@@ -27,7 +27,7 @@ G_BEGIN_DECLS
 /* --- functions --- */
 void		sfi_value_store_typed		(const GValue	*value,
 						 GString	*gstring);
-void		sfi_value_store_param		(const GValue	*value,
+void		sfi_value_store_param	        (const GValue	*value,
 						 GString	*gstring,
 						 GParamSpec	*pspec,
 						 guint		 indent);

@@ -270,7 +270,12 @@ sfi_serialize_primitives (SfiSCategory scat,
     case SFI_SCAT_INT:
       if (gstring)
 	{
-	  gstring_printf (gstring, "%d", sfi_value_get_int (value));
+	  SfiInt iv = sfi_value_get_int (value);
+          if (g_option_check (hints, "hex") &&  /* hexadecimal hint */
+              iv <= G_MAXINT)
+            gstring_printf (gstring, "0x%08x", iv);
+          else
+            gstring_printf (gstring, "%d", iv);
 	}
       else
 	{
@@ -779,9 +784,9 @@ value_store_param (const GValue *value,
 
 void
 sfi_value_store_param (const GValue *value,
-		       GString      *gstring,
-		       GParamSpec   *pspec,
-		       guint         indent)
+                       GString      *gstring,
+                       GParamSpec   *pspec,
+                       guint         indent)
 {
   gboolean needs_break = FALSE;
 

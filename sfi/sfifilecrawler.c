@@ -528,6 +528,51 @@ sfi_make_dirpath (const gchar *dir)
   g_free (dirpath);
 }
 
+void
+sfi_make_dirname_path (const gchar  *file_name)
+{
+  if (file_name)
+    {
+      gchar *dirname = g_path_get_dirname (file_name);
+      if (dirname)
+        sfi_make_dirpath (dirname);
+      g_free (dirname);
+    }
+}
+
+/**
+ * sfi_path_get_filename
+ * @filename:   possibly relative filename
+ * @parentdir:  possibly relative parent directory path
+ * @RETURNS:    a newly allocated absolute pathname
+ * Construct an absolute filename from @filename, using @parentdir as
+ * parent directory if @filename is not absolute. If @parentdir is
+ * not absolute, it is assumed to be current directory relative.
+ * An exception are filenames starting out with '~' and '~USER', these
+ * are interpreted to refer to '/home' or '/home/USER' respectively.
+ */
+gchar*
+sfi_path_get_filename (const gchar  *filename,
+                       const gchar  *parentdir)
+{
+  gchar *fname;
+  if (!filename)
+    return NULL;
+  if (!g_path_is_absolute (filename))
+    {
+      gchar *free1 = NULL;
+      if (!parentdir)
+        parentdir = init_cwd;
+      if (!g_path_is_absolute (parentdir))
+        parentdir = free1 = path_make_absolute (parentdir, init_cwd, FALSE);
+      fname = path_make_absolute (filename, parentdir, FALSE);
+      g_free (free1);
+    }
+  else
+    fname = g_strdup (filename);
+  return fname;
+}
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>

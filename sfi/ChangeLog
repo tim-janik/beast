@@ -1,3 +1,12 @@
+Sun Feb  1 16:10:42 2004  Tim Janik  <timj@gtk.org>
+
+	* sfifilecrawler.[hc]: added sfi_make_dirname_path() to easily
+	create all directories required by a filename.
+	added sfi_path_get_filename() to create absolte filenames,
+	properly expanding ~ and ~USER.
+
+	* sfiserial.c: serialize :hex ints by writing out hexadecimal numbers.
+
 Wed Jan 28 15:46:16 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: remove --module option. select the core

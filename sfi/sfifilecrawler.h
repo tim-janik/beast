@@ -58,7 +58,10 @@ SfiRing*        sfi_file_crawler_list_files             (const gchar *search_pat
                                                          const gchar *file_pattern,
                                                          GFileTest    file_test);
 
+gchar*          sfi_path_get_filename                   (const gchar  *filename,
+                                                         const gchar  *parentdir);
 void            sfi_make_dirpath                        (const gchar  *dir);
+void            sfi_make_dirname_path                   (const gchar  *filename);
 gboolean        g_file_test_all                         (const gchar  *filename,
                                                          GFileTest     test);
 
