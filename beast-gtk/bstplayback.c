@@ -36,7 +36,7 @@ bst_play_back_handle_new (void)
 
   handle = g_new0 (BstPlayBackHandle, 1);
   handle->project = bse_server_use_new_project (BSE_SERVER, "# BEAST Play Back");
-  if (BST_DVL_EXT)
+  if (BST_DBG_EXT)
     gxk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 
   handle->snet = bse_project_create_snet (handle->project, NULL);

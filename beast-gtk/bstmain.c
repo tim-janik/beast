@@ -41,7 +41,7 @@ static void			bst_print_blurb		(gboolean     print_help);
 
 /* --- variables --- */
 gboolean            bst_developer_hints = FALSE;
-gboolean            bst_developer_extensions = FALSE;
+gboolean            bst_debug_extensions = FALSE;
 gboolean            bst_main_loop_running = TRUE;
 static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
@@ -429,10 +429,10 @@ bst_early_parse_args (int    *argc_p,
 	    }
 	  if (strchr (flags, 'd') != NULL)
 	    {
-	      g_message ("enabling possibly harmfull developer functionality due to '-:d'");
-	      bst_developer_extensions = strchr (flags, 'd') != NULL;
+	      g_message ("enabling possibly harmfull debugging functionality due to '-:d'");
+	      bst_debug_extensions = strchr (flags, 'd') != NULL;
 	    }
-	  sfi_rec_set_bool (bseconfig, "developer-extensions", bst_developer_extensions);
+	  sfi_rec_set_bool (bseconfig, "debug-extensions", bst_debug_extensions);
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--hints", argv[i]) == 0)
@@ -554,7 +554,7 @@ bst_print_blurb (gboolean print_help)
       g_print ("Image Path:  %s\n", BST_PATH_IMAGES);
       g_print ("Plugin Path: %s\n", BSE_PATH_PLUGINS);
       g_print ("Script Path: %s\n", BSE_PATH_SCRIPTS);
-      g_print ("Sample Path: %s\n", BST_PATH_DATA_SAMPLES);
+      g_print ("Sample Path: %s:$BEAST_SAMPLE_PATH\n", BST_PATH_DATA_SAMPLES);
       g_print ("LADSPA Path: %s:$LADSPA_PATH\n", BSE_PATH_LADSPA);
       g_print ("\n");
       g_print ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
@@ -582,7 +582,7 @@ bst_print_blurb (gboolean print_help)
       g_print ("                          n - disable script and plugin registration\n");
       g_print ("                          p - reenable plugin registration\n");
       g_print ("                          s - reenable script registration\n");
-      g_print ("                          d - development extensions (harmfull)\n");
+      g_print ("                          d - debugging extensions (harmfull)\n");
       if (!BST_VERSION_STABLE)
         {
 	  g_print ("Gtk+ Options:\n");

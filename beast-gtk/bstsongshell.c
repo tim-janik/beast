@@ -146,7 +146,7 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 					    "label", "Parts",
 					    "visible", TRUE,
 					    NULL));
-  if (BST_DVL_EXT)
+  if (BST_DBG_EXT)
     {
       song_shell->snet_router = bst_snet_router_build_page (super_shell->super);
       g_object_connect (song_shell->snet_router,

@@ -15,10 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bstitemview.h"
-
-#include	"bstparamview.h"
-
+#include "bstitemview.h"
+#include "bstparamview.h"
+#include "bsttreestores.h"
 
 
 /* --- prototypes --- */
@@ -34,15 +33,6 @@ static void	item_view_unlisten_on		(BstItemView		*self,
 						 SfiProxy		 item);
 static void	item_view_set_container		(BstItemView		*self,
 						 SfiProxy		 new_container);
-
-
-/* --- columns --- */
-enum {
-  COL_SEQID,
-  COL_NAME,
-  COL_BLURB,
-  N_COLS
-};
 
 
 /* --- static variables --- */
@@ -86,6 +76,7 @@ bst_item_view_class_init (BstItemViewClass *class)
 
   object_class->destroy = bst_item_view_destroy;
   
+  class->item_type = NULL;
   class->n_ops = 0;
   class->ops = NULL;
   class->show_properties = TRUE;
@@ -139,6 +130,7 @@ bst_item_view_init (BstItemView      *self,
       self->op_widgets[i] = g_object_new (GTK_TYPE_BUTTON,
 					  "can_focus", FALSE,
 					  "parent", tool_box,
+					  "sensitive", FALSE,
 					  NULL);
       g_object_connect (self->op_widgets[i],
 			"signal::clicked", button_action, GUINT_TO_POINTER (bop->op),
@@ -177,9 +169,7 @@ bst_item_view_init (BstItemView      *self,
   /* show the sutter */
   gtk_widget_show_all (GTK_WIDGET (self));
   
-  self->item_type = NULL;
   self->container = 0;
-  self->id_format = g_strdup ("%03u");
 }
 
 static void
@@ -189,7 +179,11 @@ bst_item_view_destroy (GtkObject *object)
 
   bst_item_view_set_container (self, 0);
   
+  bst_update_can_operate (GTK_WIDGET (object));
+
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
+
+  bst_update_can_operate_unqueue (GTK_WIDGET (object));
 }
 
 static void
@@ -199,36 +193,10 @@ bst_item_view_finalize (GObject *object)
 
   bst_item_view_set_container (self, 0);
 
-  g_free (self->id_format);
   g_free (self->op_widgets);
+  g_object_unref (self->wlist);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
-}
-
-static void
-item_view_fill_value (BstItemView *self,
-		      guint        column,
-		      guint        row,
-		      GValue      *value)
-{
-  guint seqid = row + 1;
-  switch (column)
-    {
-      const gchar *string;
-      SfiProxy item;
-    case COL_SEQID:
-      g_value_set_string_take_ownership (value, g_strdup_printf (self->id_format, seqid));
-      break;
-    case COL_NAME:
-      item = bse_container_get_item (self->container, self->item_type, seqid);
-      g_value_set_string (value, bse_item_get_name (item));
-      break;
-    case COL_BLURB:
-      item = bse_container_get_item (self->container, self->item_type, seqid);
-      bse_proxy_get (item, "blurb", &string, NULL);
-      g_value_set_string (value, string ? string : "");
-      break;
-    }
 }
 
 void
@@ -241,8 +209,7 @@ bst_item_view_name_edited (BstItemView *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      guint seqid = row + 1;
-      SfiProxy item = bse_container_get_item (self->container, self->item_type, seqid);
+      SfiProxy item = bst_item_view_get_proxy (self, row);
       if (item)
 	bse_item_set_name (item, text);
     }
@@ -258,11 +225,37 @@ bst_item_view_blurb_edited (BstItemView *self,
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
-      guint seqid = row + 1;
-      SfiProxy item = bse_container_get_item (self->container, self->item_type, seqid);
+      SfiProxy item = bst_item_view_get_proxy (self, row);
       if (item)
 	bse_proxy_set (item, "blurb", text, NULL);
     }
+}
+
+static void
+item_view_listener (GtkTreeModel *model,
+		    SfiProxy      item,
+		    gboolean      added)
+{
+  BstItemView *self = g_object_get_data (model, "item-view");
+  if (added)
+    BST_ITEM_VIEW_GET_CLASS (self)->listen_on (self, item);
+  else
+    BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (self, item);
+  bst_update_can_operate (GTK_WIDGET (self));
+}
+
+GtkTreeModel*
+bst_item_view_adapt_list_wrapper (BstItemView    *self,
+				  GxkListWrapper *lwrapper)
+{
+  g_return_val_if_fail (BST_IS_ITEM_VIEW (self), NULL);
+  g_return_val_if_fail (GXK_IS_LIST_WRAPPER (lwrapper), NULL);
+  g_return_val_if_fail (self->wlist == NULL, NULL);
+
+  g_object_set_data (lwrapper, "item-view", self);
+  bst_child_list_wrapper_set_listener (lwrapper, item_view_listener);
+  self->wlist = g_object_ref (lwrapper);
+  return gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (self->wlist));
 }
 
 static void
@@ -270,17 +263,14 @@ bst_item_view_create_tree (BstItemView *self)
 {
   GtkWidget *scwin;
   GtkTreeSelection *tsel;
+  GtkTreeModel *smodel;
+  GxkListWrapper *lwrapper;
 
   /* item list model */
-  self->wlist = gxk_list_wrapper_new (N_COLS,
-				      G_TYPE_STRING,	/* COL_SEQID */
-				      G_TYPE_STRING,	/* COL_NAME */
-				      G_TYPE_STRING	/* COL_BLURB */
-				      );
-  g_signal_connect_object (self->wlist, "fill-value",
-			   G_CALLBACK (item_view_fill_value),
-			   self, G_CONNECT_SWAPPED);
-  
+  lwrapper = bst_child_list_wrapper_store_new ();
+  smodel = bst_item_view_adapt_list_wrapper (self, lwrapper);
+  g_object_unref (lwrapper);
+
   /* item list view */
   scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
 			"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -290,7 +280,7 @@ bst_item_view_create_tree (BstItemView *self)
 			NULL);
   self->tree = g_object_new (GTK_TYPE_TREE_VIEW,
 			     "can_focus", TRUE,
-			     "model", self->wlist,
+			     "model", smodel,
 			     "border_width", 5,
 			     "parent", scwin,
 			     "height_request", BST_ITEM_VIEW_TREE_HEIGHT,
@@ -298,18 +288,23 @@ bst_item_view_create_tree (BstItemView *self)
   gxk_nullify_on_destroy (self->tree, &self->tree);
   tsel = gtk_tree_view_get_selection (self->tree);
   gtk_tree_selection_set_mode (tsel, GTK_SELECTION_BROWSE);
-  gxk_tree_selection_force_browse (tsel, GTK_TREE_MODEL (self->wlist));
-
+  gxk_tree_selection_force_browse (tsel, smodel);
+  g_object_unref (smodel);
+  
   /* add list view columns */
-  gxk_tree_view_add_text_column (self->tree, COL_SEQID, "S",
+  gxk_tree_view_add_text_column (self->tree, BST_PROXY_STORE_SEQID, "S",
 				 0.0, "ID", NULL,
 				 NULL, NULL, 0);
-  gxk_tree_view_add_text_column (self->tree, COL_NAME, "S",
+  gxk_tree_view_add_text_column (self->tree, BST_PROXY_STORE_NAME, "S",
 				 0.0, "Name", NULL,
 				 bst_item_view_name_edited, self, G_CONNECT_SWAPPED);
-  gxk_tree_view_add_text_column (self->tree, COL_BLURB, "",
+  gxk_tree_view_add_text_column (self->tree, BST_PROXY_STORE_BLURB, "",
 				 0.0, "Comment", NULL,
 				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
+  if (BST_DBG_EXT)
+    gxk_tree_view_add_text_column (self->tree, BST_PROXY_STORE_TYPE, "",
+				   0.0, "Type", NULL,
+				   NULL, NULL, 0);
 
   /* make widgets visible */
   gtk_widget_show_all (scwin);
@@ -325,8 +320,8 @@ pview_selection_changed (BstItemView *self)
   bst_update_can_operate (GTK_WIDGET (self));
 }
 
-static void
-complete_tree (BstItemView *self)
+void
+bst_item_view_complete_tree (BstItemView *self)
 {
   if (!self->wlist && !self->tree)
     {
@@ -368,72 +363,22 @@ complete_tree (BstItemView *self)
 }
 
 static void
-item_property_notify (SfiProxy     item,
-		      const gchar *property_name,
-		      BstItemView *self)
-{
-  if (self->wlist)
-    {
-      gint row = bse_item_get_seqid (item) - 1;
-      gxk_list_wrapper_notify_change (GXK_LIST_WRAPPER (self->wlist), row);
-      bst_update_can_operate (GTK_WIDGET (self));
-    }
-}
-
-static void
-item_changed (SfiProxy     item,
-	      BstItemView *self)
-{
-  item_property_notify (item, NULL, self);
-}
-
-static void
 item_view_listen_on (BstItemView *self,
 		     SfiProxy     item)
 {
-  bse_proxy_connect (item,
-		     "signal::seqid-changed", item_changed, self,
-		     "signal::property-notify", item_property_notify, self,
-		     NULL);
+  bse_proxy_connect (item, "swapped_signal::property-notify", bst_update_can_operate, self, NULL);
+  bse_proxy_connect (item, "swapped_signal::property-notify", gtk_true, self, NULL);
+  if (self->auto_select == item)
+    bst_item_view_select (self, item);
+  self->auto_select = 0;
 }
 
 static void
 item_view_unlisten_on (BstItemView *self,
 		       SfiProxy     item)
 {
-  bse_proxy_disconnect (item,
-			"any_signal", item_changed, self,
-			"any_signal", item_property_notify, self,
-			NULL);
-}
-
-static void
-item_view_item_added (SfiProxy     container,
-		      SfiProxy     item,
-		      BstItemView *self)
-{
-  if (self->wlist && BSE_IS_ITEM (item) && bse_proxy_is_a (item, self->item_type))
-    {
-      gint row = bse_item_get_seqid (item) - 1;
-      gxk_list_wrapper_notify_insert (self->wlist, row);
-      BST_ITEM_VIEW_GET_CLASS (self)->listen_on (self, item);
-      bst_update_can_operate (GTK_WIDGET (self));
-    }
-}
-
-static void
-item_view_item_removed (SfiProxy     container,
-			SfiProxy     item,
-			gint         seqid,
-			BstItemView *self)
-{
-  if (self->wlist && BSE_IS_ITEM (item) && bse_proxy_is_a (item, self->item_type))
-    {
-      gint row = seqid - 1;
-      gxk_list_wrapper_notify_delete (self->wlist, row);
-      BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (self, item);
-      bst_update_can_operate (GTK_WIDGET (self));
-    }
+  bse_proxy_disconnect (item, "any_signal", bst_update_can_operate, self, NULL);
+  bse_proxy_disconnect (item, "any_signal", gtk_true, self, NULL);
 }
 
 static void
@@ -448,41 +393,24 @@ item_view_set_container (BstItemView *self,
 {
   if (self->container)
     {
-      BseProxySeq *pseq = bse_container_list_items (self->container);
-      guint i;
-      for (i = 0; i < pseq->n_proxies; i++)
-	if (bse_proxy_is_a (pseq->proxies[i], self->item_type))
-	  BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (self, pseq->proxies[i]);
       bse_proxy_disconnect (self->container,
-			    "any_signal", item_view_item_removed, self,
-			    "any_signal", item_view_item_added, self,
 			    "any_signal", bst_item_view_release_container, self,
 			    NULL);
       if (self->wlist)
-	gxk_list_wrapper_notify_clear (self->wlist);
+	bst_child_list_wrapper_setup (self->wlist, 0, NULL);
       if (self->pview)
 	bst_param_view_set_item (BST_PARAM_VIEW (self->pview), 0);
     }
   self->container = new_container;
   if (self->container)
     {
-      BseProxySeq *pseq = bse_container_list_items (self->container);
-      guint i;
       bse_proxy_connect (self->container,
 			 "swapped_signal::release", bst_item_view_release_container, self,
-			 "signal::item_added", item_view_item_added, self,
-			 "signal::item_removed", item_view_item_removed, self,
 			 NULL);
-      complete_tree (self);
-      for (i = 0; i < pseq->n_proxies; i++)
-	if (bse_proxy_is_a (pseq->proxies[i], self->item_type))
-	  {
-	    BST_ITEM_VIEW_GET_CLASS (self)->listen_on (self, pseq->proxies[i]);
-	    if (self->wlist)
-	      gxk_list_wrapper_notify_append (self->wlist, 1);
-	  }
+      bst_item_view_complete_tree (self);
+      if (self->wlist)
+	bst_child_list_wrapper_setup (self->wlist, self->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type);
     }
-  bst_update_can_operate (GTK_WIDGET (self));
 }
 
 void
@@ -494,6 +422,8 @@ bst_item_view_set_container (BstItemView *self,
     g_return_if_fail (BSE_IS_CONTAINER (new_container));
 
   BST_ITEM_VIEW_GET_CLASS (self)->set_container (self, new_container);
+
+  bst_update_can_operate (GTK_WIDGET (self));
 }
 
 void
@@ -505,26 +435,96 @@ bst_item_view_select (BstItemView *self,
 
   if (self->tree && bse_item_get_parent (item) == self->container)
     {
-      gint row = bse_item_get_seqid (item) - 1;
-      gxk_tree_selection_select_ipath (gtk_tree_view_get_selection (self->tree),
-				       row, -1);
+      GtkTreeIter witer;
+      if (bst_child_list_wrapper_get_iter (self->wlist, &witer, item))
+	{
+	  GtkTreeModel *smodel = gtk_tree_view_get_model (self->tree);
+	  GtkTreeIter siter;
+	  if (GTK_IS_TREE_MODEL_SORT (smodel))
+	    gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (smodel), &siter, &witer);
+	  else
+	    siter = witer;
+	  gtk_tree_selection_select_iter (gtk_tree_view_get_selection (self->tree), &siter);
+	}
+      else /* probably not added yet */
+	self->auto_select = item;
     }
+}
+
+gint
+bst_item_view_get_proxy_row (BstItemView *self,
+                             SfiProxy	  item)
+{
+  g_return_val_if_fail (BST_IS_ITEM_VIEW (self), -1);
+  g_return_val_if_fail (BSE_IS_ITEM (item), -1);
+
+  if (self->tree && bse_item_get_parent (item) == self->container)
+    {
+      GtkTreeIter witer;
+      if (bst_child_list_wrapper_get_iter (self->wlist, &witer, item))
+	{
+	  GtkTreeModel *smodel = gtk_tree_view_get_model (self->tree);
+	  GtkTreePath *path;
+          GtkTreeIter siter;
+          gint row = -1;
+	  if (GTK_IS_TREE_MODEL_SORT (smodel))
+	    gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (smodel), &siter, &witer);
+	  else
+	    siter = witer;
+          path = gtk_tree_model_get_path (smodel, &siter);
+          if (gtk_tree_path_get_depth (path) > 0)
+            row = gtk_tree_path_get_indices (path)[0];
+          gtk_tree_path_free (path);
+          return row;
+	}
+    }
+  return -1;
+}
+
+SfiProxy
+bst_item_view_get_proxy (BstItemView *self,
+			 gint         row)
+{
+  SfiProxy item = 0;
+
+  g_return_val_if_fail (BST_IS_ITEM_VIEW (self), 0);
+
+  if (self->tree && row >= 0)
+    {
+      GtkTreeIter siter, witer;
+      GtkTreeModel *smodel = gtk_tree_view_get_model (self->tree);
+      GtkTreePath *path = gtk_tree_path_new_from_indices (row, -1);
+      gtk_tree_model_get_iter (smodel, &siter, path);
+      gtk_tree_path_free (path);
+      if (GTK_IS_TREE_MODEL_SORT (smodel))
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (smodel), &witer, &siter);
+      else
+	witer = siter;
+      item = bst_child_list_wrapper_get_from_iter (self->wlist, &witer);
+    }
+  if (item)
+    g_return_val_if_fail (BSE_IS_ITEM (item), 0);
+  return item;
 }
 
 SfiProxy
 bst_item_view_get_current (BstItemView *self)
 {
   SfiProxy item = 0;
-  GtkTreeIter iter;
+  GtkTreeIter siter;
+  GtkTreeModel *smodel;
 
   g_return_val_if_fail (BST_IS_ITEM_VIEW (self), 0);
 
   if (self->tree && gtk_tree_selection_get_selected (gtk_tree_view_get_selection (self->tree),
-						     NULL, &iter))
+						     &smodel, &siter))
     {
-      guint row = gxk_list_wrapper_get_index (self->wlist, &iter);
-      guint seqid = row + 1;
-      item = bse_container_get_item (self->container, self->item_type, seqid);
+      GtkTreeIter witer;
+      if (GTK_IS_TREE_MODEL_SORT (smodel))
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (smodel), &witer, &siter);
+      else
+	witer = siter;
+      item = bst_child_list_wrapper_get_from_iter (self->wlist, &witer);
     }
   if (item)
     g_return_val_if_fail (BSE_IS_ITEM (item), 0);
@@ -532,14 +532,19 @@ bst_item_view_get_current (BstItemView *self)
 }
 
 void
-bst_item_view_set_id_format (BstItemView *item_view,
-			     const gchar *id_format)
+bst_item_view_enable_param_view (BstItemView *self,
+                                 gboolean     enabled)
 {
-  g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
-  g_return_if_fail (id_format != NULL);
+  g_return_if_fail (BST_IS_ITEM_VIEW (self));
 
-  g_free (item_view->id_format);
-  item_view->id_format = g_strdup (id_format);
+  if (self->pview)
+    {
+      if (enabled)
+        gtk_widget_show (self->pview);
+      else
+        gtk_widget_hide (self->pview);
+    }
+  bst_update_can_operate (GTK_WIDGET (self));
 }
 
 void

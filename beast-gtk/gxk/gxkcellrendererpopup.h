@@ -37,7 +37,7 @@ G_BEGIN_DECLS
 /* --- structures & typedefs --- */
 typedef struct {
   GtkCellRendererText parent_instace;
-  GtkWidget          *dialog;
+  GtkWidget          *dialog, *entry;
   gboolean	      show_button;
 } GxkCellRendererPopup;
 typedef struct {
@@ -52,6 +52,10 @@ typedef struct {
 GType	gxk_cell_renderer_popup_get_type	(void);
 void	gxk_cell_renderer_popup_dialog		(GxkCellRendererPopup	*popup,
 						 GtkWidget		*dialog);
+void    gxk_cell_renderer_enter                 (GxkCellRendererPopup   *popup,
+                                                 const gchar            *text,
+                                                 gboolean                preserve_popup,
+                                                 gboolean                keep_editing);
 
 
 /* --- type macros --- */

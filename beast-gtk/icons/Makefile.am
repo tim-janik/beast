@@ -39,6 +39,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_INSTRUMENT		$(srcdir)/aguitar.png		\
 	STOCK_KNOB			$(srcdir)/knob.png		\
 	STOCK_LOAD			$(srcdir)/cdrom.png		\
+	STOCK_LOAD_LIB			$(srcdir)/cdroms.png		\
 	STOCK_MOUSE_TOOL		$(srcdir)/mouse_tool.png	\
 	STOCK_MUSIC_CUT			$(srcdir)/music-cut.png		\
 	STOCK_MUSIC_COPY		$(srcdir)/music-copy.png	\

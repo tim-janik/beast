@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2001 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include	"bstitemview.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- Gtk+ type macros --- */
@@ -41,7 +38,7 @@ typedef	struct	_BstWaveViewClass	BstWaveViewClass;
 struct _BstWaveView
 {
   BstItemView	 parent_object;
-  GtkWidget     *load_dialog;
+  guint          editable : 1;
 };
 struct _BstWaveViewClass
 {
@@ -50,13 +47,11 @@ struct _BstWaveViewClass
 
 
 /* --- prototypes --- */
-GtkType		bst_wave_view_get_type	(void);
-GtkWidget*	bst_wave_view_new	(SfiProxy	wrepo);
+GType		bst_wave_view_get_type          (void);
+GtkWidget*	bst_wave_view_new               (SfiProxy     wrepo);
+void            bst_wave_view_set_editable      (BstWaveView *self,
+                                                 gboolean     enabled);
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_WAVE_VIEW_H__ */

@@ -369,7 +369,6 @@ bst_clue_hunter_set_clist (BstClueHunter *self,
 	g_object_disconnect (self->clist,
 			     "any_signal", bst_clue_hunter_clist_click, self,
 			     "any_signal", intercept_innermost_signal, self,
-			     "any_signal", intercept_innermost_signal, self,
 			     NULL);
       g_object_unref (self->clist);
     }

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2000-2001 Tim Janik
+ * Copyright (C) 2000-2001, 2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,23 +18,19 @@
 #ifndef __BST_WAVE_REPO_SHELL_H__
 #define __BST_WAVE_REPO_SHELL_H__
 
-#include	"bstsupershell.h"
-#include	"bstparamview.h"
-#include	"bstwaveview.h"
+#include "bstsupershell.h"
+#include "bstparamview.h"
+#include "bstwaveview.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_WAVE_REPO_SHELL	    (bst_wave_repo_shell_get_type ())
-#define	BST_WAVE_REPO_SHELL(object)	    (GTK_CHECK_CAST ((object), BST_TYPE_WAVE_REPO_SHELL, BstWaveRepoShell))
-#define	BST_WAVE_REPO_SHELL_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_WAVE_REPO_SHELL, BstWaveRepoShellClass))
-#define	BST_IS_WAVE_REPO_SHELL(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_WAVE_REPO_SHELL))
-#define	BST_IS_WAVE_REPO_SHELL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_WAVE_REPO_SHELL))
-#define BST_WAVE_REPO_SHELL_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_WAVE_REPO_SHELL, BstWaveRepoShellClass))
+#define	BST_WAVE_REPO_SHELL(object)	    (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_WAVE_REPO_SHELL, BstWaveRepoShell))
+#define	BST_WAVE_REPO_SHELL_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_WAVE_REPO_SHELL, BstWaveRepoShellClass))
+#define	BST_IS_WAVE_REPO_SHELL(object)      (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_WAVE_REPO_SHELL))
+#define	BST_IS_WAVE_REPO_SHELL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_WAVE_REPO_SHELL))
+#define BST_WAVE_REPO_SHELL_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), BST_TYPE_WAVE_REPO_SHELL, BstWaveRepoShellClass))
 
 
 /* --- structures & typedefs --- */
@@ -54,12 +50,9 @@ struct _BstWaveRepoShellClass
 
 
 /* --- prototypes --- */
-GtkType		bst_wave_repo_shell_get_type	(void);
+GType		bst_wave_repo_shell_get_type	(void);
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_WAVE_REPO_SHELL_H__ */

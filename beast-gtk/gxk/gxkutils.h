@@ -42,6 +42,8 @@ void	    gxk_widget_proxy_requisition	(GtkWidget	 *widget);
 
 /* --- GtkFileSelection workarounds --- */
 GtkWidget*	gxk_file_selection_heal		(GtkFileSelection	 *fs);
+GtkWidget*	gxk_file_selection_split	(GtkFileSelection	 *fs,
+						 GtkWidget		**bbox);
 
 
 /* --- GObject convenience --- */
@@ -93,6 +95,10 @@ void	gxk_widget_make_insensitive	(GtkWidget	*widget);
 void	gxk_widget_make_sensitive	(GtkWidget	*widget);
 void	gxk_widget_showraise		(GtkWidget	*widget);
 void	gxk_idle_show_widget		(GtkWidget	*widget);
+void    gxk_notebook_add_page		(GtkNotebook	*notebook,
+					 GtkWidget	*child,
+					 const gchar	*tab_text,
+					 gboolean        expand_fill);
 void    gxk_notebook_set_current_page_widget (GtkNotebook *notebook,
 					      GtkWidget   *page);
 GtkWidget* gtk_notebook_current_widget       (GtkNotebook *notebook);
@@ -156,6 +162,9 @@ void	gxk_tree_view_add_toggle_column		(GtkTreeView  *tree_view,
 void	gxk_tree_view_column_set_tip_title	(GtkTreeViewColumn   *tree_column,
 						 const gchar         *title,
 						 const gchar	     *tooltip);
+void	gxk_tree_view_set_editable      	(GtkTreeView         *tview,
+                                                 gboolean             maybe_editable);
+
 
 /* tree selection convenience */
 void   gxk_tree_selection_select_spath   (GtkTreeSelection      *selection,

@@ -187,18 +187,20 @@ bst_window_sync_title_to_proxy (gpointer     window,
 				SfiProxy     proxy,
 				const gchar *title_format)
 {
+  gchar *p;
+
   g_return_if_fail (GTK_IS_WINDOW (window));
   if (proxy)
     {
       g_return_if_fail (BSE_IS_ITEM (proxy));
       g_return_if_fail (title_format != NULL);
-      g_return_if_fail (strstr (title_format, "%s") != NULL);
+      /* g_return_if_fail (strstr (title_format, "%s") != NULL); */
     }
 
-  if (proxy)
+  p = title_format ? strstr (title_format, "%s") : NULL;
+  if (proxy && p)
     {
       TitleSync *tsync = g_new0 (TitleSync, 1);
-      gchar *p = strstr (title_format, "%s");
 
       tsync->window = window;
       tsync->proxy = proxy;

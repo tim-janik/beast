@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2000-2001 Tim Janik
+ * Copyright (C) 2000-2001, 2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,29 +36,26 @@ static gpointer parent_class = NULL;
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_wave_repo_shell_get_type (void)
 {
-  static GtkType song_shell_type = 0;
-  
-  if (!song_shell_type)
+  static GType type = 0;
+  if (!type)
     {
-      GtkTypeInfo song_shell_info =
-      {
-	"BstWaveRepoShell",
-	sizeof (BstWaveRepoShell),
+      static const GTypeInfo type_info = {
 	sizeof (BstWaveRepoShellClass),
-	(GtkClassInitFunc) bst_wave_repo_shell_class_init,
-	(GtkObjectInitFunc) bst_wave_repo_shell_init,
-        /* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) bst_wave_repo_shell_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	sizeof (BstWaveRepoShell),
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) bst_wave_repo_shell_init,
       };
-      
-      song_shell_type = gtk_type_unique (BST_TYPE_SUPER_SHELL, &song_shell_info);
+      type = g_type_register_static (BST_TYPE_SUPER_SHELL, "BstWaveRepoShell", &type_info, 0);
     }
-  
-  return song_shell_type;
+  return type;
 }
 
 static void
@@ -140,6 +137,7 @@ bst_wave_repo_shell_operate (BstSuperShell *super_shell,
   switch (op)
     {
     case BST_OP_WAVE_LOAD:
+    case BST_OP_WAVE_LOAD_LIB:
     case BST_OP_WAVE_DELETE:
     case BST_OP_WAVE_EDITOR:
       bst_item_view_operate (wshell->wave_view, op);
@@ -160,6 +158,7 @@ bst_wave_repo_shell_can_operate (BstSuperShell *super_shell,
   switch (op)
     {
     case BST_OP_WAVE_LOAD:
+    case BST_OP_WAVE_LOAD_LIB:
     case BST_OP_WAVE_DELETE:
     case BST_OP_WAVE_EDITOR:
       return (wshell->wave_view &&

@@ -1,3 +1,59 @@
+Sat May 10 15:50:04 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: use new file selection code.
+	(bst_update_can_operate):
+	(bst_update_can_operate_unqueue): support can_operate updates
+	on just BstItemView objects.
+
+	* beast-gtk/bstfiledialog.[hc]: reimplementation of the file selection 
+	code. we now use a GxkDialog as toplevel, reuse GtkFileSelection
+	widgets by reparenting them. Added a seperate BST_SAMPLE_PATH
+	browser for fast loading of samples, and special cased the various
+	loading/saving applications beast has.
+
+	* beast-gtk/bstitemview.[hc]: use new child-list-wrapper code to
+	maintain container children in a tree store. moved item_type field
+	from instance to class and changed derived widgets. wrap item store
+	into a sortable model, adapt code which relied on model specifics.
+
+	* beast-gtk/bsttrackview.[hc]: fixups due to BstItemView changes, added
+	popup dialog for synth selection cell. adapted code to using a sortable
+	model view BstItemView.
+
+	* beast-gtk/*.c: fix code duplicating signal disconnections
+	using the "any_signal" keyword, since "any_signal" will disconnect
+	all existing connections.
+
+	* beast-gtk/*.[hc]: renamed BST_DVL_EXT to BST_DBG_EXT as
+	"debug-extensions" is a more apropriate name since it enables unusual
+	and harmfull behaviour that's only usefull for debugging purposes.
+
+	* beast-gtk/bstutils.c: allow title setting without proxy for
+	bst_window_sync_title_to_proxy().
+
+	* beast-gtk/bstwaveview.[hc]: support new wave seleciton dialog,
+	loading of samples from BST_SAMPLE_PATH and changing of editability.
+
+	* beast-gtk/bsttracksynthdialog.[hc]: new dialog, offering an item
+	list from a BseProxySeq, and loaded waves. these are the items
+	selectable as synth input for a BseTrack.
+
+	* beast-gtk/bsttreestores.[hc]: implementations of GtkTreeStores for
+	proxy lists, proxy children and file crawler results.
+
+	* beast-gtk/bstwavedialog.[hc]: files removed, purpose has been taken
+	over by BstFileDialog.
+
+	* beast-gtk/gxk/gxkcellrendererpopup.[hc]: allow for programmatic
+	popdown.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added convenience function to add a
+	simple page to a notebook, added gxk_tree_view_set_editable() which
+	can unset the editable flag of any cell renderers within the tree.
+	added gxk_file_selection_split() which allowes for reparentation of
+	the widget groups from a GtkFileSelection dialog.
+	use gxk_file_selection_split() to implement gxk_file_selection_heal().
+
 Thu May  8 13:21:10 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* configure.in: removed checks for documentation generation

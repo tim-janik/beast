@@ -432,6 +432,18 @@ gxk_idle_show_widget (GtkWidget *widget)
   gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_shower, widget_p);
 }
 
+void
+gxk_notebook_add_page (GtkNotebook *notebook,
+		       GtkWidget   *child,
+		       const gchar *tab_text,
+		       gboolean     expand_fill)
+{
+  gtk_container_add (GTK_CONTAINER (notebook), child);
+  gtk_notebook_set_tab_label_text (notebook, child, tab_text);
+  gtk_notebook_set_menu_label_text (notebook, child, tab_text);
+  gtk_notebook_set_tab_label_packing (notebook, child, expand_fill, expand_fill, GTK_PACK_START);
+}
+
 /**
  * gxk_notebook_set_current_page_widget
  * @notebook: valid #GtkNotebook
@@ -1126,6 +1138,39 @@ gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
 			       toggled_callback, NULL, data, cflags,
 			       3, "A", column_flags);
+}
+
+void
+gxk_tree_view_set_editable (GtkTreeView *tview,
+                            gboolean     maybe_editable)
+{
+  GList *clist = gtk_tree_view_get_columns (tview);
+  GtkTreeViewColumn *tcol = g_list_pop_head (&clist);
+  while (tcol)
+    {
+      GList *rlist = gtk_tree_view_column_get_cell_renderers (tcol);
+      GtkCellRenderer *cell = g_list_pop_head (&rlist);
+      while (cell)
+        {
+          GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (cell), "editable");
+          if (pspec && g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), G_TYPE_BOOLEAN))
+            {
+              gboolean is_editable, was_editable = g_object_get_long (cell, "editable");
+              g_object_get (cell, "editable", &is_editable, NULL);
+              if (maybe_editable && was_editable && !is_editable)
+                g_object_set (cell, "editable", TRUE, NULL);
+              else if (is_editable)
+                {
+                  if (!was_editable)
+                    g_object_set_long (cell, "editable", TRUE);
+                  if (!maybe_editable)
+                    g_object_set (cell, "editable", FALSE, NULL);
+                }
+            }
+          cell = g_list_pop_head (&rlist);
+        }
+      tcol = g_list_pop_head (&clist);
+    }
 }
 
 static void
@@ -1926,26 +1971,12 @@ gxk_widget_proxy_requisition (GtkWidget *widget)
   g_signal_connect_after (widget, "size_request", G_CALLBACK (requisition_to_aux_info), NULL);
 }
 
-/**
- * gxk_file_selection_heal
- * @fs:      valid #GtkFileSelection
- * @RETURNS: new toplevel VBox of the file selection
- *
- * Fixup various oddities that happened to the Gtk+
- * file selection widget over time. This function
- * corrects container border widths, spacing, button
- * placement and the default and focus widgets.
- * Also, the lifetime of the file selection window
- * is tied to the returned #GtkVBox, enabling removal
- * of the #GtkVBox from it's parent and thus using the
- * file selection widgets in a custom #GtkWindow.
- */
 GtkWidget*
-gxk_file_selection_heal (GtkFileSelection *fs)
+gxk_file_selection_split (GtkFileSelection *fs,
+			  GtkWidget       **bbox_p)
 {
   GtkWidget *main_vbox;
   GtkWidget *hbox;
-  GtkWidget *any;
 
   g_return_val_if_fail (GTK_IS_FILE_SELECTION (fs), NULL);
 
@@ -1971,6 +2002,10 @@ gxk_file_selection_heal (GtkFileSelection *fs)
   gtk_box_pack_start (GTK_BOX (main_vbox), fs->main_vbox, TRUE, TRUE, 0);
   gtk_widget_unref (fs->main_vbox);
 
+  /* fixup focus and default widgets */
+  gtk_widget_grab_default (fs->ok_button);
+  gtk_widget_grab_focus (fs->selection_entry);
+
   /* use an ordinary HBox as button container */
   gtk_widget_hide (fs->ok_button->parent);
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
@@ -1979,7 +2014,10 @@ gxk_file_selection_heal (GtkFileSelection *fs)
 			 "border_width", 5,
 			 "visible", TRUE,
 			 NULL);
-  gtk_box_pack_end (GTK_BOX (main_vbox), hbox, FALSE, TRUE, 0);
+  if (bbox_p)
+    *bbox_p = hbox;
+  else
+    gtk_box_pack_end (GTK_BOX (main_vbox), hbox, FALSE, TRUE, 0);
   gtk_widget_reparent (fs->ok_button, hbox);
   gtk_widget_reparent (fs->cancel_button, hbox);
 
@@ -1989,18 +2027,38 @@ gxk_file_selection_heal (GtkFileSelection *fs)
 			     FALSE, TRUE,
 			     5, GTK_PACK_START);
 
-  /* obligatory button seperator */
-  any = gtk_widget_new (GTK_TYPE_HSEPARATOR,
-			"visible", TRUE,
-			NULL);
-  gtk_box_pack_end (GTK_BOX (main_vbox), any, FALSE, TRUE, 0);
-
   /* fs life cycle */
   g_signal_connect_object (main_vbox, "destroy", G_CALLBACK (gtk_widget_destroy), fs, G_CONNECT_SWAPPED);
 
-  /* fixup focus and default widgets */
-  gtk_widget_grab_default (fs->ok_button);
-  gtk_widget_grab_focus (fs->selection_entry);
-
   return main_vbox;
+}
+
+/**
+ * gxk_file_selection_heal
+ * @fs:      valid #GtkFileSelection
+ * @RETURNS: new toplevel VBox of the file selection
+ *
+ * Fixup various oddities that happened to the Gtk+
+ * file selection widget over time. This function
+ * corrects container border widths, spacing, button
+ * placement and the default and focus widgets.
+ * Also, the lifetime of the file selection window
+ * is tied to the returned #GtkVBox, enabling removal
+ * of the #GtkVBox from it's parent and thus using the
+ * file selection widgets in a custom #GtkWindow.
+ */
+GtkWidget*
+gxk_file_selection_heal (GtkFileSelection *fs)
+{
+  GtkWidget *any, *main_box;
+
+  main_box = gxk_file_selection_split (fs, NULL);
+
+  /* add obligatory button seperator */
+  any = g_object_new (GTK_TYPE_HSEPARATOR,
+		      "visible", TRUE,
+		      NULL);
+  gtk_box_pack_end (GTK_BOX (main_box), any, FALSE, TRUE, 0);
+
+  return main_box;
 }

@@ -1,31 +1,34 @@
 FIXMES:
+- fix compillation without texitheque
+- support auto-popup for cell renderer popup in track synth
+- fix seqid property notify
+- indicate directories as dirs in lib-list
+- don't always rebuild lib-list [Rebuild]-button
+- nuke BSE file crawling functions
+- fix API for file matching in SFI
+- redesign object operations and updating object operations
+- fix internal items (snets) being listed as tentative property values
+- fix BST_OP_PROJECT_SAVE
+- export seqid via properties
 - get compilation with guile-1.6 to work
-- fix patch selection popup
 - add new test song containing a wave track
 - fix saving of internal objects
 - fix sub-synth "snet" property setter
 - fix SNet derivation
 - fix internal synths being displayed by beast
-- implement (GUI) for locked properties
+- implement (GUI for) locked properties
 - fixup filemenu/dialog for WAVE recording
 - mark intern synths as INTERNAL (track's mono-synth)
 - never gather INTERNAL items in bse_item_gather_proxies()
 - loading cmt LADSPA plugins from the cmt debian package causes beast abort:
   BSE-ERROR **: Fatal: failed to reinitialize plugin "/usr/lib/ladspa/cmt.so": plugin types changed on disk
-- check whether bse/icons/Makefile.icons is included in dist tarball
-- check whether plugins/icons/Makefile.icons is included in dist tarball
-- check whether beast-0.5.1.orig/plugins/Makefile.plugins is included in dist tarball
-- check whether bse/icons/Makefile.icons is included in dist tarball
-- check whether bse/icons/Makefile.icons is included in dist tarball
-- check whether bse/icons/Makefile.icons is included in dist tarball
-- fix synth column editing in track list
+- check whether */icons/Makefile.icons is included in dist tarball
+- check whether plugins/Makefile.plugins is included in dist tarball
 - fix main menubar which contains a lot of wrongly enabled menu items
 - register category IDs via ID mechanism
 - register drivers with categories
 - fix gsl wave osc
 - install bsw/* into bse/.
-- remove SFI(signal): spurious unknown signal "release" on proxy (23)
-- remove SFI(signal): spurious unknown signal "io_changed" on proxy (35)
 - implement snet removal
 - nuke SFI memblocks, malloc() is good enough
 - GslModuleClass.free should be renamed free_user_data
@@ -256,6 +259,7 @@ sfidl:
   - support N/A choice values, currently hardcoded for BseErrorType
   - syntax for neutral values in choices
   extensions:
+  - need support for real enums in bserecords.sfidl
   - choices need support for icons per value
   - choices need support for tooltips per value
   - signals should be specified in idl files (and have to be documentable)

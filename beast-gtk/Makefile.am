@@ -42,10 +42,10 @@ beast_headers = $(strip \
 	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
 	bstrackeditor.h		bstrackitem.h	bstracktable.h		bstradiotools.h	\
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	\
-	bstusermessage.h	bstutils.h	bstwavedialog.h		bstwaveeditor.h	\
+	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	\
 	bstwavereposhell.h	bstwaveview.h	bstsongshell.h		bstxkb.h	\
 	bstzoomedwindow.h	glewidgets.h	bsttrackrollctrl.h	bstxframe.h	\
-	bstcatalog.h		bstdial.h			\
+	bstcatalog.h				bsttreestores.h		bstutils.h	\
 	bstmarshal.h bstdefs.h \
 )
 # BEAST c sources to build the program from
@@ -60,10 +60,10 @@ beast_sources = $(strip \
 	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	\
 	bstrackeditor.c		bstrackitem.c	bstracktable.c		bstradiotools.c	\
 	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	\
-	bstusermessage.c	bstutils.c	bstwavedialog.c		bstwaveeditor.c	\
+	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	\
 	bstwavereposhell.c	bstwaveview.c	bstsongshell.c		bstxkb.c	\
 	bstzoomedwindow.c	glewidgets.c	bsttrackrollctrl.c	bstxframe.c	\
-	bstcatalog.c		bstdial.c			\
+	bstcatalog.c				bsttreestores.c		bstutils.c	\
 	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)

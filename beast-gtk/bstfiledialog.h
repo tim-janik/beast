@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,10 @@
 #ifndef __BST_FILE_DIALOG_H__
 #define __BST_FILE_DIALOG_H__
 
+#include "bstutils.h"
+#include "bstapp.h"
 
-#include        "bstutils.h"
-#include        "bstapp.h"
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- type macros --- */
@@ -38,35 +34,61 @@ extern "C" {
 
 
 /* --- typedefs --- */
-typedef struct  _BstFileDialog		BstFileDialog;
-typedef struct  _BstFileDialogClass	BstFileDialogClass;
+typedef struct  _BstFileDialog	    BstFileDialog;
+typedef struct  _BstFileDialogClass BstFileDialogClass;
 
 
 /* --- structures --- */
+typedef enum {
+  BST_FILE_DIALOG_OPEN_PROJECT	= 0x0001,
+  BST_FILE_DIALOG_MERGE_PROJECT	= 0x0002,
+  BST_FILE_DIALOG_SAVE_PROJECT	= 0x0003,
+  BST_FILE_DIALOG_LOAD_WAVE	= 0x0004,
+  BST_FILE_DIALOG_LOAD_WAVE_LIB	= 0x0005,
+  BST_FILE_DIALOG_MODE_MASK	= 0x00ff,
+  BST_FILE_DIALOG_ALLOW_DIRS	= 0x1000,
+  BST_FILE_DIALOG_FLAG_MASK	= 0xff00
+} BstFileDialogMode;
 struct _BstFileDialog
 {
-  GtkFileSelection file_selection;
+  GxkDialog	    parent_instance;
+  GtkFileSelection *fs;
+  GtkWidget	   *notebook;
+  GtkWidget	   *fpage;	/* file selection */
+  GtkWidget	   *spage;	/* sample selection */
+  GtkTreeView	   *tview;	/* sample selection tree view */
+  GtkWidget	   *osave;	/* save options */
+  GtkWidget	   *radio1;
+  /* mode state */
+  BstFileDialogMode mode : 16;
+  guint		    ignore_activate : 1;
+  guint		    using_sample_list : 1;
+  GtkWindow	   *parent_window;
+  SfiProxy	    proxy;
 };
-
 struct _BstFileDialogClass
 {
-  GtkFileSelectionClass	parent_class;
+  GxkDialogClass parent_class;
 };
 
 
 /* --- prototypes --- */
-GtkType		bst_file_dialog_get_type	(void);
-GtkWidget*	bst_file_dialog_new_open	(BstApp		*app,
-						 SfiProxy	 merge_project);
-GtkWidget*	bst_file_dialog_new_save	(BstApp		*app);
+GType		bst_file_dialog_get_type		(void);
+GtkWidget*	bst_file_dialog_popup_open_project	(gpointer	   parent_widget);
+GtkWidget*	bst_file_dialog_popup_merge_project	(gpointer	   parent_widget,
+							 SfiProxy	   project);
+GtkWidget*	bst_file_dialog_popup_save_project	(gpointer	   parent_widget,
+							 SfiProxy	   project);
+GtkWidget*	bst_file_dialog_popup_load_wave		(gpointer	   parent_widget,
+							 SfiProxy	   wave_repo,
+							 gboolean	   show_lib);
+void		bst_file_dialog_set_mode		(BstFileDialog	  *self,
+							 gpointer          parent_widget,
+							 BstFileDialogMode mode,
+							 const gchar	  *fs_title,
+							 SfiProxy	   project);
 
 
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif  /* __BST_FILE_DIALOG_H__ */

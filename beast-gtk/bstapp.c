@@ -572,11 +572,7 @@ bst_app_operate (BstApp *app,
 		 BstOps	 op)
 {
   static GtkWidget *bst_help_dialogs[BST_OP_HELP_LAST - BST_OP_HELP_FIRST + 1] = { NULL, };
-  static GtkWidget *gxk_dialog_open = NULL;
-  static GtkWidget *gxk_dialog_merge = NULL;
-  static GtkWidget *gxk_dialog_save = NULL;
   static GtkWidget *bst_preferences = NULL;
-  static GtkWidget *bst_proc_browser = NULL;
   GtkWidget *widget, *shell;
   gchar *help_file = NULL, *help_title = NULL;
 
@@ -609,33 +605,14 @@ bst_app_operate (BstApp *app,
 	}
       break;
     case BST_OP_PROJECT_OPEN:
-      if (!gxk_dialog_open)
-	{
-	  gxk_dialog_open = bst_file_dialog_new_open (app, 0);
-	  g_object_connect (gxk_dialog_open,
-			    "signal::destroy", gtk_widget_destroyed, &gxk_dialog_open,
-			    NULL);
-	}
-      gxk_widget_showraise (gxk_dialog_open);
+      bst_file_dialog_popup_open_project (app);
       break;
     case BST_OP_PROJECT_MERGE:
-      if (!gxk_dialog_merge)
-	{
-	  gxk_dialog_merge = bst_file_dialog_new_open (app, app->project);
-	  g_object_connect (gxk_dialog_merge,
-			    "signal::destroy", gtk_widget_destroyed, &gxk_dialog_merge,
-			    NULL);
-	}
-      gxk_widget_showraise (gxk_dialog_merge);
+      bst_file_dialog_popup_merge_project (app, app->project);
       break;
+    case BST_OP_PROJECT_SAVE:
     case BST_OP_PROJECT_SAVE_AS:
-      if (gxk_dialog_save)
-	gtk_widget_destroy (gxk_dialog_save);
-      gxk_dialog_save = bst_file_dialog_new_save (app);
-      g_object_connect (gxk_dialog_save,
-			"signal::destroy", gtk_widget_destroyed, &gxk_dialog_save,
-			NULL);
-      gxk_widget_showraise (gxk_dialog_save);
+      bst_file_dialog_popup_save_project (app, app->project);
       break;
     case BST_OP_PROJECT_CLOSE:
       gxk_toplevel_delete (widget);
@@ -862,6 +839,7 @@ bst_app_can_operate (BstApp *app,
     case BST_OP_PROJECT_NEW:
     case BST_OP_PROJECT_OPEN:
     case BST_OP_PROJECT_MERGE:
+    case BST_OP_PROJECT_SAVE:
     case BST_OP_PROJECT_SAVE_AS:
     case BST_OP_PROJECT_NEW_SONG:
     case BST_OP_PROJECT_NEW_SNET:
@@ -899,14 +877,22 @@ static guint op_update_id = 0;
 static gboolean
 op_update_handler (gpointer data)
 {
+  guint i;
   GDK_THREADS_ENTER ();
   while (op_update_list)
     {
       GSList *tmp = op_update_list->next;
-      BstApp *app = op_update_list->data;
+      GtkWidget *widget = op_update_list->data;
       op_update_list = tmp;
-      bst_app_update_can_operate (app);
-      g_object_unref (app);
+      if (BST_IS_APP (widget))
+        bst_app_update_can_operate (BST_APP (widget));
+      else if (BST_IS_ITEM_VIEW (widget))
+        {
+          BstItemView *iview = BST_ITEM_VIEW (widget);
+          for (i = BST_OP_NONE; i < BST_OP_LAST; i++)
+            bst_item_view_can_operate (iview, i);
+        }
+      g_object_unref (widget);
     }
   op_update_id = 0;
   GDK_THREADS_LEAVE ();
@@ -916,6 +902,8 @@ op_update_handler (gpointer data)
 void            /* read bstdefs.h on this */
 bst_update_can_operate (GtkWidget *widget)
 {
+  GtkWidget *anc;
+
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
   /* this function can be called multiple times in a row
@@ -923,11 +911,33 @@ bst_update_can_operate (GtkWidget *widget)
 
   /* figure toplevel app, and update it
    */
-  widget = gtk_widget_get_ancestor (widget, BST_TYPE_APP);
-  if (BST_IS_APP (widget) && !g_slist_find (op_update_list, widget))
+  anc = gtk_widget_get_ancestor (widget, BST_TYPE_APP);
+  widget = anc ? anc : widget;
+  if (!G_OBJECT (widget)->ref_count)
+    return;
+  if ((BST_IS_APP (widget) || BST_IS_ITEM_VIEW (widget)) &&
+      !g_slist_find (op_update_list, widget))
     {
       op_update_list = g_slist_prepend (op_update_list, g_object_ref (widget));
       if (!op_update_id)
 	op_update_id = g_idle_add_full (G_PRIORITY_DEFAULT, op_update_handler, NULL, NULL);
     }
+}
+
+void            /* read bstdefs.h on this */
+bst_update_can_operate_unqueue (GtkWidget *widget)
+{
+  GtkWidget *anc;
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (g_slist_find (op_update_list, widget))
+    {
+      op_update_list = g_slist_remove (op_update_list, widget);
+      g_object_unref (widget);
+      return;
+    }
+  anc = gtk_widget_get_ancestor (widget, BST_TYPE_APP);
+  if (anc && anc != widget)
+    bst_update_can_operate_unqueue (anc);
 }

@@ -61,6 +61,7 @@ typedef enum
   BST_OP_PART_DELETE,
   BST_OP_PART_EDITOR,
   BST_OP_WAVE_LOAD,
+  BST_OP_WAVE_LOAD_LIB,
   BST_OP_WAVE_DELETE,
   BST_OP_WAVE_EDITOR,
   BST_OP_TRACK_ADD,
@@ -118,13 +119,14 @@ typedef enum {
 
 /* --- miscellaneous --- */
 #define	BST_DVL_HINTS		(bst_developer_hints != FALSE)
-#define	BST_DVL_EXT		(bst_developer_extensions != FALSE)
+#define	BST_DBG_EXT     	(bst_debug_extensions != FALSE)
 #define	BST_MAIN_LOOP_QUIT()	do { bst_main_loop_running = FALSE; } while (0)
 #define	GNOME_CANVAS_NOTIFY(object)	G_STMT_START { \
     if (GTK_IS_OBJECT (object)) \
       g_signal_emit_by_name (object, "notify::generic-change", NULL); \
 } G_STMT_END
 extern void bst_update_can_operate (GtkWidget   *some_widget);
+extern void bst_update_can_operate_unqueue (GtkWidget   *some_widget);
 
 
 /* --- i18n and gettext helpers --- */
@@ -136,7 +138,7 @@ extern void bst_update_can_operate (GtkWidget   *some_widget);
 
 /* --- internal stuff --- */
 extern gboolean bst_developer_hints;
-extern gboolean bst_developer_extensions;
+extern gboolean bst_debug_extensions;
 extern gboolean bst_main_loop_running;
 
 

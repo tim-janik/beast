@@ -259,9 +259,10 @@ gxk_cell_renderer_popup_dialog (GxkCellRendererPopup *self,
 }
 
 static void
-gxk_cell_renderer_popup_popdown (GxkCellRendererPopup *self)
+gxk_cell_renderer_remove_widget (GxkCellRendererPopup *self)
 {
   gxk_cell_renderer_popup_dialog (self, NULL);
+  self->entry = NULL;
 }
 
 static void
@@ -272,6 +273,30 @@ gxk_cell_renderer_popup_editing_done (GxkCellRendererPopup *self,
   if (entry->editing_canceled)
     return;
   g_signal_emit_by_name (self, "edited", path, gtk_entry_get_text (entry));
+}
+
+void
+gxk_cell_renderer_enter (GxkCellRendererPopup   *self,
+                         const gchar            *text,
+                         gboolean                preserve_popup,
+                         gboolean                keep_editing)
+{
+  g_return_if_fail (GXK_IS_CELL_RENDERER_POPUP (self));
+
+  if (self->entry)
+    {
+      if (text)
+        gtk_entry_set_text (GTK_ENTRY (self->entry), text);
+      if (!preserve_popup)
+        gxk_cell_renderer_popup_dialog (self, NULL);
+      if (!keep_editing)
+        {
+          GtkCellEditable *ecell = GTK_CELL_EDITABLE (self->entry);
+          self->entry = NULL;
+          gtk_cell_editable_editing_done (ecell);
+          gtk_cell_editable_remove_widget (ecell);
+        }
+    }
 }
 
 static gboolean
@@ -308,10 +333,11 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
 			"has_frame", FALSE,
 			"visible", TRUE,
 			NULL);
+  self->entry = entry;
   g_object_connect (entry,
 		    "swapped_signal::editing_done", gxk_cell_renderer_popup_editing_done, self,
 		    "signal::notify::is-focus", gxk_cell_editable_is_focus_handler, self,
-		    "swapped_signal::remove_widget", gxk_cell_renderer_popup_popdown, self,
+		    "swapped_signal::remove_widget", gxk_cell_renderer_remove_widget, self,
 		    NULL);
   if (tcell->text)
     gtk_entry_set_text (GTK_ENTRY (entry), tcell->text);

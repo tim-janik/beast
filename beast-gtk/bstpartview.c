@@ -80,12 +80,12 @@ bst_part_view_class_init (BstPartViewClass *class)
   item_view_class->operate = bst_part_view_operate;
   item_view_class->n_ops = G_N_ELEMENTS (part_view_ops);
   item_view_class->ops = part_view_ops;
+  item_view_class->item_type = "BsePart";
 }
 
 static void
 bst_part_view_init (BstPartView *part_view)
 {
-  BST_ITEM_VIEW (part_view)->item_type = "BsePart";
 }
 
 static void

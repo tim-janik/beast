@@ -48,16 +48,15 @@ struct _BstItemView
   GtkWidget	 *pview;
   GtkWidget	 *tools;
 
-  const gchar	*item_type;
   SfiProxy	 container;
-  gchar		*id_format;
-
+  SfiProxy	 auto_select;
   GtkWidget	**op_widgets;
 };
 struct _BstItemViewClass
 {
   GtkAlignmentClass parent_class;
 
+  const gchar	   *item_type;
   guint		    n_ops;
   BstItemViewOp	   *ops;
   guint		    horizontal_ops : 1;
@@ -89,20 +88,28 @@ GType		bst_item_view_get_type		(void);
 void		bst_item_view_select		(BstItemView	*item_view,
 						 SfiProxy	 item);
 SfiProxy	bst_item_view_get_current	(BstItemView	*item_view);
+SfiProxy	bst_item_view_get_proxy		(BstItemView	*item_view,
+						 gint            row);
+gint            bst_item_view_get_proxy_row     (BstItemView    *self,
+                                                 SfiProxy        item);
 void		bst_item_view_set_container	(BstItemView	*item_view,
 						 SfiProxy	 new_container);
 void		bst_item_view_operate		(BstItemView	*item_view,
 						 BstOps		 op);
 gboolean	bst_item_view_can_operate	(BstItemView	*item_view,
 						 BstOps		 op);
-void		bst_item_view_set_id_format	(BstItemView	*item_view,
-						 const gchar	*id_format);
-void		bst_item_view_name_edited	(BstItemView         *self,
-						 const gchar         *strpath,
-						 const gchar         *text);
-void		bst_item_view_blurb_edited	(BstItemView         *self,
-						 const gchar         *strpath,
-						 const gchar         *text);
+void		bst_item_view_name_edited	(BstItemView    *self,
+						 const gchar    *strpath,
+						 const gchar    *text);
+void		bst_item_view_blurb_edited	(BstItemView    *self,
+						 const gchar    *strpath,
+						 const gchar    *text);
+void		bst_item_view_enable_param_view	(BstItemView    *self,
+                                                 gboolean        enabled);
+GtkTreeModel* bst_item_view_adapt_list_wrapper	(BstItemView	*self,
+						 GxkListWrapper *lwrapper);
+void            bst_item_view_complete_tree     (BstItemView    *self);
+
 
 G_END_DECLS
 
