@@ -1,3 +1,10 @@
+Mon May 31 16:37:38 2004  Tim Janik  <timj@gtk.org>
+
+	* launchers/Makefile.am: prefix $(bindir) with $(DESTDIR) to allow
+	installations in chroot-ed environments (package building).
+	use install-exec-hook: to set suid permissions.
+	changes suggested by Sam Hocevar.
+
 Thu May 20 14:25:03 2004  Tim Janik  <timj@gtk.org>
 
 	* configure.in: changed version to 0.6.2-rc1, iface 0, binary 0.
