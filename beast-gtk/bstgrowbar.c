@@ -18,6 +18,7 @@
  */
 #include <sfi/glib-extra.h>
 #include "bstgrowbar.h"
+#include "bstdefs.h"
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkbutton.h>
@@ -47,50 +48,58 @@ bst_grow_bar_init (BstGrowBar      *self,
                               "visible", 1,
                               "parent", self,
                               NULL);
-  GtkWidget *growb = g_object_new (GTK_TYPE_BUTTON,
-                                   "visible", 1,
-                                   "can-focus", 0,
-                                   NULL);
-  g_signal_connect (growb, "clicked", G_CALLBACK (grow_range), self);
+  self->growb = g_object_new (GTK_TYPE_BUTTON,
+                              "visible", 1,
+                              "can-focus", 0,
+                              NULL);
+  g_object_ref (self->growb);
+  g_signal_connect (self->growb, "clicked", G_CALLBACK (grow_range), self);
   GtkWidget *sign = g_object_new (GTK_TYPE_ALIGNMENT,
                                   "visible", 1,
-                                  "parent", growb,
+                                  "parent", self->growb,
                                   NULL);
   g_signal_connect_after (sign, "expose-event", G_CALLBACK (draw_grow_sign), self);
-  GtkWidget *shrinkb = g_object_new (GTK_TYPE_BUTTON,
-                                     "visible", 1,
-                                     "can-focus", 0,
-                                     NULL);
-  g_signal_connect (shrinkb, "clicked", G_CALLBACK (shrink_range), self);
+  self->shrinkb = g_object_new (GTK_TYPE_BUTTON,
+                                "visible", 1,
+                                "can-focus", 0,
+                                NULL);
+  g_object_ref (self->shrinkb);
+  g_signal_connect (self->shrinkb, "clicked", G_CALLBACK (shrink_range), self);
   sign = g_object_new (GTK_TYPE_ALIGNMENT,
                        "visible", 1,
-                       "parent", shrinkb,
+                       "parent", self->shrinkb,
                        NULL);
   g_signal_connect_after (sign, "expose-event", G_CALLBACK (draw_shrink_sign), self);
-  gtk_box_pack_start (box, shrinkb, FALSE, TRUE, 0);
+  gtk_box_pack_start (box, self->shrinkb, FALSE, TRUE, 0);
   self->range = g_object_new (class->is_horizontal ? GTK_TYPE_HSCROLLBAR : GTK_TYPE_VSCROLLBAR,
                               "visible", 1,
                               "parent", box,
                               NULL);
   g_object_ref (self->range);
-  gtk_box_pack_start (box, growb, FALSE, TRUE, 0);
+  gtk_box_pack_start (box, self->growb, FALSE, TRUE, 0);
   if (class->is_horizontal)
     {
-      gxk_widget_request_vclient_width (growb, GTK_WIDGET (self->range));
-      gxk_widget_request_vclient_width (shrinkb, GTK_WIDGET (self->range));
+      gxk_widget_request_vclient_width (self->growb, GTK_WIDGET (self->range));
+      gxk_widget_request_vclient_width (self->shrinkb, GTK_WIDGET (self->range));
     }
   else
     {
-      gxk_widget_request_hclient_height (growb, GTK_WIDGET (self->range));
-      gxk_widget_request_hclient_height (shrinkb, GTK_WIDGET (self->range));
+      gxk_widget_request_hclient_height (self->growb, GTK_WIDGET (self->range));
+      gxk_widget_request_hclient_height (self->shrinkb, GTK_WIDGET (self->range));
     }
+  bst_grow_bar_set_tooltips (self,
+                             _("Shrink the scrollable area"),
+                             NULL,
+                             _("Grow the scrollable area"));
 }
 
 static void
 bst_grow_bar_finalize (GObject *object)
 {
   BstGrowBar *self = BST_GROW_BAR (object);
+  g_object_unref (self->shrinkb);
   g_object_unref (self->range);
+  g_object_unref (self->growb);
   /* chain parent class handler */
   G_OBJECT_CLASS (bst_grow_bar_parent_class)->finalize (object);
 }
@@ -179,6 +188,16 @@ bst_grow_bar_get_adjustment (BstGrowBar *self)
   return gtk_range_get_adjustment (self->range);
 }
 
+void
+bst_grow_bar_set_tooltips (BstGrowBar     *self,
+                           const gchar    *shrink_tip,
+                           const gchar    *scroll_tip,
+                           const gchar    *grow_tip)
+{
+  gxk_widget_set_tooltip (self->shrinkb, shrink_tip);
+  gxk_widget_set_tooltip (GTK_WIDGET (self->range), scroll_tip);
+  gxk_widget_set_tooltip (self->growb, grow_tip);
+}
 
 /* --- BstHGrowBar --- */
 G_DEFINE_TYPE (BstHGrowBar, bst_hgrow_bar, BST_TYPE_GROW_BAR);

@@ -54,6 +54,7 @@ typedef struct {
   GtkAlignment parent_instance;
   double       max_upper;
   GtkRange    *range;
+  GtkWidget   *shrinkb, *growb;
 } BstGrowBar;
 typedef struct {
   GtkAlignmentClass parent_class;
@@ -74,6 +75,10 @@ void		bst_grow_bar_set_max_upper      (BstGrowBar	*self,
 void            bst_grow_bar_set_adjustment     (BstGrowBar     *self,
                                                  GtkAdjustment  *adj);
 GtkAdjustment*  bst_grow_bar_get_adjustment     (BstGrowBar     *self);
+void            bst_grow_bar_set_tooltips       (BstGrowBar     *self,
+                                                 const gchar    *shrink_tip,
+                                                 const gchar    *scroll_tip,
+                                                 const gchar    *grow_tip);
 
 G_END_DECLS
 

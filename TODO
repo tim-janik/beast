@@ -1,5 +1,4 @@
 FIXMES:
-- add tolltips to grow bar buttons (through extra grow bar API)
 - implement ordinary save functionality
 - pressing F+1 on F+1, should delete old note (and its length) and insert new note (and its length)
 - pattern editor: note LENGTH!
