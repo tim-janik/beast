@@ -53,6 +53,7 @@ BODY (BseProcedureClass *proc,
   gint     note	     = sfi_value_get_note (in_values++);
   gint     fine_tune = sfi_value_get_int (in_values++);
   gfloat   velocity  = sfi_value_get_real (in_values++);
+  BseUndoStack *ustack;
   guint id;
   
   /* check parameters */
@@ -60,8 +61,12 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
+  ustack = bse_item_undo_open (self, "insert-note");
   id = bse_part_insert_note (self, tick, duration, note, fine_tune, velocity);
-  
+  if (id)
+    bse_item_push_undo_proc (self, "delete-event", id);
+  bse_item_undo_close (ustack);
+
   /* set output parameters */
   sfi_value_set_int (out_values++, id);
   
@@ -93,22 +98,35 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self      = bse_value_get_object (in_values++);
-  guint    id	     = sfi_value_get_int (in_values++);
-  guint    tick	     = sfi_value_get_int (in_values++);
-  guint    duration  = sfi_value_get_int (in_values++);
-  gint     note	     = sfi_value_get_note (in_values++);
-  gint     fine_tune = sfi_value_get_int (in_values++);
-  gfloat   velocity  = sfi_value_get_real (in_values++);
-  gboolean success;
-  
+  BsePart *self             = bse_value_get_object (in_values++);
+  guint    id	            = sfi_value_get_int (in_values++);
+  guint    otick, tick	    = sfi_value_get_int (in_values++);
+  guint    odur,  duration  = sfi_value_get_int (in_values++);
+  gint     onote, note	    = sfi_value_get_note (in_values++);
+  gint     oft,   fine_tune = sfi_value_get_int (in_values++);
+  gfloat   ovel,  velocity  = sfi_value_get_real (in_values++);
+  gboolean oselected, success = FALSE;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  success = bse_part_change_note (self, id, tick, duration, note, fine_tune, velocity);
-  
+  if (bse_part_query_note (self, id, &otick, &odur, &onote, &oft, &ovel, &oselected))
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "change-note");
+      if (otick != tick || odur != duration || onote != note ||
+          oft != fine_tune || ovel != velocity)
+        {
+          success = bse_part_change_note (self, id, tick, duration, note, fine_tune, velocity);
+          if (success)
+            bse_item_push_undo_proc (self, "change-note", id, otick, odur, onote, oft, ovel);
+        }
+      else
+        success = TRUE;
+      bse_item_undo_close (ustack);
+    }
+
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
   
@@ -132,15 +150,25 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BsePart *self     = bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
-  gboolean deleted;
-  
+  guint otick, odur;
+  gint onote, oft;
+  gfloat ovel;
+  gboolean oselected, deleted = FALSE;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  deleted = bse_part_delete_event (self, id);
-  
+  if (bse_part_query_note (self, id, &otick, &odur, &onote, &oft, &ovel, &oselected))
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "delete-event");
+      deleted = bse_part_delete_event (self, id);
+      if (deleted)
+        bse_item_push_undo_proc (self, "insert-note", otick, odur, onote, oft, ovel);
+      bse_item_undo_close (ustack);
+    }
+
   /* set output parameters */
   g_value_set_enum (out_values++, deleted ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
   

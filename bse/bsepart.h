@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include        <bse/bseitem.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_PART			(BSE_TYPE_ID (BsePart))
@@ -42,7 +39,7 @@ struct _BsePart
 
   guint		n_ids;
   guint	       *ids;
-  guint		head_id, tail_id;	/* free id list */
+  guint		last_id;	/* freed id list */
 
   guint		n_nodes;
   BsePartNode  *nodes;
@@ -71,58 +68,68 @@ struct _BsePartClass
 
 
 /* --- functions --- */
-guint		 bse_part_insert_note		(BsePart	*self,
-						 guint		 tick,
-						 guint		 duration,
-						 gint		 note,
-						 gint		 fine_tune,
-						 gfloat		 velocity);
-gboolean	 bse_part_change_note		(BsePart	*self,
-						 guint		 id,
-						 guint		 tick,
-						 guint		 duration,
-						 gint		 note,
-						 gint		 fine_tune,
-						 gfloat		 velocity);
-gboolean	 bse_part_delete_event		(BsePart	*self,
-						 guint		 id);
-gboolean	 bse_part_is_selected_event	(BsePart	*self,
-						 guint		 id);
-BsePartNoteSeq*  bse_part_list_notes_around	(BsePart	*self,
-						 guint		 tick,
-						 guint		 duration,
-						 gint		 min_note,
-						 gint		 max_note);
-void		 bse_part_queue_notes_within	(BsePart	*self,
-						 guint		 tick,
-						 guint		 duration,
-						 gint		 min_note,
-						 gint		 max_note);
-BsePartNoteSeq*  bse_part_list_selected_notes	(BsePart	*self);
-BsePartNoteSeq*  bse_part_list_notes_at		(BsePart	*self,
-						 guint		 tick,
-						 gint		 note);
-void		 bse_part_select_rectangle	(BsePart	*self,
-						 guint		 tick,
-						 guint		 duration,
-						 gint		 min_note,
-						 gint		 max_note);
-void		 bse_part_deselect_rectangle	(BsePart	*self,
-						 guint		 tick,
-						 guint		 duration,
-						 gint		 min_note,
-						 gint		 max_note);
-void		 bse_part_select_rectangle_ex	(BsePart	*self,
-						 guint		 tick,
-						 guint		 duration,
-						 gint		 min_note,
-						 gint		 max_note);
-gboolean	 bse_part_select_event		(BsePart	*self,
-						 guint		 id);
-gboolean	 bse_part_deselect_event	(BsePart	*self,
-						 guint		 id);
-guint		 bse_part_node_lookup_SL	(BsePart	*self,
-						 guint		 tick);
+guint           bse_part_insert_note         (BsePart           *self,
+                                              guint              tick,
+                                              guint              duration,
+                                              gint               note,
+                                              gint               fine_tune,
+                                              gfloat             velocity);
+gboolean        bse_part_change_note         (BsePart           *self,
+                                              guint              id,
+                                              guint              tick,
+                                              guint              duration,
+                                              gint               note,
+                                              gint               fine_tune,
+                                              gfloat             velocity);
+gboolean        bse_part_query_note          (BsePart           *self,
+                                              guint              id,
+                                              guint             *tick_p,
+                                              guint             *duration_p,
+                                              gint              *note_p,
+                                              gint              *fine_tune_p,
+                                              gfloat            *velocity_p,
+                                              gboolean          *selected_p);
+gboolean        bse_part_delete_event        (BsePart           *self,
+                                              guint              id);
+gboolean        bse_part_is_selected_event   (BsePart           *self,
+                                              guint              id);
+BsePartNoteSeq* bse_part_list_notes_around   (BsePart           *self,
+                                              guint              tick,
+                                              guint              duration,
+                                              gint               min_note,
+                                              gint               max_note);
+void            bse_part_queue_notes_within  (BsePart           *self,
+                                              guint              tick,
+                                              guint              duration,
+                                              gint               min_note,
+                                              gint               max_note);
+BsePartNoteSeq* bse_part_list_selected_notes (BsePart           *self);
+BsePartNoteSeq* bse_part_list_notes_at       (BsePart           *self,
+                                              guint              tick,
+                                              gint               note);
+void            bse_part_select_rectangle    (BsePart           *self,
+                                              guint              tick,
+                                              guint              duration,
+                                              gint               min_note,
+                                              gint               max_note);
+void            bse_part_deselect_rectangle  (BsePart           *self,
+                                              guint              tick,
+                                              guint              duration,
+                                              gint               min_note,
+                                              gint               max_note);
+void            bse_part_select_rectangle_ex (BsePart           *self,
+                                              guint              tick,
+                                              guint              duration,
+                                              gint               min_note,
+                                              gint               max_note);
+gboolean        bse_part_select_event        (BsePart           *self,
+                                              guint              id);
+gboolean        bse_part_deselect_event      (BsePart           *self,
+                                              guint              id);
+guint           bse_part_node_lookup_SL      (BsePart           *self,
+                                              guint              tick);
+
+
 
 
 /* --- implementation details --- */
@@ -189,9 +196,6 @@ typedef enum	/*< skip >*/
 } BsePartControlType;
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_PART_H__ */

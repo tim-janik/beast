@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,11 +119,9 @@ bse_part_class_init (BsePartClass *class)
 static void
 bse_part_init (BsePart *self)
 {
-  self->n_ids = 1;
-  self->ids = g_renew (guint, NULL, 1);
-  self->ids[0] = BSE_PART_INVAL_TICK_FLAG + 0;
-  self->head_id = 1;
-  self->tail_id = 1;
+  self->n_ids = 0;
+  self->ids = NULL;
+  self->last_id = 0;
   self->n_nodes = 0;
   self->nodes = g_renew (BsePartNode, NULL, upper_power2 (self->n_nodes));
   self->last_tick_SL = 0;
@@ -200,11 +198,10 @@ bse_part_finalize (GObject *object)
   self->range_queued = TRUE;
   plist_range_changed = g_slist_remove (plist_range_changed, self);
 
-  g_free (self->ids);
   self->n_ids = 0;
+  g_free (self->ids);
   self->ids = NULL;
-  self->head_id = 0;
-  self->tail_id = 0;
+  self->last_id = 0;
   
   for (i = 0; i < self->n_nodes; i++)
     for (ev = self->nodes[i].events; ev; ev = next)
@@ -227,25 +224,30 @@ bse_part_alloc_id (BsePart *self,
   
   g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
 
-  /* we keep a list of ids to implement a fast lookup
-   * from id to tick of the id owning event. ticks
-   * >= BSE_PART_INVAL_TICK_FLAG are not allocated.
+  /* we keep an array of ids to implement a fast lookup
+   * from id to tick of the event containing id. ticks
+   * >= BSE_PART_INVAL_TICK_FLAG indicate non-allocated
+   * ids. last_id is the head of a list of freed ids,
+   * so we can hand out new ids in reversed order they
+   * were freed in, to provide deterministic id assignment
+   * for state rollbacks as required by undo.
    */
 
-  id = self->head_id;
-  next = self->ids[id - 1];
-  g_assert (next >= BSE_PART_INVAL_TICK_FLAG);	// FIXME: paranoid
-  next -= BSE_PART_INVAL_TICK_FLAG;
-  if (!next)	/* last id, allocate new next */
+  if (self->last_id)
     {
-      self->n_ids++;
-      self->ids = g_renew (guint, self->ids, self->n_ids);
-      self->ids[self->n_ids - 1] = BSE_PART_INVAL_TICK_FLAG + 0;
-      self->head_id = self->n_ids;
-      self->tail_id = self->n_ids;
+      guint i = self->last_id - 1;
+
+      g_assert (self->ids[i] >= BSE_PART_INVAL_TICK_FLAG);
+
+      self->last_id = self->ids[i] - BSE_PART_INVAL_TICK_FLAG;
+      id = i + 1;
     }
   else
-    self->head_id = next;
+    {
+      guint i = self->n_ids++;
+      self->ids = g_renew (guint, self->ids, self->n_ids);
+      id = i + 1;
+    }
   self->ids[id - 1] = tick;
   return id;
 }
@@ -257,7 +259,7 @@ bse_part_move_id (BsePart *self,
 {
   g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
   g_return_val_if_fail (id > 0 && id <= self->n_ids, 0);
-  g_return_val_if_fail (self->ids[id - 1] <= BSE_PART_MAX_TICK, 0);	/* check !freed id */
+  g_return_val_if_fail (self->ids[id - 1] < BSE_PART_INVAL_TICK_FLAG, 0);	/* check !freed id */
   
   self->ids[id - 1] = tick;
   
@@ -268,12 +270,14 @@ static void
 bse_part_free_id (BsePart *self,
 		  guint    id)
 {
+  guint i;
+
   g_return_if_fail (id > 0 && id <= self->n_ids);
-  g_return_if_fail (self->ids[id - 1] <= BSE_PART_MAX_TICK);	/* check !freed id */
-  
-  self->ids[self->tail_id - 1] = BSE_PART_INVAL_TICK_FLAG + id;
-  self->tail_id = id;
-  self->ids[id - 1] = BSE_PART_INVAL_TICK_FLAG + 0;
+  g_return_if_fail (self->ids[id - 1] < BSE_PART_INVAL_TICK_FLAG);	/* check !freed id */
+
+  i = id - 1;
+  self->ids[i] = self->last_id + BSE_PART_INVAL_TICK_FLAG;
+  self->last_id = id;
 }
 
 static guint	/* returns tick (<= BSE_PART_MAX_TICK) if id is valid */
@@ -910,6 +914,42 @@ bse_part_change_note (BsePart *self,
   else
     return FALSE;
 }
+
+gboolean
+bse_part_query_note (BsePart        *self,
+                     guint           id,
+                     guint          *tick_p,
+                     guint          *duration_p,
+                     gint           *note_p,
+                     gint           *fine_tune_p,
+                     gfloat         *velocity_p,
+                     gboolean       *selected_p)
+{
+  BsePartEvent *ev;
+  guint etick;
+
+  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+
+  ev = find_event (self, id, &etick);
+  if (ev && ev->type == BSE_PART_EVENT_NOTE)
+    {
+      if (tick_p)
+        *tick_p = etick;
+      if (duration_p)
+        *duration_p = ev->note.duration;
+      if (note_p)
+        *note_p = ev->note.note;
+      if (fine_tune_p)
+        *fine_tune_p = ev->note.fine_tune;
+      if (velocity_p)
+        *velocity_p = ev->note.velocity;
+      if (selected_p)
+        *selected_p = ev->note.selected;
+      return TRUE;
+    }
+  return FALSE;
+}
+
 
 gboolean
 bse_part_is_selected_event (BsePart *self,

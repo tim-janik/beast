@@ -1,3 +1,9 @@
+Mon Jun  9 18:08:27 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepart.[hcp]*: allocate part ids in LIFO scheme to provide correct
+	ids for undo state rollbacks. added bse_part_query_note() and implemented
+	undo for modifying procedures.
+
 Mon Jun  9 03:50:49 2003  Tim Janik  <timj@gtk.org>
 
 	* BseWave undo fixup, we now support full undo on waves by keeping
