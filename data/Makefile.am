@@ -14,6 +14,7 @@ public_images = $(strip         \
 )
 images_DATA = ${public_images}
 imagesdir = ${beastimagesdir}
+EXTRA_DIST += $(private_images) $(public_images)
 
 # generate image header files
 noinst_build_sources += beast-images.h
@@ -35,16 +36,19 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = sfi.pc bse.pc
 $(pkgconfig_DATA): $(top_builddir)/config.status
 CLEANFILES += bse.pc sfi.pc
+EXTRA_DIST += sfi.pc.in bse.pc.in
 
 # install .applications files
 dotapplicationsdir = $(datadir)/application-registry
 dotapplications_DATA = beast.applications
+EXTRA_DIST += $(dotapplications_DATA)
 
 # install related pixmaps
 sharedpixmapsdir = $(datadir)/pixmaps
 sharedpixmaps_DATA = beast.png beast-audio-x-bse.png
 beast-audio-x-bse.png: $(srcdir)/bse-mime.png
 	cp $< $@
+EXTRA_DIST += $(sharedpixmaps_DATA)
 
 # generate and install .desktop file
 @INTLTOOL_DESKTOP_RULE@
@@ -53,6 +57,7 @@ dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
 CLEANFILES += beast.desktop
 beast.desktop: beast.desktop.in
+EXTRA_DIST += $(dotdesktop_in_files)
 
 # generate and install .xml mime info file
 @INTLTOOL_XML_RULE@
@@ -62,6 +67,7 @@ sharedmimepackage_in_files = beast.xml.in
 sharedmimepackage_DATA = $(sharedmimepackage_in_files:.xml.in=.xml)
 CLEANFILES += beast.xml
 beast.xml: beast.xml.in
+EXTRA_DIST += $(sharedmimepackage_in_files)
 
 # generate and install .mime and .keys files
 @INTLTOOL_KEYS_RULE@
@@ -70,6 +76,7 @@ mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
 CLEANFILES += bse.keys
 bse.keys: bse.keys.in
+EXTRA_DIST += $(mime_in_file)
 
 # update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
 install-data-hook:
@@ -78,6 +85,8 @@ uninstall-local: uninstall-sharedmimepackageDATA
 	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
 
 
+noinst_DATA = $(noinst_build_sources)
+CLEANFILES += $(noinst_build_sources)
 noinst_build_sources += config-paths.h
 config-paths.h: $(top_builddir)/config.status Makefile
 	cd . \
@@ -105,19 +114,6 @@ config-paths.h: $(top_builddir)/config.status Makefile
 	&& echo "/* Generated data ends here */" >> xgen-cph \
 	&& (cp xgen-cph $@) \
 	&& rm -f xgen-cph
-#	&& (cmp -s xgen-cph $@ || cp xgen-cph $@)
-
-
-noinst_DATA = $(noinst_build_sources)
-CLEANFILES += $(noinst_build_sources)
-
-
-EXTRA_DIST += $(strip           \
-	${public_images}	\
-	${private_images}	\
-	${dotapplications_DATA}	\
-	${dotdesktop_in_files}	\
-	${mime_in_file}		\
-        sfi.pc.in               \
-        bse.pc.in               \
-)
+foo:
+	echo EXTRA_DIST= $(EXTRA_DIST)
+        
