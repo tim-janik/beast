@@ -64,6 +64,7 @@ beast_headers = $(strip \
 	bstradiotools.h \
 	bstsamplerepo.h \
 	bstsampleshell.h \
+	bstservermonitor.h \
 	bstsnetshell.h \
 	bstsnetrouter.h \
 	bstsongshell.h \
@@ -106,6 +107,7 @@ beast_sources = $(strip \
 	bstradiotools.c \
 	bstsamplerepo.c \
 	bstsampleshell.c \
+	bstservermonitor.c \
 	bstsnetshell.c \
 	bstsnetrouter.c \
 	bstsongshell.c \

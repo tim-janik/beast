@@ -28,6 +28,7 @@
 #include	"bstgconfig.h"
 #include	"bstpreferences.h"
 #include	"bstpatterneditor.h"
+#include	"bstservermonitor.h"
 
 
 
@@ -512,6 +513,7 @@ bst_app_operate (BstApp *app,
     {
       BstSuperShell *super_shell;
       BswProxy proxy;
+      GtkWidget *any;
 
     case BST_OP_PROJECT_NEW:
       if (1)
@@ -609,29 +611,15 @@ bst_app_operate (BstApp *app,
 	}
       gtk_widget_showraise (bst_preferences);
       break;
-#if 0	// FIXME
     case BST_OP_DIALOG_DEVICE_MONITOR:
-      heart = bse_heart_get_global (FALSE);
-      if (heart)
-	{
-	  GtkWidget *hmon;
-
-	  hmon = (GtkWidget*) bst_heart_monitor_from_heart (heart);
-	  if (hmon)
-	    hmon = gtk_widget_get_toplevel (hmon);
-	  else
-	    {
-	      hmon = bst_heart_monitor_new (heart);
-	      gtk_widget_show (hmon);
-	      hmon = bst_adialog_new (NULL, NULL, hmon,
-				      0,
-				      "title", "BEAST: Device Monitor",
-				      NULL);
-	    }
-	  gtk_widget_showraise (hmon);
-	}
+      any = g_object_new (BST_TYPE_SERVER_MONITOR, NULL);
+      gtk_widget_show (any);
+      any = bst_adialog_new (NULL, NULL, any,
+			     0,
+			     "title", "BEAST: Device Monitor",
+			     NULL);
+      gtk_widget_show (any);
       break;
-#endif
     case BST_OP_REFRESH:
       gtk_container_foreach (GTK_CONTAINER (app->notebook),
 			     (GtkCallback) bst_super_shell_update,
