@@ -30,13 +30,13 @@ enum
 
 
 /* --- prototypes --- */
-static void	 bse_adder_init			(BseAdder	*adder);
+static void	 bse_adder_init			(BseAdder	*self);
 static void	 bse_adder_class_init		(BseAdderClass	*class);
-static void	 bse_adder_set_property		(BseAdder	*adder,
+static void	 bse_adder_set_property		(GObject        *object,
 						 guint           param_id,
-						 GValue         *value,
+						 const GValue   *value,
 						 GParamSpec     *pspec);
-static void	 bse_adder_get_property		(BseAdder	*adder,
+static void	 bse_adder_get_property		(GObject        *object,
 						 guint           param_id,
 						 GValue         *value,
 						 GParamSpec     *pspec);
@@ -44,7 +44,7 @@ static BswIcon*	 bse_adder_do_get_icon		(BseObject	*object);
 static void      bse_adder_context_create       (BseSource      *source,
 						 guint           context_handle,
 						 GslTrans       *trans);
-static void	 bse_adder_update_modules	(BseAdder	*adder,
+static void	 bse_adder_update_modules	(BseAdder	*self,
 						 GslTrans	*trans);
 
 
@@ -77,12 +77,12 @@ bse_adder_class_init (BseAdderClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint ichannel, ochannel;
+  guint channel;
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_adder_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_adder_get_property;
+  gobject_class->set_property = bse_adder_set_property;
+  gobject_class->get_property = bse_adder_get_property;
   
   object_class->get_icon = bse_adder_do_get_icon;
   
@@ -98,16 +98,12 @@ bse_adder_class_init (BseAdderClass *class)
 						   FALSE,
 						   BSE_PARAM_DEFAULT));
   
-  ichannel = bse_source_class_add_ichannel (source_class, "mono_in1", "Mono Input 1");
-  g_assert (ichannel == BSE_ADDER_ICHANNEL_MONO1);
-  ichannel = bse_source_class_add_ichannel (source_class, "mono_in2", "Mono Input 2");
-  g_assert (ichannel == BSE_ADDER_ICHANNEL_MONO2);
-  ichannel = bse_source_class_add_ichannel (source_class, "mono_in3", "Mono Input 3");
-  g_assert (ichannel == BSE_ADDER_ICHANNEL_MONO3);
-  ichannel = bse_source_class_add_ichannel (source_class, "mono_in4", "Mono Input 4");
-  g_assert (ichannel == BSE_ADDER_ICHANNEL_MONO4);
-  ochannel = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Output");
-  g_assert (ochannel == BSE_ADDER_OCHANNEL_MONO);
+  channel = bse_source_class_add_jchannel (source_class, "audio1", "Audio Input 1");
+  g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO1);
+  channel = bse_source_class_add_jchannel (source_class, "audio2", "Audio Input 2");
+  g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO2);
+  channel = bse_source_class_add_ochannel (source_class, "audio out", "Audio Output");
+  g_assert (channel == BSE_ADDER_OCHANNEL_AUDIO_OUT);
 }
 
 static void
@@ -118,55 +114,58 @@ bse_adder_class_finalize (BseAdderClass *class)
 }
 
 static void
-bse_adder_init (BseAdder *adder)
+bse_adder_init (BseAdder *self)
 {
-  adder->mix_buffer = NULL;
-  adder->subtract = FALSE;
+  self->subtract = FALSE;
 }
 
 static BswIcon*
 bse_adder_do_get_icon (BseObject *object)
 {
-  BseAdder *adder = BSE_ADDER (object);
+  BseAdder *self = BSE_ADDER (object);
   
-  if (adder->subtract)
-    return BSE_ADDER_GET_CLASS (adder)->sub_icon;
+  if (self->subtract)
+    return BSE_ADDER_GET_CLASS (self)->sub_icon;
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->get_icon (object);
 }
 
 static void
-bse_adder_set_property (BseAdder    *adder,
-			guint        param_id,
-			GValue      *value,
-			GParamSpec  *pspec)
+bse_adder_set_property (GObject      *object,
+			guint         param_id,
+			const GValue *value,
+			GParamSpec   *pspec)
 {
+  BseAdder *self = BSE_ADDER (object);
+
   switch (param_id)
     {
     case PARAM_SUBTRACT:
-      adder->subtract = g_value_get_boolean (value);
-      bse_adder_update_modules (adder, NULL);
-      bse_object_notify_icon_changed (BSE_OBJECT (adder));
+      self->subtract = g_value_get_boolean (value);
+      bse_adder_update_modules (self, NULL);
+      bse_object_notify_icon_changed (BSE_OBJECT (self));
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (adder, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_adder_get_property (BseAdder    *adder,
-			guint        param_id,
-			GValue      *value,
-			GParamSpec  *pspec)
+bse_adder_get_property (GObject    *object,
+			guint       param_id,
+			GValue     *value,
+			GParamSpec *pspec)
 {
+  BseAdder *self = BSE_ADDER (object);
+
   switch (param_id)
     {
     case PARAM_SUBTRACT:
-      g_value_set_boolean (value, adder->subtract);
+      g_value_set_boolean (value, self->subtract);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (adder, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
@@ -177,68 +176,71 @@ typedef struct
 } Adder;
 
 static void
-adder_process (GslModule *module,
-	       guint      n_values)
+bse_adder_update_modules (BseAdder *self,
+			  GslTrans *trans)
 {
-  Adder *add = module->user_data;
-  BseSampleValue *wave_out = GSL_MODULE_OBUFFER (module, 0);
-  BseSampleValue *bound = wave_out + n_values;
-  guint i;
-
-  if (!module->ostreams[0].connected)
-    return;     /* nothing to process */
-  for (i = 0; i < GSL_MODULE_N_ISTREAMS (module); i++)
-    if (module->istreams[i].connected)
-      {
-	/* found first channel */
-	memcpy (wave_out, GSL_MODULE_IBUFFER (module, i), n_values * sizeof (wave_out[0]));
-	break;
-      }
-  if (i >= GSL_MODULE_N_ISTREAMS (module))
-    {
-      /* no input, FIXME: should set static-0 here */
-      memset (wave_out, 0, n_values * sizeof (wave_out[0]));
-    }
-  if (!add->subtract)
-    {
-      for (; i < GSL_MODULE_N_ISTREAMS (module); i++)
-	if (module->istreams[i].connected)
-	  {
-	    const BseSampleValue *in = GSL_MODULE_IBUFFER (module, i);
-	    BseSampleValue *out = wave_out;
-	    
-	    /* found 1+nth channel to add on */
-	    do
-	      *out++ += *in++;
-	    while (out < bound);
-	  }
-    }
-  else
-    {
-      for (; i < GSL_MODULE_N_ISTREAMS (module); i++)
-	if (module->istreams[i].connected)
-	  {
-	    const BseSampleValue *in = GSL_MODULE_IBUFFER (module, i);
-	    BseSampleValue *out = wave_out;
-	    
-	    /* found 1+nth channel to subtract */
-	    do
-	      *out++ -= *in++;
-	    while (out < bound);
-	  }
-    }
+  if (BSE_SOURCE_PREPARED (self))
+    bse_source_update_modules (BSE_SOURCE (self),
+			       G_STRUCT_OFFSET (Adder, subtract),
+			       &self->subtract,
+			       sizeof (self->subtract),
+			       trans);
 }
 
 static void
-bse_adder_update_modules (BseAdder *adder,
-			  GslTrans *trans)
+adder_process (GslModule *module,
+	       guint      n_values)
 {
-  if (BSE_SOURCE_PREPARED (adder))
-    bse_source_update_modules (BSE_SOURCE (adder),
-			       G_STRUCT_OFFSET (Adder, subtract),
-			       &adder->subtract,
-			       sizeof (adder->subtract),
-			       trans);
+  Adder *adder = module->user_data;
+  guint n_au1 = GSL_MODULE_JSTREAM (module, BSE_ADDER_JCHANNEL_AUDIO1).n_connections;
+  guint n_au2 = GSL_MODULE_JSTREAM (module, BSE_ADDER_JCHANNEL_AUDIO2).n_connections;
+  gfloat *out, *audio_out = GSL_MODULE_OBUFFER (module, BSE_ADDER_OCHANNEL_AUDIO_OUT);
+  gfloat *bound = audio_out + n_values;
+  const gfloat *auin;
+  guint i;
+
+  if (!n_au1 && !n_au2)
+    {
+      module->ostreams[BSE_ADDER_OCHANNEL_AUDIO_OUT].values = gsl_engine_const_values (0);
+      return;
+    }
+  if (n_au1)	/* sum up audio1 inputs */
+    {
+      auin = GSL_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO1, 0);
+      out = audio_out;
+      do
+	*out++ = *auin++;
+      while (out < bound);
+      for (i = 1; i < n_au1; i++)
+	{
+	  auin = GSL_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO1, i);
+	  out = audio_out;
+	  do
+	    *out++ += *auin++;
+	  while (out < bound);
+	}
+    }
+  else
+    memset (audio_out, 0, n_values * sizeof (audio_out[0]));
+
+  if (n_au2 && !adder->subtract)	/* sum up audio2 inputs */
+    for (i = 0; i < n_au2; i++)
+      {
+	auin = GSL_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO2, i);
+	out = audio_out;
+	do
+	  *out++ += *auin++;
+	while (out < bound);
+      }
+  else if (n_au2)		/*  subtract audio2 inputs */
+    for (i = 0; i < n_au2; i++)
+      {
+	auin = GSL_MODULE_JBUFFER (module, BSE_ADDER_JCHANNEL_AUDIO2, i);
+	out = audio_out;
+	do
+	  *out++ -= *auin++;
+	while (out < bound);
+      }
 }
 
 static void
@@ -247,9 +249,9 @@ bse_adder_context_create (BseSource *source,
 			  GslTrans  *trans)
 {
   static const GslClass add_class = {
-    4,				/* n_istreams */
-    0,				/* n_jstreams */
-    1,				/* n_ostreams */
+    0,				/* n_istreams */
+    BSE_ADDER_N_JCHANNELS,	/* n_jstreams */
+    BSE_ADDER_N_OCHANNELS,	/* n_ostreams */
     adder_process,		/* process */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */

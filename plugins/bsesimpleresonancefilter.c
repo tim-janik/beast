@@ -251,6 +251,18 @@ static inline gdouble
 simple_resonance_filter_step (FilterModule *fmod,
 			      gdouble       x)
 {
+#if 1
+  gdouble a1, a2, a3, a4, a5;
+
+  a2 = x + fmod->s2 * fmod->c1;
+  a3 = fmod->s1 * -fmod->c1;
+  a5 = (a2 - a3) * fmod->c2;
+  a1 = a5 + a2;
+  a4 = a3 + a5;
+  fmod->s1 = a1;
+  fmod->s2 = a4;
+  return a1;
+#else
   gdouble k1, k2, k3, k4, k5, t1;
 
   k3 = fmod->s1 * -fmod->c1;
@@ -263,6 +275,7 @@ simple_resonance_filter_step (FilterModule *fmod,
   fmod->s1 = k1;
 
   return k1;
+#endif
 }
 
 static void

@@ -51,8 +51,6 @@ struct _BseAdder
   BseSource       parent_object;
 
   gboolean	  subtract;
-
-  BseMixValue    *mix_buffer;
 };
 struct _BseAdderClass
 {
@@ -65,14 +63,14 @@ struct _BseAdderClass
 /* --- channels --- */
 enum
 {
-  BSE_ADDER_ICHANNEL_MONO1,
-  BSE_ADDER_ICHANNEL_MONO2,
-  BSE_ADDER_ICHANNEL_MONO3,
-  BSE_ADDER_ICHANNEL_MONO4
+  BSE_ADDER_JCHANNEL_AUDIO1,
+  BSE_ADDER_JCHANNEL_AUDIO2,
+  BSE_ADDER_N_JCHANNELS
 };
 enum
 {
-  BSE_ADDER_OCHANNEL_MONO
+  BSE_ADDER_OCHANNEL_AUDIO_OUT,
+  BSE_ADDER_N_OCHANNELS
 };
 
 
