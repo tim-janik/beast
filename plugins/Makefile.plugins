@@ -6,7 +6,7 @@
 bseadder_la_SOURCES = bseadder.c
 bseadder_la_LDFLAGS = -module -avoid-version
 bseadder_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS += bseadder.h
+EXTRA_HEADERS         += bseadder.h
 
 ##
 ## Plugin bsecapture
@@ -14,7 +14,7 @@ EXTRA_HEADERS += bseadder.h
 bsecapture_la_SOURCES = bsecapture.c
 bsecapture_la_LDFLAGS = -module -avoid-version
 bsecapture_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS += bsecapture.h
+EXTRA_HEADERS         += bsecapture.h
 
 ##
 ## Plugin bsecompressor
@@ -22,7 +22,7 @@ EXTRA_HEADERS += bsecapture.h
 bsecompressor_la_SOURCES = bsecompressor.c
 bsecompressor_la_LDFLAGS = -module -avoid-version
 bsecompressor_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS += bsecompressor.h
+EXTRA_HEADERS         += bsecompressor.h
 
 ##
 ## Plugin bsefirfilter
@@ -30,15 +30,17 @@ EXTRA_HEADERS += bsecompressor.h
 bsefirfilter_la_SOURCES = bsefirfilter.c
 bsefirfilter_la_LDFLAGS = -module -avoid-version
 bsefirfilter_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS += bsefirfilter.h
+EXTRA_HEADERS         += bsefirfilter.h
 
 ##
 ## Plugin bsegenosc
 ##
+bsegenosc.enums: bsegenosc.h $(mkenums)
+plugins_built_sources += bsegenosc.enums
 bsegenosc_la_SOURCES = bsegenosc.c
 bsegenosc_la_LDFLAGS = -module -avoid-version
 bsegenosc_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS += bsegenosc.h
+EXTRA_HEADERS         += bsegenosc.h
 
 ##
 ## Plugin bseloopback
@@ -46,7 +48,7 @@ EXTRA_HEADERS += bsegenosc.h
 bseloopback_la_SOURCES = bseloopback.c
 bseloopback_la_LDFLAGS = -module -avoid-version
 bseloopback_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS += bseloopback.h
+EXTRA_HEADERS         += bseloopback.h
 
 ##
 ## Plugin bsemult
@@ -54,7 +56,7 @@ EXTRA_HEADERS += bseloopback.h
 bsemult_la_SOURCES = bsemult.c
 bsemult_la_LDFLAGS = -module -avoid-version
 bsemult_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS += bsemult.h
+EXTRA_HEADERS         += bsemult.h
 
 ##
 ## Plugin bsenoise
@@ -62,7 +64,7 @@ EXTRA_HEADERS += bsemult.h
 bsenoise_la_SOURCES = bsenoise.c
 bsenoise_la_LDFLAGS = -module -avoid-version
 bsenoise_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS += bsenoise.h
+EXTRA_HEADERS         += bsenoise.h
 
 ##
 ## Plugin greeting

@@ -16,6 +16,7 @@ for file in `echo $@ | sort | uniq` ; do
 	_name=`echo $name | sed 's/[^A-Za-z0-9]/_/g'`
 	cfile="$name.c"
 	hfile="$name.h"
+	efile=
 
 	test -e "$cfile" || {
 		echo "$cfile: No such file" >&2
@@ -23,23 +24,34 @@ for file in `echo $@ | sort | uniq` ; do
 	}
 
 	grep -F BSE_EXPORTS_BEGIN $cfile >/dev/null || {
-		echo "$cfile: missing BSE_EXPORTS_BEGIN (); directive" >&2
+		echo "$cfile: missing BSE_EXPORTS_BEGIN() directive" >&2
 		exit 1
 	}
 	grep -F BSE_EXPORTS_END $cfile >/dev/null || {
-		echo "$cfile: missing BSE_EXPORTS_END; directive" >&2
+		echo "$cfile: missing BSE_EXPORTS_END directive" >&2
 		exit 1
 	}
+	if grep -F BSE_EXPORT_AND_GENERATE_ENUMS $cfile >/dev/null ; then
+	    test -e "$hfile" || {
+		echo "$cfile: found BSE_EXPORT_AND_GENERATE_ENUMS() directive, but missing $hfile" >&2
+		exit 1
+	    }
+	    efile="$name.enums"
+	fi
 
 	echo
 	echo "##"
 	echo "## Plugin $name"
 	echo "##"
+	test -n "$efile" && {
+	    echo "$efile: $hfile \$(mkenums)"
+	    echo "plugins_built_sources += $efile"
+	}
 	echo "$_name""_la_SOURCES = $cfile"
 	echo "$_name""_la_LDFLAGS = -module -avoid-version"
 	echo "$_name""_la_LIBADD  =" '$(plugin_libs)'
-	test -r "$hfile" && {
-		echo "EXTRA_HEADERS += $hfile"
+	test -e "$hfile" && {
+	    echo "EXTRA_HEADERS         += $hfile"
 	}
 	
 	last="$name.la"

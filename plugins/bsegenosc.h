@@ -44,14 +44,15 @@ extern "C" {
 
 
 /* --- wave forms --- */
-enum {
-  BSE_GEN_OSC_NOWAVE,
-  BSE_GEN_OSC_SINE,
-  BSE_GEN_OSC_GSAW,
-  BSE_GEN_OSC_SSAW,
-  BSE_GEN_OSC_PULSE,
-  BSE_GEN_OSC_TRIANGLE
-};
+typedef enum
+{
+  BSE_GEN_OSC_NOWAVE,	/*< skip >*/
+  BSE_GEN_OSC_SINE,	/*< nick=Sine >*/
+  BSE_GEN_OSC_PULSE,	/*< nick=Pulse >*/
+  BSE_GEN_OSC_GSAW,	/*< nick=Growing Saw >*/
+  BSE_GEN_OSC_SSAW,	/*< nick=Shrinking Saw >*/
+  BSE_GEN_OSC_TRIANGLE	/*< nick=Triangle >*/
+} BseGenOscWaveType;
 
 
 /* --- BseGenOsc source --- */
@@ -61,12 +62,12 @@ struct _BseGenOsc
 {
   BseSource       parent_object;
 
-  guint    wave;
-  gfloat   phase;
-  gfloat   base_freq;
-  gfloat   fm_perc;
-  gboolean self_modulation;
-  gfloat   self_perc;
+  BseGenOscWaveType wave;
+  gfloat            phase;
+  gfloat            base_freq;
+  gfloat            fm_perc;
+  gboolean          self_modulation;
+  gfloat            self_perc;
 
   guint32 rate_pos;
   guint32 rate;

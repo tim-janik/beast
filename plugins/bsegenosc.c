@@ -20,11 +20,16 @@
 
 #include <bse/bsechunk.h>
 
+/* include generated enums
+ */
+#include "bsegenosc.enums"
+
 
 /* --- parameters --- */
 enum
 {
   PARAM_0,
+  PARAM_WAVE_FORM,
   PARAM_SINE,
   PARAM_GSAW,
   PARAM_SSAW,
@@ -107,31 +112,12 @@ bse_gen_osc_class_init (BseGenOscClass *class)
   class->triangle_table = NULL;
 
   bse_object_class_add_param (object_class, "Wave Form",
-			      PARAM_SINE,
-			      bse_param_spec_bool ("sine_table", "Sine Wave", NULL,
-						   TRUE,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+			      PARAM_WAVE_FORM,
+			      bse_param_spec_enum ("wave_form", "Wave", "Oscillator wave form",
+						   BSE_TYPE_GEN_OSC_WAVE_TYPE,
+						   BSE_GEN_OSC_SINE,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Wave Form",
-			      PARAM_PULSE,
-			      bse_param_spec_bool ("pulse_table", "Pulse", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
-  bse_object_class_add_param (object_class, "Wave Form",
-			      PARAM_GSAW,
-			      bse_param_spec_bool ("gsaw_table", "Growing Saw", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
-  bse_object_class_add_param (object_class, "Wave Form",
-			      PARAM_SSAW,
-			      bse_param_spec_bool ("ssaw_table", "Shrinking Saw", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
-  bse_object_class_add_param (object_class, "Wave Form",
-			      PARAM_TRIANGLE,
-			      bse_param_spec_bool ("triangle_table", "Triangle", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
-  bse_object_class_add_param (object_class, NULL,
 			      PARAM_PHASE,
                               bse_param_spec_float ("phase", "Phase", NULL,
 						    -180.0, 180.0,
@@ -139,6 +125,31 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 						    0.0,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
+  bse_object_class_add_param (object_class, "Wave Form",
+			      PARAM_SINE,
+			      bse_param_spec_bool ("sine_table", "Sine Wave", NULL,
+						   TRUE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
+  bse_object_class_add_param (object_class, "Wave Form",
+			      PARAM_PULSE,
+			      bse_param_spec_bool ("pulse_table", "Pulse", NULL,
+						   FALSE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
+  bse_object_class_add_param (object_class, "Wave Form",
+			      PARAM_GSAW,
+			      bse_param_spec_bool ("gsaw_table", "Growing Saw", NULL,
+						   FALSE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
+  bse_object_class_add_param (object_class, "Wave Form",
+			      PARAM_SSAW,
+			      bse_param_spec_bool ("ssaw_table", "Shrinking Saw", NULL,
+						   FALSE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
+  bse_object_class_add_param (object_class, "Wave Form",
+			      PARAM_TRIANGLE,
+			      bse_param_spec_bool ("triangle_table", "Triangle", NULL,
+						   FALSE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_FREQ,
                               bse_param_spec_float ("base_freq", "Frequency", NULL,
@@ -388,10 +399,16 @@ bse_gen_osc_set_param (BseGenOsc *gosc,
 
   switch (param->pspec->any.param_id)
     {
+    case PARAM_WAVE_FORM:
+      gosc->wave = param->value.v_enum;
+      bse_gen_osc_update_locals (gosc);
+      bse_object_param_changed (BSE_OBJECT (gosc), "sine_table");
+      bse_object_param_changed (BSE_OBJECT (gosc), "gsaw_table");
+      bse_object_param_changed (BSE_OBJECT (gosc), "ssaw_table");
+      bse_object_param_changed (BSE_OBJECT (gosc), "pulse_table");
+      bse_object_param_changed (BSE_OBJECT (gosc), "triangle_table");
+      break;
     case PARAM_TRIANGLE:
-      wave++;
-      /* fall through */
-    case PARAM_PULSE:
       wave++;
       /* fall through */
     case PARAM_SSAW:
@@ -400,12 +417,16 @@ bse_gen_osc_set_param (BseGenOsc *gosc,
     case PARAM_GSAW:
       wave++;
       /* fall through */
+    case PARAM_PULSE:
+      wave++;
+      /* fall through */
     case PARAM_SINE:
       wave++;
       if (param->value.v_bool)
 	{
 	  gosc->wave = wave;
 	  bse_gen_osc_update_locals (gosc);
+	  bse_object_param_changed (BSE_OBJECT (gosc), "wave_form");
 	  bse_object_param_changed (BSE_OBJECT (gosc), "sine_table");
 	  bse_object_param_changed (BSE_OBJECT (gosc), "gsaw_table");
 	  bse_object_param_changed (BSE_OBJECT (gosc), "ssaw_table");
@@ -457,6 +478,9 @@ bse_gen_osc_get_param (BseGenOsc *gosc,
 {
   switch (param->pspec->any.param_id)
     {
+    case PARAM_WAVE_FORM:
+      param->value.v_enum = gosc->wave;
+      break;
     case PARAM_SINE:
       param->value.v_bool = gosc->wave == BSE_GEN_OSC_SINE;
       break;
@@ -627,4 +651,5 @@ BSE_EXPORT_OBJECTS = {
   },
   { NULL, },
 };
+BSE_EXPORT_AND_GENERATE_ENUMS ();
 BSE_EXPORTS_END;

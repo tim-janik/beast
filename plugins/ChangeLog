@@ -1,3 +1,15 @@
+Wed Jan 12 23:45:39 2000  Tim Janik  <timj@gtk.org>
+
+	* bsegenosc.[hc]: export BseGenOscWaveType to BSE and add a parameter
+	spec for the wave form, made the wave form selection radio buttons
+	pure GUI items.
+
+	* listplugins.sh: feature BSE_EXPORT_AND_GENERATE_ENUMS() in cfiles,
+	write out %.enums creation dependancies.
+
+	* Makefile.am: added %.enums: %.h generation rule for plugin enum types.
+	support build sources in general.
+
 Fri Jan  7 23:26:26 2000  Tim Janik  <timj@gtk.org>
 
 	* bsecompressor.[hc]: added adjustable compressor.
