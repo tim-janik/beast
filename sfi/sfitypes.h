@@ -36,7 +36,6 @@ typedef guint64			SfiTime;
 typedef gdouble			SfiReal;
 #define SFI_MINREAL		(2.2250738585072014e-308)	/* IEEE754 double */
 #define SFI_MAXREAL		(1.7976931348623157e+308)	/* IEEE754 double */
-typedef gchar*			SfiString;
 typedef const gchar*		SfiChoice;
 typedef struct _SfiBBlock	SfiBBlock;
 typedef struct _SfiFBlock	SfiFBlock;

@@ -885,6 +885,24 @@ sfi_ring_sort (SfiRing     *head,
 }
 
 SfiRing*
+sfi_ring_reverse (SfiRing *head)
+{
+  if (head)
+    {
+      SfiRing *ring = head = head->prev;
+      do
+	{
+	  SfiRing *tmp = ring;
+	  ring = tmp->next;
+	  tmp->next = tmp->prev;
+	  tmp->prev = ring;
+	}
+      while (ring != head);
+    }
+  return head;
+}
+
+SfiRing*
 sfi_ring_remove (SfiRing *head,
 		 gpointer data)
 {

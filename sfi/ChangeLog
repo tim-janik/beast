@@ -1,3 +1,9 @@
+Wed Oct 23 19:25:40 2002  Tim Janik  <timj@gtk.org>
+
+	* sfivalues.[hc]:
+	* sfiparams.[hc]: s/param_spec/pspec/ due to stefan's command.
+	introduce pspec primitive (serialization lacking).
+
 Mon Oct 21 22:19:04 2002  Tim Janik  <timj@gtk.org>
 
 	* sfiglue.[hc]:

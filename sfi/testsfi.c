@@ -166,7 +166,7 @@ serialize_cmp (GValue     *value,
   g_string_free (gstring, TRUE);
   g_value_unset (&rvalue);
   sfi_value_free (value);
-  g_param_spec_sink (pspec);
+  sfi_pspec_sink (pspec);
 }
 
 static void
@@ -192,61 +192,61 @@ test_typed_serialization (gboolean serialize_typed)
   else
     MSG ("ParamSerialization:");
   serialize_cmp (sfi_value_bool (FALSE),
-		 sfi_param_spec_bool ("bool-false", NULL, NULL, FALSE, SFI_PARAM_DEFAULT));
+		 sfi_pspec_bool ("bool-false", NULL, NULL, FALSE, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_bool (TRUE),
-		 sfi_param_spec_bool ("bool-true", NULL, NULL, FALSE, SFI_PARAM_DEFAULT));
+		 sfi_pspec_bool ("bool-true", NULL, NULL, FALSE, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_int (SFI_MAXINT),
-		 sfi_param_spec_int ("int-max", NULL, NULL, 0, SFI_MININT, SFI_MAXINT, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_int ("int-max", NULL, NULL, 0, SFI_MININT, SFI_MAXINT, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_int (SFI_MININT),
-		 sfi_param_spec_int ("int-min", NULL, NULL, 0, SFI_MININT, SFI_MAXINT, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_int ("int-min", NULL, NULL, 0, SFI_MININT, SFI_MAXINT, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_num (SFI_MAXNUM),
-		 sfi_param_spec_num ("num-max", NULL, NULL, 0, SFI_MINNUM, SFI_MAXNUM, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_num ("num-max", NULL, NULL, 0, SFI_MINNUM, SFI_MAXNUM, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_num (SFI_MINNUM),
-		 sfi_param_spec_num ("num-min", NULL, NULL, 0, SFI_MINNUM, SFI_MAXNUM, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_num ("num-min", NULL, NULL, 0, SFI_MINNUM, SFI_MAXNUM, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (SFI_MAXREAL),
-		 sfi_param_spec_real ("real-max", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_real ("real-max", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (SFI_MINREAL),
-		 sfi_param_spec_real ("real-min", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_real ("real-min", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (-SFI_MINREAL),
-		 sfi_param_spec_real ("real-min-neg", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_real ("real-min-neg", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (-SFI_MAXREAL),
-		 sfi_param_spec_real ("real-max-neg", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_real ("real-max-neg", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (SFI_MININT),
-		 sfi_param_spec_real ("real-minint", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_real ("real-minint", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (SFI_MINNUM),
-		 sfi_param_spec_real ("real-minnum", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
+		 sfi_pspec_real ("real-minnum", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_string (NULL),
-		 sfi_param_spec_string ("string-nil", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_string ("string-nil", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_string ("test\"string'with\\character-?\007rubbish\177H"),
-		 sfi_param_spec_string ("string", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_string ("string", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
   for (i = 0; i < 256; i++)
     str256[i] = i;
   str256[i] = 0;
   serialize_cmp (sfi_value_string (str256),
-		 sfi_param_spec_string ("string-256", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_string ("string-256", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_choice (NULL),
-		 sfi_param_spec_choice ("choice-nil", NULL, NULL, NULL, choice_values, SFI_PARAM_DEFAULT));
+		 sfi_pspec_choice ("choice-nil", NULL, NULL, NULL, choice_values, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_choice ("test-choice-with-valid-characters_9876543210"),
-		 sfi_param_spec_choice ("choice", NULL, NULL, NULL, choice_values, SFI_PARAM_DEFAULT));
+		 sfi_pspec_choice ("choice", NULL, NULL, NULL, choice_values, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_proxy (SFI_MAXINT),
-		 sfi_param_spec_proxy ("proxy-max", NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_proxy ("proxy-max", NULL, NULL, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_proxy (SFI_MININT),
-		 sfi_param_spec_proxy ("proxy-min", NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_proxy ("proxy-min", NULL, NULL, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_bblock (NULL),
-		 sfi_param_spec_bblock ("bblock-nil", NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_bblock ("bblock-nil", NULL, NULL, SFI_PARAM_DEFAULT));
   bblock = sfi_bblock_new ();
   serialize_cmp (sfi_value_bblock (bblock),
-		 sfi_param_spec_bblock ("bblock-empty", NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_bblock ("bblock-empty", NULL, NULL, SFI_PARAM_DEFAULT));
   for (i = 0; i < 256; i++)
     sfi_bblock_append1 (bblock, i);
   serialize_cmp (sfi_value_bblock (bblock),
-		 sfi_param_spec_bblock ("bblock", NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_bblock ("bblock", NULL, NULL, SFI_PARAM_DEFAULT));
   sfi_bblock_unref (bblock);
   serialize_cmp (sfi_value_fblock (NULL),
-		 sfi_param_spec_fblock ("fblock-nil", NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_fblock ("fblock-nil", NULL, NULL, SFI_PARAM_DEFAULT));
   fblock = sfi_fblock_new ();
   serialize_cmp (sfi_value_fblock (fblock),
-		 sfi_param_spec_fblock ("fblock-empty", NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_fblock ("fblock-empty", NULL, NULL, SFI_PARAM_DEFAULT));
   sfi_fblock_append1 (fblock, -G_MINFLOAT);
   sfi_fblock_append1 (fblock, G_MINFLOAT);
   sfi_fblock_append1 (fblock, -G_MAXFLOAT);
@@ -258,13 +258,13 @@ test_typed_serialization (gboolean serialize_typed)
   sfi_fblock_append1 (fblock, -SFI_MAXNUM);
   sfi_fblock_append1 (fblock, SFI_MAXNUM);
   serialize_cmp (sfi_value_fblock (fblock),
-		 sfi_param_spec_fblock ("fblock", NULL, NULL, SFI_PARAM_DEFAULT));
-
+		 sfi_pspec_fblock ("fblock", NULL, NULL, SFI_PARAM_DEFAULT));
+  
   serialize_cmp (sfi_value_seq (NULL),
-		 sfi_param_spec_seq ("seq-nil", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_seq ("seq-nil", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
   seq = sfi_seq_new ();
   serialize_cmp (sfi_value_seq (seq),
-		 sfi_param_spec_seq ("seq-empty", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
+		 sfi_pspec_seq ("seq-empty", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
   val = sfi_value_bool (TRUE);
   sfi_seq_append (seq, val);
   sfi_value_free (val);
@@ -279,10 +279,10 @@ test_typed_serialization (gboolean serialize_typed)
   sfi_value_free (val);
   if (serialize_typed)
     serialize_cmp (sfi_value_seq (seq),
-		   sfi_param_spec_seq ("seq-heterogeneous", NULL, NULL,
-				       sfi_param_spec_real ("dummy", NULL, NULL,
-							    0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT),
-				       SFI_PARAM_DEFAULT));
+		   sfi_pspec_seq ("seq-heterogeneous", NULL, NULL,
+				  sfi_pspec_real ("dummy", NULL, NULL,
+						  0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT),
+				  SFI_PARAM_DEFAULT));
   sfi_seq_clear (seq);
   for (i = 0; i < 12; i++)
     {
@@ -290,22 +290,22 @@ test_typed_serialization (gboolean serialize_typed)
       sfi_seq_append (seq, val);
       sfi_value_free (val);
     }
-  pspec_homo_seq = sfi_param_spec_seq ("seq-homogeneous", NULL, NULL,
-				       sfi_param_spec_int ("integer", NULL, NULL,
-							   1500, 1000, 2000, 1, SFI_PARAM_DEFAULT),
-				       SFI_PARAM_DEFAULT);
-  g_param_spec_ref (pspec_homo_seq);
+  pspec_homo_seq = sfi_pspec_seq ("seq-homogeneous", NULL, NULL,
+				  sfi_pspec_int ("integer", NULL, NULL,
+						 1500, 1000, 2000, 1, SFI_PARAM_DEFAULT),
+				  SFI_PARAM_DEFAULT);
+  sfi_pspec_ref (pspec_homo_seq);
   serialize_cmp (sfi_value_seq (seq),
-		 sfi_param_spec_seq ("seq-homogeneous", NULL, NULL,
-				     sfi_param_spec_int ("integer", NULL, NULL,
-							 1500, 1000, 2000, 1, SFI_PARAM_DEFAULT),
-				     SFI_PARAM_DEFAULT));
+		 sfi_pspec_seq ("seq-homogeneous", NULL, NULL,
+				sfi_pspec_int ("integer", NULL, NULL,
+					       1500, 1000, 2000, 1, SFI_PARAM_DEFAULT),
+				SFI_PARAM_DEFAULT));
   
   serialize_cmp (sfi_value_rec (NULL),
-		 sfi_param_spec_rec ("rec-nil", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
+		 sfi_pspec_rec ("rec-nil", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
   rec = sfi_rec_new ();
   serialize_cmp (sfi_value_rec (rec),
-		 sfi_param_spec_rec ("rec-empty", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
+		 sfi_pspec_rec ("rec-empty", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
   val = sfi_value_string ("huhu");
   sfi_rec_set (rec, "exo-string", val);
   if (serialize_typed)
@@ -318,15 +318,15 @@ test_typed_serialization (gboolean serialize_typed)
   sfi_rec_set (rec, "baz-proxy", val);
   sfi_value_free (val);
   rec_fields.fields = g_new (GParamSpec*, 20); /* should be static mem */
-  rec_fields.fields[rec_fields.n_fields++] = sfi_param_spec_proxy ("baz-proxy", NULL, NULL, SFI_PARAM_DEFAULT);
-  rec_fields.fields[rec_fields.n_fields++] = sfi_param_spec_string ("exo-string", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+  rec_fields.fields[rec_fields.n_fields++] = sfi_pspec_proxy ("baz-proxy", NULL, NULL, SFI_PARAM_DEFAULT);
+  rec_fields.fields[rec_fields.n_fields++] = sfi_pspec_string ("exo-string", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
   rec_fields.fields[rec_fields.n_fields++] = pspec_homo_seq;
   serialize_cmp (sfi_value_rec (rec),
-		 sfi_param_spec_rec ("rec", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
-
+		 sfi_pspec_rec ("rec", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
+  
   sfi_fblock_unref (fblock);
   sfi_seq_unref (seq);
-  g_param_spec_unref (pspec_homo_seq);
+  sfi_pspec_unref (pspec_homo_seq);
   sfi_rec_unref (rec);
   DONE ();
 }
@@ -355,7 +355,7 @@ test_notes (void)
       guint semitone;
       gboolean black_semitone;
       gchar letter;
-
+      
       sfi_note_examine (i, &octave, &semitone, &black_semitone, &letter);
       ASSERT (octave == SFI_NOTE_OCTAVE (i));
       ASSERT (semitone == SFI_NOTE_SEMITONE (i));
@@ -374,7 +374,7 @@ test_time (void)
   SfiTime t;
   gchar *error = NULL;
   gchar *str;
-
+  
   MSG ("Time:");
   ASSERT (SFI_USEC_FACTOR == 1000000);
   ASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
@@ -479,11 +479,11 @@ static void
 vcalls_generate (void)
 {
   guint n;
-
+  
   gen_vcall_switch = FALSE;
   for (n = 0; n <= SFI_VCALL_MAX_ARGS; n++)
     vcall_rec (SFI_VCALL_PTR_ID, n);
-
+  
   gen_vcall_switch = TRUE;
   g_print ("static VCall\nvcall_switch (guint sig)\n{\n");
   g_print ("  switch (sig)\n    {\n");
@@ -549,9 +549,9 @@ main (int   argc,
       char *argv[])
 {
   g_log_set_always_fatal (g_log_set_always_fatal (G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-
+  
   sfi_init ();
-
+  
   if (0)
     {
       vcalls_generate ();

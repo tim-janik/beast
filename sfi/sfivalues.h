@@ -30,6 +30,7 @@ G_BEGIN_DECLS
 #define	SFI_TYPE_NUM		G_TYPE_INT64
 #define	SFI_TYPE_REAL		G_TYPE_DOUBLE
 #define	SFI_TYPE_STRING		G_TYPE_STRING
+#define SFI_TYPE_PSPEC		G_TYPE_PARAM
 
 
 /* --- Sfi value types --- */
@@ -50,6 +51,7 @@ G_BEGIN_DECLS
 #define SFI_VALUE_HOLDS_CHOICE(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_CHOICE))
 #define SFI_VALUE_HOLDS_BBLOCK(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_BBLOCK))
 #define SFI_VALUE_HOLDS_FBLOCK(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_FBLOCK))
+#define SFI_VALUE_HOLDS_PSPEC(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_PSPEC))
 #define SFI_VALUE_HOLDS_SEQ(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_SEQ))
 #define SFI_VALUE_HOLDS_REC(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_REC))
 #define SFI_VALUE_HOLDS_PROXY(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_PROXY))
@@ -66,42 +68,49 @@ G_BEGIN_DECLS
 #define	sfi_value_set_real		g_value_set_double
 #define	sfi_value_get_string		g_value_get_string
 #define	sfi_value_set_string		g_value_set_string
+#define	sfi_value_dup_string		g_value_dup_string
 #define	sfi_value_set_static_string	g_value_set_static_string
 #define	sfi_value_take_string		g_value_set_string_take_ownership
 
 
 /* --- Sfi value accessors --- */
-gchar*	   sfi_value_get_choice		(const GValue	*value);
-void	   sfi_value_set_choice		(GValue		*value,
+gchar*	    sfi_value_get_choice	(const GValue	*value);
+void	    sfi_value_set_choice	(GValue		*value,
 					 const gchar	*choice_value);
-SfiBBlock* sfi_value_get_bblock		(const GValue	*value);
-SfiBBlock* sfi_value_dup_bblock		(const GValue	*value);
-void	   sfi_value_set_bblock		(GValue		*value,
+SfiBBlock*  sfi_value_get_bblock	(const GValue	*value);
+SfiBBlock*  sfi_value_dup_bblock	(const GValue	*value);
+void	    sfi_value_set_bblock	(GValue		*value,
 					 SfiBBlock	*bblock);
-void	   sfi_value_take_bblock	(GValue		*value,
+void	    sfi_value_take_bblock	(GValue		*value,
 					 SfiBBlock	*bblock);
-SfiFBlock* sfi_value_get_fblock		(const GValue	*value);
-SfiFBlock* sfi_value_dup_fblock		(const GValue	*value);
-void	   sfi_value_set_fblock		(GValue		*value,
+SfiFBlock*  sfi_value_get_fblock	(const GValue	*value);
+SfiFBlock*  sfi_value_dup_fblock	(const GValue	*value);
+void	    sfi_value_set_fblock	(GValue		*value,
 					 SfiFBlock	*fblock);
-void	   sfi_value_take_fblock	(GValue		*value,
+void	    sfi_value_take_fblock	(GValue		*value,
 					 SfiFBlock	*fblock);
-SfiSeq*	   sfi_value_get_seq		(const GValue	*value);
-void	   sfi_value_set_seq		(GValue		*value,
+GParamSpec* sfi_value_get_pspec		(const GValue	*value);
+GParamSpec* sfi_value_dup_pspec		(const GValue	*value);
+void	    sfi_value_set_pspec		(GValue		*value,
+					 GParamSpec	*pspec);
+void	    sfi_value_take_pspec	(GValue		*value,
+					 GParamSpec	*pspec);
+SfiSeq*	    sfi_value_get_seq		(const GValue	*value);
+void	    sfi_value_set_seq		(GValue		*value,
 					 SfiSeq		*seq);
-void	   sfi_value_take_seq		(GValue		*value,
+void	    sfi_value_take_seq		(GValue		*value,
 					 SfiSeq		*seq);
-SfiRec*	   sfi_value_get_rec		(const GValue	*value);
-void	   sfi_value_set_rec		(GValue		*value,
+SfiRec*	    sfi_value_get_rec		(const GValue	*value);
+void	    sfi_value_set_rec		(GValue		*value,
 					 SfiRec         *rec);
-void	   sfi_value_take_rec		(GValue         *value,
+void	    sfi_value_take_rec		(GValue         *value,
 					 SfiRec         *rec);
-SfiProxy   sfi_value_get_proxy		(const GValue	*value);
-void	   sfi_value_set_proxy		(GValue		*value,
+SfiProxy    sfi_value_get_proxy		(const GValue	*value);
+void	    sfi_value_set_proxy		(GValue		*value,
 					 SfiProxy	 proxy);
-void	   sfi_value_copy_deep		(const GValue	*src_value,
+void	    sfi_value_copy_deep		(const GValue	*src_value,
 					 GValue		*dest_value);
-#define	   sfi_value_copy_shallow	g_value_copy
+#define	    sfi_value_copy_shallow	g_value_copy
 
 
 /* --- Sfi value constructors --- */
@@ -121,6 +130,7 @@ GValue*	sfi_value_lchoice	(const gchar	*vchoice,
 GValue*	sfi_value_choice_enum	(const GValue	*enum_value);
 GValue*	sfi_value_bblock	(SfiBBlock	*vfblock);
 GValue*	sfi_value_fblock	(SfiFBlock	*vfblock);
+GValue*	sfi_value_pspec		(GParamSpec	*pspec);
 GValue*	sfi_value_seq		(SfiSeq		*vseq);
 GValue*	sfi_value_rec		(SfiRec		*vrec);
 GValue*	sfi_value_proxy		(SfiProxy	 vproxy);

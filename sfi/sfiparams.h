@@ -27,38 +27,41 @@ G_BEGIN_DECLS
 
 /* --- Sfi param spec macros --- */
 #define SFI_TYPE_PARAM_BOOL		(G_TYPE_PARAM_BOOLEAN)
-#define SFI_IS_PARAM_SPEC_BOOL(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_BOOL))
-#define SFI_PARAM_SPEC_BOOL(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_BOOL, SfiParamSpecBool))
+#define SFI_IS_PSPEC_BOOL(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_BOOL))
+#define SFI_PSPEC_BOOL(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_BOOL, SfiParamSpecBool))
 #define SFI_TYPE_PARAM_INT		(G_TYPE_PARAM_INT)
-#define SFI_IS_PARAM_SPEC_INT(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_INT))
-#define SFI_PARAM_SPEC_INT(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_INT, SfiParamSpecInt))
+#define SFI_IS_PSPEC_INT(pspec)		(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_INT))
+#define SFI_PSPEC_INT(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_INT, SfiParamSpecInt))
 #define SFI_TYPE_PARAM_NUM		(G_TYPE_PARAM_INT64)
-#define SFI_IS_PARAM_SPEC_NUM(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_NUM))
-#define SFI_PARAM_SPEC_NUM(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_NUM, SfiParamSpecNum))
+#define SFI_IS_PSPEC_NUM(pspec)		(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_NUM))
+#define SFI_PSPEC_NUM(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_NUM, SfiParamSpecNum))
 #define SFI_TYPE_PARAM_REAL		(G_TYPE_PARAM_DOUBLE)
-#define SFI_IS_PARAM_SPEC_REAL(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_REAL))
-#define SFI_PARAM_SPEC_REAL(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_REAL, SfiParamSpecReal))
+#define SFI_IS_PSPEC_REAL(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_REAL))
+#define SFI_PSPEC_REAL(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_REAL, SfiParamSpecReal))
 #define SFI_TYPE_PARAM_STRING		(G_TYPE_PARAM_STRING)
-#define SFI_IS_PARAM_SPEC_STRING(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_STRING))
-#define SFI_PARAM_SPEC_STRING(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_STRING, SfiParamSpecString))
+#define SFI_IS_PSPEC_STRING(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_STRING))
+#define SFI_PSPEC_STRING(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_STRING, SfiParamSpecString))
 #define SFI_TYPE_PARAM_CHOICE		(sfi__param_spec_types[0])
-#define SFI_IS_PARAM_SPEC_CHOICE(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_CHOICE))
-#define SFI_PARAM_SPEC_CHOICE(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_CHOICE, SfiParamSpecChoice))
+#define SFI_IS_PSPEC_CHOICE(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_CHOICE))
+#define SFI_PSPEC_CHOICE(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_CHOICE, SfiParamSpecChoice))
 #define SFI_TYPE_PARAM_BBLOCK		(sfi__param_spec_types[1])
-#define SFI_IS_PARAM_SPEC_BBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_BBLOCK))
-#define SFI_PARAM_SPEC_BBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_BBLOCK, SfiParamSpecBBlock))
+#define SFI_IS_PSPEC_BBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_BBLOCK))
+#define SFI_PSPEC_BBLOCK(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_BBLOCK, SfiParamSpecBBlock))
 #define SFI_TYPE_PARAM_FBLOCK		(sfi__param_spec_types[2])
-#define SFI_IS_PARAM_SPEC_FBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_FBLOCK))
-#define SFI_PARAM_SPEC_FBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_FBLOCK, SfiParamSpecFBlock))
+#define SFI_IS_PSPEC_FBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_FBLOCK))
+#define SFI_PSPEC_FBLOCK(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_FBLOCK, SfiParamSpecFBlock))
+#define SFI_TYPE_PARAM_PSPEC		(G_TYPE_PARAM_PARAM)
+#define SFI_IS_PSPEC_PSPEC(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_PSPEC))
+#define SFI_PSPEC_PSPEC(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_PSPEC, SfiParamSpecPSpec))
 #define SFI_TYPE_PARAM_SEQ		(sfi__param_spec_types[3])
-#define SFI_IS_PARAM_SPEC_SEQ(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_SEQ))
-#define SFI_PARAM_SPEC_SEQ(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_SEQ, SfiParamSpecSeq))
+#define SFI_IS_PSPEC_SEQ(pspec)		(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_SEQ))
+#define SFI_PSPEC_SEQ(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_SEQ, SfiParamSpecSeq))
 #define SFI_TYPE_PARAM_REC		(sfi__param_spec_types[4])
-#define SFI_IS_PARAM_SPEC_REC(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_REC))
-#define SFI_PARAM_SPEC_REC(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_REC, SfiParamSpecRec))
+#define SFI_IS_PSPEC_REC(pspec)		(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_REC))
+#define SFI_PSPEC_REC(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_REC, SfiParamSpecRec))
 #define SFI_TYPE_PARAM_PROXY		(sfi__param_spec_types[5])
-#define SFI_IS_PARAM_SPEC_PROXY(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_PROXY))
-#define SFI_PARAM_SPEC_PROXY(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_PROXY, SfiParamSpecProxy))
+#define SFI_IS_PSPEC_PROXY(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_PROXY))
+#define SFI_PSPEC_PROXY(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_PROXY, SfiParamSpecProxy))
 
 
 /* --- Sfi param spec aliases --- */
@@ -67,6 +70,7 @@ typedef GParamSpecInt     SfiParamSpecInt;
 typedef GParamSpecInt64   SfiParamSpecNum;
 typedef GParamSpecDouble  SfiParamSpecReal;
 typedef GParamSpecString  SfiParamSpecString;
+typedef GParamSpecParam   SfiParamSpecPSpec;
 
 
 /* --- Sfi param specs --- */
@@ -98,12 +102,12 @@ typedef struct {
 
 
 /* --- Sfi GParamSpec  constructors --- */
-GParamSpec*    sfi_param_spec_bool	(const gchar    *name,
+GParamSpec*    sfi_pspec_bool		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 SfiBool	 default_value,
 					 const gchar	*hints);
-GParamSpec*    sfi_param_spec_int	(const gchar    *name,
+GParamSpec*    sfi_pspec_int		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 SfiInt		 default_value,
@@ -111,7 +115,7 @@ GParamSpec*    sfi_param_spec_int	(const gchar    *name,
 					 SfiInt		 maximum_value,
 					 SfiInt		 stepping,
 					 const gchar	*hints);
-GParamSpec*    sfi_param_spec_num	(const gchar    *name,
+GParamSpec*    sfi_pspec_num		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 SfiNum		 default_value,
@@ -119,7 +123,7 @@ GParamSpec*    sfi_param_spec_num	(const gchar    *name,
 					 SfiNum		 maximum_value,
 					 SfiNum		 stepping,
 					 const gchar	*hints);
-GParamSpec*    sfi_param_spec_real	(const gchar    *name,
+GParamSpec*    sfi_pspec_real		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 SfiReal	 default_value,
@@ -127,7 +131,7 @@ GParamSpec*    sfi_param_spec_real	(const gchar    *name,
 					 SfiReal	 maximum_value,
 					 SfiReal	 stepping,
 					 const gchar	*hints);
-GParamSpec*    sfi_param_spec_log_scale (const gchar    *name,
+GParamSpec*    sfi_pspec_log_scale	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 SfiReal	 default_value,
@@ -138,45 +142,62 @@ GParamSpec*    sfi_param_spec_log_scale (const gchar    *name,
 					 SfiReal	 base,
 					 SfiReal	 n_steps,
 					 const gchar	*hints);
-GParamSpec*	sfi_param_spec_string	(const gchar    *name,
+GParamSpec*	sfi_pspec_string	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar	*default_value,
 					 const gchar	*hints);
-GParamSpec*	sfi_param_spec_choice	(const gchar    *name,
+GParamSpec*	sfi_pspec_choice	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar	*default_value,
 					 SfiChoiceValues static_const_evalues,
 					 const gchar	*hints);
-GParamSpec*	sfi_param_spec_bblock	(const gchar    *name,
+GParamSpec*	sfi_pspec_bblock	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar	*hints);
-GParamSpec*	sfi_param_spec_fblock	(const gchar    *name,
+GParamSpec*	sfi_pspec_fblock	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar	*hints);
-GParamSpec*	sfi_param_spec_seq	(const gchar    *name,
+GParamSpec*	sfi_pspec_pspec		(const gchar    *name,
+					 const gchar    *nick,
+					 const gchar    *blurb,
+					 const gchar	*hints);
+GParamSpec*	sfi_pspec_seq		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 GParamSpec     *element_spec,
 					 const gchar	*hints);
-GParamSpec*	sfi_param_spec_rec	(const gchar    *name,
+GParamSpec*	sfi_pspec_rec		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 SfiRecFields    static_const_fields,
 					 const gchar	*hints);
-GParamSpec*	sfi_param_spec_proxy	(const gchar    *name,
+GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar	*hints);
 
 
+/* --- pspec wrappers --- */
+#define	sfi_pspec_ref			g_param_spec_ref
+#define	sfi_pspec_unref			g_param_spec_unref
+#define	sfi_pspec_sink			g_param_spec_sink
+#define	sfi_pspec_get_qdata		g_param_spec_get_qdata
+#define	sfi_pspec_set_qdata		g_param_spec_set_qdata
+#define	sfi_pspec_set_qdata_full	g_param_spec_set_qdata_full
+#define	sfi_pspec_steal_qdata		g_param_spec_steal_qdata
+#define	sfi_pspec_get_name		g_param_spec_get_name
+#define	sfi_pspec_get_nick		g_param_spec_get_nick
+#define	sfi_pspec_get_blurb		g_param_spec_get_blurb
+
+
 /* --- conversion --- */
-GParamSpec* 	sfi_param_spec_choice_from_enum	 (GParamSpec *enum_pspec);
-GParamSpec* 	sfi_param_spec_proxy_from_object (GParamSpec *object_pspec);
-GParamSpec*     sfi_param_spec_to_serializable   (GParamSpec *pspec);
+GParamSpec* 	sfi_pspec_choice_from_enum	 (GParamSpec *enum_pspec);
+GParamSpec* 	sfi_pspec_proxy_from_object (GParamSpec *object_pspec);
+GParamSpec*     sfi_pspec_to_serializable   (GParamSpec *pspec);
 
 
 /* --- Sfi param hints --- */
@@ -214,6 +235,7 @@ typedef enum	/*< skip >*/
   SFI_SCAT_CHOICE	= 'c',
   SFI_SCAT_BBLOCK	= 'B',
   SFI_SCAT_FBLOCK	= 'F',
+  SFI_SCAT_PSPEC	= 'P',
   SFI_SCAT_SEQ		= 'Q',
   SFI_SCAT_REC		= 'R',
   SFI_SCAT_PROXY	= 'p',
@@ -229,14 +251,14 @@ GType		sfi_category_param_type	(SfiSCategory	 pspec_cat);
 
 
 /* --- convenience aliases --- */
-#define     SFI_IS_PARAM_SPEC_NOTE	 SFI_IS_PARAM_SPEC_INT
-GParamSpec* sfi_param_spec_note		(const gchar    *name,
+#define     SFI_IS_PSPEC_NOTE		 SFI_IS_PSPEC_INT
+GParamSpec* sfi_pspec_note		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 SfiInt          default_value,
 					 const gchar    *hints);
-#define     SFI_IS_PARAM_SPEC_TIME	 SFI_IS_PARAM_SPEC_TIME
-GParamSpec* sfi_param_spec_time		(const gchar    *name,
+#define     SFI_IS_PSPEC_TIME		 SFI_IS_PSPEC_TIME
+GParamSpec* sfi_pspec_time		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 const gchar    *hints);

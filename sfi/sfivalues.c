@@ -18,6 +18,7 @@
  */
 #include "sfivalues.h"
 #include "sfiprimitives.h"
+#include "sfiparams.h"
 
 
 /* --- variables --- */
@@ -205,6 +206,43 @@ sfi_value_take_fblock (GValue    *value,
   g_return_if_fail (SFI_VALUE_HOLDS_FBLOCK (value));
   
   g_value_set_boxed_take_ownership (value, fblock);
+}
+
+GParamSpec*
+sfi_value_get_pspec (const GValue *value)
+{
+  g_return_val_if_fail (SFI_VALUE_HOLDS_PSPEC (value), NULL);
+
+  return g_value_get_boxed (value);
+}
+
+GParamSpec*
+sfi_value_dup_pspec (const GValue *value)
+{
+  GParamSpec *pspec;
+
+  g_return_val_if_fail (SFI_VALUE_HOLDS_PSPEC (value), NULL);
+  
+  pspec = g_value_get_boxed (value);
+  return pspec ? sfi_pspec_ref (pspec) : NULL;
+}
+
+void
+sfi_value_set_pspec (GValue     *value,
+		     GParamSpec *pspec)
+{
+  g_return_if_fail (SFI_VALUE_HOLDS_PSPEC (value));
+
+  g_value_set_boxed (value, pspec);
+}
+
+void
+sfi_value_take_pspec (GValue     *value,
+		      GParamSpec *pspec)
+{
+  g_return_if_fail (SFI_VALUE_HOLDS_PSPEC (value));
+
+  g_value_set_boxed_take_ownership (value, pspec);
 }
 
 SfiSeq*
@@ -461,6 +499,14 @@ sfi_value_fblock (SfiFBlock *vfblock)
 {
   GValue *value = alloc_value (SFI_TYPE_FBLOCK);
   sfi_value_set_fblock (value, vfblock);
+  return value;
+}
+
+GValue*
+sfi_value_pspec (GParamSpec *pspec)
+{
+  GValue *value = alloc_value (SFI_TYPE_PSPEC);
+  sfi_value_set_pspec (value, pspec);
   return value;
 }
 

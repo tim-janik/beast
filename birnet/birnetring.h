@@ -150,6 +150,7 @@ SfiRing*        sfi_ring_split          (SfiRing        *head1,
 					 SfiRing        *head2);
 SfiRing*        sfi_ring_sort           (SfiRing        *head,
 					 GCompareFunc    func);
+SfiRing*        sfi_ring_reverse        (SfiRing        *head);
 gpointer        sfi_ring_pop_head       (SfiRing       **head);
 gpointer        sfi_ring_pop_tail       (SfiRing       **head);
 #define         sfi_ring_push_head      sfi_ring_prepend
