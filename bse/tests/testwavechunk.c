@@ -199,7 +199,7 @@ main (gint   argc,
   gint i, j, k;
 
   g_thread_init (NULL);
-  gsl_init (gslconfig);
+  gsl_init (gslconfig, NULL);
 
   if (0)
     {

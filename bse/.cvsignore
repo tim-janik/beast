@@ -26,20 +26,13 @@ testsong
 testmixer
 testrefs
 
-bseenums.gen-proc.c
-bsehelloworld.gen-proc.c
+*.gen-proc.c
 bseinfo
-bseitem.gen-proc.c
 bsemarshal.c
 bsemarshal.h
-bseproject.gen-proc.c
-bseserver.gen-proc.c
-bsesnet.gen-proc.c
-bsesource.gen-proc.c
-bsewave.gen-proc.c
-bsewaverepo.gen-proc.c
 gslloader
 gsltests
 gslwchunk
 gsl.3
 gslfft.c
+gslconfig.h

@@ -1,15 +1,35 @@
+# this makefile defines:
+#
+# GSL_C_SRC		C source files which need to be added to *_SOURCES
+# GSL_NOINST_PROGS	GSL test programs, needs to be added to noinst_PROGRAMS
+#
+# this makefile supports:
+#
+# GSL_cc_dummy		define to an empty .cc file if your linker needs to
+#			link GSL object files as c++ code
+# GSL_progs_ldadd	add link options to this varibale, which are required
+#			to link GSL_NOINST_PROGS targets
+# gslincludedir		directory to install public headers into if not empty
+#
+# this makefile introduces:
+#
+# gsltestoutput:	make target to generate a sample set of test data
+
+# make sure gslincludedir= is defined
 # GSL targets
-GSL_H_SRC =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h gslwavechunk.h \
-		gslmath.h gslfilter.h gsldatautils.h gsldatahandle-vorbis.h \
+GSL_H_SRC     =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h \
+		gslloader.h gslmath.h gslfilter.h gsldatautils.h gsldatahandle-vorbis.h \
 		gslconvert.h gslfft.h gslieee754.h gslsignal.h gslmagic.h \
-		gslengine.h gslwaveosc.h
-GSL_PRIVATE_H_SRC = gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h gslloader.h
-GSL_C_SRC =	gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorbis.c \
+		gslengine.h gslwaveosc.h gslwavechunk.h
+GSL_C_SRC     =	gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorbis.c \
 		gslmath.c gslfilter.c gslcommon.c gsldatautils.c gslmagic.c \
 		gslloader-wav.c gslloader-gslwave.c gslloader-oggvorbis.c \
 		gslconvert.c gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
 		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c
-EXTRA_DIST +=	gslwaveosc-aux.c
+GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h gslwaveosc-aux.c
+GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header gslglib.c gslglib.h gsl-fftgen.pl
+EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT)
+
 GSL_NOINST_PROGS = gslwchunk gsltests gslglibhashtest gslffttest
 gslwchunk_SOURCES = gslwchunk.c $(GSL_cc_dummy)
 gslwchunk_LDADD = $(GSL_progs_ldadd)
@@ -19,13 +39,39 @@ gslffttest_SOURCES = gslffttest.c $(GSL_cc_dummy)
 gslffttest_LDADD = $(GSL_progs_ldadd)
 gslglibhashtest_SOURCES = gslglibhashtest.cc # C++ already
 gslglibhashtest_LDADD = $(GSL_progs_ldadd)
-EXTRA_DIST += gsl.gnuplot gsl-mplan.txt gslarrows gslglibhash.cc
-EXTRA_DIST += gslwave.header gsl/gslglib.c gsl/gslglib.h gsl-fftgen.pl
 
 gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(srcdir)/gsl-fftconf.sh $(srcdir)/gsl-fftgen.pl \"gslfft.h\" >$@
+MAINTAINERCLEANFILES += gslfft.c
 
-.PHONY:	gsltestoutput
+gslconfig.h: $(top_srcdir)/configure Makefile
+	echo "/* Generated data from $< (by make $@) */" > xgen-gch \
+	&& echo >> xgen-gch \
+	&& echo "#define GSL_SIZEOF_PTH_MUTEX_T         (@GSL_SIZEOF_PTH_MUTEX_T@)" >> xgen-gch \
+	&& echo "#define GSL_SIZEOF_PTH_COND_T          (@GSL_SIZEOF_PTH_COND_T@)" >> xgen-gch \
+	&& echo "#define GSL_HAVE_MUTEXATTR_SETTYPE     (@GSL_HAVE_MUTEXATTR_SETTYPE@ && \\" >> xgen-gch \
+	&& echo "                                        GSL_SIZEOF_PTH_MUTEX_T && \\" >> xgen-gch \
+	&& echo "                                        GSL_SIZEOF_PTH_COND_T)" >> xgen-gch \
+	&& echo "#define GSL_SIZEOF_STD_INTMAX_T        (@GSL_SIZEOF_STD_INTMAX_T@)" >> xgen-gch \
+	&& echo "#define GSL_HAVE_LIBMAD                (@GSL_HAVE_LIBMAD@)" >> xgen-gch \
+	&& echo >> xgen-gch \
+	&& echo "/* Generated data ends here */" >> xgen-gch \
+	&& (cmp -s xgen-gch $@ || cp xgen-gch $@) \
+	&& rm -f xgen-gch
+CLEANFILES += gslconfig.h xgen-gch
+$(OBJECTS): gslconfig.h
+
+install-data-local:	gsl-install-data-local
+gsl-install-data-local:
+	$(mkinstalldirs) $(DESTDIR)$(gslincludedir)
+	@list='$(GSL_H_SRC)'; \
+	test -z "$(gslincludedir)" || for hfile in $$list ; do \
+	  if test -f "$$hfile"; then d= ; else d="$(srcdir)/"; fi; \
+	  echo " $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile"; \
+	  $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile; \
+        done
+
+.PHONY:	gsltestoutput gsl-install-data-local
 
 gsltestoutput:
 	@./gsltests blp     7 0.3		0.1211
@@ -56,4 +102,3 @@ gsltestoutput:
 	@echo -n " dB(T2P10(Z(x))),"
 	@echo -n " dB(T2S10(Z(x))),"
 	@echo " -3"
-

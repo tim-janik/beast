@@ -64,7 +64,7 @@ static GslDataCacheNode*	data_cache_new_node_L	(GslDataCache	*dcache,
 
 /* --- variables --- */
 static GslMutex	   dcache_global = { 0, };
-static GslCond	  *dcache_cond_node_filled = NULL;
+static GslCond	   dcache_cond_node_filled = { 0, };
 static GslRing	  *dcache_list = NULL;
 static guint       n_aged_nodes = 0;
 
@@ -73,9 +73,12 @@ static guint       n_aged_nodes = 0;
 void
 _gsl_init_data_caches (void)
 {
-  g_assert (dcache_cond_node_filled == NULL);
+  static gboolean initialized = FALSE;
 
-  dcache_cond_node_filled = gsl_cond_new ();
+  g_assert (initialized == FALSE);
+  initialized++;
+
+  gsl_cond_init (&dcache_cond_node_filled);
   gsl_mutex_init (&dcache_global);
 }
 
@@ -345,7 +348,7 @@ data_cache_new_node_L (GslDataCache *dcache,
 
   GSL_SPIN_LOCK (&dcache->mutex);
   dnode->data = node_data;
-  gsl_cond_broadcast (dcache_cond_node_filled);
+  gsl_cond_broadcast (&dcache_cond_node_filled);
   
   return dnode;
 }
@@ -384,7 +387,7 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 	  node->ref_count++;
 	  if (load_request == GSL_DATA_CACHE_DEMAND_LOAD)
 	    while (!node->data)
-	      gsl_cond_wait (dcache_cond_node_filled, &dcache->mutex);
+	      gsl_cond_wait (&dcache_cond_node_filled, &dcache->mutex);
 	  GSL_SPIN_UNLOCK (&dcache->mutex);
 	  /* g_printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
 

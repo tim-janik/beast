@@ -204,7 +204,7 @@ main (gint   argc,
   g_thread_init (NULL);
 
   bse_init (&argc, &argv, NULL);
-
+  
   root = BSE_TYPE_OBJECT;
 
   for (i = 1; i < argc; i++)

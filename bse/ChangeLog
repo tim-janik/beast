@@ -1,3 +1,35 @@
+Thu Mar 21 08:36:55 2002  Tim Janik  <timj@gtk.org>
+
+	* gslmakefile.inc: sort things out, document interfacing, generate
+	gslconfig.h from configure.in checks. provide install hook for GSL
+	headers.
+
+	* Makefile.am: adapt to changes in gslmakefile.inc.
+	install gsl headers correctly.
+
+	* bsemain.c: define _XOPEN_SOURCE to 600 to make use of Unix98
+	pthread API. provide a pthread function vtable for GSL upon
+	GSL init if we have pthread available.
+
+	* gslcommon.[hc]: together with stefan, fix alignment problems in the
+	memblock caching allocator which lead to segfaults on solaris.
+
+	* gslcommon.[hc]: slim down the implementations for mutexes, recursive
+	mutexes and conditions. allow pluggable thread function table for these
+	constructs which allow direct use of pthread functions if they are
+	available. fixed up condition initialization and timed wait
+	implementation.
+
+	* gsldatacache.c: fix GslCond usage.
+
+	* gslglib.c:
+	* gsldefs.h: cleanups, use gslconfig.h values.
+
+	* gslengine.h, gslopmaster.c: fix assignment of const structure fields.
+
+	* gsloputil.c: together with stefan, fix and majorly improve the
+	constant value block cache algorithm. fix GslCond usage.
+
 Sun Mar 10 10:08:32 2002  Tim Janik  <timj@gtk.org>
 
 	* bseeditablesample.[hc], bseeditablesample.proc: new object

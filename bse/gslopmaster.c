@@ -16,6 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#define	__GSL_MASTER_C__
 #include "gslopmaster.h"
 
 #include "gslcommon.h"
@@ -27,6 +28,31 @@
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <errno.h>
+
+
+
+/* force public constantness but allow us to change values
+ * in these structures.
+ * *** sync this with gslengine.h ***
+ */
+struct _GslJStream
+{
+  const gfloat      **values;
+  /* const */ guint   n_connections;
+  guint               user_flags : 16;
+};
+struct _GslIStream
+{
+  const gfloat     *values;
+  guint             user_flags : 16;
+  /* const */ guint connected : 1;
+};
+struct _GslOStream
+{
+  gfloat           *values;
+  guint             user_flags : 16;
+  /* const */ guint connected : 1;
+};
 
 
 /* --- time stamping (debugging) --- */
@@ -675,3 +701,4 @@ _gsl_master_thread (gpointer data)
       run = gsl_thread_sleep (0);
     }
 }
+/* vim:set ts=8 sts=2 sw=2: */

@@ -15,14 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
+#define	_XOPEN_SOURCE	600	/* for full pthread facilities */
 #include	"bsemain.h"
 
-#include	"bsesong.h"
 #include	"bseplugin.h"
 #include	"gslcommon.h"
 #include	"gslengine.h"
 #include	<string.h>
 #include	<stdlib.h>
+
+
+/* --- prototypes --- */
+static void	call_gsl_init (const GslConfigValue values[]);
 
 
 /* --- variables --- */
@@ -210,7 +214,7 @@ bse_init (int	             *argc_p,
       { "kammer_freq",			BSE_KAMMER_FREQ, },
     };
 
-    gsl_init (gslconfig);
+    call_gsl_init (gslconfig);
   }
 }
 
@@ -236,4 +240,75 @@ void
 bse_main_sequencer_unlock (void)
 {
   GSL_SYNC_UNLOCK (&sequencer_mutex);
+}
+
+#if	(GSL_HAVE_MUTEXATTR_SETTYPE > 0)
+#include <pthread.h>
+static void
+pth_mutex_init (GslMutex *mutex)
+{
+  /* need NULL attribute here, which is the fast mutex on glibc
+   * and cannot be chosen through the pthread_mutexattr_settype()
+   */
+  pthread_mutex_init ((pthread_mutex_t*) mutex, NULL);
+}
+static void
+pth_rec_mutex_init (GslRecMutex *mutex)
+{
+  pthread_mutexattr_t attr;
+
+  pthread_mutexattr_init (&attr);
+  pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE);
+  pthread_mutex_init ((pthread_mutex_t*) mutex, &attr);
+  pthread_mutexattr_destroy (&attr);
+}
+static void
+pth_rec_cond_init (GslCond *cond)
+{
+  pthread_cond_init ((pthread_cond_t*) cond, NULL);
+}
+static void
+pth_rec_cond_wait_timed (GslCond  *cond,
+			 GslMutex *mutex,
+			 gulong    abs_secs,
+			 gulong    abs_usecs)
+{
+  struct timespec abstime;
+
+  abstime.tv_sec = abs_secs;
+  abstime.tv_nsec = abs_usecs * 1000;
+  pthread_cond_timedwait ((pthread_cond_t*) cond, (pthread_mutex_t*) mutex, &abstime);
+}
+#endif	/* GSL_HAVE_MUTEXATTR_SETTYPE */
+
+
+static void
+call_gsl_init (const GslConfigValue values[])
+{
+#if     (GSL_HAVE_MUTEXATTR_SETTYPE > 0)
+  static GslMutexTable pth_mutex_table = {
+    pth_mutex_init,
+    (void (*) (GslMutex*)) pthread_mutex_lock,
+    (int  (*) (GslMutex*)) pthread_mutex_trylock,
+    (void (*) (GslMutex*)) pthread_mutex_unlock,
+    (void (*) (GslMutex*)) pthread_mutex_destroy,
+    pth_rec_mutex_init,
+    (void (*) (GslRecMutex*)) pthread_mutex_lock,
+    (int  (*) (GslRecMutex*)) pthread_mutex_trylock,
+    (void (*) (GslRecMutex*)) pthread_mutex_unlock,
+    (void (*) (GslRecMutex*)) pthread_mutex_destroy,
+    pth_rec_cond_init,
+    (void (*)            (GslCond*)) pthread_cond_signal,
+    (void (*)            (GslCond*)) pthread_cond_broadcast,
+    (void (*) (GslCond*, GslMutex*)) pthread_cond_wait,
+    pth_rec_cond_wait_timed,
+    (void (*)            (GslCond*)) pthread_cond_destroy,
+  }, *mtable = &pth_mutex_table;
+#else  /* !GSL_HAVE_MUTEXATTR_SETTYPE */
+  static GslMutexTable *mtable = NULL;
+#endif /* !GSL_HAVE_MUTEXATTR_SETTYPE */
+  
+  gsl_init (values, mtable);
+  if (mtable)
+    g_message ("using Unix98 pthreads directly for mutexes and conditions\n");
 }

@@ -80,10 +80,11 @@ struct _GslModule
   GslOStream	 *ostreams;	/* output streams */
 };
 /* streams, constructed by engine */
+#ifndef	__GSL_MASTER_C__	/* sync this with gslopmaster.c */
 struct _GslJStream
 {
   const gfloat **values;
-  guint          n_connections;
+  const guint    n_connections;
   guint		 user_flags : 16;
 };
 struct _GslIStream
@@ -98,6 +99,7 @@ struct _GslOStream
   guint	      user_flags : 16;
   const guint connected : 1;
 };
+#endif	/* !__GSL_MASTER_C__ */
 
 
 /* --- interface (UserThread functions) --- */

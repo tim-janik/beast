@@ -47,7 +47,9 @@ typedef struct
   /* kammer frequency, normally 440Hz, historically 435Hz */
   gfloat kammer_freq;
 } GslConfig;
-void			gsl_init	(const GslConfigValue	values[]);
+typedef struct _GslMutexTable GslMutexTable;
+void			gsl_init	(const GslConfigValue	values[],
+					 GslMutexTable	       *mtable);
 const GslConfig*	gsl_get_config	(void) G_GNUC_CONST;
 #define	GSL_CONFIG(value)	((gsl_get_config () [0]) . value)
 
@@ -136,33 +138,49 @@ guint64		gsl_tick_stamp		(void);
 
 
 /* --- GslMutex --- */
-#define GSL_SPIN_LOCK(mutex)	 gsl_mutex_spin_lock (mutex)
-#define GSL_SPIN_UNLOCK(mutex)	 gsl_mutex_unlock (mutex)
-#define GSL_SYNC_LOCK(mutex)	 gsl_mutex_sync_lock (mutex)
-#define GSL_SYNC_UNLOCK(mutex)	 gsl_mutex_unlock (mutex)
-void	gsl_mutex_init		(GslMutex	*mutex);
-void	gsl_mutex_destroy	(GslMutex	*mutex);
-
-
-/* --- GslRecMutex --- */
-void	gsl_rec_mutex_init	(GslRecMutex	*rec_mutex);
-void	gsl_rec_mutex_destroy	(GslRecMutex	*rec_mutex);
-void	gsl_rec_mutex_lock	(GslRecMutex	*rec_mutex);
-void	gsl_rec_mutex_unlock	(GslRecMutex	*rec_mutex);
-
-
-/* --- GslCond --- */
-GslCond* gsl_cond_new		(void);
-#if 0
-void	 gsl_cond_wait_timed	(GslCond	*cond,
-				 GslMutex	*mutex,
-				 glong		 max_useconds);
-#endif
-void	 gsl_cond_wait		(GslCond	*cond,
+#define	gsl_mutex_init(mutex)		(gsl_mutex_table.mutex_init (mutex))
+#define GSL_SPIN_LOCK(mutex)		(gsl_mutex_table.mutex_lock (mutex))
+#define GSL_SPIN_UNLOCK(mutex)		(gsl_mutex_table.mutex_unlock (mutex))
+#define GSL_SYNC_LOCK(mutex)		(gsl_mutex_table.mutex_lock (mutex))
+#define GSL_SYNC_UNLOCK(mutex)		(gsl_mutex_table.mutex_unlock (mutex))
+#define	gsl_mutex_trylock(mutex)	(!gsl_mutex_table.mutex_trylock (mutex))
+#define	gsl_mutex_destroy(mutex)	(gsl_mutex_table.mutex_destroy (mutex))
+#define	gsl_rec_mutex_init(rmutex)	(gsl_mutex_table.rec_mutex_init (rmutex))
+#define	gsl_rec_mutex_lock(rmutex)	(gsl_mutex_table.rec_mutex_lock (rmutex))
+#define	gsl_rec_mutex_unlock(rmutex)	(gsl_mutex_table.rec_mutex_unlock (rmutex))
+#define	gsl_rec_mutex_trylock(rmutex)	(!gsl_mutex_table.rec_mutex_trylock (rmutex))
+#define	gsl_rec_mutex_destroy(rmutex)	(gsl_mutex_table.rec_mutex_destroy (rmutex))
+#define	gsl_cond_init(cond)		(gsl_mutex_table.cond_init (cond))
+#define	gsl_cond_signal(cond)		(gsl_mutex_table.cond_signal (cond))
+#define	gsl_cond_broadcast(cond)	(gsl_mutex_table.cond_broadcast (cond))
+#define	gsl_cond_wait(cond, mutex)	(gsl_mutex_table.cond_wait ((cond), (mutex)))
+#define	gsl_cond_destroy(cond)		(gsl_mutex_table.cond_destroy (cond))
+void	gsl_cond_wait_timed		(GslCond  *cond,
+					 GslMutex *mutex,
+					 glong     max_useconds);
+struct _GslMutexTable
+{
+  void	(*mutex_init)		(GslMutex	*mutex);
+  void	(*mutex_lock)		(GslMutex	*mutex);
+  int	(*mutex_trylock)	(GslMutex	*mutex); /* 0==has_lock */
+  void	(*mutex_unlock)		(GslMutex	*mutex);
+  void	(*mutex_destroy)	(GslMutex	*mutex);
+  void	(*rec_mutex_init)	(GslRecMutex	*mutex);
+  void	(*rec_mutex_lock)	(GslRecMutex	*mutex);
+  int	(*rec_mutex_trylock)	(GslRecMutex	*mutex); /* 0==has_lock */
+  void	(*rec_mutex_unlock)	(GslRecMutex	*mutex);
+  void	(*rec_mutex_destroy)	(GslRecMutex	*mutex);
+  void	(*cond_init)		(GslCond	*cond);
+  void	(*cond_signal)		(GslCond	*cond);
+  void	(*cond_broadcast)	(GslCond	*cond);
+  void	(*cond_wait)		(GslCond	*cond,
 				 GslMutex	*mutex);
-void	 gsl_cond_signal	(GslCond	*cond);
-void	 gsl_cond_broadcast	(GslCond	*cond);
-void	 gsl_cond_destroy	(GslCond	*cond);
+  void	(*cond_wait_timed)	(GslCond	*cond,
+				 GslMutex	*mutex,
+				 gulong		 abs_secs,
+				 gulong		 abs_usecs);
+  void	(*cond_destroy)		(GslCond	*cond);
+};
 
 
 /* --- misc --- */
@@ -173,16 +191,12 @@ GslErrorType gsl_check_file		(const gchar	*file_name,
 
 
 /* --- implementation details --- */
-void		gsl_mutex_spin_lock	(GslMutex	*mutex);
-void		gsl_mutex_sync_lock	(GslMutex	*mutex);
-void		gsl_mutex_unlock	(GslMutex	*mutex);
 gpointer	gsl_alloc_memblock	(gsize		 size);
 gpointer	gsl_alloc_memblock0	(gsize		 size);
 void		gsl_free_memblock	(gsize		 size,
 					 gpointer	 memblock);
 void		gsl_alloc_report	(void);
 const guint	gsl_alloc_upper_power2	(const gulong	 number);
-gboolean	gsl_rec_mutex_test_self	(GslRecMutex	*rec_mutex);
 void	       _gsl_tick_stamp_inc	(void);
 void	       _gsl_tick_stamp_set_leap (guint		 ticks);
 void	_gsl_init_data_handles		(void);
@@ -194,6 +208,7 @@ void	_gsl_init_loader_oggvorbis	(void);
 #define		GSL_N_IO_RETRIES	(5)
 #define		_GSL_TICK_STAMP_VAL()	(gsl_externvar_tick_stamp + 0)
 extern volatile guint64	gsl_externvar_tick_stamp;
+extern GslMutexTable gsl_mutex_table;
 
 #ifdef __cplusplus
 }

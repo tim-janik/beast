@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#define	GLIB_SIZEOF_INTMAX	GSL_SIZEOF_INTMAX
+#define	GLIB_SIZEOF_INTMAX	(GSL_SIZEOF_STD_INTMAX_T ? GSL_SIZEOF_STD_INTMAX_T : 8 /* educated guess */)
 
 gpointer g_malloc         (gulong        n_bytes) { void*p = malloc(n_bytes); GSL_ASSERT(p!=0); return p; }
 gpointer g_malloc0        (gulong        n_bytes) { return memset(g_malloc(n_bytes),0,n_bytes); }

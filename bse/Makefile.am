@@ -105,12 +105,10 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bswcommon.h \
 	bswprivate.h \
 	glib-extra.h \
-	$(GSL_H_SRC) \
 	$(TOYPROF_H_SOURCES) \
 @STRIP_END@
 # BSE header files that don't get installed
 bse_private_h_sources = @STRIP_BEGIN@ \
-	$(GSL_PRIVATE_H_SRC) \
 @STRIP_END@
 # BSE C sources to build the library from
 bse_c_sources = @STRIP_BEGIN@ \
@@ -379,23 +377,17 @@ builtsources: $(bse_built_h_sources) $(bse_built_c_sources)
 all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
 
 
-# --- GSL targets ---
-GSL_progs_ldadd = $(progs_LDADD)
-GSL_cc_dummy=
-include gslmakefile.inc
-# GSL_H_SRC = gslcommon.h ...
-# GSL_PRIVATE_H_SRC = gsloputil.h ...
-# GSL_C_SRC = gslcommon.c ...
-# GSL_NOINST_PROGS = gsltests ...
-# gsltests_SOURCES = gsltests.c
-# gsltests_LDADD = $(GSL_progs_ldadd)
-# EXTRA_DIST += gsl.gnuplot gsl-mplan.txt
-
-
 # TOYPROF: poor man's profiling toy
 TOYPROF_H_SOURCES = toyprof.h
 TOYPROF_C_SOURCES = toyprof.c
 EXTRA_DIST += toyprof.pl toyprof.README
+
+
+# --- GSL targets ---
+GSL_progs_ldadd = $(progs_LDADD)
+GSL_cc_dummy    =
+gslincludedir   = $(includedir)/gsl
+include gslmakefile.inc
 
 
 #

@@ -27,6 +27,7 @@
 #include <errno.h>
 #include <sys/poll.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most propably just use EINTR,
@@ -39,8 +40,10 @@
 #endif
 
 
-#define	SIMPLE_CACHE_SIZE	(1024)
 #define	PREALLOC		(8)
+#define	SIMPLE_CACHE_SIZE	(64)
+#define	TS8_SIZE		(MAX (sizeof (GTrashStack), 8))
+#define	DBG8_SIZE		(MAX (sizeof (gsize), 8))
 
 
 /* --- variables --- */
@@ -50,7 +53,7 @@ static guint     global_tick_stamp_leaps = 0;
 
 /* --- memory allocation --- */
 static GslMutex     global_memory = { 0, };
-static GTrashStack *simple_cache[SIMPLE_CACHE_SIZE] = { NULL, };
+static GTrashStack *simple_cache[SIMPLE_CACHE_SIZE] = { 0, 0, 0, /* ... */ };
 static gulong       memory_allocated = 0;
 
 const guint
@@ -64,10 +67,14 @@ low_alloc (gsize mem_size)
 {
   gpointer mem;
 
-  if (mem_size >= sizeof (GTrashStack) && mem_size < SIMPLE_CACHE_SIZE + sizeof (GTrashStack))
+  if (mem_size >= TS8_SIZE && mem_size / 8 < SIMPLE_CACHE_SIZE)
     {
+      guint cell;
+
+      mem_size = (mem_size + 7) & ~0x7;
+      cell = (mem_size >> 3) - 1;
       GSL_SPIN_LOCK (&global_memory);
-      mem = g_trash_stack_pop (simple_cache + mem_size - sizeof (GTrashStack));
+      mem = g_trash_stack_pop (simple_cache + cell);
       GSL_SPIN_UNLOCK (&global_memory);
       if (!mem)
 	{
@@ -78,7 +85,7 @@ low_alloc (gsize mem_size)
 	  memory_allocated += mem_size * PREALLOC;
 	  for (i = 0; i < PREALLOC - 1; i++)
 	    {
-	      g_trash_stack_push (simple_cache + mem_size - sizeof (GTrashStack), cache_mem);
+	      g_trash_stack_push (simple_cache + cell, cache_mem);
 	      cache_mem += mem_size;
 	    }
 	  GSL_SPIN_UNLOCK (&global_memory);
@@ -99,10 +106,14 @@ static inline void
 low_free (gsize    mem_size,
 	  gpointer mem)
 {
-  if (mem_size >= sizeof (GTrashStack) && mem_size < SIMPLE_CACHE_SIZE + sizeof (GTrashStack))
+  if (mem_size >= TS8_SIZE && mem_size / 8 < SIMPLE_CACHE_SIZE)
     {
+      guint cell;
+
+      mem_size = (mem_size + 7) & ~0x7;
+      cell = (mem_size >> 3) - 1;
       GSL_SPIN_LOCK (&global_memory);
-      g_trash_stack_push (simple_cache + mem_size - sizeof (GTrashStack), mem);
+      g_trash_stack_push (simple_cache + cell, mem);
       GSL_SPIN_UNLOCK (&global_memory);
     }
   else
@@ -117,17 +128,17 @@ low_free (gsize    mem_size,
 gpointer
 gsl_alloc_memblock (gsize block_size)
 {
-  gpointer mem;
+  guint8 *cmem;
   gsize *debug_size;
   
   g_return_val_if_fail (block_size >= sizeof (gpointer), NULL);	/* cache-link size */
 
-  mem = low_alloc (block_size + sizeof (*debug_size));
-  debug_size = mem;
+  cmem = low_alloc (block_size + DBG8_SIZE);
+  debug_size = (gsize*) cmem;
   *debug_size = block_size;
-  mem = debug_size + 1;
-  
-  return mem;
+  cmem += DBG8_SIZE;
+
+  return cmem;
 }
 
 void
@@ -135,15 +146,16 @@ gsl_free_memblock (gsize    block_size,
 		   gpointer mem)
 {
   gsize *debug_size;
-  
+  guint8 *cmem;
+
   g_return_if_fail (mem != NULL);
   
-  debug_size = mem;
-  debug_size -= 1;
-  mem = debug_size;
+  cmem = mem;
+  cmem -= DBG8_SIZE;
+  debug_size = (gsize*) cmem;
   g_return_if_fail (block_size == *debug_size);
 
-  low_free (block_size + sizeof (*debug_size), mem);
+  low_free (block_size + DBG8_SIZE, cmem);
 }
 
 void
@@ -407,9 +419,9 @@ typedef struct
   volatile gint abort;
   guint64       awake_stamp;
 } ThreadData;
-static GslMutex    global_thread;
+static GslMutex    global_thread = { 0, };
 static GslRing    *global_thread_list = NULL;
-static GslCond    *global_thread_cond = NULL;
+static GslCond     global_thread_cond = { 0, };
 static GslRing    *awake_tdata_list = NULL;
 static ThreadData *main_thread_tdata = NULL;
 
@@ -433,7 +445,7 @@ thread_wrapper (gpointer arg)
 
   GSL_SYNC_LOCK (&global_thread);
   global_thread_list = gsl_ring_prepend (global_thread_list, self);
-  gsl_cond_broadcast (global_thread_cond);
+  gsl_cond_broadcast (&global_thread_cond);
   GSL_SYNC_UNLOCK (&global_thread);
 
   tdata->func (tdata->data);
@@ -442,7 +454,7 @@ thread_wrapper (gpointer arg)
   global_thread_list = gsl_ring_remove (global_thread_list, self);
   if (tdata->awake_stamp)
     awake_tdata_list = gsl_ring_remove (awake_tdata_list, tdata);
-  gsl_cond_broadcast (global_thread_cond);
+  gsl_cond_broadcast (&global_thread_cond);
   GSL_SYNC_UNLOCK (&global_thread);
 
   close (tdata->wpipe[0]);
@@ -517,7 +529,7 @@ gsl_thread_new (GslThreadFunc func,
     {
       GSL_SYNC_LOCK (&global_thread);
       while (!gsl_ring_find (global_thread_list, gthread))
-	gsl_cond_wait (global_thread_cond, &global_thread);
+	gsl_cond_wait (&global_thread_cond, &global_thread);
       GSL_SYNC_UNLOCK (&global_thread);
     }
   else
@@ -617,7 +629,7 @@ gsl_thread_abort (GslThread *thread)
   thread_wakeup_I (tdata);
 
   while (gsl_ring_find (global_thread_list, thread))
-    gsl_cond_wait (global_thread_cond, &global_thread);
+    gsl_cond_wait (&global_thread_cond, &global_thread);
   GSL_SYNC_UNLOCK (&global_thread);
 }
 
@@ -834,19 +846,23 @@ _gsl_tick_stamp_inc (void)
 /* --- GslMutex --- */
 static gboolean is_smp_system = FALSE;
 
-void
-gsl_mutex_init (GslMutex *mutex)
+static void
+default_mutex_init (GslMutex *mutex)
 {
   g_return_if_fail (mutex != NULL);
   
   mutex->mutex_pointer = g_mutex_new ();
 }
 
-void
-gsl_mutex_spin_lock (GslMutex *mutex)
+static int
+default_mutex_trylock (GslMutex *mutex)
 {
-  g_return_if_fail (mutex != NULL);
+  return g_mutex_trylock (mutex->mutex_pointer) ? 0 : -1;
+}
 
+static void
+default_mutex_lock (GslMutex *mutex)
+{
   /* spin locks should be held only very short times,
    * so frequently we should succeed here
    */
@@ -875,73 +891,55 @@ gsl_mutex_spin_lock (GslMutex *mutex)
     }
 }
 
-void
-gsl_mutex_sync_lock (GslMutex *mutex)
+static void
+default_mutex_unlock (GslMutex *mutex)
 {
-  g_return_if_fail (mutex != NULL);
-
-  /* syncronization locks should either require us to wait
-   * on another thread or are unlocked already.
-   */
-  if (g_mutex_trylock (mutex->mutex_pointer))
-    return;
-
-  /* already locked, share processor */
-  sched_yield ();
-
-  /* sharing didn't help, perform lengthy wait in mutex_lock() */
-  g_mutex_lock (mutex->mutex_pointer);
-}
-
-void
-gsl_mutex_unlock (GslMutex *mutex)
-{
-  g_return_if_fail (mutex != NULL);
-
   g_mutex_unlock (mutex->mutex_pointer);
 }
 
-void
-gsl_mutex_destroy (GslMutex *mutex)
+static void
+default_mutex_destroy (GslMutex *mutex)
 {
-  g_return_if_fail (mutex != NULL);
-
   g_mutex_free (mutex->mutex_pointer);
   memset (mutex, 0, sizeof (*mutex));
 }
 
-
-/* --- GslRecMutex --- */
-void
-gsl_rec_mutex_init (GslRecMutex *rec_mutex)
+static void
+default_rec_mutex_init (GslRecMutex *rec_mutex)
 {
-  g_return_if_fail (rec_mutex != NULL);
-
   rec_mutex->depth = 0;
   rec_mutex->owner = NULL;
   gsl_mutex_init (&rec_mutex->sync_mutex);
 }
 
-void
-gsl_rec_mutex_destroy (GslRecMutex *rec_mutex)
-{
-  g_return_if_fail (rec_mutex != NULL);
-
-  if (rec_mutex->owner || rec_mutex->depth)
-    {
-      g_warning (G_STRLOC ": recursive mutex not unlocked during destruction");
-      return;
-    }
-  gsl_mutex_destroy (&rec_mutex->sync_mutex);
-  g_assert (rec_mutex->owner == NULL && rec_mutex->depth == 0);
-}
-
-void
-gsl_rec_mutex_lock (GslRecMutex *rec_mutex)
+static int
+default_rec_mutex_trylock (GslRecMutex *rec_mutex)
 {
   gpointer self = gsl_thread_self ();
 
-  g_return_if_fail (rec_mutex != NULL);
+  if (rec_mutex->owner == self)
+    {
+      g_assert (rec_mutex->depth > 0);  /* paranoid */
+      rec_mutex->depth += 1;
+      return 0;
+    }
+  else
+    {
+      if (gsl_mutex_trylock (&rec_mutex->sync_mutex))
+	{
+	  g_assert (rec_mutex->owner == NULL && rec_mutex->depth == 0); /* paranoid */
+	  rec_mutex->owner = self;
+	  rec_mutex->depth = 1;
+	  return 0;
+	}
+    }
+  return -1;
+}
+
+static void
+default_rec_mutex_lock (GslRecMutex *rec_mutex)
+{
+  gpointer self = gsl_thread_self ();
 
   if (rec_mutex->owner == self)
     {
@@ -957,126 +955,127 @@ gsl_rec_mutex_lock (GslRecMutex *rec_mutex)
     }
 }
 
-void
-gsl_rec_mutex_unlock (GslRecMutex *rec_mutex)
+static void
+default_rec_mutex_unlock (GslRecMutex *rec_mutex)
 {
   gpointer self = gsl_thread_self ();
 
-  g_return_if_fail (rec_mutex != NULL);
-
-  g_assert (rec_mutex->owner == self && rec_mutex->depth > 0);
-  rec_mutex->depth -= 1;
-  if (!rec_mutex->depth)
+  if (rec_mutex->owner == self && rec_mutex->depth > 0)
     {
-      rec_mutex->owner = NULL;
-      GSL_SYNC_UNLOCK (&rec_mutex->sync_mutex);
+      rec_mutex->depth -= 1;
+      if (!rec_mutex->depth)
+	{
+	  rec_mutex->owner = NULL;
+	  GSL_SYNC_UNLOCK (&rec_mutex->sync_mutex);
+	}
     }
+  else
+    g_warning ("unable to unlock recursive mutex with self %p != %p or depth %u < 1",
+	       rec_mutex->owner, self, rec_mutex->depth);
 }
 
-gboolean
-gsl_rec_mutex_test_self (GslRecMutex *rec_mutex)
+static void
+default_rec_mutex_destroy (GslRecMutex *rec_mutex)
 {
-  gpointer self = gsl_thread_self ();
-
-  g_return_val_if_fail (rec_mutex != NULL, FALSE);
-
-  return rec_mutex->owner == self && rec_mutex->depth > 0;
+  if (rec_mutex->owner || rec_mutex->depth)
+    {
+      g_warning (G_STRLOC ": recursive mutex still locked during destruction");
+      return;
+    }
+  gsl_mutex_destroy (&rec_mutex->sync_mutex);
+  g_assert (rec_mutex->owner == NULL && rec_mutex->depth == 0);
 }
 
-
-/* --- GslCond --- */
-GslCond*
-gsl_cond_new (void)
+static void
+default_cond_init (GslCond *cond)
 {
-  gpointer gcond = g_cond_new ();
-
-  return gcond;
+  cond->cond_pointer = g_cond_new ();
 }
 
-void
-gsl_cond_destroy (GslCond *cond)
+static void
+default_cond_wait (GslCond  *cond,
+		   GslMutex *mutex)
 {
-  gpointer gcond = cond;
-
-  g_return_if_fail (cond != NULL);
-
-  g_cond_free (gcond);
+  /* infinite wait */
+  g_cond_wait (cond->cond_pointer, mutex->mutex_pointer);
 }
 
-#if 0
+static void
+default_cond_signal (GslCond *cond)
+{
+  g_cond_signal (cond->cond_pointer);
+}
+
+static void
+default_cond_broadcast (GslCond *cond)
+{
+  g_cond_broadcast (cond->cond_pointer);
+}
+
+static void
+default_cond_destroy (GslCond *cond)
+{
+  g_cond_free (cond->cond_pointer);
+}
+
+static void
+default_cond_wait_timed (GslCond  *cond,
+			 GslMutex *mutex,
+			 gulong    abs_secs,
+			 gulong    abs_usecs)
+{
+  GTimeVal gtime;
+
+  gtime.tv_sec = abs_secs;
+  gtime.tv_usec = abs_usecs;
+  g_cond_timed_wait (cond->cond_pointer, mutex->mutex_pointer, &gtime);
+}
+
+GslMutexTable gsl_mutex_table = {
+  default_mutex_init,
+  default_mutex_lock,
+  default_mutex_trylock,
+  default_mutex_unlock,
+  default_mutex_destroy,
+  default_rec_mutex_init,
+  default_rec_mutex_lock,
+  default_rec_mutex_trylock,
+  default_rec_mutex_unlock,
+  default_rec_mutex_destroy,
+  default_cond_init,
+  default_cond_signal,
+  default_cond_broadcast,
+  default_cond_wait,
+  default_cond_wait_timed,
+  default_cond_destroy,
+};
+
 void
 gsl_cond_wait_timed (GslCond  *cond,
 		     GslMutex *mutex,
 		     glong     max_useconds)
 {
-  gpointer gmutex, gcond = cond;
-
-  g_return_if_fail (cond != NULL);
-  g_return_if_fail (mutex != NULL);
-
-  gmutex = mutex->mutex_pointer;
-
   if (max_useconds < 0)
-    g_cond_wait (gcond, gmutex);
+    gsl_cond_wait (cond, mutex);
   else
     {
-      glong my_sec;
-      GTimeVal gtime;
+      struct timeval now;
+      glong secs;
 
-      /* for some reason, g_cond_timed_wait() (pthread_cond_timedwait) insists
-       * on getting absolute timevalues ;(
-       */
-      g_get_current_time (&gtime);
-      my_sec = max_useconds / G_USEC_PER_SEC;
-      gtime.tv_sec += my_sec;
-      gtime.tv_usec += max_useconds - my_sec * G_USEC_PER_SEC;
-      if (gtime.tv_usec >= G_USEC_PER_SEC)
+      gettimeofday (&now, NULL);
+      secs = max_useconds / 1000000;
+      now.tv_sec += secs;
+      max_useconds -= secs * 1000000;
+      now.tv_usec += max_useconds;
+      if (now.tv_usec >= 1000000)
 	{
-	  gtime.tv_usec -= G_USEC_PER_SEC;
-	  gtime.tv_sec += 1;
+	  now.tv_usec -= 1000000;
+	  now.tv_sec += 1;
 	}
 
-      /* for linux on x86 with pthread_cond_timedwait(), this has 10ms
-       * resolution
-       */
-      g_cond_timed_wait (gcond, gmutex, &gtime);
+      /* linux on x86 with pthread has actually 10ms resolution */
+      gsl_mutex_table.cond_wait_timed (cond, mutex, now.tv_sec, now.tv_usec);
     }
-}
-#endif
-
-void
-gsl_cond_wait (GslCond  *cond,
-	       GslMutex *mutex)
-{
-  gpointer gmutex, gcond = cond;
-
-  g_return_if_fail (cond != NULL);
-  g_return_if_fail (mutex != NULL);
-
-  gmutex = mutex->mutex_pointer;
-
-  /* infinite wait */
-  g_cond_wait (gcond, gmutex);
-}
-
-void
-gsl_cond_signal (GslCond *cond)
-{
-  gpointer gcond = cond;
-
-  g_return_if_fail (cond != NULL);
-
-  g_cond_signal (gcond);
-}
-
-void
-gsl_cond_broadcast (GslCond *cond)
-{
-  gpointer gcond = cond;
-
-  g_return_if_fail (cond != NULL);
-
-  g_cond_broadcast (gcond);
 }
 
 
@@ -1260,7 +1259,8 @@ gsl_get_config (void)
 #define	ROUND(dblval)	((GslLong) ((dblval) + .5))
 
 void
-gsl_init (const GslConfigValue values[])
+gsl_init (const GslConfigValue values[],
+	  GslMutexTable       *mtable)
 {
   const GslConfigValue *config = values;
   static GslConfig pconfig = {	/* DEFAULTS */
@@ -1273,9 +1273,11 @@ gsl_init (const GslConfigValue values[])
     440,			/* kammer_freq */
   };
 
-  if (gsl_config)	/* ignore multiple invocations */
-    return;
-  g_assert (gsl_config++ == NULL);	/* dumb concurrency prevention */
+  g_return_if_fail (gsl_config == NULL);	/* assert single initialization */
+
+  /* get mutexes going first */
+  if (mtable)
+    gsl_mutex_table = *mtable;
 
   gsl_externvar_tick_stamp = 1;
 
@@ -1315,7 +1317,7 @@ gsl_init (const GslConfigValue values[])
   is_smp_system = GSL_CONFIG (n_processors) > 1;
   gsl_mutex_init (&global_memory);
   gsl_mutex_init (&global_thread);
-  global_thread_cond = gsl_cond_new ();
+  gsl_cond_init (&global_thread_cond);
   main_thread_tdata = create_tdata ();
   g_assert (main_thread_tdata != NULL);
   _gsl_init_data_handles ();

@@ -26,6 +26,10 @@
 #endif
 
 
+/* configure checks */
+#include <gsl/gslconfig.h>
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -35,7 +39,6 @@ extern "C" {
 typedef struct _GslMagic		GslMagic;
 typedef struct _GslClass		GslClass;
 typedef struct _GslComplex		GslComplex;
-typedef struct _GslCond			GslCond;
 typedef struct _GslDataCache		GslDataCache;
 typedef struct _GslDataHandle		GslDataHandle;
 typedef struct _GslDataHandleFuncs	GslDataHandleFuncs;
@@ -51,6 +54,7 @@ typedef struct _GslWaveChunk		GslWaveChunk;
 typedef struct _GslWaveChunkBlock	GslWaveChunkBlock;
 typedef struct _GslRecMutex		GslRecMutex;
 typedef struct _GslRing			GslRing;
+typedef union _GslCond			GslCond;
 typedef union _GslMutex			GslMutex;
 /* ssize_t/off_t type used within Gsl */
 typedef glong			  GslLong;
@@ -113,32 +117,30 @@ typedef struct
 #endif
 
 
-/* --- implementation specific --- */
-/*< private >*/
-/* FIXME: gslconfig.h stuff */
+/* --- implementation details --- */
 #define	GSL_ENGINE_MAX_POLLFDS	(128)
-#define GSL_SIZEOF_MUTEX        (8)
-#define GSL_SIZEOF_GTIME        (4)
-#define GSL_SIZEOF_GUINT        (4)
-#define GSL_SIZEOF_GSIZE        (4)
-#define GSL_SIZEOF_INTMAX	(8)
+union _GslCond
+{
+  gpointer cond_pointer;
+  guint8   cond_dummy[MAX (8, GSL_SIZEOF_PTH_COND_T)];
+};
 union _GslMutex
 {
   gpointer mutex_pointer;
-  guint8   mutex_dummy[GSL_SIZEOF_MUTEX];
+  guint8   mutex_dummy[MAX (8, GSL_SIZEOF_PTH_MUTEX_T)];
 };
 struct _GslRecMutex
 {
-  guint    depth;
-  gpointer owner;
   GslMutex sync_mutex;
+  gpointer owner;
+  guint    depth;
 };
 #if __GNUC__ >= 3 && defined __OPTIMIZE__
 #  define GSL_GCC_EXPECT(cond)	(__builtin_expect ((cond) != 0, 1))
 #  define GSL_GCC_REJECT(cond)	(__builtin_expect ((cond) != 0, 0))
 #else
-#  define GSL_GCC_EXPECT(cond)	(cond)
-#  define GSL_GCC_REJECT(cond)	(cond)
+#  define GSL_GCC_EXPECT(cond)	cond
+#  define GSL_GCC_REJECT(cond)	cond
 #endif
 
 #ifdef __cplusplus
@@ -146,4 +148,5 @@ struct _GslRecMutex
 #endif /* __cplusplus */
 
 #endif /* __GSL_DEFS_H__ */
+
 /* vim:set ts=8 sw=2 sts=2: */

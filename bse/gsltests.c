@@ -73,7 +73,7 @@ main (int   argc,
   shift_argv = argv;
   
   g_thread_init (NULL);
-  gsl_init (NULL);
+  gsl_init (NULL, NULL);
   
   arg = shift ();
   if (!arg)

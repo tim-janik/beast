@@ -21,6 +21,7 @@
 #include "gslcommon.h"
 #include "gslopnode.h"
 #include "gslopschedule.h"
+#include "gslsignal.h"
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -240,40 +241,44 @@ typedef struct
 {
   guint    n_nodes;
   gfloat **nodes;
+  guint8  *nodes_used;
 } ConstValuesArray;
-static const gfloat CONST_VALUES_EPSILON = 1e-5;	/* FIXME: assuming 16bit significant bits */
 
-static inline gfloat*
-const_values_lookup (ConstValuesArray *array,
-		     gfloat	       key_value)
+static const guint8 CONST_VALUES_EXPIRE = 16;           /* expire value after being unused for 16 times */
+
+static inline gfloat**
+const_values_lookup_nextmost (ConstValuesArray *array,
+		              gfloat	        key_value)
 {
   guint n_nodes = array->n_nodes;
   
   if (n_nodes > 0)
     {
       gfloat **nodes = array->nodes;
+      gfloat **check;
       
       nodes -= 1;
       do
 	{
-	  gfloat **check;
 	  guint i;
 	  register gfloat cmp;
 	  
 	  i = (n_nodes + 1) >> 1;
 	  check = nodes + i;
 	  cmp = key_value - **check;
-	  if (cmp > CONST_VALUES_EPSILON)
+	  if (cmp > GSL_SIGNAL_EPSILON)
 	    {
 	      n_nodes -= i;
 	      nodes = check;
 	    }
-	  else if (cmp < CONST_VALUES_EPSILON)
+	  else if (cmp < -GSL_SIGNAL_EPSILON)
 	    n_nodes = i - 1;
 	  else /* cmp ~==~ 0.0 */
-	    return *check;
+	    return check;   /* matched */
 	}
       while (n_nodes);
+
+      return check;  /* nextmost */
     }
   
   return NULL;
@@ -287,98 +292,113 @@ upper_power2 (guint number)
 
 static inline void
 const_values_insert (ConstValuesArray *array,
+		     guint             index,
 		     gfloat	      *value_block)
 {
-  gfloat **check;
-  
   if (array->n_nodes == 0)
     {
       guint new_size = upper_power2 (sizeof (gfloat*));
       
       array->nodes = g_realloc (array->nodes, new_size);
+      array->nodes_used = g_realloc (array->nodes_used, new_size / sizeof (gfloat*));
       array->n_nodes = 1;
-      check = array->nodes;
+
+      g_assert (index == 0);
     }
   else
     {
-      guint n_nodes = array->n_nodes;
-      gfloat **nodes = array->nodes;
-      gfloat cmp;
-      guint i;
+      guint n_nodes = array->n_nodes++;
+
+      if (*array->nodes[index] < *value_block)
+	index++;
       
-      nodes -= 1;
-      do
-	{
-	  i = (n_nodes + 1) >> 1;
-	  check = nodes + i;
-	  cmp = *value_block - **check;
-	  if (cmp > CONST_VALUES_EPSILON)
-	    {
-	      n_nodes -= i;
-	      nodes = check;
-	    }
-	  else if (cmp < CONST_VALUES_EPSILON)
-	    n_nodes = i - 1;
-	  else /* cmp ~==~ 0.0 */
-	    g_assert_not_reached ();
-	}
-      while (n_nodes);
-      /* grow */
-      if (cmp > 0)
-	check += 1;
-      i = check - array->nodes;
-      n_nodes = array->n_nodes++;
       if (1)
 	{
 	  guint new_size = upper_power2 (array->n_nodes * sizeof (gfloat*));
 	  guint old_size = upper_power2 (n_nodes * sizeof (gfloat*));
 	  
 	  if (new_size != old_size)
-	    array->nodes = g_realloc (array->nodes, new_size);
+	    {
+	      array->nodes = g_realloc (array->nodes, new_size);
+	      array->nodes_used = g_realloc (array->nodes_used, new_size / sizeof(gfloat*));
+	    }
 	}
-      check = array->nodes + i;
-      g_memmove (check + 1, check, (n_nodes - i) * sizeof (gfloat*));
+      g_memmove (array->nodes + index + 1, array->nodes + index, (n_nodes - index) * sizeof (array->nodes[0]));
+      g_memmove (array->nodes_used + index + 1, array->nodes_used + index, (n_nodes - index) * sizeof (array->nodes_used[0]));
     }
-  *check = value_block;
+
+  array->nodes[index] = value_block;
+  array->nodes_used[index] = CONST_VALUES_EXPIRE;
 }
 
-static ConstValuesArray cvalue_array = { 0, NULL, };
+static ConstValuesArray cvalue_array = { 0, NULL, NULL };
 
 gfloat*
 gsl_engine_const_values (gfloat value)
 {
   extern const gfloat gsl_engine_master_zero_block[];
-  gfloat *block;
+  gfloat **block;
   
-  if (fabs (value) < CONST_VALUES_EPSILON)
+  if (fabs (value) < GSL_SIGNAL_EPSILON)
     return (gfloat*) gsl_engine_master_zero_block;
-  block = const_values_lookup (&cvalue_array, value);
-  if (!block)
+
+  block = const_values_lookup_nextmost (&cvalue_array, value);
+
+  /* found correct match? */
+  if (block && fabs (**block - value) < GSL_SIGNAL_EPSILON)
     {
-      guint i;
-      
-      block = g_new (gfloat, gsl_engine_block_size ());
-      for (i = 0; i < gsl_engine_block_size (); i++)
-	block[i] = value;
-      const_values_insert (&cvalue_array, block);
+      cvalue_array.nodes_used[block - cvalue_array.nodes] = CONST_VALUES_EXPIRE;
+      return *block;
     }
-  return block;
+  else
+    {
+      /* create new value block */
+      gfloat *values = g_new (gfloat, gsl_engine_block_size ());
+      guint i;
+
+      for (i = 0; i < gsl_engine_block_size (); i++)
+	values[i] = value;
+     
+      if (block)
+	const_values_insert (&cvalue_array, block - cvalue_array.nodes, values);
+      else
+	const_values_insert (&cvalue_array, 0, values);
+
+      return values;
+    }
 }
 
 void
 _gsl_recycle_const_values (void)
 {
-  while (cvalue_array.n_nodes--)
-    g_free (cvalue_array.nodes[cvalue_array.n_nodes]);
-  cvalue_array.n_nodes = 0;
+  gfloat **nodes = cvalue_array.nodes;
+  guint8 *used = cvalue_array.nodes_used;
+  guint count = cvalue_array.n_nodes, e = 0, i;
+  
+  for (i = 0; i < count; i++)
+    {
+      used[i]--;  /* invariant: use counts are never 0 */
+      
+      if (used[i] == 0)
+	g_free (nodes[i]);
+      else /* preserve node */
+	{
+	  if (e < i)
+	    {
+	      nodes[e] = nodes[i];
+	      used[e] = used[i];
+	    }
+	  e++;
+	}
+    }
+  cvalue_array.n_nodes = e;
 }
-
 
 /* --- job transactions --- */
 static GslMutex       cqueue_trans = { 0, };
 static GslTrans      *cqueue_trans_pending_head = NULL;
 static GslTrans      *cqueue_trans_pending_tail = NULL;
-static GslCond       *cqueue_trans_cond = NULL;
+static GslCond        cqueue_trans_cond = { 0, };
 static GslTrans      *cqueue_trans_trash = NULL;
 static GslTrans      *cqueue_trans_active_head = NULL;
 static GslTrans      *cqueue_trans_active_tail = NULL;
@@ -403,7 +423,7 @@ op_com_enqueue_trans (GslTrans *trans)
     cqueue_trans_pending_head = trans;
   cqueue_trans_pending_tail = trans;
   GSL_SPIN_UNLOCK (&cqueue_trans);
-  gsl_cond_signal (cqueue_trans_cond);
+  gsl_cond_signal (&cqueue_trans_cond);
 }
 
 void
@@ -411,7 +431,7 @@ op_com_wait_on_trans (void)
 {
   GSL_SPIN_LOCK (&cqueue_trans);
   while (cqueue_trans_pending_head || cqueue_trans_active_head)
-    gsl_cond_wait (cqueue_trans_cond, &cqueue_trans);
+    gsl_cond_wait (&cqueue_trans_cond, &cqueue_trans);
   GSL_SPIN_UNLOCK (&cqueue_trans);
 }
 
@@ -450,7 +470,7 @@ gsl_com_pop_job (void)	/* (glong max_useconds) */
 	  cqueue_trans_pending_head = NULL;
 	  cqueue_trans_pending_tail = NULL;
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
-	  gsl_cond_signal (cqueue_trans_cond);
+	  gsl_cond_signal (&cqueue_trans_cond);
 	}
       else
 	{
@@ -480,7 +500,7 @@ gsl_com_pop_job (void)	/* (glong max_useconds) */
     {
       GSL_SPIN_LOCK (&cqueue_trans);
       if (!cqueue_trans_pending_head)
-	gsl_cond_wait_timed (cqueue_trans_cond,
+	gsl_cond_wait_timed (&cqueue_trans_cond,
 			     &cqueue_trans,
 			     max_useconds);
       GSL_SPIN_UNLOCK (&cqueue_trans);
@@ -548,7 +568,7 @@ static GslMutex          pqueue_mutex = { 0, };
 static OpSchedule       *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
-static GslCond		*pqueue_done_cond = NULL;
+static GslCond		 pqueue_done_cond = { 0, };
 static GslFlowJob       *pqueue_trash_fjobs_first = NULL;
 static GslFlowJob       *pqueue_trash_fjobs_last = NULL;
 
@@ -625,7 +645,6 @@ void
 _gsl_com_push_processed_node (OpNode *node)
 {
   g_return_if_fail (node != NULL);
-  g_return_if_fail (OP_NODE_SELF_LOCKED (node));        /* paranoid */
   g_return_if_fail (pqueue_n_nodes > 0);
   g_return_if_fail (OP_NODE_IS_SCHEDULED (node));
   
@@ -643,7 +662,7 @@ _gsl_com_push_processed_node (OpNode *node)
   pqueue_n_nodes -= 1;
   OP_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    gsl_cond_signal (pqueue_done_cond);
+    gsl_cond_signal (&pqueue_done_cond);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
@@ -657,7 +676,6 @@ void
 _gsl_com_push_processed_cycle (GslRing *cycle)
 {
   g_return_if_fail (cycle != NULL);
-  g_return_if_fail (OP_NODE_SELF_LOCKED (cycle->data));	/* paranoid */
   g_return_if_fail (pqueue_n_cycles > 0);
   g_return_if_fail (OP_NODE_IS_SCHEDULED (cycle->data));
 }
@@ -667,7 +685,7 @@ _gsl_com_wait_on_unprocessed (void)
 {
   GSL_SPIN_LOCK (&pqueue_mutex);
   while (pqueue_n_nodes || pqueue_n_cycles || !GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    gsl_cond_wait (pqueue_done_cond, &pqueue_mutex);
+    gsl_cond_wait (&pqueue_done_cond, &pqueue_mutex);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
@@ -676,10 +694,16 @@ _gsl_com_wait_on_unprocessed (void)
 void
 _gsl_init_engine_utils (void)
 {
-  g_assert (cqueue_trans_cond == NULL); /* single invocation */
-  
+  static gboolean initialized = FALSE;
+
+  g_assert (initialized == FALSE); /* single invocation */
+  initialized++;
+
   gsl_mutex_init (&cqueue_trans);
-  cqueue_trans_cond = gsl_cond_new ();
+  gsl_cond_init (&cqueue_trans_cond);
   gsl_mutex_init (&pqueue_mutex);
-  pqueue_done_cond = gsl_cond_new ();
+  gsl_cond_init (&pqueue_done_cond);
 }
+
+
+/* vim:set ts=8 sts=2 sw=2: */

@@ -40,7 +40,6 @@ extern "C" {
 #define	OP_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & GSL_COST_EXPENSIVE) != 0)
 #define	OP_NODE_LOCK(node)		gsl_rec_mutex_lock (&(node)->rec_mutex)
 #define	OP_NODE_UNLOCK(node)		gsl_rec_mutex_unlock (&(node)->rec_mutex)
-#define	OP_NODE_SELF_LOCKED(node)	(gsl_rec_mutex_test_self (&OP_NODE (node)->rec_mutex) > 0)
 
 
 /* --- transactions --- */

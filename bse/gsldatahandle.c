@@ -117,7 +117,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, EINVAL);
   g_return_val_if_fail (dhandle->ref_count > 0, EINVAL);
-  
+
   GSL_SPIN_LOCK (&dhandle->mutex);
   if (dhandle->open_count == 0)
     {
