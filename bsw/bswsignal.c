@@ -118,8 +118,7 @@ proxy_closure_new (BswProxy  proxy,
 static void
 bsw_proxy_connect_closure (BswProxy     proxy,
 			   const gchar *signal,
-			   GClosure    *closure,
-			   GObject     *watcher)
+			   GClosure    *closure)
 {
   GObject *object = bse_object_from_id (proxy);
   GClosure *proxy_closure;
@@ -128,12 +127,8 @@ bsw_proxy_connect_closure (BswProxy     proxy,
   g_return_if_fail (object->ref_count > 0);
   g_return_if_fail (signal != NULL);
   g_return_if_fail (closure != NULL);
-  if (watcher)
-    g_return_if_fail (G_IS_OBJECT (watcher));
 
   proxy_closure = proxy_closure_new (proxy, object, closure);
-  if (watcher)
-    g_object_watch_closure (watcher, proxy_closure);
 
   g_signal_connect_closure (object,
 			    signal,
@@ -243,20 +238,19 @@ bsw_proxy_connect (BswProxy     proxy,
       
       if (strncmp (signal, "signal::", 8) == 0)
 	bsw_proxy_connect_closure (proxy, signal + 8,
-				   g_cclosure_new (callback, data, NULL),
-				   NULL);
-      else if (strncmp (signal, "object_signal::", 15) == 0)
+				   g_cclosure_new (callback, data, NULL));
+      else if (strncmp (signal, "object_signal::", 15) == 0 ||
+	       strncmp (signal, "object-signal::", 15) == 0)
 	bsw_proxy_connect_closure (proxy, signal + 15,
-				   g_cclosure_new_object (callback, data),
-				   object);
-      else if (strncmp (signal, "swapped_signal::", 16) == 0)
+				   g_cclosure_new_object (callback, data));
+      else if (strncmp (signal, "swapped_signal::", 16) == 0 ||
+	       strncmp (signal, "swapped-signal::", 16) == 0)
 	bsw_proxy_connect_closure (proxy, signal + 16,
-				   g_cclosure_new_swap (callback, data, NULL),
-				   NULL);
-      else if (strncmp (signal, "swapped_object_signal::", 23) == 0)
+				   g_cclosure_new_swap (callback, data, NULL));
+      else if (strncmp (signal, "swapped_object_signal::", 23) == 0 ||
+	       strncmp (signal, "swapped-object-signal::", 23) == 0)
 	bsw_proxy_connect_closure (proxy, signal + 23,
-				   g_cclosure_new_object_swap (callback, data),
-				   object);
+				   g_cclosure_new_object_swap (callback, data));
       else
 	{
 	  g_warning ("%s: invalid signal spec \"%s\"", G_STRLOC, signal);

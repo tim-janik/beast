@@ -22,18 +22,53 @@
 
 #include <bse/bswprivate.h>
 
+typedef struct {
+  BswProxy  proxy;
+  gchar    *name;
+  gpointer  data;
+} ProxyHashKey;
+
 
 /* --- variables --- */
 gchar *bsw_log_domain_bsw = "BSW";
+static GHashTable *bsw_proxy_hash = NULL;
 
 
 /* --- functions --- */
+static guint
+proxy_hash (gconstpointer key)
+{
+  const ProxyHashKey *k = key;
+  guint h = k->proxy;
+
+#if	GLIB_SIZEOF_LONG > 4
+  h ^= k->proxy >> 32;
+#endif
+  h ^= g_str_hash (k->name);
+
+  return h;
+}
+
+static gboolean
+proxy_equal (gconstpointer v1,
+	     gconstpointer v2)
+{
+  const ProxyHashKey *k1 = v1;
+  const ProxyHashKey *k2 = v2;
+
+  return k1->proxy == k2->proxy && strcmp (k1->name, k2->name) == 0;
+}
+
 void
 bsw_init (gint               *argc,
 	  gchar             **argv[],
 	  const BswLockFuncs *lock_funcs)
 {
   BseLockFuncs lfuncs;
+
+  g_return_if_fail (bsw_proxy_hash == NULL);
+
+  bsw_proxy_hash = g_hash_table_new (proxy_hash, proxy_equal);
 
   if (lock_funcs)
     {
@@ -196,4 +231,65 @@ bsw_proxy_check_is_a (BswProxy proxy,
 {
   return g_type_check_instance_is_a (bse_object_from_id (proxy), type);
 }
-				     
+
+void
+bsw_proxy_set_data (BswProxy     proxy,
+		    const gchar *name,
+		    gpointer     data)
+{
+  ProxyHashKey key, *k;
+
+  g_return_if_fail (proxy > 0);
+  g_return_if_fail (name != NULL);
+
+  if (!data)
+    bsw_proxy_remove_data (proxy, name);
+
+  key.proxy = proxy;
+  key.name = (gchar*) name;
+  k = g_hash_table_lookup (bsw_proxy_hash, &key);
+  if (!k)
+    {
+      k = g_new (ProxyHashKey, 1);
+      k->proxy = proxy;
+      k->name = g_strdup (name);
+      g_hash_table_insert (bsw_proxy_hash, k, k);
+    }
+  k->data = data;
+}
+
+gpointer
+bsw_proxy_get_data (BswProxy     proxy,
+		    const gchar *name)
+{
+  ProxyHashKey key, *k;
+
+  g_return_val_if_fail (proxy > 0, NULL);
+  g_return_val_if_fail (name != NULL, NULL);
+
+  key.proxy = proxy;
+  key.name = (gchar*) name;
+  k = g_hash_table_lookup (bsw_proxy_hash, &key);
+
+  return k ? k->data : NULL;
+}
+
+void
+bsw_proxy_remove_data (BswProxy     proxy,
+		       const gchar *name)
+{
+  ProxyHashKey key, *k;
+
+  g_return_if_fail (proxy > 0);
+  g_return_if_fail (name != NULL);
+
+  key.proxy = proxy;
+  key.name = (gchar*) name;
+  k = g_hash_table_lookup (bsw_proxy_hash, &key);
+  if (k)
+    {
+      g_hash_table_remove (bsw_proxy_hash, k);
+      g_free (k->name);
+      g_free (k);
+    }
+}

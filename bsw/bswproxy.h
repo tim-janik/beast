@@ -55,6 +55,13 @@ GParamSpec*	bsw_proxy_get_pspec		(BswProxy		 proxy,
 GType		bsw_proxy_type			(BswProxy		 proxy);
 gboolean	bsw_proxy_check_is_a		(BswProxy		 proxy,
 						 GType			 type);
+void		bsw_proxy_set_data		(BswProxy		 proxy,
+						 const gchar		*name,
+						 gpointer		 data);
+gpointer	bsw_proxy_get_data		(BswProxy		 proxy,
+						 const gchar		*name);
+void		bsw_proxy_remove_data		(BswProxy		 proxy,
+						 const gchar		*name);
 
 
 /* --- garbage collection --- */
