@@ -52,6 +52,7 @@ dotdesktopdir = $(datadir)/applications
 dotdesktop_in_files = beast.desktop.in
 dotdesktop_DATA = $(dotdesktop_in_files:.desktop.in=.desktop)
 CLEANFILES += beast.desktop
+beast.desktop: beast.desktop.in
 
 # generate and install .xml mime info file
 @INTLTOOL_XML_RULE@
