@@ -11,6 +11,22 @@
 @unnumbered What's New?
 
 
+@newsTitle{Thursday 13 Mar 2003, New Development Release}
+
+BEAST/BSE version 0.5.0 is available in the
+@uref{beast-doc://download,,download section}.
+
+This new development series of BEAST comes with a lot of
+the internals redone, many new GUI features and a sound
+generation back-end separated from any GUI activities.
+The most outstanding new feature is the track editor which
+allows free arrangement of parts in songs and adds loop
+support to simplify song edits.
+
+More details can be found in the
+@uref{beast-doc://release-news,,NEWS section}.
+
+
 @newsTitle{Thursday 27 February 2003, LinuxForum 2003}
 
 Stefan Westerfeld and Tim Janik are going to the
@@ -26,39 +42,6 @@ discussions with Leon Shiman, who leads the
 development group, to the
 @uref{http://lists.kde.org/?l=kde-multimedia&m=104669966423967&w=2,,kde-multimedia}
 list.
-
-
-@newsTitle{Friday 21 February 2003, Recent Development}
-
-Lots of website content has been improved recently. The
-@uref{beast-doc://historic,, Historic} section got updated,
-and thanks to Alper Ersoys continued work on the documentation
-system, the constantly evolving
-@uref{beast-doc://documentation,, Reference} and
-@uref{beast-doc://development,, Development} docs now support
-function, structure and external API links.
-
-In actual program development, Stefan Westerfeld has hacked up
-a new @beast backend, supporting PCM output through
-@uref{http://sfk.evilplan.org/csl/,,CSL}, so
-@beast can now benefit from CSLs sound server support.
-Also, there's a new track editor widget developing in CVS,
-enabling more complex arrangements of songs. We'll post
-screenshots of the new widget as soon as its GUI has
-matured a bit. For the curious,
-@uref{beast-doc://release-news,, NEWS} has more details
-about development highlights in the upcoming 0.4.2
-release.
-
-
-@newsTitle{Saturday 11 January 2003, Website Switch}
-
-The new website is up, finally! Many thanks go to
-@uref{mailto://dirt@@gtk.org,,Alper Ersoy} for his continued efford to set
-the site up. The new site has a completely redone layout, improved structure
-and a lot more content.
-
-So browse and enjoy! ;-)
 
 
 @bye

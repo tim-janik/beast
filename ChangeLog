@@ -1,3 +1,7 @@
+Thu Mar 13 22:38:28 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: announced release.
+
 Thu Mar 13 21:42:45 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up version to 0.5.0, released beast-0.5.0.tar.gz.
