@@ -5,6 +5,10 @@ Thu Nov 11 03:51:21 1999  Tim Janik  <timj@gtk.org>
 
 	* bsecapture.c: same here (well i copied the basic code ;).
 
+Wed Nov 10 03:06:54 1999  Tim Janik  <timj@gtk.org>
+
+	* bsecapture.[hc]: new bse source to provide recorded data.
+
 Sun Nov  7 20:48:04 1999  Tim Janik  <timj@gtk.org>
 
 	* bsenoise.[hc]: new noise generator.
