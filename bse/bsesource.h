@@ -43,12 +43,14 @@ extern "C" {
 #define BSE_SOURCE_PAUSED(object)       ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_PAUSED) != 0)
 #define BSE_SOURCE_HAS_INPUT(object)    ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_HAS_INPUT) != 0)
 #define BSE_SOURCE_HAS_OUTPUT(object)   ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_HAS_OUTPUT) != 0)
-#define	BSE_SOURCE_ICHANNEL_DEF(src,id) (BSE_SOURCE_GET_CLASS (src)->ichannel_defs - 1 + (guint) (id))
-#define	BSE_SOURCE_OCHANNEL_DEF(src,id) (BSE_SOURCE_GET_CLASS (src)->ochannel_defs - 1 + (guint) (id))
+#define	BSE_SOURCE_ICHANNEL_DEF(src,id) (BSE_SOURCE_CLASS_ICHANNEL_DEF (BSE_SOURCE_GET_CLASS (src), id))
+#define	BSE_SOURCE_OCHANNEL_DEF(src,id) (BSE_SOURCE_CLASS_OCHANNEL_DEF (BSE_SOURCE_GET_CLASS (src), id))
 #define	BSE_SOURCE_N_ICHANNELS(src)     (BSE_SOURCE_GET_CLASS (src)->n_ichannels)
 #define	BSE_SOURCE_N_OCHANNELS(src)     (BSE_SOURCE_GET_CLASS (src)->n_ochannels)
 /*< private >*/
 #define	BSE_SOURCE_OCHANNEL(src,id)     (BSE_SOURCE (src)->ochannels - 1 + (guint) (id))
+#define	BSE_SOURCE_CLASS_ICHANNEL_DEF(cls,id) (((BseSourceClass*) (cls))->ichannel_defs - 1 + (guint) (id))
+#define	BSE_SOURCE_CLASS_OCHANNEL_DEF(cls,id) (((BseSourceClass*) (cls))->ochannel_defs - 1 + (guint) (id))
 
 
 /* --- BseSource flags --- */
