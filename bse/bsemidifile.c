@@ -271,7 +271,7 @@ bse_midi_file_add_part_events (BseMidiFile *smf,
             }
           note = bse_note_from_freq (frequency);
           fine_tune = bse_note_fine_tune_from_note_freq (note, frequency);
-          bse_item_exec_void (part, "insert-note",
+          bse_item_exec_void (part, "insert-note-auto",
                               (guint) (start * smf->tpqn_rate),
                               (guint) (dur * smf->tpqn_rate),
                               note, fine_tune, velocity);
