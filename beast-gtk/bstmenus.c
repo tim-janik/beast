@@ -292,6 +292,12 @@ bst_menu_config_create_items (BstMenuConfig  *config,
 	   */
 	  ife.extra_data = BST_PIXDATA_EMPTY1x1;
 	}
+      else if (e->item_type && strcmp (e->item_type, "<StockItem>") == 0)
+        {
+          /* create just an image item, we want the stock IDs to affect only the image (not accels etc.) */
+          ife.item_type = "<ImageItem>";
+          ife.extra_data = BST_PIXDATA_EMPTY1x1;
+        }
       else
 	{
 	  ife.item_type = e->item_type;
@@ -312,12 +318,17 @@ bst_menu_config_create_items (BstMenuConfig  *config,
 			      e->callback);
 	}
 
-      /* create image from BseIcon */
+      /* create image */
       if (e->item_type && strcmp (e->item_type, bstmenu_category_item) == 0)
 	{
 	  GtkWidget *image = bst_image_from_icon ((BseIcon*) e->extra_data, BST_SIZE_MENU);
 	  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 	}
+      else if (e->item_type && strcmp (e->item_type, "<StockItem>") == 0)
+        {
+          GtkWidget *image = e->extra_data ? gtk_image_new_from_stock ((gchar*) e->extra_data, GTK_ICON_SIZE_MENU) : NULL;
+          gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+        }
 
       /* fixup Title items */
       if (ife.item_type && strcmp (ife.item_type, "<Title>") == 0)

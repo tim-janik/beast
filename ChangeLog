@@ -1,3 +1,10 @@
+Wed Oct 15 04:58:31 2003  Tim Janik  <timj@gtk.org>
+
+	* throw out candidate 0.5.5-rc3.
+
+	* beast-gtk/bstmenus.c (bst_menu_config_create_items): fix random stock
+	accelerators.
+
 Wed Oct 15 02:41:24 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstitemview.c (bst_item_view_init): translate BstItemViewOp
