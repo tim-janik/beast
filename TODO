@@ -4,7 +4,7 @@ FIXMES:
 - remove examplepeakfilter
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
 - fix syndrum parameter scale
-- adapt BseAmplifier balance from BseBalance audio-in-balance
+- move non-infrastructure synthesis modules out of the core into plugins/
 - nuke frequency fine-tune for biquad filter
 - add toplevel menu /Synthesizers/:
   /Synthesizers/Load from Effect Library
