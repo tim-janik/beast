@@ -69,6 +69,9 @@ struct _BstPianoRoll
   guint		 draw_qn_grid : 1;
   guint		 draw_qqn_grid : 1;
 
+  /* slight hack */
+  guint          release_closes_toplevel : 1;
+
   /* scroll offset */
   guint		 init_vpos : 1;
   gint		 x_offset, y_offset;

@@ -57,6 +57,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_NOTE_16			$(srcdir)/note-16.png		\
 	STOCK_PALETTE			$(srcdir)/palette.png		\
 	STOCK_PART			$(srcdir)/part.png		\
+	STOCK_PART_TEXT			$(srcdir)/part-text.png		\
 	STOCK_PART_COPY			$(srcdir)/part-copy.png		\
 	STOCK_PART_EDITOR		$(srcdir)/part-editor.png	\
 	STOCK_PART_TOOL			$(srcdir)/part-tool.png		\

@@ -11,7 +11,6 @@ FIXMES:
   alternatively, introduce /Insert/ toplevel menu
 - fix raising/falling edge detection in SynDrum. rename SynDrum category
 - allow extra plugin path in env variable and rc file
-- make multiple notes visible in piano roll
 - add Songs/Scripts
 - freeverb bypass toggle
 - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
@@ -141,8 +140,7 @@ TODO:
 PianoRoll:
 - implement HFlip selection script
 - play notes when inserted into piano roll
-- popdown piano roll when parts are removed
-- fix piano rolldialog wrg GDK_Escape (ala trackroll)
+- change piano roll dialog wrg GDK_Escape (ala trackroll)?
 - cleanup piano tick bar
 - portamento-to-note in piano roll? probably need special effects
 - add to piano roll dialog:
@@ -158,7 +156,6 @@ PianoRoll:
 - tooltip follows mouse and shows current note/tact
 - hotkey fuer play song
 - play notes upon insert (click on piano roll window)
-- two notes from 0..15 and 16..32 look like one
 - ctrl/shift modifiers for selection
 - fix hscrollbar  (BsePart end position implementation)
 - select loop for playback during editing

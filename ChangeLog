@@ -1,3 +1,13 @@
+Mon Oct  6 10:40:17 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackrollctrl.[hc]: tweaked part editing tools.
+	
+	* beast-gtk/bstpianoroll.c (bst_piano_roll_draw_canvas): changed note
+	borders so consequtive notes can be distinguished.
+	(piano_roll_release_proxy): popdown toplevel when proxy is released.
+
+	* docs/quickstart.texi: reflect changes.
+
 Mon Oct  6 02:58:14 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/bse-categories.txt: revamped category conventions to better

@@ -100,7 +100,7 @@ main (int   argc,
   /* initialize Sfi guts */
   sfi_init ();
   sfi_log_allow_info ("all");
-  sfi_log_allow_debug ("misc");
+  // sfi_log_allow_debug ("misc");
   /* ensure SFI can wake us up */
   sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
 			 g_main_context_default (), NULL);

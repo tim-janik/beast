@@ -235,6 +235,7 @@ bst_piano_roll_init (BstPianoRoll *self)
   self->hzoom = 1;
   self->draw_qn_grid = TRUE;
   self->draw_qqn_grid = TRUE;
+  self->release_closes_toplevel = TRUE;
   self->min_note = SFI_MIN_NOTE;
   self->max_note = SFI_MAX_NOTE;
   self->hpanel_height = 20;
@@ -1109,9 +1110,9 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
 	}
       else
 	{
-	  xdark_gc = dark_gc;
+	  xdark_gc = STYLE (self)->black_gc;
 	  xnote_gc = self->color_gc[semitone];
-	  xlight_gc = NULL;	/* skip this in white canvas */
+	  xlight_gc = dark_gc;
 	}
       x1 = tick_to_coord (self, start);
       x2 = tick_to_coord (self, end);
@@ -1844,8 +1845,9 @@ piano_roll_update (BstPianoRoll *self,
 }
 
 static void
-piano_roll_unset_proxy (BstPianoRoll *self)
+piano_roll_release_proxy (BstPianoRoll *self)
 {
+  gxk_toplevel_delete (GTK_WIDGET (self));
   bst_piano_roll_set_proxy (self, 0);
 }
 
@@ -1863,7 +1865,7 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
   if (self->proxy)
     {
       bse_proxy_disconnect (self->proxy,
-			    "any_signal", piano_roll_unset_proxy, self,
+			    "any_signal", piano_roll_release_proxy, self,
 			    "any_signal", piano_roll_update, self,
 			    NULL);
       bse_item_unuse (self->proxy);
@@ -1873,7 +1875,7 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
     {
       bse_item_use (self->proxy);
       bse_proxy_connect (self->proxy,
-			 "swapped_signal::release", piano_roll_unset_proxy, self,
+			 "swapped_signal::release", piano_roll_release_proxy, self,
 			 // "swapped_signal::property-notify::uname", piano_roll_update_name, self,
 			 "swapped_signal::range-changed", piano_roll_update, self,
 			 NULL);

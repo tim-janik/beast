@@ -166,7 +166,7 @@ So the steps to a simple test setup for a synthesis instrument are:
 @item	Switch to the @pagepath{Tracks} notebook page of a song and add
 	a @object{Track} to the song.
 @item   Click into the track's tact area to create a new @object{Part} within it.
-@item   Select the ``Editor'' tool and click on the part to start up a piano
+@item   Click onto the newly created @object{Part} to start up a piano
         roll editor to arrange notes within parts.
 @item	Use the piano roll editor to create some notes in the part to be played back.
 @item	Select a synthesis network (created as shown in the last section) as
