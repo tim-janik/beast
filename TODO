@@ -1,6 +1,4 @@
 FIXME(urgent):
-- delete $(<) and similar radget functions
-- turn the bsewave magic into BseWave1
 - replace all g.k_tooltips_set_tip (GXK_TOOLTIPS,...) with gxk_widget_set_tooltip()
 - delete: GxkAction.options, GxkAction.key?
 - s/ActionSet/ActionLink/

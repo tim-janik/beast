@@ -1,3 +1,9 @@
+Thu Jan 20 00:20:26 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkradget.c: removed special character functions 
+	$(<), $(<=), $(>), $(>=), $(!=), $(=) and $(==). suitable replacement
+	functions for float comparisons are already in place.
+
 Thu Jan 20 00:07:47 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.[hc]: removed externally unused functions from public

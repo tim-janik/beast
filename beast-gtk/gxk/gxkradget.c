@@ -2219,17 +2219,17 @@ mf_floatcmp (GSList *args,
       gboolean match = FALSE;
       double v = float_from_string (arg);
       g_free (arg);
-      if (strcmp (name, "<") == 0 || strcmp (name, "lt") == 0)
+      if (strcmp (name, "lt") == 0)
         match = last < v;
-      else if (strcmp (name, "<=") == 0 || strcmp (name, "le") == 0)
+      else if (strcmp (name, "le") == 0)
         match = last <= v;
-      else if (strcmp (name, ">") == 0 || strcmp (name, "gt") == 0)
+      else if (strcmp (name, "gt") == 0)
         match = last > v;
-      else if (strcmp (name, ">=") == 0 || strcmp (name, "ge") == 0)
+      else if (strcmp (name, "ge") == 0)
         match = last >= v;
-      else if (strcmp (name, "!=") == 0 || strcmp (name, "ne") == 0)
+      else if (strcmp (name, "ne") == 0)
         match = last != v;
-      else if (strcmp (name, "==") == 0 || strcmp (name, "eq") == 0 || strcmp (name, "=") == 0)
+      else if (strcmp (name, "eq") == 0)
         match = last == v;
       if (!match)
         {
@@ -2369,13 +2369,6 @@ macro_func_lookup (const gchar *name)
     { "nor",            mf_blogic, },
     { "and",            mf_blogic, },
     { "nand",           mf_blogic, },
-    { "<",              mf_floatcmp, },
-    { "<=",             mf_floatcmp, },
-    { ">",              mf_floatcmp, },
-    { ">=",             mf_floatcmp, },
-    { "!=",             mf_floatcmp, },
-    { "=",              mf_floatcmp, },
-    { "==",             mf_floatcmp, },
     { "lt",             mf_floatcmp, },
     { "le",             mf_floatcmp, },
     { "gt",             mf_floatcmp, },
