@@ -4,21 +4,22 @@
 # Ismael Rubio Rojas <ismael_rubio_rojas@hotmail.com>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2003, 2004.
 # Yelitza Louze <ylouze@redhat.com>, 2003.
-# Jorge Gonzalez Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>, 2004.
+# Jorge Gonzalez Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>, 2004, 2005.
 #
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-28 18:46+0100\n"
-"PO-Revision-Date: 2004-12-29 15:25+0100\n"
+"POT-Creation-Date: 2005-01-11 18:38+0100\n"
+"PO-Revision-Date: 2005-01-13 00:30+0100\n"
 "Last-Translator: Jorge Gonzalez Gonzalez <jorge.gonzalez.gonzalez@hispalinux.es>\n"
+"es>\n"
 "Language-Team:  <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.3.1\n"
+"X-Generator: KBabel 1.9.1\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
 #: beast-gtk/bstapp.c:75
@@ -179,7 +180,7 @@ msgstr "Nueva canción"
 
 #: beast-gtk/bstapp.c:134
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
-msgstr "Crear una nueva canción, que consista en un mezclador, pistas, piezas y notas"
+msgstr "Crea una canción nueva, consistente en un mezclador, pistas, piezas y notas"
 
 #: beast-gtk/bstapp.c:136
 msgid "New Custom Synthesizer"
@@ -257,7 +258,7 @@ msgstr "_Inicio rápido..."
 
 #: beast-gtk/bstapp.c:156
 msgid "Provides an introduction about how to accomplish the most common tasks"
-msgstr "Proporciona una introducción sobre cómo efectuar las tareas más usuales"
+msgstr "Proporciona una introducción sobre cómo realizar las tareas más usuales"
 
 #: beast-gtk/bstapp.c:158
 msgid "_FAQ..."
@@ -470,7 +471,7 @@ msgstr "Mover evento de control"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:480 beast-gtk/bsttrackrollctrl.c:500
-#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:168
+#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:169
 msgid "No target"
 msgstr "Sin objetivo"
 
@@ -656,6 +657,12 @@ msgstr "Cargar onda"
 msgid "Loading wave `%s'"
 msgstr "Cargando onda «%s»"
 
+#: beast-gtk/bstfiledialog.c:741 beast-gtk/bstmain.c:279
+#: beast-gtk/bstmain.c:296
+#, fuzzy, c-format
+msgid "Failed to load wave file \"%s\": %s"
+msgstr "Error al cargar el proyecto «%s»: %s"
+
 #: beast-gtk/bstgrowbar.c:91
 msgid "Shrink the scrollable area"
 msgstr "Encoger el área desplazable"
@@ -830,26 +837,26 @@ msgstr "Diálogos"
 msgid "Loading..."
 msgstr "Cargando..."
 
-#: beast-gtk/bstmain.c:291 beast-gtk/bstmain.c:293
+#: beast-gtk/bstmain.c:275 beast-gtk/bstmain.c:277
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Cargando «%s»"
 
-#: beast-gtk/bstmain.c:310
+#: beast-gtk/bstmain.c:315
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Error al cargar el proyecto «%s»: %s"
 
-#: beast-gtk/bstmain.c:811
+#: beast-gtk/bstmain.c:816
 msgid "BEAST About"
 msgstr "Acerca de Beast"
 
-#: beast-gtk/bstmain.c:812
+#: beast-gtk/bstmain.c:817
 #, c-format
 msgid "BEAST Version %s"
 msgstr "Versión %s de Beast"
 
-#: beast-gtk/bstmain.c:813
+#: beast-gtk/bstmain.c:818
 msgid "Contributions made by:"
 msgstr "Contribuciones hechas por:"
 
@@ -1584,7 +1591,7 @@ msgstr "HID"
 
 #: beast-gtk/bstprofiler.c:248
 msgid "Thread ID (on some systems the process ID)"
-msgstr "ID de la Hebra (el ID del proceso en algunos sistemas)"
+msgstr "ID de la hebra (el ID del proceso en algunos sistemas)"
 
 #: beast-gtk/bstprofiler.c:249
 msgid "CPU%"
@@ -2566,7 +2573,6 @@ msgid "ADSR"
 msgstr "ADSR"
 
 #: beast-gtk/bstsnetrouter.c:1091
-#, fuzzy
 msgid "ADSR Envelope Generator"
 msgstr "Generador de envolturas ADSR"
 
@@ -2809,7 +2815,7 @@ msgstr ""
 "Las notas de las pistas sin seleccionar son ignoradas por el secuenciador "
 "durante la reproducción"
 
-#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:449 bse/bsetrack.c:973
+#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:449 bse/bsetrack.c:997
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Máximo número de voces para su reproducción simultánea"
 
@@ -2817,7 +2823,7 @@ msgstr "Máximo número de voces para su reproducción simultánea"
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Red se síntesis u onda que se va a usar como instrumento en esta pista"
 
-#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:979
+#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:1003
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Canales MIDI asignados a esta pista, 0 usa un canal privado por pista"
 
@@ -2826,7 +2832,7 @@ msgid "Mixer busses connected to track output"
 msgstr "Buses de mezcla conectados a la salida de la pista"
 
 #: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:458 bse/bsesong.c:747
-#: bse/bsetrack.c:984
+#: bse/bsetrack.c:1008
 msgid "Synthesis network to be used as postprocessor"
 msgstr "La red se síntesis que se va a usar como post-procesador"
 
@@ -3684,7 +3690,7 @@ msgstr "Lista de los buses de mezcla disponibles para ser usados como buses de s
 
 #: bse/bsebus.c:839 bse/bsebus.c:841 bse/bsebus.c:843 bse/bsebus.c:845
 #: bse/bsebus.c:849 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
-#: bse/bsemidisynth.c:474 bse/bsetrack.c:957
+#: bse/bsemidisynth.c:474 bse/bsetrack.c:981
 msgid "Adjustments"
 msgstr "Ajustes"
 
@@ -3746,11 +3752,11 @@ msgstr ""
 "Señales de síntesis (provenientes de pistas y buses) usadas como bus de "
 "entrada"
 
-#: bse/bsebus.c:862 bse/bsetrack.c:986
+#: bse/bsebus.c:862 bse/bsetrack.c:1010
 msgid "Signal Outputs"
 msgstr "Señales de salida"
 
-#: bse/bsebus.c:864 bse/bsetrack.c:988
+#: bse/bsebus.c:864 bse/bsetrack.c:1012
 msgid "Output Signals"
 msgstr "Señales de salida"
 
@@ -4781,7 +4787,6 @@ msgid "Everything went well"
 msgstr "Todo fue correctamente"
 
 #: bse/bseenums.c:100
-#, fuzzy
 msgid "Internal error (please report)"
 msgstr "Error interno (por favor envíe un mensaje a los desarrolladores)"
 
@@ -4870,177 +4875,180 @@ msgid "Data corrupt"
 msgstr "Datos corruptos"
 
 #: bse/bseenums.c:125
+msgid "Wrong number of channels"
+msgstr "Número de canales erróneo"
+
+#: bse/bseenums.c:126
 msgid "Invalid format"
 msgstr "Formato incorrecto"
 
-#: bse/bseenums.c:126
+#: bse/bseenums.c:127
 msgid "Unknown format"
 msgstr "Formato desconocido"
 
 #. miscellaneous errors
-#: bse/bseenums.c:128
+#: bse/bseenums.c:129
 msgid "Temporary error"
 msgstr "Error temporal"
 
-#: bse/bseenums.c:129
+#: bse/bseenums.c:130
 msgid "No such wave"
 msgstr "No existe la onda"
 
-#: bse/bseenums.c:130
-#, fuzzy
-msgid "CODEC failure"
-msgstr "Fallo de codecs"
-
 #: bse/bseenums.c:131
+msgid "CODEC failure"
+msgstr "Fallo de códecs"
+
+#: bse/bseenums.c:132
 msgid "Functionality not implemented"
 msgstr "Funcionalidad no implementada"
 
-#: bse/bseenums.c:132
+#: bse/bseenums.c:133
 msgid "Invalid object property"
 msgstr "Propietario del objeto no válido"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.c:134
 msgid "Invalid MIDI control type"
 msgstr "Tipo de control MIDI no válido"
 
-#: bse/bseenums.c:134
+#: bse/bseenums.c:135
 msgid "Parsing error"
 msgstr "Error de análisis"
 
-#: bse/bseenums.c:135
+#: bse/bseenums.c:136
 msgid "Failed to spawn child process"
 msgstr "Falló el intercambio del proceso hijo"
 
 #. Device errors
-#: bse/bseenums.c:137
+#: bse/bseenums.c:138
 msgid "No device (driver) available"
 msgstr "No hay dispositivo (controlador) disponible"
 
-#: bse/bseenums.c:138
+#: bse/bseenums.c:139
 msgid "Device not async capable"
 msgstr "El dispositivo no es capaz de una conexión asíncrona"
 
-#: bse/bseenums.c:139
+#: bse/bseenums.c:140
 msgid "Device busy"
 msgstr "Dispositivo ocupado"
 
-#: bse/bseenums.c:140
+#: bse/bseenums.c:141
 msgid "Failed to configure device format"
 msgstr "Falló la configuración del formato del dispositivo"
 
-#: bse/bseenums.c:141
+#: bse/bseenums.c:142
 msgid "Failed to configure device buffer"
 msgstr "Falló la configuración del búfer del dispositivo"
 
-#: bse/bseenums.c:142
+#: bse/bseenums.c:143
 msgid "Failed to configure device latency"
 msgstr "Falló la configuración de la latencia del dispositivo"
 
-#: bse/bseenums.c:143
+#: bse/bseenums.c:144
 msgid "Failed to configure number of device channels"
 msgstr "Falló la configuración del número de canales del dispositivo"
 
-#: bse/bseenums.c:144
+#: bse/bseenums.c:145
 msgid "Failed to configure device frequency"
 msgstr "Falló la configuración de la frecuencia del dispositivo"
 
-#: bse/bseenums.c:145
+#: bse/bseenums.c:146
 msgid "Device configurations mismatch"
 msgstr "Configuración del dispositivo inadecuada"
 
 #. BseSource errors
-#: bse/bseenums.c:147
+#: bse/bseenums.c:148
 msgid "No such synthesis module"
 msgstr "No existe ese módulo de síntesis"
 
-#: bse/bseenums.c:148
+#: bse/bseenums.c:149
 msgid "No such input channel"
 msgstr "No existe ese canal de entrada"
 
-#: bse/bseenums.c:149
+#: bse/bseenums.c:150
 msgid "No such output channel"
 msgstr "No existe ese canal de salida"
 
-#: bse/bseenums.c:150
+#: bse/bseenums.c:151
 msgid "Input/Output channels not connected"
 msgstr "Canales de entrada/salida sin conectar"
 
-#: bse/bseenums.c:151
+#: bse/bseenums.c:152
 msgid "Input channel is private"
 msgstr "Canal de entrada privado"
 
-#: bse/bseenums.c:152
+#: bse/bseenums.c:153
 msgid "Input channel already in use"
 msgstr "Canal de entrada en uso"
 
-#: bse/bseenums.c:153
+#: bse/bseenums.c:154
 msgid "Input/Output channels already connected"
 msgstr "Ya están conectados los canales de entrada/salida"
 
-#: bse/bseenums.c:154
+#: bse/bseenums.c:155
 msgid "Invalid synthesis module connection"
 msgstr "Conexión del módulo de síntesis no válida"
 
-#: bse/bseenums.c:155
+#: bse/bseenums.c:156
 msgid "Parent mismatch"
 msgstr "Padre inadecuado"
 
-#: bse/bseenums.c:156
+#: bse/bseenums.c:157
 msgid "Bad loopback"
 msgstr "Bucle de realimentación"
 
-#: bse/bseenums.c:157
+#: bse/bseenums.c:158
 msgid "Synthesis module currently busy"
 msgstr "Módulo de síntesis ocupado"
 
-#: bse/bseenums.c:158
+#: bse/bseenums.c:159
 msgid "Invalid synthsis module type"
 msgstr "Tipo de módulo de síntesis no válido"
 
 #. BseProcedure errors
-#: bse/bseenums.c:160
+#: bse/bseenums.c:161
 msgid "No such procedure"
 msgstr "No existe el procedimiento"
 
-#: bse/bseenums.c:161
+#: bse/bseenums.c:162
 msgid "Procedure currently busy"
 msgstr "Procedimiento ocupado"
 
 #. recursion
-#: bse/bseenums.c:162
+#: bse/bseenums.c:163
 msgid "Procedure parameter invalid"
 msgstr "Parámetro del procedimiento inválido"
 
-#: bse/bseenums.c:163
+#: bse/bseenums.c:164
 msgid "Procedure execution failed"
 msgstr "Ejecución del procedimiento fallida"
 
-#: bse/bseenums.c:164
+#: bse/bseenums.c:165
 msgid "Procedure execution aborted"
 msgstr "Ejecución del procedimiento cancelada"
 
 #. various procedure errors
-#: bse/bseenums.c:166
+#: bse/bseenums.c:167
 msgid "No such entry"
 msgstr "No existe la entrada"
 
-#: bse/bseenums.c:167
+#: bse/bseenums.c:168
 msgid "No such event"
 msgstr "No existe el evento"
 
-#: bse/bseenums.c:169
+#: bse/bseenums.c:170
 msgid "Ownership mismatch"
 msgstr "Propietario inadecuado"
 
-#: bse/bseenums.c:170
+#: bse/bseenums.c:171
 msgid "Invalid offset"
 msgstr "Compensación no válida"
 
-#: bse/bseenums.c:171
+#: bse/bseenums.c:172
 msgid "Invalid duration"
 msgstr "Duración incorrecta"
 
-#: bse/bseenums.c:172
+#: bse/bseenums.c:173
 msgid "Invalid overlap"
 msgstr ""
 
@@ -5208,12 +5216,12 @@ msgstr ""
 "procesador"
 
 #: bse/bsemidisynth.c:442 bse/bsemidisynth.c:447 bse/bsemidisynth.c:452
-#: bse/bsemidisynth.c:456 bse/bsesong.c:745 bse/bsetrack.c:976
-#: bse/bsetrack.c:982
+#: bse/bsemidisynth.c:456 bse/bsesong.c:745 bse/bsetrack.c:1000
+#: bse/bsetrack.c:1006
 msgid "MIDI Instrument"
 msgstr "Instrumento MIDI"
 
-#: bse/bsemidisynth.c:444 bse/bsetrack.c:978
+#: bse/bsemidisynth.c:444 bse/bsetrack.c:1002
 msgid "MIDI Channel"
 msgstr "Canal MIDI"
 
@@ -5221,7 +5229,7 @@ msgstr "Canal MIDI"
 msgid "Max Voices"
 msgstr "Número máximo de voces"
 
-#: bse/bsemidisynth.c:454 bse/bsesubsynth.c:513 bse/bsetrack.c:963
+#: bse/bsemidisynth.c:454 bse/bsesubsynth.c:513 bse/bsetrack.c:987
 msgid "Synthesizer"
 msgstr "Sintetizador"
 
@@ -5229,7 +5237,7 @@ msgstr "Sintetizador"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "La red se síntesis que se va a usar como instrumento MIDI"
 
-#: bse/bsemidisynth.c:458 bse/bsesong.c:747 bse/bsetrack.c:984
+#: bse/bsemidisynth.c:458 bse/bsesong.c:747 bse/bsetrack.c:1008
 msgid "Postprocessor"
 msgstr "Post-procesador"
 
@@ -5397,9 +5405,8 @@ msgid "Failed to open MIDI devices (reverting to null device): %s"
 msgstr "Error al abrir el dispositivo MIDI (volviendo a dispositivo nulo): %s"
 
 #: bse/bseserver.c:558
-#, fuzzy
 msgid "Show recording file errors"
-msgstr "Mostrar errores de grabado de archivos"
+msgstr "Mostrar los errores ocurridos al grabar archivos"
 
 #: bse/bseserver.c:559
 #, c-format
@@ -5542,7 +5549,7 @@ msgstr "/Fuentes de sonido/Oscilador estándar"
 msgid "Wave Form"
 msgstr "Forma de la onda"
 
-#: bse/bsestandardosc.c:131 bse/bsetrack.c:968 bse/bsewaveosc.c:558
+#: bse/bsestandardosc.c:131 bse/bsetrack.c:992 bse/bsewaveosc.c:558
 #: bse/bsewaveosc.c:560 bse/bsewaveosc.c:562
 msgid "Wave"
 msgstr "Onda"
@@ -5557,7 +5564,9 @@ msgstr "Fase"
 
 #: bse/bsestandardosc.c:137
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
-msgstr "Fase inicial de la forma de onda del oscilador (ciclos de desplazamiento, en grados)"
+msgstr ""
+"Fase inicial de la forma de onda del oscilador (ciclos de desplazamiento, en "
+"grados)"
 
 #: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:148
 msgid "Base Frequency"
@@ -5763,27 +5772,27 @@ msgstr ""
 msgid "List of available mixer busses to be used as track output"
 msgstr "Lista de buses mezcladores para ser usados como salidas de la pista"
 
-#: bse/bsetrack.c:959
+#: bse/bsetrack.c:983
 msgid "Muted"
 msgstr "Mudo"
 
-#: bse/bsetrack.c:961 bse/bsetrack.c:966 bse/bsetrack.c:971
+#: bse/bsetrack.c:985 bse/bsetrack.c:990 bse/bsetrack.c:995
 msgid "Synth Input"
 msgstr "Entrada de síntesis"
 
-#: bse/bsetrack.c:963
+#: bse/bsetrack.c:987
 msgid "Synthesis network to be used as instrument"
 msgstr "La red se síntesis que se va a usar como instrumento"
 
-#: bse/bsetrack.c:968
+#: bse/bsetrack.c:992
 msgid "Wave to be used as instrument"
 msgstr "Onda que será usada como instrumento"
 
-#: bse/bsetrack.c:973
+#: bse/bsetrack.c:997
 msgid "Max Voixes"
 msgstr "Máximas voces"
 
-#: bse/bsetrack.c:989
+#: bse/bsetrack.c:1013
 msgid "Mixer busses used as output for this track"
 msgstr "Buses mezcladores usados como salida para esta pista"
 
