@@ -214,7 +214,7 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, NULL));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "name"));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, NULL));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "combo-button"));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->hwrap, NULL));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (TRUE));

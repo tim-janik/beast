@@ -337,6 +337,8 @@ _bst_init_params (void)
   param_size_group = gxk_param_create_size_group ();
   gxk_param_register_editor (&param_choice1, NULL);
   gxk_param_register_editor (&param_choice2, NULL);
+  gxk_param_register_editor (&param_choice3, NULL);
+  gxk_param_register_editor (&param_choice4, NULL);
   gxk_param_register_aliases (param_choice_aliases1);
   gxk_param_register_editor (&param_color_spinner, NULL);
   gxk_param_register_editor (&param_note_sequence, NULL);

@@ -579,3 +579,39 @@ static const GxkGadgetType widget_patcher_def = {
   NULL,         /* set_pack */
 };
 const GxkGadgetType *_gxk_widget_patcher_def = &widget_patcher_def;
+
+
+/* --- focus frame --- */
+G_DEFINE_TYPE (GxkFocusFrame, gxk_focus_frame, GTK_TYPE_FRAME);
+
+static gboolean
+focus_frame_expose_event (GtkWidget      *widget,
+                          GdkEventExpose *event)
+{
+  GtkFrame *frame = GTK_FRAME (widget);
+  gint x = frame->child_allocation.x - widget->style->xthickness;
+  gint y = frame->child_allocation.y - widget->style->ythickness;
+  gint width = frame->child_allocation.width + 2 * widget->style->xthickness;
+  gint height =  frame->child_allocation.height + 2 * widget->style->ythickness;
+  if (frame->shadow_type != GTK_SHADOW_NONE)
+    gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
+                     &event->area, widget, "button", x, y, width, height);
+  if (0)
+    gtk_paint_shadow (widget->style, widget->window, GTK_STATE_NORMAL, frame->shadow_type,
+                      &event->area, widget, "frame", x, y, width, height);
+  /* skip normal frame drawing code */
+  return GTK_WIDGET_CLASS (g_type_class_peek (g_type_parent (GTK_TYPE_FRAME)))->expose_event (widget, event);
+}
+
+static void
+gxk_focus_frame_init (GxkFocusFrame *self)
+{
+  gtk_container_set_border_width (GTK_CONTAINER (self), 1);
+}
+
+static void
+gxk_focus_frame_class_init (GxkFocusFrameClass *class)
+{
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  widget_class->expose_event = focus_frame_expose_event;
+}

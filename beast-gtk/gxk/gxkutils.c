@@ -781,11 +781,14 @@ static void
 style_modify_bg_as_base (GtkWidget *widget)
 {
   GtkRcStyle *rc_style = gtk_widget_get_modifier_style (widget);
-
-  rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BG;
-  rc_style->bg[GTK_STATE_NORMAL].red = widget->style->base[GTK_STATE_NORMAL].red;
-  rc_style->bg[GTK_STATE_NORMAL].green = widget->style->base[GTK_STATE_NORMAL].green;
-  rc_style->bg[GTK_STATE_NORMAL].blue = widget->style->base[GTK_STATE_NORMAL].blue;
+  guint i;
+  for (i = GTK_STATE_NORMAL; i <= GTK_STATE_INSENSITIVE; i++)
+    {
+      rc_style->color_flags[i] = GTK_RC_BG;
+      rc_style->bg[i].red = widget->style->base[i].red;
+      rc_style->bg[i].green = widget->style->base[i].green;
+      rc_style->bg[i].blue = widget->style->base[i].blue;
+    }
   gtk_widget_modify_style (widget, rc_style);
 }
 

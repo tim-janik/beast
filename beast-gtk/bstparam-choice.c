@@ -18,10 +18,7 @@
 
 
 /* --- choice parameters --- */
-enum {
-  CHOICE_PARAM_MENU_BUTTON,
-  CHOICE_PARAM_OPTION_MENU
-};
+#define CHOICE_PARAM_OPTION_MENU        GXK_MENU_BUTTON_POPUP_MODE
 
 static void
 param_choice_change_value (GtkWidget *widget,
@@ -70,14 +67,14 @@ param_choice_create (GxkParam    *param,
   gchar *str;
   guint i;
 
-  if (variant == CHOICE_PARAM_MENU_BUTTON)
-    widget = g_object_new (GXK_TYPE_MENU_BUTTON,
-                           "visible", TRUE,
-                           "push_in", TRUE,
-                           NULL);
-  else
+  if (variant == CHOICE_PARAM_OPTION_MENU)
     widget = g_object_new (GTK_TYPE_OPTION_MENU,
                            "visible", TRUE,
+                           NULL);
+  else
+    widget = g_object_new (GXK_TYPE_MENU_BUTTON,
+                           "visible", TRUE,
+                           "mode", variant,
                            NULL);
 
   menu = g_object_new (GTK_TYPE_MENU, NULL);
@@ -142,16 +139,28 @@ param_choice_update (GxkParam  *param,
 }
 
 static GxkParamEditor param_choice1 = {
-  { "choice-menu",      N_("Drop Down Box (Option Menu)"), },
+  { "option-button",    N_("Popup Options"), },
+  { G_TYPE_STRING,      "SfiChoice", },
+  { NULL,       +8,     TRUE, },        /* options, rating, editing */
+  param_choice_create,  param_choice_update,    GXK_MENU_BUTTON_OPTION_MODE
+};
+static GxkParamEditor param_choice2 = {
+  { "combo-button",     N_("Drop Down Combo"), },
+  { G_TYPE_STRING,      "SfiChoice", },
+  { NULL,       +7,     TRUE, },        /* options, rating, editing */
+  param_choice_create,  param_choice_update,    GXK_MENU_BUTTON_COMBO_MODE
+};
+static GxkParamEditor param_choice3 = {
+  { "tool-button",      N_("Drop Down Button"), },
+  { G_TYPE_STRING,      "SfiChoice", },
+  { NULL,       +6,     TRUE, },        /* options, rating, editing */
+  param_choice_create,  param_choice_update,    GXK_MENU_BUTTON_TOOL_MODE
+};
+static GxkParamEditor param_choice4 = {
+  { "option-menu",      N_("Standard Option Menu"), },
   { G_TYPE_STRING,      "SfiChoice", },
   { NULL,       +5,     TRUE, },        /* options, rating, editing */
   param_choice_create,  param_choice_update,    CHOICE_PARAM_OPTION_MENU
-};
-static GxkParamEditor param_choice2 = {
-  { "choice-button",    N_("Drop Down Button"), },
-  { G_TYPE_STRING,      "SfiChoice", },
-  { NULL,       +6,     TRUE, },        /* options, rating, editing */
-  param_choice_create,  param_choice_update,    CHOICE_PARAM_MENU_BUTTON
 };
 static const gchar *param_choice_aliases1[] = {
   "choice",

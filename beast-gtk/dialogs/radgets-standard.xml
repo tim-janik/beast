@@ -109,9 +109,7 @@
   <xdef:menu-button           inherit="GxkMenuButton"
     prop:relief="$(ifdef,relief,$relief,normal)"
     prop:stock-size="$(null-collapse,$stock-size)"
-    prop:combo-arrow="$(first-occupied,$arrow,1)"
-    prop:push-in="$(first-occupied,$push-in,0)"
-    prop:show-selection="$(first-occupied,$show-selection,1)"
+    prop:mode="$(first-occupied,$mode,tool-mode)"
     />
   <!-- buttons: stock= label= relief= -->
   <xdef:button                inherit="GtkButton"

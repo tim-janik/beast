@@ -52,9 +52,9 @@ gxk_nullify_in_object (gpointer object,
   GClosure *closure;
   g_return_val_if_fail (object != NULL, 0);
   g_return_val_if_fail (location != NULL, 0);
-  g_return_val_if_fail (GTK_IS_OBJECT (object), 0);
-  g_return_val_if_fail (G_IS_OBJECT (*location), 0);
+  g_return_val_if_fail (G_IS_OBJECT (object), 0);
+  g_return_val_if_fail (GTK_IS_OBJECT (*location), 0);
   closure = g_cclosure_new_swap (G_CALLBACK (g_nullify_pointer), location, NULL);
-  g_object_watch_closure (*location, closure);
-  return g_signal_connect_closure (object, "destroy", closure, 0);
+  g_object_watch_closure (object, closure);
+  return g_signal_connect_closure (*location, "destroy", closure, 0);
 }

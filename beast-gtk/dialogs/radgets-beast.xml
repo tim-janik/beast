@@ -137,8 +137,7 @@
       <palette-toggle-factory action-root="" actions="router-palette-modules" />
       <vbox wrapped="1" expand="1" >
 	<hbox>
-	  <menu-button show-selection="0" focus="0" >
-	    <arrow arrow="right" />
+	  <menu-button mode="popup-mode" focus="0" >
 	    <modules-popup name="snet-popup" root="1" />
 	  </menu-button>
 	  <label name="type-label" expand="1" />

@@ -1,3 +1,32 @@
+Thu Mar  4 14:31:42 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkmenubutton.[hc]: save backing during popups.
+	support multiple layouts/setups: tool mode (retains old behaviour),
+	option mode (mimicking option menus), combo mode (mimicks combo
+	boxes) and popup mode (simply spawns a menu without capturing).
+
+	* beast-gtk/bstparam.c:
+	* beast-gtk/bstparam-choice.c: support menu button in tool, option
+	and combo modes.
+
+	* beast-gtk/bstpartdialog.c: use a combo box for direction selection.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: adapt menu button properties,
+	menu buttons simply have a mode property now.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: use a menu button in popup mode
+	to spawn the palette menu.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: added a GxkFocusFrame, which is
+	simply an ordinary frame that draws a focus border instead of shadow
+	borders.
+
+	* beast-gtk/gxk/gxkglobals.c (gxk_nullify_in_object): fix object order ,
+	i.e. listen on *location::destroy.
+
+	* beast-gtk/gxk/gxkutils.c (gtk_widget_modify_bg_as_base): affect all
+	widget states.
+
 Wed Mar  3 10:23:48 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkmenubutton.[hc]: remove non menu button code.

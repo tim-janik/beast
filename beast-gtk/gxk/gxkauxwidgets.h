@@ -81,6 +81,17 @@ typedef struct {
 GType   gxk_widget_patcher_get_type     (void);
 extern const GxkGadgetType *_gxk_widget_patcher_def;
 
+/* --- focus frame --- */
+#define GXK_TYPE_FOCUS_FRAME              (gxk_focus_frame_get_type ())
+#define GXK_FOCUS_FRAME(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_FOCUS_FRAME, GxkFocusFrame))
+#define GXK_FOCUS_FRAME_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_FOCUS_FRAME, GxkFocusFrameClass))
+#define GXK_IS_FOCUS_FRAME(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_FOCUS_FRAME))
+#define GXK_IS_FOCUS_FRAME_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_FOCUS_FRAME))
+#define GXK_FOCUS_FRAME_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_FOCUS_FRAME, GxkFocusFrameClass))
+typedef GtkFrame      GxkFocusFrame;
+typedef GtkFrameClass GxkFocusFrameClass;
+GType   gxk_focus_frame_get_type          (void);
+
 G_END_DECLS
 
 #endif /* __GXK_AUX_WIDGETS_H__ */
