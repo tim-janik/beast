@@ -287,7 +287,6 @@ sfidl:
   fixes:
   - support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
   extensions:
-  - need support for real enums in bserecords.sfidl
   - choices need support for icons per value
   - choices need support for tooltips per value
   - signals should be specified in idl files (and have to be documentable)
