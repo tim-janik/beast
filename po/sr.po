@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-26 18:14+0100\n"
-"PO-Revision-Date: 2003-10-26 02:40+0200\n"
+"POT-Creation-Date: 2003-10-27 00:07+0100\n"
+"PO-Revision-Date: 2003-10-27 00:10+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -648,95 +648,80 @@ msgid "Delete parts"
 msgstr "Обриши делове"
 
 #: beast-gtk/bstmessages.c:77
-#, fuzzy
 msgid "Insert"
-msgstr "У_метни"
+msgstr "Уметни"
 
 #: beast-gtk/bstmessages.c:79
-#, fuzzy
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
-msgstr "Уметни/уреди/премести делове (1. и 2. дугме миша)"
+msgstr "Уметни/промени величине/премести ноте (1. и 2. дугме миша)"
 
 #: beast-gtk/bstmessages.c:83
-#, fuzzy
 msgid "Delete note (mouse button 1)"
-msgstr "Уметни/уреди/премести делове (1. и 2. дугме миша)"
+msgstr "Обриши ноту (1. дугме миша)"
 
 #: beast-gtk/bstmessages.c:85
 msgid "Align"
-msgstr ""
+msgstr "Поравнај"
 
 #: beast-gtk/bstmessages.c:87
 msgid "Draw a line to align events to"
-msgstr ""
+msgstr "Нацртајте линију уз коју да поравнам догађаје"
 
 #: beast-gtk/bstmessages.c:89
-#, fuzzy
 msgid "Select"
-msgstr "Обриши"
+msgstr "Изабери"
 
 #: beast-gtk/bstmessages.c:91
 msgid "Rectangle select notes"
-msgstr ""
+msgstr "Правоугаоник бира ноте"
 
 #: beast-gtk/bstmessages.c:93
-#, fuzzy
 msgid "VSelect"
 msgstr "Усправан избор"
 
 #: beast-gtk/bstmessages.c:95
 msgid "Select tick range vertically"
-msgstr ""
+msgstr "Изаберите усправне подеоке"
 
 #: beast-gtk/bstmessages.c:97
-#, fuzzy
 msgid "1/1"
-msgstr "Q: 1/1"
+msgstr "1/1"
 
 #: beast-gtk/bstmessages.c:99
-#, fuzzy
 msgid "Insert full notes"
-msgstr "Уметни ноту"
+msgstr "Уметни пуне ноте"
 
 #: beast-gtk/bstmessages.c:101
-#, fuzzy
 msgid "1/2"
-msgstr "Q: 1/2"
+msgstr "1/2"
 
 #: beast-gtk/bstmessages.c:103
-#, fuzzy
 msgid "Insert half notes"
-msgstr "Уметни ноту"
+msgstr "Уметни полуноту"
 
 #: beast-gtk/bstmessages.c:105
-#, fuzzy
 msgid "1/4"
-msgstr "Q: 1/4"
+msgstr "1/4"
 
 #: beast-gtk/bstmessages.c:107
-#, fuzzy
 msgid "Insert quarter notes"
-msgstr "Уметни део"
+msgstr "Уметни четвртноту"
 
 #: beast-gtk/bstmessages.c:109
-#, fuzzy
 msgid "1/8"
-msgstr "Q: 1/8"
+msgstr "1/8"
 
 #: beast-gtk/bstmessages.c:111
-#, fuzzy
 msgid "Insert eighths note"
-msgstr "Уметни ноту"
+msgstr "Уметни осмину ноте"
 
 #: beast-gtk/bstmessages.c:113
-#, fuzzy
 msgid "1/16"
-msgstr "Q: 1/16"
+msgstr "1/16"
 
 #: beast-gtk/bstmessages.c:115
-#, fuzzy
 msgid "Insert sixteenth note"
-msgstr "Уметни ноту"
+msgstr "Уметни шеснаестину ноте"
 
 #: beast-gtk/bstparam-entry.c:61
 msgid "Remove Paths"

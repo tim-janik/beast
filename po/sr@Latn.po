@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-26 18:14+0100\n"
-"PO-Revision-Date: 2003-10-26 02:40+0200\n"
+"POT-Creation-Date: 2003-10-27 00:07+0100\n"
+"PO-Revision-Date: 2003-10-27 00:10+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -648,95 +648,80 @@ msgid "Delete parts"
 msgstr "Obriši delove"
 
 #: beast-gtk/bstmessages.c:77
-#, fuzzy
 msgid "Insert"
-msgstr "U_metni"
+msgstr "Umetni"
 
 #: beast-gtk/bstmessages.c:79
-#, fuzzy
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
-msgstr "Umetni/uredi/premesti delove (1. i 2. dugme miša)"
+msgstr "Umetni/promeni veličine/premesti note (1. i 2. dugme miša)"
 
 #: beast-gtk/bstmessages.c:83
-#, fuzzy
 msgid "Delete note (mouse button 1)"
-msgstr "Umetni/uredi/premesti delove (1. i 2. dugme miša)"
+msgstr "Obriši notu (1. dugme miša)"
 
 #: beast-gtk/bstmessages.c:85
 msgid "Align"
-msgstr ""
+msgstr "Poravnaj"
 
 #: beast-gtk/bstmessages.c:87
 msgid "Draw a line to align events to"
-msgstr ""
+msgstr "Nacrtajte liniju uz koju da poravnam događaje"
 
 #: beast-gtk/bstmessages.c:89
-#, fuzzy
 msgid "Select"
-msgstr "Obriši"
+msgstr "Izaberi"
 
 #: beast-gtk/bstmessages.c:91
 msgid "Rectangle select notes"
-msgstr ""
+msgstr "Pravougaonik bira note"
 
 #: beast-gtk/bstmessages.c:93
-#, fuzzy
 msgid "VSelect"
 msgstr "Uspravan izbor"
 
 #: beast-gtk/bstmessages.c:95
 msgid "Select tick range vertically"
-msgstr ""
+msgstr "Izaberite uspravne podeoke"
 
 #: beast-gtk/bstmessages.c:97
-#, fuzzy
 msgid "1/1"
-msgstr "Q: 1/1"
+msgstr "1/1"
 
 #: beast-gtk/bstmessages.c:99
-#, fuzzy
 msgid "Insert full notes"
-msgstr "Umetni notu"
+msgstr "Umetni pune note"
 
 #: beast-gtk/bstmessages.c:101
-#, fuzzy
 msgid "1/2"
-msgstr "Q: 1/2"
+msgstr "1/2"
 
 #: beast-gtk/bstmessages.c:103
-#, fuzzy
 msgid "Insert half notes"
-msgstr "Umetni notu"
+msgstr "Umetni polunotu"
 
 #: beast-gtk/bstmessages.c:105
-#, fuzzy
 msgid "1/4"
-msgstr "Q: 1/4"
+msgstr "1/4"
 
 #: beast-gtk/bstmessages.c:107
-#, fuzzy
 msgid "Insert quarter notes"
-msgstr "Umetni deo"
+msgstr "Umetni četvrtnotu"
 
 #: beast-gtk/bstmessages.c:109
-#, fuzzy
 msgid "1/8"
-msgstr "Q: 1/8"
+msgstr "1/8"
 
 #: beast-gtk/bstmessages.c:111
-#, fuzzy
 msgid "Insert eighths note"
-msgstr "Umetni notu"
+msgstr "Umetni osminu note"
 
 #: beast-gtk/bstmessages.c:113
-#, fuzzy
 msgid "1/16"
-msgstr "Q: 1/16"
+msgstr "1/16"
 
 #: beast-gtk/bstmessages.c:115
-#, fuzzy
 msgid "Insert sixteenth note"
-msgstr "Umetni notu"
+msgstr "Umetni šesnaestinu note"
 
 #: beast-gtk/bstparam-entry.c:61
 msgid "Remove Paths"
@@ -872,10 +857,9 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih "
-"izdanja. Znači, ne pouzdajte se da će izgled uređivača ostati isti u "
-"budućnosti, i budite spremni na nestabilnost u kodu (tj. redovno snimajte "
-"vaše projekte)."
+"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih izdanja. "
+"Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
+"budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109
 msgid "_Edit"
