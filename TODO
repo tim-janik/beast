@@ -733,5 +733,7 @@ Misc Buglets/Feature Requests:
  - move tests from test directory into automated feature test dir
  - remove test directory
  - create a roadmap document for BEAST
+ - documentation itemize bullets are ugly (need space after bullet)
+ - documentation itemize need indent
 
 vim:set ts=8 sts=2 sw=2:
