@@ -470,6 +470,7 @@ aprop_array_free (gpointer data)
 BseErrorType
 bse_source_set_automation_property (BseSource        *source,
                                     const gchar      *prop_name,
+                                    guint             midi_channel,
                                     BseMidiSignalType signal_type)
 {
   g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
@@ -500,6 +501,7 @@ bse_source_set_automation_property (BseSource        *source,
     {
       if (!signal_type)         /* unset */
         return BSE_ERROR_NONE;  /* oarray == aparray */
+      key.midi_channel = 0;
       key.signal_type = 0;
       aparray = g_bsearch_array_insert (aparray, &aprop_bconfig, &key);
       ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
@@ -509,20 +511,24 @@ bse_source_set_automation_property (BseSource        *source,
       g_object_steal_data (source, "BseSource-AutomationProperties");
       g_object_set_data_full (source, "BseSource-AutomationProperties", aparray, aprop_array_free);
     }
-  if (ap->signal_type != signal_type)
+  if (ap->midi_channel != midi_channel ||
+      ap->signal_type != signal_type)
     {
+      ap->midi_channel = midi_channel;
       ap->signal_type = signal_type;
       g_object_notify (source, pspec->name);
     }
   return BSE_ERROR_NONE;
 }
 
-BseMidiSignalType
-bse_source_get_automation_property (BseSource        *source,
-                                    const gchar      *prop_name)
+void
+bse_source_get_automation_property (BseSource         *source,
+                                    const gchar       *prop_name,
+                                    guint             *pmidi_channel,
+                                    BseMidiSignalType *psignal_type)
 {
-  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (prop_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_if_fail (BSE_IS_SOURCE (source));
+  g_return_if_fail (prop_name != NULL);
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
   if (pspec)
     {
@@ -531,10 +537,16 @@ bse_source_get_automation_property (BseSource        *source,
         {
           BseAutomationProperty key = { pspec, }, *ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
           if (ap)
-            return ap->signal_type;
+            {
+              if (psignal_type)
+                *psignal_type = ap->signal_type;
+              if (pmidi_channel)
+                *pmidi_channel = ap->midi_channel;
+              return;
+            }
         }
     }
-  return 0;
+  return;
 }
 
 BseAutomationProperty* /* g_free() result */

@@ -248,13 +248,17 @@ void	   bse_source_clear_ochannels	        (BseSource	*source);
 /* automation */
 typedef struct {
   GParamSpec       *pspec;
+  guint             midi_channel;
   BseMidiSignalType signal_type;
 } BseAutomationProperty;
 BseErrorType                 bse_source_set_automation_property   (BseSource         *source,
                                                                    const gchar       *prop_name,
+                                                                   guint              midi_channel,
                                                                    BseMidiSignalType  signal_type);
-BseMidiSignalType            bse_source_get_automation_property   (BseSource         *source,
-                                                                   const gchar       *prop_name);
+void                         bse_source_get_automation_property   (BseSource         *source,
+                                                                   const gchar       *prop_name,
+                                                                   guint             *pmidi_channel,
+                                                                   BseMidiSignalType *psignal_type);
 BseAutomationProperty*       bse_source_get_automation_properties (BseSource         *source,
                                                                    guint             *n_props);
 

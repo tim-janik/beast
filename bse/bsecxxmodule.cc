@@ -277,7 +277,7 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
         float minimum = 0, maximum = 0;
         get_midi_control_range (hs->aprops[i].pspec, minimum, maximum);
         bse_midi_receiver_add_control_handler (hs->midi_receiver,
-                                               hs->midi_channel,
+                                               hs->aprops[i].midi_channel ? hs->aprops[i].midi_channel : hs->midi_channel,
                                                hs->aprops[i].signal_type,
                                                minimum, maximum,
                                                midi_control_handler,
@@ -286,7 +286,7 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
       }
     else
       bse_midi_receiver_remove_control_handler (hs->midi_receiver,
-                                                hs->midi_channel,
+                                                hs->aprops[i].midi_channel ? hs->aprops[i].midi_channel : hs->midi_channel,
                                                 hs->aprops[i].signal_type,
                                                 midi_control_handler,
                                                 hs->aprops[i].pspec,
