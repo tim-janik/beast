@@ -1,0 +1,6 @@
+1999-05-31    <timj@dhcpd7.redhat.com>
+
+	* configure.in: check for GNOME libs 1.0.2, since 1.0.6 doesn't really
+	match gnome-config --version reporting 1.0.pre-2-10. gnome versioning is
+	what is actually broken and needs to be fixed ;(
+	

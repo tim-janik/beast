@@ -3,6 +3,7 @@ Makefile.in
 aclocal.m4
 config.log
 stamp-h
+stamp-h.in
 libtool
 config.status
 config.cache

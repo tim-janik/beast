@@ -97,7 +97,7 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 	dnl Check for GNOME, we override BEAST_CFLAGS and BEAST_LIBS here,
 	dnl because GNOME already takes care of Gtk+, and we already checked
 	dnl that the Gtk+ version is sufficient.
-	REQUIRED=1.0.6
+	REQUIRED=1.0.2
 	AC_MSG_CHECKING(for GNOME - version >= $REQUIRED)
 	if gnome-config --version >/dev/null 2>&1; then
 		GNOME_VERSION=[`gnome-config --version | sed 's/^[^0-9]*//'`]
