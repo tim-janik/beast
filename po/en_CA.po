@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-03 16:37-0500\n"
-"PO-Revision-Date: 2004-04-03 16:39-0500\n"
+"POT-Creation-Date: 2004-04-11 03:07-0400\n"
+"PO-Revision-Date: 2004-04-11 03:08-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -1187,12 +1187,12 @@ msgstr "Stopping Playback"
 
 #: beast-gtk/bstrackeditor.c:95
 msgid ""
-"The rack editor is still highly experimental code and guranrteed to be "
+"The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"The rack editor is still highly experimental code and guranrteed to be "
+"The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
@@ -2584,7 +2584,7 @@ msgstr "Modulation"
 msgid "Strength of linear frequency modulation"
 msgstr "Strength of linear frequency modulation"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169 bse/bsewaveosc.c:140
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Perform exponential frequency modulation instead of linear"
 
@@ -3069,10 +3069,6 @@ msgstr "Wave to play"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Modulation Strength for linear frequency modulation"
 
-#: bse/bsewaveosc.c:140
-msgid "Perform exponential frequency modulationinstead of linear"
-msgstr "Perform exponential frequency modulationinstead of linear"
-
 #: bse/bsewaveosc.c:155 plugins/davorgan.c:132
 msgid "Frequency Input"
 msgstr "Frequency Input"
@@ -3144,16 +3140,16 @@ msgid "Attack [ms]"
 msgstr "Attack [ms]"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
-msgid "Set the attack time in milli seconds"
-msgstr "Set the attack time in milli seconds"
+msgid "Set the attack time in milliseconds"
+msgstr "Set the attack time in milliseconds"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Release [ms]"
 msgstr "Release [ms]"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
-msgid "Set the release time in milli seconds"
-msgstr "Set the release time in milli seconds"
+msgid "Set the release time in milliseconds"
+msgstr "Set the release time in milliseconds"
 
 #: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Threshold"
