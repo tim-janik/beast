@@ -44,7 +44,8 @@ struct ConstantDef {
 struct ParamDef {
   std::string type;
   std::string name;
-  
+ 
+  std::string group;
   std::string pspec;
   int         line;
   std::string args;
@@ -140,7 +141,7 @@ protected:
   GTokenType parseEnumDef ();
   GTokenType parseEnumComponent (EnumComponent& comp, int& value);
   GTokenType parseRecordDef ();
-  GTokenType parseRecordField (ParamDef& comp);
+  GTokenType parseRecordField (ParamDef& comp, const std::string& group);
   GTokenType parseSequenceDef ();
   GTokenType parseParamDefHints (ParamDef &def);
   GTokenType parseClass ();

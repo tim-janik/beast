@@ -1004,13 +1004,14 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
 
 
 /* --- pspec accessors --- */
-void
+GParamSpec *
 sfi_pspec_set_group (GParamSpec  *pspec,
                      const gchar *group)
 {
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), pspec);
   
   g_param_spec_set_qdata_full (pspec, quark_param_group, g_strdup (group), group ? g_free : NULL);
+  return pspec;
 }
 
 const gchar*

@@ -281,7 +281,7 @@ GParamSpec* sfi_pspec_time		(const gchar    *name,
 
 
 /* --- pspec accessors --- */
-void		sfi_pspec_set_group		(GParamSpec	*pspec,
+GParamSpec*	sfi_pspec_set_group		(GParamSpec	*pspec,
 						 const gchar	*group);
 const gchar*	sfi_pspec_get_group		(GParamSpec	*pspec);
 void		sfi_pspec_set_owner		(GParamSpec	*pspec,

@@ -1,3 +1,12 @@
+Fri Mar  7 21:39:47 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.* sfidl.cc: support group keyword for grouping
+	parameter specifications
+
+	* sfiparams.[hc]: sfi_pspec_set_group returns now the GParamSpec*
+
+	* testidl.sfidl testsfi.c: test pspec group support
+
 Fri Mar  7 14:50:16 2003  Tim Janik  <timj@gtk.org>
 
 	* sfilog.[hc]: cleaned things up, added key based debugging

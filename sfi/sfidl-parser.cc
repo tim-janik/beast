@@ -80,11 +80,12 @@ static  GScannerConfig  scanner_config_template = {
 #define TOKEN_CHOICE     GTokenType(G_TOKEN_LAST + 1)
 #define TOKEN_CLASS      GTokenType(G_TOKEN_LAST + 2)
 #define TOKEN_CONST      GTokenType(G_TOKEN_LAST + 3)
-#define TOKEN_INFO       GTokenType(G_TOKEN_LAST + 4)
-#define TOKEN_NAMESPACE  GTokenType(G_TOKEN_LAST + 5)
-#define TOKEN_PROPERTY   GTokenType(G_TOKEN_LAST + 6)
-#define TOKEN_RECORD     GTokenType(G_TOKEN_LAST + 7)
-#define TOKEN_SEQUENCE   GTokenType(G_TOKEN_LAST + 8)
+#define TOKEN_GROUP      GTokenType(G_TOKEN_LAST + 4)
+#define TOKEN_INFO       GTokenType(G_TOKEN_LAST + 5)
+#define TOKEN_NAMESPACE  GTokenType(G_TOKEN_LAST + 6)
+#define TOKEN_PROPERTY   GTokenType(G_TOKEN_LAST + 7)
+#define TOKEN_RECORD     GTokenType(G_TOKEN_LAST + 8)
+#define TOKEN_SEQUENCE   GTokenType(G_TOKEN_LAST + 9)
 
 #define parse_or_return(token)  G_STMT_START{ \
   GTokenType _t = GTokenType(token); \
@@ -213,6 +214,7 @@ Parser::Parser () : options (*Options::the())
     "choice",
     "class",
     "Const",
+    "group",
     "Info",
     "namespace",
     "property",
@@ -749,6 +751,7 @@ GTokenType Parser::parseEnumComponent (EnumComponent& comp, int& value)
 
 GTokenType Parser::parseRecordDef ()
 {
+  string group = "";
   RecordDef rdef;
   debug("parse recorddef\n");
   
@@ -756,26 +759,48 @@ GTokenType Parser::parseRecordDef ()
   parse_or_return (G_TOKEN_IDENTIFIER);
   rdef.name = ModuleHelper::define (scanner->value.v_identifier);
   parse_or_return (G_TOKEN_LEFT_CURLY);
-  while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER
-      || g_scanner_peek_next_token (scanner) == TOKEN_INFO)
+
+  bool ready = false;
+  do
     {
-      if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
+      switch (g_scanner_peek_next_token (scanner))
 	{
-	  ParamDef def;
+	  case TOKEN_GROUP:
+	    {
+	      parse_or_return (TOKEN_GROUP);
+	      parse_or_return (':');
+	      parse_string_or_return (group);
+	      parse_or_return (';');
+	    }
+	    break;
 
-	  GTokenType expected_token = parseRecordField (def);
-	  if (expected_token != G_TOKEN_NONE)
-	    return expected_token;
+	  case G_TOKEN_IDENTIFIER:
+	    {
+	      ParamDef def;
 
-	  rdef.contents.push_back(def);
-	}
-      else
-	{
-	  GTokenType expected_token = parseInfoOptional (rdef.infos);
-	  if (expected_token != G_TOKEN_NONE)
-	    return expected_token;
-	}
+	      GTokenType expected_token = parseRecordField (def, group);
+	      if (expected_token != G_TOKEN_NONE)
+		return expected_token;
+
+	      if (def.type != "")
+		rdef.contents.push_back(def);
+	    }
+	    break;
+
+	  case TOKEN_INFO:
+	    {
+	      GTokenType expected_token = parseInfoOptional (rdef.infos);
+	      if (expected_token != G_TOKEN_NONE)
+		return expected_token;
+	    }
+	  break;
+	  
+	default:
+	    ready = true;
+	  break;
+      }
     }
+  while (!ready);
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
   
@@ -783,7 +808,7 @@ GTokenType Parser::parseRecordDef ()
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseRecordField (ParamDef& def)
+GTokenType Parser::parseRecordField (ParamDef& def, const string& group)
 {
   /* FooVolumeType volume_type; */
   /* float         volume_perc @= ("Volume[%]", "Set how loud something is",
@@ -793,6 +818,7 @@ GTokenType Parser::parseRecordField (ParamDef& def)
   parse_or_return (G_TOKEN_IDENTIFIER);
   def.type = ModuleHelper::qualify (scanner->value.v_identifier);
   def.pspec = def.type;
+  def.group = group;
   def.line = scanner->line;
   
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -894,6 +920,7 @@ GTokenType Parser::parseSequenceDef ()
 {
   GTokenType expected_token;
   SequenceDef sdef;
+  string group;
 
   /*
    * sequence IntSeq {
@@ -910,7 +937,7 @@ GTokenType Parser::parseSequenceDef ()
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
 
-  expected_token = parseRecordField (sdef.content);
+  expected_token = parseRecordField (sdef.content, "");
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
 
@@ -928,6 +955,7 @@ GTokenType Parser::parseSequenceDef ()
 GTokenType Parser::parseClass ()
 {
   ClassDef cdef;
+  string group;
   debug("parse classdef\n");
   
   parse_or_return (TOKEN_CLASS);
@@ -976,7 +1004,7 @@ GTokenType Parser::parseClass ()
 	    parse_or_return (TOKEN_PROPERTY);
 
 	    ParamDef property;
-	    GTokenType expected_token = parseRecordField (property);
+	    GTokenType expected_token = parseRecordField (property, "");
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
 
@@ -1192,3 +1220,5 @@ bool Parser::fromInclude(const string& type) const
     if (*ii == type) return true;
   return false;
 }
+
+/* vim:set ts=8 sts=2 sw=2: */

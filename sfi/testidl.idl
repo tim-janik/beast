@@ -18,6 +18,7 @@ namespace Test  // this comment tests C++ style comments
   };
 
   record SickGenericThings {
+  group: "foo";
     Rec   rec   @= ("Rec", "", ":readwrite");
     PSpec pspec @= ("Param Spec", "", ":readwrite");
   };
