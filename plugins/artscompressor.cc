@@ -176,6 +176,7 @@ public:
       case PROP_AUTO_OUTPUT:
       case PROP_RATIO_TO_ONE:
       case PROP_THRESHOLD_DB:
+      case PROP_OUTPUT_DB:
 	if (auto_output)
 	  {
 	    /* keep CLAMP range in sync with .idl file */
@@ -200,6 +201,13 @@ public:
         break;
       default: ;
       }
+  }
+  bool editable_property (CompressorPropertyID prop_id, GParamSpec *)
+  {
+    if (prop_id == PROP_OUTPUT_DB && auto_output)
+      return false;
+
+    return true;
   }
   BSE_EFFECT_INTEGRATE_MODULE (Compressor, Module, CompressorProperties);
 };

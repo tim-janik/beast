@@ -1,3 +1,9 @@
+Mon Sep 20 15:54:10 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* artscompressor.cc: Keep output_db property fixed when auto_output is
+	active. Implemented editable_property() method, to make the user aware
+	of this.
+
 Mon Sep 20 01:10:00 2004  Tim Janik  <timj@gtk.org>
 
 	* davbassfilter.[ic]*: implemented automation for cutoff_perc, 
