@@ -1,3 +1,11 @@
+Wed Sep 15 21:23:29 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.h sfidl-parser.cc: Provide label, blurb and options of
+	a pspec constructor in the Param struct. Also try to unescape and
+	evaluate options to options_literal, a ready-to-use concatenated
+	version of the string without \" and similar constructs. Throw a
+	warning if this evaluation fails.
+
 Tue Sep 14 19:10:07 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiparams.[hc]: const fixups.

@@ -264,7 +264,7 @@ Parser::Parser () : options (*Options::the())
   scanner->user_data = this;
 }
 
-void Parser::printError(const gchar *format, ...)
+void Parser::printError (const gchar *format, ...)
 {
   va_list args;
   gchar *string;
@@ -276,6 +276,19 @@ void Parser::printError(const gchar *format, ...)
   if (scanner->parse_errors < scanner->max_parse_errors)
     g_scanner_error (scanner, "%s", string);
   
+  g_free (string);
+}
+
+void Parser::printWarning (const gchar *format, ...)
+{
+  va_list args;
+  gchar *string;
+  
+  va_start (args, format);
+  string = g_strdup_vprintf (format, args);
+  va_end (args);
+  
+  g_scanner_warn (scanner, "%s", string);
   g_free (string);
 }
 
@@ -1293,6 +1306,71 @@ bool isCxxTypeName (const string& str)
   return (state == valid) && (str.size() != 0);
 }
 
+static bool
+makeLiteralOptions (const string& options, string& literal_options)
+{
+  bool failed = false;
+  bool in_string = false;
+
+  /*
+   * this does handle
+   *
+   *    \":r\"	      => :r
+   *	\":r\" \":w\" => :r:w
+   *	(\":r\"
+   *	 \":w\")      => :r:w
+   *
+   * this does not handle
+   *
+   *    \":r\" _(\":i18n-hint\") \":w\"
+   *	\":r\" C_DEFINED_IDENTIFIER \":w\"
+   *	g_strdup (\":r:w\")
+   *	\":r\" /+ (imagine this would be a C-style-comment with real asterisks) +/ \":w\"
+   *
+   * however, the last case should not occur, as options have already been GScanner scanned
+   */
+  for (string::const_iterator oi = options.begin(); oi != options.end(); oi++)
+    {
+      bool last_was_backslash = false;
+      if (*oi == '\\')
+	{
+	  last_was_backslash = true;
+
+	  if ((oi + 1) != options.end())      // unescape stuff
+	    oi++;
+	  else
+	    failed = true;		      // option string ends with a single backslash? huh?
+	}
+      switch (*oi)
+	{
+	case '"':   if (!last_was_backslash)  // keep track of whether we are inside a string or not
+		      in_string = !in_string;
+		    else if (in_string)	      // if we got an \" inside a string, replace it with the real thing
+		      literal_options += *oi;
+		    else		      // we got an \" outside a string? why?
+		      failed = true;
+		    break;
+	case '(':			      // somewhat lazy way of handling string concatenation:
+	case ')':			      // will match (C compiler will check this anyways)
+	case ' ':			      // so we just ignore whitespace and paranthesis outside strings
+	case '\t':
+	case '\n':  if (in_string)
+		      literal_options += *oi; // inside strings, treat them as real
+		    break;
+	default:    if (in_string)	      // inside strings, just collect all characters that we see
+		      literal_options += *oi;
+		    else
+		      failed = true;	      // outside strings, we shouldn't see things
+		    break;
+	}
+    }
+
+  if (failed)
+    literal_options = ""; // what we've got so far might be unusable
+
+  return !failed;
+}
+
 GTokenType Parser::parseParamHints (Param &def)
 {
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
@@ -1305,10 +1383,13 @@ GTokenType Parser::parseParamHints (Param &def)
 
   int bracelevel = 1;
   string args;
+  string current_arg;
+  int arg_count = 0;
   while (!g_scanner_eof (scanner) && bracelevel > 0)
     {
       GTokenType t = scanner_get_next_token_with_colon_identifiers (scanner);
       gchar *token_as_string = 0, *x = 0;
+      bool current_arg_complete = false;
 
       if(int(t) > 0 && int(t) <= 255)
 	{
@@ -1320,6 +1401,10 @@ GTokenType Parser::parseParamHints (Param &def)
 	case '(':		  bracelevel++;
 	  break;
 	case ')':		  bracelevel--;
+				  if (bracelevel == 0)
+				    current_arg_complete = true;
+	  break;
+	case ',':		  current_arg_complete = true;
 	  break;
 	case G_TOKEN_STRING:	  x = g_strescape (scanner->value.v_string, 0);
 				  token_as_string = g_strdup_printf ("\"%s\"", x);
@@ -1370,6 +1455,22 @@ GTokenType Parser::parseParamHints (Param &def)
 	  if (!token_as_string)
 	    return GTokenType (')');
 	}
+      if (current_arg_complete)
+	{
+	  switch (arg_count++)
+	    {
+	    case 0:   def.label = current_arg;	 /* first pspec constructor argument */
+		      break;
+	    case 1:   def.blurb = current_arg;	 /* second pspec constructor argument */
+		      break;
+	    default:  def.options = current_arg; /* last pspec constructor argument */
+	    }
+	  current_arg = "";
+	}
+      else if (token_as_string)
+	{
+	  current_arg += token_as_string;
+	}
       if (token_as_string && bracelevel)
 	{
 	  if (args != "")
@@ -1379,6 +1480,8 @@ GTokenType Parser::parseParamHints (Param &def)
 	}
     }
   def.args = args;
+  if (!makeLiteralOptions (def.options, def.literal_options))
+    printWarning ("can't parse option string: %s\n", def.options.c_str());
   return G_TOKEN_NONE;
 }
 

@@ -108,6 +108,12 @@ struct Param {
   std::string pspec;
   int         line;
   std::string args;
+
+  std::string label; /* first argument of the param spec contructor */
+  std::string blurb; /* second argument of the param spec contructor */
+  std::string options; /* last argument of the param spec contructor */
+  std::string literal_options; /* the real option string; note that conversion might not work,
+				  if building the literal option string requires things like C function calls */
 };
 
 struct Stream {
@@ -268,6 +274,7 @@ protected:
 
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
   void printError (const gchar *format, ...);
+  void printWarning (const gchar *format, ...);
 
   // preprocessor
 
