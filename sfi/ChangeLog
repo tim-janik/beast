@@ -1,3 +1,8 @@
+Tue Sep 28 21:45:12 2004  Tim Janik  <timj@gtk.org>
+
+	* sfifilecrawler.[hc]: added sfi_file_check() and sfi_file_equals()
+	(based on functions from bse/gslcommon.c). documented g_file_test_all().
+
 Thu Sep 23 15:50:18 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: added g_string_prefix_lines() which adds a prefix

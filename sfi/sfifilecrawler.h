@@ -62,6 +62,12 @@ gchar*          sfi_path_get_filename                   (const gchar  *filename,
                                                          const gchar  *parentdir);
 void            sfi_make_dirpath                        (const gchar  *dir);
 void            sfi_make_dirname_path                   (const gchar  *filename);
+
+/* --- file tests --- */
+gboolean        sfi_file_check /* sets errno */         (const gchar  *file_name,
+                                                         const gchar  *mode);
+gboolean        sfi_file_equals                         (const gchar  *file1,
+                                                         const gchar  *file2);
 gboolean        g_file_test_all                         (const gchar  *filename,
                                                          GFileTest     test);
 
