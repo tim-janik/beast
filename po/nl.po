@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-08 19:39+0100\n"
-"PO-Revision-Date: 2004-03-09 15:08+0100\n"
+"POT-Creation-Date: 2004-03-13 19:22+0100\n"
+"PO-Revision-Date: 2004-03-15 00:29+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -459,7 +459,8 @@ msgstr "Naar boven"
 
 #: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
-msgstr "De geselecteerde toetsbinding naar boven verplaatsen, relatief tot zijn buren"
+msgstr ""
+"De geselecteerde toetsbinding naar boven verplaatsen, relatief tot zijn buren"
 
 # verlagen
 # neerwaarts
@@ -469,7 +470,9 @@ msgstr "Naar beneden"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
-msgstr "De geselecteerde toetsbinding naar beneden verplaatsen, relatief tot zijn buren"
+msgstr ""
+"De geselecteerde toetsbinding naar beneden verplaatsen, relatief tot zijn "
+"buren"
 
 # huidige geselecteerde golf? wave-bestand?
 #: beast-gtk/bstkeybindings.c:59
@@ -721,8 +724,9 @@ msgstr "Editor"
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
-msgstr ""
+msgstr "De kolom-indeling van de patroon-editor wordt gemaakt door het geven van kolomtypes met mogelijke aanpassingen in de weergavevolgorde."
 
+# moet dit vertaald worden?
 #: beast-gtk/bstpatterncolumns.c:685
 msgid "COLUMN TYPES:"
 msgstr "COLUMN TYPES:"
@@ -745,7 +749,9 @@ msgstr "offset-1, length-2, velocity-3, ..."
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
-msgstr "  verschuiving, lente of velocity van noten weergeven in het eerste, tweede, ... kanaal"
+msgstr ""
+"  verschuiving, lente of velocity van noten weergeven in het eerste, "
+"tweede, ... kanaal"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:693
@@ -754,7 +760,9 @@ msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: beast-gtk/bstpatterncolumns.c:694
 msgid "  select various event types (controls, continuous controllers)"
-msgstr "  verschillende gebeurtenistypen selecteren (controleknoppen, doorlopende controllers)"
+msgstr ""
+"  verschillende gebeurtenistypen selecteren (controleknoppen, doorlopende "
+"controllers)"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:696
@@ -803,7 +811,8 @@ msgstr "hex2, hex4"
 
 #: beast-gtk/bstpatterncolumns.c:710
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
-msgstr "  hexadecimale getallen in 2 (00..FF) of 4 (0000..FFFF) cijfers weergeven"
+msgstr ""
+"  hexadecimale getallen in 2 (00..FF) of 4 (0000..FFFF) cijfers weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:712
@@ -812,7 +821,9 @@ msgstr "shex2, shex4"
 
 #: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
-msgstr "  hexadecimale getallen met teken in 2 (-FF..+FF) of 4 (-FFFF..+FFFF) cijfers weergeven"
+msgstr ""
+"  hexadecimale getallen met teken in 2 (-FF..+FF) of 4 (-FFFF..+FFFF) "
+"cijfers weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:715
@@ -830,7 +841,9 @@ msgstr "sdec2, sdec3"
 
 #: beast-gtk/bstpatterncolumns.c:719
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
-msgstr "  decimale getallen met teken in 2 (-99..+99) of 3 (-999..+999) cijfers weergeven"
+msgstr ""
+"  decimale getallen met teken in 2 (-99..+99) of 3 (-999..+999) cijfers "
+"weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:721
@@ -839,16 +852,17 @@ msgstr "col1, col2, col3"
 
 #: beast-gtk/bstpatterncolumns.c:722
 msgid "  selects one of 3 predefined colors"
-msgstr "  selecteerd een van 3 voorgedefinieerde kleuren"
+msgstr "  selecteert een van 3 voorgedefinieerde kleuren"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:724
 msgid "lfold, rfold"
 msgstr "lfold, rfold"
 
+# is dit de juiste betekenis?
 #: beast-gtk/bstpatterncolumns.c:725
 msgid "  allow folding the column into left/right neighbour"
-msgstr ""
+msgstr "  de kolom laten doorlopen in de linker/rechter buurkolom"
 
 #: beast-gtk/bstpatterncolumns.c:726
 msgid "EXAMPLE:"
@@ -870,16 +884,19 @@ msgstr "VZoom"
 
 #: beast-gtk/bstpatternctrl.c:80
 msgid "The tick/note length per line"
-msgstr ""
+msgstr "De lengte van de tel/noot per regel"
 
 #: beast-gtk/bstpatternctrl.c:83
 msgid "Steps"
 msgstr "Stappen"
 
+# vrij vertaald, maar wel begrijpelijk
+# of
+# het aantal / de hoeveelheid cellen waarover verschoven wordt nadat....
 #: beast-gtk/bstpatternctrl.c:84
 msgid ""
 "The number of cells to move across each time an event or note was edited"
-msgstr ""
+msgstr "De verschuiving (in aantal cellen) nadat een gebeurtenis of noot is bewerkt"
 
 #: beast-gtk/bstpatternctrl.c:88
 msgid "Direction"
@@ -887,7 +904,7 @@ msgstr "Richting"
 
 #: beast-gtk/bstpatternctrl.c:89
 msgid "The direction of cell movement each time an event or note was edited"
-msgstr ""
+msgstr "De verschuivingsrichting nadat een gebeurtenis of noot is bewerkt"
 
 #: beast-gtk/bstpatternctrl.c:93
 msgid "HWrap"
@@ -896,7 +913,7 @@ msgstr "HWrap"
 #: beast-gtk/bstpatternctrl.c:94
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
-msgstr ""
+msgstr "Schakelen of horizontale verplaatsing van de focus-cel bij de randen doorloopt naar de volgende regel"
 
 #: beast-gtk/bstpatternctrl.c:97
 msgid "Base Octave"
@@ -904,13 +921,15 @@ msgstr "Bas-octaaf"
 
 #: beast-gtk/bstpatternctrl.c:98
 msgid "Controls the octave relative to which notes are entered"
-msgstr ""
+msgstr "Bepaalt het octaaf waartoe de ingevoerde noten behoren"
 
 #. movement
 #: beast-gtk/bstpatternctrl.c:268
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
-msgstr "Focus naar de volgende cel verplaatsen (op/links/rechts/neer volgens de configuratie)"
+msgstr ""
+"Focus naar de volgende cel verplaatsen (op/links/rechts/neer volgens de "
+"configuratie)"
 
 #: beast-gtk/bstpatternctrl.c:269
 msgid "Move focus cell upwards"
@@ -962,7 +981,7 @@ msgstr "Focus-cel instellen op de laagst mogelijke positie"
 
 #: beast-gtk/bstpatternctrl.c:283
 msgid "Set the number of steps to make when moving to the next cell"
-msgstr ""
+msgstr "Stel het aantal uit te voeren stappen in bij het verschuiven naar de volgende cel"
 
 #: beast-gtk/bstpatternctrl.c:287
 msgid "Set the base octave"
@@ -974,23 +993,23 @@ msgstr "Het basoctaaf met een gegeven hoeveelheid aanpassen"
 
 #: beast-gtk/bstpatternctrl.c:294
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
-msgstr ""
+msgstr "De focus-cel getals-inhoud (bijv. octaaf) aanpassen met een gegeven hoeveelheid"
 
 #: beast-gtk/bstpatternctrl.c:298
 msgid "Set the focus cell octave"
-msgstr ""
+msgstr "Focus-cel octaaf instellen"
 
 #: beast-gtk/bstpatternctrl.c:302 beast-gtk/bstpatternctrl.c:316
 msgid "Remove any events in the focus cell"
-msgstr ""
+msgstr "Alle gebeurtenissen in de focus-cel wissen"
 
 #: beast-gtk/bstpatternctrl.c:306 beast-gtk/bstpatternctrl.c:320
 msgid "Set the focus cell note"
-msgstr ""
+msgstr "Focus-cel toon instellen"
 
 #: beast-gtk/bstpatternctrl.c:310 beast-gtk/bstpatternctrl.c:324
 msgid "Sets the value of the focus digit"
-msgstr ""
+msgstr "De waarde van get focus-getal instellen"
 
 #: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert"
@@ -1507,11 +1526,12 @@ msgstr "Geef de tabbreedte van het project in pixels"
 msgid "Homogeneous Input Fields"
 msgstr "Homogene invoervelden"
 
+# een herstart (van het programma)
 #: beast-gtk/bstrecords.idl:83
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
-msgstr ""
+msgstr "Homogene afmetingen gebruiken voor de meeste (numerieke en tekst) invoervelden.  Voor bepaalde velden zal dit pas effect hebben na een herstart."
 
 #: beast-gtk/bstrecords.idl:91
 msgid "Skin Name"
@@ -2876,7 +2896,7 @@ msgstr "Vertraging [ms]"
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
-msgstr ""
+msgstr "Procestijd tussen de invoer en uitvoer van een enkele sample. Kleinere waarden geven een hogere CPU-belasting"
 
 #: bse/bsecore.idl:399
 msgid "Synth Mixing Frequency"
@@ -2884,7 +2904,9 @@ msgstr "Mixfrequentie synthese"
 
 #: bse/bsecore.idl:400
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr "De mixfrequentie voor de synthese, veelgebruikte waarden zijn: 22050, 44100, 48000"
+msgstr ""
+"De mixfrequentie voor de synthese, veelgebruikte waarden zijn: 22050, 44100, "
+"48000"
 
 #: bse/bsecore.idl:402
 msgid "Synth Control Frequency"
@@ -2894,7 +2916,10 @@ msgstr "Controlefrequentie synthese"
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
-msgstr "Frequentie waarmee controlewaardes worden geëvalueerd. Deze moet veel kleiner zijn dan de Mixfrequentie voor synthese zijn om de processor niet te zwaar te belasten"
+msgstr ""
+"Frequentie waarmee controlewaardes worden geëvalueerd. Deze moet veel "
+"kleiner zijn dan de Mixfrequentie voor synthese zijn om de processor niet te "
+"zwaar te belasten"
 
 #: bse/bsesnooper.c:113
 msgid "Signal In"
