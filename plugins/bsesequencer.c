@@ -104,9 +104,9 @@ bse_sequencer_class_init (BseSequencerClass *class)
 					      100, 0, 1000, 5,
 					      SFI_PARAM_STANDARD ":f:scale"));
   
-  ochannel = bse_source_class_add_ochannel (source_class, "Freq Out", "Frequency Signal");
+  ochannel = bse_source_class_add_ochannel (source_class, "freq-out", _("Freq Out"), _("Frequency Signal"));
   g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_FREQ);
-  ochannel = bse_source_class_add_ochannel (source_class, "Note Sync", "Note Sync Signal");
+  ochannel = bse_source_class_add_ochannel (source_class, "note-sync", _("Note Sync"), _("Note Sync Signal"));
   g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_NOTE_SYNC);
 }
 

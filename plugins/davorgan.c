@@ -129,8 +129,8 @@ dav_organ_class_init (DavOrganClass *class)
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM5,
 			      harm_param ("harm5", "2nd", "2nd Harmonic", 55. / 127.));
   
-  channel_id = bse_source_class_add_ichannel (source_class, "Freq In", "Frequency Input");
-  channel_id = bse_source_class_add_ochannel (source_class, "Audio Out", "Organ Output");
+  channel_id = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Frequency Input"));
+  channel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Organ Output"));
 }
 
 static void

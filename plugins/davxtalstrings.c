@@ -138,11 +138,11 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
                                               34.0, 0.0, 100.0, 1,
                                               SFI_PARAM_STANDARD ":scale"));
   
-  channel_id = bse_source_class_add_ichannel (source_class, "Freq In", "Pluck frequency input");
+  channel_id = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Pluck frequency input"));
   g_assert (channel_id == DAV_XTAL_STRINGS_ICHANNEL_FREQ);
-  channel_id = bse_source_class_add_ichannel (source_class, "Trigger In", "Pluck strings on raising edge");
+  channel_id = bse_source_class_add_ichannel (source_class, "trigger-in", _("Trigger In"), _("Pluck strings on raising edge"));
   g_assert (channel_id == DAV_XTAL_STRINGS_ICHANNEL_TRIGGER);
-  channel_id = bse_source_class_add_ochannel (source_class, "Audio Out", "XtalStrings Output");
+  channel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("XtalStrings Output"));
   g_assert (channel_id == DAV_XTAL_STRINGS_OCHANNEL_MONO);
 }
 

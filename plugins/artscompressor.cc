@@ -60,8 +60,8 @@ class Compressor : public CompressorBase
     
     void process(unsigned int samples)
     {
-      const float *invalue = istream (ICHANNEL_INVALUE).values;
-      float *outvalue = ostream (OCHANNEL_OUTVALUE).values;
+      const float *invalue = istream (ICHANNEL_AUDIO_IN).values;
+      float *outvalue = ostream (OCHANNEL_AUDIO_OUT).values;
       
       for( unsigned int i = 0; i < samples; i++ ) {
 	float delta = fabs( invalue[i] ) - volume;
@@ -117,10 +117,10 @@ class StereoCompressor : public StereoCompressorBase
     
     void process(unsigned int samples)
     {
-      const float *inleft = istream (ICHANNEL_INLEFT).values;
-      const float *inright = istream (ICHANNEL_INRIGHT).values;
-      float *outleft = ostream (OCHANNEL_OUTLEFT).values;
-      float *outright = ostream (OCHANNEL_OUTRIGHT).values;
+      const float *inleft = istream (ICHANNEL_LEFT_AUDIO_IN).values;
+      const float *inright = istream (ICHANNEL_RIGHT_AUDIO_IN).values;
+      float *outleft = ostream (OCHANNEL_LEFT_AUDIO_OUT).values;
+      float *outright = ostream (OCHANNEL_RIGHT_AUDIO_OUT).values;
       
       for( unsigned int i = 0; i < samples; i++ ) {
 	float delta = max(fabs(inleft[i]), fabs(inright[i])) - volume;

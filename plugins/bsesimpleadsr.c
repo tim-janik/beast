@@ -115,13 +115,13 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *class)
 						    SFI_PARAM_STANDARD));
   g_free (desc);
   
-  ichannel = bse_source_class_add_ichannel (source_class, "Gate In", "Gate input (activates/deactivates envelope)");
+  ichannel = bse_source_class_add_ichannel (source_class, "gate-in", _("Gate In"), _("Gate input (activates/deactivates envelope)"));
   g_assert (ichannel == BSE_SIMPLE_ADSR_ICHANNEL_GATE);
-  ichannel = bse_source_class_add_ichannel (source_class, "Retrigger In", "Retrigger input (raising edge retriggers envelope)");
+  ichannel = bse_source_class_add_ichannel (source_class, "retrigger-in", _("Retrigger In"), _("Retrigger input (raising edge retriggers envelope)"));
   g_assert (ichannel == BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER);
-  ochannel = bse_source_class_add_ochannel (source_class, "Ctrl Out", "Attack-Decay-Sustain-Release envelope output");
+  ochannel = bse_source_class_add_ochannel (source_class, "ctrl-out", _("Ctrl Out"), _("Attack-Decay-Sustain-Release envelope output"));
   g_assert (ochannel == BSE_SIMPLE_ADSR_OCHANNEL_OUT);
-  ochannel = bse_source_class_add_ochannel (source_class, "Done Out", "This signal goes high after the release phase has completed");
+  ochannel = bse_source_class_add_ochannel (source_class, "done-out", _("Done Out"), _("This signal goes high after the release phase has completed"));
   g_assert (ochannel == BSE_SIMPLE_ADSR_OCHANNEL_DONE);
 }
 

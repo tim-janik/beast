@@ -113,13 +113,13 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
   bse_object_class_add_param (object_class, "IIR Low-Pass Filter", PROP_FILTER_NOTE,
                               bse_pspec_note_simple ("filter_note", "Note", NULL, SFI_PARAM_GUI));
 
-  channel = bse_source_class_add_ichannel (source_class, "Left In", "Left Audio Input");
+  channel = bse_source_class_add_ichannel (source_class, "left-in", _("Left In"), _("Left Audio Input"));
   g_assert (channel == DAV_CANYON_DELAY_ICHANNEL_LEFT);
-  channel = bse_source_class_add_ichannel (source_class, "Right In", "Right Audio Input");
+  channel = bse_source_class_add_ichannel (source_class, "right-in", _("Right In"), _("Right Audio Input"));
   g_assert (channel == DAV_CANYON_DELAY_ICHANNEL_RIGHT);
-  channel = bse_source_class_add_ochannel (source_class, "Left Out", "Left Audio Output");
+  channel = bse_source_class_add_ochannel (source_class, "left-out", _("Left Out"), _("Left Audio Output"));
   g_assert (channel == DAV_CANYON_DELAY_OCHANNEL_LEFT);
-  channel = bse_source_class_add_ochannel (source_class, "Right Out", "Right Audio Output");
+  channel = bse_source_class_add_ochannel (source_class, "right-out", _("Right Out"), _("Right Audio Output"));
   g_assert (channel == DAV_CANYON_DELAY_OCHANNEL_RIGHT);
 }
 

@@ -120,10 +120,10 @@ bse_free_verb_class_init (BseFreeVerbClass *class)
 					      0, constants->width_scale * 1.0,
 					      0.1 * constants->width_scale,
 					      SFI_PARAM_STANDARD ":dial"));
-  channel = bse_source_class_add_ichannel (source_class, "Left Audio In", "Left Input");
-  channel = bse_source_class_add_ichannel (source_class, "Right Audio In", "Right Input");
-  channel = bse_source_class_add_ochannel (source_class, "Left Audio Out", "Left Output");
-  channel = bse_source_class_add_ochannel (source_class, "Right Audio Out", "Right Output");
+  channel = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left Input"));
+  channel = bse_source_class_add_ichannel (source_class, "right-audio-in", _("Right Audio In"), _("Right Input"));
+  channel = bse_source_class_add_ochannel (source_class, "left-audio-out", _("Left Audio Out"), _("Left Output"));
+  channel = bse_source_class_add_ochannel (source_class, "right-audio-out", _("Right Audio Out"), _("Right Output"));
 }
 
 static void

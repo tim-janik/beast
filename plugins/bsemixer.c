@@ -106,51 +106,53 @@ bse_mixer_class_init (BseMixerClass *class)
 					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 					     SFI_PARAM_GUI ":dial"));
-  ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", "Sole Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Sole Output"));
   g_assert (ochannel == BSE_MIXER_OCHANNEL_MONO);
   for (i = 1; i <= BSE_MIXER_N_INPUTS; i++)
     {
-      gchar *group, *string, *name;
+      gchar *group, *ident, *label, *blurb;
       
-      group = g_strdup_printf ("Channel%u", i);
-      string = g_strdup_printf ("volume_f%u", i);
-      name = g_strdup_printf ("Channel%u [float]", i);
+      group = g_strdup_printf (_("Channel%u"), i);
+      ident = g_strdup_printf ("volume_f%u", i);
+      label = g_strdup_printf (_("Channel%u [float]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_f + (i - 1) * 3,
-				  sfi_pspec_real (string, name, NULL,
+				  sfi_pspec_real (ident, label, NULL,
 						  bse_dB_to_factor (BSE_DFL_MIXER_VOLUME_dB),
 						  0, bse_dB_to_factor (BSE_MAX_VOLUME_dB), 0.1,
 						  SFI_PARAM_STORAGE));
-      g_free (string);
-      g_free (name);
-      string = g_strdup_printf ("volume_dB%u", i);
-      name = g_strdup_printf ("Channel%u [dB]", i);
+      g_free (ident);
+      g_free (label);
+      ident = g_strdup_printf ("volume_dB%u", i);
+      label = g_strdup_printf (_("Channel%u [dB]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_dB + (i - 1) * 3,
-				  sfi_pspec_real (string, name, NULL,
+				  sfi_pspec_real (ident, label, NULL,
 						  BSE_DFL_MIXER_VOLUME_dB,
 						  BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 						  BSE_GCONFIG (step_volume_dB),
 						  SFI_PARAM_GUI ":dial"));
-      g_free (string);
-      g_free (name);
-      string = g_strdup_printf ("volume_perc%u", i);
-      name = g_strdup_printf ("Channel%u [%%]", i);
+      g_free (ident);
+      g_free (label);
+      ident = g_strdup_printf ("volume_perc%u", i);
+      label = g_strdup_printf (_("Channel%u [%%]"), i);
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_PERC + (i - 1) * 3,
-				  sfi_pspec_int (string, name, NULL,
+				  sfi_pspec_int (ident, label, NULL,
 						 bse_dB_to_factor (BSE_DFL_MIXER_VOLUME_dB) * 100,
 						 0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 						 SFI_PARAM_GUI ":dial"));
       g_free (group);
-      g_free (string);
-      g_free (name);
-      name = g_strdup_printf ("Audio In%u", i);
-      string = g_strdup_printf ("Input Channel %u", i);
-      ichannel = bse_source_class_add_ichannel (source_class, name, string);
+      g_free (ident);
+      g_free (label);
+      ident = g_strdup_printf ("audio-in%u", i);
+      label = g_strdup_printf (_("Audio In%u"), i);
+      blurb = g_strdup_printf (_("Input Channel %u"), i);
+      ichannel = bse_source_class_add_ichannel (source_class, ident, label, blurb);
       g_assert (ichannel == i - 1);
-      g_free (string);
-      g_free (name);
+      g_free (blurb);
+      g_free (label);
+      g_free (ident);
     }
 }
 

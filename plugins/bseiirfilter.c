@@ -157,9 +157,9 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
 					      bse_note_from_freq (BSE_KAMMER_FREQUENCY_f / 2 + FREQ_DELTA),
 					      SFI_PARAM_GUI));
   
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Audio In", _("Unfiltered Input"));
+  ichannel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Unfiltered Input"));
   g_assert (ichannel_id == BSE_IIR_FILTER_ICHANNEL_MONO);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Audio Out", _("Filtered Output"));
+  ochannel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Filtered Output"));
   g_assert (ochannel_id == BSE_IIR_FILTER_OCHANNEL_MONO);
 }
 

@@ -1,3 +1,22 @@
+Fri Feb 27 06:22:31 2004  Tim Janik  <timj@gtk.org>
+
+	* artscompressor.cc:
+	* artscompressor.idl:
+	* bseadder.c:
+	* bseatandistort.c:
+	* bsefirfilter.c:
+	* bseiirfilter.c:
+	* bsemixer.c:
+	* bsemult.c:
+	* bsenoise.c:
+	* bsesequencer.c:
+	* bsesimpleadsr.c:
+	* davcanyondelay.c:
+	* davguitar.c:
+	* davorgan.c:
+	* davsyndrum.c:
+	* davxtalstrings.c: fixed channel naming, identifiers and i18n.
+
 Tue Jan 20 05:07:57 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* artscompressor.idl bsebalance.idl davbassfilter.idl davchorus.idl:

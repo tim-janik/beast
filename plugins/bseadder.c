@@ -97,11 +97,11 @@ bse_adder_class_init (BseAdderClass *class)
 						   FALSE,
 						   SFI_PARAM_STANDARD ":skip-default"));
   
-  channel = bse_source_class_add_jchannel (source_class, "Audio In1", "Audio Input 1");
+  channel = bse_source_class_add_jchannel (source_class, "audio-in1", _("Audio In1"), _("Audio Input 1"));
   g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO1);
-  channel = bse_source_class_add_jchannel (source_class, "Audio In2", "Audio Input 2");
+  channel = bse_source_class_add_jchannel (source_class, "audio-in2", _("Audio In2"), _("Audio Input 2"));
   g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO2);
-  channel = bse_source_class_add_ochannel (source_class, "Audio Out", "Audio Output");
+  channel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Audio Output"));
   g_assert (channel == BSE_ADDER_OCHANNEL_AUDIO_OUT);
 }
 

@@ -29,8 +29,8 @@ class Compressor : Effect {
   Info    license   = _("GNU General Public License");
   Info    category  = _("/Enhance/ArtsCompressor");
   Info    blurb     = _("ArtsCompressor compresses the sound.");
-  IStream invalue   = (_("Audio In"), _("Audio input"));
-  OStream outvalue  = (_("Audio Out"), _("Compressed audio output"));
+  IStream audio_in  = (_("Audio In"), _("Audio input"));
+  OStream audio_out = (_("Audio Out"), _("Compressed audio output"));
   group _("Parameters") {
     Real attack    = Real (_("Attack [ms]"), _("Set the attack time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real release   = Real (_("Release [ms]"), _("Set the release time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
@@ -42,14 +42,14 @@ class Compressor : Effect {
 
 class StereoCompressor : Effect {
   /*Info    icon      = "icons/artscompressor.png";*/
-  Info    authors   = "Matthias Kretz, Stefan Westerfeld";
-  Info    license   = _("GNU General Public License");
-  Info    category  = _("/Enhance/ArtsStereoCompressor");
-  Info    blurb     = _("ArtsStereoCompressor compresses the sound.");
-  IStream inleft    = (_("Left Audio In"), _("Left audio input"));
-  IStream inright   = (_("Right Audio In"), _("Right audio input"));
-  OStream outleft   = (_("Left Audio Out"), _("Compressed left audio output"));
-  OStream outright  = (_("Right Audio Out"), _("Compressed right audio output"));
+  Info    authors         = "Matthias Kretz, Stefan Westerfeld";
+  Info    license         = _("GNU General Public License");
+  Info    category        = _("/Enhance/ArtsStereoCompressor");
+  Info    blurb           = _("ArtsStereoCompressor compresses the sound.");
+  IStream left_audio_in   = (_("Left Audio In"), _("Left audio input"));
+  IStream right_audio_in  = (_("Right Audio In"), _("Right audio input"));
+  OStream left_audio_out  = (_("Left Audio Out"), _("Compressed left audio output"));
+  OStream right_audio_out = (_("Right Audio Out"), _("Compressed right audio output"));
   group _("Parameters") {
     Real attack    = Real (_("Attack [ms]"), _("Set the attack time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real release   = Real (_("Release [ms]"), _("Set the release time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
