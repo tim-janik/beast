@@ -5,6 +5,7 @@
 
 keys_DATA = $(strip		\
 	keyrc.de		\
+	keyrc.us		\
 )
 keysdir = $(beastkeysdir)
 

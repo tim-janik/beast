@@ -356,11 +356,6 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     CFLAGS=$cflags
     LDFLAGS=$ldflags
 	
-    dnl Default keytable patch
-    AC_MSG_CHECKING(what the fallback keytable should be)
-    AC_DEFINE_UNQUOTED(BST_DFL_KEYTABLE, "us", [Default Keytable])
-    AC_MSG_RESULT([\"us\", there are more americans than germans ;( ])
-
     # BEAST version
     AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
     BST_VERSION_STABLE=0

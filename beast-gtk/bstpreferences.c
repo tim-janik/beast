@@ -286,6 +286,7 @@ void
 bst_preferences_load_rc_files (void)
 {
   gchar *file_name = BST_STRDUP_RC_FILE ();
+  BseErrorType error;
   GSList *slist = NULL;
 
   bst_rc_parse (file_name);
@@ -295,7 +296,14 @@ bst_preferences_load_rc_files (void)
 
   slist = g_slist_append (slist, bst_pattern_controller_piano_keys());
   // slist = g_slist_append (slist, bst_pattern_controller_generic_keys());
-  bst_key_binding_parse (bst_key_binding_rcfile (), slist);
+  error = bst_key_binding_parse (bst_key_binding_rcfile (), slist);
+  if (error == BSE_ERROR_FILE_NOT_FOUND)
+    {
+      /* try loading fallback table */
+      gchar *file = g_strconcat (BST_PATH_KEYS, G_DIR_SEPARATOR_S, "keyrc.us", NULL);
+      error = bst_key_binding_parse (file, slist);
+      g_free (file);
+    }
   g_slist_free (slist);
 }
 
