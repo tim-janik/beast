@@ -252,9 +252,11 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
       if (self->per_list)
         {
           GxkGadgetOpt *options;
+          GxkGadget *gadget;
           options = gxk_gadget_options ("action-path", name, NULL);
-          gxk_gadget_creator (NULL, domain, self->per_list, self->gadget, self->pass_options, options);
+          gadget = gxk_gadget_creator (NULL, domain, self->per_list, self->gadget, self->pass_options, options);
           gxk_gadget_free_options (options);
+          gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
         }
       for (i = 0; i < n; i++)
         {
@@ -274,6 +276,7 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
           g_free (str1);
           gadget = gxk_gadget_creator (NULL, domain, self->per_action, self->gadget, self->pass_options, options);
           gxk_gadget_free_options (options);
+          gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
           if (GTK_IS_WIDGET (gadget))
             {
               GxkGadget *child = self->activatable ? gxk_gadget_find (gadget, self->activatable) : NULL;
@@ -392,6 +395,7 @@ gadget_factory_adopt (GxkGadget          *gadget,
   gxk_gadget_free_options (options);
   self->xdef_gadget = gxk_gadget_data_get_scope_gadget (gdgdata);
   gxk_gadget_factory_attach (gadget, GTK_WIDGET (parent));
+  self->cslot = gxk_container_get_insertion_slot (GTK_CONTAINER (parent));
   return FALSE; /* no support for packing options */
 }
 

@@ -58,6 +58,10 @@ GtkWidget*      gxk_widget_find_level_ordered      (GtkWidget       *toplevel,
                                                     const gchar     *name);
 GtkWidget*      gxk_widget_get_attach_toplevel     (GtkWidget       *widget);
 GtkAccelGroup*  gxk_window_get_menu_accel_group    (GtkWindow       *window);
+guint           gxk_container_get_insertion_slot   (GtkContainer    *container);
+void            gxk_container_slot_reorder_child   (GtkContainer    *container,
+                                                    GtkWidget       *widget,
+                                                    guint            slot);
 
 
 /* --- GtkFileSelection workarounds --- */

@@ -40,6 +40,7 @@ typedef struct {
   GtkWindow       *window;
   GxkGadget       *gadget;
   GxkGadget       *xdef_gadget;
+  guint            cslot;
   gulong           timer;
   gchar           *action_root;
   gchar           *per_action;

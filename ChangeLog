@@ -1,3 +1,15 @@
+Fri Nov 14 10:42:56 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: allocate an insertion slot from
+	container upon adoption. producing creating children, reorder those into
+	the insertion slot.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_container_get_insertion_slot()
+	which remembers the current child insertion position.
+	added gxk_container_slot_reorder_child() which reorders a newly added
+	child into an insertion slot. implemented for GtkBox and GtkMenu as they
+	offer child reordering functions.
+
 Fri Nov 14 09:47:13 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-beast.xml: adjust action-root for factories

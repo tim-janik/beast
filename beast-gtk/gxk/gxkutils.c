@@ -2107,6 +2107,47 @@ gxk_window_get_menu_accel_group (GtkWindow *window)
   return agroup;
 }
 
+guint
+gxk_container_get_insertion_slot (GtkContainer *container)
+{
+  guint *slots = g_object_steal_data (container, "gxk-container-slots");
+  guint n_slots = slots ? slots[0] : 0;
+  guint n_children = 0;
+  if (GTK_IS_CONTAINER (container))
+    {
+      GList *children = gtk_container_get_children (container);
+      n_children = g_list_length (children);
+      g_list_free (children);
+    }
+  n_slots++;
+  slots = g_renew (guint, slots, 1 + n_slots);
+  slots[0] = n_slots;
+  slots[n_slots] = n_children;
+  g_object_set_data_full (container, "gxk-container-slots", slots, g_free);
+  return n_slots;
+}
+
+void
+gxk_container_slot_reorder_child (GtkContainer    *container,
+                                  GtkWidget       *widget,
+                                  guint            sloti)
+{
+  guint *slots = g_object_get_data (container, "gxk-container-slots");
+  guint n_slots = slots ? slots[0] : 0;
+  if (sloti && sloti <= n_slots)
+    {
+      guint i;
+      if (GTK_IS_MENU (container))
+        gtk_menu_reorder_child ((GtkMenu*) container, widget, slots[sloti]);
+      else if (GTK_IS_BOX (container))
+        gtk_box_reorder_child ((GtkBox*) container, widget, slots[sloti]);
+      else
+        return;
+      for (i = sloti; i <= n_slots; i++)
+        slots[i]++;
+    }
+}
+
 /**
  * gxk_menu_check_sensitive
  * @menu:    valid #GtkMenu
