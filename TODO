@@ -1,4 +1,5 @@
 FIXMES:
+- add vorbis cutter test
 - don't always rebuild lib-list [Rebuild]-button
 - nuke BSE file crawling functions
 - fix API for file matching in SFI

@@ -5,9 +5,10 @@ Overview of Changes in BEAST/BSE 0.5.2:
 * Major improvements to filw/wave selection dialogs
 * Fixed time zone handling
 * Added WAVE file beast recording ability
-* Reenabked sample rate adjustments in preferences
+* Reenabled sample rate adjustments in preferences
 * Image (Logo) improvements [Alper Ersoy]
 * Documentation improvements [Alper, Timj]
+* Adapted code to gcc-3.3/g++-3.3
 * Miscellaneous code fixes
 
 Overview of Changes in BEAST/BSE 0.5.1:

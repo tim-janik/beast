@@ -112,7 +112,7 @@ g_object_set_double (gpointer     object,
 
   g_return_if_fail (G_IS_OBJECT (object));
 
-  if (*(guint64*)&v_double == *(guint64*)&zero)
+  if (memcmp (&v_double, &zero, sizeof (zero)) == 0)
     g_object_set_data (object, name, NULL);
   else
     {

@@ -745,8 +745,8 @@ text_buffer_insert (GtkTextBuffer *tbuffer,
       while (n)
 	{
 	  /* force-validate to UTF-8 */
-	  guint8 *dest = data_buffer;
-	  while (!g_utf8_validate (dest, n - (dest - data_buffer), (const char**) &dest))
+	  gchar *dest = data_buffer;
+	  while (!g_utf8_validate (dest, n - (dest - (gchar*) data_buffer), (const gchar**) &dest))
 	    *dest = '?';
 	  gtk_text_buffer_insert_at_cursor (tbuffer, data_buffer, n);
 	  /* next chunk */

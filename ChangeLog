@@ -1,3 +1,10 @@
+Tue May 20 13:04:30 2003  Tim Janik  <timj@gtk.org>
+
+	* code and configure adoptions to gcc-3.3 and g++-3.3.
+	removed -fno-strict-aliasing, -ffor-scope, -fstrength-reduce,
+	-fexpensive-optimizations, -frerun-cse-after-loop, -frerun-loop-opt.
+	added -frename-registers, short of specifying -O3.
+
 Sun May 18 05:29:13 2003  Tim Janik  <timj@gtk.org>
 
         * config.guess, config.sub: libtool 1.4.3 updates.

@@ -180,7 +180,7 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		MC_IF_VAR_EQ(CFLAGS_include_g, yes,
 			MC_EVAR_ADD(CFLAGS, -g, -g)
 		)
-	
+		dnl Reading assembler Code
 		MC_IF_VAR_EQ(GCC, yes,
 			dnl MC_EVAR_ADD(CFLAGS, -fvolatile-global, -fvolatile-global)
 			dnl MC_EVAR_ADD(CFLAGS, -fverbose-asm, -fverbose-asm)
@@ -189,71 +189,45 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 
 	dnl Further setup CFLAGS for GCC.
 	MC_IF_VAR_EQ(GCC, yes,
-		dnl
 		dnl Debugging
-		dnl
 		MC_EVAR_SUPPLEMENT(CFLAGS, -g, -ggdb3)
-
-		dnl
+		
 		dnl Sane Behaviour
-		dnl
-		dnl dflt: MC_EVAR_ADD(CFLAGS, -fsigned-char, -fsigned-char)
-		dnl dflt: MC_EVAR_ADD(CFLAGS, -fsigned-bitfields, -fsigned-bitfields)
-		dnl dflt: MC_EVAR_ADD(CFLAGS, -fno-writable-strings, -fno-writable-strings)
-		MC_PROG_CC_SUPPORTS_OPTION(-fno-strict-aliasing,
-		    MC_EVAR_ADD(CFLAGS, -fno-strict-aliasing, -fno-strict-aliasing))
 		MC_EVAR_ADD(CFLAGS, -fno-cond-mismatch, -fno-cond-mismatch)
-		MC_EVAR_ADD(CFLAGS, -ffor-scope, -ffor-scope)
-		MC_EVAR_ADD(CFLAGS, -Wno-cast-qual, -Wno-cast-qual)
-		dnl MC_EVAR_ADD(CFLAGS, -Wwrite-strings, -Wwrite-strings)
-        	
-		dnl
+
 		dnl Warnings.
-		dnl
 		MC_EVAR_ADD(CFLAGS, -Wall, -Wall)
 		MC_EVAR_ADD(CFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
 		MC_EVAR_ADD(CFLAGS, -Wmissing-declarations, -Wmissing-declarations)
-		dnl MC_EVAR_ADD(CFLAGS, -Wstrict-prototypes, -Wstrict-prototypes)
-		MC_EVAR_ADD(CFLAGS, -Winline, -Winline)
-		dnl glibc breakage: MC_EVAR_ADD(CFLAGS, -Wpointer-arith, -Wpointer-arith)
+		MC_EVAR_ADD(CFLAGS, -Wno-cast-qual, -Wno-cast-qual)
+		dnl MC_EVAR_ADD(CFLAGS, -Winline, -Winline)
 		MC_IF_VAR_EQ(enable_pedantic_ansi, yes,
-			MC_EVAR_ADD(CFLAGS, -ansi, -ansi)
-			MC_EVAR_ADD(CFLAGS, -pedantic, -pedantic)
+		    MC_EVAR_ADD(CFLAGS, -ansi, -ansi)
+		    MC_EVAR_ADD(CFLAGS, -pedantic, -pedantic)
 		)
-		dnl junk, warns on prototype arguments:
+		dnl problematic, triggers warnings in glibc headers
+		MC_EVAR_ADD(CFLAGS, -Wpointer-arith, -Wpointer-arith)
+		dnl problematic, warns on prototype arguments:
 		dnl MC_EVAR_ADD(CFLAGS, -Wshadow, -Wshadow)
-		dnl junk, warns on pure returntype casts as well:
-		dnl MC_EVAR_ADD(CFLAGS, -Wbad-function-cast, -Wbad-function-cast)
-		dnl bogus: MC_EVAR_ADD(CFLAGS, -Wconversion, -Wconversion)
-		dnl bogus: MC_EVAR_ADD(CFLAGS, -Wsign-compare, -Wsign-compare)
+		dnl problematic, glibc breakage:
+		MC_EVAR_ADD(CFLAGS, -Wredundant-decls, -Wredundant-decls)
+		dnl instrument function workarounds
 		MC_STR_CONTAINS($CC $CFLAGS, -finstrument-functions,
 		                [mc_opt_warn_no_return=-Wno-missing-noreturn],
 		                [mc_opt_warn_no_return=-Wmissing-noreturn])
   		MC_PROG_CC_SUPPORTS_OPTION($mc_opt_warn_no_return,
 		      MC_EVAR_ADD(CFLAGS, $mc_opt_warn_no_return, $mc_opt_warn_no_return))
-		dnl glibc breakage:
-		MC_EVAR_ADD(CFLAGS, -Wredundant-decls, -Wredundant-decls)
 
-		dnl
 		dnl Optimizations
-		dnl
-		MC_EVAR_ADD(CFLAGS, -O, -O2)
 		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
-		MC_EVAR_ADD(CFLAGS, -fstrength-reduce, -fstrength-reduce)
-		MC_EVAR_ADD(CFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
-		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions)
-		MC_EVAR_ADD(CFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
-		dnl MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return) # buggy on 3.2
-		dnl MC_EVAR_ADD(CFLAGS, -funroll-loops, -funroll-loops)
-		MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt,
-		    MC_EVAR_ADD(CFLAGS, -frerun-loop-opt, -frerun-loop-opt))
-		MC_EVAR_ADD(CFLAGS, -fgcse, -fgcse)
+		MC_EVAR_ADD(CFLAGS, -O, -O2)
+		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
+		MC_EVAR_ADD(CFLAGS, -frename-registers, -frename-registers) dnl -O3 stuff as of gcc-3.3
 		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
 		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
-		
-		dnl
+		dnl MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return) dnl buggy with gcc-3.2
+
 		dnl Fun options
-		dnl
 		dnl MC_EVAR_ADD(CFLAGS, -Q, -Q)	dnl report each compiled function
 		dnl MC_EVAR_ADD(CFLAGS, -ftime-report, -ftime-report)
 		dnl MC_EVAR_ADD(CFLAGS, -fmem-report, -fmem-report)
@@ -280,7 +254,7 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		MC_IF_VAR_EQ(CXXFLAGS_include_g, yes,
 			MC_EVAR_ADD(CXXFLAGS, -g, -g)
 		)
-	
+		dnl Reading assembler Code
 		MC_IF_VAR_EQ(GCC, yes,
 			dnl MC_EVAR_ADD(CXXFLAGS, -fvolatile-global, -fvolatile-global)
 			dnl MC_EVAR_ADD(CXXFLAGS, -fverbose-asm, -fverbose-asm)
@@ -289,36 +263,18 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 
 	dnl Further setup CXXFLAGS for GXX.
 	MC_IF_VAR_EQ(GXX, yes,
-        	
 		dnl Warnings.
-		MC_EVAR_ADD(CXXFLAGS, -Wctor-dtor-privacy, -Wctor-dtor-privacy)
-		MC_EVAR_ADD(CXXFLAGS, -Wreorder, -Wreorder)
 		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
-		MC_EVAR_ADD(CXXFLAGS, -Wwrite-strings, -Wwrite-strings)
 	
-		dnl
 		dnl Optimizations
-		dnl
-		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -O, -O2)
-		MC_EVAR_ADD(CXXFLAGS, -pipe, -pipe)
-		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -fstrength-reduce, -fstrength-reduce)
-		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
-		MC_EVAR_ADD(CXXFLAGS, -finline-functions, -finline-functions)
-		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
-		dnl MC_EVAR_ADD(CXXFLAGS, -freg-struct-return, -freg-struct-return) # buggy on 3.2
-		dnl -funroll-loops gives problems with -O and templates (see Rep-CppBug_1.C)
-		dnl MC_EVAR_ADD(CXXFLAGS, -funroll-loops, -funroll-loops)
-		dnl SLOW: MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt, MC_EVAR_ADD(CXXFLAGS, -frerun-loop-opt, -frerun-loop-opt))
-		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -fgcse, -fgcse)
+		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
+		MC_EVAR_ADD(CFLAGS, -O, -O2)
+		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
+		MC_EVAR_ADD(CFLAGS, -frename-registers, -frename-registers) dnl -O3 stuff as of gcc-3.3
 		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
-		    MC_EVAR_ADD(CXXFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
-
-		dnl
-		dnl C++ specific Options
-		dnl
-		dnl MC_EVAR_ADD(CXXFLAGS, -fhandle-signatures, -fhandle-signatures)
-		dnl MC_EVAR_ADD(CXXFLAGS, -fhandle-exceptions, -fhandle-exceptions)
-		dnl MC_EVAR_ADD(CXXFLAGS, -frtti, -frtti)
+		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
+		dnl MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return) dnl buggy with gcc-3.2
+		dnl -funroll-loops gives problems with -O and templates (see Rep-CppBug_1.C)
 	,	
 		MC_IF_VAR_EQ(CXXFLAGS_include_O, yes,
 			MC_EVAR_ADD(CXXFLAGS, -O, -O2)
