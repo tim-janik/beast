@@ -65,7 +65,7 @@ extern "C" {
 #  define GSL_SIGNAL_FROM_FREQ(freq)	(((gfloat) (freq)) * GSL_SIGNAL_FROM_FREQ_FACTOR)
 #elif defined (GSL_WANT_ARTS_THREADS)  /* must be aRts */
 #  define GSL_SIGNAL_TO_FREQ(x)		(x)
-#  define GSL_FREQ_TO_SIGNAL(x)		(x)
+#  define GSL_SIGNAL_FROM_FREQ(x)	(x)
 #endif
 
 
@@ -73,7 +73,7 @@ extern "C" {
 typedef struct {
   gfloat	fm_strength;		/* linear: 0..1, exponential: n_octaves */
   guint		exponential_fm : 1;
-  gfloat	signal_freq;		/* for ifreq == NULL (as GSL_FREQ_TO_SIGNAL) */
+  gfloat	signal_freq;		/* for ifreq == NULL (as GSL_SIGNAL_FROM_FREQ) */
   gint		fine_tune;		/* -100..+100 */
 } GslFrequencyModulator;
 
