@@ -121,7 +121,7 @@ static BstMenuConfigEntry menubar_entries[] =
   { N_("/Synthesizers/Load _Instrument"),    NULL,      CB (MERGE_INSTRUMENT),          "<Item>" },
   { N_("/Synthesizers/Save As Effect"),      NULL,      CB (SAVE_EFFECT),               "<Item>" },
   { N_("/Synthesizers/Save As Instrument"),  NULL,      CB (SAVE_INSTRUMENT),           "<Item>" },
-  // { N_("/_Demo"),                            NULL,      NULL, 0,                        "<Branch>" },
+  { N_("/_Demo"),                            NULL,      NULL, 0,                        "<Branch>" },
   {    "/Demo/<<<<<<",                       NULL,      NULL, 0,                        "<Tearoff>" },
   { N_("/_Tools"),                           NULL,      NULL, 0,                        "<Branch>" },
   { N_("/Tools/_Song"),                      NULL,      NULL, 0,                        "<Branch>" },
