@@ -8,6 +8,7 @@ scripts_DATA = $(strip			\
 	progressor-example.scm		\
 	modules2grid.scm		\
 	song-parts-operations.scm	\
+	part-harmonic-transposer.scm	\
 )
 scriptsdir = $(bsescriptdir)
 
