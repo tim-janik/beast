@@ -212,16 +212,83 @@ gxk_polygon_size_request (GtkWidget      *widget,
   requisition->height = self->request_length;
 }
 
+/* draw line styles:
+ * _ETCHED_IN:                   _ETCHED_OUT:
+ * #######.  3) # = Dark         +++++++X  3) + = Light
+ * #+++++X.  1) + = Light        +#####.X  1) # = Dark
+ * #+    X.  2) X = Dark         +#    .X  2) . = Light
+ * #XXXXXX.  4) . = Light        +......X  4) X = Dark
+ * ........                      XXXXXXXX
+ * _IN:                          _OUT:
+ * +++++++X  3) + = Dark         XXXXXXX#  3) X = Light
+ * +#####.X  1) # = Black        X.....+#  1) . = Background
+ * +#    .X  2) . = Background   X.    +#  2) + = Dark
+ * +......X  4) X = Light        X++++++#  4) # = Black
+ * XXXXXXXX                      ########
+ */
+static void
+init_gcs (GxkPolygon   *self,
+	  GtkShadowType draw_type,
+	  GdkGC       **gc1,
+	  GdkGC       **gc2,
+	  GdkGC       **gc3,
+	  GdkGC       **gc4)
+{
+  GtkWidget *widget = GTK_WIDGET (self);
+  GdkGC *black = widget->style->black_gc;
+  GdkGC *dark = widget->style->dark_gc[widget->state];
+  GdkGC *bg = widget->style->bg_gc[widget->state];
+  GdkGC *light = widget->style->light_gc[widget->state];
+  if (!GTK_WIDGET_IS_SENSITIVE (self))
+    {
+      *gc1 = bg;
+      *gc2 = bg;
+      *gc3 = dark;
+      *gc4 = dark;
+      return;
+    }
+  switch (draw_type)
+    {
+    default:
+    case GTK_SHADOW_IN:
+      *gc1 = black;
+      *gc2 = bg;
+      *gc3 = dark;
+      *gc4 = light;
+      break;
+    case GTK_SHADOW_OUT:
+      *gc1 = bg;
+      *gc2 = dark;
+      *gc3 = light;
+      *gc4 = black;
+      break;
+    case GTK_SHADOW_ETCHED_IN:
+      *gc1 = light;
+      *gc2 = dark;
+      *gc3 = dark;
+      *gc4 = light;
+      break;
+    case GTK_SHADOW_ETCHED_OUT:
+      *gc1 = dark;
+      *gc2 = light;
+      *gc3 = light;
+      *gc4 = dark;
+      break;
+    }
+}
+
 static gboolean
 gxk_polygon_expose (GtkWidget      *widget,
 		    GdkEventExpose *event)
 {
   GxkPolygon *self = GXK_POLYGON (widget);
   GdkRectangle area = event->area;
+  GdkGC *gc1, *gc2, *gc3, *gc4, *bg_gc = widget->style->bg_gc[widget->state];
   gint width = CLAMP (widget->allocation.width, 2, widget->allocation.height);
   gint height = width;
   gint x = widget->allocation.x + (widget->allocation.width - width) / 2;
   gint y = widget->allocation.y + (widget->allocation.height - height) / 2;
+  guint n, pass, draw_lines, draw_arcs;
   width -= 2;
   height -= 2;
   
@@ -230,53 +297,63 @@ gxk_polygon_expose (GtkWidget      *widget,
 			widget->style->white_gc,
 			TRUE,
 			x, y, width, height);
-  
-  if (gdk_rectangle_intersect (&area, &widget->allocation, &area))
-    {
-      guint n, bgpass = 1;
-    next_pass:
+  draw_lines = gdk_rectangle_intersect (&area, &widget->allocation, &area);
+  draw_arcs = draw_lines;
+  if (draw_lines)
+    for (pass = 1; pass <= 4; pass++)
       for (n = 0; n < self->n_lines; n++)
 	{
-	  GdkGC *dark_gc = widget->style->dark_gc[widget->state];
-	  GdkGC *light_gc = widget->style->light_gc[widget->state];
-	  GdkGC *black_gc = widget->style->black_gc;
-	  GdkGC *bg_gc = widget->style->bg_gc[widget->state];
 	  GxkPolygonLine p = self->lines[n];
 	  gdouble angle = atan2 (p.y2 - p.y1, p.x2 - p.x1) / PI;
-	  gint ix1, iy1, ix2, iy2, sx, sy;
-	  
+	  gint ix1, iy1, ix2, iy2, sx, sy, clockwise;
 	  ix1 = 1 + x + p.x1 * width;
 	  iy1 = 1 + y + height - p.y1 * height;
 	  ix2 = 1 + x + p.x2 * width;
 	  iy2 = 1 + y + height - p.y2 * height;
 	  sx = ABS (p.y2 - p.y1) >= ABS (p.x2 - p.x1);
 	  sy = ABS (p.y2 - p.y1) < ABS (p.x2 - p.x1);
-          if (!GTK_WIDGET_IS_SENSITIVE (self))
+	  clockwise = angle >= -0.25 && angle < 0.75;
+	  init_gcs (self, p.draw_type, &gc1, &gc2, &gc3, &gc4);
+	  switch (pass)
 	    {
-	      black_gc = widget->style->dark_gc[widget->state];
-	      dark_gc = widget->style->bg_gc[widget->state];
-	      light_gc = widget->style->dark_gc[widget->state];
-	      bg_gc = widget->style->bg_gc[widget->state];
-	    }
-	  if (angle >= -0.25 && angle < 0.75)
-	    {
-	      if (bgpass)
-		gdk_draw_line (widget->window, dark_gc,
-			       ix1 - sx, iy1 - sy, ix2 - sx, iy2 - sy);
-	      else
-		gdk_draw_line (widget->window, black_gc,
+	    case 1:
+	      if (clockwise)
+		{
+		  gdk_draw_line (widget->window, gc1,
+				 ix1 + sx, iy1 + sy, ix2 + sx, iy2 + sy);
+		  if (sx || sy)
+		    {
+		      gdk_draw_point (widget->window, bg_gc, ix1 + sx, iy1 + sy);
+		      gdk_draw_point (widget->window, bg_gc, ix2 + sx, iy2 + sy);
+		    }
+		}
+	      break;
+	    case 2:
+	      if (!clockwise)
+		{
+		  gdk_draw_line (widget->window, gc2,
+				 ix1 - sx, iy1 - sy, ix2 - sx, iy2 - sy);
+                  if (sx || sy)
+		    {
+		      gdk_draw_point (widget->window, bg_gc, ix1 - sx, iy1 - sy);
+		      gdk_draw_point (widget->window, bg_gc, ix2 - sx, iy2 - sy);
+		    }
+		}
+	      break;
+	    case 3:
+	      if (clockwise)
+		gdk_draw_line (widget->window, gc3,
 			       ix1, iy1, ix2, iy2);
-	    }
-	  else
-	    {
-	      if (bgpass)
-		gdk_draw_line (widget->window, bg_gc,
-			       ix1 + sx, iy1 + sy, ix2 + sx, iy2 + sy);
-	      else
-		gdk_draw_line (widget->window, light_gc,
+	      break;
+	    case 4:
+	      if (!clockwise)
+		gdk_draw_line (widget->window, gc4,
 			       ix1, iy1, ix2, iy2);
+	      break;
 	    }
 	}
+  if (draw_arcs)
+    for (pass = 2; pass <= 3; pass++)
       for (n = 0; n < self->n_arcs; n++)
 	{
 	  GdkGC *dark_gc = widget->style->dark_gc[widget->state];
@@ -326,7 +403,7 @@ gxk_polygon_expose (GtkWidget      *widget,
 	      if (a1 >= -225 && a1 < -135)	/* left quarter */
 		{
 		  len = MIN (a2, -135) - a1;
-		  if (bgpass)
+		  if (pass < 3)
 		    gdk_draw_arc (widget->window, dark_gc, FALSE,
 				  ax - s, ay, aw, ah, .5+ a1 * 64, .5+ len * 64);
 		  else
@@ -336,7 +413,7 @@ gxk_polygon_expose (GtkWidget      *widget,
 	      else if (a1 >= -135 && a1 < -45)	/* bottom quarter */
 		{
 		  len = MIN (a2, -45) - a1;
-		  if (bgpass)
+		  if (pass < 3)
 		    gdk_draw_arc (widget->window, bg_gc, FALSE,
 				  ax, ay + s, aw, ah, .5+ a1 * 64, .5+ len * 64);
 		  else
@@ -346,7 +423,7 @@ gxk_polygon_expose (GtkWidget      *widget,
 	      else if (a1 >= -45 && a1 < +45)	/* right quarter */
 		{
 		  len = MIN (a2, +45) - a1;
-                  if (bgpass)
+                  if (pass < 3)
 		    gdk_draw_arc (widget->window, bg_gc, FALSE,
 				  ax + s, ay, aw, ah, .5+ a1 * 64, .5+ len * 64);
                   else
@@ -356,7 +433,7 @@ gxk_polygon_expose (GtkWidget      *widget,
 	      else if (a1 >= +45 && a1 < +135)	/* top quarter */
 		{
 		  len = MIN (a2, +135) - a1;
-                  if (bgpass)
+                  if (pass < 3)
 		    gdk_draw_arc (widget->window, dark_gc, FALSE,
 				  ax, ay - s, aw, ah, .5+ a1 * 64, .5+ len * 64);
                   else
@@ -368,9 +445,6 @@ gxk_polygon_expose (GtkWidget      *widget,
 	      a1 += len;
 	    }
 	}
-      if (bgpass--)
-	goto next_pass;
-    }
   return FALSE;
 }
 
@@ -417,10 +491,10 @@ GxkPolygonGraph gxk_polygon_power = { G_N_ELEMENTS (power_lines), power_lines,
 				      G_N_ELEMENTS (power_arcs), power_arcs, STOCK_SIZE };
 /* stop */
 static GxkPolygonLine stop_lines[] = {
-  { 0.25, 0.25, 0.25, 0.75 }, /* up */
-  { 0.25, 0.75, 0.75, 0.75 }, /* right */
-  { 0.75, 0.75, 0.75, 0.25 }, /* down */
-  { 0.75, 0.25, 0.25, 0.25 }, /* left */
+  { 0.25, 0.25, 0.25, 0.75, }, /* up */
+  { 0.25, 0.75, 0.75, 0.75, }, /* right */
+  { 0.75, 0.75, 0.75, 0.25, }, /* down */
+  { 0.75, 0.25, 0.25, 0.25, }, /* left */
 };
 GxkPolygonGraph gxk_polygon_stop = { G_N_ELEMENTS (stop_lines), stop_lines,
 				     0, NULL, STOCK_SIZE };

@@ -1,4 +1,8 @@
 FIXMES:
+- fix context handle ids to be >0 and not use ~0 anymore
+- fix name of BSE_SNET_FLAG_USER_SYNTH
+- merge snet specifics down to super
+- generalize snet id allocator
 - fix usage of serif fonts in sans-serif dialogs
 - registering the same script function twice triggers GType assertion
 - fix procbrowser

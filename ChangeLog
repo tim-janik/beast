@@ -1,3 +1,23 @@
+Mon Jan 20 11:13:14 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkpolygon.c: support ETCHED_IN/OUT and _IN/OUT
+	line (shadow) drawing types.
+
+	* beast-gtk/bstapp.[hc]: use BstProjectCtrl.
+
+	* beast-gtk/bstprojectctrl.[hc]: added controlling code, support stop
+	and play.
+
+	* beast-gtk/bstappcontrol.[hc]: moved contents to bstprojectctrl.[hc].
+
+	* beast-gtk/gxk/gxkutils.[hc]:
+	added convenience function gxk_size_group().
+
+Sun Jan 19 04:26:45 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/images/bse-mime.png: added mockup of beast-mime.png,
+	which actually says "BSE" for the file type.
+
 Tue Jan 14 18:19:26 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/release-notes.texi: changed wording and added markup.

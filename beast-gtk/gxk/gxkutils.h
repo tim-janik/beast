@@ -74,6 +74,9 @@ void	gxk_widget_modify_as_title	(GtkWidget	*widget);
 void	gxk_widget_modify_bg_as_base	(GtkWidget	*widget);
 void	gxk_widget_modify_base_as_bg	(GtkWidget	*widget);
 void	gxk_widget_force_bg_clear	(GtkWidget	*widget);
+void	gxk_size_group			(GtkSizeGroupMode sgmode,
+					 GtkWidget	*first_widget,
+					 ...);
 
 /* misc widgets */
 void	gxk_notebook_append		(GtkNotebook	*notebook,
@@ -86,6 +89,24 @@ gboolean	gxk_signal_handler_pending	(gpointer	 instance,
 						 const gchar	*detailed_signal,
 						 GCallback	 callback,
 						 gpointer	 data);
+
+
+/* --- derivation convenience --- */
+typedef enum /*< skip >*/
+{
+  GXK_METHOD_NONE,
+  GXK_METHOD_INIT,
+  GXK_METHOD_FINALIZE,
+  GXK_METHOD_DISPOSE,
+  GXK_METHOD_DESTROY,
+} GxkMethodType;
+GType	gxk_object_derive	(GType		parent_type,
+				 const gchar   *name,
+				 gpointer      *parent_class_p,
+				 guint          instance_size,
+				 guint          class_size,
+				 GxkMethodType  mtype,
+				 ...);
 
 
 G_END_DECLS

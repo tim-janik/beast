@@ -19,7 +19,6 @@
 #define __BST_APP_H__
 
 #include "bstutils.h"
-#include "bstappcontrol.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,7 +51,7 @@ struct _BstApp
 
   GtkWidget	 *rack_dialog;
   GtkWidget	 *rack_editor;
-  BstAppControl  *pcontrols;
+  GtkWidget	 *pcontrols;
 };
 struct _BstAppClass
 {

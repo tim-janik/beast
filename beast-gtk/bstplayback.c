@@ -72,7 +72,7 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 {
   BseErrorType error;
 
-  error = bse_server_run_project (BSE_SERVER, handle->project);
+  error = bse_project_play (handle->project);
   if (error)
     bst_status_eprintf (error, "Playback");
 }
@@ -89,7 +89,7 @@ bst_play_back_handle_seek_perc (BstPlayBackHandle *handle,
 void
 bst_play_back_handle_stop (BstPlayBackHandle *handle)
 {
-  bse_server_halt_project (BSE_SERVER, handle->project);
+  bse_project_stop (handle->project);
   bst_play_back_handle_pcm_notify (handle, 0, NULL, NULL);
 }
 

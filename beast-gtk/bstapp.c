@@ -30,6 +30,7 @@
 #include "bstrackeditor.h"
 #include "bstmenus.h"
 #include "bstprocedure.h"
+#include "bstprojectctrl.h"
 #include "sfi/toyprof-mem.h"
 
 
@@ -230,9 +231,9 @@ bst_app_init (BstApp *app)
   bst_menu_config_free (m1);
 
   /* setup playback controls */
-  app->pcontrols = bst_app_control_new ();
+  app->pcontrols = g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
   gtk_container_add_with_properties (GTK_CONTAINER (app->main_vbox),
-				     app->pcontrols->box,
+				     app->pcontrols,
 				     "expand", FALSE,
 				     "position", 1,
 				     NULL);
@@ -252,27 +253,6 @@ bst_app_init (BstApp *app)
 }
 
 static void
-bst_app_state_changed (BstApp   *self,
-		       SfiChoice schoice)
-{
-  BseProjectState state = bse_project_state_from_choice (schoice);
-
-  if (self->pcontrols && self->pcontrols->led)
-    switch (state)
-      {
-      case BSE_PROJECT_ACTIVE:
-	gxk_led_set_color (self->pcontrols->led, GXK_LED_BLUE);
-	break;
-      case BSE_PROJECT_PLAYING:
-	  gxk_led_set_color (self->pcontrols->led, GXK_LED_GREEN);
-	break;
-      default:
-	  gxk_led_set_color (self->pcontrols->led, GXK_LED_OFF);
-	break;
-      }
-}
-
-static void
 bst_app_destroy (GtkObject *object)
 {
   BstApp *app = BST_APP (object);
@@ -282,10 +262,11 @@ bst_app_destroy (GtkObject *object)
 
   if (app->project)
     {
-      bse_server_halt_project (BSE_SERVER, app->project);
+      if (app->pcontrols)
+	bst_project_ctrl_set_project (BST_PROJECT_CTRL (app->pcontrols), 0);
+      bse_project_deactivate (app->project);
       bse_proxy_disconnect (app->project,
 			   "any_signal", bst_app_reload_supers, app,
-			   "any_signal", bst_app_state_changed, app,
 			   NULL);
       bse_item_unuse (app->project);
       app->project = 0;
@@ -326,12 +307,12 @@ bst_app_new (SfiProxy project)
   bse_proxy_connect (app->project,
 		     "swapped_signal::item-added", bst_app_reload_supers, app,
 		     "swapped_signal::item-removed", bst_app_reload_supers, app,
-		     "swapped_signal::state-changed", bst_app_state_changed, app,
 		     NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (app), app->project, "%s");
-
+  if (app->pcontrols)
+    bst_project_ctrl_set_project (BST_PROJECT_CTRL (app->pcontrols), app->project);
+  
   bst_app_reload_supers (app);
-  bst_app_state_changed (app, bse_project_state_to_choice (bse_project_get_state (app->project)));
 
   /* update menu entries
    */
@@ -661,12 +642,13 @@ bst_app_operate (BstApp *app,
 	else
 	  starting = "Starting Playback";
 
-	error = bse_server_run_project (BSE_SERVER, app->project);
+	error = bse_project_play (app->project);
+	bse_project_auto_deactivate (app->project, 0);
 	bst_status_eprintf (error, starting);
       }
       break;
     case BST_OP_PROJECT_STOP:
-      bse_server_halt_project (BSE_SERVER, app->project);
+      bse_project_stop (app->project);
       gxk_status_set (GXK_STATUS_DONE, "Stopping Playback", NULL);
       break;
     case BST_OP_PROJECT_RACK_EDITOR:

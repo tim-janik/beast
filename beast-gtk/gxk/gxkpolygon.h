@@ -35,9 +35,11 @@ G_BEGIN_DECLS
 /* --- structures --- */
 typedef struct {
   gfloat x1, y1, x2, y2;
+  GtkShadowType draw_type;
 } GxkPolygonLine;
 typedef struct {
   gfloat xc, yc, xr, yr, sa, ea;
+  GtkShadowType draw_type;
 } GxkPolygonArc;
 typedef struct {
   GtkWidget	 parent_instance;

@@ -391,6 +391,39 @@ gxk_widget_force_bg_clear (GtkWidget *widget)
 }
 
 /**
+ * gxk_size_group
+ * @sgmode: size group mode, one of %GTK_SIZE_GROUP_NONE,
+ *          %GTK_SIZE_GROUP_HORIZONTAL, %GTK_SIZE_GROUP_VERTICAL or
+ *	    %GTK_SIZE_GROUP_BOTH
+ * @...:    %NULL terminated list of widgets to group together
+ *
+ * Group horizontal and/or vertical resizing behaviour of
+ * widgets. See gtk_size_group_set_mode() on the effect of
+ * the various grouping modes.
+ */
+void
+gxk_size_group (GtkSizeGroupMode sgmode,
+		GtkWidget       *first_widget,
+		...)
+{
+  if (first_widget)
+    {
+      GtkWidget *widget = first_widget;
+      GtkSizeGroup *sgroup = gtk_size_group_new (sgmode);
+      va_list args;
+
+      va_start (args, first_widget);
+      while (widget)
+	{
+	  gtk_size_group_add_widget (sgroup, widget);
+	  widget = va_arg (args, GtkWidget*);
+	}
+      va_end (args);
+      g_object_unref (sgroup);
+    }
+}
+
+/**
  * gxk_notebook_append
  * @notebook: a valid notebook
  * @child:    a valid parent-less widget
@@ -450,6 +483,103 @@ gxk_signal_handler_pending (gpointer     instance,
   else
     g_warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
   return FALSE;
+}
+
+
+/* --- derivation convenience --- */
+typedef struct {
+  gpointer *parent_class_p;
+  /* GObject */
+  gpointer finalize, dispose;
+  /* GtkObject */
+  gpointer destroy;
+} TypeMethods;
+
+static void
+gxk_generic_type_class_init (gpointer class,
+			     gpointer class_data)
+{
+  TypeMethods *tm = class_data;
+  if (tm)
+    *tm->parent_class_p = g_type_class_peek_parent (class);
+  if (tm && G_IS_OBJECT_CLASS (class))
+    {
+      GObjectClass *oclass = G_OBJECT_CLASS (class);
+      if (tm->finalize)
+	oclass->finalize = tm->finalize;
+      if (tm->dispose)
+	oclass->dispose = tm->dispose;
+    }
+  if (tm && GTK_IS_OBJECT_CLASS (class))
+    {
+      GtkObjectClass *oclass = GTK_OBJECT_CLASS (class);
+      if (tm->destroy)
+	oclass->destroy = tm->destroy;
+    }
+}
+
+/**
+ * gxk_object_derive
+ *
+ * Derive a new object type, giving a list of
+ * methods which are implemented for this new object type.
+ */
+GType
+gxk_object_derive (GType          parent_type,
+		   const gchar   *name,
+		   gpointer      *parent_class_p,
+		   guint          instance_size,
+		   guint          class_size,
+		   GxkMethodType  mtype,
+		   ...)
+{
+  GType type = g_type_from_name (name);
+  if (!type)
+    {
+      GTypeInfo type_info = {
+	0,	/* class_size */
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) gxk_generic_type_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	0,	/* instance_size */
+	0,      /* n_preallocs */
+	NULL,	/* instance_init */
+      };
+      TypeMethods tm = { NULL, };
+      gpointer initfunc = NULL;
+      gboolean need_cd = FALSE;
+      va_list args;
+      g_return_val_if_fail (G_TYPE_IS_OBJECT (parent_type), 0);
+      type_info.class_size = class_size;
+      type_info.instance_size = instance_size;
+      va_start (args, mtype);
+      while (mtype)
+	{
+	  gpointer func = va_arg (args, gpointer);
+	  switch (mtype)
+	    {
+	    case GXK_METHOD_INIT:		initfunc = func;	break;
+	    case GXK_METHOD_FINALIZE:		tm.finalize = func;	break;
+	    case GXK_METHOD_DISPOSE:		tm.dispose = func;	break;
+	    case GXK_METHOD_DESTROY:		tm.destroy = func;	break;
+	    default:	g_error ("invalid method type: %d", mtype);
+	    }
+	  need_cd |= mtype != GXK_METHOD_INIT;
+	  mtype = va_arg (args, GxkMethodType);
+	}
+      va_end (args);
+      type_info.instance_init = initfunc;
+      if (need_cd || parent_class_p)
+	{
+	  g_return_val_if_fail (parent_class_p != NULL, 0);
+	  tm.parent_class_p = parent_class_p;
+	  type_info.class_data = g_memdup (&tm, sizeof (TypeMethods));
+	}
+      type = g_type_register_static (parent_type, name, &type_info, 0);
+    }
+  return type;
 }
 
 

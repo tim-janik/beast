@@ -40,7 +40,7 @@ progs_LDADD = $(strip \
 beast_headers = $(strip \
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
 	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	bstsnetshell.h	\
-	bstappcontrol.h		bstcluehunter.h				bstdial.h	\
+				bstcluehunter.h	bstprojectctrl.h	bstdial.h	\
 	bstfreeradiobutton.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
 	bstlogadjustment.h	bstitemview.h	bstknob.h \
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
@@ -57,7 +57,7 @@ beast_headers = $(strip \
 beast_sources = $(strip \
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
 	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	bstsnetshell.c	\
-	bstappcontrol.c		bstcluehunter.c				bstdial.c	\
+				bstcluehunter.c	bstprojectctrl.c	bstdial.c	\
 	bstfreeradiobutton.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
 	bstlogadjustment.c	bstitemview.c	bstknob.c \
 	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
