@@ -373,6 +373,41 @@ gxk_dialog_new_radget (gpointer        pointer_loc,
 }
 
 /**
+ * gxk_dialog_set_sizes
+ * @dialog:         valid GxkDialog
+ * @min_width:      minimum dialog width or -1
+ * @min_height:     minimum dialog height or -1
+ * @default_width:  default dialog width or -1
+ * @default_height: default dialog height or -1
+ *
+ * Set the dialog's minimum and default sizes, constrained to not exceed the
+ * screen dimensions.
+ */
+void
+gxk_dialog_set_sizes (GxkDialog      *dialog,
+                      gint            min_width,
+                      gint            min_height,
+                      gint            default_width,
+                      gint            default_height)
+{
+  GdkGeometry geometry = { 0, };
+  gint swidth = gdk_screen_width();
+  gint sheight = gdk_screen_height();
+  geometry.min_width = CLAMP (min_width, -1, swidth);
+  geometry.min_height = CLAMP (min_height, -1, sheight);
+  if (default_width > 0)
+    default_width = MIN (default_width, swidth * 0.95);
+  if (default_height > 0)
+    default_height = MIN (default_height, sheight * 0.95);
+  if (geometry.min_width > 0 && default_width > 0)
+    geometry.min_width = MIN (geometry.min_width, default_width);
+  if (geometry.min_height > 0 && default_height > 0)
+    geometry.min_height = MIN (geometry.min_height, default_height);
+  gtk_window_set_geometry_hints (GTK_WINDOW (dialog), NULL, &geometry, GDK_HINT_MIN_SIZE);
+  gtk_window_set_default_size (GTK_WINDOW (dialog), default_width, default_height);
+}
+
+/**
  * gxk_dialog_set_title
  * @dialog: valid GxkDialog
  * @title: dialog window manager title

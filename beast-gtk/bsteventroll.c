@@ -160,7 +160,7 @@ event_roll_get_layout (GxkScrollCanvas       *scc,
   layout->right_panel_width = 0;
   layout->bottom_panel_height = 0;
   layout->canvas_width = 500 + XTHICKNESS (self);
-  layout->canvas_height = 128 + YTHICKNESS (self);
+  layout->canvas_height = 64 + YTHICKNESS (self);
 }
 
 static void

@@ -1422,7 +1422,7 @@ bst_db_meter_create_scale (BstDBMeter *self,
       gtk_box_pack_start (box, GTK_WIDGET (range), FALSE, TRUE, padding);
       g_object_set_data_full (range, "BstDBSetup", dbsetup, bst_db_setup_unref);
       g_object_set_data_full (adjustment, "BstDBSetup", bst_db_setup_ref (dbsetup), bst_db_setup_unref);
-      if (!gxk_signal_handler_pending (range, "size-allocate", G_CALLBACK (db_scale_size_allocate), self))
+      if (!gxk_signal_handler_exists (range, "size-allocate", G_CALLBACK (db_scale_size_allocate), self))
         g_signal_connect_object (range, "size-allocate", G_CALLBACK (db_scale_size_allocate), self, G_CONNECT_AFTER);
     }
   return range;

@@ -1,24 +1,33 @@
 FIXMES:	(release-critical)
-- remove BST_TAB_WIDTH
+- how are nodes scheduled that have different depth (levels) due to different consumers?
+- implement solo for master
 - ensure there always is a master
 - auto-conenct new busses to master
+- auto-add orphan tracks to master when loading
+- auto-add orphan parts to a new track when loading
 - help menu updates (email) add plugin-devel menu item
-- move and add compat for Arts::Compressor -> Bse::Arts::Compressor
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
 - instead of bse_engine_add_garbage(), the midireceiver needs a BSE_MIDI_RECEIVER_LOCK based callback mechanism (nodes aren't queued from teh BSE thread which invokes the engine gc)
 - disable vinput/vswitch job queueing (except for mono) if Done is not connected (use SCHEDULED(vinput/switch) to decide)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - support candidate tooltip in bst_track_synth_dialog_popup() similar to bst_item_seq_dialog_popup()
-- enfore minimum size of ca. screen-width and screen-height for GxkDialog (should make preferences scrollable)  
-- in preferences the skin-editor viewport shouldn't gxk_widget_proxy_requisition()
 - add a "[_] never show this warning" toggle button to warnings
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
+- add controller dialog popup for tracks to alter sliders corresponding to midi controls
+- implement part copying
 - overshoot LED: ___ 
                  \ |  overshoot: fill triangle
                   \|  fill level shrinks with time
-- delete track + undo doesn't preserve track order
+- BUG: undo -guards around moving events                  
+- BUG: select events, C+c, C+v, kill-selection. startover => copy is placed above old selection
+- BUG: when selected events overlap not-selected events, give prcedence to selected events when moving                  
+- BUG: delete track + undo doesn't preserve track order
+- BUG: part/event control, group/ungroup undo around drag begin+end
+- alias audio_in1 and audio_in2 of BseAdder to audio_in 
+- save default quantisation and note size with parts
+- trackview: add +track and -track buttons to toolbar, move toolbar out of paned, toolbar vscroll=never
 - rename bse_bus_get_stack() which is the only valid hook to setup song modules atm
 - evaluate typedef gpointer SfiProxy; instead of GType, this should get rid of a lot of casts
 - the skin editor should offer loading skins, just like View/Skins

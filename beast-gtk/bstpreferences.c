@@ -66,33 +66,33 @@ bst_preferences_init (BstPreferences *self)
   pspec = bst_gconfig_pspec ();
   self->rec_gconfig = bst_gconfig_to_rec (bst_gconfig_get_global ());
   pchild = bst_preferences_build_rec_editor (self->rec_gconfig, sfi_pspec_get_rec_fields (pspec), &self->params_gconfig);
-  gxk_notebook_append (self->notebook, pchild, "BEAST");
+  gxk_notebook_append (self->notebook, pchild, "BEAST", FALSE);
   
   kbinding = bst_pattern_controller_piano_keys();
   iseq = bst_key_binding_get_item_seq (kbinding);
   self->box_piano_keys = bst_key_binding_box (kbinding->binding_name, kbinding->n_funcs, kbinding->funcs, TRUE);
   bst_key_binding_box_set (self->box_piano_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
-  gxk_notebook_append (self->notebook, self->box_piano_keys, _("Piano Keys"));
+  gxk_notebook_append (self->notebook, self->box_piano_keys, _("Piano Keys"), FALSE);
 
   kbinding = bst_pattern_controller_generic_keys();
   iseq = bst_key_binding_get_item_seq (kbinding);
   self->box_generic_keys = bst_key_binding_box (kbinding->binding_name, kbinding->n_funcs, kbinding->funcs, FALSE);
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
-  gxk_notebook_append (self->notebook, self->box_generic_keys, _("Generic Keys"));
+  gxk_notebook_append (self->notebook, self->box_generic_keys, _("Generic Keys"), FALSE);
   
   pspec = bst_skin_config_pspec ();
   self->rec_skin = bst_skin_config_to_rec (bst_skin_config_get_global ());
   pchild = bst_preferences_build_rec_editor (self->rec_skin, sfi_pspec_get_rec_fields (pspec), &self->params_skin);
-  gxk_notebook_append (self->notebook, pchild, _("Skin"));
+  gxk_notebook_append (self->notebook, pchild, _("Skin"), FALSE);
   
   pspec = bse_proxy_get_pspec (BSE_SERVER, "bse-preferences");
   self->bsepspec = g_param_spec_ref (pspec);
   bse_proxy_get (BSE_SERVER, "bse-preferences", &rec, NULL);
   self->bserec = sfi_rec_copy_deep (rec);
   pchild = bst_preferences_build_rec_editor (self->bserec, sfi_pspec_get_rec_fields (pspec), &self->bseparams);
-  gxk_notebook_append (self->notebook, pchild, "BSE");
+  gxk_notebook_append (self->notebook, pchild, "BSE", FALSE);
 }
 
 static void
@@ -137,24 +137,23 @@ bst_preferences_build_rec_editor (SfiRec      *rec,
 				  SfiRecFields fields,
 				  SfiRing    **param_list)
 {
-  GtkWidget *parent;
   SfiRing *ring, *params = NULL;
   guint i;
   
   g_return_val_if_fail (rec != NULL, NULL);
   
-  parent = g_object_new (GTK_TYPE_VBOX,
-			 "visible", TRUE,
-			 "homogeneous", FALSE,
-			 "border_width", 5,
-			 NULL);
+  GtkWidget *vbox = g_object_new (GTK_TYPE_VBOX,
+                                  "visible", TRUE,
+                                  "homogeneous", FALSE,
+                                  "border_width", 5,
+                                  NULL);
   for (i = 0; i < fields.n_fields; i++)
     {
       GParamSpec *pspec = fields.fields[i];
       if (sfi_pspec_check_option (pspec, "G"))     /* GUI representable */
 	{
 	  GxkParam *param = bst_param_new_rec (pspec, rec);
-	  bst_param_create_gmask (param, NULL, parent);
+	  bst_param_create_gmask (param, NULL, vbox);
 	  params = sfi_ring_append (params, param);
 	}
     }
@@ -164,7 +163,8 @@ bst_preferences_build_rec_editor (SfiRec      *rec,
     *param_list = params;
   else
     sfi_ring_free (params);
-  return parent;
+
+  return gxk_scrolled_window_create (vbox, GTK_SHADOW_NONE, 1, 0.8, FALSE);
 }
 
 static void

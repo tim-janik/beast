@@ -68,13 +68,12 @@ bst_file_dialog_init (BstFileDialog *self)
   
   /* configure self */
   g_object_set (self,
-		"default_width", 500,
-		"default_height", 450,
 		"flags", (GXK_DIALOG_HIDE_ON_DELETE |
                           GXK_DIALOG_PRESERVE_STATE |
 			  GXK_DIALOG_POPUP_POS |
 			  GXK_DIALOG_MODAL),
 		NULL);
+  gxk_dialog_set_sizes (GXK_DIALOG (self), -1, -1, 500, 450);
   g_object_set (main_box,
 		"homogeneous", FALSE,
 		"spacing", 0,
@@ -104,7 +103,7 @@ bst_file_dialog_init (BstFileDialog *self)
   self->fpage = gxk_file_selection_split (self->fs, &bbox);
   g_object_ref (self->fpage);
   gtk_container_remove (GTK_CONTAINER (self->fpage->parent), self->fpage);
-  gxk_notebook_add_page (GTK_NOTEBOOK (self->notebook), self->fpage, "File Selection", TRUE);
+  gxk_notebook_append (GTK_NOTEBOOK (self->notebook), self->fpage, "File Selection", TRUE);
   g_object_unref (self->fpage);
   
   /* sample selection tree */
@@ -115,7 +114,7 @@ bst_file_dialog_init (BstFileDialog *self)
 			      "border_width", 5,
 			      "shadow_type", GTK_SHADOW_IN,
 			      NULL);
-  gxk_notebook_add_page (GTK_NOTEBOOK (self->notebook), self->spage, "Sample Selection", TRUE);
+  gxk_notebook_append (GTK_NOTEBOOK (self->notebook), self->spage, "Sample Selection", TRUE);
   self->file_store = bst_file_store_create ();
   smodel = gtk_tree_model_sort_new_with_model (self->file_store);
   self->tview = g_object_new (GTK_TYPE_TREE_VIEW,

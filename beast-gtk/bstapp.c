@@ -338,22 +338,11 @@ bst_app_destroy (GtkObject *object)
 BstApp*
 bst_app_new (SfiProxy project)
 {
-  GdkGeometry geometry;
-  GtkWidget *widget;
-  BstApp *self;
-  
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
   
-  widget = gtk_widget_new (BST_TYPE_APP,
-                           "default_width", 640,
-                           "default_height", 512,
-                           NULL);
-  self = BST_APP (widget);
-  
-  geometry.min_width = 320;
-  geometry.min_height = 450;
-  gtk_window_set_geometry_hints (GTK_WINDOW (widget), NULL, &geometry, GDK_HINT_MIN_SIZE);
-  
+  BstApp *self = g_object_new (BST_TYPE_APP, NULL);
+  gxk_dialog_set_sizes (GXK_DIALOG (self), 500, 400, 950, 800);
+
   self->project = project;
   bse_item_use (self->project);
   bse_proxy_connect (self->project,
@@ -956,10 +945,7 @@ app_action_exec (gpointer data,
                                                                          NULL,
                                                                          GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_DELETE_BUTTON,
                                                                          help_title, sctext);
-          g_object_set (bst_help_dialogs[action - ACTION_HELP_FIRST],
-                        "default_width", 560,
-                        "default_height", 640,
-                        NULL);
+          gxk_dialog_set_sizes (GXK_DIALOG (bst_help_dialogs[action - ACTION_HELP_FIRST]), 500, 400, 560, 640);
         }
       g_free (help_file);
       g_free (help_title);

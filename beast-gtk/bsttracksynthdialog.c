@@ -53,14 +53,13 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
 
   /* configure self */
   g_object_set (self,
-                "default_width", 500,
-                "default_height", 450,
                 "flags", (GXK_DIALOG_HIDE_ON_DELETE |
                           GXK_DIALOG_PRESERVE_STATE |
                           GXK_DIALOG_POPUP_POS |
                           GXK_DIALOG_MODAL),
                 NULL);
-
+  gxk_dialog_set_sizes (GXK_DIALOG (self), 550, 300, 600, 320);
+  
   /* notebook */
   self->notebook = g_object_new (GTK_TYPE_NOTEBOOK,
                                  "visible", TRUE,
@@ -86,7 +85,7 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
                                "border_width", 5,
                                "shadow_type", GTK_SHADOW_IN,
                                NULL);
-  gxk_notebook_add_page (GTK_NOTEBOOK (self->notebook), self->spage, "Synthesis Network Selection", TRUE);
+  gxk_notebook_append (GTK_NOTEBOOK (self->notebook), self->spage, "Synthesis Network Selection", TRUE);
 
   /* synth selection store and tree */
   self->pstore = bst_item_seq_store_new (TRUE);
@@ -121,7 +120,7 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
 
   /* wave repo view */
   self->wpage = g_object_new (BST_TYPE_WAVE_VIEW, "visible", TRUE, NULL);
-  gxk_notebook_add_page (GTK_NOTEBOOK (self->notebook), self->wpage, "Wave Selection", TRUE);
+  gxk_notebook_append (GTK_NOTEBOOK (self->notebook), self->wpage, "Wave Selection", TRUE);
   bst_wave_view_set_editable (BST_WAVE_VIEW (self->wpage), FALSE);
 
   /* provide buttons */

@@ -84,6 +84,11 @@ gpointer        gxk_dialog_new_radget             (gpointer        pointer_loc,
                                                    const gchar    *title,
                                                    const gchar    *domain_name,
                                                    const gchar    *radget_name);
+void            gxk_dialog_set_sizes              (GxkDialog      *dialog,
+                                                   gint            min_width,
+                                                   gint            min_height,
+                                                   gint            default_width,
+                                                   gint            default_height);
 void		gxk_dialog_set_title		  (GxkDialog	  *dialog,
 						   const gchar	  *title);
 void		gxk_dialog_set_focus		  (GxkDialog	  *dialog,

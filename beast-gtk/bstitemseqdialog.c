@@ -322,14 +322,13 @@ bst_item_seq_dialog_init (BstItemSeqDialog *self)
 
   /* configure self */
   g_object_set (self,
-                "default_width", 600,
-                "default_height", 320,
                 "flags", (GXK_DIALOG_HIDE_ON_DELETE |
                           GXK_DIALOG_PRESERVE_STATE |
                           GXK_DIALOG_POPUP_POS |
                           GXK_DIALOG_MODAL),
                 NULL);
-
+  gxk_dialog_set_sizes (GXK_DIALOG (self), 550, 300, 600, 320);
+  
   /* dialog contents */
   GxkRadget *radget = gxk_radget_create ("beast", "item-seq-box", NULL);
   gxk_dialog_set_child (GXK_DIALOG (self), radget);

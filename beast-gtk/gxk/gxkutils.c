@@ -21,6 +21,7 @@
 #include "gxkmenubutton.h"
 #include "gxkstock.h"
 #include "gxkcellrendererpopup.h"
+#include "gxkauxwidgets.h"
 #include <string.h>
 
 
@@ -766,16 +767,27 @@ gxk_notebook_change_tabulator (GtkWidget        *tabulator,
     }
 }
 
+
+/**
+ * gxk_notebook_append
+ * @notebook:   a valid notebook
+ * @child:      a valid parent-less widget
+ * @label:      notebook page name
+ * @fillexpand: whether the tab label should expand
+ *
+ * Add a new page containing @child to @notebook,
+ * naming the page @label.
+ */
 void
-gxk_notebook_add_page (GtkNotebook *notebook,
-		       GtkWidget   *child,
-		       const gchar *tab_text,
-		       gboolean     expand_fill)
+gxk_notebook_append (GtkNotebook *notebook,
+                     GtkWidget   *child,
+                     const gchar *tab_text,
+                     gboolean     fillexpand)
 {
   gtk_container_add (GTK_CONTAINER (notebook), child);
   gtk_notebook_set_tab_label_text (notebook, child, tab_text);
   gtk_notebook_set_menu_label_text (notebook, child, tab_text);
-  gtk_notebook_set_tab_label_packing (notebook, child, expand_fill, expand_fill, GTK_PACK_START);
+  gtk_notebook_set_tab_label_packing (notebook, child, fillexpand, fillexpand, GTK_PACK_START);
 }
 
 /**
@@ -1080,14 +1092,14 @@ gxk_widget_modify_as_title (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
   
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+  if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_FG_AS_SENSITIVE);
       g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
       if (GTK_WIDGET_REALIZED (widget))
         widget_modify_style (widget);
       gtk_widget_set_sensitive (widget, FALSE);
-      if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (gxk_widget_make_insensitive), NULL))
+      if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (gxk_widget_make_insensitive), NULL))
         g_signal_connect_after (widget, "realize", G_CALLBACK (gxk_widget_make_insensitive), NULL);
     }
 }
@@ -1106,7 +1118,7 @@ gxk_widget_modify_bg_as_base (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+  if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BG_AS_BASE);
       g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
@@ -1127,7 +1139,7 @@ gxk_widget_modify_normal_bg_as_base (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+  if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_NORMAL_BG_AS_BASE);
       g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
@@ -1151,7 +1163,7 @@ gxk_widget_modify_base_as_bg (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+  if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BASE_AS_BG);
       g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
@@ -1172,7 +1184,7 @@ gxk_widget_modify_bg_as_active (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+  if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
       g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BG_AS_ACTIVE);
       g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
@@ -1207,7 +1219,7 @@ gxk_widget_force_bg_clear (GtkWidget *widget)
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
   gtk_widget_set_redraw_on_allocate (widget, TRUE);
-  if (!gxk_signal_handler_pending (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL))
+  if (!gxk_signal_handler_exists (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL))
     g_signal_connect (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL);
 }
 
@@ -2067,9 +2079,9 @@ gxk_tree_selection_force_browse (GtkTreeSelection *selection,
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
   if (model)
     g_return_if_fail (GTK_IS_TREE_MODEL (model));
-  if (!gxk_signal_handler_pending (selection, "changed", G_CALLBACK (browse_selection_changed), selection))
+  if (!gxk_signal_handler_exists (selection, "changed", G_CALLBACK (browse_selection_changed), selection))
     g_signal_connect_data (selection, "changed", G_CALLBACK (browse_selection_changed), selection, NULL, 0);
-  if (model && !gxk_signal_handler_pending (model, "row-inserted", G_CALLBACK (browse_selection_changed), selection))
+  if (model && !gxk_signal_handler_exists (model, "row-inserted", G_CALLBACK (browse_selection_changed), selection))
     g_signal_connect_object (model, "row-inserted", G_CALLBACK (browse_selection_changed), selection, G_CONNECT_SWAPPED);
   browse_selection_changed (selection);
 }
@@ -2305,27 +2317,49 @@ gxk_tree_view_get_row_from_coord (GtkTreeView *tree,
 }
 
 /**
- * gxk_notebook_append
- * @notebook: a valid notebook
- * @child:    a valid parent-less widget
- * @label:    notebook page name
+ * gxk_signal_handler_exists
+ * @instance:        object instance with signals
+ * @detailed_signal: signal name
+ * @callback:        custom callback function
+ * @data:            callback data
+ * @RETURNS:         whether callback is connected
  *
- * Add a new page containing @child to @notebook,
- * naming the page @label.
+ * Find out whether a specific @callback is connected to a
+ * specific signal on an instance, the callback may be blocked.
+ * @detailed_signal may be
+ * %NULL to act as a wildcard. %TRUE is returned if
+ * the @callback is found, %FALSE otherwise.
  */
-void
-gxk_notebook_append (GtkNotebook *notebook,
-		     GtkWidget   *child,
-		     const gchar *label)
+gboolean
+gxk_signal_handler_exists (gpointer     instance,
+                           const gchar *detailed_signal,
+                           GCallback    callback,
+                           gpointer     data)
 {
-  g_return_if_fail (GTK_IS_NOTEBOOK (notebook));
-  g_return_if_fail (GTK_IS_WIDGET (child));
-  g_return_if_fail (label != NULL);
+  guint signal_id;
+  GQuark detail = 0;
 
-  gtk_notebook_append_page (notebook, child, g_object_new (GTK_TYPE_LABEL,
-							   "visible", TRUE,
-							   "label", label,
-							   NULL));
+  g_return_val_if_fail (G_TYPE_CHECK_INSTANCE (instance), FALSE);
+  g_return_val_if_fail (detailed_signal != NULL, FALSE);
+  g_return_val_if_fail (callback != NULL, FALSE);
+
+  if (detailed_signal && g_signal_parse_name (detailed_signal, G_TYPE_FROM_INSTANCE (instance),
+					      &signal_id, &detail, FALSE))
+    {
+      if (g_signal_handler_find (instance, (G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA |
+					    (detail ? G_SIGNAL_MATCH_DETAIL : 0)),
+				 signal_id, detail, NULL, callback, data) != 0)
+	return TRUE;
+    }
+  else if (!detailed_signal)
+    {
+      if (g_signal_handler_find (instance, G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
+				 0, 0, NULL, callback, data) != 0)
+	return TRUE;
+    }
+  else
+    g_warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
+  return FALSE;
 }
 
 /**
@@ -2336,7 +2370,8 @@ gxk_notebook_append (GtkNotebook *notebook,
  * @data:            callback data
  * @RETURNS:         whether callback is connected
  *
- * Find out whether a specific @callback is pending for a
+ * Find out whether a specific @callback is pending
+ * (connected and unblocked) for a
  * specific signal on an instance. @detailed_signal may be
  * %NULL to act as a wildcard. %TRUE is returned if
  * the @callback is found, %FALSE otherwise.
@@ -2357,14 +2392,14 @@ gxk_signal_handler_pending (gpointer     instance,
   if (detailed_signal && g_signal_parse_name (detailed_signal, G_TYPE_FROM_INSTANCE (instance),
 					      &signal_id, &detail, FALSE))
     {
-      if (g_signal_handler_find (instance, (G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA |
+      if (g_signal_handler_find (instance, (G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_UNBLOCKED |
 					    (detail ? G_SIGNAL_MATCH_DETAIL : 0)),
 				 signal_id, detail, NULL, callback, data) != 0)
 	return TRUE;
     }
   else if (!detailed_signal)
     {
-      if (g_signal_handler_find (instance, G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
+      if (g_signal_handler_find (instance, G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA | G_SIGNAL_MATCH_UNBLOCKED,
 				 0, 0, NULL, callback, data) != 0)
 	return TRUE;
     }
@@ -2614,35 +2649,157 @@ gxk_item_factory_get_widget (GtkItemFactory *ifactory,
 
 static void
 requisition_to_aux_info (GtkWidget      *widget,
-			 GtkRequisition *requisition)
+			 GtkRequisition *requisition,
+                         gpointer        data)
 {
+  double *xyscale = data;
   guint width = requisition->width;
   guint height = requisition->height;
+  
+  /* patch up requisition since gtk tends to allocate the viewport with the
+   * requested size minus vscrollbar->width or minus hscrollbar->height.
+   */
+  if (GTK_IS_SCROLLED_WINDOW (widget->parent))
+    {
+      GtkScrolledWindow *scwin = GTK_SCROLLED_WINDOW (widget->parent);
+      GtkRequisition requisition;
+      if (scwin->vscrollbar && scwin->vscrollbar_policy != GTK_POLICY_NEVER)
+        {
+          gtk_widget_size_request (scwin->vscrollbar, &requisition);
+          width += requisition.width;
+        }
+      if (scwin->hscrollbar && scwin->hscrollbar_policy != GTK_POLICY_NEVER)
+        {
+          gtk_widget_size_request (scwin->hscrollbar, &requisition);
+          height += requisition.height;
+        }
+    }
+  
+  /* we constrain the requisition to a fraction of the screen size */
+  width = MIN (width, gdk_screen_width () * xyscale[0]);
+  height = MIN (height, gdk_screen_height () * xyscale[1]);
 
-  /* we don't want the requisition to get too big */
-  width = MIN (width, gdk_screen_width () / 2);
-  height = MIN (height, gdk_screen_height () / 2);
-
-  gtk_widget_set_size_request (widget, width, height);
+  gtk_widget_set_size_request (widget,
+                               xyscale[0] < 0 ? -1 : width,
+                               xyscale[1] < 0 ? -1 : height);
 }
 
 /**
  * gxk_widget_proxy_requisition
  * @widget: valid #GtkWidget
+ * @xscale: fractional factor for screen width
+ * @yscale: fractional factor for screen height
  *
- * Proxy the size requisition of @widget through the
- * ::width_request and ::height_request properties.
- * This is useful only for immediate children of a
- * #GtkScrolledWindow, to have the #GtkScrolledWindow
- * honour the widgets size requisition.
+ * Proxy the size requisition of @widget through the ::width-request
+ * and ::height-request properties. This is useful only for immediate
+ * children of a #GtkScrolledWindow (e.g. a #GtkViewport), to have
+ * the #GtkScrolledWindow honour the widgets size requisition.
+ * If @xscale or @yscale is passed as -1, the corresponding dimension
+ * ::width-request or ::height-request is left unset.
+ * If @xscale or @yscale is passed a value between 0 and +1, it is
+ * interpreted as a fraction of the screen width or screen height to
+ * constrain the corresponding requested dimension.
  */
 void
-gxk_widget_proxy_requisition (GtkWidget *widget)
+gxk_widget_proxy_requisition (GtkWidget *widget,
+                              gdouble    xscale,
+                              gdouble    yscale)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
   g_signal_handlers_disconnect_by_func (widget, requisition_to_aux_info, NULL);
-  g_signal_connect_after (widget, "size_request", G_CALLBACK (requisition_to_aux_info), NULL);
+  double xyscale[2] = { xscale, yscale };
+  if (xscale >= 0 || yscale >= 0)
+    g_signal_connect_data (widget, "size-request", G_CALLBACK (requisition_to_aux_info),
+                           g_memdup (xyscale, sizeof (xyscale)), (GClosureNotify) g_free, G_CONNECT_AFTER);
+}
+
+static void
+scrolled_window_size_request_spare_space (GtkScrolledWindow *scwin,
+                                          GtkRequisition    *requisition)
+{
+  /* we fixup the additional sizes that scrolled windows add
+   * to the child requisition if the h/v scroll policy is NEVER.
+   */
+  if (GTK_BIN (scwin)->child &&
+      (scwin->hscrollbar_policy == GTK_POLICY_NEVER ||
+       scwin->vscrollbar_policy == GTK_POLICY_NEVER))
+    {
+      GtkRequisition child_requisition = { 0, 0 };
+      gtk_widget_size_request (GTK_BIN (scwin)->child, &child_requisition);
+      if (scwin->hscrollbar_policy == GTK_POLICY_NEVER && !scwin->vscrollbar_visible)
+        requisition->width = child_requisition.width;
+      if (scwin->vscrollbar_policy == GTK_POLICY_NEVER && !scwin->hscrollbar_visible)
+        requisition->height = child_requisition.height;
+    }
+}
+
+/**
+ * gxk_scrolled_window_spare_space
+ * @scwin:  valid #GtkScrolledWindow
+ * A normal #GtkScrolledWindow requests extra space for a horizontal scrollbar
+ * if the vertical scroll policy is set to %GTK_POLICY_NEVER and vice versa,
+ * regardless of whether the scrollbars have to be shown or not.
+ * This function patches up this behaviour to spare the extra requested space
+ * from the outer scrolled window requisition if possible (that is, if the
+ * corresponding scrollbar is not currently visible).
+ */
+void
+gxk_scrolled_window_spare_space (GtkScrolledWindow*scwin)
+{
+  if (!gxk_signal_handler_exists (scwin, "size-request", G_CALLBACK (scrolled_window_size_request_spare_space), NULL))
+    g_signal_connect (scwin, "size-request", G_CALLBACK (scrolled_window_size_request_spare_space), NULL);
+}
+
+/**
+ * gxk_scrolled_window_unspare_space
+ * @scwin:  valid #GtkScrolledWindow
+ * Undo the effect of a call to gxk_scrolled_window_spare_space().
+ */
+void
+gxk_scrolled_window_unspare_space (GtkScrolledWindow*scwin)
+{
+  if (gxk_signal_handler_exists (scwin, "size-request", G_CALLBACK (scrolled_window_size_request_spare_space), NULL))
+    g_signal_handlers_disconnect_by_func (scwin, G_CALLBACK (scrolled_window_size_request_spare_space), NULL);
+}
+
+/**
+ * gxk_scrolled_window_create
+ * @child:       valid #GtkWidget
+ * @shadow_type: shadow around the #GtkViewport
+ * @xrequest:    fractional factor for screen width
+ * @yrequest:    fractional factor for screen height
+ * @spare_space: whether to call gxk_scrolled_window_spare_space()
+ * @RETURNS:     the newly created #GtkScrolledWindow
+ *
+ * Create a #GtkScrolledWindow with a #GtkViewport as parent of @child.
+ * The @xrequest and @yrequest arguments are passed on
+ * to gxk_widget_proxy_requisition().
+ */
+GtkWidget*
+gxk_scrolled_window_create (GtkWidget        *child,
+                            GtkShadowType     shadow_type,
+                            gdouble           xrequest,
+                            gdouble           yrequest,
+                            gboolean          spare_space)
+{
+  GtkWidget *scwin = g_object_new (GXK_TYPE_SCROLLED_WINDOW,
+                                   "visible", TRUE,
+                                   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+                                   "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+                                   "spare-space", spare_space,
+                                   NULL);
+  child = gtk_widget_get_toplevel (child);
+  GtkWidget *viewport = g_object_new (GTK_TYPE_VIEWPORT,
+                                      "visible", TRUE,
+                                      "shadow_type", shadow_type,
+                                      "hadjustment", gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (scwin)),
+                                      "vadjustment", gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scwin)),
+                                      "parent", scwin,
+                                      "child", child,
+                                      NULL);
+  gxk_widget_proxy_requisition (viewport, xrequest, yrequest);
+  return scwin;
 }
 
 static void
@@ -3057,11 +3214,11 @@ gxk_menu_attach_as_submenu (GtkMenu     *menu,
 
   gtk_menu_item_set_submenu (menu_item, GTK_WIDGET (menu));
 
-  if (!gxk_signal_handler_pending (menu_item, "hierarchy-changed", G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL))
+  if (!gxk_signal_handler_exists (menu_item, "hierarchy-changed", G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL))
     g_signal_connect_after (menu_item, "hierarchy-changed", G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL);
   menu_item_propagate_hierarchy_changed (menu_item);
 
-  if (!gxk_signal_handler_pending (menu, "parent-set", G_CALLBACK (submenu_adjust_sensitivity), NULL))
+  if (!gxk_signal_handler_exists (menu, "parent-set", G_CALLBACK (submenu_adjust_sensitivity), NULL))
     g_object_connect (menu,
                       "signal_after::parent-set", submenu_adjust_sensitivity, NULL,
                       "signal_after::add", submenu_adjust_sensitivity, NULL,
@@ -3100,7 +3257,7 @@ gxk_option_menu_set_menu (GtkOptionMenu *option_menu,
 
   gtk_option_menu_set_menu (option_menu, GTK_WIDGET (menu));
 
-  if (!gxk_signal_handler_pending (option_menu, "hierarchy-changed", G_CALLBACK (option_menu_propagate_hierarchy_changed), NULL))
+  if (!gxk_signal_handler_exists (option_menu, "hierarchy-changed", G_CALLBACK (option_menu_propagate_hierarchy_changed), NULL))
     g_signal_connect_after (option_menu, "hierarchy-changed", G_CALLBACK (option_menu_propagate_hierarchy_changed), NULL);
   option_menu_propagate_hierarchy_changed (option_menu);
 }
@@ -3175,7 +3332,7 @@ gxk_menu_attach_as_popup_with_func (GtkMenu          *menu,
   g_object_set_data (menu, "gxk-GtkMenuDetachFunc", mdfunc);
   gtk_menu_attach_to_widget (menu, widget, popup_menu_detacher);
 
-  if (!gxk_signal_handler_pending (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL))
+  if (!gxk_signal_handler_exists (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL))
     g_signal_connect_after (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL);
   menu_widget_propagate_hierarchy_changed (widget);
 }
@@ -3382,7 +3539,7 @@ gxk_widget_add_font_requisition (GtkWidget       *widget,
   g_object_set_long (widget, "GxkWidget-font-chars", n_chars);
   g_object_set_long (widget, "GxkWidget-font-digits", n_digits);
   if ((n_chars || n_digits) &&
-      !gxk_signal_handler_pending (widget, "size-request", G_CALLBACK (widget_add_font_requisition), NULL))
+      !gxk_signal_handler_exists (widget, "size-request", G_CALLBACK (widget_add_font_requisition), NULL))
     g_signal_connect_after (widget, "size-request", G_CALLBACK (widget_add_font_requisition), NULL);
   gtk_widget_queue_resize (widget);
 }

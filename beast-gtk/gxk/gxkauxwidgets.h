@@ -35,6 +35,17 @@ typedef GtkImageMenuItem      GxkMenuItem;
 typedef GtkImageMenuItemClass GxkMenuItemClass;
 GType   gxk_menu_item_get_type          (void);
 
+/* --- scrolled window --- */
+#define GXK_TYPE_SCROLLED_WINDOW              (gxk_scrolled_window_get_type ())
+#define GXK_SCROLLED_WINDOW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_SCROLLED_WINDOW, GxkScrolledWindow))
+#define GXK_SCROLLED_WINDOW_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_SCROLLED_WINDOW, GxkScrolledWindowClass))
+#define GXK_IS_SCROLLED_WINDOW(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_SCROLLED_WINDOW))
+#define GXK_IS_SCROLLED_WINDOW_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_SCROLLED_WINDOW))
+#define GXK_SCROLLED_WINDOW_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_SCROLLED_WINDOW, GxkScrolledWindowClass))
+typedef GtkScrolledWindow      GxkScrolledWindow;
+typedef GtkScrolledWindowClass GxkScrolledWindowClass;
+GType   gxk_scrolled_window_get_type          (void);
+
 /* --- free radio button --- */
 #define GXK_TYPE_FREE_RADIO_BUTTON            (gxk_free_radio_button_get_type ())
 #define GXK_FREE_RADIO_BUTTON(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GXK_TYPE_FREE_RADIO_BUTTON, GxkFreeRadioButton))

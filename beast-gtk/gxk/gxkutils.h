@@ -41,7 +41,9 @@ GtkWidget*      gxk_item_factory_get_item          (GtkItemFactory  *ifactory,
                                                     const gchar     *path);
 GtkWidget*      gxk_item_factory_get_widget        (GtkItemFactory  *ifactory,
                                                     const gchar     *path);
-void            gxk_widget_proxy_requisition       (GtkWidget       *widget);
+void            gxk_widget_proxy_requisition       (GtkWidget       *widget,
+                                                    gdouble          xscale,
+                                                    gdouble          yscale);
 void            gxk_widget_request_hclient_height  (GtkWidget       *widget,
                                                     GtkWidget       *client);
 void            gxk_widget_request_vclient_width   (GtkWidget       *widget,
@@ -184,18 +186,25 @@ void         gxk_notebook_change_tabulator        (GtkWidget        *tabulator,
                                                    const gchar      *label_text,
                                                    const gchar      *stock_image,
                                                    const gchar      *tooltip);
-void         gxk_notebook_add_page                (GtkNotebook      *notebook,
-                                                   GtkWidget        *child,
-                                                   const gchar      *tab_text,
-                                                   gboolean          expand_fill);
 void         gxk_notebook_set_current_page_widget (GtkNotebook      *notebook,
                                                    GtkWidget        *page);
 GtkWidget*   gxk_vseparator_space_new             (gboolean          draw_seperator);
 GtkWidget*   gtk_notebook_current_widget          (GtkNotebook      *notebook);
 GtkWidget*   gxk_notebook_descendant_get_page     (GtkWidget        *widget);
 GtkWidget*   gxk_notebook_descendant_get_tab      (GtkWidget        *widget);
+void	     gxk_notebook_append		  (GtkNotebook	    *notebook,
+                                                   GtkWidget	    *child,
+                                                   const gchar	    *label,
+                                                   gboolean          fillexpand);
 GtkWidget*   gtk_box_get_nth_child                (GtkBox           *box,
                                                    gint              pos);
+void         gxk_scrolled_window_spare_space      (GtkScrolledWindow*scwin);
+void         gxk_scrolled_window_unspare_space    (GtkScrolledWindow*scwin);
+GtkWidget*   gxk_scrolled_window_create           (GtkWidget        *child,
+                                                   GtkShadowType     shadow_type,
+                                                   gdouble           xrequest,
+                                                   gdouble           yrequest,
+                                                   gboolean          spare_space);
 
 /* functions to affect a widget tree's toplevel */
 void         gxk_toplevel_delete                  (GtkWidget        *widget);
@@ -304,13 +313,12 @@ gboolean gxk_tree_view_is_row_selected	 (GtkTreeView		*tree,
 					  gint			 row);
 gint     gxk_tree_view_get_selected_row	 (GtkTreeView		*tree);
 
-/* misc widgets */
-void	gxk_notebook_append		(GtkNotebook	*notebook,
-					 GtkWidget	*child,
-					 const gchar	*label);
-
 
 /* --- signal convenience --- */
+gboolean	gxk_signal_handler_exists	(gpointer	 instance,
+						 const gchar	*detailed_signal,
+						 GCallback	 callback,
+						 gpointer	 data);
 gboolean	gxk_signal_handler_pending	(gpointer	 instance,
 						 const gchar	*detailed_signal,
 						 GCallback	 callback,

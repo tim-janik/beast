@@ -681,10 +681,10 @@ gxk_widget_publish_action_list (gpointer       widget,
                            g_slist_prepend (g_object_steal_qdata (widget, quark_widget_actions), aset),
                            publisher_destroy_action_sets);
   toplevel = gtk_widget_get_toplevel (widget);
-  if (!gxk_signal_handler_pending (widget, "hierarchy_changed", G_CALLBACK (publisher_update_actions_sets), NULL))
+  if (!gxk_signal_handler_exists (widget, "hierarchy_changed", G_CALLBACK (publisher_update_actions_sets), NULL))
     g_object_connect (widget, "signal_after::hierarchy-changed", publisher_update_actions_sets, NULL, NULL);
   publisher_update_actions_sets (widget);
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (gxk_widget_update_actions), NULL))
+  if (!gxk_signal_handler_exists (widget, "realize", G_CALLBACK (gxk_widget_update_actions), NULL))
     g_object_connect (widget, "signal_after::realize", gxk_widget_update_actions, NULL, NULL);
   gxk_widget_update_actions (widget);
 }

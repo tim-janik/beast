@@ -1274,7 +1274,7 @@ radget_create_from_node (Node         *node,
     }
   /* hierarchy-changed setup */
   if (GTK_IS_WIDGET (radget) &&
-      !gxk_signal_handler_pending (radget, "hierarchy-changed", G_CALLBACK (radget_widget_hierarchy_changed), NULL))
+      !gxk_signal_handler_exists (radget, "hierarchy-changed", G_CALLBACK (radget_widget_hierarchy_changed), NULL))
     {
       g_signal_connect_after (radget, "hierarchy-changed", G_CALLBACK (radget_widget_hierarchy_changed), NULL);
       /* check anchored */
@@ -1746,11 +1746,11 @@ _gxk_init_radget_types (void)
   *t++ = GTK_TYPE_HBOX;         *t++ = GTK_TYPE_VBOX;           *t++ = GXK_TYPE_MENU_BUTTON;
   *t++ = GTK_TYPE_CHECK_BUTTON; *t++ = GTK_TYPE_ENTRY;          *t++ = GXK_TYPE_MENU_ITEM;
   *t++ = GTK_TYPE_HSCROLLBAR;   *t++ = GTK_TYPE_HSCALE;         *t++ = GTK_TYPE_TEAROFF_MENU_ITEM;
-  *t++ = GTK_TYPE_VSCROLLBAR;   *t++ = GTK_TYPE_VSCALE;         *t++ = GXK_TYPE_IMAGE;
+  *t++ = GTK_TYPE_VSCROLLBAR;   *t++ = GTK_TYPE_VSCALE;         *t++ = GXK_TYPE_FREE_RADIO_BUTTON;
   *t++ = GTK_TYPE_VSEPARATOR;   *t++ = GXK_TYPE_SIMPLE_LABEL;   *t++ = GTK_TYPE_HSEPARATOR;
-  *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;
-  *t++ = GXK_TYPE_FREE_RADIO_BUTTON;
-  *t++ = GXK_TYPE_RACK_TABLE;   *t++ = GXK_TYPE_RACK_ITEM;	*t++ = GXK_TYPE_BACK_SHADE;
+  *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;      *t++ = GXK_TYPE_SCROLLED_WINDOW;
+  *t++ = GXK_TYPE_IMAGE;        *t++ = GXK_TYPE_BACK_SHADE;
+  *t++ = GXK_TYPE_RACK_TABLE;   *t++ = GXK_TYPE_RACK_ITEM;
   while (t-- > types)
     gxk_radget_define_widget_type (*t);
   radget_define_gtk_menu ();
@@ -2035,9 +2035,43 @@ mf_floatcmp (GSList *args,
           result = match;
           break;
         }
+      last = v;
       arg = argiter_exp (&argiter, env);
     }
   return g_strdup (result ? "1" : "0");
+}
+
+static gchar*
+mf_floatcollect (GSList *args,
+                 Env    *env)
+{
+  GSList      *argiter = args;
+  const gchar *name = argiter_pop (&argiter);
+  gchar *arg = argiter_exp (&argiter, env);
+  double last = arg ? float_from_string (arg) : 0;
+  guint n = arg ? 1 : 0;
+  double accu = last;
+  g_free (arg);
+  arg = argiter_exp (&argiter, env);
+  while (arg)
+    {
+      double v = float_from_string (arg);
+      g_free (arg);
+      if (strcmp (name, "max") == 0)
+        accu = MAX (accu, v);
+      else if (strcmp (name, "min") == 0)
+        accu = MIN (accu, v);
+      else if (strcmp (name, "avg") == 0)
+        accu += v;
+      else if (strcmp (name, "sum") == 0)
+        accu += v;
+      last = v;
+      n++;
+      arg = argiter_exp (&argiter, env);
+    }
+  if (strcmp (name, "avg") == 0 && n)
+    accu /= n;
+  return g_strdup_printf ("%.17g", accu);
 }
 
 static gchar*
@@ -2147,6 +2181,10 @@ macro_func_lookup (const gchar *name)
     { "ge",             mf_floatcmp, },
     { "ne",             mf_floatcmp, },
     { "eq",             mf_floatcmp, },
+    { "min",            mf_floatcollect, },
+    { "max",            mf_floatcollect, },
+    { "sum",            mf_floatcollect, },
+    { "avg",            mf_floatcollect, },
     { "nth",            mf_nth, },
     { "ifdef",          mf_ifdef, },
     { "first-occupied", mf_first_occupied, },

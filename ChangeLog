@@ -1,3 +1,45 @@
+Sun Sep 12 03:35:46 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparamview.c:
+	* beast-gtk/bstpreferences.c: changed layouts to use 
+	gxk_scrolled_window_create().
+
+	* beast-gtk/bsttracksynthdialog.c:
+	* beast-gtk/bstitemseqdialog.c:
+	* beast-gtk/bstpartdialog.c:
+	* beast-gtk/bstfiledialog.c:
+	* beast-gtk/bstapp.c: adjusted dialog sizes, constrained to screen size.
+
+	* beast-gtk/bsteventroll.c: adjusted height requisition.
+
+	* beast-gtk/gxk/gxkdialog.[hc]: added gxk_dialog_set_sizes().
+
+	* beast-gtk/gxk/gxkutils.[hc]: removed gxk_notebook_add_page() in favour
+	of gxk_notebook_append(), fixed callers.
+	gxk_widget_proxy_requisition(): added x/y scale arguments.
+	gxk_scrolled_window_create(): new convenience function.
+	gxk_scrolled_window_unspare_space(): 
+	gxk_scrolled_window_spare_space(): save extra space allocated by gtk+.
+	gxk_signal_handler_exists(): figure whether a certain signal callback
+	is connected.
+	gxk_signal_handler_pending(): check for unblocked handlers only.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: added GxkScrolledWindow which is
+	a GtkScrolledWindow with ::spare-space property to call
+	gxk_scrolled_window_spare_space() through the property interface,
+	and reduced scrollbar spacing in the class structure.
+
+	* beast-gtk/gxk/gxkradget.c: fixed up comparison logic in mf_floatcmp()
+	for argument lists > 2. added functions: min, max, sum, avg.
+
+	* beast-gtk/dialogs/radgets-beast.xml: fixed height/paned screwup of
+	PianoRoll-vpaned. added event boxes around children, to limit GUI 
+	artefacts when shrinking.
+
+	* beast-gtk/dialogs/radgets-standard.xml: support ::window-placement
+	for scrolled-window. fixed function calls in paned properties.
+	put toolbars into scrolled windows, to handle too shrunk dialogs.
+
 Thu Sep  9 01:43:52 2004  Tim Janik  <timj@gtk.org>
 
 	* bstrecords.idl:

@@ -202,6 +202,48 @@ gxk_menu_item_get_type (void)
   return type;
 }
 
+/* --- scrolled window --- */
+G_DEFINE_TYPE (GxkScrolledWindow, gxk_scrolled_window, GTK_TYPE_SCROLLED_WINDOW);
+
+static void
+gxk_scrolled_window_init (GxkScrolledWindow *self)
+{
+}
+
+enum {
+  SCROLLED_WINDOW_PROP_0,
+  SCROLLED_WINDOW_PROP_SPARE_SPACE,
+};
+static void
+gxk_scrolled_window_set_property (GObject      *object,
+                                  guint         param_id,
+                                  const GValue *value,
+                                  GParamSpec   *pspec)
+{
+  GxkScrolledWindow *self = GXK_SCROLLED_WINDOW (object);
+  switch (param_id)
+    {
+    case SCROLLED_WINDOW_PROP_SPARE_SPACE:
+      if (g_value_get_boolean (value))
+        gxk_scrolled_window_spare_space (self);
+      else
+        gxk_scrolled_window_unspare_space (self);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+}
+
+static void
+gxk_scrolled_window_class_init (GxkScrolledWindowClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  gobject_class->set_property = gxk_scrolled_window_set_property;
+  g_object_class_install_property (gobject_class, SCROLLED_WINDOW_PROP_SPARE_SPACE,
+                                   g_param_spec_boolean ("spare-space", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  GTK_SCROLLED_WINDOW_CLASS (class)->scrollbar_spacing = 1;
+}
 
 /* --- GxkFreeRadioButton --- */
 static void
@@ -530,7 +572,7 @@ widget_patcher_adopt (GxkRadget          *radget,
         gtk_tooltips_set_tip (GXK_TOOLTIPS, parent, self->tooltip, NULL);
     }
   if (self->mute_events &&
-      !gxk_signal_handler_pending (parent, "event", G_CALLBACK (widget_mute_events), NULL))
+      !gxk_signal_handler_exists (parent, "event", G_CALLBACK (widget_mute_events), NULL))
     g_object_connect (parent, "signal::event", widget_mute_events, NULL, NULL);
   if (self->modify_normal_bg_as_base)
     gxk_widget_modify_normal_bg_as_base (parent);
@@ -541,17 +583,17 @@ widget_patcher_adopt (GxkRadget          *radget,
   if (self->modify_base_as_bg)
     gxk_widget_modify_base_as_bg (parent);
   if (self->lower_windows &&
-      !gxk_signal_handler_pending (parent, "map", G_CALLBACK (widget_lower_windows), NULL))
+      !gxk_signal_handler_exists (parent, "map", G_CALLBACK (widget_lower_windows), NULL))
     g_object_connect (parent, "signal_after::map", widget_lower_windows, NULL, NULL);
   if (self->hide_insensitive &&
-      !gxk_signal_handler_pending (parent, "state-changed", G_CALLBACK (widget_hide_insensitive), NULL))
+      !gxk_signal_handler_exists (parent, "state-changed", G_CALLBACK (widget_hide_insensitive), NULL))
     g_object_connect (parent, "signal_after::state-changed", widget_hide_insensitive, NULL, NULL);
   if (self->width_from_height &&
-      !gxk_signal_handler_pending (parent, "size-request", G_CALLBACK (widget_patcher_width_from_height), NULL))
+      !gxk_signal_handler_exists (parent, "size-request", G_CALLBACK (widget_patcher_width_from_height), NULL))
     g_object_connect (parent, "signal_after::size-request", widget_patcher_width_from_height, NULL, NULL);
   g_object_set_double (parent, "width-from-height", self->width_from_height);
   if (self->height_from_width &&
-      !gxk_signal_handler_pending (parent, "size-request", G_CALLBACK (widget_patcher_height_from_width), NULL))
+      !gxk_signal_handler_exists (parent, "size-request", G_CALLBACK (widget_patcher_height_from_width), NULL))
     g_object_connect (parent, "signal_after::size-request", widget_patcher_height_from_width, NULL, NULL);
   g_object_set_double (parent, "height-from-width", self->height_from_width);
   if ((self->resize_hsteps || self->resize_vsteps ||
@@ -777,4 +819,3 @@ gxk_back_shade_class_init (GxkBackShadeClass *class)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   widget_class->expose_event = back_shade_expose_event;
 }
-

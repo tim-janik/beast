@@ -129,11 +129,10 @@ bst_part_dialog_init (BstPartDialog *self)
   /* configure self */
   g_object_set (self,
                 "name", "BEAST-PartDialog",
-                "default_width", 600,
-		"default_height", 450,
 		"flags", GXK_DIALOG_STATUS_SHELL,
 		NULL);
-
+  gxk_dialog_set_sizes (GXK_DIALOG (self), 640, 400, 1005, 650);
+  
   /* radget-complete GUI */
   radget = gxk_radget_create ("beast", "piano-roll-box", NULL);
   gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), radget);

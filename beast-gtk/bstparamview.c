@@ -255,35 +255,20 @@ bst_param_view_rebuild (BstParamView *self)
   /* pack grouped parameters */
   if (gcontainer)
     {
-      GtkScrolledWindow *scrolled_window;
-      GtkWidget *viewport;
       if (ncontainer)
 	gtk_box_pack_start (pbox, g_object_new (GTK_TYPE_HSEPARATOR,
 						"visible", TRUE,
 						NULL),
 			    FALSE, FALSE, 0);
-      scrolled_window = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
-				      "visible", TRUE,
-				      "hscrollbar_policy", GTK_POLICY_NEVER,
-				      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-				      "parent", self,
-				      NULL);
-      viewport = g_object_new (GTK_TYPE_VIEWPORT,
-			       "visible", TRUE,
-			       "shadow_type", GTK_SHADOW_NONE,
-			       "hadjustment", gtk_scrolled_window_get_hadjustment (scrolled_window),
-			       "vadjustment", gtk_scrolled_window_get_vadjustment (scrolled_window),
-			       "parent", scrolled_window,
-			       NULL);
-      gxk_widget_proxy_requisition (viewport);
       g_object_set (gcontainer,
 		    "visible", TRUE,
 		    "homogeneous", FALSE,
 		    "border_width", border_width,
-		    "parent", viewport,
 		    NULL);
+      GtkWidget *scwin = gxk_scrolled_window_create (gcontainer, GTK_SHADOW_NONE, 1, 0.8, TRUE);
+      gtk_container_add (GTK_CONTAINER (self), scwin);
     }
-
+  
   /* refresh parameter fields */
   for (slist = self->params; slist; slist = slist->next)
     gxk_param_update (slist->data);

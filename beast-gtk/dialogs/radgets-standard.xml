@@ -186,10 +186,12 @@
   <xdef:viewport              inherit="GtkViewport"
     prop:shadow-type="$(first-occupied,$shadow-type,shadow-none)"
     />
-  <xdef:scrolled-window       inherit="GtkScrolledWindow"
+  <xdef:scrolled-window       inherit="GxkScrolledWindow"
     prop:shadow-type="$(first-occupied,$shadow-type,shadow-in)"
     prop:hscrollbar-policy="$(first-occupied,$hscrollbar-policy,policy-always)"
     prop:vscrollbar-policy="$(first-occupied,$vscrollbar-policy,policy-always)"
+    prop:window-placement="$(first-occupied,$window-placement,top-left)"
+    prop:spare-space="$(first-occupied,$spare-space,0)"
     />
   <xdef:tree-view             inherit="GtkTreeView"
     prop:rules-hint="$(ifdef,rules-hint,$rules-hint,1)"
@@ -198,12 +200,12 @@
   <xdef:table                 inherit="GtkTable"          />
   <!-- paned containers -->
   <xdef:hpaned                inherit="GtkHPaned"
-    prop:position_set="$(ifdef,position,$(ge,$position,0),0)"
-    prop:position="$(if,$(ge,$position,0),$position,0)"
+    prop:position="$(max,$position,0)"
+    prop:position-set="$(if,$(le,$position,0),0,1)"
     />
   <xdef:vpaned                inherit="GtkVPaned"
-    prop:position_set="$(ifdef,position,$(ge,$position,0),0)"
-    prop:position="$(if,$(ge,$position,0),$position,0)"
+    prop:position="$(max,$position,0)"
+    prop:position-set="$(if,$(le,$position,0),0,1)"
     />
   <!-- rack table & items -->
   <xdef:rack-table            inherit="GxkRackTable" />
@@ -323,11 +325,16 @@
   
   <xdef:big-button-factory  inherit="button-factory" image-size="big-button" />
   <!-- toolbar -->
-  <xdef:toolbar             inherit="frame-shadow-out"
-    default-area="toolbar-hbox" >
-    <event-box>
+  <xdef:toolbar             inherit="scrolled-window"
+    default-area="toolbar-hbox"
+    hscrollbar-policy="automatic"
+    vscrollbar-policy="never"
+    spare-space="1"
+    shadow-type="shadow-out"
+    window-placement="bottom-right" >
+    <viewport>
       <hbox id="toolbar-hbox" />
-    </event-box>
+    </viewport>
   </xdef:toolbar>
   <!-- toolbar factories -->
   <xdef:tool-button-factory inherit="button-factory" image-size="big-button" relief="none" width-from-height="1.2" />
