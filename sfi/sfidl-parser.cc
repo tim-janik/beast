@@ -1042,8 +1042,30 @@ Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
             }
           parse_or_return (')');
 	}
+      else if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
+        {
+          parse_or_return (G_TOKEN_INT);
+          value = scanner->value.v_int64;
+        }
+      else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+               strcmp (scanner->next_value.v_string, "Neutral") == 0)
+        {
+          parse_or_return (G_TOKEN_IDENTIFIER);
+          comp.neutral = true;
+        }
+      else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+               strcmp (scanner->next_value.v_string, "_") == 0)
+        {
+          parse_istring_or_return (comp.label);
+        }
+      else if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
+        {
+          parse_istring_or_return (comp.label);
+        }
+      else
+        return G_TOKEN_INT;
     }
-  
+
   comp.value = value++;
   if (comp.neutral)
     comp.sequentialValue = 0;
