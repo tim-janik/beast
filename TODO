@@ -1,8 +1,8 @@
 FIXMES:	(release-critical)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - adjust engine block size (Subject: blocksize vs. cpu)
-- midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
 TODO:
+- midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
 - disable probing for invisible scopes
 - implement horizontal dB-meters as BstParam type
 - don't record samples to WAV file before *any* song is processed by sequencer
