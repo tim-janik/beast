@@ -203,9 +203,20 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
+    dnl Require libz
+    if test -z "$LIBZ"; then
+	AC_CHECK_LIB(z, gzsetparams,
+	    [AC_CHECK_HEADER(zlib.h, LIBZ='-lz', LIBZ='')],
+	    LIBZ='')
+    fi
+    if test -z "$LIBZ"; then
+	AC_MSG_ERROR([Compression library libz is missing, but required])
+    fi
+    AC_SUBST(LIBZ)
+
     dnl We need SFI and GSL
     BSE_CFLAGS="$GSL_CFLAGS $SFI_CFLAGS"
-    BSE_LIBS="$GSL_LIBS $SFI_LIBS"
+    BSE_LIBS="$GSL_LIBS $SFI_LIBS $LIBZ"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
 
@@ -493,6 +504,7 @@ Makefile
 sfi/Makefile
 bse/Makefile
 bse/icons/Makefile
+bse/zintern/Makefile
 plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile

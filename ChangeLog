@@ -1,3 +1,9 @@
+Thu Feb 13 10:53:59 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: added libz check. require libz for BSE.
+
+	* beast-gtk/icons/Makefile.am: fix EXTRA_DIST filter.
+
 Tue Feb 11 11:46:52 2003  Alper Ersoy <dirt@gtk.org>
 
  	* docs/generated/Makefile.am: fixed man/nroff build process and added
