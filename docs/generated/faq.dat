@@ -87,7 +87,7 @@ Why can't I get BEAST to load my .mp3, .aiff, .something sample files?
 Import functionality for foreign sample types is currently being worked on, if
 you'd like to assist this process, send email to beast@beast.gtk.org.
 Sample file loaders currently exist for Ogg/Vorbis, MPEG Audio 1.0/2.0/2.5
-Layer I/II/III and .wav files.
+Layer I/II/III, RIFF/WAVE, and .gslwave (GSL multi sample format) files.
 
 @FAQ-CATEGORY@
 General
