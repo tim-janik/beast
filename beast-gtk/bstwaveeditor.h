@@ -65,6 +65,7 @@ struct _BstWaveEditor
   BswProxy	     esample;
   guint              esample_open : 1;
   GtkWidget	    *qsampler_hscroll;
+  GtkWidget	    *qsampler_playpos;
   guint		     n_qsamplers;
   BstQSampler      **qsamplers;
 };

@@ -1,3 +1,11 @@
+Tue Jul 30 01:44:02 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/release-notes.dat: updates.
+
+	* beast-gtk/bstplayback.[hc]: export API for seeking.
+
+	* beast-gtk/bstwaveeditor.[hc]: add seek scale.
+
 Sat Jul 27 19:10:36 2002  Tim Janik  <timj@gtk.org>
 
 	* configure.in (BST_RELEASE_CANDIDATE): feature release candidate

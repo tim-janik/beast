@@ -166,6 +166,7 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		MC_EVAR_ADD(CFLAGS, -fno-cond-mismatch, -fno-cond-mismatch)
 		MC_EVAR_ADD(CFLAGS, -ffor-scope, -ffor-scope)
 		MC_EVAR_ADD(CFLAGS, -Wno-cast-qual, -Wno-cast-qual)
+		dnl MC_EVAR_ADD(CFLAGS, -Wwrite-strings, -Wwrite-strings)
         	
 		dnl
 		dnl Warnings.
@@ -284,6 +285,7 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		MC_EVAR_ADD(CXXFLAGS, -Wctor-dtor-privacy, -Wctor-dtor-privacy)
 		MC_EVAR_ADD(CXXFLAGS, -Wreorder, -Wreorder)
 		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
+		MC_EVAR_ADD(CXXFLAGS, -Wwrite-strings, -Wwrite-strings)
 	
 		dnl
 		dnl Optimizations

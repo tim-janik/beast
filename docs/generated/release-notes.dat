@@ -1,11 +1,19 @@
 				RELEASE-NOTES
 				=============
 
-	Much has changed in the new development version of BEAST,
-	this is still experimental code and might not always work
-	as expected ;)
-	However, the current code is already good enough to perform
-	interesting synthesis tasks and to have lots of fun with.
+	Much has changed in the new development version of BEAST.
+	In brief (specifics can be found in the NEWS section), the
+	GUI was majorly polished, many new synthesis features have
+	been added and support for various external wave file formats
+	was implemented.
+	The current version is already good enough to perform
+	interesting synthesis tasks and to have lots of fun with
+	songs, external MIDI devices and samples ;)
+	However, this is still an ALPHA version, so things might
+	not always work as expected, reports about misbehaviour
+	are welcome.
+	Be warned though, the .bse file format hasn't fully stabelized
+	yet, so incompatibilities whith future versions may occour.
 	
 	A good starting point are the test files shipped in the
 	tests/ subdirectory of the source package.

@@ -1,5 +1,4 @@
 RELEASE:
-- put a WARNING somewhere about file format changes in future versions
 - subsynth cycle search algorithm
 - bsw_item_check_value(item,name,value) to filter non-valid objects property settings
 - terminology: s/pulse/square/, s/growing/rising/, s/shrinking/falling/ (saw), half.tone->semitone
@@ -10,6 +9,28 @@ RELEASE:
 * add switch to set keytables directly, no-serverquery, which works without rc file
 * fix file selection (open load) dialog
 * plugin loading doesn't work for doc building after make uninstall
+
+FEATURES:
+- part editor needs play position
+- track editor needs play position
+- piano roll: ctrl+move should copy (DND style modifier)
+- snet router: ctrl+move should clone objects (DND style modifier) 
+- snet router: support selections for group moves
+- snet router: add property editor dialog which contains intersection of properties from selected objects
+- Modul BseTranspose, inputs: frequency, outputs: frequency, property: semitones
+- part-view: double click on list items should fire up editor
+- pianorroll: draw ces and fes with red lines
+- pianoroll: tooltip follows mouse and shows current note/tact
+- pianoroll: hotkey fuer play song
+- pianoroll: play notes upon insert (click on piano roll window)
+- pianoroll: two notes from 0..15 and 16..32 look like one
+- bug: song->master volume doesn't affect anything
+- pianoroll: ctrl/shift modifiers for selection
+- pianoroll: quantize upon paste
+- pianoroll: fix hscrollbar  (BsePart end position implementation)
+- pianoroll: select loop for playback during editing
+- BstToolbar, drop-down selections work only after button release
+- snet router: optionally, paint i/o channel names onto background
 
 GENERAL:
 * BLIT, band-limited impulse train

@@ -47,6 +47,8 @@ void			bst_play_back_handle_set	(BstPlayBackHandle	*handle,
 							 BswProxy		 esample,
 							 gdouble		 osc_freq);
 void			bst_play_back_handle_start	(BstPlayBackHandle	*handle);
+void			bst_play_back_handle_seek_perc	(BstPlayBackHandle	*handle,
+							 gfloat			 perc);
 void			bst_play_back_handle_stop	(BstPlayBackHandle	*handle);
 void			bst_play_back_handle_toggle	(BstPlayBackHandle	*handle);
 void			bst_play_back_handle_pcm_notify	(BstPlayBackHandle	*handle,

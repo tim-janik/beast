@@ -59,6 +59,8 @@ static void	tree_selection_changed		(BstWaveEditor		*self,
 						 GtkTreeSelection	*tsel);
 static void	adjustments_changed		(BstWaveEditor		*self,
 						 GtkAdjustment		*adjustment);
+static void	playpos_changed			(BstWaveEditor		*self,
+						 GtkAdjustment		*adjustment);
 static void	change_draw_mode		(BstWaveEditor		*self,
 						 GtkOptionMenu		*omenu);
 static void	change_scroll_mode		(BstWaveEditor		*self,
@@ -405,6 +407,21 @@ wave_editor_set_n_qsamplers (BstWaveEditor *self,
     {
       guint i;
 
+      /* playback position scale */
+      if (!self->qsampler_playpos && n_qsamplers)
+	{
+	  self->qsampler_playpos = g_object_new (GTK_TYPE_HSCALE,
+						 "visible", TRUE,
+						 "adjustment", gtk_adjustment_new (0, 0, 100, 1, 10, 0),
+						 "draw_value", FALSE,
+						 "can_focus", FALSE,
+						 NULL);
+	  bst_nullify_on_destroy (self->qsampler_playpos, &self->qsampler_playpos);
+	  gtk_box_pack_end (GTK_BOX (qsampler_parent), self->qsampler_playpos, FALSE, TRUE, 0);
+	  g_object_connect (GTK_RANGE (self->qsampler_playpos)->adjustment,
+			    "swapped_signal_after::value_changed", playpos_changed, self,
+			    NULL);
+	}
       /* horizontal scrollbar */
       if (!self->qsampler_hscroll && n_qsamplers)
 	{
@@ -574,6 +591,14 @@ adjustments_changed (BstWaveEditor *self,
       else if (adjustment == self->vscale_adjustment)
 	bst_qsampler_set_vscale (qsampler, adjustment->value);
     }
+}
+
+static void
+playpos_changed (BstWaveEditor *self,
+		 GtkAdjustment *adjustment)
+{
+  if (self->phandle && bst_play_back_handle_is_playing (self->phandle))
+    bst_play_back_handle_seek_perc (self->phandle, adjustment->value);
 }
 
 static void

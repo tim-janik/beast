@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1-rc1
-date    = 27 Jul 2002
+date    = 30 Jul 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 27 Jul 2002 BEAST-0.4.1-rc1
+BSW-Procedures 30 Jul 2002 BEAST-0.4.1-rc1
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -3436,6 +3436,34 @@ esample: Editable sample
 
 @DOC-DESCRIPTION@
 Retrive an editable sample object for a wave chunk.  
+@DOC-SYNOPSIS@
+@STRONG bsw-wave-osc-pcm-seek-perc@ (@EMPH wosc@, @EMPH pos-perc@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wosc
+@DOC-PARDESC@
+Wave Oscilator
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pos-perc
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Seek oscillator to a given pcm percentage during playback.  
 @DOC-SYNOPSIS@
 @STRONG bsw-wave-osc-request-pcm-position@ (@EMPH wosc@);
 

@@ -78,6 +78,13 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 }
 
 void
+bst_play_back_handle_seek_perc (BstPlayBackHandle *handle,
+				gfloat             perc)
+{
+  bsw_wave_osc_pcm_seek_perc (handle->wosc, perc);
+}
+
+void
 bst_play_back_handle_stop (BstPlayBackHandle *handle)
 {
   bsw_server_halt_project (BSW_SERVER, handle->project);
