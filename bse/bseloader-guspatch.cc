@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 
+#undef  WITH_GUSPATCH_XINFOS
 #define GUS_PATCH_DEBUG(...)         sfi_debug ("guspatch", __VA_ARGS__)
 
 using std::vector;
@@ -462,7 +463,9 @@ struct FileInfo
     wdsc.name = g_strdup (file_name);
     /* header->channels means output channels, GUS Patches are mono only */
     wdsc.n_channels = 1;
+#ifdef WITH_GUSPATCH_XINFOS
     wdsc.xinfos = bse_xinfos_add_value (wdsc.xinfos, "play-type", "gus-patch");
+#endif
     
     for (guint i = 0; i < wdsc.n_chunks; i++)
       {
@@ -488,11 +491,15 @@ struct FileInfo
             xinfos = bse_xinfos_add_num (xinfos, "loop-start", patches[i]->loopStart / frame_size);
             xinfos = bse_xinfos_add_num (xinfos, "loop-end", patches[i]->loopEnd / frame_size);
             
-	    xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope-rates",
-		                           envelope_array_to_string (patches[i]->filterRate).c_str());
-	    xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope-offsets",
-		                           envelope_array_to_string (patches[i]->filterOffset).c_str());
+#ifdef WITH_GUSPATCH_XINFOS
+            xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope-rates",
+                                           envelope_array_to_string (patches[i]->filterRate).c_str());
+            xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope-offsets",
+                                           envelope_array_to_string (patches[i]->filterOffset).c_str());
+#endif
           }
+
+#ifdef WITH_GUSPATCH_XINFOS
 	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-loop-fractions", patches[i]->fractions);
 	xinfos = bse_xinfos_add_float (xinfos, "gus-patch-min-freq", patches[i]->minFreq / 1000.0);
 	xinfos = bse_xinfos_add_float (xinfos, "gus-patch-max-freq", patches[i]->maxFreq / 1000.0);
@@ -508,6 +515,7 @@ struct FileInfo
 	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-wave-format", patches[i]->waveFormat);
 	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-freq-scale", patches[i]->freqScale);
 	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-freq-scale-factor", patches[i]->freqScaleFactor);
+#endif
       }
   }
   
