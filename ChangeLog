@@ -1,3 +1,14 @@
+Thu Sep 27 14:10:55 2001  Tim Janik  <timj@gtk.org>
+
+	* bsw/bsw.h: 
+	* bsw/bswproxy.h: BSE procedure API wrapper. this shall become
+	the only public API for BSE one day.
+
+	* beast-gtk/*: a bunch of code is already proted to using BSW
+	functions. however, a few unresolved fundamental problems still
+	remain, which is why BSE is still being used directly in a lot
+	of places.
+
 Thu Sep 27 13:23:21 2001  Tim Janik  <timj@gtk.org>
 
 	* lots of project shuffeling. blib got removed. we're
