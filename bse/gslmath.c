@@ -28,7 +28,7 @@
 
 
 /* factorization constants: 2^(1/12), ln(2^(1/12)) and 2^(1/(12*6))
- * retrived with:
+ * retrieved with:
  #include <stl.h>
  #include <complex.h>
  typedef long double ld;

@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
+#include "bstutils.h"	/* for the knob pixbuf */
 #include "bstknob.h"
 
 #include <gtk/gtkmain.h>
@@ -22,8 +23,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <gxk/gxkstock.h>	// FIXME: remove include
-
-#include "bstutils.h"	/* for the knob pixbuf */
 
 
 #define SCROLL_DELAY_LENGTH	300

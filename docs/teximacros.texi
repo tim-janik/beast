@@ -30,9 +30,22 @@
 
 
 @c --- accentuate phrases ---
-@rmacro emphasize{TEXT}
-@ifxmlelse{\TEXT\,emphasize,emph}
+@c --- WORKAROUND:
+@c --- The below reproduction of standard @emph command is due to
+@c --- a bug in makeinfo. If we do not define this macro,
+@c --- the output of
+@c ---    @chapter @emph{Emph} Text
+@c --- is
+@c ---    <chapter><title>Emph</title>Text...</chapter>
+@c --- (notice the lack of space between Emph and Text.)
+@ifxml
+@rmacro emph{TEXT}
+@rawxml{<emph>}\TEXT\@rawxml{</emph>}
 @end rmacro
+@rmacro code{TEXT}
+@rawxml{<code>}\TEXT\@rawxml{</code>}
+@end rmacro
+@end ifxml
 
 @rmacro important{TEXT}
 @ifxmlelse{\TEXT\,important,strong}
@@ -53,22 +66,11 @@
 @end rmacro
 
 @rmacro object{TEXT}
-@ifxmlelse{<\TEXT\>,object,r}
+@ifxmlelse{<\TEXT\>,object,code}
 @end rmacro
 
 @rmacro channel{TEXT}
 @ifxmlelse{\TEXT\,channel,code}
-@end rmacro
-
-@ifxml
-@rmacro code{TEXT}
-@rawxml{<code>}\TEXT\@rawxml{</code>}
-@end rmacro
-@end ifxml
-
-@rmacro programlisting{TEXT}
-@c in contrast to @code{} this will also preserve formatting
-@ifxmlelse{\TEXT\,programlisting,code}
 @end rmacro
 
 @rmacro keepspaceSTART
@@ -78,64 +80,133 @@
 @rawxml{</keepspace>}
 @end rmacro
 
-@rmacro preformat{TEXT}
-@ifxmlelse{\TEXT\,preformat,code}
-@end rmacro
-
-
-@c --- aliases ---
-@rmacro prop{TEXT}
-@property{\TEXT\}
-@end rmacro
-
-@rmacro module{TEXT}
-@object{\TEXT\}
-@end rmacro
-
 
 @c --- table of contents ---
-@rmacro toc{}
-@ifxmlelse{,table-of-contents,nop}
+@c --- WORKAROUND:
+@c --- Since makeinfo handles content tables itself for HTML and Info
+@c --- outputs, we only need this for XML target. Kinda work-around.
+@ifxml
+@rmacro contents
+@unnumbered Table Of Contents
+@xml
+<table-of-contents/>@end xml
 @end rmacro
+@end ifxml
 
 
 @c --- revision bit ---
-@rmacro revision{}
-@ifxmlelse{,revision,nop}
+@rmacro revision{TEXT}
+@center @emph{\TEXT\} @value{TexiStamp}
+@end rmacro
+
+
+@c --- plain index, ie. no section title, etc. ---
+@rmacro printplainindex{TEXT}
+@ifxmlelse{\TEXT\,printplainindex,nop}
+@end rmacro
+
+
+@c --- news item title ---
+@rmacro news_title{DATE, TITLE}
+@ifxmlelse{\DATE\,news-date,nop}
+@ifxmlelse{\TITLE\,news-title,nop}
+@end rmacro
+
+
+@c --- reference markup ---
+@c --- WORKAROUND:
+@c --- makeinfo formats the @deffn, @deftp, and similar
+@c --- commands in a way unsuitable for XML. So we try to
+@c --- reproduce their functionality
+@rmacro reference_function{TEXT}
+@ifxmlelse{\TEXT\,reference-function,nop}
+@end rmacro
+@rmacro reference_parameter{TEXT}
+@ifxmlelse{\TEXT\,reference-parameter,nop}
+@end rmacro
+@rmacro reference_type{TEXT}
+@ifxmlelse{\TEXT\,reference-type,nop}
+@end rmacro
+@rmacro reference_returns
+@ifxmlelse{RETURNS:,reference-returns,nop}
+@end rmacro
+@rmacro reference_blurb{TEXT}
+@ifxmlelse{\TEXT\,reference-blurb,nop}
+@end rmacro
+@rmacro reference_struct_name{TEXT}
+@ifxmlelse{\TEXT\,reference-struct-name,nop}
+@end rmacro
+@rmacro reference_struct_open
+@ifxmlelse{,reference-struct-open,nop}
+@end rmacro
+@rmacro reference_struct_close
+@ifxmlelse{,reference-struct-close,nop}
 @end rmacro
 
 
 @c --- document heading ---
+@c --- WORKAROUND:
+@c --- With these, we try to simulate the functionality of @titlepage, and
+@c --- related commands, which don't seem to be supported in XML output
 @rmacro doctitle{TEXT}
 @ifxmlelse{\TEXT\,document-title,nop}
 @end rmacro
 @rmacro docauthor{TEXT}
 @ifxmlelse{\TEXT\,document-author,nop}
 @end rmacro
+@rmacro docpackage{TEXT}
+@ifxmlelse{\TEXT\,document-package,nop}
+@end rmacro
+
+@c --- document style ---
+@rmacro docfont{TEXT}
+@ifxmlelse{\TEXT\,document-font,nop}
+@end rmacro
+
+
+@c --- aliases ---
+@rmacro module{TEXT}
+@object{\TEXT\}
+@end rmacro
+@rmacro prop{TEXT}
+@property{\TEXT\}
+@end rmacro
+@rmacro programlisting{TEXT}
+@lisp
+\TEXT\
+@end lisp
+@end rmacro
 
 
 @c --- common names ---
 @macro beast
-@emphasize{BEAST}
+@emph{BEAST}
+@end macro
+
+@macro beastlong
+@strong{BE}devilled @strong{A}udio @strong{S}ys@strong{T}em
 @end macro
 
 @macro bse
-@emphasize{BSE}
+@emph{BSE}
+@end macro
+
+@macro bselong
+@strong{B}edevilled @strong{S}ound @strong{E}ngine
 @end macro
 
 @macro gsl
-@emphasize{GSL}
+@emph{GSL}
 @end macro
 
 @macro beastbse
-@emphasize{BEAST/BSE}
+@emph{BEAST/BSE}
 @end macro
 
 @macro sfk
-@emphasize{SFK}
+@emph{SFK}
 @end macro
 
 @macro arts
-@emphasize{aRts}
+@emph{aRts}
 @end macro
-

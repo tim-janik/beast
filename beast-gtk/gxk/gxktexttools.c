@@ -16,10 +16,12 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include <malloc.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+#include <dirent.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 #include "gxktexttools.h"
@@ -92,12 +94,44 @@ text_buffer_add_error (GtkTextBuffer *tbuffer,
   g_free (string);
 }
 
-static GSList *image_paths = NULL;
+static GSList *tsm_paths = NULL;
 void
 gxk_text_add_tsm_path (const gchar *path)
 {
-  if (path)
-    image_paths = g_slist_append (image_paths, g_strdup (path));
+  guint l = strlen (path ? path : "");
+  if (l)
+    {
+      gchar *str, *p, *s;
+      gboolean was_slash = FALSE;
+      /* make path absolute and ensure it ends in '/' */
+      if (path[0] != '/')
+	{
+	  gchar *tmp = g_get_current_dir ();
+	  str = g_strconcat (tmp, "/", path, "/", NULL);
+	}
+      else
+	str = g_strconcat (path, "/", NULL);
+      /* compress '/'s and "/./" */
+      for (p = str, s = p; *p; p++)
+	if (*p != '/')
+	  {
+	    *s++ = *p;
+	    was_slash = FALSE;
+	  }
+	else
+	  {
+	    if (!was_slash)
+	      {
+		*s++ = *p;
+		was_slash = TRUE;
+	      }
+	    if (p[1] == '.' && p[2] == '/')
+	      p += 2;
+	  }
+      *s = 0;
+      tsm_paths = g_slist_append (tsm_paths, g_strdup (str));
+      g_free (str);
+    }
 }
 
 static GdkPixbuf*
@@ -108,9 +142,9 @@ pixbuf_new_from_path (const gchar *file_name,
   if (*error && !g_path_is_absolute (file_name))
     {
       GSList *slist;
-      for (slist = image_paths; slist && !pixbuf; slist = slist->next)
+      for (slist = tsm_paths; slist && !pixbuf; slist = slist->next)
 	{
-	  gchar *loc = g_strconcat (slist->data, G_DIR_SEPARATOR_S, file_name, NULL);
+	  gchar *loc = g_strconcat (slist->data, file_name, NULL);
 	  pixbuf = gdk_pixbuf_new_from_file (loc, NULL);
 	  g_free (loc);
 	}
@@ -160,14 +194,18 @@ enum_match_value (GEnumClass  *eclass,
     {
       gchar *vname = eclass->values[i].value_name;
       guint n = strlen (vname);
-      if (n >= length && enum_match (vname + n - length, name))
+      if (((n > length && char2eval (vname[n - 1 - length]) == '-')
+	   || n == length)
+	  && enum_match (vname + n - length, name))
 	return eclass->values[i].value;
     }
   for (i = 0; i < eclass->n_values; i++)
     {
       gchar *vname = eclass->values[i].value_nick;
       guint n = strlen (vname);
-      if (n >= length && enum_match (vname + n - length, name))
+      if (((n > length && char2eval (vname[n - 1 - length]) == '-')
+	   || n == length)
+	  && enum_match (vname + n - length, name))
 	return eclass->values[i].value;
     }
   return fallback;
@@ -191,6 +229,8 @@ text_buffer_tagdef (GtkTextBuffer *tbuffer,
   GtkTextTag *tag = gtk_text_tag_table_lookup (ttable, tag_name);
   GValue value = { 0, };
   GParamSpec *pspec = NULL;
+  GType vtype = 0;
+  gint edefault = 0;
   if (!tag)
     {
       tag = g_object_new (GTK_TYPE_TEXT_TAG,
@@ -202,8 +242,21 @@ text_buffer_tagdef (GtkTextBuffer *tbuffer,
     }
   if (property)
     pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (tag), property);
-  switch (pspec ? G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec)) : 0)
+  if (pspec)
     {
+      vtype = G_PARAM_SPEC_VALUE_TYPE (pspec);
+      /* special casing of weight which is int/enum */
+      if (G_IS_PARAM_SPEC_ENUM (pspec))
+	edefault = G_PARAM_SPEC_ENUM (pspec)->default_value;
+      else if (strcmp (pspec->name, "weight") == 0)
+	{
+	  vtype = PANGO_TYPE_WEIGHT;
+	  edefault = G_PARAM_SPEC_INT (pspec)->default_value;
+	}
+    }
+  switch (G_TYPE_FUNDAMENTAL (vtype))
+    {
+      GEnumClass *eclass;
       gdouble v_float;
     case G_TYPE_BOOLEAN:
       g_value_init (&value, G_TYPE_BOOLEAN);
@@ -224,11 +277,9 @@ text_buffer_tagdef (GtkTextBuffer *tbuffer,
       g_value_set_double (&value, g_strtod (tag_value, NULL));
       break;
     case G_TYPE_ENUM:
-      g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
-      g_value_set_enum (&value,
-			enum_match_value (G_PARAM_SPEC_ENUM (pspec)->enum_class,
-					  tag_value,
-					  G_PARAM_SPEC_ENUM (pspec)->default_value));
+      g_value_init (&value, vtype);
+      eclass = g_type_class_ref (vtype);
+      g_value_set_enum (&value, enum_match_value (eclass, tag_value, edefault));
       break;
     default:
       return FALSE;
@@ -632,7 +683,12 @@ tsm_text (GMarkupParseContext *context,
 	break;
       }
   *dest = 0;
-  gtk_text_buffer_insert_at_cursor (md->tbuffer, string, dest - string);
+  i = dest - string;
+  /* force-validate to UTF-8 */
+  dest = string;
+  while (!g_utf8_validate (dest, i - (dest - string), (const char**) &dest))
+    *dest = '?';
+  gtk_text_buffer_insert_at_cursor (md->tbuffer, string, i);
   g_free (string);
 }
 
@@ -683,7 +739,12 @@ text_buffer_insert (GtkTextBuffer *tbuffer,
       n = read_callback (callback_data, data_buffer, &error);
       while (n)
 	{
+	  /* force-validate to UTF-8 */
+	  guint8 *dest = data_buffer;
+	  while (!g_utf8_validate (dest, n - (dest - data_buffer), (const char**) &dest))
+	    *dest = '?';
 	  gtk_text_buffer_insert_at_cursor (tbuffer, data_buffer, n);
+	  /* next chunk */
 	  n = read_callback (callback_data, data_buffer, &error);
 	}
       if (error)
@@ -883,7 +944,10 @@ text_view_key_event (GtkTextView *tview,
 {
   GtkAdjustment *hadjustment = tview->hadjustment;
   GtkAdjustment *vadjustment = tview->vadjustment;
-  gboolean handled = TRUE;
+  gboolean editable = FALSE, handled = TRUE;
+  g_object_get (tview, "editable", &editable, NULL);
+  if (editable)
+    return FALSE;
   if (event->type != GDK_KEY_PRESS)
     return TRUE;
   switch (event->keyval)
@@ -1010,6 +1074,34 @@ gxk_text_view_cursor_to_end (GtkTextView *tview)
   gtk_text_view_scroll_to_mark (tview, gtk_text_buffer_get_insert (tbuffer), 0.0, TRUE, 0.0, 0.0);
 }
 
+void
+gxk_text_view_cursor_busy (GtkTextView *tview)
+{
+  g_return_if_fail (GTK_IS_TEXT_VIEW (tview));
+
+  if (GTK_WIDGET_DRAWABLE (tview))
+    {
+      GdkCursor *cursor = gdk_cursor_new (GDK_WATCH);
+      gdk_window_set_cursor (gtk_text_view_get_window (GTK_TEXT_VIEW (tview), GTK_TEXT_WINDOW_TEXT), cursor);
+      gdk_cursor_unref (cursor);
+      gdk_flush ();
+    }
+}
+
+void
+gxk_text_view_cursor_normal (GtkTextView *tview)
+{
+  g_return_if_fail (GTK_IS_TEXT_VIEW (tview));
+
+  if (GTK_WIDGET_DRAWABLE (tview))
+    {
+      GdkCursor *cursor = gdk_cursor_new (GDK_XTERM);
+      gdk_window_set_cursor (gtk_text_view_get_window (GTK_TEXT_VIEW (tview), GTK_TEXT_WINDOW_TEXT), cursor);
+      gdk_cursor_unref (cursor);
+      gdk_flush ();
+    }
+}
+
 static gboolean
 scroll_text_key_event (GtkWidget   *sctext,
 		       GdkEventKey *event)
@@ -1060,7 +1152,7 @@ scroll_text_patchup_size_request (GtkWidget      *scwin,
  * @flags:  scroll text flags
  * @string: default contents
  *
- * Create a non-editable scrollable text view. Behaviour
+ * Create a scrollable text view. Behaviour
  * and apperance can be tweaked by specifying various
  * @flags combinations out of:
  * GXK_SCROLL_TEXT_MONO_SPACED - use a fixed width font;
@@ -1103,9 +1195,9 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   gtk_box_pack_start (GTK_BOX (sctext), scwin, TRUE, TRUE, 0);
   widget = g_object_new (GTK_TYPE_TEXT_VIEW,
 			 "visible", TRUE,
-			 "cursor_visible", FALSE,
 			 "parent", scwin,
 			 NULL);
+  gtk_widget_grab_focus (widget);
   tbuffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
   /* navigation bits
@@ -1147,12 +1239,18 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   else
     gtk_widget_hide (GTK_WIDGET (tbar));
 
-  if (TRUE)
-    {
-      g_object_set (widget, "editable", FALSE, NULL);
-      g_signal_connect_swapped (widget, "key_press_event", G_CALLBACK (scroll_text_key_event), sctext);
-      gxk_text_view_enter_browse_mode (GTK_TEXT_VIEW (widget));
-    }
+  if (flags & GXK_SCROLL_TEXT_EDITABLE)
+    g_object_set (widget,
+		  "editable", TRUE,
+		  "cursor_visible", TRUE,
+		  NULL);
+  else
+    g_object_set (widget,
+		  "editable", FALSE,
+		  "cursor_visible", FALSE,
+		  NULL);
+  g_signal_connect_swapped (widget, "key_press_event", G_CALLBACK (scroll_text_key_event), sctext);
+  gxk_text_view_enter_browse_mode (GTK_TEXT_VIEW (widget));
   if (flags & GXK_SCROLL_TEXT_NO_WRAP)
     g_object_set (widget, "wrap_mode", GTK_WRAP_NONE, NULL);
   else
@@ -1160,7 +1258,9 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   if (flags & GXK_SCROLL_TEXT_CENTER)
     g_object_set (widget, "justification", GTK_JUSTIFY_CENTER, NULL);
   if (flags & GXK_SCROLL_TEXT_MONO_SPACED)
-    g_object_set_data ((GObject*) tbuffer, "family", "mono");
+    g_object_set_data ((GObject*) tbuffer, "family", "monospace");
+  else
+    g_object_set_data ((GObject*) tbuffer, "family", "serif");
   if (!(flags & GXK_SCROLL_TEXT_SHEET_BG))
     gxk_widget_modify_base_as_bg (widget);
 
@@ -1262,8 +1362,10 @@ gxk_scroll_text_append (GtkWidget   *sctext,
 
   tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
+  gxk_text_view_cursor_busy (tview);
   if (string)
     gxk_text_buffer_append_from_string (tbuffer, FALSE, g_object_get_int (tview, "indent"), strlen (string), string);
+  gxk_text_view_cursor_normal (tview);
   gxk_text_view_cursor_to_start (tview);
 }
 
@@ -1286,8 +1388,10 @@ gxk_scroll_text_append_tsm (GtkWidget   *sctext,
 
   tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
+  gxk_text_view_cursor_busy (tview);
   if (string)
     gxk_text_buffer_append_from_string (tbuffer, TRUE, g_object_get_int (tview, "indent"), strlen (string), string);
+  gxk_text_view_cursor_normal (tview);
   gxk_text_view_cursor_to_start (tview);
 }
 
@@ -1311,7 +1415,9 @@ gxk_scroll_text_append_file (GtkWidget   *sctext,
 
   tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
+  gxk_text_view_cursor_busy (tview);
   gxk_text_buffer_append_from_file (tbuffer, FALSE, g_object_get_int (tview, "indent"), file_name);
+  gxk_text_view_cursor_normal (tview);
   gxk_text_view_cursor_to_start (tview);
 }
 
@@ -1335,7 +1441,9 @@ gxk_scroll_text_append_file_tsm (GtkWidget   *sctext,
 
   tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
+  gxk_text_view_cursor_busy (tview);
   gxk_text_buffer_append_from_file (tbuffer, TRUE, g_object_get_int (tview, "indent"), file_name);
+  gxk_text_view_cursor_normal (tview);
   gxk_text_view_cursor_to_start (tview);
 }
 
@@ -1443,6 +1551,22 @@ navigation_reset_url (TextNavigation *tnav)
   tnav->anchor = NULL;
 }
 
+static gboolean
+navigation_test_file (const gchar *dir,
+		      const gchar *path,
+		      const gchar *file)
+{
+  gchar *fname = g_strconcat (dir ? dir : "",
+			      "/",
+			      path ? path : "",
+			      "/",
+			      file,
+			      NULL);
+  gboolean check = g_file_test (fname, G_FILE_TEST_EXISTS);
+  g_free (fname);
+  return check;
+}
+
 static void
 navigation_set_url (TextNavigation *tnav,
 		    const gchar    *src_url)
@@ -1497,6 +1621,26 @@ navigation_set_url (TextNavigation *tnav,
       p = g_strconcat (tnav->path, url, NULL);
       g_free (tnav->path);
       tnav->path = p;
+    }
+  /* here, url contains just path segment */
+
+  /* patch up relative file names */
+  if (url[0] != '/'
+      && strcmp (tnav->proto, "file") == 0
+      /* mozilla-alike behaviour also needs: && !navigation_test_file (NULL, tnav->path, tnav->file) */
+      && TRUE)
+    {
+      GSList *slist;
+      for (slist = tsm_paths; slist; slist = slist->next)
+	if (navigation_test_file (slist->data, url, tnav->file))
+	  {
+	    /* take first match */
+	    g_free (tnav->path);
+	    tnav->path = g_strconcat (slist->data, url,
+				      url[0] && url[strlen (url) - 1] != '/' ? "/" : "",
+				      NULL);
+	    break;
+	  }
     }
 
   g_free (buffer);
@@ -1576,12 +1720,13 @@ navigation_from_sctext (GtkWidget *sctext)
 enum {
   FILE_TYPE_UNKNOWN,
   FILE_TYPE_TSM,
+  FILE_TYPE_DIR,
 };
 
 static guint
 guess_file_type (const gchar *file_name)
 {
-  gint fd = open (file_name, O_RDONLY);
+  gint xerr, fd = open (file_name, O_RDONLY);
   if (fd >= 0)
     {
       guint8 buffer[FILE_READ_BUFFER_SIZE + 1];
@@ -1589,6 +1734,7 @@ guess_file_type (const gchar *file_name)
       do
 	l = read (fd, buffer, FILE_READ_BUFFER_SIZE);
       while (l < 0 && errno == EINTR);
+      xerr = l < 0 ? errno : 0;
       close (fd);
       if (l)
 	{
@@ -1604,7 +1750,28 @@ guess_file_type (const gchar *file_name)
 	    return FILE_TYPE_TSM;
 	}
     }
+  else
+    xerr = errno;
+  if (xerr == EISDIR)
+    return FILE_TYPE_DIR;
   return FILE_TYPE_UNKNOWN;
+}
+
+static void
+g_string_add_xmlstr (GString     *gstring,
+		     const gchar *str)
+{
+  const gchar *p;
+  for (p = str; *p; p++)
+    switch (*p)
+      {
+      case '<':	 g_string_append (gstring, "&lt;");	break;
+      case '>':	 g_string_append (gstring, "&gt;");	break;
+      case '&':	 g_string_append (gstring, "&amp;");	break;
+      case '"':	 g_string_append (gstring, "&quot;");	break;
+      case '\'': g_string_append (gstring, "&apos;");	break;
+      default:	 g_string_append_c (gstring, *p);
+      }
 }
 
 static void
@@ -1630,6 +1797,42 @@ scroll_text_reload (GtkWidget *sctext)
       guint file_guess = guess_file_type (file);
       if (file_guess == FILE_TYPE_TSM)
 	gxk_scroll_text_append_file_tsm (sctext, file);
+      else if (file_guess == FILE_TYPE_DIR)
+	{
+	  struct dirent **flist;
+	  gchar *tmp;
+	  gint n;
+	  n = scandir (file, &flist, NULL, alphasort);
+	  if (n < 0)
+	    gxk_scroll_text_append_file (sctext, file); /* revert to "unknown file" */
+	  else
+	    {
+	      GString *gstring = g_string_new (
+					       "<tag-span-markup>\n"
+					       "<tagdef name='body' family='monospace'/>\n"
+					       "<tagdef name='hyperlink' underline='single' foreground='#0000ff'/>\n"
+					       "<span tag='body'><keep-space>\n"
+					       );
+	      while (n--)
+		{
+		  gchar istr[256];
+		  g_snprintf (istr, sizeof (istr), "&lt;%lu&gt;                    ", flist[n]->d_ino);
+		  g_string_append_printf (gstring, "  %.20s ", istr);
+		  g_string_append (gstring, "<span tag='hyperlink'><xlink ref='");
+		  tmp = g_strconcat (file, "/", flist[n]->d_name, NULL);
+		  g_string_add_xmlstr (gstring, tmp);
+		  g_free (tmp);
+		  g_string_append (gstring, "'>");
+		  g_string_add_xmlstr (gstring, flist[n]->d_name);
+		  g_string_append (gstring, "</xlink></span>\n");
+		  free (flist[n]);
+		}
+	      free (flist);
+	      g_string_append (gstring, "</keep-space></span></tag-span-markup>");
+	      gxk_scroll_text_append_tsm (sctext, gstring->str);
+	      g_string_free (gstring, TRUE);
+	    }
+	}
       else
 	gxk_scroll_text_append_file (sctext, file);
       g_free (file);

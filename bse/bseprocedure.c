@@ -44,17 +44,17 @@ bse_type_register_procedure_info (GTypeInfo *info)
 {
   static const GTypeInfo proc_info = {
     sizeof (BseProcedureClass),
-
+    
     (GBaseInitFunc) bse_procedure_base_init,
     (GBaseFinalizeFunc) bse_procedure_base_finalize,
     (GClassInitFunc) NULL,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-
+    
     /* non classed type stuff */
     0, 0, NULL,
   };
-
+  
   *info = proc_info;
 }
 
@@ -65,9 +65,8 @@ bse_procedure_base_init (BseProcedureClass *proc)
   proc->blurb = NULL;
   proc->private_id = 0;
   proc->help = NULL;
-  proc->author = NULL;
+  proc->authors = NULL;
   proc->copyright = NULL;
-  proc->date = NULL;
   proc->n_in_pspecs = 0;
   proc->in_pspecs = NULL;
   proc->n_out_pspecs = 0;
@@ -79,21 +78,20 @@ static void
 bse_procedure_base_finalize (BseProcedureClass *proc)
 {
   guint i;
-
+  
   proc->name = NULL;
   proc->blurb = NULL;
   proc->help = NULL;
-  proc->author = NULL;
+  proc->authors = NULL;
   proc->copyright = NULL;
-  proc->date = NULL;
-
+  
   for (i = 0; i < proc->n_in_pspecs; i++)
     g_param_spec_unref (proc->in_pspecs[i]);
   g_free (proc->in_pspecs);
   for (i = 0; i < proc->n_out_pspecs; i++)
     g_param_spec_unref (proc->out_pspecs[i]);
   g_free (proc->out_pspecs);
-
+  
   proc->execute = NULL;
 }
 
@@ -105,14 +103,14 @@ bse_procedure_init (BseProcedureClass        *proc,
   GParamSpec *out_pspecs[BSE_PROCEDURE_MAX_OUT_PARAMS + 8];
   guint i;
   gchar *const_name, *const_blurb;
-
+  
   memset (in_pspecs, 0, sizeof (in_pspecs));
   memset (out_pspecs, 0, sizeof (out_pspecs));
-
+  
   proc->name = g_type_name (BSE_PROCEDURE_TYPE (proc));
   proc->blurb = bse_type_blurb (BSE_PROCEDURE_TYPE (proc));
   proc->private_id = pspec->private_id;
-
+  
   /* init procedure class from plugin,
    * paranoia check certain class members
    */
@@ -140,16 +138,18 @@ bse_procedure_init (BseProcedureClass        *proc,
       proc->execute = NULL;
       g_warning ("procedure \"%s\" messes with reserved class members", proc->name);
     }
-
+  
   /* check input parameters and setup specifications
    */
   for (i = 0; i < BSE_PROCEDURE_MAX_IN_PARAMS; i++)
     if (in_pspecs[i])
       {
-	if ((in_pspecs[i]->flags & BSE_PARAM_READWRITE) != BSE_PARAM_READWRITE)
+	if ((in_pspecs[i]->flags & G_PARAM_READWRITE) != G_PARAM_READWRITE)
 	  g_warning ("procedure \"%s\": input parameter \"%s\" has invalid flags",
 		     proc->name,
 		     in_pspecs[i]->name);
+	g_param_spec_ref (in_pspecs[i]);
+	g_param_spec_sink (in_pspecs[i]);
       }
     else
       break;
@@ -160,16 +160,18 @@ bse_procedure_init (BseProcedureClass        *proc,
   proc->in_pspecs = g_new (GParamSpec*, proc->n_in_pspecs + 1);
   memcpy (proc->in_pspecs, in_pspecs, sizeof (in_pspecs[0]) * proc->n_in_pspecs);
   proc->in_pspecs[proc->n_in_pspecs] = NULL;
-
+  
   /* check output parameters and setup specifications
    */
   for (i = 0; i < BSE_PROCEDURE_MAX_OUT_PARAMS; i++)
     if (out_pspecs[i])
       {
-        if ((out_pspecs[i]->flags & BSE_PARAM_READWRITE) != BSE_PARAM_READWRITE)
+        if ((out_pspecs[i]->flags & G_PARAM_READWRITE) != G_PARAM_READWRITE)
 	  g_warning ("procedure \"%s\": output parameter \"%s\" has invalid flags",
 		     proc->name,
 		     out_pspecs[i]->name);
+	g_param_spec_ref (out_pspecs[i]);
+	g_param_spec_sink (out_pspecs[i]);
       }
     else
       break;
@@ -189,7 +191,7 @@ bse_procedure_complete_info (const BseExportSpec *spec,
 			     GTypeInfo         *info)
 {
   const BseExportProcedure *pspec = &spec->s_proc;
-
+  
   info->class_size = sizeof (BseProcedureClass);
   info->class_init = (GClassInitFunc) bse_procedure_init;
   info->class_finalize = (GClassFinalizeFunc) pspec->unload;
@@ -204,23 +206,23 @@ bse_procedure_type_register (const gchar *name,
 {
   GType   type, base_type = 0;
   gchar *p;
-
+  
   g_return_val_if_fail (ret_type != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
   *ret_type = 0;
   g_return_val_if_fail (name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
   g_return_val_if_fail (plugin != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
-
+  
   type = g_type_from_name (name);
   if (type)
     return "Procedure already registered";
-
+  
   p = strchr (name, '+');
   if (p)
     {
       /* enforce <OBJECT>+<METHOD> syntax */
       if (!p[1])
 	return "Procedure name invalid";
-
+      
       p = g_strndup (name, p - name);
       base_type = g_type_from_name (p);
       g_free (p);
@@ -232,9 +234,9 @@ bse_procedure_type_register (const gchar *name,
 				    name,
 				    blurb,
 				    plugin);
-
+  
   *ret_type = type;
-
+  
   return NULL;
 }
 
@@ -242,9 +244,9 @@ GType
 bse_procedure_lookup (const gchar *proc_name)
 {
   GType type;
-
+  
   g_return_val_if_fail (proc_name != NULL, 0);
-
+  
   type = g_type_from_name (proc_name);
   return BSE_TYPE_IS_PROCEDURE (type) ? type : 0;
 }
@@ -278,11 +280,11 @@ call_proc (BseProcedureClass  *proc,
 {
   guint i, bail_out = FALSE;
   BseErrorType error;
-
+  
   for (i = 0; i < proc->n_in_pspecs; i++)
     {
       GParamSpec *pspec = proc->in_pspecs[i];
-
+      
       if (g_param_value_validate (pspec, ivalues + i) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
 	{
 	  g_warning ("%s: input arg `%s' contains invalid value",
@@ -291,7 +293,7 @@ call_proc (BseProcedureClass  *proc,
 	  bail_out = TRUE;
 	}
     }
-
+  
   if (bail_out)
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
@@ -327,14 +329,14 @@ bse_procedure_marshal (GType               proc_type,
   GValue tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
   guint i, bail_out = FALSE;
   BseErrorType error;
-
+  
   g_return_val_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type), BSE_ERROR_INTERNAL);
-
+  
   proc = g_type_class_ref (proc_type);
   for (i = 0; i < proc->n_in_pspecs; i++)
     {
       GParamSpec *pspec = proc->in_pspecs[i];
-
+      
       tmp_ivalues[i].g_type = 0;
       g_value_init (tmp_ivalues + i, G_PARAM_SPEC_VALUE_TYPE (pspec));
       if (!g_value_transform (ivalues + i, tmp_ivalues + i))
@@ -352,19 +354,19 @@ bse_procedure_marshal (GType               proc_type,
       tmp_ovalues[i].g_type = 0;
       g_value_init (tmp_ovalues + i, G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]));
     }
-
+  
   if (bail_out)
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     error = call_proc (proc, tmp_ivalues, tmp_ovalues, marshal, marshal_data);
   signal_exec_status (error, proc, tmp_ovalues);
-
+  
   for (i = 0; i < proc->n_in_pspecs; i++)
     g_value_unset (tmp_ivalues + i);
   for (i = 0; i < proc->n_out_pspecs; i++)
     {
       GParamSpec *pspec = proc->out_pspecs[i];
-
+      
       if (!g_value_transform (tmp_ovalues + i, ovalues + i))
 	g_warning ("%s: output arg `%s' of type `%s' cannot be converted into `%s'",
 		   proc->name,
@@ -374,7 +376,7 @@ bse_procedure_marshal (GType               proc_type,
       g_value_unset (tmp_ovalues + i);
     }
   g_type_class_unref (proc);
-
+  
   return error;
 }
 
@@ -391,9 +393,9 @@ bse_procedure_marshal_valist (GType               proc_type,
   GValue tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
   guint i, bail_out = FALSE;
   BseErrorType error;
-
+  
   g_return_val_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type), BSE_ERROR_INTERNAL);
-
+  
   proc = g_type_class_ref (proc_type);
   if (first_value)
     {
@@ -403,7 +405,7 @@ bse_procedure_marshal_valist (GType               proc_type,
       else
 	{
 	  GParamSpec *pspec = proc->in_pspecs[0];
-
+	  
 	  tmp_ivalues[0].g_type = 0;
 	  g_value_init (tmp_ivalues + 0, G_PARAM_SPEC_VALUE_TYPE (pspec));
 	  if (!g_value_transform (first_value, tmp_ivalues + 0))
@@ -421,7 +423,7 @@ bse_procedure_marshal_valist (GType               proc_type,
     {
       GParamSpec *pspec = proc->in_pspecs[i];
       gchar *error_msg = NULL;
-
+      
       tmp_ivalues[i].g_type = 0;
       g_value_init (tmp_ivalues + i, G_PARAM_SPEC_VALUE_TYPE (pspec));
       if (!bail_out)
@@ -442,20 +444,20 @@ bse_procedure_marshal_valist (GType               proc_type,
       tmp_ovalues[i].g_type = 0;
       g_value_init (tmp_ovalues + i, G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]));
     }
-
+  
   if (bail_out)
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     error = call_proc (proc, tmp_ivalues, tmp_ovalues, marshal, marshal_data);
   signal_exec_status (error, proc, tmp_ovalues);
-
+  
   for (i = 0; i < proc->n_in_pspecs; i++)
     g_value_unset (tmp_ivalues + i);
   for (i = 0; i < proc->n_out_pspecs; i++)
     {
       GParamSpec *pspec = proc->out_pspecs[i];
       gchar *error_msg = NULL;
-
+      
       if (!skip_ovalues)
 	G_VALUE_LCOPY (tmp_ovalues + i, var_args, 0, &error_msg);
       if (error_msg)
@@ -471,7 +473,7 @@ bse_procedure_marshal_valist (GType               proc_type,
       g_value_unset (tmp_ovalues + i);
     }
   g_type_class_unref (proc);
-
+  
   return error;
 }
 
@@ -480,9 +482,9 @@ bse_procedure_exec (const gchar *proc_name,
 		    ...)
 {
   GType proc_type;
-
+  
   g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
-
+  
   proc_type = bse_procedure_lookup (proc_name);
   if (!proc_type)
     {
@@ -493,7 +495,7 @@ bse_procedure_exec (const gchar *proc_name,
     {
       BseErrorType error;
       va_list var_args;
-
+      
       va_start (var_args, proc_name);
       error = bse_procedure_marshal_valist (proc_type, NULL, NULL, NULL, FALSE, var_args);
       va_end (var_args);
@@ -506,9 +508,9 @@ bse_procedure_exec_void (const gchar *proc_name,
 			 ...)
 {
   GType proc_type;
-
+  
   g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
-
+  
   proc_type = bse_procedure_lookup (proc_name);
   if (!proc_type)
     {
@@ -519,7 +521,7 @@ bse_procedure_exec_void (const gchar *proc_name,
     {
       BseErrorType error;
       va_list var_args;
-
+      
       va_start (var_args, proc_name);
       error = bse_procedure_marshal_valist (proc_type, NULL, NULL, NULL, TRUE, var_args);
       va_end (var_args);
@@ -533,9 +535,9 @@ bse_procedure_store (const gchar *proc_name,
 		     ...)
 {
   GType proc_type;
-
+  
   g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
-
+  
   proc_type = bse_procedure_lookup (proc_name);
   if (!proc_type)
     {
@@ -546,7 +548,7 @@ bse_procedure_store (const gchar *proc_name,
     {
       BseErrorType error;
       va_list var_args;
-
+      
       va_start (var_args, storage);
       error = bse_procedure_marshal_valist (proc_type, NULL,
 					    bse_storage_store_procedure, storage,
@@ -557,28 +559,41 @@ bse_procedure_store (const gchar *proc_name,
 }
 
 BseErrorType
-bse_procedure_execvl (BseProcedureClass *proc,
-		      GSList            *in_value_list,
-		      GSList            *out_value_list)
+bse_procedure_execvl (BseProcedureClass  *proc,
+		      GSList             *in_value_list,
+		      GSList             *out_value_list,
+		      BseProcedureMarshal marshal,
+		      gpointer            marshal_data)
 {
   GValue tmp_ivalues[BSE_PROCEDURE_MAX_IN_PARAMS];
   GValue tmp_ovalues[BSE_PROCEDURE_MAX_OUT_PARAMS];
   BseErrorType error;
   GSList *slist;
   guint i;
-
+  
   /* FIXME: bad, bad compat: bse_procedure_execvl() */
-
+  
   for (i = 0, slist = in_value_list; slist && i < proc->n_in_pspecs; i++, slist = slist->next)
     memcpy (tmp_ivalues + i, slist->data, sizeof (tmp_ivalues[0]));
+  if (slist || i != proc->n_in_pspecs)
+    {
+      g_warning ("%s: invalid number of arguments supplied to procedure \"%s\"", G_STRLOC, proc->name);
+      return BSE_ERROR_PROC_PARAM_INVAL;
+    }
   for (i = 0, slist = out_value_list; slist && i < proc->n_out_pspecs; i++, slist = slist->next)
     memcpy (tmp_ovalues + i, slist->data, sizeof (tmp_ovalues[0]));
-  error = bse_procedure_marshal (BSE_PROCEDURE_TYPE (proc), tmp_ivalues, tmp_ovalues, NULL, NULL);
+  if (slist || i != proc->n_out_pspecs)
+    {
+      g_warning ("%s: invalid number of arguments supplied to procedure \"%s\"", G_STRLOC, proc->name);
+      return BSE_ERROR_PROC_PARAM_INVAL;
+    }
+  error = bse_procedure_marshal (BSE_PROCEDURE_TYPE (proc), tmp_ivalues, tmp_ovalues, marshal, marshal_data);
   for (i = 0, slist = out_value_list; slist && i < proc->n_out_pspecs; i++, slist = slist->next)
     memcpy (slist->data, tmp_ovalues + i, sizeof (tmp_ivalues[0]));
   return error;
 }
 
+#if 0
 static GTokenType
 bse_procedure_eval_storage (BseStorage   *storage,
 			    BseErrorType *error_p,
@@ -590,12 +605,12 @@ bse_procedure_eval_storage (BseStorage   *storage,
   GScanner *scanner = storage->scanner;
   GType proc_type;
   guint i;
-
+  
   parse_or_return (scanner, '(');
   parse_or_return (scanner, G_TOKEN_IDENTIFIER);
   if (strcmp ("bse-proc-call", scanner->value.v_identifier) != 0)
     return G_TOKEN_IDENTIFIER;
-
+  
   /* fetch and check procedure */
   parse_or_return (scanner, G_TOKEN_STRING);
   proc_type = bse_procedure_lookup (scanner->value.v_string);
@@ -612,7 +627,7 @@ bse_procedure_eval_storage (BseStorage   *storage,
       g_type_class_unref (proc);
       return G_TOKEN_STRING;
     }
-
+  
   /* parse input values */
   for (i = 0; i < proc->n_in_pspecs; i++)
     {
@@ -625,25 +640,25 @@ bse_procedure_eval_storage (BseStorage   *storage,
 	  break;
 	}
     }
-
+  
   /* close statement */
   if (token == G_TOKEN_NONE && g_scanner_get_next_token (scanner) != ')')
     token = ')';
-
+  
   /* call procedure */
   if (token == G_TOKEN_NONE)
     {
       if (proc->n_out_pspecs)
 	g_value_init (retval, G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]));
-
+      
       *error_p = bse_procedure_marshal (BSE_PROCEDURE_TYPE (proc),
 					ivalues, retval,
 					NULL, NULL);
-
+      
       if (proc->n_out_pspecs && g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[0]), BSE_TYPE_OBJECT))
 	{
 	  GValue pvalue = { 0, };
-	  g_value_init (&pvalue, BSW_TYPE_PROXY);
+	  g_value_init (&pvalue, SFI_TYPE_PROXY);
 	  g_value_transform (retval, &pvalue);
 	  g_value_unset (retval);
 	  memcpy (retval, &pvalue, sizeof (pvalue));    /* values are relocatable */
@@ -658,10 +673,12 @@ bse_procedure_eval_storage (BseStorage   *storage,
   while (i--)
     g_value_unset (ivalues + i);
   g_type_class_unref (proc);
-
+  
   return token;
 }
+#endif
 
+#if 0
 gchar*
 bse_procedure_eval (const gchar  *expr,
 		    BseErrorType *error_p,
@@ -671,30 +688,31 @@ bse_procedure_eval (const gchar  *expr,
   BseStorage *storage;
   GTokenType token;
   gchar *warnings = NULL;
-
+  
   g_return_val_if_fail (expr != NULL, NULL);
   g_return_val_if_fail (G_VALUE_TYPE (value) == 0, NULL);
-
+  
   storage = bse_storage_new ();
   bse_storage_enable_proxies (storage);
   bse_storage_input_text (storage, expr);
-
+  
   token = bse_procedure_eval_storage (storage, &error, value);
   if (token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, token);
-
+  
   if (G_VALUE_TYPE (value) == 0)
     {
       g_value_init (value, BSE_TYPE_ERROR_TYPE);
       g_value_set_enum (value, error);
     }
   bse_storage_destroy (storage);
-
+  
   if (error_p)
     *error_p = error;
-
+  
   return warnings;
 }
+#endif
 
 gchar*
 bse_procedure_marshal_retval (BseErrorType error,
@@ -704,7 +722,7 @@ bse_procedure_marshal_retval (BseErrorType error,
   BseStorage *storage;
   GValue proxy_value = { 0, };
   gchar *str;
-
+  
   if (value)
     g_return_val_if_fail (G_IS_VALUE (value), NULL);
   else
@@ -716,17 +734,17 @@ bse_procedure_marshal_retval (BseErrorType error,
       g_value_set_enum (&proxy_value, error);
       value = &proxy_value;
     }
-
+  
   storage = bse_storage_new ();
   bse_storage_enable_proxies (storage);
-  bse_storage_prepare_write (storage, TRUE);
-
+  bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_COMPAT);
+  
   bse_storage_puts (storage, "(bse-proc-return ");
   /* error code, marshalled as uint */
   bse_storage_printf (storage, "%u ", error);
   /* return value type */
   if (G_TYPE_IS_OBJECT (G_VALUE_TYPE (value)))
-    bse_storage_puts (storage, "\"BswProxy\" ");
+    bse_storage_puts (storage, "\"SfiProxy\" ");
   else
     bse_storage_printf (storage, "\"%s\" ", g_type_name (G_VALUE_TYPE (value)));
   /* return value */
@@ -736,23 +754,24 @@ bse_procedure_marshal_retval (BseErrorType error,
   if (warnings)
     {
       gchar *esc = g_strescape (warnings, NULL);
-
+      
       bse_storage_break (storage);
       bse_storage_printf (storage, " \"%s\"", esc);
       g_free (esc);
     }
   bse_storage_pop_level (storage);
   bse_storage_putc (storage, ')');
-
+  
   /* done, return string */
   str = g_strdup (bse_storage_peek_text (storage, NULL));
   bse_storage_destroy (storage);
   if (G_VALUE_TYPE (&proxy_value))
     g_value_unset (&proxy_value);
-
+  
   return str;
 }
 
+#if 0
 gchar*
 bse_procedure_unmarshal_retval (const gchar  *string,
 				BseErrorType *error_p,
@@ -764,36 +783,36 @@ bse_procedure_unmarshal_retval (const gchar  *string,
   GType rtype;
   GValue proxy_value = { 0, };
   gchar *warnings = NULL;
-
+  
   g_return_val_if_fail (string != NULL, NULL);
   if (value)
     g_return_val_if_fail (G_VALUE_TYPE (value) == 0, NULL);
   else
     value = &proxy_value;
-
+  
   storage = bse_storage_new ();
   bse_storage_enable_proxies (storage);
   bse_storage_input_text (storage, string);
   scanner = storage->scanner;
-
+  
   /* parse boilerplate */
   if (g_scanner_get_next_token (scanner) != '(' ||
       g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER ||
       strcmp (scanner->value.v_identifier, "bse-proc-return") != 0)
     goto data_corrupt;
-
+  
   /* parse error code */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_INT)
     goto data_corrupt;
   error = scanner->value.v_int;
-
+  
   /* return value type */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
     goto data_corrupt;
   rtype = g_type_from_name (scanner->value.v_string);
   if (!rtype)
     goto data_corrupt;
-
+  
   /* return value */
   g_value_init (value, rtype);
   if (bse_storage_parse_param_value (storage, value, NULL, FALSE) != G_TOKEN_NONE)
@@ -804,32 +823,33 @@ bse_procedure_unmarshal_retval (const gchar  *string,
     }
   if (value == &proxy_value)
     g_value_unset (&proxy_value);
-
+  
   /* errors and warnings */
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
     {
       g_scanner_get_next_token (scanner);
       warnings = g_strdup (scanner->value.v_string);
     }
-
+  
   /* close statement */
   if (g_scanner_get_next_token (scanner) != ')')
     goto data_corrupt;
   bse_storage_destroy (storage);
-
+  
   if (error_p)
     *error_p = error;
-
+  
   return warnings;
-
+  
  data_corrupt:
   if (G_VALUE_TYPE (value))
     g_value_unset (value);
   if (warnings)
     g_free (warnings);
-
+  
   if (error_p)
     *error_p = BSE_ERROR_DATA_CORRUPT;
-
+  
   return g_strdup ("invalid format of bse-error statement");
 }
+#endif

@@ -17,7 +17,6 @@
  */
 #include "bsemidinotifier.h"
 
-#include "bsemarshal.h"
 #include "bsemain.h"
 #include "gslcommon.h"
 
@@ -77,7 +76,6 @@ bse_midi_notifier_class_init (BseMidiNotifierClass *class)
     }
   
   signal_midi_event = bse_object_class_add_dsignal (object_class, "midi-event",
-						    bse_marshal_VOID__BOXED, NULL,
 						    G_TYPE_NONE, 1,
 						    BSE_TYPE_MIDI_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
 }
@@ -100,19 +98,19 @@ void
 bse_midi_notifier_dispatch (BseMidiNotifier *self,
 			    BseMidiReceiver *midi_receiver)
 {
-  GslRing *ring;
+  SfiRing *ring;
   gboolean need_emission;
-
+  
   g_return_if_fail (BSE_IS_MIDI_NOTIFIER (self));
   g_return_if_fail (midi_receiver != NULL);
-
+  
   need_emission = 0 != g_signal_handler_find (self, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_UNBLOCKED,
 					      signal_midi_event, 0, NULL, NULL, NULL);
   ring = bse_midi_receiver_fetch_notify_events (midi_receiver);
   while (ring)
     {
-      BseMidiEvent *event = gsl_ring_pop_head (&ring);
-
+      BseMidiEvent *event = sfi_ring_pop_head (&ring);
+      
       if (event->channel < BSE_MIDI_MAX_CHANNELS && need_emission)
 	g_signal_emit (self, signal_midi_event, number_quarks[event->channel], event);
       bse_midi_free_event (event);

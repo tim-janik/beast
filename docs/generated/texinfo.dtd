@@ -5,3 +5,4 @@
 <!ENTITY minus     "<minus/>">
 <!ENTITY linebreak "<linebreak/>">
 <!ENTITY dots      "<dots/>">
+<!ENTITY space     "<space/>">

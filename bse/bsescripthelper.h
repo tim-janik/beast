@@ -28,14 +28,13 @@ extern "C" {
 /* --- typedefs & structures --- */
 typedef struct
 {
-  gchar	 *script_file;
-  gchar	 *name;
-  gchar	 *blurb;
-  gchar	 *help;
-  gchar	 *author;
-  gchar	 *copyright;
-  gchar	 *date;
-  GSList *params;
+  gchar	  *script_file;
+  gchar	  *name;
+  gchar	  *blurb;
+  gchar	  *help;
+  gchar	  *authors;
+  gchar	  *copyright;
+  SfiRing *params;
 } BseScriptData;
 typedef struct
 {
@@ -50,13 +49,16 @@ GType		bse_script_proc_register	(const gchar	*script_file,
 						 const gchar	*category,
 						 const gchar	*blurb,
 						 const gchar	*help,
-						 const gchar	*author,
+						 const gchar	*authors,
 						 const gchar	*copyright,
-						 const gchar	*date,
-						 GSList		*params);
+						 SfiRing	*params);
 GSList*		bse_script_dir_list_files	(const gchar	*dir_list);
-BseErrorType    bse_script_file_register	(const gchar	*file_name);
-
+BseErrorType    bse_script_file_register	(const gchar	*file_name,
+						 BseJanitor    **janitor_p);
+GValue*		bse_script_check_client_msg	(SfiGlueDecoder *decoder,
+						 BseJanitor	*janitor,
+						 const gchar    *message,
+						 const GValue   *value);
 
 #ifdef __cplusplus
 }

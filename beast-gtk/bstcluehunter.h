@@ -90,7 +90,7 @@ void	   bst_clue_hunter_select_on	        (BstClueHunter	*clue_hunter,
 void	   bst_clue_hunter_poll_refresh	        (BstClueHunter	*clue_hunter);
 gchar*	   bst_clue_hunter_try_complete	        (BstClueHunter	*clue_hunter);
 GtkWidget* bst_clue_hunter_create_arrow		(BstClueHunter	*clue_hunter);
-BstClueHunter* bst_clue_hunter_from_entry	(GtkEntry	*entry);
+gpointer   bst_clue_hunter_from_entry		(gpointer	 entry);
 
 
 

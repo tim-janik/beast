@@ -50,15 +50,10 @@ struct _BseWaveOsc
   gfloat	   n_octaves;
   
   GslWaveChunk	  *esample_wchunk;
-  
-  guint		   module_pcm_position;
 };
 struct _BseWaveOscClass
 {
   BseSourceClass parent_class;
-  
-  void	(*notify_pcm_position)	(BseWaveOsc	*wosc,
-				 guint		 pcm_position);
 };
 
 

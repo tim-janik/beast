@@ -201,7 +201,7 @@ void	   bst_qsampler_set_adjustment	(BstQSampler			*qsampler,
 					 GtkAdjustment			*adjustment);
 
 void	   bst_qsampler_set_source_from_esample (BstQSampler		*qsampler,
-						 BswProxy		 esample,
+						 SfiProxy		 esample,
 						 guint			 nth_channel);
 
 

@@ -42,7 +42,7 @@ struct _BstServerMonitor
 {
   GtkVBox	 parent_object;
   
-  BswProxy	 server;
+  SfiProxy	 server;
   
   GtkWidget	*param_view;
 };

@@ -43,7 +43,7 @@ struct _BstSuperShell
 
   GtkAccelGroup	*accel_group;
 
-  BswProxy	 super;
+  SfiProxy	 super;
   guint		 name_set_id;
 };
 struct _BstSuperShellClass
@@ -51,15 +51,14 @@ struct _BstSuperShellClass
   GtkVBoxClass	parent_class;
   
   void		(*setup_super)	 (BstSuperShell  *super_shell,
-				  BswProxy	  super);
+				  SfiProxy	  super);
   void		(*release_super) (BstSuperShell  *super_shell,
-				  BswProxy	  super);
+				  SfiProxy	  super);
   void		(*operate)	 (BstSuperShell  *super_shell,
 				  BstOps          op);
   gboolean	(*can_operate)	 (BstSuperShell  *super_shell,
 				  BstOps          op);
   void		(*rebuild)	 (BstSuperShell  *super_shell);
-  void		(*update)	 (BstSuperShell  *super_shell);
 };
 
 
@@ -70,10 +69,9 @@ void		bst_super_shell_operate		(BstSuperShell	*super_shell,
 gboolean	bst_super_shell_can_operate	(BstSuperShell	*super_shell,
 						 BstOps		 op);
 void		bst_super_shell_set_super	(BstSuperShell	*super_shell,
-						 BswProxy	 super);
-BstSuperShell*	bst_super_shell_from_super	(BswProxy	 super);
-void            bst_super_shell_update          (BstSuperShell  *super_shell);
-void            bst_super_shell_update_parent   (BstSuperShell  *super_shell);
+						 SfiProxy	 super);
+BstSuperShell*	bst_super_shell_from_super	(SfiProxy	 super);
+void            bst_super_shell_update_label    (BstSuperShell  *super_shell);
 
      
 

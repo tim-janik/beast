@@ -35,7 +35,7 @@ static gboolean	bst_part_view_can_operate	(BstItemView		*item_view,
 static BstItemViewOp part_view_ops[] = {
   { "Add",		BST_OP_PART_ADD,	BST_STOCK_PART,		},
   { "Delete",		BST_OP_PART_DELETE,	BST_STOCK_TRASHCAN,	},
-  { "Editor...",	BST_OP_PART_EDITOR,	BST_STOCK_PART_EDITOR,	},
+  { "Editor",		BST_OP_PART_EDITOR,	BST_STOCK_PART_EDITOR,	},
 };
 static gpointer	parent_class = NULL;
 
@@ -85,13 +85,13 @@ bst_part_view_class_init (BstPartViewClass *class)
 static void
 bst_part_view_init (BstPartView *part_view)
 {
-  BST_ITEM_VIEW (part_view)->item_type = g_type_from_name ("BsePart");	// FIXME
+  BST_ITEM_VIEW (part_view)->item_type = "BsePart";
 }
 
 static void
 popup_part_dialog (BstPartView *part_view)
 {
-  BswProxy part;
+  SfiProxy part;
   GtkWidget *pdialog;
 
   part = bst_item_view_get_current (BST_ITEM_VIEW (part_view));
@@ -107,7 +107,7 @@ bst_part_view_operate (BstItemView *item_view,
 		       BstOps       op)
 {
   BstPartView *part_view = BST_PART_VIEW (item_view);
-  BswProxy song;
+  SfiProxy song;
   
   g_return_if_fail (bst_part_view_can_operate (item_view, op));
 
@@ -115,14 +115,14 @@ bst_part_view_operate (BstItemView *item_view,
   
   switch (op)
     {
-      BswProxy item;
+      SfiProxy item;
     case BST_OP_PART_ADD:
-      item = bsw_song_create_part (song);
+      item = bse_song_create_part (song);
       bst_item_view_select (item_view, item);
       break;
     case BST_OP_PART_DELETE:
       item = bst_item_view_get_current (BST_ITEM_VIEW (part_view));
-      bsw_song_remove_part (song, item);
+      bse_song_remove_part (song, item);
       break;
     case BST_OP_PART_EDITOR:
       popup_part_dialog (part_view);
@@ -139,7 +139,7 @@ bst_part_view_can_operate (BstItemView *item_view,
 			   BstOps	op)
 {
   BstPartView *part_view = BST_PART_VIEW (item_view);
-  BswProxy song;
+  SfiProxy song;
 
   g_return_val_if_fail (BST_IS_PART_VIEW (part_view), FALSE);
   
@@ -147,7 +147,7 @@ bst_part_view_can_operate (BstItemView *item_view,
 
   switch (op)
     {
-      BswProxy item;
+      SfiProxy item;
     case BST_OP_PART_ADD:
       return TRUE;
     case BST_OP_PART_DELETE:

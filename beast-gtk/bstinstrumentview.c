@@ -113,18 +113,18 @@ bst_instrument_view_operate (BstItemView *item_view,
 			     BstOps       op)
 {
   BstInstrumentView *instrument_view = BST_INSTRUMENT_VIEW (item_view);
-  BswProxy song = item_view->container;
+  SfiProxy song = item_view->container;
 
   g_return_if_fail (bst_instrument_view_can_operate (item_view, op));
 
   switch (op)
     {
-      BswProxy item;
+      SfiProxy item;
       gchar *string;
     case BST_OP_INSTRUMENT_ADD:
       item = bsw_song_create_instrument (song);
       string = g_strdup_printf ("Instrument-%02X", bsw_item_get_seqid (item));
-      bsw_proxy_set (item, "uname", string, NULL);
+      bse_proxy_set (item, "uname", string, NULL);
       g_free (string);
       bst_item_view_select (item_view, item);
       break;
@@ -149,7 +149,7 @@ bst_instrument_view_can_operate (BstItemView *item_view,
   
   switch (op)
     {
-      BswProxy item;
+      SfiProxy item;
     case BST_OP_INSTRUMENT_ADD:
       return TRUE;
     case BST_OP_INSTRUMENT_DELETE:

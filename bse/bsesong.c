@@ -24,7 +24,6 @@
 #include	"bsesongthread.h"
 #include	"bseproject.h"
 #include	"bsestorage.h"
-#include	"bsemarshal.h"
 #include	"bsemain.h"
 #include	<string.h>
 
@@ -47,12 +46,13 @@ enum {
 /* --- prototypes --- */
 static void	 bse_song_class_init		(BseSongClass	   *class);
 static void	 bse_song_init			(BseSong	   *song);
-static void	 bse_song_do_destroy		(BseObject	   *object);
-static void	 bse_song_set_property		(BseSong	   *song,
+static void	 bse_song_finalize		(GObject	   *object);
+static void	 bse_song_release_children	(BseContainer	   *container);
+static void	 bse_song_set_property		(GObject           *object,
 						 guint              param_id,
-						 GValue            *value,
+						 const GValue      *value,
 						 GParamSpec        *pspec);
-static void	 bse_song_get_property		(BseSong	   *song,
+static void	 bse_song_get_property		(GObject           *object,
 						 guint              param_id,
 						 GValue            *value,
 						 GParamSpec        *pspec);
@@ -113,13 +113,13 @@ bse_song_class_init (BseSongClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_song_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_song_get_property;
-
+  gobject_class->set_property = bse_song_set_property;
+  gobject_class->get_property = bse_song_get_property;
+  gobject_class->finalize = bse_song_finalize;
+  
   object_class->store_after = bse_song_store_after;
   object_class->restore = bse_song_restore;
   object_class->restore_private = bse_song_restore_private;
-  object_class->destroy = bse_song_do_destroy;
   
   source_class->prepare = bse_song_prepare;
   source_class->context_create = bse_song_context_create;
@@ -128,39 +128,39 @@ bse_song_class_init (BseSongClass *class)
   container_class->add_item = bse_song_add_item;
   container_class->remove_item = bse_song_remove_item;
   container_class->forall_items = bse_song_forall_items;
+  container_class->release_children = bse_song_release_children;
   
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
-			      bse_param_spec_float ("volume_f", "Master [float]", NULL,
-						    0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
-						    bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB), 0.1,
-						    BSE_PARAM_STORAGE));
+			      sfi_pspec_real ("volume_f", "Master [float]", NULL,
+					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
+					      0.1, SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_dB,
-			      bse_param_spec_float ("volume_dB", "Master [dB]", NULL,
-						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-						    BSE_DFL_MASTER_VOLUME_dB, BSE_STP_VOLUME_dB,
-						    BSE_PARAM_GUI |
-						    BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("volume_dB", "Master [dB]", NULL,
+					      BSE_DFL_MASTER_VOLUME_dB,
+					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+					      BSE_GCONFIG (step_volume_dB),
+					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_PERC,
-			      bse_param_spec_uint ("volume_perc", "Master [%]", NULL,
-						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-						   bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100, 1,
-						   BSE_PARAM_GUI |
-						   BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_int ("volume_perc", "Master [%]", NULL,
+					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
+					     SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_BPM,
-			      bse_param_spec_uint ("bpm", "Beats per minute", NULL,
-						   BSE_MIN_BPM, BSE_MAX_BPM,
-						   BSE_DFL_SONG_BPM, BSE_STP_BPM,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      sfi_pspec_int ("bpm", "Beats per minute", NULL,
+					     BSE_DFL_SONG_BPM,
+					     BSE_MIN_BPM, BSE_MAX_BPM,
+					     BSE_GCONFIG (step_bpm),
+					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Playback Settings",
 			      PARAM_AUTO_ACTIVATE,
-			      g_param_spec_boolean ("auto_activate", NULL, NULL,
-						    TRUE, /* change default */
-						    /* override parent property */ 0));
+			      sfi_pspec_bool ("auto_activate", NULL, NULL,
+					      TRUE, /* change default */
+					      /* override parent property */ 0));
 }
 
 static void
@@ -176,11 +176,11 @@ bse_song_init (BseSong *self)
 
   /* context merger */
   self->context_merger = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
-  BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_STORAGE_IGNORE);
+  BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_AGGREGATE);
 
   /* output */
   self->output = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
-  BSE_OBJECT_SET_FLAGS (self->output, BSE_ITEM_FLAG_STORAGE_IGNORE);
+  BSE_OBJECT_SET_FLAGS (self->output, BSE_ITEM_FLAG_AGGREGATE);
 
   /* context merger <-> output */
   bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
@@ -190,7 +190,21 @@ bse_song_init (BseSong *self)
 }
 
 static void
-bse_song_do_destroy (BseObject *object)
+bse_song_release_children (BseContainer *container)
+{
+  BseSong *self = BSE_SONG (container);
+
+  while (self->parts)
+    bse_container_remove_item (container, self->parts->data);
+  while (self->tracks)
+    bse_container_remove_item (container, self->tracks->data);
+
+  /* chain parent class' handler */
+  BSE_CONTAINER_CLASS (parent_class)->release_children (container);
+}
+
+static void
+bse_song_finalize (GObject *object)
 {
   BseSong *self = BSE_SONG (object);
 
@@ -198,23 +212,18 @@ bse_song_do_destroy (BseObject *object)
   self->context_merger = NULL;
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->output));
   self->output = NULL;
-
-  while (self->parts)
-    bse_container_remove_item (BSE_CONTAINER (self), self->parts->data);
-  while (self->tracks)
-    bse_container_remove_item (BSE_CONTAINER (self), self->tracks->data);
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-
 static void
-bse_song_set_property (BseSong     *song,
-		       guint        param_id,
-		       GValue      *value,
-		       GParamSpec  *pspec)
+bse_song_set_property (GObject      *object,
+		       guint         param_id,
+		       const GValue *value,
+		       GParamSpec   *pspec)
 {
+  BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
       gfloat volume_factor;
@@ -226,56 +235,57 @@ bse_song_set_property (BseSong     *song,
       switch (param_id)
 	{
 	case PARAM_VOLUME_f:
-	  volume_factor = g_value_get_float (value);
+	  volume_factor = sfi_value_get_real (value);
 	  break;
 	case PARAM_VOLUME_dB:
-	  volume_factor = bse_dB_to_factor (g_value_get_float (value));
+	  volume_factor = bse_dB_to_factor (sfi_value_get_real (value));
 	  break;
 	case PARAM_VOLUME_PERC:
-	  volume_factor = g_value_get_uint (value) / 100.0;
+	  volume_factor = sfi_value_get_int (value) / 100.0;
 	  break;
 	}
       BSE_SEQUENCER_LOCK ();
-      song->volume_factor = volume_factor;
+      self->volume_factor = volume_factor;
       BSE_SEQUENCER_UNLOCK ();
-      bse_object_param_changed (BSE_OBJECT (song), "volume_dB");
-      bse_object_param_changed (BSE_OBJECT (song), "volume_perc");
-      bse_object_param_changed (BSE_OBJECT (song), "volume_f");
+      g_object_notify (self, "volume_dB");
+      g_object_notify (self, "volume_perc");
+      g_object_notify (self, "volume_f");
       break;
     case PARAM_BPM:
-      bpm = g_value_get_uint (value);
+      bpm = sfi_value_get_int (value);
       BSE_SEQUENCER_LOCK ();
-      song->bpm = bpm;
+      self->bpm = bpm;
       BSE_SEQUENCER_UNLOCK ();
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (song, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_song_get_property (BseSong     *song,
+bse_song_get_property (GObject     *object,
 		       guint        param_id,
 		       GValue      *value,
 		       GParamSpec  *pspec)
 {
+  BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
     case PARAM_VOLUME_f:
-      g_value_set_float (value, song->volume_factor);
+      sfi_value_set_real (value, self->volume_factor);
       break;
     case PARAM_VOLUME_dB:
-      g_value_set_float (value, bse_dB_from_factor (song->volume_factor, BSE_MIN_VOLUME_dB));
+      sfi_value_set_real (value, bse_dB_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
       break;
     case PARAM_VOLUME_PERC:
-      g_value_set_uint (value, song->volume_factor * 100.0 + 0.5);
+      sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);
       break;
     case PARAM_BPM:
-      g_value_set_uint (value, song->bpm);
+      sfi_value_set_int (value, self->bpm);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (song, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
     }
 }
@@ -301,7 +311,7 @@ bse_song_add_item (BseContainer *container,
   BseSong *song;
   
   song = BSE_SONG (container);
-  
+
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
     bse_track_add_modules (BSE_TRACK (item), BSE_CONTAINER (song), song->context_merger);
 
@@ -408,9 +418,9 @@ bse_song_set_bpm (BseSong *song,
   g_return_if_fail (BSE_IS_SONG (song));
   g_return_if_fail (bpm >= BSE_MIN_BPM && bpm <= BSE_MAX_BPM);
   
-  bse_object_set (BSE_OBJECT (song),
-		  "bpm", bpm,
-		  NULL);
+  g_object_set (song,
+		"bpm", bpm,
+		NULL);
 }
 
 static void

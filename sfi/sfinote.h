@@ -45,7 +45,7 @@ G_BEGIN_DECLS
 #define	SFI_MIN_OCTAVE			(SFI_NOTE_OCTAVE (SFI_MIN_NOTE))
 #define	SFI_MAX_OCTAVE			(SFI_NOTE_OCTAVE (SFI_MAX_NOTE))
 
-/* macro to retrive a valid note. simply defaults
+/* macro to retrieve a valid note. simply defaults
  * to kammer note for invalid note values.
  */
 #define	SFI_NOTE_MAKE_VALID(n)		((n) > SFI_MAX_NOTE || (n) < SFI_MIN_NOTE ? SFI_KAMMER_NOTE : ((SfiInt) (n)))

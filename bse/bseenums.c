@@ -37,6 +37,13 @@ guint               bse_debug_key_n_flag_values = (sizeof (bse_debug_flags_value
 
 
 /* --- functions --- */
+static void
+choice2enum (const GValue *src_value,
+	     GValue       *dest_value)
+{
+  sfi_value_choice2enum (src_value, dest_value, NULL);
+}
+
 void
 bse_type_register_enums (void)
 {
@@ -55,7 +62,11 @@ bse_type_register_enums (void)
   for (i = 0; i < n_enums; i++)
     {
       if (enums[i].parent_type == G_TYPE_ENUM)
-	*(enums[i].type_p) = g_enum_register_static (enums[i].name, enums[i].values);
+	{
+	  *(enums[i].type_p) = g_enum_register_static (enums[i].name, enums[i].values);
+	  g_value_register_transform_func (SFI_TYPE_CHOICE, *(enums[i].type_p), choice2enum);
+	  g_value_register_transform_func (*(enums[i].type_p), SFI_TYPE_CHOICE, sfi_value_enum2choice);
+	}
       else if (enums[i].parent_type == G_TYPE_FLAGS)
 	*(enums[i].type_p) = g_flags_register_static (enums[i].name, enums[i].values);
       else
@@ -97,7 +108,7 @@ bse_error_blurb (BseErrorType error_value)
   
   if (!bse_error_class)
     bse_error_class = g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-
+  
   switch (error_value)
     {
     case BSE_ERROR_NONE:	/* GSL */	return "Everything went well";

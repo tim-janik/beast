@@ -76,19 +76,71 @@ struct _SfiSeq {
   guint   n_elements;
   GValue *elements;
 };
-SfiSeq*	   sfi_seq_new		(void);
-SfiSeq*	   sfi_seq_ref		(SfiSeq		 *seq);
-void	   sfi_seq_unref	(SfiSeq		 *seq);
-SfiSeq*	   sfi_seq_copy_deep	(const SfiSeq	 *seq);
-#define	   sfi_seq_copy_shallow	sfi_seq_ref
-void	   sfi_seq_append	(SfiSeq		 *seq,
+SfiSeq*	 sfi_seq_new		(void);
+SfiSeq*	 sfi_seq_ref		(SfiSeq		 *seq);
+void	 sfi_seq_unref		(SfiSeq		 *seq);
+SfiSeq*	 sfi_seq_copy_deep	(const SfiSeq	 *seq);
+#define	 sfi_seq_copy_shallow	sfi_seq_ref
+void	 sfi_seq_append		(SfiSeq		 *seq,
 				 const GValue	 *value);
-void	   sfi_seq_clear	(SfiSeq		 *seq);
-guint	   sfi_seq_length	(const SfiSeq	 *seq);
-GValue*	   sfi_seq_get		(const SfiSeq	 *seq,
+void	 sfi_seq_clear		(SfiSeq		 *seq);
+guint	 sfi_seq_length		(const SfiSeq	 *seq);
+GValue*	 sfi_seq_get		(const SfiSeq	 *seq,
 				 guint		  index);
-gboolean   sfi_seq_check	(SfiSeq		 *seq,
+gboolean sfi_seq_check		(SfiSeq		 *seq,
 				 GType		  element_type);
+/* convenience */
+void     sfi_seq_append_bool	(SfiSeq          *seq,
+				 SfiBool	  v_bool);
+void     sfi_seq_append_int	(SfiSeq          *seq,
+				 SfiInt	  	  v_int);
+void     sfi_seq_append_num	(SfiSeq          *seq,
+				 SfiNum		  v_num);
+void     sfi_seq_append_real	(SfiSeq          *seq,
+				 SfiReal	  v_real);
+void     sfi_seq_append_string	(SfiSeq          *seq,
+				 const gchar	 *string);
+void     sfi_seq_append_choice	(SfiSeq          *seq,
+				 const gchar	 *choice);
+void     sfi_seq_append_bblock	(SfiSeq          *seq,
+				 SfiBBlock	 *bblock);
+void     sfi_seq_append_fblock	(SfiSeq          *seq,
+				 SfiFBlock	 *fblock);
+void     sfi_seq_append_pspec	(SfiSeq          *seq,
+				 GParamSpec	 *pspec);
+void     sfi_seq_append_seq	(SfiSeq          *seq,
+				 SfiSeq		 *v_seq);
+void     sfi_seq_append_rec	(SfiSeq          *seq,
+				 SfiRec		 *rec);
+void     sfi_seq_append_proxy	(SfiSeq          *seq,
+				 SfiProxy	  proxy);
+SfiBool	     sfi_seq_get_bool	(SfiSeq		*seq,
+				 guint		 index);
+SfiInt	     sfi_seq_get_int	(SfiSeq		*seq,
+				 guint           index);
+SfiNum	     sfi_seq_get_num	(SfiSeq		*seq,
+				 guint           index);
+SfiReal	     sfi_seq_get_real	(SfiSeq		*seq,
+				 guint           index);
+const gchar* sfi_seq_get_string (SfiSeq		*seq,
+				 guint           index);
+const gchar* sfi_seq_get_choice (SfiSeq		*seq,
+				 guint           index);
+SfiBBlock*   sfi_seq_get_bblock	(SfiSeq		*seq,
+				 guint           index);
+SfiFBlock*   sfi_seq_get_fblock	(SfiSeq		*seq,
+				 guint           index);
+GParamSpec*  sfi_seq_get_pspec	(SfiSeq		*seq,
+				 guint           index);
+SfiSeq*	     sfi_seq_get_seq	(SfiSeq		*seq,
+				 guint           index);
+SfiRec*	     sfi_seq_get_rec	(SfiSeq		*seq,
+				 guint           index);
+SfiProxy     sfi_seq_get_proxy	(SfiSeq		*seq,
+				 guint           index);
+/* conversion convenience */
+gchar**	     sfi_seq_to_strv	(SfiSeq		*seq);
+SfiSeq*	     sfi_seq_from_strv	(gchar	       **strv);
 
 
 /* --- SfiRec primitive type --- */
@@ -104,6 +156,11 @@ SfiRec*	   sfi_rec_ref		(SfiRec		 *rec);
 void	   sfi_rec_unref	(SfiRec          *rec);
 SfiRec*	   sfi_rec_copy_deep	(SfiRec		 *rec);
 #define	   sfi_rec_copy_shallow	sfi_rec_ref
+void       sfi_rec_swap_fields  (SfiRec          *rec,
+				 SfiRec		 *swapper);
+gboolean   sfi_rec_validate	(SfiRec		 *rec,
+				 SfiRecFields	  fields);
+void       sfi_rec_clear        (SfiRec          *rec);
 void       sfi_rec_set          (SfiRec          *rec,
 				 const gchar     *field_name,
 				 const GValue    *value);
@@ -115,6 +172,7 @@ GValue*    sfi_rec_field        (const SfiRec    *rec,
 gboolean   sfi_rec_check	(SfiRec		 *rec,
 				 SfiRecFields	  rfields);
 void	   sfi_rec_sort		(SfiRec          *rec);
+/* convenience */
 void       sfi_rec_set_bool	(SfiRec          *rec,
 				 const gchar     *field_name,
 				 SfiBool	  v_bool);
@@ -148,9 +206,38 @@ void       sfi_rec_set_seq	(SfiRec          *rec,
 void       sfi_rec_set_rec	(SfiRec          *rec,
 				 const gchar     *field_name,
 				 SfiRec		 *v_rec);
+void       sfi_rec_set_proxy	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiProxy	  proxy);
+SfiBool	     sfi_rec_get_bool	(SfiRec		*rec,
+				 const gchar	*field_name);
+SfiInt	     sfi_rec_get_int	(SfiRec		*rec,
+				 const gchar	*field_name);
+SfiNum	     sfi_rec_get_num	(SfiRec		*rec,
+				 const gchar	*field_name);
+SfiReal	     sfi_rec_get_real	(SfiRec		*rec,
+				 const gchar	*field_name);
+const gchar* sfi_rec_get_string (SfiRec		*rec,
+				 const gchar	*field_name);
+const gchar* sfi_rec_get_choice (SfiRec		*rec,
+				 const gchar	*field_name);
+SfiBBlock*   sfi_rec_get_bblock	(SfiRec		*rec,
+				 const gchar	*field_name);
+SfiFBlock*   sfi_rec_get_fblock	(SfiRec		*rec,
+				 const gchar	*field_name);
+GParamSpec*  sfi_rec_get_pspec	(SfiRec		*rec,
+				 const gchar	*field_name);
+SfiSeq*	     sfi_rec_get_seq	(SfiRec		*rec,
+				 const gchar	*field_name);
+SfiRec*	     sfi_rec_get_rec	(SfiRec		*rec,
+				 const gchar	*field_name);
+SfiProxy     sfi_rec_get_proxy	(SfiRec		*rec,
+				 const gchar	*field_name);
 
 
 /* --- ring (circular-list) --- */
+typedef gpointer (*SfiRingDataFunc)	(gpointer	 data,
+					 gpointer	 func_data);
 struct _SfiRing		// FIXME: move rings into their own object files
 {
   SfiRing  *next;
@@ -171,6 +258,10 @@ SfiRing*        sfi_ring_remove_node    (SfiRing        *head,
 SfiRing*        sfi_ring_remove         (SfiRing        *head,
 					 gpointer        data);
 guint           sfi_ring_length         (SfiRing        *head);
+SfiRing*        sfi_ring_copy           (SfiRing        *head);
+SfiRing*        sfi_ring_copy_deep      (SfiRing        *head,
+					 SfiRingDataFunc copy,
+					 gpointer	 func_data);
 SfiRing*        sfi_ring_concat         (SfiRing        *head1,
 					 SfiRing        *head2);
 SfiRing*        sfi_ring_find           (SfiRing        *head,
@@ -188,9 +279,12 @@ gpointer        sfi_ring_pop_head       (SfiRing       **head);
 gpointer        sfi_ring_pop_tail       (SfiRing       **head);
 #define         sfi_ring_push_head      sfi_ring_prepend
 #define         sfi_ring_push_tail      sfi_ring_append
+void            sfi_ring_free_deep      (SfiRing        *head,
+					 SfiRingDataFunc free_func,
+					 gpointer        func_data);
 void            sfi_ring_free           (SfiRing        *head);
 #define sfi_ring_tail(head)             ((head) ? (head)->prev : NULL)
-#define sfi_ring_walk(head,node)        ((node) != (head)->prev ? (node)->next : NULL)
+#define sfi_ring_walk(node,head_bound)  ((node)->next != (head_bound) ? (node)->next : NULL)
 
 
 G_END_DECLS

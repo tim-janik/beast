@@ -52,7 +52,7 @@ mad_load_file_info (gpointer      data,
       return NULL;
     }
 
-  fi = gsl_new_struct0 (FileInfo, 1);
+  fi = sfi_new_struct0 (FileInfo, 1);
   fi->wfi.n_waves = 1;	/* we support only a single MPEG stream */
   fi->wfi.waves = g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
   fi->wfi.waves[0].name = g_strdup (file_name);
@@ -73,7 +73,7 @@ mad_free_file_info (gpointer         data,
   for (i = 0; i < fi->wfi.n_waves; i++)
     g_free (fi->wfi.waves[i].name);
   g_free (fi->wfi.waves);
-  gsl_delete_struct (FileInfo, fi);
+  sfi_delete_struct (FileInfo, fi);
 }
 
 static GslWaveDsc*
@@ -83,7 +83,7 @@ mad_load_wave_dsc (gpointer         data,
 		   GslErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
-  GslWaveDsc *wdsc = gsl_new_struct0 (GslWaveDsc, 1);
+  GslWaveDsc *wdsc = sfi_new_struct0 (GslWaveDsc, 1);
 
   wdsc->name = g_strdup (fi->wfi.waves[0].name);
   wdsc->n_channels = fi->n_channels;
@@ -101,7 +101,7 @@ mad_free_wave_dsc (gpointer    data,
 {
   g_free (wdsc->name);
   g_free (wdsc->chunks);
-  gsl_delete_struct (GslWaveDsc, wdsc);
+  sfi_delete_struct (GslWaveDsc, wdsc);
 }
 
 static GslDataHandle*

@@ -78,13 +78,13 @@ static void
 bst_file_dialog_open (BstFileDialog *fd)
 {
   gchar *file_name;
-  BswProxy project;
+  SfiProxy project;
   BseErrorType error;
 
   file_name = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (fd)));
 
-  project = bsw_server_use_new_project (BSW_SERVER, file_name);
-  error = bsw_project_restore_from_file (project, file_name);
+  project = bse_server_use_new_project (BSE_SERVER, file_name);
+  error = bse_project_restore_from_file (project, file_name);
 
   if (error)
     g_message ("failed to load project `%s': %s", /* FIXME */
@@ -94,14 +94,14 @@ bst_file_dialog_open (BstFileDialog *fd)
     {
       BstApp *app;
 
-      bsw_project_ensure_wave_repo (project);
+      bse_project_ensure_wave_repo (project);
       app = bst_app_new (project);
       gxk_status_window_push (app);
       bst_status_eprintf (error,"Loading project `%s'", file_name);
       gxk_status_window_pop ();
       gxk_idle_show_widget (GTK_WIDGET (app));
     }
-  bsw_item_unuse (project);
+  bse_item_unuse (project);
 
   g_free (file_name);
   gtk_widget_destroy (GTK_WIDGET (fd));
@@ -114,7 +114,7 @@ bst_file_dialog_save (BstFileDialog *fd)
   BstApp *app;
   gchar *file_name;
   GtkWidget *radio;
-  BswErrorType error;
+  BseErrorType error;
   gboolean self_contained = FALSE;
 
   file_name = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (fd)));
@@ -128,16 +128,16 @@ bst_file_dialog_save (BstFileDialog *fd)
 
  retry_saving:
 
-  error = bsw_project_store_bse (app->project, file_name, self_contained);
+  error = bse_project_store_bse (app->project, file_name, self_contained);
 
   /* offer retry if file exists
    */
-  if (error == BSE_ERROR_FILE_EXISTS)
+  if (error == BSE_ERROR_EXISTS)
     {
       GtkWidget *choice;
-      gchar *title = g_strdup_printf ("Saving project `%s'", bsw_item_get_name (app->project));
+      gchar *title = g_strdup_printf ("Saving project `%s'", bse_item_get_name (app->project));
       gchar *text = g_strdup_printf ("Failed to save\n`%s'\nto\n`%s':\n%s",
-				     bsw_item_get_name (app->project),
+				     bse_item_get_name (app->project),
 				     file_name,
 				     bse_error_blurb (error));
       
@@ -210,7 +210,7 @@ bst_file_dialog_new_save (BstApp *app)
 
   g_return_val_if_fail (BST_IS_APP (app), NULL);
 
-  string = g_strconcat ("Save Project: ", bsw_item_get_name (app->project), ": BEAST", NULL);
+  string = g_strconcat ("Save Project: ", bse_item_get_name (app->project), ": BEAST", NULL);
   dialog = gtk_widget_new (BST_TYPE_FILE_DIALOG,
 			   "title", string,
 			   NULL);

@@ -1,0 +1,197 @@
+FIXMES:
+- registering the same script function twice triggers GType assertion
+- fix procbrowser
+- fix uses of gsl_engine_tick_stamp_from_systime() in bstwaveeditor.c
+- bst_gmask should use typedef struct _BstGMask BstGMask; instead of gpointer
+- nuke OPEN_FAILED and similar errors in favour of real descriptions
+- MidiEvent (serialization)
+- move simple-source and spawning into sfiutils?
+- fix time stamps
+- storage: fix missing newlines when storing normal proeprties
+- storage: data pocket: use typed serialization instead of #-hack for generic values
+- handle non-validated sequences and records in generation code (things
+  can be demarshalled in non-validated form after incompatible changes)
+- cleanup helper/util code in sfitype.h
+- choice type should have validation function
+- match enum names on word boundaries only
+- serialization of homogeneous sequences could store the field type code only once
+- typed record serialization needs to honour indent for sfi_value_store_param()
+- BseStorage as object
+- fix bseutils.c:bse_note_sequence_copy_deep()
+- does BseMidiIController need a MIDI channel property?
+- use procedure storage for undo or nuke the code
+- (bsw-script-set-msg 'e "huhu") BSE-Message: while executing "bse-script-set-msg": Procedure execution failed
+- bsemididevice-oss throws warnings when compiled without midi support
+- song->master volume doesn't affect anything
+- fix and canonify decibell naming everywhere
+- need volume properties per track
+- piano roll: pasting doesn't quantize (without later movement)
+- initial piano roll popup should shift vscrollbar to around 50%
+- pressing browsing hotkeys in release-notes dialog does stuff
+- preference boundary values can cause assertions
+- sample chunk display should show note names not only midi notes
+- hotkey in piano roll to replay project
+
+URGENT:
+- support pspec groups in idl files [stefan]
+
+DOCS:
+- try implementing some kind of table layout for tsmview [timj]
+- add QuickStart-Samples docs once we support sample editing [timj]
+- turn off word-wrapping for normal files (e.g. /etc/profile) in
+  tsmview. then, gsl-mplan.txt and NEWS don't need anymore markup. [timj]
+- report mising underline to havoc, alper has a tsmview example in
+  Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
+- @important should have a blue more distinct from clickable link blue
+  (especially since it's also underlined) [alper]
+- bse-structs.ps has broken struct braces indentation [alper]
+
+GSL:
+* sample loader currently hard codes 440.0 for osc_freq
+- [Stefan]  ?	LP -> LP transforms or zero/poles
+- [Stefan]  2h	3-stage joining FFT code
+- [Stefan]  ?h	FFT L-case optimiaztions
+- [Stf/tim] 3h	CSL: whitepaper completion and publication
+- [Stf/tim] 2h	CSL: csl_select() completion
+- [Stf/tim] 2h	Filter boundary conditions?
+		Also, need 2stage filters with way smaller errors
+		Filter: Oppenheim Schaefer page.441 2stage filters implementation
+		        (2stage pair finding by single (zero, pole) pair plus
+		        conj. complex pair)
+- [timj]    ?h	Buffered data handles for coarse seek
+- [timj]    ?	WaveOsc: prop for stereo channel
+- [timj]    ?	API for lp/hp/bp/bs generation from array of roots and poles
+		(requires zero and poles with ->im != 0 to occour in
+		conjugated complex pairs)
+- [timj]    ?	in API and docs, s/roots/zeros/
+- [timj]    ?	gsltests: change freq input, so that [0..1] => [0..pi]
+- [timj]    ?	gsltest: swap epsilon and steepness params for t2* filters
+- [timj]    ?	Async DCache read-ahead thread creation
+- [timj]    ?	filter evaluate function (to draw graph)
+- [Stf/tim] 2h	GUI abstraction layer
+- [Stefan]  ?	.PAT loader (move)
+- [Stf/tim] ?h	1) OscTableEntry sizes (wave_table_size ())
+- [Stf/tim] ?h	2) development of gsl_osc_table_create() frequencies
+- [Stf/tim] ?h	3) PWM scaling
+
+Snet Router:
+- ctrl+move should clone objects (DND style modifier) 
+- support selections for group moves
+- add property editor dialog which contains intersection of properties from selected objects
+- middle mouse button on canvas background should scroll
+
+PianoRoll:
+- ctrl+move should copy (DND style modifier)
+- draw ces and fes with red lines
+- tooltip follows mouse and shows current note/tact
+- hotkey fuer play song
+- play notes upon insert (click on piano roll window)
+- two notes from 0..15 and 16..32 look like one
+- ctrl/shift modifiers for selection
+- quantize upon paste
+- fix hscrollbar  (BsePart end position implementation)
+- select loop for playback during editing
+
+RackEditor:
+- covers are broken for rack-items close to right table boundary
+
+GUI features:
+- entry focus watcher: for property editing entries, do:
+  ::focus_in   - set changed_flag=0
+  ::changed    - set changed_flag=1
+  _apply_value - set changed_flag=0
+  ::focus_out  - only re-apply value if changed_flag!=0
+- XFrames should highlight like buttons in EDIT mode?
+- Module Menu: add EDIT
+- part editor needs play position
+- track editor needs play position
+- Modul BseTranspose, inputs: frequency, outputs: frequency, property: semitones
+- part-view: double click on list items should fire up editor
+- BstToolbar, drop-down selections work only after button release
+- support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
+- fix data cache seeks to skip the -64 byte offset at block boundaries
+
+General BEAST:
+* BLIT, band-limited impulse train oscillator
+* object clippboard
+* fade in/out of samples (sample editor)
+- device monitor delay should be persistent in .beastrc
+* get File/Save to work
+* quit/close needs to feature mod-time vs. creation-time handling
+* wave editor: provide transpose spinner for wave preview
+
+BseWaveChunk:
+  if (pos > wchunk->tail.end)                                   /* outside wave boundaries */
+    {
+      iter->lbound = 0;
+      iter->rel_pos = wchunk->n_pad_values;
+      iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, pos - wchunk->tail.end);
+      if (PRINT_DEBUG_INFO)
+        g_print ("PHASE_UNDEF, post-tail %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+      return PHASE_UNDEF (wchunk);
+    }
+  the "pos - wchunk->tail.end" is wrong for direction=+1, should be checked only for direction=-1 and
+  then affect lbound
+* wavechunk, fill-block:
+  wpos.loop_count = loop_count;
+  dnode = gsl_data_cache_ref_node (wchunk->dcache, 0, TRUE);
+  s/0/wpos.pos/ or offset
+- notifier wakeup is disabled in bsemidireceiver.c
+  ('cause gsl_thread_main needs to be replaced by bse_main_thred() or somesuch)
+
+General BSE:
+- fix fine-tune settings (from gsl)
+- _SL functions have to be revisited and thoroughly implemented
+- track_step_SL() needs bpm_tick => stamp_tick translation
+- fix snet property changes in sub synth and instrument
+- replace gsl_signal_exp2() with gsl_approx_exp2() and audio test result
+- check for non-xref object links which should be turned into xrefs
+- re-eval balance defines, provide just MAX_BALANCE
+- provide proper dB functions in GSL
+- implement ":force-dirty" hint (never skip save due to value==default)
+- adjust stepping and type for all percentage settings
+- get rid of BseSampleValue
+- get rid of parasites by means of using data pocket and BseSource.x/y
+- alive keeping for waves which are removed, but whose index is in use?
+- loading (restore) may only work when not playing (to keep consistency
+  and avoid lock contentions during playback)
+- during playback the instrument set needs to be fixed on a song  
+- BSE_SOURCE_GET_CLASS (source)->remove_input() add GslTrans* so clear_input removes really in batches
+- add pre-amplification (0..1) to freeverb for clip prevention
+- fix scanner error messages for deferred channel resolution to include the *correct* line number
+- fix update_suspension_state() recursion for ordinary cycles
+  
+Old BSE:
+general:
+-	delay class destruction and plugin unloading through async handlers (slight timeout)
+*	eliminate everything that fgrep -i fixme/hack reveals ;)
+-	param_changed(): update modified stamp and record undo
+Balance
+-	replace with 3d room position?
+
+
+sfidl:
+  fixes:
+  - support N/A choice values, currently hardcoded for BseErrorType
+  parsing:
+    - plural generator
+  code generation:
+    - namespace substitution that works for both, C and C++
+    - restructure name generation to example-based output:
+      foo-bar, foo_bar, fooBar, FOO_BAR, FooBar
+  C language binding:
+    - review ParamSpec/Record primitive types
+    - new enum syntax for value; nick
+      YES,
+      YES = 1,
+      YES = "Yes",
+      YES = (1, "Yes"),
+      YES = Neutral,
+      YES = (Neutral, "Yes"),
+  Qt language binding:
+    - everything
+
+LEGAL:
+- email RMS about plugins covered by patents
+
+vim:set ts=8 sts=2 sw=2:

@@ -21,15 +21,15 @@
 #include "bseproject.h"
 #include "gslengine.h"
 #include "gslcommon.h"
-#include "bsemarshal.h"
 #include "bseglue.h"
-#include "bsecomwire.h"
+#include "bsegconfig.h"
 #include "bsemidinotifier.h"
 #include "bsemain.h"		/* threads enter/leave */
-#include "bsecomwire.h"
 #include "bsemidireceiver.h"
 #include "bsemididevice-null.h"
-#include "bsescriptcontrol.h"
+#include "bsejanitor.h"
+#include <fcntl.h>
+#include <unistd.h>
 
 
 /* --- PCM GslModule implementations ---*/
@@ -40,6 +40,7 @@
 enum
 {
   PARAM_0,
+  PARAM_GCONFIG,
   PARAM_PCM_LATENCY,
 };
 
@@ -47,12 +48,12 @@ enum
 /* --- prototypes --- */
 static void	bse_server_class_init		(BseServerClass	   *class);
 static void	bse_server_init			(BseServer	   *server);
-static void	bse_server_destroy		(BseObject	   *object);
-static void	bse_server_set_property		(BseServer	   *server,
+static void	bse_server_finalize		(GObject	   *object);
+static void	bse_server_set_property		(GObject           *object,
 						 guint              param_id,
-						 GValue            *value,
+						 const GValue      *value,
 						 GParamSpec        *pspec);
-static void	bse_server_get_property		(BseServer	   *server,
+static void	bse_server_get_property		(GObject           *object,
 						 guint              param_id,
 						 GValue            *value,
 						 GParamSpec        *pspec);
@@ -65,6 +66,7 @@ static void     bse_server_forall_items         (BseContainer      *container,
 						 gpointer           data);
 static void     bse_server_remove_item          (BseContainer      *container,
 						 BseItem           *item);
+static void     bse_server_release_children     (BseContainer      *container);
 static gboolean	iowatch_remove			(BseServer	   *server,
 						 BseIOWatch	    watch_func,
 						 gpointer	    data);
@@ -73,8 +75,7 @@ static void	iowatch_add			(BseServer	   *server,
 						 GIOCondition	    events,
 						 BseIOWatch	    watch_func,
 						 gpointer	    data);
-static void	main_thread_source_setup	(BseServer	   *self,
-						 GslGlueContext    *context);
+static void	main_thread_source_setup	(BseServer	   *self);
 static void	engine_init			(BseServer	   *server,
 						 gfloat		    mix_freq);
 static void	engine_shutdown			(BseServer	   *server);
@@ -82,6 +83,7 @@ static void	engine_shutdown			(BseServer	   *server);
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
+static guint       signal_registration = 0;
 static guint       signal_user_message = 0;
 static guint       signal_script_start = 0;
 static guint       signal_script_error = 0;
@@ -120,83 +122,135 @@ bse_server_class_init (BseServerClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_server_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_server_get_property;
-
-  object_class->destroy = bse_server_destroy;
-
+  gobject_class->set_property = bse_server_set_property;
+  gobject_class->get_property = bse_server_get_property;
+  gobject_class->finalize = bse_server_finalize;
+  
   item_class->set_parent = bse_server_set_parent;
-
+  
   container_class->add_item = bse_server_add_item;
   container_class->remove_item = bse_server_remove_item;
   container_class->forall_items = bse_server_forall_items;
-
+  container_class->release_children = bse_server_release_children;
+  
+  _bse_gconfig_init ();
+  bse_object_class_add_param (object_class, "BSE Configuration",
+			      PARAM_GCONFIG,
+			      bse_gconfig_pspec ());	/* "bse-preferences" */
   bse_object_class_add_param (object_class, "PCM Settings",
 			      PARAM_PCM_LATENCY,
-			      bse_param_spec_uint ("latency", "Latency [ms]", NULL,
-						   1, 2000,
-						   50, 5,
-						   BSE_PARAM_DEFAULT | G_PARAM_CONSTRUCT));
-
+			      sfi_pspec_int ("latency", "Latency [ms]", NULL,
+					     50, 1, 2000, 5,
+					     SFI_PARAM_GUI));
+  
+  signal_registration = bse_object_class_add_signal (object_class, "registration",
+						     G_TYPE_NONE, 3,
+						     BSE_TYPE_REGISTRATION_TYPE,
+						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
+						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_user_message = bse_object_class_add_signal (object_class, "user-message",
-						     bse_marshal_VOID__ENUM_STRING, NULL,
 						     G_TYPE_NONE, 2,
 						     BSE_TYPE_USER_MSG_TYPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_script_start = bse_object_class_add_signal (object_class, "script-start",
-						     bse_marshal_VOID__OBJECT,
-						     bse_marshal_VOID__POINTER,
 						     G_TYPE_NONE, 1,
-						     BSE_TYPE_SCRIPT_CONTROL);
+						     BSE_TYPE_JANITOR);
   signal_script_error = bse_object_class_add_signal (object_class, "script-error",
-						     bse_marshal_VOID__STRING_STRING_STRING, NULL,
 						     G_TYPE_NONE, 3,
 						     G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+}
+
+static SfiTokenType
+rc_file_try_statement (gpointer   context_data,
+		       SfiRStore *rstore,
+		       GScanner  *scanner,
+		       gpointer   user_data)
+{
+  BseServer *server = context_data;
+  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  if (strcmp ("bse-preferences", scanner->next_value.v_identifier) == 0)
+    {
+      GValue *value = sfi_value_rec (NULL);
+      GTokenType token;
+      SfiRec *rec;
+      g_scanner_get_next_token (rstore->scanner);
+      token = sfi_rstore_parse_param (rstore, value, bse_gconfig_pspec ());
+      rec = sfi_value_get_rec (value);
+      if (token == G_TOKEN_NONE && rec)
+	g_object_set (server, "bse-preferences", rec, NULL);
+      sfi_value_free (value);
+      return token;
+    }
+  else
+    return SFI_TOKEN_UNMATCHED;
 }
 
 static void
 bse_server_init (BseServer *server)
 {
+  gchar *file_name;
+  gint fd;
+  
   server->engine_source = NULL;
   server->projects = NULL;
   server->dev_use_count = 0;
+  server->pcm_latency = 50;
   server->pcm_device = NULL;
   server->pcm_imodule = NULL;
   server->pcm_omodule = NULL;
   server->pcm_ref_count = 0;
   server->midi_device = NULL;
   server->midi_fallback = NULL;
-  server->main_context = g_main_context_default ();
-  g_main_context_ref (server->main_context);
   BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
-
-  /* start dispatching main thread stuff */
-  main_thread_source_setup (server, bse_glue_context ());
-}
-
-static void
-bse_server_destroy (BseObject *object)
-{
-  // BseServer *server = BSE_SERVER (object);
-
-  g_error ("BseServer got unreferenced, though persistent-singleton");
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* keep the server singleton alive */
+  bse_item_use (BSE_ITEM (server));
+  
+  /* start dispatching main thread stuff */
+  main_thread_source_setup (server);
+  
+  /* read rc file */
+  file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
+  fd = open (file_name, O_RDONLY, 0);
+  if (fd >= 0)
+    {
+      SfiRStore *rstore = sfi_rstore_new ();
+      sfi_rstore_input_fd (rstore, fd, file_name);
+      sfi_rstore_parse_all (rstore, server, rc_file_try_statement, NULL);
+      sfi_rstore_destroy (rstore);
+      close (fd);
+    }
+  g_free (file_name);
+}
+
+static void
+bse_server_finalize (GObject *object)
+{
+  g_error ("Fatal attempt to destroy singleton BseServer");
+  
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 
 static void
-bse_server_set_property (BseServer  *server,
-			 guint       param_id,
-			 GValue     *value,
-			 GParamSpec *pspec)
+bse_server_set_property (GObject      *object,
+			 guint         param_id,
+			 const GValue *value,
+			 GParamSpec   *pspec)
 {
+  BseServer *server = BSE_SERVER (object);
   switch (param_id)
     {
       BsePcmHandle *handle;
+      SfiRec *rec;
+    case PARAM_GCONFIG:
+      rec = sfi_value_get_rec (value);
+      if (rec)
+	bse_gconfig_apply (rec);
+      break;
     case PARAM_PCM_LATENCY:
-      server->pcm_latency = g_value_get_uint (value);
+      server->pcm_latency = g_value_get_int (value);
       handle = server->pcm_device ? bse_pcm_device_get_handle (server->pcm_device) : NULL;
       if (handle)
 	bse_pcm_handle_set_watermark (handle, server->pcm_latency);
@@ -208,20 +262,35 @@ bse_server_set_property (BseServer  *server,
 }
 
 static void
-bse_server_get_property (BseServer  *server,
+bse_server_get_property (GObject    *object,
 			 guint       param_id,
 			 GValue     *value,
 			 GParamSpec *pspec)
 {
+  BseServer *server = BSE_SERVER (object);
   switch (param_id)
     {
+      SfiRec *rec;
+    case PARAM_GCONFIG:
+      rec = bse_gconfig_to_rec (bse_global_config);
+      sfi_value_set_rec (value, rec);
+      sfi_rec_unref (rec);
+      break;
     case PARAM_PCM_LATENCY:
-      g_value_set_uint (value, server->pcm_latency);
+      g_value_set_int (value, server->pcm_latency);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (server, param_id, pspec);
       break;
     }
+}
+
+void
+bse_server_notify_gconfig (BseServer *server)
+{
+  g_return_if_fail (BSE_IS_SERVER (server));
+  
+  g_object_notify (server, bse_gconfig_pspec ()->name);
 }
 
 static void
@@ -236,9 +305,9 @@ bse_server_add_item (BseContainer *container,
 		     BseItem      *item)
 {
   BseServer *self = BSE_SERVER (container);
-
+  
   self->children = g_slist_prepend (self->children, item);
-
+  
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
 }
@@ -250,11 +319,11 @@ bse_server_forall_items (BseContainer      *container,
 {
   BseServer *self = BSE_SERVER (container);
   GSList *slist = self->children;
-
+  
   while (slist)
     {
       BseItem *item = slist->data;
-
+      
       slist = slist->next;
       if (!func (item, data))
 	return;
@@ -268,28 +337,39 @@ bse_server_remove_item (BseContainer *container,
   BseServer *self = BSE_SERVER (container);
   
   self->children = g_slist_remove (self->children, item);
-
+  
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
+}
+
+static void
+bse_server_release_children (BseContainer *container)
+{
+  // BseServer *self = BSE_SERVER (container);
+  
+  g_warning ("release_children() should never be triggered on BseServer singleton");
+  
+  /* chain parent class' handler */
+  BSE_CONTAINER_CLASS (parent_class)->release_children (container);
 }
 
 /**
  * bse_server_get
  * @Returns: Global BSE Server
  *
- * Retrive the global BSE server object.
+ * Retrieve the global BSE server object.
  **/
 BseServer*
 bse_server_get (void)
 {
   static BseServer *server = NULL;
-
+  
   if (!server)
     {
-      server = bse_object_new (BSE_TYPE_SERVER, NULL);
+      server = g_object_new (BSE_TYPE_SERVER, NULL);
       g_object_ref (server);
     }
-
+  
   return server;
 }
 
@@ -305,19 +385,19 @@ bse_server_create_project (BseServer   *server,
 			   const gchar *name)
 {
   BseProject *project;
-
+  
   g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
   g_return_val_if_fail (name != NULL, NULL);
   g_return_val_if_fail (bse_server_find_project (server, name) == NULL, NULL);
-
+  
   project = g_object_new (BSE_TYPE_PROJECT,
 			  "uname", name,
 			  NULL);
   server->projects = g_list_prepend (server->projects, project);
   g_object_connect (project,
-		    "signal::destroy", destroy_project, server,
+		    "signal::release", destroy_project, server,
 		    NULL);
-
+  
   return project;
 }
 
@@ -326,15 +406,15 @@ bse_server_find_project (BseServer   *server,
 			 const gchar *name)
 {
   GList *node;
-
+  
   g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
   g_return_val_if_fail (name != NULL, NULL);
-
+  
   for (node = server->projects; node; node = node->next)
     {
       BseProject *project = node->data;
       gchar *uname = BSE_OBJECT_UNAME (project);
-
+      
       if (uname && strcmp (name, uname) == 0)
 	return project;
     }
@@ -346,12 +426,12 @@ bse_server_pick_default_devices (BseServer *server)
 {
   GType *children, choice = 0;
   guint n, i, rating;
-
+  
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (server->pcm_device == NULL);
   g_return_if_fail (server->midi_device == NULL);
   g_return_if_fail (server->midi_fallback == NULL);
-
+  
   /* pcm device driver implementations all derive from BsePcmDevice */
   children = g_type_children (BSE_TYPE_PCM_DEVICE, &n);
   /* pick class with highest rating */
@@ -359,7 +439,7 @@ bse_server_pick_default_devices (BseServer *server)
   for (i = 0; i < n; i++)
     {
       BsePcmDeviceClass *class = g_type_class_ref (children[i]);
-
+      
       if (class->driver_rating > rating)
 	{
 	  rating = class->driver_rating;
@@ -370,7 +450,7 @@ bse_server_pick_default_devices (BseServer *server)
   g_free (children);
   if (rating)
     server->pcm_device = g_object_new (choice, NULL);
-
+  
   /* midi device driver implementations all derive from BseMidiDevice */
   children = g_type_children (BSE_TYPE_MIDI_DEVICE, &n);
   /* pick class with highest rating */
@@ -378,7 +458,7 @@ bse_server_pick_default_devices (BseServer *server)
   for (i = 0; i < n; i++)
     {
       BseMidiDeviceClass *class = g_type_class_ref (children[i]);
-
+      
       if (class->driver_rating > rating)
 	{
 	  rating = class->driver_rating;
@@ -402,9 +482,9 @@ BseErrorType
 bse_server_activate_devices (BseServer *server)
 {
   BseErrorType error = BSE_ERROR_NONE;
-
+  
   g_return_val_if_fail (BSE_IS_SERVER (server), BSE_ERROR_INTERNAL);
-
+  
   if (!server->pcm_device || !server->midi_device)
     bse_server_pick_default_devices (server);
   if (!server->pcm_device)
@@ -427,11 +507,11 @@ bse_server_activate_devices (BseServer *server)
   if (!error)
     {
       GslTrans *trans;
-
+      
       bse_pcm_handle_set_watermark (bse_pcm_device_get_handle (server->pcm_device),
 				    server->pcm_latency);
       engine_init (server, bse_pcm_device_get_handle (server->pcm_device)->mix_freq);
-
+      
       trans = gsl_trans_open ();
       server->pcm_imodule = bse_pcm_imodule_insert (bse_pcm_device_get_handle (server->pcm_device), trans);
       server->pcm_omodule = bse_pcm_omodule_insert (bse_pcm_device_get_handle (server->pcm_device), trans);
@@ -445,10 +525,10 @@ void
 bse_server_suspend_devices (BseServer *server)
 {
   GslTrans *trans;
-
+  
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (server->pcm_ref_count == 0);
-
+  
   trans = gsl_trans_open ();
   if (server->pcm_omodule)
     {
@@ -469,22 +549,22 @@ bse_server_suspend_devices (BseServer *server)
     bse_midi_device_suspend (server->midi_device);
   else
     bse_midi_device_suspend (server->midi_fallback);
-
+  
   engine_shutdown (server);
 }
 
 GslModule*
-bse_server_retrive_pcm_output_module (BseServer   *server,
-				      BseSource   *source,
-				      const gchar *uplink_name)
+bse_server_retrieve_pcm_output_module (BseServer   *server,
+				       BseSource   *source,
+				       const gchar *uplink_name)
 {
   g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   g_return_val_if_fail (uplink_name != NULL, NULL);
   g_return_val_if_fail (server->pcm_omodule != NULL, NULL); // FIXME server->pcm_devices_open
-
+  
   server->pcm_ref_count += 1;
-
+  
   return server->pcm_omodule;
 }
 
@@ -495,24 +575,24 @@ bse_server_discard_pcm_output_module (BseServer *server,
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (module != NULL);
   g_return_if_fail (server->pcm_ref_count > 0);
-
+  
   g_return_if_fail (server->pcm_omodule == module); // FIXME
-
+  
   server->pcm_ref_count -= 1;
 }
 
 GslModule*
-bse_server_retrive_pcm_input_module (BseServer   *server,
-				     BseSource   *source,
-				     const gchar *uplink_name)
+bse_server_retrieve_pcm_input_module (BseServer   *server,
+				      BseSource   *source,
+				      const gchar *uplink_name)
 {
   g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   g_return_val_if_fail (uplink_name != NULL, NULL);
   g_return_val_if_fail (server->pcm_imodule != NULL, NULL); // FIXME server->pcm_devices_open
-
+  
   server->pcm_ref_count += 1;
-
+  
   return server->pcm_imodule;
 }
 
@@ -523,9 +603,9 @@ bse_server_discard_pcm_input_module (BseServer *server,
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (module != NULL);
   g_return_if_fail (server->pcm_ref_count > 0);
-
+  
   g_return_if_fail (server->pcm_imodule == module); // FIXME
-
+  
   server->pcm_ref_count -= 1;
 }
 
@@ -535,11 +615,11 @@ bse_server_get_midi_receiver (BseServer   *self,
 {
   g_return_val_if_fail (BSE_IS_SERVER (self), NULL);
   g_return_val_if_fail (midi_name != NULL, NULL);
-
+  
   if (!self->midi_receiver)
     self->midi_receiver = bse_midi_receiver_new ("default");
   // FIXME: we don't actually check the midi_receiver name
-
+  
   return self->midi_receiver;
 }
 
@@ -549,13 +629,24 @@ bse_server_get_midi_receiver (BseServer   *self,
  * Signal script invocation start.
  */
 void
-bse_server_script_start (BseServer        *server,
-			 BseScriptControl *script_control)
+bse_server_script_start (BseServer  *server,
+			 BseJanitor *janitor)
 {
   g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (BSE_IS_SCRIPT_CONTROL (script_control));
+  g_return_if_fail (BSE_IS_JANITOR (janitor));
+  
+  g_signal_emit (server, signal_script_start, 0, janitor);
+}
 
-  g_signal_emit (server, signal_script_start, 0, script_control);
+void
+bse_server_registration (BseServer          *server,
+			 BseRegistrationType rtype,
+			 const gchar	    *what,
+			 const gchar	    *error)
+{
+  g_return_if_fail (BSE_IS_SERVER (server));
+
+  g_signal_emit (server, signal_registration, 0, rtype, what, error);
 }
 
 /* bse_server_script_error
@@ -575,7 +666,7 @@ bse_server_script_error (BseServer   *server,
   g_return_if_fail (script_name != NULL);
   g_return_if_fail (proc_name != NULL);
   g_return_if_fail (reason != NULL);
-
+  
   g_signal_emit (server, signal_script_error, 0,
 		 script_name, proc_name, reason);
 }
@@ -587,7 +678,7 @@ bse_server_user_message (BseServer     *server,
 {
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (message != NULL);
-
+  
   g_signal_emit (server, signal_user_message, 0,
 		 msg_type, message);
 }
@@ -602,7 +693,7 @@ bse_server_add_io_watch (BseServer      *server,
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (watch_func != NULL);
   g_return_if_fail (fd >= 0);
-
+  
   iowatch_add (server, fd, events, watch_func, data);
 }
 
@@ -613,7 +704,7 @@ bse_server_remove_io_watch (BseServer *server,
 {
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (watch_func != NULL);
-
+  
   if (!iowatch_remove (server, watch_func, data))
     g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
 }
@@ -621,69 +712,61 @@ bse_server_remove_io_watch (BseServer *server,
 BseErrorType
 bse_server_run_remote (BseServer         *server,
 		       const gchar       *process_name,
-		       BseComDispatch     dispatcher,
-		       gpointer           dispatch_data,
-		       GDestroyNotify     destroy_data,
-		       GSList            *params,
+		       SfiRing           *params,
 		       const gchar       *script_name,
 		       const gchar       *proc_name,
-		       BseScriptControl **sctrl_p)
+		       BseJanitor       **janitor_p)
 {
-  gint child_pid, standard_input, standard_output, standard_error, command_input, command_output;
-  BseScriptControl *sctrl = NULL;
+  gint child_pid, command_input, command_output;
+  BseJanitor *janitor = NULL;
   gchar *reason;
-
+  
   g_return_val_if_fail (BSE_IS_SERVER (server), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (process_name != NULL, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (dispatcher != NULL, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (script_name != NULL, BSE_ERROR_INTERNAL);
   g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
   
-  child_pid = standard_input = standard_output = standard_error = command_input = command_output = -1;
-  reason = bse_com_spawn_async (process_name,
+  child_pid = command_input = command_output = -1;
+  reason = sfi_com_spawn_async (process_name,
 				&child_pid,
 				NULL, /* &standard_input, */
 				NULL, /* &standard_output, */
 				NULL, /* &standard_error, */
-				"--bse-command-pipe",
+				"--bse-pipe",
 				&command_input,
 				&command_output,
 				params);
   if (!reason)
     {
-      gchar *wire_ident = g_strdup_printf ("%s::%s", script_name, proc_name);
-      BseComWire *wire = bse_com_wire_from_child (wire_ident,
+      gchar *ident = g_strdup_printf ("%s::%s", script_name, proc_name);
+      SfiComPort *port = sfi_com_port_from_child (ident,
 						  command_output,
 						  command_input,
-						  standard_input,
-						  standard_output,
-						  standard_error,
 						  child_pid);
-      g_free (wire_ident);
-      if (!wire->connected)	/* bad, bad */
+      g_free (ident);
+      if (!port->connected)	/* bad, bad */
 	{
-	  bse_com_wire_destroy (wire);
+	  sfi_com_port_unref (port);
 	  reason = g_strdup ("failed to establish connection");
 	}
       else
 	{
-	  bse_com_wire_set_dispatcher (wire, dispatcher, dispatch_data, destroy_data);
-	  sctrl = bse_script_control_new (wire, script_name, proc_name);
-	  bse_container_add_item (BSE_CONTAINER (server), BSE_ITEM (sctrl));
-	  g_object_unref (sctrl);
+	  janitor = bse_janitor_new (port);
+	  bse_janitor_set_script (janitor, script_name);
+	  sfi_com_port_unref (port);
+	  /* already owned by server */
+	  g_object_unref (janitor);
 	}
     }
-  if (sctrl_p)
-    *sctrl_p = sctrl;
+  if (janitor_p)
+    *janitor_p = janitor;
   if (reason)
     {
-      if (destroy_data)
-	destroy_data (dispatch_data);
       bse_server_script_error (server, script_name, proc_name, reason);
       g_free (reason);
       return BSE_ERROR_SPAWN;
     }
-  bse_server_script_start (server, sctrl);
+  bse_server_script_start (server, janitor);
   return BSE_ERROR_NONE;
 }
 
@@ -692,7 +775,6 @@ bse_server_run_remote (BseServer         *server,
 typedef struct {
   GSource         source;
   BseServer	 *server;
-  GslGlueContext *context;
   GPollFD	  pfd;
 } MainSource;
 
@@ -702,13 +784,13 @@ main_source_prepare (GSource *source,
 {
   MainSource *xsource = (MainSource*) source;
   gboolean need_dispatch;
-
+  
   BSE_THREADS_ENTER ();
-  need_dispatch = gsl_glue_context_pending (xsource->context);
+  need_dispatch = FALSE;
   if (xsource->server->midi_receiver)
     need_dispatch |= bse_midi_receiver_has_notify_events (xsource->server->midi_receiver);
   BSE_THREADS_LEAVE ();
-
+  
   return need_dispatch;
 }
 
@@ -717,10 +799,9 @@ main_source_check (GSource *source)
 {
   MainSource *xsource = (MainSource*) source;
   gboolean need_dispatch;
-
+  
   BSE_THREADS_ENTER ();
   need_dispatch = xsource->pfd.events & xsource->pfd.revents;
-  need_dispatch |= gsl_glue_context_pending (xsource->context);
   if (xsource->server->midi_receiver)
     need_dispatch |= bse_midi_receiver_has_notify_events (xsource->server->midi_receiver);
   BSE_THREADS_LEAVE ();
@@ -734,20 +815,17 @@ main_source_dispatch (GSource    *source,
 		      gpointer    user_data)
 {
   MainSource *xsource = (MainSource*) source;
-
+  
   BSE_THREADS_ENTER ();
-  gsl_glue_context_dispatch (xsource->context);
   if (xsource->server->midi_receiver && xsource->server->midi_receiver->notifier)
     bse_midi_notifier_dispatch (xsource->server->midi_receiver->notifier, xsource->server->midi_receiver);
-  gsl_thread_sleep (0);	/* process poll fd data */
   BSE_THREADS_LEAVE ();
-
+  
   return TRUE;
 }
 
 static void
-main_thread_source_setup (BseServer      *self,
-			  GslGlueContext *context)
+main_thread_source_setup (BseServer *self)
 {
   static GSourceFuncs main_source_funcs = {
     main_source_prepare,
@@ -757,15 +835,12 @@ main_thread_source_setup (BseServer      *self,
   GSource *source = g_source_new (&main_source_funcs, sizeof (MainSource));
   MainSource *xsource = (MainSource*) source;
   static gboolean single_call = 0;
-
+  
   g_assert (single_call++ == 0);
   
-  xsource->context = context;
   xsource->server = self;
-  gsl_thread_get_pollfd (&xsource->pfd);
-  g_source_set_priority (source, BSE_PRIORITY_PROG_IFACE);
-  g_source_add_poll (source, &xsource->pfd);
-  g_source_attach (source, g_main_context_default ());
+  g_source_set_priority (source, BSE_PRIORITY_NORMAL);
+  g_source_attach (source, bse_main_context);
 }
 
 
@@ -787,7 +862,7 @@ iowatch_prepare (GSource *source,
   /* BSE_THREADS_ENTER (); */
   need_dispatch = FALSE;
   /* BSE_THREADS_LEAVE (); */
-
+  
   return need_dispatch;
 }
 
@@ -796,11 +871,11 @@ iowatch_check (GSource *source)
 {
   WSource *wsource = (WSource*) source;
   guint need_dispatch;
-
+  
   /* BSE_THREADS_ENTER (); */
   need_dispatch = wsource->pfd.events & wsource->pfd.revents;
   /* BSE_THREADS_LEAVE (); */
-
+  
   return need_dispatch > 0;
 }
 
@@ -810,11 +885,11 @@ iowatch_dispatch (GSource    *source,
 		  gpointer    user_data)
 {
   WSource *wsource = (WSource*) source;
-
+  
   BSE_THREADS_ENTER ();
   wsource->watch_func (wsource->data, &wsource->pfd);
   BSE_THREADS_LEAVE ();
-
+  
   return TRUE;
 }
 
@@ -833,7 +908,7 @@ iowatch_add (BseServer   *server,
   };
   GSource *source = g_source_new (&iowatch_gsource_funcs, sizeof (WSource));
   WSource *wsource = (WSource*) source;
-
+  
   server->watch_list = g_slist_prepend (server->watch_list, wsource);
   wsource->pfd.fd = fd;
   wsource->pfd.events = events;
@@ -841,7 +916,7 @@ iowatch_add (BseServer   *server,
   wsource->data = data;
   g_source_set_priority (source, BSE_PRIORITY_HIGH);
   g_source_add_poll (source, &wsource->pfd);
-  g_source_attach (source, g_main_context_default ());
+  g_source_attach (source, bse_main_context);
 }
 
 static gboolean
@@ -850,11 +925,11 @@ iowatch_remove (BseServer *server,
 		gpointer   data)
 {
   GSList *slist;
-
+  
   for (slist = server->watch_list; slist; slist = slist->next)
     {
       WSource *wsource = slist->data;
-
+      
       if (wsource->watch_func == watch_func && wsource->data == data)
 	{
 	  g_source_destroy (&wsource->source);
@@ -886,14 +961,14 @@ engine_prepare (GSource *source,
   if (psource->loop.fds_changed)
     {
       guint i;
-
+      
       for (i = 0; i < psource->n_fds; i++)
 	g_source_remove_poll (source, psource->fds + i);
       psource->n_fds = psource->loop.n_fds;
       for (i = 0; i < psource->n_fds; i++)
 	{
 	  GPollFD *pfd = psource->fds + i;
-
+	  
 	  pfd->fd = psource->loop.fds[i].fd;
 	  pfd->events = psource->loop.fds[i].events;
 	  g_source_add_poll (source, pfd);
@@ -901,7 +976,7 @@ engine_prepare (GSource *source,
     }
   *timeout_p = psource->loop.timeout;
   BSE_THREADS_LEAVE ();
-
+  
   return need_dispatch;
 }
 
@@ -911,14 +986,14 @@ engine_check (GSource *source)
   PSource *psource = (PSource*) source;
   gboolean need_dispatch;
   guint i;
-
+  
   BSE_THREADS_ENTER ();
   for (i = 0; i < psource->n_fds; i++)
     psource->loop.fds[i].revents = psource->fds[i].revents;
   psource->loop.revents_filled = TRUE;
   need_dispatch = gsl_engine_check (&psource->loop);
   BSE_THREADS_LEAVE ();
-
+  
   return need_dispatch;
 }
 
@@ -930,7 +1005,7 @@ engine_dispatch (GSource    *source,
   BSE_THREADS_ENTER ();
   gsl_engine_dispatch ();
   BSE_THREADS_LEAVE ();
-
+  
   return TRUE;
 }
 
@@ -945,32 +1020,32 @@ engine_init (BseServer *server,
     NULL
   };
   static gboolean engine_is_initialized = FALSE;
-
+  
   g_return_if_fail (server->engine_source == NULL);
-
-  bse_globals_lock ();		// FIXME: globals mix_freq
+  
+  bse_gconfig_lock ();		// FIXME: globals mix_freq
   server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));
   g_source_set_priority (server->engine_source, BSE_PRIORITY_HIGH);
-
+  
   if (!engine_is_initialized)	// FIXME: hack because we can't deinitialize the engine
     {
       engine_is_initialized = TRUE;
-      gsl_engine_init (1, BSE_BLOCK_N_VALUES, mix_freq, 63);
+      gsl_engine_init (1, BSE_GCONFIG (synth_block_size), mix_freq, 63);
     }
   else
-    g_assert (mix_freq == gsl_engine_sample_freq () && BSE_BLOCK_N_VALUES == gsl_engine_block_size ());
-
-  g_source_attach (server->engine_source, g_main_context_default ());
+    g_assert (mix_freq == gsl_engine_sample_freq () && BSE_GCONFIG (synth_block_size) == gsl_engine_block_size ());
+  
+  g_source_attach (server->engine_source, bse_main_context);
 }
 
 static void
 engine_shutdown (BseServer *server)
 {
   g_return_if_fail (server->engine_source != NULL);
-
+  
   g_source_destroy (server->engine_source);
   server->engine_source = NULL;
   gsl_engine_garbage_collect ();
   // FIXME: need to be able to completely unintialize engine here
-  bse_globals_unlock ();
+  bse_gconfig_unlock ();
 }

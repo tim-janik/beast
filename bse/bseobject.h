@@ -50,7 +50,7 @@ extern "C" {
 #define BSE_OBJECT_SET_FLAGS(object, f)	  (BSE_OBJECT_FLAGS (object) |= (f))
 #define BSE_OBJECT_UNSET_FLAGS(object, f) (BSE_OBJECT_FLAGS (object) &= ~(f))
 #define BSE_OBJECT_IS_LOCKED(object)	  (((BseObject*) (object))->lock_count > 0)
-#define BSE_OBJECT_DISPOSED(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_DISPOSED) > 0)
+#define BSE_OBJECT_DISPOSING(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_DISPOSING) > 0)
 #define BSE_OBJECT_ID(object)		  (((BseObject*) (object))->unique_id)
 
 
@@ -58,7 +58,7 @@ extern "C" {
 typedef enum				/*< skip >*/
 {
   BSE_OBJECT_FLAG_FIXED_UNAME		= 1 << 0,
-  BSE_OBJECT_FLAG_DISPOSED		= 1 << 1
+  BSE_OBJECT_FLAG_DISPOSING		= 1 << 1
 } BseObjectFlags;
 #define BSE_OBJECT_FLAGS_USHIFT	    (2)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
@@ -109,17 +109,11 @@ struct _BseObjectClass
   BseTokenType		(*restore_private)	(BseObject	*object,
 						 BseStorage	*storage);
   void			(*unlocked)		(BseObject	*object);
-  BswIcon*		(*get_icon)		(BseObject	*object);
-  void			(*destroy)		(BseObject	*object);
+  BseIcon*		(*get_icon)		(BseObject	*object);
 };
 
 
 /* --- object class prototypes ---*/
-void	bse_object_class_set_param_log_scale	(BseObjectClass	*oclass,
-						 const gchar	*pspec_name,
-						 gdouble	 center,
-						 gdouble	 base,
-						 guint		 n_steps);
 void	bse_object_class_add_property		(BseObjectClass *oclass,
 						 const gchar	*property_group,
 						 guint		 property_id,
@@ -131,49 +125,20 @@ void		bse_object_class_add_parser	(BseObjectClass *oclass,
 						 gpointer	 user_data);
 guint		bse_object_class_add_signal	(BseObjectClass	*oclass,
 						 const gchar	*signal_name,
-						 GSignalCMarshaller c_marshaller,
-						 GSignalCMarshaller proxy_marshaller,
 						 GType           return_type,
 						 guint           n_params,
 						 ...);
 guint		bse_object_class_add_dsignal	(BseObjectClass	*oclass,
 						 const gchar	*signal_name,
-						 GSignalCMarshaller c_marshaller,
-						 GSignalCMarshaller proxy_marshaller,
 						 GType           return_type,
 						 guint           n_params,
 						 ...);
-GSignalCMarshaller bse_proxy_marshaller_lookup	(GSignalCMarshaller c_marshaller);
 
 
 /* --- object prototypes --- */
-gpointer	bse_object_new			(GType		 type,
-						 const gchar	*first_property_name,
-						 ...);
-gpointer	bse_object_new_valist		(GType		 type,
-						 const gchar	*first_property_name,
-						 va_list	 var_args);
-gpointer	bse_object_ref			(gpointer	 object);
-void		bse_object_unref		(gpointer	 object);
-void		bse_object_set			(BseObject	*object,
-						 const gchar	*first_property_name,
-						 ...);
-void		bse_object_get			(BseObject	*object,
-						 const gchar	*first_property_name,
-						 ...);
-#define 	bse_object_param_changed(o,pn)	g_object_notify ((GObject*) (o), (pn))
 void		bse_object_lock			(BseObject	*object);
 void		bse_object_unlock		(BseObject	*object);
-gpointer	bse_object_get_data		(BseObject	*object,
-						 const gchar	*key);
-void		bse_object_set_data		(BseObject	*object,
-						 const gchar	*key,
-						 gpointer	 data);
-void		bse_object_set_data_full	(BseObject	*object,
-						 const gchar	*key,
-						 gpointer	 data,
-						 GDestroyNotify	 destroy);
-BswIcon*	bse_object_get_icon		(BseObject	*object);
+BseIcon*	bse_object_get_icon		(BseObject	*object);
 void		bse_object_notify_icon_changed	(BseObject	*object);
 gpointer	bse_object_from_id		(guint		 unique_id);
 GList*		bse_objects_list		(GType		 type);
@@ -193,10 +158,6 @@ const gchar*	bse_object_type_register	(const gchar *name,
 						 const gchar *blurb,
 						 BsePlugin   *plugin,
 						 GType	     *ret_type);
-#define	bse_object_get_qdata(obj, quark)	(g_object_get_qdata ((gpointer) (obj), (quark)))
-#define	bse_object_set_qdata(obj, quark, data)	(g_object_set_qdata ((gpointer) (obj), (quark), (data)))
-#define	bse_object_set_qdata_full(o, q, d, y)	(g_object_set_qdata_full ((gpointer) (o), (q), (d), (y)))
-#define	bse_object_steal_qdata(obj, quark)	(g_object_steal_qdata ((gpointer) (obj), (quark)))
 extern GQuark bse_quark_uname;
 
 

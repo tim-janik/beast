@@ -128,7 +128,7 @@ bse_pcm_omodule_process (GslModule *module,
       d = mdata->buffer;
       do { *d += *src++; d += 2; } while (d < b);
     }
-
+  
   if (GSL_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_RIGHT).n_connections)
     src = GSL_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_RIGHT, 0);
   else
@@ -219,11 +219,11 @@ bse_pcm_imodule_process (GslModule *module,
   const gfloat *s = mdata->buffer;
   const gfloat *b = mdata->bound;
   gsize l;
-
+  
   g_return_if_fail (n_values == mdata->n_values >> 1);
   
   l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
-
+  
   do
     {
       *left++ = *s++;

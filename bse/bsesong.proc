@@ -22,125 +22,123 @@
 #include        <bse/bsepart.h>
 #include        <bse/bsetrack.h>
 
-AUTHOR  = "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Tim Janik";
-DATE    = "2002";
+AUTHORS = "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2002 Tim Janik";
 
 
 METHOD (BseSong, create-part) {
   HELP  = "Create a new Part in a Song";
-  IN    = g_param_spec_object ("song", "Song", NULL,
-                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_object ("part", "Part", NULL,
-                               BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("song", "Song", NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *song = g_value_get_object (in_values++);
+  BseSong *song = bse_value_get_object (in_values++);
   BsePart *part;
-
+  
   /* check parameters */
   if (!BSE_IS_SONG (song))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* action */
-  part = bse_object_new (BSE_TYPE_PART,
-                         NULL);
+  part = g_object_new (BSE_TYPE_PART, NULL);
   bse_container_add_item (BSE_CONTAINER (song), BSE_ITEM (part));
-
+  
   /* set output parameters */
-  g_value_set_object (out_values++, G_OBJECT (part));
+  bse_value_set_object (out_values++, G_OBJECT (part));
   g_object_unref (part);
-
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSong, remove-part) {
   HELP  = "Delete a Part from a Song";
-  IN    = g_param_spec_object ("song", "Song", NULL,
-                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_object ("part", "Part", NULL,
-                               BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("song", "Song", NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = g_value_get_object (in_values++);
-  BsePart *part = g_value_get_object (in_values++);
+  BseSong *self = bse_value_get_object (in_values++);
+  BsePart *part = bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
   
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_PART (part) || BSE_ITEM (part)->parent != BSE_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* action */
   if (BSE_SOURCE_PREPARED (self))
     error = BSE_ERROR_SOURCE_BUSY;
   else
     bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (part));
-
+  
   return error;
 }
 
 METHOD (BseSong, create-track) {
   HELP  = "Create a new Track for a Song";
-  IN    = g_param_spec_object ("song", "Song", NULL,
-                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_object ("track", "Track", NULL,
-                               BSE_TYPE_TRACK, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("song", "Song", NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self = g_value_get_object (in_values++);
+  BseSong *self = bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
   GObject *track = NULL;
-
+  
   /* check parameters */
   if (!BSE_IS_SONG (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* action */
   if (BSE_SOURCE_PREPARED (self))
     error = BSE_ERROR_SOURCE_BUSY;
   else
     track = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
-
+  
   /* set output parameters */
-  g_value_set_object (out_values++, track);
-
+  bse_value_set_object (out_values++, track);
+  
   return error;
 }
 
 METHOD (BseSong, remove-track) {
   HELP  = "Delete a Track from a Song";
-  IN    = g_param_spec_object ("song", "Song", NULL,
-                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_object ("track", "Track", NULL,
-                               BSE_TYPE_TRACK, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("song", "Song", NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *self   = g_value_get_object (in_values++);
-  BseTrack *track = g_value_get_object (in_values++);
+  BseSong *self   = bse_value_get_object (in_values++);
+  BseTrack *track = bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
+  
   /* check parameters */
   if (!BSE_IS_SONG (self) || !BSE_IS_TRACK (track) ||
       BSE_ITEM (track)->parent != BSE_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* action */
   if (BSE_SOURCE_PREPARED (self))
     error = BSE_ERROR_SOURCE_BUSY;
   else
     bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (track));
-
+  
   return error;
 }

@@ -20,725 +20,136 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
+#include <ctype.h>
 #include <vector>
+#include <map>
+#include <algorithm>
 #include "sfidl-namespace.h"
+#include "sfidl-options.h"
+#include "sfidl-parser.h"
+#include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
+using namespace Sfidl;
+using namespace std;
 
-/* --- variables --- */
-static  GScannerConfig  scanner_config_template = {
-  const_cast<gchar *>   /* FIXME: glib should use const gchar* here */
-  (
-   " \t\r\n"
-   )                    /* cset_skip_characters */,
-  const_cast<gchar *>
-  (
-   G_CSET_a_2_z
-   "_"
-   G_CSET_A_2_Z
-   )                    /* cset_identifier_first */,
-  const_cast<gchar *>
-  (
-   G_CSET_a_2_z
-   "_0123456789"
-   G_CSET_A_2_Z
-   )                    /* cset_identifier_nth */,
-  const_cast<gchar *>
-  ( "#\n" )             /* cpair_comment_single */,
-  
-  TRUE                  /* case_sensitive */,
-  
-  TRUE                  /* skip_comment_multi */,
-  TRUE                  /* skip_comment_single */,
-  TRUE                  /* scan_comment_multi */,
-  TRUE                  /* scan_identifier */,
-  TRUE                  /* scan_identifier_1char */,
-  FALSE                 /* scan_identifier_NULL */,
-  TRUE                  /* scan_symbols */,
-  FALSE                 /* scan_binary */,
-  TRUE                  /* scan_octal */,
-  TRUE                  /* scan_float */,
-  TRUE                  /* scan_hex */,
-  FALSE                 /* scan_hex_dollar */,
-  FALSE                 /* scan_string_sq */,
-  TRUE                  /* scan_string_dq */,
-  TRUE                  /* numbers_2_int */,
-  FALSE                 /* int_2_float */,
-  FALSE                 /* identifier_2_string */,
-  TRUE                  /* char_2_token */,
-  TRUE                  /* symbol_2_token */,
-  FALSE                 /* scope_0_fallback */,
-};
-
-#define TOKEN_CLASS      GTokenType(G_TOKEN_LAST + 1)
-#define TOKEN_ENUM       GTokenType(G_TOKEN_LAST + 2)
-#define TOKEN_NAMESPACE  GTokenType(G_TOKEN_LAST + 3)
-#define TOKEN_RECORD     GTokenType(G_TOKEN_LAST + 4)
-#define TOKEN_SEQUENCE   GTokenType(G_TOKEN_LAST + 5)
-#define TOKEN_TYPEDEF    GTokenType(G_TOKEN_LAST + 6)
-
-#define parse_or_return(token)  G_STMT_START{ \
-  GTokenType _t = GTokenType(token); \
-  if (g_scanner_get_next_token (scanner) != _t) \
-    return _t; \
-}G_STMT_END
-#define peek_or_return(token)   G_STMT_START{ \
-  GScanner *__s = (scanner); GTokenType _t = GTokenType(token); \
-  if (g_scanner_peek_next_token (__s) != _t) { \
-    g_scanner_get_next_token (__s); /* advance position for error-handler */ \
-    return _t; \
-  } \
-}G_STMT_END
-#define parse_string_or_return(str) G_STMT_START{ \
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING) \
-    return G_TOKEN_STRING; \
-  str = scanner->value.v_string; \
-}G_STMT_END
-#define parse_int_or_return(i) G_STMT_START{ \
-  bool negate = (g_scanner_peek_next_token (scanner) == GTokenType('-')); \
-  if (negate) \
-    g_scanner_get_next_token(scanner); \
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_INT) \
-    return G_TOKEN_INT; \
-  i = scanner->value.v_int; \
-  if (negate) i = -i; \
-}G_STMT_END
-#define parse_float_or_return(f) G_STMT_START{ \
-  bool negate = false; \
-  GTokenType t = g_scanner_get_next_token (scanner); \
-  if (t == GTokenType('-')) \
-  { \
-    negate = true; \
-    t = g_scanner_get_next_token (scanner); \
-  } \
-  if (t == G_TOKEN_INT) \
-    f = scanner->value.v_int; \
-  else if (t == G_TOKEN_FLOAT) \
-    f = scanner->value.v_float; \
-  else \
-    return G_TOKEN_FLOAT; \
-  if (negate) f = -f; \
-}G_STMT_END
-#define debug(x)
-
-namespace Conf {
-  bool        generateExtern = false;
-  const char *generateInit = 0;
-  bool        generateData = false;
-  bool        generateTypeH = false;
-  bool        generateTypeC = false;
-  bool        generateBoxedTypes = false;
-  bool        generateIdlLineNumbers = false;
-  string      namespaceCut = "";
-  string      namespaceAdd = "";
-};
-
-struct ParamDef {
-  string type;
-  string name;
-  
-  string pspec;
-  int    line;
-  string args;
-};
-
-struct EnumComponent {
-  string name;
-  string text;
-  
-  int    value;
-};
-
-struct EnumDef {
-  /**
-   * name if the enum, "_anonymous_" for anonymous enum - of course, when
-   * using namespaces, this can also lead to things like "Arts::_anonymous_",
-   * which would mean an anonymous enum in the Arts namespace
-   */
-  string name;
-  
-  vector<EnumComponent> contents;
-};
-
-struct RecordDef {
-  string name;
-  
-  vector<ParamDef> contents;
-};
-
-struct SequenceDef {
-  string name;
-  ParamDef content;
-};
-
-struct ClassDef {
-  string name;
-  string inherits;
-  
-  vector<ParamDef> contents;
-};
-
-class IdlParser {
+class CodeGenerator {
 protected:
-  vector<string>      includedNames;
-  vector<string>      types;
-  bool                insideInclude;
-  
-  vector<EnumDef>     enums;
-  vector<SequenceDef> sequences;
-  vector<RecordDef>   records;
-  vector<ClassDef>    classes;
-  
-  GScanner *scanner;
-  
-  void printError (const gchar *format, ...);
-  
-  void addEnumTodo(const EnumDef& edef);
-  void addRecordTodo(const RecordDef& rdef);
-  void addSequenceTodo(const SequenceDef& sdef);
-  void addClassTodo(const ClassDef& cdef);
+  const Parser& parser;
+  const Options& options;
 
-  GTokenType parseNamespace ();
-  GTokenType parseTypeDef ();
-  GTokenType parseEnumDef ();
-  GTokenType parseEnumComponent (EnumComponent& comp, int& value);
-  GTokenType parseRecordDef ();
-  GTokenType parseRecordField (ParamDef& comp);
-  GTokenType parseSequenceDef ();
-  GTokenType parseParamDefHints (ParamDef &def);
-  GTokenType parseClass ();
-public:
-  IdlParser (const char *file_name, int fd);
-  
-  bool parse ();
-  
-  const vector<EnumDef>& getEnums () const	    { return enums; }
-  const vector<SequenceDef>& getSequences () const  { return sequences; }
-  const vector<RecordDef>& getRecords () const	    { return records; }
-  const vector<ClassDef>& getClasses () const	    { return classes; }
-  const vector<string>& getTypes () const           { return types; }
-  
-  SequenceDef findSequence (const string& name) const;
-  RecordDef findRecord (const string& name) const;
-  
-  bool isEnum(const string& type) const;
-  bool isSequence(const string& type) const;
-  bool isRecord(const string& type) const;
-  bool isClass(const string& type) const;
-};
-
-
-bool IdlParser::isEnum(const string& type) const
-{
-  vector<EnumDef>::const_iterator i;
-  
-  for(i=enums.begin();i != enums.end(); i++)
-    if(i->name == type) return true;
-  
-  return false;
-}
-
-bool IdlParser::isSequence(const string& type) const
-{
-  vector<SequenceDef>::const_iterator i;
-  
-  for(i=sequences.begin();i != sequences.end(); i++)
-    if(i->name == type) return true;
-  
-  return false;
-}
-
-bool IdlParser::isRecord(const string& type) const
-{
-  vector<RecordDef>::const_iterator i;
-  
-  for(i=records.begin();i != records.end(); i++)
-    if(i->name == type) return true;
-  
-  return false;
-}
-
-bool IdlParser::isClass(const string& type) const
-{
-  vector<ClassDef>::const_iterator i;
-  
-  for(i=classes.begin();i != classes.end(); i++)
-    if(i->name == type) return true;
-  
-  return false;
-}
-
-SequenceDef IdlParser::findSequence(const string& name) const
-{
-  vector<SequenceDef>::const_iterator i;
-  
-  for(i=sequences.begin();i != sequences.end(); i++)
-    if(i->name == name) return *i;
-  
-  return SequenceDef();
-}
-
-RecordDef IdlParser::findRecord(const string& name) const
-{
-  vector<RecordDef>::const_iterator i;
-  
-  for(i=records.begin();i != records.end(); i++)
-    if(i->name == name) return *i;
-  
-  return RecordDef();
-}
-
-IdlParser::IdlParser(const char *file_name, int fd)
-  : insideInclude (false)
-{
-  scanner = g_scanner_new (&scanner_config_template);
-  
-  const char *syms[] = { "class", "enum", "namespace", "record", "sequence", "typedef", 0 };
-  for (int n = 0; syms[n]; n++)
-    g_scanner_add_symbol (scanner, syms[n], GUINT_TO_POINTER (TOKEN_CLASS + n));
-  
-  g_scanner_input_file (scanner, fd);
-  scanner->input_name = g_strdup (file_name);
-  scanner->max_parse_errors = 1;
-  scanner->parse_errors = 0;
-}
-
-void IdlParser::printError(const gchar *format, ...)
-{
-  va_list args;
-  gchar *string;
-  
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
-  
-  if (scanner->parse_errors < scanner->max_parse_errors)
-    g_scanner_error (scanner, "%s", string);
-  
-  g_free (string);
-}
-
-bool IdlParser::parse ()
-{
-  /* define primitive types into the basic namespace */
-  ModuleHelper::define("Bool");
-  ModuleHelper::define("Int");
-  ModuleHelper::define("Num");
-  ModuleHelper::define("Real");
-  ModuleHelper::define("String");
-  ModuleHelper::define("Proxy"); /* FIXME: remove this as soon as "real" interface types exist */
-  ModuleHelper::define("BBlock");
-  ModuleHelper::define("FBlock");
-  
-  GTokenType expected_token = G_TOKEN_NONE;
-  
-  while (!g_scanner_eof (scanner) && expected_token == G_TOKEN_NONE)
-    {
-      g_scanner_get_next_token (scanner);
-      
-      if (scanner->token == G_TOKEN_EOF)
-        break;
-      else if (scanner->token == TOKEN_NAMESPACE)
-        expected_token = parseNamespace ();
-      else
-        expected_token = G_TOKEN_EOF; /* '('; */
-    }
-  
-  if (expected_token != G_TOKEN_NONE)
-    {
-      g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
-      return false;
-    }
-
-  return true;
-}
-
-GTokenType IdlParser::parseNamespace()
-{
-  debug("parse namespace\n");
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  ModuleHelper::enter (scanner->value.v_identifier);
-  
-  parse_or_return (G_TOKEN_LEFT_CURLY);
-  
-  for(;;)
-    {
-      if (g_scanner_peek_next_token (scanner) == TOKEN_TYPEDEF)
-	{
-	  GTokenType expected_token = parseTypeDef ();
-	  if (expected_token != G_TOKEN_NONE)
-	    return expected_token;
-	}
-      else if (g_scanner_peek_next_token (scanner) == TOKEN_CLASS)
-	{
-	  GTokenType expected_token = parseClass ();
-	  if (expected_token != G_TOKEN_NONE)
-	    return expected_token;
-	}
-      else
-        break;
-    }
-  
-  parse_or_return (G_TOKEN_RIGHT_CURLY);
-  parse_or_return (';');
-  
-  ModuleHelper::leave();
-  
-  return G_TOKEN_NONE;
-}
-
-GTokenType IdlParser::parseTypeDef ()
-{
-  debug("parse typedef\n");
-  parse_or_return (TOKEN_TYPEDEF);
-  
-  switch (g_scanner_peek_next_token (scanner))
-    {
-    case TOKEN_ENUM:	  return parseEnumDef ();
-    case TOKEN_RECORD:    return parseRecordDef (); 
-    case TOKEN_SEQUENCE:  return parseSequenceDef (); 
-    default:
-      {
-	printError("typedef must be followed by either enum or record or sequence");
-	return TOKEN_ENUM;
-      }
-    }
-}
-
-GTokenType IdlParser::parseEnumDef ()
-{
-  EnumDef edef;
-  int value = 0;
-  debug("parse enumdef\n");
-  
-  parse_or_return (TOKEN_ENUM);
-  parse_or_return (G_TOKEN_LEFT_CURLY);
-  while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
-    {
-      EnumComponent comp;
-      
-      GTokenType expected_token = parseEnumComponent (comp, value);
-      if (expected_token != G_TOKEN_NONE)
-	return expected_token;
-      
-      edef.contents.push_back(comp);
-    }
-  parse_or_return (G_TOKEN_RIGHT_CURLY);
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  edef.name = ModuleHelper::define (scanner->value.v_identifier);
-  parse_or_return (';');
-  
-  addEnumTodo (edef);
-  return G_TOKEN_NONE;
-}
-
-GTokenType IdlParser::parseEnumComponent (EnumComponent& comp, int& value)
-{
-  /* MASTER @= (25, "Master Volume"), */
-  
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  comp.name = scanner->value.v_identifier;
-  
-  /* the hints are optional */
-  if (g_scanner_peek_next_token (scanner) == GTokenType('@'))
-    {
-      g_scanner_get_next_token (scanner);
-      
-      parse_or_return ('=');
-      parse_or_return ('(');
-      parse_or_return (G_TOKEN_INT);
-      value = scanner->value.v_int;
-      parse_or_return (',');
-      parse_or_return (G_TOKEN_STRING);
-      comp.text = scanner->value.v_string;
-      parse_or_return (')');
-    }
-  
-  comp.value = value;
-  
-  if (g_scanner_peek_next_token (scanner) == GTokenType(','))
-    parse_or_return (',');
-  else
-    peek_or_return ('}');
-  
-  return G_TOKEN_NONE;
-}
-
-GTokenType IdlParser::parseRecordDef ()
-{
-  RecordDef rdef;
-  debug("parse recorddef\n");
-  
-  parse_or_return (TOKEN_RECORD);
-  parse_or_return (G_TOKEN_LEFT_CURLY);
-  while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
-    {
-      ParamDef def;
-      
-      GTokenType expected_token = parseRecordField (def);
-      if (expected_token != G_TOKEN_NONE)
-	return expected_token;
-      
-      rdef.contents.push_back(def);
-    }
-  parse_or_return (G_TOKEN_RIGHT_CURLY);
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  rdef.name = ModuleHelper::define (scanner->value.v_identifier);
-  parse_or_return (';');
-  
-  addRecordTodo (rdef);
-  return G_TOKEN_NONE;
-}
-
-GTokenType IdlParser::parseRecordField (ParamDef& def)
-{
-  /* FooVolumeType volume_type; */
-  /* float         volume_perc @= ("Volume[%]", "Set how loud something is",
-     50, 0.0, 100.0, 5.0,
-     ":dial:readwrite"); */
-  
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  def.type = ModuleHelper::qualify (scanner->value.v_identifier);
-  def.pspec = def.type;
-  def.line = scanner->line;
-  
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  def.name = scanner->value.v_identifier;
-  
-  /* the hints are optional */
-  if (g_scanner_peek_next_token (scanner) == GTokenType('@'))
-    {
-      g_scanner_get_next_token (scanner);
-      
-      parse_or_return ('=');
-      
-      GTokenType expected_token = parseParamDefHints (def);
-      if (expected_token != G_TOKEN_NONE)
-	return expected_token;
-    }
-  
-  parse_or_return (';');
-  return G_TOKEN_NONE;
-}
-
-GTokenType IdlParser::parseParamDefHints (ParamDef &def)
-{
-  if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
-    {
-      parse_or_return (G_TOKEN_IDENTIFIER);
-      def.pspec = scanner->value.v_identifier;
-    }
-  
-  parse_or_return ('(');
-
-  int bracelevel = 1;
-  string args;
-  while (!g_scanner_eof (scanner) && bracelevel > 0)
-    {
-      GTokenType t = g_scanner_get_next_token (scanner);
-      gchar *token_as_string = 0, *x = 0;
-      
-      if(int(t) > 0 && int(t) <= 255)
-	{
-	  token_as_string = (char *)calloc(2, 1);
-	  token_as_string[0] = char(t);
-	}
-      switch (t)
-	{
-	case '(':		  bracelevel++;
-	  break;
-	case ')':		  bracelevel--;
-	  break;
-	case G_TOKEN_STRING:	  x = g_strescape (scanner->value.v_string, 0);
-				  token_as_string = g_strdup_printf ("\"%s\"", x);
-				  g_free (x);
-	  break;
-	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%lu", scanner->value.v_int);
-	  break;
-	case G_TOKEN_FLOAT:	  token_as_string = g_strdup_printf ("%.20g", scanner->value.v_float);
-	  break;
-	case G_TOKEN_IDENTIFIER:  token_as_string = g_strdup_printf ("%s", scanner->value.v_identifier);
-	  break;
-	default:
-	  if (!token_as_string)
-	    return GTokenType (')');
-	}
-      if (token_as_string && bracelevel)
-	{
-	  args += token_as_string;
-	  g_free (token_as_string);
-	}
-    }
-  def.args = args;
-  return G_TOKEN_NONE;
-}
-
-GTokenType IdlParser::parseSequenceDef ()
-{
-  SequenceDef sdef;
-  /*
-   * (typedef) sequence {
-   *   Int ints @= (...);
-   * } IntSeq;
-   */
-  
-  parse_or_return (TOKEN_SEQUENCE);
-  parse_or_return ('{');
-  parseRecordField (sdef.content);
-  parse_or_return ('}');
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  sdef.name = ModuleHelper::define (scanner->value.v_identifier);
-  parse_or_return (';');
-  
-  addSequenceTodo(sdef);
-  return G_TOKEN_NONE;
-}
-
-GTokenType IdlParser::parseClass ()
-{
-  ClassDef cdef;
-  debug("parse classdef\n");
-  
-  parse_or_return (TOKEN_CLASS);
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  cdef.name = ModuleHelper::define (scanner->value.v_identifier);
-  parse_or_return (G_TOKEN_LEFT_CURLY);
-  while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
-    {
-      g_scanner_get_next_token (scanner);
-      /*
-	EnumComponent comp;
-	
-	GTokenType expected_token = parseEnumComponent (comp, value);
-	if (expected_token != G_TOKEN_NONE)
-	return expected_token;
-	
-	edef.contents.push_back(comp);
-      */
-    }
-  parse_or_return (G_TOKEN_RIGHT_CURLY);
-  parse_or_return (';');
-  
-  addClassTodo (cdef);
-  return G_TOKEN_NONE;
-}
-
-void IdlParser::addEnumTodo(const EnumDef& edef)
-{
-  enums.push_back(edef);
-  
-  if (insideInclude)
-    {
-      includedNames.push_back (edef.name);
-    }
-  else
-    {
-      types.push_back (edef.name);
-    }
-}
-
-void IdlParser::addRecordTodo(const RecordDef& rdef)
-{
-  records.push_back(rdef);
-  
-  if (insideInclude)
-    {
-      includedNames.push_back (rdef.name);
-    }
-  else
-    {
-      types.push_back (rdef.name);
-    }
-}
-
-void IdlParser::addSequenceTodo(const SequenceDef& sdef)
-{
-  sequences.push_back(sdef);
-  
-  if (insideInclude)
-    {
-      includedNames.push_back (sdef.name);
-    }
-  else
-    {
-      types.push_back (sdef.name);
-    }
-}
-
-void IdlParser::addClassTodo(const ClassDef& cdef)
-{
-  classes.push_back(cdef);
-  
-  if (insideInclude)
-    {
-      includedNames.push_back (cdef.name);
-    }
-  else
-    {
-      types.push_back (cdef.name);
-    }
-}
-
-
-class CodeGeneratorC {
-protected:
-  const IdlParser& parser;
-  
-  string makeParamSpec (const ParamDef& pdef);
+  vector<string> splitName (const string& name);
   string makeNamespaceSubst (const string& name);
-  string makeLowerName (const string& name);
+  string makeLowerName (const string& name, char seperator = '_');
   string makeUpperName (const string& name);
   string makeMixedName (const string& name);
-  string makeGTypeName (const string& name);
-  string createTypeCode (const string& type, const string& name, int model);
-  
-public:
-  CodeGeneratorC(IdlParser& parser) : parser(parser) {
+  string makeLMixedName (const string& name);
+
+  CodeGenerator(const Parser& parser) : parser (parser), options (*Options::the()) {
   }
-  void run (string srcname);
+
+public:
+  virtual void run () = 0;
 };
 
-string CodeGeneratorC::makeNamespaceSubst (const string& name)
+class CodeGeneratorC : public CodeGenerator {
+protected:
+  
+  void printInfoStrings (const string& name, const map<string,string>& infos);
+  void printProcedure (const MethodDef& mdef, bool proto = false, const string& className = "");
+
+  string makeParamSpec (const ParamDef& pdef);
+  string makeGTypeName (const string& name);
+  string createTypeCode (const string& type, const string& name, int model);
+  bool enumReverseSort(const EnumComponent& e1, const EnumComponent& e2);
+  
+public:
+  CodeGeneratorC(const Parser& parser) : CodeGenerator(parser) {
+  }
+  void run ();
+};
+
+string CodeGenerator::makeNamespaceSubst (const string& name)
 {
-  if(name.substr (0, Conf::namespaceCut.length ()) == Conf::namespaceCut)
-    return Conf::namespaceAdd + name.substr (Conf::namespaceCut.length ());
+  if(name.substr (0, options.namespaceCut.length ()) == options.namespaceCut)
+    return options.namespaceAdd + name.substr (options.namespaceCut.length ());
   else
     return name; /* pattern not matched */
 }
 
-string CodeGeneratorC::makeLowerName (const string& name)
+vector<string> CodeGenerator::splitName (const string& name)
 {
-  bool lastupper = true, upper = true, lastunder = true;
+  bool lastupper = true, upper = true, lastunder = true, remove_caps = false;
   string::const_iterator i;
-  string result;
   string sname = makeNamespaceSubst (name);
-  
+  vector<string> words;
+  string word;
+
+  /*
+   * we try to guess here whether we need to remove caps
+   * or keep them
+   *
+   * if our input is BseSNet, it is vital to keep the caps
+   * if our input is IO_ERROR, we need to remove it
+   */
+  for(i = sname.begin(); i != sname.end(); i++)
+    {
+      if (*i == '_')
+	remove_caps = true;
+    }
+
   for(i = sname.begin(); i != sname.end(); i++)
     {
       lastupper = upper;
       upper = isupper(*i);
       if (!lastupper && upper && !lastunder)
 	{
-	  result += "_";
+	  words.push_back (word);
+	  word = "";
 	  lastunder = true;
 	}
       if(*i == ':' || *i == '_')
 	{
 	  if(!lastunder)
 	    {
-	      result += "_";
+	      words.push_back (word);
+	      word = "";
 	      lastunder = true;
 	    }
 	}
       else
 	{
-	  result += tolower(*i);
+	  if (remove_caps)
+	    word += tolower(*i);
+	  else
+	    word += *i;
 	  lastunder = false;
 	}
     }
+
+  if (word != "")
+    words.push_back (word);
+
+  return words;
+}
+
+string CodeGenerator::makeLowerName (const string& name, char seperator)
+{
+  string result;
+  const vector<string>& words = splitName (name);
+
+  for (vector<string>::const_iterator wi = words.begin(); wi != words.end(); wi++)
+    {
+      if (result != "") result += seperator;
+
+      for (string::const_iterator i = wi->begin(); i != wi->end(); i++)
+	result += tolower (*i);
+    }
+  
   return result;
 }
 
-string CodeGeneratorC::makeUpperName (const string& name)
+string CodeGenerator::makeUpperName (const string& name)
 {
   string lname = makeLowerName (name);
   string result;
@@ -749,37 +160,33 @@ string CodeGeneratorC::makeUpperName (const string& name)
   return result;
 }
 
-string CodeGeneratorC::makeMixedName (const string& name)
+string CodeGenerator::makeMixedName (const string& name)
 {
-  bool lastupper = true, upper = true, lastunder = true;
-  string::const_iterator i;
   string result;
-  string sname = makeNamespaceSubst (name);
-  
-  for(i = sname.begin(); i != sname.end(); i++)
+  const vector<string>& words = splitName (name);
+
+  for (vector<string>::const_iterator wi = words.begin(); wi != words.end(); wi++)
     {
-      lastupper = upper;
-      upper = isupper(*i);
-      if (!lastupper && upper && !lastunder)
+      bool first = true;
+
+      for (string::const_iterator i = wi->begin(); i != wi->end(); i++)
 	{
-	  lastunder = true;
-	}
-      if(*i == ':')
-	{
-	  if(!lastunder)
-	    {
-	      lastunder = true;
-	    }
-	}
-      else
-	{
-	  if(lastunder)
+	  if (first)
 	    result += toupper (*i);
 	  else
-	    result += tolower (*i);
-	  lastunder = false;
+	    result += *i;
+	  first = false;
 	}
     }
+  
+  return result;
+}
+
+string CodeGenerator::makeLMixedName (const string& name)
+{
+  string result = makeMixedName (name);
+
+  if (!result.empty()) result[0] = tolower (result[0]);
   return result;
 }
 
@@ -795,7 +202,7 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
   
   if (parser.isEnum (pdef.type))
     {
-      pspec = "sfi_param_spec_Enum";
+      pspec = "sfidl_pspec_Choice";
       if (pdef.args == "")
 	pspec += "_default (\"" + pdef.name + "\",";
       else
@@ -804,7 +211,7 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
     }
   else if (parser.isRecord (pdef.type))
     {
-      pspec = "sfi_param_spec_Rec";
+      pspec = "sfidl_pspec_BoxedRec";
       if (pdef.args == "")
 	pspec += "_default (\"" + pdef.name + "\",";
       else
@@ -814,7 +221,7 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
   else if (parser.isSequence (pdef.type))
     {
       const SequenceDef& sdef = parser.findSequence (pdef.type);
-      pspec = "sfi_param_spec_Seq";
+      pspec = "sfidl_pspec_BoxedSeq";
       if (pdef.args == "")
 	pspec += "_default (\"" + pdef.name + "\",";
       else
@@ -823,7 +230,7 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
     }
   else
     {
-      pspec = makeLowerName ("Sfi::ParamSpec") + "_" + pdef.pspec;
+      pspec = "sfidl_pspec_" + pdef.pspec;
       if (pdef.args == "")
 	pspec += "_default (\"" + pdef.name + "\")";
       else
@@ -832,7 +239,20 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
   return pspec;
 }
 
-#define MODEL_ARG         1
+void CodeGeneratorC::printInfoStrings (const string& name, const map<string,string>& infos)
+{
+  printf("static const gchar *%s[] = {\n", name.c_str());
+
+  map<string,string>::const_iterator ii;
+  for (ii = infos.begin(); ii != infos.end(); ii++)
+    printf("  \"%s=%s\",\n", ii->first.c_str(), ii->second.c_str());
+
+  printf("  NULL,\n");
+  printf("};\n");
+}
+
+#define MODEL_ARG         0
+#define MODEL_MEMBER      1
 #define MODEL_RET         2
 #define MODEL_ARRAY       3
 #define MODEL_FREE        4
@@ -840,6 +260,19 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
 #define MODEL_NEW         6
 #define MODEL_FROM_VALUE  7
 #define MODEL_TO_VALUE    8
+#define MODEL_VCALL       9
+#define MODEL_VCALL_ARG   10
+#define MODEL_VCALL_CONV  11
+#define MODEL_VCALL_CFREE 12
+#define MODEL_VCALL_RET   13
+#define MODEL_VCALL_RCONV 14
+#define MODEL_VCALL_RFREE 15
+
+static string scatId (SfiSCategory c)
+{
+  string s; s += (char) c;
+  return s;
+}
 
 string CodeGeneratorC::createTypeCode(const string& type, const string &name, int model)
 {
@@ -851,11 +284,14 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
   if (parser.isRecord (type) || parser.isSequence (type))
     {
       if (model == MODEL_ARG)         return makeMixedName (type)+"*";
+      if (model == MODEL_MEMBER)      return makeMixedName (type)+"*";
       if (model == MODEL_RET)         return makeMixedName (type)+"*";
       if (model == MODEL_ARRAY)       return makeMixedName (type)+"**";
       if (model == MODEL_FREE)        return makeLowerName (type)+"_free ("+name+")";
       if (model == MODEL_COPY)        return makeLowerName (type)+"_copy_shallow ("+name+")";
       if (model == MODEL_NEW)         return name + " = " + makeLowerName (type)+"_new ()";
+      if (model == MODEL_VCALL_RFREE)
+	return "if ("+name+" != NULL) sfi_glue_gc_add ("+name+", "+makeLowerName (type)+"_free)";
 
       if (parser.isSequence (type))
       {
@@ -863,6 +299,18 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
 	  return "sfi_value_seq (" + makeLowerName (type)+"_to_seq ("+name+"))";
 	if (model == MODEL_FROM_VALUE) 
 	  return makeLowerName (type)+"_from_seq (sfi_value_get_seq ("+name+"))";
+	if (model == MODEL_VCALL) 
+	  return "sfi_glue_vcall_seq";
+	if (model == MODEL_VCALL_ARG) 
+	  return "'" + scatId (SFI_SCAT_SEQ) + "', "+name+",";
+	if (model == MODEL_VCALL_CONV) 
+	  return makeLowerName (type)+"_to_seq ("+name+")";
+	if (model == MODEL_VCALL_CFREE) 
+	  return "sfi_seq_unref ("+name+")";
+	if (model == MODEL_VCALL_RET) 
+	  return "SfiSeq*";
+	if (model == MODEL_VCALL_RCONV) 
+	  return makeLowerName (type)+"_from_seq ("+name+")";
       }
       else
       {
@@ -870,30 +318,80 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
 	  return "sfi_value_rec (" + makeLowerName (type)+"_to_rec ("+name+"))";
 	if (model == MODEL_FROM_VALUE)
 	  return makeLowerName (type)+"_from_rec (sfi_value_get_rec ("+name+"))";
+	if (model == MODEL_VCALL) 
+	  return "sfi_glue_vcall_rec";
+	if (model == MODEL_VCALL_ARG) 
+	  return "'" + scatId (SFI_SCAT_REC) + "', "+name+",";
+	if (model == MODEL_VCALL_CONV) 
+	  return makeLowerName (type)+"_to_rec ("+name+")";
+	if (model == MODEL_VCALL_CFREE) 
+	  return "sfi_rec_unref ("+name+")";
+	if (model == MODEL_VCALL_RET) 
+	  return "SfiRec*";
+	if (model == MODEL_VCALL_RCONV) 
+	  return makeLowerName (type)+"_from_rec ("+name+")";
       }
     }
   else if (parser.isEnum (type))
     {
-      /*
-       * FIXME: this has to be changed to a language binding where enums 
-       * are using the typdef enum type we also generate - therefore, we
-       * also need to register a glib typesystem type to do the conversion
-       * between the actual integer value and the string
-       */
-      if (model == MODEL_ARG)         return "gchar*";
-      if (model == MODEL_RET)         return "gchar*";
-      if (model == MODEL_ARRAY)       return "gchar**";
-      if (model == MODEL_FREE)        return "g_free (" + name + ")";
-      if (model == MODEL_COPY)        return "g_strdup (" + name + ")";;
+      if (model == MODEL_ARG)         return makeMixedName (type);
+      if (model == MODEL_MEMBER)      return makeMixedName (type);
+      if (model == MODEL_RET)         return makeMixedName (type);
+      if (model == MODEL_ARRAY)       return makeMixedName (type) + "*";
+      if (model == MODEL_FREE)        return "";
+      if (model == MODEL_COPY)        return name;
       if (model == MODEL_NEW)         return "";
-      if (model == MODEL_TO_VALUE)    return "sfi_value_enum ("+name+")";
-      // FIXME: do we want sfi_value_dup_enum?
-      if (model == MODEL_FROM_VALUE)  return "g_strdup (sfi_value_get_enum ("+name+"))";
+      if (options.generateBoxedTypes)
+	{
+	  if (model == MODEL_TO_VALUE)
+	    return "sfi_value_choice_genum ("+name+", "+makeGTypeName(type)+")";
+	  if (model == MODEL_FROM_VALUE) 
+	    return "sfi_choice2enum (sfi_value_get_choice ("+name+"), "+makeGTypeName(type)+")";
+	}
+      else /* client code */
+	{
+	  if (model == MODEL_TO_VALUE)
+	    return "sfi_value_choice (" + makeLowerName (type) + "_to_choice ("+name+"))";
+	  if (model == MODEL_FROM_VALUE) 
+	    return makeLowerName (type) + "_from_choice (sfi_value_get_choice ("+name+"))";
+	}
+      if (model == MODEL_VCALL)       return "sfi_glue_vcall_choice";
+      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_CHOICE) + "', "+makeLowerName (type)+"_to_choice ("+name+"),";
+      if (model == MODEL_VCALL_CONV)  return "";
+      if (model == MODEL_VCALL_CFREE) return "";
+      if (model == MODEL_VCALL_RET)   return "const gchar *";
+      if (model == MODEL_VCALL_RCONV) return makeLowerName (type)+"_from_choice ("+name+")";
+      if (model == MODEL_VCALL_RFREE) return "";
+    }
+  else if (parser.isClass (type) || type == "Proxy")
+    {
+      /*
+       * FIXME: we're currently not using the type of the proxy anywhere
+       * it might for instance be worthwile being able to ensure that if
+       * we're expecting a "SfkServer" object, we will have one
+       */
+      if (model == MODEL_ARG)         return "SfiProxy";
+      if (model == MODEL_MEMBER)      return "SfiProxy";
+      if (model == MODEL_RET)         return "SfiProxy";
+      if (model == MODEL_ARRAY)       return "SfiProxy*";
+      if (model == MODEL_FREE)        return "";
+      if (model == MODEL_COPY)        return name;
+      if (model == MODEL_NEW)         return "";
+      if (model == MODEL_TO_VALUE)    return "sfi_value_proxy ("+name+")";
+      if (model == MODEL_FROM_VALUE)  return "sfi_value_get_proxy ("+name+")";
+      if (model == MODEL_VCALL)       return "sfi_glue_vcall_proxy";
+      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_PROXY) + "', "+name+",";
+      if (model == MODEL_VCALL_CONV)  return "";
+      if (model == MODEL_VCALL_CFREE) return "";
+      if (model == MODEL_VCALL_RET)   return "SfiProxy";
+      if (model == MODEL_VCALL_RCONV) return name;
+      if (model == MODEL_VCALL_RFREE) return "";
     }
   else if (type == "String")
     {
-      if (model == MODEL_ARG)         return "gchar*";
-      if (model == MODEL_RET)         return "gchar*";
+      if (model == MODEL_ARG)         return "const gchar*";
+      if (model == MODEL_MEMBER)      return "gchar*";
+      if (model == MODEL_RET)         return "const gchar*";
       if (model == MODEL_ARRAY)       return "gchar**";
       if (model == MODEL_FREE)        return "g_free (" + name + ")";
       if (model == MODEL_COPY)        return "g_strdup (" + name + ")";;
@@ -901,10 +399,18 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
       if (model == MODEL_TO_VALUE)    return "sfi_value_string ("+name+")";
       // FIXME: do we want sfi_value_dup_string?
       if (model == MODEL_FROM_VALUE)  return "g_strdup (sfi_value_get_string ("+name+"))";
+      if (model == MODEL_VCALL)       return "sfi_glue_vcall_string";
+      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+",";
+      if (model == MODEL_VCALL_CONV)  return "";
+      if (model == MODEL_VCALL_CFREE) return "";
+      if (model == MODEL_VCALL_RET)   return "const gchar*";
+      if (model == MODEL_VCALL_RCONV) return name;
+      if (model == MODEL_VCALL_RFREE) return "";
     }
   else if (type == "BBlock")
     {
       if (model == MODEL_ARG)         return "SfiBBlock*";
+      if (model == MODEL_MEMBER)      return "SfiBBlock*";
       if (model == MODEL_RET)         return "SfiBBlock*";
       if (model == MODEL_ARRAY)       return "SfiBBlock**";
       if (model == MODEL_FREE)        return "sfi_bblock_unref (" + name + ")";
@@ -912,10 +418,18 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
       if (model == MODEL_NEW)         return name + " = sfi_bblock_new ()";
       if (model == MODEL_TO_VALUE)    return "sfi_value_bblock ("+name+")";
       if (model == MODEL_FROM_VALUE)  return "sfi_bblock_ref (sfi_value_get_bblock ("+name+"))";
+      if (model == MODEL_VCALL)       return "sfi_glue_vcall_bblock";
+      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_BBLOCK) + "', "+name+",";
+      if (model == MODEL_VCALL_CONV)  return "";
+      if (model == MODEL_VCALL_CFREE) return "";
+      if (model == MODEL_VCALL_RET)   return "SfiBBlock*";
+      if (model == MODEL_VCALL_RCONV) return name;
+      if (model == MODEL_VCALL_RFREE) return "";
     }
   else if (type == "FBlock")
     {
       if (model == MODEL_ARG)         return "SfiFBlock*";
+      if (model == MODEL_MEMBER)      return "SfiFBlock*";
       if (model == MODEL_RET)         return "SfiFBlock*";
       if (model == MODEL_ARRAY)       return "SfiFBlock**";
       if (model == MODEL_FREE)        return "sfi_fblock_unref (" + name + ")";
@@ -923,56 +437,326 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
       if (model == MODEL_NEW)         return name + " = sfi_fblock_new ()";
       if (model == MODEL_TO_VALUE)    return "sfi_value_fblock ("+name+")";
       if (model == MODEL_FROM_VALUE)  return "sfi_fblock_ref (sfi_value_get_fblock ("+name+"))";
+      if (model == MODEL_VCALL)       return "sfi_glue_vcall_fblock";
+      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_FBLOCK) + "', "+name+",";
+      if (model == MODEL_VCALL_CONV)  return "";
+      if (model == MODEL_VCALL_CFREE) return "";
+      if (model == MODEL_VCALL_RET)   return "SfiFBlock*";
+      if (model == MODEL_VCALL_RCONV) return name;
+      if (model == MODEL_VCALL_RFREE) return "";
+    }
+  else if (type == "PSpec")
+    {
+      /* FIXME: review this for correctness */
+      if (model == MODEL_ARG)         return "GParamSpec*";
+      if (model == MODEL_MEMBER)      return "GParamSpec*";
+      if (model == MODEL_RET)         return "GParamSpec*";
+      if (model == MODEL_ARRAY)       return "GParamSpec**";
+      if (model == MODEL_FREE)        return "sfi_pspec_unref (" + name + ")";
+      if (model == MODEL_COPY)        return "sfi_pspec_ref (" + name + ")";;
+      /* no new: users of this need to be knowing to initialize things themselves */
+      if (model == MODEL_NEW)         return "";
+      if (model == MODEL_TO_VALUE)    return "sfi_value_pspec ("+name+")";
+      if (model == MODEL_FROM_VALUE)  return "sfi_pspec_ref (sfi_value_get_pspec ("+name+"))";
+      if (model == MODEL_VCALL)       return "sfi_glue_vcall_pspec";
+      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_PSPEC) + "', "+name+",";
+      if (model == MODEL_VCALL_CONV)  return "";
+      if (model == MODEL_VCALL_CFREE) return "";
+      if (model == MODEL_VCALL_RET)   return "SfiPSpec*";
+      if (model == MODEL_VCALL_RCONV) return name;
+      if (model == MODEL_VCALL_RFREE) return "";
+    }
+  else if (type == "Rec")
+    {
+      /* FIXME: review this for correctness */
+      if (model == MODEL_ARG)         return "SfiRec*";
+      if (model == MODEL_MEMBER)      return "SfiRec*";
+      if (model == MODEL_RET)         return "SfiRec*";
+      if (model == MODEL_ARRAY)       return "SfiRec**";
+      if (model == MODEL_FREE)        return "sfi_rec_unref (" + name + ")";
+      if (model == MODEL_COPY)        return "sfi_rec_ref (" + name + ")";;
+      if (model == MODEL_NEW)         return name + " = sfi_rec_new ()";
+      if (model == MODEL_TO_VALUE)    return "sfi_value_rec ("+name+")";
+      if (model == MODEL_FROM_VALUE)  return "sfi_rec_ref (sfi_value_get_rec ("+name+"))";
+      if (model == MODEL_VCALL)       return "sfi_glue_vcall_rec";
+      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_REC) + "', "+name+",";
+      if (model == MODEL_VCALL_CONV)  return "";
+      if (model == MODEL_VCALL_CFREE) return "";
+      if (model == MODEL_VCALL_RET)   return "SfiRec*";
+      if (model == MODEL_VCALL_RCONV) return name;
+      if (model == MODEL_VCALL_RFREE) return "";
     }
   else
     {
-      if (model == MODEL_ARG)         return "Sfi" + type;
-      if (model == MODEL_RET)         return "Sfi" + type;
-      if (model == MODEL_ARRAY)       return "Sfi" + type + "*";
+      string sfi = (type == "void") ? "" : "Sfi"; /* there is no such thing as an SfiVoid */
+
+      if (model == MODEL_ARG)         return sfi + type;
+      if (model == MODEL_MEMBER)      return sfi + type;
+      if (model == MODEL_RET)         return sfi + type;
+      if (model == MODEL_ARRAY)       return sfi + type + "*";
       if (model == MODEL_FREE)        return "";
       if (model == MODEL_COPY)        return name;
       if (model == MODEL_NEW)         return "";
       if (model == MODEL_TO_VALUE)    return "sfi_value_" + makeLowerName(type) + " ("+name+")";
       if (model == MODEL_FROM_VALUE)  return "sfi_value_get_" + makeLowerName(type) + " ("+name+")";
+      if (model == MODEL_VCALL)       return "sfi_glue_vcall_" + makeLowerName(type);
+      if (model == MODEL_VCALL_ARG)
+	{
+	  if (type == "Real")	      return "'" + scatId (SFI_SCAT_REAL) + "', "+name+",";
+	  if (type == "Bool")	      return "'" + scatId (SFI_SCAT_BOOL) + "', "+name+",";
+	  if (type == "Int")	      return "'" + scatId (SFI_SCAT_INT) + "', "+name+",";
+	  if (type == "Num")	      return "'" + scatId (SFI_SCAT_NUM) + "', "+name+",";
+	}
+      if (model == MODEL_VCALL_CONV)  return "";
+      if (model == MODEL_VCALL_CFREE) return "";
+      if (model == MODEL_VCALL_RET)   return sfi + type;
+      if (model == MODEL_VCALL_RCONV) return name;
+      if (model == MODEL_VCALL_RFREE) return "";
     }
   return "*createTypeCode*unknown*";
 }
 
-void CodeGeneratorC::run (string srcname)
+void CodeGeneratorC::printProcedure (const MethodDef& mdef, bool proto, const string& className)
+{
+  vector<ParamDef>::const_iterator pi;
+  string mname, dname;
+  
+  if (className == "")
+    {
+      mname = makeLowerName(mdef.name);
+      dname = makeLowerName(mdef.name, '-');
+    }
+  else
+    {
+      mname = makeLowerName(className) + "_" + makeLowerName(mdef.name);
+      dname = makeMixedName(className) + "+" + makeLowerName(mdef.name, '-');
+    }
+
+  bool first = true;
+  string ret = createTypeCode(mdef.result.type, "", MODEL_RET);
+  printf("%s%s%s (", ret.c_str(), proto?" ":"\n", mname.c_str());
+  for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
+    {
+      string arg = createTypeCode(pi->type, "", MODEL_ARG);
+      if(!first) printf(", ");
+      first = false;
+      printf("%s %s", arg.c_str(), pi->name.c_str());
+    }
+  if (first)
+    printf("void");
+  printf(")");
+  if (proto)
+    {
+      printf(";\n");
+      return;
+    }
+
+  printf(" {\n");
+
+  string vret = createTypeCode (mdef.result.type, "", MODEL_VCALL_RET);
+  if (mdef.result.type != "void")
+    printf ("  %s _retval;\n", vret.c_str());
+
+  string rfree = createTypeCode (mdef.result.type, "_retval_conv", MODEL_VCALL_RFREE);
+  if (rfree != "")
+    printf ("  %s _retval_conv;\n", ret.c_str());
+
+  map<string, string> cname;
+  for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
+    {
+      string conv = createTypeCode (pi->type, pi->name, MODEL_VCALL_CONV);
+      if (conv != "")
+	{
+	  cname[pi->name] = pi->name + "__c";
+
+	  string arg = createTypeCode(pi->type, "", MODEL_ARG);
+	  printf("  %s %s__c = %s;\n", arg.c_str(), pi->name.c_str(), conv.c_str());
+	}
+      else
+	cname[pi->name] = pi->name;
+    }
+
+  printf("  ");
+  if (mdef.result.type != "void")
+    printf("_retval = ");
+  string vcall = createTypeCode(mdef.result.type, "", MODEL_VCALL);
+  printf("%s (\"%s\", ", vcall.c_str(), dname.c_str());
+
+  for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
+    printf("%s ", createTypeCode(pi->type, cname[pi->name], MODEL_VCALL_ARG).c_str());
+  printf("0);\n");
+
+  for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
+    {
+      string cfree = createTypeCode (pi->type, cname[pi->name], MODEL_VCALL_CFREE);
+      if (cfree != "")
+	printf("  %s;\n", cfree.c_str());
+    }
+
+  if (mdef.result.type != "void")
+    {
+      string rconv = createTypeCode (mdef.result.type, "_retval", MODEL_VCALL_RCONV);
+
+      if (rfree != "")
+	{
+	  printf ("  _retval_conv = %s;\n", rconv.c_str());
+	  printf ("  %s;\n", rfree.c_str());
+	  printf ("  return _retval_conv;\n");
+	}
+      else
+	{
+	  printf ("  return %s;\n", rconv.c_str());
+	}
+    }
+  printf("}\n\n");
+}
+
+static bool enumReverseSort(const EnumComponent& e1, const EnumComponent& e2)
+{
+  string ename1 = e1.name;
+  string ename2 = e2.name;
+
+  reverse (ename1.begin(), ename1.end());
+  reverse (ename2.begin(), ename2.end());
+
+  return ename1 < ename2;
+}
+
+void CodeGeneratorC::run ()
 {
   vector<SequenceDef>::const_iterator si;
   vector<RecordDef>::const_iterator ri;
   vector<EnumDef>::const_iterator ei;
   vector<ParamDef>::const_iterator pi;
-  
-  if (Conf::generateTypeH)
+  vector<ClassDef>::const_iterator ci;
+  vector<MethodDef>::const_iterator mi;
+ 
+  if (options.generateConstant)
     {
+      vector<ConstantDef>::const_iterator ci;
+      for (ci = parser.getConstants().begin(); ci != parser.getConstants().end(); ci++)
+	{
+	  if (parser.fromInclude (ci->name)) continue;
+
+	  string uname = makeUpperName(ci->name);
+	  printf("#define %s ", uname.c_str());
+	  switch (ci->type) {
+	    case ConstantDef::tString: printf("\"%s\"\n", ci->str.c_str());
+	      break;
+	    case ConstantDef::tFloat: printf("%f\n", ci->f);
+	      break;
+	    case ConstantDef::tInt: printf("%d\n", ci->i);
+	      break;
+	  }
+	}
       printf("\n");
+    }
+  if (options.generateTypeH)
+    {
+      if (options.prefixC != "")
+	{
+	  vector<string> todo;
+	  /* namespace prefixing */
+	  for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+	    {
+	      if (parser.fromInclude (si->name)) continue;
+
+	      string lname = makeLowerName (si->name.c_str());
+	      todo.push_back (lname + "_new");
+	      todo.push_back (lname + "_append");
+	      todo.push_back (lname + "_copy_shallow");
+	      todo.push_back (lname + "_from_seq");
+	      todo.push_back (lname + "_to_seq");
+	      todo.push_back (lname + "_resize");
+	      todo.push_back (lname + "_free");
+	    }
+	  for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+	    {
+	      if (parser.fromInclude (ri->name)) continue;
+
+	      string lname = makeLowerName (ri->name.c_str());
+	      todo.push_back (lname + "_new");
+	      todo.push_back (lname + "_copy_shallow");
+	      todo.push_back (lname + "_from_rec");
+	      todo.push_back (lname + "_to_rec");
+	      todo.push_back (lname + "_free");
+	    }
+	  for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+	    {
+	      if (parser.fromInclude (ei->name)) continue;
+
+	      string lname = makeLowerName (ei->name);
+	      todo.push_back (lname + "_to_choice");
+	      todo.push_back (lname + "_from_choice");
+	    }
+
+	  for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+	    {
+	      if (parser.fromInclude (ci->name)) continue;
+
+	      for (mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
+		todo.push_back (makeLowerName (ci->name + "_" + mi->name));
+	    }
+	  for (mi = parser.getProcedures().begin(); mi != parser.getProcedures().end(); mi++)
+	    {
+	      if (parser.fromInclude (mi->name)) continue;
+	      todo.push_back (makeLowerName (mi->name));
+	    }
+
+	  for (vector<string>::const_iterator ti = todo.begin(); ti != todo.end(); ti++)
+	    printf("#define %s %s_%s\n", ti->c_str(), options.prefixC.c_str(), ti->c_str());
+	  printf("\n");
+	}
+
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
+	  if (parser.fromInclude (si->name)) continue;
+
 	  string mname = makeMixedName (si->name);
 	  printf("typedef struct _%s %s;\n", mname.c_str(), mname.c_str());
 	}
       for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	{
+	  if (parser.fromInclude (ri->name)) continue;
+
 	  string mname = makeMixedName (ri->name);
 	  printf("typedef struct _%s %s;\n", mname.c_str(), mname.c_str());
 	}
       for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
 	{
+	  if (parser.fromInclude (ei->name)) continue;
+
 	  string mname = makeMixedName (ei->name);
+	  string lname = makeLowerName (ei->name);
 	  printf("\ntypedef enum {\n");
+	  /* in the client, obscure the server side assigned values to a
+	   * straightforward numbering of the choices */
+	  int cvalue = 1;
 	  for (vector<EnumComponent>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
+	      gint value = ci->value;
+	      if (options.doInterface)
+		{
+		  if (ci->neutral)
+		    value = 0;
+		  else
+		    value = cvalue++;
+		}
 	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
-	      printf("  %s = %d,\n", ename.c_str(), ci->value);
+	      printf("  %s = %d,\n", ename.c_str(), value);
 	    }
 	  printf("} %s;\n", mname.c_str());
+
+	  printf("const gchar* %s_to_choice (%s value);\n", lname.c_str(), mname.c_str());
+	  printf("%s %s_from_choice (const gchar *choice);\n", mname.c_str(), lname.c_str());
 	}
-      
+     
       printf("\n");
+
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
+	  if (parser.fromInclude (si->name)) continue;
+
 	  string mname = makeMixedName (si->name.c_str());
 	  string array = createTypeCode (si->content.type, "", MODEL_ARRAY);
 	  string elements = si->content.name;
@@ -984,19 +768,24 @@ void CodeGeneratorC::run (string srcname)
 	}
       for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	{
+	  if (parser.fromInclude (ri->name)) continue;
+
 	  string mname = makeMixedName (ri->name.c_str());
 	  
 	  printf("struct _%s {\n", mname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
-	      printf("  %s %s;\n", createTypeCode(pi->type, "", MODEL_ARG).c_str(), pi->name.c_str());
+	      printf("  %s %s;\n", createTypeCode(pi->type, "", MODEL_MEMBER).c_str(), pi->name.c_str());
 	    }
 	  printf("};\n");
 	}
 
       printf("\n");
+
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
+	  if (parser.fromInclude (si->name)) continue;
+
 	  string ret = createTypeCode (si->name, "", MODEL_RET);
 	  string arg = createTypeCode (si->name, "", MODEL_ARG);
 	  string element = createTypeCode (si->content.type, "", MODEL_ARG);
@@ -1007,11 +796,14 @@ void CodeGeneratorC::run (string srcname)
 	  printf("%s %s_copy_shallow (%s seq);\n", ret.c_str(), lname.c_str(), arg.c_str());
 	  printf("%s %s_from_seq (SfiSeq *sfi_seq);\n", ret.c_str(), lname.c_str());
 	  printf("SfiSeq *%s_to_seq (%s seq);\n", lname.c_str(), arg.c_str());
+	  printf("void %s_resize (%s seq, guint new_size);\n", lname.c_str(), arg.c_str());
 	  printf("void %s_free (%s seq);\n", lname.c_str(), arg.c_str());
 	  printf("\n");
 	}
       for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	{
+	  if (parser.fromInclude (ri->name)) continue;
+
 	  string ret = createTypeCode (ri->name, "", MODEL_RET);
 	  string arg = createTypeCode (ri->name, "", MODEL_ARG);
 	  string lname = makeLowerName (ri->name.c_str());
@@ -1026,30 +818,43 @@ void CodeGeneratorC::run (string srcname)
       printf("\n");
     }
   
-  if (Conf::generateExtern)
+  if (options.generateExtern)
     {
       for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
-	printf("extern SfiEnumValues %s_values;\n", makeLowerName (ei->name).c_str());
+	{
+	  if (parser.fromInclude (ei->name)) continue;
+
+	  printf("extern SfiChoiceValues %s_values;\n", makeLowerName (ei->name).c_str());
+	  if (options.generateBoxedTypes)
+	    printf("extern GType %s;\n", makeGTypeName (ei->name).c_str());
+	}
       
       for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
       {
+	if (parser.fromInclude (ri->name)) continue;
+
 	printf("extern SfiRecFields %s_fields;\n",makeLowerName (ri->name).c_str());
-        if (Conf::generateBoxedTypes)
+        if (options.generateBoxedTypes)
 	  printf("extern GType %s;\n", makeGTypeName (ri->name).c_str());
       }
 
-      if (Conf::generateBoxedTypes)
+      if (options.generateBoxedTypes)
       {
 	for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
-	  printf("extern GType %s;\n", makeGTypeName (si->name).c_str());
+	  {
+	    if (parser.fromInclude (si->name)) continue;
+	    printf("extern GType %s;\n", makeGTypeName (si->name).c_str());
+	  }
       }
       printf("\n");
     }
   
-  if (Conf::generateTypeC)
+  if (options.generateTypeC)
     {
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
+	  if (parser.fromInclude (si->name)) continue;
+
 	  string ret = createTypeCode (si->name, "", MODEL_RET);
 	  string arg = createTypeCode (si->name, "", MODEL_ARG);
 	  string element = createTypeCode (si->content.type, "", MODEL_ARG);
@@ -1080,16 +885,28 @@ void CodeGeneratorC::run (string srcname)
 	  printf("%s_copy_shallow (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  %s seq_copy = NULL;\n", arg.c_str ());
-          printf("  if (seq)\n");
-          printf("    {\n");
-	  printf("      guint i;\n");
-	  printf("      seq_copy = %s_new ();\n", lname.c_str());
-	  printf("      for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
-	  printf("        %s_append (seq_copy, seq->%s[i]);\n", lname.c_str(), elements.c_str());
-          printf("    }\n");
+	  printf("  guint i;\n");
+	  printf("\n");
+	  printf("  g_return_val_if_fail (seq != NULL, NULL);\n");
+	  printf("\n");
+	  printf("  seq_copy = %s_new ();\n", lname.c_str());
+	  printf("  for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
+	  printf("    %s_append (seq_copy, seq->%s[i]);\n", lname.c_str(), elements.c_str());
 	  printf("  return seq_copy;\n");
 	  printf("}\n\n");
-	  
+
+	  if (options.generateBoxedTypes)
+	    {
+	      printf("static %s\n", ret.c_str());
+	      printf("%s_copy_shallow_internal (%s seq)\n", lname.c_str(), arg.c_str());
+	      printf("{\n");
+	      printf("  %s seq_copy = NULL;\n", arg.c_str ());
+	      printf("  if (seq)\n");
+	      printf("    seq_copy = %s_copy_shallow (seq);\n", lname.c_str());
+	      printf("  return seq_copy;\n");
+	      printf("}\n\n");
+	    }
+
 	  string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
 	  printf("%s\n", ret.c_str());
 	  printf("%s_from_seq (SfiSeq *sfi_seq)\n", lname.c_str());
@@ -1132,24 +949,61 @@ void CodeGeneratorC::run (string srcname)
 	  printf("}\n\n");
 
 	  string element_i_free = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_FREE);
+	  string element_i_new = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_NEW);
+	  printf("void\n");
+	  printf("%s_resize (%s seq, guint new_size)\n", lname.c_str(), arg.c_str());
+	  printf("{\n");
+	  printf("  g_return_if_fail (seq != NULL);\n");
+	  printf("\n");
+	  if (element_i_free != "")
+	    {
+	      printf("  if (seq->n_%s > new_size)\n", elements.c_str());
+	      printf("    {\n");
+	      printf("      guint i;\n");
+	      printf("      for (i = new_size; i < seq->n_%s; i++)\n", elements.c_str());
+	      printf("        %s;\n", element_i_free.c_str());
+	      printf("    }\n");
+	    }
+	  printf("\n");
+	  printf("  seq->%s = g_realloc (seq->%s, new_size * sizeof (seq->%s[0]));\n",
+                 elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
+	  printf("  if (new_size > seq->n_%s)\n", elements.c_str());
+	  if (element_i_new != "")
+	    {
+	      printf("    {\n");
+	      printf("      guint i;\n");
+	      printf("      for (i = seq->n_%s; i < new_size; i++)\n", elements.c_str());
+	      printf("        %s;\n", element_i_new.c_str());
+	      printf("    }\n");
+	    }
+	  else
+	    {
+	      printf("    memset (&seq->%s[seq->n_%s], 0, sizeof(seq->%s[0]) * (new_size - seq->n_%s));\n",
+		    elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
+	    }
+	  printf("  seq->n_%s = new_size;\n", elements.c_str());
+	  printf("}\n\n");
+
 	  printf("void\n");
 	  printf("%s_free (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
-          printf("  if (seq)\n");
-          printf("    {\n");
+	  if (element_i_free != "")
+	    printf("  guint i;\n\n");
+          printf("  g_return_if_fail (seq != NULL);\n");
+          printf("  \n");
 	  if (element_i_free != "")
 	    {
-	      printf("      guint i;\n");
-	      printf("      for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
-	      printf("        %s;\n", element_i_free.c_str());
+	      printf("  for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
+	      printf("    %s;\n", element_i_free.c_str());
 	    }
-	  printf("      g_free (seq);\n");
-          printf("    }\n");
+	  printf("  g_free (seq);\n");
 	  printf("}\n\n");
 	  printf("\n");
 	}
       for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	{
+	  if (parser.fromInclude (ri->name)) continue;
+
 	  string ret = createTypeCode (ri->name, "", MODEL_RET);
 	  string arg = createTypeCode (ri->name, "", MODEL_ARG);
 	  string lname = makeLowerName (ri->name.c_str());
@@ -1171,18 +1025,30 @@ void CodeGeneratorC::run (string srcname)
 	  printf("%s_copy_shallow (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  %s rec_copy = NULL;\n", arg.c_str());
-	  printf("  if (rec)\n");
-	  printf("    {\n");
-	  printf("      rec_copy = %s_new ();\n", lname.c_str());
+	  printf("\n");
+	  printf("  g_return_val_if_fail (rec != NULL, NULL);");
+	  printf("\n");
+	  printf("  rec_copy = %s_new ();\n", lname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
 	      string copy =  createTypeCode(pi->type, "rec->" + pi->name, MODEL_COPY);
-	      printf("      rec_copy->%s = %s;\n", pi->name.c_str(), copy.c_str());
+	      printf("  rec_copy->%s = %s;\n", pi->name.c_str(), copy.c_str());
 	    }
-	  printf("    }\n");
 	  printf("  return rec_copy;\n");
 	  printf("}\n\n");
-	  
+
+	  if (options.generateBoxedTypes)
+	    {
+	      printf("static %s\n", ret.c_str());
+	      printf("%s_copy_shallow_internal (%s rec)\n", lname.c_str(), arg.c_str());
+	      printf("{\n");
+	      printf("  %s rec_copy = NULL;\n", arg.c_str());
+	      printf("  if (rec)\n");
+	      printf("    rec_copy = %s_copy_shallow (rec);\n", lname.c_str());
+	      printf("  return rec_copy;\n");
+	      printf("}\n\n");
+	    }
+
 	  printf("%s\n", ret.c_str());
 	  printf("%s_from_rec (SfiRec *sfi_rec)\n", lname.c_str());
 	  printf("{\n");
@@ -1195,8 +1061,17 @@ void CodeGeneratorC::run (string srcname)
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
 	      string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
+	      string init =  createTypeCode(pi->type, "rec->" + pi->name, MODEL_NEW);
+
 	      printf("  element = sfi_rec_get (sfi_rec, \"%s\");\n", pi->name.c_str());
-	      printf("  rec->%s = %s;\n", pi->name.c_str(), elementFromValue.c_str());
+	      printf("  if (element)\n");
+	      printf("    rec->%s = %s;\n", pi->name.c_str(), elementFromValue.c_str());
+
+	      if (init != "")
+		{
+		  printf("  else\n");
+		  printf("    %s;\n",init.c_str());
+		}
 	    }
 	  printf("  return rec;\n");
 	  printf("}\n\n");
@@ -1223,44 +1098,71 @@ void CodeGeneratorC::run (string srcname)
 	  printf("void\n");
 	  printf("%s_free (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
-	  printf("  if (rec)\n");
-	  printf("    {\n");
+	  printf("  g_return_if_fail (rec != NULL);\n");
+	  printf("  \n");
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
 	      string free =  createTypeCode(pi->type, "rec->" + pi->name, MODEL_FREE);
-	      if (free != "") printf("      %s;\n",free.c_str());
+	      if (free != "") printf("  %s;\n",free.c_str());
 	    }
-	  printf("      g_free (rec);\n");
-	  printf("    }\n");
+	  printf("  g_free (rec);\n");
 	  printf("}\n\n");
 	  printf("\n");
 	}
     }
   
-  if (Conf::generateData)
+  if (options.generateData)
     {
+      int enumCount = 0;
+
       for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
 	{
+	  if (parser.fromInclude (ei->name)) continue;
+
 	  string name = makeLowerName (ei->name);
-	  printf("static const GEnumValue %s_value[%d] = {\n",name.c_str(), ei->contents.size());
+	  printf("static const GEnumValue %s_value[%d] = {\n", name.c_str(), ei->contents.size() + 1);
 	  for (vector<EnumComponent>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
-	      printf("  { %d, \"%s\", \"%s\" },\n", ci->value, ci->name.c_str(), ci->text.c_str());
+	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
+	      printf("  { %d, \"%s\", \"%s\" },\n", ci->value, ename.c_str(), ci->text.c_str());
 	    }
 	  printf("  { 0, NULL, NULL }\n");
 	  printf("};\n");
-	  printf("SfiEnumValues %s_values = { %d, %s_value };\n", name.c_str(), ei->contents.size(), name.c_str());
+	  printf("static const SfiChoiceValue %s_cvalue[%d] = {\n", name.c_str(), ei->contents.size());
+	  for (vector<EnumComponent>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
+	    {
+	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
+	      printf("  { \"%s\", \"%s\" },\n", ename.c_str(), ci->text.c_str());
+	    }
+	  printf("};\n");
+	  printf("SfiChoiceValues %s_values = { %d, %s_cvalue };\n", name.c_str(), ei->contents.size(), name.c_str());
+	  if (options.generateBoxedTypes)
+	    printf("GType %s = 0;\n", makeGTypeName (ei->name).c_str());
 	  printf("\n");
+
+	  enumCount++;
+	}
+
+      if (options.generateBoxedTypes && enumCount)
+	{
+	  printf("static void\n");
+	  printf("choice2enum (const GValue *src_value,\n");
+	  printf("             GValue       *dest_value)\n");
+	  printf("{\n");
+	  printf("  sfi_value_choice2enum (src_value, dest_value, NULL);\n");
+	  printf("}\n");
 	}
       
       for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	{
+	  if (parser.fromInclude (ri->name)) continue;
+
 	  string name = makeLowerName (ri->name);
 	  
 	  printf("static GParamSpec *%s_field[%d];\n", name.c_str(), ri->contents.size());
 	  printf("SfiRecFields %s_fields = { %d, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
 
-	  if (Conf::generateBoxedTypes)
+	  if (options.generateBoxedTypes)
 	    {
 	      string mname = makeMixedName (ri->name);
 	      
@@ -1278,13 +1180,13 @@ void CodeGeneratorC::run (string srcname)
 	      printf("    %s_from_rec (sfi_value_get_rec (src_value)));\n", name.c_str());
 	      printf("}\n");
 	      
+	      printInfoStrings (name + "_info_strings", ri->infos);
 	      printf("static SfiBoxedRecordInfo %s_boxed_info = {\n", name.c_str());
 	      printf("  \"%s\",\n", mname.c_str());
 	      printf("  { %d, %s_field },\n", ri->contents.size(), name.c_str());
-	      printf("  (SfiBoxedToRec) %s_to_rec,\n", name.c_str());
-	      printf("  (SfiBoxedFromRec) %s_from_rec,\n", name.c_str());
 	      printf("  %s_boxed2rec,\n", name.c_str());
 	      printf("  %s_rec2boxed,\n", name.c_str());
+	      printf("  %s_info_strings\n", name.c_str());
 	      printf("};\n");
 	      printf("GType %s = 0;\n", makeGTypeName (ri->name).c_str());
 	    }
@@ -1292,11 +1194,13 @@ void CodeGeneratorC::run (string srcname)
 	}
       for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
+	  if (parser.fromInclude (si->name)) continue;
+
 	  string name = makeLowerName (si->name);
 	  
 	  printf("static GParamSpec *%s_content;\n", name.c_str());
 
-	  if (Conf::generateBoxedTypes)
+	  if (options.generateBoxedTypes)
 	    {
 	      string mname = makeMixedName (si->name);
 	      
@@ -1314,13 +1218,13 @@ void CodeGeneratorC::run (string srcname)
 	      printf("    %s_from_seq (sfi_value_get_seq (src_value)));\n", name.c_str());
 	      printf("}\n");
 	      
+	      printInfoStrings (name + "_info_strings", si->infos);
 	      printf("static SfiBoxedSequenceInfo %s_boxed_info = {\n", name.c_str());
 	      printf("  \"%s\",\n", mname.c_str());
 	      printf("  NULL, /* %s_content */\n", name.c_str());
-	      printf("  (SfiBoxedToSeq) %s_to_seq,\n", name.c_str());
-	      printf("  (SfiBoxedFromSeq) %s_from_seq,\n", name.c_str());
 	      printf("  %s_boxed2seq,\n", name.c_str());
 	      printf("  %s_seq2boxed,\n", name.c_str());
+	      printf("  %s_info_strings\n", name.c_str());
 	      printf("};\n");
 	      printf("GType %s = 0;\n", makeGTypeName (si->name).c_str());
 	    }
@@ -1328,10 +1232,62 @@ void CodeGeneratorC::run (string srcname)
 	}
     }
 
-  if (Conf::generateInit)
+  if (options.doInterface && options.doSource)
+    {
+      for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+	{
+	  if (parser.fromInclude (ei->name)) continue;
+
+	  int minval = 1, maxval = 1;
+	  vector<EnumComponent>::iterator ci;
+	  string name = makeLowerName (ei->name);
+	  string mname = makeMixedName (ei->name);
+
+	  /* produce reverse sorted enum array */
+	  int cvalue = 1;
+	  vector<EnumComponent> components = ei->contents;
+	  for (ci = components.begin(); ci != components.end(); ci++)
+	    {
+	      if (ci->neutral)
+		ci->value = 0;
+	      else
+		ci->value = cvalue++;
+	      ci->name = makeLowerName (NamespaceHelper::namespaceOf(ei->name) + ci->name, '-');
+	    }
+	  sort (components.begin(), components.end(), ::enumReverseSort);
+
+	  printf("static const SfiConstants %s_vals[%d] = {\n",name.c_str(), ei->contents.size());
+	  for (ci = components.begin(); ci != components.end(); ci++)
+	    {
+	      int value = ci->value;
+	      minval = min (value, minval);
+	      maxval = max (value, maxval);
+	      printf("  { \"%s\", %d, %d },\n", ci->name.c_str(), ci->name.size(), value);
+	    }
+	  printf("};\n\n");
+
+	  printf("const gchar*\n");
+	  printf("%s_to_choice (%s value)\n", name.c_str(), mname.c_str());
+	  printf("{\n");
+	  printf("  g_return_val_if_fail (value >= %d && value <= %d, NULL);\n", minval, maxval);
+	  printf("  return sfi_constants_get_name (G_N_ELEMENTS (%s_vals), %s_vals, value);\n",
+	      name.c_str(), name.c_str());
+	  printf("}\n\n");
+
+	  printf("%s\n", mname.c_str());
+	  printf("%s_from_choice (const gchar *choice)\n", name.c_str());
+	  printf("{\n");
+	  printf("  return choice ? sfi_constants_get_index (G_N_ELEMENTS (%s_vals), %s_vals, choice) : 0;\n",
+	      name.c_str(), name.c_str());
+	  printf("}\n");
+	  printf("\n");
+	}
+    }
+
+  if (options.initFunction != "")
     {
       bool first = true;
-      printf("static void\n%s (void)\n", Conf::generateInit);
+      printf("static void\n%s (void)\n", options.initFunction.c_str());
       printf("{\n");
 
       /*
@@ -1344,6 +1300,8 @@ void CodeGeneratorC::run (string srcname)
 
       for(ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
 	{
+	  if (parser.fromInclude (*ti)) continue;
+
 	  if (parser.isRecord (*ti) || parser.isSequence (*ti))
 	    {
 	      if(!first) printf("\n");
@@ -1358,8 +1316,8 @@ void CodeGeneratorC::run (string srcname)
 
 	      for (pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++, f++)
 		{
-		  if (Conf::generateIdlLineNumbers)
-		    printf("#line %u \"%s\"\n", pi->line, srcname.c_str());
+		  if (options.generateIdlLineNumbers)
+		    printf("#line %u \"%s\"\n", pi->line, parser.fileName().c_str());
 		  printf("  %s_field[%d] = %s;\n", name.c_str(), f, makeParamSpec (*pi).c_str());
 		}
 	    }
@@ -1370,116 +1328,204 @@ void CodeGeneratorC::run (string srcname)
 	      string name = makeLowerName (sdef.name);
 	      int f = 0;
 
-	      if (Conf::generateIdlLineNumbers)
-		printf("#line %u \"%s\"\n", sdef.content.line, srcname.c_str());
+	      if (options.generateIdlLineNumbers)
+		printf("#line %u \"%s\"\n", sdef.content.line, parser.fileName().c_str());
 	      printf("  %s_content = %s;\n", name.c_str(), makeParamSpec (sdef.content).c_str());
 	    }
 	}
-      if (Conf::generateBoxedTypes)
+      if (options.generateBoxedTypes)
       {
+	for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+	  {
+	    if (parser.fromInclude (ei->name)) continue;
+
+	    string gname = makeGTypeName(ei->name);
+	    string name = makeLowerName(ei->name);
+	    string mname = makeMixedName(ei->name);
+
+	    printf("  %s = g_enum_register_static (\"%s\", %s_value);\n", gname.c_str(),
+						      mname.c_str(), name.c_str());
+	    printf("  g_value_register_transform_func (SFI_TYPE_CHOICE, %s, choice2enum);\n",
+						      gname.c_str());
+	    printf("  g_value_register_transform_func (%s, SFI_TYPE_CHOICE,"
+		   " sfi_value_enum2choice);\n", gname.c_str());
+	  }
 	for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	  {
+	    if (parser.fromInclude (ri->name)) continue;
+
 	    string gname = makeGTypeName(ri->name);
 	    string name = makeLowerName(ri->name);
 
 	    printf("  %s = sfi_boxed_make_record (&%s_boxed_info,\n", gname.c_str(), name.c_str());
-	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
+	    printf("    (GBoxedCopyFunc) %s_copy_shallow_internal,\n", name.c_str());
 	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
 	  }
       	for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	  {
+	    if (parser.fromInclude (si->name)) continue;
+
 	    string gname = makeGTypeName(si->name);
 	    string name = makeLowerName(si->name);
 
 	    printf("  %s_boxed_info.element = %s_content;\n", name.c_str(), name.c_str());
 	    printf("  %s = sfi_boxed_make_sequence (&%s_boxed_info,\n", gname.c_str(), name.c_str());
-	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
+	    printf("    (GBoxedCopyFunc) %s_copy_shallow_internal,\n", name.c_str());
 	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
 	  }
 }
       printf("}\n");
     }
+
+  if (options.generateSignalStuff)
+    {
+      for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+	{
+	  if (parser.fromInclude (ci->name)) continue;
+
+	  vector<MethodDef>::const_iterator si;
+	  for (si = ci->signals.begin(); si != ci->signals.end(); si++)
+	    {
+	      string fullname = makeLowerName (ci->name + "::" + si->name);
+
+	      printf("void %s_frobnicator (SignalContext *sigcontext) {\n", fullname.c_str());
+	      printf("  /* TODO: do something meaningful here */\n");
+	      for (pi = si->params.begin(); pi != si->params.end(); pi++)
+		{
+		  string arg = createTypeCode(pi->type, "", MODEL_ARG);
+		  printf("  %s %s;\n", arg.c_str(), pi->name.c_str());
+		}
+	      printf("}\n");
+	    }
+	}
+    }
+
+  if (options.doInterface && options.doHeader)
+    {
+      for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+	{
+	  if (parser.fromInclude (ci->name)) continue;
+
+	  string macro = makeUpperName (NamespaceHelper::namespaceOf (ci->name)) + "_IS_" +
+	                 makeUpperName (NamespaceHelper::nameOf (ci->name));
+	  string mname = makeMixedName (ci->name);
+
+	  printf ("#define %s(proxy) bse_proxy_is_a ((proxy), \"%s\")\n",
+	      macro.c_str(), mname.c_str());
+	}
+      printf("\n");
+    }
+
+  bool protoProcedures = (options.targetC && options.doHeader);
+  if (options.generateProcedures || protoProcedures)
+    {
+      for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+	{
+	  if (parser.fromInclude (ci->name)) continue;
+
+	  for (mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
+	    {
+	      MethodDef md;
+	      md.name = mi->name;
+	      md.result = mi->result;
+
+	      ParamDef class_as_param;
+	      class_as_param.name = makeLowerName(ci->name) + "_object";
+	      class_as_param.type = ci->name;
+	      md.params.push_back (class_as_param);
+
+	      for(pi = mi->params.begin(); pi != mi->params.end(); pi++)
+		md.params.push_back (*pi);
+
+	      printProcedure (md, protoProcedures, ci->name);
+	    }
+	}
+      for (mi = parser.getProcedures().begin(); mi != parser.getProcedures().end(); mi++)
+	{
+	  if (parser.fromInclude (mi->name)) continue;
+	  printProcedure (*mi, protoProcedures);
+	}
+    }
 }
 
+class CodeGeneratorQt : public CodeGenerator {
+public:
+  CodeGeneratorQt(const Parser& parser) : CodeGenerator(parser) {
+  }
+  void run ();
+};
 
-void exitUsage(char *name)
+void CodeGeneratorQt::run ()
 {
-  fprintf(stderr,"usage: %s [ <options> ] <idlfile>\n",name);
-  fprintf(stderr,"\nOptions:\n");
-  fprintf(stderr, " -x           generate extern statements\n");
-  fprintf(stderr, " -d           generate data\n");
-  fprintf(stderr, " -i <name>    generate init function\n");
-  fprintf(stderr, " -t           generate c code for types (header)\n");
-  fprintf(stderr, " -T           generate c code for types (impl)\n");
-  fprintf(stderr, " -n <subst>   specify target namespace, either directly\n");
-  fprintf(stderr, "              (-n Brahms) or as substitution (-n Bse/Bsw)\n");
-  fprintf(stderr, " -b           generate boxed types registration code\n");
-  fprintf(stderr, " -l           generate #line directives relative to .sfidl file\n");
-  exit(1);
+  NamespaceHelper nspace(stdout);
+
+  if (options.generateProcedures)
+    {
+      vector<MethodDef>::const_iterator mi;
+      for (mi = parser.getProcedures().begin(); mi != parser.getProcedures().end(); mi++)
+	{
+	  if (parser.fromInclude (mi->name)) continue;
+
+	  if (mi->result.type == "void" && mi->params.empty())
+	    {
+	      nspace.setFromSymbol (mi->name);
+	      string mname = makeLMixedName(nspace.printableForm (mi->name));
+	      string dname = makeLowerName(mi->name, '-');
+
+	      printf("void %s () {\n", mname.c_str());
+	      printf("  sfi_glue_vcall_void (\"%s\", 0);\n", dname.c_str());
+	      printf("}\n");
+	    }
+	}
+    }
 }
 
 int main (int argc, char **argv)
 {
-  // sfi_init ();
-
-  /*
-   * parse command line options
-   */
-  int c;
-  while((c = getopt(argc, argv, "xdi:tTn:bl")) != -1)
+  Options options;
+  if (!options.parse (&argc, &argv))
     {
-      switch(c)
-	{
-	case 'x': Conf::generateExtern = true;
-	  break;
-	case 'd': Conf::generateData = true;
-	  break;
-	case 'i': Conf::generateInit = optarg;
-	  break;
-	case 't': Conf::generateTypeH = true;
-	  break;
-	case 'T': Conf::generateTypeC = true;
-	  break;
-	case 'n': {
-		    string sub = optarg;
-
-		    int i = sub.find ("/", 0);
-		    if(i > 0)
-		    {
-		      Conf::namespaceCut = sub.substr (0, i);
-		      Conf::namespaceAdd = sub.substr (i+1, sub.size()-(i+1));
-		    }
-		    else
-		    {
-		      Conf::namespaceAdd = sub;
-		    }
-		  }
-	  break;
-	case 'b': Conf::generateBoxedTypes = true;
-	  break;
-	case 'l': Conf::generateIdlLineNumbers = true;
-	  break;
-	default:  exitUsage(argv[0]);
-	  break;
-	}
+      /* invalid options */
+      return 1;
     }
-  if((argc-optind) != 1) exitUsage(argv[0]);
-  const char *inputfile = argv[optind];
-  
-  int fd = open (inputfile, O_RDONLY);
-  
-  IdlParser parser(inputfile, fd);
-  if (!parser.parse())
+
+  if (options.doHelp)
+    {
+      options.printUsage ();
+      return 0;
+    }
+
+  if((argc-optind) != 1)
+    {
+      options.printUsage ();
+      return 1;
+    }
+
+  Parser parser;
+  if (!parser.parse(argv[1]))
     {
       /* parse error */
       return 1;
     }
-  
+
+  CodeGenerator *codeGenerator = 0;
+  if (options.targetC)
+    codeGenerator = new CodeGeneratorC (parser);
+
+  if (options.targetQt)
+    codeGenerator = new CodeGeneratorQt (parser);
+
+  if (!codeGenerator)
+    {
+      fprintf(stderr, "no target given\n");
+      return 1;
+    }
+
   printf("\n/*-------- begin %s generated code --------*/\n\n\n",argv[0]);
-  CodeGeneratorC codegen(parser);
-  codegen.run (inputfile);
+  codeGenerator->run ();
   printf("\n\n/*-------- end %s generated code --------*/\n\n\n",argv[0]);
 
+  delete codeGenerator;
   return 0;
 }
 

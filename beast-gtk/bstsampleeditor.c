@@ -91,8 +91,8 @@ bst_sample_editor_class_init (BstSampleEditorClass *class)
   object_class->destroy = bst_sample_editor_destroy;
 
   g_object_class_install_property (gobject_class, PARAM_SAMPLE,
-				   bsw_param_spec_proxy ("sample", NULL, NULL,
-							 G_PARAM_READWRITE));
+				   sfi_pspec_proxy ("sample", NULL, NULL,
+						    SFI_PARAM_READWRITE));
 }
 
 static void
@@ -113,7 +113,7 @@ bst_sample_editor_set_property (GObject      *object,
   switch (prop_id)
     {
     case PARAM_SAMPLE:
-      bst_sample_editor_set_sample (editor, bsw_value_get_proxy (value));
+      bst_sample_editor_set_sample (editor, sfi_value_get_proxy (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -132,7 +132,7 @@ bst_sample_editor_get_property (GObject    *object,
   switch (prop_id)
     {
     case PARAM_SAMPLE:
-      bsw_value_set_proxy (value, editor->esample);
+      sfi_value_set_proxy (value, editor->esample);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -142,22 +142,22 @@ bst_sample_editor_get_property (GObject    *object,
 
 void
 bst_sample_editor_set_sample (BstSampleEditor *editor,
-			      BswProxy	       sample)
+			      SfiProxy	       sample)
 {
   g_return_if_fail (BST_IS_SAMPLE_EDITOR (editor));
   if (sample)
-    g_return_if_fail (BSW_IS_EDITABLE_SAMPLE (sample));
+    g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (sample));
 
   if (sample != editor->esample)
     {
       if (editor->esample)
-	bsw_item_unuse (editor->esample);
+	bse_item_unuse (editor->esample);
       editor->esample = sample;
       editor->n_channels = 0;
       if (editor->esample)
 	{
-	  bsw_item_use (editor->esample);
-	  editor->n_channels = bsw_editable_sample_get_n_channels (editor->esample);
+	  bse_item_use (editor->esample);
+	  editor->n_channels = bse_editable_sample_get_n_channels (editor->esample);
 	}
       bst_sample_editor_rebuild (editor);
       g_object_notify (G_OBJECT (editor), "sample");
@@ -187,7 +187,7 @@ bst_sample_editor_finalize (GObject *object)
 }
 
 GtkWidget*
-bst_sample_editor_new (BswProxy sample)
+bst_sample_editor_new (SfiProxy sample)
 {
   GtkWidget *widget;
   
@@ -206,7 +206,7 @@ qsampler_set_selection (BstQSampler *qsampler,
 			gboolean     visible_mark)
 {
   BstSampleEditor *editor = BST_SAMPLE_EDITOR (qsampler->owner);
-  guint i, length = bsw_editable_sample_get_length (editor->esample);
+  guint i, length = bse_editable_sample_get_length (editor->esample);
 
   m1 = CLAMP (m1, 0, (gint) (length / editor->n_channels));
   m2 = CLAMP (m2, 0, (gint) (length / editor->n_channels));
@@ -374,7 +374,7 @@ play_back_wchunk (BstSampleEditor *editor)
       editor->play_back = bst_play_back_handle_new ();
       bst_play_back_handle_set (editor->play_back,
 				editor->esample,
-				bsw_editable_sample_get_osc_freq (editor->esample));
+				bse_editable_sample_get_osc_freq (editor->esample));
     }
   bst_play_back_handle_toggle (editor->play_back);
   if (bst_play_back_handle_is_playing (editor->play_back))

@@ -17,29 +17,34 @@
  */
 #include        <bsw/bsw.h>
 
+#define ASSERT(code)    do { if (code) ; else g_error ("failed to assert: %s", G_STRINGIFY (code)); } while (0)
+
 int
 main (int   argc,
       char *argv[])
 {
-  BswProxy project;
+  SfiProxy project;
   gint error;
   
   g_thread_init (NULL);
-  bsw_init (&argc, &argv, NULL);	// FIXME
 
-  g_print ("server id: %u\n", BSW_SERVER);
+  g_log_set_always_fatal (g_log_set_always_fatal (G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 
-  bsw_hello_world ();
-  project = bsw_server_use_new_project (BSW_SERVER, "test-project");
-  g_print ("project id: %u\n", project);
-  error = bsw_project_restore_from_file (project, "/usr/src/beast/test/geekworld.bse");
-  g_print ("load project result: %s\n", bsw_error_blurb (error));
+  bse_init_async (&argc, &argv, NULL);	// FIXME
+  sfi_glue_context_push (bse_init_glue_context ("TestBsw"));
+  
+  g_print ("server id: %lu\n", BSE_SERVER);
+  ASSERT (BSE_SERVER > 0);
 
-  bsw_item_unuse (project);
-  //  g_print ("project removal result: %s\n", bsw_error_blurb (error));
+  bse_hello_world ();
+  project = bse_server_use_new_project (BSE_SERVER, "test-project");
+  g_print ("project id: %lu\n", project);
+  ASSERT (project > BSE_SERVER);
+  error = bse_project_restore_from_file (project, "/YOUbetterDONThaveTHIS");
+  g_print ("load project result: %s\n", bse_error_blurb (error));
+  ASSERT (error == BSE_ERROR_NOT_FOUND);
 
-  // proxy = bsw_server_default_pcm_device (BSW_SERVER);
-  // g_print ("server default pcm device proxy id: %u\n", proxy);
+  bse_item_unuse (project);
   
   return 0;
 }

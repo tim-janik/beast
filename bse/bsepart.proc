@@ -20,43 +20,38 @@
 #include        <bse/bsepart.h>
 
 
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "2002";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2002 Tim Janik";
 
 
 METHOD (BsePart, insert-note) {
   HELP	= "Insert a new note into a part.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Start Tick", NULL,
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
-			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("note", "Note", NULL,
-				      BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_int ("fine_tune", "Fine Tune", "Fine tune in cents per semitone",
-			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
-			      0, 10,
-			      BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("velocity", "Velocity", NULL,
-				0, 1.0,
-				1.0, 0.01,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE);
-  OUT	= bse_param_spec_uint ("id", "ID", NULL,
-			       0, BSE_PART_MAX_TICK, 0, 10, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("note", "Note", NULL,
+				 SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
+  IN	= sfi_pspec_real ("velocity", "Velocity", NULL,
+			  1.0, 0, 1.0, 0.01,
+			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+  OUT	= sfi_pspec_int ("id", "ID", NULL,
+			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self      = g_value_get_object (in_values++);
-  guint    tick	     = g_value_get_uint (in_values++);
-  guint    duration  = g_value_get_uint (in_values++);
-  gint     note	     = bse_value_get_note (in_values++);
-  gint     fine_tune = g_value_get_int (in_values++);
-  gfloat   velocity  = g_value_get_float (in_values++);
+  BsePart *self      = bse_value_get_object (in_values++);
+  guint    tick	     = sfi_value_get_int (in_values++);
+  guint    duration  = sfi_value_get_int (in_values++);
+  gint     note	     = sfi_value_get_note (in_values++);
+  gint     fine_tune = sfi_value_get_int (in_values++);
+  gfloat   velocity  = sfi_value_get_real (in_values++);
   guint id;
   
   /* check parameters */
@@ -65,81 +60,77 @@ BODY (BseProcedureClass *proc,
   
   /* action */
   id = bse_part_insert_note (self, tick, duration, note, fine_tune, velocity);
-
+  
   /* set output parameters */
-  g_value_set_uint (out_values++, id);
-
+  sfi_value_set_int (out_values++, id);
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, change-note) {
   HELP	= "Change an existing note within a part.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("id", "ID", NULL,
-			       0, BSE_PART_MAX_TICK, 0, 10, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Start Tick", NULL,
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
-			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("note", "Note", NULL,
-				      BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_int ("fine_tune", "Fine Tune", "Fine tune in cents per semitone",
-			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
-			      0, 10,
-			      BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("velocity", "Velocity", NULL,
-				0, 1.0,
-				1.0, 0.01,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("id", "ID", NULL,
+			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("note", "Note", NULL,
+				 SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
+  IN	= sfi_pspec_real ("velocity", "Velocity", NULL,
+			  1.0, 0, 1.0, 0.01,
+			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self      = g_value_get_object (in_values++);
-  guint    id	     = g_value_get_uint (in_values++);
-  guint    tick	     = g_value_get_uint (in_values++);
-  guint    duration  = g_value_get_uint (in_values++);
-  gint     note	     = bse_value_get_note (in_values++);
-  gint     fine_tune = g_value_get_int (in_values++);
-  gfloat   velocity  = g_value_get_float (in_values++);
+  BsePart *self      = bse_value_get_object (in_values++);
+  guint    id	     = sfi_value_get_int (in_values++);
+  guint    tick	     = sfi_value_get_int (in_values++);
+  guint    duration  = sfi_value_get_int (in_values++);
+  gint     note	     = sfi_value_get_note (in_values++);
+  gint     fine_tune = sfi_value_get_int (in_values++);
+  gfloat   velocity  = sfi_value_get_real (in_values++);
   gboolean success;
-
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
   success = bse_part_change_note (self, id, tick, duration, note, fine_tune, velocity);
-
+  
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
-
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, delete-event) {
   HELP	= "Delete an existing event from a part.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("id", "ID", NULL,
-			       0, BSE_PART_MAX_TICK, 0, 10, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("id", "ID", NULL,
+			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  guint    id	    = g_value_get_uint (in_values++);
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    id	    = sfi_value_get_int (in_values++);
   gboolean deleted;
   
   /* check parameters */
@@ -148,30 +139,29 @@ BODY (BseProcedureClass *proc,
   
   /* action */
   deleted = bse_part_delete_event (self, id);
-
+  
   /* set output parameters */
   g_value_set_enum (out_values++, deleted ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
-
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, is-selected-event) {
   HELP	= "Check whether a specific event is selected.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("id", "ID", NULL,
-			       0, BSE_PART_MAX_TICK, 0, 10, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boolean ("selected", "Selected", NULL,
-				FALSE,
-				BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("id", "ID", NULL,
+			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("selected", "Selected", NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  guint    id	    = g_value_get_uint (in_values++);
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    id	    = sfi_value_get_int (in_values++);
   gboolean selected;
   
   /* check parameters */
@@ -180,369 +170,348 @@ BODY (BseProcedureClass *proc,
   
   /* action */
   selected = bse_part_is_selected_event (self, id);
-
+  
   /* set output parameters */
-  g_value_set_boolean (out_values++, selected);
-
+  sfi_value_set_bool (out_values++, selected);
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, list-notes-crossing) {
   HELP	= "List all notes within or crossing a tick range.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Start Tick", NULL,
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
-			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
-			      BSW_TYPE_ITER_PART_NOTE,
-			      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  guint    tick	    = g_value_get_uint (in_values++);
-  guint    duration = g_value_get_uint (in_values++);
-  BswIterPartNote *iter;
-
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    tick	    = sfi_value_get_int (in_values++);
+  guint    duration = sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_notes_around (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE);
-
-  /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++, iter);
-
+  bse_value_take_boxed (out_values++, bse_part_list_notes_around (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE));
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, queue-notes-within) {
   HELP	= "Queue updates for all notes starting within the given region.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Start Tick", NULL,
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
-			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("min_note", "Minimum Note", NULL,
-				      BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("max_note", "Maximum Note", NULL,
-				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("min_note", "Minimum Note", NULL,
+				 SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("max_note", "Maximum Note", NULL,
+				 SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  guint    tick	    = g_value_get_uint (in_values++);
-  guint    duration = g_value_get_uint (in_values++);
-  gint     min_note = bse_value_get_note (in_values++);
-  gint     max_note = bse_value_get_note (in_values++);
-
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    tick	    = sfi_value_get_int (in_values++);
+  guint    duration = sfi_value_get_int (in_values++);
+  gint     min_note = sfi_value_get_note (in_values++);
+  gint     max_note = sfi_value_get_note (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
   bse_part_queue_notes_within (self, tick, duration, min_note, max_note);
-
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, list-selected-notes) {
   HELP	= "List all currently selected notes.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
-			      BSW_TYPE_ITER_PART_NOTE,
-			      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  BswIterPartNote *iter;
-
+  BsePart *self     = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_selected_notes (self);
-
-  /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++, iter);
-
+  bse_value_take_boxed (out_values++, bse_part_list_selected_notes (self));
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, check-overlap) {
   HELP	= "Check whether a note would overlap with neighbours.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Start Tick", NULL,
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
-			       1, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("note", "Note", NULL,
-				      BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
-			      BSW_TYPE_ITER_PART_NOTE,
-			      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
+			 1, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  guint    tick	    = g_value_get_uint (in_values++);
-  guint    duration = g_value_get_uint (in_values++);
-  gint     note     = bse_value_get_note (in_values++);
-  BswIterPartNote *iter;
-
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    tick	    = sfi_value_get_int (in_values++);
+  guint    duration = sfi_value_get_int (in_values++);
+  gint     note     = sfi_value_get_note (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_notes_around (self, tick, duration, note, note);
-
-  /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++, iter);
-
+  bse_value_take_boxed (out_values++, bse_part_list_notes_around (self, tick, duration, note, note));
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, get-notes) {
-  HELP	= "Retrive all notes of specific frequency at a specific tick.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Tick", NULL,
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("note", "Note", NULL,
-				      BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
-			      BSW_TYPE_ITER_PART_NOTE,
-			      BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve all notes of specific frequency at a specific tick.";
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("note", "Note", NULL,
+				 SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  guint    tick	    = g_value_get_uint (in_values++);
-  gint     note     = bse_value_get_note (in_values++);
-  BswIterPartNote *iter;
-
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    tick	    = sfi_value_get_int (in_values++);
+  gint     note     = sfi_value_get_note (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_notes_at (self, tick, note);
-
-  /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++, iter);
-
+  bse_value_take_boxed (out_values++, bse_part_list_notes_at (self, tick, note));
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, get-min-note) {
-  HELP	= "Retrive the minimum note supported in this part.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  OUT	= bse_param_spec_note_simple ("note", "Note", NULL,
-				      BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve the minimum note supported in this part.";
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  OUT	= bse_pspec_note_simple ("note", "Note", NULL,
+				 SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-
+  BsePart *self     = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* it doesn't currently make sense to restrict the standard note range */
-  g_value_set_int (out_values++, BSE_MIN_NOTE);
-
+  sfi_value_set_int (out_values++, BSE_MIN_NOTE);
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, get-max-note) {
-  HELP	= "Retrive the maximum note supported in this part.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  OUT	= bse_param_spec_note_simple ("note", "Note", NULL,
-				      BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve the maximum note supported in this part.";
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  OUT	= bse_pspec_note_simple ("note", "Note", NULL,
+				 SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-
+  BsePart *self     = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* it doesn't currently make sense to restrict the standard note range */
-  g_value_set_int (out_values++, BSE_MAX_NOTE);
-
+  sfi_value_set_int (out_values++, BSE_MAX_NOTE);
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, get-max-tick) {
-  HELP	= "Retrive the maximum tick count represented in a part.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  OUT	= bse_param_spec_uint ("tick", "Tick", "Maximum Tick",
-			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve the maximum tick count represented in a part.";
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_int ("tick", "Tick", "Maximum Tick",
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-
+  BsePart *self     = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* output values */
-  g_value_set_uint (out_values++, BSE_PART_MAX_TICK);
-
+  sfi_value_set_int (out_values++, BSE_PART_MAX_TICK);
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, select-rectangle-exclusive) {
   HELP	= "Select all notes within rectangle and deselect all others.";
-  IN	= g_param_spec_object ("part", "Part", "Part",
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Tick", "Selection Tick",
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("duration", "Duration", "Selection Duration",
-			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("min_note", "Minimum Selection Note", NULL,
-				      BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("max_note", "Maximum Selection Note", NULL,
-				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", "Part",
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Tick", "Selection Tick",
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("min_note", "Minimum Selection Note", NULL,
+				 SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("max_note", "Maximum Selection Note", NULL,
+				 SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = g_value_get_object (in_values++);
-  guint tick      = g_value_get_uint (in_values++);
-  guint duration  = g_value_get_uint (in_values++);
-  gint  min_note  = bse_value_get_note (in_values++);
-  gint  max_note  = bse_value_get_note (in_values++);
+  BsePart *self   = bse_value_get_object (in_values++);
+  guint tick      = sfi_value_get_int (in_values++);
+  guint duration  = sfi_value_get_int (in_values++);
+  gint  min_note  = sfi_value_get_note (in_values++);
+  gint  max_note  = sfi_value_get_note (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   bse_part_select_rectangle_ex (self, tick, duration, min_note, max_note);
-
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, select-rectangle) {
   HELP	= "Select all notes within rectangle.";
-  IN	= g_param_spec_object ("part", "Part", "Part",
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Tick", "Selection Tick",
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("duration", "Duration", "Selection Duration",
-			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("min_note", "Minimum Selection Note", NULL,
-				      BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("max_note", "Maximum Selection Note", NULL,
-				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", "Part",
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Tick", "Selection Tick",
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("min_note", "Minimum Selection Note", NULL,
+				 SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("max_note", "Maximum Selection Note", NULL,
+				 SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = g_value_get_object (in_values++);
-  guint tick      = g_value_get_uint (in_values++);
-  guint duration  = g_value_get_uint (in_values++);
-  gint  min_note  = bse_value_get_note (in_values++);
-  gint  max_note  = bse_value_get_note (in_values++);
+  BsePart *self   = bse_value_get_object (in_values++);
+  guint tick      = sfi_value_get_int (in_values++);
+  guint duration  = sfi_value_get_int (in_values++);
+  gint  min_note  = sfi_value_get_note (in_values++);
+  gint  max_note  = sfi_value_get_note (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   bse_part_select_rectangle (self, tick, duration, min_note, max_note);
-
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, deselect-rectangle) {
   HELP	= "Deselect all notes within rectangle.";
-  IN	= g_param_spec_object ("part", "Part", "Part",
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("tick", "Tick", "Selection Tick",
-			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("duration", "Duration", "Selection Duration",
-			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("min_note", "Minimum Selection Note", NULL,
-				      BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_note_simple ("max_note", "Maximum Selection Note", NULL,
-				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", "Part",
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Tick", "Selection Tick",
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("min_note", "Minimum Selection Note", NULL,
+				 SFI_PARAM_DEFAULT);
+  IN	= bse_pspec_note_simple ("max_note", "Maximum Selection Note", NULL,
+				 SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self   = g_value_get_object (in_values++);
-  guint tick      = g_value_get_uint (in_values++);
-  guint duration  = g_value_get_uint (in_values++);
-  gint  min_note  = bse_value_get_note (in_values++);
-  gint  max_note  = bse_value_get_note (in_values++);
+  BsePart *self   = bse_value_get_object (in_values++);
+  guint tick      = sfi_value_get_int (in_values++);
+  guint duration  = sfi_value_get_int (in_values++);
+  gint  min_note  = sfi_value_get_note (in_values++);
+  gint  max_note  = sfi_value_get_note (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   bse_part_deselect_rectangle (self, tick, duration, min_note, max_note);
-
+  
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, select-event) {
   HELP	= "Select an existing event.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("id", "ID", NULL,
-			       0, BSE_PART_MAX_TICK, 0, 10, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("id", "ID", NULL,
+			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  guint    id	    = g_value_get_uint (in_values++);
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    id	    = sfi_value_get_int (in_values++);
   gboolean id_valid;
   
   /* check parameters */
@@ -551,24 +520,24 @@ BODY (BseProcedureClass *proc,
   
   /* action */
   id_valid = bse_part_select_event (self, id);
-
+  
   return id_valid ? BSE_ERROR_NONE : BSE_ERROR_PROC_PARAM_INVAL;
 }
 
 METHOD (BsePart, deselect-event) {
   HELP	= "Deselect an existing event.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_uint ("id", "ID", NULL,
-			       0, BSE_PART_MAX_TICK, 0, 10, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("id", "ID", NULL,
+			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  guint    id	    = g_value_get_uint (in_values++);
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    id	    = sfi_value_get_int (in_values++);
   gboolean id_valid;
   
   /* check parameters */
@@ -577,6 +546,6 @@ BODY (BseProcedureClass *proc,
   
   /* action */
   id_valid = bse_part_deselect_event (self, id);
-
+  
   return id_valid ? BSE_ERROR_NONE : BSE_ERROR_PROC_PARAM_INVAL;
 }

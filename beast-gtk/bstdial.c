@@ -135,6 +135,7 @@ bst_dial_destroy (GtkObject *object)
   
   if (dial->adjustment)
     {
+      gtk_signal_disconnect_by_data (dial->adjustment, dial);
       gtk_object_unref (dial->adjustment);
       dial->adjustment = NULL;
     }

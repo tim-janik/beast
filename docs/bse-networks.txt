@@ -34,7 +34,7 @@ A BSE Source Network is an accumulation of BseSources that are interconnected
 to controll sample data flow.
 The net as a whole is maintained by a BseSNet object which keeps
 references of all sources contained in the net and provides means
-to store/retrive undo/redo information for the whole net and implements
+to store/retrieve undo/redo information for the whole net and implements
 the corresponding requirements to save and load the complete net at a
 certain configuration.
 

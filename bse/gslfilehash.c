@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #include <errno.h>
 
 
@@ -33,7 +34,7 @@
 
 
 /* --- variables --- */
-static GslMutex    fdpool_mutex = { 0, };
+static SfiMutex    fdpool_mutex = { 0, };
 static GHashTable *hfile_ht = NULL;
 
 
@@ -68,24 +69,8 @@ _gsl_init_fd_pool (void)
 {
   g_assert (hfile_ht == NULL);
   
-  gsl_mutex_init (&fdpool_mutex);
+  sfi_mutex_init (&fdpool_mutex);
   hfile_ht = g_hash_table_new (hfile_hash, hfile_equals);
-}
-
-static gboolean
-stat_fd (gint     fd,
-	 GTime   *mtime,
-	 GslLong *n_bytes)
-{
-  struct stat statbuf = { 0, };
-  
-  if (fstat (fd, &statbuf) < 0)
-    return FALSE;	/* have errno */
-  if (mtime)
-    *mtime = statbuf.st_mtime;
-  if (n_bytes)
-    *n_bytes = statbuf.st_size;
-  return TRUE;
 }
 
 static gboolean
@@ -130,13 +115,13 @@ gsl_hfile_open (const gchar *file_name)
   if (!stat_file (file_name, &key.mtime, &key.n_bytes))
     return NULL;	/* errno from stat() */
   
-  GSL_SYNC_LOCK (&fdpool_mutex);
+  SFI_SYNC_LOCK (&fdpool_mutex);
   hfile = g_hash_table_lookup (hfile_ht, &key);
   if (hfile)
     {
-      GSL_SYNC_LOCK (&hfile->mutex);
+      SFI_SYNC_LOCK (&hfile->mutex);
       hfile->ocount++;
-      GSL_SYNC_UNLOCK (&hfile->mutex);
+      SFI_SYNC_UNLOCK (&hfile->mutex);
       ret_errno = 0;
     }
   else
@@ -146,21 +131,22 @@ gsl_hfile_open (const gchar *file_name)
       fd = open (file_name, O_RDONLY | O_NOCTTY, 0);
       if (fd >= 0)
 	{
-	  hfile = gsl_new_struct0 (GslHFile, 1);
+	  hfile = sfi_new_struct0 (GslHFile, 1);
 	  hfile->file_name = g_strdup (file_name);
 	  hfile->mtime = key.mtime;
 	  hfile->n_bytes = key.n_bytes;
 	  hfile->cpos = 0;
 	  hfile->fd = fd;
 	  hfile->ocount = 1;
-	  gsl_mutex_init (&hfile->mutex);
+	  hfile->zoffset = -2;
+	  sfi_mutex_init (&hfile->mutex);
 	  g_hash_table_insert (hfile_ht, hfile, hfile);
 	  ret_errno = 0;
 	}
       else
 	ret_errno = errno;
     }
-  GSL_SYNC_UNLOCK (&fdpool_mutex);
+  SFI_SYNC_UNLOCK (&fdpool_mutex);
   
   errno = ret_errno;
   return hfile;
@@ -181,8 +167,8 @@ gsl_hfile_close (GslHFile *hfile)
   g_return_if_fail (hfile != NULL);
   g_return_if_fail (hfile->ocount > 0);
   
-  GSL_SYNC_LOCK (&fdpool_mutex);
-  GSL_SYNC_LOCK (&hfile->mutex);
+  SFI_SYNC_LOCK (&fdpool_mutex);
+  SFI_SYNC_LOCK (&hfile->mutex);
   if (hfile->ocount > 1)
     hfile->ocount--;
   else
@@ -196,15 +182,15 @@ gsl_hfile_close (GslHFile *hfile)
 	  destroy = TRUE;
 	}
     }
-  GSL_SYNC_UNLOCK (&hfile->mutex);
-  GSL_SYNC_UNLOCK (&fdpool_mutex);
+  SFI_SYNC_UNLOCK (&hfile->mutex);
+  SFI_SYNC_UNLOCK (&fdpool_mutex);
   
   if (destroy)
     {
-      gsl_mutex_destroy (&hfile->mutex);
+      sfi_mutex_destroy (&hfile->mutex);
       close (hfile->fd);
       g_free (hfile->file_name);
-      gsl_delete_struct (GslHFile, hfile);
+      sfi_delete_struct (GslHFile, hfile);
     }
   errno = 0;
 }
@@ -241,7 +227,7 @@ gsl_hfile_pread (GslHFile *hfile,
     }
   g_return_val_if_fail (bytes != NULL, -1);
   
-  GSL_SYNC_LOCK (&hfile->mutex);
+  SFI_SYNC_LOCK (&hfile->mutex);
   if (hfile->ocount)
     {
       if (hfile->cpos != offset)
@@ -250,7 +236,7 @@ gsl_hfile_pread (GslHFile *hfile,
 	  if (hfile->cpos < 0 && errno != EINVAL)
 	    {
 	      ret_errno = errno;
-	      GSL_SYNC_UNLOCK (&hfile->mutex);
+	      SFI_SYNC_UNLOCK (&hfile->mutex);
 	      errno = ret_errno;
 	      return -1;
 	    }
@@ -283,10 +269,75 @@ gsl_hfile_pread (GslHFile *hfile,
     }
   else
     ret_errno = EFAULT;
-  GSL_SYNC_UNLOCK (&hfile->mutex);
+  SFI_SYNC_UNLOCK (&hfile->mutex);
   
   errno = ret_errno;
   return ret_bytes;
+}
+
+/**
+ * gsl_hfile_zoffset
+ * @hfile:   valid GslHFile
+ * @RETURNS: offset of first zero byte or -1
+ *
+ * Find the offset of the first zero byte in a GslHFile.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslLong
+gsl_hfile_zoffset (GslHFile *hfile)
+{
+  GslLong zoffset, l;
+  guint8 sdata[1024], *p;
+  gboolean seen_zero = FALSE;
+
+  errno = EFAULT;
+  g_return_val_if_fail (hfile != NULL, -1);
+  g_return_val_if_fail (hfile->ocount > 0, -1);
+
+  SFI_SYNC_LOCK (&hfile->mutex);
+  if (hfile->zoffset > -2) /* got valid offset already */
+    {
+      zoffset = hfile->zoffset;
+      SFI_SYNC_UNLOCK (&hfile->mutex);
+      return zoffset;
+    }
+  if (!hfile->ocount) /* bad */
+    {
+      SFI_SYNC_UNLOCK (&hfile->mutex);
+      return -1;
+    }
+  hfile->ocount += 1; /* keep open for a while */
+  SFI_SYNC_UNLOCK (&hfile->mutex);
+
+  /* seek to literal '\0' */
+  zoffset = 0;
+  do
+    {
+      do
+	l = gsl_hfile_pread (hfile, zoffset, sizeof (sdata), sdata);
+      while (l < 0 && errno == EINTR);
+      if (l < 0)
+	{
+	  gsl_hfile_close (hfile);
+	  return -1;
+	}
+
+      p = memchr (sdata, 0, l);
+      seen_zero = p != NULL;
+      zoffset += seen_zero ? p - sdata : l;
+    }
+  while (!seen_zero && l);
+  if (!seen_zero)
+    zoffset = -1;
+
+  SFI_SYNC_LOCK (&hfile->mutex);
+  if (hfile->zoffset < -1)
+    hfile->zoffset = zoffset;
+  SFI_SYNC_UNLOCK (&hfile->mutex);
+
+  gsl_hfile_close (hfile);
+
+  return zoffset;
 }
 
 /**
@@ -309,7 +360,7 @@ gsl_rfile_open (const gchar *file_name)
     rfile = NULL;
   else
     {
-      rfile = gsl_new_struct0 (GslRFile, 1);
+      rfile = sfi_new_struct0 (GslRFile, 1);
       rfile->hfile = hfile;
       rfile->offset = 0;
     }
@@ -321,7 +372,7 @@ gsl_rfile_open (const gchar *file_name)
  * @rfile:   valid #GslRFile
  * @RETURNS: the file name used to open this file
  *
- * Retrive the file name used to open @rfile.
+ * Retrieve the file name used to open @rfile.
  */
 gchar*
 gsl_rfile_name (GslRFile *rfile)
@@ -362,7 +413,7 @@ gsl_rfile_seek_set (GslRFile *rfile,
  * @rfile:   valid #GslRFile
  * @RETURNS: current position within 0 and gsl_rfile_length()
  *
- * Retrive the current #GslRFile seek position.
+ * Retrieve the current #GslRFile seek position.
  */
 GslLong
 gsl_rfile_position (GslRFile *rfile)
@@ -379,7 +430,7 @@ gsl_rfile_position (GslRFile *rfile)
  * @rfile:   valid #GslRFile
  * @RETURNS: total length of the #GslRFile in bytes
  *
- * Retrive the file length of @rfile in bytes.
+ * Retrieve the file length of @rfile in bytes.
  */
 GslLong
 gsl_rfile_length (GslRFile *rfile)
@@ -458,6 +509,6 @@ gsl_rfile_close (GslRFile *rfile)
   g_return_if_fail (rfile != NULL);
   
   gsl_hfile_close (rfile->hfile);
-  gsl_delete_struct (GslRFile, rfile);
+  sfi_delete_struct (GslRFile, rfile);
   errno = 0;
 }

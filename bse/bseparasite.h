@@ -29,14 +29,12 @@ extern "C" {
 
 
 /* --- prototypes --- */
-void	bse_parasite_set_floats		(BseObject      *object,
+void	   bse_parasite_set_floats	(BseObject      *object,
 					 const gchar	*name,
 					 guint		 n_values,
 					 gfloat		*float_values);
-guint	bse_parasite_get_floats		(BseObject      *object,
-					 const gchar	*name,
-					 guint		 max_n_values,
-					 gfloat		*float_values);
+SfiFBlock* bse_parasite_get_floats	(BseObject      *object,
+					 const gchar	*name);
 
 
 /* --- internal --- */

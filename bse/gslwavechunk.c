@@ -147,7 +147,7 @@ create_block_for_offset (GslWaveChunk *wchunk,
     loop_width += one;
   
   l = length + 2 * padding;
-  mem = gsl_new_struct (gfloat, l);
+  mem = sfi_new_struct (gfloat, l);
   offset -= padding;
   j = ((wchunk->wave_length - one - offset) -
        (wchunk->pploop_ends_backwards ? wchunk->loop_first : wave_last - wchunk->loop_last));
@@ -258,13 +258,13 @@ setup_pblocks (GslWaveChunk *wchunk)
     }
   
   l = wchunk->head.length + 2 * padding;
-  mem = gsl_new_struct (gfloat, l);
+  mem = sfi_new_struct (gfloat, l);
   fill_block (wchunk, mem, wchunk->head.first - padding, l, FALSE, wchunk->loop_count);
   wchunk->head.mem = mem + padding;
   if (wchunk->loop_type)
     {
       l = wchunk->enter.length + 2 * padding;
-      mem = gsl_new_struct (gfloat, l);
+      mem = sfi_new_struct (gfloat, l);
       fill_block (wchunk, mem, wchunk->enter.first - padding, l, FALSE, wchunk->loop_count);
       wchunk->enter.mem = mem + padding;
       if (wchunk->loop_type == GSL_WAVE_LOOP_PINGPONG)
@@ -275,7 +275,7 @@ setup_pblocks (GslWaveChunk *wchunk)
       else
 	{
 	  l = wchunk->wrap.length + 2 * padding;
-	  mem = gsl_new_struct (gfloat, l);
+	  mem = sfi_new_struct (gfloat, l);
 	  fill_block (wchunk, mem, wchunk->loop_first + wchunk->wrap.first - padding, l, FALSE, wchunk->loop_count - 1);
 	  wchunk->wrap.mem = mem + padding;
 	}
@@ -633,7 +633,7 @@ gsl_wave_chunk_new (GslDataCache   *dcache,
   g_return_val_if_fail (osc_freq < mix_freq / 2, NULL);
   g_return_val_if_fail (loop_type >= GSL_WAVE_LOOP_NONE && loop_type <= GSL_WAVE_LOOP_PINGPONG, NULL);
   
-  wchunk = gsl_new_struct0 (GslWaveChunk, 1);
+  wchunk = sfi_new_struct0 (GslWaveChunk, 1);
   wchunk->dcache = gsl_data_cache_ref (dcache);
   wchunk->length = 0;
   wchunk->n_channels = 0;
@@ -675,7 +675,7 @@ gsl_wave_chunk_unref (GslWaveChunk *wchunk)
     {
       g_return_if_fail (wchunk->open_count == 0);
       gsl_data_cache_unref (wchunk->dcache);
-      gsl_delete_struct (GslWaveChunk, wchunk);
+      sfi_delete_struct (GslWaveChunk, wchunk);
     }
 }
 
@@ -730,22 +730,22 @@ gsl_wave_chunk_close (GslWaveChunk *wchunk)
   padding = wchunk->n_pad_values;
   gsl_data_cache_close (wchunk->dcache);
   if (wchunk->head.mem)
-    gsl_delete_structs (gfloat, wchunk->head.length + 2 * padding, wchunk->head.mem - padding);
+    sfi_delete_structs (gfloat, wchunk->head.length + 2 * padding, wchunk->head.mem - padding);
   memset (&wchunk->head, 0, sizeof (GslWaveChunkMem));
   if (wchunk->enter.mem)
-    gsl_delete_structs (gfloat, wchunk->enter.length + 2 * padding, wchunk->enter.mem - padding);
+    sfi_delete_structs (gfloat, wchunk->enter.length + 2 * padding, wchunk->enter.mem - padding);
   memset (&wchunk->enter, 0, sizeof (GslWaveChunkMem));
   if (wchunk->wrap.mem)
-    gsl_delete_structs (gfloat, wchunk->wrap.length + 2 * padding, wchunk->wrap.mem - padding);
+    sfi_delete_structs (gfloat, wchunk->wrap.length + 2 * padding, wchunk->wrap.mem - padding);
   memset (&wchunk->wrap, 0, sizeof (GslWaveChunkMem));
   if (wchunk->ppwrap.mem)
-    gsl_delete_structs (gfloat, wchunk->ppwrap.length + 2 * padding, wchunk->ppwrap.mem - padding);
+    sfi_delete_structs (gfloat, wchunk->ppwrap.length + 2 * padding, wchunk->ppwrap.mem - padding);
   memset (&wchunk->ppwrap, 0, sizeof (GslWaveChunkMem));
   if (wchunk->leave.mem)
-    gsl_delete_structs (gfloat, wchunk->leave.length + 2 * padding, wchunk->leave.mem - padding);
+    sfi_delete_structs (gfloat, wchunk->leave.length + 2 * padding, wchunk->leave.mem - padding);
   memset (&wchunk->leave, 0, sizeof (GslWaveChunkMem));
   if (wchunk->tail.mem)
-    gsl_delete_structs (gfloat, wchunk->tail.length + 2 * padding, wchunk->tail.mem - padding);
+    sfi_delete_structs (gfloat, wchunk->tail.length + 2 * padding, wchunk->tail.mem - padding);
   memset (&wchunk->tail, 0, sizeof (GslWaveChunkMem));
   wchunk->length = 0;
   wchunk->n_channels = 0;

@@ -22,7 +22,6 @@
 #include	"bsemain.h"
 #include	"bseprocedure.h"
 #include	"bsestorage.h"
-#include	"bsemarshal.h"
 #include	<string.h>
 
 
@@ -105,16 +104,13 @@ bse_pattern_class_init (BsePatternClass	*class)
   object_class->destroy = bse_pattern_do_destroy;
   
   item_class->set_parent = bse_pattern_do_set_parent;
-
+  
   pattern_signals[SIGNAL_SIZE_CHANGED] = bse_object_class_add_signal (object_class, "size-changed",
-								      bse_marshal_VOID__NONE, NULL,
 								      G_TYPE_NONE, 0);
   pattern_signals[SIGNAL_NOTE_CHANGED] = bse_object_class_add_signal (object_class, "note-changed",
-								      bse_marshal_VOID__UINT_UINT, NULL,
 								      G_TYPE_NONE,
 								      2, G_TYPE_UINT, G_TYPE_UINT);
   pattern_signals[SIGNAL_NOTE_SELECTION_CHANGED] = bse_object_class_add_signal (object_class, "note-selection-changed",
-										bse_marshal_VOID__UINT_UINT, NULL,
 										G_TYPE_NONE,
 										2, G_TYPE_UINT, G_TYPE_UINT);
 }
@@ -179,22 +175,22 @@ bse_pattern_reset_note (BsePattern *pattern,
 {
   BsePatternNote *note;
   guint i;
-
+  
   note = &PNOTE (pattern, channel, row);
-
+  
   note->note = BSE_NOTE_VOID;
   if (note->instrument)
     {
-      bse_object_unref (BSE_OBJECT (note->instrument));
+      g_object_unref (note->instrument);
       note->instrument = NULL;
     }
-
+  
   for (i = 0; i < note->n_effects; i++)
     g_object_unref (G_OBJECT (note->effects[i]));
   g_free (note->effects);
   note->effects = NULL;
   note->n_effects = 0;
-
+  
   /* leave note->selected state alone */
 }
 
@@ -204,15 +200,15 @@ bse_pattern_set_n_channels (BsePattern *pattern,
 {
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (n_channels >= 1 && n_channels <= 256);
-
+  
   if (BSE_OBJECT_IS_LOCKED (pattern))
     return;
-
+  
   if (pattern->n_channels != n_channels)
     {
       BsePatternNote *notes;
       guint c, r;
-  
+      
       for (c = n_channels; c < pattern->n_channels; c++)
 	for (r = 0; r < pattern->n_rows; r++)
 	  bse_pattern_reset_note (pattern, c, r);
@@ -256,7 +252,7 @@ bse_pattern_set_n_rows (BsePattern *pattern,
     {
       BsePatternNote *notes;
       guint c, r;
-
+      
       for (r = n_rows; r < pattern->n_rows; r++)
 	for (c = 0; c < pattern->n_channels; c++)
 	  bse_pattern_reset_note (pattern, c, r);
@@ -281,7 +277,7 @@ bse_pattern_set_n_rows (BsePattern *pattern,
       g_free (pattern->notes);
       pattern->notes = notes;
       pattern->n_rows = n_rows;
-
+      
       g_signal_emit (pattern, pattern_signals[SIGNAL_SIZE_CHANGED], 0);
     }
 }
@@ -363,17 +359,17 @@ bse_pattern_note_actuate_effect (BsePattern *pattern,
       BsePatternNote *note;
       gpointer effect;
       guint i;
-
-      effect = bse_object_new (effect_type, NULL);
-
+      
+      effect = g_object_new (effect_type, NULL);
+      
       BSE_SEQUENCER_LOCK ();
-
+      
       note = &PNOTE (pattern, channel, row);
       i = note->n_effects++;
       
       note->effects = g_renew (BseEffect*, note->effects, note->n_effects);
       note->effects[i] = effect;
-
+      
       BSE_SEQUENCER_UNLOCK ();
       
       g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
@@ -400,16 +396,16 @@ bse_pattern_note_drop_effect (BsePattern *pattern,
     if (g_type_is_a (BSE_OBJECT_TYPE (note->effects[i]), effect_type))
       {
 	BseEffect *effect = note->effects[i];
-
+	
 	BSE_SEQUENCER_LOCK ();
 	
 	note->n_effects--;
 	g_memmove (note->effects + i, note->effects + i + 1, sizeof (note->effects[0]) * (note->n_effects - i));
-
+	
 	BSE_SEQUENCER_UNLOCK ();
-
+	
 	g_object_unref (effect);
-
+	
 	g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
 	return;
       }
@@ -424,15 +420,15 @@ bse_pattern_modify_note (BsePattern    *pattern,
 {
   BsePatternNote *note;
   guint notify_changed = 0;
-
+  
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
   if (note_val != BSE_NOTE_VOID)
     g_return_if_fail (note_val >= BSE_MIN_NOTE && note_val <= BSE_MAX_NOTE);
-
+  
   g_object_ref (pattern);
-
+  
   note = &PNOTE (pattern, channel, row);
   if (note->instrument != instrument)
     {
@@ -440,12 +436,12 @@ bse_pattern_modify_note (BsePattern    *pattern,
       
       if (instrument)
 	g_object_ref (instrument);
-
+      
       BSE_SEQUENCER_LOCK ();
       note->instrument = instrument;
       note->note = note_val;
       BSE_SEQUENCER_UNLOCK ();
-
+      
       if (oi)
 	g_object_unref (oi);
       notify_changed++;
@@ -457,10 +453,10 @@ bse_pattern_modify_note (BsePattern    *pattern,
       notify_changed++;
       BSE_SEQUENCER_UNLOCK ();
     }
-
+  
   if (notify_changed)
     g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
-
+  
   g_object_unref (pattern);
 }
 
@@ -471,13 +467,13 @@ bse_pattern_set_note (BsePattern *pattern,
 		      gint        note)
 {
   BsePatternNote *pnote;
-
+  
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
   if (note != BSE_NOTE_VOID)
     g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
-
+  
   pnote = bse_pattern_peek_note (pattern, channel, row);
   bse_pattern_modify_note (pattern, channel, row, note, pnote->instrument);
 }
@@ -489,13 +485,13 @@ bse_pattern_set_instrument (BsePattern    *pattern,
 			    BseInstrument *instrument)
 {
   BsePatternNote *pnote;
-
+  
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
   if (instrument)
     g_return_if_fail (BSE_IS_INSTRUMENT (instrument));
-
+  
   pnote = bse_pattern_peek_note (pattern, channel, row);
   bse_pattern_modify_note (pattern, channel, row, pnote->note, instrument);
 }
@@ -506,11 +502,11 @@ bse_pattern_select_note (BsePattern *pattern,
 			 guint       row)
 {
   BsePatternNote *note;
-
+  
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
-
+  
   note = &PNOTE (pattern, channel, row);
   if (!note->selected)
     {
@@ -527,11 +523,11 @@ bse_pattern_unselect_note (BsePattern *pattern,
 			   guint       row)
 {
   BsePatternNote *note;
-
+  
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
-
+  
   note = &PNOTE (pattern, channel, row);
   if (note->selected)
     {
@@ -547,14 +543,14 @@ bse_pattern_selection_new (guint n_channels,
 			   guint n_rows)
 {
   guint32 *selection;
-
+  
   g_return_val_if_fail (n_channels >= 1 && n_channels <= 256, NULL);
   g_return_val_if_fail (n_rows >= 1 && n_rows <= 256, NULL);
-
+  
   selection = g_new0 (guint32, (n_channels * n_rows + 31) / 32 + 2);
   BSE_PATTERN_SELECTION_N_CHANNELS (selection) = n_channels;
   BSE_PATTERN_SELECTION_N_ROWS (selection) = n_rows;
-
+  
   return selection;
 }
 
@@ -565,13 +561,13 @@ bse_pattern_selection_copy (guint32 *src_selection)
   guint n_channels, n_rows, s;
   
   g_return_val_if_fail (src_selection != NULL, NULL);
-
+  
   n_channels = BSE_PATTERN_SELECTION_N_CHANNELS (src_selection);
   n_rows = BSE_PATTERN_SELECTION_N_ROWS (src_selection);
   s = (n_channels * n_rows + 31) / 32 + 2;
   selection = g_new (guint32, s);
   memcpy (selection, src_selection, sizeof (guint32) * s);
-
+  
   return selection;
 }
 
@@ -579,7 +575,7 @@ void
 bse_pattern_selection_free (guint32 *selection)
 {
   g_return_if_fail (selection != NULL);
-
+  
   g_free (selection);
 }
 
@@ -588,9 +584,9 @@ bse_pattern_selection_fill (guint32 *selection,
 			    gboolean selected)
 {
   guint n;
-
+  
   g_return_if_fail (selection != NULL);
-
+  
   n = BSE_PATTERN_SELECTION_N_CHANNELS (selection) * BSE_PATTERN_SELECTION_N_ROWS (selection);
   memset (selection + 2, selected ? 0xff : 0, (n / 32) * sizeof (guint32));
 }
@@ -600,17 +596,17 @@ bse_pattern_save_selection (BsePattern *pattern,
 			    guint32    *selection)
 {
   guint c, r;
-
+  
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (selection != NULL);
   g_return_if_fail (BSE_PATTERN_SELECTION_N_CHANNELS (selection) == pattern->n_channels);
   g_return_if_fail (BSE_PATTERN_SELECTION_N_ROWS (selection) == pattern->n_rows);
-
+  
   for (c = 0; c < pattern->n_channels; c++)
     for (r = 0; r < pattern->n_rows; r++)
       {
 	BsePatternNote *note = &PNOTE (pattern, c, r);
-
+	
 	if (note->selected)
 	  BSE_PATTERN_SELECTION_MARK (selection, c, r);
 	else
@@ -623,18 +619,18 @@ bse_pattern_restore_selection (BsePattern *pattern,
 			       guint32    *selection)
 {
   guint c, r;
-
+  
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (selection != NULL);
   g_return_if_fail (BSE_PATTERN_SELECTION_N_CHANNELS (selection) == pattern->n_channels);
   g_return_if_fail (BSE_PATTERN_SELECTION_N_ROWS (selection) == pattern->n_rows);
-
+  
   for (c = 0; c < pattern->n_channels; c++)
     for (r = 0; r < pattern->n_rows; r++)
       {
 	BsePatternNote *note = &PNOTE (pattern, c, r);
 	gboolean selected = BSE_PATTERN_SELECTION_TEST (selection, c, r);
-
+	
 	if (note->selected && !selected)
 	  bse_pattern_unselect_note (pattern, c, r);
 	else if (!note->selected && selected)
@@ -647,18 +643,18 @@ bse_pattern_list_selection (BsePattern *pattern)
 {
   GList *list = NULL;
   guint r, c;
-
+  
   g_return_val_if_fail (BSE_IS_PATTERN (pattern), NULL);
-
+  
   for (c = 0; c < pattern->n_channels; c++)
     for (r = 0; r < pattern->n_rows; r++)
       {
 	BsePatternNote *note = &PNOTE (pattern, c, r);
-
+	
 	if (note->selected)
 	  list = g_list_prepend (list, note);
       }
-
+  
   return g_list_reverse (list);
 }
 
@@ -666,14 +662,14 @@ gboolean
 bse_pattern_has_selection (BsePattern *pattern)
 {
   guint c, r;
-
+  
   g_return_val_if_fail (BSE_IS_PATTERN (pattern), FALSE);
-
+  
   for (c = 0; c < pattern->n_channels; c++)
     for (r = 0; r < pattern->n_rows; r++)
       {
 	BsePatternNote *note = &PNOTE (pattern, c, r);
-
+	
 	if (note->selected)
 	  return TRUE;
       }
@@ -688,7 +684,7 @@ bse_pattern_peek_note (BsePattern *pattern,
   g_return_val_if_fail (BSE_IS_PATTERN (pattern), NULL);
   g_return_val_if_fail (channel < pattern->n_channels, NULL);
   g_return_val_if_fail (row < pattern->n_rows, NULL);
-
+  
   return &PNOTE (pattern, channel, row);
 }
 
@@ -749,20 +745,20 @@ save_note (BseStorage     *storage,
   if (note->instrument)
     bse_storage_printf (storage, " %u",
 			bse_item_get_seqid (BSE_ITEM (note->instrument)));
-
+  
   if (note->n_effects)
     {
       guint i;
-
+      
       bse_storage_push_level (storage);
-
+      
       for (i = 0; i < note->n_effects; i++)
 	{
 	  bse_storage_break (storage);
 	  bse_storage_putc (storage, '(');
-
+	  
 	  bse_storage_puts (storage, BSE_OBJECT_TYPE_NAME (note->effects[i]));
-
+	  
 	  bse_storage_push_level (storage);
 	  bse_object_store (BSE_OBJECT (note->effects[i]), storage);
 	  bse_storage_pop_level (storage);
@@ -802,7 +798,7 @@ bse_pattern_store_private (BseObject  *object,
 	  if (note || force_next)
 	    {
 	      gint delta;
-
+	      
 	      delta = c;
 	      delta -= n_c;
 	      if (delta)
@@ -855,7 +851,7 @@ bse_pattern_restore_private (BseObject	*object,
   if (expected_token != BSE_TOKEN_UNMATCHED ||
       g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
     return expected_token;
-
+  
   pattern = BSE_PATTERN (object);
   
   if (!quark_skip)
@@ -894,9 +890,9 @@ bse_pattern_restore_private (BseObject	*object,
     {
       gboolean negate = FALSE;
       gint pos;
-
+      
       g_scanner_get_next_token (scanner);
-
+      
       g_scanner_get_next_token (scanner);
       if (scanner->token == '+' || scanner->token == '-')
 	{
@@ -917,9 +913,9 @@ bse_pattern_restore_private (BseObject	*object,
     {
       gboolean negate = FALSE;
       gint pos;
-
+      
       g_scanner_get_next_token (scanner);
-
+      
       g_scanner_get_next_token (scanner);
       if (scanner->token == '+' || scanner->token == '-')
 	{
@@ -976,7 +972,7 @@ bse_pattern_restore_private (BseObject	*object,
 					  "invalid instrument id `%lu'",
 					  scanner->value.v_int);
 	}
-
+      
       parse_effects = TRUE;
     }
   else
@@ -988,7 +984,7 @@ bse_pattern_restore_private (BseObject	*object,
       
       return ')';
     }
-
+  
   if (token_quark == quark_note || token_quark == quark_skip)
     {
       if (pattern->current_channel < pattern->n_channels &&
@@ -1067,7 +1063,7 @@ bse_pattern_restore (BseObject	*object,
   
   /* chain parent class' handler */
   expected_token = BSE_OBJECT_CLASS (parent_class)->restore (object, storage);
-
+  
   /* clean up, parsing is done */
   pattern->current_channel = current_channel;
   pattern->current_row = current_row;

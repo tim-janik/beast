@@ -19,7 +19,7 @@
 #ifndef __BST_PARAM_VIEW_H__
 #define __BST_PARAM_VIEW_H__
 
-#include	"bstparam.h"
+#include	"bstutils.h"
 
 
 #ifdef __cplusplus
@@ -42,12 +42,12 @@ struct _BstParamView
 {
   GtkVBox	 parent_object;
 
-  BswProxy	 object;
+  SfiProxy	 item;
 
   GSList	*bparams;
 
-  GType  	 first_base_type;
-  GType  	 last_base_type;
+  gchar         *first_base_type;
+  gchar         *last_base_type;
   GPatternSpec  *reject_pattern;
   GPatternSpec  *match_pattern;
   GtkWidget	*nil_container;	/* null group */
@@ -61,14 +61,13 @@ struct _BstParamViewClass
 
 /* --- prototypes --- */
 GType		bst_param_view_get_type		(void);
-GtkWidget*	bst_param_view_new		(BswProxy	 object);
-void		bst_param_view_update		(BstParamView	*param_view);
+GtkWidget*	bst_param_view_new		(SfiProxy	 item);
 void		bst_param_view_rebuild		(BstParamView	*param_view);
-void		bst_param_view_set_object	(BstParamView	*param_view,
-						 BswProxy	 object);
+void		bst_param_view_set_item		(BstParamView	*param_view,
+						 SfiProxy	 item);
 void		bst_param_view_set_mask		(BstParamView	*param_view,
-						 GType  	 first_base_type,
-						 GType  	 last_base_type,
+						 const gchar    *first_base_type,
+						 const gchar    *last_base_type,
 						 const gchar	*reject_pattern,
 						 const gchar	*match_pattern);
 

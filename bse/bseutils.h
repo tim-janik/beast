@@ -14,24 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bseutils.h: BSE related utility functions
  */
 #ifndef __BSE_UTILS_H__
 #define __BSE_UTILS_H__
 
 #include	<bse/bseenums.h>
 #include	<bse/bseglobals.h>
+#include	<bse/bsecompat.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-
-/* --- 2D Index --- */
-#define	BSE_INDEX_2D(horz_index, vert_index)	((BseIndex2D) (((vert_index) << 16) | (horz_index)))
-#define	BSE_INDEX_2D_HI(index2d)		((guint) ((index2d) & 0xffff))
-#define	BSE_INDEX_2D_VI(index2d)		((guint) ((index2d) >> 16))
 
 
 /* --- dates and times --- */
@@ -49,18 +42,25 @@ BseTime		bse_time_from_string	(const gchar   *time_string,
 					 BseErrorType	errors[BSE_MAX_DATE_ERRORS]);
 
 
+/* --- record utils --- */
+BseNoteDescription*	bse_note_description	(SfiInt note,
+						 gint   fine_tune);
+BsePartNote*		bse_part_note		(guint    id,
+						 guint    tick,
+						 guint    duration,
+						 gint     note,
+						 gint     fine_tune,
+						 gfloat   velocity,
+						 gboolean selected);
+void			bse_part_note_seq_take_append	(BsePartNoteSeq *seq,
+							 BsePartNote    *element);
+BseNoteSequence* bse_note_sequence_copy_deep	(BseNoteSequence *rec);
+void             bse_note_sequence_resize	(BseNoteSequence *rec,
+						 guint            length);
+guint            bse_note_sequence_length	(BseNoteSequence *rec);
+
+
 /* --- notes & frequencies --- */
-void	bse_note_examine	(gint		 note,
-				 gint		*octave_p,
-				 guint		*semitone_p,
-				 gboolean	*ht_up_p,
-				 gchar		*letter_p);
-/* return a newly allocated string which describes `note' literally */
-gchar*	bse_note_to_string	(gint		 note);
-/* return the numeric value of the note in `note_string'.
- * this function will return BSE_NOTE_UNPARSABLE if the conversation failed.
- */
-gint	bse_note_from_string	(const gchar	*note_string);
 gint	bse_note_from_freq	(gdouble	 freq);
 gint    bse_note_fine_tune_from_note_freq (gint    note,
 					   gdouble freq);
@@ -81,7 +81,7 @@ gboolean        bse_darrays_match_freq	        (gfloat          match_freq,
 
 
 /* --- icons --- */
-BswIcon* bse_icon_from_pixdata (const BsePixdata *pixdata);
+BseIcon* bse_icon_from_pixdata (const BsePixdata *pixdata);
 
 
 /* --- miscellaeous --- */
@@ -97,7 +97,6 @@ gint		bse_string_equals		(gconstpointer	 string1,
 						 gconstpointer	 string2);
 
 void		bse_nullify			(gpointer	*location);
-gchar*		bse_strdup_stripped		(const gchar	*string);
 
 
 /* --- file utils --- */
@@ -127,9 +126,6 @@ bse_bbuffer_putc (gchar bbuffer[BSE_BBUFFER_SIZE],
   bbuffer[0] = character;
   bbuffer[1] = 0;
 }
-
-
-
 
 
 #ifdef __cplusplus

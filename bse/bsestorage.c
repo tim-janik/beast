@@ -22,6 +22,7 @@
 #include "bseproject.h"
 #include "bseserver.h"
 #include "bsesong.h"
+#include "bseconfig.h"
 #include "bseprocedure.h"
 #include "gsldatahandle.h"
 #include "gsldatautils.h"
@@ -198,8 +199,8 @@ bse_storage_reset (BseStorage *storage)
 }
 
 void
-bse_storage_prepare_write (BseStorage *storage,
-                           gboolean    store_defaults)
+bse_storage_prepare_write (BseStorage    *storage,
+                           BseStorageMode mode)
 {
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (!BSE_STORAGE_WRITABLE (storage));
@@ -209,8 +210,16 @@ bse_storage_prepare_write (BseStorage *storage,
   storage->gstring = g_string_sized_new (1024);
   BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_WRITABLE);
   BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
-  if (store_defaults)
+  if (mode & BSE_STORAGE_SKIP_DEFAULTS)
+    BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_PUT_DEFAULTS);
+  else
     BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_PUT_DEFAULTS);
+  bse_storage_break (storage);
+  if (!(mode & BSE_STORAGE_SKIP_COMPAT))
+    {
+      bse_storage_printf (storage, "(bse-storage-support \"v%s\")", BSE_VERSION);
+      bse_storage_break (storage);
+    }
 }
 
 BseErrorType
@@ -1057,9 +1066,9 @@ bse_storage_parse_data_handle (BseStorage     *storage,
        * we can't guarantee that further parsing is possible.
        */
       if (error == BSE_ERROR_FILE_NOT_FOUND)
-	bse_storage_warn (storage, "no device to retrive binary data from");
+	bse_storage_warn (storage, "no device to retrieve binary data from");
       else
-	bse_storage_error (storage, "failed to retrive binary data: %s", bse_error_blurb (error));
+	bse_storage_error (storage, "failed to retrieve binary data: %s", bse_error_blurb (error));
       return G_TOKEN_NONE;
     }
 
@@ -1177,186 +1186,8 @@ bse_storage_put_param (BseStorage   *storage,
   g_return_if_fail (G_IS_VALUE (value));
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   
-  bse_storage_handle_break (storage);
-  
-  bse_storage_putc (storage, '(');
-  bse_storage_puts (storage, pspec->name);
-  bse_storage_putc (storage, ' ');
-
+  // bse_storage_handle_break (storage);
   bse_storage_put_value (storage, value, pspec);
-
-  bse_storage_putc (storage, ')');
-}
-
-void
-bse_storage_put_value (BseStorage   *storage,
-		       const GValue *value,
-		       GParamSpec   *pspec)
-{
-  GType vtype;
-
-  g_return_if_fail (BSE_IS_STORAGE (storage));
-  g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
-  g_return_if_fail (G_IS_VALUE (value));
-  if (pspec)
-    g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  
-  bse_storage_handle_break (storage);
-
-  vtype = G_VALUE_TYPE (value);
-  switch (G_TYPE_FUNDAMENTAL (vtype))
-    {
-      gchar *string;
-      GEnumClass *eclass;
-      GFlagsClass *fclass;
-      GEnumValue *ev;
-      GFlagsValue *fv;
-      
-    case G_TYPE_BOOLEAN:
-      bse_storage_puts (storage, g_value_get_boolean (value) ? "#t" : "#f");
-      break;
-    case G_TYPE_INT:
-      if (pspec && BSE_IS_PARAM_SPEC_NOTE (pspec))
-	{
-	  string = bse_note_to_string (bse_value_get_note (value));
-	  bse_storage_printf (storage, "\"%s\"", string);
-	  g_free (string);
-	}
-      else
-	bse_storage_printf (storage, "%d", g_value_get_int (value));
-      break;
-    case G_TYPE_UINT:
-      bse_storage_printf (storage, "%u", g_value_get_uint (value));
-      break;
-    case G_TYPE_LONG:
-      bse_storage_printf (storage, "%ld", g_value_get_long (value));
-      break;
-    case G_TYPE_ULONG:
-      bse_storage_printf (storage, "%lu", g_value_get_ulong (value));
-      break;
-    case G_TYPE_FLOAT:
-      bse_storage_printf (storage, "%.17g", g_value_get_float (value));
-      break;
-    case G_TYPE_DOUBLE:
-      bse_storage_printf (storage, "%.30g", g_value_get_double (value));
-      break;
-    case G_TYPE_STRING:
-      if (g_value_get_string (value))
-        {
-          string = g_strescape (g_value_get_string (value), NULL);
-          bse_storage_putc (storage, '"');
-          bse_storage_puts (storage, string);
-          bse_storage_putc (storage, '"');
-          g_free (string);
-        }
-      else
-        bse_storage_puts (storage, "nil");
-      break;
-    case G_TYPE_ENUM:
-      eclass = g_type_class_ref (G_VALUE_TYPE (value));
-      ev = g_enum_get_value (eclass, g_value_get_enum (value));
-      if (ev)
-        bse_storage_puts (storage, ev->value_name);
-      else
-        bse_storage_printf (storage, "%d", g_value_get_enum (value));
-      g_type_class_unref (eclass);
-      break;
-    case G_TYPE_FLAGS:
-      fclass = g_type_class_ref (G_VALUE_TYPE (value));
-      fv = g_flags_get_first_value (fclass, g_value_get_flags (value));
-      if (fv)
-        {
-          guint v_flags;
-          guint i = 0;
-          
-          v_flags = g_value_get_flags (value) & ~fv->value;
-	  if ((v_flags & ~fv->value) == 0)
-	    {
-	      /* single value flag */
-	      bse_storage_puts (storage, fv->value_name);
-	    }
-	  else
-	    {
-	      /* list of flag values */
-	      bse_storage_puts (storage, " '(");
-	      while (fv)
-		{
-		  v_flags &= ~fv->value;
-		  
-		  if (i++ > 0)
-		    bse_storage_putc (storage, ' ');
-		  bse_storage_puts (storage, fv->value_name);
-		  
-		  fv = g_flags_get_first_value (fclass, v_flags);
-		}
-	      if (v_flags)
-		bse_storage_printf (storage, " %u", v_flags);
-	      bse_storage_putc (storage, ')');
-	    }
-        }
-      else
-        bse_storage_printf (storage, "%u", g_value_get_flags (value));
-      g_type_class_unref (fclass);
-      break;
-    case BSE_TYPE_TIME:
-      string = bse_time_to_str (bse_time_to_gmt (bse_value_get_time (value)));
-      bse_storage_putc (storage, '"');
-      bse_storage_puts (storage, string);
-      bse_storage_putc (storage, '"');
-      g_free (string);
-      break;
-    case G_TYPE_OBJECT:
-      if (BSE_STORAGE_PROXIES_ENABLED (storage) && g_type_is_a (vtype, BSE_TYPE_OBJECT))
-	{
-	  BseObject *object = g_value_get_object (value);
-	  gulong proxy = object ? BSE_OBJECT_ID (object) : 0;
-	  bse_storage_printf (storage, "(bse-proxy %lu)", proxy);
-	  break;
-	}
-      goto put_unhandled_parameter;
-    case G_TYPE_POINTER:
-      if (BSE_STORAGE_PROXIES_ENABLED (storage) && vtype == BSW_TYPE_PROXY)
-	{
-	  gulong proxy = bsw_value_get_proxy (value);
-	  bse_storage_printf (storage, "(bse-proxy %lu)", proxy);
-	  break;
-	}
-      goto put_unhandled_parameter;
-    case G_TYPE_BOXED:
-      if (g_type_is_a (G_VALUE_TYPE (value), BSW_TYPE_NOTE_SEQUENCE))
-	{
-	  BswNoteSequence *sdata = g_value_get_boxed (value);
-	  guint i;
-
-	  bse_storage_printf (storage, "'(");
-	  bse_storage_push_level (storage);
-	  for (i = 0; i < sdata->n_notes; i++)
-	    {
-	      if (i % 4)
-		bse_storage_putc (storage, ' ');
-	      else
-		bse_storage_break (storage);
-	      string = bse_note_to_string (sdata->notes[i].note);
-	      bse_storage_printf (storage, "\"%s\"", string);
-	      g_free (string);
-	    }
-	  bse_storage_pop_level (storage);
-	  bse_storage_putc (storage, ')');
-	  break;
-	}
-      goto put_unhandled_parameter;
-    default:
-    put_unhandled_parameter:
-      bse_storage_putc (storage, '?');
-      if (pspec)
-	g_warning (G_STRLOC ": unhandled parameter \"%s\" type `%s'",
-		   pspec->name,
-		   g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
-      else
-	g_warning (G_STRLOC ": unhandled value type `%s'",
-		   g_type_name (vtype));
-      break;
-    }
 }
 
 void
@@ -1402,6 +1233,108 @@ bse_storage_put_item_link (BseStorage     *storage,
       g_free (epath);
       g_free (upath);
     }
+}
+
+void
+bse_storage_put_value (BseStorage   *storage,
+		       const GValue *value,
+		       GParamSpec   *bsepspec)
+{
+  const gchar *cstring;
+  guint indent_len;
+  GString *gstring;
+
+  g_return_if_fail (BSE_IS_STORAGE (storage));
+  g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
+  g_return_if_fail (G_IS_VALUE (value));
+
+  if (bsepspec)
+    {
+      gboolean fixed = FALSE;
+      GParamSpec *pspec;
+      GValue *svalue;
+
+      g_return_if_fail (G_IS_PARAM_SPEC (bsepspec));
+
+      pspec = sfi_pspec_to_serializable (bsepspec);
+      if (!pspec)
+	g_error ("unable to serialize \"%s\" of type `%s'", bsepspec->name,
+		 g_type_name (G_PARAM_SPEC_VALUE_TYPE (bsepspec)));
+
+      gstring = g_string_new (NULL);
+      svalue = sfi_value_empty ();
+      g_value_init (svalue, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      if (!g_value_transform (value, svalue))
+	{
+	  g_warning ("unable to transform \"%s\" of type `%s' to `%s'",
+		     bsepspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (bsepspec)),
+		     g_type_name (G_VALUE_TYPE (svalue)));
+	  goto cleanup;
+	}
+      else if (G_VALUE_TYPE (svalue) != G_VALUE_TYPE (value))
+	fixed |= g_param_value_validate (pspec, svalue);
+      
+      if (fixed)
+	g_message ("fixing up contents of \"%s\" during serialization", pspec->name);
+      
+      cstring = bse_storage_get_indent (storage);
+      indent_len = cstring ? strlen (cstring) : 0;
+
+      BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);  // Sfi inserts newline and indent
+      sfi_value_store_param (svalue, gstring, pspec, indent_len);
+      
+    cleanup:
+      sfi_value_free (svalue);
+      g_param_spec_unref (pspec);
+    }
+  else
+    {
+      gstring = g_string_new (NULL);
+      bse_storage_handle_break (storage);
+      sfi_value_store_typed (value, gstring);
+    }
+  bse_storage_puts (storage, gstring->str);
+  g_string_free (gstring, TRUE);
+}
+
+GTokenType
+bse_storage_parse_param_value (BseStorage *storage,
+                               GValue     *value,
+                               GParamSpec *bsepspec)
+{
+  GScanner *scanner;
+  GParamSpec *pspec;
+  GTokenType token;
+  GValue *pvalue;
+
+  g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
+  g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
+  g_return_val_if_fail (G_IS_VALUE (value), G_TOKEN_ERROR);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (bsepspec), G_TOKEN_ERROR);
+
+  scanner = storage->scanner;
+  pspec = sfi_pspec_to_serializable (bsepspec);
+  if (!pspec)
+    g_error ("unable to serialize \"%s\" of type `%s'", bsepspec->name,
+	     g_type_name (G_PARAM_SPEC_VALUE_TYPE (bsepspec)));
+  pvalue = sfi_value_empty ();
+  token = sfi_value_parse_param_rest (pvalue, scanner, pspec);
+  if (token == G_TOKEN_NONE)
+    {
+      gboolean fixed = FALSE;
+      fixed = g_param_value_validate (pspec, pvalue);
+      if (!g_value_transform (pvalue, value))
+	g_warning ("unable to transform \"%s\" of type `%s' to `%s'",
+		   pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+		   g_type_name (G_VALUE_TYPE (value)));
+      else if (G_VALUE_TYPE (pvalue) != G_VALUE_TYPE (value))
+	fixed |= g_param_value_validate (bsepspec, value);
+      if (fixed)
+	g_scanner_warn (scanner, "fixing up contents of \"%s\"", pspec->name);
+    }
+  g_param_spec_unref (pspec);
+  sfi_value_free (pvalue);
+  return token;
 }
 
 GTokenType
@@ -1482,437 +1415,4 @@ bse_storage_parse_item_link (BseStorage           *storage,
  error_parse_link:
   ilink = storage_add_item_link (storage, from_item, restore_link, data, g_strdup ("failed to parse upath"));
   return expected_token;
-}
-
-static GTokenType	G_GNUC_PRINTF (4,5)
-storage_errwarn_skip (BseStorage  *storage,
-		      gboolean     close_statement,
-		      gboolean     skip_checks_current,
-		      const gchar *format,
-		      ...)
-{
-  va_list args;
-  gchar *string;
-
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
-  g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
-
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
-
-  if (close_statement)
-    g_scanner_warn (storage->scanner, "%s - skipping...", string);
-  else
-    g_scanner_error (storage->scanner, "%s", string);
-
-  g_free (string);
-
-  if (close_statement && !skip_checks_current)
-    g_scanner_get_next_token (storage->scanner);
-
-  return !close_statement ? G_TOKEN_ERROR : storage_skipc_statement (storage, 1);
-}
-
-GTokenType
-bse_storage_parse_param_value (BseStorage *storage,
-                               GValue     *value,
-                               GParamSpec *pspec,
-			       gboolean    close_statement)
-{
-  GScanner *scanner;
-  const gchar *pname;
-  GType vtype;
-
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
-  g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
-  g_return_val_if_fail (G_IS_VALUE (value), G_TOKEN_ERROR);
-  if (pspec)
-    g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
-
-  scanner = storage->scanner;
-  pname = pspec ? pspec->name : "anonymous value";
-  vtype = G_VALUE_TYPE (value);
-  if (pspec)
-    g_return_val_if_fail (g_type_is_a (vtype, G_PARAM_SPEC_VALUE_TYPE (pspec)), G_TOKEN_ERROR);
-  switch (G_TYPE_FUNDAMENTAL (vtype))
-    {
-      gboolean v_bool;
-      gint v_enum;
-      guint v_flags;
-      gint v_note;
-      gdouble v_double;
-      GTokenType token;
-      gchar *string;
-      
-    case G_TYPE_BOOLEAN:
-      g_scanner_get_next_token (scanner);
-      v_bool = FALSE;
-      if (scanner->token == G_TOKEN_INT &&
-          scanner->value.v_int <= 1)
-        v_bool = scanner->value.v_int != 0;
-      else if (scanner->token == '#')
-        {
-	  g_scanner_get_next_token (scanner);
-
-          if (scanner->token == 't' || scanner->token == 'T')
-	    v_bool = TRUE;
-	  else if (scanner->token == 'f' || scanner->token == 'F')
-	    v_bool = FALSE;
-          else if ((scanner->token >= 'a' && scanner->token <= 'z') ||
-		   (scanner->token >= 'A' && scanner->token <= 'Z') ||
-		   (scanner->token >= '0' && scanner->token <= '9'))
-            return storage_errwarn_skip (storage, close_statement, TRUE,
-					 "unrecognized boolean value `%c' for parameter `%s'",
-					 scanner->token,
-					 pname);
-	  else
-	    return 'f';
-        }
-      else
-        return '#';
-      g_value_set_boolean (value, v_bool);
-      break;
-    case G_TYPE_UINT:
-    case G_TYPE_ULONG:
-      g_scanner_get_next_token (scanner);
-      if (scanner->token != G_TOKEN_INT &&
-	  scanner->token != G_TOKEN_FLOAT)
-        return G_TOKEN_INT;
-      else
-	{
-	  gulong v_int = scanner->token == G_TOKEN_INT ? scanner->value.v_int : scanner->value.v_float;
-
-	  if (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)) == G_TYPE_UINT)
-	    g_value_set_uint (value, v_int);
-	  else
-	    g_value_set_ulong (value, v_int);
-	  if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-	    return storage_errwarn_skip (storage, close_statement, FALSE,
-					 "parameter value `%lu' out of bounds for parameter `%s'",
-					 v_int, pname);
-	}
-      break;
-    case G_TYPE_INT:
-      if (pspec && BSE_IS_PARAM_SPEC_NOTE (pspec))
-	{
-	  token = parse_note (storage, pspec ? BSE_PARAM_SPEC_NOTE (pspec)->allow_void : TRUE, &v_note);
-	  if (token != G_TOKEN_NONE)
-	    return token;
-	  else
-	    {
-	      bse_value_set_note (value, v_note);
-	      if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-		{
-		  string = bse_note_to_string (v_note);
-		  return storage_errwarn_skip (storage, close_statement, FALSE,
-					       "note value `%s' out of bounds for parameter `%s'",
-					       string,
-					       pname);
-		  g_free (string);
-		}
-	    }
-	}
-      /* fall through */
-    case G_TYPE_LONG:
-      g_scanner_get_next_token (scanner);
-      v_bool = FALSE;
-      if (scanner->token == '-')
-        {
-          v_bool = !v_bool;
-          g_scanner_get_next_token (scanner);
-        }
-      if (scanner->token != G_TOKEN_INT &&
-	  scanner->token != G_TOKEN_FLOAT)
-        return G_TOKEN_INT;
-      else
-	{
-          glong v_int = scanner->token == G_TOKEN_INT ? scanner->value.v_int : scanner->value.v_float;
-
-	  if (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)) == G_TYPE_INT)
-	    g_value_set_int (value, v_bool ? - v_int : v_int);
-	  else
-	    g_value_set_long (value, v_bool ? - v_int : v_int);
-          if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-	    return storage_errwarn_skip (storage, close_statement, FALSE,
-					 "parameter value `%ld' out of bounds for parameter `%s'",
-					 v_bool ? - v_int : v_int,
-					 pname);
-	}
-      break;
-    case G_TYPE_FLOAT:
-      g_scanner_get_next_token (scanner);
-      v_bool = FALSE;
-      if (scanner->token == '-')
-        {
-          v_bool = !v_bool;
-          g_scanner_get_next_token (scanner);
-        }
-      if (scanner->token == G_TOKEN_FLOAT)
-        v_double = v_bool ? - scanner->value.v_float : scanner->value.v_float;
-      else if (scanner->token == G_TOKEN_INT)
-	{
-	  v_double = scanner->value.v_int;
-	  if (v_bool)
-	    v_double = -v_double;
-	}
-      else
-        return G_TOKEN_FLOAT;
-      g_value_set_float (value, v_double);
-      if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-        return storage_errwarn_skip (storage, close_statement, FALSE,
-				     "parameter value `%f' out of bounds for parameter `%s'",
-				     v_double,
-				     pname);
-      break;
-    case G_TYPE_DOUBLE:
-      g_scanner_get_next_token (scanner);
-      v_bool = FALSE;
-      if (scanner->token == '-')
-        {
-          v_bool = !v_bool;
-          g_scanner_get_next_token (scanner);
-        }
-      if (scanner->token == G_TOKEN_FLOAT)
-        v_double = v_bool ? - scanner->value.v_float : scanner->value.v_float;
-      else if (scanner->token == G_TOKEN_INT)
-	{
-	  v_double = scanner->value.v_int;
-	  if (v_bool)
-	    v_double = -v_double;
-	}
-      else
-        return G_TOKEN_FLOAT;
-      g_value_set_double (value, v_double);
-      if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-        return storage_errwarn_skip (storage, close_statement, FALSE,
-				     "parameter value `%f' out of bounds for parameter `%s'",
-				     v_double,
-				     pname);
-      break;
-    case G_TYPE_STRING:
-      if (g_scanner_get_next_token (scanner) == BSE_TOKEN_NIL)
-	g_value_set_string (value, NULL); /* FIXME: check validity */
-      else if (scanner->token == G_TOKEN_STRING)
-	g_value_set_string (value, scanner->value.v_string);
-      else
-        return G_TOKEN_STRING;
-      break;
-    case G_TYPE_ENUM:
-      g_scanner_get_next_token (scanner);
-      v_bool = FALSE;
-      if (scanner->token == '-')
-        {
-          v_bool = !v_bool;
-          g_scanner_get_next_token (scanner);
-        }
-      if (scanner->token == G_TOKEN_INT)
-        {
-          v_enum = v_bool ? - scanner->value.v_int : scanner->value.v_int;
-        }
-      else if (v_bool)
-        return G_TOKEN_INT;
-      else if (scanner->token == G_TOKEN_IDENTIFIER)
-        {
-          GEnumValue *ev;
-          GEnumClass *eclass = g_type_class_ref (vtype);
-
-          ev = g_enum_get_value_by_nick (eclass,
-                                         scanner->value.v_identifier);
-          if (!ev)
-            ev = g_enum_get_value_by_name (eclass,
-                                           scanner->value.v_identifier);
-	  v_enum = ev ? ev->value : 0;
-
-	  g_type_class_unref (eclass);
-          if (!ev)
-            return storage_errwarn_skip (storage, close_statement, FALSE,
-					 "unrecognized enum value `%s' for parameter `%s'",
-					 scanner->value.v_identifier,
-					 pname);
-        }
-      else
-        return G_TOKEN_IDENTIFIER;
-      g_value_set_enum (value, v_enum);
-      if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-        return storage_errwarn_skip (storage, close_statement, FALSE,
-				     "parameter value `%d' out of bounds for parameter `%s'",
-				     v_enum,
-				     pname);
-      break;
-    case G_TYPE_FLAGS:
-      v_flags = 0;
-      do
-        {
-          g_scanner_get_next_token (scanner);
-          if (scanner->token == G_TOKEN_INT)
-            v_flags |= scanner->value.v_int;
-          else if (scanner->token == G_TOKEN_IDENTIFIER)
-            {
-              GFlagsValue *fv;
-	      GFlagsClass *fclass = g_type_class_ref (vtype);
-	      
-              fv = g_flags_get_value_by_nick (fclass, scanner->value.v_identifier);
-              if (!fv)
-                g_flags_get_value_by_name (fclass, scanner->value.v_identifier);
-	      v_flags |= fv ? fv->value : 0;
-
-	      g_type_class_unref (fclass);
-              if (!fv)
-                return storage_errwarn_skip (storage, close_statement, FALSE,
-					     "unrecognized flags value `%s' for parameter `%s'",
-					     scanner->value.v_identifier,
-					     pname);
-            }
-          else
-            return G_TOKEN_IDENTIFIER;
-        }
-      while (g_scanner_peek_next_token (scanner) != ')');
-      g_value_set_flags (value, v_flags);
-      if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-        return storage_errwarn_skip (storage, close_statement, FALSE,
-				     "parameter value `%d' out of bounds for parameter `%s'",
-				     v_flags,
-				     pname);
-      break;
-    case BSE_TYPE_TIME:
-      parse_or_return (scanner, G_TOKEN_STRING);
-      {
-	BseTime time;
-	BseErrorType errors[BSE_MAX_DATE_ERRORS];
-	guint i;
-	
-	time = bse_time_from_string (scanner->value.v_string, errors);
-	for (i = 0; i < BSE_MAX_DATE_ERRORS && errors[i]; i++)
-	  switch (errors[i])
-	    {
-	    case BSE_ERROR_DATE_CLUTTERED:
-	      bse_storage_warn (storage, "date string \"%s\" is cluttered", scanner->value.v_string);
-	      break;
-	    case BSE_ERROR_DATE_YEAR_BOUNDS:
-	      bse_storage_warn (storage, "%s out of bounds in date `%s'", "years", scanner->value.v_string);
-	      break;
-	    case BSE_ERROR_DATE_MONTH_BOUNDS:
-	      bse_storage_warn (storage, "%s out of bounds in date `%s'", "months", scanner->value.v_string);
-	      break;
-	    case BSE_ERROR_DATE_DAY_BOUNDS:
-	      bse_storage_warn (storage, "%s out of bounds in date `%s'", "days", scanner->value.v_string);
-	      break;
-	    case BSE_ERROR_DATE_HOUR_BOUNDS:
-	      bse_storage_warn (storage, "%s out of bounds in date `%s'", "hours", scanner->value.v_string);
-	      break;
-	    case BSE_ERROR_DATE_MINUTE_BOUNDS:
-	      bse_storage_warn (storage, "%s out of bounds in date `%s'", "minutes", scanner->value.v_string);
-	      break;
-	    case BSE_ERROR_DATE_SECOND_BOUNDS:
-	      bse_storage_warn (storage, "%s out of bounds in date `%s'", "seconds", scanner->value.v_string);
-	      break;
-	    case BSE_ERROR_DATE_TOO_OLD:
-	      return storage_errwarn_skip (storage, close_statement, FALSE,
-					   "invalid date `%s'", scanner->value.v_string);
-	    case BSE_ERROR_DATE_INVALID:
-	      return storage_errwarn_skip (storage, close_statement, FALSE,
-					   "unable to parse date `%s'", scanner->value.v_string);
-	    default:
-	      return G_TOKEN_STRING;
-	    }
-	bse_value_set_time (value, bse_time_from_gmt (time));
-	if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-	  {
-	    gchar bbuffer[BSE_BBUFFER_SIZE];
-	    
-	    return storage_errwarn_skip (storage, close_statement, FALSE,
-					 "date `%s' out of bounds for parameter `%s'",
-					 bse_time_to_bbuffer (bse_time_from_gmt (time), bbuffer),
-					 pname);
-	  }
-      }
-      break;
-    case G_TYPE_OBJECT:
-      if (BSE_STORAGE_PROXIES_ENABLED (storage) && g_type_is_a (vtype, BSE_TYPE_OBJECT))
-	{
-	  g_scanner_get_next_token (scanner);
-	  if (scanner->token == '(')
-	    {
-	      gulong proxy;
-
-	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
-	      if (!bse_string_equals ("bse-proxy", scanner->value.v_identifier))
-		return G_TOKEN_IDENTIFIER;
-	      parse_or_return (scanner, G_TOKEN_INT);
-	      proxy = scanner->value.v_int;
-	      parse_or_return (scanner, ')');
-	      g_value_set_object (value, proxy ? bse_object_from_id (proxy) : 0);
-	    }
-	  else
-	    return '(';
-	  break;
-	}
-      goto parse_unhandled_parameter;
-    case G_TYPE_POINTER:
-      if (BSE_STORAGE_PROXIES_ENABLED (storage) && vtype == BSW_TYPE_PROXY)
-	{
-	  g_scanner_get_next_token (scanner);
-	  if (scanner->token == '(')
-	    {
-	      gulong proxy;
-
-	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
-	      if (!bse_string_equals ("bse-proxy", scanner->value.v_identifier))
-		return G_TOKEN_IDENTIFIER;
-	      parse_or_return (scanner, G_TOKEN_INT);
-	      proxy = scanner->value.v_int;
-	      parse_or_return (scanner, ')');
-	      bsw_value_set_proxy (value, proxy);
-	    }
-	  else
-	    return '(';
-	  break;
-	}
-      goto parse_unhandled_parameter;
-    case G_TYPE_BOXED:
-      if (g_type_is_a (vtype, BSW_TYPE_NOTE_SEQUENCE))
-	{
-	  BswNoteSequence *sdata = NULL;
-	  guint i = 0;
-
-	  parse_or_return (scanner, '\'');	/* list quote */
-	  parse_or_return (scanner, '(');	/* list start */
-
-	  sdata = bsw_note_sequence_new (32);
-	  while (g_scanner_peek_next_token (scanner) != ')')
-	    {
-	      token = parse_note (storage, TRUE, &v_note);
-	      if (token != G_TOKEN_NONE)
-		{
-		  bsw_note_sequence_free (sdata);
-		  return token;
-		}
-	      if (i == sdata->n_notes)
-		sdata = bsw_note_sequence_resize (sdata, sdata->n_notes + 32);
-	      sdata->notes[i++].note = v_note;
-	    }
-	  if (g_scanner_get_next_token (scanner) != ')')
-	    {
-	      bsw_note_sequence_free (sdata);
-	      return ')';			/* list end */
-	    }
-	  g_value_set_boxed_take_ownership (value, bsw_note_sequence_resize (sdata, i));
-	  break;
-	}
-      goto parse_unhandled_parameter;
-    default:
-    parse_unhandled_parameter:
-      return storage_errwarn_skip (storage, close_statement, FALSE,
-				   "unhandled parameter type `%s' for parameter `%s': unable to parse `%s' types",
-				   g_type_name (vtype),
-				   pname,
-				   g_type_name (G_TYPE_FUNDAMENTAL (vtype)));
-    }
-
-  if (!close_statement)
-    return G_TOKEN_NONE;
-
-  g_scanner_get_next_token (scanner);
-  return scanner->token == ')' ? G_TOKEN_NONE : ')';
 }

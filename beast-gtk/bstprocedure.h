@@ -42,13 +42,11 @@ struct _BstProcedureShell
 {
   GtkVBox	     parent_object;
   
-  BseProcedureClass *proc;
-  
-  guint		     n_in_params;
-  guint		     n_out_params;
+  SfiGlueProc       *proc;
+  SfiRec	    *prec;
+
   guint		     n_preset_params;
-  GSList	    *bparams; /* n_in_params + n_out_params bparams */
-  GSList	    *first_out_bparam;
+  SfiRing	    *bparams; /* n_in_params + n_out_params bparams */
   
   guint		     in_modal_selection : 1;
   guint		     in_execution : 1;
@@ -62,12 +60,12 @@ struct _BstProcedureShellClass
 
 /* --- prototypes --- */
 GtkType		   bst_procedure_shell_get_type	   (void);
-GtkWidget*	   bst_procedure_shell_new	   (BseProcedureClass *proc);
+GtkWidget*	   bst_procedure_shell_new	   (SfiGlueProc       *proc);
 void		   bst_procedure_shell_update	   (BstProcedureShell *procedure_shell);
 void		   bst_procedure_shell_rebuild	   (BstProcedureShell *procedure_shell);
 void		   bst_procedure_shell_execute	   (BstProcedureShell *procedure_shell);
 void		   bst_procedure_shell_set_proc	   (BstProcedureShell *procedure_shell,
-						    BseProcedureClass *proc);
+						    SfiGlueProc       *proc);
 void		   bst_procedure_shell_reset	   (BstProcedureShell *procedure_shell);
 void		   bst_procedure_shell_unpreset	   (BstProcedureShell *procedure_shell);
 gboolean	   bst_procedure_shell_preset	   (BstProcedureShell *procedure_shell,
@@ -78,13 +76,13 @@ gboolean	   bst_procedure_shell_preset	   (BstProcedureShell *procedure_shell,
 
 /* --- convenience --- */
 BstProcedureShell* bst_procedure_shell_global	(void);
-void		   bst_procedure_exec		(GType		 procedure_type,
+void		   bst_procedure_exec		(const gchar	*procedure_name,
 						 const gchar	*preset_param,
 						 ...);
-void		   bst_procedure_exec_auto	(GType		 procedure_type,
+void		   bst_procedure_exec_auto	(const gchar    *procedure_name,
 						 const gchar	*preset_param,
 						 ...);
-void		   bst_procedure_exec_modal	(GType		 procedure_type,
+void		   bst_procedure_exec_modal	(const gchar    *procedure_name,
 						 const gchar	*preset_param,
 						 ...);
 

@@ -536,8 +536,8 @@ bst_clue_hunter_set_entry (BstClueHunter *self,
   self->completion_tag = FALSE;
 }
 
-BstClueHunter*
-bst_clue_hunter_from_entry (GtkEntry *entry)
+gpointer
+bst_clue_hunter_from_entry (gpointer entry)
 {
   g_return_val_if_fail (GTK_IS_ENTRY (entry), NULL);
 
@@ -929,8 +929,8 @@ bst_clue_hunter_event (GtkWidget *widget,
 		bst_clue_hunter_add_history (self, string);
 	    }
 	  bst_clue_hunter_popdown (self);
-	  if (string)
-	    gtk_widget_activate (GTK_WIDGET (self->entry));
+	  /* if (string) */
+	  gtk_widget_activate (GTK_WIDGET (self->entry));
 	}
       else
 	handled = gtk_widget_event (GTK_WIDGET (self->entry), event);

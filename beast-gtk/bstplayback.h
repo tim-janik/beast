@@ -27,37 +27,43 @@ extern "C" {
 
 /* --- typedefs & structures --- */
 typedef void (*BstPlayBackNotify)	(gpointer	data,
+					 SfiNum		tick_stamp,
 					 guint		pcm_position);
 typedef struct
 {
-  BswProxy project;
-  BswProxy snet;
-  BswProxy speaker;
-  BswProxy wosc;
-  BswProxy constant;
+  SfiProxy project;
+  SfiProxy snet;
+  SfiProxy speaker;
+  SfiProxy wosc;
+  SfiProxy constant;
+  guint             current_delay;
   guint             pcm_timeout;
   BstPlayBackNotify pcm_notify;
   gpointer          pcm_data;
+  guint		waiting_for_notify : 1;
+  guint		discard_next_notify : 1;
 } BstPlayBackHandle;
 
 
 /* --- functions --- */
-BstPlayBackHandle*	bst_play_back_handle_new	(void);
-void			bst_play_back_handle_set	(BstPlayBackHandle	*handle,
-							 BswProxy		 esample,
+BstPlayBackHandle* bst_play_back_handle_new		(void);
+void		   bst_play_back_handle_set		(BstPlayBackHandle	*handle,
+							 SfiProxy		 esample,
 							 gdouble		 osc_freq);
-void			bst_play_back_handle_start	(BstPlayBackHandle	*handle);
-void			bst_play_back_handle_seek_perc	(BstPlayBackHandle	*handle,
+void		   bst_play_back_handle_start		(BstPlayBackHandle	*handle);
+void		   bst_play_back_handle_seek_perc	(BstPlayBackHandle	*handle,
 							 gfloat			 perc);
-void			bst_play_back_handle_stop	(BstPlayBackHandle	*handle);
-void			bst_play_back_handle_toggle	(BstPlayBackHandle	*handle);
-void			bst_play_back_handle_pcm_notify	(BstPlayBackHandle	*handle,
+void		   bst_play_back_handle_stop		(BstPlayBackHandle	*handle);
+void		   bst_play_back_handle_toggle		(BstPlayBackHandle	*handle);
+void		   bst_play_back_handle_pcm_notify	(BstPlayBackHandle	*handle,
 							 guint			 timeout,
 							 BstPlayBackNotify	 notify,
 							 gpointer		 data);
-gboolean		bst_play_back_handle_is_playing	(BstPlayBackHandle	*handle);
-gboolean		bst_play_back_handle_done	(BstPlayBackHandle	*handle);
-void			bst_play_back_handle_destroy	(BstPlayBackHandle	*handle);
+void		   bst_play_back_handle_time_pcm_notify	(BstPlayBackHandle	*handle,
+							 guint			 timeout);
+gboolean	   bst_play_back_handle_is_playing	(BstPlayBackHandle	*handle);
+gboolean	   bst_play_back_handle_done		(BstPlayBackHandle	*handle);
+void		   bst_play_back_handle_destroy		(BstPlayBackHandle	*handle);
 
 
 

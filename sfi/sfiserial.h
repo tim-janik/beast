@@ -36,6 +36,7 @@ GTokenType	sfi_value_parse_typed		(GValue		*value,
 GTokenType	sfi_value_parse_param_rest	(GValue		*value,
 						 GScanner	*scanner,
 						 GParamSpec	*pspec);
+extern const GScannerConfig *sfi_storage_scanner_config;
 
 
 G_END_DECLS

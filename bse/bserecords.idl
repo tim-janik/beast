@@ -1,0 +1,131 @@
+/* SFI - Synthesis Fusion Kit Interface Definition Language	-*-mode: c++;-*-
+ * Copyright (C) 2002 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+namespace Bse {
+  
+  sequence IntSeq {
+    Int    ints;
+  };
+  sequence NoteSeq {
+    Int   notes	@= Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
+  };
+  sequence StringSeq {
+    String strings;
+  };
+  sequence ProxySeq {
+    Info BLURB = ("An item list");
+    Proxy  proxies;
+    Info HELP = ("A list of BSE objects, usually items.");
+  };
+
+  record PartNote
+  {
+    Info     BLURB       = "Part specific note representation";
+    Int      id		@= UInt ("ID", "", 0, ":readwrite");
+    Int      tick	@= ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
+    Int	     duration	@= ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
+    Int	     note	@= Note ("Note", "", KAMMER_NOTE, ":readwrite");
+    Int      fine_tune	@= ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
+    Real     velocity	@= ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
+    Bool     selected   @= ("Selected", "", FALSE, ":readwrite");
+  };
+
+  sequence PartNoteSeq {
+    Info BLURB = "A list of part notes";
+    PartNote pnotes;
+  };
+
+  record NoteDescription
+  {
+    Int	   note		 @= Note ("Note", "", KAMMER_NOTE, ":readwrite");
+    Int	   octave	 @= Octave ("Octave", "", KAMMER_OCTAVE, ":readwrite");
+    Real   freq		 @= Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
+    Int    fine_tune	 @= FineTune ("Fine Tune", "", ":readwrite");
+    Int    semitone	 @= Int ("Semitone", "", 0, 0, 11, 1, ":readwrite");
+    Bool   upshift;
+    Int    letter	 @= Int ("Letter", "International abbreviation letter for this note", 64, 32, 126, 1, ":readwrite");
+    String name		 @= String ("Name", "", "", ":readwrite");
+    /* constants */
+    Int	   max_fine_tune @= Int ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
+    Int	   kammer_note	 @= Int ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
+    Info   HELP           = "A note description provides all necessary details about a specific note. "
+			    "Various procedures exist to retrieve a note description, given different "
+			    "key values. The max_fine_tune and kammer_note fields are constants, which "
+			    "are provided for compatibility reasons and will vanish in future APIs.";
+  };
+  
+  record NoteSequence
+  {
+    Int	    offset	@= Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
+    NoteSeq notes	@= ("Notes", "Sequence of notes", ":readwrite");
+  };
+  
+  record Icon
+  {
+    Info   BLURB            = "BSE icon representation.";
+    Int	   bytes_per_pixel @= ("Bytes Per Pixel", "Bytes Per Pixel (3:RGB, 4:RGBA, 0:NONE)", 4, 3, 4, 1, ":readwrite");
+    Int	   width	   @= ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+    Int	   height	   @= ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+    BBlock pixels	   @= ("Pixels", "Pixel array of width*height*bytes_per_pixel bytes", ":readwrite");
+  };
+
+  record Category
+  {
+    Int    category_id @= ("Category ID", NULL, 1, 1, G_MAXINT, 1, ":readwrite");
+    String category;
+    Int    mindex;
+    Int    lindex;
+    String type;
+    Icon   icon;
+  };
+
+  sequence CategorySeq {
+    Category cats;
+  };
+
+  record Dot
+  {
+    Real	x;
+    Real	y;
+  };
+
+  sequence DotSeq {
+    Dot dots;
+  };
+
+  /* BSE Global Config */
+  record GConfig {
+    /* stepping rates */
+    Real step_volume_dB		@= ("Volume [dB] Steps", "Step width for volume in decibell",
+				    0.1, 0.001, 5, 0.01, SFI_PARAM_DEFAULT);
+    Int  step_bpm		@= ("BPM Steps", "Step width for beats per minute",
+				    10, 1, 50, 1, SFI_PARAM_DEFAULT);
+    /* synthesis settings */
+    Int  synth_block_size	@= ("Synth Block Size",
+				    "Synthesis buffer size, smaller values may reduce latency but "
+				    "increase CPU overhead",
+				    256, 4, 4096, 4,
+				    SFI_PARAM_DEFAULT""/*FIXME*/ SFI_PARAM_HINT_SCALE);
+    Int  synth_mixing_freq	@= ("Synth Mixing Frequency",
+				    "Synthesis mixing frequency, common values are: 22050, 44100, 48000",
+				    44100, 8000, 192000, 0, SFI_PARAM_DEFAULT);
+  };
+};
+
+/* vim:set ts=8 sts=2 sw=2: */

@@ -39,17 +39,14 @@ enum
 static void	 bse_pcm_output_init		(BsePcmOutput		*scard);
 static void	 bse_pcm_output_class_init	(BsePcmOutputClass	*class);
 static void	 bse_pcm_output_class_finalize	(BsePcmOutputClass	*class);
-static void	 bse_pcm_output_set_property	(BsePcmOutput		*scard,
+static void	 bse_pcm_output_set_property	(GObject		*object,
+						 guint			 param_id,
+						 const GValue		*value,
+						 GParamSpec		*pspec);
+static void	 bse_pcm_output_get_property	(GObject		*object,
 						 guint			 param_id,
 						 GValue			*value,
-						 GParamSpec		*pspec,
-						 const gchar		*trailer);
-static void	 bse_pcm_output_get_property	(BsePcmOutput		*scard,
-						 guint			 param_id,
-						 GValue			*value,
-						 GParamSpec		*pspec,
-						 const gchar		*trailer);
-static void	 bse_pcm_output_do_destroy	(BseObject		*object);
+						 GParamSpec		*pspec);
 static void	 bse_pcm_output_prepare		(BseSource		*source);
 static void	 bse_pcm_output_context_create	(BseSource		*source,
 						 guint			 instance_id,
@@ -108,10 +105,8 @@ bse_pcm_output_class_init (BsePcmOutputClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_pcm_output_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_pcm_output_get_property;
-  
-  object_class->destroy = bse_pcm_output_do_destroy;
+  gobject_class->set_property = bse_pcm_output_set_property;
+  gobject_class->get_property = bse_pcm_output_get_property;
   
   source_class->prepare = bse_pcm_output_prepare;
   source_class->context_create = bse_pcm_output_context_create;
@@ -120,22 +115,23 @@ bse_pcm_output_class_init (BsePcmOutputClass *class)
   
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_f,
-			      bse_param_spec_float ("master_volume_f", "Master [float]", NULL,
-						    0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
-						    bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB), 0.1,
-						    BSE_PARAM_STORAGE));
+			      sfi_pspec_real ("master_volume_f", "Master [float]", NULL,
+					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
+					      0.1, SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_dB,
-			      bse_param_spec_float ("master_volume_dB", "Master [dB]", NULL,
-						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-						    BSE_DFL_MASTER_VOLUME_dB, BSE_STP_VOLUME_dB,
-						    BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("master_volume_dB", "Master [dB]", NULL,
+					      BSE_DFL_MASTER_VOLUME_dB,
+					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+					      BSE_GCONFIG (step_volume_dB),
+					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_PERC,
-			      bse_param_spec_uint ("master_volume_perc", "Master [%]", NULL,
-						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-						   bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100, 1,
-						   BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_int ("master_volume_perc", "Master [%]", NULL,
+					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
+					     1, SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   
   ichannel_id = bse_source_class_add_ichannel (source_class, "Left Audio In", "Left channel input");
   g_assert (ichannel_id == BSE_PCM_OUTPUT_ICHANNEL_LEFT);
@@ -155,66 +151,55 @@ bse_pcm_output_init (BsePcmOutput *oput)
 }
 
 static void
-bse_pcm_output_do_destroy (BseObject *object)
+bse_pcm_output_set_property (GObject      *object,
+			     guint         param_id,
+			     const GValue *value,
+			     GParamSpec   *pspec)
 {
-  BsePcmOutput *oput;
-  
-  oput = BSE_PCM_OUTPUT (object);
-  
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-static void
-bse_pcm_output_set_property (BsePcmOutput   *oput,
-			     guint        param_id,
-			     GValue      *value,
-			     GParamSpec  *pspec,
-			     const gchar *trailer)
-{
+  BsePcmOutput *self = BSE_PCM_OUTPUT (object);
   switch (param_id)
     {
     case PARAM_MVOLUME_f:
-      oput->volume_factor = g_value_get_float (value);
-      bse_object_param_changed (BSE_OBJECT (oput), "master_volume_dB");
-      bse_object_param_changed (BSE_OBJECT (oput), "master_volume_perc");
+      self->volume_factor = sfi_value_get_real (value);
+      g_object_notify (self, "master_volume_dB");
+      g_object_notify (self, "master_volume_perc");
       break;
     case PARAM_MVOLUME_dB:
-      oput->volume_factor = bse_dB_to_factor (g_value_get_float (value));
-      bse_object_param_changed (BSE_OBJECT (oput), "master_volume_f");
-      bse_object_param_changed (BSE_OBJECT (oput), "master_volume_perc");
+      self->volume_factor = bse_dB_to_factor (sfi_value_get_real (value));
+      g_object_notify (self, "master_volume_f");
+      g_object_notify (self, "master_volume_perc");
       break;
     case PARAM_MVOLUME_PERC:
-      oput->volume_factor = g_value_get_uint (value) / 100.0;
-      bse_object_param_changed (BSE_OBJECT (oput), "master_volume_f");
-      bse_object_param_changed (BSE_OBJECT (oput), "master_volume_dB");
+      self->volume_factor = sfi_value_get_int (value) / 100.0;
+      g_object_notify (self, "master_volume_f");
+      g_object_notify (self, "master_volume_dB");
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (oput, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_pcm_output_get_property (BsePcmOutput   *oput,
-			     guint        param_id,
-			     GValue      *value,
-			     GParamSpec  *pspec,
-			     const gchar *trailer)
+bse_pcm_output_get_property (GObject    *object,
+			     guint       param_id,
+			     GValue     *value,
+			     GParamSpec *pspec)
 {
+  BsePcmOutput *self = BSE_PCM_OUTPUT (object);
   switch (param_id)
     {
     case PARAM_MVOLUME_f:
-      g_value_set_float (value, oput->volume_factor);
+      sfi_value_set_real (value, self->volume_factor);
       break;
     case PARAM_MVOLUME_dB:
-      g_value_set_float (value, bse_dB_from_factor (oput->volume_factor, BSE_MIN_VOLUME_dB));
+      sfi_value_set_real (value, bse_dB_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
       break;
     case PARAM_MVOLUME_PERC:
-      g_value_set_uint (value, oput->volume_factor * 100.0 + 0.5);
+      sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (oput, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
     }
 }
@@ -224,7 +209,7 @@ bse_pcm_output_prepare (BseSource *source)
 {
   BsePcmOutput *oput = BSE_PCM_OUTPUT (source);
   
-  oput->uplink = bse_server_retrive_pcm_output_module (bse_server_get (), source, "MasterOut");
+  oput->uplink = bse_server_retrieve_pcm_output_module (bse_server_get (), source, "MasterOut");
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);

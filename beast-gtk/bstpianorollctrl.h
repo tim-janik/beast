@@ -25,9 +25,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-typedef enum {
+typedef enum /*< skip >*/
+{
   BST_PIANO_ROLL_TOOL_NONE,
-  BST_PIANO_ROLL_TOOL_INSERT,
+  /* choose IDs that are unlikely to clash with category IDs */
+  BST_PIANO_ROLL_TOOL_INSERT		= G_MAXINT - 1000,
   BST_PIANO_ROLL_TOOL_RESIZE,
   BST_PIANO_ROLL_TOOL_MOVE,
   BST_PIANO_ROLL_TOOL_DELETE,
@@ -46,7 +48,7 @@ typedef struct {
   BstPianoRoll	  *proll;
   guint		   note_length;
   /* drag data */
-  BswIterPartNote *sel_iter;
+  BsePartNoteSeq  *sel_pseq;
   guint		   tool_index;
   guint		   obj_id, obj_tick, obj_duration;
   gint		   obj_note, obj_fine_tune;
@@ -68,8 +70,8 @@ void			bst_piano_roll_controller_set_obj_tools	(BstPianoRollController	*self,
 								 BstPianoRollTool	 tool1,
 								 BstPianoRollTool	 tool2,
 								 BstPianoRollTool	 tool3);
-void			bst_piano_roll_controller_set_clipboard (BswIterPartNote	*iter);
-BswIterPartNote*	bst_piano_roll_controller_get_clipboard	(void);
+void			bst_piano_roll_controller_set_clipboard (BsePartNoteSeq		*pseq);
+BsePartNoteSeq*		bst_piano_roll_controller_get_clipboard	(void);
 void			bst_piano_roll_controller_clear		(BstPianoRollController	*self);
 void			bst_piano_roll_controller_cut		(BstPianoRollController	*self);
 void			bst_piano_roll_controller_copy		(BstPianoRollController	*self);

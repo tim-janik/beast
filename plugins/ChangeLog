@@ -1,3 +1,36 @@
+Mon Dec 30 00:46:59 2002  Tim Janik  <timj@gtk.org>
+
+	* *.c: cleaned up old compat code.
+
+Tue Dec 24 00:17:41 2002  Tim Janik  <timj@gtk.org>
+
+	* davxtalstrings.c: misc bug fixes.
+
+Sun Dec  8 05:53:51 2002  Tim Janik  <timj@gtk.org>
+
+	* bsemixer.c:
+	* bsenoise.c:
+	* davorgan.c: adaptions to config changes, bug fixes.
+
+Sun Dec  1 02:26:54 2002  Tim Janik  <timj@gtk.org>
+
+	* fix note pspec constructors.
+
+Sun Nov 24 02:37:48 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.c: fix note sequence boxed type pspecs. fixup
+	default offset, fixup offset upon property setting if necessary.
+
+	* *.c: fix property setter/getter casts.
+
+Sun Oct 27 17:03:49 2002  Tim Janik  <timj@gtk.org>
+
+	* param-spec -> pspec rename, remove old log-scale code.
+
+Fri Oct 18 16:15:13 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.[hc]: adapt to BseNoteSeuence changes.
+
 Fri Aug 30 03:18:26 2002  Tim Janik  <timj@gtk.org>
 
 	* *.[hc]: update copyrights and license headers.

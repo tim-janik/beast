@@ -39,15 +39,26 @@ G_BEGIN_DECLS
 
 
 /* --- abandon typesafety for some frequently used functions --- */
-#define g_object_notify(o,s)	g_object_notify ((gpointer) (o), (s))
+#define g_object_notify(o,s)		  g_object_notify ((gpointer) o, s)
+#define	g_object_get_qdata(o,q)		  g_object_get_qdata ((gpointer) o, q)
+#define	g_object_set_qdata(o,q,d)	  g_object_set_qdata ((gpointer) o, q, d)
+#define	g_object_set_qdata_full(o,q,d,f)  g_object_set_qdata_full ((gpointer) o, q, d, (gpointer) f)
+#define	g_object_steal_qdata(o,q)	  g_object_steal_qdata ((gpointer) o, q)
+#define	g_object_get_data(o,k)		  g_object_get_data ((gpointer) o, k)
+#define	g_object_set_data(o,k,d)	  g_object_set_data ((gpointer) o, k, d)
+#define	g_object_set_data_full(o,k,d,f)	  g_object_set_data_full ((gpointer) o, k, d, (gpointer) f)
+#define	g_object_steal_data(o,k)	  g_object_steal_data ((gpointer) o, k)
 
 
 /* --- string functions --- */
-gchar**		g_straddv	 (gchar	       **str_array,
-				  const gchar	*new_str);
-gchar**		g_strslistv	(GSList		*slist);
-guint		g_strlenv	(gchar	       **str_array);
-
+gchar**		g_straddv	  (gchar	**str_array,
+				   const gchar	 *new_str);
+gchar**		g_strslistv	  (GSList	 *slist);
+guint		g_strlenv	  (gchar	**str_array);
+gchar*		g_strdup_stripped (const gchar	 *string);
+gchar*		g_strdup_rstrip   (const gchar	 *string);
+gchar*		g_strdup_lstrip   (const gchar	 *string);
+     
 
 /* --- name conversions --- */
 gchar*  g_type_name_to_cname            (const gchar    *type_name);
@@ -78,8 +89,20 @@ void		g_darray_set	(GDArray        *darray,
 #define	g_darray_prepend(a,v)	g_darray_insert ((a), 0, (v))
 
 
+/* --- simple main loop source --- */
+typedef gboolean (*GSourcePending)  (gpointer	 data,
+				     gint	*timeout);
+typedef void     (*GSourceDispatch) (gpointer	 data);
+GSource*	g_source_simple	(gint		 priority,
+				 GSourcePending  pending,
+				 GSourceDispatch dispatch,
+				 gpointer	 data,
+				 GDestroyNotify	 destroy,
+				 GPollFD	*first_pfd,
+				 ...);
 
-/* --- signal queue --- */
+
+/* --- unix signal queue --- */
 #if 0
 typedef gboolean (*GUSignalFunc) (gint8          usignal,
 			 	  gpointer       data);

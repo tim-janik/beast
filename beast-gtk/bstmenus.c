@@ -24,7 +24,7 @@ struct _BstChoice
 {
   BstChoiceFlags type_and_flags;
   const gchar   *icon_stock_id;
-  BswIcon       *bsw_icon;
+  BseIcon       *bse_icon;
   const gchar   *name;
   gpointer       p_id;
 };
@@ -37,7 +37,7 @@ struct _BstChoice
 static gboolean   modal_loop_running = FALSE;
 static gboolean   modal_loop_quit_on_menu_item_activate = FALSE;
 static GtkWidget *current_popup_menu = NULL;
-static gchar     *bstmenu_icon_item = "<BstMenuIconItem>";
+static gchar     *bstmenu_category_item = "<BstMenuCategoryItem>";
 
 
 /* --- functions --- */
@@ -45,77 +45,123 @@ static gint
 menu_entries_compare (gconstpointer a,
 		      gconstpointer b)
 {
-  const GtkItemFactoryEntry *entry_a = a;
-  const GtkItemFactoryEntry *entry_b = b;
+  const BstMenuConfigEntry *entry_a = a;
+  const BstMenuConfigEntry *entry_b = b;
 
   return strcmp (entry_a->path, entry_b->path);
 }
 
-GSList*
-bst_menu_entries_sort (GSList *entry_slist)
+void
+bst_menu_config_sort (BstMenuConfig *config)
 {
-  GSList *slist, *branch_slist = NULL, *item_slist = NULL;
+  SfiRing *entry, *branches = NULL, *items = NULL;
 
-  for (slist = entry_slist; slist; slist = slist->next)
+  for (entry = config->entries; entry; entry = sfi_ring_walk (entry, config->entries))
     {
-      GtkItemFactoryEntry *entry = slist->data;
+      BstMenuConfigEntry *e = entry->data;
 
-      if (!entry->item_type || !entry->item_type[0] ||
-	  g_pattern_match_simple ("<*Item>", entry->item_type))
-	item_slist = g_slist_prepend (item_slist, entry);
+      if (!e->item_type || !e->item_type[0] || g_pattern_match_simple ("<*Item>", e->item_type))
+	items = sfi_ring_append (items, e);
       else
-	branch_slist = g_slist_prepend (branch_slist, entry);
+	branches = sfi_ring_append (branches, e);
     }
-  g_slist_free (entry_slist);
-
-  return g_slist_concat (g_slist_reverse (branch_slist),
-			 g_slist_sort (item_slist, menu_entries_compare));
+  config->entries = sfi_ring_concat (branches, sfi_ring_sort (items, menu_entries_compare));
 }
 
-GtkItemFactoryEntry*
-bst_menu_entries_from_cats (guint              n_cats,
-			    const BseCategory *cats,
-			    BstMenuCallback    callback,
-			    gboolean	       remove_toplevel)
+void
+bst_menu_config_reverse (BstMenuConfig *config)
 {
-  GtkItemFactoryEntry *entries, *entry;
+  config->entries = sfi_ring_reverse (config->entries);
+}
 
-  if (!n_cats)
-    return NULL;
-  g_return_val_if_fail (cats != NULL, NULL);
-  g_return_val_if_fail (callback != NULL, NULL);
-  
-  entries = g_new0 (GtkItemFactoryEntry, n_cats);
-  for (entry = entries; entry < entries + n_cats; entry++)
+static void
+menu_config_append (BstMenuConfig      *config,
+		    BstMenuConfigEntry *entry)
+{
+  BstMenuConfigEntry *e = g_new0 (BstMenuConfigEntry, 1);
+  config->gcentries = g_slist_prepend (config->gcentries, e);
+  e->path = g_strdup (entry->path);
+  e->accelerator = g_strdup (entry->accelerator);
+  e->callback = entry->callback;
+  e->callback_action = entry->callback_action;
+  e->item_type = g_strdup (entry->item_type);
+  e->extra_data = entry->extra_data;
+  config->entries = sfi_ring_append (config->entries, e);
+}
+
+static BseIcon*
+menu_config_copy_icon (BstMenuConfig *config,
+		       BseIcon       *icon)
+{
+  BseIcon *ic = bse_icon_copy_shallow (icon);
+  config->gcicons = g_slist_prepend (config->gcicons, ic);
+  return ic;
+}
+
+BstMenuConfig*
+bst_menu_config_from_cats (BseCategorySeq *cseq,
+			   BstMenuCatFunc  callback,
+			   guint           skip_levels)
+{
+  BstMenuConfig *config = g_new0 (BstMenuConfig, 1);
+  guint i;
+
+  for (i = 0; i < cseq->n_cats; i++)
     {
-      entry->path = cats->category + (remove_toplevel ? cats->mindex : 0);
-      entry->accelerator = NULL;
-      entry->callback = callback;
-      entry->callback_action = cats->type;
-      entry->item_type = bstmenu_icon_item;
-      entry->extra_data = cats->icon;
-      cats++;
+      BstMenuConfigEntry e = { 0, };
+      e.path = cseq->cats[i]->category + (skip_levels ? cseq->cats[i]->mindex : 0);
+      e.accelerator = NULL;
+      e.callback = (BstMenuUserFunc) callback;
+      e.callback_action = cseq->cats[i]->category_id;
+      e.item_type = bstmenu_category_item;
+      e.extra_data = menu_config_copy_icon (config, cseq->cats[i]->icon);
+      menu_config_append (config, &e);
     }
-  
-  return entries;
+
+  return config;
 }
 
-GSList*
-bst_menu_entries_slist (guint                      n_ientries,
-			const GtkItemFactoryEntry *ientries)
+BstMenuConfig*
+bst_menu_config_from_entries (guint               n_entries,
+			      BstMenuConfigEntry *entries)
 {
-  GtkItemFactoryEntry *entry = (GtkItemFactoryEntry*) ientries;
-  GSList *entry_slist = NULL;
+  BstMenuConfig *config = g_new0 (BstMenuConfig, 1);
+  guint i;
 
-  if (!n_ientries)
-    return NULL;
-  g_return_val_if_fail (ientries != NULL, NULL);
+  for (i = 0; i < n_entries; i++)
+    menu_config_append (config, entries + i);
+  return config;
+}
 
-  entry += n_ientries - 1;
-  while (entry >= ientries)
-    entry_slist = g_slist_prepend (entry_slist, entry--);
+BstMenuConfig*
+bst_menu_config_merge (BstMenuConfig *config,
+		       BstMenuConfig *merge_config)
+{
+  config->entries = sfi_ring_concat (config->entries, merge_config->entries);
+  config->gcentries = g_slist_concat (config->gcentries, merge_config->gcentries);
+  config->gcicons = g_slist_concat (config->gcicons, merge_config->gcicons);
+  g_free (merge_config);
+  return config;
+}
 
-  return entry_slist;
+void
+bst_menu_config_free (BstMenuConfig *config)
+{
+  GSList *node;
+  for (node = config->gcentries; node; node = node->next)
+    {
+      BstMenuConfigEntry *e = node->data;
+      g_free (e->path);
+      g_free (e->accelerator);
+      g_free (e->item_type);
+      g_free (e);
+    }
+  for (node = config->gcicons; node; node = node->next)
+    bse_icon_free (node->data);
+  sfi_ring_free (config->entries);
+  g_slist_free (config->gcentries);
+  g_slist_free (config->gcicons);
+  g_free (config);
 }
 
 typedef struct {
@@ -130,9 +176,9 @@ bst_menu_item_wrapper (GtkWidget *menu_item,
 {
   GtkItemFactory *ifactory = gtk_item_factory_from_widget (menu_item);
   GtkWidget *owner = g_object_get_data (G_OBJECT (menu_item), "bst-menu-owner");
-  gpointer callback_action = g_object_get_data (G_OBJECT (menu_item), "bst-menu-callback-action");
+  gulong callback_action = (gulong) g_object_get_data (G_OBJECT (menu_item), "bst-menu-callback-action");
   PopupData *pdata = gtk_item_factory_popup_data (ifactory);
-  BstMenuCallback callback = data;
+  BstMenuCatFunc callback = data;
 
   if (!owner)
     owner = pdata ? pdata->owner : NULL;
@@ -165,59 +211,71 @@ bst_menu_item_wrapper (GtkWidget *menu_item,
     }
 
   if (owner)
-    callback (owner, (gulong) callback_action, pdata ? pdata->popup_data : NULL);
+    callback (owner, callback_action, pdata ? pdata->popup_data : NULL);
   else
     gdk_beep ();
 }
 
 void
-bst_menu_entries_create (GtkItemFactory *ifactory,
-			 GSList         *bst_menu_entries,
-			 GtkWidget	*owner)
+bst_menu_config_create_items (BstMenuConfig  *config,
+			      GtkItemFactory *ifactory,
+			      GtkWidget      *owner)
 {
-  GSList *slist;
-  
+  SfiRing *ring;
+
   g_return_if_fail (GTK_IS_ITEM_FACTORY (ifactory));
   if (!GTK_IS_MENU (ifactory->widget))
     g_return_if_fail (GTK_IS_WIDGET (owner));
 
-  for (slist = bst_menu_entries; slist; slist = slist->next)
+  for (ring = config->entries; ring; ring = sfi_ring_walk (ring, config->entries))
     {
-      GtkItemFactoryEntry entry = { 0, }, *ientry = slist->data;
+      GtkItemFactoryEntry ife = { 0, };
+      BstMenuConfigEntry *e = ring->data;
       GtkWidget *item;
 
       /* create menu item */
-      entry.path = ientry->path;
-      entry.accelerator = ientry->accelerator;
-      entry.callback = NULL;
-      entry.callback_action = 0;
-      entry.item_type = ientry->item_type == bstmenu_icon_item ? "<ImageItem>" : ientry->item_type;
-      entry.extra_data = ientry->item_type == bstmenu_icon_item ? "!Pix" : ientry->extra_data;
-      gtk_item_factory_create_items (ifactory, 1, &entry, NULL);
-      item = gtk_item_factory_get_item (ifactory, entry.path);
+      ife.path = e->path;
+      ife.accelerator = e->accelerator;
+      ife.callback = NULL;
+      ife.callback_action = 0;
+      if (e->item_type && strcmp (e->item_type, bstmenu_category_item) == 0)
+	{
+	  ife.item_type = "<ImageItem>";
+	  /* we want an image menu item without an image, which gtk
+	   * doesn't properly support, so we just provide an invalid
+	   * serialized pixbuf (via magic mismatch)
+	   */
+	  ife.extra_data = "!Pix";
+	}
+      else
+	{
+	  ife.item_type = e->item_type;
+	  ife.extra_data = e->extra_data;
+	}
+      gtk_item_factory_create_items (ifactory, 1, &ife, NULL);
+      item = gtk_item_factory_get_item (ifactory, ife.path);
 
       /* connect callback */
-      if (ientry->callback)
+      if (e->callback)
 	{
 	  g_object_set_data (G_OBJECT (item), "bst-menu-owner", owner);
-	  g_object_set_data (G_OBJECT (item), "bst-menu-callback", ientry->callback);
-	  g_object_set_data (G_OBJECT (item), "bst-menu-callback-action", (void*) ientry->callback_action);
+	  // g_object_set_data (G_OBJECT (item), "bst-menu-callback", e->callback);
+	  g_object_set_data (G_OBJECT (item), "bst-menu-callback-action", (void*) e->callback_action);
 	  gtk_signal_connect (GTK_OBJECT (item),
 			      "activate",
 			      GTK_SIGNAL_FUNC (bst_menu_item_wrapper),
-			      ientry->callback);
+			      e->callback);
 	}
 
-      /* create image from BswIcon */
-      if (ientry->item_type == bstmenu_icon_item)
+      /* create image from BseIcon */
+      if (e->item_type == bstmenu_category_item)
 	{
-	  GtkWidget *image = bst_image_from_icon ((BswIcon*) ientry->extra_data, BST_SIZE_MENU);
-
+	  GtkWidget *image = bst_image_from_icon ((BseIcon*) e->extra_data, BST_SIZE_MENU);
 	  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
 	}
 
       /* fixup Title items */
-      if (entry.item_type && strcmp (entry.item_type, "<Title>") == 0)
+      if (ife.item_type && strcmp (ife.item_type, "<Title>") == 0)
 	gxk_widget_modify_as_title (GTK_BIN (item)->child);
     }
 }
@@ -266,9 +324,9 @@ bst_menu_add_accel_owner (GtkItemFactory  *ifactory,
   g_return_if_fail (GTK_IS_ITEM_FACTORY (ifactory));
   g_return_if_fail (GTK_IS_WIDGET (owner));
 
-  slist = g_object_get_data (G_OBJECT (ifactory), "bst-menu-accel-owners");
+  slist = g_object_steal_data (G_OBJECT (ifactory), "bst-menu-accel-owners");
   slist = g_slist_prepend (slist, owner);
-  g_object_set_data (G_OBJECT (ifactory), "bst-menu-accel-owners", slist);
+  g_object_set_data_full (G_OBJECT (ifactory), "bst-menu-accel-owners", slist, (GDestroyNotify) g_slist_free);
 }
 
 BstChoice*
@@ -276,13 +334,13 @@ bst_choice_alloc (BstChoiceFlags type,
 		  const gchar   *choice_name,
 		  gpointer       choice_id,
 		  const gchar   *icon_stock_id,
-		  BswIcon       *icon)
+		  BseIcon       *icon)
 {
   BstChoice *choice = g_new (BstChoice, 1);
 
   choice->type_and_flags = type;
   choice->icon_stock_id = icon_stock_id;
-  choice->bsw_icon = icon ? bsw_icon_ref (icon) : NULL;
+  choice->bse_icon = icon ? bse_icon_copy_shallow (icon) : NULL;
   choice->name = choice_name;
   choice->p_id = choice_id;
 
@@ -354,8 +412,8 @@ menu_item_add_activator (GtkWidget *widget,
 static void
 free_choice (BstChoice *choice)
 {
-  if (choice->bsw_icon)
-    bsw_icon_unref (choice->bsw_icon);
+  if (choice->bse_icon)
+    bse_icon_free (choice->bse_icon);
   g_free (choice);
 }
 

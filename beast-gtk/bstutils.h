@@ -19,7 +19,6 @@
 #ifndef __BST_UTILS_H__
 #define __BST_UTILS_H__
 
-#include        <bse/bse.h>
 #include        <bsw/bsw.h>
 #include        <gtk/gtk.h>
 #include        "bstdefs.h"
@@ -28,7 +27,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
 
 /* --- generated includes --- */
 /* type IDs */
@@ -82,24 +80,23 @@ extern "C" {
 #define	bst_pixbuf_knob()	gxk_stock_fallback_pixbuf (BST_STOCK_KNOB)
 
 
-/* retrive static icons (no reference count needs) */
-GtkWidget*	bst_image_from_icon		(BswIcon	*icon,
+/* retrieve static icons (no reference count needs) */
+GtkWidget*	bst_image_from_icon		(BseIcon	*icon,
 						 GtkIconSize	 icon_size);
 
 
 /* --- beast/bsw specific extensions --- */
-void		bst_status_eprintf		(BswErrorType	 error,
+void		bst_status_eprintf		(BseErrorType	 error,
 						 const gchar	*message_fmt,
 						 ...) G_GNUC_PRINTF (2, 3);
 void		bst_window_sync_title_to_proxy	(gpointer	 window,
-						 BswProxy	 proxy,
+						 SfiProxy	 proxy,
 						 const gchar	*title_format);
 
 
 /* --- Gtk+ utilities & workarounds --- */
 #define    GTK_TYPE_VPANED               (gtk_vpaned_get_type ())
 #define    GTK_TYPE_HPANED               (gtk_hpaned_get_type ())
-void	   gtk_post_init_patch_ups	 (void);
 gboolean   gtk_widget_viewable		 (GtkWidget		*widget);
 void	   bst_widget_request_aux_info	 (GtkWidget		*viewport);
 void	   gtk_file_selection_heal	 (GtkFileSelection	*fs);
@@ -126,14 +123,21 @@ void   gtk_tree_selection_unselect_spath (GtkTreeSelection	*selection,
 
 
 /* --- GUI field mask --- */
+typedef struct _BstGMask BstGMask;
 GtkWidget*   bst_gmask_container_create	(gpointer	tooltips,
 					 guint		border_width,
 					 gboolean	dislodge_columns);
+typedef enum /*< skip >*/
+{
+  BST_GMASK_FIT,
+  BST_GMASK_FILL,
+  BST_GMASK_INTERLEAVE, /* stretch */
+  BST_GMASK_BIG
+} BstGMaskPack;
 gpointer	bst_gmask_form		(GtkWidget     *gmask_container,
 					 GtkWidget     *action,
-					 gboolean	expandable);
-gpointer	bst_gmask_form_big	(GtkWidget     *gmask_container,
-					 GtkWidget     *action);
+					 BstGMaskPack   gpack);
+#define		bst_gmask_form_big(c,a)	bst_gmask_form ((c), (a), BST_GMASK_BIG)
 void		bst_gmask_set_tip	(gpointer	mask,
 					 const gchar   *tip_text);
 void		bst_gmask_set_prompt	(gpointer	mask,
@@ -170,10 +174,10 @@ gpointer	bst_gmask_quick		(GtkWidget     *gmask_container,
     bst_gmask_foreach ((mask), \
 		       (sensitive) ? gxk_widget_make_sensitive : gxk_widget_make_insensitive, \
 		       NULL)
-#define	bst_gmask_ensure_styles(mask)			\
-    bst_gmask_foreach ((mask), gtk_widget_ensure_style, NULL)
 #define	bst_gmask_destroy(mask)				\
     bst_gmask_foreach ((mask), gtk_widget_destroy, NULL)
+#define	bst_gmask_ref		g_object_ref
+#define	bst_gmask_unref		g_object_unref
 
 
 /* --- BEAST utilities --- */
@@ -192,7 +196,7 @@ GtkWidget*	bst_xpm_view_create		(const gchar   **xpm,
 
 
 /* --- internal --- */
-void	bst_init_utils		(void);
+void	_bst_init_utils		(void);
 
 
 

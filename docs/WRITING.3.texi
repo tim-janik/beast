@@ -1,0 +1,101 @@
+\input texinfo   @c emacs: -*-texinfo-*-
+@c %**start of header
+@settitle @@uref tests
+@c %**end of header
+
+@include teximacros.texi
+
+@docfont{tech}
+
+@doctitle @@uref tests
+@docauthor Alper Ersoy
+@docauthor Tim Janik
+@revision{Document revised:}
+@*
+
+This document is used as a markup and document generation testbed
+and covers a few examples, e.g. for linking to other documents.
+
+@*
+@code{@@docfont@{ARG@}} styles:
+@*
+Possible parameters to @code{@@docfont} are: @code{tech}, @code{techstyle},
+@code{sans}, @code{sans-serif} for Sans Serif, and @code{story},
+@code{storystyle}, @code{serif} for Serif.  Default is @code{serif} on all
+outputs.
+
+@*
+Link Styles:
+@*
+
+HTTP:
+@itemize
+@item @code{@@uref@{http://www.gtk.org@}}: @uref{http://www.gtk.org}
+@item @code{@@uref@{http://www.gtk.org, Gtk+ Home@}}: @uref{http://www.gtk.org, Gtk+ Home}
+@item @code{@@uref@{http://www.gtk.org,, Gtk+ Home@}}: @uref{http://www.gtk.org,, Gtk+ Home}
+@end itemize
+
+FTP:
+@itemize
+@item @code{@@uref@{ftp://ftp.gtk.org@}}: @uref{ftp://ftp.gtk.org}
+@item @code{@@uref@{ftp://ftp.gtk.org, Gtk+ Ftp Site@}}: @uref{ftp://ftp.gtk.org, Gtk+ Ftp Site}
+@item @code{@@uref@{ftp://ftp.gtk.org,, Gtk+ Ftp Site@}}: @uref{ftp://ftp.gtk.org,, Gtk+ Ftp Site}
+@end itemize
+
+FILE:
+@itemize
+@item @code{@@uref@{file:///etc/profile@}}: @uref{file:///etc/profile}
+@item @code{@@uref@{file:///etc/profile, Profile@}}: @uref{file:///etc/profile, Profile}
+@item @code{@@uref@{file:///etc/profile,, Profile@}}: @uref{file:///etc/profile,, Profile}
+@end itemize
+
+MAILTO:
+@itemize
+@item @code{@@uref@{mailto://timj@@gtk.org@}}: @uref{mailto://timj@@gtk.org}
+@item @code{@@uref@{mailto://timj@@gtk.org, Maintainer@}}: @uref{mailto://timj@@gtk.org, Maintainer}
+@item @code{@@uref@{mailto://timj@@gtk.org,, Maintainer@}}: @uref{mailto://timj@@gtk.org,, Maintainer}
+@end itemize
+
+NEWS:
+@itemize
+@item @code{@@uref@{news://news.gtk.org/apps.beast@}}: @uref{news://news.gtk.org/apps.beast}
+@item @code{@@uref@{news://news.gtk.org/apps.beast, Beast Newsgroup@}}: @uref{news://news.gtk.org/apps.beast, Beast Newsgroup}
+@item @code{@@uref@{news://news.gtk.org/apps.beast,, Beast Newsgroup@}}: @uref{news://news.gtk.org/apps.beast,, Beast Newsgroup}
+@end itemize
+
+System Man Pages:
+@itemize
+@item @code{@@uref@{man://1/bash@}}: @uref{man://1/bash}
+@item @code{@@uref@{man://1/bash, Bash@}}: @uref{man://1/bash, Bash}
+@item @code{@@uref@{man://1/bash,, Bash@}}: @uref{man://1/bash,, Bash}
+@end itemize
+
+Beast Man Pages:
+@itemize
+@item @code{@@uref@{beast-man://3/beast-gxk@}}: @uref{beast-man://3/beast-gxk}
+@item @code{@@uref@{beast-man://3/beast-gxk, GUI Extension Kit@}}: @uref{beast-man://3/beast-gxk, GUI Extension Kit}
+@item @code{@@uref@{beast-man://3/beast-gxk,, GUI Extension Kit@}}: @uref{beast-man://3/beast-gxk,, GUI Extension Kit}
+@end itemize
+
+Beast Documents:
+@itemize
+@item @code{@@uref@{beast-doc://quickstart@}}: @uref{beast-doc://quickstart}
+@item @code{@@uref@{beast-doc://quickstart, Quickstart Guide@}}: @uref{beast-doc://quickstart, Quickstart Guide}
+@item @code{@@uref@{beast-doc://quickstart,, Quickstart Guide@}}: @uref{beast-doc://quickstart,, Quickstart Guide}
+@end itemize
+
+Beast Documents with anchors:
+@itemize
+@item @code{@@uref@{beast-doc://quickstart#node-2@}}: @uref{beast-doc://quickstart#node-2}
+@item @code{@@uref@{beast-doc://quickstart#node-2, Setting Up Songs@}}: @uref{beast-doc://quickstart#node-2, Setting Up Songs}
+@item @code{@@uref@{beast-doc://quickstart#node-2,, Setting Up Songs@}}: @uref{beast-doc://quickstart#node-2,, Setting Up Songs}
+@end itemize
+
+Unknown (ie. gopher):
+@itemize
+@item @code{@@uref@{gopher://gopher.gtk.org@}}: @uref{gopher://gopher.gtk.org}
+@item @code{@@uref@{gopher://gopher.gtk.org, Gtk+ Gopher@}}: @uref{gopher://gopher.gtk.org, Gtk+ Gopher}
+@item @code{@@uref@{gopher://gopher.gtk.org,, Gtk+ Gopher@}}: @uref{gopher://gopher.gtk.org,, Gtk+ Gopher}
+@end itemize
+
+@bye

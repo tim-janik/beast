@@ -48,7 +48,6 @@ struct _BstLogAdjustment
   GtkAdjustment *client;
 
   guint		 block_client;
-  guint		 client_owned : 1;
   gdouble	 base_ln;
   gdouble	 llimit;
   gdouble	 ulimit;

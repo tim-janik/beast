@@ -83,6 +83,49 @@ g_strslistv (GSList *slist)
   return str_array;
 }
 
+gchar*
+g_strdup_stripped (const gchar *string)
+{
+  if (string)
+    {
+      const gchar *s = string;
+      guint l;
+
+      while (*s == ' ')
+	s++;
+      l = strlen (s);
+      while (l && s[l - 1] == ' ')
+	l--;
+      return g_strndup (s, l);
+    }
+  return NULL;
+}
+
+gchar*
+g_strdup_rstrip (const gchar *string)
+{
+  if (string)
+    {
+      guint l = strlen (string);
+      while (l && string[l - 1] == ' ')
+	l--;
+      return g_strndup (string, l);
+    }
+  return NULL;
+}
+
+gchar*
+g_strdup_lstrip (const gchar *string)
+{
+  if (string)
+    {
+      while (*string == ' ')
+	string++;
+      return g_strdup (string);
+    }
+  return NULL;
+}
+
 
 /* --- name conversions --- */
 static inline gchar
@@ -297,6 +340,102 @@ g_darray_set (GDArray *darray,
   g_return_if_fail (index < darray->n_values);
 
   darray->values[index] = value;
+}
+
+
+/* --- simple main loop source --- */
+typedef struct {
+  GSource         source;
+  GSourcePending  pending;
+  GSourceDispatch dispatch;
+  gboolean        last_pending;
+  gpointer        data;
+  GDestroyNotify  destroy;
+} SimpleSource;
+
+static gboolean
+simple_source_prepare (GSource *source,
+		       gint    *timeout_p)
+{
+  SimpleSource *ssource = (SimpleSource*) source;
+  ssource->last_pending = ssource->pending (ssource->data, timeout_p);
+  return ssource->last_pending;
+}
+
+static gboolean
+simple_source_check (GSource *source)
+{
+  SimpleSource *ssource = (SimpleSource*) source;
+  gint timeout = -1;
+  if (!ssource->last_pending)
+    ssource->last_pending = ssource->pending (ssource->data, &timeout);
+  return ssource->last_pending;
+}
+
+static gboolean
+simple_source_dispatch (GSource    *source,
+			GSourceFunc callback,
+			gpointer    user_data)
+{
+  SimpleSource *ssource = (SimpleSource*) source;
+  ssource->dispatch (ssource->data);
+  return TRUE;
+}
+
+static void
+simple_source_finalize (GSource *source)
+{
+  SimpleSource *ssource = (SimpleSource*) source;
+
+  /* this finalize handler may be run due to g_source_remove() called
+   * from some dispatch() implementation, possibly causing reentrancy
+   * problems (mutexes etc.). however, there's hardly anything we could
+   * do about that to prevent it.
+   */
+  if (ssource->destroy)
+    ssource->destroy (ssource->data);
+}
+
+GSource*
+g_source_simple (gint            priority,
+		 GSourcePending  pending,
+		 GSourceDispatch dispatch,
+		 gpointer        data,
+		 GDestroyNotify  destroy,
+		 GPollFD        *first_pfd,
+		 ...)
+{
+  static GSourceFuncs simple_source_funcs = {
+    simple_source_prepare,
+    simple_source_check,
+    simple_source_dispatch,
+    simple_source_finalize,
+  };
+  SimpleSource *ssource;
+  GSource *source;
+  va_list var_args;
+  GPollFD *pfd;
+
+  g_return_val_if_fail (pending != NULL, NULL);
+  g_return_val_if_fail (dispatch != NULL, NULL);
+
+  source = g_source_new (&simple_source_funcs, sizeof (SimpleSource));
+  g_source_set_priority (source, priority);
+  ssource = (SimpleSource*) source;
+  ssource->pending = pending;
+  ssource->dispatch = dispatch;
+  ssource->last_pending = FALSE;
+  ssource->data = data;
+  ssource->destroy = destroy;
+  pfd = first_pfd;
+  va_start (var_args, first_pfd);
+  while (pfd)
+    {
+      g_source_add_poll (source, pfd);
+      pfd = va_arg (var_args, GPollFD*);
+    }
+  va_end (var_args);
+  return source;
 }
 
 

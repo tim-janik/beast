@@ -18,6 +18,7 @@
 #include "bseparasite.h"
 
 #include "bsestorage.h"
+#include "bsesource.h"	// FIXME: compat include
 
 
 /* --- defines --- */
@@ -63,18 +64,18 @@ store_parasite_list (BseObject  *object,
   ParasiteList *list;
   guint n;
   
-  list = bse_object_get_qdata (object, quark_parasite_list);
+  list = g_object_get_qdata (object, quark_parasite_list);
   if (!list)
     return;
-
+  
   for (n = 0; n < list->n_parasites; n++)
     {
       Parasite *parasite = list->parasites + n;
       gchar *name;
-
+      
       if (!parasite->n_values)
 	continue;
-
+      
       bse_storage_break (storage);
       name = g_strescape (g_quark_to_string (parasite->quark), NULL);
       bse_storage_printf (storage, "(parasite #\\%c \"%s\"",
@@ -83,13 +84,13 @@ store_parasite_list (BseObject  *object,
       switch (parasite->type)
 	{
 	  guint i;
-
+	  
 	case PARASITE_FLOAT:
 	  bse_storage_printf (storage, " %u", parasite->n_values);
 	  for (i = 0; i < parasite->n_values; i++)
 	    {
 	      gfloat *floats = parasite->data;
-
+	      
 	      if ((i + 1) % 5 == 0)
 		bse_storage_break (storage);
 	      bse_storage_printf (storage, " %f", floats[i]);
@@ -112,7 +113,7 @@ parasite_list_free (gpointer data)
 {
   ParasiteList *list = data;
   guint i;
-
+  
   for (i = 0; i < list->n_parasites; i++)
     if (list->parasites[i].n_values)
       g_free (list->parasites[i].data);
@@ -127,15 +128,15 @@ fetch_parasite (BseObject *object,
 {
   ParasiteList *list;
   guint i;
-
-  list = bse_object_get_qdata (object, quark_parasite_list);
+  
+  list = g_object_get_qdata (object, quark_parasite_list);
   
   if (list)
     for (i = 0; i < list->n_parasites; i++)
       if (list->parasites[i].quark == quark &&
 	  list->parasites[i].type == type)
 	return list->parasites + i;
-
+  
   if (create)
     {
       ParasiteList *olist = list;
@@ -147,24 +148,24 @@ fetch_parasite (BseObject *object,
 	{
 	  if (!quark_parasite_list)
 	    quark_parasite_list = g_quark_from_static_string ("BseParasiteList");
-
+	  
 	  if (olist)
-	    bse_object_steal_qdata (object, quark_parasite_list);
+	    g_object_steal_qdata (object, quark_parasite_list);
 	  else
 	    g_object_connect (object,
 			      "signal::store", store_parasite_list, NULL,
 			      NULL);
-	  bse_object_set_qdata_full (object, quark_parasite_list, list, parasite_list_free);
+	  g_object_set_qdata_full (object, quark_parasite_list, list, parasite_list_free);
 	}
-
+      
       list->parasites[i].quark = quark;
       list->parasites[i].type = type;
       list->parasites[i].n_values = 0;
       list->parasites[i].data = NULL;
-
+      
       return list->parasites + i;
     }
-
+  
   return NULL;
 }
 
@@ -177,10 +178,10 @@ delete_parasite (BseObject *object,
   Parasite *parasite = NULL;
   guint i;
   
-  list = bse_object_get_qdata (object, quark_parasite_list);
+  list = g_object_get_qdata (object, quark_parasite_list);
   if (!list)
     return;
-
+  
   for (i = 0; i < list->n_parasites; i++)
     if (list->parasites[i].quark == quark &&
 	list->parasites[i].type == type)
@@ -198,7 +199,7 @@ delete_parasite (BseObject *object,
       g_object_disconnect (object,
 			   "any_signal", store_parasite_list, NULL,
 			   NULL);
-      bse_object_set_qdata (object, quark_parasite_list, NULL);
+      g_object_set_qdata (object, quark_parasite_list, NULL);
     }
 }
 
@@ -213,12 +214,12 @@ parasite_parser (BseObject  *object,
   guint type;
   guint n_values;
   gpointer data;
-
+  
   /* check identifier */
   if (scanner->token != G_TOKEN_IDENTIFIER ||
       !bse_string_equals ("parasite", scanner->value.v_identifier))
     return G_TOKEN_IDENTIFIER;
-
+  
   /* parse parasite type */
   parse_or_return (scanner, '#');
   parse_or_return (scanner, '\\');
@@ -229,17 +230,17 @@ parasite_parser (BseObject  *object,
   if (scanner->token != G_TOKEN_CHAR)
     return G_TOKEN_CHAR;
   type = scanner->value.v_char;
-
+  
   /* parse parasite name */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
     return G_TOKEN_STRING;
   quark = g_quark_from_string (scanner->value.v_string);
-
+  
   switch (type)
     {
       guint i;
       gfloat *floats;
-
+      
     case PARASITE_FLOAT:
       if (g_scanner_get_next_token (scanner) != G_TOKEN_INT)
 	return G_TOKEN_INT;
@@ -250,7 +251,7 @@ parasite_parser (BseObject  *object,
       for (i = 0; i < n_values; i++)
 	{
 	  gboolean negate = FALSE;
-
+	  
 	  if (g_scanner_get_next_token (scanner) == '-')
 	    {
 	      g_scanner_get_next_token (scanner);
@@ -272,19 +273,33 @@ parasite_parser (BseObject  *object,
 				    type,
 				    g_quark_to_string (quark));
     }
-
+  
   if (g_scanner_peek_next_token (scanner) == ')')
     {
-      Parasite *parasite = fetch_parasite (object, quark, type, TRUE);
-
-      if (parasite->n_values)
-	g_free (parasite->data);
-      parasite->n_values = n_values;
-      parasite->data = data;
+      if (n_values == 2 && BSE_IS_SOURCE (object) &&
+	  quark == g_quark_from_string ("BstRouterCoords"))  // FIXME: compat code, remove
+	{
+	  gfloat *floats = data;
+	  g_object_set (object,
+			"pos_x", -floats[0] / 100.0,
+			"pos_y", floats[1] / 100.0,
+			NULL);
+	  bse_storage_warn (storage, "fixing up parasite to module position: (%f,%f)", -floats[0] / 100.0, floats[1] / 100.0);
+	  g_free (data);
+	}
+      else
+	{
+	  Parasite *parasite = fetch_parasite (object, quark, type, TRUE);
+	  
+	  if (parasite->n_values)
+	    g_free (parasite->data);
+	  parasite->n_values = n_values;
+	  parasite->data = data;
+	}
     }
   else if (n_values)
     g_free (data);
-
+  
   /* read closing brace */
   return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
 }
@@ -293,7 +308,7 @@ void
 bse_parasite_install_parsers (BseObjectClass *oclass)
 {
   g_return_if_fail (BSE_IS_OBJECT_CLASS (oclass));
-
+  
   bse_object_class_add_parser (oclass, "parasite", parasite_parser, NULL);
 }
 
@@ -308,7 +323,7 @@ bse_parasite_set_floats (BseObject   *object,
   g_return_if_fail (n_values < MAX_PARASITE_VALUES);
   if (n_values)
     g_return_if_fail (float_values != NULL);
-
+  
   if (!n_values)
     delete_parasite (object, g_quark_try_string (name), PARASITE_FLOAT);
   else
@@ -317,7 +332,7 @@ bse_parasite_set_floats (BseObject   *object,
 					   g_quark_from_string (name),
 					   PARASITE_FLOAT,
 					   TRUE);
-
+      
       if (parasite->n_values != n_values)
 	{
 	  if (parasite->n_values)
@@ -329,32 +344,22 @@ bse_parasite_set_floats (BseObject   *object,
     }
 }
 
-guint
+SfiFBlock*
 bse_parasite_get_floats (BseObject   *object,
-			 const gchar *name,
-			 guint        max_n_values,
-			 gfloat      *float_values)
+			 const gchar *name)
 {
   Parasite *parasite;
-  guint i, n;
-
+  SfiFBlock *fblock;
+  
   g_return_val_if_fail (BSE_IS_OBJECT (object), 0);
   g_return_val_if_fail (name != NULL, 0);
-  if (max_n_values)
-    g_return_val_if_fail (float_values != NULL, 0);
-
+  
   parasite = fetch_parasite (object,
 			     g_quark_try_string (name),
 			     PARASITE_FLOAT,
 			     FALSE);
-  n = parasite ? parasite->n_values : 0;
-  i = MIN (n, max_n_values);
-  if (i)
-    memcpy (float_values, parasite->data, i * sizeof (gfloat));
-  max_n_values -= i;
-  float_values += i;
-  while (max_n_values--)
-    *(float_values++) = 0.0;
-
-  return n;
+  fblock = sfi_fblock_new ();
+  if (parasite)
+    sfi_fblock_append (fblock, parasite->n_values, parasite->data);
+  return fblock;
 }

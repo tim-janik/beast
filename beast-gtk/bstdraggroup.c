@@ -35,7 +35,7 @@ struct _BstDragGroup
  * of the box.
  * it monitors ::pattern_group_inserted and ::pattern_group_removed
  * on the song to update its position field and to auto-destruct.
- * it also monitors ::set_parent on the pattern_group for
+ * it also monitors ::release on the pattern_group for
  * auto-destruction.
  * it also updates its pattern widgets, according to
  * ::pattern_inserted and ::pattern_removed on the pattern_group.
@@ -283,7 +283,7 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
   drag_group->pattern_group = pattern_group;
   g_object_connect (BSE_OBJECT (pattern_group),
 		    "swapped_signal::notify", drag_group_changed, drag_group,
-		    "swapped_signal::set_parent", bst_drag_group_destroy, drag_group,
+		    "swapped_signal::release", bst_drag_group_destroy, drag_group,
 		    "signal::pattern_inserted", drag_group_pattern_inserted, drag_group,
 		    NULL);
   

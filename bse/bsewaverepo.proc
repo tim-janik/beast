@@ -33,7 +33,7 @@ load_file (BseWaveRepo *wrepo,
   GslWaveDsc *wdsc;
   BseWave *wave;
   guint i;
-
+  
   finfo = gsl_wave_file_info_load (file_name, &error);
   if (!finfo)
     return error;
@@ -42,7 +42,7 @@ load_file (BseWaveRepo *wrepo,
       gsl_wave_file_info_unref (finfo);
       return GSL_ERROR_FORMAT_UNKNOWN;
     }
-
+  
   wdsc = gsl_wave_dsc_load (finfo, 0, &error);
   gsl_wave_file_info_unref (finfo);
   if (!wdsc)
@@ -54,14 +54,14 @@ load_file (BseWaveRepo *wrepo,
   for (i = 0; i < wdsc->n_chunks; i++)
     {
       GslWaveChunk *wchunk = gsl_wave_chunk_create (wdsc, i, error ? NULL : &error);
-
+      
       if (wchunk)
 	bse_wave_add_chunk (wave, wchunk);
     }
   bse_wave_set_locator (wave, file_name, wdsc->name);
-
+  
   gsl_wave_dsc_free (wdsc);
-
+  
   if (wave->n_wchunks)
     {
       bse_container_add_item (BSE_CONTAINER (wrepo), BSE_ITEM (wave));
@@ -70,42 +70,41 @@ load_file (BseWaveRepo *wrepo,
   else
     error = GSL_ERROR_FILE_EMPTY;
   g_object_unref (wave);
-
+  
   return error;
 }
 
 
 /* --- procedures --- */
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "2001";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
 
 
 METHOD (BseWaveRepo, load-file) {
   HELP	= "Load Wave from file";
-  IN    = g_param_spec_object ("wave_repo", "Wave Repo", NULL,
-			       BSE_TYPE_WAVE_REPO, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("file_name", "File Name", "The file to import waves from",
- 			       NULL, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
+				 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("file_name", "File Name", "The file to import waves from",
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseWaveRepo *wrepo    = (BseWaveRepo*) g_value_get_object (in_values++);
-  gchar *file_name      = g_value_get_string (in_values++);
+  BseWaveRepo *wrepo    = (BseWaveRepo*) bse_value_get_object (in_values++);
+  gchar *file_name      = sfi_value_get_string (in_values++);
   BseErrorType error = BSE_ERROR_FORMAT_MISMATCH; // FIXME
   
   /* check parameters */
   if (!BSE_IS_WAVE_REPO (wrepo) || !file_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   error = load_file (wrepo, file_name);
-
+  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
@@ -114,27 +113,27 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseWaveRepo, remove-wave) {
   HELP  = "Remove a wave from repository";
-  IN    = g_param_spec_object ("wave_repo", "Wave Repo", NULL,
-			       BSE_TYPE_WAVE_REPO, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_object ("wave", "Wave", NULL,
-			       BSE_TYPE_WAVE, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
+				 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("wave", "Wave", NULL,
+				 BSE_TYPE_WAVE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseWaveRepo *wrepo = (BseWaveRepo*) g_value_get_object (in_values++);
-  BseItem *wave      = (BseItem*) g_value_get_object (in_values++);
-
+  BseWaveRepo *wrepo = (BseWaveRepo*) bse_value_get_object (in_values++);
+  BseItem *wave      = (BseItem*) bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_WAVE_REPO (wrepo) || !BSE_IS_WAVE (wave) ||
       wave->parent != BSE_ITEM (wrepo))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* action */
   bse_container_remove_item (BSE_CONTAINER (wrepo), wave);
-
+  
   /* set output parameters */
-
+  
   return BSE_ERROR_NONE;
 }

@@ -1364,7 +1364,7 @@ bst_qsampler_set_adjustment (BstQSampler   *qsampler,
 
 
 typedef struct {
-  BswProxy esample;
+  SfiProxy esample;
   guint    nth_channel;
   guint    n_channels;
 } ESampleFiller;
@@ -1379,22 +1379,21 @@ qsampler_esample_filler (gpointer         data,
 			 BstQSampler     *qsampler)
 {
   ESampleFiller *fill = data;
-  BswValueBlock *vblock;
+  SfiFBlock *fblock;
   gint i;
 
   voffset = voffset * fill->n_channels + fill->nth_channel;
-  vblock = bsw_editable_sample_collect_stats (fill->esample,
+  fblock = bse_editable_sample_collect_stats (fill->esample,
 					      voffset,
 					      offset_scale * fill->n_channels,
 					      block_size * fill->n_channels,
 					      fill->n_channels,
 					      n_values);
-  for (i = 0; i < vblock->n_values / 2; i++)
+  for (i = 0; i < fblock->n_values / 2; i++)
     {
-      values[i].min = vblock->values[i * 2] * 32767.9;
-      values[i].max = vblock->values[i * 2 + 1] * 32767.9;
+      values[i].min = fblock->values[i * 2] * 32767.9;
+      values[i].max = fblock->values[i * 2 + 1] * 32767.9;
     }
-  bsw_value_block_unref (vblock);
 
   return i;
 }
@@ -1404,28 +1403,28 @@ free_esample_filler (gpointer data)
 {
   ESampleFiller *fill = data;
 
-  bsw_item_unuse (fill->esample);
+  bse_item_unuse (fill->esample);
   g_free (data);
 }
 
 void
 bst_qsampler_set_source_from_esample (BstQSampler *qsampler,
-				      BswProxy     esample,
+				      SfiProxy     esample,
 				      guint        nth_channel)
 {
   ESampleFiller *fill;
 
   g_return_if_fail (BST_IS_QSAMPLER (qsampler));
-  g_return_if_fail (BSW_IS_EDITABLE_SAMPLE (esample));
+  g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (esample));
 
   fill = g_new (ESampleFiller, 1);
   fill->esample = esample;
-  bsw_item_use (fill->esample);
-  fill->n_channels = bsw_editable_sample_get_n_channels (fill->esample);
+  bse_item_use (fill->esample);
+  fill->n_channels = bse_editable_sample_get_n_channels (fill->esample);
   fill->nth_channel = nth_channel;
 
   bst_qsampler_set_source (qsampler,
-			   bsw_editable_sample_get_length (fill->esample) / fill->n_channels,
+			   bse_editable_sample_get_length (fill->esample) / fill->n_channels,
 			   qsampler_esample_filler,
 			   fill, free_esample_filler);
 }

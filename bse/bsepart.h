@@ -83,7 +83,7 @@ gboolean	 bse_part_delete_event		(BsePart	*self,
 						 guint		 id);
 gboolean	 bse_part_is_selected_event	(BsePart	*self,
 						 guint		 id);
-BswIterPartNote* bse_part_list_notes_around	(BsePart	*self,
+BsePartNoteSeq*  bse_part_list_notes_around	(BsePart	*self,
 						 guint		 tick,
 						 guint		 duration,
 						 gint		 min_note,
@@ -93,8 +93,8 @@ void		 bse_part_queue_notes_within	(BsePart	*self,
 						 guint		 duration,
 						 gint		 min_note,
 						 gint		 max_note);
-BswIterPartNote* bse_part_list_selected_notes	(BsePart	*self);
-BswIterPartNote* bse_part_list_notes_at		(BsePart	*self,
+BsePartNoteSeq*  bse_part_list_selected_notes	(BsePart	*self);
+BsePartNoteSeq*  bse_part_list_notes_at		(BsePart	*self,
 						 guint		 tick,
 						 gint		 note);
 void		 bse_part_select_rectangle	(BsePart	*self,

@@ -106,45 +106,44 @@ bse_midi_icontroller_class_init (BseMidiIControllerClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_midi_icontroller_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_midi_icontroller_get_property;
+  gobject_class->set_property = bse_midi_icontroller_set_property;
+  gobject_class->get_property = bse_midi_icontroller_get_property;
   
   source_class->context_create = bse_midi_icontroller_context_create;
   source_class->context_connect = bse_midi_icontroller_context_connect;
-
-#if 0
+  
+#if 0	// FIXME
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_MIDI_CHANNEL,
-			      bse_param_spec_uint ("midi_channel", "MIDI Channel", NULL,
-						   1, BSE_MIDI_MAX_CHANNELS,
-						   1, 1,
-						   BSE_PARAM_GUI | BSE_PARAM_STORAGE | BSE_PARAM_HINT_SCALE));
+			      sfi_pspec_int ("midi_channel", "MIDI Channel", NULL,
+					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
 #endif
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_1,
-			      bse_param_spec_enum ("control_1", "Signal 1", NULL,
-						   BSE_TYPE_MIDI_SIGNAL_TYPE,
-						   BSE_MIDI_SIGNAL_PITCH_BEND,
-						   BSE_PARAM_DEFAULT));
+			      bse_param_spec_genum ("control_1", "Signal 1", NULL,
+						    BSE_TYPE_MIDI_SIGNAL_TYPE,
+						    BSE_MIDI_SIGNAL_PITCH_BEND,
+						    SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_2,
-			      bse_param_spec_enum ("control_2", "Signal 2", NULL,
-						   BSE_TYPE_MIDI_SIGNAL_TYPE,
-						   BSE_MIDI_SIGNAL_CONTINUOUS_1,
-						   BSE_PARAM_DEFAULT));
+			      bse_param_spec_genum ("control_2", "Signal 2", NULL,
+						    BSE_TYPE_MIDI_SIGNAL_TYPE,
+						    BSE_MIDI_SIGNAL_CONTINUOUS_1,
+						    SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_3,
-			      bse_param_spec_enum ("control_3", "Signal 3", NULL,
-						   BSE_TYPE_MIDI_SIGNAL_TYPE,
-						   BSE_MIDI_SIGNAL_CONTINUOUS_7,
-						   BSE_PARAM_DEFAULT));
+			      bse_param_spec_genum ("control_3", "Signal 3", NULL,
+						    BSE_TYPE_MIDI_SIGNAL_TYPE,
+						    BSE_MIDI_SIGNAL_CONTINUOUS_7,
+						    SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_4,
-			      bse_param_spec_enum ("control_4", "Signal 4", NULL,
-						   BSE_TYPE_MIDI_SIGNAL_TYPE,
-						   BSE_MIDI_SIGNAL_PRESSURE,
-						   BSE_PARAM_DEFAULT));
-
+			      bse_param_spec_genum ("control_4", "Signal 4", NULL,
+						    BSE_TYPE_MIDI_SIGNAL_TYPE,
+						    BSE_MIDI_SIGNAL_PRESSURE,
+						    SFI_PARAM_DEFAULT));
+  
   ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out1", "MIDI Signal 1");
   g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL1);
   ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out2", "MIDI Signal 2");
@@ -176,7 +175,7 @@ bse_midi_icontroller_set_property (GObject      *object,
   switch (param_id)
     {
     case PROP_MIDI_CHANNEL:
-      self->midi_channel = g_value_get_uint (value);
+      self->midi_channel = sfi_value_get_int (value);
       bse_midi_icontroller_update_modules (self);
       break;
     case PROP_CONTROL_1:
@@ -212,7 +211,7 @@ bse_midi_icontroller_get_property (GObject    *object,
   switch (param_id)
     {
     case PROP_MIDI_CHANNEL:
-      g_value_set_uint (value, self->midi_channel);
+      sfi_value_set_int (value, self->midi_channel);
       break;
     case PROP_CONTROL_1:
       g_value_set_enum (value, self->controls[0]);
@@ -243,7 +242,7 @@ module_data_free (gpointer data)
 {
   ModuleData *mdata = data;
   GslTrans *trans = gsl_trans_open ();
-
+  
   bse_midi_receiver_discard_control_module (mdata->midi_receiver, mdata->control_module, trans);
   gsl_trans_commit (trans);
   g_free (mdata);
@@ -261,11 +260,11 @@ bse_midi_icontroller_context_create (BseSource *source,
   
   /* setup module data */
   mdata->midi_receiver = bse_snet_get_midi_receiver (BSE_SNET (parent), context_handle, &mdata->midi_channel);
-  mdata->control_module = bse_midi_receiver_retrive_control_module (mdata->midi_receiver,
-								    mdata->midi_channel,
-								    self->controls,
-								    trans);
-
+  mdata->control_module = bse_midi_receiver_retrieve_control_module (mdata->midi_receiver,
+								     mdata->midi_channel,
+								     self->controls,
+								     trans);
+  
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_omodule (source, context_handle, module);
   
@@ -283,7 +282,7 @@ bse_midi_icontroller_context_connect (BseSource *source,
 {
   GslModule *module = bse_source_get_context_omodule (source, context_handle);
   ModuleData *mdata = module->user_data;
-
+  
   /* connect module to midi control uplink */
   gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 0, module, 0));
   gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 1, module, 1));
@@ -302,37 +301,37 @@ bse_midi_icontroller_update_modules (BseMidiIController *self)
       BseSource *source = BSE_SOURCE (self);
       GslTrans *trans = gsl_trans_open ();
       guint *cids, n, i;
-
+      
       /* forall contexts */
       cids = bse_source_context_ids (source, &n);
-
+      
       /* reconnect modules */
       for (i = 0; i < n; i++)
 	{
 	  GslModule *module = bse_source_get_context_omodule (source, cids[i]);
 	  ModuleData *mdata = module->user_data;
-
+	  
 	  /* disconnect from old module */
 	  gsl_trans_add (trans, gsl_job_disconnect (module, 0));
 	  gsl_trans_add (trans, gsl_job_disconnect (module, 1));
 	  gsl_trans_add (trans, gsl_job_disconnect (module, 2));
 	  gsl_trans_add (trans, gsl_job_disconnect (module, 3));
-
+	  
 	  /* discard old module */
 	  bse_midi_receiver_discard_control_module (mdata->midi_receiver, mdata->control_module, trans);
-
+	  
 	  /* fetch new module */
-	  mdata->control_module = bse_midi_receiver_retrive_control_module (mdata->midi_receiver,
-									    mdata->midi_channel,
-									    self->controls,
-									    trans);
+	  mdata->control_module = bse_midi_receiver_retrieve_control_module (mdata->midi_receiver,
+									     mdata->midi_channel,
+									     self->controls,
+									     trans);
 	  /* connect to new module */
 	  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 0, module, 0));
 	  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 1, module, 1));
 	  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 2, module, 2));
 	  gsl_trans_add (trans, gsl_job_connect (mdata->control_module, 3, module, 3));
 	}
-
+      
       /* commit and cleanup */
       g_free (cids);
       gsl_trans_commit (trans);

@@ -29,18 +29,18 @@ bse_poly2_droots (gdouble roots[2],
 {
   gdouble square = b * b - 4.0 * a * c;
   gdouble tmp;
-
+  
   if (square < 0)
     return FALSE;
-
+  
   if (b > 0)
     tmp = -b - sqrt (square);
   else
     tmp = -b + sqrt (square);
-
+  
   roots[0] = tmp / (a + a);
   roots[1] = (c + c) / tmp;
-
+  
   return TRUE;
 }
 

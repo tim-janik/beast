@@ -84,8 +84,8 @@ dav_chorus_class_init (DavChorusClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) dav_chorus_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) dav_chorus_get_property;
+  gobject_class->set_property = dav_chorus_set_property;
+  gobject_class->get_property = dav_chorus_get_property;
   
   source_class->prepare = dav_chorus_prepare;
   source_class->calc_chunk = dav_chorus_calc_chunk;

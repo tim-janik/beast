@@ -98,8 +98,7 @@ bse_sub_keyboard_class_init (BseSubKeyboardClass *class)
       
       string = g_strdup_printf ("in_port_%u", i + 1);
       bse_object_class_add_param (object_class, NULL, PROP_IPORT_NAME + i * 2,
-				  bse_param_spec_string (string, NULL, NULL,
-							 NULL, 0));
+				  sfi_pspec_string (string, NULL, NULL, NULL, 0));
       g_free (string);
     }
   
@@ -125,7 +124,7 @@ bse_sub_keyboard_reset_names (BseSubKeyboard *self)
   BseItem *item = BSE_ITEM (self);
   BseSNet *snet = item->parent ? BSE_SNET (item->parent) : NULL;
   const gchar *name;
-
+  
   g_object_freeze_notify (G_OBJECT (self));
   name = BSE_SOURCE_OCHANNEL_CNAME (self, 0);
   if (strcmp (iport->input_ports[0], name) != 0 &&
@@ -157,13 +156,13 @@ bse_sub_keyboard_set_parent (BseItem *item,
 			     BseItem *parent)
 {
   BseSubKeyboard *self = BSE_SUB_KEYBOARD (item);
-
+  
   if (item->parent)
     g_signal_handlers_disconnect_by_func (item->parent, bse_sub_keyboard_reset_names, self);
-
+  
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
-
+  
   if (item->parent)
     g_signal_connect_swapped (item->parent, "port_unregistered",
 			      G_CALLBACK (bse_sub_keyboard_reset_names), self);

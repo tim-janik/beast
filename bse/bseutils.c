@@ -815,158 +815,98 @@ bse_time_from_string (const gchar *time_string,
 }
 
 
-/* --- notes --- */
-static const struct {
-  gchar *name;
-  gint note;
-} bse_note_table[] = {
-  { "ces",	BSE_KAMMER_NOTE - 10 - BSE_KAMMER_OCTAVE * 12 },
-  { "cis",	BSE_KAMMER_NOTE -  8 - BSE_KAMMER_OCTAVE * 12 },
-  { "c",	BSE_KAMMER_NOTE -  9 - BSE_KAMMER_OCTAVE * 12 },
-  { "des",	BSE_KAMMER_NOTE -  8 - BSE_KAMMER_OCTAVE * 12 },
-  { "dis",	BSE_KAMMER_NOTE -  6 - BSE_KAMMER_OCTAVE * 12 },
-  { "d",	BSE_KAMMER_NOTE -  7 - BSE_KAMMER_OCTAVE * 12 },
-  { "es",	BSE_KAMMER_NOTE -  6 - BSE_KAMMER_OCTAVE * 12 },
-  { "eis",	BSE_KAMMER_NOTE -  4 - BSE_KAMMER_OCTAVE * 12 },
-  { "e",	BSE_KAMMER_NOTE -  5 - BSE_KAMMER_OCTAVE * 12 },
-  { "fes",	BSE_KAMMER_NOTE -  5 - BSE_KAMMER_OCTAVE * 12 },
-  { "fis",	BSE_KAMMER_NOTE -  3 - BSE_KAMMER_OCTAVE * 12 },
-  { "f",	BSE_KAMMER_NOTE -  4 - BSE_KAMMER_OCTAVE * 12 },
-  { "ges",	BSE_KAMMER_NOTE -  3 - BSE_KAMMER_OCTAVE * 12 },
-  { "gis",	BSE_KAMMER_NOTE -  1 - BSE_KAMMER_OCTAVE * 12 },
-  { "g",	BSE_KAMMER_NOTE -  2 - BSE_KAMMER_OCTAVE * 12 },
-  { "as",	BSE_KAMMER_NOTE -  1 - BSE_KAMMER_OCTAVE * 12 },
-  { "ais",	BSE_KAMMER_NOTE +  1 - BSE_KAMMER_OCTAVE * 12 },
-  { "a",	BSE_KAMMER_NOTE	     - BSE_KAMMER_OCTAVE * 12 },
-  { "bes",	BSE_KAMMER_NOTE +  1 - BSE_KAMMER_OCTAVE * 12 },
-  { "bis",	BSE_KAMMER_NOTE +  3 - BSE_KAMMER_OCTAVE * 12 },
-  { "b",	BSE_KAMMER_NOTE +  2 - BSE_KAMMER_OCTAVE * 12 },
-  // { "h",	BSE_KAMMER_NOTE +  2 - BSE_KAMMER_OCTAVE * 12 }, /* german alias */
-};
-static guint  bse_note_table_length = sizeof (bse_note_table) / sizeof (bse_note_table[0]);
-static gchar *bse_note_name_table[12] = {
-  "c", "cis", "d", "dis", "e", "f",
-  "fis", "g", "gis", "a", "ais", "b",
-};
-
-gint
-bse_note_from_string (const gchar *note_string)
+/* --- record utils --- */
+BsePartNote*
+bse_part_note (guint    id,
+	       guint    tick,
+	       guint    duration,
+	       gint     note,
+	       gint     fine_tune,
+	       gfloat   velocity,
+	       gboolean selected)
 {
-  register gchar *string;
-  register gint note;
-  register gboolean fit;
-  register guint i;
-  
-  g_return_val_if_fail (note_string != NULL, BSE_NOTE_VOID);
-  
-  string = g_strdup (note_string);
-  g_ascii_strdown (string, -1);
-  
-  note = BSE_NOTE_VOID;
-  
-  if (string[0] == 'v' &&
-      string[1] == 'o' &&
-      string[2] == 'i' &&
-      string[3] == 'd' &&
-      string[4] == 0)
-    {
-      g_free (string);
-      
-      return note;
-    }
-  
-  note = BSE_NOTE_UNPARSABLE;
-  
-  fit = FALSE;
-  for (i = 0; i < bse_note_table_length; i++)
-    {
-      register guint p;
-      
-      p = 0;
-      do
-	fit = bse_note_table[i].name[p] == string[p];
-      while (bse_note_table[i].name[++p] && fit);
-      if (fit)
-	break;
-    }
-  
-  if (fit)
-    {
-      gchar *s;
-      register gint o;
-      
-      note = bse_note_table[i].note;
-      if (*(string + strlen (bse_note_table[i].name)))
-	{
-	  o = strtol (string + strlen (bse_note_table[i].name), &s, 10);
-	  if (s && *s)
-	    note = BSE_NOTE_UNPARSABLE;
-	}
-      else
-	o = 0;
-      
-      if (note != BSE_NOTE_UNPARSABLE)
-	note = CLAMP (bse_note_table[i].note + o * 12, BSE_MIN_NOTE, BSE_MAX_NOTE);
-    }
-  
-  g_free (string);
-  
-  return note;
-}
+  BsePartNote *pnote = bse_part_note_new ();
 
-gchar*
-bse_note_to_string (gint note)
-{
-  if (note != BSE_NOTE_VOID)
-    {
-      gchar string[64];
-      guint ht;
-      gint o;
-      
-      g_return_val_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE, g_strdup ("void"));
-      
-      bse_note_examine (note, &o, &ht, NULL, NULL);
-      
-      if (o)
-	sprintf (string, "%s%+d", bse_note_name_table[ht], o);
-      else
-	strcpy (string, bse_note_name_table[ht]);
-      
-      return g_strdup (string);
-    }
-  else
-    return g_strdup ("void");
+  pnote->id = id;
+  pnote->tick = tick;
+  pnote->duration = duration;
+  pnote->note = note;
+  pnote->fine_tune = fine_tune;
+  pnote->velocity = velocity;
+  pnote->selected = selected != FALSE;
+
+  return pnote;
 }
 
 void
-bse_note_examine (gint      note,
-		  gint     *octave_p,
-		  guint    *semitone_p,
-		  gboolean *ht_up_p,
-		  gchar	   *letter_p)
+bse_part_note_seq_take_append (BsePartNoteSeq *seq,
+			       BsePartNote    *element)
 {
-  static const gint8 ht_flags[12] = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0 };
-  register guint semitone;
-  register gint octave;
-  
-  g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
-  
-  semitone = note % 12 + (9 - (BSE_KAMMER_NOTE % 12));
-  
-  note -= semitone;
-  octave = note - (BSE_KAMMER_NOTE - 9);
-  octave = octave / 12 + BSE_KAMMER_OCTAVE;
-  
-  if (octave_p)
-    *octave_p = octave;
-  if (semitone_p)
-    *semitone_p = semitone;
-  if (ht_up_p)
-    *ht_up_p = ht_flags[semitone];
-  if (letter_p)
-    *letter_p = bse_note_name_table[semitone][0];
+  g_return_if_fail (seq != NULL);
+  g_return_if_fail (element != NULL);
+
+  bse_part_note_seq_append (seq, element);
+  bse_part_note_free (element);
 }
 
+BseNoteDescription*
+bse_note_description (SfiInt note,
+		      gint   fine_tune)
+{
+  BseNoteDescription *info = bse_note_description_new ();
+
+  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
+    {
+      gchar letter;
+      info->note = note;
+      bse_note_examine (info->note,
+			&info->octave,
+			&info->semitone,
+			&info->upshift,
+			&letter);
+      info->letter = letter;
+      info->fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
+      info->freq = bse_note_to_tuned_freq (info->note, info->fine_tune);
+      info->name = bse_note_to_string (info->note);
+      info->max_fine_tune = BSE_MAX_FINE_TUNE;
+      info->kammer_note = BSE_KAMMER_NOTE;
+    }
+  else
+    {
+      info->note = BSE_NOTE_VOID;
+      info->name = NULL;
+      info->max_fine_tune = BSE_MAX_FINE_TUNE;
+      info->kammer_note = BSE_KAMMER_NOTE;
+    }
+  return info;
+}
+
+BseNoteSequence*
+bse_note_sequence_copy_deep (BseNoteSequence *rec)
+{
+  // FIXME: stefan, we need deep copies for records and sequences
+  return bse_note_sequence_copy_shallow (rec);
+}
+
+void
+bse_note_sequence_resize (BseNoteSequence *rec,
+			  guint            length)
+{
+  guint fill = rec->notes->n_notes;
+
+  bse_note_seq_resize (rec->notes, length);
+  while (fill < length)
+    rec->notes->notes[fill++] = SFI_KAMMER_NOTE;
+}
+
+guint
+bse_note_sequence_length (BseNoteSequence *rec)
+{
+  return rec->notes->n_notes;
+}
+
+
+/* --- notes --- */
 gint
 bse_note_from_freq (gdouble freq)
 {
@@ -1075,10 +1015,10 @@ bse_darrays_match_freq (gfloat   match_freq,
 
 
 /* --- icons --- */
-BswIcon*
+BseIcon*
 bse_icon_from_pixdata (const BsePixdata *pixdata)
 {
-  BswIcon *icon;
+  BseIcon *icon;
   guint bpp, encoding;
 
   g_return_val_if_fail (pixdata != NULL, NULL);
@@ -1101,17 +1041,16 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
   if (!pixdata->encoded_pix_data)
     return NULL;
 
-  icon = g_new0 (BswIcon, 1);
+  icon = bse_icon_new ();
   icon->bytes_per_pixel = bpp;
-  icon->ref_count = 1;
   icon->width = pixdata->width;
   icon->height = pixdata->height;
-  icon->pixels = g_new (guint8, icon->width * icon->height * icon->bytes_per_pixel);
+  sfi_bblock_resize (icon->pixels, icon->width * icon->height * icon->bytes_per_pixel);
 
   if (encoding == BSE_PIXDATA_1BYTE_RLE)
     {
       const guint8 *rle_buffer = pixdata->encoded_pix_data;
-      guint8 *image_buffer = icon->pixels;
+      guint8 *image_buffer = icon->pixels->bytes;
       guint8 *image_limit = image_buffer + icon->width * icon->height * bpp;
       gboolean check_overrun = FALSE;
       
@@ -1156,7 +1095,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 	g_warning (G_GNUC_PRETTY_FUNCTION "(): `pixdata' encoding screwed");
     }
   else
-    memcpy (icon->pixels, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
+    memcpy (icon->pixels->bytes, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
   
   return icon;
 }
@@ -1213,26 +1152,6 @@ bse_nullify (gpointer *location)
 {
   if (location)
     *location = NULL;
-}
-
-gchar*
-bse_strdup_stripped (const gchar *string)
-{
-  if (string)
-    {
-      guint l;
-      const gchar *s = string;
-
-      while (*s == ' ')
-	s++;
-      l = strlen (s);
-      while (l && s[l - 1] == ' ')
-	l--;
-      if (l)
-	return g_strndup (s, l);
-    }
-
-  return NULL;
 }
 
 void

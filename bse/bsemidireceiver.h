@@ -38,17 +38,17 @@ typedef struct {
 struct _BseMidiReceiver
 {
   gchar		  *receiver_name;
-
+  
   guint		   n_voices;
   BseMidiVoice	 **voices;
-
+  
   guint		   n_cmodules;
   GslModule	 **cmodules;
-
+  
   gpointer	   ctrl_slot_array;	/* BSA of BseMidiControlSlot* */
-
+  
   /*< private >*/
-  GslRing	  *events;	/* BseMidiEvent* */
+  SfiRing	  *events;	/* BseMidiEvent* */
   BseMidiEventType event_type;	/* event currently being decoded */
   BseMidiEventType running_mode;
   guint		   echannel;	/* channel of current event */
@@ -57,7 +57,7 @@ struct _BseMidiReceiver
   guint		   left_bytes;
   guint		   ref_count;
   BseMidiNotifier *notifier;
-  GslRing	  *notifier_events;
+  SfiRing	  *notifier_events;
 };
 
 
@@ -84,10 +84,10 @@ guint		 bse_midi_receiver_create_voice		  (BseMidiReceiver	*self,
 void		 bse_midi_receiver_discard_voice	  (BseMidiReceiver	*self,
 							   guint		 voice_id,
 							   GslTrans		*trans);
-GslModule*	 bse_midi_receiver_retrive_control_module (BseMidiReceiver	*self,
-							   guint		 channel_id,
-							   BseMidiSignalType	 signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
-							   GslTrans		*trans);
+GslModule*	 bse_midi_receiver_retrieve_control_module (BseMidiReceiver	*self,
+							    guint		 channel_id,
+							    BseMidiSignalType	 signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
+							    GslTrans		*trans);
 void		 bse_midi_receiver_discard_control_module (BseMidiReceiver	*self,
 							   GslModule		*cmodule,
 							   GslTrans		*trans);
@@ -101,13 +101,14 @@ void             bse_midi_receiver_set_notifier		  (BseMidiReceiver	*self,
 							   BseMidiNotifier      *notifier);
 BseMidiNotifier* bse_midi_receiver_get_notifier		  (BseMidiReceiver	*self);
 gboolean	 bse_midi_receiver_has_notify_events	  (BseMidiReceiver	*self);
-GslRing*	 bse_midi_receiver_fetch_notify_events	  (BseMidiReceiver	*self);
+SfiRing*	 bse_midi_receiver_fetch_notify_events	  (BseMidiReceiver	*self);
 
 
 /* --- internal --- */
+void		 _bse_midi_init			(void);
 void		 bse_midi_global_lock		(void);
 void		 bse_midi_global_unlock		(void);
-     
+
 
 
 

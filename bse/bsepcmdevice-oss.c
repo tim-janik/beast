@@ -58,7 +58,7 @@ typedef struct
 /* --- prototypes --- */
 static void	    bse_pcm_device_oss_class_init	(BsePcmDeviceOSSClass	*class);
 static void	    bse_pcm_device_oss_init		(BsePcmDeviceOSS	*pcm_device_oss);
-static void	    bse_pcm_device_oss_destroy		(BseObject		*object);
+static void	    bse_pcm_device_oss_finalize		(GObject		*object);
 static BseErrorType bse_pcm_device_oss_open		(BsePcmDevice		*pdev);
 static BseErrorType oss_device_setup			(OSSHandle		*oss);
 static void	    oss_device_retrigger		(OSSHandle		*oss);
@@ -106,13 +106,13 @@ BSE_BUILTIN_TYPE (BsePcmDeviceOSS)
 static void
 bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
 {
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BsePcmDeviceClass *pcm_device_class = BSE_PCM_DEVICE_CLASS (class);
-
+  
   parent_class = g_type_class_peek_parent (class);
-
-  object_class->destroy = bse_pcm_device_oss_destroy;
-
+  
+  gobject_class->finalize = bse_pcm_device_oss_finalize;
+  
   pcm_device_class->open = bse_pcm_device_oss_open;
   pcm_device_class->suspend = bse_pcm_device_oss_close;
   pcm_device_class->driver_rating = BSE_RATING_DEFAULT;
@@ -130,7 +130,7 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
   OSSHandle *oss = g_new0 (OSSHandle, 1);
   BsePcmHandle *handle = &oss->handle;
   BseErrorType error = BSE_ERROR_NONE;
-
+  
   /* setup request */
   handle->writable = TRUE;
   handle->readable = TRUE;
@@ -144,7 +144,7 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
   oss->frag_size = 512;
   oss->bytes_per_value = 2;
   oss->frag_buf = NULL;
-
+  
   /* try open */
   if (!error)
     {
@@ -162,11 +162,11 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
       else
 	error = bse_error_from_errno (errno, BSE_ERROR_OPEN_FAILED);
     }
-
+  
   /* try setup */
   if (!error)
     error = oss_device_setup (oss);
-
+  
   /* setup pdev or shutdown */
   if (!error)
     {
@@ -193,27 +193,27 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
       g_free (oss->frag_buf);
       g_free (oss);
     }
-
+  
   return error;
 }
 
 static void
-bse_pcm_device_oss_destroy (BseObject *object)
+bse_pcm_device_oss_finalize (GObject *object)
 {
   BsePcmDeviceOSS *pdev_oss = BSE_PCM_DEVICE_OSS (object);
-
+  
   g_free (pdev_oss->device_name);
   pdev_oss->device_name = NULL;
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
 bse_pcm_device_oss_close (BsePcmDevice *pdev)
 {
   OSSHandle *oss = (OSSHandle*) pdev->handle;
-
+  
   pdev->handle = NULL;
   (void) ioctl (oss->fd, SNDCTL_DSP_RESET);
   (void) close (oss->fd);
@@ -228,12 +228,12 @@ oss_device_setup (OSSHandle *oss)
   gint fd = oss->fd;
   glong d_long;
   gint d_int;
-
+  
   d_long = fcntl (fd, F_GETFL);
   d_long &= ~O_NONBLOCK;
   if (fcntl (fd, F_SETFL, d_long))
     return BSE_ERROR_DEVICE_ASYNC;
-
+  
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETFMTS, &d_int) < 0)
     return BSE_ERROR_DEVICE_GET_CAPS;
@@ -244,7 +244,7 @@ oss_device_setup (OSSHandle *oss)
       d_int != AFMT_S16_HE)
     return BSE_ERROR_DEVICE_SET_CAPS;
   oss->bytes_per_value = 2;
-
+  
   d_int = handle->n_channels - 1;
   if (ioctl (fd, SNDCTL_DSP_STEREO, &d_int) < 0)
     return BSE_ERROR_DEVICE_SET_CAPS;
@@ -254,7 +254,7 @@ oss_device_setup (OSSHandle *oss)
   if (ioctl (fd, SNDCTL_DSP_SPEED, &d_int) < 0)
     return BSE_ERROR_DEVICE_SET_CAPS;
   handle->mix_freq = d_int;
-
+  
   /* Note: fragment = n_fragments << 16;
    *       fragment |= g_bit_storage (fragment_size - 1);
    */
@@ -271,11 +271,11 @@ oss_device_setup (OSSHandle *oss)
       (d_int & 1))
     return BSE_ERROR_DEVICE_GET_CAPS;
   /* handle->block_size = d_int; */
-
+  
   if (handle->writable)
     {
       audio_buf_info info = { 0, };
-
+      
       if (ioctl (fd, SNDCTL_DSP_GETOSPACE, &info) < 0)
 	return BSE_ERROR_DEVICE_GET_CAPS;
       oss->frag_size = info.fragsize;
@@ -284,7 +284,7 @@ oss_device_setup (OSSHandle *oss)
   else if (handle->readable)
     {
       audio_buf_info info = { 0, };
-
+      
       if (ioctl (fd, SNDCTL_DSP_GETISPACE, &info) < 0)
 	return BSE_ERROR_DEVICE_GET_CAPS;
       oss->frag_size = info.fragsize;
@@ -300,7 +300,7 @@ oss_device_setup (OSSHandle *oss)
 	       oss->frag_size,
 	       oss->n_frags,
 	       oss->n_frags * oss->frag_size);
-
+  
   return BSE_ERROR_NONE;
 }
 
@@ -308,7 +308,7 @@ static void
 oss_device_retrigger (OSSHandle *oss)
 {
   gint d_int;
-
+  
   /* it should be enough to select() on the fd to trigger
    * capture/playback, but with some new OSS drivers
    * (clones) this is not the case anymore, so we also
@@ -321,7 +321,7 @@ oss_device_retrigger (OSSHandle *oss)
   if (oss->handle.writable)
     d_int |= PCM_ENABLE_OUTPUT;
   (void) ioctl (oss->fd, SNDCTL_DSP_SETTRIGGER, &d_int);
-
+  
   /* Jaroslav Kysela <perex@jcu.cz>:
    *  Important sequence:
    *     1) turn on capture
@@ -343,7 +343,7 @@ oss_device_retrigger (OSSHandle *oss)
       struct timeval tv = { 0, 0, };
       fd_set in_fds;
       fd_set out_fds;
-
+      
       FD_ZERO (&in_fds);
       FD_ZERO (&out_fds);
       FD_SET (oss->fd, &in_fds);
@@ -359,7 +359,7 @@ oss_device_status (BsePcmHandle *handle,
   OSSHandle *oss = (OSSHandle*) handle;
   gint fd = oss->fd;
   audio_buf_info info;
-
+  
   if (handle->readable)
     {
       memset (&info, 0, sizeof (info));
@@ -423,13 +423,13 @@ oss_device_read (BsePcmHandle *handle,
   gsize n_left = n_values;
   
   g_return_val_if_fail (oss->bytes_per_value == 2, 0);
-
+  
   do
     {
       gsize n = MIN (buf_size, n_left << 1);
       gint16 *b, *s = buf;
       gssize l;
-
+      
       do
 	l = read (fd, buf, n);
       while (l < 0 && errno == EINTR); /* don't mind signals */
@@ -444,7 +444,7 @@ oss_device_read (BsePcmHandle *handle,
       n_left -= l;
     }
   while (n_left);
-
+  
   return n_values;
 }
 
@@ -458,14 +458,14 @@ oss_device_write (BsePcmHandle *handle,
   gsize buf_size = FRAG_BUF_SIZE (oss);
   gpointer buf = oss->frag_buf;
   const gfloat *s = values;
-
+  
   g_return_if_fail (oss->bytes_per_value == 2);
-
+  
   do
     {
       gsize n = MIN (buf_size, n_values << 1);
       gssize l;
-
+      
       gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_16,
 				G_BYTE_ORDER,
 				s,

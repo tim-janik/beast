@@ -27,24 +27,22 @@ static void	controller_update_cursor	(BstPianoRollController *self,
 
 
 /* --- variables --- */
-static BswIterPartNote *clipboard_iter = NULL;
+static BsePartNoteSeq *clipboard_pseq = NULL;
 
 
 /* --- functions --- */
 void
-bst_piano_roll_controller_set_clipboard (BswIterPartNote *iter)
+bst_piano_roll_controller_set_clipboard (BsePartNoteSeq *pseq)
 {
-  if (clipboard_iter)
-    bsw_iter_free (clipboard_iter);
-  clipboard_iter = iter;
-  if (iter)
-    bsw_iter_rewind (iter);
+  if (clipboard_pseq)
+    bse_part_note_seq_free (clipboard_pseq);
+  clipboard_pseq = bse_part_note_seq_copy_shallow (pseq);
 }
 
-BswIterPartNote*
+BsePartNoteSeq*
 bst_piano_roll_controller_get_clipboard (void)
 {
-  return clipboard_iter;
+  return clipboard_pseq;
 }
 
 BstPianoRollController*
@@ -120,99 +118,94 @@ bst_piano_roll_controller_set_bg_tools (BstPianoRollController *self,
 void
 bst_piano_roll_controller_clear (BstPianoRollController *self)
 {
-  BswIterPartNote *iter;
-  BswProxy proxy;
+  BsePartNoteSeq *pseq;
+  SfiProxy proxy;
+  guint i;
 
   g_return_if_fail (self != NULL);
 
   proxy = self->proll->proxy;
-  iter = bsw_part_list_selected_notes (proxy);
-  while (bsw_iter_n_left (iter))
+  pseq = bse_part_list_selected_notes (proxy);
+  for (i = 0; i < pseq->n_pnotes; i++)
     {
-      BswPartNote *pnote = bsw_iter_get_part_note (iter);
-      bsw_part_delete_event (proxy, pnote->id);
-      bsw_iter_next (iter);
+      BsePartNote *pnote = pseq->pnotes[i];
+      bse_part_delete_event (proxy, pnote->id);
     }
-  bsw_iter_free (iter);
 }
 
 void
 bst_piano_roll_controller_cut (BstPianoRollController *self)
 {
-  BswIterPartNote *iter;
-  BswProxy proxy;
+  BsePartNoteSeq *pseq;
+  SfiProxy proxy;
+  guint i;
 
   g_return_if_fail (self != NULL);
 
   proxy = self->proll->proxy;
-  iter = bsw_part_list_selected_notes (proxy);
-  while (bsw_iter_n_left (iter))
+  pseq = bse_part_list_selected_notes (proxy);
+  for (i = 0; i < pseq->n_pnotes; i++)
     {
-      BswPartNote *pnote = bsw_iter_get_part_note (iter);
-      bsw_part_delete_event (proxy, pnote->id);
-      bsw_iter_next (iter);
+      BsePartNote *pnote = pseq->pnotes[i];
+      bse_part_delete_event (proxy, pnote->id);
     }
-  bst_piano_roll_controller_set_clipboard (iter);
+  bst_piano_roll_controller_set_clipboard (pseq);
 }
 
 void
 bst_piano_roll_controller_copy (BstPianoRollController *self)
 {
-  BswIterPartNote *iter;
-  BswProxy proxy;
+  BsePartNoteSeq *pseq;
+  SfiProxy proxy;
 
   g_return_if_fail (self != NULL);
 
   proxy = self->proll->proxy;
-  iter = bsw_part_list_selected_notes (proxy);
-  bst_piano_roll_controller_set_clipboard (iter);
+  pseq = bse_part_list_selected_notes (proxy);
+  bst_piano_roll_controller_set_clipboard (pseq);
 }
 
 void
 bst_piano_roll_controller_paste (BstPianoRollController *self)
 {
-  BswIterPartNote *iter;
-  BswProxy proxy;
+  BsePartNoteSeq *pseq;
+  SfiProxy proxy;
 
   g_return_if_fail (self != NULL);
 
   proxy = self->proll->proxy;
-  bsw_part_deselect_rectangle (proxy, 0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
-  iter = bst_piano_roll_controller_get_clipboard ();
-  if (iter)
+  bse_part_deselect_rectangle (proxy, 0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
+  pseq = bst_piano_roll_controller_get_clipboard ();
+  if (pseq)
     {
-      guint ptick, ctick = self->proll->max_ticks;
+      guint i, ptick, ctick = self->proll->max_ticks;
       gint cnote = 0;
       gint pnote;
       bst_piano_roll_get_paste_pos (self->proll, &ptick, &pnote);
-      bsw_iter_rewind (iter);
-      while (bsw_iter_n_left (iter))
+      for (i = 0; i < pseq->n_pnotes; i++)
 	{
-	  BswPartNote *pnote = bsw_iter_get_part_note (iter);
+	  BsePartNote *pnote = pseq->pnotes[i];
 	  ctick = MIN (ctick, pnote->tick);
 	  cnote = MAX (cnote, pnote->note);
-	  bsw_iter_next (iter);
 	}
       cnote = pnote - cnote;
-      bsw_iter_rewind (iter);
-      while (bsw_iter_n_left (iter))
+      for (i = 0; i < pseq->n_pnotes; i++)
 	{
-	  BswPartNote *pnote = bsw_iter_get_part_note (iter);
+	  BsePartNote *pnote = pseq->pnotes[i];
 	  guint id;
 	  gint note;
 	  note = pnote->note + cnote;
 	  if (note >= 0)
 	    {
-	      id = bsw_part_insert_note (proxy,
+	      id = bse_part_insert_note (proxy,
 					 pnote->tick - ctick + ptick,
 					 pnote->duration,
 					 note,
 					 pnote->fine_tune,
 					 pnote->velocity);
 	      if (id)
-		bsw_part_select_event (proxy, id);
+		bse_part_select_event (proxy, id);
 	    }
-	  bsw_iter_next (iter);
 	}
     }
 }
@@ -248,7 +241,7 @@ controller_update_cursor (BstPianoRollController *self,
 }
 
 static gboolean
-check_hoverlap (BswProxy part,
+check_hoverlap (SfiProxy part,
 		guint    tick,
 		guint    duration,
 		gint     note,
@@ -257,27 +250,17 @@ check_hoverlap (BswProxy part,
 {
   if (duration)
     {
-      BswIterPartNote *iter = bsw_part_check_overlap (part, tick, duration, note);
-      BswPartNote *pnote;
+      BsePartNoteSeq *pseq = bse_part_check_overlap (part, tick, duration, note);
+      BsePartNote *pnote;
       
-      if (bsw_iter_n_left (iter) == 0)
-	{
-	  bsw_iter_free (iter);
-	  return FALSE;     /* no overlap */
-	}
-      if (bsw_iter_n_left (iter) > 1)
-	{
-	  bsw_iter_free (iter);
-	  return TRUE;      /* definite overlap */
-	}
-      pnote = bsw_iter_get_part_note (iter);
+      if (pseq->n_pnotes == 0)
+	return FALSE;     /* no overlap */
+      if (pseq->n_pnotes > 1)
+	return TRUE;      /* definite overlap */
+      pnote = pseq->pnotes[0];
       if (pnote->tick == except_tick &&
 	  pnote->duration == except_duration)
-	{
-	  bsw_iter_free (iter);
-	  return FALSE;     /* overlaps with exception */
-	}
-      bsw_iter_free (iter);
+	return FALSE;     /* overlaps with exception */
     }
   return TRUE;
 }
@@ -286,15 +269,15 @@ static void
 move_start (BstPianoRollController *self,
 	    BstPianoRollDrag       *drag)
 {
-  BswProxy part = self->proll->proxy;
+  SfiProxy part = self->proll->proxy;
   if (self->obj_id)	/* got note to move */
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
       controller_update_cursor (self, BST_PIANO_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, "Move Note", NULL);
       drag->state = BST_DRAG_CONTINUE;
-      if (bsw_part_is_selected_event (part, self->obj_id))
-	self->sel_iter = bsw_part_list_selected_notes (part);
+      if (bse_part_is_selected_event (part, self->obj_id))
+	self->sel_pseq = bse_part_note_seq_copy_shallow (bse_part_list_selected_notes (part));
     }
   else
     {
@@ -307,8 +290,8 @@ static void
 move_group_motion (BstPianoRollController *self,
 		   BstPianoRollDrag       *drag)
 {
-  BswProxy part = self->proll->proxy;
-  gint new_tick, old_note, new_note, delta_tick, delta_note;
+  SfiProxy part = self->proll->proxy;
+  gint i, new_tick, old_note, new_note, delta_tick, delta_note;
 
   new_tick = MAX (drag->current_tick, self->xoffset) - self->xoffset;
   new_tick = bst_piano_roll_quantize (drag->proll, new_tick);
@@ -318,25 +301,23 @@ move_group_motion (BstPianoRollController *self,
   delta_note = old_note;
   delta_tick -= new_tick;
   delta_note -= new_note;
-  bsw_iter_rewind (self->sel_iter);
-  while (bsw_iter_n_left (self->sel_iter))
+  for (i = 0; i < self->sel_pseq->n_pnotes; i++)
     {
-      BswPartNote *pnote = bsw_iter_get_part_note (self->sel_iter);
+      BsePartNote *pnote = self->sel_pseq->pnotes[i];
       gint tick = pnote->tick;
       gint note = pnote->note;
       note -= delta_note;
-      bsw_part_change_note (part, pnote->id,
+      bse_part_change_note (part, pnote->id,
 			    MAX (tick - delta_tick, 0),
 			    pnote->duration,
-			    BSW_NOTE_CLAMP (note),
+			    SFI_NOTE_CLAMP (note),
 			    pnote->fine_tune,
 			    pnote->velocity);
-      bsw_iter_next (self->sel_iter);
     }
   if (drag->type == BST_DRAG_DONE)
     {
-      bsw_iter_free (self->sel_iter);
-      self->sel_iter = NULL;
+      bse_part_note_seq_free (self->sel_pseq);
+      self->sel_pseq = NULL;
     }
 }
 
@@ -344,11 +325,11 @@ static void
 move_motion (BstPianoRollController *self,
 	     BstPianoRollDrag       *drag)
 {
-  BswProxy part = self->proll->proxy;
+  SfiProxy part = self->proll->proxy;
   guint new_tick;
   gboolean note_changed;
 
-  if (self->sel_iter)
+  if (self->sel_pseq)
     {
       move_group_motion (self, drag);
       return;
@@ -361,11 +342,11 @@ move_motion (BstPianoRollController *self,
       !check_hoverlap (part, new_tick, self->obj_duration, drag->current_note,
 		       self->obj_tick, note_changed ? 0 : self->obj_duration))
     {
-      if (bsw_part_delete_event (part, self->obj_id) != BSE_ERROR_NONE)
+      if (bse_part_delete_event (part, self->obj_id) != BSE_ERROR_NONE)
 	drag->state = BST_DRAG_ERROR;
       else
 	{
-	  self->obj_id = bsw_part_insert_note (part, new_tick, self->obj_duration,
+	  self->obj_id = bse_part_insert_note (part, new_tick, self->obj_duration,
 					       drag->current_note, self->obj_fine_tune, self->obj_velocity);
 	  self->obj_tick = new_tick;
 	  self->obj_note = drag->current_note;
@@ -379,10 +360,10 @@ static void
 move_abort (BstPianoRollController *self,
 	    BstPianoRollDrag       *drag)
 {
-  if (self->sel_iter)
+  if (self->sel_pseq)
     {
-      bsw_iter_free (self->sel_iter);
-      self->sel_iter = NULL;
+      bse_part_note_seq_free (self->sel_pseq);
+      self->sel_pseq = NULL;
     }
   gxk_status_set (GXK_STATUS_ERROR, "Move Note", "Lost Note");
 }
@@ -415,7 +396,7 @@ static void
 resize_motion (BstPianoRollController *self,
 	       BstPianoRollDrag       *drag)
 {
-  BswProxy part = self->proll->proxy;
+  SfiProxy part = self->proll->proxy;
   guint new_bound, new_tick, new_duration;
 
   /* calc new note around fix-point */
@@ -432,14 +413,14 @@ resize_motion (BstPianoRollController *self,
     {
       if (self->obj_id)
 	{
-	  BseErrorType error = bsw_part_delete_event (part, self->obj_id);
+	  BseErrorType error = bse_part_delete_event (part, self->obj_id);
 	  if (error)
 	    drag->state = BST_DRAG_ERROR;
 	  self->obj_id = 0;
 	}
       if (new_duration && drag->state != BST_DRAG_ERROR)
 	{
-	  self->obj_id = bsw_part_insert_note (part, new_tick, new_duration,
+	  self->obj_id = bse_part_insert_note (part, new_tick, new_duration,
 					       self->obj_note, self->obj_fine_tune, self->obj_velocity);
 	  self->obj_tick = new_tick;
 	  self->obj_duration = new_duration;
@@ -460,10 +441,10 @@ static void
 delete_start (BstPianoRollController *self,
 	      BstPianoRollDrag       *drag)
 {
-  BswProxy part = self->proll->proxy;
+  SfiProxy part = self->proll->proxy;
   if (self->obj_id)	/* got note to delete */
     {
-      BseErrorType error = bsw_part_delete_event (part, self->obj_id);
+      BseErrorType error = bse_part_delete_event (part, self->obj_id);
       bst_status_eprintf (error, "Delete Note");
     }
   else
@@ -475,18 +456,18 @@ static void
 insert_start (BstPianoRollController *self,
 	      BstPianoRollDrag       *drag)
 {
-  BswProxy part = self->proll->proxy;
-  BswErrorType error = BSW_ERROR_NO_TARGET;
+  SfiProxy part = self->proll->proxy;
+  BseErrorType error = BSE_ERROR_NO_TARGET;
   if (drag->start_valid)
     {
       guint qtick = bst_piano_roll_quantize (drag->proll, drag->start_tick);
       guint duration = drag->proll->ppqn * 4 / self->note_length;
       if (check_hoverlap (part, qtick, duration, drag->start_note, 0, 0))
-	error = BSW_ERROR_INVALID_OVERLAP;
+	error = BSE_ERROR_INVALID_OVERLAP;
       else
 	{
-	  bsw_part_insert_note (part, qtick, duration, drag->start_note, 0, 1.0);
-	  error = BSW_ERROR_NONE;
+	  bse_part_insert_note (part, qtick, duration, drag->start_note, 0, 1.0);
+	  error = BSE_ERROR_NONE;
 	}
     }
   bst_status_eprintf (error, "Insert Note");
@@ -507,7 +488,7 @@ static void
 select_motion (BstPianoRollController *self,
 	       BstPianoRollDrag       *drag)
 {
-  BswProxy part = self->proll->proxy;
+  SfiProxy part = self->proll->proxy;
   guint start_tick = MIN (drag->start_tick, drag->current_tick);
   guint end_tick = MAX (drag->start_tick, drag->current_tick);
   gint min_note = MIN (drag->start_note, drag->current_note);
@@ -516,7 +497,7 @@ select_motion (BstPianoRollController *self,
   bst_piano_roll_set_view_selection (drag->proll, start_tick, end_tick - start_tick, min_note, max_note);
   if (drag->type == BST_DRAG_DONE)
     {
-      bsw_part_select_rectangle_exclusive (part, start_tick, end_tick - start_tick, min_note, max_note);
+      bse_part_select_rectangle_exclusive (part, start_tick, end_tick - start_tick, min_note, max_note);
       bst_piano_roll_set_view_selection (drag->proll, 0, 0, 0, 0);
     }
 }
@@ -543,7 +524,7 @@ static void
 vselect_motion (BstPianoRollController *self,
 		BstPianoRollDrag       *drag)
 {
-  BswProxy part = self->proll->proxy;
+  SfiProxy part = self->proll->proxy;
   guint start_tick = MIN (drag->start_tick, drag->current_tick);
   guint end_tick = MAX (drag->start_tick, drag->current_tick);
 
@@ -551,7 +532,7 @@ vselect_motion (BstPianoRollController *self,
 				     drag->proll->min_note, drag->proll->max_note);
   if (drag->type == BST_DRAG_DONE)
     {
-      bsw_part_select_rectangle_exclusive (part, start_tick, end_tick - start_tick,
+      bse_part_select_rectangle_exclusive (part, start_tick, end_tick - start_tick,
 					   drag->proll->min_note, drag->proll->max_note);
       bst_piano_roll_set_view_selection (drag->proll, 0, 0, 0, 0);
     }
@@ -597,13 +578,13 @@ controller_canvas_drag (BstPianoRollController *self,
   if (drag->type == BST_DRAG_START)
     {
       BstPianoRollTool tool = BST_PIANO_ROLL_TOOL_NONE;
-      BswIterPartNote *iter;
+      BsePartNoteSeq *pseq;
 
       /* setup drag data */
-      iter = bsw_part_get_notes (drag->proll->proxy, drag->start_tick, drag->start_note);
-      if (bsw_iter_n_left (iter))
+      pseq = bse_part_get_notes (drag->proll->proxy, drag->start_tick, drag->start_note);
+      if (pseq->n_pnotes)
 	{
-	  BswPartNote *pnote = bsw_iter_get_part_note (iter);
+	  BsePartNote *pnote = pseq->pnotes[0];
 	  self->obj_id = pnote->id;
 	  self->obj_tick = pnote->tick;
 	  self->obj_duration = pnote->duration;
@@ -620,12 +601,11 @@ controller_canvas_drag (BstPianoRollController *self,
 	  self->obj_fine_tune = 0;
 	  self->obj_velocity = 0;
 	}
-      if (self->sel_iter)
-	g_warning ("leaking old drag selection (%p)", self->sel_iter);
-      self->sel_iter = NULL;
+      if (self->sel_pseq)
+	g_warning ("leaking old drag selection (%p)", self->sel_pseq);
+      self->sel_pseq = NULL;
       self->xoffset = 0;
       self->tick_bound = 0;
-      bsw_iter_free (iter);
 
       /* find drag tool */
       tool = BST_PIANO_ROLL_TOOL_NONE;

@@ -1,17 +1,16 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 
-srcdir=`dirname $0`
-test -z "$srcdir" && srcdir=.
-
-ORIGDIR=`pwd`
-cd $srcdir
 PROJECT=BEAST
 TEST_TYPE=-d
 FILE=bse
+AUTOMAKE=automake-1.4
 
+srcdir=`dirname $0`
+test -z "$srcdir" && srcdir=.
+ORIGDIR=`pwd`
+cd $srcdir
 DIE=0
-
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have autoconf installed to compile $PROJECT."
@@ -19,7 +18,6 @@ DIE=0
 	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
 	DIE=1
 }
-
 (libtool --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have libtool installed to compile $PROJECT."
@@ -27,10 +25,9 @@ DIE=0
 	echo "(or a newer version if it is available)"
 	DIE=1
 }
-
-(automake --version) < /dev/null > /dev/null 2>&1 || {
+($AUTOMAKE --version) < /dev/null > /dev/null 2>&1 || {
 	echo
-	echo "You must have automake installed to compile $PROJECT."
+	echo "You must have $AUTOMAKE installed to compile $PROJECT."
 	echo "Download the appropriate package for your distribution,"
 	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
 	DIE=1
@@ -84,7 +81,7 @@ aclocal $ACLOCAL_FLAGS
 # optionally feature autoheader
 (autoheader --version)  < /dev/null > /dev/null 2>&1 && autoheader
 
-automake --add-missing $am_opt
+$AUTOMAKE --add-missing $am_opt
 autoconf
 cd $ORIGDIR
 

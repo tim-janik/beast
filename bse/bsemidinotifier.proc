@@ -20,37 +20,36 @@
 #include <bse/bsemidinotifier.h>
 #include <sys/time.h>
 
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "2002";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2002 Tim Janik";
 
 
 METHOD (BseMidiNotifier, current-time) {
   HELP	= "Test";
-  IN	= g_param_spec_object ("midi_notifier", "Midi Notifier", NULL,
- 			       BSE_TYPE_MIDI_NOTIFIER, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_uint ("msec_time", "Time [ms]", NULL,
-			     0, G_MAXUINT, 0, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("midi_notifier", "Midi Notifier", NULL,
+				 BSE_TYPE_MIDI_NOTIFIER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_int ("msec_time", "Time [ms]", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseMidiNotifier *self = g_value_get_object (in_values++);
+  BseMidiNotifier *self = bse_value_get_object (in_values++);
   struct timeval tv;
   guint64 stamp;
   
   /* check parameters */
   if (!BSE_IS_MIDI_NOTIFIER (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   gettimeofday (&tv, NULL);
   stamp = tv.tv_sec;
   stamp = stamp * 1000000 + tv.tv_usec;
-
+  
   /* set output parameters */
-  g_value_set_uint (out_values++, stamp / 1000);
+  sfi_value_set_int (out_values++, stamp / 1000);
   
   return BSE_ERROR_NONE;
 }

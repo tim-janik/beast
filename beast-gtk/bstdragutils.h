@@ -53,10 +53,6 @@ typedef enum	/*< skip >*/
 } BstDragStatus;
 
 
-typedef void (*BstControllerDestroy) (gpointer	 controller,
-				      GtkWidget	*view);
-
-
 
 #ifdef __cplusplus
 }

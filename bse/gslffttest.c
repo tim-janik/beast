@@ -59,7 +59,7 @@ main (int   argc,
   
   /* initialize GSL */
   g_thread_init (NULL);
-  gsl_init (NULL, NULL);
+  gsl_init (NULL);
 
   /* initialize random numbers */
   gettimeofday (&tv, NULL);

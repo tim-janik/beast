@@ -86,7 +86,7 @@ harm_param (gchar *name,
 	    gchar *blurb,
 	    gint   dft)
 {
-  return bse_param_spec_float (name, nick, blurb, 0, 100.0, dft * 100., 1.0, BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE);
+  return sfi_pspec_real (name, nick, blurb, dft * 100., 0, 100.0, 1.0, SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
 }
 
 static void
@@ -107,22 +107,21 @@ dav_organ_class_init (DavOrganClass *class)
   source_class->reset = dav_organ_reset;
   
   bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
-			      bse_param_spec_freq_simple ("base_freq", "Frequency", NULL,
-							  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
-  bse_object_class_set_param_log_scale (object_class, "base_freq", 880.0, 2, 4);
+			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
+						   BSE_KAMMER_FREQUENCY_f,
+						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Base Frequency",
                               PARAM_BASE_NOTE,
-                              bse_param_spec_note_simple ("base_note", "Note", NULL,
-							  BSE_PARAM_GUI));
+                              bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_BRASS,
-			      bse_param_spec_bool ("brass", "Brass Sounds", "Changes the organ to sound more brassy",
-						   FALSE, BSE_PARAM_DEFAULT));
+			      sfi_pspec_bool ("brass", "Brass Sounds", "Changes the organ to sound more brassy",
+						   FALSE, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_REED,
-			      bse_param_spec_bool ("reed", "Reed Sounds", "Adds reeds sound",
-						   FALSE, BSE_PARAM_DEFAULT));
+			      sfi_pspec_bool ("reed", "Reed Sounds", "Adds reeds sound",
+						   FALSE, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_FLUTE,
-			      bse_param_spec_bool ("flute", "Flute Sounds", "Adds flute sounds",
-						   FALSE, BSE_PARAM_DEFAULT));
+			      sfi_pspec_bool ("flute", "Flute Sounds", "Adds flute sounds",
+						   FALSE, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM0,
 			      harm_param ("harm0", "16th", "16th Harmonic", 1.0));
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM1,
@@ -172,49 +171,49 @@ dav_organ_set_property (GObject      *object,
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      self->config.freq = g_value_get_float (value);
+      self->config.freq = sfi_value_get_real (value);
       g_object_notify (G_OBJECT (self), "base_note");
       dav_organ_update_modules (self);
       break;
     case PARAM_BASE_NOTE:
-      self->config.freq = bse_note_to_freq (bse_value_get_note (value));
+      self->config.freq = bse_note_to_freq (sfi_value_get_note (value));
       g_object_notify (G_OBJECT (self), "base_freq");
       dav_organ_update_modules (self);
       break;
     case PARAM_BRASS:
-      self->config.brass = g_value_get_boolean (value);
+      self->config.brass = sfi_value_get_bool (value);
       dav_organ_update_modules (self);
       break;
     case PARAM_FLUTE:
-      self->config.flute = g_value_get_boolean (value);
+      self->config.flute = sfi_value_get_bool (value);
       dav_organ_update_modules (self);
       break;
     case PARAM_REED:
-      self->config.reed = g_value_get_boolean (value);
+      self->config.reed = sfi_value_get_bool (value);
       dav_organ_update_modules (self);
       break;
     case PARAM_HARM0:
-      self->config.harm0 = g_value_get_float (value) / 100.0;
+      self->config.harm0 = sfi_value_get_real (value) / 100.0;
       dav_organ_update_modules (self);
       break;
     case PARAM_HARM1:
-      self->config.harm1 = g_value_get_float (value) / 100.0;
+      self->config.harm1 = sfi_value_get_real (value) / 100.0;
       dav_organ_update_modules (self);
       break;
     case PARAM_HARM2:
-      self->config.harm2 = g_value_get_float (value) / 100.0;
+      self->config.harm2 = sfi_value_get_real (value) / 100.0;
       dav_organ_update_modules (self);
       break;
     case PARAM_HARM3:
-      self->config.harm3 = g_value_get_float (value) / 100.0;
+      self->config.harm3 = sfi_value_get_real (value) / 100.0;
       dav_organ_update_modules (self);
       break;
     case PARAM_HARM4:
-      self->config.harm4 = g_value_get_float (value) / 100.0;
+      self->config.harm4 = sfi_value_get_real (value) / 100.0;
       dav_organ_update_modules (self);
       break;
     case PARAM_HARM5:
-      self->config.harm5 = g_value_get_float (value) / 100.0;
+      self->config.harm5 = sfi_value_get_real (value) / 100.0;
       dav_organ_update_modules (self);
       break;
     default:
@@ -234,37 +233,37 @@ dav_organ_get_property (GObject    *object,
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      g_value_set_float (value, self->config.freq);
+      sfi_value_set_real (value, self->config.freq);
       break;
     case PARAM_BASE_NOTE:
-      bse_value_set_note (value, bse_note_from_freq (self->config.freq));
+      sfi_value_set_note (value, bse_note_from_freq (self->config.freq));
       break;
     case PARAM_BRASS:
-      g_value_set_boolean (value, self->config.brass);
+      sfi_value_set_bool (value, self->config.brass);
       break;
     case PARAM_FLUTE:
-      g_value_set_boolean (value, self->config.flute);
+      sfi_value_set_bool (value, self->config.flute);
       break;
     case PARAM_REED:
-      g_value_set_boolean (value, self->config.reed);
+      sfi_value_set_bool (value, self->config.reed);
       break;
     case PARAM_HARM0:
-      g_value_set_float (value, self->config.harm0 * 100.0);
+      sfi_value_set_real (value, self->config.harm0 * 100.0);
       break;
     case PARAM_HARM1:
-      g_value_set_float (value, self->config.harm1 * 100.0);
+      sfi_value_set_real (value, self->config.harm1 * 100.0);
       break;
     case PARAM_HARM2:
-      g_value_set_float (value, self->config.harm2 * 100.0);
+      sfi_value_set_real (value, self->config.harm2 * 100.0);
       break;
     case PARAM_HARM3:
-      g_value_set_float (value, self->config.harm3 * 100.0);
+      sfi_value_set_real (value, self->config.harm3 * 100.0);
       break;
     case PARAM_HARM4:
-      g_value_set_float (value, self->config.harm4 * 100.0);
+      sfi_value_set_real (value, self->config.harm4 * 100.0);
       break;
     case PARAM_HARM5:
-      g_value_set_float (value, self->config.harm5 * 100.0);
+      sfi_value_set_real (value, self->config.harm5 * 100.0);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -285,19 +284,19 @@ dav_organ_class_ref_tables (DavOrganClass *class)
     return;
   
   /* Initialize sine table. */
-  class->sine_table = g_new (BseSampleValue, rate);
+  class->sine_table = g_new (gfloat, rate);
   for (i = 0; i < rate; i++)
     class->sine_table[i] = sin ((i / rate) * 2.0 * PI) / 6.0;
   
   /* Initialize triangle table. */
-  class->triangle_table = g_new (BseSampleValue, rate);
+  class->triangle_table = g_new (gfloat, rate);
   for (i = 0; i < rate / 2; i++)
     class->triangle_table[i] = (4 / rate * i - 1.0) / 6.0;
   for (; i < rate; i++)
     class->triangle_table[i] = (4 / rate * (rate - i) - 1.0) / 6.0;
   
   /* Initialize pulse table. */
-  class->pulse_table = g_new (BseSampleValue, rate);
+  class->pulse_table = g_new (gfloat, rate);
   for (i = 0; i < slope; i++)
     class->pulse_table[i] = (-i / slope) / 6.0;
   for (; i < half - slope; i++)
@@ -427,7 +426,7 @@ dav_organ_process (GslModule *module,
       guint freq_256_harm4 = freq_256 * 3;
       guint freq_256_harm5 = freq_256_harm3 * 2;
       
-      for (i = 0; i < BSE_TRACK_LENGTH; i++)
+      for (i = 0; i < n_values; i++)
 	{
 	  gfloat vaccu;
 	  

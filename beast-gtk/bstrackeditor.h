@@ -41,7 +41,7 @@ struct _BstRackEditor
 {
   GtkVBox	parent_instance;
 
-  BswProxy	pocket;
+  SfiProxy	pocket;
 
   BstRackTable	*rtable;
   GSList	*plate_list;
@@ -56,11 +56,11 @@ struct _BstRackEditorClass
 
 /* --- prototypes --- */
 GtkType		bst_rack_editor_get_type	(void);
-GtkWidget*	bst_rack_editor_new		(BswProxy	rack_view);
+GtkWidget*	bst_rack_editor_new		(SfiProxy	rack_view);
 void		bst_rack_editor_set_rack_view	(BstRackEditor	*editor,
-						 BswProxy	 rack_view);
+						 SfiProxy	 rack_view);
 void		bst_rack_editor_add_property	(BstRackEditor	*editor,
-						 BswProxy	 item,
+						 SfiProxy	 item,
 						 const gchar	*property_name);
 
 

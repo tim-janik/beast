@@ -23,6 +23,7 @@
 #include "gslopschedule.h"
 #include "gslieee754.h"
 #include <string.h>
+#include <unistd.h>
 #include <sys/poll.h>
 #include <sys/time.h>
 #include <errno.h>
@@ -138,7 +139,7 @@ master_idisconnect_node (EngineNode *node,
   was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
   src_node->outputs[ostream].n_outputs -= 1;
   src_node->module.ostreams[ostream].connected = 0; /* scheduler update */
-  src_node->output_nodes = gsl_ring_remove (src_node->output_nodes, node);
+  src_node->output_nodes = sfi_ring_remove (src_node->output_nodes, node);
   NODE_FLAG_RECONNECT (node);
   NODE_FLAG_RECONNECT (src_node);
   /* update suspension state of input */
@@ -167,7 +168,7 @@ master_jdisconnect_node (EngineNode *node,
   was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
   src_node->outputs[ostream].n_outputs -= 1;
   src_node->module.ostreams[ostream].connected = 0; /* scheduler update */
-  src_node->output_nodes = gsl_ring_remove (src_node->output_nodes, node);
+  src_node->output_nodes = sfi_ring_remove (src_node->output_nodes, node);
   NODE_FLAG_RECONNECT (node);
   NODE_FLAG_RECONNECT (src_node);
   /* update suspension state of input */
@@ -312,7 +313,7 @@ master_process_job (GslJob *job)
       was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
       src_node->module.ostreams[ostream].connected = 0; /* scheduler update */
-      src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
+      src_node->output_nodes = sfi_ring_append (src_node->output_nodes, node);
       NODE_FLAG_RECONNECT (node);
       NODE_FLAG_RECONNECT (src_node);
       /* update suspension state of input */
@@ -339,7 +340,7 @@ master_process_job (GslJob *job)
       was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
       src_node->module.ostreams[ostream].connected = 0; /* scheduler update */
-      src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
+      src_node->output_nodes = sfi_ring_append (src_node->output_nodes, node);
       NODE_FLAG_RECONNECT (node);
       NODE_FLAG_RECONNECT (src_node);
       /* update suspension state of input */
@@ -400,7 +401,7 @@ master_process_job (GslJob *job)
       if (job->data.poll.n_fds + master_n_pollfds > GSL_ENGINE_MAX_POLLFDS)
 	g_error ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
 		 job->data.poll.n_fds + master_n_pollfds, GSL_ENGINE_MAX_POLLFDS);
-      poll = gsl_new_struct0 (Poll, 1);
+      poll = sfi_new_struct0 (Poll, 1);
       poll->poll_func = job->data.poll.poll_func;
       poll->data = job->data.poll.data;
       poll->free_func = job->data.poll.free_func;
@@ -440,7 +441,7 @@ master_process_job (GslJob *job)
 	      master_n_pollfds -= poll_last->n_fds;
 	      master_pollfds_changed = TRUE;
 	    }
-	  gsl_delete_struct (Poll, poll_last);
+	  sfi_delete_struct (Poll, poll_last);
 	}
       else
 	g_warning (G_STRLOC ": failed to remove unknown poll function %p(%p)",
@@ -851,25 +852,26 @@ _engine_master_dispatch (void)
 }
 
 void
-_engine_master_thread (gpointer data)
+_engine_master_thread (EngineMasterData *mdata)
 {
   gboolean run = TRUE;
-  
+
   /* assert sane configuration checks, since we're simply casting structures */
   g_assert (sizeof (struct pollfd) == sizeof (GPollFD) &&
 	    G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd) &&
 	    G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events) &&
 	    G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
   
-  /* add the thread wakeup pipe to master pollfds, so we get woken
-   * up in time (even though we evaluate the pipe contents later)
+  /* add the thread wakeup pipe to master pollfds,
+   * so we get woken  up in time.
    */
-  gsl_thread_get_pollfd (master_pollfds);
-  master_n_pollfds += 1;
+  master_pollfds[0].fd = mdata->wakeup_pipe[0];
+  master_pollfds[0].events = G_IO_IN;
+  master_n_pollfds = 1;
   master_pollfds_changed = TRUE;
-  
+
   toyprof_stampinit ();
-  
+
   while (run)
     {
       GslEngineLoop loop;
@@ -895,8 +897,19 @@ _engine_master_thread (gpointer data)
       if (need_dispatch)
 	_engine_master_dispatch ();
       
-      /* handle thread pollfd messages */
-      run = gsl_thread_sleep (0);
+      /* clear wakeup pipe */
+      {
+	guint8 data[64];
+	gint l;
+	do
+	  l = read (mdata->wakeup_pipe[0], data, sizeof (data));
+	while ((l < 0 && errno == EINTR) || l == sizeof (data));
+      }
+
+      /* wakeup user thread if necessary */
+      if (gsl_engine_has_garbage ())
+	sfi_thread_wakeup (mdata->user_thread);
     }
 }
+
 /* vim:set ts=8 sts=2 sw=2: */

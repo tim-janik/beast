@@ -15,15 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bsesource.h"
+#include <string.h>
+#include <sfi/gbsearcharray.h>
+#include "bsesource.h"
 
-#include        "bsecontainer.h"
-#include        "bsestorage.h"
-#include        "bsemarshal.h"
-#include        "gslcommon.h"
-#include        "gslengine.h"
-#include        <string.h>
-#include        "gbsearcharray.h"
+#include "bsecontainer.h"
+#include "bsestorage.h"
+#include "gslcommon.h"
+#include "gslengine.h"
 
 
 /* --- macros --- */
@@ -35,6 +34,11 @@
 enum {
   SIGNAL_IO_CHANGED,
   SIGNAL_LAST
+};
+enum {
+  PROP_0,
+  PROP_POS_X,
+  PROP_POS_Y,
 };
 typedef struct
 {
@@ -60,7 +64,16 @@ static void         bse_source_class_base_finalize	(BseSourceClass	*class);
 static void         bse_source_class_init		(BseSourceClass	*class);
 static void         bse_source_init			(BseSource	*source,
 							 BseSourceClass	*class);
-static void         bse_source_real_destroy		(BseObject	*object);
+static void	    bse_source_set_property		(GObject	*object,
+							 guint           param_id,
+							 const GValue   *value,
+							 GParamSpec     *pspec);
+static void	    bse_source_get_property		(GObject        *object,
+							 guint           param_id,
+							 GValue         *value,
+							 GParamSpec     *pspec);
+static void         bse_source_dispose			(GObject	*object);
+static void         bse_source_finalize			(GObject	*object);
 static void         bse_source_real_prepare		(BseSource	*source);
 static void	    bse_source_real_context_create	(BseSource      *source,
 							 guint           context_handle,
@@ -177,13 +190,18 @@ bse_source_class_base_finalize (BseSourceClass *class)
 static void
 bse_source_class_init (BseSourceClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
   parent_class = g_type_class_peek_parent (class);
   
+  gobject_class->set_property = bse_source_set_property;
+  gobject_class->get_property = bse_source_get_property;
+  gobject_class->dispose = bse_source_dispose;
+  gobject_class->finalize = bse_source_finalize;
+
   object_class->store_private = bse_source_real_store_private;
   object_class->restore_private = bse_source_real_restore_private;
-  object_class->destroy = bse_source_real_destroy;
 
   class->prepare = bse_source_real_prepare;
   class->context_create = bse_source_real_context_create;
@@ -193,8 +211,18 @@ bse_source_class_init (BseSourceClass *class)
   class->add_input = bse_source_real_add_input;
   class->remove_input = bse_source_real_remove_input;
 
+  bse_object_class_add_param (object_class, "Position",
+			      PROP_POS_X,
+			      sfi_pspec_real ("pos_x", "Position X", NULL,
+					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
+					      SFI_PARAM_STORAGE));
+  bse_object_class_add_param (object_class, "Position",
+			      PROP_POS_Y,
+			      sfi_pspec_real ("pos_y", "Position Y", NULL,
+					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
+					      SFI_PARAM_STORAGE));
+
   source_signals[SIGNAL_IO_CHANGED] = bse_object_class_add_signal (object_class, "io_changed",
-								   bse_marshal_VOID__NONE, NULL,
 								   G_TYPE_NONE, 0);
 }
 
@@ -206,15 +234,56 @@ bse_source_init (BseSource      *source,
   source->inputs = g_new0 (BseSourceInput, BSE_SOURCE_N_ICHANNELS (source));
   source->outputs = NULL;
   source->contexts = NULL;
+  source->pos_x = 0;
+  source->pos_y = 0;
 }
 
 static void
-bse_source_real_destroy (BseObject *object)
+bse_source_set_property (GObject      *object,
+			 guint         param_id,
+			 const GValue *value,
+			 GParamSpec   *pspec)
 {
-  BseSource *source;
-  guint i;
+  BseSource *source = BSE_SOURCE (object);
+  switch (param_id)
+    {
+    case PROP_POS_X:
+      source->pos_x = sfi_value_get_real (value);
+      break;
+    case PROP_POS_Y:
+      source->pos_y = sfi_value_get_real (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+      break;
+    }
+}
 
-  source = BSE_SOURCE (object);
+static void
+bse_source_get_property (GObject    *object,
+			 guint       param_id,
+			 GValue     *value,
+			 GParamSpec *pspec)
+{
+  BseSource *source = BSE_SOURCE (object);
+  switch (param_id)
+    {
+    case PROP_POS_X:
+      sfi_value_set_real (value, source->pos_x);
+      break;
+    case PROP_POS_Y:
+      sfi_value_set_real (value, source->pos_y);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+      break;
+    }
+}
+
+static void
+bse_source_dispose (GObject *object)
+{
+  BseSource *source = BSE_SOURCE (object);
 
   bse_source_clear_ochannels (source);
   if (BSE_SOURCE_PREPARED (source))
@@ -224,14 +293,25 @@ bse_source_real_destroy (BseObject *object)
     }
 
   bse_source_clear_ichannels (source);
+
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->dispose (object);
+}
+
+static void
+bse_source_finalize (GObject *object)
+{
+  BseSource *source = BSE_SOURCE (object);
+  guint i;
+
   for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
     if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
       g_free (BSE_SOURCE_INPUT (source, i)->jdata.joints);
   g_free (source->inputs);
   source->inputs = NULL;
 
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static gchar*
@@ -402,11 +482,11 @@ bse_source_prepare (BseSource *source)
   g_return_if_fail (!BSE_SOURCE_PREPARED (source));
   g_return_if_fail (source->contexts == NULL);
   
-  bse_object_ref (BSE_OBJECT (source));
+  g_object_ref (source);
   source->contexts = g_bsearch_array_create (&context_config);
   BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
-  bse_object_unref (BSE_OBJECT (source));
+  g_object_unref (source);
 }
 
 static void
@@ -423,7 +503,7 @@ bse_source_reset (BseSource *source)
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
   g_return_if_fail (source->contexts != NULL);
   
-  bse_object_ref (BSE_OBJECT (source));
+  g_object_ref (source);
   n_contexts = BSE_SOURCE_N_CONTEXTS (source);
   if (n_contexts)
     {
@@ -443,7 +523,7 @@ bse_source_reset (BseSource *source)
   BSE_SOURCE_GET_CLASS (source)->reset (source);
   g_bsearch_array_free (source->contexts, &context_config);
   source->contexts = NULL;
-  bse_object_unref (BSE_OBJECT (source));
+  g_object_unref (source);
 }
 
 static void
@@ -1221,8 +1301,8 @@ bse_source_unset_input (BseSource *source,
   return BSE_ERROR_NONE;
 }
 
-static GslRing*
-add_inputs_recurse (GslRing   *ring,
+static SfiRing*
+add_inputs_recurse (SfiRing   *ring,
 		    BseSource *source)
 {
   guint i, j;
@@ -1238,7 +1318,7 @@ add_inputs_recurse (GslRing   *ring,
 	    if (!BSE_SOURCE_COLLECTED (isource))
 	      {
 		BSE_OBJECT_SET_FLAGS (isource, BSE_SOURCE_FLAG_COLLECTED);
-		ring = gsl_ring_append (ring, isource);
+		ring = sfi_ring_append (ring, isource);
 	      }
 	  }
       else if (input->idata.osource)
@@ -1247,37 +1327,37 @@ add_inputs_recurse (GslRing   *ring,
 	  if (!BSE_SOURCE_COLLECTED (isource))
 	    {
 	      BSE_OBJECT_SET_FLAGS (isource, BSE_SOURCE_FLAG_COLLECTED);
-	      ring = gsl_ring_append (ring, isource);
+	      ring = sfi_ring_append (ring, isource);
 	    }
 	}
     }
   return ring;
 }
 
-GslRing*
+SfiRing*
 bse_source_collect_inputs_recursive (BseSource *source)
 {
-  GslRing *node, *ring = NULL;
+  SfiRing *node, *ring = NULL;
 
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
 
   ring = add_inputs_recurse (ring, source);
-  for (node = ring; node; node = gsl_ring_walk (ring, node))
+  for (node = ring; node; node = sfi_ring_walk (node, ring))
     ring = add_inputs_recurse (ring, node->data);
   return ring;
 }
 
 void
-bse_source_free_collection (GslRing *ring)
+bse_source_free_collection (SfiRing *ring)
 {
-  GslRing *node;
+  SfiRing *node;
 
-  for (node = ring; node; node = gsl_ring_walk (ring, node))
+  for (node = ring; node; node = sfi_ring_walk (node, ring))
     {
       BseSource *source = BSE_SOURCE (node->data);
       BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_COLLECTED);
     }
-  gsl_ring_free (ring);
+  sfi_ring_free (ring);
 }
 
 void

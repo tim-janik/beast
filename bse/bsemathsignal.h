@@ -98,7 +98,7 @@ static inline float	gsl_signal_exp2 (float x)  G_GNUC_CONST;
  * @RETURNS: y approximating 2^x
  * Fast approximation of 2 raised to the power of x.
  * Multiplicative error stays below 8e-6 and aproaches zero
- * for integer values of x (i.e. x - floor (x) = 0).
+ * for integer values of x (i.e. x - floor (x) -> 0).
  */
 static inline double	gsl_approx_exp2	(float ex)	G_GNUC_CONST;
 

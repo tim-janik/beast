@@ -1,3 +1,549 @@
+Mon Dec 30 00:42:19 2002  Tim Janik  <timj@gtk.org>
+
+	* bseglue.c:
+	(bglue_proxy_processed_notify):
+	(bclosure_notify_marshal):
+	(bclosure_marshal): keep objects alive across remote notifications
+	via use-count increment.
+
+	* bseitem.[hcp]*: expose bse_item_unuse().
+
+	* bseobject.[hc]: removed pre-GObject compat code, fixed callers.
+
+Thu Dec 26 21:59:32 2002  Tim Janik  <timj@gtk.org>
+
+	* gslengine.c (gsl_engine_init): provide master thread with user thread
+	handle for wakeups.
+
+	* gslopmaster.c (_engine_master_thread): wakeup user thread if jobs
+	need to be collected.
+
+	* bseglobals.[hc]: added NORMAL priority for idle handlers.
+
+	* bseserver.[hcp]*: emit ::registration while registering
+	scripts and plugins.
+	added bse-server-register-scripts() and bse-server-register-plugins()
+	procedure which register asyncronously.
+
+	* bsewaveosc.[hc]: pass on the current tick stamp when emitting pcm
+	position notification.
+
+Tue Dec 24 04:57:02 2002  Tim Janik  <timj@gtk.org>
+
+	* bsejanitor.[hc]: emit ::closed once the connection is terminated.
+
+	* *.c: 
+	* bsemarshal.*:
+	* bseobject.[hc]: remove marshaller generation code, use SFI marshaling.
+
+Tue Dec 24 00:11:50 2002  Tim Janik  <timj@gtk.org>
+
+	* bsepcmoutput.c:
+	* gslopmaster.c: misc bug fixes and adaptions due to SFI changes.
+
+Mon Dec 23 03:35:41 2002  Tim Janik  <timj@gtk.org>
+
+	* bseglue.[hc]: support new poll fd api. removed GSource integration
+	which is being provided by BseJanitor now. provide generic conversion
+	functions bse_value_from_sfi() and bse_value_to_sfi(). support context
+	destruction. 
+
+	* bsemain.c: let BseJanitor handle connections now.
+
+	* bsescriptcontrol.[hcp]*: removed, purpose filled by BseJanitor now.
+
+	* bseserver.[hcp]*: use BseJanitor instead of script-control, fixed
+	bse_server_run_remote() somewhat. provide procedures to register
+	scripts and plugins.
+
+	* bswcommon.[hc]: removed entirely.
+
+	* bsescripthelper.[hc]: integrate with BseJanitor, use SFI
+	serialization to pass procedure args via client message. removed
+	comwire dispatcher cruft.
+
+	* bsejanitor.[hcp]*: implemented client connection manager object,
+	based on the old script-control object.
+
+	* bseprocedure.[hc]:
+	* mkcproc.pl:
+	* *.proc: got rid of DATE argument to procedures, support multiple
+	authors.
+
+Tue Dec 17 08:27:20 2002  Tim Janik  <timj@gtk.org>
+
+	* gslfilehash.c: locking fixes.
+
+	* gslopmaster.c: handle wakeup pipe from gsl_engine_init().
+
+	* gslengine.c: create a pipe to wakeup the master thread
+	in gsl_engine_init(), since the threading layer doesn't
+	provide a pipe anymore.
+
+	* bsesnet.c: use bse_idle_remove().
+
+	* bseserver.[hc]: use BSE's main loop context for GSources.
+
+	* bse.h: added public prototypes.
+	* bsemain.[hc]: cleaned up intialization routines.
+	* *.c: changed callers.
+
+	* bsemain.[hc]:
+	(bse_init_async): start asyncronous BSE thread.
+	(bse_init_glue_context): provide a glue context connected to
+	the asyncronously running BSE thread.
+	(bse_init_intern): function resembling the old bse_init(), left
+	in place for internal utilities.
+
+	* bseglobals.[hc]: provide bse_idle_remove() and attach idle
+	handlers to BSE's main loop context.
+
+	* bseglue.[hc]: completed glue layer table implementations, fixed
+	signal handling.
+	(bse_glue_context_create): create glue contexts together with a glue
+	decoder and a main loop source.
+
+	* bsescripthelper.[hc]:
+	* bsescriptcontrol.[hc]: disabled code that has yet to be replaced.
+
+Fri Dec 13 08:08:34 2002  Tim Janik  <timj@gtk.org>
+
+	* gslcommon.[hc]: moved thread layer and memory block allocator from
+	here into SFI.
+
+	* *.[hc]: adapted callers accordingly.
+
+Thu Dec 12 15:36:16 2002  Tim Janik  <timj@gtk.org>
+
+	* remove gslglue.[hc], gslgluecodec.[hc] and gslgluesignal.c which
+	are replaced by new SFI code.
+	
+	* gslcommon.[hc]: removed GslRing code, we have SfiRing now.
+	* *.[hc]: changed callers.
+
+	* remove unused gslconvert.[hc].
+	
+	* removed gslglib.[hc], gslglibhash.cc and gslglibhashtest.cc
+	 which GSL doesn't support anymore.
+	
+Tue Dec 10 03:30:14 2002  Tim Janik  <timj@gtk.org>
+
+	* bsecomwire.[hc]: removed these files, communication went into Sfi.
+
+	* *.[hc]: ported BseComWire uses over to SfiComWire.
+
+Mon Dec  9 07:15:40 2002  Tim Janik  <timj@gtk.org>
+
+	* bsewaveosc.c (bse_wave_osc_set_property): changing waves is very
+	expensive, so ignore resetting the same value.
+
+	* gslloader-gslwave.c: support inlined data handles through a
+	new keyword "binlink".
+	* gslwave.header: added description for "binlink".
+
+	* gsldatahandle.[hc]: added gsl_wave_format_bit_depth() and
+	gsl_wave_format_byte_width() as public API, added
+	gsl_wave_handle_new_zoffset() to refer to first-zero-byte offset.
+
+	* gslfilehash.[hc]: added gsl_hfile_zoffset() to retrieve and
+	cache offset of first zero byte in a file.
+
+	* gsldatautils.[hc]: return -errno in case of failure from
+	gsl_data_handle_dump() and gsl_data_handle_dump_wav().
+	added gsl_data_handle_dump_wstore() which adds data handle
+	to the binary appendix of a SfiWStore.
+
+Sun Dec  8 05:46:32 2002  Tim Janik  <timj@gtk.org>
+
+	* bsegconfig.[hc]: nuked object implementation, implemented
+	global configuration based on BseGConfig record.
+
+	* bseglobals.[hc]: config/gconfig cleanups.
+
+	* bserecords.sfidl: added BseGConfig record.
+
+	* bseserver.[hcp]*: added bse-preferences property, load
+	rc-file, offer procedure to save rc-file.
+
+Sat Dec  7 17:49:04 2002  Tim Janik  <timj@gtk.org>
+
+        * gsldatacache.c (gsl_data_cache_from_dhandle): fix dcache loop
+        iterations.
+
+        * bseautodoc.c:
+        * bsemidivoice.c:
+        * bsesnet.c:
+        * bsesongthread.c:
+        * bsesource.c:
+        * gslcommon.c:
+        * gslcommon.h:
+        * gsldatacache.c:
+        * gslgluecodec.c:
+        * gslmagic.c:
+        * gslopschedule.c:
+        * gsltests.c: fix arg ordering in gsl/sfi_ring_walk().
+
+Wed Dec  4 16:32:07 2002  Tim Janik  <timj@gtk.org>
+
+        * bse/gslloader.[hc]: add gsl_wave_file_info_loader().
+
+        * bse/bseautodoc.c: Fixed @revision placement at bottom (alper).
+
+Tue Dec  3 02:44:39 2002  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: added --seealso argument.
+
+Tue Dec  3 01:33:31 2002  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: fixes from alper for document font.
+
+Tue Dec  3 01:02:58 2002  Tim Janik  <timj@gtk.org>
+
+	* bsetype.c: fixed pspec default hints.
+
+Sun Dec  1 22:44:42 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseprocidl.cc: support "Neutral" for choices.
+
+	* bseutils.c: changed resizing of note sequences to to use the
+	sfidl generated code - default to SFI_KAMMER_NOTE instead of
+	SFI_NOTE_VOID
+
+Sun Dec  1 05:10:12 2002  Tim Janik  <timj@gtk.org>
+
+	* bseobject.c (bse_object_do_set_property): 
+	* bsesuper.c (bse_super_set_property): use g_strdup_*strip* if needed.
+
+	* bseutils.[hc]: removed bse_strdup_stripped().
+
+Sun Dec  1 02:42:49 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseprocidl.cc: capitalized keywords Info, Const, Out, In.
+
+	* Makefile.am: generate public API to bse.sfidl with bseprocidl.
+
+Sat Nov 30 22:42:33 2002  Tim Janik  <timj@gtk.org>
+
+	* bse*.[cp]: fix pspec_note constructors.
+	
+	* bseconstant.c: fix void note properties.
+
+Sun Dec  1 00:08:00 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* Makefile.am: match new sfidl options
+
+	* bseitem.proc: property is an sfidl keyword, renamed parameter
+
+Sun Nov 24 22:52:04 2002  Tim Janik  <timj@gtk.org>
+
+	* bsewave.c (bse_wave_dispose): NULLify freed values.
+	* bsewave.proc: add wave chunk accessors.
+
+	* bseautodoc.c: minor line spacing tweak fro alper.
+
+Sun Nov 24 02:26:14 2002  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: reorder sources to speed up parallel compilation.
+
+	* bseautodoc.c: identify and dump records and sequences as
+	boxed type names. fix up missing pointer indirection for sequences
+	in dumped types.
+
+	* bsecontainer.c: patched up serialization keywords with compat code.
+	bseproject.c: same here, serialization fixes.
+
+	* bseobject.c: minor serialization fix.
+
+	* bseparasite.c: add compat code for module positions.
+
+	* bseprocedure.c: storage API adaptions.
+
+	* bserecords.sfidl: fixup types and docs for icons and BseNoteSequence.
+
+	* bsestorage.[hc]: fixup serialization by using SFI. got rid of old
+	unused code.
+
+	* bsewave.c: set/get property fixes.
+
+Wed Nov 13 23:28:28 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseprocidl.cc: remove BSE_ from enum value names, to avoid
+	double namespacing
+
+Wed Nov 13 20:14:06 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecategories.c: don't put null pointers as icons, as copying
+	them does not work
+
+Tue Nov  5 08:44:40 2002  Tim Janik  <timj@gtk.org>
+
+	* bsescriptcontrol.c (bse_script_control_class_init): 
+	* bsedatapocket.c (bse_data_pocket_class_init): 
+	* bsewaveosc.c (bse_wave_osc_class_init): 
+	* bsepart.c (bse_part_class_init): 
+	urg, move TYPE_UINT signal arguments to TYPE_INT, since
+	UINTs can't be serialized. hope that this doesn't introduce
+	subtle breakage.
+
+Tue Nov  5 05:34:53 2002  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: patch from Alper Ersoy for structure markup.
+
+Mon Nov  4 11:36:16 2002  Tim Janik  <timj@gtk.org>
+
+	* bserecords.sfidl: provide BLURBs and HELPs for some records.
+
+	* bseautodoc.c (show_structdoc): add ability to dump structure
+	documentation.
+
+	* bseautodoc.c (show_procdoc): fix C argument names so they contain
+	'_' not '-'. change order of scheme and C prototypes.
+
+	* bseautodoc.c: applied patch from alper ersoy which uses new
+	reference documentation texi macros.
+
+Mon Nov  4 07:24:12 2002  Tim Janik  <timj@gtk.org>
+
+	* bsetrack.c (bse_track_finalize): remove the aggregate midi receiver
+	in finalize, not dispose.
+
+	* bsecontainer.c (bse_container_remove_item): allow removal of items
+	during finalization phase by explicitely catching ref_count==0.
+
+	* bsesnet.c (bse_snet_release_children): only remove non-aggregate
+	children.
+
+	* bseglue.c (bglue_proxy_notify): don't export
+	::notify(SfiProxy,GParamSpec*), but
+	::property_notify(SfiProxy,const gchar*) as GObject
+	property notification signal.
+	(bglue_describe_iface): don't export iface signals.
+
+	* bseitem.[hc]: s/ITEM_STORAGE_IGNORE/ITEM_AGGREGATE/, changed
+	related files.
+
+Mon Nov  4 00:00:20 2002  Tim Janik  <timj@gtk.org>
+
+	* bseobject.c (bse_object_do_get_icon): return a static BseIcon, and
+	not freed data (bse_categories_from_type() fix).
+
+	* bsecategories.c:
+	(bse_categories_from_type): 
+	(categories_match): properly copy category fields, so static data
+	doesn't get freed with the returned category sequence.
+
+	* bsesource.c: introduce x/y position properties.
+
+Sun Nov  3 21:00:25 2002  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.c (container_release_children): provide default impl,
+	so chaining from derived classes works.
+
+Sun Nov  3 19:08:25 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesource.c: preserve vital data across dispose() and
+	free in finalize().
+
+	* bseitem.c (bse_item_set_parent): dispose items that are
+	unparented.
+
+	* bsemidisynth.c: remove internal children in finalize(), not
+	dispose().
+
+	* bseproject.c: remove children in release_children().
+
+	* bsesong.c: remove children in release_children() and internal
+	children in finalize().
+
+	* bsesuper.c (bse_super_finalize): only remove from global super list
+	upon finalize(), not dispose().
+
+	* bsecontainer.c (bse_container_dispose): invoke release_children() if
+	no use_count is being held on the container.
+
+Sun Nov  3 07:03:42 2002  Tim Janik  <timj@gtk.org>
+
+	* bseglue.c (bglue_proxy_notify): 
+	* bseglue.c (fetch_proxy): connect normal signals !RUN_AFTER and proxy
+	release notification as !RUN_AFTER, so the signal has a chance of being
+	delivered to user code before the glue layer is informed about proxy
+	releases.
+	release notification still doesn't work properly, regardless.
+
+	* bserecords.sfidl:
+	* bsecategories.c: assign unique IDs to categories.
+
+	* bseobject.c (bse_object_from_id): use SfiUStore instead of a hash
+	table for object id maintenance.
+
+	* bseobject.[hc]: remove ::destroy signal and method.
+	emit ::release upon ->dispose().
+
+	* bseitem.[hcp]*: don't emit ::set_parent() anymore. auto-remove items
+	from containers upon dispose. run ->dispose() if an item is orphaned,
+	i.e. lost its parent and has no use_count.
+
+	* bsecontainer.c: remove destroy() method.
+
+	* *.c: const fixes, turned destroy() implementations into dispose()
+	or finalize().
+
+Sat Nov  2 00:06:12 2002  Tim Janik  <timj@gtk.org>
+
+	* bse.h: remove all include files, we'll only export a handfull
+	of public functions now.
+
+	* *.c, *.cc: fixup includes.
+
+	* bseglue.c (bglue_proxy_list_properties): fix off-by-one array
+	access.
+
+	* bseserver.c: disable BSE internal glue context.
+
+Fri Nov  1 17:51:26 2002  Tim Janik  <timj@gtk.org>
+
+	* bseglue.c: fix sginal -> glue event delivery.
+
+Sun Nov  3 00:01:20 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* Makefile.am: switch to sfidl long options
+
+Sat Nov  2 22:00:52 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsetype.c: sfidl_pspec_(Rec|Seq) -> sfidl_pspec_Boxed(Rec|Seq)
+
+Sat Nov  2 00:05:20 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecategories.proc: need to have a boxed type for returning
+	BseCategorySeq
+
+	* bseprocidl.cc: generate code to define choices, class forward
+	declarations and class help strings
+
+Thu Oct 31 18:27:52 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bserecords.sfidl: added a documentation example.
+
+Wed Oct 30 00:49:04 2002  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: apply patch from Alper Ersoy to change generated
+	texi format.
+
+Tue Oct 29 00:23:16 2002  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: new program, generate texinfo procedure documentations.
+
+Mon Oct 28 04:38:42 2002  Tim Janik  <timj@gtk.org>
+
+	* bseglue.c (fetch_proxy): export proxy references if a proxy
+	has a parent or a use count.
+
+	* bseserver.c (bse_server_init): add an internal static use count
+	on the server singleton.
+
+Sun Oct 27 23:12:03 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* bseprocidl.cc: use Bse namespace, MAXINT/MININT support
+
+	* bserecords.sfidl: removed typedef to match new sfidl syntax
+
+	* bsetype.c: sfi_pspec_* -> sfidl_pspec_*
+
+Sun Oct 27 16:52:33 2002  Tim Janik  <timj@gtk.org>
+
+	* *.c: fix _log_scale() pspec usage.
+
+	* bsecategories.proc: introduce bse-categories-match().
+
+	* bseglue.[hc]: adapt to new glue layer code in SFI.
+
+	* bseobject.[hc]:
+	* bseparam.[hc]: remove old log-scale code.
+
+	* bseprocedure.proc: introduce bse-type-blurb().
+
+	* bsescripthelper.c:
+	* bseserver.c:
+	* bseprocidl.cc: fix glue context creation.
+
+	* bsesource.proc: introduce BseSource+has-outputs().
+
+Thu Oct 24 18:02:41 2002  Tim Janik  <timj@gtk.org>
+
+	* moved gbsearcharray.h into SFI.
+
+	* fix gbsearcharray.h usages.
+
+Sun Oct 27 00:35:01 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* bseprocidl.cc: use "signal" rather than "signal void" in the
+	sfidl file, as we only have signals without return value.
+
+Sat Oct 26 23:09:34 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* Makefile.am bseprocidl.cc: new program that builds an sfidl file
+	containing all classes/procedures found by introspection
+	
+	* bsecategories.proc bsecontainer.proc bseitem.proc bsepart.proc
+	bseproject.proc bseserver.proc: put return values into the appropriate
+	boxed types (i.e. BSE_TYPE_PART_NOTE_SEQ) and use boxed param specs.
+	This allows bseprocidl to figure out the type correctly.
+
+Sun Oct  6 06:32:19 2002  Tim Janik  <timj@gtk.org>
+
+	* bsecategories.[hc]:
+	* bsecategories.proc: switch this over to SFIDL generated structures
+	and implement procedures to query categories.
+
+	* bseinstrument.h[hc]: don't compile this anymore.
+
+Sat Oct  5 02:34:19 2002  Tim Janik  <timj@gtk.org>
+
+	* bseeditablesample.proc: use SfiFBlock for return values from
+	collect-stats() and read-samples().
+
+	* bseprocedure.proc (bse-note-to-freq): 
+	* bseserver.proc (describe-note), (note-from-freq), (note-from-string),
+	(construct-note): use generated BseNoteDescription instead of
+	BswNoteDescription.
+
+	* bsecontainer.proc (list-items):
+	* bsecontainer.[hc] (bse_container_list_items):
+	* bseproject.proc (match-items-by-uname): 
+	* bseitem.[hc] (bse_item_gather_proxies), (bse_item_list_proxies):
+	* bseitem.proc (list-proxies):
+	* *.c (->list_proxies):
+	use BseProxySeq instead of a proxy iter to list items.
+
+	* bseproject.proc (list-uname-paths): 
+	* bseproject.[hc] (bse_project_list_upaths): 
+	use BseStringSeq instead of a string iter.
+	
+	* bsepart.[hc]:
+	* bsepart.proc: use BsePartNote and BsePartNoteSeq instead
+	of BswIterPartNote in the interfaces.
+
+Fri Oct  4 09:35:24 2002  Tim Janik  <timj@gtk.org>
+
+	* *.[hc]: removed a bunch of code that went into SFI.
+
+	* bsecompat.h: provide short-term compatibility defines.
+
+Wed Oct  2 06:50:39 2002  Tim Janik  <timj@gtk.org>
+
+	* bseitem.proc (get-type): return the type as interface
+	name rather than gulong.
+	* bseproject.proc: same for list-uname-paths() and
+	match-items-by-uname().
+
+	* *.c: changed nearly all param_spec_*() conmstructors from
+	GLib and Bse variants over to their Sfi counterparts.
+
+Wed Sep 25 17:51:56 2002  Tim Janik  <timj@gtk.org>
+
+	* bseprocedure.c (bse_procedure_init): ref and sink the procedures
+	param specs.
+
 Sun Sep 15 06:02:16 2002  Tim Janik  <timj@gtk.org>
 
 	* bsebindata.h:
@@ -201,7 +747,7 @@ Sat Aug  3 17:16:13 2002  Tim Janik  <timj@gtk.org>
 
 Fri Aug  2 18:21:19 2002  Tim Janik  <timj@gtk.org>
 
-	* bseitem.[hc]: add per-class list_proxies() method to retrive a list
+	* bseitem.[hc]: add per-class list_proxies() method to retrieve a list
 	of possible proxies for object properties.
 	add list_proxies() function and procedure.
 	bse_item_gather_proxies(): new convenience function to add predicate
@@ -477,7 +1023,7 @@ Mon Jul 15 05:07:37 2002  Tim Janik  <timj@gtk.org>
 
 	* gslcommon.[hc]: 
 	add flow job debug key.
-	(gsl_time_system): retrive system time in micro seconds.
+	(gsl_time_system): retrieve system time in micro seconds.
 	(gsl_tick_stamp_last): get the last tick stamp update together with
 	the system time of that update.
 
@@ -620,7 +1166,7 @@ Thu Jun 13 07:28:34 2002  Tim Janik  <timj@gtk.org>
 
 	* bseserver.[hcp]*: support container usage of the server.
 	moved script handling into bsescriptcontrol.c.
-	implment procedure to retrive a MIDI notifier obejct.
+	implment procedure to retrieve a MIDI notifier obejct.
 
 	* bsesongthread.c: silence debugging output.
 
@@ -728,7 +1274,7 @@ Wed May 22 07:49:50 2002  Tim Janik  <timj@gtk.org>
 
 	* bseprocedure.[hc]: added bse_procedure_eval() to call procedures from
 	strings, and bse_procedure_marshal_retval() and it's counterpart
-	bse_procedure_unmarshal_retval() to store/retrive procedure call returns
+	bse_procedure_unmarshal_retval() to store/retrieve procedure call returns
 	in/from strings.
 
 	* bsestorage.c (bse_storage_parse_param_value): allow pspec to be NULL.
@@ -1144,7 +1690,7 @@ Sat Mar 30 05:57:45 2002  Tim Janik  <timj@gtk.org>
 	* bseinstrument.[hc]: some cleanups. provide synthesis networks
 	for song to play.
 
-	* bseitem.proc: added procedure to retrive an item's sequential ID.
+	* bseitem.proc: added procedure to retrieve an item's sequential ID.
 
 	* bsemain.c: define _XOPEN_SOURCE 600 only if
 	GSL_HAVE_MUTEXATTR_SETTYPE is > 0, since this seems to break random
@@ -1197,7 +1743,7 @@ Tue Mar 26 12:22:12 2002  Tim Janik  <timj@gtk.org>
 	(bse_object_class_add_signal):
 	(bse_proxy_marshaller_lookup): mandate specification of a BswProxy
 	marshaller besides the normal marshaller when introducing signals.
-	provide lookup facility to retrive the proxy marshaller of a signal.
+	provide lookup facility to retrieve the proxy marshaller of a signal.
 
 	* *.c: changed class_init() function which introduce signals to provide
 	a proxy marshaller.
@@ -1248,7 +1794,7 @@ Sun Mar 10 10:08:32 2002  Tim Janik  <timj@gtk.org>
 
 	* bseserver.proc: supply a procedure to check for loader matches.
 
-	* bsewave.proc: added procedure to retrive a BseEditableSample.
+	* bsewave.proc: added procedure to retrieve a BseEditableSample.
 
 	* bswcommon.[hc]: made BseIcon into a BswIcon structure, so this
 	can be shared and exported through the wrapper code.
@@ -1336,7 +1882,7 @@ Mon Feb 11 18:20:57 2002  Tim Janik  <timj@gtk.org>
 	support ordinary items (non-supers) as children of a project.
 	add new function bse_project_find_item().
 
-	* bseproject.proc: ad procedure get-data-pocket() to retrive a
+	* bseproject.proc: ad procedure get-data-pocket() to retrieve a
 	named data pocket object from a project.
 
 	* bsequery.c: minor improvement to procedure doc generation.
@@ -1786,7 +2332,7 @@ Fri Jan 11 06:17:23 2002  Tim Janik  <timj@gtk.org>
 	tick_stamp.
 	(gsl_thread_awake_before): queue wakeup of self before a certain
 	tick_stamp.
-	(gsl_thread_get_pollfd): retrive wakeup pollfd for self.
+	(gsl_thread_get_pollfd): retrieve wakeup pollfd for self.
 	(gsl_tick_stamp): return current tick stamp counter.
 	(GSL_TICK_STAMP): get current tick stamp counter without
 	lock protection (should be used within GModule only).
@@ -3211,7 +3757,7 @@ Sun Oct 31 16:20:49 1999  Tim Janik  <timj@gtk.org>
 	we weren't saving/restoring the current parsing position around binary
 	block reads.
 	(bse_storage_ensure_bin_offset): 
-	(bse_storage_restore_offset): retrive/restore current file offset.
+	(bse_storage_restore_offset): retrieve/restore current file offset.
 
 Fri Oct 29 11:27:47 1999  Tim Janik  <timj@gtk.org>
 

@@ -18,8 +18,9 @@
 #ifndef __BST_RACK_ITEM_H__
 #define __BST_RACK_ITEM_H__
 
-#include	"bstracktable.h"
-#include	"bstcontrollers.h"
+#include "bstracktable.h"
+#include "bstparam.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,16 +47,15 @@ struct _BstRackItem
   GtkWidget	*controller_choice;
   GtkWidget	*choice;
 
-  BswProxy	pocket;
+  SfiProxy	pocket;
   guint		entry;
 
-  BstControllerInfo *cinfo;
-  GtkWidget	    *cwidget;
-
   /* pocket data */
-  BswProxy	   proxy;
+  SfiProxy	   proxy;
   GParamSpec	  *pspec;
   gchar		  *ctype;
+
+  BstParam	*bparam;
 
   /* maintained by BstRackTable */
   BstRackChildInfo rack_child_info;
@@ -73,15 +73,13 @@ struct _BstRackItemClass
 /* --- prototypes --- */
 GtkType		bst_rack_item_get_type		(void);
 void		bst_rack_item_set_property	(BstRackItem	*item,
-						 BswProxy	 data_pocket,
+						 SfiProxy	 data_pocket,
 						 guint		 entry_id);
 void		bst_rack_item_set_proxy		(BstRackItem	*item,
-						 BswProxy	 proxy,
+						 SfiProxy	 proxy,
 						 GParamSpec	*pspec,
-						 BstControllerInfo *cinfo);
-void		bst_rack_item_controler_changed	(BstRackItem	*item);
+						 const gchar    *view_name);
 void		bst_rack_item_gui_changed	(BstRackItem	*item);
-void		bst_rack_item_model_changed	(BstRackItem	*item);
 
 
 #ifdef __cplusplus

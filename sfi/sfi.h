@@ -19,16 +19,24 @@
 #ifndef __SFI_H__
 #define __SFI_H__
 
+/* no bin-compat: #include <sfi/sficomwire.h> */
+#include <sfi/sficomport.h>
 #include <sfi/sfiglue.h>
 #include <sfi/sfigluecodec.h>
+#include <sfi/sfiglueproxy.h>
+#include <sfi/sfilog.h>
+#include <sfi/sfimemory.h>
 #include <sfi/sfinote.h>
 #include <sfi/sfiparams.h>
 #include <sfi/sfiprimitives.h>
 #include <sfi/sfiserial.h>
+#include <sfi/sfithreads.h>
+/* no bin-compat: #include <sfi/sfistore.h> */
 #include <sfi/sfitime.h>
 #include <sfi/sfitypes.h>
+#include <sfi/sfiustore.h>
 #include <sfi/sfivalues.h>
-#include <sfi/sfivcall.h>
+#include <sfi/sfivmarshal.h>
 
 #endif /* __SFI_VALUE_H__ */
 

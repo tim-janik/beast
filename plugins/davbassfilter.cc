@@ -125,17 +125,17 @@ dav_bass_filter_class_init (DavBassFilterClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) dav_bass_filter_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) dav_bass_filter_get_property;
+  gobject_class->set_property = dav_bass_filter_set_property;
+  gobject_class->get_property = dav_bass_filter_get_property;
   
   source_class->prepare = dav_bass_filter_prepare;
   source_class->calc_chunk = dav_bass_filter_calc_chunk;
   source_class->reset = dav_bass_filter_reset;
   
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER,
-			      bse_param_spec_bool ("trigger", "Trigger filter",
-						 "Trigger the filter",
-						 FALSE, BSE_PARAM_GUI));
+			      sfi_pspec_bool ("trigger", "Trigger filter",
+						   "Trigger the filter",
+						   FALSE, SFI_PARAM_GUI));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_CUTOFF_FREQ,
 			      bse_param_spec_float ("cutoff_freq", "Cutoff [%]",

@@ -34,9 +34,10 @@ typedef struct {
   GslLong  n_bytes;
   /*< private >*/
   GslLong  cpos;
-  GslMutex mutex;
+  SfiMutex mutex;
   gint     fd;
   guint    ocount;
+  GslLong  zoffset;
 } GslHFile;
 typedef struct {
   GslHFile *hfile;
@@ -50,6 +51,7 @@ GslLong	  gsl_hfile_pread	(GslHFile	*hfile,
 				 GslLong	 offset,
 				 GslLong         n_bytes,
 				 gpointer	 bytes);
+GslLong	  gsl_hfile_zoffset	(GslHFile	*hfile);
 void	  gsl_hfile_close	(GslHFile	*hfile);
 
 

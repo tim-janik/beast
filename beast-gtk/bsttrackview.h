@@ -50,7 +50,7 @@ struct _BstTrackViewClass
 
 /* --- prototypes --- */
 GtkType		bst_track_view_get_type	(void);
-GtkWidget*	bst_track_view_new	(BseSong	*song);
+GtkWidget*	bst_track_view_new	(SfiProxy	song);
 
 
 

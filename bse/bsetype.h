@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bsetype.h: BSE type system
  */
 #ifndef __BSE_TYPE_H__
 #define __BSE_TYPE_H__
@@ -29,39 +27,6 @@ extern "C" {
 
 /* --- typedefs --- */
 #define BSE_TYPE_PROCEDURE	G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_BSE_FIRST + 3)
-#define BSE_TYPE_TIME		G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_BSE_FIRST + 4)
-#define	BSE_TYPE_DOTS		G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_BSE_FIRST + 5)
-
-typedef enum
-{
-  BSE_PARAM_READABLE		= G_PARAM_READABLE,
-  BSE_PARAM_WRITABLE		= G_PARAM_WRITABLE,
-  BSE_PARAM_MASK		= G_PARAM_MASK,
-
-  /* intention */
-  BSE_PARAM_SERVE_GUI		= 1 << 8,
-  BSE_PARAM_SERVE_STORAGE	= 1 << 9,
-  BSE_PARAM_SERVE_MASK		= 0x00000f00,
-
-  /* storage flags */
-  BSE_PARAM_FORCE_DIRTY		= 1 << 13,
-  BSE_PARAM_STORAGE_FLAG_MASK	= 0x0000f000,
-
-  /* GUI hints */
-  BSE_PARAM_HINT_CHECK_NULL	= 1 << 16,
-  BSE_PARAM_HINT_RDONLY		= 1 << 17,
-  BSE_PARAM_HINT_RADIO		= 1 << 18,
-  BSE_PARAM_HINT_DIAL		= 1 << 19,
-  BSE_PARAM_HINT_SCALE		= 1 << 20,
-  BSE_PARAM_HINT_MASK		= 0xffff0000,
-
-  /* aliases */
-  BSE_PARAM_READWRITE		= BSE_PARAM_READABLE | BSE_PARAM_WRITABLE,
-  BSE_PARAM_GUI			= BSE_PARAM_READWRITE | BSE_PARAM_SERVE_GUI,
-  BSE_PARAM_STORAGE		= BSE_PARAM_READWRITE | BSE_PARAM_SERVE_STORAGE,
-  BSE_PARAM_DEFAULT		= BSE_PARAM_GUI | BSE_PARAM_STORAGE
-} BseParamFlags;
-
 
 /* type macros
  */
@@ -87,18 +52,6 @@ GType  		bse_type_register_dynamic (GType              parent_type,
 
 
 /* --- implementation details --- */
-extern GType BSE_TYPE_PARAM_INT;
-extern GType BSE_TYPE_PARAM_UINT;
-extern GType BSE_TYPE_PARAM_FLOAT;
-extern GType BSE_TYPE_PARAM_DOUBLE;
-extern GType BSE_TYPE_PARAM_TIME;
-extern GType BSE_TYPE_PARAM_NOTE;
-extern GType BSE_TYPE_PARAM_DOTS;
-
-/* compatibility functions
- */
-#define	bse_type_create_object(type)	((gpointer) g_type_create_instance (type))
-#define	bse_type_free_object(object)	(g_type_free_instance ((gpointer) (object)))
 
 /* magic macros to define type initialization function within
  * .c files. they identify builtin type functions for magic post
@@ -117,6 +70,10 @@ extern GType BSE_TYPE_PARAM_DOTS;
 /* Here we import the auto generated type ids.
  */
 #include        <bse/bsegentypes.h>
+
+/* --- dynamic config --- */
+#define BSE_GCONFIG(cfg) (bse_global_config->cfg)
+extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 
 
 #ifdef __cplusplus

@@ -76,52 +76,52 @@ bse_free_verb_class_init (BseFreeVerbClass *class)
   BseFreeVerbConstants *constants = &class->constants;
   BseFreeVerbConfig defaults;
   guint channel;
-
+  
   parent_class = g_type_class_peek_parent (class);
-
+  
   gobject_class->set_property = bse_free_verb_set_property;
   gobject_class->get_property = bse_free_verb_get_property;
-
+  
   source_class->context_create = bse_free_verb_context_create;
-
+  
   bse_free_verb_cpp_defaults (&defaults, constants);
-
+  
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_ROOM_SIZE,
-			      bse_param_spec_float ("room_size", "Room Size", NULL,
-						    constants->room_offset,
-						    constants->room_offset + constants->room_scale * 1.0,
-						    constants->room_offset + constants->room_scale * defaults.room_size,
-						    0.1 * constants->room_scale,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("room_size", "Room Size", NULL,
+					      constants->room_offset + constants->room_scale * defaults.room_size,
+					      constants->room_offset,
+					      constants->room_offset + constants->room_scale * 1.0,
+					      0.1 * constants->room_scale,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_DAMPING,
-			      bse_param_spec_float ("damping", "Damping [%]", NULL,
-						    0, constants->damp_scale * 1.0,
-						    constants->damp_scale * defaults.damp,
-						    0.1 * constants->damp_scale,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("damping", "Damping [%]", NULL,
+					      constants->damp_scale * defaults.damp,
+					      0, constants->damp_scale * 1.0,
+					      0.1 * constants->damp_scale,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_WET_LEVEL,
-			      bse_param_spec_float ("wet_level", "Wet Level [dB]", NULL,
-						    0, constants->wet_scale * 1.0,
-						    constants->wet_scale * defaults.wet,
-						    0.1 * constants->wet_scale,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("wet_level", "Wet Level [dB]", NULL,
+					      constants->wet_scale * defaults.wet,
+					      0, constants->wet_scale * 1.0,
+					      0.1 * constants->wet_scale,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_DRY_LEVEL,
-			      bse_param_spec_float ("dry_level", "Dry Level [dB]", NULL,
-						    0, constants->dry_scale * 1.0,
-						    constants->dry_scale * defaults.dry,
-						    0.1 * constants->dry_scale,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("dry_level", "Dry Level [dB]", NULL,
+					      constants->dry_scale * defaults.dry,
+					      0, constants->dry_scale * 1.0,
+					      0.1 * constants->dry_scale,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_WIDTH,
-			      bse_param_spec_float ("width", "Width [%]", NULL,
-						    0, constants->width_scale * 1.0,
-						    constants->width_scale * defaults.width,
-						    0.1 * constants->width_scale,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("width", "Width [%]", NULL,
+					      constants->width_scale * defaults.width,
+					      0, constants->width_scale * 1.0,
+					      0.1 * constants->width_scale,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   channel = bse_source_class_add_ichannel (source_class, "Left Audio In", "Left Input");
   channel = bse_source_class_add_ichannel (source_class, "Right Audio In", "Right Input");
   channel = bse_source_class_add_ochannel (source_class, "Left Audio Out", "Left Output");
@@ -146,23 +146,23 @@ bse_free_verb_set_property (GObject      *object,
   switch (param_id)
     {
     case PROP_ROOM_SIZE:
-      self->config.room_size = (g_value_get_float (value) - constants->room_offset) / constants->room_scale;
+      self->config.room_size = (sfi_value_get_real (value) - constants->room_offset) / constants->room_scale;
       bse_free_verb_update_modules (self);
       break;
     case PROP_DAMPING:
-      self->config.damp = g_value_get_float (value) / constants->damp_scale;
+      self->config.damp = sfi_value_get_real (value) / constants->damp_scale;
       bse_free_verb_update_modules (self);
       break;
     case PROP_WET_LEVEL:
-      self->config.wet = g_value_get_float (value) / constants->wet_scale;
+      self->config.wet = sfi_value_get_real (value) / constants->wet_scale;
       bse_free_verb_update_modules (self);
       break;
     case PROP_DRY_LEVEL:
-      self->config.dry = g_value_get_float (value) / constants->dry_scale;
+      self->config.dry = sfi_value_get_real (value) / constants->dry_scale;
       bse_free_verb_update_modules (self);
       break;
     case PROP_WIDTH:
-      self->config.width = g_value_get_float (value) / constants->width_scale;
+      self->config.width = sfi_value_get_real (value) / constants->width_scale;
       bse_free_verb_update_modules (self);
       break;
     default:
@@ -183,19 +183,19 @@ bse_free_verb_get_property (GObject    *object,
   switch (param_id)
     {
     case PROP_ROOM_SIZE:
-      g_value_set_float (value, self->config.room_size * constants->room_scale + constants->room_offset);
+      sfi_value_set_real (value, self->config.room_size * constants->room_scale + constants->room_offset);
       break;
     case PROP_DAMPING:
-      g_value_set_float (value, self->config.damp * constants->damp_scale);
+      sfi_value_set_real (value, self->config.damp * constants->damp_scale);
       break;
     case PROP_WET_LEVEL:
-      g_value_set_float (value, self->config.wet * constants->wet_scale);
+      sfi_value_set_real (value, self->config.wet * constants->wet_scale);
       break;
     case PROP_DRY_LEVEL:
-      g_value_set_float (value, self->config.dry * constants->dry_scale);
+      sfi_value_set_real (value, self->config.dry * constants->dry_scale);
       break;
     case PROP_WIDTH:
-      g_value_set_float (value, self->config.width * constants->width_scale);
+      sfi_value_set_real (value, self->config.width * constants->width_scale);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

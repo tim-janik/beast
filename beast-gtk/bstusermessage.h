@@ -27,7 +27,7 @@ extern "C" {
 
 /* --- prototypes --- */
 void	   bst_catch_scripts_and_msgs		(void);
-GtkWidget* bst_user_message_popup		(BswUserMsgType msg_type,
+GtkWidget* bst_user_message_popup		(BseUserMsgType msg_type,
 						 const gchar   *message);
 void	   bst_user_messages_kill		(void);
 

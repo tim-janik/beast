@@ -30,7 +30,11 @@ gboolean	_engine_master_prepare		(GslEngineLoop		*loop);
 gboolean	_engine_master_check		(const GslEngineLoop	*loop);
 void		_engine_master_dispatch_jobs	(void);
 void		_engine_master_dispatch		(void);
-void		_engine_master_thread		(gpointer		 data);
+typedef struct {
+  SfiThread *user_thread;
+  gint       wakeup_pipe[2];	/* read(wakeup_pipe[0]), write(wakeup_pipe[1]) */
+} EngineMasterData;
+void		_engine_master_thread		(EngineMasterData	*mdata);
 
 
 

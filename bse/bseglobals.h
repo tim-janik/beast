@@ -57,7 +57,6 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 #define	BSE_MAX_N_TRACKS		(256)
 #define	BSE_MAX_ENV_TIME		(10000) /* ms */
 #define	BSE_BBUFFER_SIZE		(128)	// FIXME
-#define	BSE_DFL_BIN_DATA_PADDING	(16 * sizeof (BseSampleValue)) // FIXME
 #define	BSE_MAX_BLOCK_PADDING		(64) /* Gsl wave_chunk_padding */
 #define BSE_MIN_BIT_SIZE                (8)
 #define BSE_MAX_BIT_SIZE                (16)
@@ -71,8 +70,12 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 #define BSE_DFL_INSTRUMENT_BALANCE	(0)
 #define BSE_DFL_INSTRUMENT_TRANSPOSE	(0)
 #define BSE_DFL_INSTRUMENT_FINE_TUNE	(0)
-#define BSE_DFL_SAMPLE_REC_FREQ		(44100)
-#define BSE_DFL_SAMPLE_REC_NOTE		(BSE_KAMMER_NOTE)
+
+
+/* --- Convenience --- */
+#define	BSE_MIX_FREQ	(gsl_engine_sample_freq ())
+#define	BSE_MIX_FREQ_f	((gfloat) BSE_MIX_FREQ)
+#define	BSE_MIX_FREQ_d	((gdouble) BSE_MIX_FREQ)
 
 
 /* --- async handlers --- */
@@ -83,50 +86,37 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 /* important, delivers async signals */
 #define	BSE_PRIORITY_NOTIFY		(G_PRIORITY_DEFAULT - 1)
 /* normal importantance, interfaces to glue layer */
-#define	BSE_PRIORITY_PROG_IFACE		(G_PRIORITY_DEFAULT)
+#define	BSE_PRIORITY_NORMAL		(G_PRIORITY_DEFAULT)
+#define	BSE_PRIORITY_GLUE		(BSE_PRIORITY_NORMAL)
 /* mildly important, used for GUI updates or user information */
 #define	BSE_PRIORITY_UPDATE		(G_PRIORITY_HIGH_IDLE + 5)
 /* unimportant, used when everything else done */
 #define BSE_PRIORITY_BACKGROUND		(G_PRIORITY_LOW + 500)
-guint	bse_idle_now		(GSourceFunc    function,
+guint	  bse_idle_now		(GSourceFunc    function,
 				 gpointer       data);
-guint	bse_idle_notify		(GSourceFunc    function,
+guint	  bse_idle_notify	(GSourceFunc    function,
 				 gpointer       data);
-guint	bse_idle_update		(GSourceFunc    function,
+guint	  bse_idle_normal	(GSourceFunc    function,
 				 gpointer       data);
-guint	bse_idle_background	(GSourceFunc    function,
+guint	  bse_idle_update	(GSourceFunc    function,
 				 gpointer       data);
-#define	bse_idle_remove		g_source_remove
-
-
-/* --- BseGlobals - configurable defaults --- */
-#define	BSE_STP_VOLUME_dB		(bse_globals->step_volume_dB)
-#define	BSE_STP_BPM			(bse_globals->step_bpm)
-#define	BSE_STP_BALANCE_f		(bse_globals->step_balance)
-#define	BSE_STP_TRANSPOSE		(bse_globals->step_transpose)
-#define	BSE_STP_FINE_TUNE		(bse_globals->step_fine_tune)
-#define	BSE_STP_ENV_TIME		(bse_globals->step_env_time)
-#define	BSE_TRACK_LENGTH		(bse_globals->track_length)	// FIXME
-#define	BSE_BLOCK_N_VALUES		(BSE_TRACK_LENGTH)
-#define	BSE_MIX_FREQ			(bse_globals->mixing_frequency)
-#define	BSE_TRACK_LENGTH_f		((gfloat) BSE_TRACK_LENGTH)
-#define	BSE_MIX_FREQ_f			((gfloat) BSE_MIX_FREQ)
-#define	BSE_TRACK_LENGTH_d		((gdouble) BSE_TRACK_LENGTH)
-#define	BSE_MIX_FREQ_d			((gdouble) BSE_MIX_FREQ)
+guint	  bse_idle_background	(GSourceFunc    function,
+				 gpointer       data);
+gboolean  bse_idle_remove	(guint		id);
 
 
 /* semitone factorization tables, i.e.
  * Index                     Factor
- * (BSE_KAMMER_NOTE - 12) -> 0.5
- * BSE_KAMMER_NOTE	  -> 1.0
- * (BSE_KAMMER_NOTE + 12) -> 2.0
+ * (SFI_KAMMER_NOTE - 12) -> 0.5
+ * SFI_KAMMER_NOTE	  -> 1.0
+ * (SFI_KAMMER_NOTE + 12) -> 2.0
  * etc...
  */
 extern const gdouble* _bse_semitone_factor_table;
-#define	BSE_SEMITONE_FACTOR(ht)		((ht) > BSE_MAX_NOTE ? \
-				         _bse_semitone_factor_table[BSE_MAX_NOTE] : \
-				         (ht) < BSE_MIN_NOTE ? \
-				         _bse_semitone_factor_table[BSE_MIN_NOTE] : \
+#define	BSE_SEMITONE_FACTOR(ht)		((ht) > SFI_MAX_NOTE ? \
+				         _bse_semitone_factor_table[SFI_MAX_NOTE] : \
+				         (ht) < SFI_MIN_NOTE ? \
+				         _bse_semitone_factor_table[SFI_MIN_NOTE] : \
 				         _bse_semitone_factor_table[(ht)])
 extern const gdouble* _bse_fine_tune_factor_table;
 #define	BSE_FINE_TUNE_FACTOR(ft)	((ft) > BSE_MAX_FINE_TUNE ? \
@@ -134,46 +124,11 @@ extern const gdouble* _bse_fine_tune_factor_table;
                                          (ft) < BSE_MIN_FINE_TUNE ? \
                                          _bse_fine_tune_factor_table[BSE_MIN_FINE_TUNE] : \
                                          _bse_fine_tune_factor_table[(ft)])
-#define	BSE_FREQ_FROM_LINEAR_VALUE(v)	(BSE_KAMMER_FREQ_d * BSE_SEMITONE_FACTOR (BSE_NOTE_FROM_VALUE (v) - BSE_KAMMER_NOTE))
-
-
-/* --- BseGlobals --- */
-struct _BseGlobals
-{
-  /* stepping rates
-   */
-  gfloat step_volume_dB;
-  guint	 step_bpm;
-  guint	 step_balance;
-  guint	 step_transpose;
-  guint	 step_fine_tune;
-  guint	 step_env_time;
-  
-  /* BSE synthesis parameters
-   */
-  guint	track_length;
-  guint mixing_frequency;
-};
-extern const BseGlobals	* const bse_globals;
-
-
-/* --- version numbers --- */
-extern const guint   bse_major_version;
-extern const guint   bse_minor_version;
-extern const guint   bse_micro_version;
-extern const guint   bse_interface_age;
-extern const guint   bse_binary_age;
-extern const gchar  *bse_version;
+#define	BSE_FREQ_FROM_LINEAR_VALUE(v)	(SFI_KAMMER_FREQ_d * BSE_SEMITONE_FACTOR (BSE_NOTE_FROM_VALUE (v) - SFI_KAMMER_NOTE))
 
 
 /* --- prototypes --- */
-gchar*		bse_check_version	(guint	required_major,
-					 guint	required_minor,
-					 guint	required_micro);
 void		bse_globals_init	(void);
-void		bse_globals_lock	(void);
-void		bse_globals_unlock	(void);
-gboolean	bse_globals_locked	(void);
 
 /* conversion */
 gdouble		bse_dB_to_factor	(gfloat		dB);

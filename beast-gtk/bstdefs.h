@@ -56,7 +56,6 @@ typedef enum
 
   /* debugging */
   BST_OP_REBUILD,
-  BST_OP_REFRESH,
 
   /* song operations
    */
@@ -118,7 +117,7 @@ extern BstDebugFlags bst_debug_flags;
 #else  /* !G_ENABLE_DEBUG */
 #  define BST_IF_DEBUG(type)	while (0) /* don't exec */
 #endif /* !G_ENABLE_DEBUG */
-#define	BST_DVL_EXT		(BSE_DVL_EXT)
+#define	BST_DVL_EXT		(0) // FIXME: BSE_DVL_EXT
 #define	BST_DVL_HINTS		(bst_dvl_hints)
 extern gboolean bst_dvl_hints;
 

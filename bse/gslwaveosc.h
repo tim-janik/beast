@@ -82,6 +82,7 @@ void		gsl_wave_osc_set_filter	(GslWaveOscData	*wosc,
 
 void		gsl_wave_osc_init	(GslWaveOscData	*wosc);
 void		gsl_wave_osc_shutdown	(GslWaveOscData	*wosc);
+GslLong		gsl_wave_osc_cur_pos	(GslWaveOscData	*wosc);
 
 /* setup:
  * wosc = g_new0 (GslWaveOscData, 1);

@@ -18,6 +18,8 @@
  */
 #include <stdlib.h>
 #include "sfiprimitives.h"
+#include "sfimemory.h"
+#include "sfiparams.h"
 
 
 /* --- SfiBBlock primitive type --- */
@@ -327,7 +329,7 @@ sfi_seq_append_copy (SfiSeq       *seq,
   guint i, l, n;
 
   g_return_if_fail (seq != NULL);
-  g_return_if_fail (G_IS_VALUE (value));
+  g_return_if_fail (SFI_IS_VALUE (value));
 
   l = upper_power2 (seq->n_elements);
   i = seq->n_elements++;
@@ -365,7 +367,7 @@ sfi_seq_append (SfiSeq       *seq,
 {
   g_return_if_fail (seq != NULL);
   g_return_if_fail (G_IS_VALUE (value));
-
+  
   sfi_seq_append_copy (seq, value, FALSE);
 }
 
@@ -381,7 +383,7 @@ sfi_seq_get (const SfiSeq *seq,
 {
   g_return_val_if_fail (seq != NULL, NULL);
   g_return_val_if_fail (index < seq->n_elements, NULL);
-
+  
   return seq->elements + index;
 }
 
@@ -397,6 +399,309 @@ sfi_seq_check (SfiSeq *seq,
     if (!G_VALUE_HOLDS (seq->elements + i, element_type))
       return FALSE;
   return TRUE;
+}
+
+void
+sfi_seq_append_bool (SfiSeq      *seq,
+		     SfiBool      v_bool)
+{
+  GValue *value = sfi_value_bool (v_bool);
+  sfi_seq_append (seq, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_seq_append_int (SfiSeq      *seq,
+		    SfiInt       v_int)
+{
+  GValue *value = sfi_value_int (v_int);
+  sfi_seq_append (seq, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_seq_append_num (SfiSeq      *seq,
+		    SfiNum       v_num)
+{
+  GValue *value = sfi_value_num (v_num);
+  sfi_seq_append (seq, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_seq_append_real (SfiSeq          *seq,
+		     SfiReal         v_real)
+{
+  GValue *value = sfi_value_real (v_real);
+  sfi_seq_append (seq, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_seq_append_string (SfiSeq      *seq,
+		       const gchar *string)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_STRING);
+  g_value_set_static_string (&value, string);
+  sfi_seq_append (seq, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_seq_append_choice (SfiSeq      *seq,
+		       const gchar *choice)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_CHOICE);
+  g_value_set_static_string (&value, choice);
+  sfi_seq_append (seq, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_seq_append_bblock (SfiSeq      *seq,
+		       SfiBBlock   *bblock)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_BBLOCK);
+  g_value_set_static_boxed (&value, bblock);
+  sfi_seq_append (seq, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_seq_append_fblock (SfiSeq      *seq,
+		       SfiFBlock   *fblock)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_FBLOCK);
+  g_value_set_static_boxed (&value, fblock);
+  sfi_seq_append (seq, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_seq_append_pspec (SfiSeq      *seq,
+		      GParamSpec  *pspec)
+{
+  GValue *value = sfi_value_pspec (pspec);
+  sfi_seq_append (seq, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_seq_append_seq (SfiSeq      *seq,
+		    SfiSeq      *v_seq)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_SEQ);
+  g_value_set_static_boxed (&value, v_seq);
+  sfi_seq_append (seq, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_seq_append_rec (SfiSeq      *seq,
+		    SfiRec      *rec)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_REC);
+  g_value_set_static_boxed (&value, rec);
+  sfi_seq_append (seq, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_seq_append_proxy (SfiSeq      *seq,
+		      SfiProxy     proxy)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_PROXY);
+  sfi_value_set_proxy (&value, proxy);
+  sfi_seq_append (seq, &value);
+  g_value_unset (&value);
+}
+
+static inline SfiNum
+value_as_num (GValue *v)
+{
+  if (v)
+    {
+      if (SFI_VALUE_HOLDS_BOOL (v))
+	return sfi_value_get_bool (v);
+      else if (SFI_VALUE_HOLDS_INT (v))
+	return sfi_value_get_int (v);
+      else if (SFI_VALUE_HOLDS_REAL (v))
+	return sfi_value_get_real (v);
+      else if (SFI_VALUE_HOLDS_NUM (v))
+	return sfi_value_get_num (v);
+    }
+  return 0;
+}
+
+static inline SfiReal
+value_as_real (GValue *v)
+{
+  if (v)
+    {
+      if (SFI_VALUE_HOLDS_BOOL (v))
+	return sfi_value_get_bool (v);
+      else if (SFI_VALUE_HOLDS_INT (v))
+	return sfi_value_get_int (v);
+      else if (SFI_VALUE_HOLDS_REAL (v))
+	return sfi_value_get_real (v);
+      else if (SFI_VALUE_HOLDS_NUM (v))
+	return sfi_value_get_num (v);
+    }
+  return 0;
+}
+
+static inline const gchar*
+value_as_string (GValue *v)
+{
+  if (v)
+    {
+      if (SFI_VALUE_HOLDS_STRING (v))
+	return sfi_value_get_string (v);
+      else if (SFI_VALUE_HOLDS_CHOICE (v))
+	return sfi_value_get_choice (v);
+    }
+  return NULL;
+}
+
+SfiBool
+sfi_seq_get_bool (SfiSeq *seq,
+		  guint   index)
+{
+  return value_as_num (sfi_seq_get (seq, index)) != 0;
+}
+
+SfiInt
+sfi_seq_get_int (SfiSeq *seq,
+		 guint   index)
+{
+  return value_as_num (sfi_seq_get (seq, index));
+}
+
+SfiNum
+sfi_seq_get_num (SfiSeq *seq,
+		 guint   index)
+{
+  return value_as_num (sfi_seq_get (seq, index));
+}
+
+SfiReal
+sfi_seq_get_real (SfiSeq *seq,
+		  guint   index)
+{
+  return value_as_real (sfi_seq_get (seq, index));
+}
+
+const gchar*
+sfi_seq_get_string (SfiSeq *seq,
+		    guint   index)
+{
+  return value_as_string (sfi_seq_get (seq, index));
+}
+
+const gchar*
+sfi_seq_get_choice (SfiSeq *seq,
+		    guint   index)
+{
+  return value_as_string (sfi_seq_get (seq, index));
+}
+
+SfiBBlock*
+sfi_seq_get_bblock (SfiSeq *seq,
+		    guint   index)
+{
+  GValue *v = sfi_seq_get (seq, index);
+  if (v && SFI_VALUE_HOLDS_BBLOCK (v))
+    return sfi_value_get_bblock (v);
+  return NULL;
+}
+
+SfiFBlock*
+sfi_seq_get_fblock (SfiSeq *seq,
+		    guint   index)
+{
+  GValue *v = sfi_seq_get (seq, index);
+  if (v && SFI_VALUE_HOLDS_FBLOCK (v))
+    return sfi_value_get_fblock (v);
+  return NULL;
+}
+
+GParamSpec*
+sfi_seq_get_pspec (SfiSeq *seq,
+		   guint   index)
+{
+  GValue *v = sfi_seq_get (seq, index);
+  if (v && SFI_VALUE_HOLDS_PSPEC (v))
+    return sfi_value_get_pspec (v);
+  return NULL;
+}
+
+SfiSeq*
+sfi_seq_get_seq (SfiSeq *seq,
+		 guint   index)
+{
+  GValue *v = sfi_seq_get (seq, index);
+  if (v && SFI_VALUE_HOLDS_SEQ (v))
+    return sfi_value_get_seq (v);
+  return NULL;
+}
+
+SfiRec*
+sfi_seq_get_rec (SfiSeq *seq,
+		 guint   index)
+{
+  GValue *v = sfi_seq_get (seq, index);
+  if (v && SFI_VALUE_HOLDS_REC (v))
+    return sfi_value_get_rec (v);
+  return NULL;
+}
+
+SfiProxy
+sfi_seq_get_proxy (SfiSeq *seq,
+		   guint   index)
+{
+  GValue *v = sfi_seq_get (seq, index);
+  if (v && SFI_VALUE_HOLDS_PROXY (v))
+    return sfi_value_get_proxy (v);
+  return 0;
+}
+
+gchar**
+sfi_seq_to_strv (SfiSeq *seq)
+{
+  GSList *slist = NULL;
+  gchar **strv;
+  guint i;
+
+  g_return_val_if_fail (seq != NULL, NULL);
+
+  for (i = 0; i < seq->n_elements; i++)
+    if (G_VALUE_HOLDS_STRING (seq->elements + i))
+      slist = g_slist_prepend (slist, sfi_value_get_string (seq->elements + i));
+  slist = g_slist_reverse (slist);
+  strv = g_strslistv (slist);
+  g_slist_free (slist);
+  return strv;
+}
+
+SfiSeq*
+sfi_seq_from_strv (gchar **strv)
+{
+  SfiSeq *seq;
+  guint i;
+  if (!strv)
+    return NULL;
+
+  seq = sfi_seq_new ();
+  for (i = 0; strv[i]; i++)
+    sfi_seq_append_string (seq, strv[i]);
+  return seq;
 }
 
 
@@ -424,6 +729,24 @@ sfi_rec_ref (SfiRec *rec)
   return rec;
 }
 
+static void
+sfi_rec_empty (SfiRec *rec)
+{
+  guint i;
+  
+  for (i = 0; i < rec->n_fields; i++)
+    {
+      g_value_unset (rec->fields + i);
+      g_free (rec->field_names[i]);
+    }
+  g_free (rec->fields);
+  g_free (rec->field_names);
+  rec->n_fields = 0;
+  rec->sorted = TRUE;
+  rec->fields = NULL;
+  rec->field_names = NULL;
+}
+
 void
 sfi_rec_unref (SfiRec *rec)
 {
@@ -433,16 +756,18 @@ sfi_rec_unref (SfiRec *rec)
   rec->ref_count--;
   if (rec->ref_count == 0)
     {
-      guint i;
-      for (i = 0; i < rec->n_fields; i++)
-	{
-	  g_value_unset (rec->fields + i);
-	  g_free (rec->field_names[i]);
-	}
-      g_free (rec->fields);
-      g_free (rec->field_names);
+      sfi_rec_empty (rec);
       g_free (rec);
     }
+}
+
+void
+sfi_rec_clear (SfiRec *rec)
+{
+  g_return_if_fail (rec != NULL);
+  g_return_if_fail (rec->ref_count > 0);
+
+  sfi_rec_empty (rec);
 }
 
 guint
@@ -541,7 +866,7 @@ sfi_rec_set (SfiRec       *rec,
 {
   g_return_if_fail (rec != NULL);
   g_return_if_fail (field_name != NULL);
-  g_return_if_fail (G_IS_VALUE (value));
+  g_return_if_fail (SFI_IS_VALUE (value));
   
   sfi_rec_set_copy (rec, field_name, value, FALSE);
 }
@@ -641,6 +966,48 @@ sfi_rec_sort (SfiRec *rec)
       rec->fields = fields;
     }
   rec->sorted = TRUE;
+}
+
+void
+sfi_rec_swap_fields (SfiRec *rec,
+		     SfiRec *swapper)
+{
+  guint n;
+  GValue *fields;
+  gchar **names;
+
+  g_return_if_fail (rec != NULL);
+  g_return_if_fail (swapper != NULL);
+  
+  sfi_rec_sort (rec);
+  sfi_rec_sort (swapper);
+  n = rec->n_fields;
+  fields = rec->fields;
+  names = rec->field_names;
+  rec->n_fields = swapper->n_fields;
+  rec->fields = swapper->fields;
+  rec->field_names = swapper->field_names;
+  swapper->n_fields = n;
+  swapper->fields = fields;
+  swapper->field_names = names;
+}
+
+gboolean
+sfi_rec_validate (SfiRec      *rec,
+		  SfiRecFields fields)
+{
+  GParamSpec *pspec;
+  GValue *v;
+  gboolean changed;
+
+  g_return_val_if_fail (rec != NULL, FALSE);
+
+  pspec = sfi_pspec_rec ("auto", NULL, NULL, fields, ":readwrite");
+  v = sfi_value_rec (rec);
+  changed = g_param_value_validate (pspec, v);
+  sfi_value_free (v);
+  g_param_spec_sink (pspec);
+  return changed;
 }
 
 void
@@ -765,33 +1132,122 @@ sfi_rec_set_rec (SfiRec      *rec,
   g_value_unset (&value);
 }
 
+void
+sfi_rec_set_proxy (SfiRec      *rec,
+		   const gchar *field_name,
+		   SfiProxy     proxy)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_PROXY);
+  sfi_value_set_proxy (&value, proxy);
+  sfi_rec_set (rec, field_name, &value);
+  g_value_unset (&value);
+}
+
+SfiBool
+sfi_rec_get_bool (SfiRec      *rec,
+		  const gchar *field_name)
+{
+  return value_as_num (sfi_rec_get (rec, field_name)) != 0;
+}
+
+SfiInt
+sfi_rec_get_int (SfiRec      *rec,
+		 const gchar *field_name)
+{
+  return value_as_num (sfi_rec_get (rec, field_name));
+}
+
+SfiNum
+sfi_rec_get_num (SfiRec      *rec,
+		 const gchar *field_name)
+{
+  return value_as_num (sfi_rec_get (rec, field_name));
+}
+
+SfiReal
+sfi_rec_get_real (SfiRec      *rec,
+		  const gchar *field_name)
+{
+  return value_as_real (sfi_rec_get (rec, field_name));
+}
+
+const gchar*
+sfi_rec_get_string (SfiRec      *rec,
+		    const gchar *field_name)
+{
+  return value_as_string (sfi_rec_get (rec, field_name));
+}
+
+const gchar*
+sfi_rec_get_choice (SfiRec      *rec,
+		    const gchar *field_name)
+{
+  return value_as_string (sfi_rec_get (rec, field_name));
+}
+
+SfiBBlock*
+sfi_rec_get_bblock (SfiRec      *rec,
+		    const gchar *field_name)
+{
+  GValue *v = sfi_rec_get (rec, field_name);
+  if (v && SFI_VALUE_HOLDS_BBLOCK (v))
+    return sfi_value_get_bblock (v);
+  return NULL;
+}
+
+SfiFBlock*
+sfi_rec_get_fblock (SfiRec      *rec,
+		    const gchar *field_name)
+{
+  GValue *v = sfi_rec_get (rec, field_name);
+  if (v && SFI_VALUE_HOLDS_FBLOCK (v))
+    return sfi_value_get_fblock (v);
+  return NULL;
+}
+
+GParamSpec*
+sfi_rec_get_pspec (SfiRec      *rec,
+		   const gchar *field_name)
+{
+  GValue *v = sfi_rec_get (rec, field_name);
+  if (v && SFI_VALUE_HOLDS_PSPEC (v))
+    return sfi_value_get_pspec (v);
+  return NULL;
+}
+
+SfiSeq*
+sfi_rec_get_seq (SfiRec      *rec,
+		 const gchar *field_name)
+{
+  GValue *v = sfi_rec_get (rec, field_name);
+  if (v && SFI_VALUE_HOLDS_SEQ (v))
+    return sfi_value_get_seq (v);
+  return NULL;
+}
+
+SfiRec*
+sfi_rec_get_rec (SfiRec      *rec,
+		 const gchar *field_name)
+{
+  GValue *v = sfi_rec_get (rec, field_name);
+  if (v && SFI_VALUE_HOLDS_REC (v))
+    return sfi_value_get_rec (v);
+  return NULL;
+}
+
+SfiProxy
+sfi_rec_get_proxy (SfiRec      *rec,
+		   const gchar *field_name)
+{
+  GValue *v = sfi_rec_get (rec, field_name);
+  if (v && SFI_VALUE_HOLDS_PROXY (v))
+    return sfi_value_get_proxy (v);
+  return 0;
+}
+
 
 /* --- ring (circular-list) --- */
-#define sfi_new_struct(type, n)         ((type*) g_malloc (sizeof (type) * (n))) // FIXME
-#define sfi_delete_structs(type, n, mem)      ({ /* FIXME */ \
-  type *__typed_pointer = (mem); \
-  g_free (__typed_pointer); \
-})
-#define sfi_delete_struct(type, mem)    (sfi_delete_structs (type, 1, (mem))) // FIXME
-static void
-sfi_free_node_list (gpointer mem,	// FIXME
-		    gsize    node_size)
-{
-  struct { gpointer next, data; } *tmp, *node = mem;
-
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (node_size >= 2 * sizeof (gpointer));
-
-  /* FIXME: this can be optimized to an O(1) operation with T-style links in mem-caches */
-  do
-    {
-      tmp = node->next;
-
-      g_free (/*node_size,*/ node);
-      node = tmp;
-    }
-  while (node);
-}
 static inline SfiRing*
 sfi_ring_prepend_link_i (SfiRing *head,
 			 SfiRing *ring)
@@ -842,7 +1298,7 @@ sfi_ring_prepend_uniq (SfiRing  *head,
 {
   SfiRing *walk;
   
-  for (walk = head; walk; walk = sfi_ring_walk (head, walk))
+  for (walk = head; walk; walk = sfi_ring_walk (walk, head))
     if (walk->data == data)
       return head;
   return sfi_ring_prepend_i (head, data);
@@ -857,6 +1313,26 @@ sfi_ring_append (SfiRing  *head,
   ring = sfi_ring_prepend_i (head, data);
   
   return head ? head : ring;
+}
+
+SfiRing*
+sfi_ring_copy (SfiRing *head)
+{
+  SfiRing *walk, *dest = NULL;
+  for (walk = head; walk; walk = sfi_ring_walk (walk, head))
+    dest = sfi_ring_append (dest, walk->data);
+  return dest;
+}
+
+SfiRing*
+sfi_ring_copy_deep (SfiRing        *head,
+		    SfiRingDataFunc copy,
+		    gpointer        func_data)
+{
+  SfiRing *walk, *dest = NULL;
+  for (walk = head; walk; walk = sfi_ring_walk (walk, head))
+    dest = sfi_ring_append (dest, copy (walk->data, func_data));
+  return dest;
 }
 
 SfiRing*
@@ -1037,7 +1513,7 @@ sfi_ring_remove (SfiRing *head,
   if (head->prev->data == data)
     return sfi_ring_remove_node (head, head->prev);
   
-  for (walk = head; walk; walk = sfi_ring_walk (head, walk))
+  for (walk = head; walk; walk = sfi_ring_walk (walk, head))
     if (walk->data == data)
       return sfi_ring_remove_node (head, walk);
   
@@ -1052,7 +1528,7 @@ sfi_ring_length (SfiRing *head)
   SfiRing *ring;
   guint i = 0;
   
-  for (ring = head; ring; ring = sfi_ring_walk (head, ring))
+  for (ring = head; ring; ring = sfi_ring_walk (ring, head))
     i++;
 
   return i;
@@ -1064,7 +1540,7 @@ sfi_ring_find (SfiRing      *head,
 {
   SfiRing *ring;
 
-  for (ring = head; ring; ring = sfi_ring_walk (head, ring))
+  for (ring = head; ring; ring = sfi_ring_walk (ring, head))
     if (ring->data == (gpointer) data)
       return ring;
 
@@ -1078,7 +1554,7 @@ sfi_ring_nth (SfiRing *head,
   SfiRing *ring = head;
 
   while (n-- && ring)
-    ring = sfi_ring_walk (head, ring);
+    ring = sfi_ring_walk (ring, head);
 
   return ring;
 }
@@ -1090,9 +1566,22 @@ sfi_ring_nth_data (SfiRing *head,
   SfiRing *ring = head;
 
   while (n-- && ring)
-    ring = sfi_ring_walk (head, ring);
+    ring = sfi_ring_walk (ring, head);
 
   return ring ? ring->data : ring;
+}
+
+void
+sfi_ring_free_deep (SfiRing        *head,
+		    SfiRingDataFunc free_func,
+		    gpointer        func_data)
+{
+  gpointer data = sfi_ring_pop_head (&head);
+  while (data)
+    {
+      free_func (data, func_data);
+      data = sfi_ring_pop_head (&head);
+    }
 }
 
 void
@@ -1101,7 +1590,7 @@ sfi_ring_free (SfiRing *head)
   if (head)
     {
       head->prev->next = NULL;
-      sfi_free_node_list (head, sizeof (*head));
+      _sfi_free_node_list (head, sizeof (*head));
     }
 }
 

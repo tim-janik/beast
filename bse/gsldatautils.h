@@ -21,6 +21,7 @@
 
 #include <gsl/gslmath.h>
 #include <gsl/gsldatahandle.h>
+#include <sfi/sfistore.h>	// FIXME:?
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,15 +69,19 @@ GslLong		gsl_data_find_block		(GslDataHandle		*handle,
 static inline gfloat gsl_data_handle_peek_value	(GslDataHandle		*dhandle,
 						 GslLong		 position,
 						 GslDataPeekBuffer	*peekbuf);
-gint /* errno */     gsl_data_handle_dump	(GslDataHandle		*dhandle,
+gint /* -errno */    gsl_data_handle_dump	(GslDataHandle		*dhandle,
 						 gint			 fd,
 						 GslWaveFormatType	 format,
 						 guint			 byte_order);
-gint /* errno */     gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
+gint /* -errno */    gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
 						 gint			 fd,
 						 guint			 n_bits,
 						 guint			 n_channels,
 						 guint			 sample_freq);
+void		     gsl_data_handle_dump_wstore(GslDataHandle		*dhandle,
+						 SfiWStore		*wstore,
+						 GslWaveFormatType	 format,
+						 guint			 byte_order);
 
 
 /* --- conversion utils --- */

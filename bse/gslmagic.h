@@ -60,17 +60,17 @@ GslMagic*	gsl_magic_create		(gpointer	 data,
 						 gint		 priority,
 						 const gchar	*extension,
 						 const gchar	*magic_spec);
-GslMagic*	gsl_magic_list_match_file	(GslRing	*magic_list,
+GslMagic*	gsl_magic_list_match_file	(SfiRing	*magic_list,
 						 const gchar    *file_name);
-GslMagic*	gsl_magic_list_match_file_skip	(GslRing	*magic_list,
+GslMagic*	gsl_magic_list_match_file_skip	(SfiRing	*magic_list,
 						 const gchar    *file_name,
 						 guint           skip_bytes);
-void		gsl_magic_list_brute_match	(GslRing	*magic_list,
+void		gsl_magic_list_brute_match	(SfiRing	*magic_list,
 						 const gchar	*file_name,
 						 guint		 skip_bytes,
 						 GslMagic	*skip_magic,
-						 GslRing       **ext_matches,
-						 GslRing       **other_matches);
+						 SfiRing       **ext_matches,
+						 SfiRing       **other_matches);
 
 #ifdef __cplusplus
 }

@@ -16,12 +16,13 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include "sfitime.h"
+#include "sfiprimitives.h"
+#include "sfilog.h"
 #include <sys/time.h>
 #include <time.h>
 #include <errno.h>
 #include <stdio.h>
-#include "sfitime.h"
-#include "sfiprimitives.h"
 
 
 #define	SFI_ERROR_DOMAIN	g_quark_from_static_string ("sfi-error-domain")
@@ -80,7 +81,7 @@ sfi_time_system (void)
   gint error = gettimeofday (&tv, NULL);
 
   if (error)
-    g_error ("gettimeofday() failed: %s", g_strerror (errno));
+    sfi_info ("gettimeofday() failed: %s", g_strerror (errno));
   ustime = tv.tv_sec;
   ustime = ustime * SFI_USEC_FACTOR + tv.tv_usec;
 
@@ -122,7 +123,7 @@ sfi_time_from_utc (SfiTime ustime)
  * @ustime:  time in micro seconds
  * @RETURNS: newly allocated string
  *
- * Retrive the time @ustime in human readable form.
+ * Retrieve the time @ustime in human readable form.
  * The returned time string contains no time zone
  * or UTC offset information.
  */
@@ -143,6 +144,13 @@ sfi_time_to_string (SfiTime ustime)
 			  bt.tm_sec);
 }
 
+/**
+ * sfi_time_from_string
+ * @time_string: string containing human readable date and time
+ * @RETURNS:     parsed time in micro seconds or 0 on error
+ *
+ * Simple variant of sfi_time_from_string_err().
+ */
 SfiTime
 sfi_time_from_string (const gchar *time_string)
 {
@@ -150,9 +158,9 @@ sfi_time_from_string (const gchar *time_string)
 }
 
 /**
- * sfi_time_from_string
+ * sfi_time_from_string_err
  * @time_string: string containing human readable date and time
- * @error_p:     location for newly allocated string with warnings
+ * @error_p:     location for newly allocated string containing conversion errors
  * @RETURNS:     parsed time in micro seconds or 0 on error
  *
  * Parse time from a string of characters and indicate possible errors.
@@ -511,7 +519,7 @@ sfi_time_from_string_err (const gchar *time_string,
   if (error_p && warnings)
     {
       GString *gstring = g_string_new (NULL);
-      for (ring = warnings; ring; ring = sfi_ring_walk (warnings, ring))
+      for (ring = warnings; ring; ring = sfi_ring_walk (ring, warnings))
 	{
 	  if (gstring->len)
 	    g_string_append (gstring, ", ");
@@ -522,7 +530,7 @@ sfi_time_from_string_err (const gchar *time_string,
     }
   else if (error_p)
     *error_p = NULL;
-  for (ring = warnings; ring; ring = sfi_ring_walk (warnings, ring))
+  for (ring = warnings; ring; ring = sfi_ring_walk (ring, warnings))
     g_free (ring->data);
   sfi_ring_free (warnings);
   return ustime;

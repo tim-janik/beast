@@ -110,6 +110,45 @@ case $ac_vm in
 esac
 ])
 
+dnl Find program
+dnl MC_ASSERT_PROG(variable, program, srcpackage)
+AC_DEFUN(MC_ASSERT_PROG,[
+    AC_PATH_PROG([$1], [$2], no)
+    case "x$[$1]" in
+    xno)
+	AC_MSG_ERROR([failed to find $2 which is required for a functional build. $3])
+	;;
+    esac
+])
+dnl MC_ASSERT_PROGS(variable, programs, srcpackage)
+AC_DEFUN(MC_ASSERT_PROGS,[
+    AC_PATH_PROGS([$1], [$2], no)
+    case "x$[$1]" in
+    xno)
+	AC_MSG_ERROR([failed to find any of ($2) which is required for a functional build. $3])
+	;;
+    esac
+])
+
+dnl MC_PKG_CONFIG_REQUIRE(package, version, clfgas-var, libs-var)
+dnl Find package through $PKG_CONFIG
+AC_DEFUN(MC_PKG_CONFIG_REQUIRE,[
+    mc_PACKAGE="[$1]"
+    mc_VERSION="[$2]"
+    AC_MSG_CHECKING([for $mc_PACKAGE - version >= $mc_VERSION])
+    if $PKG_CONFIG --atleast-version="$mc_VERSION" $mc_PACKAGE 2>/dev/null ; then
+      mc_VERSION=`$PKG_CONFIG --modversion $mc_PACKAGE`
+      AC_MSG_RESULT([yes ($mc_VERSION)])
+    else
+      AC_MSG_RESULT([no])
+      AC_MSG_ERROR([pkg-config failed to find "$mc_PACKAGE" v"$mc_VERSION"])
+    fi
+    [$3]=`$PKG_CONFIG $mc_PACKAGE --cflags`
+    [$4]=`$PKG_CONFIG $mc_PACKAGE --libs`
+    unset mc_PACKAGE
+    unset mc_VERSION
+])
+
 dnl Check whether cc accepts a certain option
 dnl MC_PROG_CC_SUPPORTS_OPTION(OPTIONS, ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND])
 AC_DEFUN(MC_PROG_CC_SUPPORTS_OPTION,[
@@ -225,37 +264,6 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 	)
 ])
 
-dnl Find program
-dnl MC_ASSERT_PROG(variable, program, srcpackage)
-AC_DEFUN(MC_ASSERT_PROG,[
-    AC_PATH_PROG([$1], [$2], no)
-    case "x$[$1]" in
-    xno) AC_MSG_ERROR([failed to find $2 which is required
-                  for a functional build.
-                  $3])
-	 ;;
-    esac
-])
-
-dnl MC_PKG_CONFIG_REQUIRE(package, version, clfgas-var, libs-var)
-dnl Find package through $PKG_CONFIG
-AC_DEFUN(MC_PKG_CONFIG_REQUIRE,[
-    mc_PACKAGE="[$1]"
-    mc_VERSION="[$2]"
-    AC_MSG_CHECKING([for $mc_PACKAGE - version >= $mc_VERSION])
-    if $PKG_CONFIG --atleast-version="$mc_VERSION" $mc_PACKAGE 2>/dev/null ; then
-      mc_VERSION=`$PKG_CONFIG --modversion $mc_PACKAGE`
-      AC_MSG_RESULT([yes ($mc_VERSION)])
-    else
-      AC_MSG_RESULT([no])
-      AC_MSG_ERROR([pkg-config failed to find "$mc_PACKAGE" v"$mc_VERSION"])
-    fi
-    [$3]=`$PKG_CONFIG $mc_PACKAGE --cflags`
-    [$4]=`$PKG_CONFIG $mc_PACKAGE --libs`
-    unset mc_PACKAGE
-    unset mc_VERSION
-])
-
 dnl Setup CXX with default CXXFLAGS value.
 AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 	MC_IF_VAR_EQ(CXXFLAGS, "", CXXFLAGS="-g")
@@ -291,18 +299,17 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		dnl
 		dnl Optimizations
 		dnl
-		MC_EVAR_ADD(CXXFLAGS, -O, -O3)
+		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -O, -O3)
 		MC_EVAR_ADD(CXXFLAGS, -pipe, -pipe)
-		MC_EVAR_ADD(CXXFLAGS, -fstrength-reduce, -fstrength-reduce)
-		MC_EVAR_ADD(CXXFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
+		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -fstrength-reduce, -fstrength-reduce)
+		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
 		MC_EVAR_ADD(CXXFLAGS, -finline-functions, -finline-functions)
-		MC_EVAR_ADD(CXXFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
+		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
 		MC_EVAR_ADD(CXXFLAGS, -freg-struct-return, -freg-struct-return)
 		dnl -funroll-loops gives problems with -O and templates (see Rep-CppBug_1.C)
 		dnl MC_EVAR_ADD(CXXFLAGS, -funroll-loops, -funroll-loops)
-		MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt,
-		    MC_EVAR_ADD(CXXFLAGS, -frerun-loop-opt, -frerun-loop-opt))
-		MC_EVAR_ADD(CXXFLAGS, -fgcse, -fgcse)
+		dnl SLOW: MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt, MC_EVAR_ADD(CXXFLAGS, -frerun-loop-opt, -frerun-loop-opt))
+		dnl SLOW: MC_EVAR_ADD(CXXFLAGS, -fgcse, -fgcse)
 		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
 		    MC_EVAR_ADD(CXXFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
 

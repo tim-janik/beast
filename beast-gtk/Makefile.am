@@ -26,9 +26,10 @@ LIBS += # -lefence # -pg
 
 # link programs against BSE and other neccessary libraries
 progs_LDADD = $(strip \
-	$(top_builddir)/bse/libbse.la \
-	$(top_builddir)/bsw/libbsw.la \
 	./gxk/libgxk.a \
+	$(top_builddir)/bsw/libbsw.la \
+	$(top_builddir)/bse/libbse.la \
+	$(top_builddir)/sfi/libsfi.la \
 	$(LDFLAGS) $(BEAST_LIBS) \
 )
 
@@ -37,126 +38,42 @@ progs_LDADD = $(strip \
 #
 # BEAST header files that don't get installed
 beast_headers = $(strip \
-	bstapp.h \
-	bstasciipixbuf.h \
-	bstcanvaslink.h \
-	bstcanvassource.h \
-	bstcluehunter.h \
-	bstcontrollers.h \
-	bstdefs.h \
-	bstdial.h \
-	bstdragutils.h \
-	bstfiledialog.h \
-	bstfreeradiobutton.h \
-	bstgconfig.h \
-	bstitemview.h \
-	bstkeytables.h \
-	bstknob.h \
-	bstlogadjustment.h \
-	bstmarshal.h \
-	bstmenus.h \
-	bstparam.h \
-	bstparamview.h \
-	bstpartdialog.h \
-	bstpartview.h \
-	bstpianoroll.h \
-	bstpianorollctrl.h \
-	bstplayback.h \
-	bstpreferences.h \
-	bstprocbrowser.h \
-	bstprocedure.h \
-	bstqsampler.h \
-	bstrackeditor.h \
-	bstrackitem.h \
-	bstracktable.h \
-	bstradiotools.h \
-	bstsampleeditor.h \
-	bstsequence.h \
-	bstservermonitor.h \
-	bstsnetshell.h \
-	bstsnetrouter.h \
-	bstsongshell.h \
-	bstsplash.h \
-	bsttrackview.h \
-	bstsupershell.h \
-	bstusermessage.h \
-	bstutils.h \
-	bstwavedialog.h \
-	bstwaveeditor.h \
-	bstwavereposhell.h \
-	bstwaveview.h \
-	bstxframe.h \
-	bstxkb.h \
-	bstzoomedwindow.h \
-	glewidgets.h \
-	gtklistwrapper.h \
+	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
+	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	bstsnetshell.h	\
+				bstcluehunter.h bstdefs.h		bstdial.h	\
+	bstfreeradiobutton.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
+	bstlogadjustment.h	bstitemview.h	bstknob.h		bstmarshal.h	\
+	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
+	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
+	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
+	bstrackeditor.h		bstrackitem.h	bstracktable.h		bstradiotools.h	\
+	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	\
+	bstusermessage.h	bstutils.h	bstwavedialog.h		bstwaveeditor.h	\
+	bstwavereposhell.h	bstwaveview.h	bstsongshell.h		bstxkb.h	\
+	bstzoomedwindow.h	glewidgets.h	gtklistwrapper.h	bstxframe.h	\
 )
-# FIXME: remove extra dist for bstpatterneditor.h which is required by keytable legacy code
-EXTRA_DIST += bstpatterneditor.h
 # BEAST c sources to build the program from
 beast_sources = $(strip \
-	bstapp.c \
-	bstasciipixbuf.c \
-	bstcanvaslink.c \
-	bstcanvassource.c \
-	bstcluehunter.c \
-	bstcontrollers.c \
-	bstdial.c \
-	bstdragutils.c \
-	bstfiledialog.c \
-	bstfreeradiobutton.c \
-	bstgconfig.c \
-	bstitemview.c \
-	bstkeytables.c \
-	bstknob.c \
-	bstlogadjustment.c \
-	bstmenus.c \
 	bstparam.c \
-	bstparamview.c \
-	bstpartdialog.c \
-	bstpartview.c \
-	bstpianoroll.c \
-	bstpianorollctrl.c \
-	bstplayback.c \
-	bstpreferences.c \
-	bstprocbrowser.c \
-	bstprocedure.c \
-	bstqsampler.c \
-	bstradiotools.c \
-	bstrackeditor.c \
-	bstrackitem.c \
-	bstracktable.c \
-	bstsampleeditor.c \
-	bstsequence.c \
-	bstservermonitor.c \
-	bstsnetshell.c \
-	bstsnetrouter.c \
-	bstsongshell.c \
-	bstsplash.c \
-	bsttrackview.c \
-	bstsupershell.c \
-	bstusermessage.c \
-	bstutils.c \
-	bstwavedialog.c \
-	bstwaveeditor.c \
-	bstwavereposhell.c \
-	bstwaveview.c \
-	bstxframe.c \
-	bstxkb.c \
-	bstzoomedwindow.c \
-	$(PROFILE_SOURCE) \
-	glewidgets.c \
-	gtklistwrapper.c \
+	bstlogadjustment.c	bstdragutils.c	gtklistwrapper.c	bstutils.c	\
+	bstzoomedwindow.c	bstxframe.c	glewidgets.c		bstxkb.c	\
+	bstfiledialog.c		bstgconfig.c	bstitemview.c		bstknob.c	\
+	bstparamview.c		bstpartdialog.c	bstpartview.c		bstpianoroll.c	\
+	bsttrackview.c		bstsplash.c	bstsupershell.c		bstwavedialog.c	\
+	bstsampleeditor.c	bstrackitem.c	bstracktable.c		bstsequence.c	\
+	bstpianorollctrl.c	bstplayback.c	bstpreferences.c	bstprocedure.c	\
+	bstprocbrowser.c	bstqsampler.c	bstradiotools.c		bstrackeditor.c	\
+	bstservermonitor.c	bstsnetshell.c	bstsnetrouter.c		bstsongshell.c	\
+	bstusermessage.c	bstwaveeditor.c	bstwavereposhell.c	bstwaveview.c	\
+	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
+	bstfreeradiobutton.c	bstdial.c				bstcluehunter.c	\
+	bstmenus.c		$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
-	bstrackeditor-covers.c \
-	bstkeytable-base.c \
-	bstkeytable-us.c \
-	bstkeytable-de.c \
-	bstmarshal.c \
-	bstmarshal.list \
-	bstenum_arrays.stamp \
+	bstparam-label.c	bstmarshal.c	bstparam-toggle.c	bstparam-spinner.c \
+	bstrackeditor-covers.c	bstmarshal.list	bstparam-choice.c	bstparam-note-sequence.c \
+	bstenum_arrays.stamp	bstparam-scale.c			bstparam-entry.c \
 )
 # BEAST built sources that don't get installed
 beast_built_sources = @STRIP_BEGIN@ \
@@ -168,6 +85,8 @@ beast_built_sources = @STRIP_BEGIN@ \
 	bstenum_list.c \
 @STRIP_END@
 GLIB_MKENUMS = glib-mkenums
+
+SFIDL = ../sfi/sfidl    # FIXME: cd $(srcdir) && $(SFIDL) doesn't work for builddir
 
 
 # gen-sources
@@ -185,20 +104,22 @@ $(srcdir)/bstenum_arrays.c: $(beast_headers)
 	&& rm -f xgen-beac
 $(srcdir)/bstenum_arrays.stamp: bstenum_arrays.c
 	@ [ -f $@ ] || touch $@
-$(srcdir)/bstgentypes.h: bstenum_arrays.stamp
+$(srcdir)/bstgentypes.h: bstenum_arrays.stamp bstrecords.sfidl
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
 	  --eprod "extern GType bst__type_id__@EnumName@;" \
 	    $(beast_headers) > xgen-bgth \
+	&& $(SFIDL) --header --implementation bstrecords.sfidl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
-$(srcdir)/bstgentypes.c: bstenum_arrays.stamp
+$(srcdir)/bstgentypes.c: bstenum_arrays.stamp bstrecords.sfidl
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
 	    $(beast_headers) > xgen-bgtc \
+	&& $(SFIDL) --source --implementation --init _bst_init_idl bstrecords.sfidl >> xgen-bgtc \
         && cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
 $(srcdir)/bstenum_list.c: bstenum_arrays.stamp
@@ -231,6 +152,9 @@ bststest_SOURCES = bststest.c bstutils.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)
 tsmview_SOURCES = tsmview.c
 tsmview_LDADD = $(progs_LDADD)
+
+# extra deps
+$(beast_SOURCES) $(bststest_SOURCES) $(tsmview_SOURCES): bstgentypes.h
 
 EXTRA_DIST += $(beast_headers) $(beast_extra_sources)
 MAINTAINERCLEANFILES += $(beast_built_sources)

@@ -56,7 +56,7 @@ struct _BseAdderClass
 {
   BseSourceClass parent_class;
 
-  BswIcon	*sub_icon;
+  BseIcon	*sub_icon;
 };
 
 

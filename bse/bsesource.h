@@ -103,6 +103,7 @@ struct _BseSource
   BseSourceInput       *inputs;	/* [n_ichannels] */
   GSList	       *outputs;
   gpointer		contexts; /* bsearch array of type BseSourceContext */
+  SfiReal		pos_x, pos_y;
 };
 struct _BseSourceChannelDefs
 {
@@ -225,8 +226,8 @@ void		bse_source_clear_ochannels	(BseSource	*source);
 
 
 /* --- internal --- */
-GslRing* bse_source_collect_inputs_recursive	(BseSource	*source);
-void     bse_source_free_collection		(GslRing	*ring);
+SfiRing* bse_source_collect_inputs_recursive	(BseSource	*source);
+void     bse_source_free_collection		(SfiRing	*ring);
 void	 bse_source_create_context_with_data	(BseSource	*source,
 						 guint		 context_handle,
 						 gpointer	 data,

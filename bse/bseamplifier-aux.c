@@ -40,7 +40,7 @@ GSL_INCLUDER_FUNC (Amplifier	*amplifier,
 {
   gfloat *audio_bound = audio_out + n_values;
   gfloat cv1balance, cv2balance, cstrength, pregain, au1balance, au2balance, mgain;
-
+  
   cv1balance = 1.0 - amplifier->config.ctrl_balance;
   cv2balance = amplifier->config.ctrl_balance;
   cstrength = amplifier->config.ctrl_strength;
@@ -48,11 +48,11 @@ GSL_INCLUDER_FUNC (Amplifier	*amplifier,
   au1balance = 1.0 - amplifier->config.audio_balance;
   au2balance = amplifier->config.audio_balance;
   mgain = amplifier->config.master_gain;
-
+  
   do
     {
       gfloat cv_sum, au_out;
-
+      
 #if   SIMPLE_CTRL		/* no control inputs */
       cv_sum = pregain;
 #else
@@ -79,7 +79,7 @@ GSL_INCLUDER_FUNC (Amplifier	*amplifier,
       if_reject (cv_sum > 1.0)
 	cv_sum = 1.0;
 #endif
-
+      
 #if   AU1b_AU2b			/* audio input, au1 and/or au2 */
       au_out = au1balance * *au1in++ + au2balance * *au2in++;
 #elif AU1y_AU2n
@@ -87,9 +87,9 @@ GSL_INCLUDER_FUNC (Amplifier	*amplifier,
 #elif AU1n_AU2y
       au_out = *au2in++;
 #endif
-
+      
       au_out = cv_sum * au_out;
-
+      
 #if   WITH_MASTER
       au_out *= mgain;
 #endif

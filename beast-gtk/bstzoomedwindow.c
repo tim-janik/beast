@@ -16,9 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include "bstutils.h"	/* for marshallers */
 #include "bstzoomedwindow.h"
 
-#include "bstutils.h"
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtksignal.h>
 

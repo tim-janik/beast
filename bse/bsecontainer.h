@@ -61,6 +61,7 @@ struct _BseContainerClass
 					 GType			 child_type,
 					 const gchar		*uname);
   GSList*	(*context_children)	(BseContainer		*container);
+  void		(*release_children)	(BseContainer		*container);
 };
 
 
@@ -76,7 +77,7 @@ void		bse_container_remove_item	(BseContainer	*container,
 void		bse_container_forall_items	(BseContainer	*container,
 						 BseForallItemsFunc func,
 						 gpointer	 data);
-BswIterProxy*	bse_container_list_items	(BseContainer	*container);
+BseProxySeq*	bse_container_list_items	(BseContainer	*container);
 guint		bse_container_get_item_seqid	(BseContainer	*container,
 						 BseItem	*item);
 BseItem*	bse_container_get_item		(BseContainer	*container,

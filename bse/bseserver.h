@@ -40,11 +40,9 @@ extern "C" {
 struct _BseServer
 {
   BseContainer     parent_object;
-
-  GMainContext    *main_context;
-
+  
   GSource	  *engine_source;
-
+  
   GList	          *projects;
   GSList	  *children;
   
@@ -57,7 +55,7 @@ struct _BseServer
   BseMidiDevice	  *midi_device;
   BseMidiDevice	  *midi_fallback;
   BseMidiReceiver *midi_receiver;
-
+  
   GSList	  *watch_list;
 };
 struct _BseServerClass
@@ -75,19 +73,19 @@ BseProject*	bse_server_find_project			(BseServer	*server,
 void		bse_server_pick_default_devices		(BseServer	*server);
 BseErrorType	bse_server_activate_devices		(BseServer	*server);
 void		bse_server_suspend_devices		(BseServer	*server);
-GslModule*	bse_server_retrive_pcm_output_module	(BseServer	*server,
+GslModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
 							 const gchar	*uplink_name);
 void		bse_server_discard_pcm_output_module	(BseServer	*server,
 							 GslModule	*module);
-GslModule*	bse_server_retrive_pcm_input_module	(BseServer	*server,
+GslModule*	bse_server_retrieve_pcm_input_module	(BseServer	*server,
 							 BseSource	*source,
 							 const gchar	*uplink_name);
 void		bse_server_discard_pcm_input_module	(BseServer	*server,
 							 GslModule	*module);
 BseMidiReceiver*bse_server_get_midi_receiver		(BseServer	*self,
 							 const gchar	*midi_name);
-GslModule*	bse_server_retrive_midi_input_module	(BseServer	*server,
+GslModule*	bse_server_retrieve_midi_input_module	(BseServer	*server,
 							 const gchar	*downlink_name,
 							 guint		 midi_channel_id,
 							 guint		 nth_note,
@@ -104,8 +102,12 @@ void		bse_server_remove_io_watch		(BseServer	*server,
 							 gpointer	 data);
 
 /* --- internal --- */
-void		bse_server_script_start			(BseServer        *server,
-							 BseScriptControl *script_control);
+void		bse_server_registration			(BseServer          *server,
+							 BseRegistrationType rtype,
+							 const gchar	    *what,
+							 const gchar	    *error);
+void		bse_server_script_start			(BseServer       *server,
+							 BseJanitor	 *janitor);
 void		bse_server_script_error			(BseServer	 *server,
 							 const gchar	 *script_name,
 							 const gchar	 *proc_name,
@@ -115,15 +117,13 @@ void		bse_server_user_message			(BseServer	*server,
 							 const gchar    *message);
 BseErrorType	bse_server_run_remote			(BseServer	   *server,
 							 const gchar	   *process_name,
-							 BseComDispatch     dispatcher,
-							 gpointer           dispatch_data,
-							 GDestroyNotify     destroy_data,
-							 GSList		   *params,
+							 SfiRing	   *params,
 							 const gchar       *script_name,
 							 const gchar       *proc_name,
-							 BseScriptControl **sctrl);
+							 BseJanitor	  **janitor_p);
 void		bse_server_queue_kill_wire		(BseServer	*server,
-							 BseComWire	*wire);
+							 SfiComWire	*wire);
+void		bse_server_notify_gconfig		(BseServer	*server);
 
 
 #ifdef __cplusplus

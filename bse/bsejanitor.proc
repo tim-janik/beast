@@ -1,0 +1,424 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2002 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsejanitor.h>
+#include <bse/bseserver.h>
+#include <string.h>
+
+
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2002 Tim Janik";
+
+
+METHOD (BseJanitor, trigger-action) {
+  HELP	= "Trigger an installed user action of this janitor.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("action", "Action", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor  *self   = bse_value_get_object (in_values++);
+  const gchar *action = sfi_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self) || !action)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  bse_janitor_trigger_action (self, action);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, get-script-name) {
+  HELP	= "Retrieve the script name of this janitor.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  OUT    = sfi_pspec_string ("script_name", "Script Name", NULL,
+			     NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor *self = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_string (out_values++, bse_janitor_get_script (self));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, get-proc-name) {
+  HELP	= "Retrieve the procedure name of this janitor.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  OUT    = sfi_pspec_string ("proc_name", "Proc Name", NULL,
+			     NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor *self = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_string (out_values++, self->proc_name);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, n-actions) {
+  HELP	= "Retrieve number of user actions of this janitor.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("n_actions", "N Actions", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor *self = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_int (out_values++, g_slist_length (self->actions));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, get-action) {
+  HELP	= "Retrieve an action of this janitor.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("nth_action", "Nth Action", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("action", "Action", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor       *self = bse_value_get_object (in_values++);
+  guint             nth  = sfi_value_get_int (in_values++);
+  BseJanitorAction *a;
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  a = g_slist_nth_data (self->actions, nth);
+  
+  /* set output parameters */
+  sfi_value_set_string (out_values++, a ? g_quark_to_string (a->action) : NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, get-action-name) {
+  HELP	= "Retrieve the name of an action of this janitor.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("nth_action", "Nth Action", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("action-name", "Action Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor       *self = bse_value_get_object (in_values++);
+  guint             nth  = sfi_value_get_int (in_values++);
+  BseJanitorAction *a;
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  a = g_slist_nth_data (self->actions, nth);
+  
+  /* set output parameters */
+  sfi_value_set_string (out_values++, a ? a->name : NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, get-action-blurb) {
+  HELP	= "Retrieve the help string of an action of this janitor.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("nth_action", "Nth Action", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("action-blurb", "Action Blurb", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor       *self = bse_value_get_object (in_values++);
+  guint             nth  = sfi_value_get_int (in_values++);
+  BseJanitorAction *a;
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  a = g_slist_nth_data (self->actions, nth);
+  
+  /* set output parameters */
+  sfi_value_set_string (out_values++, a ? a->blurb : NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, kill) {
+  HELP	= "Kill a currently running janitor.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor *self = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  if (!self->kill_pending)
+    bse_janitor_queue_kill (self);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, add-action) {
+  HELP	= "Install a user action for script control.";
+  IN    = bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("action", "Action", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("name", "Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("blurb", "Blurb", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor       *self   = bse_value_get_object (in_values++);
+  const gchar      *action = sfi_value_get_string (in_values++);
+  const gchar      *name   = sfi_value_get_string (in_values++);
+  const gchar      *blurb  = sfi_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self) || !action || !name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* check execution context */
+  if (!self->port || self->kill_pending)
+    return BSE_ERROR_PROC_EXECUTION;
+  
+  /* action */
+  bse_janitor_add_action (self, action, name, blurb);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, remove-action) {
+  HELP	= "Remove a previously installed user action from script control.";
+  IN	= bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("action", "Action", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor  *self = bse_value_get_object (in_values++);
+  const gchar *action = sfi_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self) || !action)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* check execution context */
+  if (!self->port || self->kill_pending)
+    return BSE_ERROR_PROC_EXECUTION;
+  
+  /* action */
+  bse_janitor_remove_action (self, action);
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-janitor-get-specific, "Script Utils/Specific Janitor") {
+  HELP  = "Retrieve the connection dependant janitor object.";
+  OUT   = bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  BseJanitor *self = bse_janitor_get_current ();
+  
+  /* check execution context */
+  if (!self || !self->port || self->kill_pending)
+    return BSE_ERROR_PROC_EXECUTION;
+
+  /* set output parameters */
+  bse_value_set_object (out_values++, self);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, set-msg) {
+  HELP  = "Alter script status message.";
+  IN    = bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_genum ("msg_type", "Message Type", NULL,
+				BSE_TYPE_USER_MSG_TYPE, BSE_USER_MSG_INFO,
+				SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("message", "Message", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor    *self = bse_value_get_object (in_values++);
+  BseUserMsgType mtype   = g_value_get_enum (in_values++);
+  const gchar   *message = sfi_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* check execution context */
+  if (!self->port || self->kill_pending)
+    return BSE_ERROR_PROC_EXECUTION;
+  if (!message)
+    {
+      message = bse_janitor_get_ident (self);
+      mtype = BSE_USER_MSG_INFO;
+    }
+  
+  /* action */
+  g_object_set (self,
+		"user_msg_type", mtype,
+		"user_msg", message,
+		NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, progress) {
+  HELP  = "Indicate progress (from 0.0 to 1.0 or -1 for unknown amount).";
+  IN    = bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_real ("progress", "Progress", NULL,
+			  -1, -1, 1.0, 0.1,
+			  SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor *self = bse_value_get_object (in_values++);
+  gfloat progress  = sfi_value_get_real (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* check execution context */
+  if (!self->port || self->kill_pending)
+    return BSE_ERROR_PROC_EXECUTION;
+  
+  /* action */
+  bse_janitor_progress (self, progress);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseJanitor, exit) {
+  HELP  = "Exit a script, leaving a message.";
+  IN    = bse_param_spec_object ("janitor", "Janitor", NULL,
+				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_genum ("msg_type", "Message Type", NULL,
+				BSE_TYPE_USER_MSG_TYPE, BSE_USER_MSG_INFO,
+				SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("message", "Message", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseJanitor *self       = bse_value_get_object (in_values++);
+  BseUserMsgType mtype   = g_value_get_enum (in_values++);
+  const gchar   *message = sfi_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_JANITOR (self) || !message)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* check execution context */
+  if (!BSE_IS_JANITOR (self) || !self->port || self->kill_pending)
+    return BSE_ERROR_PROC_EXECUTION;
+  
+  /* action */
+  bse_server_user_message (bse_server_get (), mtype, message);
+  bse_janitor_queue_kill (self);
+  
+  return BSE_ERROR_NONE;
+}

@@ -20,6 +20,19 @@
 #include "gslcommon.h"
 #include "gslopnode.h"
 #include "gslopmaster.h"
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+
+
+/* some systems don't have ERESTART (which is what linux returns for system
+ * calls on pipes which are being interrupted). most probably just use EINTR,
+ * and maybe some can return both. so we check for both in the below code,
+ * and alias ERESTART to EINTR if it's not present.
+ */
+#ifndef ERESTART
+#define ERESTART        EINTR
+#endif
 
 
 /* --- prototypes --- */
@@ -52,22 +65,22 @@ gsl_module_new (const GslClass *klass,
       return NULL;
     }
   
-  node = gsl_new_struct0 (EngineNode, 1);
+  node = sfi_new_struct0 (EngineNode, 1);
   
   /* setup GslModule */
   node->module.klass = klass;
   node->module.user_data = user_data;
-  node->module.istreams = klass->n_istreams ? gsl_new_struct0 (GslIStream, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
-  node->module.jstreams = klass->n_jstreams ? gsl_new_struct0 (GslJStream, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
+  node->module.istreams = klass->n_istreams ? sfi_new_struct0 (GslIStream, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
+  node->module.jstreams = klass->n_jstreams ? sfi_new_struct0 (GslJStream, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
   node->module.ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (node));
   
   /* setup EngineNode */
-  node->inputs = ENGINE_NODE_N_ISTREAMS (node) ? gsl_new_struct0 (EngineInput, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
-  node->jinputs = ENGINE_NODE_N_JSTREAMS (node) ? gsl_new_struct0 (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
-  node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? gsl_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
+  node->inputs = ENGINE_NODE_N_ISTREAMS (node) ? sfi_new_struct0 (EngineInput, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
+  node->jinputs = ENGINE_NODE_N_JSTREAMS (node) ? sfi_new_struct0 (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
+  node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? sfi_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
   node->output_nodes = NULL;
   node->integrated = FALSE;
-  gsl_rec_mutex_init (&node->rec_mutex);
+  sfi_rec_mutex_init (&node->rec_mutex);
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
     {
       node->outputs[i].buffer = node->module.ostreams[i].values;
@@ -114,7 +127,7 @@ gsl_job_integrate (GslModule *module)
   
   g_return_val_if_fail (module != NULL, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_INTEGRATE;
   job->data.node = ENGINE_NODE (module);
   
@@ -137,7 +150,7 @@ gsl_job_discard (GslModule *module)
   
   g_return_val_if_fail (module != NULL, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_DISCARD;
   job->data.node = ENGINE_NODE (module);
   
@@ -160,7 +173,7 @@ gsl_job_kill_inputs (GslModule *module)
   
   g_return_val_if_fail (module != NULL, NULL);
 
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_KILL_INPUTS;
   job->data.node = ENGINE_NODE (module);
 
@@ -183,7 +196,7 @@ gsl_job_kill_outputs (GslModule *module)
   
   g_return_val_if_fail (module != NULL, NULL);
 
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_KILL_OUTPUTS;
   job->data.node = ENGINE_NODE (module);
 
@@ -217,7 +230,7 @@ gsl_job_connect (GslModule *src_module,
   g_return_val_if_fail (dest_module != NULL, NULL);
   g_return_val_if_fail (dest_istream < dest_module->klass->n_istreams, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_ICONNECT;
   job->data.connection.dest_node = ENGINE_NODE (dest_module);
   job->data.connection.dest_ijstream = dest_istream;
@@ -253,7 +266,7 @@ gsl_job_jconnect (GslModule *src_module,
   g_return_val_if_fail (dest_module != NULL, NULL);
   g_return_val_if_fail (dest_jstream < dest_module->klass->n_jstreams, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_JCONNECT;
   job->data.connection.dest_node = ENGINE_NODE (dest_module);
   job->data.connection.dest_ijstream = dest_jstream;
@@ -283,7 +296,7 @@ gsl_job_disconnect (GslModule *dest_module,
   g_return_val_if_fail (dest_module != NULL, NULL);
   g_return_val_if_fail (dest_istream < dest_module->klass->n_istreams, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_IDISCONNECT;
   job->data.connection.dest_node = ENGINE_NODE (dest_module);
   job->data.connection.dest_ijstream = dest_istream;
@@ -322,7 +335,7 @@ gsl_job_jdisconnect (GslModule *dest_module,
   g_return_val_if_fail (src_module != NULL, NULL);
   g_return_val_if_fail (src_ostream < src_module->klass->n_ostreams, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_JDISCONNECT;
   job->data.connection.dest_node = ENGINE_NODE (dest_module);
   job->data.connection.dest_ijstream = dest_jstream;
@@ -341,7 +354,7 @@ gsl_job_set_consumer (GslModule *module,
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = is_toplevel_consumer ? ENGINE_JOB_SET_CONSUMER : ENGINE_JOB_UNSET_CONSUMER;
   job->data.node = ENGINE_NODE (module);
   
@@ -383,7 +396,7 @@ gsl_job_access (GslModule    *module,
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_ACCESS;
   job->data.access.node = ENGINE_NODE (module);
   job->data.access.access_func = access_func;
@@ -425,14 +438,14 @@ gsl_flow_job_access (GslModule    *module,
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAccess, 1);
+  fjob = (EngineFlowJob*) sfi_new_struct0 (EngineFlowJobAccess, 1);
   fjob->fjob_id = ENGINE_FLOW_JOB_ACCESS;
   fjob->any.tick_stamp = tick_stamp;
   fjob->access.access_func = access_func;
   fjob->access.data = data;
   fjob->access.free_func = free_func;
 
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_FLOW_JOB;
   job->data.flow_job.node = ENGINE_NODE (module);
   job->data.flow_job.fjob = fjob;
@@ -460,7 +473,7 @@ gsl_job_suspend (GslModule *module)
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_SUSPEND;
   job->data.node = ENGINE_NODE (module);
 
@@ -494,11 +507,11 @@ gsl_flow_job_resume (GslModule *module,
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   
-  fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAny, 1);
+  fjob = (EngineFlowJob*) sfi_new_struct0 (EngineFlowJobAny, 1);
   fjob->fjob_id = ENGINE_FLOW_JOB_RESUME;
   fjob->any.tick_stamp = tick_stamp;
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_FLOW_JOB;
   job->data.flow_job.node = ENGINE_NODE (module);
   job->data.flow_job.fjob = fjob;
@@ -555,7 +568,7 @@ gsl_job_add_poll (GslPollFunc    poll_func,
   if (n_fds)
     g_return_val_if_fail (fds != NULL, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_ADD_POLL;
   job->data.poll.poll_func = poll_func;
   job->data.poll.data = data;
@@ -583,7 +596,7 @@ gsl_job_remove_poll (GslPollFunc poll_func,
   
   g_return_val_if_fail (poll_func != NULL, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_REMOVE_POLL;
   job->data.poll.poll_func = poll_func;
   job->data.poll.data = data;
@@ -610,7 +623,7 @@ gsl_job_debug (const gchar *debug)
   
   g_return_val_if_fail (debug != NULL, NULL);
   
-  job = gsl_new_struct0 (GslJob, 1);
+  job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_DEBUG;
   job->data.debug = g_strdup (debug);
   
@@ -632,7 +645,7 @@ gsl_trans_open (void)
 {
   GslTrans *trans;
 
-  trans = gsl_new_struct0 (GslTrans, 1);
+  trans = sfi_new_struct0 (GslTrans, 1);
   
   trans->jobs_head = NULL;
   trans->jobs_tail = NULL;
@@ -856,13 +869,14 @@ slave (gpointer data)
 }
 
 /* --- setup & trigger --- */
-static gboolean   gsl_engine_initialized = FALSE;
-static gboolean   gsl_engine_threaded = FALSE;
-static GslThread *master_thread = NULL;
-guint		gsl_externvar_bsize = 0;
-guint		gsl_externvar_sample_freq = 0;
-guint		gsl_externvar_sub_sample_mask = 0;
-guint		gsl_externvar_sub_sample_steps = 0;
+static gboolean		gsl_engine_initialized = FALSE;
+static gboolean		gsl_engine_threaded = FALSE;
+static SfiThread       *master_thread = NULL;
+static EngineMasterData master_data;
+guint			gsl_externvar_bsize = 0;
+guint			gsl_externvar_sample_freq = 0;
+guint			gsl_externvar_sub_sample_mask = 0;
+guint			gsl_externvar_sub_sample_steps = 0;
 
 /**
  * gsl_engine_init
@@ -899,9 +913,29 @@ gsl_engine_init (gboolean run_threaded,
   
   if (gsl_engine_threaded)
     {
-      master_thread = gsl_thread_new (_engine_master_thread, NULL);
+      gint err = pipe (master_data.wakeup_pipe);
+      master_data.user_thread = sfi_thread_self ();
+      if (!err)
+	{
+	  glong d_long = fcntl (master_data.wakeup_pipe[0], F_GETFL, 0);
+	  /* sfi_debug ("master_wpipe-readfd, blocking=%ld", d_long & O_NONBLOCK); */
+	  d_long |= O_NONBLOCK;
+	  err = fcntl (master_data.wakeup_pipe[0], F_SETFL, d_long);
+	}
+      if (!err)
+	{
+	  glong d_long = fcntl (master_data.wakeup_pipe[1], F_GETFL, 0);
+	  /* sfi_debug ("master_wpipe-writefd, blocking=%ld", d_long & O_NONBLOCK); */
+	  d_long |= O_NONBLOCK;
+	  err = fcntl (master_data.wakeup_pipe[1], F_SETFL, d_long);
+	}
+      if (err)
+	g_error ("failed to create wakeup pipe: %s", g_strerror (errno));
+      master_thread = sfi_thread_run ("Master", (SfiThreadFunc) _engine_master_thread, &master_data);
+      if (!master_thread)
+	g_error ("failed to create master thread");
       if (0)
-	gsl_thread_new (slave, NULL);
+	sfi_thread_run ("Slave", slave, NULL);
     }
 }
 
@@ -909,7 +943,13 @@ static void
 wakeup_master (void)
 {
   if (master_thread)
-    gsl_thread_wakeup (master_thread);
+    {
+      guint8 data = 'W';
+      gint l;
+      do
+	l = write (master_data.wakeup_pipe[1], &data, 1);
+      while (l < 0 && (errno == EINTR || errno == ERESTART));
+    }
 }
 
 gboolean
@@ -983,7 +1023,7 @@ gsl_engine_tick_stamp_from_systime (guint64 systime)
   guint64 tick_stamp;
 
   /* FIXME: we should add special guards here
-   * for gsl_time_system() - ustamp.system_time ~> (44100 / gsl_engine_block_size ())
+   * for sfi_time_system() - ustamp.system_time ~> (44100 / gsl_engine_block_size ())
    */
 
   if (systime > ustamp.system_time)
@@ -1009,7 +1049,7 @@ gsl_engine_tick_stamp_from_systime (guint64 systime)
 	     "  last-update-systime   = %llu\n"
 	     "  last-update-tickstamp = %llu\n"
 	     "  sample-freq           = %u\n",
-	     tick_stamp, systime, gsl_time_system (), gsl_tick_stamp (),
+	     tick_stamp, systime, sfi_time_system (), gsl_tick_stamp (),
 	     ustamp.system_time, ustamp.tick_stamp,
 	     gsl_engine_sample_freq ());
 #endif

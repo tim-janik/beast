@@ -39,7 +39,7 @@ oggv_load_file_info (gpointer      data,
 		     const gchar  *file_name,
 		     GslErrorType *error_p)
 {
-  FileInfo *fi = gsl_new_struct0 (FileInfo, 1);
+  FileInfo *fi = sfi_new_struct0 (FileInfo, 1);
   FILE *file;
   gint err, i;
   
@@ -50,12 +50,12 @@ oggv_load_file_info (gpointer      data,
       return NULL;
     }
   
-  fi = gsl_new_struct0 (FileInfo, 1);
+  fi = sfi_new_struct0 (FileInfo, 1);
   err = ov_open (file, &fi->ofile, NULL, 0);
   if (err)
     {
       fclose (file);
-      gsl_delete_struct (FileInfo, fi);
+      sfi_delete_struct (FileInfo, fi);
       *error_p = GSL_ERROR_CODEC_FAILURE;
       return NULL;
     }
@@ -90,7 +90,7 @@ oggv_free_file_info (gpointer         data,
     g_free (fi->wfi.waves[i].name);
   g_free (fi->wfi.waves);
   ov_clear (&fi->ofile);
-  gsl_delete_struct (FileInfo, fi);
+  sfi_delete_struct (FileInfo, fi);
 }
 
 static GslWaveDsc*
@@ -100,7 +100,7 @@ oggv_load_wave_dsc (gpointer         data,
 		    GslErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
-  GslWaveDsc *wdsc = gsl_new_struct0 (GslWaveDsc, 1);
+  GslWaveDsc *wdsc = sfi_new_struct0 (GslWaveDsc, 1);
   vorbis_info *vi = ov_info (&fi->ofile, nth_wave);
 
   wdsc->name = g_strdup (fi->wfi.waves[nth_wave].name);
@@ -120,7 +120,7 @@ oggv_free_wave_dsc (gpointer    data,
 {
   g_free (wdsc->name);
   g_free (wdsc->chunks);
-  gsl_delete_struct (GslWaveDsc, wdsc);
+  sfi_delete_struct (GslWaveDsc, wdsc);
 }
 
 static GslDataHandle*

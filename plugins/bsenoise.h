@@ -48,9 +48,9 @@ typedef struct _BseNoise      BseNoise;
 typedef struct _BseNoiseClass BseNoiseClass;
 struct _BseNoise
 {
-  BseSource       parent_object;
+  BseSource  parent_object;
 
-  BseSampleValue *static_noise;
+  gfloat    *static_noise;
 };
 struct _BseNoiseClass
 {

@@ -19,7 +19,9 @@ bsebuffermixer_gen.c
 bsegentypes.c
 bsegentype_array.c
 bsequery
+bseautodoc
 bsemagic
+bseprocidl
 testtypes
 testsample
 testsong
@@ -30,11 +32,11 @@ testrefs
 bseinfo
 bsemarshal.c
 bsemarshal.h
+bse.sfidl
 
 gslloader
 gsltests
 gslwchunk
-gsl.3
 gslfft.c
 gslconfig.h
 gslffttest

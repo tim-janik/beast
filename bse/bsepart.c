@@ -18,13 +18,11 @@
 #include "bsepart.h"
 #include "bsemain.h"
 #include "bsestorage.h"
-#include "bsemarshal.h"
 #include "gslcommon.h"
-#include "bswprivate.h"
 #include <string.h>
 
 /* --- macros --- */
-#define	upper_power2(uint_n)	gsl_alloc_upper_power2 (MAX ((uint_n), 4))
+#define	upper_power2(uint_n)	sfi_alloc_upper_power2 (MAX ((uint_n), 4))
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
 
@@ -32,7 +30,7 @@
 /* --- prototypes --- */
 static void	    bse_part_class_init		(BsePartClass	*class);
 static void	    bse_part_init		(BsePart	*self);
-static void	    bse_part_destroy		(BseObject	*object);
+static void	    bse_part_dispose		(GObject	*object);
 static void	    bse_part_finalize		(GObject	*object);
 static void	    bse_part_store_private	(BseObject	*object,
 						 BseStorage	*storage);
@@ -53,18 +51,18 @@ BSE_BUILTIN_TYPE (BsePart)
 {
   static const GTypeInfo info = {
     sizeof (BsePartClass),
-
+    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_part_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-
+    
     sizeof (BsePart),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_part_init,
   };
-
+  
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BsePart",
 				   "BSE part type",
@@ -77,21 +75,20 @@ bse_part_class_init (BsePartClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   // BseItemClass *item_class = BSE_ITEM_CLASS (class);
-
+  
   parent_class = g_type_class_peek_parent (class);
-
+  
   quark_insert_note = g_quark_from_static_string ("insert-note");
-
+  
+  gobject_class->dispose = bse_part_dispose;
   gobject_class->finalize = bse_part_finalize;
-
+  
   object_class->store_private = bse_part_store_private;
   object_class->restore_private = bse_part_restore_private;
-  object_class->destroy = bse_part_destroy;
   
   signal_range_changed = bse_object_class_add_signal (object_class, "range-changed",
-						      bse_marshal_VOID__UINT_UINT_INT_INT, NULL,
 						      G_TYPE_NONE, 4,
-						      G_TYPE_UINT, G_TYPE_UINT,
+						      G_TYPE_INT, G_TYPE_INT,
 						      G_TYPE_INT, G_TYPE_INT);
 }
 
@@ -113,18 +110,18 @@ bse_part_init (BsePart *self)
 }
 
 static void
-bse_part_destroy (BseObject *object)
+bse_part_dispose (GObject *object)
 {
   BsePart *self = BSE_PART (object);
-
+  
   range_changed_parts = g_slist_remove (range_changed_parts, self);
-  self->range_tick = 0;
-  self->range_bound = BSE_PART_MAX_TICK;
-  self->range_min_note = 0;
-  self->range_max_note = BSE_MAX_NOTE;
-
+  self->range_tick = BSE_PART_MAX_TICK;
+  self->range_bound = 0;
+  self->range_min_note = BSE_MAX_NOTE;
+  self->range_max_note = 0;
+  
   /* chain parent class' handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
@@ -133,6 +130,8 @@ bse_part_finalize (GObject *object)
   BsePart *self = BSE_PART (object);
   BsePartEvent *ev, *next;
   guint i;
+  
+  range_changed_parts = g_slist_remove (range_changed_parts, self);
 
   g_free (self->ids);
   self->n_ids = 0;
@@ -144,11 +143,11 @@ bse_part_finalize (GObject *object)
     for (ev = self->nodes[i].events; ev; ev = next)
       {
 	next = ev->any.next;
-	gsl_delete_struct (BsePartEvent, ev);
+	sfi_delete_struct (BsePartEvent, ev);
       }
   g_free (self->nodes);
   self->nodes = NULL;
-
+  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -158,9 +157,9 @@ bse_part_alloc_id (BsePart *self,
 		   guint    tick)
 {
   guint next, id;
-
+  
   g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
-
+  
   id = self->head_id;
   next = self->ids[id - 1];
   g_assert (next >= BSE_PART_INVAL_TICK_FLAG);	// FIXME: paranoid
@@ -187,9 +186,9 @@ bse_part_move_id (BsePart *self,
   g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
   g_return_val_if_fail (id > 0 && id <= self->n_ids, 0);
   g_return_val_if_fail (self->ids[id - 1] <= BSE_PART_MAX_TICK, 0);	/* check !freed id */
-
+  
   self->ids[id - 1] = tick;
-
+  
   return id;
 }
 
@@ -199,7 +198,7 @@ bse_part_free_id (BsePart *self,
 {
   g_return_if_fail (id > 0 && id <= self->n_ids);
   g_return_if_fail (self->ids[id - 1] <= BSE_PART_MAX_TICK);	/* check !freed id */
-
+  
   self->ids[self->tail_id - 1] = BSE_PART_INVAL_TICK_FLAG + id;
   self->tail_id = id;
   self->ids[id - 1] = BSE_PART_INVAL_TICK_FLAG + 0;
@@ -216,17 +215,17 @@ static gboolean
 range_changed_notify_handler (gpointer data)
 {
   BSE_THREADS_ENTER ();
-
+  
   while (range_changed_parts)
     {
       GSList *slist = range_changed_parts;
       BsePart *self = slist->data;
       guint tick = self->range_tick, duration = self->range_bound - tick;
       gint min_note = self->range_min_note, max_note = self->range_max_note;
-
+      
       range_changed_parts = slist->next;
       g_slist_free_1 (slist);
-
+      
       self->range_tick = BSE_PART_MAX_TICK;
       self->range_bound = 0;
       self->range_min_note = BSE_MAX_NOTE;
@@ -235,9 +234,9 @@ range_changed_notify_handler (gpointer data)
 	g_signal_emit (self, signal_range_changed, 0, tick, duration, min_note, max_note);
     }
   range_changed_handler = 0;
-
+  
   BSE_THREADS_LEAVE ();
-
+  
   return FALSE;
 }
 
@@ -248,10 +247,10 @@ queue_update (BsePart *self,
 	      gint     note)
 {
   guint bound = tick + duration;
-
+  
   g_return_if_fail (duration > 0);
-
-  if (!BSE_OBJECT_DISPOSED (self))
+  
+  if (!BSE_OBJECT_DISPOSING (self))
     {
       if (self->range_tick >= self->range_bound)
 	range_changed_parts = g_slist_prepend (range_changed_parts, self);
@@ -270,13 +269,13 @@ lookup_tick (BsePart *self,
 {
   BsePartNode *nodes = self->nodes;
   guint n = self->n_nodes, offs = 0, i = 0;
-
+  
   while (offs < n)
     {
       gint cmp;
-
+      
       i = (offs + n) >> 1;
-
+      
       cmp = tick > nodes[i].tick ? +1 : tick < nodes[i].tick ? -1 : 0;
       if (!cmp)
 	return i;
@@ -285,7 +284,7 @@ lookup_tick (BsePart *self,
       else /* (cmp > 0) */
 	offs = i + 1;
     }
-
+  
   /* for self->n_nodes==0 we return 0, otherwise we return a
    * valid index, which is either an exact match, or one off
    * into either direction
@@ -301,7 +300,7 @@ queue_rectangle_update (BsePart *self,
 			gint     max_note)
 {
   guint end_tick = tick + MAX (duration, 1);
-
+  
   /* widen area to right if notes span across right boundary */
   if (self->n_nodes)
     {
@@ -328,13 +327,13 @@ insert_tick (BsePart *self,
 	     guint    tick)
 {
   guint n, size;
-
+  
   g_return_if_fail (index <= self->n_nodes);
   if (index > 0)
     g_return_if_fail (self->nodes[index - 1].tick < tick);
   if (index < self->n_nodes)
     g_return_if_fail (self->nodes[index].tick > tick);
-
+  
   n = self->n_nodes++;
   size = upper_power2 (self->n_nodes);
   if (size > upper_power2 (n))
@@ -356,7 +355,7 @@ ensure_tick (BsePart *self,
   else
     {
       guint index = lookup_tick (self, tick);
-
+      
       if (self->nodes[index].tick < tick)
 	insert_tick (self, ++index, tick);
       else if (self->nodes[index].tick > tick)
@@ -370,10 +369,10 @@ remove_tick (BsePart *self,
 	     guint    index)
 {
   guint n;
-
+  
   g_return_if_fail (index < self->n_nodes);
   g_return_if_fail (self->nodes[index].events == NULL);
-
+  
   n = self->n_nodes--;
   g_memmove (self->nodes + index, self->nodes + index + 1, (self->n_nodes - index) * sizeof (self->nodes[0]));
 }
@@ -385,7 +384,7 @@ insert_event (BsePart      *self,
 {
   g_return_if_fail (index < self->n_nodes);
   g_return_if_fail (ev->any.next == NULL);
-
+  
   ev->any.next = self->nodes[index].events;
   self->nodes[index].events = ev;
 }
@@ -420,14 +419,14 @@ find_note_at (BsePart *self,
   if (self->n_nodes && tick >= self->nodes[0].tick)
     {
       guint index = lookup_tick (self, tick);	/* nextmost */
-
+      
       if (self->nodes[index].tick <= tick)
 	index++;	/* adjust index to one after tick */
       /* search backward until note is found */
       while (index-- > 0)
 	{
 	  BsePartEvent *ev;
-
+	  
 	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
 	    if (ev->type == BSE_PART_EVENT_NOTE && ev->note.note == note)
 	      {
@@ -484,9 +483,9 @@ bse_part_select_rectangle (BsePart *self,
 			   gint     max_note)
 {
   guint bound;
-
+  
   g_return_if_fail (BSE_IS_PART (self));
-
+  
   min_note = BSE_NOTE_CLAMP (min_note);
   max_note = BSE_NOTE_CLAMP (max_note);
   bound = MIN (tick, BSE_PART_MAX_TICK - 1) + MIN (duration, BSE_PART_MAX_TICK);
@@ -499,7 +498,7 @@ bse_part_select_rectangle (BsePart *self,
 	{
 	  guint etick = self->nodes[index].tick;
 	  BsePartEvent *ev;
-
+	  
 	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
 	    if (ev->type == BSE_PART_EVENT_NOTE && !ev->note.selected &&
 		ev->note.note >= min_note && ev->note.note <= max_note)
@@ -519,9 +518,9 @@ bse_part_deselect_rectangle (BsePart *self,
 			     gint     max_note)
 {
   guint bound;
-
+  
   g_return_if_fail (BSE_IS_PART (self));
-
+  
   min_note = BSE_NOTE_CLAMP (min_note);
   max_note = BSE_NOTE_CLAMP (max_note);
   bound = MIN (tick, BSE_PART_MAX_TICK - 1) + MIN (duration, BSE_PART_MAX_TICK);
@@ -534,7 +533,7 @@ bse_part_deselect_rectangle (BsePart *self,
 	{
 	  guint etick = self->nodes[index].tick;
 	  BsePartEvent *ev;
-
+	  
 	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
 	    if (ev->type == BSE_PART_EVENT_NOTE && ev->note.selected &&
 		ev->note.note >= min_note && ev->note.note <= max_note)
@@ -554,9 +553,9 @@ bse_part_select_rectangle_ex (BsePart *self,
 			      gint     max_note)
 {
   guint bound, index;
-
+  
   g_return_if_fail (BSE_IS_PART (self));
-
+  
   min_note = BSE_NOTE_CLAMP (min_note);
   max_note = BSE_NOTE_CLAMP (max_note);
   bound = MIN (tick, BSE_PART_MAX_TICK - 1) + MIN (duration, BSE_PART_MAX_TICK);
@@ -610,9 +609,9 @@ bse_part_select_event (BsePart *self,
 {
   BsePartEvent *ev;
   guint etick;
-
+  
   g_return_val_if_fail (BSE_IS_PART (self), FALSE);
-
+  
   ev = find_event (self, id, &etick);
   if (ev && !ev->any.selected)
     {
@@ -631,7 +630,7 @@ bse_part_deselect_event (BsePart *self,
   guint etick;
   
   g_return_val_if_fail (BSE_IS_PART (self), FALSE);
-
+  
   ev = find_event (self, id, &etick);
   if (ev && ev->any.selected)
     {
@@ -654,8 +653,8 @@ insert_note (BsePart *self,
 {
   BsePartEvent *ev;
   guint index;
-
-  ev = gsl_new_struct0 (BsePartEvent, 1);
+  
+  ev = sfi_new_struct0 (BsePartEvent, 1);
   ev->type = BSE_PART_EVENT_NOTE;
   ev->note.id = id;
   ev->note.selected = selected;
@@ -663,14 +662,14 @@ insert_note (BsePart *self,
   ev->note.note = note;
   ev->note.fine_tune = fine_tune;
   ev->note.velocity = velocity;
-
+  
   BSE_SEQUENCER_LOCK ();
   index = ensure_tick (self, tick);
   insert_event (self, index, ev);
   BSE_SEQUENCER_UNLOCK ();
-
+  
   queue_update (self, tick, duration, note);
-
+  
   return ev->note.id;
 }
 
@@ -680,10 +679,10 @@ delete_event (BsePart *self,
 {
   BsePartEvent *last = NULL, *ev = NULL;
   guint tick, index;
-
+  
   tick = bse_part_tick_from_id (self, id);
   g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, FALSE);
-
+  
   index = lookup_tick (self, tick);	/* nextmost */
   if (index < self->n_nodes && self->nodes[index].tick == tick)
     for (ev = self->nodes[index].events; ev; last = ev, ev = last->any.next)
@@ -692,9 +691,9 @@ delete_event (BsePart *self,
   if (ev)
     {
       gboolean selected = ev->any.selected;	// FIXME: hack
-
+      
       queue_update (self, self->nodes[index].tick, ev->note.duration, ev->note.note);
-
+      
       BSE_SEQUENCER_LOCK ();
       if (last)
 	last->any.next = ev->any.next;
@@ -702,9 +701,9 @@ delete_event (BsePart *self,
 	self->nodes[index].events = ev->any.next;
       BSE_SEQUENCER_UNLOCK ();
       
-      gsl_delete_struct (BsePartEvent, ev);
+      sfi_delete_struct (BsePartEvent, ev);
       /* caller does: bse_part_free_id (self, id); */
-
+      
       return selected;
     }
   else
@@ -724,7 +723,7 @@ bse_part_insert_note (BsePart *self,
 		      gfloat   velocity)
 {
   g_return_val_if_fail (BSE_IS_PART (self), BSE_ERROR_INTERNAL);
-
+  
   if (!(BSE_NOTE_IS_VALID (note) &&
 	BSE_FINE_TUNE_IS_VALID (fine_tune) &&
 	tick < BSE_PART_MAX_TICK &&
@@ -732,7 +731,7 @@ bse_part_insert_note (BsePart *self,
 	duration < BSE_PART_MAX_TICK &&
 	tick + duration <= BSE_PART_MAX_TICK))
     return 0;
-
+  
   return insert_note (self,
 		      bse_part_alloc_id (self, tick),
 		      tick, duration, note, fine_tune, velocity,
@@ -744,9 +743,9 @@ bse_part_delete_event (BsePart *self,
 		       guint    id)
 {
   guint tick;
-
+  
   g_return_val_if_fail (BSE_IS_PART (self), FALSE);
-
+  
   tick = bse_part_tick_from_id (self, id);
   if (tick <= BSE_PART_MAX_TICK)
     {
@@ -767,9 +766,9 @@ bse_part_change_note (BsePart *self,
 		      gfloat   velocity)
 {
   guint old_tick;
-
+  
   g_return_val_if_fail (BSE_IS_PART (self), FALSE);
-
+  
   if (!(BSE_NOTE_IS_VALID (note) &&
 	BSE_FINE_TUNE_IS_VALID (fine_tune) &&
 	tick < BSE_PART_MAX_TICK &&
@@ -777,7 +776,7 @@ bse_part_change_note (BsePart *self,
 	duration < BSE_PART_MAX_TICK &&
 	tick + duration <= BSE_PART_MAX_TICK))
     return FALSE;
-
+  
   old_tick = bse_part_tick_from_id (self, id);
   if (old_tick <= BSE_PART_MAX_TICK)
     {
@@ -796,9 +795,9 @@ bse_part_is_selected_event (BsePart *self,
 			    guint    id)
 {
   guint tick;
-
+  
   g_return_val_if_fail (BSE_IS_PART (self), FALSE);
-
+  
   tick = bse_part_tick_from_id (self, id);
   if (tick <= BSE_PART_MAX_TICK)
     {
@@ -812,7 +811,7 @@ bse_part_is_selected_event (BsePart *self,
   return FALSE;
 }
 
-BswIterPartNote*
+BsePartNoteSeq*
 bse_part_list_notes_around (BsePart *self,
 			    guint    tick,
 			    guint    duration,
@@ -820,17 +819,17 @@ bse_part_list_notes_around (BsePart *self,
 			    gint     max_note)
 {
   guint bound, index;
-  BswIterPartNote *iter;
-
+  BsePartNoteSeq *pseq;
+  
   g_return_val_if_fail (BSE_IS_PART (self), NULL);
   g_return_val_if_fail (tick < BSE_PART_MAX_TICK, NULL);
   g_return_val_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK, NULL);
-
+  
   bound = tick + duration;
   min_note = BSE_NOTE_CLAMP (min_note);
   max_note = BSE_NOTE_CLAMP (max_note);
-  iter = bsw_iter_create (BSW_TYPE_ITER_PART_NOTE, 16);
-
+  pseq = bse_part_note_seq_new ();
+  
   /* find notes crossing span. any early note may span across tick,
    * so we always need to start searching at the top ;(
    */
@@ -838,23 +837,23 @@ bse_part_list_notes_around (BsePart *self,
     {
       guint etick = self->nodes[index].tick;
       BsePartEvent *ev;
-
+      
       for (ev = self->nodes[index].events; ev; ev = ev->any.next)
 	if (ev->type == BSE_PART_EVENT_NOTE &&
 	    ev->note.note >= min_note && ev->note.note <= max_note)
 	  {
 	    if (etick + ev->note.duration > tick)
-	      bsw_iter_add_part_note_take_ownership (iter,
-						     bsw_part_note (ev->note.id,
-								    etick, ev->note.duration,
-								    ev->note.note,
-								    ev->note.fine_tune,
-								    ev->note.velocity,
-								    ev->note.selected));
+	      bse_part_note_seq_take_append (pseq,
+					     bse_part_note (ev->note.id,
+							    etick, ev->note.duration,
+							    ev->note.note,
+							    ev->note.fine_tune,
+							    ev->note.velocity,
+							    ev->note.selected));
 	  }
     }
-
-  return iter;
+  
+  return pseq;
 }
 
 void
@@ -867,21 +866,21 @@ bse_part_queue_notes_within (BsePart *self,
   g_return_if_fail (BSE_IS_PART (self));
   g_return_if_fail (tick < BSE_PART_MAX_TICK);
   g_return_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK);
-
+  
   queue_rectangle_update (self, tick, duration,
 			  BSE_NOTE_CLAMP (min_note),
 			  BSE_NOTE_CLAMP (max_note));
 }
 
-BswIterPartNote*
+BsePartNoteSeq*
 bse_part_list_selected_notes (BsePart *self)
 {
-  BswIterPartNote *iter;
+  BsePartNoteSeq *pseq;
   guint index;
   
   g_return_val_if_fail (BSE_IS_PART (self), NULL);
   
-  iter = bsw_iter_create (BSW_TYPE_ITER_PART_NOTE, 16);
+  pseq = bse_part_note_seq_new ();
   if (self->n_nodes)
     for (index = 0; index < self->n_nodes; index++)
       {
@@ -889,41 +888,41 @@ bse_part_list_selected_notes (BsePart *self)
 	BsePartEvent *ev;
 	for (ev = self->nodes[index].events; ev; ev = ev->any.next)
 	  if (ev->type == BSE_PART_EVENT_NOTE && ev->note.selected)
-	    bsw_iter_add_part_note_take_ownership (iter,
-						   bsw_part_note (ev->note.id,
-								  etick, ev->note.duration,
-								  ev->note.note,
-								  ev->note.fine_tune,
-								  ev->note.velocity,
-								  ev->note.selected));
-      }
-  return iter;
-}
-
-BswIter*
-bse_part_list_notes_at (BsePart *self,
-			guint    tick,
-			gint     note)
-{
-  BswIterPartNote *iter;
-  BsePartEvent *ev;
-  guint index;
-
-  g_return_val_if_fail (BSE_IS_PART (self), NULL);
-
-  note = BSE_NOTE_CLAMP (note);
-  iter = bsw_iter_create (BSW_TYPE_ITER_PART_NOTE, 1);
-  ev = find_note_at (self, tick, note, &index);
-  if (ev)
-    bsw_iter_add_part_note_take_ownership (iter,	// FIXME: return _all_ notes
-					   bsw_part_note (ev->note.id,
-							  self->nodes[index].tick,
-							  ev->note.duration,
+	    bse_part_note_seq_take_append (pseq,
+					   bse_part_note (ev->note.id,
+							  etick, ev->note.duration,
 							  ev->note.note,
 							  ev->note.fine_tune,
 							  ev->note.velocity,
 							  ev->note.selected));
-  return iter;
+      }
+  return pseq;
+}
+
+BsePartNoteSeq*
+bse_part_list_notes_at (BsePart *self,
+			guint    tick,
+			gint     note)
+{
+  BsePartNoteSeq *pseq;
+  BsePartEvent *ev;
+  guint index;
+  
+  g_return_val_if_fail (BSE_IS_PART (self), NULL);
+  
+  note = BSE_NOTE_CLAMP (note);
+  pseq = bse_part_note_seq_new ();
+  ev = find_note_at (self, tick, note, &index);
+  if (ev)
+    bse_part_note_seq_take_append (pseq,	// FIXME: return _all_ notes
+				   bse_part_note (ev->note.id,
+						  self->nodes[index].tick,
+						  ev->note.duration,
+						  ev->note.note,
+						  ev->note.fine_tune,
+						  ev->note.velocity,
+						  ev->note.selected));
+  return pseq;
 }
 
 guint
@@ -931,18 +930,18 @@ bse_part_node_lookup_SL (BsePart *self,
 			 guint    tick)
 {
   guint index;
-
+  
   g_return_val_if_fail (BSE_IS_PART (self), 0);
-
+  
   /* we return the index of the first node wich is >= tick
    * or index == self->n_nodes
    */
-
+  
   index = lookup_tick (self, tick);
-
+  
   if (self->n_nodes && self->nodes[index].tick < tick)
     index++;
-
+  
   return index;
 }
 
@@ -952,15 +951,15 @@ bse_part_store_private (BseObject  *object,
 {
   BsePart *self = BSE_PART (object);
   guint index;
-
+  
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->store_private)
     BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
-
+  
   for (index = 0; index < self->n_nodes; index++)
     {
       BsePartEvent *ev;
-
+      
       for (ev = self->nodes[index].events; ev; ev = ev->any.next)
 	{
 	  if (ev->type == BSE_PART_EVENT_NOTE)
@@ -991,26 +990,26 @@ bse_part_restore_private (BseObject  *object,
   GScanner *scanner = storage->scanner;
   GTokenType expected_token;
   GQuark token_quark;
-
+  
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->restore_private)
     expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
   else
     expected_token = BSE_TOKEN_UNMATCHED;
-
+  
   if (expected_token != BSE_TOKEN_UNMATCHED ||
       g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
     return expected_token;
-
+  
   token_quark = g_quark_try_string (scanner->next_value.v_identifier);
-
+  
   if (token_quark == quark_insert_note)
     {
       guint id, tick, duration, note, fine_tune = 0;
       gfloat velocity = 1.0;
-
+      
       g_scanner_get_next_token (scanner);	/* eat quark */
-
+      
       parse_or_return (scanner, G_TOKEN_INT);
       tick = scanner->value.v_int;
       parse_or_return (scanner, G_TOKEN_INT);
@@ -1028,12 +1027,12 @@ bse_part_restore_private (BseObject  *object,
 	    }
 	}
       parse_or_return (scanner, ')');
-
+      
       id = bse_part_insert_note (self, tick, duration, note, fine_tune, velocity);
       if (!id)
 	bse_storage_warn (storage, "note insertion (note=%d tick=%u duration=%u) failed",
 			  note, tick, duration);
-
+      
       return G_TOKEN_NONE;
     }
   else

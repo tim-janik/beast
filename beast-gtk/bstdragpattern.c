@@ -35,7 +35,7 @@ struct _BstDragPattern
  * DRAG_BUTTON_CONTEXT if pattern_group is given.
  * it monitors ::pattern_inserted and ::pattern_removed
  * on the pgroup to update its position field and to auto-destruct.
- * it also monitors ::set_parent on the pattern for
+ * it also monitors ::release on the pattern for
  * auto-destruction.
  */
 
@@ -240,7 +240,7 @@ bst_drag_pattern_new (BsePattern      *pattern,
   g_object_connect (BSE_OBJECT (pattern),
 		    "swapped_signal::seqid_changed", drag_pattern_changed, drag_pattern,
 		    "swapped_signal::notify", drag_pattern_changed, drag_pattern,
-		    "swapped_signal::set_parent", bst_drag_pattern_destroy, drag_pattern,
+		    "swapped_signal::release", bst_drag_pattern_destroy, drag_pattern,
 		    NULL);
   if (pattern_group)
     {

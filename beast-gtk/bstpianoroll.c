@@ -26,10 +26,10 @@
 #define	STYLE(self)		(GTK_WIDGET (self)->style)
 #define	ALLOCATION(self)	(&GTK_WIDGET (self)->allocation)
 #define	N_OCTAVES(self)		(MAX_OCTAVE (self) - MIN_OCTAVE (self) + 1)
-#define	MAX_OCTAVE(self)	(BSW_NOTE_OCTAVE ((self)->max_note))
-#define	MAX_SEMITONE(self)	(BSW_NOTE_SEMITONE ((self)->max_note))
-#define	MIN_OCTAVE(self)	(BSW_NOTE_OCTAVE ((self)->min_note))
-#define	MIN_SEMITONE(self)	(BSW_NOTE_SEMITONE ((self)->min_note))
+#define	MAX_OCTAVE(self)	(SFI_NOTE_OCTAVE ((self)->max_note))
+#define	MAX_SEMITONE(self)	(SFI_NOTE_SEMITONE ((self)->max_note))
+#define	MIN_OCTAVE(self)	(SFI_NOTE_OCTAVE ((self)->min_note))
+#define	MIN_SEMITONE(self)	(SFI_NOTE_SEMITONE ((self)->min_note))
 
 /* layout (requisition) */
 #define	NOTE_HEIGHT(self)	((gint) ((self)->vzoom * 1.2))		/* factor must be between 1 .. 2 */
@@ -218,8 +218,8 @@ bst_piano_roll_init (BstPianoRoll *self)
   self->hzoom = 1;
   self->draw_qn_grid = TRUE;
   self->draw_qqn_grid = TRUE;
-  self->min_note = BSW_MIN_NOTE;
-  self->max_note = BSW_MAX_NOTE;
+  self->min_note = SFI_MIN_NOTE;
+  self->max_note = SFI_MAX_NOTE;
   self->hpanel_height = 20;
   self->vpanel = NULL;
   self->hpanel = NULL;
@@ -704,7 +704,7 @@ note_to_coord (BstPianoRoll *self,
 	       gint	    *height_p,
 	       gint	    *ces_fes_height_p)
 {
-  gint octave, ythickness = 1, z = self->vzoom, h = NOTE_HEIGHT (self), semitone = BSW_NOTE_SEMITONE (note);
+  gint octave, ythickness = 1, z = self->vzoom, h = NOTE_HEIGHT (self), semitone = SFI_NOTE_SEMITONE (note);
   gint oheight = OCTAVE_HEIGHT (self), y, zz = z + z, offs = 0, height = h;
 
   switch (semitone)
@@ -724,7 +724,7 @@ note_to_coord (BstPianoRoll *self,
     case  0:	offs += z;
       break;
     }
-  octave = N_OCTAVES (self) - 1 - BSW_NOTE_OCTAVE (note) + MIN_OCTAVE (self);
+  octave = N_OCTAVES (self) - 1 - SFI_NOTE_OCTAVE (note) + MIN_OCTAVE (self);
   y = octave * oheight;
   y += oheight - offs - h;
 
@@ -959,7 +959,7 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
   GdkWindow *window = self->canvas;
   GdkGC *light_gc, *dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
   gint i, dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
-  BswIterPartNote *iter;
+  BsePartNoteSeq *pseq;
 
   /* draw selection */
   if (self->selection_duration)
@@ -1044,13 +1044,13 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
   /* draw notes */
   light_gc = STYLE (self)->light_gc[GTK_STATE_NORMAL];
   dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
-  iter = self->proxy ? bsw_part_list_notes_crossing (self->proxy,
+  pseq = self->proxy ? bse_part_list_notes_crossing (self->proxy,
 						     coord_to_tick (self, x, FALSE),
 						     coord_to_tick (self, xbound, FALSE)) : NULL;
-  for (; iter && bsw_iter_n_left (iter); bsw_iter_next (iter))
+  for (i = 0; pseq && i < pseq->n_pnotes; i++)
     {
-      BswPartNote *pnote = bsw_iter_get_part_note (iter);
-      gint semitone = BSW_NOTE_SEMITONE (pnote->note);
+      BsePartNote *pnote = pseq->pnotes[i];
+      gint semitone = SFI_NOTE_SEMITONE (pnote->note);
       guint start = pnote->tick, end = start + pnote->duration;
       GdkGC *xdark_gc, *xlight_gc, *xnote_gc;
       gint x1, x2, y1, y2, height;
@@ -1089,8 +1089,6 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
 	    }
 	}
     }
-  if (iter)
-    bsw_iter_free (iter);
 }
 
 static void
@@ -1483,7 +1481,7 @@ bst_piano_roll_canvas_drag (BstPianoRoll *self,
       
       self->drag.current_tick = coord_to_tick (self, MAX (coord_x, 0), FALSE);
       coord_to_note (self, MAX (coord_y, 0), &info);
-      self->drag.current_note = BSW_NOTE_GENERIC (info.valid_octave, info.valid_semitone);
+      self->drag.current_note = SFI_NOTE_GENERIC (info.valid_octave, info.valid_semitone);
       self->drag.current_valid = info.valid && !info.ces_fes;
       if (initial)
 	{
@@ -1676,35 +1674,35 @@ piano_roll_unset_proxy (BstPianoRoll *self)
 
 void
 bst_piano_roll_set_proxy (BstPianoRoll *self,
-			  BswProxy      proxy)
+			  SfiProxy      proxy)
 {
   g_return_if_fail (BST_IS_PIANO_ROLL (self));
   if (proxy)
     {
-      g_return_if_fail (BSW_IS_ITEM (proxy));
-      g_return_if_fail (bsw_item_get_project (proxy) != 0);
+      g_return_if_fail (BSE_IS_ITEM (proxy));
+      g_return_if_fail (bse_item_get_project (proxy) != 0);
     }
 
   if (self->proxy)
     {
-      bsw_proxy_disconnect (self->proxy,
+      bse_proxy_disconnect (self->proxy,
 			    "any_signal", piano_roll_unset_proxy, self,
 			    "any_signal", piano_roll_update, self,
 			    NULL);
-      bsw_item_unuse (self->proxy);
+      bse_item_unuse (self->proxy);
     }
   self->proxy = proxy;
   if (self->proxy)
     {
-      bsw_item_use (self->proxy);
-      bsw_proxy_connect (self->proxy,
-			 "swapped_signal::set_parent", piano_roll_unset_proxy, self,
-			 // "swapped_signal::notify::uname", piano_roll_update_name, self,
+      bse_item_use (self->proxy);
+      bse_proxy_connect (self->proxy,
+			 "swapped_signal::release", piano_roll_unset_proxy, self,
+			 // "swapped_signal::property-notify::uname", piano_roll_update_name, self,
 			 "swapped_signal::range-changed", piano_roll_update, self,
 			 NULL);
-      self->min_note = bsw_part_get_min_note (self->proxy);
-      self->max_note = bsw_part_get_max_note (self->proxy);
-      self->max_ticks = bsw_part_get_max_tick (self->proxy);
+      self->min_note = bse_part_get_min_note (self->proxy);
+      self->max_note = bse_part_get_max_note (self->proxy);
+      self->max_ticks = bse_part_get_max_tick (self->proxy);
       bst_piano_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));
@@ -1718,7 +1716,7 @@ piano_roll_queue_region (BstPianoRoll *self,
 			 gint          max_note)
 {
   if (self->proxy && duration)	/* let the part extend the area by spawning notes if necessary */
-    bsw_part_queue_notes_within (self->proxy, tick, duration, min_note, max_note);
+    bse_part_queue_notes_within (self->proxy, tick, duration, min_note, max_note);
   piano_roll_update (self, tick, duration, min_note, max_note);
 }
 
@@ -1878,7 +1876,7 @@ bst_piano_roll_get_paste_pos (BstPianoRoll *self,
       tick = 0;
     }
   if (note_p)
-    *note_p = BSW_NOTE_MAKE_VALID (BSW_NOTE_GENERIC (octave, semitone));
+    *note_p = SFI_NOTE_MAKE_VALID (SFI_NOTE_GENERIC (octave, semitone));
   if (tick_p)
     *tick_p = tick;
 }

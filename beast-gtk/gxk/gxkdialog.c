@@ -405,7 +405,7 @@ gxk_dialog_clear_flags (GxkDialog     *dialog,
  * gxk_dialog_get_child
  * @dialog: valid GxkDialog
  *
- * Retrive the primary child of the dialog.
+ * Retrieve the primary child of the dialog.
  */
 GtkWidget*
 gxk_dialog_get_child (GxkDialog *dialog)
@@ -527,7 +527,7 @@ gxk_dialog_enter_notify_event (GtkWidget        *widget,
  * gxk_dialog_get_status_window
  * @RETURNS: a valid GxkDialog or %NULL
  *
- * Retrive the most recently entered GxkDialog if any.
+ * Retrieve the most recently entered GxkDialog if any.
  */
 GxkDialog*
 gxk_dialog_get_status_window (void)

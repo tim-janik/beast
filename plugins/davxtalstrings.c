@@ -54,11 +54,11 @@ enum
 /* --- prototypes --- */
 static void	   dav_xtal_strings_init	     (DavXtalStrings	   *self);
 static void	   dav_xtal_strings_class_init	     (DavXtalStringsClass  *class);
-static void	   dav_xtal_strings_set_property     (DavXtalStrings	   *self,
+static void	   dav_xtal_strings_set_property     (GObject              *object,
 						      guint                 param_id,
-						      GValue               *value,
+						      const GValue         *value,
 						      GParamSpec           *pspec);
-static void	   dav_xtal_strings_get_property     (DavXtalStrings	   *self,
+static void	   dav_xtal_strings_get_property     (GObject              *object,
 						      guint                 param_id,
 						      GValue               *value,
 						      GParamSpec           *pspec);
@@ -98,48 +98,47 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) dav_xtal_strings_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) dav_xtal_strings_get_property;
+  gobject_class->set_property = dav_xtal_strings_set_property;
+  gobject_class->get_property = dav_xtal_strings_get_property;
   
   source_class->context_create = dav_xtal_strings_context_create;
 
   bse_object_class_add_param (object_class, "Frequency",
 			      PARAM_BASE_FREQ,
-			      bse_param_spec_freq_simple ("base_freq", "Frequency", NULL,
-							  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
-  bse_object_class_set_param_log_scale (object_class, "base_freq", 880.0, 2, 4);
+			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
+						   BSE_KAMMER_FREQUENCY_f,
+						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Frequency",
 			      PARAM_BASE_NOTE,
-			      bse_param_spec_note_simple ("base_note", "Note", NULL,
-							  BSE_PARAM_GUI));
+			      bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_VEL,
-			      bse_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
-						    "Velocity of the string pluck",
-						    0.0, 100.0, 100.0, 1,
-						    BSE_PARAM_GUI | BSE_PARAM_HINT_SCALE));
+			      sfi_pspec_real ("trigger_vel", "Trigger Velocity [%]",
+						   "Velocity of the string pluck",
+						   100.0,  0.0, 100.0, 1,
+						   SFI_PARAM_GUI SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_HIT,
-			      bse_param_spec_bool ("trigger_pulse", "Trigger Hit", "Pluck the string",
-						   FALSE, BSE_PARAM_GUI));
+			      sfi_pspec_bool ("trigger_pulse", "Trigger Hit", "Pluck the string",
+						   FALSE, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, "Decay", PARAM_NOTE_DECAY,
-			      bse_param_spec_float ("note_decay", "Note Decay",
-						    "Note decay is the 'half-life' of the note's decay in seconds",
-						    0.001, 4.0, 0.4, 0.01,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      sfi_pspec_real ("note_decay", "Note Decay",
+						   "Note decay is the 'half-life' of the note's decay in seconds",
+						   0.4, 0.001, 4.0, 0.01,
+						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Decay", PARAM_TENSION_DECAY,
-			      bse_param_spec_float ("tension_decay", "Tension Decay",
-						    "Tension of the string",
-						    0.001, 1.0, 0.04, 0.01,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      sfi_pspec_real ("tension_decay", "Tension Decay",
+						   "Tension of the string",
+						   0.04, 0.001, 1.0, 0.01,
+						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Flavour", PARAM_METALLIC_FACTOR,
-			      bse_param_spec_float ("metallic_factor", "Metallic Factor [%]",
-						    "Metallicness of the string",
-						    0.0, 100.0, 16.0, 1,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      sfi_pspec_real ("metallic_factor", "Metallic Factor [%]",
+						   "Metallicness of the string",
+						   16.0, 0.0, 100.0, 1,
+						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Flavour", PARAM_SNAP_FACTOR,
-			      bse_param_spec_float ("snap_factor", "Snap Factor [%]",
-						    "Snappiness of the string",
-						    0.0, 100.0, 34.0, 1,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      sfi_pspec_real ("snap_factor", "Snap Factor [%]",
+						   "Snappiness of the string",
+						   34.0, 0.0, 100.0, 1,
+						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
   
   channel_id = bse_source_class_add_ichannel (source_class, "Freq In", "Pluck frequency input");
   g_assert (channel_id == DAV_XTAL_STRINGS_ICHANNEL_FREQ);
@@ -170,20 +169,21 @@ dav_xtal_strings_init (DavXtalStrings *self)
 }
 
 static void
-dav_xtal_strings_set_property (DavXtalStrings *self,
-			       guint           param_id,
-			       GValue         *value,
-			       GParamSpec     *pspec)
+dav_xtal_strings_set_property (GObject      *object,
+			       guint         param_id,
+			       const GValue *value,
+			       GParamSpec   *pspec)
 {
+  DavXtalStrings *self = DAV_XTAL_STRINGS (object);
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      self->params.freq = g_value_get_float (value);
+      self->params.freq = sfi_value_get_real (value);
       dav_xtal_strings_update_modules (self, FALSE);
       g_object_notify (G_OBJECT (self), "base_note");
       break;
     case PARAM_BASE_NOTE:
-      self->params.freq = bse_note_to_freq (bse_value_get_note (value));
+      self->params.freq = bse_note_to_freq (sfi_value_get_note (value));
       dav_xtal_strings_update_modules (self, FALSE);
       g_object_notify (G_OBJECT (self), "base_freq");
       break;
@@ -191,23 +191,23 @@ dav_xtal_strings_set_property (DavXtalStrings *self,
       dav_xtal_strings_update_modules (self, TRUE);
       break;
     case PARAM_TRIGGER_VEL:
-      self->params.trigger_vel = g_value_get_float (value) / 100.0;
+      self->params.trigger_vel = sfi_value_get_real (value) / 100.0;
       dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_NOTE_DECAY:
-      self->params.note_decay = g_value_get_float (value);
+      self->params.note_decay = sfi_value_get_real (value);
       dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_TENSION_DECAY:
-      self->params.tension_decay = g_value_get_float (value);
+      self->params.tension_decay = sfi_value_get_real (value);
       dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_METALLIC_FACTOR:
-      self->params.metallic_factor = g_value_get_float (value) / 100.0;
+      self->params.metallic_factor = sfi_value_get_real (value) / 100.0;
       dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_SNAP_FACTOR:
-      self->params.snap_factor = g_value_get_float (value) / 100.0;
+      self->params.snap_factor = sfi_value_get_real (value) / 100.0;
       dav_xtal_strings_update_modules (self, FALSE);
       break;
     default:
@@ -217,36 +217,37 @@ dav_xtal_strings_set_property (DavXtalStrings *self,
 }
 
 static void
-dav_xtal_strings_get_property (DavXtalStrings *self,
-			       guint           param_id,
-			       GValue         *value,
-			       GParamSpec     *pspec)
+dav_xtal_strings_get_property (GObject    *object,
+			       guint       param_id,
+			       GValue     *value,
+			       GParamSpec *pspec)
 {
+  DavXtalStrings *self = DAV_XTAL_STRINGS (object);
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      g_value_set_float (value, self->params.freq);
+      sfi_value_set_real (value, self->params.freq);
       break;
     case PARAM_BASE_NOTE:
-      bse_value_set_note (value, bse_note_from_freq (self->params.freq));
+      sfi_value_set_note (value, bse_note_from_freq (self->params.freq));
       break;
     case PARAM_TRIGGER_HIT:
-      g_value_set_boolean (value, FALSE);
+      sfi_value_set_bool (value, FALSE);
       break;
     case PARAM_TRIGGER_VEL:
-      g_value_set_float (value, self->params.trigger_vel * 100.0);
+      sfi_value_set_real (value, self->params.trigger_vel * 100.0);
       break;
     case PARAM_NOTE_DECAY:
-      g_value_set_float (value, self->params.note_decay);
+      sfi_value_set_real (value, self->params.note_decay);
       break;
     case PARAM_TENSION_DECAY:
-      g_value_set_float (value, self->params.tension_decay);
+      sfi_value_set_real (value, self->params.tension_decay);
       break;
     case PARAM_METALLIC_FACTOR:
-      g_value_set_float (value, self->params.metallic_factor * 100.0);
+      sfi_value_set_real (value, self->params.metallic_factor * 100.0);
       break;
     case PARAM_SNAP_FACTOR:
-      g_value_set_float (value, self->params.snap_factor * 100.0);
+      sfi_value_set_real (value, self->params.snap_factor * 100.0);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

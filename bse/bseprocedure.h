@@ -50,9 +50,8 @@ struct _BseProcedureClass
 
   /* setup upon init */
   gchar          *help;
-  gchar          *author;
+  gchar          *authors;
   gchar          *copyright;
-  gchar          *date; /* copyright date */
   
   /* implementation */
   guint           n_in_pspecs;
@@ -99,7 +98,9 @@ BseErrorType bse_procedure_marshal        (GType		 proc_type,
 					   gpointer		 marshal_data);
 BseErrorType bse_procedure_execvl	  (BseProcedureClass	*proc,
 					   GSList		*in_value_list,
-					   GSList		*out_value_list);
+					   GSList		*out_value_list,
+					   BseProcedureMarshal	 marshal,
+					   gpointer		 marshal_data);
 
 
 /* --- internal --- */

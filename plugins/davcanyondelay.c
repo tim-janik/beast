@@ -115,8 +115,8 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) dav_canyon_delay_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) dav_canyon_delay_get_property;
+  gobject_class->set_property = dav_canyon_delay_set_property;
+  gobject_class->get_property = dav_canyon_delay_get_property;
   
   object_class->destroy = dav_canyon_delay_do_destroy;
   

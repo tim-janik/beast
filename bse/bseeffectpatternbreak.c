@@ -34,13 +34,13 @@ BSE_BUILTIN_TYPE (BseEffectPatternBreak)
 {
   static const GTypeInfo effect_info = {
     sizeof (BseEffectPatternBreakClass),
-
+    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_effect_pattern_break_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-
+    
     sizeof (BseEffectPatternBreak),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_pattern_break_init,
@@ -52,7 +52,7 @@ BSE_BUILTIN_TYPE (BseEffectPatternBreak)
 					  "BSE Effect - break and advance to new pattern",
 					  &effect_info);
   bse_categories_register ("/Effect/Pattern Break", effect_type);
-
+  
   return effect_type;
 }
 
@@ -60,7 +60,7 @@ static void
 bse_effect_pattern_break_class_init (BseEffectClass *class)
 {
   /* BseObjectClass *object_class = BSE_OBJECT_CLASS (class); */
-
+  
   class->jump_sequencer = bse_effect_pattern_break_jump_sequencer;
 }
 

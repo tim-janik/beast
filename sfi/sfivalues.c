@@ -19,6 +19,7 @@
 #include "sfivalues.h"
 #include "sfiprimitives.h"
 #include "sfiparams.h"
+#include "sfimemory.h"
 
 
 /* --- variables --- */
@@ -117,6 +118,40 @@ _sfi_init_values (void)
 
 
 /* --- GValue functions --- */
+gboolean
+sfi_check_value (const GValue *value)
+{
+  GType vtype, ftype;
+  if (!value)
+    return FALSE;
+  vtype = G_VALUE_TYPE (value);
+  if (G_TYPE_IS_FUNDAMENTAL (vtype))
+    ftype = vtype;
+  else
+    ftype = G_TYPE_FUNDAMENTAL (vtype);
+  /* checking for fundamental types is good enough to figure most Sfi types */
+  switch (ftype)
+    {
+      /* fundamentals */
+    case SFI_TYPE_BOOL:
+    case SFI_TYPE_INT:
+    case SFI_TYPE_NUM:
+    case SFI_TYPE_REAL:
+    case SFI_TYPE_STRING:
+    case SFI_TYPE_PSPEC:
+      return TRUE;
+    }
+  /* non fundamentals */
+  /* SFI_TYPE_CHOICE is derived from SFI_TYPE_STRING */
+  if (ftype == G_TYPE_BOXED)
+    return (vtype == SFI_TYPE_REC ||
+	    vtype == SFI_TYPE_SEQ ||
+	    vtype == SFI_TYPE_FBLOCK ||
+	    vtype == SFI_TYPE_BBLOCK);
+  else
+    return (vtype == SFI_TYPE_PROXY);
+}
+
 gchar*
 sfi_value_get_choice (const GValue *value)
 {
@@ -213,7 +248,7 @@ sfi_value_get_pspec (const GValue *value)
 {
   g_return_val_if_fail (SFI_VALUE_HOLDS_PSPEC (value), NULL);
 
-  return g_value_get_boxed (value);
+  return g_value_get_param (value);
 }
 
 GParamSpec*
@@ -223,7 +258,7 @@ sfi_value_dup_pspec (const GValue *value)
 
   g_return_val_if_fail (SFI_VALUE_HOLDS_PSPEC (value), NULL);
   
-  pspec = g_value_get_boxed (value);
+  pspec = g_value_get_param (value);
   return pspec ? sfi_pspec_ref (pspec) : NULL;
 }
 
@@ -233,7 +268,7 @@ sfi_value_set_pspec (GValue     *value,
 {
   g_return_if_fail (SFI_VALUE_HOLDS_PSPEC (value));
 
-  g_value_set_boxed (value, pspec);
+  g_value_set_param (value, pspec);
 }
 
 void
@@ -242,7 +277,7 @@ sfi_value_take_pspec (GValue     *value,
 {
   g_return_if_fail (SFI_VALUE_HOLDS_PSPEC (value));
 
-  g_value_set_boxed_take_ownership (value, pspec);
+  g_value_set_param_take_ownership (value, pspec);
 }
 
 SfiSeq*
@@ -350,7 +385,7 @@ sfi_value_copy_deep (const GValue *src_value,
 static GValue*
 alloc_value (GType type)
 {
-  GValue *value = g_new0 (GValue, 1);
+  GValue *value = sfi_new_struct0 (GValue, 1);
   if (type)
     g_value_init (value, type);
   return value;
@@ -362,7 +397,7 @@ sfi_value_free (GValue *value)
   g_return_if_fail (value != NULL);
   if (G_VALUE_TYPE (value))
     g_value_unset (value);
-  g_free (value);
+  sfi_delete_struct (GValue, value);
 }
 
 GValue*
@@ -487,6 +522,20 @@ sfi_value_choice_enum (const GValue *enum_value)
 }
 
 GValue*
+sfi_value_choice_genum (gint enum_value, GType enum_type)
+{
+  GValue *value;
+  gchar *choice;
+
+  choice = sfi_enum2choice (enum_value, enum_type);
+  value = sfi_value_choice (choice);
+  g_free (choice);
+
+  return value;
+}
+
+
+GValue*
 sfi_value_bblock (SfiBBlock *vbblock)
 {
   GValue *value = alloc_value (SFI_TYPE_BBLOCK);
@@ -577,12 +626,29 @@ sfi_value_choice2enum (const GValue *choice_value,
   g_type_class_unref (eclass);
 }
 
+static inline gchar*
+to_sname (gchar *str)
+{
+  gchar *s;
+  for (s = str; *s; s++)
+    if (*s >= 'A' && *s <= 'Z')
+      *s += 'a' - 'A';
+    else if (*s >= 'a' && *s <= 'z')
+      ;
+    else if (*s >= '0' && *s <= '9')
+      ;
+    else
+      *s = '-';
+  return str;
+}
+
 void
 sfi_value_enum2choice (const GValue *enum_value,
 		       GValue       *choice_value)
 {
   GEnumClass *eclass;
   GEnumValue *ev;
+  gchar *sname;
 
   g_return_if_fail (SFI_VALUE_HOLDS_CHOICE (choice_value));
   g_return_if_fail (G_VALUE_HOLDS_ENUM (enum_value));
@@ -591,6 +657,50 @@ sfi_value_enum2choice (const GValue *enum_value,
   ev = g_enum_get_value (eclass, g_value_get_enum (enum_value));
   if (!ev)
     ev = eclass->values;
-  sfi_value_set_choice (choice_value, ev->value_name);
+  sname = to_sname (g_strdup (ev->value_name));
+  sfi_value_set_choice (choice_value, sname);
+  g_free (sname);
   g_type_class_unref (eclass);
+}
+
+gint
+sfi_choice2enum (const gchar    *choice_value,
+                 GType           enum_type)
+{
+  GEnumClass *eclass;
+  GEnumValue *ev = NULL;
+  guint i;
+  gint enum_value;
+
+  eclass = g_type_class_ref (enum_type);
+  if (choice_value)
+    for (i = 0; i < eclass->n_values; i++)
+      if (sfi_choice_match_detailed (eclass->values[i].value_name, choice_value, TRUE) ||
+	  sfi_choice_match_detailed (eclass->values[i].value_nick, choice_value, TRUE))
+	{
+	  ev = eclass->values + i;
+	  break;
+	}
+  enum_value = ev ? ev->value : 0;
+  g_type_class_unref (eclass);
+
+  return enum_value;
+}
+
+gchar*
+sfi_enum2choice (gint            enum_value,
+                 GType           enum_type)
+{
+  GEnumClass *eclass;
+  GEnumValue *ev;
+  gchar *choice;
+
+  eclass = g_type_class_ref (enum_type);
+  ev = g_enum_get_value (eclass, enum_value);
+  if (!ev)
+    ev = eclass->values;
+  choice = g_strdup (ev->value_name);
+  g_type_class_unref (eclass);
+
+  return choice;
 }

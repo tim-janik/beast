@@ -21,7 +21,7 @@
 #include "bsestorage.h"
 #include "bseparasite.h"
 #include "bsecategories.h"
-#include "bsemarshal.h"
+#include "bsegconfig.h"
 #include "bsesource.h"		/* debug hack */
 #include <string.h>
 
@@ -33,7 +33,7 @@ enum
 };
 enum
 {
-  SIGNAL_DESTROY,
+  SIGNAL_RELEASE,
   SIGNAL_STORE,
   SIGNAL_ICON_CHANGED,
   SIGNAL_LAST
@@ -55,12 +55,12 @@ static void		bse_object_class_base_finalize	(BseObjectClass	*class);
 static void		bse_object_class_init		(BseObjectClass	*class);
 static void		bse_object_init			(BseObject	*object);
 static void		bse_object_do_dispose		(GObject	*gobject);
-static void		bse_object_do_destroy		(BseObject	*object);
-static void		bse_object_do_set_property	(BseObject	*object,
+static void		bse_object_do_finalize		(GObject	*object);
+static void		bse_object_do_set_property	(GObject        *gobject,
 							 guint           property_id,
-							 GValue         *value,
+							 const GValue   *value,
 							 GParamSpec     *pspec);
-static void		bse_object_do_get_property	(BseObject	*object,
+static void		bse_object_do_get_property	(GObject        *gobject,
 							 guint           property_id,
 							 GValue         *value,
 							 GParamSpec     *pspec);
@@ -84,16 +84,16 @@ static BseTokenType	bse_object_do_try_statement	(BseObject	*object,
 							 BseStorage	*storage);
 static GTokenType	bse_object_do_restore		(BseObject	*object,
 							 BseStorage	*storage);
-static BswIcon*		bse_object_do_get_icon		(BseObject	*object);
+static BseIcon*		bse_object_do_get_icon		(BseObject	*object);
 
 
 /* --- variables --- */
 static gpointer	   parent_class = NULL;
 GQuark		   bse_quark_uname = 0;
+GQuark		   bse_quark_icon = 0;
 static GQuark	   quark_blurb = 0;
 static GHashTable *object_unames_ht = NULL;
-static GHashTable *object_id_ht = NULL;
-static GHashTable *marshaller_ht = NULL;
+static SfiUStore  *object_id_ustore = NULL;
 static GQuark	   quark_property_changed_queue = 0;
 static guint       object_signals[SIGNAL_LAST] = { 0, };
 
@@ -188,15 +188,16 @@ bse_object_class_init (BseObjectClass *class)
   parent_class = g_type_class_peek_parent (class);
   
   bse_quark_uname = g_quark_from_static_string ("bse-object-uname");
+  bse_quark_icon = g_quark_from_static_string ("bse-object-icon");
   quark_property_changed_queue = g_quark_from_static_string ("bse-property-changed-queue");
   quark_blurb = g_quark_from_static_string ("bse-object-blurb");
   object_unames_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
-  object_id_ht = g_hash_table_new (NULL, NULL);
-  marshaller_ht = g_hash_table_new (NULL, NULL);
+  object_id_ustore = sfi_ustore_new ();
   
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_object_do_get_property;
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_object_do_set_property;
+  gobject_class->set_property = bse_object_do_set_property;
+  gobject_class->get_property = bse_object_do_get_property;
   gobject_class->dispose = bse_object_do_dispose;
+  gobject_class->finalize = bse_object_do_finalize;
   
   class->store_property = bse_object_store_property;
   class->restore_property = bse_object_restore_property;
@@ -209,33 +210,28 @@ bse_object_class_init (BseObjectClass *class)
   class->restore_private = bse_object_do_restore_private;
   class->unlocked = NULL;
   class->get_icon = bse_object_do_get_icon;
-  class->destroy = bse_object_do_destroy;
   
   bse_object_class_add_param (class, NULL,
 			      PROP_UNAME,
-			      bse_param_spec_string ("uname", "Name", "Unique name of this object",
-						     NULL,
-						     BSE_PARAM_GUI | G_PARAM_LAX_VALIDATION
-						     /* watch out, unames are specially
-						      * treated within the various
-						      * objects, specifically BseItem
-						      * and BseContainer.
-						      */));
+			      sfi_pspec_string ("uname", "Name", "Unique name of this object",
+						NULL,
+						SFI_PARAM_GUI SFI_PARAM_LAX_VALIDATION
+						/* watch out, unames are specially
+						 * treated within the various
+						 * objects, specifically BseItem
+						 * and BseContainer.
+						 */));
   bse_object_class_add_param (class, NULL,
 			      PROP_BLURB,
-			      bse_param_spec_string ("blurb", "Comment", NULL,
-						     NULL,
-						     BSE_PARAM_DEFAULT |
-						     BSE_PARAM_HINT_CHECK_NULL));
+			      sfi_pspec_string ("blurb", "Comment", NULL,
+						NULL,
+						SFI_PARAM_DEFAULT));
   
-  object_signals[SIGNAL_DESTROY] = bse_object_class_add_signal (class, "destroy",
-								bse_marshal_VOID__NONE, NULL,
+  object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (class, "release",
 								G_TYPE_NONE, 0);
   object_signals[SIGNAL_STORE] = bse_object_class_add_signal (class, "store",
-							      bse_marshal_VOID__POINTER, NULL, // FIXME __OBJECT
 							      G_TYPE_NONE, 1, G_TYPE_POINTER); // FIXME: G_TYPE_STORAGE);
   object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (class, "icon_changed",
-								     bse_marshal_VOID__NONE, NULL,
 								     G_TYPE_NONE, 0);
   
   /* feature parasites */
@@ -248,11 +244,11 @@ bse_object_debug_leaks (void)
   BSE_IF_DEBUG (LEAKS)
     {
       GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
-
+      
       for (list = objects; list; list = list->next)
 	{
 	  BseObject *object = list->data;
-
+	  
 	  g_message ("[%p] stale %s\t ref_count=%u prepared=%u locked=%u id=%u",
 		     object,
 		     G_OBJECT_TYPE_NAME (object),
@@ -270,7 +266,7 @@ bse_object_debug_name (gpointer object)
 {
   GTypeInstance *instance = object;
   gchar *debug_name;
-
+  
   if (!instance)
     return "<NULL>";
   if (!instance->g_class)
@@ -309,7 +305,7 @@ bse_object_init (BseObject *object)
   object->unique_id = unique_id++;
   if (!unique_id)
     g_error ("object ID overflow");
-  g_hash_table_insert (object_id_ht, (gpointer) object->unique_id, object);
+  sfi_ustore_insert (object_id_ustore, object->unique_id, object);
   
   object_unames_ht_insert (object);
 }
@@ -335,52 +331,47 @@ bse_object_do_dispose (GObject *gobject)
 {
   BseObject *object = BSE_OBJECT (gobject);
   
-  g_return_if_fail (gobject->ref_count == 1);
-
-  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSED);
+  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
   
-  /* perform destroy notification */
-  g_signal_emit (object, object_signals[SIGNAL_DESTROY], 0);
+  /* perform release notification */
+  g_signal_emit (object, object_signals[SIGNAL_RELEASE], 0);
   
-  g_return_if_fail (gobject->ref_count == 1);
-  
-  /* invoke destroy method */
-  BSE_OBJECT_GET_CLASS (object)->destroy (object);
-  
-  g_return_if_fail (gobject->ref_count == 1);
-
-  /* complete shutdown process, by chaining
-   * parent class' handler
-   */
+  /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
-  
-  g_return_if_fail (gobject->ref_count == 1);
+
+  BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSING);
 }
 
 static void
-bse_object_do_destroy (BseObject *object)
+bse_object_do_finalize (GObject *gobject)
 {
-  g_hash_table_remove (object_id_ht, (gpointer) object->unique_id);
+  BseObject *object = BSE_OBJECT (gobject);
+
+  sfi_ustore_remove (object_id_ustore, object->unique_id);
   
   /* remove object from hash list *before* clearing data list,
    * since the object uname is kept in the datalist!
    */
   object_unames_ht_remove (object);
+
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (gobject);
 }
 
 static void
 bse_object_do_set_uname (BseObject   *object,
 			 const gchar *uname)
 {
-  bse_object_set_qdata_full (object, bse_quark_uname, g_strdup (uname), uname ? g_free : NULL);
+  g_object_set_qdata_full (object, bse_quark_uname, g_strdup (uname), uname ? g_free : NULL);
 }
 
 static void
-bse_object_do_set_property (BseObject   *object,
-			    guint        property_id,
-			    GValue      *value,
-			    GParamSpec  *pspec)
+bse_object_do_set_property (GObject      *gobject,
+			    guint         property_id,
+			    const GValue *value,
+			    GParamSpec   *pspec)
 {
+  BseObject *object = BSE_OBJECT (gobject);
   switch (property_id)
     {
       gchar *string;
@@ -389,7 +380,7 @@ bse_object_do_set_property (BseObject   *object,
       if (!(object->flags & BSE_OBJECT_FLAG_FIXED_UNAME))
 	{
 	  object_unames_ht_remove (object);
-	  string = bse_strdup_stripped (g_value_get_string (value));
+	  string = g_strdup_stripped (g_value_get_string (value));
 	  if (string)
 	    {
 	      gchar *p = strchr (string, ':');
@@ -409,10 +400,10 @@ bse_object_do_set_property (BseObject   *object,
     case PROP_BLURB:
       if (!quark_blurb)
 	quark_blurb = g_quark_from_static_string ("bse-blurb");
-      string = bse_strdup_stripped (g_value_get_string (value));
+      string = g_strdup (g_value_get_string (value));
       if (g_value_get_string (value) && !string) /* preserve NULL vs. "" distinction */
 	string = g_strdup ("");
-      bse_object_set_qdata_full (object, quark_blurb, string, string ? g_free : NULL);
+      g_object_set_qdata_full (object, quark_blurb, string, string ? g_free : NULL);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -421,18 +412,19 @@ bse_object_do_set_property (BseObject   *object,
 }
 
 static void
-bse_object_do_get_property (BseObject   *object,
+bse_object_do_get_property (GObject     *gobject,
 			    guint        property_id,
 			    GValue      *value,
 			    GParamSpec  *pspec)
 {
+  BseObject *object = BSE_OBJECT (gobject);
   switch (property_id)
     {
     case PROP_UNAME:
       g_value_set_string (value, BSE_OBJECT_UNAME (object));
       break;
     case PROP_BLURB:
-      g_value_set_string (value, bse_object_get_qdata (object, quark_blurb));
+      g_value_set_string (value, g_object_get_qdata (object, quark_blurb));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -448,70 +440,65 @@ bse_object_class_add_property (BseObjectClass *class,
 {
   g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (bse_param_spec_get_group (pspec) == NULL);
+  g_return_if_fail (sfi_pspec_get_group (pspec) == NULL);
   g_return_if_fail (property_id > 0);
   
-  bse_param_spec_set_group (pspec, property_group);
+  sfi_pspec_set_group (pspec, property_group);
   g_object_class_install_property (G_OBJECT_CLASS (class), property_id, pspec);
 }
 
-void
-bse_object_class_set_param_log_scale (BseObjectClass *oclass,
-				      const gchar    *pspec_name,
-				      gdouble         center,
-				      gdouble         base,
-				      guint           n_steps)
+static void
+bse_marshal_signal (GClosure       *closure,
+		    GValue /*out*/ *return_value,
+		    guint           n_param_values,
+		    const GValue   *param_values,
+		    gpointer        invocation_hint,
+		    gpointer        marshal_data)
 {
-  GParamSpec *pspec;
+  gpointer arg0, argN;
+  
+  g_return_if_fail (return_value == NULL);
+  g_return_if_fail (n_param_values >= 1 && n_param_values <= 1 + SFI_VMARSHAL_MAX_ARGS);
+  g_return_if_fail (G_VALUE_HOLDS_OBJECT (param_values));
 
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (oclass));
-  g_return_if_fail (pspec_name != NULL);
-  g_return_if_fail (n_steps > 0);
-  g_return_if_fail (base > 0);
-
-  pspec = g_object_class_find_property (G_OBJECT_CLASS (oclass), pspec_name);
-  if (!G_IS_PARAM_SPEC_FLOAT (pspec) || pspec->owner_type != G_OBJECT_CLASS_TYPE (oclass))
-    g_warning ("class `%s' has no float property `%s' to set log scale",
-	       G_OBJECT_CLASS_NAME (oclass),
-	       pspec_name);
+  arg0 = g_value_get_object (param_values);
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      argN = arg0;
+      arg0 = closure->data;
+    }
   else
-    bse_param_spec_set_log_scale (pspec, center, base, n_steps);
+    argN = closure->data;
+  sfi_vmarshal_void (((GCClosure*) closure)->callback,
+		     arg0,
+		     n_param_values - 1,
+		     param_values + 1,
+		     argN);
 }
 
 guint
 bse_object_class_add_signal (BseObjectClass    *oclass,
 			     const gchar       *signal_name,
-			     GSignalCMarshaller c_marshaller,
-			     GSignalCMarshaller proxy_marshaller,
 			     GType              return_type,
 			     guint              n_params,
 			     ...)
 {
   va_list args;
   guint signal_id;
-  gpointer old_proxy_marshaller;
-
+  
   g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
+  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
   g_return_val_if_fail (signal_name != NULL, 0);
-  g_return_val_if_fail (c_marshaller != NULL, 0);
   
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
 				   G_TYPE_FROM_CLASS (oclass),
 				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
 				   NULL, NULL, NULL,
-				   c_marshaller,
+				   bse_marshal_signal,
 				   return_type,
 				   n_params, args);
   va_end (args);
-
-  old_proxy_marshaller = g_hash_table_lookup (marshaller_ht, c_marshaller);
-  if (old_proxy_marshaller && old_proxy_marshaller != proxy_marshaller)
-    g_warning ("proxy marshaller mismatch for signal \"%s::%s\": %p != %p",
-	       g_type_name (G_TYPE_FROM_CLASS (oclass)), signal_name,
-	       old_proxy_marshaller, proxy_marshaller);
-  else
-    g_hash_table_insert (marshaller_ht, c_marshaller, proxy_marshaller);
   
   return signal_id;
 }
@@ -519,124 +506,28 @@ bse_object_class_add_signal (BseObjectClass    *oclass,
 guint
 bse_object_class_add_dsignal (BseObjectClass    *oclass,
 			      const gchar       *signal_name,
-			      GSignalCMarshaller c_marshaller,
-			      GSignalCMarshaller proxy_marshaller,
 			      GType              return_type,
 			      guint              n_params,
 			      ...)
 {
   va_list args;
   guint signal_id;
-  gpointer old_proxy_marshaller;
-
+  
   g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
+  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
   g_return_val_if_fail (signal_name != NULL, 0);
-  g_return_val_if_fail (c_marshaller != NULL, 0);
   
   va_start (args, n_params);
   signal_id = g_signal_new_valist (signal_name,
 				   G_TYPE_FROM_CLASS (oclass),
 				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_DETAILED,
 				   NULL, NULL, NULL,
-				   c_marshaller,
+				   bse_marshal_signal,
 				   return_type,
 				   n_params, args);
   va_end (args);
-
-  old_proxy_marshaller = g_hash_table_lookup (marshaller_ht, c_marshaller);
-  if (old_proxy_marshaller && old_proxy_marshaller != proxy_marshaller)
-    g_warning ("proxy marshaller mismatch for signal \"%s::%s\": %p != %p",
-	       g_type_name (G_TYPE_FROM_CLASS (oclass)), signal_name,
-	       old_proxy_marshaller, proxy_marshaller);
-  else
-    g_hash_table_insert (marshaller_ht, c_marshaller, proxy_marshaller);
   
   return signal_id;
-}
-
-GSignalCMarshaller
-bse_proxy_marshaller_lookup (GSignalCMarshaller c_marshaller)
-{
-  GSignalCMarshaller proxy_marshaller;
-
-  g_return_val_if_fail (c_marshaller != NULL, NULL);
-
-  proxy_marshaller = g_hash_table_lookup (marshaller_ht, c_marshaller);
-
-  return proxy_marshaller ? proxy_marshaller : c_marshaller;
-}
-
-gpointer
-bse_object_ref (gpointer object)
-{
-  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
-  
-  g_object_ref (object);
-  
-  return object;
-}
-
-void
-bse_object_unref (gpointer object)
-{
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  
-  g_object_unref (object);
-}
-
-gpointer
-bse_object_new_valist (GType	    type,
-		       const gchar *first_property_name,
-		       va_list	    var_args)
-{
-  g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type), NULL);
-  
-  return g_object_new_valist (type, first_property_name, var_args);
-}
-
-gpointer
-bse_object_new (GType	     type,
-		const gchar *first_property_name,
-		...)
-{
-  gpointer object;
-  va_list var_args;
-  
-  g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type), NULL);
-  
-  va_start (var_args, first_property_name);
-  object = g_object_new_valist (type, first_property_name, var_args);
-  va_end (var_args);
-  
-  return object;
-}
-
-void
-bse_object_set (BseObject   *object,
-		const gchar *first_property_name,
-		...)
-{
-  va_list var_args;
-  
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  
-  va_start (var_args, first_property_name);
-  g_object_set_valist (G_OBJECT (object), first_property_name, var_args);
-  va_end (var_args);
-}
-
-void
-bse_object_get (BseObject   *object,
-		const gchar *first_property_name,
-		...)
-{
-  va_list var_args;
-  
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  
-  va_start (var_args, first_property_name);
-  g_object_get_valist (G_OBJECT (object), first_property_name, var_args);
-  va_end (var_args);
 }
 
 void
@@ -651,12 +542,12 @@ bse_object_lock (BseObject *object)
   
   if (!object->lock_count)
     {
-      bse_object_ref (object);
+      g_object_ref (object);
       
       /* we also keep the globals locked so we don't need to duplicate
        * this all over the place
        */
-      bse_globals_lock ();
+      bse_gconfig_lock ();
     }
   
   object->lock_count += 1;
@@ -673,26 +564,19 @@ bse_object_unlock (BseObject *object)
   if (!object->lock_count)
     {
       /* release global lock */
-      bse_globals_unlock ();
+      bse_gconfig_unlock ();
       
       if (BSE_OBJECT_GET_CLASS (object)->unlocked)
 	BSE_OBJECT_GET_CLASS (object)->unlocked (object);
       
-      bse_object_unref (object);
+      g_object_unref (object);
     }
 }
 
 gpointer
 bse_object_from_id (guint unique_id)
 {
-  gpointer object = g_hash_table_lookup (object_id_ht, (gpointer) unique_id);
-
-  /* we reveal NULL for disposed objects or 0 IDs */
-
-  if (object && BSE_OBJECT_DISPOSED (object))
-    object = NULL;
-
-  return object;
+  return sfi_ustore_lookup (object_id_ustore, unique_id);
 }
 
 GList*
@@ -748,42 +632,6 @@ bse_objects_list (GType	  type)
 }
 
 void
-bse_object_set_data (BseObject	 *object,
-		     const gchar *key,
-		     gpointer	  data)
-{
-  GObject *gobject = (GObject*) object;
-  
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  
-  g_datalist_set_data (&gobject->qdata, key, data);
-}
-
-void
-bse_object_set_data_full (BseObject	*object,
-			  const gchar	*key,
-			  gpointer	 data,
-			  GDestroyNotify destroy)
-{
-  GObject *gobject = (GObject*) object;
-  
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  
-  g_datalist_set_data_full (&gobject->qdata, key, data, data ? destroy : NULL);
-}
-
-gpointer
-bse_object_get_data (BseObject	 *object,
-		     const gchar *key)
-{
-  GObject *gobject = (GObject*) object;
-  
-  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
-  
-  return g_datalist_get_data (&gobject->qdata, key);
-}
-
-void
 bse_object_class_add_parser (BseObjectClass	    *class,
 			     const gchar	    *token,
 			     BseObjectParseStatement parse_func,
@@ -831,50 +679,49 @@ bse_object_notify_icon_changed (BseObject *object)
   g_signal_emit (object, object_signals[SIGNAL_ICON_CHANGED], 0);
 }
 
-BswIcon*
+BseIcon*
 bse_object_get_icon (BseObject *object)
 {
-  BswIcon *icon;
+  BseIcon *icon;
   
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
   
-  bse_object_ref (object);
+  g_object_ref (object);
   
   icon = BSE_OBJECT_GET_CLASS (object)->get_icon (object);
   
-  bse_object_unref (object);
+  g_object_unref (object);
   
   return icon;
 }
 
-static BswIcon*
+static BseIcon*
 bse_object_do_get_icon (BseObject *object)
 {
-  BseCategory *cats;
-  guint n_cats, i;
+  BseIcon *icon;
   
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
-  
-  /* FIXME: this is a gross hack, we should store the first per-type
-   * category icon as static type-data and fetch that from here
-   */
-  
-  cats = bse_categories_from_type (BSE_OBJECT_TYPE (object), &n_cats);
-  for (i = 0; i < n_cats; i++)
+
+  icon = g_object_get_qdata (G_OBJECT (object), bse_quark_icon);
+  if (!icon)
     {
-      BswIcon *icon = cats[i].icon;
-      
-      if (icon)
-	{
-	  g_free (cats);
-	  
-	  return icon;
-	}
+      BseCategorySeq *cseq;
+      guint i;
+
+      /* FIXME: this is a bit of a hack, we could store the first per-type
+       * category icon as static type-data and fetch that from here
+       */
+      cseq = bse_categories_from_type (G_OBJECT_TYPE (object));
+      for (i = 0; i < cseq->n_cats; i++)
+	if (cseq->cats[i]->icon)
+	  {
+	    icon = bse_icon_copy_shallow (cseq->cats[i]->icon);
+	    g_object_set_qdata_full (G_OBJECT (object), bse_quark_icon, icon, (GDestroyNotify) bse_icon_free);
+	    break;
+	  }
+      bse_category_seq_free (cseq);
     }
-  
-  g_free (cats);
-  
-  return NULL;
+  return icon;
 }
 
 void
@@ -884,7 +731,7 @@ bse_object_store (BseObject  *object,
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (BSE_IS_STORAGE (storage));
   
-  bse_object_ref (object);
+  g_object_ref (object);
   
   if (BSE_OBJECT_GET_CLASS (object)->store_private)
     BSE_OBJECT_GET_CLASS (object)->store_private (object, storage);
@@ -897,7 +744,7 @@ bse_object_store (BseObject  *object,
   bse_storage_handle_break (storage);
   bse_storage_putc (storage, ')');
   
-  bse_object_unref (object);
+  g_object_unref (object);
 }
 
 static void
@@ -916,10 +763,7 @@ bse_object_store_property (BseObject  *object,
     g_warning ("%s: unable to store object property \"%s\" of type `%s'",
 	       G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
   else
-    {
-      bse_storage_break (storage);
-      bse_storage_put_param (storage, value, pspec);
-    }
+    bse_storage_put_param (storage, value, pspec);
 }
 
 static void
@@ -928,7 +772,7 @@ bse_object_do_store_private (BseObject	*object,
 {
   GParamSpec **pspecs;
   guint n;
-
+  
   /* dump the object paramters, starting out
    * at the base class
    */
@@ -937,7 +781,7 @@ bse_object_do_store_private (BseObject	*object,
     {
       GParamSpec *pspec = pspecs[n];
       
-      if (pspec->flags & BSE_PARAM_SERVE_STORAGE)
+      if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_STORAGE))
 	{
 	  GValue value = { 0, };
 	  
@@ -962,9 +806,9 @@ bse_object_restore (BseObject  *object,
     {
       GTokenType expected_token;
       
-      bse_object_ref (object);
+      g_object_ref (object);
       expected_token = BSE_OBJECT_GET_CLASS (object)->restore (object, storage);
-      bse_object_unref (object);
+      g_object_unref (object);
       
       return expected_token;
     }
@@ -1045,23 +889,23 @@ bse_object_restore_property (BseObject  *object,
 {
   GTokenType expected_token;
   gboolean fixed_uname;
-
+  
   if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
     return bse_storage_warn_skip (storage, "unable to restore object property \"%s\" of type `%s'",
 				  pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
-
+  
   /* parse the value for this pspec, including the trailing closing ')' */
-  expected_token = bse_storage_parse_param_value (storage, value, pspec, TRUE);
+  expected_token = bse_storage_parse_param_value (storage, value, pspec);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;	/* failed to parse the parameter value */
-
+  
   /* preserve the uname during restoring */
   fixed_uname = object->flags & BSE_OBJECT_FLAG_FIXED_UNAME;
   BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_FIXED_UNAME);
   g_object_set_property (G_OBJECT (object), pspec->name, value);
   if (!fixed_uname)
     BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_FIXED_UNAME);
-
+  
   return G_TOKEN_NONE;
 }
 
@@ -1100,10 +944,6 @@ bse_object_do_restore_private (BseObject  *object,
   g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
   expected_token = BSE_OBJECT_GET_CLASS (object)->restore_property (object, storage, &value, pspec);
   g_value_unset (&value);
-
+  
   return expected_token;
 }
-
-
-/* --- compile standard marshallers --- */
-#include	"bsemarshal.c"

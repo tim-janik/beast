@@ -5,12 +5,24 @@
 
 @include teximacros.texi
 
-@unnumbered Documentation
+@unnumbered Documents
 
 @itemize
-@item @uref{faq.markup,,	   Frequently Asked Questions}
-@item @uref{quickstart.markup,,	   Quick Start Guide}
-@item @uref{release-notes.markup,, BEAST Release Notice}
-@item @uref{news.markup,,	   BEAST NEWS File}
-@item @uref{gsl-mplan.markup,,	   GSL Engine (Development Concepts)}
+@item @uref{beast-doc://faq,,           Frequently Asked Questions}
+@item @uref{beast-doc://quickstart,,    Quick Start Guide}
+@item @uref{beast-doc://release-notes,, BEAST Release Notice}
+@item @uref{beast-doc://news,,          BEAST NEWS File}
+@item @uref{beast-doc://gsl-mplan,,     GSL Engine (Development Concepts)}
 @end itemize
+
+@unnumbered Reference
+
+@itemize
+@item @uref{beast-man://3/sfi,,         Synthesis Fusion Kit Interface}
+@item @uref{beast-man://3/bse,,         Bedevilled Sound Engine}
+@item @uref{beast-man://3/beast-gxk,,   BEAST's Gtk+ Extension Kit}
+@item @uref{beast-man://3/bse-procs,,   BSE Procedures}
+@item @uref{beast-man://3/bse-structs,, BSE Structures}
+@end itemize
+
+@bye

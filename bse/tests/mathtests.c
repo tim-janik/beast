@@ -74,7 +74,7 @@ main (int   argc,
   shift_argv = (const gchar**) argv;
   
   g_thread_init (NULL);
-  gsl_init (NULL, NULL);
+  gsl_init (NULL);
   
   arg = shift ();
   if (!arg)
@@ -651,11 +651,11 @@ usage (void)
 }
 
 static void
-print_int_ring (GslRing *ring)
+print_int_ring (SfiRing *ring)
 {
-  GslRing *node;
+  SfiRing *node;
   g_print ("{");
-  for (node = ring; node; node = gsl_ring_walk (ring, node))
+  for (node = ring; node; node = sfi_ring_walk (node, ring))
     g_print ("%c", (gint) node->data);
   g_print ("}");
 }
@@ -696,16 +696,16 @@ ring_test (void)
   for (n = 0; n < G_N_ELEMENTS (data_array); n++)
     {
       gint i, l = data_array[n][0];
-      GslRing *ring = NULL;
+      SfiRing *ring = NULL;
       for (i = 1; i <= l; i++)
-	ring = gsl_ring_append (ring, (gpointer) (data_array[n][i]));
+	ring = sfi_ring_append (ring, (gpointer) (data_array[n][i]));
       g_print ("source: ");
       print_int_ring (ring);
-      ring = gsl_ring_sort (ring, ints_cmp);
+      ring = sfi_ring_sort (ring, ints_cmp);
       g_print (" sorted: ");
       print_int_ring (ring);
       g_print ("\n");
-      gsl_ring_free (ring);
+      sfi_ring_free (ring);
     }
 }
 

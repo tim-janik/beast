@@ -16,43 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bseglobals.h"
-
-#include	"bseconfig.h"
-
-
-/* --- prototypes --- */
-extern void        bse_gconfig_notify_lock_changed (void);			/* from bsegconfig.c */
-extern void        bse_globals_copy                (const BseGlobals *globals_src,
-						    BseGlobals       *globals); /* for bsegconfig.c */
-extern void        bse_globals_unset               (BseGlobals       *globals); /* for bsegconfig.c */
+#include	"bsemain.h"
 
 
 /* --- extern variables --- */
-const guint	     bse_major_version = BSE_MAJOR_VERSION;
-const guint	     bse_minor_version = BSE_MINOR_VERSION;
-const guint	     bse_micro_version = BSE_MICRO_VERSION;
-const guint	     bse_interface_age = BSE_INTERFACE_AGE;
-const guint	     bse_binary_age = BSE_BINARY_AGE;
-const gchar         *bse_version = BSE_VERSION;
 const gdouble*	_bse_semitone_factor_table = NULL;
 const gdouble*	_bse_fine_tune_factor_table = NULL;
-
-
-/* --- variables --- */
-static guint		 bse_globals_lock_count = 0;
-static BseGlobals	 bse_globals_current = { 0, };
-const BseGlobals * const bse_globals = &bse_globals_current;
-static const BseGlobals	 bse_globals_defaults = {
-  0.1		/* step_volume_dB */,
-  10		/* step_bpm */,
-  8		/* step_balance */,
-  4		/* step_transpose */,
-  4		/* step_fine_tune */,
-  1		/* step_env_time */,
-  
-  256		/* track_length (hunk_size) */,
-  44100		/* mixing_frequency */,
-};
 
 
 /* --- note factors --- */
@@ -468,37 +437,17 @@ static const gdouble fine_tune_factor_table201[] = {
 
 
 /* --- functions --- */
-gchar*
-bse_check_version (guint required_major,
-		   guint required_minor,
-		   guint required_micro)
-{
-  if (required_major > BSE_MAJOR_VERSION)
-    return "BSE version too old (major mismatch)";
-  if (required_major < BSE_MAJOR_VERSION)
-    return "BSE version too new (major mismatch)";
-  if (required_minor > BSE_MINOR_VERSION)
-    return "BSE version too old (minor mismatch)";
-  if (required_minor < BSE_MINOR_VERSION)
-    return "BSE version too new (minor mismatch)";
-  if (required_micro < BSE_MICRO_VERSION - BSE_BINARY_AGE)
-    return "BSE version too new (micro mismatch)";
-  if (required_micro > BSE_MICRO_VERSION)
-    return "BSE version too old (micro mismatch)";
-  return NULL;
-}
-
 void
 bse_globals_init (void)
 {
   g_return_if_fail (_bse_semitone_factor_table == NULL);
-
+  
   /* setup semitone factorization table
    * table based on 2^(1/12*semitone)
    */
-  g_assert (BSE_KAMMER_NOTE - BSE_MIN_NOTE <= 100);
-  g_assert (BSE_MAX_NOTE - BSE_KAMMER_NOTE <= 100);
-  _bse_semitone_factor_table = semitone_factor_table201 + 100 - BSE_KAMMER_NOTE;
+  g_assert (SFI_KAMMER_NOTE - SFI_MIN_NOTE <= 100);
+  g_assert (SFI_MAX_NOTE - SFI_KAMMER_NOTE <= 100);
+  _bse_semitone_factor_table = semitone_factor_table201 + 100 - SFI_KAMMER_NOTE;
   
   /* setup fine tune factorization table
    * table based on 2^(1/1200*cent)
@@ -506,66 +455,6 @@ bse_globals_init (void)
   g_assert (BSE_MIN_FINE_TUNE >= -100);
   g_assert (BSE_MAX_FINE_TUNE <= 100);
   _bse_fine_tune_factor_table = fine_tune_factor_table201 + 100;
-
-  /* setup BseGlobals
-   */
-  bse_globals_copy (&bse_globals_defaults, &bse_globals_current);
-  
-  bse_globals_lock_count = 0;
-}
-
-void
-bse_globals_copy (const BseGlobals *globals_src,
-		  BseGlobals       *globals)
-{
-  if (!globals_src)
-    globals_src = &bse_globals_defaults;
-  if (!globals)
-    {
-      g_return_if_fail (bse_globals_locked () == FALSE);
-
-      bse_globals_unset (&bse_globals_current);
-      globals = &bse_globals_current;
-    }
-
-  *globals = *globals_src;
-  /* g_strdup()s */
-}
-
-void
-bse_globals_unset (BseGlobals *globals)
-{
-  g_return_if_fail (globals != NULL);
-
-  /* g_free()s */
-  memset (globals, 0, sizeof (*globals));
-}
-
-void
-bse_globals_lock (void)
-{
-  bse_globals_lock_count++;
-  if (bse_globals_lock_count == 1)
-    bse_gconfig_notify_lock_changed ();
-}
-
-void
-bse_globals_unlock (void)
-{
-  if (bse_globals_lock_count)
-    {
-      bse_globals_lock_count--;
-      if (bse_globals_lock_count == 0)
-	{
-	  bse_gconfig_notify_lock_changed ();
-	}
-    }
-}
-
-gboolean
-bse_globals_locked (void)
-{
-  return bse_globals_lock_count != 0;
 }
 
 gdouble
@@ -601,7 +490,7 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
 {
   g_return_val_if_fail (time_range >= BSE_TIME_RANGE_SHORT, 0);
   g_return_val_if_fail (time_range <= BSE_TIME_RANGE_LONG, 0);
-
+  
   switch (time_range)
     {
     case BSE_TIME_RANGE_SHORT:		return BSE_TIME_RANGE_SHORT_ms;
@@ -633,26 +522,76 @@ guint
 bse_idle_now (GSourceFunc function,
 	      gpointer    data)
 {
-  return g_idle_add_full (BSE_PRIORITY_NOW, function, data, NULL);
+  GSource *source = g_idle_source_new ();
+  guint id;
+  g_source_set_priority (source, BSE_PRIORITY_NOW);
+  g_source_set_callback (source, function, data, NULL);
+  id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
 }
 
 guint
 bse_idle_notify (GSourceFunc function,
 		 gpointer    data)
 {
-  return g_idle_add_full (BSE_PRIORITY_NOTIFY, function, data, NULL);
+  GSource *source = g_idle_source_new ();
+  guint id;
+  g_source_set_priority (source, BSE_PRIORITY_NOTIFY);
+  g_source_set_callback (source, function, data, NULL);
+  id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
+}
+
+guint
+bse_idle_normal (GSourceFunc function,
+		 gpointer    data)
+{
+  GSource *source = g_idle_source_new ();
+  guint id;
+  g_source_set_priority (source, BSE_PRIORITY_NORMAL);
+  g_source_set_callback (source, function, data, NULL);
+  id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
 }
 
 guint
 bse_idle_update (GSourceFunc function,
 		 gpointer    data)
 {
-  return g_idle_add_full (BSE_PRIORITY_UPDATE, function, data, NULL);
+  GSource *source = g_idle_source_new ();
+  guint id;
+  g_source_set_priority (source, BSE_PRIORITY_UPDATE);
+  g_source_set_callback (source, function, data, NULL);
+  id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
 }
 
 guint
 bse_idle_background (GSourceFunc function,
 		     gpointer    data)
 {
-  return g_idle_add_full (BSE_PRIORITY_BACKGROUND, function, data, NULL);
+  GSource *source = g_idle_source_new ();
+  guint id;
+  g_source_set_priority (source, BSE_PRIORITY_BACKGROUND);
+  g_source_set_callback (source, function, data, NULL);
+  id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
+}
+
+gboolean
+bse_idle_remove (guint id)
+{
+  GSource *source;
+
+  g_return_val_if_fail (id > 0, FALSE);
+
+  source = g_main_context_find_source_by_id (bse_main_context, id);
+  if (source)
+    g_source_destroy (source);
+  return source != NULL;
 }

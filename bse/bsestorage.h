@@ -44,7 +44,7 @@ extern "C" {
 
 
 /* --- BseStorage flags --- */
-typedef enum			/*< skip >*/
+typedef enum	/*< skip >*/
 {
   BSE_STORAGE_FLAG_READABLE	   = 1 << 0,
   BSE_STORAGE_FLAG_WRITABLE	   = 1 << 1,
@@ -54,6 +54,11 @@ typedef enum			/*< skip >*/
   BSE_STORAGE_FLAG_SELF_CONTAINED  = 1 << 5,
   BSE_STORAGE_FLAG_PROXIES_ENABLED = 1 << 6
 } BseStorageFlags;
+typedef enum	/*< skip >*/
+{
+  BSE_STORAGE_SKIP_DEFAULTS	= 1 << 0,
+  BSE_STORAGE_SKIP_COMPAT	= 1 << 1
+} BseStorageMode;
 
 
 /* --- BseStorage --- */
@@ -87,7 +92,7 @@ BseStorage*	bse_storage_new			(void);
 BseStorage*	bse_storage_from_scanner	(GScanner	*scanner);
 void		bse_storage_destroy		(BseStorage	*storage);
 void		bse_storage_prepare_write	(BseStorage	*storage,
-						 gboolean        store_defaults);
+						 BseStorageMode  mode);
 BseErrorType	bse_storage_input_file		(BseStorage	*storage,
 						 const gchar	*file_name);
 BseErrorType	bse_storage_input_text		(BseStorage	*storage,
@@ -169,8 +174,7 @@ GTokenType	bse_storage_parse_data_handle	(BseStorage	*storage,
 						 GslDataHandle **data_handle_p);
 GTokenType	bse_storage_parse_param_value	(BseStorage	*storage,
 						 GValue		*value,
-						 GParamSpec	*pspec,
-						 gboolean	 close_statement);
+						 GParamSpec	*pspec);
 GTokenType	bse_storage_parse_item_link	(BseStorage	*storage,
 						 BseItem	*from_item,
 						 BseStorageRestoreLink restore_link,

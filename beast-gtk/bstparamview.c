@@ -18,12 +18,14 @@
  */
 #include "bstparamview.h"
 
+#include "bstparam.h"
 
 
 /* --- prototypes --- */
 static void	bst_param_view_class_init	(BstParamViewClass	*klass);
 static void	bst_param_view_init		(BstParamView		*pe);
 static void	bst_param_view_destroy		(GtkObject		*object);
+static void	bst_param_view_finalize		(GObject		*object);
 
 
 /* --- static variables --- */
@@ -62,10 +64,13 @@ bst_param_view_get_type (void)
 static void
 bst_param_view_class_init (BstParamViewClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
 
   bst_param_view_class = class;
   parent_class = g_type_class_peek_parent (class);
+
+  gobject_class->finalize = bst_param_view_finalize;
 
   object_class->destroy = bst_param_view_destroy;
 }
@@ -73,11 +78,11 @@ bst_param_view_class_init (BstParamViewClass *class)
 static void
 bst_param_view_init (BstParamView *param_view)
 {
-  param_view->object = 0;
+  param_view->item = 0;
   param_view->bparams = NULL;
 
-  param_view->first_base_type = BSE_TYPE_OBJECT;
-  param_view->last_base_type = 0;
+  param_view->first_base_type = g_strdup ("BseObject");
+  param_view->last_base_type = NULL;
   param_view->reject_pattern = NULL;
   param_view->match_pattern = NULL;
 }
@@ -101,7 +106,20 @@ bst_param_view_destroy (GtkObject *object)
 
   bst_param_view_destroy_contents (param_view);
 
-  bst_param_view_set_object (param_view, 0);
+  bst_param_view_set_item (param_view, 0);
+
+  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+}
+
+static void
+bst_param_view_finalize (GObject *object)
+{
+  BstParamView *param_view = BST_PARAM_VIEW (object);
+
+  bst_param_view_set_item (param_view, 0);
+
+  g_free (param_view->first_base_type);
+  g_free (param_view->last_base_type);
 
   if (param_view->reject_pattern)
     {
@@ -114,67 +132,67 @@ bst_param_view_destroy (GtkObject *object)
       param_view->match_pattern = NULL;
     }
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkWidget*
-bst_param_view_new (BswProxy object)
+bst_param_view_new (SfiProxy item)
 {
   GtkWidget *param_view;
 
-  if (object)
-    g_return_val_if_fail (BSW_IS_OBJECT (object), NULL);
+  if (item)
+    g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
 
   param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
-  if (object)
-    bst_param_view_set_object (BST_PARAM_VIEW (param_view), object);
+  if (item)
+    bst_param_view_set_item (BST_PARAM_VIEW (param_view), item);
 
   return param_view;
 }
 
 static void
-param_view_reset_object (BstParamView *param_view)
+param_view_reset_item (BstParamView *param_view)
 {
-  bst_param_view_set_object (param_view, 0);
+  bst_param_view_set_item (param_view, 0);
 }
 
 void
-bst_param_view_set_object (BstParamView *param_view,
-			   BswProxy      object)
+bst_param_view_set_item (BstParamView *param_view,
+			 SfiProxy      item)
 {
   GSList *slist;
 
   g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
-  if (object)
-    g_return_if_fail (BSW_IS_OBJECT (object));
+  if (item)
+    g_return_if_fail (BSE_IS_ITEM (item));
 
-  if (param_view->object)
+  if (param_view->item)
     {
-      bsw_proxy_disconnect (param_view->object,
-			    "any_signal", param_view_reset_object, param_view,
+      bse_proxy_disconnect (param_view->item,
+			    "any_signal", param_view_reset_item, param_view,
 			    NULL);
-      param_view->object = 0;
+      param_view->item = 0;
       
       for (slist = param_view->bparams; slist; slist = slist->next)
-	bst_param_set_object (slist->data, NULL);
+	bst_param_set_proxy (slist->data, 0);
     }
 
-  param_view->object = object;
+  param_view->item = item;
 
-  if (param_view->object)
-    bsw_proxy_connect (param_view->object,
-		       "swapped_signal::destroy", param_view_reset_object, param_view,
+  if (param_view->item)
+    bse_proxy_connect (param_view->item,
+		       "swapped_signal::release", param_view_reset_item, param_view,
 		       NULL);
   
   bst_param_view_rebuild (param_view);
 }
 
 void
-bst_param_view_set_mask (BstParamView   *param_view,
-			 GType           first_base_type,
-			 GType           last_base_type,
-			 const gchar    *reject_pattern,
-			 const gchar    *match_pattern)
+bst_param_view_set_mask (BstParamView *param_view,
+			 const gchar  *first_base_type,
+			 const gchar  *last_base_type,
+			 const gchar  *reject_pattern,
+			 const gchar  *match_pattern)
 {
   g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
 
@@ -186,23 +204,25 @@ bst_param_view_set_mask (BstParamView   *param_view,
     g_pattern_spec_free (param_view->match_pattern);
   param_view->match_pattern = match_pattern ? g_pattern_spec_new (match_pattern) : NULL;
 
-  param_view->first_base_type = first_base_type;
-  param_view->last_base_type = last_base_type;
+  g_free (param_view->first_base_type);
+  param_view->first_base_type = g_strdup (first_base_type);
+  g_free (param_view->last_base_type);
+  param_view->last_base_type = g_strdup (last_base_type);
 }
 
 void
 bst_param_view_rebuild (BstParamView *param_view)
 {
-  BseObject *object;
   GtkWidget *param_box;
-  GParamSpec **pspecs;
+  const gchar **pstrings;
+  GSList *slist;
   guint i, n;
   
   g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
 
   bst_param_view_destroy_contents (param_view);
 
-  if (!param_view->object)
+  if (!param_view->item)
     return;
   
   param_box = GTK_WIDGET (param_view);
@@ -263,50 +283,23 @@ bst_param_view_rebuild (BstParamView *param_view)
 		    "swapped_signal::destroy", g_nullify_pointer, &param_view->nil_container,
 		    NULL);
   
-  object = bse_object_from_id (param_view->object);
-  
   /* parameter fields, per bse class
    */
-  pspecs = g_object_class_list_properties (G_OBJECT_GET_CLASS (object), &n);
+  pstrings = bse_proxy_list_properties (param_view->item, param_view->first_base_type, param_view->last_base_type, &n);
   for (i = 0; i < n; i++)
-    {
-      GParamSpec *pspec = pspecs[i];
-      gchar *param_group = bse_param_spec_get_group (pspec);
-      
-      if ((param_view->first_base_type && !g_type_is_a (pspec->owner_type, param_view->first_base_type)) ||
-	  (param_view->last_base_type && !g_type_is_a (param_view->last_base_type, pspec->owner_type)))
-	continue;
-      
-      if ((pspec->flags & BSE_PARAM_SERVE_GUI) &&
-	  (pspec->flags & BSE_PARAM_READABLE) &&
-	  (!param_view->reject_pattern ||
-	   !g_pattern_match_string (param_view->reject_pattern, pspec->name)) &&
-	  (!param_view->match_pattern ||
-	   g_pattern_match_string (param_view->match_pattern, pspec->name)))
-	{
-	  BstParam *bparam;
-	  
-	  bparam = bst_param_create (object,
-				     BSE_TYPE_OBJECT,
-				     pspec,
-				     param_group,
-				     param_group ? param_view->container : param_view->nil_container,
-				     BST_TOOLTIPS);
-	  param_view->bparams = g_slist_prepend (param_view->bparams, bparam);
-	}
-    }
-  g_free (pspecs);
-  
-  bst_param_view_update (param_view);
-}
+    if ((!param_view->reject_pattern || !g_pattern_match_string (param_view->reject_pattern, pstrings[i])) &&
+	(!param_view->match_pattern || g_pattern_match_string (param_view->reject_pattern, pstrings[i])))
+      {
+	GParamSpec *pspec = bse_proxy_get_pspec (param_view->item, pstrings[i]);
+	const gchar *param_group = sfi_pspec_get_group (pspec);
 
-void
-bst_param_view_update (BstParamView *param_view)
-{
-  GSList *slist;
-
-  g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
-
+	if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_GUI) && (pspec->flags & G_PARAM_READABLE))
+	  {
+	    BstParam *bparam = bst_param_proxy_create (pspec, FALSE, NULL, param_view->item);
+	    bst_param_pack_property (bparam, param_group ? param_view->container : param_view->nil_container);
+	    param_view->bparams = g_slist_prepend (param_view->bparams, bparam);
+	  }
+      }
   for (slist = param_view->bparams; slist; slist = slist->next)
-    bst_param_get (slist->data);
+    bst_param_update (slist->data);
 }

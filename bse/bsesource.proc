@@ -21,36 +21,35 @@
 #include        <bse/bsesource.h>
 
 
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "2001";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
 
 
 METHOD (BseSource, set-input-by-id) {
   HELP	= "Connect a module input to another module's output.";
-  IN	= g_param_spec_object ("imodule", "Input Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("omodule", "Output Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("output-channel", "Output Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("imodule", "Input Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("omodule", "Output Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("output-channel", "Output Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = g_value_get_object (in_values++);
-  guint ichannel     = g_value_get_uint (in_values++);
-  BseSource *osource = g_value_get_object (in_values++);
-  guint ochannel     = g_value_get_uint (in_values++);
+  BseSource *isource = bse_value_get_object (in_values++);
+  guint ichannel     = sfi_value_get_int (in_values++);
+  BseSource *osource = bse_value_get_object (in_values++);
+  guint ochannel     = sfi_value_get_int (in_values++);
   BseErrorType error;
-
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent)
@@ -67,29 +66,29 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseSource, set-input) {
   HELP	= "Connect a module input to another module's output.";
-  IN	= g_param_spec_object ("imodule", "Input Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("input-channel", "Input Channel", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("omodule", "Output Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("output-channel", "Output Channel", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("imodule", "Input Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("input-channel", "Input Channel", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("omodule", "Output Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("output-channel", "Output Channel", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = g_value_get_object (in_values++);
-  gchar *ichannel    = g_value_get_string (in_values++);
-  BseSource *osource = g_value_get_object (in_values++);
-  gchar *ochannel    = g_value_get_string (in_values++);
+  BseSource *isource = bse_value_get_object (in_values++);
+  gchar *ichannel    = sfi_value_get_string (in_values++);
+  BseSource *osource = bse_value_get_object (in_values++);
+  gchar *ochannel    = sfi_value_get_string (in_values++);
   BseErrorType error;
-
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
@@ -108,29 +107,29 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseSource, unset-input-by-id) {
   HELP	= "Disconnect a module input.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("omodule", "Output Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("output-channel", "Output Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("omodule", "Output Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("output-channel", "Output Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = g_value_get_object (in_values++);
-  guint ichannel     = g_value_get_uint (in_values++);
-  BseSource *osource = g_value_get_object (in_values++);
-  guint ochannel     = g_value_get_uint (in_values++);
+  BseSource *isource = bse_value_get_object (in_values++);
+  guint ichannel     = sfi_value_get_int (in_values++);
+  BseSource *osource = bse_value_get_object (in_values++);
+  guint ochannel     = sfi_value_get_int (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent)
@@ -138,7 +137,7 @@ BODY (BseProcedureClass *proc,
   
   /* disconnect */
   error = bse_source_unset_input (isource, ichannel, osource, ochannel);
-
+  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
@@ -147,29 +146,29 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseSource, unset-input) {
   HELP	= "Disconnect a module input.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("input-channel", "Input Channel", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("omodule", "Output Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("output-channel", "Output Channel", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("input-channel", "Input Channel", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("omodule", "Output Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("output-channel", "Output Channel", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = g_value_get_object (in_values++);
-  gchar *ichannel    = g_value_get_string (in_values++);
-  BseSource *osource = g_value_get_object (in_values++);
-  gchar *ochannel    = g_value_get_string (in_values++);
+  BseSource *isource = bse_value_get_object (in_values++);
+  gchar *ichannel    = sfi_value_get_string (in_values++);
+  BseSource *osource = bse_value_get_object (in_values++);
+  gchar *ochannel    = sfi_value_get_string (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
@@ -179,7 +178,7 @@ BODY (BseProcedureClass *proc,
   /* disconnect */
   error = bse_source_unset_input (isource, bse_source_find_ichannel (isource, ichannel),
 				  osource, bse_source_find_ochannel (osource, ochannel));
-
+  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
@@ -188,16 +187,16 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseSource, clear-inputs) {
   HELP	= "Disconnect all module inputs.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = g_value_get_object (in_values++);
-
+  BseSource *isource = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (isource))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -210,16 +209,16 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseSource, clear-outputs) {
   HELP	= "Disconnect all module outputs.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = g_value_get_object (in_values++);
-
+  BseSource *isource = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (isource))
     return BSE_ERROR_PROC_PARAM_INVAL;
@@ -230,375 +229,399 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseSource, n-ichannels) {
-  HELP	= "Get the number of input channels of a module.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+METHOD (BseSource, has-outputs) {
+  HELP	= "Check whether a module has output channel connections.";
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("has_outputs", "Has Outputs", NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  g_value_set_uint (out_values++, BSE_SOURCE_N_ICHANNELS (source));
+  sfi_value_set_bool (out_values++, source->outputs != NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, n-ichannels) {
+  HELP	= "Get the number of input channels of a module.";
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("n_channels", "Number of Channels", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_int (out_values++, BSE_SOURCE_N_ICHANNELS (source));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ichannel-name) {
   HELP	= "Get input channel name.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_string ("channel_name", "Channel Name", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_string ("channel_name", "Channel Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ichannel    = g_value_get_uint (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ichannel    = sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
-  g_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_NAME (source, ichannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_NAME (source, ichannel));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ichannel-cname) {
   HELP	= "Get canonical input channel name.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_string ("channel_name", "Channel Name", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_string ("channel_name", "Channel Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ichannel    = g_value_get_uint (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ichannel    = sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
-  g_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_CNAME (source, ichannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_CNAME (source, ichannel));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ichannel-blurb) {
   HELP	= "Get input channel description.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_string ("channel_blurb", "Channel Blurb", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_string ("channel_blurb", "Channel Blurb", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ichannel    = g_value_get_uint (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ichannel    = sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
-  g_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_BLURB (source, ichannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_BLURB (source, ichannel));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, is-joint-ichannel-by-id) {
   HELP	= "Check if an input channel is a joint (multi-connect) channel.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boolean ("is_jchannel", "Is Joint Channel", NULL,
-				FALSE, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("is_jchannel", "Is Joint Channel", NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ichannel    = g_value_get_uint (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ichannel    = sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
-  g_value_set_boolean (out_values++, BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel));
+  sfi_value_set_bool (out_values++, BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, is-joint-ichannel) {
   HELP	= "Check if an input channel is a joint (multi-connect) channel.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("input-channel", "Input Channel", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boolean ("is_jchannel", "Is Joint Channel", NULL,
-				FALSE, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("input-channel", "Input Channel", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("is_jchannel", "Is Joint Channel", NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  gchar *ichannel   = g_value_get_string (in_values++);
+  BseSource *source = bse_value_get_object (in_values++);
+  gchar *ichannel   = sfi_value_get_string (in_values++);
   guint id;
-
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || !ichannel)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
   id = bse_source_find_ichannel (source, ichannel);
-  g_value_set_boolean (out_values++,
-		       id < BSE_SOURCE_N_ICHANNELS (source) ? BSE_SOURCE_IS_JOINT_ICHANNEL (source, id) : FALSE);
+  sfi_value_set_bool (out_values++,
+		      id < BSE_SOURCE_N_ICHANNELS (source) ? BSE_SOURCE_IS_JOINT_ICHANNEL (source, id) : FALSE);
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ichannel-get-n-joints) {
-  HELP	= "Retrive the number of inputs connected to an input channel.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_uint ("n_joints", "Number of Connections", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve the number of inputs connected to an input channel.";
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("n_joints", "Number of Connections", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ichannel    = g_value_get_uint (in_values++);
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ichannel    = sfi_value_get_int (in_values++);
   BseSourceInput *input;
-
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
   input = BSE_SOURCE_INPUT (source, ichannel);
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
-    g_value_set_uint (out_values++, input->jdata.n_joints);
+    sfi_value_set_int (out_values++, input->jdata.n_joints);
   else
-    g_value_set_uint (out_values++, input->idata.osource ? 1 : 0);
+    sfi_value_set_int (out_values++, input->idata.osource ? 1 : 0);
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ichannel-get-osource) {
-  HELP	= "Retrive output module connected to a specific joint of an input channel";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-joint", "Input Joint", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_object ("osource", "Output Source", NULL,
-			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve output module connected to a specific joint of an input channel";
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-joint", "Input Joint", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("osource", "Output Source", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ichannel    = g_value_get_uint (in_values++);
-  guint joint       = g_value_get_uint (in_values++);
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ichannel    = sfi_value_get_int (in_values++);
+  guint joint       = sfi_value_get_int (in_values++);
   BseSourceInput *input;
-
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
   input = BSE_SOURCE_INPUT (source, ichannel);
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel) && joint < input->jdata.n_joints)
-    g_value_set_object (out_values++, input->jdata.joints[joint].osource);
+    bse_value_set_object (out_values++, input->jdata.joints[joint].osource);
   else if (joint < 1)
-    g_value_set_object (out_values++, input->idata.osource);
+    bse_value_set_object (out_values++, input->idata.osource);
   else
-    g_value_set_object (out_values++, NULL);
+    bse_value_set_object (out_values++, NULL);
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ichannel-get-ochannel) {
-  HELP	= "Retrive output channel of the module connected to a specific joint of an input channel.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-joint", "Input Joint", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_uint ("ochannel", "Output Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve output channel of the module connected to a specific joint of an input channel.";
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-joint", "Input Joint", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("ochannel", "Output Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ichannel    = g_value_get_uint (in_values++);
-  guint joint       = g_value_get_uint (in_values++);
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ichannel    = sfi_value_get_int (in_values++);
+  guint joint       = sfi_value_get_int (in_values++);
   BseSourceInput *input;
-
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
   input = BSE_SOURCE_INPUT (source, ichannel);
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel) && joint < input->jdata.n_joints)
-    g_value_set_uint (out_values++, input->jdata.joints[joint].ochannel);
+    sfi_value_set_int (out_values++, input->jdata.joints[joint].ochannel);
   else if (joint < 1)
-    g_value_set_uint (out_values++, input->idata.ochannel);
+    sfi_value_set_int (out_values++, input->idata.ochannel);
   else
-    g_value_set_uint (out_values++, G_MAXINT);
+    sfi_value_set_int (out_values++, G_MAXINT);
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, n-ochannels) {
   HELP	= "Get the number of output channels of a module.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("n_channels", "Number of Channels", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  g_value_set_uint (out_values++, BSE_SOURCE_N_OCHANNELS (source));
+  sfi_value_set_int (out_values++, BSE_SOURCE_N_OCHANNELS (source));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ochannel-name) {
   HELP	= "Get output channel name.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_string ("channel_name", "Channel Name", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_string ("channel_name", "Channel Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ochannel    = g_value_get_uint (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ochannel    = sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
-  g_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_NAME (source, ochannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_NAME (source, ochannel));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ochannel-cname) {
   HELP	= "Get canonical output channel name.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_string ("channel_name", "Channel Name", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_string ("channel_name", "Channel Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ochannel    = g_value_get_uint (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ochannel    = sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
-  g_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_CNAME (source, ochannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_CNAME (source, ochannel));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSource, ochannel-blurb) {
   HELP	= "Get output channel description.";
-  IN	= g_param_spec_object ("module", "Module", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_string ("channel_blurb", "Channel Blurb", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_string ("channel_blurb", "Channel Blurb", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-  guint ochannel    = g_value_get_uint (in_values++);
-
+  BseSource *source = bse_value_get_object (in_values++);
+  guint ochannel    = sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
-  g_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_BLURB (source, ochannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_BLURB (source, ochannel));
   
   return BSE_ERROR_NONE;
 }

@@ -21,6 +21,9 @@
 #include "sfiparams.h"
 #include "sfiprimitives.h"
 #include "sfitime.h"
+#include "sfiglue.h"
+#include "sfithreads.h"
+#include <string.h>
 
 
 
@@ -39,12 +42,14 @@ sfi_init (void)
     {
       initialized = TRUE;
 
+      _sfi_init_threads ();
       g_type_init ();
       quark_boxed_sequence = g_quark_from_static_string ("sfi-boxed-sequence-info");
       quark_boxed_record = g_quark_from_static_string ("sfi-boxed-record-info");
       _sfi_init_values ();
       _sfi_init_params ();
       _sfi_init_time ();
+      _sfi_init_glue ();
     }
 }
 
@@ -100,6 +105,22 @@ sfi_boxed_get_sequence_info (GType boxed_type)
 
 
 /* --- FIXME: hacks! */
+const gchar*
+sfi_info_string_find (const gchar **infos,
+		      const gchar  *key)
+{
+  guint l, i;
+
+  g_return_val_if_fail (infos != NULL, NULL);
+  g_return_val_if_fail (key != NULL, NULL);
+
+  l = strlen (key);
+  for (i = 0; infos[i]; i++)
+    if (strncmp (infos[i], key, l) == 0 && infos[i][l] == '=')
+      return infos[i] + l + 1;
+  return NULL;
+}
+
 void
 sfi_set_error (GError       **errorp,
 	       GQuark         domain,

@@ -21,39 +21,38 @@
 #include <bse/bsecontainer.h>
 
 
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "2002";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2002 Tim Janik";
 
 
 PROCEDURE (bse-proxy-check, "Utils/Glue/Check") {
   BLURB	= "Check whether a proxy has a certain type.";
-  IN	= g_param_spec_object ("item", "Item", "The Item",
-			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("type_name", "Type Name", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boolean ("is_a", NULL, NULL,
-				FALSE, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("item", "Item", "The Item",
+				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("type_name", "Type Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("is_a", NULL, NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseItem *item    = g_value_get_object (in_values++);
-  gchar *type_name = g_value_get_string (in_values++);
+  BseItem *item    = bse_value_get_object (in_values++);
+  gchar *type_name = sfi_value_get_string (in_values++);
   GType type;
   gboolean is_a;
-
+  
   /* check parameters */
   if (!type_name)
     type_name = "";
-
+  
   /* action */
   type = g_type_from_name (type_name);
   is_a = item && g_type_is_a (G_OBJECT_TYPE (item), type);
-
+  
   /* set output parameters */
-  g_value_set_boolean (out_values++, is_a);
-
+  sfi_value_set_bool (out_values++, is_a);
+  
   return BSE_ERROR_NONE;
 }

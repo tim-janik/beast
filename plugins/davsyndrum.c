@@ -101,8 +101,8 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) dav_syn_drum_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) dav_syn_drum_get_property;
+  gobject_class->set_property = dav_syn_drum_set_property;
+  gobject_class->get_property = dav_syn_drum_get_property;
   
   source_class->prepare = dav_syn_drum_prepare;
   source_class->calc_chunk = dav_syn_drum_calc_chunk;
@@ -126,7 +126,7 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
 						  0.0, 1000.0, 75.0, 10.0,
 						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_HIT,
-			      bse_param_spec_bool ("trigger_pulse", "Trigger Hit", "Hit the drum",
+			      sfi_pspec_bool ("trigger_pulse", "Trigger Hit", "Hit the drum",
 						 FALSE, BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Parameters", PARAM_RES,
 			      bse_param_spec_float ("res", "Resonance",
@@ -184,11 +184,11 @@ dav_syn_drum_set_property (DavSynDrum  *drum,
     {
     case PARAM_BASE_FREQ:
       drum->freq = g_value_get_float (value);
-      bse_object_param_changed (BSE_OBJECT (drum), "base_note");
+      g_object_notify (drum, "base_note");
       break;
     case PARAM_BASE_NOTE:
       drum->freq = bse_note_to_freq (bse_value_get_note (value));
-      bse_object_param_changed (BSE_OBJECT (drum), "base_freq");
+      g_object_notify (drum, "base_freq");
       break;
     case PARAM_TRIGGER_VEL:
       drum->trigger_vel = g_value_get_float (value) / 100.0;

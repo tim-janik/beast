@@ -22,7 +22,9 @@
 
 #undef          G_DISABLE_ASSERT
 #undef          G_DISABLE_CHECKS
-#include	<bse/bswcommon.h>
+#include        <sfi/sfi.h>
+#include        <sfi/sfistore.h>	// FIXME
+#include	<sfi/sficomwire.h>	// FIXME
 #include	<math.h>
 
 
@@ -37,24 +39,15 @@ extern "C" {
 #define FIXME_SKIP(code)  g_message ("%s:%d:FIXME(%s): code portion skipped", \
                                      __FILE__, __LINE__, G_GNUC_PRETTY_FUNCTION)
 #ifdef G_ENABLE_DEBUG
-#  define BSE_IF_DEBUG(type)    if (!(bse_debug_flags & BSE_DEBUG_ ## type)) { } else
+#  define BSE_IF_DEBUG(type)    if (!(bse_main_debug_flags & BSE_DEBUG_ ## type)) { } else
 #else  /* !G_ENABLE_DEBUG */
 #  define BSE_IF_DEBUG(type)    while (0) /* don't exec */
 #endif /* !G_ENABLE_DEBUG */
 
 
 /* --- BSE basic typedefs --- */
-typedef struct _BseDot			BseDot;
 typedef gint64                          BseIndex;
-#ifdef	INT_SAMPLES
-typedef gint32                          BseMixValue;
-typedef gint16                          BseSampleValue;
-#else
-typedef gfloat                          BseMixValue;
-typedef gfloat                          BseSampleValue;
-#endif
 typedef gulong                          BseTime;
-typedef guint                           BseIndex2D;
 
 
 /* --- BSE objects, classes & interfaces --- */
@@ -62,19 +55,16 @@ typedef struct  _BseBinData             BseBinData;
 typedef struct  _BseBinDataClass        BseBinDataClass;
 typedef struct  _BseCapture             BseCapture;
 typedef struct  _BseCaptureClass        BseCaptureClass;
-typedef struct  _BseComWire             BseComWire;
 typedef struct  _BseContainer           BseContainer;
 typedef struct  _BseContainerClass      BseContainerClass;
 typedef struct  _BseContextMerger       BseContextMerger;
 typedef struct  _BseContextMergerClass  BseContextMergerClass;
 typedef struct  _BseEffect              BseEffect;
 typedef struct  _BseEffectClass         BseEffectClass;
-typedef struct  _BseGConfig             BseGConfig;
-typedef struct  _BseGConfigClass        BseGConfigClass;
-typedef struct  _BseInstrument          BseInstrument;
-typedef struct  _BseInstrumentClass     BseInstrumentClass;
 typedef struct  _BseItem                BseItem;
 typedef struct  _BseItemClass           BseItemClass;
+typedef struct  _BseJanitor             BseJanitor;
+typedef struct  _BseJanitorClass        BseJanitorClass;
 typedef struct	_BseMidiDecoder		BseMidiDecoder;
 typedef struct  _BseMidiNotifier        BseMidiNotifier;
 typedef struct  _BseMidiNotifierClass   BseMidiNotifierClass;
@@ -85,10 +75,6 @@ typedef struct  _BseObject              BseObject;
 typedef struct  _BseObjectClass         BseObjectClass;
 typedef struct  _BsePart		BsePart;
 typedef struct  _BsePartClass		BsePartClass;
-typedef struct  _BsePattern             BsePattern;
-typedef struct  _BsePatternClass        BsePatternClass;
-typedef struct  _BsePatternGroup        BsePatternGroup;
-typedef struct  _BsePatternGroupClass   BsePatternGroupClass;
 typedef struct  _BseProcedureClass      BseProcedureClass;
 typedef struct  _BseProject             BseProject;
 typedef struct  _BseProjectClass        BseProjectClass;
@@ -116,20 +102,11 @@ typedef struct  _BseWaveRepoClass       BseWaveRepoClass;
 
 
 /* --- BSE aux structures --- */
-typedef struct  _BseCategory            BseCategory;
-typedef struct  _BseChunk               BseChunk;
 typedef struct  _BseGlobals             BseGlobals;
 typedef struct  _BsePixdata             BsePixdata;
-typedef struct  _BseMixBuffer           BseMixBuffer;
-typedef struct  _BseMixSource           BseMixSource;
-typedef struct  _BseMixVolume           BseMixVolume;
-typedef struct  _BseMixRate             BseMixRate;
-typedef struct  _BseMunk                BseMunk;
-typedef struct  _BsePatternNote         BsePatternNote;
 typedef struct  _BsePlugin              BsePlugin;
 typedef struct  _BsePluginClass         BsePluginClass;
 typedef struct  _BseStorage             BseStorage;
-typedef struct  _BseNotifyHook          BseNotifyHook;
 
 
 /* --- anticipated enums --- */
@@ -184,14 +161,10 @@ struct _BsePixdata
 
 
 /* --- anticipated variables --- */
-extern BseDebugFlags bse_debug_flags;
+extern BseDebugFlags bse_main_debug_flags;
 
 
 /* --- BSE function types --- */
-typedef gboolean (*BseComDispatch)   (gpointer        data,
-				      guint           request,
-				      const gchar    *request_msg,
-				      BseComWire     *wire);
 typedef void          (*BseFunc)             (void);
 typedef void          (*BseIOWatch)	     (gpointer		 data,
 					      GPollFD		*pfd);

@@ -20,15 +20,12 @@
 #include        "bsesuper.h"
 #include        "bsestorage.h"
 #include        "bseprocedure.h"
-#include        "bsemarshal.h"
 #include	"bsemain.h"
-#include	"bswprivate.h"
 
 
 
 enum {
   SIGNAL_SEQID_CHANGED,
-  SIGNAL_SET_PARENT,
   SIGNAL_LAST
 };
 
@@ -38,11 +35,11 @@ static void		bse_item_class_init_base	(BseItemClass		*class);
 static void		bse_item_class_finalize_base	(BseItemClass		*class);
 static void		bse_item_class_init		(BseItemClass		*class);
 static void		bse_item_init			(BseItem		*item);
-static BswIterProxy*	bse_item_list_no_proxies	(BseItem		*item,
+static BseProxySeq*	bse_item_list_no_proxies	(BseItem		*item,
 							 guint                   param_id,
 							 GParamSpec             *pspec);
 static void		bse_item_do_dispose		(GObject		*object);
-static void		bse_item_do_destroy		(BseObject		*object);
+static void		bse_item_do_finalize		(GObject		*object);
 static void		bse_item_do_set_uname		(BseObject		*object,
 							 const gchar		*uname);
 static guint		bse_item_do_get_seqid		(BseItem		*item);
@@ -69,20 +66,20 @@ BSE_BUILTIN_TYPE (BseItem)
 {
   static const GTypeInfo item_info = {
     sizeof (BseItemClass),
-
+    
     (GBaseInitFunc) bse_item_class_init_base,
     (GBaseFinalizeFunc) bse_item_class_finalize_base,
     (GClassInitFunc) bse_item_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-
+    
     sizeof (BseItem),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_item_init,
   };
-
+  
   g_assert (BSE_ITEM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
-
+  
   return bse_type_register_static (BSE_TYPE_OBJECT,
 				   "BseItem",
 				   "Base type for objects managed by a container",
@@ -105,26 +102,21 @@ bse_item_class_init (BseItemClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-
+  
   parent_class = g_type_class_peek_parent (class);
-
+  
   gobject_class->dispose = bse_item_do_dispose;
-
+  gobject_class->finalize = bse_item_do_finalize;
+  
   object_class->store_property = bse_item_store_property;
   object_class->restore_property = bse_item_restore_property;
   object_class->set_uname = bse_item_do_set_uname;
-  object_class->destroy = bse_item_do_destroy;
-
+  
   class->set_parent = bse_item_do_set_parent;
   class->get_seqid = bse_item_do_get_seqid;
-
+  
   item_signals[SIGNAL_SEQID_CHANGED] = bse_object_class_add_signal (object_class, "seqid_changed",
-								    bse_marshal_VOID__NONE, NULL,
 								    G_TYPE_NONE, 0);
-  item_signals[SIGNAL_SET_PARENT] = bse_object_class_add_signal (object_class, "set_parent",
-								 bse_marshal_VOID__OBJECT,
-								 bse_marshal_VOID__POINTER,
-								 G_TYPE_NONE, 1, BSE_TYPE_CONTAINER);
 }
 
 static void
@@ -138,34 +130,33 @@ bse_item_do_dispose (GObject *gobject)
 {
   BseItem *item = BSE_ITEM (gobject);
 
-  g_return_if_fail (item->use_count == 0);
+  /* force removal from parent */
+  if (item->parent)
+    bse_container_remove_item (BSE_CONTAINER (item->parent), item);
 
-  /* if parent could be != NULL here, we had to force removement */
-  g_return_if_fail (item->parent == NULL);
-
-  /* chain parent class' dispose handler */
+  /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
 }
 
 static void
-bse_item_do_destroy (BseObject *object)
+bse_item_do_finalize (GObject *object)
 {
   BseItem *item = BSE_ITEM (object);
-
+  
   item_seqid_changed_queue = g_slist_remove (item_seqid_changed_queue, item);
-
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
-
+  
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+  
   g_return_if_fail (item->use_count == 0);
 }
 
-static BswIterProxy*
+static BseProxySeq*
 bse_item_list_no_proxies (BseItem    *item,
 			  guint       param_id,
 			  GParamSpec *pspec)
 {
-  return bsw_iter_create (BSW_TYPE_ITER_PROXY, 0);
+  return bse_proxy_seq_new ();
 }
 
 static void
@@ -173,7 +164,7 @@ bse_item_do_set_uname (BseObject   *object,
 		       const gchar *uname)
 {
   BseItem *item = BSE_ITEM (object);
-
+  
   /* ensure that item names within their container are unique,
    * and that we don't end up with a NULL uname
    */
@@ -195,7 +186,7 @@ bse_item_do_set_parent (BseItem *item,
 typedef struct {
   BseItem              *item;
   gpointer              data;
-  BswIterProxy         *iter;
+  BseProxySeq          *proxies;
   GType                 base_type;
   BseItemCheckContainer ccheck;
   BseItemCheckProxy     pcheck;
@@ -206,17 +197,17 @@ gather_child (BseItem *child,
 	      gpointer data)
 {
   GatherData *gdata = data;
-
+  
   if (child != gdata->item &&
       g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
       (!gdata->pcheck || gdata->pcheck (child, gdata->item, gdata->data)))
-    bsw_iter_add_proxy (gdata->iter, BSE_OBJECT_ID (child));
+    bse_proxy_seq_append (gdata->proxies, BSE_OBJECT_ID (child));
   return TRUE;
 }
 
-BswIterProxy*
+BseProxySeq*
 bse_item_gather_proxies (BseItem              *item,
-			 BswIterProxy         *iter,
+			 BseProxySeq          *proxies,
 			 GType		       base_type,
 			 BseItemCheckContainer ccheck,
 			 BseItemCheckProxy     pcheck,
@@ -225,16 +216,16 @@ bse_item_gather_proxies (BseItem              *item,
   GatherData gdata;
   
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-  g_return_val_if_fail (BSW_IS_ITER_PROXY (iter), NULL);
-  g_return_val_if_fail (g_type_is_a (base_type, BSE_TYPE_ITEM), iter);
-
+  g_return_val_if_fail (proxies != NULL, NULL);
+  g_return_val_if_fail (g_type_is_a (base_type, BSE_TYPE_ITEM), NULL);
+  
   gdata.item = item;
   gdata.data = data;
-  gdata.iter = iter;
+  gdata.proxies = proxies;
   gdata.base_type = base_type;
   gdata.ccheck = ccheck;
   gdata.pcheck = pcheck;
-
+  
   item = BSE_IS_CONTAINER (item) ? item : item->parent;
   while (item)
     {
@@ -243,10 +234,10 @@ bse_item_gather_proxies (BseItem              *item,
 	bse_container_forall_items (container, gather_child, &gdata);
       item = item->parent;
     }
-  return iter;
+  return proxies;
 }
 
-BswIterProxy*
+BseProxySeq*
 bse_item_list_proxies (BseItem     *item,
 		       const gchar *property)
 {
@@ -255,7 +246,7 @@ bse_item_list_proxies (BseItem     *item,
   
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
   g_return_val_if_fail (property != NULL, NULL);
-
+  
   pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), property);
   if (!pspec)
     return NULL;
@@ -263,15 +254,31 @@ bse_item_list_proxies (BseItem     *item,
   return class->list_proxies (item, pspec->param_id, pspec);
 }
 
-void
+BseItem*
 bse_item_use (BseItem *item)
 {
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (G_OBJECT (item)->ref_count > 0);
-
+  
   if (!item->use_count)
-    bse_object_ref (item);
+    g_object_ref (item);
   item->use_count++;
+  return item;
+}
+
+void
+bse_item_unuse (BseItem *item)
+{
+  g_return_if_fail (BSE_IS_ITEM (item));
+  g_return_if_fail (item->use_count > 0);
+  
+  item->use_count--;
+  if (!item->use_count)
+    {
+      if (!item->parent)
+	g_object_run_dispose (G_OBJECT (item));
+      g_object_unref (item);
+    }
 }
 
 void
@@ -287,18 +294,19 @@ bse_item_set_parent (BseItem *item,
   else
     g_return_if_fail (item->parent != NULL);
   g_return_if_fail (BSE_ITEM_GET_CLASS (item)->set_parent != NULL); /* paranoid */
-
-  bse_object_ref (BSE_OBJECT (item));
+  
+  g_object_ref (item);
   if (parent)
-    bse_object_ref (BSE_OBJECT (parent));
-
-  g_signal_emit (item, item_signals[SIGNAL_SET_PARENT], 0, parent);
-
+    g_object_ref (parent);
+  
   BSE_ITEM_GET_CLASS (item)->set_parent (item, parent);
-
-  bse_object_unref (BSE_OBJECT (item));
+  
   if (parent)
-    bse_object_unref (BSE_OBJECT (parent));
+    g_object_unref (parent);
+  else
+    g_object_run_dispose (G_OBJECT (item));
+
+  g_object_unref (item);
 }
 
 static guint
@@ -319,13 +327,13 @@ idle_handler_seqid_changed (gpointer data)
     {
       GSList *slist = item_seqid_changed_queue;
       BseItem *item = slist->data;
-
+      
       item_seqid_changed_queue = slist->next;
       g_slist_free_1 (slist);
       if (item->parent)
 	g_signal_emit (item, item_signals[SIGNAL_SEQID_CHANGED], 0);
     }
-
+  
   BSE_THREADS_LEAVE ();
   
   return FALSE;
@@ -336,10 +344,10 @@ bse_item_queue_seqid_changed (BseItem *item)
 {
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (BSE_ITEM (item)->parent != NULL);
-
+  
   if (!item_seqid_changed_queue)
     bse_idle_notify (idle_handler_seqid_changed, NULL);
-
+  
   if (!g_slist_find (item_seqid_changed_queue, item))
     item_seqid_changed_queue = g_slist_prepend (item_seqid_changed_queue, item);
 }
@@ -349,7 +357,7 @@ bse_item_get_seqid (BseItem *item)
 {
   g_return_val_if_fail (BSE_IS_ITEM (item), 0);
   g_return_val_if_fail (BSE_ITEM_GET_CLASS (item)->get_seqid != NULL, 0); /* paranoid */
-
+  
   return BSE_ITEM_GET_CLASS (item)->get_seqid (item);
 }
 
@@ -359,11 +367,11 @@ bse_item_common_ancestor (BseItem *item1,
 {
   g_return_val_if_fail (BSE_IS_ITEM (item1), NULL);
   g_return_val_if_fail (BSE_IS_ITEM (item2), NULL);
-
+  
   do
     {
       BseItem *item = item2;
-
+      
       do
 	{
 	  if (item == item1)
@@ -374,7 +382,7 @@ bse_item_common_ancestor (BseItem *item1,
       item1 = item1->parent;
     }
   while (item1);
-
+  
   return NULL;
 }
 
@@ -424,12 +432,12 @@ bse_item_cross_unref (BseItem *owner,
 		      BseItem *ref_item)
 {
   BseItem *container;
-
+  
   g_return_if_fail (BSE_IS_ITEM (owner));
   g_return_if_fail (BSE_IS_ITEM (ref_item));
-
+  
   container = bse_item_common_ancestor (owner, ref_item);
-
+  
   if (container)
     bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item, FALSE);
   else
@@ -451,12 +459,12 @@ bse_item_uncross (BseItem *owner,
 		  BseItem *ref_item)
 {
   BseItem *container;
-
+  
   g_return_if_fail (BSE_IS_ITEM (owner));
   g_return_if_fail (BSE_IS_ITEM (ref_item));
-
+  
   container = bse_item_common_ancestor (owner, ref_item);
-
+  
   if (container)
     bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item, TRUE);
   else
@@ -472,10 +480,10 @@ cross_list_func (BseItem *owner,
 {
   gpointer *data = data_p;
   BseItem *item = data[0];
-
+  
   if (item == ref_item)
     data[1] = g_list_prepend (data[1], owner);
-
+  
   return TRUE;
 }
 
@@ -483,9 +491,9 @@ GList*
 bse_item_list_cross_owners (BseItem *item)
 {
   gpointer data[2] = { item, NULL };
-
+  
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-
+  
   do
     {
       if (BSE_IS_CONTAINER (item))
@@ -493,7 +501,7 @@ bse_item_list_cross_owners (BseItem *item)
       item = item->parent;
     }
   while (item);
-
+  
   return data[1];
 }
 
@@ -504,11 +512,11 @@ cross_check_func (BseItem *owner,
 {
   gpointer *data = data_p;
   BseItem *item = data[0];
-
+  
   if (item == ref_item)
     {
       data[1] = GINT_TO_POINTER (TRUE);
-
+      
       return FALSE;
     }
   else
@@ -519,9 +527,9 @@ gboolean
 bse_item_has_cross_owners (BseItem *item)
 {
   gpointer data[2] = { item, GINT_TO_POINTER (FALSE) };
-
+  
   g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
-
+  
   do
     {
       if (BSE_IS_CONTAINER (item))
@@ -529,7 +537,7 @@ bse_item_has_cross_owners (BseItem *item)
       item = item->parent;
     }
   while (item);
-
+  
   return GPOINTER_TO_INT (data[1]);
 }
 
@@ -537,7 +545,7 @@ BseSuper*
 bse_item_get_super (BseItem *item)
 {
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-
+  
   while (!BSE_IS_SUPER (item) && item)
     item = item->parent;
   
@@ -548,11 +556,11 @@ BseProject*
 bse_item_get_project (BseItem *item)
 {
   BseSuper *super;
-
+  
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-
+  
   super = bse_item_get_super (item);
-
+  
   return super ? bse_super_get_project (super) : NULL;
 }
 
@@ -562,14 +570,14 @@ bse_item_has_ancestor (BseItem *item,
 {
   g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
   g_return_val_if_fail (BSE_IS_ITEM (ancestor), FALSE);
-
+  
   while (item->parent)
     {
       item = item->parent;
       if (item == ancestor)
 	return TRUE;
     }
-
+  
   return FALSE;
 }
 
@@ -583,7 +591,7 @@ bse_item_execva_i (BseItem     *item,
   BseErrorType error;
   GValue obj_value;
   guint l2;
-
+  
   /* FIXME: we could need faster lookups here */
   type = BSE_OBJECT_TYPE (item);
   l2 = strlen (procedure);
@@ -591,7 +599,7 @@ bse_item_execva_i (BseItem     *item,
     {
       gchar *p, *name, *type_name = g_type_name (type);
       guint l1 = strlen (type_name);
-
+      
       name = strcpy (g_new (gchar, l1 + 1 + l2 + 1), type_name);
       p = name + l1;
       *(p++) = '+';
@@ -602,7 +610,7 @@ bse_item_execva_i (BseItem     *item,
       type = g_type_parent (type);
     }
   while (!proc_type && g_type_is_a (type, BSE_TYPE_ITEM));
-
+  
   if (!proc_type)
     {
       g_warning ("No such procedure \"%s\" for item `%s'",
@@ -610,7 +618,7 @@ bse_item_execva_i (BseItem     *item,
 		 BSE_OBJECT_TYPE_NAME (item));
       return BSE_ERROR_INTERNAL;
     }
-
+  
   obj_value.g_type = 0;
   g_value_init (&obj_value, BSE_TYPE_ITEM);
   g_value_set_object (&obj_value, item);
@@ -630,11 +638,11 @@ bse_item_exec_proc (gpointer	 _item,
   
   g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (procedure != NULL, BSE_ERROR_INTERNAL);
-
+  
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, FALSE);
   va_end (var_args);
-
+  
   return error;
 }
 
@@ -649,11 +657,11 @@ bse_item_exec_void_proc (gpointer     _item,
   
   g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (procedure != NULL, BSE_ERROR_INTERNAL);
-
+  
   va_start (var_args, procedure);
   error = bse_item_execva_i (item, procedure, var_args, TRUE);
   va_end (var_args);
-
+  
   return error;
 }
 
@@ -663,7 +671,7 @@ bse_item_open_undo (BseItem     *item,
 {
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
   g_return_val_if_fail (undo_group != NULL, NULL);
-
+  
   return NULL;
 }
 
@@ -684,9 +692,9 @@ bse_item_store_property (BseObject  *object,
   if (g_type_is_a (G_VALUE_TYPE (value), BSE_TYPE_ITEM))
     {
       BseItem *item = BSE_ITEM (object);
-
+      
       bse_storage_break (storage);
-
+      
       bse_storage_handle_break (storage);
       bse_storage_putc (storage, '(');
       bse_storage_puts (storage, pspec->name);
@@ -711,7 +719,7 @@ object_link_resolved (gpointer     data,
     {
       GParamSpec *pspec = data;
       GValue value = { 0, };
-
+      
       g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
       g_value_set_object (&value, dest_item);
       g_object_set_property (G_OBJECT (item), pspec->name, &value);
@@ -729,15 +737,15 @@ bse_item_restore_property (BseObject  *object,
     {
       BseItem *item = BSE_ITEM (object);
       GTokenType token;
-
+      
       /* parse the value for this pspec, including the trailing closing ')' */
       token = bse_storage_parse_item_link (storage, item, object_link_resolved, pspec);
       bse_storage_scanner_parse_or_return (storage->scanner, ')');
-
+      
       /* we cannot provide the object value at this time */
       g_value_set_object (value, NULL);
       g_object_set_property (G_OBJECT (object), pspec->name, value);
-
+      
       return token;
     }
   else

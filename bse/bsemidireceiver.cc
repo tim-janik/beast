@@ -22,7 +22,7 @@
 #include "gslengine.h"
 #include "gslsignal.h"
 #include <string.h>
-#include "gbsearcharray.h"
+#include <sfi/gbsearcharray.h>
 
 
 #define BSE_MIDI_CHANNEL_VOICE_MESSAGE(s)       ((s) < 0xf0)
@@ -38,7 +38,7 @@ static gint	midi_control_slots_compare	(gconstpointer		bsearch_node1, /* key */
 
 
 /* --- variables --- */
-static GslMutex             midi_mutex = { 0, };
+static SfiMutex             midi_mutex = { 0, };
 static const GBSearchConfig ctrl_slot_config = {
   sizeof (BseMidiControlSlot),
   midi_control_slots_compare,
@@ -51,10 +51,10 @@ void
 _bse_midi_init (void)
 {
   static gboolean initialized = FALSE;
-
+  
   g_assert (initialized++ == FALSE);
-
-  gsl_mutex_init (&midi_mutex);
+  
+  sfi_mutex_init (&midi_mutex);
 }
 
 void
@@ -75,7 +75,7 @@ events_cmp (gconstpointer a,
 {
   const BseMidiEvent *e1 = a;
   const BseMidiEvent *e2 = b;
-
+  
   return e1->tick_stamp < e2->tick_stamp ? -1 : e1->tick_stamp != e2->tick_stamp;
 }
 
@@ -84,14 +84,14 @@ receiver_enqueue_event_L (BseMidiReceiver *self,
                           guint64          tick_stamp)
 {
   BseMidiEvent *event;
-
+  
   g_return_if_fail (self->event_type & 0x80);
   g_return_if_fail (self->left_bytes == 0);
-
+  
   /* special case completed SysEx */
   if (self->event_type == BSE_MIDI_END_EX)
     self->event_type = BSE_MIDI_SYS_EX;
-  event = gsl_new_struct (BseMidiEvent, 1);
+  event = sfi_new_struct (BseMidiEvent, 1);
   event->status = self->event_type;
   event->channel = self->echannel;
   event->tick_stamp = tick_stamp;
@@ -159,8 +159,8 @@ receiver_enqueue_event_L (BseMidiReceiver *self,
     }
   self->n_bytes = 0;
   self->event_type = 0;
-
-  self->events = gsl_ring_insert_sorted (self->events, event, events_cmp);
+  
+  self->events = sfi_ring_insert_sorted (self->events, event, events_cmp);
 }
 
 void
@@ -170,13 +170,13 @@ bse_midi_receiver_push_data (BseMidiReceiver *self,
                              guint64          usec_systime)
 {
   guint64 tick_stamp;
-
+  
   g_return_if_fail (self != NULL);
   if (n_bytes)
     g_return_if_fail (bytes != NULL);
-
+  
   tick_stamp = gsl_engine_tick_stamp_from_systime (usec_systime);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   while (n_bytes)
     {
@@ -251,7 +251,7 @@ bse_midi_receiver_push_data (BseMidiReceiver *self,
           if (self->event_type == BSE_MIDI_SYS_EX)
             {
               guint i;
-
+	      
               /* search for end mark */
               for (i = 0; i < n_bytes; i++)
                 if (bytes[i] == BSE_MIDI_END_EX)
@@ -298,9 +298,9 @@ bse_midi_receiver_push_event (BseMidiReceiver *self,
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (event != NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
-  self->events = gsl_ring_insert_sorted (self->events, event, events_cmp);
+  self->events = sfi_ring_insert_sorted (self->events, event, events_cmp);
   BSE_MIDI_RECEIVER_UNLOCK (self);
 }
 
@@ -309,7 +309,7 @@ bse_midi_receiver_process_events (BseMidiReceiver *self,
 				  guint64          max_tick_stamp)
 {
   g_return_if_fail (self != NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   midi_receiver_process_events_L (self, max_tick_stamp);
   BSE_MIDI_RECEIVER_UNLOCK (self);
@@ -324,9 +324,9 @@ midi_control_slots_compare (gconstpointer bsearch_node1, /* key */
   const BseMidiControlSlot *slot1 = bsearch_node1;
   const BseMidiControlSlot *slot2 = bsearch_node2;
   gint cmp;
-
+  
   cmp = G_BSEARCH_ARRAY_CMP (slot1->type, slot2->type);
-
+  
   return cmp ? cmp : G_BSEARCH_ARRAY_CMP (slot1->midi_channel, slot2->midi_channel);
 }
 
@@ -336,7 +336,7 @@ midi_control_get_L (BseMidiReceiver  *self,
 		    BseMidiSignalType type)
 {
   BseMidiControlSlot key, *slot;
-
+  
   key.type = type;
   key.midi_channel = midi_channel;
   slot = g_bsearch_array_lookup (self->ctrl_slot_array, &ctrl_slot_config, &key);
@@ -350,7 +350,7 @@ midi_control_set_L (BseMidiReceiver  *self,
 		    gfloat            value)
 {
   BseMidiControlSlot key, *slot;
-
+  
   key.type = type;
   key.midi_channel = midi_channel;
   slot = g_bsearch_array_lookup (self->ctrl_slot_array, &ctrl_slot_config, &key);
@@ -377,7 +377,7 @@ midi_control_add_L (BseMidiReceiver  *self,
 		    GslModule        *module)
 {
   BseMidiControlSlot key, *slot;
-
+  
   key.type = type;
   key.midi_channel = midi_channel;
   slot = g_bsearch_array_lookup (self->ctrl_slot_array, &ctrl_slot_config, &key);
@@ -398,7 +398,7 @@ midi_control_remove_L (BseMidiReceiver  *self,
 		       GslModule        *module)
 {
   BseMidiControlSlot key, *slot;
-
+  
   key.type = type;
   key.midi_channel = midi_channel;
   slot = g_bsearch_array_lookup (self->ctrl_slot_array, &ctrl_slot_config, &key);
@@ -422,7 +422,7 @@ process_midi_control_module (GslModule *module,
 {
   MidiCModuleData *cdata = module->user_data;
   guint i;
-
+  
   for (i = 0; i < GSL_MODULE_N_OSTREAMS (module); i++)
     if (module->ostreams[i].connected)
       module->ostreams[i].values = gsl_engine_const_values (cdata->values[i]);
@@ -446,10 +446,10 @@ create_control_module_L (BseMidiReceiver *self,
   MidiCModuleData *cdata;
   GslModule *module;
   guint i;
-
+  
   g_return_val_if_fail (midi_channel < BSE_MIDI_MAX_CHANNELS, NULL);
   g_return_val_if_fail (signals != NULL, NULL);
-
+  
   cdata = g_new0 (MidiCModuleData, 1);
   cdata->midi_channel = midi_channel;
   for (i = 0; i < BSE_MIDI_CONTROL_MODULE_N_CHANNELS; i++)
@@ -459,7 +459,7 @@ create_control_module_L (BseMidiReceiver *self,
     }
   cdata->ref_count = 1;
   module = gsl_module_new (&midi_cmodule_class, cdata);
-
+  
   return module;
 }
 
@@ -475,7 +475,7 @@ access_midi_control_module (GslModule *module,
   MidiCModuleData *cdata = module->user_data;
   MidiCModuleAccessData *adata = data;
   guint i;
-
+  
   for (i = 0; i < BSE_MIDI_CONTROL_MODULE_N_CHANNELS; i++)
     if (cdata->signals[i] == adata->signal)
       cdata->values[i] = adata->value;
@@ -490,7 +490,7 @@ change_midi_control_modules (GSList           *modules,
 {
   MidiCModuleAccessData *adata;
   GSList *slist = modules;
-
+  
   if (!modules)
     return;
   adata = g_new0 (MidiCModuleAccessData, 1);
@@ -512,11 +512,11 @@ match_cmodule (GslModule *cmodule,
   MidiCModuleData *cdata = cmodule->user_data;
   gboolean match = TRUE;
   guint i;
-
+  
   for (i = 0; i < BSE_MIDI_CONTROL_MODULE_N_CHANNELS; i++)
     match &= cdata->signals[i] == signals[i];
   match &= cdata->midi_channel == midi_channel;
-
+  
   return match;
 }
 
@@ -545,23 +545,23 @@ process_switch_module (GslModule *module,
 {
   BseMidiVoice *voice = module->user_data;
   guint i;
-
+  
   /* dumb pass-through task */
   for (i = 0; i < GSL_MODULE_N_OSTREAMS (module); i++)
     if (GSL_MODULE_OSTREAM (module, i).connected)
       GSL_MODULE_OSTREAM (module, i).values = (gfloat*) GSL_MODULE_IBUFFER (module, i);
-
+  
   /* check Done state on last stream */
   if (GSL_MODULE_IBUFFER (module, GSL_MODULE_N_ISTREAMS (module) - 1)[n_values - 1] >= 1.0)
     {
       GslTrans *trans = gsl_trans_open ();
-
+      
       /* disconnect all inputs */
       for (i = 0; i < GSL_MODULE_N_OSTREAMS (module); i++)
         gsl_trans_add (trans, gsl_job_disconnect (voice->omodule, i));
       gsl_trans_add (trans, gsl_job_suspend (module));
       gsl_trans_commit (trans);
-
+      
       /* may be reconnected again */
       voice->active = FALSE;
     }
@@ -572,7 +572,7 @@ process_voice_module (GslModule *module,
 		      guint      n_values)
 {
   BseMidiVoice *voice = module->user_data;
-
+  
   if (GSL_MODULE_OSTREAM (module, 0).connected)
     GSL_MODULE_OSTREAM (module, 0).values = gsl_engine_const_values (voice->freq_value);
   if (GSL_MODULE_OSTREAM (module, 1).connected)
@@ -589,7 +589,7 @@ access_voice_module (GslModule *module,
 {
   BseMidiVoice *voice = module->user_data;
   gfloat *values = data;
-
+  
   voice->gate = values[0];
   voice->aftertouch = values[1];
 }
@@ -602,7 +602,7 @@ change_midi_voice (BseMidiVoice *voice,
 		   GslTrans     *trans)
 {
   gfloat values[2];
-
+  
   values[0] = gate_on ? 1.0 : 0.0;
   values[1] = aftertouch;
   gsl_trans_add (trans, gsl_flow_job_access (voice->fmodule, tick_stamp,
@@ -618,9 +618,9 @@ activate_midi_voice (BseMidiVoice *voice,
 		     GslTrans     *trans)
 {
   guint i;
-
+  
   g_return_if_fail (voice->active == FALSE);
-
+  
   voice->freq_value = freq_value;
   voice->gate = 1.0;
   voice->velocity = velocity;
@@ -639,7 +639,7 @@ midi_voice_unref (gpointer        data,
 		  const GslClass *klass)
 {
   BseMidiVoice *voice = data;
-
+  
   g_return_if_fail (voice->ref_count > 0);
   voice->ref_count--;
   if (!voice->ref_count)
@@ -671,7 +671,7 @@ create_midi_voice (guint     midi_channel,
     GSL_COST_CHEAP
   };
   BseMidiVoice *voice = g_new0 (BseMidiVoice, 1);
-
+  
   voice->midi_channel = midi_channel;
   voice->fmodule = gsl_module_new (&voice_module_class, voice);
   voice->smodule = gsl_module_new (&switch_module_class, voice);
@@ -698,7 +698,7 @@ discard_accessor (GslModule *module,
 		  gpointer   data)
 {
   GslTrans *trans = data;
-
+  
   gsl_trans_commit (trans);
 }
 
@@ -707,9 +707,9 @@ destroy_midi_voice (BseMidiVoice *voice,
 		    GslTrans     *trans)
 {
   GslTrans *tmp_trans;
-
+  
   g_return_if_fail (voice->discarded == FALSE);
-
+  
   voice->discarded = TRUE;
   tmp_trans = gsl_trans_open ();
   gsl_trans_add (tmp_trans, gsl_job_discard (voice->fmodule));
@@ -730,9 +730,9 @@ BseMidiReceiver*
 bse_midi_receiver_new (const gchar *receiver_name)
 {
   BseMidiReceiver *self;
-
+  
   g_return_val_if_fail (receiver_name != NULL, NULL);
-
+  
   self = g_new0 (BseMidiReceiver, 1);
   self->receiver_name = g_strdup (receiver_name);
   self->n_voices = 0;
@@ -748,7 +748,7 @@ bse_midi_receiver_new (const gchar *receiver_name)
   self->bytes = NULL;
   self->left_bytes = 0;
   self->ref_count = 1;
-
+  
   return self;
 }
 
@@ -757,7 +757,7 @@ bse_midi_receiver_ref (BseMidiReceiver *self)
 {
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (self->ref_count > 0, NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   self->ref_count++;
   BSE_MIDI_RECEIVER_UNLOCK (self);
@@ -772,18 +772,18 @@ bse_midi_receiver_unref (BseMidiReceiver *self)
   
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->ref_count > 0);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   self->ref_count--;
   need_destroy = self->ref_count == 0;
   if (need_destroy && self->notifier)
     g_object_unref (self->notifier);
   BSE_MIDI_RECEIVER_UNLOCK (self);
-
+  
   if (need_destroy)
     {
       guint i;
-
+      
       if (self->n_cmodules)
 	g_warning ("destroying MIDI receiver (%p) with active control modules (%u)", self, self->n_cmodules);
       for (i = 0; i < self->n_voices; i++)
@@ -798,12 +798,12 @@ bse_midi_receiver_unref (BseMidiReceiver *self)
       g_bsearch_array_free (self->ctrl_slot_array, &ctrl_slot_config);
       while (self->events)
 	{
-	  BseMidiEvent *event = gsl_ring_pop_head (&self->events);
+	  BseMidiEvent *event = sfi_ring_pop_head (&self->events);
 	  bse_midi_free_event (event);
 	}
       while (self->notifier_events)
 	{
-	  BseMidiEvent *event = gsl_ring_pop_head (&self->notifier_events);
+	  BseMidiEvent *event = sfi_ring_pop_head (&self->notifier_events);
 	  bse_midi_free_event (event);
 	}
       g_free (self->bytes);
@@ -816,9 +816,9 @@ bse_midi_receiver_set_notifier (BseMidiReceiver *self,
 				BseMidiNotifier *notifier)
 {
   BseMidiNotifier *old_notifier;
-
+  
   g_return_if_fail (self != NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   old_notifier = self->notifier;
   self->notifier = notifier;
@@ -829,7 +829,7 @@ bse_midi_receiver_set_notifier (BseMidiReceiver *self,
   if (!self->notifier)
     while (self->notifier_events)
       {
-	BseMidiEvent *event = gsl_ring_pop_head (&self->notifier_events);
+	BseMidiEvent *event = sfi_ring_pop_head (&self->notifier_events);
 	bse_midi_free_event (event);
       }
   BSE_MIDI_RECEIVER_UNLOCK (self);
@@ -839,13 +839,13 @@ BseMidiNotifier*
 bse_midi_receiver_get_notifier (BseMidiReceiver *self)
 {
   BseMidiNotifier *notifier;
-
+  
   g_return_val_if_fail (self != NULL, NULL);
   
   BSE_MIDI_RECEIVER_LOCK (self);
   notifier = self->notifier;
   BSE_MIDI_RECEIVER_UNLOCK (self);
-
+  
   return notifier;
 }
 
@@ -856,34 +856,34 @@ bse_midi_receiver_has_notify_events (BseMidiReceiver *self)
   return self->notifier && self->notifier_events;
 }
 
-GslRing*
+SfiRing*
 bse_midi_receiver_fetch_notify_events (BseMidiReceiver *self)
 {
-  GslRing *ring;
-
+  SfiRing *ring;
+  
   g_return_val_if_fail (self != NULL, NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   ring = self->notifier_events;
   self->notifier_events = NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
-
+  
   return ring;
 }
 
 GslModule*
-bse_midi_receiver_retrive_control_module (BseMidiReceiver  *self,
-                                          guint             midi_channel,
-                                          BseMidiSignalType signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
-					  GslTrans         *trans)
+bse_midi_receiver_retrieve_control_module (BseMidiReceiver  *self,
+					   guint             midi_channel,
+					   BseMidiSignalType signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
+					   GslTrans         *trans)
 {
   GslModule *cmodule;
   guint i;
-
+  
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (midi_channel < BSE_MIDI_MAX_CHANNELS, NULL);
   g_return_val_if_fail (signals != NULL, NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   for (i = 0; i < self->n_cmodules; i++)
     {
@@ -918,10 +918,10 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
 					  GslTrans        *trans)
 {
   guint i;
-
+  
   g_return_if_fail (self != NULL);
   g_return_if_fail (module != NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   for (i = 0; i < self->n_cmodules; i++)
     {
@@ -960,10 +960,10 @@ bse_midi_receiver_create_voice (BseMidiReceiver *self,
 				GslTrans        *trans)
 {
   guint i;
-
+  
   g_return_val_if_fail (self != NULL, G_MAXUINT);
   g_return_val_if_fail (midi_channel < BSE_MIDI_MAX_CHANNELS, G_MAXUINT);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   /* find free voice slot */
   for (i = 0; i < self->n_voices; i++)
@@ -977,7 +977,7 @@ bse_midi_receiver_create_voice (BseMidiReceiver *self,
     }
   self->voices[i] = create_midi_voice (midi_channel, trans);
   BSE_MIDI_RECEIVER_UNLOCK (self);
-
+  
   return i;
 }
 
@@ -988,7 +988,7 @@ bse_midi_receiver_discard_voice (BseMidiReceiver *self,
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (nth_voice < self->n_voices);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   if (!self->voices[nth_voice])
     {
@@ -1007,10 +1007,10 @@ bse_midi_receiver_get_note_module (BseMidiReceiver *self,
 {
   BseMidiVoice *voice;
   GslModule *module;
-
+  
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (nth_voice < self->n_voices, NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   voice = self->voices[nth_voice];
   module = voice ? voice->fmodule : NULL;
@@ -1025,15 +1025,15 @@ bse_midi_receiver_get_input_module (BseMidiReceiver *self,
 {
   BseMidiVoice *voice;
   GslModule *module;
-
+  
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (nth_voice < self->n_voices, NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   voice = self->voices[nth_voice];
   module = voice ? voice->smodule : NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
-
+  
   return module;
 }
 
@@ -1043,15 +1043,15 @@ bse_midi_receiver_get_output_module (BseMidiReceiver *self,
 {
   BseMidiVoice *voice;
   GslModule *module;
-
+  
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (nth_voice < self->n_voices, NULL);
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   voice = self->voices[nth_voice];
   module = voice ? voice->omodule : NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
-
+  
   return module;
 }
 
@@ -1068,9 +1068,9 @@ activate_voice_L (BseMidiReceiver *self,
   gfloat freq_val = BSE_VALUE_FROM_FREQ (freq);
   BseMidiVoice *voice;
   guint i;
-
+  
   g_return_if_fail (freq > 0 && velocity > 0);
-
+  
   /* find free voice */
   for (i = 0; i < self->n_voices; i++)
     {
@@ -1102,7 +1102,7 @@ adjust_voice_L (BseMidiReceiver *self,
   guint i;
   
   g_return_if_fail (freq > 0 && aftertouch >= 0);
-
+  
   for (i = 0; i < self->n_voices; i++)
     {
       voice = self->voices[i];
@@ -1257,7 +1257,7 @@ process_midi_control_L (BseMidiReceiver *self,
    * into BSE MIDI signals. some control numbers affect
    * multiple MIDI signals.
    */
-
+  
   /* all controls are passed literally as BSE_MIDI_SIGNAL_CONTROL_* */
   update_midi_signal_L (self, channel, tick_stamp, 128 + control, value, trans);
   
@@ -1325,15 +1325,15 @@ midi_receiver_process_events_L (BseMidiReceiver *self,
   BseMidiEvent *event;
   GslTrans *trans;
   gboolean need_wakeup = FALSE;
-
+  
   if (!self->events)
     return;
-
+  
   trans = gsl_trans_open ();
   event = self->events->data;
   if (event->tick_stamp <= max_tick_stamp)
     {
-      self->events = gsl_ring_remove_node (self->events, self->events);
+      self->events = sfi_ring_remove_node (self->events, self->events);
       switch (event->status)
 	{
 	case BSE_MIDI_NOTE_ON:
@@ -1396,15 +1396,16 @@ midi_receiver_process_events_L (BseMidiReceiver *self,
 	}
       if (self->notifier)
 	{
-	  self->notifier_events = gsl_ring_prepend (self->notifier_events, event);
+	  self->notifier_events = sfi_ring_prepend (self->notifier_events, event);
 	  need_wakeup = TRUE;
 	}
       else
 	bse_midi_free_event (event);
     }
   gsl_trans_commit (trans);
-
-  /* wake up midi notifer if necessary */
+  
+#if 0   /* FIXME: wake up midi notifer if necessary */
   if (need_wakeup)
-    gsl_thread_wakeup (gsl_thread_main ());
+    sfi_thread_wakeup (sfi_thread_main ());
+#endif
 }

@@ -119,9 +119,9 @@ bse_sub_oport_class_init (BseSubOPortClass *class)
   source_class->context_create = bse_sub_oport_context_create;
   source_class->context_connect = bse_sub_oport_context_connect;
   source_class->context_dismiss = bse_sub_oport_context_dismiss;
-
+  
   class->n_output_ports = BSE_SUB_OPORT_N_PORTS;
-
+  
   for (i = 0; i < class->n_output_ports; i++)
     {
       gchar *string, *name, *value;
@@ -130,10 +130,10 @@ bse_sub_oport_class_init (BseSubOPortClass *class)
       name = g_strdup_printf ("Output Port %u", i + 1);
       value = g_strdup_printf ("synth_out_%u", i + 1);
       bse_object_class_add_param (object_class, "Assignments", PROP_OPORT_NAME + i * 2,
-                                  bse_param_spec_string (string, name,
-                                                         "The port name is a unique name to establish input<->output "
-                                                         "port relationships",
-                                                         value, BSE_PARAM_DEFAULT));
+                                  sfi_pspec_string (string, name,
+						    "The port name is a unique name to establish input<->output "
+						    "port relationships",
+						    value, SFI_PARAM_DEFAULT));
       g_free (string);
       g_free (name);
       g_free (value);
@@ -152,7 +152,7 @@ bse_sub_oport_init (BseSubOPort *self)
 {
   BseSubOPortClass *class = BSE_SUB_OPORT_GET_CLASS (self);
   guint i;
-
+  
   self->output_ports = g_new (gchar*, class->n_output_ports);
   for (i = 0; i < class->n_output_ports; i++)
     self->output_ports[i] = g_strdup_printf ("synth_out_%u", i + 1);
@@ -289,7 +289,7 @@ bse_sub_oport_context_create (BseSource *source,
 {
   BseSubOPortClass *class = BSE_SUB_OPORT_GET_CLASS (source);
   GslModule *module;
-
+  
   if (class->gsl_class.process == NULL)
     {
       class->gsl_class.n_istreams = class->n_output_ports;
@@ -326,7 +326,7 @@ bse_sub_oport_context_connect (BseSource *source,
   for (i = 0; i < class->n_output_ports; i++)
     bse_snet_set_oport_src (snet, self->output_ports[i], context_handle,
 			    module, i, trans);
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
 }

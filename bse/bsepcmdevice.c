@@ -24,7 +24,7 @@
 /* --- prototypes --- */
 static void	   bse_pcm_device_init			(BsePcmDevice      *pdev);
 static void	   bse_pcm_device_class_init		(BsePcmDeviceClass *class);
-static void	   bse_pcm_device_destroy		(BseObject         *object);
+static void	   bse_pcm_device_dispose		(GObject           *object);
 
 
 /* --- variables --- */
@@ -59,12 +59,12 @@ BSE_BUILTIN_TYPE (BsePcmDevice)
 static void
 bse_pcm_device_class_init (BsePcmDeviceClass *class)
 {
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
-  object_class->destroy = bse_pcm_device_destroy;
-
+  gobject_class->dispose = bse_pcm_device_dispose;
+  
   class->open = NULL;
   class->suspend = NULL;
   class->driver_rating = 0;
@@ -82,43 +82,43 @@ bse_pcm_device_init (BsePcmDevice *pdev)
 }
 
 static void
-bse_pcm_device_destroy (BseObject *object)
+bse_pcm_device_dispose (GObject *object)
 {
   BsePcmDevice *pdev = BSE_PCM_DEVICE (object);
-
+  
   if (BSE_PCM_DEVICE_OPEN (pdev))
     {
       g_warning (G_STRLOC ": pcm device still opened");
       bse_pcm_device_suspend (pdev);
     }
   if (pdev->handle)
-      g_warning (G_STRLOC ": pcm device with stale pcm handle");
-
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+    g_warning (G_STRLOC ": pcm device with stale pcm handle");
+  
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 BseErrorType
 bse_pcm_device_open (BsePcmDevice *pdev)
 {
   BseErrorType error;
-
+  
   g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_PCM_DEVICE_OPEN (pdev), BSE_ERROR_INTERNAL);
-
+  
   error = BSE_PCM_DEVICE_GET_CLASS (pdev)->open (pdev);
-
+  
   if (!error)
     {
       g_return_val_if_fail (BSE_PCM_DEVICE_OPEN (pdev) && pdev->handle, BSE_ERROR_INTERNAL);
-
-      gsl_mutex_init (&pdev->handle->mutex);
+      
+      sfi_mutex_init (&pdev->handle->mutex);
     }
   else
     g_return_val_if_fail (!BSE_PCM_DEVICE_OPEN (pdev), BSE_ERROR_INTERNAL);
-
+  
   errno = 0;
-    
+  
   return error;
 }
 
@@ -127,11 +127,11 @@ bse_pcm_device_suspend (BsePcmDevice *pdev)
 {
   g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
   g_return_if_fail (BSE_PCM_DEVICE_OPEN (pdev));
-
-  gsl_mutex_destroy (&pdev->handle->mutex);
+  
+  sfi_mutex_destroy (&pdev->handle->mutex);
   
   BSE_PCM_DEVICE_GET_CLASS (pdev)->suspend (pdev);
-
+  
   BSE_OBJECT_UNSET_FLAGS (pdev, (BSE_PCM_FLAG_OPEN |
 				 BSE_PCM_FLAG_READABLE |
 				 BSE_PCM_FLAG_WRITABLE));
@@ -143,7 +143,7 @@ bse_pcm_device_get_handle (BsePcmDevice *pdev)
 {
   g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), NULL);
   g_return_val_if_fail (BSE_PCM_DEVICE_OPEN (pdev), NULL);
-
+  
   return pdev->handle;
 }
 
@@ -153,18 +153,18 @@ bse_pcm_handle_read (BsePcmHandle *handle,
 		     gfloat       *values)
 {
   gsize n;
-
+  
   g_return_val_if_fail (handle != NULL, 0);
   g_return_val_if_fail (handle->readable, 0);
   if (n_values)
     g_return_val_if_fail (values != NULL, 0);
   else
     return 0;
-
+  
   GSL_SPIN_LOCK (&handle->mutex);
   n = handle->read (handle, n_values, values);
   GSL_SPIN_UNLOCK (&handle->mutex);
-
+  
   return n;
 }
 
@@ -179,7 +179,7 @@ bse_pcm_handle_write (BsePcmHandle *handle,
     g_return_if_fail (values != NULL);
   else
     return;
-
+  
   GSL_SPIN_LOCK (&handle->mutex);
   handle->write (handle, n_values, values);
   GSL_SPIN_UNLOCK (&handle->mutex);
@@ -191,7 +191,7 @@ bse_pcm_handle_status (BsePcmHandle *handle,
 {
   g_return_if_fail (handle != NULL);
   g_return_if_fail (status != NULL);
-
+  
   GSL_SPIN_LOCK (&handle->mutex);
   handle->status (handle, status);
   GSL_SPIN_UNLOCK (&handle->mutex);
@@ -202,7 +202,7 @@ bse_pcm_handle_set_watermark (BsePcmHandle *handle,
 			      guint         watermark)
 {
   g_return_if_fail (handle != NULL);
-
+  
   GSL_SPIN_LOCK (&handle->mutex);
   handle->playback_watermark = handle->mix_freq / 1000. * watermark * handle->n_channels;
   GSL_SPIN_UNLOCK (&handle->mutex);

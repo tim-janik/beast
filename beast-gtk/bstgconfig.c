@@ -19,353 +19,237 @@
 #include	"bstgconfig.h"
 
 
-/* --- parameters --- */
-enum
-{
-  PARAM_0,
-  PARAM_SNET_ANTI_ALIASED,
-  PARAM_SNET_EDIT_FALLBACK,
-  PARAM_SNET_SWAP_IO_CHANNELS,
-  PARAM_XKB_FORCE_QUERY,
-  PARAM_XKB_SYMBOL,
-  PARAM_DISABLE_ALSA,
-  PARAM_TAB_WIDTH,
-  PARAM_SAMPLE_SWEEP,
-  PARAM_PE_KEY_FOCUS_UNSELECTS,
-  PARAM_RC_VERSION
-};
-
-
-/* --- prototypes --- */
-static void	 bst_gconfig_init		(BstGConfig	  *gconf);
-static void	 bst_gconfig_class_init		(BstGConfigClass  *class);
-static void	 bst_gconfig_class_finalize	(BstGConfigClass  *class);
-static void      bst_gconfig_set_property          (BstGConfig	  *gconf,
-						 guint             param_id,
-						 GValue           *value,
-						 GParamSpec       *pspec,
-						 const gchar      *trailer);
-static void      bst_gconfig_get_property          (BstGConfig	  *gconf,
-						 guint             param_id,
-						 GValue           *value,
-						 GParamSpec       *pspec,
-						 const gchar      *trailer);
-static void	 bst_gconfig_do_finalize	(GObject     	  *object);
-static void	 bst_gconfig_do_apply		(BseGConfig	  *bconf);
-static void	 bst_gconfig_do_revert		(BseGConfig	  *bconf);
-static void      bst_globals_copy               (const BstGlobals *globals_src,
-						 BstGlobals       *globals);
-static void      bst_globals_unset              (BstGlobals       *globals);
-
-
-
 /* --- variables --- */
-GType                    bst_type_id_BstGConfig = 0;
-static gpointer          parent_class = NULL;
-static BstGlobals        bst_globals_current = { 0, };
-const BstGlobals * const bst_globals = &bst_globals_current;
-static const BstGlobals  bst_globals_defaults = {
-  NULL			/* rc_version */,
-  NULL			/* xkb_symbol */,
-  FALSE			/* xkb_force_query */,
-  TRUE			/* snet_anti_aliased */,
-  TRUE			/* snet_edit_fallback */,
-  FALSE			/* snet_swap_io_channels */,
-  FALSE			/* disable_alsa */,
-  TRUE			/* sample_sweep */,
-  FALSE			/* pe_key_focus_unselects */,
-  0			/* tab_width */,
-};
+BstGConfig        *bst_global_config = NULL;
+static GParamSpec *pspec_global_config = NULL;
 
 
 /* --- functions --- */
 void
-bst_globals_init (void)
+_bst_gconfig_init (void)
 {
-  static const GTypeInfo gconfig_info = {
-    sizeof (BstGConfigClass),
-    
-    (GBaseInitFunc) NULL,
-    (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bst_gconfig_class_init,
-    (GClassFinalizeFunc) bst_gconfig_class_finalize,
-    NULL /* class_data */,
+  BstGConfig *gconfig;
+  GValue *value;
+  SfiRec *rec;
 
-    sizeof (BstGConfig),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bst_gconfig_init,
-  };
+  g_return_if_fail (bst_global_config == NULL);
 
-  if (bst_type_id_BstGConfig)
-    return;
+  /* global config record description */
+  pspec_global_config = sfi_pspec_rec ("beast-preferences", NULL, NULL,
+				       bst_gconfig_fields, SFI_PARAM_DEFAULT);
+  g_param_spec_ref (pspec_global_config);
+  g_param_spec_sink (pspec_global_config);
+  /* create empty config record */
+  rec = sfi_rec_new ();
+  value = sfi_value_rec (rec);
+  /* fill out missing values with defaults */
+  g_param_value_validate (pspec_global_config, value);
+  /* install global config */
+  gconfig = bst_gconfig_from_rec (rec);
+  bst_global_config = gconfig;
+  /* cleanup */
+  sfi_value_free (value);
+  sfi_rec_unref (rec);
+}
 
-  bst_type_id_BstGConfig = bse_type_register_static (BSE_TYPE_GCONFIG,
-						     "BstGConfig",
-						     "BEAST global configuration object",
-						     &gconfig_info);
-  bst_globals_copy (&bst_globals_defaults, &bst_globals_current);
+GParamSpec*
+bst_gconfig_pspec (void)
+{
+  return pspec_global_config;
+}
+
+static BstGConfig*
+copy_gconfig (BstGConfig *src_config)
+{
+  SfiRec *rec = bst_gconfig_to_rec (src_config);
+  BstGConfig *gconfig = bst_gconfig_from_rec (rec);
+  sfi_rec_unref (rec);
+  return gconfig;
 }
 
 static void
-bst_gconfig_class_finalize (BstGConfigClass *class)
+set_gconfig (BstGConfig *gconfig)
 {
-}
-
-static void
-bst_gconfig_init (BstGConfig *gconf)
-{
-  bst_globals_copy (NULL, &gconf->globals);
-}
-
-static void
-bst_gconfig_do_finalize (GObject *object)
-{
-  BstGConfig *gconf = BST_GCONFIG (object);
-
-  bst_globals_unset (&gconf->globals);
-  
-  /* chain parent class' finalize handler */
-  G_OBJECT_CLASS (parent_class)->finalize (object);
-}
-
-static void
-bst_gconfig_class_init (BstGConfigClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseGConfigClass *bconfig_class = BSE_GCONFIG_CLASS (class);
-  BstGlobals globals_defaults = { 0, };
-  
-  parent_class = g_type_class_peek (BSE_TYPE_GCONFIG);
-  
-  G_OBJECT_CLASS (class)->finalize = bst_gconfig_do_finalize;
-
-  gobject_class->set_property = (GObjectSetPropertyFunc) bst_gconfig_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bst_gconfig_get_property;
-  
-  bconfig_class->apply = bst_gconfig_do_apply;
-  bconfig_class->revert = bst_gconfig_do_revert;
-  
-  bst_globals_copy (NULL, &globals_defaults);
-  bse_object_class_add_param (object_class, "Keyboard Layout",
-			      PARAM_XKB_FORCE_QUERY,
-			      bse_param_spec_bool ("xkb_force_query", "Always query X server on startup", NULL,
-						   globals_defaults.xkb_force_query,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Internal",
-			      PARAM_RC_VERSION,
-			      bse_param_spec_string ("rc_version", "RC Version", NULL,
-						     globals_defaults.rc_version,
-						     BSE_PARAM_STORAGE));
-  bse_object_class_add_param (object_class, "Keyboard Layout",
-			      PARAM_XKB_SYMBOL,
-			      bse_param_spec_string ("xkb_symbol", "Keyboard Layout", NULL,
-						     globals_defaults.xkb_symbol,
-						     BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Samples",
-			      PARAM_SAMPLE_SWEEP,
-			      bse_param_spec_bool ("sample_sweep", "Auto sweep",
-						   "Automatically remove (sweep) unused samples of a project",
-						   globals_defaults.sample_sweep,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Synthesis Networks",
-			      PARAM_SNET_ANTI_ALIASED,
-			      bse_param_spec_bool ("snet_anti_aliased", "Anti aliased display", NULL,
-						   globals_defaults.snet_anti_aliased,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Synthesis Networks",
-			      PARAM_SNET_EDIT_FALLBACK,
-			      bse_param_spec_bool ("snet_edit_fallback", "Auto fallback into Edit mode",
-						   "Fallback into Edit mode after a new source has been added",
-						   globals_defaults.snet_edit_fallback,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Synthesis Networks",
-			      PARAM_SNET_SWAP_IO_CHANNELS,
-			      bse_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
-						   globals_defaults.snet_swap_io_channels,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Pattern Editor",
-			      PARAM_PE_KEY_FOCUS_UNSELECTS,
-			      bse_param_spec_bool ("pe_key_focus_unselects", "Focus moves reset selection",
-						   "Reset the pattern editor's selection when keyboard moves"
-						   "the focus",
-						   globals_defaults.pe_key_focus_unselects,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Geometry",
-			      PARAM_TAB_WIDTH,
-			      bse_param_spec_uint ("tab_width", "Project tabulator width",
-						   "This is the width of the project notebook's "
-						   "tabulators that show the song, network or sample names. "
-						   "Setting it to a fixed width avoids window resizing when "
-						   "samples are added or removed.",
-						   0, 1024, globals_defaults.tab_width, 5,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Debugging",
-			      PARAM_DISABLE_ALSA,
-			      bse_param_spec_bool ("disable_alsa", "Disable support for ALSA PCM driver", NULL,
-						   globals_defaults.disable_alsa,
-						   BSE_PARAM_DEFAULT));
-  bst_globals_unset (&globals_defaults);
-}
-
-static void
-bst_gconfig_set_property (BstGConfig  *gconf,
-			  guint        param_id,
-			  GValue      *value,
-			  GParamSpec  *pspec,
-			  const gchar *trailer)
-{
-  switch (param_id)
+  BstGConfig *oldconfig = bst_global_config;
+  bst_global_config = gconfig;
+  bst_gconfig_free (oldconfig);
+  if (0)
     {
-    case PARAM_SNET_ANTI_ALIASED:
-      gconf->globals.snet_anti_aliased = g_value_get_boolean (value);
-      break;
-    case PARAM_SNET_EDIT_FALLBACK:
-      gconf->globals.snet_edit_fallback = g_value_get_boolean (value);
-      break;
-    case PARAM_SNET_SWAP_IO_CHANNELS:
-      gconf->globals.snet_swap_io_channels = g_value_get_boolean (value);
-      break;
-    case PARAM_XKB_FORCE_QUERY:
-      gconf->globals.xkb_force_query = g_value_get_boolean (value);
-      break;
-    case PARAM_RC_VERSION:
-      g_free (gconf->globals.rc_version);
-      gconf->globals.rc_version = g_value_dup_string (value);
-      break;
-    case PARAM_XKB_SYMBOL:
-      g_free (gconf->globals.xkb_symbol);
-      gconf->globals.xkb_symbol = bse_strdup_stripped (g_value_get_string (value));
-      break;
-    case PARAM_DISABLE_ALSA:
-      gconf->globals.disable_alsa = g_value_get_boolean (value);
-      break;
-    case PARAM_TAB_WIDTH:
-      gconf->globals.tab_width = g_value_get_uint (value);
-      break;
-    case PARAM_SAMPLE_SWEEP:
-      gconf->globals.sample_sweep = g_value_get_boolean (value);
-      break;
-    case PARAM_PE_KEY_FOCUS_UNSELECTS:
-      gconf->globals.pe_key_focus_unselects = g_value_get_boolean (value);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (gconf, param_id, pspec);
-      break;
+      SfiRec *prec = bst_gconfig_to_rec (bst_global_config);
+      GValue *v = sfi_value_rec (prec);
+      GString *gstring = g_string_new (NULL);
+      sfi_value_store_param (v, gstring, pspec_global_config, 2);
+      g_print ("CONFIG:\n%s\n", gstring->str);
+      g_string_free (gstring, TRUE);
+      sfi_value_free (v);
+      sfi_rec_unref (prec);
     }
 }
 
-static void
-bst_gconfig_get_property (BstGConfig  *gconf,
-                       guint        param_id,
-		       GValue      *value,
-		       GParamSpec  *pspec,
-		       const gchar *trailer)
+void
+bst_gconfig_apply (SfiRec *rec)
 {
-  switch (param_id)
+  SfiRec *vrec;
+  BstGConfig *gconfig;
+
+  g_return_if_fail (rec != NULL);
+
+  vrec = sfi_rec_copy_deep (rec);
+  sfi_rec_validate (vrec, sfi_pspec_get_rec_fields (pspec_global_config));
+  gconfig = bst_gconfig_from_rec (vrec);
+  sfi_rec_unref (vrec);
+  set_gconfig (gconfig);
+}
+
+void
+bst_gconfig_set_rc_version (const gchar *rc_version)
+{
+  BstGConfig *gconfig;
+
+  gconfig = copy_gconfig (bst_global_config);
+  g_free (gconfig->rc_version);
+  gconfig->rc_version = g_strdup (rc_version);
+  set_gconfig (gconfig);
+}
+
+
+/* --- loading and saving rc file --- */
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include "../PKG_config.h"	/* BST_VERSION */
+#include <sfi/sfistore.h>	/* we rely on internal API here */
+static void
+accel_map_print (gpointer        data,
+		 const gchar    *accel_path,
+		 guint           accel_key,
+		 guint           accel_mods,
+		 gboolean        changed)
+{
+  GString *gstring = g_string_new (changed ? NULL : "; ");
+  SfiWStore *wstore = data;
+  gchar *tmp, *name;
+
+  g_string_append (gstring, "(gtk_accel_path \"");
+
+  tmp = g_strescape (accel_path, NULL);
+  g_string_append (gstring, tmp);
+  g_free (tmp);
+
+  g_string_append (gstring, "\" \"");
+
+  name = gtk_accelerator_name (accel_key, accel_mods);
+  tmp = g_strescape (name, NULL);
+  g_free (name);
+  g_string_append (gstring, tmp);
+  g_free (tmp);
+
+  g_string_append (gstring, "\")");
+
+  sfi_wstore_break (wstore);
+  sfi_wstore_puts (wstore, gstring->str);
+
+  g_string_free (gstring, TRUE);
+}
+
+BseErrorType
+bst_rc_dump (const gchar *file_name)
+{
+  SfiWStore *wstore;
+  GValue *value;
+  SfiRec *rec;
+  gint fd;
+
+  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
+  fd = open (file_name,
+	     O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
+	     0666);
+
+  if (fd < 0)
+    return errno == EEXIST ? BSE_ERROR_EXISTS : BSE_ERROR_IO;
+
+  wstore = sfi_wstore_new ();
+
+  sfi_wstore_printf (wstore, "; rc-file for BEAST v%s\n", BST_VERSION);
+
+  /* store BstGConfig */
+  sfi_wstore_puts (wstore, "\n; BstGConfig Dump\n");
+  rec = bst_gconfig_to_rec (bst_global_config);
+  value = sfi_value_rec (rec);
+  sfi_wstore_put_param (wstore, value, bst_gconfig_pspec ());
+  sfi_value_free (value);
+  sfi_rec_unref (rec);
+  sfi_wstore_puts (wstore, "\n");
+
+  /* store accelerator paths */
+  sfi_wstore_puts (wstore, "\n; Gtk+ Accel Map Path Dump\n");
+  sfi_wstore_puts (wstore, "(menu-accelerators ");
+  sfi_wstore_push_level (wstore);
+  gtk_accel_map_foreach (wstore, accel_map_print);
+  sfi_wstore_break (wstore);	/* make sure this is no comment line */
+  sfi_wstore_puts (wstore, ")\n");
+  sfi_wstore_pop_level (wstore);
+
+  /* flush stuff to rc file */
+  sfi_wstore_flush_fd (wstore, fd);
+  sfi_wstore_destroy (wstore);
+
+  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
+}
+
+static SfiTokenType
+rc_file_try_statement (gpointer   context_data,
+		       SfiRStore *rstore,
+		       GScanner  *scanner,
+		       gpointer   user_data)
+{
+  g_assert (scanner->next_token == G_TOKEN_IDENTIFIER);
+  if (strcmp ("beast-preferences", scanner->next_value.v_identifier) == 0)
     {
-    case PARAM_SNET_ANTI_ALIASED:
-      g_value_set_boolean (value, gconf->globals.snet_anti_aliased);
-      break;
-    case PARAM_SNET_EDIT_FALLBACK:
-      g_value_set_boolean (value, gconf->globals.snet_edit_fallback);
-      break;
-    case PARAM_SNET_SWAP_IO_CHANNELS:
-      g_value_set_boolean (value, gconf->globals.snet_swap_io_channels);
-      break;
-    case PARAM_XKB_FORCE_QUERY:
-      g_value_set_boolean (value, gconf->globals.xkb_force_query);
-      break;
-    case PARAM_RC_VERSION:
-      g_value_set_string (value, gconf->globals.rc_version);
-      break;
-    case PARAM_XKB_SYMBOL:
-      g_value_set_string (value, gconf->globals.xkb_symbol);
-      break;
-    case PARAM_DISABLE_ALSA:
-      g_value_set_boolean (value, gconf->globals.disable_alsa);
-      break;
-    case PARAM_TAB_WIDTH:
-      g_value_set_uint (value, gconf->globals.tab_width);
-      break;
-    case PARAM_SAMPLE_SWEEP:
-      g_value_set_boolean (value, gconf->globals.sample_sweep);
-      break;
-    case PARAM_PE_KEY_FOCUS_UNSELECTS:
-      g_value_set_boolean (value, gconf->globals.pe_key_focus_unselects);
-      break;
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (gconf, param_id, pspec);
-      break;
+      GValue *value = sfi_value_rec (NULL);
+      GTokenType token;
+      SfiRec *rec;
+      g_scanner_get_next_token (rstore->scanner);
+      token = sfi_rstore_parse_param (rstore, value, bst_gconfig_pspec ());
+      rec = sfi_value_get_rec (value);
+      if (token == G_TOKEN_NONE && rec)
+	bst_gconfig_apply (rec);
+      sfi_value_free (value);
+      return token;
     }
-}
-
-static void
-bst_gconfig_do_apply (BseGConfig *bconf)
-{
-  BstGConfig *gconf = BST_GCONFIG (bconf);
-  
-  bst_globals_copy (&gconf->globals, NULL);
-
-  /* chain parent class' handler */
-  BSE_GCONFIG_CLASS (parent_class)->apply (bconf);
-}
-
-static void
-bst_gconfig_do_revert (BseGConfig *bconf)
-{
-  BstGConfig *gconf = BST_GCONFIG (bconf);
-
-  bst_globals_unset (&gconf->globals);
-  bst_globals_copy (bst_globals, &gconf->globals);
-
-  /* chain parent class' handler */
-  BSE_GCONFIG_CLASS (parent_class)->revert (bconf);
-}
-
-void
-bst_globals_copy (const BstGlobals *globals_src,
-		  BstGlobals       *globals)
-{
-  if (!globals_src)
-    globals_src = &bst_globals_defaults;
-  if (!globals)
+  else if (strcmp ("menu-accelerators", scanner->next_value.v_identifier) == 0)
     {
-      g_return_if_fail (bse_globals_locked () == FALSE);
-
-      bst_globals_unset (&bst_globals_current);
-      globals = &bst_globals_current;
+      g_scanner_get_next_token (rstore->scanner); /* eat identifier */
+      gtk_accel_map_load_scanner (scanner);
+      if (g_scanner_get_next_token (scanner) != ')')
+	return ')';
+      else
+	return G_TOKEN_NONE;
     }
-
-  *globals = *globals_src;
-  globals->rc_version = g_strdup (globals_src->rc_version);
-  globals->xkb_symbol = g_strdup (globals_src->xkb_symbol);
+  else
+    return SFI_TOKEN_UNMATCHED;
 }
 
-void
-bst_globals_unset (BstGlobals *globals)
+BseErrorType
+bst_rc_parse (const gchar *file_name)
 {
-  g_return_if_fail (globals != NULL);
+  SfiRStore *rstore;
+  BseErrorType error = BSE_ERROR_NONE;
+  gint fd;
 
-  g_free (globals->rc_version);
-  g_free (globals->xkb_symbol);
-  memset (globals, 0, sizeof (*globals));
-}
+  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
 
-void
-bst_globals_set_rc_version (const gchar *rc_version)
-{
-  g_return_if_fail (bse_globals_locked () == FALSE);
+  fd = open (file_name, O_RDONLY, 0);
+  if (fd < 0)
+    return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
+	    BSE_ERROR_NOT_FOUND : BSE_ERROR_IO);
 
-  g_free (bst_globals_current.rc_version);
-  bst_globals_current.rc_version = g_strdup (rc_version);
-}
-
-void
-bst_globals_set_xkb_symbol (const gchar *xkb_symbol)
-{
-  g_return_if_fail (bse_globals_locked () == FALSE);
-
-  g_free (bst_globals_current.xkb_symbol);
-  bst_globals_current.xkb_symbol = g_strdup (xkb_symbol);
+  rstore = sfi_rstore_new ();
+  sfi_rstore_input_fd (rstore, fd, file_name);
+  if (sfi_rstore_parse_all (rstore, NULL, rc_file_try_statement, NULL) > 0)
+    error = BSE_ERROR_PARSE_ERROR;
+  sfi_rstore_destroy (rstore);
+  close (fd);
+  return error;
 }

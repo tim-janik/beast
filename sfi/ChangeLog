@@ -1,3 +1,469 @@
+Mon Dec 30 00:37:10 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglueproxy.[hc]: confirm processed notifies.
+
+	* sfiglue.[hc]: renamed signal connection request to
+	proxy_request_notify(), added proxy_processed_notify() to
+	confirm processed notifies.
+
+	* sfigluecodec.[hc]: support proxy_processed_notify().
+	turned proxy_processed_notify() and proxy_set_property() into
+	one-way messages.
+
+Sun Dec 29 06:02:58 2002  Tim Janik  <timj@gtk.org>
+
+	* sfigluecodec.c: code cosmetics.
+
+	* sficomport.c (sfi_com_port_io_pending): update pollfds.
+
+Sat Dec 28 11:34:50 2002  Tim Janik  <timj@gtk.org>
+
+	* sfivalues.c: allocate values as Sfi memblocks.
+
+Sat Dec 28 09:52:20 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.[hc]: added sfi_pspec_add_hint() and
+	sfi_pspec_remove_hint(), removed API for static hints.
+	(sfi_pspec_set_hints): canonicalize hints to be preceeded and
+	followed by colons.
+
+Thu Dec 26 19:11:17 2002  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added convenience function to setup a simple
+	GLib main loop source.
+
+	* sfivcall.[hc]: deleted these in favour of sfivmarshal.[hc].
+
+	* sfivmarshal.[hc]: reduced the amount of required marshallers
+	for up to 5 arguments (243 instead of 364). fixed wrong handling
+	of pointer sizes > 4. renamed vcall inrterface to
+	sfi_vmarshal_void().
+
+	* testsfi.c: more marshal generation fixes, now deployed in
+	sfivmarshal.c.
+
+Tue Dec 24 00:12:10 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiserial.c: moved SFI global GScanner config here.
+
+	* sfigluecodec.[hc]:
+	* sfiglue.[hc]: fix sfi_glue_proc_new() signature (take proc_name).
+
+Mon Dec 23 03:26:28 2002  Tim Janik  <timj@gtk.org>
+
+	* sfigluecodec.[hc]:
+	* sfiglue.[hc]: support blurb, help, authors and copyright
+	for procedures. list poll fds per context. implemented
+	context destruction. removed leading '_' frmo non-private
+	functions.
+
+	* sfigluecodec.[hc]: implement client message handling.
+
+	* sfiglueproxy.[hc]: support context destruction.
+
+	* sfivalues.[hc]: provide SFI_IS_VALUE() to check for
+	SFI supported values.
+
+	* sfiprimitives.[hc]: added sfi_rec_clear(), sfi_ring_copy(),
+	sfi_ring_copy_deep() and sfi_ring_free_deep(). enforce usage
+	of SFI values in seq and rec.
+
+	* sficomwire.[hc]: accept SfiRing of arguments for spawning.
+
+	* sficomport.[hc]: support communications via pipes.
+
+	* glib-extra.h: fix g_object_qdata type annoyances.
+
+	* testsfi.c: added comport test. toyed with new marshaller
+	(vcall) generation ideas.
+
+Tue Dec 17 08:47:57 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglue.[hc]: added main loop intergration functions to
+	glue layer.
+
+	* sfigluecodec.[hc]: reimplemented the glue layer encoder
+	and decoder.
+
+	* sfiglueproxy.[hc]: event handling fixups.
+
+	* sfithreads.[hc]: got rid of creating a pipe per thread.
+	users can set a wakeup function per thread now and sleeping
+	waits on a condition.
+	
+	* sficomport.[hc]: communication mechanism for glue layer
+	encoder and decoder (meant to obsolete SfiComWire).
+	
+Sat Dec 14 10:03:25 2002  Tim Janik  <timj@gtk.org>
+
+	* sfilog.[hc]: moved logging functionality here.
+
+	* sfistore.[hc]: removed logging functionality.
+
+Fri Dec 13 17:53:35 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglue.[hc]: get rid of remaining dangerous collect shortcuts.
+	plugged gc leaks, moved gc into contexts. keep context stack per-thread.
+
+Fri Dec 13 08:07:57 2002  Tim Janik  <timj@gtk.org>
+
+	* testsfi.c: added threading test.
+
+	* sfimemory.[hc]: simple caching memory block allocator, moved
+	here from GSL.
+
+	* sfithreads.[hc]: SFI thread wrapper, based on GslThread.
+	this is mostly a slim wrapper around GThread, except if pthreads
+	are present, in this case, the fast pthread mutex and condition
+	functions are used directly.
+
+Tue Dec 10 03:33:12 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglue.[hc]: handle NULL as iface_name in _sfi_glue_iface_new().
+	document NULL-terminated string vectors.
+
+	* sfiglueproxy.[hc]: added _sfi_glue_proxy_watch_release(),
+	_sfi_glue_proxy_notify() and sfi_glue_proxy_get_pspec_scategory().
+
+	* sfiprimitives.[hc]: added sfi_seq_to_strv() and
+	sfi_seq_from_strv().
+
+	* sficomwire.[hc]: moved here from BSE.
+
+	* sfigluecodec.[hc]: untested port of encoder and decoder
+	routines to seq/rec/value.
+
+Mon Dec  9 07:24:14 2002  Tim Janik  <timj@gtk.org>
+
+	* sfistore.[hc]: expect -errno returns from SfiStoreReadBin() in
+	case of failure, number of supplied values otherwise.
+	virtualized a few things that BSE will have to override.
+	added sfi_rstore_parse_binary() as counterpart to
+	sfi_wstore_put_binary() (renamed from _bin_data).
+
+Sun Dec  8 05:51:24 2002  Tim Janik  <timj@gtk.org>
+
+	* sfistore.[hc]: new files, implementing storage writing and
+	reading basics. *not* added as binary compatibility maintainable
+	API to sfi.h.
+
+	* sfiserial.c (sfi_value_store_param): avoid extra newline.
+
+Sat Dec  7 17:49:04 2002  Tim Janik  <timj@gtk.org>
+
+        * sfigluecodec.c:
+        * sfiprimitives.c:
+        * sfiprimitives.h:
+        * sfitime.c: fix arg ordering in gsl/sfi_ring_walk().
+
+Tue Dec  3 01:03:26 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: added sfi_rec_swap_fields() and sfi_rec_validate().
+
+Mon Dec  2 01:40:10 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglue.[hc]: made vcalls more GC friendly. removed
+	sfi_glue_gc_collect_value() to avoid misuses.
+	(sfi_glue_vcall_rec): 
+	(sfi_glue_vcall_seq): 
+	(sfi_glue_vcall_choice): 
+	(sfi_glue_vcall_string): make sure we always return "" or empty seq/rec
+	instead of NULL.
+
+Sun Dec  1 22:20:11 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl*.cc: fix allocation of elements for resizing sequences,
+	support "Neutral" for choices, fixes
+
+	* testidl.sfidl: Neutral
+
+Sun Dec  1 14:01:25 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: add results returned by clientside C language binding
+	for procedures to GC where necessary (records/sequences)
+
+Sun Dec  1 05:09:37 2002  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added whitespace stripping strdup functions.
+
+Sun Dec  1 04:21:16 2002  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am (libsfiinclude_HEADERS): install public headers.
+
+Sun Dec  1 03:42:00 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: vcall arguments are now taken from SFI_SCAT_* from
+	sfiparams.h
+
+Sun Dec  1 03:23:29 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: indentation beautification, free doesn't accept NULL
+	any longer.
+
+Sun Dec  1 02:40:38 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc testidl.sfidl: use Const instead of Constant
+	to resolve conflict with the "Constant" class.
+
+Sun Dec  1 02:18:42 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiparam.[hc]: new param spec int derived type pspec note which
+	allowes for void notes and comes with its own validation implementation.
+
+Sun Dec  1 01:32:11 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc sfidl.cc sfidl.h testidl.sfidl: use capitalized
+	keywords for In, Out, Constant, Info ; fixed const char* in C
+	language binding
+
+Sun Dec  1 00:04:48 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-options.* sfidl.cc Makefile.am: restructured options again
+
+Sun Nov 24 03:21:07 2002  Tim Janik  <timj@gtk.org>
+
+	* sfidl-options.cc: reverted stefan's last change, which broke
+	client side init function generation.
+
+Sun Nov 24 02:21:09 2002  Tim Janik  <timj@gtk.org>
+
+	* sfidl.cc: store SfiChoiceValue arrays in addition to
+	GEnumValue arrays.
+
+	* sfiparams.[hc]:
+	(sfi_pspec_copy_commons): extend copying of common fields.
+	(sfi_pspec_test_all_hints): new hint test fnction.
+
+Tue Nov 12 03:50:44 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: implement sequence and record convenience
+	getters.
+
+	* sfiparams.[hc]: define SfiChoiceValues in terms of
+	SfiChoiceValue (structure with name and blurb) instead of
+	GEnumValue.
+	introduce sfi_pspec_{g|s}et_owner().
+	get rid of sfi_pspec_get_choice_value_list().
+	implement sfi_pspec_to_rec() and sfi_pspec_from_rec().
+	(sfi_categorize_type): SFI_TYPE_PSPEC is not a boxed type,
+	but a seperate fundamental.
+
+	* sfiserial.c: implement serialization of pspecs as records.
+
+	* testsfi.c: fixed up choice serialization tests. extended
+	serialization tests to serialize pspecs and added serialization
+	test code for all defined pspecs.
+
+Thu Nov 14 10:51:51 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: fixed code generation for class names starting
+	with two uppercase letters like "BseSNet".
+
+Wed Nov 13 23:21:13 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc sfidl-options.cc: completed codegeneration for
+	client C language binding: prefix method names when
+	--c-client-prefix is given, conversion code for choices,
+	procedure prototypes, no more init function and similar
+	stuff the client doesn't need.
+
+Wed Nov 13 19:43:59 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: neutral element initialization on missing fields
+	from_rec, made copy_shallow complain on getting null pointer
+	arguments.
+
+Wed Nov  6 19:25:08 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiserial.c: get entirely rid of "nil" as identifier, it's
+	not recommended in scheme either and may clash with choices.
+	eliminated prefixing of arbitrary constructs with '\''.
+	fix choice parsing error handling. fixed sequence and record
+	indentation.
+
+	* sfiparams.h: use 'C' as type letter for choices, to preserve
+	'c' for the slight possibility of a future introduction of chars.
+
+Tue Nov  5 08:13:51 2002  Tim Janik  <timj@gtk.org>
+
+	* sfivalues.c (sfi_value_enum2choice): convert to scheme names
+	by default.
+
+Mon Nov  4 11:38:56 2002  Tim Janik  <timj@gtk.org>
+
+	* sfitypes.[hc]: remove SfiBoxedToRec, SfiBoxedFromRec,
+	SfiBoxedToSeq and SfiBoxedFromSeq fields from record and sequence
+	info, as the value transforms do the job already.
+
+	* sfidl.cc: remove unneeded code generation.
+
+	* sfidl-parser.h: 
+	* sfidl-namespace.h: start comments with one asterisk, not two
+	which is a special token used by the documentation parser.
+
+Mon Nov  4 07:32:22 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglueproxy.c (signal_quark): canonify signal names.
+
+	* sfivalues.c: G_TYPE_PARAM is it's own base type and not derived
+	from G_TYPE_BOXED, fixed code acordingly.
+
+	* sfiglue.[hc]: don't export the supported signals in SfiGlueIFace.
+
+Sun Nov  3 19:23:29 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.*: added preprocessing code to handle #include
+	directives and C++ style comments.
+
+	* sfidl-options.*: new -I option to add directories to the
+	include search path.
+
+	* sfidl.cc: limit code generation to those types that were not
+	defined in an included file.
+
+Sun Nov  3 13:55:41 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-options.* sfidl-parser.* sfidl-namespace.* sfidl.cc
+	Makefile.am: cleanup: moved the parser and the option handling
+	into seperate classes/files ; std namespace related fixes
+
+Sat Nov  2 00:17:31 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglue.c (sfi_glue_gc_add): don't warn about multiple adding
+	of ref counted objects to the gc.
+
+	* sfiglueproxy.c (signals_compare): fix quark comparison.
+
+	* sfiglue.[hc]: started to revamp context API. we need thread
+	support in Sfi to complete this though.
+
+	* sfivalues.c (sfi_choice2enum): fallback to 0 instead
+	of the first enum value if the choice can't be matched
+	(like sfi_value_choice2enum()).
+
+	* sfiglueproxy.c (default_glue_marshal): properly swap proxy and
+	data argument if rerquested.
+
+Fri Nov  1 17:55:46 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglueproxy.c (sfi_glue_proxy_is_a): spew no warning if proxy==0.
+
+Sun Nov  3 00:00:12 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: long options, finally (--sfk-core-header and such)
+
+	* Makefile.am: switch to sfidl long options
+
+Sat Nov  2 22:03:56 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: register enums for choices at the glib type system
+	when the -b option is given ; pspec_Rec -> pspec_RecBoxed to
+	resolve conflicts with "real" Rec param specs
+
+	* testidl.sfidl testsfi.c: more test code testing the type system
+	registration and the behaviour of choices in records
+
+Fri Nov  1 23:58:18 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: changed the C language binding for choices to "real"
+	enums instead of representing them as strings
+
+	* sfivalues.[hc]: implemented sfi_value_choice_genum, sfi_choice2enum
+	and sfi_enum2choice for conversion between choices and type system
+	known enums as required by sfidl
+
+	* testidl.sfidl testsfi.c: added a choice in a record for testing
+
+Fri Nov  1 01:28:12 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglueproxy.[hc]: add weak refs and the usual signal connection
+	variants.
+
+Thu Oct 31 23:16:41 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: more work on clientside C language binding: procedures,
+	methods ; first version of Rec/PSpec primitive types.
+	
+	* testsfi.c testidl.sfidl: added a test for Rec/PSpec primitive
+	types ; there is still a name clash here (sfidl_pspec_Rec) which
+	needs to be resolved (see comment in testidl.sfidl)
+
+Thu Oct 31 18:16:14 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc sfitypes.h: parsing for constants, properties, infos;
+	code generation for constants (-c option) and info lines used in
+	sequences and records ; string concatenation ; forward declarations
+	for classes.
+
+	* testidl.sfidl testsfi.c Makefile.am: added a test for
+	generation of #defines for constants
+
+Mon Oct 28 04:46:58 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglueproxy.c: for now, spew real warnings if invalid proxy ids
+	are being used.
+
+Sun Oct 27 23:00:25 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: enum is now called choice in sfidl files,
+	record, enum and sequence don't have a typedef any longer,
+	use sfidl_pspec_Int and similar instead of sfi_pspec_Int
+
+	* testidl.sfidl: removed typedef to match new sfidl syntax
+
+	* testsfi.c: sfi_pspec_* -> sfidl_pspec_*
+
+Sun Oct 27 22:38:25 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: added new code generation target for c++/qt (-g option
+	to select target), started procedure code generation (-p option)
+
+Sun Oct 27 19:26:37 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfiparams.c: fixed pspec_flags to convert sfi string hints
+	to GParamFlags properly.
+
+Sun Oct 27 16:17:32 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.[hc]: implement sfi_pspec_get_log_scale(),
+	sfi_pspec_set_log_scale() and sfi_pspec_log_scale().
+
+	* sfiustore.[hc]: new files, providing a unique-id -> data pointer
+	lookup map.
+
+	* sfiglueproxy.[hc]: new files, providing glue layer proxy
+	functionality. parts from sfiglue.[hc], sfiglusignal.c, bswproxy.[hc]
+	and bswsignal.[hc] got moved and/or reimplemented here.
+
+	* sfigluesignal.c: removed.
+
+	* sfiglue.[hc]: proxy related vtable changes.
+
+	* sfiprimitives.[hc]: provide convenience setters for records
+	and sequences.
+
+	* sfivcall.[hc]: const fixes.
+
+	* Makefile.am: reorder stuff for better streamlining during
+	compilation process. fix testidl.[hc] generation.
+
+Thu Oct 24 18:04:51 2002  Tim Janik  <timj@gtk.org>
+
+	* gbsearcharray.h: added this file here from BSE (should go into
+	GLib someday, but not for automatic includes anyway).
+
+Sun Oct 27 00:54:52 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: do proper code generation for proxy types.
+
+Sun Oct 27 00:33:24 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: parse procedures / classes / signals.
+
+Wed Oct 23 20:39:56 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: generate resize functions for sequences.
+
 Wed Oct 23 20:28:01 2002  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.h: provide convenience setters for record fields.

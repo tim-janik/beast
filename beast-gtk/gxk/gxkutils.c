@@ -95,10 +95,10 @@ g_object_set_long (gpointer     object,
 /**
  * g_object_get_long
  * @object:  a valid GObject
- * @name:    name of the long value to retrive
+ * @name:    name of the long value to retrieve
  * @RETURNS: the actual value
  *
- * Convenience variant of g_object_get_data() to retrive
+ * Convenience variant of g_object_get_data() to retrieve
  * a long instead of a pointer.
  */
 glong
@@ -122,7 +122,8 @@ gxk_widget_make_insensitive (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  gtk_widget_set_sensitive (widget, FALSE);
+  if (GTK_WIDGET_IS_SENSITIVE (widget))
+    gtk_widget_set_sensitive (widget, FALSE);
 }
 
 /**
@@ -137,7 +138,8 @@ gxk_widget_make_sensitive (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  gtk_widget_set_sensitive (widget, TRUE);
+  if (!GTK_WIDGET_IS_SENSITIVE (widget))
+    gtk_widget_set_sensitive (widget, TRUE);
 }
 
 static gint
@@ -389,6 +391,30 @@ gxk_widget_force_bg_clear (GtkWidget *widget)
 }
 
 /**
+ * gxk_notebook_append
+ * @notebook: a valid notebook
+ * @child:    a valid parent-less widget
+ * @label:    notebook page name
+ *
+ * Add a new page containing @child to @notebook,
+ * naming the page @label.
+ */
+void
+gxk_notebook_append (GtkNotebook *notebook,
+		     GtkWidget   *child,
+		     const gchar *label)
+{
+  g_return_if_fail (GTK_IS_NOTEBOOK (notebook));
+  g_return_if_fail (GTK_IS_WIDGET (child));
+  g_return_if_fail (label != NULL);
+
+  gtk_notebook_append_page (notebook, child, g_object_new (GTK_TYPE_LABEL,
+							   "visible", TRUE,
+							   "label", label,
+							   NULL));
+}
+
+/**
  * gxk_signal_handler_pending
  * @instance:        object instance with signals
  * @detailed_signal: signal name
@@ -424,4 +450,53 @@ gxk_signal_handler_pending (gpointer     instance,
   else
     g_warning ("%s: signal name \"%s\" is invalid for instance `%p'", G_STRLOC, detailed_signal, instance);
   return FALSE;
+}
+
+
+/* --- Gtk bug fixes --- */
+static gchar*
+path_fix_uline (const gchar *str)
+{
+  gchar *path = g_strdup (str);
+  gchar *p = path, *q = path;
+  if (!p)
+    return NULL;
+  while (*p)
+    {
+      if (*p == '_')
+	{
+	  if (p[1] == '_')
+	    {
+	      p++;
+	      *q++ = '_';
+	    }
+	}
+      else
+	*q++ = *p;
+      p++;
+    }
+  *q = 0;
+  return path;
+}
+
+#undef gtk_item_factory_get_item
+GtkWidget*
+gxk_item_factory_get_item (GtkItemFactory *ifactory,
+			   const gchar    *path)
+{
+  gchar *p = path_fix_uline (path);
+  GtkWidget *widget = gtk_item_factory_get_item (ifactory, p);
+  g_free (p);
+  return widget;
+}
+
+#undef gtk_item_factory_get_widget
+GtkWidget*
+gxk_item_factory_get_widget (GtkItemFactory *ifactory,
+			     const gchar    *path)
+{
+  gchar *p = path_fix_uline (path);
+  GtkWidget *widget = gtk_item_factory_get_widget (ifactory, p);
+  g_free (p);
+  return widget;
 }

@@ -76,12 +76,12 @@ magic_cmp (gconstpointer p1,
 }
 
 void
-gsl_magic_list_brute_match (GslRing     *magic_list,
+gsl_magic_list_brute_match (SfiRing     *magic_list,
 			    const gchar *file_name,
 			    guint        skip_bytes,
 			    GslMagic    *skip_magic,
-			    GslRing    **ext_matches,
-			    GslRing    **other_matches)
+			    SfiRing    **ext_matches,
+			    SfiRing    **other_matches)
 {
   BFile bfile = { -1, };
   
@@ -97,40 +97,40 @@ gsl_magic_list_brute_match (GslRing     *magic_list,
   if (bfile_open (&bfile, file_name, skip_bytes))
     {
       gchar *extension = strrchr (file_name, '.');
-      GslRing *node;
+      SfiRing *node;
       
       /* match by extension */
       if (ext_matches && extension)
-	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
+	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
 	    GslMagic *magic = node->data;
 	    
 	    if (!magic->extension || strcmp (magic->extension, extension) != 0)
 	      continue;
 	    if (magic != skip_magic && magic_match_file (&bfile, magic->match_list))
-	      *ext_matches = gsl_ring_append (*ext_matches, magic);
+	      *ext_matches = sfi_ring_append (*ext_matches, magic);
 	  }
       /* match excluding/without extension */
       if (other_matches)
-	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
+	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
 	    GslMagic *magic = node->data;
 	    
 	    if (extension && magic->extension && strcmp (magic->extension, extension) == 0)
 	      continue;
 	    if (magic != skip_magic && magic_match_file (&bfile, magic->match_list))
-              *other_matches = gsl_ring_append (*other_matches, magic);
+              *other_matches = sfi_ring_append (*other_matches, magic);
 	  }
       bfile_close (&bfile);
     }
   if (ext_matches)
-    *ext_matches = gsl_ring_sort (*ext_matches, magic_cmp);
+    *ext_matches = sfi_ring_sort (*ext_matches, magic_cmp);
   if (other_matches)
-    *other_matches = gsl_ring_sort (*other_matches, magic_cmp);
+    *other_matches = sfi_ring_sort (*other_matches, magic_cmp);
 }
 
 GslMagic*
-gsl_magic_list_match_file_skip (GslRing     *magic_list,
+gsl_magic_list_match_file_skip (SfiRing     *magic_list,
 				const gchar *file_name,
 				guint        skip_offset)
 {
@@ -143,11 +143,11 @@ gsl_magic_list_match_file_skip (GslRing     *magic_list,
     {
       gchar *extension = strrchr (file_name, '.');
       gint rpriority = G_MAXINT;
-      GslRing *node;
+      SfiRing *node;
       
       /* we do a quick scan by extension first */
       if (!rmagic && extension)
-	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
+	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
 	    GslMagic *magic = node->data;
 	    
@@ -164,7 +164,7 @@ gsl_magic_list_match_file_skip (GslRing     *magic_list,
 	  }
       /* then we do a normal walk but skip extension matches */
       if (!rmagic && extension)
-	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
+	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
 	    GslMagic *magic = node->data;
 	    
@@ -180,7 +180,7 @@ gsl_magic_list_match_file_skip (GslRing     *magic_list,
 	  }
       /* for no extension, we do a full walk */
       if (!rmagic && !extension)
-	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
+	for (node = magic_list; node; node = sfi_ring_walk (node, magic_list))
 	  {
 	    GslMagic *magic = node->data;
 	    
@@ -200,7 +200,7 @@ gsl_magic_list_match_file_skip (GslRing     *magic_list,
 }
 
 GslMagic*
-gsl_magic_list_match_file (GslRing     *magic_list,
+gsl_magic_list_match_file (SfiRing     *magic_list,
 			   const gchar *file_name)
 {
   return gsl_magic_list_match_file_skip (magic_list, file_name, 0);

@@ -523,7 +523,7 @@ bst_play_list_set_song (BstPlayList *plist,
 
       for (iter = bsw_container_list_items (BSE_OBJECT_ID (plist->song)); bsw_iter_n_left (iter); bsw_iter_next (iter))
 	{
-	  BswProxy item = bsw_iter_get_proxy (iter);
+	  SfiProxy item = bsw_iter_get_proxy (iter);
 
 	  song_item_added (plist->song, bse_object_from_id (item), plist);
 	}

@@ -45,7 +45,7 @@ struct _BstWaveDialog
   GtkFileSelection wave_selection;
 
   GtkWidget	*parent_dialog;
-  BswProxy	 wave_repo;
+  SfiProxy	 wave_repo;
 };
 
 struct _BstWaveDialogClass
@@ -56,10 +56,10 @@ struct _BstWaveDialogClass
 
 /* --- prototypes --- */
 GType		bst_wave_dialog_get_type	(void);
-GtkWidget*	bst_wave_dialog_new_load	(BswProxy	 wave_repo,
+GtkWidget*	bst_wave_dialog_new_load	(SfiProxy	 wave_repo,
 						 GtkWidget	*parent_dialog);
 void		bst_wave_dialog_set_wave_repo	(BstWaveDialog	*wave_dialog,
-						 BswProxy	 wave_repo);
+						 SfiProxy	 wave_repo);
 
 
 

@@ -322,7 +322,7 @@ dh_vorbis_destroy (GslDataHandle *data_handle)
   VorbisHandle *vhandle = (VorbisHandle*) data_handle;
 
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (VorbisHandle, vhandle);
+  sfi_delete_struct (VorbisHandle, vhandle);
 }
 
 static gboolean
@@ -360,7 +360,7 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
 
   g_return_val_if_fail (file_name != NULL, NULL);
 
-  vhandle = gsl_new_struct0 (VorbisHandle, 1);
+  vhandle = sfi_new_struct0 (VorbisHandle, 1);
   success = gsl_data_handle_common_init (&vhandle->dhandle, file_name);
   if (success)
     {
@@ -386,7 +386,7 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
     }
   else
     {
-      gsl_delete_struct (VorbisHandle, vhandle);
+      sfi_delete_struct (VorbisHandle, vhandle);
       return NULL;
     }
 }

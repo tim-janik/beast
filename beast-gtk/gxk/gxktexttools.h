@@ -30,7 +30,8 @@ typedef enum /*< skip >*/
   GXK_SCROLL_TEXT_CENTER	= 1 << 1,
   GXK_SCROLL_TEXT_NO_WRAP	= 1 << 2,
   GXK_SCROLL_TEXT_SHEET_BG	= 1 << 3,
-  GXK_SCROLL_TEXT_NAVIGATABLE	= 1 << 4
+  GXK_SCROLL_TEXT_NAVIGATABLE	= 1 << 4,
+  GXK_SCROLL_TEXT_EDITABLE	= 1 << 5
 } GxkScrollTextFlags;
 
 
@@ -39,6 +40,8 @@ void		gxk_text_view_enter_browse_mode	(GtkTextView		*tview);
 void		gxk_text_view_leave_browse_mode	(GtkTextView		*tview);
 void		gxk_text_view_cursor_to_start	(GtkTextView		*tview);
 void		gxk_text_view_cursor_to_end	(GtkTextView		*tview);
+void		gxk_text_view_cursor_normal	(GtkTextView		*tview);
+void		gxk_text_view_cursor_busy	(GtkTextView		*tview);
 GtkWidget*	gxk_scroll_text_create		(GxkScrollTextFlags	 flags,
 						 const gchar		*string);
 void		gxk_scroll_text_set_index	(GtkWidget		*sctext,

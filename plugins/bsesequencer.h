@@ -47,7 +47,7 @@ struct _BseSequencer
 
   gfloat	   counter;
   gint		   transpose;
-  BswNoteSequence *sdata;
+  BseNoteSequence *sdata;
   guint		   n_freq_values;
   gfloat	  *freq_values;
 };

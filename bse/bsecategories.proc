@@ -1,0 +1,108 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2002 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include <bse/bsecategories.h>
+#include <bse/bseprocedure.h>
+#include <bse/bseplugin.h>
+
+
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Copyright (C) 2002 Tim Janik";
+
+
+PROCEDURE (bse-categories-match-typed, "Utils/Categories/Match Typed") {
+  HELP  = "List BSE categories according to a pattern and type match.";
+  IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
+			    "*", SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("type", "Type", "Base type for categories to conform to.",
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  gchar *pattern   = sfi_value_get_string (in_values++);
+  gchar *type_name = sfi_value_get_string (in_values++);
+  GType  type      = type_name ? g_type_from_name (type_name) : 0;
+  BseCategorySeq *cseq = NULL;
+  
+  /* check parameters */
+  if (!pattern)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  if (type)
+    cseq = bse_categories_match_typed (pattern, type);
+  if (!cseq)
+    cseq = bse_category_seq_new ();
+  
+  /* set output parameters */
+  bse_value_take_boxed (out_values++, cseq);
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-categories-match, "Utils/Categories/Match") {
+  HELP  = "List BSE categories according to a pattern match.";
+  IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
+			    "*", SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  gchar *pattern   = sfi_value_get_string (in_values++);
+  BseCategorySeq *cseq = NULL;
+  
+  /* check parameters */
+  if (!pattern)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  cseq = bse_categories_match (pattern);
+  if (!cseq)
+    cseq = bse_category_seq_new ();
+  
+  /* set output parameters */
+  bse_value_take_boxed (out_values++, cseq);
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-category-from-id, "Utils/Categories/From ID") {
+  HELP  = "Find a BSE category from it's unique ID.";
+  IN	= sfi_pspec_int ("category_id", "Category ID", NULL,
+			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("category", "Category", NULL, BSE_TYPE_CATEGORY, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  guint id = sfi_value_get_int (in_values++);
+  BseCategory *cat;
+
+  cat = bse_category_from_id (id);
+  
+  /* set output parameters */
+  bse_value_take_boxed (out_values++, cat);
+  
+  return BSE_ERROR_NONE;
+}

@@ -95,7 +95,6 @@ static void
 bst_log_adjustment_init (BstLogAdjustment *ladj)
 {
   ladj->block_client = 0;
-  ladj->client_owned = FALSE;
   ladj->client = NULL;
   bst_log_adjustment_setup (ladj, 10000, 10, 4);
 }
@@ -119,28 +118,9 @@ bst_log_adjustment_from_adj (GtkAdjustment *client)
   g_return_val_if_fail (GTK_IS_ADJUSTMENT (client), NULL);
 
   ladj = g_object_new (BST_TYPE_LOG_ADJUSTMENT, NULL);
-  g_object_ref (ladj);
-  gtk_object_sink (GTK_OBJECT (ladj));
   bst_log_adjustment_set_client (ladj, client);
-  ladj->client_owned = TRUE;
   
   return GTK_ADJUSTMENT (ladj);
-}
-
-static void
-ladj_weak_notify (gpointer data,
-	       GObject *where_the_object_was)
-{
-  BstLogAdjustment *ladj = BST_LOG_ADJUSTMENT (data);
-
-  g_signal_handlers_disconnect_by_func (ladj->client, ladj_client_changed, ladj);
-  g_signal_handlers_disconnect_by_func (ladj->client, ladj_client_value_changed, ladj);
-  ladj->client = NULL;
-  if (ladj->client_owned)
-    {
-      ladj->client_owned = FALSE;
-      g_object_unref (ladj);
-    }
 }
 
 void
@@ -154,13 +134,14 @@ bst_log_adjustment_set_client (BstLogAdjustment *ladj,
   g_object_ref (ladj);
   if (ladj->client)
     {
-      g_object_weak_unref (G_OBJECT (ladj->client), ladj_weak_notify, ladj);
-      ladj_weak_notify (ladj, NULL);
+      g_signal_handlers_disconnect_by_func (ladj->client, ladj_client_changed, ladj);
+      g_signal_handlers_disconnect_by_func (ladj->client, ladj_client_value_changed, ladj);
+      g_object_unref (G_OBJECT (ladj->client));
     }
   ladj->client = client;
   if (ladj->client)
     {
-      g_object_weak_ref (G_OBJECT (ladj->client), ladj_weak_notify, ladj);
+      g_object_ref (G_OBJECT (ladj->client));
       g_object_connect (ladj->client,
 			"swapped_signal::changed", ladj_client_changed, ladj,
 			"swapped_signal::value_changed", ladj_client_value_changed, ladj,

@@ -51,7 +51,7 @@ struct _BstWaveViewClass
 
 /* --- prototypes --- */
 GtkType		bst_wave_view_get_type	(void);
-GtkWidget*	bst_wave_view_new	(BswProxy	wrepo);
+GtkWidget*	bst_wave_view_new	(SfiProxy	wrepo);
 
 
 

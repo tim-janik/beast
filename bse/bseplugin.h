@@ -20,6 +20,17 @@
 #ifndef __BSE_PLUGIN_H__
 #define __BSE_PLUGIN_H__
 
+/* default plugin name specification (if omitted in plugin)
+ */
+#ifndef BSE_PLUGIN_NAME
+#  ifdef BSE_PLUGIN_FALLBACK
+#    define BSE_PLUGIN_NAME BSE_PLUGIN_FALLBACK
+#  else /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
+#    define BSE_PLUGIN_NAME __FILE__
+#  endif /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
+#endif /* !BSE_PLUGIN_NAME */
+
+#include	<bse/bse.h>	/* for bse_check_version() */
 #include	<bse/bseexports.h>
 
 #ifdef __cplusplus
@@ -141,16 +152,6 @@ BSE_EXPORT_IMPL_F (BSE_BUILTIN_NAME) \
   return NULL; \
 } extern BSE_EXPORT_IMPL_T /* eat ; */
 #endif /* BSE_COMPILATION */
-
-/* default plugin name specification (if omitted in plugin)
- */
-#ifndef BSE_PLUGIN_NAME
-#  ifdef BSE_PLUGIN_FALLBACK
-#    define BSE_PLUGIN_NAME BSE_PLUGIN_FALLBACK
-#  else /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
-#    define BSE_PLUGIN_NAME __FILE__
-#  endif /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
-#endif /* !BSE_PLUGIN_NAME */
 
 /* system specific variable declaration and
  * implementation macros for symbol exports

@@ -53,7 +53,7 @@ struct _BseMidiVoiceInput
   BseMidiReceiver *midi_receiver;
   guint		   midi_channel;
 
-  GslRing	  *midi_voices;
+  SfiRing	  *midi_voices;
 };
 struct _BseMidiVoiceSwitch
 {

@@ -7,22 +7,25 @@
 
 @include teximacros.texi
 
-@majorheading @beastbse FAQ - Frequently Asked Questions
-@revision
+@docfont{tech}
 
-@toc
+@majorheading @beastbse FAQ - Frequently Asked Questions
+@revision{Document revised:}
+@*
+
+@contents
 
 @chapter @beastbse FAQ
                 
 @section Authors
 The main author of @beastbse is Tim Janik.
-Contributions were made by Olaf Hoehmann, David A. Bartold, Dave Seidel
-and Stefan Westerfeld.
+Contributions were made by David A. Bartold, Alper Ersoy,
+Olaf Hoehmann, Dave Seidel and Stefan Westerfeld.
 
 @section Document History
-This FAQ was written by @uref{timj@@beast.gtk.org,Tim Janik}.
+This FAQ was written by @uref{mailto://timj@@beast.gtk.org,Tim Janik}.
 Initial markup was done by Dave Seidel, until
-@uref{dirt@@gtk.org,Alper Ersoy} implemented
+@uref{mailto://dirt@@gtk.org,Alper Ersoy} implemented
 a new markup parser for @beast documentation. Around the
 0.4.1 release, the docs got migrated to texinfo format.
 
@@ -30,8 +33,8 @@ a new markup parser for @beast documentation. Around the
 @itemize
 @item WWW: @uref{http://beast.gtk.org}
 @item FTP: @uref{ftp://beast.gtk.org/pub/beast}
-@item Mailing List: @uref{beast@@beast.gtk.org}.
-Send subscription requests to @uref{timj@@beast.gtk.org}.
+@item Mailing List: @uref{mailto://beast@@beast.gtk.org}.
+Send subscription requests to @uref{mailto://timj@@beast.gtk.org}.
 @end itemize
 
 @section Why do I get "Cannot access memory at address 0x706f6e6d" when running @beast in gdb?
@@ -94,3 +97,12 @@ appendix used to store wave data doesn't get corrupted.
 @*
 The recommended mime type image for @bse files looks like this:
 @image{beast-mime,,,BSE-Mime-Logo,png}
+
+@section What are the minimum hardware requirements for @beast{}?
+
+This depends a lot on how you utilise @beast{}.  If you simply want to
+create synthesis networks or very simple songs, any Pentium II ought to
+suffice. If you want to lay down a few tracks with effects you may need
+something more modern: a Pentium III 500MHz is recommended.
+
+@bye

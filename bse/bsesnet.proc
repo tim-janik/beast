@@ -22,64 +22,63 @@
 #include        <bse/bsemain.h>
 
 
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "2001";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
 
 
 METHOD (BseSNet, supports-user-synths) {
   HELP	= "Check whether users may edit synthesis modules of this network";
-  IN	= g_param_spec_object ("snet", "Synth Net", NULL,
-			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_boolean ("user_synth", "User Synth", NULL,
-				FALSE, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("snet", "Synth Net", NULL,
+				 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_bool ("user_synth", "User Synth", NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *snet = g_value_get_object (in_values++);
-
+  BseSNet *snet = bse_value_get_object (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SNET (snet))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* set output parameters */
-  g_value_set_boolean (out_values++, BSE_SNET_USER_SYNTH (snet));
+  sfi_value_set_bool (out_values++, BSE_SNET_USER_SYNTH (snet));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseSNet, can-create-source) {
   HELP	= "Check whether inserting a new module into a synthesis network is possible";
-  IN	= g_param_spec_object ("snet", "Synth Net", NULL,
-			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("module_type", "Module Type", NULL,
-			       "", BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, 0,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("snet", "Synth Net", NULL,
+				 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("module_type", "Module Type", NULL,
+			    "", SFI_PARAM_DEFAULT);
+  OUT	= bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, 0,
+				SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *snet = g_value_get_object (in_values++);
-  const gchar *type_name = g_value_get_string (in_values++);
+  BseSNet *snet = bse_value_get_object (in_values++);
+  const gchar *type_name = sfi_value_get_string (in_values++);
   GType type = g_type_from_name (type_name);
   BseErrorType error = BSE_ERROR_NONE;
-
+  
   /* check parameters */
   if (!BSE_IS_SNET (snet))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* action */
   if (!BSE_SNET_USER_SYNTH (snet) && !BSE_DVL_EXT)
     error = BSE_ERROR_PERMS;
   else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
 	   g_type_is_a (type, BSE_TYPE_CONTAINER))
     error = BSE_ERROR_SOURCE_TYPE_INVALID;
-
+  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
@@ -88,37 +87,37 @@ METHOD (BseSNet, can-create-source) {
 
 METHOD (BseSNet, create-source) {
   HELP	= "Insert a new module into a synthesis network";
-  IN	= g_param_spec_object ("snet", "Synth Net", NULL,
-			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("module_type", "Module Type", NULL,
-			       "", BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_object ("module", "New Module", NULL,
-			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("snet", "Synth Net", NULL,
+				 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("module_type", "Module Type", NULL,
+			    "", SFI_PARAM_DEFAULT);
+  OUT	= bse_param_spec_object ("module", "New Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *snet = g_value_get_object (in_values++);
-  const gchar *type_name = g_value_get_string (in_values++);
+  BseSNet *snet = bse_value_get_object (in_values++);
+  const gchar *type_name = sfi_value_get_string (in_values++);
   BseContainer *container;
   BseSource *source;
   BseErrorType error;
-
+  
   /* check parameters */
   if (!BSE_IS_SNET (snet))
     return BSE_ERROR_PROC_PARAM_INVAL;
   if (bse_item_exec (snet, "can-create-source", type_name, &error) != 0 ||
       error != 0)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* action */
   container = BSE_CONTAINER (snet);
   source = g_object_new (g_type_from_name (type_name), NULL);
   bse_container_add_item (container, BSE_ITEM (source));
-
+  
   /* set output parameters */
-  g_value_set_object (out_values++, source);
+  bse_value_set_object (out_values++, source);
   g_object_unref (source);
   
   return BSE_ERROR_NONE;
@@ -126,32 +125,32 @@ METHOD (BseSNet, create-source) {
 
 METHOD (BseSNet, remove-source) {
   HELP	= "Remove an existing module from its synthesis network";
-  IN	= g_param_spec_object ("snet", "Synth Net", NULL,
-			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("module", "Module", NULL,
-			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, 0,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("snet", "Synth Net", NULL,
+				 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, 0,
+				SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *snet = g_value_get_object (in_values++);
-  BseSource *source = g_value_get_object (in_values++);
+  BseSNet *snet = bse_value_get_object (in_values++);
+  BseSource *source = bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-
+  
   /* check parameters */
   if (!BSE_IS_SNET (snet) || !BSE_IS_SOURCE (source) || BSE_ITEM (source)->parent != BSE_ITEM (snet) ||
       (!BSE_SNET_USER_SYNTH (snet) && !BSE_DVL_EXT))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* action */
   bse_container_remove_item (BSE_CONTAINER (snet), BSE_ITEM (source));
   
   /* set output parameters */
   g_value_set_enum (out_values++, error);
-
+  
   return BSE_ERROR_NONE;
 }

@@ -16,10 +16,10 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include <string.h>
+#include <sfi/gbsearcharray.h>
 #include "gslosctable.h"
 
-#include <string.h>
-#include "gbsearcharray.h"
 #include "gslcommon.h"
 #include "gslmath.h"
 #include "gslfft.h"
@@ -343,7 +343,7 @@ gsl_osc_table_create (gfloat         mix_freq,
   if (!cache_entries)
     cache_entries = g_bsearch_array_create (&cache_taconfig);
   
-  table = gsl_new_struct (GslOscTable, 1);
+  table = sfi_new_struct (GslOscTable, 1);
   table->mix_freq = mix_freq;
   table->wave_form = wave_form;
   table->entry_array = g_bsearch_array_create (&osc_taconfig);
@@ -429,7 +429,7 @@ gsl_osc_table_free (GslOscTable *table)
       table->entry_array = g_bsearch_array_remove (table->entry_array, &osc_taconfig, n);
     }
   g_bsearch_array_free (table->entry_array, &osc_taconfig);
-  gsl_delete_struct (GslOscTable, table);
+  sfi_delete_struct (GslOscTable, table);
 }
 
 void

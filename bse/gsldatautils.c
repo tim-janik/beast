@@ -68,11 +68,11 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 {
   GslLong l, offs = 0;
 
-  g_return_val_if_fail (dhandle != NULL, EINVAL);
-  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), EINVAL);
-  g_return_val_if_fail (fd >= 0, EINVAL);
-  g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, EINVAL);
-  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, EINVAL);
+  g_return_val_if_fail (dhandle != NULL, -EINVAL);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), -EINVAL);
+  g_return_val_if_fail (fd >= 0, -EINVAL);
+  g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, -EINVAL);
+  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, -EINVAL);
 
   l = dhandle->setup.n_values;
   while (l)
@@ -85,7 +85,7 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 	n = gsl_data_handle_read (dhandle, offs, n, src);
       while (n < 1 && retry--);
       if (retry < 0)
-	return EIO;
+	return -EIO;
 
       l -= n;
       offs += n;
@@ -96,7 +96,7 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 	j = write (fd, src, n);
       while (j < 0 && errno == EINTR);
       if (j < 0)
-	return errno ? errno : EIO;
+	return errno ? -errno : -EIO;
     }
   return 0;
 }
@@ -142,11 +142,11 @@ gsl_data_handle_dump_wav (GslDataHandle *dhandle,
 {
   guint data_length, file_length, byte_per_sample, byte_per_second;
 
-  g_return_val_if_fail (dhandle != NULL, EINVAL);
-  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), EINVAL);
-  g_return_val_if_fail (fd >= 0, EINVAL);
-  g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
-  g_return_val_if_fail (n_channels >= 1, EINVAL);
+  g_return_val_if_fail (dhandle != NULL, -EINVAL);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), -EINVAL);
+  g_return_val_if_fail (fd >= 0, -EINVAL);
+  g_return_val_if_fail (n_bits == 16 || n_bits == 8, -EINVAL);
+  g_return_val_if_fail (n_channels >= 1, -EINVAL);
 
   data_length = dhandle->setup.n_values * (n_bits == 16 ? 2 : 1);
   file_length = data_length;
@@ -172,11 +172,81 @@ gsl_data_handle_dump_wav (GslDataHandle *dhandle,
   write_uint32_le (fd, data_length);
 
   if (errno)
-    return errno;
+    return -errno;
 
   return gsl_data_handle_dump (dhandle, fd,
 			       n_bits == 16 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
 			       G_LITTLE_ENDIAN);
+}
+
+typedef struct {
+  GslDataHandle    *dhandle;
+  gboolean          opened;
+  GslWaveFormatType format;
+  guint             byte_order;
+} WStoreContext;
+
+static void
+wstore_context_destroy (gpointer data)
+{
+  WStoreContext *wc = data;
+  if (wc->opened)
+    gsl_data_handle_close (wc->dhandle);
+  gsl_data_handle_unref (wc->dhandle);
+  g_free (wc);
+}
+
+static gint /* -errno || length */
+wstore_context_reader (gpointer data,
+		       SfiNum   pos,
+		       void    *buffer,
+		       guint    blength)
+{
+  WStoreContext *wc = data;
+  GslLong l;
+
+  if (!wc->opened)
+    {
+      GslErrorType error = gsl_data_handle_open (wc->dhandle);
+      if (error)
+	return -ENOENT; /* approximation of OPEN_FAILED */
+      wc->opened = TRUE;
+    }
+
+  pos /= gsl_wave_format_byte_width (wc->format);
+  blength /= 4;	/* we use buffer for floats */
+  if (pos >= gsl_data_handle_length (wc->dhandle))
+    return 0;	/* done */
+
+  l = gsl_data_handle_read (wc->dhandle, pos, blength, buffer);
+  if (l < 1)
+    {
+      /* single retry */
+      l = gsl_data_handle_read (wc->dhandle, pos, blength, buffer);
+      if (l < 1)
+	return -EIO;	/* bail out */
+    }
+
+  return gsl_conv_from_float_clip (wc->format, wc->byte_order, buffer, buffer, l);
+}
+
+void
+gsl_data_handle_dump_wstore (GslDataHandle    *dhandle,
+			     SfiWStore        *wstore,
+			     GslWaveFormatType format,
+			     guint             byte_order)
+{
+  WStoreContext *wc;
+
+  g_return_if_fail (dhandle != NULL);
+  g_return_if_fail (wstore);
+
+  wc = g_new (WStoreContext, 1);
+  wc->dhandle = gsl_data_handle_ref (dhandle);
+  wc->opened = FALSE;
+  wc->format = format;
+  wc->byte_order = byte_order;
+  sfi_wstore_put_binary (wstore, wstore_context_reader, wc, wstore_context_destroy);
 }
 
 gboolean

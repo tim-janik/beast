@@ -18,4 +18,3 @@
 #include	"bseconstvalues.h"
 
 #include	"bseconfig.h"
-

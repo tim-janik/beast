@@ -15,7 +15,7 @@
   style         (italic|normal)          #IMPLIED
   weight        (bold|normal)            #IMPLIED
   indent        CDATA                    #IMPLIED
-  family        (mono|serif|sans-serif)  #IMPLIED
+  family        (monospace|serif|sans)   #IMPLIED
   underline     (single|double|none)     #IMPLIED
   left_margin   CDATA                    #IMPLIED
   right_margin  CDATA                    #IMPLIED

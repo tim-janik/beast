@@ -17,6 +17,7 @@
  */
 #include "bstprocedure.h"
 
+#include "bstparam.h"
 #include <gobject/gvaluecollector.h>
 #include <string.h>
 
@@ -25,6 +26,7 @@
 static void     bst_procedure_shell_class_init (BstProcedureShellClass *klass);
 static void     bst_procedure_shell_init       (BstProcedureShell      *pe);
 static void     bst_procedure_shell_destroy    (GtkObject              *object);
+static void     bst_procedure_shell_finalize   (GObject                *object);
 
 
 /* --- static variables --- */
@@ -63,113 +65,117 @@ bst_procedure_shell_get_type (void)
 static void
 bst_procedure_shell_class_init (BstProcedureShellClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+
+  parent_class = g_type_class_peek_parent (class);
   
   quark_output_params = g_quark_from_static_string ("Output Parameters");
   quark_input_params = g_quark_from_static_string ("Input Parameters");
   
-  parent_class = gtk_type_class (GTK_TYPE_VBOX);
-  
+  gobject_class->finalize = bst_procedure_shell_finalize;
+
   object_class->destroy = bst_procedure_shell_destroy;
 }
 
 static void
-bst_procedure_shell_init (BstProcedureShell *procedure_shell)
+bst_procedure_shell_init (BstProcedureShell *self)
 {
-  procedure_shell->proc = NULL;
-  procedure_shell->n_in_params = 0;
-  procedure_shell->n_out_params = 0;
-  procedure_shell->n_preset_params = 0;
-  procedure_shell->bparams = NULL;
-  procedure_shell->first_out_bparam = NULL;
-  procedure_shell->in_modal_selection = FALSE;
-  procedure_shell->in_execution = FALSE;
-  procedure_shell->hide_dialog_on_exec = FALSE;
+  self->proc = NULL;
+  self->prec = sfi_rec_new ();
+  self->n_preset_params = 0;
+  self->bparams = NULL;
+  self->in_modal_selection = FALSE;
+  self->in_execution = FALSE;
+  self->hide_dialog_on_exec = FALSE;
 }
 
 static void
-bst_procedure_shell_destroy_contents (BstProcedureShell *procedure_shell)
+bst_procedure_shell_destroy_contents (BstProcedureShell *self)
 {
-  gtk_container_foreach (GTK_CONTAINER (procedure_shell), (GtkCallback) gtk_widget_destroy, NULL);
-  g_slist_free (procedure_shell->bparams);
-  procedure_shell->n_in_params = 0;
-  procedure_shell->n_out_params = 0;
-  procedure_shell->n_preset_params = 0;
-  procedure_shell->bparams = NULL;
-  procedure_shell->first_out_bparam = NULL;
-  procedure_shell->in_modal_selection = FALSE;
+  gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
+  self->n_preset_params = 0;
+  sfi_ring_free (self->bparams);
+  self->bparams = NULL;
+  self->in_modal_selection = FALSE;
 }
 
 static void
 bst_procedure_shell_destroy (GtkObject *object)
 {
-  BstProcedureShell *shell;
+  BstProcedureShell *self = BST_PROCEDURE_SHELL (object);
   
-  g_return_if_fail (object != NULL);
-  
-  shell = BST_PROCEDURE_SHELL (object);
-  
-  if (shell->in_execution)
+  if (self->in_execution)
     g_warning (G_STRLOC ": destroying procedure shell during execution");
   
-  bst_procedure_shell_set_proc (shell, NULL);
+  bst_procedure_shell_set_proc (self, NULL);
   
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
-GtkWidget*
-bst_procedure_shell_new (BseProcedureClass *proc)
+static void
+bst_procedure_shell_finalize (GObject *object)
 {
-  GtkWidget *procedure_shell;
+  BstProcedureShell *self = BST_PROCEDURE_SHELL (object);
   
-  procedure_shell = gtk_widget_new (BST_TYPE_PROCEDURE_SHELL, NULL);
-  bst_procedure_shell_set_proc (BST_PROCEDURE_SHELL (procedure_shell), proc);
+  bst_procedure_shell_set_proc (self, NULL);
+  sfi_rec_unref (self->prec);
+  self->prec = NULL;
   
-  return procedure_shell;
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+GtkWidget*
+bst_procedure_shell_new (SfiGlueProc *proc)
+{
+  GtkWidget *widget;
+  
+  widget = gtk_widget_new (BST_TYPE_PROCEDURE_SHELL, NULL);
+  bst_procedure_shell_set_proc (BST_PROCEDURE_SHELL (widget), proc);
+  
+  return widget;
 }
 
 void
-bst_procedure_shell_set_proc (BstProcedureShell *procedure_shell,
-			      BseProcedureClass *proc)
+bst_procedure_shell_set_proc (BstProcedureShell *self,
+			      SfiGlueProc       *proc)
 {
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (procedure_shell));
-  if (proc)
-    g_return_if_fail (BSE_IS_PROCEDURE_CLASS (proc));
+  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
   
-  if (proc != procedure_shell->proc)
+  if (proc != self->proc)
     {
-      bst_procedure_shell_destroy_contents (procedure_shell);
-      if (procedure_shell->proc)
-	g_type_class_unref (procedure_shell->proc);
-      procedure_shell->proc = proc;
-      if (procedure_shell->proc)
-	g_type_class_ref (BSE_PROCEDURE_TYPE (procedure_shell->proc));
-      
-      bst_procedure_shell_rebuild (procedure_shell);
+      bst_procedure_shell_destroy_contents (self);
+      if (self->proc)
+	sfi_glue_proc_unref (self->proc);
+      self->proc = proc;
+      if (self->proc)
+	sfi_glue_proc_ref (self->proc);
+      bst_procedure_shell_rebuild (self);
     }
 }
 
 void
-bst_procedure_shell_rebuild (BstProcedureShell *shell)
+bst_procedure_shell_rebuild (BstProcedureShell *self)
 {
-  BseProcedureClass *proc;
+  SfiGlueProc *proc;
   GtkWidget *param_box;
-  GSList *slist, *pspec_array_list = NULL;
+  SfiRing *ring, *pspecs = NULL;
   gchar *string;
-  guint is_out_param = 0;
+  guint i;
   
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
+  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
   
-  bst_procedure_shell_destroy_contents (shell);
+  sfi_rec_clear (self->prec);
+  bst_procedure_shell_destroy_contents (self);
   
-  if (!shell->proc)
+  if (!self->proc)
     return;
   
-  proc = shell->proc;
+  proc = self->proc;
   
   /* main container
    */
-  param_box = GTK_WIDGET (shell);
+  param_box = GTK_WIDGET (self);
   gtk_widget_set (param_box,
 		  "homogeneous", FALSE,
 		  "spacing", 0,
@@ -215,169 +221,202 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
   
   /* parameter fields
    */
-  pspec_array_list = g_slist_prepend (pspec_array_list, proc->out_pspecs);
-  pspec_array_list = g_slist_prepend (pspec_array_list, proc->in_pspecs);
-  for (slist = pspec_array_list; slist; slist = slist->next)
+  for (i = 0; i < proc->n_params; i++)
+    pspecs = sfi_ring_append (pspecs, proc->params[i]);
+  if (proc->ret_param)
+    pspecs = sfi_ring_append (pspecs, proc->ret_param);
+  for (ring = pspecs; ring; ring = sfi_ring_walk (ring, pspecs))
     {
-      GParamSpec **pspec_p;
-      
-      pspec_p = slist->data;
-      if (pspec_p)
-        while (*pspec_p)
-          {
-            if ((*pspec_p)->flags & BSE_PARAM_SERVE_GUI &&
-                (*pspec_p)->flags & BSE_PARAM_READABLE)
-              {
-                BstParam *bparam;
-                
-                bparam = bst_param_create (proc,
-                                           BSE_TYPE_PROCEDURE,
-                                           *pspec_p,
-                                           (slist->next
-					    ? g_quark_to_string (quark_input_params)
-					    : g_quark_to_string (quark_output_params)),
-                                           param_box,
-                                           BST_TOOLTIPS);
-                shell->bparams = g_slist_append (shell->bparams, bparam);
-                (is_out_param ? shell->n_out_params : shell->n_in_params) += 1;
-                if (is_out_param && !shell->first_out_bparam)
-                  shell->first_out_bparam = g_slist_last (shell->bparams);
-              }
-            pspec_p++;
-          }
-      is_out_param++;
+      GParamSpec *pspec = ring->data;
+      // gboolean is_out_param = pspec == proc->ret_param;
+      BstParam *bparam = bst_param_rec_create (pspec, FALSE, NULL, self->prec);
+      bst_param_pack_property (bparam, param_box);
+      self->bparams = sfi_ring_append (self->bparams, bparam);
     }
-  g_slist_free (pspec_array_list);
+  sfi_ring_free (pspecs);
   
   /* initialize parameter values
    */
-  bst_procedure_shell_reset (shell);
+  bst_procedure_shell_reset (self);
 }
 
 void
-bst_procedure_shell_execute (BstProcedureShell *shell)
+bst_procedure_shell_update (BstProcedureShell *self)
+{
+  SfiRing *ring;
+
+  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
+  
+  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
+    bst_param_update (ring->data);
+}
+
+static BstParam*
+shell_find_bparam (BstProcedureShell *self,
+		   const gchar       *name)
+{
+  SfiRing *ring;
+  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
+    if (strcmp (name, bst_param_get_name (ring->data)) == 0)
+      return ring->data;
+  return NULL;
+}
+
+void
+bst_procedure_shell_execute (BstProcedureShell *self)
 {
   GtkWidget *widget;
-  GSList *slist;
+  SfiRing *ring;
+
+  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
+  g_return_if_fail (self->proc != NULL);
+  g_return_if_fail (self->in_execution == FALSE);
   
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
-  g_return_if_fail (shell->proc != NULL);
-  g_return_if_fail (shell->in_execution == FALSE);
-  
-  widget = GTK_WIDGET (shell);
-  
+  widget = GTK_WIDGET (self);
   gtk_widget_ref (widget);
-  
-  for (slist = shell->first_out_bparam; slist; slist = slist->next)
-    bst_param_reset (slist->data);
-  bst_procedure_shell_update (shell);
-  
+
+  /* update parameter record */
+  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
+    bst_param_apply_value (ring->data);
+
   if (widget)
     {
-      BseErrorType error;
+      SfiGlueProc *proc = self->proc;
+      BseErrorType error = 0;
+      SfiSeq *pseq = sfi_seq_new ();
+      GValue *rvalue;
+      guint i;
 
-      shell->in_execution = TRUE;
-      error = bse_procedure_execvl (shell->proc,
-                                    shell->bparams,
-                                    shell->first_out_bparam);
-      shell->in_execution = FALSE;
+      for (i = 0; i < proc->n_params; i++)
+	sfi_seq_append (pseq, sfi_rec_get (self->prec, proc->params[i]->name));
 
-      bst_status_eprintf (error, "Executing `%s'", shell->proc->name);
-      
-      bst_procedure_shell_update (shell);
+      self->in_execution = TRUE;
+      rvalue = sfi_glue_call_seq (self->proc->name, pseq);
+      self->in_execution = FALSE;
+
+      bst_status_eprintf (error, "Executing `%s'", self->proc->name);
+
+      sfi_seq_unref (pseq);
+      if (rvalue && proc->ret_param)
+	{
+	  BstParam *bparam = shell_find_bparam (self, proc->ret_param->name);
+	  sfi_rec_set (self->prec, proc->ret_param->name, rvalue);
+	  if (bparam)
+	    bst_param_update (bparam);
+	}
     }
-  
+
   gtk_widget_unref (widget);
 }
 
 void
-bst_procedure_shell_update (BstProcedureShell *shell)
+bst_procedure_shell_reset (BstProcedureShell *self)
 {
-  GSList *slist;
-  
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
-  
-  for (slist = shell->bparams; slist; slist = slist->next)
-    bst_param_get (slist->data);
-}
+  SfiGlueProc *proc;
+  SfiRing *ring;
 
-void
-bst_procedure_shell_reset (BstProcedureShell *shell)
-{
-  GSList *slist;
-  gint n;
-  
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
-  
-  n = shell->n_in_params;
-  for (slist = shell->bparams; slist; slist = slist->next)
+  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
+
+  proc = self->proc;
+  sfi_rec_clear (self->prec);
+  if (!self->bparams)
+    return;
+  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
     {
-      BstParam *bparam = slist->data;
-      
-      (n > 0 ? bst_param_set_default : bst_param_reset) (bparam);
-      bst_param_set_editable (bparam, n-- > 0);
+      BstParam *bparam = ring->data;
+      GParamSpec *pspec = bparam->pspec;
+      gboolean is_out_param = pspec == proc->ret_param;
+      GValue value = { 0, };
+      g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      if (is_out_param)
+	g_value_reset (&value);
+      else
+	g_param_value_set_default (pspec, &value);
+      sfi_rec_set (self->prec, pspec->name, &value);
+      g_value_unset (&value);
+      bst_param_set_editable (bparam, !is_out_param);
+      bst_param_update (bparam);
     }
-  shell->n_preset_params = 0;
+  self->n_preset_params = 0;
+
+  /* update parameters from record */
+  bst_procedure_shell_update (self);
 }
 
 void
-bst_procedure_shell_unpreset (BstProcedureShell *shell)
+bst_procedure_shell_unpreset (BstProcedureShell *self)
 {
-  GSList *slist;
-  gint n;
+  SfiRing *ring;
   
-  g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
+  g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
   
-  for (n = shell->n_in_params, slist = shell->bparams; slist && n; n--, slist = slist->next)
+  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
     {
-      BstParam *bparam = slist->data;
-      
+      BstParam *bparam = ring->data;
+      GParamSpec *pspec = bparam->pspec;
+      gboolean is_out_param = pspec == self->proc->ret_param;
       if (!bparam->editable)
 	{
-	  bst_param_set_default (bparam);
-	  bst_param_set_editable (bparam, TRUE);
+	  GValue value = { 0, };
+	  g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+	  if (is_out_param)
+	    g_value_reset (&value);
+	  else
+	    g_param_value_set_default (pspec, &value);
+	  sfi_rec_set (self->prec, pspec->name, &value);
+	  g_value_unset (&value);
+	  bst_param_set_editable (bparam, !is_out_param);
+	  bst_param_update (bparam);
 	}
     }
-  shell->n_preset_params = 0;
+  self->n_preset_params = 0;
 }
 
 gboolean
-bst_procedure_shell_preset (BstProcedureShell *shell,
+bst_procedure_shell_preset (BstProcedureShell *self,
 			    const gchar       *name,
 			    const GValue      *value,
 			    gboolean           lock_preset)
 {
-  BseProcedureClass *proc;
-  GSList *slist;
-  guint n;
-  
-  g_return_val_if_fail (BST_IS_PROCEDURE_SHELL (shell), 0);
-  g_return_val_if_fail (shell->proc != NULL, 0);
+  SfiGlueProc *proc;
+  SfiRing *ring;
+
+  g_return_val_if_fail (BST_IS_PROCEDURE_SHELL (self), 0);
+  g_return_val_if_fail (self->proc != NULL, 0);
   g_return_val_if_fail (name != NULL, 0);
   g_return_val_if_fail (G_IS_VALUE (value), 0);
   
-  proc = shell->proc;
+  proc = self->proc;
   
   /* ok, this is the really interesting part!
    * we try to unificate the preset parameter with the procedure's
-   * in parameters. if we find a name match and type conversion
-   * is sucessfull, the procedure gets invoked with a
-   * predefined parameter.
+   * input parameters. if we find a name match and type conversion
+   * is sucessfull, the procedure gets invoked with a predefined
+   * parameter value.
    */
-  
-  for (slist = shell->bparams, n = shell->n_in_params; n; slist = slist->next, n--)
+
+  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
     {
-      BstParam *bparam = slist->data;
-      
-      if (strcmp (bparam->pspec->name, name) == 0)
+      BstParam *bparam = ring->data;
+      GParamSpec *pspec = bparam->pspec;
+      gboolean is_out_param = pspec == proc->ret_param;
+
+      if (!is_out_param && strcmp (pspec->name, name) == 0)
 	{
-	  if (bst_param_set_value (bparam, value))
+	  if (g_value_type_transformable (G_VALUE_TYPE (value),
+					  G_PARAM_SPEC_VALUE_TYPE (pspec)))
 	    {
-	      if (lock_preset && bparam->editable)
+	      GValue pvalue = { 0, };
+	      g_value_init (&pvalue, G_PARAM_SPEC_VALUE_TYPE (pspec));
+	      g_param_value_convert (pspec, value, &pvalue, FALSE);
+	      sfi_rec_set (self->prec, pspec->name, &pvalue);
+	      g_value_unset (&pvalue);
+	      if (lock_preset)
 		{
-		  shell->n_preset_params += 1;
+		  self->n_preset_params += 1;
 		  bst_param_set_editable (bparam, FALSE);
 		}
+	      bst_param_update (bparam);
 	      return TRUE;
 	    }
 	  else
@@ -388,6 +427,8 @@ bst_procedure_shell_preset (BstProcedureShell *shell,
 		       name);
 	}
     }
+  /* update parameters from record */
+  bst_procedure_shell_update (self);
   
   return FALSE;
 }
@@ -434,18 +475,25 @@ bst_procedure_shell_global (void)
 }
 
 static void
-bst_procedure_exec_internal (GType        procedure_type,
+bst_procedure_exec_internal (const gchar *procedure_name,
 			     const gchar *preset_param,
 			     gboolean     modal,
 			     gboolean     auto_start,
 			     gboolean	  main_loop_recurse,
 			     va_list      var_args)
 {
-  BseProcedureClass *proc = g_type_class_ref (procedure_type);
   BstProcedureShell *shell;
+  SfiGlueProc *proc;
   GtkWidget *dialog;
 
   /* structure setup */
+  proc = sfi_glue_describe_proc (procedure_name);
+  if (!proc)
+    {
+      g_warning ("no such procedure \"%s\"", procedure_name);
+      return;
+    }
+  proc = sfi_glue_proc_ref (proc);
   shell = bst_procedure_shell_global ();
   dialog = gtk_widget_get_toplevel (GTK_WIDGET (shell));
   bst_procedure_shell_set_proc (shell, proc);
@@ -479,7 +527,7 @@ bst_procedure_exec_internal (GType        procedure_type,
   /* execution */
   gxk_status_window_push (dialog);
   g_object_ref (dialog);
-  if (auto_start && shell->n_preset_params == shell->n_in_params && shell->n_out_params == 0)
+  if (auto_start && shell->n_preset_params >= shell->proc->n_params && shell->proc->ret_param == NULL)
     bst_procedure_shell_execute (shell);
   else
     {
@@ -501,47 +549,47 @@ bst_procedure_exec_internal (GType        procedure_type,
   gxk_status_window_pop ();
   g_object_unref (dialog);
 
-  g_type_class_unref (proc);
+  sfi_glue_proc_unref (proc);
 }
 
 void
-bst_procedure_exec_modal (GType        procedure_type,
+bst_procedure_exec_modal (const gchar *procedure_name,
 			  const gchar *preset_param,
 			  ...)
 {
   va_list var_args;
 
-  g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
+  g_return_if_fail (procedure_name != NULL);
 
   va_start (var_args, preset_param);
-  bst_procedure_exec_internal (procedure_type, preset_param, TRUE, TRUE, TRUE, var_args);
+  bst_procedure_exec_internal (procedure_name, preset_param, TRUE, TRUE, TRUE, var_args);
   va_end (var_args);
 }
 
 void
-bst_procedure_exec (GType        procedure_type,
+bst_procedure_exec (const gchar *procedure_name,
 		    const gchar *preset_param,
 		    ...)
 {
   va_list var_args;
 
-  g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
+  g_return_if_fail (procedure_name != NULL);
 
   va_start (var_args, preset_param);
-  bst_procedure_exec_internal (procedure_type, preset_param, FALSE, FALSE, FALSE, var_args);
+  bst_procedure_exec_internal (procedure_name, preset_param, FALSE, FALSE, FALSE, var_args);
   va_end (var_args);
 }
 
 void
-bst_procedure_exec_auto (GType        procedure_type,
+bst_procedure_exec_auto (const gchar *procedure_name,
 			 const gchar *preset_param,
 			 ...)
 {
   va_list var_args;
 
-  g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
+  g_return_if_fail (procedure_name != NULL);
 
   va_start (var_args, preset_param);
-  bst_procedure_exec_internal (procedure_type, preset_param, FALSE, TRUE, FALSE, var_args);
+  bst_procedure_exec_internal (procedure_name, preset_param, FALSE, TRUE, FALSE, var_args);
   va_end (var_args);
 }

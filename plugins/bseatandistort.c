@@ -83,11 +83,11 @@ bse_atan_distort_class_init (BseAtanDistortClass *class)
   
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_BOOST_AMOUNT,
-			      bse_param_spec_float ("boost_amount", "Boost Amount [%]",
-						    "The atan distortion boost amount (strength) ranges "
-						    "from maximum attenuation (0%) to maximum boost (100%).",
-						    0, 100.0, 50, 5,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      sfi_pspec_real ("boost_amount", "Boost Amount [%]",
+						   "The atan distortion boost amount (strength) ranges "
+						   "from maximum attenuation (0%) to maximum boost (100%).",
+						   50, 0, 100.0, 5,
+						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
 
   channel_id = bse_source_class_add_ichannel (source_class, "Audio In", "Audio Input SIgnal");
   g_assert (channel_id == BSE_ATAN_DISTORT_ICHANNEL_MONO1);
@@ -113,7 +113,7 @@ bse_atan_distort_set_property (GObject      *object,
   switch (param_id)
     {
     case PARAM_BOOST_AMOUNT:
-      self->boost_amount = g_value_get_float (value) / 100.0;
+      self->boost_amount = sfi_value_get_real (value) / 100.0;
       self->prescale = gsl_approx_atan1_prescale (self->boost_amount);
       break;
     default:
@@ -134,7 +134,7 @@ bse_atan_distort_get_property (GObject    *object,
   switch (param_id)
     {
     case PARAM_BOOST_AMOUNT:
-      g_value_set_float (value, self->boost_amount * 100.0);
+      sfi_value_set_real (value, self->boost_amount * 100.0);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

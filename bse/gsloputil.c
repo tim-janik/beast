@@ -35,7 +35,7 @@ _engine_alloc_ostreams (guint n)
   if (n)
     {
       guint i = sizeof (GslOStream) * n + sizeof (gfloat) * gsl_engine_block_size () * n;
-      GslOStream *streams = gsl_alloc_memblock0 (i);
+      GslOStream *streams = sfi_alloc_memblock0 (i);
       gfloat *buffers = (gfloat*) (streams + n);
 
       for (i = 0; i < n; i++)
@@ -63,19 +63,19 @@ free_node (EngineNode *node)
   g_return_if_fail (node->sched_recurse_tag == FALSE);
   g_return_if_fail (node->flow_jobs == NULL && node->fjob_first == NULL);
   
-  gsl_rec_mutex_destroy (&node->rec_mutex);
+  sfi_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
       guint n = ENGINE_NODE_N_OSTREAMS (node);
       guint i = sizeof (GslOStream) * n + sizeof (gfloat) * gsl_engine_block_size () * n;
 
-      gsl_free_memblock (i, node->module.ostreams);
-      gsl_delete_structs (EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
+      sfi_free_memblock (i, node->module.ostreams);
+      sfi_delete_structs (EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
     }
   if (node->module.istreams)
     {
-      gsl_delete_structs (GslIStream, ENGINE_NODE_N_ISTREAMS (node), node->module.istreams);
-      gsl_delete_structs (EngineInput, ENGINE_NODE_N_ISTREAMS (node), node->inputs);
+      sfi_delete_structs (GslIStream, ENGINE_NODE_N_ISTREAMS (node), node->module.istreams);
+      sfi_delete_structs (EngineInput, ENGINE_NODE_N_ISTREAMS (node), node->inputs);
     }
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
     {
@@ -84,12 +84,12 @@ free_node (EngineNode *node)
     }
   if (node->module.jstreams)
     {
-      gsl_delete_structs (GslJStream, ENGINE_NODE_N_JSTREAMS (node), node->module.jstreams);
-      gsl_delete_structs (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
+      sfi_delete_structs (GslJStream, ENGINE_NODE_N_JSTREAMS (node), node->module.jstreams);
+      sfi_delete_structs (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
     }
   klass = node->module.klass;
   user_data = node->module.user_data;
-  gsl_delete_struct (EngineNode, node);
+  sfi_delete_struct (EngineNode, node);
 
   /* allow the free function to free the klass as well */
   if (klass->free)
@@ -121,7 +121,7 @@ free_job (GslJob *job)
       break;
     default: ;
     }
-  gsl_delete_struct (GslJob, job);
+  sfi_delete_struct (GslJob, job);
 }
 
 static void
@@ -130,12 +130,12 @@ free_flow_job (EngineFlowJob *fjob)
   switch (fjob->fjob_id)
     {
     case ENGINE_FLOW_JOB_RESUME:
-      gsl_delete_struct (EngineFlowJobAny, &fjob->any);
+      sfi_delete_struct (EngineFlowJobAny, &fjob->any);
       break;
     case ENGINE_FLOW_JOB_ACCESS:
       if (fjob->access.free_func)
 	fjob->access.free_func (fjob->access.data);
-      gsl_delete_struct (EngineFlowJobAccess, &fjob->access);
+      sfi_delete_struct (EngineFlowJobAccess, &fjob->access);
       break;
     default:
       g_assert_not_reached ();
@@ -160,7 +160,7 @@ free_trans (GslTrans *trans)
       free_job (job);
       job = tmp;
     }
-  gsl_delete_struct (GslTrans, trans);
+  sfi_delete_struct (GslTrans, trans);
 }
 
 
@@ -304,7 +304,7 @@ const_values_lookup_nextmost (ConstValuesArray *array,
 static inline guint
 upper_power2 (guint number)
 {
-  return gsl_alloc_upper_power2 (MAX (number, 8));
+  return sfi_alloc_upper_power2 (MAX (number, 8));
 }
 
 static inline void
@@ -412,10 +412,10 @@ _engine_recycle_const_values (void)
 }
 
 /* --- job transactions --- */
-static GslMutex       cqueue_trans = { 0, };
+static SfiMutex       cqueue_trans = { 0, };
 static GslTrans      *cqueue_trans_pending_head = NULL;
 static GslTrans      *cqueue_trans_pending_tail = NULL;
-static GslCond        cqueue_trans_cond = { 0, };
+static SfiCond        cqueue_trans_cond = { 0, };
 static GslTrans      *cqueue_trans_trash = NULL;
 static GslTrans      *cqueue_trans_active_head = NULL;
 static GslTrans      *cqueue_trans_active_tail = NULL;
@@ -440,7 +440,7 @@ _engine_enqueue_trans (GslTrans *trans)
     cqueue_trans_pending_head = trans;
   cqueue_trans_pending_tail = trans;
   GSL_SPIN_UNLOCK (&cqueue_trans);
-  gsl_cond_broadcast (&cqueue_trans_cond);
+  sfi_cond_broadcast (&cqueue_trans_cond);
 }
 
 void
@@ -448,7 +448,7 @@ _engine_wait_on_trans (void)
 {
   GSL_SPIN_LOCK (&cqueue_trans);
   while (cqueue_trans_pending_head || cqueue_trans_active_head)
-    gsl_cond_wait (&cqueue_trans_cond, &cqueue_trans);
+    sfi_cond_wait (&cqueue_trans_cond, &cqueue_trans);
   GSL_SPIN_UNLOCK (&cqueue_trans);
 }
 
@@ -503,7 +503,7 @@ _engine_pop_job (void)
 	  cqueue_trans_pending_head = NULL;
 	  cqueue_trans_pending_tail = NULL;
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
-	  gsl_cond_broadcast (&cqueue_trans_cond);
+	  sfi_cond_broadcast (&cqueue_trans_cond);
 	}
       else	/* not currently processing a transaction */
 	{
@@ -588,11 +588,11 @@ gsl_engine_has_garbage (void)
 
 
 /* --- node processing queue --- */
-static GslMutex          pqueue_mutex = { 0, };
+static SfiMutex          pqueue_mutex = { 0, };
 static EngineSchedule   *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
-static GslCond		 pqueue_done_cond = { 0, };
+static SfiCond		 pqueue_done_cond = { 0, };
 static EngineFlowJob    *pqueue_trash_fjobs_first = NULL;
 static EngineFlowJob    *pqueue_trash_fjobs_last = NULL;
 
@@ -704,18 +704,18 @@ _engine_push_processed_node (EngineNode *node)
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    gsl_cond_signal (&pqueue_done_cond);
+    sfi_cond_signal (&pqueue_done_cond);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
-GslRing*
+SfiRing*
 _engine_pop_unprocessed_cycle (void)
 {
   return NULL;
 }
 
 void
-_engine_push_processed_cycle (GslRing *cycle)
+_engine_push_processed_cycle (SfiRing *cycle)
 {
   g_return_if_fail (cycle != NULL);
   g_return_if_fail (pqueue_n_cycles > 0);
@@ -727,7 +727,7 @@ _engine_wait_on_unprocessed (void)
 {
   GSL_SPIN_LOCK (&pqueue_mutex);
   while (pqueue_n_nodes || pqueue_n_cycles || !GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
-    gsl_cond_wait (&pqueue_done_cond, &pqueue_mutex);
+    sfi_cond_wait (&pqueue_done_cond, &pqueue_mutex);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
@@ -741,10 +741,10 @@ _gsl_init_engine_utils (void)
   g_assert (initialized == FALSE); /* single invocation */
   initialized++;
 
-  gsl_mutex_init (&cqueue_trans);
-  gsl_cond_init (&cqueue_trans_cond);
-  gsl_mutex_init (&pqueue_mutex);
-  gsl_cond_init (&pqueue_done_cond);
+  sfi_mutex_init (&cqueue_trans);
+  sfi_cond_init (&cqueue_trans_cond);
+  sfi_mutex_init (&pqueue_mutex);
+  sfi_cond_init (&pqueue_done_cond);
 }
 
 

@@ -263,8 +263,8 @@ create_seek_table (MadHandle *handle,
 	      return NULL;		/* FIXME: ETOOBIG */
 	    }
 	  
-	  if (gsl_alloc_upper_power2 (n_seeks) > gsl_alloc_upper_power2 (i))
-	    seeks = g_renew (guint, seeks, gsl_alloc_upper_power2 (n_seeks));
+	  if (sfi_alloc_upper_power2 (n_seeks) > sfi_alloc_upper_power2 (i))
+	    seeks = g_renew (guint, seeks, sfi_alloc_upper_power2 (n_seeks));
 	  seeks[i] = this_pos;
 	  
 	  if (0)
@@ -597,7 +597,7 @@ dh_mad_destroy (GslDataHandle *data_handle)
   handle->seeks = NULL;
   handle->n_seeks = 0;
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (MadHandle, handle);
+  sfi_delete_struct (MadHandle, handle);
 }
 
 static gboolean
@@ -633,7 +633,7 @@ dh_mad_new (const gchar *file_name,
   MadHandle *handle;
   gboolean success;
 
-  handle = gsl_new_struct0 (MadHandle, 1);
+  handle = sfi_new_struct0 (MadHandle, 1);
   success = gsl_data_handle_common_init (&handle->dhandle, file_name);
   if (success)
     {
@@ -670,7 +670,7 @@ dh_mad_new (const gchar *file_name,
   else
     {
       g_free (handle->seeks);
-      gsl_delete_struct (MadHandle, handle);
+      sfi_delete_struct (MadHandle, handle);
       return NULL;
     }
 }

@@ -64,10 +64,10 @@ const gchar*
 bse_midi_signal_name (BseMidiSignalType signal)
 {
   GEnumValue *ev;
-
+  
   if (!bse_midi_signal_class)
     bse_midi_signal_class = g_type_class_ref (BSE_TYPE_MIDI_SIGNAL_TYPE);
-
+  
   ev = g_enum_get_value (bse_midi_signal_class, signal);
   return ev ? ev->value_name : NULL;
 }
@@ -76,10 +76,10 @@ const gchar*
 bse_midi_signal_nick (BseMidiSignalType signal)
 {
   GEnumValue *ev;
-
+  
   if (!bse_midi_signal_class)
     bse_midi_signal_class = g_type_class_ref (BSE_TYPE_MIDI_SIGNAL_TYPE);
-
+  
   ev = g_enum_get_value (bse_midi_signal_class, signal);
   return ev ? ev->value_nick : NULL;
 }
@@ -98,10 +98,10 @@ bse_midi_free_event (BseMidiEvent *event)
 {
   g_return_if_fail (event != NULL);
   g_return_if_fail (event->status != 0);
-
+  
   if (event->status == BSE_MIDI_SYS_EX)
     g_free (event->data.sys_ex.bytes);
-  gsl_delete_struct (BseMidiEvent, event);
+  sfi_delete_struct (BseMidiEvent, event);
 }
 
 BseMidiEvent*
@@ -111,18 +111,18 @@ bse_midi_event_note_on (guint   midi_channel,
 			gfloat  velocity)
 {
   BseMidiEvent *event;
-
+  
   g_return_val_if_fail (midi_channel < BSE_MIDI_MAX_CHANNELS, NULL);
   g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY_f, NULL);
   g_return_val_if_fail (velocity >= 0 && velocity <= 1, NULL);
-
-  event = gsl_new_struct (BseMidiEvent, 1);
+  
+  event = sfi_new_struct (BseMidiEvent, 1);
   event->status = BSE_MIDI_NOTE_ON;
   event->channel = midi_channel;
   event->tick_stamp = tick_stamp;
   event->data.note.frequency = frequency;
   event->data.note.velocity = velocity;
-
+  
   return event;
 }
 
@@ -132,17 +132,17 @@ bse_midi_event_note_off (guint   midi_channel,
 			 gfloat  frequency)
 {
   BseMidiEvent *event;
-
+  
   g_return_val_if_fail (midi_channel < BSE_MIDI_MAX_CHANNELS, NULL);
   g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY_f, NULL);
-
-  event = gsl_new_struct (BseMidiEvent, 1);
+  
+  event = sfi_new_struct (BseMidiEvent, 1);
   event->status = BSE_MIDI_NOTE_OFF;
   event->channel = midi_channel;
   event->tick_stamp = tick_stamp;
   event->data.note.frequency = frequency;
   event->data.note.velocity = 0.0;
-
+  
   return event;
 }
 
@@ -151,7 +151,7 @@ boxed_copy_midi_event (gpointer boxed)
 {
   BseMidiEvent *src = boxed;
   BseMidiEvent *dest = g_new (BseMidiEvent, 1);
-
+  
   *dest = *src;
   if (dest->status == BSE_MIDI_SYS_EX)
     {
@@ -165,18 +165,18 @@ static void
 boxed_free_midi_event (gpointer boxed)
 {
   BseMidiEvent *event = boxed;
-
+  
   bse_midi_free_event (event);
 }
 
-static GslGlueRec*
+static SfiRec*
 midi_event_to_record (gpointer crecord)
 {
+  SfiRec *rec = sfi_rec_new ();
+#if 0 // FIXME
   BseMidiEvent *event = crecord;
   GslGlueValue *val;
-  GslGlueRec *rec;
-
-  rec = gsl_glue_rec ();
+  
   /* status */
   val = gsl_glue_value_enum (g_type_name (BSE_TYPE_MIDI_EVENT_TYPE),
 			     bse_glue_enum_index (BSE_TYPE_MIDI_EVENT_TYPE, event->status));
@@ -249,6 +249,7 @@ midi_event_to_record (gpointer crecord)
       gsl_glue_rec_set (rec, "data2", val);
       break;
     }
+#endif
   return rec;
 }
 
@@ -256,12 +257,12 @@ GType
 bse_midi_event_get_type (void)
 {
   static GType type = 0;
-
+  
   if (!type)
     type = bse_glue_make_rorecord ("BseMidiEvent",
 				   boxed_copy_midi_event,
 				   boxed_free_midi_event,
 				   midi_event_to_record);
-
+  
   return type;
 }

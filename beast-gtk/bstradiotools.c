@@ -34,7 +34,7 @@ struct _BstRadioToolEntry
   gchar            *name;
   gchar            *tip;
   gchar            *blurb;
-  BswIcon          *icon;
+  BseIcon          *icon;
   gchar            *stock_icon;
 };
 
@@ -44,6 +44,7 @@ static void	  bst_radio_tools_class_init		(BstRadioToolsClass	*klass);
 static void	  bst_radio_tools_init			(BstRadioTools		*rtools,
 							 BstRadioToolsClass     *class);
 static void	  bst_radio_tools_destroy		(GtkObject		*object);
+static void	  bst_radio_tools_finalize		(GObject		*object);
 static void	  bst_radio_tools_do_set_tool		(BstRadioTools		*rtools,
 							 guint         		 tool_id);
 
@@ -82,10 +83,13 @@ bst_radio_tools_get_type (void)
 static void
 bst_radio_tools_class_init (BstRadioToolsClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
+  gobject_class->finalize = bst_radio_tools_finalize;
+
   object_class->destroy = bst_radio_tools_destroy;
   
   class->set_tool = bst_radio_tools_do_set_tool;
@@ -126,14 +130,20 @@ bst_radio_tools_destroy (GtkObject *object)
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
+static void
+bst_radio_tools_finalize (GObject *object)
+{
+  /* BstRadioTools *rtools = BST_RADIO_TOOLS (object); */
+
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
 BstRadioTools*
 bst_radio_tools_new (void)
 {
-  GtkObject *object;
+  BstRadioTools *rtools = g_object_new (BST_TYPE_RADIO_TOOLS, NULL);
   
-  object = gtk_object_new (BST_TYPE_RADIO_TOOLS, NULL);
-  
-  return BST_RADIO_TOOLS (object);
+  return rtools;
 }
 
 static void
@@ -192,19 +202,17 @@ bst_radio_tools_add_category (BstRadioTools    *rtools,
   /* strip first namespace prefix from type name */
   name = g_type_name (category->type);
   for (i = 0; name[i] != 0; i++)
-    if (i && toupper(name[i]) == name[i])
+    if (i && toupper (name[i]) == name[i])
       {
 	next_uc = i;
 	break;
       }
-  if (toupper(name[0]) == name[0] && next_uc > 0)
+  if (toupper (name[0]) == name[0] && next_uc > 0)
     name += next_uc;
 #endif
   
   tip = g_strconcat (category->category + category->lindex + 1,
-		     " [",
-		     g_type_name (category->type),
-		     "]",
+		     " [", category->type, "]",
 		     NULL);
   bst_radio_tools_add_tool (rtools,
 			    tool_id,
@@ -222,7 +230,7 @@ bst_radio_tools_add_tool_any (BstRadioTools    *rtools,
 			      const gchar      *tool_name,
 			      const gchar      *tool_tip,
 			      const gchar      *tool_blurb,
-			      BswIcon          *tool_icon,
+			      BseIcon          *tool_icon,
 			      const gchar      *stock_icon,
 			      BstRadioToolFlags flags)
 {
@@ -239,7 +247,7 @@ bst_radio_tools_add_tool_any (BstRadioTools    *rtools,
   rtools->tools[i].name = g_strdup (tool_name);
   rtools->tools[i].tip = g_strdup (tool_tip);
   rtools->tools[i].blurb = g_strdup (tool_blurb);
-  rtools->tools[i].icon = tool_icon ? bsw_icon_ref (tool_icon) : NULL;
+  rtools->tools[i].icon = tool_icon ? bse_icon_copy_shallow (tool_icon) : NULL;
   rtools->tools[i].stock_icon = g_strdup (stock_icon);
   rtools->tools[i].flags = flags;
 }
@@ -250,7 +258,7 @@ bst_radio_tools_add_tool (BstRadioTools    *rtools,
 			  const gchar      *tool_name,
 			  const gchar      *tool_tip,
 			  const gchar      *tool_blurb,
-			  BswIcon          *tool_icon,
+			  BseIcon          *tool_icon,
 			  BstRadioToolFlags flags)
 {
   g_return_if_fail (BST_IS_RADIO_TOOLS (rtools));
@@ -289,7 +297,7 @@ bst_radio_tools_clear_tools (BstRadioTools *rtools)
       g_free (rtools->tools[i].tip);
       g_free (rtools->tools[i].blurb);
       if (rtools->tools[i].icon)
-	bsw_icon_unref (rtools->tools[i].icon);
+	bse_icon_free (rtools->tools[i].icon);
       g_free (rtools->tools[i].stock_icon);
     }
   rtools->n_tools = 0;

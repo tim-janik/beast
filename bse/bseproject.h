@@ -51,7 +51,7 @@ struct _BseProjectClass
 /* --- prototypes --- */
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
-BswIterString*	bse_project_list_upaths		(BseProject	*project,
+BseStringSeq*	bse_project_list_upaths		(BseProject	*project,
 						 GType  	 item_type);
 BseItem*	bse_project_item_from_upath	(BseProject	*project,
 						 const gchar	*uname_path);

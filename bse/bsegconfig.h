@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bsegconfig.h: BSE global configuration value object
  */
 #ifndef __BSE_GCONFIG_H__
 #define __BSE_GCONFIG_H__
@@ -28,42 +26,14 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-
-/* --- BseGConfig object --- */
-#define BSE_TYPE_GCONFIG              (BSE_TYPE_ID (BseGConfig))
-#define BSE_GCONFIG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_GCONFIG, BseGConfig))
-#define BSE_GCONFIG_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_GCONFIG, BseGConfigClass))
-#define BSE_IS_GCONFIG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_GCONFIG))
-#define BSE_IS_GCONFIG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_GCONFIG))
-#define BSE_GCONFIG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_GCONFIG, BseGConfigClass))
-
-
-/* --- structures --- */
-struct _BseGConfig
-{
-  BseObject parent_object;
-
-  BseGlobals globals;
-};
-struct _BseGConfigClass
-{
-  BseObjectClass parent_class;
-
-  void		(*apply)		(BseGConfig	*gconf);
-  gboolean	(*can_apply)	      	(BseGConfig	*gconf);
-  void		(*revert)	      	(BseGConfig	*gconf);
-  void		(*default_revert)	(BseGConfig	*gconf);
-};
-
-
-/* --- prototypes --- */
-void	 bse_gconfig_apply	      (BseGConfig	*gconf);
-gboolean bse_gconfig_can_apply	      (BseGConfig	*gconf);
-void	 bse_gconfig_revert	      (BseGConfig	*gconf);
-void	 bse_gconfig_default_revert   (BseGConfig	*gconf);
-
-
-
+/* --- Global Config --- */
+/* extern BseGConfig *bse_global_config; bsetype.h */
+void               _bse_gconfig_init	(void);
+void               bse_gconfig_apply	(SfiRec *rec);
+GParamSpec*        bse_gconfig_pspec	(void);
+void		   bse_gconfig_lock	(void);
+void		   bse_gconfig_unlock	(void);
+gboolean	   bse_gconfig_locked	(void);
 
 
 #ifdef __cplusplus

@@ -43,6 +43,7 @@ G_BEGIN_DECLS
 
 
 /* --- Sfi value macros --- */
+#define SFI_IS_VALUE(value)		(sfi_check_value (value))
 #define SFI_VALUE_HOLDS_BOOL(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_BOOL))
 #define SFI_VALUE_HOLDS_INT(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_INT))
 #define SFI_VALUE_HOLDS_NUM(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_NUM))
@@ -128,6 +129,8 @@ GValue*	sfi_value_choice	(const gchar	*vchoice);
 GValue*	sfi_value_lchoice	(const gchar	*vchoice,
 				 guint           length);
 GValue*	sfi_value_choice_enum	(const GValue	*enum_value);
+GValue*	sfi_value_choice_genum	(gint            enum_value,
+                                 GType           enum_type);
 GValue*	sfi_value_bblock	(SfiBBlock	*vfblock);
 GValue*	sfi_value_fblock	(SfiFBlock	*vfblock);
 GValue*	sfi_value_pspec		(GParamSpec	*pspec);
@@ -154,12 +157,16 @@ void	sfi_value_choice2enum	(const GValue	*choice_value,
 				 GParamSpec	*fallback_param);
 void	sfi_value_enum2choice	(const GValue	*enum_value,
 				 GValue		*choice_value);
+gint    sfi_choice2enum         (const gchar    *choice_value,
+                                 GType           enum_type);
+gchar*  sfi_enum2choice         (gint            enum_value,
+                                 GType           enum_type);
 
 
 /* --- internal --- */
 void	     _sfi_init_values	(void);
 extern GType *sfi__value_types;
-
+gboolean      sfi_check_value	(const GValue	*value);
 
 G_END_DECLS
 

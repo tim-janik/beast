@@ -14,56 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bse.h: global include file for libbse
  */
 #ifndef __BSE_H__
 #define __BSE_H__
 
+#include <sfi/sfi.h>
+#include <bse/bseconfig.h>
 
-/* BSE includes
- */
-#include        <bse/bseglobals.h>
-#include        <bse/bsebindata.h>
-#include        <bse/bsecategories.h>
-#include        <bse/bsecomwire.h>
-#include        <bse/bseconfig.h>
-#include        <bse/bsecontainer.h>
-#include        <bse/bsedatapocket.h>
-#include        <bse/bsedefs.h>
-#include        <bse/bseeditablesample.h>
-#include        <bse/bseenums.h>
-#include        <bse/bseexports.h>
-#include        <bse/bsegconfig.h>
-#include        <bse/bseglobals.h>
-#include        <bse/bseitem.h>
-#include        <bse/bsemain.h>
-#include        <bse/bsemath.h>
-#include	<bse/bsemidinotifier.h>
-#include	<bse/bsemidisynth.h>
-#include        <bse/bseobject.h>
-#include        <bse/bseparam.h>
-#include        <bse/bseparasite.h>
-#include        <bse/bsepart.h>
-#include        <bse/bsepcmdevice.h>
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bseproject.h>
-#include        <bse/bseserver.h>
-#include        <bse/bsescripthelper.h>
-#include        <bse/bsescriptcontrol.h>
-#include        <bse/bsesnet.h>
-#include        <bse/bsesong.h>
-#include        <bse/bsesource.h>
-#include	<bse/bsestorage.h>
-#include        <bse/bsesuper.h>
-#include        <bse/bsetrack.h>
-#include        <bse/bsetype.h>
-#include        <bse/bseutils.h>
-#include        <bse/bsewave.h>
-#include        <bse/bsewaveosc.h>
-#include        <bse/bsewaverepo.h>
-#include        <bse/bswcommon.h>
+G_BEGIN_DECLS
 
+/* initialize BSE and start the core thread */
+void		bse_init_async		(gint		*argc,
+					 gchar	      ***argv,
+					 SfiRec		*config);
+/* provide SFI glue layer context for BSE */
+SfiGlueContext*	bse_init_glue_context	(const gchar	*client);
+
+/* library versioning */
+extern const guint   bse_major_version;
+extern const guint   bse_minor_version;
+extern const guint   bse_micro_version;
+extern const guint   bse_interface_age;
+extern const guint   bse_binary_age;
+extern const gchar  *bse_version;
+gchar*               bse_check_version	(guint           required_major,
+					 guint           required_minor,
+					 guint           required_micro);
+
+G_END_DECLS
 
 #endif /* __BSE_H__ */

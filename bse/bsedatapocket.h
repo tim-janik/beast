@@ -70,10 +70,9 @@ struct _BseDataPocket
 {
   BseItem	      parent_object;
 
-  guint		      need_store;	/* for BSE_ITEM_FLAG_STORAGE_IGNORE */
+  guint		      need_store;	/* for BSE_ITEM_FLAG_AGGREGATE */
   GSList	     *cr_items;
   
-  guint		      in_destroy : 1;
   guint		      free_id;
 
   guint		      n_entries;

@@ -76,7 +76,7 @@ BSE_BUILTIN_TYPE (BsePlugin)
   plugin_type = g_type_register_static (G_TYPE_OBJECT, "BsePlugin", &plugin_info, 0);
   
   g_type_add_interface_static (plugin_type, G_TYPE_TYPE_PLUGIN, &iface_info);
-
+  
   return plugin_type;
 }
 
@@ -92,11 +92,11 @@ static void
 bse_plugin_dispose (GObject *object)
 {
   BsePlugin *plugin = BSE_PLUGIN (object);
-
+  
   g_warning (G_STRLOC ": dispose should never happen for static plugins");
-
+  
   g_object_ref (object);
-
+  
   /* chain parent class handler */
   G_OBJECT_CLASS (g_type_class_peek_parent (BSE_PLUGIN_GET_CLASS (plugin)))->dispose (object);
 }
@@ -105,7 +105,7 @@ static void
 bse_plugin_class_init (BsePluginClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-
+  
   gobject_class->dispose = bse_plugin_dispose;
 }
 
@@ -157,7 +157,7 @@ bse_plugins_init (void)
 	{
 	  const gchar *name, *error;
 	  BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
-
+	  
 	  g_free (plugin->name);
 	  plugin->name = "BSE-builtin";	/* has to get reinitialized */
 	  bse_plugins = g_slist_prepend (bse_plugins, plugin);
@@ -165,10 +165,10 @@ bse_plugins_init (void)
 	  while (plugin->use_count--)
 	    g_object_ref (G_OBJECT (plugin));
 	  plugin->use_count = BUILTIN_USE_COUNT;
-
+	  
 	  BSE_IF_DEBUG (PLUGINS)
 	    g_message ("register-builtin-plugin \"%s\"", plugin->name);
-
+	  
 	  name = plugin->name;
 	  error = builtin_inits[i] (plugin);
 	  if (error)
@@ -294,11 +294,11 @@ bse_plugin_register_exports (BsePlugin    *plugin,
 		return "Attempt to register known type";
 	      if (!G_TYPE_IS_ENUM (espec->parent_type) && !G_TYPE_IS_FLAGS (espec->parent_type))
 		return "Invalid enum/flags registration attempt";
-
+	      
 	      type = bse_type_register_dynamic (espec->parent_type,
 						espec->name, NULL,
 						plugin);
-
+	      
 	      plugin->n_enum_types++;
 	      plugin->enum_types = g_renew (GType,
 					    plugin->enum_types,
@@ -311,7 +311,7 @@ bse_plugin_register_exports (BsePlugin    *plugin,
 	}
       plugin->e_enums = array_p;
       return NULL;
-
+      
     default:
       break;
     }
@@ -350,7 +350,7 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
       if (exp_types < exp_last)
 	error = "Unable to rematch enum types from previous initialization";
     }
-
+  
   /* object types
    */
   if (ospecs)
@@ -372,7 +372,7 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
       if (exp_types < exp_last)
 	error = "Unable to rematch object types from previous initialization";
     }
-
+  
   /* procedure types
    */
   if (pspecs)
@@ -396,9 +396,9 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
       if (exp_types < exp_last)
 	error = "Unable to rematch procedure types from previous initialization";
     }
-
+  
   /* nothing to do for file handler types (BseExportFileHandler) */
-
+  
   return error;
 }
 
@@ -407,7 +407,7 @@ bse_plugin_use (GTypePlugin *gplugin)
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
   gboolean need_reinit = FALSE;
-
+  
   g_return_if_fail (plugin != NULL);
   
   g_object_ref (G_OBJECT (plugin));
@@ -416,7 +416,7 @@ bse_plugin_use (GTypePlugin *gplugin)
       const gchar *error = NULL;
       
       plugin->use_count++;
-
+      
       BSE_IF_DEBUG (PLUGINS)
 	g_message ("reloading-plugin \"%s\" (\"%s\")", plugin->name, plugin->fname ? plugin->fname : "???NULL???");
       
@@ -426,7 +426,7 @@ bse_plugin_use (GTypePlugin *gplugin)
       if (!error && plugin->exports_enums)
 	{
 	  gpointer *sym_array;
-
+	  
 	  if (g_module_symbol (plugin->gmodule,
 			       BSE_EXPORT_SYMBOL (Enum),
 			       (gpointer) &sym_array))
@@ -445,7 +445,7 @@ bse_plugin_use (GTypePlugin *gplugin)
       if (!error && plugin->exports_objects)
 	{
 	  gpointer *sym_array;
-
+	  
 	  if (g_module_symbol (plugin->gmodule,
 			       BSE_EXPORT_SYMBOL (Object),
 			       (gpointer) &sym_array))
@@ -459,7 +459,7 @@ bse_plugin_use (GTypePlugin *gplugin)
       if (!error && plugin->exports_procedures)
 	{
 	  gpointer *sym_array;
-
+	  
 	  if (g_module_symbol (plugin->gmodule,
 			       BSE_EXPORT_SYMBOL (Procedure),
 			       (gpointer) &sym_array))
@@ -473,7 +473,7 @@ bse_plugin_use (GTypePlugin *gplugin)
       if (!error && plugin->exports_file_handlers)
 	{
 	  gpointer *sym_array;
-
+	  
 	  if (g_module_symbol (plugin->gmodule,
 			       BSE_EXPORT_SYMBOL (FileHandler),
 			       (gpointer) &sym_array))
@@ -489,10 +489,10 @@ bse_plugin_use (GTypePlugin *gplugin)
 	  else
 	    error = g_module_error ();
 	}
-
+      
       if (!error)
 	error = bse_plugin_reinit_type_ids (plugin);
-
+      
       if (error)
 	g_error ("Fatal plugin error, failed to reinitialize plugin: %s", error);
     }
@@ -504,7 +504,7 @@ static void
 bse_plugin_unload (BsePlugin *plugin)
 {
   g_return_if_fail (plugin->gmodule != NULL && plugin->fname != NULL);
-
+  
   g_module_close (plugin->gmodule);
   plugin->gmodule = NULL;
   
@@ -513,7 +513,7 @@ bse_plugin_unload (BsePlugin *plugin)
   plugin->e_objects = NULL;
   plugin->e_enums = NULL;
   plugin->e_file_handlers = NULL;
-
+  
   BSE_IF_DEBUG (PLUGINS)
     g_message ("unloaded-plugin \"%s\"", plugin->name);
 }
@@ -522,9 +522,9 @@ static void
 bse_plugin_unuse (GTypePlugin *gplugin)
 {
   BsePlugin *plugin = BSE_PLUGIN (gplugin);
-
+  
   g_return_if_fail (plugin->use_count > 0);
-
+  
   plugin->use_count--;
   if (!plugin->use_count)
     {
@@ -548,11 +548,11 @@ bse_plugin_get_export_spec (BsePlugin    *plugin,
 			    guint         spec_size)
 {
   g_return_val_if_fail (export_specs && spec_size > sizeof (GType*), NULL);
-
+  
   if (export_specs)
     {
       const BseExportSpec* spec;
-
+      
       for (spec = export_specs; spec->type_p; spec = POINTER_ADD (spec, spec_size))
 	if (*(spec->type_p) == type)
 	  return spec;
@@ -567,7 +567,7 @@ enum_flags_complete_info (const BseExportSpec *spec,
 {
   const BseExportEnum *espec = &spec->s_enum;
   GType type = *(espec->type_p);
-
+  
   if (G_TYPE_IS_ENUM (type))
     g_enum_complete_type_info (type, info, espec->values);
   else if (G_TYPE_IS_FLAGS (type))
@@ -590,7 +590,7 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
   
   g_return_if_fail (plugin != NULL);
   g_return_if_fail (plugin->use_count > 0);
-
+  
   /* we are an internal function, and thusly need to behave pretty conservative,
    * so in effect we only guarrantee to always fill the type_info structure we
    * get passed.
@@ -618,13 +618,13 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
       g_assert_not_reached ();
       break;
     }
-
+  
   export_spec = bse_plugin_get_export_spec (plugin, type, specs_p, spec_size);
   if (!export_spec || !complete_info)
     g_error ("unable to find export spec for `%s' in \"%s\"",
 	     g_type_name (type),
 	     plugin->name);
-
+  
   complete_info (export_spec, type_info);
 }
 
@@ -632,15 +632,15 @@ static inline BsePlugin*
 bse_plugin_find (GModule *gmodule)
 {
   GSList *slist;
-
+  
   for (slist = bse_plugins; slist; slist = slist->next)
     {
       BsePlugin *plugin = slist->data;
-
+      
       if (plugin->gmodule == gmodule)
 	return plugin;
     }
-
+  
   return NULL;
 }
 
@@ -659,7 +659,7 @@ bse_plugin_check_load (const gchar *_file_name)
   gchar *error = NULL;
   
   g_return_val_if_fail (file_name != NULL, NULL);
-
+  
   /* open libtool archive
    */
   fd = open (file_name, O_RDONLY, 0);
@@ -667,7 +667,7 @@ bse_plugin_check_load (const gchar *_file_name)
     return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
 	    bse_error_blurb (BSE_ERROR_FILE_NOT_FOUND) :
 	    "Unable to access plugin");
-
+  
   /* and search libtool's dlname specification
    */
   scanner = g_scanner_new (NULL);
@@ -691,7 +691,7 @@ bse_plugin_check_load (const gchar *_file_name)
       
       return "Plugin's dlname broken";
     }
-
+  
   /* construct real module name
    */
   string = g_path_get_dirname (file_name);
@@ -700,7 +700,7 @@ bse_plugin_check_load (const gchar *_file_name)
   
   g_scanner_destroy (scanner);
   close (fd);
-
+  
   /* load module
    */
   gmodule = g_module_open (file_name, 0);
@@ -708,18 +708,18 @@ bse_plugin_check_load (const gchar *_file_name)
   if (!gmodule)
     {
       g_free (file_name);
-
+      
       return g_module_error ();
     }
-
+  
   if (bse_plugin_find (gmodule))
     {
       g_module_close (gmodule);
       g_free (file_name);
-
+      
       return "Plugin already loaded";
     }
-
+  
   /* check whether this is a BSE module
    */
   if (!g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (Begin), (gpointer) &sym_begin) ||
@@ -731,15 +731,15 @@ bse_plugin_check_load (const gchar *_file_name)
       
       return "Not a BSE Plugin";
     }
-
+  
   if (bse_plugin_lookup (*sym_begin))
     {
       g_module_close (gmodule);
       g_free (file_name);
-
+      
       return "Plugin already registered (clone?)";
     }
-
+  
   /* create plugin and feature type registration
    */
   plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
@@ -747,7 +747,7 @@ bse_plugin_check_load (const gchar *_file_name)
   plugin->name = g_strdup (*sym_begin);
   plugin->fname = file_name;
   plugin->gmodule = gmodule;
-
+  
   if (!error && g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (Enum), (gpointer) &sym_array))
     {
       if (sym_array)
@@ -761,9 +761,9 @@ bse_plugin_check_load (const gchar *_file_name)
     error = (gchar*) bse_plugin_register_exports (plugin, sym_array, BSE_EXPORT_TYPE_PROCS);
   if (!error && g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (FileHandler), (gpointer) &sym_array))
     error = (gchar*) bse_plugin_register_exports (plugin, sym_array, BSE_EXPORT_TYPE_FILE_HANDLERS);
-
+  
   bse_plugins = g_slist_prepend (bse_plugins, plugin);
-
+  
   bse_plugin_unload (plugin);
   
   return error;
@@ -773,17 +773,17 @@ BsePlugin*
 bse_plugin_lookup (const gchar *name)
 {
   GSList *slist;
-
+  
   g_return_val_if_fail (name != NULL, NULL);
-
+  
   for (slist = bse_plugins; slist; slist = slist->next)
     {
       BsePlugin *plugin = slist->data;
-
+      
       if (bse_string_equals (name, plugin->name))
 	return plugin;
     }
-
+  
   return NULL;
 }
 

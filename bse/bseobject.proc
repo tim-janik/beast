@@ -20,32 +20,31 @@
 #include        <bse/bseprocedure.h>
 #include        <bse/bseobject.h>
 
-AUTHOR  = "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Tim Janik";
-DATE    = "2002";
+AUTHORS = "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2002 Tim Janik";
 
 METHOD (BseObject, is-a) {
   HELP  = "Check object type";
-  IN    = g_param_spec_object ("item", "Item", NULL,
-			       BSE_TYPE_OBJECT, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("type_name", "Type Name", NULL,
-                               NULL, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boolean ("is_a_check", NULL, NULL,
-                                FALSE, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("item", "Item", NULL,
+				 BSE_TYPE_OBJECT, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("type_name", "Type Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("is_a_check", NULL, NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseObject *object = g_value_get_object (in_values++);
-  gchar *type_name  = g_value_get_string (in_values++);
+  BseObject *object = bse_value_get_object (in_values++);
+  gchar *type_name  = sfi_value_get_string (in_values++);
   
   /* check parameters */
   if (!type_name)  /* we do allow NULL objects here, to comlpy with g_type_instance_is_a() semantics */
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  g_value_set_boolean (out_values++, G_TYPE_CHECK_INSTANCE_TYPE (object, g_type_from_name (type_name)));
+  sfi_value_set_bool (out_values++, G_TYPE_CHECK_INSTANCE_TYPE (object, g_type_from_name (type_name)));
   
   return BSE_ERROR_NONE;
 }

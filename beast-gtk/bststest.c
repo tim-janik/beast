@@ -17,6 +17,7 @@
  */
 #include	"bstqsampler.h"
 
+#include	"bse/bse.h"
 #include	"bstutils.h"
 #include	<gsl/gsldatacache.h>
 #include	<gsl/gsldatahandle.h>
@@ -470,11 +471,11 @@ main (int   argc,
   
   g_thread_init (NULL);
   g_type_init ();
-  bse_init (&argc, &argv, NULL);
-  gsl_init (gslconfig, NULL);
+  gsl_init (gslconfig);
+  bse_init_intern (&argc, &argv, NULL);
   gtk_init (&argc, &argv);
   gxk_init ();
-  bst_init_utils ();
+  _bst_init_utils ();
   
   if (argc < 2)
     g_error ("need filenames");

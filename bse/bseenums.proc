@@ -21,17 +21,17 @@
 #include        <bse/bseenums.h>
 
 
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "2001";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
 
 
 PROCEDURE (bse-error-name, "Utils/Error Name") {
-  HELP	= "Retrive the name of an error value";
-  IN	= g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_string ("name", "Name", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve the name of an error value";
+  IN	= bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("name", "Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -40,21 +40,22 @@ PROCEDURE (bse-error-name, "Utils/Error Name") {
   BseErrorType error = g_value_get_enum (in_values++);
   
   /* check parameters */
-
+  
   /* action */
-
+  
   /* set output parameters */
   g_value_set_string (out_values++, bse_error_name (error));
-
+  
   return BSE_ERROR_NONE;
 }
 
 PROCEDURE (bse-error-blurb, "Utils/Error Blurb") {
-  HELP	= "Retrive the description of an error value";
-  IN	= g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_string ("blurb", "Blurb", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve the description of an error value";
+  IN	= bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("blurb", "Blurb", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -63,9 +64,9 @@ PROCEDURE (bse-error-blurb, "Utils/Error Blurb") {
   BseErrorType error = g_value_get_enum (in_values++);
   
   /* check parameters */
-
+  
   /* action */
-
+  
   /* set output parameters */
   g_value_set_string (out_values++, bse_error_blurb (error));
   

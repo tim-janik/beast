@@ -1,3 +1,645 @@
+Mon Dec 30 01:06:12 2002  Tim Janik  <timj@gtk.org>
+
+	* merged sfk-launch branch into HEAD. oddly enough, there's
+	still no SFK yet. BSE uses an SFI based middle ware layer
+	now which supports structure definitions in IDL files and
+	contains the neccessary logic to seperate BSE into an extra
+	thread (in or out of process) and generate client side API
+	wrapper code.
+
+Sat Dec 28 09:38:50 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstrackitem.[hc]: switched code over from old
+	BstControllers to BstParams.
+
+	* beast-gtk/bstparam.c: removed code performing automated value
+	transforms, the param implementations do neccessary transforms
+	themselves. API cleanups, fixed callers. expose list of param
+	implementations and rating facility.
+
+	* beast-gtk/bstparam-entry.c: fix signal connection.
+
+	* bstparam-toggle.c: support check and radio buttons.
+
+	* beast-gtk/bstparam-scale.c: new rack property views: knob, scale,
+	h/v scale.
+
+	* beast-gtk/bstlogadjustment.c: fix referencing. the log adjustment
+	keeps the client adjustment alive and bst_log_adjustment_from_adj()
+	returns an unsunken log adjustment.
+
+	* beast-gtk/bstcontrollers.[hc]: removed these, replaced by BstParams.
+
+Thu Dec 26 22:05:29 2002  Tim Janik  <timj@gtk.org>
+
+	* bstplayback.[hc]: pass on the current tick stamp for pcm position
+	notifications.
+	allow timing adjustments of pcm position notifier during playback.
+	(wave_oscillator_pcm_notify): discard pcm position changes following
+	a seek as those contain outdated data.
+
+	* bstwaveeditor.[hc]: seperate scroll updates from pcm position
+	notification. use our own timer which runs with a higher frequency
+	than pcm position updates. set position pointer padding to 0 for
+	smoother scrolling. vary pcm position notification timeouts to
+	improve accuracy and reduce overhead.
+
+	* beast-gtk/bstmain.c: use the new asyncronous registration mechanism
+	of BseServer for scripts and plugins.
+	fix sfi_thread_set_wakeup() call to come early enough. create
+	a real GSource for the BSE glue layer context.
+
+Tue Dec 24 04:55:52 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw-shell/bse-scm-glue.boot: cache (bse-janitor-get-specific) calls.
+
+Tue Dec 24 00:18:42 2002  Tim Janik  <timj@gtk.org>
+
+	* */TODO:
+	* TODO: unite todo entries. merged with old GSL todo list.
+
+	* docs/utils/xmlantispace.c: implement deletion of spaces up to and
+	including the first newline after a tag start (del2newline). enabled
+	this for keepspace rules.
+
+	* beast-gtk/Makefile.am: let all C sources depend on bstgentypes.h to
+	get this file generated.
+
+Mon Dec 23 22:03:53 2002  Tim Janik  <timj@gtk.org>
+
+	* fix writing "retrieve" with "ie", pointed out by alper.
+
+Mon Dec 23 03:54:16 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw/bswproxy.c: hardcode BseServer proxy ID, eek.
+
+	* bsw-shell/bsw-scm-glue.boot:
+	* bsw-shell/bse-scm-glue.boot: s/bsw/bse/
+
+	* bsw-shell/bswscminterp.[hc]: renamed everything from bsw to bse.
+	added equal? and null test handling for proxy smob.
+	implemented procedure argument fetching via client message. removed
+	com wire related code. resurrected remote interface. changed main
+	loop wrapper to used glue context functions.
+
+	* bsw-shell/bswshell.c: renamed bsw->bse. streamlined code. resurrected
+	remote interface.
+
+	* bsw-shell/*.scm: example fixes.
+
+	* beast-gtk/bstmain.c: register scripts and pugins through
+	BseServer procedures.
+
+	* beast-gtk/bstprocedure.[hc]: resurrect procedure dialog.
+
+	* beast-gtk/bstusermessage.[hc]: BseJanitor related fixes and
+	updates.
+
+Tue Dec 17 08:55:08 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c: initialize BSE with bse_init_async() and
+	create a BSE glue layer context to interface to the BSE thread.
+	removed gtk lock functions as BSE doesn't need the global gtk
+	lock anymore. set wakeup function on the GUI SfiThread.
+
+	* bsw/bswproxy.[hc]: removed bsw_init().
+
+Mon Dec 16 08:25:58 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in: require makeinfo v4.3 if compiling from CVS (i.e.
+	we're on a developer system, so test $DEVEL_BUILD_TEST is true).
+
+	* autogen.sh: require and build using only automake-1.4.
+
+	* acbeast.m4: added MC_ASSERT_PROGS().
+
+Sun Dec 15 10:33:32 2002  Tim Janik  <timj@gtk.org>
+
+	* applied patch from Alper Ersoy:
+
+	* docs/generated/scandocs.pl:
+	* bse/bseautodoc.c: put ';' after variables, fix @revision{} usage.
+	
+	* docs/teximacros.texi: provide programlisting alias.
+	
+	* docs/generated/man.xsl: remove colorization.
+	
+	* docs/generated/markup.xsl: adjust @important color.
+	
+Sun Dec 15 04:28:43 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: nuked revision strinparam, added
+	texinfo file stamp definitions to makeinfo.
+
+	* bse/bseautodoc.c:
+	* docs/teximacros.texi:
+	* docs/generated/man.xsl:
+	* docs/generated/html.xsl:
+	* docs/generated/markup.xsl: applied patch from alper regarding
+	#reference documentation cleanup.
+	
+	* docs/*.texi: patch from alper, put end docs with @bye.
+
+	* docs/teximacros.texi: patch from alper, cleanups and comments.
+
+	* docs/teximacros.texi:
+	* docs/generated/Makefile.am:
+	applied and fixed up patches from alper to improve revision and
+	time stamp handling.
+
+	* docs/generated/Makefile.am: misc cleanups. [alper, tim]
+
+	* docs/generated/man.xsl:
+	* docs/generated/html.xsl:
+	* docs/generated/markup.xsl:
+	* docs/generated/texinfo.dtd: major improvements and reorganization
+	of things by alper.
+
+Fri Dec 13 08:13:46 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in: rename config options needed by SFI.
+
+Wed Dec 11 03:42:59 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/tsmview.c (main): support --edit arg to make textview
+	editable. stop demanding file arguments. add beast's image and doc
+	dirs to the tsm path list.
+
+	* beast-gtk/gxk/gxktexttools.[hc]: implement GXK_SCROLL_TEXT_EDITABLE
+	for development tests. force UTF8 validation for input to shut-up
+	GtkTextBuffer assertions on binary files.
+	canonicalize path list segments. handle file: directories by
+	rudimentary content display instead of error messages.
+	support path list beyond image lookups (i.e. for file:).
+	grab the default focus for the textview.
+	provide visible indication during busy-phases (change cursor).
+
+Tue Dec 10 03:41:06 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw-shell/bswscminterp.c: s/BseComWire/SfiComWire/ according
+	to BSE->SFI move.
+
+Mon Dec  9 07:16:02 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-proxy.c (param_proxy_change_value): don't
+	propagate uneccessary value changed notifications through the
+	glue layer. fixed invalid dead clue hunter accesses.
+
+Sun Dec  8 05:44:35 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstgconfig.[hc]: implement loading and saving of rc values.
+
+	* beast-gtk/bstmain.c: re-eanbled rc-file loading/saving and
+	release-notes dialog.
+
+	* beast-gtk/bstpreferences.[hc]: removed dead code, added BSE preference
+	values.
+
+Sat Dec  7 17:49:04 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpreferences.c:
+	* beast-gtk/bstmenus.c: fix arg ordering in gsl/sfi_ring_walk().
+
+Thu Dec  5 22:54:33 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/utils/xmlantispace.[hc]: added ability to backup to
+	last newline at closing tag. enabled backnewline for keepspace.
+
+	* docs/generated/faq.xml: removed this file.
+	
+	* patch from Alper Ersoy:
+
+	* docs/generated/markup.xsl:
+	* docs/generated/html.xsl: changed the colors of variables and
+	struct-names from red to some shade of green.
+	improved the look of entries in table of contents.
+
+	* docs/generated/markup.xsl:
+	* docs/generated/html.xsl:
+	* docs/generated/man.xsl: made the author names in title pages
+	multi-language friendlier.
+
+Wed Dec  4 18:59:38 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxktexttools.c (text_buffer_tagdef): work arond
+	GtkTextView introducing ::weight as G_TYPE_INT instead of as
+	PANGO_TYPE_WEIGHT. fixes bold etc. font styles.
+	(enum_match_value): make sure enum values are matched word-wise.
+
+Wed Dec  4 17:29:49 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: added menual page postscript targets.
+	
+	* beast-gtk/bstapp.c (bst_app_operate): 
+	* beast-gtk/tsmview.c (main): default to monospace font in navigatable
+	doc browsers.
+
+	* incorporated changes/fixes from Alper Ersoy:
+
+	* docs/WRITING.3.texi: general improvements.
+	
+	* docs/generated/markup.xsl: Various display fixes, new attempt at
+	enabling enumerations.
+	
+	* docs/generated/*.xsl: Improved the look of title pages, especially
+	when there is more than one author. Added a navigation system. Misc
+	other improvements.
+	
+	* docs/generated/scandocs.pl: RETURN layout fixes.
+
+Tue Dec  3 02:45:39 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am (bse-procs.3.texi): added bse-structs(3)
+	to SEE ALSO section.
+
+	* docs/generated/Makefile.am (bse-structs.3.texi): added bse-procs(3)
+	to SEE ALSO section.
+
+Tue Dec  3 02:34:35 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am (bse.3.texi): added bse-procs(3) to
+	SEE ALSO section of bse.3.
+
+Tue Dec  3 02:22:56 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: generate manual pages
+	from *.<section>.xml sources, to match alper's new reference style.
+
+	* docs/WRITING.3.texi: new example file (example links from
+	alper).
+	
+	* docs/teximacros.texi: 
+	* docs/release-notes.texi: 
+	* docs/faq.texi: 
+	* docs/beast-index.texi: font and link fixes from alper.
+
+	* docs/generated/markup.xsl: 
+	* docs/generated/man.xsl: 
+	* docs/generated/html.xsl: fixes and new rules from alper to support
+	target specific document links and url protocolls.
+
+	* docs/generated/scandocs.pl: patch from alper to add see-also sections.
+
+Tue Dec  3 00:58:18 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: reenabled preferences dialog.
+
+	* beast-gtk/bstrecords.sfidl:
+	* beast-gtk/bstgconfig.[hc]: reimplemented BEAST global config as an
+	SfiRec.
+
+	* beast-gtk/bstparam.[hc]: slight fix to proxy binding.
+	implemented SfiRec binding.
+
+	* beast-gtk/bstpreferences.[hc]: reimplemented BEAST preferences (no BSE
+	preferences yet) albeit without saving.
+
+	* beast-gtk/bstutils.c: fix default hints for pspecs.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added convenience function
+	gxk_notebook_append().
+
+Sun Dec  1 07:26:26 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.[hc]: polished proxy listing in property bindings.
+	* beast-gtk/bstparam-proxy.c: new property editor for proxies.
+
+Sun Dec  1 07:19:12 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcluehunter.c (bst_clue_hunter_event): activate due to
+	Enter regardless of successfull matching.
+
+Sun Dec  1 02:50:54 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsw/Makefile.am: switched from using mkapi to using sfidl
+	C language binding on bse.sfidl.
+
+Sun Dec  1 02:17:09 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdial.c: disconnect adjustment signals.
+
+Sun Dec  1 00:09:12 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/Makefile.am: new sfidl options
+
+Fri Nov 29 00:57:43 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.[hc]:
+	* beast-gtk/bstsnetrouter.c: fix parasite coord handling.
+
+	* beast-gtk/bstutils.[hc]: made bst_gmask_form() more flexible
+	by supporting packing flags, fixed callers.
+
+	* beast-gtk/bstparam.[hc]: cleanup, fix and comment sensitivity
+	of property editors. demand exact scat matches for property editors
+	of non-fundamental scats.
+	* beast-gtk/bstparam-strnum.c: implement editing of notes and times.
+	* beast-gtk/bstparam-note-spinner.c: implement note editing as number.
+
+Thu Nov 28 00:01:49 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c:
+	* beast-gtk/bstparam-choice.c: new property editor implementation
+	for choices.
+
+Wed Nov 27 01:12:12 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxktexttools.c: use "serif" as default font, so
+	documents that want to display "sans" need to explicitely
+	select that.
+
+Mon Nov 25 20:53:09 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/markup.xsl:
+	* docs/generated/man.xsl: more spacing/newline fixes by alper.
+
+Sun Nov 24 23:51:45 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/html.xsl: 
+	* docs/generated/markup.xsl: applied changes by alper.
+
+	* beast-gtk/bstwaveeditor.c (wave_chunk_fill_value): port
+	this function over to the new API.
+
+Sun Nov 24 02:32:32 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c: fixup module position code, use
+	properties instead of parasites.
+
+	* beast-gtk/bstparam.c: flag the params as 'updating' during creation to
+	fix spurious value settings. support note-sequence property
+	editing, support editor type hint matching.
+
+	* beast-gtk/bstparam-note-sequence.c: new property type to edit
+	note sequences.
+
+	* beast-gtk/bstsequence.c: fixup fallback offset.
+
+Tue Nov  5 08:57:44 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-entry.c: new property type to edit strings.
+
+Tue Nov  5 06:33:06 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/beast-index.texi: link reference docs.
+
+	* docs/generated/Makefile.am: added reference docs to
+	$(markup_targets).
+
+	* docs/teximacros.texi: additional macros from Alper Ersoy
+	for structure markup.
+
+	* docs/generated/scandocs.pl:
+	* docs/generated/html.xsl:
+	* docs/generated/man.xsl:
+	* docs/generated/markup.xsl: updates from Alper Ersoy to improve
+	reference documentation generation.
+
+Mon Nov  4 23:51:31 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/faq.texi: added section about hardware requirements from
+	Andrew McDonald <andrew.mcdonald@boursedata.com.au>.
+
+Mon Nov  4 12:18:22 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: some cleanups, added manual page
+	generation rules.
+
+	* docs/reference/: tidy up, this directory becomes obsolete.
+	
+	* docs/generated/markup.dtd: fixup family (monospace|serif|sans).
+	* docs/generated/markup.xsl: likewise, s/mono/monospace/.
+
+	* docs/generated/man.xsl: XSL transformation from alper ersoy to
+	generate manual pages from makeinfo xml sources.
+	applied slight changes to switch order of c and scheme function
+	prototypes.
+	
+	* docs/generated/scandocs.pl: scandocs.pl from ../reference plus
+	a patch from alper ersoy which switches manual page generation
+	over to texi macros.
+	
+	* docs/teximacros.texi: applied patch from alper ersoy which adds a
+	set of required macros for reference documentation generation.
+
+Mon Nov  4 07:35:32 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-toggle.c: implement rack and property toggle
+	buttons.
+
+	* beast-gtk/bstsupershell.c (bst_super_shell_release_super): fix signal
+	disconnection.
+
+	* beast-gtk/bstparam.c: fix named rating.
+
+	* beast-gtk/bstparam-spinner.c: implement rack and property spin
+	buttons.
+
+	* beast-gtk/bstutils.c (bst_window_sync_title_to_proxy): 
+	* beast-gtk/bstinstrumentview.c (bst_instrument_view_operate): 
+	* beast-gtk/bstapp.c (bst_app_destroy): remove last occourances
+	of bsw_proxy_* functions.
+
+	* bsw/bswsignal.c: urg, remove old non-glue signal connection
+	code which was still being used and worked!
+
+	* *.c: adapt to glue layer signal changes.
+
+Mon Nov  4 00:06:13 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c: update x/y position from BseSource
+	properties, not parasites.
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_event): assign x/y
+	positions when creating new modules.
+
+	* beast-gtk/bstrecords.sfidl: fix preference defaults.
+
+Sun Nov  3 06:26:03 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmenus.h: 
+	* beast-gtk/bstapp.c (bst_app_run_script_proc): 
+	* beast-gtk/bstpartdialog.c (part_dialog_run_proc): 
+	* beast-gtk/bstsnetrouter.c (bst_router_popup_select): 
+	pass on category_id for BseCategories.
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_event): fix tool_id
+	usage, which is a category_id now.
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_update): fix rebuilding
+	of the canvas sources.
+
+	* beast-gtk/bstmenus.c (bst_menu_config_create_items): fix ImageItem
+	creation.
+
+	* beast-gtk/*.c: change ::set_parent connections on proxies to
+	:.release.
+
+Sat Nov  2 00:20:55 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.[hc]: complete design revamp. the new BstParam
+	code is supposed to take over the old BstParam uses and implement
+	controllers for the rack view.
+	* beast-gtk/bstparam-label.c: param implementation for property name
+	display.
+
+	* beast-gtk/bstapp.[hc]:
+	* beast-gtk/bstsupershell.[hc] + derived widgets:
+	eliminate update() method.
+
+	* beast-gtk/bstsupershell.c: port over to new property system.
+
+	* beast-gtk/bstmain.c (main): disable release dialog, enable
+	glue layer signal dispatching through a simple hack. cleanup
+	initialization order.
+
+	* bsw/*.c: fix includes due to bse.h changes.
+
+	* bsw-shell/bswscminterp.[hc]: fix includes, disable code
+	for glue layer context dispatching.
+
+Sun Nov  3 00:03:49 2002  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsw/Makefile.am: switch to sfidl long options
+
+Wed Oct 30 00:18:12 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/utils/xmlantispace.[hc]: new program to strip spaces from
+	XML sources during documentation generation.
+
+Mon Oct 28 01:53:24 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.[hc]: provide fixed versions
+	of gxk_item_factory_get_item() and gxk_item_factory_get_widget()
+	which properly deal with underlines in paths.
+
+Sun Oct 27 23:50:15 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_init): fix sort-order of
+	menu entries.
+
+	* beast-gtk/bstmenus.c (bst_menu_config_from_cats): fix no-zero
+	initializations.
+
+	* beast-gtk/bstmain.c (main): fix initialization order.
+
+Sun Oct 27 23:29:07 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstrecords.sfidl: 
+	* beast-gtk/bstutils.c: fixes according to recent sfidl changes.
+
+Sun Oct 27 23:14:00 2002  Tim Janik  <timj@gtk.org>
+
+	* ok, at this point, beast finally links again.
+
+	* beast-gtk/bstrecords.sfidl: new file, containing BstGlobalConfig
+	record definition.
+
+	* beast-gtk/Makefile.am: forgive alphabetic grouping of source files
+	for tighter layout and compilation time optimized ordering.
+	properly generate sfidl types.
+
+	* beast-gtk/bstutils.c (_bst_init_utils): fix up initialization
+	process some more, support idl generated types.
+
+	* beast-gtk/bstgconfig.[hc]: use BstGlobalConfig from bstrecords.sfidl
+	to provide global config structure.
+
+Sun Oct 27 20:35:54 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstitemview.c (bst_item_view_item_changed): 
+	* beast-gtk/bstusermessage.c (sctrl_actions_changed):
+	don't free return values from bse_proxy_get() (these are
+	garbage collected).
+
+	* beast-gtk/bstusermessage.c: reenable and fix code, mostly
+	renames and const corrections.
+
+	* beast-gtk/bstapp.c (bst_app_operate): 
+	* beast-gtk/bstprocedure.c: disable procedures (provide dummies)
+	and procbrowser as long as we don't have param editing.
+
+Sun Oct 27 17:51:38 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianoroll.c: fix and reenable code.
+
+	* beast-gtk/bstpianorollctrl.c: fix and reenable code.
+
+	* beast-gtk/bstpartdialog.c: reenable and fix code.
+
+	* beast-gtk/bstwaveeditor.c: fix code, leave just broken code
+	disabled.
+
+	* beast-gtk/bstwavereposhell.c: reenable and fix code.
+
+	* beast-gtk/bstparamview.c: disable broken code.
+
+	* beast-gtk/bstmenus.c (bst_menu_config_free): implement.
+
+	* beast-gtk/bstapp.c (bst_app_operate): disable preference browser.
+
+	* beast-gtk/bstmain.c (main): fix glua layer usage.
+
+Sun Oct 27 16:58:16 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/*.c: do param-spec -> pspec renames.
+
+	* beast-gtk/*.c: fix more BSE_OBJECT_ID()/bse_object_from_id() places.
+
+	* beast-gtk/*.c: fix more BSW/bse macros and functions.
+
+	* beast-gtk/*.c: adapt to new glue layer proxy code.
+
+	* beast-gtk/bstplayback.c: reenable fixed version of the code.
+
+	* beast-gtk/bstradiotools.c: more category fixes.
+
+	* bsw/bswproxy.[hc]: remove most of the code in here, use sfi
+	glue layer proxy functions instead.
+
+	* bsw-shell/bswscminterp.c: constant and proxy fixes.
+
+Fri Oct 25 17:40:16 2002  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4: removed C++ optimization options, that simply takes
+	too damn long to compile.
+
+Thu Oct 24 17:07:40 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsupershell.[hc]: use proxies, fix signal connections,
+	s/bsw/bse/.
+
+	* beast-gtk/bsttrackview.c: s/bsw/bse/.
+
+	* beast-gtk/bstitemview.[hc]: make item_type a static const string.
+
+	* bsw/bswproxy.h: define bse_* aliases for sfi_* functions, this
+	needs much more cleanup anyways.
+
+	* beast-gtk/bstsnetrouter.[hc]: use new menu code, disable
+	broken code, use SfiProxy instead of Bse objects.
+
+	* beast-gtk/bstsnetshell.c (bst_snet_shell_rebuild): s/bsw/bse/.
+
+	* beast-gtk/bstdefs.h: define BST_DVL_EXT to 0 for now, need to
+	query this from BSE at some point.
+
+	* beast-gtk/bstservermonitor.c (bst_server_monitor_init): use strings
+	instead of type IDs.
+
+	* beast-gtk/bstsequence.c: fix structure access.
+
+	* beast-gtk/bstrackeditor.c: s/bse/bsw/.
+
+	* beast-gtk/bstqsampler.c: s/bsw/bse/, use SfiFBlock instead of
+	ancient BSW types.
+
+	* *.c: a couple include fixes, disable broken code.
+	
+Wed Oct 23 20:47:51 2002  Tim Janik  <timj@gtk.org>
+
+	* started sfk-launch branch.
+
 Thu Oct  3 23:31:26 2002  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4: when using gcc, compile sources with -O3 (not -O6).
@@ -504,7 +1146,7 @@ Sun Jul 21 21:16:22 2002  Tim Janik  <timj@gtk.org>
 	cut/copy/paste and clear.
 
 	* beast-gtk/bstpianoroll.[hc]: slight note colorization changes, support
-	view-only selection rectangle. add function to retrive paste position.
+	view-only selection rectangle. add function to retrieve paste position.
 	remove controller-specific drag data.
 
 	* beast-gtk/bstpianorollctrl.[hc]: add clipborad support add
@@ -891,7 +1533,7 @@ Sat Mar 30 06:58:14 2002  Tim Janik  <timj@gtk.org>
 	DONE, ERROR, IDLE and WAIT. changed callers.
 
 	* beast-gtk/bstutils.[hc]: added stock items for various
-	widgets. provide convenience functions to retrive icons size
+	widgets. provide convenience functions to retrieve icons size
 	width and height.
 
 	* beast-gtk/bstwaveview.c: defer load dialog creation because
@@ -924,7 +1566,7 @@ Wed Mar 13 18:19:44 2002  Tim Janik  <timj@gtk.org>
 	* beast-gtk/icons/: added new icons. autogenerate C sources with
 	gdk-pixbuf-csource. removed old/uneeded files.
 
-	* beast-gtk/bstknob.c: retrive pixbuf via stock.
+	* beast-gtk/bstknob.c: retrieve pixbuf via stock.
 
 	* beast-gtk/bstmenus.[hc]: rewrote item factory handling for saner API.
 
@@ -2565,7 +3207,7 @@ Fri Oct 15 00:07:17 1999  Tim Janik  <timj@gtk.org>
 	* beast-gtk/bstsnetrouter.[hc]: new files (added some weeks ago
 	actually), mostly reimplemented this file from the old song router
 	code which is currently inactive. additionally to the routing canvas,
-	create a toolbar from which BseSource objects are selectable (retrived
+	create a toolbar from which BseSource objects are selectable (retrieved
 	through the categories).
 
 Thu Oct  7 15:30:45 1999  Tim Janik  <timj@gtk.org>

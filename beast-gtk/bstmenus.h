@@ -30,32 +30,75 @@ extern "C" {
 
 /* --- typedefs & structures --- */
 typedef struct _BstChoice BstChoice;
-typedef void  (*BstMenuCallback)    (GtkWidget *owner,
-				     gulong	callback_action, /* cat->type */
-				     gpointer	popup_data);
+typedef void  (*BstMenuCatFunc)    (GtkWidget   *owner,
+				    gulong       category_id,
+				    gpointer	 popup_data);
+typedef void  (*BstMenuUserFunc)   (GtkWidget   *owner,
+				    gulong       callback_action,
+				    gpointer	 popup_data);
+typedef struct {
+  gchar *path;
+  gchar *accelerator;
+
+  BstMenuUserFunc callback;
+  gulong          callback_action;
+
+  /* possible values:
+   * NULL               -> "<Item>"
+   * ""                 -> "<Item>"
+   * "<Title>"          -> create a title item
+   * "<Item>"           -> create a simple item
+   * "<ImageItem>"      -> create an item holding an image
+   * "<StockItem>"      -> create an item holding a stock image
+   * "<CheckItem>"      -> create a check item
+   * "<ToggleItem>"     -> create a toggle item
+   * "<RadioItem>"      -> create a radio item
+   * <path>             -> path of a radio item to link against
+   * "<Separator>"      -> create a separator
+   * "<Tearoff>"        -> create a tearoff separator
+   * "<Branch>"         -> create an item to hold sub items
+   * "<LastBranch>"     -> create a right justified item to hold sub items
+   */
+  gchar          *item_type;
+
+  /* Extra data for some item types:
+   *  ImageItem  -> pointer to inlined pixbuf stream
+   *  StockItem  -> name of stock item
+   */
+  gconstpointer extra_data;
+} BstMenuConfigEntry;
+typedef struct {
+  SfiRing *entries;
+  GSList  *gcentries;
+  GSList  *gcicons;
+} BstMenuConfig;
 
 
 /* --- item factory helpers --- */
-GtkItemFactoryEntry* bst_menu_entries_from_cats	(guint			    n_cats,
-						 const BseCategory	   *cats,
-						 BstMenuCallback	    callback,
-						 gboolean		    remove_toplevel);
-GSList*		     bst_menu_entries_slist	(guint			    n_ientries,
-						 const GtkItemFactoryEntry *ientries);
-GSList*		     bst_menu_entries_sort	(GSList			   *entry_slist);
-void		     bst_menu_entries_create	(GtkItemFactory		   *ifactory,
-						 GSList			   *bst_menu_entries,
-						 GtkWidget		   *owner);
-void		     bst_menu_popup		(GtkItemFactory		   *ifactory,
-						 GtkWidget		   *owner,
-						 gpointer		    popup_data,
-						 GtkDestroyNotify	    popup_data_destroy,
-						 guint			    x,
-						 guint			    y,
-						 guint			    mouse_button,
-						 guint32		    time);
-void		     bst_menu_add_accel_owner	(GtkItemFactory		   *ifactory,
-						 GtkWidget		   *owner);
+BstMenuConfig*	bst_menu_config_from_cats	(BseCategorySeq		*cseq,
+						 BstMenuCatFunc		 callback,
+						 guint			 skip_levels);
+BstMenuConfig*	bst_menu_config_from_entries	(guint			 n_entries,
+						 BstMenuConfigEntry	*entries);
+void		bst_menu_config_sort		(BstMenuConfig		*config);
+void		bst_menu_config_reverse		(BstMenuConfig		*config);
+BstMenuConfig*	bst_menu_config_merge		(BstMenuConfig		*config,
+						 BstMenuConfig		*merge_config);
+void		bst_menu_config_free		(BstMenuConfig		*config);
+void		bst_menu_config_create_items	(BstMenuConfig		*config,
+						 GtkItemFactory		*ifactory,
+						 GtkWidget		*owner); /* e.g. menubar toplevel */
+
+void		bst_menu_popup			(GtkItemFactory		*ifactory,
+						 GtkWidget		*owner,  /* window with popup*/
+						 gpointer		 popup_data,
+						 GtkDestroyNotify	 popup_data_destroy,
+						 guint			 x,
+						 guint			 y,
+						 guint			 mouse_button,
+						 guint32		 time);
+void		bst_menu_add_accel_owner	(GtkItemFactory		*ifactory,
+						 GtkWidget		*owner); /* key press windows */
 
 
 /* --- BstChoice --- */
@@ -117,7 +160,7 @@ BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
 					   const gchar            *choice_name,
 					   gpointer                choice_id,
 					   const gchar		  *icon_stock_id,
-					   BswIcon		  *bsw_icon);
+					   BseIcon		  *bse_icon);
 
 
 #ifdef __cplusplus

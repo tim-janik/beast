@@ -62,6 +62,9 @@ G_BEGIN_DECLS
 #define SFI_TYPE_PARAM_PROXY		(sfi__param_spec_types[5])
 #define SFI_IS_PSPEC_PROXY(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_PROXY))
 #define SFI_PSPEC_PROXY(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_PROXY, SfiParamSpecProxy))
+#define SFI_TYPE_PARAM_NOTE		(sfi__param_spec_types[6])
+#define SFI_IS_PSPEC_NOTE(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_NOTE))
+#define SFI_PSPEC_NOTE(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_NOTE, SfiParamSpecNote))
 
 
 /* --- Sfi param spec aliases --- */
@@ -75,9 +78,13 @@ typedef GParamSpecParam   SfiParamSpecPSpec;
 
 /* --- Sfi param specs --- */
 typedef struct {
-  guint              n_values;
-  const GEnumValue  *values;
-} SfiChoiceValues;     // auxillary
+  gchar *choice_name;
+  gchar *choice_blurb;
+} SfiChoiceValue;	// auxillary
+typedef struct {
+  guint                 n_values;
+  const SfiChoiceValue *values;
+} SfiChoiceValues;	// auxillary
 typedef struct {
   GParamSpecString   pspec;
   SfiChoiceValues    cvalues;
@@ -99,6 +106,10 @@ typedef struct {
 typedef struct {
   GParamSpecPointer  pspec;
 } SfiParamSpecProxy;
+typedef struct {
+  GParamSpecInt      pspec;
+  gboolean           allow_void;
+} SfiParamSpecNote;
 
 
 /* --- Sfi GParamSpec  constructors --- */
@@ -195,9 +206,9 @@ GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 
 
 /* --- conversion --- */
-GParamSpec* 	sfi_pspec_choice_from_enum	 (GParamSpec *enum_pspec);
-GParamSpec* 	sfi_pspec_proxy_from_object (GParamSpec *object_pspec);
-GParamSpec*     sfi_pspec_to_serializable   (GParamSpec *pspec);
+GParamSpec* 	 sfi_pspec_choice_from_enum  (GParamSpec *enum_pspec);
+GParamSpec* 	 sfi_pspec_proxy_from_object (GParamSpec *object_pspec);
+GParamSpec*      sfi_pspec_to_serializable   (GParamSpec *pspec);
 
 
 /* --- Sfi param hints --- */
@@ -214,8 +225,9 @@ GParamSpec*     sfi_pspec_to_serializable   (GParamSpec *pspec);
 #define	SFI_PARAM_HINT_RADIO	  "radio:"
 #define	SFI_PARAM_HINT_DIAL	  "dial:"
 #define	SFI_PARAM_HINT_SCALE	  "scale:"
+#define	SFI_PARAM_HINT_LOG_SCALE  "log-scale:"
 /* readable and writable */
-#define	SFI_PARAM_DEFAULT	  SFI_PARAM_READWRITE SFI_PARAM_GUI SFI_PARAM_STORAGE
+#define	SFI_PARAM_DEFAULT	  SFI_PARAM_READWRITE SFI_PARAM_SERVE_GUI SFI_PARAM_SERVE_STORAGE
 #define	SFI_PARAM_GUI		  SFI_PARAM_READWRITE SFI_PARAM_SERVE_GUI
 #define	SFI_PARAM_STORAGE	  SFI_PARAM_READWRITE SFI_PARAM_SERVE_STORAGE
 /* readable and for non-GUI writable */
@@ -232,7 +244,7 @@ typedef enum	/*< skip >*/
   SFI_SCAT_NUM		= 'n',
   SFI_SCAT_REAL		= 'r',
   SFI_SCAT_STRING	= 's',
-  SFI_SCAT_CHOICE	= 'c',
+  SFI_SCAT_CHOICE	= 'C',
   SFI_SCAT_BBLOCK	= 'B',
   SFI_SCAT_FBLOCK	= 'F',
   SFI_SCAT_PSPEC	= 'P',
@@ -251,11 +263,13 @@ GType		sfi_category_param_type	(SfiSCategory	 pspec_cat);
 
 
 /* --- convenience aliases --- */
-#define     SFI_IS_PSPEC_NOTE		 SFI_IS_PSPEC_INT
 GParamSpec* sfi_pspec_note		(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
 					 SfiInt          default_value,
+					 SfiInt		 min_note,
+					 SfiInt		 max_note,
+					 gboolean	 allow_void,
 					 const gchar    *hints);
 #define     SFI_IS_PSPEC_TIME		 SFI_IS_PSPEC_TIME
 GParamSpec* sfi_pspec_time		(const gchar    *name,
@@ -268,12 +282,19 @@ GParamSpec* sfi_pspec_time		(const gchar    *name,
 void		sfi_pspec_set_group		(GParamSpec	*pspec,
 						 const gchar	*group);
 const gchar*	sfi_pspec_get_group		(GParamSpec	*pspec);
+void		sfi_pspec_set_owner		(GParamSpec	*pspec,
+						 const gchar	*owner);
+const gchar*	sfi_pspec_get_owner		(GParamSpec	*pspec);
 void		sfi_pspec_set_hints		(GParamSpec	*pspec,
 						 const gchar	*hints);
-void		sfi_pspec_set_static_hints	(GParamSpec	*pspec,
-						 const gchar	*hints);
+void		sfi_pspec_add_hint		(GParamSpec	*pspec,
+						 const gchar	*hint);
+void		sfi_pspec_remove_hint		(GParamSpec	*pspec,
+						 const gchar	*hint);
 gboolean	sfi_pspec_test_hint		(GParamSpec	*pspec,
 						 const gchar	*hint);
+gboolean	sfi_pspec_test_all_hints	(GParamSpec	*pspec,
+						 const gchar	*hints);
 const gchar*	sfi_pspec_get_hints		(GParamSpec	*pspec);
 SfiBool		sfi_pspec_get_bool_default	(GParamSpec	*pspec);
 SfiInt		sfi_pspec_get_int_default	(GParamSpec	*pspec);
@@ -281,6 +302,9 @@ void		sfi_pspec_get_int_range		(GParamSpec	*pspec,
 						 SfiInt         *minimum_value,
 						 SfiInt         *maximum_value,
 						 SfiInt         *stepping);
+gboolean	sfi_pspec_allows_void_note	(GParamSpec	*pspec);
+#define		sfi_pspec_get_note_default	 sfi_pspec_get_int_default
+#define		sfi_pspec_get_note_range	 sfi_pspec_get_int_range
 SfiNum		sfi_pspec_get_num_default	(GParamSpec	*pspec);
 void		sfi_pspec_get_num_range		(GParamSpec	*pspec,
 						 SfiNum         *minimum_value,
@@ -295,14 +319,13 @@ void		sfi_pspec_set_log_scale		(GParamSpec	*pspec,
 						 SfiReal         center,
 						 SfiReal         base,
 						 SfiReal         n_steps);
-void		sfi_pspec_get_log_scale		(GParamSpec	*pspec,
+gboolean	sfi_pspec_get_log_scale		(GParamSpec	*pspec,
 						 SfiReal        *center,
 						 SfiReal        *base,
 						 SfiReal        *n_steps);
 const gchar*	sfi_pspec_get_string_default	(GParamSpec	*pspec);
 const gchar*	sfi_pspec_get_choice_default	(GParamSpec	*pspec);
 SfiChoiceValues	sfi_pspec_get_choice_values	(GParamSpec	*pspec);
-GEnumValue*	sfi_pspec_get_choice_value_list	(GParamSpec	*pspec);
 GParamSpec*	sfi_pspec_get_seq_element	(GParamSpec	*pspec);
 SfiRecFields	sfi_pspec_get_rec_fields	(GParamSpec	*pspec);
 GParamSpec*	sfi_pspec_get_rec_field		(GParamSpec	*pspec,
@@ -312,6 +335,9 @@ GParamSpec*	sfi_pspec_get_rec_field		(GParamSpec	*pspec,
 /* --- internal --- */
 void		_sfi_init_params	(void);
 extern GType*	 sfi__param_spec_types;
+SfiRec*		sfi_pspec_to_rec	(GParamSpec	*pspec);
+GParamSpec*	sfi_pspec_from_rec	(SfiRec		*prec);
+
 
 G_END_DECLS
 

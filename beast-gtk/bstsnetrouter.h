@@ -47,7 +47,7 @@ struct _BstSNetRouter
   GtkWidget	   *palette;
   GtkAdjustment    *adjustment;
 
-  BswProxy	    snet;
+  SfiProxy	    snet;
 
   BstRadioTools    *rtools;
 
@@ -70,17 +70,17 @@ struct _BstSNetRouterClass
 
 /* --- prototypes --- */
 GtkType		 bst_snet_router_get_type	      (void);
-GtkWidget*	 bst_snet_router_new		      (BswProxy	     snet);
+GtkWidget*	 bst_snet_router_new		      (SfiProxy	     snet);
 void		 bst_snet_router_set_snet 	      (BstSNetRouter *router,
-						       BswProxy       snet);
+						       SfiProxy       snet);
 void		 bst_snet_router_update		      (BstSNetRouter *snet_router);
 void		 bst_snet_router_rebuild	      (BstSNetRouter *snet_router);
 void		 bst_snet_router_adjust_region	      (BstSNetRouter *snet_router);
 BstCanvasSource* bst_snet_router_csource_from_source  (BstSNetRouter *snet_router,
-						       BswProxy       source);
+						       SfiProxy       source);
 void		 bst_snet_router_toggle_channel_hints (BstSNetRouter *router);
 void		 bst_snet_router_toggle_palette	      (BstSNetRouter *snet_router);
-BstSNetRouter*	 bst_snet_router_build_page	      (BswProxy	     snet);
+BstSNetRouter*	 bst_snet_router_build_page	      (SfiProxy	     snet);
 
 
 #ifdef __cplusplus

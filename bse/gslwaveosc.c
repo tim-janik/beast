@@ -305,6 +305,17 @@ wave_osc_transform_filter (GslWaveOscData *wosc,
     }
 }
 
+GslLong
+gsl_wave_osc_cur_pos (GslWaveOscData *wosc)
+{
+  g_return_val_if_fail (wosc != NULL, -1);
+
+  if (wosc->wchunk)
+    return wosc->block.offset;
+  else
+    return wosc->config.start_offset;
+}
+
 void
 gsl_wave_osc_retrigger (GslWaveOscData *wosc,
 			gfloat          base_freq)

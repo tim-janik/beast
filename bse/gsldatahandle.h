@@ -44,7 +44,7 @@ struct _GslDataHandle
   GslDataHandleFuncs *vtable;
   gchar		     *name;
   /* common members */
-  GslMutex	      mutex;
+  SfiMutex	      mutex;
   guint		      ref_count;
   guint		      open_count;
   /* opened data handle setup (open_count > 0) */
@@ -139,6 +139,14 @@ GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 						 guint		   byte_order,
 						 GslLong	   byte_offset,
 						 GslLong	   n_values);
+GslDataHandle*	  gsl_wave_handle_new_zoffset	(const gchar	  *file_name,
+						 guint		   n_channels,
+						 GslWaveFormatType format,
+						 guint		   byte_order,
+						 GslLong	   byte_offset,
+						 GslLong	   byte_size);
+guint		  gsl_wave_format_bit_depth	(GslWaveFormatType format);
+guint		  gsl_wave_format_byte_width	(GslWaveFormatType format);
 
 
 /* --- data handle optimization jobs --- */

@@ -25,7 +25,6 @@
 static void	bst_song_shell_class_init	(BstSongShellClass	*klass);
 static void	bst_song_shell_init		(BstSongShell		*pe);
 static void	bst_song_shell_rebuild		(BstSuperShell		*super_shell);
-static void	bst_song_shell_update		(BstSuperShell		*super_shell);
 static void	bst_song_shell_operate		(BstSuperShell		*super_shell,
 						 BstOps			 sop);
 static gboolean	bst_song_shell_can_operate	(BstSuperShell		*super_shell,
@@ -74,7 +73,6 @@ bst_song_shell_class_init (BstSongShellClass *class)
   super_shell_class->operate = bst_song_shell_operate;
   super_shell_class->can_operate = bst_song_shell_can_operate;
   super_shell_class->rebuild = bst_song_shell_rebuild;
-  super_shell_class->update = bst_song_shell_update;
 
   class->factories_path = "<BstSongShell>";
 }
@@ -92,12 +90,12 @@ static void
 bst_song_shell_rebuild (BstSuperShell *super_shell)
 {
   BstSongShell *song_shell = BST_SONG_SHELL (super_shell);
-  BseSong *song = bse_object_from_id (super_shell->super);
+  SfiProxy song = super_shell->super;
   GtkWidget *notebook;
 
   g_return_if_fail (song_shell->param_view == NULL);
 
-  song_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT_ID (song));
+  song_shell->param_view = (BstParamView*) bst_param_view_new (song);
   g_object_set (GTK_WIDGET (song_shell->param_view),
 		"visible", TRUE,
 		NULL);
@@ -160,20 +158,6 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 						"visible", TRUE,
 						NULL));
     }
-}
-
-static void
-bst_song_shell_update (BstSuperShell *super_shell)
-{
-  BstSongShell *song_shell;
-  
-  song_shell = BST_SONG_SHELL (super_shell);
-  
-  bst_param_view_update (song_shell->param_view);
-  bst_item_view_update (song_shell->track_view);
-  bst_item_view_update (song_shell->part_view);
-  if (song_shell->snet_router)
-    bst_snet_router_update (song_shell->snet_router);
 }
 
 static void

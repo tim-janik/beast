@@ -35,7 +35,7 @@ sub has_semicolon {
     return m/;/;
 }
 
-my $var_pattern = "HELP|BLURB|AUTHOR|CRIGHTS|DATE";
+my $var_pattern = "HELP|BLURB|AUTHORS|CRIGHTS";
 my %var_defs = ();
 my %proc_defs = ();
 my $line_jump = 1;
@@ -179,9 +179,8 @@ while (<>) {
 	$externs .= "},\n";
 
 	print_assignment ("proc->help", "HELP");
-	print_assignment ("proc->author", "AUTHOR");
+	print_assignment ("proc->authors", "AUTHORS");
 	print_assignment ("proc->copyright", "CRIGHTS");
-	print_assignment ("proc->date", "DATE");
 	print "#line $line \"$file\"\n$1 }\n";
 	print "static BseErrorType\n";
 	print "#line $line \"$file\"\n";

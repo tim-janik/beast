@@ -57,11 +57,15 @@ struct _BstWaveEditor
   guint		     auto_scroll_mode;
   GtkWidget	    *preview_on;
   GtkWidget	    *preview_off;
+  guint		     playback_marker;
+  SfiNum	     tick_stamp;
+  guint		     pcm_pos;
+  gdouble	     pcm_per_tick;
 
-  BswProxy	     wave;
+  SfiProxy	     wave;
 
   /* editable sample view */
-  BswProxy	     esample;
+  SfiProxy	     esample;
   guint              esample_open : 1;
   guint              ignore_playpos : 1;
   GtkWidget	    *qsampler_hscroll;
@@ -77,12 +81,12 @@ struct _BstWaveEditorClass
 
 /* --- prototypes --- */
 GtkType		bst_wave_editor_get_type	(void);
-GtkWidget*	bst_wave_editor_new		(BswProxy	 wave);
+GtkWidget*	bst_wave_editor_new		(SfiProxy	 wave);
 void		bst_wave_editor_set_wave	(BstWaveEditor	*self,
-						 BswProxy	 wave);
+						 SfiProxy	 wave);
 void		bst_wave_editor_rebuild		(BstWaveEditor *wave_editor);
 void		bst_wave_editor_set_esample	(BstWaveEditor	*self,
-						 BswProxy	 editable_sample);
+						 SfiProxy	 editable_sample);
 
 
 #ifdef __cplusplus

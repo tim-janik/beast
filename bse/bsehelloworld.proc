@@ -22,9 +22,8 @@
 #include	<stdlib.h>
 
 
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "1999";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 1999 Tim Janik";
 
 
 PROCEDURE (bse-hello-world, "Toys/Hello World") {
@@ -39,7 +38,7 @@ PROCEDURE (bse-hello-world, "Toys/Hello World") {
 {
   /* issue a message */
   g_message ("Hello World");
-
+  
   return BSE_ERROR_NONE;
 }
 
@@ -50,13 +49,13 @@ PROCEDURE (bse-randomizer, "Toys/Randomizer") {
 	   "is to test out the parameter passing functionality.");
   
   /* input parameters */
-  IN	= bse_param_spec_bool ("use-seed", "Use seed value?", NULL,
-			     FALSE, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_int ("seed", "Random Seed", NULL,
-			    -32768, 32767, 42, 1, BSE_PARAM_DEFAULT);
+  IN	= sfi_pspec_bool ("use-seed", "Use seed value?", NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("seed", "Random Seed", NULL,
+			 42, -32768, 32767, 1, SFI_PARAM_DEFAULT);
   /* output parameters */
-  OUT	= bse_param_spec_string ("text", "Random Text", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("text", "Random Text", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -65,20 +64,20 @@ PROCEDURE (bse-randomizer, "Toys/Randomizer") {
   gint use_seed = g_value_get_boolean (in_values++);
   gint seed     = g_value_get_int (in_values++);
   gchar *string;
-
+  
   /* check parameters */
   if (use_seed && seed == 0)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* perform our duty */
   if (use_seed)
     srand (seed);
-
+  
   string = g_strdup_printf ("Random Number: %d", rand ());
-
+  
   /* set output parameters */
   g_value_set_string (out_values++, string);
   g_free (string);
-
+  
   return BSE_ERROR_NONE;
 }

@@ -26,7 +26,7 @@ static void	schedule_node		(EngineSchedule	*schedule,
 					 EngineNode	*node,
 					 guint		 leaf_level);
 static void	schedule_cycle		(EngineSchedule	*schedule,
-					 GslRing	*cycle_nodes,
+					 SfiRing	*cycle_nodes,
 					 guint		 leaf_level);
 static void 	subschedule_query_node	(EngineSchedule *schedule,
 					 EngineNode     *node,
@@ -37,7 +37,7 @@ static void 	subschedule_query_node	(EngineSchedule *schedule,
 EngineSchedule*
 _engine_schedule_new (void)
 {
-  EngineSchedule *sched = gsl_new_struct0 (EngineSchedule, 1);
+  EngineSchedule *sched = sfi_new_struct0 (EngineSchedule, 1);
   
   sched->n_items = 0;
   sched->leaf_levels = 0;
@@ -61,7 +61,7 @@ unschedule_virtual (EngineSchedule *sched,
   g_return_if_fail (sched->n_items > 0);
 
   /* SCHED_DEBUG ("unschedule_virtual(%p)", vnode); */
-  sched->vnodes = gsl_ring_remove (sched->vnodes, vnode);
+  sched->vnodes = sfi_ring_remove (sched->vnodes, vnode);
   vnode->sched_tag = FALSE;
   sched->n_items--;
 }
@@ -78,7 +78,7 @@ unschedule_node (EngineSchedule *sched,
   g_return_if_fail (sched->n_items > 0);
   
   /* SCHED_DEBUG ("unschedule_node(%p,%u)", node, leaf_level); */
-  sched->nodes[leaf_level] = gsl_ring_remove (sched->nodes[leaf_level], node);
+  sched->nodes[leaf_level] = sfi_ring_remove (sched->nodes[leaf_level], node);
   node->sched_leaf_level = 0;
   node->sched_tag = FALSE;
   if (node->flow_jobs)
@@ -88,10 +88,10 @@ unschedule_node (EngineSchedule *sched,
 
 static inline void
 unschedule_cycle (EngineSchedule *sched,
-		  GslRing     *ring)
+		  SfiRing        *ring)
 {
   guint leaf_level;
-  GslRing *walk;
+  SfiRing *walk;
   
   g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (ENGINE_NODE (ring->data)) == TRUE);
   leaf_level = ENGINE_NODE (ring->data)->sched_leaf_level;
@@ -99,8 +99,8 @@ unschedule_cycle (EngineSchedule *sched,
   g_return_if_fail (sched->n_items > 0);
   
   /* SCHED_DEBUG ("unschedule_cycle(%p,%u,%p)", ring->data, leaf_level, ring); */
-  sched->nodes[leaf_level] = gsl_ring_remove (sched->nodes[leaf_level], ring);
-  for (walk = ring; walk; walk = gsl_ring_walk (ring, walk))
+  sched->nodes[leaf_level] = sfi_ring_remove (sched->nodes[leaf_level], ring);
+  for (walk = ring; walk; walk = sfi_ring_walk (walk, ring))
     {
       EngineNode *node = walk->data;
       
@@ -130,12 +130,12 @@ _engine_schedule_debug_dump (EngineSchedule *sched)
 		  sched->cur_node, sched->cur_cycle);
       for (i = 0; i < sched->leaf_levels; i++)
 	{
-	  GslRing *ring, *head = sched->nodes[i];
+	  SfiRing *ring, *head = sched->nodes[i];
 	  
 	  if (!head)
 	    continue;
 	  g_printerr ("  { leaf_level=%u:", i);
-	  for (ring = head; ring; ring = gsl_ring_walk (head, ring))
+	  for (ring = head; ring; ring = sfi_ring_walk (ring, head))
 	    g_printerr (" node(%p(i:%u,s:%u))", ring->data,
 			((EngineNode*) ring->data)->integrated,
 			((EngineNode*) ring->data)->sched_tag);
@@ -177,7 +177,7 @@ _engine_schedule_destroy (EngineSchedule *sched)
   _engine_schedule_clear (sched);
   g_free (sched->nodes);
   g_free (sched->cycles);
-  gsl_delete_struct (EngineSchedule, sched);
+  sfi_delete_struct (EngineSchedule, sched);
 }
 
 static void
@@ -191,8 +191,8 @@ _engine_schedule_grow (EngineSchedule *sched,
       guint i = sched->leaf_levels;
       
       sched->leaf_levels = ll;
-      sched->nodes = g_renew (GslRing*, sched->nodes, sched->leaf_levels);
-      sched->cycles = g_renew (GslRing*, sched->cycles, sched->leaf_levels);
+      sched->nodes = g_renew (SfiRing*, sched->nodes, sched->leaf_levels);
+      sched->cycles = g_renew (SfiRing*, sched->cycles, sched->leaf_levels);
       for (; i < sched->leaf_levels; i++)
 	{
 	  sched->nodes[i] = NULL;
@@ -214,7 +214,7 @@ schedule_virtual (EngineSchedule *sched,
   /* SCHED_DEBUG ("schedule_virtual(%p)", vnode); */
   vnode->sched_tag = TRUE;
   vnode->cleared_ostreams = FALSE;
-  sched->vnodes = gsl_ring_append (sched->vnodes, vnode);
+  sched->vnodes = sfi_ring_append (sched->vnodes, vnode);
   sched->n_items++;
 }
 
@@ -236,22 +236,22 @@ schedule_node (EngineSchedule *sched,
     _engine_mnl_reorder (node);
   _engine_schedule_grow (sched, leaf_level);
   /* could do 3-stage scheduling by expensiveness */
-  sched->nodes[leaf_level] = (ENGINE_NODE_IS_EXPENSIVE (node) ? gsl_ring_prepend : gsl_ring_append) (sched->nodes[leaf_level], node);
+  sched->nodes[leaf_level] = (ENGINE_NODE_IS_EXPENSIVE (node) ? sfi_ring_prepend : sfi_ring_append) (sched->nodes[leaf_level], node);
   sched->n_items++;
 }
 
 static void
 schedule_cycle (EngineSchedule *sched,
-		GslRing        *cycle_nodes,
+		SfiRing        *cycle_nodes,
 		guint           leaf_level)
 {
-  GslRing *walk;
+  SfiRing *walk;
   
   g_return_if_fail (sched != NULL);
   g_return_if_fail (sched->secured == FALSE);
   g_return_if_fail (cycle_nodes != NULL);
   
-  for (walk = cycle_nodes; walk; walk = gsl_ring_walk (cycle_nodes, walk))
+  for (walk = cycle_nodes; walk; walk = sfi_ring_walk (walk, cycle_nodes))
     {
       EngineNode *node = walk->data;
       
@@ -263,7 +263,7 @@ schedule_cycle (EngineSchedule *sched,
 	_engine_mnl_reorder (node);
     }
   _engine_schedule_grow (sched, leaf_level);
-  sched->cycles[leaf_level] = gsl_ring_prepend (sched->cycles[leaf_level], cycle_nodes);
+  sched->cycles[leaf_level] = sfi_ring_prepend (sched->cycles[leaf_level], cycle_nodes);
   sched->n_items++;
 }
 
@@ -326,7 +326,7 @@ _engine_schedule_pop_node (EngineSchedule *sched)
 	{
 	  EngineNode *node = sched->cur_node->data;
 	  
-	  sched->cur_node = gsl_ring_walk (sched->nodes[leaf_level], sched->cur_node);
+	  sched->cur_node = sfi_ring_walk (sched->cur_node, sched->nodes[leaf_level]);
 	  return node;
 	}
       schedule_advance (sched);
@@ -337,7 +337,7 @@ _engine_schedule_pop_node (EngineSchedule *sched)
   return NULL;
 }
 
-GslRing*
+SfiRing*
 _engine_schedule_pop_cycle (EngineSchedule *sched)
 {
   g_return_val_if_fail (sched != NULL, NULL);
@@ -350,9 +350,9 @@ _engine_schedule_pop_cycle (EngineSchedule *sched)
       
       if (sched->cur_cycle)
 	{
-	  GslRing *cycle = sched->cur_cycle->data;
+	  SfiRing *cycle = sched->cur_cycle->data;
 	  
-	  sched->cur_cycle = gsl_ring_walk (sched->cycles[leaf_level], sched->cur_cycle);
+	  sched->cur_cycle = sfi_ring_walk (sched->cur_cycle, sched->cycles[leaf_level]);
 	  return cycle;
 	}
       schedule_advance (sched);
@@ -400,12 +400,12 @@ _engine_schedule_consumer_node (EngineSchedule *schedule,
 static void
 update_suspension_state (EngineNode *node)
 {
-  GslRing *ring;
+  SfiRing *ring;
   guint seen_suspended = 0, seen_active = 0;
   gboolean outputs_suspended;
 
   node->suspension_update = FALSE;
-  for (ring = node->output_nodes; ring && !seen_active; ring = gsl_ring_walk (node->output_nodes, ring))
+  for (ring = node->output_nodes; ring && !seen_active; ring = sfi_ring_walk (ring, node->output_nodes))
     {
       EngineNode *dest_node = ring->data;
       if (dest_node != node)	/* self-feedback cycles */
@@ -427,14 +427,14 @@ update_suspension_state (EngineNode *node)
   /* FIXME: suspension state updates need back propagation within cycles */
 }
 
-static GslRing*
-merge_untagged_node_lists_uniq (GslRing *ring1,
-				GslRing *ring2)
+static SfiRing*
+merge_untagged_node_lists_uniq (SfiRing *ring1,
+				SfiRing *ring2)
 {
-  GslRing *walk;
+  SfiRing *walk;
   
   /* paranoid, ensure all nodes are untagged (ring2) */
-  for (walk = ring2; walk; walk = gsl_ring_walk (ring2, walk))
+  for (walk = ring2; walk; walk = sfi_ring_walk (walk, ring2))
     {
       EngineNode *node = walk->data;
       
@@ -442,7 +442,7 @@ merge_untagged_node_lists_uniq (GslRing *ring1,
     }
   
   /* tag all nodes in ring1 first */
-  for (walk = ring1; walk; walk = gsl_ring_walk (ring1, walk))
+  for (walk = ring1; walk; walk = sfi_ring_walk (walk, ring1))
     {
       EngineNode *node = walk->data;
       
@@ -451,35 +451,35 @@ merge_untagged_node_lists_uniq (GslRing *ring1,
     }
   
   /* merge list with missing (untagged) nodes */
-  for (walk = ring2; walk; walk = gsl_ring_walk (ring2, walk))
+  for (walk = ring2; walk; walk = sfi_ring_walk (walk, ring2))
     {
       EngineNode *node = walk->data;
       
       if (node->sched_recurse_tag == FALSE)
-	ring1 = gsl_ring_append (ring1, node);
+	ring1 = sfi_ring_append (ring1, node);
     }
   
   /* untag all nodes */
-  for (walk = ring1; walk; walk = gsl_ring_walk (ring1, walk))
+  for (walk = ring1; walk; walk = sfi_ring_walk (walk, ring1))
     {
       EngineNode *node = walk->data;
       
       node->sched_recurse_tag = FALSE;
     }
-  for (walk = ring2; walk; walk = gsl_ring_walk (ring2, walk))
+  for (walk = ring2; walk; walk = sfi_ring_walk (walk, ring2))
     {
       EngineNode *node = walk->data;
       
       node->sched_recurse_tag = FALSE;
     }
-  gsl_ring_free (ring2);
+  sfi_ring_free (ring2);
   return ring1;
 }
 
 static gboolean
 resolve_cycle (EngineCycle *cycle,
 	       EngineNode  *node,
-	       GslRing    **cycle_nodes_p)
+	       SfiRing    **cycle_nodes_p)
 {
   if (node != cycle->last)
     return FALSE;
@@ -497,7 +497,7 @@ static gboolean
 master_resolve_cycles (EngineQuery *query,
 		       EngineNode  *node)
 {
-  GslRing *walk;
+  SfiRing *walk;
   gboolean all_resolved = TRUE;
   
   g_assert (query->cycles != NULL);	/* paranoid */
@@ -505,7 +505,7 @@ master_resolve_cycles (EngineQuery *query,
   walk = query->cycles;
   while (walk)
     {
-      GslRing *next = gsl_ring_walk (query->cycles, walk);
+      SfiRing *next = sfi_ring_walk (walk, query->cycles);
       EngineCycle *cycle = walk->data;
       
       if (resolve_cycle (cycle, node, &query->cycle_nodes))
@@ -513,8 +513,8 @@ master_resolve_cycles (EngineQuery *query,
 	  g_assert (cycle->last == NULL);	/* paranoid */
 	  g_assert (cycle->nodes == NULL);	/* paranoid */
 	  
-	  gsl_delete_struct (EngineCycle, cycle);
-	  query->cycles = gsl_ring_remove_node (query->cycles, walk);
+	  sfi_delete_struct (EngineCycle, cycle);
+	  query->cycles = sfi_ring_remove_node (query->cycles, walk);
 	}
       else
 	all_resolved = FALSE;
@@ -530,12 +530,12 @@ query_add_cycle (EngineQuery *query,
 		 EngineNode  *dep,
 		 EngineNode  *node)
 {
-  EngineCycle *cycle = gsl_new_struct0 (EngineCycle, 1);
+  EngineCycle *cycle = sfi_new_struct0 (EngineCycle, 1);
   
   cycle->last = dep;
-  cycle->nodes = gsl_ring_prepend (NULL, node);
+  cycle->nodes = sfi_ring_prepend (NULL, node);
   cycle->seen_deferred_node = ENGINE_NODE_IS_DEFERRED (node); /* dep will be checked when added to nodes */
-  query->cycles = gsl_ring_append (query->cycles, cycle);
+  query->cycles = sfi_ring_append (query->cycles, cycle);
 }
 
 static void
@@ -543,21 +543,21 @@ query_merge_cycles (EngineQuery *query,
 		    EngineQuery *child_query,
 		    EngineNode  *node)
 {
-  GslRing *walk;
+  SfiRing *walk;
   
   g_assert (child_query->cycles != NULL);	/* paranoid */
   
   /* add node to all child cycles */
-  for (walk = child_query->cycles; walk; walk = gsl_ring_walk (child_query->cycles, walk))
+  for (walk = child_query->cycles; walk; walk = sfi_ring_walk (walk, child_query->cycles))
     {
       EngineCycle *cycle = walk->data;
       
-      cycle->nodes = gsl_ring_prepend (cycle->nodes, node);
+      cycle->nodes = sfi_ring_prepend (cycle->nodes, node);
       cycle->seen_deferred_node |= ENGINE_NODE_IS_DEFERRED (node);
     }
   
   /* merge child cycles into our cycle list */
-  query->cycles = gsl_ring_concat (query->cycles, child_query->cycles);
+  query->cycles = sfi_ring_concat (query->cycles, child_query->cycles);
   child_query->cycles = NULL;
   
   /* merge child's cycle nodes from resolved cycles into ours */

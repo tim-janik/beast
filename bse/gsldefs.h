@@ -19,11 +19,8 @@
 #ifndef __GSL_DEFS_H__
 #define __GSL_DEFS_H__
 
-#ifdef	GSL_WANT_GLIB_WRAPPER
-#include <gsl/gslglib.h>	/* GSL just uses a certain subset of GLib */
-#else
-#include <glib.h>
-#endif
+#include <sfi/sfi.h>
+#include <sfi/sfistore.h>
 
 
 /* configure checks */
@@ -42,21 +39,15 @@ typedef struct _GslComplex		GslComplex;
 typedef struct _GslDataCache		GslDataCache;
 typedef struct _GslDataHandle		GslDataHandle;
 typedef struct _GslDataHandleFuncs	GslDataHandleFuncs;
-typedef struct _GslGlueContext          GslGlueContext;
 typedef struct _GslJob			GslJob;
 typedef struct _GslModule		GslModule;
 typedef struct _GslIStream		GslIStream;
 typedef struct _GslJStream		GslJStream;
 typedef struct _GslLoader		GslLoader;
 typedef struct _GslOStream		GslOStream;
-typedef struct _GslThread		GslThread;
 typedef struct _GslTrans		GslTrans;
 typedef struct _GslWaveChunk		GslWaveChunk;
 typedef struct _GslWaveChunkBlock	GslWaveChunkBlock;
-typedef struct _GslRecMutex		GslRecMutex;
-typedef struct _GslRing			GslRing;
-typedef union _GslCond			GslCond;
-typedef union _GslMutex			GslMutex;
 /* ssize_t/off_t type used within Gsl */
 typedef glong			  GslLong;
 #define	GSL_MAXLONG		  G_MAXLONG
@@ -111,22 +102,6 @@ typedef void     (*GslModuleFreeFunc)   (gpointer        data,
 
 /* --- implementation details --- */
 #define	GSL_ENGINE_MAX_POLLFDS	(128)
-union _GslCond
-{
-  gpointer cond_pointer;
-  guint8   cond_dummy[MAX (8, GSL_SIZEOF_PTH_COND_T)];
-};
-union _GslMutex
-{
-  gpointer mutex_pointer;
-  guint8   mutex_dummy[MAX (8, GSL_SIZEOF_PTH_MUTEX_T)];
-};
-struct _GslRecMutex
-{
-  GslMutex sync_mutex;
-  gpointer owner;
-  guint    depth;
-};
 #if __GNUC__ >= 3 && defined __OPTIMIZE__
 #  define GSL_GCC_EXPECT(cond)	(__builtin_expect ((cond) != 0, 1))
 #  define GSL_GCC_REJECT(cond)	(__builtin_expect ((cond) != 0, 0))

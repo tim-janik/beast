@@ -1,4 +1,4 @@
-/* BSW-SCM - Bedevilled Sound Engine Scheme Wrapper
+/* BSE-SCM - Bedevilled Sound Engine Scheme Wrapper
  * Copyright (C) 2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -15,17 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#define G_LOG_DOMAIN "BswShell"
+#define G_LOG_DOMAIN "BseShell"
 
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <guile/gh.h>
-#include <bsw/bsw.h>
-#include <bsw/bswglue.h>
+#include <bse/bse.h>
 #include "bswscminterp.h"
 #include "../PKG_config.h"
 
+
+
+#define	BOILERPLATE_SCM		BSW_PATH_SCRIPTS ## "/bse-scm-glue.boot"
 
 
 /* --- prototypes --- */
@@ -36,11 +38,24 @@ static void	shell_parse_args	(gint    *argc_p,
 
 
 /* --- variables --- */
-static BswSCMWire *bsw_scm_wire = NULL;
-static gchar      *bsw_scm_remote_expr = NULL;
+static gint            bse_scm_pipe[2] = { -1, -1 };
+static gchar          *bse_scm_eval_expr = NULL;
+static gboolean        bse_scm_enable_register = FALSE;
+static gboolean        bse_scm_register_plugins = TRUE;
+static SfiComPort     *bse_scm_port = NULL;
+static SfiGlueContext *bse_scm_context = NULL;
 
 
 /* --- functions --- */
+static void
+port_closed (SfiComPort *port,
+	     gpointer    close_data)
+{
+  /* we don't do anything fancy here */
+  if (port)
+    exit (0);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -48,19 +63,75 @@ main (int   argc,
   const gchar *env_str;
 
   g_thread_init (NULL);
-  env_str = g_getenv ("BSW_SHELL_SLEEP4GDB");
+  g_set_prgname ("BseShell");
+  sfi_init ();
+
+  env_str = g_getenv ("BSE_SHELL_SLEEP4GDB");
   if (env_str && atoi (env_str) > 0)
     {
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
 
-  bsw_init (&argc, &argv, NULL);
   shell_parse_args (&argc, &argv);
+
+  if (bse_scm_pipe[0] >= 0 && bse_scm_pipe[1] >= 0)
+    {
+      bse_scm_port = sfi_com_port_from_pipe ("BseShell", bse_scm_pipe[0], bse_scm_pipe[1]);
+      sfi_com_port_set_close_func (bse_scm_port, port_closed, NULL);
+      if (!bse_scm_port->connected)
+	{
+	  g_printerr ("bseshell: failed to connect to pipe (%d, %d)\n", bse_scm_pipe[0], bse_scm_pipe[1]);
+	  exit (1);
+	}
+      bse_scm_context = sfi_glue_encoder_context (bse_scm_port);
+    }
+
+  if (!bse_scm_context)
+    {
+      /* start our own core thread */
+      bse_init_async (&argc, &argv, NULL);
+      bse_scm_context = bse_init_glue_context ("BseShell");
+    }
 
   gh_enter (argc, argv, gh_main);
 
   return 0;
+}
+
+
+static void
+gh_main (int   argc,
+	 char *argv[])
+{
+  /* initial interpreter setup */
+  if (bse_scm_enable_register)
+    bse_scm_enable_script_register (TRUE);
+  else
+    bse_scm_enable_server (TRUE);
+  sfi_glue_context_push (bse_scm_context);
+
+  /* initialize interpreter */
+  bse_scm_interp_init ();
+
+  /* exec Bse Scheme bootup code */
+  gh_load (BOILERPLATE_SCM);
+
+  /* eval or interactive */
+  if (bse_scm_eval_expr)
+    gh_eval_str (bse_scm_eval_expr);
+  else
+    gh_repl (argc, argv);
+
+  /* shutdown */
+  g_print ("BSE-SHELL shutdown\n");
+  sfi_glue_context_pop ();
+  if (bse_scm_port)
+    {
+      sfi_com_port_set_close_func (bse_scm_port, NULL, NULL);
+      sfi_com_port_close_remote (bse_scm_port, FALSE);
+    }
+  sfi_glue_context_destroy (bse_scm_context);
 }
 
 static void
@@ -84,53 +155,48 @@ shell_parse_args (gint    *argc_p,
 	  g_log_set_always_fatal (fatal_mask);
 	  argv[i] = NULL;
 	}
-      else if (strcmp (argv[i], "--bse-command-pipe") == 0)
+      else if (strcmp (argv[i], "--bse-pipe") == 0)
 	{
-	  /* first two arguments are input and output pipes from BseServer,
-	   * the third is supplied by the BSE Scheme code and is an
-	   * expression for us to evaulate
-	   */
-	  if (i + 3 < argc)
+	  /* first two arguments are input and output pipes from BseServer */
+	  bse_scm_pipe[0] = -1;
+	  bse_scm_pipe[1] = -1;
+	  if (i + 2 < argc)
 	    {
-	      gint remote_input = atoi (argv[i + 1]);
-	      gint remote_output = atoi (argv[i + 2]);
-
-	      bsw_scm_remote_expr = argv[i + 3];
-	      if (remote_input > 2 && remote_output > 2 && bsw_scm_remote_expr)
-		bsw_scm_wire = bsw_scm_wire_from_pipe ("BSW-Shell", remote_input, remote_output);
-	      argv[i] = NULL;
-	      i += 1;
-	      argv[i] = NULL;
-	      i += 1;
-	      argv[i] = NULL;
-	      i += 1;
+	      bse_scm_pipe[0] = atoi (argv[i + 1]);
+	      bse_scm_pipe[1] = atoi (argv[i + 2]);
+	      argv[i++] = NULL;
+	      argv[i++] = NULL;
 	    }
 	  argv[i] = NULL;
-	  if (!bsw_scm_wire)
+	  if (bse_scm_pipe[0] < 2 || bse_scm_pipe[1] < 2)
 	    {
-	      g_printerr ("bswshell: invalid arguments supplied for: --bse-command-pipe <inpipe> <outpipe> <expr>\n");
+	      g_printerr ("bseshell: invalid arguments supplied for: --bse-pipe <inpipe> <outpipe>\n");
+	      exit (1);
+	    }
+	}
+      else if (strcmp (argv[i], "--bse-eval") == 0)
+	{
+	  bse_scm_eval_expr = NULL;
+	  if (i + 1 < argc)
+	    {
+	      bse_scm_eval_expr = argv[i + 1];
+	      argv[i++] = NULL;
+	    }
+	  argv[i] = NULL;
+	  if (!bse_scm_eval_expr)
+	    {
+	      g_printerr ("bseshell: invalid arguments supplied for: --bse-eval <expression>\n");
 	      exit (1);
 	    }
 	}
       else if (strcmp (argv[i], "--bse-enable-register") == 0)
 	{
-	  bsw_scm_enable_script_register (TRUE);
+	  bse_scm_enable_register = TRUE;
 	  argv[i] = NULL;
 	}
-      else if (strcmp (argv[i], "--bse-enable-server") == 0)
+      else if (strcmp (argv[i], "--bse-no-plugins") == 0)
 	{
-	  bsw_scm_enable_server (TRUE);
-	  argv[i] = NULL;
-	}
-      else if (strcmp (argv[i], "-p") == 0)
-	{
-	  static gboolean registered_plugins = FALSE;
-
-	  if (!registered_plugins)
-	    {
-	      registered_plugins = TRUE;
-	      bsw_register_plugins (NULL, TRUE, NULL, NULL, NULL);
-	    }
+	  bse_scm_register_plugins = FALSE;
 	  argv[i] = NULL;
 	}
     }
@@ -151,28 +217,4 @@ shell_parse_args (gint    *argc_p,
     }
   if (e)
     *argc_p = e;
-}
-
-#define	BOILERPLATE_SCM		BSW_PATH_SCRIPTS ## "/bsw-scm-glue.boot"
-
-static void
-gh_main (int   argc,
-	 char *argv[])
-{
-  if (!bsw_scm_wire)
-    bsw_scm_enable_server (TRUE);	/* do this before interp_init */
-
-  bsw_scm_interp_init (bsw_scm_wire);
-
-  gh_load (BOILERPLATE_SCM);
-
-  if (bsw_scm_wire)
-    {
-      BSW_SCM_DEFER_INTS ();
-      gh_eval_str (bsw_scm_remote_expr);
-      bsw_scm_wire_died (bsw_scm_wire);
-      BSW_SCM_ALLOW_INTS ();
-    }
-  else
-    gh_repl (argc, argv);
 }

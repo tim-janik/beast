@@ -15,7 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bse/bse.h"
+#include "bseutils.h"
+#include "bsemain.h"
 
 #define	PREC_SHIFT	16
 #define	FLF	"26.20"
@@ -25,7 +26,7 @@ print_note (const gchar *note_name,
 	    gint         note)
 {
   gchar *string;
-
+  
   string = bse_note_to_string (note);
   g_print ("%s =%-4d \tfactor=%"FLF"f [%-5s] (freq=%"FLF"f)\n",
 	   note_name, note,
@@ -69,8 +70,8 @@ main (gint   argc,
   gint j, k;
   
   g_thread_init (NULL);
-  bse_init (&argc, &argv, NULL);
-
+  bse_init_intern (&argc, &argv, NULL);
+  
   g_print ("Rate relevant limits:\n");
   print_note      ("BSE_MIN_NOTE     ", BSE_MIN_NOTE);
   print_note      ("BSE_KAMMER_NOTE  ", BSE_KAMMER_NOTE);
@@ -80,14 +81,14 @@ main (gint   argc,
   print_fine_tune ("bse-mid-fine-tune", (BSE_MIN_FINE_TUNE + BSE_MAX_FINE_TUNE) / 2);
   print_fine_tune ("BSE_MAX_FINE_TUNE", BSE_MAX_FINE_TUNE);
   print_note      ("BSE_KAMMER_NOTE+1", BSE_KAMMER_NOTE + 1);
-
+  
   if (0)
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 3)
       print_note (":", j);
   if (0)
     for (j = BSE_MIN_FINE_TUNE; j <= BSE_MAX_FINE_TUNE; j += 10)
       print_fine_tune (":", j);
-
+  
   if (0)
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 3)
       for (k = BSE_MIN_FINE_TUNE / 2; k <= BSE_MAX_FINE_TUNE / 2; k += 10)
@@ -104,20 +105,20 @@ main (gint   argc,
   if (0)
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 1)
       {
-	gint octave = BSE_NOTE_OCTAVE (j);
-	gint semitone = BSE_NOTE_SEMITONE (j);
+	gint octave = SFI_NOTE_OCTAVE (j);
+	gint semitone = SFI_NOTE_SEMITONE (j);
 	gint note = BSE_NOTE_GENERIC (octave, semitone);
 	gchar *name = bse_note_to_string (j);
-
+	
 	g_print ("note[%3d]: name=%-8s octave=%3d semitone=%3d note=%3d match=%u\n",
 		 j, name, octave, semitone, note, j == note);
 	g_free (name);
       }
-
+  
   if (argc == 2)
     {
       GSList *plist, *slist;
-
+      
       g_print ("search path: \"%s\"\n", argv[1]);
       // plist = bse_search_path_list_files (argv[1], NULL);
       plist = bse_path_pattern_list_matches (argv[1], NULL, 0);
@@ -125,6 +126,6 @@ main (gint   argc,
 	g_print ("%s\n", (char*) slist->data);
       bse_str_slist_free (plist);
     }
-
+  
   return 0;
 }

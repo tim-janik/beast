@@ -19,30 +19,28 @@
 # GSL targets
 GSL_H_SRC     =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h \
 		gslloader.h gslmath.h gslfilter.h gsldatautils.h gsldatahandle-vorbis.h \
-		gslconvert.h gslfft.h gslieee754.h gslsignal.h gslmagic.h \
+		gslfft.h gslieee754.h gslsignal.h gslmagic.h \
 		gslengine.h gslwaveosc.h gslwavechunk.h gsldatahandle-mad.h \
-		gslosctable.h gsloscillator.h gslglue.h gslgluecodec.h gslfilehash.h
+		gslosctable.h gsloscillator.h gslfilehash.h
 GSL_C_SRC     =	gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorbis.c \
 		gslmath.c gslfilter.c gslcommon.c gsldatautils.c gslmagic.c \
 		gslloader-wav.c gslloader-gslwave.c gslloader-mad.c gslloader-oggvorbis.c \
-		gslconvert.c gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
+		gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
 		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c gsldatahandle-mad.c \
-		gslosctable.c gsloscillator.c gslglue.c gslgluecodec.c gslfilehash.c
-GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h gslgluesignal.c \
+		gslosctable.c gsloscillator.c gslfilehash.c
+GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h \
 		gslopschedule.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
-GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header gslglib.c gslglib.h \
+GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header \
                 gsl-fftgen.pl gsl-fftconf.sh
 EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT)
 
-GSL_NOINST_PROGS = gslwchunk gsltests gslglibhashtest gslffttest
+GSL_NOINST_PROGS = gslwchunk gsltests gslffttest
 gslwchunk_SOURCES = gslwchunk.c $(GSL_cc_dummy)
 gslwchunk_LDADD = $(GSL_progs_ldadd)
 gsltests_SOURCES = gsltests.c $(GSL_cc_dummy)
 gsltests_LDADD = $(GSL_progs_ldadd)
 gslffttest_SOURCES = gslffttest.c $(GSL_cc_dummy)
 gslffttest_LDADD = $(GSL_progs_ldadd)
-gslglibhashtest_SOURCES = gslglibhashtest.cc # C++ already
-gslglibhashtest_LDADD = $(GSL_progs_ldadd)
 
 $(srcdir)/gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
@@ -51,11 +49,6 @@ MAINTAINERCLEANFILES += gslfft.c
 gslconfig.h: $(top_srcdir)/configure Makefile
 	echo "/* Generated data from $< (by make $@) */" > xgen-gch \
 	&& echo >> xgen-gch \
-	&& echo "#define GSL_SIZEOF_PTH_MUTEX_T         (@GSL_SIZEOF_PTH_MUTEX_T@)" >> xgen-gch \
-	&& echo "#define GSL_SIZEOF_PTH_COND_T          (@GSL_SIZEOF_PTH_COND_T@)" >> xgen-gch \
-	&& echo "#define GSL_HAVE_MUTEXATTR_SETTYPE     (@GSL_HAVE_MUTEXATTR_SETTYPE@ && \\" >> xgen-gch \
-	&& echo "                                        GSL_SIZEOF_PTH_MUTEX_T && \\" >> xgen-gch \
-	&& echo "                                        GSL_SIZEOF_PTH_COND_T)" >> xgen-gch \
 	&& echo "#define GSL_SIZEOF_STD_INTMAX_T        (@GSL_SIZEOF_STD_INTMAX_T@)" >> xgen-gch \
 	&& echo "#define GSL_OV_READ_FLOAT_ARGS         (@GSL_OV_READ_FLOAT_ARGS@)" >> xgen-gch \
 	&& echo "#define GSL_HAVE_LIBMAD                (@GSL_HAVE_LIBMAD@)" >> xgen-gch \
@@ -67,7 +60,6 @@ CLEANFILES += gslconfig.h xgen-gch
 $(srcdir)/gslwchunk.c: gslconfig.h
 $(srcdir)/gsltests.c: gslconfig.h
 $(srcdir)/gslffttest.c: gslconfig.h
-$(srcdir)/gslglibhashtest.cc: gslconfig.h
 $(OBJECTS): gslconfig.h
 
 gsl_public_headers = $(GSL_H_SRC) gslconfig.h

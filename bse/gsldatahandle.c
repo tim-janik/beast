@@ -72,12 +72,14 @@ typedef struct {
 } DCacheHandle;
 typedef struct {
   GslDataHandle     dhandle;
+  GslHFile	   *hfile;
+  GslLong	    byte_offset;
+  guint             byte_order;
   guint		    n_channels;
   GslWaveFormatType format;
-  guint             byte_order;
-  GslLong	    byte_offset;
+  guint		    add_zoffset : 1;
+  GslLong	    requested_offset;
   GslLong	    requested_length;
-  GslHFile	   *hfile;
 } WaveHandle;
 
 
@@ -92,7 +94,7 @@ gsl_data_handle_common_init (GslDataHandle *dhandle,
   g_return_val_if_fail (dhandle->ref_count == 0, FALSE);
   
   dhandle->name = g_strdup (file_name);
-  gsl_mutex_init (&dhandle->mutex);
+  sfi_mutex_init (&dhandle->mutex);
   dhandle->ref_count = 1;
   dhandle->open_count = 0;
   memset (&dhandle->setup, 0, sizeof (dhandle->setup));
@@ -122,7 +124,7 @@ gsl_data_handle_common_free (GslDataHandle *dhandle)
   
   g_free (dhandle->name);
   dhandle->name = NULL;
-  gsl_mutex_destroy (&dhandle->mutex);
+  sfi_mutex_destroy (&dhandle->mutex);
 }
 
 void
@@ -366,7 +368,7 @@ mem_handle_destroy (GslDataHandle *dhandle)
   gsl_data_handle_common_free (dhandle);
   mhandle->values = NULL;
   mhandle->free_values = NULL;
-  gsl_delete_struct (MemHandle, mhandle);
+  sfi_delete_struct (MemHandle, mhandle);
   
   if (free_values)
     free_values ((gpointer) mem_values);
@@ -410,7 +412,7 @@ gsl_data_handle_new_mem (guint         n_channels,
   if (n_values)
     g_return_val_if_fail (values != NULL, NULL);
   
-  mhandle = gsl_new_struct0 (MemHandle, 1);
+  mhandle = sfi_new_struct0 (MemHandle, 1);
   success = gsl_data_handle_common_init (&mhandle->dhandle, NULL);
   if (success)
     {
@@ -425,7 +427,7 @@ gsl_data_handle_new_mem (guint         n_channels,
     }
   else
     {
-      gsl_delete_struct (MemHandle, mhandle);
+      sfi_delete_struct (MemHandle, mhandle);
       return NULL;
     }
   return &mhandle->dhandle;
@@ -476,7 +478,7 @@ reverse_handle_destroy (GslDataHandle *data_handle)
   gsl_data_handle_unref (rhandle->src_handle);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (ReversedHandle, rhandle);
+  sfi_delete_struct (ReversedHandle, rhandle);
 }
 
 static GslLong
@@ -532,7 +534,7 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
   
   g_return_val_if_fail (src_handle != NULL, NULL);
   
-  rhandle = gsl_new_struct0 (ReversedHandle, 1);
+  rhandle = sfi_new_struct0 (ReversedHandle, 1);
   success = gsl_data_handle_common_init (&rhandle->dhandle, NULL);
   if (success)
     {
@@ -542,7 +544,7 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
     }
   else
     {
-      gsl_delete_struct (ReversedHandle, rhandle);
+      sfi_delete_struct (ReversedHandle, rhandle);
       return NULL;
     }
   return &rhandle->dhandle;
@@ -575,7 +577,7 @@ cut_handle_destroy (GslDataHandle *data_handle)
   gsl_data_handle_unref (chandle->src_handle);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (CutHandle, chandle);
+  sfi_delete_struct (CutHandle, chandle);
 }
 
 static GslLong
@@ -633,7 +635,7 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
   g_return_val_if_fail (src_handle != NULL, NULL);
   g_return_val_if_fail (cut_offset >= 0 && n_cut_values >= 0 && tail_cut >= 0, NULL);
   
-  chandle = gsl_new_struct0 (CutHandle, 1);
+  chandle = sfi_new_struct0 (CutHandle, 1);
   success = gsl_data_handle_common_init (&chandle->dhandle, NULL);
   if (success)
     {
@@ -646,7 +648,7 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
     }
   else
     {
-      gsl_delete_struct (CutHandle, chandle);
+      sfi_delete_struct (CutHandle, chandle);
       return NULL;
     }
   return &chandle->dhandle;
@@ -724,7 +726,7 @@ insert_handle_destroy (GslDataHandle *data_handle)
   gsl_data_handle_common_free (data_handle);
   ihandle->paste_values = NULL;
   ihandle->free_values = NULL;
-  gsl_delete_struct (InsertHandle, ihandle);
+  sfi_delete_struct (InsertHandle, ihandle);
   
   if (free_values)
     free_values ((gpointer) paste_values);
@@ -806,7 +808,7 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
   if (n_paste_values)
     g_return_val_if_fail (paste_values != NULL, NULL);
   
-  ihandle = gsl_new_struct0 (InsertHandle, 1);
+  ihandle = sfi_new_struct0 (InsertHandle, 1);
   success = gsl_data_handle_common_init (&ihandle->dhandle, NULL);
   if (success)
     {
@@ -822,7 +824,7 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
     }
   else
     {
-      gsl_delete_struct (InsertHandle, ihandle);
+      sfi_delete_struct (InsertHandle, ihandle);
       return NULL;
     }
   return &ihandle->dhandle;
@@ -865,7 +867,7 @@ loop_handle_destroy (GslDataHandle *data_handle)
   gsl_data_handle_unref (lhandle->src_handle);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (LoopHandle, lhandle);
+  sfi_delete_struct (LoopHandle, lhandle);
 }
 
 static GslLong
@@ -912,7 +914,7 @@ gsl_data_handle_new_looped (GslDataHandle *src_handle,
   g_return_val_if_fail (loop_first >= 0, NULL);
   g_return_val_if_fail (loop_last >= loop_first, NULL);
   
-  lhandle = gsl_new_struct0 (LoopHandle, 1);
+  lhandle = sfi_new_struct0 (LoopHandle, 1);
   success = gsl_data_handle_common_init (&lhandle->dhandle, NULL);
   if (success)
     {
@@ -926,7 +928,7 @@ gsl_data_handle_new_looped (GslDataHandle *src_handle,
     }
   else
     {
-      gsl_delete_struct (LoopHandle, lhandle);
+      sfi_delete_struct (LoopHandle, lhandle);
       return NULL;
     }
   return &lhandle->dhandle;
@@ -942,7 +944,7 @@ dcache_handle_destroy (GslDataHandle *data_handle)
   gsl_data_cache_unref (dhandle->dcache);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (DCacheHandle, dhandle);
+  sfi_delete_struct (DCacheHandle, dhandle);
 }
 
 static GslErrorType
@@ -1012,7 +1014,7 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
   
   g_return_val_if_fail (dcache != NULL, NULL);
   
-  dhandle = gsl_new_struct0 (DCacheHandle, 1);
+  dhandle = sfi_new_struct0 (DCacheHandle, 1);
   success = gsl_data_handle_common_init (&dhandle->dhandle, NULL);
   if (success)
     {
@@ -1023,7 +1025,7 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
     }
   else
     {
-      gsl_delete_struct (DCacheHandle, dhandle);
+      sfi_delete_struct (DCacheHandle, dhandle);
       return NULL;
     }
   return &dhandle->dhandle;
@@ -1053,13 +1055,25 @@ wave_format_bit_depth (const GslWaveFormatType format)
 }
 #define	wave_format_byte_width(f)	((wave_format_bit_depth (f) + 7) / 8)
 
+guint
+gsl_wave_format_bit_depth (GslWaveFormatType format)
+{
+  return wave_format_bit_depth (format);
+}
+
+guint
+gsl_wave_format_byte_width (GslWaveFormatType format)
+{
+  return wave_format_byte_width (format);
+}
+
 static void
 wave_handle_destroy (GslDataHandle *data_handle)
 {
   WaveHandle *whandle = (WaveHandle*) data_handle;
 
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (WaveHandle, whandle);
+  sfi_delete_struct (WaveHandle, whandle);
 }
 
 static GslErrorType
@@ -1074,6 +1088,13 @@ wave_handle_open (GslDataHandle      *data_handle,
   else
     {
       GslLong l, fwidth = wave_format_byte_width (whandle->format);
+      whandle->byte_offset = whandle->requested_offset;
+      if (whandle->add_zoffset)
+	{
+	  GslLong zoffset = gsl_hfile_zoffset (whandle->hfile);
+	  if (zoffset >= 0)
+	    whandle->byte_offset += zoffset + 1;
+	}
       /* convert size into n_values, i.e. float length */
       l = whandle->hfile->n_bytes;
       l -= MIN (l, whandle->byte_offset);
@@ -1268,23 +1289,39 @@ gsl_wave_handle_new (const gchar      *file_name,
   g_return_val_if_fail (n_channels >= 1, NULL);
   g_return_val_if_fail (n_values >= 1 || n_values == -1, NULL);
 
-  whandle = gsl_new_struct0 (WaveHandle, 1);
+  whandle = sfi_new_struct0 (WaveHandle, 1);
   if (gsl_data_handle_common_init (&whandle->dhandle, file_name))
     {
       whandle->dhandle.vtable = &wave_handle_vtable;
       whandle->n_channels = n_channels;
       whandle->format = format;
       whandle->byte_order = byte_order;
-      whandle->byte_offset = byte_offset;
+      whandle->requested_offset = byte_offset;
       whandle->requested_length = n_values;
       whandle->hfile = NULL;
       return &whandle->dhandle;
     }
   else
     {
-      gsl_delete_struct (WaveHandle, whandle);
+      sfi_delete_struct (WaveHandle, whandle);
       return NULL;
     }
+}
+
+GslDataHandle*
+gsl_wave_handle_new_zoffset (const gchar      *file_name,
+			     guint             n_channels,
+			     GslWaveFormatType format,
+			     guint             byte_order,
+			     GslLong           byte_offset,
+			     GslLong           byte_size)
+{
+  GslDataHandle *dhandle = gsl_wave_handle_new (file_name, n_channels, format,
+						byte_order, byte_offset,
+						byte_size / wave_format_byte_width (format));
+  if (dhandle)
+    ((WaveHandle*) dhandle)->add_zoffset = TRUE;
+  return dhandle;
 }
 
 const gchar*

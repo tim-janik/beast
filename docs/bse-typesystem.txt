@@ -77,7 +77,7 @@ of plugins (a plugin being loaded, unloaded and the reloaded again will most
 certainly end up in a different memory location than before).
 When class or object instances of a dynamic type need to be created, the
 corresponding plugin will be loaded into memory and the required implementation
-related type information will be retrived.
+related type information will be retrieved.
 Upon destruction of the instance, the type info is released again and the
 plugin will be unloaded.
 So for dynamic types, the only things that stays persistent across plugin life

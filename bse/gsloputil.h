@@ -73,8 +73,8 @@ void	    _engine_set_schedule		(EngineSchedule	*schedule);
 void	    _engine_unset_schedule		(EngineSchedule	*schedule);
 EngineNode* _engine_pop_unprocessed_node	(void);
 void	    _engine_push_processed_node		(EngineNode	*node);
-GslRing*    _engine_pop_unprocessed_cycle	(void);
-void	    _engine_push_processed_cycle	(GslRing	*cycle);
+SfiRing*    _engine_pop_unprocessed_cycle	(void);
+void	    _engine_push_processed_cycle	(SfiRing	*cycle);
 void	    _engine_wait_on_unprocessed		(void);
 
        

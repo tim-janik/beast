@@ -20,34 +20,35 @@
 #include <bse/bseserver.h>
 #include <bse/bseproject.h>
 #include <bse/gslloader.h>
-#include <bse/bswprivate.h>
 #include <bse/bsemidinotifier.h>
 #include <bse/bsemidievent.h>
-#include <bse/bsescriptcontrol.h>
+#include <bse/bsejanitor.h>
+#include <bse/bsescripthelper.h>
+#include <bse/bsegconfig.h>
+#include "../PKG_paths.h"
 #include <string.h>
 
 
-AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik";
-DATE	= "2001";
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
 
 
 METHOD (BseServer, use-new-project) {
   HELP	= "Create a new project, owned by the caller (name is modified to be unique if necessary)";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("name", "Project Name", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_object ("project", "Project", NULL,
-			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("name", "Project Name", NULL,
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT	= bse_param_spec_object ("project", "Project", NULL,
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server     = (BseServer*) g_value_get_object (in_values++);
-  gchar *name           = g_value_get_string (in_values++);
+  BseServer *server     = (BseServer*) bse_value_get_object (in_values++);
+  gchar *name           = sfi_value_get_string (in_values++);
   gchar *uname;
   guint num = 1;
   BseProject *project;
@@ -55,7 +56,7 @@ BODY (BseProcedureClass *proc,
   /* check parameters */
   if (!BSE_IS_SERVER (server) || !name)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* enforce unique name */
   uname = g_strdup (name);
   while (bse_server_find_project (server, uname))
@@ -63,39 +64,39 @@ BODY (BseProcedureClass *proc,
       g_free (uname);
       uname = g_strdup_printf ("%s-%u", name, num++);
     }
-
+  
   /* create project */
   project = bse_server_create_project (server, uname);
   g_free (uname);
-  bse_item_exec_void_proc (project, "use");
-  bse_object_unref (project);
+  bse_item_use (BSE_ITEM (project));
+  g_object_unref (project);
   
   /* set output parameters */
-  g_value_set_object (out_values++, G_OBJECT (project));
+  bse_value_set_object (out_values++, G_OBJECT (project));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseServer, get-midi-notifier) {
-  HELP	= "Retrive the global midi notifier object.";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_object ("midi_notifier", "Midi Notifier", NULL,
-			       BSE_TYPE_MIDI_NOTIFIER, BSE_PARAM_DEFAULT);
+  HELP	= "Retrieve the global midi notifier object.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= bse_param_spec_object ("midi_notifier", "Midi Notifier", NULL,
+				 BSE_TYPE_MIDI_NOTIFIER, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *self = g_value_get_object (in_values++);
+  BseServer *self = bse_value_get_object (in_values++);
   BseMidiReceiver *midi_receiver;
   BseMidiNotifier *notifier;
-
+  
   /* check parameters */
   if (!BSE_IS_SERVER (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   midi_receiver = bse_server_get_midi_receiver (self, "default");
   notifier = bse_midi_receiver_get_notifier (midi_receiver);
   if (!notifier)
@@ -104,36 +105,36 @@ BODY (BseProcedureClass *proc,
       bse_midi_receiver_set_notifier (midi_receiver, notifier);
       g_object_unref (notifier);
     }
-
+  
   /* set output parameters */
-  g_value_set_object (out_values++, G_OBJECT (notifier));
+  bse_value_set_object (out_values++, G_OBJECT (notifier));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseServer, run-project) {
   HELP	= "Process a project to generate sound";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("project", "Project", NULL,
-			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_enum ("error", "Error", NULL,
-			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("project", "Project", NULL,
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= (BseServer*) g_value_get_object (in_values++);
-  BseProject *project	= (BseProject*) g_value_get_object (in_values++);
+  BseServer *server	= (BseServer*) bse_value_get_object (in_values++);
+  BseProject *project	= (BseProject*) bse_value_get_object (in_values++);
   BseErrorType error = 0;
   
   /* check parameters */
   if (!BSE_IS_SERVER (server) || !BSE_IS_PROJECT (project))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* check that we have running MIDI/PCM devices */
   if (!server->dev_use_count)
     error = bse_server_activate_devices (server);
@@ -145,14 +146,14 @@ BODY (BseProcedureClass *proc,
       g_return_val_if_fail (server->dev_use_count > 0, BSE_ERROR_INTERNAL);
       server->dev_use_count--;
     }
-
+  
   /* (re-)start project playback */
   if (!error)
     {
       bse_project_start_playback (project);
       server->dev_use_count++;
     }
-
+  
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
@@ -161,23 +162,23 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseServer, halt-project) {
   HELP	= "Stop processing a project generating sound";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("project", "Project", NULL,
-			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("project", "Project", NULL,
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= g_value_get_object (in_values++);
-  BseProject *project	= g_value_get_object (in_values++);
+  BseServer *server	= bse_value_get_object (in_values++);
+  BseProject *project	= bse_value_get_object (in_values++);
   
   /* check parameters */
   if (!BSE_IS_SERVER (server) || !BSE_IS_PROJECT (project))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* if project is currently playing, halt it */
   if (BSE_SOURCE_PREPARED (project))
     {
@@ -193,29 +194,29 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseServer, can-load) {
   HELP	= "Check whether a loader can be found for a wave file";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("file_name", "File Name", "The file to find a loader for",
-			       NULL, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boolean ("can-load", NULL, NULL,
-				FALSE, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("file_name", "File Name", "The file to find a loader for",
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("can-load", NULL, NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= g_value_get_object (in_values++);
-  gchar *file_name	= g_value_get_string (in_values++);
+  BseServer *server	= bse_value_get_object (in_values++);
+  gchar *file_name	= sfi_value_get_string (in_values++);
   GslWaveFileInfo *finfo;
-
+  
   /* check parameters */
   if (!BSE_IS_SERVER (server) || !file_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* find a loader */
   finfo = gsl_wave_file_info_load (file_name, NULL);
-  g_value_set_boolean (out_values++, finfo != NULL);
+  sfi_value_set_bool (out_values++, finfo != NULL);
   if (finfo)
     gsl_wave_file_info_unref (finfo);
   
@@ -224,179 +225,377 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseServer, describe-note) {
   HELP	= "Describe a note, providing information about its octave, semitone, frequency, etc.";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_uint ("note", "Note", NULL,
-			       BSE_MIN_NOTE, BSE_MAX_NOTE,
-			       BSE_KAMMER_NOTE, 1,
-			       BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_int ("fine_tune", "Fine Tune", NULL,
-			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
-			      0, 1, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
-			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
+  OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
+			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= g_value_get_object (in_values++);
-  gint       note	= g_value_get_uint (in_values++);
-  gint       fine_tune	= g_value_get_int (in_values++);
-  BswNoteDescription *info;
-
+  BseServer *server	= bse_value_get_object (in_values++);
+  gint       note	= sfi_value_get_int (in_values++);
+  gint       fine_tune	= sfi_value_get_int (in_values++);
+  
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* describe note */
-  info = bsw_note_description (note, fine_tune);
-
-  /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++, info);
+  bse_value_take_boxed (out_values++, bse_note_description (note, fine_tune));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseServer, note-from-freq) {
   HELP	= "Describe a note, given its frequency.";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_float ("freq", "Frequency", NULL,
-				0, BSE_MAX_FREQUENCY_f,
-				BSE_KAMMER_FREQUENCY_f, 10.0,
-				BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
-			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_real ("freq", "Frequency", NULL,
+			  BSE_KAMMER_FREQUENCY_f,
+			  0, BSE_MAX_FREQUENCY_f,
+			  10.0, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
+			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= g_value_get_object (in_values++);
-  gfloat     freq	= g_value_get_float (in_values++);
-  BswNoteDescription *info;
+  BseServer *server	= bse_value_get_object (in_values++);
+  gfloat     freq	= sfi_value_get_real (in_values++);
   gint note;
-
+  
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* describe note */
   note = bse_note_from_freq (freq);
-  info = bsw_note_description (note, 0);
-
-  /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++, info);
+  bse_value_take_boxed (out_values++, bse_note_description (note, 0));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseServer, note-from-string) {
   HELP	= "Describe a note, given its name and octave offset.";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_string ("name", "Name", NULL,
-				 "", BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
-			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("name", "Name", NULL,
+			    "", SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
+			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= g_value_get_object (in_values++);
-  gchar     *name     	= g_value_get_string (in_values++);
-  BswNoteDescription *info;
+  BseServer *server	= bse_value_get_object (in_values++);
+  gchar     *name     	= sfi_value_get_string (in_values++);
   gint note;
-
+  
   /* check parameters */
   if (!BSE_IS_SERVER (server) || !name)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* describe note */
   note = bse_note_from_string (name);
-  info = bsw_note_description (note, 0);
-
-  /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++, info);
+  bse_value_take_boxed (out_values++, bse_note_description (note, 0));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseServer, construct-note) {
   HELP	= "Describe a note, given its semitone, octave and fine tune.";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_uint ("semitone", NULL, NULL,
-			       0, 11,
-			       9, 1, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_int ("octave", NULL, NULL,
-			      BSE_MIN_OCTAVE, BSE_MAX_OCTAVE,
-			      BSE_KAMMER_OCTAVE, 1, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_int ("fine_tune", "Fine Tune", NULL,
-			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
-			      0, 1, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
-			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("semitone", NULL, NULL,
+			 9, 0, 11, 1,
+			 SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_octave ("octave", NULL, NULL);
+  IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
+  OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
+			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= g_value_get_object (in_values++);
-  guint      semitone	= g_value_get_uint (in_values++);
-  gint       octave	= g_value_get_int (in_values++);
-  gint       fine_tune	= g_value_get_int (in_values++);
-  BswNoteDescription *info;
+  BseServer *server	= bse_value_get_object (in_values++);
+  guint      semitone	= sfi_value_get_int (in_values++);
+  gint       octave	= sfi_value_get_int (in_values++);
+  gint       fine_tune	= sfi_value_get_int (in_values++);
   gint note;
-
+  
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   /* describe note */
   note = BSE_NOTE_GENERIC (octave, semitone);
-  info = bsw_note_description (note, fine_tune);
-
-  /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++, info);
+  bse_value_take_boxed (out_values++, bse_note_description (note, fine_tune));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseServer, n-scripts) {
   HELP	= "Return the number of scripts currently running on this server.";
-  IN	= g_param_spec_object ("server", "Server", NULL,
- 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  OUT   = bse_param_spec_uint ("n_connections", NULL, "Number of Connections",
-			       0, G_MAXINT, 0, 1,
-			       BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("n_connections", NULL, "Number of Connections",
+			 0, 0, G_MAXINT, 1,
+			 SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseServer *server	= g_value_get_object (in_values++);
+  BseServer *server	= bse_value_get_object (in_values++);
   GSList *slist;
   guint n_scripts = 0;
+  
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* count script controls */
+  for (slist = server->children; slist; slist = slist->next)
+    if (BSE_IS_JANITOR (slist->data))
+      n_scripts++;
+  
+  /* set output parameters */
+  sfi_value_set_int (out_values++, n_scripts);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, preferences-locked) {
+  HELP	= "Returns whether the bse-preferences property is currently locked against modifications or not.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("locked", NULL, NULL,
+			  FALSE, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server	= bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_int (out_values++, bse_gconfig_locked ());
+  
+  return BSE_ERROR_NONE;
+}
+
+typedef struct _ScriptRegistration ScriptRegistration;
+struct _ScriptRegistration
+{
+  gchar         *script;
+  BseErrorType (*register_func) (const gchar *script,
+				 BseJanitor **janitor_p);
+  ScriptRegistration *next;
+};
+
+static gboolean	register_scripts (gpointer data);
+
+static void
+script_janitor_closed (BseJanitor *janitor,
+		       BseServer  *server)
+{
+  bse_server_registration (server, BSE_REGISTER_SCRIPT, bse_janitor_get_script (janitor), NULL);
+  bse_idle_normal (register_scripts, server);
+}
+
+static gboolean
+register_scripts (gpointer data)
+{
+  BseServer *server = data;
+  ScriptRegistration *scr = g_object_get_data (server, "script-registration-queue");
+  BseJanitor *janitor = NULL;
+  BseErrorType error;
+
+  if (!scr)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  g_object_set_data (server, "script-registration-queue", scr->next);
+
+  error = scr->register_func (scr->script, &janitor);
+  if (!janitor)
+    {
+      bse_server_registration (server, BSE_REGISTER_SCRIPT, scr->script, bse_error_blurb (error));
+      g_free (scr->script);
+      g_free (scr);
+      return TRUE;
+    }
+  g_object_connect (janitor, "signal::closed", script_janitor_closed, server, NULL);
+  return FALSE;
+}
+
+METHOD (BseServer, register-scripts) {
+  HELP	= "Register external scripts.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  static gboolean registration_done = FALSE;
+  /* extract parameter values */
+  BseServer *server	       = bse_value_get_object (in_values++);
+  const gchar *path            = BSW_PATH_SCRIPTS;
+  ScriptRegistration *scr_list = NULL;
+  GSList *free_list, *list;
 
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
-  /* count script controls */
-  for (slist = server->children; slist; slist = slist->next)
-    if (BSE_IS_SCRIPT_CONTROL (slist->data))
-      n_scripts++;
+  if (registration_done)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return BSE_ERROR_NONE;
+    }
+  registration_done = TRUE;
 
-  /* set output parameters */
-  g_value_set_uint (out_values++, n_scripts);
+  list = bse_search_path_list_files (path, "*.scm", NULL, G_FILE_TEST_IS_REGULAR);
+  free_list = g_slist_sort (list, (GCompareFunc) strcmp);
+  for (list = free_list; list; list = list->next)
+    {
+      ScriptRegistration *scr = g_new0 (ScriptRegistration, 1);
+      scr->script = list->data;
+      scr->register_func = bse_script_file_register;
+      scr->next = scr_list;
+      scr_list = scr;
+    }
+  g_slist_free (free_list);
+
+  g_object_set_data (server, "script-registration-queue", scr_list);
+  bse_idle_normal (register_scripts, server);
+
+  return BSE_ERROR_NONE;
+}
+
+static gboolean
+register_plugins (gpointer data)
+{
+  BseServer *server = data;
+  GSList *slist = g_object_get_data (server, "plugin-registration-queue");
+  const gchar *error;
+
+  if (!slist)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  g_object_set_data (server, "plugin-registration-queue", slist->next);
+
+  error = bse_plugin_check_load (slist->data);
+  bse_server_registration (server, BSE_REGISTER_PLUGIN, slist->data, error);
+  g_free (slist->data);
+  g_slist_free_1 (slist);
+  return TRUE;
+}
+
+METHOD (BseServer, register-plugins) {
+  HELP	= "Register core plugins.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  static gboolean registration_done = FALSE;
+  /* extract parameter values */
+  BseServer *server	= bse_value_get_object (in_values++);
+  const gchar *path = BSE_PATH_PLUGINS;
+  GSList *slist;
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  if (registration_done)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return BSE_ERROR_NONE;
+    }
+  registration_done = TRUE;
+
+  slist = bse_plugin_dir_list_files (path);
+  g_object_set_data (server, "plugin-registration-queue", slist);
+  bse_idle_normal (register_plugins, server);
+
+  return BSE_ERROR_NONE;
+}
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+METHOD (BseServer, save-preferences) {
+  HELP	= "Request the bse-preferences property to be saved into BSE's configuration file.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server = bse_value_get_object (in_values++);
+  SfiWStore *wstore;
+  gchar *file_name;
+  GValue *value;
+  SfiRec *rec;
+  gint fd;
   
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
+  fd = open (file_name,
+	     O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
+	     0666);
+  g_free (file_name);
+  if (fd < 0)
+    return BSE_ERROR_NONE;
+
+  wstore = sfi_wstore_new ();
+  sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", BSE_VERSION);
+
+  /* store BseGConfig */
+  sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");
+  rec = bse_gconfig_to_rec (bse_global_config);
+  value = sfi_value_rec (rec);
+  sfi_wstore_put_param (wstore, value, bse_gconfig_pspec ());
+  sfi_value_free (value);
+  sfi_rec_unref (rec);
+  sfi_wstore_puts (wstore, "\n");
+
+  /* flush stuff to rc file */
+  sfi_wstore_flush_fd (wstore, fd);
+  sfi_wstore_destroy (wstore);
+  close (fd);
+
   return BSE_ERROR_NONE;
 }

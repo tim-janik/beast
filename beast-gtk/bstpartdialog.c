@@ -33,16 +33,18 @@ static void	piano_canvas_press		(BstPartDialog		*part_dialog,
 						 GdkEvent		*event,
 						 BstPianoRoll		*proll);
 static void	part_dialog_run_proc		(GtkWidget		*widget,
-						 gulong			 callback_action,
+						 gulong                  category_id,
 						 gpointer		 popup_data);
 static void	part_dialog_note_choice		(BstPartDialog		*self,
 						 guint			 choice);
 static void	part_dialog_qnote_choice	(BstPartDialog		*self,
 						 guint			 choice);
-static void	menu_select_tool		(BstPartDialog		*self,
-						 guint			 tool);
-static void	menu_activate_tool		(BstPartDialog		*self,
-						 guint			 tool);
+static void	menu_select_tool		(GtkWidget              *owner,
+						 gulong                  callback_action,
+						 gpointer                popup_data);
+static void	menu_activate_tool		(GtkWidget              *owner,
+						 gulong                  callback_action,
+						 gpointer                popup_data);
 
 
 /* --- variables --- */
@@ -52,7 +54,7 @@ enum {
   ACTION_COPY,
   ACTION_PASTE
 };
-static GtkItemFactoryEntry popup_entries[] =
+static BstMenuConfigEntry popup_entries[] =
 {
 #define MENU_CB(xxx)	menu_select_tool, BST_PIANO_ROLL_TOOL_ ## xxx
 #define ACTION_CB(xxx)	menu_activate_tool, ACTION_ ## xxx
@@ -105,11 +107,9 @@ static void
 bst_part_dialog_class_init (BstPartDialogClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  GtkItemFactoryEntry *centries;
-  BseCategory *cats;
-  GSList *slist;
-  guint n_cats;
-  
+  BseCategorySeq *cseq;
+  BstMenuConfig *m1, *m2;
+
   parent_class = g_type_class_peek_parent (class);
   
   gobject_class->finalize = bst_part_dialog_finalize;
@@ -117,18 +117,17 @@ bst_part_dialog_class_init (BstPartDialogClass *class)
   /* create item factory for menu entries and categories */
   class->popup_factory = gtk_item_factory_new (GTK_TYPE_MENU, "<BstPartDialog>", NULL);
 
-  /* construct menu entry list */
-  cats = bse_categories_match_typed ("/Scripts/*", BSE_TYPE_PROCEDURE, &n_cats);
-  centries = bst_menu_entries_from_cats (n_cats, cats, part_dialog_run_proc, TRUE);
-  slist = bst_menu_entries_slist (n_cats, centries);
-  slist = bst_menu_entries_sort (slist);
-  slist = g_slist_concat (bst_menu_entries_slist (G_N_ELEMENTS (popup_entries), popup_entries), slist);
-
-  /* create entries and release allocations */
-  bst_menu_entries_create (class->popup_factory, slist, NULL);
-  g_slist_free (slist);
-  g_free (centries);
-  g_free (cats);
+  /* standard entries */
+  m1 = bst_menu_config_from_entries (G_N_ELEMENTS (popup_entries), popup_entries);
+  /* procedures */
+  cseq = bse_categories_match_typed ("/Scripts/*", "BseProcedure");
+  m2 = bst_menu_config_from_cats (cseq, part_dialog_run_proc, 1);
+  bst_menu_config_sort (m2);
+  /* merge */
+  m1 = bst_menu_config_merge (m1, m2);
+  /* and create menu items */
+  bst_menu_config_create_items (m1, class->popup_factory, NULL);
+  bst_menu_config_free (m1);
 }
 
 static void
@@ -305,11 +304,11 @@ bst_part_dialog_finalize (GObject *object)
 
 void
 bst_part_dialog_set_proxy (BstPartDialog *self,
-			   BswProxy       part)
+			   SfiProxy       part)
 {
   g_return_if_fail (BST_IS_PART_DIALOG (self));
   if (part)
-    g_return_if_fail (BSW_IS_PART (part));
+    g_return_if_fail (BSE_IS_PART (part));
 
   bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
   bst_piano_roll_set_proxy (BST_PIANO_ROLL (self->proll), part);
@@ -368,15 +367,14 @@ part_dialog_update_tool (BstPartDialog *self)
 
 static void
 part_dialog_run_proc (GtkWidget *widget,
-		      gulong     callback_action,
+		      gulong     category_id,
 		      gpointer   popup_data)
 {
   BstPartDialog *self = BST_PART_DIALOG (widget);
-
-  GType proc_type = callback_action;
-
-  bst_procedure_exec_auto (proc_type,
-			   "part", BSE_TYPE_PART, bse_object_from_id (BST_PIANO_ROLL (self->proll)->proxy),
+  BseCategory *cat = bse_category_from_id (category_id);
+  
+  bst_procedure_exec_auto (cat->type,
+			   "part", SFI_TYPE_PROXY, BST_PIANO_ROLL (self->proll)->proxy,
 			   NULL);
 }
 
@@ -415,17 +413,21 @@ part_dialog_qnote_choice (BstPartDialog *self,
 }
 
 static void
-menu_select_tool (BstPartDialog *self,
-		  guint          tool)
+menu_select_tool (GtkWidget *owner,
+		  gulong     callback_action,
+		  gpointer   popup_data)
 {
-  bst_radio_tools_set_tool (self->rtools, tool);
+  BstPartDialog *self = BST_PART_DIALOG (owner);
+  bst_radio_tools_set_tool (self->rtools, callback_action);
 }
 
 static void
-menu_activate_tool (BstPartDialog *self,
-		    guint          tool)
+menu_activate_tool (GtkWidget *owner,
+		    gulong     callback_action,
+		    gpointer   popup_data)
 {
-  switch (tool)
+  BstPartDialog *self = BST_PART_DIALOG (owner);
+  switch (callback_action)
     {
     case ACTION_CLEAR:
       bst_piano_roll_controller_clear (self->proll_ctrl);

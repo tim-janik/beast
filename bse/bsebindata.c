@@ -33,7 +33,7 @@ enum
 /* --- prototypes --- */
 static void	bse_bin_data_class_init		(BseBinDataClass	*class);
 static void	bse_bin_data_init		(BseBinData		*bin_data);
-static void	bse_bin_data_destroy		(BseObject		*object);
+static void	bse_bin_data_finalize		(GObject		*object);
 static void     bse_bin_data_set_property       (GObject                *object,
 						 guint          	 param_id,
 						 const GValue         	*value,
@@ -84,22 +84,20 @@ bse_bin_data_class_init (BseBinDataClass *class)
   
   gobject_class->set_property = bse_bin_data_set_property;
   gobject_class->get_property = bse_bin_data_get_property;
-  
-  object_class->destroy = bse_bin_data_destroy;
+  gobject_class->finalize = bse_bin_data_finalize;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_N_BITS,
-			      bse_param_spec_uint ("n_bits", "# Bits", "Value size in bits",
-						 BSE_MIN_BIT_SIZE, BSE_MAX_BIT_SIZE,
-						 BSE_DFL_BIN_DATA_BITS, 8,
-						 BSE_PARAM_DEFAULT));
+			      sfi_pspec_int ("n_bits", "# Bits", "Value size in bits",
+					     BSE_DFL_BIN_DATA_BITS,
+					     BSE_MIN_BIT_SIZE, BSE_MAX_BIT_SIZE,
+					     8, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_BYTE_SIZE,
-			      bse_param_spec_uint ("byte_size", "Byte Size", "Value size in bytes",
-						 BSE_MIN_BIT_SIZE / 8, BSE_MAX_BIT_SIZE / 8,
-						 BSE_DFL_BIN_DATA_BITS / 8, 1,
-						 BSE_PARAM_READWRITE |
-						 BSE_PARAM_SERVE_GUI));
+			      sfi_pspec_int ("byte_size", "Byte Size", "Value size in bytes",
+					     BSE_DFL_BIN_DATA_BITS / 8,
+					     BSE_MIN_BIT_SIZE / 8, BSE_MAX_BIT_SIZE / 8,
+					     1, SFI_PARAM_GUI));
 }
 
 static void
@@ -113,16 +111,14 @@ bse_bin_data_init (BseBinData *bin_data)
 }
 
 static void
-bse_bin_data_destroy (BseObject *object)
+bse_bin_data_finalize (GObject *object)
 {
-  BseBinData *bin_data;
-  
-  bin_data = BSE_BIN_DATA (object);
-  
+  BseBinData *bin_data = BSE_BIN_DATA (object);
+
   bse_bin_data_free_values (bin_data);
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -132,16 +128,16 @@ bse_bin_data_set_property (GObject      *object,
 			   GParamSpec   *pspec)
 {
   BseBinData *self = BSE_BIN_DATA (object);
-
+  
   if (self->values)
     bse_bin_data_free_values (self);
   switch (param_id)
     {
     case PARAM_N_BITS:
-      self->bits_per_value = g_value_get_uint (value);
+      self->bits_per_value = sfi_value_get_int (value);
       break;
     case PARAM_BYTE_SIZE:
-      self->bits_per_value = g_value_get_uint (value);
+      self->bits_per_value = sfi_value_get_int (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -156,14 +152,14 @@ bse_bin_data_get_property (GObject    *object,
 			   GParamSpec *pspec)
 {
   BseBinData *self = BSE_BIN_DATA (object);
-
+  
   switch (param_id)
     {
     case PARAM_N_BITS:
-      g_value_set_uint (value, self->bits_per_value);
+      sfi_value_set_int (value, self->bits_per_value);
       break;
     case PARAM_BYTE_SIZE:
-      g_value_set_uint (value, self->bits_per_value * 8);
+      sfi_value_set_int (value, self->bits_per_value * 8);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -222,8 +218,8 @@ bse_bin_data_set_values_from_fd (BseBinData   *bin_data,
   
   bin_data->n_values = n_bytes / ((bin_data->bits_per_value + 7) / 8);
   bin_data->n_bytes = bin_data->n_values * ((bin_data->bits_per_value + 7) / 8);
-  bse_object_param_changed (BSE_OBJECT (bin_data), "n_bits");
-  bse_object_param_changed (BSE_OBJECT (bin_data), "byte_size");
+  g_object_notify (bin_data, "n_bits");
+  g_object_notify (bin_data, "byte_size");
   pad_data = g_new (guint8, bin_data->byte_padding + bin_data->n_bytes + bin_data->byte_padding);
   memset (pad_data, 0, bin_data->byte_padding);
   memset (pad_data + bin_data->byte_padding + bin_data->n_bytes, 0, bin_data->byte_padding);
@@ -277,8 +273,8 @@ bse_bin_data_init_values (BseBinData *bin_data,
   bin_data->bits_per_value = CLAMP (bits_per_value, BSE_MIN_BIT_SIZE, BSE_MIN_BIT_SIZE);
   bin_data->n_values = n_values;
   bin_data->n_bytes = bin_data->n_values * ((bin_data->bits_per_value + 7) / 8);
-  bse_object_param_changed (BSE_OBJECT (bin_data), "n_bits");
-  bse_object_param_changed (BSE_OBJECT (bin_data), "byte_size");
+  g_object_notify (bin_data, "n_bits");
+  g_object_notify (bin_data, "byte_size");
   pad_data = g_new0 (guint8, bin_data->byte_padding + bin_data->n_bytes + bin_data->byte_padding);
   memset (pad_data, 0, bin_data->byte_padding);
   memset (pad_data + bin_data->byte_padding + bin_data->n_bytes, 0, bin_data->byte_padding);

@@ -25,34 +25,21 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- structures --- */
-struct _BseCategory
-{
-  gchar	  *category;
-  guint    mindex, lindex;
-  GType    type;
-  BswIcon *icon; /* static icons, no need for reference counting */
-};
-
-
 /* --- prototypes --- */
-void                bse_categories_register      (const gchar      *category,
-						  GType             type);
-void                bse_categories_register_icon (const gchar      *category,
-						  GType             type,
-						  const BsePixdata *pixdata);
-BseCategory* /*fr*/ bse_categories_match         (const gchar      *pattern,
-						  guint            *n_matches);
-BseCategory* /*fr*/ bse_categories_match_typed   (const gchar      *pattern,
-						  GType             base_type,
-						  guint            *n_matches);
-BseCategory* /*fr*/ bse_categories_from_type     (GType             type,
-						  guint            *n_categories);
+void		bse_categories_register      (const gchar      *category,
+					      GType             type);
+void		bse_categories_register_icon (const gchar      *category,
+					      GType             type,
+					      const BsePixdata *pixdata);
+BseCategorySeq*	bse_categories_match         (const gchar      *pattern);
+BseCategorySeq*	bse_categories_match_typed   (const gchar      *pattern,
+					      GType             base_type);
+BseCategorySeq*	bse_categories_from_type     (GType             type);
+BseCategory*	bse_category_from_id	     (guint		 id);
 
 
-
-
-
+/* --- internal --- */
+void		_bse_init_categories	     (void);
 
 
 #ifdef __cplusplus

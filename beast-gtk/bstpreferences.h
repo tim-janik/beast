@@ -20,6 +20,7 @@
 #define __BST_PREFERENCES_H__
 
 #include	"bstparamview.h"
+#include	"bstgconfig.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,11 +43,15 @@ struct _BstPreferences
 {
   GtkVBox	 parent_object;
 
-  BseGConfig	*gconf;
+  GtkNotebook	*notebook;
 
-  GtkWidget	*bse_param_view;
-  GtkWidget	*bst_param_view;
-  GtkWidget	*notebook;
+  SfiRec	*bstrec;
+  SfiRing	*bstparams;
+
+  GParamSpec    *bsepspec;
+  SfiRec	*bserec;
+  SfiRing	*bseparams;
+
   GtkWidget	*apply;
 };
 struct _BstPreferencesClass
@@ -57,25 +62,14 @@ struct _BstPreferencesClass
 
 /* --- prototypes --- */
 GtkType		 bst_preferences_get_type	(void);
-GtkWidget*	 bst_preferences_new		(BseGConfig	*gconf);
-void		 bst_preferences_rebuild	(BstPreferences *prefs);
 void		 bst_preferences_set_gconfig	(BstPreferences *prefs,
-						 BseGConfig     *gconf);
+						 BstGConfig     *gconf);
 void		 bst_preferences_apply		(BstPreferences *prefs);
 void		 bst_preferences_save		(BstPreferences *prefs);
 void		 bst_preferences_revert		(BstPreferences *prefs);
 void		 bst_preferences_default_revert	(BstPreferences *prefs);
 void		 bst_preferences_create_buttons (BstPreferences *prefs,
 						 GxkDialog      *dialog);
-#define	bst_preferences_update	bst_preferences_revert
-
-
-/* --- rc file --- */
-BseErrorType	 bst_rc_dump			(const gchar	*file_name,
-						 BseGConfig     *gconf);
-BseErrorType	 bst_rc_parse			(const gchar	*file_name,
-						 BseGConfig     *gconf);
-
 
 
 #ifdef __cplusplus

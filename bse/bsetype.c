@@ -21,17 +21,8 @@
 #include        <string.h>
 
 
-
-
 /* --- variables --- */
 static GQuark	quark_blurb = 0;
-GType BSE_TYPE_PARAM_INT = 0;
-GType BSE_TYPE_PARAM_UINT = 0;
-GType BSE_TYPE_PARAM_FLOAT = 0;
-GType BSE_TYPE_PARAM_DOUBLE = 0;
-GType BSE_TYPE_PARAM_TIME = 0;
-GType BSE_TYPE_PARAM_NOTE = 0;
-GType BSE_TYPE_PARAM_DOTS = 0;
 
 
 /* --- functions --- */
@@ -46,7 +37,7 @@ bse_type_set_blurb (GType        type,
 		    const gchar *blurb)
 {
   g_return_if_fail (bse_type_blurb (type) == NULL);
-
+  
   g_type_set_qdata (type, quark_blurb, g_strdup (blurb));
 }
 
@@ -57,23 +48,23 @@ bse_type_register_static (GType            parent_type,
 			  const GTypeInfo *info)
 {
   GType type;
-
+  
   /* some builtin types have destructors eventhough they are registered
    * statically, compensate for that
    */
   if (G_TYPE_IS_INSTANTIATABLE (parent_type) && info->class_finalize)
     {
       GTypeInfo tmp_info;
-
+      
       tmp_info = *info;
       tmp_info.class_finalize = NULL;
       info = &tmp_info;
     }
-
+  
   type = g_type_register_static (parent_type, type_name, info, 0);
-
+  
   bse_type_set_blurb (type, type_blurb);
-
+  
   return type;
 }
 
@@ -84,16 +75,60 @@ bse_type_register_dynamic (GType        parent_type,
 			   BsePlugin   *plugin)
 {
   GType type = g_type_register_dynamic (parent_type, type_name, G_TYPE_PLUGIN (plugin), 0);
-
+  
   bse_type_set_blurb (type, type_blurb);
-
+  
   return type;
 }
 
-/* include type id builtin variable declarations */
+
+/* --- SFIDL includes --- */
+/* provide common constants */
+#include "bseglobals.h"
+/* provide IDL type initializers */
+#define	sfidl_pspec_Int(name, nick, blurb, dflt, min, max, step, hints)	\
+  sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints)
+#define	sfidl_pspec_Int_default(name)	sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_DEFAULT)
+#define	sfidl_pspec_UInt(name, nick, blurb, dflt, hints)	\
+  sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, hints)
+#define	sfidl_pspec_Real(name, nick, blurb, dflt, min, max, step, hints)	\
+  sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints)
+#define	sfidl_pspec_Real_default(name)	sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_DEFAULT)
+#define	sfidl_pspec_Bool(name, nick, blurb, dflt, hints)			\
+  sfi_pspec_bool (name, nick, blurb, dflt, hints)
+#define	sfidl_pspec_Bool_default(name)	sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT)
+#define	sfidl_pspec_Note(name, nick, blurb, dflt, hints)			\
+  sfi_pspec_note (name, nick, blurb, dflt, SFI_MIN_NOTE, SFI_MAX_NOTE, FALSE, hints)
+#define	sfidl_pspec_Octave(name, nick, blurb, dflt, hints)			\
+  sfi_pspec_int (name, nick, blurb, dflt, BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 4, hints)
+#define	sfidl_pspec_Freq(name, nick, blurb, dflt, hints)			\
+  sfi_pspec_real (name, nick, blurb, dflt, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f, 10.0, hints)
+#define	sfidl_pspec_FineTune(name, nick, blurb, hints)			\
+  sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, hints)
+#define	sfidl_pspec_String(name, nick, blurb, dflt, hints)			\
+  sfi_pspec_string (name, nick, blurb, dflt, hints)
+#define	sfidl_pspec_String_default(name)	sfi_pspec_string (name, NULL, NULL, NULL, SFI_PARAM_DEFAULT)
+#define	sfidl_pspec_Proxy_default(name)	sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_DEFAULT)
+#define	sfidl_pspec_BoxedSeq(name, nick, blurb, hints, element_pspec)		\
+  sfi_pspec_seq (name, nick, blurb, element_pspec, hints)
+#define	sfidl_pspec_BoxedRec(name, nick, blurb, hints, fields)			\
+  sfi_pspec_rec (name, nick, blurb, fields, hints)
+#define	sfidl_pspec_BoxedRec_default(name, fields)	sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_DEFAULT)
+#define	sfidl_pspec_BBlock(name, nick, blurb, hints)				\
+  sfi_pspec_bblock (name, nick, blurb, hints)
+/* provide IDL constants */
+#define	KAMMER_FREQ	BSE_KAMMER_FREQUENCY_f
+#define	KAMMER_NOTE	BSE_KAMMER_NOTE
+#define	KAMMER_OCTAVE	BSE_KAMMER_OCTAVE
+#define	MAXINT		G_MAXINT
+#define	MIN_FINE_TUNE	BSE_MIN_FINE_TUNE
+#define	MAX_FINE_TUNE	BSE_MAX_FINE_TUNE
+/* include SFIDL generations */
 #include        "bsegentypes.c"
 
-/* extern decls for other *.h files that implement fundamentals */
+
+/* --- type initializations --- */
+/* FIXME: extern decls for other *.h files that implement fundamentals */
 extern void     bse_type_register_procedure_info        (GTypeInfo    *info);
 extern void     bse_type_register_object_info           (GTypeInfo    *info);
 extern void     bse_type_register_enums                 (void);
@@ -113,18 +148,14 @@ bse_type_init (void)
   const guint n_builtin_types = sizeof (builtin_types) / sizeof (builtin_types[0]);
   static GTypeFundamentalInfo finfo = { 0, };
   guint i;
-
+  
   g_return_if_fail (quark_blurb == 0);
-
-  /* compat checks
-   */
-  g_assert (BSE_PARAM_MASK == 0x000000ff);
-
+  
   /* type system initialization
    */
-  quark_blurb = g_quark_from_static_string ("GType  -blurb");
+  quark_blurb = g_quark_from_static_string ("GType-blurb");
   g_type_init ();
-
+  
   /* initialize parameter types */
   bse_param_types_init ();
   
@@ -140,8 +171,11 @@ bse_type_init (void)
   g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, 0);
   bse_type_set_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type");
   g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
-
+  
   /* initialize builtin types */
   for (i = 0; i < n_builtin_types; i++)
     *(builtin_types[i].type_p) = builtin_types[i].register_type ();
+  
+  /* initialize SFIDL types */
+  _sfidl_types_init ();
 }

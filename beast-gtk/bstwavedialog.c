@@ -99,7 +99,7 @@ bst_wave_dialog_destroy (GtkObject *object)
 static void
 bst_wave_dialog_open (BstWaveDialog *wd)
 {
-  BswProxy wrepo = wd->wave_repo;
+  SfiProxy wrepo = wd->wave_repo;
   gchar *wave_name;
   BseErrorType error;
 
@@ -112,7 +112,7 @@ bst_wave_dialog_open (BstWaveDialog *wd)
 
   gxk_status_printf (0, NULL, "Loading wave `%s'", wave_name);
 
-  error = bsw_wave_repo_load_file (wrepo, wave_name);
+  error = bse_wave_repo_load_file (wrepo, wave_name);
 
   bst_status_eprintf (error, "Loading wave `%s'", wave_name);
 
@@ -120,7 +120,7 @@ bst_wave_dialog_open (BstWaveDialog *wd)
 }
 
 GtkWidget*
-bst_wave_dialog_new_load (BswProxy   wrepo,
+bst_wave_dialog_new_load (SfiProxy   wrepo,
 			  GtkWidget *parent_dialog)
 {
   BstWaveDialog *wd;
@@ -155,15 +155,15 @@ bst_wave_dialog_new_load (BswProxy   wrepo,
 
 void
 bst_wave_dialog_set_wave_repo (BstWaveDialog *wd,
-			       BswProxy       wrepo)
+			       SfiProxy       wrepo)
 {
   g_return_if_fail (BST_IS_WAVE_DIALOG (wd));
   if (wrepo)
-    g_return_if_fail (BSW_IS_WAVE_REPO (wrepo));
+    g_return_if_fail (BSE_IS_WAVE_REPO (wrepo));
 
   if (wd->wave_repo)
-    bsw_item_unuse (wd->wave_repo);
+    bse_item_unuse (wd->wave_repo);
   wd->wave_repo = wrepo;
   if (wd->wave_repo)
-    bsw_item_use (wd->wave_repo);
+    bse_item_use (wd->wave_repo);
 }

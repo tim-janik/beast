@@ -79,13 +79,13 @@ BSE_BUILTIN_TYPE (BseConstant)
     CONST_IMAGE_RLE_PIXEL_DATA,
   };
   GType type_id;
-
+  
   type_id = bse_type_register_static (BSE_TYPE_SOURCE,
 				      "BseConstant",
 				      "This module provides constant signal outputs",
 				      &type_info);
   bse_categories_register_icon ("/Modules/Other Sources/Constant", type_id, &icon);
-
+  
   return type_id;
 }
 
@@ -103,34 +103,36 @@ bse_constant_class_init (BseConstantClass *class)
   gobject_class->get_property = bse_constant_get_property;
   
   source_class->context_create = bse_constant_context_create;
-
+  
   for (i = 1; i <= BSE_CONSTANT_N_OUTPUTS; i++)
     {
       gchar *string, *name, *group = g_strdup_printf ("Constant Output %u", i);
-
+      
       string = g_strdup_printf ("value_%u", i);
       name = g_strdup_printf ("Value [float]");
       bse_object_class_add_param (object_class, group, PARAM_VALUE + (i - 1) * 3,
-				  bse_param_spec_float (string, name, NULL,
-							-1.0, 1.0, 1.0, 0.01,
-							BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+				  sfi_pspec_real (string, name, NULL,
+						  1.0, -1.0, 1.0, 0.01,
+						  SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("frequency_%u", i);
       name = g_strdup_printf ("Frequency");
       bse_object_class_add_param (object_class, group, PARAM_FREQ + (i - 1) * 3,
-				  bse_param_spec_float (string, name, NULL,
-							0, BSE_MAX_FREQUENCY_f,
-							BSE_MAX_FREQUENCY_f, 10.0,
-							BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
-      bse_object_class_set_param_log_scale (object_class, string, BSE_KAMMER_FREQUENCY_f * 2, 2, 4);
+				  sfi_pspec_log_scale (string, name, NULL,
+						       BSE_MAX_FREQUENCY_f,
+						       0, BSE_MAX_FREQUENCY_f,
+						       10.0,
+						       BSE_KAMMER_FREQUENCY_f * 2, 2, 4,
+						       SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("note_%u", i);
       name = g_strdup_printf ("Note");
       bse_object_class_add_param (object_class, group, PARAM_NOTE + (i - 1) * 3,
-				  bse_param_spec_note_simple (string, name, NULL,
-							      BSE_PARAM_GUI));
+				  sfi_pspec_note (string, name, NULL,
+						  SFI_KAMMER_NOTE, SFI_MIN_NOTE, SFI_MAX_NOTE,
+						  TRUE, SFI_PARAM_GUI));
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("Const Out%u", i);
@@ -147,7 +149,7 @@ static void
 bse_constant_init (BseConstant *constant)
 {
   guint i;
-
+  
   for (i = 0; i < BSE_CONSTANT_N_OUTPUTS; i++)
     constant->constants[i] = 1.0;
 }
@@ -159,7 +161,7 @@ bse_constant_set_property (GObject      *object,
 			   GParamSpec   *pspec)
 {
   BseConstant *constant = BSE_CONSTANT (object);
-
+  
   switch (param_id)
     {
       guint indx, n;
@@ -169,8 +171,9 @@ bse_constant_set_property (GObject      *object,
       switch (indx)
 	{
 	  gchar *prop;
+	  SfiNote note;
 	case PARAM_VALUE - PARAM_VALUE:
-	  constant->constants[n] = g_value_get_float (value);
+	  constant->constants[n] = sfi_value_get_real (value);
 	  bse_constant_update_modules (constant, NULL);
 	  prop = g_strdup_printf ("frequency_%u", n + 1);
 	  g_object_notify (object, prop);
@@ -180,7 +183,7 @@ bse_constant_set_property (GObject      *object,
 	  g_free (prop);
 	  break;
 	case PARAM_FREQ - PARAM_VALUE:
-	  constant->constants[n] = BSE_VALUE_FROM_FREQ (g_value_get_float (value));
+	  constant->constants[n] = BSE_VALUE_FROM_FREQ (sfi_value_get_real (value));
           bse_constant_update_modules (constant, NULL);
           prop = g_strdup_printf ("value_%u", n + 1);
 	  g_object_notify (object, prop);
@@ -190,14 +193,18 @@ bse_constant_set_property (GObject      *object,
 	  g_free (prop);
 	  break;
 	case PARAM_NOTE - PARAM_VALUE:
-	  constant->constants[n] = BSE_VALUE_FROM_FREQ (bse_note_to_freq (bse_value_get_note (value)));
-          bse_constant_update_modules (constant, NULL);
-	  prop = g_strdup_printf ("value_%u", n + 1);
-	  g_object_notify (object, prop);
-	  g_free (prop);
-          prop = g_strdup_printf ("frequency_%u", n + 1);
-	  g_object_notify (object, prop);
-	  g_free (prop);
+	  note = sfi_value_get_note (value);
+	  if (note != SFI_NOTE_VOID)
+	    {
+	      constant->constants[n] = BSE_VALUE_FROM_FREQ (bse_note_to_freq (note));
+	      bse_constant_update_modules (constant, NULL);
+	      prop = g_strdup_printf ("value_%u", n + 1);
+	      g_object_notify (object, prop);
+	      g_free (prop);
+	      prop = g_strdup_printf ("frequency_%u", n + 1);
+	      g_object_notify (object, prop);
+	      g_free (prop);
+	    }
 	  break;
 	default:
 	  G_OBJECT_WARN_INVALID_PROPERTY_ID (constant, param_id, pspec);
@@ -213,7 +220,7 @@ bse_constant_get_property (GObject     *object,
 			   GParamSpec  *pspec)
 {
   BseConstant *constant = BSE_CONSTANT (object);
-
+  
   switch (param_id)
     {
       guint indx, n;
@@ -223,13 +230,13 @@ bse_constant_get_property (GObject     *object,
       switch (indx)
 	{
         case PARAM_VALUE - PARAM_VALUE:
-	  g_value_set_float (value, constant->constants[n]);
+	  sfi_value_set_real (value, constant->constants[n]);
 	  break;
         case PARAM_FREQ - PARAM_VALUE:
-	  g_value_set_float (value, BSE_FREQ_FROM_VALUE (constant->constants[n]));
+	  sfi_value_set_real (value, BSE_FREQ_FROM_VALUE (constant->constants[n]));
 	  break;
         case PARAM_NOTE - PARAM_VALUE:
-	  bse_value_set_note (value, bse_note_from_freq (BSE_FREQ_FROM_VALUE (constant->constants[n])));
+	  sfi_value_set_note (value, bse_note_from_freq (BSE_FREQ_FROM_VALUE (constant->constants[n])));
 	  break;
 	default:
 	  G_OBJECT_WARN_INVALID_PROPERTY_ID (constant, param_id, pspec);
@@ -267,9 +274,9 @@ flow_access (GslModule *module,
 {
   ConstantModule *cmod = module->user_data;
   FlowAccessData *fdata = data;
-
+  
   g_print("FLOWJOBINCONSTANT(%u): %f (%lld)\n", fdata->index, fdata->constants[0], gsl_module_tick_stamp (module));
-
+  
   memcpy (cmod->constants + fdata->index, fdata->constants, sizeof (cmod->constants[0]) * fdata->n_values);
 }
 
@@ -279,7 +286,7 @@ constant_process (GslModule *module,
 {
   ConstantModule *cmod = module->user_data;
   guint i;
-
+  
   for (i = 0; i < BSE_CONSTANT_N_OUTPUTS; i++)
     if (GSL_MODULE_OSTREAM (module, i).connected)
       GSL_MODULE_OSTREAM (module, i).values = gsl_engine_const_values (cmod->constants[i]);

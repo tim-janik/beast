@@ -281,7 +281,7 @@ wav_load_file_info (gpointer      data,
       return NULL;
     }
   
-  fi = gsl_new_struct0 (FileInfo, 1);
+  fi = sfi_new_struct0 (FileInfo, 1);
   fi->wfi.n_waves = 1;
   fi->wfi.waves = g_malloc0 (sizeof (fi->wfi.waves[0]) * fi->wfi.n_waves);
   fi->wfi.waves[0].name = g_strdup (file_name);
@@ -299,7 +299,7 @@ wav_free_file_info (gpointer         data,
   g_free (fi->wfi.waves[0].name);
   g_free (fi->wfi.waves);
   close (fi->fd);
-  gsl_delete_struct (FileInfo, fi);
+  sfi_delete_struct (FileInfo, fi);
 }
 
 typedef struct
@@ -361,7 +361,7 @@ wav_load_wave_dsc (gpointer         data,
     WAV_DEBUG ("n_channels: %d sample_freq: %d bit_width: %u",
 	       fmt_header.n_channels, fmt_header.sample_freq, fmt_header.bit_per_sample);
   
-  dsc = gsl_new_struct0 (WaveDsc, 1);
+  dsc = sfi_new_struct0 (WaveDsc, 1);
   dsc->wdsc.name = g_strdup (fi->wfi.waves[0].name);
   dsc->wdsc.n_channels = fmt_header.n_channels;
   dsc->wdsc.n_chunks = 1;
@@ -383,7 +383,7 @@ wav_free_wave_dsc (gpointer    data,
   
   g_free (dsc->wdsc.name);
   g_free (dsc->wdsc.chunks);
-  gsl_delete_struct (WaveDsc, dsc);
+  sfi_delete_struct (WaveDsc, dsc);
 }
 
 static GslDataHandle*

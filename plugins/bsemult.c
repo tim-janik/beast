@@ -83,8 +83,8 @@ multiply_process (GslModule *module,
 		  guint      n_values)
 {
   // = module->user_data;
-  BseSampleValue *wave_out = GSL_MODULE_OBUFFER (module, 0);
-  BseSampleValue *bound = wave_out + n_values;
+  gfloat *wave_out = GSL_MODULE_OBUFFER (module, 0);
+  gfloat *bound = wave_out + n_values;
   guint i;
   
   if (!module->ostreams[0].connected)
@@ -104,8 +104,8 @@ multiply_process (GslModule *module,
   for (i += 1; i < GSL_MODULE_N_ISTREAMS (module); i++)
     if (module->istreams[i].connected)
       {
-	const BseSampleValue *in = GSL_MODULE_IBUFFER (module, i);
-	BseSampleValue *out = wave_out;
+	const gfloat *in = GSL_MODULE_IBUFFER (module, i);
+	gfloat *out = wave_out;
 	
 	/* found 1+nth channel to multiply with */
 	do

@@ -16,11 +16,11 @@
   (bse-container-restore "BseSequencer::Sequencer"
     (counter 156.844803)
     (transpose -24)
-    (notes '(
+    (notes ((notes (
       "a+1" "a+1" "a+2" "a+2"
       "a+1" "a+1" "d+2" "a+1"
       "d+2" "a+1" "e+2" "a+1"
-      "e+2" "a+1" "a+2" "g+2"))
+      "e+2" "a+1" "a+2" "g+2"))))
     (parasite #\f "BstRouterCoords" 2 474.000000 22.000000))
   (bse-container-restore "BseSimpleADSR::OrganADSR"
     (release-time 57.051289)

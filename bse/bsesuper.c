@@ -35,12 +35,12 @@ enum
 static void	bse_super_class_init	(BseSuperClass		*class);
 static void	bse_super_init		(BseSuper		*super,
 					 gpointer		 rclass);
-static void	bse_super_destroy	(BseObject		*object);
-static void	bse_super_set_property	(BseSuper		*super,
+static void	bse_super_finalize	(GObject		*object);
+static void	bse_super_set_property	(GObject		*object,
 					 guint                   param_id,
-					 GValue                 *value,
+					 const GValue           *value,
 					 GParamSpec             *pspec);
-static void	bse_super_get_property	(BseSuper		*super,
+static void	bse_super_get_property	(GObject		*object,
 					 guint                   param_id,
 					 GValue                 *value,
 					 GParamSpec             *pspec);
@@ -90,37 +90,31 @@ bse_super_class_init (BseSuperClass *class)
   quark_author = g_quark_from_static_string ("author");
   quark_copyright = g_quark_from_static_string ("copyright");
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_super_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_super_get_property;
-
-  object_class->destroy = bse_super_destroy;
-
+  gobject_class->set_property = bse_super_set_property;
+  gobject_class->get_property = bse_super_get_property;
+  gobject_class->finalize = bse_super_finalize;
+  
   class->is_dirty = bse_super_do_is_dirty;
   class->modified = bse_super_do_modified;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,
-			      bse_param_spec_string ("author", "Author", NULL,
-						   NULL,
-						   BSE_PARAM_DEFAULT));
+			      sfi_pspec_string ("author", "Author", NULL,
+						NULL,
+						SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_COPYRIGHT,
-			      bse_param_spec_string ("copyright", "Copyright", NULL,
-						   NULL,
-						   BSE_PARAM_DEFAULT));
+			      sfi_pspec_string ("copyright", "Copyright", NULL,
+						NULL,
+						SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_CREATION_TIME,
-			      bse_param_spec_time ("creation_time", "Creation Time", NULL,
-						 0,
-						 BSE_PARAM_DEFAULT |
-						 BSE_PARAM_HINT_RDONLY));
+			      sfi_pspec_time ("creation_time", "Creation Time", NULL,
+					      SFI_PARAM_DEFAULT_RDONLY));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_MOD_TIME,
-			      bse_param_spec_time ("modification_time", "Last modification time", NULL,
-						 0,
-						 BSE_PARAM_READWRITE |
-						 BSE_PARAM_HINT_RDONLY |
-						   BSE_PARAM_SERVE_STORAGE));
+			      sfi_pspec_time ("modification_time", "Last modification time", NULL,
+					      SFI_PARAM_DEFAULT_RDONLY));
 }
 
 static void
@@ -130,7 +124,7 @@ bse_super_init (BseSuper *super,
   BseObject *object;
   
   object = BSE_OBJECT (super);
-
+  
   super->mod_time = bse_time_current ();
   super->creation_time = super->mod_time;
   super->saved_mod_time = super->mod_time;
@@ -138,7 +132,7 @@ bse_super_init (BseSuper *super,
   super->auto_activate_context_handle = ~0;
   
   bse_super_objects = g_slist_prepend (bse_super_objects, super);
-
+  
   /* we want Unnamed-xxx default unames */
   g_object_set (object,
 		"uname", "Unnamed",
@@ -146,48 +140,47 @@ bse_super_init (BseSuper *super,
 }
 
 static void
-bse_super_destroy (BseObject *object)
+bse_super_finalize (GObject *object)
 {
-  BseSuper *super;
-  
-  super = BSE_SUPER (object);
+  BseSuper *super = BSE_SUPER (object);
   
   bse_super_objects = g_slist_remove (bse_super_objects, super);
-
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
-bse_super_set_property (BseSuper    *super,
-			guint        param_id,
-			GValue      *value,
-			GParamSpec  *pspec)
+bse_super_set_property (GObject      *object,
+			guint         param_id,
+			const GValue *value,
+			GParamSpec   *pspec)
 {
+  BseSuper *super = BSE_SUPER (object);
   switch (param_id)
     {
     case PARAM_AUTHOR:
-      bse_object_set_qdata_full (BSE_OBJECT (super),
-				 quark_author,
-				 bse_strdup_stripped (g_value_get_string (value)),
-				 g_free);
+      g_object_set_qdata_full (super,
+			       quark_author,
+			       g_strdup (g_value_get_string (value)),
+			       g_free);
       break;
     case PARAM_COPYRIGHT:
-      bse_object_set_qdata_full (BSE_OBJECT (super),
-				 quark_copyright,
-				 bse_strdup_stripped (g_value_get_string (value)),
-				 g_free);
+      g_object_set_qdata_full (super,
+			       quark_copyright,
+			       g_strdup (g_value_get_string (value)),
+			       g_free);
       break;
     case PARAM_MOD_TIME:
-      super->mod_time = MAX (super->creation_time, bse_value_get_time (value));
+      super->mod_time = MAX (super->creation_time, sfi_value_get_time (value));
       break;
     case PARAM_CREATION_TIME:
-      super->creation_time = bse_value_get_time (value);
+      super->creation_time = sfi_value_get_time (value);
       /* we have to ensure that mod_time is always >= creation_time */
       if (super->creation_time > super->mod_time)
 	{
 	  super->mod_time = super->creation_time;
-	  bse_object_param_changed (BSE_OBJECT (super), "mod-time");
+	  g_object_notify (super, "modification-time");
 	}
       break;
     default:
@@ -197,24 +190,25 @@ bse_super_set_property (BseSuper    *super,
 }
 
 static void
-bse_super_get_property (BseSuper    *super,
+bse_super_get_property (GObject     *object,
 			guint        param_id,
 			GValue      *value,
 			GParamSpec  *pspec)
 {
+  BseSuper *super = BSE_SUPER (object);
   switch (param_id)
     {
     case PARAM_AUTHOR:
-      g_value_set_string (value, bse_object_get_qdata (BSE_OBJECT (super), quark_author));
+      g_value_set_string (value, g_object_get_qdata (super, quark_author));
       break;
     case PARAM_COPYRIGHT:
-      g_value_set_string (value, bse_object_get_qdata (BSE_OBJECT (super), quark_copyright));
+      g_value_set_string (value, g_object_get_qdata (super, quark_copyright));
       break;
     case PARAM_MOD_TIME:
-      bse_value_set_time (value, super->mod_time);
+      sfi_value_set_time (value, super->mod_time);
       break;
     case PARAM_CREATION_TIME:
-      bse_value_set_time (value, super->creation_time);
+      sfi_value_set_time (value, super->creation_time);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (super, param_id, pspec);
@@ -282,11 +276,11 @@ BseProject*
 bse_super_get_project (BseSuper *super)
 {
   BseItem *item;
-
+  
   g_return_val_if_fail (BSE_IS_SUPER (super), NULL);
-
+  
   item = BSE_ITEM (super);
-
+  
   return BSE_IS_PROJECT (item->parent) ? BSE_PROJECT (item->parent) : NULL;
 }
 
@@ -297,9 +291,9 @@ bse_super_set_author (BseSuper	  *super,
   g_return_if_fail (BSE_IS_SUPER (super));
   g_return_if_fail (author != NULL);
   
-  bse_object_set (BSE_OBJECT (super),
-		  "author", author,
-		  NULL);
+  g_object_set (super,
+		"author", author,
+		NULL);
 }
 
 void
@@ -309,9 +303,9 @@ bse_super_set_copyright (BseSuper    *super,
   g_return_if_fail (BSE_IS_SUPER (super));
   g_return_if_fail (copyright != NULL);
   
-  bse_object_set (BSE_OBJECT (super),
-		  "copyright", copyright,
-		  NULL);
+  g_object_set (super,
+		"copyright", copyright,
+		NULL);
 }
 
 gchar*
@@ -319,7 +313,7 @@ bse_super_get_author (BseSuper *super)
 {
   g_return_val_if_fail (BSE_IS_SUPER (super), NULL);
   
-  return bse_object_get_qdata (BSE_OBJECT (super), quark_author);
+  return g_object_get_qdata (super, quark_author);
 }
 
 gchar*
@@ -327,5 +321,5 @@ bse_super_get_copyright (BseSuper *super)
 {
   g_return_val_if_fail (BSE_IS_SUPER (super), NULL);
   
-  return bse_object_get_qdata (BSE_OBJECT (super), quark_copyright);
+  return g_object_get_qdata (super, quark_copyright);
 }

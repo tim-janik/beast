@@ -5,7 +5,7 @@
 
 SUBDIRS =
 
-INCLUDES = -I.. $(BEAST_CFLAGS) -I.
+INCLUDES = -I.. $(GXK_CFLAGS) -I.
 
 DEFS += $(strip \
 	-DGTK_DISABLE_COMPAT_H \

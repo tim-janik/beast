@@ -86,13 +86,13 @@ BSE_BUILTIN_TYPE (BseAmplifier)
 {
   static const GTypeInfo type_info = {
     sizeof (BseAmplifierClass),
-
+    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_amplifier_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-
+    
     sizeof (BseAmplifier),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_amplifier_init,
@@ -104,7 +104,7 @@ BSE_BUILTIN_TYPE (BseAmplifier)
     AMP_CTRL_IMAGE_RLE_PIXEL_DATA,
   };
   GType type;
-
+  
   type = bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseAmplifier",
 				   "BseAmplifier provides input signal controlled amplification or "
@@ -143,75 +143,74 @@ bse_amplifier_class_init (BseAmplifierClass *class)
   
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_MUL,
-			      bse_param_spec_boolean ("ctrl_mul", "Multiply Controls", "Multiply the two control inputs with each other, rather than weighting them by balance",
-						      FALSE,
-						      BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_bool ("ctrl_mul", "Multiply Controls", "Multiply the two control inputs with each other, rather than weighting them by balance",
+					      FALSE, SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_BALANCE,
-			      bse_param_spec_float ("ctrl_balance", "Control Balance", "Determine balance of the two control inputs",
-						    -BSE_MAX_BALANCE_f, BSE_MAX_BALANCE_f,
-						    0, BSE_STP_BALANCE_f,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("ctrl_balance", "Control Balance", "Determine balance of the two control inputs",
+					      0, -BSE_MAX_BALANCE_f, BSE_MAX_BALANCE_f, 10,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_STRENGTH_f,
-			      bse_param_spec_float ("ctrl_strength_f", "Control Strength [float]", NULL,
-						    0, 1.0, 0.5, 0.01,
-						    BSE_PARAM_STORAGE | BSE_PARAM_FORCE_DIRTY));
+			      sfi_pspec_real ("ctrl_strength_f", "Control Strength [float]", NULL,
+					      0.5, 0, 1.0, 0.01,
+					      SFI_PARAM_STORAGE SFI_PARAM_FORCE_DIRTY));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_STRENGTH_dB,
-			      bse_param_spec_float ("ctrl_strength_dB", "Strength [dB]", "Amount of impact of the control inputs",
-						    bse_dB_from_factor (0, BSE_MIN_VOLUME_dB), bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
-						    bse_dB_from_factor (0.5, BSE_MIN_VOLUME_dB), 0.1,
-						    BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("ctrl_strength_dB", "Strength [dB]", "Amount of impact of the control inputs",
+					      bse_dB_from_factor (0.5, BSE_MIN_VOLUME_dB),
+					      bse_dB_from_factor (0, BSE_MIN_VOLUME_dB),
+					      bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
+					      0.1, SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_STRENGTH_PERC,
-			      bse_param_spec_float ("ctrl_strength_perc", "Strength [%]", "Amount of impact of the control inputs",
-						    0, 100, 50.0, 1,
-						    BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("ctrl_strength_perc", "Strength [%]", "Amount of impact of the control inputs",
+					      50.0, 0, 100, 1,
+					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_EXPONENTIAL,
-			      bse_param_spec_boolean ("ctrl_exp", "Exponential Control", "Toggle exponential and linear control response",
-						      TRUE,
-						      BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_bool ("ctrl_exp", "Exponential Control", "Toggle exponential and linear control response",
+					      TRUE, SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_AUDIO_BALANCE,
-			      bse_param_spec_float ("audio_balance", "Audio Balance", "Determine balance of the two audio inputs",
-						    -BSE_MAX_BALANCE_f, BSE_MAX_BALANCE_f,
-						    0, BSE_STP_BALANCE_f,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("audio_balance", "Audio Balance", "Determine balance of the two audio inputs",
+					      0, -BSE_MAX_BALANCE_f, BSE_MAX_BALANCE_f, 10,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_GAIN_f,
-			      bse_param_spec_float ("audio_gain_f", "Gain [float]", NULL,
-						    0, 1.0, 0.5, 0.01,
-						    BSE_PARAM_STORAGE | BSE_PARAM_FORCE_DIRTY));
+			      sfi_pspec_real ("audio_gain_f", "Gain [float]", NULL,
+					      0.5, 0, 1.0, 0.01,
+					      SFI_PARAM_STORAGE SFI_PARAM_FORCE_DIRTY));
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_GAIN_dB,
-			      bse_param_spec_float ("audio_gain_dB", "Gain [dB]", "Base amplification (the control signal adds up to this)",
-						    bse_dB_from_factor (0, BSE_MIN_VOLUME_dB), bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
-						    bse_dB_from_factor (0.5, BSE_MIN_VOLUME_dB), 0.1,
-						    BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("audio_gain_dB", "Gain [dB]", "Base amplification (the control signal adds up to this)",
+					      bse_dB_from_factor (0.5, BSE_MIN_VOLUME_dB),
+					      bse_dB_from_factor (0, BSE_MIN_VOLUME_dB),
+					      bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
+					      0.1, SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_GAIN_PERC,
-			      bse_param_spec_float ("audio_gain_perc", "Gain [%]", "Base amplification (the control signal adds up to this)",
-						    0, 100, 50.0, 1,
-						    BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("audio_gain_perc", "Gain [%]", "Base amplification (the control signal adds up to this)",
+					      50.0, 0, 100, 1,
+					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Output",
 			      PROP_MASTER_f,
-			      bse_param_spec_float ("master_gain_f", "Master [float]", NULL,
-						    0, 1.0, 1.0, 0.01,
-						    BSE_PARAM_STORAGE | BSE_PARAM_FORCE_DIRTY));
+			      sfi_pspec_real ("master_gain_f", "Master [float]", NULL,
+					      1.0, 0, 1.0, 0.01,
+					      SFI_PARAM_STORAGE SFI_PARAM_FORCE_DIRTY));
   bse_object_class_add_param (object_class, "Output",
 			      PROP_MASTER_dB,
-			      bse_param_spec_float ("master_gain_dB", "Master [dB]", "Output stage amplification",
-						    bse_dB_from_factor (0, BSE_MIN_VOLUME_dB), bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
-						    bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB), 0.1,
-						    BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
+			      sfi_pspec_real ("master_gain_dB", "Master [dB]", "Output stage amplification",
+					      bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
+					      bse_dB_from_factor (0, BSE_MIN_VOLUME_dB),
+					      bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
+					      0.1, SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Output",
 			      PROP_MASTER_PERC,
-			      bse_param_spec_float ("master_gain_perc", "Master [%]", "Output stage amplification",
-						    0, 100, 100, 1,
-						    BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
-
+			      sfi_pspec_real ("master_gain_perc", "Master [%]", "Output stage amplification",
+					      100, 0, 100, 1,
+					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+  
   channel = bse_source_class_add_ichannel (source_class, "Audio In1", "Audio Input 1");
   channel = bse_source_class_add_ichannel (source_class, "Audio In2", "Audio Input 2");
   channel = bse_source_class_add_ichannel (source_class, "Ctrl In1", "Control Input 1");
@@ -238,75 +237,75 @@ bse_amplifier_set_property (GObject      *object,
 			    GParamSpec   *pspec)
 {
   BseAmplifier *self = BSE_AMPLIFIER (object);
-
+  
   switch (param_id)
     {
     case PROP_CTRL_MUL:
-      self->config.ctrl_mul = g_value_get_boolean (value);
+      self->config.ctrl_mul = sfi_value_get_bool (value);
       bse_amplifier_update_modules (self, NULL);
       break;
     case PROP_CTRL_BALANCE:
-      self->config.ctrl_balance = g_value_get_float (value) / (BSE_MAX_BALANCE_f * 2) + 0.5;
+      self->config.ctrl_balance = sfi_value_get_real (value) / (BSE_MAX_BALANCE_f * 2) + 0.5;
       bse_amplifier_update_modules (self, NULL);
       break;
     case PROP_CTRL_STRENGTH_f:
-      self->config.ctrl_strength = g_value_get_float (value);
+      self->config.ctrl_strength = sfi_value_get_real (value);
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "ctrl_strength_dB");
       g_object_notify (object, "ctrl_strength_perc");
       break;
     case PROP_CTRL_STRENGTH_dB:
-      self->config.ctrl_strength = bse_dB_to_factor (g_value_get_float (value));
+      self->config.ctrl_strength = bse_dB_to_factor (sfi_value_get_real (value));
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "ctrl_strength_f");
       g_object_notify (object, "ctrl_strength_perc");
       break;
     case PROP_CTRL_STRENGTH_PERC:
-      self->config.ctrl_strength = g_value_get_float (value) / 100.0;
+      self->config.ctrl_strength = sfi_value_get_real (value) / 100.0;
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "ctrl_strength_f");
       g_object_notify (object, "ctrl_strength_dB");
       break;
     case PROP_CTRL_EXPONENTIAL:
-      self->config.exp_ctrl = g_value_get_boolean (value);
+      self->config.exp_ctrl = sfi_value_get_bool (value);
       bse_amplifier_update_modules (self, NULL);
       break;
     case PROP_AUDIO_BALANCE:
-      self->config.audio_balance = g_value_get_float (value) / (BSE_MAX_BALANCE_f * 2) + 0.5;
+      self->config.audio_balance = sfi_value_get_real (value) / (BSE_MAX_BALANCE_f * 2) + 0.5;
       bse_amplifier_update_modules (self, NULL);
       break;
     case PROP_GAIN_f:
-      self->config.audio_gain = g_value_get_float (value);
+      self->config.audio_gain = sfi_value_get_real (value);
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "audio_gain_dB");
       g_object_notify (object, "audio_gain_perc");
       break;
     case PROP_GAIN_dB:
-      self->config.audio_gain = bse_dB_to_factor (g_value_get_float (value));
+      self->config.audio_gain = bse_dB_to_factor (sfi_value_get_real (value));
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "audio_gain_f");
       g_object_notify (object, "audio_gain_perc");
       break;
     case PROP_GAIN_PERC:
-      self->config.audio_gain = g_value_get_float (value) / 100.0;
+      self->config.audio_gain = sfi_value_get_real (value) / 100.0;
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "audio_gain_f");
       g_object_notify (object, "audio_gain_dB");
       break;
     case PROP_MASTER_f:
-      self->config.master_gain = g_value_get_float (value);
+      self->config.master_gain = sfi_value_get_real (value);
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "master_gain_dB");
       g_object_notify (object, "master_gain_perc");
       break;
     case PROP_MASTER_dB:
-      self->config.master_gain = bse_dB_to_factor (g_value_get_float (value));
+      self->config.master_gain = bse_dB_to_factor (sfi_value_get_real (value));
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "master_gain_f");
       g_object_notify (object, "master_gain_perc");
       break;
     case PROP_MASTER_PERC:
-      self->config.master_gain = g_value_get_float (value) / 100.0;
+      self->config.master_gain = sfi_value_get_real (value) / 100.0;
       bse_amplifier_update_modules (self, NULL);
       g_object_notify (object, "master_gain_f");
       g_object_notify (object, "master_gain_dB");
@@ -324,47 +323,47 @@ bse_amplifier_get_property (GObject    *object,
 			    GParamSpec *pspec)
 {
   BseAmplifier *self = BSE_AMPLIFIER (object);
-
+  
   switch (param_id)
     {
     case PROP_CTRL_MUL:
-      g_value_set_boolean (value, self->config.ctrl_mul);
+      sfi_value_set_bool (value, self->config.ctrl_mul);
       break;
     case PROP_CTRL_BALANCE:
-      g_value_set_float (value, (self->config.ctrl_balance - 0.5) * 2 * BSE_MAX_BALANCE_f);
+      sfi_value_set_real (value, (self->config.ctrl_balance - 0.5) * 2 * BSE_MAX_BALANCE_f);
       break;
     case PROP_CTRL_STRENGTH_f:
-      g_value_set_float (value, self->config.ctrl_strength);
+      sfi_value_set_real (value, self->config.ctrl_strength);
       break;
     case PROP_CTRL_STRENGTH_dB:
-      g_value_set_float (value, bse_dB_from_factor (self->config.ctrl_strength, BSE_MIN_VOLUME_dB));
+      sfi_value_set_real (value, bse_dB_from_factor (self->config.ctrl_strength, BSE_MIN_VOLUME_dB));
       break;
     case PROP_CTRL_STRENGTH_PERC:
-      g_value_set_float (value, self->config.ctrl_strength * 100.0);
+      sfi_value_set_real (value, self->config.ctrl_strength * 100.0);
       break;
     case PROP_CTRL_EXPONENTIAL:
-      g_value_set_boolean (value, self->config.exp_ctrl);
+      sfi_value_set_bool (value, self->config.exp_ctrl);
       break;
     case PROP_AUDIO_BALANCE:
-      g_value_set_float (value, (self->config.audio_balance - 0.5) * 2 * BSE_MAX_BALANCE_f);
+      sfi_value_set_real (value, (self->config.audio_balance - 0.5) * 2 * BSE_MAX_BALANCE_f);
       break;
     case PROP_GAIN_f:
-      g_value_set_float (value, self->config.audio_gain);
+      sfi_value_set_real (value, self->config.audio_gain);
       break;
     case PROP_GAIN_dB:
-      g_value_set_float (value, bse_dB_from_factor (self->config.audio_gain, BSE_MIN_VOLUME_dB));
+      sfi_value_set_real (value, bse_dB_from_factor (self->config.audio_gain, BSE_MIN_VOLUME_dB));
       break;
     case PROP_GAIN_PERC:
-      g_value_set_float (value, self->config.audio_gain * 100.0);
+      sfi_value_set_real (value, self->config.audio_gain * 100.0);
       break;
     case PROP_MASTER_f:
-      g_value_set_float (value, self->config.master_gain);
+      sfi_value_set_real (value, self->config.master_gain);
       break;
     case PROP_MASTER_dB:
-      g_value_set_float (value, bse_dB_from_factor (self->config.master_gain, BSE_MIN_VOLUME_dB));
+      sfi_value_set_real (value, bse_dB_from_factor (self->config.master_gain, BSE_MIN_VOLUME_dB));
       break;
     case PROP_MASTER_PERC:
-      g_value_set_float (value, self->config.master_gain * 100.0);
+      sfi_value_set_real (value, self->config.master_gain * 100.0);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -443,7 +442,7 @@ amplifier_process (GslModule *module,
   const gfloat *au2in = GSL_MODULE_IBUFFER (module, BSE_AMPLIFIER_ICHANNEL_AUDIO2);
   gfloat *audio_out = GSL_MODULE_OBUFFER (module, BSE_AMPLIFIER_OCHANNEL_AUDIO_OUT);
   guint mode = 0, no_controls = FALSE;
-
+  
   if (GSL_MODULE_ISTREAM (module, BSE_AMPLIFIER_ICHANNEL_AUDIO1).connected &&
       GSL_MODULE_ISTREAM (module, BSE_AMPLIFIER_ICHANNEL_AUDIO2).connected)
     mode |= AMP_FLAGS_A1b_A2b;
@@ -469,7 +468,7 @@ amplifier_process (GslModule *module,
     no_controls = TRUE;
   if (!no_controls && amplifier->config.exp_ctrl)
     mode |= AMP_FLAG_EXP_CONTROLS;
-
+  
   if (no_controls)
     amp_process_simple_table[mode] (amplifier, n_values,
 				    cv1in, cv2in, au1in, au2in,

@@ -52,7 +52,7 @@ BSE_BUILTIN_TYPE (BseContextMerger)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_context_merger_init,
   };
-
+  
   return bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseContextMerger",
 				   "Internal CONTEXT Voice glue object (merger)",
@@ -66,19 +66,19 @@ bse_context_merger_class_init (BseContextMergerClass *class)
   guint channel_id, i;
   
   parent_class = g_type_class_peek_parent (class);
-
+  
   source_class->context_create = bse_context_merger_context_create;
   source_class->context_dismiss = bse_context_merger_context_dismiss;
-
+  
   for (i = 0; i < BSE_CONTEXT_MERGER_N_IOPORTS; i++)
     {
       gchar *string;
-
+      
       string = g_strdup_printf ("Input %u", i + 1);
       channel_id = bse_source_class_add_jchannel (source_class, string, NULL);
       g_assert (channel_id == i);
       g_free (string);
-
+      
       string = g_strdup_printf ("Output %u", i + 1);
       channel_id = bse_source_class_add_ochannel (source_class, string, NULL);
       g_assert (channel_id == i);
@@ -97,7 +97,7 @@ bse_context_merger_set_merge_context (BseContextMerger *self,
 				      guint             merge_context)
 {
   g_return_if_fail (BSE_CONTEXT_MERGER (self));
-
+  
   if (merge_context)
     {
       g_return_if_fail (self->merge_context == 0);
@@ -105,7 +105,7 @@ bse_context_merger_set_merge_context (BseContextMerger *self,
     }
   else
     g_return_if_fail (self->merge_context != 0);
-
+  
   self->merge_context = merge_context;
 }
 
@@ -119,12 +119,12 @@ context_merger_process (GslModule *module,
 			guint      n_values)
 {
   guint i;
-
+  
   for (i = 0; i < BSE_CONTEXT_MERGER_N_IOPORTS; i++)
     if (GSL_MODULE_OSTREAM (module, i).connected)
       {
 	guint j, n_cons = GSL_MODULE_JSTREAM (module, i).n_connections;
-
+	
 	if (!n_cons)
 	  module->ostreams[i].values = gsl_engine_const_values (0);
 	else if (n_cons == 1)
@@ -163,7 +163,7 @@ bse_context_merger_context_create (BseSource *source,
   };
   BseContextMerger *self = BSE_CONTEXT_MERGER (source);
   GslModule *module;
-
+  
   /* merge with existing context if set */
   if (self->merge_context)
     {
@@ -186,10 +186,10 @@ bse_context_merger_context_create (BseSource *source,
       /* commit module to engine */
       gsl_trans_add (trans, gsl_job_integrate (module));
     }
-
+  
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
@@ -200,7 +200,7 @@ bse_context_merger_context_dismiss (BseSource *source,
 				    GslTrans  *trans)
 {
   GslModule *module;
-
+  
   /* if the GslModule wasn't created within context_handle, we would
    * just need to disconnect it from connections within this context
    * and not discard it. however, that's somewhat tedious since it
@@ -209,7 +209,7 @@ bse_context_merger_context_dismiss (BseSource *source,
    * so we can simply skip the disconnection, as usually all contexts
    * should be dismissed together.
    */
-
+  
   module = bse_source_get_context_imodule (source, context_handle);
   if (module)
     {
@@ -222,7 +222,7 @@ bse_context_merger_context_dismiss (BseSource *source,
 	  bse_source_set_context_omodule (source, context_handle, NULL);
 	}
     }
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }

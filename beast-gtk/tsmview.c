@@ -18,6 +18,8 @@
  */
 #include <gxk/gxk.h>
 
+#include "../PKG_paths.h"
+
 #define PRGNAME "tsmview"
 
 /* --- functions --- */
@@ -26,14 +28,8 @@ main (int   argc,
       char *argv[])
 {
   GtkWidget *sctext, *dialog;
-  gchar *str, *title;
-  guint i;
-
-  if (argc < 2)
-    {
-      g_printerr (PRGNAME ": missing filename argument\n");
-      return 1;
-    }
+  gchar *str, *title = NULL;
+  guint i, flags = 0;
 
   /* initialize modules
    */
@@ -41,18 +37,39 @@ main (int   argc,
   gtk_init (&argc, &argv);
   gxk_init ();
 
-  title = g_strdup (argv[1]);
+  for (i = 1; i < argc; i++)
+    if (!flags && strcmp (argv[i], "--edit") == 0)
+      {
+	flags = GXK_SCROLL_TEXT_EDITABLE;
+	argv[i] = NULL;
+	if (title)
+	  break;
+      }
+    else if (!title)
+      {
+	title = g_strdup (argv[i]);
+	argv[i] = NULL;
+	if (flags)
+	  break;
+      }
+  if (!title)
+    title = g_strdup (".");
   gxk_text_add_tsm_path (".");
-  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG | GXK_SCROLL_TEXT_NAVIGATABLE, NULL);
-  gxk_scroll_text_enter (sctext, argv[1]);
-  for (i = 2; i < argc; i++)
-    {
-      gxk_scroll_text_enter (sctext, argv[i]);  // FIXME: should append
-      str = title;
-      title = g_strconcat (title, " ", argv[i], NULL);
-      g_free (str);
-    }
-
+  gxk_text_add_tsm_path (BST_PATH_DOCS);
+  gxk_text_add_tsm_path (BST_PATH_IMAGES);
+  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG |
+				   GXK_SCROLL_TEXT_NAVIGATABLE | flags |
+				   GXK_SCROLL_TEXT_MONO_SPACED, NULL);
+  gxk_scroll_text_enter (sctext, title);
+  for (i = 1; i < argc; i++)
+    if (argv[i])
+      {
+	gxk_scroll_text_enter (sctext, argv[i]);
+	str = title;
+	title = g_strconcat (title, " ", argv[i], NULL);
+	g_free (str);
+      }
+  
   str = title;
   title = g_strdup ("tsmview");	// g_strconcat (title, " - tsmview", NULL);
   g_free (str);

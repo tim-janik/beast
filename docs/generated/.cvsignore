@@ -3,3 +3,6 @@ Makefile.in
 *.xml
 *.markup
 *.html
+*.3
+*.texi
+*.ps

@@ -1,4 +1,4 @@
-/* BSW-SCM - Bedevilled Sound Engine Scheme Wrapper
+/* BSE-SCM - Bedevilled Sound Engine Scheme Wrapper
  * Copyright (C) 2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __BSW_SCM_INTERP_H__
-#define __BSW_SCM_INTERP_H__
+#ifndef __BSE_SCM_INTERP_H__
+#define __BSE_SCM_INTERP_H__
 
-#include <bsw/bsw.h>
+#include <bsw/bswproxy.h>
 #include <guile/gh.h>
 
 #ifdef __cplusplus
@@ -29,34 +29,36 @@ extern "C" {
  * with incremental int-blocking. guile recovers
  * from unbalanced defer/allow pairs.
  */
-#define	BSW_SCM_DEFER_INTS()	SCM_REDEFER_INTS
-#define	BSW_SCM_ALLOW_INTS()	SCM_REALLOW_INTS
+#define	BSE_SCM_DEFER_INTS()	SCM_REDEFER_INTS
+#define	BSE_SCM_ALLOW_INTS()	SCM_REALLOW_INTS
 
-typedef struct _BswSCMWire   BswSCMWire;
+typedef struct _BseSCMWire   BseSCMWire;
 
 
 /* --- prototypes --- */
-void	bsw_scm_interp_init		(BswSCMWire	*wire);
-void	bsw_scm_interp_exec_script	(const gchar	*file_name,
+void	bse_scm_interp_init		(void);
+void	bse_scm_interp_exec_script	(const gchar	*file_name,
 					 const gchar	*call_expr,
 					 GValue		*value);
-void	bsw_scm_enable_script_register	(gboolean	 enabled);
-void	bsw_scm_enable_server		(gboolean	 enabled);
+void	bse_scm_enable_script_register	(gboolean	 enabled);
+void	bse_scm_enable_server		(gboolean	 enabled);
 
 
 /* --- SCM procedures --- */
-SCM	bsw_scm_server_get		(void);
-SCM	bsw_scm_enum_match		(SCM		 s_ev1,
+SCM	bse_scm_server_get		(void);
+SCM	bse_scm_enum_match		(SCM		 s_ev1,
 					 SCM		 s_ev2);
-SCM	bsw_scm_glue_set_prop		(SCM		 s_proxy,
+SCM	bse_scm_glue_set_prop		(SCM		 s_proxy,
 					 SCM		 s_prop_name,
 					 SCM		 s_value);
-SCM	bsw_scm_glue_call		(SCM		 s_proc_name,
+SCM	bse_scm_glue_get_prop		(SCM		 s_proxy,
+					 SCM		 s_prop_name);
+SCM	bse_scm_glue_call		(SCM		 s_proc_name,
 					 SCM		 s_arg_list);
-SCM	bsw_scm_signal_connect		(SCM		 s_proxy,
+SCM	bse_scm_signal_connect		(SCM		 s_proxy,
 					 SCM		 s_signal,
 					 SCM		 s_lambda);
-SCM	bsw_scm_script_register		(SCM		 name,
+SCM	bse_scm_script_register		(SCM		 name,
 					 SCM		 category,
 					 SCM		 blurb,
 					 SCM		 help,
@@ -64,23 +66,13 @@ SCM	bsw_scm_script_register		(SCM		 name,
 					 SCM		 copyright,
 					 SCM		 date,
 					 SCM		 params);
-SCM	bsw_scm_context_pending		(void);
-SCM	bsw_scm_context_iteration	(SCM		 s_may_block);
-SCM	bsw_scm_glue_rec_get		(SCM		  scm_rec,
+SCM	bse_scm_context_pending		(void);
+SCM	bse_scm_context_iteration	(SCM		 s_may_block);
+SCM	bse_scm_glue_rec_get		(SCM		  scm_rec,
 					 SCM		  s_field);
-SCM	bsw_scm_make_gc_plateau		(guint		  size_hint);
-void	bsw_scm_destroy_gc_plateau	(SCM		  s_gcplateau);
-
-
-/* --- SCM-Wire --- */
-BswSCMWire*     bsw_scm_wire_from_pipe   (const gchar    *ident,
-					  gint            remote_input,
-					  gint            remote_output);
-gchar*          bsw_scm_wire_do_request  (BswSCMWire     *wire,
-					  const gchar    *request_msg);
-void            bsw_scm_wire_died        (BswSCMWire     *wire);
-void		bsw_scm_wire_dispatch_io (BswSCMWire     *swire,
-					  guint           timeout);
+SCM	bse_scm_glue_rec_print		(SCM		  scm_rec);
+SCM	bse_scm_make_gc_plateau		(guint		  size_hint);
+void	bse_scm_destroy_gc_plateau	(SCM		  s_gcplateau);
 
 					 
 
@@ -88,4 +80,4 @@ void		bsw_scm_wire_dispatch_io (BswSCMWire     *swire,
 }
 #endif /* __cplusplus */
 
-#endif /* __BSW_SCM_INTERP_H__ */
+#endif /* __BSE_SCM_INTERP_H__ */

@@ -7,11 +7,13 @@
 
 @include teximacros.texi
 
+@docfont{tech}
+
 @unnumbered RELEASE-NOTES
 
 @keepspaceSTART
 		Much has changed in the new development series (v0.4) of BEAST.
-		In brief (specifics can be found in the @uref{news.markup,,NEWS section}), the
+		In brief (specifics can be found in the @uref{beast-doc://news,,NEWS section}), the
 		GUI was majorly polished, many new synthesis features have
 		been added and support for various external wave file formats
 		was implemented.
@@ -47,7 +49,6 @@
 		Questions, comments, bug reports and similar stuff should be sent to:
 @keepspaceEND
 
-@center		@uref{beast@@beast.gtk.org,,beast@@beast.gtk.org}
+@center		@uref{mailto://beast@@beast.gtk.org}
 
-@*
-@*
+@bye

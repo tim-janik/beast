@@ -45,7 +45,7 @@ struct _BstSequence
   guint            entered : 1;
   GtkWidget       *darea;
   gint	           n_rows;
-  BswNoteSequence *sdata;
+  BseNoteSequence *sdata;
 };
 struct _BstSequenceClass
 {
@@ -58,7 +58,7 @@ struct _BstSequenceClass
 /* --- prototypes --- */
 GType		bst_sequence_get_type	(void);
 void		bst_sequence_set_seq	(BstSequence	 *seq,
-					 BswNoteSequence *sdata);
+					 BseNoteSequence *sdata);
 
 
 #ifdef __cplusplus

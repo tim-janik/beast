@@ -51,6 +51,7 @@ struct _BstRadioTools
   GtkObject	     parent_object;
 
   guint              tool_id;
+  gpointer           tool_data;
 
   guint		     n_tools;
   BstRadioToolEntry *tools;
@@ -76,7 +77,7 @@ void            bst_radio_tools_add_tool	     (BstRadioTools *rtools,
 						      const gchar   *tool_name,
 						      const gchar   *tool_tip,
 						      const gchar   *tool_blurb,
-						      BswIcon       *tool_icon,
+						      BseIcon       *tool_icon,
 						      BstRadioToolFlags flags);
 void            bst_radio_tools_add_stock_tool	     (BstRadioTools *rtools,
 						      guint          tool_id,

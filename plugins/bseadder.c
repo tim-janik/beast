@@ -40,7 +40,7 @@ static void	 bse_adder_get_property		(GObject        *object,
 						 guint           param_id,
 						 GValue         *value,
 						 GParamSpec     *pspec);
-static BswIcon*	 bse_adder_do_get_icon		(BseObject	*object);
+static BseIcon*	 bse_adder_do_get_icon		(BseObject	*object);
 static void      bse_adder_context_create       (BseSource      *source,
 						 guint           context_handle,
 						 GslTrans       *trans);
@@ -92,11 +92,11 @@ bse_adder_class_init (BseAdderClass *class)
   
   bse_object_class_add_param (object_class, "Features",
 			      PARAM_SUBTRACT,
-			      bse_param_spec_bool ("subtract", "Subtract instead",
+			      sfi_pspec_bool ("subtract", "Subtract instead",
 						   "Use subtraction to combine sample"
 						   "values (instead of addition)",
 						   FALSE,
-						   BSE_PARAM_DEFAULT));
+						   SFI_PARAM_DEFAULT));
   
   channel = bse_source_class_add_jchannel (source_class, "Audio In1", "Audio Input 1");
   g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO1);
@@ -109,7 +109,7 @@ bse_adder_class_init (BseAdderClass *class)
 static void
 bse_adder_class_finalize (BseAdderClass *class)
 {
-  bsw_icon_unref (class->sub_icon);
+  bse_icon_free (class->sub_icon);
   class->sub_icon = NULL;
 }
 
@@ -119,7 +119,7 @@ bse_adder_init (BseAdder *self)
   self->subtract = FALSE;
 }
 
-static BswIcon*
+static BseIcon*
 bse_adder_do_get_icon (BseObject *object)
 {
   BseAdder *self = BSE_ADDER (object);
@@ -141,7 +141,7 @@ bse_adder_set_property (GObject      *object,
   switch (param_id)
     {
     case PARAM_SUBTRACT:
-      self->subtract = g_value_get_boolean (value);
+      self->subtract = sfi_value_get_bool (value);
       bse_adder_update_modules (self, NULL);
       bse_object_notify_icon_changed (BSE_OBJECT (self));
       break;
@@ -162,7 +162,7 @@ bse_adder_get_property (GObject    *object,
   switch (param_id)
     {
     case PARAM_SUBTRACT:
-      g_value_set_boolean (value, self->subtract);
+      sfi_value_set_bool (value, self->subtract);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

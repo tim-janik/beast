@@ -20,7 +20,7 @@ CLEANFILES += $(gen_sources)
 #
 bin_PROGRAMS = bswshell
 # libraries to link programs against
-programs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/bsw/libbsw.la
+programs_ldadd = $(top_builddir)/bsw/libbsw.la $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
 # source setups
 bswshell_SOURCES = bswshell.c bswscminterp.c
 bswshell_LDADD = $(programs_ldadd) $(BSW_SHELL_LIBS)
@@ -34,7 +34,7 @@ EXTRA_DIST += bswscminterp.h
 scriptdir = $(bswscriptdir)
 script_DATA = $(public_scripts)
 public_scripts = $(strip	\
-	bsw-scm-glue.boot	\
+	bse-scm-glue.boot	\
 	progressor-example.scm	\
 )
 EXTRA_DIST += $(public_scripts) test.scm

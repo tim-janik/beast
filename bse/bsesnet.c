@@ -15,23 +15,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bsesnet.h"
+#include <string.h>
+#include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sfi/gbsearcharray.h>
+#include <gsl/gslengine.h>
+#include <gsl/gslcommon.h>
+#include "bsesnet.h"
 
-#include        "bseproject.h"
-#include        "bsecategories.h"
-#include        "bsestorage.h"
-#include        "bsemarshal.h"
-#include        "bsemain.h"
-#include        "bsecontextmerger.h"
-#include        "bsemidireceiver.h"
-#include        <string.h>
-#include        <time.h>
-#include        <fcntl.h>
-#include        <unistd.h>
-#include        <stdlib.h>
-#include        "gbsearcharray.h"
-#include        <gsl/gslengine.h>
-#include        <gsl/gslcommon.h>
+#include "bseproject.h"
+#include "bsecategories.h"
+#include "bsestorage.h"
+#include "bsemain.h"
+#include "bsecontextmerger.h"
+#include "bsemidireceiver.h"
 
 
 typedef struct
@@ -55,7 +54,7 @@ enum
 /* --- prototypes --- */
 static void      bse_snet_class_init             (BseSNetClass   *class);
 static void      bse_snet_init                   (BseSNet        *snet);
-static void      bse_snet_do_destroy             (BseObject      *object);
+static void      bse_snet_dispose                (GObject        *object);
 static void      bse_snet_finalize               (GObject        *object);
 static void      bse_snet_set_property           (GObject	 *object,
 						  guint           param_id,
@@ -72,6 +71,7 @@ static void      bse_snet_forall_items           (BseContainer   *container,
 						  gpointer        data);
 static void      bse_snet_remove_item            (BseContainer   *container,
 						  BseItem        *item);
+static void      bse_snet_release_children       (BseContainer   *container);
 static void      bse_snet_prepare                (BseSource      *source);
 static void      bse_snet_reset                  (BseSource      *source);
 static gint	 snet_ports_compare              (gconstpointer   bsearch_node1, /* key */
@@ -138,9 +138,8 @@ bse_snet_class_init (BseSNetClass *class)
   
   gobject_class->set_property = bse_snet_set_property;
   gobject_class->get_property = bse_snet_get_property;
+  gobject_class->dispose = bse_snet_dispose;
   gobject_class->finalize = bse_snet_finalize;
-  
-  object_class->destroy = bse_snet_do_destroy;
   
   source_class->prepare = bse_snet_prepare;
   source_class->context_create = bse_snet_context_create;
@@ -152,15 +151,15 @@ bse_snet_class_init (BseSNetClass *class)
   container_class->remove_item = bse_snet_remove_item;
   container_class->forall_items = bse_snet_forall_items;
   container_class->context_children = snet_context_children;
+  container_class->release_children = bse_snet_release_children;
   
   bse_object_class_add_param (object_class, "Playback Settings",
 			      PARAM_AUTO_ACTIVATE,
-			      g_param_spec_boolean ("auto_activate", "Auto Activate",
-						    "Automatic activation only needs to be enabled for synthesis networks "
-						    "that don't use virtual ports for their input or output",
-						    FALSE, BSE_PARAM_DEFAULT));
+			      sfi_pspec_bool ("auto_activate", "Auto Activate",
+					      "Automatic activation only needs to be enabled for synthesis networks "
+					      "that don't use virtual ports for their input or output",
+					      FALSE, SFI_PARAM_DEFAULT));
   signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered",
-							  bse_marshal_VOID__NONE, NULL,
 							  G_TYPE_NONE, 0);
 }
 
@@ -180,19 +179,35 @@ bse_snet_init (BseSNet *snet)
 }
 
 static void
-bse_snet_do_destroy (BseObject *object)
+bse_snet_release_children (BseContainer *container)
 {
-  BseSNet *snet = BSE_SNET (object);
-  
-  while (snet->sources)
-    bse_container_remove_item (BSE_CONTAINER (snet), snet->sources->data);
+  BseSNet *snet = BSE_SNET (container);
+  GList *list;
+
+  list = snet->sources;
+  while (list)
+    {
+      GList *next = list->next;
+      if (!BSE_ITEM_AGGREGATE (list->data))
+	bse_container_remove_item (container, list->data);
+      list = next;
+    }
   if (snet->iport_names)
     g_warning ("%s: leaking %cport \"%s\"", G_STRLOC, 'i', (gchar*) snet->iport_names->data);
   if (snet->oport_names)
     g_warning ("%s: leaking %cport \"%s\"", G_STRLOC, 'o', (gchar*) snet->oport_names->data);
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' handler */
+  BSE_CONTAINER_CLASS (parent_class)->release_children (container);
+}
+
+static void
+bse_snet_dispose (GObject *object)
+{
+  // BseSNet *snet = BSE_SNET (object);
+  
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
@@ -202,7 +217,7 @@ bse_snet_finalize (GObject *object)
   
   if (snet->port_unregistered_id)
     {
-      g_source_remove (snet->port_unregistered_id);
+      bse_idle_remove (snet->port_unregistered_id);
       snet->port_unregistered_id = 0;
     }
   
@@ -243,7 +258,7 @@ bse_snet_set_property (GObject      *object,
   switch (param_id)
     {
     case PARAM_AUTO_ACTIVATE:
-      BSE_SUPER (self)->auto_activate = g_value_get_boolean (value);
+      BSE_SUPER (self)->auto_activate = sfi_value_get_bool (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -262,7 +277,7 @@ bse_snet_get_property (GObject    *object,
   switch (param_id)
     {
     case PARAM_AUTO_ACTIVATE:
-      g_value_set_boolean (value, BSE_SUPER (self)->auto_activate);
+      sfi_value_set_bool (value, BSE_SUPER (self)->auto_activate);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -711,7 +726,7 @@ create_context_data (BseSNet         *self,
 		     guint            midi_channel)
 {
   ContextData *cdata = g_new0 (ContextData, 1);
-
+  
   cdata->context_id = context_id;
   cdata->midi_receiver = bse_midi_receiver_ref (midi_receiver);
   cdata->midi_channel = midi_channel;
@@ -721,7 +736,7 @@ create_context_data (BseSNet         *self,
     {
       ContextData *pdata = find_context_data (self, parent_context);
       guint i;
-
+      
       i = pdata->n_branches++;
       pdata->branches = g_renew (guint, pdata->branches, pdata->n_branches);
       pdata->branches[i] = context_id;
@@ -740,18 +755,18 @@ free_context_data (BseSource *source,
 {
   BseSNet *self = BSE_SNET (source);
   ContextData *cdata = data;
-
+  
   g_return_if_fail (cdata->n_branches == 0);
-
+  
   bse_midi_receiver_unref (cdata->midi_receiver);
   bse_snet_free_cid (self, cdata->context_id);
   if (cdata->parent_context)
     {
       ContextData *pdata = find_context_data (self, cdata->parent_context);
       guint i, swap_context;
-
+      
       g_return_if_fail (pdata->n_branches > 0);
-
+      
       pdata->n_branches--;
       swap_context = pdata->branches[pdata->n_branches];
       for (i = 0; i < pdata->n_branches; i++)
@@ -782,7 +797,7 @@ bse_snet_create_context (BseSNet         *self,
   cid = bse_snet_alloc_cid (self);
   g_return_val_if_fail (cid > 0, 0);
   g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), cid) == FALSE, 0);
-
+  
   cdata = create_context_data (self, cid, 0, midi_receiver, midi_channel);
   bse_source_create_context_with_data (BSE_SOURCE (self), cid, cdata, free_context_data, trans);
   
@@ -797,9 +812,9 @@ bse_snet_context_clone_branch (BseSNet         *self,
 			       guint            midi_channel,
 			       GslTrans        *trans)
 {
-  GslRing *ring;
+  SfiRing *ring;
   guint bcid = 0;
-
+  
   g_return_val_if_fail (BSE_IS_SNET (self), 0);
   g_return_val_if_fail (BSE_SOURCE_PREPARED (self), 0);
   g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), context), 0);
@@ -808,15 +823,15 @@ bse_snet_context_clone_branch (BseSNet         *self,
   g_return_val_if_fail (BSE_ITEM (context_merger)->parent == BSE_ITEM (self), 0);
   g_return_val_if_fail (midi_receiver != NULL, 0);
   g_return_val_if_fail (trans != NULL, 0);
-
+  
   ring = bse_source_collect_inputs_recursive (context_merger);
   if (!BSE_SOURCE_COLLECTED (context_merger))
     {
       ContextData *cdata;
-      GslRing *node;
-
+      SfiRing *node;
+      
       g_assert (self->tmp_context_children == NULL);
-      for (node = ring; node; node = gsl_ring_walk (ring, node))
+      for (node = ring; node; node = sfi_ring_walk (node, ring))
 	self->tmp_context_children = g_slist_prepend (self->tmp_context_children, node->data);
       self->tmp_context_children = g_slist_prepend (self->tmp_context_children, context_merger);
       bse_source_free_collection (ring);
@@ -830,8 +845,8 @@ bse_snet_context_clone_branch (BseSNet         *self,
       g_warning ("%s: context merger forms a cycle with it's inputs", G_STRLOC);
       bse_source_free_collection (ring);
     }
-
-
+  
+  
   return bcid;
 }
 
@@ -840,11 +855,11 @@ bse_snet_context_is_branch (BseSNet *self,
 			    guint    context_id)
 {
   ContextData *cdata;
-
+  
   g_return_val_if_fail (BSE_IS_SNET (self), FALSE);
   g_return_val_if_fail (BSE_SOURCE_PREPARED (self), FALSE);
   g_return_val_if_fail (context_id > 0, FALSE);
-
+  
   cdata = find_context_data (self, context_id);
   return cdata ? cdata->parent_context > 0 : FALSE;
 }
@@ -854,7 +869,7 @@ snet_context_children (BseContainer *container)
 {
   BseSNet *self = BSE_SNET (container);
   GSList *slist;
-
+  
   if (self->tmp_context_children)
     {
       slist = self->tmp_context_children;
@@ -862,7 +877,7 @@ snet_context_children (BseContainer *container)
     }
   else
     slist = BSE_CONTAINER_CLASS (parent_class)->context_children (container);
-
+  
   return slist;
 }
 
@@ -872,9 +887,9 @@ bse_snet_get_midi_receiver (BseSNet *self,
 			    guint   *midi_channel)
 {
   ContextData *cdata;
-
+  
   g_return_val_if_fail (BSE_IS_SNET (self), 0);
-
+  
   cdata = find_context_data (self, context_handle);
   if (midi_channel)
     *midi_channel = cdata ? cdata->midi_channel : 0;
@@ -934,14 +949,14 @@ bse_snet_context_create (BseSource *source,
 			 GslTrans  *trans)
 {
   BseSNet *self = BSE_SNET (source);
-
+  
   if (self->tmp_context_children)
     {
       BseContextMerger *context_merger = self->tmp_context_children->data;
       ContextData *cdata = find_context_data (self, context_handle);
-
+      
       g_assert (BSE_IS_CONTEXT_MERGER (context_merger));
-
+      
       bse_context_merger_set_merge_context (context_merger, cdata->parent_context);
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -962,10 +977,10 @@ bse_snet_context_connect (BseSource *source,
   BseSNet *self = BSE_SNET (source);
   ContextData *cdata = find_context_data (self, context_handle);
   guint i;
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
-
+  
   for (i = 0; i < cdata->n_branches; i++)
     bse_source_connect_context (source, cdata->branches[i], trans);
 }
@@ -977,10 +992,10 @@ bse_snet_context_dismiss (BseSource *source,
 {
   BseSNet *self = BSE_SNET (source);
   ContextData *cdata = find_context_data (self, context_handle);
-
+  
   while (cdata->n_branches)
     bse_source_dismiss_context (source, cdata->branches[cdata->n_branches - 1], trans);
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }

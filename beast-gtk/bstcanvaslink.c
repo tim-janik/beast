@@ -167,23 +167,23 @@ clink_view_update (BstCanvasLink *clink,
   if (frame)
     {
       GtkWidget *text = GTK_BIN (frame)->child;
-      gchar *ic_name, *oc_name, *ic_blurb, *oc_blurb;
-      gchar *string, *iname, *oname;
+      const gchar *ic_name, *oc_name, *ic_blurb, *oc_blurb, *iname, *oname;
+      gchar *string;
 
       /* figure appropriate window title
        */
-      iname = clink->icsource ? bsw_item_get_name_or_type (clink->icsource->source) : "<???>";
-      oname = clink->ocsource ? bsw_item_get_name_or_type (clink->ocsource->source) : "<???>";
+      iname = clink->icsource ? bse_item_get_name_or_type (clink->icsource->source) : "<???>";
+      oname = clink->ocsource ? bse_item_get_name_or_type (clink->ocsource->source) : "<???>";
       string = g_strconcat ("Module Link: ", iname, " <=> ", oname, NULL);
       gxk_dialog_set_title (GXK_DIALOG (clink->link_view), string);
       g_free (string);
 
       /* construct actuall information
        */
-      oc_name = clink->ocsource ? bsw_source_ochannel_name (clink->ocsource->source, clink->ochannel) : NULL;
-      oc_blurb = clink->ocsource ? bsw_source_ochannel_blurb (clink->ocsource->source, clink->ochannel) : NULL;
-      ic_name = clink->icsource ? bsw_source_ichannel_name (clink->icsource->source, clink->ichannel) : NULL;
-      ic_blurb = clink->icsource ? bsw_source_ichannel_blurb (clink->icsource->source, clink->ichannel) : NULL;
+      oc_name = clink->ocsource ? bse_source_ochannel_name (clink->ocsource->source, clink->ochannel) : NULL;
+      oc_blurb = clink->ocsource ? bse_source_ochannel_blurb (clink->ocsource->source, clink->ochannel) : NULL;
+      ic_name = clink->icsource ? bse_source_ichannel_name (clink->icsource->source, clink->ichannel) : NULL;
+      ic_blurb = clink->icsource ? bse_source_ichannel_blurb (clink->icsource->source, clink->ichannel) : NULL;
       if (!oc_name)
 	oc_name = "?";
       if (!ic_name)
@@ -268,7 +268,7 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
   if (clink->ocsource)
     {
       if (clink->ocsource->source) /* source may be destroyed already */
-	bsw_proxy_disconnect (clink->ocsource->source,
+	bse_proxy_disconnect (clink->ocsource->source,
 			      "any_signal", clink_view_check_update, clink,
 			      NULL);
       if (g_signal_handler_is_connected (clink->ocsource, clink->oc_handler))
@@ -284,8 +284,8 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      bsw_proxy_connect (clink->ocsource->source,
-			 "swapped_signal::notify::uname", clink_view_check_update, clink,
+      bse_proxy_connect (clink->ocsource->source,
+			 "swapped_signal::property-notify::uname", clink_view_check_update, clink,
 			 NULL);
       bst_canvas_link_update (clink);
     }
@@ -303,7 +303,7 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
   if (clink->icsource)
     {
       if (clink->icsource->source) /* source may be destroyed already */
-	bsw_proxy_disconnect (clink->icsource->source,
+	bse_proxy_disconnect (clink->icsource->source,
 			      "any_signal", clink_view_check_update, clink,
 			      NULL);
       if (g_signal_handler_is_connected (clink->icsource, clink->ic_handler))
@@ -319,8 +319,8 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      bsw_proxy_connect (clink->icsource->source,
-			 "swapped_signal::notify::uname", clink_view_check_update, clink,
+      bse_proxy_connect (clink->icsource->source,
+			 "swapped_signal::property-notify::uname", clink_view_check_update, clink,
 			 NULL);
       bst_canvas_link_update (clink);
     }

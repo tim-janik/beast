@@ -85,8 +85,8 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_fir_filter_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_fir_filter_get_property;
+  gobject_class->set_property = bse_fir_filter_set_property;
+  gobject_class->get_property = bse_fir_filter_get_property;
 
   object_class->destroy = bse_fir_filter_do_destroy;
   
@@ -96,19 +96,19 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
   
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_ALLPASS,
-			      bse_param_spec_bool ("allpass", "AllPass", NULL,
+			      sfi_pspec_bool ("allpass", "AllPass", NULL,
 						 FALSE,
-						 BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+						 SFI_PARAM_DEFAULT SFI_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_LOWPASS,
-			      bse_param_spec_bool ("lowpass", "LowPass", NULL,
+			      sfi_pspec_bool ("lowpass", "LowPass", NULL,
 						 TRUE,
-						 BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+						 SFI_PARAM_DEFAULT SFI_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_HIGHPASS,
-			      bse_param_spec_bool ("highpass", "HighPass", NULL,
+			      sfi_pspec_bool ("highpass", "HighPass", NULL,
 						 FALSE,
-						 BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+						 SFI_PARAM_DEFAULT SFI_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_DEGREE,
 			      bse_param_spec_uint ("degree", "Degree", "Number of filter coefficients",
@@ -117,14 +117,14 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Smoothing",
 			      PARAM_HANN,
-			      bse_param_spec_bool ("hann_smooth", "von Hann", NULL,
+			      sfi_pspec_bool ("hann_smooth", "von Hann", NULL,
 						 FALSE,
-						 BSE_PARAM_DEFAULT));
+						 SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Smoothing",
 			      PARAM_LANCZOS,
-			      bse_param_spec_bool ("lanczos_smooth", "C. Lanczos", NULL,
+			      sfi_pspec_bool ("lanczos_smooth", "C. Lanczos", NULL,
 						 FALSE,
-						 BSE_PARAM_DEFAULT));
+						 SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Cut off",
 			      PARAM_CUT_OFF_FREQ,
 			      bse_param_spec_float ("cut_off_freq", "Frequency", NULL,
@@ -286,15 +286,15 @@ bse_fir_filter_set_property (BseFIRFilter *filter,
     case PARAM_CUT_OFF_FREQ:
       filter->cut_off_freq = g_value_get_float (value);
       bse_fir_filter_update_locals (filter);
-      bse_object_param_changed (BSE_OBJECT (filter), "cut_off_note");
+      g_object_notify (filter, "cut_off_note");
       break;
     case PARAM_CUT_OFF_NOTE:
       filter->cut_off_freq = bse_note_to_freq (bse_value_get_note (value));
       filter->cut_off_freq = MAX (filter->cut_off_freq, BSE_MIN_OSC_FREQ_d);
       bse_fir_filter_update_locals (filter);
-      bse_object_param_changed (BSE_OBJECT (filter), "cut_off_freq");
+      g_object_notify (filter, "cut_off_freq");
       if (bse_note_from_freq (filter->cut_off_freq) != bse_value_get_note (value))
-	bse_object_param_changed (BSE_OBJECT (filter), "cut_off_note");
+	g_object_notify (filter, "cut_off_note");
       break;
     case PARAM_LANCZOS:
       filter->lanczos_smoothing = g_value_get_boolean (value);
@@ -315,9 +315,9 @@ bse_fir_filter_set_property (BseFIRFilter *filter,
 	{
 	  filter->filter_type = filter_type;
 	  bse_fir_filter_update_locals (filter);
-	  bse_object_param_changed (BSE_OBJECT (filter), "allpass");
-	  bse_object_param_changed (BSE_OBJECT (filter), "lowpass");
-	  bse_object_param_changed (BSE_OBJECT (filter), "highpass");
+	  g_object_notify (filter, "allpass");
+	  g_object_notify (filter, "lowpass");
+	  g_object_notify (filter, "highpass");
 	}
       break;
     default:

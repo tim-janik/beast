@@ -130,10 +130,10 @@ bse_sub_iport_class_init (BseSubIPortClass *class)
       name = g_strdup_printf ("Input Port %u", i + 1);
       value = g_strdup_printf ("synth_in_%u", i + 1);
       bse_object_class_add_param (object_class, "Assignments", PROP_IPORT_NAME + i * 2,
-                                  bse_param_spec_string (string, name,
+                                  sfi_pspec_string (string, name,
                                                          "The port name is a unique name to establish input<->output "
                                                          "port relationships",
-                                                         value, BSE_PARAM_DEFAULT));
+                                                         value, SFI_PARAM_DEFAULT));
       g_free (string);
       g_free (name);
       g_free (value);

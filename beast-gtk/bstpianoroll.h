@@ -57,7 +57,7 @@ struct _BstPianoRoll
 {
   GtkContainer	 parent_instance;
 
-  BswProxy	 proxy;
+  SfiProxy	 proxy;
   gint		 min_note;
   gint		 max_note;
   guint		 vzoom;
@@ -112,7 +112,7 @@ struct _BstPianoRollClass
 /* --- prototypes --- */
 GType	bst_piano_roll_get_type			(void);
 void	bst_piano_roll_set_proxy		(BstPianoRoll	*proll,
-						 BswProxy	 proxy);
+						 SfiProxy	 proxy);
 void	bst_piano_roll_set_hadjustment		(BstPianoRoll	*proll,
 						 GtkAdjustment	*adjustment);
 void	bst_piano_roll_set_vadjustment		(BstPianoRoll	*proll,

@@ -20,6 +20,7 @@
 
 #include "bstprocedure.h"
 
+#if 0
 
 enum {
   COL_SNAME,	/* scheme name */
@@ -240,7 +241,7 @@ bst_proc_browser_execute (BstProcBrowser *self)
       else
 	g_printerr ("no-such-procedure: %s \n", argv[0]);
       
-      // g_printerr ("return: %d\n", bsw_server_exec_proc (BSW_SERVER, argv[0], argv[1]));
+      // g_printerr ("return: %d\n", bsw_server_exec_proc (BSE_SERVER, argv[0], argv[1]));
       g_strfreev (argv);
     }
 }
@@ -272,3 +273,4 @@ bst_proc_browser_create_buttons (BstProcBrowser *self,
    */
   widget = gxk_dialog_action (dialog, BST_STOCK_CLOSE, gxk_toplevel_delete, NULL);
 }
+#endif

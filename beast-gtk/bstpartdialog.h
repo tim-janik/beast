@@ -61,7 +61,7 @@ struct _BstPartDialogClass
 /* --- prototypes --- */
 GType		bst_part_dialog_get_type	(void);
 void		bst_part_dialog_set_proxy	(BstPartDialog	*self,
-						 BswProxy	 part);
+						 SfiProxy	 part);
 
 
 #ifdef __cplusplus

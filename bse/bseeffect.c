@@ -34,18 +34,18 @@ BSE_BUILTIN_TYPE (BseEffect)
 {
   static const GTypeInfo effect_info = {
     sizeof (BseEffectClass),
-
+    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_effect_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-
+    
     sizeof (BseEffect),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_init,
   };
-
+  
   return bse_type_register_static (BSE_TYPE_OBJECT,
 				   "BseEffect",
 				   "Base type for all BSE Effects",
@@ -56,11 +56,11 @@ static void
 bse_effect_class_init (BseEffectClass *class)
 {
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-
+  
   parent_class = g_type_class_peek_parent (class);
-
+  
   object_class->destroy = bse_effect_destroy;
-
+  
   class->jump_sequencer = NULL;
   class->setup_voice = NULL;
 }
@@ -73,7 +73,7 @@ bse_effect_init	(BseEffect *effect)
 static void
 bse_effect_destroy (BseObject *object)
 {
-
+  
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -84,11 +84,11 @@ bse_effect_jump_sequencer (BseEffect *effect,
 			   guint     *current_row)
 {
   BseEffectClass *class;
-
+  
   g_return_if_fail (BSE_IS_EFFECT (effect));
   g_return_if_fail (current_pattern != NULL);
   g_return_if_fail (current_row != NULL);
-
+  
   class = BSE_EFFECT_GET_CLASS (effect);
   if (class->jump_sequencer)
     class->jump_sequencer (effect, current_pattern, current_row);
@@ -99,10 +99,10 @@ bse_effect_setup_voice (BseEffect *effect,
 			BseVoice  *voice)
 {
   BseEffectClass *class;
-
+  
   g_return_if_fail (BSE_IS_EFFECT (effect));
   g_return_if_fail (voice != NULL);
-
+  
   class = BSE_EFFECT_GET_CLASS (effect);
   if (class->setup_voice)
     class->setup_voice (effect, voice);

@@ -98,14 +98,32 @@ else
   CFLAGS="$DEBUG_FLAGS"
 fi
 
-
 dnl Foreign defaults:
 MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
 MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
 
+dnl basic environment
+if test -d CVS -a -x autogen.sh ; then
+    DEVEL_BUILD_TEST="-n CVS"
+else
+    DEVEL_BUILD_TEST="-z CVS"
+fi
+
+
 dnl
 dnl Define package requirements.
 dnl
+AC_DEFUN(AC_SFI_REQUIREMENTS,
+[
+    dnl We need GLib with friends
+    PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.0.6 gobject-2.0 gmodule-2.0 gthread-2.0)
+    AC_SUBST(GLIB_CFLAGS)
+    AC_SUBST(GLIB_LIBS)
+    SFI_CFLAGS="$GLIB_CFLAGS"
+    SFI_LIBS="$GLIB_LIBS"
+    AC_SUBST(SFI_CFLAGS)
+    AC_SUBST(SFI_LIBS)
+])
 AC_DEFUN(AC_GSL_REQUIREMENTS,
 [
     GSL_CFLAGS=
@@ -161,11 +179,11 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
 
     dnl === sizeof types ===
     GLIB_SIZEOF([#include <pthread.h>], pthread_mutex_t, pth_mutex_t)
-    GSL_SIZEOF_PTH_MUTEX_T="$glib_cv_sizeof_pth_mutex_t"
-    AC_SUBST(GSL_SIZEOF_PTH_MUTEX_T)
+    SFI_SIZEOF_PTH_MUTEX_T="$glib_cv_sizeof_pth_mutex_t"
+    AC_SUBST(SFI_SIZEOF_PTH_MUTEX_T)
     GLIB_SIZEOF([#include <pthread.h>], pthread_cond_t, pth_cond_t)
-    GSL_SIZEOF_PTH_COND_T="$glib_cv_sizeof_pth_cond_t"
-    AC_SUBST(GSL_SIZEOF_PTH_COND_T)
+    SFI_SIZEOF_PTH_COND_T="$glib_cv_sizeof_pth_cond_t"
+    AC_SUBST(SFI_SIZEOF_PTH_COND_T)
     GLIB_SIZEOF([#include <inttypes.h>], intmax_t, std_intmax_t)
     GSL_SIZEOF_STD_INTMAX_T="$glib_cv_sizeof_std_intmax_t"
     AC_SUBST(GSL_SIZEOF_STD_INTMAX_T)
@@ -180,22 +198,13 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
       int val = PTHREAD_MUTEX_RECURSIVE;
       attr_settype = 0; val = 0;
     ],
-      GSL_HAVE_MUTEXATTR_SETTYPE=1
+      SFI_HAVE_MUTEXATTR_SETTYPE=1
       AC_MSG_RESULT(yes)
     ,
-      GSL_HAVE_MUTEXATTR_SETTYPE=0
+      SFI_HAVE_MUTEXATTR_SETTYPE=0
       AC_MSG_RESULT(no)
     )
-    AC_SUBST(GSL_HAVE_MUTEXATTR_SETTYPE)
-])
-AC_DEFUN(AC_SFI_REQUIREMENTS,
-[
-    dnl We need GLib with friends
-    PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.0.6 gobject-2.0 gmodule-2.0 gthread-2.0)
-    SFI_CFLAGS="$GLIB_CFLAGS"
-    SFI_LIBS="$GLIB_LIBS"
-    AC_SUBST(SFI_CFLAGS)
-    AC_SUBST(SFI_LIBS)
+    AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
@@ -345,18 +354,22 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 ])
 AC_DEFUN(AC_DOC_REQUIREMENTS,
 [
-    AC_MSG_CHECKING([for makeinfo-4.2xmlpatch])
-    XMLMAKEINFO=
-    if test -x ./docs/generated/../../makeinfo-4.2xmlpatch ; then
-	XMLMAKEINFO='$(top_builddir)/makeinfo-4.2xmlpatch'
+    AC_CHECK_PROGS(XMLMAKEINFO,makeinfo,)
+    REQUIRED_VERSION=4.3
+    AC_MSG_CHECKING([for makeinfo version >= $REQUIRED_VERSION])
+    version=`$XMLMAKEINFO --version 2>/dev/null | head -n 1`
+    MC_CHECK_VERSION($version, $REQUIRED_VERSION,
         AC_MSG_RESULT(yes)
-    else
+    ,
+	XMLMAKEINFO=
         AC_MSG_RESULT(no)
-    fi
+    )
     AC_SUBST(XMLMAKEINFO)
-    XSLTPROC=
-    AC_CHECK_PROGS(XSLTPROC,xsltproc)
+    AC_CHECK_PROGS(XSLTPROC,xsltproc,)
     AM_CONDITIONAL(HAVE_XMLMAKEINFO_AND_XSLTPROC, test -n "$XSLTPROC" && test -n "$XMLMAKEINFO")
+    if test $DEVEL_BUILD_TEST -a -z "$HAVE_XMLMAKEINFO_AND_XSLTPROC_FALSE" ; then
+	AC_MSG_ERROR("required program makeinfo or xsltproc is missing")
+    fi
 ])
 
 # check compilers and their behaviour, setup CFLAGS
@@ -405,7 +418,7 @@ AC_SUBST(STRIP_END)
 # require pkg-config
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
 
-# Check requirements for each subpackage
+# Check requirement sets
 AC_SFI_REQUIREMENTS
 AC_GSL_REQUIREMENTS
 AC_BSE_REQUIREMENTS
@@ -492,7 +505,7 @@ beast-gtk/gxk/Makefile
 beast-gtk/icons/Makefile
 beast-gtk/images/Makefile
 docs/Makefile
-docs/reference/Makefile
+docs/utils/Makefile
 docs/generated/Makefile
 test/Makefile
 bse/bseconfig.h

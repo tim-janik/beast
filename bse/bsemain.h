@@ -19,47 +19,45 @@
 #define __BSE_MAIN_H__
 
 #include	<bse/bseglobals.h>
-
+#include	<bse/bse.h>	/* initialization */
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- bse global lock --- */
-typedef struct
-{
-  gpointer	  lock_data;
-  void		(*lock)		(gpointer lock_data);
-  void		(*unlock)	(gpointer lock_data);
-} BseLockFuncs;
-
-
-/* --- variables --- */
-#if 0 /* bsedefs.h: */
-extern BseDebugFlags bse_debug_flags;
+/* --- global variables --- */
+extern GMainContext *bse_main_context;
+extern SfiMutex	     bse_main_sequencer_mutex;
+extern gboolean      bse_main_developer_extensions;
+extern SfiThread    *bse_main_thread;
+#if 0	// prototyped in bsedefs.h
+extern BseDebugFlags bse_main_debug_flags;
 #endif
 
 
-/* --- prototypes --- */
-gboolean	bse_initialized			(void);
-void		bse_init			(gint		    *argc,
-						 gchar	          ***argv,
-						 const BseLockFuncs *lock_funcs);
-#define	BSE_THREADS_ENTER()			bse_main_global_lock ()
-#define	BSE_THREADS_LEAVE()			bse_main_global_unlock ()
-#define	BSE_SEQUENCER_LOCK()			bse_main_sequencer_lock ()
-#define	BSE_SEQUENCER_UNLOCK()			bse_main_sequencer_unlock ()
+/* --- initialization --- */
+#if 0	// prototyped in bse.h */
+void		bse_init_async		(gint		*argc,
+					 gchar	      ***argv,
+					 SfiRec		*config);
+SfiGlueContext* bse_init_glue_context	(const gchar    *client);
+gchar*          bse_check_version	(guint		 required_major,
+                                         guint		 required_minor,
+                                         guint		 required_micro);
+#endif
+/* initialization for internal utilities */
+void		bse_init_intern		(gint		*argc,
+					 gchar	      ***argv,
+					 SfiRec		*config);
 
 
-/* --- internal --- */
-void		bse_main_global_lock		(void);
-void		bse_main_global_unlock		(void);
-void		bse_main_sequencer_lock		(void);
-void		bse_main_sequencer_unlock	(void);
-extern gboolean	bse_developer_extensions;
-#define		BSE_DVL_EXT			(bse_developer_extensions != FALSE)
-void		_bse_midi_init			(void);
+/* --- global macros --- */
+#define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
+#define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
+#define	BSE_SEQUENCER_LOCK()			SFI_SYNC_LOCK (&bse_main_sequencer_mutex)
+#define	BSE_SEQUENCER_UNLOCK()			SFI_SYNC_UNLOCK (&bse_main_sequencer_mutex)
+#define	BSE_DVL_EXT				(bse_main_developer_extensions != FALSE)
 
 
 #ifdef __cplusplus

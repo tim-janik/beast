@@ -67,12 +67,12 @@ bst_server_monitor_class_init (BstServerMonitorClass *class)
 static void
 bst_server_monitor_init (BstServerMonitor *smon)
 {
-  smon->server = BSW_SERVER;
+  smon->server = BSE_SERVER;
   smon->param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
-  bst_param_view_set_mask (BST_PARAM_VIEW (smon->param_view), BSE_TYPE_SERVER, 0, NULL, NULL);
+  bst_param_view_set_mask (BST_PARAM_VIEW (smon->param_view), "BseServer", 0, NULL, NULL);
   gtk_widget_show (smon->param_view);
   gtk_container_add (GTK_CONTAINER (smon), smon->param_view);
-  bst_param_view_set_object (BST_PARAM_VIEW (smon->param_view), smon->server);
+  bst_param_view_set_item (BST_PARAM_VIEW (smon->param_view), smon->server);
 }
 
 static void
@@ -96,5 +96,4 @@ bst_server_monitor_update (BstServerMonitor *smon)
 {
   g_return_if_fail (BST_IS_SERVER_MONITOR (smon));
   
-  bst_param_view_update (BST_PARAM_VIEW (smon->param_view));
 }

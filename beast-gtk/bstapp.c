@@ -33,21 +33,24 @@
 
 
 /* --- prototypes --- */
-static void	bst_app_class_init		(BstAppClass	 *class);
-static void	bst_app_init			(BstApp		 *app);
-static void	bst_app_destroy			(GtkObject	 *object);
-static gboolean bst_app_handle_delete_event	(GtkWidget	 *widget,
-						 GdkEventAny	 *event);
-static void     bst_app_run_script_proc		(GtkWidget	 *widget,
-						 gulong           callback_action,
-						 gpointer         popup_data);
+static void	bst_app_class_init		(BstAppClass	*class);
+static void	bst_app_init			(BstApp		*app);
+static void	bst_app_destroy			(GtkObject	*object);
+static gboolean bst_app_handle_delete_event	(GtkWidget	*widget,
+						 GdkEventAny	*event);
+static void	bst_app_menu_callback		(GtkWidget	*owner,
+						 gulong		 callback_action,
+						 gpointer	 popup_data);
+static void     bst_app_run_script_proc		(GtkWidget	*widget,
+						 gulong          category_id,
+						 gpointer        popup_data);
 
 
 /* --- menus --- */
 static gchar	   *bst_app_factories_path = "<BstApp>";
-static GtkItemFactoryEntry menubar_entries[] =
+static BstMenuConfigEntry menubar_entries[] =
 {
-#define BST_OP(bst_op) (bst_app_operate), (BST_OP_ ## bst_op)
+#define BST_OP(bst_op) (bst_app_menu_callback), (BST_OP_ ## bst_op)
   { "/_File",				NULL,		NULL, 0,			"<Branch>" },
   { "/File/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/File/_New",			"<ctrl>N",	BST_OP (PROJECT_NEW),		"<Item>" },
@@ -75,7 +78,6 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Project/Rack Editor",		NULL,		BST_OP (PROJECT_RACK_EDITOR),	"<Item>" },
   { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Project/Rebuild",			NULL,		BST_OP (REBUILD),		"<Item>" },
-  { "/Project/Refresh",			NULL,		BST_OP (REFRESH),		"<Item>" },
   { "/_Edit",				NULL,		NULL, 0,			"<Branch>" },
   { "/Edit/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Edit/_Undo",			"<ctrl>Z",	BST_OP (UNDO_LAST),		"<Item>" },
@@ -96,7 +98,7 @@ static GtkItemFactoryEntry menubar_entries[] =
   // { "/SNet/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   // { "/SNet/_Test",			"",		BST_OP (NONE),			"<Item>" },
 };
-static GtkItemFactoryEntry menubar_help_entries[] = {
+static BstMenuConfigEntry menubar_help_entries[] = {
   { "/_Help",				NULL,		NULL, 0,			"<LastBranch>" },
   { "/Help/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Help/_Release Notes...",		NULL,		BST_OP (HELP_RELEASE_NOTES),	"<Item>" },
@@ -174,10 +176,8 @@ bst_app_init (BstApp *app)
   GtkWidget *widget = GTK_WIDGET (app);
   GtkWindow *window = GTK_WINDOW (app);
   GtkItemFactory *factory;
-  GtkItemFactoryEntry *centries;
-  BseCategory *cats;
-  GSList *slist;
-  guint n_cats;
+  BseCategorySeq *cseq;
+  BstMenuConfig *m1, *m2;
   
   g_object_set (app,
 		"allow_shrink", TRUE,
@@ -213,25 +213,20 @@ bst_app_init (BstApp *app)
 			    bst_app_factories_path,
 			    factory,
 			    (GtkDestroyNotify) gtk_object_unref);
-
-  /* setup standard entries
-   */
-  gtk_item_factory_create_items (factory, G_N_ELEMENTS (menubar_entries), menubar_entries, app);
-
-  /* add scripts to the menu bar
-   */
-  cats = bse_categories_match_typed ("/Scripts/*", BSE_TYPE_PROCEDURE, &n_cats);
-  centries = bst_menu_entries_from_cats (n_cats, cats, bst_app_run_script_proc, FALSE);
-  slist = bst_menu_entries_slist (n_cats, centries);
-  slist = bst_menu_entries_sort (slist);
-  bst_menu_entries_create (factory, slist, GTK_WIDGET (app));
-  g_slist_free (slist);
-  g_free (centries);
-  g_free (cats);
-
-  /* setup help entries
-   */
-  gtk_item_factory_create_items (factory, G_N_ELEMENTS (menubar_help_entries), menubar_help_entries, app);
+  /* standard entries */
+  m1 = bst_menu_config_from_entries (G_N_ELEMENTS (menubar_entries), menubar_entries);
+  /* script entries */
+  cseq = bse_categories_match_typed ("/Scripts/*", "BseProcedure");
+  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, FALSE);
+  bst_menu_config_sort (m2);
+  /* merge and sort up */
+  m1 = bst_menu_config_merge (m1, m2);
+  /* add help entries */
+  m2 = bst_menu_config_from_entries (G_N_ELEMENTS (menubar_help_entries), menubar_help_entries);
+  m1 = bst_menu_config_merge (m1, m2);
+  /* and create menu items */
+  bst_menu_config_create_items (m1, factory, GTK_WIDGET (app));
+  bst_menu_config_free (m1);
 
   /* setup the main notebook
    */
@@ -259,11 +254,11 @@ bst_app_destroy (GtkObject *object)
 
   if (app->project)
     {
-      bsw_server_halt_project (BSW_SERVER, app->project);
-      g_object_disconnect (bse_object_from_id (app->project),
+      bse_server_halt_project (BSE_SERVER, app->project);
+      bse_proxy_disconnect (app->project,
 			   "any_signal", bst_app_reload_supers, app,
 			   NULL);
-      bsw_item_unuse (app->project);
+      bse_item_unuse (app->project);
       app->project = 0;
     }
 
@@ -279,13 +274,13 @@ bst_app_destroy (GtkObject *object)
 }
 
 BstApp*
-bst_app_new (BswProxy project)
+bst_app_new (SfiProxy project)
 {
   GdkGeometry geometry;
   GtkWidget *widget;
   BstApp *app;
 
-  g_return_val_if_fail (BSW_IS_PROJECT (project), NULL);
+  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
 
   widget = gtk_widget_new (BST_TYPE_APP,
 			   "default_width", 640,
@@ -298,11 +293,11 @@ bst_app_new (BswProxy project)
   gtk_window_set_geometry_hints (GTK_WINDOW (widget), NULL, &geometry, GDK_HINT_MIN_SIZE);
 
   app->project = project;
-  bsw_item_use (app->project);
-  g_object_connect (bse_object_from_id (app->project),
-		    "swapped_signal::item-added", bst_app_reload_supers, app,
-		    "swapped_signal::item-removed", bst_app_reload_supers, app,
-		    NULL);
+  bse_item_use (app->project);
+  bse_proxy_connect (app->project,
+		     "swapped_signal::item-added", bst_app_reload_supers, app,
+		     "swapped_signal::item-removed", bst_app_reload_supers, app,
+		     NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (app), app->project, "%s");
 
   bst_app_reload_supers (app);
@@ -315,11 +310,11 @@ bst_app_new (BswProxy project)
 }
 
 BstApp*
-bst_app_find (BswProxy project)
+bst_app_find (SfiProxy project)
 {
   GSList *slist;
   
-  g_return_val_if_fail (BSW_IS_PROJECT (project), NULL);
+  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
 
   for (slist = bst_app_class->apps; slist; slist = slist->next)
     {
@@ -356,24 +351,24 @@ bst_app_menu_factory (BstApp *app)
 
 static GtkWidget*
 bst_app_create_super_shell (BstApp  *app,
-			    BswProxy super)
+			    SfiProxy super)
 {
   GtkWidget *shell = NULL;
 
-  if (BSW_IS_SONG (super))
+  if (BSE_IS_SONG (super))
     shell = gtk_widget_new (BST_TYPE_SONG_SHELL,
 			    "visible", TRUE,
 			    NULL);
-  else if (BSW_IS_SNET (super))
+  else if (BSE_IS_SNET (super))
     shell = gtk_widget_new (BST_TYPE_SNET_SHELL,
 			    "visible", TRUE,
 			    NULL);
-  else if (BSW_IS_WAVE_REPO (super))
+  else if (BSE_IS_WAVE_REPO (super))
     shell = gtk_widget_new (BST_TYPE_WAVE_REPO_SHELL,
 			    "visible", TRUE,
 			    NULL);
   else
-    g_warning ("unknown super type `%s'", bsw_item_get_type_name (super));
+    g_warning ("unknown super type `%s'", bse_item_get_type_name (super));
 
   if (shell)
     {
@@ -392,7 +387,9 @@ bst_app_reload_supers (BstApp *app)
   GtkWidget *old_page, *old_focus;
   GSList *page_list = NULL;
   GSList *slist;
-
+  BseProxySeq *pseq;
+  guint i;
+  
   g_return_if_fail (BST_IS_APP (app));
 
   old_focus = GTK_WINDOW (app)->focus_widget;
@@ -406,31 +403,30 @@ bst_app_reload_supers (BstApp *app)
       gtk_container_remove (GTK_CONTAINER (app->notebook), page_list->data);
     }
 
-  for (slist = BSE_PROJECT (bse_object_from_id (app->project))->supers; slist; slist = slist->next)
+  pseq = bse_project_get_supers (app->project);
+  for (i = 0; i < pseq->n_proxies; i++)
     {
       GtkWidget *label, *page = NULL;
       GSList *node;
 
       for (node = page_list; node; node = node->next)
-	if (BST_SUPER_SHELL (node->data)->super == BSE_OBJECT_ID (slist->data))
+	if (BST_SUPER_SHELL (node->data)->super == pseq->proxies[i])
 	  {
 	    page = node->data;
 	    page_list = g_slist_remove (page_list, page);
 	    break;
 	  }
       if (!page)
-	page = bst_app_create_super_shell (app, BSE_OBJECT_ID (slist->data));
+	page = bst_app_create_super_shell (app, pseq->proxies[i]);
       if (page)
 	{
-	  label = gtk_widget_new (GTK_TYPE_LABEL,
-				  "visible", TRUE,
-				  "width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
-				  NULL);
-	  gtk_notebook_append_page (app->notebook,
-				    page,
-				    label);
+	  label = g_object_new (GTK_TYPE_LABEL,
+				"visible", TRUE,
+				"width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
+				NULL);
+	  gtk_notebook_append_page (app->notebook, page, label);
 	  gtk_notebook_set_tab_label_packing (app->notebook, page, FALSE, TRUE, GTK_PACK_START);
-	  bst_super_shell_update_parent (BST_SUPER_SHELL (page));
+	  bst_super_shell_update_label (BST_SUPER_SHELL (page));
 	  gtk_widget_unref (page);
 	}
     }
@@ -508,28 +504,36 @@ foreach_super_shell_operate (BstSuperShell *shell,
 static void
 rebuild_super_shell (BstSuperShell *super_shell)
 {
-  BswProxy proxy;
+  SfiProxy proxy;
 
   g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
 
   proxy = super_shell->super;
-  bsw_item_use (proxy);
+  bse_item_use (proxy);
   bst_super_shell_set_super (super_shell, 0);
   bst_super_shell_set_super (super_shell, proxy);
-  bsw_item_unuse (proxy);
+  bse_item_unuse (proxy);
 }
 
 static void
 bst_app_run_script_proc (GtkWidget *widget,
-			 gulong     callback_action,
+			 gulong     category_id,
 			 gpointer   popup_data)
 {
   BstApp *self = BST_APP (widget);
-  GType proc_type = callback_action;
+  BseCategory *cat = bse_category_from_id (category_id);
 
-  bst_procedure_exec_auto (proc_type,
-			   "project", BSE_TYPE_PROJECT, bse_object_from_id (self->project),
+  bst_procedure_exec_auto (cat->type,
+			   "project", SFI_TYPE_PROXY, self->project,
 			   NULL);
+}
+
+static void
+bst_app_menu_callback (GtkWidget *owner,
+		       gulong     callback_action,
+		       gpointer   popup_data)
+{
+  bst_app_operate (BST_APP (owner), callback_action);
 }
 
 void
@@ -557,17 +561,17 @@ bst_app_operate (BstApp *app,
   switch (op)
     {
       BstSuperShell *super_shell;
-      BswProxy proxy;
+      SfiProxy proxy;
       GtkWidget *any;
     case BST_OP_PROJECT_NEW:
       if (1)
 	{
-	  BswProxy project = bsw_server_use_new_project (BSW_SERVER, "Untitled.bse");
+	  SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
 	  BstApp *new_app;
 
-	  bsw_project_ensure_wave_repo (project);
+	  bse_project_ensure_wave_repo (project);
 	  new_app = bst_app_new (project);
-	  bsw_item_unuse (project);
+	  bse_item_unuse (project);
 
 	  gxk_idle_show_widget (GTK_WIDGET (new_app));
 	}
@@ -605,33 +609,33 @@ bst_app_operate (BstApp *app,
 	}
       break;
     case BST_OP_PROJECT_NEW_SONG:
-      proxy = bsw_project_create_song (app->project, NULL);
+      proxy = bse_project_create_song (app->project, NULL);
       super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_NEW_SNET:
-      proxy = bsw_project_create_snet (app->project, NULL);
+      proxy = bse_project_create_snet (app->project, NULL);
       super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_NEW_MIDI_SYNTH:
-      proxy = bsw_project_create_midi_synth (app->project, NULL);
+      proxy = bse_project_create_midi_synth (app->project, NULL);
       super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_PLAY:
       {
 	gchar *starting;
-	BswErrorType error;
+	BseErrorType error;
 
-	if (bsw_project_is_playing (app->project))
+	if (bse_project_is_playing (app->project))
 	  starting = "Restarting Playback";
 	else
 	  starting = "Starting Playback";
 
-	error = bsw_server_run_project (BSW_SERVER, app->project);
+	error = bse_server_run_project (BSE_SERVER, app->project);
 	bst_status_eprintf (error, starting);
       }
       break;
     case BST_OP_PROJECT_STOP:
-      bsw_server_halt_project (BSW_SERVER, app->project);
+      bse_server_halt_project (BSE_SERVER, app->project);
       gxk_status_set (GXK_STATUS_DONE, "Stopping Playback", NULL);
       break;
     case BST_OP_PROJECT_RACK_EDITOR:
@@ -642,7 +646,7 @@ bst_app_operate (BstApp *app,
 					    NULL);
 
 	  app->rack_editor = g_object_connect (ed, "swapped_signal::destroy", g_nullify_pointer, &app->rack_editor, NULL);
-	  bst_rack_editor_set_rack_view (ed, bsw_project_get_data_pocket (app->project, "BEAST-Rack-View"));
+	  bst_rack_editor_set_rack_view (ed, bse_project_get_data_pocket (app->project, "BEAST-Rack-View"));
 	  app->rack_dialog = gxk_dialog_new (&app->rack_dialog,
 					     GTK_OBJECT (app),
 					     0, // FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
@@ -654,14 +658,9 @@ bst_app_operate (BstApp *app,
     case BST_OP_DIALOG_PREFERENCES:
       if (!bst_preferences)
 	{
-	  BseGConfig *gconf = bse_object_new (BST_TYPE_GCONFIG, NULL);
-	  GtkWidget *widget;
-
-	  bse_gconfig_revert (gconf);
-	  widget = bst_preferences_new (gconf);
-	  bse_object_unref (BSE_OBJECT (gconf));
-	  gtk_widget_show (widget);
-
+	  GtkWidget *widget = g_object_new (BST_TYPE_PREFERENCES,
+					    "visible", TRUE,
+					    NULL);
 	  bst_preferences = gxk_dialog_new (&bst_preferences,
 					    NULL,
 					    GXK_DIALOG_HIDE_ON_DELETE,
@@ -674,6 +673,7 @@ bst_app_operate (BstApp *app,
       gxk_widget_showraise (bst_preferences);
       break;
     case BST_OP_DIALOG_PROC_BROWSER:
+#if 0 // FIXME
       if (!bst_proc_browser)
 	{
 	  GtkWidget *widget;
@@ -688,6 +688,7 @@ bst_app_operate (BstApp *app,
 	  bst_proc_browser_create_buttons (BST_PROC_BROWSER (widget), GXK_DIALOG (bst_proc_browser));
 	}
       gxk_widget_showraise (bst_proc_browser);
+#endif
       break;
     case BST_OP_DIALOG_DEVICE_MONITOR:
       any = g_object_new (BST_TYPE_SERVER_MONITOR, NULL);
@@ -698,13 +699,7 @@ bst_app_operate (BstApp *app,
 			    "Device Monitor",
 			    any);
       gtk_widget_show (any);
-      break;
-    case BST_OP_REFRESH:
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) bst_super_shell_update,
-			     NULL);
-      gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
-#if 0
+#if 0 // FIXME
       //gsl_alloc_report ();
       {
 	GSList *slist, *olist = g_object_debug_list();
@@ -756,7 +751,9 @@ bst_app_operate (BstApp *app,
     HELP_DIALOG:
       if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
 	{
-	  GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG | GXK_SCROLL_TEXT_NAVIGATABLE, NULL);
+	  GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG |
+						      GXK_SCROLL_TEXT_NAVIGATABLE |
+						      GXK_SCROLL_TEXT_MONO_SPACED, NULL);
 	  gchar *index = g_strconcat ("file://", BST_PATH_DOCS, "/beast-index.markup", NULL);
 	  gxk_scroll_text_set_index (sctext, index);
 	  g_free (index);
@@ -780,7 +777,8 @@ bst_app_operate (BstApp *app,
 	  GtkWidget *sctext;
 	  help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
 	  help_title = help_file;
-	  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG, NULL);
+	  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG |
+					   GXK_SCROLL_TEXT_MONO_SPACED, NULL);
 	  gxk_scroll_text_append_file_tsm (sctext, help_file);
 	  help_file = g_strconcat (BST_PATH_DOCS, "/news.markup", NULL);
 	  gxk_scroll_text_append_file_tsm (sctext, help_file);
@@ -860,23 +858,16 @@ bst_app_can_operate (BstApp *app,
     case BST_OP_PROJECT_NEW_SNET:
     case BST_OP_PROJECT_NEW_MIDI_SYNTH:
     case BST_OP_PROJECT_CLOSE:
-    case BST_OP_REFRESH:
     case BST_OP_REBUILD:
     case BST_OP_EXIT:
       return TRUE;
     case BST_OP_PROJECT_PLAY:
-      if (app->project && BSE_PROJECT (bse_object_from_id (app->project))->supers)
+      if (app->project && bse_project_can_play (app->project))
 	return TRUE;
       return FALSE;
     case BST_OP_PROJECT_STOP:
-      if (app->project)
-	{
-	  GSList *slist;
-
-	  for (slist = BSE_PROJECT (bse_object_from_id (app->project))->supers; slist; slist = slist->next)
-	    if (BSE_SOURCE_PREPARED (slist->data))
-	      return TRUE;
-	}
+      if (app->project && bse_project_is_playing (app->project))
+	return TRUE;
       return FALSE;
     case BST_OP_PROJECT_RACK_EDITOR:
     case BST_OP_DIALOG_PREFERENCES:
