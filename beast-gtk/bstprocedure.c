@@ -456,8 +456,8 @@ bst_procedure_shell_global (void)
 
       /* actions */
       bst_dialog_default_action_swapped (BST_DIALOG (dialog),
-					 BST_STOCK_ACTION_EXECUTE, bst_procedure_shell_execute, global_proc_shell);
-      bst_dialog_action (BST_DIALOG (dialog), BST_STOCK_ACTION_CLOSE, gtk_toplevel_delete, NULL);
+					 BST_STOCK_EXECUTE, bst_procedure_shell_execute, global_proc_shell);
+      bst_dialog_action (BST_DIALOG (dialog), BST_STOCK_CLOSE, gtk_toplevel_delete, NULL);
     }
   return global_proc_shell;
 }

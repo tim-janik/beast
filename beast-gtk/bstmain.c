@@ -46,6 +46,7 @@ static void			bst_print_blurb		(FILE	     *fout,
 
 /* --- variables --- */
 BstDebugFlags       bst_debug_flags = 0;
+gboolean	    bst_developer_extensions = FALSE;
 GtkTooltips        *bst_global_tooltips = NULL;
 static GDebugKey    bst_debug_keys[] = { /* keep in sync with bstdefs.h */
   { "keytable",		BST_DEBUG_KEYTABLE, },
@@ -91,7 +92,8 @@ main (int   argc,
   g_type_init ();
   bsw_init (&argc, &argv, &lfuncs);
   bst_globals_init ();
-  
+  _bst_utils_init ();
+
   /* pre-parse BEAST args
    */
   bst_parse_args (&argc, &argv);
@@ -212,7 +214,9 @@ main (int   argc,
 
   /* open default app window
    */
-  if (!app)
+  if (0)
+    proll_test (); /* FIXME: HACK */
+  else if (!app)
     {
       BswProxy project = bsw_server_use_new_project (BSW_SERVER, "Untitled.bse");
       
@@ -310,6 +314,11 @@ bst_parse_args (int    *argc_p,
       if (strcmp ("--no-plugins", argv[i]) == 0)
 	{
 	  bst_load_plugins = FALSE;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--beast-developer-extensions", argv[i]) == 0)
+	{
+	  bst_developer_extensions = TRUE;
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--beast-debug", argv[i]) == 0 ||

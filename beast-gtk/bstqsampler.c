@@ -937,7 +937,7 @@ bst_qsampler_fetch_gcs (BstQSampler *qsampler,
 	      else if (peak_type & BST_QSAMPLER_SELECTED)
 		fore_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
 	      else /* normal */
-		fore_gc = widget->style->fg_gc[GTK_STATE_NORMAL];
+		fore_gc = widget->style->bg_gc[GTK_STATE_NORMAL];
 	    }
 	}
       else /* regions or untagged peaks */

@@ -147,8 +147,8 @@ bst_file_dialog_save (BstFileDialog *fd)
       
       choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
 					  BST_CHOICE_TEXT (text),
-					  BST_CHOICE_D (1, BST_STOCK_ACTION_OVERWRITE, NONE),
-					  BST_CHOICE (0, BST_STOCK_ACTION_CANCEL, NONE),
+					  BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
+					  BST_CHOICE (0, BST_STOCK_CANCEL, NONE),
 					  BST_CHOICE_END);
       g_free (title);
       g_free (text);

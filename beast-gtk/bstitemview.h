@@ -75,9 +75,9 @@ struct _BstItemViewClass
 };
 struct _BstItemViewOp
 {
-  gchar	*op_name;
-  guint	 op;
-  guint  stock_icon;
+  gchar	      *op_name;
+  guint	       op;
+  const gchar *stock_icon;
 };
 
 

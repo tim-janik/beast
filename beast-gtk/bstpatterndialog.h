@@ -48,14 +48,12 @@ struct _BstPatternDialog
   GtkWidget	*scrolled_window;
   GtkWidget	*pattern_editor;
   GtkWidget	*effect_view;
-
-  GtkWidget	*popup;
 };
 struct _BstPatternDialogClass
 {
   BstDialogClass parent_class;
 
-  GSList *popup_entries; /* of type BstMenuEntry* */
+  GtkItemFactory *popup_factory;
 };
 
 typedef enum
@@ -73,7 +71,6 @@ void		bst_pattern_dialog_operate	(BstPatternDialog *pattern_dialog,
 						 BstPatternOps	   op);
 gboolean	bst_pattern_dialog_can_operate	(BstPatternDialog *pattern_dialog,
 						 BstPatternOps	   op);
-void		bst_pattern_dialog_update	(BstPatternDialog *pattern_dialog);
 void   bst_pattern_dialog_gtkfix_default_accels (void);
 
 

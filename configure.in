@@ -105,6 +105,7 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
 [
     dnl === Ogg/Vorbis check ===
     ov_headers=0
+    # check for ogg_stream_reset_serialno() to identify rc4 which changes ov_read_float()
     AC_CHECK_LIB(vorbisfile, ov_read_float,
       [AC_CHECK_HEADER(ogg/ogg.h, ov_headers=`expr $ov_headers + 1`)]
       [AC_CHECK_HEADER(vorbis/vorbisfile.h, ov_headers=`expr $ov_headers + 1`)]
@@ -125,9 +126,12 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
       mad_detect=0, -lmad)
     if test $mad_detect = 1 ; then
       GSL_LIBS="$GSL_LIBS -lmad"
+      GSL_HAVE_LIBMAD=1
     else
       AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
+      GSL_HAVE_LIBMAD=0
     fi
+    AC_SUBST(GSL_HAVE_LIBMAD)
 
     dnl === Check library requirements ===
     AC_MSG_CHECKING([the required GSL-Loader library set])
@@ -138,6 +142,35 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
     AC_SUBST(GSL_LIBS)
+
+    dnl === sizeof types ===
+    GLIB_SIZEOF([#include <pthread.h>], pthread_mutex_t, pth_mutex_t)
+    GSL_SIZEOF_PTH_MUTEX_T="$glib_cv_sizeof_pth_mutex_t"
+    AC_SUBST(GSL_SIZEOF_PTH_MUTEX_T)
+    GLIB_SIZEOF([#include <pthread.h>], pthread_cond_t, pth_cond_t)
+    GSL_SIZEOF_PTH_COND_T="$glib_cv_sizeof_pth_cond_t"
+    AC_SUBST(GSL_SIZEOF_PTH_COND_T)
+    GLIB_SIZEOF([#include <inttypes.h>], intmax_t, std_intmax_t)
+    GSL_SIZEOF_STD_INTMAX_T="$glib_cv_sizeof_std_intmax_t"
+    AC_SUBST(GSL_SIZEOF_STD_INTMAX_T)
+
+    dnl === pthread_mutexattr_settype ===
+    AC_MSG_CHECKING([for pthread_mutexattr_settype()])
+    AC_TRY_COMPILE([
+      #define _XOPEN_SOURCE   600
+      #include <pthread.h>
+    ], [
+      int (*attr_settype) (pthread_mutexattr_t *__attr, int __kind) = pthread_mutexattr_settype;
+      int val = PTHREAD_MUTEX_RECURSIVE;
+      attr_settype = 0; val = 0;
+    ],
+      GSL_HAVE_MUTEXATTR_SETTYPE=1
+      AC_MSG_RESULT(yes)
+    ,
+      GSL_HAVE_MUTEXATTR_SETTYPE=0
+      AC_MSG_RESULT(no)
+    )
+    AC_SUBST(GSL_HAVE_MUTEXATTR_SETTYPE)
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
@@ -342,12 +375,10 @@ AC_MSG_CHECKING(whether this is rambokid's machine)
 if fgrep birgrave.birnet.private /etc/hosts >/dev/null 2>&1; then
     BIRNET_Y=
     BIRNET_N=\#
-    AC_DEFINE_UNQUOTED(BST_HAVE_BIRNET, 1)
     AC_MSG_RESULT(yes)
 else
     BIRNET_Y=\#
     BIRNET_N=
-    AC_DEFINE_UNQUOTED(BST_HAVE_BIRNET, 0)
     AC_MSG_RESULT(no)
 fi
 AC_SUBST(MISSING_PERL5)

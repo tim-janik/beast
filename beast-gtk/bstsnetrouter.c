@@ -458,16 +458,16 @@ bst_snet_router_build_tools (BstSNetRouter *router)
    */
   bst_radio_tools_clear_tools (router->rtools);
   /* add link/move/property edit tool */
-  bst_radio_tools_add_tool (router->rtools,
-			    0,
-			    "Edit",
-			    "Edit tool (mouse buttons 1-3)",
-			    ("Edit tool (mouse buttons 1-3)\n"
-			     "Use button1 to create links, "
-			     "button2 for movement and "
-			     "button3 to change properties"),
-			    bst_icon_from_stock (BST_ICON_MOUSE_TOOL),
-			    BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (router->rtools,
+				  0,
+				  "Edit",
+				  "Edit tool (mouse buttons 1-3)",
+				  ("Edit tool (mouse buttons 1-3)\n"
+				   "Use button1 to create links, "
+				   "button2 for movement and "
+				   "button3 to change properties"),
+				  BST_STOCK_MOUSE_TOOL,
+				  BST_RADIO_TOOLS_EVERYWHERE);
 
   /* add BseSource types from categories */
   cats = bse_categories_match ("/Source/*", &n_cats);
@@ -542,7 +542,7 @@ bst_snet_router_build_tools (BstSNetRouter *router)
    */
   button = gtk_toolbar_append_element (GTK_TOOLBAR (router->toolbar), GTK_TOOLBAR_CHILD_BUTTON, NULL,
 				       "Palette", "Toggle visibility of the tool palette", NULL,
-				       bst_forest_from_bsw_icon (bst_icon_from_stock (BST_ICON_PALETTE_TOOL), 32, 32),
+				       bst_image_from_stock (BST_STOCK_PALETTE, BST_SIZE_PALETTE),
 				       NULL, NULL);
   g_object_connect (button,
 		    "swapped_signal::clicked", bst_snet_router_toggle_palette, router,
@@ -909,7 +909,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 						BST_CHOICE_S (2, "Properties", PROPERTIES, csource->source != router->snet),
 						BST_CHOICE_S (3, "Delete Inputs", NO_ILINK, has_inputs),
 						BST_CHOICE_S (4, "Delete Outputs", NO_OLINK, BSE_SOURCE (bse_object_from_id (csource->source))->outputs),
-						BST_CHOICE (5, "Show Info", NONE),
+						BST_CHOICE (5, "Show Info", INFO),
 						BST_CHOICE_SEPERATOR,
 						BST_CHOICE_S (1, "Delete", DELETE, csource->source != router->snet),
 						BST_CHOICE_END);

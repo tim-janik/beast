@@ -3,30 +3,57 @@
 #
 ## Makefile.am for BEAST icons
 
-icon_pattern = *.c *.xcf
-icon_list = 
-
-# create icon list
-Makefile.icons: $(icon_pattern) Makefile.am
-	cd $(srcdir) \
-	&& echo "## Generated data (by make $@)" > $@ \
-	&& for f in $(icon_pattern) ; do \
-	    echo "icon_list += $$f" >>$@ ; \
-	done \
-	&& echo "## Generated data ends here" >> $@
-
-EXTRA_DIST += $(strip \
+EXTRA_DIST += @STRIP_BEGIN@ \
 	$(icon_list) \
-)
+@STRIP_END@
 
-## include generated icon list Makefile
-include Makefile.icons
+SRC_IMAGES = @STRIP_BEGIN@	\
+	cdrom.xcf		\
+	editor.xcf		\
+	knob.xcf		\
+	mouse_tool.xcf		\
+	no_olink.xcf		\
+	noicon.xcf		\
+	palette.xcf		\
+	pattern-group.xcf	\
+	pattern-tool.xcf	\
+	pattern.xcf		\
+	target.xcf		\
+	trashcan.xcf		\
+	wave.xcf		\
+	wave-tool.xcf		\
+	small-audio.xcf		\
+@STRIP_END@
 
-## Makefile.plugins contains a generated make rule list of the *.c
-## files in this directory, e.g. it'd list a given foo.c as:
-##
-##foo_la_SOURCES = foo.c
-##foo_la_LDFLAGS = -module -avoid-version
-##foo_la_LIBADD  = $(plugin_libs)
-##
-##plugin_LTLIBRARIES += foo.la
+STOCK_IMAGE_PAIRS = @STRIP_BEGIN@ \
+	stock_info			$(srcdir)/bulb.png		\
+	stock_cdrom			$(srcdir)/cdrom.png		\
+	stock_editor			$(srcdir)/editor.png		\
+	stock_knob			$(srcdir)/knob.png		\
+	stock_mouse_tool		$(srcdir)/mouse_tool.png	\
+	stock_no_ilink			$(srcdir)/no_ilink.png		\
+	stock_no_olink			$(srcdir)/no_olink.png		\
+	stock_no_icon			$(srcdir)/noicon.png		\
+	stock_palette			$(srcdir)/palette.png		\
+	stock_pattern_group		$(srcdir)/pattern-group.png	\
+	stock_pattern_tool		$(srcdir)/pattern-tool.png	\
+	stock_pattern			$(srcdir)/pattern.png		\
+	stock_small_audio		$(srcdir)/small-audio.png	\
+	stock_small_noaudio		$(srcdir)/small-noaudio.png	\
+	stock_target			$(srcdir)/target.png		\
+	stock_trashcan			$(srcdir)/trashcan.png		\
+	stock_wave			$(srcdir)/wave.png		\
+	stock_wave_tool			$(srcdir)/wave-tool.png		\
+	stock_zoom_any			$(srcdir)/zoom-any.png		\
+@STRIP_END@
+
+gen_sources           = xgen-bstg
+CLEANFILES           += $(gen_sources)
+MAINTAINERCLEANFILES += bst-stock-gen.c
+noinst_DATA           = bst-stock-gen.c
+
+bst-stock-gen.c:	*.png
+	gdk-pixbuf-csource --build-list $(STOCK_IMAGE_PAIRS) >xgen-bstg && \
+	mv xgen-bstg $@
+
+EXTRA_DIST = bst-stock-gen.c

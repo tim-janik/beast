@@ -46,25 +46,6 @@ static void	bst_sample_editor_get_property	(GObject		*object,
 						 GParamSpec		*pspec);
 
 
-/* --- menus --- */
-static gchar		  *bst_sample_editor_factories_path = "<BstSample>";
-static BstMenuEntry popup_entries[] =
-{
-#define BST_OP(op) (gtk_true), (BST_SAMPLE_OP_ ## op)
-  { "/<<<<<<",			NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/Sample",			NULL,		NULL, 0,		"<Title>",	/* FIXME:BST_ICON_SAMPLE*/0 },
-  { "/-----",			NULL,		NULL, 0,		"<Separator>",	0 },
-  { "/_Edit/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/_Select/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/_Tools/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/-----",			NULL,		NULL, 0,		"<Separator>",	0 },
-  { "/To_ys",			NULL,		NULL, 0,		"<LastBranch>",	0 },
-  { "/Toys/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
-#undef	BST_OP
-};
-static guint n_popup_entries = sizeof (popup_entries) / sizeof (popup_entries[0]);
-
-
 /* --- static variables --- */
 static gpointer		   parent_class = NULL;
 
@@ -101,8 +82,6 @@ bst_sample_editor_class_init (BstSampleEditorClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   // GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-  BseCategory *cats;
-  guint n_cats;
   
   parent_class = g_type_class_peek_parent (class);
 
@@ -112,26 +91,6 @@ bst_sample_editor_class_init (BstSampleEditorClass *class)
 
   object_class->destroy = bst_sample_editor_destroy;
 
-  class->popup_entries = NULL;
-#if 0
-  class->popup_entries = bst_menu_entries_add_bentries (class->popup_entries,
-							n_popup_entries,
-							popup_entries);
-  cats = bse_categories_match_typed ("/Method/BseSample/*", BSE_TYPE_PROCEDURE, &n_cats);
-  class->popup_entries = bst_menu_entries_add_categories (class->popup_entries,
-							  n_cats,
-							  cats,
-							  sample_editor_exec_proc);
-  g_free (cats);
-  cats = bse_categories_match_typed ("/Proc/Toys/*", BSE_TYPE_PROCEDURE, &n_cats);
-  class->popup_entries = bst_menu_entries_add_categories (class->popup_entries,
-							  n_cats,
-							  cats,
-							  sample_editor_exec_proc);
-  g_free (cats);
-#endif
-  class->popup_entries = bst_menu_entries_sort (class->popup_entries);
-
   g_object_class_install_property (gobject_class, PARAM_SAMPLE,
 				   bsw_param_spec_proxy ("sample", NULL, NULL,
 							 G_PARAM_READWRITE));
@@ -140,28 +99,8 @@ bst_sample_editor_class_init (BstSampleEditorClass *class)
 static void
 bst_sample_editor_init (BstSampleEditor *editor)
 {
-  BstSampleEditorClass *class = BST_SAMPLE_EDITOR_GET_CLASS (editor);
-  GtkItemFactory *factory;
-
   /* setup main container */
   editor->main_vbox = GTK_WIDGET (editor);
-  if (0)
-    g_object_connect (editor->main_vbox,
-		      "signal::destroy", gtk_widget_destroyed, &editor->main_vbox,
-		      NULL);
-
-  /* setup the popup menu
-   */
-#if 0
-  factory = gtk_item_factory_new (GTK_TYPE_MENU, bst_sample_editor_factories_path, NULL);
-  gtk_window_add_accel_group (GTK_WINDOW (editor), factory->accel_group);
-  bst_menu_entries_create_list (factory, class->popup_entries, editor);
-  editor->popup = factory->widget;
-  gtk_object_set_data_full (GTK_OBJECT (editor),
-			    bst_sample_editor_factories_path,
-			    factory,
-			    (GtkDestroyNotify) gtk_object_unref);
-#endif
 }
 
 static void
@@ -494,8 +433,7 @@ adjustments_changed (BstSampleEditor *editor,
 void
 bst_sample_editor_rebuild (BstSampleEditor *editor)
 {
-  GtkWidget *qsampler_parent, *sbar, *tree, *scwin, *entry, *mask_parent, *any;
-  GtkTreeSelection *tsel;
+  GtkWidget *qsampler_parent, *sbar, *entry, *mask_parent, *any;
   gpointer gmask;
   guint i;
   
@@ -549,7 +487,7 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
 	bst_qsampler_set_source (qsampler, 0, NULL, NULL, NULL);
       else
 	{
-	  gint i, length = bsw_editable_sample_get_length (editor->esample);
+	  gint length = bsw_editable_sample_get_length (editor->esample);
 
 	  bst_qsampler_set_source (qsampler, length / editor->n_channels,
 				   qsampler_filler, editor, NULL);

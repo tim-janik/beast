@@ -29,21 +29,24 @@
 static void	bst_pattern_dialog_class_init	(BstPatternDialogClass	*klass);
 static void	bst_pattern_dialog_init		(BstPatternDialog	*pattern_dialog);
 static void	bst_pattern_dialog_destroy	(GtkObject		*object);
-static void	pattern_dialog_operate		(BstPatternDialog	*pattern_dialog,
-						 BstPatternOps     	 op,
-						 GtkWidget        	*menu_item);
-static void	pattern_dialog_exec_proc	(BstPatternDialog	*pattern_dialog,
+static void	pattern_dialog_focus_from_popup (BstPatternDialog	*pattern_dialog,
+						 gpointer		 popup_data,
+						 guint		        *channel,
+						 guint		        *row);
+static void	pattern_dialog_operate		(GtkWidget		*widget,
+						 gulong		     	 op,
+						 gpointer		 popup_data);
+static void	pattern_dialog_exec_proc	(GtkWidget		*widget,
 						 GType  		 proc_type,
-						 GtkWidget        	*menu_item);
+						 gpointer		 popup_data);
 
 
 /* --- menus --- */
-static gchar		  *bst_pattern_dialog_factories_path = "<BstPattern>";
-static BstMenuEntry popup_entries[] =
+static GtkItemFactoryEntry popup_entries[] =
 {
 #define BST_OP(op) (pattern_dialog_operate), (BST_PATTERN_OP_ ## op)
   { "/<<<<<<",			NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/Pattern",			NULL,		NULL, 0,		"<Title>",	BST_ICON_PATTERN },
+  { "/Pattern",			NULL,		NULL, 0,		"<Title>",	BST_STOCK_PATTERN },
   { "/-----",			NULL,		NULL, 0,		"<Separator>",	0 },
   { "/_Edit/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
   { "/_Select/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
@@ -58,7 +61,6 @@ static guint n_popup_entries = sizeof (popup_entries) / sizeof (popup_entries[0]
 
 /* --- static variables --- */
 static gpointer		      parent_class = NULL;
-static BstPatternDialogClass *bst_pattern_dialog_class = NULL;
 
 
 /* --- functions --- */
@@ -92,31 +94,37 @@ bst_pattern_dialog_class_init (BstPatternDialogClass *class)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   // GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  GtkItemFactoryEntry *c1entries, *c2entries;
+  GSList *slist;
   BseCategory *cats;
-  guint n_cats;
-  
+  guint n_c1entries, n_c2entries;
+
   parent_class = g_type_class_peek_parent (class);
-  bst_pattern_dialog_class = class;
 
   object_class->destroy = bst_pattern_dialog_destroy;
 
-  class->popup_entries = NULL;
-  class->popup_entries = bst_menu_entries_add_bentries (class->popup_entries,
-							n_popup_entries,
-							popup_entries);
-  cats = bse_categories_match_typed ("/Method/BsePattern/*", BSE_TYPE_PROCEDURE, &n_cats);
-  class->popup_entries = bst_menu_entries_add_categories (class->popup_entries,
-							  n_cats,
-							  cats,
-							  pattern_dialog_exec_proc);
+  /* create item factory for menu entries and categories */
+  class->popup_factory = gtk_item_factory_new (GTK_TYPE_MENU, "<BstPattern>", NULL);
+
+  /* categories */
+  cats = bse_categories_match_typed ("/Method/BsePattern/*", BSE_TYPE_PROCEDURE, &n_c1entries);
+  c1entries = bst_menu_entries_from_cats (n_c1entries, cats, pattern_dialog_exec_proc);
   g_free (cats);
-  cats = bse_categories_match_typed ("/Proc/Toys/*", BSE_TYPE_PROCEDURE, &n_cats);
-  class->popup_entries = bst_menu_entries_add_categories (class->popup_entries,
-							  n_cats,
-							  cats,
-							  pattern_dialog_exec_proc);
+  cats = bse_categories_match_typed ("/Proc/Toys/*", BSE_TYPE_PROCEDURE, &n_c2entries);
+  c2entries = bst_menu_entries_from_cats (n_c2entries, cats, pattern_dialog_exec_proc);
   g_free (cats);
-  class->popup_entries = bst_menu_entries_sort (class->popup_entries);
+
+  /* construct menu entry list */
+  slist = g_slist_concat (bst_menu_entries_slist (n_c1entries, c1entries),
+			  bst_menu_entries_slist (n_c2entries, c2entries));
+  slist = bst_menu_entries_sort (slist);
+  slist = g_slist_concat (bst_menu_entries_slist (n_popup_entries, popup_entries), slist);
+
+  /* create entries and release allocations */
+  bst_menu_entries_create (class->popup_factory, slist, NULL);
+  g_slist_free (slist);
+  g_free (c1entries);
+  g_free (c2entries);
 }
 
 void
@@ -158,7 +166,6 @@ static void
 bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
 {
   BstPatternDialogClass *class = BST_PATTERN_DIALOG_GET_CLASS (pattern_dialog);
-  GtkItemFactory *factory;
   GtkWidget *main_vbox;
 
   g_object_set (pattern_dialog,
@@ -191,14 +198,9 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
 
   /* setup the popup menu
    */
-  factory = gtk_item_factory_new (GTK_TYPE_MENU, bst_pattern_dialog_factories_path, NULL);
-  gtk_window_add_accel_group (GTK_WINDOW (pattern_dialog), factory->accel_group);
-  bst_menu_entries_create_list (factory, class->popup_entries, pattern_dialog);
-  pattern_dialog->popup = factory->widget;
-  gtk_object_set_data_full (GTK_OBJECT (pattern_dialog),
-			    bst_pattern_dialog_factories_path,
-			    factory,
-			    (GtkDestroyNotify) gtk_object_unref);
+  gtk_window_add_accel_group (GTK_WINDOW (pattern_dialog),
+			      class->popup_factory->accel_group);
+  bst_menu_add_accel_owner (class->popup_factory, GTK_WIDGET (pattern_dialog));
 }
 
 static void
@@ -248,14 +250,13 @@ pe_effect_area_draw (BstPatternEditor *pe,
 		   !n ? "-" : n == 1 ? "+" : "*");
 }
 
-static inline void
-pe_channel_row_from_popup (BstPatternDialog *pattern_dialog,
-			   GtkWidget        *menu_item,
-			   guint            *channel,
-			   guint            *row)
+static void
+pattern_dialog_focus_from_popup (BstPatternDialog *pattern_dialog,
+				 gpointer	   popup_data,
+				 guint            *channel,
+				 guint            *row)
 {
-  gpointer data = menu_item ? gtk_item_factory_popup_data_from_widget (menu_item) : NULL;
-  guint index = GPOINTER_TO_UINT (data);
+  guint index = GPOINTER_TO_UINT (popup_data);
 
   if (index)
     {
@@ -282,21 +283,18 @@ pe_cell_activate (BstPatternEditor *pe,
 {
   if (button == 3 || button == 0)
     {
-      GtkItemFactory *popup_factory = gtk_object_get_data (GTK_OBJECT (pattern_dialog),
-								bst_pattern_dialog_factories_path);
+      GtkItemFactory *popup_factory = BST_PATTERN_DIALOG_GET_CLASS (pattern_dialog)->popup_factory;
       guint index = (channel + 1) << 16 | (row + 1);
 
       // bst_pattern_editor_set_focus (pe, channel, row, FALSE);
       if (!bse_pattern_has_selection (pe->pattern))
 	bse_pattern_select_note (pe->pattern, pe->focus_channel, pe->focus_row);
-      
-      gtk_item_factory_popup_with_data (popup_factory,
-					GUINT_TO_POINTER (index),
-					NULL,
-					root_x,
-					root_y,
-					button,
-					time);
+
+      bst_menu_popup (popup_factory,
+		      GTK_WIDGET (pattern_dialog),
+		      GUINT_TO_POINTER (index), NULL,
+		      root_x, root_y,
+		      button, time);
     }
 }
 
@@ -314,7 +312,7 @@ pe_key_press (GtkObject        *pattern_editor,
       if (type)
 	{
 	  handled = TRUE;
-	  pattern_dialog_exec_proc (pattern_dialog, type, NULL);
+	  pattern_dialog_exec_proc (GTK_WIDGET (pattern_dialog), type, NULL);
 	}
     }
   else if (event->keyval == GDK_Delete)
@@ -324,12 +322,9 @@ pe_key_press (GtkObject        *pattern_editor,
       if (type)
 	{
 	  handled = TRUE;
-	  pattern_dialog_exec_proc (pattern_dialog, type, NULL);
+	  pattern_dialog_exec_proc (GTK_WIDGET (pattern_dialog), type, NULL);
 	}
     }
-
-  if (handled)
-    gtk_signal_emit_stop_by_name (pattern_editor, "key-press-event");
 
   return handled;
 }
@@ -357,11 +352,12 @@ bst_pattern_dialog_new (BsePattern *pattern)
   widget = gtk_widget_new (BST_TYPE_PATTERN_DIALOG, NULL);
   pattern_dialog = BST_PATTERN_DIALOG (widget);
   
-  pattern_dialog->pattern_editor = bst_pattern_editor_new (pattern);
+  pattern_dialog->pattern_editor = bst_pattern_editor_new (NULL);
   gtk_widget_set (pattern_dialog->pattern_editor,
 		  "visible", TRUE,
 		  "parent", pattern_dialog->scrolled_window,
 		  NULL);
+  bst_pattern_editor_set_pattern (BST_PATTERN_EDITOR (pattern_dialog->pattern_editor), pattern);	/* updates title */
   g_object_connect (pattern_dialog->pattern_editor,
 		    "signal::destroy", gtk_widget_destroyed, &pattern_dialog->pattern_editor,
 		    "signal::pattern-step", bst_pattern_editor_dfl_stepper, NULL,
@@ -379,36 +375,36 @@ bst_pattern_dialog_new (BsePattern *pattern)
 }
 
 static void
-pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
-			  GType             proc_type,
-			  GtkWidget        *menu_item)
+pattern_dialog_exec_proc (GtkWidget *widget,
+			  GType      proc_type,
+			  gpointer   popup_data)
 {
+  BstPatternDialog *pattern_dialog = BST_PATTERN_DIALOG (widget);
   BstPatternEditor *pattern_editor = BST_PATTERN_EDITOR (pattern_dialog->pattern_editor);
   BsePattern *pattern = BSE_PATTERN (pattern_editor->pattern);
+  guint channel, row;
 
   bse_object_ref (BSE_OBJECT (pattern));
+  pattern_dialog_focus_from_popup (pattern_dialog, popup_data, &channel, &row);
   bst_procedure_exec_modal (proc_type,
 			    "pattern", BSE_TYPE_PATTERN, pattern,
-			    "focus-channel", G_TYPE_UINT, pattern_editor->focus_channel,
-			    "focus-row", G_TYPE_UINT, pattern_editor->focus_row,
+			    "focus-channel", G_TYPE_UINT, channel,
+			    "focus-row", G_TYPE_UINT, row,
 			    NULL);
-
-  bst_pattern_dialog_update (pattern_dialog);
   bse_object_unref (BSE_OBJECT (pattern));
 }
 
 static void
-pattern_dialog_operate (BstPatternDialog *pattern_dialog,
-			BstPatternOps     op,
-			GtkWidget        *menu_item)
+pattern_dialog_operate (GtkWidget *widget,
+			gulong     op,
+			gpointer   popup_data)
 {
-  BsePattern *pattern;
-  GtkWidget *widget;
+  BstPatternDialog *pattern_dialog = BST_PATTERN_DIALOG (widget);
+  BstPatternEditor *pattern_editor = BST_PATTERN_EDITOR (pattern_dialog->pattern_editor);
+  BsePattern *pattern = BSE_PATTERN (pattern_editor->pattern);
   guint channel, row;
-  
-  widget = GTK_WIDGET (pattern_dialog);
-  pattern = BSE_PATTERN (BST_PATTERN_EDITOR (pattern_dialog->pattern_editor)->pattern);
-  pe_channel_row_from_popup (pattern_dialog, menu_item, &channel, &row);
+
+  pattern_dialog_focus_from_popup (pattern_dialog, popup_data, &channel, &row);
   
   gtk_widget_ref (widget);
   bse_object_ref (BSE_OBJECT (pattern));
@@ -422,8 +418,6 @@ pattern_dialog_operate (BstPatternDialog *pattern_dialog,
       break;
     }
   
-  bst_pattern_dialog_update (pattern_dialog);
-  
   bse_object_unref (BSE_OBJECT (pattern));
   gtk_widget_unref (widget);
 }
@@ -435,7 +429,7 @@ bst_pattern_dialog_operate (BstPatternDialog *pattern_dialog,
   g_return_if_fail (BST_IS_PATTERN_DIALOG (pattern_dialog));
   g_return_if_fail (bst_pattern_dialog_can_operate (pattern_dialog, op));
 
-  pattern_dialog_operate (pattern_dialog, op, NULL);
+  pattern_dialog_operate (GTK_WIDGET (pattern_dialog), op, NULL);
 }
 
 gboolean
@@ -457,11 +451,4 @@ bst_pattern_dialog_can_operate (BstPatternDialog *pattern_dialog,
     default:
       return FALSE;
     }
-}
-
-void
-bst_pattern_dialog_update (BstPatternDialog *pattern_dialog)
-{
-  g_return_if_fail (BST_IS_PATTERN_DIALOG (pattern_dialog));
-  
 }

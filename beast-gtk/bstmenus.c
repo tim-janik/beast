@@ -25,7 +25,7 @@
 struct _BstChoice
 {
   BstChoiceFlags type_and_flags;
-  BswIcon       *icon;
+  const gchar   *icon_stock_id;
   const gchar   *name;
   gpointer       p_id;
 };
@@ -35,8 +35,9 @@ struct _BstChoice
 
 
 /* --- variables --- */
-static gboolean  main_quit_on_menu_item_activate = FALSE;
+static gboolean   main_quit_on_menu_item_activate = FALSE;
 static GtkWidget *current_popup_menu = NULL;
+static gchar     *bstmenu_icon_item = "<BstMenuIconItem>";
 
 
 /* --- functions --- */
@@ -44,10 +45,10 @@ static gint
 menu_entries_compare (gconstpointer a,
 		      gconstpointer b)
 {
-  const BstFactoryItem *entry_a = a;
-  const BstFactoryItem *entry_b = b;
+  const GtkItemFactoryEntry *entry_a = a;
+  const GtkItemFactoryEntry *entry_b = b;
 
-  return strcmp (entry_a->entry.path, entry_b->entry.path);
+  return strcmp (entry_a->path, entry_b->path);
 }
 
 GSList*
@@ -57,13 +58,13 @@ bst_menu_entries_sort (GSList *entry_slist)
 
   for (slist = entry_slist; slist; slist = slist->next)
     {
-      BstFactoryItem *bitem = slist->data;
+      GtkItemFactoryEntry *entry = slist->data;
 
-      if (!bitem->entry.item_type || !bitem->entry.item_type[0] ||
-	  bse_string_equals (bitem->entry.item_type, "<Item>"))
-	item_slist = g_slist_prepend (item_slist, bitem);
+      if (!entry->item_type || !entry->item_type[0] ||
+	  g_pattern_match_simple ("<*Item>", entry->item_type))
+	item_slist = g_slist_prepend (item_slist, entry);
       else
-	branch_slist = g_slist_prepend (branch_slist, bitem);
+	branch_slist = g_slist_prepend (branch_slist, entry);
     }
   g_slist_free (entry_slist);
 
@@ -71,176 +72,214 @@ bst_menu_entries_sort (GSList *entry_slist)
 			 g_slist_sort (item_slist, menu_entries_compare));
 }
 
-GSList*
-bst_menu_entries_add_categories (GSList                *orig_entry_slist,
-				 guint                  n_cats,
-				 BseCategory           *cats,
-				 GtkItemFactoryCallback cat_activate)
+GtkItemFactoryEntry*
+bst_menu_entries_from_cats (guint           n_cats,
+			    BseCategory    *cats,
+			    BstMenuCallback callback)
 {
-  BstFactoryItem *bitem, *last_bitem;
-  GSList *entry_slist = NULL;
+  GtkItemFactoryEntry *entries, *entry;
 
-  if (n_cats)
-    {
-      g_return_val_if_fail (cats != NULL, NULL);
-      g_return_val_if_fail (cat_activate != NULL, NULL);
-    }
-
-  bitem = g_new0 (BstFactoryItem, n_cats);
-  last_bitem = bitem + n_cats;
-  cats += n_cats;
-  while (bitem < last_bitem)
-    {
-      entry_slist = g_slist_prepend (entry_slist, bitem);
-      cats--;
-      bitem->entry.path = cats->category + cats->mindex;
-      bitem->entry.callback = cat_activate;
-      bitem->entry.callback_action = cats->type;
-      bitem->icon = cats->icon;
-      bitem++;
-    }
-
-  return g_slist_concat (orig_entry_slist, entry_slist);
-}
-
-GSList*
-bst_menu_entries_add_item_entries (GSList              *orig_entry_slist,
-				   guint                n_menu_entries,
-				   GtkItemFactoryEntry *menu_entries)
-{
-  BstFactoryItem *bitem, *last_bitem;
-  GSList *entry_slist = NULL;
-
-  if (n_menu_entries)
-    g_return_val_if_fail (menu_entries != NULL, NULL);
-
-  bitem = g_new0 (BstFactoryItem, n_menu_entries);
-  last_bitem = bitem + n_menu_entries;
-  while (bitem < last_bitem)
-    {
-      entry_slist = g_slist_prepend (entry_slist, bitem);
-      bitem->entry = menu_entries[--n_menu_entries];
-      bitem->icon = NULL;
-      bitem++;
-    }
-
-  return g_slist_concat (orig_entry_slist, entry_slist);
-}
-
-GSList*
-bst_menu_entries_add_bentries (GSList       *orig_entry_slist,
-			       guint         n_menu_entries,
-			       BstMenuEntry *menu_entries)
-{
-  BstFactoryItem *bitem, *last_bitem;
-  GSList *entry_slist = NULL;
-
-  if (n_menu_entries)
-    g_return_val_if_fail (menu_entries != NULL, NULL);
-
-  bitem = g_new0 (BstFactoryItem, n_menu_entries);
-  last_bitem = bitem + n_menu_entries;
-  while (bitem < last_bitem)
-    {
-      entry_slist = g_slist_prepend (entry_slist, bitem);
-      --n_menu_entries;
-      bitem->entry.path = menu_entries[n_menu_entries].path;
-      bitem->entry.accelerator = menu_entries[n_menu_entries].accelerator;
-      bitem->entry.callback = menu_entries[n_menu_entries].callback;
-      bitem->entry.callback_action = menu_entries[n_menu_entries].callback_action;
-      bitem->entry.item_type = menu_entries[n_menu_entries].item_type;
-      bitem->icon = bst_icon_from_stock (menu_entries[n_menu_entries].stock_icon);
-      bitem++;
-    }
-
-  return g_slist_concat (orig_entry_slist, entry_slist);
-}
-
-static GtkWidget*
-create_icon_widget (BswIcon *icon)
-{
-  GtkWidget *widget;
-  const guint size = 16;
-
-  if (icon)
-    {
-      widget = gtk_widget_new (GNOME_TYPE_FOREST,
-			       "visible", TRUE,
-			       "width_request", size,
-			       "height_request", size,
-			       NULL);
-      gnome_forest_put_sprite (GNOME_FOREST (widget), 1,
-			       (icon->bytes_per_pixel > 3
-				? art_pixbuf_new_const_rgba
-				: art_pixbuf_new_const_rgb) (icon->pixels,
-							     icon->width,
-							     icon->height,
-							     icon->width *
-							     icon->bytes_per_pixel));
-      gnome_forest_set_sprite_size (GNOME_FOREST (widget), 1, size, size);
-    }
-  else
-    widget = gtk_widget_new (GTK_TYPE_ALIGNMENT,
-			     "visible", TRUE,
-			     "width_request", size,
-			     NULL);
+  if (!n_cats)
+    return NULL;
+  g_return_val_if_fail (cats != NULL, NULL);
+  g_return_val_if_fail (callback != NULL, NULL);
   
-  return widget;
+  entries = g_new0 (GtkItemFactoryEntry, n_cats);
+  for (entry = entries; entry < entries + n_cats; entry++)
+    {
+      entry->path = cats->category + cats->mindex;
+      entry->accelerator = NULL;
+      entry->callback = callback;
+      entry->callback_action = cats->type;
+      entry->item_type = bstmenu_icon_item;
+      entry->extra_data = cats->icon;
+      cats++;
+    }
+  
+  return entries;
+}
+
+GSList*
+bst_menu_entries_slist (guint                      n_ientries,
+			const GtkItemFactoryEntry *ientries)
+{
+  GtkItemFactoryEntry *entry = (GtkItemFactoryEntry*) ientries;
+  GSList *entry_slist = NULL;
+
+  if (!n_ientries)
+    return NULL;
+  g_return_val_if_fail (ientries != NULL, NULL);
+
+  entry += n_ientries - 1;
+  while (entry >= ientries)
+    entry_slist = g_slist_prepend (entry_slist, entry--);
+
+  return entry_slist;
+}
+
+typedef struct {
+  GtkWidget	  *owner;
+  gpointer         popup_data;
+  GtkDestroyNotify destroy;
+} PopupData;
+
+static void
+bst_menu_item_wrapper (GtkWidget *menu_item,
+		       gpointer   data)
+{
+  GtkItemFactory *ifactory = gtk_item_factory_from_widget (menu_item);
+  GtkWidget *owner = g_object_get_data (G_OBJECT (menu_item), "bst-menu-owner");
+  gpointer callback_action = g_object_get_data (G_OBJECT (menu_item), "bst-menu-callback-action");
+  PopupData *pdata = gtk_item_factory_popup_data (ifactory);
+  BstMenuCallback callback = data;
+
+  if (!owner)
+    owner = pdata ? pdata->owner : NULL;
+  if (!owner)
+    {
+      GdkEvent *event = gtk_get_current_event ();
+
+      /* possibly an accelerator invocation,
+       * the alternative to gtk_get_current_event() would
+       * be focus-event snooping...
+       */
+      if (event)
+	{
+	  GtkWidget *ewidget = gtk_get_event_widget (event);
+
+	  ewidget = ewidget ? gtk_widget_get_toplevel (ewidget) : NULL;
+	  if (GTK_IS_WINDOW (ewidget))
+	    {
+	      GSList *slist = g_object_get_data (G_OBJECT (ifactory), "bst-menu-accel-owners");
+
+	      ewidget = GTK_WINDOW (ewidget)->focus_widget;
+	      while (ewidget && !owner)
+		{
+		  if (g_slist_find (slist, ewidget))
+		    owner = ewidget;
+		  ewidget = ewidget->parent;
+		}
+	    }
+	}
+    }
+
+  if (owner)
+    callback (owner, (gulong) callback_action, pdata ? pdata->popup_data : NULL);
+  else
+    gdk_beep ();
 }
 
 void
-bst_menu_entries_create_list (GtkItemFactory *ifactory,
-			      GSList         *bst_menu_entries,
-			      gpointer        callback_data)
+bst_menu_entries_create (GtkItemFactory *ifactory,
+			 GSList         *bst_menu_entries,
+			 GtkWidget	*owner)
+{
+  GSList *slist;
+  
+  g_return_if_fail (GTK_IS_ITEM_FACTORY (ifactory));
+  if (!GTK_IS_MENU (ifactory->widget))
+    g_return_if_fail (GTK_IS_WIDGET (owner));
+
+  for (slist = bst_menu_entries; slist; slist = slist->next)
+    {
+      GtkItemFactoryEntry entry = { 0, }, *ientry = slist->data;
+      GtkWidget *item;
+
+      /* create menu item */
+      entry.path = ientry->path;
+      entry.accelerator = ientry->accelerator;
+      entry.callback = NULL;
+      entry.callback_action = 0;
+      entry.item_type = ientry->item_type == bstmenu_icon_item ? "<ImageItem>" : ientry->item_type;
+      entry.extra_data = ientry->item_type == bstmenu_icon_item ? "!Pix" : ientry->extra_data;
+      gtk_item_factory_create_items (ifactory, 1, &entry, NULL);
+      item = gtk_item_factory_get_item (ifactory, entry.path);
+
+      /* connect callback */
+      if (ientry->callback)
+	{
+	  g_object_set_data (G_OBJECT (item), "bst-menu-owner", owner);
+	  g_object_set_data (G_OBJECT (item), "bst-menu-callback", ientry->callback);
+	  g_object_set_data (G_OBJECT (item), "bst-menu-callback-action", (void*) ientry->callback_action);
+	  gtk_signal_connect (GTK_OBJECT (item),
+			      "activate",
+			      GTK_SIGNAL_FUNC (bst_menu_item_wrapper),
+			      ientry->callback);
+	}
+
+      /* create image from BswIcon */
+      if (ientry->item_type == bstmenu_icon_item)
+	{
+	  GtkWidget *image = bst_image_from_icon ((BswIcon*) ientry->extra_data, BST_SIZE_MENU);
+
+	  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
+	}
+
+      /* fixup Title items */
+      if (entry.item_type && strcmp (entry.item_type, "<Title>") == 0)
+	bst_widget_modify_as_title (GTK_BIN (item)->child);
+    }
+}
+
+static void
+popup_data_destroy (gpointer data)
+{
+  PopupData *pdata = data;
+
+  if (pdata->destroy)
+    pdata->destroy (pdata->popup_data);
+  g_free (pdata);
+}
+
+void
+bst_menu_popup (GtkItemFactory  *ifactory,
+		GtkWidget	*owner,
+		gpointer         popup_data,
+		GtkDestroyNotify popup_data_destroy,
+		guint            x,
+		guint            y,
+		guint            mouse_button,
+		guint32          time)
+{
+  PopupData *pdata;
+
+  g_return_if_fail (GTK_IS_ITEM_FACTORY (ifactory));
+  g_return_if_fail (GTK_IS_WIDGET (owner));
+
+  pdata = g_new (PopupData, 1);
+  pdata->owner = owner;
+  pdata->popup_data = popup_data;
+  pdata->destroy = popup_data_destroy;
+
+  gtk_item_factory_popup_with_data (ifactory,
+				    pdata, popup_data_destroy,
+				    x, y, mouse_button, time);
+}
+
+void
+bst_menu_add_accel_owner (GtkItemFactory  *ifactory,
+			  GtkWidget       *owner)
 {
   GSList *slist;
 
   g_return_if_fail (GTK_IS_ITEM_FACTORY (ifactory));
+  g_return_if_fail (GTK_IS_WIDGET (owner));
 
-  for (slist = bst_menu_entries; slist; slist = slist->next)
-    {
-      BstFactoryItem *bitem = slist->data;
-      GtkWidget *item, *child = NULL;
-
-      gtk_item_factory_create_items (ifactory, 1, &bitem->entry, callback_data);
-      item = gtk_item_factory_get_item (ifactory, bitem->entry.path);
-      if (GTK_IS_MENU_ITEM (item))
-	child = GTK_BIN (item)->child;
-      if (child)
-	{
-	  GtkWidget *hbox;
-
-	  gtk_widget_ref (child);
-	  gtk_container_remove (GTK_CONTAINER (item), child);
-	  if (bitem->entry.item_type && strcmp (bitem->entry.item_type, "<Title>") == 0)
-	    bst_widget_modify_as_title (child);
-	  hbox = gtk_widget_new (GTK_TYPE_HBOX,
-				 "visible", TRUE,
-				 "spacing", BST_INNER_PADDING,
-				 "parent", item,
-				 "child", child,
-				 NULL);
-	  gtk_container_add_with_properties (GTK_CONTAINER (hbox),
-					     create_icon_widget (bitem->icon),
-					     "expand", FALSE,
-					     "fill", FALSE,
-					     "position", 0,
-					     NULL);
-	  gtk_widget_unref (child);
-	}
-    }
+  slist = g_object_get_data (G_OBJECT (ifactory), "bst-menu-accel-owners");
+  slist = g_slist_prepend (slist, owner);
+  g_object_set_data (G_OBJECT (ifactory), "bst-menu-accel-owners", slist);
 }
 
 BstChoice*
 bst_choice_alloc (BstChoiceFlags type,
-		  BstIconId      icon_id,
+		  const gchar   *icon_stock_id,
 		  const gchar   *choice_name,
 		  gpointer       choice_id)
 {
   BstChoice *choice = g_new (BstChoice, 1);
 
   choice->type_and_flags = type;
-  choice->icon = bst_icon_from_stock (icon_id);
+  choice->icon_stock_id = icon_stock_id;
   choice->name = choice_name;
   choice->p_id = choice_id;
 
@@ -313,8 +352,8 @@ void
 bst_choice_menu_add_choice_and_free (GtkWidget *menu,
 				     BstChoice *choice)
 {
-  GtkWidget *item, *hbox;
   guint choice_type, choice_flags;
+  GtkWidget *item;
 
   g_return_if_fail (GTK_IS_MENU (menu));
   g_return_if_fail (choice != NULL);
@@ -322,7 +361,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
   choice_type = choice->type_and_flags & BST_CHOICE_TYPE_MASK;
   choice_flags = choice->type_and_flags & BST_CHOICE_FLAG_MASK;
 
-  item = gtk_widget_new (GTK_TYPE_MENU_ITEM,
+  item = gtk_widget_new (GTK_TYPE_IMAGE_MENU_ITEM,
 			 "visible", TRUE,
 			 "sensitive", !((choice_flags & BST_CHOICE_FLAG_INSENSITIVE) ||
 					(choice_type != BST_CHOICE_TYPE_ITEM &&
@@ -337,29 +376,20 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
   if (choice->name)
     {
       GtkWidget *any;
-      
-      hbox = gtk_widget_new (GTK_TYPE_HBOX,
-			     "visible", TRUE,
-			     "spacing", BST_INNER_PADDING,
-			     "parent", item,
-			     NULL);
-      gtk_container_add_with_properties (GTK_CONTAINER (hbox),
-					 create_icon_widget (choice->icon),
-					 "expand", FALSE,
-					 "fill", FALSE,
-					 NULL);
+
+      if (choice->icon_stock_id)
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item),
+				       bst_image_from_stock (choice->icon_stock_id, BST_SIZE_MENU));
       any = gtk_widget_new (GTK_TYPE_ACCEL_LABEL,
 			    "visible", TRUE,
 			    "label", choice->name,
-			    "parent", hbox,
+			    "parent", item,
 			    "accel_widget", item,
 			    "xalign", 0.0,
 			    NULL);
       if (choice_type == BST_CHOICE_TYPE_TITLE)
 	bst_widget_modify_as_title (any);
     }
-  if (choice->icon)
-    bsw_icon_unref (choice->icon);
   g_free (choice);
 }
 
@@ -495,15 +525,13 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 	case BST_CHOICE_TYPE_ITEM:
 	  any = bst_dialog_action_multi (BST_DIALOG (dialog), choice->name,
 					 button_choice_activate, choice->p_id,
-					 choice->icon,
+					 choice->icon_stock_id,
 					 (choice_flags & BST_CHOICE_FLAG_DEFAULT) ? BST_DIALOG_MULTI_DEFAULT : 0);
 	  if (choice_flags & BST_CHOICE_FLAG_INSENSITIVE)
 	    gtk_widget_set_sensitive (any, FALSE);
 	  break;
 	}
-      
-      if (choice->icon)
-	bsw_icon_unref (choice->icon);
+
       g_free (choice);
       
       choice = va_arg (args, BstChoice*);

@@ -95,5 +95,5 @@ General
 @FAQ-TITLE@
 Why doesn't BEAST 0.4.0 play songs from earlier versions?
 @FAQ-ANSWER@
-The song support was complete rewritten for this version. If lots of
-compatiblity problem reports occour, a convert might be implemented at some point.
+The song support was completely rewritten for this version. If lots of
+compatiblity problem reports occour, a converter might be implemented at some point.

@@ -1,5 +1,45 @@
 dnl Setup useful string and variable macros.
 
+## Portability defines that help interoperate with classic and modern autoconfs
+ifdef([AC_TR_SH],[
+define([GLIB_TR_SH],[AC_TR_SH([$1])])
+define([GLIB_TR_CPP],[AC_TR_CPP([$1])])
+], [
+define([GLIB_TR_SH],
+       [patsubst(translit([[$1]], [*+], [pp]), [[^a-zA-Z0-9_]], [_])])
+define([GLIB_TR_CPP],
+       [patsubst(translit([[$1]],
+  	                  [*abcdefghijklmnopqrstuvwxyz],
+ 			  [PABCDEFGHIJKLMNOPQRSTUVWXYZ]),
+		 [[^A-Z0-9_]], [_])])
+])
+
+
+dnl GLIB_SIZEOF (INCLUDES, TYPE, ALIAS [, CROSS-SIZE])
+AC_DEFUN(GLIB_SIZEOF,
+[pushdef([glib_Sizeof], GLIB_TR_SH([glib_cv_sizeof_$3]))dnl
+AC_CACHE_CHECK([size of $2], glib_Sizeof,
+[AC_TRY_RUN([#include <stdio.h>
+#if STDC_HEADERS
+#include <stdlib.h>
+#include <stddef.h>
+#endif
+$1
+main()
+{
+  FILE *f=fopen("conftestval", "w");
+  if (!f) exit(1);
+  fprintf(f, "%d\n", sizeof($2));
+  exit(0);
+}],
+  [glib_Sizeof=`cat conftestval`  dnl''
+],
+  [glib_Sizeof=0],
+  ifelse([$4], [], [], [glib_Sizeof=$4]))])
+AC_DEFINE_UNQUOTED(GLIB_TR_CPP(glib_sizeof_$3), [$[]glib_Sizeof], [Size of $3])
+popdef([glib_Sizeof])dnl
+])
+
 
 dnl MC_IF_VAR_EQ(environment-variable, value [, equals-action] [, else-action])
 AC_DEFUN(MC_IF_VAR_EQ,[

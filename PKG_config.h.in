@@ -24,7 +24,16 @@
 #undef  BSE_PCM_DEVICE_CONF_ALSA
 #undef  BSE_PCM_DEVICE_CONF_OSS
 #undef  BSE_MIDI_DEVICE_CONF_OSS
-#undef BST_HAVE_BIRNET
 
 /* Define if you have the <dlfcn.h> header file.  */
 #undef HAVE_DLFCN_H
+
+/* Size of pth_mutex_t */
+#undef GLIB_SIZEOF_PTH_MUTEX_T
+
+/* Size of pth_cond_t */
+#undef GLIB_SIZEOF_PTH_COND_T
+
+/* Size of std_intmax_t */
+#undef GLIB_SIZEOF_STD_INTMAX_T
+

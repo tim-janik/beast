@@ -269,12 +269,12 @@ bst_play_list_init (BstPlayList *plist)
       bst_widget_force_bg_clear (drag_widget);
       bst_play_list_drop_spot_pattern_group = drag_widget;
 
-      drag_widget = bst_drag_window_from_icon (bst_icon_from_stock (BST_ICON_PATTERN));
+      drag_widget = bst_drag_window_from_stock (BST_STOCK_PATTERN);
       gtk_widget_ref (drag_widget);
       gtk_object_sink (GTK_OBJECT (drag_widget));
       bst_play_list_drag_window_pattern_icon = drag_widget;
 
-      drag_widget = bst_drag_window_from_icon (bst_icon_from_stock (BST_ICON_PATTERN_GROUP));
+      drag_widget = bst_drag_window_from_stock (BST_STOCK_PATTERN_GROUP);
       gtk_widget_ref (drag_widget);
       gtk_object_sink (GTK_OBJECT (drag_widget));
       bst_play_list_drag_window_pattern_group_icon = drag_widget;

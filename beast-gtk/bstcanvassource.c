@@ -184,8 +184,6 @@ source_icon_changed (BstCanvasSource *csource)
   /* update icon in group, revert to a stock icon if none is available
    */
   icon = bse_object_get_icon (bse_object_from_id (csource->source));
-  if (!icon)
-    icon = bst_icon_from_stock (BST_ICON_NOICON);
   bst_canvas_icon_set (csource->icon_item, icon);
 }
 
@@ -550,36 +548,30 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 		     BswIcon         *icon)
 {
   GdkPixbuf *pixbuf;
-  
-  bsw_icon_ref (icon);
-#if 0
-  ArtPixBuf *apixbuf;
-  apixbuf = (icon->bytes_per_pixel > 3
-	     ? art_pixbuf_new_const_rgba
-	     : art_pixbuf_new_const_rgb) (icon->pixels,
-					  icon->width,
-					  icon->height,
-					  icon->width *
-					  icon->bytes_per_pixel);
-  pixbuf = gdk_pixbuf_new_from_art_pixbuf (apixbuf);
-#endif
-  pixbuf = gdk_pixbuf_new_from_data (icon->pixels, GDK_COLORSPACE_RGB, TRUE,
-				     8, icon->width, icon->height,
-				     icon->width * icon->bytes_per_pixel,
-				     NULL, NULL);
+
+  if (icon)
+    {
+      bsw_icon_ref (icon);
+      pixbuf = gdk_pixbuf_new_from_data (icon->pixels, GDK_COLORSPACE_RGB, icon->bytes_per_pixel == 4,
+					 8, icon->width, icon->height,
+					 icon->width * icon->bytes_per_pixel,
+					 NULL, NULL);
+      gtk_object_set_data_full (GTK_OBJECT (item),
+				"BswIcon",
+				icon,
+				(GtkDestroyNotify) bsw_icon_unref);
+    }
+  else
+    pixbuf = bst_pixbuf_no_icon ();
+
   g_object_set (GTK_OBJECT (item),
 		"pixbuf", pixbuf,
 		"x_in_pixels", FALSE,
 		"y_in_pixels", FALSE,
 		"anchor", GTK_ANCHOR_NORTH_WEST,
-		// "x_set", TRUE,
-		// "y_set", TRUE,
 		NULL);
-  gtk_object_set_data_full (GTK_OBJECT (item),
-			    "BswIcon",
-			    icon,
-			    (GtkDestroyNotify) bsw_icon_unref);
-  gdk_pixbuf_unref (pixbuf);
+  if (icon)
+    gdk_pixbuf_unref (pixbuf);
 }
 
 static void

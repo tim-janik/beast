@@ -84,7 +84,7 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Song/Add _Instrument",		"<ctrl>I",	BST_OP (INSTRUMENT_ADD),	"<Item>" },
   { "/_Waves",				NULL,		NULL, 0,			"<Branch>" },
   { "/Waves/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
-  { "/Waves/_Add Wave...",		"",		BST_OP (WAVE_LOAD),		"<Item>" },
+  { "/Waves/_Load Wave...",		"",		BST_OP (WAVE_LOAD),		"<Item>" },
   { "/Waves/Delete Wave",		NULL,		BST_OP (WAVE_DELETE),		"<Item>" },
   { "/Waves/_Edit Wave...",		"",		BST_OP (WAVE_EDITOR),		"<Item>" },
   // { "/S_Net",			NULL,		NULL, 0,			"<Branch>" },
@@ -222,12 +222,6 @@ bst_app_init (BstApp *app)
 }
 
 static void
-app_set_title (BstApp *app)
-{
-  g_object_set (app, "title", bsw_item_get_name (app->project), NULL);
-}
-
-static void
 bst_app_destroy (GtkObject *object)
 {
   BstApp *app = BST_APP (object);
@@ -239,7 +233,6 @@ bst_app_destroy (GtkObject *object)
     {
       bsw_server_halt_project (BSW_SERVER, app->project);
       g_object_disconnect (bse_object_from_id (app->project),
-			   "any_signal", app_set_title, app,
 			   "any_signal", bst_app_reload_supers, app,
 			   NULL);
       bsw_item_unuse (app->project);
@@ -279,11 +272,10 @@ bst_app_new (BswProxy project)
   app->project = project;
   bsw_item_use (app->project);
   g_object_connect (bse_object_from_id (app->project),
-		    "swapped_signal::notify::name", app_set_title, app,
 		    "swapped_signal::item-added", bst_app_reload_supers, app,
 		    "swapped_signal::item-removed", bst_app_reload_supers, app,
 		    NULL);
-  app_set_title (app);
+  bst_dialog_sync_title_to_proxy (BST_DIALOG (app), app->project, "%s");
 
   bst_app_reload_supers (app);
 
@@ -638,6 +630,8 @@ bst_app_operate (BstApp *app,
 					    widget);
 	  bst_preferences_create_buttons (BST_PREFERENCES (widget), BST_DIALOG (bst_preferences));
 	}
+      if (!GTK_WIDGET_VISIBLE (bst_preferences))
+	bst_preferences_revert (BST_PREFERENCES (bst_dialog_get_child (BST_DIALOG (bst_preferences))));
       gtk_widget_showraise (bst_preferences);
       break;
     case BST_OP_DIALOG_DEVICE_MONITOR:

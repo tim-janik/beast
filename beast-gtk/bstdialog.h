@@ -56,6 +56,10 @@ struct _BstDialog
 
   GtkWidget	*vbox;
 
+  BswProxy	 proxy;
+  gchar		*title1;
+  gchar		*title2;
+
   /*< private >*/
   GtkObject	*alive_object;	/* dialog is destroyed with this object */
   BstDialogFlags flags;
@@ -83,6 +87,9 @@ void		bst_dialog_set_title		  (BstDialog	  *dialog,
 						   const gchar	  *title);
 GtkWidget*	bst_dialog_get_child		  (BstDialog	  *dialog);
 BstDialog*	bst_dialog_get_status_window	  (void);
+void		bst_dialog_sync_title_to_proxy	  (BstDialog	  *dialog,
+						   BswProxy	   proxy,
+						   const gchar	  *title_format);
 #define		bst_dialog_action(		   dialog, action, callback, data)	\
                                                   bst_dialog_action_multi ((dialog), (action), (callback), (data), 0, 0)
 #define		bst_dialog_default_action(	   dialog, action, callback, data)	\
@@ -91,21 +98,6 @@ BstDialog*	bst_dialog_get_status_window	  (void);
                                                   bst_dialog_action_multi ((dialog), (action), (callback), (data), 0, BST_DIALOG_MULTI_SWAPPED)
 #define		bst_dialog_default_action_swapped( dialog, action, callback, data)	\
                                                   bst_dialog_action_multi ((dialog), (action), (callback), (data), 0, BST_DIALOG_MULTI_DEFAULT | BST_DIALOG_MULTI_SWAPPED)
-
-
-/* --- recognized stock actions --- */
-extern const gchar *BST_STOCK_ACTION_OK;
-extern const gchar *BST_STOCK_ACTION_CLOSE;
-extern const gchar *BST_STOCK_ACTION_CANCEL;
-extern const gchar *BST_STOCK_ACTION_DELETE;
-extern const gchar *BST_STOCK_ACTION_EXECUTE;
-extern const gchar *BST_STOCK_ACTION_UNDO;
-extern const gchar *BST_STOCK_ACTION_REDO;
-extern const gchar *BST_STOCK_ACTION_CLONE;
-extern const gchar *BST_STOCK_ACTION_APPLY;
-extern const gchar *BST_STOCK_ACTION_REVERT;
-extern const gchar *BST_STOCK_ACTION_DEFAULT_REVERT;
-extern const gchar *BST_STOCK_ACTION_OVERWRITE;
 
 
 /* --- internal --- */
@@ -118,7 +110,7 @@ GtkWidget*	bst_dialog_action_multi		(BstDialog	    *dialog,
 						 const gchar	    *action,
 						 gpointer	     callback,
 						 gpointer	     data,
-						 BswIcon	    *icon,
+						 const gchar	    *icon_stock_id,
 						 BstDialogMultiFlags multi_mode);
 
 #ifdef __cplusplus

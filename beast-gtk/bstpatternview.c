@@ -33,9 +33,9 @@ static gboolean	bst_pattern_view_can_operate	(BstItemView		*item_view,
 
 /* --- pattern ops --- */
 static BstItemViewOp pattern_view_ops[] = {
-  { "Add",		BST_OP_PATTERN_ADD,	BST_ICON_PATTERN,	},
-  { "Delete",		BST_OP_PATTERN_DELETE,	BST_ICON_TRASHCAN,	},
-  { "Editor...",	BST_OP_PATTERN_EDITOR,	BST_ICON_PATTERN_TOOL,	},
+  { "Add",		BST_OP_PATTERN_ADD,	BST_STOCK_PATTERN,	},
+  { "Delete",		BST_OP_PATTERN_DELETE,	BST_STOCK_TRASHCAN,	},
+  { "Editor...",	BST_OP_PATTERN_EDITOR,	BST_STOCK_PATTERN_TOOL,	},
 };
 static guint n_pattern_view_ops = sizeof (pattern_view_ops) / sizeof (pattern_view_ops[0]);
 

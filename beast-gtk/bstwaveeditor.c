@@ -58,31 +58,6 @@ static void	bst_wave_editor_get_property	(GObject		*object,
 						 guint			 prop_id,
 						 GValue			*value,
 						 GParamSpec		*pspec);
-static void	wave_editor_operate		(BstWaveEditor		*wave_editor,
-						 BstWaveOps     	 op,
-						 GtkWidget        	*menu_item);
-static void	wave_editor_exec_proc		(BstWaveEditor		*wave_editor,
-						 GType  		 proc_type,
-						 GtkWidget        	*menu_item);
-
-
-/* --- menus --- */
-static gchar		  *bst_wave_editor_factories_path = "<BstWave>";
-static BstMenuEntry popup_entries[] =
-{
-#define BST_OP(op) (wave_editor_operate), (BST_WAVE_OP_ ## op)
-  { "/<<<<<<",			NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/Wave",			NULL,		NULL, 0,		"<Title>",	/* FIXME:BST_ICON_WAVE*/0 },
-  { "/-----",			NULL,		NULL, 0,		"<Separator>",	0 },
-  { "/_Edit/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/_Select/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/_Tools/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
-  { "/-----",			NULL,		NULL, 0,		"<Separator>",	0 },
-  { "/To_ys",			NULL,		NULL, 0,		"<LastBranch>",	0 },
-  { "/Toys/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
-#undef	BST_OP
-};
-static guint n_popup_entries = sizeof (popup_entries) / sizeof (popup_entries[0]);
 
 
 /* --- static variables --- */
@@ -121,8 +96,6 @@ bst_wave_editor_class_init (BstWaveEditorClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   // GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-  BseCategory *cats;
-  guint n_cats;
   
   parent_class = g_type_class_peek_parent (class);
 
@@ -131,26 +104,6 @@ bst_wave_editor_class_init (BstWaveEditorClass *class)
   gobject_class->finalize = bst_wave_editor_finalize;
 
   object_class->destroy = bst_wave_editor_destroy;
-
-  class->popup_entries = NULL;
-#if 0
-  class->popup_entries = bst_menu_entries_add_bentries (class->popup_entries,
-							n_popup_entries,
-							popup_entries);
-  cats = bse_categories_match_typed ("/Method/BseWave/*", BSE_TYPE_PROCEDURE, &n_cats);
-  class->popup_entries = bst_menu_entries_add_categories (class->popup_entries,
-							  n_cats,
-							  cats,
-							  wave_editor_exec_proc);
-  g_free (cats);
-  cats = bse_categories_match_typed ("/Proc/Toys/*", BSE_TYPE_PROCEDURE, &n_cats);
-  class->popup_entries = bst_menu_entries_add_categories (class->popup_entries,
-							  n_cats,
-							  cats,
-							  wave_editor_exec_proc);
-  g_free (cats);
-#endif
-  class->popup_entries = bst_menu_entries_sort (class->popup_entries);
 
   g_object_class_install_property (gobject_class, PARAM_WAVE,
 				   g_param_spec_uint ("wave", "Wave", NULL,
@@ -161,15 +114,8 @@ bst_wave_editor_class_init (BstWaveEditorClass *class)
 static void
 bst_wave_editor_init (BstWaveEditor *wave_editor)
 {
-  BstWaveEditorClass *class = BST_WAVE_EDITOR_GET_CLASS (wave_editor);
-  GtkItemFactory *factory;
-
   /* setup main container */
   wave_editor->main_vbox = GTK_WIDGET (wave_editor);
-  if (0)
-    g_object_connect (wave_editor->main_vbox,
-		      "signal::destroy", gtk_widget_destroyed, &wave_editor->main_vbox,
-		      NULL);
 
   wave_editor->chunk_store = gtk_list_store_new (N_COLS,
 						 G_TYPE_STRING,  /* COL_OSC_FREQ */
@@ -177,20 +123,6 @@ bst_wave_editor_init (BstWaveEditor *wave_editor)
 						 G_TYPE_STRING,  /* COL_NAME */
 						 G_TYPE_STRING   /* COL_LOOP */
 						 );
-
-  /* setup the popup menu
-   */
-#if 0
-  factory = gtk_item_factory_new (GTK_TYPE_MENU, bst_wave_editor_factories_path, NULL);
-  gtk_window_add_accel_group (GTK_WINDOW (wave_editor), factory->accel_group);
-  bst_menu_entries_create_list (factory, class->popup_entries, wave_editor);
-  wave_editor->popup = factory->widget;
-  gtk_object_set_data_full (GTK_OBJECT (wave_editor),
-			    bst_wave_editor_factories_path,
-			    factory,
-			    (GtkDestroyNotify) gtk_object_unref);
-  wave_editor->proc_editor = NULL;
-#endif
 
   /* playback handle */
   wave_editor->phandle = bst_play_back_handle_new ();
@@ -300,361 +232,13 @@ bst_wave_editor_new (BswProxy wave)
   return widget;
 }
 
-void
-bst_wave_editor_gtkfix_default_accels (void)
-{
-  static gchar *accel_defaults[][2] = {
-    { "<BstWave>/Select/All",               "<Control>A", },
-    { "<BstWave>/Select/None",              "<Shift><Control>A", },
-    { "<BstWave>/Select/Invert",            "<Control>I", },
-    { "<BstWave>/Edit/Undo",                "<Control>Z", },
-    { "<BstWave>/Edit/Redo",                "<Control>R", },
-    { "<BstWave>/Edit/Copy",                "<Control>C", },
-    { "<BstWave>/Edit/Cut",                 "<Control>X", },
-    { "<BstWave>/Edit/Cut Named...",        "<Shift><Control>X", },
-    { "<BstWave>/Edit/Paste",               "<Control>V", },
-    { "<BstWave>/Edit/Paste Named...",      "<Shift><Control>V", },
-    { "<BstWave>/Edit/Clear",               "<Control>K", },
-    { "<BstWave>/Edit/Fill",                "<Control>period", },
-    { "<BstWave>/Edit/Clear",               "<Control>K", },
-  };
-  static guint n_accel_defaults = sizeof (accel_defaults) / sizeof (accel_defaults[0]);
-  guint i;
-
-  for (i = 0; i < n_accel_defaults; i++)
-    {
-      gchar *string = g_strconcat ("(menu-path \"",
-				   accel_defaults[i][0],
-				   "\" \"",
-				   accel_defaults[i][1],
-				   "\")",
-				   NULL);
-
-      //FIXME; gtk_item_factory_parse_rc_string (string);
-      g_free (string);
-    }
-}
-
-#if 0
-static void
-wave_editor_exec_proc (BstWaveEditor *wave_editor,
-			  GType             proc_type,
-			  GtkWidget        *menu_item)
-{
-  GValue value = { 0, };
-  BstWaveEditor *wave_editor;
-  BseProcedureClass *procedure;
-  BstProcedureShell *proc_shell;
-  BseWave *wave;
-  GtkWidget *widget;
-  guint channel, row;
-
-  widget = GTK_WIDGET (wave_editor);
-  wave_editor = BST_WAVE_EDITOR (wave_editor->wave_editor);
-  wave = BSE_WAVE (wave_editor->wave);
-  pe_channel_row_from_popup (wave_editor, menu_item, &channel, &row);
-
-  gtk_widget_ref (widget);
-  bse_object_ref (BSE_OBJECT (wave));
-
-  /* ensure procedure shell
-   */
-  if (!wave_editor->proc_editor)
-    {
-      proc_shell = BST_PROCEDURE_SHELL (bst_procedure_shell_new (NULL));
-      wave_editor->proc_editor = bst_procedure_editor_from_shell (proc_shell, &wave_editor->proc_editor);
-    }
-  else
-    proc_shell = bst_procedure_editor_get_shell (wave_editor->proc_editor);
-
-  /* setup procedure
-   */
-  procedure = g_type_class_ref (proc_type);
-  bst_procedure_shell_set_proc (proc_shell, procedure);
-  g_type_class_unref (procedure);
-
-  /* ok, now we build a list of possible preset parameters to
-   * pass into the procedure and attempt applying them
-   */
-  bst_procedure_shell_unpreset (proc_shell);
-  g_value_init (&value, BSE_TYPE_WAVE);
-  g_value_set_object (&value, G_OBJECT (wave));
-  bst_procedure_shell_preset (proc_shell, "wave", &value, TRUE);
-  g_value_unset (&value);
-  g_value_init (&value, G_TYPE_UINT);
-  g_value_set_uint (&value, wave_editor->focus_channel);
-  bst_procedure_shell_preset (proc_shell, "focus-channel", &value, TRUE);
-  g_value_set_uint (&value, wave_editor->focus_row);
-  bst_procedure_shell_preset (proc_shell, "focus-row", &value, TRUE);
-  g_value_unset (&value);
-
-  /* invoke procedure with selection already residing in the wave
-   */
-  bst_status_window_push (widget);
-  bst_procedure_editor_exec_modal (wave_editor->proc_editor, FALSE);
-  bst_status_window_pop ();
-
-  bst_wave_editor_update (wave_editor);
-
-  bse_object_unref (BSE_OBJECT (wave));
-  gtk_widget_unref (widget);
-}
-
-static void
-wave_editor_operate (BstWaveEditor *wave_editor,
-			BstWaveOps     op,
-			GtkWidget        *menu_item)
-{
-  BseWave *wave;
-  GtkWidget *widget;
-  guint channel, row;
-  
-  widget = GTK_WIDGET (wave_editor);
-  wave = BSE_WAVE (BST_WAVE_EDITOR (wave_editor->wave_editor)->wave);
-  pe_channel_row_from_popup (wave_editor, menu_item, &channel, &row);
-  
-  gtk_widget_ref (widget);
-  bse_object_ref (BSE_OBJECT (wave));
-  
-  switch (op)
-    {
-    case BST_WAVE_OP_HUHU:
-      g_message ("HUHU c%u r%u", channel, row);
-      break;
-    default:
-      break;
-    }
-  
-  bst_wave_editor_update (wave_editor);
-  
-  bse_object_unref (BSE_OBJECT (wave));
-  gtk_widget_unref (widget);
-}
-
-void
-bst_wave_editor_operate (BstWaveEditor *wave_editor,
-			    BstWaveOps     op)
-{
-  g_return_if_fail (BST_IS_WAVE_EDITOR (wave_editor));
-  g_return_if_fail (bst_wave_editor_can_operate (wave_editor, op));
-
-  wave_editor_operate (wave_editor, op, NULL);
-}
-
-gboolean
-bst_wave_editor_can_operate (BstWaveEditor *wave_editor,
-				BstWaveOps	  op)
-{
-  BseWave *wave;
-  GtkWidget *widget;
-  
-  g_return_val_if_fail (BST_IS_WAVE_EDITOR (wave_editor), FALSE);
-  
-  widget = GTK_WIDGET (wave_editor);
-  wave = BSE_WAVE (BST_WAVE_EDITOR (wave_editor->wave_editor)->wave);
-  
-  switch (op)
-    {
-    case BST_WAVE_OP_HUHU:
-      return TRUE;
-    default:
-      return FALSE;
-    }
-}
-#endif
-
-
-#define QSAMPLER_SELECTION_TIMEOUT      (33)
-static gulong qsampler_selection_timeout_id = 0;
-
-static void
-qsampler_set_selection (BstQSampler *qsampler,
-			gint         m1,
-			gint         m2,
-			gboolean     visible_mark)
-{
-  BstWaveEditor *wave_editor = BST_WAVE_EDITOR (g_object_get_data (G_OBJECT (qsampler), "wave_editor"));
-  guint i;
-
-  for (i = 0; i < wave_editor->n_channels; i++)
-    {
-      BstQSampler *qs = wave_editor->qsampler[i];
-      gchar *s;
-
-      bst_qsampler_set_mark (qs, 1, m1, BST_QSAMPLER_SELECTED);
-      bst_qsampler_set_mark (qs, 2, m2, BST_QSAMPLER_SELECTED);
-      bst_qsampler_set_region (qs, 1, MIN (m1, m2), 1 + MAX (m1, m2) - MIN (m1, m2), BST_QSAMPLER_SELECTED);
-      if (visible_mark == 1)
-	bst_qsampler_scroll_show (qs, m1);
-      else if (visible_mark == 2)
-	bst_qsampler_scroll_show (qs, m2);
-      s = g_strdup_printf ("%d", MIN (m1, m2));
-      gtk_entry_set_text (wave_editor->sstart, s);
-      g_free (s);
-      s = g_strdup_printf ("%d", MAX (m1, m2));
-      gtk_entry_set_text (wave_editor->send, s);
-      g_free (s);
-    }
-}
-
-static gboolean
-qsampler_selection_timeout (gpointer data)
-{
-  BstQSampler *qsampler = BST_QSAMPLER (data);
-  gboolean retain = FALSE;
-
-  if (GTK_WIDGET_DRAWABLE (qsampler))
-    {
-      gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
-      gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
-      gint x;
-
-      gdk_window_get_pointer (GTK_WIDGET (qsampler)->window, &x, NULL, NULL);
-      if (!bst_qsampler_get_offset_at (qsampler, &x))
-	{
-	  gint b;
-
-	  if (x < 0)
-	    {
-	      bst_qsampler_get_bounds (qsampler, &b, NULL);
-	      x = MAX (0, b + x);
-	    }
-	  else
-	    {
-	      bst_qsampler_get_bounds (qsampler, NULL, &b);
-	      x = MIN (qsampler->pcm_length - 1, b + x);
-	    }
-	  retain = TRUE;
-	}
-      if (ABS (m1 - x) < ABS (m2 - x))
-	qsampler_set_selection (qsampler, m2, x, 2);
-      else
-	qsampler_set_selection (qsampler, m1, x, 2);
-    }
-
-  if (retain && qsampler_selection_timeout_id)
-    return TRUE;
-  else
-    {
-      qsampler_selection_timeout_id = 0;
-      g_object_unref (qsampler);
-      return FALSE;
-    }
-}
-
-static gboolean
-qsampler_button_event (BstQSampler    *qsampler,
-		       GdkEventButton *event)
-{
-  gboolean handled = FALSE;
-
-  if (event->button == 1)
-    {
-      gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
-      gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
-      gint x = event->x;
-
-      handled = TRUE;
-      if (!bst_qsampler_get_offset_at (qsampler, &x))
-	{
-	  if (x < 0)
-	    bst_qsampler_get_bounds (qsampler, &x, NULL);
-	  else
-	    bst_qsampler_get_bounds (qsampler, NULL, &x);
-	}
-
-      if (event->type == GDK_BUTTON_PRESS && (event->state & GDK_SHIFT_MASK) &&
-	  m1 >= 0 && m2 >= 0)
-	{
-	  if (ABS (m1 - x) < ABS (m2 - x))
-	    qsampler_set_selection (qsampler, m2, x, 2);
-	  else
-	    qsampler_set_selection (qsampler, m1, x, 2);
-	}
-      else if (event->type == GDK_BUTTON_PRESS)
-	qsampler_set_selection (qsampler, x, x, 2);
-      else if (event->type == GDK_BUTTON_RELEASE)
-	{
-	  if (qsampler_selection_timeout_id)
-	    {
-	      gtk_timeout_remove (qsampler_selection_timeout_id);
-	      qsampler_selection_timeout_id = 0;
-	    }
-	}
-    }
-
-  return handled;
-}
-
-static gboolean
-qsampler_motion_event (BstQSampler    *qsampler,
-		       GdkEventMotion *event)
-{
-  gboolean handled = FALSE;
-
-  if (event->type == GDK_MOTION_NOTIFY)
-    {
-      gint m1 = bst_qsampler_get_mark_offset (qsampler, 1);
-      // gint m2 = bst_qsampler_get_mark_offset (qsampler, 2);
-      gint x = event->x;
-
-      handled = TRUE;
-      if (bst_qsampler_get_offset_at (qsampler, &x))
-	qsampler_set_selection (qsampler, m1, x, 2);
-      else if (!qsampler_selection_timeout_id)
-	qsampler_selection_timeout_id = g_timeout_add_full (G_PRIORITY_DEFAULT + 1,
-							    QSAMPLER_SELECTION_TIMEOUT,
-							    qsampler_selection_timeout,
-							    g_object_ref (qsampler), NULL);
-    }
-
-  return handled;
-}
-
-static void
-qsampler_filler (gpointer     data,
-		 guint        voffset,
-		 guint        n_values,
-		 gint16      *values,
-		 BstQSampler *qsampler)
-{
-  BstWaveEditor *wave_editor = BST_WAVE_EDITOR (data);
-  GslDataCache *dcache = wave_editor->wchunk->dcache;
-  GslDataCacheNode *dnode;
-  glong dnode_length;
-  guint channel = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (qsampler), "channel"));
-  gint i;
-
-  voffset = voffset * wave_editor->n_channels + channel;
-  n_values *= wave_editor->n_channels;
-  dnode = gsl_data_cache_ref_node (dcache, voffset, TRUE);
-  dnode_length = dcache->node_size;
-  for (i = 0; i < n_values; i += wave_editor->n_channels)
-    {
-      glong offset = voffset + i;
-
-      if (offset < 0 || offset >= dcache->dhandle->n_values)
-	*values++ = 0;
-      else
-	{
-	  if (offset < dnode->offset || offset >= dnode->offset + dnode_length)
-	    {
-	      gsl_data_cache_unref_node (dcache, dnode);
-	      dnode = gsl_data_cache_ref_node (dcache, offset, TRUE);
-	    }
-	  *values++ = dnode->data[offset - dnode->offset] * 32768.0;
-	}
-    }
-  gsl_data_cache_unref_node (dcache, dnode);
-}
-
 static void
 tree_selection (BstWaveEditor    *wave_editor,
 		GtkTreeSelection *tsel)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;
-  guint i;
+  BstQSampler *qsampler = wave_editor->qsampler;
 
   if (gtk_tree_selection_get_selected (tsel, &model, &iter))
     {
@@ -673,24 +257,25 @@ tree_selection (BstWaveEditor    *wave_editor,
       wave_editor->wchunk = bse_wave_lookup_chunk (bse_object_from_id (wave_editor->wave), osc_freq, mix_freq);
     }
 
-  for (i = 0; i < wave_editor->n_channels; i++)
-    {
-      BstQSampler *qsampler = wave_editor->qsampler[i];
-      
-      if (!wave_editor->wchunk)
-	bst_qsampler_set_source (qsampler, 0, NULL, NULL, NULL);
-      else
-	bst_qsampler_set_source (qsampler, wave_editor->wchunk->dcache->dhandle->n_values / wave_editor->n_channels,
-				 qsampler_filler, wave_editor, NULL);
-    }
+  bst_qsampler_set_source (qsampler, 0, NULL, NULL, NULL);
 }
 
 static void
-play_back_wchunk (BstWaveEditor *wave_editor)
+play_back_wchunk_on (BstWaveEditor *wave_editor)
 {
   bst_play_back_handle_stop (wave_editor->phandle);
   // bst_play_back_handle_set (wave_editor->phandle, wave_editor->wchunk, wave_editor->wchunk->osc_freq);
   bst_play_back_handle_start (wave_editor->phandle);
+  gtk_widget_hide (wave_editor->preview_on);
+  gtk_widget_show (wave_editor->preview_off);
+}
+
+static void
+play_back_wchunk_off (BstWaveEditor *wave_editor)
+{
+  bst_play_back_handle_stop (wave_editor->phandle);
+  gtk_widget_hide (wave_editor->preview_off);
+  gtk_widget_show (wave_editor->preview_on);
 }
 
 static void
@@ -701,39 +286,7 @@ tree_row_activated (BstWaveEditor     *wave_editor,
 {
   // GtkTreeSelection *tsel = gtk_tree_view_get_selection (tree_view);
 
-  play_back_wchunk (wave_editor);
-}
-
-static void
-change_draw_mode (BstWaveEditor *wave_editor,
-		  GtkOptionMenu *omenu)
-{
-  guint i;
-  guint mode = bst_choice_get_last (omenu->menu);
-
-  for (i = 0; i < wave_editor->n_channels; i++)
-    {
-      BstQSampler *qsampler = wave_editor->qsampler[i];
-
-      bst_qsampler_set_draw_mode (qsampler, mode);
-    }
-}
-
-static void
-adjustments_changed (BstWaveEditor *wave_editor,
-		     GtkAdjustment *adjustment)
-{
-  guint i;
-  
-  for (i = 0; i < wave_editor->n_channels; i++)
-    {
-      BstQSampler *qsampler = wave_editor->qsampler[i];
-      
-      if (adjustment == wave_editor->zoom_adjustment)
-	bst_qsampler_set_zoom (qsampler, adjustment->value);
-      else if (adjustment == wave_editor->vscale_adjustment)
-	bst_qsampler_set_vscale (qsampler, adjustment->value);
-    }
+  play_back_wchunk_on (wave_editor);
 }
 
 void
@@ -782,39 +335,18 @@ bst_wave_editor_rebuild (BstWaveEditor *wave_editor)
 				    "parent", wave_editor->main_vbox,
 				    "border_width", 0,
 				    NULL);
-  wave_editor->qsampler = g_renew (BstQSampler*, wave_editor->qsampler, wave_editor->n_channels);
 
-  /* setup qsampler widgets
+  /* setup qsampler
    */
   sbar = gtk_widget_new (GTK_TYPE_HSCROLLBAR,
 			 "visible", TRUE,
 			 NULL);
-  for (i = 0; i < wave_editor->n_channels; i++)
-    {
-      GtkWidget *qbox = gtk_widget_new (GTK_TYPE_VBOX,
+  wave_editor->qsampler = g_object_new (BST_TYPE_QSAMPLER,
 					"visible", TRUE,
-					"border_width", 0,
 					"parent", qsampler_parent,
+					"height_request", 80,
 					NULL);
-      BstQSampler *qsampler = g_object_new (BST_TYPE_QSAMPLER,
-					    "visible", TRUE,
-					    "events", (GDK_BUTTON_PRESS_MASK |
-						       GDK_BUTTON_RELEASE_MASK |
-						       GDK_BUTTON1_MOTION_MASK),
-					    "parent", qbox,
-					    "height_request", 80,
-					    NULL);
-      g_object_connect (qsampler,
-			"signal::button_press_event", qsampler_button_event, NULL,
-			"signal::button_release_event", qsampler_button_event, NULL,
-			"signal::motion_notify_event", qsampler_motion_event, NULL,
-			NULL);
-      bst_qsampler_set_adjustment (qsampler, gtk_range_get_adjustment (GTK_RANGE (sbar)));
-      g_object_set_data (G_OBJECT (qsampler), "channel", GUINT_TO_POINTER (i));
-      g_object_set_data (G_OBJECT (qsampler), "wave_editor", wave_editor);
-      wave_editor->qsampler[i] = qsampler;
-    }
-  gtk_box_pack_start (GTK_BOX (qsampler_parent), sbar, FALSE, TRUE, 0);
+  g_object_set_data (G_OBJECT (wave_editor->qsampler), "wave_editor", wave_editor);
 
   /* add columns to chunk list
    */
@@ -897,76 +429,29 @@ bst_wave_editor_rebuild (BstWaveEditor *wave_editor)
    */
   mask_parent = bst_gmask_container_create (BST_TOOLTIPS, 5);
   gtk_box_pack_start (GTK_BOX (wave_editor->main_vbox), mask_parent, FALSE, TRUE, 0);
-  wave_editor->zoom_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 0.1, 10, 0));
-  g_object_connect (wave_editor->zoom_adjustment,
-		    "swapped_signal_after::value_changed", adjustments_changed, wave_editor,
-		    "swapped_signal::destroy", g_nullify_pointer, &wave_editor->zoom_adjustment,
-		    NULL);
   entry = g_object_new (GTK_TYPE_SPIN_BUTTON,
 			"adjustment", wave_editor->zoom_adjustment,
 			"digits", 5,
 			"visible", TRUE,
 			NULL);
-  gmask = bst_gmask_quick (mask_parent, 0, "Zoom:", entry, NULL);
-  wave_editor->vscale_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 1, 10, 0));
-  g_object_connect (wave_editor->vscale_adjustment,
-		    "swapped_signal_after::value_changed", adjustments_changed, wave_editor,
-		    "swapped_signal::destroy", g_nullify_pointer, &wave_editor->vscale_adjustment,
-		    NULL);
-  entry = g_object_new (GTK_TYPE_SPIN_BUTTON,
-			"adjustment", wave_editor->vscale_adjustment,
-			"digits", 5,
-			"visible", TRUE,
-			NULL);
-  gmask = bst_gmask_quick (mask_parent, 1, "VScale:", entry, NULL);
-
-  /* setup qsampler selection start and end
-   */
-  wave_editor->sstart = g_object_new (GTK_TYPE_ENTRY,
-				      "visible", TRUE,
-				      NULL);
-  g_object_connect (wave_editor->sstart,
-		    "swapped_signal::destroy", g_nullify_pointer, &wave_editor->sstart,
-		    NULL);
-  gmask = bst_gmask_quick (mask_parent, 0, "Start:", wave_editor->sstart, NULL);
-  wave_editor->send = g_object_new (GTK_TYPE_ENTRY,
-				    "visible", TRUE,
-				    NULL);
-  g_object_connect (wave_editor->send,
-		    "swapped_signal::destroy", g_nullify_pointer, &wave_editor->sstart,
-		    NULL);
-  gmask = bst_gmask_quick (mask_parent, 1, "End:", wave_editor->send, NULL);
-
-  /* setup wave display type
-   */
-  any = g_object_new (GTK_TYPE_OPTION_MENU,
-		      "visible", TRUE,
-		      NULL);
-  gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
-			    bst_choice_menu_createv ("<BEAST-WaveEditor>/Popup",
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, "Shape Range", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, "Shape Average", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, "Shape Minimum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, "Shape Maximum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_CSHAPE, "Sketch Range", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MIDDLE_LINE, "Sketch Average", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_LINE, "Sketch Minimum", NONE),
-						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_LINE, "Sketch Maximum", NONE),
-						     BST_CHOICE_END));
-  g_object_connect (any,
-		    "swapped_signal::changed", change_draw_mode, wave_editor,
-		    NULL);
-  gtk_option_menu_set_history (GTK_OPTION_MENU (any), 0);
-  gmask = bst_gmask_quick (mask_parent, 2, NULL, any, NULL);
+  gmask = bst_gmask_quick (mask_parent, 0, "Stuff:", entry, NULL);
 
   /* setup preview button
    */
-  any = g_object_new (GTK_TYPE_BUTTON,
+  any = g_object_new (GTK_TYPE_HBOX,
 		      "visible", TRUE,
-		      "label", "Preview",
 		      NULL);
-  g_object_connect (any,
-		    "swapped_signal::clicked", play_back_wchunk, wave_editor,
+  wave_editor->preview_on = bst_stock_button (BST_STOCK_PREVIEW_AUDIO, "_Preview");
+  wave_editor->preview_off = bst_stock_button (BST_STOCK_PREVIEW_NOAUDIO, "_Preview");
+  gtk_container_add (GTK_CONTAINER (any), wave_editor->preview_on);
+  gtk_container_add (GTK_CONTAINER (any), wave_editor->preview_off);
+  g_object_connect (wave_editor->preview_on,
+		    "swapped_signal::clicked", play_back_wchunk_on, wave_editor,
 		    NULL);
+  g_object_connect (wave_editor->preview_off,
+		    "swapped_signal::clicked", play_back_wchunk_off, wave_editor,
+		    NULL);
+  gtk_widget_show (wave_editor->preview_on);
+  gtk_widget_hide (wave_editor->preview_off);
   gmask = bst_gmask_quick (mask_parent, 2, NULL, any, NULL);
 }

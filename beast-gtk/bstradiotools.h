@@ -44,30 +44,21 @@ typedef enum
   BST_RADIO_TOOLS_CHOICE	= (1 << 2),
   BST_RADIO_TOOLS_EVERYWHERE	= (0xffff)
 } BstRadioToolFlags;
-typedef	struct	_BstRadioTool		BstRadioTool;
+typedef	struct	_BstRadioToolEntry	BstRadioToolEntry;
 typedef	struct	_BstRadioTools		BstRadioTools;
 typedef	struct	_BstRadioToolsClass	BstRadioToolsClass;
-struct _BstRadioTool
-{
-  guint             tool_id;
-  BstRadioToolFlags flags;
-  gchar            *name;
-  gchar            *tip;
-  gchar            *blurb;
-  BswIcon          *icon;
-};
 struct _BstRadioTools
 {
-  GtkObject	    parent_object;
+  GtkObject	     parent_object;
 
-  guint             block_tool_id : 1;
+  guint              block_tool_id : 1;
 
-  guint             tool_id;
+  guint              tool_id;
 
-  guint		    n_tools;
-  BstRadioTool     *tools;
+  guint		     n_tools;
+  BstRadioToolEntry *tools;
 
-  GSList	   *widgets;
+  GSList	    *widgets;
 };
 struct _BstRadioToolsClass
 {
@@ -89,6 +80,13 @@ void            bst_radio_tools_add_tool	     (BstRadioTools *rtools,
 						      const gchar   *tool_tip,
 						      const gchar   *tool_blurb,
 						      BswIcon       *tool_icon,
+						      BstRadioToolFlags flags);
+void            bst_radio_tools_add_stock_tool	     (BstRadioTools *rtools,
+						      guint          tool_id,
+						      const gchar   *tool_name,
+						      const gchar   *tool_tip,
+						      const gchar   *tool_blurb,
+						      const gchar   *stock_icon,
 						      BstRadioToolFlags flags);
 void            bst_radio_tools_clear_tools	     (BstRadioTools *rtools);
 void            bst_radio_tools_add_category	     (BstRadioTools *rtools,

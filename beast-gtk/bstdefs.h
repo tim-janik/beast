@@ -19,7 +19,6 @@
 #define __BST_DEFS_H__
 
 #include	"bstutils.h"
-#include	"gnomeforest.h"
 #include	"glewidgets.h"
 #include	"bstzoomedwindow.h"
 #include	"bstfreeradiobutton.h"
@@ -128,8 +127,8 @@ extern BstDebugFlags bst_debug_flags;
 #else  /* !G_ENABLE_DEBUG */
 #  define BST_IF_DEBUG(type)	while (0) /* don't exec */
 #endif /* !G_ENABLE_DEBUG */
-
-
+extern gboolean bst_developer_extensions;
+#define	BST_DVL_EXT		(bst_developer_extensions != FALSE)
 
 extern void bst_update_can_operate (GtkWidget   *some_widget);
 

@@ -435,9 +435,7 @@ bst_item_view_rebuild (BstItemView *item_view)
 			"visible", TRUE,
 			"homogeneous", FALSE,
 			"spacing", 0,
-			"child", bst_forest_from_bsw_icon (bst_icon_from_stock (bop->stock_icon),
-							   BST_BUTTON_ICON_WIDTH,
-							   BST_BUTTON_ICON_HEIGHT),
+			"child", bst_image_from_stock (bop->stock_icon, BST_SIZE_BIG_BUTTON),
 			"child", label,
 			"parent", item_view->op_widgets[i],
 			NULL);

@@ -54,17 +54,16 @@ struct _BstWaveEditor
   GtkEntry      *sstart;
   GtkEntry      *send;
   
-  BstQSampler  **qsampler;
-  GtkWidget	*popup;
+  BstQSampler   *qsampler;
   GtkWidget	*proc_editor;
+
+  GtkWidget	*preview_on, *preview_off;
 
   BstPlayBackHandle *phandle;
 };
 struct _BstWaveEditorClass
 {
   GtkVBoxClass parent_class;
-
-  GSList *popup_entries; /* of type BstMenuEntry* */
 };
 
 typedef enum

@@ -38,9 +38,9 @@ static gboolean	bst_wave_view_can_operate	(BstItemView		*item_view,
 
 /* --- wave ops --- */
 static BstItemViewOp wave_view_ops[] = {
-  { "Load...",		BST_OP_WAVE_LOAD,	BST_ICON_CDROM, /* FIXME: WAVE*/	},
-  { "Delete",		BST_OP_WAVE_DELETE,	BST_ICON_TRASHCAN,	},
-  { "Editor...",	BST_OP_WAVE_EDITOR,	BST_ICON_NONE,	},	// FIXME: need icon
+  { "Load...",		BST_OP_WAVE_LOAD,	BST_STOCK_LOAD,	},
+  { "Delete",		BST_OP_WAVE_DELETE,	BST_STOCK_TRASHCAN,	},
+  { "Editor...",	BST_OP_WAVE_EDITOR,	BST_STOCK_EDIT_TOOL,	},
 };
 static guint n_wave_view_ops = sizeof (wave_view_ops) / sizeof (wave_view_ops[0]);
 
@@ -118,19 +118,13 @@ XXXpopup_wave_dialog (BstWaveView *wave_view)
   BswProxy wave = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
   GtkWidget *weditor, *wdialog;
 
-  wdialog = g_object_new (GTK_TYPE_WINDOW,
-			  "default_width", 320,
-			  "default_height", 200,
-			  NULL);
   weditor = g_object_new (BST_TYPE_WAVE_EDITOR,
 			  "visible", TRUE,
 			  "wave", wave,
-			  "parent", wdialog,
 			  NULL);
-  gtk_signal_connect_object_while_alive (GTK_OBJECT (wave_view),
-					 "destroy",
-					 G_CALLBACK (gtk_widget_destroy),
-					 GTK_OBJECT (wdialog));
+  wdialog = bst_dialog_new (NULL, GTK_OBJECT (wave_view), BST_DIALOG_DELETE_BUTTON,
+			    NULL, weditor);
+  bst_dialog_sync_title_to_proxy (BST_DIALOG (wdialog), wave, "%s");
   gtk_widget_show (wdialog);
 }
 
@@ -145,12 +139,14 @@ popup_wave_dialog (BstWaveView *wave_view)
       GtkWidget *wdialog, *editor = bst_sample_editor_new (esample);
 
       wdialog = bst_dialog_new (NULL, GTK_OBJECT (wave_view), BST_DIALOG_DELETE_BUTTON,
-				bsw_item_get_name_or_type (wave),
+				NULL,
 				editor);
+      bst_dialog_sync_title_to_proxy (BST_DIALOG (wdialog), esample, "%s");
       gtk_widget_show (editor);
       bsw_item_unuse (esample);
       gtk_widget_show (wdialog);
     }
+  // XXXpopup_wave_dialog (wave_view);
 }
 
 void

@@ -18,6 +18,9 @@
 #include	"bstdialog.h"
 
 #include	"bststatusbar.h"
+#include	<string.h>
+
+#define	DEFAULT_TITLE	"Auxillary Dialog"
 
 
 /* --- properties --- */
@@ -49,8 +52,6 @@ static void	bst_dialog_get_property		(GObject	  *object,
 						 guint		   prop_id,
 						 GValue		  *value,
 						 GParamSpec	  *pspec);
-static const gchar* fetch_stock_icon		(const gchar	  *action,
-						 GtkWidget	 **image);
 
 
 /* --- variables --- */
@@ -129,10 +130,13 @@ bst_dialog_init (BstDialog *dialog)
 {
   GtkWindow *window = GTK_WINDOW (dialog);
 
+  dialog->proxy = 0;
+  dialog->title1 = NULL;
+  dialog->title2 = NULL;
   dialog->flags = 0;
   dialog->pointer_loc = NULL;
   dialog->alive_object = NULL;
-  bst_dialog_set_title (dialog, "Auxillary Dialog");
+  bst_dialog_set_title (dialog, DEFAULT_TITLE);
 
   /* main box */
   dialog->mbox = g_object_new (GTK_TYPE_VBOX,
@@ -231,7 +235,7 @@ bst_dialog_set_property (GObject      *object,
 	  /* we synthesize a delete event instead of hiding/destroying
 	   * directly, because derived classes may override delete_event
 	   */
-	  bst_dialog_default_action (dialog, BST_STOCK_ACTION_CLOSE, gtk_toplevel_delete, NULL);
+	  bst_dialog_default_action (dialog, BST_STOCK_CLOSE, gtk_toplevel_delete, NULL);
 	}
       break;
     default:
@@ -273,6 +277,8 @@ bst_dialog_destroy (GtkObject *object)
 {
   BstDialog *dialog = BST_DIALOG (object);
 
+  bst_dialog_sync_title_to_proxy (dialog, 0, NULL);
+
   enter_stack = g_slist_remove (enter_stack, dialog);
 
   if (dialog->pointer_loc)
@@ -289,7 +295,9 @@ bst_dialog_destroy (GtkObject *object)
 static void
 bst_dialog_finalize (GObject *object)
 {
-  // BstDialog *dialog = BST_DIALOG (object);
+  BstDialog *dialog = BST_DIALOG (object);
+
+  bst_dialog_sync_title_to_proxy (dialog, 0, NULL);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -307,7 +315,7 @@ bst_dialog_new (gpointer       pointer_loc,
 			 "pointer", pointer_loc,
 			 "alive_object", alive_object,
 			 "flags", flags,
-			 "title", title,
+			 "title", title ? title : DEFAULT_TITLE,
 			 NULL);
   bst_dialog_set_title (BST_DIALOG (dialog), title);
   if (child)
@@ -410,12 +418,66 @@ bst_dialog_get_status_window (void)
   return NULL;
 }
 
+static void
+sync_title (BstDialog *dialog)
+{
+  gchar *s, *name = bsw_item_get_name (dialog->proxy);
+
+  s = g_strconcat (dialog->title1, name ? name : "<NULL>", dialog->title2, NULL);
+  g_object_set (dialog, "title", s, NULL);
+  g_free (s);
+}
+
+void
+bst_dialog_sync_title_to_proxy (BstDialog   *dialog,
+				BswProxy     proxy,
+				const gchar *title_format)
+{
+  g_return_if_fail (BST_IS_DIALOG (dialog));
+  if (proxy)
+    {
+      g_return_if_fail (BSW_IS_ITEM (proxy));
+      g_return_if_fail (title_format != NULL);
+      g_return_if_fail (strstr (title_format, "%s") != NULL);
+    }
+
+  if (dialog->proxy)
+    {
+      bsw_proxy_disconnect (dialog->proxy,
+			    "any_signal", sync_title, dialog,
+			    NULL);
+      g_free (dialog->title1);
+      g_free (dialog->title2);
+      if (!proxy)
+	g_object_set (dialog, "title", DEFAULT_TITLE, NULL);
+    }
+
+  dialog->proxy = proxy;
+  dialog->title1 = NULL;
+  dialog->title2 = NULL;
+
+  if (dialog->proxy)
+    {
+      gchar *p = strstr (title_format, "%s");
+
+      if (p)	/* asserted above */
+	{
+	  bsw_proxy_connect (dialog->proxy,
+			     "swapped_signal::notify::name", sync_title, dialog,
+			     NULL);
+	  dialog->title1 = g_strndup (title_format, p - title_format);
+	  dialog->title2 = g_strdup (p + 2);
+	  sync_title (dialog);
+	}
+    }
+}
+
 GtkWidget*
 bst_dialog_action_multi (BstDialog          *dialog,
 			 const gchar        *action,
 			 gpointer            callback,
 			 gpointer            data,
-			 BswIcon	    *icon,
+			 const gchar        *icon_stock_id,
 			 BstDialogMultiFlags multi_mode)
 {
   GtkWidget *button = NULL;
@@ -427,9 +489,10 @@ bst_dialog_action_multi (BstDialog          *dialog,
     gtk_widget_show (dialog->sep);
   if (dialog->hbox)
     {
-      GtkWidget *alignment, *hbox, *image;
+      GtkWidget *alignment, *hbox, *image = icon_stock_id ? bst_image_from_stock (icon_stock_id, BST_SIZE_BUTTON) : NULL;
 
-      action = fetch_stock_icon (action, icon ? NULL : &image);
+      if (!image)
+	image = bst_image_from_stock (action, BST_SIZE_BUTTON);
 
       /* setup button */
       button = g_object_new (GTK_TYPE_BUTTON,
@@ -448,12 +511,9 @@ bst_dialog_action_multi (BstDialog          *dialog,
       gtk_container_add (GTK_CONTAINER (alignment), hbox);
       if (image)
 	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
-      else if (icon)
-	{
-	}
       gtk_box_pack_start (GTK_BOX (hbox),
 			  g_object_new (GTK_TYPE_LABEL,
-					"label", action,
+					"label", bst_stock_action (action),
 					"use_underline", TRUE,
 					NULL),
 			  FALSE, TRUE, 0);
@@ -470,47 +530,4 @@ bst_dialog_action_multi (BstDialog          *dialog,
 	}
     }
   return button;
-}
-
-
-/* --- recognized stock actions --- */
-const gchar *BST_STOCK_ACTION_OK = GTK_STOCK_OK;
-const gchar *BST_STOCK_ACTION_CLOSE = GTK_STOCK_CLOSE;
-const gchar *BST_STOCK_ACTION_CANCEL = GTK_STOCK_CANCEL;
-const gchar *BST_STOCK_ACTION_DELETE = GTK_STOCK_DELETE;
-const gchar *BST_STOCK_ACTION_EXECUTE = GTK_STOCK_EXECUTE;
-const gchar *BST_STOCK_ACTION_UNDO = GTK_STOCK_UNDO;
-const gchar *BST_STOCK_ACTION_REDO = GTK_STOCK_REDO;
-const gchar *BST_STOCK_ACTION_APPLY = GTK_STOCK_APPLY;
-const gchar *BST_STOCK_ACTION_CLONE = "beast-clone";
-const gchar *BST_STOCK_ACTION_REVERT = "beast-revert";
-const gchar *BST_STOCK_ACTION_DEFAULT_REVERT = "beast-default-revert";
-const gchar *BST_STOCK_ACTION_OVERWRITE = "beast-overwrite";
-
-#define	OVERRIDE(_action, _stock, _label) { if (action == (_action)) { stock_image = (_stock); label = (_label); } }
-
-static const gchar*
-fetch_stock_icon (const gchar *action,
-		  GtkWidget  **image_p)
-{
-  const gchar *label = NULL, *stock_image = action;
-  GtkWidget *image = NULL;
-  GtkStockItem item;
-
-  OVERRIDE (BST_STOCK_ACTION_CLONE,		GTK_STOCK_COPY,			"_Clone");
-  OVERRIDE (BST_STOCK_ACTION_REVERT,		GTK_STOCK_UNDO,			"_Revert");
-  OVERRIDE (BST_STOCK_ACTION_DEFAULT_REVERT,	GTK_STOCK_UNDO,			"_Defaults");
-  OVERRIDE (BST_STOCK_ACTION_OVERWRITE,		GTK_STOCK_SAVE,			"_Overwrite");
-
-  if (image_p && gtk_stock_lookup (stock_image, &item))
-    image = gtk_image_new_from_stock (stock_image, GTK_ICON_SIZE_BUTTON);
-  if (!label && gtk_stock_lookup (action, &item))
-    label = item.label;
-  else if (!label)
-    label = action;
-    
-  if (image_p)
-    *image_p = image;
-
-  return label;
 }

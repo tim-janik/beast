@@ -38,6 +38,7 @@ beast_LDADD = $(progs_LDADD)
 # BEAST header files that don't get installed
 beast_headers = $(strip \
 	bstapp.h \
+	bstasciipixbuf.h \
 	bstcanvaslink.h \
 	bstcanvassource.h \
 	bstcontrollers.h \
@@ -60,6 +61,7 @@ beast_headers = $(strip \
 	bstpatterndialog.h \
 	bstpatterneditor.h \
 	bstpatternview.h \
+	bstpianoroll.h \
 	bstplayback.h \
 	bstplaylist.h \
 	bstpreferences.h \
@@ -86,11 +88,11 @@ beast_headers = $(strip \
 	bstxkb.h \
 	bstzoomedwindow.h \
 	glewidgets.h \
-	gnomeforest.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
 	bstapp.c \
+	bstasciipixbuf.c \
 	bstcanvaslink.c \
 	bstcanvassource.c \
 	bstcontrollers.c \
@@ -112,6 +114,7 @@ beast_sources = $(strip \
 	bstpatterndialog.c \
 	bstpatterneditor.c \
 	bstpatternview.c \
+	bstpianoroll.c \
 	bstplayback.c \
 	bstplaylist.c \
 	bstpreferences.c \
@@ -139,7 +142,6 @@ beast_sources = $(strip \
 	bstzoomedwindow.c \
 	$(PROFILE_SOURCE) \
 	glewidgets.c \
-	gnomeforest.c \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
@@ -221,7 +223,7 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 #
 beast_SOURCES = $(beast_sources)
 noinst_PROGRAMS = bststest
-bststest_SOURCES = bststest.c bstutils.c gnomeforest.c bstqsampler.c
+bststest_SOURCES = bststest.c bstutils.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)
 
 EXTRA_DIST += $(beast_headers) $(beast_extra_sources)

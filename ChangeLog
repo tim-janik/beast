@@ -1,3 +1,73 @@
+Wed Mar 13 18:19:44 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.[hc]: added BST_STOCK_* defines for stock icons and
+	actions. added new icons. added convenience functions to create GtkImages
+	from BswIcon and stock icons. added BST_SIZE_* icon sizes and enforced
+	their use in the API. cleaned up unused utility functions. got rid of
+	GnomeForest based functions. added gdk_pixbuf_create_bitmap_data(), this
+	should really be in Gdk.
+
+	* beast-gtk/bstwaveeditor.[hc]: cleaned up cruft.
+
+	* beast-gtk/bstwaveview.c: use new icons, fix sample editor title handling.
+
+	* beast-gtk/icons/: added new icons. autogenerate C sources with
+	gdk-pixbuf-csource. removed old/uneeded files.
+
+	* beast-gtk/bstknob.c: retrive pixbuf via stock.
+
+	* beast-gtk/bstmenus.[hc]: rewrote item factory handling for saner API.
+
+	* beast-gtk/bstpatterndialog.[hc]: cleaned up cruft, use new menu API.
+
+	* beast-gtk/bstqsampler.c: slight fix to pcm position indicator.
+
+	* beast-gtk/bstsampleeditor.[hc]: cleaned up cruft.
+
+	* beast-gtk/bstradiotools.[hc]: support stock icons now.
+
+	* beast-gtk/bstsnetrouter.c:
+	* beast-gtk/bstprocedure.c:
+	* beast-gtk/bstpreferences.c:
+	* beast-gtk/bstplaylist.c:
+	* beast-gtk/bstpatternview.c:
+	* beast-gtk/bstmenus.[hc]:
+	* beast-gtk/bstitemview.[hc]:
+	* beast-gtk/bstfiledialog.c: fixup forest/icon/image handling and stock
+	actions.
+
+	* beast-gtk/bstdialog.[hc]: provide ability to sync the title with
+	a BswProxy object. fixup stock actions and icon handling.
+
+	* beast-gtk/bstpatterneditor.c: quick hack to sync BstDialog title of
+	parent window.
+
+	* beast-gtk/bstcanvassource.c: fix icon handling.
+
+	* beast-gtk/bstapp.c: fix menus, title setting and revert preferences
+	when reshown.
+
+	* beast-gtk/: remove gnomeforest.[hc]
+
+Tue Mar 12 10:35:30 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in: nuke recently added BST_HAVE_BIRNET macro. we use
+	a command line argument now. added libmad checks to support MPEG
+	decoding.
+
+	* beast-gtk/bstdefs.h (BST_DVL_EXT): 
+	* beast-gtk/bstmain.c (bst_parse_args): support comand line arg
+	--beast-developer-extensions to enable extra dialogs features which
+	are only usefull for developers (and may decrease stability for
+	incorrect usage).
+
+	* beast-gtk/bstplayback.c (bst_play_back_handle_new): show an
+	application dialog for the playback project only if BST_DVL_EXT is
+	TRUE.
+
+	* beast-gtk/bstwavereposhell.c (bst_wave_repo_shell_rebuild): put the
+	wave list on the first notebook page.
+
 Sun Mar 10 10:19:04 2002  Tim Janik  <timj@gtk.org>
 
 	* LOTS of GUI fixes.

@@ -471,7 +471,7 @@ main (int   argc,
   g_thread_init (NULL);
   g_type_init ();
   bse_init (&argc, &argv, NULL);
-  gsl_init (gslconfig);
+  gsl_init (gslconfig, NULL);
   gtk_init (&argc, &argv);
   bst_init_gentypes ();
   

@@ -22,6 +22,9 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "bstutils.h"	/* for the knob pixbuf */
+
+
 #define SCROLL_DELAY_LENGTH	300
 #define SQR(x)  ((x) * (x))
 
@@ -119,7 +122,6 @@ bst_knob_class_init (BstKnobClass *class)
 static void
 bst_knob_init (BstKnob *knob)
 {
-#include "icons/knob.c"
   gfloat w, h, radius;
 
   knob->update_policy = GTK_UPDATE_CONTINUOUS;
@@ -133,7 +135,7 @@ bst_knob_init (BstKnob *knob)
   knob->old_upper = 0.0;
   knob->old_page_size = 0.0;
   knob->adjustment = NULL;
-  knob->pixbuf = gdk_pixbuf_new_from_inline (-1, knob_pixbuf, FALSE, NULL);
+  knob->pixbuf = g_object_ref (bst_pixbuf_knob ());
   g_assert (knob->pixbuf);
 
   gtk_image_set_from_pixbuf (GTK_IMAGE (knob), knob->pixbuf);

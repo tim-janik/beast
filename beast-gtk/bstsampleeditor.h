@@ -60,8 +60,6 @@ struct _BstSampleEditor
 struct _BstSampleEditorClass
 {
   GtkVBoxClass parent_class;
-
-  GSList *popup_entries; /* of type BstMenuEntry* */
 };
 
 
