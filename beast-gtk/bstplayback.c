@@ -74,7 +74,7 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 
   error = bsw_server_run_project (BSW_SERVER, handle->project);
   if (error)
-    bst_status_printf (0, bse_error_blurb (error), "Playback");
+    bst_status_eprintf (error, "Playback");
 }
 
 void

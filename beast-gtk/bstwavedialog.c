@@ -115,7 +115,7 @@ bst_wave_dialog_open (BstWaveDialog *wd)
 
   error = bsw_wave_repo_load_file (wrepo, wave_name);
 
-  bst_status_printf (error ? 0 : 100, bse_error_blurb (error), "Loading wave `%s'", wave_name);
+  bst_status_eprintf (error, "Loading wave `%s'", wave_name);
 
   g_free (wave_name);
 }

@@ -284,7 +284,7 @@ bst_drag_pattern_new (BsePattern      *pattern,
   drag_pattern->seq_id = g_object_connect (gtk_widget_new (GTK_TYPE_LABEL,
 							   "visible", TRUE,
 							   NULL),
-					   "swapped_signal::destroy", bse_nullify_pointer, &drag_pattern->seq_id,
+					   "swapped_signal::destroy", g_nullify_pointer, &drag_pattern->seq_id,
 					   NULL);
   gtk_box_pack_start (GTK_BOX (hbox), drag_pattern->seq_id, FALSE, TRUE, 5);
 
@@ -300,7 +300,7 @@ bst_drag_pattern_new (BsePattern      *pattern,
       drag_pattern->name = g_object_connect (gtk_widget_new (GTK_TYPE_LABEL,
 							     "visible", TRUE,
 							     NULL),
-					     "swapped_signal::destroy", bse_nullify_pointer, &drag_pattern->name,
+					     "swapped_signal::destroy", g_nullify_pointer, &drag_pattern->name,
 					     NULL);
       gtk_box_pack_start (GTK_BOX (hbox), drag_pattern->name, FALSE, TRUE, 5);
     }

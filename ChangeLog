@@ -1,3 +1,16 @@
+Wed Apr 24 06:16:56 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (csource_info_update): 
+	* beast-gtk/bstcanvaslink.c (clink_view_update): improve info text.
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_source_event): implement status
+	idle-hint for i/o channels.
+
+	* beast-gtk/bststatusbar.[hc]: status bar rewrite. removed old code,
+	introduced BST_STATUS_PROGRESS and BST_STATUS_IDLE_HINT.
+	
+	* test/*: updates to changes in BSE.
+
 Tue Apr 16 13:00:43 2002  Tim Janik  <timj@gtk.org>
 
 	* test/simple-echo.bse: simple echo example.

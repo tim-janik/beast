@@ -185,7 +185,7 @@ bst_app_init (BstApp *app)
 						     "visible", TRUE,
 						     "parent", BST_DIALOG (app)->vbox,
 						     NULL),
-				     "swapped_signal::destroy", bse_nullify_pointer, &app->main_vbox,
+				     "swapped_signal::destroy", g_nullify_pointer, &app->main_vbox,
 				     NULL);
 
 
@@ -216,7 +216,7 @@ bst_app_init (BstApp *app)
 				"can_focus", TRUE,
 				NULL);
   g_object_connect (app->notebook,
-		    "swapped_signal::destroy", bse_nullify_pointer, &app->notebook,
+		    "swapped_signal::destroy", g_nullify_pointer, &app->notebook,
 		    "swapped_signal_after::switch-page", bst_update_can_operate, app,
 		    "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
 		    NULL);
@@ -580,7 +580,7 @@ bst_app_operate (BstApp *app,
     case BST_OP_PROJECT_PLAY:
       {
 	gchar *starting;
-	BseErrorType error;
+	BswErrorType error;
 
 	if (bsw_project_is_playing (app->project))
 	  starting = "Restarting Playback";
@@ -588,7 +588,7 @@ bst_app_operate (BstApp *app,
 	  starting = "Starting Playback";
 
 	error = bsw_server_run_project (BSW_SERVER, app->project);
-	bst_status_printf (0, error ? bse_error_blurb (error) : NULL, starting);
+	bst_status_eprintf (error, starting);
       }
       break;
     case BST_OP_PROJECT_STOP:

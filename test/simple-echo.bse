@@ -2,23 +2,23 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-04-16 11:47:50")
+  (modification-time "2002-04-24 05:37:47")
   (creation-time "2002-04-13 21:18:35"))
 (BseMidiSynth::MIDI_Input
   (snet (BseSNet::Instrument))
   (n-voices 4)
-  (modification-time "2002-04-16 11:47:50")
+  (modification-time "2002-04-24 05:37:47")
   (creation-time "2002-04-13 21:18:43")
   (name "MIDI Input"))
 (BseSNet::Instrument
-  (modification-time "2002-04-16 11:47:50")
+  (modification-time "2002-04-24 05:37:47")
   (creation-time "2002-04-13 21:18:47")
   (name "Instrument")
   (BseStandardOsc::VCO
     (wave-form BSE_STANDARD_OSC_MOOG_SAW)
     (name "VCO")
     (source-input "freq_in" BseSNet:1.BseSubKeyboard:1 "frequency")
-    (source-input "freq_mod_in" BseSNet:1.BseSubKeyboard:1 "gate")
+    (source-input "sync_in" BseSNet:1.BseSubKeyboard:1 "gate")
     (parasite f "BstRouterCoords" 2 143.000000 149.000000))
   (BseSubKeyboard::Keyboard
     (name "Keyboard")
@@ -28,12 +28,12 @@
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
     (name "LFO")
     (source-input "freq_in" BseSNet:1.BseMult:3 "mono_out")
-    (source-input "freq_mod_in" BseSNet:1.BseSubKeyboard:1 "gate")
+    (source-input "sync_in" BseSNet:1.BseSubKeyboard:1 "gate")
     (parasite f "BstRouterCoords" 2 83.000000 34.000000))
   (BseMult::EchoVCA
     (name "EchoVCA")
-    (source-input "mono_in1" BseSNet:1.BseStandardOsc:1 "osc_out")
-    (source-input "mono_in2" BseSNet:1.BseStandardOsc:2 "osc_out")
+    (source-input "mono_in1" BseSNet:1.BseStandardOsc:1 "audio_out")
+    (source-input "mono_in2" BseSNet:1.BseStandardOsc:2 "audio_out")
     (parasite f "BstRouterCoords" 2 -15.000000 143.000000))
   (BseMult::ADSR-VCA
     (name "ADSR-VCA")

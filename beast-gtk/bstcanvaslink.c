@@ -168,7 +168,7 @@ clink_view_update (BstCanvasLink *clink,
 
   if (frame)
     {
-      GtkWidget *label = GTK_BIN (frame)->child;
+      GtkWidget *text = GTK_BIN (frame)->child;
       gchar *ic_name, *oc_name, *ic_blurb, *oc_blurb;
       gchar *string, *iname, *oname;
 
@@ -186,19 +186,36 @@ clink_view_update (BstCanvasLink *clink,
       oc_blurb = clink->ocsource ? bsw_source_ochannel_blurb (clink->ocsource->source, clink->ochannel) : NULL;
       ic_name = clink->icsource ? bsw_source_ichannel_name (clink->icsource->source, clink->ichannel) : NULL;
       ic_blurb = clink->icsource ? bsw_source_ichannel_blurb (clink->icsource->source, clink->ichannel) : NULL;
-      string = g_strdup_printf ("Source:\n"
-				"        %s:%d %s\n"
-				"        (%s)\n"
-				"\n"
-				"Destination:\n"
-				"        %s:%d %s\n"
-				"        (%s)\n",
-				oname, clink->ochannel, oc_name ? oc_name : "?",
-				oc_blurb ? oc_blurb : "?",
-				iname, clink->ichannel, ic_name ? ic_name : "?",
-				ic_blurb ? ic_blurb : "?");
-      gtk_label_set_text (GTK_LABEL (label), string);
-      g_free (string);
+      if (!oc_name)
+	oc_name = "?";
+      if (!ic_name)
+	ic_name = "?";
+
+      /* compose new info */
+      bst_wrap_text_clear (text);
+      bst_wrap_text_aprintf (text, "Source Module:\n");
+      bst_wrap_text_push_indent (text, "  ");
+      if (oc_blurb)
+	{
+	  bst_wrap_text_aprintf (text, "%s: %s:\n", oname, oc_name);
+	  bst_wrap_text_push_indent (text, "  ");
+	  bst_wrap_text_aprintf (text, "%s\n", oc_blurb);
+	  bst_wrap_text_pop_indent (text);
+	}
+      else
+	bst_wrap_text_aprintf (text, "%s: %s\n", oname, oc_name);
+      bst_wrap_text_pop_indent (text);
+      bst_wrap_text_aprintf (text, "\nDestination Module:\n");
+      bst_wrap_text_push_indent (text, "  ");
+      if (ic_blurb)
+	{
+	  bst_wrap_text_aprintf (text, "%s: %s:\n", iname, ic_name);
+	  bst_wrap_text_push_indent (text, "  ");
+	  bst_wrap_text_aprintf (text, "%s\n", ic_blurb);
+	  bst_wrap_text_pop_indent (text);
+	}
+      else
+	bst_wrap_text_aprintf (text, "%s: %s\n", iname, ic_name);
     }
 }
 
@@ -216,11 +233,7 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
 						       "visible", TRUE,
 						       "border_width", 5,
 						       "label", "Module link",
-						       "child", gtk_widget_new (GTK_TYPE_LABEL,
-										"visible", TRUE,
-										"justify", GTK_JUSTIFY_LEFT,
-										"xpad", 5,
-										NULL),
+						       "child", bst_wrap_text_create (FALSE, NULL),
 						       NULL));
   clink_view_update (clink, TRUE);
   gtk_widget_showraise (clink->link_view);

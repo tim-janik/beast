@@ -23,6 +23,7 @@
 #include "bstmenus.h"
 #include "bstgconfig.h"
 #include "bstdialog.h"
+#include <gdk/gdkkeysyms.h>
 
 
 #define EPSILON 1e-6
@@ -175,7 +176,7 @@ bst_snet_router_init (BstSNetRouter      *router,
   router->adjustment = (GtkAdjustment*) gtk_adjustment_new (1.0, 0.20, 5.00, 0.05, 0.50, 0.50);
   g_object_connect (GTK_OBJECT (router->adjustment),
 		    "swapped_signal::value_changed", bst_snet_router_adjust_zoom, router,
-		    "swapped_signal::destroy", bse_nullify_pointer, &router->adjustment,
+		    "swapped_signal::destroy", g_nullify_pointer, &router->adjustment,
 		    NULL);
 
   bst_snet_router_build_tools (router);
@@ -580,7 +581,7 @@ bst_snet_router_build_tools (BstSNetRouter *router)
 						      // "relief", GTK_RELIEF_NONE,
 						      // "space_style", GTK_TOOLBAR_SPACE_LINE,
 						      NULL),
-				      "swapped_signal::destroy", bse_nullify_pointer, &router->toolbar,
+				      "swapped_signal::destroy", g_nullify_pointer, &router->toolbar,
 				      NULL);
   
   /* add radios to toolbar
@@ -779,7 +780,7 @@ update_tmp_line (BstSNetRouter *router)
       if (router->rtools->tool_id != 1)
 	{
 	  gtk_object_destroy (GTK_OBJECT (router->tmp_line));
-	  bst_status_set (0, NULL, NULL);
+	  bst_status_clear ();
 	  /* queue update cause canvas-line is broken and leaves artefacts */
 	  gnome_canvas_FIXME_hard_update (GNOME_CANVAS (router));
 	}
@@ -890,7 +891,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 									  "fill_color", "black",
 									  "points", gpoints,
 									  NULL),
-						   "swapped_signal::destroy", bse_nullify_pointer, &router->tmp_line,
+						   "swapped_signal::destroy", g_nullify_pointer, &router->tmp_line,
 						   NULL);
 	      gnome_canvas_points_free (gpoints);
 	      router->world_x = event->button.x;
@@ -922,7 +923,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	    }
 	  else
 	    {
-	      BseErrorType error;
+	      BswErrorType error;
 	      
 	      if (!csource || (router->drag_is_input ? ochannel : ichannel) == ~0)
 		error = router->drag_is_input ? BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL : BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
@@ -935,7 +936,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      router->drag_csource = NULL;
 	      router->drag_channel = ~0;
 	      bst_snet_router_reset_tool (router);
-	      bst_status_set (error ? BST_STATUS_ERROR : BST_STATUS_DONE, "Create Link", bsw_error_blurb (error));
+	      bst_status_eprintf (error, "Create Link");
 	    }
 	  handled = TRUE;
 	}
@@ -963,13 +964,14 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 						BST_CHOICE_S (1, "Delete", DELETE, csource->source != router->snet),
 						BST_CHOICE_END);
 	      g_free (source_name);
+	      i = bst_choice_modal (choice, event->button.button, event->button.time);
 	      bst_status_bar_catch_procedure ();
-	      switch (bst_choice_modal (choice, event->button.button, event->button.time))
+	      switch (i)
 		{
 		  BswErrorType error;
 		case 1:
 		  error = bsw_snet_remove_source (router->snet, csource->source);
-		  bst_status_set (error ? BST_STATUS_ERROR : BST_STATUS_DONE, "Remove Module", bsw_error_blurb (error));
+		  bst_status_eprintf (error, "Remove Module");
 		  break;
 		case 2:
 		  bst_canvas_source_popup_view (csource);
@@ -993,22 +995,24 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	  else if (clink && !csource)
 	    {
 	      GtkWidget *choice;
-	      
+	      guint i;
+
 	      choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/LinkPopup",
 						BST_CHOICE_TITLE ("Module link"),
 						BST_CHOICE_SEPERATOR,
-						BST_CHOICE (2, "Properties", PROPERTIES),
+                                                BST_CHOICE (2, "Show Info", INFO),
 						BST_CHOICE_SEPERATOR,
 						BST_CHOICE (1, "Delete", DELETE),
 						BST_CHOICE_END);
+	      i = bst_choice_modal (choice, event->button.button, event->button.time);
               bst_status_bar_catch_procedure ();
-	      switch (bst_choice_modal (choice, event->button.button, event->button.time))
+	      switch (i)
 		{
 		  BseErrorType error;
 		case 1:
 		  error = bsw_source_unset_input (clink->icsource->source, clink->ichannel,
 						  clink->ocsource->source, clink->ochannel);
-		  bst_status_set (error ? BST_STATUS_ERROR : BST_STATUS_DONE, "Delete Link", bsw_error_blurb (error));
+		  bst_status_eprintf (error, "Delete Link");
 		  break;
 		case 2:
 		  bst_canvas_link_popup_view (clink);
@@ -1049,7 +1053,7 @@ bst_snet_router_event (GtkWidget *widget,
 	  error = bsw_snet_can_create_source (router->snet, type);
 	  if (!error)
 	    bsw_snet_create_source (router->snet, type);
-	  bst_status_set (error ? BST_STATUS_ERROR : BST_STATUS_DONE, "Insert Module", bsw_error_blurb (error));
+	  bst_status_eprintf (error, "Insert Module");
 
 	  router->world_x = 0;
 	  router->world_y = 0;
@@ -1068,6 +1072,13 @@ bst_snet_router_event (GtkWidget *widget,
 				    event->motion.x, event->motion.y,
 				    &router->world_x, &router->world_y);
       update_tmp_line (router);
+      break;
+    case GDK_KEY_PRESS:
+      if (event->key.keyval == GDK_Escape)
+	{
+	  handled = TRUE;
+	  bst_radio_tools_set_tool (router->rtools, 0);
+	}
       break;
     default:
       break;

@@ -198,7 +198,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
    */
   if (proc->blurb)
     {
-      GtkWidget *hbox, *text = bst_wrap_text_create (proc->blurb, TRUE, NULL);
+      GtkWidget *hbox, *text = bst_wrap_text_create (TRUE, proc->blurb);
       
       hbox = gtk_widget_new (GTK_TYPE_HBOX,
                              "visible", TRUE,

@@ -140,15 +140,15 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
 							    bse_marshal_VOID__UINT, NULL,
 							    G_TYPE_NONE, 1, G_TYPE_UINT);
 
-  ichannel = bse_source_class_add_ichannel (source_class, "freq_in", "Frequency Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "Freq In", "Frequency Input");
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
-  ichannel = bse_source_class_add_ichannel (source_class, "sync_in", "Syncronization Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "Sync In", "Syncronization Input");
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_SYNC);
-  ichannel = bse_source_class_add_ichannel (source_class, "mod_in", "Modulation Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "Mod In", "Modulation Input");
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_MOD);
-  ochannel = bse_source_class_add_ochannel (source_class, "wave_out", "Wave Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", "Wave Output");
   g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_WAVE);
-  ochannel = bse_source_class_add_ochannel (source_class, "gate_out", "Gate Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "Gate Out", "Gate Output");
   g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_GATE);
 }
 

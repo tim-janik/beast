@@ -1,4 +1,5 @@
 URGENT:
+- complete bst_wrap_text implementation
 - sampleview needs to be completed (view chunks)
 - piano roll: disable selection tools until they are implemented
 - put a WARNING somewhere about file format changes in future versions
@@ -6,55 +7,20 @@ URGENT:
 - bsw_item_check_value(item,name,value) to filter non-valid objects property settings
 - terminology: s/pulse/square/, s/growing/rising/, s/shrinking/falling/ (saw)
 - remove GenOsc plugin
-- Module LInk: show INFO not "porperties". the dialog: s/source/module/
 - Module Menu: add EDIT
 - help: QuickStart-Samples, QuickStart-Synthesis, QuickStart-Songs
-- mouse over module or i/o-channels: set tooltips as status if status is idle
 
 GENERAL:
-- pulse: width% for positive pulse width in relation to whole period + boundary safety wrappers
-- BLIT, band-limited impulse train
-
+* BLIT, band-limited impulse train
 * load wave dialog
-* pattern copy
 * clippboard
 * fix file selection (open load) dialog
-* octave/note shift for pattern selection
 * fade in/out of samples (sample editor & sequencer)
-* highlight arranger patterns when played
-* need play-single-pattern mode
-* change default envelop to 0 attack
-* device monitor delay should be persistent in .beastrc
-* pattern-channel instrument selection should be persistent per pattern
-* arranger paned to 50%
-* arranger need sswitch to show pattern names instead of numbers
-* arranger menus need to provide "change name" as well (especially f. groups)
-* project playback can fail! should reset play mode afterwards
+- change default envelop to 0 attack
+- device monitor delay should be persistent in .beastrc
+- project playback can fail! should reset play mode afterwards
 * add switch to set keytables directly, no-serverquery, which works without rc file
-
-bugs:
--	select/none + select/invert unselects focus
-
-icons:
--	need duplicate (clone) and duplicate-link menu icons
-
-important docs:
--	sane default sizes for windows
--	write up basic blurb 1) new song 2) instrument+sample 3) pattern etc..
--	how to get instruments going in a pattern
-
-general:
--	use auxillary window for bsepatterdialog?
--	get File/Save to work
--	quit/close needs to feature mod-time vs. creation-time handling
-
-wave editor:
--	provide transpose spinenr for wave preview
-
-sample repo:
--	this needs to be essentially removed from bst* files
-
-Pattern Editor
--	the popup menu should be attached/detached instead of the ifactory ref/sink pair?
--	user configurable toggle to start from 000 or 001 for row numbering
--	per channel mute. per channel in-use flag (bg-color?) (active when any note or instr or eff)
+- pattern: select/none + select/invert unselects focus
+* get File/Save to work
+* quit/close needs to feature mod-time vs. creation-time handling
+* wave editor: provide transpose spinenr for wave preview

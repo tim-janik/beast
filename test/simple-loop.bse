@@ -2,29 +2,31 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-04-09 01:54:09")
+  (modification-time "2002-04-24 05:46:37")
   (creation-time "2002-02-06 14:05:19"))
 (BseSNet::Simple-Loop
   (auto-activate 't)
-  (modification-time "2002-04-09 01:54:09")
+  (modification-time "2002-04-24 05:46:37")
   (creation-time "2002-02-06 14:05:24")
   (name "Simple-Loop")
-  (BseStandardOsc::StandardOsc
-    (wave-form BSE_STANDARD_OSC_GSAW)
-    (name "StandardOsc")
+  (BseStandardOsc::PulseOsc
+    (pulse-mod-perc 98.400002)
+    (wave-form BSE_STANDARD_OSC_PULSE)
+    (name "PulseOsc")
     (source-input "freq_in" BseSNet:1.BseSequencer:1 "freq_out")
+    (source-input "pwm_in" BseSNet:1.BseStandardOsc:2 "audio_out")
     (parasite f "BstRouterCoords" 2 211.000000 168.000000))
-  (BsePcmOutput::BsePcmOutput-1
-    (name "BsePcmOutput-1")
+  (BsePcmOutput::PcmOutput
+    (name "PcmOutput")
     (source-input "left_in" BseSNet:1.BseFreeVerb:1 "left_out")
     (source-input "right_in" BseSNet:1.BseFreeVerb:1 "right_out")
-    (parasite f "BstRouterCoords" 2 -253.000000 0.000000))
+    (parasite f "BstRouterCoords" 2 -199.000000 26.000000))
   (BseIIRFilter::Tune-Filter
     (cut-off-freq-2 18716.583984)
     (cut-off-freq 1069.513428)
     (name "Tune-Filter")
     (source-input "mono_in" BseSNet:1.BseMult:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 32.000000 81.000000))
+    (parasite f "BstRouterCoords" 2 53.000000 79.000000))
   (BseSequencer::Sequencer
     (counter 123.544830)
     (transpose -30)
@@ -45,17 +47,17 @@
     (parasite f "BstRouterCoords" 2 196.000000 82.000000))
   (BseMult::Tune-VCF
     (name "Tune-VCF")
-    (source-input "mono_in1" BseSNet:1.BseStandardOsc:1 "osc_out")
+    (source-input "mono_in1" BseSNet:1.BseStandardOsc:1 "audio_out")
     (source-input "mono_in2" BseSNet:1.BseSimpleADSR:1 "adsr_out")
     (parasite f "BstRouterCoords" 2 90.000000 174.000000))
   (BseNoise::HH-Noise
     (name "HH-Noise")
     (parasite f "BstRouterCoords" 2 333.500000 -92.500000))
   (BseSimpleADSR::HH-Trigger-ADSR
-    (release-time 31.868130)
-    (sustain-level 19.780220)
-    (decay-time 5.596700)
-    (attack-time 1.498900)
+    (release-time 3.868130)
+    (sustain-level 8.780220)
+    (decay-time 1.296700)
+    (attack-time 0.100000)
     (name "HH-Trigger-ADSR")
     (source-input "retrigger_in" BseSNet:1.BseSequencer:1 "note_sync")
     (parasite f "BstRouterCoords" 2 112.500000 -6.500000))
@@ -69,9 +71,9 @@
     (parasite f "BstRouterCoords" 2 226.500000 -94.500000))
   (BseMult::HH-VCF
     (name "HH-VCF")
-    (source-input "mono_in1" BseSNet:1.BseIIRFilter:2 "mono_out")
+    (source-input "mono_in1" BseSNet:1.BseCompressor:1 "mono_output1")
     (source-input "mono_in2" BseSNet:1.BseSimpleADSR:2 "adsr_out")
-    (parasite f "BstRouterCoords" 2 56.500000 -116.500000))
+    (parasite f "BstRouterCoords" 2 -14.500000 -92.500000))
   (BseFreeVerb::BseFreeVerb-1
     (width 46.153851)
     (dry-level 0.825170)
@@ -81,4 +83,14 @@
     (name "BseFreeVerb-1")
     (source-input "left_in" BseSNet:1.BseIIRFilter:1 "mono_out")
     (source-input "right_in" BseSNet:1.BseMult:2 "mono_out")
-    (parasite f "BstRouterCoords" 2 -110.500000 -6.500000)))
+    (parasite f "BstRouterCoords" 2 -69.500000 57.500000))
+  (BseStandardOsc::PulseModulator
+    (base-freq 0.100000)
+    (wave-form BSE_STANDARD_OSC_SINE)
+    (name "PulseModulator")
+    (parasite f "BstRouterCoords" 2 338.500000 199.500000))
+  (BseCompressor::Distortion
+    (pi-exp 3.250000)
+    (name "Distortion")
+    (source-input "mono_input1" BseSNet:1.BseIIRFilter:2 "mono_out")
+    (parasite f "BstRouterCoords" 2 90.500000 -120.500000)))

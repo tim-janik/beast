@@ -212,13 +212,19 @@ void	        bst_widget_modify_bg_as_base	(GtkWidget	*widget);
 GtkWidget*	bst_text_view_from		(GString        *gstring,
 						 const gchar    *file_name,
 						 const gchar    *font_name);
-GtkWidget*	bst_wrap_text_create		(const gchar    *string,
-						 gboolean        double_newlines,
-						 gpointer        user_data);
+GtkWidget*	bst_wrap_text_create		(gboolean        duplicate_newlines,
+						 const gchar    *string);
 void		bst_wrap_text_set		(GtkWidget      *text,
-						 const gchar    *string,
-						 gboolean        double_newlines,
-						 gpointer        user_data);
+						 const gchar    *string);
+void		bst_wrap_text_clear		(GtkWidget      *text);
+void		bst_wrap_text_push_indent	(GtkWidget	*text,
+						 const gchar	*spaces);
+void		bst_wrap_text_append		(GtkWidget      *text,
+						 const gchar    *string);
+void		bst_wrap_text_aprintf		(GtkWidget      *text,
+						 const gchar    *text_fmt,
+						 ...) G_GNUC_PRINTF (2, 3);
+void		bst_wrap_text_pop_indent	(GtkWidget	*text);
 guint      bst_container_get_insertion_position (GtkContainer   *container,
 						 gboolean        scan_horizontally,
 						 gint            xy,

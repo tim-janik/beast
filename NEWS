@@ -17,6 +17,10 @@ Overview of Changes in BEAST/BSE 0.4.1:
   Sequencer	  - a mini sequencer for harmonic tone switches
 * Many (not yet all) synthesis modules got ported to the
   new engine and got improved in quality and speed
+* New 19"-rack alike GUI front-end for customized GUI presentation
+  of .bse projects
+* Joint (multi-connect) channel support, allowing multiple input
+  connections er channel on some modules
 * New file caching layer
 * Major GUI cleanup
 * External Wave file support for WAVE, MPEG and Ogg/Vorbis

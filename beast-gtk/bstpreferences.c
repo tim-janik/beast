@@ -79,11 +79,11 @@ bst_preferences_init (BstPreferences *prefs)
   prefs->bse_param_view = g_object_connect (gtk_widget_new (BST_TYPE_PARAM_VIEW,
 							    "visible", TRUE,
 							    NULL),
-					    "swapped_signal::destroy", bse_nullify_pointer, &prefs->bse_param_view,
+					    "swapped_signal::destroy", g_nullify_pointer, &prefs->bse_param_view,
 					    NULL);
   bst_param_view_set_mask (BST_PARAM_VIEW (prefs->bse_param_view), BSE_TYPE_GCONFIG, BSE_TYPE_GCONFIG, NULL, NULL);
   prefs->bst_param_view = g_object_connect (gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL),
-					    "swapped_signal::destroy", bse_nullify_pointer, &prefs->bst_param_view,
+					    "swapped_signal::destroy", g_nullify_pointer, &prefs->bst_param_view,
 					    NULL);
   bst_param_view_set_mask (BST_PARAM_VIEW (prefs->bst_param_view), BST_TYPE_GCONFIG, 0, NULL, NULL);
 
@@ -95,7 +95,7 @@ bst_preferences_init (BstPreferences *prefs)
 						      "can_focus", TRUE,
 						      "border_width", 5,
 						      NULL),
-				      "swapped_signal::destroy", bse_nullify_pointer, &prefs->notebook,
+				      "swapped_signal::destroy", g_nullify_pointer, &prefs->notebook,
 				      "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
 				      NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (prefs->notebook), prefs->bst_param_view,
@@ -415,7 +415,7 @@ bst_preferences_create_buttons (BstPreferences *prefs,
   prefs->apply = g_object_connect (bst_dialog_default_action (dialog, BST_STOCK_APPLY, NULL, NULL),
 				   "swapped_signal::clicked", bst_preferences_apply, prefs,
 				   "swapped_signal::clicked", bst_preferences_save, prefs,
-				   "swapped_signal::destroy", bse_nullify_pointer, &prefs->apply,
+				   "swapped_signal::destroy", g_nullify_pointer, &prefs->apply,
 				   NULL);
   gtk_tooltips_set_tip (BST_TOOLTIPS, prefs->apply,
 			"Apply and save the preference values. Some values may only take effect after "

@@ -487,7 +487,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 	{
 	  GtkWidget *any;
 	case BST_CHOICE_TYPE_TEXT:
-	  /* any = bst_wrap_text_create (choice->name, TRUE, NULL); */
+	  /* any = bst_wrap_text_create (TRUE, choice->name); */
 	  any = gtk_widget_new (GTK_TYPE_LABEL,
 				"visible", TRUE,
 				"justify", GTK_JUSTIFY_CENTER,

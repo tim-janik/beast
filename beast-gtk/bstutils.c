@@ -1505,42 +1505,50 @@ tweak_text_resize (GtkText *text)
 }
 
 GtkWidget*
-bst_wrap_text_create (const gchar *string,
-		      gboolean     double_newlines,
-		      gpointer     user_data)
+bst_wrap_text_create (gboolean     duplicate_newlines,
+		      const gchar *string)
 {
   GtkWidget *text;
   
-  text = g_object_connect (gtk_widget_new (GTK_TYPE_TEXT,
-					   "visible", TRUE,
-					   "editable", FALSE,
-					   "word_wrap", TRUE,
-					   "line_wrap", TRUE,
-					   "can_focus", FALSE,
-					   NULL),
+  text = g_object_connect (g_object_new (GTK_TYPE_TEXT,
+					 "visible", TRUE,
+					 "editable", FALSE,
+					 "word_wrap", TRUE,
+					 "line_wrap", TRUE,
+					 "can_focus", FALSE,
+					 NULL),
 			   "signal_after::realize", style_modify_base_as_bg, NULL, // FIXME
 			   "signal_after::realize", tweak_text_resize, NULL, // FIXME
 			   "signal_after::size_allocate", tweak_text_resize, NULL, // FIXME
 			   NULL);
-  bst_wrap_text_set (text, string, double_newlines, user_data);
+  if (duplicate_newlines)
+    g_object_set_data (G_OBJECT (text), "duplicate_newlines", GUINT_TO_POINTER (TRUE));
+  bst_wrap_text_set (text, string);
   
   return text;
 }
 
 void
-bst_wrap_text_set (GtkWidget   *text,
-		   const gchar *string,
-		   gboolean     double_newlines,
-		   gpointer     user_data)
+bst_wrap_text_clear (GtkWidget *text)
 {
   g_return_if_fail (GTK_IS_TEXT (text));
-  
+
   gtk_editable_delete_text (GTK_EDITABLE (text), 0, -1);
+  gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
+}
+
+void
+bst_wrap_text_set (GtkWidget   *text,
+		   const gchar *string)
+{
+  g_return_if_fail (GTK_IS_TEXT (text));
+
+  bst_wrap_text_clear (text);
   if (string)
     {
       GString *gstring = g_string_new (string);
       
-      if (double_newlines)
+      if (g_object_get_data (G_OBJECT (text), "duplicate_newlines") != NULL)
 	{
 	  gint i;
 	  
@@ -1551,8 +1559,65 @@ bst_wrap_text_set (GtkWidget   *text,
       gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
       g_string_free (gstring, TRUE);
     }
-  gtk_object_set_user_data (GTK_OBJECT (text), user_data);
   gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
+}
+
+void
+bst_wrap_text_append (GtkWidget   *text,
+		      const gchar *string)
+{
+  g_return_if_fail (GTK_IS_TEXT (text));
+  
+  if (string)
+    {
+      GString *gstring = g_string_new (string);
+      
+      if (g_object_get_data (G_OBJECT (text), "duplicate_newlines") != NULL)
+	{
+	  gint i;
+	  
+	  for (i = 0; i < gstring->len; i++)
+	    if (gstring->str[i] == '\n')
+	      g_string_insert_c (gstring, i++, '\n');
+	}
+      gtk_text_set_point (GTK_TEXT (text), gtk_text_get_length (GTK_TEXT (text)));
+      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
+      g_string_free (gstring, TRUE);
+    }
+  gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
+}
+
+void
+bst_wrap_text_aprintf (GtkWidget   *text,
+		       const gchar *text_fmt,
+		       ...)
+{
+  g_return_if_fail (GTK_IS_TEXT (text));
+
+  if (text_fmt)
+    {
+      va_list args;
+      gchar *buffer;
+      
+      va_start (args, text_fmt);
+      buffer = g_strdup_vprintf (text_fmt, args);
+      va_end (args);
+
+      bst_wrap_text_append (text, buffer);
+      g_free (buffer);
+    }
+}
+
+void
+bst_wrap_text_push_indent (GtkWidget   *text,
+			   const gchar *spaces)
+{
+  bst_wrap_text_append (text, spaces);
+}
+
+void
+bst_wrap_text_pop_indent (GtkWidget *text)
+{
 }
 
 guint

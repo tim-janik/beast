@@ -323,7 +323,7 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
 						       "visible", TRUE,
 						       "xalign", 0.0,
 						       NULL),
-				       "swapped_signal::destroy", bse_nullify_pointer, &drag_group->name,
+				       "swapped_signal::destroy", g_nullify_pointer, &drag_group->name,
 				       NULL);
   gtk_box_pack_start (GTK_BOX (hbox), drag_group->name, FALSE, TRUE, 5);
 
@@ -338,7 +338,7 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
 						       "visible", TRUE,
 						       "parent", hbox,
 						       NULL),
-				       "swapped_signal::destroy", bse_nullify_pointer, &drag_group->hbox,
+				       "swapped_signal::destroy", g_nullify_pointer, &drag_group->hbox,
 				       NULL);
   
 

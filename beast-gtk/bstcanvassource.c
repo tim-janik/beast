@@ -22,7 +22,7 @@
 #include	"bstparamview.h"
 #include	"bstgconfig.h"
 #include	"bstdialog.h"
-
+#include	"bststatusbar.h"
 
 
 /* --- defines --- */
@@ -344,39 +344,65 @@ csource_info_update (BstCanvasSource *csource)
 
   if (frame)
     {
-      GtkWidget *label = GTK_BIN (frame)->child;
-      GString *gstring = g_string_new ("");
+      GtkWidget *text = GTK_BIN (frame)->child;
+      gchar *string;
       guint i;
 
-      /* construct information
-       */
+      /* construct information */
+      bst_wrap_text_clear (text);
+      bst_wrap_text_aprintf (text, "%s (%s):\n",
+			     bsw_item_get_name_or_type (csource->source),
+			     bsw_item_get_type_name (csource->source));
+
+      /* input channels */
       if (bsw_source_n_ichannels (csource->source))
-	g_string_printfa (gstring, "Input Channels:\n");
+	{
+	  bst_wrap_text_aprintf (text, "\nInput Channels:\n");
+	  bst_wrap_text_push_indent (text, "  ");
+	}
       for (i = 0; i < bsw_source_n_ichannels (csource->source); i++)
-	g_string_printfa (gstring,
-			  "  %s:\n"
-			  "    %s\n",
-			  bsw_source_ichannel_name (csource->source, i),
-			  bsw_source_ichannel_blurb (csource->source, i));
+	{
+          string = bsw_source_ichannel_blurb (csource->source, i);
+	  bst_wrap_text_aprintf (text, "%s%s\n", bsw_source_ichannel_name (csource->source, i), string ? ":" : "");
+	  if (string)
+	    {
+	      bst_wrap_text_push_indent (text, "  ");
+	      bst_wrap_text_aprintf (text, "%s\n", string);
+	      bst_wrap_text_pop_indent (text);
+	    }
+	}
+      if (bsw_source_n_ichannels (csource->source))
+	bst_wrap_text_pop_indent (text);
+
+      /* output channels */
       if (bsw_source_n_ochannels (csource->source))
 	{
-	  if (bsw_source_n_ichannels (csource->source))
-	    g_string_append_c (gstring, '\n');
-	  g_string_printfa (gstring, "Output Channels:\n");
+	  bst_wrap_text_aprintf (text, "\nOutput Channels:\n");
+	  bst_wrap_text_push_indent (text, "  ");
 	}
       for (i = 0; i < bsw_source_n_ochannels (csource->source); i++)
-	g_string_printfa (gstring,
-			  "  %s:\n"
-			  "    %s\n",
-			  bsw_source_ochannel_name (csource->source, i),
-			  bsw_source_ochannel_blurb (csource->source, i));
-      g_string_printfa (gstring,
-			"%s:\n"
-			"  %s\n",
-			"Description",
-			bsw_item_get_type_blurb (csource->source));
-      gtk_label_set_text (GTK_LABEL (label), gstring->str);
-      g_string_free (gstring, TRUE);
+	{
+	  string = bsw_source_ochannel_blurb (csource->source, i);
+	  bst_wrap_text_aprintf (text, "%s%s\n", bsw_source_ochannel_name (csource->source, i), string ? ":" : "");
+          if (string)
+	    {
+	      bst_wrap_text_push_indent (text, "  ");
+	      bst_wrap_text_aprintf (text, "%s\n", string);
+	      bst_wrap_text_pop_indent (text);
+	    }
+	}
+      if (bsw_source_n_ochannels (csource->source))
+	bst_wrap_text_pop_indent (text);
+
+      /* description */
+      string = bsw_item_get_type_blurb (csource->source);
+      if (string)
+	{
+	  bst_wrap_text_aprintf (text, "\nDescription:\n");
+	  bst_wrap_text_push_indent (text, "  ");
+	  bst_wrap_text_aprintf (text, "%s\n", string);
+	  bst_wrap_text_pop_indent (text);
+	}
     }
 }
 
@@ -394,11 +420,7 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 							   "visible", TRUE,
 							   "border_width", 5,
 							   "label", "Module Info",
-							   "child", gtk_widget_new (GTK_TYPE_LABEL,
-										    "visible", TRUE,
-										    "justify", GTK_JUSTIFY_LEFT,
-										    "xpad", 5,
-										    NULL),
+							   "child", bst_wrap_text_create (FALSE, NULL),
 							   NULL));
   csource_info_update (csource);
   source_name_changed (csource);
@@ -832,6 +854,32 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	  gnome_canvas_item_move (item, x - csource->move_dx, y - csource->move_dy);
 	  GNOME_CANVAS_NOTIFY (item);
 	  handled = TRUE;
+	}
+      else
+	{
+	  guint channel;
+	  gchar *name = NULL, *prefix = NULL;
+
+	  /* set i/o channel hints */
+	  channel = bst_canvas_source_ichannel_at (csource, event->motion.x, event->motion.y);
+	  if (channel != ~0)
+	    {
+	      name = bsw_source_ichannel_name (csource->source, channel);
+	      prefix = "Input";
+	    }
+	  else
+	    {
+	      channel = bst_canvas_source_ochannel_at (csource, event->motion.x, event->motion.y);
+	      if (channel != ~0)
+		{
+		  name = bsw_source_ochannel_name (csource->source, channel);
+		  prefix = "Output";
+		}
+	    }
+	  if (name)
+	    bst_status_printf (BST_STATUS_IDLE_HINT, "(Hint)", "%s: %s", prefix, name);
+	  else
+	    bst_status_set (BST_STATUS_IDLE_HINT, NULL, NULL);
 	}
       break;
     case GDK_BUTTON_RELEASE:

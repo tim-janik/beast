@@ -295,10 +295,10 @@ piano_canvas_press (BstPartDialog *self,
         }
       else if (button == 1)     /* insert */
         {
-          BseErrorType error = bsw_part_insert_note (part, tick, 384, freq, 1);
+          BswErrorType error = bsw_part_insert_note (part, tick, 384, freq, 1);
 
           bst_piano_roll_set_pointer (proll, BST_PIANO_ROLL_POINTER_IGNORE);
-          bst_status_set (error ? BST_STATUS_ERROR : BST_STATUS_DONE, "Insert Note", bsw_error_blurb (error));
+          bst_status_eprintf (error, "Insert Note");
         }
       else
         bst_piano_roll_set_pointer (proll, BST_PIANO_ROLL_POINTER_IGNORE);

@@ -98,10 +98,7 @@ bst_file_dialog_open (BstFileDialog *fd)
       bsw_project_ensure_wave_repo (project);
       app = bst_app_new (project);
       bst_status_window_push (app);
-      bst_status_printf (error ? 0 : 100,
-			 error ? "Failed" : "Done",
-			 "Loading project `%s'",
-			 file_name);
+      bst_status_eprintf (error,"Loading project `%s'", file_name);
       bst_status_window_pop ();
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
@@ -118,7 +115,7 @@ bst_file_dialog_save (BstFileDialog *fd)
   BstApp *app;
   gchar *file_name;
   GtkWidget *radio;
-  BseErrorType error;
+  BswErrorType error;
   gboolean self_contained = FALSE;
 
   file_name = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (fd)));
@@ -156,7 +153,7 @@ bst_file_dialog_save (BstFileDialog *fd)
 	{
 	  bst_choice_destroy (choice);
 	  if (unlink (file_name) < 0)
-	    bst_status_printf (0, g_strerror (errno), "Deleting `%s'", file_name);
+	    bst_status_errnoprintf (errno, "Deleting `%s'", file_name);
 	  else
 	    goto retry_saving;
 	}
@@ -165,10 +162,7 @@ bst_file_dialog_save (BstFileDialog *fd)
     }
   else
     {
-      bst_status_printf (error ? 0 : 100,
-			 error ? bse_error_blurb (error) : "Done",
-			 "Saving project `%s'",
-			 file_name);
+      bst_status_eprintf (error, "Saving project `%s'", file_name);
       if (!error)
 	gtk_widget_destroy (GTK_WIDGET (fd));
     }

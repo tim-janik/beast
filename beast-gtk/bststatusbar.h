@@ -29,38 +29,50 @@
 extern "C" {
 #endif /* __cplusplus */
 
+
+/* --- status percentages --- */
+#define	BST_STATUS_PROGRESS	(+200.0)
 #define	BST_STATUS_DONE		(+100.0)
+#define	BST_STATUS_IDLE_HINT	(-0.4)
 #define	BST_STATUS_IDLE		(-0.5)
 #define	BST_STATUS_WAIT		(-1.0)
 #define	BST_STATUS_ERROR	(-2.0)
+/* 0..+100 is normal progression percentage */
+
+
+/* --- auxillary structure --- */
+typedef struct
+{
+  GtkWidget      *sbar;
+  GtkProgressBar *pbar;
+  GtkProgress    *prog;
+  GtkLabel       *message;
+  GtkLabel       *status;
+  guint           is_idle : 1;
+  guint		  timer_id;
+} BstStatusBar;
 
 
 /* --- prototypes --- */
-GtkWidget*	bst_status_bar_create		(void);
-GtkWidget*	bst_status_bar_get_current	(void);
-void		bst_status_bar_catch_procedure	(void);
-void		bst_status_bar_uncatch_procedure (void);
-GtkWidget*	bst_status_bar_from_widget	(GtkWidget	*widget);
-void		bst_status_bar_queue_clear	(GtkWidget	*sbar,
-						 guint		 msecs);
-void		bst_status_bar_set		(GtkWidget	*sbar,
-						 gfloat		 percentage,
+GtkWidget* bst_status_bar_create		(void);
+void	   bst_status_set			(gfloat		 percentage,
 						 const gchar	*message,
 						 const gchar	*status_msg);
-guint		bst_status_bar_set_permanent	(GtkWidget	*sbar,
-						 gfloat		 percentage,
-						 const gchar	*message,
-						 const gchar	*status_msg);
-void		bst_status_set			(gfloat		 percentage,
-						 const gchar	*message,
-						 const gchar	*status_msg);
-void		bst_status_printf		(gfloat		 percentage,
+void	   bst_status_printf			(gfloat		 percentage,
 						 const gchar	*status_msg,
 						 const gchar	*message_fmt,
 						 ...) G_GNUC_PRINTF (3, 4);
-void		bst_status_clear		(void);
-void		bst_status_window_push		(gpointer        widget);
-void		bst_status_window_pop		(void);
+void	   bst_status_eprintf			(BswErrorType	 error,
+						 const gchar	*message_fmt,
+						 ...) G_GNUC_PRINTF (2, 3);
+void	   bst_status_errnoprintf		(gint		 libc_errno,
+						 const gchar	*message_fmt,
+						 ...) G_GNUC_PRINTF (2, 3);
+void	   bst_status_clear			(void);
+void	   bst_status_bar_catch_procedure	(void);
+void	   bst_status_bar_uncatch_procedure	(void);
+void	   bst_status_window_push		(gpointer        widget);
+void	   bst_status_window_pop		(void);
 
 
 
