@@ -168,6 +168,7 @@ bin_PROGRAMS = @BEAST_BINARY@			# this expands to beast-$BST_VERSION
 EXTRA_PROGRAMS = beast-\$(BST_VERSION)		# make automake-1.4 eat beast____BST_VERSION_ variables
 beast____BST_VERSION__SOURCES = bstmain.c $(beast_sources)
 beast____BST_VERSION__LDADD = $(progs_LDADD)
+beast_objects = $(beast____BST_VERSION__OBJECTS)
 noinst_PROGRAMS = tsmview # bststest
 # bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
 # bststest_LDADD = $(progs_LDADD)
@@ -178,7 +179,8 @@ tsmview_LDADD = $(progs_LDADD)
 #
 # rules to generate built sources
 #
-$(beast_OBJECTS) $(bststest_OBJECTS) $(tsmview_OBJECTS): $(beast_built_sources)
+#$(beast_objects) $(bststest_OBJECTS) $(tsmview_OBJECTS): $(beast_built_sources)
+$(OBJECTS): $(beast_built_sources)
 
 # broken: $(beast_SOURCES) $(bststest_SOURCES) $(tsmview_SOURCES): bstgentypes.h
 # broken: EXTRA_DIST += $(beast_built_sources)
