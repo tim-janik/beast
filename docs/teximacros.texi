@@ -106,11 +106,11 @@
 
 
 @c --- document heading ---
-@rmacro doctitle{}
-@ifxmlelse{,document-title,nop}
+@rmacro doctitle{TEXT}
+@ifxmlelse{\TEXT\,document-title,nop}
 @end rmacro
-@rmacro docauthor{}
-@ifxmlelse{,document-author,nop}
+@rmacro docauthor{TEXT}
+@ifxmlelse{\TEXT\,document-author,nop}
 @end rmacro
 
 
