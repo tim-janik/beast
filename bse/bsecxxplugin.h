@@ -36,7 +36,7 @@ namespace Bse {
 /* --- frequently used constants --- */
 const SfiInt  KAMMER_NOTE = SFI_KAMMER_NOTE;
 const SfiInt  KAMMER_OCTAVE = SFI_KAMMER_OCTAVE;
-const SfiReal KAMMER_FREQ = BSE_KAMMER_FREQUENCY_f;
+const SfiReal KAMMER_FREQ = BSE_KAMMER_FREQUENCY;
 const SfiInt  MIN_FINE_TUNE = BSE_MIN_FINE_TUNE;
 const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
 

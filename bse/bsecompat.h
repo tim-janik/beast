@@ -27,7 +27,7 @@ G_BEGIN_DECLS
 #define bse_param_spec_genum(name,nick,blurb, genum_type, default_value, hints) \
    bse_param_spec_enum (name,nick,blurb, default_value, genum_type, hints)
 #define bse_param_spec_freq_simple(name, nick, blurb, hints) \
-  bse_param_spec_freq (name, nick, blurb, BSE_KAMMER_FREQUENCY_f, hints)
+  bse_param_spec_freq (name, nick, blurb, BSE_KAMMER_FREQUENCY, hints)
 #define bse_param_spec_fine_tune(name, nick, blurb)	\
   sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, \
                  "scale:" SFI_PARAM_STANDARD)

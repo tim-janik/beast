@@ -43,7 +43,7 @@ class LatencyTest : Effect {
                            "", STANDARD);
   };
   group _("MIDI setup") {
-    Int	   midi_note	= Note (_("Note"), NULL, bse_note_from_freq (BSE_KAMMER_FREQUENCY_f), STANDARD);
+    Int	   midi_note	= Note (_("Note"), NULL, bse_note_from_freq (BSE_KAMMER_FREQUENCY), STANDARD);
     Int    midi_channel = (_("Midi Output Channel"), _("The midi output device where the tester sends its events"),
                            1, 1, 16, 1, STANDARD);
     String midi_output	= (_("Midi Output Device"),

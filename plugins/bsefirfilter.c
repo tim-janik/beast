@@ -208,7 +208,7 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	  filter->filter_type == BSE_FIR_FILTER_HIGHPASS)
 	{
 	  d = 2 * filter->cut_off_freq;
-	  d /= BSE_MIX_FREQ;
+	  d /= bse_engine_sample_freq();
 	  c = d * PI;
 	  for (i = 0; i < filter->n_coeffs; i++)
 	    {

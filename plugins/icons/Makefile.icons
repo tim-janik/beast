@@ -31,6 +31,7 @@ icon_list += davbassfilter.png
 icon_list += drum.png
 icon_list += eguitar.png
 icon_list += filter.png
+icon_list += moog.png
 icon_list += noise.png
 icon_list += organ.png
 icon_list += prod.png

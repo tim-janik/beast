@@ -102,7 +102,7 @@ dav_organ_class_init (DavOrganClass *class)
   
   bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
-						   BSE_KAMMER_FREQUENCY_f,
+						   BSE_KAMMER_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, "Base Frequency",
                               PARAM_BASE_NOTE,
@@ -140,7 +140,7 @@ dav_organ_init (DavOrgan *self)
   self->config.flute = FALSE;
   self->config.reed = FALSE;
   
-  self->config.freq = BSE_KAMMER_FREQUENCY_f;
+  self->config.freq = BSE_KAMMER_FREQUENCY;
   self->config.harm0 = 1.0;
   self->config.harm1 = 36. / 127.;
   self->config.harm2 = 100. / 127.;
@@ -263,7 +263,7 @@ dav_organ_get_property (GObject    *object,
 static void
 dav_organ_class_ref_tables (DavOrganClass *class)
 {
-  gfloat rate = BSE_MIX_FREQ;
+  gfloat rate = bse_engine_sample_freq();
   gfloat half = rate / 2;
   gfloat slope = rate / 10;
   gint i;
@@ -384,7 +384,7 @@ dav_organ_process (BseModule *module,
     freq_256 = BSE_FREQ_FROM_VALUE (ifreq[0]) * 256 + 0.5;
   else
     freq_256 = organ->config.freq * 256 + 0.5;
-  mix_freq_256 = BSE_MIX_FREQ * 256;
+  mix_freq_256 = bse_engine_sample_freq() * 256;
   freq_256_harm0 = freq_256 / 2;
   freq_256_harm1 = freq_256;
   

@@ -34,7 +34,7 @@ bse_note_from_freq (gdouble freq)
   gdouble d;
   gint note;
 
-  freq /= BSE_KAMMER_FREQUENCY_f;
+  freq /= BSE_KAMMER_FREQUENCY;
   d = log (freq) / BSE_LN_2_POW_1_DIV_12;
   note = bse_ftoi (BSE_KAMMER_NOTE + d);
 
@@ -47,7 +47,7 @@ bse_note_from_freq_bounded (gdouble freq)
   gdouble d;
   gint note;
 
-  freq /= BSE_KAMMER_FREQUENCY_f;
+  freq /= BSE_KAMMER_FREQUENCY;
   d = log (freq) / BSE_LN_2_POW_1_DIV_12;
   note = bse_ftoi (BSE_KAMMER_NOTE + d);
 
@@ -61,7 +61,7 @@ bse_note_fine_tune_from_note_freq (gint    note,
   gdouble d;
   gint fine_tune;
   
-  freq /= BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note);
+  freq /= BSE_KAMMER_FREQUENCY * BSE_SEMITONE_FACTOR (note);
   d = log (freq) / BSE_LN_2_POW_1_DIV_1200_d;
   fine_tune = bse_ftoi (d);
 
@@ -72,7 +72,7 @@ gdouble
 bse_note_to_freq (gint note)
 {
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    return BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note);
+    return BSE_KAMMER_FREQUENCY * BSE_SEMITONE_FACTOR (note);
   else
     return 0.0;
 }
@@ -82,7 +82,7 @@ bse_note_to_tuned_freq (gint note,
 			gint fine_tune)
 {
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    return BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
+    return BSE_KAMMER_FREQUENCY * BSE_SEMITONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
   else
     return 0.0;
 }

@@ -231,12 +231,12 @@ bse_init_core (void)
   /* initialize GSL components */
   {
     static const GslConfigValue gslconfig[] = {
-      { "wave_chunk_padding",		BSE_MAX_BLOCK_PADDING, },
+      { "wave_chunk_padding",		64, },
       { "wave_chunk_big_pad",		256, },
       { "dcache_block_size",		4000, },
       { "dcache_cache_memory",		10 * 1024 * 1024, },
       { "midi_kammer_note",		BSE_KAMMER_NOTE, },
-      { "kammer_freq",			BSE_KAMMER_FREQUENCY_f, },
+      { "kammer_freq",			BSE_KAMMER_FREQUENCY, },
       { NULL, },
     };
     gsl_init (gslconfig);

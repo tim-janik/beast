@@ -24,10 +24,7 @@
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_SIMPLE_ADSR              (BSE_EXPORT_TYPE_ID (BseSimpleADSR))
@@ -78,10 +75,6 @@ enum
   BSE_SIMPLE_ADSR_N_OCHANNELS
 };
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SIMPLE_ADSR_H__ */

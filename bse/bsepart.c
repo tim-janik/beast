@@ -960,7 +960,7 @@ note_get_control_value (BsePartEventNote *note,
     case BSE_MIDI_SIGNAL_VELOCITY:
       return note->velocity;
     case BSE_MIDI_SIGNAL_FINE_TUNE:
-      return note->fine_tune * (1.0 / BSE_MAX_FINE_TUNE_f);
+      return note->fine_tune * (1.0 / BSE_MAX_FINE_TUNE);
     default:
       return 0;
     }

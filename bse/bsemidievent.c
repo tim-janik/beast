@@ -164,7 +164,7 @@ bse_midi_event_note_on (guint   midi_channel,
 {
   BseMidiEvent *event;
   
-  g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY_f, NULL);
+  g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY, NULL);
   g_return_val_if_fail (velocity >= 0 && velocity <= 1, NULL);
   g_return_val_if_fail (midi_channel > 0, NULL);
   
@@ -185,7 +185,7 @@ bse_midi_event_note_off (guint   midi_channel,
 {
   BseMidiEvent *event;
   
-  g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY_f, NULL);
+  g_return_val_if_fail (frequency > 0 && frequency < BSE_MAX_FREQUENCY, NULL);
   g_return_val_if_fail (midi_channel > 0, NULL);
   
   event = bse_midi_alloc_event ();

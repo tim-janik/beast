@@ -383,31 +383,31 @@ static void
 bse_simple_adsr_update_modules (BseSimpleADSR *adsr,
 				BseTrans      *trans)
 {
-  BseSimpleADSRVars vars;
-  double ms = bse_time_range_to_ms (adsr->time_range);
-  
-  ms *= bse_engine_sample_freq () / 1000.0;
-  vars.attack_level = 1.0;
-  if (adsr->attack_time < TIME_EPSILON)
-    vars.attack_inc = 1.0;
-  else
-    vars.attack_inc = 1.0 / (ms * adsr->attack_time);
-  vars.sustain_level = adsr->sustain_level;
-  if (adsr->decay_time < TIME_EPSILON)
-    vars.decay_dec = 1.0;
-  else
-    vars.decay_dec = (vars.attack_level - vars.sustain_level) / (ms * adsr->decay_time);
-  if (adsr->release_time < TIME_EPSILON)
-    vars.release_dec = 1.0;
-  else
-    vars.release_dec = vars.sustain_level / (ms * adsr->release_time);
-  
   if (BSE_SOURCE_PREPARED (adsr))
-    bse_source_update_modules (BSE_SOURCE (adsr),
-			       G_STRUCT_OFFSET (SimpleADSR, vars),
-			       &vars,
-			       sizeof (vars),
-			       trans);
+    {
+      BseSimpleADSRVars vars;
+      double ms = bse_time_range_to_ms (adsr->time_range);
+      ms *= bse_engine_sample_freq () / 1000.0;
+      vars.attack_level = 1.0;
+      if (adsr->attack_time < TIME_EPSILON)
+        vars.attack_inc = 1.0;
+      else
+        vars.attack_inc = 1.0 / (ms * adsr->attack_time);
+      vars.sustain_level = adsr->sustain_level;
+      if (adsr->decay_time < TIME_EPSILON)
+        vars.decay_dec = 1.0;
+      else
+        vars.decay_dec = (vars.attack_level - vars.sustain_level) / (ms * adsr->decay_time);
+      if (adsr->release_time < TIME_EPSILON)
+        vars.release_dec = 1.0;
+      else
+        vars.release_dec = vars.sustain_level / (ms * adsr->release_time);
+      bse_source_update_modules (BSE_SOURCE (adsr),
+                                 G_STRUCT_OFFSET (SimpleADSR, vars),
+                                 &vars,
+                                 sizeof (vars),
+                                 trans);
+    }
 }
 
 static void

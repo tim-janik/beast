@@ -117,10 +117,10 @@ bse_constant_class_init (BseConstantClass *class)
       label = g_strdup_printf (_("Frequency"));
       bse_object_class_add_param (object_class, group, PARAM_FREQ + (i - 1) * 3,
 				  sfi_pspec_log_scale (ident, label, NULL,
-						       BSE_MAX_FREQUENCY_f,
-						       0, BSE_MAX_FREQUENCY_f,
+						       BSE_MAX_FREQUENCY,
+						       0, BSE_MAX_FREQUENCY,
 						       10.0,
-						       BSE_KAMMER_FREQUENCY_f * 2, 2, 4,
+						       BSE_KAMMER_FREQUENCY * 2, 2, 4,
 						       SFI_PARAM_GUI ":dial"));
       g_free (ident);
       g_free (label);

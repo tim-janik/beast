@@ -260,7 +260,7 @@ struct _BsePartEventNote
 
 #define BSE_PART_NOTE_N_CROSSINGS(note)         ((note)->crossings ? (note)->crossings[0] : 0)
 #define BSE_PART_NOTE_CROSSING(note,j)          ((note)->crossings[1 + (j)])
-#define BSE_PART_NOTE_FREQ(note)                (BSE_KAMMER_FREQUENCY_f *               \
+#define BSE_PART_NOTE_FREQ(note)                (BSE_KAMMER_FREQUENCY *                 \
                                                  BSE_SEMITONE_FACTOR ((note)->note) *   \
                                                  BSE_FINE_TUNE_FACTOR ((note)->fine_tune))
 

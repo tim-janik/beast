@@ -71,11 +71,11 @@ bse_param_spec_freq (const gchar *name,
 {
   GParamSpec *pspec;
   
-  g_return_val_if_fail (default_freq >= BSE_MIN_OSC_FREQUENCY_f && default_freq <= BSE_MAX_OSC_FREQUENCY_f, NULL);
+  g_return_val_if_fail (default_freq >= BSE_MIN_OSC_FREQUENCY && default_freq <= BSE_MAX_OSC_FREQUENCY, NULL);
   
   pspec = sfi_pspec_log_scale (name, nick, blurb,
-			       default_freq, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f, 10.0,
-			       2 * BSE_KAMMER_FREQUENCY_f, 2, 4,
+			       default_freq, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY, 10.0,
+			       2 * BSE_KAMMER_FREQUENCY, 2, 4,
 			       hints);
   
   return pspec;

@@ -128,7 +128,7 @@ METHOD (BseWave, chunk-get-osc-freq) {
   IN    = sfi_pspec_int ("chunk_index", "Chunk Index", "Index of chunk",
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_real ("osc_freq", NULL, NULL,
-			  BSE_KAMMER_FREQUENCY_f, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f, 10.0,
+			  BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY, 10.0,
 			  SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,

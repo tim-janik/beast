@@ -104,7 +104,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   bse_object_class_add_param (object_class, "Frequency",
 			      PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
-						   BSE_KAMMER_FREQUENCY_f,
+						   BSE_KAMMER_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, "Frequency",
 			      PARAM_BASE_NOTE,
@@ -149,7 +149,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
 static void
 dav_xtal_strings_init (DavXtalStrings *self)
 {
-  self->params.freq = BSE_KAMMER_FREQUENCY_f;
+  self->params.freq = BSE_KAMMER_FREQUENCY;
   self->params.trigger_vel = 1.0;
   self->params.note_decay = 0.4;
   self->params.tension_decay = 0.04;
@@ -288,7 +288,7 @@ xmod_trigger (XtalStringsModule *xmod,
   
   xmod->pos = 0;
   xmod->count = 0;
-  xmod->size = (int) ((BSE_MIX_FREQ + trigger_freq - 1) / trigger_freq);
+  xmod->size = (int) ((bse_engine_sample_freq() + trigger_freq - 1) / trigger_freq);
   
   xmod->a = calc_factor (trigger_freq, xmod->tparams.tension_decay);
   xmod->damping_factor = calc_factor (trigger_freq, xmod->tparams.note_decay);
@@ -326,7 +326,7 @@ xmod_process (BseModule *module,
   guint i;
   
   real_freq_256 = (int) (xmod->last_trigger_freq * 256);
-  actual_freq_256 = (int) (BSE_MIX_FREQ_f * 256 / xmod->size);
+  actual_freq_256 = (int) (bse_engine_sample_freq() * 256. / xmod->size);
   
   if (BSE_MODULE_ISTREAM (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ).connected)
     freq_in = BSE_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ);
@@ -340,7 +340,7 @@ xmod_process (BseModule *module,
       	{
 	  xmod_trigger (xmod, freq_in ? BSE_SIGNAL_TO_FREQ (freq_in[i]) : xmod->tparams.freq);
 	  real_freq_256 = (int) (xmod->last_trigger_freq * 256);
-	  actual_freq_256 = (int) (BSE_MIX_FREQ_f * 256 / xmod->size);
+	  actual_freq_256 = (int) (bse_engine_sample_freq() * 256. / xmod->size);
 	}
       last_trigger_level = trigger_in[i];
       
@@ -375,7 +375,7 @@ xmod_process (BseModule *module,
   xmod->last_trigger_level = last_trigger_level;
 }
 
-#define	STRING_LENGTH()	((BSE_MIX_FREQ + 19) / 20)
+#define	STRING_LENGTH()	((bse_engine_sample_freq() + 19) / 20)
 
 static void
 xmod_reset (BseModule *module)

@@ -69,15 +69,15 @@ static void	bse_standard_osc_update_modules	(BseStandardOsc		*standard_osc,
 /* --- variables --- */
 static gpointer	    parent_class = NULL;
 static const gfloat osc_table_freqs[] = {
-  BSE_KAMMER_FREQUENCY_f,
-  BSE_KAMMER_FREQUENCY_f / 2.0,
-  BSE_KAMMER_FREQUENCY_f / 4.0,
-  BSE_KAMMER_FREQUENCY_f / 8.0,
-  BSE_KAMMER_FREQUENCY_f / 16.0,
-  BSE_KAMMER_FREQUENCY_f * 2.0,
-  BSE_KAMMER_FREQUENCY_f * 4.0,
-  BSE_KAMMER_FREQUENCY_f * 8.0,
-  BSE_KAMMER_FREQUENCY_f * 16.0
+  BSE_KAMMER_FREQUENCY,
+  BSE_KAMMER_FREQUENCY / 2.0,
+  BSE_KAMMER_FREQUENCY / 4.0,
+  BSE_KAMMER_FREQUENCY / 8.0,
+  BSE_KAMMER_FREQUENCY / 16.0,
+  BSE_KAMMER_FREQUENCY * 2.0,
+  BSE_KAMMER_FREQUENCY * 4.0,
+  BSE_KAMMER_FREQUENCY * 8.0,
+  BSE_KAMMER_FREQUENCY * 16.0
 };
 
 
@@ -209,7 +209,7 @@ bse_standard_osc_init (BseStandardOsc *self)
 {
   self->wave = BSE_STANDARD_OSC_SAW_FALL;
   self->config.phase = 0.0;
-  self->config.cfreq = BSE_KAMMER_FREQUENCY_f;
+  self->config.cfreq = BSE_KAMMER_FREQUENCY;
   self->config.exponential_fm = FALSE;
   self->config.self_fm_strength = 0;
   self->config.pulse_width = 0.5;
@@ -243,7 +243,7 @@ bse_standard_osc_set_property (GObject      *object,
       break;
     case PROP_BASE_NOTE:
       self->config.cfreq = bse_note_to_freq (sfi_value_get_note (value));
-      self->config.cfreq = MAX (self->config.cfreq, BSE_MIN_OSC_FREQUENCY_d);
+      self->config.cfreq = MAX (self->config.cfreq, BSE_MIN_OSC_FREQUENCY);
       bse_standard_osc_update_modules (self, FALSE, NULL);
       g_object_notify (self, "base_freq");
       if (bse_note_from_freq (self->config.cfreq) != sfi_value_get_note (value))

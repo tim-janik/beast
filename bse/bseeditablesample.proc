@@ -155,7 +155,7 @@ METHOD (BseEditableSample, get-osc-freq) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  sfi_value_set_real (out_values++, esample->wchunk ? esample->wchunk->osc_freq : BSE_KAMMER_FREQUENCY_f);
+  sfi_value_set_real (out_values++, esample->wchunk ? esample->wchunk->osc_freq : BSE_KAMMER_FREQUENCY);
   
   return BSE_ERROR_NONE;
 }

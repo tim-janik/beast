@@ -170,20 +170,20 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	  gfloat dfvalue = port->default_value;
 	  if (port->rate_relative)
 	    {
-	      /* we relate a maximum value of 0.5 (sample_freq/2) to BSE_MAX_OSC_FREQUENCY_f */
-	      maximum *= 2.0 * BSE_MAX_OSC_FREQUENCY_f;
-	      minimum *= 2.0 * BSE_MAX_OSC_FREQUENCY_f;
-	      dfvalue *= 2.0 * BSE_MAX_OSC_FREQUENCY_f;
+	      /* we relate a maximum value of 0.5 (sample_freq/2) to BSE_MAX_OSC_FREQUENCY */
+	      maximum *= 2.0 * BSE_MAX_OSC_FREQUENCY;
+	      minimum *= 2.0 * BSE_MAX_OSC_FREQUENCY;
+	      dfvalue *= 2.0 * BSE_MAX_OSC_FREQUENCY;
 	    }
 	  if (port->concert_a)
-	    dfvalue = BSE_KAMMER_FREQUENCY_f;
-	  minimum = CLAMP (minimum, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f);
-	  maximum = CLAMP (maximum, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f);
+	    dfvalue = BSE_KAMMER_FREQUENCY;
+	  minimum = CLAMP (minimum, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY);
+	  maximum = CLAMP (maximum, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY);
 	  dfvalue = CLAMP (dfvalue, minimum, maximum);
 	  group = "Frequencies";
 	  pspec = sfi_pspec_log_scale (port->ident, port->name, NULL,
 				       dfvalue, minimum, maximum, 10.0,
-				       2 * BSE_KAMMER_FREQUENCY_f, 2, 4,
+				       2 * BSE_KAMMER_FREQUENCY, 2, 4,
 				       SFI_PARAM_GUI ":f:scale:dial");
 	  if (port->concert_a)
 	    {

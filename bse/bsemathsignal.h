@@ -21,6 +21,7 @@
 #define __BSE_SIGNAL_H__
 
 #include <bse/bsemath.h>
+#include <bse/bseglobals.h>
 
 G_BEGIN_DECLS
 
@@ -54,16 +55,10 @@ G_BEGIN_DECLS
 
 /* convert between literal frequencies and signal values
  */
-#if defined (BSE_COMPILATION) || defined (BSE_PLUGIN_FALLBACK)
-#include <bse/bseglobals.h>
-#  define BSE_SIGNAL_TO_FREQ_FACTOR	(BSE_MAX_FREQUENCY_f)
-#  define BSE_SIGNAL_FROM_FREQ_FACTOR	(1.0 / BSE_MAX_FREQUENCY_f)
-#  define BSE_SIGNAL_TO_FREQ(value)	(((gfloat) (value)) * BSE_SIGNAL_TO_FREQ_FACTOR)
-#  define BSE_SIGNAL_FROM_FREQ(freq)	(((gfloat) (freq)) * BSE_SIGNAL_FROM_FREQ_FACTOR)
-#elif defined (BSE_WANT_ARTS_THREADS)  /* must be aRts */
-#  define BSE_SIGNAL_TO_FREQ(x)		(x)
-#  define BSE_SIGNAL_FROM_FREQ(x)	(x)
-#endif
+#define BSE_SIGNAL_TO_FREQ_FACTOR	(BSE_MAX_FREQUENCY)
+#define BSE_SIGNAL_FROM_FREQ_FACTOR	(1.0 / BSE_MAX_FREQUENCY)
+#define BSE_SIGNAL_TO_FREQ(value)	(BSE_FREQ_FROM_VALUE (value))
+#define BSE_SIGNAL_FROM_FREQ(freq)	(BSE_VALUE_FROM_FREQ (freq))
 
 #define BSE_SIGNAL_CLIP(v)      bse_signal_value_clip (v)
 

@@ -179,8 +179,8 @@ METHOD (BseServer, note-from-freq) {
   IN	= bse_param_spec_object ("server", "Server", NULL,
 				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_real ("freq", "Frequency", NULL,
-			  BSE_KAMMER_FREQUENCY_f,
-			  0, BSE_MAX_FREQUENCY_f,
+			  BSE_KAMMER_FREQUENCY,
+			  0, BSE_MAX_FREQUENCY,
 			  10.0, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
                                 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);

@@ -308,7 +308,7 @@ dav_canyon_delay_context_create (BseSource *source,
   BseModule *module;
 
   module = bse_module_new (&cmod_class, cmod);
-  cmod->datasize = BSE_MIX_FREQ;
+  cmod->datasize = bse_engine_sample_freq();
   cmod->data_l = g_new0 (gdouble, cmod->datasize);
   cmod->data_r = g_new0 (gdouble, cmod->datasize);
   cmod->params = self->params;
@@ -340,28 +340,26 @@ dav_canyon_delay_update_modules (DavCanyonDelay *self)
 {
   if (BSE_SOURCE_PREPARED (self))
     {
-      gdouble half;
-      
       self->params.l_to_r_mag = self->l_to_r_feedback / 100.0;
       self->params.l_to_r_invmag = 1.0 - ABS (self->params.l_to_r_mag);
       self->params.r_to_l_mag = self->r_to_l_feedback / 100.0;
       self->params.r_to_l_invmag = 1.0 - ABS (self->params.r_to_l_mag);
-      self->params.l_to_r_pos = self->l_to_r_seconds * BSE_MIX_FREQ;
-      self->params.r_to_l_pos = self->r_to_l_seconds * BSE_MIX_FREQ;
+      self->params.l_to_r_pos = self->l_to_r_seconds * bse_engine_sample_freq();
+      self->params.r_to_l_pos = self->r_to_l_seconds * bse_engine_sample_freq();
       
       /* The following stuff (except the multiplicative inverse)
        * is a guesstimate. The calculations seem to be right, tho.
        * Compare to the FIR filter for a reference.
        */
-      half = 1.0 / (4.0 * PI * self->filter_freq);
+      gdouble half = 1.0 / (4.0 * PI * self->filter_freq);
       
       /* Calculate the half life rate given:
-       *   half         - the length of the half life
-       *   BSE_MIX_FREQ - time divisor (usually the # calcs per second)
+       *   half        - the length of the half life
+       *   sample_freq - time divisor (usually the # calcs per second)
        * Basically, find r given 1/2 = e^(-r*(half/rate))
        * ln(1/2) = -ln(2) = -BSE_LN2 = -0.693147...
        */
-      self->params.filter_invmag = exp (-BSE_LN2 / (half * BSE_MIX_FREQ));
+      self->params.filter_invmag = exp (-BSE_LN2 / (half * bse_engine_sample_freq()));
       self->params.filter_mag = 1.0 - self->params.filter_invmag;
       
       /* update all DavCanyonDelayModules. take a look at davxtalstrings.c

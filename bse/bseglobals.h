@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-2002 Tim Janik
+ * Copyright (C) 1997-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,29 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bseglobals.h: globals definitions and values for BSE
  */
 #ifndef __BSE_GLOBALS_H__
 #define __BSE_GLOBALS_H__
 
-#include	<bse/bsedefs.h>
-#include	<bse/bsemath.h>
-#include	<bse/bsenote.h>
-#include	<bse/bseconstvalues.h>
+#include <bse/bsedefs.h>
+#include <bse/bsemath.h>
+#include <bse/bsenote.h>
+#include <bse/bseconstvalues.h>
 
 G_BEGIN_DECLS
 
-/* --- signal ranges --- */
-/* min..max sample value: -1.0 .. 1.0
- * notes<->sample value: 0 .. 127 (BSE_VALUE_FROM_NOTE)
- * freq<->sample value: 0 .. 24000 (BSE_FREQ_FROM_VALUE)
- */
-#define	BSE_FREQ_FROM_VALUE(value)	 (((gfloat) (value)) * BSE_MAX_FREQUENCY_f)
-#define	BSE_VALUE_FROM_FREQ(freq)	 ((gfloat) ((freq) * (1.0 / BSE_MAX_FREQUENCY_f)))
-
-
-/* --- time ranges --- */
+/* --- time ranges --- */ // FIXME: BSE_TIME_RANGE is deprecated
 typedef enum
 {
   BSE_TIME_RANGE_SHORT	= 1,
@@ -47,22 +36,6 @@ typedef enum
 #define	BSE_TIME_RANGE_MEDIUM_ms	(1000.0 *  10.0)
 #define	BSE_TIME_RANGE_LONG_ms		(1000.0 * 200.0)
 glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
-
-
-/* --- FIXME: deprecated constants --- */
-#define	BSE_MAX_N_TRACKS		(256)
-#define	BSE_MAX_ENV_TIME		(10000) /* ms */
-#define	BSE_BBUFFER_SIZE		(128)	// FIXME
-#define	BSE_MAX_BLOCK_PADDING		(64) /* Gsl wave_chunk_padding */
-#define BSE_MIN_BIT_SIZE                (8)
-#define BSE_MAX_BIT_SIZE                (16)
-#define BSE_DFL_BIN_DATA_BITS		(16)	// FIXME
-
-
-/* --- Convenience --- */
-#define	BSE_MIX_FREQ	(bse_engine_sample_freq ())
-#define	BSE_MIX_FREQ_f	((gfloat) BSE_MIX_FREQ)
-#define	BSE_MIX_FREQ_d	((gdouble) BSE_MIX_FREQ)
 
 
 /* --- async handlers --- */
@@ -125,7 +98,6 @@ gdouble	bse_db_to_factor	(gdouble	dB);
 gdouble	bse_db_from_factor	(gdouble	factor,
                                  gdouble	min_dB);
 #define	BSE_MINDB               (-96)   /* 32bit:-192 24bit:-144 16bit:-96 */
-
 
 G_END_DECLS
 

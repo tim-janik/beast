@@ -95,6 +95,7 @@ const gchar*    bse_intern_path_user_data       (const gchar    *dir);
 
 
 /* --- bbuffer utils --- */
+#define BSE_BBUFFER_SIZE        (128)
 void	bse_bbuffer_puts	(gchar       	 bbuffer[BSE_BBUFFER_SIZE],
 				 const gchar	*string);
 guint	bse_bbuffer_printf	(gchar		 bbuffer[BSE_BBUFFER_SIZE],

@@ -1,3 +1,16 @@
+Sat Dec 18 23:58:04 2004  Tim Janik  <timj@gtk.org>
+
+	* bseconstvalues.h: constant cleanups, removed _f and _d postfixes and
+	superfluous casts.
+
+	* bseglobals.h: removed deprectaed constants. deprecated time ranges
+	which are badly choosen and ADSR specific.
+
+	* bsemathsignal.h: consolidation of signal<->frequency 
+	conversion macros.
+
+	* bseutils.h: define bbuffer size.
+
 Fri Dec 17 21:19:25 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecxxutils.h: removed assert_derivation() and assert_ptr_derivation().

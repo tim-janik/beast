@@ -114,13 +114,14 @@ wave_guide_stop (WaveGuide *wave)
 }
 
 static void
-wave_guide_set_freq (WaveGuide *wave, float frq)
+wave_guide_set_freq (WaveGuide *wave,
+                     double     frq)
 {
   guint i;
   
   wave->freq = frq;
   wave->pos = 0;
-  wave->wavelen = (int) (BSE_MIX_FREQ / frq);
+  wave->wavelen = (int) (bse_engine_sample_freq() / frq);
   wave->lowpass_data = 0.0;
   wave_guide_unstop (wave);
   
@@ -168,7 +169,7 @@ wave_guide_pluck (WaveGuide *wave,
 static void
 wave_guide_init (WaveGuide *wave, float frq)
 {
-  wave->data = g_new0 (gfloat, (BSE_MIX_FREQ + 49) / 50);
+  wave->data = g_new0 (gfloat, (bse_engine_sample_freq() + 49) / 50);
   wave_guide_set_freq (wave, frq);
 }
 
@@ -563,7 +564,7 @@ dav_guitar_prepare (BseSource *source,
   DavGuitar *guitar = DAV_GUITAR (source);
   int i;
   
-  guitar->hipass_coeff = pow (0.5, 20.0 / BSE_MIX_FREQ_f);
+  guitar->hipass_coeff = pow (0.5, 20.0 / bse_engine_sample_freq());
   guitar->hipass_data = 0.0;
   
   wave_guide_prepare (&guitar->body);
