@@ -334,7 +334,7 @@ struct FileInfo
   int
   bytes_per_frame (int wave_format)
   {
-    return ((wave_format & PAT_FORMAT_16BIT) ? 2 : 1) * header->channels;
+    return ((wave_format & PAT_FORMAT_16BIT) ? 2 : 1);
   }
 
   FileInfo (const gchar *file_name, BseErrorType *error_p)
@@ -406,7 +406,9 @@ struct FileInfo
     wdsc.name = g_strdup (file_name);
     wdsc.n_chunks = instrument->sampleCount;
     wdsc.chunks = (typeof (wdsc.chunks)) g_malloc0 (sizeof (wdsc.chunks[0]) * wdsc.n_chunks);
-    wdsc.n_channels = header->channels;
+    /* header->channels means output channels, GUS Patches are mono only */
+    wdsc.n_channels = 1;
+    wdsc.xinfos = bse_xinfos_add_value (wdsc.xinfos, "play-type", "gus-patch-mono");
 
     for (guint i = 0; i < wdsc.n_chunks; i++)
       {
@@ -450,6 +452,7 @@ struct FileInfo
         g_strfreev (wdsc.chunks[i].xinfos); // FIXME: double free with gslloader.c
         wdsc.chunks[i].xinfos = NULL;
       }
+    g_strfreev (wdsc.xinfos);
     g_free (wdsc.name);
     g_free (wdsc.chunks);
 

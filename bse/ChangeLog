@@ -1,3 +1,7 @@
+Sun Jan  2 11:41:05 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslloader-pat.cc: GUS Patches are only mono patches.
+
 Sat Jan  1 21:59:43 2005  Tim Janik  <timj@gtk.org>
 
 	* bseutils.[hc] bse_xinfos_dup_consolidated(): added flag to indicate 
@@ -65,12 +69,12 @@ Thu Dec 30 04:05:50 2004  Tim Janik  <timj@gtk.org>
 
 	* gslloader.c (gsl_wave_dsc_free): removed bogus g_strfreev().
 
-Wed Dec 29 22:24:51 2004 Stefan Westerfeld <stefan@space.twc.de>
+Wed Dec 29 22:24:51 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslloader.h:
 	* gslloader-pat.cc: Code cleanups and better error handling.
 
-Wed Dec 29 12:52:01 2004 Stefan Westerfeld <stefan@space.twc.de>
+Wed Dec 29 12:52:01 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsestorage.c: Include "gslcommon.h" for gsl_byte_order_to_string.
 	This fixes a segfault (and compile warning) on AMD64.
