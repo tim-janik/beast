@@ -1,3 +1,9 @@
+Thu Jan  6 22:27:53 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslloader-pat.cc: Fix compilation: reintroduce data_offsets, as the
+	loader_offset field is no more. Changed xinfos of envelopes to
+	single comma delimited lists of floats.
+
 Thu Jan  6 19:51:36 2005  Tim Janik  <timj@gtk.org>
 
 	* bsewave.[hc]: keep inlined data handles opened, to protect against

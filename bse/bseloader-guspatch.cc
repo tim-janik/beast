@@ -284,6 +284,7 @@ struct FileInfo
   PatHeader          *header;
   PatInstrument      *instrument;
   vector<PatPatch *>  patches;
+  vector<long>	      data_offsets;
 
   GslWaveLoopType loop_type (int wave_format)
   {
@@ -349,18 +350,20 @@ struct FileInfo
   }
 
   string
-  envelope_to_string (PatPatch *patch)
+  envelope_array_to_string (byte *envelope_array)
   {
     string envelope_str;
 
     for (int i = 0; i < 6; i++)
       {
-	envelope_str += "(" + envelope_point_to_string (patch->filterRate[i]) +
-	                " " + envelope_point_to_string (patch->filterOffset[i]) + ")";
+	if (i)
+	  envelope_str += ",";
+	envelope_str += envelope_point_to_string (envelope_array[i]);
       }
 
     return envelope_str;
   }
+
 
   FileInfo (const gchar *file_name, BseErrorType *error_p)
   {
@@ -398,7 +401,6 @@ struct FileInfo
         return;
       }
 
-    vector<long> data_offsets;
     for (int i = 0; i<instrument->sampleCount; i++)
       {
 	PatPatch *patch = new PatPatch();
@@ -440,7 +442,6 @@ struct FileInfo
 	/* fill GslWaveChunk */
 	wdsc.chunks[i].mix_freq = patches[i]->sampleRate;
 	wdsc.chunks[i].osc_freq = patches[i]->origFreq / 1000.0;
-	wdsc.chunks[i].loader_offset = data_offsets[i];
 
 	GUS_PATCH_DEBUG ("orig_freq = %f (%d)", patches[i]->origFreq / 1000.0, patches[i]->origFreq);
 	GUS_PATCH_DEBUG ("min_freq = %f", patches[i]->minFreq / 1000.0);
@@ -459,8 +460,10 @@ struct FileInfo
             xinfos = bse_xinfos_add_num (xinfos, "loop-start", patches[i]->loopStart / frame_size);
             xinfos = bse_xinfos_add_num (xinfos, "loop-end", patches[i]->loopEnd / frame_size);
 
-	    xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope",
-		                           envelope_to_string (patches[i]).c_str());
+	    xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope-rates",
+		                           envelope_array_to_string (patches[i]->filterRate).c_str());
+	    xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope-offsets",
+		                           envelope_array_to_string (patches[i]->filterOffset).c_str());
           }
       }
   }
@@ -550,7 +553,7 @@ pat_create_chunk_handle (gpointer      data,
 	  G_LITTLE_ENDIAN,
 	  chunk->mix_freq,
 	  chunk->osc_freq,
-	  chunk->loader_offset,
+	  file_info->data_offsets[nth_chunk],
 	  patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
 
   GslDataHandle *dhandle;
@@ -560,7 +563,7 @@ pat_create_chunk_handle (gpointer      data,
 				 G_LITTLE_ENDIAN,
 				 chunk->mix_freq,
 				 chunk->osc_freq,
-				 chunk->loader_offset,
+				 file_info->data_offsets[nth_chunk],
 				 patch->wavesize / file_info->bytes_per_frame (patch->waveFormat),
                                  chunk->xinfos);
   return dhandle;
