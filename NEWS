@@ -5,6 +5,7 @@ Overview of Changes in BEAST/BSE 0.5.5:
   BseMonoKeyboard - Monophonic MIDI Keyboard input module
 * Implemented ability to use sequencer as modulation source
 * Added support for external MIDI events in song tracks
+* Added .bse file playback facility to bsesh
 * Added support for C++ Plugins
 * Now installs bse-plugin-generator for simple creation of C++ Modules
 * Added prototype support to IDL compiler [Stefan Westerfeld]
@@ -14,6 +15,7 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * Lots of small MIDI handling fixes
 * Various GUI improvements
 * Added manual pages for installed executables
+* Lots of bug fixes
 
 Overview of Changes in BEAST/BSE 0.5.4:
 
