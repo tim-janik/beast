@@ -307,6 +307,8 @@ sfidl:
     can be demarshalled in non-validated form after incompatible changes)
   - sfidl-parser.cc: property keyword should be nuked
   - sfidl-parser.cc: choices i18n
+  - sfidl-parser should assign increemental numbers to enum values as they are
+    parsed (starting at 1). i.e. implement the C++ enum numeration mechanism
   - install sfidl
   extensions:
 30- choices need support for icons per value
