@@ -1,3 +1,9 @@
+Wed Apr 16 19:25:45 2003  Tim Janik  <timj@gtk.org>
+
+	* freeverb/allpass.hpp:
+	* freeverb/allpass.cpp:
+	* freeverb/revmodel.hpp: fix missing newlines at end of files.
+
 Thu Mar 13 10:47:21 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemixer.c (bse_mixer_class_init): 
