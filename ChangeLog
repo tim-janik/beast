@@ -1,3 +1,7 @@
+Wed Feb  5 14:38:52 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-historic.texi: added article links.
+
 Wed Feb  5 03:52:58 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackroll.[hc]: support editable cells.
