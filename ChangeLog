@@ -1,3 +1,10 @@
+Sat Jul  5 01:03:13 2003  Tim Janik  <timj@gtk.org>
+
+	* shell/modules2grid.scm: ignore non-BseSource children.
+
+	* beast-gtk/bstparam-proxy.c (param_proxy_change_value): check for
+	pop->prefix to be != NULL before calling strlen on it.
+
 Wed Jun 25 01:22:54 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: rotate news, announce release.

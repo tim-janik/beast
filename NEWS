@@ -1,3 +1,7 @@
+Overview of Changes in BEAST/BSE 0.5.4:
+
+* Miscellaneous bug fixes
+
 Overview of Changes in BEAST/BSE 0.5.3:
 
 * Seperated core plugin loading from LADSPA plugin loading

@@ -135,7 +135,7 @@ param_proxy_change_value (GtkWidget *action,
 		    break;
 		  }
 	      }
-	  if (!item && l)			/* try case insensitive exact match with prefix */
+	  if (!item && pop->prefix && l)        /* try case insensitive exact match with prefix */
 	    {
 	      guint j = strlen (pop->prefix);
 	      for (i = 0; pop->paths[i]; i++)
