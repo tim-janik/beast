@@ -19,7 +19,7 @@
 #include "bsemult.h"
 
 #include <bse/bsechunk.h>
-#include <bse/bsemixer.h>
+#include <bse/bsehunkmixer.h>
 
 
 /* --- prototypes --- */
@@ -162,10 +162,10 @@ bse_mult_calc_chunk (BseSource *source,
 	      
 	      mv *= *d;
 	      mv >>= 15;
-	      if (mv >= -32767)
+	      if (mv >= -BSE_MAX_SAMPLE_VALUE)
 		*(d++) = mv;
 	      else
-		*(d++) = 32767;
+		*(d++) = BSE_MAX_SAMPLE_VALUE;
 	    }
 	  while (d < bound);
 

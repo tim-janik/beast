@@ -19,7 +19,7 @@
 #include "bseadder.h"
 
 #include <bse/bsechunk.h>
-#include <bse/bsemixer.h>
+#include <bse/bsehunkmixer.h>
 
 
 /* --- parameters --- */
@@ -205,7 +205,7 @@ bse_adder_calc_chunk (BseSource *source,
 {
   BseAdder *adder = BSE_ADDER (source);
   BseMixValue *mv, *bound;
-  BseSampleValue *v, *hunk;
+  BseSampleValue *hunk;
   guint c;
   
   g_return_val_if_fail (ochannel_id == BSE_ADDER_OCHANNEL_MONO, NULL);
@@ -272,19 +272,9 @@ bse_adder_calc_chunk (BseSource *source,
 	  }
       }
     
+  /* clip the mix buffer to output hunk */
   hunk = bse_hunk_alloc (1);
-  v = hunk;
-  mv = adder->mix_buffer;
-  do
-    {
-      if (*mv > 32767)
-	*(v++) = 32767;
-      else if (*mv < -32767)
-	*(v++) = -32767;
-      else
-	*(v++) = *mv;
-    }
-  while (++mv < bound);
+  bse_hunk_clip_mix_buffer (1, hunk, 1.0, adder->mix_buffer);
 
   return bse_chunk_new_orphan (1, hunk);
 }

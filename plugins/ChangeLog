@@ -1,3 +1,12 @@
+Sat Jan 15 19:51:16 2000  Tim Janik  <timj@gtk.org>
+
+	* bsemixer.[hc]: new source which will mix up to four input channels
+	at specified volumes together.
+
+	* *.c: adapted a couple plugins to include bsehunkmixer.h and make use
+	of bse_hunk_clip_mix_buffer(). enforced usage of BSE_MAX_SAMPLE_VALUE
+	instead of hardcoded numbers.
+
 Wed Jan 12 23:45:39 2000  Tim Janik  <timj@gtk.org>
 
 	* bsegenosc.[hc]: export BseGenOscWaveType to BSE and add a parameter

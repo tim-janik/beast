@@ -19,7 +19,7 @@
 #include "bsecompressor.h"
 
 #include <bse/bsechunk.h>
-#include <bse/bsemixer.h>
+#include <bse/bsehunkmixer.h>
 #include <math.h>
 
 
@@ -193,8 +193,8 @@ bse_compressor_calc_chunk (BseSource *source,
   ihunk = bse_chunk_complete_hunk (chunk);
   hunk = bse_hunk_alloc (1);
   
-  isample_fact = compr->pi_fact / 32767.0;
-  osample_fact = 2.0 / PI * 32767.0;
+  isample_fact = compr->pi_fact / BSE_MAX_SAMPLE_VALUE_f;
+  osample_fact = 2.0 / PI * BSE_MAX_SAMPLE_VALUE_f;
   
   for (i = 0; i < BSE_TRACK_LENGTH; i++)
     hunk[i] = atan (ihunk[i] * isample_fact) * osample_fact;

@@ -20,7 +20,7 @@
 
 #include <bse/bsechunk.h>
 #include <bse/bseheart.h>
-#include <bse/bsemixer.h>
+#include <bse/bsehunkmixer.h>
 #include <stdlib.h>
 #include <time.h>
 

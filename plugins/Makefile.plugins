@@ -51,6 +51,14 @@ bseloopback_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bseloopback.h
 
 ##
+## Plugin bsemixer
+##
+bsemixer_la_SOURCES = bsemixer.c
+bsemixer_la_LDFLAGS = -module -avoid-version
+bsemixer_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += bsemixer.h
+
+##
 ## Plugin bsemult
 ##
 bsemult_la_SOURCES = bsemult.c
@@ -88,6 +96,7 @@ plugin_LTLIBRARIES += \
 	bsefirfilter.la \
 	bsegenosc.la \
 	bseloopback.la \
+	bsemixer.la \
 	bsemult.la \
 	bsenoise.la \
 	greeting.la \
