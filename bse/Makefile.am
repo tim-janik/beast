@@ -73,6 +73,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsenullstream.h \
 	bseobject.h \
 	bseparam.h \
+	bseparasite.h \
 	bsepattern.h \
 	bsepcmstream.h \
 	bsepcmstream-oss.h \
@@ -120,6 +121,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsenullstream.c \
 	bseobject.c \
 	bseparam.c \
+	bseparasite.c \
 	bseparamcol.c \
 	bsepattern.c \
 	bsepcmstream.c \

@@ -16,33 +16,41 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include        "bsesource.h"
+
 #include        "bsechunk.h"
+#include        "bsecontainer.h"
+#include        "bsestorage.h"
 
 
 
 /* --- prototypes --- */
-static void     bse_source_class_base_init	(BseSourceClass	*class);
-static void     bse_source_class_base_destroy	(BseSourceClass	*class);
-static void     bse_source_class_init		(BseSourceClass	*class);
-static void     bse_source_init			(BseSource	*source,
-						 BseSourceClass	*class);
-static void     bse_source_do_shutdown		(BseObject	*object);
-static void     bse_source_calc_history		(BseSource	*source,
-						 guint		 ochannel_id);
-static void     bse_source_do_prepare		(BseSource	*source,
-						 BseIndex	 index);
-static void     bse_source_do_reset		(BseSource	*source);
-static void     bse_source_do_cycle		(BseSource	*source);
-static void	bse_source_do_add_input		(BseSource	*source,
-						 guint     	 ichannel_id,
-						 BseSource 	*input,
-						 guint     	 ochannel_id);
-static void	bse_source_do_remove_input	(BseSource	*source,
-						 guint		 input_index);
+static void         bse_source_class_base_init		(BseSourceClass	*class);
+static void         bse_source_class_base_destroy	(BseSourceClass	*class);
+static void         bse_source_class_init		(BseSourceClass	*class);
+static void         bse_source_init			(BseSource	*source,
+							 BseSourceClass	*class);
+static void         bse_source_do_shutdown		(BseObject	*object);
+static void         bse_source_calc_history		(BseSource	*source,
+							 guint		 ochannel_id);
+static void         bse_source_do_prepare		(BseSource	*source,
+							 BseIndex	 index);
+static void         bse_source_do_reset			(BseSource	*source);
+static void         bse_source_do_cycle			(BseSource	*source);
+static void	    bse_source_do_add_input		(BseSource	*source,
+							 guint     	 ichannel_id,
+							 BseSource 	*input,
+							 guint     	 ochannel_id);
+static void	    bse_source_do_remove_input		(BseSource	*source,
+							 guint		 input_index);
+static void	    bse_source_do_store_private		(BseObject	*object,
+							 BseStorage	*storage);
+static BseTokenType bse_source_do_restore_private	(BseObject      *object,
+							 BseStorage     *storage);
 
 
 /* --- variables --- */
-static BseTypeClass     *parent_class = NULL;
+static BseTypeClass *parent_class = NULL;
+static GQuark        quark_deferred_input = 0;
 
 
 /* --- functions --- */
@@ -109,6 +117,8 @@ bse_source_class_init (BseSourceClass *class)
   parent_class = bse_type_class_peek (BSE_TYPE_ITEM);
   object_class = BSE_OBJECT_CLASS (class);
   
+  object_class->store_private = bse_source_do_store_private;
+  object_class->restore_private = bse_source_do_restore_private;
   object_class->shutdown = bse_source_do_shutdown;
 
   class->prepare = bse_source_do_prepare;
@@ -150,6 +160,9 @@ bse_source_do_shutdown (BseObject *object)
   guint i;
   
   source = BSE_SOURCE (object);
+
+  if (bse_object_get_qdata (object, quark_deferred_input))
+    g_warning ("bse_source_do_shutdown(): Uhh ohh, source still contains deferred_input data");
 
   bse_source_clear_ochannels (source);
 
@@ -212,6 +225,26 @@ bse_source_class_add_ichannel (BseSourceClass *source_class,
 }
 
 guint
+bse_source_get_ichannel_id (BseSource   *source,
+			    const gchar *ichannel_name)
+{
+  guint i;
+
+  g_return_val_if_fail (BSE_IS_SOURCE (source), 0);
+  g_return_val_if_fail (ichannel_name != NULL, 0);
+
+  for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
+    {
+      BseSourceIChannelDef *ic_def = BSE_SOURCE_ICHANNEL_DEF (source, i + 1);
+
+      if (strcmp (ic_def->name, ichannel_name) == 0)
+	return i + 1;
+    }
+
+  return 0;
+}
+
+guint
 bse_source_class_add_ochannel (BseSourceClass *source_class,
 			       const gchar    *name,
 			       const gchar    *blurb,
@@ -235,6 +268,26 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
   source_class->ochannel_defs[index].n_tracks = n_tracks;
 
   return index + 1;
+}
+
+guint
+bse_source_get_ochannel_id (BseSource   *source,
+			    const gchar *ochannel_name)
+{
+  guint i;
+
+  g_return_val_if_fail (BSE_IS_SOURCE (source), 0);
+  g_return_val_if_fail (ochannel_name != NULL, 0);
+
+  for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
+    {
+      BseSourceOChannelDef *oc_def = BSE_SOURCE_OCHANNEL_DEF (source, i + 1);
+
+      if (strcmp (oc_def->name, ochannel_name) == 0)
+	return i + 1;
+    }
+
+  return 0;
 }
 
 static void
@@ -484,14 +537,14 @@ bse_source_set_input (BseSource *source,
   g_return_val_if_fail (!BSE_OBJECT_DESTROYED (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_OBJECT_DESTROYED (input), BSE_ERROR_INTERNAL);
   
-  ic_def = BSE_SOURCE_ICHANNEL_DEF (source, ichannel_id);
-  oc_def = BSE_SOURCE_OCHANNEL_DEF (input, ochannel_id);
-  
   if (ichannel_id < 1 || ichannel_id > BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
   if (ochannel_id < 1 || ochannel_id > BSE_SOURCE_N_OCHANNELS (input))
     return BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
 
+  ic_def = BSE_SOURCE_ICHANNEL_DEF (source, ichannel_id);
+  oc_def = BSE_SOURCE_OCHANNEL_DEF (input, ochannel_id);
+  
   if (ic_def->min_n_tracks > oc_def->n_tracks)
     return BSE_ERROR_SOURCE_TOO_MANY_ITRACKS;
   if (ic_def->max_n_tracks < oc_def->n_tracks)
@@ -756,4 +809,179 @@ bse_source_list_inputs (BseSource *source)
     list = g_list_prepend (list, source->inputs[i].osource);
   
   return list;
+}
+
+static void
+bse_source_do_store_private (BseObject	*object,
+			     BseStorage *storage)
+{
+  BseSource *source = BSE_SOURCE (object);
+  BseProject *project = bse_item_get_project (BSE_ITEM (source));
+  guint i;
+  
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->store_private)
+    BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
+
+  for (i = 0; i < source->n_inputs; i++)
+    {
+      BseSourceInput *input = source->inputs + i;
+      gchar *path = bse_container_make_item_path (BSE_CONTAINER (project),
+						  BSE_ITEM (input->osource),
+						  FALSE);
+
+      bse_storage_break (storage);
+      
+      bse_storage_printf (storage,
+			  "(source-input \"%s\" ",
+			  BSE_SOURCE_ICHANNEL_DEF (source, input->ichannel_id)->name);
+      bse_storage_push_level (storage);
+      bse_storage_printf (storage, "%s \"%s\"",
+			  path,
+			  BSE_SOURCE_OCHANNEL_DEF (input->osource, input->ochannel_id)->name);
+      bse_storage_pop_level (storage);
+      bse_storage_handle_break (storage);
+      bse_storage_putc (storage, ')');
+      g_free (path);
+    }
+}
+
+typedef struct _DeferredInput DeferredInput;
+struct _DeferredInput
+{
+  DeferredInput *next;
+  guint          ichannel_id;
+  gchar         *osource_path;
+  gchar         *ochannel_name;
+};
+
+static void
+deferred_input_free (gpointer data)
+{
+  do
+    {
+      DeferredInput *dinput = data;
+
+      data = dinput->next;
+      g_free (dinput->osource_path);
+      g_free (dinput->ochannel_name);
+      g_free (dinput);
+    }
+  while (data);
+}
+
+static void
+resolve_dinput (BseSource  *source,
+		BseStorage *storage,
+		gboolean    aborted,
+		BseProject *project)
+{
+  BseObject *object = BSE_OBJECT (source);
+  DeferredInput *dinput = bse_object_get_qdata (object, quark_deferred_input);
+
+  bse_object_remove_notifiers_by_func (BSE_OBJECT (project),
+				       resolve_dinput,
+				       source);
+
+  for (; dinput; dinput = dinput->next)
+    {
+      BseItem *item;
+      BseErrorType error;
+
+      item = bse_container_item_from_path (BSE_CONTAINER (project), dinput->osource_path);
+      if (!item || !BSE_IS_SOURCE (item))
+	{
+	  if (!aborted)
+	    bse_storage_warn (storage,
+			      "%s: unable to determine input source from \"%s\"",
+			      BSE_OBJECT_NAME (source),
+			      dinput->osource_path);
+	  continue;
+	}
+      error = bse_source_set_input (source,
+				    dinput->ichannel_id,
+				    BSE_SOURCE (item),
+				    bse_source_get_ochannel_id (BSE_SOURCE (item),
+								dinput->ochannel_name));
+      if (error && !aborted)
+	bse_storage_warn (storage,
+			  "%s: failed to create input link from \"%s\": %s",
+			  BSE_OBJECT_NAME (source),
+			  dinput->osource_path,
+			  bse_error_blurb (error));
+    }
+
+  bse_object_set_qdata (object, quark_deferred_input, NULL);
+}
+
+static BseTokenType
+bse_source_do_restore_private (BseObject  *object,
+			       BseStorage *storage)
+{
+  BseSource *source = BSE_SOURCE (object);
+  GScanner *scanner = storage->scanner;
+  GTokenType expected_token = BSE_TOKEN_UNMATCHED;
+  DeferredInput *dinput;
+  BseProject *project;
+  guint ichannel_id;
+  gchar *osource_path;
+
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
+    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+
+  /* feature source-input keywords */
+  if (expected_token != BSE_TOKEN_UNMATCHED ||
+      g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
+      !bse_string_equals ("source-input", scanner->next_value.v_identifier))
+    return expected_token;
+
+  g_scanner_get_next_token (scanner); /* eat "source-input" */
+  project = bse_item_get_project (BSE_ITEM (source));
+
+  /* parse ichannel name */
+  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
+    return G_TOKEN_STRING;
+  ichannel_id = bse_source_get_ichannel_id (source, scanner->value.v_string);
+
+  /* parse osource path */
+  if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
+    return G_TOKEN_IDENTIFIER;
+  osource_path = g_strdup (scanner->value.v_identifier);
+
+  /* parse ochannel name */
+  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
+    {
+      g_free (osource_path);
+
+      return G_TOKEN_STRING;
+    }
+
+  /* ok, we got the link information, save it away into our list
+   * and make sure we get notified from our project when to
+   * complete restoration
+   */
+  if (!quark_deferred_input)
+    quark_deferred_input = g_quark_from_static_string ("BseSourceDeferredInput");
+  dinput = g_new (DeferredInput, 1);
+  dinput->next = bse_object_get_qdata (object, quark_deferred_input);
+  dinput->ichannel_id = ichannel_id;
+  dinput->osource_path = osource_path;
+  dinput->ochannel_name = g_strdup (scanner->value.v_string);
+  if (dinput->next)
+    {
+      bse_object_kill_qdata_no_notify (object, quark_deferred_input);
+      bse_object_set_qdata_full (object, quark_deferred_input, dinput, deferred_input_free);
+    }
+  else
+    {
+      bse_object_set_qdata_full (object, quark_deferred_input, dinput, deferred_input_free);
+      bse_object_add_data_notifier (BSE_OBJECT (project),
+				    "complete_restore",
+				    resolve_dinput,
+				    source);
+    }
+
+  /* read closing brace */
+  return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
 }

@@ -434,7 +434,9 @@ bse_storage_put_param (BseStorage *storage,
       if (param->value.v_string)
 	{
 	  string = g_strdup_quoted (param->value.v_string);
+	  bse_storage_putc (storage, '"');
 	  bse_storage_puts (storage, string);
+	  bse_storage_putc (storage, '"');
 	  g_free (string);
 	}
       else
@@ -447,6 +449,7 @@ bse_storage_put_param (BseStorage *storage,
 	  gchar *path = bse_container_make_item_path (BSE_CONTAINER (project),
 						      param->value.v_item,
 						      TRUE);
+
 	  bse_storage_printf (storage, "(%s)", path);
 	  g_free (path);
 	}
@@ -525,12 +528,16 @@ bse_storage_flush_fd (BseStorage *storage,
     l = write (fd, storage->gstring->str, storage->gstring->len);
   while (l < 0 && errno == EINTR);
   
+  do
+    l = write (fd, "\n", 1);
+  while (l < 0 && errno == EINTR);
+
   /* dump binary data
    */
   if (storage->wblocks)
     {
       BseStorageBBlock *bblock;
-      gchar term[] = "\n\n; binary appendix:\n";
+      gchar term[] = "\n; binary appendix:\n";
       guint n = strlen (term) + 1;
 
       do
@@ -654,7 +661,7 @@ bse_storage_parse_rest (BseStorage     *storage,
 	    {
 	      if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
 		{
-		  g_warning ("try_statement() implementation <%p> is broken", try_statement);
+		  g_warning ("bse_storage_parse_rest(): try_statement() implementation <%p> is broken", try_statement);
 		  return G_TOKEN_ERROR;
 		}
 	      expected_token = bse_storage_warn_skip (storage,

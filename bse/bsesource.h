@@ -164,6 +164,10 @@ BseChunk*	bse_source_ref_state_chunk	(BseSource	*source,
 						 guint		 ochannel_id,
 						 BseIndex	 index);
 GList*		bse_source_list_inputs		(BseSource	*source);
+guint		bse_source_get_ichannel_id	(BseSource	*source,
+						 const gchar    *ichannel_name);
+guint		bse_source_get_ochannel_id	(BseSource	*source,
+						 const gchar    *ochannel_name);
 guint		bse_source_class_add_ichannel	(BseSourceClass	*source_class,
 						 const gchar	*name,
 						 const gchar	*blurb,

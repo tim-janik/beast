@@ -130,7 +130,6 @@ typedef struct	_BseDot			BseDot;
 typedef struct	_BseGlobals		BseGlobals;
 typedef struct	_BseIcon		BseIcon;
 typedef struct	_BseLfo			BseLfo;
-typedef struct	_BseParserData		BseParserData;
 typedef struct  _BsePixdata             BsePixdata;
 typedef struct	_BseMunk		BseMunk;
 typedef struct	_BseNote		BseNote;
@@ -250,6 +249,9 @@ typedef	void	(*BseNotify_name_set)		(BseObject	*object,
 typedef	void	(*BseNotify_param_changed)	(BseObject	*object,
 						 BseParamSpec	*pspec,
 						 gpointer	 data);
+typedef	void	(*BseNotify_store)		(BseObject	*object,
+						 BseStorage     *storage,
+						 gpointer	 data);
 typedef	void	(*BseNotify_io_changed)		(BseSource	*source,
 						 gpointer	 data);
 typedef void	(*BseNotify_write_chars)	(BseText	*text,
@@ -282,6 +284,10 @@ typedef void	(*BseNotify_note_unselected)	(BsePattern	*pattern,
 						 guint		 row,
 						 gpointer	 data);
 typedef void	(*BseNotify_sequencer_step)	(BseSong	*song,
+						 gpointer	 data);
+typedef void	(*BseNotify_complete_restore)	(BseProject	*project,
+						 BseStorage	*storage,
+						 gboolean        aborted,
 						 gpointer	 data);
 
 

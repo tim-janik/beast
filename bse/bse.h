@@ -52,6 +52,7 @@
 #include        <bse/bsenullstream.h>
 #include        <bse/bseobject.h>
 #include        <bse/bseparam.h>
+#include        <bse/bseparasite.h>
 #include        <bse/bsepattern.h>
 #include        <bse/bsepcmstream.h>
 #include        <bse/bsepcmstream-oss.h>

@@ -84,7 +84,7 @@ bse_master_class_init (BseMasterClass *class)
   source_class->add_input = bse_master_do_add_input;
   source_class->remove_input = bse_master_do_remove_input;
 
-  bse_source_class_add_ichannel (source_class, "Master input", NULL, 1, BSE_MAX_N_TRACKS);
+  bse_source_class_add_ichannel (source_class, "multi_in", "Master input", 1, BSE_MAX_N_TRACKS);
   /* FIXME: bad hack for multiple inputs */
   source_class->ichannel_defs[0].min_n_tracks = 0;
 }

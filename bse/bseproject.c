@@ -281,6 +281,8 @@ bse_project_restore (BseProject *project,
   /* FIXME: this should integrate with the object system better */
   
   scanner = storage->scanner;
+
+  bse_object_ref (BSE_OBJECT (project));
   
   while (!bse_storage_input_eof (storage) &&
 	 expected_token == G_TOKEN_NONE)
@@ -297,7 +299,12 @@ bse_project_restore (BseProject *project,
   
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
+
+  expected_token = expected_token != G_TOKEN_NONE;
+  BSE_NOTIFY (project, complete_restore, NOTIFY (OBJECT, storage, expected_token, DATA));
   
+  bse_object_unref (BSE_OBJECT (project));
+
   return (scanner->parse_errors >= scanner->max_parse_errors ?
 	  BSE_ERROR_PARSE_ERROR :
 	  BSE_ERROR_NONE);

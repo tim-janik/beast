@@ -123,11 +123,11 @@ bse_snet_class_init (BseSNetClass *class)
   container_class->forall_items = bse_snet_forall_items;
   
   ichannel_id = bse_source_class_add_ichannel (source_class,
-					       "Mono/Stereo/Multi Track In", "Input Channel",
+					       "multi_in", "Multi Track In",
 					       1, 2); /* FIXME: BSE_MAX_N_TRACKS */
   g_assert (ichannel_id == BSE_SNET_ICHANNEL_MULTI);
   ochannel_id = bse_source_class_add_ochannel (source_class,
-					       "Stereo Out", "Stereo Output",
+					       "stereo_out", "Stereo Out",
 					       2);
   g_assert (ochannel_id == BSE_SNET_OCHANNEL_STEREO);
 }

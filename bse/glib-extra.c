@@ -57,7 +57,7 @@ g_strdup_quoted (const gchar *string)
   
   g_return_val_if_fail (string != NULL, NULL);
   
-  gstring = g_string_new ("\"");
+  gstring = g_string_new ("");
   while (*string)
     {
       switch (*string)
@@ -89,7 +89,6 @@ g_strdup_quoted (const gchar *string)
 	}
       string++;
     }
-  g_string_append_c (gstring, '"');
   
   retval = gstring->str;
   g_string_free (gstring, FALSE);

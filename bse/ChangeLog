@@ -1,3 +1,42 @@
+Sat Nov 27 09:11:32 1999  Tim Janik  <timj@gtk.org>
+
+	* bseobject.c (bse_object_class_init): install parasite parsers.
+
+	* bseparasite.c:
+	(store_parasite_list): 
+	(parasite_parser): implemented storing/parsing abilities for parasites.
+
+	* bseobject.[hc]: cleaned up the custom parser interface.
+	(bse_object_do_try_statement): feature custom parsers.
+	(bse_object_store): emit store when storing.
+
+Sat Nov 27 05:40:45 1999  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c (bse_storage_flush_fd): terminate with newline if we
+	don't have binary data.
+
+	* bsesource.c:
+	(bse_source_do_store_private): store input links here.
+	(bse_source_do_restore_private): restore input links (deferred until
+	project emits complete_restore).
+
+	* bsesource.[hc]: new functions bse_source_get_ochannel_id and
+	bse_source_get_ichannel_id to get channel ids from their names.
+
+	* bseproject.c (bse_project_restore): emit complete_restore upon
+	completion.
+
+	* bsecontainer.c (bse_container_store_termination): eeek, need to chain
+	parent class handler here.
+
+Tue Nov 23 23:55:49 1999  Tim Janik  <timj@gtk.org>
+
+	* bseparasite.[hc]: started parasite implementation. only floats
+	are featured currently, and we need saving/parsing hooks.
+
+	* bseobject.[hc] (bse_object_kill_qdata_no_notify): remove a certain
+	data poriotn without notification.
+
 Sat Nov 20 12:27:21 1999  Tim Janik  <timj@gtk.org>
 
 	* bseparam.h (BseParamBits): added BSE_PARAM_HINT_RADIO.

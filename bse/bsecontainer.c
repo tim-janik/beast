@@ -422,8 +422,9 @@ bse_container_store_termination (BseObject  *object,
    */
   bse_container_store_items (BSE_CONTAINER (object), storage);
 
-  bse_storage_handle_break (storage);
-  bse_storage_putc (storage, ')');
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->store_termination)
+    BSE_OBJECT_CLASS (parent_class)->store_termination (object, storage);
 }
 
 static BseTokenType

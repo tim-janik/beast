@@ -20,6 +20,7 @@
 #include	"bseexports.h"
 #include	"bseparamcol.c" /* FIXME */
 #include	"bsestorage.h"
+#include	"bseparasite.h"
 #include	"bsecategories.h" /* FIXME */
 
 enum
@@ -27,6 +28,15 @@ enum
   PARAM_0,
   PARAM_NAME,
   PARAM_BLURB
+};
+
+
+/* -- structures --- */
+struct _BseObjectParser
+{
+  gchar                  *token;
+  BseObjectParseStatement parser;
+  gpointer                user_data;
 };
 
 
@@ -200,8 +210,8 @@ bse_object_class_base_init (BseObjectClass *class)
 				      bse_notifiers[i].notifier));
       }
   
-  class->n_parse_hooks = 0;
-  class->parse_hooks = NULL;
+  class->n_parsers = 0;
+  class->parsers = NULL;
   
   class->set_param = NULL;
   class->get_param = NULL;
@@ -221,9 +231,9 @@ bse_object_class_base_destroy (BseObjectClass *class)
 
   g_free (class->notifiers);
 
-  for (i = 0; i < class->n_parse_hooks; i++)
-    g_free (class->parse_hooks[i].token);
-  g_free (class->parse_hooks);
+  for (i = 0; i < class->n_parsers; i++)
+    g_free (class->parsers[i].token);
+  g_free (class->parsers);
 }
 
 static void
@@ -279,6 +289,9 @@ bse_object_class_init (BseObjectClass *class)
 	       bse_notifiers[i].notifier, bse_notifiers[i].object);
 
   quark_param_changed_queue = g_quark_from_static_string ("bse-param-changed-queue");
+
+  /* feature parasites */
+  bse_parasite_install_parsers (class);
 }
 
 static inline void
@@ -714,6 +727,16 @@ bse_object_set_qdata_full (BseObject     *object,
   g_datalist_id_set_data_full (&object->datalist, quark, data, data ? destroy : NULL);
 }
 
+void
+bse_object_kill_qdata_no_notify (BseObject *object,
+				 GQuark	    quark)
+{
+  g_return_if_fail (BSE_IS_OBJECT (object));
+  g_return_if_fail (quark > 0);
+  
+  g_datalist_id_remove_no_notify (&object->datalist, quark);
+}
+
 gpointer
 bse_object_get_qdata (BseObject *object,
 		      GQuark     quark)
@@ -932,34 +955,37 @@ bse_object_remove_notifier (gpointer _object,
 }
 
 void
-bse_object_class_add_parser (BseObjectClass     *class,
-			     const gchar        *token,
-			     BseObjectParserFunc parser)
+bse_object_class_add_parser (BseObjectClass         *class,
+			     const gchar            *token,
+			     BseObjectParseStatement parse_func,
+			     gpointer                user_data)
 {
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
-  g_return_if_fail (parser != NULL);
+  guint n;
 
-  class->n_parse_hooks++;
-  class->parse_hooks = g_renew (BseParseHook, class->parse_hooks, class->n_parse_hooks);
-  class->parse_hooks[class->n_parse_hooks - 1].token = g_strdup (token);
-  class->parse_hooks[class->n_parse_hooks - 1].parser = parser;
+  g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
+  g_return_if_fail (token != NULL);
+  g_return_if_fail (parse_func != NULL);
+
+  n = class->n_parsers++;
+  class->parsers = g_renew (BseObjectParser, class->parsers, class->n_parsers);
+  class->parsers[n].token = g_strdup (token);
+  class->parsers[n].parser = parse_func;
+  class->parsers[n].user_data = user_data;
 }
 
-BseObjectParserFunc
+static BseObjectParser*
 bse_object_class_get_parser (BseObjectClass *class,
 			     const gchar    *token)
 {
-  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (class), NULL);
+  g_return_val_if_fail (token != NULL, NULL);
 
   do
     {
       guint i;
 
-      for (i = 0; i < class->n_parse_hooks; i++)
-	if ((!token && !class->parse_hooks[i].token) ||
-	    (token && class->parse_hooks[i].token &&
-	     !strcmp (class->parse_hooks[i].token, token)))
-	  return class->parse_hooks[i].parser;
+      for (i = 0; i < class->n_parsers; i++)
+	if (strcmp (class->parsers[i].token, token) == 0)
+	  return class->parsers + i;
 
       class = bse_type_class_peek_parent (class);
     }
@@ -1381,10 +1407,15 @@ bse_object_store (BseObject  *object,
   g_return_if_fail (BSE_IS_STORAGE (storage));
 
   bse_object_ref (object);
+
   if (BSE_OBJECT_GET_CLASS (object)->store_private)
     BSE_OBJECT_GET_CLASS (object)->store_private (object, storage);
+
+  BSE_NOTIFY (object, store, NOTIFY (OBJECT, storage, DATA));
+
   if (BSE_OBJECT_GET_CLASS (object)->store_termination)
     BSE_OBJECT_GET_CLASS (object)->store_termination (object, storage);
+
   bse_object_unref (object);
 }
 
@@ -1469,6 +1500,7 @@ bse_object_do_try_statement (BseObject  *object,
 {
   GScanner *scanner = storage->scanner;
   GTokenType expected_token;
+  BseObjectParser *parser;
 
   /* ensure that the statement starts out with an identifier
    */
@@ -1500,7 +1532,15 @@ bse_object_do_try_statement (BseObject  *object,
 	return expected_token;
     }
 
-  /* FIXME: we need to feature custom parsing functions here */
+  /* hm, try custom parsing hooks now */
+  parser = bse_object_class_get_parser (BSE_OBJECT_GET_CLASS (object),
+					scanner->next_value.v_identifier);
+  if (parser)
+    {
+      g_scanner_get_next_token (scanner); /* read in the identifier */
+      
+      return parser->parser (object, storage, parser->user_data);
+    }
 
   /* no matches
    */

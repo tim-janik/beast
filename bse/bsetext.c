@@ -334,7 +334,9 @@ bse_text_put_param (BseText *text,
       if (param->value.v_string)
 	{
 	  string = g_strdup_quoted (param->value.v_string);
+	  bse_text_putc (text, '"');
 	  bse_text_puts (text, string);
+	  bse_text_putc (text, '"');
 	  g_free (string);
 	}
       else
