@@ -38,7 +38,8 @@ using namespace std;
 struct Options {
   string	      programName;
   guint               channel;
-  bool                cut_zeros;
+  bool                cut_zeros_head;
+  bool                cut_zeros_tail;
 
   map<string, FILE*>  outputFiles;
 
@@ -57,6 +58,26 @@ class Signal
   GslLong	  signal_length;
   GslLong         signal_offset;
 
+  /* check if the first sample is silent on all channels */
+  bool head_is_silent()
+  {
+    for (guint i = 0; i < signal_n_channels; i++)
+      if ((*this)[i] != 0)
+	return false;
+
+    return true;
+  }
+
+  /* check if the last sample is silent on all channels */
+  bool tail_is_silent()
+  {
+    for (guint i = 0; i < signal_n_channels; i++)
+      if ((*this)[signal_length - signal_n_channels + i] != 0)
+	return false;
+
+    return true;
+  }
+
 public:
   Signal (GslDataHandle *data_handle)
     : data_handle (data_handle)
@@ -68,16 +89,19 @@ public:
     memset (&peek_buffer, 0, sizeof (peek_buffer));
     peek_buffer.dir = 1; /* incremental direction */;
 
-    if (options.cut_zeros)
+    if (options.cut_zeros_head)
       {
 	/* cut_zeros head */
-	while ((*this)[options.channel] == 0 && signal_length > signal_n_channels)
+	while (head_is_silent() && signal_length > signal_n_channels)
 	  {
 	    signal_offset += signal_n_channels;
 	    signal_length -= signal_n_channels;
 	  }
+      }
+    if (options.cut_zeros_tail)
+      {
 	/* cut_zeros tail */
-	while ((*this)[signal_length - signal_n_channels + options.channel] == 0 && signal_length > signal_n_channels)
+	while (tail_is_silent() && signal_length > signal_n_channels)
 	  {
 	    signal_length -= signal_n_channels;
 	  }
@@ -389,7 +413,8 @@ Options::Options ()
 {
   programName = "bsefextract";
   channel = 0;
-  cut_zeros = false;
+  cut_zeros_head = false;
+  cut_zeros_tail = false;
 }
 
 FILE *Options::openOutputFile (const char *filename)
@@ -448,7 +473,17 @@ void Options::parse (int *argc_p, char **argv_p[])
 	}
       else if (strcmp ("--cut-zeros", opt) == 0)
 	{
-	  cut_zeros = true;
+	  cut_zeros_head = cut_zeros_tail = true;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--cut-zeros-head", opt) == 0)
+	{
+	  cut_zeros_head = true;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--cut-zeros-tail", opt) == 0)
+	{
+	  cut_zeros_tail = true;
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--channel", opt) == 0)
@@ -507,6 +542,8 @@ void Options::printUsage ()
   fprintf (stderr, " --help                      help for %s\n", programName.c_str());
   fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, " --cut-zeros                 cut zero samples at start/end of the signal\n");
+  fprintf (stderr, " --cut-zeros-head            cut zero samples at start of the signal\n");
+  fprintf (stderr, " --cut-zeros-tail            cut zero samples at end of the signal\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "If you want to write an extracted feature to a seperate files, you can\n");
   fprintf (stderr, "append =<filename> to a feature (example: %s --start-time=t.start t.wav).\n", programName.c_str());

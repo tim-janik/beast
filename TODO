@@ -185,8 +185,7 @@ DOCS:
   table etc. calculations
 
 FEATURE-EXTRACT/-COMPARE:
-- silence cut should examine all channels
-
+- base frequency feature
 
 MONITORING DIALOG:
 * Frame "Thread Info"
