@@ -127,8 +127,8 @@ while (<>) {
 	# ok! we now have the complete function body in $_
 
 	# parse parent type
-	if (/_type_register_static\s*\(\s*(\w+)\s*,/) {
-	    $uc_parent = $1;
+	if (/_type_register_(static|abstract)\s*\(\s*(\w+)\s*,/) {
+	    $uc_parent = $2;
 	} else {
 	    die "$0: can't figure parent type of $type from $file\n";
 	}
