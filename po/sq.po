@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-07 19:59+0200\n"
+"POT-Creation-Date: 2004-07-28 03:00+0200\n"
 "PO-Revision-Date: 2004-01-12 15:14+0100\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -47,9 +47,10 @@ msgstr ""
 msgid "Import a standard MIDI file into the current project"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstapp.c:76
 msgid "_Close"
-msgstr "_Mbylle"
+msgstr "_Mbyll"
 
 #: beast-gtk/bstapp.c:80
 msgid "_Save"
@@ -206,7 +207,7 @@ msgstr ""
 msgid "Module Link: "
 msgstr ""
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:901
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:747
 msgid "Module link"
 msgstr ""
 
@@ -214,11 +215,11 @@ msgstr ""
 msgid "Module Info"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.c:962 beast-gtk/bstsnetrouter.c:184
+#: beast-gtk/bstcanvassource.c:962 beast-gtk/bstsnetrouter.c:1084
 msgid "Input"
 msgstr "Input"
 
-#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:1081
 #: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
 #: plugins/artscompressor.idl:58
 msgid "Output"
@@ -410,15 +411,16 @@ msgid "Grow the scrollable area"
 msgstr ""
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bstbusview.c:34 beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Shto"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
-#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
-#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
+#: beast-gtk/bstsnetrouter.c:751 beast-gtk/bstbusview.c:35
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:64
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Elemino"
 
@@ -580,16 +582,16 @@ msgstr ""
 msgid "Loading project \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:723
+#: beast-gtk/bstmain.c:722
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.c:724
+#: beast-gtk/bstmain.c:723
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:725
+#: beast-gtk/bstmain.c:724
 msgid "Contributions made by:"
 msgstr ""
 
@@ -661,9 +663,10 @@ msgstr ""
 msgid "Time Entry"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstpartdialog.c:60
 msgid "Clear"
-msgstr "Pastro (fshi)"
+msgstr "Pastro"
 
 #: beast-gtk/bstpartdialog.c:60
 msgid "Clear the current selection"
@@ -1232,37 +1235,46 @@ msgstr ""
 msgid "Procedure"
 msgstr ""
 
-#: beast-gtk/bstprofiler.c:167
-#, fuzzy
+#. GRUT modified this item
+#: beast-gtk/bstprofiler.c:166
 msgid "Totals"
-msgstr "_Vegla"
+msgstr "Totalet"
 
-#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:378
 msgid "Thread Name"
 msgstr ""
 
-#: beast-gtk/bstprofiler.c:246
+#: beast-gtk/bstprofiler.c:248
+#, fuzzy
+msgid "TID"
+msgstr "ID"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Thread ID (on some systems the process ID)"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:249
 msgid "CPU%"
 msgstr ""
 
-#: beast-gtk/bstprofiler.c:246
+#: beast-gtk/bstprofiler.c:249
 msgid "Percentage of CPU usage"
 msgstr ""
 
-#: beast-gtk/bstprofiler.c:247
+#: beast-gtk/bstprofiler.c:250
 msgid "UTime"
 msgstr "UTime"
 
-#: beast-gtk/bstprofiler.c:247
+#: beast-gtk/bstprofiler.c:250
 msgid ""
 "Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
 
-#: beast-gtk/bstprofiler.c:248
+#: beast-gtk/bstprofiler.c:251
 msgid "STime"
 msgstr "STime"
 
-#: beast-gtk/bstprofiler.c:248
+#: beast-gtk/bstprofiler.c:251
 msgid ""
 "Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
@@ -1280,19 +1292,19 @@ msgstr ""
 #. "'X' - thread exited"),
 #. NULL, NULL, 0);
 #.
-#: beast-gtk/bstprofiler.c:262
+#: beast-gtk/bstprofiler.c:265
 msgid "Nice"
 msgstr "Nice"
 
-#: beast-gtk/bstprofiler.c:262
+#: beast-gtk/bstprofiler.c:265
 msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr ""
 
-#: beast-gtk/bstprofiler.c:263
+#: beast-gtk/bstprofiler.c:266
 msgid "#CPU"
 msgstr ""
 
-#: beast-gtk/bstprofiler.c:263
+#: beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
 msgstr ""
 
@@ -1907,108 +1919,108 @@ msgstr ""
 msgid "Preview"
 msgstr "Shikoje"
 
-#: beast-gtk/bstsnetrouter.c:69
+#: beast-gtk/bstsnetrouter.c:42
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
 "Use button1 to create links, button2 for movement and button3 to change "
 "properties"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:74
+#: beast-gtk/bstsnetrouter.c:47
 msgid "Edit"
 msgstr "Ndrysho"
 
-#: beast-gtk/bstsnetrouter.c:74
+#: beast-gtk/bstsnetrouter.c:47
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1077
+#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:923
 msgid "Palette"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:78
+#: beast-gtk/bstsnetrouter.c:51
 msgid "Toggle visibility of the tool palette"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:181
-msgid "PCM Output module"
-msgstr ""
-
-#: beast-gtk/bstsnetrouter.c:182
-msgid "DCA"
-msgstr ""
-
-#: beast-gtk/bstsnetrouter.c:182
-msgid "Standard amplifier module"
-msgstr ""
-
-#: beast-gtk/bstsnetrouter.c:183
-msgid "Snooper"
-msgstr ""
-
-#: beast-gtk/bstsnetrouter.c:183
-msgid "Signal debugging module"
-msgstr ""
-
-#: beast-gtk/bstsnetrouter.c:184
-msgid "PCM Input module"
-msgstr ""
-
-#: beast-gtk/bstsnetrouter.c:232
-msgid "Channel Hints"
-msgstr ""
-
-#: beast-gtk/bstsnetrouter.c:232
-msgid "Toggle channel name hints"
-msgstr ""
-
-#: beast-gtk/bstsnetrouter.c:772
+#: beast-gtk/bstsnetrouter.c:618
 msgid "Input channel in use"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:799 beast-gtk/bstsnetrouter.c:801
-#: beast-gtk/bstsnetrouter.c:837
+#: beast-gtk/bstsnetrouter.c:645 beast-gtk/bstsnetrouter.c:647
+#: beast-gtk/bstsnetrouter.c:683
 msgid "Create Link"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:799
+#: beast-gtk/bstsnetrouter.c:645
 msgid "Select output module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:801
+#: beast-gtk/bstsnetrouter.c:647
 msgid "Select input module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:857
+#: beast-gtk/bstsnetrouter.c:703
 msgid "Properties"
 msgstr "Pronësitë"
 
-#: beast-gtk/bstsnetrouter.c:858
+#: beast-gtk/bstsnetrouter.c:704
 msgid "Reset Properties"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:859
+#: beast-gtk/bstsnetrouter.c:705
 msgid "Delete Inputs"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:860
+#: beast-gtk/bstsnetrouter.c:706
 msgid "Delete Outputs"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:861 beast-gtk/bstsnetrouter.c:903
+#: beast-gtk/bstsnetrouter.c:707 beast-gtk/bstsnetrouter.c:749
 msgid "Show Info"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:887
+#: beast-gtk/bstsnetrouter.c:733
 msgid "Remove Module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:914
+#: beast-gtk/bstsnetrouter.c:760
 msgid "Delete Link"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:968
+#: beast-gtk/bstsnetrouter.c:814
 msgid "Insert Module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:1081
+msgid "PCM Output module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:1082
+msgid "DCA"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:1082
+msgid "Standard amplifier module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:1083
+msgid "Snooper"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:1083
+msgid "Signal debugging module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:1084
+msgid "PCM Input module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:1132
+msgid "Channel Hints"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:1132
+msgid "Toggle channel name hints"
 msgstr ""
 
 #: beast-gtk/bststest.c:550
@@ -2325,9 +2337,10 @@ msgstr ""
 msgid "Wave_s"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Zoom"
-msgstr "Shkalla"
+msgstr "Shkalla e zmadhimit"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "_Apply"
@@ -2954,80 +2967,88 @@ msgid "The execution state of the thread"
 msgstr ""
 
 #: bse/bsecore.idl:380
+msgid "Thread ID"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid "A unique number identifying this thread"
+msgstr ""
+
+#: bse/bsecore.idl:382
 msgid "Priority"
 msgstr "Prioriteti"
 
-#: bse/bsecore.idl:380
+#: bse/bsecore.idl:382
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 msgstr ""
 
-#: bse/bsecore.idl:383
+#: bse/bsecore.idl:385
 msgid "Processor"
 msgstr "Proçesori"
 
-#: bse/bsecore.idl:383
+#: bse/bsecore.idl:385
 msgid "The processor that this thread is currently being executed on"
 msgstr ""
 
-#: bse/bsecore.idl:385
+#: bse/bsecore.idl:387
 msgid "User Time"
 msgstr ""
 
-#: bse/bsecore.idl:385
+#: bse/bsecore.idl:387
 msgid "The CPU time spent executing instructions of this thread"
 msgstr ""
 
-#: bse/bsecore.idl:387
+#: bse/bsecore.idl:389
 msgid "System Time"
 msgstr ""
 
-#: bse/bsecore.idl:387
+#: bse/bsecore.idl:389
 msgid "The CPU time spent in the system for this thread"
 msgstr ""
 
-#: bse/bsecore.idl:389
+#: bse/bsecore.idl:391
 msgid "Child User Time"
 msgstr ""
 
-#: bse/bsecore.idl:389
+#: bse/bsecore.idl:391
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr ""
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:393
 msgid "Child System Time"
 msgstr ""
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:393
 msgid "The CPU time spent in the system for children of this thread"
 msgstr ""
 
-#: bse/bsecore.idl:432
+#: bse/bsecore.idl:434
 msgid "Latency [ms]"
 msgstr ""
 
-#: bse/bsecore.idl:433
+#: bse/bsecore.idl:435
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr ""
 
-#: bse/bsecore.idl:436
+#: bse/bsecore.idl:438
 #, fuzzy
 msgid "Synth Mixing Frequency"
 msgstr "Frekuenca"
 
-#: bse/bsecore.idl:437
+#: bse/bsecore.idl:439
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: bse/bsecore.idl:439
+#: bse/bsecore.idl:441
 #, fuzzy
 msgid "Synth Control Frequency"
 msgstr "Frekuenca"
 
-#: bse/bsecore.idl:440
+#: bse/bsecore.idl:442
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3186,25 +3207,45 @@ msgstr ""
 msgid "Disconnect Out"
 msgstr ""
 
+#: bse/bseparasite.proc:28 bse/bseparasite.proc:52 bse/bseparasite.proc:70
+#: bse/bseparasite.proc:89
+msgid "Item"
+msgstr ""
+
+#. GRUT modified this item
+#: bse/bseparasite.proc:29 bse/bseparasite.proc:53 bse/bseparasite.proc:71
+#: bse/bseparasite.proc:90
+msgid "Path"
+msgstr "Pozicioni"
+
+#: bse/bseparasite.proc:30
+msgid "Parasite Paths"
+msgstr ""
+
+#: bse/bseparasite.proc:54 bse/bseparasite.proc:72 bse/bseparasite.proc:91
+#, fuzzy
+msgid "Parasite"
+msgstr "Ngjite"
+
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
 msgstr ""
 
-#: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsepcminput.c:128 bse/bsebus.c:273 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr ""
 
-#: bse/bsepcminput.c:128
+#: bse/bsepcminput.c:128 bse/bsebus.c:273
 msgid "Left channel output"
 msgstr ""
 
-#: bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsepcminput.c:130 bse/bsebus.c:275 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr ""
 
-#: bse/bsepcminput.c:130
+#: bse/bsepcminput.c:130 bse/bsebus.c:275
 msgid "Right channel output"
 msgstr ""
 
@@ -3212,16 +3253,16 @@ msgstr ""
 msgid "/Input & Output/PCM Output"
 msgstr ""
 
-#: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsepcmoutput.c:128 bse/bsebus.c:269 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr ""
 
-#: bse/bsepcmoutput.c:128
+#: bse/bsepcmoutput.c:128 bse/bsebus.c:269
 msgid "Left channel input"
 msgstr ""
 
-#: bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsepcmoutput.c:130 bse/bsebus.c:271 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr ""
@@ -3266,6 +3307,65 @@ msgstr ""
 
 #: bse/bsesnooper.c:108
 msgid "Snoop Signal"
+msgstr ""
+
+#: bse/bsesong.proc:37
+msgid "Create a new mixer bus for a Song."
+msgstr ""
+
+#: bse/bsesong.proc:68
+msgid "Delete a mixer bus from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:106
+msgid "Retrieve master output bus of a song."
+msgstr ""
+
+#: bse/bsesong.proc:133
+msgid "Ensure that each part in a song is inserted into at least one track."
+msgstr ""
+
+#: bse/bsesong.proc:154
+msgid "Ensure that each track in a song is connected to an output bus."
+msgstr ""
+
+#: bse/bsesong.proc:194
+msgid "Create a new Part in a Song."
+msgstr ""
+
+#: bse/bsesong.proc:225
+msgid "Delete a Part from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:263
+msgid "Create a new Track for a Song."
+msgstr ""
+
+#: bse/bsesong.proc:299
+msgid "Delete a Track from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:338
+msgid "Find a track suitable for playing notes of a given part."
+msgstr ""
+
+#: bse/bsesong.proc:381
+msgid "Synthesize a note on a song of an active project."
+msgstr ""
+
+#: bse/bsesong.proc:431
+msgid "Retrieve song timing information at a specific tick."
+msgstr ""
+
+#: bse/bsebus.c:271
+#, fuzzy
+msgid "Right channel input"
+msgstr "Input"
+
+#: bse/bsebus.c:294
+msgid ""
+"Bus implementation for songs, used to route track audio signals to the "
+"master output."
 msgstr ""
 
 #: bse/bsestandardosc.c:106
@@ -3512,9 +3612,10 @@ msgstr ""
 msgid "Music Composer"
 msgstr ""
 
+#. GRUT modified this item
 #: data/bse.keys.in.h:1
 msgid "Audio"
-msgstr "Audio"
+msgstr "Zëri"
 
 #: data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
