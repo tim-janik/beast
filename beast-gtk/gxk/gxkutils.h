@@ -184,6 +184,11 @@ void         gxk_notebook_set_current_page_widget (GtkNotebook      *notebook,
                                                    GtkWidget        *page);
 GtkWidget*   gxk_vseparator_space_new             (gboolean          draw_seperator);
 GtkWidget*   gtk_notebook_current_widget          (GtkNotebook      *notebook);
+GtkWidget*   gxk_notebook_descendant_get_page     (GtkWidget        *widget);
+GtkWidget*   gxk_notebook_descendant_get_tab      (GtkWidget        *widget);
+GtkWidget*   gtk_box_get_nth_child                (GtkBox           *box,
+                                                   gint              pos);
+
 
 /* functions to affect a widget tree's toplevel */
 void         gxk_toplevel_delete                  (GtkWidget        *widget);

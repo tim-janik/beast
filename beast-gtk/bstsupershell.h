@@ -50,6 +50,7 @@ struct _BstSuperShellClass
 GType		bst_super_shell_get_type	(void);
 void		bst_super_shell_set_super	(BstSuperShell	*super_shell,
 						 SfiProxy	 super);
+GtkWidget*      bst_super_shell_create_label    (BstSuperShell  *super_shell);
 void            bst_super_shell_update_label    (BstSuperShell  *super_shell);
 
 G_END_DECLS

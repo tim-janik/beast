@@ -24,6 +24,8 @@
 #include "bstwaveview.h"
 #include "bstrackview.h"
 #include "bstsnetrouter.h"
+#include "bstgconfig.h"
+#include <string.h>
 
 enum {
   PROP_0,
@@ -140,26 +142,60 @@ bst_super_shell_finalize (GObject *object)
   G_OBJECT_CLASS (bst_super_shell_parent_class)->finalize (object);
 }
 
-static void
-bst_super_shell_name_set (BstSuperShell *self)
+void
+bst_super_shell_update_label (BstSuperShell *self)
 {
+  g_return_if_fail (BST_IS_SUPER_SHELL (self));
+
   GtkWidget *widget = GTK_WIDGET (self);
-  if (widget->parent && GTK_IS_NOTEBOOK (widget->parent))
+  GtkWidget *tab = gxk_notebook_descendant_get_tab (widget);
+  GtkWidget *box = tab ? GTK_BIN (tab)->child : NULL;
+  GtkWidget *label = tab ? gtk_box_get_nth_child (GTK_BOX (box), 1) : NULL;
+  if (GTK_IS_LABEL (label) && self->super)
     {
-      gchar *name = NULL;
+      /* discriminate super */
+      const gchar *stock, *name = bse_item_get_name (self->super);
+      gchar *tip;
       if (BSE_IS_WAVE_REPO (self->super))
-        name = g_strdup (_("Waves"));
+        {
+          name = _("Waves");
+          tip = g_strdup (_("Wave Repository"));
+          stock = BST_STOCK_MINI_WAVE_REPO;
+        }
+      else if (BSE_IS_SONG (self->super))
+        {
+          tip = g_strdup_printf (_("Song: %s"), name);
+          stock = BST_STOCK_MINI_SONG;
+        }
+      else if (BSE_IS_MIDI_SYNTH (self->super))
+        {
+          tip = g_strdup_printf (_("MIDI Synthesizer: %s"), name);
+          stock = BST_STOCK_MINI_MIDI_SYNTH;
+        }
+      else
+        {
+          tip = g_strdup_printf (_("Synthesizer: %s"), name);
+          stock = BST_STOCK_MINI_CSYNTH;
+        }
+      /* update tooltip */
+      gxk_widget_set_tooltip (tab, tip);
+      g_free (tip);
+      /* update image */
+      GtkWidget *image = gtk_box_get_nth_child (GTK_BOX (box), 0);
+      if (GTK_IS_IMAGE (image))
+        {
+          gchar *ostock = NULL;
+          GtkIconSize isize = 0;
+          gtk_image_get_stock (GTK_IMAGE (image), &ostock, &isize);
+          if (!ostock || strcmp (ostock, stock) != 0 || isize != GXK_ICON_SIZE_TABULATOR)
+            gtk_image_set_from_stock (GTK_IMAGE (image), stock, GXK_ICON_SIZE_TABULATOR);
+        }
+      /* update label */
+      if (BSE_IS_WAVE_REPO (self->super))
+        name = _("Waves");
       else if (self->super)
-        name = g_strconcat (bse_item_get_type (self->super),
-                            ":\n",
-                            bse_item_get_name (self->super),
-                            NULL);
-      widget = gtk_notebook_get_tab_label (GTK_NOTEBOOK (widget->parent), widget);
-      if (widget)
-	g_object_set (widget,
-                      "label", name ? name : "BstSuperShell",
-                      NULL);
-      g_free (name);
+        name = bse_item_get_name (self->super);
+      g_object_set (label, "label", name, NULL);
     }
 }
 
@@ -176,7 +212,7 @@ bst_super_shell_set_super (BstSuperShell *self,
       if (self->super)
 	{
           bse_proxy_disconnect (self->super,
-                                "any_signal::property-notify::uname", bst_super_shell_name_set, self,
+                                "any_signal::property-notify::uname", bst_super_shell_update_label, self,
                                 NULL);
           gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
 	  bse_item_unuse (self->super);
@@ -186,20 +222,27 @@ bst_super_shell_set_super (BstSuperShell *self,
 	{
 	  bse_item_use (self->super);
           bse_proxy_connect (self->super,
-                             "swapped_signal::property-notify::uname", bst_super_shell_name_set, self,
+                             "swapped_signal::property-notify::uname", bst_super_shell_update_label, self,
                              NULL);
           super_shell_add_views (self);
-	  bst_super_shell_name_set (self);
+	  bst_super_shell_update_label (self);
 	}
     }
 }
 
-void
-bst_super_shell_update_label (BstSuperShell *self)
+GtkWidget*
+bst_super_shell_create_label (BstSuperShell *super_shell)
 {
-  g_return_if_fail (BST_IS_SUPER_SHELL (self));
-
-  bst_super_shell_name_set (self);
+  GtkWidget *ev = g_object_new (GTK_TYPE_EVENT_BOX, NULL);
+  GtkWidget *image = gtk_image_new();
+  GtkWidget *label = g_object_new (GTK_TYPE_LABEL,
+                                   "width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
+                                   NULL);
+  GtkWidget *box = g_object_new (GTK_TYPE_HBOX, "parent", ev, NULL);
+  gtk_box_pack_start (GTK_BOX (box), image, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), label, TRUE, TRUE, 0);
+  gtk_widget_show_all (ev);
+  return ev;
 }
 
 static void

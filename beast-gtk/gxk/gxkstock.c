@@ -26,6 +26,7 @@ guint  gxk_size_big_button = 0;
 guint  gxk_size_canvas = 0;
 guint  gxk_size_toolbar = 0;
 guint  gxk_size_menu = 0;
+guint  gxk_size_tabulator = 0;
 guint  gxk_size_info_sign = 0;
 guint  gxk_size_palette = 0;
 static GtkIconFactory *stock_icon_factory = NULL;
@@ -43,6 +44,7 @@ _gxk_init_stock (void)
   gxk_size_big_button = GTK_ICON_SIZE_DND;      /* 32x32 */
   gxk_size_info_sign = GTK_ICON_SIZE_DIALOG;    /* 48x48 */
   gxk_size_menu = gtk_icon_size_register ("GxkIconSizeMenu", 24, 24); /* GTK_ICON_SIZE_MENU is 16x16 */
+  gxk_size_tabulator = gtk_icon_size_register ("GxkIconSizeTabulator", 24, 24);
   gxk_size_toolbar = gxk_size_big_button;
   gxk_size_canvas = gtk_icon_size_register ("GxkIconSizeCanvas", 64, 64);
   gxk_size_palette = gxk_size_toolbar;
@@ -51,6 +53,7 @@ _gxk_init_stock (void)
   gtk_icon_size_register_alias ("canvas", GXK_ICON_SIZE_CANVAS);
   gtk_icon_size_register_alias ("toolbar", GXK_ICON_SIZE_TOOLBAR);
   gtk_icon_size_register_alias ("menu", GXK_ICON_SIZE_MENU);
+  gtk_icon_size_register_alias ("tabulator", GXK_ICON_SIZE_TABULATOR);
   gtk_icon_size_register_alias ("info-sign", GXK_ICON_SIZE_INFO_SIGN);
   gtk_icon_size_register_alias ("palette", GXK_ICON_SIZE_PALETTE);
 }

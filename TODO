@@ -18,6 +18,8 @@ TODO:
 - the skin editor should offer loading skins, just like View/Skins
 - add more menu tooltips
 - mixer icon
+- icons for: BseSong, BseCSynth and BseWaveRepo (get rid of object type prefixes in the toplevel notebook, use icons)
+  * waverepo: similar to Lib... button; CSynth: box(filter,osc)+connection+speaker; Song: pages of notes
 - get rid of FIXMEs in beast-gtk/testgui.c
 - seqid changed notification *only* works for non-source children of BseSong
 - delete+undo on tracks kills connections (busses?)

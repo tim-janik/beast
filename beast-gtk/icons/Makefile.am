@@ -13,6 +13,9 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	event-control.xcf	\
 	knob.xcf		\
 	loopleft.xcf		\
+	mini-csynth.xcf		\
+	mini-song.xcf		\
+	mini-waverepo.xcf	\
 	mouse_tool.xcf		\
 	no_olink.xcf		\
 	noicon.xcf		\
@@ -55,6 +58,10 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_KNOB			$(srcdir)/knob.png		\
 	STOCK_LOAD			$(srcdir)/cdrom.png		\
 	STOCK_LOAD_LIB			$(srcdir)/cdroms.png		\
+	STOCK_MINI_CSYNTH		$(srcdir)/mini-csynth.png	\
+	STOCK_MINI_MIDI_SYNTH		$(srcdir)/mini-midi-synth.png	\
+	STOCK_MINI_SONG			$(srcdir)/mini-song.png		\
+	STOCK_MINI_WAVE_REPO		$(srcdir)/mini-waverepo.png	\
 	STOCK_MOUSE_TOOL		$(srcdir)/mouse_tool.png	\
 	STOCK_MUSIC_CUT			$(srcdir)/music-cut.png		\
 	STOCK_MUSIC_COPY		$(srcdir)/music-copy.png	\

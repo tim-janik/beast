@@ -37,6 +37,7 @@ typedef	struct	_BstBusMixerClass BstBusMixerClass;
 struct _BstBusMixer
 {
   BstItemView      parent_object;
+  GSList          *unlisteners;
 };
 struct _BstBusMixerClass
 {

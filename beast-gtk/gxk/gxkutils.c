@@ -734,6 +734,62 @@ gtk_notebook_current_widget (GtkNotebook *notebook)
 }
 
 /**
+ * gxk_notebook_descendant_get_page
+ * @widget:  valid #GtkWidget
+ * @RETURNS: notebook page widget or %NULL
+ *
+ * Find the innermost notebook page widget that contains @widget.
+ */
+GtkWidget*
+gxk_notebook_descendant_get_page (GtkWidget *widget)
+{
+  while (widget->parent && !GTK_IS_NOTEBOOK (widget->parent))
+    widget = widget->parent;
+  return widget->parent ? widget : NULL;
+}
+
+/**
+ * gxk_notebook_descendant_get_tab
+ * @widget:  valid #GtkWidget
+ * @RETURNS: notebook page tab widget or %NULL
+ *
+ * Find the innermost notebook page widget that contains @widget
+ * and return its tabulator widget.
+ */
+GtkWidget*
+gxk_notebook_descendant_get_tab (GtkWidget *widget)
+{
+  widget = gxk_notebook_descendant_get_page (widget);
+  return widget ? gtk_notebook_get_tab_label (GTK_NOTEBOOK (widget->parent), widget) : NULL;
+}
+
+/**
+ * gtk_box_get_nth_child
+ * @box:     a valid GtkBox
+ * @pos:     position of the requested child
+ * @RETURNS: a child of @box or %NULL
+ *
+ * Find the child at position @pos (0 indicates the first child) of
+ * @box and return it. To retrieve the last xchild of @box, -1
+ * may be passed as @pos.
+ */
+GtkWidget*
+gtk_box_get_nth_child (GtkBox *box,
+                       gint    pos)
+{
+  g_return_val_if_fail (GTK_IS_BOX (box), NULL);
+
+  GList *child = box->children;
+
+  if (child)
+    while (child->next && pos--)
+      child = child->next;
+
+  GtkBoxChild *child_info = child && pos <= 0 ? child->data : NULL;
+  return child_info ? child_info->widget : NULL;
+}
+
+/**
  * gxk_widget_showraise
  * @widget: a valid widget
  *

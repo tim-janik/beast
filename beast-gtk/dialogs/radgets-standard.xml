@@ -81,7 +81,6 @@
     default-pack:hfill="$(first-occupied,$hfill,$fill,1)"
     default-pack:vfill="$(first-occupied,$vfill,$fill,1)"
     default-pack:wrapped="$(first-occupied,$wrapped,0)"
-    default-pack:padding="$(ifdef,padding,$padding,0)"
     />
   <xdef:vwrap                 inherit="GtkVWrapBox"
     prop:aspect-ratio="$(first-occupied,$aspect-ratio,1)"
@@ -90,7 +89,6 @@
     default-pack:hfill="$(first-occupied,$hfill,$fill,1)"
     default-pack:vfill="$(first-occupied,$vfill,$fill,1)"
     default-pack:wrapped="$(first-occupied,$wrapped,0)"
-    default-pack:padding="$(ifdef,padding,$padding,0)"
     />
   <!-- menubar -->
   <xdef:menubar               inherit="GtkMenuBar" />

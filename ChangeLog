@@ -1,3 +1,26 @@
+Sun Aug 22 03:37:36 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: lots of tooltip additions.
+	sort notebook tabs by object type.
+
+	* beast-gtk/bstbusmixer.c: keep a list of items we listen on, for
+	proper destruction.
+
+	* beast-gtk/bstsupershell.[hc]: create and update notebook tabs with
+	tooltips and images of songs and synths.
+
+	* beast-gtk/dialogs/radgets-standard.xml: wrap boxes don't have a
+	padding pack property.
+
+	* beast-gtk/gxk/gxkstock.[hc]: added icon size for tabulators.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added convenience functions:
+	gxk_notebook_descendant_get_page(), gxk_notebook_descendant_get_tab()
+	and gtk_box_get_nth_child().
+
+	* beast-gtk/icons/*.{xcf|png}: added icons for song, wave-repo,
+	csynth and midi-synth.
+
 Fri Aug 20 18:13:41 2004  Tim Janik  <timj@gtk.org>
 
         * beast-gtk/bstbuseditor.[hc]: drive db-beams by db probes from the bus.

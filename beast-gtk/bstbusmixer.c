@@ -74,7 +74,8 @@ bus_mixer_item_added (SfiProxy     container,
   BstItemView *iview = BST_ITEM_VIEW (self);
   if (BSE_IS_ITEM (item) && bse_proxy_is_a (item, BST_ITEM_VIEW_GET_CLASS (self)->item_type))
     {
-      BST_ITEM_VIEW_GET_CLASS (iview)->listen_on (iview, item);
+      self->unlisteners = g_slist_prepend (self->unlisteners, (gpointer) item);
+      BST_ITEM_VIEW_GET_CLASS (self)->listen_on (iview, item);
       GtkWidget *be = bst_bus_editor_new (item);
       gxk_radget_add (self, NULL, be);
       gxk_widget_update_actions (self);
@@ -82,15 +83,16 @@ bus_mixer_item_added (SfiProxy     container,
 }
 
 static void
-bus_mixer_item_removed (SfiProxy     container,
+bus_mixer_item_removed (SfiProxy     unused1,
                         SfiProxy     item,
-                        gint         seqid,
+                        gint         unused2,
                         BstBusMixer *self)
 {
   BstItemView *iview = BST_ITEM_VIEW (self);
   if (BSE_IS_ITEM (item) && bse_proxy_is_a (item, BST_ITEM_VIEW_GET_CLASS (self)->item_type))
     {
-      BST_ITEM_VIEW_GET_CLASS (iview)->unlisten_on (iview, item);
+      self->unlisteners = g_slist_remove (self->unlisteners, (gpointer) item);
+      BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (iview, item);
       GtkContainer *container = gxk_radget_find_area (self, NULL);      /* find bus-editor container */
       GList *node, *list = gtk_container_get_children (container);
       for (node = list; node; node = node->next)
@@ -115,6 +117,11 @@ bus_mixer_set_container (BstItemView *iview,
   BstBusMixer *self = BST_BUS_MIXER (iview);
   if (iview->container)
     {
+      while (self->unlisteners)
+        {
+          SfiProxy item = (SfiProxy) g_slist_pop_head (&self->unlisteners);
+          bus_mixer_item_removed (0, item, 0, self);
+        }
       bse_proxy_disconnect (iview->container,
                             "any-signal", bus_mixer_item_added, self,
                             "any-signal", bus_mixer_item_removed, self,
@@ -156,11 +163,8 @@ static gboolean
 bus_mixer_action_check (gpointer data,
                         gulong   action)
 {
-  BstBusMixer *self = BST_BUS_MIXER (data);
-  BstItemView *iview = BST_ITEM_VIEW (self);
   switch (action)
     {
-      SfiProxy item;
     case ACTION_ADD_BUS:
       return TRUE;
     default:

@@ -29,6 +29,7 @@ G_BEGIN_DECLS
 #define GXK_ICON_SIZE_CANVAS	  (gxk_size_canvas)
 #define GXK_ICON_SIZE_TOOLBAR	  (gxk_size_toolbar)
 #define GXK_ICON_SIZE_MENU	  (gxk_size_menu)
+#define GXK_ICON_SIZE_TABULATOR	  (gxk_size_tabulator)
 #define GXK_ICON_SIZE_INFO_SIGN	  (gxk_size_info_sign)
 #define GXK_ICON_SIZE_PALETTE	  (gxk_size_palette)
 guint	gxk_size_width		  (GtkIconSize	 icon_size);
@@ -71,6 +72,7 @@ extern guint	gxk_size_big_button;
 extern guint	gxk_size_canvas;
 extern guint	gxk_size_toolbar;
 extern guint	gxk_size_menu;
+extern guint	gxk_size_tabulator;
 extern guint	gxk_size_info_sign;
 extern guint	gxk_size_palette;
 

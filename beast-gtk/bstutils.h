@@ -168,10 +168,7 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 #define BST_STOCK_PREFERENCES           GTK_STOCK_PREFERENCES
 #define BST_STOCK_PLAY                  GTK_STOCK_GO_FORWARD // FIXME
 #define BST_STOCK_STOP                  GTK_STOCK_STOP
-#define BST_STOCK_NEW_SONG              GTK_STOCK_NEW // FIXME
-#define BST_STOCK_NEW_CSYNTH            GTK_STOCK_NEW // FIXME
-#define BST_STOCK_NEW_MIDI_SYNTH        GTK_STOCK_NEW // FIXME
-#define BST_STOCK_REMOVE_SYNTH          GTK_STOCK_REMOVE // REMOVE
+#define BST_STOCK_REMOVE_SYNTH          GTK_STOCK_REMOVE
 #define BST_STOCK_DOC_NEWS              GTK_STOCK_NEW // FIXME
 #define BST_STOCK_HELP                  GTK_STOCK_HELP
 #define BST_STOCK_DOC_FAQ               GTK_STOCK_NEW // FIXME

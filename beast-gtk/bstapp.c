@@ -73,21 +73,22 @@ static const GxkStockAction file_open_actions[] = {
     BST_ACTION_MERGE_PROJECT,   BST_STOCK_MERGE, },
   { N_("_Import MIDI..."),      "",             N_("Import a standard MIDI file into the current project"),
     BST_ACTION_IMPORT_MIDI,     BST_STOCK_OPEN, },
-  { N_("_Close"),               "<ctrl>W",      NULL,
+  { N_("_Close"),               "<ctrl>W",      N_("Close the project"),
     BST_ACTION_CLOSE_PROJECT,   BST_STOCK_CLOSE, },
 };
 static const GxkStockAction file_save_actions[] = {
-  { N_("_Save"),                NULL,           NULL,
+  { N_("_Save"),                NULL,           N_("Write project to disk"),
     BST_ACTION_SAVE_PROJECT,    BST_STOCK_SAVE, },
-  { N_("Save _As..."),          NULL,           NULL,
+  { N_("Save _As..."),          NULL,           N_("Write project to a specific file"),
     BST_ACTION_SAVE_PROJECT_AS, BST_STOCK_SAVE_AS, },
 };
 static const GxkStockAction file_epilog_actions[] = {
-  { N_("_Quit"),                "<ctrl>Q",      NULL,
+  { N_("_Quit"),                "<ctrl>Q",      N_("Close all windows and quit"),
     BST_ACTION_EXIT,            BST_STOCK_QUIT, },
 };
 static const GxkStockAction preference_actions[] = {
-  { N_("_Preferences..."),      NULL,           NULL,   ACTION_SHOW_PREFERENCES,    BST_STOCK_PREFERENCES, },
+  { N_("_Preferences..."),      NULL,           N_("Adjust overall program behaviour"),
+    ACTION_SHOW_PREFERENCES,    BST_STOCK_PREFERENCES, },
 };
 static const GxkStockAction rebuild_actions[] = {
   { N_("Rebuild"),              NULL,           NULL,   BST_ACTION_REBUILD, },
@@ -96,58 +97,62 @@ static const GxkStockAction about_actions[] = {
   { N_("_About..."),            NULL,           NULL,   ACTION_HELP_ABOUT,          BST_STOCK_ABOUT },
 };
 static const GxkStockAction undo_actions[] = {
-  { N_("_Undo"),                "<ctrl>Z",      NULL,
+  { N_("_Undo"),                "<ctrl>Z",      N_("Undo the effect of the last action"),
     BST_ACTION_UNDO,            BST_STOCK_UNDO, },
-  { N_("_Redo"),                "<ctrl>R",      NULL,
+  { N_("_Redo"),                "<ctrl>R",      N_("Redo the last undone action"),
     BST_ACTION_REDO,            BST_STOCK_REDO, },
 };
 static const GxkStockAction undo_dvl_actions[] = {
-  { N_("_Clear Undo"),          NULL,           NULL,
+  { N_("_Clear Undo"),          NULL,           N_("Delete the complete undo history"),
     BST_ACTION_CLEAR_UNDO,      BST_STOCK_CLEAR_UNDO, },
 };
 static const GxkStockAction dialog_actions[] = {
-  { N_("Procedure _Browser"),   NULL,           NULL,
+  { N_("Procedure _Browser"),   NULL,           N_("Display an overview of all procedures"),
     ACTION_SHOW_PROC_BROWSER, },
   { N_("Rack Editor"),          NULL,           NULL,
     ACTION_RACK_EDITOR, },
-  { N_("Profiler"),             NULL,           NULL,
+  { N_("Profiler"),             NULL,           N_("Display statistics and timing information"),
     ACTION_SHOW_PROFILER, },
-  { N_("New View"),             NULL,           NULL,
+  { N_("New View"),             NULL,           N_("Create an extra view of the project"),
     ACTION_EXTRA_VIEW, },
 };
 static const GxkStockAction playback_actions[] = {
-  { N_("_Play"),                "<ctrl>P",      NULL,
+  { N_("_Play"),                "<ctrl>P",      N_("Play or restart playback of the project"),
     BST_ACTION_START_PLAYBACK,  BST_STOCK_PLAY },
-  { N_("_Stop"),                "<ctrl>S",      NULL,
+  { N_("_Stop"),                "<ctrl>S",      N_("Stop playback of the project"),
     BST_ACTION_STOP_PLAYBACK,  BST_STOCK_STOP },
 };
 static const GxkStockAction project_actions[] = {
-  { N_("New Song"),             NULL,           NULL,
-    BST_ACTION_NEW_SONG,        BST_STOCK_NEW_SONG },
-  { N_("New Custom Synthesizer"), NULL,         NULL,
-    BST_ACTION_NEW_CSYNTH,      BST_STOCK_NEW_CSYNTH },
-  { N_("New MIDI Synthesizer"), NULL,           NULL,
-    BST_ACTION_NEW_MIDI_SYNTH,  BST_STOCK_NEW_MIDI_SYNTH },
-  { N_("Remove Song or Synthesizer"), NULL,     NULL,
+  { N_("New Song"),             NULL,           N_("Create a new song, consisting of a mixer, tracks, parts and notes"),
+    BST_ACTION_NEW_SONG,        BST_STOCK_MINI_SONG },
+  { N_("New Custom Synthesizer"), NULL,         N_("Create a new synthesizer mesh to be used as effect or instrument in songs"),
+    BST_ACTION_NEW_CSYNTH,      BST_STOCK_MINI_CSYNTH },
+  { N_("New MIDI Synthesizer"), NULL,           N_("Create a new MIDI synthesizer to control an instrument from external MIDI events"),
+    BST_ACTION_NEW_MIDI_SYNTH,  BST_STOCK_MINI_MIDI_SYNTH },
+  { N_("Remove Song or Synthesizer"), NULL,     N_("Remove the currently selected synthesizer (song)"),
     BST_ACTION_REMOVE_SYNTH,    BST_STOCK_REMOVE_SYNTH },
 };
 static const GxkStockAction library_files_actions[] = {
-  { N_("Load _Instrument"),     NULL,           NULL,
+  { N_("Load _Instrument"),     NULL,           N_("Load synthesizer mesh from instruments folder"),
     BST_ACTION_MERGE_INSTRUMENT, },
-  { N_("Load _Effect"),         NULL,           NULL,
+  { N_("Load _Effect"),         NULL,           N_("Load synthesizer mesh from effects folder"),
     BST_ACTION_MERGE_EFFECT, },
-  { N_("Save As Instrument"),   NULL,           NULL,
+  { N_("Save As Instrument"),   NULL,           N_("Save synthesizer mesh to instruments folder"),
     BST_ACTION_SAVE_INSTRUMENT, },
-  { N_("Save As Effect"),       NULL,           NULL,
+  { N_("Save As Effect"),       NULL,           N_("Save synthesizer mesh to effects folder"),
     BST_ACTION_SAVE_EFFECT, },
 };
 static const GxkStockAction simple_help_actions[] = {
-  { N_("_Release Notes..."),    NULL,           NULL,   ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
-  { N_("Quick Start..."),       NULL,           NULL,   ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
-  { N_("_FAQ..."),              NULL,           NULL,   ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
+  { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),
+    ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
+  { N_("Quick Start..."),       NULL,           N_("Provides an introduction into the most common tasks"),
+    ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
+  { N_("_FAQ..."),              NULL,           N_("Frequently asked questions"),
+    ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
 };
 static const GxkStockAction devel_help_actions[] = {
-  { N_("GSL Engine..."),        NULL,           NULL,   ACTION_HELP_GSL_PLAN,       BST_STOCK_DOC_DEVEL },
+  { N_("DSP Engine..."),        NULL,           N_("Technical description of the multi-threaded synthesis engine innards"),
+    ACTION_HELP_GSL_PLAN,       BST_STOCK_DOC_DEVEL },
 };
 
 
@@ -413,10 +418,36 @@ bst_app_get_current_super (BstApp *app)
   return 0;
 }
 
+static gint
+proxy_rate_super (SfiProxy p)
+{
+  if (BSE_IS_WAVE_REPO (p))
+    return 1;
+  else if (BSE_IS_SONG (p))
+    return 2;
+  else if (BSE_IS_MIDI_SYNTH (p))
+    return 4;
+  else if (BSE_IS_CSYNTH (p))
+    return 3;
+  return 5;
+}
+
+static gint
+proxyp_cmp_supers (gconstpointer v1,
+                   gconstpointer v2,
+                   gpointer      data)
+{
+  const SfiProxy *p1 = v1;
+  const SfiProxy *p2 = v2;
+  if (*p1 == *p2)
+    return 0;
+  return proxy_rate_super (*p1) - proxy_rate_super (*p2);
+}
+
 void
 bst_app_reload_supers (BstApp *app)
 {
-  GtkWidget *old_page, *old_focus, *song_page = NULL, *synth_page = NULL;
+  GtkWidget *old_page, *old_focus, *first_synth = NULL;
   GSList *page_list = NULL;
   GSList *slist;
   BseItemSeq *iseq;
@@ -435,15 +466,23 @@ bst_app_reload_supers (BstApp *app)
       gtk_container_remove (GTK_CONTAINER (app->notebook), page_list->data);
     }
   
+  /* get supers */
   iseq = bse_project_get_supers (app->project);
+  SfiRing *ring, *supers = NULL;
+  /* convert to ring */
   for (i = 0; i < iseq->n_items; i++)
+    supers = sfi_ring_append (supers, iseq->items + i);
+  /* sort supers */
+  supers = sfi_ring_sort (supers, proxyp_cmp_supers, NULL);
+  /* update shells */
+  for (ring = supers; ring; ring = sfi_ring_next (ring, supers))
     {
-      GtkWidget *label, *page = NULL;
-      GSList *node;
-      
-      if (!BST_DBG_EXT && bse_item_internal (iseq->items[i]))
+      SfiProxy *pp = ring->data, super = *pp;
+      if (bse_item_internal (super) && !BST_DBG_EXT)
         continue;
-      
+
+      GtkWidget *page = NULL;
+      GSList *node;
       for (node = page_list; node; node = node->next)
         if (BST_SUPER_SHELL (node->data)->super == iseq->items[i])
           {
@@ -453,33 +492,27 @@ bst_app_reload_supers (BstApp *app)
           }
       if (!page)
         {
-          page = g_object_new (BST_TYPE_SUPER_SHELL, "super", iseq->items[i], NULL);
+          page = g_object_new (BST_TYPE_SUPER_SHELL, "super", super, NULL);
           g_object_ref (page);
           gtk_object_sink (GTK_OBJECT (page));
         }
-      if (page)
-        {
-          if (!song_page && BSE_IS_SONG (iseq->items[i]))
-            song_page = page;
-          else if (!synth_page && BSE_IS_SNET (iseq->items[i]))
-            synth_page = page;
-          label = g_object_new (GTK_TYPE_LABEL,
-                                "visible", TRUE,
-                                "width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
-                                NULL);
-          gtk_notebook_append_page (app->notebook, page, label);
-          gtk_notebook_set_tab_label_packing (app->notebook, page, FALSE, TRUE, GTK_PACK_START);
-          bst_super_shell_update_label (BST_SUPER_SHELL (page));
-          gtk_widget_unref (page);
-        }
+      if (!first_synth && BSE_IS_SNET (super))
+        first_synth = page;
+      GtkWidget *label = bst_super_shell_create_label (BST_SUPER_SHELL (page));
+      gtk_notebook_append_page (app->notebook, page, label);
+      gtk_notebook_set_tab_label_packing (app->notebook, page, FALSE, TRUE, GTK_PACK_START);
+      bst_super_shell_update_label (BST_SUPER_SHELL (page));
+      gtk_widget_unref (page);
     }
+  /* free ring */
+  sfi_ring_free (ring);
+
+  /* restore page */
   if (old_page && old_page->parent == GTK_WIDGET (app->notebook))
     gxk_notebook_set_current_page_widget (app->notebook, old_page);
-  else if (song_page)
-    gxk_notebook_set_current_page_widget (app->notebook, song_page);
-  else if (synth_page)
-    gxk_notebook_set_current_page_widget (app->notebook, synth_page);
-  
+  else if (first_synth)
+    gxk_notebook_set_current_page_widget (app->notebook, first_synth);
+  /* restore focus */
   if (old_focus)
     {
       if (old_page && gtk_widget_is_ancestor (old_focus, old_page) &&
