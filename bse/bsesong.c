@@ -47,10 +47,6 @@ enum
   PROP_TICK_POINTER,
 };
 
-enum {
-  SIGNAL_LAST
-};
-
 
 /* --- prototypes --- */
 static void         bse_song_update_tpsi_SL   (BseSong            *song);
