@@ -24,7 +24,8 @@ CLEANFILES += $(gen_sources)
 bsecxxapi.h: $(top_builddir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include <bse/bsecxxsmart.h>\n" > xgen-bcah \
-	&& echo -e "#include <bsw/bswcxxutils.h>\n" > xgen-bcah \
+	&& echo -e "#include <string>\n" >> xgen-bcah \
+	&& echo -e "extern inline std::string sfi_value_get_cxxstring(GValue*v) { return std::string (sfi_value_get_string (v)); }" >> xgen-bcah \
 	&& $(SFIDL) --cxx --header --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcah \
 	&& cp xgen-bcah $@ \
 	&& rm -f xgen-bcah

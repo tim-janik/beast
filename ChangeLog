@@ -1,3 +1,7 @@
+Sat Nov 29 06:59:18 2003  Tim Janik  <timj@gtk.org>
+
+	* tests/Makefile.am: revert last change which broke compilation again.
+
 Sat Nov 29 03:05:05 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am: Use bsw/bswcxxutils.h again. This makes NULL
