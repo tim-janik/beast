@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ struct _CEntry
 {
   CEntry  *next;
   GQuark   category;
-  guint    mindex;
+  guint    mindex, lindex;
   GType    type;
   BswIcon *icon;
 };
@@ -80,6 +80,23 @@ category_strip_toplevels (const gchar *category)
   return 0;
 }
 
+static guint
+leaf_index (const gchar *string)
+{
+  gboolean in_quote = FALSE;
+  guint pos = 0;
+  const gchar *p;
+
+  for (p = string; *p; p++)
+    switch (*p)
+      {
+      case '\\':	in_quote = TRUE;			break;
+      case '/':		pos = in_quote ? pos : p - string;	/* fall through */
+      default:		in_quote = FALSE;
+      }
+  return pos;
+}
+
 static inline CEntry*
 centry_new (const gchar *caller,
 	    const gchar *category)
@@ -117,6 +134,7 @@ centry_new (const gchar *caller,
   centry->next = cat_entries;
   cat_entries = centry;
   centry->mindex = mindex - 1;
+  centry->lindex = leaf_index (category);
   centry->category = g_quark_from_string (category);
 
   cats_need_sort = TRUE;
@@ -226,6 +244,7 @@ categories_match (const gchar *pattern,
 	  cats = g_renew (BseCategory, cats, n_cats);
 	  cats[i].category = category;
 	  cats[i].mindex = centry->mindex;
+	  cats[i].lindex = centry->lindex;
 	  cats[i].type = centry->type;
 	  cats[i].icon = centry->icon;
 	}
@@ -284,6 +303,7 @@ bse_categories_from_type (GType   type,
 	cats = g_renew (BseCategory, cats, n_cats);
 	cats[i].category = g_quark_to_string (centry->category);
 	cats[i].mindex = centry->mindex;
+	cats[i].lindex = centry->lindex;
 	cats[i].type = centry->type;
 	cats[i].icon = centry->icon;
       }

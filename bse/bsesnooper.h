@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine
+/* BseSnooper - BSE Snooper
  * Copyright (C) 1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BSE_OUT_PORT_H__
-#define __BSE_OUT_PORT_H__
+#ifndef __BSE_SNOOPER_H__
+#define __BSE_SNOOPER_H__
 
 #include <bse/bsesource.h>
 
@@ -26,35 +26,37 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+
+
+
 /* --- object type macros --- */
-#define BSE_TYPE_OUT_PORT		(BSE_TYPE_ID (BseOutPort))
-#define BSE_OUT_PORT(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_OUT_PORT, BseOutPort))
-#define BSE_OUT_PORT_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_OUT_PORT, BseOutPortClass))
-#define BSE_IS_PORT(object)		(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_OUT_PORT))
-#define BSE_IS_PORT_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_OUT_PORT))
-#define BSE_OUT_PORT_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_OUT_PORT, BseOutPortClass))
+#define BSE_TYPE_SNOOPER              (BSE_TYPE_ID (BseSnooper))
+#define BSE_SNOOPER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SNOOPER, BseSnooper))
+#define BSE_SNOOPER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SNOOPER, BseSnooperClass))
+#define BSE_IS_SNOOPER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SNOOPER))
+#define BSE_IS_SNOOPER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SNOOPER))
+#define BSE_SNOOPER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SNOOPER, BseSnooperClass))
 
 
-/* --- BseOutPort module --- */
-typedef struct _BseOutPort      BseOutPort;
-typedef struct _BseOutPortClass BseOutPortClass;
-struct _BseOutPort
+/* --- BseSnooper source --- */
+typedef struct _BseSnooper     BseSnooper;
+typedef struct _BseSourceClass BseSnooperClass;
+struct _BseSnooper
 {
-  BseSource	 parent_object;
-  
-  gchar		*port_name;
-};
-struct _BseOutPortClass
-{
-  BseSourceClass parent_class;
+  BseSource       parent_object;
+
+  volatile guint  active_context_id;
 };
 
 
 /* --- channels --- */
 enum
 {
-  BSE_OUT_PORT_ICHANNEL_VOUT
+  BSE_SNOOPER_ICHANNEL_MONO,
+  BSE_SNOOPER_N_ICHANNELS
 };
+
+
 
 
 
@@ -62,4 +64,4 @@ enum
 }
 #endif /* __cplusplus */
 
-#endif /* __BSE_OUT_PORT_H__ */
+#endif /* __BSE_SNOOPER_H__ */

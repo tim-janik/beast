@@ -105,7 +105,7 @@ BSE_BUILTIN_TYPE (BseStandardOsc)
 				   "StandardOsc is a basis oscillator that supports frequency, "
 				   "modulation and sync inputs",
 				   &type_info);
-  bse_categories_register_icon ("/Modules/Oscillators/Standard Oscillator",
+  bse_categories_register_icon ("/Modules/Audio Sources/Standard Oscillator",
 				type,
 				&pixdata);
   return type;

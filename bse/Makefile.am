@@ -59,7 +59,6 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseexports.h \
 	bsegconfig.h \
 	bseglobals.h \
-	bseinport.h \
 	bseinstrument.h \
 	bseitem.h \
 	bsemain.h \
@@ -70,11 +69,9 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsemididevice-oss.h \
 	bsemidievent.h \
 	bsemidimodule.h \
-	bsemidikeyboard.h \
 	bsemidisynth.h \
 	bsemidisynthinput.h \
 	bseobject.h \
-	bseoutport.h \
 	bsepart.h \
 	bsepcminput.h \
 	bsepcmoutput.h \
@@ -90,12 +87,17 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsesequence.h \
 	bseserver.h \
 	bsesnet.h \
+	bsesnooper.h \
 	bsesong.h \
 	bsesongthread.h \
 	bsesource.h \
 	bsestandardosc.h \
 	bsestandardsynths.h \
 	bsestorage.h \
+	bsesubinstrument.h \
+	bsesubiport.h \
+	bsesubkeyboard.h \
+	bsesuboport.h \
 	bsesubsynth.h \
 	bsesuper.h \
 	bsetype.h \
@@ -128,7 +130,6 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseenums.c \
 	bsegconfig.c \
 	bseglobals.c \
-	bseinport.c \
 	bseinstrument.c \
 	bseitem.c \
 	bsemain.c \
@@ -139,11 +140,9 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsemididevice-oss.c \
 	bsemidievent.c \
 	bsemidimodule.c \
-	bsemidikeyboard.c \
 	bsemidisynth.c \
 	bsemidisynthinput.c \
 	bseobject.c \
-	bseoutport.c \
 	bsepart.c \
 	bsepcminput.c \
 	bsepcmoutput.c \
@@ -159,12 +158,17 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsesequence.c \
 	bseserver.c \
 	bsesnet.c \
+	bsesnooper.c \
 	bsesong.c \
 	bsesongthread.c \
 	bsesource.c \
 	bsestandardosc.c \
 	bsestandardsynths.c \
 	bsestorage.c \
+	bsesubinstrument.c \
+	bsesubiport.c \
+	bsesubkeyboard.c \
+	bsesuboport.c \
 	bsesubsynth.c \
 	bsesuper.c \
 	bsetype.c \

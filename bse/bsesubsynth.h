@@ -36,7 +36,7 @@ extern "C" {
 #define BSE_IS_SUB_SYNTH_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUB_SYNTH))
 #define BSE_SUB_SYNTH_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUB_SYNTH, BseSubSynthClass))
 
-#define BSE_SUB_SYNTH_N_IOPORTS (5)
+#define BSE_SUB_SYNTH_N_IOPORTS (8)
 
 /* --- BseSubSynth source --- */
 typedef struct _BseSubSynth      BseSubSynth;

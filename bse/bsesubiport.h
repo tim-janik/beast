@@ -16,10 +16,11 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BSE_IN_PORT_H__
-#define __BSE_IN_PORT_H__
+#ifndef __BSE_SUB_IPORT_H__
+#define __BSE_SUB_IPORT_H__
 
 #include <bse/bsesource.h>
+#include <gsl/gslengine.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,33 +28,30 @@ extern "C" {
 
 
 /* --- object type macros --- */
-#define BSE_TYPE_IN_PORT		(BSE_TYPE_ID (BseInPort))
-#define BSE_IN_PORT(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_IN_PORT, BseInPort))
-#define BSE_IN_PORT_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_IN_PORT, BseInPortClass))
-#define BSE_IS_PORT(object)		(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_IN_PORT))
-#define BSE_IS_PORT_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_IN_PORT))
-#define BSE_IN_PORT_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_IN_PORT, BseInPortClass))
+#define BSE_TYPE_SUB_IPORT		(BSE_TYPE_ID (BseSubIPort))
+#define BSE_SUB_IPORT(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SUB_IPORT, BseSubIPort))
+#define BSE_SUB_IPORT_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SUB_IPORT, BseSubIPortClass))
+#define BSE_IS_IPORT(object)		(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SUB_IPORT))
+#define BSE_IS_IPORT_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUB_IPORT))
+#define BSE_SUB_IPORT_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUB_IPORT, BseSubIPortClass))
 
+#define	BSE_SUB_IPORT_N_PORTS	(4)
 
-/* --- BseInPort module --- */
-typedef struct _BseInPort      BseInPort;
-typedef struct _BseInPortClass BseInPortClass;
-struct _BseInPort
+/* --- BseSubIPort module --- */
+typedef struct _BseSubIPort      BseSubIPort;
+typedef struct _BseSubIPortClass BseSubIPortClass;
+struct _BseSubIPort
 {
   BseSource	 parent_object;
   
-  gchar		*port_name;
+  gchar	       **input_ports;
 };
-struct _BseInPortClass
+struct _BseSubIPortClass
 {
   BseSourceClass parent_class;
-};
 
-
-/* --- channels --- */
-enum
-{
-  BSE_IN_PORT_OCHANNEL_VIN
+  guint		 n_input_ports;
+  GslClass	 gsl_class;
 };
 
 
@@ -61,4 +59,4 @@ enum
 }
 #endif /* __cplusplus */
 
-#endif /* __BSE_IN_PORT_H__ */
+#endif /* __BSE_SUB_IPORT_H__ */

@@ -728,14 +728,14 @@ bse_source_set_context_imodule (BseSource *source,
   g_return_if_fail (BSE_SOURCE_N_ICHANNELS (source) > 0);
   if (imodule)
     {
-      g_return_if_fail (GSL_MODULE_N_JSTREAMS (imodule) == BSE_SOURCE_N_JOINT_ICHANNELS (source));
+      g_return_if_fail (GSL_MODULE_N_JSTREAMS (imodule) >= BSE_SOURCE_N_JOINT_ICHANNELS (source));
       if (BSE_SOURCE_N_JOINT_ICHANNELS (source))
 	{
 	  guint n_non_joint_ichannels = BSE_SOURCE_N_ICHANNELS (source) - BSE_SOURCE_N_JOINT_ICHANNELS (source);
-	  g_return_if_fail (GSL_MODULE_N_ISTREAMS (imodule) == n_non_joint_ichannels);
+	  g_return_if_fail (GSL_MODULE_N_ISTREAMS (imodule) >= n_non_joint_ichannels);
 	}
       else
-	g_return_if_fail (GSL_MODULE_N_ISTREAMS (imodule) == BSE_SOURCE_N_ICHANNELS (source));
+	g_return_if_fail (GSL_MODULE_N_ISTREAMS (imodule) >= BSE_SOURCE_N_ICHANNELS (source));
     }
 
   context = context_lookup (source, context_handle);
@@ -782,7 +782,7 @@ bse_source_set_context_omodule (BseSource *source,
   g_return_if_fail (context_handle > 0);
   g_return_if_fail (BSE_SOURCE_N_OCHANNELS (source) > 0);
   if (omodule)
-    g_return_if_fail (GSL_MODULE_N_OSTREAMS (omodule) == BSE_SOURCE_N_OCHANNELS (source));
+    g_return_if_fail (GSL_MODULE_N_OSTREAMS (omodule) >= BSE_SOURCE_N_OCHANNELS (source));
 
   context = context_lookup (source, context_handle);
   if (!context)
@@ -824,8 +824,8 @@ bse_source_set_context_module (BseSource *source,
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
   g_return_if_fail (module != NULL);
-  g_return_if_fail (GSL_MODULE_N_OSTREAMS (module) == BSE_SOURCE_N_OCHANNELS (source));
-  g_return_if_fail (GSL_MODULE_N_ISTREAMS (module) + GSL_MODULE_N_JSTREAMS (module) == BSE_SOURCE_N_ICHANNELS (source));
+  g_return_if_fail (GSL_MODULE_N_OSTREAMS (module) >= BSE_SOURCE_N_OCHANNELS (source));
+  g_return_if_fail (GSL_MODULE_N_ISTREAMS (module) + GSL_MODULE_N_JSTREAMS (module) >= BSE_SOURCE_N_ICHANNELS (source));
   
   if (BSE_SOURCE_N_ICHANNELS (source))
     bse_source_set_context_imodule (source, context_handle, module);

@@ -67,6 +67,8 @@ struct _BseSNet
   GSList	*oport_names;
   gpointer	 port_array;	/* of type BseSNetPort* */
 
+  guint		 port_unregistered_id;
+
   guint		 cid_counter;
   guint		 n_cids;
   guint		*cids;
@@ -82,10 +84,14 @@ guint		bse_snet_create_context		(BseSNet	*snet,
 						 GslTrans	*trans);
 const gchar*	bse_snet_iport_name_register	(BseSNet	*snet,
 						 const gchar	*tmpl_name);
+gboolean	bse_snet_iport_name_registered	(BseSNet        *snet,
+						 const gchar    *name);
 void		bse_snet_iport_name_unregister	(BseSNet	*snet,
 						 const gchar	*name);
 const gchar*	bse_snet_oport_name_register	(BseSNet	*snet,
 						 const gchar	*tmpl_name);
+gboolean	bse_snet_oport_name_registered	(BseSNet        *snet,
+						 const gchar    *name);
 void		bse_snet_oport_name_unregister	(BseSNet	*snet,
 						 const gchar	*name);
 void		bse_snet_set_iport_src		(BseSNet	*snet,

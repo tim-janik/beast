@@ -1,3 +1,35 @@
+Tue Apr 16 12:51:17 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesnooper.[hc]: move this module from plugins to BSE.
+
+	* bsesubiport.[hc]: virtual sub network input ports.
+
+	* bsesubiport.[hc]: virtual sub network output ports.
+
+	* bsesubkeyboard.[hc]: convenience virual input for instruments.
+
+	* bseinport.[hc], bseoutport.[hc], bsemidikeyboard.[hc]:
+	scratch these, they are replaced by the new modules now.
+
+	* bsesubinstrument.[hc]: convenience virual output for instruments.
+
+	* bsecategories.[hc]: provide leaf index of category names.
+
+	* bsesnet.[hc]: provide functions to test for registered port names
+	and provide notification when port names got unregistered.
+
+	* bsesource.c:
+	(bse_source_set_context_imodule):
+	(bse_source_set_context_omodule):
+	(bse_source_set_context_module):
+	be laxer about module IO checks, only demand the
+	GSL module has at least as many input/output channels as the
+	BseSource.
+
+	* bsestandardsynths.c: use the new modules.
+
+	* *.c: category fixes.
+
 Mon Apr 15 14:43:18 2002  Tim Janik  <timj@gtk.org>
 
 	* bsestandardosc.h (enum): get rid of BSE_STANDARD_OSC_NONE.

@@ -19,8 +19,8 @@
 
 #include "bsesnet.h"
 #include "bsestandardosc.h"
-#include "bseoutport.h"
-#include "bsemidikeyboard.h"
+#include "bsesubinstrument.h"
+#include "bsesubkeyboard.h"
 
 
 /* --- typedefs & structures --- */
@@ -29,8 +29,7 @@ typedef struct {
   BseSource		*input;
   BseSource		*osc;
   BseSource		*env;
-  BseSource		*left_out;
-  BseSource		*right_out;
+  BseSource		*output;
 } Piano;
 
 
@@ -77,22 +76,21 @@ bse_project_standard_piano (BseProject *project)
       synth->snet = g_object_new (BSE_TYPE_SNET, "name", "bse-intern-standard-piano", NULL);
       BSE_OBJECT_SET_FLAGS (synth->snet, BSE_ITEM_FLAG_STORAGE_IGNORE);
       project_set_standard_synth (project, "bse-standard-piano", synth);
-      piano->input = bse_container_new_item (BSE_CONTAINER (synth->snet), BSE_TYPE_MIDI_KEYBOARD, NULL);
+      piano->input = bse_container_new_item (BSE_CONTAINER (synth->snet), BSE_TYPE_SUB_KEYBOARD, NULL);
       piano->osc = bse_container_new_item (BSE_CONTAINER (synth->snet), BSE_TYPE_STANDARD_OSC, NULL);
       bse_source_set_input (piano->osc, BSE_STANDARD_OSC_ICHANNEL_FREQ,
-			    piano->input, BSE_MIDI_KEYBOARD_OCHANNEL_FREQUENCY);
+			    piano->input, BSE_SUB_KEYBOARD_OCHANNEL_FREQUENCY);
       bse_source_set_input (piano->osc, BSE_STANDARD_OSC_ICHANNEL_SYNC,
-			    piano->input, BSE_MIDI_KEYBOARD_OCHANNEL_GATE);
+			    piano->input, BSE_SUB_KEYBOARD_OCHANNEL_GATE);
       piano->env = bse_container_new_item (BSE_CONTAINER (synth->snet), g_type_from_name ("BseMult"), NULL); // FIXME
       bse_source_set_input (piano->env, 0,
-			    piano->input, BSE_MIDI_KEYBOARD_OCHANNEL_GATE);
+			    piano->input, BSE_SUB_KEYBOARD_OCHANNEL_GATE);
       bse_source_set_input (piano->env, 1,
 			    piano->osc, BSE_STANDARD_OSC_OCHANNEL_OSC);
-      piano->left_out = bse_container_new_item (BSE_CONTAINER (synth->snet), BSE_TYPE_OUT_PORT, "port_name", "left_out", NULL);
-      bse_source_set_input (piano->left_out, BSE_OUT_PORT_ICHANNEL_VOUT,
+      piano->output = bse_container_new_item (BSE_CONTAINER (synth->snet), BSE_TYPE_SUB_INSTRUMENT, NULL);
+      bse_source_set_input (piano->output, 0,
 			    piano->env, 0);
-      piano->right_out = bse_container_new_item (BSE_CONTAINER (synth->snet), BSE_TYPE_OUT_PORT, "port_name", "right_out", NULL);
-      bse_source_set_input (piano->right_out, BSE_OUT_PORT_ICHANNEL_VOUT,
+      bse_source_set_input (piano->output, 1,
 			    piano->env, 0);
     }
   return synth;

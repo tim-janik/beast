@@ -92,7 +92,7 @@ BSE_BUILTIN_TYPE (BsePcmInput)
 						 "Stereo PCM sound input module, per default, signals from this "
 						 "module originate from recording on the standard soundcard",
 						 &pcm_input_info);
-  bse_categories_register_icon ("/Modules/PCM Input",
+  bse_categories_register_icon ("/Modules/Input & Output/PCM Input",
 				pcm_input_type_id,
 				&mic_pixdata);
   return pcm_input_type_id;

@@ -84,7 +84,7 @@ BSE_BUILTIN_TYPE (BseConstant)
 				      "BseConstant",
 				      "This module provides constant signal outputs",
 				      &type_info);
-  bse_categories_register_icon ("/Modules/Constant", type_id, &icon);
+  bse_categories_register_icon ("/Modules/Other Sources/Constant", type_id, &icon);
 
   return type_id;
 }

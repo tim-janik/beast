@@ -39,7 +39,6 @@ enum
 /* --- prototypes --- */
 static void	 bse_sub_synth_init		(BseSubSynth		*scard);
 static void	 bse_sub_synth_class_init	(BseSubSynthClass	*class);
-static void	 bse_sub_synth_class_finalize	(BseSubSynthClass	*class);
 static void	 bse_sub_synth_set_property	(GObject                *object,
 						 guint                   param_id,
 						 const GValue           *value,
@@ -78,7 +77,7 @@ BSE_BUILTIN_TYPE (BseSubSynth)
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_sub_synth_class_init,
-    (GClassFinalizeFunc) bse_sub_synth_class_finalize,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSubSynth),
@@ -97,7 +96,7 @@ BSE_BUILTIN_TYPE (BseSubSynth)
 						"This module encapsulates whole synthesizer networks, by "
 						"interfacing to/from their virtual input and output ports",
 						&sub_synth_info);
-  bse_categories_register_icon ("/Modules/Plug/Virtual Sub Synth",
+  bse_categories_register_icon ("/Modules/Virtualization/Virtual Sub Synth",
 				sub_synth_type_id,
 				&pixdata);
   return sub_synth_type_id;
@@ -164,11 +163,6 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
       g_free (string);
       g_free (name);
     }
-}
-
-static void
-bse_sub_synth_class_finalize (BseSubSynthClass *class)
-{
 }
 
 static void
