@@ -17,7 +17,6 @@
  */
 #include "bstprocedure.h"
 
-#include "bsttexttools.h"
 #include <gobject/gvaluecollector.h>
 #include <string.h>
 
@@ -197,7 +196,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
    */
   if (proc->blurb)
     {
-      GtkWidget *hbox, *text = bst_scroll_text_create (BST_TEXT_VIEW_CENTER, proc->blurb);
+      GtkWidget *hbox, *text = gxk_scroll_text_create (GXK_SCROLL_TEXT_CENTER, proc->blurb);
 
       hbox = gtk_widget_new (GTK_TYPE_HBOX,
                              "visible", TRUE,

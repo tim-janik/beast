@@ -3,8 +3,8 @@ Makefile.in
 bsw-procs.3
 bse.3
 gsl.3
-bst.3
+beast-gxk.3
 bse-procs.dat
 bse.dat
-bst.dat
+gxk.dat
 gsl.dat

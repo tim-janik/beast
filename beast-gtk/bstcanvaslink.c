@@ -17,8 +17,6 @@
  */
 #include "bstcanvaslink.h"
 
-#include "bsttexttools.h"
-
 #include <math.h>
 
 #define ARROW_LENGTH    (12.0)
@@ -192,30 +190,30 @@ clink_view_update (BstCanvasLink *clink,
 	ic_name = "?";
 
       /* compose new info */
-      bst_scroll_text_clear (text);
-      bst_scroll_text_aprintf (text, "Source Module:\n");
-      bst_scroll_text_push_indent (text, "  ");
+      gxk_scroll_text_clear (text);
+      gxk_scroll_text_aprintf (text, "Source Module:\n");
+      gxk_scroll_text_push_indent (text);
       if (oc_blurb)
 	{
-	  bst_scroll_text_aprintf (text, "%s: %s:\n", oname, oc_name);
-	  bst_scroll_text_push_indent (text, "  ");
-	  bst_scroll_text_aprintf (text, "%s\n", oc_blurb);
-	  bst_scroll_text_pop_indent (text);
+	  gxk_scroll_text_aprintf (text, "%s: %s:\n", oname, oc_name);
+	  gxk_scroll_text_push_indent (text);
+	  gxk_scroll_text_aprintf (text, "%s\n", oc_blurb);
+	  gxk_scroll_text_pop_indent (text);
 	}
       else
-	bst_scroll_text_aprintf (text, "%s: %s\n", oname, oc_name);
-      bst_scroll_text_pop_indent (text);
-      bst_scroll_text_aprintf (text, "\nDestination Module:\n");
-      bst_scroll_text_push_indent (text, "  ");
+	gxk_scroll_text_aprintf (text, "%s: %s\n", oname, oc_name);
+      gxk_scroll_text_pop_indent (text);
+      gxk_scroll_text_aprintf (text, "\nDestination Module:\n");
+      gxk_scroll_text_push_indent (text);
       if (ic_blurb)
 	{
-	  bst_scroll_text_aprintf (text, "%s: %s:\n", iname, ic_name);
-	  bst_scroll_text_push_indent (text, "  ");
-	  bst_scroll_text_aprintf (text, "%s\n", ic_blurb);
-	  bst_scroll_text_pop_indent (text);
+	  gxk_scroll_text_aprintf (text, "%s: %s:\n", iname, ic_name);
+	  gxk_scroll_text_push_indent (text);
+	  gxk_scroll_text_aprintf (text, "%s\n", ic_blurb);
+	  gxk_scroll_text_pop_indent (text);
 	}
       else
-	bst_scroll_text_aprintf (text, "%s: %s\n", iname, ic_name);
+	gxk_scroll_text_aprintf (text, "%s: %s\n", iname, ic_name);
     }
 }
 
@@ -233,7 +231,7 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
 						       "visible", TRUE,
 						       "border_width", 5,
 						       "label", "Module link",
-						       "child", bst_scroll_text_create (0, NULL),
+						       "child", gxk_scroll_text_create (0, NULL),
 						       NULL));
   clink_view_update (clink, TRUE);
   gxk_widget_showraise (clink->link_view);

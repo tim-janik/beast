@@ -553,7 +553,7 @@ bst_snet_router_build_tools (BstSNetRouter *self)
   
   /* create toolbar
    */
-  self->toolbar = bst_toolbar_new (&self->toolbar);
+  self->toolbar = gxk_toolbar_new (&self->toolbar);
 
   /* add radios to toolbar
    */
@@ -561,8 +561,8 @@ bst_snet_router_build_tools (BstSNetRouter *self)
   
   /* add `Palette' button to toolbar
    */
-  bst_toolbar_append_space (self->toolbar);
-  button = bst_toolbar_append (self->toolbar, BST_TOOLBAR_BUTTON,
+  gxk_toolbar_append_space (self->toolbar);
+  button = gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_BUTTON,
 			       "Palette", "Toggle visibility of the tool palette",
 			       gxk_stock_image (BST_STOCK_PALETTE, BST_SIZE_TOOLBAR));
   g_object_connect (button,
@@ -574,7 +574,7 @@ bst_snet_router_build_tools (BstSNetRouter *self)
   button = gtk_spin_button_new (self->adjustment, 0.0, 2);
   gtk_widget_set_usize (button, 50, 0);
   gtk_widget_show (button);
-  bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
+  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
 		      "Zoom", "Adjust the zoom factor of the router display",
 		      button);
 
@@ -586,7 +586,7 @@ bst_snet_router_build_tools (BstSNetRouter *self)
 		"active", self->channel_hints,
 		"can_focus", FALSE,
 		NULL);
-  bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
+  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
 		      "Hints", "Toggle channel name hints.",
 		      button);
   g_object_connect (button,

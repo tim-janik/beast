@@ -1,3 +1,27 @@
+Wed Sep 11 18:23:00 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/Makefile.am: remove bsttexttools.[hc] and
+	bsttoolbar.[hc] in favour of GXK variants.
+
+	* beast-gtk/gxk/gxk.h:
+	* beast-gtk/gxk/Makefile.am:
+	* beast-gtk/gxk/gxktoolbar.[hc]:
+	* beast-gtk/gxk/gxktexttools.[hc]: add new cleaned up,
+	renamed and documented ports of the text tools and toolbar
+	code to GXK.
+
+	* docs/generated/Makefile.am: generate and check in faq.xml which
+	is needed for the web site.
+
+	* docs/generated/html.xsl:
+	* docs/generated/markup.xsl: minor fixes from alper ersoy.
+
+	* docs/generated/Makefile.am:
+	* docs/generated/markup.dtd: added markup.dtd from alper ersoy and
+	lint rule to check validity of markup output.
+
+	* *.[hc]: adaptions to the GXK rename.
+
 Sat Sep  7 16:06:51 2002  Tim Janik  <timj@gtk.org>
 
 	* bsw/bswproxy.c (add_gc): remember the collector id. fixes

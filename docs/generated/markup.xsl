@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-  <xsl:output method="html" indent="no"/>
-  
+  <xsl:output method="xml" indent="no" doctype-system="markup.dtd"/>
+
   <xsl:param name="revision"/>
-  
+
   <xsl:template match="texinfo">
     <tag-span-markup>
       <!-- basic tag definitions -->
@@ -45,16 +45,16 @@
       <tagdef name="tableterm"	  family="mono"/>
       <tagdef name="tableitem"	  indent="45" />
       <tagdef name="multitable"     family="mono" />
-      
+
       <tagdef name="title_page"     justification="center" />
       <tagdef name="doc_title"      underline="double" />
       <tagdef name="doc_author"     weight="bold" />
-      
+
       <tagdef name="hyperlink"      underline="single" foreground="#0000ff" />
-      
+
       <!-- contextual tags -->
       <tagdef name="code"           family="mono" foreground="#000040" />
-      
+
       <tagdef name="acronym"        />
       <tagdef name="cite"           />
       <tagdef name="command"        />
@@ -69,16 +69,16 @@
       <tagdef name="strong"         weight="bold" />
       <tagdef name="url"            />
       <tagdef name="var"            />
-      
+
       <tagdef name="revision"       style="italic" />
-      
+
       <tagdef name="programlisting" family="mono" wrap_mode="none" foreground="#000040" />
       <tagdef name="property"       style="italic" />
       <tagdef name="channel"        style="italic" />
       <tagdef name="menupath"       style="italic" weight="bold" background="#e0e0e0" />
       <tagdef name="pagepath"       style="italic" weight="bold" background="#f0f0f0" />
       <tagdef name="object"         family="mono" style="italic" />
-      
+
       <!-- generate body -->
       <span tag="body">
 	<xsl:call-template name="title_page"/>
@@ -88,10 +88,10 @@
       </span>
     </tag-span-markup>
   </xsl:template>
-  
+
   <!-- useless tags -->
   <xsl:template match="setfilename|settitle|document-title|document-author|itemfunction|columnfraction"/>
-  
+
   <xsl:template name="title_page">
     <xsl:if test="string-length(/texinfo/para/document-title) > 0 or string-length(/texinfo/para/document-author) > 0">
       <newline/>
@@ -112,7 +112,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <!-- revision bit -->
   <xsl:template match="para/revision">
     <xsl:choose>
@@ -130,12 +130,12 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
+
   <!-- table of contents related stuff -->
   <xsl:template name="node_number">
     <xsl:text>node-</xsl:text><xsl:number level="multiple" count="chapter|section|subsection|subsubsection|appendix|appendixsec|appendixsubsec|appendixsubsubsec|unnumbered|unnumberedsec|unnumberedsubsec|unnumberedsubsubsec" format="1-1-1-1"/>
   </xsl:template>
-  
+
   <xsl:template name="node_name">
     <anchor>
       <xsl:attribute name="name">
@@ -143,7 +143,7 @@
       </xsl:attribute>
     </anchor>
   </xsl:template>
-  
+
   <xsl:template match="para/table-of-contents">
     <newline/><breakline/>
     <newline/><breakline/>
@@ -154,7 +154,7 @@
     </span>
     <newline/><breakline/>
     <newline/><breakline/>
-    
+
     <xsl:for-each select="/texinfo/chapter|/texinfo/unnumbered|/texinfo/appendix">
       <xsl:if test="local-name() = 'chapter'">
 	<xsl:call-template name="toc_chapter"/>
@@ -167,7 +167,7 @@
       </xsl:if>
     </xsl:for-each>
   </xsl:template>
-  
+
   <xsl:template name="toc_chapter">
     <span tag="hyperlink">
       <xlink>
@@ -186,7 +186,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_section">
     <span tag="hyperlink">
       <xlink>
@@ -205,7 +205,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_subsection">
     <span tag="hyperlink">
       <xlink>
@@ -224,7 +224,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_subsubsection">
     <span tag="hyperlink">
       <xlink>
@@ -236,7 +236,7 @@
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template name="toc_appendix">
     <span tag="hyperlink">
       <xlink>
@@ -255,7 +255,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_appendixsec">
     <span tag="hyperlink">
       <xlink>
@@ -274,7 +274,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_appendixsubsec">
     <span tag="hyperlink">
       <xlink>
@@ -293,7 +293,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_appendixsubsubsec">
     <span tag="hyperlink">
       <xlink>
@@ -305,7 +305,7 @@
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template name="toc_unnumbered">
     <span tag="hyperlink">
       <xlink>
@@ -324,7 +324,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_unnumberedsec">
     <span tag="hyperlink">
       <xlink>
@@ -343,7 +343,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_unnumberedsubsec">
     <span tag="hyperlink">
       <xlink>
@@ -362,7 +362,7 @@
       </span>
     </xsl:if>
   </xsl:template>
-  
+
   <xsl:template name="toc_unnumberedsubsubsec">
     <span tag="hyperlink">
       <xlink>
@@ -374,36 +374,36 @@
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <!-- end of table of contents related stuff -->
-  
+
   <xsl:template match="linebreak">
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="section|appendixsec|unnumberedsec">
     <span tag="section">
       <xsl:apply-templates/>
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="subsection|appendixsubsec|unnumberedsubsec">
     <span tag="subsection">
       <xsl:apply-templates/>
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="subsubsection|appendixsubsubsec|unnumberedsubsubsec">
     <span tag="subsubsection">
       <xsl:apply-templates/>
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <!-- title stuff -->
-  
+
   <xsl:template match="chapter/title">
     <breakline/>
     <newline/>
@@ -417,7 +417,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="section/title">
     <breakline/>
     <newline/>
@@ -428,7 +428,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="subsection/title">
     <breakline/>
     <newline/>
@@ -439,7 +439,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="subsubsection/title">
     <breakline/>
     <newline/>
@@ -450,7 +450,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="appendix/title">
     <breakline/>
     <newline/>
@@ -463,7 +463,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="appendixsec/title">
     <breakline/>
     <newline/>
@@ -474,7 +474,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="appendixsubsec/title">
     <breakline/>
     <newline/>
@@ -485,7 +485,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="appendixsubsubsec/title">
     <breakline/>
     <newline/>
@@ -496,7 +496,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="unnumbered/title|chapheading/title|majorheading/title">
     <breakline/>
     <newline/>
@@ -509,7 +509,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="unnumberedsec/title|unnumberedsubsec/title|unnumberedsubsubsec/title">
     <breakline/>
     <newline/>
@@ -520,7 +520,7 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="heading/title|subheading/title|subsubheading/title">
     <breakline/>
     <newline/>
@@ -530,15 +530,15 @@
     </span>
     <newline/>
   </xsl:template>
-  
+
   <!-- title stuff ends here -->
-  
+
   <xsl:template match="code">
     <span tag="code">
       <xsl:apply-templates/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="preformat">
     <breakline/>
     <span tag="nowrap">
@@ -548,7 +548,7 @@
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="keepspace">
     <breakline/>
     <span tag="nowrap">
@@ -556,7 +556,7 @@
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="para">
     <!-- <breakline/> -->
     <!-- If paragrapgh is bogus (ie. white-space only), skip it -->
@@ -565,7 +565,7 @@
     </xsl:if>
     <!-- <breakline/> -->
   </xsl:template>
-  
+
   <xsl:template match="acronym|cite|dfn|kbd|samp|var|strong|url|email|key|env|file|command|option">
     <span>
       <xsl:attribute name="tag">
@@ -576,7 +576,7 @@
       </span>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="programlisting">
     <breakline/>
     <span tag="programlisting">
@@ -584,55 +584,55 @@
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="menupath">
     <span tag="menupath">
       <xsl:apply-templates/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="pagepath">
     <span tag="pagepath"><xsl:apply-templates/></span>
   </xsl:template>
-  
+
   <xsl:template match="property">
     <span tag="property">
       "<xsl:apply-templates/>"
     </span>
   </xsl:template>
-  
+
   <xsl:template match="object">
     <span tag="object">
       <xsl:apply-templates/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="module">
     <span tag="object">
       <xsl:apply-templates/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="channel">
     <span tag="channel">
       <xsl:apply-templates/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="emph|emphasize">
     <span tag="italic">
       <xsl:apply-templates/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="important">
-    <span style="italic">
+    <span tag="italic">
       <span tag="underline">
 	<xsl:apply-templates/>
       </span>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="center">
     <breakline/>
     <span tag="center">
@@ -640,7 +640,7 @@
       <breakline/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="indent">
     <breakline/>
     <span tag="indent-margin">
@@ -648,19 +648,19 @@
       <breakline/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="fill">
     <breakline/>
     <!-- grumbl, text-widget fill is not implemented -->
     <keep-space><xsl:apply-templates/></keep-space><breakline/>
   </xsl:template>
-  
+
   <xsl:template match="itemize|enumerate">
     <breakline/>
     <xsl:apply-templates/>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="itemize/item|enumerate/item">
     <breakline/>
     <span tag="item-margin">
@@ -669,7 +669,7 @@
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="this-is-disabled-enumerate/item">
     <!-- Alper, when enabling this, also see the previous template -->
     <!-- because even after you enable this template, the previous -->
@@ -681,7 +681,7 @@
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="uref">
     <span tag="hyperlink">
       <xlink>
@@ -696,7 +696,7 @@
       </xlink>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="image">
     <!-- <xlink ref="error:DEADEND"> -->
     <image>
@@ -707,18 +707,18 @@
     </image>
     <!-- </xlink> -->
   </xsl:template>
-  
+
   <!-- omit indices for a while -->
   <xsl:template match="indexterm|printindex">
   </xsl:template>
-  
+
   <xsl:template match="tableterm">
     <span tag="tableterm">
       <xsl:apply-templates/>
     </span>
     <breakline/>
   </xsl:template>
-  
+
   <xsl:template match="tableitem/item/para">
     <span tag="tableitem">
       <xsl:apply-templates/>
@@ -726,16 +726,16 @@
     <breakline/>
     <newline/>
   </xsl:template>
-  
+
   <xsl:template match="multitable">
     <span tag="multitable">
       <xsl:apply-templates/>
     </span>
   </xsl:template>
-  
+
   <xsl:template match="multitable/row">
     <xsl:apply-templates/>
     <breakline/>
   </xsl:template>
-  
+
 </xsl:stylesheet>

@@ -18,7 +18,6 @@
  */
 #include "bstradiotools.h"
 
-#include "bsttexttools.h"
 #include <ctype.h>
 
 
@@ -327,12 +326,12 @@ rtools_toggle_toggled (BstRadioTools   *rtools,
 
 void
 bst_radio_tools_build_toolbar (BstRadioTools *rtools,
-			       BstToolbar    *toolbar)
+			       GxkToolbar    *toolbar)
 {
   guint i;
 
   g_return_if_fail (BST_IS_RADIO_TOOLS (rtools));
-  g_return_if_fail (BST_IS_TOOLBAR (toolbar));
+  g_return_if_fail (GXK_IS_TOOLBAR (toolbar));
 
   for (i = 0; i < rtools->n_tools; i++)
     {
@@ -347,7 +346,7 @@ bst_radio_tools_build_toolbar (BstRadioTools *rtools,
 	image = gxk_stock_image (rtools->tools[i].stock_icon, BST_SIZE_TOOLBAR);
       if (!image)
 	image = gxk_stock_image (BST_STOCK_NO_ICON, BST_SIZE_TOOLBAR);
-      button = bst_toolbar_append (toolbar, BST_TOOLBAR_TOGGLE,
+      button = gxk_toolbar_append (toolbar, GXK_TOOLBAR_TOGGLE,
 				   rtools->tools[i].name,
 				   rtools->tools[i].tip,
 				   image);
@@ -414,12 +413,12 @@ toggle_apply_blurb (GtkToggleButton *toggle,
 
   if (tool_id == blurb_id && !toggle->active)
     {
-      bst_scroll_text_set (text, NULL);
+      gxk_scroll_text_set (text, NULL);
       g_object_set_data (G_OBJECT (text), "user_data", GUINT_TO_POINTER (~0));
     }
   else if (toggle->active && tool_id != blurb_id)
     {
-      bst_scroll_text_set (text, gtk_object_get_data (GTK_OBJECT (toggle), "blurb"));
+      gxk_scroll_text_set (text, gtk_object_get_data (GTK_OBJECT (toggle), "blurb"));
       g_object_set_data (G_OBJECT (text), "user_data", tool_id);
     }
 }
@@ -446,7 +445,7 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
   gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, TRUE, 0);
   if (show_descriptions)
     {
-      text = bst_scroll_text_create (0, NULL);
+      text = gxk_scroll_text_create (0, NULL);
       g_object_set_data (G_OBJECT (text), "user_data", GUINT_TO_POINTER (~0));
       gtk_widget_ref (text);
       gtk_object_sink (GTK_OBJECT (text));

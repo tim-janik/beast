@@ -24,7 +24,6 @@
 #include	"bstgconfig.h"
 #include	"bstusermessage.h"
 #include	"bstpreferences.h"
-#include	"bsttexttools.h"
 #include	"../PKG_config.h"
 #include	"images/beast-images.h"
 #include	<unistd.h>
@@ -173,9 +172,9 @@ main (int   argc,
   bst_splash_update_entity (splash, "Plugins");
   if (bst_load_plugins)
     bsw_register_plugins (NULL, TRUE, NULL, splash_update_item, splash);
-  bst_text_add_tsm_path (BST_PATH_DOCS);
-  bst_text_add_tsm_path (BST_PATH_IMAGES);
-  bst_text_add_tsm_path (".");
+  gxk_text_add_tsm_path (BST_PATH_DOCS);
+  gxk_text_add_tsm_path (BST_PATH_IMAGES);
+  gxk_text_add_tsm_path (".");
 
   /* debugging hook
    */

@@ -16,16 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "bsttexttools.h"
-
+#include <gxk/gxk.h>
 
 #define PRGNAME "tsmview"
-
-
-
-/* --- variables --- */
-gboolean          bst_dvl_hints = FALSE;
-
 
 /* --- functions --- */
 int
@@ -45,17 +38,16 @@ main (int   argc,
   /* initialize modules
    */
   g_type_init ();
-  gxk_init ();
-  bst_init_utils ();
   gtk_init (&argc, &argv);
+  gxk_init ();
 
   title = g_strdup (argv[1]);
-  bst_text_add_tsm_path (".");
-  sctext = bst_scroll_text_create (BST_TEXT_VIEW_SHEET_BG | BST_TEXT_VIEW_NAVIGATABLE, NULL);
-  bst_scroll_text_enter (sctext, argv[1]);
+  gxk_text_add_tsm_path (".");
+  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG | GXK_SCROLL_TEXT_NAVIGATABLE, NULL);
+  gxk_scroll_text_enter (sctext, argv[1]);
   for (i = 2; i < argc; i++)
     {
-      bst_scroll_text_enter (sctext, argv[i]);  // FIXME: should append
+      gxk_scroll_text_enter (sctext, argv[i]);  // FIXME: should append
       str = title;
       title = g_strconcat (title, " ", argv[i], NULL);
       g_free (str);

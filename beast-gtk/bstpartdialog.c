@@ -163,7 +163,7 @@ bst_part_dialog_init (BstPartDialog *self)
   main_vbox = GXK_DIALOG (self)->vbox;
 
   /* create toolbar */
-  self->toolbar = bst_toolbar_new (&self->toolbar);
+  self->toolbar = gxk_toolbar_new (&self->toolbar);
   gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (self->toolbar), FALSE, TRUE, 0);
 
   /* create scrolled window */
@@ -214,49 +214,49 @@ bst_part_dialog_init (BstPartDialog *self)
   bst_radio_tools_build_toolbar (self->rtools, self->toolbar);
 
   /* selection ops (copy/cut/...) */
-  bst_toolbar_append_separator (self->toolbar);
-  button = bst_toolbar_append_stock (self->toolbar, BST_TOOLBAR_BUTTON, "Clear", "Clear the current selection", BST_STOCK_TRASH_SCISSORS);
+  gxk_toolbar_append_separator (self->toolbar);
+  button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Clear", "Clear the current selection", BST_STOCK_TRASH_SCISSORS);
   g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_clear, self->proll_ctrl, NULL);
-  button = bst_toolbar_append_stock (self->toolbar, BST_TOOLBAR_BUTTON, "Cut", "Move the current selection into clipboard", BST_STOCK_MUSIC_CUT);
+  button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Cut", "Move the current selection into clipboard", BST_STOCK_MUSIC_CUT);
   g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_cut, self->proll_ctrl, NULL);
-  button = bst_toolbar_append_stock (self->toolbar, BST_TOOLBAR_BUTTON, "Copy", "Copy the current selection into clipboard", BST_STOCK_MUSIC_COPY);
+  button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Copy", "Copy the current selection into clipboard", BST_STOCK_MUSIC_COPY);
   g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_copy, self->proll_ctrl, NULL);
-  button = bst_toolbar_append_stock (self->toolbar, BST_TOOLBAR_BUTTON, "Paste", "Insert clipboard contents as current selection", BST_STOCK_MUSIC_PASTE);
+  button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Paste", "Insert clipboard contents as current selection", BST_STOCK_MUSIC_PASTE);
   g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_paste, self->proll_ctrl, NULL);
 
   /* note selection */
-  bst_toolbar_append_separator (self->toolbar);
-  choice = bst_toolbar_append_choice (self->toolbar, BST_TOOLBAR_TRUNC_BUTTON,
-				      (BstToolbarChoiceFunc) part_dialog_note_choice, self, NULL);
-  bst_toolbar_choice_add (choice, "1/1", "Insert full notes",
+  gxk_toolbar_append_separator (self->toolbar);
+  choice = gxk_toolbar_append_choice (self->toolbar, GXK_TOOLBAR_TRUNC_BUTTON,
+				      (GxkToolbarChoiceFunc) part_dialog_note_choice, self, NULL);
+  gxk_toolbar_choice_add (choice, "1/1", "Insert full notes",
 			  gxk_stock_image (BST_STOCK_NOTE_1, BST_SIZE_TOOLBAR), 1);
-  bst_toolbar_choice_add (choice, "1/2", "Insert half notes",
+  gxk_toolbar_choice_add (choice, "1/2", "Insert half notes",
 			  gxk_stock_image (BST_STOCK_NOTE_2, BST_SIZE_TOOLBAR), 2);
-  bst_toolbar_choice_set (choice, "1/4", "Insert quarter notes",
+  gxk_toolbar_choice_set (choice, "1/4", "Insert quarter notes",
 			  gxk_stock_image (BST_STOCK_NOTE_4, BST_SIZE_TOOLBAR), 4);
-  bst_toolbar_choice_add (choice, "1/8", "Insert eighths note",
+  gxk_toolbar_choice_add (choice, "1/8", "Insert eighths note",
 			  gxk_stock_image (BST_STOCK_NOTE_8, BST_SIZE_TOOLBAR), 8);
-  bst_toolbar_choice_add (choice, "1/16", "Insert sixteenth note",
+  gxk_toolbar_choice_add (choice, "1/16", "Insert sixteenth note",
 			  gxk_stock_image (BST_STOCK_NOTE_16, BST_SIZE_TOOLBAR), 16);
   
   /* quantization selection */
-  choice = bst_toolbar_append_choice (self->toolbar, BST_TOOLBAR_TRUNC_BUTTON,
-				      (BstToolbarChoiceFunc) part_dialog_qnote_choice, self, NULL);
-  bst_toolbar_choice_add (choice, "None", "No quantization selected",
+  choice = gxk_toolbar_append_choice (self->toolbar, GXK_TOOLBAR_TRUNC_BUTTON,
+				      (GxkToolbarChoiceFunc) part_dialog_qnote_choice, self, NULL);
+  gxk_toolbar_choice_add (choice, "None", "No quantization selected",
 			  gxk_stock_image (BST_STOCK_QNOTE_NONE, BST_SIZE_TOOLBAR), 0);
-  bst_toolbar_choice_add (choice, "Q: 1/1", "Quantize to full note boundaries",
+  gxk_toolbar_choice_add (choice, "Q: 1/1", "Quantize to full note boundaries",
 			  gxk_stock_image (BST_STOCK_QNOTE_1, BST_SIZE_TOOLBAR), 1);
-  bst_toolbar_choice_add (choice, "Q: 1/2", "Quantize to half note boundaries",
+  gxk_toolbar_choice_add (choice, "Q: 1/2", "Quantize to half note boundaries",
 			  gxk_stock_image (BST_STOCK_QNOTE_2, BST_SIZE_TOOLBAR), 2);
-  bst_toolbar_choice_add (choice, "Q: 1/4", "Quantize to quarter note boundaries",
+  gxk_toolbar_choice_add (choice, "Q: 1/4", "Quantize to quarter note boundaries",
 			  gxk_stock_image (BST_STOCK_QNOTE_4, BST_SIZE_TOOLBAR), 4);
-  bst_toolbar_choice_set (choice, "Q: 1/8", "Quantize to eighths note boundaries",
+  gxk_toolbar_choice_set (choice, "Q: 1/8", "Quantize to eighths note boundaries",
 			  gxk_stock_image (BST_STOCK_QNOTE_8, BST_SIZE_TOOLBAR), 8);
-  bst_toolbar_choice_add (choice, "Q: 1/16", "Quantize to sixteenth note boundaries",
+  gxk_toolbar_choice_add (choice, "Q: 1/16", "Quantize to sixteenth note boundaries",
 			  gxk_stock_image (BST_STOCK_QNOTE_16, BST_SIZE_TOOLBAR), 16);
 
   /* vzoom */
-  bst_toolbar_append_separator (self->toolbar);
+  gxk_toolbar_append_separator (self->toolbar);
   adjustment = gtk_adjustment_new (4, 1, 16, 1, 4, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", vzoom_changed, self,
@@ -267,11 +267,11 @@ bst_part_dialog_init (BstPartDialog *self)
 			"digits", 0,
 			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
 			NULL);
-  bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
+  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
 		      "VZoom", "Vertical Zoom", entry);
 
   /* hzoom */
-  // bst_toolbar_append_space (self->toolbar);
+  // gxk_toolbar_append_space (self->toolbar);
   adjustment = gtk_adjustment_new (13, 0, 100, 1, 5, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", hzoom_changed, self,
@@ -282,7 +282,7 @@ bst_part_dialog_init (BstPartDialog *self)
 			"digits", 1,
 			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
 			NULL);
-  bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
+  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
 		      "HZoom", "Horizontal Zoom", entry);
 
   /* setup the popup menu

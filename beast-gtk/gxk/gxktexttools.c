@@ -1,5 +1,5 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 1998-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,12 +22,12 @@
 #include <errno.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
-#include "bsttexttools.h"
-#include "bsttoolbar.h"
-#include "bstutils.h"
+#include "gxktexttools.h"
+#include "gxktoolbar.h"
+#include "gxkutils.h"
 
 
-#define	BST_IS_SCROLL_TEXT	GTK_IS_VBOX
+#define	GXK_IS_SCROLL_TEXT	GTK_IS_VBOX
 
 
 typedef struct {
@@ -41,7 +41,7 @@ typedef struct {
   gchar     *file;
   gchar     *anchor;
   gchar     *current;
-  GSList    *bstack;
+  GSList    *gxkack;
   GSList    *fstack;
 } TextNavigation;
 
@@ -66,19 +66,19 @@ text_buffer_add_error (GtkTextBuffer *tbuffer,
 		       ...)
 {
   GtkTextTagTable *table = gtk_text_buffer_get_tag_table (tbuffer);
-  GtkTextTag *tag = gtk_text_tag_table_lookup (table, "bst-text-tools-error");
+  GtkTextTag *tag = gtk_text_tag_table_lookup (table, "gxk-text-tools-error");
   GtkTextIter iter;
   gchar *string, *text;
   va_list args;
   if (!tag)
     {
       tag = g_object_new (GTK_TYPE_TEXT_TAG,
-			  "name", "bst-text-tools-error",
+			  "name", "gxk-text-tools-error",
 			  "foreground", "#000000",
 			  "background", "#ff0000",
 			  "wrap_mode", GTK_WRAP_WORD,
 			  NULL);
-      g_object_set_int (tag, "bst-text-tools-owned", 1);
+      g_object_set_int (tag, "gxk-text-tools-owned", 1);
       gtk_text_tag_table_add (table, tag);
       g_object_unref (tag);
     }
@@ -94,7 +94,7 @@ text_buffer_add_error (GtkTextBuffer *tbuffer,
 
 static GSList *image_paths = NULL;
 void
-bst_text_add_tsm_path (const gchar *path)
+gxk_text_add_tsm_path (const gchar *path)
 {
   if (path)
     image_paths = g_slist_append (image_paths, g_strdup (path));
@@ -196,7 +196,7 @@ text_buffer_tagdef (GtkTextBuffer *tbuffer,
       tag = g_object_new (GTK_TYPE_TEXT_TAG,
 			  "name", tag_name,
 			  NULL);
-      g_object_set_int (tag, "bst-text-tools-owned", 1);
+      g_object_set_int (tag, "gxk-text-tools-owned", 1);
       gtk_text_tag_table_add (ttable, tag);
       g_object_unref (tag);
     }
@@ -246,7 +246,7 @@ text_buffer_tagdef (GtkTextBuffer *tbuffer,
 static guint signal_custom_activate = 0;
 
 void
-bst_text_buffer_init_custom (void)
+gxk_text_buffer_init_custom (void)
 {
   if (!signal_custom_activate)
     signal_custom_activate = g_signal_new ("custom-activate",
@@ -439,7 +439,7 @@ tsm_start_element  (GMarkupParseContext *context,
 	  {
 	    GtkTextTagTable *ttable = gtk_text_buffer_get_tag_table (md->tbuffer);
 	    ml->tag = g_object_new (GTK_TYPE_TEXT_TAG, NULL);
-	    g_object_set_int (ml->tag, "bst-text-tools-owned", 1);
+	    g_object_set_int (ml->tag, "gxk-text-tools-owned", 1);
 	    g_object_set_data_full (G_OBJECT (ml->tag), "data", g_strdup (attribute_values[i]), g_free);
 	    g_object_connect (ml->tag, "signal::event", data_tag_event, md->tbuffer, NULL);
 	    gtk_text_tag_table_add (ttable, ml->tag);
@@ -752,7 +752,7 @@ text_buffer_insert (GtkTextBuffer *tbuffer,
 	g_object_unref (md.style);
     }
   
-  name = g_strdup_printf ("bst-text-buffer-indent-tag-%u", indent);
+  name = g_strdup_printf ("gxk-text-tools-indent-%u", indent);
   tag = gtk_text_tag_table_lookup (ttable, name);
   if (!tag)
     {
@@ -763,7 +763,7 @@ text_buffer_insert (GtkTextBuffer *tbuffer,
 			  "right_margin", right_margin,
 			  "family", g_object_get_data (G_OBJECT (tbuffer), "family"),
 			  NULL);
-      g_object_set_int (tag, "bst-text-tools-owned", 1);
+      g_object_set_int (tag, "gxk-text-tools-owned", 1);
       gtk_text_tag_table_add (ttable, tag);
       gtk_text_tag_set_priority (tag, 0);
       g_object_unref (tag);
@@ -789,7 +789,7 @@ static_read_callback (gpointer data,
 }
 
 void
-bst_text_buffer_append_from_string (GtkTextBuffer *tbuffer,
+gxk_text_buffer_append_from_string (GtkTextBuffer *tbuffer,
 				    gboolean       parse_tsm,
 				    guint          indent_margin,
 				    guint          text_length,
@@ -799,7 +799,7 @@ bst_text_buffer_append_from_string (GtkTextBuffer *tbuffer,
   if (text_length)
     g_return_if_fail (text != NULL);
   
-  bst_text_buffer_cursor_to_end (tbuffer);
+  gxk_text_buffer_cursor_to_end (tbuffer);
   if (!text_length)
     return;
   text_buffer_insert (tbuffer, parse_tsm, indent_margin, "<Inlined String>", static_read_callback, &text_length, (guint8*) text);
@@ -823,7 +823,7 @@ fd_read_callback (gpointer data,
 }
 
 void
-bst_text_buffer_append_from_file (GtkTextBuffer *tbuffer,
+gxk_text_buffer_append_from_file (GtkTextBuffer *tbuffer,
 				  gboolean       parse_tsm,
 				  guint          indent_margin,
 				  const gchar   *file_name)
@@ -833,7 +833,7 @@ bst_text_buffer_append_from_file (GtkTextBuffer *tbuffer,
   g_return_if_fail (GTK_IS_TEXT_BUFFER (tbuffer));
   g_return_if_fail (file_name != NULL);
   
-  bst_text_buffer_cursor_to_end (tbuffer);
+  gxk_text_buffer_cursor_to_end (tbuffer);
   
   fd = open (file_name, O_RDONLY);
   if (fd >= 0)
@@ -847,7 +847,7 @@ bst_text_buffer_append_from_file (GtkTextBuffer *tbuffer,
 }
 
 void
-bst_text_buffer_cursor_to_start (GtkTextBuffer *tbuffer)
+gxk_text_buffer_cursor_to_start (GtkTextBuffer *tbuffer)
 {
   GtkTextIter iter;
   
@@ -858,7 +858,7 @@ bst_text_buffer_cursor_to_start (GtkTextBuffer *tbuffer)
 }
 
 void
-bst_text_buffer_cursor_to_end (GtkTextBuffer *tbuffer)
+gxk_text_buffer_cursor_to_end (GtkTextBuffer *tbuffer)
 {
   GtkTextIter iter;
   
@@ -935,8 +935,15 @@ text_view_key_event (GtkTextView *tview,
   return handled;
 }
 
+/**
+ * gxk_text_view_enter_browse_mode
+ * @tview:  a GtkTextView object
+ *
+ * Install key press handlers on a text view which
+ * allow scrolling its contents into any direction.
+ */
 void
-bst_text_view_enter_browse_mode (GtkTextView *tview)
+gxk_text_view_enter_browse_mode (GtkTextView *tview)
 {
   g_return_if_fail (GTK_IS_TEXT_VIEW (tview));
 
@@ -947,8 +954,15 @@ bst_text_view_enter_browse_mode (GtkTextView *tview)
     }
 }
 
+/**
+ * gxk_text_view_leave_browse_mode
+ * @tview:  a GtkTextView object
+ *
+ * Deinstall key press handlers previously installed
+ * with gxk_text_view_enter_browse_mode().
+ */
 void
-bst_text_view_leave_browse_mode (GtkTextView *tview)
+gxk_text_view_leave_browse_mode (GtkTextView *tview)
 {
   g_return_if_fail (GTK_IS_TEXT_VIEW (tview));
 
@@ -956,27 +970,43 @@ bst_text_view_leave_browse_mode (GtkTextView *tview)
     g_signal_handlers_disconnect_by_func (tview, text_view_key_event, tview);
 }
 
+/**
+ * gxk_text_view_cursor_to_start
+ * @tview:  a GtkTextView object
+ *
+ * Move the insertion and selection bound mark to
+ * the start of the text view's buffer and keep
+ * the cursor on screen.
+ */
 void
-bst_text_view_cursor_to_start (GtkTextView *tview)
+gxk_text_view_cursor_to_start (GtkTextView *tview)
 {
   GtkTextBuffer *tbuffer;
 
   g_return_if_fail (GTK_IS_TEXT_VIEW (tview));
 
   tbuffer = gtk_text_view_get_buffer (tview);
-  bst_text_buffer_cursor_to_start (tbuffer);
+  gxk_text_buffer_cursor_to_start (tbuffer);
   gtk_text_view_scroll_to_mark (tview, gtk_text_buffer_get_insert (tbuffer), 0.0, TRUE, 0.0, 0.0);
 }
 
+/**
+ * gxk_text_view_cursor_to_end
+ * @tview:  a GtkTextView object
+ *
+ * Move the insertion and selection bound mark to
+ * the end of the text view's buffer and keep
+ * the cursor on screen.
+ */
 void
-bst_text_view_cursor_to_end (GtkTextView *tview)
+gxk_text_view_cursor_to_end (GtkTextView *tview)
 {
   GtkTextBuffer *tbuffer;
 
   g_return_if_fail (GTK_IS_TEXT_VIEW (tview));
 
   tbuffer = gtk_text_view_get_buffer (tview);
-  bst_text_buffer_cursor_to_end (tbuffer);
+  gxk_text_buffer_cursor_to_end (tbuffer);
   gtk_text_view_scroll_to_mark (tview, gtk_text_buffer_get_insert (tbuffer), 0.0, TRUE, 0.0, 0.0);
 }
 
@@ -1018,15 +1048,32 @@ scroll_text_patchup_size_request (GtkWidget      *scwin,
     }
 }
 
+/**
+ * gxk_scroll_text_create
+ * @flags:  scroll text flags
+ * @string: default contents
+ *
+ * Create a non-editable scrollable text view. Behaviour
+ * and apperance can be tweaked by specifying various
+ * @flags combinations out of:
+ * GXK_SCROLL_TEXT_MONO_SPACED - use a fixed width font;
+ * GXK_SCROLL_TEXT_CENTER - center @string;
+ * GXK_SCROLL_TEXT_NO_WRAP - disallow word wrapping of @string;
+ * GXK_SCROLL_TEXT_SHEET_BG - use white as default background
+ * (similar to lists, trees and text widgets) instead of the
+ * normal grey widget background;
+ * GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow
+ * the user to navigate through clickable links.
+ */
 GtkWidget*
-bst_scroll_text_create (BstTextViewFlags flags,
-			const gchar     *string)
+gxk_scroll_text_create (GxkScrollTextFlags flags,
+			const gchar       *string)
 {
   GtkWidget *widget, *sctext, *scwin;
   GtkTextBuffer *tbuffer;
-  BstToolbar *tbar;
+  GxkToolbar *tbar;
 
-  bst_text_buffer_init_custom ();
+  gxk_text_buffer_init_custom ();
 
   /* sctext outer container
    */
@@ -1035,7 +1082,7 @@ bst_scroll_text_create (BstTextViewFlags flags,
 			 NULL);
   /* navigation toolbar
    */
-  tbar = bst_toolbar_new (NULL);
+  tbar = gxk_toolbar_new (NULL);
   gtk_box_pack_start (GTK_BOX (sctext), GTK_WIDGET (tbar), FALSE, TRUE, 0);
 
   /* scrollable text area
@@ -1056,27 +1103,27 @@ bst_scroll_text_create (BstTextViewFlags flags,
 
   /* navigation bits
    */
-  if (flags & BST_TEXT_VIEW_NAVIGATABLE)
+  if (flags & GXK_SCROLL_TEXT_NAVIGATABLE)
     {
       TextNavigation *tnav = navigation_from_sctext (sctext);
-      g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (bst_scroll_text_advance), sctext);
-      tnav->backb = bst_toolbar_append_stock (tbar, BST_TOOLBAR_BUTTON, "_Back", "Go back one page", GTK_STOCK_GO_BACK);
+      g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (gxk_scroll_text_advance), sctext);
+      tnav->backb = gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Back", "Go back one page", GTK_STOCK_GO_BACK);
       g_object_connect (g_object_ref (tnav->backb),
 			"swapped_signal::clicked", navigate_back, sctext,
 			NULL);
       gtk_widget_set_sensitive (tnav->backb, FALSE);
-      tnav->forwardb = bst_toolbar_append_stock (tbar, BST_TOOLBAR_BUTTON, "Forw_ard", "Go forward one page", GTK_STOCK_GO_FORWARD);
+      tnav->forwardb = gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "Forw_ard", "Go forward one page", GTK_STOCK_GO_FORWARD);
       g_object_connect (g_object_ref (tnav->forwardb),
 			"swapped_signal::clicked", navigate_forward, sctext,
 			NULL);
       gtk_widget_set_sensitive (tnav->forwardb, FALSE);
-      g_object_connect (bst_toolbar_append_stock (tbar, BST_TOOLBAR_BUTTON, "_Reload", "Reload current page", GTK_STOCK_REFRESH),
+      g_object_connect (gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Reload", "Reload current page", GTK_STOCK_REFRESH),
 			"swapped_signal::clicked", navigate_reload, sctext,
 			NULL);
-      g_object_connect (bst_toolbar_append_stock (tbar, BST_TOOLBAR_BUTTON, "_Index", NULL, GTK_STOCK_INDEX),
+      g_object_connect (gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Index", NULL, GTK_STOCK_INDEX),
 			"swapped_signal::clicked", navigate_index, sctext,
 			NULL);
-      g_object_connect (bst_toolbar_append_stock (tbar, BST_TOOLBAR_BUTTON, "_Find", "Searching not yet implemented", GTK_STOCK_FIND),
+      g_object_connect (gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Find", "Searching not yet implemented", GTK_STOCK_FIND),
 			"swapped_signal::clicked", navigate_find, sctext,
 			NULL);
       tnav->refe = g_object_new (GTK_TYPE_ENTRY,
@@ -1087,7 +1134,7 @@ bst_scroll_text_create (BstTextViewFlags flags,
 			"swapped_signal::activate", navigate_goto, sctext,
 			"swapped_signal::key_press_event", scroll_text_key_event, sctext,
 			NULL);
-      bst_toolbar_append (tbar, BST_TOOLBAR_FILL_WIDGET, "Location", NULL, tnav->refe);
+      gxk_toolbar_append (tbar, GXK_TOOLBAR_FILL_WIDGET, "Location", NULL, tnav->refe);
       gtk_widget_show (GTK_WIDGET (tbar));
     }
   else
@@ -1097,20 +1144,20 @@ bst_scroll_text_create (BstTextViewFlags flags,
     {
       g_object_set (widget, "editable", FALSE, NULL);
       g_signal_connect_swapped (widget, "key_press_event", G_CALLBACK (scroll_text_key_event), sctext);
-      bst_text_view_enter_browse_mode (GTK_TEXT_VIEW (widget));
+      gxk_text_view_enter_browse_mode (GTK_TEXT_VIEW (widget));
     }
-  if (flags & BST_TEXT_VIEW_NO_WRAP)
+  if (flags & GXK_SCROLL_TEXT_NO_WRAP)
     g_object_set (widget, "wrap_mode", GTK_WRAP_NONE, NULL);
   else
     g_object_set (widget, "wrap_mode", GTK_WRAP_WORD, NULL);
-  if (flags & BST_TEXT_VIEW_CENTER)
+  if (flags & GXK_SCROLL_TEXT_CENTER)
     g_object_set (widget, "justification", GTK_JUSTIFY_CENTER, NULL);
-  if (flags & BST_TEXT_VIEW_MONO_SPACED)
+  if (flags & GXK_SCROLL_TEXT_MONO_SPACED)
     g_object_set_data ((GObject*) tbuffer, "family", "mono");
-  if (!(flags & BST_TEXT_VIEW_SHEET_BG))
+  if (!(flags & GXK_SCROLL_TEXT_SHEET_BG))
     gxk_widget_modify_base_as_bg (widget);
 
-  bst_scroll_text_append (sctext, string);
+  gxk_scroll_text_append (sctext, string);
   
   return sctext;
 }
@@ -1120,12 +1167,18 @@ text_tag_remove (GtkTextTag *tag,
 		 gpointer    data)
 {
   GSList **slist_p = data;
-  if (g_object_get_int (tag, "bst-text-tools-owned"))
+  if (g_object_get_int (tag, "gxk-text-tools-owned"))
     *slist_p = g_slist_prepend (*slist_p, tag);
 }
 
+/**
+ * gxk_scroll_text_clear
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ *
+ * Clear the textual contents of this @sctext and reset the indentation level.
+ */
 void
-bst_scroll_text_clear (GtkWidget *sctext)
+gxk_scroll_text_clear (GtkWidget *sctext)
 {
   GtkTextView *tview;
   GtkTextBuffer *tbuffer;
@@ -1133,9 +1186,9 @@ bst_scroll_text_clear (GtkWidget *sctext)
   GtkTextIter iter1, iter2;
   GSList *node, *slist = NULL;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
-  tview = bst_scroll_text_get_text_view (sctext);
+  tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
   ttable = gtk_text_buffer_get_tag_table (tbuffer);
 
@@ -1149,96 +1202,149 @@ bst_scroll_text_clear (GtkWidget *sctext)
   g_object_set_int (tview, "indent", 0);
 }
 
+/**
+ * gxk_scroll_text_set
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @string: the new text to be displayed
+ *
+ * Replace the textual contents of this @sctext with @string.
+ */
 void
-bst_scroll_text_set (GtkWidget   *sctext,
+gxk_scroll_text_set (GtkWidget   *sctext,
 		     const gchar *string)
 {
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
-  bst_scroll_text_clear (sctext);
-  bst_scroll_text_append (sctext, string);
+  gxk_scroll_text_clear (sctext);
+  gxk_scroll_text_append (sctext, string);
 }
 
+/**
+ * gxk_scroll_text_set_tsm
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @string: the new text to be displayed in tag-span-markup
+ *
+ * Replace the textual contents of this @sctext with @string, where
+ * @string is marked up with tag-span-markup.
+ */
 void
-bst_scroll_text_set_tsm (GtkWidget   *sctext,
+gxk_scroll_text_set_tsm (GtkWidget   *sctext,
 			 const gchar *string)
 {
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
-  bst_scroll_text_clear (sctext);
-  bst_scroll_text_append_tsm (sctext, string);
+  gxk_scroll_text_clear (sctext);
+  gxk_scroll_text_append_tsm (sctext, string);
 }
 
+/**
+ * gxk_scroll_text_append
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @string: the text to be displayed
+ *
+ * Append @string to the textual contents of this @sctext.
+ */
 void
-bst_scroll_text_append (GtkWidget   *sctext,
+gxk_scroll_text_append (GtkWidget   *sctext,
 			const gchar *string)
 {
   GtkTextView *tview;
   GtkTextBuffer *tbuffer;
   
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
-  tview = bst_scroll_text_get_text_view (sctext);
+  tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
   if (string)
-    bst_text_buffer_append_from_string (tbuffer, FALSE, g_object_get_int (tview, "indent"), strlen (string), string);
-  bst_text_view_cursor_to_start (tview);
+    gxk_text_buffer_append_from_string (tbuffer, FALSE, g_object_get_int (tview, "indent"), strlen (string), string);
+  gxk_text_view_cursor_to_start (tview);
 }
 
+/**
+ * gxk_scroll_text_append_tsm
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @string: the text to be displayed in tag-span-markup
+ *
+ * Append @string to the textual contents of this @sctext, where
+ * @string is marked up with tag-span-markup.
+ */
 void
-bst_scroll_text_append_tsm (GtkWidget   *sctext,
+gxk_scroll_text_append_tsm (GtkWidget   *sctext,
 			    const gchar *string)
 {
   GtkTextView *tview;
   GtkTextBuffer *tbuffer;
   
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
-  tview = bst_scroll_text_get_text_view (sctext);
+  tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
   if (string)
-    bst_text_buffer_append_from_string (tbuffer, TRUE, g_object_get_int (tview, "indent"), strlen (string), string);
-  bst_text_view_cursor_to_start (tview);
+    gxk_text_buffer_append_from_string (tbuffer, TRUE, g_object_get_int (tview, "indent"), strlen (string), string);
+  gxk_text_view_cursor_to_start (tview);
 }
 
+/**
+ * gxk_scroll_text_append_file
+ * @sctext:    a scroll text widget as returned from gxk_scroll_text_create()
+ * @file_name: file holding the text to be displayed
+ *
+ * Append the contents of @file_name to the textual
+ * contents of this @sctext.
+ */
 void
-bst_scroll_text_append_file (GtkWidget   *sctext,
+gxk_scroll_text_append_file (GtkWidget   *sctext,
 			     const gchar *file_name)
 {
   GtkTextView *tview;
   GtkTextBuffer *tbuffer;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
   g_return_if_fail (file_name != NULL);
 
-  tview = bst_scroll_text_get_text_view (sctext);
+  tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
-  bst_text_buffer_append_from_file (tbuffer, FALSE, g_object_get_int (tview, "indent"), file_name);
-  bst_text_view_cursor_to_start (tview);
+  gxk_text_buffer_append_from_file (tbuffer, FALSE, g_object_get_int (tview, "indent"), file_name);
+  gxk_text_view_cursor_to_start (tview);
 }
 
+/**
+ * gxk_scroll_text_append_file_tsm
+ * @sctext:    a scroll text widget as returned from gxk_scroll_text_create()
+ * @file_name: file holding the text to be displayed in tag-span-markup
+ *
+ * Append the contents of @file_name to the textual contents of
+ * this @sctext, where those contents are marked up with tag-span-markup.
+ */
 void
-bst_scroll_text_append_file_tsm (GtkWidget   *sctext,
+gxk_scroll_text_append_file_tsm (GtkWidget   *sctext,
 				 const gchar *file_name)
 {
   GtkTextView *tview;
   GtkTextBuffer *tbuffer;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
   g_return_if_fail (file_name != NULL);
 
-  tview = bst_scroll_text_get_text_view (sctext);
+  tview = gxk_scroll_text_get_text_view (sctext);
   tbuffer = gtk_text_view_get_buffer (tview);
-  bst_text_buffer_append_from_file (tbuffer, TRUE, g_object_get_int (tview, "indent"), file_name);
-  bst_text_view_cursor_to_start (tview);
+  gxk_text_buffer_append_from_file (tbuffer, TRUE, g_object_get_int (tview, "indent"), file_name);
+  gxk_text_view_cursor_to_start (tview);
 }
 
+/**
+ * gxk_scroll_text_aprintf
+ * @sctext:   a scroll text widget as returned from gxk_scroll_text_create()
+ * @text_fmt: printf(3) style format string
+ *
+ * Append @text_fmt to the textual contents of this @sctext.
+ */
 void
-bst_scroll_text_aprintf (GtkWidget   *sctext,
+gxk_scroll_text_aprintf (GtkWidget   *sctext,
 			 const gchar *text_fmt,
 			 ...)
 {
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
   if (text_fmt)
     {
@@ -1249,39 +1355,25 @@ bst_scroll_text_aprintf (GtkWidget   *sctext,
       buffer = g_strdup_vprintf (text_fmt, args);
       va_end (args);
 
-      bst_scroll_text_append (sctext, buffer);
+      gxk_scroll_text_append (sctext, buffer);
       g_free (buffer);
     }
 }
 
-void
-bst_scroll_text_aprintf_tsm (GtkWidget   *sctext,
-			     const gchar *text_fmt,
-			     ...)
-{
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
-
-  if (text_fmt)
-    {
-      va_list args;
-      gchar *buffer;
-      
-      va_start (args, text_fmt);
-      buffer = g_strdup_vprintf (text_fmt, args);
-      va_end (args);
-
-      bst_scroll_text_append_tsm (sctext, buffer);
-      g_free (buffer);
-    }
-}
-
+/**
+ * gxk_scroll_text_get_text_view
+ * @sctext:  a scroll text widget as returned from gxk_scroll_text_create()
+ * @RETURNS: a GtkTextView widget
+ *
+ * Return the internally used GtkTextView of this @sctext.
+ */
 GtkTextView*
-bst_scroll_text_get_text_view (GtkWidget *sctext)
+gxk_scroll_text_get_text_view (GtkWidget *sctext)
 {
   GtkTextView *tview;
   GtkWidget *scwin;
 
-  g_return_val_if_fail (BST_IS_SCROLL_TEXT (sctext), NULL);
+  g_return_val_if_fail (GXK_IS_SCROLL_TEXT (sctext), NULL);
 
   scwin = ((GtkBoxChild*) GTK_BOX (sctext)->children->next->data)->widget;
 
@@ -1290,29 +1382,42 @@ bst_scroll_text_get_text_view (GtkWidget *sctext)
   return tview;
 }
 
+/**
+ * gxk_scroll_text_push_indent
+ * @sctext:  a scroll text widget as returned from gxk_scroll_text_create()
+ *
+ * Increment the global indentation level, which affects overall
+ * indentation of text added with gxk_scroll_text_append() and friends.
+ */
 void
-bst_scroll_text_push_indent (GtkWidget   *sctext,
-			     const gchar *spaces)
+gxk_scroll_text_push_indent (GtkWidget *sctext)
 {
   GtkTextView *tview;
   guint indent;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
-  tview = bst_scroll_text_get_text_view (sctext);
+  tview = gxk_scroll_text_get_text_view (sctext);
   indent = g_object_get_int (tview, "indent");
   g_object_set_int (tview, "indent", indent + 2);
 }
 
+/**
+ * gxk_scroll_text_pop_indent
+ * @sctext:  a scroll text widget as returned from gxk_scroll_text_create()
+ *
+ * Decrement the global indentation level after a previous
+ * increment with gxk_scroll_text_push_indent().
+ */
 void
-bst_scroll_text_pop_indent (GtkWidget *sctext)
+gxk_scroll_text_pop_indent (GtkWidget *sctext)
 {
   GtkTextView *tview;
   guint indent;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
-  tview = bst_scroll_text_get_text_view (sctext);
+  tview = gxk_scroll_text_get_text_view (sctext);
   indent = g_object_get_int (tview, "indent");
   if (indent)
     g_object_set_int (tview, "indent", indent - 2);
@@ -1414,7 +1519,7 @@ navigation_update_widgets (TextNavigation *tnav)
 {
   /* handle sensitivity */
   if (tnav->backb)
-    gtk_widget_set_sensitive (tnav->backb, tnav->bstack != NULL);
+    gtk_widget_set_sensitive (tnav->backb, tnav->gxkack != NULL);
   if (tnav->forwardb)
     gtk_widget_set_sensitive (tnav->forwardb, tnav->fstack != NULL);
   /* update location */
@@ -1440,23 +1545,23 @@ free_navigation (gpointer data)
   g_free (tnav->anchor);
   g_free (tnav->current);
   navigation_clear_fstack (tnav);
-  for (slist = tnav->bstack; slist; slist = slist->next)
+  for (slist = tnav->gxkack; slist; slist = slist->next)
     g_free (slist->data);
-  g_slist_free (tnav->bstack);
+  g_slist_free (tnav->gxkack);
   g_free (tnav);
 }
 
 static TextNavigation*
 navigation_from_sctext (GtkWidget *sctext)
 {
-  TextNavigation *tnav = g_object_get_data (G_OBJECT (sctext), "Bst-scroll-text-navigation");
+  TextNavigation *tnav = g_object_get_data (G_OBJECT (sctext), "gxk-text-tools-navigation");
   if (!tnav)
     {
       tnav = g_new0 (TextNavigation, 1);
       tnav->sctext = sctext;
       tnav->index = g_strdup ("about:");
       navigation_reset_url (tnav);
-      g_object_set_data_full (G_OBJECT (sctext), "Bst-scroll-text-navigation", tnav, free_navigation);
+      g_object_set_data_full (G_OBJECT (sctext), "gxk-text-tools-navigation", tnav, free_navigation);
     }
   return tnav;
 }
@@ -1482,9 +1587,13 @@ guess_file_type (const gchar *file_name)
 	{
 	  gchar *p = buffer;
 	  buffer[l] = 0;
+#if 0
 	  while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r')
 	    p++;
 	  if (strncmp (p, "<tag-span-markup>", 17) == 0)
+	    return FILE_TYPE_TSM;
+#endif
+	  if (strstr (p, "<!DOCTYPE tag-span-markup") && strstr (p, "<tag-span-markup>"))
 	    return FILE_TYPE_TSM;
 	}
     }
@@ -1496,9 +1605,9 @@ scroll_text_reload (GtkWidget *sctext)
 {
   TextNavigation *tnav = navigation_from_sctext (sctext);
 
-  bst_scroll_text_clear (sctext);
+  gxk_scroll_text_clear (sctext);
   if (strcmp (tnav->proto, "about") == 0)
-    bst_scroll_text_set_tsm (sctext,
+    gxk_scroll_text_set_tsm (sctext,
 			     "<tag-span-markup>"
 			     "<tagdef name='center' justification='center'/>"
 			     "<span tag='center'><newline/>"
@@ -1513,13 +1622,13 @@ scroll_text_reload (GtkWidget *sctext)
       gchar *file = g_strconcat (tnav->path, tnav->file, NULL);
       guint file_guess = guess_file_type (file);
       if (file_guess == FILE_TYPE_TSM)
-	bst_scroll_text_append_file_tsm (sctext, file);
+	gxk_scroll_text_append_file_tsm (sctext, file);
       else
-	bst_scroll_text_append_file (sctext, file);
+	gxk_scroll_text_append_file (sctext, file);
       g_free (file);
       if (tnav->anchor)
 	{
-	  GtkTextView *tview = bst_scroll_text_get_text_view (sctext);
+	  GtkTextView *tview = gxk_scroll_text_get_text_view (sctext);
 	  GtkTextBuffer *tbuffer = gtk_text_view_get_buffer (tview);
 	  gchar *aname = g_strconcat ("#-", tnav->anchor, NULL);
 	  GtkTextMark *mark = gtk_text_buffer_get_mark (tbuffer, aname);
@@ -1536,20 +1645,28 @@ scroll_text_reload (GtkWidget *sctext)
   else
     {
       gchar *loc = navigation_strdup_url (tnav);
-      text_buffer_add_error (gtk_text_view_get_buffer (bst_scroll_text_get_text_view (sctext)),
+      text_buffer_add_error (gtk_text_view_get_buffer (gxk_scroll_text_get_text_view (sctext)),
 			     "Resource locator with unknown method: %s", loc);
       g_free (loc);
-      bst_text_view_cursor_to_end (bst_scroll_text_get_text_view (sctext));
+      gxk_text_view_cursor_to_end (gxk_scroll_text_get_text_view (sctext));
     }
 }
 
+/**
+ * gxk_scroll_text_display
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @uri:    resource locator
+ *
+ * Load and display the resource from @uri without
+ * altering the navigation history.
+ */
 void
-bst_scroll_text_display (GtkWidget   *sctext,
+gxk_scroll_text_display (GtkWidget   *sctext,
 			 const gchar *uri)
 {
   TextNavigation *tnav;
   
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
   g_return_if_fail (uri != NULL);
   
   tnav = navigation_from_sctext (sctext);
@@ -1558,23 +1675,32 @@ bst_scroll_text_display (GtkWidget   *sctext,
   scroll_text_reload (sctext);
 }
 
+/**
+ * gxk_scroll_text_advance
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @uri:    resource locator
+ *
+ * Relative to the url currently being displayed
+ * load and display the possibly partial (relative)
+ * url @uri. Navigation history is affected.
+ */
 void
-bst_scroll_text_advance (GtkWidget   *sctext,
+gxk_scroll_text_advance (GtkWidget   *sctext,
 			 const gchar *uri)
 {
   TextNavigation *tnav;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
   g_return_if_fail (uri != NULL);
 
   tnav = navigation_from_sctext (sctext);
   /* handle history */
   if (tnav->current)
     {
-      if (tnav->bstack && strcmp (tnav->bstack->data, tnav->current) == 0)
+      if (tnav->gxkack && strcmp (tnav->gxkack->data, tnav->current) == 0)
 	g_free (tnav->current);
       else
-	tnav->bstack = g_slist_prepend (tnav->bstack, tnav->current);
+	tnav->gxkack = g_slist_prepend (tnav->gxkack, tnav->current);
       tnav->current = NULL;
     }
   navigation_clear_fstack (tnav);
@@ -1583,37 +1709,53 @@ bst_scroll_text_advance (GtkWidget   *sctext,
   /* prepare for next history */
   tnav->current = navigation_strdup_url (tnav);
   /* dedup history */
-  if (tnav->bstack && strcmp (tnav->bstack->data, tnav->current) == 0)
+  if (tnav->gxkack && strcmp (tnav->gxkack->data, tnav->current) == 0)
     {
-      g_free (tnav->bstack->data);
-      tnav->bstack = g_slist_delete_link (tnav->bstack, tnav->bstack);
+      g_free (tnav->gxkack->data);
+      tnav->gxkack = g_slist_delete_link (tnav->gxkack, tnav->gxkack);
     }
   /* show away */
   scroll_text_reload (sctext);
   navigation_update_widgets (tnav);
 }
 
+/**
+ * gxk_scroll_text_enter
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @uri:    resource locator
+ *
+ * Load and display the url @uri.
+ * Navigation history is affected.
+ */
 void
-bst_scroll_text_enter (GtkWidget   *sctext,
+gxk_scroll_text_enter (GtkWidget   *sctext,
 		       const gchar *uri)
 {
   TextNavigation *tnav;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
   g_return_if_fail (uri != NULL);
 
   tnav = navigation_from_sctext (sctext);
   navigation_reset_url (tnav);
-  bst_scroll_text_advance (sctext, uri);
+  gxk_scroll_text_advance (sctext, uri);
 }
 
+/**
+ * gxk_scroll_text_set_index
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ * @uri:    resource locator
+ *
+ * Affect what uri is being displayed by pressing
+ * on the "Index" navigation button.
+ */
 void
-bst_scroll_text_set_index (GtkWidget   *sctext,
+gxk_scroll_text_set_index (GtkWidget   *sctext,
 			   const gchar *uri)
 {
   TextNavigation *tnav;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
   if (!uri || !uri[0])
     uri = "about:";
 
@@ -1622,15 +1764,21 @@ bst_scroll_text_set_index (GtkWidget   *sctext,
   tnav->index = g_strdup (uri);
 }
 
+/**
+ * gxk_scroll_text_rewind
+ * @sctext: a scroll text widget as returned from gxk_scroll_text_create()
+ *
+ * Go back in navigation history as far as possible.
+ */
 void
-bst_scroll_text_rewind (GtkWidget *sctext)
+gxk_scroll_text_rewind (GtkWidget *sctext)
 {
   TextNavigation *tnav;
 
-  g_return_if_fail (BST_IS_SCROLL_TEXT (sctext));
+  g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
   tnav = navigation_from_sctext (sctext);
-  while (tnav->bstack)
+  while (tnav->gxkack)
     {
       if (tnav->current)
 	{
@@ -1639,8 +1787,8 @@ bst_scroll_text_rewind (GtkWidget *sctext)
 	  else
 	    tnav->fstack = g_slist_prepend (tnav->fstack, tnav->current);
 	}
-      tnav->current = tnav->bstack->data;
-      tnav->bstack = g_slist_delete_link (tnav->bstack, tnav->bstack);
+      tnav->current = tnav->gxkack->data;
+      tnav->gxkack = g_slist_delete_link (tnav->gxkack, tnav->gxkack);
     }
   if (tnav->current)
     {
@@ -1649,14 +1797,14 @@ bst_scroll_text_rewind (GtkWidget *sctext)
       scroll_text_reload (sctext);
     }
   navigation_update_widgets (tnav);
-  bst_text_view_cursor_to_start (bst_scroll_text_get_text_view (sctext));
+  gxk_text_view_cursor_to_start (gxk_scroll_text_get_text_view (sctext));
 }
 
 static void
 navigate_back (GtkWidget *sctext)
 {
   TextNavigation *tnav = navigation_from_sctext (sctext);
-  if (tnav->bstack)
+  if (tnav->gxkack)
     {
       if (tnav->current)
 	{
@@ -1665,8 +1813,8 @@ navigate_back (GtkWidget *sctext)
 	  else
 	    tnav->fstack = g_slist_prepend (tnav->fstack, tnav->current);
 	}
-      tnav->current = tnav->bstack->data;
-      tnav->bstack = g_slist_delete_link (tnav->bstack, tnav->bstack);
+      tnav->current = tnav->gxkack->data;
+      tnav->gxkack = g_slist_delete_link (tnav->gxkack, tnav->gxkack);
       navigation_reset_url (tnav);
       navigation_set_url (tnav, tnav->current);
       scroll_text_reload (sctext);
@@ -1682,10 +1830,10 @@ navigate_forward (GtkWidget *sctext)
     {
       if (tnav->current)
 	{
-	  if (tnav->bstack && strcmp (tnav->bstack->data, tnav->current) == 0)
+	  if (tnav->gxkack && strcmp (tnav->gxkack->data, tnav->current) == 0)
 	    g_free (tnav->current);
 	  else
-	    tnav->bstack = g_slist_prepend (tnav->bstack, tnav->current);
+	    tnav->gxkack = g_slist_prepend (tnav->gxkack, tnav->current);
 	}
       tnav->current = tnav->fstack->data;
       tnav->fstack = g_slist_delete_link (tnav->fstack, tnav->fstack);
@@ -1700,13 +1848,13 @@ static void
 navigate_index (GtkWidget *sctext)
 {
   TextNavigation *tnav = navigation_from_sctext (sctext);
-  bst_scroll_text_enter (sctext, tnav->index);
+  gxk_scroll_text_enter (sctext, tnav->index);
 }
 
 static void
 navigate_find (GtkWidget *sctext)
 {
-  bst_scroll_text_enter (sctext, "about:");
+  gxk_scroll_text_enter (sctext, "about:");
 }
 
 static void
@@ -1721,5 +1869,5 @@ navigate_goto (GtkWidget *sctext)
   TextNavigation *tnav = navigation_from_sctext (sctext);
   const gchar *text = gtk_entry_get_text (GTK_ENTRY (tnav->refe));
   if (text && text[0])
-    bst_scroll_text_enter (sctext, text);
+    gxk_scroll_text_enter (sctext, text);
 }

@@ -47,7 +47,7 @@ struct _BstPartDialog
   GtkWidget	*scrolled_window;
   GtkWidget	*proll;
   BstPianoRollController *proll_ctrl;
-  BstToolbar	*toolbar;
+  GxkToolbar	*toolbar;
   BstRadioTools	*rtools;
 };
 struct _BstPartDialogClass

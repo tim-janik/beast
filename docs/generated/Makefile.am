@@ -5,6 +5,7 @@ docs_DATA = ${public_docs}
 
 public_docs = $(strip		\
 	faq.markup		\
+	faq.xml			\
 	release-notes.markup	\
 	news.markup		\
 	gsl-mplan.markup	\
@@ -27,6 +28,7 @@ texi_docs = $(strip			\
 )
 build_tools = $(strip		\
 	html.xsl		\
+	markup.dtd		\
 	markup.xsl		\
 	texinfo.dtd		\
 )
@@ -50,12 +52,18 @@ news.xml: $(top_srcdir)/NEWS
 	&& echo '<settitle>BEAST/BSE NEWS</settitle><preformat><para>' >> $@ \
 	&& sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' < $< >> $@ \
 	&& echo '</para></preformat></texinfo>' >> $@
-conditional_clean = $(build_targets) gsl-mplan.xml news.xml
+conditional_clean = $(build_targets) gsl-mplan.xml news.xml faq.xml
 endif
 
 html-targets:	$(html_targets)
 
-.PHONY: html-tagets
+lint:
+	for i in $(build_targets) ; do \
+		xmllint --noout --loaddtd --valid $$i ; \
+	done
+
+
+.PHONY: html-tagets lint
 
 CLEANFILES += $(conditional_clean) $(html_targets)
 

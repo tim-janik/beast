@@ -30,7 +30,6 @@
 #include "bstrackeditor.h"
 #include "bstmenus.h"
 #include "bstprocedure.h"
-#include "bsttexttools.h"
 
 
 /* --- prototypes --- */
@@ -757,11 +756,11 @@ bst_app_operate (BstApp *app,
     HELP_DIALOG:
       if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
 	{
-	  GtkWidget *sctext = bst_scroll_text_create (BST_TEXT_VIEW_SHEET_BG | BST_TEXT_VIEW_NAVIGATABLE, NULL);
+	  GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG | GXK_SCROLL_TEXT_NAVIGATABLE, NULL);
 	  gchar *index = g_strconcat ("file://", BST_PATH_DOCS, "/beast-index.markup", NULL);
-	  bst_scroll_text_set_index (sctext, index);
+	  gxk_scroll_text_set_index (sctext, index);
 	  g_free (index);
-	  bst_scroll_text_enter (sctext, help_file);
+	  gxk_scroll_text_enter (sctext, help_file);
 	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = gxk_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
 								     NULL,
 								     GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_DELETE_BUTTON,
@@ -772,7 +771,7 @@ bst_app_operate (BstApp *app,
 			NULL);
 	}
       g_free (help_file);
-      bst_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
+      gxk_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
       gxk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
       break;
     case BST_OP_HELP_RELEASE_NOTES:
@@ -781,10 +780,10 @@ bst_app_operate (BstApp *app,
 	  GtkWidget *sctext;
 	  help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
 	  help_title = help_file;
-	  sctext = bst_scroll_text_create (BST_TEXT_VIEW_SHEET_BG, NULL);
-	  bst_scroll_text_append_file_tsm (sctext, help_file);
+	  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG, NULL);
+	  gxk_scroll_text_append_file_tsm (sctext, help_file);
 	  help_file = g_strconcat (BST_PATH_DOCS, "/news.markup", NULL);
-	  bst_scroll_text_append_file_tsm (sctext, help_file);
+	  gxk_scroll_text_append_file_tsm (sctext, help_file);
 	  g_free (help_file);
 	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = gxk_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
 								     NULL,
@@ -796,7 +795,7 @@ bst_app_operate (BstApp *app,
 			NULL);
 	  g_free (help_title);
 	}
-      bst_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
+      gxk_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
       gxk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
       break;
     case BST_OP_HELP_ABOUT:

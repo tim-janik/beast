@@ -17,8 +17,6 @@
  */
 #include "bstusermessage.h"
 
-#include "bsttexttools.h"
-
 
 /* --- prototypes --- */
 static GtkWidget*	create_script_control_dialog	(BswProxy	script_control);
@@ -145,7 +143,7 @@ update_dialog (GxkDialog     *dialog,
 				    "yalign", 0.5,
 				    "xscale", 1.0,
 				    "yscale", 0.75,
-				    "child", bst_scroll_text_create (BST_TEXT_VIEW_CENTER, message),
+				    "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_CENTER, message),
 				    NULL),
 		      TRUE, TRUE, 5);
   g_free (xmessage);	/* grrr, the new text widget is still enormously buggy */

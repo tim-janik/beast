@@ -26,6 +26,8 @@
 #include <gxk/gxkglobals.h>
 #include <gxk/gxkstatusbar.h>
 #include <gxk/gxkstock.h>
+#include <gxk/gxktexttools.h>
+#include <gxk/gxktoolbar.h>
 #include <gxk/gxkutils.h>
 
 #endif /* __GXK_H__ */

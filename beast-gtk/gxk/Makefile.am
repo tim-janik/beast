@@ -22,6 +22,8 @@ gxk_headers = $(strip \
 	gxkglobals.h \
 	gxkstatusbar.h \
 	gxkstock.h \
+	gxktexttools.h \
+	gxktoolbar.h \
 	gxkutils.h \
 )
 gxk_c_sources = $(strip \
@@ -30,6 +32,8 @@ gxk_c_sources = $(strip \
 	gxkglobals.c \
 	gxkstatusbar.c \
 	gxkstock.c \
+	gxktexttools.c \
+	gxktoolbar.c \
 	gxkutils.c \
 )
 gxk_extra_sources = $(strip \

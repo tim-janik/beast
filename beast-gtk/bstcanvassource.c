@@ -21,7 +21,6 @@
 
 #include "bstparamview.h"
 #include "bstgconfig.h"
-#include "bsttexttools.h"
 
 
 /* --- defines --- */
@@ -376,65 +375,65 @@ csource_info_update (BstCanvasSource *csource)
       guint i;
 
       /* construct information */
-      bst_scroll_text_clear (text);
-      bst_scroll_text_aprintf (text, "%s (%s):\n",
+      gxk_scroll_text_clear (text);
+      gxk_scroll_text_aprintf (text, "%s (%s):\n",
 			       bsw_item_get_name_or_type (csource->source),
 			       bsw_item_get_type_name (csource->source));
 
       /* input channels */
       if (bsw_source_n_ichannels (csource->source))
 	{
-	  bst_scroll_text_aprintf (text, "\nInput Channels:\n");
-	  bst_scroll_text_push_indent (text, "  ");
+	  gxk_scroll_text_aprintf (text, "\nInput Channels:\n");
+	  gxk_scroll_text_push_indent (text);
 	}
       for (i = 0; i < bsw_source_n_ichannels (csource->source); i++)
 	{
           string = bsw_source_ichannel_blurb (csource->source, i);
-	  bst_scroll_text_aprintf (text, "%s[%s]%s\n",
+	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
 				   bsw_source_ichannel_name (csource->source, i),
 				   bsw_source_ichannel_cname (csource->source, i),
 				   string ? ":" : "");
 	  if (string)
 	    {
-	      bst_scroll_text_push_indent (text, "  ");
-	      bst_scroll_text_aprintf (text, "%s\n", string);
-	      bst_scroll_text_pop_indent (text);
+	      gxk_scroll_text_push_indent (text);
+	      gxk_scroll_text_aprintf (text, "%s\n", string);
+	      gxk_scroll_text_pop_indent (text);
 	    }
 	}
       if (bsw_source_n_ichannels (csource->source))
-	bst_scroll_text_pop_indent (text);
+	gxk_scroll_text_pop_indent (text);
 
       /* output channels */
       if (bsw_source_n_ochannels (csource->source))
 	{
-	  bst_scroll_text_aprintf (text, "\nOutput Channels:\n");
-	  bst_scroll_text_push_indent (text, "  ");
+	  gxk_scroll_text_aprintf (text, "\nOutput Channels:\n");
+	  gxk_scroll_text_push_indent (text);
 	}
       for (i = 0; i < bsw_source_n_ochannels (csource->source); i++)
 	{
 	  string = bsw_source_ochannel_blurb (csource->source, i);
-	  bst_scroll_text_aprintf (text, "%s[%s]%s\n",
+	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
 				   bsw_source_ochannel_name (csource->source, i),
 				   bsw_source_ochannel_cname (csource->source, i),
 				   string ? ":" : "");
           if (string)
 	    {
-	      bst_scroll_text_push_indent (text, "  ");
-	      bst_scroll_text_aprintf (text, "%s\n", string);
-	      bst_scroll_text_pop_indent (text);
+	      gxk_scroll_text_push_indent (text);
+	      gxk_scroll_text_aprintf (text, "%s\n", string);
+	      gxk_scroll_text_pop_indent (text);
 	    }
 	}
       if (bsw_source_n_ochannels (csource->source))
-	bst_scroll_text_pop_indent (text);
+	gxk_scroll_text_pop_indent (text);
 
       /* description */
       string = bsw_item_get_type_blurb (csource->source);
       if (string)
 	{
-	  bst_scroll_text_aprintf (text, "\nDescription:\n");
-	  bst_scroll_text_push_indent (text, "  ");
-	  bst_scroll_text_aprintf (text, "%s\n", string);
-	  bst_scroll_text_pop_indent (text);
+	  gxk_scroll_text_aprintf (text, "\nDescription:\n");
+	  gxk_scroll_text_push_indent (text);
+	  gxk_scroll_text_aprintf (text, "%s\n", string);
+	  gxk_scroll_text_pop_indent (text);
 	}
     }
 }
@@ -454,7 +453,7 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 							     "visible", TRUE,
 							     "border_width", 5,
 							     "label", "Module Info",
-							     "child", bst_scroll_text_create (0, NULL),
+							     "child", gxk_scroll_text_create (0, NULL),
 							     NULL));
     }
   csource_info_update (csource);

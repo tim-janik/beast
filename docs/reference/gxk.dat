@@ -2,14 +2,14 @@
 name    = GXK-Functions
 blurb   = Gtk+ Extension Kit Function Reference
 package = BEAST-0.4.2
-date    = 07 Sep 2002
+date    = 11 Sep 2002
 image   = gxk-functions
 
 @DOC-TITLE@
 GXK-Functions
 
 @DOC-HEAD@
-GXK-Functions 07 Sep 2002 BEAST-0.4.2
+GXK-Functions 11 Sep 2002 BEAST-0.4.2
 
 @DOC-NAME@
 GXK-Functions - Gtk+ Extension Kit Function Reference
@@ -708,6 +708,816 @@ a window showing the stock icon
 
 @DOC-DESCRIPTION@
 Create a window displaying a stock icon which is transparent according to the icon's alpha mask. Such windows are mostly usefull to implement drag-and-drop operations with stock icons.  
+@DOC-SYNOPSIS@
+@STRONG gxk_text_view_enter_browse_mode@ (@EMPH tview@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkTextView*
+typeraw = GtkTextView*
+@DOC-PARAMETER@
+tview
+@DOC-PARDESC@
+a GtkTextView object
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+
+@DOC-DESCRIPTION@
+Install key press handlers on a text view which allow scrolling its contents into any direction.  
+@DOC-SYNOPSIS@
+@STRONG gxk_text_view_leave_browse_mode@ (@EMPH tview@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkTextView*
+typeraw = GtkTextView*
+@DOC-PARAMETER@
+tview
+@DOC-PARDESC@
+a GtkTextView object
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+
+@DOC-DESCRIPTION@
+Deinstall key press handlers previously installed with @STRONG gxk_text_view_enter_browse_mode()@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_text_view_cursor_to_start@ (@EMPH tview@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkTextView*
+typeraw = GtkTextView*
+@DOC-PARAMETER@
+tview
+@DOC-PARDESC@
+a GtkTextView object
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+
+@DOC-DESCRIPTION@
+Move the insertion and selection bound mark to the start of the text view's buffer and keep the cursor on screen.  
+@DOC-SYNOPSIS@
+@STRONG gxk_text_view_cursor_to_end@ (@EMPH tview@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkTextView*
+typeraw = GtkTextView*
+@DOC-PARAMETER@
+tview
+@DOC-PARDESC@
+a GtkTextView object
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+
+@DOC-DESCRIPTION@
+Move the insertion and selection bound mark to the end of the text view's buffer and keep the cursor on screen.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_create@ (@EMPH flags@, @EMPH string@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 28
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkScrollTextFlags\ 
+typeraw = GxkScrollTextFlags 
+@DOC-PARAMETER@
+flags
+@DOC-PARDESC@
+scroll text flags
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*\ \ \ \ \ \ \ 
+typeraw = const gchar*       
+@DOC-PARAMETER@
+string
+@DOC-PARDESC@
+default contents
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 28
+
+
+@DOC-DESCRIPTION@
+Create a non-editable scrollable text view. Behaviour and apperance can be tweaked by specifying various @EMPH flags@ combinations out of: GXK_SCROLL_TEXT_MONO_SPACED - use a fixed width font; GXK_SCROLL_TEXT_CENTER - center @EMPH string@; GXK_SCROLL_TEXT_NO_WRAP - disallow word wrapping of @EMPH string@; GXK_SCROLL_TEXT_SHEET_BG - use white as default background (similar to lists, trees and text widgets) instead of the normal grey widget background; GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow the user to navigate through clickable links.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_clear@ (@EMPH sctext@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Clear the textual contents of this @EMPH sctext@ and reset the indentation level.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_set@ (@EMPH sctext@, @EMPH string@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+string
+@DOC-PARDESC@
+the new text to be displayed
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Replace the textual contents of this @EMPH sctext@ with @EMPH string@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_set_tsm@ (@EMPH sctext@, @EMPH string@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+string
+@DOC-PARDESC@
+the new text to be displayed in tag-span-markup
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Replace the textual contents of this @EMPH sctext@ with @EMPH string@, where @EMPH string@ is marked up with tag-span-markup.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_append@ (@EMPH sctext@, @EMPH string@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+string
+@DOC-PARDESC@
+the text to be displayed
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Append @EMPH string@ to the textual contents of this @EMPH sctext@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_append_tsm@ (@EMPH sctext@, @EMPH string@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+string
+@DOC-PARDESC@
+the text to be displayed in tag-span-markup
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Append @EMPH string@ to the textual contents of this @EMPH sctext@, where @EMPH string@ is marked up with tag-span-markup.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_append_file@ (@EMPH sctext@, @EMPH file_name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+file_name
+@DOC-PARDESC@
+file holding the text to be displayed
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+
+@DOC-DESCRIPTION@
+Append the contents of @EMPH file_name@ to the textual contents of this @EMPH sctext@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_append_file_tsm@ (@EMPH sctext@, @EMPH file_name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+file_name
+@DOC-PARDESC@
+file holding the text to be displayed in tag-span-markup
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+
+@DOC-DESCRIPTION@
+Append the contents of @EMPH file_name@ to the textual contents of this @EMPH sctext@, where those contents are marked up with tag-span-markup.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_aprintf@ (@EMPH sctext@, @EMPH text_fmt@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+text_fmt
+@DOC-PARDESC@
+@STRONG printf(3)@ style format string
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Append @EMPH text_fmt@ to the textual contents of this @EMPH sctext@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_get_text_view@ (@EMPH sctext@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+@DOC-RETURNS@
+a GtkTextView widget
+
+@DOC-DESCRIPTION@
+Return the internally used GtkTextView of this @EMPH sctext@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_push_indent@ (@EMPH sctext@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Increment the global indentation level, which affects overall indentation of text added with @STRONG gxk_scroll_text_append()@ and friends.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_pop_indent@ (@EMPH sctext@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Decrement the global indentation level after a previous increment with @STRONG gxk_scroll_text_push_indent()@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_display@ (@EMPH sctext@, @EMPH uri@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+uri
+@DOC-PARDESC@
+resource locator
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Load and display the resource from @EMPH uri@ without altering the navigation history.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_advance@ (@EMPH sctext@, @EMPH uri@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+uri
+@DOC-PARDESC@
+resource locator
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Relative to the url currently being displayed load and display the possibly partial (relative) url @EMPH uri@. Navigation history is affected.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_enter@ (@EMPH sctext@, @EMPH uri@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+uri
+@DOC-PARDESC@
+resource locator
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Load and display the url @EMPH uri@. Navigation history is affected.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_set_index@ (@EMPH sctext@, @EMPH uri@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+uri
+@DOC-PARDESC@
+resource locator
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Affect what uri is being displayed by pressing on the "Index" navigation button.  
+@DOC-SYNOPSIS@
+@STRONG gxk_scroll_text_rewind@ (@EMPH sctext@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+sctext
+@DOC-PARDESC@
+a scroll text widget as returned from @STRONG gxk_scroll_text_create()@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Go back in navigation history as far as possible.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toolbar_new@ (@EMPH nullify_pointer@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 27
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ 
+typeraw = gpointer 
+@DOC-PARAMETER@
+nullify_pointer
+@DOC-PARDESC@
+location of a pointer to nullify or @EMPH NULL@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 27
+
+@DOC-RETURNS@
+newly created toolbar
+
+@DOC-DESCRIPTION@
+Create a new toolbar and setup handlers to nullify @EMPH nullify_pointer@ once the toolbar is destructed.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toolbar_append@ (@EMPH self@, @EMPH child_type@, @EMPH name@, @EMPH tooltip@, @EMPH icon@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 29
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkToolbar*\ \ \ \ \ 
+typeraw = GxkToolbar*     
+@DOC-PARAMETER@
+self
+@DOC-PARDESC@
+a toolbar as returned from @STRONG gxk_toolbar_new()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkToolbarChild\ 
+typeraw = GxkToolbarChild 
+@DOC-PARAMETER@
+child_type
+@DOC-PARDESC@
+child type
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*\ \ \ \ 
+typeraw = const gchar*    
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+name of the child wiget (underscores indicate hotkeys)
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*\ \ \ \ 
+typeraw = const gchar*    
+@DOC-PARAMETER@
+tooltip
+@DOC-PARDESC@
+tooltip to be displayed with this child
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ \ \ \ \ 
+typeraw = GtkWidget*      
+@DOC-PARAMETER@
+icon
+@DOC-PARDESC@
+image widget for buttons or a custom widget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 29
+
+@DOC-RETURNS@
+newly created toolbar child
+
+@DOC-DESCRIPTION@
+Append a new child to the toolbar, named @EMPH name@, with tooltip @EMPH tooltip@ and containing @EMPH icon@. @EMPH icon@ is usually an image widget, unless @EMPH GXK_TOOLBAR_WIDGET@ or one of its variants was specified as child type. The possible child types are: @EMPH GXK_TOOLBAR_SPACE@ - add a vertical space; @EMPH GXK_TOOLBAR_SEPARATOR@ - add a vertical seperator; @EMPH GXK_TOOLBAR_BUTTON@ - add a button widget; @EMPH GXK_TOOLBAR_TRUNC_BUTTON@ - like @EMPH GXK_TOOLBAR_BUTTON@, but clip the @EMPH name@ label if it width exceeds the button size; @EMPH GXK_TOOLBAR_EXTRA_BUTTON@ - like @EMPH GXK_TOOLBAR_BUTTON@, but leave the button's size alone, it is not made homogeneous with other toolbar children. @EMPH GXK_TOOLBAR_TOGGLE@ - add a toggle button widget; @EMPH GXK_TOOLBAR_TRUNC_TOGGLE@ - like @EMPH GXK_TOOLBAR_TRUNC_BUTTON@ for toggle buttons; @EMPH GXK_TOOLBAR_EXTRA_TOGGLE@ - like @EMPH GXK_TOOLBAR_EXTRA_BUTTON@ for toggle buttons; @EMPH GXK_TOOLBAR_WIDGET@ - treat @EMPH icon@ as a custom widget, and don't put it into a button, toggle button or other activatable container; GXK_TOOLBAR_TRUNC_WIDGET - like @EMPH GXK_TOOLBAR_TRUNC_BUTTON@ for custom widgets; GXK_TOOLBAR_EXTRA_WIDGET - like @EMPH GXK_TOOLBAR_EXTRA_BUTTON@ for custom widgets; GXK_TOOLBAR_FILL_WIDGET - like @EMPH GXK_TOOLBAR_EXTRA_WIDGET@ but extra unused space of the toolbar is given to this child.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toolbar_append_stock@ (@EMPH self@, @EMPH child_type@, @EMPH name@, @EMPH tooltip@, @EMPH stock_id@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 29
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkToolbar*\ \ \ \ \ 
+typeraw = GxkToolbar*     
+@DOC-PARAMETER@
+self
+@DOC-PARDESC@
+a toolbar as returned from @STRONG gxk_toolbar_new()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkToolbarChild\ 
+typeraw = GxkToolbarChild 
+@DOC-PARAMETER@
+child_type
+@DOC-PARDESC@
+child type
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*\ \ \ \ 
+typeraw = const gchar*    
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+name of the child wiget (underscores indicate hotkeys)
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*\ \ \ \ 
+typeraw = const gchar*    
+@DOC-PARAMETER@
+tooltip
+@DOC-PARDESC@
+tooltip to be displayed with this child
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*\ \ \ \ 
+typeraw = const gchar*    
+@DOC-PARAMETER@
+stock_id
+@DOC-PARDESC@
+stock name
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 29
+
+@DOC-RETURNS@
+newly created toolbar child
+
+@DOC-DESCRIPTION@
+Like @STRONG gxk_toolbar_append()@ but create the icon widget from @EMPH stock_id@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toolbar_append_choice@ (@EMPH self@, @EMPH child_type@, @EMPH choice_func@, @EMPH data@, @EMPH data_free@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 35
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkToolbar*\ \ \ \ \ \ \ \ \ \ 
+typeraw = GxkToolbar*          
+@DOC-PARAMETER@
+self
+@DOC-PARDESC@
+a toolbar as returned from @STRONG gxk_toolbar_new()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkToolbarChild\ \ \ \ \ \ 
+typeraw = GxkToolbarChild      
+@DOC-PARAMETER@
+child_type
+@DOC-PARDESC@
+child type (one for the button variants)
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkToolbarChoiceFunc\ 
+typeraw = GxkToolbarChoiceFunc 
+@DOC-PARAMETER@
+choice_func
+@DOC-PARDESC@
+callback notified if the choice changes
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ \ \ \ \ \ \ \ \ \ \ \ \ 
+typeraw = gpointer             
+@DOC-PARAMETER@
+data
+@DOC-PARDESC@
+extra data argument to the callback
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GDestroyNotify\ \ \ \ \ \ \ 
+typeraw = GDestroyNotify       
+@DOC-PARAMETER@
+data_free
+@DOC-PARDESC@
+callback to destroy @EMPH data@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 35
+
+@DOC-RETURNS@
+newly created toolbar choice child
+
+@DOC-DESCRIPTION@
+Create and append a new toolbar child which offers a choice menu of various options to the user.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toolbar_choice_add@ (@EMPH widget@, @EMPH name@, @EMPH tooltip@, @EMPH icon@, @EMPH choice@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 22
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a toolbar child as returned from @STRONG gxk_toolbar_append_choice()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+name of the choice child wiget
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+tooltip
+@DOC-PARDESC@
+tooltip to be displayed with this choice child
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+icon
+@DOC-PARDESC@
+image widget for this choice
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ \ \ 
+typeraw = guint       
+@DOC-PARAMETER@
+choice
+@DOC-PARDESC@
+unique integer id to identify this choice
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 22
+
+@DOC-RETURNS@
+newly created toolbar choice child
+
+@DOC-DESCRIPTION@
+Add a choice variant to a toolbar choice child.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toolbar_choice_set@ (@EMPH widget@, @EMPH name@, @EMPH tooltip@, @EMPH icon@, @EMPH choice@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 22
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a toolbar child as returned from @STRONG gxk_toolbar_append_choice()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+name of the choice child wiget
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+tooltip
+@DOC-PARDESC@
+tooltip to be displayed with this choice child
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ 
+typeraw = GtkWidget*  
+@DOC-PARAMETER@
+icon
+@DOC-PARDESC@
+image widget for this choice
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ \ \ 
+typeraw = guint       
+@DOC-PARAMETER@
+choice
+@DOC-PARDESC@
+unique integer id to identify this choice
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 22
+
+@DOC-RETURNS@
+newly created toolbar choice child
+
+@DOC-DESCRIPTION@
+Add a choice variant to a toolbar choice child and make this variant the currently selected one.  
 @DOC-SYNOPSIS@
 @STRONG gxk_type_register_generated@ (@EMPH n_entries@, @EMPH entries@);
 

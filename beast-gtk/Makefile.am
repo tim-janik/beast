@@ -77,8 +77,6 @@ beast_headers = $(strip \
 	bstsnetrouter.h \
 	bstsongshell.h \
 	bstsplash.h \
-	bsttexttools.h \
-	bsttoolbar.h \
 	bsttrackview.h \
 	bstsupershell.h \
 	bstusermessage.h \
@@ -135,8 +133,6 @@ beast_sources = $(strip \
 	bstsnetrouter.c \
 	bstsongshell.c \
 	bstsplash.c \
-	bsttexttools.c \
-	bsttoolbar.c \
 	bsttrackview.c \
 	bstsupershell.c \
 	bstusermessage.c \
@@ -233,7 +229,7 @@ beast_LDADD = $(progs_LDADD)
 noinst_PROGRAMS = bststest tsmview
 bststest_SOURCES = bststest.c bstutils.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)
-tsmview_SOURCES = tsmview.c $(beast_sources)
+tsmview_SOURCES = tsmview.c
 tsmview_LDADD = $(progs_LDADD)
 
 EXTRA_DIST += $(beast_headers) $(beast_extra_sources)

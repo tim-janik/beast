@@ -1,0 +1,134 @@
+<!DOCTYPE texinfo SYSTEM "texinfo.dtd">
+<texinfo>
+ <setfilename>faq.xml</setfilename>
+ <settitle>BEAST/BSE FAQ</settitle>
+ <para>
+
+ </para>
+ <majorheading>
+  <title><emphasize>BEAST/BSE</emphasize> FAQ - Frequently Asked Questions</title>
+  <para>
+<revision></revision>
+  </para>
+  <para>
+<table-of-contents></table-of-contents>
+  </para></majorheading>
+ <chapter>
+  <title><emphasize>BEAST/BSE</emphasize> FAQ</title>
+  <section>
+   <title>Authors</title>
+   <para>
+The main author of <emphasize>BEAST/BSE</emphasize> is Tim Janik.
+Contributions were made by Olaf Hoehmann, David A. Bartold, Dave Seidel
+and Stefan Westerfeld.
+   </para></section>
+  <section>
+   <title>Document History</title>
+   <para>
+This FAQ was written by <uref><urefurl>timj@beast.gtk.org</urefurl><urefdesc>Tim Janik</urefdesc></uref>.
+Initial markup was done by Dave Seidel, until
+<uref><urefurl>dirt@gtk.org</urefurl><urefdesc>Alper Ersoy</urefdesc></uref> implemented
+a new markup parser for <emphasize>BEAST</emphasize> documentation. Around the
+0.4.1 release, the docs got migrated to texinfo format.
+   </para></section>
+  <section>
+   <title>Contact Information and Resources</title>
+   <itemize>
+    <itemfunction>&bullet;</itemfunction>
+    <item>
+     <para>
+WWW: <uref><urefurl>http://beast.gtk.org</urefurl></uref>
+     </para></item>
+    <item>
+     <para>
+FTP: <uref><urefurl>ftp://beast.gtk.org/pub/beast</urefurl></uref>
+     </para></item>
+    <item>
+     <para>
+Mailing List: <uref><urefurl>beast@beast.gtk.org</urefurl></uref>.
+Send subscription requests to <uref><urefurl>timj@beast.gtk.org</urefurl></uref>.
+     </para></item></itemize></section>
+  <section>
+   <title>Why do I get "Cannot access memory at address 0x706f6e6d" when running <emphasize>BEAST</emphasize> in gdb?</title>
+   <para>
+Some versions of gdb have problems figuring dynamic plugins, we can only hope
+that this is going to be fixed some time soon. Newer versions of gdb may
+already figure what's going on with the plugins if you simply restart <emphasize>BEAST</emphasize>
+within gdb.
+&linebreak; <strong>UPDATE:</strong> This problem hasn't yet been reproduced with gdb versions newer than 5.
+   </para></section>
+  <section>
+   <title>Why doesn't my synthesis network produce any sound?</title>
+   <para>
+There are various possible causes for this. First, make sure you have
+<emphasize>BEAST</emphasize> correctly installed and accessing your sound card by running
+one of the synthesis tests in the ./test/ subdirectory.
+For custom synthesis networks, make sure you have something noisy (e.g.
+the audio output of an oscillator) hooked up to a PcmOutput module, and
+have the network's "Auto Activate" parameter (on it's "Parameters"
+notebook page, section "Playback Settings") enabled.
+   </para></section>
+  <section>
+   <title>Why can't I get the synthesis networks to work?</title>
+   <para>
+This is probably a plugin loading problem, most synthesis networks
+require plugins and won't work if there are any problems loading/finding
+them.
+<emphasize>BEAST</emphasize> loads its plugins from some common installation directory. It therefore
+needs to be properly installed before you can make use of its plugins. Simply
+starting it from within the build directory is not sufficient.
+   </para></section>
+  <section>
+   <title>Why do I see <code>BEAST-WARNING **: strange, can't find any plugins, please check .../plugins</code> on startup?</title>
+   <para>
+See previous item.
+   </para></section>
+  <section>
+   <title>Why can't I get <emphasize>BEAST</emphasize> to load my .mp3, .aiff, .something sample files?</title>
+   <para>
+Import functionality for foreign sample types is always being worked on, but due
+to the shear multitude of formats out there chances are that a specific format
+is not yet supported.
+However, sample file loaders have much improved in the last versions, and at
+this point exist for Ogg/Vorbis, MPEG Audio 1.0/2.0/2.5 Layer I/II/III,
+RIFF/WAVE, and .gslwave (<emphasize>GSL</emphasize> multi sample format) files.
+   </para></section>
+  <section>
+   <title>Why does <emphasize>BEAST</emphasize> sometimes crash with a segmentation fault on startup?</title>
+   <para>
+This was due to a bug in the X Keyboard extension. <emphasize>BEAST</emphasize> tries to figure the
+country specifics of the keyboard layout, using the XKB extension. Apparently,
+there are some allocation problems in XkbFreeKeyboard() or XkbFreeClientMap()
+in libX11, which can cause random crashes. Usually <emphasize>BEAST</emphasize> will run fine when
+restarted.
+&linebreak; <strong>UPDATE:</strong> Recent versions of XKB seem to have fixed this problem.
+   </para></section>
+  <section>
+   <title>Why doesn't <emphasize>BEAST</emphasize> 0.4.0 play songs from earlier versions?</title>
+   <para>
+The song support was completely rewritten for this version. If lots of
+compatiblity problem reports occur, a converter might be implemented
+at some point.
+   </para></section>
+  <section>
+   <title>What is a <code>.bse</code> file?</title>
+   <para>
+<emphasize>BEAST</emphasize> stores saved data in <emphasize>BSE</emphasize> files. These files can hold
+everything associated with a project, such as the definition of
+synthesis networks, songs with their notes and tracks, and even complete music
+sample files. Except for raw sample data, the contents are stored
+in a human readable text form using lisp syntax. The textual file
+contents may even be manually edited, as long as the binary
+appendix used to store wave data doesn't get corrupted.
+&linebreak;   </para>
+   <para>
+The recommended mime type image for <emphasize>BSE</emphasize> files looks like this:
+<image width="" height="" alttext="BSE-Mime-Logo" extension="png">beast-mime</image>
+   </para></section></chapter></texinfo>
+<!-- Keep this comment at the end of the file
+Local variables:
+mode: sgml
+sgml-indent-step:1
+sgml-indent-data:nil
+End:
+-->

@@ -20,7 +20,6 @@
 #define __BST_RADIO_TOOLS_H__
 
 #include	"bstutils.h"
-#include	"bsttoolbar.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,7 +91,7 @@ void            bst_radio_tools_add_category	     (BstRadioTools *rtools,
 						      BseCategory   *category,
 						      BstRadioToolFlags flags);
 void            bst_radio_tools_build_toolbar	     (BstRadioTools *rtools,
-						      BstToolbar    *toolbar);
+						      GxkToolbar    *toolbar);
 void            bst_radio_tools_build_gtk_toolbar    (BstRadioTools *rtools,
 						      GtkToolbar    *toolbar);
 GtkWidget*      bst_radio_tools_build_palette	     (BstRadioTools *rtools,
