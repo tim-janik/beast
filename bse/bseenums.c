@@ -112,19 +112,15 @@ bse_error_blurb (BseErrorType error_value)
   switch (error_value)
     {
     case BSE_ERROR_NONE:	/* GSL */	return "Everything went well";
-    case BSE_ERROR_UNIMPLEMENTED:		return "Functionality not imlemented";
-    case BSE_ERROR_SPAWN:			return "Failed to spawn child process";
-    case BSE_ERROR_NOT_OWNER:			return "Ownership mismatch";
-    case BSE_ERROR_FILE_TOO_SHORT:		return "File too short";
-    case BSE_ERROR_FILE_TOO_LONG:		return "File too long";
-    case BSE_ERROR_HEADER_CORRUPT:		return "Header corrupt";
-    case BSE_ERROR_SUB_HEADER_CORRUPT:		return "Sub-header corrupt";
-    case BSE_ERROR_BINARY_DATA_CORRUPT:		return "Binary data corrupt";
+    case BSE_ERROR_UNIMPLEMENTED:		return "Functionality not implemented";
+    case BSE_ERROR_DEVICE_NOT_AVAILABLE:	return "No device (driver) available";
     case BSE_ERROR_DEVICE_ASYNC:		return "Device not async capable";
     case BSE_ERROR_DEVICE_BUSY:			return "Device busy";
     case BSE_ERROR_DEVICE_GET_CAPS:		return "Failed to query device capabilities";
     case BSE_ERROR_DEVICE_CAPS_MISMATCH:	return "Device capabilities not sufficient";
     case BSE_ERROR_DEVICE_SET_CAPS:		return "Failed to set device capabilities";
+      /* FIXME: remove date parsing errors */
+    case BSE_ERROR_SOURCE_NO_SUCH_MODULE:	return "No such synthesis module";
     case BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL:	return "No such input channel";
     case BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL:	return "No such output channel";
     case BSE_ERROR_SOURCE_NO_SUCH_CONNECTION:	return "Input/Output channels not connected";
@@ -133,16 +129,21 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_SOURCE_BAD_LOOPBACK:		return "Bad loopback";
     case BSE_ERROR_SOURCE_BUSY:			return "Synthesis module currently busy";
     case BSE_ERROR_SOURCE_TYPE_INVALID:		return "Invalid synthsis module type";
+    case BSE_ERROR_PROC_NOT_FOUND:		return "No such procedure";
     case BSE_ERROR_PROC_BUSY:			return "Procedure currently busy"; /* recursion */
     case BSE_ERROR_PROC_PARAM_INVAL:		return "Procedure parameter invalid";
     case BSE_ERROR_PROC_EXECUTION:		return "Procedure execution failed";
     case BSE_ERROR_PROC_ABORT:			return "Procedure execution aborted";
+    case BSE_ERROR_PARSE_ERROR:			return "Parsing error";
+    case BSE_ERROR_SPAWN:			return "Failed to spawn child process";
+      /* various procedure errors */
+    case BSE_ERROR_NO_ENTRY:			return "No such entry";
+    case BSE_ERROR_NO_EVENT:			return "No such event";
+    case BSE_ERROR_NO_TARGET:			return "No target";
+    case BSE_ERROR_NOT_OWNER:			return "Ownership mismatch";
     case BSE_ERROR_INVALID_OFFSET:		return "Invalid offset";
     case BSE_ERROR_INVALID_DURATION:		return "Invalid duration";
     case BSE_ERROR_INVALID_OVERLAP:		return "Invalid overlap";
-    case BSE_ERROR_NO_TARGET:			return "No target";
-    case BSE_ERROR_NO_PCM_DEVICE:		return "No active PCM device present";
-    case BSE_ERROR_PCM_DEVICE_ACTIVE:		return "PCM device is active";
     default:
       if (error_value < GSL_ERROR_LAST)
 	return (gchar*) gsl_strerror (error_value);

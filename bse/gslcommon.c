@@ -146,22 +146,28 @@ gsl_strerror (GslErrorType error)
     case GSL_ERROR_NONE:		return "Everything went well";
     case GSL_ERROR_INTERNAL:		return "Internal error (please report)";
     case GSL_ERROR_UNKNOWN:		return "Unknown error";
-    case GSL_ERROR_IO:			return "I/O error";
+    case GSL_ERROR_IO:			return "Input/output error";
     case GSL_ERROR_PERMS:		return "Insufficient permission";
-    case GSL_ERROR_BUSY:		return "Resource currently busy";
-    case GSL_ERROR_EXISTS:		return "Resource exists already";
-    case GSL_ERROR_TEMP:		return "Temporary error";
+    case GSL_ERROR_BUSY:		return "Device or resource busy";
+    case GSL_ERROR_EXISTS:		return "File exists already";
     case GSL_ERROR_EOF:			return "File empty or premature EOF";
-    case GSL_ERROR_NOT_FOUND:		return "Resource not found";
+    case GSL_ERROR_NOT_FOUND:		return "No such file (or directory)";
     case GSL_ERROR_OPEN_FAILED:		return "Open failed";
     case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
     case GSL_ERROR_READ_FAILED:		return "Read failed";
     case GSL_ERROR_WRITE_FAILED:	return "Write failed";
+    case GSL_ERROR_MANY_FILES:		return "Too many open files";
+    case GSL_ERROR_NO_FILES:		return "Too many open files in system";
+    case GSL_ERROR_NO_SPACE:		return "No space left on device";
+    case GSL_ERROR_NO_MEMORY:		return "Out of memory";
+    case GSL_ERROR_NO_HEADER:		return "Failed to detect (start of) header";
+    case GSL_ERROR_NO_SEEK_INFO:	return "Failed to retrieve seek information";
+    case GSL_ERROR_NO_DATA:		return "No data available";
+    case GSL_ERROR_DATA_CORRUPT:        return "Data corrupt";
     case GSL_ERROR_FORMAT_INVALID:	return "Invalid format";
     case GSL_ERROR_FORMAT_UNKNOWN:	return "Unknown format";
-    case GSL_ERROR_DATA_CORRUPT:        return "Data corrupt";
-    case GSL_ERROR_CONTENT_GLITCH:      return "Data glitch (junk) detected";
-    case GSL_ERROR_NO_RESOURCE:		return "Out of memory, disk space or similar resource";
+    case GSL_ERROR_TEMP:		return "Temporary error";
+    case GSL_ERROR_WAVE_NOT_FOUND:	return "No such wave";
     case GSL_ERROR_CODEC_FAILURE:	return "CODEC failure";
     default:				return NULL;
     }
@@ -435,11 +441,11 @@ gsl_error_from_errno (gint         sys_errno,
     case EROFS:
     case EPERM:
     case EACCES:        return GSL_ERROR_PERMS;
-    case ENOMEM:
-    case ENOSPC:
+    case ENOMEM:	return GSL_ERROR_NO_MEMORY;
+    case ENOSPC:	return GSL_ERROR_NO_SPACE;
+    case ENFILE:	return GSL_ERROR_NO_FILES;
+    case EMFILE:	return GSL_ERROR_MANY_FILES;
     case EFBIG:
-    case ENFILE:
-    case EMFILE:	return GSL_ERROR_NO_RESOURCE;
     case EISDIR:
     case ESPIPE:
     case EIO:           return GSL_ERROR_IO;

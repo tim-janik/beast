@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 
 
 /* load routine for the RIFF/WAVE sample format
@@ -62,8 +63,8 @@ wav_read_header (gint       fd,
   g_assert (n_bytes == sizeof (*header));
   if (read (fd, header, n_bytes) != n_bytes)
     {
-      WAV_DEBUG ("failed to read WavHeader");
-      return GSL_ERROR_IO;
+      WAV_DEBUG ("failed to read WavHeader: %s", g_strerror (errno));
+      return gsl_error_from_errno (errno, GSL_ERROR_IO);
     }
   
   /* endianess corrections */
@@ -116,7 +117,7 @@ wav_read_fmt_header (gint       fd,
   if (read (fd, header, n_bytes) != n_bytes)
     {
       WAV_DEBUG ("failed to read FmtHeader");
-      return GSL_ERROR_IO;
+      return gsl_error_from_errno (errno, GSL_ERROR_IO);
     }
   
   /* endianess corrections */
@@ -181,12 +182,12 @@ wav_read_fmt_header (gint       fd,
 	  if (l < 1 || l > n)
 	    {
 	      WAV_DEBUG ("failed to read FmtHeader");
-	      return GSL_ERROR_IO;
+	      return gsl_error_from_errno (errno, GSL_ERROR_IO);
 	    }
 	  n -= l;
 	}
       
-      WAV_MSG (GSL_ERROR_CONTENT_GLITCH, "skipping %u bytes of junk in WAVE header", header->length - 16);
+      WAV_MSG (GSL_ERROR_DATA_CORRUPT, "skipping %u bytes of junk in WAVE header", header->length - 16);
     }
   
   return GSL_ERROR_NONE;
@@ -212,7 +213,7 @@ wav_read_data_header (gint        fd,
   if (read (fd, header, n_bytes) != n_bytes)
     {
       WAV_DEBUG ("failed to read DataHeader");
-      return GSL_ERROR_IO;
+      return gsl_error_from_errno (errno, GSL_ERROR_IO);
     }
   
   /* endianess corrections */
@@ -238,7 +239,7 @@ wav_read_data_header (gint        fd,
       if (lseek (fd, header->data_length, SEEK_CUR) < 0)
 	{
 	  WAV_DEBUG ("failed to seek while skipping sub-chunk");
-	  return GSL_ERROR_IO;
+	  return gsl_error_from_errno (errno, GSL_ERROR_IO);
 	}
       return wav_read_data_header (fd, header, byte_alignment);
     }
@@ -270,7 +271,7 @@ wav_load_file_info (gpointer      data,
   fd = open (file_name, O_RDONLY);
   if (fd < 0)
     {
-      *error_p = GSL_ERROR_OPEN_FAILED;
+      *error_p = gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
       return NULL;
     }
   
@@ -328,7 +329,7 @@ wav_load_wave_dsc (gpointer         data,
   if (lseek (fi->fd, sizeof (WavHeader), SEEK_SET) != sizeof (WavHeader))
     {
       WAV_DEBUG ("failed to seek to end of WavHeader");
-      *error_p = GSL_ERROR_IO;
+      *error_p = gsl_error_from_errno (errno, GSL_ERROR_IO);
       return NULL;
     }
   
@@ -342,7 +343,7 @@ wav_load_wave_dsc (gpointer         data,
   if (data_offset < sizeof (WavHeader) && !*error_p)
     {
       WAV_DEBUG ("failed to seek to start of data");
-      *error_p = GSL_ERROR_IO;
+      *error_p = gsl_error_from_errno (errno, GSL_ERROR_IO);
     }
   if (*error_p)
     return NULL;

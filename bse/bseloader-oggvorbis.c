@@ -23,6 +23,7 @@
 
 #include <vorbis/vorbisfile.h>
 #include <unistd.h>
+#include <errno.h>
 
 
 /* --- structures --- */
@@ -46,7 +47,7 @@ oggv_load_file_info (gpointer      data,
   file = fopen (file_name, "r");
   if (!file)
     {
-      *error_p = GSL_ERROR_OPEN_FAILED;
+      *error_p = gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
       return NULL;
     }
   

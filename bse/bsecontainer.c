@@ -283,7 +283,7 @@ bse_container_new_item (BseContainer *container,
 			const gchar  *first_param_name,
 			...)
 {
-  BseItem *item;
+  gpointer item;
   va_list var_args;
   
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);

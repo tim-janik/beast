@@ -116,7 +116,6 @@ receiver_enqueue_event_L (BseMidiReceiver *self,
       break;
     case BSE_MIDI_CONTROL_CHANGE:
       g_return_if_fail (self->n_bytes == 2);
-      g_print ("bytes: %x %x\n", self->bytes[0], self->bytes[1]);
       event->data.control.control = self->bytes[0] & 0x7f;
       ival = self->bytes[1] & 0x7f;
       event->data.control.value = ival / (gfloat) 0x7f;

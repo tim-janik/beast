@@ -79,7 +79,7 @@ METHOD (BseDataPocket, delete-entry) {
     fail = _bse_data_pocket_delete_entry (pocket, id);
   
   /* set output parameters */
-  g_value_set_enum (out_values++, fail ? BSE_ERROR_NOT_FOUND : BSE_ERROR_NONE);
+  g_value_set_enum (out_values++, fail ? BSE_ERROR_NO_ENTRY : BSE_ERROR_NONE);
   
   return BSE_ERROR_NONE;
 }
@@ -170,7 +170,7 @@ METHOD (BseDataPocket, set-float) {
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_FLOAT, value);
   
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
   
   return BSE_ERROR_NONE;
 }
@@ -212,7 +212,7 @@ METHOD (BseDataPocket, set-int) {
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_INT, value);
   
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
   
   return BSE_ERROR_NONE;
 }
@@ -255,7 +255,7 @@ METHOD (BseDataPocket, set-object) {
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_OBJECT, value);
   
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
   
   return BSE_ERROR_NONE;
 }
@@ -295,7 +295,7 @@ METHOD (BseDataPocket, set-string) {
     success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_STRING, value);
   
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_ENTRY);
   
   return BSE_ERROR_NONE;
 }

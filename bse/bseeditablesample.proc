@@ -46,7 +46,7 @@ METHOD (BseEditableSample, open) {
   
   /* action */
   if (!esample->wchunk)
-    error = BSE_ERROR_NOT_FOUND;
+    error = BSE_ERROR_WAVE_NOT_FOUND;
   else if (esample->open_count)
     {
       esample->open_count++;

@@ -160,7 +160,7 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
       if (fd >= 0)
 	oss->fd = fd;
       else
-	error = bse_error_from_errno (errno, BSE_ERROR_OPEN_FAILED);
+	error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
   
   /* try setup */

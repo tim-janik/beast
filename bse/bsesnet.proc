@@ -74,7 +74,7 @@ METHOD (BseSNet, can-create-source) {
   
   /* action */
   if (!BSE_SNET_USER_SYNTH (snet) && !BSE_DVL_EXT)
-    error = BSE_ERROR_PERMS;
+    error = BSE_ERROR_NOT_OWNER;
   else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
 	   g_type_is_a (type, BSE_TYPE_CONTAINER))
     error = BSE_ERROR_SOURCE_TYPE_INVALID;

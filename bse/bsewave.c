@@ -602,15 +602,14 @@ bse_wave_load_wave_file (BseWave     *wave,
 	    }
 	}
       else
-	error = GSL_ERROR_NOT_FOUND;
+	error = BSE_ERROR_FILE_NOT_FOUND;
     }
-  else if (!g_file_test (file_name, G_FILE_TEST_IS_REGULAR))
-    error = BSE_ERROR_FILE_NOT_FOUND;
-  else if (!g_file_test (file_name, G_FILE_TEST_IS_REGULAR)) /* FIXME: READABLE */
-    error = BSE_ERROR_PERMS;
   else
-    error = BSE_ERROR_IO;
-  
+    {
+      error = gsl_check_file (file_name, "fr");
+      if (!error)
+	error = BSE_ERROR_FILE_OPEN_FAILED;
+    }
   return error;
 }
 

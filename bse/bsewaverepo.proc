@@ -40,7 +40,7 @@ load_file (BseWaveRepo *wrepo,
   if (finfo->n_waves != 1)
     {
       gsl_wave_file_info_unref (finfo);
-      return GSL_ERROR_FORMAT_UNKNOWN;
+      return BSE_ERROR_FORMAT_UNKNOWN;
     }
   
   wdsc = gsl_wave_dsc_load (finfo, 0, &error);
@@ -68,7 +68,7 @@ load_file (BseWaveRepo *wrepo,
       error = GSL_ERROR_NONE;
     }
   else
-    error = GSL_ERROR_FILE_EMPTY;
+    error = BSE_ERROR_WAVE_NOT_FOUND;
   g_object_unref (wave);
   
   return error;
@@ -97,7 +97,7 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseWaveRepo *wrepo    = (BseWaveRepo*) bse_value_get_object (in_values++);
   gchar *file_name      = sfi_value_get_string (in_values++);
-  BseErrorType error = BSE_ERROR_FORMAT_MISMATCH; // FIXME
+  BseErrorType error;
   
   /* check parameters */
   if (!BSE_IS_WAVE_REPO (wrepo) || !file_name)

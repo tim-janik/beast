@@ -319,6 +319,7 @@ dh_mad_open (GslDataHandle      *dhandle,
   GslHFile *hfile;
   GslLong n;
   gboolean seek_invalidated = FALSE;
+  GslErrorType error;
 
   hfile = gsl_hfile_open (handle->dhandle.name);
   if (!hfile)
@@ -339,7 +340,10 @@ dh_mad_open (GslDataHandle      *dhandle,
 
   /* fetch first frame */
   if (!read_next_frame_header (handle))
-    goto OPEN_FAILED;
+    {
+      error = GSL_ERROR_NO_HEADER;
+      goto OPEN_FAILED;
+    }
 
   /* get n_channels, frame size and sample rate */
   setup->bit_depth = 24;
@@ -352,7 +356,10 @@ dh_mad_open (GslDataHandle      *dhandle,
       setup->n_channels > MAX_CHANNELS ||
       handle->frame_size < 1 ||
       handle->sample_rate < 1)
-    goto OPEN_FAILED;
+    {
+      error = GSL_ERROR_FORMAT_INVALID;
+      goto OPEN_FAILED;
+    }
   
   /* seek through the stream to collect frame positions */
   if (seek_invalidated || !handle->n_seeks)
@@ -372,7 +379,10 @@ dh_mad_open (GslDataHandle      *dhandle,
 	{
 	  handle->seeks = create_seek_table (handle, &handle->n_seeks);
 	  if (!handle->seeks)
-	    goto OPEN_FAILED;
+	    {
+	      error = GSL_ERROR_NO_SEEK_INFO;
+	      goto OPEN_FAILED;
+	    }
 	  MAD_DEBUG ("frames in seektable: %u", handle->n_seeks);
 	}
     }
@@ -382,10 +392,16 @@ dh_mad_open (GslDataHandle      *dhandle,
   if (n > 0)
     setup->n_values = n;
   else
-    goto OPEN_FAILED;
+    {
+      error = GSL_ERROR_NO_DATA;
+      goto OPEN_FAILED;
+    }
 
   if (dh_mad_coarse_seek (&handle->dhandle, 0) != 0)
-    goto OPEN_FAILED;
+    {
+      error = GSL_ERROR_SEEK_FAILED;
+      goto OPEN_FAILED;
+    }
 
   return GSL_ERROR_NONE;
 
@@ -406,7 +422,7 @@ dh_mad_open (GslDataHandle      *dhandle,
   gsl_hfile_close (handle->hfile);
   handle->hfile = NULL;
 
-  return GSL_ERROR_OPEN_FAILED;
+  return error;
 }
 
 static GslLong
@@ -493,7 +509,7 @@ dh_mad_read (GslDataHandle *dhandle,
     }
   else /* something went wrong here, _badly_ */
     {
-      MAD_MSG (GSL_ERROR_READ_FAILED,
+      MAD_MSG (GSL_ERROR_SEEK_FAILED,
 	       "pcm position screwed (pos: %lu, handle-pos: %lu), aborting read",
 	       pos, handle->pcm_pos);	
       return -1;

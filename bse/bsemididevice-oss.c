@@ -132,7 +132,7 @@ bse_midi_device_oss_open (BseMidiDevice *mdev)
       if (fd >= 0)
 	oss->fd = fd;
       else
-	error = bse_error_from_errno (errno, BSE_ERROR_OPEN_FAILED);
+	error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
   
   /* setup mdev or shutdown */

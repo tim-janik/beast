@@ -1530,7 +1530,7 @@ resolve_osource_input (gpointer     data,
       BseErrorType cerror;
 
       if (!osource)
-	cerror = BSE_ERROR_NOT_FOUND;
+	cerror = BSE_ERROR_SOURCE_NO_SUCH_MODULE;
       else if (!dinput->ichannel_name)
 	cerror = BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
       else if (!dinput->ochannel_name)

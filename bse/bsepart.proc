@@ -109,7 +109,7 @@ BODY (BseProcedureClass *proc,
   success = bse_part_change_note (self, id, tick, duration, note, fine_tune, velocity);
   
   /* set output parameters */
-  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
   
   return BSE_ERROR_NONE;
 }
@@ -141,7 +141,7 @@ BODY (BseProcedureClass *proc,
   deleted = bse_part_delete_event (self, id);
   
   /* set output parameters */
-  g_value_set_enum (out_values++, deleted ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
+  g_value_set_enum (out_values++, deleted ? BSE_ERROR_NONE : BSE_ERROR_NO_EVENT);
   
   return BSE_ERROR_NONE;
 }

@@ -1,3 +1,11 @@
+Wed Jan  8 20:15:01 2003  Tim Janik  <timj@gtk.org>
+
+	* bseenums.[hc]:
+	* gsldefs.[hc]:
+	* gslcommon.[hc]:
+	* gsl*.c:
+	* bse*.c: error code cleanups, improved error code handling.
+
 Mon Jan  6 00:16:17 2003  Tim Janik  <timj@gtk.org>
 
 	* bseproject.[hcp]*: introduce activation state. added state

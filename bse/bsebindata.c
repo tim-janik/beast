@@ -209,12 +209,12 @@ bse_bin_data_set_values_from_fd (BseBinData   *bin_data,
   
   l = lseek (fd, 0, SEEK_END);
   if (l < 0)
-    return BSE_ERROR_FILE_IO;
+    return bse_error_from_errno (errno, BSE_ERROR_FILE_SEEK_FAILED);
   if (l < offset + n_bytes)
-    return BSE_ERROR_FILE_TOO_SHORT;
-  
+    return BSE_ERROR_FILE_EOF;
+
   if (lseek (fd, offset, SEEK_SET) != offset)
-    return BSE_ERROR_FILE_IO;
+    return bse_error_from_errno (errno, BSE_ERROR_FILE_SEEK_FAILED);
   
   bin_data->n_values = n_bytes / ((bin_data->bits_per_value + 7) / 8);
   bin_data->n_bytes = bin_data->n_values * ((bin_data->bits_per_value + 7) / 8);
@@ -236,7 +236,7 @@ bse_bin_data_set_values_from_fd (BseBinData   *bin_data,
       /* FIXME: we could probably do better here */
       bse_bin_data_free_values (bin_data);
       
-      return l < 1 ? BSE_ERROR_FILE_IO : BSE_ERROR_FILE_TOO_SHORT;
+      return l < 1 ? BSE_ERROR_FILE_IO : BSE_ERROR_FILE_EOF;
     }
   
   /* if necessary, convert LE/BE

@@ -144,18 +144,6 @@ dh_vorbis_open (GslDataHandle      *data_handle,
   GslLong n, i;
   gint err;
   
-#if 0
-  file = fopen (vhandle->dhandle.name, "r");
-  if (!file)
-    return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
-  err = ov_open (file, &vhandle->ofile, NULL, 0);
-  if (err < 0)
-    {
-      fclose (file);
-      return ov_errno_to_error (err, GSL_ERROR_OPEN_FAILED);
-    }
-#endif
-
   rfile = gsl_rfile_open (vhandle->dhandle.name);
   if (!rfile)
     return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
@@ -172,7 +160,7 @@ dh_vorbis_open (GslDataHandle      *data_handle,
   else
     {
       ov_clear (&vhandle->ofile); /* closes file */
-      return GSL_ERROR_OPEN_FAILED;
+      return GSL_ERROR_NO_DATA;	/* requested stream not available */
     }
 
   vhandle->soffset = 0;
@@ -190,7 +178,7 @@ dh_vorbis_open (GslDataHandle      *data_handle,
   else
     {
       ov_clear (&vhandle->ofile); /* closes file */
-      return GSL_ERROR_OPEN_FAILED;
+      return GSL_ERROR_NO_DATA;
     }
 
   vhandle->max_block_size = vorbis_info_blocksize (vi, 0);

@@ -489,7 +489,7 @@ bse_procedure_exec (const gchar *proc_name,
   if (!proc_type)
     {
       g_warning ("%s: no such procedure", proc_name);
-      return BSE_ERROR_NOT_FOUND;
+      return BSE_ERROR_PROC_NOT_FOUND;
     }
   else
     {
@@ -515,7 +515,7 @@ bse_procedure_exec_void (const gchar *proc_name,
   if (!proc_type)
     {
       g_warning ("%s: no such procedure", proc_name);
-      return BSE_ERROR_NOT_FOUND;
+      return BSE_ERROR_PROC_NOT_FOUND;
     }
   else
     {
@@ -542,7 +542,7 @@ bse_procedure_store (const gchar *proc_name,
   if (!proc_type)
     {
       g_warning ("%s: no such procedure", proc_name);
-      return BSE_ERROR_NOT_FOUND;
+      return BSE_ERROR_PROC_NOT_FOUND;
     }
   else
     {

@@ -176,7 +176,7 @@ gslwave_load_file_info (gpointer      data,
   fd = open (file_name, O_RDONLY);
   if (fd < 0)
     {
-      *error_p = GSL_ERROR_OPEN_FAILED;
+      *error_p = gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
       g_free (cwd);
       g_free (file_name);
       return NULL;
@@ -508,7 +508,7 @@ gslwave_load_wave_dsc (gpointer         data,
   fd = open (file_info->file_name, O_RDONLY);
   if (fd < 0)
     {
-      *error_p = GSL_ERROR_OPEN_FAILED;
+      *error_p = gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
       return NULL;
     }
 
@@ -592,7 +592,7 @@ gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
 	break;
   if (i >= fi->n_waves)
     {
-      *error_p = GSL_ERROR_NOT_FOUND;
+      *error_p = GSL_ERROR_WAVE_NOT_FOUND;
       return NULL;
     }
 
@@ -658,11 +658,11 @@ gslwave_create_chunk_handle (gpointer      data,
       if (chunk->loader_data2)	/* wave_name */
 	{
 	  /* raw samples don't give names to their data */
-	  *error_p = GSL_ERROR_NOT_FOUND;
+	  *error_p = GSL_ERROR_WAVE_NOT_FOUND;
 	  g_free (string);
 	  return NULL;
 	}
-      dhandle = gsl_wave_handle_new (string,	/* file_name */
+      dhandle = gsl_wave_handle_new (string,			/* file_name */
 				     dsc->wdsc.n_channels,
 				     dsc->format,
 				     dsc->byte_order,
@@ -688,7 +688,7 @@ gslwave_create_chunk_handle (gpointer      data,
 	  *error_p = dhandle ? GSL_ERROR_NONE : GSL_ERROR_IO;
 	}
       else
-	*error_p = GSL_ERROR_NOT_FOUND;
+	*error_p = GSL_ERROR_WAVE_NOT_FOUND;
       return dhandle;
     }
 }
