@@ -21,6 +21,7 @@ Overview of Changes in BEAST/BSE 0.6.2:
 * Updated Portuguese translation [Duarte Loreto]
 * Updated Albanian translation [Laurent Dhima]
 * Various sfidl fixes [Stefan Westerfeld, Tim Janik]
+* First steps taken towards mixer infrastrukture
 * Fixed user configurable debugging support
 * Lots of adaptions to GLib/Gtk+-2.4
 
