@@ -1,7 +1,15 @@
+Fri Oct 15 17:20:30 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Added --compact option.
+
+	* tests/audio/featuretest.sh: Use --compact in output. This avoids
+	cluttering the screen when comparing --spectrum features.
+	Make output for failed tests more recognizable.
+
 Fri Oct 15 16:21:04 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Implemented seperate --cut-zeros-head and
-	--cut-zeros-tail options. Silence cutting looks whether the signal is
+	--cut-zeros-tail options. Silence cutting checks whether the signal is
 	silent on all channels now, rather than just taking into account the
 	channel selected by the --channel option.
 

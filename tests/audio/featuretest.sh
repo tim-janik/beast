@@ -143,7 +143,7 @@ echo "TEST $test_name:"
   # compare with reference data
   if test -f $srcdir/$reference; then
     echo "${test_indentation}comparing features with options: $cmpopts"
-    $top_builddir/tools/bsefcompare $cmpopts $test_name.current $srcdir/$reference > $bsefile.result || exit_code=1
+    $top_builddir/tools/bsefcompare --compact $cmpopts $test_name.current $srcdir/$reference > $bsefile.result || exit_code=1
     sed "s/^/$test_indentation/g" < $bsefile.result
     rm -f $bsefile.result
   else
@@ -152,18 +152,21 @@ echo "TEST $test_name:"
   fi
   exit $exit_code
 ) || test_result=failed
-echo "TEST $test_name $test_result."
 
 if test -f featuretest-summary.sh; then
   . featuretest-summary.sh
 fi
 
 if test $test_result = "failed"; then
-  echo "# If you are sure the extracted features of this test run are correct, and"
-  echo "# you want to make them the new reference data, you can do so by typing:"
-  echo "mv $test_name.current $srcdir/$test_name.reference"
+  echo "*** TEST $test_name FAILED. "
+  echo "    If you are sure the extracted features of this test run are correct, and"
+  echo "    you want to make them the new reference data, you can do so by executing:"
+  echo "        mv $test_name.current $srcdir/$test_name.reference"
   tests_failed=`expr $tests_failed + 1`
+else
+  echo "TEST $test_name PASSED."
 fi
+
 tests_total=`expr $tests_total + 1`
 
 # update feature test statistics

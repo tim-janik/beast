@@ -31,12 +31,14 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <algorithm>
 
 using namespace std;
 
 struct Options {
   string	      programName;
   double              threshold;
+  bool                compact;
 
   Options ();
   void parse (int *argc_p, char **argv_p[]);
@@ -47,6 +49,7 @@ Options::Options ()
 {
   programName = "bsefcompare";
   threshold = 100;
+  compact = false;
 }
 
 void Options::parse (int *argc_p, char **argv_p[])
@@ -86,8 +89,19 @@ void Options::parse (int *argc_p, char **argv_p[])
 	}
       else if (strcmp ("--threshold", argv[i]) == 0)
 	{
+	  if (!arg)
+	    {
+	      fprintf (stderr, "%s: threshold required for --threshold option.\n",
+		  programName.c_str());
+	      exit (1);
+	    }
 	  threshold = atof (arg);
 	  argv[i] = NULL;
+	}
+      else if (strcmp ("--compact", argv[i]) == 0)
+	{
+	  compact = true;
+	  argv[i] = 0;
 	}
     }
 
@@ -116,6 +130,7 @@ void Options::printUsage ()
   fprintf (stderr, "\n");
   fprintf (stderr, "options:\n");
   fprintf (stderr, " --threshold=<percent>       set threshold for returning that two files match\n");
+  fprintf (stderr, " --compact                   suppress printing individual similarities\n");
   fprintf (stderr, " --help                      help for %s\n", programName.c_str());
   fprintf (stderr, " --version                   print version\n");
 }
@@ -241,12 +256,20 @@ int main (int argc, char **argv)
       else if (f1.size() == 0 && f2.size() == 0)
 	{
 	  double s = 0.0;
+	  double min_s = similarity.empty() ? 0.0 : similarity[0];
+	  double max_s = min_s;
+
 	  printf ("similarities: ");
 	  for (size_t i = 0; i < similarity.size(); i++)
 	    {
-	      printf (i == 0 ? "%f" : ", %f", similarity[i] * 100.0); /* percent */
+	      if (!options.compact)
+		printf (i == 0 ? "%f" : ", %f", similarity[i] * 100.0); /* percent */
 	      s += similarity[i];
+	      min_s = min (similarity[i], min_s);
+	      min_s = min (similarity[i], max_s);
 	    }
+	  if (options.compact)
+	    printf ("minimum=%f%% maximum=%f%%", min_s * 100.0, max_s * 100.0);
 	  printf ("\n");
 
 	  double average_similarity = s / similarity.size() * 100.0; /* percent */
@@ -264,7 +287,7 @@ int main (int argc, char **argv)
 	    }
 	  else
 	    {
-	      printf ("the two files differ.\n");
+	      printf ("similarity below threshold.\n");
 	      return 1;
 	    }
 	}
