@@ -1,3 +1,7 @@
+Tue Mar 28 05:39:44 2000  Tim Janik  <timj@gtk.org>
+
+	* fldbsepattern.c: capitalize procedure categories.
+
 Fri Mar 24 09:44:26 2000  Tim Janik  <timj@gtk.org>
 
 	* *.[hc]: port over from BSE to GLib type system.
