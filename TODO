@@ -1,5 +1,4 @@
 FIXMES:
-- add option to disable ladspa plugin loading
 - add demo song
 - check whether */icons/Makefile.icons is included in dist tarball
 - check whether plugins/Makefile.plugins is included in dist tarball

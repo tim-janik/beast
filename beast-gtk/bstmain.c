@@ -46,7 +46,8 @@ gboolean            bst_debug_extensions = FALSE;
 gboolean            bst_main_loop_running = TRUE;
 static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
-static gboolean     register_plugins = TRUE;
+static gboolean     register_core_plugins = TRUE;
+static gboolean     register_ladspa_plugins = TRUE;
 static gboolean     register_scripts = TRUE;
 static const gchar *bst_rc_string =
 ( "style'BstTooltips-style'"
@@ -188,8 +189,8 @@ main (int   argc,
 		     "signal::registration", server_registration, splash,
 		     NULL);
 
-  /* register dynamic types and modules (plugins) */
-  if (register_plugins)
+  /* register core plugins */
+  if (register_core_plugins)
     {
       bst_splash_update_entity (splash, _("Plugins"));
 
@@ -197,7 +198,26 @@ main (int   argc,
        * so we wait until all are done
        */
       registration_done = FALSE;
-      bse_server_register_plugins (BSE_SERVER);
+      bse_server_register_core_plugins (BSE_SERVER);
+      while (!registration_done)
+	{
+	  GDK_THREADS_LEAVE ();
+	  g_main_iteration (TRUE);
+	  GDK_THREADS_ENTER ();
+	  sfi_glue_gc_run ();
+	}
+    }
+
+  /* register LADSPA plugins */
+  if (register_ladspa_plugins)
+    {
+      bst_splash_update_entity (splash, _("LADSPA Plugins"));
+
+      /* plugin registration, this is done asyncronously,
+       * so we wait until all are done
+       */
+      registration_done = FALSE;
+      bse_server_register_ladspa_plugins (BSE_SERVER);
       while (!registration_done)
 	{
 	  GDK_THREADS_LEAVE ();
@@ -415,11 +435,14 @@ bst_early_parse_args (int    *argc_p,
 	  g_printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
 	  if (strchr (flags, 'n') != NULL)
 	    {
-	      register_plugins = FALSE;
+	      register_core_plugins = FALSE;
+	      register_ladspa_plugins = FALSE;
 	      register_scripts = FALSE;
 	    }
 	  if (strchr (flags, 'p'))
-	    register_plugins = TRUE;
+	    register_core_plugins = TRUE;
+	  if (strchr (flags, 'l'))
+	    register_ladspa_plugins = TRUE;
 	  if (strchr (flags, 's'))
 	    register_scripts = TRUE;
 	  if (strchr (flags, 'f'))
@@ -581,7 +604,8 @@ bst_print_blurb (gboolean print_help)
       g_print ("  -:[flags]               [flags] can be any of:\n");
       g_print ("                          f - fatal warnings\n");
       g_print ("                          n - disable script and plugin registration\n");
-      g_print ("                          p - reenable plugin registration\n");
+      g_print ("                          p - reenable core plugin registration\n");
+      g_print ("                          l - reenable LADSPA plugin registration\n");
       g_print ("                          s - reenable script registration\n");
       g_print ("                          d - debugging extensions (harmfull)\n");
       if (!BST_VERSION_STABLE)

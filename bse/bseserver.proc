@@ -412,11 +412,10 @@ BODY (BseProcedureClass *proc,
 }
 
 static gboolean
-register_plugins (gpointer data)
+register_core_plugins (gpointer data)
 {
   BseServer *server = data;
   GSList *plugin_slist = g_object_get_data (server, "plugin-registration-queue");
-  GSList *ladspa_slist = g_object_get_data (server, "ladspa-registration-queue");
   const gchar *error;
 
   if (plugin_slist)
@@ -427,7 +426,61 @@ register_plugins (gpointer data)
       g_free (plugin_slist->data);
       g_slist_free_1 (plugin_slist);
     }
-  else if (ladspa_slist)
+  else
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return FALSE;
+    }
+  return TRUE;
+}
+
+METHOD (BseServer, register-core-plugins) {
+  HELP	= "Register core plugins.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  static gboolean registration_done = FALSE;
+  /* extract parameter values */
+  BseServer *server	= bse_value_get_object (in_values++);
+  GSList *slist;
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  if (registration_done)
+    {
+      bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
+      return BSE_ERROR_NONE;
+    }
+  registration_done = TRUE;
+
+  slist = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
+  g_object_set_data (server, "plugin-registration-queue", slist);
+
+  bse_idle_normal (register_core_plugins, server);
+
+  return BSE_ERROR_NONE;
+}
+
+static gboolean
+register_ladspa_plugins (gpointer data)
+{
+  BseServer *server = data;
+  GSList *ladspa_slist = g_object_get_data (server, "ladspa-registration-queue");
+  const gchar *error;
+
+  if (g_object_get_data (server, "plugin-registration-queue"))
+    {
+      /* give precedence to core plugins until they're done registering */
+      return TRUE;
+    }
+
+  if (ladspa_slist)
     {
       g_object_set_data (server, "ladspa-registration-queue", ladspa_slist->next);
       error = bse_ladspa_plugin_check_load (ladspa_slist->data);
@@ -443,8 +496,8 @@ register_plugins (gpointer data)
   return TRUE;
 }
 
-METHOD (BseServer, register-plugins) {
-  HELP	= "Register core plugins.";
+METHOD (BseServer, register-ladspa-plugins) {
+  HELP	= "Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
 				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
 }
@@ -469,9 +522,6 @@ BODY (BseProcedureClass *proc,
     }
   registration_done = TRUE;
 
-  slist = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
-  g_object_set_data (server, "plugin-registration-queue", slist);
-
   slist = bse_ladspa_plugin_dir_list_files (BSE_PATH_LADSPA);
   paths = g_getenv ("LADSPA_PATH");
   if (paths)
@@ -480,7 +530,8 @@ BODY (BseProcedureClass *proc,
       slist = g_slist_concat (slist, slist2);
     }
   g_object_set_data (server, "ladspa-registration-queue", slist);
-  bse_idle_normal (register_plugins, server);
+
+  bse_idle_normal (register_ladspa_plugins, server);
 
   return BSE_ERROR_NONE;
 }

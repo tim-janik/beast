@@ -1,3 +1,7 @@
+Wed Jun 25 00:18:11 2003  Tim Janik  <timj@gtk.org>
+
+	* bseserver.proc: seperate ladspa and core plugin loading.
+
 Tue Jun 24 23:25:54 2003  Tim Janik  <timj@gtk.org>
 
 	* bseserver.proc (register_scripts): fixed memleak in if() branch.

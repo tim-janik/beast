@@ -1,3 +1,10 @@
+Wed Jun 25 00:18:25 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: release 0.5.3, interface and binary age 0.
+	
+	* beast-gtk/bstmain.c: LADSPA plugin loading now needs to be
+	reenabled with -:l if it was disabled due to -:n.
+
 Tue Jun 24 23:28:16 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkutils.c (style_modify_fg_as_sensitive): free rc_style
