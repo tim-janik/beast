@@ -1,5 +1,5 @@
 /* StandardGusPatchEnvelope - Standard GUS Patch Envelope
- * Copyright (C) 2004 Stefan Westerfeld
+ * Copyright (C) 2004-2005 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,8 +71,11 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 		  else
 		    envelope_value = max<gfloat> (envelope_value - envelope_incr, 0.0);
 
-		  *out1++ = *in++ * envelope_value;
-		  *out2++ = *in++ * envelope_value;
+		  gdouble output = *in++ * envelope_value;
+
+		  // FIXME: panning
+		  *out1++ = output;
+		  *out2++ = output;
 
 		  *done++ = (!gate_active && envelope_value < epsilon) ? 1.0 : 0.0;
 		}

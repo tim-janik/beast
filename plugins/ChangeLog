@@ -1,3 +1,7 @@
+Sun Jan  2 12:19:36 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* standardguspatchenvelope.cc: Fixed code of the last change.
+
 Sat Jan  1 15:38:43 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* Makefile.am:
