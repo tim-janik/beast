@@ -129,8 +129,9 @@ static void
 g_object_base_class_finalize (GObjectClass *class)
 {
   guint i;
+
+  g_message ("finallizing base class of %s", G_OBJECT_CLASS_NAME (class));
   
-  class->n_param_specs = 0;
   for (i = 0; i < class->n_param_specs; i++)
     {
       GParamSpec *pspec = class->param_specs[i];
@@ -139,6 +140,7 @@ g_object_base_class_finalize (GObjectClass *class)
       g_param_spec_set_qdata (pspec, quark_param_id, NULL);
       g_param_spec_unref (pspec);
     }
+  class->n_param_specs = 0;
   g_free (class->param_specs);
   class->param_specs = NULL;
 }

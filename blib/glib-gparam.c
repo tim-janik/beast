@@ -267,7 +267,10 @@ g_param_spec_hash_table_remove (GHashTable *hash_table,
   g_return_if_fail (hash_table != NULL);
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
 
+  g_assert (g_param_spec_hash_table_lookup (hash_table, pspec->name, pspec->owner_type, FALSE, NULL) != NULL); // FIXME: paranoid
+
   g_hash_table_remove (hash_table, pspec);
+  g_assert (g_param_spec_hash_table_lookup (hash_table, pspec->name, pspec->owner_type, FALSE, NULL) == NULL); // FIXME: paranoid
   pspec->owner_type = 0;
 }
 
