@@ -732,5 +732,6 @@ Misc Buglets/Feature Requests:
  - make check for test thingy
  - move tests from test directory into automated feature test dir
  - remove test directory
+ - create a roadmap document for BEAST
 
 vim:set ts=8 sts=2 sw=2:
