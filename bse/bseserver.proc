@@ -182,7 +182,7 @@ BODY (BseProcedureClass *proc,
   /* if project is currently playing, halt it */
   if (BSE_SOURCE_PREPARED (project))
     {
-      bse_project_stop_playback (project);
+      bse_project_deactivate (project);
       g_return_val_if_fail (server->dev_use_count > 0, BSE_ERROR_INTERNAL);
       server->dev_use_count--;
       if (!server->dev_use_count)

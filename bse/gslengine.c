@@ -814,7 +814,7 @@ dtrans_timer (gpointer timer_data,
  * Commit the transaction like gsl_trans_commit(), but make sure
  * that the commit happens no earlier than @tick_stamp. This
  * function will block until the commit occoured, so it will not
- * return any earlier than @@tick_stamp.
+ * return any earlier than @tick_stamp.
  * This function is MT-safe and may be called from any thread.
  */ /* bullshit, this function can't be called from the master thread ;) */
 void

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,7 @@
 
 #include        <bse/bsecontainer.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- object type macros --- */
@@ -35,12 +33,19 @@ extern "C" {
 
 
 /* --- BseProject object --- */
+typedef enum {
+  BSE_PROJECT_INACTIVE,
+  BSE_PROJECT_ACTIVE,
+  BSE_PROJECT_PLAYING
+} BseProjectState;
 struct _BseProject
 {
   BseContainer	 parent_object;
 
   GSList	     *supers;
   GSList	     *items;
+
+  BseProjectState     state;
 };
 struct _BseProjectClass
 {
@@ -49,8 +54,12 @@ struct _BseProjectClass
 
 
 /* --- prototypes --- */
+void		bse_project_activate		(BseProject	*project);
+void		bse_project_deactivate		(BseProject	*project);
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
+void		bse_project_state_changed	(BseProject	*project,
+						 BseProjectState state);
 BseStringSeq*	bse_project_list_upaths		(BseProject	*project,
 						 GType  	 item_type);
 BseItem*	bse_project_item_from_upath	(BseProject	*project,
@@ -70,8 +79,6 @@ BseItem*	bse_project_lookup_typed_item	(BseProject	*project,
 BseWaveRepo*	bse_project_get_wave_repo	(BseProject	*project);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_PROJECT_H__ */

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2000-2002 Tim Janik
+ * Copyright (C) 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -444,6 +444,29 @@ METHOD (BseProject, can-play) {
   
   /* set output parameters */
   sfi_value_set_bool (out_values++, project->supers != NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, get-state) {
+  HELP	= "Retrieve the current project state.";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT	= bse_param_spec_genum ("state", "State", "Project playback/activation state",
+				BSE_TYPE_PROJECT_STATE, BSE_PROJECT_INACTIVE, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *self = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_enum (out_values++, self->state);
   
   return BSE_ERROR_NONE;
 }

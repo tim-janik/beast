@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,11 +32,6 @@
 #include	<errno.h>
 
 
-enum {
-  SIGNAL_COMPLETE_RESTORE,
-  SIGNAL_LAST
-};
-
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
@@ -64,7 +59,8 @@ static void	bse_project_prepare		(BseSource		*source);
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
-static guint       project_signals[SIGNAL_LAST] = { 0, };
+static guint       signal_complete_restore = 0;
+static guint       signal_state_changed = 0;
 
 
 /* --- functions --- */
@@ -109,11 +105,14 @@ bse_project_class_init (BseProjectClass *class)
   container_class->forall_items = bse_project_forall_items;
   container_class->retrieve_child = bse_project_retrieve_child;
   container_class->release_children = bse_project_release_children;
-
-  project_signals[SIGNAL_COMPLETE_RESTORE] = bse_object_class_add_signal (object_class, "complete-restore",
-									  G_TYPE_NONE,
-									  2, G_TYPE_POINTER, // FIXME TYPE_OBJECT
-									  G_TYPE_BOOLEAN);
+  
+  signal_complete_restore = bse_object_class_add_signal (object_class, "complete-restore",
+							 G_TYPE_NONE,
+							 2, G_TYPE_POINTER, // FIXME TYPE_OBJECT
+							 G_TYPE_BOOLEAN);
+  signal_state_changed = bse_object_class_add_signal (object_class, "state-changed",
+						      G_TYPE_NONE,
+						      1, BSE_TYPE_PROJECT_STATE);
 }
 
 static void
@@ -130,6 +129,7 @@ bse_project_init (BseProject *project,
 
   object = BSE_OBJECT (project);
 
+  project->state = BSE_PROJECT_INACTIVE;
   project->supers = NULL;
   project->items = NULL;
 
@@ -242,7 +242,7 @@ bse_project_retrieve_child (BseContainer *container,
       for (slist = project->supers; slist; slist = slist->next)
 	if (g_type_is_a (G_OBJECT_TYPE (slist->data), BSE_TYPE_WAVE_REPO))
 	  return slist->data;
-      g_printerr("eeeeeek wave-repo not found\n");
+      g_printerr ("eeeeeek wave-repo not found\n");
       return NULL;	/* shouldn't happen */
     }
   else
@@ -418,7 +418,7 @@ bse_project_restore (BseProject *project,
   bse_storage_resolve_item_links (storage);
 
   expected_token = expected_token != G_TOKEN_NONE;
-  g_signal_emit (project, project_signals[SIGNAL_COMPLETE_RESTORE], 0, storage, expected_token);
+  g_signal_emit (project, signal_complete_restore, 0, storage, expected_token);
   
   g_object_unref (project);
 
@@ -497,79 +497,171 @@ bse_project_prepare (BseSource *source)
 }
 
 void
-bse_project_start_playback (BseProject *project)
+bse_project_state_changed (BseProject     *self,
+			   BseProjectState state)
 {
-  g_return_if_fail (BSE_IS_PROJECT (project));
-  
-  if (!BSE_SOURCE_PREPARED (project))
-    {
-      GslTrans *synth_trans = gsl_trans_open ();
-      GslTrans *song_trans = gsl_trans_open ();
-      SfiRing *seq_jobs = NULL;
-      GSList *slist;
-      
-      bse_source_prepare (BSE_SOURCE (project));
-      
-      for (slist = project->supers; slist; slist = slist->next)
-	{
-	  BseSuper *super = BSE_SUPER (slist->data);
-	  if (super->auto_activate)
-	    {
-	      BseSNet *snet = BSE_SNET (super);
-	      gboolean is_song = BSE_IS_SONG (super);
-	      GslTrans *trans = is_song ? song_trans : synth_trans;
-	      super->auto_activate_context_handle = 0;
-	      super->auto_activate_context_handle = bse_snet_create_context (snet,
-									     bse_server_get_midi_receiver (bse_server_get (),
-													   "default"),
-									     0,
-									     trans);
-	      bse_source_connect_context (BSE_SOURCE (snet), super->auto_activate_context_handle, trans);
-	      if (is_song)
-		seq_jobs = sfi_ring_prepend (seq_jobs, bse_ssequencer_add_song (BSE_SONG (super)));
-	    }
-	  else
-	    super->auto_activate_context_handle = ~0;
-	}
-      if (seq_jobs)
-	{
-	  SfiTime start_stamp;
-	  gsl_trans_commit (song_trans);
-	  start_stamp = bse_ssequencer_queue_jobs (seq_jobs);
-	  gsl_trans_commit_delayed (synth_trans, start_stamp);
-	}
-      else
-	gsl_trans_commit (gsl_trans_merge (song_trans, synth_trans));
-    }
+  g_return_if_fail (BSE_IS_PROJECT (self));
+
+  self->state = state;
+  g_signal_emit (self, signal_state_changed, 0, state);
 }
 
 void
-bse_project_stop_playback (BseProject *project)
+bse_project_activate (BseProject *self)
 {
-  g_return_if_fail (BSE_IS_PROJECT (project));
+  GslTrans *trans;
+  GSList *slist;
+
+  g_return_if_fail (BSE_IS_PROJECT (self));
+
+  if (self->state != BSE_PROJECT_INACTIVE)
+    return;
+  g_return_if_fail (BSE_SOURCE_PREPARED (self) == FALSE);
+
+  bse_source_prepare (BSE_SOURCE (self));
   
-  if (BSE_SOURCE_PREPARED (project))
+  trans = gsl_trans_open ();
+  for (slist = self->supers; slist; slist = slist->next)
     {
-      GslTrans *trans = gsl_trans_open ();
-      GSList *slist;
-      
-      for (slist = project->supers; slist; slist = slist->next)
+      BseSuper *super = BSE_SUPER (slist->data);
+      if (BSE_IS_SONG (super))
 	{
-          BseSuper *super = BSE_SUPER (slist->data);
-	  
-	  if (super->auto_activate_context_handle != ~0)
-	    {
-	      BseSource *source = BSE_SOURCE (super);
-	      
-	      bse_source_dismiss_context (source, super->auto_activate_context_handle, trans);
-	      super->auto_activate_context_handle = ~0;
-	    }
+	  BseSNet *snet = BSE_SNET (super);
+	  super->auto_activate_context_handle = bse_snet_create_context (snet,
+									 bse_server_get_midi_receiver (bse_server_get (),
+												       "default"),
+									 0,
+									 trans);
+	  bse_source_connect_context (BSE_SOURCE (snet), super->auto_activate_context_handle, trans);
 	}
-      gsl_trans_commit (trans);
-
-      /* wait until after all modules have actually been dismissed */
-      gsl_engine_wait_on_trans ();
-
-      bse_source_reset (BSE_SOURCE (project));
+      else
+	super->auto_activate_context_handle = ~0;
     }
+  gsl_trans_commit (trans);
+  bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
+}
+
+void
+bse_project_start_playback (BseProject *self)
+{
+  SfiRing *seq_jobs = NULL;
+  GslTrans *synth_trans;
+  GSList *slist;
+  guint seen_synth = 0;
+
+  g_return_if_fail (BSE_IS_PROJECT (self));
+
+  if (self->state == BSE_PROJECT_PLAYING)
+    return;
+
+  bse_project_activate (self);
+
+  synth_trans = gsl_trans_open ();
+  for (slist = self->supers; slist; slist = slist->next)
+    {
+      BseSuper *super = BSE_SUPER (slist->data);
+      if (!super->auto_activate)
+	continue;
+      else if (BSE_IS_SONG (super))
+	seq_jobs = sfi_ring_prepend (seq_jobs, bse_ssequencer_add_song (BSE_SONG (super)));
+      else
+	{
+	  BseSNet *snet = BSE_SNET (super);
+	  super->auto_activate_context_handle = 0;
+	  super->auto_activate_context_handle = bse_snet_create_context (snet,
+									 bse_server_get_midi_receiver (bse_server_get (),
+												       "default"),
+									 0,
+									 synth_trans);
+	  bse_source_connect_context (BSE_SOURCE (snet), super->auto_activate_context_handle, synth_trans);
+	  seen_synth++;
+	}
+    }
+
+  if (seq_jobs)
+    {
+      SfiTime start_stamp;
+      start_stamp = bse_ssequencer_queue_jobs (seq_jobs);
+      gsl_trans_commit_delayed (synth_trans, start_stamp);
+    }
+  else if (seen_synth)
+    gsl_trans_commit (synth_trans);
+  else /* no synth, no song */
+    {
+      gsl_trans_dismiss (synth_trans);
+      return;
+    }
+  bse_project_state_changed (self, BSE_PROJECT_PLAYING);
+}
+
+void
+bse_project_stop_playback (BseProject *self)
+{
+  SfiRing *seq_jobs = NULL;
+  GslTrans *trans;
+  GSList *slist;
+
+  g_return_if_fail (BSE_IS_PROJECT (self));
+  
+  if (self->state != BSE_PROJECT_PLAYING)
+    return;
+  g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+
+  trans = gsl_trans_open ();
+  for (slist = self->supers; slist; slist = slist->next)
+    {
+      BseSuper *super = BSE_SUPER (slist->data);
+      
+      if (super->auto_activate_context_handle == ~0)
+	continue;
+      if (BSE_IS_SONG (super))
+        seq_jobs = sfi_ring_prepend (seq_jobs, bse_ssequencer_remove_song (BSE_SONG (super)));
+      else
+	{
+	  BseSource *source = BSE_SOURCE (super);
+	  bse_source_dismiss_context (source, super->auto_activate_context_handle, trans);
+	  super->auto_activate_context_handle = ~0;
+	}
+    }
+  if (seq_jobs)
+    bse_ssequencer_handle_jobs (seq_jobs);
+  gsl_trans_commit (trans);
+  /* wait until after all modules have actually been dismissed */
+  gsl_engine_wait_on_trans ();
+  bse_project_state_changed (self, BSE_PROJECT_ACTIVE);
+}
+
+void
+bse_project_deactivate (BseProject *self)
+{
+  GslTrans *trans;
+  GSList *slist;
+
+  g_return_if_fail (BSE_IS_PROJECT (self));
+  
+  if (self->state == BSE_PROJECT_INACTIVE)
+    return;
+  g_return_if_fail (BSE_SOURCE_PREPARED (self) == TRUE);
+
+  bse_project_stop_playback (self);
+
+  trans = gsl_trans_open ();
+  for (slist = self->supers; slist; slist = slist->next)
+    {
+      BseSuper *super = BSE_SUPER (slist->data);
+      
+      if (super->auto_activate_context_handle == ~0)
+	continue;
+      else
+	{
+	  BseSource *source = BSE_SOURCE (super);
+	  bse_source_dismiss_context (source, super->auto_activate_context_handle, trans);
+	  super->auto_activate_context_handle = ~0;
+	}
+    }
+  gsl_trans_commit (trans);
+  /* wait until after all modules have actually been dismissed */
+  gsl_engine_wait_on_trans ();
+  bse_source_reset (BSE_SOURCE (self));
+  bse_project_state_changed (self, BSE_PROJECT_INACTIVE);
 }

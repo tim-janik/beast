@@ -1,3 +1,8 @@
+Mon Jan  6 00:16:17 2003  Tim Janik  <timj@gtk.org>
+
+	* bseproject.[hcp]*: introduce activation state. added state
+	notification.
+
 Sat Jan  4 15:34:28 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.c (process_midi_control_L): 
