@@ -1,13 +1,10 @@
 FIXMES:	(release-critical)
-- invoke bsemidireceiver.cc::extra_free through engine GC. (MIDI LOCK is currently held!)
-- how are nodes scheduled that have different depth (levels) due to different consumers?
 - implement solo for master
 - ensure there always is a master
 - auto-conenct new busses to master
 - auto-add orphan tracks to master when loading
 - auto-add orphan parts to a new track when loading
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
-- instead of bse_engine_add_garbage(), the midireceiver needs a BSE_MIDI_RECEIVER_LOCK based callback mechanism (nodes aren't queued from teh BSE thread which invokes the engine gc)
 - disable vinput/vswitch job queueing (except for mono) if Done is not connected (use SCHEDULED(vinput/switch) to decide)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - support candidate tooltip in bst_track_synth_dialog_popup() similar to bst_item_seq_dialog_popup()
