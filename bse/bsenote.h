@@ -87,19 +87,14 @@ G_BEGIN_DECLS
 
 
 /* --- functions --- */
-gdouble                 bse_freq_from_note              (gint           note);
-gint
-bse_note_from_freq (gdouble freq);
-gint
-bse_note_from_freq_bounded (gdouble freq);
-gint
-bse_note_fine_tune_from_note_freq (gint    note,
-                                   gdouble freq);
-gdouble
-bse_note_to_freq (gint note);
-gdouble
-bse_note_to_tuned_freq (gint note,
-                        gint fine_tune);
+gdouble         bse_freq_from_note                      (gint    note);
+gint            bse_note_from_freq                      (gdouble freq);
+gint            bse_note_from_freq_bounded              (gdouble freq);
+gint            bse_note_fine_tune_from_note_freq       (gint    note,
+                                                         gdouble freq);
+gdouble         bse_note_to_freq                        (gint    note);
+gdouble         bse_note_to_tuned_freq                  (gint    note,
+                                                         gint    fine_tune);
 
 /* --- freq array --- */
 typedef struct BseFreqArray BseFreqArray;
