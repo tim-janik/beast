@@ -172,7 +172,7 @@ GROUP_DONE (GtkWidget *group)
   GtkTooltips *tt = NULL;
   gchar *tip_text, *tip_ref = NULL;
   GtkTable *table;
-  gboolean big, expandable;
+  gboolean big, expandable, dummy_scale = FALSE;
   guint row, n, c;
 
   g_return_val_if_fail (GTK_IS_WIDGET (group), NULL);
@@ -241,13 +241,18 @@ GROUP_DONE (GtkWidget *group)
 	}
       else
 	scale = NULL;
+      dummy_scale = TRUE;
     }
   if (scale)
-    gtk_table_attach (table,
-		      gtk_widget_get_toplevel (scale),
-		      dial ? c : c - 1, c + 1, row, row + 1,
-		      GTK_EXPAND | GTK_FILL, 0,
-		      0, 0);
+    {
+      gtk_table_attach (table,
+			gtk_widget_get_toplevel (scale),
+			dial ? c : c - 1, c + 1, row, row + 1,
+			GTK_EXPAND | GTK_FILL, 0,
+			0, 0);
+      if (dummy_scale)
+	scale = NULL;
+    }
   c++;
   /* stuff action with pre- and post- widgets closely together */
   any = gtk_widget_get_toplevel (action);
@@ -880,8 +885,8 @@ bst_param_create (gpointer      owner,
       frame = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
 			      "label", NULL,
-			      "shadow", GTK_SHADOW_OUT,
-			      "border_width", 5,
+			      "shadow", GTK_SHADOW_IN,
+			      "border_width", 0,
 			      NULL);
       dot_data = g_new0 (DotAreaData, 1);
       action = gtk_widget_new (GTK_TYPE_DRAWING_AREA,
