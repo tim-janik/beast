@@ -19,6 +19,7 @@
 #include "bstasciipixbuf.h"
 #include "bstskinconfig.h"
 #include <string.h>
+#include <math.h>
 
 
 /* --- defines --- */
@@ -252,31 +253,31 @@ piano_roll_get_layout (GxkScrollCanvas        *scc,
   layout->canvas_height = N_OCTAVES (self) * OCTAVE_HEIGHT (self);
 }
 
-static gint
+static gdouble
 ticks_to_pixels (BstPianoRoll *self,
-		 gint	       ticks)
+		 gdouble       ticks)
 {
   gdouble ppqn = self->ppqn;
   gdouble tpixels = QNOTE_HPIXELS;
   
   /* compute pixel span of a tick range */
   
-  tpixels *= self->hzoom / ppqn * (gdouble) ticks;
+  tpixels *= self->hzoom / ppqn * ticks;
   if (ticks)
     tpixels = MAX (tpixels, 1);
   return MIN (G_MAXINT, tpixels);
 }
 
-static gint
+static gdouble
 pixels_to_ticks (BstPianoRoll *self,
-		 gint	       pixels)
+		 gdouble       pixels)
 {
   gdouble ppqn = self->ppqn;
   gdouble ticks = 1.0 / (gdouble) QNOTE_HPIXELS;
 
   /* compute tick span of a pixel range */
 
-  ticks = ticks * ppqn / self->hzoom * (gdouble) pixels;
+  ticks = ticks * ppqn / self->hzoom * pixels;
   if (pixels > 0)
     ticks = MAX (ticks, 1);
   else
@@ -980,7 +981,7 @@ piano_roll_adjustment_changed (GxkScrollCanvas *scc,
       umax = MIN (umax, 1e+9);                                                  /* upper bound for adj->upper based on pixels */
       umin = MIN (umin, umax * 1.5), umax = MAX (umin, umax);                   /* properly confine boundaries */
       /* guard against invalid changes */
-      if (adj->lower != 0 || adj->upper != CLAMP (adj->upper, umin, umax))
+      if (adj->lower != 0 || fabs (adj->upper - CLAMP (adj->upper, umin, umax)) > 1e-7)
         {
           scc->hadjustment->lower = 0;
           scc->hadjustment->upper = CLAMP (scc->hadjustment->upper, umin, umax);
@@ -1031,11 +1032,13 @@ bst_piano_roll_hsetup (BstPianoRoll *self,
 		       guint	     max_ticks,
 		       gfloat	     hzoom)
 {
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
   guint old_ppqn = self->ppqn;
   guint old_qnpt = self->qnpt;
   guint old_max_ticks = self->max_ticks;
   gfloat old_hzoom = self->hzoom;
-  
+  gdouble old_hpos = pixels_to_ticks (self, scc->hadjustment->value);
+
   /* here, we setup all things necessary to determine our
    * horizontal layout. we avoid resizes if only max_ticks
    * changes, since the tick range might grow/shrink fairly
@@ -1054,6 +1057,7 @@ bst_piano_roll_hsetup (BstPianoRoll *self,
       self->draw_qn_grid = ticks_to_pixels (self, self->ppqn) >= 3;
       self->draw_qqn_grid = ticks_to_pixels (self, self->ppqn / 4) >= 5;
       gtk_widget_queue_draw (GTK_WIDGET (self));
+      scc->hadjustment->value = ticks_to_pixels (self, old_hpos); // fix start position when hzoom changes
       X_OFFSET (self) = GXK_SCROLL_CANVAS (self)->hadjustment->value;
       gxk_scroll_canvas_update_adjustments (GXK_SCROLL_CANVAS (self), TRUE, FALSE);
     }

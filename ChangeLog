@@ -1,3 +1,12 @@
+Tue Jan 25 00:00:11 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianoroll.c: 
+	turned ticks_to_pixels() and pixels_to_ticks() into conversions
+	with double precision. 
+	bst_piano_roll_hsetup(): fixate start position when hzooming.
+	piano_roll_adjustment_changed(): compare floats within suitable 
+	epsilon to avoid endless adjustment-changed reemissions.
+
 Sun Jan 23 22:04:43 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/scripts/Makefile.am:
