@@ -1,3 +1,7 @@
+Wen Nov 19 00:45:00 2003  Duarte Loreto <happyguy_pt@hotmail.com>
+
+	* configure.in: Added Portuguese (pt) to ALL_LINGUAS.
+
 Tue Nov 18 22:57:40 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-beast.xml: fixed unfound actions
