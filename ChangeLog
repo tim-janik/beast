@@ -1,3 +1,8 @@
+Sat Nov 27 01:14:48 1999  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4: check for support before adding -Wmissing-noreturn
+	to the gcc option list.
+
 Sat Nov 20 08:47:50 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_event): reset router mode

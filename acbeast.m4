@@ -65,6 +65,20 @@ case $ac_vm in
 esac
 ])
 
+dnl Check whether cc accepts a certain option
+dnl MC_PROG_CC_SUPPORTS_OPTION(OPTIONS, ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND])
+AC_DEFUN(MC_PROG_CC_SUPPORTS_OPTION,[
+AC_MSG_CHECKING([whether ${CC-cc} supports $1])
+echo >conftest.c;
+if ${CC-cc} [$1] -c $CFLAGS conftest.c >/dev/null 2>&1 ; then
+    AC_MSG_RESULT(yes)
+    [$2]
+else
+    AC_MSG_RESULT(no)
+    [$3]
+fi
+rm -fr conftest*
+])dnl
 
 dnl Setup CC with default CFLAGS value.
 AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
@@ -120,9 +134,9 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		dnl MC_EVAR_ADD(CFLAGS, -Wbad-function-cast, -Wbad-function-cast)
 		dnl bogus: MC_EVAR_ADD(CFLAGS, -Wconversion, -Wconversion)
 		dnl bogus: MC_EVAR_ADD(CFLAGS, -Wsign-compare, -Wsign-compare)
-		MC_EVAR_ADD(CFLAGS, -Wmissing-noreturn, -Wmissing-noreturn)
+		MC_PROG_CC_SUPPORTS_OPTION(-Wmissing-noreturn,
+		    MC_EVAR_ADD(CFLAGS, -Wmissing-noreturn, -Wmissing-noreturn))
 		dnl glibc breakage: MC_EVAR_ADD(CFLAGS, -Wredundant-decls, -Wredundant-decls)
-		
 	
 		dnl Optimizations
 		MC_EVAR_ADD(CFLAGS, -O, -O6)
