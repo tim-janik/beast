@@ -20,13 +20,16 @@
 GSL_H_SRC     =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h \
 		gslloader.h gslmath.h gslfilter.h gsldatautils.h gsldatahandle-vorbis.h \
 		gslconvert.h gslfft.h gslieee754.h gslsignal.h gslmagic.h \
-		gslengine.h gslwaveosc.h gslwavechunk.h gsldatahandle-mad.h
+		gslengine.h gslwaveosc.h gslwavechunk.h gsldatahandle-mad.h \
+		gslosctable.h gsloscillator.h
 GSL_C_SRC     =	gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorbis.c \
 		gslmath.c gslfilter.c gslcommon.c gsldatautils.c gslmagic.c \
 		gslloader-wav.c gslloader-gslwave.c gslloader-mad.c gslloader-oggvorbis.c \
 		gslconvert.c gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
-		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c gsldatahandle-mad.c
-GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h gslwaveosc-aux.c
+		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c gsldatahandle-mad.c \
+		gslosctable.c gsloscillator.c
+GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h \
+		gslopschedule.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
 GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header gslglib.c gslglib.h gsl-fftgen.pl
 EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT)
 

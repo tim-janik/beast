@@ -123,6 +123,7 @@ bse_constant_class_init (BseConstantClass *class)
 							0, BSE_MAX_FREQUENCY,
 							BSE_MAX_FREQUENCY, 10.0,
 							BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
+      bse_object_class_set_param_log_scale (object_class, string, 880.0, 2, 4);
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("note_%u", i);

@@ -64,6 +64,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseitem.h \
 	bsemain.h \
 	bsemath.h \
+	bsemidiicontroller.h \
 	bsemididevice.h \
 	bsemididevice-null.h \
 	bsemididevice-oss.h \
@@ -132,6 +133,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseitem.c \
 	bsemain.c \
 	bsemath.c \
+	bsemidiicontroller.c \
 	bsemididevice.c \
 	bsemididevice-null.c \
 	bsemididevice-oss.c \

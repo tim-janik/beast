@@ -69,7 +69,7 @@ gsl_window_sinc (double x)	/* noramlied C. Lanczos window */
 }
 
 double
-gsl_window_rectangle (double x)	/* a square */
+gsl_window_rect (double x)	/* a square */
 {
   if (fabs (x) > 1)
     return 0;

@@ -53,18 +53,6 @@ bse_parse_args (gint    *argc_p,
 {
   extern GFlagsValue *bse_debug_key_flag_values;	/* bseenums.c feature */
   extern guint        bse_debug_key_n_flag_values;	/* bseenums.c feature */
-  static const GDebugKey gsl_debug_keys[] = {
-    { "notify",		GSL_MSG_NOTIFY },
-    { "dcache",		GSL_MSG_DATA_CACHE },
-    { "dhandle",	GSL_MSG_DATA_HANDLE },
-    { "loader",		GSL_MSG_LOADER },
-    { "engine",		GSL_MSG_ENGINE },
-    { "jobs",		GSL_MSG_JOBS },
-    { "sched",		GSL_MSG_SCHED },
-    { "master",		GSL_MSG_MASTER },
-    { "slave",		GSL_MSG_SLAVE },
-  };
-  static const guint gsl_n_debug_keys = G_N_ELEMENTS (gsl_debug_keys);
   GDebugKey *debug_keys;
   guint n_debug_keys;
   guint argc = *argc_p;

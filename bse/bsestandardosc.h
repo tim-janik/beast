@@ -19,6 +19,7 @@
 #define __BSE_STANDARD_OSC_H__
 
 #include <bse/bsesource.h>
+#include <gsl/gsloscillator.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,51 +38,34 @@ extern "C" {
 /* --- wave forms --- */
 typedef enum
 {
-  BSE_STANDARD_OSC_NONE,	/*< skip >*/
-  BSE_STANDARD_OSC_SINE,	/*< nick=Sine >*/
-  BSE_STANDARD_OSC_PULSE,	/*< nick=Pulse >*/
-  BSE_STANDARD_OSC_GSAW,	/*< nick=Growing Saw >*/
-  BSE_STANDARD_OSC_SSAW,	/*< nick=Shrinking Saw >*/
-  BSE_STANDARD_OSC_TRIANGLE	/*< nick=Triangle >*/
+  BSE_STANDARD_OSC_NONE,					/*< skip >*/
+  BSE_STANDARD_OSC_SINE		= GSL_OSC_WAVE_SINE,		/*< nick=Sine >*/
+  BSE_STANDARD_OSC_TRIANGLE	= GSL_OSC_WAVE_TRIANGLE,	/*< nick=Triangle >*/
+  BSE_STANDARD_OSC_SAW_RISE	= GSL_OSC_WAVE_SAW_RISE,	/*< nick=Rising Saw >*/
+  BSE_STANDARD_OSC_SAW_FALL	= GSL_OSC_WAVE_SAW_FALL,	/*< nick=Falling Saw >*/
+  BSE_STANDARD_OSC_PEAK_RISE	= GSL_OSC_WAVE_PEAK_RISE,	/*< nick=Rising Peak >*/
+  BSE_STANDARD_OSC_PEAK_FALL	= GSL_OSC_WAVE_PEAK_FALL,	/*< nick=Falling Peak >*/
+  BSE_STANDARD_OSC_MOOG_SAW	= GSL_OSC_WAVE_MOOG_SAW,	/*< nick=Moog Saw >*/
+  BSE_STANDARD_OSC_SQUARE	= GSL_OSC_WAVE_SQUARE,		/*< nick=Square >*/
+  BSE_STANDARD_OSC_PULSE	= GSL_OSC_WAVE_PULSE_SAW	/*< nick=Pulse >*/
 } BseStandardOscWaveType;
 
 
 /* --- BseStandardOsc source --- */
 typedef struct _BseStandardOsc      BseStandardOsc;
 typedef struct _BseStandardOscClass BseStandardOscClass;
-typedef struct {
-  guint32	  n_table_values;
-  BseSampleValue *table;	/* [n_table_values + 1] */
-
-  guint32	  sync_pos;	/* phase */
-  gfloat	  fm_strength;
-  gboolean	  with_fm_mod;
-} BseStandardOscVars;
 struct _BseStandardOsc
 {
-  BseSource         parent_object;
+  BseSource		 parent_object;
 
   BseStandardOscWaveType wave;
-  gfloat               phase;
-  gfloat               base_freq;
-  gfloat               fm_perc;
+  GslOscConfig		 config;
+  gfloat                 fm_strength;
+  gfloat                 n_octaves;
 };
 struct _BseStandardOscClass
 {
   BseSourceClass parent_class;
-
-  guint           ref_count;
-
-  guint           sine_table_size;
-  BseSampleValue *sine_table;
-  guint           gsaw_table_size;
-  BseSampleValue *gsaw_table;
-  guint           ssaw_table_size;
-  BseSampleValue *ssaw_table;
-  guint           pulse_table_size;
-  BseSampleValue *pulse_table;
-  guint           triangle_table_size;
-  BseSampleValue *triangle_table;
 };
 
 
@@ -90,12 +74,15 @@ enum
 {
   BSE_STANDARD_OSC_ICHANNEL_FREQ,
   BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD,
-  BSE_STANDARD_OSC_ICHANNEL_SYNC
+  BSE_STANDARD_OSC_ICHANNEL_SYNC,
+  BSE_STANDARD_OSC_ICHANNEL_PWM,
+  BSE_STANDARD_OSC_N_ICHANNELS
 };
 enum
 {
   BSE_STANDARD_OSC_OCHANNEL_OSC,
-  BSE_STANDARD_OSC_OCHANNEL_SYNC
+  BSE_STANDARD_OSC_OCHANNEL_SYNC,
+  BSE_STANDARD_OSC_N_OCHANNELS
 };
 
 

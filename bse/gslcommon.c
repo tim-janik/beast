@@ -1137,6 +1137,19 @@ gsl_strerror (GslErrorType error)
     }
 }
 
+static const GDebugKey gsl_static_debug_keys[] = {
+  { "notify",         GSL_MSG_NOTIFY },
+  { "dcache",         GSL_MSG_DATA_CACHE },
+  { "dhandle",        GSL_MSG_DATA_HANDLE },
+  { "loader",         GSL_MSG_LOADER },
+  { "osc",	      GSL_MSG_OSC },
+  { "engine",         GSL_MSG_ENGINE },
+  { "jobs",           GSL_MSG_JOBS },
+  { "sched",          GSL_MSG_SCHED },
+  { "master",         GSL_MSG_MASTER },
+  { "slave",          GSL_MSG_SLAVE },
+};
+
 static const gchar*
 reporter_name (GslDebugFlags reporter)
 {
@@ -1146,6 +1159,7 @@ reporter_name (GslDebugFlags reporter)
     case GSL_MSG_DATA_CACHE:	return "DataCache";
     case GSL_MSG_DATA_HANDLE:	return "DataHandle";
     case GSL_MSG_LOADER:	return "Loader";
+    case GSL_MSG_OSC:		return "Oscillator";
     case GSL_MSG_ENGINE:	return "Engine";	/* Engine */
     case GSL_MSG_JOBS:		return "Jobs";		/* Engine */
     case GSL_MSG_SCHED:		return "Sched";		/* Engine */
@@ -1154,6 +1168,9 @@ reporter_name (GslDebugFlags reporter)
     default:			return "Custom";
     }
 }
+
+const GDebugKey *gsl_debug_keys = gsl_static_debug_keys;
+const guint      gsl_n_debug_keys = G_N_ELEMENTS (gsl_static_debug_keys);
 
 void
 gsl_message_send (GslDebugFlags reporter,
@@ -1235,7 +1252,7 @@ gsl_debug (GslDebugFlags reporter,
       va_start (args, format);
       string = g_strdup_vprintf (format, args);
       va_end (args);
-      g_printerr (/* "GSL-" */ "%s%s%s: %s\n",
+      g_printerr ("DEBUG:GSL-%s%s%s: %s\n",
 		  reporter_name (reporter),
 		  section ? ":" : "",
 		  section ? section : "",

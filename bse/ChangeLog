@@ -1,3 +1,47 @@
+Mon Apr 15 09:43:15 2002  Tim Janik  <timj@gtk.org>
+
+	* gslosctable.[hc]: create anti-aliased filter tables for the
+	following wave forms: sine, triangle, saw, peak, moog saw and
+	square/pulse variants.
+
+	* gsloscillator.[hc], gsloscillator-aux.c: new oscillator code,
+	supporting sync out and various inputs: freq, freq modulation,
+	sync and pulse width modulation. the wave to use for oscillation
+	is supplied via a GslOscTable.
+
+	* gslincluder.c: helper file for sources that need to comile
+	various forms of the same function.
+
+	* gslcommon.[hc]: supply debug keys for the debug options.
+
+	* gslieee754.h: mark gsl_ftoi() GNUC_CONST.
+
+	* gslsignal.h: mark gsl_signal_exp2() GNUC_CONST.
+
+	* gbsearcharray.h: minor naming fix.
+
+	* bsemidiicontroller.[hc]: provide midi control inputs.
+
+	* bseconstant.c: allow logarithmic scaling of the input values
+	as frequencies.
+
+	* bseenums.h: provide BseMidiControlType enum.
+
+	* bsemain.c: use GSL supplied debug keys.
+
+	* bsemidimodule.c: fix BSE_MIDI_SIGNAL_PITCH_BEND setting, so we put out
+	values between -1 and +1 for this.
+
+	* bsestandardosc.[hc]: use new GSL oscillator code for this (and
+	support all its bells and whistles).
+
+Fri Apr 12 04:45:04 2002  Tim Janik  <timj@gtk.org>
+
+	* gsl-fftconf.sh (gsl_power2_fftc_big): fix a missing NULL check to skip
+	first fft stage on input values.
+	(gsl_power2_fftsr): invoke gsl_power2_fftc_big() with n_cvalues instead
+	of n_values like we do for all other ffts as well.
+
 Mon Apr  8 14:04:30 2002  Tim Janik  <timj@gtk.org>
 
 	* gsldefs.h: define if_expect() and if_reject() if GSL_EXTENSIONS

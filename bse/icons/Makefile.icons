@@ -7,6 +7,7 @@ icon_list += keyboard.c
 icon_list += mic.c
 icon_list += midi-in.c
 icon_list += midi-out.c
+icon_list += midiictrl.c
 icon_list += osc.c
 icon_list += outport.c
 icon_list += snet.c

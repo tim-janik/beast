@@ -110,12 +110,15 @@ typedef enum /*< skip >*/
   GSL_MSG_DATA_CACHE	= 1 << 1,
   GSL_MSG_DATA_HANDLE	= 1 << 2,
   GSL_MSG_LOADER	= 1 << 3,
-  GSL_MSG_ENGINE	= 1 << 4,
-  GSL_MSG_JOBS		= 1 << 5,
-  GSL_MSG_SCHED		= 1 << 6,
-  GSL_MSG_MASTER	= 1 << 7,
-  GSL_MSG_SLAVE		= 1 << 8
+  GSL_MSG_OSC		= 1 << 4,
+  GSL_MSG_ENGINE	= 1 << 5,
+  GSL_MSG_JOBS		= 1 << 6,
+  GSL_MSG_SCHED		= 1 << 7,
+  GSL_MSG_MASTER	= 1 << 8,
+  GSL_MSG_SLAVE		= 1 << 9
 } GslDebugFlags;
+extern const GDebugKey *gsl_debug_keys;
+extern const guint      gsl_n_debug_keys;
 void		gsl_debug		(GslDebugFlags  reporter,
 					 const gchar   *section,
 					 const gchar   *format,

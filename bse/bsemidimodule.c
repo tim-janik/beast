@@ -53,7 +53,7 @@ pick_signal (BseMidiChannel *channel,
 	{
 	case BSE_MIDI_SIGNAL_PROGRAM:		value = BSE_VALUE_FROM_BOUNDED_UINT (channel->program, BSE_MIDI_MAX_PROGRAM);	break;
 	case BSE_MIDI_SIGNAL_PRESSURE:		value = BSE_VALUE_FROM_BOUNDED_UINT (channel->pressure, BSE_MIDI_MAX_PRESSURE);	break;
-	case BSE_MIDI_SIGNAL_PITCH_BEND:	value = BSE_VALUE_FROM_BOUNDED_UINT (channel->pitch_bend, BSE_MIDI_MAX_PITCH_BEND);	break;
+	case BSE_MIDI_SIGNAL_PITCH_BEND:	value = BSE_VALUE_FROM_BOUNDED_UINT (channel->pitch_bend, BSE_MIDI_MAX_PITCH_BEND + 1) * 2.0 - 1.0;	break;
 	}
     }
   else /* signal = BSE_MIDI_SIGNAL_CONTROL + nth */

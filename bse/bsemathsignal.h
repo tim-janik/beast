@@ -70,7 +70,7 @@ extern "C" {
  * glibc function though, by taking advantage of a limited input
  * range and smaller precision requirements.
  */
-static inline float	gsl_signal_exp2 (float x);
+static inline float	gsl_signal_exp2 (float x)  G_GNUC_CONST;
 
 
 /* --- windows --- */
@@ -79,11 +79,11 @@ double	gsl_window_blackman	(double x);
 double	gsl_window_cos		(double x);
 double	gsl_window_hamming	(double x);
 double	gsl_window_sinc		(double x);
-double	gsl_window_rectangle	(double x);	/* widest */
+double	gsl_window_rect		(double x);	/* widest */
 
 
 /* --- implementation details --- */
-static inline float
+static inline float  G_GNUC_CONST
 _gsl_signal_exp2_fraction (float x)	/* 2^x, -0.5 <= x <= 0.5 */
 {
   static const float exp2taylorC0 = 1.0000000000000000000000000000000000000000;
@@ -115,7 +115,7 @@ _gsl_signal_exp2_fraction (float x)	/* 2^x, -0.5 <= x <= 0.5 */
   
   return r;
 }
-static inline float
+static inline float  G_GNUC_CONST
 gsl_signal_exp2 (float x)		/* 2^x, -3.5 <= x <= 3.5, prec>16bit */
 {
   if_reject (x < -0.5)

@@ -92,13 +92,13 @@ static inline void		g_bsearch_array_free	  (GBSearchArray	*barray,
 #define	g_bsearch_array_lookup(barray, bconfig, key_node)	\
     g_bsearch_array_lookup_fuzzy ((barray), (bconfig), (key_node), 0)
 
-/* g_bsearch_array_lookup_nextmost():
+/* g_bsearch_array_lookup_sibling():
  * return NULL for barray->n_nodes==0, otherwise return the
  * exact match node, or, if there's no such node, return the
- * node closest to an exact match (will be one off into either
- * direction).
+ * node last visited, which is pretty close to an exact match
+ * (will be one off into either direction).
  */
-#define	g_bsearch_array_lookup_nextmost(barray, bconfig, key_node)	\
+#define	g_bsearch_array_lookup_sibling(barray, bconfig, key_node)	\
     g_bsearch_array_lookup_fuzzy ((barray), (bconfig), (key_node), 1)
 
 /* g_bsearch_array_lookup_insertion():
@@ -139,12 +139,12 @@ static inline gpointer
 g_bsearch_array_lookup_fuzzy (GBSearchArray		*barray,
 			      const GBSearchConfig	*bconfig,
 			      gconstpointer		 key_node,
-			      const guint		 nextmost_after);
+			      const guint		 sibling_or_after);
 static inline gpointer
 g_bsearch_array_lookup_fuzzy (GBSearchArray        *barray,
 			      const GBSearchConfig *bconfig,
 			      gconstpointer         key_node,
-			      const guint           nextmost_after)
+			      const guint           sibling_or_after)
 {
   GBSearchCompareFunc cmp_nodes = bconfig->cmp_nodes;
   guint8 *check = NULL, *nodes = G_BSEARCH_ARRAY_NODES (barray);
@@ -159,7 +159,7 @@ g_bsearch_array_lookup_fuzzy (GBSearchArray        *barray,
       check = nodes + i * sizeof_node;
       cmp = cmp_nodes (key_node, check);
       if (cmp == 0)
-	return nextmost_after > 1 ? NULL : check;
+	return sibling_or_after > 1 ? NULL : check;
       else if (cmp < 0)
 	n_nodes = i;
       else /* (cmp > 0) */
@@ -167,7 +167,7 @@ g_bsearch_array_lookup_fuzzy (GBSearchArray        *barray,
     }
 
   /* check is last mismatch, cmp > 0 indicates greater key */
-  return !nextmost_after ? NULL : (nextmost_after > 1 && cmp > 0) ? check + sizeof_node : check;
+  return !sibling_or_after ? NULL : (sibling_or_after > 1 && cmp > 0) ? check + sizeof_node : check;
 }
 static inline gpointer
 g_bsearch_array_get_nth (GBSearchArray        *barray,

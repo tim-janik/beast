@@ -65,6 +65,11 @@ done
 #
 echo "Generating generic FFT function for sizes >8192" >&2
 cat <<__EOF
+
+
+/* public FFT frontends and generic handling of huge fft sizes */
+
+
 static void
 gsl_power2_fftc_big (const unsigned int n_values,
 		     const $IEEE_TYPE  *rivalues_in,
@@ -78,13 +83,15 @@ gsl_power2_fftc_big (const unsigned int n_values,
 
   if (esign > 0)
     {
-      bitreverse_fft2analysis (n_values, rivalues_in, rivalues);
+      if (rivalues_in)
+        bitreverse_fft2analysis (n_values, rivalues_in, rivalues);
       for (i = 0; i < n_values; i += 8192)
         gsl_power2_fft8192analysis_skip2 (rivalues + (i << 1), rivalues + (i << 1));
     }
   else
     {
-      bitreverse_fft2synthesis (n_values, rivalues_in, rivalues);
+      if (rivalues_in)
+        bitreverse_fft2synthesis (n_values, rivalues_in, rivalues);
       for (i = 0; i < n_values; i += 8192)
         gsl_power2_fft8192synthesis_skip2 (rivalues + (i << 1), rivalues + (i << 1));
     }
@@ -409,7 +416,7 @@ gsl_power2_fftsr (const unsigned int n_values,
       case 2048: gsl_power2_fft2048synthesis_skip2 (NULL, r_values_out); break;
       case 4096: gsl_power2_fft4096synthesis_skip2 (NULL, r_values_out); break;
       case 8192: gsl_power2_fft8192synthesis_skip2 (NULL, r_values_out); break;
-      default:	 gsl_power2_fftc_big (n_values, NULL, r_values_out, -1);
+      default:	 gsl_power2_fftc_big (n_cvalues, NULL, r_values_out, -1);
     }
 }
 void

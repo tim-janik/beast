@@ -60,6 +60,8 @@ struct _GslComplex
 /* --- complex numbers --- */
 static inline GslComplex gsl_complex		(double		re,
 						 double		im);
+static inline GslComplex gsl_complex_polar	(double		abs,
+						 double		arg);
 static inline GslComplex gsl_complex_add	(GslComplex	c1,
 						 GslComplex	c2);
 static inline GslComplex gsl_complex_add3	(GslComplex	c1,
@@ -186,6 +188,12 @@ gsl_complex (double re,
   r.re = re;
   r.im = im;
   return r;
+}
+static inline GslComplex
+gsl_complex_polar (double abs,
+		   double arg)
+{
+  return gsl_complex (abs * cos (arg), abs * sin (arg));
 }
 static inline GslComplex
 gsl_complex_add	(GslComplex c1,
