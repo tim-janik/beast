@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-02 03:14+0200\n"
-"PO-Revision-Date: 2004-07-02 08:40+0200\n"
+"POT-Creation-Date: 2004-07-06 03:13+0200\n"
+"PO-Revision-Date: 2004-07-06 13:00+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -406,6 +406,14 @@ msgstr "Načíst vlnu"
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Načítám vlnu `%s'"
+
+#: beast-gtk/bstgrowbar.c:91
+msgid "Shrink the scrollable area"
+msgstr "Zmenšit posunovatelnou oblast"
+
+#: beast-gtk/bstgrowbar.c:93
+msgid "Grow the scrollable area"
+msgstr "Zvětšit posunovatelnou oblast"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
 #: beast-gtk/bsttrackview.c:61
@@ -2059,30 +2067,34 @@ msgstr "Označit signál (začátek)"
 msgid "Mark Signal (Tail)"
 msgstr "Označit signál (konec)"
 
-#: beast-gtk/bstsupershell.c:149 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:150 beast-gtk/bstsupershell.c:273
 msgid "Waves"
 msgstr "Vlny"
 
-#: beast-gtk/bstsupershell.c:212
+#: beast-gtk/bstsupershell.c:213
 msgid "Tracks"
 msgstr "Stopy"
 
-#: beast-gtk/bstsupershell.c:217 beast-gtk/bstsupershell.c:253
-#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:34
+#: beast-gtk/bstsupershell.c:218 beast-gtk/bstsupershell.c:260
+#: beast-gtk/bstsupershell.c:278 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parametry"
 
-#: beast-gtk/bstsupershell.c:222
+#: beast-gtk/bstsupershell.c:223
 msgid "Parts"
 msgstr "Části"
 
-#: beast-gtk/bstsupershell.c:228 beast-gtk/bstsupershell.c:247
+#: beast-gtk/bstsupershell.c:229
+msgid "Busses"
+msgstr ""
+
+#: beast-gtk/bstsupershell.c:235 beast-gtk/bstsupershell.c:254
 msgid "Routing"
 msgstr "Směrování"
 
-#: beast-gtk/bstsupershell.c:242
+#: beast-gtk/bstsupershell.c:249
 msgid "Rack"
 msgstr "Rack"
 
