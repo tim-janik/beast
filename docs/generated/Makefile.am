@@ -200,6 +200,7 @@ navigation.xml: $(srcdir)/../site-navigation.xml
 	cp $< $@
 site:	$(html_targets) index.html navigation.xml
 	tar jcf beast-site-con.tar.bz2 --mode=0664 $(html_targets) index.html css/*.css
+	tar zcf beast-site-cgi.tar.gz  --mode=0775 cgi-bin/*.cgi
 	tar zcf beast-site-img.tar.gz  --mode=0664 css/images/*.png
 	tar zcf beast-site-nav.tar.gz  --mode=0664 navigation.xml
 site-update-con: site
@@ -212,6 +213,16 @@ site-update-con: site
 	   && tar jxmpf ${XPREFIX}-beast-site-con.tar.bz2 -C /web/beast/html \
 	   && echo Cleaning up. \
 	   && rm ${XPREFIX}-beast-site-con.tar.bz2"
+site-update-cgi: site
+	echo Connecting to ${ACCOUNT}... \
+	&& uuencode ${XPREFIX}-beast-site-cgi.tar.gz < beast-site-cgi.tar.gz \
+	| ssh ${ACCOUNT} \
+	  "echo Receiving... \
+	   && uudecode \
+	   && echo Extracting... \
+	   && tar zxmpf ${XPREFIX}-beast-site-cgi.tar.gz -C /web/beast \
+	   && echo Cleaning up. \
+	   && rm ${XPREFIX}-beast-site-cgi.tar.gz"
 site-update-img: site
 	echo Connecting to ${ACCOUNT}... \
 	&& uuencode ${XPREFIX}-beast-site-img.tar.gz < beast-site-img.tar.gz \
@@ -238,10 +249,11 @@ site-update-nav: site
 BEAST_PREVIEW=~/devel_html/beast-preview/.
 site-preview:	site	$(BEAST_PREVIEW)
 	tar jxmpf beast-site-con.tar.bz2 -C $(BEAST_PREVIEW)
+	tar zxmpf beast-site-cgi.tar.gz  -C $(BEAST_PREVIEW)
 	tar zxmpf beast-site-img.tar.gz  -C $(BEAST_PREVIEW)
 	tar zxpf  beast-site-nav.tar.gz  -C $(BEAST_PREVIEW)
 site-update: site-update-con
-site-upgrade: site-update-con site-update-img site-update-nav
+site-upgrade: site-update-con site-update-img site-update-nav site-update-cgi
 CLEANFILES += beast-site-*.tar.gz beast-site-*.tar.bz2 index.html
 
 
