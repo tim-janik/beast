@@ -76,6 +76,8 @@ beast -- Graphical program to simulate audio synthesis and compose music.
 	times and features an `auto' driver.
 @item ---bse-driver-list
 	Produce a list of all available PCM and MIDI drivers and available devices.
+@item ---
+	Stop argument processing, interpret all remaining arguments as file names.
 @end table
 
 	Development Options:
