@@ -561,6 +561,7 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
 	  global_dcache_list = sfi_ring_append (global_dcache_list, dcache);
 	  dcache_count = global_dcache_count;
 	  GSL_SPIN_UNLOCK (&global_dcache_mutex);
+#define DEBUG_TRASHING 0
 #if DEBUG_TRASHING
           gint debug_gnaged = global_dcache_n_aged_nodes;
 #endif

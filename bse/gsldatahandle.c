@@ -1361,6 +1361,7 @@ typedef struct {
   guint		    add_zoffset : 1;
   GslLong	    requested_offset;
   GslLong	    requested_length;
+  gchar           **xinfos;
 } WaveHandle;
 
 static inline const guint G_GNUC_CONST
@@ -1417,6 +1418,7 @@ wave_handle_destroy (GslDataHandle *dhandle)
 {
   WaveHandle *whandle = (WaveHandle*) dhandle;
   
+  g_strfreev (whandle->xinfos);
   gsl_data_handle_common_free (dhandle);
   sfi_delete_struct (WaveHandle, whandle);
 }
@@ -1457,10 +1459,7 @@ wave_handle_open (GslDataHandle      *dhandle,
       setup->bit_depth = wave_format_bit_depth (whandle->format);
       setup->mix_freq = whandle->mix_freq;
       setup->osc_freq = whandle->osc_freq;
-#ifndef __linux__
-      /* linux does proper caching and WAVs are easily readable */
-      setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".needs-cache", 1);
-#endif
+      setup->xinfos = whandle->xinfos;
       return BSE_ERROR_NONE;
     }
 }
@@ -1470,7 +1469,6 @@ wave_handle_close (GslDataHandle *dhandle)
 {
   WaveHandle *whandle = (WaveHandle*) dhandle;
   
-  g_strfreev (dhandle->setup.xinfos);
   dhandle->setup.xinfos = NULL;
   gsl_hfile_close (whandle->hfile);
   whandle->hfile = NULL;
@@ -1576,14 +1574,12 @@ gsl_wave_handle_new (const gchar      *file_name,
       whandle->requested_offset = byte_offset;
       whandle->requested_length = n_values;
       whandle->hfile = NULL;
-      if (xinfos && xinfos[0])
-        {
-          GslDataHandle *dhandle = gsl_data_handle_new_add_xinfos (&whandle->dhandle, xinfos);
-          gsl_data_handle_unref (&whandle->dhandle);
-          return dhandle;
-        }
-      else
-        return &whandle->dhandle;
+      whandle->xinfos = bse_xinfos_dup_consolidated (xinfos);
+#ifndef __linux__
+      /* linux does proper caching and WAVs are easily readable */
+      whandle->xinfos = bse_xinfos_add_num (whandle->xinfos, ".needs-cache", 1);
+#endif
+      return &whandle->dhandle;
     }
   else
     {
@@ -1605,15 +1601,9 @@ gsl_wave_handle_new_zoffset (const gchar      *file_name,
 {
   GslDataHandle *dhandle = gsl_wave_handle_new (file_name, n_channels, format,
 						byte_order, mix_freq, osc_freq, byte_offset,
-						byte_size / wave_format_byte_width (format), NULL);
+						byte_size / wave_format_byte_width (format), xinfos);
   if (dhandle)
     ((WaveHandle*) dhandle)->add_zoffset = TRUE;
-  if (dhandle && xinfos && xinfos[0])
-    {
-      GslDataHandle *tmp_handle = dhandle;
-      dhandle = gsl_data_handle_new_add_xinfos (tmp_handle, xinfos);
-      gsl_data_handle_unref (tmp_handle);
-    }
   return dhandle;
 }
 
