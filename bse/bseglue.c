@@ -874,6 +874,8 @@ bglue_proxy_get_property (SfiGlueContext *context,
 	  rvalue = bglue_value_to_serializable (value);
 	  sfi_value_free (value);
 	}
+      else
+        sfi_warn ("object %s has no such property: %s", bse_object_debug_name (object), prop);
     }
   return rvalue;
 }

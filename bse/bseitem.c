@@ -16,18 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include        "bseitem.h"
-
 #include        "bsesuper.h"
 #include        "bsestorage.h"
 #include        "bseprocedure.h"
 #include	"bsemain.h"
-
 #include	<string.h>
 
 
 enum {
-  SIGNAL_SEQID_CHANGED,
-  SIGNAL_LAST
+  PROP_0,
+  PROP_SEQID,
 };
 
 
@@ -36,6 +34,14 @@ static void		bse_item_class_init_base	(BseItemClass		*class);
 static void		bse_item_class_finalize_base	(BseItemClass		*class);
 static void		bse_item_class_init		(BseItemClass		*class);
 static void		bse_item_init			(BseItem		*item);
+static void             bse_item_set_property           (GObject                *object,
+                                                         guint                   param_id,
+                                                         const GValue           *value,
+                                                         GParamSpec             *pspec);
+static void             bse_item_get_property           (GObject                *object,
+                                                         guint                   param_id,
+                                                         GValue                 *value,
+                                                         GParamSpec             *pspec);
 static BseProxySeq*	bse_item_list_no_proxies	(BseItem		*item,
 							 guint                   param_id,
 							 GParamSpec             *pspec);
@@ -51,7 +57,6 @@ static void		bse_item_do_set_parent		(BseItem                *item,
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static GSList     *item_seqid_changed_queue = NULL;
-static guint       item_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
@@ -98,6 +103,8 @@ bse_item_class_init (BseItemClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
+  gobject_class->get_property = bse_item_get_property;
+  gobject_class->set_property = bse_item_set_property;
   gobject_class->dispose = bse_item_do_dispose;
   gobject_class->finalize = bse_item_do_finalize;
   
@@ -105,15 +112,50 @@ bse_item_class_init (BseItemClass *class)
   
   class->set_parent = bse_item_do_set_parent;
   class->get_seqid = bse_item_do_get_seqid;
-  
-  item_signals[SIGNAL_SEQID_CHANGED] = bse_object_class_add_signal (object_class, "seqid_changed",
-								    G_TYPE_NONE, 0);
+
+  bse_object_class_add_param (object_class, NULL,
+                              PROP_SEQID,
+                              sfi_pspec_int ("seqid", "Sequential ID", NULL,
+                                             0, 0, SFI_MAXINT, 1, SFI_PARAM_GUI_READABLE));
 }
 
 static void
 bse_item_init (BseItem *item)
 {
   item->parent = NULL;
+}
+
+static void
+bse_item_set_property (GObject                *object,
+                       guint                   param_id,
+                       const GValue           *value,
+                       GParamSpec             *pspec)
+{
+  // BseItem *self = BSE_ITEM (object);
+  switch (param_id)
+    {
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+      break;
+    }
+}
+
+static void
+bse_item_get_property (GObject                *object,
+                       guint                   param_id,
+                       GValue                 *value,
+                       GParamSpec             *pspec)
+{
+  BseItem *self = BSE_ITEM (object);
+  switch (param_id)
+    {
+    case PROP_SEQID:
+      sfi_value_set_int (value, bse_item_get_seqid (self));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
+      break;
+    }
 }
 
 static void
@@ -358,13 +400,8 @@ idle_handler_seqid_changed (gpointer data)
   
   while (item_seqid_changed_queue)
     {
-      GSList *slist = item_seqid_changed_queue;
-      BseItem *item = slist->data;
-      
-      item_seqid_changed_queue = slist->next;
-      g_slist_free_1 (slist);
-      if (item->parent)
-	g_signal_emit (item, item_signals[SIGNAL_SEQID_CHANGED], 0);
+      BseItem *item = g_slist_pop_head (&item_seqid_changed_queue);
+      g_object_notify (item, "seqid");
     }
   
   BSE_THREADS_LEAVE ();
