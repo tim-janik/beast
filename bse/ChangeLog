@@ -1,3 +1,12 @@
+Thu Jan 20 05:10:27 2005  Tim Janik  <timj@gtk.org>
+
+	* gslcommon.c (gsl_error_from_errno): return BSE_ERROR_NONE for an
+	errno of 0.
+
+	* bseproject.c (bse_project_store_bse): pass on storage errors.
+
+	* bsestorage.c (bse_storage_flush_fd): pass on storage errors.
+
 Thu Jan 20 04:21:53 2005  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c (restore_item_property): generate proper warnings

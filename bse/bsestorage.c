@@ -1679,17 +1679,19 @@ bse_storage_parse_data_handle_rest (BseStorage     *self,
   return parse_data_handle_trampoline (self, TRUE, data_handle_p, n_channels_p, mix_freq_p, osc_freq_p);
 }
 
-void
+BseErrorType
 bse_storage_flush_fd (BseStorage *self,
                       gint        fd)
 {
-  g_return_if_fail (BSE_IS_STORAGE (self));
-  g_return_if_fail (self->wstore);
-  g_return_if_fail (fd >= 0);
+  g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (self->wstore, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (fd >= 0, BSE_ERROR_INTERNAL);
 
   bse_storage_break (self);
 
-  sfi_wstore_flush_fd (self->wstore, fd);
+  gint nerrno = sfi_wstore_flush_fd (self->wstore, fd);
+  
+  return bse_error_from_errno (-nerrno, BSE_ERROR_FILE_WRITE_FAILED);
 }
 
 void

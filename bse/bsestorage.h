@@ -144,7 +144,7 @@ void         bse_storage_put_data_handle        (BseStorage             *self,
                                                  GslDataHandle          *dhandle);
 void         bse_storage_put_xinfos             (BseStorage             *self,
                                                  gchar                 **xinfos);
-void         bse_storage_flush_fd               (BseStorage             *self,
+BseErrorType bse_storage_flush_fd               (BseStorage             *self,
                                                  gint                    fd);
 
 

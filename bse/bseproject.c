@@ -546,11 +546,13 @@ bse_project_store_bse (BseProject  *self,
   while (l < 0 && errno == EINTR);
   g_free (string);
 
-  bse_storage_flush_fd (storage, fd);
+  BseErrorType error = bse_storage_flush_fd (storage, fd);
+  if (close (fd) < 0 && error == BSE_ERROR_NONE)
+    error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
   bse_storage_reset (storage);
   g_object_unref (storage);
 
-  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
+  return error;
 }
 
 BseErrorType

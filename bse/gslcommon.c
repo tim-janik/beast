@@ -180,6 +180,7 @@ gsl_error_from_errno (gint         sys_errno,
 {
   switch (sys_errno)
     {
+    case 0:             return BSE_ERROR_NONE;
     case ELOOP:
     case ENAMETOOLONG:
     case ENOENT:        return BSE_ERROR_FILE_NOT_FOUND;
