@@ -51,32 +51,33 @@ static const struct {
 
 
 /* --- prototypes --- */
-extern void	bse_type_register_object_info	(BseTypeInfo	*info);
-static void	bse_object_class_base_init	(BseObjectClass	*class);
-static void	bse_object_class_base_destroy	(BseObjectClass	*class);
-static void	bse_object_class_init		(BseObjectClass	*class);
-static void	bse_object_init			(BseObject	*object);
-static void	bse_object_do_shutdown		(BseObject	*object);
-static void	bse_object_do_destroy		(BseObject	*object);
-static void     bse_object_do_set_param		(BseObject      *object,
-						 BseParam       *param);
-static void     bse_object_do_get_param		(BseObject      *object,
-						 BseParam       *param);
-static void     bse_object_do_set_name		(BseObject      *object,
-						 const gchar	*name);
-static guint	bse_pspec_hash			(gconstpointer	 key_spec);
-static gint	bse_pspec_equals		(gconstpointer	 key_spec_1,
-						 gconstpointer	 key_spec_2);
-static void	bse_object_do_store_private	(BseObject      *object,
-						 BseStorage     *storage);
-static void	bse_object_do_store_termination	(BseObject      *object,
-						 BseStorage     *storage);
-static BseTokenType bse_object_do_restore_private(BseObject     *object,
-						  BseStorage    *storage);
-static BseTokenType bse_object_do_try_statement	(BseObject      *object,
-						 BseStorage     *storage);
-static GTokenType bse_object_do_restore		(BseObject      *object,
-						 BseStorage     *storage);
+extern void		bse_type_register_object_info	(BseTypeInfo	*info);
+static void		bse_object_class_base_init	(BseObjectClass	*class);
+static void		bse_object_class_base_destroy	(BseObjectClass	*class);
+static void		bse_object_class_init		(BseObjectClass	*class);
+static void		bse_object_init			(BseObject	*object);
+static void		bse_object_do_shutdown		(BseObject	*object);
+static void		bse_object_do_destroy		(BseObject	*object);
+static void     	bse_object_do_set_param		(BseObject      *object,
+							 BseParam       *param);
+static void     	bse_object_do_get_param		(BseObject      *object,
+							 BseParam       *param);
+static void     	bse_object_do_set_name		(BseObject      *object,
+							 const gchar	*name);
+static guint		bse_pspec_hash			(gconstpointer	 key_spec);
+static gint		bse_pspec_equals		(gconstpointer	 key_spec_1,
+							 gconstpointer	 key_spec_2);
+static void		bse_object_do_store_private	(BseObject      *object,
+							 BseStorage     *storage);
+static void		bse_object_do_store_termination	(BseObject      *object,
+							 BseStorage     *storage);
+static BseTokenType	bse_object_do_restore_private	(BseObject     *object,
+							 BseStorage    *storage);
+static BseTokenType	bse_object_do_try_statement	(BseObject      *object,
+							 BseStorage     *storage);
+static GTokenType	bse_object_do_restore		(BseObject      *object,
+							 BseStorage     *storage);
+static BseIcon*		bse_object_do_get_icon		(BseObject	*object);
 
 
 /* --- variables --- */
@@ -256,6 +257,7 @@ bse_object_class_init (BseObjectClass *class)
   class->store_private = bse_object_do_store_private;
   class->restore_private = bse_object_do_restore_private;
   class->unlocked = NULL;
+  class->get_icon = bse_object_do_get_icon;
   class->shutdown = bse_object_do_shutdown;
   class->destroy = bse_object_do_destroy;
 
@@ -1008,8 +1010,32 @@ bse_object_class_get_parser (BseObjectClass *class,
   return NULL;
 }
 
+void
+bse_object_notify_icon_changed (BseObject *object)
+{
+  g_return_if_fail (BSE_IS_OBJECT (object));
+
+  BSE_NOTIFY (object, icon_changed, NOTIFY (OBJECT, DATA));
+}
+
 BseIcon*
 bse_object_get_icon (BseObject *object)
+{
+  BseIcon *icon;
+
+  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+
+  bse_object_ref (object);
+
+  icon = BSE_OBJECT_GET_CLASS (object)->get_icon (object);
+
+  bse_object_unref (object);
+
+  return icon;
+}
+
+static BseIcon*
+bse_object_do_get_icon (BseObject *object)
 {
   BseCategory *cats;
   guint n_cats, i;
@@ -1017,8 +1043,7 @@ bse_object_get_icon (BseObject *object)
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
 
   /* FIXME: this is a gross hack, we should store the first per-type
-   * category icon as static type-data and fetch that through a default
-   * handler BseObjectClass.get_icon()
+   * category icon as static type-data and fetch that from here
    */
 
   cats = bse_categories_from_type (BSE_OBJECT_TYPE (object), &n_cats);

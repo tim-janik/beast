@@ -133,6 +133,7 @@ struct _BseObjectClass
   BseTokenType          (*restore_private)      (BseObject      *object,
                                                  BseStorage     *storage);
   void                  (*unlocked)             (BseObject      *object);
+  BseIcon*		(*get_icon)             (BseObject      *object);
   void                  (*shutdown)             (BseObject      *object);
   void                  (*destroy)              (BseObject      *object);
 };
@@ -198,6 +199,7 @@ void            bse_object_set_qdata_full       (BseObject      *object,
 void            bse_object_kill_qdata_no_notify (BseObject      *object,
                                                  GQuark          quark);
 BseIcon*        bse_object_get_icon             (BseObject      *object);
+void		bse_object_notify_icon_changed  (BseObject      *object);
 gpointer        bse_object_ensure_interface_data(BseObject      *object,
                                                  BseType         interface_type,
                                                  BseInterfaceDataNew new_func,

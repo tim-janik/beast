@@ -241,6 +241,8 @@ typedef	void	(*BseNotify_param_changed)	(BseObject	*object,
 typedef	void	(*BseNotify_store)		(BseObject	*object,
 						 BseStorage     *storage,
 						 gpointer	 data);
+typedef	void	(*BseNotify_icon_changed)	(BseObject	*object,
+						 gpointer	 data);
 typedef	void	(*BseNotify_io_changed)		(BseSource	*source,
 						 gpointer	 data);
 typedef	void	(*BseNotify_item_added)		(BseContainer	*container,

@@ -790,7 +790,7 @@ bse_icon_unref (BseIcon *icon)
       icon->ref_count -= 1;
       if (!icon->ref_count)
 	{
-	  g_print ("freeing ixon\n");
+	  g_print ("freeing icon\n");
 	  g_free (icon->pixels);
 	  g_free (icon);
 	}

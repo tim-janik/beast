@@ -1,3 +1,8 @@
+Sun Dec 26 18:51:35 1999  Tim Janik  <timj@gtk.org>
+
+	* bseobject.[hc]: finally introduce a get_icon() class function and
+	provide icon_changed notification if necessary.
+
 Wed Dec 22 18:57:10 1999  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-oss.c (bse_pcm_device_oss_open): 
