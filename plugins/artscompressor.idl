@@ -31,11 +31,11 @@ class Compressor : Bse::Effect {
   IStream invalue   = ("Audio In", "Audio input");
   OStream outvalue  = ("Audio Out", "Compressed audio output");
   group "Parameters" {
-    Real attack    = Real ("Attack [ms]", "Set the attack time in milli seconds", 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-    Real release   = Real ("Release [ms]", "Set the release time in milli seconds", 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-    Real threshold = LogScale ("Threshold", "Set the threshold", 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
-    Real ratio     = Real ("Ratio", "Set the compression ratio", 0.8, 0.0, 1.0, 0.1, STANDARD ":scale");
-    Real output    = LogScale ("Output", "Set the output amplification", 1, 0.1, 10.0, 1, pow (2, 0), 2, log (10) / log (2), STANDARD);
+    Real attack    = Real (_("Attack [ms]"), _("Set the attack time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real release   = Real (_("Release [ms]"), _("Set the release time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real threshold = LogScale (_("Threshold"), _("Set the threshold"), 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
+    Real ratio     = Real (_("Ratio"), _("Set the compression ratio"), 0.8, 0.0, 1.0, 0.1, STANDARD ":scale");
+    Real output    = LogScale (_("Output"), _("Set the output amplification"), 1, 0.1, 10.0, 1, pow (2, 0), 2, log (10) / log (2), STANDARD);
   };
 };
 
@@ -49,11 +49,11 @@ class StereoCompressor : Bse::Effect {
   OStream outleft   = ("Left Audio Out", "Compressed left audio output");
   OStream outright  = ("Right Audio Out", "Compressed right audio output");
   group "Parameters" {
-    Real attack    = Real ("Attack [ms]", "Set the attack time in milli seconds", 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-    Real release   = Real ("Release [ms]", "Set the release time in milli seconds", 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-    Real threshold = LogScale ("Threshold", "Set the threshold", 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
-    Real ratio     = Real ("Ratio", "Set the compression ratio", 0.8, 0.0, 1.0, 0.1, STANDARD ":scale");
-    Real output    = LogScale ("Output", "Set the output amplification", 1, 0.1, 10.0, 1, pow(2, 0), 2, log(10)/log(2), STANDARD);
+    Real attack    = Real (_("Attack [ms]"), _("Set the attack time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real release   = Real (_("Release [ms]"), _("Set the release time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real threshold = LogScale (_("Threshold"), _("Set the threshold"), 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
+    Real ratio     = Real (_("Ratio"), _("Set the compression ratio"), 0.8, 0.0, 1.0, 0.1, STANDARD ":scale");
+    Real output    = LogScale (_("Output"), _("Set the output amplification"), 1, 0.1, 10.0, 1, pow(2, 0), 2, log(10)/log(2), STANDARD);
   };
 };
 

@@ -1,3 +1,9 @@
+Wed Dec 10 16:30:16 2003  Tim Janik  <timj@gtk.org>
+
+	* davchorus.idl: 
+	* bsebalance.idl: 
+	* artscompressor.idl: started i18n markup.
+
 Mon Nov 17 18:03:09 2003  Tim Janik  <timj@gtk.org>
 
 	* evaluator/bseevaluator.idl: changed category.

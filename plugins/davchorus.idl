@@ -28,7 +28,7 @@ class Chorus : Bse::Effect {
   IStream audio_in  = ("Audio In", "Audio input");
   OStream audio_out = ("Audio Out", "Chorus audio output");
   group "Parameters" {
-    Real wet_out = Perc ("Wet out [%]", "Set the amount of modified data to mix", 50.0, STANDARD);
+    Real wet_out = Perc (_("Wet out [%]"), _("Set the amount of modified data to mix"), 50.0, STANDARD);
   };
 };
 
