@@ -1,3 +1,11 @@
+Mon Dec 13 00:40:08 2004  Tim Janik  <timj@gtk.org>
+
+	* shell/Makefile.am: removed libbsw dependancy.
+
+	* shell/bsescminterp.c: hard code BseServer id.
+
+	* shell/bsescminterp.h: including bse/bse.h is good enough.
+
 Mon Dec 13 00:31:18 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/Makefile.am: removed BSW dependancy. 

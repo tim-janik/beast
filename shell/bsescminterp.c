@@ -344,8 +344,10 @@ bse_scm_server_get (void)
   SfiProxy server;
   SCM s_retval;
 
+  static const int bse_server_id = 1; /* HACK */
+
   BSE_SCM_DEFER_INTS ();
-  server = server_enabled ? bsw_proxy_get_server () : 0;
+  server = server_enabled ? bse_server_id : 0;
   BSE_SCM_ALLOW_INTS ();
   s_retval = bse_scm_make_glue_proxy (server);
 

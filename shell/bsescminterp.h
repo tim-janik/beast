@@ -18,7 +18,7 @@
 #ifndef __BSE_SCM_INTERP_H__
 #define __BSE_SCM_INTERP_H__
 
-#include <bsw/bswproxy.h>
+#include <bse/bse.h>
 #include <guile/gh.h>
 
 G_BEGIN_DECLS
