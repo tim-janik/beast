@@ -246,6 +246,8 @@ GParamSpec*  sfi_boxed_type_get_seq_element (GType               boxed_type);
  * "DB"                 - decibell hint
  * "trigger"            - trigger button hint
  * "searchpath"         - indicates colon seperated directory list
+ * Source Options:
+ * unprepared           - property is writable only for unprepared objects
  */
 /* common option combinations: */
 #define	SFI_PARAM_READWRITE       ":r:w:"

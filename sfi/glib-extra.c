@@ -280,15 +280,19 @@ g_option_find_value (const gchar *option_string,
 
   /* try first match */
   p = strstr (option_string, option);
-  if (p && (p == option_string || p[-1] == ':') &&
-      (p[l] == '-' || p[l] == '+' || p[l] == ':' || p[l] == 0))
+  if (p &&
+      (p == option_string || p[-1] == ':') &&
+      (p[l] == ':' || p[l] == 0 || p[l] == '=' ||
+       ((p[l] == '-' || p[l] == '+') && (p[l + 1] == ':' || p[l + 1] == 0))))
     match = p;
   /* allow later matches to override */
   while (p)
     {
       p = strstr (p + l, option);
-      if (p && p[-1] == ':' &&
-          (p[l] == '-' || p[l] == '+' || p[l] == ':' || p[l] == 0))
+      if (p &&
+          p[-1] == ':' &&
+          (p[l] == ':' || p[l] == 0 || p[l] == '=' ||
+           ((p[l] == '-' || p[l] == '+') && (p[l + 1] == ':' || p[l + 1] == 0))))
         match = p;
     }
   return match ? match + l : NULL;

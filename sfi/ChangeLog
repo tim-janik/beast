@@ -1,3 +1,10 @@
+Thu Sep  2 03:29:39 2004  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.c: g_option_find_value(): match +/- option modifiers only
+	at option boundaries, allow = after option name for value assignments.
+
+	* sfiparams.h: more preliminary pspec option documentation.
+
 Wed Sep  1 01:45:40 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.[hc]:
