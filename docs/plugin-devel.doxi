@@ -3,7 +3,7 @@
 @settitle BSE Plugin Development
 @footnotestyle end
 @c %**end of header
-@c revision-date: $Id: plugin-devel.doxi,v 1.6 2004/10/30 13:21:25 timj Exp $
+@c revision-date: $Id: plugin-devel.doxi,v 1.7 2004/10/30 14:28:36 timj Exp $
 
 @include texiutils.texi
 
@@ -181,7 +181,7 @@ and @option{:skip-undo:}.
 	set to @const{TRUE} in a trigger attempt though, so certain actions may be
 	started in response. GUIs would usually display this option via a clickable
 	button. All plugin's set_property() methods automatically reset trigger
-        property values to %FALSE after invoking the property_changed() method.
+        property values to @const{FALSE} after invoking the property_changed() method.
 @end itemize
 
 
