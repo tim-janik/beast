@@ -1,3 +1,10 @@
+Sun Dec 12 00:42:24 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstfiledialog.c: changed storage logic, so overwriting
+	files happens by saving to a temporary file and then renaming that.
+	this fixes embedded wave data getting lost when saving to existing
+	BSE files.
+
 Sat Dec 11 15:34:43 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstscrollgraph.c: don't hide-on-delete the window, to stop

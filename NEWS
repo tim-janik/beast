@@ -1,5 +1,6 @@
 Overview of Changes in BEAST/BSE 0.6.4:
 
+* Fixed storage logic that caused data loss when overwriting BSE files
 * Added -N and -n=<nicelevel> options to drop nice level priorities
 
 Overview of Changes in BEAST/BSE 0.6.3:

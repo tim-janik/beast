@@ -19,6 +19,7 @@
 #include "bstmenus.h"
 #include "bsttreestores.h"
 #include <unistd.h>
+#include <stdio.h>
 #include <errno.h>
 
 
@@ -490,39 +491,75 @@ bst_file_dialog_import_midi (BstFileDialog *self,
 }
 
 static gboolean
-retry_after_file_unlink (gchar       *title,
-                         gchar       *message,
-                         const gchar *file_name)
+store_bse_file (BstFileDialog *self,
+                SfiProxy       project,
+                SfiProxy       super,
+                const gchar   *file_name,
+                const gchar   *saving_message_format,
+                gboolean       self_contained)
 {
-  GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
-                                                 BST_CHOICE_TEXT (message),
-                                                 BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
-                                                 BST_CHOICE (0, BST_STOCK_CANCEL, NONE),
-                                                 BST_CHOICE_END);
-  gboolean need_retry = FALSE;
-  if (bst_choice_modal (choice, 0, 0) == 1)
+  BseErrorType error = bse_project_store_bse (project, super, file_name, self_contained);
+  gchar *title = g_strdup_printf (saving_message_format, bse_item_get_name (super ? super : project));
+  gboolean handled = TRUE;
+  gchar *msg = NULL;
+  /* handle file exists cases */
+  if (error == BSE_ERROR_FILE_EXISTS)
     {
+      gchar *text = g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"), bse_item_get_name (project), file_name, bse_error_blurb (error));
+      GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
+                                                     BST_CHOICE_TEXT (text),
+                                                     BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
+                                                     BST_CHOICE (0, BST_STOCK_CANCEL, NONE),
+                                                     BST_CHOICE_END);
+      g_free (text);
+      gboolean want_overwrite = bst_choice_modal (choice, 0, 0) == 1;
       bst_choice_destroy (choice);
-      if (unlink (file_name) < 0)
+      if (want_overwrite)
         {
-          gchar *text = g_strdup_printf (_("Failed to delete file\n`%s'\ndue to:\n%s"),
-                                         file_name, g_strerror (errno));
-          choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
-                                              BST_CHOICE_TEXT (text),
-                                              BST_CHOICE_D (0, BST_STOCK_CLOSE, NONE),
-                                              BST_CHOICE_END);
-          g_free (text);
-          bst_choice_modal (choice, 0, 0);
-          bst_choice_destroy (choice);
+          /* save to temporary file */
+          gchar *temp_file = NULL;
+          while (error == BSE_ERROR_FILE_EXISTS)
+            {
+              g_free (temp_file);
+              temp_file = g_strdup_printf ("%s_%u_XXXXXX", file_name, rand());
+              mktemp (temp_file); /* this is save, due to use of: O_CREAT | O_EXCL */
+              error = bse_project_store_bse (project, super, temp_file, self_contained);
+            }
+          /* replace file by temporary file */
+          if (error != BSE_ERROR_NONE)
+            {
+              unlink (temp_file); /* error != BSE_ERROR_FILE_EXISTS */
+              msg = g_strdup_printf (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
+            }
+          else if (rename (temp_file, file_name) < 0)
+            {
+              unlink (temp_file);
+              msg = g_strdup_printf (_("Failed to replace file\n`%s'\ndue to:\n%s"), file_name, g_strerror (errno));
+            }
+          else /* success */
+            ;
         }
       else
-        need_retry = TRUE;
+        handled = FALSE;        /* exists && !overwrite */
     }
-  else
-    bst_choice_destroy (choice);
-  g_free (message);
+  else if (error != BSE_ERROR_NONE)
+    msg = g_strdup_printf (_("Failed to save to file\n`%s'\ndue to:\n%s"), file_name, bse_error_blurb (error));
+  /* report errors */
+  if (msg)
+    {
+      GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
+                                                     BST_CHOICE_TEXT (msg),
+                                                     BST_CHOICE_D (0, BST_STOCK_CLOSE, NONE),
+                                                     BST_CHOICE_END);
+      g_free (msg);
+      bst_choice_modal (choice, 0, 0);
+      bst_choice_destroy (choice);
+      handled = FALSE;
+    }
+  else if (handled) /* no error */
+    bst_status_eprintf (BSE_ERROR_NONE, "%s", title);
   g_free (title);
-  return need_retry;
+  return handled;
 }
 
 GtkWidget*
@@ -550,25 +587,8 @@ bst_file_dialog_save_project (BstFileDialog *self,
 			      const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  gboolean handled = TRUE, self_contained = GTK_TOGGLE_BUTTON (self->radio1)->active;
-  BseErrorType error;
-
- retry_saving:
-  error = bse_project_store_bse (project, 0, file_name, self_contained);
-  /* offer retry if file exists */
-  if (error == BSE_ERROR_FILE_EXISTS)
-    {
-      if (retry_after_file_unlink (g_strdup_printf (_("Saving project `%s'"), bse_item_get_name (project)),
-                                   g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"),
-                                                    bse_item_get_name (project),
-                                                    file_name,
-                                                    bse_error_blurb (error)),
-                                   file_name))
-        goto retry_saving;
-      handled = FALSE;
-    }
-  else
-    bst_status_eprintf (error, _("Saving project `%s'"), bse_item_get_name (self->proxy));
+  gboolean self_contained = GTK_TOGGLE_BUTTON (self->radio1)->active;
+  gboolean handled = store_bse_file (self, project, 0, file_name, _("Saving project `%s'"), self_contained);
   bse_item_unuse (project);
 
   return handled;
@@ -626,25 +646,8 @@ bst_file_dialog_save_effect (BstFileDialog *self,
                              const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  gboolean handled = TRUE;
-  BseErrorType error;
-
- retry_saving:
-  error = bse_project_store_bse (project, self->super, file_name, TRUE);
-  /* offer retry if file exists */
-  if (error == BSE_ERROR_FILE_EXISTS)
-    {
-      if (retry_after_file_unlink (g_strdup_printf (_("Saving effect `%s'"), bse_item_get_name (self->super)),
-                                   g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"),
-                                                    bse_item_get_name (self->super),
-                                                    file_name,
-                                                    bse_error_blurb (error)),
-                                   file_name))
-        goto retry_saving;
-      handled = FALSE;
-    }
-  else
-    bst_status_eprintf (error, _("Saving effect `%s'"), bse_item_get_name (self->super));
+  gboolean self_contained = TRUE;
+  gboolean handled = store_bse_file (self, project, self->super, file_name, _("Saving effect `%s'"), self_contained);
   bse_item_unuse (project);
 
   return handled;
@@ -702,25 +705,8 @@ bst_file_dialog_save_instrument (BstFileDialog *self,
                                  const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  gboolean handled = TRUE;
-  BseErrorType error;
-
- retry_saving:
-  error = bse_project_store_bse (project, self->super, file_name, TRUE);
-  /* offer retry if file exists */
-  if (error == BSE_ERROR_FILE_EXISTS)
-    {
-      if (retry_after_file_unlink (g_strdup_printf (_("Saving instrument `%s'"), bse_item_get_name (self->super)),
-                                   g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"),
-                                                    bse_item_get_name (self->super),
-                                                    file_name,
-                                                    bse_error_blurb (error)),
-                                   file_name))
-        goto retry_saving;
-      handled = FALSE;
-    }
-  else
-    bst_status_eprintf (error, _("Saving instrument `%s'"), bse_item_get_name (self->super));
+  gboolean self_contained = TRUE;
+  gboolean handled = store_bse_file (self, project, self->super, file_name, _("Saving instrument `%s'"), self_contained);
   bse_item_unuse (project);
 
   return handled;
