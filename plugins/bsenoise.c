@@ -47,7 +47,7 @@ static const BseTypeInfo type_info_noise = {
   (BseClassDestroyFunc) bse_noise_class_destroy,
   NULL /* class_data */,
   
-  sizeof (BseSource),
+  sizeof (BseNoise),
   0 /* n_preallocs */,
   (BseObjectInitFunc) bse_noise_init,
 };
@@ -96,7 +96,7 @@ bse_noise_do_shutdown (BseObject *object)
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
-#define N_STATIC_BLOCKS (17)
+#define N_STATIC_BLOCKS (17) /* FIXME: need n_blocks_per_second() */
 
 static void
 bse_noise_prepare (BseSource *source,
