@@ -1,3 +1,9 @@
+Sun Jan 16 02:51:06 2000  Tim Janik  <timj@gtk.org>
+
+	* davorgan.[hc]: added DavOrgan module, an additive organ
+	synthesizer provided by David A. Bartold <foxx@mail.utexas.edu>.
+	did overall clean up for coding style etc.
+
 Sat Jan 15 19:51:16 2000  Tim Janik  <timj@gtk.org>
 
 	* bsemixer.[hc]: new source which will mix up to four input channels

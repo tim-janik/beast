@@ -75,6 +75,14 @@ bsenoise_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsenoise.h
 
 ##
+## Plugin davorgan
+##
+davorgan_la_SOURCES = davorgan.c
+davorgan_la_LDFLAGS = -module -avoid-version
+davorgan_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += davorgan.h
+
+##
 ## Plugin greeting
 ##
 greeting_la_SOURCES = greeting.c
@@ -99,6 +107,7 @@ plugin_LTLIBRARIES += \
 	bsemixer.la \
 	bsemult.la \
 	bsenoise.la \
+	davorgan.la \
 	greeting.la \
 	hello-space.la
 
