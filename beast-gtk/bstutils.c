@@ -1277,6 +1277,10 @@ _bst_log_scan_keys (void)
   sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, hints), group)
 #define sfidl_pspec_Rec_default(group, name, fields)                                    \
   sfi_pspec_set_group (sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_STANDARD), group)
+#define sfidl_pspec_BoxedRec(group, name, nick, blurb, hints, fields)       \
+  sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, SFI_PARAM_STANDARD), group)
+#define sfidl_pspec_BoxedRec_default(group, name, fields)       \
+  sfi_pspec_set_group (sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_BBlock(group, name, nick, blurb, hints)                             \
   sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, hints), group)
 /* --- generated type IDs and SFIDL types --- */

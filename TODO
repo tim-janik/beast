@@ -1,4 +1,6 @@
 FIXMES:
+- record classes in c++ need to derive from GNewAllocator
+- put bstrecords.idl generated files into CLEAN files or at least MAINTAINER-CLEAN files
 - bseautodoc.c: use bse_type_get_license() instead of sfi_info_string_find()
 - remove sfi_boxed_get_record_info
 - sfi_info_string_find
