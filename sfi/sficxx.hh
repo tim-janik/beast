@@ -199,6 +199,7 @@ public:
       record = new Type (*src.record);
     else
       record = NULL;
+    return *this;
   }
   Type* c_ptr() const
   {
@@ -222,11 +223,11 @@ public:
       g_critical ("%s: invalid array subscript: %u", G_STRFUNC, index);
     return *(index ? NULL : record);
   }
-  bool is_null()
+  bool is_null() const
   {
     return !record;
   }
-  operator bool ()
+  operator bool () const
   {
     return !is_null();
   }

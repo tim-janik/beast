@@ -43,7 +43,7 @@ CodeGeneratorCxxBase::typeArg (const string& type)
   switch (parser.typeOf (type))
     {
       case STRING:    return "const Sfi::String&";
-      case RECORD:    return type + "Ptr";
+      case RECORD:    return "const " + type + "Handle&";
       case SEQUENCE:  return "const " + type + "&";
       case CHOICE:    return type;
       case OBJECT:    return type;
@@ -57,7 +57,7 @@ CodeGeneratorCxxBase::typeField (const string& type)
   switch (parser.typeOf (type))
     {
       case STRING:    return "Sfi::String";
-      case RECORD:    return type + "Ptr";
+      case RECORD:    return type + "Handle";
       case CHOICE:
       case OBJECT:
       case SEQUENCE:  return type;
@@ -71,7 +71,7 @@ CodeGeneratorCxxBase::typeRet (const string& type)
   switch (parser.typeOf (type))
     {
       case STRING:    return "Sfi::String";
-      case RECORD:    return type + "Ptr";
+      case RECORD:    return type + "Handle";
       case CHOICE:
       case OBJECT:
       case SEQUENCE:  return type;
@@ -214,10 +214,7 @@ void CodeGeneratorCxx::run ()
 
 	  printf("\n");
 	  printf("class %s;\n", name.c_str());
-	  printf("typedef Bse::SmartPtr<%s,Bse::CountablePointer<Bse::RefCountable> > %sPtr;\n",
-	      name.c_str(), name.c_str());
-	  printf("typedef Bse::SmartPtr<const %s,Bse::CountablePointer<const Bse::RefCountable> >"
-	      " %sCPtr;\n", name.c_str(), name.c_str());
+	  printf("typedef Sfi::RecordHandle<%s> %sHandle;\n", name.c_str(), name.c_str());
 	}
 
       printf("\n");
@@ -296,14 +293,14 @@ void CodeGeneratorCxx::run ()
 	  string name = nspace.printableForm (ri->name);
 
 	  printf("\n");
-	  printf("class %s : public Bse::RefCountable {\n", name.c_str());
+	  printf("class %s {\n", name.c_str());
 	  printf("public:\n");
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
 	      printf("  %s %s;\n", cTypeField (pi->type), pi->name.c_str());
 	    }
-	  printf("  static %sPtr _from_rec (SfiRec *rec);\n", name.c_str());
-	  printf("  static SfiRec *_to_rec (%sPtr ptr);\n", name.c_str());
+	  printf("  static %s _from_rec (SfiRec *rec);\n", cTypeRet(ri->name));
+	  printf("  static SfiRec *_to_rec (%s ptr);\n", cTypeArg(ri->name));
 	  printf("};\n");
 	}
     }
@@ -374,9 +371,9 @@ void CodeGeneratorCxx::run ()
           printf("  GValue *element;\n");
           printf("\n");
           printf("  if (!sfi_rec)\n");
-	  printf("    return NULL;\n");
+	  printf("    return Sfi::INIT_NULL;\n");
           printf("\n");
-          printf("  %s rec = new %s();\n", cTypeArg (ri->name), name.c_str());
+          printf("  %s rec = Sfi::INIT_DEFAULT;\n", cTypeField (ri->name));
           for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
             {
               string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
