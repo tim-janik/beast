@@ -136,6 +136,7 @@ BseDot*	bse_value_dup_dots	(GValue		*value,
 
 /* --- GParamSpec prototypes --- */
 #define	    bse_param_spec_bool	 g_param_spec_boolean
+#define	    bse_param_spec_boolean g_param_spec_boolean
 GParamSpec* bse_param_spec_int	(const gchar    *name,
 				 const gchar    *nick,
 				 const gchar    *blurb,

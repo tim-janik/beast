@@ -24,6 +24,7 @@
 #include	"bsesong.h"
 #include	"bsesnet.h"
 #include	"bsemarshal.h"
+#include	"bsewaverepo.h"
 #include	"gslengine.h"
 #include	<string.h>
 #include	<stdlib.h>
@@ -55,6 +56,7 @@ static guint	bse_project_item_seqid	(BseContainer		*container,
 static BseItem*	bse_project_get_item	(BseContainer		*container,
 					 GType  		 item_type,
 					 guint		         seqid);
+static void	bse_project_prepare	(BseSource		*source);
 
 
 /* --- variables --- */
@@ -88,14 +90,15 @@ BSE_BUILTIN_TYPE (BseProject)
 static void
 bse_project_class_init (BseProjectClass *class)
 {
-  BseObjectClass *object_class;
-  BseContainerClass *container_class;
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
-  object_class = BSE_OBJECT_CLASS (class);
-  container_class = BSE_CONTAINER_CLASS (class);
   
   object_class->destroy = bse_project_do_destroy;
+
+  source_class->prepare = bse_project_prepare;
 
   container_class->add_item = bse_project_add_item;
   container_class->remove_item = bse_project_remove_item;
@@ -450,6 +453,21 @@ bse_project_path_resolver (gpointer     func_data,
     item = bse_container_item_from_path (BSE_CONTAINER (project), path);
   
   return item;
+}
+
+static void
+bse_project_prepare (BseSource *source)
+{
+  BseProject *project = BSE_PROJECT (source);
+  GSList *slist;
+  
+  /* make sure Wave repositories are prepared first */
+  for (slist = project->supers; slist; slist = slist->next)
+    if (BSE_IS_WAVE_REPO (slist->data))
+      bse_source_prepare (slist->data);
+
+  /* chain parent class' handler to prepare the rest */
+  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
 void

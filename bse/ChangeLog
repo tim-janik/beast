@@ -1,3 +1,34 @@
+Tue Jan 15 17:27:02 2002  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.c (forall_prepare): ignore already prepared
+	children.
+
+	* bseparam.h: grr, gimme bse_param_spec_boolean().
+
+	* bseproject.c (bse_project_prepare): give preparation precedence
+	to BseWaveRepos, so synth modules can fetch their wave index
+	from BseWave in BseSource.prepare().
+
+	* gslfilter.[hc]: added gsl_filter_fir_approx() from stefan, which
+	approximates an FIR filter from a frequency transfer function, given
+	in freely-spaced transfer function samples.
+	get rid of GSL_SIGNAL_EPSILON and GSL_SIGNAL_KAPPA.
+
+	* gslmath.h: provide GSL_LN2.
+
+	* gslopmaster.c: added debugging/trace facility to catch the slowest
+	module in the current schedule.
+
+	* gslsignal.[hc]: new file to aid signal processing. provides macros
+	to test for signal edges and changes. also provides gsl_signal_exp2(),
+	a fast but limited approximation of exp2f().
+
+	* gslwaveosc*.[hc]: seperated wave oscillator code out of
+	plugins/bsewaveosc.c into independantly callable functions. fixed up
+	the code somewhat and added modulation.
+	this is still missing an LP->LP transformation function in gslfilter.h
+	to adjust the filter during modulation.
+
 Sat Jan 12 11:22:18 2002  Tim Janik  <timj@gtk.org>
 
 	* bseinstrument.[hc]: get rid of old sample and synth inputs. support

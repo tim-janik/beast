@@ -18,7 +18,7 @@
  */
 #include "gslfilter.h"
 
-
+#include "gslfft.h"
 
 
 /* --- common utilities --- */
@@ -776,3 +776,95 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
     norm /= sqrt (1.0 / (1.0 + epsilon * epsilon));
   gsl_poly_scale (iorder, a, 1.0 / norm);
 }
+
+
+/* --- windowed fir approximation --- */
+/* returns a blackman window: x is supposed to be in the interval [0..1] */
+static inline double
+gsl_blackman_window (double x)
+{
+  if (x < 0)
+    return 0;
+  if (x > 1)
+    return 0;
+  return 0.42 - 0.5 * cos (GSL_PI * x * 2) + 0.08 * cos (4 * GSL_PI * x);
+}
+
+/**
+ * gsl_filter_fir_approx
+ *
+ * @iorder: order of the filter (must be odd, >= 3)
+ * @freq:   the frequencies of the transfer function
+ * @value:  the desired value of the transfer function
+ *
+ * Approximates a given transfer function with an iorder-coefficient FIR filter.
+ * It is recommended to provide enough frequency values, so that
+ * @n_points >= @iorder.
+ */
+void
+gsl_filter_fir_approx (unsigned int  iorder,
+		       double       *a,	/* [0..iorder] */
+		       unsigned int  n_points,
+		       const double *freq,
+		       const double *value)
+{
+  /* TODO:
+   *
+   * a) does fft_size matter for the quality of the approximation? i.e. do
+   *    larger fft_sizes produce better filters?
+   * b) generalize windowing
+   */
+  unsigned int fft_size = 8;
+  unsigned int point = 0, i;
+  double lfreq = -2, lval = 1.0, rfreq = -1, rval = 1.0;
+  double *fft_in, *fft_out;
+  double ffact;
+  
+  g_return_if_fail (iorder >= 2);
+  g_return_if_fail ((iorder & 1) == 0);
+
+  while (fft_size / 2 <= iorder)
+    fft_size *= 2;
+  
+  fft_in = g_newa (double, fft_size*2);
+  fft_out = fft_in+fft_size;
+  ffact = 2.0 * GSL_PI / (double)fft_size;
+  
+  for (i = 0; i <= fft_size / 2; i++)
+    {
+      double f = (double) i * ffact;
+      double pos, val;
+      
+      while (f > rfreq && point != n_points)
+	{
+	  lfreq = rfreq;
+	  rfreq = freq[point];
+	  lval = rval;
+	  rval = value[point];
+	  point++;
+	}
+      
+      pos = (f - lfreq) / (rfreq - lfreq);
+      val = lval * (1.0 - pos) + rval * pos;
+      
+      if (i != fft_size / 2)
+	{
+	  fft_in[2 * i] = val;
+	  fft_in[2 * i + 1] = 0.0;
+	}
+      else
+	fft_in[1] = val;
+    }
+  
+  gsl_power2_fftsr (fft_size, fft_in, fft_out);
+  
+  for (i = 0; i <= iorder / 2; i++)
+    {
+      double c = fft_out[i] * gsl_blackman_window (0.5 + (double) i / (iorder + 2.0));
+      a[iorder / 2 - i] = c;
+      a[iorder / 2 + i] = c;
+    }
+}
+
+
+/* vim:set ts=8 sts=2 sw=2: */

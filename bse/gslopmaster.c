@@ -24,8 +24,82 @@
 #include "gslopschedule.h"
 #include <string.h>
 #include <sys/poll.h>
+#include <sys/time.h>
 #include <errno.h>
 
+
+/* --- time stamping --- */
+#if	defined (__GNUC__) && defined (__i586__)
+#define ToyprofStamp 		unsigned long long int
+#define	toyprof_clock_name()	("Pentium(R) RDTSC - CPU clock cycle counter")
+/* capturing time stamps via rdtsc can produce inaccurate results due
+ * to parallel instruction execution. so we issue cpuid as serializaion
+ * barrier first.
+ */
+#define toyprof_stamp(stamp)	({ unsigned int low, high;				\
+                                   __asm__ __volatile__ ("pushl %%ebx\n"		\
+							 "cpuid\n" /* serialization */	\
+							 "rdtsc\n"			\
+							 "popl %%ebx\n"			\
+							 : "=a" (low), "=d" (high)	\
+							 : "a" (0)			\
+							 : "cx", "cc");			\
+                                   (stamp) = high;					\
+                                   (stamp) <<= 32;					\
+                                   (stamp) += low;					\
+})
+#define toyprof_stamp_ticks()			(toyprof_stampfreq)
+/* special case (fstamp) > (lstamp), this should never happen
+ * because we always stamp fstamp first, and invoke rdtsc after
+ * a serialization barrier (cpuid). in case this still happens
+ * that's probably due to running on an SMP system.
+ */
+#define toyprof_elapsed(fstamp, lstamp)        ({ \
+  ToyprofStamp diff;								\
+  if ((fstamp) > (lstamp))							\
+  dprintf(2, "%llu > %llu\n",fstamp,lstamp); \
+  if ((fstamp) > (lstamp))							\
+    TOYPROF_ABORT ("pentium CPU clock warped backwards, running on SMP?");	\
+  diff = (lstamp) - (fstamp); diff;						\
+})
+static unsigned long long int toyprof_stampfreq = 0;
+static void
+toyprof_stampinit (void)
+{	/* grep "cpu MHz         : 551.256" from /proc/cpuinfo */
+  int fd = open ("/proc/cpuinfo", O_RDONLY);
+  if (fd >= 0) {
+    char *val, buf[8192]; unsigned int l;
+    l = read (fd, buf, sizeof (buf));
+    buf[CLAMP (l, 0, sizeof (buf) - 1)] = 0;
+    close (fd);
+    val = l > 10 ? strstr (buf, "cpu MHz") : NULL;
+    val = val ? strpbrk (val, "0123456789\n") : NULL;
+    if (val && *val >= '0' && *val <= '9') {
+      int frac = 6;
+      while (*val >= '0' && *val <= '9')
+	toyprof_stampfreq = toyprof_stampfreq * 10 + *val++ - '0';
+      if (*val++ == '.')
+	while (*val >= '0' && *val <= '9' && frac-- > 0)
+	  toyprof_stampfreq = toyprof_stampfreq * 10 + *val++ - '0';
+      while (frac-- > 0)
+	toyprof_stampfreq *= 10;
+    }
+  }
+  TOYPROF_ASSERT (toyprof_stampfreq > 0);
+}
+#else	/* !(GCC && PENTIUM) */
+#define	ToyprofStamp		struct timeval
+#define	toyprof_clock_name()	("Glibc gettimeofday(2)")
+#define toyprof_stampinit()	/* nothing */
+#define	toyprof_stamp(st)	gettimeofday (&(st), 0)
+#define	toyprof_stamp_ticks()	(1000000)
+#define	toyprof_elapsed(fstamp, lstamp)	({							\
+  unsigned long long int first = (fstamp).tv_sec * toyprof_stamp_ticks () + (fstamp).tv_usec;	\
+  unsigned long long int last  = (lstamp).tv_sec * toyprof_stamp_ticks () + (lstamp).tv_usec;	\
+  last -= first;										\
+  last;												\
+})
+#endif  /* !(GCC && PENTIUM) */
 
 
 /* --- typedefs & structures --- */
@@ -326,11 +400,16 @@ master_process_locked_node (OpNode *node,
   node->counter += n_values;
 }
 
+static GslLong gsl_trace_delay = 0;
+
 static void
 master_process_flow (void)
 {
   guint64 new_counter = GSL_TICK_STAMP + gsl_engine_block_size ();
-
+  GslLong trace_slowest = 0;
+  GslLong trace_delay = gsl_trace_delay;
+  OpNode *trace_node = NULL;
+  
   g_return_if_fail (master_need_process == TRUE);
 
   OP_DEBUG (GSL_ENGINE_DEBUG_MASTER, "process_flow");
@@ -344,9 +423,41 @@ master_process_flow (void)
       node = _gsl_com_pop_unprocessed_node ();
       while (node)
 	{
+	  ToyprofStamp trace_stamp1, trace_stamp2;
+
+	  if_reject (trace_delay)
+	    toyprof_stamp (trace_stamp1);
+	  
 	  master_process_locked_node (node, gsl_engine_block_size ());
+	  
+	  if_reject (trace_delay)
+	    {
+	      GslLong duration;
+
+	      toyprof_stamp (trace_stamp2);
+	      duration = toyprof_elapsed (trace_stamp1, trace_stamp2);
+	      if (duration > trace_slowest)
+		{
+		  trace_slowest = duration;
+		  trace_node = node;
+		}
+	    }
+	  
 	  _gsl_com_push_processed_node (node);
 	  node = _gsl_com_pop_unprocessed_node ();
+	}
+
+      if_reject (trace_delay)
+	{
+	  if (trace_node)
+	    {
+	      if (trace_slowest > trace_delay)
+		g_print ("Excess Node: %p  Duration: %lu usecs     ((void(*)())%p)         \n",
+			 trace_node, trace_slowest, trace_node->module.klass->process);
+	      else
+		g_print ("Slowest Node: %p  Duration: %lu usecs     ((void(*)())%p)         \r",
+			 trace_node, trace_slowest, trace_node->module.klass->process);
+	    }
 	}
 
       /* walk unscheduled nodes which have flow jobs */
@@ -529,6 +640,8 @@ _gsl_master_thread (gpointer data)
   gsl_thread_get_pollfd (master_pollfds);
   master_n_pollfds += 1;
   master_pollfds_changed = TRUE;
+
+  toyprof_stampinit ();
   
   while (run)
     {

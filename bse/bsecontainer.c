@@ -1062,12 +1062,8 @@ static gboolean
 forall_prepare (BseItem *item,
 		gpointer data)
 {
-  if (BSE_IS_SOURCE (item))
-    {
-      g_return_val_if_fail (!BSE_SOURCE_PREPARED (item), TRUE);
-
-      bse_source_prepare (BSE_SOURCE (item));
-    }
+  if (BSE_IS_SOURCE (item) && !BSE_SOURCE_PREPARED (item))
+    bse_source_prepare (BSE_SOURCE (item));
 
   return TRUE;
 }

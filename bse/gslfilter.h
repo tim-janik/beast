@@ -26,11 +26,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- boundaries to reset filter states --- */
-#define	GSL_SIGNAL_EPSILON	(1.15e-14)	/* 1.16415321826934814453125e-9 ~= 1/2^33 */
-#define	GSL_SIGNAL_KAPPA	(1.5)
-
-
 /* --- filter roots and poles --- */
 void	gsl_filter_butter_rp    (unsigned int iorder,
 				 double       freq,   /* 0..pi */
@@ -130,6 +125,15 @@ void	gsl_filter_tscheb2_bs	(unsigned int iorder,
 				 double       epsilon,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
+
+
+/* --- fir filters --- */
+void	gsl_filter_fir_approx	(unsigned int  iorder,
+				 double       *a,	/* [0..iorder] */
+				 unsigned int  n_points,
+				 const double *freq,
+				 const double *value);
+
 
 
 
