@@ -1,3 +1,11 @@
+Fri Dec 10 11:01:28 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstscrollgraph.[hc]: added ::resize-values signal.
+	fixed copying of old values. fixed fft-size check upon probe
+	notification. added ruler and alignment resizing logic.
+
+	* beast-gtk/dialogs/radgets-beast.xml: scrollgraph dialog adaptions.
+
 Mon Dec  6 23:40:46 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstrecords.idl: added FFTSize choice.

@@ -31,8 +31,8 @@ G_BEGIN_DECLS
 #define BST_SCROLLGRAPH_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((obj), BST_TYPE_SCROLLGRAPH, BstScrollgraphClass))
 
 /* --- structures & typedefs --- */
-typedef struct _BstScrollgraph BstScrollgraph;
-typedef struct _GtkWidgetClass BstScrollgraphClass;
+typedef struct _BstScrollgraph      BstScrollgraph;
+typedef struct _BstScrollgraphClass BstScrollgraphClass;
 struct _BstScrollgraph
 {
   GtkWidget       parent_instance;
@@ -48,7 +48,13 @@ struct _BstScrollgraph
   SfiProxy        source;
   guint           ochannel;
 };
-  
+struct _BstScrollgraphClass
+{
+  GtkWidgetClass parent_class;
+  void  (*resize_values) (BstScrollgraph *self,
+                          BstDirection    direction);
+};
+
 /* --- public methods --- */
 GType	        bst_scrollgraph_get_type	(void);
 void            bst_scrollgraph_clear           (BstScrollgraph *self);
