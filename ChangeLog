@@ -1,3 +1,7 @@
+Sun May  2 15:04:38 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdial.c: minor bug fix.
+
 Fri Apr  9 11:48:27 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkdialog.c (call_gtk_window_activate_key): work around
