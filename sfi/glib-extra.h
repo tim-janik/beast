@@ -61,8 +61,10 @@ gchar*		g_strdup_lstrip   (const gchar	 *string);
      
 
 /* --- list extensions --- */
-gpointer	g_slist_pop_head  (GSList	**slist_p);
-gpointer	g_list_pop_head	  (GList	**list_p);
+gpointer	g_slist_pop_head	(GSList	**slist_p);
+gpointer	g_list_pop_head		(GList	**list_p);
+GSList*		g_slist_append_uniq	(GSList	 *slist,
+					 gpointer data);
 
 
 /* --- name conversions --- */

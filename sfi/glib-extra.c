@@ -142,6 +142,20 @@ g_slist_pop_head (GSList **slist_p)
   return data;
 }
 
+GSList*
+g_slist_append_uniq (GSList  *slist,
+		     gpointer data)
+{
+  GSList *tmp, *last = NULL;
+  for (tmp = slist; tmp; last = tmp, tmp = last->next)
+    if (tmp->data == data)
+      return slist;
+  if (!last)
+    return g_slist_append (slist, data);
+  last->next = g_slist_append (NULL, data);
+  return slist;
+}
+
 gpointer
 g_list_pop_head (GList **list_p)
 {

@@ -1,3 +1,8 @@
+Fri Jan 31 19:36:20 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: new function to append en element to an slist
+	if it's not already contained.
+
 Sat Jan 18 05:15:46 2003  Tim Janik  <timj@gtk.org>
 
 	* sfilog.[hc]: improved logging output, add with_key() variants
