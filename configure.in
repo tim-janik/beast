@@ -541,6 +541,10 @@ if test x"$enable_devel_rules" = xyes ; then
     if test -z "$PERL" || $PERL -e 'exit !($] < 5.002)' > /dev/null ; then
 	AC_MSG_ERROR([failed to detect correct perl version (>= 5.002)])
     fi
+    AC_CHECK_PROGS(XMLLINT, xmllint)
+    if test -z "$XMLLINT" ; then
+	AC_MSG_ERROR([failed to find xmllint, which is required for development builds of beast])
+    fi
     DVLBUILD=""
     NOTDVLBUILD=#
 else
