@@ -25,19 +25,51 @@
 
 
 /* --- prototypes --- */
-static void	controller_canvas_drag		(BstEventRollController	*self,
-						 BstEventRollDrag	*drag);
-static void	controller_vpanel_drag		(BstEventRollController	*self,
-						 BstEventRollDrag	*drag);
-static void	controller_update_canvas_cursor	(BstEventRollController *self,
-						 BstGenericRollTool	 tool);
+static gboolean bst_event_roll_controller_check_action  (BstEventRollController *self,
+                                                         gulong                  action_id,
+                                                         guint64                 action_stamp);
+static void     bst_event_roll_controller_exec_action   (BstEventRollController *self,
+                                                         gulong                  action_id);
+static void	controller_canvas_drag		        (BstEventRollController	*self,
+                                                         BstEventRollDrag	*drag);
+static void	controller_vpanel_drag		        (BstEventRollController	*self,
+                                                         BstEventRollDrag	*drag);
+static void	controller_update_canvas_cursor	        (BstEventRollController *self,
+                                                         BstCommonRollTool	 tool);
 
 
 /* --- variables --- */
 static BsePartControlSeq *clipboard_cseq = NULL;
 
+/* --- actions --- */
+enum {
+  ACTION_NONE           = BST_COMMON_ROLL_TOOL_LAST,
+  ACTION_SELECT_ALL,
+  ACTION_SELECT_NONE,
+  ACTION_SELECT_INVERT,
+};
 
 /* --- functions --- */
+GxkActionList*
+bst_event_roll_controller_select_actions (BstEventRollController *self)
+{
+  GxkActionList *alist = gxk_action_list_create ();
+  static const GxkStockAction actions[] = {
+    { N_("All"),                "",     N_("Select all events"),
+      ACTION_SELECT_ALL,        BST_STOCK_SELECT_ALL },
+    { N_("None"),               "",     N_("Unselect all events"),
+      ACTION_SELECT_NONE,       BST_STOCK_SELECT_NONE },
+    { N_("Invert"),             "",     N_("Invert the current seleciton"),
+      ACTION_SELECT_INVERT,     BST_STOCK_SELECT_INVERT },
+  };
+  gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
+                               NULL /*i18n_domain*/,
+                               (GxkActionCheck) bst_event_roll_controller_check_action,
+                               (GxkActionExec) bst_event_roll_controller_exec_action,
+                               self);
+  return alist;
+}
+
 void
 bst_event_roll_controller_set_clipboard (BsePartControlSeq *cseq)
 {
@@ -122,7 +154,51 @@ bst_event_roll_controller_unref (BstEventRollController *self)
     }
 }
 
-static BstGenericRollTool
+static gboolean
+bst_event_roll_controller_check_action (BstEventRollController *self,
+                                        gulong                  action_id,
+                                        guint64                 action_stamp)
+{
+  switch (action_id)
+    {
+    case ACTION_SELECT_ALL:
+      return TRUE;
+    case ACTION_SELECT_NONE:
+    case ACTION_SELECT_INVERT:
+      return bst_event_roll_controller_has_selection (self, action_stamp);
+    }
+  return FALSE;
+}
+
+static void
+bst_event_roll_controller_exec_action (BstEventRollController *self,
+                                       gulong                  action_id)
+{
+  SfiProxy part = self->eroll->proxy;
+  switch (action_id)
+    {
+      BsePartControlSeq *cseq;
+      guint i;
+    case ACTION_SELECT_ALL:
+      bse_part_select_controls (part, 0, self->eroll->max_ticks, CONTROL_TYPE (self));
+      break;
+    case ACTION_SELECT_NONE:
+      bse_part_deselect_controls (part, 0, self->eroll->max_ticks, CONTROL_TYPE (self));
+      break;
+    case ACTION_SELECT_INVERT:
+      cseq = bse_part_list_selected_controls (part, CONTROL_TYPE (self));
+      bse_part_select_controls (part, 0, self->eroll->max_ticks, CONTROL_TYPE (self));
+      for (i = 0; i < cseq->n_pcontrols; i++)
+        {
+          BsePartControl *pcontrol = cseq->pcontrols[i];
+          bse_part_deselect_event (part, pcontrol->id);
+        }
+      break;
+    }
+  gxk_widget_update_actions_downwards (self->eroll);
+}
+
+static BstCommonRollTool
 event_canvas_button_tool (BstEventRollController *self,
                           guint                   button,
                           guint                   have_object)
@@ -130,68 +206,68 @@ event_canvas_button_tool (BstEventRollController *self,
   switch (self->canvas_rtools->action_id | /* user selected tool */
           (have_object ? HAVE_OBJECT : 0))
     {
-    case BST_GENERIC_ROLL_TOOL_INSERT: /* background */
+    case BST_COMMON_ROLL_TOOL_INSERT: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_INSERT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_INSERT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_INSERT | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_INSERT | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_RESIZE;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_RESIZE;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_DELETE: /* background */
+    case BST_COMMON_ROLL_TOOL_DELETE: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;       /* user error */
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_DELETE;       /* user error */
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_DELETE | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_DELETE | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_DELETE;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_ALIGN: /* background */
+    case BST_COMMON_ROLL_TOOL_ALIGN: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_ALIGN;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_ALIGN;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_ALIGN | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_ALIGN | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_ALIGN;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_ALIGN;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_SELECT: /* background */
+    case BST_COMMON_ROLL_TOOL_SELECT: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_SELECT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_SELECT | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_SELECT | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_SELECT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_VSELECT: /* background */
+    case BST_COMMON_ROLL_TOOL_VSELECT: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_SELECT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_VSELECT | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_VSELECT | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_SELECT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
     }
-  return BST_GENERIC_ROLL_TOOL_NONE;
+  return BST_COMMON_ROLL_TOOL_NONE;
 }
 
 void
@@ -285,10 +361,24 @@ bst_event_roll_controller_paste (BstEventRollController *self)
 }
 
 gboolean
-bst_event_roll_controler_clipboard_full (BstEventRollController *self)
+bst_event_roll_controller_clipboard_full (BstEventRollController *self)
 {
   BsePartControlSeq *cseq = bst_event_roll_controller_get_clipboard ();
   return cseq && cseq->n_pcontrols;
+}
+
+gboolean
+bst_event_roll_controller_has_selection (BstEventRollController *self,
+                                         guint64                 action_stamp)
+{
+  if (self->cached_stamp != action_stamp)
+    {
+      SfiProxy part = self->eroll->proxy;
+      self->cached_stamp = action_stamp;
+      BsePartControlSeq *cseq = bse_part_list_selected_controls (part, CONTROL_TYPE (self));
+      self->cached_n_controls = cseq->n_pcontrols;
+    }
+  return self->cached_n_controls > 0;
 }
 
 guint
@@ -314,24 +404,24 @@ bst_event_roll_controller_quantize (BstEventRollController *self,
 
 static void
 controller_update_canvas_cursor (BstEventRollController *self,
-                                 BstGenericRollTool      tool)
+                                 BstCommonRollTool      tool)
 {
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self->eroll);
   switch (tool)
     {
-    case BST_GENERIC_ROLL_TOOL_INSERT:
+    case BST_COMMON_ROLL_TOOL_INSERT:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_PENCIL);
       break;
-    case BST_GENERIC_ROLL_TOOL_RESIZE:
+    case BST_COMMON_ROLL_TOOL_RESIZE:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_SB_V_DOUBLE_ARROW);
       break;
-    case BST_GENERIC_ROLL_TOOL_MOVE:
+    case BST_COMMON_ROLL_TOOL_MOVE:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_FLEUR);
       break;
-    case BST_GENERIC_ROLL_TOOL_DELETE:
+    case BST_COMMON_ROLL_TOOL_DELETE:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_TARGET);
       break;
-    case BST_GENERIC_ROLL_TOOL_SELECT:
+    case BST_COMMON_ROLL_TOOL_SELECT:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_CROSSHAIR);
       break;
     default:
@@ -347,7 +437,7 @@ move_start (BstEventRollController *self,
   SfiProxy part = self->eroll->proxy;
   if (self->obj_id)	/* got control event to move */
     {
-      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
+      controller_update_canvas_cursor (self, BST_COMMON_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, _("Move Control Event"), NULL);
       drag->state = GXK_DRAG_CONTINUE;
       if (bse_part_is_event_selected (part, self->obj_id))
@@ -503,7 +593,7 @@ resize_start (BstEventRollController *self,
 {
   if (self->obj_id)	/* got control event for resize */
     {
-      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_RESIZE);
+      controller_update_canvas_cursor (self, BST_COMMON_ROLL_TOOL_RESIZE);
       gxk_status_set (GXK_STATUS_WAIT, _("Resize Control Event"), NULL);
       drag->state = GXK_DRAG_CONTINUE;
     }
@@ -614,15 +704,15 @@ controller_canvas_drag (BstEventRollController *self,
 			BstEventRollDrag       *drag)
 {
   static struct {
-    BstGenericRollTool tool;
+    BstCommonRollTool tool;
     DragFunc start, motion, abort;
   } tool_table[] = {
-    { BST_GENERIC_ROLL_TOOL_INSERT,     insert_resize_start,	resize_motion,  resize_abort,	},
-    { BST_GENERIC_ROLL_TOOL_ALIGN,	align_start,	        align_motion,	align_abort,	},
-    { BST_GENERIC_ROLL_TOOL_RESIZE,	resize_start,	        resize_motion,	resize_abort,	},
-    { BST_GENERIC_ROLL_TOOL_MOVE,	move_start,	        move_motion,	move_abort,	},
-    { BST_GENERIC_ROLL_TOOL_DELETE,	delete_start,	        NULL,		NULL,		},
-    { BST_GENERIC_ROLL_TOOL_SELECT,	select_start,	        select_motion,	select_abort,	},
+    { BST_COMMON_ROLL_TOOL_INSERT,     insert_resize_start,	resize_motion,  resize_abort,	},
+    { BST_COMMON_ROLL_TOOL_ALIGN,	align_start,	        align_motion,	align_abort,	},
+    { BST_COMMON_ROLL_TOOL_RESIZE,	resize_start,	        resize_motion,	resize_abort,	},
+    { BST_COMMON_ROLL_TOOL_MOVE,	move_start,	        move_motion,	move_abort,	},
+    { BST_COMMON_ROLL_TOOL_DELETE,	delete_start,	        NULL,		NULL,		},
+    { BST_COMMON_ROLL_TOOL_SELECT,	select_start,	        select_motion,	select_abort,	},
   };
   guint i;
   
@@ -630,7 +720,7 @@ controller_canvas_drag (BstEventRollController *self,
 
   if (drag->type == GXK_DRAG_START)
     {
-      BstGenericRollTool tool = BST_GENERIC_ROLL_TOOL_NONE;
+      BstCommonRollTool tool = BST_COMMON_ROLL_TOOL_NONE;
       BsePartControlSeq *cseq;
       gint j, i = drag->start_tick;
       BsePartControl *nearest = NULL;

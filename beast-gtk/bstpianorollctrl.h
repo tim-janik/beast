@@ -39,6 +39,9 @@ typedef struct {
   GxkActionGroup  *note_rtools;
   GxkActionGroup  *quant_rtools;
   GxkActionGroup  *canvas_rtools;
+  /* action cache */
+  guint64          cached_stamp;
+  guint            cached_n_notes;
 } BstPianoRollController;
 
 
@@ -50,6 +53,7 @@ guint                   bst_piano_roll_controller_quantize       (BstPianoRollCo
                                                                  guint                    fine_tick);
 void			bst_piano_roll_controller_set_clipboard  (BsePartNoteSeq	 *pseq);
 BsePartNoteSeq*		bst_piano_roll_controller_get_clipboard	 (void);
+GxkActionList*          bst_piano_roll_controller_select_actions (BstPianoRollController *self);
 GxkActionList*          bst_piano_roll_controller_canvas_actions (BstPianoRollController *self);
 GxkActionList*          bst_piano_roll_controller_note_actions   (BstPianoRollController *self);
 GxkActionList*          bst_piano_roll_controller_quant_actions  (BstPianoRollController *self);
@@ -57,7 +61,9 @@ void			bst_piano_roll_controller_clear		 (BstPianoRollController *self);
 void			bst_piano_roll_controller_cut		 (BstPianoRollController *self);
 gboolean		bst_piano_roll_controller_copy		 (BstPianoRollController *self);
 void			bst_piano_roll_controller_paste		 (BstPianoRollController *self);
-gboolean                bst_piano_roll_controler_clipboard_full  (BstPianoRollController *self);
+gboolean                bst_piano_roll_controller_clipboard_full (BstPianoRollController *self);
+gboolean                bst_piano_roll_controller_has_selection  (BstPianoRollController *self,
+                                                                  guint64                 action_stamp);
 
 
 G_END_DECLS

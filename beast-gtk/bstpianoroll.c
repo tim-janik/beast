@@ -1201,6 +1201,7 @@ piano_roll_update (BstPianoRoll *self,
   if (GTK_WIDGET_DRAWABLE (self))
     for (note = min_note; note <= max_note; note++)
       piano_roll_queue_expose (self, CANVAS (self), note, tick, tick + duration - 1);
+  gxk_widget_update_actions (self); /* update controllers */
 }
 
 static void

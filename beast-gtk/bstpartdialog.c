@@ -38,9 +38,10 @@ static void	event_canvas_clicked		(BstEventRoll           *eroll,
                                                  gfloat                  value,
                                                  GdkEvent               *event,
                                                  BstPartDialog          *self);
-static void     part_dialog_action_exec         (gpointer                data,
-                                                 gulong                  action);
 static gboolean part_dialog_action_check        (gpointer                data,
+                                                 gulong                  action,
+                                                 guint64                 action_stamp);
+static void     part_dialog_action_exec         (gpointer                data,
                                                  gulong                  action);
 static void     part_dialog_run_script_proc     (gpointer                data,
                                                  gulong                  category_id);
@@ -48,7 +49,8 @@ static void     part_dialog_run_script_proc     (gpointer                data,
 
 /* --- track actions --- */
 enum {
-  ACTION_CLEAR = 1,
+  ACTION_NONE           = BST_COMMON_ROLL_TOOL_LAST,
+  ACTION_CLEAR,
   ACTION_CUT,
   ACTION_COPY,
   ACTION_PASTE,
@@ -110,6 +112,7 @@ eparam_changed (gpointer  data,
     {
       BseMidiSignalType midi_signal_type = bse_midi_signal_type_from_choice (sfi_value_get_choice (&param->value));
       bst_event_roll_set_control_type (self->eroll, midi_signal_type);
+      gxk_widget_update_actions (self); /* update controllers */
     }
 }
 
@@ -163,19 +166,21 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (srange));
   adj = bst_grow_bar_get_adjustment (grow_bar);
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->proll), adj);
-  self->pictrl = bst_piano_roll_controller_new (self->proll);
-  gxk_widget_publish_action_list (self, "pctrl-canvas-tools", bst_piano_roll_controller_canvas_actions (self->pictrl));
-  gxk_widget_publish_action_list (self, "pctrl-note-tools", bst_piano_roll_controller_note_actions (self->pictrl));
-  gxk_widget_publish_action_list (self, "pctrl-quant-tools", bst_piano_roll_controller_quant_actions (self->pictrl));
+  self->pctrl = bst_piano_roll_controller_new (self->proll);
+  gxk_widget_publish_action_list (self, "pctrl-select-actions", bst_piano_roll_controller_select_actions (self->pctrl));
+  gxk_widget_publish_action_list (self, "pctrl-canvas-tools", bst_piano_roll_controller_canvas_actions (self->pctrl));
+  gxk_widget_publish_action_list (self, "pctrl-note-tools", bst_piano_roll_controller_note_actions (self->pctrl));
+  gxk_widget_publish_action_list (self, "pctrl-quant-tools", bst_piano_roll_controller_quant_actions (self->pctrl));
 
   /* event roll */
   self->eroll = gxk_radget_find (radget, "event-roll");
   gxk_nullify_in_object (self, &self->eroll);
   g_signal_connect (self->eroll, "canvas-clicked", G_CALLBACK (event_canvas_clicked), self);
-  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pictrl->quant_rtools, self->pictrl->canvas_rtools);
+  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, self->pctrl->canvas_rtools);
   adj = bst_grow_bar_get_adjustment (grow_bar);
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->eroll), adj);
   bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
+  gxk_widget_publish_action_list (self, "ectrl-select-actions", bst_event_roll_controller_select_actions (self->ectrl));
 
   grow_bar = gxk_radget_find (radget, "pattern-view-vgrow-bar");
 
@@ -186,7 +191,7 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->pview), gtk_range_get_adjustment (srange));
   adj = bst_grow_bar_get_adjustment (grow_bar);
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->pview), adj);
-  self->pvctrl = bst_pattern_controller_new (self->pview, self->pictrl->quant_rtools);
+  self->pvctrl = bst_pattern_controller_new (self->pview, self->pctrl->quant_rtools);
 
   /* pattern view controls */
   g_signal_connect_swapped (gxk_radget_find (radget, "configure-button"), "clicked",
@@ -263,7 +268,7 @@ bst_part_dialog_finalize (GObject *object)
 
   bst_part_dialog_set_proxy (self, 0);
 
-  bst_piano_roll_controller_unref (self->pictrl);
+  bst_piano_roll_controller_unref (self->pctrl);
   bst_event_roll_controller_unref (self->ectrl);
   
   G_OBJECT_CLASS (bst_part_dialog_parent_class)->finalize (object);
@@ -349,6 +354,46 @@ part_dialog_run_script_proc (gpointer                data,
                            NULL);
 }
 
+static gboolean
+part_dialog_action_check (gpointer data,
+                          gulong   action,
+                          guint64  action_stamp)
+{
+  BstPartDialog *self = BST_PART_DIALOG (data);
+  switch (action)
+    {
+    case ACTION_CLEAR:
+    case ACTION_CUT:
+    case ACTION_COPY:
+      return (bst_piano_roll_controller_has_selection (self->pctrl, action_stamp) ||
+              bst_event_roll_controller_has_selection (self->ectrl, action_stamp));
+    case ACTION_PASTE:
+      return (bst_piano_roll_controller_clipboard_full (self->pctrl) ||
+              bst_event_roll_controller_clipboard_full (self->ectrl));
+    case ACTION_UNDO:
+      return self->project && bse_project_undo_depth (self->project) > 0;
+    case ACTION_REDO:
+      return self->project && bse_project_redo_depth (self->project) > 0;
+    case ACTION_CLEAR_UNDO:
+      return self->project && bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
+      /* tools */
+    case BST_COMMON_ROLL_TOOL_INSERT:
+    case BST_COMMON_ROLL_TOOL_RESIZE:
+    case BST_COMMON_ROLL_TOOL_MOVE:
+    case BST_COMMON_ROLL_TOOL_DELETE:
+    case BST_COMMON_ROLL_TOOL_ALIGN:
+    case BST_COMMON_ROLL_TOOL_SELECT:
+    case BST_COMMON_ROLL_TOOL_VSELECT:
+      return TRUE;
+    default:
+      if (action >= BST_COMMON_ROLL_TOOL_FIRST)
+        {
+          return TRUE;
+        }
+      return FALSE;
+    }
+}
+
 static void
 part_dialog_action_exec (gpointer data,
                          gulong   action)
@@ -360,19 +405,19 @@ part_dialog_action_exec (gpointer data,
   switch (action)
     {
     case ACTION_CLEAR:
-      bst_piano_roll_controller_clear (self->pictrl);
+      bst_piano_roll_controller_clear (self->pctrl);
       bst_event_roll_controller_clear (self->ectrl);
       break;
     case ACTION_CUT:
-      bst_piano_roll_controller_cut (self->pictrl);
+      bst_piano_roll_controller_cut (self->pctrl);
       bst_event_roll_controller_cut (self->ectrl);
       break;
     case ACTION_COPY:
-      if (!bst_piano_roll_controller_copy (self->pictrl))
+      if (!bst_piano_roll_controller_copy (self->pctrl))
         bst_event_roll_controller_copy (self->ectrl);
       break;
     case ACTION_PASTE:
-      bst_piano_roll_controller_paste (self->pictrl);
+      bst_piano_roll_controller_paste (self->pctrl);
       bst_event_roll_controller_paste (self->ectrl);
       break;
     case ACTION_UNDO:
@@ -391,42 +436,4 @@ part_dialog_action_exec (gpointer data,
   gxk_status_window_pop ();
 
   gxk_widget_update_actions_downwards (self);
-}
-
-static gboolean
-part_dialog_action_check (gpointer data,
-                          gulong   action)
-{
-  BstPartDialog *self = BST_PART_DIALOG (data);
-  switch (action)
-    {
-    case ACTION_CLEAR:
-    case ACTION_CUT:
-    case ACTION_COPY:
-      return TRUE;
-    case ACTION_PASTE:
-      return (bst_piano_roll_controler_clipboard_full (self->pictrl) ||
-              bst_event_roll_controler_clipboard_full (self->ectrl));
-    case ACTION_UNDO:
-      return self->project && bse_project_undo_depth (self->project) > 0;
-    case ACTION_REDO:
-      return self->project && bse_project_redo_depth (self->project) > 0;
-    case ACTION_CLEAR_UNDO:
-      return self->project && bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
-      /* tools */
-    case BST_GENERIC_ROLL_TOOL_INSERT:
-    case BST_GENERIC_ROLL_TOOL_RESIZE:
-    case BST_GENERIC_ROLL_TOOL_MOVE:
-    case BST_GENERIC_ROLL_TOOL_DELETE:
-    case BST_GENERIC_ROLL_TOOL_ALIGN:
-    case BST_GENERIC_ROLL_TOOL_SELECT:
-    case BST_GENERIC_ROLL_TOOL_VSELECT:
-      return TRUE;
-    default:
-      if (action >= BST_GENERIC_ROLL_TOOL_FIRST)
-        {
-          return TRUE;
-        }
-      return FALSE;
-    }
 }

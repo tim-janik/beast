@@ -36,24 +36,30 @@ typedef struct {
   /* tool selections */
   GxkActionGroup  *quant_rtools;
   GxkActionGroup  *canvas_rtools;
+  /* action cache */
+  guint64          cached_stamp;
+  guint            cached_n_controls;
 } BstEventRollController;
 
 
 /* --- API --- */
-BstEventRollController*	bst_event_roll_controller_new		(BstEventRoll		*eroll,
-                                                                 GxkActionGroup         *quant_rtools,
-                                                                 GxkActionGroup         *canvas_rtools);
-BstEventRollController*	bst_event_roll_controller_ref		(BstEventRollController	*self);
-void			bst_event_roll_controller_unref		(BstEventRollController	*self);
-guint                   bst_event_roll_controller_quantize      (BstEventRollController *self,
-                                                                 guint                   fine_tick);
-void			bst_event_roll_controller_set_clipboard (BsePartControlSeq	*cseq);
-BsePartControlSeq*	bst_event_roll_controller_get_clipboard	(void);
-void			bst_event_roll_controller_clear		(BstEventRollController	*self);
-void			bst_event_roll_controller_cut		(BstEventRollController	*self);
-gboolean		bst_event_roll_controller_copy		(BstEventRollController	*self);
-void			bst_event_roll_controller_paste		(BstEventRollController	*self);
-gboolean                bst_event_roll_controler_clipboard_full (BstEventRollController *self);
+BstEventRollController*	bst_event_roll_controller_new		 (BstEventRoll		        *eroll,
+                                                                  GxkActionGroup                *quant_rtools,
+                                                                  GxkActionGroup                *canvas_rtools);
+BstEventRollController*	bst_event_roll_controller_ref		 (BstEventRollController	*self);
+void			bst_event_roll_controller_unref		 (BstEventRollController	*self);
+guint                   bst_event_roll_controller_quantize       (BstEventRollController        *self,
+                                                                  guint                          fine_tick);
+GxkActionList*          bst_event_roll_controller_select_actions (BstEventRollController        *self);
+void			bst_event_roll_controller_set_clipboard  (BsePartControlSeq	        *cseq);
+BsePartControlSeq*	bst_event_roll_controller_get_clipboard	 (void);
+void			bst_event_roll_controller_clear		 (BstEventRollController	*self);
+void			bst_event_roll_controller_cut		 (BstEventRollController	*self);
+gboolean		bst_event_roll_controller_copy		 (BstEventRollController	*self);
+void			bst_event_roll_controller_paste		 (BstEventRollController        *self);
+gboolean                bst_event_roll_controller_clipboard_full (BstEventRollController        *self);
+gboolean                bst_event_roll_controller_has_selection  (BstEventRollController        *self,
+                                                                  guint64                        action_stamp);
 
 
 G_END_DECLS

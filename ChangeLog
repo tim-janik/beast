@@ -1,3 +1,31 @@
+Fri Jan 21 00:33:42 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/radgets-beast.xml: added action factories to event
+	and piano roll popup menus to create menu items for selection actions.
+
+	* beast-gtk/bstpartdialog.[hc]: change cut/copy/clear sensitivity according
+	to selection changes. publish piano roll and event roll selection actions.
+	
+	* beast-gtk/bsteventrollctrl.[hc]: implemented selection actions.
+
+	* beast-gtk/bsteventroll.c: fixed unnecessary redraws. keep max_ticks
+	field up to date. update controllers upon part changes. 
+
+	* beast-gtk/bstpianorollctrl.[hc]: implemented selection actions.
+
+	* beast-gtk/bstpianoroll.c: update controllers upon part changes.
+
+	* beast-gtk/gxk/gxkaction.[hc]: added 64bit stamp to GxkActionCheck() 
+	to cache check function results across multiple consequtive invocations
+	of GxkActionCheck() functions. exported gxk_action_inc_cache_stamp() to
+	allow user code to still call check functions themselves.
+
+	* beast-gtk/bstapp.c: adapted to action_stamp changes.
+
+	* beast-gtk/bstdefs.h: renamed BstCommonRollTool, adapted users.
+
+	* beast-gtk/bstutils.h: added placholder stock icons for select actions.
+
 Thu Jan 20 17:16:26 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bwtwave.cc (store): use sfi_wstore_putf() to store floats.

@@ -496,12 +496,16 @@ bst_event_roll_hsetup (BstEventRoll *self,
 
   if (old_ppqn != self->ppqn ||
       old_qnpt != self->qnpt ||
-      old_max_ticks != self->max_ticks ||	// FIXME: shouldn't always cause a redraw
       old_hzoom != self->hzoom)
     {
       self->draw_qn_grid = ticks_to_pixels (self, self->ppqn) >= 3;
       self->draw_qqn_grid = ticks_to_pixels (self, self->ppqn / 4) >= 5;
       gtk_widget_queue_draw (GTK_WIDGET (self));
+      X_OFFSET (self) = GXK_SCROLL_CANVAS (self)->hadjustment->value;
+      gxk_scroll_canvas_update_adjustments (GXK_SCROLL_CANVAS (self), TRUE, FALSE);
+    }
+  else if (old_max_ticks != self->max_ticks)
+    {
       X_OFFSET (self) = GXK_SCROLL_CANVAS (self)->hadjustment->value;
       gxk_scroll_canvas_update_adjustments (GXK_SCROLL_CANVAS (self), TRUE, FALSE);
     }
@@ -578,6 +582,14 @@ event_roll_handle_drag (GxkScrollCanvas     *scc,
 }
 
 static void
+event_roll_range_changed (BstEventRoll *self)
+{
+  guint max_ticks;
+  bse_proxy_get (self->proxy, "last-tick", &max_ticks, NULL);
+  bst_event_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
+}
+
+static void
 event_roll_update (BstEventRoll *self,
 		   guint         tick_start,
 		   guint         duration)
@@ -596,6 +608,7 @@ event_roll_update (BstEventRoll *self,
       area.height = height;
       gdk_window_invalidate_rect (CANVAS (self), &area, TRUE);
     }
+  gxk_widget_update_actions (self); /* update controllers */
 }
 
 static void
@@ -618,8 +631,9 @@ bst_event_roll_set_proxy (BstEventRoll *self,
   if (self->proxy)
     {
       bse_proxy_disconnect (self->proxy,
-			    "any_signal", event_roll_unset_proxy, self,
-			    "any_signal", event_roll_update, self,
+			    "any-signal", event_roll_unset_proxy, self,
+                            "any-signal", event_roll_range_changed, self,
+			    "any-signal", event_roll_update, self,
 			    NULL);
       bse_item_unuse (self->proxy);
     }
@@ -628,13 +642,11 @@ bst_event_roll_set_proxy (BstEventRoll *self,
     {
       bse_item_use (self->proxy);
       bse_proxy_connect (self->proxy,
-			 "swapped_signal::release", event_roll_unset_proxy, self,
-			 // "swapped_signal::property-notify::uname", event_roll_update_name, self,
-			 "swapped_signal::range-changed", event_roll_update, self,
+			 "swapped-signal::release", event_roll_unset_proxy, self,
+                         "swapped-signal::property-notify::last-tick", event_roll_range_changed, self,
+			 "swapped-signal::range-changed", event_roll_update, self,
 			 NULL);
-      bse_proxy_get (self->proxy, "last-tick", &self->max_ticks, NULL);
-      self->max_ticks = MAX (self->max_ticks, 1);
-      bst_event_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
+      event_roll_range_changed (self);
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }

@@ -28,10 +28,11 @@ G_BEGIN_DECLS
 
 
 /* --- structures --- */
-typedef gboolean (*GxkActionCheck)      (gpointer        user_data,
-                                         gulong          action_id);
-typedef void     (*GxkActionExec)       (gpointer        user_data,
-                                         gulong          action_id);
+typedef gboolean (*GxkActionCheck)        (gpointer        user_data,
+                                           gulong          action_id,
+                                           guint64         action_stamp);
+typedef void     (*GxkActionExec)         (gpointer        user_data,
+                                           gulong          action_id);
 typedef struct GxkActionGroup GxkActionGroup;   /* prototyped */
 typedef struct GxkActionList  GxkActionList;
 typedef struct {
@@ -53,6 +54,7 @@ typedef struct {
 } GxkStockAction;
 
 /* --- public API --- */
+guint64         gxk_action_inc_cache_stamp      (void);
 GxkActionList*  gxk_action_list_create          (void);
 GxkActionList*  gxk_action_list_create_grouped  (GxkActionGroup         *agroup);
 void            gxk_action_list_add_actions     (GxkActionList          *alist,

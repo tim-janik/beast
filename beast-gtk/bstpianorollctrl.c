@@ -25,34 +25,66 @@
 
 
 /* --- prototypes --- */
-static void	controller_canvas_drag		(BstPianoRollController	*self,
-						 BstPianoRollDrag	*drag);
-static void	controller_piano_drag		(BstPianoRollController	*self,
-						 BstPianoRollDrag	*drag);
-static void	controller_update_canvas_cursor	(BstPianoRollController *self,
-						 BstGenericRollTool	 tool);
+static gboolean bst_piano_roll_controller_check_action  (BstPianoRollController *self,
+                                                         gulong                  action_id,
+                                                         guint64                 action_stamp);
+static void     bst_piano_roll_controller_exec_action   (BstPianoRollController *self,
+                                                         gulong                  action_id);
+static void	controller_canvas_drag		        (BstPianoRollController	*self,
+                                                         BstPianoRollDrag	*drag);
+static void	controller_piano_drag		        (BstPianoRollController	*self,
+                                                         BstPianoRollDrag	*drag);
+static void	controller_update_canvas_cursor	        (BstPianoRollController *self,
+                                                         BstCommonRollTool	 tool);
 
 
 /* --- variables --- */
 static BsePartNoteSeq *clipboard_pseq = NULL;
 
+/* --- actions --- */
+enum {
+  ACTION_NONE           = BST_COMMON_ROLL_TOOL_LAST,
+  ACTION_SELECT_ALL,
+  ACTION_SELECT_NONE,
+  ACTION_SELECT_INVERT,
+};
 
 /* --- functions --- */
+GxkActionList*
+bst_piano_roll_controller_select_actions (BstPianoRollController *self)
+{
+  GxkActionList *alist = gxk_action_list_create ();
+  static const GxkStockAction actions[] = {
+    { N_("All"),                "<ctrl>A",              N_("Select all notes"),
+      ACTION_SELECT_ALL,        BST_STOCK_SELECT_ALL },
+    { N_("None"),               "<shift><ctrl>A",       N_("Unselect all notes"),
+      ACTION_SELECT_NONE,       BST_STOCK_SELECT_NONE },
+    { N_("Invert"),             "<ctrl>I",              N_("Invert the current seleciton"),
+      ACTION_SELECT_INVERT,     BST_STOCK_SELECT_INVERT },
+  };
+  gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
+                               NULL /*i18n_domain*/,
+                               (GxkActionCheck) bst_piano_roll_controller_check_action,
+                               (GxkActionExec) bst_piano_roll_controller_exec_action,
+                               self);
+  return alist;
+}
+
 GxkActionList*
 bst_piano_roll_controller_canvas_actions (BstPianoRollController *self)
 {
   GxkActionList *alist = gxk_action_list_create_grouped (self->canvas_rtools);
   static const GxkStockAction actions[] = {
     { N_("Insert"),           "I",    N_("Insert/resize/move notes (mouse button 1 and 2)"),
-      BST_GENERIC_ROLL_TOOL_INSERT,   BST_STOCK_PART_TOOL },
+      BST_COMMON_ROLL_TOOL_INSERT,   BST_STOCK_PART_TOOL },
     { N_("Delete"),           "D",    N_("Delete note (mouse button 1)"),
-      BST_GENERIC_ROLL_TOOL_DELETE,   BST_STOCK_TRASHCAN },
+      BST_COMMON_ROLL_TOOL_DELETE,   BST_STOCK_TRASHCAN },
     { N_("Align Events"),     "A",    N_("Draw a line to align events to"),
-      BST_GENERIC_ROLL_TOOL_ALIGN,    BST_STOCK_EVENT_CONTROL },
+      BST_COMMON_ROLL_TOOL_ALIGN,    BST_STOCK_EVENT_CONTROL },
     { N_("Select"),           "S",    N_("Rectangle select notes"),
-      BST_GENERIC_ROLL_TOOL_SELECT,   BST_STOCK_RECT_SELECT },
+      BST_COMMON_ROLL_TOOL_SELECT,   BST_STOCK_RECT_SELECT },
     { N_("Vertical Select"),  "V",    N_("Select tick range vertically"),
-      BST_GENERIC_ROLL_TOOL_VSELECT,  BST_STOCK_VERT_SELECT },
+      BST_COMMON_ROLL_TOOL_VSELECT,  BST_STOCK_VERT_SELECT },
   };
   gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
                                NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
@@ -161,7 +193,7 @@ bst_piano_roll_controller_new (BstPianoRoll *proll)
 			 G_CONNECT_SWAPPED);
   /* canvas tools */
   self->canvas_rtools = gxk_action_group_new ();
-  gxk_action_group_select (self->canvas_rtools, BST_GENERIC_ROLL_TOOL_INSERT);
+  gxk_action_group_select (self->canvas_rtools, BST_COMMON_ROLL_TOOL_INSERT);
   /* note length selection */
   self->note_rtools = gxk_action_group_new ();
   gxk_action_group_select (self->note_rtools, 4);
@@ -205,7 +237,51 @@ bst_piano_roll_controller_unref (BstPianoRollController *self)
     }
 }
 
-static BstGenericRollTool
+static gboolean
+bst_piano_roll_controller_check_action (BstPianoRollController *self,
+                                        gulong                  action_id,
+                                        guint64                 action_stamp)
+{
+  switch (action_id)
+    {
+    case ACTION_SELECT_ALL:
+      return TRUE;
+    case ACTION_SELECT_NONE:
+    case ACTION_SELECT_INVERT:
+      return bst_piano_roll_controller_has_selection (self, action_stamp);
+    }
+  return FALSE;
+}
+
+static void
+bst_piano_roll_controller_exec_action (BstPianoRollController *self,
+                                       gulong                  action_id)
+{
+  SfiProxy part = self->proll->proxy;
+  switch (action_id)
+    {
+      BsePartNoteSeq *pseq;
+      guint i;
+    case ACTION_SELECT_ALL:
+      bse_part_select_notes (part, 0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
+      break;
+    case ACTION_SELECT_NONE:
+      bse_part_deselect_notes (part, 0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
+      break;
+    case ACTION_SELECT_INVERT:
+      pseq = bse_part_list_selected_notes (part);
+      bse_part_select_notes (part, 0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
+      for (i = 0; i < pseq->n_pnotes; i++)
+        {
+          BsePartNote *pnote = pseq->pnotes[i];
+          bse_part_deselect_event (part, pnote->id);
+        }
+      break;
+    }
+  gxk_widget_update_actions_downwards (self->proll);
+}
+
+static BstCommonRollTool
 piano_canvas_button_tool (BstPianoRollController *self,
                           guint                   button,
                           guint                   have_object)
@@ -213,68 +289,68 @@ piano_canvas_button_tool (BstPianoRollController *self,
   switch (self->canvas_rtools->action_id | /* user selected tool */
           (have_object ? HAVE_OBJECT : 0))
     {
-    case BST_GENERIC_ROLL_TOOL_INSERT: /* background */
+    case BST_COMMON_ROLL_TOOL_INSERT: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_INSERT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_INSERT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_INSERT | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_INSERT | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_RESIZE;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_RESIZE;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_DELETE: /* background */
+    case BST_COMMON_ROLL_TOOL_DELETE: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;       /* user error */
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_DELETE;       /* user error */
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_DELETE | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_DELETE | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_DELETE;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_ALIGN: /* background */
+    case BST_COMMON_ROLL_TOOL_ALIGN: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_ALIGN;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_ALIGN;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_ALIGN | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_ALIGN | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_ALIGN;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_ALIGN;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_SELECT: /* background */
+    case BST_COMMON_ROLL_TOOL_SELECT: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_SELECT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_SELECT | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_SELECT | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_SELECT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_VSELECT: /* background */
+    case BST_COMMON_ROLL_TOOL_VSELECT: /* background */
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_VSELECT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_VSELECT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
-    case BST_GENERIC_ROLL_TOOL_VSELECT | HAVE_OBJECT:
+    case BST_COMMON_ROLL_TOOL_VSELECT | HAVE_OBJECT:
       switch (button) {
-      case 1:  return BST_GENERIC_ROLL_TOOL_VSELECT;
-      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
-      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      case 1:  return BST_COMMON_ROLL_TOOL_VSELECT;
+      case 2:  return BST_COMMON_ROLL_TOOL_MOVE;
+      default: return BST_COMMON_ROLL_TOOL_NONE;
       }
     }
-  return BST_GENERIC_ROLL_TOOL_NONE;
+  return BST_COMMON_ROLL_TOOL_NONE;
 }
 
 void
@@ -380,10 +456,24 @@ bst_piano_roll_controller_paste (BstPianoRollController *self)
 }
 
 gboolean
-bst_piano_roll_controler_clipboard_full (BstPianoRollController *self)
+bst_piano_roll_controller_clipboard_full (BstPianoRollController *self)
 {
   BsePartNoteSeq *pseq = bst_piano_roll_controller_get_clipboard ();
   return pseq && pseq->n_pnotes;
+}
+
+gboolean
+bst_piano_roll_controller_has_selection (BstPianoRollController *self,
+                                         guint64                 action_stamp)
+{
+  if (self->cached_stamp != action_stamp)
+    {
+      SfiProxy part = self->proll->proxy;
+      self->cached_stamp = action_stamp;
+      BsePartNoteSeq *pseq = bse_part_list_selected_notes (part);
+      self->cached_n_notes = pseq->n_pnotes;
+    }
+  return self->cached_n_notes > 0;
 }
 
 guint
@@ -412,27 +502,27 @@ bst_piano_roll_controller_quantize (BstPianoRollController *self,
 
 static void
 controller_update_canvas_cursor (BstPianoRollController *self,
-                                 BstGenericRollTool      tool)
+                                 BstCommonRollTool      tool)
 {
   GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self->proll);
   switch (tool)
     {
-    case BST_GENERIC_ROLL_TOOL_INSERT:
+    case BST_COMMON_ROLL_TOOL_INSERT:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_PENCIL);
       break;
-    case BST_GENERIC_ROLL_TOOL_RESIZE:
+    case BST_COMMON_ROLL_TOOL_RESIZE:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_SB_H_DOUBLE_ARROW);
       break;
-    case BST_GENERIC_ROLL_TOOL_MOVE:
+    case BST_COMMON_ROLL_TOOL_MOVE:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_FLEUR);
       break;
-    case BST_GENERIC_ROLL_TOOL_DELETE:
+    case BST_COMMON_ROLL_TOOL_DELETE:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_TARGET);
       break;
-    case BST_GENERIC_ROLL_TOOL_SELECT:
+    case BST_COMMON_ROLL_TOOL_SELECT:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_CROSSHAIR);
       break;
-    case BST_GENERIC_ROLL_TOOL_VSELECT:
+    case BST_COMMON_ROLL_TOOL_VSELECT:
       gxk_scroll_canvas_set_canvas_cursor (scc, GDK_LEFT_SIDE);
       break;
     default:
@@ -474,7 +564,7 @@ move_start (BstPianoRollController *self,
   if (self->obj_id)	/* got note to move */
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
-      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
+      controller_update_canvas_cursor (self, BST_COMMON_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, _("Move Note"), NULL);
       drag->state = GXK_DRAG_CONTINUE;
       if (bse_part_is_event_selected (part, self->obj_id))
@@ -586,7 +676,7 @@ resize_start (BstPianoRollController *self,
 	self->tick_bound = bound;
       else
 	self->tick_bound = self->obj_tick;
-      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_RESIZE);
+      controller_update_canvas_cursor (self, BST_COMMON_ROLL_TOOL_RESIZE);
       gxk_status_set (GXK_STATUS_WAIT, _("Resize Note"), NULL);
       drag->state = GXK_DRAG_CONTINUE;
     }
@@ -770,22 +860,22 @@ controller_canvas_drag (BstPianoRollController *self,
 			BstPianoRollDrag       *drag)
 {
   static struct {
-    BstGenericRollTool tool;
+    BstCommonRollTool tool;
     DragFunc start, motion, abort;
   } tool_table[] = {
-    { BST_GENERIC_ROLL_TOOL_INSERT,	insert_start,	NULL,		NULL,		},
-    { BST_GENERIC_ROLL_TOOL_ALIGN,	insert_start,	NULL,		NULL,		},
-    { BST_GENERIC_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
-    { BST_GENERIC_ROLL_TOOL_MOVE,	move_start,	move_motion,	move_abort,	},
-    { BST_GENERIC_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},
-    { BST_GENERIC_ROLL_TOOL_SELECT,	select_start,	select_motion,	select_abort,	},
-    { BST_GENERIC_ROLL_TOOL_VSELECT,	vselect_start,	vselect_motion,	vselect_abort,	},
+    { BST_COMMON_ROLL_TOOL_INSERT,	insert_start,	NULL,		NULL,		},
+    { BST_COMMON_ROLL_TOOL_ALIGN,	insert_start,	NULL,		NULL,		},
+    { BST_COMMON_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
+    { BST_COMMON_ROLL_TOOL_MOVE,	move_start,	move_motion,	move_abort,	},
+    { BST_COMMON_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},
+    { BST_COMMON_ROLL_TOOL_SELECT,	select_start,	select_motion,	select_abort,	},
+    { BST_COMMON_ROLL_TOOL_VSELECT,	vselect_start,	vselect_motion,	vselect_abort,	},
   };
   guint i;
 
   if (drag->type == GXK_DRAG_START)
     {
-      BstGenericRollTool tool = BST_GENERIC_ROLL_TOOL_NONE;
+      BstCommonRollTool tool = BST_COMMON_ROLL_TOOL_NONE;
       BsePartNoteSeq *pseq;
 
       /* setup drag data */

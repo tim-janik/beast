@@ -191,6 +191,10 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 #define BST_STOCK_ADD                   GTK_STOCK_ADD
 #define BST_STOCK_REMOVE                GTK_STOCK_REMOVE
 
+#define BST_STOCK_SELECT_ALL            BST_STOCK_NONE // FIXME
+#define BST_STOCK_SELECT_NONE           BST_STOCK_NONE // FIXME
+#define BST_STOCK_SELECT_INVERT         BST_STOCK_NONE // FIXME
+
 
 /* --- stock actions and aliases --- */
 #define BST_STOCK_NONE                  (NULL)

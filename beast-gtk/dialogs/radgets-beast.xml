@@ -440,7 +440,7 @@
 	  <event-box resize="1">
 	    <hbox>
 	      <frame-shadow-in pack:expand="1" >
-		<piano-roll>
+		<piano-roll> <!-- piano roll popup -->
 		  <popup-menu id="piano-popup" >
 		    <menu-title _label="Piano Notes" />
 		    <menu-separator />
@@ -451,6 +451,9 @@
 		      <menu-factory action-root="" actions="piano-edit-actions" />
 		      <menu-factory action-root="" actions="piano-edit-undo" separator="1" />
 		      <menu-factory action-root="" actions="piano-clear-undo" />
+		    </submenu>
+		    <submenu _label="_Select" >
+		      <menu-factory action-root="" actions="pctrl-select-actions" />
 		    </submenu>
 		    <submenu _label="_Quantization" >
 		      <menu-factory action-root="" actions="pctrl-quant-tools" />
@@ -473,7 +476,7 @@
 	    <hbox>
 	      <vbox spacing="3" pack:expand="1" >
 		<frame-shadow-in pack:expand="1" >
-		  <event-roll>
+		  <event-roll> <!-- event roll popup -->
 		    <popup-menu id="event-popup" >
 		      <menu-title _label="Events" />
 		      <menu-separator />
@@ -484,6 +487,9 @@
 			<menu-factory action-root="" actions="piano-edit-actions" />
 			<menu-factory action-root="" actions="piano-edit-undo" separator="1" />
 			<menu-factory action-root="" actions="piano-clear-undo" />
+		      </submenu>
+		      <submenu _label="_Select" >
+			<menu-factory action-root="" actions="ectrl-select-actions" />
 		      </submenu>
 		      <submenu _label="_Quantization" >
 			<menu-factory action-root="" actions="pctrl-quant-tools" />

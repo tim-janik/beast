@@ -24,6 +24,31 @@
 #define intern_null_string(s,sconst)      (s ? (sconst ? g_intern_static_string : g_intern_string) (s) : NULL)
 #define intern_i18n_string(idom,s,sconst) (intern_null_string (idom && s ? dgettext (idom, s) : s, sconst))
 
+/* --- caching GxkActionCheck() --- */
+#define ACTION_CHECK( func, user_data, action_id)         (!func || action_check_stamped (func, user_data, action_id, TRUE))
+#define ACTION_CHECK_CACHED( func, user_data, action_id)  (!func || action_check_stamped (func, user_data, action_id, FALSE))
+
+static guint64 global_action_cache_stamp = 0x100000000LL;
+
+guint64
+gxk_action_inc_cache_stamp (void)
+{
+  do
+    global_action_cache_stamp += 1;
+  while ((global_action_cache_stamp & 0xffffffff) == 0);
+  return global_action_cache_stamp;
+}
+
+static inline gboolean
+action_check_stamped (GxkActionCheck acheck_func,
+                      gpointer       user_data,
+                      gulong         action_id,
+                      gboolean       alter_stamp)
+{
+  if (alter_stamp)
+    gxk_action_inc_cache_stamp();
+  return acheck_func (user_data, action_id, global_action_cache_stamp) != FALSE;
+}
 
 /* --- action class ---- */
 typedef struct {
@@ -336,7 +361,7 @@ gxk_action_list_force_regulate (GtkWidget *widget)
   ActionEntry *e = g_object_get_qdata (widget, quark_action_entry);
   if (e)
     {
-      gboolean sensitive = !e->klass->acheck || e->klass->acheck (e->klass->user_data, e->action.action_id);
+      gboolean sensitive = ACTION_CHECK (e->klass->acheck, e->klass->user_data, e->action.action_id);
       gboolean active = e->klass->agroup && e->klass->agroup->action_id == e->action.action_id;
       if (e->klass->agroup)
         gxk_action_group_lock (e->klass->agroup);
@@ -365,7 +390,7 @@ gxk_action_activate_callback (gconstpointer action_data)
   g_return_if_fail (e && e->klass && e->klass->ref_count > 0);
   if (!e->klass->agroup || e->klass->agroup->lock_count == 0)
     {
-      if (!e->klass->acheck || e->klass->acheck (e->klass->user_data, e->action.action_id))
+      if (ACTION_CHECK (e->klass->acheck, e->klass->user_data, e->action.action_id))
         {
           if (e->klass->agroup)
             gxk_action_group_select (e->klass->agroup, e->action.action_id);
@@ -510,6 +535,7 @@ static gboolean
 window_action_update_timer (gpointer data)
 {
   GDK_THREADS_ENTER ();
+  gxk_action_inc_cache_stamp();
   while (window_queue)
     {
       GtkWidget *window = g_slist_pop_head (&window_queue);
@@ -550,7 +576,7 @@ window_action_update_timer (gpointer data)
               GSList *wnode;
               if (!e->widgets)
                 continue;
-              sensitive = !e->klass->acheck || e->klass->acheck (e->klass->user_data, e->action.action_id);
+              sensitive = ACTION_CHECK_CACHED (e->klass->acheck, e->klass->user_data, e->action.action_id);
               active = e->klass->agroup && e->klass->agroup->action_id == e->action.action_id;
               if (e->klass->agroup)
                 gxk_action_group_lock (e->klass->agroup);

@@ -44,7 +44,7 @@ struct _BstPartDialog
   GxkDialog	          parent_object;
 
   BstPianoRoll           *proll;
-  BstPianoRollController *pictrl;
+  BstPianoRollController *pctrl;
   BstEventRoll           *eroll;
   BstEventRollController *ectrl;
   BstPatternView         *pview;

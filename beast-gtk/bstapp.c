@@ -41,7 +41,8 @@ static GxkActionList* skin_entries_create         (BstApp      *app);
 static void           app_action_exec             (gpointer     data,
                                                    gulong       action);
 static gboolean       app_action_check            (gpointer     data,
-                                                   gulong       action);
+                                                   gulong       action,
+                                                   guint64      action_stamp);
 static void           bst_app_reload_pages        (BstApp      *self);
 
 
@@ -807,7 +808,7 @@ bst_app_run_script_proc (gpointer data,
 void
 bst_app_show_release_notes (BstApp *app)
 {
-  if (app_action_check (app, ACTION_HELP_RELEASE_NOTES))
+  if (app_action_check (app, ACTION_HELP_RELEASE_NOTES, gxk_action_inc_cache_stamp()))
     app_action_exec (app, ACTION_HELP_RELEASE_NOTES);
 }
 
@@ -1086,7 +1087,8 @@ app_action_exec (gpointer data,
 
 static gboolean
 app_action_check (gpointer data,
-                  gulong   action)
+                  gulong   action,
+                  guint64  action_stamp)
 {
   BstApp *self = BST_APP (data);
   
