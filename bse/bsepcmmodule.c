@@ -101,8 +101,10 @@ bse_pcm_module_poll (gpointer       data,
       if (!debug_hint++)
 	{
 	  gfloat perc = status.n_playback_values_available * 100. / status.total_playback_values;
-	  DEBUG ("free=%f%% latency=%f %s", perc,
-		 handle->playback_watermark / (gfloat) handle->n_channels / handle->mix_freq,
+	  DEBUG ("free=%f%% latency=%f %s",
+		 perc,
+		 (status.total_playback_values - status.n_playback_values_available) /
+		 (handle->mix_freq * (gfloat) handle->n_channels),
 		 perc >= 97.0 ? "**" : "");
 	}
       return TRUE;	/* need to write out stuff now */
@@ -112,8 +114,10 @@ bse_pcm_module_poll (gpointer       data,
   fillmark /= handle->n_channels;
   *timeout_p = fillmark * 1000.0 / mdata->handle->mix_freq;
 
-  DEBUG ("free=%f%% latency=%f", status.n_playback_values_available * 100. / status.total_playback_values,
-	 handle->playback_watermark / (gfloat) handle->n_channels / handle->mix_freq);
+  DEBUG ("free=%f%% latency=%f",
+	 status.n_playback_values_available * 100. / status.total_playback_values,
+	 (status.total_playback_values - status.n_playback_values_available) /
+	 (handle->mix_freq * (gfloat) handle->n_channels));
   debug_hint = 0;
 
   return *timeout_p == 0;
