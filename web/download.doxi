@@ -79,10 +79,10 @@ and on occasions may produce invalid @file{.bse} files.
 
 Stock
 @uref{http://www.debian.org,,Debian}
-@uref{http://packages.debian.org/unstable/,,unstable} already ships
-@uref{http://packages.qa.debian.org/b/beast.html,,beast package}s,
-so to install beast, a simple:
-@example
+@uref{http://packages.debian.org/unstable/,,unstable} and
+@uref{http://packages.debian.org/testing/,,testing} already ship
+recent @uref{http://packages.qa.debian.org/b/beast.html,,beast package}s,
+so to install beast, a simple: @example
 $ apt-get update
 $ apt-get install beast
 @end example
@@ -92,13 +92,7 @@ For SuSE 8.2,
 @uref{mailto://gwaluga@@computerbraxas.de,,Gregor Waluga}
 has written a small
 @uref{http://linux.waluga.de/beast/BEAST-installation under-SuSE 82.txt,,HOWTO in english and german}
-about installing @beast{}.
-The related RPMs are available here:
-@* @uref{http://linux.waluga.de/beast/beast-0.5.3-1.i386.rpm}
-@* @uref{http://linux.waluga.de/beast/gtk+-2.2.2-1.i386.rpm}
-@* @uref{http://linux.waluga.de/beast/guile-1.6.4-1.i386.rpm}
-@* @uref{http://linux.waluga.de/beast/libgnomecanvas-2.3.0-1.i386.rpm}
-@* @uref{http://linux.waluga.de/beast/libmad-0.15.0b-1.i386.rpm}
+about installing @beast{} and created the related RPMs.
 
 
 @bye
