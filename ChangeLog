@@ -1,3 +1,21 @@
+Thu Jan 24 11:19:31 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvaslink.c: colorize jchannel connection tags
+	differently.
+
+	* beast-gtk/bstcanvassource.[hc]: provide API to figure whether an
+	input channel is a jchannel.
+	colorize jchannels differently.
+
+	* beast-gtk/bstsnetrouter.c:
+	(bst_snet_router_update_links): walk jchannels correctly. use
+	bsw_*() functions, don't access BseSource directly.
+	(bst_snet_router_root_event): don't access BseSource directly, use
+	bsw_source_ichannel_get_n_joints() to figure possible input
+	connections.
+	provide bsw_source_unset_input() with the output source and channel
+	that are to be disconnected.
+
 Thu Jan 24 07:18:14 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.c (gnome_canvas_FIXME_hard_update): try disabling

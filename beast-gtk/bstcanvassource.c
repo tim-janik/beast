@@ -426,6 +426,18 @@ bst_canvas_source_at (GnomeCanvas *canvas,
   return (BstCanvasSource*) gnome_canvas_typed_item_at (canvas, BST_TYPE_CANVAS_SOURCE, world_x, world_y);
 }
 
+gboolean
+bst_canvas_source_is_jchannel (BstCanvasSource *csource,
+			       guint            ichannel)
+{
+  g_return_val_if_fail (BST_IS_CANVAS_SOURCE (csource), FALSE);
+
+  if (!csource->source)
+    return FALSE;
+
+  return bsw_source_is_joint_ichannel (csource->source, ichannel);
+}
+
 void
 bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
 				guint            ochannel,
@@ -565,12 +577,14 @@ channel_item_remove (BstCanvasSource *csource,
 static void
 bst_canvas_source_build_channels (BstCanvasSource *csource,
 				  gboolean         is_input,
-				  gint             color,
-				  gint		   color_fade)
+				  gint             color1,
+				  gint		   color1_fade,
+				  gint		   color2,
+				  gint		   color2_fade)
 {
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (csource);
   const guint alpha = 0xa0;
-  gint n_channels, color_delta = 0;
+  gint n_channels, color1_delta = 0, color2_delta = 0;
   gdouble x1, x2, y1, y2;
   gdouble d_y;
   guint i;
@@ -595,10 +609,15 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
     {
       gint cd_red, cd_blue, cd_green;
 
-      cd_red = ((color_fade & 0xff0000) - (color & 0xff0000)) / (n_channels - 1);
-      cd_green = ((color_fade & 0x00ff00) - (color & 0x00ff00)) / (n_channels - 1);
-      cd_blue = ((color_fade & 0x0000ff) - (color & 0x0000ff)) / (n_channels - 1);
-      color_delta = (cd_red & ~0xffff) + (cd_green & ~0xff) + cd_blue;
+      cd_red = ((color1_fade & 0xff0000) - (color1 & 0xff0000)) / (n_channels - 1);
+      cd_green = ((color1_fade & 0x00ff00) - (color1 & 0x00ff00)) / (n_channels - 1);
+      cd_blue = ((color1_fade & 0x0000ff) - (color1 & 0x0000ff)) / (n_channels - 1);
+      color1_delta = (cd_red & ~0xffff) + (cd_green & ~0xff) + cd_blue;
+
+      cd_red = ((color2_fade & 0xff0000) - (color2 & 0xff0000)) / (n_channels - 1);
+      cd_green = ((color2_fade & 0x00ff00) - (color2 & 0x00ff00)) / (n_channels - 1);
+      cd_blue = ((color2_fade & 0x0000ff) - (color2 & 0x0000ff)) / (n_channels - 1);
+      color2_delta = (cd_red & ~0xffff) + (cd_green & ~0xff) + cd_blue;
     }
   else if (n_channels == 0)
     {
@@ -622,11 +641,13 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   for (i = 0; i < n_channels; i++)
     {
       GnomeCanvasItem *item;
+      gboolean is_jchannel = is_input && bsw_source_is_joint_ichannel (csource->source, i);
+      guint tmp_color = is_jchannel ? color2 : color1;
 
       y2 = y1 + d_y;
       item = g_object_connect (gnome_canvas_item_new (group,
 						      GNOME_TYPE_CANVAS_RECT,
-						      "fill_color_rgba", (color << 8) | alpha,
+						      "fill_color_rgba", (tmp_color << 8) | alpha,
 						      "outline_color_rgba", RGBA_BLACK,
 						      "x1", x1,
 						      "y1", y1,
@@ -637,7 +658,8 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
 			       "swapped_signal::event", bst_canvas_source_child_event, csource,
 			       NULL);
       csource->channel_items = g_slist_prepend (csource->channel_items, item);
-      color += color_delta;
+      color1 += color1_delta;
+      color2 += color2_delta;
       y1 = y2;
     }
 }
@@ -688,10 +710,12 @@ bst_canvas_source_build (BstCanvasSource *csource)
     gtk_object_destroy (csource->channel_items->data);
   bst_canvas_source_build_channels (csource,
 				    TRUE, /* input channels */
-				    0xffff00, 0x808000);
+				    0xffff00, 0x808000,	  /* ichannels */
+				    0x00afff, 0x005880);  /* jchannels */
   bst_canvas_source_build_channels (csource,
 				    FALSE, /* output channels */
-				    0xff0000, 0x800000);
+				    0xff0000, 0x800000,
+				    0, 0); /* unused */
 
   /* put line above and below the icon
    */

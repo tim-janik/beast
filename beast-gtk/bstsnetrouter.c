@@ -662,42 +662,49 @@ bst_snet_router_update_links (BstSNetRouter   *router,
    */
   for (i = 0; i < bsw_source_n_ichannels (csource->source); i++)
     {
-      BseSourceInput *input = BSE_SOURCE_INPUT (bse_object_from_id (csource->source), i);
-      BstCanvasSource *ocsource;
-      BstCanvasLink *link = NULL;
+      guint j, ochannel, n_joints = bsw_source_ichannel_get_n_joints (csource->source, i);
 
-      if (!input->osource)
-	continue;
-      ocsource = bst_snet_router_csource_from_source (router, BSE_OBJECT_ID (input->osource));
-      if (!ocsource)
+      for (j = 0; j < n_joints; j++)
 	{
-	  g_warning ("Couldn't figure CanvasSource Item From BseSource");
-	  continue;
-	}
-      
-      /* find corresponding link */
-      for (slist = ilist; slist; slist = slist->next)
-	{
-	  link = slist->data;
-	  if (!link)
+	  BswProxy osource = bsw_source_ichannel_get_osource (csource->source, i, j);
+	  BstCanvasSource *ocsource;
+	  BstCanvasLink *link = NULL;
+
+	  if (!osource)
 	    continue;
 
-	  if (link->ichannel == i &&
-	      link->ocsource == ocsource &&
-	      link->ochannel == input->ochannel)
-	    break;
+	  ochannel = bsw_source_ichannel_get_ochannel (csource->source, i, j);
+	  ocsource = bst_snet_router_csource_from_source (router, osource);
+	  if (!ocsource)
+	    {
+	      g_warning ("Couldn't figure CanvasSource Item From BseSource (%u)", osource);
+	      continue;
+	    }
+
+	  /* find corresponding link */
+	  for (slist = ilist; slist; slist = slist->next)
+	    {
+	      link = slist->data;
+	      if (!link)
+		continue;
+	      
+	      if (link->ichannel == i &&
+		  link->ocsource == ocsource &&
+		  link->ochannel == ochannel)
+		break;
+	    }
+	  if (slist) /* cool, found one already */
+	    slist->data = NULL;
+	  else /* got none, ok, need to create new one */
+	    {
+	      link = g_object_ref (bst_canvas_link_new (GNOME_CANVAS_GROUP (canvas->root)));
+	      bst_canvas_link_set_icsource (link, csource, i);
+	      bst_canvas_link_set_ocsource (link, ocsource, ochannel);
+	      /* queue update cause ellipse-rect is broken */
+	      gnome_canvas_FIXME_hard_update (canvas);
+	    }
+	  router->link_list = g_slist_prepend (router->link_list, link);
 	}
-      if (slist) /* cool, found one already */
-	slist->data = NULL;
-      else /* got none, ok, need to create new one */
-	{
-	  link = g_object_ref (bst_canvas_link_new (GNOME_CANVAS_GROUP (canvas->root)));
-	  bst_canvas_link_set_icsource (link, csource, i);
-	  bst_canvas_link_set_ocsource (link, ocsource, input->ochannel);
-	  /* queue update cause ellipse-rect is broken */
-	  gnome_canvas_FIXME_hard_update (canvas);
-	}
-      router->link_list = g_slist_prepend (router->link_list, link);
     }
 
   /* gotta nuke outdated links now */
@@ -887,12 +894,10 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 						": ",
 						bsw_item_get_name (csource->source),
 						NULL);
-	      gboolean has_inputs = FALSE;
-	      guint i;
+	      guint i, has_inputs = 0;
 	      
-	      for (i = 0; i < bsw_source_n_ichannels (csource->source); i++)
-		if (BSE_SOURCE_INPUT (bse_object_from_id (csource->source), i)->osource != NULL)
-		  has_inputs = TRUE;
+	      for (i = 0; has_inputs == 0 && i < bsw_source_n_ichannels (csource->source); i++)
+		has_inputs += bsw_source_ichannel_get_n_joints (csource->source, i);
 	      choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
 						BST_CHOICE_TITLE (source_name),
 						BST_CHOICE_SEPERATOR,
@@ -942,7 +947,8 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      switch (bst_choice_modal (choice, event->button.button, event->button.time))
 		{
 		case 1:
-		  bsw_source_unset_input (clink->icsource->source, clink->ichannel);
+		  bsw_source_unset_input (clink->icsource->source, clink->ichannel,
+					  clink->ocsource->source, clink->ochannel);
 		  break;
 		case 2:
 		  bst_canvas_link_popup_view (clink);

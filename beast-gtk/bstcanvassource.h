@@ -78,6 +78,8 @@ void		 bst_canvas_source_ichannel_pos	(BstCanvasSource  *csource,
 						 guint             ichannel,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
+gboolean	 bst_canvas_source_is_jchannel	(BstCanvasSource  *csource,
+						 guint             ichannel);
 guint		 bst_canvas_source_ichannel_at  (BstCanvasSource  *csource,
 						 gdouble           world_x,
 						 gdouble           world_y);

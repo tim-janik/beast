@@ -321,7 +321,8 @@ bst_canvas_link_update (BstCanvasLink *clink)
   GnomeCanvasItem *item = GNOME_CANVAS_ITEM (clink);
   GnomeCanvasPoints *gpoints;
   gdouble start_x = 0, start_y = 0, end_x = 10, end_y = 10;
-  
+  gboolean is_jchannel = FALSE;
+
   if (clink->ocsource)
     {
       bst_canvas_source_ochannel_pos (clink->ocsource, clink->ochannel, &start_x, &start_y);
@@ -330,6 +331,7 @@ bst_canvas_link_update (BstCanvasLink *clink)
   if (clink->icsource)
     {
       bst_canvas_source_ichannel_pos (clink->icsource, clink->ichannel, &end_x, &end_y);
+      is_jchannel = bst_canvas_source_is_jchannel (clink->icsource, clink->ichannel);
       gnome_canvas_item_w2i (item, &end_x, &end_y);
     }
   if (clink->ocsource && clink->icsource)
@@ -360,7 +362,7 @@ bst_canvas_link_update (BstCanvasLink *clink)
     clink->tag_end = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
 							      GNOME_TYPE_CANVAS_ELLIPSE,
 							      "outline_color_rgba", 0x000000ff, // 0xff0000ff,
-							      "fill_color_rgba", 0xff0000ff,
+							      "fill_color_rgba", is_jchannel ? 0x00ff00ff : 0xff0000ff,
 							      NULL),
 				       "signal::destroy", gtk_widget_destroyed, &clink->tag_end,
 				       "swapped_signal::event", bst_canvas_link_child_event, clink,
