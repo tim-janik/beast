@@ -12,6 +12,7 @@
 * Pattern editor keytable display
 * Simple sample views for samples used in a project
 * More test files in the test/ subdirectory ;)
+* Vast amounts of code cleanups and bug fixes ;)
 
 Overview of Changes in BEAST/BSE 0.3.1:
 

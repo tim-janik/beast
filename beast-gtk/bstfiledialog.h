@@ -61,6 +61,15 @@ GtkWidget*	bst_text_view_from		(GString	*gstring,
 						 const gchar	*file_name,
 						 const gchar    *font_name,
 						 const gchar    *font_fallback);
+GtkWidget*	bst_wrap_text_create		(const gchar    *string,
+						 gboolean        double_newlines,
+						 gpointer	 user_data);
+void		bst_wrap_text_set		(GtkWidget	*text,
+						 const gchar    *string,
+						 gboolean        dounle_newlines,
+						 gpointer	 user_data);
+
+
 
 
 

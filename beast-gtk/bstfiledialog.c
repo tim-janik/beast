@@ -341,3 +341,78 @@ bst_text_view_from (GString     *gstring,
       
   return hbox;
 }
+
+static void
+undo_base_background (GtkWidget *widget)
+{
+  GtkRcStyle *rc_style = gtk_rc_style_new ();
+
+  rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BASE;
+  rc_style->base[GTK_STATE_NORMAL].red = widget->style->bg[GTK_STATE_NORMAL].red;
+  rc_style->base[GTK_STATE_NORMAL].green = widget->style->bg[GTK_STATE_NORMAL].green;
+  rc_style->base[GTK_STATE_NORMAL].blue = widget->style->bg[GTK_STATE_NORMAL].blue;
+  gtk_widget_modify_style (widget, rc_style);
+}
+
+static void
+tweak_text_resize (GtkText *text)
+{
+  GtkAllocation *allocation = &GTK_WIDGET (text)->allocation;
+
+  if (text->text_area)
+    gdk_window_move_resize (text->text_area,
+			    0, 0,
+			    allocation->width,
+			    allocation->height);
+  gtk_adjustment_set_value (text->vadj, 0);
+}
+
+GtkWidget*
+bst_wrap_text_create (const gchar *string,
+		      gboolean     double_newlines,
+		      gpointer     user_data)
+{
+  GtkWidget *text;
+
+  text = gtk_widget_new (GTK_TYPE_TEXT,
+			 "visible", TRUE,
+			 "editable", FALSE,
+			 "word_wrap", TRUE,
+			 "line_wrap", TRUE,
+			 "can_focus", FALSE,
+			 "signal_after::realize", undo_base_background, NULL, // FIXME
+			 "signal_after::realize", tweak_text_resize, NULL, // FIXME
+			 "signal_after::size_allocate", tweak_text_resize, NULL, // FIXME
+			 NULL);
+  bst_wrap_text_set (text, string, double_newlines, user_data);
+
+  return text;
+}
+
+void
+bst_wrap_text_set (GtkWidget   *text,
+		   const gchar *string,
+		   gboolean     double_newlines,
+		   gpointer     user_data)
+{
+  g_return_if_fail (GTK_IS_TEXT (text));
+
+  gtk_editable_delete_text (GTK_EDITABLE (text), 0, -1);
+  if (string)
+    {
+      GString *gstring = g_string_new (string);
+
+      if (double_newlines)
+	{
+	  gint i;
+
+	  for (i = 0; i < gstring->len; i++)
+	    if (gstring->str[i] == '\n')
+	      g_string_insert_c (gstring, i++, '\n');
+	}
+      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
+      g_string_free (gstring, TRUE);
+    }
+  gtk_object_set_user_data (GTK_OBJECT (text), user_data);
+  gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
+}

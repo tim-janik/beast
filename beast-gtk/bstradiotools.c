@@ -15,9 +15,10 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bstradiotools.h"
+#include	"bstradiotools.h"
 
-#include <ctype.h>
+#include	"bstfiledialog.h"
+#include	<ctype.h>
 
 
 /* --- defines --- */
@@ -334,46 +335,18 @@ bst_radio_tools_build_toolbar (BstRadioTools *rtools,
 
 static void
 toggle_apply_blurb (GtkToggleButton *toggle,
-		    GtkText         *text)
+		    GtkWidget       *text)
 {
   gpointer tool_id = gtk_object_get_data (GTK_OBJECT (toggle), "user_data");
   gpointer blurb_id = gtk_object_get_data (GTK_OBJECT (text), "user_data");
 
   if (tool_id == blurb_id && !toggle->active)
-    {
-      gtk_object_set_data (GTK_OBJECT (text), "user_data", GUINT_TO_POINTER (~0));
-      gtk_editable_delete_text (GTK_EDITABLE (text), 0, -1);
-    }
+    bst_wrap_text_set (text, NULL, FALSE, GUINT_TO_POINTER (~0));
   else if (toggle->active && tool_id != blurb_id)
-    {
-      GString *gstring = g_string_new (gtk_object_get_data (GTK_OBJECT (toggle), "blurb"));
-      guint i;
-      
-      gtk_object_set_data (GTK_OBJECT (text), "user_data", tool_id);
-      
-      gtk_editable_delete_text (GTK_EDITABLE (text), 0, -1);
-      
-      /* double newlines */
-      for (i = 0; i < gstring->len; i++)
-	if (gstring->str[i] == '\n')
-	  g_string_insert_c (gstring, i++, '\n');
-      if (gstring->str)
-	gtk_text_insert (text, NULL, NULL, NULL, gstring->str, gstring->len);
-      g_string_free (gstring, TRUE);
-      gtk_adjustment_set_value (text->vadj, 0);
-    }
-}
-
-static void
-undo_base_background (GtkWidget *widget)
-{
-  GtkRcStyle *rc_style = gtk_rc_style_new ();
-  
-  rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BASE;
-  rc_style->base[GTK_STATE_NORMAL].red = widget->style->bg[GTK_STATE_NORMAL].red;
-  rc_style->base[GTK_STATE_NORMAL].green = widget->style->bg[GTK_STATE_NORMAL].green;
-  rc_style->base[GTK_STATE_NORMAL].blue = widget->style->bg[GTK_STATE_NORMAL].blue;
-  gtk_widget_modify_style (widget, rc_style);
+    bst_wrap_text_set (text,
+		       gtk_object_get_data (GTK_OBJECT (toggle), "blurb"),
+		       TRUE,
+		       tool_id);
 }
 
 GtkWidget*
@@ -398,15 +371,7 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
   gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, TRUE, 0);
   if (show_descriptions)
     {
-      text = gtk_widget_new (GTK_TYPE_TEXT,
-			     "visible", TRUE,
-			     "editable", FALSE,
-			     "word_wrap", TRUE,
-			     "line_wrap", TRUE,
-			     "user_data", GUINT_TO_POINTER (~0),
-			     "can_focus", FALSE,
-			     "signal_after::realize", undo_base_background, NULL, // FIXME
-			     NULL);
+      text = bst_wrap_text_create (NULL, FALSE, GUINT_TO_POINTER (~0));
       gtk_widget_ref (text);
       gtk_object_sink (GTK_OBJECT (text));
     }

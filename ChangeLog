@@ -1,3 +1,9 @@
+Thu Feb 10 03:27:49 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c (bst_procedure_dialog_rebuild): some
+	visibility improvements, i.e. gimme the description and name.
+	* minor code cleanups.
+
 Wed Feb  9 13:37:09 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/*.c: some changes due to BSE's parameter mess.

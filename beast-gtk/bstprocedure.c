@@ -15,9 +15,10 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bstprocedure.h"
+#include	"bstprocedure.h"
 
-#include "bststatusbar.h"
+#include	"bststatusbar.h"
+#include	"bstfiledialog.h"
 
 
 /* --- prototypes --- */
@@ -149,6 +150,7 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
   BseProcedureClass *proc;
   GtkWidget *param_box, *any;
   GSList *slist, *pspec_array_list = NULL;
+  gchar *string;
   guint is_out_param = 0;
 
   g_return_if_fail (BST_IS_PROCEDURE_DIALOG (procedure_dialog));
@@ -165,6 +167,38 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
 			      "spacing", 0,
 			      "border_width", 5,
 			      NULL);
+
+  /* put procedure title
+   */
+  string = strchr (proc->name, ':');
+  if (string && string[1] == ':')
+    string +=2;
+  else
+    string = proc->name;
+  gtk_box_pack_start (GTK_BOX (param_box),
+		      gtk_widget_new (GTK_TYPE_LABEL,
+				      "visible", TRUE,
+				      "label", string,
+				      NULL),
+		      FALSE,
+		      TRUE,
+		      0);
+
+  /* put description
+   */
+  if (proc->blurb)
+    {
+      gtk_widget_new (GTK_TYPE_FRAME,
+		      "visible", TRUE,
+		      "label", "Description",
+		      "label_xalign", 0.0,
+		      "border_width", 5,
+		      "width", 1,
+		      "height", 50,
+		      "child", bst_wrap_text_create (proc->blurb, TRUE, NULL),
+		      "parent", param_box,
+		      NULL);
+    }
 
   /* parameter fields
    */
@@ -187,8 +221,8 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
 					   BSE_TYPE_PROCEDURE,
 					   *pspec_p,
 					   (slist->next
-					    ? g_quark_from_static_string ("Output Parameters")
-					    : g_quark_from_static_string ("Input Parameters")),
+					    ? g_quark_from_static_string ("Input Parameters")
+					    : g_quark_from_static_string ("Output Parameters")),
 					   param_box,
 					   GTK_TOOLTIPS (procedure_dialog->tooltips));
 		procedure_dialog->bparams = g_slist_append (procedure_dialog->bparams, bparam);
@@ -296,7 +330,9 @@ bst_procedure_dialog_get_global (void)
       global_procedure_dialog = bst_subwindow_new (NULL,
 						   &global_procedure_dialog,
 						   bst_procedure_dialog_new (NULL),
-						   BST_SUB_POPUP_POS, NULL);
+						   BST_SUB_POPUP_POS,
+						   "title", "BEAST: Procedure",
+						   NULL);
       bst_status_bar_ensure (GTK_WINDOW (global_procedure_dialog));
     }
   
@@ -390,6 +426,7 @@ bst_procedure_void_execpl_modal (BseProcedureClass *proc,
       GtkWidget *dialog = bst_subwindow_new (NULL, &dialog,
 					     widget,
 					     BST_SUB_DESTROY_ON_HIDE | BST_SUB_POPUP_POS | BST_SUB_MODAL,
+					     "title", "BEAST: Procedure",
 					     NULL);
       proc_dialog->one_shot_exec = TRUE;
       gtk_widget_show (dialog);
