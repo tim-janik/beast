@@ -1,3 +1,8 @@
+Wed Jan 21 03:26:00 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testplugin.*: Commented out TestRecord (doesn't compile right
+	now).
+
 Tue Jan 20 23:22:43 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* beast-gtk/bstrecords.idl: Added "using namespace Sfi;".

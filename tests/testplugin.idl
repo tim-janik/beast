@@ -30,6 +30,7 @@ choice FunkynessType {
 };
 
 // test record
+/* doesn't work yet
 record TestRecord {
   Int           i;
   String        str;
@@ -37,7 +38,8 @@ record TestRecord {
 };
 
 // adds i and str to the record given by rec
-// TestRecord record_add (TestRecord rec, Int i, String str);
+TestRecord record_add (TestRecord rec, Int i, String str);
+*/
 
 // test effect
 class TestObject : Bse::Effect {

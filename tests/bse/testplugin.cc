@@ -62,6 +62,7 @@ Procedure::test_exception::exec (SfiInt        i,
 
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ENUM (FunkynessType);
+// BSE_CXX_REGISTER_RECORD (TestRecord);
 BSE_CXX_REGISTER_EFFECT (TestObject);
 BSE_CXX_REGISTER_PROCEDURE (test_exception);
 
