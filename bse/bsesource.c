@@ -1218,6 +1218,8 @@ bse_source_set_input (BseSource *source,
     }
   else if (BSE_SOURCE_INPUT (source, ichannel)->idata.osource)
     return BSE_ERROR_SOURCE_ICHANNEL_IN_USE;
+  if (bse_source_test_input_recursive (osource, source))
+    return BSE_ERROR_SOURCE_BAD_LOOPBACK;
 
   g_object_ref (source);
   g_object_ref (osource);
@@ -1408,6 +1410,40 @@ bse_source_free_collection (SfiRing *ring)
       BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_COLLECTED);
     }
   sfi_ring_free (ring);
+}
+
+static gboolean
+ring_search_backwards (SfiRing *ring,
+                       SfiRing *bound,
+                       void    *data)
+{
+  while (ring != bound)
+    if (ring->data == data)
+      return TRUE;
+    else
+      ring = ring->prev;
+  return FALSE;
+}
+
+gboolean
+bse_source_test_input_recursive (BseSource      *source,
+                                 BseSource      *test)
+{
+  SfiRing *node, *last, *ring = NULL;
+
+  g_return_val_if_fail (BSE_IS_SOURCE (source) && BSE_IS_SOURCE (test), FALSE);
+
+  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_COLLECTED);
+  last = ring = sfi_ring_append (NULL, source);
+  gboolean match = last->data == test;
+  for (node = ring; node && !match; node = sfi_ring_walk (node, ring))
+    {
+      ring = collect_inputs_flat (ring, node->data);
+      match = ring_search_backwards (ring->prev, last, test);
+      last = ring->prev;
+    }
+  bse_source_free_collection (ring);
+  return match;
 }
 
 void

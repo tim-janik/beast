@@ -415,7 +415,7 @@ list_items (BseItem *item,
 }
 
 BseItemSeq*
-bse_container_list_items (BseContainer *container)
+bse_container_list_children (BseContainer *container)
 {
   BseItemSeq *iseq;
   

@@ -20,7 +20,6 @@
 #include "bsetrack.h"
 #include "bsepart.h"
 #include "bsesongbus.h"
-#include "bsecontextmerger.h"
 #include "bsepcmoutput.h"
 #include "bseproject.h"
 #include "bsemidireceiver.h"
@@ -124,8 +123,6 @@ bse_song_finalize (GObject *object)
 {
   BseSong *self = BSE_SONG (object);
 
-  bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->context_merger));
-  self->context_merger = NULL;
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->postprocess));
   self->postprocess = NULL;
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->output));
@@ -406,7 +403,7 @@ bse_song_add_item (BseContainer *container,
   BseSong *self = BSE_SONG (container);
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
-    bse_track_add_modules (BSE_TRACK (item), container, self->midi_receiver_SL, self->context_merger);
+    bse_track_add_modules (BSE_TRACK (item), container, self->midi_receiver_SL);
 
   BSE_SEQUENCER_LOCK ();
 
@@ -414,7 +411,7 @@ bse_song_add_item (BseContainer *container,
     self->tracks_SL = sfi_ring_append (self->tracks_SL, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
     self->parts = sfi_ring_append (self->parts, item);
-  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SONG_BUS))
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
     self->busses = sfi_ring_append (self->busses, item);
   else
     /* parent class manages other BseSources */ ;
@@ -480,7 +477,7 @@ bse_song_remove_item (BseContainer *container,
 	bse_item_queue_seqid_changed (tmp->data);
       self->parts = sfi_ring_remove_node (self->parts, ring);
     }
-  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SONG_BUS))
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
     {
       SfiRing *tmp, *ring = sfi_ring_find (self->busses, item);
       for (tmp = sfi_ring_walk (ring, self->busses); tmp; tmp = sfi_ring_walk (tmp, self->busses))
@@ -594,9 +591,9 @@ bse_song_stop_sequencing_SL (BseSong *self)
 }
 
 BseSource*
-bse_song_create_merger (BseSong *self)
+bse_song_create_summation (BseSong *self)
 {
-  BseSource *merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER,
+  BseSource *merger = bse_container_new_child (BSE_CONTAINER (self), g_type_from_name ("BseSummation"),
                                                "uname", "Merger", NULL);
   bse_snet_intern_child (BSE_SNET (self), merger);
   return merger;
@@ -605,10 +602,14 @@ bse_song_create_merger (BseSong *self)
 BseSource*
 bse_song_get_master (BseSong *self)
 {
-  if (!self->master_bus)
+  if (!self->master_bus && self->postprocess)
     {
-      self->master_bus = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_SONG_BUS, "Master", NULL);
+      self->master_bus = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, "Master", NULL);
       bse_snet_intern_child (BSE_SNET (self), self->master_bus);
+      bse_source_must_set_input (self->postprocess, 0,
+                                 self->master_bus, 0);
+      bse_source_must_set_input (self->postprocess, 1,
+                                 self->master_bus, 1);
     }
   return self->master_bus;
 }
@@ -644,12 +645,6 @@ bse_song_init (BseSong *self)
   self->loop_left_SL = -1;
   self->loop_right_SL = -1;
 
-  /* context merger */
-  self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER,
-                                                  "uname", "Track-Merger",
-                                                  NULL);
-  bse_snet_intern_child (snet, self->context_merger);
-
   /* post processing slot */
   self->postprocess = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
                                                "uname", "Postprocess",
@@ -658,11 +653,7 @@ bse_song_init (BseSong *self)
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
 
   /* context merger <-> postprocess */
-  bse_source_must_set_input (self->postprocess, 0,
-			     self->context_merger, 0);
-  bse_source_must_set_input (self->postprocess, 1,
-			     self->context_merger, 1);
-
+  
   /* output */
   self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   bse_snet_intern_child (snet, self->output);

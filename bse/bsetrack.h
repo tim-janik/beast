@@ -74,8 +74,7 @@ struct _BseTrackClass
 /* --- prototypes -- */
 void	bse_track_add_modules		(BseTrack		*self,
 					 BseContainer		*container,
-                                         BseMidiReceiver        *midi_receiver,
-					 BseSource		*merger);
+                                         BseMidiReceiver        *midi_receiver);
 void    bse_track_connect_sniffer       (BseTrack               *self,
                                          BseSource              *source);
 void	bse_track_remove_modules	(BseTrack		*self,
@@ -85,6 +84,7 @@ void	bse_track_clone_voices		(BseTrack		*self,
 					 guint			 context,
                                          BseMidiContext          mcontext,
 					 GslTrans		*trans);
+BseSource*       bse_track_get_output   (BseTrack               *self);
 guint        	 bse_track_insert_part	(BseTrack		*self,
 					 guint			 tick,
 					 BsePart		*part);

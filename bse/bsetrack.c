@@ -705,12 +705,10 @@ bse_track_get_part_SL (BseTrack *self,
 void
 bse_track_add_modules (BseTrack        *self,
 		       BseContainer    *container,
-                       BseMidiReceiver *midi_receiver,
-		       BseSource       *merger)
+                       BseMidiReceiver *midi_receiver)
 {
   g_return_if_fail (BSE_IS_TRACK (self));
   g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_SOURCE (merger));
   g_return_if_fail (self->sub_synth == NULL);
   g_return_if_fail (midi_receiver != NULL);
 
@@ -774,12 +772,14 @@ bse_track_add_modules (BseTrack        *self,
   bse_source_must_set_input (self->postprocess, 0, self->context_merger, 0);
   bse_source_must_set_input (self->postprocess, 1, self->context_merger, 1);
 
-  /* postprocess <-> container's merger */
-  bse_source_must_set_input (merger, 0, self->postprocess, 0);
-  bse_source_must_set_input (merger, 1, self->postprocess, 1);
-
   /* propagate midi channel to modules */
   bse_track_update_midi_channel (self);
+}
+
+BseSource*
+bse_track_get_output (BseTrack *self)
+{
+  return self->postprocess;
 }
 
 void

@@ -128,6 +128,7 @@ bse_proc_sources = $(strip \
 	bsescripthelper.proc \
 	bseserver.proc \
 	bsesong.proc \
+	bsesongbus.proc \
 	bsesource.proc \
 	bsecsynth.proc \
 	bsesnet.proc \
@@ -152,6 +153,7 @@ bse_proc_gen_sources = $(strip \
 	bsescripthelper.gen-proc.c \
 	bseserver.gen-proc.c \
 	bsesong.gen-proc.c \
+	bsesongbus.gen-proc.c \
 	bsesource.gen-proc.c \
 	bsecsynth.gen-proc.c \
 	bsesnet.gen-proc.c \

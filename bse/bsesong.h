@@ -49,10 +49,9 @@ struct _BseSong
   gfloat            volume_factor;      /* 1-based factor */
   
   SfiRing          *parts;              /* of type BsePart* */
-  SfiRing          *busses;             /* of type BseSongBus* */
+  SfiRing          *busses;             /* of type BseBus* */
   BseSource        *master_bus;
 
-  BseSource	   *context_merger;
   BseSource	   *postprocess;
   BseSource	   *output;
 
@@ -90,7 +89,7 @@ void		bse_song_get_timing		(BseSong	*self,
 						 guint		 tick,
 						 BseSongTiming	*timing);
 void		bse_song_timing_get_default	(BseSongTiming	*timing);
-BseSource*      bse_song_create_merger          (BseSong        *self);
+BseSource*      bse_song_create_summation       (BseSong        *self);
 BseSource*      bse_song_get_master             (BseSong        *self);
 
 G_END_DECLS

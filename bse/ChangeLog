@@ -1,3 +1,31 @@
+Tue Jul 13 21:59:07 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.proc:
+	* bsecontainer.[hc]: renamed bse_container_list_items() to
+	bse_container_list_children(), since there's a corresponding 
+	BseItem method already. adapted callers.
+
+	* bsesong.proc:
+	* bsesong.[hc]: got rid of track merger object, as the master
+	bus takes care of merging track outputs now. s/SongBus/Bus/.
+	(bse_song_create_summation): funciton name fixup.
+	(ensure-output-busses): fixup procedure for GUIs.
+	(ensure-track-links): fixup procedure for GUIs, not currently
+	functional.
+
+	* bsesongbus.proc: 
+	* bsesongbus.[hc]: s/SongBus/Bus/.
+	implemented proper connect/disconnect handling of busses and tracks.
+	can stand some optimization, so that 1:1 conenction don't use a
+	summation object (which means an extra block copy in engine modules).
+
+	* bsesource.[hc]: implemented bse_source_test_input_recursive() to
+	catch cycles before they are created.
+	(bse_source_set_input): catch cyclic connections and return BAD_LOOPBACK.
+
+	* bsetrack.[hc]: got rid of the merger arg in bse_track_add_modules().
+	(bse_track_get_output): provide ouput module.
+
 Sun Jul 11 23:42:58 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesource.[hc]: support flat (direct) input object collection.
