@@ -139,6 +139,25 @@ bse_module_has_source (BseModule *module,
 }
 
 /**
+ * bse_module_is_scheduled
+ * @module:  a BSE Engine Module
+ * @RETURNS: whether the module is scheduled
+ *
+ * Check whether @module is part of the schedule required to
+ * calculate the signal flow up to the consumer modules.
+ * This state may frequently change with for instance connection
+ * changes of other modules.
+ * This function is MT-safe and may be called from any thread.
+ */
+gboolean
+bse_module_is_scheduled (BseModule *module)
+{
+  g_return_val_if_fail (module != NULL, FALSE);
+  EngineNode *node = ENGINE_NODE (module);
+  return ENGINE_NODE_IS_INTEGRATED (node) && ENGINE_NODE_IS_SCHEDULED (node);
+}
+
+/**
  * bse_job_integrate
  * @module: The module to integrate
  * @Returns: New job suitable for bse_trans_add()
@@ -854,14 +873,31 @@ bse_job_add_timer (BseEngineTimerFunc timer_func,
 BseJob*
 bse_job_debug (const gchar *debug)
 {
-  BseJob *job;
-  
   g_return_val_if_fail (debug != NULL, NULL);
   
-  job = sfi_new_struct0 (BseJob, 1);
-  job->job_id = ENGINE_JOB_DEBUG;
-  job->data.debug = g_strdup (debug);
-  
+  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  job->job_id = ENGINE_JOB_MESSAGE;
+  job->data.message = g_strdup (debug);
+  return job;
+}
+
+/**
+ * bse_job_nop
+ * @Returns: New job suitable for bse_trans_add()
+ *
+ * Create a new transaction job which does nothing.
+ * The job enforces a roundtrip to the engine's master
+ * thread however, which may be relevant when comitting
+ * otherwise empty transactions and calling
+ * bse_engine_wait_on_trans().
+ * This function is MT-safe and may be called from any thread.
+ */
+BseJob*
+bse_job_nop (void)
+{
+  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  job->job_id = ENGINE_JOB_MESSAGE;
+  job->data.message = NULL;
   return job;
 }
 
@@ -1557,10 +1593,10 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
  * bse_engine_wait_on_trans
  *
  * Wait until all pending transactions have been processed
- * by the BSE Engine.
- * This function, when done waiting, will run a garbage
- * collection cycle before returning (see
- * bse_engine_garbage_collect()).
+ * by the BSE Engine. This function, when done waiting, will
+ * run a garbage collection cycle before returning.
+ * See bse_engine_garbage_collect(), the same restrictions
+ * apply to invokations of this function.
  */
 void
 bse_engine_wait_on_trans (void)

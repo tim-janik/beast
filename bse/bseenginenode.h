@@ -29,8 +29,9 @@ G_BEGIN_DECLS
 #define ENGINE_NODE_N_JSTREAMS(node)	((node)->module.klass->n_jstreams)
 #define	ENGINE_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
 					 (node)->output_nodes == NULL)
-#define	ENGINE_NODE_IS_SUSPENDED(nod,s) ((s) < (nod)->next_active)
+#define	ENGINE_NODE_IS_INTEGRATED(node)	((node)->integrated)
 #define	ENGINE_NODE_IS_VIRTUAL(node)	((node)->virtual_node)
+#define	ENGINE_NODE_IS_SUSPENDED(nod,s) ((s) < (nod)->next_active)
 #define	ENGINE_NODE_IS_DEFERRED(node)	(FALSE)
 #define	ENGINE_NODE_IS_SCHEDULED(node)	(ENGINE_NODE (node)->sched_tag)
 #define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module.klass->mflags & BSE_COST_CHEAP) != 0)
@@ -72,7 +73,7 @@ typedef enum /*< skip >*/
   ENGINE_JOB_PROBE_JOB,
   ENGINE_JOB_FLOW_JOB,
   ENGINE_JOB_BOUNDARY_JOB,
-  ENGINE_JOB_DEBUG,
+  ENGINE_JOB_MESSAGE,
   ENGINE_JOB_LAST
 } EngineJobType;
 struct _BseJob
@@ -122,7 +123,7 @@ struct _BseJob
       EngineNode     *node;
       EngineProbeJob *pjob;
     } probe_job;
-    gchar	     *debug;
+    gchar	     *message;
   } data;
 };
 struct _BseTrans

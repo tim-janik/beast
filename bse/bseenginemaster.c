@@ -571,9 +571,14 @@ master_process_job (BseJob *job)
       node_insert_boundary_job (node, tjob);
       master_new_boundary_jobs = TRUE;
       break;
-    case ENGINE_JOB_DEBUG:
-      JOB_DEBUG ("debug");
-      g_printerr ("JOB-DEBUG: %s\n", job->data.debug);
+    case ENGINE_JOB_MESSAGE:
+      if (job->data.message)
+        {
+          JOB_DEBUG ("debug");
+          g_printerr ("BSE-ENGINE: %s\n", job->data.message);
+        }
+      else
+        JOB_DEBUG ("nop");
       break;
     case ENGINE_JOB_ADD_POLL:
       JOB_DEBUG ("add poll %p(%p,%u)", job->data.poll.poll_func, job->data.poll.data, job->data.poll.n_fds);

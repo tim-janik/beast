@@ -238,16 +238,29 @@ typedef std::map<float,VoiceInput*> VoiceInputTable;
 /* --- midi channel --- */
 struct MidiChannel {
   guint           midi_channel;
+  guint           poly_enabled;
   VoiceInput     *vinput;
   guint           n_voices;
   VoiceSwitch   **voices;
   VoiceInputTable voice_input_table;
   MidiChannel (guint mc) :
-    midi_channel (mc)
+    midi_channel (mc),
+    poly_enabled (0)
   {
     vinput = NULL;
     n_voices = 0;
     voices = NULL;
+  }
+  void
+  enable_poly (void)
+  {
+    poly_enabled++;
+  }
+  void
+  disable_poly (void)
+  {
+    if (poly_enabled)
+      poly_enabled--;
   }
   ~MidiChannel()
   {
@@ -271,6 +284,8 @@ struct MidiChannel {
   void  kill_notes      (guint64          tick_stamp,
                          gboolean         sustained_only,
                          BseTrans        *trans);
+  void  no_poly_voice   (const gchar     *event_name,
+                         gfloat           freq);
   void  debug_notes     (guint64          tick_stamp,
                          BseTrans        *trans);
 };
@@ -1010,6 +1025,21 @@ check_voice_input_improvement_L (VoiceInput *vinput1, /* vinput1 better than vin
 }
 
 void
+MidiChannel::no_poly_voice (const gchar *event_name,
+                            gfloat       freq)
+{
+  MidiChannel *mchannel = this;
+  /* check whether warning is appropriate */
+  VoiceSwitch *any_vswitch = mchannel->n_voices ? mchannel->voices[0] : NULL;
+  if (any_vswitch &&                                            /* poly voices are present */
+      !bse_module_is_scheduled (any_vswitch->vmodule))          /* but voices are (temporarily) disconnected */
+    return;
+  /* provide diagnostics */
+  sfi_diag ("MidiChannel(%u): no voice available for %s (%fHz)",
+            mchannel->midi_channel, event_name, freq);
+}
+
+void
 MidiChannel::start_note (guint64         tick_stamp,
                          gfloat          freq,
                          gfloat          velocity,
@@ -1025,7 +1055,10 @@ MidiChannel::start_note (guint64         tick_stamp,
   /* adjust channel global mono synth */
   if (mchannel->vinput)
     change_voice_input_L (mchannel->vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
-  
+
+  if (!mchannel->poly_enabled)
+    return;
+
   /* figure voice from event */
   vswitch = NULL; // voice numbers on events not currently supported
   /* find free poly voice */
@@ -1057,7 +1090,7 @@ MidiChannel::start_note (guint64         tick_stamp,
       change_voice_input_L (vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
     }
   else
-    sfi_diag ("MidiChannel(%u): no voice available for note-on (%fHz)", mchannel->midi_channel, freq);
+    no_poly_voice ("note-on", freq);
 }
 
 void
@@ -1079,6 +1112,9 @@ MidiChannel::adjust_note (guint64         tick_stamp,
   if (mchannel->vinput)
     change_voice_input_L (mchannel->vinput, tick_stamp, vctype, freq_val, velocity, trans);
   
+  if (!mchannel->poly_enabled)
+    return;
+
   /* find corresponding vinput */
   vinput = mchannel->voice_input_table[freq_val];
   while (vinput && vinput->queue_state != VSTATE_BUSY)
@@ -1088,8 +1124,7 @@ MidiChannel::adjust_note (guint64         tick_stamp,
   if (vinput)
     change_voice_input_L (vinput, tick_stamp, vctype, freq_val, velocity, trans);
   else
-    sfi_diag ("MidiChannel(%u): no voice available for %s (%fHz)", mchannel->midi_channel,
-              etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity", freq);
+    no_poly_voice (etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity", freq);
 }
 
 void
@@ -1501,6 +1536,32 @@ bse_midi_receiver_remove_control_handler (BseMidiReceiver      *self,
   
   BSE_MIDI_RECEIVER_LOCK ();
   self->remove_control_handler (midi_channel, signal_type, handler_func, handler_data, module);
+  BSE_MIDI_RECEIVER_UNLOCK ();
+}
+
+void
+bse_midi_receiver_channel_enable_poly (BseMidiReceiver *self,
+                                       guint            midi_channel)
+{
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (midi_channel > 0);
+  
+  BSE_MIDI_RECEIVER_LOCK ();
+  MidiChannel *mchannel = self->get_channel (midi_channel);
+  mchannel->enable_poly();
+  BSE_MIDI_RECEIVER_UNLOCK ();
+}
+
+void
+bse_midi_receiver_channel_disable_poly (BseMidiReceiver *self,
+                                        guint            midi_channel)
+{
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (midi_channel > 0);
+  
+  BSE_MIDI_RECEIVER_LOCK ();
+  MidiChannel *mchannel = self->get_channel (midi_channel);
+  mchannel->disable_poly();
   BSE_MIDI_RECEIVER_UNLOCK ();
 }
 

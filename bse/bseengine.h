@@ -123,6 +123,7 @@ BseModule* bse_module_new_virtual       (guint                 n_iostreams,
 guint64    bse_module_tick_stamp        (BseModule            *module);
 gboolean   bse_module_has_source        (BseModule            *module,
                                          guint                 istream);
+gboolean   bse_module_is_scheduled      (BseModule            *module);
 BseJob*    bse_job_connect              (BseModule            *src_module,
                                          guint                 src_ostream,
                                          BseModule            *dest_module,
@@ -148,6 +149,7 @@ BseJob*    bse_job_suspend_now          (BseModule            *module);
 BseJob*    bse_job_resume_at            (BseModule            *module,
                                          guint64               tick_stamp);
 BseJob*    bse_job_debug                (const gchar          *debug);
+BseJob*    bse_job_nop                  (void);
 BseJob*    bse_job_add_poll             (BseEnginePollFunc     poll_func,
                                          gpointer              data,
                                          BseFreeFunc           free_func,

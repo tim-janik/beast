@@ -417,7 +417,7 @@ bse_source_prepare (BseSource *source)
   g_object_freeze_notify (G_OBJECT (source));
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   source->contexts = g_bsearch_array_create (&context_config);
-  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
+  BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);      /* guard properties from _before_ preapre() */
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
   source_notify_properties (source);
   g_object_thaw_notify (G_OBJECT (source));
@@ -455,8 +455,8 @@ bse_source_reset (BseSource *source)
       bse_trans_commit (trans);
     }
   bse_engine_wait_on_trans ();
-  BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
   BSE_SOURCE_GET_CLASS (source)->reset (source);
+  BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);    /* guard properties until _after_ reset() */
   g_bsearch_array_free (source->contexts, &context_config);
   source->contexts = NULL;
   source_notify_properties (source);

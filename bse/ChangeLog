@@ -1,3 +1,23 @@
+Tue Sep 21 04:41:29 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.[hc]*: introduced explicit enabling of polyphonic
+	voice handling. avoid warning about unavailable voices for disconnected
+	tracks, or if polyphonic handling was not enabled.
+
+	* bsetrack.c: request polyphonic midi channel handling iff the track
+	provides a synth mesh and is prepared.
+
+	* bseproject.c: bse_project_start_playback(): ensure all modules are
+	properly intergrated into the engine before starting the sequencer.
+
+	* bsesource.c: guard objects with PREPARED flag until after reset()
+	invocation.
+
+	* bseengine.[hc]: added bse_module_is_scheduled() and bse_job_nop().
+
+	* bseengineutils.c:
+	* bseenginemaster.c: handle nop jobs properly.
+
 Tue Sep 21 02:40:05 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.cc: don't throw invalid warnings.

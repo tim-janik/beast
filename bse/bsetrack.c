@@ -399,7 +399,7 @@ bse_track_set_property (GObject      *object,
       BSE_SEQUENCER_UNLOCK ();
       break;
     case PROP_SNET:
-      if (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth))
+      if (!self->sub_synth || !BSE_SOURCE_PREPARED (self))
 	{
 	  BseSNet *snet = bse_value_get_object (value);
 	  if (snet || self->snet)
@@ -443,15 +443,14 @@ bse_track_set_property (GObject      *object,
       break;
     case PROP_MIDI_CHANNEL:
       i = sfi_value_get_int (value);
-      if (i != self->midi_channel_SL &&
-          (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess)))
+      if (i != self->midi_channel_SL && !BSE_SOURCE_PREPARED (self))
         {
           self->midi_channel_SL = i > 0 ? i : self->channel_id;
           bse_track_update_midi_channel (self);
         }
       break;
     case PROP_PNET:
-      if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
+      if (!self->postprocess || !BSE_SOURCE_PREPARED (self))
 	{
           if (self->pnet)
             {
@@ -760,6 +759,32 @@ bse_track_update_midi_channel (BseTrack *self)
     }
 }
 
+static void
+bse_track_context_create (BseSource      *source,
+                          guint           context_handle,
+                          BseTrans       *trans)
+{
+  BseTrack *self = BSE_TRACK (source);
+  BseMidiContext mcontext = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (self)), context_handle);
+  if (self->snet)
+    bse_midi_receiver_channel_enable_poly (mcontext.midi_receiver, self->midi_channel_SL);
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
+}
+
+static void
+bse_track_context_dismiss (BseSource      *source,
+                           guint           context_handle,
+                           BseTrans       *trans)
+{
+  BseTrack *self = BSE_TRACK (source);
+  BseMidiContext mcontext = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (self)), context_handle);
+  if (self->snet)
+    bse_midi_receiver_channel_disable_poly (mcontext.midi_receiver, self->midi_channel_SL);
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
+}
+
 void
 bse_track_remove_modules (BseTrack     *self,
 			  BseContainer *container)
@@ -878,6 +903,7 @@ bse_track_class_init (BseTrackClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
@@ -891,6 +917,9 @@ bse_track_class_init (BseTrackClass *class)
   
   item_class->get_candidates = bse_track_get_candidates;
   
+  source_class->context_create = bse_track_context_create;
+  source_class->context_dismiss = bse_track_context_dismiss;
+
   bse_source_class_inherit_channels (BSE_SOURCE_CLASS (class));
 
   bse_object_class_add_param (object_class, _("Adjustments"),

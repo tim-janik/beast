@@ -76,6 +76,10 @@ void             bse_midi_receiver_discard_mono_voice      (BseMidiReceiver   *s
                                                             guint              midi_channel,
                                                             BseModule         *fmodule,
                                                             BseTrans          *trans);
+void             bse_midi_receiver_channel_enable_poly     (BseMidiReceiver   *self,
+                                                            guint              midi_channel);
+void             bse_midi_receiver_channel_disable_poly    (BseMidiReceiver   *self,
+                                                            guint              midi_channel);
 guint            bse_midi_receiver_create_poly_voice       (BseMidiReceiver   *self,
                                                             guint              midi_channel,
                                                             BseTrans          *trans);

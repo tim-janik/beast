@@ -167,8 +167,8 @@ free_job (BseJob *job)
       if (job->data.timed_job.tjob)
         free_user_job ((EngineUserJob*) job->data.timed_job.tjob);
       break;
-    case ENGINE_JOB_DEBUG:
-      g_free (job->data.debug);
+    case ENGINE_JOB_MESSAGE:
+      g_free (job->data.message);
       break;
     default: ;
     }
