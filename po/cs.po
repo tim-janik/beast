@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-19 10:46+0100\n"
-"PO-Revision-Date: 2004-12-19 12:45+0100\n"
+"POT-Creation-Date: 2005-01-02 10:37+0100\n"
+"PO-Revision-Date: 2005-01-02 14:47+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -459,7 +459,7 @@ msgstr "Přesunout řídicí událost"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:480 beast-gtk/bsttrackrollctrl.c:500
-#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:134
+#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:168
 msgid "No target"
 msgstr "Žádný cíl"
 
@@ -2336,11 +2336,11 @@ msgstr "Barva nulové hodnoty"
 msgid "Negative Value Color"
 msgstr "Barva záporné hodnoty"
 
-#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:199
 msgid "Zoom:"
 msgstr "Zvětšení:"
 
-#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:210
 msgid "VScale:"
 msgstr "VMěřítko:"
 
@@ -2352,35 +2352,35 @@ msgstr "Začátek:"
 msgid "End:"
 msgstr "Konec:"
 
-#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:216
 msgid "Shape Range"
 msgstr "Rozsah tvaru"
 
-#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:217
 msgid "Shape Average"
 msgstr "Průměr tvaru"
 
-#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:218
 msgid "Shape Minimum"
 msgstr "Minimum tvaru"
 
-#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:219
 msgid "Shape Maximum"
 msgstr "Maximum tvaru"
 
-#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:220
 msgid "Sketch Range"
 msgstr "Rozsah návrhu"
 
-#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:221
 msgid "Sketch Average"
 msgstr "Průměr návrhu"
 
-#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:222
 msgid "Sketch Minimum"
 msgstr "Minimum návrhu"
 
-#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:223
 msgid "Sketch Maximum"
 msgstr "Maximum návrhu"
 
@@ -2548,39 +2548,39 @@ msgstr "Nápovědy kanálů"
 msgid "Toggle channel name hints"
 msgstr "Přepnout nápovědy názvů kanálů"
 
-#: beast-gtk/bststest.c:550
+#: beast-gtk/bststest.c:553
 msgid "Selection to Loop"
 msgstr "Výběr do smyčky"
 
-#: beast-gtk/bststest.c:558
+#: beast-gtk/bststest.c:561
 msgid "Loop to Selection"
 msgstr "Smyčka do výběru"
 
-#: beast-gtk/bststest.c:566
+#: beast-gtk/bststest.c:569
 msgid "Zoom Selection"
 msgstr "Zvětšit výběr"
 
-#: beast-gtk/bststest.c:574
+#: beast-gtk/bststest.c:577
 msgid "Apply Loop"
 msgstr "Použít smyčku"
 
-#: beast-gtk/bststest.c:582
+#: beast-gtk/bststest.c:585
 msgid "Reset Loop"
 msgstr "Zrušit smyčku"
 
-#: beast-gtk/bststest.c:590
+#: beast-gtk/bststest.c:593
 msgid "Score"
 msgstr "Noty"
 
-#: beast-gtk/bststest.c:598
+#: beast-gtk/bststest.c:601
 msgid "Find"
 msgstr "Hledat"
 
-#: beast-gtk/bststest.c:616
+#: beast-gtk/bststest.c:619
 msgid "Mark Signal (Head)"
 msgstr "Označit signál (začátek)"
 
-#: beast-gtk/bststest.c:626
+#: beast-gtk/bststest.c:629
 msgid "Mark Signal (Tail)"
 msgstr "Označit signál (konec)"
 
@@ -2846,19 +2846,19 @@ msgstr "zpracování"
 msgid "Updating View"
 msgstr "Aktualizuji pohled"
 
-#: beast-gtk/bstwaveeditor.c:241
+#: beast-gtk/bstwaveeditor.c:238
 msgid "Scroll None"
 msgstr "Neposouvat nic"
 
-#: beast-gtk/bstwaveeditor.c:242
+#: beast-gtk/bstwaveeditor.c:239
 msgid "Scroll Both"
 msgstr "Posouvat obojí"
 
-#: beast-gtk/bstwaveeditor.c:243
+#: beast-gtk/bstwaveeditor.c:240
 msgid "Scroll Left"
 msgstr "Posouvat levý"
 
-#: beast-gtk/bstwaveeditor.c:244
+#: beast-gtk/bstwaveeditor.c:241
 msgid "Scroll Right"
 msgstr "Posouvat pravý"
 
@@ -4710,159 +4710,270 @@ msgstr ""
 "Auto je speciální ovladač, znamená automatický\n"
 "výběr ovladače."
 
-#. GSL
 #: bse/bseenums.c:99
 msgid "Everything went well"
 msgstr "Vše fungovalo správně"
 
 #: bse/bseenums.c:100
+msgid "Internal error (please report)"
+msgstr "Interní chyba (ohlaste ji prosím)"
+
+#: bse/bseenums.c:101
+msgid "Unknown error"
+msgstr "Neznámá chyba"
+
+#: bse/bseenums.c:102
+msgid "Input/output error"
+msgstr "Chyba vstupu/výstupu"
+
+#: bse/bseenums.c:103
+msgid "Insufficient permission"
+msgstr "Nedostatečná oprávnění"
+
+#. file errors
+#: bse/bseenums.c:105
+msgid "Device or resource busy"
+msgstr "Zařízení nebo zdroj se používá"
+
+#: bse/bseenums.c:106
+msgid "File exists already"
+msgstr "Soubor již existuje"
+
+#: bse/bseenums.c:107
+msgid "File empty or premature EOF"
+msgstr "Soubor je prázdný nebo předčasný konec souboru"
+
+#. case BSE_ERROR_FILE_EMPTY:
+#: bse/bseenums.c:109
+msgid "No such file, device or directory"
+msgstr "Takový soubor, zařízení nebo adresář neexistuje"
+
+#: bse/bseenums.c:110
+msgid "Is a directory"
+msgstr "Je adresář"
+
+#: bse/bseenums.c:111
+msgid "Open failed"
+msgstr "Otevření selhalo"
+
+#: bse/bseenums.c:112
+msgid "Seek failed"
+msgstr "Posun selhal"
+
+#: bse/bseenums.c:113
+msgid "Read failed"
+msgstr "Čtení selhalo"
+
+#: bse/bseenums.c:114
+msgid "Write failed"
+msgstr "Zápis selhal"
+
+#. out of resource conditions
+#: bse/bseenums.c:116
+msgid "Too many open files"
+msgstr "Příliš mnoho otevřených souborů"
+
+#: bse/bseenums.c:117
+msgid "Too many open files in system"
+msgstr "Příliš mnoho otevřených souborů v systému"
+
+#: bse/bseenums.c:118
+msgid "No space left on device"
+msgstr "Na zařízení nezbývá místo"
+
+#: bse/bseenums.c:119
+msgid "Out of memory"
+msgstr "Nedostatek paměti"
+
+#. content errors
+#: bse/bseenums.c:121
+msgid "Failed to detect (start of) header"
+msgstr "Nemohu detekovat (začátek) hlavičky"
+
+#: bse/bseenums.c:122
+msgid "Failed to retrieve seek information"
+msgstr "Nemohu získat informace o pozici"
+
+#: bse/bseenums.c:123
+msgid "No data available"
+msgstr "Nejsou k dispozici žádná data"
+
+#: bse/bseenums.c:124
+msgid "Data corrupt"
+msgstr "Data poškozena"
+
+#: bse/bseenums.c:125
+msgid "Invalid format"
+msgstr "Neplatný formát"
+
+#: bse/bseenums.c:126
+msgid "Unknown format"
+msgstr "Neznámý formát"
+
+#. miscellaneous errors
+#: bse/bseenums.c:128
+msgid "Temporary error"
+msgstr "Dočasná chyba"
+
+#: bse/bseenums.c:129
+msgid "No such wave"
+msgstr "Taková vlna neexistuje"
+
+#: bse/bseenums.c:130
+msgid "CODEC failure"
+msgstr "Chyba kodeku"
+
+#: bse/bseenums.c:131
 msgid "Functionality not implemented"
 msgstr "Funkce není implementována"
 
-#: bse/bseenums.c:101
+#: bse/bseenums.c:132
+msgid "Invalid object property"
+msgstr "Neplatná vlastnost objektu"
+
+#: bse/bseenums.c:133
+msgid "Invalid MIDI control type"
+msgstr "Neplatný typ řízení MIDI"
+
+#: bse/bseenums.c:134
+msgid "Parsing error"
+msgstr "Chyba zpracovávání"
+
+#: bse/bseenums.c:135
+msgid "Failed to spawn child process"
+msgstr "Nemohu spustit proces potomka"
+
+#. Device errors
+#: bse/bseenums.c:137
 msgid "No device (driver) available"
 msgstr "Není k dispozici zařízení (ovladač)"
 
 # If the en_* can get away with this, I can too
-#: bse/bseenums.c:102
+#: bse/bseenums.c:138
 msgid "Device not async capable"
 msgstr "Zařízení neumí asynchronně"
 
-#: bse/bseenums.c:103
+#: bse/bseenums.c:139
 msgid "Device busy"
 msgstr "Zařízení se používá"
 
-#: bse/bseenums.c:104
+#: bse/bseenums.c:140
 msgid "Failed to configure device format"
 msgstr "Nemohu nastavit formát zařízení"
 
-#: bse/bseenums.c:105
+#: bse/bseenums.c:141
 msgid "Failed to configure device buffer"
 msgstr "Nemohu nastavit vyrovnávací paměť zařízení"
 
-#: bse/bseenums.c:106
+#: bse/bseenums.c:142
 msgid "Failed to configure device latency"
 msgstr "Nemohu nastavit zpoždění zařízení"
 
-#: bse/bseenums.c:107
+#: bse/bseenums.c:143
 msgid "Failed to configure number of device channels"
 msgstr "Nemohu nastavit počet kanálů zařízení"
 
-#: bse/bseenums.c:108
+#: bse/bseenums.c:144
 msgid "Failed to configure device frequency"
 msgstr "Nemohu nastavit frekvenci zařízení"
 
-#: bse/bseenums.c:109
+#: bse/bseenums.c:145
 msgid "Device configurations mismatch"
 msgstr "Nastavení zařízení nesouhlasí"
 
-#: bse/bseenums.c:110
+#. BseSource errors
+#: bse/bseenums.c:147
 msgid "No such synthesis module"
 msgstr "Takový modul syntézy neexistuje"
 
-#: bse/bseenums.c:111
+#: bse/bseenums.c:148
 msgid "No such input channel"
 msgstr "Takový vstupní kanál neexistuje"
 
-#: bse/bseenums.c:112
+#: bse/bseenums.c:149
 msgid "No such output channel"
 msgstr "Takový výstupní kanál neexistuje"
 
-#: bse/bseenums.c:113
+#: bse/bseenums.c:150
 msgid "Input/Output channels not connected"
 msgstr "Vstupní/výstupní kanál není připojen"
 
-#: bse/bseenums.c:114
+#: bse/bseenums.c:151
 msgid "Input channel is private"
 msgstr "Vstupní kanál je soukromý"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.c:152
 msgid "Input channel already in use"
 msgstr "Vstupní kanál se již používá"
 
-#: bse/bseenums.c:116
+#: bse/bseenums.c:153
 msgid "Input/Output channels already connected"
 msgstr "Vstupní/výstupní kanály jsou již připojeny"
 
-#: bse/bseenums.c:117
+#: bse/bseenums.c:154
 msgid "Invalid synthesis module connection"
 msgstr "Neplatné připojení modulu syntézy"
 
-#: bse/bseenums.c:118
+#: bse/bseenums.c:155
 msgid "Parent mismatch"
 msgstr "Rodič nesouhlasí"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.c:156
 msgid "Bad loopback"
 msgstr "Špatný loopback"
 
-#: bse/bseenums.c:120
+#: bse/bseenums.c:157
 msgid "Synthesis module currently busy"
 msgstr "Modul syntézy se právě používá"
 
-#: bse/bseenums.c:121
+#: bse/bseenums.c:158
 msgid "Invalid synthsis module type"
 msgstr "Neplatný typ modulu syntézy"
 
-#: bse/bseenums.c:122
+#. BseProcedure errors
+#: bse/bseenums.c:160
 msgid "No such procedure"
 msgstr "Taková procedura neexistuje"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.c:161
 msgid "Procedure currently busy"
 msgstr "Procedura se právě používá"
 
 #. recursion
-#: bse/bseenums.c:124
+#: bse/bseenums.c:162
 msgid "Procedure parameter invalid"
 msgstr "Parametr procedury není platný"
 
-#: bse/bseenums.c:125
+#: bse/bseenums.c:163
 msgid "Procedure execution failed"
 msgstr "Spouštění procedury selhalo"
 
-#: bse/bseenums.c:126
+#: bse/bseenums.c:164
 msgid "Procedure execution aborted"
 msgstr "Spouštění procedury přerušeno"
 
-#: bse/bseenums.c:127
-msgid "Invalid object property"
-msgstr "Neplatná vlastnost objektu"
-
-#: bse/bseenums.c:128
-msgid "Invalid MIDI control type"
-msgstr "Neplatný typ řízení MIDI"
-
-#: bse/bseenums.c:129
-msgid "Parsing error"
-msgstr "Chyba zpracovávání"
-
-#: bse/bseenums.c:130
-msgid "Failed to spawn child process"
-msgstr "Nemohu spustit proces potomka"
-
 #. various procedure errors
-#: bse/bseenums.c:132
+#: bse/bseenums.c:166
 msgid "No such entry"
 msgstr "Taková položka neexistuje"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.c:167
 msgid "No such event"
 msgstr "Taková událost neexistuje"
 
-#: bse/bseenums.c:135
+#: bse/bseenums.c:169
 msgid "Ownership mismatch"
 msgstr "Vlastnictví nesouhlasí"
 
-#: bse/bseenums.c:136
+#: bse/bseenums.c:170
 msgid "Invalid offset"
 msgstr "Neplatný posun"
 
-#: bse/bseenums.c:137
+#: bse/bseenums.c:171
 msgid "Invalid duration"
 msgstr "Neplatné trvání"
 
-#: bse/bseenums.c:138
+#: bse/bseenums.c:172
 msgid "Invalid overlap"
 msgstr "Neplatný překryv"
 
