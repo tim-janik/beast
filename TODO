@@ -292,7 +292,6 @@ sfidl:
   - add comment for closing namespaces in namespacehelper
   - handle Procedure {} namesace in namespacehelper
   - rename nspace.printableForm() to something that expresses namespace relativity
-  - enum value names are not stored in fully qualified manner
 90- bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
 85- support records and sequences in bse-plugin-generator and bseprocidl
 60- bse.idl defines bseamplifier, for which there is an idl file
