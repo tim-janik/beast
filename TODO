@@ -1,6 +1,9 @@
-FIXMES:	(release-critical)
-- adjust engine block size (Subject: blocksize vs. cpu)
 TODO:
+- test engine block size changes (Subject: blocksize vs. cpu)
+- probes only need to deliver (sample frames) 25 times per second, and need not be continuous
+- change per-track scopes to stereo volume meters
+- coalesce volume meter updates to only 25 per second
+- align block boundaries to sample_freq/control_freq chunks
 - reexamine bse_object_lock()
 - remove [dB], [%], [uS] etc... unit specifications from property labels, use hints instead and let the GUI make such indications
 - davsyndrum needs gate-out (or done)
