@@ -94,7 +94,7 @@ thread_info_cell_fill_value (GtkWidget *profiler,
       sfi_value_take_string (value, info->thread_id ? g_strdup_printf ("%u", info->thread_id) : g_strdup (""));
       break;
     case TCOL_PRIO:
-      sfi_value_take_string (value, info->priority < G_MAXINT ? g_strdup_printf ("%d", info->priority) : g_strdup (""));
+      sfi_value_take_string (value, info->thread_id ? g_strdup_printf ("%d", info->priority) : g_strdup (""));
       break;
     case TCOL_PERC:
       sfi_value_take_string (value, g_strdup_printf ("%5.2f%%", (info->utime + info->stime) * 0.0001));
@@ -158,7 +158,7 @@ update_infos (GSList         *slist,
         }
       totals->utime += oinfo->utime;
       totals->stime += oinfo->stime;
-      // totals->priority = MIN (oinfo->priority, totals->priority);
+      totals->priority = MIN (oinfo->priority, totals->priority);
     }
   if (totals_changed)
     {
