@@ -1,3 +1,18 @@
+Fri Nov 26 16:45:32 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstscrollgraph.[hc]: new NO-WINDOW widget skeleton for
+	display purposes.
+
+	* beast-gtk/dialogs/radgets-beast.xml: define "scrollgraph" radget
+	type and "scrollgraph-dialog" to monitor output signals.
+
+	* beast-gtk/bstutils.c: define BstScrollgraph as radget type.
+
+	* beast-gtk/bstsnetrouter.c: popup scrollgraph-dialog to monitor
+	output signals.
+
+	* beast-gtk/gxk/gxkradget.c: warning cosmetics.
+
 Fri Nov 26 16:17:05 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstknob.[hc]: cleanups.

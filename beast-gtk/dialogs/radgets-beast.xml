@@ -19,6 +19,7 @@
   <xdef:db-meter      inherit="BstDBMeter"
     prop:orientation="$(ifdef,orientation,$orientation,orientation-vertical)"
     prop:n-channels="$(ifdef,n-channels,$n-channels,0)" />
+  <xdef:scrollgraph   inherit="BstScrollgraph" />
   
   <!-- track view -->
   <xdef:track-view inherit="BstTrackView" border-width="3" >
@@ -158,6 +159,13 @@
     </hwrap>
   </xdef:snet-palette>
 
+  <!-- scrollgraph-dialog -->
+  <xdef:scrollgraph-dialog inherit="vbox">
+    <label label="test1"/>
+    <scrollgraph width="200" height="200" />
+    <label label="test2"/>
+  </xdef:scrollgraph-dialog>
+
   <!-- profiler -->
   <xdef:profiler inherit="vbox">
     <alignment border-width="5" expand="1" >
@@ -170,7 +178,7 @@
     </alignment>
   </xdef:profiler>
   
-  <!-- wave view -->
+  <!-- wave-view -->
   <xdef:wave-view inherit="BstWaveView" border-width="3" >
     <hbox spacing="3" >
       <scrolled-window id="tree-area" pack:expand="1" >

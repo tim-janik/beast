@@ -714,6 +714,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               i = bst_choice_modal (choice, event->button.button, event->button.time);
               switch (i)
                 {
+                  GtkWidget *dialog;
                   BseErrorType error;
                 case 2:
                   bst_canvas_source_popup_params (csource);
@@ -737,6 +738,12 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                 case 0: break;
                 default:
                   g_printerr ("Monitor Ouput: %d\n", 1 + i - monitor_ids);
+                  dialog = gxk_dialog_new (NULL,
+                                           GTK_OBJECT (self),
+                                           GXK_DIALOG_HIDE_ON_DELETE,
+                                           _("Scrollgraph"),
+                                           gxk_radget_create ("beast", "scrollgraph-dialog", NULL));
+                  gtk_widget_show (dialog);
                   break;
                 }
               bst_choice_destroy (choice);

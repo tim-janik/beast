@@ -946,7 +946,7 @@ gxk_radget_parse (const gchar    *domain_name,
   close (fd);
   if (myerror)
     {
-      g_warning ("GxkRadget: while parsing \"%s\": %s", file_name, myerror->message);
+      g_warning ("GxkRadget: parsing error in \"%s\": %s", file_name, myerror->message);
       g_error_free (myerror);
     }
 }
@@ -971,7 +971,7 @@ gxk_radget_parse_text (const gchar    *domain_name,
   radget_parser (domain, i18n_domain, -1, text, text_len < 0 ? strlen (text) : text_len, error ? error : &myerror);
   if (myerror)
     {
-      g_warning ("GxkRadget: while parsing: %s", myerror->message);
+      g_warning ("GxkRadget: parsing error: %s", myerror->message);
       g_error_free (myerror);
     }
 }

@@ -30,6 +30,7 @@
 #include "bsteventroll.h"
 #include "bstgrowbar.h"
 #include "bstdbmeter.h"
+#include "bstscrollgraph.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -125,6 +126,7 @@ _bst_init_radgets (void)
   gxk_radget_define_widget_type (BST_TYPE_DB_BEAM);
   gxk_radget_define_widget_type (BST_TYPE_DB_LABELING);
   gxk_radget_define_widget_type (BST_TYPE_DB_METER);
+  gxk_radget_define_widget_type (BST_TYPE_SCROLLGRAPH);
   gxk_radget_define_widget_type (BST_TYPE_PATTERN_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
   text = gxk_zfile_uncompress (BST_RADGETS_STANDARD_SIZE, BST_RADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_RADGETS_STANDARD_DATA));
