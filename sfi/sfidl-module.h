@@ -38,7 +38,6 @@ protected:
   std::string pspec_constructor (const Param &param);
   const char* func_value_set_param (const Param &param);
   std::string func_value_get_param (const Param &param, const std::string dest);
-  std::string func_value_dup_param (const Param &param);
   std::string func_param_return_free (const Param &param);
   std::string func_param_free (const Param &param);
   

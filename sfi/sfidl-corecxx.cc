@@ -69,9 +69,10 @@ CodeGeneratorModule::TypeRef (const string &type)
   switch (parser.typeOf (type))
     {
     case BBLOCK:
-    case FBLOCK:
+    case FBLOCK:        return g_intern_string (tname.c_str());
     case SEQUENCE:
     case RECORD:
+    case SFIREC:        return "SfiRec*";
     case OBJECT:        return g_intern_string (string (tname + "*").c_str());
     default:            return g_intern_string (tname.c_str());
     }
@@ -219,10 +220,11 @@ CodeGeneratorModule::func_value_set_param (const Param &param)
     case REAL:          return "sfi_value_set_real";
     case STRING:        return "::Sfi::String::value_set";
     case CHOICE:        return "g_value_set_enum";
-    case BBLOCK:        return "sfi_value_set_bblock";
-    case FBLOCK:        return "sfi_value_set_fblock";
-    case SEQUENCE:      return "sfi_value_set_seq";
-    case RECORD:        return "sfi_value_set_rec";
+    case BBLOCK:        return "::Sfi::BBlock::value_set";
+    case FBLOCK:        return "::Sfi::FBlock::value_set";
+    case SEQUENCE:      g_assert_not_reached(); return "sfi_value_set_seq";
+    case RECORD:        g_assert_not_reached(); return "sfi_value_set_rec";
+    case SFIREC:        return "sfi_value_set_rec";
     case OBJECT:        return "g_value_set_object";
     default:            return "*** ERROR ***";
     }
@@ -246,61 +248,17 @@ CodeGeneratorModule::func_value_get_param (const Param &param,
     case REAL:          return "sfi_value_get_real";
     case STRING:        return "::Sfi::String::value_get";
     case CHOICE:        return string ("(") + TypeName (param.type) + ") g_value_get_enum";
-    case BBLOCK:        return "sfi_value_get_bblock";
-    case FBLOCK:        return "sfi_value_get_fblock";
+    case BBLOCK:        return "::Sfi::BBlock::value_get";
+    case FBLOCK:        return "::Sfi::FBlock::value_get";
+    case SFIREC:        return "::Sfi::Rec::value_get";
     case SEQUENCE:      return "sfi_value_get_seq";
-    case RECORD:        return "sfi_value_get_rec";
+    case RECORD:        g_assert_not_reached(); return "sfi_value_get_rec";
     case OBJECT:
       if (dest != "")
         return "("+ dest +"*) ::Bse::g_value_get_object< "+ dest +"Base*>";
       else
         return "(GObject*) g_value_get_object";
     default:            return "*** ERROR ***";
-    }
-}
-
-string
-CodeGeneratorModule::func_value_dup_param (const Param &param)
-{
-  switch (parser.typeOf (param.type))
-    {
-    case STRING:        return "sfi_value_dup_string";
-    case BBLOCK:        return "sfi_value_dup_bblock";
-    case FBLOCK:        return "sfi_value_dup_fblock";
-    case SEQUENCE:      return "sfi_value_dup_seq";
-    case RECORD:        return "sfi_value_dup_rec";
-    case OBJECT:        return "g_value_dup_object";
-    default:            return func_value_get_param (param);
-    }
-}
-
-string
-CodeGeneratorModule::func_param_return_free (const Param &param)
-{
-  switch (parser.typeOf (param.type))
-    {
-    case BOOL:          return "";
-    case INT:           return "";
-    case NUM:           return "";
-    case REAL:          return "";
-    case STRING:        return "";
-    case CHOICE:        return "";      /* enum value */
-    case BBLOCK:        return "sfi_bblock_unref";
-    case FBLOCK:        return "sfi_fblock_unref";
-    case SEQUENCE:      return "sfi_seq_unref";
-    case RECORD:        return "";
-    case OBJECT:        return "";
-    default:            return "*** ERROR ***";
-    }
-}
-
-string
-CodeGeneratorModule::func_param_free (const Param &param)
-{
-  switch (parser.typeOf (param.type))
-    {
-    case OBJECT:        return "g_object_unref";
-    default:            return func_param_return_free (param);
     }
 }
 
@@ -385,8 +343,6 @@ CodeGeneratorModule::generate_procedures (const std::string          &outer_nspa
       printf ("             );\n");
       if (!is_void)
         printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result));
-      if (!is_void && func_param_return_free (mi->result) != "")
-        printf ("      if (__return_value) %s (__return_value);\n", func_param_return_free (mi->result).c_str());
       printf ("    } catch (std::exception &e) {\n");
       printf ("      sfi_debug (\"%%s: %%s\", \"%s\", e.what());\n", ptName.c_str());
       printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
@@ -665,10 +621,7 @@ CodeGeneratorModule::run ()
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
         {
           printf ("    case PROP_%s:\n", cUC_NAME (pi->name));
-          string f = func_param_free (*pi).c_str();
-          if (f.size())
-            printf ("      %s (%s);\n", f.c_str(), pi->name.c_str());
-          printf ("      %s = %s (&value);\n", pi->name.c_str(), func_value_dup_param (*pi).c_str());
+          printf ("      %s = %s (&value);\n", pi->name.c_str(), func_value_get_param (*pi).c_str());
           printf ("    break;\n");
         }
       printf ("    };\n");
@@ -724,12 +677,6 @@ CodeGeneratorModule::run ()
       printf ("  virtual ~%s ()\n", ctNameBase.c_str());
       printf ("  {\n");
       /* property deletion */
-      for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-        {
-          string f = func_param_free (*pi).c_str();
-          if (f.size())
-            printf ("    %s (%s);\n", f.c_str(), pi->name.c_str());
-        }
       for (vector<string>::const_iterator vi = destroy_jobs.begin(); vi != destroy_jobs.end(); vi++)
         printf ("    %s;\n", vi->c_str());
       printf ("  }\n");

@@ -337,7 +337,7 @@ void CodeGeneratorCxx::run ()
           printf("  for (i = 0; i < length; i++)\n");
           printf("  {\n");
           printf("    GValue *element = sfi_seq_get (sfi_seq, i);\n");
-          printf("    seq[i] = (%s);\n", elementFromValue.c_str());
+          printf("    seq[i] = %s;\n", elementFromValue.c_str());
           printf("  }\n");
           printf("  return seq;\n");
           printf("}\n\n");

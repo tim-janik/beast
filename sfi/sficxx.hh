@@ -29,9 +29,6 @@ typedef SfiBool   Bool;    // FIXME: use bool instead?
 typedef SfiInt    Int;
 typedef SfiNum    Num;
 typedef SfiReal   Real;
-typedef SfiBBlock BBlock;
-typedef SfiFBlock FBlock;
-typedef SfiRec    Rec;
 
 class String {
   char *cstring;
@@ -69,14 +66,20 @@ public:
   }
   String& operator= (const gchar *cstr)
   {
-    g_free (cstring);
-    cstring = g_strdup (cstr ? cstr : "");
+    if (cstr != cstring)
+      {
+        g_free (cstring);
+        cstring = g_strdup (cstr ? cstr : "");
+      }
     return *this;
   }
   String& operator= (const String &s)
   {
-    g_free (cstring);
-    cstring = g_strdup (s.cstring);
+    if (s.cstring != cstring)
+      {
+        g_free (cstring);
+        cstring = g_strdup (s.cstring);
+      }
     return *this;
   }
   const char* c_str() const
@@ -183,8 +186,11 @@ public:
   }
   RecordHandle& operator= (const Type &rec)
   {
-    delete record;
-    record = new Type (rec);
+    if (record != &rec)
+      {
+        delete record;
+        record = new Type (rec);
+      }
     return *this;
   }
   void take (Type *rec)
@@ -194,11 +200,14 @@ public:
   }
   RecordHandle& operator= (const RecordHandle &src)
   {
-    delete record;
-    if (src.record)
-      record = new Type (*src.record);
-    else
-      record = NULL;
+    if (record != src.record)
+      {
+        delete record;
+        if (src.record)
+          record = new Type (*src.record);
+        else
+          record = NULL;
+      }
     return *this;
   }
   Type* c_ptr() const
@@ -285,12 +294,15 @@ public:
   }
   Sequence& operator= (const Sequence &sh)
   {
-    for (guint i = 0; i < length(); i++)
-      cseq->elements[i].~Type();
-    cseq->n_elements = sh.length();
-    cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
-    for (guint i = 0; i < length(); i++)
-      new (cseq->elements + i) Type (sh[i]);
+    if (cseq != sh.cseq)
+      {
+        for (guint i = 0; i < length(); i++)
+          cseq->elements[i].~Type();
+        cseq->n_elements = sh.length();
+        cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
+        for (guint i = 0; i < length(); i++)
+          new (cseq->elements + i) Type (sh[i]);
+      }
     return *this;
   }
   unsigned int length() const
@@ -303,6 +315,472 @@ public:
       cseq->elements[i].~Type();
     g_free (cseq->elements);
     g_free (cseq);
+  }
+};
+
+class FBlock {
+  SfiFBlock *block;
+public:
+  FBlock (unsigned int length = 0)
+  {
+    block = sfi_fblock_new_sized (length);
+  }
+  FBlock (SfiFBlock &fblock)
+  {
+    block = NULL;
+    *this = fblock;
+  }
+  FBlock (unsigned int length,
+          const float *values)
+  {
+    block = sfi_fblock_new();
+    sfi_fblock_append (block, length, values);
+  }
+  FBlock (const FBlock &fb)
+  {
+    if (fb.block)
+      block = sfi_fblock_ref (fb.block);
+    else
+      block = sfi_fblock_new();
+  }
+  FBlock& operator= (SfiFBlock &fb)
+  {
+    if (block != &fb)
+      {
+        if (block)
+          sfi_fblock_unref (block);
+        block = &fb;
+        if (block)
+          sfi_fblock_ref (block);
+      }
+    return *this;
+  }
+  FBlock& operator= (const FBlock &s)
+  {
+    if (block != s.block)
+      {
+        if (block)
+          sfi_fblock_unref (block);
+        block = s.block;
+        if (block)
+          sfi_fblock_ref (block);
+      }
+    return *this;
+  }
+  SfiFBlock* fblock()
+  {
+    return block;
+  }
+  ~FBlock()
+  {
+    if (block)
+      sfi_fblock_unref (block);
+  }
+  void ref ()
+  {
+    if (block)
+      sfi_fblock_ref (block);
+    else
+      block = sfi_fblock_new();
+  }
+  void unref ()
+  {
+    g_return_if_fail (block != NULL && block->ref_count > 0);
+    sfi_fblock_unref (block);
+  }
+  void resize (unsigned int length)
+  {
+    if (block)
+      sfi_fblock_resize (block, length);
+    else
+      block = sfi_fblock_new_sized (length);
+  }
+  void take (SfiFBlock *fb)
+  {
+    if (block)
+      sfi_fblock_unref (block);
+    block = fb;
+  }
+  FBlock copy_deep()
+  {
+    if (block)
+      return FBlock (block->n_values, block->values);
+    else
+      return FBlock (0);
+  }
+  FBlock copy_shallow()
+  {
+    return FBlock (*this);
+  }
+  void append (unsigned int length,
+               const float *values)
+  {
+    if (!block)
+      block = sfi_fblock_new();
+    sfi_fblock_append (block, length, values);
+  }
+  void append (float f)
+  {
+    append (1, &f);
+  }
+  unsigned int length()
+  {
+    return block ? block->n_values : 0;
+  }
+  const float* get()
+  {
+    return block ? block->values : NULL;
+  }
+  static FBlock value_get (const GValue *value)
+  {
+    SfiFBlock *fb = sfi_value_get_fblock (value);
+    FBlock self (0);
+    if (fb)
+      self.take (sfi_fblock_ref (fb));
+    return self;
+  }
+  static void value_set (GValue       *value,
+                         const FBlock &self)
+  {
+    sfi_value_set_fblock (value, self.block);
+  }
+};
+
+class BBlock {
+  SfiBBlock *block;
+public:
+  BBlock (unsigned int length = 0)
+  {
+    block = sfi_bblock_new_sized (length);
+  }
+  BBlock (SfiBBlock &bblock)
+  {
+    block = NULL;
+    *this = bblock;
+  }
+  BBlock (unsigned int  length,
+          const guint8 *bytes)
+  {
+    block = sfi_bblock_new();
+    sfi_bblock_append (block, length, bytes);
+  }
+  BBlock (const BBlock &bb)
+  {
+    if (bb.block)
+      block = sfi_bblock_ref (bb.block);
+    else
+      block = sfi_bblock_new();
+  }
+  BBlock& operator= (SfiBBlock &bb)
+  {
+    if (block != &bb)
+      {
+        if (block)
+          sfi_bblock_unref (block);
+        block = &bb;
+        if (block)
+          sfi_bblock_ref (block);
+      }
+    return *this;
+  }
+  BBlock& operator= (const BBlock &s)
+  {
+    if (block != s.block)
+      {
+        if (block)
+          sfi_bblock_unref (block);
+        block = s.block;
+        if (block)
+          sfi_bblock_ref (block);
+      }
+    return *this;
+  }
+  SfiBBlock* bblock()
+  {
+    return block;
+  }
+  ~BBlock()
+  {
+    if (block)
+      sfi_bblock_unref (block);
+  }
+  void ref ()
+  {
+    if (block)
+      sfi_bblock_ref (block);
+    else
+      block = sfi_bblock_new();
+  }
+  void unref ()
+  {
+    g_return_if_fail (block != NULL && block->ref_count > 0);
+    sfi_bblock_unref (block);
+  }
+  void resize (unsigned int length)
+  {
+    if (block)
+      sfi_bblock_resize (block, length);
+    else
+      block = sfi_bblock_new_sized (length);
+  }
+  void take (SfiBBlock *bb)
+  {
+    if (block)
+      sfi_bblock_unref (block);
+    block = bb;
+  }
+  BBlock copy_deep()
+  {
+    if (block)
+      return BBlock (block->n_bytes, block->bytes);
+    else
+      return BBlock (0);
+  }
+  BBlock copy_shallow()
+  {
+    return BBlock (*this);
+  }
+  void append (unsigned int  length,
+               const guint8 *bytes)
+  {
+    if (!block)
+      block = sfi_bblock_new();
+    sfi_bblock_append (block, length, bytes);
+  }
+  void append (guint8 b)
+  {
+    append (1, &b);
+  }
+  unsigned int length()
+  {
+    return block ? block->n_bytes : 0;
+  }
+  const guint8* get()
+  {
+    return block ? block->bytes : NULL;
+  }
+  static BBlock value_get (const GValue *value)
+  {
+    SfiBBlock *bb = sfi_value_get_bblock (value);
+    BBlock self (0);
+    if (bb)
+      self.take (sfi_bblock_ref (bb));
+    return self;
+  }
+  static void value_set (GValue       *value,
+                         const BBlock &self)
+  {
+    sfi_value_set_bblock (value, self.block);
+  }
+};
+
+class Rec {
+  SfiRec *crec;
+public:
+  Rec ()
+  {
+    crec = NULL;
+  }
+  Rec (SfiRec &sr)
+  {
+    crec = NULL;
+    *this = sr;
+  }
+  Rec (const Rec &rr)
+  {
+    if (rr.crec)
+      crec = sfi_rec_ref (rr.crec);
+    else
+      crec = NULL;
+  }
+  void clear ()
+  {
+    if (crec)
+      sfi_rec_clear (crec);
+  }
+  Rec& operator= (SfiRec &sr)
+  {
+    if (crec != &sr)
+      {
+        if (crec)
+          sfi_rec_unref (crec);
+        crec = &sr;
+        if (crec)
+          sfi_rec_ref (crec);
+      }
+    return *this;
+  }
+  Rec& operator= (const Rec &rr)
+  {
+    if (crec != rr.crec)
+      {
+        if (crec)
+          sfi_rec_unref (crec);
+        crec = rr.crec;
+        if (crec)
+          sfi_rec_ref (crec);
+      }
+    return *this;
+  }
+  SfiRec* rec()
+  {
+    return crec;
+  }
+  ~Rec()
+  {
+    if (crec)
+      sfi_rec_unref (crec);
+  }
+  void ref ()
+  {
+    if (crec)
+      sfi_rec_ref (crec);
+    else
+      crec = sfi_rec_new();
+  }
+  void unref ()
+  {
+    g_return_if_fail (crec != NULL && crec->ref_count > 0);
+    sfi_rec_unref (crec);
+  }
+  void take (SfiRec *sr)
+  {
+    if (crec)
+      sfi_rec_unref (crec);
+    crec = sr;
+  }
+  Rec copy_deep()
+  {
+    if (crec)
+      return Rec (*sfi_rec_copy_deep (crec));
+    else
+      return Rec ();
+  }
+  Rec copy_shallow()
+  {
+    return Rec (*this);
+  }
+  void set (const gchar     *field_name,
+            const GValue    *value)
+  {
+    if (!crec)
+      crec = sfi_rec_new();
+    sfi_rec_set (crec, field_name, value);
+  }
+  unsigned int length()
+  {
+    return crec ? crec->n_fields : 0;
+  }
+  GValue* get (const gchar *name)
+  {
+    return crec ? sfi_rec_get (crec, name) : NULL;
+  }
+  static Rec value_get (const GValue *value)
+  {
+    SfiRec *sr = sfi_value_get_rec (value);
+    Rec self;
+    if (sr)
+      self.take (sfi_rec_ref (sr));
+    return self;
+  }
+  static void value_set (GValue       *value,
+                         const Rec &self)
+  {
+    sfi_value_set_rec (value, self.crec);
+  }
+};
+
+class ObjectHandle {
+  GObject *cobj;
+public:
+  ObjectHandle ()
+  {
+    cobj = NULL;
+  }
+  ObjectHandle (GObject &object)
+  {
+    cobj = NULL;
+    *this = object;
+  }
+  ObjectHandle (const ObjectHandle &oh)
+  {
+    if (oh.cobj)
+      cobj = (GObject*) g_object_ref (oh.cobj);
+    else
+      cobj = NULL;
+  }
+  ~ObjectHandle()
+  {
+    if (cobj)
+      g_object_unref (cobj);
+  }
+  ObjectHandle& operator= (GObject &object)
+  {
+    if (cobj != &object)
+      {
+        if (cobj)
+          g_object_unref (cobj);
+        cobj = &object;
+        if (cobj)
+          g_object_ref (cobj);
+      }
+    return *this;
+  }
+  ObjectHandle& operator= (const ObjectHandle &oh)
+  {
+    if (cobj != oh.cobj)
+      {
+        if (cobj)
+          g_object_unref (cobj);
+        cobj = oh.cobj;
+        if (cobj)
+          g_object_ref (cobj);
+      }
+    return *this;
+  }
+  GObject* object()
+  {
+    return cobj;
+  }
+  void ref ()
+  {
+    g_return_if_fail (cobj != NULL && cobj->ref_count > 0);
+    g_object_ref (cobj);
+  }
+  void unref ()
+  {
+    g_return_if_fail (cobj != NULL && cobj->ref_count > 0);
+    g_object_unref (cobj);
+  }
+  void take (GObject *object)
+  {
+    if (cobj)
+      g_object_unref (cobj);
+    cobj = object;
+  }
+  ObjectHandle copy_deep()
+  {
+    if (cobj)
+      return ObjectHandle (*cobj);
+    else
+      return ObjectHandle ();
+  }
+  ObjectHandle copy_shallow()
+  {
+    return ObjectHandle (*this);
+  }
+  static ObjectHandle value_get (const GValue *value)
+  {
+    GObject *object = (GObject*) g_value_get_object (value);
+    ObjectHandle self;
+    if (object)
+      self.take ((GObject*) g_object_ref (object));
+    return self;
+  }
+  static void value_set (GValue             *value,
+                         const ObjectHandle &self)
+  {
+    g_value_set_object (value, self.cobj);
   }
 };
 

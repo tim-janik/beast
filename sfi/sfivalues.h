@@ -102,6 +102,7 @@ void	    sfi_value_set_seq		(GValue		*value,
 void	    sfi_value_take_seq		(GValue		*value,
 					 SfiSeq		*seq);
 SfiRec*	    sfi_value_get_rec		(const GValue	*value);
+SfiRec*     sfi_value_dup_rec           (const GValue   *value);
 void	    sfi_value_set_rec		(GValue		*value,
 					 SfiRec         *rec);
 void	    sfi_value_take_rec		(GValue         *value,

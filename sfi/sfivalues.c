@@ -314,6 +314,15 @@ sfi_value_get_rec (const GValue *value)
   return g_value_get_boxed (value);
 }
 
+SfiRec*
+sfi_value_dup_rec (const GValue *value)
+{
+  SfiRec *rec;
+  g_return_val_if_fail (SFI_VALUE_HOLDS_REC (value), NULL);
+  rec = g_value_get_param (value);
+  return rec ? sfi_rec_ref (rec) : NULL;
+}
+
 void
 sfi_value_set_rec (GValue *value,
 		   SfiRec *rec)
