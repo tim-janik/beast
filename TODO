@@ -668,6 +668,10 @@ interop:
   native jack driver:
     - write it
     - maybe add a blocking API to JACK itself
+    - make connection to JACK persistent, so that the client is visible all
+      the time, and patchbays can be used in a sane way (with PortAudio,
+      BEAST is only visible during playback, which is not useful for using
+      qjackctl)
 
 design instruments:
   samples:
@@ -695,5 +699,6 @@ Misc Buglets/Feature Requests:
  - when opening the instrument assignment dialog in the track view,
    after using the "load" button, the newly loaded instrument should
    be the default
+ - add: playback cursor follows song (like sweep does: with jumps)
 
 vim:set ts=8 sts=2 sw=2:
