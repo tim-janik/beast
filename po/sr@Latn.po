@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-16 00:11+0200\n"
+"POT-Creation-Date: 2003-10-17 21:42+0200\n"
 "PO-Revision-Date: 2003-10-16 00:11+0200\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -53,7 +53,7 @@ msgstr "/Datoteka/_Postavke"
 msgid "/File/_Quit"
 msgstr "/Datoteka/_Izađi"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:77 beast-gtk/bstpartdialog.c:78
 msgid "/_Edit"
 msgstr "/_Uređivanje"
 
@@ -169,7 +169,7 @@ msgstr "/Talasi/Obriši talas"
 msgid "/Waves/_Edit Wave..."
 msgstr "/Talasi/_Uredi talas..."
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:118 beast-gtk/bstpartdialog.c:72
 msgid "/_Tools"
 msgstr "/_Alati"
 
@@ -591,6 +591,70 @@ msgstr "Obriši delove"
 msgid "Remove Paths"
 msgstr "Ukloni putanje"
 
+#: beast-gtk/bstpartdialog.c:73
+#, fuzzy
+msgid "/Tools/Insert"
+msgstr "/Alati/_Sintetizator"
+
+#: beast-gtk/bstpartdialog.c:74
+#, fuzzy
+msgid "/Tools/Delete"
+msgstr "Obriši"
+
+#: beast-gtk/bstpartdialog.c:75
+#, fuzzy
+msgid "/Tools/Align Events"
+msgstr "/Alati/_Talasi"
+
+#: beast-gtk/bstpartdialog.c:76
+#, fuzzy
+msgid "/Tools/Select"
+msgstr "/Alati/_Sintetizator"
+
+#: beast-gtk/bstpartdialog.c:77
+#, fuzzy
+msgid "/Tools/Vertical Select"
+msgstr "Uspravan izbor"
+
+#: beast-gtk/bstpartdialog.c:79
+#, fuzzy
+msgid "/Edit/Cut"
+msgstr "/_Uređivanje"
+
+#: beast-gtk/bstpartdialog.c:80
+#, fuzzy
+msgid "/Edit/Copy"
+msgstr "/Uređivanje/Po_novi"
+
+#: beast-gtk/bstpartdialog.c:81
+#, fuzzy
+msgid "/Edit/Paste"
+msgstr "Uredi deo"
+
+#: beast-gtk/bstpartdialog.c:82
+#, fuzzy
+msgid "/Edit/Clear"
+msgstr "/Uređivanje/_Očisti vraćanje"
+
+#: beast-gtk/bstpartdialog.c:84
+#, fuzzy
+msgid "/Edit/Undo"
+msgstr "/Uređivanje/Opo_zovi"
+
+#: beast-gtk/bstpartdialog.c:85
+#, fuzzy
+msgid "/Edit/Redo"
+msgstr "/Uređivanje/Po_novi"
+
+#: beast-gtk/bstpartdialog.c:87
+#, fuzzy
+msgid "/Scripts"
+msgstr "Skripte"
+
+#: beast-gtk/bstpartdialog.c:88
+msgid "/Test"
+msgstr ""
+
 #: beast-gtk/bstpartdialog.c:260
 msgid "Control Type: "
 msgstr "Vrsta kontrole:"
@@ -958,79 +1022,60 @@ msgstr "Klizaj desno"
 msgid "Waves"
 msgstr "Talasi"
 
-#: beast-gtk/gxk/gxklistwrapper.c:101
-msgid "Number of Columns"
-msgstr "Broj kolona"
+#~ msgid "Number of Columns"
+#~ msgstr "Broj kolona"
 
-#: beast-gtk/gxk/gxklistwrapper.c:105
-msgid "Array of column types"
-msgstr "Niz vrsta kolona"
+#~ msgid "Array of column types"
+#~ msgstr "Niz vrsta kolona"
 
-#: beast-gtk/gxk/gxklistwrapper.c:109
-msgid "Number of Rows"
-msgstr "Broj redova"
+#~ msgid "Number of Rows"
+#~ msgstr "Broj redova"
 
-#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
-msgid "Filter Choice"
-msgstr "Izbor filtera"
+#~ msgid "Filter Choice"
+#~ msgstr "Izbor filtera"
 
-#: plugins/bseiirfilter.c:118
-msgid "Filter Algorithm"
-msgstr "Algoritam filtriranja"
+#~ msgid "Filter Algorithm"
+#~ msgstr "Algoritam filtriranja"
 
-#: plugins/bseiirfilter.c:118
-msgid "The filter design type"
-msgstr "Vrsta izrade filtera"
+#~ msgid "The filter design type"
+#~ msgstr "Vrsta izrade filtera"
 
-#: plugins/bseiirfilter.c:124
-msgid "Filter Type"
-msgstr "Vrsta filtera"
+#~ msgid "Filter Type"
+#~ msgstr "Vrsta filtera"
 
-#: plugins/bseiirfilter.c:124
-msgid "The type of filter to use"
-msgstr "Koju vrstu filtera da koristim"
+#~ msgid "The type of filter to use"
+#~ msgstr "Koju vrstu filtera da koristim"
 
-#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
-msgid "Filter Specification"
-msgstr "Navod filtera"
+#~ msgid "Filter Specification"
+#~ msgstr "Navod filtera"
 
-#: plugins/bseiirfilter.c:130
-msgid "Order"
-msgstr "Redosled"
+#~ msgid "Order"
+#~ msgstr "Redosled"
 
-#: plugins/bseiirfilter.c:130
-msgid "Order of Filter"
-msgstr "Redosled filtera"
+#~ msgid "Order of Filter"
+#~ msgstr "Redosled filtera"
 
-#: plugins/bseiirfilter.c:135
-msgid "Epsilon"
-msgstr "Epsilon"
+#~ msgid "Epsilon"
+#~ msgstr "Epsilon"
 
 # šta god :-)
-#: plugins/bseiirfilter.c:135
-msgid "Passband falloff at cutoff frequency"
-msgstr "Pad prolazne trake na učestanosti isecanja"
+#~ msgid "Passband falloff at cutoff frequency"
+#~ msgstr "Pad prolazne trake na učestanosti isecanja"
 
-#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
-msgid "Cutoff Frequency (All Filters)"
-msgstr "Učestanost isecanja (svi filteri)"
+#~ msgid "Cutoff Frequency (All Filters)"
+#~ msgstr "Učestanost isecanja (svi filteri)"
 
-#: plugins/bseiirfilter.c:140 plugins/bseiirfilter.c:150
-msgid "Cutoff [Hz]"
-msgstr "Isecanje [Hz]"
+#~ msgid "Cutoff [Hz]"
+#~ msgstr "Isecanje [Hz]"
 
-#: plugins/bseiirfilter.c:145 plugins/bseiirfilter.c:155
-msgid "Note"
-msgstr "Napomena"
+#~ msgid "Note"
+#~ msgstr "Napomena"
 
-#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
-msgid "Cutoff Frequency 2 (Band Pass/Stop)"
-msgstr "Učestanost isecanja 2 (prolaz/zaustavljanje trake)"
+#~ msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+#~ msgstr "Učestanost isecanja 2 (prolaz/zaustavljanje trake)"
 
-#: plugins/bseiirfilter.c:159
-msgid "Unfiltered Input"
-msgstr "Nefiltrirani ulaz"
+#~ msgid "Unfiltered Input"
+#~ msgstr "Nefiltrirani ulaz"
 
-#: plugins/bseiirfilter.c:161
-msgid "Filtered Output"
-msgstr "Filtrirani ulaz"
+#~ msgid "Filtered Output"
+#~ msgstr "Filtrirani ulaz"

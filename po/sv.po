@@ -2,12 +2,13 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.2 2003/10/16 17:41:11 menthos Exp $
+# $Id: sv.po,v 1.3 2003/10/17 19:44:22 timj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
-"POT-Creation-Date: 2003-10-16 19:38+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-10-17 21:42+0200\n"
 "PO-Revision-Date: 2003-10-16 19:39+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -51,7 +52,7 @@ msgstr "/Arkiv/Inställningar..."
 msgid "/File/_Quit"
 msgstr "/Arkiv/_Avsluta"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:77 beast-gtk/bstpartdialog.c:78
 msgid "/_Edit"
 msgstr "/_Redigera"
 
@@ -167,7 +168,7 @@ msgstr "/Vågor/Ta bort våg"
 msgid "/Waves/_Edit Wave..."
 msgstr "/Vågor/_Redigera våg..."
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:118 beast-gtk/bstpartdialog.c:72
 msgid "/_Tools"
 msgstr "/_Verktyg"
 
@@ -592,6 +593,70 @@ msgstr "Ta bort delar"
 msgid "Remove Paths"
 msgstr "Ta bort sökvägar"
 
+#: beast-gtk/bstpartdialog.c:73
+#, fuzzy
+msgid "/Tools/Insert"
+msgstr "/Verktyg/_Synth"
+
+#: beast-gtk/bstpartdialog.c:74
+#, fuzzy
+msgid "/Tools/Delete"
+msgstr "Ta bort"
+
+#: beast-gtk/bstpartdialog.c:75
+#, fuzzy
+msgid "/Tools/Align Events"
+msgstr "/Verktyg/V_ågor"
+
+#: beast-gtk/bstpartdialog.c:76
+#, fuzzy
+msgid "/Tools/Select"
+msgstr "/Verktyg/_Synth"
+
+#: beast-gtk/bstpartdialog.c:77
+#, fuzzy
+msgid "/Tools/Vertical Select"
+msgstr "Vertikalmarkering"
+
+#: beast-gtk/bstpartdialog.c:79
+#, fuzzy
+msgid "/Edit/Cut"
+msgstr "/Redigera/-"
+
+#: beast-gtk/bstpartdialog.c:80
+#, fuzzy
+msgid "/Edit/Copy"
+msgstr "/Redigera/Spår/_Kopiera"
+
+#: beast-gtk/bstpartdialog.c:81
+#, fuzzy
+msgid "/Edit/Paste"
+msgstr "/Redigera/_Mönster"
+
+#: beast-gtk/bstpartdialog.c:82
+#, fuzzy
+msgid "/Edit/Clear"
+msgstr "/Redigera/_Töm ångra"
+
+#: beast-gtk/bstpartdialog.c:84
+#, fuzzy
+msgid "/Edit/Undo"
+msgstr "/Redigera/_Ångra"
+
+#: beast-gtk/bstpartdialog.c:85
+#, fuzzy
+msgid "/Edit/Redo"
+msgstr "/Redigera/_Gör om"
+
+#: beast-gtk/bstpartdialog.c:87
+#, fuzzy
+msgid "/Scripts"
+msgstr "Skript"
+
+#: beast-gtk/bstpartdialog.c:88
+msgid "/Test"
+msgstr ""
+
 #: beast-gtk/bstpartdialog.c:260
 msgid "Control Type: "
 msgstr "Kontrolltyp: "
@@ -959,81 +1024,62 @@ msgstr "Rulla höger"
 msgid "Waves"
 msgstr "Vågor"
 
-#: beast-gtk/gxk/gxklistwrapper.c:101
-msgid "Number of Columns"
-msgstr "Antal kolumner"
+#~ msgid "Number of Columns"
+#~ msgstr "Antal kolumner"
 
-#: beast-gtk/gxk/gxklistwrapper.c:105
-msgid "Array of column types"
-msgstr "Vektor med kolumntyper"
+#~ msgid "Array of column types"
+#~ msgstr "Vektor med kolumntyper"
 
-#: beast-gtk/gxk/gxklistwrapper.c:109
-msgid "Number of Rows"
-msgstr "Antal rader"
+#~ msgid "Number of Rows"
+#~ msgstr "Antal rader"
 
-#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
-msgid "Filter Choice"
-msgstr "Filterval"
+#~ msgid "Filter Choice"
+#~ msgstr "Filterval"
 
-#: plugins/bseiirfilter.c:118
-msgid "Filter Algorithm"
-msgstr "Filteralgoritm"
+#~ msgid "Filter Algorithm"
+#~ msgstr "Filteralgoritm"
 
-#: plugins/bseiirfilter.c:118
-msgid "The filter design type"
-msgstr "Filterdesigntypen"
+#~ msgid "The filter design type"
+#~ msgstr "Filterdesigntypen"
 
-#: plugins/bseiirfilter.c:124
-msgid "Filter Type"
-msgstr "Filtertyp"
+#~ msgid "Filter Type"
+#~ msgstr "Filtertyp"
 
-#: plugins/bseiirfilter.c:124
-msgid "The type of filter to use"
-msgstr "Typen av filter att använda"
+#~ msgid "The type of filter to use"
+#~ msgstr "Typen av filter att använda"
 
-#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
-msgid "Filter Specification"
-msgstr "Filterspecifikation"
+#~ msgid "Filter Specification"
+#~ msgstr "Filterspecifikation"
 
-#: plugins/bseiirfilter.c:130
-msgid "Order"
-msgstr "Ordning"
+#~ msgid "Order"
+#~ msgstr "Ordning"
 
-#: plugins/bseiirfilter.c:130
-msgid "Order of Filter"
-msgstr "Filtrets ordning"
+#~ msgid "Order of Filter"
+#~ msgstr "Filtrets ordning"
 
-#: plugins/bseiirfilter.c:135
-msgid "Epsilon"
-msgstr "Epsilon"
+#~ msgid "Epsilon"
+#~ msgstr "Epsilon"
 
-#: plugins/bseiirfilter.c:135
-msgid "Passband falloff at cutoff frequency"
-msgstr "Passbandsavskärning vid avskärningsfrekvens"
+#~ msgid "Passband falloff at cutoff frequency"
+#~ msgstr "Passbandsavskärning vid avskärningsfrekvens"
 
-#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
-msgid "Cutoff Frequency (All Filters)"
-msgstr "Avskärningsfrekvens (alla filter)"
+#~ msgid "Cutoff Frequency (All Filters)"
+#~ msgstr "Avskärningsfrekvens (alla filter)"
 
-#: plugins/bseiirfilter.c:140 plugins/bseiirfilter.c:150
-msgid "Cutoff [Hz]"
-msgstr "Avskärning [Hz]"
+#~ msgid "Cutoff [Hz]"
+#~ msgstr "Avskärning [Hz]"
 
-#: plugins/bseiirfilter.c:145 plugins/bseiirfilter.c:155
-msgid "Note"
-msgstr "Not"
+#~ msgid "Note"
+#~ msgstr "Not"
 
-#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
-msgid "Cutoff Frequency 2 (Band Pass/Stop)"
-msgstr "Avskärningsfrekvens 2 (bandpass/-stopp)"
+#~ msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+#~ msgstr "Avskärningsfrekvens 2 (bandpass/-stopp)"
 
-#: plugins/bseiirfilter.c:159
-msgid "Unfiltered Input"
-msgstr "Ofiltrerad inmatning"
+#~ msgid "Unfiltered Input"
+#~ msgstr "Ofiltrerad inmatning"
 
-#: plugins/bseiirfilter.c:161
-msgid "Filtered Output"
-msgstr "Filtrerad utmatning"
+#~ msgid "Filtered Output"
+#~ msgstr "Filtrerad utmatning"
 
 #~ msgid "/File/_New..."
 #~ msgstr "/Arkiv/_Ny..."
@@ -2560,14 +2606,8 @@ msgstr "Filtrerad utmatning"
 #~ msgid "/Edit/_Jazz Edit Mode"
 #~ msgstr "/Redigera/_Jazzredigeringsläge"
 
-#~ msgid "/Edit/-"
-#~ msgstr "/Redigera/-"
-
 #~ msgid "/Edit/_Transposition..."
 #~ msgstr "/Redigera/_Transponering..."
-
-#~ msgid "/Edit/_Pattern"
-#~ msgstr "/Redigera/_Mönster"
 
 #~ msgid "/Edit/Pattern/C_ut"
 #~ msgstr "/Redigera/Mönster/Klipp _ut"
@@ -2583,9 +2623,6 @@ msgstr "Filtrerad utmatning"
 
 #~ msgid "/Edit/Track/C_ut"
 #~ msgstr "/Redigera/Spår/Klipp _ut"
-
-#~ msgid "/Edit/Track/_Copy"
-#~ msgstr "/Redigera/Spår/_Kopiera"
 
 #~ msgid "/Edit/Track/_Paste"
 #~ msgstr "/Redigera/Spår/Klistra _in"
