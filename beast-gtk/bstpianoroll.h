@@ -39,11 +39,10 @@ typedef struct _BstPianoRoll        BstPianoRoll;
 typedef struct _BstPianoRollClass   BstPianoRollClass;
 typedef enum
 {
-  BST_PIANO_ROLL_DRAG_NONE,
-  BST_PIANO_ROLL_DRAG_ADD,
-  BST_PIANO_ROLL_DRAG_REMOVE,
-  BST_PIANO_ROLL_DRAG_MOVE
-} BstPianoRollDragType;
+  BST_PIANO_ROLL_POINTER_IGNORE,	/* don't report motion and release */
+  BST_PIANO_ROLL_POINTER_RELEASE,	/* report release */
+  BST_PIANO_ROLL_POINTER_MOTION		/* report motion and release */
+} BstPianoRollPointerType;
 
 
 /* --- structures & typedefs --- */
@@ -52,7 +51,8 @@ struct _BstPianoRoll
   GtkContainer	 parent_instance;
 
   BswProxy	 proxy;
-  guint		 n_octaves;
+  gint		 min_octave;
+  gint		 max_octave;
   guint		 vzoom;
 
   /* horizontal layout */
@@ -67,31 +67,70 @@ struct _BstPianoRoll
 
   guint		 hpanel_height;
   GdkWindow	*vpanel, *hpanel, *canvas;
+  GdkCursorType	 canvas_cursor, vpanel_cursor, hpanel_cursor;
   GdkGC		*color_gc[12];
 
-  /* note dragging/clicks */
-  guint16	 drag_type;
-  guint16	 drag_button;
-  guint		 drag_start;	/* ticks */
-  guint		 drag_current;	/* ticks */
-  guint		 drag_note;
-  guint		 drag_octave;
-  guint		 drag_hackid;
-
   GtkAdjustment	*hadjustment, *vadjustment;
+
+  /* selection rectangle */
+  
+
+  /* custom drag data */
+  guint16	 drag_button;
+  guint16	 drag_type;
+  guint		 drag_tick0;
+  gfloat	 drag_freq0;
+  guint		 drag_tick1, drag_duration1;
+  gfloat	 drag_freq1;
+  guint		 drag_tick2, drag_duration2;
+  gfloat	 drag_freq2;
 };
 struct _BstPianoRollClass
 {
   GtkContainerClass parent_class;
 
-  void  (*set_scroll_adjustments) (BstPianoRoll		*proll,
-				   GtkAdjustment	*hadjustment,
-				   GtkAdjustment	*vadjustment);
+  void		(*set_scroll_adjustments)	(BstPianoRoll	*proll,
+						 GtkAdjustment	*hadjustment,
+						 GtkAdjustment	*vadjustment);
+  void		(*canvas_press)			(BstPianoRoll	*proll,
+						 guint		 button,
+						 guint		 tick_position,
+						 gfloat		 freq);
+  void		(*canvas_motion)		(BstPianoRoll	*proll,
+						 guint		 button,
+						 guint		 tick_position,
+						 gfloat		 freq);
+  void		(*canvas_release)		(BstPianoRoll	*proll,
+						 guint		 button,
+						 guint		 tick_position,
+						 gfloat		 freq);
 };
+
+void	bst_piano_roll_set_pointer	(BstPianoRoll			*proll,
+					 BstPianoRollPointerType	 type);
+void	bst_piano_roll_set_drag_data1	(BstPianoRoll			*proll,
+					 guint				 tick,
+					 guint				 duration,
+					 gfloat				 freq);
+void	bst_piano_roll_set_drag_data2	(BstPianoRoll			*proll,
+					 guint				 tick,
+					 guint				 duration,
+					 gfloat				 freq);
+guint	bst_piano_roll_get_drag_data0	(BstPianoRoll			*proll,
+					 guint				*tick,
+					 gfloat				*freq);
+guint	bst_piano_roll_get_drag_data1	(BstPianoRoll			*proll,
+					 guint				*tick,
+					 guint				*duration,
+					 gfloat				*freq);
+guint	bst_piano_roll_get_drag_data2	(BstPianoRoll			*proll,
+					 guint				*tick,
+					 guint				*duration,
+					 gfloat				*freq);
 
 
 /* --- prototypes --- */
-void proll_test (void);
+GtkWidget* proll_test (void);
 GType	bst_piano_roll_get_type			(void);
 void	bst_piano_roll_set_proxy		(BstPianoRoll	*proll,
 						 BswProxy	 proxy);
@@ -104,6 +143,12 @@ gfloat	bst_piano_roll_set_hzoom		(BstPianoRoll	*proll,
 						 gfloat		 hzoom);
 gfloat	bst_piano_roll_set_vzoom		(BstPianoRoll	*proll,
 						 gfloat		 vzoom);
+void	bst_piano_roll_set_canvas_cursor	(BstPianoRoll	*proll,
+						 GdkCursorType	 cursor);
+void	bst_piano_roll_set_vpanel_cursor	(BstPianoRoll	*proll,
+						 GdkCursorType	 cursor);
+void	bst_piano_roll_set_hpanel_cursor	(BstPianoRoll	*proll,
+						 GdkCursorType	 cursor);
      
      
      

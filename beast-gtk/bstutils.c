@@ -78,6 +78,7 @@ typedef struct
 static StockIcon stock_pixdata_icons[] = {
   { BST_STOCK_EDIT_TOOL,	stock_editor,		},
   { BST_STOCK_INFO,		stock_info,		},
+  { BST_STOCK_INSTRUMENT,	stock_instrument,	},
   { BST_STOCK_KNOB,		stock_knob,		},
   { BST_STOCK_LOAD,		stock_cdrom,		},
   { BST_STOCK_MOUSE_TOOL,	stock_mouse_tool,	},
@@ -85,13 +86,18 @@ static StockIcon stock_pixdata_icons[] = {
   { BST_STOCK_NO_ILINK,		stock_no_ilink,		},
   { BST_STOCK_NO_OLINK,		stock_no_olink,		},
   { BST_STOCK_PALETTE,		stock_palette,		},
+  { BST_STOCK_PART,		stock_part,		},
+  { BST_STOCK_PART_EDITOR,	stock_part_editor,	},
+  { BST_STOCK_PART_TOOL,	stock_part_tool,	},
   { BST_STOCK_PATTERN,		stock_pattern,		},
   { BST_STOCK_PATTERN_GROUP,	stock_pattern_group,	},
   { BST_STOCK_PATTERN_TOOL,	stock_pattern_tool,	},
   { BST_STOCK_PREVIEW_AUDIO,	stock_small_audio,	},
   { BST_STOCK_PREVIEW_NOAUDIO,	stock_small_noaudio,	},
+  { BST_STOCK_RECT_SELECT,	stock_rect_select,	},
   { BST_STOCK_TARGET,		stock_target,		},
   { BST_STOCK_TRASHCAN,		stock_trashcan,		},
+  { BST_STOCK_VERT_SELECT,	stock_vert_select,	},
   { BST_STOCK_WAVE,		stock_wave,		},
   { BST_STOCK_WAVE_TOOL,	stock_wave_tool,	},
   { BST_STOCK_ZOOM_ANY,		stock_zoom_any,		},
@@ -177,6 +183,24 @@ _bst_utils_init (void)
 
   /* register globally */
   gtk_icon_factory_add_default (stock_icon_factory);
+}
+
+guint
+bst_size_width (GtkIconSize bst_size)
+{
+  gint width = 10;
+
+  gtk_icon_size_lookup (bst_size, &width, NULL);
+  return width;
+}
+
+guint
+bst_size_height (GtkIconSize bst_size)
+{
+  gint height = 10;
+
+  gtk_icon_size_lookup (bst_size, NULL, &height);
+  return height;
 }
 
 GtkWidget*
@@ -368,7 +392,6 @@ gdk_pixbuf_create_bitmap_data (GdkPixbuf *pixbuf,
   guint8 *data, *buffer;
 
   g_return_val_if_fail (GDK_IS_PIXBUF (pixbuf), NULL);
-  g_return_val_if_fail (gdk_pixbuf_get_has_alpha (pixbuf) == TRUE, NULL);
 
   width = gdk_pixbuf_get_width (pixbuf);
   height = gdk_pixbuf_get_height (pixbuf);

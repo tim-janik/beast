@@ -142,8 +142,6 @@ bst_radio_tools_do_set_tool (BstRadioTools *rtools,
 {
   GSList *slist, *next;
 
-  rtools->tool_id = tool_id;
-
   rtools->block_tool_id = TRUE;
   for (slist = rtools->widgets; slist; slist = next)
     {
@@ -165,8 +163,15 @@ bst_radio_tools_set_tool (BstRadioTools *rtools,
 {
   g_return_if_fail (BST_IS_RADIO_TOOLS (rtools));
 
-  if (rtools->tool_id != tool_id && !rtools->block_tool_id)
-    gtk_signal_emit (GTK_OBJECT (rtools), radio_tools_signals[SIGNAL_SET_TOOL], tool_id);
+  if (!rtools->block_tool_id)
+    {
+      /* emit the signal unconditionally if we don't have tools yet */
+      if (!rtools->n_tools || rtools->tool_id != tool_id)
+	{
+	  rtools->tool_id = tool_id;
+	  gtk_signal_emit (GTK_OBJECT (rtools), radio_tools_signals[SIGNAL_SET_TOOL], tool_id);
+	}
+    }
 }
 
 void

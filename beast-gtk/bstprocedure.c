@@ -295,11 +295,6 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
       shell->in_execution = FALSE;
       bst_status_bar_uncatch_procedure ();
       
-      /* check for recursion
-       */
-      if (error == BSE_ERROR_PROC_BUSY)
-        gdk_beep ();
-      
       bst_procedure_shell_update (shell);
       /* feature procedures with error out parameter */
       if (!error && shell->n_out_params)
@@ -310,11 +305,9 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
 	   * so only act on out_param errors
 	   */
 	  if (g_type_is_a (G_VALUE_TYPE (&bparam->value), BSE_TYPE_ERROR_TYPE))
-	    {
-	      error = g_value_get_enum (&bparam->value);
-	      bst_status_set (error ? 0 : 100, shell->proc->name, bse_error_blurb (error));
-	    }
+	    error = g_value_get_enum (&bparam->value);
 	}
+      bst_status_set (error ? BST_STATUS_ERROR : BST_STATUS_DONE, shell->proc->name, bse_error_blurb (error));
     }
   
   gtk_widget_unref (widget);

@@ -46,7 +46,6 @@ static void			bst_print_blurb		(FILE	     *fout,
 
 /* --- variables --- */
 BstDebugFlags       bst_debug_flags = 0;
-gboolean	    bst_developer_extensions = FALSE;
 GtkTooltips        *bst_global_tooltips = NULL;
 static GDebugKey    bst_debug_keys[] = { /* keep in sync with bstdefs.h */
   { "keytable",		BST_DEBUG_KEYTABLE, },
@@ -84,7 +83,7 @@ main (int   argc,
   BstApp *app = NULL;
   guint i, this_rc_version;
   
-  /* initialize BSE and preferences
+  /* initialize BSE, BSW and preferences
    */
   if (0)
     g_mem_set_vtable (glib_mem_profiler_table);
@@ -104,23 +103,22 @@ main (int   argc,
   gtk_init (&argc, &argv);
   g_set_prgname ("BEAST");
   gtk_post_init_patch_ups ();
-  gdk_rgb_init ();
 
   GDK_THREADS_ENTER ();
 
-  /* BEAST initialization bits */
+  /* BEAST initialization
+   */
   bst_init_gentypes ();
   bst_pattern_dialog_gtkfix_default_accels ();
   gtk_rc_parse_string (bst_rc_string);
-  {
-    g_type_name (bst_free_radio_button_get_type ());	/* urg, GCC_CONST */
-  }
+  g_type_name (bst_free_radio_button_get_type ());	/* urg, GCC_CONST */
   bst_global_tooltips = gtk_tooltips_new ();
   g_object_ref (bst_global_tooltips);
   gtk_object_sink (GTK_OBJECT (bst_global_tooltips));
   
-  /* parse rc file */
-  if (1)
+  /* parse rc file
+   */
+  if (TRUE)
     {
       BseGConfig *gconf;
       BseErrorType error;
@@ -170,7 +168,7 @@ main (int   argc,
       BswErrorType error;
 
       /* load waves into the last project */
-      if (bsw_server_loader_name (BSW_SERVER, argv[i]))
+      if (bsw_server_can_load (BSW_SERVER, argv[i]))
 	{
 	  if (!app)
 	    {
@@ -214,9 +212,7 @@ main (int   argc,
 
   /* open default app window
    */
-  if (0)
-    proll_test (); /* FIXME: HACK */
-  else if (!app)
+  if (!app)
     {
       BswProxy project = bsw_server_use_new_project (BSW_SERVER, "Untitled.bse");
       
@@ -231,7 +227,6 @@ main (int   argc,
    */
   bst_key_table_install_patch (bst_key_table_from_xkb (gdk_get_display ()));
 
-
   /* fire up release notes dialog
    */
   this_rc_version = 1;	/* <- increment to trigger greeting dialog */
@@ -241,24 +236,24 @@ main (int   argc,
       bst_globals_set_rc_version (this_rc_version);
     }
   
-  
   /* and away into the main loop
    */
   gtk_main ();
   
-  /* stop everything playing */
+  /* stop everything playing
+   */
   // bse_heart_reset_all_attach ();
   
-  /* FXME: wrt cleanup cycles */
-  
-  /* perform necessary cleanup cycles */
+  /* perform necessary cleanup cycles
+   */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     ;
   GDK_THREADS_ENTER ();
   
-  /* save rc file */
-  if (1)
+  /* save rc file
+   */
+  if (TRUE)
     {
       BseGConfig *gconf;
       BseErrorType error;
@@ -274,10 +269,12 @@ main (int   argc,
       g_free (file_name);
     }
   
-  /* remove pcm devices */
+  /* remove pcm devices
+   */
   // bse_heart_unregister_all_devices ();
   
-  /* perform necessary cleanup cycles */
+  /* perform necessary cleanup cycles
+   */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     ;
@@ -318,7 +315,7 @@ bst_parse_args (int    *argc_p,
 	}
       else if (strcmp ("--beast-developer-extensions", argv[i]) == 0)
 	{
-	  bst_developer_extensions = TRUE;
+	  bse_developer_extensions = TRUE;
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--beast-debug", argv[i]) == 0 ||

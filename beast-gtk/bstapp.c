@@ -61,8 +61,8 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/File/_Exit",			"<ctrl>Q",	BST_OP (EXIT),			"<Item>" },
   { "/_Project",			NULL,		NULL, 0,			"<Branch>" },
   { "/Project/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
-  { "/Project/_Play",			"",		BST_OP (PROJECT_PLAY),		"<Item>" },
-  { "/Project/_Stop",			"",		BST_OP (PROJECT_STOP),		"<Item>" },
+  { "/Project/_Play",			"<ctrl>P",	BST_OP (PROJECT_PLAY),		"<Item>" },
+  { "/Project/_Stop",			"<ctrl>S",	BST_OP (PROJECT_STOP),		"<Item>" },
   { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Project/New Song",		NULL,		BST_OP (PROJECT_NEW_SONG),	"<Item>" },
   { "/Project/New Synthesizer Network",	NULL,		BST_OP (PROJECT_NEW_SNET),	"<Item>" },
@@ -208,17 +208,18 @@ bst_app_init (BstApp *app)
 
   /* setup the main notebook
    */
-  app->notebook = g_object_connect (gtk_widget_new (GTK_TYPE_NOTEBOOK,
-						    "visible", TRUE,
-						    "parent", app->main_vbox,
-						    "tab_pos", GTK_POS_LEFT,
-						    "scrollable", TRUE,
-						    "can_focus", TRUE,
-						    NULL),
-				    "swapped_signal::destroy", bse_nullify_pointer, &app->notebook,
-				    "swapped_signal_after::switch-page", bst_update_can_operate, app,
-				    "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
-				    NULL);
+  app->notebook = g_object_new (GTK_TYPE_NOTEBOOK,
+				"visible", TRUE,
+				"parent", app->main_vbox,
+				"tab_pos", GTK_POS_LEFT,
+				"scrollable", TRUE,
+				"can_focus", TRUE,
+				NULL);
+  g_object_connect (app->notebook,
+		    "swapped_signal::destroy", bse_nullify_pointer, &app->notebook,
+		    "swapped_signal_after::switch-page", bst_update_can_operate, app,
+		    "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+		    NULL);
 }
 
 static void
@@ -565,9 +566,8 @@ bst_app_operate (BstApp *app,
 	}
       break;
     case BST_OP_PROJECT_NEW_SONG:
-      proxy = bsw_project_create_song (app->project, BSE_DFL_SONG_N_CHANNELS);
+      proxy = bsw_project_create_song (app->project);
       super_shell = bst_super_shell_from_super (proxy);
-      bst_super_shell_operate (super_shell, BST_OP_PATTERN_ADD);
       break;
     case BST_OP_PROJECT_NEW_SNET:
       proxy = bsw_project_create_snet (app->project);
@@ -593,7 +593,7 @@ bst_app_operate (BstApp *app,
       break;
     case BST_OP_PROJECT_STOP:
       bsw_server_halt_project (BSW_SERVER, app->project);
-      bst_status_set (0, "Stopping Playback", NULL);
+      bst_status_set (BST_STATUS_DONE, "Stopping Playback", NULL);
       break;
     case BST_OP_PROJECT_RACK_EDITOR:
       if (!app->rack_dialog)
@@ -649,6 +649,7 @@ bst_app_operate (BstApp *app,
 			     (GtkCallback) bst_super_shell_update,
 			     NULL);
       gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
+      gsl_alloc_report ();
       break;
     case BST_OP_REBUILD:
       gtk_container_foreach (GTK_CONTAINER (app->notebook),

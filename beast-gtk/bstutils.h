@@ -50,6 +50,7 @@ void		bst_init_gentypes	(void);
 #define BST_STOCK_EDIT_TOOL		("bst-stock-edit-tool")
 #define BST_STOCK_EXECUTE		("bst-stock-execute")
 #define	BST_STOCK_INFO			("bst-stock-info")
+#define	BST_STOCK_INSTRUMENT		("bst-stock-instrument")
 #define	BST_STOCK_KNOB			("bst-stock-palette-knob")
 #define	BST_STOCK_LOAD			("bst-stock-load")
 #define	BST_STOCK_MOUSE_TOOL		("bst-stock-mouse-tool")
@@ -59,17 +60,22 @@ void		bst_init_gentypes	(void);
 #define BST_STOCK_OK			("bst-stock-ok")
 #define BST_STOCK_OVERWRITE		("bst-stock-overwrite")
 #define	BST_STOCK_PALETTE		("bst-stock-palette")
+#define	BST_STOCK_PART			("bst-stock-part")
+#define	BST_STOCK_PART_EDITOR		("bst-stock-part-editor")
+#define	BST_STOCK_PART_TOOL		("bst-stock-part-tool")
 #define	BST_STOCK_PATTERN		("bst-stock-pattern")
 #define	BST_STOCK_PATTERN_GROUP		("bst-stock-pattern-group")
 #define	BST_STOCK_PATTERN_TOOL		("bst-stock-pattern-tool")
 #define BST_STOCK_PREVIEW_AUDIO		("bst-stock-preview-audio")
 #define BST_STOCK_PREVIEW_NOAUDIO	("bst-stock-preview-noaudio")
 #define	BST_STOCK_PROPERTIES		("bst-stock-properties")
+#define BST_STOCK_RECT_SELECT		("bst-stock-rect-select")
 #define BST_STOCK_REDO			("bst-stock-redo")
 #define BST_STOCK_REVERT		("bst-stock-revert")
 #define	BST_STOCK_TARGET		("bst-stock-target")
 #define	BST_STOCK_TRASHCAN		("bst-stock-trashcan")
 #define BST_STOCK_UNDO			("bst-stock-undo")
+#define BST_STOCK_VERT_SELECT		("bst-stock-vert-select")
 #define BST_STOCK_WAVE			("bst-stock-wave")
 #define BST_STOCK_WAVE_TOOL		("bst-stock-wave-tool")
 #define	BST_STOCK_ZOOM_100		("bst-stock-zoom-100")
@@ -104,6 +110,8 @@ GtkWidget*	bst_stock_button		(const gchar	*stock_id,
 						 const gchar	*label);
 GtkWidget*	bst_drag_window_from_stock	(const gchar	*stock_id);
 void		_bst_utils_init			(void);
+guint		bst_size_width			(GtkIconSize	 bst_size);
+guint		bst_size_height			(GtkIconSize	 bst_size);
 
 
 /* --- Gtk+ utilities & workarounds --- */

@@ -30,8 +30,8 @@ static gboolean	bst_instrument_view_can_operate	(BstItemView		*item_view,
 
 /* --- instrument ops --- */
 static BstItemViewOp instrument_view_ops[] = {
-  { "Add",		BST_OP_INSTRUMENT_ADD,		},
-  { "Delete",		BST_OP_INSTRUMENT_DELETE,	},
+  { "Add",		BST_OP_INSTRUMENT_ADD,		BST_STOCK_INSTRUMENT	},
+  { "Delete",		BST_OP_INSTRUMENT_DELETE,	BST_STOCK_TRASHCAN	},
 };
 static guint n_instrument_view_ops = sizeof (instrument_view_ops) / sizeof (instrument_view_ops[0]);
 
@@ -112,26 +112,25 @@ void
 bst_instrument_view_operate (BstItemView *item_view,
 			     BstOps       op)
 {
-  BseSong *song;
   BstInstrumentView *instrument_view = BST_INSTRUMENT_VIEW (item_view);
-  
+  BswProxy song = item_view->container;
+
   g_return_if_fail (bst_instrument_view_can_operate (item_view, op));
-  
-  song = bse_object_from_id (item_view->container);
-  
+
   switch (op)
     {
-      BseItem *item;
+      BswProxy item;
       gchar *string;
-      
     case BST_OP_INSTRUMENT_ADD:
-      item = bse_container_new_item (BSE_CONTAINER (song), BSE_TYPE_INSTRUMENT, NULL);
-      string = g_strdup_printf ("Instrument-%02X", bse_item_get_seqid (item));
-      g_object_set (item, "name", string, NULL);
+      item = bsw_song_create_instrument (song);
+      string = g_strdup_printf ("Instrument-%02X", bsw_item_get_seqid (item));
+      bsw_proxy_set (item, "name", string, NULL);
       g_free (string);
-      bst_item_view_select (item_view, BSE_OBJECT_ID (item));
+      bst_item_view_select (item_view, item);
       break;
     case BST_OP_INSTRUMENT_DELETE:
+      item = bst_item_view_get_current (item_view);
+      bsw_song_remove_instrument (song, item);
       break;
     default:
       break;
@@ -144,19 +143,18 @@ gboolean
 bst_instrument_view_can_operate (BstItemView *item_view,
 				 BstOps	   op)
 {
-  BseSong *song;
   BstInstrumentView *instrument_view = BST_INSTRUMENT_VIEW (item_view);
   
   g_return_val_if_fail (BST_IS_INSTRUMENT_VIEW (instrument_view), FALSE);
   
-  song = bse_object_from_id (item_view->container);
-  
   switch (op)
     {
+      BswProxy item;
     case BST_OP_INSTRUMENT_ADD:
       return TRUE;
     case BST_OP_INSTRUMENT_DELETE:
-      return FALSE;
+      item = bst_item_view_get_current (item_view);
+      return item != 0;
     default:
       return FALSE;
     }

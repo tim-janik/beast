@@ -1777,6 +1777,7 @@ gtk_clue_hunter_event (GtkWidget *widget,
   switch (event->type)
     {
       GtkWidget *ev_widget;
+      guint n_retries;
     case GDK_KEY_PRESS:
       if (event->key.keyval == GDK_Escape)
 	{
@@ -1821,6 +1822,7 @@ gtk_clue_hunter_event (GtkWidget *widget,
       
     case GDK_BUTTON_PRESS:
     case GDK_BUTTON_RELEASE:
+      n_retries = 0;
       while (gdk_pointer_grab (widget->window, TRUE,
 			       (GDK_POINTER_MOTION_HINT_MASK |
 				GDK_BUTTON1_MOTION_MASK |
@@ -1831,8 +1833,15 @@ gtk_clue_hunter_event (GtkWidget *widget,
 			       NULL,
 			       NULL,
 			       GDK_CURRENT_TIME) != 0)
-	;
-      ev_widget = gtk_get_event_widget (event);
+	{
+	  if (n_retries++ > 5)
+	    {
+	      g_warning ("unable to get Xserver pointer grab");
+	      n_retries = 100;
+	      break;
+	    }
+	}
+      ev_widget = n_retries < 100 ? gtk_get_event_widget (event) : NULL;
       if (ev_widget == widget &&
 	  event->type == GDK_BUTTON_PRESS)
 	{

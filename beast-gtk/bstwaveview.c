@@ -92,10 +92,27 @@ static void
 bst_wave_view_init (BstWaveView *wave_view)
 {
   BST_ITEM_VIEW (wave_view)->item_type = BSE_TYPE_WAVE;
-  wave_view->load_dialog = bst_wave_dialog_new_load (0, GTK_WIDGET (wave_view));
-  g_object_connect (wave_view->load_dialog,
-		    "swapped_object_signal_after::hide", bst_update_can_operate, wave_view,
-		    NULL);
+
+  /* defer load dialog, see prepare_load_dialog() */
+  wave_view->load_dialog = NULL;
+}
+
+static void
+prepare_load_dialog (BstWaveView *self)
+{
+  /* we defer creation of the load dialog, because GtkFileSelection
+   * scans directories in its _init routines and can thusly dramatically
+   * increase startup time.
+   */
+  if (!self->load_dialog)
+    {
+      self->load_dialog = bst_wave_dialog_new_load (0, GTK_WIDGET (self));
+      g_object_connect (self->load_dialog,
+			"swapped_object_signal_after::hide", bst_update_can_operate, self,
+			NULL);
+    }
+  bst_wave_dialog_set_wave_repo (BST_WAVE_DIALOG (self->load_dialog),
+				 BST_ITEM_VIEW (self)->container);
 }
 
 GtkWidget*
@@ -107,7 +124,6 @@ bst_wave_view_new (BswProxy wrepo)
   
   wave_view = gtk_widget_new (BST_TYPE_WAVE_VIEW, NULL);
   bst_item_view_set_container (BST_ITEM_VIEW (wave_view), wrepo);
-  bst_wave_dialog_set_wave_repo (BST_WAVE_DIALOG (BST_WAVE_VIEW (wave_view)->load_dialog), wrepo);
 
   return wave_view;
 }
@@ -153,7 +169,7 @@ void
 bst_wave_view_operate (BstItemView *item_view,
 		       BstOps       op)
 {
-  BstWaveView *wave_view = BST_WAVE_VIEW (item_view);
+  BstWaveView *self = BST_WAVE_VIEW (item_view);
   BswProxy wrepo = item_view->container;
   
   g_return_if_fail (bst_wave_view_can_operate (item_view, op));
@@ -162,21 +178,22 @@ bst_wave_view_operate (BstItemView *item_view,
     {
       BswProxy item;
     case BST_OP_WAVE_LOAD:
-      gtk_widget_show (wave_view->load_dialog);
+      prepare_load_dialog (self);
+      gtk_widget_show (self->load_dialog);
       // bst_procedure_user_exec_method ("BseWaveRepo+read-file", wrepo);
       break;
     case BST_OP_WAVE_DELETE:
-      item = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
+      item = bst_item_view_get_current (BST_ITEM_VIEW (self));
       bsw_wave_repo_remove_wave (wrepo, item);
       break;
     case BST_OP_WAVE_EDITOR:
-      popup_wave_dialog (wave_view);
+      popup_wave_dialog (self);
       break;
     default:
       break;
     }
   
-  bst_update_can_operate (GTK_WIDGET (wave_view));
+  bst_update_can_operate (GTK_WIDGET (self));
 }
 
 gboolean

@@ -51,13 +51,11 @@ struct _BstRadioTools
 {
   GtkObject	     parent_object;
 
-  guint              block_tool_id : 1;
-
   guint              tool_id;
 
   guint		     n_tools;
   BstRadioToolEntry *tools;
-
+  guint              block_tool_id : 1;
   GSList	    *widgets;
 };
 struct _BstRadioToolsClass

@@ -1,3 +1,46 @@
+Sat Mar 30 06:58:14 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsongshell.[hc]: conditionalize the pattern view,
+	play list and routing views on BST_DVL_EXT. that's because
+	patterns are deprecated, and routing is BSE internal.
+	added part view.
+
+	* beast-gtk/bstpartview.[hc]: new widget to show parts of a song.
+
+	* beast-gtk/bstpartdialog.[hc]: part editor, using piano roll.
+
+	* beast-gtk/bstapp.c: (minor hack) output GSL alloc report
+	upon Refresh. Rebuild and Refresh menu items need to be
+	cleaned up anyways.
+
+	* beast-gtk/bstinstrumentview.c: add icons. use procedures.
+
+	* beast-gtk/bstmain.c: fix loader test.
+
+	* beast-gtk/bstpianoroll.[hc]: implement proper octave ordering,
+	remove test model, use BsePart as model.
+	add signals to handle pointer on the canvas.
+ 	add support for cursor handling on the panels and the canvas, and
+	for user supplied drag data. 
+
+	* beast-gtk/bstradiotools.c: changed logic so that tool_id is
+	setup on signal emissions.
+
+	* beast-gtk/bststatusbar.[hc]: support status aliases for
+	DONE, ERROR, IDLE and WAIT. changed callers.
+
+	* beast-gtk/bstutils.[hc]: added stock items for various
+	widgets. provide convenience functions to retrive icons size
+	width and height.
+
+	* beast-gtk/bstwaveview.c: defer load dialog creation because
+	GtkFileSelection does unholy things in its _init routine.
+
+Tue Mar 26 12:09:21 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw/bswsignal.c: lookup proxy marshaller from
+	c marshaller when it comes to set the c marshaller on user closures.
+
 Thu Mar 21 18:40:12 2002  Tim Janik  <timj@gtk.org>
 
 	* bstpianoroll.[hc]: beginning of a piano roll editing widget.

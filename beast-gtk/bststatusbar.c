@@ -23,8 +23,6 @@
 #include	<gdk/gdkkeysyms.h>
 #include	<string.h>
 
-#define	STATUS_LASTS_ms		(7*1000)
-#define	STATUS_ERROR_LASTS_ms	(25*1000)
 
 /* --- prototypes --- */
 static void	status_bar_remove_timer		(GtkWidget	*sbar);
@@ -217,12 +215,15 @@ procedure_finished (gpointer	 func_data,
   if (sbar)
     {
       gchar *text = strrchr (proc_name, ':');
-      
+      guint msecs;
+
       if (text)
-	bst_status_bar_set_permanent (sbar, exit_status ? 0 : 100, text + 1, bse_error_blurb (exit_status));
+	msecs = bst_status_bar_set_permanent (sbar, exit_status ? BST_STATUS_ERROR : BST_STATUS_DONE,
+					      text + 1, bse_error_blurb (exit_status));
       else
-	bst_status_bar_set_permanent (sbar, exit_status ? 0 : 100, proc_name, bse_error_blurb (exit_status));
-      bst_status_bar_queue_clear (sbar, exit_status ? STATUS_ERROR_LASTS_ms : STATUS_LASTS_ms);
+	msecs = bst_status_bar_set_permanent (sbar, exit_status ? BST_STATUS_ERROR : BST_STATUS_DONE,
+					      proc_name, bse_error_blurb (exit_status));
+      bst_status_bar_queue_clear (sbar, msecs);
     }
   
   if (proc_window)
@@ -370,15 +371,17 @@ bst_status_bar_queue_clear (GtkWidget *sbar,
   gtk_object_unref (object);
 }
 
-void
+guint
 bst_status_bar_set_permanent (GtkWidget	  *sbar,
 			      gfloat	   percentage,
 			      const gchar *message,
 			      const gchar *status_msg)
 {
   GtkObject *object;
-  
-  g_return_if_fail (GTK_IS_WIDGET (sbar));
+  guint status_ms = 7 * 1000;
+  gboolean beep = FALSE;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (sbar), 0);
   
   object = GTK_OBJECT (sbar);
   gtk_object_ref (object);
@@ -390,19 +393,51 @@ bst_status_bar_set_permanent (GtkWidget	  *sbar,
       GtkWidget *msg = gtk_object_get_data (object, "bst-msg");
       GtkWidget *status = gtk_object_get_data (object, "bst-status");
       GtkWidget *abort = gtk_object_get_data (object, "bst-abort");
+
+      if (!message)
+	{
+	  message = "...Idle...";
+	  percentage = BST_STATUS_IDLE;
+	}
       
       gtk_widget_hide (abort);
       gtk_progress_set_activity_mode (GTK_PROGRESS (progress), FALSE);
-      gtk_progress_set_value (GTK_PROGRESS (progress), percentage);
-      gtk_label_set_text (GTK_LABEL (msg), message ? message : "...Idle...");
+      if (percentage < 0)
+	{
+	  gchar *string = "   ";	/* BST_STATUS_IDLE */
+
+	  if (percentage <= BST_STATUS_ERROR)
+	    {
+	      status_ms = 25 * 1000;
+	      string = "Error:";
+	      beep = TRUE;
+	    }
+	  else if (percentage <= BST_STATUS_WAIT)
+	    {
+	      status_ms = 2147483647;	/* 2^31-1 */
+	      string = "<>";
+	    }
+	  gtk_progress_set_format_string (GTK_PROGRESS (progress), string);
+	  gtk_progress_set_value (GTK_PROGRESS (progress), 0);
+	}
+      else
+	{
+	  gtk_progress_set_format_string (GTK_PROGRESS (progress), "%P %%");
+	  gtk_progress_set_value (GTK_PROGRESS (progress), percentage);
+	}
+      gtk_label_set_text (GTK_LABEL (msg), message);
       gtk_label_set_text (GTK_LABEL (status), status_msg);
       if (status_msg)
 	gtk_widget_show (status);
       else
 	gtk_widget_hide (status);
+      if (beep)
+	gdk_beep ();
     }
   
   gtk_object_unref (object);
+
+  return status_ms;
 }
 
 void
@@ -412,14 +447,15 @@ bst_status_bar_set (GtkWidget	*sbar,
 		    const gchar *status_msg)
 {
   GtkObject *object;
-  
+  guint msecs;
+
   g_return_if_fail (GTK_IS_WIDGET (sbar));
   
   object = GTK_OBJECT (sbar);
   gtk_object_ref (object);
 
-  bst_status_bar_set_permanent (sbar, percentage, message, status_msg);
-  bst_status_bar_queue_clear (sbar, percentage < 99.9999 ? STATUS_ERROR_LASTS_ms : STATUS_LASTS_ms);
+  msecs = bst_status_bar_set_permanent (sbar, percentage, message, status_msg);
+  bst_status_bar_queue_clear (sbar, msecs);
 
   gtk_object_unref (object);
 }

@@ -58,6 +58,8 @@ beast_headers = $(strip \
 	bstmenus.h \
 	bstparam.h \
 	bstparamview.h \
+	bstpartdialog.h \
+	bstpartview.h \
 	bstpatterndialog.h \
 	bstpatterneditor.h \
 	bstpatternview.h \
@@ -111,6 +113,8 @@ beast_sources = $(strip \
 	bstmenus.c \
 	bstparam.c \
 	bstparamview.c \
+	bstpartdialog.c \
+	bstpartview.c \
 	bstpatterndialog.c \
 	bstpatterneditor.c \
 	bstpatternview.c \

@@ -2,18 +2,110 @@
 name    = BSE-Functions
 blurb   = BSE Function Reference
 package = BEAST-0.4.0
-date    = 21 Mar 2002
+date    = 04 Apr 2002
 image   = bse-functions
 
 @DOC-TITLE@
 BSE-Functions
 
 @DOC-HEAD@
-BSE-Functions 21 Mar 2002 BEAST-0.4.0
+BSE-Functions 04 Apr 2002 BEAST-0.4.0
 
 @DOC-NAME@
 BSE-Functions - BSE Function Reference
 
+@DOC-SYNOPSIS@
+@STRONG bse_item_cross_ref@ (@EMPH owner@, @EMPH ref_item@, @EMPH uncross_func@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 31
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseItem*\ \ \ \ \ \ \ \ 
+typeraw = BseItem*        
+@DOC-PARAMETER@
+owner
+@DOC-PARDESC@
+reference owner
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseItem*\ \ \ \ \ \ \ \ 
+typeraw = BseItem*        
+@DOC-PARAMETER@
+ref_item
+@DOC-PARDESC@
+item to be referenced by @EMPH owner@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseItemUncross\ \ 
+typeraw = BseItemUncross  
+@DOC-PARAMETER@
+uncross_func
+@DOC-PARDESC@
+notifier to be executed on uncrossing
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 31
+
+
+@DOC-DESCRIPTION@
+Install a weak cross reference from @EMPH owner@ to @EMPH ref_item@. The two items must have a common ancestor when the cross reference is installed. Once their ancestry changes so that they don't have a common ancestor anymore, @EMPH uncross_func@() is executed.  
+@DOC-SYNOPSIS@
+@STRONG bse_item_cross_unref@ (@EMPH owner@, @EMPH ref_item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseItem*
+typeraw = BseItem*
+@DOC-PARAMETER@
+owner
+@DOC-PARDESC@
+reference owner
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseItem*
+typeraw = BseItem*
+@DOC-PARAMETER@
+ref_item
+@DOC-PARDESC@
+item referenced by @EMPH owner@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Removes a cross reference previously installed via @STRONG bse_item_cross_ref()@ without executing the associated notifier.  
+@DOC-SYNOPSIS@
+@STRONG bse_item_uncross@ (@EMPH owner@, @EMPH ref_item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseItem*
+typeraw = BseItem*
+@DOC-PARAMETER@
+owner
+@DOC-PARDESC@
+reference owner
+
+@DOC-VARIABLE-DEFINITIONS@
+type = BseItem*
+typeraw = BseItem*
+@DOC-PARAMETER@
+ref_item
+@DOC-PARDESC@
+item referenced by @EMPH owner@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Destroys an existing cross reference previously installed via @STRONG bse_item_cross_ref()@ by executing the associated notifier.  
 @DOC-SYNOPSIS@
 @STRONG bse_server_get@ ();
 

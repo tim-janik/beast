@@ -26,7 +26,7 @@
     (order 2)
     (filter-algorithm BSE_IIR_FILTER_CHEBYCHEFF1)
     (name "BseIIRFilter-1")
-    (source-input "mono_in" BseSNet:1.BseSimpleOsc:1 "osc_out")
+    (source-input "mono_in" BseSNet:1.BseStandardOsc:1 "osc_out")
     (parasite f "BstRouterCoords" 2 -4.000000 -79.000000))
   (BseMixer::BseMixer-1
     (master-volume-f 0.338844)
@@ -40,12 +40,12 @@
     (source-input "left_in" BseSNet:1.BseMixer:1 "mono_out")
     (source-input "right_in" BseSNet:1.BseMixer:1 "mono_out")
     (parasite f "BstRouterCoords" 2 -250.000000 4.000000))
-  (BseSimpleOsc::BseSimpleOsc-1
+  (BseStandardOsc::BseStandardOsc-1
     (fm-perc 15.000000)
     (base-freq 3333.333252)
     (phase 45.000000)
-    (wave-form BSE_SIMPLE_OSC_GSAW)
-    (name "BseSimpleOsc-1")
+    (wave-form BSE_STANDARD_OSC_GSAW)
+    (name "BseStandardOsc-1")
     (source-input "freq_in" BseSNet:1.BseSequencer:2 "freq_out")
     (parasite f "BstRouterCoords" 2 115.000000 -78.000000))
   (BseSequencer::BseSequencer-2
@@ -60,11 +60,11 @@
     (cut-off-freq 778.800049)
     (filter-type BSE_IIR_FILTER_HIGH_PASS)
     (name "BseIIRFilter-2")
-    (source-input "mono_in" BseSNet:1.BseSimpleOsc:2 "osc_out")
+    (source-input "mono_in" BseSNet:1.BseStandardOsc:2 "osc_out")
     (parasite f "BstRouterCoords" 2 12.000000 124.000000))
-  (BseSimpleOsc::BseSimpleOsc-2
-    (wave-form BSE_SIMPLE_OSC_TRIANGLE)
-    (name "BseSimpleOsc-2")
+  (BseStandardOsc::BseStandardOsc-2
+    (wave-form BSE_STANDARD_OSC_TRIANGLE)
+    (name "BseStandardOsc-2")
     (source-input "freq_in" BseSNet:1.BseSequencer:1 "freq_out")
     (parasite f "BstRouterCoords" 2 116.000000 136.000000))
   (BseNoise::BseNoise-1

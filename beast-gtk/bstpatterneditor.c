@@ -2234,7 +2234,7 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
       if (pea_mask == BST_PEA_NOTE_VOID)
 	note = BSE_NOTE_VOID;
       else if (pea_mask)
-	note = BSE_NOTE_GENERIC (pea_mask >> BST_PEA_NOTE_SHIFT, pe->base_octave);
+	note = BSE_NOTE_GENERIC ((pea_mask >> BST_PEA_NOTE_SHIFT) - 1, pe->base_octave);
       /* octave shifting */
       switch (pea & BST_PEA_OCTAVE_MASK)
 	{
@@ -2499,7 +2499,7 @@ bst_pattern_editor_channel_popup (BstPatternEditor *pe,
       g_snprintf (buffer, 64, INSTRUMENT_FMT, bse_item_get_seqid (BSE_ITEM (instrument)));
       string = bsw_item_get_name (BSE_OBJECT_ID (instrument));
       if (!string || *string == 0)
-	string = bsw_item_get_name (BSE_OBJECT_ID (instrument->input));
+	string = bsw_item_get_name (BSE_OBJECT_ID (instrument->seq_snet));
       string = g_strconcat (buffer, ") ", string, NULL);
       item = gtk_menu_item_new_with_label (string);
       gtk_widget_set (item,

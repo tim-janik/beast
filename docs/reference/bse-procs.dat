@@ -2,14 +2,14 @@
 name    = BSE-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.0
-date    = 21 Mar 2002
+date    = 04 Apr 2002
 image   = bse-procedures
 
 @DOC-TITLE@
 BSE-Procedures
 
 @DOC-HEAD@
-BSE-Procedures 21 Mar 2002 BEAST-0.4.0
+BSE-Procedures 04 Apr 2002 BEAST-0.4.0
 
 @DOC-NAME@
 BSE-Procedures - BSE Procedure Reference
@@ -753,6 +753,28 @@ project:
 @DOC-DESCRIPTION@
 Retrive item's parent  
 @DOC-SYNOPSIS@
+@STRONG BseItem::get-seqid@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+seqid: 
+
+@DOC-DESCRIPTION@
+Retrive Sequential ID  
+@DOC-SYNOPSIS@
 @STRONG BseItem::get-type@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -910,6 +932,300 @@ is-a-check:
 
 @DOC-DESCRIPTION@
 Check object type  
+@DOC-SYNOPSIS@
+@STRONG BsePart::check-overlap@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+duration
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+freq
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+note-list: 
+
+@DOC-DESCRIPTION@
+Check whether a note would overlap with neighbours.  
+@DOC-SYNOPSIS@
+@STRONG BsePart::delete-note@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 7
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+freq
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 7
+
+
+@DOC-DESCRIPTION@
+Delete an existing note from a part.  
+@DOC-SYNOPSIS@
+@STRONG BsePart::find-notes@ (@EMPH part@, @EMPH tick@, @EMPH duration@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+duration
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+note-list: 
+
+@DOC-DESCRIPTION@
+List all notes within or crossing a tick range.  
+@DOC-SYNOPSIS@
+@STRONG BsePart::freq-equals@ (@EMPH part@, @EMPH freq1@, @EMPH freq2@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+freq1
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+freq2
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+equals: 
+
+@DOC-DESCRIPTION@
+Check whether two frequencies are equal.  
+@DOC-SYNOPSIS@
+@STRONG BsePart::get-max-octave@ (@EMPH part@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+octave: 
+
+@DOC-DESCRIPTION@
+Retrive the maximum octave supported.  
+@DOC-SYNOPSIS@
+@STRONG BsePart::get-min-octave@ (@EMPH part@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+octave: 
+
+@DOC-DESCRIPTION@
+Retrive the minimum octave supported.  
+@DOC-SYNOPSIS@
+@STRONG BsePart::get-note@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+freq
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+note-list: 
+
+@DOC-DESCRIPTION@
+List a note of specific frequency at a specific tick.  
+@DOC-SYNOPSIS@
+@STRONG BsePart::insert-note@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@, @EMPH velocity@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+tick
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+duration
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+freq
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+velocity
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Insert a new note into a part.  
 @DOC-SYNOPSIS@
 @STRONG BsePattern::clear-content@ (@EMPH pattern@);
 
@@ -1251,10 +1567,10 @@ snet:
 @DOC-DESCRIPTION@
 Create a synthsizer network in project  
 @DOC-SYNOPSIS@
-@STRONG BseProject::create-song@ (@EMPH project@, @EMPH n-channels@);
+@STRONG BseProject::create-song@ (@EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 13
+parspace = 11
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1265,15 +1581,7 @@ project
 
 
 @DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-n-channels
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 13
+retspace = 11
 
 @DOC-RETURNS@
 song: 
@@ -1543,6 +1851,142 @@ error:
 @DOC-DESCRIPTION@
 Remove an existing module from its synthesis network  
 @DOC-SYNOPSIS@
+@STRONG BseSNet::supports_user_synths@ (@EMPH snet@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+snet
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+user-synth: 
+
+@DOC-DESCRIPTION@
+Check whether users may edit synthesis modules of this network  
+@DOC-SYNOPSIS@
+@STRONG BseServer::can-load@ (@EMPH server@, @EMPH file-name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+file-name
+@DOC-PARDESC@
+The file to find a loader for
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+can-load: 
+
+@DOC-DESCRIPTION@
+Check whether a loader can be found for a wave file  
+@DOC-SYNOPSIS@
+@STRONG BseServer::construct-note@ (@EMPH server@, @EMPH half-tone@, @EMPH octave@, @EMPH fine-tune@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+half-tone
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+octave
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+fine-tune
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+note-description: 
+
+@DOC-DESCRIPTION@
+Describe a note, given its half tone, octave and fine tune.  
+@DOC-SYNOPSIS@
+@STRONG BseServer::describe-note@ (@EMPH server@, @EMPH note@, @EMPH fine-tune@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+note
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+fine-tune
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+note-description: 
+
+@DOC-DESCRIPTION@
+Describe a note, providing information about its octave, half tone, frequency, etc.  
+@DOC-SYNOPSIS@
 @STRONG BseServer::halt-project@ (@EMPH server@, @EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -1571,10 +2015,10 @@ retspace = 10
 @DOC-DESCRIPTION@
 Stop processing a project generating sound  
 @DOC-SYNOPSIS@
-@STRONG BseServer::loader-name@ (@EMPH server@, @EMPH file-name@);
+@STRONG BseServer::note-from-freq@ (@EMPH server@, @EMPH freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 12
+parspace = 11
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1588,18 +2032,48 @@ server
 type = 
 typeraw = 
 @DOC-PARAMETER@
-file-name
+freq
 @DOC-PARDESC@
-The file to find a loader for
+
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 12
+retspace = 11
 
 @DOC-RETURNS@
-loader: 
+note-description: 
 
 @DOC-DESCRIPTION@
-Find a loader for a wave file and return the loader name  
+Describe a note, given its frequency.  
+@DOC-SYNOPSIS@
+@STRONG BseServer::note-from-string@ (@EMPH server@, @EMPH name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+note-description: 
+
+@DOC-DESCRIPTION@
+Describe a note, given its name and octave offset.  
 @DOC-SYNOPSIS@
 @STRONG BseServer::run-project@ (@EMPH server@, @EMPH project@);
 
@@ -1660,6 +2134,106 @@ project:
 
 @DOC-DESCRIPTION@
 Create a new project, owned by the caller  
+@DOC-SYNOPSIS@
+@STRONG BseSong::create-instrument@ (@EMPH song@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+song
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+instrument: 
+
+@DOC-DESCRIPTION@
+Create a new Instrument in a Song  
+@DOC-SYNOPSIS@
+@STRONG BseSong::create-part@ (@EMPH song@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+song
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+part: 
+
+@DOC-DESCRIPTION@
+Create a new Part in a Song  
+@DOC-SYNOPSIS@
+@STRONG BseSong::remove-instrument@ (@EMPH song@, @EMPH instrument@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 13
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+song
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+instrument
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 13
+
+
+@DOC-DESCRIPTION@
+Delete an Instrument from a Song  
+@DOC-SYNOPSIS@
+@STRONG BseSong::remove-part@ (@EMPH song@, @EMPH part@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 7
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+song
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+part
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 7
+
+
+@DOC-DESCRIPTION@
+Delete a Part from a Song  
 @DOC-SYNOPSIS@
 @STRONG BseSource::clear-inputs@ (@EMPH source@);
 

@@ -91,7 +91,7 @@ proxy_meta_marshal (GClosure     *closure,
     bsw_value_glue2bsw (param_values + i, event->values + i);
   event->closure = g_closure_ref (user_closure);
   if (G_CLOSURE_NEEDS_MARSHAL (event->closure))
-    g_closure_set_marshal (event->closure, closure->marshal);
+    g_closure_set_marshal (event->closure, bse_proxy_marshaller_lookup (closure->marshal));
 
   if (!event_list)
     g_idle_add_full (BSE_NOTIFY_PRIORITY, handle_event_list, NULL, NULL);
@@ -285,7 +285,7 @@ bsw_proxy_list_proxy_closures (GObject  *object,
 	  GClosure *user_closure = proxy_closure->notifiers[0].data;
 
 	  if (user_closure->data == data &&
-	      (user_closure->marshal == NULL || user_closure->marshal == proxy_closure->marshal) &&
+	      (user_closure->marshal == NULL || user_closure->marshal == bse_proxy_marshaller_lookup (proxy_closure->marshal)) &&
 	      ((GCClosure*) user_closure)->callback == func)
 	    rlist = g_slist_prepend (rlist, proxy_closure);
 	}

@@ -58,6 +58,9 @@ typedef enum
 
   /* song operations
    */
+  BST_OP_PART_ADD,
+  BST_OP_PART_DELETE,
+  BST_OP_PART_EDITOR,
   BST_OP_PATTERN_ADD,
   BST_OP_PATTERN_DELETE,
   BST_OP_PATTERN_EDITOR,
@@ -127,8 +130,7 @@ extern BstDebugFlags bst_debug_flags;
 #else  /* !G_ENABLE_DEBUG */
 #  define BST_IF_DEBUG(type)	while (0) /* don't exec */
 #endif /* !G_ENABLE_DEBUG */
-extern gboolean bst_developer_extensions;
-#define	BST_DVL_EXT		(bst_developer_extensions != FALSE)
+#define	BST_DVL_EXT		(BSE_DVL_EXT)
 
 extern void bst_update_can_operate (GtkWidget   *some_widget);
 

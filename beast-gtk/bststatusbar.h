@@ -29,6 +29,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define	BST_STATUS_DONE		(+100.0)
+#define	BST_STATUS_IDLE		(-0.5)
+#define	BST_STATUS_WAIT		(-1.0)
+#define	BST_STATUS_ERROR	(-2.0)
+
 
 /* --- prototypes --- */
 GtkWidget*	bst_status_bar_create		(void);
@@ -42,7 +47,7 @@ void		bst_status_bar_set		(GtkWidget	*sbar,
 						 gfloat		 percentage,
 						 const gchar	*message,
 						 const gchar	*status_msg);
-void		bst_status_bar_set_permanent	(GtkWidget	*sbar,
+guint		bst_status_bar_set_permanent	(GtkWidget	*sbar,
 						 gfloat		 percentage,
 						 const gchar	*message,
 						 const gchar	*status_msg);
