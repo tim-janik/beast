@@ -870,7 +870,7 @@ Sun Aug 29 04:18:43 2004  Tim Janik  <timj@gtk.org>
 
 Sat Aug 28 21:56:44 2004  Tim Janik  <timj@gtk.org>
 
-	* configure.in: version 6.2.3rc1.
+	* configure.in: version 0.6.3rc1.
 	added ja.po to ALL_LINGUAS.
 
 	* docs/site-development.texi: added link for japanese translation.
@@ -1111,6 +1111,16 @@ Fri Jul 30 11:28:02 2004  Tim Janik  <timj@gtk.org>
 	implementation with inverse lookup (abscissa finder).
 
 	* beast-gtk/gxk/splinetest.c: spline test porgram.
+
+Sat Jul 24 19:53:33 2004  Tim Janik  <timj@gtk.org>
+
+        * bstsnifferscope.[hc]: fixed up drawing code to show time-scrolling
+        peak values. overshoot values are drawn in red.
+
+        * bsttrackroll.c: arrenged for more scope space, fixed left-panel layout.
+
+        * beast-gtk/gxk/gxkutils.[hc]: added convenience functions
+        gdk_draw_hline() and gdk_draw_vline().
 
 Sat Jul 24 08:20:32 2004  Tim Janik  <timj@gtk.org>
 
