@@ -1,10 +1,8 @@
 FIXMES:
-- remove bse_glue_make_rorecord() and siblings
 - fix bse_gettext()
 - piano roll/align events: does insert notes with wrong cursor
 - event roll: align events: outline colors don't honour skin colorization
 - add author and license to procedure execution dialog
-- fix ref-count initilization for Bst*Controller
 - fix repeat not working if left/right exchanged
 - create one canonical place for supported sample formats and keep that updated
 - document options: :filename, :rgb, :hex
