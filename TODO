@@ -1,4 +1,14 @@
 FIXMES:
+* dialog to spawn for [Inputs...] and [Outputs...]:
+  |                |                           |                |
+  |                |      +------------------+ |                |
+  |                |  <<  |      Add         | |                |
+  |                |      +------------------+ |                |
+  |                |                           |                |
+  |                | +------------------+      |                |
+  |                | |     Remove       |  >>  |                |
+  |                | +------------------+      |                |
+  |                |                           |                |
 - add more menu tooltips
 - mixer icon
 - get rid of FIXMEs in beast-gtk/testgui.c
@@ -7,6 +17,7 @@ FIXMES:
 - rename bsesnifferscope.* to bsescope.*
 - rename snifferscope to trackscope
 - skip no-voice found for snet==NULL tracks
+- the "Synth Selection" dialog popped up from the track view should preselect a track's existing Synth object
 - check sfi_debug_check ("sched") in --debug-list
 - rename gslopmaster to bseenginemaster
 - move ProbeFeatures into bseprobe.idl (requires BseSource as C++ object)

@@ -1,3 +1,24 @@
+Tue Aug 17 17:31:52 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbusmixer.c: added bus-description radget to mixer.
+
+	* beast-gtk/dialogs/radgets-beast.xml: added bus-description definition.
+	bus-editor: UI beef-up.
+
+	* beast-gtk/dialogs/radgets-standard.xml: support normal-bg-as-base
+	property for widget-patcher. fixed up shadow-type and arrow-type of
+	arrow. added pack-type and padding properties to boxes.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: implemented normal_bg_as_base
+	property.
+
+	* beast-gtk/gxk/gxkutils.[hc]: code cleanups. implemented
+	gxk_widget_modify_normal_bg_as_base().
+
+	* beast-gtk/gxk/gxkradget.[hc]: implemented per-window size groups,
+	usable through the attributes: size:window-hgroup, size:window-vgroup
+	and size:window-hvgroup. 
+
 Mon Aug 16 16:49:14 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkradget.[hc]:

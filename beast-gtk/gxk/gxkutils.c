@@ -806,17 +806,62 @@ gxk_toplevel_hide (GtkWidget *widget)
   gtk_widget_hide (widget);
 }
 
-static void
-style_modify_fg_as_sensitive (GtkWidget *widget)
-{
-  GtkRcStyle *rc_style = gtk_rc_style_new ();
+enum {
+  STYLE_MODIFY_FG_AS_SENSITIVE,
+  STYLE_MODIFY_BASE_AS_BG,
+  STYLE_MODIFY_BG_AS_BASE,
+  STYLE_MODIFY_NORMAL_BG_AS_BASE,
+};
 
-  rc_style->color_flags[GTK_STATE_INSENSITIVE] = GTK_RC_FG;
-  rc_style->fg[GTK_STATE_INSENSITIVE].red = widget->style->fg[GTK_STATE_NORMAL].red;
-  rc_style->fg[GTK_STATE_INSENSITIVE].green = widget->style->fg[GTK_STATE_NORMAL].green;
-  rc_style->fg[GTK_STATE_INSENSITIVE].blue = widget->style->fg[GTK_STATE_NORMAL].blue;
-  gtk_widget_modify_style (widget, rc_style);
-  gtk_rc_style_unref (rc_style);
+static void
+widget_modify_style (GtkWidget *widget)
+{
+  guint style_modify = g_object_get_int (widget, "gxk-style-modify-type");
+  switch (style_modify)
+    {
+      GtkRcStyle *rc_style;
+      guint i;
+    case STYLE_MODIFY_FG_AS_SENSITIVE:
+      rc_style = gtk_rc_style_new ();
+      rc_style->color_flags[GTK_STATE_INSENSITIVE] = GTK_RC_FG;
+      rc_style->fg[GTK_STATE_INSENSITIVE].red = widget->style->fg[GTK_STATE_NORMAL].red;
+      rc_style->fg[GTK_STATE_INSENSITIVE].green = widget->style->fg[GTK_STATE_NORMAL].green;
+      rc_style->fg[GTK_STATE_INSENSITIVE].blue = widget->style->fg[GTK_STATE_NORMAL].blue;
+      gtk_widget_modify_style (widget, rc_style);
+      gtk_rc_style_unref (rc_style);
+      break;
+    case STYLE_MODIFY_BASE_AS_BG:
+      rc_style = gtk_rc_style_new ();
+      rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BASE;
+      rc_style->base[GTK_STATE_NORMAL].red = widget->style->bg[GTK_STATE_NORMAL].red;
+      rc_style->base[GTK_STATE_NORMAL].green = widget->style->bg[GTK_STATE_NORMAL].green;
+      rc_style->base[GTK_STATE_NORMAL].blue = widget->style->bg[GTK_STATE_NORMAL].blue;
+      gtk_widget_modify_style (widget, rc_style);
+      break;
+    case STYLE_MODIFY_BG_AS_BASE:
+      rc_style = gtk_widget_get_modifier_style (widget);
+      for (i = GTK_STATE_NORMAL; i <= GTK_STATE_INSENSITIVE; i++)
+        {
+          rc_style->color_flags[i] = GTK_RC_BG;
+          rc_style->bg[i].red = widget->style->base[i].red;
+          rc_style->bg[i].green = widget->style->base[i].green;
+          rc_style->bg[i].blue = widget->style->base[i].blue;
+        }
+      gtk_widget_modify_style (widget, rc_style);
+      break;
+    case STYLE_MODIFY_NORMAL_BG_AS_BASE:
+      rc_style = gtk_widget_get_modifier_style (widget);
+      for (i = GTK_STATE_NORMAL; i <= GTK_STATE_INSENSITIVE; i++)
+        if (i == GTK_STATE_NORMAL || i == GTK_STATE_INSENSITIVE)
+          {
+            rc_style->color_flags[i] = GTK_RC_BG;
+            rc_style->bg[i].red = widget->style->base[i].red;
+            rc_style->bg[i].green = widget->style->base[i].green;
+            rc_style->bg[i].blue = widget->style->base[i].blue;
+          }
+      gtk_widget_modify_style (widget, rc_style);
+      break;
+    }
 }
 
 /**
@@ -831,29 +876,17 @@ void
 gxk_widget_modify_as_title (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  gtk_widget_set_sensitive (widget, FALSE);
-  if (GTK_WIDGET_REALIZED (widget))
-    style_modify_fg_as_sensitive (widget);
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (style_modify_fg_as_sensitive), NULL))
-    g_signal_connect_after (widget, "realize", G_CALLBACK (style_modify_fg_as_sensitive), NULL);
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (gxk_widget_make_insensitive), NULL))
-    g_signal_connect_after (widget, "realize", G_CALLBACK (gxk_widget_make_insensitive), NULL);
-}
-
-static void
-style_modify_bg_as_base (GtkWidget *widget)
-{
-  GtkRcStyle *rc_style = gtk_widget_get_modifier_style (widget);
-  guint i;
-  for (i = GTK_STATE_NORMAL; i <= GTK_STATE_INSENSITIVE; i++)
+  
+  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
     {
-      rc_style->color_flags[i] = GTK_RC_BG;
-      rc_style->bg[i].red = widget->style->base[i].red;
-      rc_style->bg[i].green = widget->style->base[i].green;
-      rc_style->bg[i].blue = widget->style->base[i].blue;
+      g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_FG_AS_SENSITIVE);
+      g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
+      if (GTK_WIDGET_REALIZED (widget))
+        widget_modify_style (widget);
+      gtk_widget_set_sensitive (widget, FALSE);
+      if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (gxk_widget_make_insensitive), NULL))
+        g_signal_connect_after (widget, "realize", G_CALLBACK (gxk_widget_make_insensitive), NULL);
     }
-  gtk_widget_modify_style (widget, rc_style);
 }
 
 /**
@@ -870,22 +903,34 @@ gxk_widget_modify_bg_as_base (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (GTK_WIDGET_REALIZED (widget))
-    style_modify_bg_as_base (widget);
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (style_modify_bg_as_base), NULL))
-    g_signal_connect_after (widget, "realize", G_CALLBACK (style_modify_bg_as_base), NULL);
+  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+    {
+      g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BG_AS_BASE);
+      g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
+      if (GTK_WIDGET_REALIZED (widget))
+        widget_modify_style (widget);
+    }
 }
 
-static void
-style_modify_base_as_bg (GtkWidget *widget)
+/**
+ * gxk_widget_modify_normal_bg_as_base
+ * @widget: a valid GtkWidget
+ *
+ * Modify the widget's background like gxk_widget_modify_bg_as_base()
+ * does, as long as the widget isn't activated or selected.
+ */
+void
+gxk_widget_modify_normal_bg_as_base (GtkWidget *widget)
 {
-  GtkRcStyle *rc_style = gtk_rc_style_new ();
+  g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BASE;
-  rc_style->base[GTK_STATE_NORMAL].red = widget->style->bg[GTK_STATE_NORMAL].red;
-  rc_style->base[GTK_STATE_NORMAL].green = widget->style->bg[GTK_STATE_NORMAL].green;
-  rc_style->base[GTK_STATE_NORMAL].blue = widget->style->bg[GTK_STATE_NORMAL].blue;
-  gtk_widget_modify_style (widget, rc_style);
+  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+    {
+      g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_NORMAL_BG_AS_BASE);
+      g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
+      if (GTK_WIDGET_REALIZED (widget))
+        widget_modify_style (widget);
+    }
 }
 
 /**
@@ -903,10 +948,13 @@ gxk_widget_modify_base_as_bg (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (GTK_WIDGET_REALIZED (widget))
-    style_modify_base_as_bg (widget);
-  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (style_modify_base_as_bg), NULL))
-    g_signal_connect_after (widget, "realize", G_CALLBACK (style_modify_base_as_bg), NULL);
+  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (widget_modify_style), NULL))
+    {
+      g_object_set_int (widget, "gxk-style-modify-type", STYLE_MODIFY_BASE_AS_BG);
+      g_signal_connect_after (widget, "realize", G_CALLBACK (widget_modify_style), NULL);
+      if (GTK_WIDGET_REALIZED (widget))
+        widget_modify_style (widget);
+    }
 }
 
 static gboolean

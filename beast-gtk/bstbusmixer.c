@@ -48,6 +48,9 @@ bst_bus_mixer_init (BstBusMixer *self)
   gxk_widget_publish_actions (self, "bus-mixer-actions",
                               G_N_ELEMENTS (bus_mixer_actions), bus_mixer_actions,
                               NULL, bus_mixer_action_check, bus_mixer_action_exec);
+  /* add description */
+  GxkRadget *bdesc = gxk_radget_create ("beast", "bus-description", NULL);
+  gxk_radget_add (self, NULL, bdesc);
 }
 
 GtkWidget*

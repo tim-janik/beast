@@ -21,6 +21,7 @@
     prop:force-resize-vsteps="$(ifdef,force-resize-vsteps,$force-resize-vsteps,0)"
     prop:min-resize-hunits="$(ifdef,min-resize-hunits,$min-resize-hunits,0)"
     prop:min-resize-vunits="$(ifdef,min-resize-vunits,$min-resize-vunits,0)"
+    prop:normal-bg-as-base="$(ifdef,normal-bg-as-base,$normal-bg-as-base,0)"
     prop:bg-as-base="$(ifdef,bg-as-base,$bg-as-base,0)"
     prop:base-as-bg="$(ifdef,base-as-bg,$base-as-bg,0)"
     />
@@ -39,7 +40,10 @@
     prop:yscale="$(first-occupied,$yscale,1)"
     />
   <xdef:event-box             inherit="GtkEventBox"         />
-  <xdef:arrow                 inherit="GtkArrow"            prop:shadow-type="$shadow" prop:arrow-type="$arrow" />
+  <xdef:arrow                 inherit="GtkArrow"
+    prop:shadow-type="$(ifdef,shadow-type,$shadow-type,shadow-etched-in)"
+    prop:arrow-type="$(ifdef,arrow-type,$arrow-type,arrow-right)"
+    />
   <xdef:frame                 inherit="GtkFrame"
     prop:shadow-type="$(ifdef,shadow-type,$shadow-type,shadow-etched-in)"
     />
@@ -55,12 +59,19 @@
     prop:spacing="$(ifdef,spacing,$spacing,0)"
     default-pack:expand="$(ifdef,expand,$expand,0)"
     default-pack:fill="$(ifdef,fill,$fill,1)"
+    default-pack:pack-type="$(ifdef,pack-type,$pack-type,start)"
+    default-pack:padding="$(ifdef,padding,$padding,0)"
     />
   <xdef:vbox                  inherit="GtkVBox"
     prop:homogeneous="$(ifdef,homogeneous,$homogeneous,0)"
     prop:spacing="$(ifdef,spacing,$spacing,0)"
     default-pack:expand="$(ifdef,expand,$expand,0)"
     default-pack:fill="$(ifdef,fill,$fill,1)"
+    default-pack:pack-type="$(ifdef,pack-type,$pack-type,start)"
+    default-pack:padding="$(ifdef,padding,$padding,0)"
+    />
+  <xdef:hbox-flipped          inherit="hbox"
+    default-pack:pack-type="$(ifdef,pack-type,$pack-type,end)"
     />
   <!-- wrap boxes -->
   <xdef:hwrap                 inherit="GtkHWrapBox"
@@ -70,6 +81,7 @@
     default-pack:hfill="$(first-occupied,$hfill,$fill,1)"
     default-pack:vfill="$(first-occupied,$vfill,$fill,1)"
     default-pack:wrapped="$(first-occupied,$wrapped,0)"
+    default-pack:padding="$(ifdef,padding,$padding,0)"
     />
   <xdef:vwrap                 inherit="GtkVWrapBox"
     prop:aspect-ratio="$(first-occupied,$aspect-ratio,1)"
@@ -78,6 +90,7 @@
     default-pack:hfill="$(first-occupied,$hfill,$fill,1)"
     default-pack:vfill="$(first-occupied,$vfill,$fill,1)"
     default-pack:wrapped="$(first-occupied,$wrapped,0)"
+    default-pack:padding="$(ifdef,padding,$padding,0)"
     />
   <!-- menubar -->
   <xdef:menubar               inherit="GtkMenuBar" />
@@ -198,9 +211,9 @@
   <!-- border-layout -->
   <xdef:border-layout inherit="vbox" default-area="center" >
     <vbox id="north" />
-    <hbox pack:expand="1" >
+    <hbox expand="1" >
       <hbox id="east" />
-      <vbox id="center" pack:expand="1" />
+      <vbox id="center" expand="1" />
       <hbox id="west" />
     </hbox>
     <vbox id="south" />

@@ -195,31 +195,106 @@
     </vpaned>
   </xdef:part-view>
   
-  <!-- bus editor -->
-  <xdef:bus-editor inherit="BstBusEditor" border-width="3" >
+  <!-- bus description -->
+  <xdef:bus-description inherit="GtkAlignment" border-width="3" >
     <event-box>
       <frame shadow-type="shadow-out" >
-	<vbox>
-	  <label _label="BUS"/>
-	  <entry text="Name" width="10" />
-	  <hbox>
+	<vbox border-width="3" spacing="3" >
+	  <!-- Name -->
+	  <label _label="Bus Name" size:window-vgroup="bus-name" />
+	  <!-- Inputs -->
+	  <frame shadow-type="etched-in" size:window-vgroup="bus-inputs" >
+	    <label _label="Inputs" />
+	  </frame>
+	  <!-- Leds & Mute+Solo -->
+	  <frame shadow-type="etched-in" size:window-vgroup="bus-levels" >
+	    <label _label="Level" />
+	  </frame>
+	  <!-- Reset -->
+	  <arrow arrow-type="down" size:window-vgroup="bus-reset" />
+	  <!-- Effects -->
+	  <frame shadow-type="etched-in" size:window-vgroup="bus-effects" >
+	    <label label="Effects" />
+	  </frame>
+	  <!-- Bypass -->
+	  <arrow arrow-type="down" size:window-vgroup="bus-bypass" />
+	  <!-- Volume -->
+	  <frame shadow-type="etched-in" expand="1" >
+	    <label label="Volume" />
+	  </frame>
+	  <!-- VolumeEntry -->
+	  <arrow arrow-type="down" size:window-vgroup="bus-volume-entry" />
+	  <!-- Outputs -->
+	  <frame shadow-type="etched-in" size:window-vgroup="bus-outputs" >
+	    <label _label="Outputs" />
+	  </frame>
+	</vbox>
+      </frame>
+    </event-box>
+  </xdef:bus-description>
+
+  <!-- bus editor -->
+  <xdef:bus-editor inherit="BstBusEditor" border-width="3" size:window-hgroup="bus-mixer-busses" >
+    <event-box>
+      <frame shadow-type="shadow-out" >
+	<vbox border-width="3" spacing="3" >
+	  <!-- Name -->
+	  <entry text="Name" width="10" size:window-vgroup="bus-name" />
+	  <!-- Inputs -->
+	  <button can-focus="0" size:window-vgroup="bus-inputs" >
+	    <tooltip text="Source signals going into this bus" />
+	    <hbox>
+	      <frame shadow-type="shadow-in" border-width="3" expand="1" >
+		<widget-patcher normal-bg-as-base="1" />
+		<event-box>
+		  <widget-patcher normal-bg-as-base="1" />
+		  <label label="#23" pack-type="start" />
+		</event-box>
+	      </frame>
+	      <label label="..." />
+	    </hbox>
+	  </button>
+	  <!-- Leds & Mute+Solo -->
+	  <hbox size:window-vgroup="bus-levels" >
 	    <label label="(O)"/>
-	    <hbox expand="1">
-	      <button label="M"/>
-	      <button label="S"/>
+	    <hbox expand="1" homogeneous="1" >
+	      <toggle-button label="M" size:hgroup="bus-editor-toggles" can-focus="0" />
+	      <toggle-button label="S" size:hgroup="bus-editor-toggles" can-focus="0" />
 	    </hbox>
 	    <label label="(#)"/>
 	  </hbox>
-	  <button label="Reset"/>
-	  <label label="[ EFX ]"/>
-	  <label label="[ EFX ]"/>
-	  <label label="[ EFX ]"/>
-	  <button label="Bypass"/>
+	  <!-- Reset -->
+	  <button label="Reset" size:window-vgroup="bus-reset" />
+	  <!-- Effects -->
+          <frame shadow-type="none" size:window-vgroup="bus-effects" >
+	    <vbox>
+	      <label label="[ EFX ]"/>
+	      <label label="[ EFX ]"/>
+	      <label label="[ EFX ]"/>
+	    </vbox>
+	  </frame>
+	  <!-- Bypass -->
+	  <button label="Bypass" size:window-vgroup="bus-bypass"/>
+	  <!-- Volume -->
 	  <hbox expand="1" >
 	    <vscale expand="1" />
 	  </hbox>
-	  <entry text="Volume" width="10" />
-	  <label label="Sender"/>
+	  <!-- VolumeEntry -->
+	  <entry text="Volume" width="10" size:window-vgroup="bus-volume-entry" />
+	  <!-- Outputs -->
+	  <button can-focus="0" size:window-vgroup="bus-outputs" >
+	    <tooltip text="Signal destinations going out of this bus" />
+	    <hbox>
+	      <frame shadow-type="shadow-in" border-width="3" expand="1" >
+		<widget-patcher normal-bg-as-base="1" />
+		<event-box>
+		  <widget-patcher normal-bg-as-base="1" />
+		  <label label="Master" pack-type="start" />
+		</event-box>
+	      </frame>
+	      <label label="..." />
+	    </hbox>
+	  </button>
 	</vbox>
       </frame>
     </event-box>

@@ -73,6 +73,7 @@ typedef struct {
   guint   mute_events : 1;
   guint   lower_windows : 1;
   guint   hide_insensitive : 1;
+  guint   modify_normal_bg_as_base : 1;
   guint   modify_bg_as_base : 1;
   guint   modify_base_as_bg : 1;
   gdouble resize_hsteps, resize_vsteps;

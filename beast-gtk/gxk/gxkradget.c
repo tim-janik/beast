@@ -75,9 +75,8 @@ struct Node {
   GxkRadgetArgs *prop_args;
   GxkRadgetArgs *pack_args;
   GxkRadgetArgs *dfpk_args;
-  const gchar  *size_hgroup;
-  const gchar  *size_vgroup;
-  const gchar  *size_hvgroup;
+  const gchar  *size_hgroup, *size_vgroup, *size_hvgroup;
+  const gchar  *size_window_hgroup, *size_window_vgroup, *size_window_hvgroup;
   const gchar *default_area;
   GSList       *children;       /* Node* */
   GSList       *call_stack;     /* expanded call_args */
@@ -224,6 +223,9 @@ clone_node_intern (Node        *source,
   node->size_hgroup = source->size_hgroup;
   node->size_vgroup = source->size_vgroup;
   node->size_hvgroup = source->size_hvgroup;
+  node->size_window_hgroup = source->size_window_hgroup;
+  node->size_window_vgroup = source->size_window_vgroup;
+  node->size_window_hvgroup = source->size_window_hvgroup;
   node->default_area = source->default_area;
   for (slist = source->children; slist; slist = slist->next)
     {
@@ -731,6 +733,12 @@ node_define (Domain       *domain,
       node->size_vgroup = g_intern_string (attribute_values[i]);
     else if (strcmp (attribute_names[i], "size:hvgroup") == 0 && g_type_is_a (node->type, GTK_TYPE_WIDGET))
       node->size_hvgroup = g_intern_string (attribute_values[i]);
+    else if (strcmp (attribute_names[i], "size:window-hgroup") == 0 && g_type_is_a (node->type, GTK_TYPE_WIDGET))
+      node->size_window_hgroup = g_intern_string (attribute_values[i]);
+    else if (strcmp (attribute_names[i], "size:window-vgroup") == 0 && g_type_is_a (node->type, GTK_TYPE_WIDGET))
+      node->size_window_vgroup = g_intern_string (attribute_values[i]);
+    else if (strcmp (attribute_names[i], "size:window-hvgroup") == 0 && g_type_is_a (node->type, GTK_TYPE_WIDGET))
+      node->size_window_hvgroup = g_intern_string (attribute_values[i]);
     else if (strcmp (attribute_names[i], "inherit") == 0 ||
              strcmp (attribute_names[i], "default-area") == 0 ||
              strcmp (attribute_names[i], "area") == 0)
@@ -959,6 +967,54 @@ gxk_radget_parse_text (const gchar    *domain_name,
     }
 }
 
+static GtkSizeGroup*
+toplevel_get_size_group (GtkWidget   *toplevel,
+                         const gchar *name,
+                         gchar        type)
+{
+  gchar *key = g_strdup_printf ("gxk-toplevel-%cgroup#%s", type, name);
+  GtkSizeGroup *sg = g_object_get_data (toplevel, key);
+  if (!sg)
+    {
+      sg = gtk_size_group_new (type == 'h' ? GTK_SIZE_GROUP_HORIZONTAL :
+                               type == 'v' ? GTK_SIZE_GROUP_VERTICAL :
+                               GTK_SIZE_GROUP_BOTH);
+      g_object_set_data_full (toplevel, key, sg, g_object_unref);
+    }
+  g_free (key);
+  return sg;
+}
+
+static void
+radget_widget_hierarchy_changed (GtkWidget *widget,
+                                 GtkWidget *previous_toplevel)
+{
+  if (previous_toplevel)
+    return;
+  const gchar *hgroup = g_object_get_data (widget, "gxk-window-hgroup");
+  const gchar *vgroup = g_object_get_data (widget, "gxk-window-vgroup");
+  const gchar *bgroup = g_object_get_data (widget, "gxk-window-hvgroup");
+  if (!hgroup && !vgroup && !bgroup)
+    return;
+  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+  g_assert (GTK_WIDGET_TOPLEVEL (toplevel));
+  if (hgroup)
+    {
+      GtkSizeGroup *sg = toplevel_get_size_group (toplevel, hgroup, 'h');
+      gtk_size_group_add_widget (sg, widget);
+    }
+  if (vgroup)
+    {
+      GtkSizeGroup *sg = toplevel_get_size_group (toplevel, vgroup, 'v');
+      gtk_size_group_add_widget (sg, widget);
+    }
+  if (bgroup)
+    {
+      GtkSizeGroup *sg = toplevel_get_size_group (toplevel, bgroup, 'b');
+      gtk_size_group_add_widget (sg, widget);
+    }
+}
+
 static void
 property_value_from_string (GtkType      widget_type,
                             GParamSpec  *pspec,
@@ -1181,6 +1237,9 @@ radget_create_from_node (Node         *node,
     gtk_size_group_add_widget (env_get_size_group (env, node->size_vgroup, 'v'), radget);
   if (node->size_hvgroup)
     gtk_size_group_add_widget (env_get_size_group (env, node->size_hvgroup, 'b'), radget);
+  g_object_set_data (radget, "gxk-window-hgroup", (gchar*) node->size_window_hgroup);
+  g_object_set_data (radget, "gxk-window-vgroup", (gchar*) node->size_window_vgroup);
+  g_object_set_data (radget, "gxk-window-hvgroup", (gchar*) node->size_window_hvgroup);
   /* set properties */
   for (i = 0; i < ARGS_N_ENTRIES (node->prop_args); i++)
     {
@@ -1199,6 +1258,15 @@ radget_create_from_node (Node         *node,
         }
       else if (!pspec)
         set_error (error, "radget \"%s\" has no property: %s", node->name, pname);
+    }
+  /* hierarchy-changed setup */
+  if (GTK_IS_WIDGET (radget) &&
+      !gxk_signal_handler_pending (radget, "hierarchy-changed", G_CALLBACK (radget_widget_hierarchy_changed), NULL))
+    {
+      g_signal_connect_after (radget, "hierarchy-changed", G_CALLBACK (radget_widget_hierarchy_changed), NULL);
+      /* check anchored */
+      if (GTK_WIDGET_TOPLEVEL (gtk_widget_get_toplevel (radget)))
+        radget_widget_hierarchy_changed (radget, NULL);
     }
   /* cleanup */
   g_type_class_unref (klass);
