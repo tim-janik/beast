@@ -24,6 +24,14 @@
 
 namespace Sfi {
 
+typedef SfiBool   Bool;    // FIXME: use bool instead?
+typedef SfiInt    Int;
+typedef SfiNum    Num;
+typedef SfiReal   Real;
+typedef SfiBBlock BBlock;
+typedef SfiFBlock FBlock;
+typedef SfiRec    Rec;
+
 class String {
   char *cstring;
   int cmp (const char *ostring) const
@@ -77,21 +85,21 @@ public:
   String& operator+= (const std::string &src)
   {
     char *old = cstring;
-    cstring = g_strconcat (old, src.c_str(), NULL);
+    cstring = g_strconcat (old ? old : "", src.c_str(), NULL);
     g_free (old);
     return *this;
   }
   String& operator+= (const gchar *cstr)
   {
     char *old = cstring;
-    cstring = g_strconcat (old, cstr, NULL);
+    cstring = g_strconcat (old ? old : "", cstr, NULL);
     g_free (old);
     return *this;
   }
   String& operator+= (const String &src)
   {
     char *old = cstring;
-    cstring = g_strconcat (old, src.cstring, NULL);
+    cstring = g_strconcat (old ? old : "", src.cstring, NULL);
     g_free (old);
     return *this;
   }
@@ -115,7 +123,7 @@ public:
   bool operator== (const std::string &s) const { return cmp (s.c_str()) == 0; }
   unsigned int length()
   {
-    return strlen (cstring);
+    return cstring ? strlen (cstring) : 0;
   }
   ~String()
   {
@@ -184,6 +192,79 @@ public:
   Type& operator* ()
   {
     return *operator-> ();
+  }
+};
+
+template<typename Type>
+class Sequence {
+  struct CSeq {
+    unsigned int n_elements;
+    Type        *elements;
+  };
+  CSeq *cseq;
+public:
+  Sequence (unsigned int n = 0)
+  {
+    cseq = g_new0 (CSeq, 1);
+    resize (n);
+  }
+  Sequence (const Sequence &sh)
+  {
+    cseq = g_new0 (CSeq, 1);
+    *this = sh;
+  }
+  void resize (unsigned int n)
+  {
+    guint i;
+    // Note that this does *not* use an explicit copy-constructor call to relocate existing elements
+    for (i = n; i < length(); i++)
+      cseq->elements[i].~Type();
+    i = cseq->n_elements;
+    cseq->n_elements = n;
+    cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
+    for (; i < length(); i++)
+      new (cseq->elements + i) Type ();
+  }
+  Type& operator[] (unsigned int index)
+  {
+    if (index >= cseq->n_elements)
+      g_critical ("%s: invalid array subscript: %u", G_STRFUNC, index);
+    return cseq->elements[index];
+  }
+  const Type& operator[] (unsigned int index) const
+  {
+    if (index >= cseq->n_elements)
+      g_critical ("%s: invalid array subscript: %u", G_STRFUNC, index);
+    return cseq->elements[index];
+  }
+  Sequence& operator+= (const Type &elm)
+  {
+    // Note that this does *not* use an explicit copy-constructor call to relocate existing elements
+    guint i = cseq->n_elements++;
+    cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
+    new (cseq->elements + i) Type (elm);
+    return *this;
+  }
+  Sequence& operator= (const Sequence &sh)
+  {
+    for (guint i = 0; i < length(); i++)
+      cseq->elements[i].~Type();
+    cseq->n_elements = sh->length();
+    cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
+    for (guint i = 0; i < length(); i++)
+      new (cseq->elements + i) Type (sh[i]);
+    return *this;
+  }
+  unsigned int length() const
+  {
+    return cseq->n_elements;
+  }
+  ~Sequence()
+  {
+    for (guint i = 0; i < length(); i++)
+      cseq->elements[i].~Type();
+    g_free (cseq->elements);
+    g_free (cseq);
   }
 };
 

@@ -31,7 +31,8 @@ using namespace Sfi;
 struct Bar {
   int i;
 };
-
+typedef Sequence<Bar> BarSeq;
+typedef Sequence<Int> IntSeq;
 
 int
 main (int   argc,
@@ -62,6 +63,41 @@ main (int   argc,
   b.i = 5;
   RecordHandle<Bar> b4 = b;
   ASSERT (b4->i == 5);
+  DONE();
+
+  MSG ("Test IntSeq:");
+  ASSERT (sizeof (IntSeq) == sizeof (void*));
+  IntSeq is (9);
+  for (guint i = 0; i < 9; i++)
+    is[i] = i;
+  for (int i = 0; i < 9; i++)
+    ASSERT (is[i] == i);
+  is.resize (12);
+  ASSERT (is.length() == 12);
+  for (guint i = 0; i < 12; i++)
+    is[i] = 2147483600 + i;
+  for (int i = 0; i < 12; i++)
+    ASSERT (is[i] == 2147483600 + i);
+  is.resize (0);
+  ASSERT (is.length() == 0);
+  DONE();
+
+  MSG ("Test BarSeq:");
+  ASSERT (sizeof (BarSeq) == sizeof (void*));
+  BarSeq bs (7);
+  ASSERT (bs.length() == 7);
+  for (guint i = 0; i < 7; i++)
+    bs[i].i = i;
+  for (int i = 0; i < 7; i++)
+    ASSERT (bs[i].i == i);
+  bs.resize (22);
+  ASSERT (bs.length() == 22);
+  for (guint i = 0; i < 22; i++)
+    bs[i].i = 2147483600 + i;
+  for (int i = 0; i < 22; i++)
+    ASSERT (bs[i].i == 2147483600 + i);
+  bs.resize (0);
+  ASSERT (bs.length() == 0);
   DONE();
 
   return 0;
