@@ -1,3 +1,8 @@
+Sun Dec 28 19:44:00 2003  Tim Janik  <timj@gtk.org>
+
+	* test/test-song.bse: updated to version 0.5.6, refined module
+	positions and names for screenshots.
+
 Mon Dec 29 18:05:14 2003  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: include intltool-modules/XML/Parser/Style/OrigTree.pm
