@@ -1,3 +1,7 @@
+Tue Jan 20 03:11:17 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/Makefile.am: No more bse/bsecxxsmart.h.
+
 Tue Jan 20 02:50:56 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/cxxbinding.cc: Using Sfi::Sequence now (instead of
