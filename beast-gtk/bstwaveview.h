@@ -41,6 +41,7 @@ typedef	struct	_BstWaveViewClass	BstWaveViewClass;
 struct _BstWaveView
 {
   BstItemView	 parent_object;
+  GtkWidget     *load_dialog;
 };
 struct _BstWaveViewClass
 {
@@ -50,7 +51,7 @@ struct _BstWaveViewClass
 
 /* --- prototypes --- */
 GtkType		bst_wave_view_get_type	(void);
-GtkWidget*	bst_wave_view_new	(BseWaveRepo	*wrepo);
+GtkWidget*	bst_wave_view_new	(BswProxy	wrepo);
 
 
 

@@ -103,7 +103,7 @@ bst_instrument_view_new (BseSong *song)
   g_return_val_if_fail (BSE_IS_SONG (song), NULL);
   
   instrument_view = gtk_widget_new (BST_TYPE_INSTRUMENT_VIEW, NULL);
-  bst_item_view_set_container (BST_ITEM_VIEW (instrument_view), BSE_CONTAINER (song));
+  bst_item_view_set_container (BST_ITEM_VIEW (instrument_view), BSE_OBJECT_ID (song));
   
   return instrument_view;
 }
@@ -117,7 +117,7 @@ bst_instrument_view_operate (BstItemView *item_view,
   
   g_return_if_fail (bst_instrument_view_can_operate (item_view, op));
   
-  song = BSE_SONG (item_view->container);
+  song = bse_object_from_id (item_view->container);
   
   switch (op)
     {
@@ -127,9 +127,9 @@ bst_instrument_view_operate (BstItemView *item_view,
     case BST_OP_INSTRUMENT_ADD:
       item = bse_container_new_item (BSE_CONTAINER (song), BSE_TYPE_INSTRUMENT, NULL);
       string = g_strdup_printf ("Instrument-%02X", bse_item_get_seqid (item));
-      bse_object_set_name (BSE_OBJECT (item), string);
+      g_object_set (item, "name", string, NULL);
       g_free (string);
-      bst_item_view_select (item_view, item);
+      bst_item_view_select (item_view, BSE_OBJECT_ID (item));
       break;
     case BST_OP_INSTRUMENT_DELETE:
       break;
@@ -149,7 +149,7 @@ bst_instrument_view_can_operate (BstItemView *item_view,
   
   g_return_val_if_fail (BST_IS_INSTRUMENT_VIEW (instrument_view), FALSE);
   
-  song = BSE_SONG (item_view->container);
+  song = bse_object_from_id (item_view->container);
   
   switch (op)
     {

@@ -59,7 +59,7 @@ bst_status_bar_get_current (void)
     {
       GtkWindow *window = status_window_stack->data;
 
-      if (!GTK_OBJECT_DESTROYED (window))
+      if (window)
 	sbar = bst_status_bar_from_window (window);
 
       if (!sbar || !widget_fully_visible (sbar))
@@ -118,11 +118,11 @@ bst_status_bar_from_window (GtkWindow *window)
 {
   g_return_val_if_fail (GTK_IS_WINDOW (window), NULL);
   
-  if (!GTK_OBJECT_DESTROYED (window))
+  if (window)
     {
       GtkWidget *sbar = gtk_object_get_data (GTK_OBJECT (window), "bst-status-bar");
       
-      if (sbar && !GTK_OBJECT_DESTROYED (sbar))
+      if (sbar)
 	return sbar;
     }
   
@@ -138,7 +138,7 @@ bst_status_focus_in_event (GtkWidget	 *widget,
   if (event->type == GDK_FOCUS_CHANGE &&
       event->in == TRUE &&
       GTK_IS_WINDOW (widget) &&
-      !GTK_OBJECT_DESTROYED (widget))
+      !GTK_WIDGET_REALIZED (widget))
     {
       status_windows = g_slist_remove (status_windows, widget);
       status_windows = g_slist_prepend (status_windows, widget);
@@ -264,7 +264,7 @@ procedure_share (gpointer     func_data,
       gtk_grab_remove (abort);
       gtk_signal_disconnect (GTK_OBJECT (proc_window), event_signal_handler);
       
-      should_abort = GTK_OBJECT_DESTROYED (abort) || gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (abort));
+      should_abort = !GTK_WIDGET_REALIZED (abort) || gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (abort));
       
       gtk_widget_unref (abort);
     }
@@ -354,7 +354,7 @@ bst_status_bar_ensure (GtkWindow *window)
   g_return_val_if_fail (GTK_IS_WINDOW (window), NULL);
   
   sbar = bst_status_bar_from_window (window);
-  if (GTK_OBJECT_DESTROYED (window) || sbar)
+  if (sbar)
     return sbar;
   
   if (status_bar_rc_string)
@@ -497,12 +497,6 @@ bst_status_bar_queue_clear (GtkWidget *sbar,
   
   status_bar_remove_timer (sbar);
   
-  if (GTK_OBJECT_DESTROYED (sbar))
-    {
-      gtk_object_unref (object);
-      return;
-    }
-  
   if (!msecs)
     bst_status_bar_set_permanent (sbar, 0, NULL, NULL);
   else
@@ -531,7 +525,7 @@ bst_status_bar_set_permanent (GtkWidget	  *sbar,
   gtk_object_ref (object);
   
   status_bar_remove_timer (sbar);
-  if (!GTK_OBJECT_DESTROYED (sbar))
+  if (sbar)
     {
       GtkWidget *progress = gtk_object_get_data (object, "bst-progress");
       GtkWidget *msg = gtk_object_get_data (object, "bst-msg");

@@ -1,5 +1,5 @@
 /* BSW - Bedevilled Sound Engine Wrapper
- * Copyright (C) 2000-2001 Tim Janik
+ * Copyright (C) 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,12 @@ extern "C" {
 #define	BSW_TYPE_PROXY		(bsw_proxy_get_type ())
 #define	BSW_SERVER		(bsw_proxy_get_server ())
 
-typedef guint BswProxy;
+#if     GLIB_SIZEOF_LONG == GLIB_SIZEOF_SIZE_T
+typedef gulong                          BswProxy;
+#else   /* hm, shouldn't happen? */
+typedef gsize                           BswProxy;
+#endif
+
 typedef struct
 {
   guint  n_in_params;
@@ -61,4 +66,4 @@ gchar*		bsw_proxy_collector_get_string	(GValue			*value);
 }
 #endif /* __cplusplus */
 
-#endif /* __BSE_OBJECT_H__ */
+#endif /* __BSE_PROXY_H__ */

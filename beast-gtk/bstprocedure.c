@@ -261,7 +261,6 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
   GSList *slist;
   
   g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
-  g_return_if_fail (GTK_OBJECT_DESTROYED (shell) == FALSE);
   g_return_if_fail (shell->proc != NULL);
   g_return_if_fail (shell->in_execution == FALSE);
   
@@ -282,7 +281,7 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
     bst_param_reset (slist->data);
   bst_procedure_shell_update (shell);
   
-  if (!GTK_OBJECT_DESTROYED (widget))
+  if (widget)
     {
       BseErrorType error;
       
@@ -443,7 +442,6 @@ bst_procedure_dialog_from_shell (BstProcedureShell *shell,
   GtkWidget *adialog;
   
   g_return_val_if_fail (BST_IS_PROCEDURE_SHELL (shell), NULL);
-  g_return_val_if_fail (GTK_OBJECT_DESTROYED (shell) == FALSE, NULL);
   g_return_val_if_fail (GTK_WIDGET (shell)->parent == NULL, NULL);
   
   gtk_widget_show (GTK_WIDGET (shell));
@@ -575,7 +573,7 @@ bst_procedure_user_exec_method (const gchar *proc_path,
 	  !g_type_is_a (G_OBJECT_TYPE (bse_object_from_id (preset_proxy)),
 			G_PARAM_SPEC_VALUE_TYPE (procedure->in_param_specs[0])))
 	{
-	  g_warning ("proxy %u invalid as preset parameter for procedure type \"%s\"",
+	  g_warning ("proxy %lu invalid as preset parameter for procedure type \"%s\"",
 		     preset_proxy, proc_path);
 	  return;
 	}

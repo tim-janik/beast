@@ -72,9 +72,10 @@ beast_headers = $(strip \
 	bststatusbar.h \
 	bstsupershell.h \
 	bstutils.h \
+	bstwavedialog.h \
+	bstwaveeditor.h \
 	bstwavereposhell.h \
 	bstwaveview.h \
-	bstwaveeditor.h \
 	bstxframe.h \
 	bstxkb.h \
 	bstzoomedwindow.h \
@@ -117,9 +118,10 @@ beast_sources = $(strip \
 	bststatusbar.c \
 	bstsupershell.c \
 	bstutils.c \
+	bstwavedialog.c \
+	bstwaveeditor.c \
 	bstwavereposhell.c \
 	bstwaveview.c \
-	bstwaveeditor.c \
 	bstxframe.c \
 	bstxkb.c \
 	bstzoomedwindow.c \

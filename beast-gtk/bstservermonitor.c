@@ -72,7 +72,7 @@ bst_server_monitor_init (BstServerMonitor *smon)
   bst_param_view_set_mask (BST_PARAM_VIEW (smon->param_view), BSE_TYPE_SERVER, 0, NULL, NULL);
   gtk_widget_show (smon->param_view);
   gtk_container_add (GTK_CONTAINER (smon), smon->param_view);
-  bst_param_view_set_object (BST_PARAM_VIEW (smon->param_view), bse_object_from_id (smon->server));
+  bst_param_view_set_object (BST_PARAM_VIEW (smon->param_view), smon->server);
 }
 
 static void

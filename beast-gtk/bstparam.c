@@ -1012,7 +1012,7 @@ bst_param_apply (BstParam *bparam,
 	    }
 	  else if (!item) /* try generic lookup for pure name (brute force actually) */
 	    {
-	      GList *list, *free_list = bse_objects_list_by_name (G_PARAM_SPEC_VALUE_TYPE (pspec), string);
+	      GList *list, *free_list = bse_objects_list_by_uloc (G_PARAM_SPEC_VALUE_TYPE (pspec), string);
 	      
 	      for (list = free_list; list; list = list->next)
 		if (bse_item_get_project (list->data) == project)

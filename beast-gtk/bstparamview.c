@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -71,7 +71,7 @@ bst_param_view_class_init (BstParamViewClass *class)
 static void
 bst_param_view_init (BstParamView *param_view)
 {
-  param_view->object = NULL;
+  param_view->object = 0;
   param_view->bparams = NULL;
 
   param_view->base_type = BSE_TYPE_OBJECT;
@@ -99,7 +99,7 @@ bst_param_view_destroy (GtkObject *object)
 
   bst_param_view_destroy_contents (param_view);
 
-  bst_param_view_set_object (param_view, NULL);
+  bst_param_view_set_object (param_view, 0);
 
   if (param_view->reject_pattern)
     {
@@ -116,12 +116,12 @@ bst_param_view_destroy (GtkObject *object)
 }
 
 GtkWidget*
-bst_param_view_new (BseObject *object)
+bst_param_view_new (BswProxy object)
 {
   GtkWidget *param_view;
 
   if (object)
-    g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+    g_return_val_if_fail (BSW_IS_OBJECT (object), NULL);
 
   param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
   if (object)
@@ -133,25 +133,25 @@ bst_param_view_new (BseObject *object)
 static void
 param_view_reset_object (BstParamView *param_view)
 {
-  bst_param_view_set_object (param_view, NULL);
+  bst_param_view_set_object (param_view, 0);
 }
 
 void
 bst_param_view_set_object (BstParamView *param_view,
-			   BseObject    *object)
+			   BswProxy      object)
 {
   GSList *slist;
 
   g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
   if (object)
-    g_return_if_fail (BSE_IS_OBJECT (object));
+    g_return_if_fail (BSW_IS_OBJECT (object));
 
   if (param_view->object)
     {
-      g_object_disconnect (param_view->object,
-			   "any_signal", param_view_reset_object, param_view,
-			   NULL);
-      param_view->object = NULL;
+      bsw_proxy_disconnect (param_view->object,
+			    "any_signal", param_view_reset_object, param_view,
+			    NULL);
+      param_view->object = 0;
       
       for (slist = param_view->bparams; slist; slist = slist->next)
 	bst_param_set_object (slist->data, NULL);
@@ -160,9 +160,9 @@ bst_param_view_set_object (BstParamView *param_view,
   param_view->object = object;
 
   if (param_view->object)
-    g_object_connect (param_view->object,
-		      "swapped_signal::destroy", param_view_reset_object, param_view,
-		      NULL);
+    bsw_proxy_connect (param_view->object,
+		       "swapped_signal::destroy", param_view_reset_object, param_view,
+		       NULL);
   
   bst_param_view_rebuild (param_view);
 }
@@ -216,7 +216,7 @@ bst_param_view_rebuild (BstParamView *param_view)
 		    "swapped_signal::destroy", g_nullify_pointer, &param_view->container,
 		    NULL);
   
-  object = BSE_OBJECT (param_view->object);
+  object = bse_object_from_id (param_view->object);
   
   /* parameter fields, per bse class
    */

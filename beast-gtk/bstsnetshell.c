@@ -96,7 +96,7 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 
   g_return_if_fail (snet_shell->param_view == NULL);
 
-  snet_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT (snet));
+  snet_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT_ID (snet));
   g_object_set (GTK_WIDGET (snet_shell->param_view),
 		"visible", TRUE,
 		NULL);

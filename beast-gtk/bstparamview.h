@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,7 +43,7 @@ struct _BstParamView
 {
   GtkVBox	 parent_object;
 
-  BseObject	*object;
+  BswProxy	 object;
 
   GSList	*bparams;
 
@@ -61,11 +61,11 @@ struct _BstParamViewClass
 
 /* --- prototypes --- */
 GtkType		bst_param_view_get_type		(void);
-GtkWidget*	bst_param_view_new		(BseObject	*object);
+GtkWidget*	bst_param_view_new		(BswProxy	 object);
 void		bst_param_view_update		(BstParamView	*param_view);
 void		bst_param_view_rebuild		(BstParamView	*param_view);
 void		bst_param_view_set_object	(BstParamView	*param_view,
-						 BseObject	*object);
+						 BswProxy	 object);
 void		bst_param_view_set_mask		(BstParamView	*param_view,
 						 GType  	 base_type,
 						 GType  	 param_object_type,

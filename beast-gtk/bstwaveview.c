@@ -21,6 +21,7 @@
 #include "bststatusbar.h"
 #include "bstprocedure.h"
 #include "bstwaveeditor.h"
+#include "bstwavedialog.h"
 
 
 
@@ -89,25 +90,30 @@ static void
 bst_wave_view_init (BstWaveView *wave_view)
 {
   BST_ITEM_VIEW (wave_view)->item_type = BSE_TYPE_WAVE;
+  wave_view->load_dialog = bst_wave_dialog_new_load (0, GTK_WIDGET (wave_view));
+  g_object_connect (wave_view->load_dialog,
+		    "swapped_object_signal_after::hide", bst_update_can_operate, wave_view,
+		    NULL);
 }
 
 GtkWidget*
-bst_wave_view_new (BseWaveRepo *wrepo)
+bst_wave_view_new (BswProxy wrepo)
 {
   GtkWidget *wave_view;
   
-  g_return_val_if_fail (BSE_IS_WAVE_REPO (wrepo), NULL);
+  g_return_val_if_fail (BSW_IS_WAVE_REPO (wrepo), NULL);
   
   wave_view = gtk_widget_new (BST_TYPE_WAVE_VIEW, NULL);
-  bst_item_view_set_container (BST_ITEM_VIEW (wave_view), BSE_CONTAINER (wrepo));
-  
+  bst_item_view_set_container (BST_ITEM_VIEW (wave_view), wrepo);
+  bst_wave_dialog_set_wave_repo (BST_WAVE_DIALOG (BST_WAVE_VIEW (wave_view)->load_dialog), wrepo);
+
   return wave_view;
 }
 
 static void
 popup_wave_dialog (BstWaveView *wave_view)
 {
-  BseItem *wave = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
+  BswProxy wave = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
   GtkWidget *weditor, *wdialog;
 
   wdialog = g_object_new (GTK_TYPE_WINDOW,
@@ -116,7 +122,7 @@ popup_wave_dialog (BstWaveView *wave_view)
 			  NULL);
   weditor = g_object_new (BST_TYPE_WAVE_EDITOR,
 			  "visible", TRUE,
-			  "wave", BSE_OBJECT_ID (wave),
+			  "wave", wave,
 			  "parent", wdialog,
 			  NULL);
   gtk_signal_connect_object_while_alive (GTK_OBJECT (wave_view),
@@ -131,19 +137,20 @@ bst_wave_view_operate (BstItemView *item_view,
 		       BstOps       op)
 {
   BstWaveView *wave_view = BST_WAVE_VIEW (item_view);
-  BseWaveRepo *wrepo = BSE_WAVE_REPO (item_view->container);
+  BswProxy wrepo = item_view->container;
   
   g_return_if_fail (bst_wave_view_can_operate (item_view, op));
   
   switch (op)
     {
-      BseItem *item;
+      BswProxy item;
     case BST_OP_WAVE_LOAD:
-      bst_procedure_user_exec_method ("BseWaveRepo+read-file", BSE_OBJECT_ID (wrepo));
+      gtk_widget_show (wave_view->load_dialog);
+      // bst_procedure_user_exec_method ("BseWaveRepo+read-file", wrepo);
       break;
     case BST_OP_WAVE_DELETE:
       item = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
-      bsw_wave_repo_remove_wave (BSE_OBJECT_ID (wrepo), BSE_OBJECT_ID (item));
+      bsw_wave_repo_remove_wave (wrepo, item);
       break;
     case BST_OP_WAVE_EDITOR:
       popup_wave_dialog (wave_view);

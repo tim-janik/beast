@@ -786,7 +786,7 @@ bst_pattern_editor_fetch_pattern_sibling (BstPatternEditor *pe,
 {
   BseItem *item;
   guint seqid;
-  
+
   g_return_if_fail (BST_IS_PATTERN_EDITOR (pe));
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (pe->pattern == pattern);
@@ -800,7 +800,10 @@ bst_pattern_editor_fetch_pattern_sibling (BstPatternEditor *pe,
   if (!item && seqid > 1)
     item = bse_container_get_item (BSE_CONTAINER (container), BSE_TYPE_PATTERN, seqid - 1);
   if (!item)
-    bst_pattern_editor_release_pattern (pe);
+    {
+      g_warning ("%s: couldn't find pattern in song", G_STRLOC);
+      bst_pattern_editor_release_pattern (pe);
+    }
   else
     bst_pattern_editor_set_pattern (pe, BSE_PATTERN (item));
 }
@@ -2486,9 +2489,9 @@ bst_pattern_editor_channel_popup (BstPatternEditor *pe,
       instrument = list->data;
       
       g_snprintf (buffer, 64, INSTRUMENT_FMT, bse_item_get_seqid (BSE_ITEM (instrument)));
-      string = BSE_OBJECT_NAME (instrument);
+      string = bsw_item_get_name (BSE_OBJECT_ID (instrument));
       if (!string || *string == 0)
-	string = BSE_OBJECT_NAME (instrument->input);
+	string = bsw_item_get_name (BSE_OBJECT_ID (instrument->input));
       string = g_strconcat (buffer, ") ", string, NULL);
       item = gtk_menu_item_new_with_label (string);
       gtk_widget_set (item,

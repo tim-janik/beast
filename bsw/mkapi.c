@@ -66,7 +66,7 @@ indent (guint n_spaces)
 static void
 add_type_wrapper (GType type)
 {
-  if (g_type_is_a (type, BSE_TYPE_ITEM) && !g_hash_table_lookup (type_wrapper_ht, (gpointer) type))
+  if (g_type_is_a (type, BSE_TYPE_OBJECT) && !g_hash_table_lookup (type_wrapper_ht, (gpointer) type))
     {
       g_hash_table_insert (type_wrapper_ht, (gpointer) type, GUINT_TO_POINTER (TRUE));
       add_type_wrapper (g_type_parent (type));
@@ -75,8 +75,8 @@ add_type_wrapper (GType type)
 
 static void
 type_wrapper_foreach (gpointer key,
-		      gpointer value,
-		      gpointer user_data)
+		      gpointer dummy1,
+		      gpointer dummy2)
 {
   GType type = (GType) key;
   gchar *macro = tmacro_from_type (type);
@@ -88,7 +88,7 @@ type_wrapper_foreach (gpointer key,
   if (macro[0] == 'B' && macro[1] == 'S' && macro[2] == 'E')
     macro[2] = 'W';
   
-  fprintf (f_out, "#define %s_IS_%s(proxy)\t(bsw_item_is_a ((proxy), \"%s\"))\n",
+  fprintf (f_out, "#define %s_IS_%s(proxy)\t(bsw_object_is_a ((proxy), \"%s\"))\n",
 	   macro, delim + 1,
 	   g_type_name (type));
   g_free (macro);
@@ -219,7 +219,7 @@ cfunc_from_proc_name (const gchar *string)
   guint was_upper;
   
   /* strip procedure namespace */
-  if (strchr (string, '+'))	/* methods: BseItem+get-type */
+  if (strchr (string, '+'))	/* methods: BseObject+get-type */
     {
       s = string + 1;
       while (*s && (*s < 'A' || *s > 'Z'))
@@ -308,7 +308,7 @@ static MarshalType marshal_types[] = {
   { G_TYPE_UCHAR,     "guchar   ",	"bsw_value_initset_uchar",	"g_value_get_uchar", },
   { G_TYPE_FLOAT,     "gfloat   ",	"bsw_value_initset_float",	"g_value_get_float", },
   { G_TYPE_DOUBLE,    "gdouble  ",	"bsw_value_initset_double",	"g_value_get_double", },
-  { G_TYPE_OBJECT,    "BswProxy ",	"bsw_value_initset_proxy",	"g_value_get_uint", },
+  { G_TYPE_OBJECT,    "BswProxy ",	"bsw_value_initset_proxy",	"(BswProxy) g_value_get_pointer", },
 };
 
 static MarshalType*
@@ -476,7 +476,7 @@ static const gchar *cfile_header =
  "#define bsw_value_initset_uchar(val,t,vuchar)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vuchar)); }\n"
  "#define bsw_value_initset_float(val,t,vfloat)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vfloat)); }\n"
  "#define bsw_value_initset_double(val,t,vdouble) { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vdouble)); }\n"
- "#define bsw_value_initset_proxy(val,t,vproxy)	  { (val)->g_type = 0; g_value_init ((val), BSW_TYPE_PROXY); g_value_set_uint ((val), (vproxy)); }\n"
+ "#define bsw_value_initset_proxy(val,t,vproxy)	  { (val)->g_type = 0; g_value_init ((val), BSW_TYPE_PROXY); g_value_set_pointer ((val), (gpointer) (vproxy)); }\n"
  );
 
 int

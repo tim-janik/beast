@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,13 @@ extern "C" {
 
 
 /* --- type macros --- */
-#define BST_TYPE_FILE_DIALOG		(bst_file_dialog_get_type ())
-#define BST_FILE_DIALOG(object)		(GTK_CHECK_CAST ((object), BST_TYPE_FILE_DIALOG, BstFileDialog))
-#define BST_FILE_DIALOG_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_FILE_DIALOG, BstFileDialogClass))
-#define BST_IS_FILE_DIALOG(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_FILE_DIALOG))
-#define BST_IS_FILE_DIALOG_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_FILE_DIALOG))
+#define BST_TYPE_FILE_DIALOG              (bst_file_dialog_get_type ())
+#define BST_FILE_DIALOG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_FILE_DIALOG, BstFileDialog))
+#define BST_FILE_DIALOG_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_FILE_DIALOG, BstFileDialogClass))
+#define BST_IS_FILE_DIALOG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_FILE_DIALOG))
+#define BST_IS_FILE_DIALOG_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_FILE_DIALOG))
+#define BST_FILE_DIALOG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_FILE_DIALOG, BstFileDialog))
+
 
 /* --- typedefs --- */
 typedef struct  _BstFileDialog		BstFileDialog;

@@ -48,7 +48,7 @@ struct _BstItemView
 
   GType  	 item_type;
   
-  BseContainer	*container;
+  BswProxy	 container;
 
   gchar		*id_format;
   guint		 item_list_pos;
@@ -86,10 +86,10 @@ GtkType		bst_item_view_get_type		(void);
 void		bst_item_view_rebuild		(BstItemView	*item_view);
 void		bst_item_view_update		(BstItemView	*item_view);
 void		bst_item_view_select		(BstItemView	*item_view,
-						 BseItem	*item);
-BseItem*	bst_item_view_get_current	(BstItemView	*item_view);
+						 BswProxy	 item);
+BswProxy	bst_item_view_get_current	(BstItemView	*item_view);
 void		bst_item_view_set_container	(BstItemView	*item_view,
-						 BseContainer	*new_container);
+						 BswProxy	 new_container);
 void		bst_item_view_operate		(BstItemView	*item_view,
 						 BstOps		 op);
 gboolean	bst_item_view_can_operate	(BstItemView	*item_view,

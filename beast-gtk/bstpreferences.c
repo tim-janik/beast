@@ -214,8 +214,8 @@ bst_preferences_set_gconfig (BstPreferences *prefs,
 
   if (prefs->gconf)
     {
-      bst_param_view_set_object (BST_PARAM_VIEW (prefs->bse_param_view), NULL);
-      bst_param_view_set_object (BST_PARAM_VIEW (prefs->bst_param_view), NULL);
+      bst_param_view_set_object (BST_PARAM_VIEW (prefs->bse_param_view), 0);
+      bst_param_view_set_object (BST_PARAM_VIEW (prefs->bst_param_view), 0);
       g_object_disconnect (prefs->gconf,
 			   "any_signal", preferences_lock_changed, prefs,
 			   NULL);
@@ -229,8 +229,8 @@ bst_preferences_set_gconfig (BstPreferences *prefs,
       g_object_connect (prefs->gconf,
 			"swapped_signal::lock_changed", preferences_lock_changed, prefs,
 			NULL);
-      bst_param_view_set_object (BST_PARAM_VIEW (prefs->bse_param_view), BSE_OBJECT (prefs->gconf));
-      bst_param_view_set_object (BST_PARAM_VIEW (prefs->bst_param_view), BSE_OBJECT (prefs->gconf));
+      bst_param_view_set_object (BST_PARAM_VIEW (prefs->bse_param_view), BSE_OBJECT_ID (prefs->gconf));
+      bst_param_view_set_object (BST_PARAM_VIEW (prefs->bst_param_view), BSE_OBJECT_ID (prefs->gconf));
       if (g_type_next_base (BSE_OBJECT_TYPE (prefs->gconf), BSE_TYPE_GCONFIG))
 	{
 	  gtk_widget_show (prefs->bst_param_view);

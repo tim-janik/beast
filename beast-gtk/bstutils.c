@@ -346,7 +346,7 @@ idle_shower (GtkWidget **widget_p)
 {
   GDK_THREADS_ENTER ();
   
-  if (GTK_IS_WIDGET (*widget_p) && !GTK_OBJECT_DESTROYED (*widget_p))
+  if (GTK_IS_WIDGET (*widget_p))
     {
       gtk_signal_disconnect_by_func (GTK_OBJECT (*widget_p),
 				     GTK_SIGNAL_FUNC (gtk_widget_destroyed),
@@ -364,19 +364,18 @@ idle_shower (GtkWidget **widget_p)
 void
 gtk_idle_show_widget (GtkWidget *widget)
 {
+  GtkWidget **widget_p;
+
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (!GTK_OBJECT_DESTROYED (widget))
-    {
-      GtkWidget **widget_p = g_new (GtkWidget*, 1);
+  widget_p = g_new (GtkWidget*, 1);
 
-      *widget_p = widget;
-      gtk_signal_connect (GTK_OBJECT (widget),
-			  "destroy",
-			  GTK_SIGNAL_FUNC (gtk_widget_destroyed),
-			  widget_p);
-      gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_shower, widget_p);
-    }
+  *widget_p = widget;
+  gtk_signal_connect (GTK_OBJECT (widget),
+		      "destroy",
+		      GTK_SIGNAL_FUNC (gtk_widget_destroyed),
+		      widget_p);
+  gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_shower, widget_p);
 }
 
 static gboolean
@@ -1043,24 +1042,21 @@ bst_widget_modify_as_title (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
   
-  if (!GTK_OBJECT_DESTROYED (widget))
-    {
-      gtk_widget_set_sensitive (widget, FALSE);
-      if (GTK_WIDGET_REALIZED (widget))
-	style_modify_fg_as_sensitive (widget);
-      if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
-					       gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
-					       TRUE,
-					       style_modify_fg_as_sensitive,
-					       NULL))
-	gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_fg_as_sensitive), NULL);
-      if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
-					       gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
-					       TRUE,
-					       gtk_widget_make_insensitive,
-					       NULL))
-	gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (gtk_widget_make_insensitive), NULL);
-    }
+  gtk_widget_set_sensitive (widget, FALSE);
+  if (GTK_WIDGET_REALIZED (widget))
+    style_modify_fg_as_sensitive (widget);
+  if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
+					   gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
+					   TRUE,
+					   style_modify_fg_as_sensitive,
+					   NULL))
+    gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_fg_as_sensitive), NULL);
+  if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
+					   gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
+					   TRUE,
+					   gtk_widget_make_insensitive,
+					   NULL))
+    gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (gtk_widget_make_insensitive), NULL);
 }
 
 static void
@@ -1080,17 +1076,14 @@ bst_widget_modify_bg_as_base (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
   
-  if (!GTK_OBJECT_DESTROYED (widget))
-    {
-      if (GTK_WIDGET_REALIZED (widget))
-	style_modify_bg_as_base (widget);
-      if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
-					       gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
-					       TRUE,
-					       style_modify_bg_as_base,
-					       NULL))
-	gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_bg_as_base), NULL);
-    }
+  if (GTK_WIDGET_REALIZED (widget))
+    style_modify_bg_as_base (widget);
+  if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
+					   gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
+					   TRUE,
+					   style_modify_bg_as_base,
+					   NULL))
+    gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_bg_as_base), NULL);
 }
 
 GtkWidget*
@@ -1410,12 +1403,8 @@ bst_container_set_named_child (GtkWidget *container,
   g_return_if_fail (GTK_IS_CONTAINER (container));
   g_return_if_fail (qname > 0);
   g_return_if_fail (GTK_IS_WIDGET (child));
-  g_return_if_fail (!GTK_OBJECT_DESTROYED (child));
   if (child)
-    {
-      g_return_if_fail (!GTK_OBJECT_DESTROYED (container));
-      g_return_if_fail (gtk_widget_is_ancestor (child, container));
-    }
+    g_return_if_fail (gtk_widget_is_ancestor (child, container));
 
   if (!quark_container_named_children)
     quark_container_named_children = g_quark_from_static_string ("BstContainer-named_children");

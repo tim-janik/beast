@@ -304,7 +304,7 @@ bst_canvas_source_update_links (BstCanvasSource *csource)
 {
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
 
-  if (!GTK_OBJECT_DESTROYED (csource) && csource->source)
+  if (csource->source)
     gtk_signal_emit (GTK_OBJECT (csource), csource_signals[SIGNAL_UPDATE_LINKS]);
 }
 
@@ -317,7 +317,7 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
     {
       GtkWidget *param_view;
 
-      param_view = bst_param_view_new (bse_object_from_id (csource->source));
+      param_view = bst_param_view_new (csource->source);
       gtk_widget_show (param_view);
       csource->source_view = bst_adialog_new (GTK_OBJECT (csource), &csource->source_view, param_view,
 					      BST_ADIALOG_POPUP_POS, NULL);

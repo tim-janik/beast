@@ -61,7 +61,6 @@ typedef enum
   BST_OP_PATTERN_ADD,
   BST_OP_PATTERN_DELETE,
   BST_OP_PATTERN_EDITOR,
-  BST_OP_WAVE_ADD,
   BST_OP_WAVE_LOAD,
   BST_OP_WAVE_DELETE,
   BST_OP_WAVE_EDITOR,
@@ -128,7 +127,7 @@ extern BstDebugFlags bst_debug_flags;
 extern void bst_update_can_operate (GtkWidget   *some_widget);
 
 #define	GNOME_CANVAS_NOTIFY(object)	G_STMT_START { \
-    if (!GTK_IS_OBJECT (object) || !GTK_OBJECT_DESTROYED (object)) \
+    if (GTK_IS_OBJECT (object)) \
       g_signal_emit_by_name (object, "notify::generic-change", NULL); \
 } G_STMT_END
 

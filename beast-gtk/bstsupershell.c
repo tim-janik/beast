@@ -189,7 +189,7 @@ bst_super_shell_name_set (BstSuperShell *super_shell,
     {
       gchar *name = g_strconcat (BSE_OBJECT_TYPE_NAME (super),
 				 ":\n",
-				 BSE_OBJECT_NAME (super),
+				 bsw_item_get_name (BSE_OBJECT_ID (super)),
 				 NULL);
       
       widget = gtk_notebook_get_tab_label (GTK_NOTEBOOK (widget->parent), widget);

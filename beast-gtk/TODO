@@ -1,10 +1,11 @@
+* load wave dialog
 * pattern copy
 * clippboard
 * fix file selection (open load) dialog
 * octave/note shift for pattern selection
 * fade in/out of samples (sample editor & sequencer)
 * highlight arranger patterns when played
-* need play-sinle-pattern mode
+* need play-single-pattern mode
 * change default envelop to 0 attack
 * device monitor delay should be persistent in .beastrc
 * pattern-channel instrument selection should be persistent per pattern
@@ -30,8 +31,8 @@ general:
 -	get File/Save to work
 -	quit/close needs to feature mod-time vs. creation-time handling
 
-instrument editor:
--	prehearse fuctionality with spinner to indicate note
+wave editor:
+-	provide transpose spinenr for wave preview
 
 sample repo:
 -	this needs to be essentially removed from bst* files

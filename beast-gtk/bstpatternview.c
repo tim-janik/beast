@@ -103,7 +103,7 @@ bst_pattern_view_new (BseSong *song)
   g_return_val_if_fail (BSE_IS_SONG (song), NULL);
   
   pattern_view = gtk_widget_new (BST_TYPE_PATTERN_VIEW, NULL);
-  bst_item_view_set_container (BST_ITEM_VIEW (pattern_view), BSE_CONTAINER (song));
+  bst_item_view_set_container (BST_ITEM_VIEW (pattern_view), BSE_OBJECT_ID (song));
   
   return pattern_view;
 }
@@ -114,7 +114,7 @@ popup_pattern_dialog (BstPatternView *pattern_view)
   BseItem *pattern;
   GtkWidget *pd;
 
-  pattern = bst_item_view_get_current (BST_ITEM_VIEW (pattern_view));
+  pattern = bse_object_from_id (bst_item_view_get_current (BST_ITEM_VIEW (pattern_view)));
   pd = bst_pattern_dialog_new (BSE_PATTERN (pattern));
 
   gtk_signal_connect_object_while_alive (GTK_OBJECT (pattern_view),
@@ -136,7 +136,7 @@ bst_pattern_view_operate (BstItemView *item_view,
   
   g_return_if_fail (bst_pattern_view_can_operate (item_view, op));
 
-  song = BSE_SONG (item_view->container);
+  song = bse_object_from_id (item_view->container);
   
   switch (op)
     {
@@ -147,10 +147,10 @@ bst_pattern_view_operate (BstItemView *item_view,
       bse_pattern_group_insert_pattern (bse_song_get_default_pattern_group (song),
 					BSE_PATTERN (item),
 					-1);
-      bst_item_view_select (item_view, item);
+      bst_item_view_select (item_view, BSE_OBJECT_ID (item));
       break;
     case BST_OP_PATTERN_DELETE:
-      item = bst_item_view_get_current (BST_ITEM_VIEW (pattern_view));
+      item = bse_object_from_id (bst_item_view_get_current (BST_ITEM_VIEW (pattern_view)));
       bse_container_remove_item (BSE_CONTAINER (song), item);
       break;
     case BST_OP_PATTERN_EDITOR:
@@ -172,7 +172,7 @@ bst_pattern_view_can_operate (BstItemView *item_view,
 
   g_return_val_if_fail (BST_IS_PATTERN_VIEW (pattern_view), FALSE);
   
-  song = BSE_SONG (item_view->container);
+  song = bse_object_from_id (item_view->container);
 
   switch (op)
     {
@@ -181,7 +181,7 @@ bst_pattern_view_can_operate (BstItemView *item_view,
     case BST_OP_PATTERN_DELETE:
       return g_list_length (song->patterns) > 1;
     case BST_OP_PATTERN_EDITOR:
-      return bst_item_view_get_current (item_view) != NULL;
+      return bst_item_view_get_current (item_view) != 0;
     default:
       return FALSE;
     }

@@ -28,7 +28,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#define	GTK_OBJECT_DESTROYED(x)	(0)
 
 /* --- generated type ids --- */
 #include	"bstgentypes.h"

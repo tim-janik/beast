@@ -3,7 +3,7 @@
 <title>BEAST/BSE-0.4.0: BSE-Procedures</title>
 </head>
 <body text="#000000" bgcolor="#ffffff" link="#cc0000" alink="#cc0000" vlink="#990000">
-<h0>BSE-Procedures &nbsp &nbsp - &nbsp 02 Feb 2002 &nbsp - &nbsp BEAST/BSE-0.4.0 </h0>
+<h0>BSE-Procedures &nbsp &nbsp - &nbsp 04 Feb 2002 &nbsp - &nbsp BEAST/BSE-0.4.0 </h0>
 
 <h1>NAME</h1>
 <blockquote>BSE-Procedures - BSE Procedure Reference</blockquote>
@@ -23,11 +23,11 @@
 <br>
 <strong>BseItem::get-type-name (</strong><u>item</u><strong>)</strong>;
 <br>
-<strong>BseItem::is-a (</strong><u>item</u>, <u>type-name</u><strong>)</strong>;
-<br>
 <strong>BseItem::unuse (</strong><u>item</u><strong>)</strong>;
 <br>
 <strong>BseItem::use (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseObject::is-a (</strong><u>item</u>, <u>type-name</u><strong>)</strong>;
 <br>
 <strong>BsePattern::clear-content (</strong><u>pattern</u><strong>)</strong>;
 <br>
@@ -206,19 +206,6 @@ Retrieve Type Name
 </blockquote>
 </blockquote>
 <blockquote>
-<strong>BseItem::is-a (</strong><u>item</u>, <u>type-name</u><strong>)</strong>;
-<blockquote>
-<table border=0 summary=" ">
-<tr><td><u></u><td><u>item</u><td>
-<tr><td><u></u><td><u>type-name</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
-</table>
-</blockquote>
-<blockquote>
-Check item type  
-</blockquote>
-</blockquote>
-<blockquote>
 <strong>BseItem::unuse (</strong><u>item</u><strong>)</strong>;
 <blockquote>
 <table border=0 summary=" ">
@@ -238,6 +225,19 @@ Decrement use count for when an object is not needed anymore
 </blockquote>
 <blockquote>
 Increment use count to keep the object alive  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseObject::is-a (</strong><u>item</u>, <u>type-name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td><u></u><td><u>type-name</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Check object type  
 </blockquote>
 </blockquote>
 <blockquote>

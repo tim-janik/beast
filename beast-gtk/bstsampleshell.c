@@ -105,7 +105,7 @@ bst_sample_shell_rebuild (BstSuperShell *super_shell)
 
   g_return_if_fail (sample_shell->param_view == NULL);
 
-  sample_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT (sample));
+  sample_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT_ID (sample));
   g_object_set (GTK_WIDGET (sample_shell->param_view),
 		"visible", TRUE,
 		"parent", sample_shell,

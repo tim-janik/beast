@@ -280,7 +280,7 @@ bst_snet_router_rebuild (BstSNetRouter *router)
 static void
 palette_reset (BstSNetRouter *router)
 {
-  if (!GTK_OBJECT_DESTROYED (router) && router->rtools)
+  if (router->rtools)
     bst_radio_tools_set_tool (router->rtools, 0);
 }
 
@@ -406,8 +406,7 @@ idle_zoom (gpointer data)
   canvas = GNOME_CANVAS (data);
   d = gtk_object_get_data (GTK_OBJECT (canvas), "zoom_d");
   
-  if (!GTK_OBJECT_DESTROYED (canvas) &&
-      EPSILON < fabs (canvas->pixels_per_unit - *d))
+  if (EPSILON < fabs (canvas->pixels_per_unit - *d))
     gnome_canvas_set_pixels_per_unit (canvas, *d);
   
   gtk_object_remove_data (GTK_OBJECT (canvas), "zoom_d");
@@ -677,7 +676,7 @@ bst_snet_router_update_links (BstSNetRouter   *router,
 	  ocsource = bst_snet_router_csource_from_source (router, osource);
 	  if (!ocsource)
 	    {
-	      g_warning ("Couldn't figure CanvasSource Item From BseSource (%u)", osource);
+	      g_warning ("Couldn't figure CanvasSource Item From BseSource (%lu)", osource);
 	      continue;
 	    }
 

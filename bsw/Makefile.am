@@ -36,6 +36,7 @@ libbsw_la_LIBADD = # $(top_builddir)/bse/libbse.la # -lm
 bsw_public_h_sources = @STRIP_BEGIN@ \
 	bsw.h \
 	bswproxy.h \
+	bswsignal.h \
 @STRIP_END@
 # BSW header files that don't get installed
 bsw_private_h_sources = @STRIP_BEGIN@ \
@@ -44,6 +45,7 @@ bsw_private_h_sources = @STRIP_BEGIN@ \
 bsw_c_sources = @STRIP_BEGIN@ \
 	bswproxy.c \
 	bswgenapi.c \
+	bswsignal.c \
 @STRIP_END@
 # source to built, that don't get installed
 bsw_built_sources = @STRIP_BEGIN@ \

@@ -1,3 +1,19 @@
+Sun Feb  3 23:16:31 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstwavedialog.[hc]: new file selection dialog to
+	load wave files.
+
+	* bsw/bswsignal.[hc]: new files to implement bsw_proxy_connect() and
+	bsw_proxy_disconnect() to support signals on BswProxy.
+
+	* beast-gtk/bstutils.h:
+	* beast-gtk/*.c: remove GTK_OBJECT_DESTROYED() hackiness.
+
+	* beast-gtk/*.c: fix BSE_OBJECT_NAME() usages. many more
+	Bse* -> BswProxy fixes.
+
+	* beast-gtk/*.[hc]: many, many fixes.
+
 Sat Feb  2 12:21:04 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstfiledialog.c: provide radio buttons that

@@ -181,7 +181,7 @@ bst_effect_view_init (BstEffectView *effect_view)
   gtk_clist_column_titles_passive (clist);
   
   /* setup param view */
-  effect_view->param_view =  bst_param_view_new (NULL);
+  effect_view->param_view =  bst_param_view_new (0);
   gtk_widget_set (effect_view->param_view,
 		  "visible", TRUE,
 		  "parent", pbox,
@@ -312,7 +312,7 @@ update_effect_lists (BstEffectView *effect_view)
   GtkCList *aclist = GTK_CLIST (effect_view->clist_aeffects);
   GtkCList *pclist = GTK_CLIST (effect_view->clist_peffects);
 
-  if (!GTK_OBJECT_DESTROYED (aclist) && !GTK_OBJECT_DESTROYED (pclist))
+  if (aclist && pclist)
     {
       guint i, n_effects = 0, ptype = ~0;
       
@@ -380,7 +380,7 @@ add_effect (BstEffectView *effect_view)
 {
   GtkCList *aclist = GTK_CLIST (effect_view->clist_aeffects);
 
-  if (!GTK_OBJECT_DESTROYED (aclist) && aclist->selection && effect_view->pattern)
+  if (aclist && aclist->selection && effect_view->pattern)
     bse_pattern_note_actuate_effect (effect_view->pattern, effect_view->channel, effect_view->row,
 				     GPOINTER_TO_UINT (gtk_clist_get_selection_data (aclist, 0)));
 }
@@ -390,7 +390,7 @@ remove_effect (BstEffectView *effect_view)
 {
   GtkCList *pclist = GTK_CLIST (effect_view->clist_peffects);
 
-  if (!GTK_OBJECT_DESTROYED (pclist) && pclist->selection && effect_view->pattern)
+  if (pclist && pclist->selection && effect_view->pattern)
     bse_pattern_note_drop_effect (effect_view->pattern, effect_view->channel, effect_view->row,
 				  GPOINTER_TO_UINT (gtk_clist_get_selection_data (pclist, 0)));
 }
@@ -400,7 +400,7 @@ alist_selection_changed (BstEffectView *effect_view)
 {
   GtkCList *aclist = GTK_CLIST (effect_view->clist_aeffects);
 
-  if (!GTK_OBJECT_DESTROYED (effect_view->param_view) && effect_view->pattern)
+  if (effect_view->param_view && effect_view->pattern)
     {
       gpointer data = gtk_clist_get_selection_data (aclist, 0);
       BseEffect *effect = data ? bse_pattern_note_find_effect (effect_view->pattern,
@@ -418,7 +418,7 @@ plist_selection_changed (BstEffectView *effect_view)
 {
   GtkCList *pclist = GTK_CLIST (effect_view->clist_peffects);
 
-  if (!GTK_OBJECT_DESTROYED (effect_view->param_view) && effect_view->pattern)
+  if (effect_view->param_view && effect_view->pattern)
     {
       gpointer data = gtk_clist_get_selection_data (pclist, 0);
       BseEffect *effect = data ? bse_pattern_note_find_effect (effect_view->pattern,
@@ -427,7 +427,7 @@ plist_selection_changed (BstEffectView *effect_view)
 							       GPOINTER_TO_UINT (data)) : NULL;
 
       bst_param_view_set_object (BST_PARAM_VIEW (effect_view->param_view),
-				 (BseObject*) effect);
+				 effect ? BSE_OBJECT_ID (effect) : 0);
     }
   gtk_clist_moveto_selection (pclist);
   gtk_widget_set_sensitive (effect_view->remove_button, pclist->selection != NULL);

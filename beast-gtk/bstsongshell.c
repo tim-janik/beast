@@ -98,7 +98,7 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 
   g_return_if_fail (song_shell->param_view == NULL);
 
-  song_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT (song));
+  song_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT_ID (song));
   g_object_set (GTK_WIDGET (song_shell->param_view),
 		"visible", TRUE,
 		NULL);

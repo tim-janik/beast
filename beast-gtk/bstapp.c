@@ -82,7 +82,7 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Song/Add _Instrument",		"<ctrl>I",	BST_OP (INSTRUMENT_ADD),	"<Item>" },
   { "/_Waves",				NULL,		NULL, 0,			"<Branch>" },
   { "/Waves/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
-  { "/Waves/_Add Wave...",		"",		BST_OP (WAVE_ADD),		"<Item>" },
+  { "/Waves/_Add Wave...",		"",		BST_OP (WAVE_LOAD),		"<Item>" },
   { "/Waves/Delete Wave",		NULL,		BST_OP (WAVE_DELETE),		"<Item>" },
   { "/Waves/_Edit Wave...",		"",		BST_OP (WAVE_EDITOR),		"<Item>" },
   // { "/S_Net",			NULL,		NULL, 0,			"<Branch>" },
@@ -335,7 +335,7 @@ bst_app_create_super_shell (BstApp  *app,
     shell = gtk_widget_new (BST_TYPE_WAVE_REPO_SHELL,
 			    "visible", TRUE,
 			    NULL);
-  else if (bsw_item_is_a (super, "BseSample"))
+  else if (bsw_object_is_a (super, "BseSample"))
     shell = gtk_widget_new (BST_TYPE_SAMPLE_SHELL,
 			    "visible", TRUE,
 			    NULL);

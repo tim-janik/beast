@@ -61,7 +61,7 @@ drag_pattern_changed (BstDragPattern *drag_pattern)
     }
 
   if (drag_pattern->name)
-    gtk_label_set_text (GTK_LABEL (drag_pattern->name), BSE_OBJECT_NAME (drag_pattern->pattern));
+    gtk_label_set_text (GTK_LABEL (drag_pattern->name), bsw_item_get_name (BSE_OBJECT_ID (drag_pattern->pattern)));
 }
 
 static void
@@ -197,7 +197,7 @@ drag_pattern_button_press (GtkWidget       *widget,
 	   drag_pattern->pattern_group)
     {
       GtkWidget *choice;
-      gchar *string = g_strconcat ("Pattern: ", BSE_OBJECT_NAME (drag_pattern->pattern), NULL);
+      gchar *string = g_strconcat ("Pattern: ", bsw_item_get_name (BSE_OBJECT_ID (drag_pattern->pattern)), NULL);
 
       choice = bst_choice_menu_createv ("<BEAST-DragPattern>/Popup",
 					BST_CHOICE_TITLE (string),

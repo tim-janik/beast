@@ -80,7 +80,7 @@ static void
 drag_group_changed (BstDragGroup *drag_group)
 {
   if (drag_group->name)
-    gtk_label_set_text (GTK_LABEL (drag_group->name), BSE_OBJECT_NAME (drag_group->pattern_group));
+    gtk_label_set_text (GTK_LABEL (drag_group->name), bsw_item_get_name (BSE_OBJECT_ID (drag_group->pattern_group)));
 }
 
 static void
@@ -232,7 +232,7 @@ drag_group_button_press (GtkWidget       *widget,
   else if (event->type == GDK_BUTTON_PRESS && event->button == BST_DRAG_BUTTON_CONTEXT)
     {
       GtkWidget *choice;
-      gchar *string = g_strconcat ("Group: ", BSE_OBJECT_NAME (drag_group->pattern_group), NULL);
+      gchar *string = g_strconcat ("Group: ", bsw_item_get_name (BSE_OBJECT_ID (drag_group->pattern_group)), NULL);
 
       choice = bst_choice_menu_createv ("<BEAST-DragGroup>/Popup",
 					BST_CHOICE_TITLE (string),

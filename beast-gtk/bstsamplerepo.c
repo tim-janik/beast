@@ -149,7 +149,7 @@ bst_sample_repo_load_sample (BstSampleLoc *loc,
 	  BseObject *object = slist->data;
 	  
 	  if (BSE_IS_SAMPLE (object) &&
-	      bse_string_equals (BSE_OBJECT_NAME (object), loc->name))
+	      bse_string_equals (BSE_OBJECT_ULOC (object), loc->name))
 	    {
 	      bse_object_ref (object);
 	      bse_project_remove_super (tmp_project, BSE_SUPER (object));

@@ -1,5 +1,5 @@
 /* BSW - Bedevilled Sound Engine Wrapper
- * Copyright (C) 2000-2001 Tim Janik
+ * Copyright (C) 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ bsw_proxy_get_type (void)
     {
       static const GTypeInfo proxy_info = { 0, };
 
-      proxy_type = g_type_register_static (G_TYPE_UINT, "BswProxy", &proxy_info, 0);
+      proxy_type = g_type_register_static (G_TYPE_POINTER, "BswProxy", &proxy_info, 0);
     }
 
   return proxy_type;
@@ -71,7 +71,7 @@ value_transform_to_proxy (GValue  *value)
 
       g_value_unset (value);
       g_value_init (value, BSW_TYPE_PROXY);
-      g_value_set_uint (value, BSE_IS_OBJECT (object) ? BSE_OBJECT_ID (object) : 0);
+      g_value_set_pointer (value, (gpointer) (BSE_IS_OBJECT (object) ? BSE_OBJECT_ID (object) : 0));
     }
 }
 static inline void
@@ -80,7 +80,7 @@ value_transform_to_object (GValue *value,
 {
   if (G_VALUE_TYPE (value) == BSW_TYPE_PROXY)
     {
-      guint object_id = g_value_get_uint (value);
+      guint object_id = (BswProxy) g_value_get_pointer (value);
 
       g_value_unset (value);
       g_value_init (value, object_type);

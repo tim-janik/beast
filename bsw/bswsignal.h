@@ -1,5 +1,5 @@
 /* BSW - Bedevilled Sound Engine Wrapper
- * Copyright (C) 2000-2001 Tim Janik
+ * Copyright (C) 2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,15 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __BSW_H__
-#define __BSW_H__
+#ifndef __BSW_SIGNAL_H__
+#define __BSW_SIGNAL_H__
+
+#include <bsw/bswproxy.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+void	bsw_proxy_connect	(BswProxy     proxy,
+				 const gchar *signal,
+				 ...);
+void	bsw_proxy_disconnect	(BswProxy     proxy,
+				 const gchar *signal,
+				 ...);
 
 
-/* BSW includes
- */
-#include        <bsw/bswproxy.h>
-#include        <bsw/bswsignal.h>
-#include        <bsw/bswgenapi.h>
 
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-#endif /* __BSW_H__ */
+#endif /* __BSE_SIGNAL_H__ */
