@@ -1,3 +1,8 @@
+Sun Dec 12 19:47:32 2004  Tim Janik  <timj@gtk.org>
+
+	* removed gslwave.header and gslloader-gslwave.c, build from
+	gslloader-bsewave.c.
+
 Sun Dec 12 19:38:22 2004  Tim Janik  <timj@gtk.org>
 
 	* bsewave.header: CVS copied from gslwave.header.

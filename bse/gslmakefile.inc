@@ -28,13 +28,13 @@ GSL_H_SRC     = $(strip \
 GSL_C_SRC     =	$(strip \
 	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
 	gslfilter.c		gslcommon.c \
-	gslloader-oggvorbis.c	gslloader-wav.c	gslloader-mad.c	gslloader-gslwave.c \
+	gslloader-oggvorbis.c	gslloader-wav.c	gslloader-mad.c	gslloader-bsewave.c \
 	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
 	gsldatahandle-mad.c	gslloader.c	gslfilehash.c	gsldatautils.c	\
 	gslwaveosc.c		gslosctable.c	gslmagic.c	gslloader-aiff.c \
 )
 GSL_EXTRA_SRC =	gslconfig.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
-GSL_EXTRA_DAT = gsl.gnuplot gslarrows gslwave.header \
+GSL_EXTRA_DAT = gsl.gnuplot gslarrows bsewave.header \
                 gsl-fftgen.pl gsl-fftconf.sh
 EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT) gslmakefile.inc
 
