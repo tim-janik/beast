@@ -45,10 +45,27 @@ struct Wave {
   string          name;
   list<WaveChunk> chunks;
   gchar         **wave_xinfos;
+  void                 set_chunks_xinfo (const gchar    *key,
+                                         const gchar    *value,
+                                         gfloat          osc_freq,
+                                         bool            all_chunks);
 public:
   /*Con*/               Wave            (const gchar    *wave_name,
                                          guint           n_channels,
                                          gchar         **xinfos);
+  void                  set_xinfo       (const gchar    *key,
+                                         const gchar    *value);
+  void                  set_all_xinfo   (const gchar    *key,
+                                         const gchar    *value)
+  {
+    set_chunks_xinfo (key, value, -1, true);
+  }
+  void                  set_chunk_xinfo (gfloat          osc_freq,
+                                         const gchar    *key,
+                                         const gchar    *value)
+  {
+    set_chunks_xinfo (key, value, osc_freq, false);
+  }
   void                  add_chunk       (GslDataHandle  *dhandle,
                                          gchar         **xinfos = NULL);
   GslDataHandle*        lookup          (gfloat          osc_freq);

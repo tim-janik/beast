@@ -1,3 +1,13 @@
+Sat Jan  8 03:53:01 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.h:
+	* tools/bsewavetool.cc: introduced short blurbs to print long
+	command line help with -h and a short version on errors.
+	added "xinfo" command which allows for changing xinfo strings.
+
+	* tools/bwtwave.h:
+	* tools/bwtwave.cc: support xinfo changes on the wave and the chunks.
+
 Fri Jan  7 14:08:53 2005  Tim Janik  <timj@gtk.org>
 
 	* docs/architecture.texi: more XInfo docs.

@@ -46,9 +46,11 @@ public:
   virtual void
   exec (Wave *wave) = 0;
   virtual void
-  blurb()
+  blurb (bool bshort)
   {
     g_print ("\n");
+    if (bshort)
+      return;
   }
   virtual
   ~Command()

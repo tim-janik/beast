@@ -27,6 +27,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/time.h>
+#include <vector>
 
 
 namespace BseWaveTool {
@@ -38,7 +39,7 @@ namespace BseWaveTool {
 /* --- prototypes --- */
 static void     wavetool_parse_args     (int    *argc_p,
                                          char ***argv_p);
-static void     wavetool_print_blurb    (void);
+static void     wavetool_print_blurb    (bool    bshort);
 
 /* --- variables --- */
 static bool   continue_on_error = false;
@@ -75,7 +76,7 @@ main (int   argc,
       if (orig_argc > 1)
         sfi_error ("missing command\n");
       else
-        wavetool_print_blurb();
+        wavetool_print_blurb (true);
       exit (1);
     }
   Command *command = NULL;
@@ -208,14 +209,14 @@ wavetool_print_version (void)
 }
 
 static void
-wavetool_print_blurb (void)
+wavetool_print_blurb (bool bshort)
 {
   g_print ("Usage: bsewavetool [tool-options] command <file.bsewave> {command-arguments}\n");
   g_print ("Tool options:\n");
   g_print ("  -o <output.bsewave>   name of the destination file (default: <file.bsewave>)\n");
   g_print ("  -k                    continue on errors (may overwrite bsewave files after\n");
   g_print ("                        load errors occoured for part of its contents)\n");
-  g_print ("  -h, --help            show this help message\n");
+  g_print ("  -h, --help            show elaborated help message with command documentation\n");
   g_print ("  -v, --version         print version information\n");
   /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   g_print ("Commands:\n");
@@ -223,7 +224,7 @@ wavetool_print_blurb (void)
     {
       Command *cmd = *it;
       g_print ("  %s ", cmd->name.c_str());
-      cmd->blurb();
+      cmd->blurb (bshort);
     }
 }
 
@@ -286,7 +287,7 @@ wavetool_parse_args (int    *argc_p,
       else if (strcmp ("-h", argv[i]) == 0 ||
                strcmp ("--help", argv[i]) == 0)
         {
-          wavetool_print_blurb ();
+          wavetool_print_blurb (false);
           argv[i] = NULL;
           exit (0);
         }
@@ -359,9 +360,11 @@ public:
     /* nothing to do */
   }
   void
-  blurb()
+  blurb (bool bshort)
   {
     g_print ("\n");
+    if (bshort)
+      return;
     g_print ("    Store the input bsewave as output bsewave. If both file names are the same,\n");
     g_print ("    the bsewave file is simply rewritten. Allthough no explicit modifications\n");
     g_print ("    are performed on the bsewave, externally referenced sample files will be\n");
@@ -377,9 +380,11 @@ public:
     Command (command_name)
   {}
   void
-  blurb()
+  blurb (bool bshort)
   {
     g_print ("<n_channels>\n");
+    if (bshort)
+      return;
     g_print ("    Create an empty bsewave file, <n_channels>=1 (mono) and <n_channels>=2\n");
     g_print ("    (stereo) are currently supported. Options:\n");
     g_print ("    -N <wave-name>      name of the wave stored inside of <output.bsewave>\n");
@@ -451,9 +456,11 @@ public:
     quality = 3.0;
   }
   void
-  blurb()
+  blurb (bool bshort)
   {
     g_print ("\n");
+    if (bshort)
+      return;
     g_print ("    Compress all chunks with the Vorbis audio codec and store the wave data\n");
     g_print ("    as Ogg/Vorbis streams inside the bsewave file. Options:\n");
     g_print ("    -q <n>              use quality level <n>, refer to oggenc(1) for details\n");
@@ -492,6 +499,8 @@ public:
   void
   exec (Wave *wave)
   {
+    /* get the wave into storage order */
+    wave->sort();
     /* ogg encoder */
     guint nth = 1;
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++, nth++)
@@ -631,9 +640,11 @@ public:
   {
   }
   void
-  blurb()
+  blurb (bool bshort)
   {
     g_print ("[options] {-m=midi-note|-f=osc-freq} <sample-file> ...\n");
+    if (bshort)
+      return;
     g_print ("    Add a new chunk containing <sample-file> to the wave file. For each chunk,\n");
     g_print ("    a unique oscillator frequency must be given to determine what note the\n");
     g_print ("    chunk is to be played back for. Multi oscillator frequency + sample-file\n");
@@ -883,6 +894,146 @@ public:
         }
   }
 } cmd_add_chunk ("add-chunk");
+
+class XInfoCmd : public Command {
+  vector<char*> args;
+public:
+  XInfoCmd (const char *command_name) :
+    Command (command_name)
+  {
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks|--wave} key=[value] ...\n");
+    if (bshort)
+      return;
+    g_print ("    Add, change or remove an XInfo string of a bsewave file.\n");
+    g_print ("    Omission of [value] deletes the XInfo associated with the key.\n");
+    g_print ("    Key and value pairs may be specified multiple times, optionally preceeded\n");
+    g_print ("    by location options to control what portion of a bsewave file (the wave,\n");
+    g_print ("    individual wave chunks or all wave chunks) should be affected.\n");
+    g_print ("    Options:\n");
+    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --all-chunks        apply XInfo modification to all chunks\n");
+    g_print ("    --wave              apply XInfo modifications to the wave itself\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (int    argc,
+              char **argv)
+  {
+    args.clear();
+    for (int i = 1; i < argc; i++)
+      {
+        args.push_back (argv[i]);
+        argv[i] = NULL;
+      }
+    return 0; /* no args missing */
+  }
+  typedef enum {
+    NONE,
+    OSC_FREQ,
+    ALL_CHUNKS,
+    WAVE
+  } Location;
+  void
+  exec (Wave *wave)
+  {
+    gfloat osc_freq = 0;
+    Location location = NONE;
+    for (vector<char*>::iterator it = args.begin(); it != args.end(); it++)
+      {
+        const char *arg = *it;
+        if (strcmp ("--all-chunks", arg) == 0)
+          location = ALL_CHUNKS;
+        else if (strcmp ("--wave", arg) == 0)
+          location = WAVE;
+        else if (strcmp ("-m", arg) == 0 ||
+                 strncmp ("-m", arg, 2) == 0)
+          {
+            const gchar *equal = arg + 2;
+            const gchar *note_str = NULL;
+            if (*equal == '=')            /* -m=Arg */
+              note_str = equal + 1;
+            else if (*equal)              /* -mArg */
+              note_str = equal;
+            else if (it + 1 != args.end())/* -m Arg */
+              {
+                it++;
+                note_str = *it;
+              }
+            if (note_str)
+              {
+                SfiNum num = g_ascii_strtoull (note_str, NULL, 10);
+                osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+                location = OSC_FREQ;
+              }
+          }
+        else if (strcmp ("-f", arg) == 0 ||
+                 strncmp ("-f", arg, 2) == 0)
+          {
+            const gchar *equal = arg + 2;
+            const gchar *freq_str = NULL;
+            if (*equal == '=')            /* -f=Arg */
+              freq_str = equal + 1;
+            else if (*equal)              /* -fArg */
+              freq_str = equal;
+            else if (it + 1 != args.end())/* -f Arg */
+              {
+                it++;
+                freq_str = *it;
+              }
+            if (freq_str)
+              {
+                osc_freq = g_ascii_strtod (freq_str, NULL);
+                location = OSC_FREQ;
+              }
+          }
+        else /* XInfo string */
+          {
+            const gchar *equal = strchr (arg, '=');
+            if (!equal)
+              {
+                sfi_error ("missing \"=\" in XInfo assignment: %s\n", arg);
+                exit (1);
+              }
+            gchar *key = g_strndup (arg, equal - arg);
+            const gchar *value = equal + 1;
+            g_strcanon (key, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS, '-');
+            if (!key[0] || strncmp (key, arg, equal - arg) != 0)
+              {
+                sfi_error ("invalid key specified in XInfo assignment: %s\n", arg);
+                exit (1);
+              }
+            switch (location)
+              {
+              case NONE:
+                sfi_error ("missing location option for XInfo assignment: %s\n", arg);
+                exit (1);
+              case WAVE:
+                wave->set_xinfo (key, value);
+                break;
+              case OSC_FREQ:
+                if (wave->lookup (osc_freq))
+                  wave->set_chunk_xinfo (osc_freq, key, value);
+                else
+                  {
+                    sfi_error ("failed to find wave chunk with oscillator frequency: %.2f", osc_freq);
+                    if (!continue_on_error)
+                      exit (1);
+                  }
+                break;
+              case ALL_CHUNKS:
+                wave->set_all_xinfo (key, value);
+                break;
+              }
+            g_free (key);
+          }
+      }
+  }
+} cmd_xinfo ("xinfo");
 
 /* FIXME: TODO items:
  * bsewavetool del-wave <file.bsewave> {-m midi-note|-f osc-freq} ...

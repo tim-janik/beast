@@ -144,6 +144,45 @@ Wave::add_chunk (GslDataHandle  *dhandle,
   gsl_data_handle_unref (dhandle);
 }
 
+void
+Wave::set_xinfo (const gchar    *key,
+                 const gchar    *value)
+{
+  if (value && value[0])
+    wave_xinfos = bse_xinfos_add_value (wave_xinfos, key, value);
+  else
+    wave_xinfos = bse_xinfos_del_value (wave_xinfos, key);
+}
+
+void
+Wave::set_chunks_xinfo (const gchar    *key,
+                        const gchar    *value,
+                        gfloat          osc_freq,
+                        bool            all_chunks)
+{
+  for (list<WaveChunk>::iterator it = chunks.begin(); it != chunks.end(); it++)
+    if (all_chunks || fabs (gsl_data_handle_osc_freq (it->dhandle) - osc_freq) < 0.01)
+      {
+        WaveChunk &wchunk = *it;
+        GslDataHandle *tmp_handle;
+        if (value && value[0])
+          {
+            gchar *xinfos[2] = { g_strconcat (key, "=", value, NULL), NULL };
+            tmp_handle = gsl_data_handle_new_add_xinfos (wchunk.dhandle, xinfos);
+            g_free (xinfos[0]);
+          }
+        else
+          {
+            gchar *xinfos[2] = { (gchar*) key, NULL };
+            tmp_handle = gsl_data_handle_new_remove_xinfos (wchunk.dhandle, xinfos);
+          }
+        gsl_data_handle_open (tmp_handle); /* wchunk.dhandle already opened */
+        gsl_data_handle_unref (tmp_handle);
+        gsl_data_handle_close (wchunk.dhandle);
+        wchunk.dhandle = tmp_handle;
+      }
+}
+
 GslDataHandle*
 Wave::lookup (gfloat osc_freq)
 {
