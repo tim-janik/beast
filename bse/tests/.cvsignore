@@ -5,3 +5,7 @@
 Makefile
 Makefile.in
 cutvorbis
+magictest
+mathtests
+testfft
+testwavechunk
