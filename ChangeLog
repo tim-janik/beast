@@ -1,3 +1,9 @@
+Thu Jan  9 03:22:37 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/scandocs.pl (tags_highlight): fix variable, type,
+	constant and function identifier matches. extend numeric constant
+	markup.
+
 Wed Jan  8 02:41:29 2003  Alper Ersoy <dirt@gtk.org>
 
 	* docs/generated/Makefile.am: added simple rule for pdf generation

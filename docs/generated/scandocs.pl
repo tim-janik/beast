@@ -163,22 +163,42 @@ sub tags_print_syntax {
 }
 sub tags_highlight {
     my $t = shift;
-    # A parameter
-    $t =~ s/@([A-Za-z0-9_-]+)/\@reference_parameter{$1}/g;
 
-    # A constant
-    $t =~ s/%([A-Za-z0-9_-]+)/\@reference_constant{$1}/g;
+    my $ident = "[*0-9A-Za-z?][*0-9A-Za-z_?]*";
 
-    # A number should look like a constant
-    # FIXME this needs improvements, especially in math formulas
-    $t =~ s/(\s+)([0-9]+)(\s+)/$1\@reference_constant{$2}$3/g;
+    # A variable (parameter)
+    $t =~ s/ \@ ( $ident ) /\@reference_parameter{$1}/gx;
 
     # A type
-    $t =~ s/#([A-Za-z0-9_-]+)/\@reference_type{$1}/g;
+    $t =~ s/ \# ( $ident ) /\@reference_type{$1}/gx;
 
     # A function name
-    # $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/<strong>$1<\/strong>/g;
-    $t =~ s/([A-Za-z0-9_-]+\([+\/%&|^~!A-Za-z0-9\s,*_-]*\))/\@reference_function{$1}/g;
+    $t =~ s/    ( $ident \( [-+*=!^\$%&\/?\\~;:,.|<>A-Za-z0-9\s_]* \) ) /\@reference_function{$1}/gx;
+
+    # quote multiple dots
+    die "input contains preserved keyword" if $t =~ m/scandocs_pl_QUOTE/;
+    $t =~ s/ ( \. \.+ ) /:scandocs_pl_QUOTE1$1scandocs_pl_QUOTE2:/gx;
+
+    # markup numeric constants automagically
+    my $expo = "([eE][+-]?[0-9]+)";
+    if ($t =~ s/( # float:
+		  ( \b [0-9]+ \.   [0-9]+ $expo ? \b ) |
+		  ( \b [0-9]+ \. ?        $expo   \b ) |
+		  ( \b [0-9]+ \.                  \B ) |
+		  ( \B        \.   [0-9]+ $expo ? \b ) |
+		  # integer:
+		  ( \b              [0-9]+ [LlUu]* \b ) |
+		  ( \b 0 [xX] [A-Fa-f0-9]+         \b )
+		)/\@reference_constant{$1}/gx ) {
+	# print STDERR "CONSTANT: \$1\n";
+    }
+
+    # unquote dots
+    $t =~ s/ :scandocs_pl_QUOTE1 ( .* ) scandocs_pl_QUOTE2: /$1/gx;
+
+    # A constant
+    $t =~ s/  % ( $ident ) /\@reference_constant{$1}/gx;
+
     return $t;
 }
 sub tags_print_description {
