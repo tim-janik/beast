@@ -1,5 +1,4 @@
 FIXMES:
-- fix test plugin installatiojn
 - disable evaluator
 - closing an app window stops playing songs, even if alternative views exist
 - bsedefs.h should define _() only for BSE_COMPILATION
