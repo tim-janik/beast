@@ -122,6 +122,8 @@ extern BstDebugFlags bst_debug_flags;
 #define	BST_DVL_HINTS		(bst_dvl_hints)
 extern gboolean bst_dvl_hints;
 
+extern gboolean beast_main_loop;
+
 extern void bst_update_can_operate (GtkWidget   *some_widget);
 
 #define	GNOME_CANVAS_NOTIFY(object)	G_STMT_START { \

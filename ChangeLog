@@ -1,3 +1,17 @@
+Sun Sep 15 06:30:06 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw-shell/bswscminterp.[hc]: integrate with glue layer garbage
+	collector and adjust to recent glue layer changes.
+
+	* beast-gtk/bstapp.c: use beast_main_loop instead of gtk_main_quit().
+	* beast-gtk/bstmenus.c: same here, and implement a modal recursive
+	main loop explicitely.
+
+	* beast-gtk/bstmain.c: instead of using gtk_main(), implement our
+	own main loop which allowes us to call gsl_glue_gc_run() periodically
+	in th etoplevel main loop. export global variable beast_main_loop
+	to flag application exit, since gtk_main_quit() doesn't work anymore.
+
 Thu Sep 12 06:58:52 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxktexttools.c (scroll_text_key_event): support

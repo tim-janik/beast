@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.2
-date    = 12 Sep 2002
+date    = 14 Sep 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 12 Sep 2002 BEAST-0.4.2
+GSL-Functions 14 Sep 2002 BEAST-0.4.2
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
@@ -141,17 +141,25 @@ retspace = 17
 @DOC-DESCRIPTION@
 Sleep for the amount of time given. This function may get interrupted by wakeup or abort requests, it returns whether the thread is supposed to continue execution after waking up. This function also processes remaining data from the thread's poll fd.  
 @DOC-SYNOPSIS@
-@STRONG gsl_thread_awake_after@ ();
+@STRONG gsl_thread_get_pollfd@ (@EMPH pfd@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 3
+parspace = 14
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 3
+type = GPollFD*
+typeraw = GPollFD*
+@DOC-PARAMETER@
+pfd
+@DOC-PARDESC@
+GPollFD to fill in for the current thread
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
 
 
 @DOC-DESCRIPTION@
-RETURNS: GPollFD for the current thread Get the GPollfd for the current thread which is used to signal thread wakeups (e.g. due to @STRONG gsl_thread_abort()@ or @STRONG gsl_thread_wakeup()@).  
+Get the GPollfd for the current thread which is used to signal thread wakeups (e.g. due to @STRONG gsl_thread_abort()@ or @STRONG gsl_thread_wakeup()@).  
 @DOC-SYNOPSIS@
 @STRONG gsl_thread_awake_after@ (@EMPH tick_stamp@);
 

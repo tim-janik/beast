@@ -68,6 +68,8 @@ SCM	bsw_scm_context_pending		(void);
 SCM	bsw_scm_context_iteration	(SCM		 s_may_block);
 SCM	bsw_scm_glue_rec_get		(SCM		  scm_rec,
 					 SCM		  s_field);
+SCM	bsw_scm_make_gc_plateau		(guint		  size_hint);
+void	bsw_scm_destroy_gc_plateau	(SCM		  s_gcplateau);
 
 
 /* --- SCM-Wire --- */

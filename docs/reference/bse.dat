@@ -2,18 +2,90 @@
 name    = BSE-Functions
 blurb   = BSE Function Reference
 package = BEAST-0.4.2
-date    = 12 Sep 2002
+date    = 15 Sep 2002
 image   = bse-functions
 
 @DOC-TITLE@
 BSE-Functions
 
 @DOC-HEAD@
-BSE-Functions 12 Sep 2002 BEAST-0.4.2
+BSE-Functions 15 Sep 2002 BEAST-0.4.2
 
 @DOC-NAME@
 BSE-Functions - BSE Function Reference
 
+@DOC-SYNOPSIS@
+@STRONG BseGlueBoxedToRec@ (@EMPH boxed@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+boxed
+@DOC-PARDESC@
+the boxed value to be converted into a record
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+a GC owned GslGlueRec*
+
+@DOC-DESCRIPTION@
+Construct a new @STRONG GslGlueRec@ from a boxed value.  
+@DOC-SYNOPSIS@
+@STRONG BseGlueBoxedToSeq@ (@EMPH boxed@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+boxed
+@DOC-PARDESC@
+the boxed value to be converted into a sequence
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+a GC owned GslGlueSeq*
+
+@DOC-DESCRIPTION@
+Construct a new @STRONG GslGlueSeq@ from a boxed value.  
+@DOC-SYNOPSIS@
+@STRONG bse_glue_boxed_to_value@ (@EMPH boxed_type@, @EMPH boxed@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 22
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GType\ \ \ \ 
+typeraw = GType    
+@DOC-PARAMETER@
+boxed_type
+@DOC-PARDESC@
+type of the boxed value
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ 
+typeraw = gpointer 
+@DOC-PARAMETER@
+boxed
+@DOC-PARDESC@
+the boxed value
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 22
+
+
+@DOC-DESCRIPTION@
+Covert a boxed value into a @STRONG GslGlueValue@ (usually holding either a sequence or a record). The returned value is owned by the GC.  
 @DOC-SYNOPSIS@
 @STRONG bse_item_cross_ref@ (@EMPH owner@, @EMPH ref_item@, @EMPH uncross_func@);
 

@@ -41,6 +41,7 @@ static void			bst_print_blurb		(FILE	     *fout,
 
 /* --- variables --- */
 BstDebugFlags       bst_debug_flags = 0;
+gboolean            beast_main_loop = TRUE;
 gboolean            bst_dvl_hints = FALSE;
 static GDebugKey    bst_debug_keys[] = { /* keep in sync with bstdefs.h */
   { "keytable",		BST_DEBUG_KEYTABLE, },
@@ -203,6 +204,7 @@ main (int   argc,
 	  GDK_THREADS_LEAVE ();
 	  g_main_iteration (TRUE);
 	  GDK_THREADS_ENTER ();
+	  gsl_glue_gc_run ();
 	}
     }
 
@@ -293,17 +295,24 @@ main (int   argc,
       bst_app_operate (app, BST_OP_HELP_RELEASE_NOTES);
       bst_globals_set_rc_version (BST_VERSION);
     }
-
+  
   /* destroy splash to release grabs,
    * away into the main loop
    */
   gtk_widget_destroy (splash);
-  gtk_main ();
+  while (beast_main_loop)
+    {
+      gsl_glue_gc_run ();
+      
+      GDK_THREADS_LEAVE ();
+      g_main_iteration (TRUE);
+      GDK_THREADS_ENTER ();
+    }
   
   /* stop everything playing
    */
   // bse_heart_reset_all_attach ();
-
+  
   /* take down GUI leftovers
    */
   bst_user_messages_kill ();
@@ -312,7 +321,11 @@ main (int   argc,
    */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
-    ;
+    {
+      GDK_THREADS_ENTER ();
+      gsl_glue_gc_run ();
+      GDK_THREADS_LEAVE ();
+    }
   GDK_THREADS_ENTER ();
   
   /* save rc file
@@ -341,7 +354,11 @@ main (int   argc,
    */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
-    ;
+    {
+      GDK_THREADS_ENTER ();
+      gsl_glue_gc_run ();
+      GDK_THREADS_LEAVE ();
+    }
 
   bse_object_debug_leaks ();
   

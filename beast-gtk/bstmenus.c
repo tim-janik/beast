@@ -34,7 +34,8 @@ struct _BstChoice
 
 
 /* --- variables --- */
-static gboolean   main_quit_on_menu_item_activate = FALSE;
+static gboolean   modal_loop_running = FALSE;
+static gboolean   modal_loop_quit_on_menu_item_activate = FALSE;
 static GtkWidget *current_popup_menu = NULL;
 static gchar     *bstmenu_icon_item = "<BstMenuIconItem>";
 
@@ -298,8 +299,8 @@ menu_choice_activate (GtkWidget *item,
     {
       gtk_object_set_data (GTK_OBJECT (current_popup_menu), "BstChoice", udata);
       
-      if (main_quit_on_menu_item_activate)
-	gtk_main_quit ();
+      if (modal_loop_quit_on_menu_item_activate)
+	modal_loop_running = FALSE;
     }
   else	/* current_popup_menu is not set e.g. for option menus */
     {
@@ -330,10 +331,10 @@ button_choice_activate (GtkWidget *item,
 }
 
 static void
-check_main_quit (GtkWidget *item)
+check_modal_quit (GtkWidget *item)
 {
-  if (main_quit_on_menu_item_activate)
-    gtk_main_quit ();
+  if (modal_loop_quit_on_menu_item_activate)
+    modal_loop_running = FALSE;
 }
 
 static void
@@ -440,7 +441,7 @@ bst_choice_menu_createv (const gchar *menu_path,
 
   menu = g_object_connect (gtk_widget_new (GTK_TYPE_MENU,
 					   NULL),
-			   "signal::selection-done", check_main_quit, NULL,
+			   "signal::selection-done", check_modal_quit, NULL,
 			   NULL);
   gtk_menu_set_accel_path (GTK_MENU (menu), menu_path);
   gtk_widget_ref (menu);
@@ -619,12 +620,18 @@ bst_choice_modal (GtkWidget *choice,
 
       if (bst_choice_selectable (choice))
 	{
-	  main_quit_on_menu_item_activate = TRUE;
+	  modal_loop_quit_on_menu_item_activate = TRUE;
+	  modal_loop_running = TRUE;
 	  current_popup_menu = GTK_WIDGET (menu);
 	  gtk_menu_popup (menu, NULL, NULL, NULL, NULL, mouse_button, time);
-	  gtk_main ();
+	  while (modal_loop_running)
+	    {
+	      GDK_THREADS_LEAVE ();
+	      g_main_iteration (TRUE);
+	      GDK_THREADS_ENTER ();
+	    }
 	  current_popup_menu = NULL;
-	  main_quit_on_menu_item_activate = FALSE;
+	  modal_loop_quit_on_menu_item_activate = FALSE;
 	}
       
       data = gtk_object_get_data (GTK_OBJECT (menu), "BstChoice");
@@ -637,13 +644,12 @@ bst_choice_modal (GtkWidget *choice,
 	{
 	  gtk_widget_show (choice);
 
-	  do
+          while (GTK_WIDGET_VISIBLE (choice))
 	    {
 	      GDK_THREADS_LEAVE ();
 	      g_main_iteration (TRUE);
 	      GDK_THREADS_ENTER ();
 	    }
-	  while (GTK_WIDGET_VISIBLE (choice));
 	}
 
       data = gtk_object_get_data (GTK_OBJECT (choice), "BstChoice");
