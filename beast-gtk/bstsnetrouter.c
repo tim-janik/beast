@@ -70,11 +70,20 @@ static BstMenuConfigEntry popup_entries[] =
   { "/Audio _Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Other Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Routing",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_Spatial",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Filters",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Enhance",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Distortion",	NULL,		NULL,	0,	"<Branch>",	0 },
-  { "/_Input & Output",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Virtualization",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_Input & Output",	NULL,		NULL,	0,	"<Branch>",	0 },
+};
+static const gchar *palette_cats[] = {
+  "/Modules/Audio Sources/",    "/Modules/Other Sources/",
+  "/Modules/Routing/",          "/Modules/Spatial/",
+  "/Modules/Filters/",
+  "/Modules/Enhance/",          "/Modules/Distortion/",
+  "/Modules/Virtualization/",
+  "/Modules/Input & Output/",
 };
 
 
@@ -561,13 +570,6 @@ bst_snet_router_build_tools (BstSNetRouter *self)
 	{ "BseAmplifier", "DCA", "Amplifier" },
 	{ "BseSnooper", "Snoop", "Signal Debugging Tool" },
 	{ "BsePcmInput", "Input", "PCM Input" },
-      };
-      static const gchar *palette_cats[] = {
-	"/Modules/Audio Sources/", "/Modules/Filters/",
-	"/Modules/Input & Output/",
-	"/Modules/Other Sources/", "/Modules/Routing/",
-	"/Modules/Enhance/", "/Modules/Distortion/",
-	"/Modules/Virtualization/",
       };
       guint n, is_palette = 0;
 

@@ -3,6 +3,7 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * New (ported) modules:
   DavCanyonDelay  - Canyon Echo by David A. Bartold
   BseMonoKeyboard - Monophonic MIDI Keyboard input module
+  BseBalance      - Stereo panorama position module
 * Implemented ability to use sequencer as modulation source
 * Added support for external MIDI events in song tracks
 * Added .bse file playback facility to bsesh

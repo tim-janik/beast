@@ -23,7 +23,14 @@ namespace Bse {
 class Balance : Bse::Effect {
   Info    icon      = "icons/balance.png";
   Info    category  = "/Modules/Spatial/Balance";
-  Info    blurb     = "Stereo balance panning module.";
+  Info    blurb     = ("BseBalance is a stereo panning module with "
+                       "two audio and two control inputs, each of which can "
+                       "be seperately level adjusted. "
+                       "The resulting output balance is controlled by a balance adjustment "
+                       "and the sum of the control inputs. "
+                       "To avoid aliasing artefacts for rapid balance changes, the control "
+                       "signal is preprocessed by a simple lowpass filter with adjustable "
+                       "cutoff frequency.");
   IStream audio_in1  = ("Audio In1", "First audio input");
   IStream audio_in2  = ("Audio In2", "Second audio input");
   IStream ctrl_in1   = ("Ctrl In1", "First control input");

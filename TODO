@@ -214,6 +214,9 @@ BseWaveChunk:
 - notifier wakeup is disabled in bsemidireceiver.c
   ('cause gsl_thread_main needs to be replaced by bse_main_thred() or somesuch)
 
+OPTIMIZATIONS:
+- optimize BseBalance process()
+
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq
   Person        S T

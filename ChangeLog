@@ -1,3 +1,7 @@
+Sun Oct  5 08:49:22 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: add /Modules/Spatial/ to palette.
+
 Sun Oct  5 06:06:38 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-download.texi: reordered sections,
