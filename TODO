@@ -1,4 +1,6 @@
 FIXME(urgent):
+- 0.6.5: simply load guspatch files as mono samples without extra xinfo values
+- 0.6.5: disable gus-patch envelope
 - fix BseMixer sync behaviour across saving
 - pianoroll: close pianoroll window in response to part::release  
 - skip and retrigger updates for scope visibility changes
