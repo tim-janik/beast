@@ -45,6 +45,8 @@ bse_midi_signal_default (BseMidiSignalType type)
     case BSE_MIDI_SIGNAL_CONTINUOUS_8:	return 0.5;	/* Balance */
     case BSE_MIDI_SIGNAL_CONTROL_7:	return 0.8;	/* Volume MSB */
     case BSE_MIDI_SIGNAL_CONTROL_8:	return 0.5;	/* Balance MSB */
+    case BSE_MIDI_SIGNAL_CONTROL_64:
+      return BSE_GCONFIG (invert_sustain) ? 1.0 : 0.0;	/* Damper Pedal Switch */
     case BSE_MIDI_SIGNAL_CONTROL_120:	return 1.0;	/* All Sound Off ITrigger */
     case BSE_MIDI_SIGNAL_CONTROL_121:	return 1.0;	/* All Controllers Off ITrigger */
     case BSE_MIDI_SIGNAL_CONTROL_123:	return 1.0;	/* All Notes Off ITrigger */

@@ -116,6 +116,7 @@ receiver_enqueue_event_L (BseMidiReceiver *self,
       break;
     case BSE_MIDI_CONTROL_CHANGE:
       g_return_if_fail (self->n_bytes == 2);
+      g_print ("bytes: %x %x\n", self->bytes[0], self->bytes[1]);
       event->data.control.control = self->bytes[0] & 0x7f;
       ival = self->bytes[1] & 0x7f;
       event->data.control.value = ival / (gfloat) 0x7f;
@@ -1123,7 +1124,8 @@ adjust_voice_L (BseMidiReceiver *self,
       return;
     }
   /* set voice outputs */
-  if (note_off && midi_control_get_L (self, midi_channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5) /* sustain check */
+  if (note_off &&	/* sustain check: */
+      (BSE_GCONFIG (invert_sustain) ^ (midi_control_get_L (self, midi_channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5)))
     {
       voice->sustained = TRUE;
       change_midi_voice (voice, tick_stamp, TRUE, aftertouch, trans);
@@ -1276,7 +1278,7 @@ process_midi_control_L (BseMidiReceiver *self,
   else switch (control)
     {
     case 64:			/* Damper Pedal Switch (Sustain) */
-      if (value < 0.5)
+      if (BSE_GCONFIG (invert_sustain) ^ (value < 0.5))
 	kill_voices_L (self, channel, tick_stamp, TRUE, trans);
       break;
     case 98:			/* Non-Registered Parameter MSB */

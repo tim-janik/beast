@@ -32,6 +32,7 @@ FIXMES:
 - preference boundary values can cause assertions
 - sample chunk display should show note names not only midi notes
 - hotkey in piano roll to replay project
+- support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
 
 URGENT:
 - support pspec groups in idl files [stefan]

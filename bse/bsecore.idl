@@ -125,6 +125,10 @@ namespace Bse {
     Int  synth_mixing_freq	@= ("Synth Mixing Frequency",
 				    "Synthesis mixing frequency, common values are: 22050, 44100, 48000",
 				    44100, 8000, 192000, 0, SFI_PARAM_DEFAULT);
+    /* MIDI settings */
+    Bool invert_sustain		@= ("Invert Sustain Pedal",
+				    "Invert the state of sustain (damper) pedal so on/off meanings are reversed",
+				    FALSE, SFI_PARAM_DEFAULT);
   };
 };
 

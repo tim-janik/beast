@@ -1,3 +1,10 @@
+Sat Jan  4 15:34:28 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.c (process_midi_control_L): 
+	* bsemidievent.c (bse_midi_signal_default):
+	* bserecords.sfidl (GConfig): added config option invert_sustain to
+	support sustain pedals which report inverted sustain events.
+
 Fri Jan  3 19:10:03 2003  Tim Janik  <timj@gtk.org>
 
 	* bsessequencer.[hc]: new song sequencer implementation, based on the
