@@ -1,3 +1,7 @@
+Fri Mar  7 21:45:13 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bstutils.c: adapted sfidl_xxx macros to pspec group support.
+
 Fri Mar  7 14:53:17 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/Makefile.am: scan debugging keys and dump

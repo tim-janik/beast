@@ -1108,29 +1108,35 @@ bst_log_scan_keys (void)
 
 
 /* --- IDL pspecs --- */
-#define sfidl_pspec_Int(name, nick, blurb, dflt, min, max, step, hints)	\
-  sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints)
-#define sfidl_pspec_Int_default(name)	sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_DEFAULT)
-#define sfidl_pspec_UInt(name, nick, blurb, dflt, hints)	\
-  sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, hints)
-#define sfidl_pspec_Real(name, nick, blurb, dflt, min, max, step, hints)	\
-  sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints)
-#define sfidl_pspec_Real_default(name)	sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_DEFAULT)
-#define sfidl_pspec_Bool(name, nick, blurb, dflt, hints)			\
-  sfi_pspec_bool (name, nick, blurb, dflt, hints)
-#define sfidl_pspec_Bool_default(name)	sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT)
-#define sfidl_pspec_Note(name, nick, blurb, dflt, hints)			\
-  sfi_pspec_note (name, nick, blurb, dflt, hints)
-#define sfidl_pspec_String(name, nick, blurb, dflt, hints)			\
-  sfi_pspec_string (name, nick, blurb, dflt, hints)
-#define sfidl_pspec_String_default(name)	sfi_pspec_string (name, NULL, NULL, NULL, SFI_PARAM_DEFAULT)
-#define sfidl_pspec_Proxy_default(name)	sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_DEFAULT)
-#define sfidl_pspec_Seq(name, nick, blurb, hints, element_pspec)		\
-  sfi_pspec_seq (name, nick, blurb, element_pspec, hints)
-#define sfidl_pspec_Rec(name, nick, blurb, hints, fields)			\
-  sfi_pspec_rec (name, nick, blurb, fields, hints)
-#define sfidl_pspec_Rec_default(name, fields)	sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_DEFAULT)
-#define sfidl_pspec_BBlock(name, nick, blurb, hints)				\
-  sfi_pspec_bblock (name, nick, blurb, hints)
+#define sfidl_pspec_Int(group, name, nick, blurb, dflt, min, max, step, hints)	\
+  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints), group)
+#define sfidl_pspec_Int_default(group, name)						\
+  sfi_pspec_set_group (sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_DEFAULT), group)
+#define sfidl_pspec_UInt(group, name, nick, blurb, dflt, hints)	\
+  sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, hints), group)
+#define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)	\
+  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
+#define sfidl_pspec_Real_default(group, name)						\
+  sfi_pspec_set_group (sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_DEFAULT), group)
+#define sfidl_pspec_Bool(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, hints), group)
+#define sfidl_pspec_Bool_default(group, name)						\
+  sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT), group)
+#define sfidl_pspec_Note(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_note (name, nick, blurb, dflt, hints), group)
+#define sfidl_pspec_String(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, hints), group)
+#define sfidl_pspec_String_default(group, name)					\
+  sfi_pspec_set_group (sfi_pspec_string (name, NULL, NULL, NULL, SFI_PARAM_DEFAULT), group)
+#define sfidl_pspec_Proxy_default(group, name)						\
+  sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_DEFAULT), group)
+#define sfidl_pspec_Seq(group, name, nick, blurb, hints, element_pspec)		\
+  sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element_pspec, hints), group)
+#define sfidl_pspec_Rec(group, name, nick, blurb, hints, fields)			\
+  sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, hints), group)
+#define sfidl_pspec_Rec_default(group, name, fields)					\
+  sfi_pspec_set_group (sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_DEFAULT), group)
+#define sfidl_pspec_BBlock(group, name, nick, blurb, hints)				\
+  sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, hints), group)
 /* --- generated type IDs and SFIDL types --- */
 #include "bstgentypes.c"	/* type id defs */
