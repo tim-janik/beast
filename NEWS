@@ -2,17 +2,16 @@ Overview of Changes in BEAST/BSE 0.5.0:
 
 * Moved BSE into its own thread
 * Added IDL based code generator [Stefan Westerfeld]
-* Added CSL driver to the PCM backends [Stefan Westerfeld]
 * Deployed new middleware layer
 * Major documentation generation improvements [Alper Ersoy]
 * Generate structure documentation [Timj, Alper]
 * Added documentation about Gtk+ GUI extensions
 * Made documentation browser navigatable
-* Imporved MIDI support
+* Improved MIDI support
 * Added track editor to allow complex song arrangements
 * The guile shell to BSE is named bsesh now
 * Major code cleanups, bug fixes and refactoring
-* Lots of GUI bug fixes, improvements and revamps
+* Lots of GUI fixes, improvements and revamps
 * Bug fixes and major cleanups
 
 Overview of Changes in BEAST/BSE 0.4.1:
