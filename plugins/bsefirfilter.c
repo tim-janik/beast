@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU FIReral Public License for more details.
  *
  * You should have received a copy of the GNU Library FIReral Public
@@ -37,34 +37,38 @@ enum
 
 
 /* --- prototypes --- */
-static void	   bse_fir_filter_init	        (BseFIRFilter	   *fir_filter);
-static void	   bse_fir_filter_class_init    (BseFIRFilterClass *class);
-static void	   bse_fir_filter_class_destroy (BseFIRFilterClass *class);
-static void	   bse_fir_filter_do_shutdown   (BseObject     	   *object);
-static void        bse_fir_filter_set_param     (BseFIRFilter	   *fir_filter,
-						 BseParam          *param,
-						 guint              param_id);
-static void        bse_fir_filter_get_param     (BseFIRFilter	   *fir_filter,
-						 BseParam          *param,
-						 guint              param_id);
-static void        bse_fir_filter_prepare       (BseSource         *source,
-						 BseIndex           index);
-static BseChunk*   bse_fir_filter_calc_chunk    (BseSource         *source,
-						 guint              ochannel_id);
-static void        bse_fir_filter_reset         (BseSource         *source);
-static inline void bse_fir_filter_update_locals	(BseFIRFilter      *filter);
+static void	   bse_fir_filter_init		 (BseFIRFilter	    *fir_filter);
+static void	   bse_fir_filter_class_init	 (BseFIRFilterClass *class);
+static void	   bse_fir_filter_class_finalize (BseFIRFilterClass *class);
+static void	   bse_fir_filter_do_destroy	 (BseObject	    *object);
+static void	   bse_fir_filter_set_param	 (BseFIRFilter	    *fir_filter,
+						  guint              param_id,
+						  GValue            *value,
+						  GParamSpec        *pspec,
+						  const gchar       *trailer);
+static void	   bse_fir_filter_get_param	 (BseFIRFilter	    *fir_filter,
+						  guint              param_id,
+						  GValue            *value,
+						  GParamSpec        *pspec,
+						  const gchar       *trailer);
+static void	   bse_fir_filter_prepare	 (BseSource	    *source,
+						  BseIndex	     index);
+static BseChunk*   bse_fir_filter_calc_chunk	 (BseSource	    *source,
+						  guint		     ochannel_id);
+static void	   bse_fir_filter_reset		 (BseSource	    *source);
+static inline void bse_fir_filter_update_locals	 (BseFIRFilter	    *filter);
 
 
 /* --- variables --- */
-static GType             type_id_fir_filter = 0;
-static gpointer          parent_class = NULL;
+static GType		 type_id_fir_filter = 0;
+static gpointer		 parent_class = NULL;
 static const GTypeInfo type_info_fir_filter = {
   sizeof (BseFIRFilterClass),
   
   (GBaseInitFunc) NULL,
-  (GBaseDestroyFunc) NULL,
+  (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_fir_filter_class_init,
-  (GClassDestroyFunc) bse_fir_filter_class_destroy,
+  (GClassFinalizeFunc) bse_fir_filter_class_finalize,
   NULL /* class_data */,
   
   sizeof (BseFIRFilter),
@@ -77,70 +81,67 @@ static const GTypeInfo type_info_fir_filter = {
 static void
 bse_fir_filter_class_init (BseFIRFilterClass *class)
 {
-  BseObjectClass *object_class;
-  BseSourceClass *source_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ochannel_id, ichannel_id;
-
+  
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
-  object_class = BSE_OBJECT_CLASS (class);
-  source_class = BSE_SOURCE_CLASS (class);
+  
+  gobject_class->set_param = (GObjectSetParamFunc) bse_fir_filter_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_fir_filter_get_param;
 
-  object_class->set_param = (BseObjectSetParamFunc) bse_fir_filter_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_fir_filter_get_param;
-  object_class->shutdown = bse_fir_filter_do_shutdown;
-
+  object_class->destroy = bse_fir_filter_do_destroy;
+  
   source_class->prepare = bse_fir_filter_prepare;
   source_class->calc_chunk = bse_fir_filter_calc_chunk;
   source_class->reset = bse_fir_filter_reset;
-
+  
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_ALLPASS,
-			      bse_param_spec_bool ("allpass", "AllPass", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+			      b_param_spec_bool ("allpass", "AllPass", NULL,
+						 FALSE,
+						 B_PARAM_DEFAULT | B_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_LOWPASS,
-			      bse_param_spec_bool ("lowpass", "LowPass", NULL,
-						   TRUE,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+			      b_param_spec_bool ("lowpass", "LowPass", NULL,
+						 TRUE,
+						 B_PARAM_DEFAULT | B_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_HIGHPASS,
-			      bse_param_spec_bool ("highpass", "HighPass", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+			      b_param_spec_bool ("highpass", "HighPass", NULL,
+						 FALSE,
+						 B_PARAM_DEFAULT | B_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_DEGREE,
-			      bse_param_spec_uint ("degree", "Degree", "Number of filter coefficients",
-						   2, 256,
-						   4,
-						   6,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_uint ("degree", "Degree", "Number of filter coefficients",
+						 2, 256,
+						 6, 4,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Smoothing",
 			      PARAM_HANN,
-			      bse_param_spec_bool ("hann_smooth", "von Hann", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("hann_smooth", "von Hann", NULL,
+						 FALSE,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Smoothing",
 			      PARAM_LANCZOS,
-			      bse_param_spec_bool ("lanczos_smooth", "C. Lanczos", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("lanczos_smooth", "C. Lanczos", NULL,
+						 FALSE,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Cut off",
 			      PARAM_CUT_OFF_FREQ,
-			      bse_param_spec_float ("cut_off_freq", "Frequency", NULL,
-						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
-						    5.0,
-						    BSE_KAMMER_FREQ / 2,
-						    BSE_PARAM_DEFAULT |
-						    BSE_PARAM_HINT_SCALE));
+			      b_param_spec_float ("cut_off_freq", "Frequency", NULL,
+						  BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
+						  BSE_KAMMER_FREQ / 2, 5.0,
+						  B_PARAM_DEFAULT |
+						  B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Cut off",
 			      PARAM_CUT_OFF_NOTE,
-			      bse_param_spec_note ("cut_off_note", "Note", NULL,
-						   BSE_MIN_NOTE, BSE_MAX_NOTE,
-						   1,
-						   bse_note_from_freq (BSE_KAMMER_FREQ / 2),
-						   TRUE,
-						   BSE_PARAM_GUI));
+			      b_param_spec_note ("cut_off_note", "Note", NULL,
+						 BSE_MIN_NOTE, BSE_MAX_NOTE,
+						 bse_note_from_freq (BSE_KAMMER_FREQ / 2), 1,
+						 TRUE,
+						 B_PARAM_GUI));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Filtered Output", 1);
   g_assert (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO);
@@ -150,7 +151,7 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 }
 
 static void
-bse_fir_filter_class_destroy (BseFIRFilterClass *class)
+bse_fir_filter_class_finalize (BseFIRFilterClass *class)
 {
 }
 
@@ -169,33 +170,33 @@ bse_fir_filter_init (BseFIRFilter *filter)
 }
 
 static void
-bse_fir_filter_do_shutdown (BseObject *object)
+bse_fir_filter_do_destroy (BseObject *object)
 {
   BseFIRFilter *fir_filter;
-
+  
   fir_filter = BSE_FIR_FILTER (object);
-
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static inline void
 bse_fir_filter_update_locals (BseFIRFilter *filter)
 {
   gint i;
-
+  
   if (BSE_SOURCE_PREPARED (filter))
     {
       gdouble d, c;
       gint z = filter->n_coeffs;
-
+      
       filter->n_coeffs = MIN (filter->degree, BSE_TRACK_LENGTH) * 2 + 1;
       filter->history = g_renew (BseSampleValue, filter->history, filter->n_coeffs);
       for (i = z; i < filter->n_coeffs; i++)
 	filter->history[i] = 0;
       z = filter->n_coeffs / 2;
       filter->history_pos %= filter->n_coeffs;
-
+      
       /* setup allpass
        */
       g_free (filter->coeffs);
@@ -203,7 +204,7 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
       for (i = 0; i < filter->n_coeffs; i++)
 	filter->coeffs[i] = 0;
       filter->coeffs[z] = 1;
-
+      
       /* setup lowpass (precalculate highpass)
        */
       if (filter->filter_type == BSE_FIR_FILTER_LOWPASS ||
@@ -224,20 +225,20 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 		}
 	    }
 	}
-
+      
       if (filter->lanczos_smoothing)
 	{
 	  c = z;
 	  c = PI / c;
 	  for (i = 0; i < filter->n_coeffs; i++)
 	    {
-              gdouble k = (i - z);
-
+	      gdouble k = (i - z);
+	      
 	      if (k)
 		filter->coeffs[i] *= sin (c * k) / (c * k);
 	    }
 	}
-
+      
       if (filter->hann_smoothing)
 	{
 	  c = z;
@@ -260,7 +261,7 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	    else
 	      filter->coeffs[i] = - filter->coeffs[i];
 	  }
-
+      
 #if 0
       for (i = 0; i < filter->n_coeffs; i++)
 	g_print ("a[%d]=%f ", i - z, filter->coeffs[i]);
@@ -271,36 +272,40 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 
 static void
 bse_fir_filter_set_param (BseFIRFilter *filter,
-			  BseParam     *param,
-			  guint         param_id)
+			  guint         param_id,
+			  GValue       *value,
+			  GParamSpec   *pspec,
+			  const gchar  *trailer)
 {
   BseFIRFilterType filter_type = BSE_FIR_FILTER_ALLPASS;
-
+  
   switch (param_id)
     {
+      guint v_uint;
     case PARAM_DEGREE:
-      filter->degree = (param->value.v_uint + (param->value.v_uint > 2 * filter->degree)) / 2;
+      v_uint = b_value_get_uint (value);
+      filter->degree = (v_uint + (v_uint > 2 * filter->degree)) / 2;
       bse_fir_filter_update_locals (filter);
       break;
     case PARAM_CUT_OFF_FREQ:
-      filter->cut_off_freq = param->value.v_float;
+      filter->cut_off_freq = b_value_get_float (value);
       bse_fir_filter_update_locals (filter);
       bse_object_param_changed (BSE_OBJECT (filter), "cut_off_note");
       break;
     case PARAM_CUT_OFF_NOTE:
-      filter->cut_off_freq = bse_note_to_freq (param->value.v_note);
+      filter->cut_off_freq = bse_note_to_freq (b_value_get_note (value));
       filter->cut_off_freq = MAX (filter->cut_off_freq, BSE_MIN_OSC_FREQ_d);
       bse_fir_filter_update_locals (filter);
       bse_object_param_changed (BSE_OBJECT (filter), "cut_off_freq");
-      if (bse_note_from_freq (filter->cut_off_freq) != param->value.v_note)
+      if (bse_note_from_freq (filter->cut_off_freq) != b_value_get_note (value))
 	bse_object_param_changed (BSE_OBJECT (filter), "cut_off_note");
       break;
     case PARAM_LANCZOS:
-      filter->lanczos_smoothing = param->value.v_bool;
+      filter->lanczos_smoothing = b_value_get_bool (value);
       bse_fir_filter_update_locals (filter);
       break;
     case PARAM_HANN:
-      filter->hann_smoothing = param->value.v_bool;
+      filter->hann_smoothing = b_value_get_bool (value);
       bse_fir_filter_update_locals (filter);
       break;
     case PARAM_HIGHPASS:
@@ -310,7 +315,7 @@ bse_fir_filter_set_param (BseFIRFilter *filter,
       filter_type++;
       /* fall through */
     case PARAM_ALLPASS:
-      if (param->value.v_bool)
+      if (b_value_get_bool (value))
 	{
 	  filter->filter_type = filter_type;
 	  bse_fir_filter_update_locals (filter);
@@ -320,44 +325,46 @@ bse_fir_filter_set_param (BseFIRFilter *filter,
 	}
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (filter, param, param_id);
+      G_WARN_INVALID_PARAM_ID (filter, param_id, pspec);
       break;
     }
 }
 
 static void
 bse_fir_filter_get_param (BseFIRFilter *filter,
-			  BseParam     *param,
-			  guint         param_id)
+			  guint         param_id,
+			  GValue       *value,
+			  GParamSpec   *pspec,
+			  const gchar  *trailer)
 {
   switch (param_id)
     {
     case PARAM_DEGREE:
-      param->value.v_uint = filter->degree * 2;
+      b_value_set_uint (value, filter->degree * 2);
       break;
     case PARAM_CUT_OFF_FREQ:
-      param->value.v_float = filter->cut_off_freq;
+      b_value_set_float (value, filter->cut_off_freq);
       break;
     case PARAM_CUT_OFF_NOTE:
-      param->value.v_note = bse_note_from_freq (filter->cut_off_freq);
+      b_value_set_note (value, bse_note_from_freq (filter->cut_off_freq));
       break;
     case PARAM_LANCZOS:
-      param->value.v_bool = filter->lanczos_smoothing;
+      b_value_set_bool (value, filter->lanczos_smoothing);
       break;
     case PARAM_HANN:
-      param->value.v_bool = filter->hann_smoothing;
+      b_value_set_bool (value, filter->hann_smoothing);
       break;
     case PARAM_ALLPASS:
-      param->value.v_float = filter->filter_type == BSE_FIR_FILTER_ALLPASS;
+      b_value_set_bool (value, filter->filter_type == BSE_FIR_FILTER_ALLPASS);
       break;
     case PARAM_LOWPASS:
-      param->value.v_float = filter->filter_type == BSE_FIR_FILTER_LOWPASS;
+      b_value_set_bool (value, filter->filter_type == BSE_FIR_FILTER_LOWPASS);
       break;
     case PARAM_HIGHPASS:
-      param->value.v_float = filter->filter_type == BSE_FIR_FILTER_HIGHPASS;
+      b_value_set_bool (value, filter->filter_type == BSE_FIR_FILTER_HIGHPASS);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (filter, param, param_id);
+      G_WARN_INVALID_PARAM_ID (filter, param_id, pspec);
       break;
     }
 }
@@ -367,9 +374,9 @@ bse_fir_filter_prepare (BseSource *source,
 			BseIndex   index)
 {
   BseFIRFilter *filter = BSE_FIR_FILTER (source);
-
+  
   bse_fir_filter_update_locals (filter);
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
 }
@@ -386,7 +393,7 @@ bse_fir_filter_calc_chunk (BseSource *source,
   guint i, n_coeffs, history_pos;
   
   g_return_val_if_fail (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO, NULL);
-
+  
   input = bse_source_get_input (source, BSE_FIR_FILTER_ICHANNEL_MONO); /* mono */
   if (!input) /* silence */
     return bse_chunk_new_static_zero (1);
@@ -394,12 +401,12 @@ bse_fir_filter_calc_chunk (BseSource *source,
   ichunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
   bse_chunk_complete_hunk (ichunk);
   ihunk = ichunk->hunk;
-
+  
   if (filter->filter_type == BSE_FIR_FILTER_ALLPASS)
     return ichunk;
-
+  
   hunk = bse_hunk_alloc (1);
-
+  
   n_coeffs = filter->n_coeffs;
   coeffs = filter->coeffs;
   history_pos = filter->history_pos;
@@ -408,22 +415,22 @@ bse_fir_filter_calc_chunk (BseSource *source,
     {
       gfloat *a;
       guint n;
-
+      
       a = coeffs;
       hunk[i] = 0;
       for (n = history_pos; n < n_coeffs; n++)
 	hunk[i] += *(a++) * hvals[n];
       for (n = 0; n < history_pos; n++)
 	hunk[i] += *(a++) * hvals[n];
-
+      
       hvals[history_pos++] = ihunk[i];
       if (history_pos >= n_coeffs)
 	history_pos -= n_coeffs;
     }
   filter->history_pos = history_pos;
-
+  
   bse_chunk_unref (ichunk);
-
+  
   return bse_chunk_new_orphan (1, hunk);
 }
 
@@ -431,14 +438,14 @@ static void
 bse_fir_filter_reset (BseSource *source)
 {
   BseFIRFilter *filter = BSE_FIR_FILTER (source);
-
+  
   filter->n_coeffs = 0;
   g_free (filter->coeffs);
   filter->coeffs = NULL;
   filter->history_pos = 0;
   g_free (filter->history);
   filter->history = NULL;
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }

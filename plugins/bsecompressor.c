@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -34,31 +34,35 @@ enum
 /* --- prototypes --- */
 static void	 bse_compressor_init		      (BseCompressor		*compr);
 static void	 bse_compressor_class_init	      (BseCompressorClass	*class);
-static void	 bse_compressor_class_destroy	      (BseCompressorClass	*class);
-static void      bse_compressor_set_param             (BseCompressor		*compr,
-						       BseParam       		*param,
-						       guint                     param_id);
-static void      bse_compressor_get_param             (BseCompressor		*compr,
-						       BseParam       		*param,
-						       guint                     param_id);
-static void	 bse_compressor_do_shutdown		(BseObject     		*object);
-static void      bse_compressor_prepare               (BseSource      		*source,
-						       BseIndex       		 index);
-static BseChunk* bse_compressor_calc_chunk            (BseSource      		*source,
-						       guint          		 ochannel_id);
-static void      bse_compressor_reset                 (BseSource      		*source);
+static void	 bse_compressor_class_finalize	      (BseCompressorClass	*class);
+static void	 bse_compressor_set_param	      (BseCompressor		*compr,
+						       guint                     param_id,
+						       GValue                   *value,
+						       GParamSpec               *pspec,
+						       const gchar              *trailer);
+static void	 bse_compressor_get_param	      (BseCompressor		*compr,
+						       guint                     param_id,
+						       GValue                   *value,
+						       GParamSpec               *pspec,
+						       const gchar              *trailer);
+static void	 bse_compressor_do_destroy	      (BseObject		*object);
+static void	 bse_compressor_prepare		      (BseSource		*source,
+						       BseIndex			 index);
+static BseChunk* bse_compressor_calc_chunk	      (BseSource		*source,
+						       guint			 ochannel_id);
+static void	 bse_compressor_reset		      (BseSource		*source);
 
 
 /* --- variables --- */
-static GType             type_id_compressor = 0;
-static gpointer          parent_class = NULL;
+static GType		 type_id_compressor = 0;
+static gpointer		 parent_class = NULL;
 static const GTypeInfo type_info_compressor = {
   sizeof (BseCompressorClass),
   
   (GBaseInitFunc) NULL,
-  (GBaseDestroyFunc) NULL,
+  (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_compressor_class_init,
-  (GClassDestroyFunc) bse_compressor_class_destroy,
+  (GClassFinalizeFunc) bse_compressor_class_finalize,
   NULL /* class_data */,
   
   sizeof (BseCompressor),
@@ -71,17 +75,17 @@ static const GTypeInfo type_info_compressor = {
 static void
 bse_compressor_class_init (BseCompressorClass *class)
 {
-  BseObjectClass *object_class;
-  BseSourceClass *source_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ichannel_id, ochannel_id;
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
-  object_class = BSE_OBJECT_CLASS (class);
-  source_class = BSE_SOURCE_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) bse_compressor_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_compressor_get_param;
-  object_class->shutdown = bse_compressor_do_shutdown;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_compressor_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_compressor_get_param;
+
+  object_class->destroy = bse_compressor_do_destroy;
   
   source_class->prepare = bse_compressor_prepare;
   source_class->calc_chunk = bse_compressor_calc_chunk;
@@ -89,11 +93,11 @@ bse_compressor_class_init (BseCompressorClass *class)
   
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_PI_EXP,
-			      bse_param_spec_float ("pi_exp", "Strength",
-						    "The compressor strength allowes for fine grained "
-						    "adjustments from extenuated volume to maximum limiting",
-						    -1.0, 5.0, 0.25, 0.0,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      b_param_spec_float ("pi_exp", "Strength",
+						  "The compressor strength allowes for fine grained "
+						  "adjustments from extenuated volume to maximum limiting",
+						  -1.0, 5.0, 0.0, 0.25,
+						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
   
   ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in1", "Mono Input", 1, 1);
   g_assert (ichannel_id == BSE_COMPRESSOR_ICHANNEL_MONO1);
@@ -102,7 +106,7 @@ bse_compressor_class_init (BseCompressorClass *class)
 }
 
 static void
-bse_compressor_class_destroy (BseCompressorClass *class)
+bse_compressor_class_finalize (BseCompressorClass *class)
 {
 }
 
@@ -113,44 +117,48 @@ bse_compressor_init (BseCompressor *compr)
 }
 
 static void
-bse_compressor_do_shutdown (BseObject *object)
+bse_compressor_do_destroy (BseObject *object)
 {
   BseCompressor *compr;
   
   compr = BSE_COMPRESSOR (object);
   
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
 bse_compressor_set_param (BseCompressor *compr,
-			  BseParam      *param,
-			  guint          param_id)
+			  guint          param_id,
+			  GValue        *value,
+			  GParamSpec    *pspec,
+			  const gchar   *trailer)
 {
   switch (param_id)
     {
     case PARAM_PI_EXP:
-      compr->pi_fact = pow (PI, param->value.v_float);
+      compr->pi_fact = pow (PI, b_value_get_float (value));
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (compr, param, param_id);
+      G_WARN_INVALID_PARAM_ID (compr, param_id, pspec);
       break;
     }
 }
 
 static void
 bse_compressor_get_param (BseCompressor *compr,
-			  BseParam      *param,
-			  guint          param_id)
+			  guint          param_id,
+			  GValue        *value,
+			  GParamSpec    *pspec,
+			  const gchar   *trailer)
 {
   switch (param_id)
     {
     case PARAM_PI_EXP:
-      param->value.v_float = log (compr->pi_fact) / log (PI);
+      b_value_set_float (value, log (compr->pi_fact) / log (PI));
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (compr, param, param_id);
+      G_WARN_INVALID_PARAM_ID (compr, param_id, pspec);
       break;
     }
 }

@@ -50,6 +50,7 @@ for file in `echo $@ | sort | uniq` ; do
 	echo "$_name""_la_SOURCES = $cfile"
 	echo "$_name""_la_LDFLAGS = -module -avoid-version"
 	echo "$_name""_la_LIBADD  =" '$(plugin_libs)'
+	# echo "$_name""_la_LDADD   =" '$(plugin_ldlibs)'
 	test -e "$hfile" && {
 	    echo "EXTRA_HEADERS         += $hfile"
 	}

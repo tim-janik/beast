@@ -14,7 +14,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -40,34 +40,37 @@ enum
 
 
 /* --- prototypes --- */
-static void        dav_bass_filter_init             (DavBassFilter       *filter);
-static void        dav_bass_filter_class_init       (DavBassFilterClass  *class);
-static void        dav_bass_filter_class_destroy    (DavBassFilterClass  *class);
-static void        dav_bass_filter_do_shutdown      (BseObject           *object);
-static void        dav_bass_filter_set_param        (DavBassFilter       *filter,
-						     BseParam             *param,
-						     guint                 param_id);
-static void        dav_bass_filter_get_param        (DavBassFilter       *filter,
-						     BseParam             *param,
-						     guint                 param_id);
-static void        dav_bass_filter_prepare          (BseSource           *source,
-						     BseIndex              index);
-static BseChunk*   dav_bass_filter_calc_chunk       (BseSource           *source,
-						     guint                 ochannel_id);
-static void        dav_bass_filter_reset            (BseSource           *source);
-static inline void dav_bass_filter_update_locals    (DavBassFilter       *filter);
+static void	   dav_bass_filter_init		    (DavBassFilter	 *filter);
+static void	   dav_bass_filter_class_init	    (DavBassFilterClass	 *class);
+static void	   dav_bass_filter_class_finalize   (DavBassFilterClass	 *class);
+static void	   dav_bass_filter_set_param	    (DavBassFilter	 *filter,
+						     guint                param_id,
+						     GValue              *value,
+						     GParamSpec          *pspec,
+						     const gchar         *trailer);
+static void	   dav_bass_filter_get_param	    (DavBassFilter	 *filter,
+						     guint                param_id,
+						     GValue              *value,
+						     GParamSpec          *pspec,
+						     const gchar         *trailer);
+static void	   dav_bass_filter_prepare	    (BseSource		 *source,
+						     BseIndex		   index);
+static BseChunk*   dav_bass_filter_calc_chunk	    (BseSource		 *source,
+						     guint		   ochannel_id);
+static void	   dav_bass_filter_reset	    (BseSource		 *source);
+static inline void dav_bass_filter_update_locals    (DavBassFilter	 *filter);
 
 
 /* --- variables --- */
-static GType             type_id_bass_filter = 0;
-static gpointer          parent_class = NULL;
+static GType		 type_id_bass_filter = 0;
+static gpointer		 parent_class = NULL;
 static const GTypeInfo type_info_bass_filter = {
   sizeof (DavBassFilterClass),
   
   (GBaseInitFunc) NULL,
-  (GBaseDestroyFunc) NULL,
+  (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) dav_bass_filter_class_init,
-  (GClassDestroyFunc) dav_bass_filter_class_destroy,
+  (GClassFinalizeFunc) dav_bass_filter_class_finalize,
   NULL /* class_data */,
   
   sizeof (DavBassFilter),
@@ -119,50 +122,48 @@ dav_bass_filter_update_locals (DavBassFilter *filter)
 static void
 dav_bass_filter_class_init (DavBassFilterClass *class)
 {
-  BseObjectClass *object_class;
-  BseSourceClass *source_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ochannel_id, ichannel_id;
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
-  object_class = BSE_OBJECT_CLASS (class);
-  source_class = BSE_SOURCE_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) dav_bass_filter_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) dav_bass_filter_get_param;
-  object_class->shutdown = dav_bass_filter_do_shutdown;
+  gobject_class->set_param = (GObjectSetParamFunc) dav_bass_filter_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) dav_bass_filter_get_param;
   
   source_class->prepare = dav_bass_filter_prepare;
   source_class->calc_chunk = dav_bass_filter_calc_chunk;
   source_class->reset = dav_bass_filter_reset;
   
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER,
-                              bse_param_spec_bool ("trigger", "Trigger filter",
-                                                   "Trigger the filter",
-						   FALSE, BSE_PARAM_GUI));
+			      b_param_spec_bool ("trigger", "Trigger filter",
+						 "Trigger the filter",
+						 FALSE, B_PARAM_GUI));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_CUTOFF_FREQ,
-                              bse_param_spec_float ("cutoff_freq", "Cutoff [%]",
-						    "Set the cutoff frequency",
-                                                    0.0, 100.0, 0.1, 50.0,
-                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      b_param_spec_float ("cutoff_freq", "Cutoff [%]",
+						  "Set the cutoff frequency",
+						  0.0, 100.0, 50.0, 0.1,
+						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_RESONANCE,
-                              bse_param_spec_float ("resonance", "Resonance [%]",
-                                                    "Set the amount of resonance",
-                                                    0.0, 100.0, 0.1, 99.5,
-                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      b_param_spec_float ("resonance", "Resonance [%]",
+						  "Set the amount of resonance",
+						  0.0, 100.0, 99.5, 0.1,
+						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_ENV_MOD,
-                              bse_param_spec_float ("env_mod", "Envelope Modulation [%]",
-                                                    "Set the envelope magnitude",
-                                                    0.0, 100.0, 0.1, 90.0,
-                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      b_param_spec_float ("env_mod", "Envelope Modulation [%]",
+						  "Set the envelope magnitude",
+						  0.0, 100.0, 90.0, 0.1,
+						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_DECAY,
-                              bse_param_spec_float ("decay", "Decay [%]",
-                                                    "Set the decay length",
-                                                    0.0, 100.0, 0.1, 20.0,
-                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      b_param_spec_float ("decay", "Decay [%]",
+						  "Set the decay length",
+						  0.0, 100.0, 20.0, 0.1,
+						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "BassFilter Output", 1);
   g_assert (ochannel_id == DAV_BASS_FILTER_OCHANNEL_MONO);
@@ -172,7 +173,7 @@ dav_bass_filter_class_init (DavBassFilterClass *class)
 }
 
 static void
-dav_bass_filter_class_destroy (DavBassFilterClass *class)
+dav_bass_filter_class_finalize (DavBassFilterClass *class)
 {
 }
 
@@ -194,20 +195,11 @@ dav_bass_filter_init (DavBassFilter *filter)
 }
 
 static void
-dav_bass_filter_do_shutdown (BseObject *object)
-{
-  DavBassFilter *filter;
-  
-  filter = DAV_BASS_FILTER (object);
-  
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
-}
-
-static void
 dav_bass_filter_set_param (DavBassFilter *filter,
-			   BseParam      *param,
-			   guint          param_id)
+			   guint          param_id,
+			   GValue        *value,
+			   GParamSpec    *pspec,
+			   const gchar   *trailer)
 {
   switch (param_id)
     {
@@ -220,60 +212,62 @@ dav_bass_filter_set_param (DavBassFilter *filter,
       break;
       
     case PARAM_CUTOFF_FREQ:
-      filter->cutoff = param->value.v_float / 100.0;
+      filter->cutoff = b_value_get_float (value) / 100.0;
       dav_bass_filter_update_locals (filter);
       break;
       
     case PARAM_RESONANCE:
-      filter->reso = param->value.v_float / 100.0;
+      filter->reso = b_value_get_float (value) / 100.0;
       dav_bass_filter_update_locals (filter);
       break;
       
     case PARAM_ENV_MOD:
-      filter->envmod = param->value.v_float / 100.0;
+      filter->envmod = b_value_get_float (value) / 100.0;
       dav_bass_filter_update_locals (filter);
       break;
       
     case PARAM_DECAY:
-      filter->envdecay = param->value.v_float / 100.0;
+      filter->envdecay = b_value_get_float (value) / 100.0;
       dav_bass_filter_update_locals (filter);
       break;
       
     default:
-      BSE_UNHANDLED_PARAM_ID (filter, param, param_id);
+      G_WARN_INVALID_PARAM_ID (filter, param_id, pspec);
       break;
     }
 }
 
 static void
 dav_bass_filter_get_param (DavBassFilter *filter,
-			   BseParam      *param,
-			   guint          param_id)
+			   guint          param_id,
+			   GValue        *value,
+			   GParamSpec    *pspec,
+			   const gchar   *trailer)
 {
   switch (param_id)
     {
     case PARAM_TRIGGER:
-      param->value.v_bool = FALSE;
+      b_value_set_bool (value, FALSE);
       break;
       
     case PARAM_CUTOFF_FREQ:
-      param->value.v_float = filter->cutoff * 100.0;
+      b_value_set_float (value, filter->cutoff * 100.0);
       break;
       
     case PARAM_RESONANCE:
-      param->value.v_float = filter->reso * 100.0;
+      b_value_set_float (value, filter->reso * 100.0);
       break;
       
     case PARAM_ENV_MOD:
-      param->value.v_float = filter->envmod * 100.0;
+      b_value_set_float (value, filter->envmod * 100.0);
       break;
       
     case PARAM_DECAY:
-      param->value.v_float = filter->envdecay * 100.0;
+      b_value_set_float (value, filter->envdecay * 100.0);
       break;
       
     default:
-      BSE_UNHANDLED_PARAM_ID (filter, param, param_id);
+      G_WARN_INVALID_PARAM_ID (filter, param_id, pspec);
       break;
     }
 }
@@ -323,14 +317,14 @@ dav_bass_filter_calc_chunk (BseSource *source,
   for (i = 0; i < BSE_TRACK_LENGTH; i++)
     {
       if (input_chunk == NULL)
-        {
-          value = filter->a * filter->d1 + filter->b * filter->d2;
-        }
+	{
+	  value = filter->a * filter->d1 + filter->b * filter->d2;
+	}
       else
-        {
-          c = (1.0 - filter->a - filter->b) * 0.2;
-          value = filter->a * filter->d1 + filter->b * filter->d2 + c * inputs[i];
-        }
+	{
+	  c = (1.0 - filter->a - filter->b) * 0.2;
+	  value = filter->a * filter->d1 + filter->b * filter->d2 + c * inputs[i];
+	}
       
       hunk [i] = BSE_CLIP_SAMPLE_VALUE (value);
       
@@ -340,11 +334,11 @@ dav_bass_filter_calc_chunk (BseSource *source,
       filter->envpos++;
       
       if (filter->envpos >= 64)
-        {
-          filter->envpos = 0;
-          filter->c0 *= filter->decay;
-          recalc_a_b (filter);
-        }
+	{
+	  filter->envpos = 0;
+	  filter->c0 *= filter->decay;
+	  recalc_a_b (filter);
+	}
     }
   
   if (input_chunk != NULL)

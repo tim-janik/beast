@@ -16,7 +16,6 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #ifndef __DAV_GUITAR_H__
 #define __DAV_GUITAR_H__
 
@@ -43,10 +42,10 @@ typedef struct _WaveGuide WaveGuide;
 
 struct _WaveGuide
 {
-  gfloat freq;
-  gfloat lowpass_data, lowpass_coeff;
-  int wavelen;
-  int pos;
+  gfloat  freq;
+  gfloat  lowpass_data, lowpass_coeff;
+  gint    wavelen;
+  gint    pos;
   gfloat *data;
 };
 
@@ -56,7 +55,7 @@ struct _DavGuitar
 
   gfloat hipass_data, hipass_coeff;
 
-  int body_taps[6];
+  gint      body_taps[6];
   WaveGuide strings[6];
   WaveGuide body;
 };

@@ -43,14 +43,17 @@ enum
 /* --- prototypes --- */
 static void        dav_organ_init             (DavOrgan      *organ);
 static void        dav_organ_class_init       (DavOrganClass  *class);
-static void        dav_organ_class_destroy    (DavOrganClass  *class);
-static void        dav_organ_do_shutdown      (BseObject      *object);
+static void        dav_organ_class_finalize   (DavOrganClass  *class);
 static void        dav_organ_set_param        (DavOrgan       *organ,
-					       BseParam       *param,
-					       guint           param_id);
+					       guint           param_id,
+					       GValue         *value,
+					       GParamSpec     *pspec,
+					       const gchar    *trailer);
 static void        dav_organ_get_param        (DavOrgan       *organ,
-					       BseParam       *param,
-					       guint           param_id);
+					       guint           param_id,
+					       GValue         *value,
+					       GParamSpec     *pspec,
+					       const gchar    *trailer);
 static void        dav_organ_prepare          (BseSource      *source,
 					       BseIndex        index);
 static BseChunk*   dav_organ_calc_chunk       (BseSource      *source,
@@ -66,9 +69,9 @@ static const GTypeInfo type_info_organ = {
   sizeof (DavOrganClass),
   
   (GBaseInitFunc) NULL,
-  (GBaseDestroyFunc) NULL,
+  (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) dav_organ_class_init,
-  (GClassDestroyFunc) dav_organ_class_destroy,
+  (GClassFinalizeFunc) dav_organ_class_finalize,
   NULL /* class_data */,
   
   sizeof (DavOrgan),
@@ -78,57 +81,54 @@ static const GTypeInfo type_info_organ = {
 
 
 /* --- functions --- */
-static BseParamSpec*
+static inline GParamSpec*
 harm_param (gchar *name,
 	    gchar *nick,
 	    gchar *blurb,
 	    gint   dft)
 {
-  return bse_param_spec_int (name, nick, blurb, 0, 127, 1, dft, BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE);
+  return b_param_spec_int (name, nick, blurb, 0, 127, dft, 1, B_PARAM_DEFAULT | B_PARAM_HINT_SCALE);
 }
 
 static void
 dav_organ_class_init (DavOrganClass *class)
 {
-  BseObjectClass *object_class;
-  BseSourceClass *source_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ochannel_id;
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
-  object_class = BSE_OBJECT_CLASS (class);
-  source_class = BSE_SOURCE_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) dav_organ_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) dav_organ_get_param;
-  object_class->shutdown = dav_organ_do_shutdown;
+  gobject_class->set_param = (GObjectSetParamFunc) dav_organ_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) dav_organ_get_param;
   
   source_class->prepare = dav_organ_prepare;
   source_class->calc_chunk = dav_organ_calc_chunk;
   source_class->reset = dav_organ_reset;
   
   bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
-			      bse_param_spec_float ("base_freq", "Frequency", NULL,
-						    BSE_MIN_OSC_FREQ_d,
-						    BSE_MAX_OSC_FREQ_d,
-						    10.0,
-						    BSE_KAMMER_FREQ,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      b_param_spec_float ("base_freq", "Frequency", NULL,
+						  BSE_MIN_OSC_FREQ_d,
+						  BSE_MAX_OSC_FREQ_d,
+						  BSE_KAMMER_FREQ,
+						  10.0,
+						  B_PARAM_DEFAULT | B_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Base Frequency",
                               PARAM_BASE_NOTE,
-                              bse_param_spec_note ("base_note", "Note", NULL,
-                                                   BSE_MIN_NOTE, BSE_MAX_NOTE,
-                                                   1, BSE_KAMMER_NOTE, TRUE,
-                                                   BSE_PARAM_GUI));
-  
+                              b_param_spec_note ("base_note", "Note", NULL,
+						 BSE_MIN_NOTE, BSE_MAX_NOTE,
+						 BSE_KAMMER_NOTE, 1, TRUE,
+						 B_PARAM_GUI));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_BRASS,
-			      bse_param_spec_bool ("brass", "Brass sounds", "Changes the organ to sound more brassy",
-						   FALSE, BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("brass", "Brass sounds", "Changes the organ to sound more brassy",
+						 FALSE, B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_REED,
-			      bse_param_spec_bool ("reed", "Reed sounds", "Adds reeds sound",
-						   FALSE, BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("reed", "Reed sounds", "Adds reeds sound",
+						 FALSE, B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_FLUTE,
-			      bse_param_spec_bool ("flute", "Flute sounds", "Adds flute sounds",
-						   FALSE, BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("flute", "Flute sounds", "Adds flute sounds",
+						 FALSE, B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM0,
 			      harm_param ("harm0", "16th", "16th harmonic", 127));
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM1,
@@ -147,7 +147,7 @@ dav_organ_class_init (DavOrganClass *class)
 }
 
 static void
-dav_organ_class_destroy (DavOrganClass *class)
+dav_organ_class_finalize (DavOrganClass *class)
 {
 }
 
@@ -168,107 +168,100 @@ dav_organ_init (DavOrgan *organ)
 }
 
 static void
-dav_organ_do_shutdown (BseObject *object)
-{
-  DavOrgan *organ;
-  
-  organ = DAV_ORGAN (object);
-  
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
-}
-
-static void
-dav_organ_set_param (DavOrgan *organ,
-                     BseParam *param,
-		     guint     param_id)
+dav_organ_set_param (DavOrgan    *organ,
+		     guint        param_id,
+		     GValue      *value,
+		     GParamSpec  *pspec,
+		     const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      organ->freq = param->value.v_float;
+      organ->freq = b_value_get_float (value);
       bse_object_param_changed (BSE_OBJECT (organ), "base_note");
       break;
     case PARAM_BASE_NOTE:
-      organ->freq = bse_note_to_freq (param->value.v_note);
+      organ->freq = bse_note_to_freq (b_value_get_note (value));
       bse_object_param_changed (BSE_OBJECT (organ), "base_freq");
       break;
     case PARAM_BRASS:
-      organ->brass = param->value.v_bool;
+      organ->brass = b_value_get_bool (value);
       break;
     case PARAM_FLUTE:
-      organ->flute = param->value.v_bool;
+      organ->flute = b_value_get_bool (value);
       break;
     case PARAM_REED:
-      organ->reed = param->value.v_bool;
+      organ->reed = b_value_get_bool (value);
       break;
     case PARAM_HARM0:
-      organ->harm0 = param->value.v_int;
+      organ->harm0 = b_value_get_int (value);
       break;
     case PARAM_HARM1:
-      organ->harm1 = param->value.v_int;
+      organ->harm1 = b_value_get_int (value);
       break;
     case PARAM_HARM2:
-      organ->harm2 = param->value.v_int;
+      organ->harm2 = b_value_get_int (value);
       break;
     case PARAM_HARM3:
-      organ->harm3 = param->value.v_int;
+      organ->harm3 = b_value_get_int (value);
       break;
     case PARAM_HARM4:
-      organ->harm4 = param->value.v_int;
+      organ->harm4 = b_value_get_int (value);
       break;
     case PARAM_HARM5:
-      organ->harm5 = param->value.v_int;
+      organ->harm5 = b_value_get_int (value);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (organ, param, param_id);
+      G_WARN_INVALID_PARAM_ID (organ, param_id, pspec);
       break;
     }
 }
 
 static void
-dav_organ_get_param (DavOrgan *organ,
-                     BseParam *param,
-		     guint     param_id)
+dav_organ_get_param (DavOrgan    *organ,
+		     guint        param_id,
+		     GValue      *value,
+		     GParamSpec  *pspec,
+		     const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      param->value.v_float = organ->freq;
+      b_value_set_float (value, organ->freq);
       break;
     case PARAM_BASE_NOTE:
-      param->value.v_note = bse_note_from_freq (organ->freq);
+      b_value_set_note (value, bse_note_from_freq (organ->freq));
       break;
     case PARAM_BRASS:
-      param->value.v_bool = organ->brass;
+      b_value_set_bool (value, organ->brass);
       break;
     case PARAM_FLUTE:
-      param->value.v_bool = organ->flute;
+      b_value_set_bool (value, organ->flute);
       break;
     case PARAM_REED:
-      param->value.v_bool = organ->reed;
+      b_value_set_bool (value, organ->reed);
       break;
     case PARAM_HARM0:
-      param->value.v_int = organ->harm0;
+      b_value_set_int (value, organ->harm0);
       break;
     case PARAM_HARM1:
-      param->value.v_int = organ->harm1;
+      b_value_set_int (value, organ->harm1);
       break;
     case PARAM_HARM2:
-      param->value.v_int = organ->harm2;
+      b_value_set_int (value, organ->harm2);
       break;
     case PARAM_HARM3:
-      param->value.v_int = organ->harm3;
+      b_value_set_int (value, organ->harm3);
       break;
     case PARAM_HARM4:
-      param->value.v_int = organ->harm4;
+      b_value_set_int (value, organ->harm4);
       break;
     case PARAM_HARM5:
-      param->value.v_int = organ->harm5;
+      b_value_set_int (value, organ->harm5);
       break;
       
     default:
-      BSE_UNHANDLED_PARAM_ID (organ, param, param_id);
+      G_WARN_INVALID_PARAM_ID (organ, param_id, pspec);
       break;
     }
 }

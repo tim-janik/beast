@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -28,15 +28,16 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* --- object type macros --- */
-#define DAV_TYPE_XTAL_STRINGS              (type_id_xtal_strings)
-#define DAV_XTAL_STRINGS(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_XTAL_STRINGS, DavXtalStrings))
-#define DAV_XTAL_STRINGS_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_XTAL_STRINGS, DavXtalStringsClass))
-#define DAV_IS_XTAL_STRINGS(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_XTAL_STRINGS))
+#define DAV_TYPE_XTAL_STRINGS		   (type_id_xtal_strings)
+#define DAV_XTAL_STRINGS(object)	   (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_XTAL_STRINGS, DavXtalStrings))
+#define DAV_XTAL_STRINGS_CLASS(class)	   (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_XTAL_STRINGS, DavXtalStringsClass))
+#define DAV_IS_XTAL_STRINGS(object)	   (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_XTAL_STRINGS))
 #define DAV_IS_XTAL_STRINGS_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_XTAL_STRINGS))
 #define DAV_XTAL_STRINGS_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavXtalStringsClass))
 
+
 /* --- DavXtalStrings source --- */
-typedef struct _DavXtalStrings      DavXtalStrings;
+typedef struct _DavXtalStrings	    DavXtalStrings;
 typedef struct _DavXtalStringsClass DavXtalStringsClass;
 
 struct _DavXtalStrings
@@ -49,17 +50,17 @@ struct _DavXtalStrings
   gfloat      tension_decay;
   gfloat      metallic_factor;
   gfloat      snap_factor;
-
+  
   gfloat      a;
   gfloat      damping_factor;
-
+  
   gfloat      d;
   gfloat      *string;
-  int         size;
-  int         pos;
-  guint       count;
-
-  guint       input_trigger_state : 1;
+  gint	      size;
+  gint	      pos;
+  guint	      count;
+  
+  guint	      input_trigger_state : 1;
 };
 
 struct _DavXtalStringsClass

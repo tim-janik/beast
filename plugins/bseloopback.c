@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -26,25 +26,25 @@
 /* --- prototypes --- */
 static void	 bse_loopback_init		(BseLoopback		*loopback);
 static void	 bse_loopback_class_init	(BseLoopbackClass	*class);
-static void	 bse_loopback_class_destroy	(BseLoopbackClass	*class);
-static void	 bse_loopback_do_shutdown	(BseObject	     	*object);
-static void      bse_loopback_prepare           (BseSource	        *source,
-						 BseIndex 	         index);
-static BseChunk* bse_loopback_calc_chunk        (BseSource	        *source,
-						 guint    	         ochannel_id);
-static void      bse_loopback_reset             (BseSource      	*source);
+static void	 bse_loopback_class_finalize	(BseLoopbackClass	*class);
+static void	 bse_loopback_do_destroy	(BseObject		*object);
+static void	 bse_loopback_prepare		(BseSource		*source,
+						 BseIndex		 index);
+static BseChunk* bse_loopback_calc_chunk	(BseSource		*source,
+						 guint			 ochannel_id);
+static void	 bse_loopback_reset		(BseSource		*source);
 
 
 /* --- variables --- */
-static GType             type_id_loopback = 0;
-static gpointer          parent_class = NULL;
+static GType		 type_id_loopback = 0;
+static gpointer		 parent_class = NULL;
 static const GTypeInfo type_info_loopback = {
   sizeof (BseLoopbackClass),
   
   (GBaseInitFunc) NULL,
-  (GBaseDestroyFunc) NULL,
+  (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_loopback_class_init,
-  (GClassDestroyFunc) bse_loopback_class_destroy,
+  (GClassFinalizeFunc) bse_loopback_class_finalize,
   NULL /* class_data */,
   
   sizeof (BseLoopback),
@@ -66,7 +66,7 @@ bse_loopback_class_init (BseLoopbackClass *class)
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 
-  object_class->shutdown = bse_loopback_do_shutdown;
+  object_class->destroy = bse_loopback_do_destroy;
 
   source_class->prepare = bse_loopback_prepare;
   source_class->calc_chunk = bse_loopback_calc_chunk;
@@ -89,7 +89,7 @@ bse_loopback_class_init (BseLoopbackClass *class)
 }
 
 static void
-bse_loopback_class_destroy (BseLoopbackClass *class)
+bse_loopback_class_finalize (BseLoopbackClass *class)
 {
 }
 
@@ -99,21 +99,21 @@ bse_loopback_init (BseLoopback *loopback)
 }
 
 static void
-bse_loopback_do_shutdown (BseObject *object)
+bse_loopback_do_destroy (BseObject *object)
 {
   BseLoopback *loopback;
 
   loopback = BSE_LOOPBACK (object);
 
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 #define N_STATIC_BLOCKS (17) /* FIXME: need n_blocks_per_second() */
 BseSampleValue *debug = NULL;
 static void
 bse_loopback_prepare (BseSource *source,
-		     BseIndex   index)
+		     BseIndex	index)
 {
   // BseLoopback *loopback = BSE_LOOPBACK (source);
   BseChunk *dummy = bse_chunk_new_static_zero (1);
@@ -126,7 +126,7 @@ bse_loopback_prepare (BseSource *source,
 
 static BseChunk*
 bse_loopback_calc_chunk (BseSource *source,
-			 guint      ochannel_id)
+			 guint	    ochannel_id)
 {
   // BseLoopback *loopback = BSE_LOOPBACK (source);
   BseSourceInput *input;

@@ -14,6 +14,7 @@ plugindir = $(bseplugindir)
 
 # all plugins want to link against:
 plugin_libs = $(BSE_LIBS) -lm
+# plugin_ldlibs = $(top_builddir)/bse/libbse.la $(top_builddir)/blib/libblib.la
 
 # create plugin list
 Makefile.plugins: $(srcdir)/listplugins.sh *.c Makefile.am

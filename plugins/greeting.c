@@ -29,8 +29,8 @@ static GType   type_id_greeting = 0;
 static GType   type_id_greeting_again = 0;
 static void
 greeting_setup (BseProcedureClass *proc,
-		BseParamSpec     **ipspecs,
-		BseParamSpec     **opspecs)
+		GParamSpec       **in_pspecs,
+		GParamSpec       **out_pspecs)
 {
   proc->help      = ("Greeting greets the outside world. It takes an "
 		     "unsigned integer as input parameter "
@@ -41,21 +41,21 @@ greeting_setup (BseProcedureClass *proc,
   proc->date      = "1999";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_uint ("year", "Curent Year", NULL,
-				      1980, 2100, 1, 1999, BSE_PARAM_PROCEDURE);
+  *(in_pspecs++) = b_param_spec_uint ("year", "Curent Year", NULL,
+				      1980, 2100, 1999, 1, B_PARAM_PROCEDURE);
   
   /* output parameters */
-  *(opspecs++) = bse_param_spec_string ("greeting", "Greeting", NULL,
-					NULL, BSE_PARAM_DEFAULT);
+  *(out_pspecs++) = b_param_spec_string ("greeting", "Greeting", NULL,
+					 NULL, B_PARAM_DEFAULT);
 }
 
 static BseErrorType
 greeting_exec (BseProcedureClass *proc,
-	       BseParam          *iparams,
-	       BseParam          *oparams)
+	       GValue            *in_values,
+	       GValue            *out_values)
 {
   /* extract parameter values */
-  guint year = (iparams++)->value.v_uint;
+  guint year = b_value_get_uint (in_values++);
   gchar *string;
   
   /* check parameters */
@@ -64,7 +64,8 @@ greeting_exec (BseProcedureClass *proc,
   string = g_strdup_printf ("Hello, nice to be loaded into a library in %d.", year);
   
   /* set output parameters */
-  (oparams++)->value.v_string = string;
+  b_value_set_string (out_values++, string);
+  g_free (string);
   
   return BSE_ERROR_NONE;
 }

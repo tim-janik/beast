@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -25,25 +25,24 @@
 /* --- prototypes --- */
 static void	 bse_mult_init			(BseMult	*mult);
 static void	 bse_mult_class_init		(BseMultClass	*class);
-static void	 bse_mult_class_destroy		(BseMultClass	*class);
-static void	 bse_mult_do_shutdown		(BseObject     	*object);
-static void      bse_mult_prepare               (BseSource      *source,
-						 BseIndex        index);
-static BseChunk* bse_mult_calc_chunk            (BseSource      *source,
-						 guint           ochannel_id);
-static void      bse_mult_reset                 (BseSource      *source);
+static void	 bse_mult_class_finalize	(BseMultClass	*class);
+static void	 bse_mult_prepare		(BseSource	*source,
+						 BseIndex	 index);
+static BseChunk* bse_mult_calc_chunk		(BseSource	*source,
+						 guint		 ochannel_id);
+static void	 bse_mult_reset			(BseSource	*source);
 
 
 /* --- variables --- */
-static GType             type_id_mult = 0;
-static gpointer          parent_class = NULL;
+static GType		 type_id_mult = 0;
+static gpointer		 parent_class = NULL;
 static const GTypeInfo type_info_mult = {
   sizeof (BseMultClass),
   
   (GBaseInitFunc) NULL,
-  (GBaseDestroyFunc) NULL,
+  (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_mult_class_init,
-  (GClassDestroyFunc) bse_mult_class_destroy,
+  (GClassFinalizeFunc) bse_mult_class_finalize,
   NULL /* class_data */,
   
   sizeof (BseMult),
@@ -64,8 +63,6 @@ bse_mult_class_init (BseMultClass *class)
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   
-  object_class->shutdown = bse_mult_do_shutdown;
-  
   source_class->prepare = bse_mult_prepare;
   source_class->calc_chunk = bse_mult_calc_chunk;
   source_class->reset = bse_mult_reset;
@@ -83,7 +80,7 @@ bse_mult_class_init (BseMultClass *class)
 }
 
 static void
-bse_mult_class_destroy (BseMultClass *class)
+bse_mult_class_finalize (BseMultClass *class)
 {
 }
 
@@ -93,22 +90,11 @@ bse_mult_init (BseMult *mult)
 }
 
 static void
-bse_mult_do_shutdown (BseObject *object)
-{
-  BseMult *mult;
-  
-  mult = BSE_MULT (object);
-  
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
-}
-
-static void
 bse_mult_prepare (BseSource *source,
 		  BseIndex   index)
 {
   BseMult *mult;
-
+  
   mult = BSE_MULT (source);
   
   /* chain parent class' handler */
@@ -117,31 +103,31 @@ bse_mult_prepare (BseSource *source,
 
 static BseChunk*
 bse_mult_calc_chunk (BseSource *source,
-		     guint      ochannel_id)
+		     guint	ochannel_id)
 {
   BseSampleValue *hunk, *bound;
   guint c;
   
   
   g_return_val_if_fail (ochannel_id == BSE_MULT_OCHANNEL_MONO, NULL);
-
+  
   if (source->n_inputs == 0)
     return bse_chunk_new_static_zero (1);
   else if (source->n_inputs == 1)
     return bse_source_ref_chunk (source->inputs[0].osource, source->inputs[0].ochannel_id, source->index);
-
+  
   hunk = bse_hunk_alloc (1);
   bound = hunk + BSE_TRACK_LENGTH;
   for (c = BSE_MULT_ICHANNEL_MONO1; c <= BSE_MULT_ICHANNEL_MONO4; c++)
     {
       BseSourceInput *input = bse_source_get_input (source, c);
-
+      
       if (input)
 	{
 	  BseChunk *chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-
+	  
 	  bse_hunk_mix (1, hunk, NULL, chunk->n_tracks, bse_chunk_complete_hunk (chunk));
-
+	  
 	  bse_chunk_unref (chunk);
 	  break;
 	}
@@ -149,12 +135,12 @@ bse_mult_calc_chunk (BseSource *source,
   for (c = c + 1; c <= BSE_MULT_ICHANNEL_MONO4; c++)
     {
       BseSourceInput *input = bse_source_get_input (source, c);
-
+      
       if (input)
 	{
 	  BseChunk *chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
 	  BseSampleValue *d, *s = bse_chunk_complete_hunk (chunk);
-
+	  
 	  d = hunk;
 	  do
 	    {
@@ -168,11 +154,11 @@ bse_mult_calc_chunk (BseSource *source,
 		*(d++) = BSE_MAX_SAMPLE_VALUE;
 	    }
 	  while (d < bound);
-
+	  
 	  bse_chunk_unref (chunk);
 	}
     }
-
+  
   return bse_chunk_new_orphan (1, hunk);
 }
 
@@ -180,7 +166,7 @@ static void
 bse_mult_reset (BseSource *source)
 {
   BseMult *mult;
-
+  
   mult = BSE_MULT (source);
   
   /* chain parent class' handler */

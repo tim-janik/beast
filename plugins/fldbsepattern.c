@@ -35,8 +35,8 @@ static GType   type_id_fill_instrument = 0;
 /* --- delete-note --- */
 static void
 delete_note_setup (BseProcedureClass *proc,
-		   BseParamSpec     **ipspecs,
-		   BseParamSpec     **opspecs)
+		   GParamSpec       **in_pspecs,
+		   GParamSpec       **out_pspecs)
 {
   proc->help      = ("Delete current note and shift remaining notes up");
   proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
@@ -44,27 +44,27 @@ delete_note_setup (BseProcedureClass *proc,
   proc->date      = "2000";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", NULL, NULL,
-				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("focus_channel", NULL, NULL,
-				      0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("focus_row", NULL, NULL,
-				      0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
+					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
+  *(in_pspecs++) = b_param_spec_uint ("focus_channel", "Focus Channel", NULL,
+				      0, BSE_MAX_N_CHANNELS - 1, 0, BSE_STP_N_CHANNELS, B_PARAM_DEFAULT);
+  *(in_pspecs++) = b_param_spec_uint ("focus_row", "Focus Row", NULL,
+				      0, BSE_MAX_N_ROWS - 1, 0, BSE_STP_N_ROWS, B_PARAM_DEFAULT);
   /* output parameters */
 }
 
 static BseErrorType
 delete_note_exec (BseProcedureClass *proc,
-		  BseParam          *iparams,
-		  BseParam          *oparams)
+		  GValue            *in_values,
+		  GValue            *out_values)
 {
   /* extract parameter values */
-  BsePattern *pattern = (BsePattern*) (iparams++)->value.v_item;
-  guint c             = (iparams++)->value.v_uint;
-  guint r             = (iparams++)->value.v_uint;
+  BsePattern *pattern = (BsePattern*) g_value_get_object (in_values++);
+  guint c             = b_value_get_uint (in_values++);
+  guint r             = b_value_get_uint (in_values++);
   
   /* check parameters */
-  if (!pattern)
+  if (!BSE_IS_PATTERN (pattern))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* FIXME: start undo */
@@ -97,8 +97,8 @@ delete_note_exec (BseProcedureClass *proc,
 /* --- insert-note --- */
 static void
 insert_note_setup (BseProcedureClass *proc,
-		   BseParamSpec     **ipspecs,
-		   BseParamSpec     **opspecs)
+                   GParamSpec       **in_pspecs,
+		   GParamSpec       **out_pspecs)
 {
   proc->help      = ("Insert new note and shift remaining notes down");
   proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
@@ -106,39 +106,30 @@ insert_note_setup (BseProcedureClass *proc,
   proc->date      = "2000";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", NULL, NULL,
-				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("focus_channel", NULL, NULL,
-				      0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("focus_row", NULL, NULL,
-				      0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
-#if 0
-  *(ipspecs++) = bse_param_spec_note ("note", "Note", "Note to play",
-                                      BSE_MIN_NOTE, BSE_MAX_NOTE,
-				      1, BSE_NOTE_VOID, TRUE,
-				      BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_item ("instrument", "Instrument", "Instrument to use",
-                                      BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
-#endif
+  *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
+					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
+  *(in_pspecs++) = b_param_spec_uint ("focus_channel", "Focus Channel", NULL,
+				      0, BSE_MAX_N_CHANNELS - 1, 0, BSE_STP_N_CHANNELS, B_PARAM_DEFAULT);
+  *(in_pspecs++) = b_param_spec_uint ("focus_row", "Focus Row", NULL,
+				      0, BSE_MAX_N_ROWS - 1, 0, BSE_STP_N_ROWS, B_PARAM_DEFAULT);
   /* output parameters */
 }
 
 static BseErrorType
 insert_note_exec (BseProcedureClass *proc,
-		  BseParam          *iparams,
-		  BseParam          *oparams)
+                  GValue            *in_values,
+		  GValue            *out_values)
 {
   /* extract parameter values */
-  BsePattern *pattern       = (BsePattern*) (iparams++)->value.v_item;
-  guint cur_c               = (iparams++)->value.v_uint;
-  guint cur_r               = (iparams++)->value.v_uint;
-  gint note_val	            = BSE_NOTE_VOID; /* (iparams++)->value.v_note; */
-  BseInstrument* instrument = NULL; /* (BseInstrument*) (iparams++)->value.v_item; */
-  
+  BsePattern *pattern       = (BsePattern*) g_value_get_object (in_values++);
+  guint cur_c               = b_value_get_uint (in_values++);
+  guint cur_r               = b_value_get_uint (in_values++);
+  gint note_val	            = BSE_NOTE_VOID;
+  BseInstrument* instrument = NULL;
   guint r;
   
   /* check parameters */
-  if (!pattern)
+  if (!BSE_IS_PATTERN (pattern))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* FIXME: start undo */
@@ -166,8 +157,8 @@ insert_note_exec (BseProcedureClass *proc,
 /* --- clear-instrument --- */
 static void
 clear_instrument_setup (BseProcedureClass *proc,
-			BseParamSpec     **ipspecs,
-			BseParamSpec     **opspecs)
+			GParamSpec       **in_pspecs,
+			GParamSpec       **out_pspecs)
 {
   proc->help      = ("Reset instrument for selected notes");
   proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
@@ -175,22 +166,22 @@ clear_instrument_setup (BseProcedureClass *proc,
   proc->date      = "2000";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", NULL, NULL,
-				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
+					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
   /* output parameters */
 }
 
 static BseErrorType
 clear_instrument_exec (BseProcedureClass *proc,
-		       BseParam          *iparams,
-		       BseParam          *oparams)
+		       GValue            *in_values,
+		       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePattern *pattern       = (BsePattern*) (iparams++)->value.v_item;
+  BsePattern *pattern = (BsePattern*) g_value_get_object (in_values++);
   guint c, r;
   
   /* check parameters */
-  if (!pattern)
+  if (!BSE_IS_PATTERN (pattern))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* FIXME: start undo */
@@ -216,8 +207,8 @@ clear_instrument_exec (BseProcedureClass *proc,
 /* --- fill-instrument --- */
 static void
 fill_instrument_setup (BseProcedureClass *proc,
-		       BseParamSpec     **ipspecs,
-		       BseParamSpec     **opspecs)
+		       GParamSpec       **in_pspecs,
+		       GParamSpec       **out_pspecs)
 {
   proc->help      = ("Reset instrument for selected notes");
   proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
@@ -225,25 +216,25 @@ fill_instrument_setup (BseProcedureClass *proc,
   proc->date      = "2000";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", NULL, NULL,
-				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_item ("instrument", "Instrument", "Instrument to use",
-                                      BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
+					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
+  *(in_pspecs++) = g_param_spec_object ("instrument", "Instrument", "Instrument to use",
+					BSE_TYPE_INSTRUMENT, B_PARAM_DEFAULT);
   /* output parameters */
 }
 
 static BseErrorType
 fill_instrument_exec (BseProcedureClass *proc,
-		      BseParam          *iparams,
-		      BseParam          *oparams)
+		      GValue            *in_values,
+		      GValue            *out_values)
 {
   /* extract parameter values */
-  BsePattern *pattern       = (BsePattern*) (iparams++)->value.v_item;
-  BseInstrument* instrument = (BseInstrument*) (iparams++)->value.v_item;
+  BsePattern *pattern       = (BsePattern*) g_value_get_object (in_values++);
+  BseInstrument *instrument = (BseInstrument*) g_value_get_object (in_values++);
   guint c, r;
   
   /* check parameters */
-  if (!pattern)
+  if (!BSE_IS_PATTERN (pattern) || (instrument && !BSE_IS_INSTRUMENT (instrument)))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* FIXME: start undo */

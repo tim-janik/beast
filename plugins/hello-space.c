@@ -28,8 +28,8 @@
 static GType   type_id_hello_space = 0;
 static void
 hello_space_setup (BseProcedureClass *proc,
-		   BseParamSpec     **ipspecs,
-		   BseParamSpec     **opspecs)
+		   GParamSpec       **in_pspecs,
+		   GParamSpec       **out_pspecs)
 {
   proc->help      = ("Hello Space - Simplistic Hello World type o' thing. "
 		     "Its purpose is to say \"Hello Space\". "
@@ -43,8 +43,8 @@ hello_space_setup (BseProcedureClass *proc,
 
 static BseErrorType
 hello_space_exec (BseProcedureClass *proc,
-		  BseParam          *iparams,
-		  BseParam          *oparams)
+		  GValue            *in_values,
+		  GValue            *out_values)
 {
   /* issue a message */
   g_message ("Hello Space");
