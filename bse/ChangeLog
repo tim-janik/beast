@@ -1,5 +1,7 @@
 Mon Apr 28 05:02:28 2003  Tim Janik  <timj@gtk.org>
 
+	* zintern/mono-wave.bse: updates to be used by BseTrack.
+
 	* bsetrack.[hc]: support BseWave property concurrently to the
 	"snet" property. "wave" tracks are played through an internal
 	standard mono synth.

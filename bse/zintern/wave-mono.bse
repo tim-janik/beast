@@ -1,0 +1,50 @@
+; BseProject
+
+(bse-version "0.5.1")
+
+(container-child "BseWaveRepo::Wave-Repository"
+  (modification-time "2003-04-27 22:08:00")
+  (creation-time "2003-04-27 20:45:22"))
+(container-child "BseSNet::.bse-intern-mono-wave"
+  (modification-time "2003-04-27 22:08:00")
+  (creation-time "2003-04-27 20:45:24")
+  (copyright "")
+  (author "Tim Janik")
+  (container-child "BseWaveOsc::wave-osc"
+    (pos-y 1.9399999999999999)
+    (pos-x 0.28000000000000003)
+    (blurb "")
+    (source-input "freq-in" (link 1 "midi-note") "frequency")
+    (source-input "sync-in" (link 1 "midi-note") "gate")
+    (source-input "mod-in" (link 1 "midi-controls") "ctrl-out1"))
+  (container-child "BseSubKeyboard::midi-note"
+    (pos-y 1.8400000000000001)
+    (pos-x -2.5099999999999998))
+  (container-child "BseMidiIController::midi-controls"
+    (pos-y -0.14999999999999999)
+    (pos-x -2.4900000000000002))
+  (container-child "BseAmplifier::amplifier"
+    (pos-y 1.9099999999999999)
+    (pos-x 2.7799999999999998)
+    (source-input "audio-in1" (link 1 "wave-osc") "audio-out")
+    (source-input "ctrl-in2" (link 1 "adsr") "ctrl-out"))
+  (container-child "BseSubInstrument::instrument-output"
+    (pos-y -0.22999999999999993)
+    (pos-x 2.8500000000000001)
+    (source-input "left-audio" (link 1 "volume-multiplier") "audio-out")
+    (source-input "right-audio" (link 1 "volume-multiplier") "audio-out")
+    (source-input "synth-done" (link 1 "adsr") "done-out"))
+  (container-child "BseSimpleADSR::adsr"
+    (release-time 3)
+    (sustain-level 100)
+    (decay-time 0)
+    (attack-time 0.3)
+    (pos-y 1)
+    (pos-x 0.27000000000000002)
+    (source-input "gate-in" (link 1 "midi-note") "gate"))
+  (container-child "BseMult::volume-multiplier"
+    (pos-y 0.90000000000000002)
+    (pos-x 2.8100000000000001)
+    (source-input "audio-in1" (link 1 "amplifier") "audio-out")
+    (source-input "audio-in2" (link 1 "midi-controls") "ctrl-out3")
+    (source-input "audio-in3" (link 1 "midi-note") "velocity")))
