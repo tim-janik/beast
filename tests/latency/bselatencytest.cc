@@ -26,7 +26,7 @@ using namespace Sfi;
 namespace Bse {
 
 class LatencyTest : public LatencyTestBase {
-  /* properties (used to pass "global" noise data into the modules) */
+  /* properties */
   struct Properties : public LatencyTestProperties {
     Properties (LatencyTest *noise) : LatencyTestProperties (noise)
     {
