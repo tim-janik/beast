@@ -28,6 +28,7 @@
 
 /* --- variables --- */
 static gboolean        bse_is_initialized = FALSE;
+static GslMutex	       sequencer_mutex;
 BseDebugFlags          bse_debug_flags = 0;
 
 
@@ -174,18 +175,6 @@ dummy_nop (gpointer data)
 static BseLockFuncs        bse_lock_funcs = { NULL, dummy_nop, dummy_nop };
 
 void
-bse_main_lock (void)
-{
-  bse_lock_funcs.lock (bse_lock_funcs.lock_data);
-}
-
-void
-bse_main_unlock (void)
-{
-  bse_lock_funcs.unlock (bse_lock_funcs.lock_data);
-}
-
-void
 bse_init (int	             *argc_p,
 	  char	           ***argv_p,
 	  const BseLockFuncs *lock_funcs)
@@ -197,7 +186,9 @@ bse_init (int	             *argc_p,
     bse_lock_funcs = *lock_funcs;
   
   g_assert (BSE_BYTE_ORDER == BSE_LITTLE_ENDIAN || BSE_BYTE_ORDER == BSE_BIG_ENDIAN);
-  
+
+  gsl_mutex_init (&sequencer_mutex);
+
   if (argc_p && argv_p)
     {
       g_set_prgname (**argv_p);
@@ -222,4 +213,28 @@ bse_init (int	             *argc_p,
 
     gsl_init (gslconfig);
   }
+}
+
+void
+bse_main_global_lock (void)
+{
+  bse_lock_funcs.lock (bse_lock_funcs.lock_data);
+}
+
+void
+bse_main_global_unlock (void)
+{
+  bse_lock_funcs.unlock (bse_lock_funcs.lock_data);
+}
+
+void
+bse_main_sequencer_lock (void)
+{
+  GSL_SYNC_LOCK (&sequencer_mutex);
+}
+
+void
+bse_main_sequencer_unlock (void)
+{
+  GSL_SYNC_UNLOCK (&sequencer_mutex);
 }

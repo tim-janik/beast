@@ -83,10 +83,6 @@ BseWaveIndex*	bse_wave_get_index_for_modules	(BseWave	*wave);
 /* BseWaveIndex is safe to use from GslModules */
 GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
 						 gfloat		 osc_freq);
-
-gboolean	bse_value_arrays_match_freq	(gfloat		 match_freq,
-						 GValueArray	*inclusive_set,
-						 GValueArray	*exclusive_set);
 						 
 
 

@@ -1,71 +1,79 @@
-conceptual approach to simulate flow-system behavior
-====================================================
+The GSL Engine
+==============
 
-introductionary remarks:
+The following gives an outline of the conceptual approach to
+simulate flow-system behavior and carries details of the
+implementation along.
+
+Introductionary remarks:
 ------------------------
-the GSL engine simulates signal flow systems by mapping them
+The GSL Engine simulates signal flow systems by mapping them
 onto a network of signal processing modules which are connected
 via signal streams.
-the signal streams are value and time quantized, where C floats
-are used to store the quantized values and time quantization can
-be arbitrary, but is assumed to be synchronous for all nodes.
-in the public GSL C API, engine modules are exposed as GslModule
-structures, for the internal GSL engine implementation, each
+The signal streams are value quantized and time discrete, where
+floats are used to store the quantized values and the samples are
+taken at arbitrary but equidistant points in time. Also, the
+sampling periods are assumed to be synchronous for all nodes.
+In the public GSL C API, engine modules are exposed as GslModule
+structures, for the internal engine implementation, each
 GslModule is embedded in an OpNode structure.
 
-node model:
+Node Model:
 -----------
 * a node has n_istreams input streams
+* a node has n_jstreams joint input streams facilities, that is,
+  an unlimited number of ouput streams can be connected to each
+  "joint" input stream
 * a node has n_ostreams output streams
-* all streams are equally value-quantized as IEEE754
-  floats, usually within the range -1..1
-* all streams are synchronously time-quantized
+* all streams are equally value quantized as IEEE754 floats,
+  usually within the range -1..1
+* all streams are synchronously time discrete
 * the flow-system behavior can be iteratively approximated
-  by calculating a nodes output streams from its input streams
+  by calculating a node's output streams from its input streams
 * since all streams are equally time discrete, n output
   values for all output streams can be calculated from n input
-  values at all input streams
+  values at all input streams of a single network
 * some nodes always react delayed ("deferred" nodes) and can
   guarantee that they can always produce n output values ahead
   of receiving the corresponding n input values, with n>=1
 * a node that has no output facilities (n_ostreams==0) is
-  considered a "consumer" and has to be processed
+  considered a "consumer" and has to be processed // FIXME
 
-node methods:
+Node Methods:
 -------------
 ->process()
-  this method specifies through one of its arguments
+  This method specifies through one of its arguments
   the number of iterations the node has to perform,
   and therefore the number of values that are supplied
-  in its stream input buffers and that have to be supplied
-  in its stream output buffers
+  in its stream input buffers and which have to be supplied
+  in its stream output buffers.
 ->process_deferred()
-  this method specifies the number of input values supplied
+  This method specifies the number of input values supplied
   and the number of output values that should be supplied.
-  the number of input values may be smaller than the number
+  The number of input values may be smaller than the number
   of output values requested, in which case the node may return
   less output values than requested.
 
-node relationships:
+Node Relationships:
 -------------------
-node B is an "input" of node A if:
+Node B is an "input" of node A if:
   * one of A's input streams is connected to one of B's output streams,
   or
   * node C is an "input" of A and B is an "input" of C
 
-processing order:
+Processing Order:
 -----------------
-if node A has an input node B and A is not a deferred node, B has to
+If node A has an input node B and A is not a deferred node, B has to
 be processed prior to processing A.
 
-connection cycles:
+Connection Cycles:
 ------------------
-nodes A and B "form a cycle" if A is an input to B and B is an
+Nodes A and B "form a cycle" if A is an input to B and B is an
 input to A.
 
-invalid connections:
+Invalid Connections:
 --------------------
-for nodes A and B (not necessarily distinct) which form a cycle,
+For nodes A and B (not necessarily distinct) which form a cycle,
 the connections that the cycle consists of are only valid if
 the following is true:
   (C is a deferred node) and
@@ -73,18 +81,18 @@ the following is true:
   A and B do not anymore form the cycle))
 
 
-implementation notes
+Implementation Notes
 ====================
 * if a node is deferred, all output channels are delayed
 * independent leaf nodes (nodes that have no inputs) can be
   scheduled separately
 * nodes contained in a cycle have to be scheduled together
 
-scheduling algorithm
+Scheduling Algorithm
 --------------------
-to schedule a consumer and its dependency nodes, schedule_query it:
+To schedule a consumer and its dependency nodes, schedule_query() it:
 
-schedule_query_node:
+Query and Schedule Node:
 * tag current node
 * ignore scheduled input nodes
 * schedule_query_node on untagged input nodes, then do one of:
@@ -96,26 +104,26 @@ schedule_query_node:
 * own leaf level is MAX() of input node leaf-levels + 1
 * untag node
 
-resolving cycles:
+Resolving Cycles:
 * eliminate child from precondition list, once the list
   is empty the cycle is resolved
 * at least one node being eliminated has to be deferred
   for the cycle to be valid
 
-scheduling:
+Scheduling:
 * nodes need to be processed in the order of leaf-level
 * within leaf-levels, processing is determined by a per-node
   processing costs hint (cheap, normal, expensive)
 
-implementation considerations:
+Implementation Considerations:
 ------------------------------
-for deferred nodes, the number n specifying the amount of output
+For deferred nodes, the number n specifying the amount of output
 values that are produced ahead of input can be considered
 mostly-fixed. that is, it's unlikely to change often and will do
 so only at block boundaries.
-supporting n to be completely variable or considering it mostly
-fixed has certain implications. here're the considerations that
-lead to supporting a completely variable n for the implementation:
+Supporting n to be completely variable or considering it mostly
+fixed has certain implications. Here're the considerations that
+led to supporting a completely variable n for the implementation:
 
 n is block-boundary fixed:
 + for complex cycles (i.e. cycles that contain other cycles,
@@ -134,48 +142,53 @@ n is variable for every iteration step:
 + the delay of deferred nodes can correlate to an input stream
 
 
-threads, communication, main loops
+Threads, communication, main loops
 ==================================
 
-thread types:
-* UserThread; for the scope of the GSL engine (the functions exposed in
+Thread types:
+* UserThread; for the scope of the engine (the functions exposed in
   gslengine.h), only one user thread may execute API functions
   at a time.
   i.e. if more than one user thread need to call engine API
   functions, the user has to take measures to avoid concurrency
   in calling these functions, e.g. by using a GslMutex which is
-  to be locked around GSL engine API calls.
+  to be locked around engine API calls.
 * MasterThread; the engine, if configured accordingly,
   sets up one master thread which
   - processes transactions from the UserThread
   - schedules processing order of engine modules
-  - processes sole modules when required
+  - processes single modules when required
   - processes module cycles when required
+  - passes back processed transactions and flow jobs to the
+    UserThread for garbage collection
 * SlaveThread; the engine can be configured to spawn slave threads which,
   in addition to the master thread
-  - process sole modules when required
+  - process single modules when required
   - process module cycles when required
 
-communication at thread boundaries:
-* job transaction queue; the UserThread constructs job transactions and
-  enqueues them for the MasterThread. the UserThread also dequeues already
+Communication at thread boundaries:
+* Job transaction queue; the UserThread constructs job transactions and
+  enqueues them for the MasterThread. The UserThread also dequeues already
   processed transactions, in order for destroy functions of modules and
-  accessors to only be executed from the UserThread.
-  also, the UserThread can wait (block) until all pending transactions
+  accessors to only be executed within the UserThread.
+  Also, the UserThread can wait (block) until all pending transactions
   have been processed by the MasterThread (in order to sync state with
   module network contained in the engine).
-* module/cycle pool; the MasterThread fills in the module/cycle pool with
-  modules than need to be processed. the MasterThread and the SlaveThreads
+* Flow job collection list; the MasterThread adds processed flow jobs into
+  a collection queue, the UserThread then collects the queued flow jobs
+  and frees them.
+* Module/cycle pool; the MasterThread fills in the module/cycle pool with
+  modules which need to be processed. The MasterThread and the SlaveThreads
   pop modules/cycles from this pool, process them, and push back processed
   nodes.
-* load control; FIXME
+* load control; // FIXME
 
-main loop integration:
+Main loop integration:
 in order to process certain engine modules only from within
 the UserThread and to drive the engine even without master
 or slave threads, the engine can be hooked up to a main loop
 mechanism supplied by the UserThread.
-the engine provides API entry points to:
+The engine provides API entry points to:
 - export file descriptors and timeout, suitable for main loop backends
   such as poll(2)
 - check whether dispatching is necessary
@@ -200,6 +213,8 @@ TODO:
 - cost rating: cost*n_inputs+cost*n_outputs
 - multi-input(joint) streams: job_disconnect(dmod,distr,smod,sistr); (jstreams)
 
+Jan 07 2002	Tim Janik
+	* cosmetic updates, flow jobs
 Aug 19 2001	Tim Janik
 	* notes on threads, communication, main loops
 Jul 29 2001	Tim Janik

@@ -26,6 +26,9 @@
 
 enum {
   PARAM_0,
+  PARAM_LOCATOR_SET,
+  PARAM_FILE_NAME,
+  PARAM_WAVE_NAME
 };
 
 #define	ABANDONED_OWNER		(GUINT_TO_POINTER (42))
@@ -99,7 +102,7 @@ BSE_BUILTIN_TYPE (BseWave)
     NULL /* class_data */,
     
     sizeof (BseWave),
-    8  /* n_preallocs */,
+    0  /* n_preallocs */,
     (GInstanceInitFunc) bse_wave_init,
   };
   
@@ -141,6 +144,21 @@ bse_wave_class_init (BseWaveClass *class)
 			      g_type_from_name ("BseWave+gslwave-loader"),
 			      ".gslwave",
 			      "0 string #GslWave\n");
+  bse_object_class_add_param (object_class, "Locator",
+			      PARAM_LOCATOR_SET,
+			      g_param_spec_boolean ("locator_set", "Locator Set", NULL,
+						    FALSE,
+						    BSE_PARAM_GUI & ~G_PARAM_WRITABLE));
+  bse_object_class_add_param (object_class, "Locator",
+			      PARAM_FILE_NAME,
+			      g_param_spec_string ("file_name", "File Name", NULL,
+						   NULL,
+						   BSE_PARAM_GUI & ~G_PARAM_WRITABLE));
+  bse_object_class_add_param (object_class, "Locator",
+			      PARAM_WAVE_NAME,
+			      g_param_spec_string ("wave_name", "Wave Name", NULL,
+						   NULL,
+						   BSE_PARAM_GUI & ~G_PARAM_WRITABLE));
 }
 
 static void
@@ -179,6 +197,15 @@ bse_wave_get_property (BseWave	  *wave,
 {
   switch (param_id)
     {
+    case PARAM_LOCATOR_SET:
+      g_value_set_boolean (value, wave->locator_set);
+      break;
+    case PARAM_FILE_NAME:
+      g_value_set_string (value, wave->file_name);
+      break;
+    case PARAM_WAVE_NAME:
+      g_value_set_string (value, wave->wave_name);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (wave, param_id, pspec);
       break;
@@ -373,6 +400,11 @@ bse_wave_set_locator (BseWave     *wave,
   wave->locator_set = TRUE;
   wave->file_name = g_strdup (file_name);
   wave->wave_name = g_strdup (wave_name);
+  g_object_freeze_notify (G_OBJECT (wave));
+  g_object_notify (G_OBJECT (wave), "locator_set");
+  g_object_notify (G_OBJECT (wave), "file_name");
+  g_object_notify (G_OBJECT (wave), "wave_name");
+  g_object_thaw_notify (G_OBJECT (wave));
 }
 
 #define parse_or_return(scanner, token) { guint _t = (token); \
@@ -602,7 +634,7 @@ call_wave_chunk_loader (GType        proc_type,
 
   proc = g_type_class_ref (proc_type);
   if (!bse_procedure_signature_is_loader (proc))
-    error = BSE_ERROR_NO_LOADER;	/* actually, this is a bad mismatch */
+    error = BSE_ERROR_NO_LOADER;	/* actually, this is a bad mismatch, FIXME? */
   else
     error = bse_procedure_exec (g_type_name (proc_type),
 				wave, file_name, wave_name,

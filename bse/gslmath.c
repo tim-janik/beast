@@ -365,14 +365,14 @@ gsl_complex_ellip_sn (GslComplex u,
   return sn;
 }
 
-gfloat
+double
 gsl_bit_depth_epsilon (guint n_bits)
 {
   /* epsilon for various bit depths, based on significance of one bit,
    * minus fudge. created with:
    * { echo "scale=40"; for i in `seq 1 32` ; do echo "1/2^$i - 10^-($i+1)" ; done } | bc | sed 's/$/,/'
    */
-  static const float bit_epsilons[] = {
+  static const double bit_epsilons[] = {
     .4900000000000000000000000000000000000000,
     .2490000000000000000000000000000000000000,
     .1249000000000000000000000000000000000000,

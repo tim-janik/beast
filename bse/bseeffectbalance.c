@@ -57,7 +57,7 @@ BSE_BUILTIN_TYPE (BseEffectBalance)
     NULL /* class_data */,
     
     sizeof (BseEffectBalance),
-    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_balance_init,
   };
   GType effect_type;

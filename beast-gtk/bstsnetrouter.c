@@ -314,10 +314,7 @@ bst_snet_router_item_added (BstSNetRouter *router,
   GnomeCanvasItem *csource;
   
   if (!BSE_IS_SOURCE (item))
-    {
-      g_warning ("Can't handle non-source snet items");
-      return;
-    }
+    return;
   
   csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
 				   BSE_OBJECT_ID (item),
@@ -339,9 +336,7 @@ walk_items (BseItem  *item,
   BstSNetRouter *router = BST_SNET_ROUTER (data[0]);
   GnomeCanvas *canvas = GNOME_CANVAS (router);
   
-  if (!BSE_IS_SOURCE (item))
-    g_warning ("Can't handle non-source snet items");
-  else
+  if (BSE_IS_SOURCE (item))
     {
       GnomeCanvasItem *csource;
       
@@ -983,4 +978,69 @@ bst_snet_router_event (GtkWidget *widget,
     handled = GTK_WIDGET_CLASS (parent_class)->event (widget, event);
   
   return handled;
+}
+
+BstSNetRouter*
+bst_snet_router_build_page (BswProxy snet)
+{
+  static gchar *zoom_xpm[] = {
+    "12 12 2 1", "  c None", "# c #000000",
+    "            ",
+    " ####  #### ",
+    " ##      ## ",
+    " # #    # # ",
+    " #  ####  # ",
+    "    #  #    ",
+    "    #  #    ",
+    " #  ####  # ",
+    " # #    # # ",
+    " ##      ## ",
+    " ####  #### ",
+    "            ",
+  };
+  GtkWidget *router, *zoomed_window, *router_box, *pix;
+  GdkPixmap *pixmap;
+  GdkBitmap *mask;
+
+  g_return_val_if_fail (BSW_IS_SNET (snet), NULL);
+
+  router = g_object_new (BST_TYPE_SNET_ROUTER,
+			 "aa", BST_SNET_ANTI_ALIASED,
+			 NULL);
+  bst_snet_router_set_snet (BST_SNET_ROUTER (router), snet);
+
+  router_box = g_object_new (GTK_TYPE_VBOX,
+			     "visible", TRUE,
+			     "homogeneous", FALSE,
+			     "spacing", 3,
+			     "border_width", 5,
+			     NULL);
+  gtk_box_pack_start (GTK_BOX (router_box), BST_SNET_ROUTER (router)->toolbar, FALSE, TRUE, 0);
+  zoomed_window = g_object_new (BST_TYPE_ZOOMED_WINDOW,
+				"visible", TRUE,
+				"hscrollbar_policy", GTK_POLICY_ALWAYS,
+				"vscrollbar_policy", GTK_POLICY_ALWAYS,
+				"parent", router_box,
+				NULL);
+  g_object_connect (zoomed_window,
+		    "swapped_signal::zoom", bst_snet_router_adjust_region, router,
+		    "swapped_signal::zoom", gtk_false, NULL,
+		    NULL);
+
+  pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (zoomed_window),
+						  &mask, NULL, zoom_xpm);
+  pix = gtk_pixmap_new (pixmap, mask);
+  gdk_pixmap_unref (pixmap);
+  gdk_pixmap_unref (mask);
+  gtk_widget_set (pix,
+		  "visible", TRUE,
+		  "parent", BST_ZOOMED_WINDOW (zoomed_window)->toggle_button,
+		  NULL);
+  
+  g_object_set (router,
+		"visible", TRUE,
+		"parent", zoomed_window,
+		NULL);
+
+  return BST_SNET_ROUTER (router);
 }

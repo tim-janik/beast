@@ -77,7 +77,9 @@ BODY (BseProcedureClass *proc,
 	  guint i;
 	  
 	  for (i = 0; i < wdsc->n_chunks; i++)
-	    if (bse_value_arrays_match_freq (wdsc->chunks[i].osc_freq, list_array->n_values ? list_array : 0, skip_array)) // FIXME: bad hack around GValueArray
+	    if (bse_value_arrays_match_freq (wdsc->chunks[i].osc_freq,
+					     list_array && list_array->n_values ? list_array : NULL,
+					     skip_array))
 	      {
 		GslWaveChunk *wchunk = gsl_wave_chunk_from_dsc (wdsc, i);
 		

@@ -1,3 +1,8 @@
+Thu Dec 20 07:01:32 2001  Tim Janik  <timj@gtk.org>
+
+	* bsewaveosc.c (wmod_process): removed commented reference
+	implementation, clear filter state beyond GSL_SIGNAL_EPSILON.
+
 Sat Oct 20 12:51:57 2001  Tim Janik  <timj@gtk.org>
 
 	* icons/filter.xcf: new excellent image by drc.

@@ -73,7 +73,7 @@ bst_xframe_get_type (void)
 	(GBaseInitFunc) NULL,
 	(GBaseFinalizeFunc) NULL,
 	(GClassInitFunc) bst_xframe_class_init,
-	NULL,   /* clas_finalize */
+	NULL,   /* class_finalize */
 	NULL,   /* class_data */
 	sizeof (BstXFrame),
 	0,      /* n_preallocs */

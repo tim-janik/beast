@@ -76,7 +76,7 @@ BSE_BUILTIN_TYPE (BseSample)
     NULL /* class_data */,
     
     sizeof (BseSample),
-    BSE_PREALLOC_N_SAMPLES /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_sample_init,
   };
   

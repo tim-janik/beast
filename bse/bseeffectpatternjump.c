@@ -54,7 +54,7 @@ BSE_BUILTIN_TYPE (BseEffectPatternJump)
     NULL /* class_data */,
 
     sizeof (BseEffectPatternJump),
-    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_pattern_jump_init,
   };
   GType effect_type;

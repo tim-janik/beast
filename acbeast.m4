@@ -110,11 +110,14 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 
 	dnl Further setup CFLAGS for GCC.
 	MC_IF_VAR_EQ(GCC, yes,
-
+		dnl
 		dnl Debugging
+		dnl
 		MC_EVAR_SUPPLEMENT(CFLAGS, -g, -ggdb3)
 
+		dnl
 		dnl Sane Behaviour
+		dnl
 		dnl dflt: MC_EVAR_ADD(CFLAGS, -fsigned-char, -fsigned-char)
 		dnl dflt: MC_EVAR_ADD(CFLAGS, -fsigned-bitfields, -fsigned-bitfields)
 		dnl dflt: MC_EVAR_ADD(CFLAGS, -fno-writable-strings, -fno-writable-strings)
@@ -124,9 +127,12 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		MC_EVAR_ADD(CFLAGS, -ffor-scope, -ffor-scope)
 		MC_EVAR_ADD(CFLAGS, -Wno-cast-qual, -Wno-cast-qual)
         	
+		dnl
 		dnl Warnings.
+		dnl
 		MC_EVAR_ADD(CFLAGS, -Wall, -Wall)
 		MC_EVAR_ADD(CFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
+		MC_EVAR_ADD(CFLAGS, -Wmissing-declarations, -Wmissing-declarations)
 		dnl MC_EVAR_ADD(CFLAGS, -Wstrict-prototypes, -Wstrict-prototypes)
 		MC_EVAR_ADD(CFLAGS, -Winline, -Winline)
 		dnl glibc breakage: MC_EVAR_ADD(CFLAGS, -Wpointer-arith, -Wpointer-arith)
@@ -145,9 +151,12 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		                [mc_opt_warn_no_return=-Wmissing-noreturn])
   		MC_PROG_CC_SUPPORTS_OPTION($mc_opt_warn_no_return,
 		      MC_EVAR_ADD(CFLAGS, $mc_opt_warn_no_return, $mc_opt_warn_no_return))
-		dnl glibc breakage: MC_EVAR_ADD(CFLAGS, -Wredundant-decls, -Wredundant-decls)
-	
+		dnl glibc breakage:
+		MC_EVAR_ADD(CFLAGS, -Wredundant-decls, -Wredundant-decls)
+
+		dnl
 		dnl Optimizations
+		dnl
 		MC_EVAR_ADD(CFLAGS, -O, -O6)
 		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
 		MC_EVAR_ADD(CFLAGS, -fstrength-reduce, -fstrength-reduce)
@@ -161,6 +170,13 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		MC_EVAR_ADD(CFLAGS, -fgcse, -fgcse)
 		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
 		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
+		
+		dnl
+		dnl Fun options
+		dnl
+		dnl MC_EVAR_ADD(CFLAGS, -Q, -Q)	dnl report each compiled function
+		dnl MC_EVAR_ADD(CFLAGS, -ftime-report, -ftime-report)
+		dnl MC_EVAR_ADD(CFLAGS, -fmem-report, -fmem-report)
 	,	
 		MC_IF_VAR_EQ(CFLAGS_include_O, yes,
 			MC_EVAR_ADD(CFLAGS, -O, -O2)

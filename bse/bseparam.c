@@ -503,7 +503,7 @@ bse_param_types_init (void)	/* sync with btype.c */
    */
   memset (&info, 0, sizeof (info));
   info.class_size = sizeof (GParamSpecClass);
-  info.n_preallocs = 8;
+  info.n_preallocs = 0;
   
   /* BSE_TYPE_PARAM_INT (derived from G_TYPE_PARAM_INT)
    */

@@ -79,7 +79,7 @@ BSE_BUILTIN_TYPE (BseServer)
     NULL /* class_data */,
     
     sizeof (BseServer),
-    BSE_PREALLOC_N_SUPERS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_server_init,
   };
   

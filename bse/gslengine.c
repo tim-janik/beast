@@ -23,6 +23,10 @@
 #include "gslopmaster.h"
 
 
+/* --- prototypes --- */
+static void wakeup_master (void);
+
+
 /* --- UserThread --- */
 GslModule*
 gsl_module_new (const GslClass *klass,
@@ -39,23 +43,36 @@ gsl_module_new (const GslClass *klass,
   /* setup GslModule */
   node->module.klass = klass;
   node->module.user_data = user_data;
-  node->module.istreams = klass->n_istreams ? gsl_new_struct0 (GslIStream, klass->n_istreams) : NULL;
-  node->module.ostreams = _op_alloc_ostreams (klass->n_ostreams);
+  node->module.istreams = klass->n_istreams ? gsl_new_struct0 (GslIStream, OP_NODE_N_ISTREAMS (node)) : NULL;
+  node->module.ostreams = _gsl_alloc_ostreams (OP_NODE_N_OSTREAMS (node));
   
   /* setup OpNode */
   node->inputs = OP_NODE_N_ISTREAMS (node) ? gsl_new_struct0 (OpInput, OP_NODE_N_ISTREAMS (node)) : NULL;
   node->outputs = OP_NODE_N_OSTREAMS (node) ? gsl_new_struct0 (OpOutput, OP_NODE_N_OSTREAMS (node)) : NULL;
-  node->onodes = NULL;
-  node->mnl_contained = FALSE;
+  node->output_nodes = NULL;
+  node->integrated = FALSE;
   gsl_rec_mutex_init (&node->rec_mutex);
   for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
     node->outputs[i].buffer = node->module.ostreams[i].values;
+  node->flow_jobs = NULL;
+  node->fjob_first = NULL;
+  node->fjob_last = NULL;
   
   return &node->module;
 }
 
+/**
+ * gsl_module_tick_stamp
+ * @module:  a GSL engine module
+ * @RETURNS: the module's tick stamp, indicating its process status
+ *
+ * Any thread may call this function on a valid engine module.
+ * The module specific tick stamp is updated to gsl_tick_stamp() +
+ * @n_values every time its GslProcessFunc() function was
+ * called. See also gsl_tick_stamp().
+ */
 guint64
-gsl_module_counter (GslModule *module)	/* called by any thread */
+gsl_module_tick_stamp (GslModule *module)
 {
   g_return_val_if_fail (module != NULL, 0);
   
@@ -68,7 +85,7 @@ gsl_module_counter (GslModule *module)	/* called by any thread */
  * @Returns: New job suitable for gsl_trans_add()
  *
  * Create a new transaction job to integrate @module into the engine.
- **/
+ */
 GslJob*
 gsl_job_integrate (GslModule *module)
 {
@@ -90,7 +107,7 @@ gsl_job_integrate (GslModule *module)
  *
  * Create a new transaction job which remove @module from the
  * engine and destroys it.
- **/
+ */
 GslJob*
 gsl_job_discard (GslModule *module)
 {
@@ -117,7 +134,7 @@ gsl_job_discard (GslModule *module)
  * of module @src_module to the input stream @dest_istream of module @dest_module
  * (it is an error if the input stream is already connected by the time the job
  * is executed).
- **/
+ */
 GslJob*
 gsl_job_connect (GslModule *src_module,
 		 guint      src_ostream,
@@ -150,7 +167,7 @@ gsl_job_connect (GslModule *src_module,
  * Create a new transaction job which causes the input stream @dest_istream
  * of @dest_module to be disconnected (it is an error if the input stream isn't
  * connected by the time the job is executed).
- **/
+ */
 GslJob*
 gsl_job_disconnect (GslModule *dest_module,
 		    guint      dest_istream)
@@ -180,7 +197,7 @@ gsl_job_disconnect (GslModule *dest_module,
  * either read out a module's current state, or to modify its state. An
  * accessor may only operate on the @data and the @module passed
  * in to it.
- **/
+ */
 /**
  * gsl_job_access
  * @module: The module to access
@@ -192,7 +209,7 @@ gsl_job_disconnect (GslModule *dest_module,
  * Create a new transaction job which will invoke @access_func 
  * on @module with @data when the transaction queue is processed
  * to modify the module's state.
- **/
+ */
 GslJob*
 gsl_job_access (GslModule    *module,
 		GslAccessFunc access_func,
@@ -205,11 +222,84 @@ gsl_job_access (GslModule    *module,
   g_return_val_if_fail (access_func != NULL, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = OP_JOB_ACCESS;
+  job->job_id = GSL_JOB_ACCESS;
   job->data.access.node = OP_NODE (module);
   job->data.access.access_func = access_func;
   job->data.access.data = data;
   job->data.access.free_func = free_func;
+  
+  return job;
+}
+
+/**
+ * gsl_flow_job_access
+ */
+GslJob*
+gsl_flow_job_access (GslModule    *module,
+		     guint64       tick_stamp,
+		     GslAccessFunc access_func,
+		     gpointer      data,
+		     GslFreeFunc   free_func)
+{
+  GslJob *job;
+  GslFlowJob *fjob;
+
+  g_return_val_if_fail (module != NULL, NULL);
+  g_return_val_if_fail (access_func != NULL, NULL);
+  
+  fjob = (GslFlowJob*) gsl_new_struct0 (GslFlowJobAccess, 1);
+  fjob->fjob_id = GSL_FLOW_JOB_ACCESS;
+  fjob->any.tick_stamp = tick_stamp;
+  fjob->access.access_func = access_func;
+  fjob->access.data = data;
+  fjob->access.free_func = free_func;
+
+  job = gsl_new_struct0 (GslJob, 1);
+  job->job_id = GSL_JOB_FLOW_JOB;
+  job->data.flow_job.node = OP_NODE (module);
+  job->data.flow_job.fjob = fjob;
+  
+  return job;
+}
+
+GslJob*
+gsl_flow_job_suspend (GslModule *module,
+		      guint64    tick_stamp)
+{
+  GslJob *job;
+  GslFlowJob *fjob;
+  
+  g_return_val_if_fail (module != NULL, NULL);
+  
+  fjob = (GslFlowJob*) gsl_new_struct0 (GslFlowJobAny, 1);
+  fjob->fjob_id = GSL_FLOW_JOB_SUSPEND;
+  fjob->any.tick_stamp = tick_stamp;
+  
+  job = gsl_new_struct0 (GslJob, 1);
+  job->job_id = GSL_JOB_FLOW_JOB;
+  job->data.flow_job.node = OP_NODE (module);
+  job->data.flow_job.fjob = fjob;
+  
+  return job;
+}
+
+GslJob*
+gsl_flow_job_resume (GslModule *module,
+		     guint64    tick_stamp)
+{
+  GslJob *job;
+  GslFlowJob *fjob;
+  
+  g_return_val_if_fail (module != NULL, NULL);
+  
+  fjob = (GslFlowJob*) gsl_new_struct0 (GslFlowJobAny, 1);
+  fjob->fjob_id = GSL_FLOW_JOB_RESUME;
+  fjob->any.tick_stamp = tick_stamp;
+  
+  job = gsl_new_struct0 (GslJob, 1);
+  job->job_id = GSL_JOB_FLOW_JOB;
+  job->data.flow_job.node = OP_NODE (module);
+  job->data.flow_job.fjob = fjob;
   
   return job;
 }
@@ -235,7 +325,7 @@ gsl_job_access (GslModule    *module,
  * %FALSE if not.
  * If %FALSE is returned, @timeout_p may be filled with the number of milliseconds
  * the engine should use for polling at maximum.
- **/
+ */
 /**
  * gsl_job_add_poll
  * @poll_func: Poll function to add
@@ -248,7 +338,7 @@ gsl_job_access (GslModule    *module,
  * Create a new transaction job which adds a poll function
  * to the engine. The poll function is used by the engine to
  * determine whether processing is currently necessary.
- **/
+ */
 GslJob*
 gsl_job_add_poll (GslPollFunc      poll_func,
 		  gpointer         data,
@@ -280,7 +370,7 @@ gsl_job_add_poll (GslPollFunc      poll_func,
  *
  * Create a new transaction job which removes a previously inserted poll
  * function from the engine.
- **/
+ */
 GslJob*
 gsl_job_remove_poll (GslPollFunc poll_func,
 		     gpointer    data)
@@ -307,7 +397,7 @@ gsl_job_remove_poll (GslPollFunc poll_func,
  * Create a new transaction job which issues @debug message when
  * the job is executed. This function is meant for debugging purposes
  * during development phase only and shouldn't be used in production code.
- **/
+ */
 GslJob*
 gsl_job_debug (const gchar *debug)
 {
@@ -327,11 +417,17 @@ gsl_job_debug (const gchar *debug)
  * @Returns: Newly opened empty transaction
  *
  * Open up a new transaction to commit jobs to the GSL engine.
- **/
+ * This function may cause garbage collection (see
+ * gsl_engine_garbage_collect()).
+ */
 GslTrans*
 gsl_trans_open (void)
 {
-  GslTrans *trans = _op_alloc_trans ();
+  GslTrans *trans;
+
+  gsl_engine_garbage_collect ();
+
+  trans = gsl_new_struct0 (GslTrans, 1);
   
   trans->jobs_head = NULL;
   trans->jobs_tail = NULL;
@@ -347,7 +443,7 @@ gsl_trans_open (void)
  * @job: Job to add
  *
  * Append a job to an opened transaction.
- **/
+ */
 void
 gsl_trans_add (GslTrans *trans,
 	       GslJob   *job)
@@ -372,7 +468,7 @@ gsl_trans_add (GslTrans *trans,
  * will execute the jobs contained in this transaction as soon as
  * it has completed its current processing cycle. The jobs will be
  * executed in the exact order they were added to the transaction.
- **/
+ */
 void
 gsl_trans_commit (GslTrans *trans)
 {
@@ -384,7 +480,7 @@ gsl_trans_commit (GslTrans *trans)
     {
       trans->comitted = TRUE;
       op_com_enqueue_trans (trans);
-      _gsl_com_fire_master_wakeup ();
+      wakeup_master ();
     }
   else
     gsl_trans_dismiss (trans);
@@ -396,7 +492,9 @@ gsl_trans_commit (GslTrans *trans)
  *
  * Close and discard the transaction, destroy all jobs currently
  * contained in it and do not execute them.
- **/
+ * This function may cause garbage collection (see
+ * gsl_engine_garbage_collect()).
+ */
 void
 gsl_trans_dismiss (GslTrans *trans)
 {
@@ -404,7 +502,9 @@ gsl_trans_dismiss (GslTrans *trans)
   g_return_if_fail (trans->comitted == FALSE);
   g_return_if_fail (trans->cqt_next == NULL);
   
-  _op_free_trans (trans);
+  _gsl_free_trans (trans);
+
+  gsl_engine_garbage_collect ();
 }
 
 /**
@@ -415,7 +515,7 @@ gsl_trans_dismiss (GslTrans *trans)
  * Convenience function which openes up a new transaction,
  * collects the %NULL terminated job list passed to the function,
  * and commits the transaction.
- **/
+ */
 void
 gsl_transact (GslJob *job,
 	      ...)
@@ -504,18 +604,22 @@ slave (gpointer data)
 }
 
 /* --- setup & trigger --- */
-static gboolean gsl_engine_initialized = FALSE;
-static gboolean gsl_engine_threaded = FALSE;
+static gboolean   gsl_engine_initialized = FALSE;
+static gboolean   gsl_engine_threaded = FALSE;
+static GslThread *master_thread = NULL;
 guint		gsl_externvar_bsize = 0;
 guint		gsl_externvar_sample_freq = 0;
-guint64		gsl_externvar_lcounter = 0;
 
 /**
  * gsl_engine_init
+ * @block_size: number of values to process block wise
  *
  * Initialize the GSL engine, this function must be called prior to
  * any other engine related function and can only be invoked once.
- **/
+ * The @block_size determines the amount by which the global tick
+ * stamp (see gsl_tick_stamp()) is updated everytime the whole
+ * module network completed processing @block_size values.
+ */
 void
 gsl_engine_init (gboolean run_threaded,
 		 guint	  block_size,
@@ -528,33 +632,24 @@ gsl_engine_init (gboolean run_threaded,
   gsl_engine_initialized = TRUE;
   gsl_engine_threaded = run_threaded;
   gsl_externvar_bsize = block_size;
-  gsl_externvar_lcounter = 0;
   gsl_externvar_sample_freq = sample_freq;
+  _gsl_tick_stamp_set_leap (block_size);
   
   OP_DEBUG (GSL_ENGINE_DEBUG_ENGINE, "initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
   
   if (gsl_engine_threaded)
     {
-      GslTrans *trans = gsl_trans_open ();
-
-      _gsl_com_add_master_wakeup (trans);
-      gsl_trans_commit (trans);
-      gsl_thread_new (_gsl_master_thread, NULL);
+      master_thread = gsl_thread_new (_gsl_master_thread, NULL);
       if (0)
 	gsl_thread_new (slave, NULL);
     }
 }
 
-void
-_op_engine_inc_counter (guint64 delta)
+static void
+wakeup_master (void)
 {
-  volatile guint64 newval;
-  
-  g_return_if_fail (delta > 0);
-  
-  newval = gsl_engine_last_counter ();
-  newval += delta;
-  gsl_externvar_lcounter = newval;
+  if (master_thread)
+    gsl_thread_wakeup (master_thread);
 }
 
 gboolean
@@ -597,6 +692,14 @@ gsl_engine_dispatch (void)
     _gsl_master_dispatch ();
 }
 
+/**
+ * gsl_engine_wait_on_trans
+ *
+ * Wait until all pending transactions have been processed
+ * by the GSL Engine.
+ * This function may cause garbage collection (see
+ * gsl_engine_garbage_collect()).
+ */
 void
 gsl_engine_wait_on_trans (void)
 {
@@ -610,7 +713,7 @@ gsl_engine_wait_on_trans (void)
   op_com_wait_on_trans ();
   
   /* call all free() functions */
-  _op_collect_trans ();
+  gsl_engine_garbage_collect ();
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

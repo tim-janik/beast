@@ -54,7 +54,7 @@ BSE_BUILTIN_TYPE (BseEffectVolumeDelta)
     NULL /* class_data */,
 
     sizeof (BseEffectVolumeDelta),
-    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_volume_delta_init,
   };
   GType effect_type;

@@ -21,6 +21,7 @@
 #include        "bsecontainer.h"
 #include        "bsestorage.h"
 #include        "bsemarshal.h"
+#include        "bsemain.h"
 #include        <string.h>
 
 
@@ -75,7 +76,7 @@ BSE_BUILTIN_TYPE (BsePatternGroup)
     NULL /* class_group */,
     
     sizeof (BsePatternGroup),
-    BSE_PREALLOC_N_PATTERN_GROUPS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pattern_group_init,
   };
   
@@ -181,14 +182,15 @@ bse_pattern_group_insert_pattern (BsePatternGroup *pgroup,
   if (position < 0 || position > pgroup->n_entries)
     position = pgroup->n_entries;
 
+  BSE_SEQUENCER_LOCK ();
   n = pgroup->n_entries++;
   pgroup->entries = g_renew (BsePatternGroupEntry, pgroup->entries, pgroup->n_entries);
   g_memmove (pgroup->entries + position + 1,
 	     pgroup->entries + position,
 	     sizeof (BsePatternGroupEntry) * (n - position));
   pgroup->entries[position].pattern = pattern;
-
   update_pattern_count (pgroup);
+  BSE_SEQUENCER_UNLOCK ();
 
   bse_object_ref (BSE_OBJECT (pattern));
   g_signal_emit (pgroup, pattern_group_signals[SIGNAL_PATTERN_INSERTED], 0, pattern, position);
@@ -207,12 +209,13 @@ bse_pattern_group_remove_entry (BsePatternGroup *pgroup,
     {
       BsePattern *pattern = pgroup->entries[position].pattern;
       
+      BSE_SEQUENCER_LOCK ();
       pgroup->n_entries--;
       g_memmove (pgroup->entries + position,
 		 pgroup->entries + position + 1,
 		 sizeof (BsePatternGroupEntry) * (pgroup->n_entries - position));
-      
       update_pattern_count (pgroup);
+      BSE_SEQUENCER_UNLOCK ();
       
       bse_object_ref (BSE_OBJECT (pattern));
       g_signal_emit (pgroup, pattern_group_signals[SIGNAL_PATTERN_REMOVED], 0, pattern, position);
@@ -233,6 +236,7 @@ bse_pattern_group_remove_pattern (BsePatternGroup *pgroup,
   cur = pgroup->entries;
   last = cur;
   bound = cur + pgroup->n_entries;
+  BSE_SEQUENCER_LOCK ();
   while (cur < bound)
     {
       if (cur->pattern != pattern)
@@ -248,9 +252,9 @@ bse_pattern_group_remove_pattern (BsePatternGroup *pgroup,
       cur++;
     }
   pgroup->n_entries = last - pgroup->entries;
-
   update_pattern_count (pgroup);
-
+  BSE_SEQUENCER_UNLOCK ();
+  
   bse_object_ref (BSE_OBJECT (pgroup));
   bse_object_ref (BSE_OBJECT (pattern));
 
@@ -263,8 +267,8 @@ bse_pattern_group_remove_pattern (BsePatternGroup *pgroup,
 }
 
 void
-bse_pattern_group_copy_contents (BsePatternGroup *pgroup,
-				 BsePatternGroup *src_pgroup)
+bse_pattern_group_clone_contents (BsePatternGroup *pgroup,
+				  BsePatternGroup *src_pgroup)
 {
   guint i;
 

@@ -86,6 +86,7 @@ bst_song_shell_init (BstSongShell *song_shell)
   song_shell->instrument_view = NULL;
   song_shell->pattern_view = NULL;
   song_shell->play_list = NULL;
+  song_shell->snet_router = NULL;
 }
 
 static void
@@ -160,6 +161,20 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 					    "label", "Arrangement",
 					    "visible", TRUE,
 					    NULL));
+
+  /* synth net router */
+  if (1)
+    {
+      song_shell->snet_router = bst_snet_router_build_page (super_shell->super);
+      g_object_connect (song_shell->snet_router,
+			"signal::destroy", gtk_widget_destroyed, &song_shell->snet_router,
+			NULL);
+      gtk_notebook_append_page (GTK_NOTEBOOK (notebook), gtk_widget_get_toplevel (GTK_WIDGET (song_shell->snet_router)),
+				gtk_widget_new (GTK_TYPE_LABEL,
+						"label", "Routing",
+						"visible", TRUE,
+						NULL));
+    }
 }
 
 static void
@@ -173,6 +188,8 @@ bst_song_shell_update (BstSuperShell *super_shell)
   bst_item_view_update (song_shell->instrument_view);
   bst_item_view_update (song_shell->pattern_view);
   // bst_play_list_update (song_shell->play_list);
+  if (song_shell->snet_router)
+    bst_snet_router_update (song_shell->snet_router);
 }
 
 static void

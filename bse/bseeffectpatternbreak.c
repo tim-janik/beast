@@ -42,7 +42,7 @@ BSE_BUILTIN_TYPE (BseEffectPatternBreak)
     NULL /* class_data */,
 
     sizeof (BseEffectPatternBreak),
-    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_pattern_break_init,
   };
   GType effect_type;

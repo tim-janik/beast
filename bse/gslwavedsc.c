@@ -442,7 +442,7 @@ gsl_wave_dsc_free (GslWaveDsc *wave)
     g_free (wave->chunks[i].file_name);
   g_free (wave->chunks);
   g_free (wave->name);
-  gsl_delete_struct (GslWaveDsc, 1, wave);
+  gsl_delete_struct (GslWaveDsc, wave);
 }
 
 GslRing* /* free ring + ring ->data elements */

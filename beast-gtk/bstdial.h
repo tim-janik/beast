@@ -66,6 +66,7 @@ struct _BstDial
   gfloat old_value;
   gfloat old_lower;
   gfloat old_upper;
+  gfloat old_page_size;
   
   /* The adjustment object that stores the data for this dial */
   GtkObject *adjustment;

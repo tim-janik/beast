@@ -1,3 +1,96 @@
+Fri Jan 11 06:17:23 2002  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.h: provide object flags user shift macro.
+	
+	* *.c: reset TypeInfo prealloc configurations.
+	
+	* bseinstrument.c: tiny cleanup.
+	
+	* bsemain.[hc]: provide sequencer mutex.
+	
+	* bsepattern.c: insert sequencer locks as apropriate.
+	
+	* bsepatterngroup.c: same here.
+	
+	* bsepcmoutput.c: doh, fix off-by-one buffer access.
+	
+	* bsesnet.[hc]: change code to allow derivation.
+	
+	* bsesong.[hc]: derive from BseSNet. protect portions
+	by sequencer lock. spwan sequencer thread upon playback.
+	
+	* bsesource.c: fix parser warning about failing connections.
+	
+	* bsestorage.c: fix off-by-one string access.
+	
+	* bsesuper.h: provide object flag user shift macro.
+	
+	* gsl-mplan.txt: updates, mention flow jobs.
+	
+	* gslcommon.[hc]: fix gsl_delete_struct/gsl_delete_structs.
+	(gsl_ring_find): nw function to find data in a ring.
+	(gsl_thread_new): return a thread handle.
+	(gsl_thread_self): same here.
+	(gsl_thread_sleep): sleep until timeout expires or woken up.
+	(gsl_thread_aborted): should the thread abort?
+	(gsl_thread_queue_abort): queue abort event on a thread.
+	(gsl_thread_abort): abort a thread and wait until it finished.
+	(gsl_thread_wakeup): wake up a sleeping thread.
+	(gsl_thread_awake_after): queue wakeup of self after a certain
+	tick_stamp.
+	(gsl_thread_awake_before): queue wakeup of self before a certain
+	tick_stamp.
+	(gsl_thread_get_pollfd): retrive wakeup pollfd for self.
+	(gsl_tick_stamp): return current tick stamp counter.
+	(GSL_TICK_STAMP): get current tick stamp counter without
+	lock protection (should be used within GModule only).
+	
+	* *.c: gsl_delete_struct*() adaptions.
+
+	* gsldefs.h: provide GslThread handle.
+	(if_reject): if() statement that is unlikely to succeede.
+	(if_expect): if() statement that is likely to succeede.
+	
+	* gslengine.c: fix stream buffer allocations.
+	doc fixes. added proper tick_stamp support.
+	(gsl_flow_job_access): queue a time stamped flow job on
+	a module to access module data.
+	(gsl_flow_job_suspend): queue a time stamped flow job on
+	a module to suspend it.
+	(gsl_flow_job_resume): queue a time stamped flow job on
+	a module to resume it.
+	
+	* gslopnode.h: buncha renaming and fields order changing.
+	added flow jobs.
+	
+	* gslopmaster.c: removed master node list code. handle
+	flow jobs. misc fixes. changed wakeup mechanism.
+	walk unscheduled nodes with flow jobs at the end of dispatching.
+	
+	* gslopschedule.c: care of keping master node list sorted. dump
+	schedule for debugging once it changed.
+	
+	* gsloputil.[hc]: plugged memleak. removed gross over-allocation
+	of buffers. handle flow job trash queue. added function for
+	master node list maintenance: _gsl_mnl_remove(), _gsl_mnl_integrate()
+	and _gsl_mnl_reorder(). the list is partially sorted now.
+	(gsl_engine_garbage_collect): do proper trash collection from
+	user thread. removed old wakeup code.
+	
+	* gslfilter.h: added GSL_SIGNAL_EPSILON and GSL_SIGNAL_KAPPA
+	to compare valid signals against.
+	
+	* gslmath.[hc]: make gsl_bit_depth_epsilon() return doubles.
+	
+Thu Dec 20 06:40:04 2001  Tim Janik  <timj@gtk.org>
+
+	* gslmath.[hc]: include gslieee754.h.
+	(gsl_bit_depth_epsilon): grumble, make this return doubles.
+
+	* gslieee754.h: new file, containing all the necessary bits to provide
+	and check for inf/nan, normal and subnormal numbers on ieee754 floats
+	and doubles.
+
 Fri Dec 14 08:49:49 2001  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-oss.c: use BseServer IO watch to monitor device.

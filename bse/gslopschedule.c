@@ -54,8 +54,10 @@ unschedule_node (OpSchedule *sched,
   
   OP_DEBUG (GSL_ENGINE_DEBUG_SCHED, "unschedule_node(%p,%u)", node, leaf_level);
   sched->nodes[leaf_level] = gsl_ring_remove (sched->nodes[leaf_level], node);
-  node->sched_tag = FALSE;
   node->sched_leaf_level = 0;
+  node->sched_tag = FALSE;
+  if (node->flow_jobs)
+    _gsl_mnl_reorder (node);
   sched->n_items--;
 }
 
@@ -79,8 +81,10 @@ unschedule_cycle (OpSchedule *sched,
 
       if (!OP_NODE_IS_SCHEDULED (node))
 	g_warning ("node(%p) in schedule ring(%p) is untagged", node, ring);
-      node->sched_tag = FALSE;
       node->sched_leaf_level = 0;
+      node->sched_tag = FALSE;
+      if (node->flow_jobs)
+	_gsl_mnl_reorder (node);
     }
   sched->n_items--;
 }
@@ -124,10 +128,11 @@ _op_schedule_clear (OpSchedule *sched)
   g_return_if_fail (sched->secured == FALSE);
   g_return_if_fail (sched->in_pqueue == FALSE);
 
-  _op_schedule_debug_dump (sched);
-
   for (i = 0; i < sched->leaf_levels; i++)
     {
+      /* FIXME: each unschedule operation is a list walk, while we
+       * could easily leave the rings alone and free them as a whole
+       */
       while (sched->nodes[i])
 	unschedule_node (sched, sched->nodes[i]->data);
       while (sched->cycles[i])
@@ -146,7 +151,7 @@ _op_schedule_destroy (OpSchedule *sched)
   _op_schedule_clear (sched);
   g_free (sched->nodes);
   g_free (sched->cycles);
-  gsl_delete_struct (OpSchedule, 1, sched);
+  gsl_delete_struct (OpSchedule, sched);
 }
 
 static void
@@ -181,8 +186,10 @@ _op_schedule_node (OpSchedule *sched,
   g_return_if_fail (!OP_NODE_IS_SCHEDULED (node));
 
   OP_DEBUG (GSL_ENGINE_DEBUG_SCHED, "schedule_node(%p,%u)", node, leaf_level);
-  node->sched_tag = TRUE;
   node->sched_leaf_level = leaf_level;
+  node->sched_tag = TRUE;
+  if (node->flow_jobs)
+    _gsl_mnl_reorder (node);
   _op_schedule_grow (sched, leaf_level);
   /* could do 3-stage scheduling by expensiveness */
   sched->nodes[leaf_level] = (OP_NODE_IS_EXPENSIVE (node) ? gsl_ring_prepend : gsl_ring_append) (sched->nodes[leaf_level], node);
@@ -205,8 +212,10 @@ _op_schedule_cycle (OpSchedule *sched,
       OpNode *node = walk->data;
 
       g_return_if_fail (!OP_NODE_IS_SCHEDULED (node));
-      node->sched_tag = TRUE;
       node->sched_leaf_level = leaf_level;
+      node->sched_tag = TRUE;
+      if (node->flow_jobs)
+	_gsl_mnl_reorder (node);
     }
   _op_schedule_grow (sched, leaf_level);
   sched->cycles[leaf_level] = gsl_ring_prepend (sched->cycles[leaf_level], cycle_nodes);
@@ -238,6 +247,8 @@ _op_schedule_secure (OpSchedule *sched)
 
   sched->secured = TRUE;
   sched->cur_leaf_level = sched->leaf_levels;
+
+  _op_schedule_debug_dump (sched);
 }
 
 static void
@@ -408,7 +419,7 @@ master_resolve_cycles (OpQuery *query,
 	  g_assert (cycle->last == NULL);	/* paranoid */
 	  g_assert (cycle->nodes == NULL);	/* paranoid */
 
-	  gsl_delete_struct (OpCycle, 1, cycle);
+	  gsl_delete_struct (OpCycle, cycle);
 	  query->cycles = gsl_ring_remove_node (query->cycles, walk);
 	}
       else
@@ -510,7 +521,7 @@ subschedule_query_node (OpSchedule *schedule,
 	}
     }
   query->leaf_level = leaf_level;
-  node->counter = gsl_engine_last_counter ();
+  node->counter = GSL_TICK_STAMP;
   node->sched_router_tag = FALSE;
   OP_DEBUG (GSL_ENGINE_DEBUG_SCHED, "end_query(%p)", node);
 }

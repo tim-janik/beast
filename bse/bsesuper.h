@@ -30,6 +30,7 @@
 #define BSE_IS_SUPER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SUPER))
 #define BSE_IS_SUPER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUPER))
 #define BSE_SUPER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUPER, BseSuperClass))
+#define BSE_SUPER_FLAGS_USHIFT	    (BSE_CONTAINER_FLAGS_USHIFT + 0)
 
 
 /* --- BseSuper object --- */

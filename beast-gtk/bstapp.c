@@ -155,6 +155,7 @@ bst_app_register (BstApp *app)
 {
   if (!g_slist_find (bst_app_class->apps, app))
     bst_app_class->apps = g_slist_prepend (bst_app_class->apps, app);
+  BST_APP_GET_CLASS (app)->seen_apps = TRUE;
 }
 static void
 bst_app_unregister (BstApp *app)
@@ -247,8 +248,11 @@ bst_app_destroy (GtkObject *object)
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 
-  if (!bst_app_class->apps)
-    gtk_main_quit ();
+  if (!bst_app_class->apps && bst_app_class->seen_apps)
+    {
+      bst_app_class->seen_apps = FALSE;
+      gtk_main_quit ();
+    }
 }
 
 BstApp*

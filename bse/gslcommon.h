@@ -55,14 +55,18 @@ const GslConfig*	gsl_get_config	(void) G_GNUC_CONST;
 /* --- memory allocation --- */
 #define gsl_new_struct(type, n)		((type*) gsl_alloc_memblock (sizeof (type) * (n)))
 #define gsl_new_struct0(type, n)	((type*) gsl_alloc_memblock0 (sizeof (type) * (n)))
+#define gsl_delete_struct(type, mem)	(gsl_delete_structs (type, 1, (mem)))
 #ifndef	__GNUC__
-#  define gsl_delete_struct(type, n, mem)	(gsl_free_memblock (sizeof (type) * (n), (mem)))
+#  define gsl_delete_structs(type, n, mem)	(gsl_free_memblock (sizeof (type) * (n), (mem)))
 #else					/* provide typesafety if possible */
-#  define gsl_delete_struct(type, n, mem)	({ \
+#  define gsl_delete_structs(type, n, mem)	({ \
   type *__typed_pointer = (mem); \
   gsl_free_memblock (sizeof (type) * (n), __typed_pointer); \
 })
 #endif
+#define	GSL_ALIGNED_SIZE(size,align)	((align) > 0 ? _GSL_INTERN_ALIGN (((gsize) (size)), ((gsize) (align))) : (gsize) (size))
+#define	_GSL_INTERN_ALIGN(s, a)		(((s + (a - 1)) / a) * a)
+#define	GSL_STD_ALIGN			(MAX (MAX (sizeof (float), sizeof (int)), sizeof (void*)))
 
 
 /* --- ring (circular-list) --- */
@@ -85,6 +89,8 @@ GslRing*	gsl_ring_remove_node	(GslRing	*head,
 GslRing*	gsl_ring_remove		(GslRing	*head,
 					 gpointer	 data);
 guint		gsl_ring_length		(GslRing	*head);
+GslRing*	gsl_ring_find		(GslRing	*head,
+					 gconstpointer	 data);
 GslRing*	gsl_ring_nth		(GslRing	*head,
 					 guint           n);
 gpointer	gsl_ring_nth_data	(GslRing	*head,
@@ -127,10 +133,23 @@ const gchar*	gsl_strerror		(GslErrorType	error);
 
 /* --- GslThread --- */
 typedef void (*GslThreadFunc)		(gpointer	user_data);
-gboolean	gsl_thread_new		(GslThreadFunc	func,
+GslThread*	gsl_thread_new		(GslThreadFunc	func,
 					 gpointer	user_data);
 guint		gsl_threads_get_count	(void);
-gpointer	gsl_thread_self		(void);
+GslThread*	gsl_thread_self		(void);
+
+
+/* --- thread syncronization --- */
+gboolean	gsl_thread_sleep	(glong		 max_msec);
+gboolean	gsl_thread_aborted	(void);
+void		gsl_thread_queue_abort	(GslThread	*thread);
+void		gsl_thread_abort	(GslThread	*thread);
+void		gsl_thread_wakeup	(GslThread	*thread);
+void		gsl_thread_awake_after	(guint64	 tick_stamp);
+void		gsl_thread_awake_before	(guint64	 tick_stamp);
+void		gsl_thread_get_pollfd	(GslPollFD	*pfd);
+guint64		gsl_tick_stamp		(void);
+#define		GSL_TICK_STAMP		(_GSL_TICK_STAMP_VAL ())
 
 
 /* --- GslMutex --- */
@@ -174,12 +193,15 @@ void		gsl_free_memblock	(gsize		 size,
 void		gsl_alloc_report	(void);
 const guint	gsl_alloc_upper_power2	(const gulong	 number);
 gboolean	gsl_rec_mutex_test_self	(GslRecMutex	*rec_mutex);
-void		_gsl_init_data_handles	(void);
-void		_gsl_init_data_caches	(void);
-void		_gsl_init_wave_dsc	(void);
-void		_gsl_init_engine_utils	(void);
+void	       _gsl_init_data_handles	(void);
+void	       _gsl_init_data_caches	(void);
+void	       _gsl_init_wave_dsc	(void);
+void	       _gsl_init_engine_utils	(void);
+void	       _gsl_tick_stamp_inc	(void);
+void	       _gsl_tick_stamp_set_leap (guint		 ticks);
 #define		GSL_N_IO_RETRIES	(5)
-
+#define		_GSL_TICK_STAMP_VAL()	(gsl_externvar_tick_stamp + 0)
+extern volatile guint64	gsl_externvar_tick_stamp;
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,35 @@
+Fri Jan 11 05:54:30 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstracktable.[hc]: GtkTablke derived widget, that
+	allowes for limited grid-aligned GUI editing.
+	
+	* beast-gtk/bstrtest.c: test program for bstracktable.
+	
+	* beast-gtk/bstapp.[hc]: fix main loop exit.
+	
+	* beast-gtk/bstdial.[hc]: more cosmetic fixups.
+	
+	* beast-gtk/bstpatterneditor.[hc]: fix font and clear
+	windows upon redraws.
+	
+	* beast-gtk/bstplaylist.[hc]: move to xpm format for the
+	drop spot icon. remove kennel usage.
+	
+	* beast-gtk/bstsnetrouter.[hc]: silently ignor non BseSource items.
+	fixed xpm icon creation.
+	(bst_snet_router_build_page): convenience function to build notebook
+	page with SNetRouter (so can be resused in songs).
+	
+	* beast-gtk/bstsnetshell.c: adaptions to SNetRouter changes.
+	
+	* beast-gtk/bstsongshell.[hc]: create a SNetRouter here as well.
+	
+	* beast-gtk/bstutils.[hc]: get rid of GtkKennel implementation,
+	we have GtkSizeGroup now.
+	(bst_xpm_view_create): create a GtkPixmap widget from an xpm.
+	(bst_widget_force_bg_clear): force bg clearance and redraw
+	on a widget.
+	
 Mon Jan  7 09:48:34 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdraggroup.c: dnd fixes, don't specify

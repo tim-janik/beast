@@ -47,7 +47,7 @@ struct _BstPlayList
 
   GtkWidget	*pattern_list;
   GtkWidget	*group_list;
-  GtkKennel     *group_name_kennel;
+  GtkSizeGroup  *size_group;
 };
 struct _BstPlayListClass
 {

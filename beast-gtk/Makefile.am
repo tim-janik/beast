@@ -22,7 +22,7 @@ DEFS += $(strip \
 # special profiling hooks
 PROFILE_SOURCE = # profile.c
 CFLAGS += # $(subst profile.c, -pg -a, $(findstring profile.c, $(<F)))
-LIBS += # -pg 
+LIBS += # -lefence # -pg 
 
 # link programs against BSE and other neccessary libraries
 progs_LDADD = \
@@ -61,6 +61,7 @@ beast_headers = $(strip \
 	bstpreferences.h \
 	bstprocedure.h \
 	bstqsampler.h \
+	bstracktable.h \
 	bstradiotools.h \
 	bstsamplerepo.h \
 	bstsampleshell.h \
@@ -106,6 +107,7 @@ beast_sources = $(strip \
 	bstprocedure.c \
 	bstqsampler.c \
 	bstradiotools.c \
+	bstracktable.c \
 	bstsamplerepo.c \
 	bstsampleshell.c \
 	bstservermonitor.c \
@@ -203,9 +205,11 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 # setup BEAST sources and their dependancies
 #
 beast_SOURCES = $(beast_sources)
-noinst_PROGRAMS = bststest
+noinst_PROGRAMS = bststest bstrtest
 bststest_SOURCES = bststest.c bstutils.c gnomeforest.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)
+bstrtest_SOURCES = bstrtest.c bstracktable.c bstdial.c
+bstrtest_LDADD = $(progs_LDADD)
 
 EXTRA_DIST += $(beast_headers) $(beast_extra_sources)
 MAINTAINERCLEANFILES += $(beast_built_sources)

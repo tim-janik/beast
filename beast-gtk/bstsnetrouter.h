@@ -77,7 +77,7 @@ void		 bst_snet_router_adjust_region	     (BstSNetRouter *snet_router);
 BstCanvasSource* bst_snet_router_csource_from_source (BstSNetRouter *snet_router,
 						      BswProxy       source);
 void		 bst_snet_router_toggle_palette	     (BstSNetRouter *snet_router);
-
+BstSNetRouter*	 bst_snet_router_build_page	     (BswProxy	     snet);
 
 
 #ifdef __cplusplus

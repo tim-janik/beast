@@ -266,7 +266,7 @@ reversed_handle_destroy (GslDataHandle *data_handle)
   gsl_data_handle_unref (rhandle->src_handle);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (ReversedHandle, 1, rhandle);
+  gsl_delete_struct (ReversedHandle, rhandle);
 }
 
 static GslLong
@@ -332,7 +332,7 @@ gsl_data_handle_new_reversed (GslDataHandle *src_handle)
     }
   if (!success)
     {
-      gsl_delete_struct (ReversedHandle, 1, rhandle);
+      gsl_delete_struct (ReversedHandle, rhandle);
       return NULL;
     }
   return &rhandle->dhandle;
@@ -348,7 +348,7 @@ cut_handle_destroy (GslDataHandle *data_handle)
   gsl_data_handle_unref (chandle->src_handle);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (CutHandle, 1, chandle);
+  gsl_delete_struct (CutHandle, chandle);
 }
 
 static GslLong
@@ -420,7 +420,7 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
     }
   if (!success)
     {
-      gsl_delete_struct (CutHandle, 1, chandle);
+      gsl_delete_struct (CutHandle, chandle);
       return NULL;
     }
   return &chandle->dhandle;
@@ -441,7 +441,7 @@ insert_handle_destroy (GslDataHandle *data_handle)
   gsl_data_handle_common_free (data_handle);
   ihandle->paste_values = NULL;
   ihandle->free_values = NULL;
-  gsl_delete_struct (InsertHandle, 1, ihandle);
+  gsl_delete_struct (InsertHandle, ihandle);
   
   if (free_values)
     free_values ((gpointer) paste_values);
@@ -540,7 +540,7 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
     }
   if (!success)
     {
-      gsl_delete_struct (InsertHandle, 1, ihandle);
+      gsl_delete_struct (InsertHandle, ihandle);
       return NULL;
     }
   return &ihandle->dhandle;
@@ -556,7 +556,7 @@ loop_handle_destroy (GslDataHandle *data_handle)
   gsl_data_handle_unref (lhandle->src_handle);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (LoopHandle, 1, lhandle);
+  gsl_delete_struct (LoopHandle, lhandle);
 }
 
 static GslLong
@@ -616,7 +616,7 @@ gsl_data_handle_new_looped (GslDataHandle *src_handle,
     }
   if (!success)
     {
-      gsl_delete_struct (LoopHandle, 1, lhandle);
+      gsl_delete_struct (LoopHandle, lhandle);
       return NULL;
     }
   return &lhandle->dhandle;
@@ -632,7 +632,7 @@ dcache_handle_destroy (GslDataHandle *data_handle)
   gsl_data_cache_unref (dhandle->dcache);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (DCacheHandle, 1, dhandle);
+  gsl_delete_struct (DCacheHandle, dhandle);
 }
 
 static gint
@@ -696,7 +696,7 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
     }
   if (!success)
     {
-      gsl_delete_struct (DCacheHandle, 1, dhandle);
+      gsl_delete_struct (DCacheHandle, dhandle);
       return NULL;
     }
   return &dhandle->dhandle;
@@ -736,7 +736,7 @@ wave_handle_destroy (GslDataHandle *data_handle)
   GSL_SPIN_UNLOCK (&dhandle_global);
   
   gsl_data_handle_common_free (data_handle);
-  gsl_delete_struct (WaveHandle, 1, whandle);
+  gsl_delete_struct (WaveHandle, whandle);
 }
 
 static gint
@@ -965,7 +965,7 @@ gsl_wave_handle_new_cached (const gchar      *file_name,
     }
   if (!success)
     {
-      gsl_delete_struct (WaveHandle, 1, whandle);
+      gsl_delete_struct (WaveHandle, whandle);
       return NULL;
     }
   GSL_SPIN_LOCK (&dhandle_global);

@@ -81,7 +81,7 @@ free_mwave (GslMultiWave *mwave)
       if (wchunk->dcache)
 	_gsl_wave_chunk_close (wchunk);
       _gsl_wave_chunk_uninit (wchunk);
-      gsl_delete_struct (GslWaveChunk, 1, wchunk);
+      gsl_delete_struct (GslWaveChunk, wchunk);
     }
   gsl_ring_free (mwave->wave_chunks);
   for (ring = mwave->dloc_cache; ring; ring = gsl_ring_walk (mwave->dloc_cache, ring))
@@ -89,11 +89,11 @@ free_mwave (GslMultiWave *mwave)
       GslDataLocator *dloc = ring->data;
 
       g_free (dloc->name);
-      gsl_delete_struct (GslDataLocator, 1, dloc);
+      gsl_delete_struct (GslDataLocator, dloc);
     }
   gsl_ring_free (mwave->dloc_cache);
   g_free (mwave->name);
-  gsl_delete_struct (GslMultiWave, 1, mwave);
+  gsl_delete_struct (GslMultiWave, mwave);
 }
 
 GslMultiWave*

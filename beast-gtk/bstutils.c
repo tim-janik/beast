@@ -474,294 +474,6 @@ gtk_clist_get_selection_data (GtkCList *clist,
 }
 
 
-/* --- Gtk+ Kennel --- */
-struct _GtkKennel
-{
-  GtkKennelType	width_constraint : 8;
-  GtkKennelType	height_constraint : 8;
-  guint         resize_handler;
-  GtkWidget    *cwidget;
-  guint         width;
-  guint         height;
-  guint         ref_count;
-  GSList       *children;
-};
-typedef struct
-{
-  GtkWidget     *widget;
-  GtkRequisition real_requisition;
-} KennelChild;
-
-GtkKennel*
-gtk_kennel_new (GtkKennelType width_constrain,
-		GtkKennelType height_constrain)
-{
-  GtkKennel *kennel = g_new0 (GtkKennel, 1);
-
-  kennel->ref_count = 1;
-  gtk_kennel_configure (kennel, width_constrain, height_constrain);
-
-  return kennel;
-}
-
-GtkKennel*
-gtk_kennel_ref (GtkKennel *kennel)
-{
-  g_return_val_if_fail (kennel != NULL, NULL);
-  g_return_val_if_fail (kennel->ref_count > 0, NULL);
-
-  kennel->ref_count += 1;
-
-  return kennel;
-}
-
-void
-gtk_kennel_unref (GtkKennel *kennel)
-{
-  g_return_if_fail (kennel != NULL);
-  g_return_if_fail (kennel->ref_count > 0);
-
-  kennel->ref_count -= 1;
-  if (!kennel->ref_count)
-    {
-      if (kennel->resize_handler)
-	g_source_remove (kennel->resize_handler);
-      if (kennel->cwidget)
-	gtk_widget_unref (kennel->cwidget);
-      g_free (kennel);
-    }
-}
-
-void
-gtk_kennel_configure (GtkKennel    *kennel,
-		      GtkKennelType width_constrain,
-		      GtkKennelType height_constrain)
-{
-  g_return_if_fail (kennel != NULL);
-  g_return_if_fail (kennel->ref_count > 0);
-
-  width_constrain = CLAMP (width_constrain, 0, GTK_KENNEL_TO_WIDGET);
-  height_constrain = CLAMP (height_constrain, 0, GTK_KENNEL_TO_WIDGET);
-  if (kennel->width_constraint != width_constrain ||
-      kennel->height_constraint != height_constrain)
-    {
-      kennel->width_constraint = width_constrain;
-      kennel->height_constraint = height_constrain;
-      gtk_kennel_resize (kennel, kennel->width, kennel->height);
-    }
-}
-
-void
-gtk_kennel_resize (GtkKennel *kennel,
-		   guint      width,
-		   guint      height)
-{
-  GSList *slist;
-
-  g_return_if_fail (kennel != NULL);
-  g_return_if_fail (kennel->ref_count > 0);
-
-  kennel->width = width;
-  kennel->height = height;
-  for (slist = kennel->children; slist; slist = slist->next)
-    {
-      KennelChild *child = slist->data;
-      GtkRequisition *requisition = &child->widget->requisition;
-
-      if ((kennel->width_constraint && requisition->width != kennel->width) ||
-	  (kennel->height_constraint && requisition->height != kennel->height))
-	gtk_widget_queue_resize (child->widget);
-    }
-}
-
-static void kennel_widget_size_request (GtkWidget      *widget,
-					GtkRequisition *requisition,
-					GtkKennel      *kennel);
-
-static gboolean
-kennel_idle_sizer (gpointer data)
-{
-  GtkKennel *kennel = data;
-
-  GDK_THREADS_ENTER ();
-  
-  kennel->resize_handler = 0;
-
-  if (kennel->width_constraint == GTK_KENNEL_TO_MINIMUM ||
-      kennel->width_constraint == GTK_KENNEL_TO_MAXIMUM ||
-      kennel->height_constraint == GTK_KENNEL_TO_MINIMUM ||
-      kennel->height_constraint == GTK_KENNEL_TO_MAXIMUM)
-    {
-      guint width = 0, height = 0;
-      GSList *slist;
-      
-      for (slist = kennel->children; slist; slist = slist->next)
-	{
-	  KennelChild *child = slist->data;
-	  GtkRequisition *requisition;
-
-	  gtk_signal_handler_block_by_func (GTK_OBJECT (child->widget), G_CALLBACK (kennel_widget_size_request), kennel);
-	  /* FIXME: GTKFIX - grrr, buggy GtkLabel code caches requisition */
-	  if (GTK_IS_LABEL (child->widget))
-	    {
-	      gchar *string = g_strdup (GTK_LABEL (child->widget)->label);
-
-	      gtk_label_set_text (GTK_LABEL (child->widget), NULL);
-	      gtk_label_set_text (GTK_LABEL (child->widget), string);
-	      g_free (string);
-	    }
-	  gtk_widget_size_request (child->widget, NULL);
-	  gtk_signal_handler_unblock_by_func (GTK_OBJECT (child->widget), G_CALLBACK (kennel_widget_size_request), kennel);
-	  requisition = &child->widget->requisition;
-	  child->real_requisition = *requisition;
-	  width = (kennel->width_constraint == GTK_KENNEL_TO_MINIMUM
-		   ? MIN (width, requisition->width)
-		   : MAX (width, requisition->width));
-	  height = (kennel->height_constraint == GTK_KENNEL_TO_MINIMUM
-		    ? MIN (height, requisition->height)
-		    : MAX (height, requisition->height));
-	}
-
-      if (kennel->width_constraint != GTK_KENNEL_TO_MINIMUM &&
-	  kennel->width_constraint != GTK_KENNEL_TO_MAXIMUM)
-	width = kennel->width;
-      if (kennel->height_constraint != GTK_KENNEL_TO_MINIMUM &&
-	  kennel->height_constraint != GTK_KENNEL_TO_MAXIMUM)
-	height = kennel->height;
-
-      gtk_kennel_resize (kennel, width, height);
-    }
-  GDK_THREADS_LEAVE ();
-  
-  return FALSE;
-}
-
-static void
-kennel_widget_size_request (GtkWidget      *widget,
-			    GtkRequisition *requisition,
-			    GtkKennel      *kennel)
-{
-  KennelChild *child = gtk_object_get_data (GTK_OBJECT (widget), "GtkKennelChild");
-  GtkRequisition *real_requisition = &child->real_requisition;
-  gboolean need_resize = FALSE;
-
-  g_return_if_fail (g_slist_find (kennel->children, child));
-
-  requisition->width = MAX (0, requisition->width);
-  requisition->height = MAX (0, requisition->height);
-
-  switch (kennel->width_constraint)
-    {
-    case GTK_KENNEL_TO_MINIMUM:
-      if (requisition->width < kennel->width ||
-	  (real_requisition->width == kennel->width &&
-	   requisition->width != real_requisition->width))
-	need_resize = TRUE;
-      else
-	requisition->width = kennel->width;
-      break;
-    case GTK_KENNEL_TO_MAXIMUM:
-      if (requisition->width > kennel->width ||
-	  (real_requisition->width == kennel->width &&
-	   requisition->width != real_requisition->width))
-	need_resize = TRUE;
-      else
-	requisition->width = kennel->width;
-      break;
-    case GTK_KENNEL_TO_USIZE:
-    case GTK_KENNEL_TO_WIDGET:
-      requisition->width = kennel->width;
-      break;
-    }
-  switch (kennel->height_constraint)
-    {
-    case GTK_KENNEL_TO_MINIMUM:
-      if (requisition->height < kennel->height ||
-	  (real_requisition->height == kennel->height &&
-	   requisition->height != real_requisition->height))
-	need_resize = TRUE;
-      else
-	requisition->height = kennel->height;
-      break;
-    case GTK_KENNEL_TO_MAXIMUM:
-      if (requisition->height > kennel->height ||
-	  (real_requisition->height == kennel->height &&
-	   requisition->height != real_requisition->height))
-	need_resize = TRUE;
-      else
-	requisition->height = kennel->height;
-      break;
-    case GTK_KENNEL_TO_USIZE:
-    case GTK_KENNEL_TO_WIDGET:
-      requisition->height = kennel->height;
-      break;
-    }
-  if (need_resize && !kennel->resize_handler)
-    kennel->resize_handler = g_idle_add_full (GTK_PRIORITY_RESIZE - 1, kennel_idle_sizer, kennel, NULL);
-}
-
-void
-gtk_kennel_add (GtkKennel *kennel,
-		GtkWidget *widget)
-{
-  KennelChild *child;
-
-  g_return_if_fail (kennel != NULL);
-  g_return_if_fail (kennel->ref_count > 0);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  g_return_if_fail (GTK_OBJECT_DESTROYED (widget) == FALSE);
-  g_return_if_fail (gtk_object_get_data (GTK_OBJECT (widget), "GtkKennelChild") == NULL);
-
-  gtk_kennel_ref (kennel);
-  child = g_new0 (KennelChild, 1);
-  gtk_object_set_data (GTK_OBJECT (widget), "GtkKennelChild", child);
-  child->widget = widget;
-  kennel->children = g_slist_prepend (kennel->children, child);
-  g_object_connect (widget,
-		    "signal_after::size_request", kennel_widget_size_request, kennel,
-		    "swapped_signal::destroy",  gtk_kennel_remove, kennel,
-		    NULL);
-  gtk_widget_queue_resize (widget);
-}
-
-void
-gtk_kennel_remove (GtkKennel *kennel,
-		   GtkWidget *widget)
-{
-  GSList *slist, *last = NULL;
-
-  g_return_if_fail (kennel != NULL);
-  g_return_if_fail (kennel->ref_count > 0);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  g_return_if_fail (gtk_object_get_data (GTK_OBJECT (widget), "GtkKennelChild") != NULL);
-
-  gtk_object_set_data (GTK_OBJECT (widget), "GtkKennelChild", NULL);
-  gtk_signal_disconnect_by_func (GTK_OBJECT (widget),
-				 G_CALLBACK (kennel_widget_size_request),
-				 kennel);
-  gtk_signal_disconnect_by_func (GTK_OBJECT (widget),
-				 G_CALLBACK (gtk_kennel_remove),
-				 kennel);
-  for (slist = kennel->children; slist; last = slist, slist = last->next)
-    {
-      KennelChild *child = slist->data;
-
-      if (child->widget == widget)
-	{
-	  (last ? last->next : kennel->children) = slist->next;
-	  g_slist_free_1 (slist);
-	  g_free (child);
-	  break;
-	}
-    }
-  if (!kennel->resize_handler)
-    kennel->resize_handler = g_idle_add_full (GTK_PRIORITY_RESIZE - 1, kennel_idle_sizer, kennel, NULL);
-  if (!GTK_OBJECT_DESTROYED (widget))
-    gtk_widget_queue_resize (widget);
-  gtk_kennel_unref (kennel);
-}
-
-
 /* --- field mask --- */
 static GQuark gmask_quark = 0;
 typedef struct {
@@ -1354,7 +1066,7 @@ bst_widget_modify_as_title (GtkWidget *widget)
 static void
 style_modify_bg_as_base (GtkWidget *widget)
 {
-  GtkRcStyle *rc_style = gtk_rc_style_new ();
+  GtkRcStyle *rc_style = gtk_widget_get_modifier_style (widget);
   
   rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BG;
   rc_style->bg[GTK_STATE_NORMAL].red = widget->style->base[GTK_STATE_NORMAL].red;
@@ -1745,6 +1457,48 @@ bst_container_get_named_child (GtkWidget *container,
       return child;
     }
   return NULL;
+}
+
+GtkWidget*
+bst_xpm_view_create (const gchar **xpm,
+		     GtkWidget    *colormap_widget)
+{
+  GtkWidget *pix;
+  GdkPixmap *pixmap;
+  GdkBitmap *mask;
+
+  g_return_val_if_fail (xpm != NULL, NULL);
+  g_return_val_if_fail (GTK_IS_WIDGET (colormap_widget), NULL);
+
+  pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (colormap_widget),
+						  &mask, NULL, (gchar**) xpm);
+  pix = gtk_pixmap_new (pixmap, mask);
+  gdk_pixmap_unref (pixmap);
+  gdk_pixmap_unref (mask);
+  gtk_widget_set (pix,
+		  "visible", TRUE,
+		  NULL);
+  return pix;
+}
+
+static gboolean
+expose_bg_clear (GtkWidget      *widget,
+		 GdkEventExpose *event)
+{
+  gtk_paint_flat_box (widget->style, widget->window, GTK_STATE_NORMAL,
+		      GTK_SHADOW_NONE, &event->area, widget, "base", 0, 0, -1, -1);
+  
+  return FALSE;
+}
+
+void
+bst_widget_force_bg_clear (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  
+  gtk_widget_set_redraw_on_allocate (widget, TRUE);
+  if (!g_signal_handler_find (widget, G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA, 0, 0, NULL, expose_bg_clear, NULL))
+    g_object_connect (widget, "signal::expose_event", expose_bg_clear, NULL, NULL);
 }
 
 

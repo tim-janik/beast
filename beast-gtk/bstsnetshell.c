@@ -88,52 +88,11 @@ bst_snet_shell_init (BstSNetShell *snet_shell)
 }
 
 static void
-zoomed_add_xpm (BstZoomedWindow *zoomed)
-{
-  if (!GTK_BIN (zoomed->toggle_button)->child)
-    {
-      GtkWidget *widget = GTK_WIDGET (zoomed);
-      GdkPixmap *pixmap;
-      GdkBitmap *mask;
-      GtkWidget *pix;
-      static const gchar *zoom_xpm[] = {
-	"12 12 2 1", "  c None", "# c #000000",
-	"            ",
-	" ####  #### ",
-	" ##      ## ",
-	" # #    # # ",
-	" #  ####  # ",
-	"    #  #    ",
-	"    #  #    ",
-	" #  ####  # ",
-	" # #    # # ",
-	" ##      ## ",
-	" ####  #### ",
-	"            ",
-      };
-
-      pixmap = gdk_pixmap_create_from_xpm_d (widget->window,
-					     &mask,
-					     NULL,
-					     (gchar**) zoom_xpm);
-      pix = gtk_pixmap_new (pixmap, mask);
-      gdk_pixmap_unref (pixmap);
-      gdk_pixmap_unref (mask);
-
-      gtk_widget_set (pix,
-		      "visible", TRUE,
-		      "parent", zoomed->toggle_button,
-		      NULL);
-    }
-}
-
-static void
 bst_snet_shell_rebuild (BstSuperShell *super_shell)
 {
   BstSNetShell *snet_shell = BST_SNET_SHELL (super_shell);
   BseSNet *snet = bse_object_from_id (super_shell->super);
-  GtkWidget *notebook, *zoomed_window;
-  GtkWidget *snet_router_box;
+  GtkWidget *notebook;
 
   g_return_if_fail (snet_shell->param_view == NULL);
 
@@ -145,28 +104,7 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 		    "signal::destroy", gtk_widget_destroyed, &snet_shell->param_view,
 		    NULL);
 
-  snet_router_box = gtk_widget_new (GTK_TYPE_VBOX,
-				    "visible", TRUE,
-				    "homogeneous", FALSE,
-				    "spacing", 3,
-				    "border_width", 5,
-				    NULL);
-  snet_shell->snet_router = (BstSNetRouter*) bst_snet_router_new (BSE_OBJECT_ID (snet));
-  gtk_box_pack_start (GTK_BOX (snet_router_box), snet_shell->snet_router->toolbar, FALSE, TRUE, 0);
-  zoomed_window = g_object_connect (gtk_widget_new (BST_TYPE_ZOOMED_WINDOW,
-						    "visible", TRUE,
-						    "hscrollbar_policy", GTK_POLICY_ALWAYS,
-						    "vscrollbar_policy", GTK_POLICY_ALWAYS,
-						    "parent", snet_router_box,
-						    NULL),
-				    "swapped_signal::zoom", bst_snet_router_adjust_region, snet_shell->snet_router,
-				    "swapped_signal::zoom", gtk_false, NULL,
-				    "signal::realize", zoomed_add_xpm, NULL,
-				    NULL);
-  g_object_set (GTK_WIDGET (snet_shell->snet_router),
-		"visible", TRUE,
-		"parent", zoomed_window,
-		NULL);
+  snet_shell->snet_router = bst_snet_router_build_page (super_shell->super);
   g_object_connect (GTK_WIDGET (snet_shell->snet_router),
 		    "signal::destroy", gtk_widget_destroyed, &snet_shell->snet_router,
 		    NULL);
@@ -190,7 +128,7 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 					    "label", "Parameters",
 					    "visible", TRUE,
 					    NULL));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), snet_router_box,
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), gtk_widget_get_toplevel (GTK_WIDGET (snet_shell->snet_router)),
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "label", "Routing",
 					    "visible", TRUE,

@@ -20,7 +20,7 @@
 #ifndef __BSE_SONG_H__
 #define __BSE_SONG_H__
 
-#include        <bse/bsesuper.h>
+#include        <bse/bsesnet.h>
 
 
 #ifdef __cplusplus
@@ -40,7 +40,7 @@ extern "C" {
 /* --- BseSong object --- */
 struct _BseSong
 {
-  BseSuper parent_object;
+  BseSNet parent_object;
   
   guint             bpm;
   gfloat            volume_factor;      /* 1-based factor */
@@ -53,7 +53,7 @@ struct _BseSong
   GList            *pattern_groups;     /* of type BsePatternGroup* */
 
   guint             n_pgroups;
-  BsePatternGroup **pgroups;
+  BsePatternGroup **pgroups;		/* play list */
 
   /*< private >*/
   BseSongSequencer *sequencer;
@@ -61,7 +61,7 @@ struct _BseSong
 };
 struct _BseSongClass
 {
-  BseSuperClass parent_class;
+  BseSNetClass parent_class;
 };
 
 

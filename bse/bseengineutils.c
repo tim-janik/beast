@@ -28,24 +28,33 @@
 #include <math.h>
 
 
-/* some systems don't have ERESTART (which is what linux returns for system
- * calls on pipes which are being interrupted). most propably just use EINTR,
- * and maybe some can return both. so we check for both in the below code,
- * and alias ERESTART to EINTR if it's not present. compilers are supposed
- * to catch and optimize the doubled check arising from this.
- */
-#ifndef ERESTART
-#define ERESTART        EINTR
-#endif
-
-
 /* --- UserThread --- */
+GslOStream*
+_gsl_alloc_ostreams (guint n)
+{
+  if (n)
+    {
+      guint i = sizeof (GslOStream) * n + sizeof (gfloat) * gsl_engine_block_size () * n;
+      GslOStream *streams = gsl_alloc_memblock0 (i);
+      gfloat *buffers = (gfloat*) (streams + n);
+
+      for (i = 0; i < n; i++)
+	{
+	  streams[i].values = buffers;
+	  buffers += gsl_engine_block_size ();
+	}
+      return streams;
+    }
+  else
+    return NULL;
+}
+
 static void
-op_free_node (OpNode *node)
+free_node (OpNode *node)
 {
   g_return_if_fail (node != NULL);
-  g_return_if_fail (node->onodes == NULL);
-  g_return_if_fail (node->mnl_contained == FALSE);
+  g_return_if_fail (node->output_nodes == NULL);
+  g_return_if_fail (node->integrated == FALSE);
   g_return_if_fail (node->sched_tag == FALSE);
   g_return_if_fail (node->sched_router_tag == FALSE);
   
@@ -53,24 +62,29 @@ op_free_node (OpNode *node)
     node->module.klass->free (node->module.user_data, node->module.klass);
   gsl_rec_mutex_destroy (&node->rec_mutex);
   if (OP_NODE_N_OSTREAMS (node))
-    gsl_delete_struct (GslOStream, OP_NODE_N_OSTREAMS (node), node->module.ostreams); /* FIXME: free ostream buffers */
+    {
+      guint n = OP_NODE_N_OSTREAMS (node);
+      guint i = sizeof (GslOStream) * n + sizeof (gfloat) * gsl_engine_block_size () * n;
+
+      gsl_free_memblock (i, node->module.ostreams);
+    }
   if (OP_NODE_N_ISTREAMS (node))
-    gsl_delete_struct (GslIStream, OP_NODE_N_ISTREAMS (node), node->module.istreams);
+    gsl_delete_structs (GslIStream, OP_NODE_N_ISTREAMS (node), node->module.istreams);
   if (node->inputs)
-    gsl_delete_struct (OpInput, OP_NODE_N_ISTREAMS (node), node->inputs);
+    gsl_delete_structs (OpInput, OP_NODE_N_ISTREAMS (node), node->inputs);
   if (node->outputs)
-    gsl_delete_struct (OpOutput, OP_NODE_N_OSTREAMS (node), node->outputs);
-  gsl_delete_struct (OpNode, 1, node);
+    gsl_delete_structs (OpOutput, OP_NODE_N_OSTREAMS (node), node->outputs);
+  gsl_delete_struct (OpNode, node);
 }
 
 static void
-op_free_job (GslJob *job)
+free_job (GslJob *job)
 {
   g_return_if_fail (job != NULL);
   
   switch (job->job_id)
     {
-    case OP_JOB_ACCESS:
+    case GSL_JOB_ACCESS:
       if (job->data.access.free_func)
 	job->data.access.free_func (job->data.access.data);
       break;
@@ -84,36 +98,34 @@ op_free_job (GslJob *job)
 	job->data.poll.free_func (job->data.poll.data);
       break;
     case OP_JOB_DISCARD:
-      op_free_node (job->data.node);
+      free_node (job->data.node);
       break;
     default: ;
     }
-  gsl_delete_struct (GslJob, 1, job);
+  gsl_delete_struct (GslJob, job);
 }
 
-void
-_op_collect_trans (void)
+static void
+free_flow_job (GslFlowJob *fjob)
 {
-  GslTrans *trans;
-  
-  for (trans = op_com_collect_trans (); trans; trans = op_com_collect_trans ())
+  switch (fjob->fjob_id)
     {
-      trans->comitted = FALSE;
-      _op_free_trans (trans);
+    case GSL_FLOW_JOB_SUSPEND:
+    case GSL_FLOW_JOB_RESUME:
+      gsl_delete_struct (GslFlowJobAny, &fjob->any);
+      break;
+    case GSL_FLOW_JOB_ACCESS:
+      if (fjob->access.free_func)
+	fjob->access.free_func (fjob->access.data);
+      gsl_delete_struct (GslFlowJobAccess, &fjob->access);
+      break;
+    default:
+      g_assert_not_reached ();
     }
 }
 
-GslTrans*
-_op_alloc_trans (void)
-{
-  /* do a bit of garbage collection here */
-  _op_collect_trans ();
-  
-  return gsl_new_struct0 (GslTrans, 1);
-}
-
 void
-_op_free_trans (GslTrans *trans)
+_gsl_free_trans (GslTrans *trans)
 {
   GslJob *job;
   
@@ -127,30 +139,99 @@ _op_free_trans (GslTrans *trans)
     {
       GslJob *tmp = job->next;
       
-      op_free_job (job);
+      free_job (job);
       job = tmp;
     }
-  gsl_delete_struct (GslTrans, 1, trans);
+  gsl_delete_struct (GslTrans, trans);
 }
 
-GslOStream*
-_op_alloc_ostreams (guint n)
+
+/* -- master node list --- */
+static OpNode      *master_node_list_head = NULL;
+static OpNode      *master_node_list_tail = NULL;
+
+OpNode*
+_gsl_mnl_head (void)
 {
-  GslOStream *streams;
-  
-  if (n)
-    {
-      guint i;
-      
-      streams = gsl_new_struct0 (GslOStream, n);
-      
-      for (i = 0; i < n; i++)
-	streams[i].values = g_new (gfloat, GSL_STREAM_MAX_VALUES); /* FIXME */
-    }
+  return master_node_list_head;
+}
+
+void
+_gsl_mnl_remove (OpNode *node)
+{
+  g_return_if_fail (node->integrated == TRUE);
+
+  node->integrated = FALSE;
+  /* remove */
+  if (node->mnl_prev)
+    node->mnl_prev->mnl_next = node->mnl_next;
   else
-    streams = NULL;
-  
-  return streams;
+    master_node_list_head = node->mnl_next;
+  if (node->mnl_next)
+    node->mnl_next->mnl_prev = node->mnl_prev;
+  else
+    master_node_list_tail = node->mnl_prev;
+  node->mnl_prev = NULL;
+  node->mnl_next = NULL;
+}
+
+void
+_gsl_mnl_integrate (OpNode *node)
+{
+  g_return_if_fail (node->integrated == FALSE);
+  g_return_if_fail (node->flow_jobs == NULL);
+
+  node->integrated = TRUE;
+  /* append */
+  if (master_node_list_tail)
+    master_node_list_tail->mnl_next = node;
+  node->mnl_prev = master_node_list_tail;
+  master_node_list_tail = node;
+  if (!master_node_list_head)
+    master_node_list_head = master_node_list_tail;
+  g_assert (node->mnl_next == NULL);
+}
+
+void
+_gsl_mnl_reorder (OpNode *node)
+{
+  OpNode *sibling;
+
+  g_return_if_fail (node->integrated == TRUE);
+
+  /* the master node list is partially sorted. that is, all
+   * nodes which are not scheduled and have pending flow_jobs
+   * are agglomerated at the head.
+   */
+  sibling = node->mnl_prev ? node->mnl_prev : node->mnl_next;
+  if (sibling && GSL_MNL_HEAD_NODE (node) != GSL_MNL_HEAD_NODE (sibling))
+    {
+      /* remove */
+      if (node->mnl_prev)
+	node->mnl_prev->mnl_next = node->mnl_next;
+      else
+	master_node_list_head = node->mnl_next;
+      if (node->mnl_next)
+	node->mnl_next->mnl_prev = node->mnl_prev;
+      else
+	master_node_list_tail = node->mnl_prev;
+      if (GSL_MNL_HEAD_NODE (node))	/* move towards head */
+	{
+	  /* prepend to non-NULL list */
+	  master_node_list_head->mnl_prev = node;
+	  node->mnl_next = master_node_list_head;
+	  master_node_list_head = node;
+	  node->mnl_prev = NULL;
+	}
+      else				/* move towards tail */
+	{
+	  /* append to non-NULL list */
+	  master_node_list_tail->mnl_next = node;
+	  node->mnl_prev = master_node_list_tail;
+	  master_node_list_tail = node;
+	  node->mnl_next = NULL;
+	}
+    }
 }
 
 
@@ -295,12 +376,13 @@ _gsl_recycle_const_values (void)
 
 /* --- job transactions --- */
 static GslMutex       cqueue_trans = { 0, };
-static GslTrans       *cqueue_trans_pending_head = NULL;
-static GslTrans       *cqueue_trans_pending_tail = NULL;
+static GslTrans      *cqueue_trans_pending_head = NULL;
+static GslTrans      *cqueue_trans_pending_tail = NULL;
 static GslCond       *cqueue_trans_cond = NULL;
-static GslTrans       *cqueue_trans_trash = NULL;
+static GslTrans      *cqueue_trans_trash = NULL;
 static GslTrans      *cqueue_trans_active_head = NULL;
 static GslTrans      *cqueue_trans_active_tail = NULL;
+static GslFlowJob    *cqueue_trash_fjobs = NULL;
 static GslJob        *cqueue_trans_job = NULL;
 
 void
@@ -322,25 +404,6 @@ op_com_enqueue_trans (GslTrans *trans)
   cqueue_trans_pending_tail = trans;
   GSL_SPIN_UNLOCK (&cqueue_trans);
   gsl_cond_signal (cqueue_trans_cond);
-}
-
-GslTrans*
-op_com_collect_trans (void)
-{
-  GslTrans *trans;
-  
-  GSL_SPIN_LOCK (&cqueue_trans);
-  trans = cqueue_trans_trash;
-  if (trans)
-    cqueue_trans_trash = trans->cqt_next;
-  GSL_SPIN_UNLOCK (&cqueue_trans);
-  if (trans)
-    {
-      trans->cqt_next = NULL;
-      trans->jobs_tail->next = NULL;
-    }
-  
-  return trans;
 }
 
 void
@@ -431,12 +494,63 @@ gsl_com_pop_job (void)	/* (glong max_useconds) */
   return NULL;
 }
 
+
+/* --- user thread garbage collection --- */
+/**
+ * gsl_engine_garbage_collect
+ *
+ * GSL Engine user thread function. Collects processed jobs
+ * and transactions from the engine and frees them, this
+ * involves callback invocation of GslFreeFunc() functions,
+ * e.g. from gsl_job_access() or gsl_flow_job_access()
+ * jobs.
+ * This function may only be called from the user thread,
+ * as GslFreeFunc() functions are guranteed to be executed
+ * in the user thread.
+ */
+void
+gsl_engine_garbage_collect (void)
+{
+  GslTrans *trans;
+  GslFlowJob *fjobs;
+
+  GSL_SPIN_LOCK (&cqueue_trans);
+  trans = cqueue_trans_trash;
+  cqueue_trans_trash = NULL;
+  fjobs = cqueue_trash_fjobs;
+  cqueue_trash_fjobs = NULL;
+  GSL_SPIN_UNLOCK (&cqueue_trans);
+
+  while (trans)
+    {
+      GslTrans *t = trans;
+
+      trans = t->cqt_next;
+      t->cqt_next = NULL;
+      t->jobs_tail->next = NULL;
+      t->comitted = FALSE;
+      _gsl_free_trans (t);
+    }
+
+  while (fjobs)
+    {
+      GslFlowJob *j = fjobs;
+
+      fjobs = j->any.next;
+      j->any.next = NULL;
+      free_flow_job (j);
+    }
+}
+
+
 /* --- node processing queue --- */
 static GslMutex          pqueue_mutex = { 0, };
 static OpSchedule       *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
 static GslCond		*pqueue_done_cond = NULL;
+static GslFlowJob       *pqueue_trash_fjobs_first = NULL;
+static GslFlowJob       *pqueue_trash_fjobs_last = NULL;
 
 void
 _gsl_com_set_schedule (OpSchedule *sched)
@@ -445,10 +559,10 @@ _gsl_com_set_schedule (OpSchedule *sched)
   g_return_if_fail (sched->secured == TRUE);
   
   GSL_SPIN_LOCK (&pqueue_mutex);
-  if (pqueue_schedule)
+  if_reject (pqueue_schedule)
     {
-      g_warning (G_STRLOC ": schedule already set");
       GSL_SPIN_UNLOCK (&pqueue_mutex);
+      g_warning (G_STRLOC ": schedule already set");
       return;
     }
   pqueue_schedule = sched;
@@ -459,24 +573,35 @@ _gsl_com_set_schedule (OpSchedule *sched)
 void
 _gsl_com_unset_schedule (OpSchedule *sched)
 {
+  GslFlowJob *trash_fjobs_first, *trash_fjobs_last;
+
   g_return_if_fail (sched != NULL);
   
   GSL_SPIN_LOCK (&pqueue_mutex);
-  if (pqueue_schedule != sched)
+  if_reject (pqueue_schedule != sched)
     {
+      GSL_SPIN_UNLOCK (&pqueue_mutex);
       g_warning (G_STRLOC ": schedule(%p) not currently set", sched);
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
       return;
     }
-  if (pqueue_n_nodes || pqueue_n_cycles)
-    {
-      g_warning (G_STRLOC ": schedule(%p) still busy", sched);
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
-      return;
-    }
+  if_reject (pqueue_n_nodes || pqueue_n_cycles)
+    g_warning (G_STRLOC ": schedule(%p) still busy", sched);
+
   sched->in_pqueue = FALSE;
   pqueue_schedule = NULL;
+  trash_fjobs_first = pqueue_trash_fjobs_first;
+  trash_fjobs_last = pqueue_trash_fjobs_last;
+  pqueue_trash_fjobs_first = NULL;
+  pqueue_trash_fjobs_last = NULL;
   GSL_SPIN_UNLOCK (&pqueue_mutex);
+
+  if (trash_fjobs_first)	/* move trash flow jobs */
+    {
+      GSL_SPIN_LOCK (&cqueue_trans);
+      trash_fjobs_last->any.next = cqueue_trash_fjobs;
+      cqueue_trash_fjobs = trash_fjobs_first;
+      GSL_SPIN_UNLOCK (&cqueue_trans);
+    }
 }
 
 OpNode*
@@ -506,6 +631,15 @@ _gsl_com_push_processed_node (OpNode *node)
   
   GSL_SPIN_LOCK (&pqueue_mutex);
   g_assert (pqueue_n_nodes > 0);        /* paranoid */
+  if (node->fjob_first)	/* collect trash flow jobs */
+    {
+      node->fjob_last->any.next = pqueue_trash_fjobs_first;
+      pqueue_trash_fjobs_first = node->fjob_first;
+      if (!pqueue_trash_fjobs_last)
+	pqueue_trash_fjobs_last = node->fjob_last;
+      node->fjob_first = NULL;
+      node->fjob_last = NULL;
+    }
   pqueue_n_nodes -= 1;
   OP_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
@@ -535,152 +669,6 @@ _gsl_com_wait_on_unprocessed (void)
   while (pqueue_n_nodes || pqueue_n_cycles || !GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
     gsl_cond_wait (pqueue_done_cond, &pqueue_mutex);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
-}
-
-
-/* --- thread wakeups --- */
-static gint	master_wakeup_pipe[2] = { -1, -1 };
-static gint	user_wakeup_pipe[2] = { -1, -1 };
-
-static inline void
-wakeup_pipe_create (gint wakeup_pipe[2])
-{
-  gint pipe_creation_error;
-  glong d_long;
-
-  pipe_creation_error = pipe (wakeup_pipe);
-  if (pipe_creation_error == 0)
-    {
-      d_long = fcntl (wakeup_pipe[0], F_GETFL, 0);
-      g_print ("pipe-readfd, blocking=%ld\n", d_long & O_NONBLOCK);
-      d_long |= O_NONBLOCK;
-      pipe_creation_error = fcntl (wakeup_pipe[0], F_SETFL, d_long);
-    }
-  if (pipe_creation_error == 0)
-    {
-      d_long = fcntl (wakeup_pipe[1], F_GETFL, 0);
-      g_print ("pipe-writefd, blocking=%ld\n", d_long & O_NONBLOCK);
-      d_long |= O_NONBLOCK;
-      pipe_creation_error = fcntl (wakeup_pipe[1], F_SETFL, d_long);
-    }
-  if (pipe_creation_error != 0)		/* hard to handle failures here */
-    g_error ("failed to create thread wakeup pipe: %s\n",
-	     g_strerror (errno));
-}
-
-static inline void
-wakeup_pipe_write (gint wakeup_pipe[2])
-{
-  if (wakeup_pipe[1] != -1)
-    {
-      guint8 data = 'W';
-      gint r;
-      
-      do
-	r = write (wakeup_pipe[1], &data, 1);
-      while (r < 0 && (errno == EINTR || errno == ERESTART));
-    }
-}
-
-static inline void
-wakeup_pipe_read_all (gint wakeup_pipe[2])
-{
-  if (wakeup_pipe[0] != -1)
-    {
-      guint8 data[64];
-      gint r;
-      
-      do
-	r = read (wakeup_pipe[0], data, sizeof (data));
-      while ((r < 0 && (errno == EINTR || errno == ERESTART)) || r == sizeof (data));
-    }
-}
-
-static gboolean
-wakeup_check (gpointer         data,
-	      guint            n_values,
-	      glong           *timeout_p,
-	      guint            n_fds,
-	      const GslPollFD *fds,
-	      gboolean         revents_filled)
-{
-  if (!revents_filled)	/* we're just here to check poll(2) state */
-    return FALSE;
-  else
-    return fds[0].revents & GSL_POLLIN;
-}
-
-static void
-wakeup_delete (gpointer data)
-{
-  gint *wakeup_pipe = data;
-
-  g_return_if_fail (wakeup_pipe[0] != -1);
-  
-  close (wakeup_pipe[0]);
-  wakeup_pipe[0] = -1;
-  close (wakeup_pipe[1]);
-  wakeup_pipe[1] = -1;
-}
-
-void
-_gsl_com_add_master_wakeup (GslTrans *trans)
-{
-  GslPollFD pollfd;
-
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (master_wakeup_pipe[0] == -1);
-
-  wakeup_pipe_create (master_wakeup_pipe);
-
-  pollfd.fd = master_wakeup_pipe[0];
-  pollfd.events = GSL_POLLIN;
-  gsl_trans_add (trans,
-		 gsl_job_add_poll (wakeup_check, master_wakeup_pipe, wakeup_delete,
-				   1, &pollfd));
-}
-
-void
-_gsl_com_remove_master_wakeup (GslTrans *trans)
-{
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (master_wakeup_pipe[0] != -1);
-
-  gsl_trans_add (trans,
-		 gsl_job_remove_poll (wakeup_check, NULL));
-}
-
-void
-_gsl_com_fire_master_wakeup (void)
-{
-  wakeup_pipe_write (master_wakeup_pipe);
-}
-
-void
-_gsl_com_discard_master_wakeups (void)
-{
-  wakeup_pipe_read_all (master_wakeup_pipe);
-}
-
-gint
-_gsl_com_get_user_wakeup (void)
-{
-  if (user_wakeup_pipe[0] == -1)
-    wakeup_pipe_create (user_wakeup_pipe);
-
-  return user_wakeup_pipe[0];
-}
-
-void
-_gsl_com_fire_user_wakeup (void)
-{
-  wakeup_pipe_write (user_wakeup_pipe);
-}
-
-void
-_gsl_com_discard_user_wakeups (void)
-{
-  wakeup_pipe_read_all (user_wakeup_pipe);
 }
 
 

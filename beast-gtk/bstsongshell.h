@@ -24,6 +24,7 @@
 #include	"bstinstrumentview.h"
 #include	"bstpatternview.h"
 #include	"bstplaylist.h"
+#include	"bstsnetrouter.h"
 
 
 #ifdef __cplusplus
@@ -51,6 +52,7 @@ struct _BstSongShell
   BstItemView    *instrument_view;
   BstItemView    *pattern_view;
   GtkWidget      *play_list;
+  BstSNetRouter  *snet_router;
 };
 struct _BstSongShellClass
 {

@@ -19,10 +19,9 @@
 #ifndef __GSL_MATH_H__
 #define __GSL_MATH_H__
 
-/* #define _GNU_SOURCE */     /* for ISO-C99 math: signbit(), nan, etc... */
-#include <math.h>
-
+#include <gsl/gslieee754.h>
 #include <gsl/gsldefs.h>
+#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -160,7 +159,7 @@ double			 gsl_temp_freq		(double		kammer_freq,
 
 
 /* --- miscellaneous --- */
-gfloat			gsl_bit_depth_epsilon	(guint		n_bits); /* 1..32 */
+double			gsl_bit_depth_epsilon	(guint		n_bits); /* 1..32 */
 
 
 /* --- ellipses --- */

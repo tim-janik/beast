@@ -103,31 +103,6 @@ void   gtk_tree_selection_unselect_spath (GtkTreeSelection	*selection,
 #define GTK_STYLE_THICKNESS(s,xy)    ((s)-> xy##thickness)
   
 
-/* --- Gtk+ Kennel --- */
-typedef enum
-{
-  GTK_KENNEL_TO_MINIMUM	= 1,
-  GTK_KENNEL_TO_MAXIMUM	= 2,
-  GTK_KENNEL_TO_USIZE	= 3,
-  GTK_KENNEL_TO_WIDGET	= 4
-} GtkKennelType;
-typedef    struct _GtkKennel              GtkKennel;
-GtkKennel* gtk_kennel_new		 (GtkKennelType		 width_constrain,
-					  GtkKennelType		 height_constrain);
-void	   gtk_kennel_configure		 (GtkKennel		*kennel,
-					  GtkKennelType		 width_constrain,
-					  GtkKennelType		 height_constrain);
-GtkKennel* gtk_kennel_ref		 (GtkKennel		*kennel);
-void	   gtk_kennel_unref		 (GtkKennel		*kennel);
-void	   gtk_kennel_add		 (GtkKennel		*kennel,
-					  GtkWidget		*widget);
-void	   gtk_kennel_remove		 (GtkKennel		*kennel,
-					  GtkWidget		*widget);
-void	   gtk_kennel_resize		 (GtkKennel		*kennel,
-					  guint			 width,
-					  guint			 height);
-
-
 /* --- GUI field mask --- */
 GtkWidget*   bst_gmask_container_create	(gpointer	tooltips,
 					 guint		border_width);
@@ -208,6 +183,9 @@ void		bst_container_set_named_child	(GtkWidget	*container,
 						 GtkWidget	*child);
 GtkWidget*	bst_container_get_named_child	(GtkWidget	*container,
 						 GQuark		 qname);
+GtkWidget*	bst_xpm_view_create		(const gchar   **xpm,
+						 GtkWidget	*colormap_widget);
+void		bst_widget_force_bg_clear	(GtkWidget	*widget);
 
 
 /* --- Canvas utilities & workarounds --- */

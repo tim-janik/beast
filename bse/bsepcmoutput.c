@@ -246,22 +246,20 @@ pcm_output_process (GslModule *module,
   BseSampleValue *rd = GSL_MODULE_OBUFFER (module, 1);
   gfloat v = mdata->volume;
   
-  /* FIXME: could simply poke pointers for volume==1.0 once nodes support stream buffer virtualization */
+  // FIXME: could simply poke pointers for volume==1.0 once nodes support stream buffer virtualization
   
   if (mdata->volume_set)
-    do
+    while (n_values--)
       {
 	*ld++ = v * *ls++;
 	*rd++ = v * *rs++;
       }
-    while (n_values--);
   else
-    do
+    while (n_values--)
       {
 	*ld++ = *ls++;
 	*rd++ = *rs++;
       }
-    while (n_values--);
 }
 
 static void

@@ -90,7 +90,6 @@ static void	bse_instrument_get_property	(BseInstrument		*instrument,
 						 GValue                 *value,
 						 GParamSpec             *pspec,
 						 const gchar            *trailer);
-static void	bse_instrument_unlocked		(BseObject		*object);
 
 
 /* --- variables --- */
@@ -110,7 +109,7 @@ BSE_BUILTIN_TYPE (BseInstrument)
     NULL /* class_data */,
     
     sizeof (BseInstrument),
-    BSE_PREALLOC_N_INSTRUMENTS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_instrument_init,
   };
   
@@ -131,16 +130,13 @@ bse_instrument_class_init (BseInstrumentClass *class)
   gobject_class->set_property = (GObjectSetPropertyFunc) bse_instrument_set_property;
   gobject_class->get_property = (GObjectGetPropertyFunc) bse_instrument_get_property;
   
-  object_class->unlocked = bse_instrument_unlocked;
   object_class->destroy = bse_instrument_do_destroy;
   
-#if 0
   bse_object_class_add_param (object_class, "Synthesis Input",
 			      PARAM_SYNTH,
 			      g_param_spec_object ("sinstrument", "Synth", NULL,	// FIXME
-						   BSE_TYPE_SINSTRUMENT,
-						   (BSE_PARAM_DEFAULT) & ~BSE_PARAM_SERVE_GUI));
-#endif
+						   BSE_TYPE_SAMPLE, // INSTRUMENT,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_SAMPLE,
 			      g_param_spec_object ("sample", "Sample", NULL,	// FIXME
@@ -307,18 +303,6 @@ bse_instrument_do_destroy (BseObject *object)
   
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-static void
-bse_instrument_unlocked (BseObject *object)
-{
-  BseInstrument *instrument;
-  
-  instrument = BSE_INSTRUMENT (object);
-  
-  /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->unlocked)
-    BSE_OBJECT_CLASS (parent_class)->unlocked (object);
 }
 
 static void

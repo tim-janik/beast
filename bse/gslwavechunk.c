@@ -608,7 +608,7 @@ _gsl_wave_chunk_destroy (GslWaveChunk *wchunk)
 
   wave_chunk_close (wchunk);
   gsl_data_cache_unref (wchunk->dcache);
-  gsl_delete_struct (GslWaveChunk, 1, wchunk);
+  gsl_delete_struct (GslWaveChunk, wchunk);
 }
 
 static void
@@ -630,22 +630,22 @@ wave_chunk_close (GslWaveChunk *wchunk)
   padding = wchunk->n_pad_values;
   gsl_data_cache_close (wchunk->dcache);
   if (wchunk->head.mem)
-    gsl_delete_struct (gfloat, wchunk->head.length + 2 * padding, wchunk->head.mem - padding);
+    gsl_delete_structs (gfloat, wchunk->head.length + 2 * padding, wchunk->head.mem - padding);
   memset (&wchunk->head, 0, sizeof (GslWaveChunkMem));
   if (wchunk->enter.mem)
-    gsl_delete_struct (gfloat, wchunk->enter.length + 2 * padding, wchunk->enter.mem - padding);
+    gsl_delete_structs (gfloat, wchunk->enter.length + 2 * padding, wchunk->enter.mem - padding);
   memset (&wchunk->enter, 0, sizeof (GslWaveChunkMem));
   if (wchunk->wrap.mem)
-    gsl_delete_struct (gfloat, wchunk->wrap.length + 2 * padding, wchunk->wrap.mem - padding);
+    gsl_delete_structs (gfloat, wchunk->wrap.length + 2 * padding, wchunk->wrap.mem - padding);
   memset (&wchunk->wrap, 0, sizeof (GslWaveChunkMem));
   if (wchunk->ppwrap.mem)
-    gsl_delete_struct (gfloat, wchunk->ppwrap.length + 2 * padding, wchunk->ppwrap.mem - padding);
+    gsl_delete_structs (gfloat, wchunk->ppwrap.length + 2 * padding, wchunk->ppwrap.mem - padding);
   memset (&wchunk->ppwrap, 0, sizeof (GslWaveChunkMem));
   if (wchunk->leave.mem)
-    gsl_delete_struct (gfloat, wchunk->leave.length + 2 * padding, wchunk->leave.mem - padding);
+    gsl_delete_structs (gfloat, wchunk->leave.length + 2 * padding, wchunk->leave.mem - padding);
   memset (&wchunk->leave, 0, sizeof (GslWaveChunkMem));
   if (wchunk->tail.mem)
-    gsl_delete_struct (gfloat, wchunk->tail.length + 2 * padding, wchunk->tail.mem - padding);
+    gsl_delete_structs (gfloat, wchunk->tail.length + 2 * padding, wchunk->tail.mem - padding);
   memset (&wchunk->tail, 0, sizeof (GslWaveChunkMem));
   wchunk->leave_end_norm = 0;
   wchunk->tail_start_norm = 0;

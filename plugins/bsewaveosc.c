@@ -380,6 +380,8 @@ static void
 wmod_process (GslModule *module,
 	      guint      n_values)
 {
+  WaveOscModule *wmod = module->user_data;
+
   if (module->istreams[BSE_WAVE_OSC_ICHANNEL_FREQ].connected)
     {
       if (module->istreams[BSE_WAVE_OSC_ICHANNEL_SYNC].connected)
@@ -394,123 +396,24 @@ wmod_process (GslModule *module,
       else /* nosync */
 	wmod_mix_nofreq_nosync (module, n_values);
     }
-  
-#if 0
-  WaveOscModule *wmod = module->user_data;
-  // const BseSampleValue *freq_in = GSL_MODULE_IBUFFER (module, 0);
-  // const BseSampleValue *mod_in = GSL_MODULE_IBUFFER (module, 1);
-  // const BseSampleValue *sync_in = GSL_MODULE_IBUFFER (module, 2);
-  gfloat *wave_boundary, *wave_out = GSL_MODULE_OBUFFER (module, 0);
-  gboolean with_self_mod = wmod->vars.with_self_mod;
-  gfloat fm_strength = wmod->vars.freq_mod;
-  gfloat self_strength = wmod->vars.self_mod;
-  GslWaveChunkBlock *block = &wmod->block;
-  gdouble *a = wmod->a, *b = wmod->b, *y = wmod->y;
-  guint istep = wmod->istep;
-  gfloat ffrac, *boundary = block->end;
-  gint dirstride = block->dirstride;
-  guint wmod_j = wmod->j;
-  
-  if (!wmod->vars.index)
-    {
-      module->ostreams[0].values = gsl_engine_const_values (0);
-      module->ostreams[1].values = gsl_engine_const_values (0);
-      module->ostreams[2].values = gsl_engine_const_values (0);
-      return;
-    }
-  /* sync */
-  module->ostreams[1].values = gsl_engine_const_values (0.0);
-  /* gate */
-  module->ostreams[2].values = gsl_engine_const_values (block->is_silent ? 0.0 : 1.0);
-  
-  /* do the mixing */
-  wave_boundary = wave_out + n_values;
-  do
-    {
-      /* process filter while necesary */
-      while (wmod->cur_pos >= (FRAC_MASK + 1) << 1)
-	{
-	  gfloat c, c0, c1, c2, c3, c4, c5, c6, c7, c8;
-	  gfloat d, d0, d1, d2, d3, d4, d5, d6, d7;
-	  gfloat *x;
-	  
-	  if (wmod->x == boundary)	/* wchunk block boundary */
-	    {
-	      GslLong next_offset = block->next_offset;
-	      
-	      gsl_wave_chunk_unuse_block (wmod->wchunk, block);
-	      block->offset = next_offset;
-	      gsl_wave_chunk_use_block (wmod->wchunk, block);
-	      wmod->x = block->start;
-	      boundary = block->end;
-	      dirstride = block->dirstride;
-	    }
-	  
-	  g_assert (dirstride == 1);
-	  g_assert (ORDER == 8);
-	  
-	  x = wmod->x;
-	  d0 = b[0] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d1 = b[1] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d2 = b[2] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d3 = b[3] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d4 = b[4] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d5 = b[5] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d6 = b[6] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d7 = b[7] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  c8 = a[8] * x[-4];
-	  c6 = a[6] * x[-3];
-	  c4 = a[4] * x[-2];
-	  c2 = a[2] * x[-1];
-	  c0 = a[0] * x[0];
-	  d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
-	  c = c0 + c2 + c4 + c6 + c8;
-	  y[wmod_j] = c - d; wmod_j++; wmod_j &= 0x7;
-	  d0 = b[0] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d1 = b[1] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d2 = b[2] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d3 = b[3] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d4 = b[4] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d5 = b[5] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d6 = b[6] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  d7 = b[7] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;
-	  c7 = a[7] * x[-3];
-	  c5 = a[5] * x[-2];
-	  c3 = a[3] * x[-1];
-	  c1 = a[1] * x[0];
-	  d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
-	  c = c1 + c3 + c5 + c7;
-	  y[wmod_j] = c - d; wmod_j++; wmod_j &= 0x7;
-	  wmod->x += 1;	/* dirstride == 1 !! */
-	  wmod->cur_pos -= (FRAC_MASK + 1) << 1;
-	}
 
-      /* interpolate filter output from current pos
-       * wmod->cur_pos >> FRAC_SHIFT is 1 or 0;
-       */
-      if (wmod->cur_pos >> FRAC_SHIFT)
-	{
-	  guint k = wmod_j - 2;
+  if (wmod->y[0] != 0.0 &&
+      !(fabs (wmod->y[0]) > GSL_SIGNAL_EPSILON && fabs (wmod->y[0]) < GSL_SIGNAL_KAPPA))
+    {
+      guint i;
 
-	  ffrac = wmod->cur_pos & FRAC_MASK;	/* int -> float */
-	  ffrac *= 1. / (FRAC_MASK + 1.);
-	  *wave_out++ = y[k & 0x7] * (1.0 - ffrac) + y[(k + 1) & 0x7] * ffrac;
-	}
-      else
+      g_printerr ("clearing filter state at:\n");
+      for (i = 0; i < ORDER; i++)
 	{
-	  guint k = wmod_j - 3;
-	  
-	  ffrac = wmod->cur_pos;		/* int -> float */
-	  ffrac *= 1. / (FRAC_MASK + 1.);
-	  *wave_out++ = y[k & 0x7] * (1.0 - ffrac) + y[(k + 1) & 0x7] * ffrac;
+	  g_printerr ("%u) %+.38f\n", i, wmod->y[i]);
+	  if (GSL_DOUBLE_IS_INF (wmod->y[0]) || fabs (wmod->y[0]) > GSL_SIGNAL_KAPPA)
+	    wmod->y[i] = GSL_DOUBLE_SIGN (wmod->y[0]) ? -1.0 : 1.0;
+	  else
+	    wmod->y[i] = 0.0;
 	}
-      
-      /* increment */
-      wmod->cur_pos += istep;
     }
-  while (wave_out < wave_boundary);
-  wmod->j = wmod_j;
-#endif
+  g_assert (!GSL_DOUBLE_IS_NANINF (wmod->y[0]));
+  g_assert (!GSL_DOUBLE_IS_SUBNORMAL (wmod->y[0]));
 }
 
 static void

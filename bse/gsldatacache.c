@@ -194,11 +194,11 @@ dcache_free (GslDataCache *dcache)
       guint size;
 
       size = dcache->node_size + (dcache->padding << 1);
-      gsl_delete_struct (GslDataType, size, node->data - dcache->padding);
-      gsl_delete_struct (GslDataCacheNode, 1, node);
+      gsl_delete_structs (GslDataType, size, node->data - dcache->padding);
+      gsl_delete_struct (GslDataCacheNode, node);
     }
   g_free (dcache->nodes);
-  gsl_delete_struct (GslDataCache, 1, dcache);
+  gsl_delete_struct (GslDataCache, dcache);
 }
 
 void
@@ -422,8 +422,8 @@ data_cache_free_olders_LL (GslDataCache *dcache,
 
       if (!node->ref_count && node->age + oldest <= dcache->max_age)
 	{
-	  gsl_delete_struct (GslDataType, size, node->data - dcache->padding);
-	  gsl_delete_struct (GslDataCacheNode, 1, node);
+	  gsl_delete_structs (GslDataType, size, node->data - dcache->padding);
+	  gsl_delete_struct (GslDataCacheNode, node);
 	  if (!slot_p)
 	    slot_p = dcache->nodes + i;
 	  n_freed++;

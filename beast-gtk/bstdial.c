@@ -23,7 +23,7 @@
 #include <stdio.h>
 
 #define SCROLL_DELAY_LENGTH	300
-#define DIAL_DEFAULT_SIZE	52
+#define DIAL_DEFAULT_SIZE	30
 #define RATIO			0.75752
 #define HCENTER			(1.0 / (2 * RATIO))
 
@@ -303,7 +303,7 @@ bst_dial_paint (BstDial *dial)
 
   /* draw the ticks
    */
-  if (widget->allocation.width >= DIAL_DEFAULT_SIZE)
+  if (widget->allocation.width >= DIAL_DEFAULT_SIZE * 2)
     {
       n_steps = 36;
       thick_step = 6;
@@ -476,7 +476,7 @@ bst_dial_mouse_update (BstDial *dial,
 
   /* compute new adjustment value, translated to its lower...upper range */
   adjustment->value = (adjustment->lower +
-		       (1.0 - angle / M_PI) * (adjustment->upper - adjustment->lower));
+		       (1.0 - angle / M_PI) * (adjustment->upper - adjustment->lower - adjustment->page_size));
   
   /* if the adjustment value changed:
    * - for continuous updates: emit the GtkAdjustment::value_changed signal
@@ -599,6 +599,7 @@ bst_dial_set_adjustment (BstDial       *dial,
   dial->old_value = adjustment->value;
   dial->old_lower = adjustment->lower;
   dial->old_upper = adjustment->upper;
+  dial->old_page_size = adjustment->page_size;
   
   bst_dial_update (dial);
 }
@@ -616,11 +617,13 @@ bst_dial_adjustment_changed (GtkAdjustment *adjustment,
   
   if (dial->old_value != adjustment->value ||
       dial->old_lower != adjustment->lower ||
-      dial->old_upper != adjustment->upper)
+      dial->old_upper != adjustment->upper ||
+      dial->old_page_size != adjustment->page_size)
     {
       dial->old_value = adjustment->value;
       dial->old_lower = adjustment->lower;
       dial->old_upper = adjustment->upper;
+      dial->old_page_size = adjustment->page_size;
 
       bst_dial_update (dial);
     }
@@ -657,7 +660,7 @@ bst_dial_update (BstDial *dial)
   widget = GTK_WIDGET (dial);
   adjustment = GTK_ADJUSTMENT (dial->adjustment);
   
-  new_value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper);
+  new_value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
   
   if (new_value != adjustment->value)
     {
@@ -665,7 +668,8 @@ bst_dial_update (BstDial *dial)
       gtk_adjustment_value_changed (GTK_ADJUSTMENT (dial->adjustment));
     }
   
-  dial->angle = M_PI - M_PI * (new_value - adjustment->lower) / MAX (1, (adjustment->upper - adjustment->lower));
+  dial->angle = (M_PI - M_PI * (adjustment->value - adjustment->lower) /
+		 (adjustment->upper - adjustment->page_size - adjustment->lower));
   
   gtk_widget_queue_draw (widget);
 }

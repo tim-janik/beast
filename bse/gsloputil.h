@@ -32,18 +32,22 @@ typedef struct _OpSchedule OpSchedule;
 
 
 /* --- UserThread --- */
-GslTrans*       _op_alloc_trans		(void);
-void            _op_free_trans		(GslTrans        *trans);
-void            _op_collect_trans	(void);
-GslOStream*	_op_alloc_ostreams	(guint		 n);
+void		_gsl_free_trans			(GslTrans      *trans);
+GslOStream*	_gsl_alloc_ostreams		(guint		n);
+#if 0	/* gslengine.h: */
+void            gsl_engine_garbage_collect	(void);
+gfloat*		gsl_engine_const_values		(gfloat		value);
+#endif
 
 
 /* --- MasterThread --- */
 void	       _gsl_recycle_const_values (void);
-
-/* --- public utils --- */
-gfloat*		gsl_engine_const_values	(gfloat		value);
-
+/* master node list */
+void		_gsl_mnl_remove			(OpNode		*node);
+void		_gsl_mnl_reorder		(OpNode		*node);
+void		_gsl_mnl_integrate		(OpNode		*node);
+#define	GSL_MNL_HEAD_NODE(node)			((node)->flow_jobs && !(node)->sched_tag)
+OpNode*		_gsl_mnl_head			(void);
 
 /* communication routines for threads:
  * UserThread   - main application
@@ -72,16 +76,6 @@ void	 _gsl_com_push_processed_node	(OpNode		*node);
 GslRing* _gsl_com_pop_unprocessed_cycle	(void);
 void	 _gsl_com_push_processed_cycle	(GslRing	*cycle);
 void	 _gsl_com_wait_on_unprocessed	(void);
-
-
-/* --- thread wakeups --- */
-void	_gsl_com_add_master_wakeup	(GslTrans	*trans);
-void	_gsl_com_remove_master_wakeup	(GslTrans	*trans);
-void	_gsl_com_fire_master_wakeup	(void);
-void	_gsl_com_discard_master_wakeups	(void);
-gint	_gsl_com_get_user_wakeup	(void);
-void	_gsl_com_fire_user_wakeup	(void);
-void	_gsl_com_discard_user_wakeups	(void);
 
        
 

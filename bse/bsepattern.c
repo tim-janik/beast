@@ -19,6 +19,7 @@
 #include	"bseglobals.h"
 #include	"bseinstrument.h"
 #include	"bsesong.h"
+#include	"bsemain.h"
 #include	"bseprocedure.h"
 #include	"bsestorage.h"
 #include	"bsemarshal.h"
@@ -78,7 +79,7 @@ BSE_BUILTIN_TYPE (BsePattern)
     NULL /* class_data */,
     
     sizeof (BsePattern),
-    BSE_PREALLOC_N_PATTERNS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pattern_init,
   };
   
@@ -173,8 +174,8 @@ bse_pattern_do_set_parent (BseItem *item,
 
 static void
 bse_pattern_reset_note (BsePattern *pattern,
-			guint	    channel,
-			guint	    row)
+			guint       channel,
+			guint       row)
 {
   BsePatternNote *note;
   guint i;
@@ -194,7 +195,7 @@ bse_pattern_reset_note (BsePattern *pattern,
   note->effects = NULL;
   note->n_effects = 0;
 
-  /* leave note->selected state */
+  /* leave note->selected state alone */
 }
 
 void
@@ -206,12 +207,12 @@ bse_pattern_set_n_channels (BsePattern *pattern,
 
   if (BSE_OBJECT_IS_LOCKED (pattern))
     return;
-  
+
   if (pattern->n_channels != n_channels)
     {
       BsePatternNote *notes;
       guint c, r;
-      
+  
       for (c = n_channels; c < pattern->n_channels; c++)
 	for (r = 0; r < pattern->n_rows; r++)
 	  bse_pattern_reset_note (pattern, c, r);
@@ -255,7 +256,7 @@ bse_pattern_set_n_rows (BsePattern *pattern,
     {
       BsePatternNote *notes;
       guint c, r;
-      
+
       for (r = n_rows; r < pattern->n_rows; r++)
 	for (c = 0; c < pattern->n_channels; c++)
 	  bse_pattern_reset_note (pattern, c, r);
@@ -280,7 +281,7 @@ bse_pattern_set_n_rows (BsePattern *pattern,
       g_free (pattern->notes);
       pattern->notes = notes;
       pattern->n_rows = n_rows;
-      
+
       g_signal_emit (pattern, pattern_signals[SIGNAL_SIZE_CHANGED], 0);
     }
 }
@@ -359,11 +360,22 @@ bse_pattern_note_actuate_effect (BsePattern *pattern,
   
   if (!bse_pattern_note_find_effect (pattern, channel, row, g_type_next_base (effect_type, BSE_TYPE_EFFECT)))
     {
-      BsePatternNote *note = &PNOTE (pattern, channel, row);
-      guint i = note->n_effects++;
+      BsePatternNote *note;
+      gpointer effect;
+      guint i;
+
+      effect = bse_object_new (effect_type, NULL);
+
+      BSE_SEQUENCER_LOCK ();
+
+      note = &PNOTE (pattern, channel, row);
+      i = note->n_effects++;
       
       note->effects = g_renew (BseEffect*, note->effects, note->n_effects);
-      note->effects[i] = bse_object_new (effect_type, NULL);
+      note->effects[i] = effect;
+
+      BSE_SEQUENCER_UNLOCK ();
+      
       g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
     }
 }
@@ -387,9 +399,17 @@ bse_pattern_note_drop_effect (BsePattern *pattern,
   for (i = 0; i < note->n_effects; i++)
     if (g_type_is_a (BSE_OBJECT_TYPE (note->effects[i]), effect_type))
       {
-	g_object_unref (G_OBJECT (note->effects[i]));
+	BseEffect *effect = note->effects[i];
+
+	BSE_SEQUENCER_LOCK ();
+	
 	note->n_effects--;
 	g_memmove (note->effects + i, note->effects + i + 1, sizeof (note->effects[0]) * (note->n_effects - i));
+
+	BSE_SEQUENCER_UNLOCK ();
+
+	g_object_unref (effect);
+
 	g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
 	return;
       }
@@ -411,29 +431,37 @@ bse_pattern_modify_note (BsePattern    *pattern,
   if (note_val != BSE_NOTE_VOID)
     g_return_if_fail (note_val >= BSE_MIN_NOTE && note_val <= BSE_MAX_NOTE);
 
-  bse_object_lock (BSE_OBJECT (pattern));
+  g_object_ref (pattern);
 
   note = &PNOTE (pattern, channel, row);
-
   if (note->instrument != instrument)
     {
-      if (note->instrument)
-	bse_object_unref (BSE_OBJECT (note->instrument));
+      BseInstrument *oi = note->instrument;
+      
+      if (instrument)
+	g_object_ref (instrument);
+
+      BSE_SEQUENCER_LOCK ();
       note->instrument = instrument;
-      if (note->instrument)
-	bse_object_ref (BSE_OBJECT (note->instrument));
+      note->note = note_val;
+      BSE_SEQUENCER_UNLOCK ();
+
+      if (oi)
+	g_object_unref (oi);
       notify_changed++;
     }
-  if (note->note != note_val)
+  else if (note->note != note_val)
     {
+      BSE_SEQUENCER_LOCK ();
       note->note = note_val;
       notify_changed++;
+      BSE_SEQUENCER_UNLOCK ();
     }
 
   if (notify_changed)
     g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
 
-  bse_object_unlock (BSE_OBJECT (pattern));
+  g_object_unref (pattern);
 }
 
 void
@@ -486,7 +514,9 @@ bse_pattern_select_note (BsePattern *pattern,
   note = &PNOTE (pattern, channel, row);
   if (!note->selected)
     {
+      BSE_SEQUENCER_LOCK ();
       note->selected = TRUE;
+      BSE_SEQUENCER_UNLOCK ();
       g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_SELECTION_CHANGED], 0, channel, row);
     }
 }
@@ -505,7 +535,9 @@ bse_pattern_unselect_note (BsePattern *pattern,
   note = &PNOTE (pattern, channel, row);
   if (note->selected)
     {
+      BSE_SEQUENCER_LOCK ();
       note->selected = FALSE;
+      BSE_SEQUENCER_UNLOCK ();
       g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_SELECTION_CHANGED], 0, channel, row);
     }
 }

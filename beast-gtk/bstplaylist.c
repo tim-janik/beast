@@ -21,6 +21,28 @@
 #include	"bstmenus.h"
 
 
+/* --- drop target --- */
+static const gchar *target_xpm[] = {
+  "16 16 6 1", "  c None", "# c #DF4444", ": c #E78484", "- c ##F85E5E", "X c #373684", "| c #7E7CF8",
+  "                ",
+  "      :###:     ",
+  "    :###:###:   ",
+  "   :##:   :##:  ",
+  "  :#:   -   :#: ",
+  " :#:  :###:  :#:",
+  " :#: :#: :#: :#:",
+  " #:  #:|X|:#  :#",
+  " #:  # XXX #  :#",
+  " #:  #:|X|:#  :#",
+  " :#: :#: :#: :#:",
+  " :#:  :###:  :#:",
+  "  :#:   -   :#: ",
+  "   :#:     :#:  ",
+  "    :###:###:   ",
+  "      :###:     ",
+};
+
+
 /* --- global play_list variables --- */
 static GtkWidget        *bst_play_list_drag_window_pattern_icon = NULL;
 static GtkWidget        *bst_play_list_drag_window_pattern_group_icon = NULL;
@@ -210,9 +232,7 @@ bst_play_list_init (BstPlayList *plist)
       drag_widget = gtk_widget_new (GTK_TYPE_FRAME,
 				    "visible", TRUE,
 				    "shadow", GTK_SHADOW_IN,
-				    "child", bst_forest_from_bse_icon (bst_icon_from_stock (BST_ICON_TARGET),
-								       BST_DRAG_ICON_WIDTH / 2,
-								       BST_DRAG_ICON_HEIGHT / 2),
+				    "child", bst_xpm_view_create (&target_xpm, GTK_WIDGET (plist)),
 				    NULL);
       gtk_widget_ref (drag_widget);
       gtk_object_sink (GTK_OBJECT (drag_widget));
@@ -223,35 +243,30 @@ bst_play_list_init (BstPlayList *plist)
 			     NULL);
       frame = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
-			      "shadow", GTK_SHADOW_OUT,
-			      "child", bst_forest_from_bse_icon (bst_icon_from_stock (BST_ICON_TARGET),
-								 BST_DRAG_ICON_WIDTH / 2,
-								 BST_DRAG_ICON_HEIGHT / 2),
+			      "shadow", GTK_SHADOW_IN,
+			      "child", bst_xpm_view_create (&target_xpm, GTK_WIDGET (plist)),
 			      NULL);
       gtk_box_pack_start (GTK_BOX (hbox), frame, FALSE, FALSE, 0);
       frame = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
-			      "shadow", GTK_SHADOW_OUT,
-			      "child", bst_forest_from_bse_icon (bst_icon_from_stock (BST_ICON_TARGET),
-								 BST_DRAG_ICON_WIDTH / 2,
-								 BST_DRAG_ICON_HEIGHT / 2),
+			      "shadow", GTK_SHADOW_IN,
+			      "child", bst_xpm_view_create (&target_xpm, GTK_WIDGET (plist)),
 			      NULL);
       gtk_box_pack_start (GTK_BOX (hbox), frame, TRUE, FALSE, 0);
       frame = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
-			      "shadow", GTK_SHADOW_OUT,
-			      "child", bst_forest_from_bse_icon (bst_icon_from_stock (BST_ICON_TARGET),
-								 BST_DRAG_ICON_WIDTH / 2,
-								 BST_DRAG_ICON_HEIGHT / 2),
+			      "shadow", GTK_SHADOW_IN,
+			      "child", bst_xpm_view_create (&target_xpm, GTK_WIDGET (plist)),
 			      NULL);
       gtk_box_pack_start (GTK_BOX (hbox), frame, FALSE, FALSE, 0);
       drag_widget = gtk_widget_new (GTK_TYPE_FRAME,
 				    "visible", TRUE,
-				    "shadow", GTK_SHADOW_IN,
+				    "shadow", GTK_SHADOW_OUT,
 				    "child", hbox,
 				    NULL);
       gtk_widget_ref (drag_widget);
       gtk_object_sink (GTK_OBJECT (drag_widget));
+      bst_widget_force_bg_clear (drag_widget);
       bst_play_list_drop_spot_pattern_group = drag_widget;
 
       drag_widget = bst_drag_window_from_icon (bst_icon_from_stock (BST_ICON_PATTERN));
@@ -265,7 +280,7 @@ bst_play_list_init (BstPlayList *plist)
       bst_play_list_drag_window_pattern_group_icon = drag_widget;
     }
   drag_windows_ref_count += 1;
-  plist->group_name_kennel = gtk_kennel_new (GTK_KENNEL_TO_MAXIMUM, 0);
+  plist->size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
 static void
@@ -275,10 +290,10 @@ bst_play_list_destroy (GtkObject *object)
 
   bst_play_list_set_song (plist, NULL);
 
-  if (plist->group_name_kennel) /* catch first destroy only */
+  if (plist->size_group) /* catch first destroy only */
     {
-      gtk_kennel_unref (plist->group_name_kennel);
-      plist->group_name_kennel = NULL;
+      g_object_unref (plist->size_group);
+      plist->size_group = NULL;
       
       /* destroy drag_windows
        */
@@ -461,7 +476,7 @@ song_pattern_group_insert (BseSong         *song,
 {
   BstDragGroup *drag_group = bst_drag_group_new (pgroup, position, ignore_first_insert);
 
-  gtk_kennel_add (plist->group_name_kennel, drag_group->name);
+  gtk_size_group_add_widget (plist->size_group, drag_group->name);
   gtk_container_add_with_properties (GTK_CONTAINER (plist->group_list), drag_group->widget,
 				     "expand", FALSE,
 				     "position", position,

@@ -232,7 +232,7 @@ bse_wave_repo_import_wave (BseWaveRepo *wrepo,
 		bse_wave_add_chunk (wave, wchunk);
 	    }
 	  bse_wave_set_locator (wave, file_name, wdsc->name);
-	  if (1) // FIXME: junk hack
+	  if (0) // FIXME: junk hack
 	    {
 	      GslWaveChunk *wchunk;
 

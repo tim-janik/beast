@@ -60,7 +60,7 @@ void	    bse_pattern_group_remove_pattern	(BsePatternGroup	*pgroup,
 						 BsePattern		*pattern);
 void	    bse_pattern_group_remove_entry	(BsePatternGroup	*pgroup,
 						 gint			 position);
-void	    bse_pattern_group_copy_contents	(BsePatternGroup	*pgroup,
+void	    bse_pattern_group_clone_contents	(BsePatternGroup	*pgroup,
 						 BsePatternGroup	*src_pgroup);
 BsePattern* bse_pattern_group_get_nth_pattern	(BsePatternGroup	*pgroup,
 						 gint			 index);

@@ -33,6 +33,7 @@ extern "C" {
 #define BST_APP_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_APP, BstAppClass))
 #define BST_IS_APP(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_APP))
 #define BST_IS_APP_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_APP))
+#define BST_APP_GET_CLASS(app)  (G_TYPE_INSTANCE_GET_CLASS ((app), BST_TYPE_APP, BstAppClass))
 
 
 /* --- object & class member/convenience macros --- */
@@ -60,6 +61,7 @@ struct _BstApp
 struct _BstAppClass
 {
   GtkWindowClass        parent_class;
+  gboolean		seen_apps;
   GSList               *apps;
 };
 

@@ -102,7 +102,7 @@ struct _GslOStream
 /* --- interface (UserThread functions) --- */
 GslModule*	gsl_module_new		(const GslClass	 *klass,
 					 gpointer	  user_data);
-guint64		gsl_module_counter	(GslModule	 *module);
+guint64		gsl_module_tick_stamp	(GslModule	 *module);
 GslJob*		gsl_job_connect		(GslModule	 *src_module,
 					 guint		  src_ostream,
 					 GslModule	 *dest_module,
@@ -130,6 +130,15 @@ void		gsl_trans_commit	(GslTrans	 *trans);
 void		gsl_trans_dismiss	(GslTrans	 *trans);
 void		gsl_transact		(GslJob		 *job,
 					 ...);
+GslJob*		gsl_flow_job_access	(GslModule	 *module,
+					 guint64	  tick_stamp,
+					 GslAccessFunc	  access_func,	/* EngineThread */
+					 gpointer	  data,
+					 GslFreeFunc	  free_func);	/* UserThread */
+GslJob*		gsl_flow_job_suspend	(GslModule	 *module,
+					 guint64	  tick_stamp);
+GslJob*		gsl_flow_job_resume	(GslModule	 *module,
+					 guint64	  tick_stamp);
 
 
 /* --- module utilities --- */
@@ -137,7 +146,7 @@ gfloat*		gsl_engine_const_values	(gfloat		 value);
 
 
 /* --- initialization & main loop --- */
-void	      gsl_engine_init		(gboolean	 threaded,
+void	        gsl_engine_init		(gboolean	 threaded,
 					 guint		 block_size,
 					 guint		 sample_freq);
 typedef struct
@@ -148,16 +157,16 @@ typedef struct
   GslPollFD    *fds;
   gboolean	revents_filled;
 } GslEngineLoop;
-gboolean      gsl_engine_prepare	(GslEngineLoop		*loop);
-gboolean      gsl_engine_check		(const GslEngineLoop	*loop);
-void	      gsl_engine_dispatch	(void);
+gboolean        gsl_engine_prepare	(GslEngineLoop		*loop);
+gboolean        gsl_engine_check	(const GslEngineLoop	*loop);
+void	        gsl_engine_dispatch	(void);
 
 
 /* --- miscellaneous --- */
-void	      gsl_engine_wait_on_trans	(void);
-#define	      gsl_engine_block_size()	(/* guint */	gsl_externvar_bsize + 0)
-#define	      gsl_engine_last_counter()	(/* guint64 */	gsl_externvar_lcounter + 0)
-#define	      gsl_engine_sample_freq()	(/* guint */	gsl_externvar_sample_freq + 0)
+void	      gsl_engine_garbage_collect	(void);
+void	      gsl_engine_wait_on_trans		(void);
+#define	      gsl_engine_block_size()		(/* guint */	gsl_externvar_bsize + 0)
+#define	      gsl_engine_sample_freq()		(/* guint */	gsl_externvar_sample_freq + 0)
 
 
 /* --- debugging --- */
@@ -177,7 +186,6 @@ void gsl_engine_debug_disable (GslEngineDebugLevel level);
 /*< private >*/
 extern guint	gsl_externvar_bsize;
 extern guint	gsl_externvar_sample_freq;
-extern guint64	gsl_externvar_lcounter;
 
 #ifdef __cplusplus
 }

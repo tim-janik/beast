@@ -38,7 +38,9 @@ typedef struct
 
 
 /* --- variables --- */
+#if 0 /* bsedefs.h: */
 extern BseDebugFlags bse_debug_flags;
+#endif
 
 
 /* --- prototypes --- */
@@ -46,13 +48,17 @@ gboolean	bse_initialized			(void);
 void		bse_init			(gint		    *argc,
 						 gchar	          ***argv,
 						 const BseLockFuncs *lock_funcs);
-#define	BSE_THREADS_ENTER()			bse_main_lock ()
-#define	BSE_THREADS_LEAVE()			bse_main_unlock ()
+#define	BSE_THREADS_ENTER()			bse_main_global_lock ()
+#define	BSE_THREADS_LEAVE()			bse_main_global_unlock ()
+#define	BSE_SEQUENCER_LOCK()			bse_main_sequencer_lock ()
+#define	BSE_SEQUENCER_UNLOCK()			bse_main_sequencer_unlock ()
 
 
 /* --- internal --- */
-void		bse_main_lock			(void);
-void		bse_main_unlock			(void);
+void		bse_main_global_lock		(void);
+void		bse_main_global_unlock		(void);
+void		bse_main_sequencer_lock		(void);
+void		bse_main_sequencer_unlock	(void);
 
 
 

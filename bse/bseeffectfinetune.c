@@ -57,7 +57,7 @@ BSE_BUILTIN_TYPE (BseEffectFineTune)
     NULL /* class_data */,
     
     sizeof (BseEffectFineTune),
-    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_fine_tune_init,
   };
   GType effect_type;

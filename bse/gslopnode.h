@@ -33,7 +33,7 @@ extern "C" {
 #define OP_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
 #define	OP_NODE_IS_CONSUMER(node)	((node)->module.klass->n_ostreams == 0 || \
 					 (((node)->module.klass->mflags & GSL_ALWAYS_PROCESS) && \
-					  (node)->onodes == NULL))
+					  (node)->output_nodes == NULL))
 #define	OP_NODE_IS_DEFERRED(node)	(FALSE)
 #define	OP_NODE_IS_SCHEDULED(node)	(OP_NODE (node)->sched_tag)
 #define	OP_NODE_IS_CHEAP(node)		(((node)->module.klass->mflags & GSL_COST_CHEAP) != 0)
@@ -44,15 +44,17 @@ extern "C" {
 
 
 /* --- transactions --- */
+typedef union _GslFlowJob GslFlowJob;
 typedef enum {
   OP_JOB_NOP,
   OP_JOB_INTEGRATE,
   OP_JOB_DISCARD,
   OP_JOB_CONNECT,
   OP_JOB_DISCONNECT,
-  OP_JOB_ACCESS,
+  GSL_JOB_ACCESS,
   OP_JOB_ADD_POLL,
   OP_JOB_REMOVE_POLL,
+  GSL_JOB_FLOW_JOB,
   OP_JOB_DEBUG,
   OP_JOB_LAST
 } GslJobType;
@@ -81,6 +83,10 @@ struct _GslJob
       guint           n_fds;
       GPollFD	     *fds;
     } poll;
+    struct {
+      OpNode	     *node;
+      GslFlowJob     *fjob;
+    } flow_job;
     gchar	     *debug;
   } data;
 };
@@ -90,6 +96,34 @@ struct _GslTrans
   GslJob   *jobs_tail;
   guint	    comitted : 1;
   GslTrans *cqt_next;	/* com-thread-queue */
+};
+typedef enum {
+  GSL_FLOW_JOB_NOP,
+  GSL_FLOW_JOB_SUSPEND,
+  GSL_FLOW_JOB_RESUME,
+  GSL_FLOW_JOB_ACCESS,
+  GSL_FLOW_JOB_LAST
+} GslFlowJobType;
+typedef struct
+{
+  GslFlowJobType   fjob_id;
+  GslFlowJob      *next;
+  guint64          tick_stamp;
+} GslFlowJobAny;
+typedef struct
+{
+  GslFlowJobType   fjob_id;
+  GslFlowJob	  *next;
+  guint64	   tick_stamp;
+  GslAccessFunc    access_func;
+  gpointer         data;
+  GslFreeFunc      free_func;
+} GslFlowJobAccess;
+union _GslFlowJob
+{
+  GslFlowJobType   fjob_id;
+  GslFlowJobAny	   any;
+  GslFlowJobAccess access;
 };
 
 
@@ -104,30 +138,55 @@ typedef struct
   gfloat *buffer;
   guint	  n_outputs;
 } OpOutput;
-struct _OpNode
+struct _OpNode	/* fields sorted by order of processing access */
 {
   GslModule	 module;
+
+  GslRecMutex	 rec_mutex;	/* processing lock */
+  guint64	 counter;	/* <= GSL_TICK_STAMP */
   OpInput	*inputs;	/* [OP_NODE_N_ISTREAMS()] */
   OpOutput	*outputs;	/* [OP_NODE_N_OSTREAMS()] */
-  GslRing	*onodes;	/* OpNode* */
-  guint64	 counter;
-  
+
+  /* flow jobs */
+  GslFlowJob	*flow_jobs;			/* active jobs */
+  GslFlowJob	*fjob_first, *fjob_last;	/* trash list */
+
   /* master-node-list */
-  guint		 mnl_contained : 1;
   OpNode	*mnl_next;
   OpNode	*mnl_prev;
-  OpNode	*mcl_next;	/* master-consumer-list */
-  
-  /* processing lock */
-  GslRecMutex	 rec_mutex;
+  guint		 integrated : 1;
   
   /* scheduler */
   guint		 sched_tag : 1;
   guint		 sched_router_tag : 1;
   guint		 sched_leaf_level;
+  OpNode	*toplevel_next;	/* master-consumer-list */
+  GslRing	*output_nodes;	/* OpNode* ring of nodes in ->outputs[] */
 };
 
+static inline GslFlowJob*
+_gsl_node_pop_flow_job (OpNode *node,
+			guint64 tick_stamp)
+{
+  GslFlowJob *fjob = node->flow_jobs;
 
+  if (fjob)
+    {
+      if (tick_stamp >= fjob->any.tick_stamp)
+	{
+	  node->flow_jobs = fjob->any.next;
+	  
+	  fjob->any.next = node->fjob_first;
+	  node->fjob_first = fjob;
+	  if (!node->fjob_last)
+	    node->fjob_last = node->fjob_first;
+	}
+      else
+	fjob = NULL;
+    }
+
+  return fjob;
+}
 
 #if defined(__GNUC__) || defined(__DECC__)
 #define OP_DEBUG	_gsl_op_debug

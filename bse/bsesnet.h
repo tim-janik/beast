@@ -36,6 +36,15 @@ extern "C" {
 #define BSE_IS_SNET(object)	   (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SNET))
 #define BSE_IS_SNET_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SNET))
 #define BSE_SNET_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SNET, BseSNetClass))
+#define BSE_SNET_FINAL(src)	   ((BSE_OBJECT_FLAGS (src) & BSE_SNET_FLAG_FINAL) != 0)
+
+
+/* --- BseSNet flags --- */
+typedef enum
+{
+  BSE_SNET_FLAG_FINAL		= 1 << (BSE_SUPER_FLAGS_USHIFT + 0)
+} BseSNetFlags;
+#define BSE_SNET_FLAGS_USHIFT	(BSE_SUPER_FLAGS_USHIFT + 1)
 
 
 /* --- BseSNet object --- */
@@ -66,8 +75,6 @@ struct _BseSNetClass
 
 
 /* --- prototypes --- */
-BseSNet*	bse_snet_lookup		 	(BseProject	*project,
-						 const gchar	*name);
 const gchar*	bse_snet_add_in_port	 	(BseSNet	*snet,
 						 const gchar	*tmpl_name,
 						 BseSource	*source,

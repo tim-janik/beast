@@ -1000,13 +1000,19 @@ resolve_dinput (BseSource  *source,
 				    bse_source_find_ochannel (BSE_SOURCE (item),
 							      dinput->ochannel_name));
       if (error && !aborted)
-	bse_storage_warn (storage,
-			  "failed to connect input \"%s\" of \"%s\" to output \"%s\" of \"%s\": %s",
+	{
+	  bse_storage_warn (storage,
+			    "failed to connect input \"%s\" of \"%s\" to output \"%s\" of \"%s\": %s",
 			  dinput->ichannel < BSE_SOURCE_N_ICHANNELS (source) ? BSE_SOURCE_ICHANNEL_CNAME (source, dinput->ichannel) : "???",
 			  BSE_OBJECT_NAME (source),
 			  dinput->ochannel_name,
 			  BSE_OBJECT_NAME (item),
-			  bse_error_blurb (error));
+			    bse_error_blurb (error));
+	  g_print ("find: %s\n", dinput->osource_path);
+	  G_BREAKPOINT ();
+	  item = bse_container_item_from_path (BSE_CONTAINER (project), dinput->osource_path);
+	  g_print ("found: %s\n", G_OBJECT_TYPE_NAME (item));
+	}
     }
   
   bse_object_set_qdata (object, quark_deferred_input, NULL);

@@ -43,6 +43,7 @@ typedef struct _GslModule		GslModule;
 typedef struct _GslIStream		GslIStream;
 typedef struct _GslJStream		GslJStream;
 typedef struct _GslOStream		GslOStream;
+typedef struct _GslThread		GslThread;
 typedef struct _GslTrans		GslTrans;
 typedef struct _GslWaveDsc		GslWaveDsc;
 typedef struct _GslWaveChunk		GslWaveChunk;
@@ -79,6 +80,12 @@ typedef struct
 } GslPollFD;
 
 
+#ifdef BSE_COMPILATION
+#  define if_expect(cond)		if (GSL_GCC_EXPECT (cond))
+#  define if_reject(cond)		if (GSL_GCC_REJECT (cond))
+#endif
+
+
 /* --- implementation specific --- */
 /*< private >*/
 /* FIXME: gslconfig.h stuff */
@@ -99,7 +106,13 @@ struct _GslRecMutex
   gpointer owner;
   GslMutex sync_mutex;
 };
-
+#if __GNUC__ >= 3 && defined __OPTIMIZE__
+#  define GSL_GCC_EXPECT(cond)	(__builtin_expect ((cond) != 0, 1))
+#  define GSL_GCC_REJECT(cond)	(__builtin_expect ((cond) != 0, 0))
+#else
+#  define GSL_GCC_EXPECT(cond)	(cond)
+#  define GSL_GCC_REJECT(cond)	(cond)
+#endif
 
 #ifdef __cplusplus
 }

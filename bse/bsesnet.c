@@ -78,7 +78,7 @@ BSE_BUILTIN_TYPE (BseSNet)
     NULL /* class_data */,
     
     sizeof (BseSNet),
-    BSE_PREALLOC_N_SUPERS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_snet_init,
   };
   
@@ -86,6 +86,7 @@ BSE_BUILTIN_TYPE (BseSNet)
                                         "BseSNet",
                                         "BSE Synthesis (Filter) Network",
                                         &snet_info);
+  g_assert (BSE_SNET_FLAGS_USHIFT <= 32);
 
   return snet_type;
 }
@@ -123,6 +124,7 @@ bse_snet_class_init (BseSNetClass *class)
 static void
 bse_snet_init (BseSNet *snet)
 {
+  BSE_OBJECT_SET_FLAGS (snet, BSE_SNET_FLAG_FINAL);
   BSE_SUPER (snet)->auto_activate = FALSE;
   snet->sources = NULL;
 }
@@ -173,20 +175,6 @@ bse_snet_get_property (BseSNet     *snet,
     }
 }
 
-BseSNet*
-bse_snet_lookup (BseProject  *project,
-                 const gchar *name)
-{
-  BseItem *item;
-
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
-
-  item = bse_container_lookup_item (BSE_CONTAINER (project), name);
-
-  return BSE_IS_SNET (item) ? BSE_SNET (item) : NULL;
-}
-
 static void
 bse_snet_add_item (BseContainer *container,
                    BseItem      *item)
@@ -195,7 +183,7 @@ bse_snet_add_item (BseContainer *container,
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = g_list_append (snet->sources, item);
-  else
+  else if (BSE_SNET_FINAL (snet))
     g_warning ("BseSNet: cannot hold non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
 
@@ -233,7 +221,7 @@ bse_snet_remove_item (BseContainer *container,
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = g_list_remove (snet->sources, item);
-  else
+  else if (BSE_SNET_FINAL (snet))
     g_warning ("BseSNet: cannot hold non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
 

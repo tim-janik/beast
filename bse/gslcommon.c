@@ -20,13 +20,31 @@
 
 #include "gsldatacache.h"
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/utsname.h>
 #include <string.h>
 #include <sched.h>
+#include <errno.h>
+#include <sys/poll.h>
+
+/* some systems don't have ERESTART (which is what linux returns for system
+ * calls on pipes which are being interrupted). most propably just use EINTR,
+ * and maybe some can return both. so we check for both in the below code,
+ * and alias ERESTART to EINTR if it's not present. compilers are supposed
+ * to catch and optimize the doubled check arising from this.
+ */
+#ifndef ERESTART
+#define ERESTART        EINTR
+#endif
 
 
 #define	SIMPLE_CACHE_SIZE	(1024)
 #define	PREALLOC		(8)
+
+
+/* --- variables --- */
+volatile guint64 gsl_externvar_tick_stamp = 0;
+static guint     global_tick_stamp_leaps = 0;
 
 
 /* --- memory allocation --- */
@@ -253,7 +271,7 @@ gsl_ring_remove_node (GslRing *head,
     {
       g_return_val_if_fail (node == head, head);
       
-      gsl_delete_struct (GslRing, 1, node);
+      gsl_delete_struct (GslRing, node);
       return NULL;
     }
   g_return_val_if_fail (node != node->next, head); /* node can't be a one item ring here */
@@ -262,7 +280,7 @@ gsl_ring_remove_node (GslRing *head,
   node->prev->next = node->next;
   if (head == node)
     head = node->next;
-  gsl_delete_struct (GslRing, 1, node);
+  gsl_delete_struct (GslRing, node);
   
   return head;
 }
@@ -299,6 +317,19 @@ gsl_ring_length (GslRing *head)
     i++;
 
   return i;
+}
+
+GslRing*
+gsl_ring_find (GslRing      *head,
+	       gconstpointer data)
+{
+  GslRing *ring;
+
+  for (ring = head; ring; ring = gsl_ring_walk (head, ring))
+    if (ring->data == (gpointer) data)
+      return ring;
+
+  return NULL;
 }
 
 GslRing*
@@ -368,67 +399,117 @@ gsl_ring_pop_tail (GslRing **head_p)
 
 /* --- GslThread --- */
 static GslMutex global_thread;
-static guint    global_thread_count = 0;
+static GslRing *global_thread_list = NULL;
+static GslCond *global_thread_cond = NULL;
+static GslRing *awake_tdata_list = NULL;
 
 typedef struct
 {
   GslThreadFunc func;
   gpointer      data;
-} ThreadFunc;
+  gint		wpipe[2];
+  volatile gint abort;
+  guint64       awake_stamp;
+} ThreadData;
+
+static inline ThreadData*
+thread_data_from_gsl_thread (GslThread *thread)
+{
+  GThread *gthread = (GThread*) thread;
+
+  return gthread->data;
+}
 
 static gpointer
 thread_wrapper (gpointer arg)
 {
-  ThreadFunc *tfunc = arg;
-  GslThreadFunc func = tfunc->func;
-  gpointer data = tfunc->data;
+  GslThread *self = gsl_thread_self ();
+  ThreadData *tdata = arg;
+
+  g_assert (tdata == thread_data_from_gsl_thread (gsl_thread_self ()));
 
   GSL_SYNC_LOCK (&global_thread);
-  global_thread_count += 1;
+  global_thread_list = gsl_ring_prepend (global_thread_list, self);
+  gsl_cond_broadcast (global_thread_cond);
   GSL_SYNC_UNLOCK (&global_thread);
 
-  gsl_delete_struct (ThreadFunc, 1, tfunc);
-
-  func (data);
+  tdata->func (tdata->data);
 
   GSL_SYNC_LOCK (&global_thread);
-  global_thread_count -= 1;
+  global_thread_list = gsl_ring_remove (global_thread_list, self);
+  if (tdata->awake_stamp)
+    awake_tdata_list = gsl_ring_remove (awake_tdata_list, tdata);
+  gsl_cond_broadcast (global_thread_cond);
   GSL_SYNC_UNLOCK (&global_thread);
 
+  close (tdata->wpipe[0]);
+  tdata->wpipe[0] = -1;
+  close (tdata->wpipe[1]);
+  tdata->wpipe[1] = -1;
+  gsl_delete_struct (ThreadData, tdata);
+  
   return NULL;
 }
 
-gboolean
+GslThread*
 gsl_thread_new (GslThreadFunc func,
 		gpointer      user_data)
 {
   const gboolean joinable = TRUE;
-  ThreadFunc *tfunc;
-  gpointer gthread;
+  gpointer gthread = NULL;
+  ThreadData *tdata;
+  glong d_long;
+  GError *gerror = NULL;
+  gint error;
 
   g_return_val_if_fail (func != NULL, FALSE);
 
-  tfunc = gsl_new_struct (ThreadFunc, 1);
-  tfunc->func = func;
-  tfunc->data = user_data;
-  gthread = g_thread_create (thread_wrapper, tfunc, joinable, NULL);
+  tdata = gsl_new_struct0 (ThreadData, 1);
+  tdata->func = func;
+  tdata->data = user_data;
+  tdata->wpipe[0] = -1;
+  tdata->wpipe[1] = -1;
+  tdata->abort = FALSE;
+  error = pipe (tdata->wpipe);
+  if (error == 0)
+    {
+      d_long = fcntl (tdata->wpipe[0], F_GETFL, 0);
+      g_print ("pipe-readfd, blocking=%ld\n", d_long & O_NONBLOCK);
+      d_long |= O_NONBLOCK;
+      error = fcntl (tdata->wpipe[0], F_SETFL, d_long);
+    }
+  if (error == 0)
+    {
+      d_long = fcntl (tdata->wpipe[1], F_GETFL, 0);
+      g_print ("pipe-writefd, blocking=%ld\n", d_long & O_NONBLOCK);
+      d_long |= O_NONBLOCK;
+      error = fcntl (tdata->wpipe[1], F_SETFL, d_long);
+    }
 
-  return gthread != NULL;
+  if (error == 0)
+    gthread = g_thread_create_full (thread_wrapper, tdata, 0, joinable, FALSE,
+				    G_THREAD_PRIORITY_NORMAL, &gerror);
+  
+  if (gthread)
+    {
+      GSL_SYNC_LOCK (&global_thread);
+      while (!gsl_ring_find (global_thread_list, gthread))
+	gsl_cond_wait (global_thread_cond, &global_thread);
+      GSL_SYNC_UNLOCK (&global_thread);
+    }
+  else
+    {
+      close (tdata->wpipe[0]);
+      close (tdata->wpipe[1]);
+      gsl_delete_struct (ThreadData, tdata);
+      g_warning ("Failed to create thread: %s", gerror->message);
+      g_error_free (gerror);
+    }
+
+  return gthread;
 }
 
-guint
-gsl_threads_get_count (void)
-{
-  guint count;
-
-  GSL_SYNC_LOCK (&global_thread);
-  count = global_thread_count;
-  GSL_SYNC_UNLOCK (&global_thread);
-
-  return count;
-}
-
-gpointer
+GslThread*
 gsl_thread_self (void)
 {
   gpointer gthread = g_thread_self ();
@@ -437,6 +518,290 @@ gsl_thread_self (void)
     g_error ("gsl_thread_self() failed");
 
   return gthread;
+}
+
+guint
+gsl_threads_get_count (void)
+{
+  guint count;
+
+  GSL_SYNC_LOCK (&global_thread);
+  count = gsl_ring_length (global_thread_list);
+  GSL_SYNC_UNLOCK (&global_thread);
+
+  return count;
+}
+
+static void
+thread_wakeup_I (ThreadData *tdata)
+{
+  guint8 data = 'W';
+  gint r;
+
+  do
+    r = write (tdata->wpipe[1], &data, 1);
+  while (r < 0 && (errno == EINTR || errno == ERESTART));
+}
+
+/**
+ * gsl_thread_wakeup
+ * @thread: thread to wake up
+ * Wake up a currently sleeping thread. In practice, this
+ * function simply causes the next call to gsl_thread_sleep()
+ * within @thread to last for 0 seconds.
+ */
+void
+gsl_thread_wakeup (GslThread *thread)
+{
+  ThreadData *tdata;
+
+  g_return_if_fail (thread != NULL);
+
+  GSL_SYNC_LOCK (&global_thread);
+  g_assert (gsl_ring_find (global_thread_list, thread));
+  GSL_SYNC_UNLOCK (&global_thread);
+
+  tdata = thread_data_from_gsl_thread (thread);
+  thread_wakeup_I (tdata);
+}
+
+/**
+ * gsl_thread_abort
+ * @thread: thread to abort
+ * Abort a currently running thread. This function does not
+ * return until the thread in question terminated execution.
+ * Note that the thread handle gets invalidated with invocation
+ * of gsl_thread_abort() or gsl_thread_queue_abort().
+ */
+void
+gsl_thread_abort (GslThread *thread)
+{
+  ThreadData *tdata;
+  
+  g_return_if_fail (thread != NULL);
+  
+  GSL_SYNC_LOCK (&global_thread);
+  g_assert (gsl_ring_find (global_thread_list, thread));
+  GSL_SYNC_UNLOCK (&global_thread);
+
+  tdata = thread_data_from_gsl_thread (thread);
+
+  GSL_SYNC_LOCK (&global_thread);
+  tdata->abort = TRUE;
+  thread_wakeup_I (tdata);
+
+  while (gsl_ring_find (global_thread_list, thread))
+    gsl_cond_wait (global_thread_cond, &global_thread);
+  GSL_SYNC_UNLOCK (&global_thread);
+}
+
+/**
+ * gsl_thread_queue_abort
+ * @thread: thread to abort
+ * Same as gsl_thread_abort(), but returns as soon as possible,
+ * even if thread hasn't stopped execution yet.
+ * Note that the thread handle gets invalidated with invocation
+ * of gsl_thread_abort() or gsl_thread_queue_abort().
+ */
+void
+gsl_thread_queue_abort (GslThread *thread)
+{
+  ThreadData *tdata;
+  
+  g_return_if_fail (thread != NULL);
+
+  GSL_SYNC_LOCK (&global_thread);
+  g_assert (gsl_ring_find (global_thread_list, thread));
+  GSL_SYNC_UNLOCK (&global_thread);
+
+  tdata = thread_data_from_gsl_thread (thread);
+
+  GSL_SYNC_LOCK (&global_thread);
+  tdata->abort = TRUE;
+  thread_wakeup_I (tdata);
+  GSL_SYNC_UNLOCK (&global_thread);
+}
+
+/**
+ * gsl_thread_aborted
+ * @returns: %TRUE if the thread should abort execution
+ * Find out if the currently running thread should be aborted (the thread is
+ * supposed to return from its main thread function).
+ */
+gboolean
+gsl_thread_aborted (void)
+{
+  ThreadData *tdata = thread_data_from_gsl_thread (gsl_thread_self ());
+  gboolean aborted;
+
+  GSL_SYNC_LOCK (&global_thread);
+  aborted = tdata->abort != FALSE;
+  GSL_SYNC_UNLOCK (&global_thread);
+
+  return aborted;
+}
+
+/**
+ * gsl_thread_sleep
+ * @max_msec: maximum amount of milli seconds to sleep (-1 for infinite time)
+ * @returns:  %TRUE if the thread should continue execution
+ * Sleep for the amount of time given. This function may get interrupted
+ * by wakeup or abort requests, it returns whether the thread is supposed
+ * to continue execution after waking up.
+ */
+gboolean
+gsl_thread_sleep (glong max_msec)
+{
+  ThreadData *tdata = thread_data_from_gsl_thread (gsl_thread_self ());
+  struct pollfd pfd;
+  gint r, aborted;
+
+  pfd.fd = tdata->wpipe[0];
+  pfd.events = GSL_POLLIN;
+  pfd.revents = 0;
+
+  r = poll (&pfd, 1, max_msec);
+
+  if (r < 0 && errno != EINTR)
+    g_message (G_STRLOC ": poll() error: %s\n", g_strerror (errno));
+  else if (pfd.revents & GSL_POLLIN)
+    {
+      guint8 data[64];
+
+      do
+	r = read (tdata->wpipe[0], data, sizeof (data));
+      while ((r < 0 && (errno == EINTR || errno == ERESTART)) || r == sizeof (data));
+    }
+
+  GSL_SYNC_LOCK (&global_thread);
+  aborted = tdata->abort != FALSE;
+  GSL_SYNC_UNLOCK (&global_thread);
+
+  return !aborted;
+}
+
+void
+gsl_thread_get_pollfd (GslPollFD *pfd)
+{
+  ThreadData *tdata = thread_data_from_gsl_thread (gsl_thread_self ());
+
+  pfd->fd = tdata->wpipe[0];
+  pfd->events = GSL_POLLIN;
+  pfd->revents = 0;
+}
+
+/**
+ * gsl_thread_awake_after
+ * @tick_stamp: tick stamp update to trigger wakeup
+ * Wakeup the currently running thread after the global tick stamp
+ * (see gsl_tick_stamp()) has been updated to @tick_stamp.
+ * (If the moment of wakeup has already passed by, the thread is
+ * woken up at the next global tick stamp update.)
+ */
+void
+gsl_thread_awake_after (guint64 tick_stamp)
+{
+  ThreadData *tdata = thread_data_from_gsl_thread (gsl_thread_self ());
+
+  g_return_if_fail (tick_stamp > 0);
+
+  GSL_SYNC_LOCK (&global_thread);
+  if (!tdata->awake_stamp)
+    {
+      awake_tdata_list = gsl_ring_prepend (awake_tdata_list, tdata);
+      tdata->awake_stamp = tick_stamp;
+    }
+  else
+    tdata->awake_stamp = MIN (tdata->awake_stamp, tick_stamp);
+  GSL_SYNC_UNLOCK (&global_thread);
+}
+
+/**
+ * gsl_thread_awake_before
+ * @tick_stamp: tick stamp update to trigger wakeup
+ * Wakeup the currently running thread upon the last global tick stamp
+ * update (see gsl_tick_stamp()) that happens prior to updating the
+ * global tick stamp to @tick_stamp.
+ * (If the moment of wakeup has already passed by, the thread is
+ * woken up at the next global tick stamp update.)
+ */
+void
+gsl_thread_awake_before (guint64 tick_stamp)
+{
+  g_return_if_fail (tick_stamp > 0);
+
+  if (tick_stamp > global_tick_stamp_leaps)
+    gsl_thread_awake_after (tick_stamp - global_tick_stamp_leaps);
+  else
+    gsl_thread_awake_after (tick_stamp);
+}
+
+/**
+ * gsl_tick_stamp
+ * @RETURNS: GSL's execution tick stamp as unsigned 64bit integer
+ * Retrive the GSL global tick stamp.
+ * GSL increments its global tick stamp at certain intervals,
+ * by specific amounts (refer to gsl_engine_init() for further
+ * details). The tick stamp is a non-wrapping, unsigned 64bit
+ * integer greater than 0. Threads can schedule sleep interruptions
+ * at certain tick stamps with gsl_thread_awake_after() and
+ * gsl_thread_awake_before(). Tick stamp updating occours at
+ * GSL engine block processing boundaries, so code that can
+ * guarantee to not run across those boundaries (for instance
+ * GslProcessFunc() functions) may use the macro %GSL_TICK_STAMP
+ * to retrive the current tick in a faster manner (not involving
+ * mutex locking). See also gsl_module_tick_stamp().
+ */
+guint64
+gsl_tick_stamp (void)
+{
+  guint64 stamp;
+
+  GSL_SYNC_LOCK (&global_thread);
+  stamp = gsl_externvar_tick_stamp;
+  GSL_SYNC_UNLOCK (&global_thread);
+
+  return stamp;
+}
+
+void
+_gsl_tick_stamp_set_leap (guint ticks)
+{
+  GSL_SYNC_LOCK (&global_thread);
+  global_tick_stamp_leaps = ticks;
+  GSL_SYNC_UNLOCK (&global_thread);
+}
+
+void
+_gsl_tick_stamp_inc (void)
+{
+  volatile guint64 newstamp;
+  GslRing *ring;
+
+  g_return_if_fail (global_tick_stamp_leaps > 0);
+
+  newstamp = gsl_externvar_tick_stamp + global_tick_stamp_leaps;
+
+  GSL_SYNC_LOCK (&global_thread);
+  gsl_externvar_tick_stamp = newstamp;
+  for (ring = awake_tdata_list; ring; )
+    {
+      ThreadData *tdata = ring->data;
+
+      if (tdata->awake_stamp <= GSL_TICK_STAMP)
+	{
+	  GslRing *next = gsl_ring_walk (awake_tdata_list, ring);
+
+	  tdata->awake_stamp = 0;
+	  awake_tdata_list = gsl_ring_remove (awake_tdata_list, tdata);
+
+	  thread_wakeup_I (tdata);
+	  ring = next;
+	}
+      else
+	ring = gsl_ring_walk (awake_tdata_list, ring);
+    }
+  GSL_SYNC_UNLOCK (&global_thread);
 }
 
 
@@ -798,6 +1163,8 @@ gsl_init (const GslConfigValue values[])
     return;
   g_assert (gsl_config++ == NULL);	/* dumb concurrency prevention */
 
+  gsl_externvar_tick_stamp = 1;
+
   /* configure permanent config record */
   if (config)
     while (config->value_name)
@@ -834,6 +1201,7 @@ gsl_init (const GslConfigValue values[])
   is_smp_system = GSL_CONFIG (n_processors) > 1;
   gsl_mutex_init (&global_memory);
   gsl_mutex_init (&global_thread);
+  global_thread_cond = gsl_cond_new ();
   _gsl_init_data_handles ();
   _gsl_init_data_caches ();
   _gsl_init_wave_dsc ();

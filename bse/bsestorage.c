@@ -273,21 +273,24 @@ void
 bse_storage_puts (BseStorage  *storage,
                   const gchar *string)
 {
+  guint l;
+
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
+
+  if (!string)
+    return;
+  l = strlen (string);
+  if (!l)
+    return;
+
+  if (storage->gstring)
+    g_string_append (storage->gstring, string);
   
-  if (string)
-    {
-      guint l = strlen (string);
-      
-      if (storage->gstring)
-        g_string_append (storage->gstring, string);
-      
-      if (string[l - 1] == '\n')
-        BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
-      else
-        BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
-    }
+  if (string[l - 1] == '\n')
+    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+  else
+    BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
 }
 
 void

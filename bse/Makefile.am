@@ -89,7 +89,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseserver.h \
 	bsesnet.h \
 	bsesong.h \
-	bsesongsequencer.h \
+	bsesongthread.h \
 	bsesource.h \
 	bsestorage.h \
 	bsesubsynth.h \
@@ -155,7 +155,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseserver.c \
 	bsesnet.c \
 	bsesong.c \
-	bsesongsequencer.c \
+	bsesongthread.c \
 	bsesource.c \
 	bsestorage.c \
 	bsesubsynth.c \

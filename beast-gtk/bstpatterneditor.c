@@ -231,7 +231,7 @@ static gint bst_pattern_editor_expose		(GtkWidget		*widget,
 						 GdkEventExpose		*event);
 static void bst_pattern_editor_draw_focus	(GtkWidget		*widget);
 static void bst_pattern_editor_draw_main	(BstPatternEditor	*pe);
-static void bst_pattern_editor_draw_tone	(BstPatternEditor	*pe,
+static void bst_pattern_editor_clear_draw_tone	(BstPatternEditor	*pe,
 						 guint			 channel,
 						 guint			 row);
 static void bst_pattern_editor_draw_grid	(BstPatternEditor	*pe,
@@ -257,8 +257,6 @@ static gint bst_pattern_editor_motion		(GtkWidget		*widget,
 						 GdkEventMotion		*event);
 static gint bst_pattern_editor_button_release	(GtkWidget		*widget,
 						 GdkEventButton		*event);
-static void bst_pattern_editor_draw		(GtkWidget		*widget,
-						 GdkRectangle		*area);
 static void bst_pattern_editor_channel_popup	(BstPatternEditor	*pe,
 						 guint			 channel,
 						 guint			 mouse_button,
@@ -284,7 +282,7 @@ static const gchar	     *class_rc_string =
 ( "style'BstPatternEditorClass-style'"
   "{"
   //  "font='-misc-fixed-*-*-*-*-*-130-*-*-*-*-*-*'\n"
-  "font_name='Monospace 12'\n"
+  "font_name='Monospace 10'\n"
   "fg[PRELIGHT]={1.,0.,0.}"
   "}"
   "widget_class'*BstPatternEditor'style'BstPatternEditorClass-style'"
@@ -376,7 +374,6 @@ bst_pattern_editor_class_init (BstPatternEditorClass *class)
   widget_class->unrealize = bst_pattern_editor_unrealize;
   widget_class->style_set = bst_pattern_editor_style_set;
   widget_class->state_changed = bst_pattern_editor_state_changed;
-  // widget_class->draw = bst_pattern_editor_draw;
   widget_class->expose_event = bst_pattern_editor_expose;
   widget_class->focus_in_event = bst_pattern_editor_focus_in;
   widget_class->focus_out_event = bst_pattern_editor_focus_out;
@@ -740,7 +737,7 @@ bst_pe_note_changed (BstPatternEditor *pe,
   
   if (GTK_WIDGET_DRAWABLE (pe))
     {
-      bst_pattern_editor_draw_tone (pe, channel, row);
+      bst_pattern_editor_clear_draw_tone (pe, channel, row);
       bst_pattern_editor_draw_grid (pe, channel, row, 0, 0);
     }
 }
@@ -1441,38 +1438,26 @@ bst_pattern_editor_expose (GtkWidget	  *widget,
 					   NULL,
 					   &e_c,
 					   &e_r);
-
-      /*
-	gdk_window_set_background (pe->index,
-	(GTK_WIDGET_IS_SENSITIVE (pe)
-	? &widget->style->bg[GTK_STATE_SELECTED]
-	: &widget->style->bg[GTK_STATE_INSENSITIVE]));
-	gdk_window_set_background (pe->headline,
-	(GTK_WIDGET_IS_SENSITIVE (pe)
-	? &widget->style->bg[GTK_STATE_SELECTED]
-	: &widget->style->bg[GTK_STATE_INSENSITIVE]));
-	gdk_window_set_background (pe->panel, &widget->style->base[GTK_WIDGET_STATE (pe)]);
-
-	we need
-	gdk_window_clear_area (pe->panel, tone_x, tone_y, tone_width, tone_height);
-	on headers and columns as well
-	
-      */
-      
       if (event->window == pe->panel)
 	{
 	  for (c = b_c; c <= e_c; c++)
 	    for (r = b_r; r <= e_r; r++)
-	      bst_pattern_editor_draw_tone (pe, c, r);
+	      bst_pattern_editor_clear_draw_tone (pe, c, r);
 	  bst_pattern_editor_draw_grid (pe, b_c, b_r, e_c + 1, e_r + 1);
 	}
       else if (event->window == pe->index)
 	{
+	  gdk_window_clear_area (pe->index,
+				 event->area.x, event->area.y,
+				 event->area.width, event->area.height);
 	  for (r = b_r; r <= e_r; r++)
 	    bst_pattern_editor_draw_index (pe, r);
 	}
       else if (event->window == pe->headline)
 	{
+	  gdk_window_clear_area (pe->headline,
+				 event->area.x, event->area.y,
+				 event->area.width, event->area.height);
 	  for (c = b_c; c <= e_c; c++)
 	    bst_pattern_editor_draw_headline (pe, c);
 	}
@@ -1494,25 +1479,6 @@ bst_pattern_editor_expose (GtkWidget	  *widget,
     }
   
   return TRUE;
-}
-
-static void
-bst_pattern_editor_draw (GtkWidget    *widget,
-			 GdkRectangle *area)
-{
-  BstPatternEditor *pe;
-  
-  g_return_if_fail (widget != NULL);
-  g_return_if_fail (BST_IS_PATTERN_EDITOR (widget));
-  g_return_if_fail (area != NULL);
-  
-  pe = BST_PATTERN_EDITOR (widget);
-  
-  if (GTK_WIDGET_DRAWABLE (widget))
-    {
-      bst_pattern_editor_draw_main (pe);
-      bst_pattern_editor_refresh (pe, TRUE, TRUE, TRUE);
-    }
 }
 
 static void
@@ -1552,7 +1518,7 @@ bst_pattern_editor_refresh (BstPatternEditor *pe,
   if (refresh_panel)
     for (c = b_c; c <= e_c; c++)
       for (r = b_r; r <= e_r; r++)
-	bst_pattern_editor_draw_tone (pe, c, r);
+	bst_pattern_editor_clear_draw_tone (pe, c, r);
   if (refresh_panel)
     bst_pattern_editor_draw_grid (pe, b_c, b_r, e_c + 1, e_r + 1);
   gdk_flush ();
@@ -1571,7 +1537,7 @@ bst_pattern_editor_draw_focus (GtkWidget *widget)
   if (GTK_WIDGET_DRAWABLE (pe))
     {
       bst_pattern_editor_draw_main (pe);
-      bst_pattern_editor_draw_tone (pe, pe->focus_channel, pe->focus_row);
+      bst_pattern_editor_clear_draw_tone (pe, pe->focus_channel, pe->focus_row);
       bst_pattern_editor_draw_grid (pe, pe->focus_channel, pe->focus_row, 0, 0);
     }
 }
@@ -1881,9 +1847,9 @@ bst_pattern_editor_draw_grid (BstPatternEditor *pe,
 }
 
 static void
-bst_pattern_editor_draw_tone (BstPatternEditor *pe,
-			      guint		channel,
-			      guint		row)
+bst_pattern_editor_clear_draw_tone (BstPatternEditor *pe,
+				    guint	      channel,
+				    guint	      row)
 {
   GtkWidget *widget = GTK_WIDGET (pe);
   BsePatternNote *note;
@@ -2053,10 +2019,10 @@ bst_pattern_editor_set_focus (BstPatternEditor *pe,
 	  if (old_channel < N_CHANNELS (pe) &&
 	      old_row < N_ROWS (pe))
 	    {
-	      bst_pattern_editor_draw_tone (pe, old_channel, old_row);
+	      bst_pattern_editor_clear_draw_tone (pe, old_channel, old_row);
 	      bst_pattern_editor_draw_grid (pe, old_channel, old_row, 0, 0);
 	    }
-	  bst_pattern_editor_draw_tone (pe, pe->focus_channel, pe->focus_row);
+	  bst_pattern_editor_clear_draw_tone (pe, pe->focus_channel, pe->focus_row);
 	  bst_pattern_editor_draw_grid (pe, pe->focus_channel, pe->focus_row, 0, 0);
 	}
     }
@@ -2551,12 +2517,12 @@ bst_pattern_editor_mark_row (BstPatternEditor *pe,
   
   if (pe->marked_row >= 0)
     {
-      bst_pattern_editor_draw_tone (pe, 0, pe->marked_row);
+      bst_pattern_editor_clear_draw_tone (pe, 0, pe->marked_row);
     }
   pe->marked_row = row;
   if (pe->marked_row >= 0)
     {
-      bst_pattern_editor_draw_tone (pe, 0, pe->marked_row);
+      bst_pattern_editor_clear_draw_tone (pe, 0, pe->marked_row);
     }
 }
 

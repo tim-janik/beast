@@ -21,11 +21,12 @@
 #include	"bseinstrument.h"
 #include	"bsepattern.h"
 #include	"bsepatterngroup.h"
-#include	"bsesongsequencer.h"
+#include	"bsesongthread.h"
 #include	"bseproject.h"
 #include	"bsechunk.h"
 #include	"bsestorage.h"
 #include	"bsemarshal.h"
+#include	"bsemain.h"
 #include	<string.h>
 
 
@@ -101,11 +102,11 @@ BSE_BUILTIN_TYPE (BseSong)
     NULL /* class_data */,
     
     sizeof (BseSong),
-    BSE_PREALLOC_N_SUPERS /* n_preallocs */,
+    0 /* n_preallocs */,
     (GInstanceInitFunc) bse_song_init,
   };
   
-  return bse_type_register_static (BSE_TYPE_SUPER,
+  return bse_type_register_static (BSE_TYPE_SNET,
 				   "BseSong",
 				   "BSE Song type",
 				   &song_info);
@@ -195,6 +196,7 @@ bse_song_class_init (BseSongClass *class)
 static void
 bse_song_init (BseSong *song)
 {
+  BSE_OBJECT_UNSET_FLAGS (song, BSE_SNET_FLAG_FINAL);
   song->bpm = BSE_DFL_SONG_BPM;
   song->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   song->pattern_length = BSE_DFL_SONG_PATTERN_LENGTH;
@@ -242,7 +244,9 @@ bse_song_set_property (BseSong     *song,
   switch (param_id)
     {
       GList *list;
-      
+      gfloat volume_factor;
+      guint bpm;
+
     case PARAM_N_CHANNELS:
       /* we silently ignore this parameter during playing phase */
       if (!BSE_OBJECT_IS_LOCKED (song))
@@ -262,30 +266,33 @@ bse_song_set_property (BseSong     *song,
 	}
       break;
     case PARAM_VOLUME_f:
-      song->volume_factor = g_value_get_float (value);
-      if (song->sequencer)
-	bse_song_sequencer_recalc (song);
-      bse_object_param_changed (BSE_OBJECT (song), "volume_dB");
-      bse_object_param_changed (BSE_OBJECT (song), "volume_perc");
-      break;
     case PARAM_VOLUME_dB:
-      song->volume_factor = bse_dB_to_factor (g_value_get_float (value));
-      if (song->sequencer)
-	bse_song_sequencer_recalc (song);
-      bse_object_param_changed (BSE_OBJECT (song), "volume_f");
-      bse_object_param_changed (BSE_OBJECT (song), "volume_perc");
-      break;
     case PARAM_VOLUME_PERC:
-      song->volume_factor = g_value_get_uint (value) / 100.0;
-      if (song->sequencer)
-	bse_song_sequencer_recalc (song);
-      bse_object_param_changed (BSE_OBJECT (song), "volume_f");
+      volume_factor = 0; /* silence gcc */
+      switch (param_id)
+	{
+	case PARAM_VOLUME_f:
+	  volume_factor = g_value_get_float (value);
+	  break;
+	case PARAM_VOLUME_dB:
+	  volume_factor = bse_dB_to_factor (g_value_get_float (value));
+	  break;
+	case PARAM_VOLUME_PERC:
+	  volume_factor = g_value_get_uint (value) / 100.0;
+	  break;
+	}
+      BSE_SEQUENCER_LOCK ();
+      song->volume_factor = volume_factor;
+      BSE_SEQUENCER_UNLOCK ();
       bse_object_param_changed (BSE_OBJECT (song), "volume_dB");
+      bse_object_param_changed (BSE_OBJECT (song), "volume_perc");
+      bse_object_param_changed (BSE_OBJECT (song), "volume_f");
       break;
     case PARAM_BPM:
-      song->bpm = g_value_get_uint (value);
-      if (song->sequencer)
-	bse_song_sequencer_recalc (song);
+      bpm = g_value_get_uint (value);
+      BSE_SEQUENCER_LOCK ();
+      song->bpm = bpm;
+      BSE_SEQUENCER_UNLOCK ();
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (song, param_id, pspec);
@@ -360,6 +367,8 @@ bse_song_add_item (BseContainer *container,
   
   song = BSE_SONG (container);
   
+  BSE_SEQUENCER_LOCK ();
+
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
     song->instruments = g_list_append (song->instruments, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
@@ -367,11 +376,12 @@ bse_song_add_item (BseContainer *container,
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN_GROUP))
     song->pattern_groups = g_list_append (song->pattern_groups, item);
   else
-    g_warning ("BseSong: cannot add unknown item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
-  
+    /* parent class manages BseSources */ ;
+
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
+
+  BSE_SEQUENCER_UNLOCK ();
 }
 
 static void
@@ -416,6 +426,9 @@ bse_song_forall_items (BseContainer	 *container,
       if (!func (item, data))
 	return;
     }
+
+  /* parent class manages BseSources */
+  BSE_CONTAINER_CLASS (parent_class)->forall_items (container, func, data);
 }
 
 static void
@@ -444,9 +457,9 @@ bse_song_remove_item (BseContainer *container,
       list_p = &song->pattern_groups;
     }
   else
-    g_warning ("BseSong: cannot remove unknown item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    /* parent class manages BseSources */ ;
 
+  BSE_SEQUENCER_LOCK ();
   if (list_p)
     {
       GList *list, *tmp;
@@ -465,6 +478,7 @@ bse_song_remove_item (BseContainer *container,
       for (; list; list = list->next)
 	bse_item_queue_seqid_changed (list->data);
     }
+  BSE_SEQUENCER_UNLOCK ();
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
@@ -567,13 +581,15 @@ bse_song_insert_pattern_group_link (BseSong         *song,
   if (position < 0 || position > song->n_pgroups)
     position = song->n_pgroups;
 
+  BSE_SEQUENCER_LOCK ();
   n = song->n_pgroups++;
   song->pgroups = g_renew (BsePatternGroup*, song->pgroups, song->n_pgroups);
   g_memmove (song->pgroups + position + 1,
 	     song->pgroups + position,
 	     sizeof (BsePatternGroup*) * (n - position));
   song->pgroups[position] = pgroup;
-
+  BSE_SEQUENCER_UNLOCK ();
+  
   bse_object_ref (BSE_OBJECT (pgroup));
   g_signal_emit (song, song_signals[SIGNAL_PATTERN_GROUP_INSERTED], 0, pgroup, position);
   bse_object_unref (BSE_OBJECT (pgroup));
@@ -603,10 +619,13 @@ bse_song_remove_pattern_group_entry (BseSong *song,
 	}
 
       /* just remove link */
+      BSE_SEQUENCER_LOCK ();
       song->n_pgroups--;
       g_memmove (song->pgroups + position,
 		 song->pgroups + position + 1,
 		 sizeof (BsePatternGroup*) * (song->n_pgroups - position));
+      BSE_SEQUENCER_UNLOCK ();
+      
       bse_object_ref (BSE_OBJECT (pgroup));
       g_signal_emit (song, song_signals[SIGNAL_PATTERN_GROUP_REMOVED], 0, pgroup, position);
       bse_object_unref (BSE_OBJECT (pgroup));
@@ -626,6 +645,7 @@ bse_song_remove_pgroup_links (BseSong         *song,
   cur = song->pgroups;
   last = cur;
   bound = cur + song->n_pgroups;
+  BSE_SEQUENCER_LOCK ();
   while (cur < bound)
     {
       if (*cur != pgroup)
@@ -639,7 +659,8 @@ bse_song_remove_pgroup_links (BseSong         *song,
       cur++;
     }
   song->n_pgroups = last - song->pgroups;
-
+  BSE_SEQUENCER_UNLOCK ();
+  
   bse_object_ref (BSE_OBJECT (song));
   bse_object_ref (BSE_OBJECT (pgroup));
 
@@ -678,7 +699,7 @@ bse_song_insert_pattern_group_copy (BseSong         *song,
 
   bse_song_insert_pattern_group_link (song, pgroup, position);
 
-  bse_pattern_group_copy_contents (pgroup, src_pgroup);
+  bse_pattern_group_clone_contents (pgroup, src_pgroup);
   
   bse_object_unref (BSE_OBJECT (pgroup));
   bse_object_unref (BSE_OBJECT (src_pgroup));
@@ -953,12 +974,13 @@ bse_song_prepare (BseSource *source)
   bse_object_lock (BSE_OBJECT (song));
   
   song->sequencer_index = 0;
-  bse_song_sequencer_setup (song, 2);
-  
+  song->sequencer = bse_song_sequencer_setup (song);
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
+#if 0
 void
 bse_song_update_sequencer (BseSong *song)
 {
@@ -976,7 +998,6 @@ bse_song_update_sequencer (BseSong *song)
     }
 }
 
-#if 0
 static BseChunk*
 bse_song_calc_chunk (BseSource *source,
 		     guint	ochannel_id)
@@ -1008,7 +1029,7 @@ bse_song_reset (BseSource *source)
   BseSong *song = BSE_SONG (source);
 
   song->sequencer_index = 0;
-  bse_song_sequencer_destroy (song);
+  bse_song_sequencer_destroy (song->sequencer);
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
