@@ -1,3 +1,8 @@
+Thu Jan  9 18:17:00 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/log2texi.sh: fix up markup for types, functions and
+	constants.
+
 Thu Jan  9 17:51:50 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/log2texi.sh: sync SYMBOL_PREFIX and MACRO_PREFIX with

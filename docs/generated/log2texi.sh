@@ -23,9 +23,9 @@ function ChangeLog2texi ()
 	-e '/^[		]\+\* [^:]\+$/s/^[ 	]\+//' \
 	-e '/^[12][-0-9]\{9\}/s/^\(.*\)$/@unnumberedsec @code{\1}/' \
 	-e '/^[A-z]\{3\}/s/^\(.*\)$/@unnumberedsec @code{\1}/' \
-	-e 's/\(\b'"$SYMBOL_PREFIX"''"$SYMBOL_PATTERN"'\)/@reference_parameter{\1}/g' \
+	-e 's/\(\b'"$SYMBOL_PREFIX"''"$SYMBOL_PATTERN"'\)/@reference_type{\1}/g' \
 	-e 's/\(\b'"$FUNC_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_function{\1}/g' \
-	-e 's/\(\b'"$MACRO_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_function{\1}/g' \
+	-e 's/\(\b'"$MACRO_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_constant{\1}/g' \
 	-e 's/$/@*/g' \
 	-e 's/^[ 	]*@\*$//g' \
 	-e '/^@[a-z]/ s/@\*$//g' | perl -e '$_ = join("", <>); s/@\*\n^$/\n/gm; print'
