@@ -17,7 +17,7 @@ AC_PREREQ(2.57)
 AC_DIVERT_BEFORE_HELP([
 PKG_MAJOR_VERSION=0
 PKG_MINOR_VERSION=6
-PKG_MICRO_VERSION=3
+PKG_MICRO_VERSION=4
 PKG_INTERFACE_AGE=0
 PKG_BINARY_AGE=0
 ])
@@ -84,16 +84,21 @@ AC_ARG_ENABLE(devel-rules, [  --enable-devel-rules=[no/yes]   turn on developer 
 
 dnl setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
-  DEBUG_FLAGS="-DG_ENABLE_DEBUG"
+  DEBUG_FLAGS="-g -DG_ENABLE_DEBUG"
 else if test "x$enable_debug" = "xno"; then
-  DEBUG_FLAGS="-DG_DISABLE_CHECKS -DBSE_DISABLE_CAST_CHECKS" # -DG_DISABLE_ASSERT
+  DEBUG_FLAGS="-DG_DISABLE_CHECKS -DG_DISABLE_CAST_CHECKS" # -DG_DISABLE_ASSERT
 else
-  DEBUG_FLAGS="-DGTK_NO_CHECK_CASTS"
+  DEBUG_FLAGS="-DG_DISABLE_CAST_CHECKS"
 fi fi
-if test "$cflags_set" = set; then
-  CFLAGS="$CFLAGS -g $DEBUG_FLAGS"
-else
+if test -z "$CFLAGS"; then
   CFLAGS="$DEBUG_FLAGS"
+else
+  CFLAGS="$CFLAGS $DEBUG_FLAGS"
+fi
+if test -z "$CXXFLAGS"; then
+  CXXFLAGS="$DEBUG_FLAGS"
+else
+  CXXFLAGS="$CXXFLAGS $DEBUG_FLAGS"
 fi
 
 dnl Foreign defaults:
@@ -122,6 +127,14 @@ AC_DEFUN(AC_LIBBSE_CHECK,
 ])
 AC_DEFUN(AC_ASOUND_CHECK,
 [
+    saved_cflags="$CFLAGS"
+    saved_cxxflags="$CXXFLAGS"
+    saved_ldflags="$LDFLAGS"
+    CFLAGS="$CFLAGS $BSE_CFLAGS" dnl *** automatically search for libasound under the BSE prefix
+    CXXFLAGS="$CFLAGS $BSE_CFLAGS"
+    LDFLAGS="$LDFLAGS $BSE_LIBS"
+    AC_LANG_SAVE
+
     dnl --- find asoundlib.h ---
     found_asoundlibh=0
     AC_CHECK_HEADERS(alsa/asoundlib.h, found_asoundlibh=1)
@@ -151,6 +164,11 @@ AC_DEFUN(AC_ASOUND_CHECK,
 	AC_MSG_ERROR([ALSA version 1.0.5 is required to build this package])
     fi
     AC_SUBST(ALSA_LIBS)
+
+    AC_LANG_RESTORE
+    CFLAGS="$saved_cflags"
+    CXXFLAGS="$saved_cxxflags"
+    LDFLAGS="$saved_ldflags"
 ])
 
 # check compilers and their behaviour, setup CFLAGS
@@ -186,6 +204,7 @@ AC_ASOUND_CHECK
 
 # Automake @VARIABLE@ exports.
 AC_SUBST(CFLAGS)
+AC_SUBST(CXXFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 

@@ -1,3 +1,7 @@
+Overview of Changes in BSE-ALSA 0.6.4:
+
+* Build fixes.
+
 Initial Release of BSE-ALSA 0.6.3:
 
 * Provide an ALSA PCM driver for BSE
