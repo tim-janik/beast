@@ -2,10 +2,7 @@
 
 (bse-version "0.5.1")
 
-(container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2003-04-27 22:08:00")
-  (creation-time "2003-04-27 20:45:22"))
-(container-child "BseSNet::.bse-intern-mono-wave"
+(container-child "BseSNet::%bse-intern-mono-wave"
   (modification-time "2003-04-27 22:08:00")
   (creation-time "2003-04-27 20:45:24")
   (author "Tim Janik")
