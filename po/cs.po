@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-14 14:11+0200\n"
-"PO-Revision-Date: 2004-06-14 19:11+0200\n"
+"POT-Creation-Date: 2004-06-20 14:06+0200\n"
+"PO-Revision-Date: 2004-06-20 18:24+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -96,10 +96,9 @@ msgstr "_Procházeč procedur"
 msgid "Rack Editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:113
-#, fuzzy
+#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
 msgid "Profiler"
-msgstr "Pořadí filtrů"
+msgstr "Profiler"
 
 #: beast-gtk/bstapp.c:115
 msgid "New View"
@@ -1230,6 +1229,67 @@ msgstr "Spouštím `%s'"
 #: beast-gtk/bstprocedure.c:446
 msgid "Procedure"
 msgstr "Procedura"
+
+#: beast-gtk/bstprofiler.c:167
+msgid "Totals"
+msgstr "Součty"
+
+#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+msgid "Thread Name"
+msgstr "Název vlákna"
+
+#: beast-gtk/bstprofiler.c:246
+msgid "CPU%"
+msgstr "CPU%"
+
+#: beast-gtk/bstprofiler.c:246
+msgid "Percentage of CPU usage"
+msgstr "Využití CPU v procentech"
+
+#: beast-gtk/bstprofiler.c:247
+msgid "UTime"
+msgstr "UČas"
+
+#: beast-gtk/bstprofiler.c:247
+msgid "Milliseconds of user CPU time used by thread"
+msgstr "Uživatelský čas CPU použitý vláknem v milisekundách"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "STime"
+msgstr "SČas"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Milliseconds of system CPU time used by thread"
+msgstr "Systémový čas CPU použitý vláknem v milisekundách"
+
+#.
+#. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+#. _("Thread State:\n"
+#. "'?' - thread state is unknown\n"
+#. "'R' - thread is running\n"
+#. "'S' - thread is sleeping\n"
+#. "'D' - thread waits on disk\n"
+#. "'T' - thread is traced\n"
+#. "'W' - thread is swapping memory\n"
+#. "'Z' - thread died unexpectedly\n"
+#. "'X' - thread exited"),
+#. NULL, NULL, 0);
+#.
+#: beast-gtk/bstprofiler.c:262
+msgid "Nice"
+msgstr "Nice"
+
+#: beast-gtk/bstprofiler.c:262
+msgid "Thread priority from -20 (high) to +19 (low)"
+msgstr "Priorita vlákna od -20 (vysoká) do +19 (nízká)"
+
+#: beast-gtk/bstprofiler.c:263
+msgid "#CPU"
+msgstr "#CPU"
+
+#: beast-gtk/bstprofiler.c:263
+msgid "CPU the thread is currently running on"
+msgstr "CPU, na kterám vlákno právě běží"
 
 #: beast-gtk/bstprojectctrl.c:38
 msgid "Restarting Playback"
@@ -2757,10 +2817,6 @@ msgstr "Frekvence"
 msgid "Const Out%u"
 msgstr "Konst Out%u"
 
-#: bse/bsecore.idl:378
-msgid "Thread Name"
-msgstr "Název vlákna"
-
 #: bse/bsecore.idl:379
 msgid "State"
 msgstr "Stav"
@@ -2777,7 +2833,9 @@ msgstr "Priorita"
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
-msgstr "Hodnota nice vlákna, -20 znamená vlákno s vysokou prioritou a +19 vlákno s nízkou prioritou, které je na ostatní 'nice'"
+msgstr ""
+"Hodnota nice vlákna, -20 znamená vlákno s vysokou prioritou a +19 vlákno s "
+"nízkou prioritou, které je na ostatní 'nice'"
 
 #: bse/bsecore.idl:383
 msgid "Processor"
