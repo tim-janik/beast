@@ -265,6 +265,11 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("  static inline const char* authors   () { return %s; }\n", ri->infos.get("authors").escaped().c_str());
       printf ("  static inline const char* license   () { return %s; }\n", ri->infos.get("license").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", type_name.c_str());
+      if (options.doImplementation)
+	{
+	  /* FIXME: need to build record fields here */
+	  // printf ("  static inline ... rec_fields () { return ...; }\n");
+	}
       printf ("};\n");
       printf ("\n");
     }
