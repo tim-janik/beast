@@ -27,6 +27,16 @@ bsegenosc_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsegenosc.h
 
 ##
+## Plugin bseiirfilter
+##
+bseiirfilter.enums: bseiirfilter.h 
+plugins_built_sources += bseiirfilter.enums
+bseiirfilter_la_SOURCES = bseiirfilter.c
+bseiirfilter_la_LDFLAGS = -module -avoid-version
+bseiirfilter_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += bseiirfilter.h
+
+##
 ## Plugin bsemixer
 ##
 bsemixer_la_SOURCES = bsemixer.c
@@ -112,6 +122,7 @@ plugin_LTLIBRARIES += \
 	bseadder.la \
 	bsecompressor.la \
 	bsegenosc.la \
+	bseiirfilter.la \
 	bsemixer.la \
 	bsemult.la \
 	bsenoise.la \

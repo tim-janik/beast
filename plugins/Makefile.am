@@ -32,6 +32,7 @@ PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bseadder.[hc]		\
 	bsecompressor.[hc]	\
 	bsegenosc.[hc]		\
+	bseiirfilter.[hc]	\
 	bsemixer.[hc]		\
 	bsemult.[hc]		\
 	bsenoise.[hc]		\

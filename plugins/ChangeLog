@@ -1,3 +1,9 @@
+Wed Feb  6 04:41:09 2002  Tim Janik  <timj@gtk.org>
+
+	* bseiirfilter.[hc]: new IIR filter module.
+	for some odd reaon, band pass and stop filters aren't
+	currently working.
+
 Tue Feb  5 04:38:54 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesequencer.[hc]: new mini sequencer.
