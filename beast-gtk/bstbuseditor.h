@@ -18,7 +18,8 @@
 #ifndef __BST_BUS_EDITOR_H__
 #define __BST_BUS_EDITOR_H__
 
-#include	"bstitemview.h"
+#include "bstitemview.h"
+#include "bstdbmeter.h"
 
 G_BEGIN_DECLS
 
@@ -38,6 +39,8 @@ struct _BstBusEditor
 {
   GtkAlignment      parent_object;
   SfiProxy          item;
+  GxkParam         *lvolume, *rvolume;
+  BstDBBeam        *lbeam, *rbeam;
 };
 struct _BstBusEditorClass
 {

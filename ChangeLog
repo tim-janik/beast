@@ -1,3 +1,26 @@
+Fri Aug 20 18:13:41 2004  Tim Janik  <timj@gtk.org>
+
+        * beast-gtk/bstbuseditor.[hc]: drive db-beams by db probes from the bus.
+	setup left/right volume scale, add volume spinners.
+
+	* beast-gtk/bstdbmeter.[hc]: slight color adjustment. cleaned up
+	n-channels property and API of BstDBMeter. removed debugging timeout.
+	fixed dbsetup assignments in creation functions.
+	added bst_db_scale_hook_up_param() and scale adjustment handling.
+	added accessors: bst_db_meter_get_scale(), bst_db_meter_get_beam() and
+	bst_db_meter_get_labeling() to get individual channel objects.
+	(bst_db_beam_set_value): don't clamp exported db value.
+
+	* beast-gtk/dialogs/radgets-beast.xml: db-meter fixups. added
+	volume spinner area to bus-editor.
+
+	* beast-gtk/gxk/gxkparam.c: slight fixed up adjustment lookup in
+	gxk_param_get_adjustment_with_stepping() and
+	gxk_param_get_log_adjustment().
+
+	* beast-gtk/testgui.c: added timeout to change db-beams.
+	added more test cases to db-meter test.
+
 Fri Aug 20 11:38:22 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/Makefile.am: added bstdbmeter.[hc], build testgui.

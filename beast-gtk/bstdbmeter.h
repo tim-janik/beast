@@ -120,7 +120,8 @@ typedef struct {
 } BstDBMeter;
 typedef GtkAlignmentClass BstDBMeterClass;
 GType           bst_db_meter_get_type           (void);
-GtkWidget*      bst_db_meter_new                (GtkOrientation  orientation);
+GtkWidget*      bst_db_meter_new                (GtkOrientation  orientation,
+                                                 guint           n_channels);
 void            bst_db_meter_propagate_border   (BstDBMeter     *self,
                                                  guint           border);
 void            bst_db_meter_propagate_setup    (BstDBMeter     *self,
@@ -134,7 +135,14 @@ BstDBLabeling*  bst_db_meter_create_dashes      (BstDBMeter     *self,
                                                  guint           padding);
 GtkRange*       bst_db_meter_create_scale       (BstDBMeter     *self,
                                                  guint           padding);
-GtkWidget*      bst_db_meter_new_stereo         (GtkOrientation  orientation);
+GtkRange*       bst_db_meter_get_scale          (BstDBMeter     *self,
+                                                 guint           nth);
+BstDBBeam*      bst_db_meter_get_beam           (BstDBMeter     *self,
+                                                 guint           nth);
+BstDBLabeling*  bst_db_meter_get_labeling       (BstDBMeter     *self,
+                                                 guint           nth);
+void            bst_db_scale_hook_up_param      (GtkRange       *range,
+                                                 GxkParam       *param);
 
 G_END_DECLS
 

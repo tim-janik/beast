@@ -100,7 +100,7 @@ bst_db_setup_new (GxkSpline *db2pixel_spline,
     {  +6, 0xff0000 },
     {   0, 0xffff00 },
     {  -6, 0x00ff00 },
-    { -96, 0x00b000 },
+    { -96, 0x00c000 },
   };
   dbsetup->n_colors = G_N_ELEMENTS (default_colors);
   dbsetup->colors = g_memdup (default_colors, sizeof (dbsetup->colors[0]) * dbsetup->n_colors);
@@ -244,7 +244,7 @@ enum {
   PROP_ORIENTATION = 1,
   PROP_DRAW_VALUES,
   PROP_JUSTIFY,
-  PROP_N_SCALES,
+  PROP_N_CHANNELS,
 };
 
 
@@ -771,23 +771,7 @@ bst_db_labeling_class_init (BstDBLabelingClass *class)
 
 /* --- DB Beam --- */
 G_DEFINE_TYPE (BstDBBeam, bst_db_beam, GTK_TYPE_WIDGET);
-static gboolean beam_finalized = FALSE;
-static gboolean
-change_beam_value (gpointer data)
-{
-  if (beam_finalized)
-    return FALSE;
-  GDK_THREADS_ENTER ();
-  BstDBBeam *self = BST_DB_BEAM (data);
-  static double v = 0;
-  v += 0.05;
-  v = rand() / ((double) RAND_MAX) * (self->dbsetup->maxdb - self->dbsetup->mindb) + self->dbsetup->mindb;
-  if (v > self->dbsetup->maxdb)
-    v = self->dbsetup->mindb;
-  bst_db_beam_set_value (self, v);
-  GDK_THREADS_LEAVE ();
-  return TRUE;
-}
+
 static void
 bst_db_beam_init (BstDBBeam *self)
 {
@@ -798,13 +782,11 @@ bst_db_beam_init (BstDBBeam *self)
   self->border = DEFAULT_BORDER;
   self->orientation = GTK_ORIENTATION_VERTICAL;
   self->currentdb = 0;
-  g_timeout_add (50, change_beam_value, self);
 }
 
 static void
 bst_db_beam_destroy (GtkObject *object)
 {
-  beam_finalized = TRUE;
   // BstDBBeam *self = BST_DB_BEAM (object);
   GTK_OBJECT_CLASS (bst_db_beam_parent_class)->destroy (object);
 }
@@ -954,9 +936,9 @@ bst_db_beam_set_value (BstDBBeam      *self,
                        double          db)
 {
   BstDBSetup *dbsetup = self->dbsetup;
-  db = CLAMP (db, dbsetup->mindb, dbsetup->maxdb);
   double olddb = CLAMP (self->currentdb, dbsetup->mindb, dbsetup->maxdb);
   self->currentdb = db;
+  db = CLAMP (db, dbsetup->mindb, dbsetup->maxdb);
   if (GTK_WIDGET_REALIZED (self))
     {
       GtkWidget *widget = GTK_WIDGET (self);
@@ -1107,8 +1089,8 @@ bst_db_meter_size_allocate (GtkWidget     *widget,
                           vertical ? widget->allocation.height : widget->allocation.width, vertical);
 }
 
-static void     db_meter_build_scales (BstDBMeter *self,
-                                       guint       n_scales);
+static void     db_meter_build_channels (BstDBMeter *self,
+                                         guint       n_channels);
 
 static void
 bst_db_meter_set_property (GObject      *object,
@@ -1134,8 +1116,8 @@ bst_db_meter_set_property (GObject      *object,
                         NULL);
         }
       break;
-    case PROP_N_SCALES:
-      db_meter_build_scales (self, g_value_get_uint (value));
+    case PROP_N_CHANNELS:
+      db_meter_build_channels (self, g_value_get_uint (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, prop_id, pspec);
@@ -1162,9 +1144,10 @@ bst_db_meter_get_property (GObject     *object,
 }
 
 GtkWidget*
-bst_db_meter_new (GtkOrientation  orientation)
+bst_db_meter_new (GtkOrientation  orientation,
+                  guint           n_channels)
 {
-  BstDBMeter *self = g_object_new (BST_TYPE_DB_METER, "orientation", orientation, NULL);
+  BstDBMeter *self = g_object_new (BST_TYPE_DB_METER, "orientation", orientation, "n-channels", n_channels, NULL);
   return GTK_WIDGET (self);
 }
 
@@ -1244,6 +1227,7 @@ bst_db_meter_create_beam (BstDBMeter     *self,
       aux = g_object_new (BST_TYPE_DB_BEAM,
                           "orientation", self->orientation,
                           NULL);
+      bst_db_beam_setup (aux, self->dbsetup);
       bst_db_beam_set_border (aux, self->border);
       gtk_box_pack_start (box, GTK_WIDGET (aux), FALSE, TRUE, padding);
     }
@@ -1262,6 +1246,7 @@ bst_db_meter_create_numbers (BstDBMeter     *self,
                           "orientation", self->orientation,
                           "draw-values", TRUE,
                           NULL);
+      bst_db_labeling_setup (aux, self->dbsetup);
       bst_db_labeling_set_border (aux, self->border);
       gtk_box_pack_start (box, GTK_WIDGET (aux), FALSE, TRUE, padding);
     }
@@ -1269,9 +1254,9 @@ bst_db_meter_create_numbers (BstDBMeter     *self,
 }
 
 BstDBLabeling*
-bst_db_meter_create_dashes (BstDBMeter     *self,
+bst_db_meter_create_dashes (BstDBMeter      *self,
                             GtkJustification justify,
-                            guint           padding)
+                            guint            padding)
 {
   GtkBox *box = (void*) GTK_BIN (self)->child;
   BstDBLabeling *aux = NULL;
@@ -1282,6 +1267,7 @@ bst_db_meter_create_dashes (BstDBMeter     *self,
                           "draw-values", FALSE,
                           "justify", justify,
                           NULL);
+      bst_db_labeling_setup (aux, self->dbsetup);
       bst_db_labeling_set_border (aux, self->border);
       gtk_box_pack_start (box, GTK_WIDGET (aux), FALSE, TRUE, padding);
     }
@@ -1289,19 +1275,69 @@ bst_db_meter_create_dashes (BstDBMeter     *self,
 }
 
 static void
-db_meter_adjust_range (BstDBMeter    *self,
-                       GtkAllocation *dummy,
-                       GtkRange      *range)
+db_scale_pixel_adjustment_value_changed (GtkAdjustment *adjustment,
+                                         GxkParam      *param)
 {
-  const gboolean rvertical = range->orientation == GTK_ORIENTATION_VERTICAL;
-  GtkAllocation *rallocation = &GTK_WIDGET (range)->allocation;
-  gint woffset = rvertical ? rallocation->y : rallocation->x;
-  gint wlength = rvertical ? rallocation->height : rallocation->width;
-  gint toffset = rvertical ? range->range_rect.y : range->range_rect.x;
-  gint tlength = rvertical ? range->range_rect.height : range->range_rect.width;
+  if (param->updating)
+    return;
+  BstDBSetup *dbsetup = g_object_get_data (adjustment, "BstDBSetup");
+  double value = bst_db_setup_get_dbvalue (dbsetup, adjustment->value);
+  GValue dvalue = { 0, };
+  g_value_init (&dvalue, G_TYPE_DOUBLE);
+  g_value_set_double (&dvalue, value);
+  g_value_transform (&dvalue, &param->value);
+  g_value_unset (&dvalue);
+  gxk_param_apply_value (param);
+}
+
+static void
+db_scale_pixel_adjustment_update (GxkParam       *param,
+                                  GtkObject      *object)
+{
+  BstDBSetup *dbsetup = g_object_get_data (object, "BstDBSetup");
+  GValue dvalue = { 0, };
+  g_value_init (&dvalue, G_TYPE_DOUBLE);
+  g_value_transform (&param->value, &dvalue);
+  gtk_adjustment_set_value (GTK_ADJUSTMENT (object), bst_db_setup_get_pixel (dbsetup, g_value_get_double (&dvalue)));
+  g_value_unset (&dvalue);
+}
+
+void
+bst_db_scale_hook_up_param (GtkRange     *range,
+                            GxkParam     *param)
+{
+  gchar *tooltip = gxk_param_dup_tooltip (param);
+  gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (range), tooltip, NULL);
+  g_free (tooltip);
+  gboolean updating = param->updating;
+  param->updating = TRUE;       /* protect value from change-notifications during setup */
+  // FIXME: update adjustment // range = editor->create_widget (param, tooltip, editor->variant);
+  param->updating = updating;
+  gxk_param_add_object (param, GTK_OBJECT (range));
+  GtkAdjustment *adjustment = gtk_range_get_adjustment (range);
+  gxk_object_set_param_callback (GTK_OBJECT (adjustment), db_scale_pixel_adjustment_update);
+  gxk_param_add_object (param, GTK_OBJECT (adjustment));
+  /* catch notifies *after* the widgets are updated */
+  g_object_connect (adjustment, "signal_after::value-changed", db_scale_pixel_adjustment_value_changed, param, NULL);
+}
+
+static void
+db_scale_size_allocate (GtkRange      *range,
+                        GtkAllocation *dummy,
+                        BstDBMeter    *dbmeter)
+{
+  GtkWidget *widget = GTK_WIDGET (range);
+  const gboolean vertical = range->orientation == GTK_ORIENTATION_VERTICAL;
+  GtkAllocation *allocation = &GTK_WIDGET (range)->allocation;
+  gint border = 0;
+  /* calculate db meter border */
+  gint woffset = vertical ? allocation->y : allocation->x;
+  gint wlength = vertical ? allocation->height : allocation->width;
+  gint toffset = vertical ? range->range_rect.y : range->range_rect.x;
+  gint tlength = vertical ? range->range_rect.height : range->range_rect.width;
   gint slider = range->slider_end - range->slider_start;
   gint range_trough_border = 0, focus_line_width = 0, focus_padding = 0;
-  gtk_widget_style_get (GTK_WIDGET (range),
+  gtk_widget_style_get (widget,
                         "trough-border", &range_trough_border,
                         "focus-line-width", &focus_line_width,
                         "focus-padding", &focus_padding,
@@ -1313,10 +1349,36 @@ db_meter_adjust_range (BstDBMeter    *self,
   if (0)        // GTKFIX: GtkRange should simply export the slide rectangle through a function call
     g_printerr ("y=%d h=%d ty=%d th=%d trough-borders=%d slider=%d (start=%d)\n",
                 woffset, wlength, toffset, tlength, range_trough_border, slider, range->slider_start);
-  gint border = toffset + slider / 2;
+  border = toffset + slider / 2;
   if (range_trough_border && range_trough_border + slider <= tlength / 2)
     border += range_trough_border;
-  bst_db_meter_propagate_border (self, border);
+  /* adjust dbsetup */
+  BstDBSetup *dbsetup = g_object_get_data (range, "BstDBSetup");
+  if (dbsetup)
+    {
+      guint thickness = vertical ? YTHICKNESS (range) : XTHICKNESS (range);
+      db_setup_size_allocate (dbsetup, thickness, border, vertical ? allocation->height : allocation->width, vertical);
+    }
+  /* adapt adjustment to dbsetup */
+  GtkAdjustment *adjustment = gtk_range_get_adjustment (range);
+  if (dbsetup && adjustment)
+    {
+      double pmin = bst_db_setup_get_pixel (dbsetup, dbsetup->mindb);
+      double pmax = bst_db_setup_get_pixel (dbsetup, dbsetup->maxdb);
+      adjustment->lower = MIN (pmin, pmax);
+      adjustment->upper = MAX (pmin, pmax);
+      gint pzer = bst_db_setup_get_pixel (dbsetup, 0);
+      gint page = bst_db_setup_get_pixel (dbsetup, -6) - pzer;
+      adjustment->page_increment = ABS (page);
+      adjustment->page_increment = MIN ((adjustment->upper - adjustment->lower) / 4, adjustment->page_increment);
+      adjustment->step_increment = adjustment->page_increment / 4;
+      // FIXME: adjust adjustment->value
+      gtk_adjustment_changed (adjustment);
+      // FIXME: junk:
+      gtk_adjustment_set_value (adjustment, bst_db_setup_get_pixel (dbsetup, 0));
+    }
+  /* propagate db meter border */
+  bst_db_meter_propagate_border (dbmeter, border);
 }
 
 GtkRange*
@@ -1324,66 +1386,105 @@ bst_db_meter_create_scale (BstDBMeter *self,
                            guint       padding)
 {
   GtkBox *box = (void*) GTK_BIN (self)->child;
-  GtkRange *aux = NULL;
+  GtkRange *range = NULL;
   if (GTK_IS_BOX (box))
     {
-      BstDBSetup *dbsetup = self->dbsetup;
-      gint p0 = bst_db_setup_get_pixel (dbsetup, 0) - dbsetup->offset;
-      gint p1 = bst_db_setup_get_pixel (dbsetup, dbsetup->mindb) - dbsetup->offset;
-      gint p2 = bst_db_setup_get_pixel (dbsetup, dbsetup->maxdb) - dbsetup->offset;
-      aux = g_object_new (self->orientation == GTK_ORIENTATION_VERTICAL ? GTK_TYPE_VSCALE : GTK_TYPE_HSCALE,
-                          "visible", TRUE,
-                          "draw_value", FALSE,
-                          "adjustment", gtk_adjustment_new (p0, MIN (p1, p2), MAX (p1, p2),
-                                                            MIN (1.0, ABS (p1 - p2) / 100),
-                                                            MIN (1.0, ABS (p1 - p2) / 10),
-                                                            0.0),
-                          "can-focus", FALSE,
-                          // "inverted", self->orientation == GTK_ORIENTATION_HORIZONTAL,
-                          NULL);
-      gtk_box_pack_start (box, GTK_WIDGET (aux), FALSE, TRUE, padding);
-      if (!gxk_signal_handler_pending (aux, "size-allocate", G_CALLBACK (db_meter_adjust_range), self))
-        g_signal_connect_object (aux, "size-allocate", G_CALLBACK (db_meter_adjust_range), self, G_CONNECT_AFTER | G_CONNECT_SWAPPED);
+      BstDBSetup *dbsetup = bst_db_setup_copy (self->dbsetup);
+      GtkAdjustment *adjustment = (void*) gtk_adjustment_new (bst_db_setup_get_pixel (dbsetup, 0),
+                                                              bst_db_setup_get_pixel (dbsetup, dbsetup->mindb),
+                                                              bst_db_setup_get_pixel (dbsetup, dbsetup->maxdb),
+                                                              0, 0, 0);
+      range = g_object_new (self->orientation == GTK_ORIENTATION_VERTICAL ? GTK_TYPE_VSCALE : GTK_TYPE_HSCALE,
+                            "visible", TRUE,
+                            "draw_value", FALSE,
+                            "adjustment", adjustment,
+                            "can-focus", FALSE,
+                            NULL);
+      gtk_box_pack_start (box, GTK_WIDGET (range), FALSE, TRUE, padding);
+      g_object_set_data_full (range, "BstDBSetup", dbsetup, bst_db_setup_unref);
+      g_object_set_data_full (adjustment, "BstDBSetup", bst_db_setup_ref (dbsetup), bst_db_setup_unref);
+      if (!gxk_signal_handler_pending (range, "size-allocate", G_CALLBACK (db_scale_size_allocate), self))
+        g_signal_connect_object (range, "size-allocate", G_CALLBACK (db_scale_size_allocate), self, G_CONNECT_AFTER);
     }
-  return aux;
+  return range;
 }
 
-GtkWidget*
-bst_db_meter_new_stereo (GtkOrientation  orientation)
+static gpointer
+db_meter_get_child (BstDBMeter     *self,
+                    guint           nth,
+                    GType           ctype)
 {
-  GtkWidget *widget = bst_db_meter_new (orientation);
-  BstDBMeter *self = BST_DB_METER (widget);
-  db_meter_build_scales (self, 2);
-  return widget;
+  GtkBox *box = (void*) GTK_BIN (self)->child;
+  GtkWidget *child = NULL;
+  if (GTK_IS_BOX (box))
+    {
+      GList *node, *children = gtk_container_get_children (GTK_CONTAINER (box));
+      for (node = children; node; node = node->next)
+        if (g_type_is_a (G_OBJECT_TYPE (node->data), ctype))
+          {
+            if (nth)
+              nth--;
+            else
+              {
+                child = node->data;
+                break;
+              }
+          }
+      g_list_free (children);
+    }
+  return child;
+}
+
+GtkRange*
+bst_db_meter_get_scale (BstDBMeter     *self,
+                        guint           nth)
+{
+  return db_meter_get_child (self, nth, GTK_TYPE_RANGE);
+}
+
+BstDBBeam*
+bst_db_meter_get_beam (BstDBMeter     *self,
+                       guint           nth)
+{
+  return db_meter_get_child (self, nth, BST_TYPE_DB_BEAM);
+}
+
+BstDBLabeling*
+bst_db_meter_get_labeling (BstDBMeter     *self,
+                           guint           nth)
+{
+  return db_meter_get_child (self, nth, BST_TYPE_DB_LABELING);
 }
 
 static void
-db_meter_build_scales (BstDBMeter *self,
-                       guint       n_scales)
+db_meter_build_channels (BstDBMeter *self,
+                         guint       n_channels)
 {
-  if (n_scales < 2)
-    return;
-
-  /* scale + dashes */
-  bst_db_meter_create_scale (self, 2);
-  bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, 2);
-  
-  /* beam left */
-  bst_db_meter_create_beam (self, 2);
-  /* lines left */
-  bst_db_meter_create_dashes (self, GTK_JUSTIFY_LEFT, 2);
-  
-  /* numbers mid */
-  bst_db_meter_create_numbers (self, 2);
-  
-  /* lines right */
-  bst_db_meter_create_dashes (self, GTK_JUSTIFY_RIGHT, 2);
-  /* beam right */
-  bst_db_meter_create_beam (self, 2);
-  
-  /* dashes + scale */
-  bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, 2);
-  bst_db_meter_create_scale (self, 2);
+  const gint padding = 2;
+  if (n_channels == 1)
+    {
+      /* scale + dash + number + dash + beam */
+      bst_db_meter_create_scale (self, padding);
+      bst_db_meter_create_dashes (self, GTK_JUSTIFY_LEFT, padding);
+      bst_db_meter_create_numbers (self, padding);
+      bst_db_meter_create_dashes (self, GTK_JUSTIFY_RIGHT, padding);
+      bst_db_meter_create_beam (self, padding);
+    }
+  else if (n_channels == 2)
+    {
+      /* scale + dash + beam */
+      bst_db_meter_create_scale (self, padding);
+      bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, padding);
+      bst_db_meter_create_beam (self, padding);
+      /* dash + number + dash */
+      bst_db_meter_create_dashes (self, GTK_JUSTIFY_LEFT, padding);
+      bst_db_meter_create_numbers (self, padding);
+      bst_db_meter_create_dashes (self, GTK_JUSTIFY_RIGHT, padding);
+      /* beam + dash + scale */
+      bst_db_meter_create_beam (self, padding);
+      bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, padding);
+      bst_db_meter_create_scale (self, padding);
+    }
 }
 
 static void
@@ -1404,6 +1505,6 @@ bst_db_meter_class_init (BstDBMeterClass *class)
   g_object_class_install_property (gobject_class, PROP_ORIENTATION,
                                    g_param_spec_enum ("orientation", _("Orientation"), _("Choose horizontal or vertical orientation"),
                                                       GTK_TYPE_ORIENTATION, GTK_ORIENTATION_VERTICAL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-  g_object_class_install_property (gobject_class, PROP_N_SCALES,
-                                   g_param_spec_uint ("n-scales", NULL, NULL, 0, G_MAXINT, 0, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, PROP_N_CHANNELS,
+                                   g_param_spec_uint ("n-channels", NULL, NULL, 0, G_MAXINT, 0, G_PARAM_WRITABLE));
 }

@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstbuseditor.h"
+#include "bstparam.h"
+#include "bstsnifferscope.h" // FIXME
 
 
 /* --- prototypes --- */
@@ -45,7 +47,7 @@ static void
 bst_bus_editor_init (BstBusEditor *self)
 {
   /* complete GUI */
-  GxkRadget *radget = gxk_radget_complete (GTK_WIDGET (self), "beast", "bus-editor", NULL);
+  gxk_radget_complete (GTK_WIDGET (self), "beast", "bus-editor", NULL);
   /* create tool actions */
   gxk_widget_publish_actions (self, "bus-editor-actions",
                               G_N_ELEMENTS (bus_editor_actions), bus_editor_actions,
@@ -86,6 +88,28 @@ bus_editor_release_item (SfiProxy      item,
   bst_bus_editor_set_bus (self, 0);
 }
 
+static void
+bus_probes_notify (SfiProxy     bus,
+                   SfiSeq      *sseq,
+                   gpointer     data)
+{
+  BstBusEditor *self = BST_BUS_EDITOR (data);
+  BseProbeSeq *pseq = bse_probe_seq_from_seq (sseq);
+  BseProbe *lprobe = NULL, *rprobe = NULL;
+  guint i;
+  for (i = 0; i < pseq->n_probes && (!lprobe || !rprobe); i++)
+    if (pseq->probes[i]->channel_id == 0)
+      lprobe = pseq->probes[i];
+    else if (pseq->probes[i]->channel_id == 1)
+      rprobe = pseq->probes[i];
+  if (self->lbeam && lprobe && lprobe->probe_features->probe_energie)
+    bst_db_beam_set_value (self->lbeam, lprobe->energie);
+  if (self->rbeam && rprobe && rprobe->probe_features->probe_energie)
+    bst_db_beam_set_value (self->rbeam, rprobe->energie);
+  bse_source_queue_probe_request (self->item, 0, 1, 1, 0, 0);
+  bse_source_queue_probe_request (self->item, 1, 1, 1, 0, 0);
+}
+
 void
 bst_bus_editor_set_bus (BstBusEditor *self,
                         SfiProxy      item)
@@ -95,8 +119,13 @@ bst_bus_editor_set_bus (BstBusEditor *self,
   if (self->item)
     {
       bse_proxy_disconnect (self->item,
+                            "any_signal::probes", bus_probes_notify, self,
+                            NULL);
+      bse_proxy_disconnect (self->item,
                             "any-signal", bus_editor_release_item, self,
                             NULL);
+      gxk_param_destroy (self->lvolume);
+      gxk_param_destroy (self->rvolume);
     }
   self->item = item;
   if (self->item)
@@ -104,6 +133,35 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       bse_proxy_connect (self->item,
                          "signal::release", bus_editor_release_item, self,
                          NULL);
+      /* create params */
+      GParamSpec *pspec = bse_proxy_get_pspec (self->item, "left-volume-db");
+      self->lvolume = bst_param_new_proxy (pspec, self->item);
+      pspec = bse_proxy_get_pspec (self->item, "right-volume-db");
+      self->rvolume = bst_param_new_proxy (pspec, self->item);
+      gxk_param_update (self->lvolume);
+      gxk_param_update (self->rvolume);
+      BstDBMeter *dbmeter = gxk_radget_find (self, "db-meter");
+      if (dbmeter)
+        {
+          GtkRange *range = bst_db_meter_get_scale (dbmeter, 0);
+          bst_db_scale_hook_up_param (range, self->lvolume);
+          range = bst_db_meter_get_scale (dbmeter, 1);
+          bst_db_scale_hook_up_param (range, self->rvolume);
+          self->lbeam = bst_db_meter_get_beam (dbmeter, 0);
+          if (self->lbeam)
+            bst_db_beam_set_value (self->lbeam, -G_MAXDOUBLE);
+          self->rbeam = bst_db_meter_get_beam (dbmeter, 1);
+          if (self->rbeam)
+            bst_db_beam_set_value (self->rbeam, -G_MAXDOUBLE);
+        }
+      gxk_radget_add (self, "spinner-box", gxk_param_create_editor (self->lvolume, "spinner"));
+      gxk_radget_add (self, "spinner-box", gxk_param_create_editor (self->rvolume, "spinner"));
+      /* setup scope */
+      bse_proxy_connect (self->item,
+                         "signal::probes", bus_probes_notify, self,
+                         NULL);
+      bse_source_queue_probe_request (self->item, 0, 1, 1, 0, 0);
+      bse_source_queue_probe_request (self->item, 1, 1, 1, 0, 0);
     }
 }
 

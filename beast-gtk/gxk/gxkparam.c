@@ -101,6 +101,7 @@ void
 gxk_object_set_param_callback (GtkObject          *object,
                                GxkParamUpdateFunc  ufunc)
 {
+  /* sets the callback to apply param->value to object (update GUI) */
   g_return_if_fail (GTK_IS_OBJECT (object));
   g_object_set_data (object, "GxkParamUpdateFunc", ufunc);
 }
@@ -601,6 +602,7 @@ void
 gxk_param_set_size_group (GxkParam                  *param,
                           guint                      size_group)
 {
+  g_return_if_fail (GXK_IS_PARAM (param));
   g_return_if_fail (size_group <= n_size_groups);
   param->size_group = size_group;
 }
@@ -765,7 +767,8 @@ gxk_param_get_adjustment_with_stepping (GxkParam  *param,
   gboolean isint = TRUE;
   GSList *slist;
   for (slist = param->objects; slist; slist = slist->next)
-    if (GTK_IS_ADJUSTMENT (slist->data))
+    if (GTK_IS_ADJUSTMENT (slist->data) &&
+        g_object_get_data (slist->data, "gxk-param-func") == gxk_param_get_adjustment_with_stepping)
       return slist->data;
   
 #define EXTRACT_FIELDS(p,T,mi,ma,df) { T *t = (T*) p; mi = t->minimum; ma = t->maximum; df = t->default_value; }
@@ -844,6 +847,8 @@ gxk_param_get_adjustment_with_stepping (GxkParam  *param,
   g_object_connect (adjustment,
                     "signal_after::value-changed", param_adjustment_value_changed, param,
                     NULL);
+  /* recognize adjustments created by this function */
+  g_object_set_data (adjustment, "gxk-param-func", gxk_param_get_adjustment_with_stepping);
   return GTK_ADJUSTMENT (adjustment);
 }
 
@@ -859,7 +864,8 @@ gxk_param_get_log_adjustment (GxkParam *param)
   GtkAdjustment *adjustment;
   GSList *slist;
   for (slist = param->objects; slist; slist = slist->next)
-    if (GXK_IS_LOG_ADJUSTMENT (slist->data))
+    if (GXK_IS_LOG_ADJUSTMENT (slist->data) &&
+        g_object_get_data (slist->data, "gxk-param-func") == gxk_param_get_log_adjustment)
       return slist->data;
   adjustment = gxk_param_get_adjustment (param);
   if (adjustment)
@@ -872,9 +878,8 @@ gxk_param_get_log_adjustment (GxkParam *param)
           gxk_log_adjustment_setup (GXK_LOG_ADJUSTMENT (log_adjustment), center, base, n_steps);
           gxk_param_add_object (param, object);
           gtk_object_sink (object);
-          /* keep the linear adjustment before the log_adjustment */
-          param->objects = g_slist_remove (param->objects, adjustment);
-          param->objects = g_slist_prepend (param->objects, adjustment);
+          /* recognize adjustments created by this function */
+          g_object_set_data (log_adjustment, "gxk-param-func", gxk_param_get_log_adjustment);
           return log_adjustment;
         }
     }

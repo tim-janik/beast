@@ -16,7 +16,8 @@
   <xdef:db-beam       inherit="BstDBBeam" />
   <xdef:db-labeling   inherit="BstDBLabeling" />
   <xdef:db-meter      inherit="BstDBMeter"
-    prop:n-scales="$(ifdef,n-scales,$n-scales,0)" />
+    prop:orientation="$(ifdef,orientation,$orientation,orientation-vertical)"
+    prop:n-channels="$(ifdef,n-channels,$n-channels,0)" />
   
   <!-- track view -->
   <xdef:track-view inherit="BstTrackView" border-width="3" >
@@ -226,8 +227,8 @@
 	  <frame shadow-type="etched-in" expand="1" >
 	    <label label="Volume" />
 	  </frame>
-	  <!-- VolumeEntry -->
-	  <arrow arrow-type="down" size:window-vgroup="bus-volume-entry" />
+	  <!-- VolumeSpinners -->
+	  <arrow arrow-type="down" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
 	  <frame shadow-type="etched-in" size:window-vgroup="bus-outputs" >
 	    <label _label="Outputs" />
@@ -281,10 +282,10 @@
 	  <button label="Bypass" size:window-vgroup="bus-bypass"/>
 	  <!-- Volume -->
 	  <hbox expand="1" >
-	    <db-meter n-scales="2" />
+	    <db-meter id="db-meter" n-channels="2" />
 	  </hbox>
-	  <!-- VolumeEntry -->
-	  <entry text="Volume" width="10" size:window-vgroup="bus-volume-entry" />
+	  <!-- VolumeSpinners -->
+	  <hbox id="spinner-box" homogeneous="1" width="1" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
 	  <button can-focus="0" size:window-vgroup="bus-outputs" >
 	    <tooltip text="Signal destinations going out of this bus" />

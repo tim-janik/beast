@@ -1,4 +1,10 @@
-FIXMES:
+FIXMES:	(release-critical)
+- enfore minimum size of ca. screen-width and screen-height for GxkDialog (should make preferences scrollable)  
+- in preferences the skin-editor viewport shouldn't gxk_widget_proxy_requisition()
+- add a "[_] never show this warning" toggle button to warnings
+  (not having /dev/midi gets really annoying)
+  or disable "/dev/midi": no such device dialog
+TODO:
 * dialog to spawn for [Inputs...] and [Outputs...]:
   |                |                           |                |
   |                |      +------------------+ |                |
@@ -9,12 +15,14 @@ FIXMES:
   |                | |     Remove       |  >>  |                |
   |                | +------------------+      |                |
   |                |                           |                |
+- the skin editor should offer loading skins, just like View/Skins
 - add more menu tooltips
 - mixer icon
 - get rid of FIXMEs in beast-gtk/testgui.c
 - seqid changed notification *only* works for non-source children of BseSong
 - delete+undo on tracks kills connections (busses?)
 - rename bsesnifferscope.* to bsescope.*
+- split bstutils into bstgutils
 - rename snifferscope to trackscope
 - skip no-voice found for snet==NULL tracks
 - the "Synth Selection" dialog popped up from the track view should preselect a track's existing Synth object
@@ -169,7 +177,7 @@ DRIVER DIALOG:
 * Frame "Midi Driver"
 - Driver NAme
 
-TODO:
+TASKS:
 - support sequencer input from and to ALSA and JACK
 - Icons: delete-track and delete-part shouldn't have the same item in track-roll
 - Main: make beast recognize and view .markup files from the command line

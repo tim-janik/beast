@@ -29,18 +29,38 @@ void beast_show_about_box (void) {}
      
 
 /* --- functions --- */
+static gboolean
+change_beam_value (gpointer data)
+{
+  if (!GTK_WIDGET_DRAWABLE (data))
+    {
+      g_object_unref (data);
+      return FALSE;
+    }
+  GDK_THREADS_ENTER ();
+  BstDBBeam *self = BST_DB_BEAM (data);
+  double v = rand() / ((double) RAND_MAX) * (self->dbsetup->maxdb - self->dbsetup->mindb) + self->dbsetup->mindb;
+  if (v > self->dbsetup->maxdb)
+    v = self->dbsetup->mindb;
+  bst_db_beam_set_value (self, v);
+  GDK_THREADS_LEAVE ();
+  return TRUE;
+}
+
 static GtkWidget*
 create_db_meter (GtkOrientation  orientation)
 {
-  GtkWidget *widget = bst_db_meter_new (orientation);
+  GtkWidget *widget = bst_db_meter_new (orientation, 0);
   BstDBMeter *self = BST_DB_METER (widget);
+  BstDBBeam *dbbeam;
   
   bst_db_meter_create_dashes (self, GTK_JUSTIFY_RIGHT, 2);
   bst_db_meter_create_scale (self, 2);
   bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, 2);
 
-  bst_db_meter_create_beam (self, 2);
+  dbbeam = bst_db_meter_create_beam (self, 2);
   bst_db_meter_create_dashes (self, GTK_JUSTIFY_LEFT, 2);
+  g_timeout_add (50, change_beam_value, g_object_ref (dbbeam));
 
   bst_db_meter_create_numbers (self, 2);
   bst_db_meter_create_dashes (self, GTK_JUSTIFY_CENTER, 2);
@@ -52,11 +72,15 @@ static void
 build_db_meter_test (GtkBox *box)
 {
   GtkWidget *meter;
+  meter = bst_db_meter_new (GTK_ORIENTATION_HORIZONTAL, 1);
+  bst_db_beam_set_value (bst_db_meter_get_beam (meter, 0), G_MAXDOUBLE);
+  gtk_box_pack_start (box, meter, TRUE, TRUE, 5);
   meter = create_db_meter (GTK_ORIENTATION_VERTICAL);
   gtk_box_pack_start (box, meter, TRUE, TRUE, 5);
   meter = create_db_meter (GTK_ORIENTATION_HORIZONTAL);
   gtk_box_pack_start (box, meter, FALSE, TRUE, 5);
-  meter = bst_db_meter_new_stereo (GTK_ORIENTATION_VERTICAL);
+  meter = bst_db_meter_new (GTK_ORIENTATION_VERTICAL, 2);
+  bst_db_beam_set_value (bst_db_meter_get_beam (meter, 1), G_MAXDOUBLE);
   gtk_box_pack_start (box, meter, TRUE, TRUE, 5);
 }
 
