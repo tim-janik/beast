@@ -202,6 +202,21 @@ void	 bse_param_spec_set_group (GParamSpec   *pspec,
 gchar*	 bse_param_spec_get_group (GParamSpec   *pspec);
 
 
+/* --- logarithmic float specs --- */
+typedef struct
+{
+  gdouble     center;
+  gdouble     base;
+  guint       n_steps;
+} BseParamLogScale;
+void	 bse_param_spec_set_log_scale	(GParamSpec       *pspec,
+					 gdouble           center,
+					 gdouble           base,
+					 guint             n_steps);
+void	 bse_param_spec_get_log_scale	(GParamSpec       *pspec,
+					 BseParamLogScale *lscale_p);
+     
+
 
 #ifdef __cplusplus
 }

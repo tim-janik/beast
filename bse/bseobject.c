@@ -431,6 +431,29 @@ bse_object_class_add_property (BseObjectClass *class,
   g_object_class_install_property (G_OBJECT_CLASS (class), property_id, pspec);
 }
 
+void
+bse_object_class_set_param_log_scale (BseObjectClass *oclass,
+				      const gchar    *pspec_name,
+				      gdouble         center,
+				      gdouble         base,
+				      guint           n_steps)
+{
+  GParamSpec *pspec;
+
+  g_return_if_fail (BSE_IS_OBJECT_CLASS (oclass));
+  g_return_if_fail (pspec_name != NULL);
+  g_return_if_fail (n_steps > 0);
+  g_return_if_fail (base > 0);
+
+  pspec = g_object_class_find_property (G_OBJECT_CLASS (oclass), pspec_name);
+  if (!G_IS_PARAM_SPEC_FLOAT (pspec) || pspec->owner_type != G_OBJECT_CLASS_TYPE (oclass))
+    g_warning ("class `%s' has no float property `%s' to set log scale",
+	       G_OBJECT_CLASS_NAME (oclass),
+	       pspec_name);
+  else
+    bse_param_spec_set_log_scale (pspec, center, base, n_steps);
+}
+
 guint
 bse_object_class_add_signal (BseObjectClass    *oclass,
 			     const gchar       *signal_name,

@@ -249,3 +249,29 @@ METHOD (BseItem, get-name-or-type) {
   
   return BSE_ERROR_NONE;
 }
+
+METHOD (BseItem, common-ancestor) {
+  HELP	= "Retrive the common ancestor of two items if there's any";
+  IN	= g_param_spec_object ("item", "Item", "First item",
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_object ("item2", "Item2", "Second item",
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("ancestor", "ancestor", "Common ancestor of both items",
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item  = g_value_get_object (in_values++);
+  BseItem *item2 = g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item) || !BSE_IS_ITEM (item2))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_object (out_values++, bse_item_common_ancestor (item, item2));
+  
+  return BSE_ERROR_NONE;
+}

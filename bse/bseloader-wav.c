@@ -220,14 +220,15 @@ read_data_header (gint        fd,
   /* validation */
   if (header->data_chunk != ('d' << 24 | 'a' << 16 | 't' << 8 | 'a'))
     {
-      guchar chunk[5] = {
-	header->data_chunk >> 24,
-	(header->data_chunk >> 16) & 0xff,
-	(header->data_chunk >> 8) & 0xff,
-	header->data_chunk & 0xff,
-	0,
-      };
-      gchar *esc = g_strescape (chunk, NULL);
+      guchar chunk[5];
+      gchar *esc;
+
+      chunk[0] = header->data_chunk >> 24;
+      chunk[1] = (header->data_chunk >> 16) & 0xff;
+      chunk[2] = (header->data_chunk >> 8) & 0xff;
+      chunk[3] = header->data_chunk & 0xff;
+      chunk[4] = 0;
+      esc = g_strescape (chunk, NULL);
       
       GSL_DEBUG_LOADER ("unmatched token 'data' (found '%s')", esc);
       g_free (esc);

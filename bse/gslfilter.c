@@ -95,6 +95,8 @@ band_filter_common (unsigned int iorder,
     }
   for (i = 0; i <= iorder; i++)
     b[i] = poly[i].re;
+  gsl_poly_scale (iorder, a, 1.0 / b[0]);
+  gsl_poly_scale (iorder, b, 1.0 / b[0]);
 }
 
 static void
@@ -949,6 +951,8 @@ gsl_iir_filter_setup (GslIIRFilter  *f,
   for (i = 0; i <= order; i++)
     f->b[i] = -b[i];
   memset (f->w, 0, sizeof (f->w[0]) * (order + 1) * 2);
+
+  g_return_if_fail (fabs (b[0] - 1.0) < 1e-14);
 }
 
 void
@@ -979,11 +983,13 @@ gsl_iir_filter_change (GslIIRFilter  *f,
   for (i = 0; i <= order; i++)
     f->b[i] = -b[i];
   /* leaving f->w to preserve state */
+
+  g_return_if_fail (fabs (b[0] - 1.0) < 1e-14);
 }
 
 static inline gdouble /* Y */
-filter_step (GslIIRFilter *f,
-	     gdouble       X)
+filter_step_direct_canon_2 (GslIIRFilter *f,
+			    gdouble       X)
 {
   register guint n = f->order;
   gdouble *a = f->a, *b = f->b, *w = f->w;
@@ -1008,9 +1014,38 @@ filter_step (GslIIRFilter *f,
   x += X;
   w[1] = x;
   y += x * a[0];
+  /* w[0] unused */
 
   return y;
 }
+
+static inline gdouble /* Y */
+filter_step_direct_canon_1 (GslIIRFilter *f,
+			    gdouble       X)
+{
+  register guint n = f->order;
+  gdouble *a = f->a, *b = f->b, *w = f->w;
+  gdouble y, v;
+
+  /* w[n] unused */
+  y = X * a[0] + w[0];
+  v = X * a[n] + y * b[n];
+
+  while (--n)
+    {
+      gdouble t = w[n];
+
+      w[n] = v;
+      t += X * a[n];
+      v = y * b[n];
+      v += t;
+    }
+  w[0] = v;
+
+  return y;
+}
+
+#define	filter_step	filter_step_direct_canon_1
 
 void
 gsl_iir_filter_eval (GslIIRFilter *f,

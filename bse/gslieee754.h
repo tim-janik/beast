@@ -19,6 +19,8 @@
 #ifndef __GSL_IEEE754_H__
 #define __GSL_IEEE754_H__
 
+#include	<gsl/gsldefs.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -104,10 +106,10 @@ typedef	unsigned short int	GslFpuState;
  * be necessary as round-to-nearest is the hardware
  * default (can be checked with gsl_fpu_okround()).
  */
-extern inline void	gsl_fpu_setround	(GslFpuState		*cw);
-extern inline int	gsl_fpu_okround		(void);
-extern inline void	gsl_fpu_restore		(GslFpuState		 cv);
-extern inline int	gsl_ftoi		(register double	 f);
+static inline void	gsl_fpu_setround	(GslFpuState		*cw);
+static inline int	gsl_fpu_okround		(void);
+static inline void	gsl_fpu_restore		(GslFpuState		 cv);
+static inline int	gsl_ftoi		(register double	 f);
 /* fallbacks for the !386 case are below */
 #endif
 
@@ -171,7 +173,7 @@ static const union { unsigned char c[4]; float f; }  _gsl_fnan_union = { _GSL_FL
 static const union { unsigned char c[4]; float f; }  _gsl_finf_union = { _GSL_FLOAT_INF_BYTES };
 
 #if defined (__i386__) && defined (__GNUC__)
-extern inline void
+static inline void
 gsl_fpu_setround (GslFpuState *cw)
 {
   GslFpuState cv;
@@ -184,7 +186,7 @@ gsl_fpu_setround (GslFpuState *cw)
        :
        : "m" (*&cv));
 }
-extern inline int
+static inline int
 gsl_fpu_okround (void)
 {
   GslFpuState cv;
@@ -193,14 +195,14 @@ gsl_fpu_okround (void)
        : "=m" (*&cv));
   return !(cv & 0x0c00);
 }
-extern inline void
+static inline void
 gsl_fpu_restore (GslFpuState cv)
 {
   asm ("fldcw %0"
        :
        : "m" (*&cv));
 }
-extern inline int
+static inline int
 gsl_ftoi (register double f)
 {
   int r;

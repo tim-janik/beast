@@ -38,6 +38,7 @@ struct _BseProject
   BseContainer	 parent_object;
 
   GSList	     *supers;
+  GSList	     *items;
 };
 struct _BseProjectClass
 {
@@ -48,10 +49,6 @@ struct _BseProjectClass
 /* --- prototypes --- */
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
-void		bse_project_add_super		(BseProject	*project,
-						 BseSuper	*super);
-void		bse_project_remove_super	(BseProject	*project,
-						 BseSuper	*super);
 GList*		bse_project_list_supers		(BseProject	*project,
 						 GType  	 super_type);
 GList* /*fr*/	bse_project_list_nick_paths	(BseProject	*project,
@@ -67,6 +64,10 @@ BseObject*	bse_project_path_resolver	(gpointer        project /* func_data */,
 						 BseStorage     *storage,
 						 GType           required_type,
 						 const gchar    *path);
+BseItem*	bse_project_find_item		(BseProject	*project,
+						 GType		 item_type,
+						 const gchar	*name);
+
 
 #ifdef __cplusplus
 }

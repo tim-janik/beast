@@ -33,7 +33,7 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
 {
   if (pos < peekbuf->start || pos >= peekbuf->end)
     {
-      GslLong inc, k, bsize = GSL_DATA_HANDLE_PEEK_BUFFER;
+      GslLong inc, k, bsize = MIN (GSL_DATA_HANDLE_PEEK_BUFFER, dhandle->n_values);
 
       g_return_val_if_fail (pos >= 0 && pos < dhandle->n_values, 0);
 
@@ -183,7 +183,7 @@ gsl_data_detect_signal (GslDataHandle *handle,
 			GslLong       *sigend_p)
 {
   gfloat level_0, level_1, level_2, level_3, level_4;
-  gfloat signal_threshold = 16. * 16. * 16.;
+  gfloat signal_threshold = 16. * 16. * 16.;	/* noise level threshold */
   GslLong k, xcheck = -1, minsamp = -1, maxsamp = -2;
   GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
   
@@ -223,7 +223,7 @@ gsl_data_detect_signal (GslDataHandle *handle,
        *   break;
        */
     }
-  if (xcheck-minsamp > 0)
+  if (xcheck - minsamp > 0)
     g_printerr("###################");
   g_printerr ("active area %ld .. %ld, signal>16 at: %ld\t diff: %ld\n",minsamp,maxsamp,xcheck, xcheck-minsamp);
 
@@ -283,19 +283,19 @@ gsl_data_find_sample (GslDataHandle *dhandle,
 }
 
 static inline gdouble
-score_loop (GslDataHandle *shandle,
-	    GslDataHandle *dhandle,
-	    GslLong	   start,
-	    gdouble	   worst_score)
+tailmatch_score_loop (GslDataHandle *shandle,
+		      GslDataHandle *dhandle,
+		      GslLong	   start,
+		      gdouble	   worst_score)
 {
   GslLong l, length = MIN (shandle->n_values, dhandle->n_values);
+  gfloat v1[GSL_DATA_HANDLE_PEEK_BUFFER], v2[GSL_DATA_HANDLE_PEEK_BUFFER];
   gdouble score = 0;
 
   g_assert (start < length);
 
   for (l = start; l < length; )
     {
-      gfloat v1[GSL_DATA_HANDLE_PEEK_BUFFER], v2[GSL_DATA_HANDLE_PEEK_BUFFER];
       GslLong b = MIN (GSL_DATA_HANDLE_PEEK_BUFFER, length - l);
 
       b = gsl_data_handle_read (shandle, l, b, v1);
@@ -359,7 +359,7 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 	  gdouble score;
 	  
 	  gsl_data_handle_open (lhandle);
-	  score = score_loop (shandle, lhandle, offset + l, best_score);
+	  score = tailmatch_score_loop (shandle, lhandle, offset + l, best_score);
 	  gsl_data_handle_close (lhandle);
 	  gsl_data_handle_unref (lhandle);
 	  

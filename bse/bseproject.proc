@@ -24,6 +24,7 @@
 #include        <bse/bsewaverepo.h>
 #include        <bse/bsesnet.h>
 #include        <bse/bsemidisynth.h>
+#include        <bse/bsedatapocket.h>
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
@@ -154,7 +155,7 @@ METHOD (BseProject, create-song) {
   song = bse_object_new (BSE_TYPE_SONG,
 			 "n-channels", n_channels,
 			 NULL);
-  bse_project_add_super (project, BSE_SUPER (song));
+  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (song));
 
   /* set output parameters */
   g_value_set_object (out_values++, G_OBJECT (song));
@@ -192,12 +193,48 @@ METHOD (BseProject, ensure-wave-repo) {
   if (!wrepo)
     {
       wrepo = bse_object_new (BSE_TYPE_WAVE_REPO, NULL);
-      bse_project_add_super (project, BSE_SUPER (wrepo));
+      bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (wrepo));
       g_object_unref (wrepo);
     }
 
   /* set output parameters */
   g_value_set_object (out_values++, G_OBJECT (wrepo));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, get-data-pocket) {
+  HELP	= "Retrive a specifically named data pocket for this project";
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("name", "Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("data_pocket", "Data Pocket", NULL,
+			       BSE_TYPE_DATA_POCKET, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  gchar *name = g_value_get_string (in_values++);
+  BseItem *item;
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  item = bse_project_find_item (project, BSE_TYPE_DATA_POCKET, name);
+  if (!item)
+    {
+      item = g_object_new (BSE_TYPE_DATA_POCKET, "name", name, NULL);
+      bse_container_add_item (BSE_CONTAINER (project), item);
+      g_object_unref (item);
+    }
+
+  /* set output parameters */
+  g_value_set_object (out_values++, item);
   
   return BSE_ERROR_NONE;
 }
@@ -223,7 +260,7 @@ METHOD (BseProject, create-snet) {
   /* action */
   snet = bse_object_new (BSE_TYPE_SNET,
 			 NULL);
-  bse_project_add_super (project, BSE_SUPER (snet));
+  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (snet));
   
   /* set output parameters */
   g_value_set_object (out_values++, G_OBJECT (snet));
@@ -252,7 +289,7 @@ METHOD (BseProject, create-midi-synth) {
 
   /* action */
   midi_synth = bse_object_new (BSE_TYPE_MIDI_SYNTH, NULL);
-  bse_project_add_super (project, BSE_SUPER (midi_synth));
+  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (midi_synth));
 
   /* set output parameters */
   g_value_set_object (out_values++, G_OBJECT (midi_synth));

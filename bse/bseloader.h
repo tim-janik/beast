@@ -60,8 +60,8 @@ struct _GslWaveChunkDsc
   gfloat	  osc_freq;
   gfloat	  mix_freq;
   GslWaveLoopType loop_type;
-  guint		  loop_start;	/* sample offset */
-  guint		  loop_end;	/* sample offset */
+  GslLong	  loop_start;	/* sample offset */
+  GslLong	  loop_end;	/* sample offset */
   guint		  loop_count;
   /* loader-specific */
   GslLong         loader_offset;

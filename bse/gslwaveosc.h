@@ -50,7 +50,7 @@ typedef struct
   gfloat	    last_sync_level, last_freq_level, last_mod_level;
   GslWaveChunkBlock block;
   gfloat           *x;                  /* pointer into block */
-  guint             cur_pos, istep;	// FIX
+  guint             cur_pos, istep;	/* FIXME */
   gdouble           a[GSL_WAVE_OSC_FILTER_ORDER + 1];       /* order */
   gdouble           b[GSL_WAVE_OSC_FILTER_ORDER + 1];       /* reversed order */
   gdouble           y[GSL_WAVE_OSC_FILTER_ORDER + 1];
@@ -58,7 +58,7 @@ typedef struct
   GslWaveChunk     *wchunk;
   gfloat	    mix_freq;		/* gsl_engine_sample_freq() */
   gfloat	    step_factor;
-  gboolean	    done;		/* FIX. caution, this is TRUE only if
+  gboolean	    done;		/* FIXME. caution, this is TRUE only if
 					 * (play_dir < 0 && cur_pos < 0) ||
 					 * (play_dir > 0 && cur_pos > wchunk.length)
 					 */

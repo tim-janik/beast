@@ -110,6 +110,9 @@ void		gsl_wave_chunk_debug_block	(GslWaveChunk		*wchunk,
 						 GslLong		 length,
 						 gfloat			*block);
 GslWaveChunk*	gsl_wave_chunk_copy		(GslWaveChunk		*wchunk);
+const gchar*	gsl_wave_loop_type_to_string	(GslWaveLoopType	 wave_loop);
+GslWaveLoopType	gsl_wave_loop_type_from_string	(const gchar		*string);
+
 
 #ifdef __cplusplus
 }

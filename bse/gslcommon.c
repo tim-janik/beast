@@ -399,11 +399,6 @@ gsl_ring_pop_tail (GslRing **head_p)
 
 
 /* --- GslThread --- */
-static GslMutex global_thread;
-static GslRing *global_thread_list = NULL;
-static GslCond *global_thread_cond = NULL;
-static GslRing *awake_tdata_list = NULL;
-
 typedef struct
 {
   GslThreadFunc func;
@@ -412,13 +407,20 @@ typedef struct
   volatile gint abort;
   guint64       awake_stamp;
 } ThreadData;
+static GslMutex    global_thread;
+static GslRing    *global_thread_list = NULL;
+static GslCond    *global_thread_cond = NULL;
+static GslRing    *awake_tdata_list = NULL;
+static ThreadData *main_thread_tdata = NULL;
 
 static inline ThreadData*
 thread_data_from_gsl_thread (GslThread *thread)
 {
   GThread *gthread = (GThread*) thread;
 
-  return gthread->data;
+  /* if gthread->data==NULL, we assume this is the main thread */
+
+  return gthread->data ? gthread->data : main_thread_tdata;
 }
 
 static gpointer
@@ -452,22 +454,16 @@ thread_wrapper (gpointer arg)
   return NULL;
 }
 
-GslThread*
-gsl_thread_new (GslThreadFunc func,
-		gpointer      user_data)
+static ThreadData*
+create_tdata (void)
 {
-  const gboolean joinable = TRUE;
-  gpointer gthread = NULL;
   ThreadData *tdata;
   glong d_long;
-  GError *gerror = NULL;
   gint error;
 
-  g_return_val_if_fail (func != NULL, FALSE);
-
   tdata = gsl_new_struct0 (ThreadData, 1);
-  tdata->func = func;
-  tdata->data = user_data;
+  tdata->func = NULL;
+  tdata->data = NULL;
   tdata->wpipe[0] = -1;
   tdata->wpipe[1] = -1;
   tdata->abort = FALSE;
@@ -475,22 +471,48 @@ gsl_thread_new (GslThreadFunc func,
   if (error == 0)
     {
       d_long = fcntl (tdata->wpipe[0], F_GETFL, 0);
-      g_print ("pipe-readfd, blocking=%ld\n", d_long & O_NONBLOCK);
+      /* g_printerr ("pipe-readfd, blocking=%ld\n", d_long & O_NONBLOCK); */
       d_long |= O_NONBLOCK;
       error = fcntl (tdata->wpipe[0], F_SETFL, d_long);
     }
   if (error == 0)
     {
       d_long = fcntl (tdata->wpipe[1], F_GETFL, 0);
-      g_print ("pipe-writefd, blocking=%ld\n", d_long & O_NONBLOCK);
+      /* g_printerr ("pipe-writefd, blocking=%ld\n", d_long & O_NONBLOCK); */
       d_long |= O_NONBLOCK;
       error = fcntl (tdata->wpipe[1], F_SETFL, d_long);
     }
+  if (error)
+    {
+      close (tdata->wpipe[0]);
+      close (tdata->wpipe[1]);
+      gsl_delete_struct (ThreadData, tdata);
+      tdata = NULL;
+    }
+  return tdata;
+}
 
-  if (error == 0)
-    gthread = g_thread_create_full (thread_wrapper, tdata, 0, joinable, FALSE,
-				    G_THREAD_PRIORITY_NORMAL, &gerror);
-  
+GslThread*
+gsl_thread_new (GslThreadFunc func,
+		gpointer      user_data)
+{
+  const gboolean joinable = TRUE;
+  gpointer gthread = NULL;
+  ThreadData *tdata;
+  GError *gerror = NULL;
+
+  g_return_val_if_fail (func != NULL, FALSE);
+
+  tdata = create_tdata ();
+
+  if (tdata)
+    {
+      tdata->func = func;
+      tdata->data = user_data;
+      gthread = g_thread_create_full (thread_wrapper, tdata, 0, joinable, FALSE,
+				      G_THREAD_PRIORITY_NORMAL, &gerror);
+    }
+
   if (gthread)
     {
       GSL_SYNC_LOCK (&global_thread);
@@ -500,9 +522,12 @@ gsl_thread_new (GslThreadFunc func,
     }
   else
     {
-      close (tdata->wpipe[0]);
-      close (tdata->wpipe[1]);
-      gsl_delete_struct (ThreadData, tdata);
+      if (tdata)
+	{
+	  close (tdata->wpipe[0]);
+	  close (tdata->wpipe[1]);
+	  gsl_delete_struct (ThreadData, tdata);
+	}
       g_warning ("Failed to create thread: %s", gerror->message);
       g_error_free (gerror);
     }
@@ -1286,6 +1311,8 @@ gsl_init (const GslConfigValue values[])
   gsl_mutex_init (&global_memory);
   gsl_mutex_init (&global_thread);
   global_thread_cond = gsl_cond_new ();
+  main_thread_tdata = create_tdata ();
+  g_assert (main_thread_tdata != NULL);
   _gsl_init_data_handles ();
   _gsl_init_data_caches ();
   _gsl_init_engine_utils ();

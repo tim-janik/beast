@@ -38,11 +38,11 @@ typedef struct
 } GslDataPeekBuffer;
 typedef struct
 {
-  GslLong head_skip;
+  GslLong head_skip;	/* FIXME: remove this */
   GslLong tail_cut;
   GslLong min_loop;
   GslLong max_loop;
-} GslLoopSpec;
+} GslLoopSpec;	/* rename this to ...Data... */
 
 
 /* --- data utils --- */

@@ -1,3 +1,62 @@
+Mon Feb 11 18:20:57 2002  Tim Janik  <timj@gtk.org>
+
+	* bseitem.proc: add common-ancestor() procedure.
+
+	* bseobject.[hc]: add bse_object_class_set_param_log_scale() to set
+	logarithmic scale parameters for a proeprty.
+
+	* bseparam.[hc] (bse_param_spec_set_log_scale): support logarithmic
+	parameters on property scales. add bse_param_spec_get_log_scale()
+	for read-out.
+
+	* bseproject.[hc]: remove useless bse_project_add/remove_super()
+	functions.
+	support ordinary items (non-supers) as children of a project.
+	add new function bse_project_find_item().
+
+	* bseproject.proc: ad procedure get-data-pocket() to retrive a
+	named data pocket object from a project.
+
+	* bsequery.c: minor improvement to procedure doc generation.
+
+	* bsetype.h: flags cleanup.
+
+	* gslcommon.[hc]: support gsl_thread_self() for the main thread
+	in a way that's also suitable for aRts.
+
+	* gsldatautils.c: fix peekbuffer fill size.
+
+	* gsldatautils.c: minor speed improvement for tailmatch_score_loop().
+
+	* gslfilter.c: fox band pass/stop filter scaling, so that b[0]==1.0.
+
+	* gslfilter.[hc]: implement filter evaluation routine for first direct
+	canonical form.
+
+	* gslieee754.h: use static inline instead of extern inline in the GCC
+	case, so this works with --finstrument-functions.
+
+	* gslloader-gslwave.c: correctly handle relative chunk file paths.
+
+	* gslloader-wav.c: fix gcc-ism.
+
+	* gslloader.h: make loop_start/end GslLongs.
+
+	* gslmath.c: up the default %f precision in stringifaction.
+
+	* gsltests.c: support multiple file names for the wave-scan command.
+
+	* gslwavechunk.[hc]: add strngification functions for GslWaveLoopType.
+
+	* gslwaveosc.h: fix FIXMEs.
+
+	* bsecontainer.c (uncross_ref): important fix to only invoke
+	uncross notifier when uncrossing, not when unreffing the cross
+	ref.
+
+	* bsedatapocket.[hc] bsedatapocket.proc: new object to hold view
+	specific, generic data. currently lacks storage ability.
+
 Wed Feb  6 04:52:37 2002  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c (bse_storage_parse_param_value): allow floats when

@@ -114,9 +114,10 @@ bse_project_init (BseProject *project,
   object = BSE_OBJECT (project);
 
   project->supers = NULL;
+  project->items = NULL;
 
   wrepo = bse_object_new (BSE_TYPE_WAVE_REPO, NULL);
-  bse_project_add_super (project, BSE_SUPER (wrepo));
+  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (wrepo));
   g_object_unref (wrepo);
 }
 
@@ -127,22 +128,13 @@ bse_project_do_destroy (BseObject *object)
   
   project = BSE_PROJECT (object);
 
+  while (project->items)
+    bse_container_remove_item (BSE_CONTAINER (project), project->items->data);
   while (project->supers)
     bse_container_remove_item (BSE_CONTAINER (project), project->supers->data);
 
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-void
-bse_project_add_super (BseProject *project,
-		       BseSuper   *super)
-{
-  g_return_if_fail (BSE_IS_PROJECT (project));
-  g_return_if_fail (BSE_IS_SUPER (super));
-  g_return_if_fail (BSE_ITEM (super)->parent == NULL);
-
-  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (super));
 }
 
 static void
@@ -154,22 +146,10 @@ bse_project_add_item (BseContainer *container,
   if (BSE_IS_SUPER (item))
     project->supers = g_slist_append (project->supers, item);
   else
-    g_warning ("BseProject: cannot add unknown item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    project->items = g_slist_append (project->items, item);
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
-}
-
-void
-bse_project_remove_super (BseProject *project,
-			  BseSuper   *super)
-{
-  g_return_if_fail (BSE_IS_PROJECT (project));
-  g_return_if_fail (BSE_IS_SUPER (super));
-  g_return_if_fail (BSE_ITEM (super)->parent == BSE_ITEM (project));
-
-  bse_container_remove_item (BSE_CONTAINER (project), BSE_ITEM (super));
 }
 
 static void
@@ -184,8 +164,7 @@ bse_project_remove_item (BseContainer *container,
   if (BSE_IS_SUPER (item))
     project->supers = g_slist_remove (project->supers, item);
   else
-    g_warning ("BseProject: cannot remove unknown item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+    project->items = g_slist_remove (project->items, item);
 }
 
 static void
@@ -197,6 +176,17 @@ bse_project_forall_items (BseContainer      *container,
   GSList *slist;
 
   slist = project->supers;
+  while (slist)
+    {
+      BseItem *item;
+
+      item = slist->data;
+      slist = slist->next;
+      if (!func (item, data))
+	return;
+    }
+
+  slist = project->items;
   while (slist)
     {
       BseItem *item;
@@ -425,6 +415,35 @@ bse_project_path_resolver (gpointer     func_data,
   if (g_type_is_a (required_type, BSE_TYPE_ITEM))
     item = bse_container_item_from_path (BSE_CONTAINER (project), path);
   
+  return item;
+}
+
+BseItem*
+bse_project_find_item (BseProject  *project,
+		       GType	    item_type,
+		       const gchar *name)
+{
+  BseItem *item = NULL;
+  GSList *slist;
+
+  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  g_return_val_if_fail (name != NULL, NULL);
+
+  for (slist = project->items; slist; slist = slist->next)
+    {
+      gchar *oname;
+
+      if (G_OBJECT_TYPE (item) != item_type)
+	continue;
+
+      item = slist->data;
+      g_object_get (item, "name", &oname, NULL);
+      if (oname && strcmp (oname, name) == 0)
+	break;
+    }
+  if (!slist)
+    item = NULL;
+
   return item;
 }
 

@@ -80,6 +80,7 @@ typedef enum
 typedef struct
 {
   GslWaveFileInfo wfi;
+  gchar          *cwd;
 } FileInfo;
 
 typedef struct
@@ -146,20 +147,37 @@ skip_rest_statement (GScanner *scanner,
 
 static GslWaveFileInfo*
 load_file_info (gpointer      data,
-		const gchar  *file_name,
+		const gchar  *_file_name,
 		GslErrorType *error_p)
 {
   FileInfo *fi = NULL;
   gboolean in_wave = FALSE, abort = FALSE;
   GslRing *wave_names = NULL;
   GScanner *scanner;
+  gchar *cwd, *file_name;
   gint fd;
   guint i;
+
+  if (g_path_is_absolute (_file_name))
+    {
+      gchar *p = strrchr (_file_name, G_DIR_SEPARATOR);
+
+      g_assert (p != NULL);
+      cwd = g_strndup (_file_name, p - _file_name + 1);
+      file_name = g_strdup (_file_name);
+    }
+  else
+    {
+      cwd = g_get_current_dir ();
+      file_name = g_strdup_printf ("%s%c%s", cwd, G_DIR_SEPARATOR, _file_name);
+    }
 
   fd = open (file_name, O_RDONLY);
   if (fd < 0)
     {
       *error_p = GSL_ERROR_OPEN_FAILED;
+      g_free (cwd);
+      g_free (file_name);
       return NULL;
     }
 
@@ -226,7 +244,11 @@ load_file_info (gpointer      data,
       for (i = 0, ring = wave_names; i < fi->wfi.n_waves; i++, ring = ring->next)
 	fi->wfi.waves[i].name = ring->data;
       gsl_ring_free (wave_names);
+      fi->cwd = cwd;
     }
+  else
+    g_free (cwd);
+  g_free (file_name);
 
   /* FIXME: empty wave error? */
 
@@ -243,6 +265,7 @@ free_file_info (gpointer         data,
   for (i = 0; i < fi->wfi.n_waves; i++)
     g_free (fi->wfi.waves[i].name);
   g_free (fi->wfi.waves);
+  g_free (fi->cwd);
   gsl_delete_struct (FileInfo, fi);
 }
 
@@ -371,8 +394,8 @@ parse_wave_dsc (GScanner    *scanner,
 	dsc->wdsc.chunks[i].mix_freq = dsc->dfl_mix_freq;
 	dsc->wdsc.chunks[i].osc_freq = dsc->dfl_mix_freq;	/* we check this later */
 	dsc->wdsc.chunks[i].loop_type = GSL_WAVE_LOOP_JUMP;
-	dsc->wdsc.chunks[i].loop_start = ~0;
-	dsc->wdsc.chunks[i].loop_end = 0;
+	dsc->wdsc.chunks[i].loop_start = GSL_MAXLONG;
+	dsc->wdsc.chunks[i].loop_end = -1;
 	dsc->wdsc.chunks[i].loop_count = 1000000; /* FIXME */
 	dsc->wdsc.chunks[i].loader_offset = 0;			/* offset in bytes */
 	dsc->wdsc.chunks[i].loader_length = 0;			/* length in n_values */
@@ -381,7 +404,7 @@ parse_wave_dsc (GScanner    *scanner,
 	token = parse_chunk_dsc (scanner, dsc->wdsc.chunks + i);
 	if (token != G_TOKEN_NONE)
 	  return token;
-	if (dsc->wdsc.chunks[i].loop_end <= dsc->wdsc.chunks[i].loop_start)
+	if (dsc->wdsc.chunks[i].loop_end < dsc->wdsc.chunks[i].loop_start)
 	  {
 	    dsc->wdsc.chunks[i].loop_type = GSL_WAVE_LOOP_NONE;
 	    dsc->wdsc.chunks[i].loop_start = 0;
@@ -585,28 +608,41 @@ create_chunk_handle (gpointer      data,
 		     GslErrorType *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
+  FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;
   GslWaveChunkDsc *chunk = wave_dsc->chunks + nth_chunk;
 
   if (chunk->loader_data1)	/* file_name */
     {
       GslDataHandle *dhandle;
-      GslWaveFileInfo *fi;
+      GslWaveFileInfo *cfi;
+      gchar *string;
+
+
+      /* construct chunk file name from (hopefully) relative path
+       */
+      if (g_path_is_absolute (chunk->loader_data1))
+	string = g_strdup (chunk->loader_data1);
+      else
+	string = g_strdup_printf ("%s%c%s", fi->cwd, G_DIR_SEPARATOR, (char*) chunk->loader_data1);
+
 
       /* first, try to load the chunk via registered loaders
        */
-      fi = gsl_wave_file_info_load (chunk->loader_data1, error_p);
-      if (fi)
+      cfi = gsl_wave_file_info_load (string, error_p);
+      if (cfi)
 	{
 	  /* FIXME: there's a potential attack here, in letting a single chunk
 	   * wave's chunk point to its own wave. this'll trigger recursions until
 	   * stack overflow
 	   */
-	  dhandle = load_singlechunk_wave (fi,
+	  dhandle = load_singlechunk_wave (cfi,
 					   chunk->loader_data2,	/* wave_name */
 					   error_p);
-	  gsl_wave_file_info_free (fi);
+	  gsl_wave_file_info_free (cfi);
+	  g_free (string);
 	  return dhandle;
 	}
+
 
       /* didn't work, assume it's a raw sample
        */
@@ -614,9 +650,10 @@ create_chunk_handle (gpointer      data,
 	{
 	  /* raw samples don't give names to their data */
 	  *error_p = GSL_ERROR_NOT_FOUND;
+	  g_free (string);
 	  return NULL;
 	}
-      dhandle = gsl_wave_handle_new (chunk->loader_data1,	/* file_name */
+      dhandle = gsl_wave_handle_new (string,	/* file_name */
 				     0,
 				     dsc->format,
 				     dsc->byte_order,
@@ -625,6 +662,7 @@ create_chunk_handle (gpointer      data,
 				     ? chunk->loader_length
 				     : -1);
       *error_p = dhandle ? GSL_ERROR_NONE : GSL_ERROR_IO;
+      g_free (string);
       return dhandle;
     }	
   else

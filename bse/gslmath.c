@@ -23,7 +23,7 @@
 
 
 #define RING_BUFFER_LENGTH	(16)
-#define	PRINTF_DIGITS		"12" /* "1270" */
+#define	PRINTF_DIGITS		"1270"
 #define	FLOAT_STRING_SIZE	(2048)
 
 

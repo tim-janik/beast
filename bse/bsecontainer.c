@@ -820,7 +820,8 @@ uncross_ref (BseContainerCrossRefs *crefs,
   if (n < crefs->n_cross_refs)
     crefs->cross_refs[n] = crefs->cross_refs[crefs->n_cross_refs];
 
-  uncross (owner, ref_item);
+  if (notify)
+    uncross (owner, ref_item);
 }
 
 static void

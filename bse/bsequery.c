@@ -154,7 +154,8 @@ show_procdoc (void)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->out_param_specs[j]);
 
-	  fprintf (f_out, " * @Returns: %s\n",
+	  fprintf (f_out, " * @Returns: %s: %s\n",
+		   pspec->name,
 		   g_param_spec_get_blurb (pspec) ? g_param_spec_get_blurb (pspec) : nullstr);
 	}
       if (class->help)

@@ -76,22 +76,29 @@ main (int   argc,
  restart:
   if (strcmp (arg, "wave-scan") == 0)
     {
-      GslWaveFileInfo *fi;
-      GslErrorType error;
       gchar *file = pshift ();
 
-      fi = gsl_wave_file_info_load (file, &error);
-      if (fi)
+      while (file)
 	{
-	  guint i;
+	  GslWaveFileInfo *fi;
+	  GslErrorType error;
 
-	  g_print ("Loader \"%s\" found %u waves in \"%s\":\n", fi->loader->name, fi->n_waves, file);
-	  for (i = 0; i < fi->n_waves; i++)
-	    g_print ("%u) %s\n", i + 1, fi->waves[i].name);
-	  gsl_wave_file_info_free (fi);
+	  fi = gsl_wave_file_info_load (file, &error);
+	  if (fi)
+	    {
+	      guint i;
+	      
+	      g_print ("Loader \"%s\" found %u waves in \"%s\":\n", fi->loader->name, fi->n_waves, file);
+	      for (i = 0; i < fi->n_waves; i++)
+		g_print ("%u) %s\n", i + 1, fi->waves[i].name);
+	      gsl_wave_file_info_free (fi);
+	    }
+	  else
+	    g_print ("Failed to scan \"%s\": %s\n", file, gsl_strerror (error));
+	  file = pshift ();
+	  if (!file[0])
+	    break;
 	}
-      else
-	g_print ("Failed to scan \"%s\": %s\n", file, gsl_strerror (error));
     }
   else if (strcmp (arg, "file-test") == 0)
     {

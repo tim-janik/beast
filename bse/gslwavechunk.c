@@ -21,6 +21,8 @@
 #include "gslcommon.h"
 #include "gsldatahandle.h"
 
+#include <string.h>
+
 
 /* --- macros --- */
 #define	PRINT_DEBUG_INFO		(0)
@@ -739,4 +741,32 @@ gsl_wave_chunk_copy (GslWaveChunk *wchunk)
 				 wchunk->loop_start,
 				 wchunk->loop_end,
 				 wchunk->loop_count);
+}
+
+const gchar*
+gsl_wave_loop_type_to_string (GslWaveLoopType wave_loop)
+{
+  g_return_val_if_fail (wave_loop >= GSL_WAVE_LOOP_NONE && wave_loop <= GSL_WAVE_LOOP_PINGPONG, NULL);
+
+  switch (wave_loop)
+    {
+    case GSL_WAVE_LOOP_NONE:		return "none";
+    case GSL_WAVE_LOOP_JUMP:		return "jump";
+    case GSL_WAVE_LOOP_PINGPONG:	return "pingpong";
+    default:				return NULL;
+    }
+}
+
+GslWaveLoopType
+gsl_wave_loop_type_from_string (const gchar *string)
+{
+  g_return_val_if_fail (string != NULL, 0);
+
+  while (*string == ' ')
+    string++;
+  if (strncasecmp (string, "jump", 4) == 0)
+    return GSL_WAVE_LOOP_JUMP;
+  if (strncasecmp (string, "pingpong", 8) == 0)
+    return GSL_WAVE_LOOP_PINGPONG;
+  return GSL_WAVE_LOOP_NONE;
 }
