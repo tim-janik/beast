@@ -78,6 +78,7 @@ FIXMES:
 * eliminate everything that fgrep -i fixme/hack reveals
 
 DOCS:
+- make beast recognize and view .markup files from the command line
 - add QuickStart section on piano roll usage, esp. copy+pasting
 - implement Playback facility in doc browser for .bse file links
 - try implementing some kind of table layout for tsmview [timj]

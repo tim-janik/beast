@@ -1,3 +1,7 @@
+Thu Jul 10 22:28:41 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: announce linuxtag presence of tim and stefan.
+
 Mon Jul  7 22:07:43 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.c: fixup tool menu item sensitivity.
