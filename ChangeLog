@@ -1,3 +1,7 @@
+Sun Feb  1 16:46:45 2004  Robert Sedak  <robert.sedak@sk.htnet.hr>
+
+        * configure.in: Added "hr" (Croatian) to ALL_LINGUAS.
+
 Sun Feb  1 15:46:45 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstskinconfig.[hc]: skin configuration handling,
