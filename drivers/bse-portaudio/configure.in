@@ -127,6 +127,12 @@ AC_DEFUN(AC_LIBBSE_CHECK,
 ])
 AC_DEFUN(AC_PORTAUDIO_CHECK,
 [
+    saved_cflags="$CFLAGS"
+    saved_cxxflags="$CXXFLAGS"
+    saved_ldflags="$LDFLAGS"
+    CFLAGS="$CFLAGS $BSE_CFLAGS"
+    CXXFLAGS="$CFLAGS $BSE_CFLAGS"
+    LDFLAGS="$LDFLAGS $BSE_LIBS"
     AC_LANG_SAVE
     AC_LANG_CPLUSPLUS
 
@@ -156,6 +162,9 @@ AC_DEFUN(AC_PORTAUDIO_CHECK,
     AC_SUBST(PORTAUDIO_LIBS)
 
     AC_LANG_RESTORE
+    CFLAGS="$saved_cflags"
+    CXXFLAGS="$saved_cxxflags"
+    LDFLAGS="$saved_ldflags"
 ])
 
 # check compilers and their behaviour, setup CFLAGS
