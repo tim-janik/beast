@@ -1,3 +1,10 @@
+Fri Oct 17 22:25:00 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* shell/bse-scm-glue.boot: Defined bse-param-song.
+
+	* library/scripts/song-parts-operations.scm: Added scripts for cropping
+	or duplicating parts within the loop range.
+
 Fri Oct 17 22:19:18 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: add /Synthesizers submenu, support

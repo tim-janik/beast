@@ -27,6 +27,7 @@
 (define (bse-param-part    name) (bse-param-proxy name "BsePart"))
 (define (bse-param-snet    name) (bse-param-proxy name "BseSNet"))
 (define (bse-param-item    name) (bse-param-proxy name "BseItem"))
+(define (bse-param-song    name) (bse-param-proxy name "BseSong"))
 (define (bse-param-source  name) (bse-param-proxy name "BseSource"))
 
 (define (bse-item-set proxy . list)
