@@ -141,4 +141,14 @@ $(srcdir)/artscompressor.cc: artscompressor.gen-idl.h
 plugins_built_sources += artscompressor.gen-idl.h
 plugin_LTLIBRARIES    += artscompressor.la
 
+##
+## Plugin davbassfilter
+##
+davbassfilter_la_SOURCES = davbassfilter.cc
+davbassfilter_la_LDFLAGS = -module $(plugin_ldflags)
+davbassfilter_la_LIBADD  = $(plugin_libs)
+$(srcdir)/davbassfilter.cc: davbassfilter.gen-idl.h
+plugins_built_sources += davbassfilter.gen-idl.h
+plugin_LTLIBRARIES    += davbassfilter.la
+
 ## Generated data ends here

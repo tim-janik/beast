@@ -1,0 +1,46 @@
+/* DavBassFilter - DAV Bass Filter                              -*-mode: c++;-*-
+ * Copyright (c) 1999, 2000 David A. Bartold, 2003 Tim Janik
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include <bse/bse.idl>
+
+namespace Dav {
+Const STANDARD = Bse::STANDARD; // FIXME: need using
+
+class BassFilter : Bse::Effect {
+  Info    icon      = "icons/davbassfilter.png";
+  Info    authors   = "David A. Bartold, Tim Janik";
+  Info    license   = _("GNU Lesser General Public License");
+  Info    category  = _("/Filters/Bass Filter");
+  Info    blurb     = _("DavBassFilter is a low-pass resonant TB-303 style filter based "
+                        "on the VCF303 portions of gsyn v0.2. The filter algorithm is partly "
+                        "based on the one described in \"Musical Applications of Microprocessors\" "
+                        "by Hal Chamberlin.");
+  IStream audio_in  = (_("Audio In"), _("Audio input"));
+  OStream audio_out = (_("Audio Out"), _("Filtered audio output"));
+  group _("Parameters") {
+    Real cutoff_perc = Perc (_("Cutoff [%]"), _("Set the cutoff frequency percentage"), 50, STANDARD);
+    Real reso_perc   = Perc (_("Resonance [%]"), _("Set the amount of resonance in percent"), 99.5, STANDARD);
+    Real env_mod     = Perc (_("Envelope Modulation [%]"), _("Set the envelope magnitude in percent"), 90, STANDARD);
+    Real env_decay   = Perc (_("Decay [%]"), _("Set the decay length in percent"), 20, STANDARD);
+    Bool trigger     = Trigger (_("Trigger filter"), NULL, SFI_PARAM_GUI);
+  };
+};
+
+}; // Dav
+
+/* vim:set ts=8 sw=2 sts=2: */

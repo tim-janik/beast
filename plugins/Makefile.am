@@ -18,6 +18,7 @@ plugin_idl_files = $(strip	\
 	davchorus.idl		\
 	bsebalance.idl		\
 	artscompressor.idl	\
+	davbassfilter.idl	\
 )
 EXTRA_HEADERS += $(plugin_idl_files)
 # setup generation of C++ plugins from idl files
@@ -33,7 +34,6 @@ Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
 # old/unported plugin list
 UNPORTED = $(strip		\
 	bsefirfilter.[hc]	\
-	davbassfilter.[hc]	\
 	davguitar.[hc]		\
 )
 PLUGIN_CFILES = $(strip		\
