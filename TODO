@@ -1,6 +1,5 @@
 FIXMES:
 - undo across midi file import is broken
-- destroy piano roll dialog if part is released
 - implement (GUI for) locked properties
 - add clone tool for csynths
 - fix undo for: BseDataPocket

@@ -1,9 +1,41 @@
 Overview of Changes in BEAST/BSE 0.5.6:
 
+* New (or ported) modules:
+  BseEvaluator  - highly experimental (available with --devel) expression
+                  evaluator by Stefan Westerfeld
+  DavBassFilter - a low-pass resonant TB-303 style filter by David A. Bartold
+* Added support for author and licensing information for plugins,
+  available as "Show Info" in the button3 popup menu on modules
+* Started MIDI file import ability
+* Started new undo-able parasite mechanism for BSE files
+* Fixed default value serialization in BSE files
+* IDL Compiler bug fixes and cleanups [Stefan Westerfeld]
+* Started C++ Language Binding [Stefan Westerfeld]
+* Added i18n support to IDL Compiler [Stefan Westerfeld]
+* Added #include-impl support to IDL Compiler [Stefan Westerfeld]
+* Added toplevel package tests in tests/ [Stefan Westerfeld]
+* Support upper case note names
+* Internationalized plugins
+* Merged translation domains
+* Updated Czech translation [Miloslav Trmac]
+* Updated Dutch translation [Vincent van Adrighem]
+* Updated German translation [Christian Neumair]
 * Updated Serbian translation [Danilo Segan]
+* Updated Spanish translation [Ismael Andres Rubio Rojas]
+* Updated Swedish translation [Christian Rose]
 * Added Catalan translation [Xavier Conde Rueda]
 * Added Greek translation [Kostas Papadimas]
 * Added Portuguese translation [Duarte Loreto]
+* Complete rebuild of the GUI code by moving to XML based widget tree stencils
+* Completely recoded menu generation, activation and sensitivity, based
+  on new simple action lists amd a stencil factory mechanism
+* Rewrote all existing property entry fields and added new types
+* Implemented a couple new widgets to improve GUI experience (GxkMenuButton
+  as GtkOptionMenu replacement, GxkSimpleLable for shortened widths, ...)
+* Added accelerator support for popup menus
+* Lots of overall GUI polishing
+* Added "About" box
+* Miscellaneous bug fixes, lots of code cleanups
 
 Overview of Changes in BEAST/BSE 0.5.5:
 

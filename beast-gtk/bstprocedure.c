@@ -212,7 +212,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
       g_object_new (GTK_TYPE_ALIGNMENT,
                     "visible", TRUE,
                     "parent", frame,
-                    "border_width", 3,
+                    "border_width", 2,
                     "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK | GXK_SCROLL_TEXT_CENTER,
                                                      proc->help),
                     NULL);

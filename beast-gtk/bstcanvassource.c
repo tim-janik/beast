@@ -484,13 +484,13 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
       GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL);
       GtkWidget *frame = gtk_widget_new (GTK_TYPE_FRAME,
                                          "visible", TRUE,
-                                         "border_width", 5,
                                          "label", _("Module Info"),
+                                         "border_width", 5,
                                          NULL);
       g_object_new (GTK_TYPE_ALIGNMENT,
                     "visible", TRUE,
                     "parent", frame,
-                    "border_width", 1,
+                    "border_width", 2,
                     "child", sctext,
                     NULL),
       csource->source_info = gxk_dialog_new (&csource->source_info,
