@@ -1,3 +1,8 @@
+Sun Dec 26 22:42:45 1999  Tim Janik  <timj@gtk.org>
+
+	* bsefirfilter.[hc]: added highpass, corrected displayed
+	degree value (*2).
+
 Sun Dec 26 19:23:58 1999  Tim Janik  <timj@gtk.org>
 
 	* bseadder.c (bse_adder_set_param): notify icon_changed when entering/

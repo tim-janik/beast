@@ -51,7 +51,7 @@ struct _BseFIRFilter
   BseSource       parent_object;
 
   guint16 degree;
-  guint   lowpass : 1;
+  guint   filter_type : 8;
   guint   lanczos_smoothing : 1;
   guint   hann_smoothing : 1;
   gfloat  cut_off_freq;
@@ -65,6 +65,15 @@ struct _BseFIRFilterClass
 {
   BseSourceClass parent_class;
 };
+
+
+/* --- enums --- */
+typedef enum
+{
+  BSE_FIR_FILTER_ALLPASS,
+  BSE_FIR_FILTER_LOWPASS,
+  BSE_FIR_FILTER_HIGHPASS
+} BseFIRFilterType;
 
 
 /* --- channels --- */

@@ -25,7 +25,9 @@
 enum
 {
   PARAM_0,
+  PARAM_ALLPASS,
   PARAM_LOWPASS,
+  PARAM_HIGHPASS,
   PARAM_DEGREE,
   PARAM_LANCZOS,
   PARAM_HANN,
@@ -89,17 +91,27 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
   source_class->calc_chunk = bse_fir_filter_calc_chunk;
   source_class->reset = bse_fir_filter_reset;
 
-  bse_object_class_add_param (object_class, NULL,
+  bse_object_class_add_param (object_class, "Filter Type",
+			      PARAM_ALLPASS,
+			      bse_param_spec_bool ("allpass", "AllPass", NULL,
+						   FALSE,
+						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+  bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_LOWPASS,
 			      bse_param_spec_bool ("lowpass", "LowPass", NULL,
 						   TRUE,
-						   BSE_PARAM_DEFAULT));
+						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
+  bse_object_class_add_param (object_class, "Filter Type",
+			      PARAM_HIGHPASS,
+			      bse_param_spec_bool ("highpass", "HighPass", NULL,
+						   FALSE,
+						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_DEGREE,
 			      bse_param_spec_uint ("degree", "Degree", "Number of filter coefficients",
-						   1, 128,
-						   2,
-						   3,
+						   2, 256,
+						   4,
+						   6,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Smoothing",
 			      PARAM_HANN,
@@ -143,11 +155,11 @@ bse_fir_filter_class_destroy (BseFIRFilterClass *class)
 static void
 bse_fir_filter_init (BseFIRFilter *filter)
 {
-  filter->degree = 3;
+  filter->degree = 6;
   filter->lanczos_smoothing = FALSE;
   filter->hann_smoothing = FALSE;
   filter->cut_off_freq = BSE_KAMMER_FREQ / 2;
-  filter->lowpass = TRUE;
+  filter->filter_type = BSE_FIR_FILTER_LOWPASS;
   filter->n_coeffs = 0;
   filter->coeffs = NULL;
   filter->history_pos = 0;
@@ -182,14 +194,18 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
       z = filter->n_coeffs / 2;
       filter->history_pos %= filter->n_coeffs;
 
-      /* setup allpass */
+      /* setup allpass
+       */
       g_free (filter->coeffs);
       filter->coeffs = g_new (gfloat, filter->n_coeffs);
       for (i = 0; i < filter->n_coeffs; i++)
 	filter->coeffs[i] = 0;
       filter->coeffs[z] = 1;
 
-      if (1 || filter->lowpass) /* setup lowpass */
+      /* setup lowpass (precalculate highpass)
+       */
+      if (filter->filter_type == BSE_FIR_FILTER_LOWPASS ||
+	  filter->filter_type == BSE_FIR_FILTER_HIGHPASS)
 	{
 	  d = 2 * filter->cut_off_freq;
 	  d /= BSE_MIX_FREQ;
@@ -232,6 +248,17 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	    }
 	}
       
+      /* setup highpass (from lowpass)
+       */
+      if (filter->filter_type == BSE_FIR_FILTER_HIGHPASS)
+	for (i = 0; i < filter->n_coeffs; i++)
+	  {
+	    if (i == z)
+	      filter->coeffs[i] = 1.0 - filter->coeffs[i];
+	    else
+	      filter->coeffs[i] = - filter->coeffs[i];
+	  }
+
 #if 0
       for (i = 0; i < filter->n_coeffs; i++)
 	g_print ("a[%d]=%f ", i - z, filter->coeffs[i]);
@@ -244,10 +271,12 @@ static void
 bse_fir_filter_set_param (BseFIRFilter *filter,
 			  BseParam     *param)
 {
+  BseFIRFilterType filter_type = BSE_FIR_FILTER_ALLPASS;
+
   switch (param->pspec->any.param_id)
     {
     case PARAM_DEGREE:
-      filter->degree = param->value.v_uint;
+      filter->degree = (param->value.v_uint + (param->value.v_uint > 2 * filter->degree)) / 2;
       bse_fir_filter_update_locals (filter);
       break;
     case PARAM_CUT_OFF_FREQ:
@@ -271,9 +300,21 @@ bse_fir_filter_set_param (BseFIRFilter *filter,
       filter->hann_smoothing = param->value.v_bool;
       bse_fir_filter_update_locals (filter);
       break;
+    case PARAM_HIGHPASS:
+      filter_type++;
+      /* fall through */
     case PARAM_LOWPASS:
-      filter->lowpass = param->value.v_bool;
-      bse_fir_filter_update_locals (filter);
+      filter_type++;
+      /* fall through */
+    case PARAM_ALLPASS:
+      if (param->value.v_bool)
+	{
+	  filter->filter_type = filter_type;
+	  bse_fir_filter_update_locals (filter);
+	  bse_object_param_changed (BSE_OBJECT (filter), "allpass");
+	  bse_object_param_changed (BSE_OBJECT (filter), "lowpass");
+	  bse_object_param_changed (BSE_OBJECT (filter), "highpass");
+	}
       break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
@@ -292,7 +333,7 @@ bse_fir_filter_get_param (BseFIRFilter *filter,
   switch (param->pspec->any.param_id)
     {
     case PARAM_DEGREE:
-      param->value.v_uint = filter->degree;
+      param->value.v_uint = filter->degree * 2;
       break;
     case PARAM_CUT_OFF_FREQ:
       param->value.v_float = filter->cut_off_freq;
@@ -306,8 +347,14 @@ bse_fir_filter_get_param (BseFIRFilter *filter,
     case PARAM_HANN:
       param->value.v_bool = filter->hann_smoothing;
       break;
+    case PARAM_ALLPASS:
+      param->value.v_float = filter->filter_type == BSE_FIR_FILTER_ALLPASS;
+      break;
     case PARAM_LOWPASS:
-      param->value.v_float = filter->lowpass;
+      param->value.v_float = filter->filter_type == BSE_FIR_FILTER_LOWPASS;
+      break;
+    case PARAM_HIGHPASS:
+      param->value.v_float = filter->filter_type == BSE_FIR_FILTER_HIGHPASS;
       break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
@@ -352,7 +399,7 @@ bse_fir_filter_calc_chunk (BseSource *source,
   bse_chunk_complete_hunk (ichunk);
   ihunk = ichunk->hunk;
 
-  if (!filter->lowpass)
+  if (filter->filter_type == BSE_FIR_FILTER_ALLPASS)
     return ichunk;
 
   hunk = bse_hunk_alloc (1);
