@@ -2,8 +2,12 @@
 # Please keep this file sorted alphabetically
 beast-gtk/bstapp.c
 beast-gtk/bstauxdialogs.c
+beast-gtk/bstbuseditor.c
+beast-gtk/bstbusmixer.c
+beast-gtk/bstbusview.c
 beast-gtk/bstcanvaslink.c
 beast-gtk/bstcanvassource.c
+beast-gtk/bstdbmeter.c
 beast-gtk/bsteventrollctrl.c
 beast-gtk/bstfiledialog.c
 beast-gtk/bstgrowbar.c
@@ -35,7 +39,6 @@ beast-gtk/bstrackview.c
 beast-gtk/bstrecords.idl
 beast-gtk/bstsampleeditor.c
 beast-gtk/bstsnetrouter.c
-beast-gtk/bstbusview.c
 beast-gtk/bststest.c
 beast-gtk/bstsupershell.c
 beast-gtk/bsttrackrollctrl.c
@@ -55,6 +58,7 @@ beast-gtk/gxk/gxksimplelabel.c
 bse/bseamplifier.idl
 bse/bseautodoc.c
 bse/bsebiquadfilter.c
+bse/bsebus.c
 bse/bseconstant.c
 bse/bsecore.idl
 bse/bseinstrumentinput.c
@@ -68,12 +72,12 @@ bse/bsepcmoutput.c
 bse/bseserver.c
 bse/bsesnooper.c
 bse/bsesong.proc
-bse/bsebus.c
 bse/bsestandardosc.c
 bse/bsesubiport.c
 bse/bsesuboport.c
 bse/bsesubsynth.c
 bse/bsesuper.c
+bse/bsetrack.c
 bse/bsewaveosc.c
 data/beast.desktop.in
 data/bse.keys.in
