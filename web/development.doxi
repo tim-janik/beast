@@ -1,0 +1,22 @@
+\input texinfo
+@c %**start of header
+@settitle BEAST/BSE Development
+@c %**end of header
+
+@include teximacros.texi
+
+@hasbanner{large}
+@navigation{navigation.xml}
+
+@unnumbered Current Development State
+
+There are various documents in CVS that track the current development state.
+Every major part has it's own ChangeLog (see links in the sidebar) and for
+overall track keeping, the release specific NEWS are also maintained:
+
+@docfont{mono}
+@format
+@verbatiminclude @sedfix{top_srcdir}/NEWS
+@end format
+
+@bye

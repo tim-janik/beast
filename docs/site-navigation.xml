@@ -12,30 +12,43 @@
 ]>
 
 <navigation>
-  <node title="News"        target="news.html"              />
-  <node title="About"       target="about.html"             />
-  <node title="Screenshots" target="screenshots/index.html" />
-  <node title="Download"    target="download.html"          />
-  <node title="Contact"     target="contact.html"           />
-  <node title="Links"       target="resources.html"         />
-  
-  <node title="FAQ"                 target="faq.html" />
-  <node title="Quick Start"         target="quickstart.html" />
-  
-  <node title="ChangeLogs">
-    <node title="BEAST"   target="log-beast.html"   />
-    <node title="BSE"     target="log-bse.html"     />
-    <node title="Plugins" target="log-plugins.html" />
-    <node title="SFI"     target="log-sfi.html"     />
+  <node title="News"                target="news.html"              />
+  <node title="About"               target="about.html"             />
+  <node title="Screenshots"         target="screenshots/index.html" />
+
+  <node title="Documentation"       target="documentation.html">
+    <node title="FAQ"               target="faq.html" />
+    <node title="Tutorials">
+      <node title="Quick Start"     target="quickstart.html" />
+    </node>
+    <node title="API Reference">
+      <node title="BSE Procedures"  target="bse-procs.3.html"   />
+      <node title="BSE Structs"     target="bse-structs.3.html" />
+      <node title="SFI Functions"   target="sfi.3.html"         />
+    </node>
+    <node title="BEAST/BSE Development">
+      <node title="GXK Functions"   target="beast-gxk.3.html"   />
+      <node title="BSE Functions"   target="bse.3.html"         />
+      <node title="Synth Engine"    target="gsl-mplan.html"     />
+    </node>
   </node>
-  
-  <node title="API Reference"       target="documentation.html">
-    <node title="SFI Functions"     target="sfi.3.html"         />
-    <node title="BSE Functions"     target="bse.3.html"         />
-    <node title="GXK Functions"     target="beast-gxk.3.html"   />
-    <node title="BSE Procedures"    target="bse-procs.3.html"   />
-    <node title="BSE Structs"       target="bse-structs.3.html" />
+
+  <node title="Resources"           target="resources.html"         />
+  <node title="Download"            target="download.html"          />
+
+  <node title="Development"         target="development.html">
+    <node title="ChangeLogs">
+      <node title="BEAST"           target="log-beast.html"   />
+      <node title="Plugins"         target="log-plugins.html" />
+      <node title="BSE"             target="log-bse.html"     />
+      <node title="SFI"             target="log-sfi.html"     />
+    </node>
   </node>
-  
-  <node title="Logo Contest (Now Over)" target="logo-submissions/index.html" />
+
+  <node title="Historic"            target="historic.html">
+    <node title="Old News"          target="oldnews.html"  />
+    <node title="Logo Contest"      target="logo-submissions/index.html" />
+  </node>
+
+  <node title="Contact"             target="contact.html"           />
 </navigation>

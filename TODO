@@ -49,6 +49,39 @@ DOCS:
   (especially since it's also underlined) [alper]
 - bse-structs.ps has broken struct braces indentation [alper]
 - keep old news item links working after the site move (docs/cvs-news.html)
+- same level indentation, we have:
+  Screenshots
+  > Documentation
+  Resources
+  Documentation shouldn't be indented, instead all of Screenshots,
+  Documentation and Resources should be aligned and the arrow should be
+  outsanding to the left (as in a tree view widget)
+- indented children, indentation of unfolded is far too big, with a
+  moderately sized font, things look like:
+  v Documentation
+       FAQ
+       v Tutorials
+             Quick Start
+  children should be much less indented, at least as much as the triangle
+  width and probably 1 or 1.5 more letters, but that's about it.
+- banner overlapping document. with the current indetation depth of
+  the document branch, the left-hand banner overlaps with the left hand
+  side of the actuall document, sketched:
+  v Documentation          | Gentle Introduction to the BEAST/BSE
+       FAQ                 |rchitecture
+       v Tutorials         |
+             Quick Start   |ast has a number of components.
+- @verbatiminclude doesn't seem to support makeinfo @value{} variable
+  substitutions (alper, can you tell karl about this?). so i had to
+  revert to an sed hack to make this work
+- @docfont{} is not the right macro to switch to monospaced font, Historic
+  is a good example of where this fails. the NEWS part should appear in
+  monospaced font, but doesn't because there's no markup i could use
+  to express this for the verbatim included part:
+  @docfont{mono}
+  @format
+  @verbatiminclude @sedfix{top_srcdir}/NEWS
+  @end format
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq

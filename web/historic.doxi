@@ -1,0 +1,22 @@
+\input texinfo
+@c %**start of header
+@settitle Historic
+@c %**end of header
+
+@include teximacros.texi
+
+@hasbanner{large}
+@navigation{navigation.xml}
+
+@unnumbered Historic
+
+For the sake of completeness, and for curious readers, we're
+keeping
+@uref{http://beast.gtk.org/oldnews.html,,old website news}.
+
+In March 2000 we started a contest to find a logo for BEAST, and beyond
+the actually selected logo, we also got a number of other interesting
+submissions, which can still be found on the
+@uref{http://beast.gtk.org/logo-submissions.html,,logo submissions} page.
+
+@bye

@@ -25,11 +25,14 @@ markup_targets = $(strip	\
 # website html targets
 html_targets = $(strip		\
 	news.html		\
+	oldnews.html		\
 	about.html		\
 	download.html		\
 	contact.html		\
 	resources.html		\
 	documentation.html	\
+	development.html	\
+	historic.html		\
 	log-beast.html		\
 	log-bse.html		\
 	log-plugins.html	\
@@ -131,10 +134,12 @@ if HAVE_XMLMAKEINFO_AND_XSLTPROC
 	groff -man -t $< >$@
 # where to get *.texi docs from
 %.texi: $(srcdir)/../%.texi
-	cp -p $< $@
+	sed -e "s#@sedfix{top_srcdir}#${top_srcdir}#" <$< >$@
+	touch $@ -r $<
 # where to get website *.texi from
 %.texi: $(srcdir)/../site-%.texi
-	cp -p $< $@
+	sed -e "s#@sedfix{top_srcdir}#${top_srcdir}#" <$< >$@
+	touch $@ -r $<
 # where to get website *.xml from
 %.xml: $(srcdir)/../site-%.xml
 	cp -p $< $@

@@ -5,6 +5,7 @@ texi_docs = $(strip								\
 	faq.texi		quickstart.texi		release-notes.texi	\
 	site-contact.texi	site-download.texi	site-resources.texi	\
 	site-documentation.texi	site-news.texi		site-about.texi		\
+	site-development.texi	site-historic.texi	site-oldnews.texi	\
 )
 extra_docs = $(strip					\
 	site-navigation.xml				\
