@@ -1,3 +1,9 @@
+Tue Sep 21 02:40:05 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.cc: don't throw invalid warnings.
+	voice_input_module_access_U():
+	change_voice_input_L(): mono voices may receive note-on while busy.
+
 Tue Sep 21 02:18:37 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.cc: added documentation blurb on voice states and 

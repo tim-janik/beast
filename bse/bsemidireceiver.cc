@@ -688,7 +688,7 @@ voice_input_module_access_U (BseModule *module,
   switch (mdata->vtype)
     {
     case VOICE_ON:
-      if (vinput->vstate == VSTATE_BUSY)
+      if (vinput->vstate == VSTATE_BUSY && /*LOCK()*/ vinput->table /*UNLOCK()*/)
         g_warning ("%s: VOICE_ON: vinput->vstate == VSTATE_BUSY", G_STRLOC);
       vinput->vstate = VSTATE_BUSY;
       vinput->freq_value = mdata->freq_value;
@@ -738,7 +738,7 @@ change_voice_input_L (VoiceInput      *vinput,
   switch (vtype)
     {
     case VOICE_ON:
-      if (vinput->queue_state == VSTATE_BUSY)
+      if (vinput->queue_state == VSTATE_BUSY && vinput->table)
         g_warning ("%s: VOICE_ON: vinput->queue_state == VSTATE_BUSY", G_STRLOC);
       if (vinput->table)
         {
