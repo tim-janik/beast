@@ -654,18 +654,22 @@ simple_label_direction_changed (GtkWidget        *widget,
 }
 
 static void
-get_layout_location (GxkSimpleLabel  *self,
-                     gint      *xp,
-                     gint      *yp)
+get_layout_location (GxkSimpleLabel *self,
+                     gint           *xp,
+                     gint           *yp)
 {
   GtkWidget *widget = GTK_WIDGET (self);
   gint x, y;
   GtkMisc *misc = GTK_MISC (self);
   gint xpad = MIN ((widget->allocation.width - 1) / 2, misc->xpad);
   gint ypad = MIN ((widget->allocation.height - 1) / 2, misc->ypad);
-
-  x = widget->allocation.x + xpad + GTK_MISC (self)->xalign * MAX (label_allocation_width (self) - widget->requisition.width, 0);
-  y = widget->allocation.y + ypad + GTK_MISC (self)->yalign * MAX (label_allocation_height (self) - widget->requisition.height, 0);
+  PangoRectangle logical_rect;
+  pango_layout_get_extents (self->layout, NULL, &logical_rect);
+  gint rwidth = MIN (widget->requisition.width, PANGO_PIXELS (logical_rect.width));
+  gint rheight = MIN (widget->requisition.height, PANGO_PIXELS (logical_rect.height));
+  
+  x = widget->allocation.x + xpad + GTK_MISC (self)->xalign * MAX (label_allocation_width (self) - rwidth, 0);
+  y = widget->allocation.y + ypad + GTK_MISC (self)->yalign * MAX (label_allocation_height (self) - rheight, 0);
   *xp = x;
   *yp = y;
 }

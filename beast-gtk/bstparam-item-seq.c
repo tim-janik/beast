@@ -83,7 +83,7 @@ param_item_seq_create (GxkParam    *param,
                                   "parent", frame,
                                   NULL);
   gxk_widget_modify_normal_bg_as_base (ebox);
-  label = g_object_new (GTK_TYPE_LABEL, "parent", ebox, NULL);
+  label = g_object_new (GXK_TYPE_SIMPLE_LABEL, "parent", ebox, "auto-cut", TRUE, "xpad", 2, NULL);
   gxk_widget_modify_normal_bg_as_base (label);
   /* store handles */
   g_object_set_data (widget, "beast-GxkParam", param);

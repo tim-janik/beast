@@ -307,7 +307,7 @@
 	  <!-- Name -->
 	  <alignment id="name-box" size:window-vgroup="bus-name"/>
 	  <!-- Inputs -->
-	  <alignment id="inputs-box" size:window-vgroup="bus-inputs" />
+	  <alignment id="inputs-box" size:window-vgroup="bus-inputs" width="10"/>
 	  <!-- Leds & Mute+Solo -->
 	  <hbox size:window-vgroup="bus-levels" >
 	    <label label="(O)"/>

@@ -1,3 +1,14 @@
+Wed Sep  1 14:23:47 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxksimplelabel.c (get_layout_location): take actual text
+	size into account when centering within allocation, since it might be
+	smaller than the requisition (e.g. due to auto-cutting).
+
+	* beast-gtk/dialogs/radgets-beast.xml: don't horizontally expand the
+	inputs-box of a bus-editor.
+
+	* beast-gtk/bstparam-item-seq.c: use a GxkSimpleLabel to display connections.
+
 Tue Aug 31 23:58:56 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbuseditor.[hc]: added ::inputs and ::uname property 
