@@ -58,12 +58,12 @@ extern const BstGlobals * const bst_globals;
 
 /* --- BstGConfig macros --- */
 #define BST_TYPE_GCONFIG              (bst_type_id_BstGConfig)
-#define BST_GCONFIG(object)           (BSE_CHECK_STRUCT_CAST ((object), BST_TYPE_GCONFIG, BstGConfig))
-#define BST_GCONFIG_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BST_TYPE_GCONFIG, BstGConfigClass))
-#define BST_IS_GCONFIG(object)        (BSE_CHECK_STRUCT_TYPE ((object), BST_TYPE_GCONFIG))
-#define BST_IS_GCONFIG_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BST_TYPE_GCONFIG))
-#define BST_GCONFIG_GET_CLASS(object) ((BstGConfigClass*) (((BseObject*) (object))->bse_struct.bse_class))
-extern BseType bst_type_id_BstGConfig;
+#define BST_GCONFIG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_GCONFIG, BstGConfig))
+#define BST_GCONFIG_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BST_TYPE_GCONFIG, BstGConfigClass))
+#define BST_IS_GCONFIG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_GCONFIG))
+#define BST_IS_GCONFIG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BST_TYPE_GCONFIG))
+#define BST_GCONFIG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BstGConfigClass))
+extern GType bst_type_id_BstGConfig;
 
 
 /* --- structures & typedefs --- */

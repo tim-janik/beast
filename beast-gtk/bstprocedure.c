@@ -383,8 +383,8 @@ bst_procedure_shell_preset (BstProcedureShell *shell,
               else
                 g_warning (G_STRLOC ": can't convert preset parameter `%s' from `%s' to `%s'",
                            pparam->pspec->any.name,
-                           bse_type_name (pparam->pspec->type),
-                           bse_type_name (iparam->pspec->type));
+                           g_type_name (pparam->pspec->type),
+                           g_type_name (iparam->pspec->type));
             }
         }
       

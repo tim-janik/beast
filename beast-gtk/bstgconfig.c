@@ -56,8 +56,8 @@ static void      bst_globals_reset              (BstGlobals       *globals);
 
 
 /* --- variables --- */
-BseType                  bst_type_id_BstGConfig = 0;
-static BseTypeClass     *parent_class = NULL;
+GType                    bst_type_id_BstGConfig = 0;
+static GTypeClass     *parent_class = NULL;
 static BstGlobals        bst_globals_current = { 0, };
 const BstGlobals * const bst_globals = &bst_globals_current;
 static const BstGlobals  bst_globals_defaults = {
@@ -77,18 +77,18 @@ static const BstGlobals  bst_globals_defaults = {
 void
 bst_globals_init (void)
 {
-  static const BseTypeInfo gconfig_info = {
+  static const GTypeInfo gconfig_info = {
     sizeof (BstGConfigClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bst_gconfig_class_init,
-    (BseClassDestroyFunc) bst_gconfig_class_destroy,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bst_gconfig_class_init,
+    (GClassDestroyFunc) bst_gconfig_class_destroy,
     NULL /* class_data */,
 
     sizeof (BstGConfig),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bst_gconfig_init,
+    (GInstanceInitFunc) bst_gconfig_init,
   };
 
   if (bst_type_id_BstGConfig)
@@ -141,7 +141,7 @@ bst_gconfig_class_init (BstGConfigClass *class)
   BseGConfigClass *bconfig_class;
   BstGlobals globals_defaults = { 0, };
   
-  parent_class = bse_type_class_peek (BSE_TYPE_GCONFIG);
+  parent_class = g_type_class_peek (BSE_TYPE_GCONFIG);
   object_class = BSE_OBJECT_CLASS (class);
   bconfig_class = BSE_GCONFIG_CLASS (class);
   

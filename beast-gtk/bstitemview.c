@@ -183,7 +183,7 @@ bst_item_view_build_param_view (BstItemView *item_view)
   
   free_list = bse_container_list_items (container);
   for (list = free_list; list; list = list->next)
-    if (bse_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
+    if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
       item = list->data;
   g_list_free (free_list);
   if (BSE_IS_ITEM (item))
@@ -211,7 +211,7 @@ bst_item_view_item_added (BstItemView  *item_view,
 			  BseItem      *item,
 			  BseContainer *container)
 {
-  if (BSE_IS_ITEM (item) && bse_type_is_a (BSE_OBJECT_TYPE (item), item_view->item_type))
+  if (BSE_IS_ITEM (item) && g_type_is_a (BSE_OBJECT_TYPE (item), item_view->item_type))
     {
       static gchar *text[CLIST_N_COLUMNS] = { 0, };
       gint row;
@@ -242,7 +242,7 @@ bst_item_view_item_removed (BstItemView  *item_view,
 			    BseItem	 *item,
 			    BseContainer *container)
 {
-  if (BSE_IS_ITEM (item) && bse_type_is_a (BSE_OBJECT_TYPE (item), item_view->item_type))
+  if (BSE_IS_ITEM (item) && g_type_is_a (BSE_OBJECT_TYPE (item), item_view->item_type))
     {
       gint row;
       GtkCList *clist = GTK_CLIST (item_view->item_clist);
@@ -290,7 +290,7 @@ bst_item_view_set_container (BstItemView  *item_view,
       
       free_list = bse_container_list_items (BSE_CONTAINER (container));
       for (list = free_list; list; list = list->next)
-	if (bse_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
+	if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
 	  {
 	    bse_object_remove_notifiers_by_func (list->data,
 						 bst_item_view_item_changed,
@@ -338,7 +338,7 @@ bst_item_view_set_container (BstItemView  *item_view,
 
       free_list = bse_container_list_items (BSE_CONTAINER (container));
       for (list = free_list; list; list = list->next)
-	if (bse_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
+	if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
 	  {
 	    bse_object_add_data_notifier (list->data,
 					  "seqid_changed",
@@ -518,7 +518,7 @@ bst_item_view_update (BstItemView *item_view)
   
   free_list = bse_container_list_items (BSE_CONTAINER (container));
   for (list = free_list; list; list = list->next)
-    if (bse_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
+    if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
       {
 	static gchar *text[CLIST_N_COLUMNS] = { NULL, };
 	gint row;

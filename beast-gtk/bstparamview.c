@@ -179,8 +179,8 @@ bst_param_view_set_object (BstParamView *param_view,
 
 void
 bst_param_view_set_mask (BstParamView   *param_view,
-			 BseType         base_type,
-			 BseType         param_object_type,
+			 GType           base_type,
+			 GType           param_object_type,
 			 const gchar    *reject_pattern,
 			 const gchar    *match_pattern)
 {
@@ -227,11 +227,11 @@ bst_param_view_rebuild (BstParamView *param_view)
   
   /* parameter fields, per bse class
    */
-  while (class && bse_type_is_a (BSE_CLASS_TYPE (class), param_view->base_type))
+  while (class && g_type_is_a (BSE_CLASS_TYPE (class), param_view->base_type))
     {
-      if (!param_view->object_type || bse_type_is_a (param_view->object_type, BSE_CLASS_TYPE (class)))
+      if (!param_view->object_type || g_type_is_a (param_view->object_type, BSE_CLASS_TYPE (class)))
 	class_list = g_slist_prepend (class_list, class);
-      class = bse_type_class_peek_parent (class);
+      class = g_type_class_peek_parent (class);
     }
   
   for (slist = class_list; slist; slist = slist->next)

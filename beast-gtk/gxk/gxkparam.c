@@ -388,7 +388,7 @@ bst_param_update_clue_hunter (BstParam *bparam)
 
   g_return_if_fail (pspec->type == BSE_TYPE_PARAM_ITEM && GTK_IS_CLUE_HUNTER (ch));
   
-  if (bse_type_is_a (pspec->s_item.item_type, BSE_TYPE_SAMPLE))
+  if (g_type_is_a (pspec->s_item.item_type, BSE_TYPE_SAMPLE))
     {
       GList *free_list = bst_sample_repo_list_sample_locs (), *list;
       
@@ -404,7 +404,7 @@ bst_param_update_clue_hunter (BstParam *bparam)
       g_list_free (free_list);
     }
   else if (bparam->is_object && BSE_IS_ITEM (bparam->owner) &&
-	   bse_type_is_a (pspec->s_item.item_type, BSE_TYPE_ITEM))
+	   g_type_is_a (pspec->s_item.item_type, BSE_TYPE_ITEM))
     {
       BseItem *item = BSE_ITEM (bparam->owner);
       BseProject *project = bse_item_get_project (item);
@@ -533,7 +533,7 @@ bst_param_set_object (BstParam  *bparam,
 
 BstParam*
 bst_param_create (gpointer      owner,
-		  BseType	owner_type,
+		  GType  	owner_type,
 		  BseParamSpec *pspec,
 		  GQuark        param_group,
 		  GtkWidget    *parent,
@@ -580,7 +580,7 @@ bst_param_create (gpointer      owner,
       bst_param_set_object (bparam, owner);
     }
   bparam->locked = 1;
-  bse_type_class_ref (owner_type);
+  g_type_class_ref (owner_type);
   bparam->editable = TRUE;
   
   parent_container = gtk_object_get_data_by_id (GTK_OBJECT (parent), param_group ? param_group : null_group);
@@ -953,7 +953,7 @@ bst_param_create (gpointer      owner,
     gtk_widget_set (bparam->group,
 		    "signal::destroy", gtk_widget_destroyed, &bparam->group,
 		    "object_signal::destroy", bst_param_free, bparam,
-		    "object_signal::destroy", bse_type_class_unref, bse_type_class_peek (owner_type),
+		    "object_signal::destroy", g_type_class_unref, g_type_class_peek (owner_type),
 		    NULL);
   else
     g_return_val_if_fail (bparam->group != NULL, bparam);
@@ -1177,7 +1177,7 @@ bst_param_apply (BstParam *bparam,
 	    {
 	      item = bse_project_item_from_nick_path (project, string);
 
-	      if (item && !bse_type_is_a (BSE_OBJECT_TYPE (item), pspec->s_item.item_type))
+	      if (item && !g_type_is_a (BSE_OBJECT_TYPE (item), pspec->s_item.item_type))
 		item = NULL;
 	    }
 	  else if (!item) /* try generic lookup for pure name (brute force actually) */

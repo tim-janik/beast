@@ -26,7 +26,7 @@ Such procedures that serve as object methods, e.g. to alter the object's
 state in a certain way, get their name prefixed with the object type
 they take as first argument and get categorized under "<OType>/".
 The prefixing works by constructing the final procedure name out of
-<OBJECT_TYPE> a prefix seperatoir "::" and the actuall procedure name.
+<OBJECT_TYPE> a prefix seperator "+" and the actuall procedure name.
 The prefixing keeps a name space seperation for similar procedure names
 across hirarchy branches, so equally named procedures can be introduced
 for different purposes, with different implemenatations or argument lists
@@ -57,7 +57,7 @@ S  BseVocoder				/Source/Filters/Vocoder
 SA BseVocoder				/Source/Effects/Misc/Vocoder
 
 P  hello-world				/Proc/Test/Hello World
-P  BsePattern::set-instrument		/Method/BsePattern/Basic/Set Instrument
-P  BsePattern::set-note			/Method/BsePattern/Basic/Set Note
-P  BsePattern::select-all		/Method/BsePattern/Select/All
-P  BsePattern::cut-selection		/Method/BsePattern/Edit/Cut
+P  BsePattern+set-instrument		/Method/BsePattern/Basic/Set Instrument
+P  BsePattern+set-note			/Method/BsePattern/Basic/Set Note
+P  BsePattern+select-all		/Method/BsePattern/Select/All
+P  BsePattern+cut-selection		/Method/BsePattern/Edit/Cut

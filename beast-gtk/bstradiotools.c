@@ -196,7 +196,7 @@ bst_radio_tools_add_category (BstRadioTools    *rtools,
   guint i, next_uc = 0;
 
   /* strip first namespace prefix from type name */
-  name = bse_type_name (category->type);
+  name = g_type_name (category->type);
   for (i = 0; name[i] != 0; i++)
     if (i && toupper(name[i]) == name[i])
       {
@@ -209,7 +209,7 @@ bst_radio_tools_add_category (BstRadioTools    *rtools,
   
   tip = g_strconcat (category->category + category->mindex + 1,
 		     " [",
-		     bse_type_name (category->type),
+		     g_type_name (category->type),
 		     "]",
 		     NULL);
   bst_radio_tools_add_tool (rtools,

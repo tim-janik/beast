@@ -50,7 +50,7 @@ struct _BstParam
  * toplevel GtkWindow.
  */
 BstParam*	bst_param_create		(gpointer	 owner,
-						 BseType	 owner_type,
+						 GType  	 owner_type,
 						 BseParamSpec	*pspec,
 						 GQuark          param_group,
 						 GtkWidget      *parent,

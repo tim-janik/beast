@@ -1,3 +1,15 @@
+Fri Mar 24 09:10:58 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstgconfig.[hc]: port over from BSE to GLib type system.
+
+	* docs/bse-categories.txt: updated, we now use "+" instead of "::"
+	to seperate a procedure's base type from the method name. ':' and
+	'.' are already used for instance names or object paths.
+
+Mon Mar 20 00:30:06 2000  Tim Janik  <timj@gtk.org>
+
+	* docs/faq.dat: updates from Dave Seidel <dave@superluminal.com>
+
 Mon Mar 13 01:00:35 2000  Tim Janik  <timj@gtk.org>
 
         * released beast-0.3.2.tar.gz on http://beast.gtk.org.

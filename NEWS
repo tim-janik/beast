@@ -1,3 +1,7 @@
+* New synthesis modules:
+  DavXTalString	- string synthesizer
+  DavGuitar     - physical modelling acoustic guitar
+
 Overview of Changes in BEAST/BSE 0.3.2:
 
 * Songs have a pattern play list now that can be altered

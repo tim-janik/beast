@@ -223,7 +223,7 @@ bst_preferences_set_gconfig (BstPreferences *prefs,
 				    prefs);
       bst_param_view_set_object (BST_PARAM_VIEW (prefs->bse_param_view), BSE_OBJECT (prefs->gconf));
       bst_param_view_set_object (BST_PARAM_VIEW (prefs->bst_param_view), BSE_OBJECT (prefs->gconf));
-      if (bse_type_next_base (BSE_OBJECT_TYPE (prefs->gconf), BSE_TYPE_GCONFIG))
+      if (g_type_next_base (BSE_OBJECT_TYPE (prefs->gconf), BSE_TYPE_GCONFIG))
 	{
 	  gtk_widget_show (prefs->bst_param_view);
 	  gtk_notebook_set_page (GTK_NOTEBOOK (prefs->notebook), 0);

@@ -48,8 +48,8 @@ struct _BstParamView
 
   GSList	*bparams;
 
-  BseType	 base_type;
-  BseType	 object_type;
+  GType  	 base_type;
+  GType  	 object_type;
   GPatternSpec  *reject_pattern;
   GPatternSpec  *match_pattern;
 
@@ -69,8 +69,8 @@ void		bst_param_view_rebuild		(BstParamView	*param_view);
 void		bst_param_view_set_object	(BstParamView	*param_view,
 						 BseObject	*object);
 void		bst_param_view_set_mask		(BstParamView	*param_view,
-						 BseType	 base_type,
-						 BseType	 param_object_type,
+						 GType  	 base_type,
+						 GType  	 param_object_type,
 						 const gchar	*reject_pattern,
 						 const gchar	*match_pattern);
 

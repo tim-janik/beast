@@ -449,7 +449,7 @@ bst_snet_router_build_tools (BstSNetRouter *router)
       gboolean add_to_toolbar = FALSE;
 
       for (n = 0; n < n_toolbar_categories; n++)
-	if (strcmp (toolbar_categories[n], bse_type_name (cats[i].type)) == 0)
+	if (strcmp (toolbar_categories[n], g_type_name (cats[i].type)) == 0)
 	  {
 	    add_to_toolbar = TRUE;
 	    break;

@@ -45,7 +45,7 @@ struct _BstItemView
 {
   GtkVPaned	 parent_object;
 
-  BseType	 item_type;
+  GType  	 item_type;
   
   BseContainer	*container;
   

@@ -31,7 +31,7 @@ static void	pattern_dialog_operate		(BstPatternDialog	*pattern_dialog,
 						 BstPatternOps     	 op,
 						 GtkWidget        	*menu_item);
 static void	pattern_dialog_exec_proc	(BstPatternDialog	*pattern_dialog,
-						 BseType		 proc_type,
+						 GType  		 proc_type,
 						 GtkWidget        	*menu_item);
 
 
@@ -286,7 +286,7 @@ bst_pattern_dialog_new (BsePattern *pattern)
 
 static void
 pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
-			  BseType           proc_type,
+			  GType             proc_type,
 			  GtkWidget        *menu_item)
 {
   BseParamSpec *pspec_pattern, *pspec_focus_channel, *pspec_focus_row; /* FIXME: cache these */
@@ -319,9 +319,9 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
 
   /* setup procedure
    */
-  procedure = bse_type_class_ref (proc_type);
+  procedure = g_type_class_ref (proc_type);
   bst_procedure_shell_set_proc (proc_shell, procedure);
-  bse_type_class_unref (procedure);
+  g_type_class_unref (procedure);
 
   /* ok, now we build a list of possible preset parameters to
    * pass into the procedure
