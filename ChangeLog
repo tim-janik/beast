@@ -1,3 +1,7 @@
+Sun May 18 05:29:13 2003  Tim Janik  <timj@gtk.org>
+
+        * config.guess, config.sub: libtool 1.4.3 updates.
+
 Sun May 18 05:16:26 2003  Tim Janik  <timj@gtk.org>
 
 	* shell/bsescminterp.[hc]: added bse-rec-get, bse-rec-set,
