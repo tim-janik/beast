@@ -158,7 +158,7 @@ static const GxkStockAction simple_help_actions[] = {
     ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
   { N_("Online _Help Desk..."), NULL,           N_("Start a web browser pointing to the online help desk at the BEAST website"),
     ACTION_URL_HELP_DESK,       BST_STOCK_ONLINE_HELP_DESK },
-  { N_("_BEAST Web Site..."),   NULL,           N_("Start a web browser pointing to the BEAST website"),
+  { N_("_BEAST Website..."),    NULL,           N_("Start a web browser pointing to the BEAST website"),
     ACTION_URL_BEAST_SITE,      BST_STOCK_ONLINE_BEAST_SITE },
 #if 0
   { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),

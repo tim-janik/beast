@@ -14,6 +14,7 @@ FIXMES:	(release-critical)
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
+- close piano roll on Escape
 - add controller dialog popup for tracks to alter sliders corresponding to midi controls
 - implement part copying
 - overshoot LED: ___ 

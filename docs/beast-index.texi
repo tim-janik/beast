@@ -41,7 +41,7 @@
 
 @unnumbered Online Resources
 @itemize
-@item @uref{http://beast.gtk.org/,,                       BEAST Web Site}
+@item @uref{http://beast.gtk.org/,,                       BEAST Website}
 @item @uref{http://beast.gtk.org/browse-bse-files.html,,  Sound Archive}
 @item @uref{http://beast.gtk.org/wiki:HelpDesk,,          Help Desk}
 @item @uref{http://beast.gtk.org/wiki:FeatureRequests,,   Feature Requests}
