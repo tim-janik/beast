@@ -4,14 +4,11 @@ FIXMES:
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
-- amplifier: audio_balance and ctrl_balance range: -100..+100
 - fix syndrum parameter scale
-- nuke frequency fine-tune for biquad filter
 - provide proper stock effect
 - provide proper stock instrument
 - .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
-- add warning at the GUI that the rackview widget is still experimental and will break for future BSE files
 - /Demo
 - check button3 /Tools/ menu in piano rool editor
 - check i18n strings for pianoroll GUI elements
@@ -33,9 +30,9 @@ FIXMES:
   /Synthesizers/Demo
   alternatively, introduce /Insert/ toplevel menu
 - create ~/beast/instruments ~/beast/effects when saving effect/instrument
+- add new test song containing a wave track so the internal wave csynth is properly testet
 - add demo song
 - add author and license information to module types just like we do for procedures
-- add new test song containing a wave track
 - default saving (SFI_PARAM_SKIP_DEFAULT)
 - fix non-NULL icons at 0x0, GUI breaks in lots of places for them
 - move non-infrastructure synthesis modules out of the core into plugins/
