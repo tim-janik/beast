@@ -7,8 +7,6 @@ SUBDIRS =
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 
-# supported defines: SFI_DISABLE_DEBUG
-
 # public libraries
 lib_LTLIBRARIES = libsfi.la
 DEFS += -DG_LOG_DOMAIN=\"SFI\" -DG_DISABLE_CONST_RETURNS

@@ -862,7 +862,7 @@ get_pth_thread_table (void)
 {
   if (pthread_key_create (&pth_thread_table_key, (void(*)(void*)) sfi_thread_handle_deleted) != 0)
     {
-      sfi_info ("failed to create pthread key, falling back to GLib threads");
+      sfi_diag ("failed to create pthread key, falling back to GLib threads");
       return NULL;
     }
   return &pth_thread_table;

@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,92 +24,88 @@
 G_BEGIN_DECLS
 
 
+/* --- debugging --- */
+#define sfi_debug(       key, ...)      sfi_log (SFI_LOG_DEBUG, SfiLogger (key, 0, 0), __VA_ARGS__)
+#define sfi_nodebug(     key, ...)      do { /* nothing */ } while (0)
+int     sfi_debug_check (const char *key);
+void    sfi_debug_allow (const char *key);
+void    sfi_debug_deny  (const char *key);
+
+
 /* --- logging --- */
-static void	sfi_error		(const gchar		*format,
-					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_warn		(const gchar		*format,
-					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_info		(const gchar		*format,
-					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_debug		(const gchar		*format,
-					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_nodebug		(const gchar		*format,
-					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-void		sfi_log_allow_info	(const gchar		*key_list);
-void		sfi_log_reset_info	(void);
-void		sfi_log_allow_debug	(const gchar		*key_list);
-void		sfi_log_reset_debug	(void);
-gboolean	sfi_debug_test_key	(const gchar		*key);
-#define	        sfi_debug_keyfunc(key)	   _sfi_debug_kfi (key)
-#define	        sfi_info_keyfunc(key)	   _sfi_info_kfi (key)
-#define	        sfi_nodebug_keyfunc(key)   sfi_nodebug
+#define SfiLogger(key, cblurb, ablurb)  sfi_log_context (key, cblurb /* preferences */, ablurb /* dialogs */)
+#define sfi_error(logger, ...)          sfi_log (SFI_LOG_ERROR, logger, __VA_ARGS__)
+#define sfi_warn(logger, ...)           sfi_log (SFI_LOG_WARN, logger, __VA_ARGS__)
+#define sfi_info(logger, ...)           sfi_log (SFI_LOG_INFO, logger, __VA_ARGS__)
+#define sfi_diag(...)                   sfi_log (SFI_LOG_DIAG, SfiLogger (0, 0, 0), __VA_ARGS__)
+#define sfi_msg(...)                    sfi_log_printf (NULL, SFI_LOG_INFO, SfiLogger (NULL, NULL, NULL), __VA_ARGS__)
 
 
-/* --- internal --- */
+typedef enum /*< skip >*/
+{
+  SFI_LOG_TO_STDERR     = 1,
+  SFI_LOG_TO_STDLOG     = 2,
+  SFI_LOG_TO_HANDLER    = 4,
+} SfiLogActions;
+typedef struct _SfiLogContext        SfiLogContext;
+typedef void  (*SfiLogHandler)      (const char          *log_domain,
+                                     unsigned char        level,
+                                     const SfiLogContext *lcontext,
+                                     const char          *message);
+
+void sfi_log_set_handler            (SfiLogHandler        handler);
+void sfi_log_default_handler        (const char          *log_domain,
+                                     unsigned char        level,
+                                     const SfiLogContext *lcontext,
+                                     const char          *message);
+void sfi_log_configure_level        (unsigned char        level,
+                                     SfiLogActions        actions);
+void sfi_log_configure_stdlog       (gboolean             stdlog_to_err,
+                                     const char          *stdlog_filename,
+                                     gint                 syslog_priority); /* if != 0, stdlog to syslog */
+struct _SfiLogContext {
+  const char *key;
+  const char *config_blurb;
+  const char *alert_blurb;
+};
+static inline
+const SfiLogContext sfi_log_context (const char          *key,
+                                     const char          *config_blurb,     /* toggle in preferences */
+                                     const char          *alert_blurb);     /* toggle in dialog */
+void                sfi_log_printf  (const char          *log_domain,
+                                     unsigned char        level,
+                                     const SfiLogContext  lcontext,
+                                     const char          *format,
+                                     ...) G_GNUC_PRINTF (4,5);
+void                sfi_log_valist  (const char          *log_domain,
+                                     unsigned char        level,
+                                     const SfiLogContext  lcontext,
+                                     const char          *format,
+                                     va_list              args);
+#ifndef SFI_LOG_DOMAIN
+#define SFI_LOG_DOMAIN  G_LOG_DOMAIN
+#endif
+#define sfi_log(level, logger, ...)     sfi_log_printf (SFI_LOG_DOMAIN, level, logger, __VA_ARGS__)
+
+
+/* --- internal/implementation --- */
 #define	SFI_LOG_ERROR	('E')
 #define	SFI_LOG_WARN	('W')
 #define	SFI_LOG_INFO	('I')
+#define	SFI_LOG_DIAG	('A')
 #define	SFI_LOG_DEBUG	('D')
-void		sfi_log			  (const gchar		*log_domain,
-					   guint		 level,
-					   const gchar		*format,
-					   ...) G_GNUC_PRINTF (3,4);
-void		sfi_log_valist		  (const gchar		*log_domain,
-					   guint		 level,
-					   const gchar		*format,
-					   va_list		 args);
-void		sfi_log_push_key	  (const gchar		*static_key);
-#define	_sfi_debug_kfi(key)		  (sfi_log_push_key (key), sfi_debug)
-#define	_sfi_info_kfi(key)		  (sfi_log_push_key (key), sfi_info)
 
-
-/* --- implementation --- */
-void		_sfi_init_log		(void);
-static void
-sfi_error (const gchar *format,
-	   ...)
+static inline const SfiLogContext
+sfi_log_context (const char *key,
+                 const char *config_blurb,
+                 const char *alert_blurb)
 {
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (G_LOG_DOMAIN, SFI_LOG_ERROR, format, args);
-  va_end (args);
+  SfiLogContext lcontext;
+  lcontext.key = key;
+  lcontext.config_blurb = config_blurb;
+  lcontext.alert_blurb = alert_blurb;
+  return lcontext;
 }
-static void
-sfi_warn (const gchar *format,
-	  ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (G_LOG_DOMAIN, SFI_LOG_WARN, format, args);
-  va_end (args);
-}
-static void
-sfi_info (const gchar *format,
-	  ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (G_LOG_DOMAIN, SFI_LOG_INFO, format, args);
-  va_end (args);
-}
-static void
-sfi_debug (const gchar *format,
-	   ...)
-{
-  va_list args;
-  va_start (args, format);
-  sfi_log_valist (G_LOG_DOMAIN, SFI_LOG_DEBUG, format, args);
-  va_end (args);
-}
-static void
-sfi_nodebug (const gchar *format,
-	     ...)
-{
-}
-#define	sfi_nodebug	while (0) sfi_nodebug
-#ifdef SFI_DISABLE_DEBUG
-#define	sfi_debug	sfi_nodebug
-#endif
 
 
 G_END_DECLS

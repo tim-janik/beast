@@ -44,7 +44,6 @@ sfi_init (void)
 
       _sfi_init_threads ();
       g_type_init ();
-      _sfi_init_log ();
       _sfi_init_values ();
       _sfi_init_params ();
       _sfi_init_time ();

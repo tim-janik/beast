@@ -31,7 +31,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define	DEBUG	sfi_debug_keyfunc ("comport")
+#define	DEBUG(...)      sfi_debug ("comport", __VA_ARGS__)
 
 /* define the io bottle neck (for writes) to a small value
  * (e.g. 20) to trigger and test blocking IO on fast systems
@@ -489,13 +489,13 @@ com_port_read_pending (SfiComPort *port)
 		  port->rbuffer.header[2] != ((SFI_COM_PORT_MAGIC >> 8) & 0xff) ||
 		  port->rbuffer.header[3] != (SFI_COM_PORT_MAGIC & 0xff))
 		{
-		  sfi_info ("%s: received data with invalid magic", port->ident);
+		  g_printerr ("ComPort:%s: received data with invalid magic", port->ident);
 		  return FALSE;
 		}
 	      /* check length */
 	      if (port->rbuffer.dlen < 1 || port->rbuffer.dlen > 10 * 1024 * 1024)
 		{
-		  sfi_info ("%s: received data with excessive length", port->ident);
+		  g_printerr ("ComPort:%s: received data with excessive length", port->ident);
 		  return FALSE;
 		}
 	    }
@@ -533,7 +533,7 @@ com_port_scanner_msg (GScanner *scanner,
 		      gboolean  error)
 {
   SfiComPort *port = scanner->user_data;
-  sfi_info ("%s: while processing data: %s", port->ident, message);
+  g_printerr ("ComPort:%s: while processing data: %s", port->ident, message);
 }
 
 static void

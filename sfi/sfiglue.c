@@ -344,7 +344,7 @@ sfi_glue_call_valist (const gchar *proc_name,
 	}
       if (error)
 	{
-	  sfi_warn ("%s: %s", G_STRLOC, error);
+	  sfi_diag ("%s: %s", G_STRLOC, error);
 	  g_free (error);
 	  sfi_seq_unref (seq);
 	  return NULL;

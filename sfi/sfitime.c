@@ -56,7 +56,7 @@ _sfi_init_time (void)
   tzset ();
   error = gettimeofday (&tv, NULL);
   if (error)
-    sfi_info ("gettimeofday() failed: %s", g_strerror (errno));
+    g_error ("gettimeofday() failed: %s", g_strerror (errno));
   t = tv.tv_sec + tv.tv_usec / 1000000;
 
   /* we need to find out the timezone offset relative to GMT here */
@@ -510,7 +510,7 @@ sfi_time_from_string_err (const gchar *time_string,
       tm_data.tm_year = year[i] - 1900;
       tm_data.tm_wday = 0;
       tm_data.tm_yday = 0;
-      tm_data.tm_isdst = 0;
+      tm_data.tm_isdst = 1;
       
       /* mktime() wants localtime */
       tm_data.tm_sec -= gmt_diff / SFI_USEC_FACTOR;
