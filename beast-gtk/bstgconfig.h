@@ -25,7 +25,6 @@ G_BEGIN_DECLS
 
 /* --- BstGConfig - configurable defaults --- */
 #define	BST_RC_VERSION			BST_GCONFIG (rc_version)
-#define BST_TAB_WIDTH			BST_GCONFIG (tab_width)
 #define BST_SNET_ANTI_ALIASED		BST_GCONFIG (snet_anti_aliased)
 #define BST_SNET_EDIT_FALLBACK		BST_GCONFIG (snet_edit_fallback)
 #define BST_SNET_SWAP_IO_CHANNELS	BST_GCONFIG (snet_swap_io_channels)
