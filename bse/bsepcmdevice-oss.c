@@ -58,7 +58,6 @@ typedef struct
   guint		n_frags;
   guint		frag_size;
   guint		frame_size;
-  guint         queue_length; /* in frames */
   gint16       *frag_buf;
   guint         read_write_count;
   gboolean      needs_trigger;
@@ -176,10 +175,9 @@ bse_pcm_device_oss_open (BseDevice     *device,
   BsePcmHandle *handle = &oss->handle;
   
   /* setup request */
-  handle->n_channels = 2;
+  handle->n_channels = BSE_PCM_DEVICE (device)->req_n_channels;
   handle->mix_freq = BSE_PCM_DEVICE (device)->req_mix_freq;
   oss->n_frags = 1024;
-  oss->frag_size = 128;
   oss->frag_buf = NULL;
   oss->fd = -1;
   oss->needs_trigger = TRUE;
@@ -291,7 +289,8 @@ oss_device_setup (OSSHandle *oss,
   d_int = handle->n_channels - 1;
   if (ioctl (fd, SNDCTL_DSP_STEREO, &d_int) < 0)
     return BSE_ERROR_DEVICE_CHANNELS;
-  handle->n_channels = d_int + 1;
+  if (handle->n_channels != d_int + 1)
+    return BSE_ERROR_DEVICE_CHANNELS;
   oss->frame_size = handle->n_channels * bytes_per_value;
 
   d_int = handle->mix_freq;
