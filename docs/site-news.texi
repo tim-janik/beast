@@ -47,18 +47,4 @@ A good starting point are the test files shipped in the
 Quick Start Guide in the Help menu.
 
 
-@news_title{Friday 23 Aug 2002, Logo Contest Winner}
-
-And the winner is... @strong{jimmac}!
-
-jimmac's entry is decided to be the official logo for Beast/BSE. The upcoming
-release will feature the winner image as a splash screen, and the logo will
-appear here once the website is facelifted. The current release candidates are
-actually featuring the winner image.
-
-We want to specially thank everyone who sent an entry. You may visit the
-contest entries at the
-@uref{beast-doc://logo-submissions/,,logo submissions} page.
-
-
 @bye

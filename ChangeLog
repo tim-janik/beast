@@ -1,3 +1,9 @@
+Fri Jan  3 08:46:46 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: 
+	* docs/site-oldnews.texi: rotate news, so there're only two
+	entries on the front page.
+
 Thu Jan  2 18:19:19 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/html.xsl: small fix from alper.
