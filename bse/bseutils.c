@@ -760,23 +760,27 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 
 #define STATIC_REF_COUNT (1 << 31)
 
-void
+BseIcon*
 bse_icon_static_ref (BseIcon *icon)
 {
-  g_return_if_fail (icon != NULL);
-  g_return_if_fail (icon->ref_count > 0);
+  g_return_val_if_fail (icon != NULL, NULL);
+  g_return_val_if_fail (icon->ref_count > 0, NULL);
 
   icon->ref_count |= STATIC_REF_COUNT;
+
+  return icon;
 }
 
-void
+BseIcon*
 bse_icon_ref (BseIcon *icon)
 {
-  g_return_if_fail (icon != NULL);
-  g_return_if_fail (icon->ref_count > 0);
+  g_return_val_if_fail (icon != NULL, NULL);
+  g_return_val_if_fail (icon->ref_count > 0, NULL);
 
   if (!(icon->ref_count & STATIC_REF_COUNT))
     icon->ref_count += 1;
+
+  return icon;
 }
 
 void

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  *
- * bsesnet.h: bse source network
+ * bsesnet.h: bse synthesis network
  */
 #ifndef	__BSE_SNET_H__
 #define	__BSE_SNET_H__
@@ -49,6 +49,8 @@ struct _BseSNet
 struct _BseSNetClass
 {
   BseSuperClass parent_class;
+
+  BseIcon      *icon;
 };
 
 

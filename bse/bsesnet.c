@@ -42,6 +42,7 @@ enum
 /* --- prototypes --- */
 static void      bse_snet_class_init             (BseSNetClass   *class);
 static void      bse_snet_init                   (BseSNet        *snet);
+static BseIcon*  bse_snet_do_get_icon            (BseObject      *object);
 static void      bse_snet_do_shutdown            (BseObject      *object);
 static void      bse_snet_set_param              (BseSNet        *snet,
 						  BseParam       *param);
@@ -83,17 +84,12 @@ BSE_BUILTIN_TYPE (BseSNet)
     16 /* n_preallocs */,
     (BseObjectInitFunc) bse_snet_init,
   };
-  static const BsePixdata snet_pixdata = {
-    SNET_PIXDATA_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    SNET_PIXDATA_WIDTH, SNET_PIXDATA_HEIGHT,
-    SNET_PIXDATA_RLE_PIXEL_DATA,
-  };
   
   snet_type = bse_type_register_static (BSE_TYPE_SUPER,
                                         "BseSNet",
                                         "BSE Synthesis (Filter) Network",
                                         &snet_info);
-  bse_categories_register_icon ("/Source/Projects/SNet", snet_type, &snet_pixdata);
+  // bse_categories_register_icon ("/Source/Projects/SNet", snet_type, &snet_pixdata);
 
   return snet_type;
 }
@@ -101,6 +97,11 @@ BSE_BUILTIN_TYPE (BseSNet)
 static void
 bse_snet_class_init (BseSNetClass *class)
 {
+  static const BsePixdata snet_pixdata = {
+    SNET_PIXDATA_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+    SNET_PIXDATA_WIDTH, SNET_PIXDATA_HEIGHT,
+    SNET_PIXDATA_RLE_PIXEL_DATA,
+  };
   BseObjectClass *object_class;
   BseSourceClass *source_class;
   BseContainerClass *container_class;
@@ -115,6 +116,7 @@ bse_snet_class_init (BseSNetClass *class)
   
   object_class->set_param = (BseObjectSetParamFunc) bse_snet_set_param;
   object_class->get_param = (BseObjectGetParamFunc) bse_snet_get_param;
+  object_class->get_icon = bse_snet_do_get_icon;
   object_class->shutdown = bse_snet_do_shutdown;
   
   source_class->prepare = bse_snet_prepare;
@@ -125,6 +127,8 @@ bse_snet_class_init (BseSNetClass *class)
   container_class->remove_item = bse_snet_remove_item;
   container_class->forall_items = bse_snet_forall_items;
   
+  class->icon = bse_icon_static_ref (bse_icon_from_pixdata (&snet_pixdata));
+
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
 			      bse_param_spec_float ("volume_f", "Master [float]", NULL,
@@ -172,6 +176,14 @@ bse_snet_do_shutdown (BseObject *object)
 
   /* chain parent class' shutdown handler */
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+}
+
+static BseIcon*
+bse_snet_do_get_icon (BseObject *object)
+{
+  BseSNet *snet = BSE_SNET (object);
+
+  return BSE_SNET_GET_CLASS (snet)->icon;
 }
 
 static void

@@ -1,3 +1,13 @@
+Tue Feb  8 09:23:25 2000  Tim Janik  <timj@gtk.org>
+
+	* bseutils.[hc]: return the referenced icon from bse_icon_static_ref()
+	and bse_icon_ref().
+
+	* bsesnet.c:
+	(BSE_BUILTIN_TYPE): don't add to categories.
+	(bse_snet_class_init): 
+	(bse_snet_do_get_icon): return synthesis network icon.
+
 Mon Feb  7 02:57:43 2000  Tim Janik  <timj@gtk.org>
 
 	* bsepattern.[hc]: reintroduce bse_pattern_select_note() and
