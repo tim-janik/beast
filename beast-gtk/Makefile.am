@@ -66,9 +66,11 @@ beast_sources = $(strip \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
-	bstparam-label.c	bstmarshal.c	 bstparam-toggle.c	bstparam-spinner.c \
-	bstrackeditor-covers.c	bstparam-scale.c bstparam-choice.c	bstparam-note-sequence.c \
-	bstparam-entry.c \
+	bstparam-label.c	bstparam-toggle.c	bstparam-spinner.c \
+	bstparam-scale.c	bstparam-choice.c	bstparam-note-sequence.c \
+	bstparam-entry.c	bstparam-strnum.c	bstparam-note-spinner.c \
+	bstparam-proxy.c	\
+	bstrackeditor-covers.c	bstmarshal.c		\
 )
 beast_extra_files = $(strip \
 	catalog-en.c	bstmarshal.list		bstenum_arrays.stamp	stamp-ckeycheck \
