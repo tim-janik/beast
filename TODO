@@ -1,4 +1,8 @@
 FIXMES:	(release-critical)
+- fix ssequencer super list length>1 for one song
+- bse_project_stop_playback: add nop job
+- midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
+- midireceiver: revisit sched_tag as condition, it's probably too weak due to temporary enginescheduler resets
 - implement solo for master
 - ensure there always is a master
 - auto-conenct new busses to master
