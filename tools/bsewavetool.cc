@@ -382,7 +382,7 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("<n_channels>\n");
+    g_print ("<n_channels> [options]\n");
     if (bshort)
       return;
     g_print ("    Create an empty bsewave file, <n_channels>=1 (mono) and <n_channels>=2\n");
@@ -458,7 +458,7 @@ public:
   void
   blurb (bool bshort)
   {
-    g_print ("\n");
+    g_print ("[options]\n");
     if (bshort)
       return;
     g_print ("    Compress all chunks with the Vorbis audio codec and store the wave data\n");

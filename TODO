@@ -29,6 +29,7 @@ FIXME(urgent):
 - close pianoroll window in response to part::release  
 - add dialog to ask the user whether he really wants to delete the last link to a part.
 TODO:
+- make sfi_wstore_flush_fd() return -errno on errors and handle those in Wave::store()
 - add editable text fields to snet router
 - implement ResetAll according to: http://www.midi.org/about-midi/rp15.shtml (more: http://www.midi.org/about-midi/specinfo.shtml)
 - provide a color/dB reference scale, next to the fft-scope view
