@@ -450,7 +450,7 @@ bst_early_parse_args (int    *argc_p,
 	    {
               bst_developer_hints = TRUE;
 	      bst_debug_extensions = TRUE;
-	      g_message ("enabling possibly harmfull debugging extensions due to '-:d'");
+	      g_message ("enabling possibly harmful debugging extensions due to '-:d'");
 	    }
 	  sfi_rec_set_bool (bseconfig, "debug-extensions", bst_debug_extensions);
 	  argv[i] = NULL;
