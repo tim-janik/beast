@@ -638,7 +638,7 @@ bst_param_rate_impl (BstParamImpl    *impl,
 		     BstParamBinding *binding)
 {
   gboolean is_editable, does_match, type_specific, type_mismatch, scat_specific = FALSE;
-  guint goodness = 0;
+  guint type_distance = 0;
   GType vtype, itype;
   guint rating = 0;
 
@@ -672,9 +672,9 @@ bst_param_rate_impl (BstParamImpl    *impl,
     return 0;		/* mismatch */
 
   if (itype)
-    goodness = g_type_depth (vtype) - g_type_depth (itype);
+    type_distance = g_type_depth (vtype) - g_type_depth (itype);
 
-  rating |= goodness;
+  rating |= 128 - type_distance;
   rating <<= 1;
   rating |= is_editable;
   rating <<= 1;

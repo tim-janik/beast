@@ -1,3 +1,9 @@
+Mon Dec 30 04:30:46 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_rate_impl): oops, fix rating.
+	growing inheritance distance between editable type and value type
+	decreases goodness (fixes option menu mismatch for choices).
+
 Mon Dec 30 01:06:12 2002  Tim Janik  <timj@gtk.org>
 
 	* merged sfk-launch branch into HEAD. oddly enough, there's
