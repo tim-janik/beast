@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-20 15:42-0500\n"
-"PO-Revision-Date: 2004-11-20 19:50-0400\n"
+"POT-Creation-Date: 2004-11-26 18:43-0500\n"
+"PO-Revision-Date: 2004-11-26 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -379,7 +379,7 @@ msgstr "Add"
 #: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
 #: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:711 beast-gtk/bstsnetrouter.c:757
+#: beast-gtk/bstsnetrouter.c:712 beast-gtk/bstsnetrouter.c:766
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
 #: beast-gtk/bstwaveview.c:45
 msgid "Delete"
@@ -402,7 +402,7 @@ msgstr "Delete the currently selected bus"
 msgid "Module Link: "
 msgstr "Module Link: "
 
-#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:753
+#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:762
 msgid "Module link"
 msgstr "Module link"
 
@@ -410,11 +410,11 @@ msgstr "Module link"
 msgid "Module Info"
 msgstr "Module Info"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1090
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1099
 msgid "Input"
 msgstr "Input"
 
-#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1087
+#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1096
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Output"
@@ -816,16 +816,16 @@ msgstr "Loading \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Loading project \"%s\""
 
-#: beast-gtk/bstmain.c:792
+#: beast-gtk/bstmain.c:793
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:793
+#: beast-gtk/bstmain.c:794
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:794
+#: beast-gtk/bstmain.c:795
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -2237,7 +2237,7 @@ msgstr "Sketch Maximum"
 msgid "Preview"
 msgstr "Preview"
 
-#: beast-gtk/bstsnetrouter.c:42
+#: beast-gtk/bstsnetrouter.c:43
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
 "Use button1 to create links, button2 for movement and button3 to change "
@@ -2247,105 +2247,109 @@ msgstr ""
 "Use button1 to create links, button2 for movement and button3 to change "
 "properties"
 
-#: beast-gtk/bstsnetrouter.c:47
+#: beast-gtk/bstsnetrouter.c:48
 msgid "Edit"
 msgstr "Edit"
 
-#: beast-gtk/bstsnetrouter.c:47
+#: beast-gtk/bstsnetrouter.c:48
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Edit/Move/Menu (mouse buttons 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:929
+#: beast-gtk/bstsnetrouter.c:52 beast-gtk/bstsnetrouter.c:938
 msgid "Palette"
 msgstr "Palette"
 
-#: beast-gtk/bstsnetrouter.c:51
+#: beast-gtk/bstsnetrouter.c:52
 msgid "Toggle visibility of the tool palette"
 msgstr "Toggle visibility of the tool palette"
 
-#: beast-gtk/bstsnetrouter.c:610
+#: beast-gtk/bstsnetrouter.c:611
 msgid "Input channel in use"
 msgstr "Input channel in use"
 
-#: beast-gtk/bstsnetrouter.c:637 beast-gtk/bstsnetrouter.c:639
-#: beast-gtk/bstsnetrouter.c:675
+#: beast-gtk/bstsnetrouter.c:638 beast-gtk/bstsnetrouter.c:640
+#: beast-gtk/bstsnetrouter.c:676
 msgid "Create Link"
 msgstr "Create Link"
 
-#: beast-gtk/bstsnetrouter.c:637
+#: beast-gtk/bstsnetrouter.c:638
 msgid "Select output module"
 msgstr "Select output module"
 
-#: beast-gtk/bstsnetrouter.c:639
+#: beast-gtk/bstsnetrouter.c:640
 msgid "Select input module"
 msgstr "Select input module"
 
-#: beast-gtk/bstsnetrouter.c:703 beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
 #: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:281
 msgid "Properties"
 msgstr "Properties"
 
-#: beast-gtk/bstsnetrouter.c:704
+#: beast-gtk/bstsnetrouter.c:705
 msgid "Reset Properties"
 msgstr "Reset Properties"
 
-#: beast-gtk/bstsnetrouter.c:705
+#: beast-gtk/bstsnetrouter.c:706
 msgid "Delete Inputs"
 msgstr "Delete Inputs"
 
-#: beast-gtk/bstsnetrouter.c:706
+#: beast-gtk/bstsnetrouter.c:707
 msgid "Delete Outputs"
 msgstr "Delete Outputs"
 
-#: beast-gtk/bstsnetrouter.c:708 beast-gtk/bstsnetrouter.c:755
+#: beast-gtk/bstsnetrouter.c:709 beast-gtk/bstsnetrouter.c:764
 msgid "Show Info"
 msgstr "Show Info"
 
-#: beast-gtk/bstsnetrouter.c:709
+#: beast-gtk/bstsnetrouter.c:710
 msgid "Monitor Output Signal"
 msgstr "Monitor Output Signal"
 
-#: beast-gtk/bstsnetrouter.c:735
+#: beast-gtk/bstsnetrouter.c:737
 msgid "Remove Module"
 msgstr "Remove Module"
 
-#: beast-gtk/bstsnetrouter.c:766
+#: beast-gtk/bstsnetrouter.c:745
+msgid "Scrollgraph"
+msgstr "Scrollgraph"
+
+#: beast-gtk/bstsnetrouter.c:775
 msgid "Delete Link"
 msgstr "Delete Link"
 
-#: beast-gtk/bstsnetrouter.c:820
+#: beast-gtk/bstsnetrouter.c:829
 msgid "Insert Module"
 msgstr "Insert Module"
 
-#: beast-gtk/bstsnetrouter.c:1087
+#: beast-gtk/bstsnetrouter.c:1096
 msgid "PCM Output module"
 msgstr "PCM Output module"
 
-#: beast-gtk/bstsnetrouter.c:1088
+#: beast-gtk/bstsnetrouter.c:1097
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:1088
+#: beast-gtk/bstsnetrouter.c:1097
 msgid "Standard amplifier module"
 msgstr "Standard amplifier module"
 
-#: beast-gtk/bstsnetrouter.c:1089
+#: beast-gtk/bstsnetrouter.c:1098
 msgid "Snooper"
 msgstr "Snooper"
 
-#: beast-gtk/bstsnetrouter.c:1089
+#: beast-gtk/bstsnetrouter.c:1098
 msgid "Signal debugging module"
 msgstr "Signal debugging module"
 
-#: beast-gtk/bstsnetrouter.c:1090
+#: beast-gtk/bstsnetrouter.c:1099
 msgid "PCM Input module"
 msgstr "PCM Input module"
 
-#: beast-gtk/bstsnetrouter.c:1138
+#: beast-gtk/bstsnetrouter.c:1147
 msgid "Channel Hints"
 msgstr "Channel Hints"
 
-#: beast-gtk/bstsnetrouter.c:1138
+#: beast-gtk/bstsnetrouter.c:1147
 msgid "Toggle channel name hints"
 msgstr "Toggle channel name hints"
 
@@ -2644,7 +2648,7 @@ msgstr "Message has been repeated %u times"
 msgid "processing"
 msgstr "processing"
 
-#: beast-gtk/bstutils.c:318 beast-gtk/bstutils.c:340 beast-gtk/bstutils.c:343
+#: beast-gtk/bstutils.c:320 beast-gtk/bstutils.c:342 beast-gtk/bstutils.c:345
 msgid "Updating View"
 msgstr "Updating View"
 
