@@ -1,3 +1,11 @@
+Fri Dec 24 15:37:11 1999  Tim Janik  <timj@gtk.org>
+
+	* docs/bse-heart.txt: new file describing how BSE's internal loop works,
+	the syncronization issues araising there, and how we currently handle
+	them.
+
+	* docs/Makefile.am (EXTRA_DIST): added bse-heart.txt.
+
 Wed Dec 22 19:01:56 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (main): do not bail out because opening of pcm
