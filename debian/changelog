@@ -1,0 +1,386 @@
+beast (0.6.1-3) unstable; urgency=low
+
+  * sfi/glib-extra.h:
+    + Applied temporary upstream compilation fix for glib 2.4.0.
+  * beast-gtk/gxk/gxkdialog.c:
+    + Ditto for GTK+ 2.4.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri, 28 May 2004 08:59:00 -0300
+
+beast (0.6.1-2) unstable; urgency=low
+
+  * sfi/sfithreads.c:
+    + Replaced a _syscall0() declaration with a direct call to syscall()
+      because _syscallX() macros don't exist on IA64 (Closes: #245817).
+  * debian/menu:
+    + Quoted strings where appropriate.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 27 May 2004 19:48:56 -0300
+
+beast (0.6.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Removed all Debian-specific patches; they're either applied upstream or
+    obsolete.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri,  9 Apr 2004 20:09:21 +0200
+
+beast (0.5.5-5) unstable; urgency=medium
+
+  * bse/bsetrack.proc:
+    + Re-fixed the spurious CRIGHTS that regressed in my -4 upload.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon,  9 Feb 2004 22:51:18 +0100
+
+beast (0.5.5-4) unstable; urgency=medium
+
+  * debian/control:
+    + Added libxml-parser-perl to the build dependencies (Closes: #230951).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Tue,  3 Feb 2004 20:21:43 +0100
+
+beast (0.5.5-3) unstable; urgency=medium
+
+  * Fixed my messing with autoconf so that all plugins are correctly installed
+    (Closes: #223029).
+  * Relibtoolized with libtool 1.5.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri,  7 Nov 2003 17:41:26 +0100
+
+beast (0.5.5-2) unstable; urgency=low
+
+  * debian/rules:
+    + Use --enable-osspcm and --enable-ossmidi instead of the now deprecated
+      --enable-devdsp and --enable-devmidi. Fixes builds on system without a
+      /dev, such as autobuilders.
+  * debian/copyright:
+    + Minor cosmetic enhancements.
+  * configure.in:
+    + Fixed a warning in the XKBgeom.h detection.
+  * bse/bsetrack.proc:
+    + Replaced a spurious CRIGHTS entry with a proper LICENSE entry.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Wed, 29 Oct 2003 17:03:52 +0100
+
+beast (0.5.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Tue, 28 Oct 2003 11:50:00 +0100
+
+beast (0.5.4-5) unstable; urgency=low
+
+  * debian/control:
+    + Set policy to 3.6.1.0.
+  * docs/generated/*:
+    + Replaced H1 with SH in the manpages to please mandb (Closes: #210623).
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri, 24 Oct 2003 01:51:26 +0200
+
+beast (0.5.4-4) unstable; urgency=low
+
+  * debian/control:
+    + Downgraded the debhelper build-dependency to 3.0.
+  * sfi/Makefile.am:
+    + Disabled the sfidl build due to a gcc ICE on Alpha that I have not yet
+      been able to reproduce or narrow to a minimal testcase.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 14 Aug 2003 13:49:31 +0200
+
+beast (0.5.4-3) unstable; urgency=low
+
+  * debian/control:
+    + Build-depend on libgtk2.0-dev (>= 2.2.2-2) to fix the ARM build (See
+      #201443 for more information).
+    + Set the beast build-conflict to (<< ${Source-Version}).
+  * Removed deprecated changes from the diff.
+  * Re-ran "libtoolize -c -f && aclocal-1.4 && autoheader && autoconf && \
+    automake-1.4" with the latest libtool (1.5) so that our C++ kludge is no
+    longer needed.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Fri,  8 Aug 2003 09:57:11 +0200
+
+beast (0.5.4-2) unstable; urgency=low
+
+  * sfi/toyprof.c: Replaced #ifdef with #if to test variables.
+  * debian/control: Set policy to 3.6.0. No changes required.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 24 Jul 2003 22:52:09 +0200
+
+beast (0.5.4-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Wed, 23 Jul 2003 17:52:37 +0200
+
+beast (0.5.3-2) unstable; urgency=low
+
+  * debian/control:
+    + Build-depend on guile-1.6 (>= 1.6.4-2.1) to avoid build failures on ia64.
+  * bse/bsestorage.c, sfi/testsfi.c:
+    + Include <signal.h> because G_BREAKPOINT needs it on !i386 && !alpha.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Mon,  7 Jul 2003 15:33:15 +0200
+
+beast (0.5.3-1) unstable; urgency=low
+
+  * New upstream release.
+    + Supports unlimited Undo/Redo.
+    + Most Debian compilation fixes were merged.
+  * aclocal-1.4 && autoconf && autoheader && automake-1.4 -a -c
+  * debian/control:
+    + Set the Guile build-dependency to guile-1.6-dev only, because upstream
+      now officially supports it, and because it now builds on all Debian
+      architectures.
+    + Build-conflicts with beast (<< 0.5.3-1) so that libtool does not get
+      confused with our old libbsw.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sun,  6 Jul 2003 13:55:35 +0200
+
+beast (0.5.1-7) unstable; urgency=low
+
+  * debian/control:
+    + Updated the package description with a suggestion from upstream.
+    + Explicitely depend on libglib2.0-dev (>= 2.2.2-1) because of bug #198077
+      in glib2.0 that caused the hppa build to hang (Closes: #196693).
+  * debian/rules:
+    + Split the build target into configure and build.
+    + Re-enabled optimizations on hppa that were disabled in a previous NMU,
+      because this is not how it should be done.
+    + On ia64, we build gslfft.c with -O1 instead of -O3 to work around a
+      gcc-3.3 ICE (GCC Bug #10681).
+  * Disabled the documentation generation, since it is already built in the
+    original tarball.
+  * Replaced g_print with g_printf in zintern.c, just in case #198077
+    strikes back.
+  * Stored the return value of bse_type_register_static in a GType instead of
+    a guint in a few places. Fixes a FTBFS and probably crashes on Alpha.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Thu, 19 Jun 2003 20:30:18 +0200
+
+beast (0.5.1-6) unstable; urgency=low
+
+  * Linked libbsw and libbse against libsfi to allow prelinking these
+    libraries.
+  * Removed the leading "a" in the package description.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Sun,  8 Jun 2003 14:26:35 +0200
+
+beast (0.5.1-5) unstable; urgency=low
+
+  * Fixed the ia64 and hppa builds by including <assert.h> in sfidl-parser.cc.
+  * Explicitely put -lpthread in addition to -pthread in GLIB_LIBS and GUI_LIBS
+    because libtool eats -pthread in the link phase (Bug #194774). Makes our
+    libraries usable on hppa.
+  * Fixed a bug in the LADSPA plugin loader that was causing crashes when
+    the cmt package was installed (Closes: #189655).
+  * Set policy to 3.5.10.
+
+ -- Sam Hocevar (Debian packages) <sam+deb@zoy.org>  Wed, 30 Apr 2003 16:27:16 +0200
+
+beast (0.5.1-4) unstable; urgency=low
+
+  * Fixed the guile version check in configure.in (Closes: #191346).
+
+ -- Samuel Hocevar <sam@zoy.org>  Wed, 30 Apr 2003 16:27:16 +0200
+
+beast (0.5.1-3) unstable; urgency=low
+
+  * We conflict against cmt (<<1.15) because old versions were compiled
+    with an uncompatible version of g++.
+  * Commented out some x86-only code that was disabled anyway but prevented
+    proper compilation on other architectures (Closes: #190423).
+
+ -- Samuel Hocevar <sam@zoy.org>  Thu, 24 Apr 2003 05:47:09 +0200
+
+beast (0.5.1-2) unstable; urgency=low
+
+  * Removed an outdated comment in README.Debian suggesting to use pd
+    instead of beast. beast is now mature enough.
+  * Changed section to gnome, according to the recent section additions.
+
+ -- Samuel Hocevar <sam@zoy.org>  Fri, 18 Apr 2003 22:29:24 +0200
+
+beast (0.5.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Replaced `==' with `=' in configure.in.
+  * Re-added libguile9-dev to the list of conditional build dependencies,
+    because it does not look like guile-1.6-dev is going to build for all
+    architectures very soon.
+  * Ported the code to work with both guile-1.4 and guile-1.6. Only
+    `scm_long_long2big' needed to be replaced with `scm_i_long_long2big' in
+    shell/bsescminterp.c.
+
+ -- Samuel Hocevar <sam@zoy.org>  Tue, 15 Apr 2003 02:59:39 +0200
+
+beast (0.5.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * A lot of Debian fixes were merged into this release.
+  * Fixed a bashism in bsw/Makefile.am.
+  * Fixed format string errors in sfi/sfidl.cc.
+  * bswshell was renamed to bsesh.
+
+ -- Samuel Hocevar <sam@zoy.org>  Thu, 27 Mar 2003 02:01:21 +0100
+
+beast (0.4.1-6) unstable; urgency=low
+
+  * New maintainer.
+  * Wrote a more complete manpage for beast.
+  * Wrote a manpage for bswshell.
+  * Disabled annoying guile version checking, Build-Depends will be enough; we
+    now link against the new guile 1.6.
+  * Added gsl/bseconfig.h to the list of configure-generated files.
+  * Updated config.guess and config.sub.
+  * Re-created bse/gslmakefile.inc by hand and other script-generated files
+    that didn't get distributed.
+  * Re-ran aclocal && autoheader && autoconf && automake.
+  * Re-ran libtoolize and hacked the local ltmain.sh so that libtool properly
+    links the freeverb.so C++ plugin.
+  * Removed the build dependency on autotools-dev.
+  * Fixed lots of compilation warnings (Closes: #172005).
+  * Fixed the prototype of beast-gtk/bststest.c:qsampler_dcache_filler().
+
+ -- Samuel Hocevar <sam@zoy.org>  Thu, 27 Mar 2003 02:01:21 +0100
+
+beast (0.4.1-5.1) unstable; urgency=low
+
+  * Non Maintainer Upload
+  * Replace -O6 by -O0 on hppa (Closes: #171127)
+  * Fix sed regexp problem in configure (cause configure abort)
+  * Replace automake build-depends by automaken
+  * Rebuild against new libvorbis0a package
+
+ -- Julien LEMOINE <speedblue@debian.org>  Sun, 16 Mar 2003 14:12:58 +0100
+
+beast (0.4.1-5) unstable; urgency=low
+
+  * QA upload.
+  * bse/bsemain.c (bse_init): Terminate gslconfig array with a NULL.
+    Hopefully fixes #164328.
+  * configure.in: Remove Pentium check (due to a typo it didn't work in
+    the first place).  The Pentium timing code works only on non-SMP
+    machines, and the proper way to detect those is a run-time check.
+  * Switch to debhelper 4.
+  * debian/rules:
+    - Automatically update config.{guess,sub} from autotools-dev.
+    - Remove `debug' support and enable `-g' by default.
+  * Conforms to Standards version 3.5.8.
+
+ -- Matej Vela <vela@debian.org>  Tue, 11 Feb 2003 12:50:03 +0100
+
+beast (0.4.1-4) unstable; urgency=low
+
+  * orphan this package.
+
+ -- Junichi Uekawa <dancer@debian.org>  Mon, 30 Dec 2002 17:21:20 +0900
+
+beast (0.4.1-3) unstable; urgency=low
+
+  * #undef TOYPROF_PENTIUM so that profiling is disabled everywhere.
+  * specify HOST from dpkg-architecture.
+  * configure.in: modify to check for architecture that support pentium instructions.
+
+ -- Junichi Uekawa <dancer@debian.org>  Mon,  7 Oct 2002 15:44:09 +0900
+
+beast (0.4.1-2) unstable; urgency=low
+
+  * Add hacks to ./configure to ignore detection of /dev/dsp and /dev/midi
+  * set bse/toyprof.c TOYPROF_PENTIUM to 0, to not to use assembler instructions.
+  * Add --enable-devmidi --enable-devdsp to ./configure options.
+  * The above should fix build failure (closes: #163460)
+  Thanks for reporting, Stephen R Marenka <stephen@marenka.net> 
+
+ -- Junichi Uekawa <dancer@debian.org>  Sun,  6 Oct 2002 17:23:33 +0900
+
+beast (0.4.1-1) unstable; urgency=low
+
+  * New upstream version
+  * add libmad0-dev, libgnomecanvas2-dev, libvorbis-dev, libguile-dev, libart-2.0-dev build dependency
+  * change libgtk1.2-dev to libgtk2.0-dev
+  * remove autoconf hack.
+  * debian/rules: remove dh_testversion
+  * use -prefix option to configure, and DESTDIR for make install
+  * do not generate shlibs file for now.
+
+ -- Junichi Uekawa <dancer@debian.org>  Fri,  4 Oct 2002 17:24:33 +0900
+
+beast (0.3.3-3) unstable; urgency=low
+
+  * Rebuild with gdk-imlib1-dev.
+
+ -- Junichi Uekawa <dancer@debian.org>  Sat,  7 Sep 2002 12:54:49 +0900
+
+beast (0.3.3-2) unstable; urgency=low
+
+  * Re-applied the patch to configure.in. The original configure.in
+    checks if OSS works, and that's not really necessary on autobuilders.
+    (closes: #103835)
+  * autoconf is ran on build, and removed on clean target (as it used to be).
+  * build-depends on autoconf.
+  * removed the unnecessary build-conflicts for libasound1-dev
+
+ -- Junichi Uekawa <dancer@debian.org>  Sun,  8 Jul 2001 23:12:00 +0900
+
+beast (0.3.3-1) unstable; urgency=low
+
+  * new upstream release for fixing problems (closes: #103076)
+    thanks go to Tim Janik for backporting fixes.
+  * build-deps are now fixed. (closes: #96962)
+  * no longer call autoconf in debian/rules.
+  * libbse-3.0 soname increased to 3
+  * This is a maintenance upload. Although this package has been 
+    requested to be adopted by someone, I think I should be doing the 
+    packaging of this fix, since I am still the maintainer until 
+    that someone actually "adopts" this package.
+
+ -- Junichi Uekawa <dancer@debian.org>  Sat,  7 Jul 2001 01:46:56 +0900
+
+beast (0.3.2-6) unstable; urgency=low
+
+  * rebuilt with newer libs for newer dependency
+
+ -- Junichi Uekawa <dancer@debian.org>  Mon,  7 May 2001 00:15:41 +0900
+
+beast (0.3.2-5) unstable; urgency=low
+
+  * calls autoconf && ./configure in the configure process of 
+    debian/rules, so that I won't get into this discrepancy of 
+    configure.in and configure not matching
+  * Compiled fine on vore when I did it manually.
+    I guess there was some mistake in the previous upload. (closes: #89304) 
+
+ -- Junichi Uekawa <dancer@debian.org>  Mon, 26 Mar 2001 00:19:11 +0900
+
+beast (0.3.2-4) unstable; urgency=low
+
+  * Unconditionally assume that OSS is available in the configure
+    process, so that at least OSS is available, and build
+    succeeds even when the build machine isn't able to make
+    a sound. (closes: #89304)
+
+ -- Junichi Uekawa <dancer@debian.org>  Sat, 24 Mar 2001 03:03:30 +0900
+
+beast (0.3.2-3) unstable; urgency=low
+
+  * fixing configure.in so that ALSA is properly recognized.
+  * bse/bsepcmdevice-alsa.c: modified so that it doesn't try to use
+    asoundid.h which seems to be not available in my system.
+  * configure.in acconfig.h has been modified accordingly.
+  * after all that above, I found out that ALSA didn't work, and adding
+    libasound1-dev into build-deps won't help anything. (closes: #89304)
+
+ -- Junichi Uekawa <dancer@debian.org>  Thu, 15 Mar 2001 23:00:03 +0900
+
+beast (0.3.2-2) unstable; urgency=low
+
+  * fixing build deps according to benc's suggestion (closes: #89304)
+
+ -- Junichi Uekawa <dancer@debian.org>  Tue, 13 Mar 2001 00:19:55 +0900
+
+beast (0.3.2-1) unstable; urgency=low
+
+  * Initial Debian package. (closes: #85183)
+
+ -- Junichi Uekawa <dancer@debian.org>  Wed, 28 Feb 2001 04:30:13 +0900

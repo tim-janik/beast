@@ -1,0 +1,62 @@
+.TH BEAST 1 "28 Feb 2001" "Debian GNU/Linux" "BEAST/BSE"
+.SH NAME
+beast \- the bedevilled sound engine
+.SH SYNOPSIS
+.B beast
+.RI [ OPTIONS ]
+.RI [ FILES ]...
+.SH DESCRIPTION
+.B beast
+is a graphical tool to create and manipulate sound files. Sample manipulation
+includes generation of new sounds from module networks, based on various kinds
+of synthesis.
+
+.SH OPTIONS
+.B beast
+follows the usual GNU command line syntax, with long
+options starting with two dashes (`-').
+.TP
+\fB\-\-hints\fR
+enrich the GUI with hints useful for (script) developers
+.TP
+\fB\-\-no-plugins\fR
+disable plugins (debug usage only)
+.TP
+\fB\-\-force-xkb\fR
+force XKB keytable queries
+.TP
+\fB\-\-beast-debug=keys\fR
+enable certain BEAST debug stages
+.TP
+\fB\-\-beast-no-debug=keys\fR
+disable certain BEAST debug stages
+.TP
+\fB\-\-bse-debug=keys\fR
+enable certain BSE debug stages
+.TP
+\fB\-\-bse-no-debug=keys\fR
+disable certain BSE debug stages
+.TP
+\fB\-\-print-path=resource\fR
+print the file path for a specific resource
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+show the help message and exit
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+print version and file paths and exit
+.PP
+.B beast
+also supports Gtk-specific options, please run "beast --help" for
+a precise description of all of them.
+
+.SH BUGS
+This is an ALPHA version of
+.B beast
+, it is still in development stage.
+.SH AUTHOR
+This manpage has been written by Junichi Uekawa <dancer@debian.org> and
+Sam Hocevar <sam@zoy.org> for the Debian GNU/Linux system.
+.SH "SEE ALSO"
+pd(1).
+

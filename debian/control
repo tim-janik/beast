@@ -1,0 +1,18 @@
+Source: beast
+Section: gnome
+Priority: extra
+Maintainer: Sam Hocevar (Debian packages) <sam+deb@zoy.org>
+Build-Depends: debhelper (>= 3.0), libgtk2.0-dev (>= 2.2.2-2), libglib2.0-dev (>= 2.2.2-1), libaudiofile-dev, libvorbis-dev, guile-1.6-dev (>= 1.6.4-2.1), libart-2.0-dev, libgnomecanvas2-dev, libmad0-dev, libxml-parser-perl
+Build-Conflicts: beast (<< ${Source-Version})
+Standards-Version: 3.6.1.0
+
+Package: beast
+Section: gnome
+Architecture: any
+Depends: ${shlibs:Depends}
+Conflicts: cmt (<< 1.15)
+Description: music synthesis and composition framework
+ BEAST/BSE is a plugin-based graphical system where you can link objects
+ to each other and generate sound.
+ .
+ BEAST also has support for scriptability in Scheme using Guile.

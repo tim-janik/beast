@@ -1,0 +1,62 @@
+.TH BSESH 1 "29 Mar 2003" "Debian GNU/Linux" "BEAST/BSE"
+.SH NAME
+bsesh \- a scheme shell for BEAST/BSE
+.SH SYNOPSIS
+.B bsesh [OPTIONS] ...
+.SH DESCRIPTION
+.B bsesh
+is a scheme interpreter based on guile that interacts with
+.B beast.
+It is usually launched by
+.B beast
+itself.
+
+.SH OPTIONS
+.IP --bse-command-pipe <input> <output> <expression>
+Provide the input and output pipes from
+.B beast
+and a Scheme expression to evaluate.
+.IP --bse-enable-server
+Activate the
+.B beast
+server.
+.IP --bse-enable-register
+Register
+.B beast
+scripts.
+.IP -p
+Register
+.B beast
+plugins.
+.IP --g-fatal-warnings
+Cause runtime warnings to immediately abort the program.
+.IP -l FILE
+Load scheme source code from file.
+.IP -e FUNCTION
+After reading script, apply FUNCTION to command-line arguments.
+.IP -ds
+do -s SCRIPT at this point (note that this argument must be used in
+conjuction with -s).
+.IP --help
+Describe command line options and exit.
+.IP --debug
+Start bsesh with debugging evaluator and backtraces enabled
+(useful for debugging guile scripts).
+.IP --version
+Display guile version and exit.
+.IP --emacs
+Enable emacs protocol for use from within emacs (experimental).
+.IP --
+Stop argument processing, start bsesh in interactive mode.
+.IP -c EXPR
+Stop argument processing, evaluate EXPR as a scheme expression.
+.IP -s SCRIPT-FILE
+Load Scheme source from SCRIPT-FILE and execute as a script.
+
+.SH AUTHOR
+This manpage has been written by Sam Hocevar <sam@zoy.org> for the Debian
+GNU/Linux system, based on the guile manpage written by Robert Merkel
+<rgmerk@mira.net>.
+.SH "SEE ALSO"
+beast(1), guile(1).
+

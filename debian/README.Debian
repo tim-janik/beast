@@ -1,0 +1,7 @@
+beast for Debian
+----------------
+
+If you ever wish to make any program to depend upon the bse lib, 
+before doing that, I would rather split the package up.
+
+ -- Junichi Uekawa <dancer@debian.org>, Wed, 28 Feb 2001 04:30:13 +0900

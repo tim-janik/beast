@@ -1,0 +1,16 @@
+This package was debianized by Junichi Uekawa <dancer@debian.org> on
+Wed, 28 Feb 2001 04:30:13 +0900.
+
+It was downloaded from http://beast.gtk.org/
+
+Upstream Authors: 
+  Olaf Hoehmann <olaf@gtk.org>
+  Tim Janik <timj@gtk.org>
+
+BEAST is GPL (and parts are LGPL), BSE is GPL. plugins are LGPL.
+This probably makes BEAST as a whole to be under GPL.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL' and
+the complete text of the GNU Lesser General Public License can be
+found in `/usr/share/common-licenses/LGPL'.
