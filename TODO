@@ -1,7 +1,7 @@
 FIXMES:
 - rename gsl_strerror()
 - fix 64bit v_int usage of GScanner in BSE?
-- fix undo for: BseWave, BsePart, BseDataPocket
+- fix undo for: BseDataPocket
 - popdown piano roll when parts are removed
 - get rid of bse_procedure_execvl
 - get rid of super->mod_time
@@ -75,6 +75,9 @@ FIXMES:
 - fix the word "tact" vs. measure
 - clenup piano roll code
 - need tact number entry widget
+- object clippboard
+- fade in/out of samples (sample editor)
+- wave editor: provide transpose spinner for wave preview
 * eliminate everything that fgrep -i fixme/hack reveals
 
 DOCS:
@@ -237,14 +240,11 @@ GUI features:
 - support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
 - fix data cache seeks to skip the -64 byte offset at block boundaries
 
-General BEAST:
+Effects:
 * BLIT, band-limited impulse train oscillator
-* object clippboard
-* fade in/out of samples (sample editor)
-- device monitor delay should be persistent in .beastrc
-* get File/Save to work
-* quit/close needs to feature mod-time vs. creation-time handling
-* wave editor: provide transpose spinner for wave preview
+- device monitor latency setting should be persistent in .bserc
+- implement filters from http://www.harmony-central.com/Computer/Programming/Audio-EQ-Cookbook.txt
+  (main source for http://zynaddsubfx.sourceforge.net)
 
 sfidl:
   fixes:
