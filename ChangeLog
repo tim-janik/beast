@@ -1,3 +1,8 @@
+Tue Nov 18 22:57:40 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-beast.xml: fixed unfound actions
+	in the palette popup menu by conditionalizing $action-root.
+
 Tue Nov 18 22:38:29 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up version to 0.5.6-rc1.

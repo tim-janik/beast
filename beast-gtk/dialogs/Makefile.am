@@ -19,8 +19,8 @@ if MAINTAINER_MODE
 WANT_XMLLINT=xmllint --noout $(XML_FILES)
 endif
 
-beast-xml-zfiles.c:	$(ZINTERN) $(srcdir)/*.xml
-	$(WANT_XMLLINT) 
+beast-xml-zfiles.c:	$(XML_FILES) $(ZINTERN)
+	$(WANT_XMLLINT)
 	$(ZINTERN) -b -z $(ZFILE_DEFS) > xgen-bxc	\
 	&& cp xgen-bxc $@				\
 	&& rm -f xgen-bxc
