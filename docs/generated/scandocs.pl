@@ -1,6 +1,7 @@
 #!/usr/bin/perl -W
 # Stupid doc scanner
-# Copyright (C) 2001 Tim Janik
+# Copyright (C) 2001,2003 Tim Janik
+# Copyright (C) 2002 Alper Ersoy
 #
 # This code is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,6 +14,16 @@ my $pblurb = "Official Foo Manual";
 my $package = "FooFactory";
 
 my @seealso = ();
+
+# supported documentation tags (quoted from gtk-doc/doc/gnome.txt)
+#   @name   a parameter.
+#   %name   a constant.
+#   name()  reference to a function, or a macro which works like a function
+#           (this will be turned into a hypertext link if the function is
+#           documented anywhere).
+#   #name   reference to any other type of declaration, e.g. a struct, enum,
+#           union, or macro (this will also be turned into a link if possible).
+#
 
 # parse options
 while ($_ = $ARGV[0], defined $_ && /^-/) {
