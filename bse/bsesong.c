@@ -421,7 +421,10 @@ bse_song_add_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
     bse_track_add_modules (BSE_TRACK (item), container, self->midi_receiver_SL);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
-    bse_bus_create_stack (BSE_BUS (item));
+    {
+      BseBus *bus = BSE_BUS (item);
+      bse_bus_create_stack (bus);
+    }
 }
 
 static void

@@ -1,3 +1,12 @@
+Sat Oct 16 10:02:06 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.proc: added ensure-output() to ensure a master bus connection.
+
+	* bsesong.proc:
+	remove-bus(): fixed up loosing ::master-output property across undo.
+	get-master-bus(): don't create a master bus.
+	ensure-master-bus(): create a master bus if required.
+
 Sat Oct 16 08:34:40 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c: allow ::solo property editing on master.
