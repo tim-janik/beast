@@ -1,3 +1,9 @@
+Mon Sep  8 14:59:42 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.[hc]: made reamining structures private (moved
+	to .cc file). renamed voice-input and voice-switch modules and
+	their API to make the code more consistent and readable.
+
 Mon Sep  8 00:11:45 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsemidireceiver.cc: cvs copy of bsemidireceiver.c.

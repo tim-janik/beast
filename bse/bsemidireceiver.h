@@ -23,15 +23,6 @@
 
 G_BEGIN_DECLS
 
-/* --- BSE MIDI structs --- */
-typedef struct _BseMidiMonoSynth BseMidiMonoSynth;
-typedef struct _BseMidiVoice     BseMidiVoice;
-typedef struct {
-  guint             midi_channel;
-  BseMidiMonoSynth *msynth;
-  guint             n_voices;
-  BseMidiVoice    **voices;
-} BseMidiChannel;
 
 /* --- API --- */
 #define	BSE_MIDI_CONTROL_MODULE_N_CHANNELS		   (4)
