@@ -69,7 +69,7 @@ WaveChunk::set_dhandle_from_temporary (const string &fname,
               if (osc_freq > 0)
                 {
                   gchar **xinfos = NULL;
-                  xinfos = bse_xinfos_add_float (xinfos, ".osc-freq", osc_freq);
+                  xinfos = bse_xinfos_add_float (xinfos, "osc-freq", osc_freq);
                   GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (xhandle, xinfos);
                   g_strfreev (xinfos);
                   gsl_data_handle_unref (xhandle);

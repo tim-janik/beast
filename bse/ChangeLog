@@ -1,3 +1,17 @@
+Sat Jan  1 21:59:43 2005  Tim Janik  <timj@gtk.org>
+
+	* bseutils.[hc] bse_xinfos_dup_consolidated(): added flag to indicate 
+	whether internal xinfos should be copied.
+
+	* gsldatahandle-mad.c:
+	* gsldatahandle-vorbis.c:
+	* gsldatahandle.[hc]:
+	* gslloader-bsewave.c:
+	moved bit_depth, mix_freq and needs_cache (back) into the 
+	GslDataHandleSetup structure, because they are an integral part of
+	all wave data storage formats. turned osc-freq into a custom xinfo
+	string, because it is not.
+
 Sat Jan  1 21:20:03 2005  Tim Janik  <timj@gtk.org>
 
 	* zintern/wave-mono.bse: CVS copied from mono-wave.bse.

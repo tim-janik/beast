@@ -105,7 +105,8 @@ SfiNum        bse_xinfos_get_num                (gchar          **xinfos,
                                                  const gchar     *key);
 gchar**       bse_xinfos_del_value              (gchar          **xinfos,
                                                  const gchar     *key);
-gchar**       bse_xinfos_dup_consolidated       (gchar          **xinfos);
+gchar**       bse_xinfos_dup_consolidated       (gchar          **xinfos,
+                                                 gboolean         copy_interns);
 gint          bse_xinfo_stub_compare            (const gchar     *xinfo1,  /* must contain '=' */
                                                  const gchar     *xinfo2); /* must contain '=' */
 

@@ -755,7 +755,7 @@ gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
       if (dhandle && osc_freq > 0)
         {
           gchar **xinfos = NULL;
-          xinfos = bse_xinfos_add_float (xinfos, ".osc-freq", osc_freq);
+          xinfos = bse_xinfos_add_float (xinfos, "osc-freq", osc_freq);
           GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (dhandle, xinfos);
           g_strfreev (xinfos);
           gsl_data_handle_unref (dhandle);

@@ -232,10 +232,10 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   vhandle->pcm_pos = 0;
   vhandle->pcm_length = 0;
   
-  setup->xinfos = bse_xinfos_add_float (setup->xinfos, ".mix-freq", vi->rate);
-  setup->xinfos = bse_xinfos_add_float (setup->xinfos, ".osc-freq", vhandle->osc_freq);
-  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".bit-depth", 24);
-  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".needs-cache", 1);
+  setup->bit_depth = 24;
+  setup->mix_freq = vi->rate;
+  setup->needs_cache = TRUE;
+  setup->xinfos = bse_xinfos_add_float (setup->xinfos, "osc-freq", vhandle->osc_freq);
   return BSE_ERROR_NONE;
 }
 

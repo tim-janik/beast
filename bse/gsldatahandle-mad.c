@@ -444,10 +444,10 @@ dh_mad_open (GslDataHandle      *dhandle,
       goto OPEN_FAILED;
     }
   
-  setup->xinfos = bse_xinfos_add_float (setup->xinfos, ".osc-freq", handle->osc_freq);
-  setup->xinfos = bse_xinfos_add_float (setup->xinfos, ".mix-freq", handle->sample_rate);
-  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".bit-depth", 24);
-  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".needs-cache", 1);
+  setup->bit_depth = 24;
+  setup->mix_freq = handle->sample_rate;
+  setup->needs_cache = TRUE;
+  setup->xinfos = bse_xinfos_add_float (setup->xinfos, "osc-freq", handle->osc_freq);
   return BSE_ERROR_NONE;
 
  OPEN_FAILED:

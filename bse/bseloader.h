@@ -51,8 +51,8 @@ struct _GslWaveDsc
 };
 struct _GslWaveChunkDsc
 {
-  gfloat	  mix_freq;
   gfloat	  osc_freq;
+  gfloat	  mix_freq;
   gchar         **xinfos;
   /* loader-specific */
   GslLong         loader_offset;

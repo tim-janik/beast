@@ -587,7 +587,8 @@ bse_xinfos_get_num (gchar          **xinfos,
 }
 
 gchar**
-bse_xinfos_dup_consolidated (gchar **xinfos)
+bse_xinfos_dup_consolidated (gchar  **xinfos,
+                             gboolean copy_interns)
 {
   if (xinfos)
     {
@@ -623,7 +624,8 @@ bse_xinfos_dup_consolidated (gchar **xinfos)
             {
               const gchar *xinfo = sfi_ring_pop_head (&xinfo_list);
               const gchar *e = strchr (xinfo, '=');
-              if (e[1]) /* non-empty xinfo */
+              if (e[1] &&       /* non-empty xinfo */
+                  (e[0] != '.' || copy_interns))
                 dest_xinfos[i++] = g_strdup (xinfo);
             }
           dest_xinfos[i] = NULL;

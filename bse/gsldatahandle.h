@@ -34,6 +34,9 @@ typedef struct {
   guint		n_channels;
   GslLong	n_values;
   gchar       **xinfos;
+  guint         bit_depth : 8;
+  guint         needs_cache : 1;
+  gfloat        mix_freq;
 } GslDataHandleSetup;
 struct _GslDataHandle
 {

@@ -230,16 +230,10 @@ gsl_data_handle_n_channels (GslDataHandle *dhandle)
 guint
 gsl_data_handle_bit_depth (GslDataHandle *dhandle)
 {
-  guint n;
-  
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-  
-  GSL_SPIN_LOCK (&dhandle->mutex);
-  n = bse_xinfos_get_num (dhandle->setup.xinfos, ".bit-depth");
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
-  
-  return n;
+
+  return dhandle->setup.bit_depth;
 }
 
 gfloat
@@ -247,12 +241,8 @@ gsl_data_handle_mix_freq (GslDataHandle *dhandle)
 {
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
-  
-  GSL_SPIN_LOCK (&dhandle->mutex);
-  gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, ".mix-freq");
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
-  
-  return f;
+
+  return dhandle->setup.mix_freq;
 }
 
 gfloat
@@ -262,7 +252,9 @@ gsl_data_handle_osc_freq (GslDataHandle *dhandle)
   g_return_val_if_fail (dhandle->open_count > 0, 0);
   
   GSL_SPIN_LOCK (&dhandle->mutex);
-  gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, ".osc-freq");
+  gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "osc-freq");
+  if (f == 0)
+    f = bse_temp_freq (gsl_get_config ()->kammer_freq, bse_xinfos_get_float (dhandle->setup.xinfos, "midi-note") - gsl_get_config ()->midi_kammer_note);
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   
   return f;
@@ -283,7 +275,7 @@ gsl_data_handle_needs_cache (GslDataHandle *dhandle)
   g_return_val_if_fail (dhandle->ref_count > 0, FALSE);
   g_return_val_if_fail (dhandle->open_count > 0, FALSE);
   
-  return bse_xinfos_get_num (dhandle->setup.xinfos, ".needs-cache") > 0;
+  return dhandle->setup.needs_cache;
 }
 
 
@@ -295,6 +287,8 @@ typedef struct {
   const gfloat     *values;
   void            (*free_values) (gpointer);
   gchar           **xinfos;
+  gfloat            mix_freq;
+  guint             bit_depth : 8;
 } MemHandle;
 
 static BseErrorType
@@ -306,6 +300,8 @@ mem_handle_open (GslDataHandle      *dhandle,
   setup->n_values = mhandle->n_values;
   setup->n_channels = mhandle->n_channels;
   setup->xinfos = mhandle->xinfos;
+  setup->mix_freq = mhandle->mix_freq;
+  setup->bit_depth = mhandle->bit_depth;
   
   return BSE_ERROR_NONE;
 }
@@ -387,9 +383,9 @@ gsl_data_handle_new_mem (guint         n_channels,
       mhandle->n_values *= mhandle->n_channels;
       mhandle->values = values;
       mhandle->free_values = free;
-      mhandle->xinfos = bse_xinfos_add_float (mhandle->xinfos, ".mix-freq", mix_freq);
-      mhandle->xinfos = bse_xinfos_add_float (mhandle->xinfos, ".osc-freq", osc_freq);
-      mhandle->xinfos = bse_xinfos_add_num (mhandle->xinfos, ".bit-depth", bit_depth);
+      mhandle->xinfos = bse_xinfos_add_float (mhandle->xinfos, "osc-freq", osc_freq);
+      mhandle->mix_freq = mix_freq;
+      mhandle->bit_depth = bit_depth;
     }
   else
     {
@@ -955,7 +951,7 @@ insert_handle_open (GslDataHandle      *dhandle,
   else
     setup->n_values += ihandle->n_paste_values;
   guint n = gsl_data_handle_bit_depth (ihandle->src_handle);
-  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".bit-depth", MAX (n, ihandle->paste_bit_depth));
+  setup->bit_depth = MAX (n, ihandle->paste_bit_depth);
   
   return BSE_ERROR_NONE;
 }
@@ -1313,6 +1309,7 @@ typedef struct {
   GslLong	    requested_offset;
   GslLong	    requested_length;
   gchar           **xinfos;
+  gfloat            mix_freq;
 } WaveHandle;
 
 static inline const guint G_GNUC_CONST
@@ -1408,6 +1405,12 @@ wave_handle_open (GslDataHandle      *dhandle,
 	setup->n_values = 0;
       setup->n_channels = whandle->n_channels;
       setup->xinfos = whandle->xinfos;
+      setup->bit_depth = wave_format_bit_depth (whandle->format);
+      setup->mix_freq = whandle->mix_freq;
+#ifndef __linux__
+      /* linux does proper caching and WAVs are easily readable */
+      setup->needs_cache = TRUE;
+#endif
       return BSE_ERROR_NONE;
     }
 }
@@ -1520,14 +1523,9 @@ gsl_wave_handle_new (const gchar      *file_name,
       whandle->requested_offset = byte_offset;
       whandle->requested_length = n_values;
       whandle->hfile = NULL;
-      whandle->xinfos = bse_xinfos_dup_consolidated (xinfos);
-      whandle->xinfos = bse_xinfos_add_num (whandle->xinfos, ".bit-depth", wave_format_bit_depth (whandle->format));
-      whandle->xinfos = bse_xinfos_add_float (whandle->xinfos, ".mix-freq", mix_freq);
-      whandle->xinfos = bse_xinfos_add_float (whandle->xinfos, ".osc-freq", osc_freq);
-#ifndef __linux__
-      /* linux does proper caching and WAVs are easily readable */
-      whandle->xinfos = bse_xinfos_add_num (whandle->xinfos, ".needs-cache", 1);
-#endif
+      whandle->xinfos = bse_xinfos_dup_consolidated (xinfos, FALSE);
+      whandle->mix_freq = mix_freq;
+      whandle->xinfos = bse_xinfos_add_float (whandle->xinfos, "osc-freq", osc_freq);
       return &whandle->dhandle;
     }
   else
