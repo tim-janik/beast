@@ -10,8 +10,6 @@ FIXME(urgent):
 - skip and retrigger updates for scope visibility changes
 - add midi control numbers to midi control enum values as tooltips
 - implement display of Note properties next to frequency properties (and nuke note properties from plugins)
-- loading bsewave overrides mixing frequencies from wav-file chunks with the default bsewave mix frequency
-  (should only happen if mixfreq is specified per chunk)
 - ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - pianoroll: select-all/none
