@@ -422,16 +422,16 @@ dav_organ_update_locals (DavOrgan *organ)
 }
 
 /* --- Export to DAV --- */
-#include "./icons/noicon.c"
+#include "./icons/organ.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_organ, "DavOrgan", "BseSource",
     "DavOrgan is a modifiable additive organ synthesizer",
     &type_info_organ,
     "/Source/Organ",
-    { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_WIDTH, NOICON_HEIGHT,
-      NOICON_RLE_PIXEL_DATA, },
+    { ORGAN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      ORGAN_IMAGE_WIDTH, ORGAN_IMAGE_HEIGHT,
+      ORGAN_IMAGE_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };

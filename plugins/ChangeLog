@@ -1,3 +1,10 @@
+Wed Feb 16 01:07:48 2000  Tim Janik  <timj@gtk.org>
+
+	* icons/drum.c: 
+	* icons/drum.xcf: 
+	* icons/organ.c: 
+	* icons/organ.xcf: added two more icons.
+
 Mon Feb  7 03:54:44 2000  Tim Janik  <timj@gtk.org>
 
 	* fldbsepattern.c (test_content_setup): use the useless number as a
