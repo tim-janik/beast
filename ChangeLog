@@ -1,3 +1,16 @@
+Sat Feb  2 12:21:04 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstfiledialog.c: provide radio buttons that
+	actually make sense, i.e. an option about whether to include
+	samples in saved files or not.
+
+	* test/midi-test.bse: use a synthesized oscillator to not
+	point at sample files. (and i won't inline a huge sample,
+	here, just for a midi test).
+
+	* test/osc-test.bse: resurrect this in a version that actually
+	works with the new object layout.
+
 Sat Feb  2 09:52:44 2002  Tim Janik  <timj@gtk.org>
 
 	* configure.in: check for sys/soundcard.h in the OSS check, and

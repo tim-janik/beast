@@ -119,19 +119,20 @@ bst_file_dialog_save (BstFileDialog *fd)
   gchar *file_name;
   GtkWidget *radio;
   BseErrorType error;
-  
+  gboolean self_contained = FALSE;
+
   file_name = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (fd)));
   app = gtk_object_get_data (GTK_OBJECT (fd), "app");
 
   radio = gtk_object_get_data (GTK_OBJECT (fd), "radio-1");
-  if (radio && GTK_TOGGLE_BUTTON (radio)->active)
-    ;
+  if (radio)
+    self_contained = !GTK_TOGGLE_BUTTON (radio)->active;
 
   bst_status_window_push (app);
 
  retry_saving:
 
-  error = bse_project_store_bse (BSE_PROJECT (bse_object_from_id (app->project)), file_name);
+  error = bsw_project_store_bse (app->project, file_name, self_contained);
 
   /* offer retry if file exists
    */
@@ -232,7 +233,7 @@ bst_file_dialog_new_save (BstApp *app)
 			 "parent", frame,
 			 NULL);
   radio1 = gtk_widget_new (GTK_TYPE_RADIO_BUTTON,
-			   "label", "Checkbox1",
+			   "label", "Store references to wave files",
 			   "visible", TRUE,
 			   "parent", vbox,
 			   "can_focus", FALSE,
@@ -240,7 +241,7 @@ bst_file_dialog_new_save (BstApp *app)
   gtk_misc_set_alignment (GTK_MISC (GTK_BIN (radio1)->child), 0, .5);
   gtk_object_set_data (GTK_OBJECT (dialog), "radio-1", radio1);
   radio2 = gtk_widget_new (GTK_TYPE_RADIO_BUTTON,
-			   "label", "Checkbox2",
+			   "label", "Include wave files",
 			   "visible", TRUE,
 			   "parent", vbox,
 			   "group", radio1,
