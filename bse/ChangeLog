@@ -1,3 +1,11 @@
+Sun Nov 14 15:32:57 2004  Tim Janik  <timj@gtk.org>
+
+	* bseengine.[hc]: documentation updates.
+	bse_job_boundary_discard(): implemented jobs to discard modules deferred.
+
+	* bsemidireceiver.cc: use bse_job_boundary_discard() to discard modules,
+	since extra jobs may be queued asyncronously from process()implementations.
+
 Sat Nov 13 20:12:23 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecompat.c: added compat for DavChorus and DavBassFilter.

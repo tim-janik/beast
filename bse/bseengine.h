@@ -180,6 +180,7 @@ BseJob*    bse_job_boundary_access      (BseModule            *module,
                                          BseEngineAccessFunc   access_func,     /* EngineThread */
                                          gpointer              data,
                                          BseFreeFunc           free_func);      /* UserThread */
+BseJob*    bse_job_boundary_discard     (BseModule            *module);
 BseTrans*  bse_trans_open               (void);
 void       bse_trans_add                (BseTrans             *trans,
                                          BseJob               *job);

@@ -854,7 +854,7 @@ destroy_voice_input_L (VoiceInput      *vinput,
   
   if (vinput->table && vinput->iter != vinput->table->end())
     voice_input_remove_from_table_L (vinput);
-  bse_trans_add (trans, bse_job_discard (vinput->fmodule));
+  bse_trans_add (trans, bse_job_boundary_discard (vinput->fmodule));
 }
 
 
@@ -915,7 +915,8 @@ voice_switch_module_boundary_check_U (BseModule *module,
                                       gpointer   data)
 {
   VoiceSwitch *vswitch = (VoiceSwitch*) module->user_data;
-  if (!bse_module_has_source (vswitch->vmodule, 0))
+  if (vswitch->ref_count &&     /* don't queue jobs post-discard */
+      !bse_module_has_source (vswitch->vmodule, 0))
     {
       BseTrans *trans = bse_trans_open ();
       guint i;
@@ -998,8 +999,8 @@ destroy_voice_switch_L (VoiceSwitch *vswitch,
   g_return_if_fail (vswitch->n_vinputs == 0);
   
   tmp_trans = bse_trans_open ();
-  bse_trans_add (tmp_trans, bse_job_discard (vswitch->smodule));
-  bse_trans_add (tmp_trans, bse_job_discard (vswitch->vmodule));
+  bse_trans_add (tmp_trans, bse_job_boundary_discard (vswitch->smodule));
+  bse_trans_add (tmp_trans, bse_job_boundary_discard (vswitch->vmodule));
   /* we can't commit the transaction right away, because the switch
    * module might currently be processing and is about to queue
    * disconnection jobs on the modules we're just discarding.
@@ -1467,7 +1468,7 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
 	      guint midi_channel = cdata->midi_channel;
               self->n_cmodules--;
               self->cmodules[i] = self->cmodules[self->n_cmodules];
-              bse_trans_add (trans, bse_job_discard (cmodule));
+              bse_trans_add (trans, bse_job_boundary_discard (cmodule));
 	      self->remove_control (midi_channel, signals[0], cmodule);
 	      if (signals[1] != signals[0])
 		self->remove_control (midi_channel, signals[1], cmodule);
@@ -1773,10 +1774,17 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
       if (vswitch->vinputs[i]->fmodule == fmodule)
         {
           vswitch->vinputs[i]->ref_count--;
+          /* first, unset ref_count */
           if (!vswitch->vinputs[i]->ref_count)
             {
-              destroy_voice_input_L (vswitch->vinputs[i], trans);
-              vswitch->vinputs[i] = vswitch->vinputs[--vswitch->n_vinputs];
+              VoiceInput *vinput = vswitch->vinputs[i];
+              /* second, unlist vinput */
+              vswitch->vinputs[i] = vswitch->vinputs[--vswitch->n_vinputs]; /* FIXME: need memory-write-barrier */
+              /* last, queue vinput destruction */
+              destroy_voice_input_L (vinput, trans);
+              /* the order of the above steps is important to prevent DSP-threads
+               * from queueing jobs on vinput after destruction has been queued on it
+               */
               need_unref = TRUE;
             }
           fmodule = NULL;

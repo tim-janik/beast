@@ -601,6 +601,8 @@ bse_job_probe_request (BseModule         *module,
  * are executed during flow system progress at specific times.
  * Once the time stamp counter of @module passed @tick_stamp,
  * @access_func is called to modify the module's state.
+ * Flow jobs queued for executaion after a node's destruction
+ * will not be executed but destroyed together with the node.
  * This function is MT-safe and may be called from any thread.
  */
 BseJob*
@@ -647,6 +649,8 @@ bse_job_flow_access (BseModule    *module,
  * Boundary jobs are executed at block boundaries, after all
  * ordinary jobs have been processed and before global time
  * stamp counter passed @tick_stamp.
+ * Boundary jobs queued for executaion after a node's destruction
+ * will not be executed but destroyed together with the node.
  * This function is MT-safe and may be called from any thread.
  */
 BseJob*
@@ -676,6 +680,51 @@ bse_job_boundary_access (BseModule    *module,
   job->data.timed_job.node = ENGINE_NODE (module);
   job->data.timed_job.tjob = tjob;
   
+  return job;
+}
+
+static void
+bse_engine_boundary_discard (BseModule      *module,
+                             gpointer        data)
+{
+  BseTrans *trans = bse_trans_open();
+  bse_trans_add (trans, bse_job_discard (module));
+  bse_trans_commit (trans);
+}
+
+/**
+ * bse_job_boundary_discard
+ * @module:      The module to access
+ * @Returns:     New job suitable for bse_trans_add()
+ *
+ * Discard @module at block boundaries, after all ordinary jobs
+ * have been processed. This job type should be used instead of
+ * jobs from bse_job_discard() in situations where queueing of
+ * past-discard jobs before the next block boundary is hard to
+ * avoid (such as queing disconnection/suspend jobs from within
+ * process()).
+ * This function is MT-safe and may be called from any thread.
+ */
+BseJob*
+bse_job_boundary_discard (BseModule *module)
+{
+  BseJob *job;
+  EngineTimedJob *tjob;
+
+  g_return_val_if_fail (module != NULL, NULL);
+
+  tjob = g_new0 (EngineTimedJob, 1);
+  tjob->job_type = ENGINE_JOB_BOUNDARY_JOB;
+  tjob->free_func = NULL;
+  tjob->data = NULL;
+  tjob->tick_stamp = 0;
+  tjob->access_func = bse_engine_boundary_discard;
+
+  job = sfi_new_struct0 (BseJob, 1);
+  job->job_id = ENGINE_JOB_BOUNDARY_JOB;
+  job->data.timed_job.node = ENGINE_NODE (module);
+  job->data.timed_job.tjob = tjob;
+
   return job;
 }
 
