@@ -112,12 +112,14 @@ insert_note_setup (BseProcedureClass *proc,
 				      0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
   *(ipspecs++) = bse_param_spec_uint ("focus_row", NULL, NULL,
 				      0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
+#if 0
   *(ipspecs++) = bse_param_spec_note ("note", "Note", "Note to play",
                                       BSE_MIN_NOTE, BSE_MAX_NOTE,
 				      1, BSE_NOTE_VOID, TRUE,
 				      BSE_PARAM_DEFAULT);
   *(ipspecs++) = bse_param_spec_item ("instrument", "Instrument", "Instrument to use",
                                       BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
+#endif
   /* output parameters */
 }
 
@@ -130,8 +132,8 @@ insert_note_exec (BseProcedureClass *proc,
   BsePattern *pattern       = (BsePattern*) (iparams++)->value.v_item;
   guint cur_c               = (iparams++)->value.v_uint;
   guint cur_r               = (iparams++)->value.v_uint;
-  gint note_val	            = (iparams++)->value.v_note;
-  BseInstrument* instrument = (BseInstrument*) (iparams++)->value.v_item;
+  gint note_val	            = BSE_NOTE_VOID; /* (iparams++)->value.v_note; */
+  BseInstrument* instrument = NULL; /* (BseInstrument*) (iparams++)->value.v_item; */
   
   guint r;
   

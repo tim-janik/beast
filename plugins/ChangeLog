@@ -1,3 +1,9 @@
+Sun Mar 12 23:40:17 2000  Tim Janik  <timj@gtk.org>
+
+	* fldbsepattern.c (insert_note_exec): scratched the note_val and
+	instrument parameters, so this procedure can be used for generic
+	note insertions (e.g. bound to an accelerator).
+
 Fri Mar 10 00:10:04 2000  Tim Janik  <timj@gtk.org>
 
 	* icons/canyon.xcf:
