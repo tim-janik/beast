@@ -1,4 +1,6 @@
 FIXME(release-critical):
+- test fft on 2, 3, 4 etc channels       
+- spectrogram needs to show "channel is unconnected" label instead of black background
 - ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - pianoroll: select-all/none
@@ -16,12 +18,9 @@ FIXME(release-critical):
   implement time parser for this in beast, merge with travelad parser
 - driver interface: support multilpe MIDI devices
 - popdown scrollgraph on ::release
-- menu button: keep the popup menu *onscreen*, even if the button is partially offscreen
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 - add: /demo/simple/stereo pipe
        /demo/simple/MIDI piano
-- test fft on 2, 3, 4 etc channels       
-- spectrogram needs to show "channel is unconnected" label instead of black background
 TODO:
 - support various fft windows for fft probes
 - implement float-ffts
