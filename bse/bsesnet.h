@@ -68,10 +68,6 @@ struct _BseSNet
   GSList	*tmp_context_children;
 
   guint		 port_unregistered_id;
-
-  guint		 cid_counter;
-  guint		 n_cids;
-  guint		*cids;
 };
 struct _BseSNetClass
 {

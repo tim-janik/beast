@@ -1,3 +1,12 @@
+Mon Feb 17 15:31:41 2003  Tim Janik  <timj@gtk.org>
+
+	* bseobject.c:  use global ID allocator.
+
+	* bsesnet.[hc]: nuke per-object id allocator, use global ID allocator.
+
+	* bseutils.[hc]: removed old functions. updated bse_string_hash().
+	added global ID allocator.
+
 Fri Feb 14 07:50:29 2003  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.[hc]: major overhaul. made BseStorage an object.

@@ -225,7 +225,12 @@ bse_part_alloc_id (BsePart *self,
   guint next, id;
   
   g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
-  
+
+  /* we keep a list of ids to implement a fast lookup
+   * from id to tick of the id owning event. ticks
+   * >= BSE_PART_INVAL_TICK_FLAG are not allocated.
+   */
+
   id = self->head_id;
   next = self->ids[id - 1];
   g_assert (next >= BSE_PART_INVAL_TICK_FLAG);	// FIXME: paranoid

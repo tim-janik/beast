@@ -261,13 +261,9 @@ object_unames_ht_insert (BseObject *object)
 static void
 bse_object_init (BseObject *object)
 {
-  static guint unique_id = 1;
-  
   object->flags = 0;
   object->lock_count = 0;
-  object->unique_id = unique_id++;
-  if (!unique_id)
-    g_error ("object ID overflow");
+  object->unique_id = bse_id_alloc ();
   sfi_ustore_insert (object_id_ustore, object->unique_id, object);
   
   object_unames_ht_insert (object);
@@ -310,8 +306,10 @@ bse_object_do_finalize (GObject *gobject)
 {
   BseObject *object = BSE_OBJECT (gobject);
 
+  bse_id_free (object->unique_id);
   sfi_ustore_remove (object_id_ustore, object->unique_id);
-  
+  object->unique_id = 0;
+
   /* remove object from hash list *before* clearing data list,
    * since the object uname is kept in the datalist!
    */

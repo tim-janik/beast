@@ -1101,39 +1101,61 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
 }
 
 
+/* --- ID allocator --- */
+#define	ID_WITHHOLD_BUFFER_SIZE		59
+static gulong  id_counter = 1;
+static gulong  n_buffer_ids = 0;
+static gulong  id_buffer[ID_WITHHOLD_BUFFER_SIZE];
+static gulong  id_buffer_pos = 0;
+static gulong  n_free_ids = 0;
+static gulong *free_id_buffer = NULL;
+
+void
+bse_id_free (gulong id)
+{
+  g_return_if_fail (id > 0);
+
+  /* release oldest withheld id */
+  if (n_buffer_ids >= ID_WITHHOLD_BUFFER_SIZE)
+    {
+      gulong n = n_free_ids++;
+      gulong size = sfi_alloc_upper_power2 (n_free_ids);
+      if (size != sfi_alloc_upper_power2 (n))
+	free_id_buffer = g_renew (gulong, free_id_buffer, size);
+      free_id_buffer[n] = id_buffer[id_buffer_pos];
+    }
+
+  /* release id */
+  id_buffer[id_buffer_pos++] = id;
+  n_buffer_ids = MAX (n_buffer_ids, id_buffer_pos);
+  if (id_buffer_pos >= ID_WITHHOLD_BUFFER_SIZE)
+    id_buffer_pos = 0;
+}
+
+gulong
+bse_id_alloc (void)
+{
+  if (n_free_ids)
+    {
+      gulong random_pos = (id_counter + id_buffer[id_buffer_pos]) % n_free_ids--;
+      gulong id = free_id_buffer[random_pos];
+      free_id_buffer[random_pos] = free_id_buffer[n_free_ids];
+      return id;
+    }
+  return id_counter++;
+}
+
+
 /* --- miscellaeous --- */
-gchar*
-bse_sample_name_make_valid (gchar *string)
-{
-  return string;
-}
-
-gchar*
-bse_song_name_make_valid (gchar *string)
-{
-  return string;
-}
-
 guint
 bse_string_hash (gconstpointer string)
 {
+  const gchar *p = string;
   guint h = 0;
-  
-  if (string)
-    {
-      const gchar *p;
-      
-      for (p = string; *p != 0; p += 1)
-	{
-	  guint g;
-	  
-	  h = (h << 4) + *p;
-	  g = h & 0xf0000000;
-	  if (g)
-	    h = h ^ (g >> 26);
-	}
-    }
-  
+  if (!p)
+    return 1;
+  for (; *p; p++)
+    h = (h << 5) - h + *p;
   return h;
 }
 
@@ -1145,13 +1167,6 @@ bse_string_equals (gconstpointer string1,
     return strcmp (string1, string2) == 0;
   else
     return string1 == string2;
-}
-
-void
-bse_nullify (gpointer *location)
-{
-  if (location)
-    *location = NULL;
 }
 
 void

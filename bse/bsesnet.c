@@ -172,9 +172,6 @@ bse_snet_init (BseSNet *snet)
   snet->oport_names = NULL;
   snet->port_array = NULL;
   snet->port_unregistered_id = 0;
-  snet->cid_counter = 0;
-  snet->n_cids = 0;
-  snet->cids = NULL;
 }
 
 static void
@@ -682,36 +679,6 @@ bse_snet_set_oport_dest (BseSNet     *snet,
     port_delete (snet, port);
 }
 
-static void
-bse_snet_free_cid (BseSNet *snet,
-		   guint    cid)
-{
-  guint i;
-  
-  g_return_if_fail (BSE_SOURCE_PREPARED (snet));
-  
-  i = snet->n_cids++;
-  snet->cids = g_renew (guint, snet->cids, snet->n_cids);
-  snet->cids[i] = cid;
-}
-
-static guint
-bse_snet_alloc_cid (BseSNet *snet)
-{
-  guint i, cid;
-  
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (snet), 0);
-  
-  while (snet->n_cids < 2)
-    bse_snet_free_cid (snet, ++snet->cid_counter);
-  
-  i = rand () % snet->n_cids;
-  cid = snet->cids[i];
-  snet->n_cids--;
-  snet->cids[i] = snet->cids[snet->n_cids];
-  return cid;
-}
-
 static inline ContextData*
 find_context_data (BseSNet *self,
 		   guint    context_id)
@@ -761,7 +728,7 @@ free_context_data (BseSource *source,
   g_return_if_fail (cdata->n_branches == 0);
   
   bse_midi_receiver_unref (cdata->midi_receiver);
-  bse_snet_free_cid (self, cdata->context_id);
+  bse_id_free (cdata->context_id);
   if (cdata->parent_context)
     {
       ContextData *pdata = find_context_data (self, cdata->parent_context);
@@ -796,8 +763,7 @@ bse_snet_create_context (BseSNet         *self,
   g_return_val_if_fail (midi_receiver != NULL, 0);
   g_return_val_if_fail (trans != NULL, 0);
   
-  cid = bse_snet_alloc_cid (self);
-  g_return_val_if_fail (cid > 0, 0);
+  cid = bse_id_alloc ();
   g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), cid) == FALSE, 0);
   
   cdata = create_context_data (self, cid, 0, midi_receiver, midi_channel);
@@ -837,7 +803,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
 	self->tmp_context_children = g_slist_prepend (self->tmp_context_children, node->data);
       self->tmp_context_children = g_slist_prepend (self->tmp_context_children, context_merger);
       bse_source_free_collection (ring);
-      bcid = bse_snet_alloc_cid (self);
+      bcid = bse_id_alloc ();
       cdata = create_context_data (self, bcid, context, midi_receiver, midi_channel);
       bse_source_create_context_with_data (BSE_SOURCE (self), bcid, cdata, free_context_data, trans);
       g_assert (self->tmp_context_children == NULL);
@@ -916,7 +882,6 @@ static void
 bse_snet_reset (BseSource *source)
 {
   BseSNet *self = BSE_SNET (source);
-  guint i;
   
   g_return_if_fail (self->port_array != NULL);
   
@@ -933,14 +898,6 @@ bse_snet_reset (BseSource *source)
     }
   g_bsearch_array_free (self->port_array, &port_array_config);
   self->port_array = NULL;
-  
-  i = self->cid_counter - self->n_cids;
-  if (i)
-    g_warning ("%s: %u context IDs still in use", G_STRLOC, i);
-  g_free (self->cids);
-  self->cid_counter = 0;
-  self->n_cids = 0;
-  self->cids = NULL;
   
   bse_object_unlock (BSE_OBJECT (self));
 }

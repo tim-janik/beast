@@ -190,7 +190,9 @@ bse_server_init (BseServer *server)
 {
   gchar *file_name;
   gint fd;
-  
+
+  g_assert (BSE_OBJECT_ID (server) == 1);	/* assert being the first object */
+
   server->engine_source = NULL;
   server->projects = NULL;
   server->dev_use_count = 0;

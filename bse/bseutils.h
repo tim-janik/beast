@@ -84,19 +84,15 @@ gboolean        bse_darrays_match_freq	        (gfloat          match_freq,
 BseIcon* bse_icon_from_pixdata (const BsePixdata *pixdata);
 
 
-/* --- miscellaeous --- */
-/* these functions mutate special characters to conform to
- * internal rules about sample names. operation is performed
- * on the source string.
- */
-gchar*		bse_sample_name_make_valid	(gchar		*string);
-gchar*		bse_song_name_make_valid	(gchar		*string);
+/* --- ID allocator --- */
+gulong	bse_id_alloc	(void);
+void	bse_id_free	(gulong	id);
 
+
+/* --- miscellaeous --- */
 guint		bse_string_hash			(gconstpointer   string);
 gint		bse_string_equals		(gconstpointer	 string1,
 						 gconstpointer	 string2);
-
-void		bse_nullify			(gpointer	*location);
 
 
 /* --- file utils --- */
