@@ -3,7 +3,7 @@
 @settitle BEAST Architecture
 @footnotestyle end
 @c %**end of header
-@c revision-date: $Id: architecture.texi,v 1.1 2004/12/17 14:58:49 timj Exp $
+@c revision-date: $Id: architecture.texi,v 1.2 2004/12/17 15:33:37 timj Exp $
 
 @include texiutils.texi
 
@@ -50,7 +50,21 @@ audio synthesis package and related components.
 @enumerate
 @item BSE-Shell - a Guile based scheme shell (@uref{beast-man://1/bsesh,,bsesh}) for @bse used for scripting @beast and to run standalone scripts
 @item @beast - a Gtk+ based GUI front-end (@uref{beast-man://1/beast,,beast}) for @bse
-@item @bse - the sequencing and synthesis core
+@item @bse - the sequencing and synthesis core, consisting of:
+@itemize
+@item Plugin interface
+@item MIDI Event processing logic
+@item MIDI File import
+@item Undo/redo stack
+@item Object framework
+@item Glue layer + scripting objects
+@item Song, track, part, mixer and wave objects
+@item Synthesis networks
+@item Sequencer (seperately threaded)
+@item Input output drivers for PCM and MIDI
+@item OSS MIDI and PCM driver
+@item Standard synthesis modules
+@end itemize
 @end enumerate
 
 @bye
