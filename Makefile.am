@@ -30,5 +30,4 @@ EXTRA_DIST += $(strip		\
 	intltool-extract.in     \
 	intltool-merge.in       \
 	intltool-update.in	\
-	intltool-modules/XML/Parser/Style/OrigTree.pm \
 )
