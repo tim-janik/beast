@@ -45,7 +45,6 @@ extern "C" {
       BSE_MICRO_VERSION >= (micro)))
 
 
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -554,10 +554,19 @@ bse_plugin_lookup (const gchar *name)
   return NULL;
 }
 
-GSList*
-bse_plugin_dir_list_files (const gchar *dir_list)
+#include "topconfig.h"
+
+SfiRing*
+bse_plugin_path_list_files (void)
 {
-  GSList *slist = bse_search_path_list_files (dir_list, "*.la", NULL, 0);
-  
-  return g_slist_sort (slist, (GCompareFunc) strcmp);
+  SfiRing *ring1, *ring2 = NULL;
+
+  ring1 = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.la", 0);
+  ring1 = sfi_ring_sort (ring1, (GCompareFunc) strcmp);
+
+  if (BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
+    ring2 = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.la", 0);
+  ring2 = sfi_ring_sort (ring2, (GCompareFunc) strcmp);
+
+  return sfi_ring_concat (ring1, ring2);
 }

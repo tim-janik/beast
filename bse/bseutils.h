@@ -81,20 +81,6 @@ gint		bse_string_equals		(gconstpointer	 string1,
 						 gconstpointer	 string2);
 
 
-/* --- file utils --- */
-void		bse_str_slist_free		(GSList		*slist);
-GSList*		bse_path_pattern_list_matches	(const gchar	*file_pattern,
-						 const gchar	*cwd,
-						 GFileTest	 file_test);
-GSList*		bse_search_path_list_entries	(const gchar	*search_path);
-GSList*		bse_search_path_list_matches	(const gchar	*search_path,
-						 const gchar	*cwd);
-GSList*		bse_search_path_list_files	(const gchar	*search_path,
-						 const gchar	*file_pattern,
-						 const gchar	*cwd,
-						 GFileTest	 file_test);
-
-
 /* --- bbuffer utils --- */
 void	bse_bbuffer_puts	(gchar       	 bbuffer[BSE_BBUFFER_SIZE],
 				 const gchar	*string);

@@ -31,6 +31,8 @@ GslDataHandle*	gsl_data_handle_new_mad		(const gchar *file_name,
 GslErrorType	gsl_data_handle_mad_testopen	(const gchar *file_name,
 						 guint       *n_channels,
 						 gfloat      *mix_freq);
+const gchar*    gsl_data_handle_mad_version     (void);
+
 G_END_DECLS
 
 #endif /* __GSL_DATA_HANDLE_MAD_H__ */

@@ -52,7 +52,7 @@ GType		bse_script_proc_register	(const gchar	*script_file,
 						 const gchar	*authors,
 						 const gchar	*copyright,
 						 SfiRing	*params);
-GSList*		bse_script_dir_list_files	(const gchar	*dir_list);
+SfiRing*	bse_script_path_list_files	(void);
 BseErrorType    bse_script_file_register	(const gchar	*file_name,
 						 BseJanitor    **janitor_p);
 GValue*		bse_script_check_client_msg	(SfiGlueDecoder *decoder,

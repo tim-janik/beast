@@ -146,6 +146,7 @@ bse_param_spec_enum (const gchar    *name,
 /* --- SFIDL includes --- */
 /* provide common constants */
 #include "bseglobals.h"
+#include "topconfig.h"
 /* provide IDL constants */
 #define	KAMMER_FREQ	BSE_KAMMER_FREQUENCY_f
 #define	KAMMER_NOTE	BSE_KAMMER_NOTE

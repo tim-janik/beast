@@ -100,12 +100,12 @@ struct _BseLadspaInfo
 
 
 /* --- public API --- */
-BseLadspaInfo*	 bse_ladspa_info_assemble	  (const gchar		*file_path,
+BseLadspaInfo*	bse_ladspa_info_assemble	  (const gchar		*file_path,
 						   gconstpointer	 ladspa_descriptor);
-void		 bse_ladspa_info_free		  (BseLadspaInfo	*bli);
-GSList*		 bse_ladspa_plugin_dir_list_files (const gchar		*dir_list);
-const gchar*     bse_ladspa_plugin_check_load     (const gchar		*file_name);
-gchar*		 bse_ladspa_info_port_2str	  (BseLadspaPort	*port);
+void		bse_ladspa_info_free		  (BseLadspaInfo	*bli);
+SfiRing*	bse_ladspa_plugin_path_list_files (void);
+const gchar*    bse_ladspa_plugin_check_load      (const gchar		*file_name);
+gchar*		bse_ladspa_info_port_2str	  (BseLadspaPort	*port);
 
 G_END_DECLS
 

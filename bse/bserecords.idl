@@ -1,4 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface Definition Language	-*-mode: c++;-*-
+/* SFI - Synthesis Fusion Kit Interface Definition Language     -*-mode: c++;-*-
  * Copyright (C) 2002, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
@@ -215,41 +215,41 @@ sequence IntSeq {
   Int    ints;
 };
 sequence NoteSeq {
-  Int   notes	= Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
+  Int    notes   = Note ("Note", "", KAMMER_NOTE, ":readwrite"); /* FIXME: s/notes/note/ for pspecs, but not the C API */
 };
 sequence StringSeq {
   String strings;
 };
 sequence ProxySeq {
-  Info BLURB = ("An item list");
+  Info   BLURB = ("An item list");
   Proxy  proxies;
-  Info HELP = ("A list of BSE objects, usually items.");
+  Info   HELP = ("A list of BSE objects, usually items.");
 };
 
 record PartNote
 {
   Info     BLURB      = "Part specific note representation";
-  Int      id		= UInt ("ID", "", 0, ":readwrite");
-  Int      tick	= ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
-  Int	     duration	= ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
-  Int	     note	= Note ("Note", "", KAMMER_NOTE, ":readwrite");
-  Int      fine_tune	= ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
-  Real     velocity	= ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
+  Int      id           = UInt ("ID", "", 0, ":readwrite");
+  Int      tick = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int      duration   = ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
+  Int      note       = Note ("Note", "", KAMMER_NOTE, ":readwrite");
+  Int      fine_tune    = ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
+  Real     velocity     = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
   Bool     selected   = ("Selected", "", FALSE, ":readwrite");
 };
 
 sequence PartNoteSeq {
-  Info BLURB = "A list of part notes";
+  Info     BLURB = "A list of part notes";
   PartNote pnotes;
 };
 
 record PartControl
 {
   Info           BLURB        = "Part specific control event representation";
-  Int            id		= UInt ("ID", "", 0, ":readwrite");
-  Int            tick	        = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int            id           = UInt ("ID", "", 0, ":readwrite");
+  Int            tick         = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
   MidiSignalType control_type;
-  Real           value	= ("Value", "", 0, -1, +1, 0.1, ":readwrite");
+  Real           value        = ("Value", "", 0, -1, +1, 0.1, ":readwrite");
   Bool           selected     = ("Selected", "", FALSE, ":readwrite");
 };
 
@@ -260,36 +260,36 @@ sequence PartControlSeq {
 
 record NoteDescription
 {
-  Int	   note		 = Note ("Note", "", KAMMER_NOTE, ":readwrite");
-  Int	   octave	 = Octave ("Octave", "", KAMMER_OCTAVE, ":readwrite");
-  Real   freq		 = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
-  Int    fine_tune	 = FineTune ("Fine Tune", "", ":readwrite");
-  Int    semitone	 = Int ("Semitone", "", 0, 0, 11, 1, ":readwrite");
+  Int    note            = Note ("Note", "", KAMMER_NOTE, ":readwrite");
+  Int    octave          = Octave ("Octave", "", KAMMER_OCTAVE, ":readwrite");
+  Real   freq            = Freq ("Frequency", "", KAMMER_FREQ, ":readwrite");
+  Int    fine_tune       = FineTune ("Fine Tune", "", ":readwrite");
+  Int    semitone        = Int ("Semitone", "", 0, 0, 11, 1, ":readwrite");
   Bool   upshift;
-  Int    letter	 = Int ("Letter", "International abbreviation letter for this note", 64, 32, 126, 1, ":readwrite");
-  String name		 = String ("Name", "", "", ":readwrite");
+  Int    letter          = Int ("Letter", "International abbreviation letter for this note", 64, 32, 126, 1, ":readwrite");
+  String name            = String ("Name", "", "", ":readwrite");
   /* constants */
-  Int	   max_fine_tune = Int ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
-  Int	   kammer_note	 = Int ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
-  Info   HELP          = "A note description provides all necessary details about a specific note. "
-                         "Various procedures exist to retrieve a note description, given different "
-                         "key values. The max_fine_tune and kammer_note fields are constants, which "
-                         "are provided for compatibility reasons and will vanish in future APIs.";
+  Int    max_fine_tune   = Int ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
+  Int    kammer_note     = Int ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
+  Info   HELP            = "A note description provides all necessary details about a specific note. "
+                           "Various procedures exist to retrieve a note description, given different "
+                           "key values. The max_fine_tune and kammer_note fields are constants, which "
+                           "are provided for compatibility reasons and will vanish in future APIs.";
 };
 
 record NoteSequence
 {
-  Int	    offset	= Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
-  NoteSeq notes	= ("Notes", "Sequence of notes", ":readwrite");
+  Int     offset = Note ("Note Offset", "Center/base note", KAMMER_NOTE, ":readwrite");
+  NoteSeq notes  = ("Notes", "Sequence of notes", ":readwrite");
 };
 
 record Icon
 {
   Info   BLURB           = "BSE icon representation.";
-  Int	   bytes_per_pixel = ("Bytes Per Pixel", "Bytes Per Pixel (3:RGB, 4:RGBA, 0:NONE)", 4, 3, 4, 1, ":readwrite");
-  Int	   width	   = ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  Int	   height	   = ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
-  BBlock pixels	   = ("Pixels", "Pixel array of width*height*bytes_per_pixel bytes", ":readwrite");
+  Int    bytes_per_pixel = ("Bytes Per Pixel", "Bytes Per Pixel (3:RGB, 4:RGBA, 0:NONE)", 4, 3, 4, 1, ":readwrite");
+  Int    width           = ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+  Int    height          = ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
+  BBlock pixels          = ("Pixels", "Pixel array of width*height*bytes_per_pixel bytes", ":readwrite");
 };
 
 record Category
@@ -308,8 +308,8 @@ sequence CategorySeq {
 
 record Dot
 {
-  Real	x;
-  Real	y;
+  Real  x;
+  Real  y;
 };
 
 sequence DotSeq {
@@ -318,9 +318,9 @@ sequence DotSeq {
 
 /* BSE Track structures */
 record TrackPart {
-  Int		tick	 = ("Tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
-  Proxy	part;
-  Int		duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  Proxy part;
+  Int           duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
 };
 sequence TrackPartSeq {
   TrackPart tparts;
@@ -329,48 +329,73 @@ sequence TrackPartSeq {
 /* BSE Song timing structure */
 record SongTiming {
   /* song position timing applies to */
-  Int		tick	    = ("Current tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  Int   tick        = ("Current tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
   /* tempo */
-  Real	bpm	    = ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, SFI_PARAM_DEFAULT);
+  Real  bpm         = ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, SFI_PARAM_DEFAULT);
   /* signature */
-  Int		nominator   = ("Nominator", "Number of notes per measure", 4, 1, 256, 2, SFI_PARAM_DEFAULT);
-  Int		denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, SFI_PARAM_DEFAULT);
+  Int   nominator   = ("Nominator", "Number of notes per measure", 4, 1, 256, 2, SFI_PARAM_DEFAULT);
+  Int   denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, SFI_PARAM_DEFAULT);
   /* sequencer timing */
-  Int		tpqn	    = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
-  Int		tpt	    = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
+  Int   tpqn        = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
+  Int   tpt         = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
 };
 
 record SampleFileInfo {
-  String	file	= ("Filename", NULL, NULL, SFI_PARAM_DEFAULT);
-  Int		size	= ("File Size", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_DEFAULT);
-  Num		mtime	= ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, SFI_PARAM_DEFAULT);
-  String	loader	= ("Loader", NULL, NULL, SFI_PARAM_DEFAULT);
-  StringSeq	waves	= (NULL, NULL, SFI_PARAM_DEFAULT);
-  Int		error	= ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_DEFAULT); // FIXME: use BseErrorType here
+  String        file    = ("Filename", NULL, NULL, SFI_PARAM_DEFAULT);
+  Int           size    = ("File Size", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_DEFAULT);
+  Num           mtime   = ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, SFI_PARAM_DEFAULT);
+  String        loader  = ("Loader", NULL, NULL, SFI_PARAM_DEFAULT);
+  StringSeq     waves   = (NULL, NULL, SFI_PARAM_DEFAULT);
+  Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_DEFAULT); // FIXME: use BseErrorType here
 };
 
 /* BSE Global Config */
 record GConfig {
+  group "Search Paths" {
+    String sample_path     = ("Sample Path",
+                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                              "find audio samples. ", BSE_PATH_USER_DATA("/samples"), STANDARD ":searchpath");
+    String effect_path     = ("Effect Path",
+                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                              "find BSE effect files. ", BSE_PATH_USER_DATA("/effects"), STANDARD ":searchpath");
+    String instrument_path = ("Instrument Path",
+                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                              "find BSE instrument files. ", BSE_PATH_USER_DATA("/instruments"), STANDARD ":searchpath");
+    String script_path     = ("Script Path",
+                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                              "find BSE scheme scripts. ", BSE_PATH_USER_DATA("/scripts"), STANDARD ":searchpath");
+    String plugin_path     = ("Plugin Path",
+                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                              "find BSE plugins. This path is searched for in addition to the standard BSE plugin "
+                              "location on this system.",
+                              NULL, STANDARD ":searchpath");
+    String ladspa_path     = ("LADSPA Path",
+                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                              "find LADSPA plugins. This path is searched for in addition to the standard LADSPA "
+                              "location on this system. LADSPA is the Linux Audio Developer's Simple Plugin API, "
+                              "more informations about LADSPA plugins can be found at http:/""/www.ladspa.org/.",
+                              NULL, STANDARD ":searchpath");
+  };
   group "Synthesis Settings" {
-    Int  synth_block_size	= ("Synth Block Size",
-                                   "Synthesis buffer size, smaller values may reduce latency but "
-                                   "increase CPU overhead",
-                                   256, 4, 4096, 4,
-                                   SFI_PARAM_DEFAULT ":scale");
-    Int  synth_mixing_freq	= ("Synth Mixing Frequency",
-                                   "Synthesis mixing frequency, common values are: 22050, 44100, 48000",
-                                   44100, 8000, 192000, 0, SFI_PARAM_DEFAULT);
+    Int  synth_block_size  = ("Synth Block Size",
+                              "Synthesis buffer size, smaller values may reduce latency but "
+                              "increase CPU overhead",
+                              256, 4, 4096, 4,
+                              SFI_PARAM_DEFAULT ":scale");
+    Int  synth_mixing_freq = ("Synth Mixing Frequency",
+                              "Synthesis mixing frequency, common values are: 22050, 44100, 48000",
+                              44100, 8000, 192000, 0, SFI_PARAM_DEFAULT);
   };
   group "MIDI" {
-    Bool invert_sustain	= ("Invert Sustain Pedal",
+    Bool invert_sustain = ("Invert Sustain Pedal",
                            "Invert the state of sustain (damper) pedal so on/off meanings are reversed",
                            FALSE, SFI_PARAM_DEFAULT);
   };
   group "Stepping Rates" {
-    Real step_volume_dB	= ("Volume [dB] Steps", "Step width for volume in decibell",
+    Real step_volume_dB = ("Volume [dB] Steps", "Step width for volume in decibell",
                            0.1, 0.001, 5, 0.01, SFI_PARAM_DEFAULT);
-    Int  step_bpm		= ("BPM Steps", "Step width for beats per minute",
-                                   10, 1, 50, 1, SFI_PARAM_DEFAULT);
+    Int  step_bpm       = ("BPM Steps", "Step width for beats per minute",
+                           10, 1, 50, 1, SFI_PARAM_DEFAULT);
   };
 };
 

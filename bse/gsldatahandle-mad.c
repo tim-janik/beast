@@ -738,6 +738,12 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
   return GSL_ERROR_NONE;
 }
 
+const gchar*
+gsl_data_handle_mad_version (void)
+{
+  return MAD_VERSION;
+}
+
 #else	/* !GSL_HAVE_LIBMAD */
 
 GslDataHandle*
@@ -753,6 +759,12 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
                               gfloat      *mix_freq)
 {
   return GSL_ERROR_FORMAT_UNKNOWN;
+}
+
+const gchar*
+gsl_data_handle_mad_version (void)
+{
+  return NULL;
 }
 
 #endif	/* !GSL_HAVE_LIBMAD */

@@ -380,9 +380,8 @@ BODY (BseProcedureClass *proc,
   static gboolean registration_done = FALSE;
   /* extract parameter values */
   BseServer *server	       = bse_value_get_object (in_values++);
-  const gchar *path            = BSE_PATH_SCRIPTS;
   ScriptRegistration *scr_list = NULL;
-  GSList *free_list, *list;
+  SfiRing *ring;
 
   /* check parameters */
   if (!BSE_IS_SERVER (server))
@@ -395,17 +394,15 @@ BODY (BseProcedureClass *proc,
     }
   registration_done = TRUE;
 
-  list = bse_search_path_list_files (path, "*.scm", NULL, G_FILE_TEST_IS_REGULAR);
-  free_list = g_slist_sort (list, (GCompareFunc) strcmp);
-  for (list = free_list; list; list = list->next)
+  ring = bse_script_path_list_files ();
+  while (ring)
     {
       ScriptRegistration *scr = g_new0 (ScriptRegistration, 1);
-      scr->script = list->data;
+      scr->script = sfi_ring_pop_head (&ring);
       scr->register_func = bse_script_file_register;
       scr->next = scr_list;
       scr_list = scr;
     }
-  g_slist_free (free_list);
 
   g_object_set_data (server, "script-registration-queue", scr_list);
   bse_idle_normal (register_scripts, server);
@@ -417,16 +414,16 @@ static gboolean
 register_core_plugins (gpointer data)
 {
   BseServer *server = data;
-  GSList *plugin_slist = g_object_get_data (server, "plugin-registration-queue");
+  SfiRing *plugins = g_object_get_data (server, "plugin-registration-queue");
   const gchar *error;
 
-  if (plugin_slist)
+  if (plugins)
     {
-      g_object_set_data (server, "plugin-registration-queue", plugin_slist->next);
-      error = bse_plugin_check_load (plugin_slist->data);
-      bse_server_registration (server, BSE_REGISTER_PLUGIN, plugin_slist->data, error);
-      g_free (plugin_slist->data);
-      g_slist_free_1 (plugin_slist);
+      gchar *name = sfi_ring_pop_head (&plugins);
+      g_object_set_data (server, "plugin-registration-queue", plugins);
+      error = bse_plugin_check_load (name);
+      bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
+      g_free (name);
     }
   else
     {
@@ -448,7 +445,7 @@ BODY (BseProcedureClass *proc,
   static gboolean registration_done = FALSE;
   /* extract parameter values */
   BseServer *server	= bse_value_get_object (in_values++);
-  GSList *slist;
+  SfiRing *ring;
 
   /* check parameters */
   if (!BSE_IS_SERVER (server))
@@ -461,8 +458,8 @@ BODY (BseProcedureClass *proc,
     }
   registration_done = TRUE;
 
-  slist = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
-  g_object_set_data (server, "plugin-registration-queue", slist);
+  ring = bse_plugin_path_list_files ();
+  g_object_set_data (server, "plugin-registration-queue", ring);
 
   bse_idle_normal (register_core_plugins, server);
 
@@ -473,7 +470,7 @@ static gboolean
 register_ladspa_plugins (gpointer data)
 {
   BseServer *server = data;
-  GSList *ladspa_slist = g_object_get_data (server, "ladspa-registration-queue");
+  SfiRing *lplugins = g_object_get_data (server, "ladspa-registration-queue");
   const gchar *error;
 
   if (g_object_get_data (server, "plugin-registration-queue"))
@@ -482,13 +479,13 @@ register_ladspa_plugins (gpointer data)
       return TRUE;
     }
 
-  if (ladspa_slist)
+  if (lplugins)
     {
-      g_object_set_data (server, "ladspa-registration-queue", ladspa_slist->next);
-      error = bse_ladspa_plugin_check_load (ladspa_slist->data);
-      bse_server_registration (server, BSE_REGISTER_PLUGIN, ladspa_slist->data, error);
-      g_free (ladspa_slist->data);
-      g_slist_free_1 (ladspa_slist);
+      gchar *name = sfi_ring_pop_head (&lplugins);
+      g_object_set_data (server, "ladspa-registration-queue", lplugins);
+      error = bse_ladspa_plugin_check_load (name);
+      bse_server_registration (server, BSE_REGISTER_PLUGIN, name, error);
+      g_free (name);
     }
   else
     {
@@ -510,8 +507,7 @@ BODY (BseProcedureClass *proc,
   static gboolean registration_done = FALSE;
   /* extract parameter values */
   BseServer *server	= bse_value_get_object (in_values++);
-  gchar *paths;
-  GSList *slist;
+  SfiRing *ring;
 
   /* check parameters */
   if (!BSE_IS_SERVER (server))
@@ -524,14 +520,8 @@ BODY (BseProcedureClass *proc,
     }
   registration_done = TRUE;
 
-  slist = bse_ladspa_plugin_dir_list_files (BSE_PATH_LADSPA);
-  paths = g_getenv ("LADSPA_PATH");
-  if (paths)
-    {
-      GSList *slist2 = bse_ladspa_plugin_dir_list_files (paths);
-      slist = g_slist_concat (slist, slist2);
-    }
-  g_object_set_data (server, "ladspa-registration-queue", slist);
+  ring = bse_ladspa_plugin_path_list_files ();
+  g_object_set_data (server, "ladspa-registration-queue", ring);
 
   bse_idle_normal (register_ladspa_plugins, server);
 
@@ -589,5 +579,121 @@ BODY (BseProcedureClass *proc,
   sfi_wstore_destroy (wstore);
   close (fd);
 
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, get-version) {
+  HELP	= "Retrieve BSE version.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("version", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  sfi_value_set_string (out_values++, BSE_VERSION);
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, get-sample-path) {
+  HELP	= "Retrieve sample search path.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_SAMPLES, BSE_GCONFIG (sample_path), NULL));
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, get-effect-path) {
+  HELP	= "Retrieve effect search path.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_EFFECTS, BSE_GCONFIG (effect_path), NULL));
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, get-instrument-path) {
+  HELP	= "Retrieve instrument search path.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_INSTRUMENTS, BSE_GCONFIG (instrument_path), NULL));
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, get-script-path) {
+  HELP	= "Retrieve script search path.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_SCRIPTS, BSE_GCONFIG (script_path), NULL));
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, get-plugin-path) {
+  HELP	= "Retrieve plugin search path.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_PLUGINS, BSE_GCONFIG (plugin_path), NULL));
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, get-ladspa-path) {
+  HELP	= "Retrieve ladspa search path.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  sfi_value_take_string (out_values++, g_path_concat (BSE_PATH_LADSPA, BSE_GCONFIG (ladspa_path), NULL));
+  return BSE_ERROR_NONE;
+}
+
+#include "gsldatahandle-mad.h"
+
+METHOD (BseServer, get-mp3-version) {
+  HELP	= "Retrieve BSE MP3 handler version.";
+  IN	= bse_param_spec_object ("server", "Server", NULL,
+				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_string ("version", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  const gchar *c = gsl_data_handle_mad_version ();
+  if (c)
+    sfi_value_take_string (out_values++, g_strconcat ("MAD ", c, NULL));
   return BSE_ERROR_NONE;
 }

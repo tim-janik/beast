@@ -227,12 +227,19 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
   return NULL;
 }
 
-GSList*
-bse_script_dir_list_files (const gchar *dir_list)
+SfiRing*
+bse_script_path_list_files (void)
 {
-  GSList *slist = bse_search_path_list_files (dir_list, "*.scm", NULL, G_FILE_TEST_IS_REGULAR);
-  
-  return g_slist_sort (slist, (GCompareFunc) strcmp);
+  SfiRing *ring1, *ring2 = NULL;
+
+  ring1 = sfi_file_crawler_list_files (BSE_PATH_SCRIPTS, "*.scm", G_FILE_TEST_IS_REGULAR);
+  ring1 = sfi_ring_sort (ring1, (GCompareFunc) strcmp);
+
+  if (BSE_GCONFIG (script_path) && BSE_GCONFIG (script_path)[0])
+    ring2 = sfi_file_crawler_list_files (BSE_GCONFIG (script_path), "*.scm", G_FILE_TEST_IS_REGULAR);
+  ring2 = sfi_ring_sort (ring2, (GCompareFunc) strcmp);
+
+  return sfi_ring_concat (ring1, ring2);
 }
 
 BseErrorType

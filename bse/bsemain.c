@@ -255,10 +255,10 @@ bse_init_intern (gint    *argc,
   /* initialize core plugins */
   if (sfi_rec_get_bool (config, "load-core-plugins"))
     {
-      GSList *slist = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
-      while (slist)
+      SfiRing *ring = bse_plugin_path_list_files ();
+      while (ring)
         {
-          gchar *name = g_slist_pop_head (&slist);
+          gchar *name = sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
             sfi_warn ("%s: %s", name, error);

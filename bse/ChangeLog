@@ -1,3 +1,26 @@
+Sun Oct 12 16:37:29 2003  Tim Janik  <timj@gtk.org>
+
+	* bseutils.[hc]: removed old search path mathing code.
+	sfi_file_crawler_list_files() does a better job on this.
+
+	* bseladspa.[hc]:
+	* bseplugin.[hc]:
+	* bsescripthelper.[hc]: provide bse_*_path_list_files() functions
+	which take care of extended path specifications and use SfiFileCrawler
+	to properly expand ~/ etc.
+
+	* bsemain.c:
+	* bseserver.proc: use new bse_*_path_list_files() functions.
+
+	* bserecords.idl: indentation fixes.
+	added 6 "Search Paths" properties to BseGConfig, to allow users to
+	configure sample/script/plugin/etc. paths directly.
+
+	* bseserver.proc: added procedures to query file paths from bse
+	and bse/mp3-handler versions.
+
+	* gsldatahandle-mad.[hc]: export MAD version string.
+
 Sun Oct 12 14:17:19 2003  Tim Janik  <timj@gtk.org>
 
 	* bsedefs.h: 

@@ -98,14 +98,15 @@ main (gint   argc,
   
   if (argc == 2)
     {
-      GSList *plist, *slist;
-      
+      SfiRing *ring;
       g_print ("search path: \"%s\"\n", argv[1]);
       // plist = bse_search_path_list_files (argv[1], NULL);
-      plist = bse_path_pattern_list_matches (argv[1], NULL, 0);
-      for (slist = plist; slist; slist = slist->next)
-	g_print ("%s\n", (char*) slist->data);
-      bse_str_slist_free (plist);
+      ring = sfi_file_crawler_list_files (argv[1], NULL, 0);
+      while (ring)
+        {
+          gchar *name = sfi_ring_pop_head (&ring);
+          g_print ("%s\n", name);
+        }
     }
   
   return 0;

@@ -662,12 +662,30 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
   return error;
 }
 
-GSList*
-bse_ladspa_plugin_dir_list_files (const gchar *dir_list)
-{
-  GSList *slist = bse_search_path_list_files (dir_list, "*.so", NULL, 0);
+#include "topconfig.h"
 
-  return g_slist_sort (slist, (GCompareFunc) strcmp);
+SfiRing*
+bse_ladspa_plugin_path_list_files (void)
+{
+  SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
+  const gchar *paths;
+
+  ring1 = sfi_file_crawler_list_files (BSE_PATH_LADSPA, "*.so", 0);
+  ring1 = sfi_ring_sort (ring1, (GCompareFunc) strcmp);
+
+  paths = g_getenv ("LADSPA_PATH");
+  if (paths && paths[0])
+    ring2 = sfi_file_crawler_list_files (paths, "*.so", 0);
+  ring2 = sfi_ring_sort (ring2, (GCompareFunc) strcmp);
+
+  paths = BSE_GCONFIG (ladspa_path);
+  if (paths && paths[0])
+    ring3 = sfi_file_crawler_list_files (paths, "*.so", 0);
+  ring3 = sfi_ring_sort (ring3, (GCompareFunc) strcmp);
+
+  ring2 = sfi_ring_concat (ring2, ring3);
+
+  return sfi_ring_concat (ring1, ring2);
 }
 
 #if 0
