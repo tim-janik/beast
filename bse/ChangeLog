@@ -1,3 +1,8 @@
+Fri Jun 20 00:00:31 2003  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle-mad.c: fix BSE not compiling without libmad,
+	reported by Daniel MacDonald <danboid@yahoo.co.uk>.
+
 Thu Jun 19 23:21:39 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecategories.proc: get rid of debugging junk.

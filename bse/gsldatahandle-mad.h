@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
+ * Copyright (C) 2001-2003 Tim Janik and Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,10 +22,7 @@
 #include <bse/gslcommon.h>
 #include <bse/gsldatahandle.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* linear-read handle. needs buffering handle wrapper
  */
@@ -34,10 +31,6 @@ GslDataHandle*	gsl_data_handle_new_mad		(const gchar *file_name,
 GslErrorType	gsl_data_handle_mad_testopen	(const gchar *file_name,
 						 guint       *n_channels,
 						 gfloat      *mix_freq);
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_DATA_HANDLE_MAD_H__ */

@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
+ * Copyright (C) 2001-2003 Tim Janik and Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -735,15 +735,16 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
 #else	/* !GSL_HAVE_LIBMAD */
 
 GslDataHandle*
-gsl_data_handle_new_mad (const gchar *file_name)
+gsl_data_handle_new_mad (const gchar *file_name,
+                         gfloat       osc_freq)
 {
   return NULL;
 }
 
 GslErrorType
 gsl_data_handle_mad_testopen (const gchar *file_name,
-			      guint       *n_channels,
-			      gfloat      *mix_freq)
+                              guint       *n_channels,
+                              gfloat      *mix_freq)
 {
   return GSL_ERROR_FORMAT_UNKNOWN;
 }
