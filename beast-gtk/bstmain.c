@@ -407,7 +407,7 @@ bst_early_parse_args (int    *argc_p,
   
   for (i = 1; i < argc; i++)
     {
-      if (strncmp (argv[i], "-!", 2) == 0)
+      if (strncmp (argv[i], "-:", 2) == 0)
 	{
 	  // bse_developer_extensions = TRUE;
 	  if (strchr (argv[i], 'p'))

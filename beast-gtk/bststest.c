@@ -15,13 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bstqsampler.h"
-
-#include	"bse/bse.h"
-#include	"bstutils.h"
-#include	<gsl/gsldatacache.h>
-#include	<gsl/gsldatahandle.h>
-#include	<string.h>
+#include "bstutils.h"
+#include "bstqsampler.h"
+#include "bstcellptrack.h"
+#include <gsl/gsldatacache.h>
+#include <gsl/gsldatahandle.h>
+#include <string.h>
 
 #include <math.h>
 
@@ -454,6 +453,7 @@ findx ()
   gsl_data_handle_unref (shandle);
 }
 
+static GtkWidget*	pack_test_widget (void);
 
 int
 main (int   argc,
@@ -480,12 +480,14 @@ main (int   argc,
   if (argc < 2)
     g_error ("need filenames");
 
-  sbar = gtk_widget_new (GTK_TYPE_HSCROLLBAR,
-			 "visible", TRUE,
-			 NULL);
   vbox = gtk_widget_new (GTK_TYPE_VBOX,
 			 "visible", TRUE,
 			 "border_width", 10,
+			 NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), pack_test_widget (), TRUE, TRUE, 0);
+
+  sbar = gtk_widget_new (GTK_TYPE_HSCROLLBAR,
+			 "visible", TRUE,
 			 NULL);
   gtk_box_pack_start (GTK_BOX (vbox), sbar, FALSE, TRUE, 0);
 
@@ -634,3 +636,129 @@ main (int   argc,
   
   return 0;
 }
+
+#if 0	/* test code */
+static void
+plist_fill_value (gpointer  da_NULL,
+		  guint           column,
+		  guint           row,
+		  GValue         *value)
+{
+  switch (column)
+    {
+    case 0:
+      g_value_set_string (value, "Foo");
+      break;
+    case 1:
+      g_value_set_string (value, "Foozy");
+      break;
+    case 2:
+      g_value_set_string (value, "Fuzy");
+      break;
+    }
+}
+
+static gboolean
+tree_event (GtkTreeView *tree,
+	    GdkEvent    *event)
+{
+  GtkTreeViewColumn *column;
+  gint cx, cy, atrow;
+  switch (event->type)
+    {
+      GdkRectangle rect;
+      gint wx, wy;
+    case GDK_BUTTON_PRESS:
+      atrow = gtk_tree_view_get_path_at_pos (tree, event->button.x, event->button.y,
+					     NULL, &column, &cx, &cy);
+      g_print ("got button_press at %f,%f [%u] (%p %d %d)\n", event->button.x, event->button.y, atrow, column, cx, cy);
+      break;
+    case GDK_BUTTON_RELEASE:
+      atrow = gtk_tree_view_get_path_at_pos (tree, event->button.x, event->button.y,
+					     NULL, &column, &cx, &cy);
+      g_print ("got button_release at %f,%f [%u] (%p %d %d)\n", event->button.x, event->button.y, atrow, column, cx, cy);
+      break;
+    case GDK_MOTION_NOTIFY:
+      atrow = gtk_tree_view_get_path_at_pos (tree, event->motion.x, event->motion.y,
+					     NULL, &column, &cx, &cy);
+      gtk_tree_view_get_visible_rect (tree, &rect);
+      gtk_tree_view_tree_to_widget_coords (tree, rect.x, rect.y, &wx, &wy);
+      g_print ("got motion at %f,%f [%u] (%p %d %d) widget(%d %d)\n", event->motion.x, event->motion.y, atrow, column,
+	       cx, cy, wx, wy);
+      break;
+    default:
+    }
+  return FALSE;
+}
+
+static GtkWidget*
+pack_test_widget (void)
+{
+  GtkWidget *scwin, *tree;
+  GtkTreeSelection *tsel;
+  GxkListWrapper *plist = gxk_list_wrapper_new (3 /* N_COLS */,
+						G_TYPE_STRING,  /* 0 */
+						G_TYPE_STRING,  /* 1 */
+						G_TYPE_STRING   /* 2 */
+						);
+  g_signal_connect_object (plist, "fill-value",
+			   G_CALLBACK (plist_fill_value),
+			   NULL, G_CONNECT_SWAPPED);
+  gxk_list_wrapper_notify_prepend (plist, 200);
+
+  scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+			"visible", TRUE,
+			"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+			"vscrollbar_policy", GTK_POLICY_ALWAYS,
+			"height_request", 320,
+			"width_request", 320,
+			"border_width", 5,
+			"shadow_type", GTK_SHADOW_IN,
+			NULL);
+  tree = g_object_new (GTK_TYPE_TREE_VIEW,
+		       "visible", TRUE,
+		       "can_focus", TRUE,
+		       "model", plist,
+		       "border_width", 10,
+		       "parent", scwin,
+		       NULL);
+  gxk_tree_view_append_text_columns (GTK_TREE_VIEW (tree), 3 /* N_COLS */,
+				     0, 0.0, "Foo Name",
+				     1, 0.0, "Bar Name",
+				     2, 0.0, "Baz Type"
+				     );
+  gtk_tree_view_add_column (GTK_TREE_VIEW (tree), -1,
+			    g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
+					  "title", "PTrack",
+					  "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+					  "resizable", TRUE,
+					  NULL),
+			    g_object_new (BST_TYPE_CELL_PTRACK,
+					  "xalign", 0.0,
+					  NULL),
+			    // "text", 3,
+			    NULL);
+  g_object_connect (tree,
+		    "signal::event", tree_event, NULL,
+		    NULL);
+#if 0
+  g_object_connect (tree,
+		    "swapped_object_signal::row_activated", tree_row_activated, self,
+		    NULL);
+#endif
+
+  /* ensure selection
+   */
+  tsel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  gtk_tree_selection_set_mode (tsel, GTK_SELECTION_SINGLE);
+  gxk_tree_selection_select_spath (tsel, "0");
+
+  return scwin;
+}
+#else
+static GtkWidget*
+pack_test_widget (void)
+{
+  return g_object_new (GTK_TYPE_ALIGNMENT, NULL);
+}
+#endif

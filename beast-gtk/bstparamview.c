@@ -157,34 +157,37 @@ param_view_reset_item (BstParamView *param_view)
 }
 
 void
-bst_param_view_set_item (BstParamView *param_view,
+bst_param_view_set_item (BstParamView *self,
 			 SfiProxy      item)
 {
   GSList *slist;
 
-  g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
+  g_return_if_fail (BST_IS_PARAM_VIEW (self));
   if (item)
     g_return_if_fail (BSE_IS_ITEM (item));
 
-  if (param_view->item)
+  if (item == self->item)
+    return;
+
+  if (self->item)
     {
-      bse_proxy_disconnect (param_view->item,
-			    "any_signal", param_view_reset_item, param_view,
+      bse_proxy_disconnect (self->item,
+			    "any_signal", param_view_reset_item, self,
 			    NULL);
-      param_view->item = 0;
+      self->item = 0;
       
-      for (slist = param_view->bparams; slist; slist = slist->next)
+      for (slist = self->bparams; slist; slist = slist->next)
 	bst_param_set_proxy (slist->data, 0);
     }
 
-  param_view->item = item;
+  self->item = item;
 
-  if (param_view->item)
-    bse_proxy_connect (param_view->item,
-		       "swapped_signal::release", param_view_reset_item, param_view,
+  if (self->item)
+    bse_proxy_connect (self->item,
+		       "swapped_signal::release", param_view_reset_item, self,
 		       NULL);
   
-  bst_param_view_rebuild (param_view);
+  bst_param_view_rebuild (self);
 }
 
 void
@@ -211,54 +214,77 @@ bst_param_view_set_mask (BstParamView *param_view,
 }
 
 void
-bst_param_view_rebuild (BstParamView *param_view)
+bst_param_view_rebuild (BstParamView *self)
 {
-  GtkWidget *param_box;
+  GtkBox *pbox;
+  GtkWidget *ncontainer = NULL, *gcontainer = NULL;
   const gchar **pstrings;
   GSList *slist;
+  gint border_width = 5;
   guint i, n;
   
-  g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
+  g_return_if_fail (BST_IS_PARAM_VIEW (self));
 
-  bst_param_view_destroy_contents (param_view);
+  bst_param_view_destroy_contents (self);
 
-  if (!param_view->item)
+  pbox = GTK_BOX (self);
+  if (!self->item)
     return;
-  
-  param_box = GTK_WIDGET (param_view);
 
-  if (0)	/* want Wrap boxes */
+  /* create parameter fields */
+  pstrings = bse_proxy_list_properties (self->item, self->first_base_type, self->last_base_type, &n);
+  for (i = 0; i < n; i++)
+    if ((!self->reject_pattern || !g_pattern_match_string (self->reject_pattern, pstrings[i])) &&
+	(!self->match_pattern || g_pattern_match_string (self->reject_pattern, pstrings[i])))
+      {
+	GParamSpec *pspec = bse_proxy_get_pspec (self->item, pstrings[i]);
+	const gchar *param_group = sfi_pspec_get_group (pspec);
+
+	if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_GUI) && (pspec->flags & G_PARAM_READABLE))
+	  {
+	    BstParam *bparam = bst_param_proxy_create (pspec, FALSE, NULL, self->item);
+	    if (param_group)
+	      {
+		if (!gcontainer)
+		  gcontainer = g_object_new (GTK_TYPE_VBOX, NULL);
+		bst_param_pack_property (bparam, gcontainer);
+	      }
+	    else
+	      {
+		if (!ncontainer)
+		  ncontainer = g_object_new (GTK_TYPE_VBOX, NULL);
+		bst_param_pack_property (bparam, ncontainer);
+	      }
+	    self->bparams = g_slist_prepend (self->bparams, bparam);
+	  }
+      }
+
+  /* pack groupless parameters */
+  if (ncontainer)
     {
-      param_view->container = g_object_new (GTK_TYPE_HWRAP_BOX,
-					    "visible", TRUE,
-					    "homogeneous", FALSE,
-					    "border_width", 5,
-					    "hspacing", 5,
-					    "aspect_ratio", 0.0,
-					    "parent", param_view,
-					    NULL);
-      param_view->nil_container = param_view->container;
+      g_object_set (ncontainer,
+		    "visible", TRUE,
+		    "homogeneous", FALSE,
+		    "border_width", border_width,
+		    NULL);
+      gtk_box_pack_start (pbox, ncontainer, FALSE, TRUE, 0);
     }
-  else
+
+  /* pack grouped parameters */
+  if (gcontainer)
     {
       GtkScrolledWindow *scrolled_window;
-      GtkWidget *viewport, *separator;
-
-      param_view->nil_container = g_object_new (GTK_TYPE_VBOX,
+      GtkWidget *viewport;
+      if (ncontainer)
+	gtk_box_pack_start (pbox, g_object_new (GTK_TYPE_HSEPARATOR,
 						"visible", TRUE,
-						"homogeneous", FALSE,
-						"border_width", 5,
-						NULL);
-      gtk_box_pack_start (GTK_BOX (param_view), param_view->nil_container, FALSE, TRUE, 0);
-      separator = g_object_new (GTK_TYPE_HSEPARATOR,
-				"visible", TRUE,
-				NULL);
-      gtk_box_pack_start (GTK_BOX (param_view), separator, FALSE, FALSE, 0);
+						NULL),
+			    FALSE, FALSE, 0);
       scrolled_window = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
 				      "visible", TRUE,
 				      "hscrollbar_policy", GTK_POLICY_NEVER,
 				      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-				      "parent", param_view,
+				      "parent", self,
 				      NULL);
       viewport = g_object_new (GTK_TYPE_VIEWPORT,
 			       "visible", TRUE,
@@ -268,38 +294,15 @@ bst_param_view_rebuild (BstParamView *param_view)
 			       "parent", scrolled_window,
 			       NULL);
       bst_widget_request_aux_info (viewport);
-      param_view->container = g_object_new (GTK_TYPE_VBOX,
-					    "visible", TRUE,
-					    "homogeneous", FALSE,
-					    "border_width", 5,
-					    "parent", viewport,
-					    NULL);
+      g_object_set (gcontainer,
+		    "visible", TRUE,
+		    "homogeneous", FALSE,
+		    "border_width", border_width,
+		    "parent", viewport,
+		    NULL);
     }
-    
-  g_object_connect (param_view->container,
-		    "swapped_signal::destroy", g_nullify_pointer, &param_view->container,
-		    NULL);
-  g_object_connect (param_view->nil_container,
-		    "swapped_signal::destroy", g_nullify_pointer, &param_view->nil_container,
-		    NULL);
-  
-  /* parameter fields, per bse class
-   */
-  pstrings = bse_proxy_list_properties (param_view->item, param_view->first_base_type, param_view->last_base_type, &n);
-  for (i = 0; i < n; i++)
-    if ((!param_view->reject_pattern || !g_pattern_match_string (param_view->reject_pattern, pstrings[i])) &&
-	(!param_view->match_pattern || g_pattern_match_string (param_view->reject_pattern, pstrings[i])))
-      {
-	GParamSpec *pspec = bse_proxy_get_pspec (param_view->item, pstrings[i]);
-	const gchar *param_group = sfi_pspec_get_group (pspec);
 
-	if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_GUI) && (pspec->flags & G_PARAM_READABLE))
-	  {
-	    BstParam *bparam = bst_param_proxy_create (pspec, FALSE, NULL, param_view->item);
-	    bst_param_pack_property (bparam, param_group ? param_view->container : param_view->nil_container);
-	    param_view->bparams = g_slist_prepend (param_view->bparams, bparam);
-	  }
-      }
-  for (slist = param_view->bparams; slist; slist = slist->next)
+  /* refresh parameter fields */
+  for (slist = self->bparams; slist; slist = slist->next)
     bst_param_update (slist->data);
 }

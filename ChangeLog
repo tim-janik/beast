@@ -1,3 +1,69 @@
+Wed Feb  5 03:52:58 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackroll.[hc]: support editable cells.
+
+	* beast-gtk/bsttrackrollctrl.c: support part name cell edits.
+
+	* beast-gtk/bsttrackview.c (bst_track_view_create_tree): 
+
+	* beast-gtk/gxk/gxklistwrapper.c (gxk_list_wrapper_class_init): added
+	::row-changed signal which is emitted before any row changes, usefull
+	to abort cell edits.
+
+Tue Feb  4 18:37:34 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstitemview.[hc]: removed "Name" and "Comment" fields.
+	made "Name" and "Comment" columns editable.
+
+	* beast-gtk/gxk/gxkutils.[hc]: moved gxk_tree_view_add_column()
+	and gxk_tree_view_append_text_columns() from bstutils.[hc] into
+	this place.
+	added gxk_tree_view_add_editable_text_column().
+
+Fri Jan 31 19:43:54 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstitemview.[hc]: made code more versatile and added
+	virtual functions so bsttrackview demands can be fullfilled.
+
+	* beast-gtk/bstmain.c: changed developer option from -! to -: to
+	workaround sh history expansion.
+
+	* beast-gtk/bsttrackview.c: take over tree widget creation and
+	maintenance from item view. put a trackroll alongside and coupled
+	with the tree.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_window_process_next() to
+	force asyncronous GdkWindow updates. added tree view related
+	convenience functions: gxk_tree_view_get_bin_window_pos(),
+	gxk_tree_view_get_row_area(), gxk_tree_view_focus_row(),
+	gxk_tree_view_is_row_selected(), gxk_tree_view_get_selected_row()
+	and gxk_tree_view_get_row_from_coord().
+
+	* beast-gtk/bsttrackroll.[hc]: new widget, designed to act as
+	an extra tree view column, used to display part lists for tracks.
+
+	* beast-gtk/bsttrackrollctrl.[hc]: controller code for BstTrackRoll
+	widgets.
+
+	* misc doc fixes.
+
+Mon Jan 27 22:32:43 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.[hc]: introduce gxk_window_set_cursor_type()
+	to allow simple cursor type settings and to simplify resetting the
+	cursor type to inherit the cursor type from the parent.
+
+	* beast-gtk/bstpianoroll.c: simplify cusor handling, minor code
+	cosmetics and bug fixes.
+
+	* beast-gtk/bstpianorollctrl.c: fix default cursor setting.
+
+Fri Jan 24 18:57:53 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianoroll.c (bst_piano_roll_realize): remove bogus cursor
+	type increment.
+	(bst_piano_roll_overlap_grow_hpanel_area): limit fudging by 0.
+
 Fri Jan 24 00:42:20 2003  Alper Ersoy <dirt@gtk.org>
 
 	* docs/generated/html.xsl:

@@ -50,8 +50,6 @@ struct _BstParamView
   gchar         *last_base_type;
   GPatternSpec  *reject_pattern;
   GPatternSpec  *match_pattern;
-  GtkWidget	*nil_container;	/* null group */
-  GtkWidget	*container;
 };
 struct _BstParamViewClass
 {

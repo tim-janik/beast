@@ -19,12 +19,10 @@
 #define __BST_TRACK_VIEW_H__
 
 #include	"bstitemview.h"
+#include	"bsttrackroll.h"
+#include	"bsttrackrollctrl.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_TRACK_VIEW	       (bst_track_view_get_type ())
@@ -41,6 +39,8 @@ typedef	struct	_BstTrackViewClass BstTrackViewClass;
 struct _BstTrackView
 {
   BstItemView	 parent_object;
+  BstTrackRoll	*troll;
+  BstTrackRollController *troll_ctrl;
 };
 struct _BstTrackViewClass
 {
@@ -54,8 +54,6 @@ GtkWidget*	bst_track_view_new	(SfiProxy	song);
 
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_TRACK_VIEW_H__ */

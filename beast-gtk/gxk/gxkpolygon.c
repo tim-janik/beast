@@ -116,6 +116,7 @@ gxk_polygon_new (GxkPolygonGraph *polygon_graph)
 
 /**
  * gxk_polygon_set_lines
+ * @self:    valid #GxkPolygon
  * @n_lines: number of lines
  * @lines:   array of lines
  *
@@ -139,6 +140,7 @@ gxk_polygon_set_lines (GxkPolygon     *self,
 
 /**
  * gxk_polygon_set_arcs
+ * @self:   valid #GxkPolygon
  * @n_arcs: number of arcs
  * @arcs:   array of arcs
  *
@@ -162,6 +164,7 @@ gxk_polygon_set_arcs (GxkPolygon    *self,
 
 /**
  * gxk_polygon_set_graph
+ * @self:          valid #GxkPolygon
  * @polygon_graph: set of lines and arcs
  *
  * Set the lines and arcs for this polygon, see
@@ -188,6 +191,7 @@ gxk_polygon_set_graph (GxkPolygon      *self,
 
 /**
  * gxk_polygon_set_length
+ * @self:   valid #GxkPolygon
  * @length: set of lines and arcs
  *
  * Set the desired width and height for this polygon

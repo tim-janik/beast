@@ -111,6 +111,77 @@ g_object_get_long (gpointer     object,
 }
 
 /**
+ * gxk_window_set_cursor_type
+ * @window: valid #GdkWindow*
+ * @cursor: #GdkCursorType cursor type
+ *
+ * Set a window's cursor type. If %GXK_DEFAULT_CURSOR is specified
+ * the window's cursor will be inherited from it's parent.
+ */
+void
+gxk_window_set_cursor_type (GdkWindow    *window,
+			    GdkCursorType cursor)
+{
+  g_return_if_fail (GDK_IS_WINDOW (window));
+
+  if (cursor >= GDK_LAST_CURSOR || cursor < 0)
+    gdk_window_set_cursor (window, NULL);
+  else
+    {
+      GdkCursor *wc = gdk_cursor_new (cursor & ~1);
+      gdk_window_set_cursor (window, wc);
+      gdk_cursor_unref (wc);
+    }
+}
+
+static guint   expose_handler_id = 0;
+static GSList *expose_windows = NULL;
+static GSList *cexpose_windows = NULL;
+
+static gboolean
+expose_handler (gpointer data)
+{
+  GdkWindow *window, *cwindow;
+  GDK_THREADS_ENTER ();
+  window = g_slist_pop_head (&expose_windows);
+  cwindow = g_slist_pop_head (&cexpose_windows);
+  while (window || cwindow)
+    {
+      if (window)
+	gdk_window_process_updates (window, FALSE);
+      if (cwindow)
+	gdk_window_process_updates (cwindow, TRUE);
+      window = g_slist_pop_head (&expose_windows);
+      cwindow = g_slist_pop_head (&cexpose_windows);
+    }
+  expose_handler_id = 0;
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+/**
+ * gxk_window_process_next
+ * @window:          valid #GdkWindow
+ * @update_children: whether to also process updates for child windows
+ *
+ * Cause @window to be updated asyncronously as soon as possible via
+ * gdk_window_process_updates().
+ */
+void
+gxk_window_process_next (GdkWindow *window,
+			 gboolean   update_children)
+{
+  g_return_if_fail (GDK_IS_WINDOW (window));
+
+  if (update_children)
+    cexpose_windows = g_slist_append_uniq (cexpose_windows, window);
+  else
+    expose_windows = g_slist_append_uniq (expose_windows, window);
+  if (!expose_handler_id)
+    expose_handler_id = g_idle_add_full (G_PRIORITY_DEFAULT, expose_handler, NULL, NULL);
+}
+
+/**
  * gxk_widget_make_insensitive
  * @widget: a valid GtkWidget
  *
@@ -403,7 +474,7 @@ gxk_widget_force_bg_clear (GtkWidget *widget)
  */
 void
 gxk_size_group (GtkSizeGroupMode sgmode,
-		GtkWidget       *first_widget,
+		gpointer         first_widget,
 		...)
 {
   if (first_widget)
@@ -421,6 +492,181 @@ gxk_size_group (GtkSizeGroupMode sgmode,
       va_end (args);
       g_object_unref (sgroup);
     }
+}
+
+/**
+ * gxk_tree_spath_index0
+ * @strpath: stringified #GtkTreePath
+ *
+ * Return index[0] of @strpath. Usefull for paths in lists,
+ * where index[0] usually corresponds to the nth row.
+ */
+gint
+gxk_tree_spath_index0 (const gchar *strpath)
+{
+  GtkTreePath *path = strpath ? gtk_tree_path_new_from_string (strpath) : NULL;
+  gint row = -1;
+  if (path)
+    {
+      if (gtk_tree_path_get_depth (path) > 0)
+	row = gtk_tree_path_get_indices (path)[0];
+      gtk_tree_path_free (path);
+    }
+  return row;
+}
+
+/**
+ * gxk_tree_path_prev
+ * @path: valid #GtkTreePath
+ *
+ * Workaround for gtk_tree_path_prev() which corrupts memory
+ * if called on empty paths (up to version 2.2 at least).
+ */
+gboolean
+gxk_tree_path_prev (GtkTreePath *path)
+{
+  if (path && gtk_tree_path_get_depth (path) < 1)
+    return FALSE;
+  return gtk_tree_path_prev (path);
+}
+
+/**
+ * gxk_tree_view_add_column
+ * @tree_view: valid #GtkTreeView
+ * @position:  column position (or -1 to append)
+ * @column:    valid #GtkTreeViewColumn
+ * @cell:      valid #GtkCellRenderer
+ * @...:       attribute mappings
+ *
+ * Appends @cell to @column and adds @column
+ * to @tree_view at the specified @position.
+ * This function takes a %NULL-terminated list
+ * of attribute mappings consisting of a string
+ * and a guint, mapping cell attributes to
+ * model columns as documented in
+ * gtk_tree_view_column_add_attribute().
+ */
+guint
+gxk_tree_view_add_column (GtkTreeView       *tree_view,
+			  gint               position,
+			  GtkTreeViewColumn *column,
+			  GtkCellRenderer   *cell,
+			  const gchar       *attrib_name,
+			  ...)
+{
+  guint n_cols;
+  va_list var_args;
+
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), 0);
+  g_return_val_if_fail (GTK_IS_TREE_VIEW_COLUMN (column), 0);
+  g_return_val_if_fail (column->tree_view == NULL, 0);
+  g_return_val_if_fail (GTK_IS_CELL_RENDERER (cell), 0);
+
+  g_object_ref (column);
+  g_object_ref (cell);
+  gtk_object_sink (GTK_OBJECT (column));
+  gtk_object_sink (GTK_OBJECT (cell));
+  gtk_tree_view_column_pack_start (column, cell, TRUE);
+
+  va_start (var_args, attrib_name);
+  while (attrib_name)
+    {
+      guint col = va_arg (var_args, guint);
+
+      gtk_tree_view_column_add_attribute (column, cell, attrib_name, col);
+      attrib_name = va_arg (var_args, const gchar*);
+    }
+  va_end (var_args);
+
+  n_cols = gtk_tree_view_insert_column (tree_view, column, position);
+
+  g_object_unref (column);
+  g_object_unref (cell);
+
+  return n_cols;
+}
+
+/**
+ * gxk_tree_view_append_text_columns
+ * @tree_view: valid #GtkTreeView
+ * @n_cols:    number of columns to append
+ * @...:       column arguments
+ *
+ * Add @n_cols new columns with text cells to
+ * @tree_view. Per column, the caller needs to
+ * supply a #guint, a #gdouble and a string, to
+ * be used as model column number (for the text
+ * to be displayed), the horizontal cell alignment
+ * (between 0 and 1) and the column title respectively.
+ */
+void
+gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
+				   guint        n_cols,
+				   ...)
+{
+  va_list var_args;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+
+  va_start (var_args, n_cols);
+  while (n_cols--)
+    {
+      guint col = va_arg (var_args, guint);
+      gfloat xalign = va_arg (var_args, gdouble);
+      gchar *title = va_arg (var_args, gchar*);
+
+      gxk_tree_view_add_column (tree_view, -1,
+				g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
+					      "title", title,
+					      "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+					      "resizable", TRUE,
+					      NULL),
+				g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
+					      "xalign", xalign,
+					      NULL),
+				"text", col,
+				NULL);
+    }
+  va_end (var_args);
+}
+
+/**
+ * gxk_tree_view_add_editable_text_column
+ * @tree_view: valid #GtkTreeView
+ *
+ * Add an editable text column, similar to
+ * gxk_tree_view_append_text_columns().
+ * @edited_callback(@data) is connected with
+ * @cflags (see g_signal_connect_data()) to
+ * the "edited" signal of the text cell.
+ */
+void
+gxk_tree_view_add_editable_text_column (GtkTreeView  *tree_view,
+					guint	      model_column,
+					gdouble       xalign,
+					const gchar  *title,
+					gpointer      edited_callback,
+					gpointer      data,
+					GConnectFlags cflags)
+{
+  GtkCellRenderer *cell;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+
+  cell = g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
+		       "xalign", xalign,
+		       "editable", TRUE,
+		       NULL);
+  g_signal_connect_data (cell, "edited", G_CALLBACK (edited_callback), data, NULL, cflags);
+  gxk_tree_view_add_column (tree_view, -1,
+			    g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
+					  "title", title,
+					  "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+					  "resizable", TRUE,
+					  NULL),
+			    cell,
+			    "text", model_column,
+			    NULL);
 }
 
 /**
@@ -577,7 +823,18 @@ browse_selection_handler (gpointer data)
 		}
 	    }
 	  if (needs_sel)
-	    gxk_tree_selection_select_ipath (selection, 0, -1);
+	    {
+	      gxk_tree_selection_select_ipath (selection, 0, -1);
+	      path = gtk_tree_path_new ();
+	      gtk_tree_path_append_index (path, 0);
+	      gtk_tree_selection_select_path (selection, path);
+	      gtk_tree_view_set_cursor (gtk_tree_selection_get_tree_view (selection),
+					path, NULL, FALSE);
+	      gtk_tree_path_free (path);
+	    }
+	  else
+	    gtk_tree_view_set_cursor (gtk_tree_selection_get_tree_view (selection),
+				      path, NULL, FALSE);
 	  browse_selection_ignore = NULL;
 	  g_object_unref (selection);
 	}
@@ -606,7 +863,6 @@ browse_selection_changed (GtkTreeSelection *selection)
       if (browse_selection_handler_id == 0)
 	browse_selection_handler_id = g_idle_add_full (G_PRIORITY_DEFAULT, browse_selection_handler, NULL, NULL);
     }
-  g_print ("browse_selection_changed\n");
 }
 
 /**
@@ -633,18 +889,192 @@ gxk_tree_selection_force_browse (GtkTreeSelection *selection,
 }
 
 /**
- * gxk_tree_path_prev
- * @path:
+ * gxk_tree_view_get_bin_window_pos
+ * @tree: valid #GtkTreeView
+ * @x_p:  x position
+ * @y_p:  y position
  *
- * Workaround for gtk_tree_path_prev() which corrupts memory
- * if called on empty paths (up to version 2.2 at least).
+ * Retrieve the position of the bin window (row display area) of
+ * a #GtkTreeView widget once it's realized.
+ */
+void
+gxk_tree_view_get_bin_window_pos (GtkTreeView *tree,
+				  gint        *x_p,
+				  gint        *y_p)
+{
+  GdkWindow *window;
+  gint ax = 0, ay = 0;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree));
+
+  window = gtk_tree_view_get_bin_window (tree);
+  if (window)
+    {
+      GdkWindow *ancestor = GTK_WIDGET (tree)->window;
+      /* accumulate offsets up to widget->window */
+      while (window != ancestor)
+	{
+	  gint dx, dy;
+	  gdk_window_get_position (window, &dx, &dy);
+	  ax += dx;
+	  ay += dy;
+	  window = gdk_window_get_parent (window);
+	}
+    }
+  if (x_p)
+    *x_p = ax;
+  if (y_p)
+    *y_p = ay;
+}
+
+/**
+ * gxk_tree_view_get_row_area
+ * @tree:     valid #GtkTreeView
+ * @row:      row to retrieve area coordinates for
+ * @y_p:      y position of @row
+ * @height_p: height of @row
+ *
+ * Retrieve the position and height of a row of a
+ * #GtkTreeView widget within its bin window.
  */
 gboolean
-gxk_tree_path_prev (GtkTreePath *path)
+gxk_tree_view_get_row_area (GtkTreeView *tree,
+                            gint         row,
+                            gint        *y_p,
+                            gint        *height_p)
 {
-  if (path && gtk_tree_path_get_depth (path) < 1)
-    return FALSE;
-  return gtk_tree_path_prev (path);
+  GdkRectangle rect;
+
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
+
+  if (row < 0)
+    {
+      rect.y = 0;
+      rect.width = 0;
+    }
+  else
+    {
+      GtkTreePath *path = gtk_tree_path_new ();
+      gtk_tree_path_append_index (path, row);
+      gtk_tree_view_get_background_area (tree, path, NULL, &rect);
+      gtk_tree_path_free (path);
+    }
+  if (y_p)
+    *y_p = rect.y;
+  if (height_p)
+    *height_p = rect.height;
+  return !(rect.y == 0 && rect.height == 0);
+}
+
+/**
+ * gxk_tree_view_focus_row
+ * @tree:     valid #GtkTreeView
+ * @row:      row to focus
+ *
+ * Force focus to @row, causes automatic selection of
+ * @row in browse mode.
+ */
+void
+gxk_tree_view_focus_row (GtkTreeView *tree,
+			 gint         row)
+{
+  GtkTreePath *path;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree));
+
+  path = gtk_tree_path_new ();
+  gtk_tree_path_append_index (path, row);
+  gtk_tree_view_set_cursor (tree, path, NULL, FALSE);
+  gtk_tree_path_free (path);
+}
+
+/**
+ * gxk_tree_view_is_row_selected
+ * @tree:    valid #GtkTreeView
+ * @row:     row to test
+ * @RETURNS: whether @row is selected
+ *
+ * Check whether @row in @tree is selected.
+ */
+gboolean
+gxk_tree_view_is_row_selected (GtkTreeView *tree,
+			       gint         row)
+{
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
+
+  if (row >= 0)
+    {
+      GtkTreePath *path = gtk_tree_path_new ();
+      gboolean selected;
+      gtk_tree_path_append_index (path, row);
+      selected = gtk_tree_selection_path_is_selected (gtk_tree_view_get_selection (tree),
+						      path);
+      gtk_tree_path_free (path);
+      return selected;
+    }
+  return FALSE;
+}
+
+/**
+ * gxk_tree_view_get_selected_row
+ * @tree:    valid #GtkTreeView
+ * @RETURNS: first selected row or -1
+ *
+ * Retrieve the selected row in browse mode (for other
+ * selection modes, return the first selected row if any).
+ */
+gint
+gxk_tree_view_get_selected_row (GtkTreeView *tree)
+{
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+  gint row = -1;
+
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), -1);
+
+  if (gtk_tree_selection_get_selected (gtk_tree_view_get_selection (tree),
+				       &model, &iter))
+    {
+      GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
+      if (gtk_tree_path_get_depth (path) > 0)
+	row = gtk_tree_path_get_indices (path)[0];
+      gtk_tree_path_free (path);
+    }
+  return row;
+}
+
+/**
+ * gxk_tree_view_is_row_selected
+ * @tree:  valid #GtkTreeView
+ * @y:     bin window y coordinate
+ * @row_p: row pointed to by @y
+ *
+ * Retrieve the row within which @y lies.
+ */
+void
+gxk_tree_view_get_row_from_coord (GtkTreeView *tree,
+				  gint         y,
+				  gint        *row_p)
+{
+  GtkTreePath *path;
+  gint row = -1;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree));
+
+  if (gtk_tree_view_get_path_at_pos (tree,
+				     GTK_WIDGET (tree)->allocation.width / 2,
+				     y,
+				     &path,
+				     NULL,
+				     NULL,
+				     NULL))
+    {
+      if (gtk_tree_path_get_depth (path) > 0)
+	row = gtk_tree_path_get_indices (path)[0];
+      gtk_tree_path_free (path);
+    }
+  if (row_p)
+    *row_p = row;
 }
 
 /**
@@ -808,6 +1238,43 @@ gxk_object_derive (GType          parent_type,
 
 
 /* --- Gtk bug fixes --- */
+/**
+ * gxk_cell_editable_canceled
+ * @ecell:   valid #GtkCellEditable
+ * @RETURNS: whether editing got aborted
+ *
+ * Return whether editing was canceled (currently supported
+ * by GtkEntry and triggered by pressing Escape during editing).
+ */
+gboolean
+gxk_cell_editable_canceled (GtkCellEditable *ecell)
+{
+  g_return_val_if_fail (GTK_IS_CELL_EDITABLE (ecell), FALSE);
+
+  if (GTK_IS_ENTRY (ecell))
+    return GTK_ENTRY (ecell)->editing_canceled;
+  return FALSE;
+}
+
+/**
+ * gxk_cell_editable_focus_out_handler
+ * @ecell:   valid #GtkCellEditable
+ * @RETURNS: returns %FALSE
+ *
+ * Call gtk_cell_editable_editing_done() if necessary and return %FALSE.
+ * This function is meant to be used to handle focus out events on
+ * #GtkCellEditable widgets.
+ */
+gboolean
+gxk_cell_editable_focus_out_handler (GtkCellEditable *ecell)
+{
+  g_return_val_if_fail (GTK_IS_CELL_EDITABLE (ecell), FALSE);
+
+  // gtk_cell_editable_editing_done (ecell);
+
+  return FALSE;
+}
+
 static gchar*
 path_fix_uline (const gchar *str)
 {

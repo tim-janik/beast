@@ -104,15 +104,6 @@ void	   gtk_clist_moveto_selection	 (GtkCList		*clist);
 gpointer   gtk_clist_get_selection_data	 (GtkCList		*clist,
 					  guint                  index);
 void	   gtk_widget_viewable_changed	 (GtkWidget		*widget);
-guint	   gtk_tree_view_add_column	 (GtkTreeView	        *tree_view,
-					  gint                   position,
-					  GtkTreeViewColumn     *column,
-					  GtkCellRenderer       *cell,
-					  const gchar           *attrib_name,
-					  ...);
-void   gtk_tree_view_append_text_columns (GtkTreeView		*tree_view,
-					  guint			 n_cols,
-					  ...);
 
 #define gtk_notebook_current_widget(n) \
     gtk_notebook_get_nth_page ((n), gtk_notebook_get_current_page ((n)))

@@ -240,7 +240,7 @@ controller_update_cursor (BstPianoRollController *self,
       bst_piano_roll_set_canvas_cursor (self->proll, GDK_LEFT_SIDE);
       break;
     default:
-      bst_piano_roll_set_canvas_cursor (self->proll, GDK_X_CURSOR);
+      bst_piano_roll_set_canvas_cursor (self->proll, GXK_DEFAULT_CURSOR);
       break;
     }
 }

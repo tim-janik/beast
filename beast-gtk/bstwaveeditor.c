@@ -169,7 +169,7 @@ bst_wave_editor_init (BstWaveEditor *self)
   g_object_connect (tsel, "swapped_object_signal::changed", tree_selection_changed, self, NULL);
 
   /* add columns to chunk list */
-  gtk_tree_view_append_text_columns (GTK_TREE_VIEW (self->tree), N_COLS,
+  gxk_tree_view_append_text_columns (GTK_TREE_VIEW (self->tree), N_COLS,
 				     COL_OSC_FREQ, 0.0, "OscFreq",
 				     COL_MIX_FREQ, 0.0, "MixFreq",
 				     COL_LOOP, 0.0, "Loop",

@@ -27,13 +27,14 @@ static void	bst_item_view_init		(BstItemView		*self,
 						 BstItemViewClass	*real_class);
 static void	bst_item_view_destroy		(GtkObject		*object);
 static void	bst_item_view_finalize		(GObject		*object);
-static void	item_view_fill_value		(BstItemView		*self,
-						 guint			 column,
-						 guint			 row,
-						 GValue			*value);
+static void	bst_item_view_create_tree	(BstItemView		*self);
+static void	item_view_listen_on		(BstItemView		*self,
+						 SfiProxy		 item);
+static void	item_view_unlisten_on		(BstItemView		*self,
+						 SfiProxy		 item);
 
 
-/* --- item clist --- */
+/* --- columns --- */
 enum {
   COL_SEQID,
   COL_NAME,
@@ -87,10 +88,13 @@ bst_item_view_class_init (BstItemViewClass *class)
   
   class->n_ops = 0;
   class->ops = NULL;
+  class->show_properties = TRUE;
   
   class->operate = NULL;
   class->can_operate = NULL;
-  class->default_param_view_height = 0;
+  class->create_tree = bst_item_view_create_tree;
+  class->listen_on = item_view_listen_on;
+  class->unlisten_on = item_view_unlisten_on;
 }
 
 static void
@@ -103,30 +107,20 @@ button_action (GtkWidget *widget,
 }
 
 static void
-pview_selection_changed (BstItemView *self)
-{
-  if (self->pview)
-    bst_param_view_set_item (BST_PARAM_VIEW (self->pview),
-			     bst_item_view_get_current (self));
-}
-
-static void
 bst_item_view_init (BstItemView      *self,
 		    BstItemViewClass *ITEM_VIEW_CLASS)
 {
-  GtkWidget *paned, *scwin, *vbox = NULL;
-  GtkTreeSelection *tsel;
   guint i;
-
+  
   /* action buttons */
   self->op_widgets = g_new0 (GtkWidget*, ITEM_VIEW_CLASS->n_ops);
   if (ITEM_VIEW_CLASS->n_ops)
-    vbox = g_object_new (GTK_TYPE_VBOX,
-			 "homogeneous", TRUE,
-			 "spacing", 5,
-			 "border_width", 0,
-			 "visible", TRUE,
-			 NULL);
+    self->op_box = g_object_new (ITEM_VIEW_CLASS->horizontal_ops ? GTK_TYPE_HBOX : GTK_TYPE_VBOX,
+				 "homogeneous", TRUE,
+				 "spacing", 5,
+				 "border_width", 0,
+				 "visible", TRUE,
+				 NULL);
   for (i = 0; i < ITEM_VIEW_CLASS->n_ops; i++)
     {
       BstItemViewOp *bop = ITEM_VIEW_CLASS->ops + i;
@@ -134,7 +128,7 @@ bst_item_view_init (BstItemView      *self,
 				       "label", bop->op_name,
 				       NULL);
       self->op_widgets[i] = g_object_new (GTK_TYPE_BUTTON,
-					  "parent", vbox,
+					  "parent", self->op_box,
 					  NULL);
       g_object_connect (self->op_widgets[i],
 			"signal::clicked", button_action, GUINT_TO_POINTER (bop->op),
@@ -152,75 +146,24 @@ bst_item_view_init (BstItemView      *self,
 		      NULL);
     }
   
-  /* item list model */
-  self->wlist = gxk_list_wrapper_new (N_COLS,
-				      G_TYPE_STRING,	/* COL_SEQID */
-				      G_TYPE_STRING,	/* COL_NAME */
-				      G_TYPE_STRING	/* COL_BLURB */
-				      );
-  g_signal_connect_object (self->wlist, "fill-value",
-			   G_CALLBACK (item_view_fill_value),
-			   self, G_CONNECT_SWAPPED);
-  
-  /* item list view */
-  scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
-			"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
-			"vscrollbar_policy", GTK_POLICY_ALWAYS,
-			"height_request", 120,
-			"border_width", 5,
-			"shadow_type", GTK_SHADOW_IN,
-			NULL);
-  self->tree = g_object_new (GTK_TYPE_TREE_VIEW,
-			     "can_focus", TRUE,
-			     "model", self->wlist,
-			     "border_width", 5,
-			     "parent", scwin,
-			     NULL);
-  gxk_nullify_on_destroy (self->tree, &self->tree);
-  tsel = gtk_tree_view_get_selection (self->tree);
-  gtk_tree_selection_set_mode (tsel, GTK_SELECTION_BROWSE);
-  gxk_tree_selection_force_browse (tsel, GTK_TREE_MODEL (self->wlist));
-  g_object_connect (tsel, "swapped_object_signal::changed", pview_selection_changed, self, NULL);
-
-  /* add list view columns */
-  gtk_tree_view_append_text_columns (self->tree, N_COLS,
-				     COL_SEQID, 0.0, "ID",
-				     COL_NAME, 0.0, "Name",
-				     COL_BLURB, 0.0, "Blurb");
-
   /* pack list view + button box */
-  paned = g_object_new (GTK_TYPE_VPANED,
-			"parent", self,
-			NULL);
-  if (vbox)
-    {
-      GtkWidget *lbox = g_object_new (GTK_TYPE_HBOX,
-				      "border_width", 0,
-				      "spacing", 5,
-				      NULL);
-      gtk_box_pack_start (GTK_BOX (lbox), scwin, TRUE, TRUE, 0);
-      gtk_box_pack_end (GTK_BOX (lbox),
-			g_object_new (GTK_TYPE_ALIGNMENT, /* don't want vexpand */
-				      "xscale", 0.0,
-				      "yscale", 0.0,
-				      "xalign", 0.0,
-				      "yalign", 0.0,
-				      "child", vbox,
-				      NULL),
-			FALSE, FALSE, 0);
-      gtk_paned_pack1 (GTK_PANED (paned), lbox, FALSE, FALSE);
-    }
-  else
-    gtk_paned_pack1 (GTK_PANED (paned), scwin, FALSE, FALSE);
-
+  self->paned = g_object_new (GTK_TYPE_VPANED,
+			      "parent", self,
+			      NULL);
+  gxk_nullify_on_destroy (self->paned, &self->paned);
+  
   /* property view */
-  self->pview = bst_param_view_new (0);
-  gxk_nullify_on_destroy (self->pview, &self->pview);
-  gtk_paned_pack2 (GTK_PANED (paned), self->pview, TRUE, TRUE);
-
+  if (ITEM_VIEW_CLASS->show_properties)
+    {
+      self->pview = bst_param_view_new (0);
+      bst_param_view_set_mask (BST_PARAM_VIEW (self->pview), "BseItem", 0, NULL, NULL);
+      gxk_nullify_on_destroy (self->pview, &self->pview);
+      gtk_paned_pack2 (self->paned, self->pview, TRUE, TRUE);
+    }
+  
   /* show the sutter */
   gtk_widget_show_all (GTK_WIDGET (self));
-
+  
   self->item_type = NULL;
   self->container = 0;
   self->id_format = g_strdup ("%03u");
@@ -270,8 +213,148 @@ item_view_fill_value (BstItemView *self,
     case COL_BLURB:
       item = bse_container_get_item (self->container, self->item_type, seqid);
       bse_proxy_get (item, "blurb", &string, NULL);
-      g_value_set_string (value, string);
+      g_value_set_string (value, string ? string : "");
       break;
+    }
+}
+
+void
+bst_item_view_name_edited (BstItemView *self,
+			   const gchar *strpath,
+			   const gchar *text)
+{
+  g_return_if_fail (BST_IS_ITEM_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      guint seqid = row + 1;
+      SfiProxy item = bse_container_get_item (self->container, self->item_type, seqid);
+      if (item)
+	bse_item_set_name (item, text);
+    }
+}
+
+void
+bst_item_view_blurb_edited (BstItemView *self,
+			    const gchar *strpath,
+			    const gchar *text)
+{
+  g_return_if_fail (BST_IS_ITEM_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      guint seqid = row + 1;
+      SfiProxy item = bse_container_get_item (self->container, self->item_type, seqid);
+      if (item)
+	bse_proxy_set (item, "blurb", text, NULL);
+    }
+}
+
+static void
+bst_item_view_create_tree (BstItemView *self)
+{
+  GtkWidget *scwin;
+  GtkTreeSelection *tsel;
+
+  /* item list model */
+  self->wlist = gxk_list_wrapper_new (N_COLS,
+				      G_TYPE_STRING,	/* COL_SEQID */
+				      G_TYPE_STRING,	/* COL_NAME */
+				      G_TYPE_STRING	/* COL_BLURB */
+				      );
+  g_signal_connect_object (self->wlist, "fill-value",
+			   G_CALLBACK (item_view_fill_value),
+			   self, G_CONNECT_SWAPPED);
+  
+  /* item list view */
+  scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+			"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+			"vscrollbar_policy", GTK_POLICY_ALWAYS,
+			"border_width", 0,
+			"shadow_type", GTK_SHADOW_IN,
+			NULL);
+  self->tree = g_object_new (GTK_TYPE_TREE_VIEW,
+			     "can_focus", TRUE,
+			     "model", self->wlist,
+			     "border_width", 5,
+			     "parent", scwin,
+			     "height_request", BST_ITEM_VIEW_TREE_HEIGHT,
+			     NULL);
+  gxk_nullify_on_destroy (self->tree, &self->tree);
+  tsel = gtk_tree_view_get_selection (self->tree);
+  gtk_tree_selection_set_mode (tsel, GTK_SELECTION_BROWSE);
+  gxk_tree_selection_force_browse (tsel, GTK_TREE_MODEL (self->wlist));
+
+  /* add list view columns */
+  gxk_tree_view_append_text_columns (self->tree, 1,
+				     COL_SEQID, 0.0, "ID");
+  gxk_tree_view_add_editable_text_column (self->tree,
+					  COL_NAME, 0.0, "Name",
+					  bst_item_view_name_edited, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_editable_text_column (self->tree,
+					  COL_BLURB, 0.0, "Comment",
+					  bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
+
+  /* make widgets visible */
+  gtk_widget_show_all (scwin);
+}
+
+static void
+pview_selection_changed (BstItemView *self)
+{
+  if (self->pview)
+    bst_param_view_set_item (BST_PARAM_VIEW (self->pview),
+			     bst_item_view_get_current (self));
+}
+
+static void
+complete_tree (BstItemView *self)
+{
+  if (!self->wlist && !self->tree)
+    {
+      BST_ITEM_VIEW_GET_CLASS (self)->create_tree (self);
+      if (self->tree)
+	{
+	  GtkWidget *widget = GTK_WIDGET (self->tree);
+	  while (widget->parent)
+	    widget = widget->parent;
+
+	  /* update property editor */
+	  g_object_connect (gtk_tree_view_get_selection (self->tree),
+			    "swapped_object_signal::changed", pview_selection_changed, self,
+			    NULL);
+
+	  /* pack list view + button box */
+	  if (self->op_box)
+	    {
+	      gboolean vpack = BST_ITEM_VIEW_GET_CLASS (self)->horizontal_ops;
+	      GtkWidget *lbox = g_object_new (vpack ? GTK_TYPE_VBOX : GTK_TYPE_HBOX,
+					      "visible", TRUE,
+					      "border_width", 3,
+					      "spacing", 3,
+					      NULL);
+	      if (!vpack)
+		gtk_box_pack_start (GTK_BOX (lbox), widget, TRUE, TRUE, 0);
+	      gtk_widget_show_all (GTK_WIDGET (self->op_box));
+	      gtk_box_pack_start (GTK_BOX (lbox),
+				  g_object_new (GTK_TYPE_ALIGNMENT, /* don't want vexpand */
+						"visible", TRUE,
+						"xscale", 0.0,
+						"yscale", 0.0,
+						"xalign", 0.0,
+						"yalign", 0.0,
+						"child", self->op_box,
+						NULL),
+				  FALSE, FALSE, 0);
+	      if (vpack)
+		gtk_box_pack_start (GTK_BOX (lbox), widget, TRUE, TRUE, 0);
+	      gtk_paned_pack1 (self->paned, lbox, FALSE, FALSE);
+	    }
+	  else
+	    gtk_paned_pack1 (self->paned, widget, FALSE, FALSE);
+	}
     }
 }
 
@@ -295,6 +378,26 @@ item_changed (SfiProxy     item,
 }
 
 static void
+item_view_listen_on (BstItemView *self,
+		     SfiProxy     item)
+{
+  bse_proxy_connect (item,
+		     "signal::seqid-changed", item_changed, self,
+		     "signal::property-notify", item_property_notify, self,
+		     NULL);
+}
+
+static void
+item_view_unlisten_on (BstItemView *self,
+		       SfiProxy     item)
+{
+  bse_proxy_disconnect (item,
+			"any_signal", item_changed, self,
+			"any_signal", item_property_notify, self,
+			NULL);
+}
+
+static void
 item_view_item_added (SfiProxy     container,
 		      SfiProxy     item,
 		      BstItemView *self)
@@ -303,10 +406,7 @@ item_view_item_added (SfiProxy     container,
     {
       gint row = bse_item_get_seqid (item) - 1;
       gxk_list_wrapper_notify_insert (self->wlist, row);
-      bse_proxy_connect (item,
-			 "signal::seqid_changed", item_changed, self,
-			 "signal::property-notify", item_property_notify, self,
-			 NULL);
+      BST_ITEM_VIEW_GET_CLASS (self)->listen_on (self, item);
       bst_item_view_can_operate (self, 0);
     }
 }
@@ -321,10 +421,7 @@ item_view_item_removed (SfiProxy     container,
     {
       gint row = seqid - 1;
       gxk_list_wrapper_notify_delete (self->wlist, row);
-      bse_proxy_disconnect (item,
-			    "any_signal", item_changed, self,
-			    "any_signal", item_property_notify, self,
-			    NULL);
+      BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (self, item);
       bst_update_can_operate (GTK_WIDGET (self));
     }
 }
@@ -349,10 +446,7 @@ bst_item_view_set_container (BstItemView *self,
       guint i;
       for (i = 0; i < pseq->n_proxies; i++)
 	if (bse_proxy_is_a (pseq->proxies[i], self->item_type))
-	  bse_proxy_disconnect (pseq->proxies[i],
-				"any_signal", item_changed, self,
-				"any_signal", item_property_notify, self,
-				NULL);
+	  BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (self, pseq->proxies[i]);
       bse_proxy_disconnect (self->container,
 			    "any_signal", item_view_item_removed, self,
 			    "any_signal", item_view_item_added, self,
@@ -368,21 +462,19 @@ bst_item_view_set_container (BstItemView *self,
     {
       BseProxySeq *pseq = bse_container_list_items (self->container);
       guint i;
-      for (i = 0; i < pseq->n_proxies; i++)
-	if (bse_proxy_is_a (pseq->proxies[i], self->item_type))
-	  {
-	    bse_proxy_connect (pseq->proxies[i],
-			       "signal::seqid_changed", item_changed, self,
-			       "signal::notify", item_property_notify, self,
-			       NULL);
-	    if (self->wlist)
-	      gxk_list_wrapper_notify_append (self->wlist, 1);
-	  }
       bse_proxy_connect (self->container,
 			 "swapped_signal::release", bst_item_view_release_container, self,
 			 "signal::item_added", item_view_item_added, self,
 			 "signal::item_removed", item_view_item_removed, self,
 			 NULL);
+      complete_tree (self);
+      for (i = 0; i < pseq->n_proxies; i++)
+	if (bse_proxy_is_a (pseq->proxies[i], self->item_type))
+	  {
+	    BST_ITEM_VIEW_GET_CLASS (self)->listen_on (self, pseq->proxies[i]);
+	    if (self->wlist)
+	      gxk_list_wrapper_notify_append (self->wlist, 1);
+	  }
     }
 }
 

@@ -569,11 +569,11 @@ bst_piano_roll_realize (GtkWidget *widget)
   piano_roll_reset_backgrounds (self);
 
   /* update cursors */
-  cursor_type = self->canvas_cursor++;
+  cursor_type = self->canvas_cursor;
   bst_piano_roll_set_canvas_cursor (self, cursor_type);
-  cursor_type = self->vpanel_cursor++;
+  cursor_type = self->vpanel_cursor;
   bst_piano_roll_set_vpanel_cursor (self, cursor_type);
-  cursor_type = self->hpanel_cursor++;
+  cursor_type = self->hpanel_cursor;
   bst_piano_roll_set_hpanel_cursor (self, cursor_type);
 }
 
@@ -604,8 +604,8 @@ bst_piano_roll_unrealize (GtkWidget *widget)
 }
 
 static gint
-ticks_to_pixel (BstPianoRoll *self,
-		gint	      ticks)
+ticks_to_pixels (BstPianoRoll *self,
+		 gint	       ticks)
 {
   gfloat ppqn = self->ppqn;
   gfloat tpixels = QNOTE_HPIXELS;
@@ -639,7 +639,7 @@ static gint
 tick_to_coord (BstPianoRoll *self,
 	       gint	     tick)
 {
-  return ticks_to_pixel (self, tick) - self->x_offset;
+  return ticks_to_pixels (self, tick) - self->x_offset;
 }
 
 static gint
@@ -716,10 +716,10 @@ typedef struct {
 } NoteInfo;
 
 static gint
-note_to_coord (BstPianoRoll *self,
-	       gint	     note,
-	       gint	    *height_p,
-	       gint	    *ces_fes_height_p)
+note_to_pixels (BstPianoRoll *self,
+		gint	      note,
+		gint	     *height_p,
+		gint	     *ces_fes_height_p)
 {
   gint octave, ythickness = 1, z = self->vzoom, h = NOTE_HEIGHT (self), semitone = SFI_NOTE_SEMITONE (note);
   gint oheight = OCTAVE_HEIGHT (self), y, zz = z + z, offs = 0, height = h;
@@ -756,7 +756,16 @@ note_to_coord (BstPianoRoll *self,
   if (ces_fes_height_p)
     *ces_fes_height_p = (semitone == 0 || semitone == 4 || semitone == 5 || semitone == 11) ? z : 0;
 
-  return y - self->y_offset;
+  return y;
+}
+
+static gint
+note_to_coord (BstPianoRoll *self,
+	       gint	     note,
+	       gint	    *height_p,
+	       gint	    *ces_fes_height_p)
+{
+  return note_to_pixels (self, note, height_p, ces_fes_height_p) - self->y_offset;
 }
 
 static gboolean
@@ -876,7 +885,7 @@ static void
 bst_piano_roll_overlap_grow_vpanel_area (BstPianoRoll *self,
 					 GdkRectangle *area)
 {
-  /* grow hpanel exposes by surrounding white keys */
+  /* grow vpanel exposes by surrounding white keys */
   area->y -= OCTAVE_HEIGHT (self) / 7;			/* fudge 1 key upwards */
   area->height += OCTAVE_HEIGHT (self) / 7;
   area->height += OCTAVE_HEIGHT (self) / 7;		/* fudge 1 key downwards */
@@ -1117,7 +1126,8 @@ bst_piano_roll_overlap_grow_hpanel_area (BstPianoRoll *self,
   /* grow hpanel exposes by surrounding tacts */
   i = coord_to_tick (self, x, FALSE);
   i /= self->ppqn * self->qnpt;
-  i -= 1;		/* fudge 1 tact to the left */
+  if (i > 0)
+    i -= 1;		/* fudge 1 tact to the left */
   i *= self->ppqn * self->qnpt;
   x = tick_to_coord (self, i);
   i = coord_to_tick (self, xbound + 1, TRUE);
@@ -1284,7 +1294,7 @@ piano_roll_adjustment_value_changed (BstPianoRoll  *self,
     {
       gint x = self->x_offset, diff;
 
-      self->x_offset = ticks_to_pixel (self, adjustment->value);
+      self->x_offset = ticks_to_pixels (self, adjustment->value);
       diff = x - self->x_offset;
       if (diff && GTK_WIDGET_DRAWABLE (self))
 	{
@@ -1440,11 +1450,11 @@ bst_piano_roll_hsetup (BstPianoRoll *self,
     {
       if (self->hadjustment)
 	{
-	  self->x_offset = ticks_to_pixel (self, self->hadjustment->value);
+	  self->x_offset = ticks_to_pixels (self, self->hadjustment->value);
 	  piano_roll_update_adjustments (self, TRUE, FALSE);
 	}
-      self->draw_qn_grid = ticks_to_pixel (self, self->ppqn) >= 3;
-      self->draw_qqn_grid = ticks_to_pixel (self, self->ppqn / 4) >= 5;
+      self->draw_qn_grid = ticks_to_pixels (self, self->ppqn) >= 3;
+      self->draw_qqn_grid = ticks_to_pixels (self, self->ppqn / 4) >= 5;
       gtk_widget_queue_draw (GTK_WIDGET (self));
     }
 }
@@ -2006,19 +2016,13 @@ void
 bst_piano_roll_set_canvas_cursor (BstPianoRoll *self,
 				  GdkCursorType cursor_type)
 {
-  GdkCursor *cursor;
-
   g_return_if_fail (BST_IS_PIANO_ROLL (self));
 
   if (cursor_type != self->canvas_cursor)
     {
       self->canvas_cursor = cursor_type;
       if (GTK_WIDGET_REALIZED (self))
-	{
-	  cursor = gdk_cursor_new (self->canvas_cursor);
-	  gdk_window_set_cursor (self->canvas, cursor);
-	  gdk_cursor_unref (cursor);
-	}
+	gxk_window_set_cursor_type (self->canvas, self->canvas_cursor);
     }
 }
 
@@ -2026,19 +2030,13 @@ void
 bst_piano_roll_set_vpanel_cursor (BstPianoRoll *self,
 				  GdkCursorType cursor_type)
 {
-  GdkCursor *cursor;
-
   g_return_if_fail (BST_IS_PIANO_ROLL (self));
 
   if (cursor_type != self->vpanel_cursor)
     {
       self->vpanel_cursor = cursor_type;
       if (GTK_WIDGET_REALIZED (self))
-	{
-	  cursor = gdk_cursor_new (self->vpanel_cursor);
-	  gdk_window_set_cursor (self->vpanel, cursor);
-	  gdk_cursor_unref (cursor);
-	}
+	gxk_window_set_cursor_type (self->vpanel, self->vpanel_cursor);
     }
 }
 
@@ -2046,18 +2044,12 @@ void
 bst_piano_roll_set_hpanel_cursor (BstPianoRoll *self,
 				  GdkCursorType cursor_type)
 {
-  GdkCursor *cursor;
-
   g_return_if_fail (BST_IS_PIANO_ROLL (self));
 
   if (cursor_type != self->hpanel_cursor)
     {
       self->hpanel_cursor = cursor_type;
       if (GTK_WIDGET_REALIZED (self))
-	{
-	  cursor = gdk_cursor_new (self->hpanel_cursor);
-	  gdk_window_set_cursor (self->hpanel, cursor);
-	  gdk_cursor_unref (cursor);
-	}
+        gxk_window_set_cursor_type (self->hpanel, self->hpanel_cursor);
     }
 }

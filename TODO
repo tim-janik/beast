@@ -1,4 +1,7 @@
 FIXMES:
+- fix part references in tracks
+- update /Help index to cover new docs
+- insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
 - export item seqid as readonly property (doesn't need its own notification signal then)
 - fix context handle ids to be >0 and not use ~0 anymore
 - fix name of BSE_SNET_FLAG_USER_SYNTH
@@ -44,6 +47,7 @@ FIXMES:
 
 URGENT:
 - support pspec groups in idl files [stefan]
+- clean up default storage in BSE files [stefan,tim]
 
 DOCS:
 - try implementing some kind of table layout for tsmview [timj]
@@ -58,6 +62,7 @@ DOCS:
 - adjust overall brightness of the site [alper]
 - in development docs, make function names in descriptions links to
   apropriate functions [alper]
+- function docs constants (e.g. %NULL) aren't marked up in cyan in .markup output [alper]
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq
@@ -93,7 +98,12 @@ Snet Router:
 - add property editor dialog which contains intersection of properties from selected objects
 - middle mouse button on canvas background should scroll
 
+TrackView:
+- resizable scrollbar
+- context menu with delete, move, insert (double click inserts?)
+
 PianoRoll:
+- hscrollbar resizable (like cubase) or last-tick + 1 tact
 - ctrl+move should copy (DND style modifier)
 - draw ces and fes with red lines
 - tooltip follows mouse and shows current note/tact

@@ -20,10 +20,7 @@
 
 #include	"bstutils.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_ITEM_VIEW	      (bst_item_view_get_type ())
@@ -32,6 +29,8 @@ extern "C" {
 #define	BST_IS_ITEM_VIEW(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_ITEM_VIEW))
 #define	BST_IS_ITEM_VIEW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_ITEM_VIEW))
 #define BST_ITEM_VIEW_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_ITEM_VIEW, BstItemViewClass))
+
+#define	BST_ITEM_VIEW_TREE_HEIGHT     (120)
 
 
 /* --- structures & typedefs --- */
@@ -42,9 +41,12 @@ struct _BstItemView
 {
   GtkAlignment	  parent_object;
 
-  GxkListWrapper *wlist;
   GtkTreeView    *tree;
+  GxkListWrapper *wlist;
+
+  GtkPaned       *paned;
   GtkWidget	 *pview;
+  GtkBox	 *op_box;
 
   const gchar	*item_type;
   SfiProxy	 container;
@@ -58,13 +60,18 @@ struct _BstItemViewClass
 
   guint		    n_ops;
   BstItemViewOp	   *ops;
+  guint		    horizontal_ops : 1;
+  guint		    show_properties : 1;
 
-  guint             default_param_view_height;
-
-  void          (*operate)       (BstItemView	*item_view,
-				  BstOps	 op);
-  gboolean      (*can_operate)   (BstItemView	*item_view,
-				  BstOps         op);
+  void          (*operate)	(BstItemView	*item_view,
+				 BstOps	 	 op);
+  gboolean      (*can_operate)	(BstItemView	*item_view,
+				 BstOps          op);
+  void		(*create_tree)	(BstItemView	*self);
+  void		(*listen_on)	(BstItemView	*self,
+				 SfiProxy	 item);
+  void		(*unlisten_on)	(BstItemView	*self,
+				 SfiProxy	 item);
 };
 struct _BstItemViewOp
 {
@@ -87,11 +94,13 @@ gboolean	bst_item_view_can_operate	(BstItemView	*item_view,
 						 BstOps		 op);
 void		bst_item_view_set_id_format	(BstItemView	*item_view,
 						 const gchar	*id_format);
+void		bst_item_view_name_edited	(BstItemView         *self,
+						 const gchar         *strpath,
+						 const gchar         *text);
+void		bst_item_view_blurb_edited	(BstItemView         *self,
+						 const gchar         *strpath,
+						 const gchar         *text);
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_ITEM_VIEW_H__ */

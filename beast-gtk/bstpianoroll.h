@@ -20,9 +20,7 @@
 
 #include	"bstdragutils.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* --- type macros --- */
 #define BST_TYPE_PIANO_ROLL              (bst_piano_roll_get_type ())
@@ -149,9 +147,6 @@ void    bst_piano_roll_get_paste_pos		(BstPianoRoll	*self,
 						 gint		*note_p);
 
      
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_PIANO_ROLL_H__ */

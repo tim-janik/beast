@@ -126,8 +126,8 @@ gxk_led_new (guint color)
 
 /**
  * gxk_led_set_color
- * @led: valid GxkLed
- * @colors: color as RGB byte triple
+ * @self:  valid GxkLed
+ * @color: color as RGB byte triple
  *
  * Set the current led color as 24bit RGB values.
  */

@@ -40,9 +40,9 @@ progs_LDADD = $(strip \
 beast_headers = $(strip \
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
 	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	bstsnetshell.h	\
-				bstcluehunter.h	bstprojectctrl.h	bstdial.h	\
+	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstdial.h	\
 	bstfreeradiobutton.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
-	bstlogadjustment.h	bstitemview.h	bstknob.h \
+	bstlogadjustment.h	bstitemview.h				bstknob.h	\
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
 	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
 	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
@@ -50,16 +50,16 @@ beast_headers = $(strip \
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	\
 	bstusermessage.h	bstutils.h	bstwavedialog.h		bstwaveeditor.h	\
 	bstwavereposhell.h	bstwaveview.h	bstsongshell.h		bstxkb.h	\
-	bstzoomedwindow.h	glewidgets.h				bstxframe.h	\
+	bstzoomedwindow.h	glewidgets.h	bsttrackrollctrl.h	bstxframe.h	\
 	bstdefs.h bstmarshal.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
 	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	bstsnetshell.c	\
-				bstcluehunter.c	bstprojectctrl.c	bstdial.c	\
+	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstdial.c	\
 	bstfreeradiobutton.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
-	bstlogadjustment.c	bstitemview.c	bstknob.c \
+	bstlogadjustment.c	bstitemview.c				bstknob.c	\
 	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
 	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	\
 	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	\
@@ -67,7 +67,7 @@ beast_sources = $(strip \
 	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	\
 	bstusermessage.c	bstutils.c	bstwavedialog.c		bstwaveeditor.c	\
 	bstwavereposhell.c	bstwaveview.c	bstsongshell.c		bstxkb.c	\
-	bstzoomedwindow.c	glewidgets.c				bstxframe.c	\
+	bstzoomedwindow.c	glewidgets.c	bsttrackrollctrl.c	bstxframe.c	\
 	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)

@@ -56,6 +56,8 @@ struct _GxkListWrapperClass
 			 guint		 column,
 			 guint		 row,
 			 GValue		*value);
+  void	(*row_change)	(GxkListWrapper	*self,
+			 gint		 row);
 };
 
 

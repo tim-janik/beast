@@ -50,6 +50,7 @@ static void	gxk_list_wrapper_init_tree_model_iface	(GtkTreeModelIface	*iface);
 /* --- static variables --- */
 static gpointer parent_class = NULL;
 static guint    signal_fill_value = 0;
+static guint    signal_row_change = 0;
 
 
 /* --- functions --- */
@@ -57,7 +58,7 @@ GType
 gxk_list_wrapper_get_type (void)
 {
   static GType type = 0;
-
+  
   if (!type)
     {
       static const GTypeInfo type_info = {
@@ -76,7 +77,7 @@ gxk_list_wrapper_get_type (void)
 	(GInterfaceFinalizeFunc) NULL,
 	NULL,	/* interface_data */
       };
-
+      
       type = g_type_register_static (G_TYPE_OBJECT, "GxkListWrapper", &type_info, 0);
       g_type_add_interface_static (type, GTK_TYPE_TREE_MODEL, &iface_info);
     }
@@ -87,13 +88,13 @@ static void
 gxk_list_wrapper_class_init (GxkListWrapperClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-
+  
   parent_class = g_type_class_peek_parent (class);
-
+  
   object_class->set_property = gxk_list_wrapper_set_property;
   object_class->get_property = gxk_list_wrapper_get_property;
   object_class->finalize = gxk_list_wrapper_finalize;
-
+  
   g_object_class_install_property (object_class,
 				   PROP_N_COLS,
 				   g_param_spec_uint ("n_cols", _("Number of Columns"), NULL,
@@ -106,7 +107,7 @@ gxk_list_wrapper_class_init (GxkListWrapperClass *class)
 				   PROP_N_ROWS,
 				   g_param_spec_uint ("n_rows", _("Number of Rows"), NULL,
 						      0, G_MAXINT, 0, G_PARAM_READWRITE));
-
+  
   signal_fill_value = g_signal_new ("fill-value",
 				    G_OBJECT_CLASS_TYPE (object_class),
 				    G_SIGNAL_RUN_LAST,
@@ -115,6 +116,13 @@ gxk_list_wrapper_class_init (GxkListWrapperClass *class)
 				    gxk_marshal_NONE__UINT_UINT_BOXED,
 				    G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_UINT,
 				    G_TYPE_VALUE | G_SIGNAL_TYPE_STATIC_SCOPE);
+  signal_row_change = g_signal_new ("row-change",
+				    G_OBJECT_CLASS_TYPE (object_class),
+				    G_SIGNAL_RUN_LAST,
+				    G_STRUCT_OFFSET (GxkListWrapperClass, row_change),
+				    NULL, NULL,
+				    gxk_marshal_NONE__INT,
+				    G_TYPE_NONE, 1, G_TYPE_INT);
 }
 
 static void
@@ -410,6 +418,7 @@ gxk_list_wrapper_notify_insert (GxkListWrapper *self,
   g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
   g_return_if_fail (nth_row <= self->n_rows);
 
+  g_signal_emit (self, signal_row_change, 0, -1);
   tree_model = GTK_TREE_MODEL (self);
 
   self->n_rows++;
@@ -435,6 +444,7 @@ gxk_list_wrapper_notify_change (GxkListWrapper *self,
   g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
   g_return_if_fail (nth_row < self->n_rows);
 
+  g_signal_emit (self, signal_row_change, 0, nth_row);
   tree_model = GTK_TREE_MODEL (self);
 
   iter.stamp = self->stamp;
@@ -456,6 +466,7 @@ gxk_list_wrapper_notify_delete (GxkListWrapper *self,
   g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
   g_return_if_fail (nth_row < self->n_rows);
 
+  g_signal_emit (self, signal_row_change, 0, -1);
   tree_model = GTK_TREE_MODEL (self);
 
   iter.stamp = self->stamp;
@@ -465,7 +476,6 @@ gxk_list_wrapper_notify_delete (GxkListWrapper *self,
   self->stamp++;
   gtk_tree_model_row_deleted (tree_model, path);
   gtk_tree_path_free (path);
-
   g_object_notify (G_OBJECT (self), "n_rows");
 }
 
@@ -476,6 +486,7 @@ gxk_list_wrapper_notify_prepend (GxkListWrapper *self,
   g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
 
   g_object_freeze_notify (G_OBJECT (self));
+  g_signal_emit (self, signal_row_change, 0, -1);
   while (n_rows--)
     gxk_list_wrapper_notify_insert (self, 0);
   g_object_thaw_notify (G_OBJECT (self));
@@ -488,6 +499,7 @@ gxk_list_wrapper_notify_append (GxkListWrapper *self,
   g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
   
   g_object_freeze_notify (G_OBJECT (self));
+  g_signal_emit (self, signal_row_change, 0, -1);
   while (n_rows--)
     gxk_list_wrapper_notify_insert (self, self->n_rows);
   g_object_thaw_notify (G_OBJECT (self));
@@ -499,6 +511,7 @@ gxk_list_wrapper_notify_clear (GxkListWrapper *self)
   g_return_if_fail (GXK_IS_LIST_WRAPPER (self));
 
   g_object_freeze_notify (G_OBJECT (self));
+  g_signal_emit (self, signal_row_change, 0, -1);
   while (self->n_rows)
     gxk_list_wrapper_notify_delete (self, self->n_rows - 1);
   g_object_thaw_notify (G_OBJECT (self));

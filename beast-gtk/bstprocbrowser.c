@@ -135,7 +135,7 @@ bst_proc_browser_init (BstProcBrowser *self)
 		       "border_width", 10,
 		       "parent", scwin,
 		       NULL);
-  gtk_tree_view_append_text_columns (GTK_TREE_VIEW (tree), N_COLS,
+  gxk_tree_view_append_text_columns (GTK_TREE_VIEW (tree), N_COLS,
 				     COL_SNAME, 0.0, "Scheme Name",
 				     COL_TNAME, 0.0, "Type Name",
 				     COL_CAT,   0.0, "Category"
