@@ -34,7 +34,7 @@ choice SaturationType {
 };
 
 class Saturator : Bse::Effect {
-  Info    category  = "/Enhance/Saturate";
+  Info    category  = "/Distortion/Saturate";
   Info    icon      = "icons/saturate.png";
   Info    authors   = "Tim Janik";
   Info    blurb     = ("This is 2-channel saturation module. Various saturation types are supported. "

@@ -1,3 +1,7 @@
+Thu Jan 20 01:34:00 2005  Tim Janik  <timj@gtk.org>
+
+	* standardsaturator.idl: move saturator into the distortion submenu.
+
 Thu Jan 20 01:21:24 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* standardguspatchenvelope.cc: Don't assume that in the attack phase,
