@@ -1,3 +1,7 @@
+Mon Oct 27 00:39:10 2003  Tim Janik  <timj@gtk.org>
+
+	* gslloader-oggvorbis.c: added application/ogg.
+
 Sun Oct 26 09:38:12 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bserecords.idl: Using // within a string now works (no longer
