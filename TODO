@@ -709,5 +709,7 @@ Misc Buglets/Feature Requests:
    be the default
  - add: playback cursor follows song (like sweep does: with jumps)
  - scheme console via xterm
-
+ - make default velocity for pianoroll either 100 (since it might be useful
+   if you have edited some notes, to make some individual notes louder,
+   which is not possible if the default is already 127), or configurable
 vim:set ts=8 sts=2 sw=2:
