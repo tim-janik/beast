@@ -331,12 +331,12 @@ CodeGeneratorModule::generate_procedures (const std::string          &outer_nspa
       string pstream = "NULL";
       if (icon != "")
         {
-          printf ("  template<bool> static inline const unsigned char* pixstream();\n");
+          printf ("  template<bool> static inline const unsigned char* inlined_pixstream();\n");
           images.push_back (Image (include_relative (icon, mi->file),
                                    "template<bool> const unsigned char*\n" +
                                    ptName +
-                                   "::pixstream()"));
-          pstream = "pixstream<true>()";
+                                   "::inlined_pixstream()"));
+          pstream = "inlined_pixstream<true>()";
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
@@ -568,12 +568,12 @@ CodeGeneratorModule::run ()
       string pstream = "NULL";
       if (icon != "")
         {
-          printf ("  template<bool> static inline const unsigned char* pixstream();\n");
+          printf ("  template<bool> static inline const unsigned char* inlined_pixstream();\n");
           images.push_back (Image (include_relative (icon, ci->file),
                                    "template<bool> const unsigned char*\n" +
                                    ctNameBase +
-                                   "::pixstream()"));
-          pstream = "pixstream<true>()";
+                                   "::inlined_pixstream()"));
+          pstream = "inlined_pixstream<true>()";
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());

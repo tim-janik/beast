@@ -166,9 +166,16 @@ test_thread (gpointer data)
 static void
 test_threads (void)
 {
+  static SfiMutex test_mutex;
   guint thread_data = 0;
   SfiThread *thread;
+  gboolean locked;
   MSG ("Threading:");
+  sfi_mutex_init (&test_mutex);
+  locked = sfi_mutex_trylock (&test_mutex);
+  ASSERT (locked);
+  SFI_SPIN_UNLOCK (&test_mutex);
+  sfi_mutex_destroy (&test_mutex);
   thread = sfi_thread_run (NULL, test_thread, &thread_data);
   ASSERT (thread != NULL);
   ASSERT (thread_data == 0);
