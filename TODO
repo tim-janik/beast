@@ -1,4 +1,6 @@
 FIXMES:
+- fix icons in file menu
+- prime file dialog singletons with custom-dir from bse
 - regitering the same procedure twice trigegrs g_warning()
 - document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
 - .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this
