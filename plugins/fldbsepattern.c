@@ -45,11 +45,11 @@ test_content_setup (BseProcedureClass *proc,
   /* input parameters */
   *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern", NULL,
 				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("a_number", "Useless Number",
-				      "Enter any number here, it won't be used "
-				      "anyways ;)",
-				      0, 1000, 1, 1,
-				      BSE_PARAM_DEFAULT);
+  *(ipspecs++) = bse_param_spec_int ("seed_value", "Random Seed Value",
+				     "Enter any number here, it will be used "
+				     "as seed value for the note generator",
+				     0, 1000, 1, 1,
+				     BSE_PARAM_DEFAULT);
   /* output parameters */
 }
 
@@ -59,12 +59,16 @@ test_content_exec (BseProcedureClass *proc,
 		   BseParam          *oparams)
 {
   /* extract parameter values */
-  BsePattern *pattern	= (BsePattern*) (iparams++)->value.v_item;
+  BsePattern *pattern	 = (BsePattern*) (iparams++)->value.v_item;
+  gint        seed_value = (iparams++)->value.v_int;
   guint c, r;
   
   /* check parameters */
   if (!pattern)
     return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* initialize from seed value */
+  srand (seed_value);
   
   /* FIXME: start undo */
   

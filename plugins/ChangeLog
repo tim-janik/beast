@@ -1,3 +1,9 @@
+Mon Feb  7 03:54:44 2000  Tim Janik  <timj@gtk.org>
+
+	* fldbsepattern.c (test_content_setup): use the useless number as a
+	random seed value, since this procedure is actually funny to some
+	extend ;)
+
 Sun Feb  6 07:43:28 2000  Tim Janik  <timj@gtk.org>
 
 	* davcanyondelay.[hc]: added cool new canyon delay module from
