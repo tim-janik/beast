@@ -7,7 +7,6 @@ FIXMES:	(release-critical)
 - adjust engine block size (Subject: blocksize vs. cpu)
 - save mixer bus volumes
 - BseAmplifier: extend master volume to +24db
-- redo doesn't work for BseBus properties
 TODO:
 - implement GxkLogAdjustment in terms of GxkAdapterAdjustment and rename gxklogadjustment.h
 - remove [dB], [%], [uS] etc... unit specifications from property labels, use hints instead and let the GUI make such indications
