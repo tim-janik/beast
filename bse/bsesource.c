@@ -309,13 +309,13 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
 }
 
 void
-bse_source_class_cache_gsl_class (BseSourceClass *source_class,
-                                  const BseModuleClass *gsl_class)
+bse_source_class_cache_engine_class (BseSourceClass *source_class,
+                                     const BseModuleClass *engine_class)
 {
-  g_return_if_fail (source_class->gsl_class == NULL);
-  g_return_if_fail (gsl_class != NULL);
+  g_return_if_fail (source_class->engine_class == NULL);
+  g_return_if_fail (engine_class != NULL);
 
-  source_class->gsl_class = g_memdup (gsl_class, sizeof (*gsl_class));
+  source_class->engine_class = g_memdup (engine_class, sizeof (*engine_class));
 }
 
 guint
@@ -1704,7 +1704,7 @@ bse_source_class_base_init (BseSourceClass *class)
   class->channel_defs.ochannel_idents = NULL;
   class->channel_defs.ochannel_labels = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
-  class->gsl_class = NULL;
+  class->engine_class = NULL;
 }
 
 static void
@@ -1741,8 +1741,8 @@ bse_source_class_base_finalize (BseSourceClass *class)
   class->channel_defs.ochannel_idents = NULL;
   class->channel_defs.ochannel_labels = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
-  g_free (class->gsl_class);
-  class->gsl_class = NULL;
+  g_free (class->engine_class);
+  class->engine_class = NULL;
 }
 
 static void

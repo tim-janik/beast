@@ -77,27 +77,27 @@ Effect::update_modules (BseTrans *trans)
 
 SynthesisModule::SynthesisModule()
 {
-  engine_module = NULL;
+  intern_module = NULL;
 }
 
 void
-SynthesisModule::set_module (BseModule *gslmodule)
+SynthesisModule::set_module (BseModule *engine_module)
 {
-  g_return_if_fail (engine_module == NULL);
-  g_return_if_fail (gslmodule != NULL);
+  g_return_if_fail (intern_module == NULL);
+  g_return_if_fail (engine_module != NULL);
   
-  engine_module = gslmodule;
+  intern_module = engine_module;
   /* see check_mirror_structs() on why these casts are valid */
-  istreams = reinterpret_cast<IStream*> (gslmodule->istreams);
-  jstreams = reinterpret_cast<JStream*> (gslmodule->jstreams);
-  ostreams = reinterpret_cast<OStream*> (gslmodule->ostreams);
+  istreams = reinterpret_cast<IStream*> (engine_module->istreams);
+  jstreams = reinterpret_cast<JStream*> (engine_module->jstreams);
+  ostreams = reinterpret_cast<OStream*> (engine_module->ostreams);
 }
 
 void
 SynthesisModule::ostream_set (unsigned int ostream_index,
                               const float *values)
 {
-  BseModule *m = gslmodule();
+  BseModule *m = engine_module();
   m->ostreams[ostream_index].values = const_cast<float*> (values);
 }
 
@@ -118,17 +118,17 @@ SynthesisModule::cost()
 }
 
 void
-process_module (BseModule *gslmodule,
+process_module (BseModule *engine_module,
                 guint      n_values)
 {
-  SynthesisModule *m = static_cast<SynthesisModule*> (gslmodule->user_data);
+  SynthesisModule *m = static_cast<SynthesisModule*> (engine_module->user_data);
   m->process (n_values);
 }
 
 void
-reset_module (BseModule *gslmodule)
+reset_module (BseModule *engine_module)
 {
-  SynthesisModule *m = static_cast<SynthesisModule*> (gslmodule->user_data);
+  SynthesisModule *m = static_cast<SynthesisModule*> (engine_module->user_data);
   m->reset();
 }
 
@@ -153,15 +153,15 @@ module_flags_from_process_cost (ProcessCost cost)
 }
 
 const BseModuleClass*
-Effect::create_gsl_class (SynthesisModule *sample_module,
-                          int              cost,
-                          int              n_istreams,
-                          int              n_jstreams,
-                          int              n_ostreams)
+Effect::create_engine_class (SynthesisModule *sample_module,
+                             int              cost,
+                             int              n_istreams,
+                             int              n_jstreams,
+                             int              n_ostreams)
 {
   BseSource *source = cast (this);
   BseSourceClass *source_class = BSE_SOURCE_GET_CLASS (source);
-  if (!source_class->gsl_class)
+  if (!source_class->engine_class)
     {
       BseModuleClass klass = {
         0,                      /* n_istreams */
@@ -178,30 +178,30 @@ Effect::create_gsl_class (SynthesisModule *sample_module,
                                                          BSE_SOURCE_N_JOINT_ICHANNELS (source));
       klass.n_jstreams = n_jstreams >= 0 ? n_jstreams : BSE_SOURCE_N_JOINT_ICHANNELS (source);
       klass.n_ostreams = n_ostreams >= 0 ? n_ostreams : BSE_SOURCE_N_OCHANNELS (source);
-      bse_source_class_cache_gsl_class (source_class, &klass);
+      bse_source_class_cache_engine_class (source_class, &klass);
     }
-  return source_class->gsl_class;
+  return source_class->engine_class;
 }
 
 BseModule*
-Effect::integrate_bse_module (unsigned int   context_handle,
-                              BseTrans      *trans)
+Effect::integrate_engine_module (unsigned int   context_handle,
+                                 BseTrans      *trans)
 {
   SynthesisModule *cxxmodule = create_module (context_handle, trans);
-  BseModule *gslmodule = bse_module_new (create_gsl_class (cxxmodule), cxxmodule);
-  cxxmodule->set_module (gslmodule);
+  BseModule *engine_module = bse_module_new (create_engine_class (cxxmodule), cxxmodule);
+  cxxmodule->set_module (engine_module);
   /* intergrate module into engine */
-  bse_trans_add (trans, bse_job_integrate (gslmodule));
-  return gslmodule;
+  bse_trans_add (trans, bse_job_integrate (engine_module));
+  return engine_module;
 }
 
 void
-Effect::dismiss_bse_module (BseModule       *gslmodule,
-                            guint            context_handle,
-                            BseTrans        *trans)
+Effect::dismiss_engine_module (BseModule       *engine_module,
+                               guint            context_handle,
+                               BseTrans        *trans)
 {
-  if (gslmodule)
-    bse_trans_add (trans, bse_job_discard (gslmodule));
+  if (engine_module)
+    bse_trans_add (trans, bse_job_discard (engine_module));
 }
 
 unsigned int
@@ -225,17 +225,17 @@ Effect::class_init (CxxBaseClass *klass)
     {
       CxxBase *base = cast (source);
       Effect *self = static_cast<Effect*> (base);
-      BseModule *gslmodule = self->integrate_bse_module (context_handle, trans);
+      BseModule *engine_module = self->integrate_engine_module (context_handle, trans);
       
       /* setup module i/o streams with BseSource i/o channels */
-      bse_source_set_context_module (source, context_handle, gslmodule);
+      bse_source_set_context_module (source, context_handle, engine_module);
       
       /* reset module */
-      bse_trans_add (trans, bse_job_force_reset (gslmodule));
+      bse_trans_add (trans, bse_job_force_reset (engine_module));
       /* configure module */
       SynthesisModule::Accessor *ac = self->module_configurator();
       if (ac)
-        bse_trans_add (trans, bse_job_access (gslmodule, access_trampoline, ac, access_data_free));
+        bse_trans_add (trans, bse_job_access (engine_module, access_trampoline, ac, access_data_free));
       
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_create (source, context_handle, trans);
@@ -247,19 +247,19 @@ Effect::class_init (CxxBaseClass *klass)
     {
       CxxBase *base = cast (source);
       Effect *self = static_cast<Effect*> (base);
-      BseModule *gslmodule = NULL;
+      BseModule *engine_module = NULL;
       if (BSE_SOURCE_N_ICHANNELS (source))
         {
-          gslmodule = bse_source_get_context_imodule (source, context_handle);
+          engine_module = bse_source_get_context_imodule (source, context_handle);
           bse_source_set_context_imodule (source, context_handle, NULL);
         }
       if (BSE_SOURCE_N_OCHANNELS (source))
         {
-          gslmodule = bse_source_get_context_omodule (source, context_handle);
+          engine_module = bse_source_get_context_omodule (source, context_handle);
           bse_source_set_context_omodule (source, context_handle, NULL);
         }
 
-      self->dismiss_bse_module (gslmodule, context_handle, trans);
+      self->dismiss_engine_module (engine_module, context_handle, trans);
 
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_dismiss (source, context_handle, trans);

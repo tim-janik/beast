@@ -46,7 +46,7 @@ struct OStream {
 
 class SynthesisModule {
   template<class T, typename P> class AccessorP1; /* 1-argument member function closure */
-  BseModule     *engine_module;
+  BseModule     *intern_module;
   const IStream *istreams;
   const JStream *jstreams;
   const OStream *ostreams;
@@ -65,7 +65,7 @@ public:
   inline const unsigned int mix_freq        () const;
   inline const unsigned int block_size      () const;
   inline guint64            tick_stamp      ();
-  inline BseModule*         gslmodule       ();
+  inline BseModule*         engine_module   ();
   static inline int         dtoi            (double d) { return gsl_dtoi (d); }
   static inline int         ftoi            (float  f) { return gsl_ftoi (f); }
   /* member function closure base */
@@ -102,12 +102,12 @@ public:
   guint         ichannels_istream (guint i) const { return BSE_SOURCE_ICHANNEL_ISTREAM (gobject(), i); }
   guint         ichannels_jstream (guint i) const { return BSE_SOURCE_ICHANNEL_JSTREAM (gobject(), i); }
   guint         ochannels_ostream (guint i) const { return BSE_SOURCE_OCHANNEL_OSTREAM (gobject(), i); }
-  const gchar*  ichannel_ident (guint i)    const { return BSE_SOURCE_ICHANNEL_IDENT (gobject(), i); }
-  const gchar*  ichannel_label (guint i)    const { return BSE_SOURCE_ICHANNEL_LABEL (gobject(), i); }
-  const gchar*  ichannel_blurb (guint i)    const { return BSE_SOURCE_ICHANNEL_BLURB (gobject(), i); }
-  const gchar*  ochannel_ident (guint i)    const { return BSE_SOURCE_OCHANNEL_IDENT (gobject(), i); }
-  const gchar*  ochannel_label (guint i)    const { return BSE_SOURCE_OCHANNEL_LABEL (gobject(), i); }
-  const gchar*  ochannel_blurb (guint i)    const { return BSE_SOURCE_OCHANNEL_BLURB (gobject(), i); }
+  const gchar*  ichannel_ident    (guint i) const { return BSE_SOURCE_ICHANNEL_IDENT (gobject(), i); }
+  const gchar*  ichannel_label    (guint i) const { return BSE_SOURCE_ICHANNEL_LABEL (gobject(), i); }
+  const gchar*  ichannel_blurb    (guint i) const { return BSE_SOURCE_ICHANNEL_BLURB (gobject(), i); }
+  const gchar*  ochannel_ident    (guint i) const { return BSE_SOURCE_OCHANNEL_IDENT (gobject(), i); }
+  const gchar*  ochannel_label    (guint i) const { return BSE_SOURCE_OCHANNEL_LABEL (gobject(), i); }
+  const gchar*  ochannel_blurb    (guint i) const { return BSE_SOURCE_OCHANNEL_BLURB (gobject(), i); }
   virtual SynthesisModule*  create_module        (unsigned int     context_handle,
                                                   BseTrans        *trans) = 0;
   virtual SynthesisModule::
@@ -119,19 +119,19 @@ public:
   virtual void  reset1()        { /* override this to do something before parent class dismiss */ }
   virtual void  reset2()        { /* override this to do something after parent class dismiss */ }
   
-  static void               class_init           (CxxBaseClass    *klass);
+  static void           class_init              (CxxBaseClass    *klass);
 protected:
-  const BseModuleClass*     create_gsl_class     (SynthesisModule *sample_module,
-                                                  int              cost = -1,
-                                                  int              n_istreams = -1,
-                                                  int              n_jstreams = -1,
-                                                  int              n_ostreams = -1);
-  virtual BseModule*        integrate_bse_module (unsigned int     context_handle,
-                                                  BseTrans        *trans);
-  virtual void              dismiss_bse_module   (BseModule       *gslmodule,
-                                                  guint            context_handle,
-                                                  BseTrans        *trans);
-  unsigned int              block_size() const;
+  const BseModuleClass* create_engine_class     (SynthesisModule *sample_module,
+                                                 int              cost = -1,
+                                                 int              n_istreams = -1,
+                                                 int              n_jstreams = -1,
+                                                 int              n_ostreams = -1);
+  virtual BseModule*    integrate_engine_module (unsigned int     context_handle,
+                                                 BseTrans        *trans);
+  virtual void          dismiss_engine_module   (BseModule       *engine_module,
+                                                 guint            context_handle,
+                                                 BseTrans        *trans);
+  unsigned int          block_size              () const;
 };
 /* effect method: create_module(); */
 #define BSE_CXX_DEFINE_CREATE_MODULE(ObjectType,ModuleType,ParamType)           \
@@ -161,9 +161,9 @@ extern guint bse_engine_exvar_block_size;
 extern guint64 bse_module_tick_stamp (BseModule*);
 } }
 inline BseModule*
-SynthesisModule::gslmodule ()
+SynthesisModule::engine_module ()
 {
-  return engine_module;
+  return intern_module;
 }
 inline const unsigned int
 SynthesisModule::mix_freq () const
@@ -178,7 +178,7 @@ SynthesisModule::block_size () const
 inline guint64
 SynthesisModule::tick_stamp ()
 {
-  return externC::bse_module_tick_stamp (gslmodule());
+  return externC::bse_module_tick_stamp (engine_module());
 }
 inline const IStream&
 SynthesisModule::istream (unsigned int istream_index) const

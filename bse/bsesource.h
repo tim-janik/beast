@@ -144,7 +144,7 @@ struct _BseSourceClass
 			 guint		 ichannel,
 			 BseSource	*osource,
 			 guint		 ochannel);
-  BseModuleClass *gsl_class;
+  BseModuleClass *engine_class;
 };
 
 
@@ -226,18 +226,18 @@ void       bse_source_input_backup_to_undo      (BseSource      *source,
                                                  BseSource      *osource,
                                                  guint           ochannel);
 /* convenience */
-void    	bse_source_class_cache_gsl_class(BseSourceClass	*source_class,
-						 const BseModuleClass *gsl_class);
-void		bse_source_set_context_module	(BseSource	*source,
+void   	   bse_source_class_cache_engine_class  (BseSourceClass	*source_class,
+						 const BseModuleClass *engine_class);
+void	   bse_source_set_context_module	(BseSource	*source,
 						 guint		 context_handle,
 						 BseModule	*module);
-void		bse_source_update_modules	(BseSource	*source,
+void	   bse_source_update_modules	        (BseSource	*source,
 						 guint		 member_offset,
 						 gpointer	 member_data,
 						 guint		 member_size,
 						 BseTrans	*trans);
-void		bse_source_clear_ichannels	(BseSource	*source);
-void		bse_source_clear_ochannels	(BseSource	*source);
+void	   bse_source_clear_ichannels	        (BseSource	*source);
+void	   bse_source_clear_ochannels	        (BseSource	*source);
 
 
 /* --- internal --- */
