@@ -36,6 +36,8 @@
 #define sfidl_pspec_PSpec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 
+#define _(x) (x "_tr")
+
 #include <sfi/testidl.h>
 
 #define	MSG(what)	do g_print ("%s [", what); while (0)

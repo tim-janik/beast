@@ -1,7 +1,18 @@
+Mon Feb 23 17:48:46 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: Fixed bug - code generated will be generated for
+	types defined directly in stdin (using sfidl -).
+
+	* testidl.idl: Added a choice definition containing all syntactically
+	valid ways of defining a choice value.
+
+	* testidl.c: Added _(x) macro: translates "example" to "example_tr".
+
 Mon Feb 23 17:30:15 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-parser.cc (parseChoiceValue): fix simple assigments to
 	choice values.
+
 
 Mon Feb 23 04:04:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
 

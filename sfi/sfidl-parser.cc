@@ -320,26 +320,33 @@ static bool fileExists(const string& filename)
   return false;
 }
 
-static void loadFile(const char *filename, vector<char>& v)
+static void loadFile (FILE *file, vector<char>& v)
 {
-  FILE *f = 0;
-
-  if (strcmp (filename, "-") == 0) /* stdin */
-    f = stdin;
-  else
-    f = fopen (filename,"r");
-
-  if(!f)
-    {
-      fprintf(stderr,"file '%s' not found\n",filename);
-      exit(1);
-    }
-
   char buffer[1024];
   long l;
-  while (!feof (f) && (l = fread(buffer,1,1024,f)) > 0)
+  while (!feof (file) && (l = fread(buffer,1,1024,file)) > 0)
     v.insert(v.end(),buffer, buffer+l);
-  fclose(f);
+}
+
+static void loadFile(const char *filename, vector<char>& v)
+{
+  if (strcmp (filename, "-") == 0) /* stdin */
+    {
+      loadFile (stdin, v);
+    }
+  else
+    {
+      FILE *file = fopen (filename,"r");
+
+      if (!file)
+	{
+	  fprintf(stderr,"file '%s' not found\n",filename);
+	  exit(1);
+	}
+
+      loadFile (file, v);
+      fclose (file);
+    }
 }
 
 bool Parser::haveIncluded (const string& filename) const
@@ -394,7 +401,13 @@ void Parser::preprocess (const string& filename, bool includeImpl)
 
       vector<LineInfo>::iterator li;
       for (li = scannerLineInfo.begin(); li != scannerLineInfo.end(); li++)
-	li->isInclude = (implIncludes.count (li->filename) == 0);
+	{
+	  li->isInclude = (implIncludes.count (li->filename) == 0);
+
+	  // Error messages are more readable if they speak of "stdin" instead of "-".
+	  if (li->filename == "-") 
+	    li->filename = "stdin";
+	}
     }
 }
 
@@ -411,7 +424,7 @@ void Parser::preprocessContents (const string& input_filename)
 
   LineInfo linfo;
   linfo.line = 1;
-  linfo.filename = (input_filename == "-") ? "stdin" : input_filename;
+  linfo.filename = input_filename;
 
   vector<char> input;
   loadFile (input_filename.c_str(), input);

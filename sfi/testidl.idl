@@ -12,6 +12,17 @@ choice YesNoUndecided {
          No = (2, "No")
 };
 
+choice ExcessiveChoiceTest {
+  V0, 
+  V2  = 2,
+  V4  = "l4",
+  V6  = _("l6i"),
+  V8  = (8, "l8"),
+  V10 = (10, _("l10i")),
+  V12 = (12, "l12", _("b12")),
+  V14 = (14, _("l14i"), _("b14i")),
+};
+
 record Position {
   Sfi::Real x = ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
   Sfi::Real y = ("Y", "", 3.0, -10.0, 10.0, 1, ":readwrite");
