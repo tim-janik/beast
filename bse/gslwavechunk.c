@@ -242,8 +242,8 @@ setup_pblocks (GslWaveChunk *wchunk)
 	wchunk->enter.last = wchunk->head.last;
 	wchunk->enter.length = 0;
       */
-      wchunk->enter.first = wchunk->tail.last + 1;
-      wchunk->enter.last = wchunk->head.first - 1;
+      wchunk->enter.first = wchunk->tail.first;
+      wchunk->enter.last = wchunk->head.last;
       wchunk->enter.length = 0;
       wchunk->wrap.first = wchunk->tail.last + 1;
       wchunk->wrap.last = wchunk->head.first - 1;
@@ -309,15 +309,15 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	g_print ("PHASE_UNDEF, post-tail %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_UNDEF (wchunk);
     }
-  if (pos <= wchunk->enter.last)					/* before loop */
+  if (pos <= wchunk->head.last)
     {
-      if (pos <= wchunk->head.last)
-	{
-	  iter->rel_pos = pos - wchunk->head.first;
-	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_HEAD %ld %ld %ld\n", wchunk->head.first, iter->rel_pos, wchunk->head.last);
-	  return PHASE_HEAD (wchunk);
-	}
+      iter->rel_pos = pos - wchunk->head.first;
+      if (PRINT_DEBUG_INFO)
+	g_print ("PHASE_HEAD %ld %ld %ld\n", wchunk->head.first, iter->rel_pos, wchunk->head.last);
+      return PHASE_HEAD (wchunk);
+    }
+  else if (pos <= wchunk->enter.last)					/* before loop */
+    {
       if (pos >= wchunk->enter.first)
 	{
 	  iter->rel_pos = pos - wchunk->enter.first;
@@ -332,15 +332,15 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	g_print ("PHASE_NORM, pre-enter %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_NORM (wchunk);
     }
+  else if (pos >= wchunk->tail.first)
+    {
+      iter->rel_pos = pos - wchunk->tail.first;
+      if (PRINT_DEBUG_INFO)
+	g_print ("PHASE_TAIL %ld %ld %ld\n", wchunk->tail.first, iter->rel_pos, wchunk->tail.last);
+      return PHASE_TAIL (wchunk);
+    }
   else if (pos >= wchunk->leave.first)				/* after loop */
     {
-      if (pos >= wchunk->tail.first)
-	{
-	  iter->rel_pos = pos - wchunk->tail.first;
-	  if (PRINT_DEBUG_INFO)
-	    g_print ("PHASE_TAIL %ld %ld %ld\n", wchunk->tail.first, iter->rel_pos, wchunk->tail.last);
-	  return PHASE_TAIL (wchunk);
-	}
       if (pos <= wchunk->leave.last)
 	{
 	  iter->rel_pos = pos - wchunk->leave.first;

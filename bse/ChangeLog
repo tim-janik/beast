@@ -1,3 +1,13 @@
+Sun Aug  4 11:56:27 2002  Tim Janik  <timj@gtk.org>
+
+	* gslwavechunk.c: add fix from stefan so tail and head blocks are
+	actually read out.
+
+	* gslwavechunk.[hc] (struct _GslWaveChunk): rename ->start and ->end
+	fields to ->first and ->last since they both point to the first/last
+	position meant to be read out within that block (rather than the start
+	and upper boundary of the block).
+
 Sat Aug  3 17:16:13 2002  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-oss.c (bse_pcm_device_oss_open):
