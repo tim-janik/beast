@@ -1,9 +1,30 @@
+Overview of Changes in BEAST/BSE 0.6.0:
+
 * Moved RC file from ~/.beastrc to ~/.beast/beastrc
+* Lots of major and minor GUI improvements
+* Major improvements and speedups to scrolling code
+* Added sniffer module and per-track scope display
+* Fixed sequencer occasionally swallowing notes
+* Added skin-support to event and piano roll widgets
+* Added support for structures/boxed types in plugins
+* Implemented a-law/u-law decoders
+* Improved configurability
+* Added AIFF file loader
+* Minor and major performance improvements [Tim Janik, Stefan Westerfeld]
+* Incorporated OpenBSD fixes [Nedko Arnaudov]
+* Updated Serbian translation [Danilo Segan]
+* Updated Czech translation [Miloslav Trmac]
+* Updated Portuguese translation [Duarte Loreto]
+* Updated Spanish translation [Yelitza Louze, Francisco Javier F. Serrador]
+* Updated Dutch translation [Tino Meinen, Kees van den Broek]
+* Updated German translation [Christian Neumair]
 * Added Croatian translation [Robert Sedak]
 * Added French translation [Christophe Merlet]
 * Added Albanian translation [Laurent Dhima]
 * Added Mongolian translation [Dulmandakh Sukhbaatar]
-        
+* Added sfidl documentation [Stefan Westerfeld]
+* Miscellaneous bug fixes and cleanups
+
 Overview of Changes in BEAST/BSE 0.5.6:
 
 * New (or ported) modules:
