@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 20:11+0200\n"
-"PO-Revision-Date: 2004-05-06 17:39+0200\n"
+"POT-Creation-Date: 2004-05-28 19:09+0200\n"
+"PO-Revision-Date: 2004-05-29 01:14+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -2604,9 +2604,8 @@ msgstr "Uitvoerkanalen:"
 # Filtersoort
 # Soort filter
 #: bse/bsebiquadfilter.c:105
-#, fuzzy
 msgid "/Filters/Biquad Types"
-msgstr "Filtertype"
+msgstr "/Filters/Biquad types"
 
 # filteren?
 #: bse/bsebiquadfilter.c:124
@@ -2727,9 +2726,8 @@ msgid "Filtered Audio Signal"
 msgstr "Gefilterd audiosignaal"
 
 #: bse/bseconstant.c:84
-#, fuzzy
 msgid "/Other Sources/Constant"
-msgstr "Overige _bronnen"
+msgstr "/Overige bronnen/Constante"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
 #, c-format
@@ -2786,9 +2784,8 @@ msgstr ""
 "zwaar te belasten"
 
 #: bse/bseinstrumentinput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Voice Input"
-msgstr "_Invoer & uitvoer"
+msgstr "/Invoer & uitvoer/Instrument stem invoer"
 
 # frequentie van de toets
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
@@ -2820,9 +2817,8 @@ msgid "Velocity while the note is pressed"
 msgstr "Velocity terwijl de toets wordt ingedrukt"
 
 #: bse/bseinstrumentoutput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Output"
-msgstr "_Invoer & uitvoer"
+msgstr "/Invoer & uitvoer/Instrument uitvoer"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2853,9 +2849,8 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr "Hoog geeft aan dat het instrument klaar is met de synthese"
 
 #: bse/bsemidicontroller.c:86
-#, fuzzy
 msgid "/Input & Output/MIDI Control Input"
-msgstr "_Invoer & uitvoer"
+msgstr "/Invoer & uitvoer/MIDI controle invoer"
 
 #: bse/bsemidicontroller.c:137
 msgid "Ctrl Out1"
@@ -2890,9 +2885,8 @@ msgid "MIDI Signal 4"
 msgstr "MIDI signaal 4"
 
 #: bse/bsemidiinput.c:82
-#, fuzzy
 msgid "/Input & Output/MIDI Voice Input"
-msgstr "_Invoer & uitvoer"
+msgstr "/Invoer & uitvoer/MIDI stem invoer"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
 msgid "Freq Out"
@@ -2937,9 +2931,8 @@ msgid "Disconnect Out"
 msgstr "Disconnect uit"
 
 #: bse/bsepcminput.c:85
-#, fuzzy
 msgid "/Input & Output/PCM Input"
-msgstr "_Invoer & uitvoer"
+msgstr "/Invoer & uitvoer/PCM invoer"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
@@ -2960,9 +2953,8 @@ msgid "Right channel output"
 msgstr "Rechter kanaaluitgang"
 
 #: bse/bsepcmoutput.c:85
-#, fuzzy
 msgid "/Input & Output/PCM Output"
-msgstr "_Invoer & uitvoer"
+msgstr "/Invoer & uitvoer/PCM uitvoer"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
@@ -2984,26 +2976,25 @@ msgstr "Rechter kanaalingag"
 
 #: bse/bseserver.c:503
 msgid "Advice about MIDI device selections"
-msgstr ""
+msgstr "Adviseren over MIDI apparaat selectie"
 
 #: bse/bseserver.c:504
 msgid "Alert me about MIDI device selections"
-msgstr ""
+msgstr "Waarschuw mij bij MIDI apparaatselectie"
 
 #: bse/bseserver.c:505
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr ""
+msgstr "openen midi apparaat %s mislukt (teruggaan naar null-apparaat): %s"
 
 #: bse/bseserver.c:547
 #, c-format
 msgid "failed to open output file \"%s\": %s"
-msgstr ""
+msgstr "openen uitvoerbestand \"%s\" mislukt: %s"
 
 #: bse/bsesnooper.c:77
-#, fuzzy
 msgid "/Misc/Snooper"
-msgstr "Snooper"
+msgstr "/Overig/Snooper"
 
 #: bse/bsesnooper.c:108
 msgid "Signal In"
@@ -3024,9 +3015,8 @@ msgstr ""
 "typen golfvormen en modulatie-ingangen."
 
 #: bse/bsestandardosc.c:109
-#, fuzzy
 msgid "/Audio Sources/Standard Oscillator"
-msgstr "/Modules/Geluidsbronnen/Standaard oscillator"
+msgstr "/Geluidsbronnen/Standaard oscillator"
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
 msgid "Wave Form"
@@ -3134,9 +3124,8 @@ msgid "Syncronization Output"
 msgstr "Synchronisatie-uitgang"
 
 #: bse/bsesubiport.c:90
-#, fuzzy
 msgid "/Virtualization/Virtual Input"
-msgstr "_Virtualisatie"
+msgstr "/Virtualisatie/Virtuele invoer"
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
 #, c-format
@@ -3160,9 +3149,8 @@ msgid "Virtual input %u"
 msgstr "Virtuele ingang %u"
 
 #: bse/bsesuboport.c:90
-#, fuzzy
 msgid "/Virtualization/Virtual Output"
-msgstr "_Virtualisatie"
+msgstr "/Virtualisatie/Virtuele uitvoer"
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
 #, c-format
@@ -3175,9 +3163,8 @@ msgid "Virtual output %u"
 msgstr "Virtuele uitgang %u"
 
 #: bse/bsesubsynth.c:97
-#, fuzzy
 msgid "/Virtualization/Virtual Sub Synth"
-msgstr "_Virtualisatie"
+msgstr "/Virtualisatie/Virtuele sub synth"
 
 #: bse/bsesubsynth.c:124
 msgid "Synthesis Network"
