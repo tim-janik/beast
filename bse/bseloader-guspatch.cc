@@ -288,11 +288,11 @@ struct FileInfo
   GslWaveLoopType loop_type (int wave_format)
   {
     /* FIXME: is backwards for the loop or for the wave? */
-    if (wave_format & (PAT_FORMAT_LOOPED))
+    if (wave_format & PAT_FORMAT_LOOPED)
       {
-	if (wave_format & (PAT_FORMAT_LOOP_BIDI))
+	if (wave_format & PAT_FORMAT_LOOP_BIDI)
 	  {
-	    if (wave_format & (PAT_FORMAT_LOOP_BACKWARDS))
+	    if (wave_format & PAT_FORMAT_LOOP_BACKWARDS)
 	      {
 		GUS_PATCH_DEBUG ("unsupported loop type (backwards-pingpong)");
 		return GSL_WAVE_LOOP_PINGPONG;
@@ -304,7 +304,7 @@ struct FileInfo
 	  }
 	else
 	  {
-	    if (wave_format & (PAT_FORMAT_LOOP_BACKWARDS))
+	    if (wave_format & PAT_FORMAT_LOOP_BACKWARDS)
 	      {
 		GUS_PATCH_DEBUG ("unsupported loop type (backwards-jump)");
 		return GSL_WAVE_LOOP_JUMP;
