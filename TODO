@@ -16,6 +16,8 @@ FIXME(urgent):
   implement time parser for this in beast, merge with travelad parser
 - driver interface: support multilpe MIDI devices
 - add Left and Right channels to BseAmplifier to allow stereo amplification
+- provide script to render bse file to WAV. then add File/Export function which:
+  1) saves the current bse file, 2) renders the saved file to WAV with progress indication
 TODO:
 - add "..." to new dialog items in View/
 - add "Help on Skins" button to skin settings dialog, describing --skinrc option
