@@ -29,5 +29,8 @@ beast-gtk/bsttrackview.c
 beast-gtk/bstusermessage.c
 beast-gtk/bstwaveeditor.c
 beast-gtk/bstwavereposhell.c
+beast-gtk/bstwaveview.c
+beast-gtk/dialogs/gadgets-beast.xml
+beast-gtk/dialogs/gadgets-standard.xml
 data/beast.desktop.in
 data/bse.keys.in
