@@ -1,12 +1,12 @@
 FIXMES:
-- fix compillation without texitheque
+- add demo song
 - check whether */icons/Makefile.icons is included in dist tarball
 - check whether plugins/Makefile.plugins is included in dist tarball
 - fixup filemenu/dialog for WAVE recording
+- fix undo for: BseDataPocket
 - fix initial_granule in gslvorbis-cutter.c wrg page flushing
 - rename gsl_strerror()
 - fix 64bit v_int usage of GScanner in BSE?
-- fix undo for: BseDataPocket
 - popdown piano roll when parts are removed
 - get rid of bse_procedure_execvl
 - get rid of super->mod_time
@@ -26,8 +26,7 @@ FIXMES:
 - install bsw/* into bse/.
 - nuke SFI memblocks, malloc() is good enough
 - GslModuleClass.free should be renamed free_user_data
-- add demo song
-- fix engine deinitialization assertions in bseserver.c
+- fix engine deinitialization warning in bseserver.c
 - default saving (SFI_PARAM_SKIP_DEFAULT)
 - match enum names on word boundaries only
 - master tune slider in preferences (kammer ton)
@@ -50,19 +49,15 @@ FIXMES:
 - cleanup helper/util code in sfitype.h
 - choice type should have validation function
 - does BseMidiIController need a MIDI channel property?
-- use procedure storage for undo or nuke the code
-- (bsw-script-set-msg 'e "huhu") BSE-Message: while executing "bse-script-set-msg": Procedure execution failed
 - song->master volume doesn't affect anything
 - fix and canonify decibell naming everywhere
 - need volume properties per track
 - pressing browsing hotkeys in release-notes dialog does stuff
 - don't generate .markup files for NEWS and gsl-mplan.txt
 - sample chunk display should show note names not only midi notes
-- bstusermessage.c:user_message() signal handler takes choice argument, fix connections
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
 - RackEditor covers are broken for rack-items close to right table boundary
 - delay class destruction and plugin unloading through async handlers (slight timeout)
-- check for non-xref object links which should be turned into xrefs
 - fix the word "tact" vs. measure
 - clenup piano roll code
 - need tact number entry widget
