@@ -20,6 +20,8 @@
 
 #include "bsecategories.h"
 #include "bsesnet.h"
+#include "bseproject.h"
+#include "bswprivate.h"
 #include "bsemidireceiver.h"
 #include "./icons/inoutport.c"
 #include "gslengine.h"
@@ -48,6 +50,9 @@ static void	 bse_sub_synth_get_property	(GObject                *object,
 						 guint                   param_id,
 						 GValue                 *value,
 						 GParamSpec             *pspec);
+static BswIterProxy* bse_sub_synth_list_proxies	(BseItem		*item,
+						 guint			 param_id,
+						 GParamSpec		*pspec);
 static void	 bse_sub_synth_do_destroy	(BseObject		*object);
 static void	 bse_sub_synth_context_create	(BseSource		*source,
 						 guint			 instance_id,
@@ -108,6 +113,7 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint channel_id, i;
   
@@ -118,6 +124,8 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
   
   object_class->destroy = bse_sub_synth_do_destroy;
   
+  item_class->list_proxies = bse_sub_synth_list_proxies;
+
   source_class->context_create = bse_sub_synth_context_create;
   source_class->context_connect = bse_sub_synth_context_connect;
   source_class->context_dismiss = bse_sub_synth_context_dismiss;
@@ -249,11 +257,14 @@ bse_sub_synth_set_property (GObject      *object,
     {
       guint indx, n;
     case PARAM_SNET:
-      if (self->snet)
-	g_object_unref (self->snet);
-      self->snet = g_value_get_object (value);
-      if (self->snet)
-	g_object_ref (self->snet);	// FIXME: use cross-refs
+      if (!BSE_SOURCE_PREPARED (self))	/* FIXME: should check LOCKED() here instead? */
+	{
+	  if (self->snet)
+	    g_object_unref (self->snet);
+	  self->snet = g_value_get_object (value);
+	  if (self->snet)
+	    g_object_ref (self->snet);	// FIXME: use cross-refs
+	}
       break;
     default:
       indx = (param_id - PARAM_IPORT_NAME) % 2 + PARAM_IPORT_NAME;
@@ -317,6 +328,41 @@ bse_sub_synth_get_property (GObject    *object,
     }
 }
 
+static gboolean
+check_project (BseItem *item)
+{
+  return BSE_IS_PROJECT (item);
+}
+
+static gboolean
+check_synth (BseItem *item)
+{
+  // FIXME: we check for non-derived snets here because snet is base type for midisnets and songs
+  return G_OBJECT_TYPE (item) == BSE_TYPE_SNET;
+}
+
+static BswIterProxy*
+bse_sub_synth_list_proxies (BseItem    *item,
+			    guint       param_id,
+			    GParamSpec *pspec)
+{
+  BseSubSynth *self = BSE_SUB_SYNTH (item);
+  BswIterProxy *iter = bsw_iter_create (BSW_TYPE_ITER_PROXY, 0);
+  switch (param_id)
+    {
+    case PARAM_SNET:
+      bse_item_gather_proxies (item, iter, BSE_TYPE_SNET,
+			       (BseItemCheckContainer) check_project,
+			       (BseItemCheckProxy) check_synth,
+			       NULL);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+  return iter;
+}
+
 void
 bse_sub_synth_set_midi_receiver (BseSubSynth     *self,
 				 BseMidiReceiver *midi_receiver,
@@ -341,16 +387,22 @@ bse_sub_synth_context_create (BseSource *source,
 			      guint      context_handle,
 			      GslTrans  *trans)
 {
+  static GSList *recursion_stack = NULL;
   BseSubSynth *self = BSE_SUB_SYNTH (source);
   BseSNet *snet = self->snet;
   ModData *mdata_in = g_new0 (ModData, 1);
   ModData *mdata_out = g_new0 (ModData, 1);
   GslModule *imodule = gsl_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_in, g_free);
   GslModule *omodule = gsl_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_out, g_free);
-  guint foreign_context_handle = ~0;
+  guint foreign_context_handle = 0;
 
   /* create new context for foreign synth */
-  if (snet)
+  if (snet && g_slist_find (recursion_stack, source))
+    {
+      g_warning ("%s: not creating modules for %s due to infinite recursion",
+		 bse_object_debug_name (self), bse_object_debug_name (snet));
+    }
+  else if (snet)
     {
       BseMidiReceiver *midi_receiver = self->midi_receiver;
       guint midi_channel = self->midi_channel;
@@ -360,7 +412,10 @@ bse_sub_synth_context_create (BseSource *source,
 	  BseItem *parent = BSE_ITEM (self)->parent;
 	  midi_receiver = bse_snet_get_midi_receiver (BSE_SNET (parent), context_handle, &midi_channel);
 	}
+      recursion_stack = g_slist_prepend (recursion_stack, self);
       foreign_context_handle = bse_snet_create_context (snet, midi_receiver, midi_channel, trans);
+      recursion_stack = g_slist_remove (recursion_stack, self);
+      g_assert (foreign_context_handle > 0);
     }
 
   mdata_in->synth_context_handle = foreign_context_handle;
@@ -395,13 +450,16 @@ bse_sub_synth_context_connect (BseSource *source,
       ModData *mdata_in = imodule->user_data;
       guint foreign_context_handle = mdata_in->synth_context_handle;
 
-      bse_source_connect_context (BSE_SOURCE (snet), foreign_context_handle, trans);
-      for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+      if (foreign_context_handle)
 	{
-	  bse_snet_set_iport_src (snet, self->input_ports[i], foreign_context_handle,
-				  imodule, i, trans);
-	  bse_snet_set_oport_dest (snet, self->output_ports[i], foreign_context_handle,
-				   omodule, i, trans);
+	  bse_source_connect_context (BSE_SOURCE (snet), foreign_context_handle, trans);
+	  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+	    {
+	      bse_snet_set_iport_src (snet, self->input_ports[i], foreign_context_handle,
+				      imodule, i, trans);
+	      bse_snet_set_oport_dest (snet, self->output_ports[i], foreign_context_handle,
+				       omodule, i, trans);
+	    }
 	}
     }
   
@@ -422,15 +480,18 @@ bse_sub_synth_context_dismiss (BseSource *source,
       GslModule *imodule = bse_source_get_context_imodule (source, context_handle);
       ModData *mdata_in = imodule->user_data;
       guint i, foreign_context_handle = mdata_in->synth_context_handle;
-      
-      for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+
+      if (foreign_context_handle)
 	{
-	  bse_snet_set_iport_src (snet, self->input_ports[i], foreign_context_handle, NULL, i, trans);
-	  bse_snet_set_oport_dest (snet, self->output_ports[i], foreign_context_handle, NULL, i, trans);
+	  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+	    {
+	      bse_snet_set_iport_src (snet, self->input_ports[i], foreign_context_handle, NULL, i, trans);
+	      bse_snet_set_oport_dest (snet, self->output_ports[i], foreign_context_handle, NULL, i, trans);
+	    }
+	  bse_source_dismiss_context (BSE_SOURCE (snet), foreign_context_handle, trans);
 	}
-      bse_source_dismiss_context (BSE_SOURCE (snet), mdata_in->synth_context_handle, trans);
     }
-  
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }
@@ -446,26 +507,34 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
   BseSource *source = BSE_SOURCE (self);
   GslTrans *trans = gsl_trans_open ();
   guint *cids, n, i;
-
+  
   g_return_if_fail (BSE_SOURCE_PREPARED (self));
-
+  
   cids = bse_source_context_ids (source, &n);
   for (i = 0; i < n; i++)
     if (is_input)
       {
 	GslModule *imodule = bse_source_get_context_imodule (source, cids[i]);
 	ModData *mdata_in = imodule->user_data;
+	guint foreign_context_handle = mdata_in->synth_context_handle;
 
-	bse_snet_set_iport_src (snet, old_name, mdata_in->synth_context_handle, NULL, port, trans);
-	bse_snet_set_iport_src (snet, new_name, mdata_in->synth_context_handle, imodule, port, trans);
+	if (foreign_context_handle)
+	  {
+	    bse_snet_set_iport_src (snet, old_name, foreign_context_handle, NULL, port, trans);
+	    bse_snet_set_iport_src (snet, new_name, foreign_context_handle, imodule, port, trans);
+	  }
       }
-  else
-    {
+    else
+      {
 	GslModule *omodule = bse_source_get_context_omodule (source, cids[i]);
 	ModData *mdata_in = omodule->user_data;
-
-	bse_snet_set_oport_dest (snet, old_name, mdata_in->synth_context_handle, NULL, port, trans);
-	bse_snet_set_oport_dest (snet, new_name, mdata_in->synth_context_handle, omodule, port, trans);
+        guint foreign_context_handle = mdata_in->synth_context_handle;
+	
+        if (foreign_context_handle)
+	  {
+	    bse_snet_set_oport_dest (snet, old_name, foreign_context_handle, NULL, port, trans);
+	    bse_snet_set_oport_dest (snet, new_name, foreign_context_handle, omodule, port, trans);
+	  }
       }
   g_free (cids);
   gsl_trans_commit (trans);

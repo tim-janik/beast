@@ -19,6 +19,24 @@
     disconnect (item, ::unparanted);
     unuse (item);
   }
+  
+* wavechunk:
+  if (pos > wchunk->tail.end)                                   /* outside wave boundaries */
+    {
+      iter->lbound = 0;
+      iter->rel_pos = wchunk->n_pad_values;
+      iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, pos - wchunk->tail.end);
+      if (PRINT_DEBUG_INFO)
+        g_print ("PHASE_UNDEF, post-tail %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+      return PHASE_UNDEF (wchunk);
+    }
+  the "pos - wchunk->tail.end" is wrong for direction=+1, should be checked only for direction=-1 and
+  then affect lbound
+* wavechunk, fill-block:
+  wpos.loop_count = loop_count;
+  dnode = gsl_data_cache_ref_node (wchunk->dcache, 0, TRUE);
+  s/0/wpos.pos/ or offset
+      
 
 NEW:
 - get rid of ulongs (for types), make all types strings

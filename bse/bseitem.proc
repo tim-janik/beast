@@ -20,6 +20,7 @@
 #include        <bse/bseprocedure.h>
 #include        <bse/bseitem.h>
 #include        <bse/bsecontainer.h>
+#include        <bse/bswprivate.h>
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
@@ -356,6 +357,37 @@ METHOD (BseItem, check-is-a) {
 
   /* set output parameters */
   g_value_set_boolean (out_values++, is_a);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, list-proxies) {
+  HELP	= "List possible values for a proxy property of an item.";
+  IN	= g_param_spec_object ("item", NULL, NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("property", NULL, "Proxy property name",
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_boxed ("proxy_list", NULL, NULL,
+			      BSW_TYPE_ITER_PROXY,
+			      BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = g_value_get_object (in_values++);
+  gchar   *property = g_value_get_string (in_values++);
+  BswIterProxy *iter;
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (self) || !property)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  iter = bse_item_list_proxies (self, property);
+  if (!iter)
+    iter = bsw_iter_create (BSW_TYPE_ITER_PROXY, 0);
+  g_value_set_boxed_take_ownership (out_values++, iter);
 
   return BSE_ERROR_NONE;
 }

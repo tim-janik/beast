@@ -56,21 +56,39 @@ struct _BseItemClass
 {
   BseObjectClass parent_class;
 
-  void  (*set_parent)     (BseItem      *item,
-                           BseItem      *parent);
-  guint  (*get_seqid)     (BseItem      *item);
+  BswIterProxy*	(*list_proxies)	(BseItem	*item,
+				 guint		 param_id,
+				 GParamSpec	*pspec);
+
+  void		(*set_parent)	(BseItem	*item,
+				 BseItem	*parent);
+  guint		(*get_seqid)	(BseItem	*item);
 };
 
 #if 0
-typedef void    (*BseItemCrossFunc)          (BseItem        *owner,
+typedef void     (*BseItemCrossFunc)          (BseItem        *owner,
 					      BseItem        *ref_item,
 					      gpointer        data);
 #endif
-typedef void    (*BseItemUncross)	     (BseItem        *owner,
+typedef void     (*BseItemUncross)	     (BseItem        *owner,
 					      BseItem        *ref_item);
+typedef gboolean (*BseItemCheckContainer)    (BseContainer   *container,
+					      BseItem	     *item,
+					      gpointer	      data);
+typedef gboolean (*BseItemCheckProxy)	     (BseItem	     *proxy,
+					      BseItem	     *item,
+					      gpointer	      data);
 
 
 /* --- prototypes --- */
+BswIterProxy*	bse_item_gather_proxies	     (BseItem	           *item,
+					      BswIterProxy         *iter,
+					      GType		    base_type,
+					      BseItemCheckContainer ccheck,
+					      BseItemCheckProxy     pcheck,
+					      gpointer	            data);
+BswIterProxy*	bse_item_list_proxies	     (BseItem	      *item,
+					      const gchar     *property);
 guint           bse_item_get_seqid           (BseItem         *item);
 void            bse_item_queue_seqid_changed (BseItem         *item);
 BseSuper*       bse_item_get_super           (BseItem         *item);

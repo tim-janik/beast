@@ -22,6 +22,7 @@
 #include        "bseprocedure.h"
 #include        "bsemarshal.h"
 #include	"bsemain.h"
+#include	"bswprivate.h"
 
 
 
@@ -33,8 +34,13 @@ enum {
 
 
 /* --- prototypes --- */
-static void		bse_item_class_init		(BseItemClass	*class);
+static void		bse_item_class_init_base	(BseItemClass		*class);
+static void		bse_item_class_finalize_base	(BseItemClass		*class);
+static void		bse_item_class_init		(BseItemClass		*class);
 static void		bse_item_init			(BseItem		*item);
+static BswIterProxy*	bse_item_list_no_proxies	(BseItem		*item,
+							 guint                   param_id,
+							 GParamSpec             *pspec);
 static void		bse_item_do_dispose		(GObject		*object);
 static void		bse_item_do_destroy		(BseObject		*object);
 static void		bse_item_do_set_uname		(BseObject		*object,
@@ -64,8 +70,8 @@ BSE_BUILTIN_TYPE (BseItem)
   static const GTypeInfo item_info = {
     sizeof (BseItemClass),
 
-    (GBaseInitFunc) NULL,
-    (GBaseFinalizeFunc) NULL,
+    (GBaseInitFunc) bse_item_class_init_base,
+    (GBaseFinalizeFunc) bse_item_class_finalize_base,
     (GClassInitFunc) bse_item_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
@@ -81,6 +87,17 @@ BSE_BUILTIN_TYPE (BseItem)
 				   "BseItem",
 				   "Base type for objects managed by a container",
 				   &item_info);
+}
+
+static void
+bse_item_class_init_base (BseItemClass *class)
+{
+  class->list_proxies = bse_item_list_no_proxies;
+}
+
+static void
+bse_item_class_finalize_base (BseItemClass *class)
+{
 }
 
 static void
@@ -143,6 +160,14 @@ bse_item_do_destroy (BseObject *object)
   g_return_if_fail (item->use_count == 0);
 }
 
+static BswIterProxy*
+bse_item_list_no_proxies (BseItem    *item,
+			  guint       param_id,
+			  GParamSpec *pspec)
+{
+  return bsw_iter_create (BSW_TYPE_ITER_PROXY, 0);
+}
+
 static void
 bse_item_do_set_uname (BseObject   *object,
 		       const gchar *uname)
@@ -165,6 +190,77 @@ bse_item_do_set_parent (BseItem *item,
 			BseItem *parent)
 {
   item->parent = parent;
+}
+
+typedef struct {
+  BseItem              *item;
+  gpointer              data;
+  BswIterProxy         *iter;
+  GType                 base_type;
+  BseItemCheckContainer ccheck;
+  BseItemCheckProxy     pcheck;
+} GatherData;
+
+static gboolean
+gather_child (BseItem *child,
+	      gpointer data)
+{
+  GatherData *gdata = data;
+
+  if (child != gdata->item &&
+      g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
+      (!gdata->pcheck || gdata->pcheck (child, gdata->item, gdata->data)))
+    bsw_iter_add_proxy (gdata->iter, BSE_OBJECT_ID (child));
+  return TRUE;
+}
+
+BswIterProxy*
+bse_item_gather_proxies (BseItem              *item,
+			 BswIterProxy         *iter,
+			 GType		       base_type,
+			 BseItemCheckContainer ccheck,
+			 BseItemCheckProxy     pcheck,
+			 gpointer              data)
+{
+  GatherData gdata;
+  
+  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  g_return_val_if_fail (BSW_IS_ITER_PROXY (iter), NULL);
+  g_return_val_if_fail (g_type_is_a (base_type, BSE_TYPE_ITEM), iter);
+
+  gdata.item = item;
+  gdata.data = data;
+  gdata.iter = iter;
+  gdata.base_type = base_type;
+  gdata.ccheck = ccheck;
+  gdata.pcheck = pcheck;
+
+  item = BSE_IS_CONTAINER (item) ? item : item->parent;
+  while (item)
+    {
+      BseContainer *container = BSE_CONTAINER (item);
+      if (!gdata.ccheck || gdata.ccheck (container, gdata.item, gdata.data))
+	bse_container_forall_items (container, gather_child, &gdata);
+      item = item->parent;
+    }
+  return iter;
+}
+
+BswIterProxy*
+bse_item_list_proxies (BseItem     *item,
+		       const gchar *property)
+{
+  BseItemClass *class;
+  GParamSpec *pspec;
+  
+  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  g_return_val_if_fail (property != NULL, NULL);
+
+  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), property);
+  if (!pspec)
+    return NULL;
+  class = g_type_class_peek (pspec->owner_type);
+  return class->list_proxies (item, pspec->param_id, pspec);
 }
 
 void

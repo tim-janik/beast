@@ -179,19 +179,13 @@ METHOD (BseProject, ensure-wave-repo) {
   /* extract parameter values */
   BseProject *project = g_value_get_object (in_values++);
   BseWaveRepo *wrepo = NULL;
-  GSList *slist;
 
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  for (slist = project->supers; slist; slist = slist->next)
-    if (BSE_IS_WAVE_REPO (slist->data))
-      {
-	wrepo = slist->data;
-	break;
-      }
+  wrepo = bse_project_get_wave_repo (project);
   if (!wrepo)
     {
       wrepo = bse_object_new (BSE_TYPE_WAVE_REPO, NULL);

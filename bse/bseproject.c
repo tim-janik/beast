@@ -443,6 +443,19 @@ bse_project_lookup_typed_item (BseProject  *project,
   return NULL;
 }
 
+BseWaveRepo*
+bse_project_get_wave_repo (BseProject *project)
+{
+  GSList *slist;
+
+  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+
+  for (slist = project->supers; slist; slist = slist->next)
+    if (BSE_IS_WAVE_REPO (slist->data))
+      return slist->data;
+  return NULL;
+}
+
 static void
 bse_project_prepare (BseSource *source)
 {

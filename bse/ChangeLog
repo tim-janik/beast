@@ -1,3 +1,23 @@
+Fri Aug  2 18:21:19 2002  Tim Janik  <timj@gtk.org>
+
+	* bseitem.[hc]: add per-class list_proxies() method to retrive a list
+	of possible proxies for object properties.
+	add list_proxies() function and procedure.
+	bse_item_gather_proxies(): new convenience function to add predicate
+	filtered proxies to an iterator.
+
+	* bsemidisynth.c: support list_proxies() for synth net property.
+
+	* bseproject.[hc]: provide bse_project_get_wave_repo().
+
+	* bsesubsynth.[hc]: lock synth net property during playback, catch
+	infinite recursion during context creation. support list_proxies() for
+	synth net property.
+
+	* bsetrack.[hc]: support list_proxies() for synth net and part properties.
+
+	* bsewaveosc.c: support list_proxies() for wave property.
+
 Tue Jul 30 01:20:48 2002  Tim Janik  <timj@gtk.org>
 
 	* bsewaveosc.[hcp]*: support percentual seekage.

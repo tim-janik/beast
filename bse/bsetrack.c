@@ -23,6 +23,9 @@
 #include	"bsemain.h"
 #include	"gslcommon.h"
 #include	"bsesubsynth.h"
+#include	"bseproject.h"
+#include	"bsesong.h"
+#include	"bswprivate.h"
 #include        "bsemidivoice.h"
 #include	"bsecontextmerger.h"
 #include        "bsemidireceiver.h"
@@ -47,6 +50,9 @@ static void	bse_track_get_property	(GObject		*object,
 					 guint                   param_id,
 					 GValue                 *value,
 					 GParamSpec             *pspec);
+static BswIterProxy* bse_track_list_proxies	(BseItem        *item,
+						 guint           param_id,
+						 GParamSpec     *pspec);
 
 
 /* --- variables --- */
@@ -81,13 +87,16 @@ bse_track_class_init (BseTrackClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
   gobject_class->set_property = bse_track_set_property;
   gobject_class->get_property = bse_track_get_property;
-  
+
   object_class->destroy = bse_track_destroy;
+  
+  item_class->list_proxies = bse_track_list_proxies;
   
   bse_object_class_add_param (object_class, "Synth Input",
 			      PARAM_SYNTH_NET,
@@ -125,6 +134,59 @@ bse_track_destroy (BseObject *object)
 
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
+}
+
+static gboolean
+check_project (BseItem *item)
+{
+  return BSE_IS_PROJECT (item);
+}
+
+static gboolean
+check_song (BseItem *item)
+{
+  return BSE_IS_SONG (item);
+}
+
+static gboolean
+check_part (BseItem *item)
+{
+  return BSE_IS_PART (item);
+}
+
+static gboolean
+check_synth (BseItem *item)
+{
+  // FIXME: we check for non-derived snets here because snet is base type for midisnets and songs
+  return G_OBJECT_TYPE (item) == BSE_TYPE_SNET;
+}
+
+static BswIterProxy*
+bse_track_list_proxies (BseItem    *item,
+			guint       param_id,
+			GParamSpec *pspec)
+{
+  BseTrack *self = BSE_TRACK (item);
+  BswIterProxy *iter = bsw_iter_create (BSW_TYPE_ITER_PROXY, 0);
+  switch (param_id)
+    {
+    case PARAM_SYNTH_NET:
+      bse_item_gather_proxies (item, iter, BSE_TYPE_SNET,
+			       (BseItemCheckContainer) check_project,
+			       (BseItemCheckProxy) check_synth,
+			       NULL);
+      break;
+    case PARAM_PART:
+      bse_item_gather_proxies (item, iter, BSE_TYPE_PART,
+			       (BseItemCheckContainer) check_song,
+			       (BseItemCheckProxy) NULL,
+			       NULL);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+  return iter;
 }
 
 static void

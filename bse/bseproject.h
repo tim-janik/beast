@@ -67,6 +67,7 @@ BseObject*	bse_project_upath_resolver	(gpointer        project /* func_data */,
 BseItem*	bse_project_lookup_typed_item	(BseProject	*project,
 						 GType		 item_type,
 						 const gchar	*uname);
+BseWaveRepo*	bse_project_get_wave_repo	(BseProject	*project);
 
 
 #ifdef __cplusplus

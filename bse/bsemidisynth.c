@@ -22,6 +22,8 @@
 #include        "bsecontextmerger.h"
 #include        "bsesubsynth.h"
 #include        "bsepcmoutput.h"
+#include        "bseproject.h"
+#include        "bswprivate.h"
 #include        <string.h>
 #include        <time.h>
 #include        <fcntl.h>
@@ -45,20 +47,23 @@ enum
 
 
 /* --- prototypes --- */
-static void	bse_midi_synth_class_init	(BseMidiSynthClass	*class);
-static void	bse_midi_synth_init		(BseMidiSynth		*msynth);
-static void	bse_midi_synth_destroy		(BseObject		*object);
-static void	bse_midi_synth_set_property	(GObject		*object,
-						 guint			 param_id,
-						 const GValue		*value,
-						 GParamSpec		*pspec);
-static void	bse_midi_synth_get_property	(GObject		*msynth,
-						 guint			 param_id,
-						 GValue			*value,
-						 GParamSpec		*pspec);
-static void	bse_midi_synth_context_create	(BseSource		*source,
-						 guint			 context_handle,
-						 GslTrans		*trans);
+static void	bse_midi_synth_class_init	 (BseMidiSynthClass	*class);
+static void	bse_midi_synth_init		 (BseMidiSynth		*msynth);
+static void	bse_midi_synth_destroy		 (BseObject		*object);
+static void	bse_midi_synth_set_property	 (GObject		*object,
+						  guint			 param_id,
+						  const GValue		*value,
+						  GParamSpec		*pspec);
+static void	bse_midi_synth_get_property	 (GObject		*msynth,
+						  guint			 param_id,
+						  GValue		*value,
+						  GParamSpec		*pspec);
+static BswIterProxy* bse_midi_synth_list_proxies (BseItem		*item,
+						  guint			 param_id,
+						  GParamSpec		*pspec);
+static void	bse_midi_synth_context_create	 (BseSource		*source,
+						  guint			 context_handle,
+						  GslTrans		*trans);
 
 
 /* --- variables --- */
@@ -97,6 +102,7 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
@@ -105,6 +111,8 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
   gobject_class->get_property = bse_midi_synth_get_property;
 
   object_class->destroy = bse_midi_synth_destroy;
+
+  item_class->list_proxies = bse_midi_synth_list_proxies;
 
   source_class->context_create = bse_midi_synth_context_create;
   
@@ -250,6 +258,41 @@ bse_midi_synth_destroy (BseObject *object)
   
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
+}
+
+static gboolean
+check_project (BseItem *item)
+{
+  return BSE_IS_PROJECT (item);
+}
+
+static gboolean
+check_synth (BseItem *item)
+{
+  // FIXME: we check for non-derived snets here because snet is base type for midisnets and songs
+  return G_OBJECT_TYPE (item) == BSE_TYPE_SNET;
+}
+
+static BswIterProxy*
+bse_midi_synth_list_proxies (BseItem    *item,
+			     guint       param_id,
+			     GParamSpec *pspec)
+{
+  BseMidiSynth *self = BSE_MIDI_SYNTH (item);
+  BswIterProxy *iter = bsw_iter_create (BSW_TYPE_ITER_PROXY, 0);
+  switch (param_id)
+    {
+    case PARAM_SNET:
+      bse_item_gather_proxies (item, iter, BSE_TYPE_SNET,
+			       (BseItemCheckContainer) check_project,
+			       (BseItemCheckProxy) check_synth,
+			       NULL);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+  return iter;
 }
 
 static void

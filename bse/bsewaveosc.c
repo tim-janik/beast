@@ -21,6 +21,9 @@
 #include <bse/bsemain.h>
 #include <bse/bsecategories.h>
 #include <bse/bseeditablesample.h>
+#include <bse/bsewaverepo.h>
+#include <bse/bseproject.h>
+#include <bse/bswprivate.h>
 #include <bse/gslengine.h>
 #include <bse/gslwavechunk.h>
 #include <bse/gslfilter.h>
@@ -51,6 +54,9 @@ static void	bse_wave_osc_set_property	(GObject		*object,
 static void	bse_wave_osc_get_property	(GObject		*object,
 						 guint			 param_id,
 						 GValue			*value,
+						 GParamSpec		*pspec);
+static BswIterProxy* bse_wave_osc_list_proxies  (BseItem		*item,
+						 guint			 param_id,
 						 GParamSpec		*pspec);
 static void	bse_wave_osc_context_create	(BseSource		*source,
 						 guint			 context_handle,
@@ -107,6 +113,7 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ochannel, ichannel;
   
@@ -116,6 +123,8 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
   gobject_class->get_property = bse_wave_osc_get_property;
   gobject_class->finalize = bse_wave_osc_finalize;
   gobject_class->dispose = bse_wave_osc_dispose;
+
+  item_class->list_proxies = bse_wave_osc_list_proxies;
   
   source_class->context_create = bse_wave_osc_context_create;
   
@@ -208,6 +217,47 @@ bse_wave_osc_finalize (GObject *object)
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static gboolean
+check_wrepo (BseItem *item)
+{
+  return BSE_IS_WAVE_REPO (item);
+}
+
+static gboolean
+check_wave (BseItem *item)
+{
+  return BSE_IS_WAVE (item);
+}
+
+static BswIterProxy*
+bse_wave_osc_list_proxies (BseItem    *item,
+			   guint       param_id,
+			   GParamSpec *pspec)
+{
+  BseWaveOsc *self = BSE_WAVE_OSC (item);
+  BswIterProxy *iter = bsw_iter_create (BSW_TYPE_ITER_PROXY, 0);
+  switch (param_id)
+    {
+      BseProject *project;
+    case PARAM_WAVE:
+      project = bse_item_get_project (item);
+      if (project)
+	{
+	  BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
+
+	  bse_item_gather_proxies (BSE_ITEM (wrepo), iter, BSE_TYPE_WAVE,
+				   (BseItemCheckContainer) check_wrepo,
+				   (BseItemCheckProxy) check_wave,
+				   NULL);
+	}
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+  return iter;
 }
 
 static void
