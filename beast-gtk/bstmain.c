@@ -596,7 +596,6 @@ bst_exit_print_version (void)
   if (c)
     g_print (", %s", c);
   g_print (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
-  g_print (", GdkPixbuf");
 #ifdef BST_WITH_XKB
   g_print (", XKBlib");
 #endif
