@@ -113,13 +113,35 @@ EnumValue (int         int_value,
     static BseExportNodeBoxed bnode = {                                 \
       { NULL, BSE_EXPORT_NODE_RECORD, RecordName, },                    \
     };                                                                  \
+    if (!enode.node.name) {                                             \
+      enode.node.name = RecordType::type_name();                        \
+      enode.node.options = RecordType::options();                       \
+      enode.node.category = NULL;                                       \
+      enode.node.authors = RecordType::authors();                       \
+      enode.node.license = RecordType::license();                       \
+      enode.node.pixstream = NULL;                                      \
+      enode.node.blurb = RecordType::blurb();                           \
+      enode.copy = RecordType::boxed_copy();                            \
+      enode.free = RecordType::boxed_free();                            \
+      enode.seqrec2boxed = RecordType::from_rec();                      \
+      enode.boxed2recseq = RecordType::to_rec();                        \
+      enode.fields = RecordType::rec_fields();                          \
+    }                                                                   \
     return &rnode.node;                                                 \
   }                                                                     \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__1##RecordType;
 #define BSE_CXX_REGISTER_RECORD(RecordType)                             \
   ::Bse::ExportTypeKeeper                                               \
          bse_type_keeper__1##RecordType (bse_export_node<RecordType>,   \
-                                         &BSE_CXX_EXPORT_IDENTITY);
+                                         &BSE_CXX_EXPORT_IDENTITY);     \
+  SfiRec* sfidl__to_rec_##RecordType (const RecordType##Handle &h)      \
+  {                                                                     \
+    return RecordType::to_rec (h);                                      \
+  }                                                                     \
+  RecordType##Handle sfidl__from_rec_##RecordType (SfiRec *rec)         \
+  {                                                                     \
+    return RecordType::from_rec (rec);                                  \
+  }
 
 
 /* --- procedure registration --- */
