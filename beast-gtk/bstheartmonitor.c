@@ -121,7 +121,7 @@ bst_heart_monitor_set_heart (BstHeartMonitor *hmon,
 
   if (hmon->heart)
     {
-      bse_object_set_data (BSE_OBJECT (heart), "BstHeartMonitor", NULL);
+      bse_object_set_data (BSE_OBJECT (hmon->heart), "BstHeartMonitor", NULL);
       bst_param_view_set_object (BST_PARAM_VIEW (hmon->param_box), NULL);
       bse_object_remove_notifiers_by_func (hmon->heart,
 					   heart_monitor_reset_object,
@@ -131,7 +131,7 @@ bst_heart_monitor_set_heart (BstHeartMonitor *hmon,
   hmon->heart = heart;
   if (hmon->heart)
     {
-      bse_object_set_data (BSE_OBJECT (heart), "BstHeartMonitor", hmon);
+      bse_object_set_data (BSE_OBJECT (hmon->heart), "BstHeartMonitor", hmon);
       bse_object_add_data_notifier (hmon->heart,
 				    "destroy",
 				    heart_monitor_reset_object,

@@ -1,3 +1,8 @@
+Fri Dec 31 00:07:03 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstheartmonitor.c (bst_heart_monitor_set_heart): small bug
+	fix.
+
 Thu Dec 30 22:27:40 1999  Tim Janik  <timj@gtk.org>
 
 	* configure.in:
