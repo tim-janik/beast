@@ -92,7 +92,7 @@ CVS access to freedesktop.org is described on their
 page, however to just get texitheque, you do:
 
 @lisp
-$ export CVSROOT=':pserver:anoncvs@@pdx.freedesktop.org:/cvs'
+$ export CVSROOT=':pserver:anoncvs@pdx.freedesktop.org:/cvs/texitheque'
 $ cvs login # there is no password, just hit return
 $ cvs -z3 checkout texitheque
 @end lisp
