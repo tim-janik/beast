@@ -371,6 +371,11 @@ csource_info_update (BstCanvasSource *csource)
 			  "    %s\n",
 			  bsw_source_ochannel_name (csource->source, i),
 			  bsw_source_ochannel_blurb (csource->source, i));
+      g_string_printfa (gstring,
+			"%s:\n"
+			"  %s\n",
+			"Description",
+			bsw_item_get_type_blurb (csource->source));
       gtk_label_set_text (GTK_LABEL (label), gstring->str);
       g_string_free (gstring, TRUE);
     }

@@ -847,7 +847,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      router->drag_csource = NULL;
 	      router->drag_channel = ~0;
 	      bst_snet_router_reset_tool (router);
-	      bst_status_set (error ? 0 : 100, "Create Link", bse_error_blurb (error));
+	      bst_status_set (error ? 0 : 100, "Create Link", bsw_error_blurb (error));
 	    }
 	  handled = TRUE;
 	}

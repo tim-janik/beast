@@ -455,13 +455,9 @@ bse_object_new_valist (GType	    type,
 		       const gchar *first_property_name,
 		       va_list	    var_args)
 {
-  BseObject *object;
-  
   g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type), NULL);
   
-  object = g_object_new_valist (type, first_property_name, var_args);
-  
-  return object;
+  return g_object_new_valist (type, first_property_name, var_args);
 }
 
 gpointer
@@ -469,7 +465,7 @@ bse_object_new (GType	     type,
 		const gchar *first_property_name,
 		...)
 {
-  BseObject *object;
+  gpointer object;
   va_list var_args;
   
   g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type), NULL);

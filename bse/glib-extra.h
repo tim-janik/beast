@@ -29,6 +29,16 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+/* --- saner aliases --- */
+#define	g_string_printfa	g_string_append_printf
+#define	g_scanner_add_symbol( scanner, symbol, value )	G_STMT_START { \
+  g_scanner_scope_add_symbol ((scanner), 0, (symbol), (value)); \
+} G_STMT_END
+#define	g_scanner_remove_symbol( scanner, symbol )	G_STMT_START { \
+  g_scanner_scope_remove_symbol ((scanner), 0, (symbol)); \
+} G_STMT_END
+
+
 /* --- string functions --- */
 gchar*  g_strdup_quoted         (const gchar   *string);
 

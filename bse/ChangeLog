@@ -1,3 +1,12 @@
+Sat Oct  6 14:27:39 2001  Tim Janik  <timj@gtk.org>
+
+	* gslglibhash.cc: new GHashTable implementation in c++ from
+	stefan, that doesn't use SGI specific classes.
+
+	* gslglibhashtest.cc (main): new file from stefan to test hashtable.
+	
+	* bseitem.proc: add procedure to retrieve type blurb of an item.
+
 Thu Sep 27 13:10:43 2001  Tim Janik  <timj@gtk.org>
 
 	* MANY fixes, new APIs and cleanups.

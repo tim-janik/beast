@@ -2599,9 +2599,8 @@ bst_pattern_editor_class_set_key (BstPatternEditorClass	*class,
 			 GUINT_TO_POINTER (keyval | ((modifier & BST_MOD_SCA) << 16)),
 			 GUINT_TO_POINTER (pe_action));
   else
-    g_hash_table_insert (class->pea_ktab,
-			 GUINT_TO_POINTER (keyval | ((modifier & BST_MOD_SCA) << 16)),
-			 NULL);
+    g_hash_table_remove (class->pea_ktab,
+			 GUINT_TO_POINTER (keyval | ((modifier & BST_MOD_SCA) << 16)));
 }
 
 void

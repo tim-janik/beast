@@ -1,3 +1,11 @@
+Sat Oct  6 15:11:25 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterneditor.c (bst_pattern_editor_class_set_key): use
+	hash_table_remove not insert(NULL) to remove nodes.
+
+	* beast-gtk/bstcanvassource.c (csource_info_update): show type blurb in
+	info window.
+
 Thu Sep 27 14:22:41 2001  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: ensure that a gsl->bse link is in place.
