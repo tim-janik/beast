@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-04 06:45+0100\n"
-"PO-Revision-Date: 2004-02-02 18:32+0100\n"
+"POT-Creation-Date: 2004-02-06 03:12+0100\n"
+"PO-Revision-Date: 2004-02-06 17:33+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -522,14 +522,12 @@ msgid "Drop Down Button"
 msgstr "Tlačítko rozbalení"
 
 #: beast-gtk/bstparam-color-spinner.c:67
-#, fuzzy
 msgid "Select Color"
-msgstr "Vyberte soubor"
+msgstr "Vyberte barvu"
 
 #: beast-gtk/bstparam-color-spinner.c:116
-#, fuzzy
 msgid "Color Entry"
-msgstr "Vstup noty"
+msgstr "Zadání barvy"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -794,9 +792,8 @@ msgid "Playback"
 msgstr "Přehrávání"
 
 #: beast-gtk/bstpreferences.c:69
-#, fuzzy
 msgid "Skin"
-msgstr "_Skiny"
+msgstr "Skin"
 
 #: beast-gtk/bstprocedure.c:206
 msgid "Description"
