@@ -506,7 +506,8 @@ sfi_time_from_string_err (const gchar *time_string,
 
       if (ttime < SFI_MIN_TIME / SFI_USEC_FACTOR) /* limit ttime to 1.1.1990 */
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup ("invalid date specification"));
+	  warnings = sfi_ring_append (warnings, g_strdup_printf ("invalid date specification (%lld < %lld, gmt-diff: %lld)",
+								 SFI_USEC_FACTOR * ttime, SFI_MIN_TIME, gmt_diff));
 	  ustime = 0;
 	}
       else
@@ -527,7 +528,7 @@ sfi_time_from_string_err (const gchar *time_string,
 	    g_string_append (gstring, ", ");
 	  g_string_append (gstring, ring->data);
 	}
-      g_string_aprintf (gstring, " in date: %s", time_string);
+      g_string_aprintf (gstring, " in date: \"%s\"", time_string);
       *error_p = g_string_free (gstring, FALSE);
     }
   else if (error_p)

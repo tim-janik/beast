@@ -40,7 +40,7 @@
 #define	TICK()		do g_print ("-"); while (0)
 #define	XTICK()		do g_print ("X"); while (0)
 #define	DONE()		do g_print ("]\n"); while (0)
-#define	ASSERT(code)	do { if (code) TICK (); else g_error ("failed to assert: %s", G_STRINGIFY (code)); } while (0)
+#define	ASSERT(code)	do { if (code) TICK (); else g_error ("(line:%u) failed to assert: %s", __LINE__, #code); } while (0)
 
 static void
 test_misc (void)
@@ -90,7 +90,7 @@ test_time (void)
       if (!error)
 	TICK ();
       else
-	g_print ("{failed to parse \"%s\": %s\n}", time_strings[i], error);
+	g_print ("{failed to parse \"%s\": %s (got: %s)\n}", time_strings[i], error, sfi_time_to_string (t)); /* memleak */
       g_free (error);
       str = sfi_time_to_string (t);
       ASSERT (sfi_time_from_string_err (str, &error) == t);

@@ -1,3 +1,7 @@
+Sun Apr 20 21:46:20 2003  Tim Janik  <timj@gtk.org>
+
+	* sfitime.c (sfi_time_from_string_err): make <1990 time check more verbose.
+
 Wed Apr 16 19:29:48 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl.cc (CodeGeneratorC::run): include <string.h> in generated code,
