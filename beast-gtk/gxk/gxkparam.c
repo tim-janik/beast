@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General
@@ -35,20 +35,20 @@ struct _DotAreaData
 };
 
 /* --- prototypes --- */
-static gint dots_area_configure_event	(GtkWidget          *widget,
+static gint dots_area_configure_event	(GtkWidget	    *widget,
 					 GdkEventConfigure  *event,
-					 BstParam           *bparam);
-static gint dots_area_expose_event	(GtkWidget          *widget,
-					 GdkEventExpose     *event,
 					 BstParam	    *bparam);
-static gint dots_area_cross_event	(GtkWidget          *widget,
+static gint dots_area_expose_event	(GtkWidget	    *widget,
+					 GdkEventExpose	    *event,
+					 BstParam	    *bparam);
+static gint dots_area_cross_event	(GtkWidget	    *widget,
 					 GdkEventCrossing   *event,
 					 BstParam	    *bparam);
-static gint dots_area_button_event	(GtkWidget          *widget,
-					 GdkEventButton     *event,
+static gint dots_area_button_event	(GtkWidget	    *widget,
+					 GdkEventButton	    *event,
 					 BstParam	    *bparam);
-static gint dots_area_motion_event	(GtkWidget          *widget,
-					 GdkEventMotion     *event,
+static gint dots_area_motion_event	(GtkWidget	    *widget,
+					 GdkEventMotion	    *event,
 					 BstParam	    *bparam);
 
 
@@ -77,8 +77,8 @@ _GROUP_ADD_NAMED_OBJECT (GtkWidget   *group,
 }
 static void
 _GROUP_CALL (GtkWidget *group,
-	     gpointer   f,
-	     gpointer   d)
+	     gpointer	f,
+	     gpointer	d)
 {
   static const gchar *names[] = {
     "group_prompt",
@@ -89,14 +89,14 @@ _GROUP_CALL (GtkWidget *group,
     "group_action",
   };
   guint i;
-
+  
   g_return_if_fail (GTK_IS_WIDGET (group));
-
+  
   gtk_widget_ref (group);
   for (i = 0; i < sizeof (names) / sizeof (names[0]); i++)
     {
       GtkWidget *callee = _GROUP_GET_NAMED_WIDGET (group, names[i]);
-
+      
       if (callee)
 	((GtkCallback) f) (callee, d);
     }
@@ -109,11 +109,11 @@ GROUP_FORM (GtkWidget *parent,
 {
   g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (action), NULL);
-
+  
   _GROUP_ADD_NAMED_OBJECT (action, "group_action", action);
   _GROUP_ADD_NAMED_OBJECT (action, "group_parent", parent);
   gtk_object_set_data (GTK_OBJECT (action), "group_flags", GUINT_TO_POINTER (expandable ? 2 : 0));
-
+  
   return action;
 }
 static GtkWidget*
@@ -122,29 +122,29 @@ GROUP_FORM_BIG (GtkWidget *parent,
 {
   g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (action), NULL);
-
+  
   _GROUP_ADD_NAMED_OBJECT (action, "group_action", action);
   _GROUP_ADD_NAMED_OBJECT (action, "group_parent", parent);
   gtk_object_set_data (GTK_OBJECT (action), "group_flags", GUINT_TO_POINTER (2 | 1));
-
+  
   return action;
 }
-#define GROUP_ADD_POST_ACTION(g, w)       (_GROUP_ADD_NAMED_OBJECT ((g), "group_post_action", (w)))
-#define GROUP_ADD_PRE_ACTION(g, w)        (_GROUP_ADD_NAMED_OBJECT ((g), "group_pre_action", (w)))
-#define GROUP_ADD_PROMPT(g, w)            (_GROUP_ADD_NAMED_OBJECT ((g), "group_prompt", (w)))
-#define GROUP_ADD_DIAL(g, w)              (_GROUP_ADD_NAMED_OBJECT ((g), "group_dial", (w)))
-#define GROUP_ADD_SCALE(g, w)             (_GROUP_ADD_NAMED_OBJECT ((g), "group_scale", (w)))
-#define GROUP_GET_ACTION(g)	          (GTK_WIDGET (g))
-#define GROUP_GET_PRE_ACTION(g)	          (_GROUP_GET_NAMED_WIDGET ((g), "group_pre_action"))
+#define GROUP_ADD_POST_ACTION(g, w)	  (_GROUP_ADD_NAMED_OBJECT ((g), "group_post_action", (w)))
+#define GROUP_ADD_PRE_ACTION(g, w)	  (_GROUP_ADD_NAMED_OBJECT ((g), "group_pre_action", (w)))
+#define GROUP_ADD_PROMPT(g, w)		  (_GROUP_ADD_NAMED_OBJECT ((g), "group_prompt", (w)))
+#define GROUP_ADD_DIAL(g, w)		  (_GROUP_ADD_NAMED_OBJECT ((g), "group_dial", (w)))
+#define GROUP_ADD_SCALE(g, w)		  (_GROUP_ADD_NAMED_OBJECT ((g), "group_scale", (w)))
+#define GROUP_GET_ACTION(g)		  (GTK_WIDGET (g))
+#define GROUP_GET_PRE_ACTION(g)		  (_GROUP_GET_NAMED_WIDGET ((g), "group_pre_action"))
 #define GROUP_GET_POST_ACTION(g)	  (_GROUP_GET_NAMED_WIDGET ((g), "group_post_action"))
-#define GROUP_GET_PROMPT(g)	          (_GROUP_GET_NAMED_WIDGET ((g), "group_prompt"))
+#define GROUP_GET_PROMPT(g)		  (_GROUP_GET_NAMED_WIDGET ((g), "group_prompt"))
 static void
 GROUP_SET_TIP (GtkWidget   *group,
 	       const gchar *tip_text,
 	       const gchar *tip_private)
 {
   g_return_if_fail (GTK_IS_WIDGET (group));
-
+  
   if (tip_text)
     gtk_object_set_data_full (GTK_OBJECT (group), "group_tiptext", g_strdup (tip_text), g_free);
   if (tip_private)
@@ -162,7 +162,7 @@ GROUP_PARENT_CREATE (gpointer tooltips,
 					 NULL);
   if (tooltips)
     _GROUP_ADD_NAMED_OBJECT (container, "group_tooltips", tooltips);
-
+  
   return container;
 }
 static GtkWidget*
@@ -175,9 +175,9 @@ GROUP_DONE (GtkWidget *group)
   GtkTable *table;
   gboolean big, expandable, dummy_scale = FALSE;
   guint row, n, c;
-
+  
   g_return_val_if_fail (GTK_IS_WIDGET (group), NULL);
-
+  
   action = group;
   parent = _GROUP_GET_NAMED_WIDGET (group, "group_parent");
   prompt = _GROUP_GET_NAMED_WIDGET (group, "group_prompt");
@@ -199,7 +199,7 @@ GROUP_DONE (GtkWidget *group)
   if (tt && GTK_WIDGET_NO_WINDOW (action))
     {
       GtkWidget *at = gtk_widget_get_toplevel (action);
-
+      
       if (GTK_WIDGET_NO_WINDOW (at))
 	action = gtk_widget_new (GTK_TYPE_EVENT_BOX,
 				 "visible", TRUE,
@@ -208,7 +208,7 @@ GROUP_DONE (GtkWidget *group)
       else
 	action = at;
     }
-
+  
   /* pack stuff, options: GTK_EXPAND, GTK_SHRINK, GTK_FILL */
   table = GTK_TABLE (parent);
   row = !table->children ? table->nrows - 1 : table->nrows;
@@ -229,7 +229,7 @@ GROUP_DONE (GtkWidget *group)
   if (!scale)
     {
       scale = gtk_object_get_data (GTK_OBJECT (table), "dummy_scale");
-
+      
       /* need to have at least 1 (dummy) scale per table
        * to eat up expanding space
        */
@@ -315,18 +315,18 @@ GROUP_DONE (GtkWidget *group)
       if (pre_action && !GTK_WIDGET_NO_WINDOW (pre_action))
 	gtk_tooltips_set_tip (tt, pre_action, tip_text, tip_ref);
     }
-
+  
   return group;
 }
-#define GROUP_DESTROY(g)          (_GROUP_CALL ((g), gtk_widget_destroy, NULL))
-#define GROUP_ENSURE_STYLES(g)    (_GROUP_CALL ((g), gtk_widget_ensure_style, NULL))
+#define GROUP_DESTROY(g)	  (_GROUP_CALL ((g), gtk_widget_destroy, NULL))
+#define GROUP_ENSURE_STYLES(g)	  (_GROUP_CALL ((g), gtk_widget_ensure_style, NULL))
 #define GROUP_SET_SENSITIVE(g, s) (_GROUP_CALL ((g), (s) ? gtk_widget_make_sensitive : gtk_widget_make_insensitive, NULL))
 
 
 /* --- functions --- */
 static void
 bst_string_toggle (GtkToggleButton *tb,
-		   GtkWidget       *widget)
+		   GtkWidget	   *widget)
 {
   gtk_editable_set_editable (GTK_EDITABLE (widget), tb->active);
   if (tb->active)
@@ -348,9 +348,9 @@ bst_param_gtk_update (BstParam *bparam)
 }
 
 static gboolean
-bst_entry_key_press (GtkEntry    *entry,
+bst_entry_key_press (GtkEntry	 *entry,
 		     GdkEventKey *event,
-		     BstParam    *bparam)
+		     BstParam	 *bparam)
 {
   GtkEditable *editable = GTK_EDITABLE (entry);
   gboolean intercept = FALSE;
@@ -358,7 +358,7 @@ bst_entry_key_press (GtkEntry    *entry,
   if (event->state & GDK_MOD1_MASK)
     switch (event->keyval)
       {
-      case 'b':	/* check gtk_move_backward_word() */
+      case 'b': /* check gtk_move_backward_word() */
 	intercept = editable->current_pos <= 0;
 	break;
       case 'd': /* gtk_delete_forward_word() */
@@ -381,14 +381,13 @@ static void
 bst_param_update_clue_hunter (BstParam *bparam)
 {
   GtkWidget *group = bparam->group;
-  BseParam *param = &bparam->param;
-  BseParamSpec *pspec = param->pspec;
+  GParamSpec *pspec = bparam->pspec;
   GtkWidget *action = GROUP_GET_ACTION (group);
   GtkClueHunter *ch = gtk_object_get_user_data (GTK_OBJECT (action));
-
-  g_return_if_fail (pspec->type == BSE_TYPE_PARAM_ITEM && GTK_IS_CLUE_HUNTER (ch));
   
-  if (g_type_is_a (pspec->s_item.item_type, BSE_TYPE_SAMPLE))
+  g_return_if_fail (G_PARAM_SPEC_TYPE (pspec) == G_TYPE_PARAM_OBJECT && GTK_IS_CLUE_HUNTER (ch));
+  
+  if (g_type_is_a (G_PARAM_SPEC_OBJECT (pspec)->object_type, BSE_TYPE_SAMPLE))
     {
       GList *free_list = bst_sample_repo_list_sample_locs (), *list;
       
@@ -404,15 +403,15 @@ bst_param_update_clue_hunter (BstParam *bparam)
       g_list_free (free_list);
     }
   else if (bparam->is_object && BSE_IS_ITEM (bparam->owner) &&
-	   g_type_is_a (pspec->s_item.item_type, BSE_TYPE_ITEM))
+	   g_type_is_a (G_PARAM_SPEC_OBJECT (pspec)->object_type, BSE_TYPE_ITEM))
     {
       BseItem *item = BSE_ITEM (bparam->owner);
       BseProject *project = bse_item_get_project (item);
       GList *nick_list, *list;
       
       gtk_clue_hunter_remove_matches (ch, "*");
-
-      nick_list = bse_project_list_nick_paths (project, pspec->s_item.item_type);
+      
+      nick_list = bse_project_list_nick_paths (project, G_PARAM_SPEC_OBJECT (pspec)->object_type);
       
       for (list = nick_list; list; list = list->next)
 	{
@@ -424,19 +423,20 @@ bst_param_update_clue_hunter (BstParam *bparam)
 }
 
 static void
-bst_bparam_bse_changed (BstParam     *bparam,
-			BseParamSpec *pspec)
+bst_bparam_bse_changed (BstParam   *bparam,
+			GParamSpec *pspec)
 {
-  if (bparam->param.pspec == pspec && !bparam->locked)
+  if (bparam->pspec == pspec && !bparam->locked)
     bst_param_get (bparam);
 }
 
 void
 bst_param_destroy (BstParam *bparam)
 {
-  g_return_if_fail (BSE_IS_PARAM (bparam));
+  g_return_if_fail (G_IS_VALUE (bparam));
+  g_return_if_fail (G_IS_PARAM_SPEC (bparam->pspec));
   g_return_if_fail (bparam->locked == 0);
-
+  
   GROUP_DESTROY (bparam->group);
 }
 
@@ -447,25 +447,27 @@ bst_param_free (BstParam *bparam)
     bst_param_set_object (bparam, NULL);
   else if (bparam->is_procedure)
     bst_param_set_procedure (bparam, NULL);
-
-  bse_param_free_value (&bparam->param);
+  
+  g_value_unset (&bparam->value);
+  g_param_spec_unref (bparam->pspec);
   
   g_free (bparam);
 }
 
 void
-bst_param_set_procedure (BstParam          *bparam,
+bst_param_set_procedure (BstParam	   *bparam,
 			 BseProcedureClass *proc)
 {
-  g_return_if_fail (BSE_IS_PARAM (bparam));
+  g_return_if_fail (G_IS_VALUE (bparam));
+  g_return_if_fail (G_IS_PARAM_SPEC (bparam->pspec));
   g_return_if_fail (!bparam->locked);
   g_return_if_fail (bparam->is_procedure);
   if (proc)
     g_return_if_fail (BSE_IS_PROCEDURE_CLASS (proc));
-
+  
   if (bparam->owner)
     bse_procedure_unref (bparam->owner);
-
+  
   bparam->owner = proc;
   if (bparam->owner)
     {
@@ -486,7 +488,7 @@ bparam_reset_object (BstParam *bparam)
 }
 
 static void
-hscale_size_request (GtkWidget      *scale,
+hscale_size_request (GtkWidget	    *scale,
 		     GtkRequisition *requisition)
 {
   requisition->width = GTK_SCALE_CLASS (GTK_OBJECT (scale)->klass)->slider_length;
@@ -494,15 +496,16 @@ hscale_size_request (GtkWidget      *scale,
 }
 
 void
-bst_param_set_object (BstParam  *bparam,
+bst_param_set_object (BstParam	*bparam,
 		      BseObject *object)
 {
-  g_return_if_fail (BSE_IS_PARAM (bparam));
+  g_return_if_fail (G_IS_VALUE (bparam));
+  g_return_if_fail (G_IS_PARAM_SPEC (bparam->pspec));
   g_return_if_fail (!bparam->locked);
   g_return_if_fail (bparam->is_object);
   if (object)
     g_return_if_fail (BSE_IS_OBJECT (object));
-
+  
   if (bparam->owner)
     {
       bse_object_remove_notifier (bparam->owner, bparam->param_set_id);
@@ -510,7 +513,7 @@ bst_param_set_object (BstParam  *bparam,
 					   bparam_reset_object,
 					   bparam);
     }
-
+  
   bparam->owner = object;
   if (bparam->owner)
     {
@@ -532,30 +535,31 @@ bst_param_set_object (BstParam  *bparam,
 }
 
 BstParam*
-bst_param_create (gpointer      owner,
-		  GType  	owner_type,
-		  BseParamSpec *pspec,
-		  GQuark        param_group,
+bst_param_create (gpointer	owner,
+		  GType		owner_type,
+		  GParamSpec   *pspec,
+		  const gchar  *param_group,
 		  GtkWidget    *parent,
 		  GtkTooltips  *tooltips)
 {
-  GtkWidget *parent_container;
-  gpointer widget_group;
   static GQuark null_group = 0;
-  BstParam *bparam;
   GtkAdjustment *adjustment = NULL;
-  guint digits = 0;
+  GtkWidget *parent_container;
   GtkWidget *spinner = NULL;
   GtkWidget *scale = NULL;
   GtkWidget *dial = NULL;
+  gpointer widget_group;
+  GQuark param_group_quark = param_group ? g_quark_from_string (param_group) : 0;
+  BstParam *bparam;
+  guint digits = 0;
   gboolean read_only, string_toggle, radio, expandable;
   gchar *name, *tooltip;
-
+  
   if (BSE_TYPE_IS_PROCEDURE (owner_type))
     g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (owner), NULL);
   else
     g_return_val_if_fail (BSE_IS_OBJECT (owner), NULL);
-  g_return_val_if_fail (BSE_IS_PARAM_SPEC (pspec), NULL);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (parent), NULL);
   g_return_val_if_fail (GTK_IS_TOOLTIPS (tooltips), NULL);
   
@@ -565,9 +569,10 @@ bst_param_create (gpointer      owner,
       quark_evalues = g_quark_from_static_string ("Bst-enum-values");
       quark_fvalues = g_quark_from_static_string ("Bst-flags-values");
     }
-
+  
   bparam = g_new0 (BstParam, 1);
-  bse_param_init_default (&bparam->param, pspec);
+  bparam->pspec = g_param_spec_ref (pspec);
+  g_value_init_default (&bparam->value, bparam->pspec);
   bparam->owner = NULL;
   if (BSE_TYPE_IS_PROCEDURE (owner_type))
     {
@@ -583,24 +588,24 @@ bst_param_create (gpointer      owner,
   g_type_class_ref (owner_type);
   bparam->editable = TRUE;
   
-  parent_container = gtk_object_get_data_by_id (GTK_OBJECT (parent), param_group ? param_group : null_group);
+  parent_container = gtk_object_get_data_by_id (GTK_OBJECT (parent), param_group_quark ? param_group_quark : null_group);
   if (!parent_container ||
       GTK_OBJECT_DESTROYED (parent_container) ||
       !GTK_IS_CONTAINER (parent_container))
     {
       GtkWidget *any;
       
-      any = GROUP_PARENT_CREATE (tooltips, param_group ? 5 : 0);
+      any = GROUP_PARENT_CREATE (tooltips, param_group_quark ? 5 : 0);
       parent_container = any;
       gtk_widget_ref (any);
       gtk_object_set_data_by_id_full (GTK_OBJECT (parent),
-				      param_group ? param_group : null_group,
+				      param_group_quark ? param_group_quark : null_group,
 				      any,
 				      (GtkDestroyNotify) gtk_widget_unref);
-      if (param_group)
+      if (param_group_quark)
 	any = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
-			      "label", g_quark_to_string (param_group),
+			      "label", g_quark_to_string (param_group_quark),
 			      "child", any,
 			      NULL);
       if (GTK_IS_BOX (parent))
@@ -619,48 +624,48 @@ bst_param_create (gpointer      owner,
   
   /* feature param hints and integral values
    */
-  read_only = (pspec->any.flags & BSE_PARAM_HINT_RDONLY) != 0;
-  radio = (pspec->any.flags & BSE_PARAM_HINT_RADIO) != 0;
-  string_toggle = (pspec->any.flags & BSE_PARAM_HINT_CHECK_NULL) != 0;
-  switch (pspec->type)
+  read_only = (pspec->flags & B_PARAM_HINT_RDONLY) != 0;
+  radio = (pspec->flags & B_PARAM_HINT_RADIO) != 0;
+  string_toggle = (pspec->flags & B_PARAM_HINT_CHECK_NULL) != 0;
+  switch (b_seq_param_from_type (G_PARAM_SPEC_TYPE (pspec)))
     {
-    case BSE_TYPE_PARAM_INT:
-      if (pspec->s_int.stepping_rate != 0)
-	adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_int.default_value,
-							  pspec->s_int.minimum,
-							  pspec->s_int.maximum,
+    case B_SEQ_PARAM_INT:
+      if (B_PARAM_SPEC_INT (pspec)->stepping_rate != 0)
+	adjustment = (GtkAdjustment*) gtk_adjustment_new (G_PARAM_SPEC_INT (pspec)->default_value,
+							  G_PARAM_SPEC_INT (pspec)->minimum,
+							  G_PARAM_SPEC_INT (pspec)->maximum,
 							  1,
-							  pspec->s_int.stepping_rate,
+							  B_PARAM_SPEC_INT (pspec)->stepping_rate,
 							  0);
       digits = 0;
       break;
-    case BSE_TYPE_PARAM_UINT:
-      if (pspec->s_uint.stepping_rate != 0)
-	adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_uint.default_value,
-							  pspec->s_uint.minimum,
-							  pspec->s_uint.maximum,
+    case B_SEQ_PARAM_UINT:
+      if (B_PARAM_SPEC_UINT (pspec)->stepping_rate != 0)
+	adjustment = (GtkAdjustment*) gtk_adjustment_new (G_PARAM_SPEC_UINT (pspec)->default_value,
+							  G_PARAM_SPEC_UINT (pspec)->minimum,
+							  G_PARAM_SPEC_UINT (pspec)->maximum,
 							  1,
-							  pspec->s_uint.stepping_rate,
+							  B_PARAM_SPEC_UINT (pspec)->stepping_rate,
 							  0);
       digits = 0;
       break;
-    case BSE_TYPE_PARAM_FLOAT:
-      if (BSE_EPSILON_CMP (pspec->s_float.stepping_rate, 0) != 0)
-	adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_float.default_value,
-							  pspec->s_float.minimum,
-							  pspec->s_float.maximum,
-							  MIN (0.1, pspec->s_float.stepping_rate),
-							  MAX (0.1, pspec->s_float.stepping_rate),
+    case B_SEQ_PARAM_FLOAT:
+      if (BSE_EPSILON_CMP (B_PARAM_SPEC_FLOAT (pspec)->stepping_rate, 0) != 0)
+	adjustment = (GtkAdjustment*) gtk_adjustment_new (G_PARAM_SPEC_FLOAT (pspec)->default_value,
+							  G_PARAM_SPEC_FLOAT (pspec)->minimum,
+							  G_PARAM_SPEC_FLOAT (pspec)->maximum,
+							  MIN (0.1, B_PARAM_SPEC_FLOAT (pspec)->stepping_rate),
+							  MAX (0.1, B_PARAM_SPEC_FLOAT (pspec)->stepping_rate),
 							  0);
       digits = 3;
       break;
-    case BSE_TYPE_PARAM_DOUBLE:
-      if (BSE_EPSILON_CMP (pspec->s_double.stepping_rate, 0) != 0)
-	adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_double.default_value,
-							  pspec->s_double.minimum,
-							  pspec->s_double.maximum,
-							  MIN (0.1, pspec->s_double.stepping_rate),
-							  MAX (0.1, pspec->s_double.stepping_rate),
+    case B_SEQ_PARAM_DOUBLE:
+      if (BSE_EPSILON_CMP (B_PARAM_SPEC_DOUBLE (pspec)->stepping_rate, 0) != 0)
+	adjustment = (GtkAdjustment*) gtk_adjustment_new (G_PARAM_SPEC_DOUBLE (pspec)->default_value,
+							  G_PARAM_SPEC_DOUBLE (pspec)->minimum,
+							  G_PARAM_SPEC_DOUBLE (pspec)->maximum,
+							  MIN (0.1, B_PARAM_SPEC_DOUBLE (pspec)->stepping_rate),
+							  MAX (0.1, B_PARAM_SPEC_DOUBLE (pspec)->stepping_rate),
 							  0);
       digits = 5;
       break;
@@ -678,13 +683,13 @@ bst_param_create (gpointer      owner,
 				       bst_param_gtk_changed,
 				       (GtkObject*) bparam);
       spinner = gtk_spin_button_new (adjustment, 0, digits);
-      if (pspec->any.flags & BSE_PARAM_HINT_DIAL)
+      if (pspec->flags & B_PARAM_HINT_DIAL)
 	dial = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
 			       "label", "(dial)", /* FIXME: we need a real dial */
 			       NULL);
-      if (pspec->any.flags & BSE_PARAM_HINT_SCALE
-	  || pspec->any.flags & BSE_PARAM_HINT_DIAL) /* FIXME: we need a real dial */
+      if (pspec->flags & B_PARAM_HINT_SCALE
+	  || pspec->flags & B_PARAM_HINT_DIAL) /* FIXME: we need a real dial */
 	scale = gtk_widget_new (GTK_TYPE_HSCALE,
 				"visible", TRUE,
 				"adjustment", adjustment,
@@ -695,18 +700,18 @@ bst_param_create (gpointer      owner,
       gtk_object_unref (GTK_OBJECT (adjustment));
     }
   
-  name = pspec->any.nick;
-  tooltip = pspec->any.blurb;
-
+  name = pspec->nick;
+  tooltip = pspec->blurb;
+  
   expandable = FALSE;
-  switch (pspec->type)
+  switch (b_seq_param_from_type (G_PARAM_SPEC_TYPE (pspec)))
     {
       GtkWidget *action, *prompt, *pre_action, *post_action, *frame, *any, *group;
       DotAreaData *dot_data;
       GEnumValue *ev;
       guint width;
-
-    case BSE_TYPE_PARAM_BOOL:
+      
+    case B_SEQ_PARAM_BOOL:
       action = gtk_widget_new (radio ? BST_TYPE_FREE_RADIO_BUTTON : GTK_TYPE_CHECK_BUTTON,
 			       "visible", TRUE,
 			       "label", name,
@@ -717,28 +722,28 @@ bst_param_create (gpointer      owner,
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
-    case BSE_TYPE_PARAM_INT:
-    case BSE_TYPE_PARAM_UINT:
-    case BSE_TYPE_PARAM_FLOAT:
-    case BSE_TYPE_PARAM_DOUBLE:
-    case BSE_TYPE_PARAM_TIME:
-    case BSE_TYPE_PARAM_NOTE:
-      switch (pspec->type)
+    case B_SEQ_PARAM_INT:
+    case B_SEQ_PARAM_UINT:
+    case B_SEQ_PARAM_FLOAT:
+    case B_SEQ_PARAM_DOUBLE:
+    case B_SEQ_PARAM_TIME:
+    case B_SEQ_PARAM_NOTE:
+      switch (b_seq_param_from_type (G_PARAM_SPEC_TYPE (pspec)))
 	{
-	case BSE_TYPE_PARAM_INT:
-	case BSE_TYPE_PARAM_UINT:
+	case B_SEQ_PARAM_INT:
+	case B_SEQ_PARAM_UINT:
 	  width = 70;
 	  break;
-	case BSE_TYPE_PARAM_FLOAT:
-	case BSE_TYPE_PARAM_DOUBLE:
+	case B_SEQ_PARAM_FLOAT:
+	case B_SEQ_PARAM_DOUBLE:
 	  expandable = TRUE;
 	  width = 80;
 	  break;
-	case BSE_TYPE_PARAM_TIME:
+	case B_SEQ_PARAM_TIME:
 	  expandable = TRUE;
 	  width = 140;
 	  break;
-	case BSE_TYPE_PARAM_NOTE:
+	case B_SEQ_PARAM_NOTE:
 	  width = 50;
 	  break;
 	default:
@@ -775,8 +780,8 @@ bst_param_create (gpointer      owner,
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
-    case BSE_TYPE_PARAM_ENUM:
-      ev = pspec->s_enum.enum_class->values;
+    case B_SEQ_PARAM_ENUM:
+      ev = G_PARAM_SPEC_ENUM (pspec)->enum_class->values;
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
 			       "label", name,
@@ -791,23 +796,23 @@ bst_param_create (gpointer      owner,
       if (ev)
 	{
 	  GtkWidget *menu;
-
+	  
 	  menu = gtk_widget_new (GTK_TYPE_MENU,
 				 "object_signal::selection_done", bst_param_gtk_changed, bparam,
 				 NULL);
 	  while (ev->value_nick)
 	    {
 	      GtkWidget *item;
-
+	      
 	      item = gtk_menu_item_new_with_label (ev->value_nick);
 	      gtk_widget_lock_accelerators (item);
 	      gtk_widget_show (item);
 	      gtk_object_set_data_by_id (GTK_OBJECT (item), quark_evalues, ev);
 	      gtk_container_add (GTK_CONTAINER (menu), item);
-
+	      
 	      ev++;
 	    }
-
+	  
 	  gtk_option_menu_set_menu (GTK_OPTION_MENU (action), menu);
 	}
       group = GROUP_FORM (parent_container, action, FALSE);
@@ -815,17 +820,17 @@ bst_param_create (gpointer      owner,
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
-    case BSE_TYPE_PARAM_FLAGS:
+    case B_SEQ_PARAM_FLAGS:
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
 			       "sensitive", FALSE,
-			       "label", pspec->any.name,
+			       "label", pspec->name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
 			       NULL);
       action = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
-			       "label", pspec->any.blurb,
+			       "label", pspec->blurb,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
 			       NULL);
@@ -834,7 +839,7 @@ bst_param_create (gpointer      owner,
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
-    case BSE_TYPE_PARAM_STRING:
+    case B_SEQ_PARAM_STRING:
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
 			       "label", name,
@@ -873,7 +878,7 @@ bst_param_create (gpointer      owner,
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
-    case BSE_TYPE_PARAM_DOTS:
+    case B_SEQ_PARAM_DOTS:
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
 			       "label", name,
@@ -913,7 +918,7 @@ bst_param_create (gpointer      owner,
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
-    case BSE_TYPE_PARAM_ITEM:
+    case B_SEQ_PARAM_OBJECT:
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
 			       "label", name,
@@ -943,7 +948,7 @@ bst_param_create (gpointer      owner,
       widget_group = GROUP_DONE (group);
       break;
     default:
-      g_warning ("unknown param type: `%s'", pspec->any.name);
+      g_warning ("unknown param type: `%s'", pspec->name);
       widget_group = NULL;
       break;
     }
@@ -967,37 +972,37 @@ static void
 bst_param_update (BstParam *bparam)
 {
   GtkWidget *group = bparam->group;
-  BseParam *param = &bparam->param;
-  BseParamSpec *pspec = param->pspec;
-  gboolean read_only = (pspec->any.flags & BSE_PARAM_HINT_RDONLY) != 0;
-
+  GValue *value = &bparam->value;
+  GParamSpec *pspec = bparam->pspec;
+  gboolean read_only = (pspec->flags & B_PARAM_HINT_RDONLY) != 0;
+  
   GROUP_SET_SENSITIVE (group, !read_only && bparam->editable);
   
-  switch (pspec->type)
+  switch (b_seq_param_from_type (G_PARAM_SPEC_TYPE (pspec)))
     {
       GtkWidget *action, *prompt, *pre_action, *any;
       gchar *string;
       
-    case BSE_TYPE_PARAM_BOOL:
+    case B_SEQ_PARAM_BOOL:
       action = GROUP_GET_ACTION (group);
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (action), param->value.v_bool);
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (action), b_value_get_bool (value));
       break;
-    case BSE_TYPE_PARAM_INT:
-    case BSE_TYPE_PARAM_UINT:
-    case BSE_TYPE_PARAM_FLOAT:
-    case BSE_TYPE_PARAM_DOUBLE:
-    case BSE_TYPE_PARAM_TIME:
-    case BSE_TYPE_PARAM_NOTE:
+    case B_SEQ_PARAM_INT:
+    case B_SEQ_PARAM_UINT:
+    case B_SEQ_PARAM_FLOAT:
+    case B_SEQ_PARAM_DOUBLE:
+    case B_SEQ_PARAM_TIME:
+    case B_SEQ_PARAM_NOTE:
       action = GROUP_GET_ACTION (group);
       string = NULL; /* eek, cure stupid compiler */
-      switch (pspec->type)
+      switch (b_seq_param_from_type (G_PARAM_SPEC_TYPE (pspec)))
 	{
-	case BSE_TYPE_PARAM_INT:    string = g_strdup_printf ("%d", param->value.v_int);    break;
-	case BSE_TYPE_PARAM_UINT:   string = g_strdup_printf ("%u", param->value.v_uint);   break;
-	case BSE_TYPE_PARAM_FLOAT:  string = g_strdup_printf ("%f", param->value.v_float);  break;
-	case BSE_TYPE_PARAM_DOUBLE: string = g_strdup_printf ("%f", param->value.v_double); break;
-	case BSE_TYPE_PARAM_TIME:   string = bse_time_to_str (param->value.v_time);         break;
-	case BSE_TYPE_PARAM_NOTE:   string = bse_note_to_string (param->value.v_note);      break;
+	case B_SEQ_PARAM_INT:	 string = g_strdup_printf ("%d", b_value_get_int (value));    break;
+	case B_SEQ_PARAM_UINT:	 string = g_strdup_printf ("%u", b_value_get_uint (value));   break;
+	case B_SEQ_PARAM_FLOAT:	 string = g_strdup_printf ("%f", b_value_get_float (value));  break;
+	case B_SEQ_PARAM_DOUBLE: string = g_strdup_printf ("%f", b_value_get_double (value)); break;
+	case B_SEQ_PARAM_TIME:	 string = bse_time_to_str (b_value_get_time (value));	      break;
+	case B_SEQ_PARAM_NOTE:	 string = bse_note_to_string (b_value_get_note (value));      break;
 	}
       if (!g_str_equal (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	{
@@ -1007,31 +1012,33 @@ bst_param_update (BstParam *bparam)
 	}
       g_free (string);
       break;
-    case BSE_TYPE_PARAM_STRING:
+    case B_SEQ_PARAM_STRING:
       action = GROUP_GET_ACTION (group);
-      string = param->value.v_string;
+      string = b_value_get_string (value);
       if (!string || !g_str_equal (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
       pre_action = GROUP_GET_PRE_ACTION (group);
       if (pre_action)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (pre_action), string != NULL);
       break;
-    case BSE_TYPE_PARAM_DOTS:
+    case B_SEQ_PARAM_DOTS:
       action = GROUP_GET_ACTION (group);
       gtk_widget_queue_draw (action);
       break;
-    case BSE_TYPE_PARAM_ITEM:
+    case B_SEQ_PARAM_OBJECT:
       action = GROUP_GET_ACTION (group);
-      string = param->value.v_item ? bse_item_make_nick_path (param->value.v_item) : NULL;
+      string = (BSE_IS_ITEM (g_value_get_object (value))
+		? bse_item_make_nick_path (BSE_ITEM (g_value_get_object (value)))
+		: NULL);
       if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
       any = gtk_object_get_user_data (GTK_OBJECT (action));
       break;
-    case BSE_TYPE_PARAM_ENUM:
+    case B_SEQ_PARAM_ENUM:
       action = GROUP_GET_ACTION (group);
       any = gtk_option_menu_get_menu (GTK_OPTION_MENU (action));
       prompt = GROUP_GET_PROMPT (group);
-      gtk_widget_set_sensitive (prompt, GTK_WIDGET_IS_SENSITIVE (prompt) && pspec->s_enum.enum_class->values);
+      gtk_widget_set_sensitive (prompt, GTK_WIDGET_IS_SENSITIVE (prompt) && G_PARAM_SPEC_ENUM (pspec)->enum_class->values);
       if (any)
 	{
 	  GList *list;
@@ -1041,8 +1048,8 @@ bst_param_update (BstParam *bparam)
 	    {
 	      GtkWidget *item = list->data;
 	      GtkEnumValue *ev = gtk_object_get_data_by_id (GTK_OBJECT (item), quark_evalues);
-
-	      if (ev->value == param->value.v_enum)
+	      
+	      if (ev->value == b_value_get_enum (value))
 		{
 		  gtk_option_menu_set_history (GTK_OPTION_MENU (action), n);
 		  break;
@@ -1051,9 +1058,9 @@ bst_param_update (BstParam *bparam)
 	    }
 	}
       break;
-    case BSE_TYPE_PARAM_FLAGS:
+    case B_SEQ_PARAM_FLAGS:
     default:
-      g_warning ("unknown param type: `%s'", pspec->any.name);
+      g_warning ("unknown param type: `%s'", pspec->name);
       break;
     }
 }
@@ -1063,48 +1070,30 @@ bst_param_apply (BstParam *bparam,
 		 gboolean *changed)
 {
   GtkWidget *group = bparam->group;
-  BseParam *param = &bparam->param;
-  BseParamSpec *pspec = param->pspec;
-  BseParam param2 = { 0, };
+  GValue *value = &bparam->value;
+  GParamSpec *pspec = bparam->pspec;
+  GValue tmp_value = { 0, };
   gchar *dummy = NULL;
   guint dirty = 0;
-
-  bse_param_init (&param2, pspec);
-  bse_param_copy_value (param, &param2);
-
+  
+  g_value_init (&tmp_value, G_VALUE_TYPE (value));
+  g_value_copy (value, &tmp_value);
+  
   *changed = FALSE;
-
-  switch (pspec->type)
+  
+  switch (b_seq_param_from_type (G_PARAM_SPEC_TYPE (pspec)))
     {
       GtkWidget *action, *pre_action, *any;
       gchar *string;
       BseTime time_data;
       guint base;
       gint note_data;
-
-    case BSE_TYPE_PARAM_BOOL:
+      
+    case B_SEQ_PARAM_BOOL:
       action = GROUP_GET_ACTION (group);
-      dirty += bse_param_set_bool (param, GTK_TOGGLE_BUTTON (action)->active);
+      b_value_set_bool (value, GTK_TOGGLE_BUTTON (action)->active);
       break;
-    case BSE_TYPE_PARAM_INT:
-      action = GROUP_GET_ACTION (group);
-      string = gtk_entry_get_text (GTK_ENTRY (action));
-      if (string && string[0] == '0')
-	{
-	  base = 8;
-	  string++;
-	  if (string[0] == 'x' || string[0] == 'X')
-	    {
-	      base = 16;
-	      string++;
-	    }
-	}
-      else
-	base = 10;
-      dirty += bse_param_set_int (param, strtol (string, &dummy, base));
-      dirty += dummy != NULL && (*dummy != 0 || dummy == string);
-      break;
-    case BSE_TYPE_PARAM_UINT:
+    case B_SEQ_PARAM_INT:
       action = GROUP_GET_ACTION (group);
       string = gtk_entry_get_text (GTK_ENTRY (action));
       if (string && string[0] == '0')
@@ -1119,34 +1108,52 @@ bst_param_apply (BstParam *bparam,
 	}
       else
 	base = 10;
-      dirty += bse_param_set_uint (param, strtol (string, &dummy, base));
+      b_value_set_int (value, strtol (string, &dummy, base));
       dirty += dummy != NULL && (*dummy != 0 || dummy == string);
       break;
-    case BSE_TYPE_PARAM_FLOAT:
+    case B_SEQ_PARAM_UINT:
       action = GROUP_GET_ACTION (group);
-      dirty += bse_param_set_float (param, g_strtod (gtk_entry_get_text (GTK_ENTRY (action)), &dummy));
+      string = gtk_entry_get_text (GTK_ENTRY (action));
+      if (string && string[0] == '0')
+	{
+	  base = 8;
+	  string++;
+	  if (string[0] == 'x' || string[0] == 'X')
+	    {
+	      base = 16;
+	      string++;
+	    }
+	}
+      else
+	base = 10;
+      b_value_set_uint (value, strtol (string, &dummy, base));
+      dirty += dummy != NULL && (*dummy != 0 || dummy == string);
       break;
-    case BSE_TYPE_PARAM_DOUBLE:
+    case B_SEQ_PARAM_FLOAT:
       action = GROUP_GET_ACTION (group);
-      dirty += bse_param_set_double (param, g_strtod (gtk_entry_get_text (GTK_ENTRY (action)), &dummy));
+      b_value_set_float (value, g_strtod (gtk_entry_get_text (GTK_ENTRY (action)), &dummy));
       break;
-    case BSE_TYPE_PARAM_TIME:
+    case B_SEQ_PARAM_DOUBLE:
+      action = GROUP_GET_ACTION (group);
+      b_value_set_double (value, g_strtod (gtk_entry_get_text (GTK_ENTRY (action)), &dummy));
+      break;
+    case B_SEQ_PARAM_TIME:
       action = GROUP_GET_ACTION (group);
       time_data = bse_time_from_string (gtk_entry_get_text (GTK_ENTRY (action)), NULL);
       if (time_data)
-	dirty += bse_param_set_time (param, time_data);
+	b_value_set_time (value, time_data);
       else
 	dirty++;
       break;
-    case BSE_TYPE_PARAM_NOTE:
+    case B_SEQ_PARAM_NOTE:
       action = GROUP_GET_ACTION (group);
       note_data = bse_note_from_string (gtk_entry_get_text (GTK_ENTRY (action)));
       if (note_data != BSE_NOTE_UNPARSABLE)
-	dirty += bse_param_set_note (param, note_data);
+	b_value_set_note (value, note_data);
       else
 	dirty++;
       break;
-    case BSE_TYPE_PARAM_STRING:
+    case B_SEQ_PARAM_STRING:
       action = GROUP_GET_ACTION (group);
       pre_action = GROUP_GET_PRE_ACTION (group);
       if (!pre_action)
@@ -1159,30 +1166,30 @@ bst_param_apply (BstParam *bparam,
 	}
       else
 	string = NULL;
-      dirty += bse_param_set_string (param, string);
+      b_value_set_string (value, string);
       break;
-    case BSE_TYPE_PARAM_DOTS:
+    case B_SEQ_PARAM_DOTS:
       *changed = TRUE;
       break;
-    case BSE_TYPE_PARAM_ITEM:
+    case B_SEQ_PARAM_OBJECT:
       action = GROUP_GET_ACTION (group);
       string = bse_strdup_stripped (gtk_entry_get_text (GTK_ENTRY (action)));
       if (string && bparam->is_object && BSE_IS_ITEM (bparam->owner))
 	{
 	  BseProject *project = bse_item_get_project (BSE_ITEM (bparam->owner));
 	  BseItem *item = NULL;
-
+	  
 	  /* check whether this is a nick path */
 	  if (!item && strchr (string, '.'))
 	    {
 	      item = bse_project_item_from_nick_path (project, string);
-
-	      if (item && !g_type_is_a (BSE_OBJECT_TYPE (item), pspec->s_item.item_type))
+	      
+	      if (item && !g_type_is_a (BSE_OBJECT_TYPE (item), G_PARAM_SPEC_OBJECT (pspec)->object_type))
 		item = NULL;
 	    }
 	  else if (!item) /* try generic lookup for pure name (brute force actually) */
 	    {
-	      GList *list, *free_list = bse_objects_list_by_name (pspec->s_item.item_type, string);
+	      GList *list, *free_list = bse_objects_list_by_name (G_PARAM_SPEC_OBJECT (pspec)->object_type, string);
 	      
 	      for (list = free_list; list; list = list->next)
 		if (bse_item_get_project (list->data) == project)
@@ -1192,9 +1199,9 @@ bst_param_apply (BstParam *bparam,
 		  }
 	      g_list_free (free_list);
 	    }
-
+	  
 	  /* check whether this refers to an on-disk sample that we can demand load */
-	  if (!item && pspec->s_item.item_type == BSE_TYPE_SAMPLE)
+	  if (!item && g_type_is_a (G_PARAM_SPEC_OBJECT (pspec)->object_type, BSE_TYPE_SAMPLE))
 	    {
 	      BstSampleLoc *loc = bst_sample_repo_find_sample_loc (string);
 	      
@@ -1205,49 +1212,52 @@ bst_param_apply (BstParam *bparam,
 		  item = (BseItem*) bst_sample_repo_load_sample (loc, project);
 		}
 	    }
-
+	  
 	  /* ok, found one or giving up */
-	  dirty += bse_param_set_item (param, item);
+	  g_value_set_object (value, (GObject*) item);
 	  g_free (string);
-
+	  
 	  /* enforce redisplay of the entry's string with the correct name */
 	  dirty += 1;
 	}
       else
-	dirty += bse_param_set_item (param, NULL);
+	g_value_set_object (value, NULL);
       break;
-    case BSE_TYPE_PARAM_ENUM:
+    case B_SEQ_PARAM_ENUM:
       action = GROUP_GET_ACTION (group);
       any = GTK_OPTION_MENU (action)->menu_item;
       if (any)
 	{
 	  GtkEnumValue *ev = gtk_object_get_data_by_id (GTK_OBJECT (any), quark_evalues);
-
-	  dirty += bse_param_set_enum (param, ev->value);
+	  
+	  b_value_set_enum (value, ev->value);
 	}
       break;
-    case BSE_TYPE_PARAM_FLAGS:
+    case B_SEQ_PARAM_FLAGS:
     default:
-      g_warning ("unknown param type: `%s'", pspec->any.name);
+      g_warning ("unknown param type: `%s'", pspec->name);
       break;
     }
-
-  *changed |= bse_param_values_cmp (param, &param2) != 0;
-  bse_param_free_value (&param2);
-
+  
+  dirty += g_value_validate (value, pspec);
+  
+  *changed |= g_values_cmp (value, &tmp_value, pspec) != 0;
+  g_value_unset (&tmp_value);
+  
   dirty += *changed;
-
+  
   return dirty > 0;
 }
 
 void
 bst_param_get (BstParam *bparam)
 {
-  g_return_if_fail (BSE_IS_PARAM (bparam));
-
+  g_return_if_fail (G_IS_VALUE (bparam));
+  g_return_if_fail (G_IS_PARAM_SPEC (bparam->pspec));
+  
   bparam->locked++;
   if (bparam->is_object && bparam->owner)
-    bse_object_get_param (bparam->owner, &bparam->param);
+    g_object_get_param (G_OBJECT (bparam->owner), bparam->pspec->name, &bparam->value);
   else
     {
       /* bse_param_reset_value (&bparam->param); */
@@ -1260,14 +1270,15 @@ void
 bst_param_set (BstParam *bparam)
 {
   gboolean dirty, changed;
-
-  g_return_if_fail (BSE_IS_PARAM (bparam));
-
+  
+  g_return_if_fail (G_IS_VALUE (bparam));
+  g_return_if_fail (G_IS_PARAM_SPEC (bparam->pspec));
+  
   bparam->locked++;
   dirty = bst_param_apply (bparam, &changed);
   if (changed && bparam->is_object && bparam->owner)
-    bse_object_set_param (bparam->owner, &bparam->param);
-
+    g_object_set_param (G_OBJECT (bparam->owner), bparam->pspec->name, &bparam->value);
+  
   if (dirty)
     bst_param_get (bparam);
   else
@@ -1277,34 +1288,49 @@ bst_param_set (BstParam *bparam)
 void
 bst_param_reset (BstParam *bparam)
 {
-  g_return_if_fail (BSE_IS_PARAM (bparam));
-
+  g_return_if_fail (G_IS_VALUE (bparam));
+  g_return_if_fail (G_IS_PARAM_SPEC (bparam->pspec));
+  
   bparam->locked++;
-  bse_param_reset_value (&bparam->param);
+  g_value_reset (&bparam->value);
+  bst_param_update (bparam);
+  bparam->locked = 0;
+}
+
+void
+bst_param_set_default (BstParam *bparam)
+{
+  g_return_if_fail (G_IS_VALUE (bparam));
+  g_return_if_fail (G_IS_PARAM_SPEC (bparam->pspec));
+  
+  bparam->locked++;
+  g_value_set_default (&bparam->value, bparam->pspec);
   bst_param_update (bparam);
   bparam->locked = 0;
 }
 
 gboolean
-bst_param_set_from_other (BstParam *bparam,
-			  BseParam *src_param)
+bst_param_set_value (BstParam	  *bparam,
+		     const GValue *value)
 {
   gboolean success;
-
-  g_return_val_if_fail (BSE_IS_PARAM (bparam), FALSE);
-  g_return_val_if_fail (BSE_IS_PARAM (src_param), FALSE);
-
-  success = bse_param_value_convert (src_param, &bparam->param);
-
+  
+  g_return_val_if_fail (G_IS_VALUE (bparam), FALSE);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (bparam->pspec), FALSE);
+  g_return_val_if_fail (G_IS_VALUE (value), FALSE);
+  
+  success = g_value_convert (value, &bparam->value);
+  g_value_validate (&bparam->value, bparam->pspec);
+  
   if (success)
     {
       if (bparam->is_object && bparam->owner)
-	bse_object_set_param (bparam->owner, &bparam->param);
+	g_object_set_param (G_OBJECT (bparam->owner), bparam->pspec->name, &bparam->value);
       bst_param_get (bparam);
     }
   else
     bparam->locked = 0;
-
+  
   return success;
 }
 
@@ -1312,8 +1338,9 @@ void
 bst_param_set_editable (BstParam *bparam,
 			gboolean  editable)
 {
-  g_return_if_fail (BSE_IS_PARAM (bparam));
-
+  g_return_if_fail (G_IS_VALUE (bparam));
+  g_return_if_fail (G_IS_PARAM_SPEC (bparam->pspec));
+  
   editable = editable != FALSE;
   if (bparam->editable != editable)
     {
@@ -1323,22 +1350,22 @@ bst_param_set_editable (BstParam *bparam,
 }
 
 static gint
-dots_area_configure_event (GtkWidget         *widget,
+dots_area_configure_event (GtkWidget	     *widget,
 			   GdkEventConfigure *event,
-			   BstParam          *bparam)
+			   BstParam	     *bparam)
 {
   gdk_window_set_background (widget->window, &widget->style->base[GTK_WIDGET_STATE (widget)]);
-
+  
   return TRUE;
 }
 
 static gint
-dots_area_cross_event (GtkWidget        *widget,
+dots_area_cross_event (GtkWidget	*widget,
 		       GdkEventCrossing *event,
-		       BstParam         *bparam)
+		       BstParam		*bparam)
 {
   DotAreaData *data = GTK_DRAWING_AREA (widget)->draw_data;
-
+  
   if (event->type == GDK_ENTER_NOTIFY)
     data->entered = TRUE;
   else if (event->type == GDK_LEAVE_NOTIFY)
@@ -1350,7 +1377,7 @@ dots_area_cross_event (GtkWidget        *widget,
     }
   
   gtk_widget_queue_draw (widget);
-
+  
   return TRUE;
 }
 
@@ -1359,8 +1386,8 @@ dots_area_expose_event (GtkWidget      *widget,
 			GdkEventExpose *event,
 			BstParam       *bparam)
 {
-  guint n_dots = bparam->param.pspec->s_dots.n_dots;
-  BseDot *dots = bparam->param.value.v_dots;
+  guint n_dots;
+  BDot *dots = b_value_get_dots (&bparam->value, &n_dots);
   GdkDrawable *drawable = widget->window;
   GdkGC *fg_gc = widget->style->black_gc;
   GdkGC *bg_gc = widget->style->base_gc[GTK_WIDGET_STATE (widget)];
@@ -1368,11 +1395,11 @@ dots_area_expose_event (GtkWidget      *widget,
   DotAreaData *data = GTK_DRAWING_AREA (widget)->draw_data;
   gint width, height, maxx, maxy;
   guint i;
-
+  
   gdk_window_get_size (widget->window, &width, &height);
   maxx = width - 1;
   maxy = height - 1;
-
+  
   /* clear background
    */
   gdk_draw_rectangle (drawable, bg_gc,
@@ -1381,7 +1408,7 @@ dots_area_expose_event (GtkWidget      *widget,
 		      0,
 		      width,
 		      height);
-
+  
   /* draw lines
    */
   for (i = 0; i < n_dots - 1; i++)
@@ -1391,7 +1418,7 @@ dots_area_expose_event (GtkWidget      *widget,
 		   maxx * dots[i + 1].x,
 		   maxy * (1.0 - dots[i + 1].y));
   
-
+  
   /* draw circles
    */
   if (data->entered || data->cdot >= 0)
@@ -1401,7 +1428,7 @@ dots_area_expose_event (GtkWidget      *widget,
 		    maxy * (1.0 - dots[i].y) - BST_TAG_DIAMETER / 2,
 		    BST_TAG_DIAMETER, BST_TAG_DIAMETER,
 		    0 * 64, 360 *64);
-      
+  
   return TRUE;
 }
 
@@ -1410,19 +1437,19 @@ dots_area_button_event (GtkWidget      *widget,
 			GdkEventButton *event,
 			BstParam       *bparam)
 {
-  guint n_dots = bparam->param.pspec->s_dots.n_dots;
-  BseDot *dots = bparam->param.value.v_dots;
+  guint n_dots;
+  BDot *dots = b_value_get_dots (&bparam->value, &n_dots);
   gint maxx, maxy;
   DotAreaData *data = GTK_DRAWING_AREA (widget)->draw_data;
-
+  
   if (bparam->locked)
     return TRUE;
-
+  
   data->cdot = -1;
-
+  
   gdk_window_get_size (widget->window, &maxx, &maxy);
   maxx -= 1; maxy -= 1;
-
+  
   if (event->button == 1 &&
       event->type == GDK_BUTTON_PRESS)
     {
@@ -1442,20 +1469,21 @@ dots_area_button_event (GtkWidget      *widget,
 	      data->cdot = i;
 	    }
 	}
-
+      
       if (data->cdot >= 0)
 	{
 	  gfloat y = event->y ? event->y / maxy : 0;
 	  gfloat x = event->x ? event->x / maxx : 0;
 	  
-	  bse_param_set_dot (&bparam->param, data->cdot,
-			     x,
-			     1.0 - y);
-
+	  b_value_set_dot (&bparam->value,
+			   data->cdot,
+			   x,
+			   1.0 - y);
+	  
 	  bst_param_set (bparam);
 	}
     }
-
+  
   return TRUE;
 }
 
@@ -1466,13 +1494,13 @@ dots_area_motion_event (GtkWidget      *widget,
 {
   gint maxx, maxy;
   DotAreaData *data = GTK_DRAWING_AREA (widget)->draw_data;
-
+  
   gdk_window_get_size (widget->window, &maxx, &maxy);
   maxx -= 1; maxy -= 1;
-
+  
   if (bparam->locked)
     return TRUE;
-
+  
   if (data->cdot >= 0 &&
       event->type == GDK_MOTION_NOTIFY &&
       !event->is_hint)
@@ -1480,9 +1508,10 @@ dots_area_motion_event (GtkWidget      *widget,
       gfloat y = event->y ? event->y / maxy : 0;
       gfloat x = event->x ? event->x / maxx : 0;
       
-      bse_param_set_dot (&bparam->param, data->cdot,
-			 x,
-			 1.0 - y);
+      b_value_set_dot (&bparam->value,
+		       data->cdot,
+		       x,
+		       1.0 - y);
       
       bst_param_set (bparam);
     }

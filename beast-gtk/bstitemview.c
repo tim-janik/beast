@@ -154,20 +154,21 @@ bst_item_view_item_changed (BstItemView *item_view,
   row = gtk_clist_find_row_from_data (clist, item);
   if (row >= 0)
     {
-      gchar *string;
+      gchar *string, *blurb = NULL;
       
       string = g_strdup_printf ("%03u", bse_item_get_seqid (BSE_ITEM (item)));
       gtk_clist_set_text (clist, row, CLIST_SEQID, string);
       g_free (string);
       gtk_clist_set_text (clist, row, CLIST_NAME, BSE_OBJECT_NAME (item));
-      gtk_clist_set_text (clist, row, CLIST_BLURB, bse_object_get_blurb (BSE_OBJECT (item)));
+      g_object_get (G_OBJECT (item), "blurb", &blurb, NULL);
+      gtk_clist_set_text (clist, row, CLIST_BLURB, blurb);
     }
 }
 
 static void
-bst_item_view_item_param_changed (BstItemView  *item_view,
-				  BseParamSpec *pspec,
-				  BseItem      *item)
+bst_item_view_item_param_changed (BstItemView *item_view,
+				  GParamSpec  *pspec,
+				  BseItem     *item)
 {
   bst_item_view_item_changed (item_view, item);
 }

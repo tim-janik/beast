@@ -239,18 +239,18 @@ bst_param_view_rebuild (BstParamView *param_view)
       guint i, n;
       
       class = slist->data;
-      n = bse_object_class_get_n_param_specs (class);
+      n = G_OBJECT_CLASS (class)->n_param_specs;
       for (i = 0; i < n; i++)
 	{
-	  GQuark param_group;
-	  BseParamSpec *pspec = bse_object_class_get_param_spec (class, i, &param_group);
+	  GParamSpec *pspec = G_OBJECT_CLASS (class)->param_specs[i];
+	  gchar *param_group = b_param_spec_get_group (pspec);
 	  
-	  if (pspec->any.flags & BSE_PARAM_SERVE_GUI &&
-	      pspec->any.flags & BSE_PARAM_READABLE &&
+	  if (pspec->flags & B_PARAM_SERVE_GUI &&
+	      pspec->flags & B_PARAM_READABLE &&
 	      (!param_view->reject_pattern ||
-	       !g_pattern_match_string (param_view->reject_pattern, pspec->any.name)) &&
+	       !g_pattern_match_string (param_view->reject_pattern, pspec->name)) &&
 	      (!param_view->match_pattern ||
-	       g_pattern_match_string (param_view->match_pattern, pspec->any.name)))
+	       g_pattern_match_string (param_view->match_pattern, pspec->name)))
 	    {
 	      BstParam *bparam;
 	      

@@ -20,7 +20,6 @@ BSE_MICRO_VERSION=2
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
-BST_VERSION=$BSE_VERSION
 AC_DIVERT_POP()dnl
 dnl#
 dnl# Making releases:
@@ -31,12 +30,26 @@ dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
 dnl# if backwards compatibility has been broken,
 dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
 dnl#
+# BLib and BEAST version numbers
+BLIB_MAJOR_VERSION=$BSE_MAJOR_VERSION
+BLIB_MINOR_VERSION=$BSE_MINOR_VERSION
+BLIB_MICRO_VERSION=$BSE_MICRO_VERSION
+BLIB_INTERFACE_AGE=$BSE_INTERFACE_AGE
+BLIB_BINARY_AGE=$BSE_BINARY_AGE
+BLIB_VERSION=$BSE_VERSION
+BST_VERSION=$BSE_VERSION
 AC_SUBST(BSE_MAJOR_VERSION)
 AC_SUBST(BSE_MINOR_VERSION)
 AC_SUBST(BSE_MICRO_VERSION)
 AC_SUBST(BSE_INTERFACE_AGE)
 AC_SUBST(BSE_BINARY_AGE)
 AC_SUBST(BSE_VERSION)
+AC_SUBST(BLIB_MAJOR_VERSION)
+AC_SUBST(BLIB_MINOR_VERSION)
+AC_SUBST(BLIB_MICRO_VERSION)
+AC_SUBST(BLIB_INTERFACE_AGE)
+AC_SUBST(BLIB_BINARY_AGE)
+AC_SUBST(BLIB_VERSION)
 AC_SUBST(BST_VERSION)
 
 # compute libtool versions
@@ -100,15 +113,23 @@ MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
 dnl
 dnl Define package requirements.
 dnl
-AC_DEFUN(AC_BSE_REQUIREMENTS,
+AC_DEFUN(AC_BLIB_REQUIREMENTS,
 [
     AM_PATH_GLIB(1.2.6,
 	GLIB_VERSION=`$GLIB_CONFIG --version`,
 	    AC_MSG_ERROR(Cannot find GLib - glib-config missing from path?),
 		gmodule
 	)
-    BSE_CFLAGS="$GLIB_CFLAGS"
-    BSE_LIBS="$GLIB_LIBS"
+    BLIB_CFLAGS="$GLIB_CFLAGS"
+    BLIB_LIBS="$GLIB_LIBS"
+    AC_SUBST(BLIB_CFLAGS)
+    AC_SUBST(BLIB_LIBS)
+])
+AC_DEFUN(AC_BSE_REQUIREMENTS,
+[
+    # BSE depends on BLib
+    BSE_CFLAGS="$BLIB_CFLAGS"
+    BSE_LIBS="$BLIB_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
 
@@ -365,6 +386,8 @@ fi
 AC_SUBST(STRIP_BEGIN)
 AC_SUBST(STRIP_END)
 
+# BLib requirements
+AC_BLIB_REQUIREMENTS
 # BSE requirements
 AC_BSE_REQUIREMENTS
 # check for sound devices
@@ -435,6 +458,7 @@ AC_SUBST(LDFLAGS)
 # create output files
 AC_OUTPUT([
 Makefile
+blib/Makefile
 bse/Makefile
 bse/icons/Makefile
 plugins/Makefile
@@ -443,5 +467,6 @@ beast-gtk/Makefile
 beast-gtk/icons/Makefile
 docs/Makefile
 test/Makefile
+blib/blibconfig.h
 bse/bseconfig.h
 ])

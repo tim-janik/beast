@@ -72,9 +72,11 @@ void		   bst_procedure_shell_execute	   (BstProcedureShell *procedure_shell);
 void		   bst_procedure_shell_set_proc	   (BstProcedureShell *procedure_shell,
 						    BseProcedureClass *proc);
 void		   bst_procedure_shell_reset	   (BstProcedureShell *procedure_shell);
-guint		   bst_procedure_shell_preset	   (BstProcedureShell *procedure_shell,
-						    gboolean	       lock_presets,
-						    GSList	      *preset_params);
+void		   bst_procedure_shell_unpreset	   (BstProcedureShell *procedure_shell);
+gboolean	   bst_procedure_shell_preset	   (BstProcedureShell *procedure_shell,
+						    const gchar       *name,
+						    const GValue      *value,
+						    gboolean	       lock_preset);
 
 /* --- dialogs --- */
 GtkWidget*	   bst_procedure_dialog_from_shell (BstProcedureShell *shell,

@@ -359,14 +359,12 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
 			  GType             proc_type,
 			  GtkWidget        *menu_item)
 {
-  BseParamSpec *pspec_pattern, *pspec_focus_channel, *pspec_focus_row; /* FIXME: cache these */
-  BseParam param_pattern = { NULL, }, param_focus_channel = { NULL, }, param_focus_row = { NULL, };
+  GValue value = { 0, };
   BstPatternEditor *pattern_editor;
   BseProcedureClass *procedure;
   BstProcedureShell *proc_shell;
   BsePattern *pattern;
   GtkWidget *widget;
-  GSList *slist = NULL;
   guint channel, row;
 
   widget = GTK_WIDGET (pattern_dialog);
@@ -394,38 +392,20 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
   g_type_class_unref (procedure);
 
   /* ok, now we build a list of possible preset parameters to
-   * pass into the procedure
+   * pass into the procedure and attempt applying them
    */
-  pspec_pattern = bse_param_spec_item ("pattern", NULL, NULL,
-				       BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  pspec_focus_channel = bse_param_spec_uint ("focus_channel", NULL, NULL,
-					     0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
-  pspec_focus_row = bse_param_spec_uint ("focus_row", NULL, NULL,
-					 0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
-  bse_param_init (&param_pattern, pspec_pattern);
-  bse_param_init (&param_focus_channel, pspec_focus_channel);
-  bse_param_init (&param_focus_row, pspec_focus_row);
-  bse_param_set_item (&param_pattern, BSE_ITEM (pattern));
-  bse_param_set_uint (&param_focus_channel, pattern_editor->focus_channel);
-  bse_param_set_uint (&param_focus_row, pattern_editor->focus_row);
-  slist = g_slist_prepend (slist, &param_pattern);
-  slist = g_slist_prepend (slist, &param_focus_channel);
-  slist = g_slist_prepend (slist, &param_focus_row);
+  bst_procedure_shell_unpreset (proc_shell);
+  g_value_init (&value, G_TYPE_PARAM_OBJECT);
+  g_value_set_object (&value, G_OBJECT (pattern));
+  bst_procedure_shell_preset (proc_shell, "pattern", &value, TRUE);
+  g_value_unset (&value);
+  g_value_init (&value, G_TYPE_PARAM_UINT);
+  b_value_set_uint (&value, pattern_editor->focus_channel);
+  bst_procedure_shell_preset (proc_shell, "focus-channel", &value, TRUE);
+  b_value_set_uint (&value, pattern_editor->focus_row);
+  bst_procedure_shell_preset (proc_shell, "focus-row", &value, TRUE);
+  g_value_unset (&value);
 
-  /* apply preset params and clean up
-   */
-  bst_procedure_shell_preset (proc_shell, TRUE, slist);
-  while (slist)
-    {
-      BseParam *param = slist->data;
-      GSList *tmp = slist->next;
-
-      bse_param_free_value (param);
-      bse_param_spec_free (param->pspec);
-      g_slist_free_1 (slist);
-      slist = tmp;
-    }
-  
   /* invoke procedure with selection already residing in the pattern
    */
   bst_status_window_push (widget);

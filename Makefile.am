@@ -4,7 +4,7 @@
 ## Makefile.am for BEAST/BSE
 
 # subdirs with source code to be compiled
-SRC_SUBDIRS = bse plugins beast-gtk
+SRC_SUBDIRS = blib bse plugins beast-gtk
 
 # other subdirs
 SUBDIRS = $(SRC_SUBDIRS) docs test

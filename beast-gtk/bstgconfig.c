@@ -38,26 +38,29 @@ enum
 /* --- prototypes --- */
 static void	 bst_gconfig_init		(BstGConfig	  *gconf);
 static void	 bst_gconfig_class_init		(BstGConfigClass  *class);
-static void	 bst_gconfig_class_destroy	(BstGConfigClass  *class);
+static void	 bst_gconfig_class_finalize	(BstGConfigClass  *class);
 static void      bst_gconfig_set_param          (BstGConfig	  *gconf,
-						 BseParam         *param,
-						 guint             param_id);
+						 guint             param_id,
+						 GValue           *value,
+						 GParamSpec       *pspec,
+						 const gchar      *trailer);
 static void      bst_gconfig_get_param          (BstGConfig	  *gconf,
-						 BseParam         *param,
-						 guint             param_id);
-static void	 bst_gconfig_do_shutdown	(BseObject     	  *object);
-static void	 bst_gconfig_do_destroy		(BseObject     	  *object);
+						 guint             param_id,
+						 GValue           *value,
+						 GParamSpec       *pspec,
+						 const gchar      *trailer);
+static void	 bst_gconfig_do_finalize	(GObject     	  *object);
 static void	 bst_gconfig_do_apply		(BseGConfig	  *bconf);
 static void	 bst_gconfig_do_revert		(BseGConfig	  *bconf);
 static void      bst_globals_copy               (const BstGlobals *globals_src,
 						 BstGlobals       *globals);
-static void      bst_globals_reset              (BstGlobals       *globals);
+static void      bst_globals_unset              (BstGlobals       *globals);
 
 
 
 /* --- variables --- */
 GType                    bst_type_id_BstGConfig = 0;
-static GTypeClass     *parent_class = NULL;
+static gpointer          parent_class = NULL;
 static BstGlobals        bst_globals_current = { 0, };
 const BstGlobals * const bst_globals = &bst_globals_current;
 static const BstGlobals  bst_globals_defaults = {
@@ -81,9 +84,9 @@ bst_globals_init (void)
     sizeof (BstGConfigClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bst_gconfig_class_init,
-    (GClassDestroyFunc) bst_gconfig_class_destroy,
+    (GClassFinalizeFunc) bst_gconfig_class_finalize,
     NULL /* class_data */,
 
     sizeof (BstGConfig),
@@ -102,7 +105,7 @@ bst_globals_init (void)
 }
 
 static void
-bst_gconfig_class_destroy (BstGConfigClass *class)
+bst_gconfig_class_finalize (BstGConfigClass *class)
 {
 }
 
@@ -113,42 +116,29 @@ bst_gconfig_init (BstGConfig *gconf)
 }
 
 static void
-bst_gconfig_do_shutdown (BseObject *object)
-{
-  BstGConfig *gconf;
-  
-  gconf = BST_GCONFIG (object);
-  
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
-}
-
-static void
-bst_gconfig_do_destroy (BseObject *object)
+bst_gconfig_do_finalize (GObject *object)
 {
   BstGConfig *gconf = BST_GCONFIG (object);
 
-  bst_globals_reset (&gconf->globals);
+  bst_globals_unset (&gconf->globals);
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' finalize handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
 bst_gconfig_class_init (BstGConfigClass *class)
 {
-  BseObjectClass *object_class;
-  BseGConfigClass *bconfig_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseGConfigClass *bconfig_class = BSE_GCONFIG_CLASS (class);
   BstGlobals globals_defaults = { 0, };
   
   parent_class = g_type_class_peek (BSE_TYPE_GCONFIG);
-  object_class = BSE_OBJECT_CLASS (class);
-  bconfig_class = BSE_GCONFIG_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) bst_gconfig_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bst_gconfig_get_param;
-  object_class->shutdown = bst_gconfig_do_shutdown;
-  object_class->destroy = bst_gconfig_do_destroy;
+  gobject_class->set_param = (GObjectSetParamFunc) bst_gconfig_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bst_gconfig_get_param;
+  gobject_class->finalize = bst_gconfig_do_finalize;
   
   bconfig_class->apply = bst_gconfig_do_apply;
   bconfig_class->revert = bst_gconfig_do_revert;
@@ -156,138 +146,141 @@ bst_gconfig_class_init (BstGConfigClass *class)
   bst_globals_copy (NULL, &globals_defaults);
   bse_object_class_add_param (object_class, "Keyboard Layout",
 			      PARAM_XKB_FORCE_QUERY,
-			      bse_param_spec_bool ("xkb_force_query", "Always query X server on startup", NULL,
-						   globals_defaults.xkb_force_query,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("xkb_force_query", "Always query X server on startup", NULL,
+						 globals_defaults.xkb_force_query,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Keyboard Layout",
 			      PARAM_XKB_SYMBOL,
-			      bse_param_spec_string ("xkb_symbol", "Keyboard Layout", NULL,
-						     globals_defaults.xkb_symbol,
-						     BSE_PARAM_DEFAULT));
+			      b_param_spec_string ("xkb_symbol", "Keyboard Layout", NULL,
+						   globals_defaults.xkb_symbol,
+						   B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Samples",
 			      PARAM_SAMPLE_SWEEP,
-			      bse_param_spec_bool ("sample_sweep", "Auto sweep",
-						   "Automatically remove (sweep) unused samples of a project",
-						   globals_defaults.sample_sweep,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("sample_sweep", "Auto sweep",
+						 "Automatically remove (sweep) unused samples of a project",
+						 globals_defaults.sample_sweep,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_ANTI_ALIASED,
-			      bse_param_spec_bool ("snet_anti_aliased", "Anti aliased display", NULL,
-						   globals_defaults.snet_anti_aliased,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("snet_anti_aliased", "Anti aliased display", NULL,
+						 globals_defaults.snet_anti_aliased,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_EDIT_FALLBACK,
-			      bse_param_spec_bool ("snet_edit_fallback", "Auto fallback into Edit mode",
-						   "Fallback into Edit mode after a new source has been added",
-						   globals_defaults.snet_edit_fallback,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("snet_edit_fallback", "Auto fallback into Edit mode",
+						 "Fallback into Edit mode after a new source has been added",
+						 globals_defaults.snet_edit_fallback,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_SWAP_IO_CHANNELS,
-			      bse_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
-						   globals_defaults.snet_swap_io_channels,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
+						 globals_defaults.snet_swap_io_channels,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Pattern Editor",
 			      PARAM_PE_KEY_FOCUS_UNSELECTS,
-			      bse_param_spec_bool ("pe_key_focus_unselects", "Focus moves reset selection",
-						   "Reset the pattern editor's selection when keyboard moves"
-						   "the focus",
-						   globals_defaults.pe_key_focus_unselects,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("pe_key_focus_unselects", "Focus moves reset selection",
+						 "Reset the pattern editor's selection when keyboard moves"
+						 "the focus",
+						 globals_defaults.pe_key_focus_unselects,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Geometry",
 			      PARAM_TAB_WIDTH,
-			      bse_param_spec_uint ("tab_width", "Project tabulator width",
-						   "This is the width of the project notebook's "
-						   "tabulators that show the song, network or sample names. "
-						   "Setting it to a fixed width avoids window resizing when "
-						   "samples are added or removed.",
-						   0, 1024, 5, globals_defaults.tab_width,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_uint ("tab_width", "Project tabulator width",
+						 "This is the width of the project notebook's "
+						 "tabulators that show the song, network or sample names. "
+						 "Setting it to a fixed width avoids window resizing when "
+						 "samples are added or removed.",
+						 0, 1024, globals_defaults.tab_width, 5,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Debugging",
 			      PARAM_DISABLE_ALSA,
-			      bse_param_spec_bool ("disable_alsa", "Disable support for ALSA PCM driver", NULL,
-						   globals_defaults.disable_alsa,
-						   BSE_PARAM_DEFAULT));
-  bst_globals_reset (&globals_defaults);
+			      b_param_spec_bool ("disable_alsa", "Disable support for ALSA PCM driver", NULL,
+						 globals_defaults.disable_alsa,
+						 B_PARAM_DEFAULT));
+  bst_globals_unset (&globals_defaults);
 }
 
 static void
-bst_gconfig_set_param (BstGConfig *gconf,
-		       BseParam   *param,
-		       guint       param_id)
+bst_gconfig_set_param (BstGConfig  *gconf,
+                       guint        param_id,
+		       GValue      *value,
+		       GParamSpec  *pspec,
+		       const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_SNET_ANTI_ALIASED:
-      gconf->globals.snet_anti_aliased = param->value.v_bool;
+      gconf->globals.snet_anti_aliased = b_value_get_bool (value);
       break;
     case PARAM_SNET_EDIT_FALLBACK:
-      gconf->globals.snet_edit_fallback = param->value.v_bool;
+      gconf->globals.snet_edit_fallback = b_value_get_bool (value);
       break;
     case PARAM_SNET_SWAP_IO_CHANNELS:
-      gconf->globals.snet_swap_io_channels = param->value.v_bool;
+      gconf->globals.snet_swap_io_channels = b_value_get_bool (value);
       break;
     case PARAM_XKB_FORCE_QUERY:
-      gconf->globals.xkb_force_query = param->value.v_bool;
+      gconf->globals.xkb_force_query = b_value_get_bool (value);
       break;
     case PARAM_XKB_SYMBOL:
       g_free (gconf->globals.xkb_symbol);
-      gconf->globals.xkb_symbol = bse_strdup_stripped (param->value.v_string);
+      gconf->globals.xkb_symbol = bse_strdup_stripped (b_value_get_string (value));
       break;
     case PARAM_DISABLE_ALSA:
-      gconf->globals.disable_alsa = param->value.v_bool;
+      gconf->globals.disable_alsa = b_value_get_bool (value);
       break;
     case PARAM_TAB_WIDTH:
-      gconf->globals.tab_width = param->value.v_uint;
+      gconf->globals.tab_width = b_value_get_uint (value);
       break;
     case PARAM_SAMPLE_SWEEP:
-      gconf->globals.sample_sweep = param->value.v_bool;
+      gconf->globals.sample_sweep = b_value_get_bool (value);
       break;
     case PARAM_PE_KEY_FOCUS_UNSELECTS:
-      gconf->globals.pe_key_focus_unselects = param->value.v_bool;
+      gconf->globals.pe_key_focus_unselects = b_value_get_bool (value);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (gconf, param, param_id);
+      G_WARN_INVALID_PARAM_ID (gconf, param_id, pspec);
       break;
     }
 }
 
 static void
-bst_gconfig_get_param (BstGConfig *gconf,
-		       BseParam   *param,
-		       guint       param_id)
+bst_gconfig_get_param (BstGConfig  *gconf,
+                       guint        param_id,
+		       GValue      *value,
+		       GParamSpec  *pspec,
+		       const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_SNET_ANTI_ALIASED:
-      param->value.v_bool = gconf->globals.snet_anti_aliased;
+      b_value_set_bool (value, gconf->globals.snet_anti_aliased);
       break;
     case PARAM_SNET_EDIT_FALLBACK:
-      param->value.v_bool = gconf->globals.snet_edit_fallback;
+      b_value_set_bool (value, gconf->globals.snet_edit_fallback);
       break;
     case PARAM_SNET_SWAP_IO_CHANNELS:
-      param->value.v_bool = gconf->globals.snet_swap_io_channels;
+      b_value_set_bool (value, gconf->globals.snet_swap_io_channels);
       break;
     case PARAM_XKB_FORCE_QUERY:
-      param->value.v_bool = gconf->globals.xkb_force_query;
+      b_value_set_bool (value, gconf->globals.xkb_force_query);
       break;
     case PARAM_XKB_SYMBOL:
-      g_free (param->value.v_string);
-      param->value.v_string = g_strdup (gconf->globals.xkb_symbol);
+      b_value_set_string (value, gconf->globals.xkb_symbol);
       break;
     case PARAM_DISABLE_ALSA:
-      param->value.v_bool = gconf->globals.disable_alsa;
+      b_value_set_bool (value, gconf->globals.disable_alsa);
       break;
     case PARAM_TAB_WIDTH:
-      param->value.v_uint = gconf->globals.tab_width;
+      b_value_set_uint (value, gconf->globals.tab_width);
       break;
     case PARAM_SAMPLE_SWEEP:
-      param->value.v_bool = gconf->globals.sample_sweep;
+      b_value_set_bool (value, gconf->globals.sample_sweep);
       break;
     case PARAM_PE_KEY_FOCUS_UNSELECTS:
-      param->value.v_bool = gconf->globals.pe_key_focus_unselects;
+      b_value_set_bool (value, gconf->globals.pe_key_focus_unselects);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (gconf, param, param_id);
+      G_WARN_INVALID_PARAM_ID (gconf, param_id, pspec);
       break;
     }
 }
@@ -308,7 +301,7 @@ bst_gconfig_do_revert (BseGConfig *bconf)
 {
   BstGConfig *gconf = BST_GCONFIG (bconf);
 
-  bst_globals_reset (&gconf->globals);
+  bst_globals_unset (&gconf->globals);
   bst_globals_copy (bst_globals, &gconf->globals);
 
   /* chain parent class' handler */
@@ -325,7 +318,7 @@ bst_globals_copy (const BstGlobals *globals_src,
     {
       g_return_if_fail (bse_globals_locked () == FALSE);
 
-      bst_globals_reset (&bst_globals_current);
+      bst_globals_unset (&bst_globals_current);
       globals = &bst_globals_current;
     }
 
@@ -334,7 +327,7 @@ bst_globals_copy (const BstGlobals *globals_src,
 }
 
 void
-bst_globals_reset (BstGlobals *globals)
+bst_globals_unset (BstGlobals *globals)
 {
   g_return_if_fail (globals != NULL);
 

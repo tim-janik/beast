@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General
@@ -34,14 +34,15 @@ extern "C" {
 typedef struct _BstParam BstParam;
 struct _BstParam
 {
-  BseParam   param;
-  gpointer   owner;
-  guint	     param_set_id;
-  GtkWidget *group;
-  guint	     locked : 24;
-  guint	     editable : 1;
-  guint	     is_object : 1;
-  guint	     is_procedure : 1;
+  GValue      value;
+  GParamSpec *pspec;
+  gpointer    owner;
+  guint	      param_set_id;
+  GtkWidget  *group;
+  guint	      locked : 24;
+  guint	      editable : 1;
+  guint	      is_object : 1;
+  guint	      is_procedure : 1;
 };
 
 
@@ -50,21 +51,22 @@ struct _BstParam
  * toplevel GtkWindow.
  */
 BstParam*	bst_param_create		(gpointer	 owner,
-						 GType  	 owner_type,
-						 BseParamSpec	*pspec,
-						 GQuark          param_group,
-						 GtkWidget      *parent,
+						 GType		 owner_type,
+						 GParamSpec	*pspec,
+						 const gchar    *param_group,
+						 GtkWidget	*parent,
 						 GtkTooltips	*tooltips);
 /* bst_param_get   - set the widget's value from the object
  * bst_param_set   - set the object's value from the widget (this implies
- *                   a succeding call to bst_param_get).
+ *		     a succeding call to bst_param_get).
  * bst_param_reset - reset to default values
  */
 void		bst_param_get			(BstParam	*bparam);
 void		bst_param_set			(BstParam	*bparam);
 void		bst_param_reset			(BstParam	*bparam);
-gboolean	bst_param_set_from_other	(BstParam	*bparam,
-						 BseParam	*src_param);
+void		bst_param_set_default		(BstParam	*bparam);
+gboolean	bst_param_set_value		(BstParam	*bparam,
+						 const GValue	*value);
 void		bst_param_set_object		(BstParam	*bparam,
 						 BseObject	*object);
 void		bst_param_set_procedure		(BstParam	*bparam,

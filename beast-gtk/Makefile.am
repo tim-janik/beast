@@ -19,7 +19,7 @@ DEFS += $(strip \
 )
 
 # link programs against BSE and other neccessary libraries
-progs_LDADD = $(top_builddir)/bse/libbse.la $(LDFLAGS) $(BEAST_LIBS)
+progs_LDADD = $(top_builddir)/blib/libblib.la $(top_builddir)/bse/libbse.la $(LDFLAGS) $(BEAST_LIBS)
 beast_LDADD = $(progs_LDADD)
 
 

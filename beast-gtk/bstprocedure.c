@@ -27,8 +27,9 @@ static void     bst_procedure_shell_destroy    (GtkObject              *object);
 
 
 /* --- static variables --- */
-static gpointer                parent_class = NULL;
-static BstProcedureShellClass *bst_procedure_shell_class = NULL;
+static gpointer parent_class = NULL;
+static GQuark   quark_input_params = 0;
+static GQuark   quark_output_params = 0;
 
 
 /* --- functions --- */
@@ -60,11 +61,11 @@ bst_procedure_shell_get_type (void)
 static void
 bst_procedure_shell_class_init (BstProcedureShellClass *class)
 {
-  GtkObjectClass *object_class;
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+
+  quark_output_params = g_quark_from_static_string ("Output Parameters");
+  quark_input_params = g_quark_from_static_string ("Input Parameters");
   
-  object_class = GTK_OBJECT_CLASS (class);
-  
-  bst_procedure_shell_class = class;
   parent_class = gtk_type_class (GTK_TYPE_VBOX);
   
   object_class->destroy = bst_procedure_shell_destroy;
@@ -224,14 +225,14 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
   pspec_array_list = g_slist_prepend (pspec_array_list, proc->in_param_specs);
   for (slist = pspec_array_list; slist; slist = slist->next)
     {
-      BseParamSpec **pspec_p;
+      GParamSpec **pspec_p;
       
       pspec_p = slist->data;
       if (pspec_p)
         while (*pspec_p)
           {
-            if ((*pspec_p)->any.flags & BSE_PARAM_SERVE_GUI &&
-                (*pspec_p)->any.flags & BSE_PARAM_READABLE)
+            if ((*pspec_p)->flags & B_PARAM_SERVE_GUI &&
+                (*pspec_p)->flags & B_PARAM_READABLE)
               {
                 BstParam *bparam;
                 
@@ -239,8 +240,8 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
                                            BSE_TYPE_PROCEDURE,
                                            *pspec_p,
                                            (slist->next
-                                            ? g_quark_from_static_string ("Input Parameters")
-                                            : g_quark_from_static_string ("Output Parameters")),
+					    ? g_quark_to_string (quark_input_params)
+					    : g_quark_to_string (quark_output_params)),
                                            param_box,
                                            GTK_TOOLTIPS (shell->tooltips));
                 shell->bparams = g_slist_append (shell->bparams, bparam);
@@ -330,73 +331,81 @@ bst_procedure_shell_reset (BstProcedureShell *shell)
     {
       BstParam *bparam = slist->data;
 
+      (n > 0 ? bst_param_set_default : bst_param_reset) (bparam);
       bst_param_set_editable (bparam, n-- > 0);
-      bst_param_reset (bparam);
     }
   shell->n_preset_params = 0;
 }
 
-guint
+void
+bst_procedure_shell_unpreset (BstProcedureShell *shell)
+{
+  GSList *slist;
+  gint n;
+
+  g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
+
+  for (n = shell->n_in_params, slist = shell->bparams; slist && n; n--, slist = slist->next)
+    {
+      BstParam *bparam = slist->data;
+
+      if (!bparam->editable)
+	{
+	  bst_param_set_default (bparam);
+	  bst_param_set_editable (bparam, TRUE);
+	}
+    }
+  shell->n_preset_params = 0;
+}
+
+gboolean
 bst_procedure_shell_preset (BstProcedureShell *shell,
-			    gboolean           lock_presets,
-			    GSList            *preset_params)
+			    const gchar       *name,
+			    const GValue      *value,
+			    gboolean           lock_preset)
 {
   BseProcedureClass *proc;
-  GSList *bparam_slist;
+  GSList *slist;
   guint n;
   
   g_return_val_if_fail (BST_IS_PROCEDURE_SHELL (shell), 0);
   g_return_val_if_fail (shell->proc != NULL, 0);
+  g_return_val_if_fail (name != NULL, 0);
+  g_return_val_if_fail (G_IS_VALUE (value), 0);
   
   proc = shell->proc;
-  bparam_slist = shell->bparams;
-  n = preset_params ? shell->n_in_params : 0;
   
   /* ok, this is the really interesting part!
-   * we walk the preset_params list and try to unificate the
-   * parameters with the procedure's in parameters. if we find
-   * a name match and type conversion is sucessfull, the procedure
-   * gets invoked with a predefined parameter
+   * we try to unificate the preset parameter with the procedure's
+   * in parameters. if we find a name match and type conversion
+   * is sucessfull, the procedure gets invoked with a
+   * predefined parameter.
    */
-  
-  shell->n_preset_params = 0;
-  while (n--)
+
+  for (slist = shell->bparams, n = shell->n_in_params; n; slist = slist->next, n--)
     {
-      BstParam *bparam = bparam_slist->data;
-      BseParam *iparam = &bparam->param;
-      GSList *slist;
+      BstParam *bparam = slist->data;
       
-      bst_param_set_editable (bparam, TRUE);
-      for (slist = preset_params; slist; slist = slist->next)
-        {
-          BseParam *pparam = slist->data;
-	  
-          if (strcmp (iparam->pspec->any.name, pparam->pspec->any.name) == 0)
-            {
-              if (bst_param_set_from_other (bparam, pparam))
-                {
+      if (strcmp (bparam->pspec->name, name) == 0)
+	{
+	  if (bst_param_set_value (bparam, value))
+	    {
+	      if (lock_preset && bparam->editable)
+		{
 		  shell->n_preset_params += 1;
-                  if (lock_presets)
-                    bst_param_set_editable (bparam, FALSE);
-                  break;
-                }
-              else
-                g_warning (G_STRLOC ": can't convert preset parameter `%s' from `%s' to `%s'",
-                           pparam->pspec->any.name,
-                           g_type_name (pparam->pspec->type),
-                           g_type_name (iparam->pspec->type));
-            }
-        }
-      
-      bparam_slist = bparam_slist->next;
+		  bst_param_set_editable (bparam, FALSE);
+		}
+	      return TRUE;
+	    }
+	  else
+	    g_warning (G_STRLOC ": can't convert preset parameter `%s' from `%s' to `%s'",
+		       name,
+		       g_type_name (G_PARAM_SPEC_TYPE (bparam->pspec)),
+		       g_type_name (G_VALUE_TYPE (value)));
+	}
     }
 
-  /* and reset output parameters
-   */
-  for (; bparam_slist; bparam_slist = bparam_slist->next)
-    bst_param_reset (bparam_slist->data);
-  
-  return shell->n_preset_params;
+  return FALSE;
 }
 
 static void
