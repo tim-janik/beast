@@ -86,10 +86,10 @@ sfi_com_port_from_child (const gchar *ident,
   else
     port->ident = g_strdup (ident);
   port->pfd[0].fd = nonblock_fd (remote_input);
-  port->pfd[0].events = G_IO_IN;
+  port->pfd[0].events = port->pfd[0].fd >= 0 ? G_IO_IN : 0;
   port->pfd[0].revents = 0;
   port->pfd[1].fd = nonblock_fd (remote_output);
-  port->pfd[1].events = G_IO_OUT;
+  port->pfd[1].events = port->pfd[1].fd >= 0 ? G_IO_OUT : 0;
   port->pfd[1].revents = 0;
   if (remote_pid > 1)
     {
@@ -230,11 +230,13 @@ sfi_com_port_close_remote (SfiComPort *port,
     {
       close (port->pfd[0].fd);
       port->pfd[0].fd = -1;
+      port->pfd[0].events = 0;
     }
   if (port->pfd[1].fd >= 0)
     {
       close (port->pfd[1].fd);
       port->pfd[1].fd = -1;
+      port->pfd[1].events = 0;
     }
   com_port_try_reap (port, FALSE);
   if (terminate_child &&
@@ -669,8 +671,8 @@ sfi_com_port_io_pending (SfiComPort *port)
   g_return_val_if_fail (port != NULL, FALSE);
 
   /* maintain poll fds */
-  port->pfd[0].events = G_IO_IN;
-  port->pfd[1].events = port->wbuffer.n ? G_IO_OUT : 0;
+  port->pfd[0].events = port->pfd[0].fd >= 0 ? G_IO_IN : 0;
+  port->pfd[1].events = port->pfd[1].fd >= 0 && port->wbuffer.n ? G_IO_OUT : 0;
 
   /* check link queue */
   if (port->link &&
