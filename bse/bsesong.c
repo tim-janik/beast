@@ -625,15 +625,7 @@ bse_song_forall_items (BseContainer	 *container,
   BseSong *self = BSE_SONG (container);
   SfiRing *ring;
 
-  ring = self->busses;
-  while (ring)
-    {
-      BseItem *item = ring->data;
-      ring = sfi_ring_walk (ring, self->busses);
-      if (!func (item, data))
-	return;
-    }
-
+  /* iterate over non-source children */
   ring = self->tracks_SL;
   while (ring)
     {
@@ -642,7 +634,6 @@ bse_song_forall_items (BseContainer	 *container,
       if (!func (item, data))
 	return;
     }
-
   ring = self->parts;
   while (ring)
     {
@@ -652,7 +643,7 @@ bse_song_forall_items (BseContainer	 *container,
 	return;
     }
 
-  /* parent class manages BseSources */
+  /* parent class iterates over BseSources children */
   BSE_CONTAINER_CLASS (parent_class)->forall_items (container, func, data);
 }
 
