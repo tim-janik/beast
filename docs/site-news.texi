@@ -27,6 +27,15 @@
 @c ----------------------------- START -----------------------------
 
 
+@newsTitle{Sunday 26 Dec 2004, From the ``security first'' dept.}
+
+Due to a recent
+@uref{http://www.hardened-php.net/advisories/012004.txt,,security advisory},
+@uref{http://www.php.net/,,PHP} support has been taken down on gtk.org.
+So currently the search facility and the beast wiki are not available.
+We apologize for the inconvenience and will put stuff back to work once
+debian packages the new PHP versions that plug all known security holes.
+
 @newsTitle{Saturday 18 Dec 2004, The ``Clean up your mind'' Release}
 
 BEAST/BSE version 0.6.4 is available from the
