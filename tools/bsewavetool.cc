@@ -1070,7 +1070,6 @@ public:
 } cmd_xinfo ("xinfo");
 
 class ClipCmd : public Command {
-  vector<char*> args;
   gfloat threshold;
   guint head_samples, tail_samples, fade_samples, pad_samples, tail_silence;
   bool all_chunks;
@@ -1160,12 +1159,6 @@ public:
       }
     return !seen_selection ? 1 : 0; /* # args missing */
   }
-  typedef enum {
-    NONE,
-    OSC_FREQ,
-    ALL_CHUNKS,
-    WAVE
-  } Location;
   void
   exec (Wave *wave)
   {
@@ -1229,14 +1222,81 @@ public:
   }
 } cmd_clip ("clip");
 
+#if 0
+class LoopCmd : public Command {
+  bool all_chunks;
+  vector<gfloat> freq_list;
+public:
+  LoopCmd (const char *command_name) :
+    Command (command_name),
+    all_chunks (false)
+  {
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks} [options]\n");
+    if (bshort)
+      return;
+    g_print ("    Find suitable loop points.\n");
+    /* bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
+     *         don't loop chunks with loop-type=unloopable xinfos
+     *         automatically add xinfos with looping errors.
+     *         allow ogg/vorbis package cutting at end-loop point
+     */
+    g_print ("    Options:\n");
+    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --all-chunks        try to loop all chunks\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    bool seen_selection = false;
+    for (guint i = 1; i < argc; i++)
+      {
+        const gchar *str;
+        if (parse_bool_option (argv, i, "--all-chunks"))
+          {
+            all_chunks = true;
+            seen_selection = true;
+          }
+        else if (parse_str_option (argv, i, "-f", str, argc))
+          {
+            freq_list.push_back (g_ascii_strtod (str, NULL));
+            seen_selection = true;
+          }
+        else if (parse_str_option (argv, i, "-m", str, argc))
+          {
+            SfiNum num = g_ascii_strtoull (str, NULL, 10);
+            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+            freq_list.push_back (osc_freq);
+            seen_selection = true;
+          }
+      }
+    return !seen_selection ? 1 : 0; /* # args missing */
+  }
+  void
+  exec (Wave *wave)
+  {
+    sort (freq_list.begin(), freq_list.end());
+    vector<list<WaveChunk>::iterator> deleted;
+    /* level clipping */
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      if (all_chunks || wave->match (*it, freq_list))
+        {
+          WaveChunk *chunk = &*it;
+          sfi_info ("LOOP: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+        }
+  }
+} cmd_loop ("loop");
+#endif
 
 /* TODO commands:
  * bsewavetool.1 # need manual page
  * bsewavetool merge <file.bsewave> <second.bsewave>
- * bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
- *         don't loop chunks with loop-type=unloopable xinfos
- *         automatically add xinfos with looping errors.
- *         allow ogg/vorbis package cutting at end-loop point
  * bsewavetool omit <file.bsewave> [-a remove-algorithm] ...
  *   -L    drop samples based on loop errors
  * bsewavetool del-wave <file.bsewave> {-m midi-note|-f osc-freq} ...
