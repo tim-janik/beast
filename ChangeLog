@@ -1,3 +1,7 @@
+Mon Mar  7 07:33:06 2005  Tim Janik  <timj@gtk.org>
+
+	* *.hh: added .hh variants for .h C++ headers.
+
 Sun Mar  6 23:30:36 2005  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4: use $(tput cols) to figure terminal width instead of 
