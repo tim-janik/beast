@@ -1389,6 +1389,57 @@ sfi_ring_append_uniq (SfiRing *head,
 }
 
 SfiRing*
+sfi_ring_insert_before (SfiRing        *head,
+                        SfiRing        *sibling,
+                        gpointer        data)
+{
+  if (!sibling)
+    return sfi_ring_append (head, data);
+  SfiRing *node = sfi_ring_prepend (sibling, data);
+  return sibling == head ? node : head;
+}
+
+SfiRing*
+sfi_ring_insert (SfiRing *head,
+                 gpointer data,
+                 gint     position)
+{
+  if (position < 0)
+    return sfi_ring_append (head, data);
+  else if (position == 0)
+    return sfi_ring_prepend (head, data);
+  SfiRing *node = sfi_ring_nth (head, position);
+  if (node)
+    return sfi_ring_insert_before (head, node, data);
+  else
+    return sfi_ring_append (head, data);
+}
+
+gint
+sfi_ring_position (SfiRing        *head,
+                   SfiRing        *node)
+{
+  guint i = 0;
+  SfiRing *ring;
+  for (ring = head; ring; ring = sfi_ring_walk (ring, head), i++)
+    if (ring == node)
+      return i;
+  return -1;
+}
+
+gint
+sfi_ring_index (SfiRing        *head,
+                gconstpointer   data)
+{
+  guint i = 0;
+  SfiRing *ring;
+  for (ring = head; ring; ring = sfi_ring_walk (ring, head), i++)
+    if (ring->data == data)
+      return i;
+  return -1;
+}
+
+SfiRing*
 sfi_ring_copy (SfiRing *head)
 {
   SfiRing *walk, *dest = NULL;

@@ -29,7 +29,7 @@ namespace {
 using namespace Sfidl;
 using namespace std;
 
-class CodeGeneratorCoreC : public CodeGeneratorCBase {
+class CodeGeneratorCoreC : public CodeGenerator {
   const char*
   intern (const string &str)
   {
@@ -82,13 +82,13 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
   void
   CodeGeneratorCoreC::help()
   {
-    CodeGeneratorCBase::help();
+    CodeGenerator::help();
     fprintf (stderr, " --init <name>               set the name of the init function\n");
   }
   OptionVector
   getOptions()
   {
-    OptionVector opts = CodeGeneratorCBase::getOptions();
+    OptionVector opts = CodeGenerator::getOptions();
     
     opts.push_back (make_pair ("--init", true));
     
@@ -104,7 +104,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
       }
     else
       {
-        CodeGeneratorCBase::setOption (option, value);
+        CodeGenerator::setOption (option, value);
       }
   }
 
@@ -176,6 +176,44 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
       default:          return intern (var);
       }
   }
+  string
+  construct_pspec (const Param &pdef)
+  {
+    string pspec;
+    const string group = (pdef.group != "") ? pdef.group.escaped() : "NULL";
+    string pname, parg;
+    switch (parser.typeOf (pdef.type))
+      {
+      case CHOICE:
+        pname = "Choice";
+        parg = makeLowerName (pdef.type) + "_get_values()";
+        break;
+      case RECORD:
+        pname = "Record";
+        parg = makeLowerName (pdef.type) + "_fields";
+        break;
+      case SEQUENCE:
+        pname = "Sequence";
+        parg = makeLowerName (pdef.type) + "_content";
+        break;
+      case OBJECT:
+        /* FIXME: the ParamSpec doesn't transport the type of the objects we require */
+        pname = "Proxy";
+        break;
+      default:
+        pname = pdef.pspec;
+        break;
+      }
+    pspec = "sfidl_pspec_" + pname;
+    if (parg != "")
+      parg = string (", ") + parg;
+    if (pdef.args == "")
+      pspec += "_default (" + group + ",\"" + pdef.name + parg + "\")";
+    else
+      pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + parg + ")";
+    return pspec;
+  }
+
   void
   generate_enum_type_id_prototypes ()
   {
@@ -303,7 +341,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
         printf ("  return choice_values;\n");
         printf ("}\n");
         
-        printf ("GType %s = 0;\n", makeGTypeName (ei->name).c_str());
+        printf ("GType %s = 0;\n", make_TYPE_MACRO (ei->name));
         printf ("\n");
         
         enumCount++;
@@ -535,7 +573,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
         printf ("  %s_rec2boxed,\n", name.c_str());
         printf ("  %s_info_strings\n", name.c_str());
         printf ("};\n");
-        printf ("GType %s = 0;\n", makeGTypeName (ri->name).c_str());
+        printf ("GType %s = 0;\n", make_TYPE_MACRO (ri->name));
       }
   }
   void
@@ -559,7 +597,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
         if (parser.fromInclude (si->name)) continue;
         
         string mname = makeMixedName (si->name.c_str());
-        string array = typeArray (si->content.type);
+        string array = string (TypeField (si->content.type)) + "*";
         string elements = si->content.name;
         
         printf ("struct _%s {\n", mname.c_str());
@@ -709,7 +747,6 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
         printf ("  return hack_cast (sh, sh.steal());\n");
         printf ("}\n");
         
-        string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
         printf ("%s\n", ret.c_str());
         printf ("%s_from_seq (SfiSeq *seq)\n", lname.c_str());
         printf ("{\n");
@@ -717,7 +754,6 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
         printf ("  return hack_cast (sh, sh.steal());\n");
         printf ("}\n");
         
-        string elementToValue = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_TO_VALUE);
         printf ("SfiSeq*\n");
         printf ("%s_to_seq (%s cseq)\n", lname.c_str(), arg.c_str());
         printf ("{\n");
@@ -784,7 +820,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
         printf ("  %s_seq2boxed,\n", name.c_str());
         printf ("  %s_info_strings\n", name.c_str());
         printf ("};\n");
-        printf ("GType %s = 0;\n", makeGTypeName (si->name).c_str());
+        printf ("GType %s = 0;\n", make_TYPE_MACRO (si->name));
       }
   }
   void
@@ -824,7 +860,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
               {
                 if (generateIdlLineNumbers)
                   printf ("#line %u \"%s\"\n", pi->line, parser.fileName().c_str());
-                printf ("  %s_field[%d] = %s;\n", name.c_str(), f, makeParamSpec (*pi).c_str());
+                printf ("  %s_field[%d] = %s;\n", name.c_str(), f, construct_pspec (*pi).c_str());
               }
           }
         if (parser.isSequence (*ti))
@@ -835,14 +871,14 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
             
             if (generateIdlLineNumbers)
               printf ("#line %u \"%s\"\n", sdef.content.line, parser.fileName().c_str());
-            printf ("  %s_content = %s;\n", name.c_str(), makeParamSpec (sdef.content).c_str());
+            printf ("  %s_content = %s;\n", name.c_str(), construct_pspec (sdef.content).c_str());
           }
       }
     for (vector<Choice>::const_iterator ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
       {
         if (parser.fromInclude (ei->name)) continue;
         
-        string gname = makeGTypeName(ei->name);
+        string gname = make_TYPE_MACRO (ei->name);
         string name = makeLowerName(ei->name);
         string mname = makeMixedName(ei->name);
         
@@ -857,7 +893,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
       {
         if (parser.fromInclude (ri->name)) continue;
         
-        string gname = makeGTypeName(ri->name);
+        string gname = make_TYPE_MACRO (ri->name);
         string name = makeLowerName(ri->name);
         
         printf ("  %s = sfi_boxed_make_record (&%s_boxed_info,\n", gname.c_str(), name.c_str());
@@ -868,7 +904,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
       {
         if (parser.fromInclude (si->name)) continue;
         
-        string gname = makeGTypeName(si->name);
+        string gname = make_TYPE_MACRO (si->name);
         string name = makeLowerName(si->name);
         
         printf ("  %s_boxed_info.element = %s_content;\n", name.c_str(), name.c_str());
@@ -881,7 +917,7 @@ class CodeGeneratorCoreC : public CodeGeneratorCBase {
   
 public:
   CodeGeneratorCoreC (const Parser& parser) :
-    CodeGeneratorCBase (parser)
+    CodeGenerator (parser)
   {
   }
 

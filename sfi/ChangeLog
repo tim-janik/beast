@@ -1,3 +1,18 @@
+Sat Aug 28 17:53:30 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: added SfiRing methods: sfi_ring_insert_before(),
+	sfi_ring_insert(), sfi_ring_position(), sfi_ring_index().
+
+Thu Aug 26 13:13:11 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corec.cc: use make_TYPE_MACRO() instead of makeGTypeName().
+	don't use typeArray() of CodeGeneratorCBase, that's simply type + "*".
+	roll out own pspec constructor function construct_pspec() which is
+	simpler than that of CodeGeneratorCBase. removed cruft. 
+	changed base type to CodeGenerator, as there's nothing left we'd
+	use from CBase. (this also fixes SfiProxy uses instead BseItem in
+	the core binding).
+
 Fri Aug 20 18:35:57 2004  Tim Janik  <timj@gtk.org>
 
 	* sfigluecodec.c (decoder_proxy_get_pspec): don't try to free NULL pspecs.

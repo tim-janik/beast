@@ -271,6 +271,22 @@ SfiRing*        sfi_ring_append         (SfiRing        *head,
 					 gpointer        data);
 SfiRing*        sfi_ring_append_uniq    (SfiRing        *head,
 					 gpointer        data);
+SfiRing*        sfi_ring_insert         (SfiRing        *head,
+                                         gpointer        data,
+                                         gint            position);
+SfiRing*        sfi_ring_insert_before  (SfiRing        *head,
+                                         SfiRing        *sibling,
+                                         gpointer        data);
+gint            sfi_ring_position       (SfiRing        *head,
+					 SfiRing        *node);
+gint            sfi_ring_index          (SfiRing        *head,
+                                         gconstpointer   data);
+SfiRing*        sfi_ring_nth            (SfiRing        *head,
+					 guint           n);
+gpointer        sfi_ring_nth_data       (SfiRing        *head,
+					 guint           n);
+SfiRing*        sfi_ring_find           (SfiRing        *head,
+					 gconstpointer   data);
 SfiRing*        sfi_ring_remove_node    (SfiRing        *head,
 					 SfiRing        *node);
 SfiRing*        sfi_ring_remove         (SfiRing        *head,
@@ -286,12 +302,6 @@ SfiRing*        sfi_ring_copy_rest      (SfiRing        *ring,
                                          SfiRing        *head);
 SfiRing*        sfi_ring_concat         (SfiRing        *head1,
 					 SfiRing        *head2);
-SfiRing*        sfi_ring_find           (SfiRing        *head,
-					 gconstpointer   data);
-SfiRing*        sfi_ring_nth            (SfiRing        *head,
-					 guint           n);
-gpointer        sfi_ring_nth_data       (SfiRing        *head,
-					 guint           n);
 SfiRing*        sfi_ring_split          (SfiRing        *head1,
 					 SfiRing        *head2);
 SfiRing*        sfi_ring_reverse        (SfiRing        *head);
