@@ -264,13 +264,13 @@ piano_canvas_press (BstPartDialog *self,
 
   switch (self->rtools->tool_id)
     {
-      BswVIterBoxed *iter;
+      BswIterPartNote *iter;
       BswPartNote *pnote;
     case TOOL_MOVE_RESIZE:
       iter = bsw_part_get_note (part, tick, freq);
-      if (bsw_viter_n_left (iter))
+      if (bsw_iter_n_left (iter))
         {
-          pnote = bsw_viter_get_boxed (iter);
+          pnote = bsw_iter_get_part_note (iter);
           if (button == 2)      /* move */
             {
               bst_piano_roll_set_drag_data1 (proll, pnote->tick, pnote->duration, pnote->freq);
@@ -302,13 +302,13 @@ piano_canvas_press (BstPartDialog *self,
         }
       else
         bst_piano_roll_set_pointer (proll, BST_PIANO_ROLL_POINTER_IGNORE);
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
       break;
     case TOOL_DELETE:
       iter = bsw_part_get_note (part, tick, freq);
-      if (bsw_viter_n_left (iter))
+      if (bsw_iter_n_left (iter))
 	{
-          pnote = bsw_viter_get_boxed (iter);
+          pnote = bsw_iter_get_part_note (iter);
 	  if (button == 1)	/* delete */
 	    {
 	      bsw_part_delete_note (part, pnote->tick, pnote->freq);
@@ -345,28 +345,28 @@ check_overlap (BswProxy part,
                guint    except_tick,
                guint    except_duration)
 {
-  BswVIterBoxed *iter;
+  BswIterPartNote *iter;
   BswPartNote *pnote;
   
   iter = bsw_part_check_overlap (part, tick, duration, freq);
-  if (bsw_viter_n_left (iter) == 0)
+  if (bsw_iter_n_left (iter) == 0)
     {
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
       return FALSE;     /* no overlap */
     }
-  if (bsw_viter_n_left (iter) > 1)
+  if (bsw_iter_n_left (iter) > 1)
     {
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
       return TRUE;      /* definite overlap */
     }
-  pnote = bsw_viter_get_boxed (iter);
+  pnote = bsw_iter_get_part_note (iter);
   if (pnote->tick == except_tick &&
       pnote->duration == except_duration)
     {
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
       return FALSE;     /* overlaps with exception */
     }
-  bsw_viter_free (iter);
+  bsw_iter_free (iter);
   return TRUE;
 }
 
@@ -377,7 +377,7 @@ piano_move (BstPartDialog *self,
             BstPianoRoll  *proll)
 {
   BswProxy part = proll->proxy;
-  BswVIterBoxed *iter;
+  BswIterPartNote *iter;
   BswPartNote *pnote;
   guint note_tick, note_duration, offset;
   gboolean freq_changed;
@@ -391,9 +391,9 @@ piano_move (BstPartDialog *self,
                       note_tick, freq_changed ? 0 : note_duration))
     {
       iter = bsw_part_get_note (part, note_tick, note_freq);
-      if (bsw_viter_n_left (iter))
+      if (bsw_iter_n_left (iter))
         {
-          pnote = bsw_viter_get_boxed (iter);
+          pnote = bsw_iter_get_part_note (iter);
           if (pnote->tick != tick || freq_changed)
             {
               bsw_part_delete_note (part, pnote->tick, pnote->freq);
@@ -407,7 +407,7 @@ piano_move (BstPartDialog *self,
           bst_status_set (BST_STATUS_ERROR, "Move Note", "Lost Note");
           piano_update_cursor (self);
         }
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
     }
 }
 
@@ -418,7 +418,7 @@ piano_resize (BstPartDialog *self,
               BstPianoRoll  *proll)
 {
   BswProxy part = proll->proxy;
-  BswVIterBoxed *iter;
+  BswIterPartNote *iter;
   BswPartNote *pnote;
   guint note_tick, note_duration, new_tick, new_duration;
   gfloat note_freq;
@@ -433,9 +433,9 @@ piano_resize (BstPartDialog *self,
 		      note_tick, note_duration))
     {
       iter = bsw_part_get_note (part, note_tick, note_freq);
-      if (bsw_viter_n_left (iter))
+      if (bsw_iter_n_left (iter))
         {
-          pnote = bsw_viter_get_boxed (iter);
+          pnote = bsw_iter_get_part_note (iter);
 	  bsw_part_delete_note (part, pnote->tick, pnote->freq);
 	  bsw_part_insert_note (part, new_tick, new_duration, pnote->freq, pnote->velocity);
 	  bst_piano_roll_set_drag_data1 (proll, new_tick, new_duration, pnote->freq);
@@ -446,7 +446,7 @@ piano_resize (BstPartDialog *self,
           bst_status_set (BST_STATUS_ERROR, "Resize Note", "Lost Note");
           piano_update_cursor (self);
         }
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
     }
 }
 

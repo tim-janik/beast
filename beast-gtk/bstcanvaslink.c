@@ -270,9 +270,9 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
   if (clink->ocsource)
     {
       if (clink->ocsource->source) /* source may be destroyed already */
-	g_object_disconnect (bse_object_from_id (clink->ocsource->source),
-			     "any_signal", clink_view_check_update, clink,
-			     NULL);
+	bsw_proxy_disconnect (clink->ocsource->source,
+			      "any_signal", clink_view_check_update, clink,
+			      NULL);
       if (g_signal_handler_is_connected (clink->ocsource, clink->oc_handler))
 	gtk_signal_disconnect (GTK_OBJECT (clink->ocsource), clink->oc_handler);
       gtk_object_unref (GTK_OBJECT (clink->ocsource));
@@ -286,9 +286,9 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      g_object_connect (bse_object_from_id (clink->ocsource->source),
-			"swapped_signal::notify::name", clink_view_check_update, clink,
-			NULL);
+      bsw_proxy_connect (clink->ocsource->source,
+			 "swapped_signal::notify::uname", clink_view_check_update, clink,
+			 NULL);
       bst_canvas_link_update (clink);
     }
 }
@@ -305,9 +305,9 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
   if (clink->icsource)
     {
       if (clink->icsource->source) /* source may be destroyed already */
-	g_object_disconnect (bse_object_from_id (clink->icsource->source),
-			     "any_signal", clink_view_check_update, clink,
-			     NULL);
+	bsw_proxy_disconnect (clink->icsource->source,
+			      "any_signal", clink_view_check_update, clink,
+			      NULL);
       if (g_signal_handler_is_connected (clink->icsource, clink->ic_handler))
         gtk_signal_disconnect (GTK_OBJECT (clink->icsource), clink->ic_handler);
       gtk_object_unref (GTK_OBJECT (clink->icsource));
@@ -321,9 +321,9 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 						     "notify",
 						     G_CALLBACK (bst_canvas_link_update),
 						     GTK_OBJECT (clink));
-      g_object_connect (bse_object_from_id (clink->icsource->source),
-			"swapped_signal::notify::name", clink_view_check_update, clink,
-			NULL);
+      bsw_proxy_connect (clink->icsource->source,
+			 "swapped_signal::notify::uname", clink_view_check_update, clink,
+			 NULL);
       bst_canvas_link_update (clink);
     }
 }

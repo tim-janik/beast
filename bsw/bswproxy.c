@@ -189,24 +189,3 @@ bsw_proxy_type (BswProxy proxy)
 
   return BSE_IS_OBJECT (object) ? G_OBJECT_TYPE (object) : 0;
 }
-
-/* --- utilities --- */
-void
-bse_util_foreach_proc (gpointer           data,
-		       BswUtilForeachProc foreach)
-{
-  BseCategory *categories;
-  guint i, n_cats;
-
-  categories = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE, &n_cats);
-  for (i = 0; i < n_cats; i++)
-    {
-      BseProcedureClass *class = g_type_class_ref (categories[i].type);
-
-      if (class->n_out_pspecs > 1)
-	continue;
-      foreach (data, class);
-      g_type_class_unref (class);
-    }
-  g_free (categories);
-}

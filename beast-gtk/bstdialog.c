@@ -463,7 +463,7 @@ bst_dialog_sync_title_to_proxy (BstDialog   *dialog,
       if (p)	/* asserted above */
 	{
 	  bsw_proxy_connect (dialog->proxy,
-			     "swapped_signal::notify::name", sync_title, dialog,
+			     "swapped_signal::notify::uname", sync_title, dialog,
 			     NULL);
 	  dialog->title1 = g_strndup (title_format, p - title_format);
 	  dialog->title2 = g_strdup (p + 2);

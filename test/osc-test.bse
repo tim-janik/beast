@@ -1,58 +1,48 @@
-;BseProjectV0
+;BseProjectV1
 
 
-(BseWaveRepo::Wave-Repository
-  (modification-time "2002-05-14 20:31:40")
-  (creation-time "2002-02-02 11:09:01")
-  (name "Wave-Repository"))
-(BseSNet::Oscillator_test
-  (auto-activate 't)
-  (modification-time "2002-05-14 20:31:40")
+(bse-project-restore "BseWaveRepo::Wave-Repository"
+  (modification-time "2002-05-21 02:01:58")
+  (creation-time "2002-02-02 11:09:01"))
+(bse-project-restore "BseSNet::Oscillator_test"
+  (auto-activate #t)
+  (modification-time "2002-05-21 02:01:58")
   (creation-time "1999-12-31 03:01:29")
   (author "Tim Janik")
   (blurb "strange isn't it? ;)")
-  (name "Oscillator_test")
-  (parasite f "BstRouterCoords" 2 -176.000000 -11.000000)
-  (parasite f "BstRouterZoom" 1 1.000000)
-  (BseAdder::BseAdder-1
-    (name "BseAdder-1")
-    (source-input "audio1" BseSNet:1.BseStandardOsc:3 "audio_out")
-    (source-input "audio2" BseSNet:1.BseStandardOsc:4 "audio_out")
-    (parasite f "BstRouterCoords" 2 131.000000 50.000000))
-  (BseMult::BseMult-1
-    (name "BseMult-1")
-    (source-input "mono_in1" BseSNet:1.BseStandardOsc:1 "audio_out")
-    (source-input "mono_in2" BseSNet:1.BseStandardOsc:2 "audio_out")
-    (source-input "mono_in4" BseSNet:1.BseConstant:1 "const_out_1")
-    (parasite f "BstRouterCoords" 2 -90.000000 52.000000))
-  (BsePcmOutput::BsePcmOutput-1
-    (name "BsePcmOutput-1")
-    (source-input "left_in" BseSNet:1.BseMult:1 "mono_out")
-    (source-input "right_in" BseSNet:1.BseMult:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 -91.500000 -49.500000))
-  (BseStandardOsc::BseStandardOsc-1
+  (parasite #\f "BstRouterCoords" 2 -176.000000 -11.000000)
+  (parasite #\f "BstRouterZoom" 1 1.000000)
+  (bse-container-restore "BseAdder::BseAdder-1"
+    (source-input "audio1" (bse-upath-resolve 1 "BseStandardOsc-3") "audio_out")
+    (source-input "audio2" (bse-upath-resolve 1 "BseStandardOsc-4") "audio_out")
+    (parasite #\f "BstRouterCoords" 2 179.000000 64.000000))
+  (bse-container-restore "BseMult::BseMult-1"
+    (source-input "mono_in1" (bse-upath-resolve 1 "BseStandardOsc-1") "audio_out")
+    (source-input "mono_in2" (bse-upath-resolve 1 "BseStandardOsc-2") "audio_out")
+    (source-input "mono_in3" (bse-upath-resolve 1 "BseConstant-1") "const_out_1")
+    (parasite #\f "BstRouterCoords" 2 -33.000000 65.000000))
+  (bse-container-restore "BsePcmOutput::BsePcmOutput-1"
+    (source-input "left_in" (bse-upath-resolve 1 "BseMult-1") "mono_out")
+    (source-input "right_in" (bse-upath-resolve 1 "BseMult-1") "mono_out")
+    (parasite #\f "BstRouterCoords" 2 -32.500000 -27.500000))
+  (bse-container-restore "BseStandardOsc::BseStandardOsc-1"
     (fm-perc 18.500000)
-    (name "BseStandardOsc-1")
-    (source-input "freq_mod_in" BseSNet:1.BseAdder:1 "audio_out")
-    (parasite f "BstRouterCoords" 2 19.000000 50.500000))
-  (BseStandardOsc::BseStandardOsc-2
+    (source-input "freq_mod_in" (bse-upath-resolve 1 "BseAdder-1") "audio_out")
+    (parasite #\f "BstRouterCoords" 2 75.000000 63.500000))
+  (bse-container-restore "BseStandardOsc::BseStandardOsc-2"
     (base-freq 6.600000)
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
-    (name "BseStandardOsc-2")
-    (parasite f "BstRouterCoords" 2 131.000000 -53.500000))
-  (BseStandardOsc::BseStandardOsc-3
+    (parasite #\f "BstRouterCoords" 2 180.000000 -28.500000))
+  (bse-container-restore "BseStandardOsc::BseStandardOsc-3"
     (self-perc 10.000000)
     (base-freq 55.000000)
     (wave-form BSE_STANDARD_OSC_SINE)
-    (name "BseStandardOsc-3")
-    (parasite f "BstRouterCoords" 2 251.000000 48.500000))
-  (BseStandardOsc::BseStandardOsc-4
+    (parasite #\f "BstRouterCoords" 2 284.000000 63.500000))
+  (bse-container-restore "BseStandardOsc::BseStandardOsc-4"
     (self-perc 10.000000)
     (base-freq 0.550000)
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
-    (name "BseStandardOsc-4")
-    (parasite f "BstRouterCoords" 2 249.000000 -54.500000))
-  (BseConstant::BseConstant-1
+    (parasite #\f "BstRouterCoords" 2 283.000000 -29.500000))
+  (bse-container-restore "BseConstant::BseConstant-1"
     (value-1 0.340000)
-    (name "BseConstant-1")
-    (parasite f "BstRouterCoords" 2 18.500000 -51.000000)))
+    (parasite #\f "BstRouterCoords" 2 75.500000 -28.000000)))

@@ -202,14 +202,14 @@ bst_item_view_build_param_view (BstItemView *item_view)
 {
   BswProxy container = item_view->container;
   BswProxy item = 0;
-  BswVIter *iter;
+  BswIterProxy *iter;
   
   g_return_if_fail (item_view->param_view == NULL);
   
-  for (iter = bsw_container_list_items (container); bsw_viter_n_left (iter); bsw_viter_next (iter))
-    if (g_type_is_a (bsw_proxy_type (bsw_viter_get_proxy (iter)), item_view->item_type))
-      item = bsw_viter_get_proxy (iter);
-  bsw_viter_free (iter);
+  for (iter = bsw_container_list_items (container); bsw_iter_n_left (iter); bsw_iter_next (iter))
+    if (g_type_is_a (bsw_proxy_type (bsw_iter_get_proxy (iter)), item_view->item_type))
+      item = bsw_iter_get_proxy (iter);
+  bsw_iter_free (iter);
 
   if (BSW_IS_ITEM (item))
     {
@@ -292,7 +292,7 @@ bst_item_view_set_container (BstItemView *item_view,
 			     BswProxy     new_container)
 {
   BswProxy container;
-  BswVIter* iter;
+  BswIterProxy* iter;
   
   g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
   if (new_container)
@@ -305,13 +305,13 @@ bst_item_view_set_container (BstItemView *item_view,
       
       bst_item_view_destroy_contents (item_view);
       
-      for (iter = bsw_container_list_items (container); bsw_viter_n_left (iter); bsw_viter_next (iter))
-	if (g_type_is_a (bsw_proxy_type (bsw_viter_get_proxy (iter)), item_view->item_type))
-	  bsw_proxy_disconnect (bsw_viter_get_proxy (iter),
+      for (iter = bsw_container_list_items (container); bsw_iter_n_left (iter); bsw_iter_next (iter))
+	if (g_type_is_a (bsw_proxy_type (bsw_iter_get_proxy (iter)), item_view->item_type))
+	  bsw_proxy_disconnect (bsw_iter_get_proxy (iter),
 				"any_signal", bst_item_view_item_changed, item_view,
 				"any_signal", bst_item_view_item_param_changed, item_view,
 				NULL);
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
 
       g_object_disconnect (bse_object_from_id (container),
 			   "any_signal", bst_item_view_item_removed, item_view,
@@ -334,13 +334,13 @@ bst_item_view_set_container (BstItemView *item_view,
 			"swapped_signal::item_added", bst_item_view_item_added, item_view,
 			"swapped_signal::item_removed", bst_item_view_item_removed, item_view,
 			NULL);
-      for (iter = bsw_container_list_items (container); bsw_viter_n_left (iter); bsw_viter_next (iter))
-	if (g_type_is_a (bsw_proxy_type (bsw_viter_get_proxy (iter)), item_view->item_type))
-	  bsw_proxy_connect (bsw_viter_get_proxy (iter),
+      for (iter = bsw_container_list_items (container); bsw_iter_n_left (iter); bsw_iter_next (iter))
+	if (g_type_is_a (bsw_proxy_type (bsw_iter_get_proxy (iter)), item_view->item_type))
+	  bsw_proxy_connect (bsw_iter_get_proxy (iter),
 			     "swapped_signal::seqid_changed", bst_item_view_item_changed, item_view,
 			     "swapped_signal::notify", bst_item_view_item_param_changed, item_view,
 			     NULL);
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
 
       bst_item_view_rebuild (item_view);
     }
@@ -484,7 +484,7 @@ bst_item_view_update (BstItemView *item_view)
 {
   BswProxy container;
   GtkCList *clist;
-  BswVIter *iter;
+  BswIterProxy *iter;
 
   g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
   
@@ -494,9 +494,9 @@ bst_item_view_update (BstItemView *item_view)
   gtk_clist_freeze (clist);
   gtk_clist_clear (clist);
   
-  for (iter = bsw_container_list_items (container); bsw_viter_n_left (iter); bsw_viter_next (iter))
+  for (iter = bsw_container_list_items (container); bsw_iter_n_left (iter); bsw_iter_next (iter))
     {
-      BswProxy item = bsw_viter_get_proxy (iter);
+      BswProxy item = bsw_iter_get_proxy (iter);
 
       if (g_type_is_a (bsw_proxy_type (item), item_view->item_type))
 	{
@@ -508,7 +508,7 @@ bst_item_view_update (BstItemView *item_view)
 	  bst_item_view_item_changed (item_view, item);
 	}
     }
-  bsw_viter_free (iter);
+  bsw_iter_free (iter);
   
   gtk_clist_thaw (clist);
   

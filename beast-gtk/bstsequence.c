@@ -125,7 +125,7 @@ bst_sequence_init (BstSequence *seq)
 		    NULL);
 
   seq->n_rows = 13;
-  seq->sd = bse_sequence_new (1, BSE_KAMMER_NOTE);
+  seq->sdata = bsw_note_sequence_new (1);
 }
 
 static void
@@ -133,23 +133,23 @@ bst_sequence_finalize (GObject *object)
 {
   BstSequence *seq = BST_SEQUENCE (object);
 
-  bse_sequence_free (seq->sd);
+  bsw_note_sequence_free (seq->sdata);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 void
-bst_sequence_set_seq (BstSequence *seq,
-		      BseSequence *seq_data)
+bst_sequence_set_seq (BstSequence     *seq,
+		      BswNoteSequence *sdata)
 {
   g_return_if_fail (BST_IS_SEQUENCE (seq));
 
-  bse_sequence_free (seq->sd);
-  if (seq_data)
-    seq->sd = bse_sequence_copy (seq_data);
+  bsw_note_sequence_free (seq->sdata);
+  if (sdata)
+    seq->sdata = bsw_note_sequence_copy (sdata);
   else
-    seq->sd = bse_sequence_new (1, BSE_KAMMER_NOTE);
+    seq->sdata = bsw_note_sequence_new (1);
   gtk_widget_queue_draw (seq->darea);
 }
 
@@ -188,7 +188,7 @@ darea_expose_event (BstSequence    *seq,
 		    GdkEventExpose *event)
 {
   GtkWidget *widget = seq->darea;
-  BseSequence *sdata = seq->sd;
+  BswNoteSequence *sdata = seq->sdata;
   GdkDrawable *drawable = widget->window;
   GdkGC *fg_gc = widget->style->black_gc;
   GdkGC *bg_gc = widget->style->base_gc[GTK_WIDGET_STATE (widget)];
@@ -235,7 +235,7 @@ darea_button_event (BstSequence    *seq,
 		    GdkEventButton *event)
 {	
   GtkWidget *widget = seq->darea;
-  BseSequence *sdata = seq->sd;
+  BswNoteSequence *sdata = seq->sdata;
   gboolean changed = FALSE;
 
   if (event->type == GDK_BUTTON_PRESS)
@@ -285,7 +285,7 @@ darea_motion_event (BstSequence    *seq,
 		    GdkEventMotion *event)
 {
   GtkWidget *widget = seq->darea;
-  BseSequence *sdata = seq->sd;
+  BswNoteSequence *sdata = seq->sdata;
   gboolean changed = FALSE;
 
   if (event->type == GDK_MOTION_NOTIFY && !event->is_hint)

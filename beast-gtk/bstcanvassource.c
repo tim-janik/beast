@@ -69,6 +69,7 @@ static gboolean bst_canvas_source_child_event	(BstCanvasSource	*csource,
 static void     bst_canvas_source_changed       (BstCanvasSource        *csource);
 static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
 						 BswIcon         	*icon);
+static void	csource_info_update		(BstCanvasSource	*csource);
 
 
 /* --- static variables --- */
@@ -168,7 +169,10 @@ source_name_changed (BstCanvasSource *csource)
     g_object_set (csource->text, "text", name, NULL);
 
   if (csource->source_view)
-    bst_dialog_set_title (BST_DIALOG (csource->source_view), name);
+    {
+      bst_dialog_set_title (BST_DIALOG (csource->source_view), name);
+      csource_info_update (csource);
+    }
 
   name = g_strconcat ("Info: ", name, NULL);
   if (csource->source_info)
@@ -198,12 +202,13 @@ bst_canvas_source_destroy (GtkObject *object)
 
   if (csource->source)
     {
-      g_object_disconnect (bse_object_from_id (csource->source),
-			   "any_signal", gtk_object_destroy, csource,
-			   "any_signal", source_channels_changed, csource,
-			   "any_signal", source_name_changed, csource,
-			   "any_signal", source_icon_changed, csource,
-			   NULL);
+      bsw_proxy_disconnect (csource->source,
+			    "any_signal", gtk_object_destroy, csource,
+			    "any_signal", source_channels_changed, csource,
+			    "any_signal", source_name_changed, csource,
+			    "any_signal", source_icon_changed, csource,
+			    NULL);
+      bsw_item_unuse (csource->source);
       csource->source = 0;
     }
 
@@ -261,19 +266,19 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
   GnomeCanvasItem *item;
   
   g_return_val_if_fail (GNOME_IS_CANVAS_GROUP (group), NULL);
-  g_return_val_if_fail (BSE_IS_SOURCE (bse_object_from_id (source)), NULL);
+  g_return_val_if_fail (BSW_IS_SOURCE (source), NULL);
 
   item = gnome_canvas_item_new (group,
 				BST_TYPE_CANVAS_SOURCE,
 				NULL);
   csource = BST_CANVAS_SOURCE (item);
-  csource->source = source;
-  g_object_connect (bse_object_from_id (csource->source),
-		    "swapped_signal::destroy", gtk_object_destroy, csource,
-		    "swapped_signal::io_changed", source_channels_changed, csource,
-		    "swapped_signal::notify::name", source_name_changed, csource,
-		    "swapped_signal::icon-changed", source_icon_changed, csource,
-		    NULL);
+  csource->source = bsw_item_use (source);
+  bsw_proxy_connect (csource->source,
+		     "swapped_signal::set_parent", gtk_object_destroy, csource,
+		     "swapped_signal::io_changed", source_channels_changed, csource,
+		     "swapped_signal::notify::uname", source_name_changed, csource,
+		     "swapped_signal::icon-changed", source_icon_changed, csource,
+		     NULL);
 
   if (bse_object_get_parasite_coords (bse_object_from_id (csource->source), &world_x, &world_y))
     {

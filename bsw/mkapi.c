@@ -213,10 +213,10 @@ init_marshal_types (void)
   add (G_TYPE_DOUBLE,    "gdouble  ",	"bsw_value_initset_double",	"g_value_get_double", 0);
   add (G_TYPE_STRING,    "gchar*",	"bsw_value_initset_string",	"bsw_collector_get_string", "const gchar*");
   add (G_TYPE_OBJECT,    "BswProxy ",	"bsw_value_initset_proxy",	"bsw_value_get_proxy", 0);
-  add (BSW_TYPE_VITER_INT,        "BswVIterInt*",        "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
-  add (BSW_TYPE_VITER_STRING,     "BswVIterString*",     "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
-  add (BSW_TYPE_VITER_BOXED,      "BswVIterBoxed*",      "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
-  add (BSW_TYPE_VITER_PROXY,      "BswVIterProxy*",      "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
+  add (BSW_TYPE_ITER_INT,         "BswIterInt*",         "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
+  add (BSW_TYPE_ITER_STRING,      "BswIterString*",      "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
+  add (BSW_TYPE_ITER_PROXY,       "BswIterProxy*",       "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
+  add (BSW_TYPE_ITER_PART_NOTE,   "BswIterPartNote*",    "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
   add (BSW_TYPE_VALUE_BLOCK,      "BswValueBlock*",      "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
   add (BSW_TYPE_NOTE_DESCRIPTION, "BswNoteDescription*", "bsw_value_initset_boxed", "g_value_dup_boxed", 0);
 #undef add

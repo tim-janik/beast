@@ -1,91 +1,80 @@
-;BseProjectV0
+;BseProjectV1
 
 
-(BseWaveRepo::Wave-Repository
-  (modification-time "2002-05-14 20:14:20")
+(bse-project-restore "BseWaveRepo::Wave-Repository"
+  (modification-time "2002-05-21 02:05:32")
   (creation-time "2002-02-06 14:05:19"))
-(BseSNet::Simple-Loop
-  (auto-activate 't)
-  (modification-time "2002-05-14 20:14:20")
+(bse-project-restore "BseSNet::Simple-Loop"
+  (auto-activate #t)
+  (modification-time "2002-05-21 02:05:32")
   (creation-time "2002-02-06 14:05:24")
-  (name "Simple-Loop")
-  (parasite f "BstRouterZoom" 1 1.000000)
-  (BsePcmOutput::PcmOutput
-    (name "PcmOutput")
-    (source-input "left_in" BseSNet:1.BseFreeVerb:1 "left_out")
-    (source-input "right_in" BseSNet:1.BseFreeVerb:1 "right_out")
-    (parasite f "BstRouterCoords" 2 -6.000000 -55.000000))
-  (BseSequencer::Sequencer
+  (parasite #\f "BstRouterZoom" 1 1.000000)
+  (bse-container-restore "BsePcmOutput::PcmOutput"
+    (source-input "left_in" (bse-upath-resolve 1 "FreeVerb") "left_out")
+    (source-input "right_in" (bse-upath-resolve 1 "FreeVerb") "right_out")
+    (parasite #\f "BstRouterCoords" 2 -6.000000 -55.000000))
+  (bse-container-restore "BseSequencer::Sequencer"
     (counter 156.844803)
     (transpose -24)
-    (notes 16
-      (a+1) (a+1) (a+2) (a+2)
-      (a+1) (a+1) (d+2) (a+1)
-      (d+2) (a+1) (e+2) (a+1)
-      (e+2) (a+1) (a+2) (g+2))
-    (name "Sequencer")
-    (parasite f "BstRouterCoords" 2 474.000000 22.000000))
-  (BseSimpleADSR::OrganADSR
+    (notes '(
+      "a+1" "a+1" "a+2" "a+2"
+      "a+1" "a+1" "d+2" "a+1"
+      "d+2" "a+1" "e+2" "a+1"
+      "e+2" "a+1" "a+2" "g+2"))
+    (parasite #\f "BstRouterCoords" 2 474.000000 22.000000))
+  (bse-container-restore "BseSimpleADSR::OrganADSR"
     (release-time 57.051289)
     (sustain-level 45.285709)
     (decay-time 14.599999)
     (attack-time 1.200000)
-    (name "OrganADSR")
-    (source-input "retrigger_in" BseSNet:1.BseSequencer:1 "note_sync")
-    (parasite f "BstRouterCoords" 2 351.000000 116.000000))
-  (BseMult::OrganVCF
-    (name "OrganVCF")
-    (source-input "mono_in1" BseSNet:1.DavOrgan:1 "organ_out")
-    (source-input "mono_in2" BseSNet:1.BseSimpleADSR:1 "adsr_out")
-    (parasite f "BstRouterCoords" 2 349.000000 205.000000))
-  (BseNoise::DrumNoise
-    (name "DrumNoise")
-    (parasite f "BstRouterCoords" 2 473.500000 -162.500000))
-  (BseSimpleADSR::DrumTrigger
+    (source-input "retrigger_in" (bse-upath-resolve 1 "Sequencer") "note_sync")
+    (parasite #\f "BstRouterCoords" 2 351.000000 116.000000))
+  (bse-container-restore "BseMult::OrganVCF"
+    (source-input "mono_in1" (bse-upath-resolve 1 "Organ") "organ_out")
+    (source-input "mono_in2" (bse-upath-resolve 1 "OrganADSR") "adsr_out")
+    (parasite #\f "BstRouterCoords" 2 349.000000 205.000000))
+  (bse-container-restore "BseNoise::DrumNoise"
+    (parasite #\f "BstRouterCoords" 2 473.500000 -162.500000))
+  (bse-container-restore "BseSimpleADSR::DrumTrigger"
     (release-time 3.868130)
     (sustain-level 33.599998)
     (decay-time 2.000000)
     (attack-time 0.100000)
-    (name "DrumTrigger")
-    (source-input "retrigger_in" BseSNet:1.BseSequencer:1 "note_sync")
-    (parasite f "BstRouterCoords" 2 355.500000 -70.500000))
-  (BseMult::DrumSwitch
-    (name "DrumSwitch")
-    (source-input "mono_in2" BseSNet:1.BseSimpleADSR:2 "adsr_out")
-    (source-input "mono_in3" BseSNet:1.BseAdder:3 "audio_out")
-    (parasite f "BstRouterCoords" 2 238.500000 -169.500000))
-  (BseFreeVerb::FreeVerb
+    (source-input "retrigger_in" (bse-upath-resolve 1 "Sequencer") "note_sync")
+    (parasite #\f "BstRouterCoords" 2 355.500000 -70.500000))
+  (bse-container-restore "BseMult::DrumSwitch"
+    (source-input "mono_in1" (bse-upath-resolve 1 "DrumTrigger") "adsr_out")
+    (source-input "mono_in2" (bse-upath-resolve 1 "DrumAdder") "audio_out")
+    (parasite #\f "BstRouterCoords" 2 238.500000 -169.500000))
+  (bse-container-restore "BseFreeVerb::FreeVerb"
     (width 46.153851)
     (dry-level 0.825170)
     (wet-level 1.090910)
     (damping 93.706291)
     (room-size 0.799860)
-    (name "FreeVerb")
-    (source-input "left_in" BseSNet:1.BseAmplifier:1 "audio_out")
-    (source-input "right_in" BseSNet:1.BseAmplifier:1 "audio_out")
-    (parasite f "BstRouterCoords" 2 -9.500000 44.500000))
-  (BseBiquadFilter::BiquadFilter
+    (source-input "left_in" (bse-upath-resolve 1 "Amplifier") "audio_out")
+    (source-input "right_in" (bse-upath-resolve 1 "Amplifier") "audio_out")
+    (parasite #\f "BstRouterCoords" 2 -9.500000 44.500000))
+  (bse-container-restore "BseBiquadFilter::BiquadFilter"
     (gain-perc 96.226418)
-    (exponential-fm 't)
+    (exponential-fm #t)
     (fm-perc 79.166672)
     (gain 12.000000)
     (freq 1660.063110)
-    (name "BiquadFilter")
-    (source-input "audio_input" BseSNet:1.BseAdder:1 "audio_out")
-    (source-input "freq_mod_input" BseSNet:1.BseAdder:2 "audio_out")
-    (parasite f "BstRouterCoords" 2 124.000000 114.000000))
-  (DavXtalStrings::Strings
+    (source-input "audio_input" (bse-upath-resolve 1 "BseAdder-1") "audio_out")
+    (source-input "freq_mod_input" (bse-upath-resolve 1 "FilterSum") "audio_out")
+    (parasite #\f "BstRouterCoords" 2 124.000000 114.000000))
+  (bse-container-restore "DavXtalStrings::Strings"
     (snap-factor 0.000000)
     (metallic-factor 38.216560)
     (tension-decay 0.134200)
     (note-decay 0.438390)
     (base-freq 499.097504)
-    (name "Strings")
-    (source-input "freq_input" BseSNet:1.BseSequencer:1 "freq_out")
-    (source-input "trigger_input" BseSNet:1.BseSequencer:1 "note_sync")
-    (parasite f "BstRouterCoords" 2 471.000000 115.000000))
-  (DavOrgan::Organ
-    (brass 't)
+    (source-input "freq_input" (bse-upath-resolve 1 "Sequencer") "freq_out")
+    (source-input "trigger_input" (bse-upath-resolve 1 "Sequencer") "note_sync")
+    (parasite #\f "BstRouterCoords" 2 471.000000 115.000000))
+  (bse-container-restore "DavOrgan::Organ"
+    (brass #t)
     (harm5 100.000000)
     (harm4 97.802200)
     (harm3 89.010986)
@@ -93,59 +82,49 @@
     (harm1 43.956039)
     (harm0 25.274731)
     (base-freq 368.167084)
-    (name "Organ")
-    (source-input "freq_in" BseSNet:1.BseSequencer:1 "freq_out")
-    (parasite f "BstRouterCoords" 2 468.500000 203.500000))
-  (BseAdder::BseAdder-1
-    (name "BseAdder-1")
-    (source-input "audio1" BseSNet:1.DavXtalStrings:1 "audio_out")
-    (source-input "audio2" BseSNet:1.BseBiquadFilter:2 "audio_output")
-    (source-input "audio2" BseSNet:1.BseMult:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 124.500000 15.500000))
-  (BseSimpleADSR::FilterADSR
+    (source-input "freq_in" (bse-upath-resolve 1 "Sequencer") "freq_out")
+    (parasite #\f "BstRouterCoords" 2 468.500000 203.500000))
+  (bse-container-restore "BseAdder::BseAdder-1"
+    (source-input "audio1" (bse-upath-resolve 1 "Strings") "audio_out")
+    (source-input "audio1" (bse-upath-resolve 1 "OrganVCF") "mono_out")
+    (source-input "audio2" (bse-upath-resolve 1 "DrumFilter") "audio_output")
+    (parasite #\f "BstRouterCoords" 2 124.500000 15.500000))
+  (bse-container-restore "BseSimpleADSR::FilterADSR"
     (release-time 14.000000)
     (sustain-level 27.000002)
     (decay-time 4.400010)
     (attack-time 14.200001)
-    (name "FilterADSR")
-    (source-input "retrigger_in" BseSNet:1.BseSequencer:1 "note_sync")
-    (parasite f "BstRouterCoords" 2 235.500000 17.500000))
-  (BseBiquadFilter::DrumFilter
+    (source-input "retrigger_in" (bse-upath-resolve 1 "Sequencer") "note_sync")
+    (parasite #\f "BstRouterCoords" 2 235.500000 17.500000))
+  (bse-container-restore "BseBiquadFilter::DrumFilter"
     (gain-perc 25.000000)
     (fm-perc 25.000000)
     (gain 12.000000)
     (freq 244.685822)
-    (name "DrumFilter")
-    (source-input "audio_input" BseSNet:1.BseAtanDistort:1 "audio_out")
-    (parasite f "BstRouterCoords" 2 131.500000 -138.500000))
-  (BseStandardOsc::FilterLFO
+    (source-input "audio_input" (bse-upath-resolve 1 "DrumDistort") "audio_out")
+    (parasite #\f "BstRouterCoords" 2 131.500000 -138.500000))
+  (bse-container-restore "BseStandardOsc::FilterLFO"
     (base-freq 0.200000)
     (wave-form BSE_STANDARD_OSC_SINE)
-    (name "FilterLFO")
-    (parasite f "BstRouterCoords" 2 236.500000 210.500000))
-  (BseAdder::FilterSum
-    (name "FilterSum")
-    (source-input "audio1" BseSNet:1.BseStandardOsc:1 "audio_out")
-    (source-input "audio2" BseSNet:1.BseSimpleADSR:3 "adsr_out")
-    (parasite f "BstRouterCoords" 2 124.500000 207.500000))
-  (BseStandardOsc::DrumSine
+    (parasite #\f "BstRouterCoords" 2 236.500000 210.500000))
+  (bse-container-restore "BseAdder::FilterSum"
+    (source-input "audio1" (bse-upath-resolve 1 "FilterLFO") "audio_out")
+    (source-input "audio2" (bse-upath-resolve 1 "FilterADSR") "adsr_out")
+    (parasite #\f "BstRouterCoords" 2 124.500000 207.500000))
+  (bse-container-restore "BseStandardOsc::DrumSine"
     (base-freq 65.000000)
     (phase 90.000000)
     (wave-form BSE_STANDARD_OSC_SINE)
-    (name "DrumSine")
-    (source-input "sync_in" BseSNet:1.BseSequencer:1 "note_sync")
-    (parasite f "BstRouterCoords" 2 473.500000 -68.500000))
-  (BseAdder::DrumAdder
-    (name "DrumAdder")
-    (source-input "audio1" BseSNet:1.BseStandardOsc:2 "audio_out")
-    (source-input "audio2" BseSNet:1.BseNoise:1 "noise_out")
-    (parasite f "BstRouterCoords" 2 362.500000 -167.500000))
-  (BseAmplifier::Amplifier
-    (name "Amplifier")
-    (source-input "audio1" BseSNet:1.BseBiquadFilter:1 "audio_output")
-    (parasite f "BstRouterCoords" 2 -10.500000 152.500000))
-  (BseAtanDistort::DrumDistort
+    (source-input "sync_in" (bse-upath-resolve 1 "Sequencer") "note_sync")
+    (parasite #\f "BstRouterCoords" 2 473.500000 -68.500000))
+  (bse-container-restore "BseAdder::DrumAdder"
+    (source-input "audio1" (bse-upath-resolve 1 "DrumSine") "audio_out")
+    (source-input "audio2" (bse-upath-resolve 1 "DrumNoise") "noise_out")
+    (parasite #\f "BstRouterCoords" 2 362.500000 -167.500000))
+  (bse-container-restore "BseAmplifier::Amplifier"
+    (source-input "audio1" (bse-upath-resolve 1 "BiquadFilter") "audio_output")
+    (parasite #\f "BstRouterCoords" 2 -10.500000 152.500000))
+  (bse-container-restore "BseAtanDistort::DrumDistort"
     (boost-amount 100.000000)
-    (name "DrumDistort")
-    (source-input "audio_in" BseSNet:1.BseMult:2 "mono_out")
-    (parasite f "BstRouterCoords" 2 230.500000 -77.000000)))
+    (source-input "audio_in" (bse-upath-resolve 1 "DrumSwitch") "mono_out")
+    (parasite #\f "BstRouterCoords" 2 230.500000 -77.000000)))

@@ -131,8 +131,10 @@ main (int   argc,
       if (error != BSE_ERROR_FILE_NOT_FOUND)
 	{
 	  bse_gconfig_apply (gconf);
+#if 0
 	  if (error)
-	    g_warning ("error parsing rc-file \"%s\": %s", file_name, bse_error_blurb (error));
+	    g_printerr ("BEAST: error parsing rc-file \"%s\": %s\n", file_name, bse_error_blurb (error));
+#endif
 	}
       bse_object_unref (BSE_OBJECT (gconf));
       g_free (file_name);

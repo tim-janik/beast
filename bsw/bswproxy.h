@@ -55,12 +55,6 @@ GParamSpec*	bsw_proxy_get_pspec		(BswProxy		 proxy,
 GType		bsw_proxy_type			(BswProxy		 proxy);
 
 
-/* --- utilities --- */
-typedef gboolean (*BswUtilForeachProc)	(gpointer	    data,
-					 GTypeClass        *klass);
-void	bse_util_foreach_proc		(gpointer	    data,
-					 BswUtilForeachProc foreach);
-
 
 /* --- garbage collection --- */
 gchar*		bsw_collector_get_string	(GValue			*value);

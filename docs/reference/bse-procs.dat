@@ -2,14 +2,14 @@
 name    = BSE-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1
-date    = 17 May 2002
+date    = 21 May 2002
 image   = bse-procedures
 
 @DOC-TITLE@
 BSE-Procedures
 
 @DOC-HEAD@
-BSE-Procedures 17 May 2002 BEAST-0.4.1
+BSE-Procedures 21 May 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSE-Procedures - BSE Procedure Reference
@@ -841,7 +841,7 @@ type-name:
 @DOC-DESCRIPTION@
 Retrieve an item's type name.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-uloc-path@ (@EMPH item@);
+@STRONG BseItem::get-uname-path@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -861,7 +861,7 @@ retspace = 11
 uloc-path: 
 
 @DOC-DESCRIPTION@
-Retrieve the uloc path for this item.  
+Retrieve the project relative uname path for this item.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::unuse@ (@EMPH item@);
 
@@ -886,7 +886,7 @@ Decrement use count for when an item is not needed anymore.
 @STRONG BseItem::use@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 7
+parspace = 11
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -897,8 +897,10 @@ item
 
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 7
+retspace = 11
 
+@DOC-RETURNS@
+used-item: 
 
 @DOC-DESCRIPTION@
 Increment use count to keep an item alive.  
@@ -1611,10 +1613,10 @@ wrepo:
 @DOC-DESCRIPTION@
 Ensure the project has a wave repository  
 @DOC-SYNOPSIS@
-@STRONG BseProject::find-item@ (@EMPH project@, @EMPH uloc-path@);
+@STRONG BseProject::find-item@ (@EMPH project@, @EMPH uname-path@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 12
+parspace = 13
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1628,18 +1630,18 @@ project
 type = 
 typeraw = 
 @DOC-PARAMETER@
-uloc-path
+uname-path
 @DOC-PARDESC@
 
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 12
+retspace = 13
 
 @DOC-RETURNS@
 item: 
 
 @DOC-DESCRIPTION@
-Find an item within a project, given its uloc path.  
+Find an item within a project, given its uname path.  
 @DOC-SYNOPSIS@
 @STRONG BseProject::get-data-pocket@ (@EMPH project@, @EMPH name@);
 
@@ -1693,7 +1695,37 @@ is-playing:
 @DOC-DESCRIPTION@
 Check whether a project is currently playing  
 @DOC-SYNOPSIS@
-@STRONG BseProject::list-items-by-uloc@ (@EMPH project@, @EMPH item-type@, @EMPH uloc@);
+@STRONG BseProject::list-uname-paths@ (@EMPH project@, @EMPH item-type@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item-type
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+uname-paths: 
+
+@DOC-DESCRIPTION@
+List uname paths for all items of a specified type within this project. By their uname paths, items are uniquely identifyable within a project.  
+@DOC-SYNOPSIS@
+@STRONG BseProject::match-items-by-uname@ (@EMPH project@, @EMPH item-type@, @EMPH uname@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -1718,7 +1750,7 @@ item-type
 type = 
 typeraw = 
 @DOC-PARAMETER@
-uloc
+uname
 @DOC-PARDESC@
 
 
@@ -1729,37 +1761,7 @@ retspace = 12
 item-list: 
 
 @DOC-DESCRIPTION@
-Retrive all items of a specific type within a project with matching uloc  
-@DOC-SYNOPSIS@
-@STRONG BseProject::list-uloc-paths@ (@EMPH project@, @EMPH item-type@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 12
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-project
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-item-type
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 12
-
-@DOC-RETURNS@
-uloc-paths: 
-
-@DOC-DESCRIPTION@
-List uloc paths for all items of a specified type within this project. By their uloc paths, items are uniquely identifyable within a project.  
+Retrive all items of a specific type within a project with matching uname  
 @DOC-SYNOPSIS@
 @STRONG BseSNet::can_create_source@ (@EMPH snet@, @EMPH source-type@);
 
@@ -2133,7 +2135,7 @@ retspace = 11
 project: 
 
 @DOC-DESCRIPTION@
-Create a new project, owned by the caller  
+Create a new project, owned by the caller (name is modified to be unique if necessary)  
 @DOC-SYNOPSIS@
 @STRONG BseSong::create-instrument@ (@EMPH song@);
 

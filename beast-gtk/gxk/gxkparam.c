@@ -91,17 +91,9 @@ static void
 bst_param_entry_activate (GtkWidget *widget,
 			  BstParam  *bparam)
 {
-  static gboolean block_me = FALSE;
-  GtkEntry *entry;
+  GtkEntry *entry = GTK_ENTRY (widget);
 
-  entry = GTK_ENTRY (widget);
   bst_param_gtk_changed (bparam);
-  if (!block_me)
-    {
-      block_me = TRUE;
-      gtk_toplevel_activate_default (widget);
-      block_me = FALSE;
-    }
 }
 
 static gboolean
@@ -146,8 +138,8 @@ bst_entry_key_press (GtkEntry	 *entry,
 }
 
 static inline gchar*
-str_diff (gchar *s,
-	  gchar *m)
+str_diff (gchar       *s,
+	  const gchar *m)
 {
   while (*s && *m)
     {
@@ -173,24 +165,24 @@ bst_param_update_clue_hunter (BstParam *bparam)
       g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_ITEM))
     {
       BseItem *item = BSE_ITEM (bparam->owner);
-      BseProject *project = bse_item_get_project (item);
+      BswProxy project = bsw_item_get_project (BSE_OBJECT_ID (item));
       gchar *p, *prefix = NULL;
       guint l;
-      BswVIter *iter;
+      BswIterString *iter;
       
       gtk_clue_hunter_remove_matches (ch, "*");
 
-      iter = bsw_project_list_uloc_paths (BSE_OBJECT_ID (project), G_PARAM_SPEC_VALUE_TYPE (pspec));
-      if (bsw_viter_n_left (iter) > 1)
+      iter = bsw_project_list_uname_paths (project, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      if (bsw_iter_n_left (iter) > 1)
 	{
-	  prefix = g_strdup (bsw_viter_get_string (iter));
+	  prefix = g_strdup (bsw_iter_get_string (iter));
 
-	  for (bsw_viter_next (iter); bsw_viter_n_left (iter); bsw_viter_next (iter))
+	  for (bsw_iter_next (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
 	    {
-	      p = str_diff (prefix, bsw_viter_get_string (iter));
+	      p = str_diff (prefix, bsw_iter_get_string (iter));
 	      *p = 0;
 	    }
-	  p = strrchr (prefix, '.');
+	  p = strrchr (prefix, ':');
 	  if (p)
 	    *(++p) = 0;
 	  else
@@ -201,12 +193,12 @@ bst_param_update_clue_hunter (BstParam *bparam)
 	}
       l = prefix ? strlen (prefix) : 0;
 
-      for (bsw_viter_rewind (iter); bsw_viter_n_left (iter); bsw_viter_next (iter))
-	gtk_clue_hunter_add_string (ch, bsw_viter_get_string (iter) + l);
-      for (bsw_viter_rewind (iter); bsw_viter_n_left (iter); bsw_viter_next (iter))
-	g_print (" %s %s\n", prefix, bsw_viter_get_string (iter) + l);
+      for (bsw_iter_rewind (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
+	gtk_clue_hunter_add_string (ch, bsw_iter_get_string (iter) + l);
+      for (bsw_iter_rewind (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
+	g_print (" %s %s\n", prefix, bsw_iter_get_string (iter) + l);
       g_object_set_data_full (G_OBJECT (ch), "prefix", prefix, g_free);
-      bsw_viter_free (iter);
+      bsw_iter_free (iter);
     }
 }
 
@@ -612,7 +604,7 @@ bst_param_create (gpointer	owner,
       g_object_set (action,
 		    "visible", TRUE,
 		    "width_request", width,
-		    "activates_default", FALSE,
+		    "activates_default", TRUE,
 		    NULL);
       g_object_connect (action,
 			"signal::key_press_event", bst_entry_key_press, bparam,
@@ -711,7 +703,7 @@ bst_param_create (gpointer	owner,
     case G_TYPE_STRING:
       action = g_object_connect (gtk_widget_new (GTK_TYPE_ENTRY,
 						 "visible", TRUE,
-						 "activates_default", FALSE,
+						 "activates_default", TRUE,
 						 NULL),
 				 "signal::key_press_event", bst_entry_key_press, bparam,
 				 "signal::activate", bst_param_entry_activate, bparam,
@@ -805,7 +797,7 @@ bst_param_create (gpointer	owner,
       action = g_object_connect (gtk_widget_new (GTK_TYPE_ENTRY,
 						 "visible", TRUE,
 						 "width_request", 160 * 2,
-						 "activates_default", FALSE,
+						 "activates_default", TRUE,
 						 NULL),
 				 "signal::key_press_event", bst_entry_key_press, bparam,
 				 "signal::activate", bst_param_entry_activate, bparam,
@@ -838,7 +830,7 @@ bst_param_create (gpointer	owner,
       bst_gmask_pack (group);
       break;
     case G_TYPE_BOXED:
-      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SEQUENCE))
+      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSW_TYPE_NOTE_SEQUENCE))
 	{
 	  prompt = gtk_widget_new (GTK_TYPE_LABEL,
 				   "visible", TRUE,
@@ -959,7 +951,7 @@ bst_param_update (BstParam *bparam)
     case G_TYPE_OBJECT:
       action = bst_gmask_get_action (group);
       string = (BSE_IS_ITEM (g_value_get_object (value))
-		? bsw_item_get_uloc_path (BSE_OBJECT_ID (g_value_get_object (value)))
+		? bsw_item_get_uname_path (BSE_OBJECT_ID (g_value_get_object (value)))
 		: NULL);
       if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
@@ -990,7 +982,7 @@ bst_param_update (BstParam *bparam)
 	}
       break;
     case G_TYPE_BOXED:
-      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SEQUENCE))
+      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSW_TYPE_NOTE_SEQUENCE))
 	{
 	  action = bst_gmask_get_action (group);
 	  bst_sequence_set_seq (BST_SEQUENCE (action),
@@ -1117,27 +1109,32 @@ bst_param_apply (BstParam *bparam,
       if (string && bparam->is_object && BSE_IS_ITEM (bparam->owner))
 	{
 	  BswProxy item = 0, project = bsw_item_get_project (BSE_OBJECT_ID (bparam->owner));
+
+	  g_printerr ("checking: %s\n", string);
 	  
-	  /* check whether this is an uloc path */
-	  if (!item && strchr (string, '.'))
+	  /* check whether this is an uname path */
+	  if (!item && strchr (string, ':'))
 	    {
 	      item = bsw_project_find_item (project, string);
+
+	      g_printerr ("porject-find-item: %lu\n", item);
 	      
 	      if (item && !g_type_is_a (bsw_proxy_type (item), G_PARAM_SPEC_VALUE_TYPE (pspec)))
 		item = 0;
 	    }
-	  else if (!item) /* try generic lookup for uloc (ambiguous lookup) */
+	  else if (!item) /* try generic lookup for uname (ambiguous lookup) */
 	    {
-	      BswVIter *iter = bsw_project_list_items_by_uloc (project,
-							       G_PARAM_SPEC_VALUE_TYPE (pspec),
-							       string);
-	      for (bsw_viter_rewind (iter); bsw_viter_n_left (iter); bsw_viter_next (iter))
-		if (bsw_item_get_project (bsw_viter_get_proxy (iter)) == project)
+	      BswIterProxy *iter = bsw_project_match_items_by_uname (project,
+								     G_PARAM_SPEC_VALUE_TYPE (pspec),
+								     string);
+	      g_printerr ("matching uname: n=%u\n", bsw_iter_n_left (iter));
+	      for (bsw_iter_rewind (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
+		if (bsw_item_get_project (bsw_iter_get_proxy (iter)) == project)
 		  {
-		    item = bsw_viter_get_proxy (iter);
+		    item = bsw_iter_get_proxy (iter);
 		    break;
 		  }
-	      bsw_viter_free (iter);
+	      bsw_iter_free (iter);
 	    }
 
 	  /* ok, found one or giving up */
@@ -1161,10 +1158,10 @@ bst_param_apply (BstParam *bparam,
 	}
       break;
     case G_TYPE_BOXED:
-      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SEQUENCE))
+      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSW_TYPE_NOTE_SEQUENCE))
 	{
 	  action = bst_gmask_get_action (group);
-	  g_value_set_boxed (value, BST_SEQUENCE (action)->sd);
+	  g_value_set_boxed (value, BST_SEQUENCE (action)->sdata);
 	  break;
 	}
       /* fall through */

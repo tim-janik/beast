@@ -207,7 +207,7 @@ bst_super_shell_setup_super (BstSuperShell *super_shell,
 			     BswProxy       super)
 {
   bse_object_set_qdata (bse_object_from_id (super), quark_super_shell, super_shell);
-  super_shell->name_set_id = g_signal_connect_data (bse_object_from_id (super), "notify::name",
+  super_shell->name_set_id = g_signal_connect_data (bse_object_from_id (super), "notify::uname",
 						    G_CALLBACK (bst_super_shell_name_set), super_shell, NULL,
 						    G_CONNECT_SWAPPED);
   BST_SUPER_SHELL_GET_CLASS (super_shell)->rebuild (super_shell);

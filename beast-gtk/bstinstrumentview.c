@@ -124,7 +124,7 @@ bst_instrument_view_operate (BstItemView *item_view,
     case BST_OP_INSTRUMENT_ADD:
       item = bsw_song_create_instrument (song);
       string = g_strdup_printf ("Instrument-%02X", bsw_item_get_seqid (item));
-      bsw_proxy_set (item, "name", string, NULL);
+      bsw_proxy_set (item, "uname", string, NULL);
       g_free (string);
       bst_item_view_select (item_view, item);
       break;

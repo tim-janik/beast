@@ -913,7 +913,7 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
   GdkWindow *window = self->canvas;
   GdkGC *light_gc, *note_gc, *dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
   gint i, dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
-  BswVIter *iter;
+  BswIterPartNote *iter;
 
   /* draw horizontal grid lines */
   for (i = y; i < ybound; i++)
@@ -988,9 +988,9 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
   iter = self->proxy ? bsw_part_find_notes (self->proxy,
 					    coord_to_tick (self, x, FALSE),
 					    coord_to_tick (self, xbound, FALSE)) : NULL;
-  for (; iter && bsw_viter_n_left (iter); bsw_viter_next (iter))
+  for (; iter && bsw_iter_n_left (iter); bsw_iter_next (iter))
     {
-      BswPartNote *pnote = bsw_viter_get_boxed (iter);
+      BswPartNote *pnote = bsw_iter_get_part_note (iter);
       BswNoteDescription *info = bsw_server_note_from_freq (BSW_SERVER, pnote->freq);
       guint start = pnote->tick, end = start + pnote->duration;
       gint x1, x2, y1, y2, height;
@@ -1014,7 +1014,7 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
       bsw_note_description_free (info);
     }
   if (iter)
-    bsw_viter_free (iter);
+    bsw_iter_free (iter);
 }
 
 static void
@@ -1518,7 +1518,7 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
       bsw_item_use (self->proxy);
       bsw_proxy_connect (self->proxy,
 			 "swapped_signal::set_parent", piano_roll_unset_proxy, self,
-			 // "swapped_signal::notify::name", piano_roll_update_name, self,
+			 // "swapped_signal::notify::uname", piano_roll_update_name, self,
 			 "swapped_signal::range-changed", piano_roll_update, self,
 			 NULL);
       self->min_octave = bsw_part_get_min_octave (self->proxy);

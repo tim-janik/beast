@@ -1,3 +1,25 @@
+Tue May 21 09:25:23 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c: fix info updates, keep a use-count
+	on the BseSource.
+
+	* beast-gtk/bstparam.c: (bst_param_entry_activate) don't activate
+	toplevel default. fix uloc and iterator usages.
+
+	* beast-gtk/bstplaylist.c:
+	* beast-gtk/bstpianoroll.c:
+	* beast-gtk/bstpartdialog.c: more iterator fixes.
+
+	* beast-gtk/*.c: fixes due to ::name -> ::uname change in BseObject,
+	iterator changes and procedure cleanups.
+
+	* test/*.bse: adoptions due to major storage format changes.
+
+Sat May 18 03:17:52 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsequence.[hc]: 
+	* beast-gtk/bstparam.c: fixes due to BswNoteSequence.
+
 Thu May 16 23:17:54 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c:

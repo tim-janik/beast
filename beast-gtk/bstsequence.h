@@ -19,7 +19,7 @@
 #define __BST_SEQUENCE_H__
 
 #include <gtk/gtk.h>
-#include <bse/bsesequence.h>
+#include <bsw/bsw.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,12 +40,12 @@ typedef struct _BstSequence	 BstSequence;
 typedef struct _BstSequenceClass BstSequenceClass;
 struct _BstSequence
 {
-  GtkHBox parent_object;
+  GtkHBox          parent_object;
 
-  guint        entered : 1;
-  GtkWidget   *darea;
-  gint	       n_rows;
-  BseSequence *sd;
+  guint            entered : 1;
+  GtkWidget       *darea;
+  gint	           n_rows;
+  BswNoteSequence *sdata;
 };
 struct _BstSequenceClass
 {
@@ -57,8 +57,8 @@ struct _BstSequenceClass
 
 /* --- prototypes --- */
 GType		bst_sequence_get_type	(void);
-void		bst_sequence_set_seq	(BstSequence	*seq,
-					 BseSequence	*seq_data);
+void		bst_sequence_set_seq	(BstSequence	 *seq,
+					 BswNoteSequence *sdata);
 
 
 #ifdef __cplusplus
