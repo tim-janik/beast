@@ -1,3 +1,9 @@
+Mon Dec 15 16:12:36 2003  Tim Janik  <timj@gtk.org>
+
+	* POTFILES.in: added idl files.
+
+	* *.po: dist update.
+
 Mon Dec 15 15:05:15 2003  Tim Janik  <timj@gtk.org>
 
 	* POTFILES.in: added files from po-bse/.

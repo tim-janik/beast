@@ -41,8 +41,12 @@ beast-gtk/gxk/gxkparam-scale.c
 beast-gtk/gxk/gxkparam-spinner.c
 beast-gtk/gxk/gxkparam-toggle.c
 beast-gtk/gxk/gxksimplelabel.c
+bse/bseamplifier.idl
 bse/bsebiquadfilter.c
 bse/bsesuper.c
 data/beast.desktop.in
 data/bse.keys.in
 plugins/artscompressor.idl
+plugins/bsebalance.idl
+plugins/davchorus.idl
+plugins/evaluator/bseevaluator.idl

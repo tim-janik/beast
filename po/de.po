@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.55\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-15 14:12+0100\n"
+"POT-Creation-Date: 2003-12-15 16:07+0100\n"
 "PO-Revision-Date: 2003-11-22 13:47+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -198,7 +198,8 @@ msgid "Input"
 msgstr "Eingabe"
 
 #: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
-#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
+#: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
+#: plugins/artscompressor.idl:57
 msgid "Output"
 msgstr "Ausgabe"
 
@@ -1050,7 +1051,9 @@ msgid "Tracks"
 msgstr "Spuren"
 
 #: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
-#: beast-gtk/bstsupershell.c:295
+#: beast-gtk/bstsupershell.c:295 plugins/artscompressor.idl:33
+#: plugins/artscompressor.idl:52 plugins/davchorus.idl:32
+#: plugins/evaluator/bseevaluator.idl:33
 msgid "Parameters"
 msgstr "Parameter"
 
@@ -1546,6 +1549,167 @@ msgstr ""
 "Das Widget, das aktiviert werden soll, wenn die dem Kürzelbuchstaben der "
 "Beschriftung entsprechende Taste gedrückt wird"
 
+#: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26 plugins/davchorus.idl:27
+msgid "GNU Lesser General Public License"
+msgstr ""
+
+#: bse/bseamplifier.idl:32
+msgid "/Routing/Amplifier"
+msgstr ""
+
+#: bse/bseamplifier.idl:33
+msgid ""
+"BseAmplifier provides input signal controlled amplification or attenuation. "
+"It supports two control inputs and two audio inputs which are mixed together "
+"after balance and level adjustments. The gain setting controls "
+"preamplification of the mixed audio signal. The mixed control signal, "
+"weighted by a strength setting, determines additional amplification, "
+"allowing for external sources to modulate the overall volume (tremolo). The "
+"mixed control signal can influence the amplification linearly (to amplify "
+"other control signals) or exponentially (to amplify audio signals). Finally, "
+"the master volume controls amplification of the resulting output signal."
+msgstr ""
+
+#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
+#, fuzzy
+msgid "Audio In1"
+msgstr "Audio"
+
+#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
+msgid "First audio input"
+msgstr ""
+
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
+#, fuzzy
+msgid "Audio In2"
+msgstr "Audio"
+
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
+msgid "Second audio input"
+msgstr ""
+
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
+msgid "Ctrl In1"
+msgstr ""
+
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
+#, fuzzy
+msgid "First control input"
+msgstr "Steuerereignis einfügen"
+
+#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
+msgid "Ctrl In2"
+msgstr ""
+
+#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
+msgid "Second control input"
+msgstr ""
+
+#: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
+#, fuzzy
+msgid "Audio Out"
+msgstr "Audio"
+
+#: bse/bseamplifier.idl:50
+msgid "Amplified audio output"
+msgstr ""
+
+#: bse/bseamplifier.idl:51 plugins/bsebalance.idl:43
+#, fuzzy
+msgid "Audio Input"
+msgstr "Auto-Kürzen"
+
+#: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:44
+#: plugins/bsebalance.idl:49
+#, fuzzy
+msgid "Input 1 [%]"
+msgstr "Eingabe"
+
+#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:44
+msgid "Attenuate the level of audio input 1"
+msgstr ""
+
+#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:45
+#: plugins/bsebalance.idl:50
+#, fuzzy
+msgid "Input 2 [%]"
+msgstr "Eingabe"
+
+#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:45
+msgid "Attenuate the level of audio input 2"
+msgstr ""
+
+#: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:46
+#: plugins/bsebalance.idl:51
+msgid "Balance"
+msgstr ""
+
+#: bse/bseamplifier.idl:54 plugins/bsebalance.idl:46
+msgid "Balance audio input levels"
+msgstr ""
+
+#: bse/bseamplifier.idl:56 plugins/bsebalance.idl:48
+#, fuzzy
+msgid "Control Input"
+msgstr "Steuerungstyp:"
+
+#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:49
+msgid "Attenuate the level of control input 1"
+msgstr ""
+
+#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:50
+msgid "Attenuate the level of control input 2"
+msgstr ""
+
+#: bse/bseamplifier.idl:59 plugins/bsebalance.idl:51
+msgid "Balance control input levels"
+msgstr ""
+
+#: bse/bseamplifier.idl:60
+msgid "Multiply Controls"
+msgstr ""
+
+#: bse/bseamplifier.idl:61
+msgid ""
+"Multiply the two control inputs with each other, rather than weighting them "
+"by balance"
+msgstr ""
+
+#: bse/bseamplifier.idl:64
+msgid "Exponential Control"
+msgstr ""
+
+#: bse/bseamplifier.idl:64
+msgid "Toggle exponential and linear control response"
+msgstr ""
+
+#: bse/bseamplifier.idl:67 plugins/bsebalance.idl:54
+#, fuzzy
+msgid "Control Strength"
+msgstr "Steuerereignis verschieben"
+
+#: bse/bseamplifier.idl:67
+msgid "Adjust how much the control signals affect the output volume"
+msgstr ""
+
+#: bse/bseamplifier.idl:68
+msgid "Base Volume"
+msgstr ""
+
+#: bse/bseamplifier.idl:68
+msgid "Base amplification (the control signal adds up to this)"
+msgstr ""
+
+#: bse/bseamplifier.idl:69
+msgid "Master Volume"
+msgstr ""
+
+#: bse/bseamplifier.idl:69
+#, fuzzy
+msgid "Output stage amplification"
+msgstr "Ausrichtung"
+
 #: bse/bsebiquadfilter.c:130
 msgid "Filter"
 msgstr "Filter"
@@ -1689,40 +1853,230 @@ msgstr "BSE-Multi-Part-Wave-Datei"
 msgid "BSE Synthesis File"
 msgstr "BSE-Synthesedatei"
 
-#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+#: plugins/artscompressor.idl:28 plugins/artscompressor.idl:45
+#: plugins/evaluator/bseevaluator.idl:26
+msgid "GNU General Public License"
+msgstr ""
+
+#: plugins/artscompressor.idl:29
+msgid "/Enhance/ArtsCompressor"
+msgstr ""
+
+#: plugins/artscompressor.idl:30
+msgid "ArtsCompressor compresses the sound."
+msgstr ""
+
+#: plugins/artscompressor.idl:31 plugins/davchorus.idl:30
+#: plugins/evaluator/bseevaluator.idl:31
+#, fuzzy
+msgid "Audio In"
+msgstr "Audio"
+
+#: plugins/artscompressor.idl:31 plugins/davchorus.idl:30
+#: plugins/evaluator/bseevaluator.idl:31
+#, fuzzy
+msgid "Audio input"
+msgstr "Auto-Kürzen"
+
+#: plugins/artscompressor.idl:32
+msgid "Compressed audio output"
+msgstr ""
+
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
 msgid "Attack [ms]"
 msgstr ""
 
-#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
 msgid "Set the attack time in milli seconds"
 msgstr ""
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 #, fuzzy
 msgid "Release [ms]"
 msgstr "_Release-Hinweise..."
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Set the release time in milli seconds"
 msgstr ""
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Threshold"
 msgstr ""
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Set the threshold"
 msgstr ""
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 #, fuzzy
 msgid "Ratio"
 msgstr "Ort"
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Set the compression ratio"
 msgstr ""
 
-#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Set the output amplification"
+msgstr ""
+
+#: plugins/artscompressor.idl:46
+msgid "/Enhance/ArtsStereoCompressor"
+msgstr ""
+
+#: plugins/artscompressor.idl:47
+msgid "ArtsStereoCompressor compresses the sound."
+msgstr ""
+
+#: plugins/artscompressor.idl:48
+msgid "Left Audio In"
+msgstr ""
+
+#: plugins/artscompressor.idl:48
+msgid "Left audio input"
+msgstr ""
+
+#: plugins/artscompressor.idl:49
+msgid "Right Audio In"
+msgstr ""
+
+#: plugins/artscompressor.idl:49
+msgid "Right audio input"
+msgstr ""
+
+#: plugins/artscompressor.idl:50
+msgid "Left Audio Out"
+msgstr ""
+
+#: plugins/artscompressor.idl:50
+msgid "Compressed left audio output"
+msgstr ""
+
+#: plugins/artscompressor.idl:51
+msgid "Right Audio Out"
+msgstr ""
+
+#: plugins/artscompressor.idl:51
+msgid "Compressed right audio output"
+msgstr ""
+
+#: plugins/bsebalance.idl:27
+msgid "/Spatial/Balance"
+msgstr ""
+
+#: plugins/bsebalance.idl:28
+msgid ""
+"BseBalance is a stereo panning module with two audio and two control inputs, "
+"each of which can be seperately level adjusted. The resulting output balance "
+"is controlled by a balance adjustment and the sum of the control inputs. To "
+"avoid aliasing artefacts for rapid balance changes, the control signal is "
+"preprocessed by a simple lowpass filter with adjustable cutoff frequency."
+msgstr ""
+
+#: plugins/bsebalance.idl:40
+#, fuzzy
+msgid "Left Out"
+msgstr "Links"
+
+#: plugins/bsebalance.idl:40
+msgid "Left audio output"
+msgstr ""
+
+#: plugins/bsebalance.idl:41
+msgid "Mix Out"
+msgstr ""
+
+#: plugins/bsebalance.idl:41
+msgid "Mixed audio output"
+msgstr ""
+
+#: plugins/bsebalance.idl:42
+#, fuzzy
+msgid "Right Out"
+msgstr "Rechts"
+
+#: plugins/bsebalance.idl:42
+msgid "Right audio output"
+msgstr ""
+
+#: plugins/bsebalance.idl:53
+#, fuzzy
+msgid "Output Panning"
+msgstr "Ausgabe"
+
+#: plugins/bsebalance.idl:54
+msgid "Adjust how much the control signals affect the output balance"
+msgstr ""
+
+#: plugins/bsebalance.idl:55
+msgid "Lowpass [Hz]"
+msgstr ""
+
+#: plugins/bsebalance.idl:55
+msgid "Lowpass filter frequency for the control signal"
+msgstr ""
+
+#: plugins/bsebalance.idl:56
+#, fuzzy
+msgid "Output Balance"
+msgstr "Ausgabe"
+
+#: plugins/bsebalance.idl:56
+msgid "Adjust output balance between left and right"
+msgstr ""
+
+# CHECK
+#: plugins/davchorus.idl:28
+#, fuzzy
+msgid "/Enhance/Chorus"
+msgstr "Auf_bessern"
+
+#: plugins/davchorus.idl:29
+msgid "DavChorus adds more depth to sounds"
+msgstr ""
+
+#: plugins/davchorus.idl:31
+msgid "Chorus audio output"
+msgstr ""
+
+#: plugins/davchorus.idl:33
+msgid "Wet out [%]"
+msgstr ""
+
+#: plugins/davchorus.idl:33
+msgid "Set the amount of modified data to mix"
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:27
+msgid "/Misc/Evaluator"
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:28
+msgid ""
+"BseEvaluator is a module which can compute arithmetic operations in a small "
+"language. The audio input signal is called input, the audio output signal is "
+"called output. Simple examples for programs would be \"output = input * 5\" "
+"or \"output = 2 * input + 1\"."
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:32
+#, fuzzy
+msgid "Audio output"
+msgstr "Auto-Kürzen"
+
+#: plugins/evaluator/bseevaluator.idl:34
+msgid "Source code"
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:34
+msgid "The source code"
+msgstr ""
+
+#: plugins/evaluator/bseevaluator.idl:35
+#, fuzzy
+msgid "Status"
+msgstr "Startvorgang"
+
+#: plugins/evaluator/bseevaluator.idl:35
+msgid "Status used to output error messages"
 msgstr ""
