@@ -194,7 +194,7 @@ sfi_time_from_string_err (const gchar *time_string,
    * to match a string and pick the best one. if we acquire a full match
    * before all match possibilities have been tryed, we skip outstanding
    * match attempts. we do not use strptime(3), since it carries the locale(7)
-   * junk that doesn't do anything usefull for the purpose of generic file
+   * junk that doesn't do anything useful for the purpose of generic file
    * parsing and it doesn't give the smallest clue whether the source
    * string was (not) valid in any meaningfull sense.
    * rules:

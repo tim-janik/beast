@@ -52,7 +52,7 @@ template<typename What, typename Reason> void invalid_type () { TEMPLATE_ERROR::
 template<typename TYPE> void invalid_argument_type () { TEMPLATE_ERROR::abort; }
 }
 
-/* --- generally usefull templates --- */
+/* --- generally useful templates --- */
 template<class Data> static void
 delete_this (Data *d)
 {

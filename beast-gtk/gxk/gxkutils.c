@@ -445,7 +445,7 @@ idle_showraiser (gpointer data)
  * @widget: a valid #GtkWidget
  *
  * Defers showing and raising this widget like gxk_widget_showraise()
- * until the next idle handler is run. This is usefull if other things
+ * until the next idle handler is run. This is useful if other things
  * are pending which need to be processed first, for instance hiding
  * other toplevels or constructing remaining parts of the widget hierarchy.
  */
@@ -487,7 +487,7 @@ idle_shower (GtkWidget **widget_p)
  * @widget: a valid #GtkWidget
  *
  * Defer showing this widget until the next idle handler
- * is run. This is usefull if other things are pending
+ * is run. This is useful if other things are pending
  * which need to be processed first, for instance
  * hiding other toplevels.
  */
@@ -534,7 +534,7 @@ idle_unrealizer (GtkWidget **widget_p)
  * @widget: a valid #GtkWindow
  *
  * Defer unrealizing this widget until the next idle handler
- * is run. This is usefull if other things are pending
+ * is run. This is useful if other things are pending
  * which need to be processed first, e.g. completing a running
  * signal emission.
  */
@@ -619,7 +619,7 @@ gxk_widget_showraise (GtkWidget *widget)
  * gxk_toplevel_delete
  * @widget: a widget having a toplevel
  *
- * This function is usefull to produce the exact same effect
+ * This function is useful to produce the exact same effect
  * as if the user caused window manager triggered window
  * deletion on the toplevel of @widget.
  */
@@ -689,7 +689,7 @@ style_modify_fg_as_sensitive (GtkWidget *widget)
  * @widget: a valid GtkWidget
  *
  * Modify the widget and it's style, so that it is insensitive,
- * but doesn't quite look that way. Usefull for inactive title
+ * but doesn't quite look that way. Useful for inactive title
  * menu items in menus (@widget should be the menu item's label).
  */
 void
@@ -723,7 +723,7 @@ style_modify_bg_as_base (GtkWidget *widget)
  * @widget: a valid GtkWidget
  *
  * Modify the widget's background to look like the background
- * of a text or list widget (usually white). This is usefull
+ * of a text or list widget (usually white). This is useful
  * if a hbox or similar widget is used to "simulate" a list,
  * text, or similar widget.
  */
@@ -756,7 +756,7 @@ style_modify_base_as_bg (GtkWidget *widget)
  *
  * Modify the widget's base background (used by list and
  * text widgets) to look like an ordinary widget background.
- * This is usefull if a list, text or similar widget shouldn't
+ * This is useful if a list, text or similar widget shouldn't
  * stand out as such, e.g. when the GtkTextView widget displaying
  * a long non-editable text should look similar to a GtkLabel.
  */
@@ -887,7 +887,7 @@ gxk_size_group (GtkSizeGroupMode sgmode,
  * gxk_tree_spath_index0
  * @strpath: stringified #GtkTreePath
  *
- * Return index[0] of @strpath. Usefull for paths in lists,
+ * Return index[0] of @strpath. Useful for paths in lists,
  * where index[0] usually corresponds to the nth row.
  */
 gint
@@ -2147,7 +2147,7 @@ requisition_to_aux_info (GtkWidget      *widget,
  *
  * Proxy the size requisition of @widget through the
  * ::width_request and ::height_request properties.
- * This is usefull only for immediate children of a
+ * This is useful only for immediate children of a
  * #GtkScrolledWindow, to have the #GtkScrolledWindow
  * honour the widgets size requisition.
  */
@@ -2861,7 +2861,7 @@ gxk_widget_get_options (gpointer widget)
  *
  * Add/set a custom @option of @widget to a particular @value.
  * Custom options on widgets are used to attach extra information
- * to widgets which may be usefull to otherwise disjoint code
+ * to widgets which may be useful to otherwise disjoint code
  * portions. The actual options are implemented by means of
  * g_option_concat(), g_option_check() and g_option_get().
  */

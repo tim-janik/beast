@@ -743,7 +743,7 @@ sfi_rstore_parse_until (SfiRStore     *rstore,
       GTokenType expected_token;
       guint saved_line, saved_position;
       
-      /* it is only usefull to feature statements which
+      /* it is only useful to feature statements which
        * start out with an identifier (syntactically)
        */
       if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)

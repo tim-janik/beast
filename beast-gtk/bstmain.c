@@ -610,7 +610,7 @@ bst_print_blurb (void)
   g_print ("  --force-xkb             force XKB keytable queries\n");
 #endif
   g_print ("  --print-dir[=RESOURCE]  print the directory for a specific resource\n");
-  g_print ("  --devel                 enrich the GUI with hints usefull for developers,\n");
+  g_print ("  --devel                 enrich the GUI with hints useful for developers,\n");
   g_print ("                          enable unstable plugins and experimental code\n");
   g_print ("  -h, --help              show this help message\n");
   g_print ("  -v, --version           print version and file paths\n");

@@ -152,7 +152,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
       else if (port->integer_stepping)
 	{
 	  const gchar *hints;
-	  /* try to guess when scales are going to be usefull */
+	  /* try to guess when scales are going to be useful */
 	  if (port->minimum < 0 ||
 	      port->maximum - port->minimum > 10)
 	    hints = SFI_PARAM_GUI ":scale";

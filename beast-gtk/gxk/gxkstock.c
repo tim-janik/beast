@@ -143,7 +143,7 @@ gxk_stock_button (const gchar *stock_id,
  *
  * This function does the same as gxk_stock_button() except
  * for creating the actual button. The button's child is instead
- * returned to the caller, this might e.g. be usefull if a button
+ * returned to the caller, this might e.g. be useful if a button
  * is created containing multiple children which are shown only
  * selectively during runtime.
  */
@@ -372,7 +372,7 @@ gdk_pixbuf_create_bitmap_data (GdkPixbuf *pixbuf,
  *
  * Create a window displaying a stock icon which is transparent
  * according to the icon's alpha mask. Such windows are mostly
- * usefull to implement drag-and-drop operations with stock icons.
+ * useful to implement drag-and-drop operations with stock icons.
  */
 GtkWidget*
 gxk_stock_icon_window (const gchar *stock_id)
