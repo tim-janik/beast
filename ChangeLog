@@ -1,3 +1,8 @@
+Sat Feb  2 09:52:44 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in: check for sys/soundcard.h in the OSS check, and
+	forget about /dev/sndstat.
+
 Sat Feb  2 09:31:42 2002  Tim Janik  <timj@gtk.org>
 
 	* test/midi-test.bse: new test file to use with midi devices.

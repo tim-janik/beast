@@ -109,7 +109,6 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
     else
       AC_MSG_ERROR([Ogg/Vorbis libraries (at least version 1.0rc3) are required])
     fi
-    sleep 5
     AC_SUBST(GSL_LIBS)
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
@@ -204,85 +203,27 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
     bse_have_pcmdev=
 	
     dnl OSS-Lite driver check
-    AC_MSG_CHECKING(for OSS-Lite sounddriver device)
-    have_oss_sndstat=no
-    if test -r /dev/sndstat; then
-	have_oss_sndstat=yes
-    elif test -r /proc/asound/oss-devices && test -r /proc/asound/sndstat; then
-	have_oss_sndstat=yes
-    fi
+    AC_CHECK_HEADER(sys/soundcard.h, have_oss_header=yes, have_oss_header=no)
     result=
-    if test -c /dev/dsp && test "$have_oss_sndstat" = yes; then
+    if test -c /dev/dsp ; then
 	bse_have_pcmdev=yes
         AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_OSS, "/dev/dsp")
         result="$result""PCM:/dev/dsp "
     else
         result="$result""PCM:none "
     fi
-    if test -c /dev/midi && test "$have_oss_sndstat" = yes; then
+    if test $have_oss_header = yes && test -c /dev/midi ; then
         AC_DEFINE_UNQUOTED(BSE_MIDI_DEVICE_CONF_OSS, "/dev/midi")
         result="$result""MIDI:/dev/midi "
     else
         result="$result""MIDI:none "
     fi
+    AC_MSG_CHECKING([for available sound driver/devices])
     AC_MSG_RESULT($result)
-
-    dnl feature ALSA with a minimum version requirement -
-    dnl the logic here is as follows, even if /proc support
-    dnl for ALSA is not currently present, we still check
-    dnl for -lasound since the modules may be loaded at runtime
-    dnl however, if /proc support is present but the ALSA version
-    dnl is too old, we report that and skip ALSA support
-    REQUIRED=0.5.0
-    check_alsa_lib=
-    AC_MSG_CHECKING(for ALSA modules - version >= $REQUIRED)
-    if test -e /proc/asound/version; then
-	ALSA_VERSION=[`cat /proc/asound/version | \
-	    sed -e '/Version/!d' \
-                -e 's/.*Version[^0-9]*\(.*[0-9]\)[^0-9]*$/\1/' `]
-	MC_CHECK_VERSION($ALSA_VERSION, $REQUIRED,
-	    AC_MSG_RESULT([yes ($ALSA_VERSION)])
-            check_alsa_lib=yes
-	    ,
-	    check_alsa_lib=no
-	    AC_MSG_RESULT([no (found $ALSA_VERSION - version too old)])
-	)
-    else
-        check_alsa_lib=yes
-	AC_MSG_RESULT(no)
-    fi
-    if test "x$check_alsa_lib" = "xyes"; then
-        dnl check for -lasound
-        dnl this check assumes that libasound.la is installed in some
-        dnl standard path, e.g. /usr or /usr/local
-	AC_MSG_CHECKING(for ALSA Sound Library)
-        cflags=$CFLAGS
-        ldflags=$LDFLAGS
-        CFLAGS=$BSE_CFLAGS
-        LDFLAGS="-lasound $BSE_LIBS"
-        AC_TRY_LINK([
-          #include <sys/asoundlib.h>
-          #include <linux/asoundid.h>
-        ],[{
-          snd_pcm_open (0, 0, 0, SND_PCM_OPEN_CAPTURE);
-          snd_pcm_channel_setup (0, 0);
-          /* snd_card_get_longname (SND_CARD_TYPE_SHARE, NULL); */
-        }],[
-          bse_have_pcmdev=yes
-	  AC_MSG_RESULT([found it - ALSA support enabled])
-	  AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_ALSA)
-	  AC_CHECK_FUNCS(snd_pcm_channel_flush)
-	  BSE_LIBS="-lasound $BSE_LIBS"
-        ],[
-	  AC_MSG_RESULT([failed - disabling ALSA support])
-        ])
-        CFLAGS=$cflags
-        LDFLAGS=$ldflags
-    fi
 
     dnl Error out if there is no sound device at all
     if test "x$bse_have_pcmdev" \!= "xyes"; then
-	AC_MSG_ERROR(unable to find any sound drivers/devices)
+	AC_MSG_ERROR([unable to find any sound drivers/devices])
     fi
 ])
 
