@@ -14,6 +14,7 @@ Overview of Changes in BEAST/BSE 0.5.2:
 * Robustness fixes to LADSPA loader [Sam Hocevar]
 * Improved documentation building process [Alper Ersoy]
 * Image (Logo) improvements [Alper Ersoy]
+* Bug fixes for 64bit archs [Sam Hocevar]
 * Miscellaneous major and minor code fixes
 
 Overview of Changes in BEAST/BSE 0.5.1:

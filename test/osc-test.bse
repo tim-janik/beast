@@ -1,13 +1,13 @@
 ; BseProject
 
-(bse-version "0.5.0")
+(bse-version "0.5.2")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2003-03-13 17:40:08")
+  (modification-time "2003-06-19 21:38:16")
   (creation-time "2002-02-02 11:09:01"))
-(container-child "BseSNet::Oscillator_test"
+(container-child "BseCSynth::Oscillator_test"
   (auto-activate #t)
-  (modification-time "2003-03-13 17:40:08")
+  (modification-time "2003-06-19 21:38:16")
   (creation-time "1999-12-31 03:01:29")
   (author "Tim Janik")
   (pos-y -0.11)
@@ -15,44 +15,38 @@
   (blurb "strange isn't it? ;)")
   (parasite f "BstRouterZoom" 1 1)
   (container-child "BseAdder::BseAdder-1"
-    (pos-y 0.64000000000000001)
-    (pos-x -1.79)
+    (pos-y 1)
+    (pos-x -2)
     (source-input "audio-in1" (link 1 "BseStandardOsc-3") "audio-out")
     (source-input "audio-in2" (link 1 "BseStandardOsc-4") "audio-out"))
   (container-child "BseMult::BseMult-1"
-    (pos-y 0.65000000000000002)
-    (pos-x 0.33000000000000002)
+    (pos-y 1)
     (source-input "audio-in1" (link 1 "BseStandardOsc-1") "audio-out")
     (source-input "audio-in2" (link 1 "BseStandardOsc-2") "audio-out")
     (source-input "audio-in3" (link 1 "BseConstant-1") "const-out1"))
   (container-child "BsePcmOutput::BsePcmOutput-1"
-    (pos-y -0.27500000000000002)
-    (pos-x 0.32500000000000001)
     (source-input "left-audio-in" (link 1 "BseMult-1") "audio-out")
     (source-input "right-audio-in" (link 1 "BseMult-1") "audio-out"))
   (container-child "BseStandardOsc::BseStandardOsc-1"
     (fm-perc 18.5)
-    (pos-y 0.63500000000000001)
-    (pos-x -0.75)
+    (pos-y 1)
+    (pos-x -1)
     (source-input "freq-mod-in" (link 1 "BseAdder-1") "audio-out"))
   (container-child "BseStandardOsc::BseStandardOsc-2"
     (base-freq 6.6)
     (wave-form bse-standard-osc-triangle)
-    (pos-y -0.28499999999999998)
-    (pos-x -1.8))
+    (pos-x -2))
   (container-child "BseStandardOsc::BseStandardOsc-3"
     (self-perc 10)
     (base-freq 55)
     (wave-form bse-standard-osc-sine)
-    (pos-y 0.63500000000000001)
-    (pos-x -2.8399999999999999))
+    (pos-y 1)
+    (pos-x -3))
   (container-child "BseStandardOsc::BseStandardOsc-4"
     (self-perc 10)
     (base-freq 0.55)
     (wave-form bse-standard-osc-triangle)
-    (pos-y -0.29499999999999998)
-    (pos-x -2.8300000000000001))
+    (pos-x -3))
   (container-child "BseConstant::BseConstant-1"
     (value-1 0.34000000357627869)
-    (pos-y -0.28000000000000003)
-    (pos-x -0.755)))
+    (pos-x -1)))

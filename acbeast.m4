@@ -230,6 +230,8 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		dnl Optimizations
 		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
 		MC_EVAR_ADD(CFLAGS, -O, -O2)
+		MC_PROG_CC_SUPPORTS_OPTION(-ftracer,
+		    MC_EVAR_ADD(CFLAGS, -ftracer, -ftracer))
 		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
 		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
 		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
@@ -277,6 +279,8 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		dnl Optimizations
 		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
 		MC_EVAR_ADD(CFLAGS, -O, -O2)
+		MC_PROG_CC_SUPPORTS_OPTION(-ftracer,
+		    MC_EVAR_ADD(CFLAGS, -ftracer, -ftracer))
 		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
 		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
 		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))

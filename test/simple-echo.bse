@@ -1,17 +1,17 @@
 ; BseProject
 
-(bse-version "0.5.0")
+(bse-version "0.5.2")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2003-03-13 17:38:53")
+  (modification-time "2003-06-19 21:39:42")
   (creation-time "2002-04-13 21:18:35"))
 (container-child "BseMidiSynth::MIDI_Input"
   (snet (link 1 "Instrument"))
   (n-voices 4)
-  (modification-time "2003-03-13 17:38:53")
+  (modification-time "2003-06-19 21:39:42")
   (creation-time "2002-04-13 21:18:43"))
-(container-child "BseSNet::Instrument"
-  (modification-time "2003-03-13 17:38:53")
+(container-child "BseCSynth::Instrument"
+  (modification-time "2003-06-19 21:39:42")
   (creation-time "2002-04-13 21:18:47")
   (container-child "BseStandardOsc::VCO"
     (wave-form bse-standard-osc-moog-saw)

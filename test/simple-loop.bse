@@ -1,13 +1,13 @@
 ; BseProject
 
-(bse-version "0.5.0")
+(bse-version "0.5.2")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2003-03-13 17:37:19")
+  (modification-time "2003-06-19 21:40:39")
   (creation-time "2002-02-06 14:05:19"))
-(container-child "BseSNet::Simple-Loop"
+(container-child "BseCSynth::Simple-Loop"
   (auto-activate #t)
-  (modification-time "2003-03-13 17:37:19")
+  (modification-time "2003-06-19 21:40:39")
   (creation-time "2002-02-06 14:05:24")
   (parasite f "BstRouterZoom" 1 1)
   (container-child "BsePcmOutput::PcmOutput"
@@ -101,8 +101,8 @@
   (container-child "BseAdder::BseAdder-1"
     (pos-y 0.155)
     (pos-x -1.2450000000000001)
-    (source-input "audio-in1" (link 1 "OrganVCF") "audio-out")
     (source-input "audio-in1" (link 1 "Strings") "audio-out")
+    (source-input "audio-in1" (link 1 "OrganVCF") "audio-out")
     (source-input "audio-in2" (link 1 "DrumFilter") "audio-out"))
   (container-child "BseSimpleADSR::FilterADSR"
     (release-time 14)

@@ -24,7 +24,7 @@ the sources can be found at:
 GnomeCanvas (GNOME-2.0):
 	ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
 Gtk+-2.0:
-	ftp://ftp.gtk.org/pub/gtk/v2.0/
+	ftp://ftp.gtk.org/pub/gtk/v2.2/
 Guile-1.6:
 	http://www.gnu.org/software/guile/guile.html
 Ogg/Vorbis (at least version 1.0):

@@ -1,3 +1,17 @@
+Thu Jun 19 23:21:07 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up to v0.5.2-rc2.
+
+	* acbeast.m4: support -ftracer for gcc-3.3.
+	
+	* test/freak-noise.bse:
+	* test/midi-test.bse:
+	* test/osc-test.bse:
+	* test/simple-echo.bse:
+	* test/simple-loop.bse:
+	* test/test-song.bse:
+	* test/wave-midi.bse: upgrade to 0.5.2 BSE format.
+	
 Tue Jun 17 14:30:54 2003  Tim Janik  <timj@gtk.org>
 
 	* shell/progressor-example.scm: simplyfied code, fixed comments.
