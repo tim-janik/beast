@@ -572,6 +572,7 @@ gsl_job_add_poll (GslPollFunc    poll_func,
   job->job_id = ENGINE_JOB_ADD_POLL;
   job->data.poll.poll_func = poll_func;
   job->data.poll.data = data;
+  job->data.poll.free_func = free_func;
   job->data.poll.n_fds = n_fds;
   job->data.poll.fds = g_memdup (fds, sizeof (fds[0]) * n_fds);
   
@@ -601,8 +602,39 @@ gsl_job_remove_poll (GslPollFunc poll_func,
   job->data.poll.poll_func = poll_func;
   job->data.poll.data = data;
   job->data.poll.free_func = NULL;
+  job->data.poll.n_fds = 0;
   job->data.poll.fds = NULL;
   
+  return job;
+}
+
+/**
+ * gsl_job_add_timer
+ * @timer_func: Timer function to add
+ * @data: Data of timer function
+ * @free_func: Function to free @data
+ * @Returns: New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which adds a timer function
+ * to the engine. The timer function is called after the engine
+ * caused new tick stamp updates.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslJob*
+gsl_job_add_timer (GslEngineTimerFunc timer_func,
+		   gpointer           data,
+		   GslFreeFunc        free_func)
+{
+  GslJob *job;
+
+  g_return_val_if_fail (timer_func != NULL, NULL);
+
+  job = sfi_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_ADD_TIMER;
+  job->data.timer.timer_func = timer_func;
+  job->data.timer.data = data;
+  job->data.timer.free_func = free_func;
+
   return job;
 }
 
@@ -680,20 +712,57 @@ gsl_trans_add (GslTrans *trans,
 }
 
 /**
+ * gsl_trans_merge
+ * @trans1:  open transaction
+ * @trans2:  open transaction
+ * @Returns: open transaction
+ *
+ * Merge two open transactions by appending the jobs of @trans2
+ * to the jobs of @trans1, returning the resulting transaction.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslTrans*
+gsl_trans_merge (GslTrans *trans1,
+		 GslTrans *trans2)
+{
+  g_return_val_if_fail (trans1 != NULL, trans2);
+  g_return_val_if_fail (trans1->comitted == FALSE, trans2);
+  g_return_val_if_fail (trans2 != NULL, trans1);
+  g_return_val_if_fail (trans2->comitted == FALSE, trans1);
+
+  if (!trans1->jobs_head)
+    {
+      trans1->jobs_head = trans2->jobs_head;
+      trans1->jobs_tail = trans2->jobs_tail;
+      trans2->jobs_head = NULL;
+      trans2->jobs_tail = NULL;
+    }
+  else if (trans2->jobs_head)
+    {
+      trans1->jobs_tail->next = trans2->jobs_head;
+      trans1->jobs_tail = trans2->jobs_tail;
+      trans2->jobs_head = NULL;
+      trans2->jobs_tail = NULL;
+    }
+  gsl_trans_dismiss (trans2);
+  return trans1;
+}
+
+/**
  * gsl_trans_commit
- * @trans: Opened transaction
+ * @trans: open transaction
  *
  * Close the transaction and commit it to the engine. The engine
  * will execute the jobs contained in this transaction as soon as
  * it has completed its current processing cycle. The jobs will be
  * executed in the exact order they were added to the transaction.
+ * This function is MT-safe and may be called from any thread.
  */
 void
 gsl_trans_commit (GslTrans *trans)
 {
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == FALSE);
-  g_return_if_fail (trans->cqt_next == NULL);
   
   if (trans->jobs_head)
     {
@@ -702,7 +771,78 @@ gsl_trans_commit (GslTrans *trans)
       wakeup_master ();
     }
   else
-    _engine_free_trans (trans);
+    gsl_trans_dismiss (trans);
+}
+
+typedef struct {
+  GslTrans *trans;
+  guint64   tick_stamp;
+  SfiCond   cond;
+  SfiMutex  mutex;
+} DTrans;
+
+static gboolean
+dtrans_timer (gpointer timer_data,
+	      guint64  stamp)
+{
+  DTrans *data = timer_data;
+  if (data->tick_stamp <= stamp)
+    {
+      if (!data->trans->jobs_head)
+	{
+	  /* this is sick, is this some perverted way of
+	   * trying to wait until @tick_stamp passed by?
+	   */
+	  gsl_trans_dismiss (data->trans);
+	}
+      else
+	gsl_trans_commit (data->trans);
+      SFI_SPIN_LOCK (&data->mutex);
+      data->trans = NULL;
+      SFI_SPIN_UNLOCK (&data->mutex);
+      sfi_cond_signal (&data->cond);
+      return FALSE;
+    }
+  return TRUE;
+}
+
+/**
+ * gsl_trans_commit_delayed
+ * @trans:      open transaction
+ * @tick_stamp: earliest stamp
+ *
+ * Commit the transaction like gsl_trans_commit(), but make sure
+ * that the commit happens no earlier than @tick_stamp. This
+ * function will block until the commit occoured, so it will not
+ * return any earlier than @@tick_stamp.
+ * This function is MT-safe and may be called from any thread.
+ */ /* bullshit, this function can't be called from the master thread ;) */
+void
+gsl_trans_commit_delayed (GslTrans *trans,
+			  guint64   tick_stamp)
+{
+  g_return_if_fail (trans != NULL);
+  g_return_if_fail (trans->comitted == FALSE);
+
+  if (tick_stamp <= gsl_tick_stamp ())
+    gsl_trans_commit (trans);
+  else
+    {
+      GslTrans *wtrans = gsl_trans_open ();
+      DTrans data = { 0, };
+      data.trans = trans;
+      data.tick_stamp = tick_stamp;
+      sfi_cond_init (&data.cond);
+      sfi_mutex_init (&data.mutex);
+      gsl_trans_add (wtrans, gsl_job_add_timer (dtrans_timer, &data, NULL));
+      SFI_SPIN_LOCK (&data.mutex);
+      gsl_trans_commit (wtrans);
+      while (data.trans)
+	sfi_cond_wait (&data.cond, &data.mutex);
+      SFI_SPIN_UNLOCK (&data.mutex);
+      sfi_cond_destroy (&data.cond);
+      sfi_mutex_destroy (&data.mutex);
+    }
 }
 
 /**
@@ -718,7 +858,6 @@ gsl_trans_dismiss (GslTrans *trans)
 {
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == FALSE);
-  g_return_if_fail (trans->cqt_next == NULL);
   
   _engine_free_trans (trans);
 }

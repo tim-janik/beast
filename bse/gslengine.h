@@ -46,12 +46,14 @@ typedef gboolean (*GslPollFunc)		(gpointer	data,
 					 guint          n_fds,
 					 const GPollFD *fds,
 					 gboolean	revents_filled);
-typedef void     (*GslProcessFunc)	(GslModule	 *module,
-					 guint		  n_values);
-typedef guint    (*GslProcessDeferFunc)	(GslModule	 *module,
-					 guint		  n_ivalues,
-					 guint		  n_ovalues);
-typedef void     (*GslResetFunc)	(GslModule	 *module);
+typedef gboolean (*GslEngineTimerFunc)	(gpointer	data,
+					 guint64	tick_stamp);
+typedef void     (*GslProcessFunc)	(GslModule     *module,
+					 guint		n_values);
+typedef guint    (*GslProcessDeferFunc)	(GslModule     *module,
+					 guint		n_ivalues,
+					 guint		n_ovalues);
+typedef void     (*GslResetFunc)	(GslModule     *module);
 /* gsldefs.h:
  * typedef void  (*GslAccessFunc)	(GslModule	*module,
  *					 gpointer	 data);
@@ -148,10 +150,17 @@ GslJob*		gsl_job_add_poll	(GslPollFunc	  poll_func,
 					 const GPollFD   *fds);
 GslJob*		gsl_job_remove_poll	(GslPollFunc	  poll_func,
 					 gpointer	  data);
+GslJob*		gsl_job_add_timer	(GslEngineTimerFunc timer_func,
+					 gpointer	  data,
+					 GslFreeFunc	  free_func);
 GslTrans*	gsl_trans_open		(void);
 void		gsl_trans_add		(GslTrans	 *trans,
 					 GslJob		 *job);
+GslTrans*	gsl_trans_merge		(GslTrans	 *trans1,
+					 GslTrans	 *trans2);
 void		gsl_trans_commit	(GslTrans	 *trans);
+void		gsl_trans_commit_delayed(GslTrans	 *trans,
+					 guint64	  tick_stamp);
 void		gsl_trans_dismiss	(GslTrans	 *trans);
 void		gsl_transact		(GslJob		 *job,
 					 ...);

@@ -1,3 +1,23 @@
+Fri Jan  3 19:10:03 2003  Tim Janik  <timj@gtk.org>
+
+	* bsessequencer.[hc]: new song sequencer implementation, based on the
+	old song sequencing thread from bsesongthread.[hc].
+
+	* bseproject.c: queue song sequencer jobs to start song playback and
+	don't start synthesis networks any earlier than song playback.
+
+	* bsesong.[hc]: use the new song sequencer.
+
+	* gsloputils.[hc]:
+	* gslopmaster.[hc]:
+	* gslengine.[hc]: implemented engine timers, delayed commits and
+	transaction merging.
+
+	* gslengine.[hc]: (gsl_job_add_poll): leak fix, don't forget
+	the free_func.
+
+	* bsesongthread.[hc]: removed this.
+
 Tue Dec 31 03:03:39 2002  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am, toyprof.*: remove toyprof code.

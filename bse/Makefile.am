@@ -88,7 +88,7 @@ bse_public_h_sources = $(strip \
 	bsesnet.h \
 	bsesnooper.h \
 	bsesong.h \
-	bsesongthread.h \
+	bsessequencer.h \
 	bsesource.h \
 	bsestandardosc.h \
 	bsestandardsynths.h \
@@ -155,7 +155,7 @@ bse_c_sources = $(strip \
 	bsesnet.c \
 	bsesnooper.c \
 	bsesong.c \
-	bsesongthread.c \
+	bsessequencer.c \
 	bsesource.c \
 	bsestandardosc.c \
 	bsestandardsynths.c \

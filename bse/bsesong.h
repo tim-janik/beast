@@ -48,13 +48,17 @@ struct _BseSong
   gfloat            volume_factor;      /* 1-based factor */
   
   GList            *parts;              /* of type BsePart* */
-  GList            *tracks;             /* of type BseTrack* */
 
   BseSource	   *context_merger;
   BseSource	   *output;
 
-  /*< private >*/
-  BseSongSequencer *sequencer;
+  /* fields protected by sequencer mutex */
+  gdouble	    tpsi_SL;		/* ticks per stamp increment (sample) */
+  SfiRing	   *tracks_SL;		/* of type BseTrack* */
+  /* sequencer stuff */
+  SfiTime	    start_SL;		/* playback start */
+  gdouble	    delta_stamp_SL;	/* start + delta_stamp => tick */
+  guint		    tick_SL;		/* tick at stamp_SL */
 };
 struct _BseSongClass
 {

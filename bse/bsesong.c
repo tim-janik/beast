@@ -15,17 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bsesong.h"
+#include "bsesong.h"
 
-#include	"bsetrack.h"
-#include	"bsepart.h"
-#include	"bsecontextmerger.h"
-#include	"bsepcmoutput.h"
-#include	"bsesongthread.h"
-#include	"bseproject.h"
-#include	"bsestorage.h"
-#include	"bsemain.h"
-#include	<string.h>
+#include "bsetrack.h"
+#include "bsepart.h"
+#include "bsecontextmerger.h"
+#include "bsepcmoutput.h"
+#include "bseproject.h"
+#include "bsestorage.h"
+#include "bsemain.h"
+#include "bsessequencer.h"
+#include "gslengine.h"	// FIXME: for gsl_engine_sample_freq()
+#include <string.h>
 
 
 enum
@@ -74,6 +75,7 @@ static void      bse_song_context_create        (BseSource         *source,
 						 guint              context_handle,
 						 GslTrans          *trans);
 static void	 bse_song_reset			(BseSource	   *source);
+static void	 bse_song_update_tpsi_SL	(BseSong	   *song);
 
 
 /* --- variables --- */
@@ -172,7 +174,7 @@ bse_song_init (BseSong *self)
   self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
   self->parts = NULL;
-  self->tracks = NULL;
+  self->tracks_SL = NULL;
 
   /* context merger */
   self->context_merger = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
@@ -196,8 +198,8 @@ bse_song_release_children (BseContainer *container)
 
   while (self->parts)
     bse_container_remove_item (container, self->parts->data);
-  while (self->tracks)
-    bse_container_remove_item (container, self->tracks->data);
+  while (self->tracks_SL)
+    bse_container_remove_item (container, self->tracks_SL->data);
 
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -253,9 +255,8 @@ bse_song_set_property (GObject      *object,
       break;
     case PARAM_BPM:
       bpm = sfi_value_get_int (value);
-      BSE_SEQUENCER_LOCK ();
       self->bpm = bpm;
-      BSE_SEQUENCER_UNLOCK ();
+      bse_song_update_tpsi_SL (self);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -318,7 +319,7 @@ bse_song_add_item (BseContainer *container,
   BSE_SEQUENCER_LOCK ();
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
-    song->tracks = g_list_append (song->tracks, item);
+    song->tracks_SL = sfi_ring_append (song->tracks_SL, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
     song->parts = g_list_append (song->parts, item);
   else
@@ -336,17 +337,16 @@ bse_song_forall_items (BseContainer	 *container,
 		       gpointer		  data)
 {
   BseSong *song;
+  SfiRing *ring;
   GList *list;
   
   song = BSE_SONG (container);
   
-  list = song->tracks;
-  while (list)
+  ring = song->tracks_SL;
+  while (ring)
     {
-      BseItem *item;
-      
-      item = list->data;
-      list = list->next;
+      BseItem *item = ring->data;
+      ring = sfi_ring_walk (ring, song->tracks_SL);
       if (!func (item, data))
 	return;
     }
@@ -377,35 +377,35 @@ bse_song_remove_item (BseContainer *container,
   
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
     {
-      g_assert (!BSE_SOURCE_PREPARED (song));
+      SfiRing *ring, *tmp;
       bse_track_remove_modules (BSE_TRACK (item), BSE_CONTAINER (song));
-      list_p = &song->tracks;
+      ring = sfi_ring_find (song->tracks_SL, item);
+      for (tmp = sfi_ring_walk (ring, song->tracks_SL); tmp; tmp = sfi_ring_walk (tmp, song->tracks_SL))
+	bse_item_queue_seqid_changed (tmp->data);
+      BSE_SEQUENCER_LOCK ();
+      song->tracks_SL = sfi_ring_remove_node (song->tracks_SL, ring);
+      BSE_SEQUENCER_UNLOCK ();
     }
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
     list_p = &song->parts;
   else
-    /* parent class manages BseSources */ ;
+    /* parent class manages BseSources */;
 
-  BSE_SEQUENCER_LOCK ();
   if (list_p)
     {
       GList *list, *tmp;
-      
       for (list = *list_p; list; list = list->next)
 	if (list->data == (gpointer) item)
 	  break;
-      
       (list->prev ? list->prev->next : *list_p) = list->next;
       if (list->next)
 	list->next->prev = list->prev;
       tmp = list;
       list = list->next;
       g_list_free_1 (tmp);
-      
       for (; list; list = list->next)
 	bse_item_queue_seqid_changed (list->data);
     }
-  BSE_SEQUENCER_UNLOCK ();
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
@@ -480,16 +480,38 @@ bse_song_restore (BseObject  *object,
 }
 
 static void
+bse_song_update_tpsi_SL (BseSong *self)
+{
+  gdouble tpqn = 384; 			/* ticks per quarter note */
+  gdouble qnps = self->bpm / 60.;	/* quarter notes per second */
+  gdouble tps = tpqn * qnps;		/* ticks per second */
+  gdouble sps = gsl_engine_sample_freq ();
+  gdouble tpsi = tps / sps;		/* ticks per stamp increment (sample) */
+  BSE_SEQUENCER_LOCK ();
+  self->tpsi_SL = tpsi;
+  BSE_SEQUENCER_UNLOCK ();
+}
+
+static void
 bse_song_prepare (BseSource *source)
 {
   BseSong *song = BSE_SONG (source);
 
   bse_object_lock (BSE_OBJECT (song));
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
-  
-  song->sequencer = bse_song_sequencer_setup (song);
+
+  bse_song_update_tpsi_SL (song);
+
+  {
+    static gboolean seq_initialized = FALSE;
+    if (!seq_initialized)
+      {
+	seq_initialized = TRUE;
+	bse_ssequencer_start ();
+      }
+  }
 }
 
 static void
@@ -499,14 +521,14 @@ bse_song_context_create (BseSource *source,
 {
   BseSong *self = BSE_SONG (source);
   BseSNet *snet = BSE_SNET (self);
-  GList *list;
-  
+  SfiRing *ring;
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 
   if (!bse_snet_context_is_branch (snet, context_handle))       /* catch recursion */
-    for (list = self->tracks; list; list = list->next)
-      bse_track_clone_voices (list->data, snet, context_handle, trans);
+    for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+      bse_track_clone_voices (ring->data, snet, context_handle, trans);
 }
 
 static void
@@ -514,7 +536,7 @@ bse_song_reset (BseSource *source)
 {
   BseSong *song = BSE_SONG (source);
 
-  bse_song_sequencer_destroy (song->sequencer);
+  bse_ssequencer_handle_jobs (sfi_ring_prepend (NULL, bse_ssequencer_remove_song (song)));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);

@@ -22,6 +22,7 @@
 #include	"bsesong.h"
 #include	"bsesnet.h"
 #include	"bsewaverepo.h"
+#include	"bsessequencer.h"
 #include	"bseserver.h"
 #include	"gslengine.h"
 #include	<string.h>
@@ -502,7 +503,9 @@ bse_project_start_playback (BseProject *project)
   
   if (!BSE_SOURCE_PREPARED (project))
     {
-      GslTrans *trans = gsl_trans_open ();
+      GslTrans *synth_trans = gsl_trans_open ();
+      GslTrans *song_trans = gsl_trans_open ();
+      SfiRing *seq_jobs = NULL;
       GSList *slist;
       
       bse_source_prepare (BSE_SOURCE (project));
@@ -510,11 +513,11 @@ bse_project_start_playback (BseProject *project)
       for (slist = project->supers; slist; slist = slist->next)
 	{
 	  BseSuper *super = BSE_SUPER (slist->data);
-	  
 	  if (super->auto_activate)
 	    {
 	      BseSNet *snet = BSE_SNET (super);
-
+	      gboolean is_song = BSE_IS_SONG (super);
+	      GslTrans *trans = is_song ? song_trans : synth_trans;
 	      super->auto_activate_context_handle = 0;
 	      super->auto_activate_context_handle = bse_snet_create_context (snet,
 									     bse_server_get_midi_receiver (bse_server_get (),
@@ -522,11 +525,21 @@ bse_project_start_playback (BseProject *project)
 									     0,
 									     trans);
 	      bse_source_connect_context (BSE_SOURCE (snet), super->auto_activate_context_handle, trans);
+	      if (is_song)
+		seq_jobs = sfi_ring_prepend (seq_jobs, bse_ssequencer_add_song (BSE_SONG (super)));
 	    }
 	  else
 	    super->auto_activate_context_handle = ~0;
 	}
-      gsl_trans_commit (trans);
+      if (seq_jobs)
+	{
+	  SfiTime start_stamp;
+	  gsl_trans_commit (song_trans);
+	  start_stamp = bse_ssequencer_queue_jobs (seq_jobs);
+	  gsl_trans_commit_delayed (synth_trans, start_stamp);
+	}
+      else
+	gsl_trans_commit (gsl_trans_merge (song_trans, synth_trans));
     }
 }
 

@@ -60,6 +60,14 @@ struct _Poll
   GPollFD    *fds;
   GslFreeFunc free_func;
 };
+typedef struct _Timer Timer;
+struct _Timer
+{
+  Timer             *next;
+  GslEngineTimerFunc timer_func;
+  gpointer           data;
+  GslFreeFunc        free_func;
+};
 
 
 /* --- prototypes --- */
@@ -71,6 +79,7 @@ static gboolean	       master_need_reflow = FALSE;
 static gboolean	       master_need_process = FALSE;
 static EngineNode     *master_consumer_list = NULL;
 const gfloat           gsl_engine_master_zero_block[GSL_STREAM_MAX_VALUES] = { 0, }; /* FIXME */
+static Timer	      *master_timer_list = NULL;
 static Poll	      *master_poll_list = NULL;
 static guint           master_n_pollfds = 0;
 static guint           master_pollfds_changed = FALSE;
@@ -200,6 +209,7 @@ master_process_job (GslJob *job)
     {
       EngineNode *node, *src_node;
       Poll *poll, *poll_last;
+      Timer *timer;
       guint istream, jstream, ostream, con;
       EngineFlowJob *fjob;
       gboolean was_consumer;
@@ -447,6 +457,16 @@ master_process_job (GslJob *job)
 	g_warning (G_STRLOC ": failed to remove unknown poll function %p(%p)",
 		   job->data.poll.poll_func, job->data.poll.data);
       break;
+    case ENGINE_JOB_ADD_TIMER:
+      JOB_DEBUG ("add timer %p(%p)", job->data.timer.timer_func, job->data.timer.data);
+      timer = sfi_new_struct0 (Timer, 1);
+      timer->timer_func = job->data.timer.timer_func;
+      timer->data = job->data.timer.data;
+      timer->free_func = job->data.timer.free_func;
+      job->data.timer.free_func = NULL;		/* don't free data this round */
+      timer->next = master_timer_list;
+      master_timer_list = timer;
+      break;
     default:
       g_assert_not_reached ();
     }
@@ -481,6 +501,35 @@ master_poll_check (glong   *timeout_p,
 	*timeout_p = *timeout_p < 0 ? timeout : MIN (*timeout_p, timeout);
     }
   master_need_process = need_processing;
+}
+
+static void
+master_tick_stamp_inc (void)
+{
+  Timer *timer, *last = NULL;
+  guint64 new_stamp;
+  _gsl_tick_stamp_inc ();
+  new_stamp = GSL_TICK_STAMP;
+  timer = master_timer_list;
+  while (timer)
+    {
+      Timer *next = timer->next;
+      if (!timer->timer_func (timer->data, new_stamp))
+	{
+	  GslTrans *trans = gsl_trans_open ();
+	  if (last)
+	    last->next = next;
+	  else
+	    master_timer_list = next;
+	  /* free timer data in user thread */
+	  gsl_trans_add (trans, gsl_job_add_timer (timer->timer_func, timer->data, timer->free_func));
+	  gsl_trans_dismiss (trans);
+	  sfi_delete_struct (Timer, timer);
+	}
+      else
+	last = timer;
+      timer = next;
+    }
 }
 
 static void
@@ -707,7 +756,7 @@ master_process_flow (void)
       _engine_wait_on_unprocessed ();
       
       _engine_unset_schedule (master_schedule);
-      _gsl_tick_stamp_inc ();
+      master_tick_stamp_inc ();
       _engine_recycle_const_values ();
     }
   master_need_process = FALSE;

@@ -116,6 +116,10 @@ free_job (GslJob *job)
       if (job->data.poll.free_func)
 	job->data.poll.free_func (job->data.poll.data);
       break;
+    case ENGINE_JOB_ADD_TIMER:
+      if (job->data.timer.free_func)
+	job->data.timer.free_func (job->data.timer.data);
+      break;
     case ENGINE_JOB_DISCARD:
       free_node (job->data.node);
       break;
@@ -428,7 +432,6 @@ _engine_enqueue_trans (GslTrans *trans)
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == TRUE);
   g_return_if_fail (trans->jobs_head != NULL);
-  g_return_if_fail (trans->cqt_next == NULL);
   
   GSL_SPIN_LOCK (&cqueue_trans);
   if (cqueue_trans_pending_tail)
@@ -473,7 +476,6 @@ _engine_free_trans (GslTrans *trans)
   g_return_if_fail (trans->comitted == FALSE);
   if (trans->jobs_tail)
     g_return_if_fail (trans->jobs_tail->next == NULL);  /* paranoid */
-  g_return_if_fail (trans->cqt_next == NULL);
 
   GSL_SPIN_LOCK (&cqueue_trans);
   trans->cqt_next = cqueue_trans_trash;

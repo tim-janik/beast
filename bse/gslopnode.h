@@ -71,6 +71,7 @@ typedef enum {
   ENGINE_JOB_SUSPEND,
   ENGINE_JOB_ADD_POLL,
   ENGINE_JOB_REMOVE_POLL,
+  ENGINE_JOB_ADD_TIMER,
   ENGINE_JOB_FLOW_JOB,
   ENGINE_JOB_DEBUG,
   ENGINE_JOB_LAST
@@ -100,6 +101,11 @@ struct _GslJob
       guint           n_fds;
       GPollFD	     *fds;
     } poll;
+    struct {
+      GslEngineTimerFunc timer_func;
+      gpointer	         data;
+      GslFreeFunc        free_func;
+    } timer;
     struct {
       EngineNode     *node;
       EngineFlowJob  *fjob;
