@@ -302,3 +302,4 @@ GtkWidget* gtk_vwrap_box_new                (gboolean homogeneous);
 }
 #endif /* __cplusplus */
 #endif /* __GLE_WIDGETS_H__ */
+

@@ -22,6 +22,7 @@
 #include <sfi/glib-extra.h>
 #include <gtk/gtk.h>
 
+#include <gxk/glewidgets.h>
 #include <gxk/gxkaction.h>
 #include <gxk/gxkauxwidgets.h>
 #include <gxk/gxkcanvas.h>

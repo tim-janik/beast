@@ -20,7 +20,6 @@
 
 #include <gxk/gxk.h>
 #include <libintl.h>
-#include "glewidgets.h"
 #include "bstzoomedwindow.h"
 #include "bstfreeradiobutton.h"
 

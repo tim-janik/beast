@@ -62,4 +62,3 @@ sed >>glewidgets.c <glewidgets.tmp -e 's,^\(#include.*\),/* \1 */,'
 
 # remove temporary
 rm glewidgets.tmp
-

@@ -1,3 +1,10 @@
+Sun Nov 16 08:03:55 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gle-pull.sh:
+	* beast-gtk/gxk/glewidgets.[hc]: moved here from ../.
+
+	* beast-gtk/gxk/gxkgadget.c: define h/v wrap box types.
+
 Sat Nov 15 09:54:17 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackrollctrl.[hc]: switched to GxkActionGroup and explicit
