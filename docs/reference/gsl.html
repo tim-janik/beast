@@ -101,6 +101,8 @@
 <br>
 <strong>gsl_filter_fir_approx (</strong><u>iorder</u>, <u>freq</u>, <u>value</u><strong>)</strong>;
 <br>
+<strong>gsl_filter_sine_scan (</strong><u>order</u>, <u>a</u>, <u>b</u>, <u>freq</u>, <u>n_values</u><strong>)</strong>;
+<br>
 <strong>gsl_engine_garbage_collect (</strong><strong>)</strong>;
 <br>
 <strong>gsl_signal_exp2 (</strong><strong>)</strong>;
@@ -717,6 +719,21 @@ Tschebyscheff type 2 bandstop filter.
 </blockquote>
 <blockquote>
 Approximates a given transfer function with an iorder-coefficient FIR filter. It is recommended to provide enough frequency values, so that <u>n_points</u> >= <u>iorder</u>.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>gsl_filter_sine_scan (</strong><u>order</u>, <u>a</u>, <u>b</u>, <u>freq</u>, <u>n_values</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u>guint </u><td><u>order</u><td>order of the iir filter
+<tr><td><u>const gdouble*</u><td><u>a</u><td>root polynomial coefficients of the filter a[0..order]
+<tr><td><u>const gdouble*</u><td><u>b</u><td>pole polynomial coefficients of the filter b[0..order]
+<tr><td><u>gdouble </u><td><u>freq</u><td>frequency to test
+<tr><td><u>guint </u><td><u>n_values</u><td>number of samples
+</table>
+</blockquote>
+<blockquote>
+This function sends a sine signal of the desired frequency through an IIR filter, to test the value of the transfer function at a given point. It uses gsl_iir_filter_eval to do so.  Compared to a "mathematical approach" of finding the transfer function, this function makes it possible to see the effects of finite arithmetic during filter evaluation.  The first half of the output signal is not considered, since a lot of IIR filters have a transient phase where also overshoot is possible.  For n_values, you should specify a reasonable large value. It should be a lot larger than the filter order, and large enough to let the input signal become (close to) 1.0 multiple times.  
 </blockquote>
 </blockquote>
 <blockquote>

@@ -1071,6 +1071,30 @@ gsl_iir_filter_eval (GslIIRFilter *f,
 /* --- filter scanning -- */
 #define SINE_SCAN_SIZE 1024
 
+/**
+ * gsl_filter_sine_scan
+ *
+ * @order:    order of the iir filter
+ * @a:        root polynomial coefficients of the filter a[0..order]
+ * @b:        pole polynomial coefficients of the filter b[0..order]
+ * @freq:     frequency to test
+ * @n_values: number of samples
+ *
+ * This function sends a sine signal of the desired frequency through an IIR
+ * filter, to test the value of the transfer function at a given point. It uses
+ * gsl_iir_filter_eval to do so.
+ *
+ * Compared to a "mathematical approach" of finding the transfer function,
+ * this function makes it possible to see the effects of finite arithmetic
+ * during filter evaluation.
+ * 
+ * The first half of the output signal is not considered, since a lot of IIR
+ * filters have a transient phase where also overshoot is possible.
+ * 
+ * For n_values, you should specify a reasonable large value. It should be
+ * a lot larger than the filter order, and large enough to let the input
+ * signal become (close to) 1.0 multiple times.
+ */
 gdouble
 gsl_filter_sine_scan (guint order,
                       const gdouble *a,

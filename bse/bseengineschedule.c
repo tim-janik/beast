@@ -248,7 +248,7 @@ _op_schedule_secure (OpSchedule *sched)
   sched->secured = TRUE;
   sched->cur_leaf_level = sched->leaf_levels;
 
-  _op_schedule_debug_dump (sched);
+  /* _op_schedule_debug_dump (sched); */
 }
 
 static void

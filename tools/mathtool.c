@@ -67,7 +67,7 @@ main (int   argc,
   enum { FILTER_GNUPLOT, FILTER_SCAN } filter_mode = FILTER_GNUPLOT;
   const gchar *filter_label = 0;
   gdouble *a, *b;
-  guint order;
+  guint order = 0;
   
   shift_argc = argc;
   shift_argv = argv;
@@ -452,10 +452,10 @@ main (int   argc,
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
       
+      gsl_filter_tscheb2_hp (order, f, st, e, a, b);
       g_print ("# Highpass Tschebyscheff Type2 order=%u freq=%f steepness=%f (%f, %f) epsilon(s^2)=%f norm=%f:\n",
 	       order, f, st, GSL_PI - f, (GSL_PI - f) * (1.+st), e,
 	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-      gsl_filter_tscheb2_hp (order, f, st, e, a, b);
       filter_label = "T2H";
     }
   else if (strcmp (arg, "t2p") == 0)
@@ -472,10 +472,10 @@ main (int   argc,
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
       
+      gsl_filter_tscheb2_bp (order, f1, f2, st, e, a, b);
       g_print ("# Bandpass Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
 	       order, f1, f2, st, e,
 	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-      gsl_filter_tscheb2_bp (order, f1, f2, st, e, a, b);
       filter_label = "T2P";
     }
   else if (strcmp (arg, "t2s") == 0)
@@ -492,10 +492,10 @@ main (int   argc,
       a = g_new (gdouble, order + 1);
       b = g_new (gdouble, order + 1);
       
+      gsl_filter_tscheb2_bs (order, f1, f2, st, e, a, b);
       g_print ("# Bandstop Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
 	       order, f1, f2, st, e,
 	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-      gsl_filter_tscheb2_bs (order, f1, f2, st, e, a, b);
       filter_label = "T2S";
     }
   else if (strcmp (arg, "scan") == 0)
@@ -505,7 +505,7 @@ main (int   argc,
   else if (strcmp (arg, "fir") == 0)
     {
       unsigned int iorder = atoi (pshift ());
-      unsigned int n_points = 0, i = 0;
+      unsigned int n_points = 0;
       
       double *freq = g_newa (double, argc / 2 + 1);
       double *value = g_newa (double, argc / 2 + 1);
@@ -526,8 +526,8 @@ main (int   argc,
 	}
       while (f[0] && v[0]);
       
-      gsl_filter_fir_approx (iorder, a, freq, value, n_points);
-      g_print ("FIR%u(z)=%s\n", iorder, gsl_poly_str (iorder - 1, a, "z")); /* FIXME: order-1 ?? */
+      gsl_filter_fir_approx (iorder, a, n_points, freq, value);
+      g_print ("FIR%u(z)=%s\n", iorder, gsl_poly_str (iorder, a, "z"));
     }
   else if (strncmp (arg, "poly", 4) == 0)
     {

@@ -524,7 +524,7 @@ load_wave_dsc (gpointer         data,
       wave_dsc_free (dsc);
       dsc = NULL;
       if (!scanner->parse_errors)
-	g_scanner_unexp_token (scanner, token, "identifier", "keyword", NULL, "discarding wave", TRUE); // FIXME
+	g_scanner_unexp_token (scanner, token, "identifier", "keyword", NULL, "discarding wave", TRUE); /* FIXME */
     }
   else
     {

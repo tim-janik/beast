@@ -1,3 +1,9 @@
+Wed Feb 13 18:12:16 2002  Tim Janik  <timj@gtk.org>
+
+	* gsltests.c: 
+	* gslfilter.c: applied patch from stefan with bug fixes and doc
+	additions.
+
 Wed Feb 13 17:32:45 2002  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.proc: add list-items() procedure.
