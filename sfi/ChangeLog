@@ -1,3 +1,8 @@
+Tue Jan 20 02:49:23 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sficxx.h sfidl-cxx.cc: Migrate to Sfi::Sequence (instead of
+	Bse::Sequence).
+
 Tue Jan 20 02:18:22 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sficxx.h: The bool operator and is_null() should be const.

@@ -287,7 +287,7 @@ public:
   {
     for (guint i = 0; i < length(); i++)
       cseq->elements[i].~Type();
-    cseq->n_elements = sh->length();
+    cseq->n_elements = sh.length();
     cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
     for (guint i = 0; i < length(); i++)
       new (cseq->elements + i) Type (sh[i]);

@@ -242,7 +242,7 @@ void CodeGeneratorCxx::run ()
 	  string content = typeField (si->content.type);
 
 	  printf("\n");
-	  printf("class %s : public Bse::Sequence<%s> {\n", name.c_str(), content.c_str());
+	  printf("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
 	  printf("public:\n");
 	  /* TODO: make this a constructor? */
 	  printf("  static %s _from_seq (SfiSeq *seq);\n", cTypeRet (si->name));
@@ -348,7 +348,7 @@ void CodeGeneratorCxx::run ()
 	  printf("%s::_to_seq ()\n", name.c_str());
 	  printf("{\n");
 	  printf("  SfiSeq *sfi_seq = sfi_seq_new ();\n");
-	  printf("  for (guint i = 0; i < size(); i++)\n");
+	  printf("  for (guint i = 0; i < length(); i++)\n");
 	  printf("  {\n");
 	  printf("    GValue *element = %s;\n", elementToValue.c_str());
 	  printf("    sfi_seq_append (sfi_seq, element);\n");
