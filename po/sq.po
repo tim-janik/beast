@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-18 11:02+0200\n"
+"POT-Creation-Date: 2004-08-19 11:02+0200\n"
 "PO-Revision-Date: 2004-01-12 15:14+0100\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -59,7 +59,6 @@ msgstr "_Ruaj"
 msgid "Save _As..."
 msgstr "Ruaje _Si..."
 
-#. GRUT modified this item
 #: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr "_Dalja"
@@ -281,10 +280,11 @@ msgstr ""
 msgid "Contents"
 msgstr "Përmbajtja"
 
+#. GRUT modified this item
 #. setup remaining bits
 #: beast-gtk/bstfiledialog.c:201
 msgid "File Selection"
-msgstr ""
+msgstr "Zgjedhja e file"
 
 #: beast-gtk/bstfiledialog.c:382
 msgid "Open Project"
@@ -294,9 +294,10 @@ msgstr ""
 msgid "Select File"
 msgstr "Zgjidh file"
 
+#. GRUT modified this item
 #: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
-msgstr ""
+msgstr "Zgjidh Directory"
 
 #: beast-gtk/bstfiledialog.c:449
 #, c-format
@@ -620,9 +621,10 @@ msgstr ""
 msgid "Select Color"
 msgstr "Zgjidh ngjyrën"
 
+#. GRUT modified this item
 #: beast-gtk/bstparam-color-spinner.c:116
 msgid "Color Entry"
-msgstr ""
+msgstr "Zëri i ngjyrës"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -2066,21 +2068,22 @@ msgstr ""
 msgid "Waves"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstsupershell.c:214
 msgid "Tracks"
-msgstr ""
+msgstr "Pistat"
 
-#. GRUT modified this item
 #: beast-gtk/bstsupershell.c:219
 msgid "Mixer"
 msgstr "Kontrolli i volumit"
 
+#. GRUT modified this item
 #: beast-gtk/bstsupershell.c:224 beast-gtk/bstsupershell.c:266
 #: beast-gtk/bstsupershell.c:284 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
-msgstr ""
+msgstr "Parametrat"
 
 #: beast-gtk/bstsupershell.c:229
 msgid "Parts"
@@ -2200,9 +2203,10 @@ msgstr "Gabim"
 msgid "Warning"
 msgstr "Kujdes"
 
+#. GRUT modified this item
 #: beast-gtk/bstusermessage.c:99
 msgid "Notice"
-msgstr ""
+msgstr "Njoftim"
 
 #: beast-gtk/bstusermessage.c:103
 msgid "Diagnostic"
@@ -2274,9 +2278,10 @@ msgstr ""
 msgid "Bus Name"
 msgstr "Emri"
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Configure"
-msgstr ""
+msgstr "Konfiguro"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Configure the column layout of the pattern editor"
@@ -2298,7 +2303,6 @@ msgstr ""
 msgid "E_xamples"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "Events"
 msgstr "Ndodhitë"
@@ -2800,12 +2804,10 @@ msgstr ""
 msgid "Output stage amplification"
 msgstr ""
 
-#. GRUT modified this item
 #: bse/bseautodoc.c:360 bse/bseautodoc.c:422
 msgid "Authors:"
 msgstr "Autorët:"
 
-#. GRUT modified this item
 #: bse/bseautodoc.c:365 bse/bseautodoc.c:425
 msgid "License:"
 msgstr "Liçenca:"
@@ -3102,9 +3104,10 @@ msgstr "Ngjit"
 msgid "High if the note is currently being pressed"
 msgstr ""
 
+#. GRUT modified this item
 #: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
 msgid "Velocity"
-msgstr ""
+msgstr "Shpejtësia"
 
 #: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
 msgid "Velocity of the note press"
@@ -3601,9 +3604,10 @@ msgstr "Autori"
 msgid "Person changing or creating this object"
 msgstr ""
 
+#. GRUT modified this item
 #: bse/bsesuper.c:106
 msgid "License"
-msgstr ""
+msgstr "Liçenca"
 
 #: bse/bsesuper.c:106
 msgid "Copyright license applying to this object"
