@@ -1,3 +1,8 @@
+Tue Jun 24 23:28:16 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.c (style_modify_fg_as_sensitive): free rc_style
+	when done.
+
 Mon Jun 23 20:43:59 2003  Tim Janik  <timj@gtk.org>
 
 	* shell/bsesh.c: return an error code!=0 (currently 102) if the

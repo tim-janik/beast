@@ -604,6 +604,7 @@ style_modify_fg_as_sensitive (GtkWidget *widget)
   rc_style->fg[GTK_STATE_INSENSITIVE].green = widget->style->fg[GTK_STATE_NORMAL].green;
   rc_style->fg[GTK_STATE_INSENSITIVE].blue = widget->style->fg[GTK_STATE_NORMAL].blue;
   gtk_widget_modify_style (widget, rc_style);
+  gtk_rc_style_unref (rc_style);
 }
 
 /**
