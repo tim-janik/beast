@@ -1,7 +1,6 @@
 FIXMES:
 - update release notes
 - add demo song
-- fix all test files
 - fix plugins in bsesh
 - fix engine deinitialization assertions in bseserver.c
 - default saving (SFI_PARAM_SKIP_DEFAULT)

@@ -1,3 +1,7 @@
+Thu Mar 13 18:04:21 2003  Tim Janik  <timj@gtk.org>
+
+	* test/*.bse: storage format fixups.
+
 Thu Mar 13 15:54:28 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: applied patch from Junichi Uekawa <dancer@debian.org>
