@@ -42,8 +42,11 @@ typedef struct
 
 
 /* --- convenience --- */
+gulong  gxk_nullify_in_object (gpointer object,
+                               gpointer location,
+                               gpointer location_object);
 #define gxk_nullify_on_destroy(object, location) \
-  g_signal_connect_swapped ((object), "destroy", G_CALLBACK (g_nullify_pointer), (location))
+  gxk_nullify_in_object ((object), (location), NULL)
 
 
 /* --- variables --- */

@@ -16,6 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "gxk/gxk.h"
+#include "gxkracktable.h"
+#include "gxkrackitem.h"
+
+
+/* --- prototype --- */
+static void     rack_test (void);
 
 
 /* --- variables --- */
@@ -69,6 +75,8 @@ main (int   argc,
   
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
+
+  rack_test ();
 
   /* test polygons */
   {
@@ -182,4 +190,55 @@ main (int   argc,
   gtk_main ();
 
   return 0;
+}
+
+static void
+toggle_edit_mode (GtkToggleButton *tb,
+                  GxkRackTable    *rtable)
+{
+  gxk_rack_table_set_edit_mode (rtable, tb->active);
+}
+
+static void
+exit_program ()
+{
+  exit (0);
+}
+
+static void
+rack_test (void)
+{
+  GtkWidget *win, *box = g_object_new (GTK_TYPE_VBOX, "visible", TRUE, NULL);
+  GtkWidget *button = g_object_new (GTK_TYPE_TOGGLE_BUTTON,
+                                    "visible", TRUE,
+                                    "use_underline", TRUE,
+                                    "label", "_Edit",
+                                    NULL);
+  GxkRackTable *rtable = g_object_new (GXK_TYPE_RACK_TABLE, NULL);
+  gtk_table_resize (GTK_TABLE (rtable), 20, 30);
+  gtk_box_pack_start (GTK_BOX (box), button, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), GTK_WIDGET (rtable), TRUE, TRUE, 0);
+  g_object_connect (button, "signal::clicked", toggle_edit_mode, rtable, NULL);
+  gtk_table_attach_defaults (GTK_TABLE (rtable),
+                             g_object_new (GTK_TYPE_BUTTON, "visible", 1, "label", "Huhu", NULL),
+                             3, 20, 3, 5);
+  gtk_table_attach_defaults (GTK_TABLE (rtable),
+                             g_object_new (GXK_TYPE_RACK_ITEM,
+                                           "child", g_object_new (GTK_TYPE_LABEL, "visible", 1, "label", "RackItem", NULL),
+                                           NULL),
+                             3, 20, 7, 9);
+  win = g_object_new (GTK_TYPE_WINDOW,
+                      "border_width", 20,
+                      "child", box,
+                      "default_width", 400,
+                      "default_height", 400,
+                      "sensitive", TRUE,
+                      "visible", TRUE,
+                      NULL);
+  g_object_connect (win,
+                    "signal::hide", exit_program, NULL,
+                    "signal::delete-event", gtk_widget_hide_on_delete, NULL,
+                    NULL);
+  /* start main loop */
+  gtk_main ();
 }

@@ -95,6 +95,9 @@ void            gxk_window_remove_action_factory(GtkWindow              *window,
 void      gxk_widget_publish_action_list        (gpointer                widget,
                                                  const gchar            *prefix,
                                                  GxkActionList          *alist);
+GSList*   gxk_widget_peek_action_widgets        (gpointer                widget,
+                                                 const gchar            *prefix,
+                                                 gulong                  action_id);
 void      gxk_widget_publish_actions            (gpointer                widget,
                                                  const gchar            *prefix,
                                                  guint                   n_actions,

@@ -1,3 +1,23 @@
+Fri Nov 28 03:27:55 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: nullify notebook on destruction, so we don't operate
+	on an invalid widget.
+
+	* beast-gtk/gxk/gxkaction.[hc]: new function gxk_widget_peek_action_widgets()
+	to modify action widgets after creation.
+
+	* beast-gtk/gxk/gxkglobals.[hc]: new function gxk_nullify_in_object() which
+	disconnects a nullification handler if either object is destroyed.
+
+	* beast-gtk/gxk/gxkracktable.[hc]:
+	drag window bug fixes. 
+	added code to create and adjust child resizing handle.
+	added test code for resizing handle.
+	added gxk_rack_table_find_xy_child() to find children by coordinates.
+	added leave handler to clear resize handle.
+
+	* beast-gtk/gxk/gxktest.c: added GxkRackTable test.
+
 Fri Nov 28 03:13:09 2003  Tim Janik  <timj@gtk.org>
 
 	* tests/Makefile.am: rewrote cxxapi generation rules.

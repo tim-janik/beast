@@ -42,3 +42,14 @@ gxk_init (void)
   _gxk_init_actions ();
   _gxk_init_gadget_types ();
 }
+
+gulong
+gxk_nullify_in_object (gpointer object,
+                       gpointer location,
+                       gpointer location_object)
+{
+  GClosure *closure = g_cclosure_new_swap (G_CALLBACK (g_nullify_pointer), location, NULL);
+  if (location_object)
+    g_object_watch_closure (location_object, closure);
+  return g_signal_connect_closure (object, "destroy", closure, 0);
+}

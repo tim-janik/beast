@@ -20,13 +20,13 @@
 #include <string.h>
 
 /* --- prototypes --- */
-static void       gxk_rack_item_class_init      (GxkRackItemClass       *klass);
-static void       gxk_rack_item_init            (GxkRackItem            *self);
-static void       gxk_rack_item_destroy         (GtkObject              *object);
-static void       gxk_rack_item_parent_set      (GtkWidget              *widget,
-                                                 GtkWidget              *previous_parent);
-static void       gxk_rack_item_button_press    (GxkRackItem            *self,
-                                                 GdkEventButton         *event);
+static void     gxk_rack_item_class_init         (GxkRackItemClass *klass);
+static void     gxk_rack_item_init               (GxkRackItem      *self);
+static void     gxk_rack_item_destroy            (GtkObject        *object);
+static void     gxk_rack_item_parent_set         (GtkWidget        *widget,
+                                                  GtkWidget        *previous_parent);
+static void     gxk_rack_item_button_press       (GxkRackItem      *self,
+                                                  GdkEventButton   *event);
 
 
 /* --- static variables --- */
@@ -87,6 +87,9 @@ gxk_rack_item_class_init (GxkRackItemClass *class)
 static void
 gxk_rack_item_init (GxkRackItem *self)
 {
+  g_object_set (self,
+                "visible", TRUE,
+                NULL);
   self->rack_child_info.col = -1;
   self->rack_child_info.row = -1;
   self->rack_child_info.hspan = -1;
@@ -139,6 +142,7 @@ gxk_rack_item_button_press (GxkRackItem    *self,
   if (event->button == 3)
     {
     }
+  g_print ("rack-item, button-%u pressed\n", event->button);
 }
 
 void

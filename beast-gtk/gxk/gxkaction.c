@@ -671,6 +671,27 @@ gxk_widget_publish_action_list (gpointer       widget,
   gxk_widget_update_actions_downwards (widget);
 }
 
+GSList*
+gxk_widget_peek_action_widgets (gpointer                widget,
+                                const gchar            *prefix,
+                                gulong                  action_id)
+{
+  GSList *asetlist = g_object_get_qdata (widget, quark_widget_actions);
+  for (; asetlist; asetlist = asetlist->next)
+    {
+      ActionSet *aset = asetlist->data;
+      if (strcmp (aset->prefix, prefix) == 0)
+        {
+          guint i;
+          for (i = 0; i < aset->alist->n_entries; i++)
+            if (aset->alist->entries[i]->action.action_id == action_id)
+              return aset->alist->entries[i]->widgets;
+          return NULL;
+        }
+    }
+  return NULL;
+}
+
 void
 gxk_widget_republish_actions (gpointer                widget,
                               const gchar            *prefix,

@@ -267,6 +267,7 @@ bst_app_init (BstApp *app)
   gxk_gadget_add (app->box, "control-area", app->pcontrols);
   /* setup the main notebook */
   app->notebook = gxk_gadget_find (app->box, "main-notebook");
+  gxk_nullify_in_object (app->notebook, &app->notebook, app);
   g_object_connect (app->notebook,
                     "swapped_signal_after::switch-page", gxk_widget_update_actions, app,
                     "signal_after::switch-page", gxk_widget_viewable_changed, NULL,

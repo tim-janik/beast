@@ -19,7 +19,7 @@
 #ifndef __GXK_RACK_ITEM_H__
 #define __GXK_RACK_ITEM_H__
 
-#include "gxkracktable.h"
+#include <gxk/gxkracktable.h>
 
 G_BEGIN_DECLS
 
@@ -37,7 +37,7 @@ typedef struct  _GxkRackItem            GxkRackItem;
 typedef struct  _GxkRackItemClass       GxkRackItemClass;
 struct _GxkRackItem
 {
-  GtkFrame       parent_instance;
+  GtkFrame         parent_instance;
   /* maintained by GxkRackTable */
   GxkRackChildInfo rack_child_info;
   guint            empty_frame : 1;

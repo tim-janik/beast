@@ -66,6 +66,11 @@ struct _GxkRackTable
   gint              xofs;
   gint              yofs;
   GtkWidget        *child;
+
+  /* child resizing windows */
+  GdkWindow     *crq1, *crq2, *crq3, *crq4;     /* upper left, right and bottom left, right corners */
+  GdkWindow     *crb1, *crb2, *crb3, *crb4;     /* upper, right, bottom and left bars */
+  gint           crx, cry, crw, crh;
 };
 struct _GxkRackTableClass
 {
