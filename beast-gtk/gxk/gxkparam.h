@@ -124,6 +124,11 @@ BstParam*	 bst_param_rec_create	  (GParamSpec	   *pspec,
 					   SfiRec	   *rec);
 
 
+/* --- miscellaneous utilities --- */
+SfiProxy	bst_proxy_seq_list_match  (GSList	   *proxy_seq_slist,
+					   const gchar	   *path_tail);
+
+
 /* --- param implementation utils --- */
 void	      _bst_init_params		(void);
 BstParam*     bst_param_alloc		(BstParamImpl	*impl,

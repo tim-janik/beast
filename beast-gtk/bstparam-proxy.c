@@ -126,10 +126,30 @@ param_proxy_change_value (GtkWidget *action,
 		  }
 	    }
 	  if (!item && l)
-	    for (i = 0; pop->paths[i]; i++)	/* find tail matching path */
+	    for (i = 0; pop->paths[i]; i++)	/* try tail matching path */
 	      {
 		guint j = strlen (pop->paths[i]);
 		if (j >= l && strcmp (string, pop->paths[i] + j - l) == 0)
+		  {
+		    item = pop->pseq->proxies[i];
+		    break;
+		  }
+	      }
+	  if (!item && l)			/* try case insensitive exact match with prefix */
+	    {
+	      guint j = strlen (pop->prefix);
+	      for (i = 0; pop->paths[i]; i++)
+		if (g_ascii_strcasecmp (string, pop->paths[i] + j) == 0)
+		  {
+		    item = pop->pseq->proxies[i];
+		    break;
+		  }
+	    }
+	  if (!item && l)
+	    for (i = 0; pop->paths[i]; i++)	/* try case insensitive tail matching path */
+	      {
+		guint j = strlen (pop->paths[i]);
+		if (j >= l && g_ascii_strcasecmp (string, pop->paths[i] + j - l) == 0)
 		  {
 		    item = pop->pseq->proxies[i];
 		    break;
@@ -144,6 +164,37 @@ param_proxy_change_value (GtkWidget *action,
 	  bst_param_apply_value (bparam);
 	}
     }
+}
+
+SfiProxy
+bst_proxy_seq_list_match (GSList      *proxy_seq_slist,
+			  const gchar *text)
+{
+  SfiProxy cmatch = 0, tmatch = 0, tcmatch = 0;
+  GSList *slist;
+  guint l, i;
+  if (!text || !text[0])
+    return 0;
+  l = strlen (text);
+  for (slist = proxy_seq_slist; slist; slist = slist->next)
+    {
+      BseProxySeq *pseq = slist->data;
+      for (i = 0; i < pseq->n_proxies; i++)
+	{
+	  const gchar *path = bse_item_get_uname_path (pseq->proxies[i]);
+	  guint j = path ? strlen (path) : 0;
+	  if (j == l && strcmp (text, path) == 0)
+	    return pseq->proxies[i];	/* found exact match */
+	  else if (!cmatch && j == l && g_strcasecmp (text, path) == 0)
+	    cmatch = pseq->proxies[i];	/* remember first case insensitive match */
+	  else if (!tmatch && j > l && strcmp (text, path + j - l) == 0)
+	    tmatch = pseq->proxies[i];	/* remember first tail match */
+	  else if (!tcmatch && j > l && g_strcasecmp (text, path + j - l) == 0)
+	    tcmatch = pseq->proxies[i];	/* remember first case insensitive tail match */
+	}
+    }
+  /* fallback to tail match, then case insensitive matches */
+  return tmatch ? tmatch : cmatch ? cmatch : tcmatch;
 }
 
 static gboolean

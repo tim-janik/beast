@@ -1,3 +1,17 @@
+Mon Apr 28 04:27:47 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackview.c: support waves besides synth networks in
+	the "Synth" column. use bst_proxy_seq_list_match() to find the matching
+	proxy.
+
+	* beast-gtk/bstparam-proxy.c (param_proxy_change_value): support case
+	insensitive matches.
+
+	* beast-gtk/bstparam.h:
+	* beast-gtk/bstparam-proxy.c: added bst_proxy_seq_list_match() which
+	makes case (in-)sensitive exact/tail matches of uname paths available
+	to other code portions.
+
 Fri Apr 25 20:49:54 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* TODO: removed obsolete items

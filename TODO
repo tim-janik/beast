@@ -1,4 +1,11 @@
 FIXMES:
+- fix sub-synth "snet" property setter
+- fix SNet derivation
+- fix internal synths being displayed by beast
+- implement (GUI) for locked properties
+- fixup filemenu/dialog for WAVE recording
+- mark intern synths as INTERNAL (track's mono-synth)
+- never gather INTERNAL items in bse_item_gather_proxies()
 - loading cmt LADSPA plugins from the cmt debian package causes beast abort:
   BSE-ERROR **: Fatal: failed to reinitialize plugin "/usr/lib/ladspa/cmt.so": plugin types changed on disk
 - check whether bse/icons/Makefile.icons is included in dist tarball

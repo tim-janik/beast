@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsttrackview.h"
+#include "bstparam.h"
 
 #include <stdlib.h> /* strtol */
 #include <string.h>
@@ -166,7 +167,7 @@ track_view_fill_value (BstItemView *iview,
       const gchar *string;
       gboolean vbool;
       SfiInt vint;
-      SfiProxy item, snet;
+      SfiProxy item, snet, wave;
     case COL_NAME:
       item = bse_container_get_item (iview->container, iview->item_type, seqid);
       g_value_set_string (value, bse_item_get_name (item));
@@ -184,14 +185,50 @@ track_view_fill_value (BstItemView *iview,
     case COL_SYNTH:
       item = bse_container_get_item (iview->container, iview->item_type, seqid);
       snet = 0;
-      bse_proxy_get (item, "snet", &snet, NULL);
-      g_value_set_string (value, snet ? bse_item_get_name (snet) : "");
+      bse_proxy_get (item, "snet", &snet, "wave", &wave, NULL);
+      g_value_set_string (value, snet || wave ? bse_item_get_name (snet ? snet : wave) : "");
       break;
     case COL_BLURB:
       item = bse_container_get_item (iview->container, iview->item_type, seqid);
       bse_proxy_get (item, "blurb", &string, NULL);
       g_value_set_string (value, string ? string : "");
       break;
+    }
+}
+
+static void
+track_view_synth_edited (BstTrackView *self,
+			 const gchar  *strpath,
+			 const gchar  *text)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      guint seqid = row + 1;
+      SfiProxy item = bse_container_get_item (BST_ITEM_VIEW (self)->container,
+					      BST_ITEM_VIEW (self)->item_type,
+					      seqid);
+      if (text)
+	{
+	  SfiProxy proxy = 0;
+	  GSList *slist = NULL;
+	  /* list possible snet/wave candidates */
+	  slist = g_slist_append (slist, bse_item_list_proxies (item, "snet"));
+	  slist = g_slist_append (slist, bse_item_list_proxies (item, "wave"));
+	  /* find best match */
+	  proxy = bst_proxy_seq_list_match (slist, text);
+	  g_slist_free (slist);
+	  if (proxy && BSE_IS_SNET (proxy))
+	    bse_proxy_set (item, "snet", proxy, NULL);
+	  else if (proxy && BSE_IS_WAVE (proxy))
+	    bse_proxy_set (item, "wave", proxy, NULL);
+	  else
+	    bse_proxy_set (item, "snet", 0, "wave", 0, NULL);
+	}
+      else
+	bse_proxy_set (item, "snet", 0, "wave", 0, NULL);
     }
 }
 
@@ -240,41 +277,6 @@ track_view_voices_edited (BstTrackView *self,
 	  if (i > 0)
 	    bse_proxy_set (item, "n_voices", i, NULL);
 	}
-    }
-}
-
-static void
-track_view_synth_edited (BstTrackView *self,
-			 const gchar  *strpath,
-			 const gchar  *text)
-{
-  g_return_if_fail (BST_IS_TRACK_VIEW (self));
-
-  if (strpath)
-    {
-      gint row = gxk_tree_spath_index0 (strpath);
-      guint seqid = row + 1;
-      SfiProxy snet = 0, item = bse_container_get_item (BST_ITEM_VIEW (self)->container,
-							BST_ITEM_VIEW (self)->item_type,
-							seqid);
-      guint i, l = text ? strlen (text) : 0;
-      if (l)
-	{
-	  SfiProxy ematch = 0, tmatch = 0;
-	  /* list possible snet candidates */
-	  BseProxySeq *pseq = bse_item_list_proxies (item, "snet");
-	  for (i = 0; !ematch && i < pseq->n_proxies; i++)
-	    {
-	      const gchar *path = bse_item_get_uname_path (pseq->proxies[i]);
-	      guint j = path ? strlen (path) : 0;
-	      if (j == l && strcmp (text, path) == 0)
-		ematch = pseq->proxies[i];	/* find exact match */
-	      else if (!tmatch && j >= l && strcmp (text, path + j - l) == 0)
-		tmatch = pseq->proxies[i];	/* fallback to first tail match */
-	    }
-	  snet = ematch ? ematch : tmatch;
-	}
-      bse_proxy_set (item, "snet", snet, NULL);
     }
 }
 
@@ -508,7 +510,7 @@ bst_track_view_create_tree (BstItemView *iview)
 				 COL_VOICES, 0.5, "V", "Maximum number of voices for simultaneous playback",
 				 track_view_voices_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree,
-				  COL_SYNTH, 0.5, "Synth", "Synthesizer network to be used by this track",
+				  COL_SYNTH, 0.5, "Synth", "Synthesizer network or wave to be used by this track",
 				  track_view_synth_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree,
 				 COL_BLURB, 0.0, "Comment", NULL,
