@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,21 +40,30 @@ extern "C" {
 #define	BSE_STORAGE_AT_BOL(st)		((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_AT_BOL) != 0)
 #define	BSE_STORAGE_PUT_DEFAULTS(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_PUT_DEFAULTS) != 0)
 #define	BSE_STORAGE_SELF_CONTAINED(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_SELF_CONTAINED) != 0)
+#define	BSE_STORAGE_PROXIES_ENABLED(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_PROXIES_ENABLED) != 0)
+
 
 /* --- BseStorage flags --- */
 typedef enum			/*< skip >*/
 {
-  BSE_STORAGE_FLAG_READABLE	  = 1 << 0,
-  BSE_STORAGE_FLAG_WRITABLE	  = 1 << 1,
-  BSE_STORAGE_FLAG_NEEDS_BREAK	  = 1 << 2,
-  BSE_STORAGE_FLAG_AT_BOL	  = 1 << 3,
-  BSE_STORAGE_FLAG_PUT_DEFAULTS	  = 1 << 4,
-  BSE_STORAGE_FLAG_SELF_CONTAINED = 1 << 5
+  BSE_STORAGE_FLAG_READABLE	   = 1 << 0,
+  BSE_STORAGE_FLAG_WRITABLE	   = 1 << 1,
+  BSE_STORAGE_FLAG_NEEDS_BREAK	   = 1 << 2,
+  BSE_STORAGE_FLAG_AT_BOL	   = 1 << 3,
+  BSE_STORAGE_FLAG_PUT_DEFAULTS	   = 1 << 4,
+  BSE_STORAGE_FLAG_SELF_CONTAINED  = 1 << 5,
+  BSE_STORAGE_FLAG_PROXIES_ENABLED = 1 << 6
 } BseStorageFlags;
 
 
 /* --- BseStorage --- */
-typedef struct _BseStorageBBlock  BseStorageBBlock;
+typedef struct _BseStorageBBlock   BseStorageBBlock;
+typedef struct _BseStorageItemLink BseStorageItemLink;
+typedef void (*BseStorageRestoreLink)	(gpointer	 data,
+					 BseStorage	*storage,
+					 BseItem	*from_item,
+					 BseItem	*to_item,
+					 const gchar	*error);
 struct _BseStorage
 {
   BseStorageFlags	 flags;
@@ -64,9 +73,7 @@ struct _BseStorage
   GScanner		*scanner;
   gint			 fd;
   glong			 bin_offset;
-  gpointer		 resolver_fd;
-  BsePathResolver	 resolver;
-  gpointer		 resolver_data;
+  BseStorageItemLink	*item_links;
   
   /* writing */
   GSList		*indent;
@@ -83,7 +90,10 @@ void		bse_storage_prepare_write	(BseStorage	*storage,
 						 gboolean        store_defaults);
 BseErrorType	bse_storage_input_file		(BseStorage	*storage,
 						 const gchar	*file_name);
+BseErrorType	bse_storage_input_text		(BseStorage	*storage,
+						 const gchar	*text);
 void		bse_storage_reset		(BseStorage	*storage);
+void		bse_storage_enable_proxies	(BseStorage	*storage);
 
 
 /* --- writing --- */
@@ -102,7 +112,7 @@ void		bse_storage_needs_break		(BseStorage	*storage);
 void		bse_storage_put_param		(BseStorage	*storage,
 						 const GValue	*value,
 						 GParamSpec	*pspec);
-void		bse_storage_put_param_value	(BseStorage	*storage,
+void		bse_storage_put_value		(BseStorage	*storage,
 						 const GValue	*value,
 						 GParamSpec	*pspec);
 void		bse_storage_put_wave_handle	(BseStorage	*storage,
@@ -118,11 +128,14 @@ BseErrorType	bse_storage_store_procedure	(gpointer	   storage,
 						 BseProcedureClass *proc,
 						 const GValue      *ivalues,
 						 GValue            *ovalues);
+void		bse_storage_put_item_link	(BseStorage	*storage,
+						 BseItem	*from_item,
+						 BseItem	*to_item);
 
 
 /* --- reading --- */
-void		bse_storage_set_path_resolver	(BseStorage	*storage,
-						 BsePathResolver resolver,
+void		bse_storage_set_upath_resolver	(BseStorage	*storage,
+						 BseUPathResolver resolver,
 						 gpointer        func_data);
 gboolean	bse_storage_input_eof		(BseStorage	*storage);
 void		bse_storage_error		(BseStorage	*storage,
@@ -134,6 +147,12 @@ void		bse_storage_warn		(BseStorage	*storage,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2,3);
 GTokenType	bse_storage_warn_skip		(BseStorage	*storage,
+						 const gchar	*format,
+						 ...) G_GNUC_PRINTF (2,3);
+/* use this instead of bse_storage_warn_skip() if the current token
+ * hasn't been processed yet (might be the seeked for ')')
+ */
+GTokenType	bse_storage_warn_skipc		(BseStorage	*storage,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2,3);
 GTokenType	bse_storage_skip_statement	(BseStorage	*storage);
@@ -148,7 +167,15 @@ GTokenType	bse_storage_parse_wave_handle	(BseStorage	*storage,
 						 GslDataHandle **data_handle_p);
 GTokenType	bse_storage_parse_param_value	(BseStorage	*storage,
 						 GValue		*value,
-						 GParamSpec	*pspec);
+						 GParamSpec	*pspec,
+						 gboolean	 close_statement);
+GTokenType	bse_storage_parse_item_link	(BseStorage	*storage,
+						 BseItem	*from_item,
+						 BseStorageRestoreLink restore_link,
+						 gpointer	  data);
+GTokenType	bse_storage_parse_eval		(BseStorage	*storage,
+						 GValue		*retval);
+void		bse_storage_resolve_item_links	(BseStorage	*storage);
 
 
 /* --- helpers --- */

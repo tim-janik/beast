@@ -19,32 +19,291 @@
 
 #include "bswprivate.h"
 #include "gslcommon.h"
+#include <string.h>
 
 
-/* --- macros --- */
-#define BSW_IS_VITER_INT(vi)	((vi) && (vi)->type == BSW_TYPE_VITER_INT)
-#define BSW_IS_VITER_STRING(vi)	((vi) && (vi)->type == BSW_TYPE_VITER_STRING)
-#define BSW_IS_VITER_BOXED(vi)	((vi) && (vi)->type == BSW_TYPE_VITER_BOXED)
-#define BSW_IS_VITER_PROXY(vi)	((vi) && (vi)->type == BSW_TYPE_VITER_PROXY)
-
-#define	PREALLOC_BLOCK_SIZE	(8)
+#define	ITER_ITEMS_PREALLOC	(8)
 
 
-/* --- structures --- */
-struct _BswVIter
+/* --- BSW iterator base --- */
+typedef union
+{
+  gulong   v_ulong;
+  gfloat   v_float;
+  gchar   *v_string;
+  gpointer v_pointer;
+} BswIterItem;
+typedef BswIterItem (*BswIterCopyItem)	(const BswIterItem	item);
+typedef void	    (*BswIterFreeItem)	(BswIterItem		item);
+typedef struct
+{
+  BswIterCopyItem copy;
+  BswIterFreeItem free;
+} BswIterFuncs;
+struct _BswIter
+{
+  GType        type;
+  guint        n_items;
+  guint        pos;
+  BswIterItem *items;
+  guint        prealloc;
+};
+
+static GQuark iter_func_quark = 0;
+
+static gpointer
+iter_copy (gpointer boxed)
+{
+  return boxed ? bsw_iter_copy (boxed) : NULL;
+}
+
+static void
+iter_free (gpointer boxed)
+{
+  if (boxed)
+    bsw_iter_free (boxed);
+}
+
+static GType
+bsw_iter_make_type (const gchar  *type_name,
+		    BswIterFuncs *funcs)
 {
   GType type;
-  GType	boxed_type;
-  guint n_items;
-  guint pos;
-  union {
-    guint    v_int;
-    gchar   *v_string;
-    gpointer v_boxed;
-    BswProxy v_proxy;
-  } *items;
-  guint prealloc;
-};
+
+  g_return_val_if_fail (strncmp ("BswIter", type_name, 7) == 0, 0);
+  g_return_val_if_fail (funcs != NULL, 0);
+
+  type = g_boxed_type_register_static (type_name, iter_copy, iter_free);
+
+  if (!iter_func_quark)
+    iter_func_quark = g_quark_from_static_string ("BswIterFuncs");
+
+  g_type_set_qdata (type, iter_func_quark, funcs);
+
+  return type;
+}
+
+static BswIterFuncs*
+bsw_iter_funcs (GType type)
+{
+  return g_type_get_qdata (type, iter_func_quark);
+}
+
+static inline guint
+bsw_iter_grow1 (BswIter *iter)
+{
+  guint i;
+
+  i = iter->n_items++;
+  if (iter->n_items > iter->prealloc)
+    {
+      iter->prealloc += ITER_ITEMS_PREALLOC;
+      iter->items = g_realloc (iter->items, sizeof (iter->items[0]) * iter->prealloc);
+      memset (iter->items + i, 0, sizeof (iter->items[0]) * (iter->prealloc - i));
+    }
+  return i;
+}
+
+gboolean
+bsw_iter_check_type (GType type)
+{
+  BswIterFuncs *funcs = bsw_iter_funcs (type);
+  gchar *name = g_type_name (type);
+
+  return funcs && strncmp ("BswIter", name, 7) == 0;
+}
+
+BswIter*
+bsw_iter_create (GType type,
+		 guint prealloc)
+{
+  BswIter *iter;
+
+  g_return_val_if_fail (bsw_iter_check_type (type), NULL);
+
+  iter = gsl_new_struct (BswIter, 1);
+  iter->type = type;
+
+  iter->n_items = 0;
+  iter->prealloc = prealloc;
+  iter->pos = 0;
+
+  iter->items = g_malloc0 (sizeof (iter->items[0]) * iter->prealloc);
+
+  return iter;
+}
+
+BswIter*
+bsw_iter_copy (BswIter *iter)
+{
+  BswIterFuncs *funcs;
+  BswIter *diter;
+  guint i;
+
+  g_return_val_if_fail (BSW_IS_ITER (iter), NULL);
+
+  funcs = bsw_iter_funcs (iter->type);
+  diter = bsw_iter_create (iter->type, iter->n_items);
+  if (funcs->copy)
+    for (i = 0; i < iter->n_items; i++)
+      diter->items[i] = funcs->copy (iter->items[i]);
+  else
+    for (i = 0; i < iter->n_items; i++)
+      memcpy (&diter->items[i], &iter->items[i], sizeof (iter->items[i]));
+  diter->n_items = iter->n_items;
+
+  return diter;
+}
+
+void
+bsw_iter_free (BswIter *iter)
+{
+  BswIterFuncs *funcs;
+  guint i;
+
+  g_return_if_fail (BSW_IS_ITER (iter));
+
+  funcs = bsw_iter_funcs (iter->type);
+  if (funcs->free)
+    for (i = 0; i < iter->n_items; i++)
+      funcs->free (iter->items[i]);
+  g_free (iter->items);
+  iter->type = 0;
+  gsl_delete_struct (BswIter, iter);
+}
+
+void
+bsw_iter_rewind (BswIter *iter)
+{
+  g_return_if_fail (BSW_IS_ITER (iter));
+
+  iter->pos = 0;
+}
+
+guint
+bsw_iter_n_left (BswIter *iter)
+{
+  g_return_val_if_fail (BSW_IS_ITER (iter), 0);
+
+  return iter->n_items - iter->pos;
+}
+
+void
+bsw_iter_next (BswIter *iter)
+{
+  g_return_if_fail (BSW_IS_ITER (iter));
+  g_return_if_fail (iter->pos < iter->n_items);
+
+  iter->pos++;
+}
+
+void
+bsw_iter_prev (BswIter *iter)
+{
+  g_return_if_fail (BSW_IS_ITER (iter));
+  g_return_if_fail (iter->pos > 0);
+
+  iter->pos--;
+}
+
+void
+bsw_iter_jump (BswIter *iter,
+	       guint    nth)
+{
+  g_return_if_fail (BSW_IS_ITER (iter));
+  g_return_if_fail (nth <= iter->n_items);
+
+  iter->pos = nth;
+}
+
+gboolean
+bsw_iter_check (const BswIter *iter)
+{
+  return iter != NULL && bsw_iter_check_type (iter->type);
+}
+
+gboolean
+bsw_iter_check_is_a (const BswIter *iter,
+		     GType          type)
+{
+  return bsw_iter_check (iter) && g_type_is_a (iter->type, type);
+}
+
+
+/* --- discrete iterators --- */
+GType
+bsw_iter_int_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      static BswIterFuncs funcs = {
+	(BswIterCopyItem) NULL,
+	(BswIterFreeItem) NULL,
+      };
+      type = bsw_iter_make_type ("BswIterInt", &funcs);
+    }
+  return type;
+}
+
+gint
+bsw_iter_get_int (BswIterInt *iter)
+{
+  g_return_val_if_fail (BSW_IS_ITER_INT (iter), 0);
+  g_return_val_if_fail (iter->pos < iter->n_items, 0);
+
+  return iter->items[iter->pos].v_ulong;
+}
+
+static BswIterItem
+iter_string_copy (const BswIterItem item)
+{
+  BswIterItem ditem;
+  ditem.v_string = g_strdup (item.v_string);
+  return ditem;
+}
+
+static void
+iter_string_free (BswIterItem item)
+{
+  g_free (item.v_string);
+}
+
+GType
+bsw_iter_string_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      static BswIterFuncs funcs = {
+	iter_string_copy,
+	iter_string_free,
+      };
+      type = bsw_iter_make_type ("BswIterString", &funcs);
+    }
+  return type;
+}
+
+const gchar*
+bsw_iter_get_string (BswIterString *iter)
+{
+  g_return_val_if_fail (BSW_IS_ITER_STRING (iter), NULL);
+  g_return_val_if_fail (iter->pos < iter->n_items, NULL);
+
+  return iter->items[iter->pos].v_string;
+}
+
+void
+bsw_iter_add_string_take_ownership (BswIterString *iter,
+				    gchar         *string)
+{
+  guint i;
+
+  g_return_if_fail (BSW_IS_ITER_STRING (iter));
+
+  i = bsw_iter_grow1 (iter);
+  iter->items[i].v_string = string;
+}
 
 
 /* --- BSW proxy --- */
@@ -87,299 +346,40 @@ bsw_param_spec_proxy (const gchar *name,
   return pspec;
 }
 
-
-/* --- BSW value iterators --- */
-static gpointer
-iter_copy (gpointer boxed)
-{
-  return boxed ? bsw_viter_copy (boxed) : NULL;
-}
-
-static void
-iter_free (gpointer boxed)
-{
-  if (boxed)
-    bsw_viter_free (boxed);
-}
-
 GType
-bsw_viter_int_get_type (void)
+bsw_iter_proxy_get_type (void)
 {
   static GType type = 0;
   if (!type)
-    type = g_boxed_type_register_static ("BswVIterInt", iter_copy, iter_free);
-  return type;
-}
-
-GType
-bsw_viter_string_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    type = g_boxed_type_register_static ("BswVIterString", iter_copy, iter_free);
-  return type;
-}
-
-GType
-bsw_viter_boxed_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    type = g_boxed_type_register_static ("BswVIterBoxed", iter_copy, iter_free);
-  return type;
-}
-
-GType
-bsw_viter_proxy_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    type = g_boxed_type_register_static ("BswVIterProxy", iter_copy, iter_free);
-  return type;
-}
-
-GType
-bsw_viter_type (BswVIter *iter)
-{
-  g_return_val_if_fail (BSW_IS_VITER (iter), 0);
-
-  return iter->type;
-}
-
-BswVIter*
-bsw_viter_create (GType type,
-		  guint prealloc)
-{
-  BswVIter *iter;
-
-  g_return_val_if_fail (type != G_TYPE_BOXED && G_TYPE_IS_BOXED (type), NULL);
-
-  iter = gsl_new_struct (BswVIter, 1);
-  if (type == BSW_TYPE_VITER_INT ||
-      type == BSW_TYPE_VITER_STRING ||
-      type == BSW_TYPE_VITER_PROXY)
-   {
-     iter->type = type;
-     iter->boxed_type = 0;
-   }
-  else /* (G_TYPE_IS_BOXED (type)) */
     {
-      iter->type = BSW_TYPE_VITER_BOXED;
-      iter->boxed_type = type;
+      static BswIterFuncs funcs = {
+        (BswIterCopyItem) NULL,
+	(BswIterFreeItem) NULL,
+      };
+      type = bsw_iter_make_type ("BswIterProxy", &funcs);
     }
-
-  g_return_val_if_fail (BSW_IS_VITER (iter), NULL);
-
-  iter->n_items = 0;
-  iter->prealloc = prealloc;
-  iter->pos = 0;
-
-  iter->items = g_malloc0 (sizeof (iter->items[0]) * iter->prealloc);
-
-  return iter;
-}
-
-BswVIter*
-bsw_viter_copy (BswVIter *iter)
-{
-  BswVIter *diter;
-  guint i;
-
-  g_return_val_if_fail (BSW_IS_VITER (iter), NULL);
-
-  if (BSW_IS_VITER_BOXED (iter))
-    diter = bsw_viter_create (iter->boxed_type, iter->n_items);
-  else
-    diter = bsw_viter_create (iter->type, iter->n_items);
-  if (BSW_IS_VITER_STRING (diter))
-    for (i = 0; i < iter->n_items; i++)
-      diter->items[i].v_string = g_strdup (iter->items[i].v_string);
-  else if (BSW_IS_VITER_BOXED (diter))
-    for (i = 0; i < iter->n_items; i++)
-      diter->items[i].v_boxed = iter->items[i].v_boxed ? g_boxed_copy (diter->boxed_type, iter->items[i].v_boxed) : NULL;
-  else
-    for (i = 0; i < iter->n_items; i++)
-      memcpy (&diter->items[i], &iter->items[i], sizeof (iter->items[i]));
-  diter->n_items = iter->n_items;
-
-  return diter;
-}
-
-void
-bsw_viter_free (BswVIter *iter)
-{
-  guint i;
-
-  g_return_if_fail (BSW_IS_VITER (iter));
-
-  if (BSW_IS_VITER_STRING (iter))
-    for (i = 0; i < iter->n_items; i++)
-      g_free (iter->items[i].v_string);
-  else if (BSW_IS_VITER_BOXED (iter))
-    for (i = 0; i < iter->n_items; i++)
-      if (iter->items[i].v_boxed)
-	g_boxed_free (iter->boxed_type, iter->items[i].v_boxed);
-  g_free (iter->items);
-  iter->type = 0;
-  gsl_delete_struct (BswVIter, iter);
-}
-
-void
-bsw_viter_rewind (BswVIter *iter)
-{
-  g_return_if_fail (BSW_IS_VITER (iter));
-
-  iter->pos = 0;
-}
-
-guint
-bsw_viter_n_left (BswVIter *iter)
-{
-  g_return_val_if_fail (BSW_IS_VITER (iter), 0);
-
-  return iter->n_items - iter->pos;
-}
-
-void
-bsw_viter_next (BswVIter *iter)
-{
-  g_return_if_fail (BSW_IS_VITER (iter));
-  g_return_if_fail (iter->pos < iter->n_items);
-
-  iter->pos++;
-}
-
-void
-bsw_viter_prev (BswVIter *iter)
-{
-  g_return_if_fail (BSW_IS_VITER (iter));
-  g_return_if_fail (iter->pos > 0);
-
-  iter->pos--;
-}
-
-void
-bsw_viter_jump (BswVIter *iter,
-		guint     nth)
-{
-  g_return_if_fail (BSW_IS_VITER (iter));
-  g_return_if_fail (nth <= iter->n_items);
-
-  iter->pos = nth;
-}
-
-gint
-bsw_viter_get_int (BswVIterInt *iter)
-{
-  g_return_val_if_fail (BSW_IS_VITER_INT (iter), 0);
-  g_return_val_if_fail (iter->pos < iter->n_items, 0);
-
-  return iter->items[iter->pos].v_int;
-}
-
-gchar*
-bsw_viter_get_string (BswVIterString *iter)
-{
-  g_return_val_if_fail (BSW_IS_VITER_STRING (iter), NULL);
-  g_return_val_if_fail (iter->pos < iter->n_items, NULL);
-
-  return iter->items[iter->pos].v_string;
-}
-
-gpointer
-bsw_viter_get_boxed (BswVIterBoxed *iter)
-{
-  g_return_val_if_fail (BSW_IS_VITER_BOXED (iter), NULL);
-  g_return_val_if_fail (iter->pos < iter->n_items, NULL);
-
-  return iter->items[iter->pos].v_boxed;
+  return type;
 }
 
 BswProxy
-bsw_viter_get_proxy (BswVIterProxy *iter)
+bsw_iter_get_proxy (BswIterProxy *iter)
 {
-  g_return_val_if_fail (BSW_IS_VITER_PROXY (iter), 0);
+  g_return_val_if_fail (BSW_IS_ITER_PROXY (iter), 0);
   g_return_val_if_fail (iter->pos < iter->n_items, 0);
 
-  return iter->items[iter->pos].v_proxy;
-}
-
-static inline guint
-bsw_viter_grow1 (BswVIter *iter)
-{
-  guint i;
-
-  i = iter->n_items++;
-  if (iter->n_items > iter->prealloc)
-    {
-      iter->prealloc += PREALLOC_BLOCK_SIZE;
-      iter->items = g_realloc (iter->items, sizeof (iter->items[0]) * iter->prealloc);
-      memset (iter->items + i, 0, sizeof (iter->items[0]) * (iter->prealloc - i));
-    }
-  return i;
+  return iter->items[iter->pos].v_ulong;
 }
 
 void
-bsw_viter_append_int (BswVIterInt *iter,
-		      gint         v_int)
+bsw_iter_add_proxy (BswIterProxy *iter,
+		    BswProxy      proxy)
 {
   guint i;
 
-  g_return_if_fail (BSW_IS_VITER_INT (iter));
+  g_return_if_fail (BSW_IS_ITER_PROXY (iter));
 
-  i = bsw_viter_grow1 (iter);
-  iter->items[i].v_int = v_int;
-}
-
-void
-bsw_viter_append_string_take_ownership (BswVIterString *iter,
-					const gchar    *string)
-{
-  guint i;
-
-  g_return_if_fail (BSW_IS_VITER_STRING (iter));
-
-  i = bsw_viter_grow1 (iter);
-  iter->items[i].v_string = (gchar*) string;
-}
-
-void
-bsw_viter_append_boxed_take_ownership (BswVIterBoxed *iter,
-				       gpointer       boxed)
-{
-  guint i;
-
-  g_return_if_fail (BSW_IS_VITER_BOXED (iter));
-
-  i = bsw_viter_grow1 (iter);
-  iter->items[i].v_boxed = boxed;
-}
-
-void
-bsw_viter_append_boxed (BswVIterBoxed *iter,
-			gconstpointer  boxed)
-{
-  guint i;
-
-  g_return_if_fail (BSW_IS_VITER_BOXED (iter));
-
-  i = bsw_viter_grow1 (iter);
-  if (boxed)
-    iter->items[i].v_boxed = g_boxed_copy (iter->boxed_type, boxed);
-  else
-    iter->items[i].v_boxed = NULL;
-}
-
-void
-bsw_viter_append_proxy (BswVIterProxy *iter,
-			BswProxy       proxy)
-{
-  guint i;
-
-  g_return_if_fail (BSW_IS_VITER_PROXY (iter));
-
-  i = bsw_viter_grow1 (iter);
-  iter->items[i].v_proxy = proxy;
+  i = bsw_iter_grow1 (iter);
+  iter->items[i].v_ulong = proxy;
 }
 
 
@@ -430,6 +430,59 @@ bsw_part_note (guint  tick,
   return pnote;
 }
 
+static BswIterItem
+iter_part_note_copy (const BswIterItem item)
+{
+  BswIterItem ditem;
+  ditem.v_pointer = item.v_pointer ? g_boxed_copy (BSW_TYPE_PART_NOTE, item.v_pointer) : NULL;
+  return ditem;
+}
+
+static void
+iter_part_note_free (BswIterItem item)
+{
+  if (item.v_pointer)
+    g_boxed_free (BSW_TYPE_PART_NOTE, item.v_pointer);
+}
+
+GType
+bsw_iter_part_note_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      static BswIterFuncs funcs = {
+	iter_part_note_copy,
+	iter_part_note_free,
+      };
+      type = bsw_iter_make_type ("BswIterPartNote", &funcs);
+    }
+  return type;
+}
+
+BswPartNote*
+bsw_iter_get_part_note (BswIterString *iter)
+{
+  g_return_val_if_fail (BSW_IS_ITER_PART_NOTE (iter), NULL);
+  g_return_val_if_fail (iter->pos < iter->n_items, NULL);
+
+  return iter->items[iter->pos].v_pointer;
+}
+
+void
+bsw_iter_add_part_note_take_ownership (BswIterPartNote *iter,
+				       BswPartNote     *pnote)
+{
+  guint i;
+
+  g_return_if_fail (BSW_IS_ITER_PART_NOTE (iter));
+
+  i = bsw_iter_grow1 (iter);
+  iter->items[i].v_pointer = pnote;
+}
+
+
+/* -- BSW Note Description --- */
 static gpointer
 note_description_copy (gpointer boxed)
 {
@@ -460,7 +513,9 @@ bsw_note_description_get_type (void)
 {
   static GType type = 0;
   if (!type)
-    type = g_boxed_type_register_static ("BswNoteDescription", note_description_copy, (GBoxedFreeFunc) bsw_note_description_free);
+    type = g_boxed_type_register_static ("BswNoteDescription",
+					 note_description_copy,
+					 (GBoxedFreeFunc) bsw_note_description_free);
   return type;
 }
 
@@ -493,6 +548,85 @@ bsw_note_description (guint note,
       info->kammer_note = BSE_KAMMER_NOTE;
     }
   return info;
+}
+
+
+/* --- BSW Note Sequence --- */
+static gpointer
+note_sequence_copy (gpointer boxed)
+{
+  return boxed ? bsw_note_sequence_copy (boxed) : NULL;
+}
+
+static void
+note_sequence_free (gpointer boxed)
+{
+  if (boxed)
+    bsw_note_sequence_free (boxed);
+}
+
+GType
+bsw_note_sequence_get_type (void)
+{
+  static GType type;
+
+  if (!type)
+    type = g_boxed_type_register_static ("BswNoteSequence",
+					 note_sequence_copy,
+					 note_sequence_free);
+  return type;
+}
+
+BswNoteSequence*
+bsw_note_sequence_new (guint n_notes)
+{
+  BswNoteSequence *seq;
+  guint i;
+
+  seq = g_malloc (sizeof (BswNoteSequence) + sizeof (seq->notes[0]) * (MAX (n_notes, 1) - 1));
+  seq->offset = BSE_KAMMER_NOTE;
+  seq->n_notes = n_notes;
+  for (i = 0; i < seq->n_notes; i++)
+    seq->notes[i].note = BSE_NOTE_VOID;
+
+  return seq;
+}
+
+BswNoteSequence*
+bsw_note_sequence_copy (const BswNoteSequence *seq)
+{
+  guint size;
+
+  g_return_val_if_fail (seq != NULL, NULL);
+
+  size = sizeof (BswNoteSequence) + sizeof (seq->notes[0]) * (MAX (seq->n_notes, 1) - 1);
+
+  return g_memdup (seq, size);
+}
+
+void
+bsw_note_sequence_free (BswNoteSequence *seq)
+{
+  g_return_if_fail (seq != NULL);
+
+  g_free (seq);
+}
+
+BswNoteSequence*
+bsw_note_sequence_resize (BswNoteSequence *seq,
+			  guint            n_notes)
+{
+  guint size, i;
+
+  g_return_val_if_fail (seq != NULL, seq);
+
+  i = seq->n_notes;
+  seq->n_notes = n_notes;
+  size = sizeof (BswNoteSequence) + sizeof (seq->notes[0]) * (MAX (seq->n_notes, 1) - 1);
+  seq = g_realloc (seq, size);
+  for (; i < seq->n_notes; i++)
+    seq->notes[i].note = BSE_NOTE_VOID;
+  return seq;
 }
 
 
@@ -553,7 +687,7 @@ bsw_value_block_unref (BswValueBlock *vblock)
 }
 
 
-/* --- BSW icons --- */
+/* --- BSW Icon --- */
 #define STATIC_REF_COUNT (1 << 31)
 
 BswIcon*

@@ -182,10 +182,10 @@ typedef void          (*BseIOWatch)	     (gpointer		 data,
 typedef BseTokenType  (*BseTryStatement)     (gpointer           func_data,
                                               BseStorage        *storage,
                                               gpointer           user_data);
-typedef BseObject*    (*BsePathResolver)     (gpointer           func_data,
-                                              BseStorage        *storage,
+typedef BseObject*    (*BseUPathResolver)    (gpointer           func_data,
                                               GType              required_type,
-                                              const gchar       *path);
+                                              const gchar       *path,
+					      gchar	       **error);
 typedef gboolean      (*BseProcedureShare)   (gpointer           func_data,
                                               const gchar       *proc_name,
                                               gfloat             progress);

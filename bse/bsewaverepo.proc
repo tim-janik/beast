@@ -49,7 +49,7 @@ load_file (BseWaveRepo *wrepo,
     return error;
   
   wave = g_object_new (BSE_TYPE_WAVE,
-		       "name", g_basename (file_name),
+		       "uname", g_basename (file_name),
 		       NULL);
   for (i = 0; i < wdsc->n_chunks; i++)
     {

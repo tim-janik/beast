@@ -87,7 +87,7 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
   error = bse_storage_input_file (storage, file_name);
   if (!error)
     {
-      bse_storage_set_path_resolver (storage, bse_project_path_resolver, project);
+      // bse_storage_set_upath_resolver (storage, bse_project_upath_resolver, project);
       error = bse_project_restore (project, storage);
     }
   bse_storage_destroy (storage);
@@ -222,10 +222,10 @@ METHOD (BseProject, get-data-pocket) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  item = bse_project_find_item (project, BSE_TYPE_DATA_POCKET, name);
+  item = bse_project_lookup_typed_item (project, BSE_TYPE_DATA_POCKET, name);
   if (!item)
     {
-      item = g_object_new (BSE_TYPE_DATA_POCKET, "name", name, NULL);
+      item = g_object_new (BSE_TYPE_DATA_POCKET, "uname", name, NULL);
       bse_container_add_item (BSE_CONTAINER (project), item);
       g_object_unref (item);
     }
@@ -295,15 +295,15 @@ METHOD (BseProject, create-midi-synth) {
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseProject, list-uloc-paths) {
-  HELP  = ("List uloc paths for all items of a specified type within this project. "
-	   "By their uloc paths, items are uniquely identifyable within a project.");
+METHOD (BseProject, list-uname-paths) {
+  HELP  = ("List uname paths for all items of a specified type within this project. "
+	   "By their uname paths, items are uniquely identifyable within a project.");
   IN    = g_param_spec_object ("project", NULL, NULL,
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
   IN    = g_param_spec_ulong ("item_type", NULL, NULL,
 			      0, G_MAXLONG, 0, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_boxed ("uloc_paths", NULL, NULL,
-			      BSW_TYPE_VITER_STRING,
+  OUT   = g_param_spec_boxed ("uname_paths", NULL, NULL,
+			      BSW_TYPE_ITER_STRING,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	GValue            *in_values,
@@ -318,17 +318,16 @@ METHOD (BseProject, list-uloc-paths) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  g_value_set_boxed_take_ownership (out_values++,
-				    bse_project_make_uloc_paths (project, type));
+  g_value_set_boxed_take_ownership (out_values++, bse_project_list_upaths (project, type));
 
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, find-item) {
-  HELP  = "Find an item within a project, given its uloc path.";
+  HELP  = "Find an item within a project, given its uname path.";
   IN    = g_param_spec_object ("project", NULL, NULL,
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("uloc_path", NULL, NULL,
+  IN    = g_param_spec_string ("uname_path", NULL, NULL,
 			       NULL, BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_object ("item", NULL, NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
@@ -345,21 +344,21 @@ METHOD (BseProject, find-item) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  g_value_set_object (out_values++, bse_project_item_from_uloc_path (project, string));
+  g_value_set_object (out_values++, bse_container_resolve_upath (BSE_CONTAINER (project), string));
 
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseProject, list-items-by-uloc) {
-  HELP  = "Retrive all items of a specific type within a project with matching uloc";
+METHOD (BseProject, match-items-by-uname) {
+  HELP  = "Retrive all items of a specific type within a project with matching uname";
   IN    = g_param_spec_object ("project", NULL, NULL,
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
   IN    = g_param_spec_ulong ("item_type", NULL, NULL,
 			      0, G_MAXLONG, 0, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("uloc", NULL, NULL,
+  IN    = g_param_spec_string ("uname", NULL, NULL,
 			       NULL, BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_boxed ("item_list", NULL, NULL,
-			      BSW_TYPE_VITER_PROXY,
+			      BSW_TYPE_ITER_PROXY,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	GValue            *in_values,
@@ -370,19 +369,19 @@ METHOD (BseProject, list-items-by-uloc) {
   GType type          = g_value_get_ulong (in_values++);
   const gchar *string = g_value_get_string (in_values++);
   GList *list, *free_list;
-  BswVIter *iter;
+  BswIterProxy *iter;
 
   /* check parameters */
   if (!BSE_IS_PROJECT (project) || !string || !g_type_is_a (type, BSE_TYPE_ITEM))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  iter = bsw_viter_create (BSW_TYPE_VITER_PROXY, 1);
-  free_list = bse_objects_list_by_uloc (type, string);
+  iter = bsw_iter_create (BSW_TYPE_ITER_PROXY, 1);
+  free_list = bse_objects_list_by_uname (type, string);	// FIXME: type as string and >= BSE_TYPE_ITEM
   for (list = free_list; list; list = list->next)
     if (bse_item_get_project (list->data) == project)
       {
-	bsw_viter_append_object (iter, list->data);
+	bsw_iter_add_object (iter, list->data);
 	break;
       }
   g_list_free (free_list);

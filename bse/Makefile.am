@@ -86,7 +86,6 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseplugin.h \
 	bseprocedure.h \
 	bseproject.h \
-	bsesequence.h \
 	bseserver.h \
 	bsesnet.h \
 	bsesnooper.h \
@@ -160,7 +159,6 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseplugin.c \
 	bseprocedure.c \
 	bseproject.c \
-	bsesequence.c \
 	bseserver.c \
 	bsesnet.c \
 	bsesnooper.c \

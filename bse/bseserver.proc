@@ -31,7 +31,7 @@ DATE	= "2001";
 
 
 METHOD (BseServer, use-new-project) {
-  HELP	= "Create a new project, owned by the caller";
+  HELP	= "Create a new project, owned by the caller (name is modified to be unique if necessary)";
   IN	= g_param_spec_object ("server", "Server", NULL,
  			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_string ("name", "Project Name", NULL,
@@ -46,14 +46,25 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseServer *server     = (BseServer*) g_value_get_object (in_values++);
   gchar *name           = g_value_get_string (in_values++);
+  gchar *uname;
+  guint num = 1;
   BseProject *project;
   
   /* check parameters */
-  if (!BSE_IS_SERVER (server) || !name || bse_server_find_project (server, name))
+  if (!BSE_IS_SERVER (server) || !name)
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
+  /* enforce unique name */
+  uname = g_strdup (name);
+  while (bse_server_find_project (server, uname))
+    {
+      g_free (uname);
+      uname = g_strdup_printf ("%s-%u", name, num++);
+    }
+
   /* create project */
-  project = bse_server_create_project (server, name);
+  project = bse_server_create_project (server, uname);
+  g_free (uname);
   bse_item_exec_void_proc (project, "use");
   bse_object_unref (project);
   

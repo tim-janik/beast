@@ -27,75 +27,57 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- type macros --- */
-#define	BSW_TYPE_PROXY		  (bsw_proxy_get_type ())
-#define BSW_TYPE_VITER_INT        (bsw_viter_int_get_type ())
-#define BSW_TYPE_VITER_STRING     (bsw_viter_string_get_type ())
-#define BSW_TYPE_VITER_BOXED	  (bsw_viter_boxed_get_type ())
-#define BSW_TYPE_VITER_PROXY      (bsw_viter_proxy_get_type ())
-#define	BSW_TYPE_PART_NOTE	  (bsw_part_note_get_type ())
-#define	BSW_TYPE_NOTE_DESCRIPTION (bsw_note_description_get_type ())
-#define	BSW_TYPE_VALUE_BLOCK	  (bsw_value_block_get_type ())
-#define	BSW_VALUE_HOLDS_PROXY(v)  (G_TYPE_CHECK_VALUE_TYPE ((v), BSW_TYPE_PROXY))
+/* --- BSW abstract iterator --- */
+typedef		struct _BswIter			BswIter;
+#define		BSW_IS_ITER(iter)		(bsw_iter_check (iter))
+void		bsw_iter_rewind			(BswIter	*iter);
+guint		bsw_iter_n_left			(BswIter	*iter);
+void		bsw_iter_next			(BswIter	*iter);
+void		bsw_iter_prev			(BswIter	*iter);
+void		bsw_iter_jump			(BswIter	*iter,
+						 guint		 nth);
+BswIter*	bsw_iter_copy			(BswIter	*iter);
+void		bsw_iter_free			(BswIter	*iter);
+gboolean	bsw_iter_check			(const BswIter	*iter);
+gboolean	bsw_iter_check_is_a		(const BswIter	*iter,
+						 GType		 type);
 
 
-/* --- typedefs & structures --- */
-typedef gsize		      BswProxy;
-typedef struct _BswVIter      BswVIter;
-typedef BswVIter              BswVIterInt;
-typedef BswVIter              BswVIterString;
-typedef BswVIter              BswVIterBoxed;
-typedef BswVIter              BswVIterProxy;
-typedef struct _BswValueBlock BswValueBlock;
-typedef struct _BswIcon	      BswIcon;
-struct _BswIcon
-{
-  guint   bytes_per_pixel; /* 3:RGB, 4:RGBA */
-  guint   ref_count;       /* &(1<<31) indicates permanent ref counts */
-  guint   width;
-  guint   height;
-  guint8 *pixels;
-};
-struct _BswValueBlock
-{
-  guint   ref_count;
-  guint   n_values;
-  gfloat  values[1];	/* flexible array */
-};
+/* --- BSW discrete iterators --- */
+typedef		BswIter				BswIterInt;
+#define		BSW_TYPE_ITER_INT		(bsw_iter_int_get_type ())
+#define		BSW_IS_ITER_INT(iter)		(bsw_iter_check_is_a ((iter), BSW_TYPE_ITER_INT))
+GType		bsw_iter_int_get_type		(void);
+gint		bsw_iter_get_int		(BswIterInt	*iter);
+typedef		BswIter				BswIterString;
+#define		BSW_TYPE_ITER_STRING		(bsw_iter_string_get_type ())
+#define		BSW_IS_ITER_STRING(iter)	(bsw_iter_check_is_a ((iter), BSW_TYPE_ITER_STRING))
+GType		bsw_iter_string_get_type	(void);
+const gchar*	bsw_iter_get_string		(BswIterString	*iter);
 
 
-/* --- BSW proxy --- */
+/* --- BSW Proxy (object wrapper) --- */
+#define		BSW_TYPE_PROXY			(bsw_proxy_get_type ())
+#define		BSW_VALUE_HOLDS_PROXY(v)	(G_TYPE_CHECK_VALUE_TYPE ((v), BSW_TYPE_PROXY))
+typedef		gsize				 BswProxy;
 GType		bsw_proxy_get_type		(void);
 void		bsw_value_set_proxy		(GValue		*value,
 						 BswProxy	 proxy);
 BswProxy	bsw_value_get_proxy		(const GValue	*value);
-GParamSpec*     bsw_param_spec_proxy            (const gchar    *name,
+GParamSpec*     bsw_param_spec_proxy		(const gchar    *name,
 						 const gchar    *nick,
 						 const gchar    *blurb,
 						 GParamFlags     flags);
 
-
-/* --- BSW value iterators --- */
-GType		bsw_viter_int_get_type		(void);
-GType		bsw_viter_string_get_type	(void);
-GType		bsw_viter_boxed_get_type	(void);
-GType		bsw_viter_proxy_get_type	(void);
-GType           bsw_viter_type                  (BswVIter       *iter);
-void            bsw_viter_rewind                (BswVIter       *iter);
-guint           bsw_viter_n_left                (BswVIter       *iter);
-void            bsw_viter_next                  (BswVIter       *iter);
-void            bsw_viter_prev                  (BswVIter       *iter);
-void            bsw_viter_jump                  (BswVIter       *iter,
-						 guint           nth);
-BswVIter*       bsw_viter_copy                  (BswVIter       *iter);
-void            bsw_viter_free                  (BswVIter       *iter);
-gint            bsw_viter_get_int               (BswVIterInt    *iter);
-gchar*          bsw_viter_get_string            (BswVIterString *iter);
-gpointer        bsw_viter_get_boxed             (BswVIterBoxed  *iter);
-BswProxy        bsw_viter_get_proxy             (BswVIterProxy  *iter);
+typedef		BswIter				BswIterProxy;
+#define		BSW_TYPE_ITER_PROXY		(bsw_iter_proxy_get_type ())
+#define		BSW_IS_ITER_PROXY(iter)		(bsw_iter_check_is_a ((iter), BSW_TYPE_ITER_PROXY))
+GType		bsw_iter_proxy_get_type		(void);
+BswProxy	bsw_iter_get_proxy		(BswIterProxy	*iter);
 
 
-/* -- BSW Notes --- */
+/* --- BSW Part Note --- */
+#define		BSW_TYPE_PART_NOTE		(bsw_part_note_get_type ())
 typedef struct
 {
   guint  tick;
@@ -106,7 +88,15 @@ typedef struct
 GType		bsw_part_note_get_type		(void);
 void		bsw_part_note_free		(BswPartNote	*pnote);
 
+typedef		BswIter				BswIterPartNote;
+#define		BSW_TYPE_ITER_PART_NOTE		(bsw_iter_part_note_get_type ())
+#define		BSW_IS_ITER_PART_NOTE(iter)	(bsw_iter_check_is_a ((iter), BSW_TYPE_ITER_PART_NOTE))
+GType		bsw_iter_part_note_get_type	(void);
+BswPartNote*	bsw_iter_get_part_note		(BswIterPartNote *iter);
 
+
+/* -- BSW Note Description --- */
+#define		BSW_TYPE_NOTE_DESCRIPTION	(bsw_note_description_get_type ())
 typedef struct
 {
   guint    note;
@@ -125,14 +115,47 @@ GType		bsw_note_description_get_type	(void);
 void		bsw_note_description_free	(BswNoteDescription	*info);
 
 
+/* --- BSW Note Sequence --- */
+#define		BSW_TYPE_NOTE_SEQUENCE		(bsw_note_sequence_get_type ())
+typedef struct
+{
+  guint  n_notes;
+  gint   offset;	/* center/base note */
+  struct {
+    gint note;
+  } notes[1];		/* flexible array */
+} BswNoteSequence;
+GType		 bsw_note_sequence_get_type	(void);
+BswNoteSequence* bsw_note_sequence_new		(guint			 n_notes);
+BswNoteSequence* bsw_note_sequence_copy		(const BswNoteSequence	*sequence);
+void		 bsw_note_sequence_free		(BswNoteSequence	*sequence);
+BswNoteSequence* bsw_note_sequence_resize	(BswNoteSequence	*sequence,
+						 guint			 n_notes);
+
+
 /* --- BSW value block --- */
+#define		BSW_TYPE_VALUE_BLOCK		(bsw_value_block_get_type ())
+typedef struct
+{
+  guint   ref_count;
+  guint   n_values;
+  gfloat  values[1];	/* flexible array */
+} BswValueBlock;
 GType		bsw_value_block_get_type	(void);
 BswValueBlock*	bsw_value_block_new		(guint		 n_values);
 BswValueBlock*	bsw_value_block_ref		(BswValueBlock	*vblock);
 void		bsw_value_block_unref		(BswValueBlock	*vblock);
 
 
-/* --- BSW icons --- */
+/* --- BSW Icon --- */
+typedef struct
+{
+  guint   bytes_per_pixel; /* 3:RGB, 4:RGBA */
+  guint   ref_count;       /* &(1<<31) indicates permanent ref counts */
+  guint   width;
+  guint   height;
+  guint8 *pixels;
+} BswIcon;
 BswIcon*	bsw_icon_ref_static		(BswIcon	*icon);
 BswIcon*	bsw_icon_ref			(BswIcon	*icon);
 void		bsw_icon_unref			(BswIcon	*icon);

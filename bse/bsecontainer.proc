@@ -31,7 +31,7 @@ METHOD (BseContainer, list-items) {
   IN	= g_param_spec_object ("container", NULL, NULL,
 			       BSE_TYPE_CONTAINER, BSE_PARAM_DEFAULT);
   OUT	= g_param_spec_boxed ("item_list", NULL, NULL,
-			      BSW_TYPE_VITER_PROXY,
+			      BSW_TYPE_ITER_PROXY,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	GValue            *in_values,

@@ -19,6 +19,7 @@
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>
 #include        <bse/bseitem.h>
+#include        <bse/bsecontainer.h>
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
@@ -144,8 +145,8 @@ METHOD (BseItem, get-project) {
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseItem, get-uloc-path) {
-  HELP	= "Retrieve the uloc path for this item.";
+METHOD (BseItem, get-uname-path) {
+  HELP	= "Retrieve the project relative uname path for this item.";
   IN	= g_param_spec_object ("item", NULL, NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
   OUT	= g_param_spec_string ("uloc_path", NULL, NULL,
@@ -156,13 +157,17 @@ METHOD (BseItem, get-uloc-path) {
 {
   /* extract parameter values */
   BseItem *item = g_value_get_object (in_values++);
+  BseProject *project;
 
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
+  project = bse_item_get_project (item);
+
   /* set output parameters */
-  g_value_set_string_take_ownership (out_values++, bse_item_make_uloc_path (item));
+  g_value_set_string_take_ownership (out_values++,
+				     project ? bse_container_make_upath (BSE_CONTAINER (project), item) : NULL);
   
   return BSE_ERROR_NONE;
 }
@@ -170,6 +175,8 @@ METHOD (BseItem, get-uloc-path) {
 METHOD (BseItem, use) {
   HELP	= "Increment use count to keep an item alive.";
   IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("used_item", "Item", NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	GValue            *in_values,
@@ -184,7 +191,10 @@ METHOD (BseItem, use) {
 
   /* action */
   bse_item_use (item);
-  
+
+  /* set output parameters */
+  g_value_set_object (out_values++, item);
+				     
   return BSE_ERROR_NONE;
 }
 
@@ -228,15 +238,13 @@ METHOD (BseItem, get-name) {
 {
   /* extract parameter values */
   BseItem *item = (BseItem*) g_value_get_object (in_values++);
-  gchar *name = NULL;
 
   /* check parameters */
   if (!BSE_IS_ITEM (item))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  g_object_get (item, "name", &name, NULL);
-  g_value_set_string_take_ownership (out_values++, name);
+  g_value_set_string (out_values++, BSE_OBJECT_UNAME (item));
   
   return BSE_ERROR_NONE;
 }
@@ -260,9 +268,9 @@ METHOD (BseItem, get-name-or-type) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  g_object_get (item, "name", &name, NULL);
+  name = BSE_OBJECT_UNAME (item);
   if (name)
-    g_value_set_string_take_ownership (out_values++, name);
+    g_value_set_string (out_values++, name);
   else
     g_value_set_string (out_values++, BSE_OBJECT_TYPE_NAME (item));
   

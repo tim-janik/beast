@@ -73,7 +73,7 @@ bse_project_standard_piano (BseProject *project)
       Piano *piano = g_new0 (Piano, 1);
 
       synth = &piano->synth;
-      synth->snet = g_object_new (BSE_TYPE_SNET, "name", "bse-intern-standard-piano", NULL);
+      synth->snet = g_object_new (BSE_TYPE_SNET, "uname", "bse-intern-standard-piano", NULL);
       BSE_OBJECT_SET_FLAGS (synth->snet, BSE_ITEM_FLAG_STORAGE_IGNORE);
       project_set_standard_synth (project, "bse-standard-piano", synth);
       piano->input = bse_container_new_item (BSE_CONTAINER (synth->snet), BSE_TYPE_SUB_KEYBOARD, NULL);

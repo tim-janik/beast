@@ -33,15 +33,23 @@ enum {
 
 
 /* --- prototypes --- */
-static void	bse_item_class_init		(BseItemClass	*class);
-static void	bse_item_init			(BseItem		*item);
-static void	bse_item_do_dispose		(GObject		*object);
-static void	bse_item_do_destroy		(BseObject		*object);
-static void	bse_item_do_set_uloc		(BseObject		*object,
-						 const gchar		*uloc);
-static guint	bse_item_do_get_seqid		(BseItem		*item);
-static void	bse_item_do_set_parent		(BseItem                *item,
-						 BseItem                *parent);
+static void		bse_item_class_init		(BseItemClass	*class);
+static void		bse_item_init			(BseItem		*item);
+static void		bse_item_do_dispose		(GObject		*object);
+static void		bse_item_do_destroy		(BseObject		*object);
+static void		bse_item_do_set_uname		(BseObject		*object,
+							 const gchar		*uname);
+static guint		bse_item_do_get_seqid		(BseItem		*item);
+static void		bse_item_do_set_parent		(BseItem                *item,
+							 BseItem                *parent);
+static void             bse_item_store_property		(BseObject		*object,
+							 BseStorage		*storage,
+							 GValue			*value,
+							 GParamSpec		*pspec);
+static GTokenType       bse_item_restore_property	(BseObject		*object,
+							 BseStorage		*storage,
+							 GValue			*value,
+							 GParamSpec		*pspec);
 
 
 /* --- variables --- */
@@ -85,7 +93,9 @@ bse_item_class_init (BseItemClass *class)
 
   gobject_class->dispose = bse_item_do_dispose;
 
-  object_class->set_uloc = bse_item_do_set_uloc;
+  object_class->store_property = bse_item_store_property;
+  object_class->restore_property = bse_item_restore_property;
+  object_class->set_uname = bse_item_do_set_uname;
   object_class->destroy = bse_item_do_destroy;
 
   class->set_parent = bse_item_do_set_parent;
@@ -134,18 +144,19 @@ bse_item_do_destroy (BseObject *object)
 }
 
 static void
-bse_item_do_set_uloc (BseObject   *object,
-		      const gchar *uloc)
+bse_item_do_set_uname (BseObject   *object,
+		       const gchar *uname)
 {
   BseItem *item = BSE_ITEM (object);
 
-  /* ensure that item ulocs within this container are unique
+  /* ensure that item names within their container are unique,
+   * and that we don't end up with a NULL uname
    */
   if (!BSE_IS_CONTAINER (item->parent) ||
-      (uloc && !bse_container_lookup_item (BSE_CONTAINER (item->parent), uloc)))
+      (uname && !bse_container_lookup_item (BSE_CONTAINER (item->parent), uname)))
     {
-      /* chain parent class' set_uloc handler */
-      BSE_OBJECT_CLASS (parent_class)->set_uloc (object, uloc);
+      /* chain parent class' set_uname handler */
+      BSE_OBJECT_CLASS (parent_class)->set_uname (object, uname);
     }
 }
 
@@ -466,46 +477,6 @@ bse_item_has_ancestor (BseItem *item,
   return FALSE;
 }
 
-gchar* /* free result */
-bse_item_make_handle (BseItem *item,
-		      gboolean persistent)
-{
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-
-  if (persistent)
-    return g_strconcat (BSE_OBJECT_TYPE_NAME (item), "::", BSE_OBJECT_ULOC (item), NULL);
-  else
-    {
-      gchar buffer[10];
-      
-      g_snprintf (buffer, 10, "%u", bse_item_get_seqid (item));
-      
-      return g_strconcat (BSE_OBJECT_TYPE_NAME (item), ":", buffer, NULL);
-    }
-}
-
-gchar* /* free result */
-bse_item_make_uloc_path (BseItem *item)
-{
-  BseItem *project;
-  gchar *uloc = NULL;
-
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-
-  project = (BseItem*) bse_item_get_project (item);
-
-  while (item && item != project)
-    {
-      gchar *string = uloc;
-
-      uloc = g_strconcat (BSE_OBJECT_ULOC (item), string ? "." : NULL, string, NULL);
-      g_free (string);
-      item = item->parent;
-    }
-
-  return uloc;
-}
-
 static inline BseErrorType
 bse_item_execva_i (BseItem     *item,
 		   const gchar *procedure,
@@ -606,4 +577,71 @@ bse_item_close_undo (BseItem    *item,
 {
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (BSE_IS_STORAGE (storage));
+}
+
+static void
+bse_item_store_property (BseObject  *object,
+			 BseStorage *storage,
+			 GValue     *value,
+			 GParamSpec *pspec)
+{
+  if (g_type_is_a (G_VALUE_TYPE (value), BSE_TYPE_ITEM))
+    {
+      BseItem *item = BSE_ITEM (object);
+
+      bse_storage_handle_break (storage);
+      bse_storage_putc (storage, '(');
+      bse_storage_puts (storage, pspec->name);
+      bse_storage_putc (storage, ' ');
+      bse_storage_put_item_link (storage, item, g_value_get_object (value));
+      bse_storage_putc (storage, ')');
+    }
+  else
+    BSE_OBJECT_CLASS (parent_class)->store_property (object, storage, value, pspec);
+}
+
+static void
+object_link_resolved (gpointer     data,
+		      BseStorage  *storage,
+		      BseItem     *item,
+		      BseItem     *dest_item,
+		      const gchar *error)
+{
+  if (error)
+    bse_storage_warn (storage, error);
+  else
+    {
+      GParamSpec *pspec = data;
+      GValue value = { 0, };
+
+      g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      g_value_set_object (&value, dest_item);
+      g_object_set_property (G_OBJECT (item), pspec->name, &value);
+      g_value_unset (&value);
+    }
+}
+
+static GTokenType
+bse_item_restore_property (BseObject  *object,
+			   BseStorage *storage,
+			   GValue     *value,
+			   GParamSpec *pspec)
+{
+  if (g_type_is_a (G_VALUE_TYPE (value), BSE_TYPE_ITEM))
+    {
+      BseItem *item = BSE_ITEM (object);
+      GTokenType token;
+
+      /* parse the value for this pspec, including the trailing closing ')' */
+      token = bse_storage_parse_item_link (storage, item, object_link_resolved, pspec);
+      bse_storage_scanner_parse_or_return (storage->scanner, ')');
+
+      /* we cannot provide the object value at this time */
+      g_value_set_object (value, NULL);
+      g_object_set_property (G_OBJECT (object), pspec->name, value);
+
+      return token;
+    }
+  else
+    return BSE_OBJECT_CLASS (parent_class)->restore_property (object, storage, value, pspec);
 }

@@ -224,7 +224,7 @@ bse_server_create_project (BseServer   *server,
   g_return_val_if_fail (bse_server_find_project (server, name) == NULL, NULL);
 
   project = g_object_new (BSE_TYPE_PROJECT,
-			  "name", name,
+			  "uname", name,
 			  NULL);
   server->projects = g_list_prepend (server->projects, project);
   g_object_connect (project,
@@ -246,8 +246,9 @@ bse_server_find_project (BseServer   *server,
   for (node = server->projects; node; node = node->next)
     {
       BseProject *project = node->data;
+      gchar *uname = BSE_OBJECT_UNAME (project);
 
-      if (strcmp (name, BSE_OBJECT_ULOC (project)) == 0)
+      if (uname && strcmp (name, uname) == 0)
 	return project;
     }
   return NULL;

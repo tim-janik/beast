@@ -46,7 +46,7 @@ struct _BseContainer
 };
 struct _BseContainerClass
 {
-  BseSourceClass parent_class;
+  BseSourceClass  parent_class;
   
   void		(*add_item)		(BseContainer		*container,
 					 BseItem		*item);
@@ -55,6 +55,9 @@ struct _BseContainerClass
   void		(*forall_items)		(BseContainer		*container,
 					 BseForallItemsFunc	 func,
 					 gpointer		 data);
+  BseItem*	(*retrieve_child)	(BseContainer		*container,
+					 GType			 child_type,
+					 const gchar		*uname);
 };
 
 
@@ -67,28 +70,26 @@ gpointer        bse_container_new_item          (BseContainer   *container,
 						 ...);
 void		bse_container_remove_item	(BseContainer	*container,
 						 BseItem	*item);
-void		bse_container_add_item_unrefed	(BseContainer	*container,
-						 BseItem	*item);
 void		bse_container_forall_items	(BseContainer	*container,
 						 BseForallItemsFunc func,
 						 gpointer	 data);
-BswVIter*	bse_container_list_items	(BseContainer	*container);
+BswIterProxy*	bse_container_list_items	(BseContainer	*container);
 guint		bse_container_get_item_seqid	(BseContainer	*container,
 						 BseItem	*item);
 BseItem*	bse_container_get_item		(BseContainer	*container,
 						 GType  	 item_type,
 						 guint		 seq_id);
 void		bse_container_store_items	(BseContainer	*container,
-						 BseStorage	*storage);
+						 BseStorage	*storage,
+						 const gchar	*restore_func);
 BseItem*	bse_container_lookup_item	(BseContainer	*container,
-						 const gchar	*uloc);
-BseItem*	bse_container_item_from_handle	(BseContainer	*container,
-						 const gchar	*handle);
-BseItem*	bse_container_item_from_path	(BseContainer	*container,
-						 const gchar	*path);
-gchar* /*fr*/	bse_container_make_item_path	(BseContainer	*container,
-						 BseItem	*item,
-						 gboolean	 persistent);
+						 const gchar	*uname);
+BseItem*	bse_container_retrieve_child	(BseContainer	*container,
+						 const gchar	*type_uname);
+BseItem*	bse_container_resolve_upath	(BseContainer	*container,
+						 const gchar	*upath);
+gchar* /*fr*/	bse_container_make_upath	(BseContainer	*container,
+						 BseItem	*item);
 
 
 /* --- internal functions --- */

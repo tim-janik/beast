@@ -31,7 +31,6 @@
 
 
 /* --- BseItem member macros --- */
-#define BSE_ITEM_PARENT_REF(object)     ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_PARENT_REF) != 0)
 #define BSE_ITEM_SINGLETON(object)      ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_SINGLETON) != 0)
 #define BSE_ITEM_STORAGE_IGNORE(object) ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_STORAGE_IGNORE) != 0)
 
@@ -39,11 +38,10 @@
 /* --- bse item flags --- */
 typedef enum                            /*< skip >*/
 {
-  BSE_ITEM_FLAG_PARENT_REF	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
-  BSE_ITEM_FLAG_SINGLETON	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
-  BSE_ITEM_FLAG_STORAGE_IGNORE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
+  BSE_ITEM_FLAG_SINGLETON	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
+  BSE_ITEM_FLAG_STORAGE_IGNORE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1)
 } BseItemFlags;
-#define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 3)
+#define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 2)
 
 
 /* --- BseItem object --- */
@@ -75,17 +73,12 @@ typedef void    (*BseItemUncross)	     (BseItem        *owner,
 /* --- prototypes --- */
 guint           bse_item_get_seqid           (BseItem         *item);
 void            bse_item_queue_seqid_changed (BseItem         *item);
-gboolean        bse_item_has_anchestor       (BseItem         *item,
-					      BseItem         *anchestor);
 BseSuper*       bse_item_get_super           (BseItem         *item);
 BseProject*     bse_item_get_project         (BseItem         *item);
 gboolean        bse_item_has_ancestor        (BseItem         *item,
 					      BseItem         *ancestor);
 BseItem*        bse_item_common_ancestor     (BseItem         *item1,
 					      BseItem         *item2);
-gchar* /*fr*/   bse_item_make_handle         (BseItem         *item,
-					      gboolean         named);
-gchar* /*fr*/   bse_item_make_uloc_path      (BseItem         *item);
 void            bse_item_cross_ref           (BseItem         *owner,
 					      BseItem         *ref_item,
 					      BseItemUncross   uncross_func);

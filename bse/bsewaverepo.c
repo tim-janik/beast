@@ -102,9 +102,6 @@ bse_wave_repo_init (BseWaveRepo *wrepo)
 {
   BSE_SUPER (wrepo)->auto_activate = FALSE;
   wrepo->waves = NULL;
-  /* we're a singleton within our project */
-  BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_ULOC);
-  g_object_set (wrepo, "uloc", "Wave-Repository", NULL);
 }
 
 static void

@@ -161,20 +161,20 @@ bse_midi_synth_init (BseMidiSynth *msynth)
   msynth->snet = NULL;
 
   /* left channel multiport */
-  msynth->lmixer = g_object_new (g_type_from_name ("BseMixer"), "name", "left-mixer", NULL);
+  msynth->lmixer = g_object_new (g_type_from_name ("BseMixer"), "uname", "left-mixer", NULL);
   BSE_OBJECT_SET_FLAGS (msynth->lmixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
   bse_container_add_item (BSE_CONTAINER (msynth), BSE_ITEM (msynth->lmixer));
   g_object_unref (msynth->lmixer);
 
   /* right channel multiport */
-  msynth->rmixer = g_object_new (g_type_from_name ("BseMixer"), "name", "right-mixer", NULL);
+  msynth->rmixer = g_object_new (g_type_from_name ("BseMixer"), "uname", "right-mixer", NULL);
   BSE_OBJECT_SET_FLAGS (msynth->rmixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
   bse_container_add_item (BSE_CONTAINER (msynth), BSE_ITEM (msynth->rmixer));
   g_object_unref (msynth->rmixer);
 
   /* pcm output */
   msynth->pcm_out = g_object_new (g_type_from_name ("BsePcmOutput"),
-				  "name", "pcm-output",
+				  "uname", "pcm-output",
 				  "master_volume_f", msynth->volume_factor,
 				  NULL);
   BSE_OBJECT_SET_FLAGS (msynth->pcm_out, BSE_ITEM_FLAG_STORAGE_IGNORE);

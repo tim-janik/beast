@@ -49,22 +49,22 @@ struct _BseProjectClass
 /* --- prototypes --- */
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
-BswVIter*	bse_project_make_uloc_paths	(BseProject	*project,
+BswIterString*	bse_project_list_upaths		(BseProject	*project,
 						 GType  	 item_type);
-BseItem*	bse_project_item_from_uloc_path	(BseProject	*project,
-						 const gchar	*uloc_path);
+BseItem*	bse_project_item_from_upath	(BseProject	*project,
+						 const gchar	*uname_path);
 BseErrorType	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
 BseErrorType	bse_project_store_bse		(BseProject	*project,
 						 const gchar	*bse_file,
 						 gboolean        self_contained);
-BseObject*	bse_project_path_resolver	(gpointer        project /* func_data */,
-						 BseStorage     *storage,
+BseObject*	bse_project_upath_resolver	(gpointer        project /* func_data */,
 						 GType           required_type,
-						 const gchar    *path);
-BseItem*	bse_project_find_item		(BseProject	*project,
+						 const gchar    *upath,
+						 gchar	       **error_p);
+BseItem*	bse_project_lookup_typed_item	(BseProject	*project,
 						 GType		 item_type,
-						 const gchar	*name);
+						 const gchar	*uname);
 
 
 #ifdef __cplusplus

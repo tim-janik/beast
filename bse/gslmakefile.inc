@@ -66,7 +66,7 @@ $(srcdir)/gslwchunk.c: gslconfig.h
 $(srcdir)/gsltests.c: gslconfig.h
 $(srcdir)/gslffttest.c: gslconfig.h
 $(srcdir)/gslglibhashtest.cc: gslconfig.h
-# $(OBJECTS): gslconfig.h
+$(OBJECTS): gslconfig.h
 
 gsl_public_headers = $(GSL_H_SRC) gslconfig.h
 

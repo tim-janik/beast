@@ -37,20 +37,28 @@ enum {
   SIGNAL_LAST
 };
 
+/* --- macros --- */
+#define parse_or_return         bse_storage_scanner_parse_or_return
+#define peek_or_return          bse_storage_scanner_peek_or_return
+
 
 /* --- prototypes --- */
-static void	bse_project_class_init	(BseProjectClass	*class);
-static void	bse_project_init	(BseProject		*project,
-					 gpointer		 rclass);
-static void	bse_project_do_destroy	(BseObject		*object);
-static void	bse_project_add_item	(BseContainer		*container,
-					 BseItem		*item);
-static void	bse_project_remove_item	(BseContainer		*container,
-					 BseItem		*item);
-static void	bse_project_forall_items(BseContainer		*container,
-					 BseForallItemsFunc	 func,
-					 gpointer		 data);
-static void	bse_project_prepare	(BseSource		*source);
+static void	bse_project_class_init		(BseProjectClass	*class);
+static void	bse_project_class_finalize	(BseProjectClass	*class);
+static void	bse_project_init		(BseProject		*project,
+						 gpointer		 rclass);
+static void	bse_project_do_destroy		(BseObject		*object);
+static void	bse_project_add_item		(BseContainer		*container,
+						 BseItem		*item);
+static void	bse_project_remove_item		(BseContainer		*container,
+						 BseItem		*item);
+static void	bse_project_forall_items	(BseContainer		*container,
+						 BseForallItemsFunc	 func,
+						 gpointer		 data);
+static BseItem* bse_project_retrieve_child	(BseContainer           *container,
+						 GType                   child_type,
+						 const gchar            *uname);
+static void	bse_project_prepare		(BseSource		*source);
 
 
 /* --- variables --- */
@@ -67,7 +75,7 @@ BSE_BUILTIN_TYPE (BseProject)
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_project_class_init,
-    (GClassFinalizeFunc) NULL,
+    (GClassFinalizeFunc) bse_project_class_finalize,
     NULL /* class_data */,
     
     sizeof (BseProject),
@@ -97,12 +105,18 @@ bse_project_class_init (BseProjectClass *class)
   container_class->add_item = bse_project_add_item;
   container_class->remove_item = bse_project_remove_item;
   container_class->forall_items = bse_project_forall_items;
+  container_class->retrieve_child = bse_project_retrieve_child;
 
   project_signals[SIGNAL_COMPLETE_RESTORE] = bse_object_class_add_signal (object_class, "complete-restore",
 									  bse_marshal_VOID__POINTER_BOOLEAN, NULL, // FIXME: OBJECT
 									  G_TYPE_NONE,
 									  2, G_TYPE_POINTER, // FIXME TYPE_OBJECT
 									  G_TYPE_BOOLEAN);
+}
+
+static void
+bse_project_class_finalize (BseProjectClass *class)
+{
 }
 
 static void
@@ -117,9 +131,14 @@ bse_project_init (BseProject *project,
   project->supers = NULL;
   project->items = NULL;
 
-  wrepo = bse_object_new (BSE_TYPE_WAVE_REPO, NULL);
+  /* we always have a wave-repo */
+  wrepo = bse_object_new (BSE_TYPE_WAVE_REPO,
+			  "uname", "Wave-Repository",
+			  NULL);
   bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (wrepo));
   g_object_unref (wrepo);
+  /* with fixed uname */
+  BSE_OBJECT_SET_FLAGS (wrepo, BSE_OBJECT_FLAG_FIXED_UNAME);
 }
 
 static void
@@ -199,143 +218,62 @@ bse_project_forall_items (BseContainer      *container,
     }
 }
 
+static BseItem*
+bse_project_retrieve_child (BseContainer *container,
+			    GType         child_type,
+			    const gchar  *uname)
+{
+  BseProject *project = BSE_PROJECT (container);
+
+  /* always hand out the same wave repo */
+  if (g_type_is_a (child_type, BSE_TYPE_WAVE_REPO))
+    {
+      GSList *slist;
+
+      for (slist = project->supers; slist; slist = slist->next)
+	if (g_type_is_a (G_OBJECT_TYPE (slist->data), BSE_TYPE_WAVE_REPO))
+	  return slist->data;
+      g_printerr("eeeeeek wave-repo not found\n");
+      return NULL;	/* shouldn't happen */
+    }
+  else
+    return BSE_CONTAINER_CLASS (parent_class)->retrieve_child (container, child_type, uname);
+}
+
 static gboolean
-make_nick_paths (BseItem *item,
+add_item_upaths (BseItem *item,
 		 gpointer data_p)
 {
   gpointer *data = data_p;
+  BswIterString *iter = data[0];
   GType item_type = (GType) data[1];
-  gchar *prefix = data[2];
-  BswVIter *iter = data[0];
+  BseContainer *container = data[2];
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
-    bsw_viter_append_string_take_ownership (iter, g_strconcat (prefix, BSE_OBJECT_ULOC (item), NULL));
+    bsw_iter_add_string_take_ownership (iter, bse_container_make_upath (container, item));
   if (BSE_IS_CONTAINER (item))
-    {
-      data[2] = g_strconcat (prefix, BSE_OBJECT_ULOC (item), ".", NULL);
-      bse_container_forall_items (BSE_CONTAINER (item), make_nick_paths, data);
-      g_free (data[2]);
-      data[2] = prefix;
-    }
+    bse_container_forall_items (BSE_CONTAINER (item), add_item_upaths, data);
 
   return TRUE;
 }
 
-BswVIter*
-bse_project_make_uloc_paths (BseProject *project,
-			     GType       item_type)
+BswIterString*
+bse_project_list_upaths (BseProject *project,
+			 GType       item_type)
 {
-  gpointer data[3] = { NULL, (gpointer) item_type, "" };
-  BswVIter *iter;
+  gpointer data[3];
+  BswIterString *iter;
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
   g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
-  iter = bsw_viter_create (BSW_TYPE_VITER_STRING, 16);
+  iter = bsw_iter_create (BSW_TYPE_ITER_STRING, 16);
   data[0] = iter;
-  bse_container_forall_items (BSE_CONTAINER (project), make_nick_paths, data);
+  data[1] = (gpointer) item_type;
+  data[2] = project;
+  bse_container_forall_items (BSE_CONTAINER (project), add_item_upaths, data);
 
   return iter;
-}
-
-static BseItem*
-container_find_uloc_item (BseContainer *container,
-			  gchar        *uloc)
-{
-  BseItem *item;
-  gchar *next = strchr (uloc, '.');
-
-  if (next)
-    {
-      *(next++) = 0;
-      next = *next ? next : NULL;
-    }
-
-  item = bse_container_lookup_item (container, uloc);
-
-  if (next)
-    item = BSE_IS_CONTAINER (item) ? container_find_uloc_item (BSE_CONTAINER (item), next) : NULL;
-
-  return item;
-}
-
-BseItem*
-bse_project_item_from_uloc_path (BseProject  *project,
-				 const gchar *uloc_path)
-{
-  BseItem *item;
-  gchar *uloc;
-
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (uloc_path != NULL, NULL);
-
-  uloc = g_strdup (uloc_path);
-  item = container_find_uloc_item (BSE_CONTAINER (project), uloc);
-  g_free (uloc);
-
-  return item;
-}
-
-static inline GTokenType
-parse_statement (BseContainer *container,
-		 BseStorage   *storage)
-{
-  GScanner *scanner = storage->scanner;
-  BseItem *item;
-
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return G_TOKEN_IDENTIFIER;
-
-  item = bse_container_item_from_path (container, scanner->value.v_identifier);
-  if (!item)
-    return bse_storage_warn_skip (storage,
-				  "unable to resolve `%s', no such item",
-				  scanner->value.v_identifier);
-
-  return bse_object_restore (BSE_OBJECT (item), storage);
-}
-
-BseErrorType
-bse_project_restore (BseProject *project,
-		     BseStorage *storage)
-{
-  GScanner *scanner;
-  GTokenType expected_token = G_TOKEN_NONE;
-  
-  g_return_val_if_fail (BSE_IS_PROJECT (project), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_STORAGE_READABLE (storage), BSE_ERROR_INTERNAL);
-
-  /* FIXME: this should integrate with the object system better */
-  
-  scanner = storage->scanner;
-
-  bse_object_ref (BSE_OBJECT (project));
-  
-  while (!bse_storage_input_eof (storage) &&
-	 expected_token == G_TOKEN_NONE)
-    {
-      g_scanner_get_next_token (scanner);
-      
-      if (scanner->token == G_TOKEN_EOF)
-	break;
-      else if (scanner->token == '(')
-	expected_token = parse_statement (BSE_CONTAINER (project), storage);
-      else
-	expected_token = G_TOKEN_EOF; /* '('; */
-    }
-  
-  if (expected_token != G_TOKEN_NONE)
-    bse_storage_unexp_token (storage, expected_token);
-
-  expected_token = expected_token != G_TOKEN_NONE;
-  g_signal_emit (project, project_signals[SIGNAL_COMPLETE_RESTORE], 0, storage, expected_token);
-  
-  bse_object_unref (BSE_OBJECT (project));
-
-  return (scanner->parse_errors >= scanner->max_parse_errors ?
-	  BSE_ERROR_PARSE_ERROR :
-	  BSE_ERROR_NONE);
 }
 
 BseErrorType
@@ -366,14 +304,14 @@ bse_project_store_bse (BseProject  *project,
   if (self_contained)
     BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_SELF_CONTAINED);
   bse_storage_prepare_write (storage, FALSE);
-  bse_container_store_items (BSE_CONTAINER (project), storage);
+  bse_container_store_items (BSE_CONTAINER (project), storage, "bse-project-restore");
 
   mflags = storage->wblocks ? BSE_MAGIC_BSE_BIN_EXTENSION : 0;
   for (slist = project->supers; slist; slist = slist->next)
     if (BSE_IS_SONG (slist->data))
       mflags |= BSE_MAGIC_BSE_SONG;
 
-  string = g_strdup_printf (";BseProjectV0\n\n"); /* %010o mflags */
+  string = g_strdup_printf (";BseProjectV1\n\n"); /* %010o mflags */
   do
     l = write (fd, string, strlen (string));
   while (l < 0 && errno == EINTR);
@@ -385,54 +323,123 @@ bse_project_store_bse (BseProject  *project,
   return close (fd) < 0 ? BSE_ERROR_FILE_IO : BSE_ERROR_NONE;
 }
 
+static inline GTokenType
+parse_statement (BseProject *project,
+		 BseStorage *storage)
+{
+  GScanner *scanner = storage->scanner;
+  BseItem *item;
+
+  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+
+  if (strcmp ("bse-project-restore", scanner->value.v_identifier) == 0)
+    {
+      parse_or_return (scanner, G_TOKEN_STRING);	/* type_uname argument */
+
+      item = bse_container_retrieve_child (BSE_CONTAINER (project), scanner->value.v_string);
+      if (!item)
+	return bse_storage_warn_skip (storage, "unable to create object from (invalid) reference: %s",
+				      scanner->value.v_string);
+    }
+  else		/* deprecated compat, the uname path is an identifier */
+    {
+      item = bse_container_retrieve_child (BSE_CONTAINER (project), scanner->value.v_identifier);
+
+      if (!item)	/* probably not a compat case */
+	return G_TOKEN_STRING;
+
+      bse_storage_warn (storage, "deprecated syntax: non-string uname path: %s", scanner->value.v_identifier);
+    }
+
+  /* now let the child restore itself
+   */
+  return bse_object_restore (BSE_OBJECT (item), storage);
+}
+
+BseErrorType
+bse_project_restore (BseProject *project,
+		     BseStorage *storage)
+{
+  GScanner *scanner;
+  GTokenType expected_token = G_TOKEN_NONE;
+  
+  g_return_val_if_fail (BSE_IS_PROJECT (project), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_STORAGE_READABLE (storage), BSE_ERROR_INTERNAL);
+
+  /* FIXME: this should integrate with the object system better */
+  
+  scanner = storage->scanner;
+
+  bse_object_ref (BSE_OBJECT (project));
+  
+  while (!bse_storage_input_eof (storage) &&
+	 expected_token == G_TOKEN_NONE)
+    {
+      g_scanner_get_next_token (scanner);
+      
+      if (scanner->token == G_TOKEN_EOF)
+	break;
+      else if (scanner->token == '(')
+	expected_token = parse_statement (project, storage);
+      else
+	expected_token = G_TOKEN_EOF; /* '('; */
+    }
+  
+  if (expected_token != G_TOKEN_NONE)
+    bse_storage_unexp_token (storage, expected_token);
+
+  bse_storage_resolve_item_links (storage);
+
+  expected_token = expected_token != G_TOKEN_NONE;
+  g_signal_emit (project, project_signals[SIGNAL_COMPLETE_RESTORE], 0, storage, expected_token);
+  
+  bse_object_unref (BSE_OBJECT (project));
+
+  return (scanner->parse_errors >= scanner->max_parse_errors ?
+	  BSE_ERROR_PARSE_ERROR :
+	  BSE_ERROR_NONE);
+}
+
 BseObject*
-bse_project_path_resolver (gpointer     func_data,
-			   BseStorage  *storage,
-			   GType        required_type,
-			   const gchar *path)
+bse_project_upath_resolver (gpointer     func_data,
+			    GType        required_type,
+			    const gchar *upath,
+			    gchar      **error_p)
 {
   BseProject *project = func_data;
   gpointer item = NULL;
 
+  if (error_p)
+    *error_p = NULL;
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), NULL);
-  g_return_val_if_fail (path != NULL, NULL);
+  g_return_val_if_fail (upath != NULL, NULL);
 
-  /* FIXME: need error handling, storage warnings.... */
+  /* FIXME: need error handling, warnings.... */
 
   if (g_type_is_a (required_type, BSE_TYPE_ITEM))
-    item = bse_container_item_from_path (BSE_CONTAINER (project), path);
+    item = bse_container_resolve_upath (BSE_CONTAINER (project), upath);
+  else if (error_p)
+    *error_p = g_strdup_printf ("unable to resolve object of type `%s' from upath: %s", g_type_name (required_type), upath);
   
   return item;
 }
 
 BseItem*
-bse_project_find_item (BseProject  *project,
-		       GType	    item_type,
-		       const gchar *name)
+bse_project_lookup_typed_item (BseProject  *project,
+			       GType	    item_type,
+			       const gchar *uname)
 {
-  BseItem *item = NULL;
-  GSList *slist;
+  BseItem *item;
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
+  g_return_val_if_fail (uname != NULL, NULL);
 
-  for (slist = project->items; slist; slist = slist->next)
-    {
-      gchar *oname;
+  item = bse_container_lookup_item (BSE_CONTAINER (project), uname);
+  if (item && G_OBJECT_TYPE (item) == item_type)
+    return item;
 
-      item = slist->data;
-      if (G_OBJECT_TYPE (item) != item_type)
-	continue;
-
-      g_object_get (item, "name", &oname, NULL);
-      if (oname && strcmp (oname, name) == 0)
-	break;
-    }
-  if (!slist)
-    item = NULL;
-
-  return item;
+  return NULL;
 }
 
 static void

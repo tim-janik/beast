@@ -22,6 +22,7 @@
 #include	"bsemain.h"
 
 #include	"bseplugin.h"
+#include	"bseserver.h"
 #include	"gslcommon.h"
 #include	"gslengine.h"
 #include	<string.h>
@@ -218,6 +219,9 @@ bse_init (int	             *argc_p,
 
     call_gsl_init (gslconfig);
   }
+
+  /* make sure the server is alive */
+  bse_server_get ();
 }
 
 void

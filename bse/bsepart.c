@@ -435,7 +435,7 @@ bse_part_delete_note (BsePart *part,
 	       BSE_PART_FREQ (ifreq), tick);
 }
 
-BswVIter*
+BswIterPartNote*
 bse_part_list_notes (BsePart *part,
 		     guint    tick,
 		     guint    duration,
@@ -443,7 +443,7 @@ bse_part_list_notes (BsePart *part,
 		     gfloat   max_freq)
 {
   guint bound, min_ifreq, max_ifreq, index;
-  BswVIterBoxed *iter;
+  BswIterPartNote *iter;
 
   g_return_val_if_fail (BSE_IS_PART (part), NULL);
   g_return_val_if_fail (duration > 0, NULL);
@@ -452,7 +452,7 @@ bse_part_list_notes (BsePart *part,
 
   min_ifreq = BSE_PART_IFREQ (min_freq);
   max_ifreq = BSE_PART_IFREQ (max_freq);
-  iter = bsw_viter_create (BSW_TYPE_PART_NOTE, 16);
+  iter = bsw_iter_create (BSW_TYPE_ITER_PART_NOTE, 16);
 
   /* find notes crossing span. any early note may span across tick,
    * so we always need to start searching at the top ;(
@@ -467,7 +467,7 @@ bse_part_list_notes (BsePart *part,
 	    ev->note.ifreq >= min_ifreq && ev->note.ifreq <= max_ifreq)
 	  {
 	    if (etick + ev->note.duration > tick)
-	      bsw_viter_append_boxed_take_ownership (iter,
+	      bsw_iter_add_part_note_take_ownership (iter,
 						     bsw_part_note (etick,
 								    ev->note.duration,
 								    BSE_PART_FREQ (ev->note.ifreq),
@@ -478,21 +478,21 @@ bse_part_list_notes (BsePart *part,
   return iter;
 }
 
-BswVIter*
+BswIter*
 bse_part_get_note_at (BsePart *part,
 		      guint    tick,
 		      gfloat   freq)
 {
-  BswVIterBoxed *iter;
+  BswIterPartNote *iter;
   BsePartEvent *ev;
   guint index;
 
   g_return_val_if_fail (BSE_IS_PART (part), NULL);
 
-  iter = bsw_viter_create (BSW_TYPE_PART_NOTE, 1);
+  iter = bsw_iter_create (BSW_TYPE_ITER_PART_NOTE, 1);
   ev = find_note_at (part, tick, BSE_PART_IFREQ (freq), &index);
   if (ev)
-    bsw_viter_append_boxed_take_ownership (iter,
+    bsw_iter_add_part_note_take_ownership (iter,
 					   bsw_part_note (part->nodes[index].tick,
 							  ev->note.duration,
 							  BSE_PART_FREQ (ev->note.ifreq),

@@ -1,5 +1,28 @@
+* nuke ::destroy. use dispose or finalize for objects.
+* introduce ::unparanted for items (convenience).
+  item usage from outside:
+  {
+    use (item);
+    connect (item, ::unparanted);
+    do stuff with item.
+    disconnect (item, ::unparanted);
+    unuse (item);
+  }
+  or
+  {
+    use (item);
+    connect (item, ::unparanted);
+    do stuff with item.
+  }
+  upon ::unparanted:
+  {
+    disconnect (item, ::unparanted);
+    unuse (item);
+  }
+
+- get rid of ulongs (for types), make all types strings
 - fix fine-tune settings (from gsl)
-- partials context creation for non-modifiable snets (songs):
+- partial context creation for non-modifiable snets (songs):
   gsl-module: BseContextBus 4in<->4out
   BseSource: BseContextIBus (owns ContextBus) 4in, BseContextOBus 4out
 - BseDisconnectSource with two engine modules
@@ -32,7 +55,6 @@ general:
 -	delay class destruction and plugin unloading through timeout handlers
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
 -	optimize cross-reference removal
--	BseStorage shouldn't not contain type references above BSE_TYPE_ITEM()
 -	param_changed(): update modified stamp and record undo
 -	rework undo, gotta decide on what hirarchy and function level undo
 	should be implemented.
@@ -40,47 +62,20 @@ general:
 -	to enable source grouping:
 	sources need to disconnect their links ala xrefs, and need to notify of
 	that *before* destroy is invoked.
-	effectively, this has to work like as:
+	effectively, this has to work like:
 	channels installed on a source need to be xref-linked if the i/o sources
 	don't have the same parent. if their parents are the same, we can simply
 	have bsecontainer.c care about destructing those channels (as an optimization
 	to keep xref-links low).
+
+Instrument
+-	smooth up the dot array behaviour, editing is somewhat sluggish
+-	need to put envelope logic into a sperate file anyways
 
 Song/Pattern
 -	removal of instruments needs to scratch instrument references from all patterns
 -	mutable channels! (make them silent)
 	use procedure types for this
 
-Identifiers
--	we need a string conversion routine, which converts invalid characters
--	there're some shortcomings in object namings e.g. "--- Minus ---" was
-	not possible (there're also some bugs with making them into '_'s)
-
-Instrument
--	smooth up the dot array behaviour, editing is somewhat sluggish
--	need to put envelope logic into a sperate file anyways
-
-Loaders
--	we need AIFF
-
 Balance
--	durch 3d raum position ersetzen
-
-Effects
--	there is no code at all yet ;)
-	(take a look at the *.mod effects)
-	pattern-break
-	set-volume	(voice-volume)
-	vibrato
-	-	buffer-sync
-	-	lfo as freq-mod
-	tremolo
-	-	buffer-sync
-	-	lfo as freq-mod
-	fine-tune
-	-	1/24 of halftone
-	pitch-bend
-	-	slides
-	portamento (up/down/to note)
-	-	nahtloser uebergang zur naechsten note
-	-	buffer-sync
+-	replace with 3d room position?

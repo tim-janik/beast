@@ -1,3 +1,83 @@
+Tue May 21 08:13:51 2002  Tim Janik  <timj@gtk.org>
+
+	* final object reference cleanup. get rid of ulocs, allow freeform
+	name for objects with the exception of ":" and uniqueness within
+	children of a container. BseObject just has an ::uname property
+	for this purpose now, and no ::name or ::uloc properties anymore.
+
+	* bseobject.[hc]: ::uloc/::name/::uname cleanup and changes. virtualize
+	property storage.
+	
+	* bsecontainer.[hc]: store child references as strings with apropriate
+	prefix (bse-container-restore).
+	introduce retrieve_child() class function to resolve a (type,uname) pair
+	into an existing or a new child.
+	removed bse_container_item_from_handle(), bse_container_item_from_path()
+	and bse_container_make_item_path(). introduced:
+	bse_container_retrieve_child(): same purpose as the new class function.
+	bse_container_resolve_upath(): resolve a colon seperated list of unames,
+	by following the associated named objects (children).
+	bse_container_make_upath(): construct an upath for a (non-immediate)
+	child of a container.
+
+	* bseitem.[hc]: remove bse_item_make_handle() and
+	bse_item_make_uloc_path().
+
+	* bsecontainer.[hc]:
+	* bseitem.[hc]: remove unused PARENT_REF hack.
+
+	* bseproject.[hc]:
+	* bsewaverepo.[hc]: moved single-child-per-project hack into
+	bseproject.c and cleaned this up some.
+
+	* bsestorage.[hc]: disallow storing/parsing object values through
+	bse_storage_put_param()/bse_storage_parse_param_value().
+	introduced bse_storage_put_item_link() and bse_storage_parse_item_link()
+	for this purpose, where the latter takes a function for deferred
+	invocation to resolve object references after all have been created.
+	added bse_storage_input_text() and bse_storage_warn_skipc().
+
+	* bseitem.c: implement bse_item_store_property() and
+	bse_item_restore_property() to implement object properties via
+	BseStorage's _item_link functions.
+
+	* bsedatapocket.c: handle object links according to the new storage API.
+
+	* bse*.[hc], bse*.proc: various uname/upath/uloc fixes. changed
+	BseStorage uses to store/retrieve object references via
+	bse_storage_put_item_link() and bse_storage_parse_item_link().
+
+Sun May 19 23:57:10 2002  Tim Janik  <timj@gtk.org>
+
+	* bswcommon.[hc], bswprivate.h: reworked the iterators.
+	we now have BswIter as an abstract base, which introduces generic
+	iterator functions. there's no boxed iterator type, instead, each
+	boxed type that needs an iterator has to be implemented from scratch
+	(failry easy though). with that, we currently just need BswIterPartNote.
+
+	* bse*.[hc]: fixes due to iterator changes.
+
+Sat May 18 02:18:00 2002  Tim Janik  <timj@gtk.org>
+
+	* bswcommon.[hc]: renamed BseSequence to BswNoteSequence and moved it
+	into this file.
+
+	* bsesequence.[hc]: removed these files.
+
+	* bsestorage.[hc]: storage format fixups:
+	- valid boolean values: #t, #f, #T, #F
+	- store notes as strings
+	- store flags as lists
+	- store BswNoteSequence as list of notes
+
+	* bseparasite.[hc]:
+	* bsedatapocket.c: fix character storage, using #\c.
+
+	* bsestorage.[hc]: added bse_storage_parse_eval() to parse
+	procedures.
+
+	* bsemain.c: make sure the server is alive.
+
 Fri May 17 20:56:39 2002  Tim Janik  <timj@gtk.org>
 
 	* gsl*.*: incorporate fixes from stefan.

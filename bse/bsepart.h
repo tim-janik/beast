@@ -70,12 +70,12 @@ BseErrorType	bse_part_insert_note	(BsePart	*part,
 void		bse_part_delete_note	(BsePart	*part,
 					 guint		 tick,
 					 gfloat		 freq);
-BswVIter*	bse_part_list_notes	(BsePart	*part,
+BswIterPartNote* bse_part_list_notes	(BsePart	*part,
 					 guint		 tick,
 					 guint		 duration,
 					 gfloat		 min_freq,
 					 gfloat		 max_freq);
-BswVIter*	bse_part_get_note_at	(BsePart	*part,
+BswIterPartNote* bse_part_get_note_at	(BsePart	*part,
 					 guint		 tick,
 					 gfloat		 freq);
 guint		bse_part_node_lookup_SL	(BsePart	*part,

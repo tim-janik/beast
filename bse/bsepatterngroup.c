@@ -308,7 +308,6 @@ bse_pattern_group_store_private (BseObject  *object,
 				 BseStorage *storage)
 {
   BsePatternGroup *pgroup = BSE_PATTERN_GROUP (object);
-  BseProject *project = bse_item_get_project (BSE_ITEM (pgroup));
   guint i;
 
   /* chain parent class' handler */
@@ -317,18 +316,29 @@ bse_pattern_group_store_private (BseObject  *object,
 
   for (i = 0; i < pgroup->n_entries; i++)
     {
-      gchar *path = bse_container_make_item_path (BSE_CONTAINER (project),
-						  BSE_ITEM (pgroup->entries[i].pattern),
-						  FALSE);
-
       bse_storage_break (storage);
-
       bse_storage_putc (storage, '(');
-      bse_storage_puts (storage, "add-pattern");
-      bse_storage_printf (storage, " %s", path);
+      bse_storage_puts (storage, "add-pattern ");
+      bse_storage_put_item_link (storage, BSE_ITEM (pgroup), BSE_ITEM (pgroup->entries[i].pattern));
       bse_storage_handle_break (storage);
       bse_storage_putc (storage, ')');
-      g_free (path);
+    }
+}
+
+static void
+parser_add_pattern (gpointer     data,
+		    BseStorage  *storage,
+		    BseItem     *from_item,
+		    BseItem     *to_item,
+		    const gchar *error)
+{
+  BsePatternGroup *pgroup = BSE_PATTERN_GROUP (from_item);
+
+  if (error)
+    bse_storage_warn (storage, error);
+  else if (BSE_IS_PATTERN (to_item))
+    {
+      bse_pattern_group_insert_pattern (pgroup, BSE_PATTERN (to_item), pgroup->n_entries);
     }
 }
 
@@ -337,11 +347,9 @@ bse_pattern_group_restore_private (BseObject  *object,
 				   BseStorage *storage)
 {
   BsePatternGroup *pgroup = BSE_PATTERN_GROUP (object);
-  BseProject *project = bse_item_get_project (BSE_ITEM (pgroup));
   GScanner *scanner = storage->scanner;
   GTokenType expected_token;
   gchar *pattern_path;
-  BseItem *item;
 
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->restore_private)
@@ -357,21 +365,14 @@ bse_pattern_group_restore_private (BseObject  *object,
   /* eat "add-pattern" */
   g_scanner_get_next_token (scanner);
 
-  /* parse pgroup path */
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return G_TOKEN_IDENTIFIER;
-  pattern_path = g_strdup (scanner->value.v_identifier);
+  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
+    return G_TOKEN_STRING;
+  pattern_path = g_strdup (scanner->value.v_string);
 
-  /* ok, resolve and add pgroup */
-  item = bse_container_item_from_path (BSE_CONTAINER (project), pattern_path);
-  if (!item || !BSE_IS_PATTERN (item))
-    bse_storage_warn (storage,
-		      "%s: unable to determine pattern from \"%s\"",
-		      BSE_OBJECT_ULOC (pgroup),
-		      pattern_path);
-  else
-    bse_pattern_group_insert_pattern (pgroup, BSE_PATTERN (item), pgroup->n_entries);
-  g_free (pattern_path);
+  /* queue resolving object link */
+  expected_token = bse_storage_parse_item_link (storage, BSE_ITEM (pgroup), parser_add_pattern, NULL);
+  if (expected_token != G_TOKEN_NONE)
+    return expected_token;
 
   /* read closing brace */
   return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';

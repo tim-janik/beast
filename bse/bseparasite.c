@@ -22,6 +22,8 @@
 
 /* --- defines --- */
 #define MAX_PARASITE_VALUES (1024) /* (2 << 24) */
+#define parse_or_return         bse_storage_scanner_parse_or_return
+#define peek_or_return          bse_storage_scanner_peek_or_return
 
 
 /* --- types --- */
@@ -75,7 +77,7 @@ store_parasite_list (BseObject  *object,
 
       bse_storage_break (storage);
       name = g_strdup_quoted (g_quark_to_string (parasite->quark));
-      bse_storage_printf (storage, "(parasite %c \"%s\"",
+      bse_storage_printf (storage, "(parasite #\\%c \"%s\"",
 			  parasite->type,
 			  name);
       switch (parasite->type)
@@ -97,7 +99,7 @@ store_parasite_list (BseObject  *object,
 	  g_warning (G_STRLOC ": unknown parasite type `%c' for \"%s\" in \"%s\"",
 		     parasite->type,
 		     name,
-		     BSE_OBJECT_ULOC (object));
+		     BSE_OBJECT_UNAME (object));
 	  break;
 	}
       g_free (name);
@@ -218,6 +220,8 @@ parasite_parser (BseObject  *object,
     return G_TOKEN_IDENTIFIER;
 
   /* parse parasite type */
+  parse_or_return (scanner, '#');
+  parse_or_return (scanner, '\\');
   char_2_token = scanner->config->char_2_token;
   scanner->config->char_2_token = FALSE;
   g_scanner_get_next_token (scanner);

@@ -109,7 +109,7 @@ METHOD (BsePart, find-notes) {
   IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
 			       1, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
-			      BSW_TYPE_VITER_BOXED,
+			      BSW_TYPE_ITER_PART_NOTE,
 			      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
@@ -120,7 +120,7 @@ BODY (BseProcedureClass *proc,
   BsePart *part     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   guint    duration = g_value_get_uint (in_values++);
-  BswVIter *iter;
+  BswIterPartNote *iter;
 
   /* check parameters */
   if (!BSE_IS_PART (part))
@@ -148,7 +148,7 @@ METHOD (BsePart, check-overlap) {
 				BSE_KAMMER_FREQ, 10.0,
 				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
   OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
-			      BSW_TYPE_VITER_BOXED,
+			      BSW_TYPE_ITER_PART_NOTE,
 			      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
@@ -160,7 +160,7 @@ BODY (BseProcedureClass *proc,
   guint    tick	    = g_value_get_uint (in_values++);
   guint    duration = g_value_get_uint (in_values++);
   gfloat   freq     = g_value_get_float (in_values++);
-  BswVIter *iter;
+  BswIterPartNote *iter;
 
   /* check parameters */
   if (!BSE_IS_PART (part))
@@ -220,7 +220,7 @@ METHOD (BsePart, get-note) {
 				BSE_KAMMER_FREQ, 10.0,
 				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
   OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
-			      BSW_TYPE_VITER_BOXED,
+			      BSW_TYPE_ITER_PART_NOTE,
 			      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
@@ -231,7 +231,7 @@ BODY (BseProcedureClass *proc,
   BsePart *part     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   gfloat   freq     = g_value_get_float (in_values++);
-  BswVIter *iter;
+  BswIterPartNote *iter;
 
   /* check parameters */
   if (!BSE_IS_PART (part))

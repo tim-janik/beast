@@ -506,7 +506,7 @@ bse_song_get_default_pattern_group (BseSong *song)
       GList *list;
 
       for (list = song->pattern_groups; list; list = list->next)
-	if (bse_string_equals (BSE_OBJECT_ULOC (list->data), "Default"))
+	if (bse_string_equals (BSE_OBJECT_UNAME (list->data), "Default"))
 	  return list->data;
 
       return song->pgroups[song->n_pgroups - 1];
@@ -517,7 +517,7 @@ bse_song_get_default_pattern_group (BseSong *song)
       BsePatternGroup *pgroup;
 
       item = bse_container_new_item (BSE_CONTAINER (song), BSE_TYPE_PATTERN_GROUP,
-				     "name", "Default",
+				     "uname", "Default",
 				     NULL);
       pgroup = BSE_PATTERN_GROUP (item);
       bse_song_insert_pattern_group_link (song, pgroup, 0);
@@ -649,7 +649,7 @@ bse_song_insert_pattern_group_copy (BseSong         *song,
 
   g_object_get (G_OBJECT (src_pgroup), "blurb", &blurb, NULL);
   item = bse_container_new_item (BSE_CONTAINER (song), BSE_TYPE_PATTERN_GROUP,
-				 "name", BSE_OBJECT_ULOC (src_pgroup),
+				 "uname", BSE_OBJECT_UNAME (src_pgroup),
 				 "blurb", blurb,
 				 NULL);
   pgroup = BSE_PATTERN_GROUP (item);
@@ -731,7 +731,6 @@ bse_song_store_after (BseObject  *object,
 		      BseStorage *storage)
 {
   BseSong *song = BSE_SONG (object);
-  BseProject *project = bse_item_get_project (BSE_ITEM (song));
   guint i;
 
   /* we store the pattern groups after the store_after() handler,
@@ -745,19 +744,26 @@ bse_song_store_after (BseObject  *object,
 
   for (i = 0; i < song->n_pgroups; i++)
     {
-      gchar *path = bse_container_make_item_path (BSE_CONTAINER (project),
-						  BSE_ITEM (song->pgroups[i]),
-						  FALSE);
-
       bse_storage_break (storage);
 
       bse_storage_putc (storage, '(');
       bse_storage_puts (storage, "add-pattern-group");
-      bse_storage_printf (storage, " %s", path);
-      bse_storage_handle_break (storage);
+      bse_storage_put_item_link (storage, BSE_ITEM (song), BSE_ITEM (song->pgroups[i]));
       bse_storage_putc (storage, ')');
-      g_free (path);
     }
+}
+
+static void
+add_resolved_pgroup (gpointer     data,
+		     BseStorage  *storage,
+		     BseItem     *song,
+		     BseItem     *pgroup,
+		     const gchar *error)
+{
+  if (error)
+    bse_storage_warn (storage, error);
+  else if (BSE_IS_PATTERN_GROUP (pgroup))
+    bse_song_insert_pattern_group_link (BSE_SONG (song), BSE_PATTERN_GROUP (pgroup), BSE_SONG (song)->n_pgroups);
 }
 
 static BseTokenType
@@ -765,11 +771,8 @@ bse_song_restore_private (BseObject  *object,
 			  BseStorage *storage)
 {
   BseSong *song = BSE_SONG (object);
-  BseProject *project = bse_item_get_project (BSE_ITEM (song));
   GScanner *scanner = storage->scanner;
   GTokenType expected_token;
-  gchar *pgroup_path;
-  BseItem *item;
   
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->restore_private)
@@ -785,21 +788,10 @@ bse_song_restore_private (BseObject  *object,
   /* eat "add-pattern-group" */
   g_scanner_get_next_token (scanner);
 
-  /* parse pgroup path */
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return G_TOKEN_IDENTIFIER;
-  pgroup_path = g_strdup (scanner->value.v_identifier);
-
-  /* ok, resolve and add pgroup */
-  item = bse_container_item_from_path (BSE_CONTAINER (project), pgroup_path);
-  if (!item || !BSE_IS_PATTERN_GROUP (item))
-    bse_storage_warn (storage,
-		      "%s: unable to determine pattern group from \"%s\"",
-		      BSE_OBJECT_ULOC (song),
-		      pgroup_path);
-  else
-    bse_song_insert_pattern_group_link (song, BSE_PATTERN_GROUP (item), song->n_pgroups);
-  g_free (pgroup_path);
+  /* queue pgroup resolver */
+  expected_token = bse_storage_parse_item_link (storage, BSE_ITEM (song), add_resolved_pgroup, NULL);
+  if (expected_token != G_TOKEN_NONE)
+    return expected_token;
 
   /* read closing brace */
   return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
