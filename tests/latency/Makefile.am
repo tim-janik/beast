@@ -50,6 +50,7 @@ test: 	all
 CLEANFILES += tmp-midi-fifo
 
 EXTRA_DIST += $(strip 		\
+	bseplay.scm		\
 	midi-latency.bse	\
 	$(EXTRA_HEADERS)	\
 )
