@@ -24,7 +24,6 @@ icon_list += adsr.xcf
 icon_list += ampmix.xcf
 icon_list += atan.xcf
 icon_list += canyon.xcf
-icon_list += chorus.xcf
 icon_list += cyria-filter.xcf
 icon_list += drum.xcf
 icon_list += filter.xcf
