@@ -46,7 +46,7 @@ typedef enum
   BSEWAVE_TOKEN_MIDI_NOTE,
   BSEWAVE_TOKEN_OSC_FREQ,
   BSEWAVE_TOKEN_XINFO,
-  BSEWAVE_TOKEN_OGG_LINK,
+  BSEWAVE_TOKEN_VORBIS_LINK,
   BSEWAVE_TOKEN_FILE,
   BSEWAVE_TOKEN_INDEX,          /* file (auto detect loader) */
   BSEWAVE_TOKEN_RAW_FILE,
@@ -79,8 +79,6 @@ typedef enum
   BSEWAVE_TOKEN_LOOP_START,     /* compat <= 0.6.4 */
   BSEWAVE_TOKEN_LOOP_END,       /* compat <= 0.6.4 */
   BSEWAVE_TOKEN_LOOP_COUNT,     /* compat <= 0.6.4 */
-  BSEWAVE_TOKEN_RAWLINK,        /* compat <= 0.6.4 */
-  BSEWAVE_TOKEN_OGGLINK,        /* compat <= 0.6.4 */
 } GslWaveTokenType;
 
 
@@ -88,7 +86,7 @@ typedef enum
 static const char *bsewave_tokens[] = {
   /* keyword tokens */
   "wave",       "chunk",        "name",         "n-channels",
-  "midi-note",  "osc-freq",     "xinfo",        "ogg-link",
+  "midi-note",  "osc-freq",     "xinfo",        "vorbis-link",
   "file",       "index",        "raw-file",     "boffset",
   "n-values",   "raw-link",     "byte-order",   "format",
   "mix-freq",
@@ -128,7 +126,7 @@ typedef struct
 #define AUTO_FILE_MAGIC         (('A' << 24) | ('u' << 16) | ('t' << 8) | 'F')
 #define RAW_FILE_MAGIC          (('R' << 24) | ('a' << 16) | ('w' << 8) | 'F')
 #define RAW_LINK_MAGIC          (('R' << 24) | ('a' << 16) | ('w' << 8) | 'L')
-#define OGG_LINK_MAGIC          (('O' << 24) | ('g' << 16) | ('g' << 8) | 'L')
+#define VORBIS_LINK_MAGIC       (('O' << 24) | ('/' << 16) | ('V' << 8) | '1')
 
 /* --- functions --- */
 static GTokenType
@@ -324,8 +322,7 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
         chunk->xinfos = bse_xinfos_add_value (chunk->xinfos, key, scanner->value.v_string);
         g_free (key);
         break;
-      case BSEWAVE_TOKEN_OGGLINK:       /* compat <= 0.6.4 */
-      case BSEWAVE_TOKEN_OGG_LINK:
+      case BSEWAVE_TOKEN_VORBIS_LINK:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, '(');
 	parse_or_return (scanner, G_TOKEN_IDENTIFIER);
@@ -338,7 +335,7 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
 	parse_or_return (scanner, ')');
 	g_free (LOADER_FILE (chunk));
 	LOADER_FILE (chunk) = NULL;
-        LOADER_TYPE (chunk) = OGG_LINK_MAGIC;
+        LOADER_TYPE (chunk) = VORBIS_LINK_MAGIC;
 	break;
       case BSEWAVE_TOKEN_FILE:
 	parse_or_return (scanner, '=');
@@ -370,7 +367,6 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
 	parse_or_return (scanner, G_TOKEN_INT);
         LOADER_LENGTH (chunk) = scanner->value.v_int64;	        /* n_values */
 	break;
-      case BSEWAVE_TOKEN_RAWLINK:       /* compat <= 0.6.4 */
       case BSEWAVE_TOKEN_RAW_LINK:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, '(');
@@ -616,7 +612,7 @@ bsewave_load_wave_dsc (gpointer         data,
   g_scanner_input_file (scanner, fd);
   for (i = BSEWAVE_TOKEN_WAVE; i < BSEWAVE_TOKEN_LAST; i++)
     g_scanner_scope_add_symbol (scanner, 0, bsewave_tokens[i - BSEWAVE_TOKEN_WAVE], GUINT_TO_POINTER (i));
-  /* compat tokens */
+  /* tokens for compat <= 0.6.4 */
   g_scanner_scope_add_symbol (scanner, 0, "n_channels", GUINT_TO_POINTER (BSEWAVE_TOKEN_N_CHANNELS));
   g_scanner_scope_add_symbol (scanner, 0, "midi_note", GUINT_TO_POINTER (BSEWAVE_TOKEN_MIDI_NOTE));
   g_scanner_scope_add_symbol (scanner, 0, "osc_freq", GUINT_TO_POINTER (BSEWAVE_TOKEN_OSC_FREQ));
@@ -628,7 +624,7 @@ bsewave_load_wave_dsc (gpointer         data,
   g_scanner_scope_add_symbol (scanner, 0, "loop_end", GUINT_TO_POINTER (BSEWAVE_TOKEN_LOOP_END));
   g_scanner_scope_add_symbol (scanner, 0, "loop_count", GUINT_TO_POINTER (BSEWAVE_TOKEN_LOOP_COUNT));
   g_scanner_scope_add_symbol (scanner, 0, "rawlink", GUINT_TO_POINTER (BSEWAVE_TOKEN_RAW_LINK));
-  g_scanner_scope_add_symbol (scanner, 0, "ogglink", GUINT_TO_POINTER (BSEWAVE_TOKEN_OGG_LINK));
+  g_scanner_scope_add_symbol (scanner, 0, "ogglink", GUINT_TO_POINTER (BSEWAVE_TOKEN_VORBIS_LINK));
 
   WaveDsc *dsc = sfi_new_struct0 (WaveDsc, 1);
   dsc->wdsc.name = NULL;
@@ -823,7 +819,7 @@ bsewave_create_chunk_handle (gpointer      data,
       else
         *error_p = BSE_ERROR_WAVE_NOT_FOUND;
       break;
-    case OGG_LINK_MAGIC:
+    case VORBIS_LINK_MAGIC:
       if (LOADER_LENGTH (chunk))        /* inlined binary data */
 	{
           *error_p = BSE_ERROR_IO;
@@ -832,7 +828,7 @@ bsewave_create_chunk_handle (gpointer      data,
                                                             chunk->osc_freq,
                                                             LOADER_BOFFSET (chunk),     /* byte offset */
                                                             LOADER_LENGTH (chunk),      /* byte length */
-                                                            &vnch);
+                                                            &vnch, NULL);
           if (dhandle && vnch != dsc->wdsc.n_channels)
             {
               *error_p = BSE_ERROR_WRONG_N_CHANNELS;

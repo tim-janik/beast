@@ -106,7 +106,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  wchunk = g_slist_nth_data (wave->wave_chunks, chunk_index);
+  wchunk = sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     {
       esample = g_object_new (BSE_TYPE_EDITABLE_SAMPLE, NULL);
@@ -144,7 +144,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  wchunk = g_slist_nth_data (wave->wave_chunks, chunk_index);
+  wchunk = sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     sfi_value_set_real (out_values++, wchunk->osc_freq);
 
@@ -174,7 +174,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_WAVE (wave))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  wchunk = g_slist_nth_data (wave->wave_chunks, chunk_index);
+  wchunk = sfi_ring_nth_data (wave->wave_chunks, chunk_index);
   if (wchunk)
     sfi_value_set_real (out_values++, wchunk->mix_freq);
 

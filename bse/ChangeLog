@@ -1,3 +1,19 @@
+Thu Jan  6 18:37:16 2005  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c: store/parse Ogg/Vorbis data handles as in compressed
+	form, rather than unpacked.
+
+	* bsewave.[hc]: removed wave chunk url structures which were unused
+	anyway. store waves in order, sorted by oscillator frequency. use
+	SfiRing to hold the list of wave chunks.
+
+	* gsldatahandle-vorbis.[hc]: allow peeking of mix_freq from
+	gsl_data_handle_new_ogg_vorbis_zoffset(). added convenience function
+	gsl_vorbis1_handle_put_wstore().
+
+	* gslloader-bsewave.c: use "vorbis-link" as keyword for inlined 
+	Ogg/Vorbis streams. minor cleanups.
+
 Wed Jan  5 01:10:54 2005  Tim Janik  <timj@gtk.org>
 
 	* bseenums.[hc]: added BSE_ERROR_WRONG_N_CHANNELS.

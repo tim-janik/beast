@@ -38,7 +38,7 @@ wave {
 					# e.g. the midi note number '57' means
 					# 440 Hz (A-1).
 		xinfo["key"] = "value"	# extra information per chunk
-                ogg-link = (...)	# reference to Ogg/Vorbis data block
+                vorbis-link = (...)	# reference to Ogg/Vorbis data block
                 			# in binary appendix of the wave file
                 file = "filename"	# wave file containing this chunk's
                 			# sampled data, the format is auto

@@ -33,15 +33,21 @@ GslDataHandle* gsl_data_handle_new_ogg_vorbis_zoffset (const gchar      *file_na
                                                        gfloat            osc_freq,
                                                        GslLong           byte_offset,
                                                        GslLong           byte_size,
-                                                       guint            *n_channelsp);
+                                                       guint            *n_channelsp,
+                                                       gfloat           *mix_freq_p);
 
 /* --- writing vorbis files --- */
 typedef struct GslVorbis1Handle GslVorbis1Handle;
 GslVorbis1Handle* gsl_vorbis1_handle_new              (GslDataHandle    *ogg_vorbis_handle);
-gint              gsl_vorbis1_handle_reader           (GslVorbis1Handle *vorbis1, /* returns -errno || length */
-                                                       guint8           *buffer,
-                                                       guint             blength);
+gint              gsl_vorbis1_handle_read             (GslVorbis1Handle *vorbis1, /* returns -errno || length */
+                                                       guint             blength,
+                                                       guint8           *buffer);
 void              gsl_vorbis1_handle_destroy          (GslVorbis1Handle *vorbis1);
+/* gsl_vorbis1_handle_put_wstore() calls gsl_vorbis1_handle_destroy()
+ * on vorbis1 when sfi_wstore_destroy (wstore) is executed.
+ */
+void              gsl_vorbis1_handle_put_wstore       (GslVorbis1Handle *vorbis1,
+                                                       SfiWStore        *wstore);
 
 G_END_DECLS
 

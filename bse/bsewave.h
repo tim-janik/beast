@@ -51,14 +51,13 @@ struct _BseWave
   guint		     locator_set : 1;
   gchar		    *file_name;
   gchar		    *wave_name;
-  GSList	    *wave_chunk_urls;
 
   /* wave data */
   gchar            **xinfos;
 
   /* wave chunks */
   guint		     n_wchunks;
-  GSList	    *wave_chunks;
+  SfiRing           *wave_chunks;       /* data=GslWaveChunk* */
 };
 struct _BseWaveClass
 {

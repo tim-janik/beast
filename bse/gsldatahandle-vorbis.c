@@ -375,10 +375,13 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
                                     gboolean     add_zoffset,
                                     guint        byte_offset,
                                     guint        byte_size,
-                                    guint       *n_channelsp)
+                                    guint       *n_channelsp,
+                                    gfloat      *mix_freqp)
 {
   if (n_channelsp)
     *n_channelsp = 0;
+  if (mix_freqp)
+    *mix_freqp = 0;
   VorbisHandle *vhandle = sfi_new_struct0 (VorbisHandle, 1);
   gboolean success = gsl_data_handle_common_init (&vhandle->dhandle, file_name);
   if (success)
@@ -401,6 +404,8 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
 	{
           if (n_channelsp)
             *n_channelsp = vhandle->dhandle.setup.n_channels;
+          if (mix_freqp)
+            *mix_freqp = vhandle->dhandle.setup.mix_freq;
 	  gsl_data_handle_close (&vhandle->dhandle);
 	  return &vhandle->dhandle;
 	}
@@ -424,7 +429,7 @@ gsl_data_handle_new_ogg_vorbis_muxed (const gchar *file_name,
 {
   g_return_val_if_fail (file_name != NULL, NULL);
 
-  return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, osc_freq, FALSE, 0, 0, NULL);
+  return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, osc_freq, FALSE, 0, 0, NULL, NULL);
 }
 
 GslDataHandle*
@@ -432,13 +437,14 @@ gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
                                         gfloat       osc_freq,
                                         GslLong      byte_offset,
                                         GslLong      byte_size,
-                                        guint       *n_channelsp)
+                                        guint       *n_channelsp,
+                                        gfloat      *mix_freq_p)
 {
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (byte_offset >= 0, NULL);
   g_return_val_if_fail (byte_size > 0, NULL);
 
-  return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, osc_freq, TRUE, byte_offset, byte_size, n_channelsp);
+  return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, osc_freq, TRUE, byte_offset, byte_size, n_channelsp, mix_freq_p);
 }
 
 /* --- writing vorbis files --- */
@@ -476,9 +482,9 @@ gsl_vorbis1_handle_new (GslDataHandle *ogg_vorbis_handle)
 }
 
 gint
-gsl_vorbis1_handle_reader (GslVorbis1Handle *v1h, /* returns -errno || length */
-                           guint8           *buffer,
-                           guint             blength)
+gsl_vorbis1_handle_read (GslVorbis1Handle *v1h, /* returns -errno || length */
+                         guint             blength,
+                         guint8           *buffer)
 {
   if (!v1h->rfile)
     {
@@ -530,4 +536,28 @@ gsl_vorbis1_handle_destroy (GslVorbis1Handle *v1h)
   gsl_data_handle_close (v1h->dhandle);
   v1h->dhandle = NULL;
   g_free (v1h);
+}
+
+static gint /* -errno || length */
+vorbis1_handle_reader (gpointer data,
+                       SfiNum   pos,
+                       void    *buffer,
+                       guint    blength)
+{
+  GslVorbis1Handle *vhandle = (GslVorbis1Handle*) data;
+  return gsl_vorbis1_handle_read (vhandle, blength, (guint8*) buffer);
+}
+
+static void
+vorbis1_handle_destroy (gpointer data)
+{
+  GslVorbis1Handle *vhandle = (GslVorbis1Handle*) data;
+  gsl_vorbis1_handle_destroy (vhandle);
+}
+
+void
+gsl_vorbis1_handle_put_wstore (GslVorbis1Handle *vorbis1,
+                               SfiWStore        *wstore)
+{
+  sfi_wstore_put_binary (wstore, vorbis1_handle_reader, vorbis1, vorbis1_handle_destroy);
 }
