@@ -123,7 +123,7 @@ gsl_job_discard (GslModule *module)
 }
 
 /**
- * gsl_job_connect
+ * gsl_job_iconnect
  * @src_module: Module with output stream
  * @src_ostream: Index of output stream of @src_module
  * @dest_module: Module with unconnected input stream
@@ -136,10 +136,10 @@ gsl_job_discard (GslModule *module)
  * is executed).
  */
 GslJob*
-gsl_job_connect (GslModule *src_module,
-		 guint      src_ostream,
-		 GslModule *dest_module,
-		 guint      dest_istream)
+gsl_job_iconnect (GslModule *src_module,
+		  guint      src_ostream,
+		  GslModule *dest_module,
+		  guint      dest_istream)
 {
   GslJob *job;
   
@@ -549,51 +549,6 @@ gsl_transact (GslJob *job,
 }
 
 
-/* --- debugging --- */
-static volatile GslEngineDebugLevel op_debug_levels = 0;
-
-void
-gsl_engine_debug_enable (GslEngineDebugLevel level)
-{
-  level |= op_debug_levels;
-  op_debug_levels = level;
-}
-
-void
-gsl_engine_debug_disable (GslEngineDebugLevel level)
-{
-  level = op_debug_levels & ~level;
-  op_debug_levels = level;
-}
-
-void
-_gsl_op_debug (GslEngineDebugLevel lvl,
-	       const gchar        *format,
-	       ...)
-{
-  if (lvl & op_debug_levels)
-    {
-      va_list var_args;
-      gchar *s, *l;
-      
-      switch (lvl)
-	{
-	case GSL_ENGINE_DEBUG_ENGINE:	l = "ENGINE";	break;
-	case GSL_ENGINE_DEBUG_JOBS:	l = "JOBS";	break;
-	case GSL_ENGINE_DEBUG_SCHED:	l = "SCHED";	break;
-	case GSL_ENGINE_DEBUG_MASTER:	l = "MASTER";	break;
-	case GSL_ENGINE_DEBUG_SLAVE:	l = "SLAVE";	break;
-	default:			l = "UNKNOWN";	break;
-	}
-      va_start (var_args, format);
-      s = g_strdup_vprintf (format, var_args);
-      va_end (var_args);
-      g_printerr (G_LOG_DOMAIN ": DEBUG_%s(%p): %s\n", l, gsl_thread_self (), s);
-      g_free (s);
-    }
-}
-
-
 /* --- initialization --- */
 static void
 slave (gpointer data)
@@ -650,7 +605,7 @@ gsl_engine_init (gboolean run_threaded,
   gsl_externvar_sample_freq = sample_freq;
   _gsl_tick_stamp_set_leap (block_size);
   
-  OP_DEBUG (GSL_ENGINE_DEBUG_ENGINE, "initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
+  ENG_DEBUG ("initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
   
   if (gsl_engine_threaded)
     {

@@ -91,6 +91,8 @@ void            bse_item_cross_ref           (BseItem         *owner,
 					      BseItemUncross   uncross_func);
 void            bse_item_cross_unref         (BseItem         *owner,
 					      BseItem         *ref_item);
+void            bse_item_uncross	     (BseItem         *owner,
+					      BseItem         *ref_item);
 gboolean        bse_item_has_cross_owners    (BseItem         *ref_item);
 GList* /*fr*/   bse_item_list_cross_owners   (BseItem         *ref_item);
 BseErrorType    bse_item_exec_proc           (gpointer	       item,

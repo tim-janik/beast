@@ -1,3 +1,133 @@
+Fri Apr  5 06:45:29 2002  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle-mad.[hc]: libmad based mp3 datahandle implementation.
+
+	* gslloader-mad.c: gsldatahandle-mad.[hc] based mp3 loader.
+
+	* gslcommon.[hc]: introduce new debugging mechanism and rework
+	GSL messages.
+
+	* gslop*.[hc], gslengine.[hc]: fixup old debugging code.
+
+	* gsldatautils.[hc]: new function gsl_data_find_block().
+
+	* bsesnet.[hc], bsesnet.proc:
+	got rid of BSE_SNET_FLAG_FINAL. introduced BSE_SNET_FLAG_USER_SYNTH
+	to indicate user editable synthesis networks.
+	disallow procedures to modify a synthesis network unless
+	BSE_SNET_FLAG_USER_SYNTH or BSE_DVL_EXT are set.
+
+Thu Apr  4 23:02:54 2002  Tim Janik  <timj@gtk.org>
+
+	* bseinport.[hc], bseoutport.[hc]:
+	* bsesubsynth.[hc], bsemidikeyboard.[hc]: use the new BseSNet port API.
+
+	* bsemain.c (bse_init): initialize random numbers properly.
+
+	* bsemidievent.c: add debugging for note on/off events.
+
+	* bsesnet.[hc]: rewrote port handling, changed API.
+	provide bse_snet_create_context() to create contexts with an ID provided
+	by the snet. added simple ID allocation algorithm to reuse freed IDs.
+
+	* bsesongthread.c: some cleanups.
+
+	* bsesource.[hcp]*: allow only one i/o module for all i/o channels now.
+	add more jstream support (still not complete though).
+	API cleanups and simplifications.
+	redid context management code so context IDs are freely assignable by
+	synthesis networks.
+	(bse_source_set_context_omodule): allow resetting the module to NULL.
+	(bse_source_set_context_imodule): allow resetting the module to NULL.
+	
+	* bseinport.c:
+	* bseoutport.c:
+	* bsesubsynth.c: fix port name changes during playback.
+	
+	* gbsearcharray.h: new file from/for GLib with binary searchable array
+	implementation.
+
+Sun Mar 31 19:44:44 2002  Tim Janik  <timj@gtk.org>
+
+	* bseitem.c (bse_item_uncross): new function to remove a cross reference
+	by invoking the cross notifier.
+
+Sat Mar 30 05:57:45 2002  Tim Janik  <timj@gtk.org>
+
+	* bsepart.[hc], bsepart.proc: new song related object which stores a
+	list of notes to play.
+
+	* bsestandardosc.[hc]: moved and renamed plugins/bsesimpleosc.[hc]
+	to BseStandardOsc since BSE needs a default oscillator.
+
+	* bsestandardsynths.[hc]: new file, adding functions that construct
+	standard synthesis components for songs.
+
+	* bsesong.proc: provide procedures to create/delete child components.
+
+	* bseglobals.[hc], bsegconfig.[hc]: remove outdated definitions.
+
+	* bseinstrument.[hc]: some cleanups. provide synthesis networks
+	for song to play.
+
+	* bseitem.proc: added procedure to retrive an item's sequential ID.
+
+	* bsemain.c: define _XOPEN_SOURCE 600 only if
+	GSL_HAVE_MUTEXATTR_SETTYPE is > 0, since this seems to break random
+	stuff on some systems.
+
+	* bsepattern.c: remove old defines, soon to be deprecated.
+
+	* bseserver.proc: fix loader lookup, provide procedures to
+	examine notes.
+
+	* bsesong.[hc]: add support for BsePart.
+
+	* bsesongthread.[hc]: start supporting BsePart.
+
+	* bseutils.c: some cleanups.
+
+	* bswcommon.[hc]: added uspport for iterators over boxed types.
+	added boxed types BswPartNote and BswNoteDescription.
+
+	* gslcommon.c: made gsl_alloc_report() more elaborate.
+	(gsl_thread_new): do _not_ create joinable threads.
+	initialize _gsl_init_loader_mad().
+
+	* gslloader.[hc]: changed GslLoader, so we support lists of
+	file extensions, file magics and mime types.
+
+	* gslloader-wav.c:
+	* gslloader-oggvorbis.c: 
+	* gslloader-gslwave.c: prefix function names with loader
+	name. adapt code to GslLoader changes.
+
+	* gslloader-wav.c: add "audio/wav" mime type, fix file magic to
+	demand PCM format.
+
+	* gslmagic.[hc]:
+	(magic_parse_test): off-by-one error in string tests.
+	(magic_parse_type): fix *short data size. disable "size" type. fix
+	errors for mask handling.
+	(magic_create): improve warnings.
+	(magic_read_data): fix *short byte swapping.
+
+	* bsemagictest.c: some minor improvements.
+
+Tue Mar 26 12:22:12 2002  Tim Janik  <timj@gtk.org>
+
+	* removed unneeded files: bsechunk.[hc], bsehunkmixer.[hc],
+	bsebuffermixer.[hc] and bsecapture.[hc].
+
+	* bseobject.[hc]:
+	(bse_object_class_add_signal):
+	(bse_proxy_marshaller_lookup): mandate specification of a BswProxy
+	marshaller besides the normal marshaller when introducing signals.
+	provide lookup facility to retrive the proxy marshaller of a signal.
+
+	* *.c: changed class_init() function which introduce signals to provide
+	a proxy marshaller.
+
 Thu Mar 21 08:36:55 2002  Tim Janik  <timj@gtk.org>
 
 	* gslmakefile.inc: sort things out, document interfacing, generate

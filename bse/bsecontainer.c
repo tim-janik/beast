@@ -130,9 +130,11 @@ bse_container_class_init (BseContainerClass *class)
   
   container_signals[SIGNAL_ITEM_ADDED] = bse_object_class_add_signal (object_class, "item_added",
 								      bse_marshal_VOID__OBJECT,
+								      bse_marshal_VOID__POINTER,
 								      G_TYPE_NONE, 1, BSE_TYPE_ITEM);
   container_signals[SIGNAL_ITEM_REMOVED] = bse_object_class_add_signal (object_class, "item_removed",
 									bse_marshal_VOID__OBJECT,
+									bse_marshal_VOID__POINTER,
 									G_TYPE_NONE, 1, BSE_TYPE_ITEM);
 }
 
@@ -195,20 +197,19 @@ bse_container_do_add_item (BseContainer *container,
   if (BSE_IS_SOURCE (item) && BSE_SOURCE_PREPARED (container))
     {
       GslTrans *trans = gsl_trans_open ();
-      guint c;
+      guint *cids, n, c;
 
       g_return_if_fail (BSE_SOURCE_PREPARED (item) == FALSE);
 
       bse_source_prepare (BSE_SOURCE (item));
 
-      /* create item contexts */
-      for (c = 0; c < BSE_SOURCE (container)->n_contexts; c++)
-	{
-	  guint context = bse_source_create_context (BSE_SOURCE (item), trans);
-
-	  g_assert (context == c);	/* better not fail here */
-	  bse_source_connect_context (BSE_SOURCE (item), context, trans);
-	}
+      /* create and connect item contexts */
+      cids = bse_source_context_ids (BSE_SOURCE (container), &n);
+      for (c = 0; c < n; c++)
+	bse_source_create_context (BSE_SOURCE (item), cids[c], trans);
+      for (c = 0; c < n; c++)
+	bse_source_connect_context (BSE_SOURCE (item), cids[c], trans);
+      g_free (cids);
       gsl_trans_commit (trans);
     }
 }
@@ -287,7 +288,7 @@ bse_container_add_item_unrefed (BseContainer *container,
   container_add_item (container, item);
 }
 
-BseItem*
+gpointer
 bse_container_new_item (BseContainer *container,
 			GType         item_type,
 			const gchar  *first_param_name,
@@ -326,8 +327,8 @@ bse_container_do_remove_item (BseContainer *container,
   if (BSE_IS_SOURCE (item))
     {
       /* detach item from rest of the world */
-      _bse_source_clear_ichannels (BSE_SOURCE (item));
-      _bse_source_clear_ochannels (BSE_SOURCE (item));
+      bse_source_clear_ichannels (BSE_SOURCE (item));
+      bse_source_clear_ochannels (BSE_SOURCE (item));
       /* before mudling with its state */
       if (BSE_SOURCE_PREPARED (container))
 	{
@@ -899,7 +900,8 @@ bse_container_cross_ref (BseContainer    *container,
 void
 bse_container_cross_unref (BseContainer *container,
 			   BseItem      *owner,
-			   BseItem      *ref_item)
+			   BseItem      *ref_item,
+			   gboolean	 notify)
 {
   BseContainerCrossRefs *crefs;
   gboolean found_one = FALSE;
@@ -922,7 +924,7 @@ bse_container_cross_unref (BseContainer *container,
 	  if (crefs->cross_refs[i].owner == owner &&
 	      crefs->cross_refs[i].ref_item == ref_item)
 	    {
-	      uncross_ref (crefs, i, FALSE);
+	      uncross_ref (crefs, i, notify);
 	      container_queue_cross_changes (container);
 	      found_one = TRUE;
 	      break;
@@ -1078,7 +1080,7 @@ bse_container_prepare (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 
-  /* make sure all BseSource children are prepared as well */
+  /* make sure all BseSource children are prepared last */
   if (container->n_items)
     {
       g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
@@ -1095,12 +1097,9 @@ forall_context_create (BseItem *item,
 
   if (BSE_IS_SOURCE (item))
     {
-      guint new_context_handle;
-
       g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
 
-      new_context_handle = bse_source_create_context (BSE_SOURCE (item), data[1]);
-      g_return_val_if_fail (new_context_handle == GPOINTER_TO_UINT (data[0]), TRUE);
+      bse_source_create_context (BSE_SOURCE (item), GPOINTER_TO_UINT (data[0]), data[1]);
     }
 
   return TRUE;
@@ -1224,7 +1223,7 @@ bse_container_reset (BseSource *source)
 {
   BseContainer *container = BSE_CONTAINER (source);
 
-  /* make sure all BseSource children are reset as well */
+  /* make sure all BseSource children are reset first */
   if (container->n_items)
     {
       g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */

@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bsesong.h: bse song object
  */
 #ifndef __BSE_SONG_H__
 #define __BSE_SONG_H__
@@ -36,40 +34,43 @@ extern "C" {
 #define BSE_IS_SONG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SONG))
 #define BSE_SONG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SONG, BseSongClass))
 
+/* legacy */
+#define	BSE_SONG_N_CHANNELS(song)	((void) (song), 16)
+#define	BSE_SONG_PATTERN_LENGTH(song)	((void) (song), 64)
+
 
 /* --- BseSong object --- */
 typedef struct {
-  BseSource *ofreq;
-  BseSource *synth;
+  BseSource *constant;
+  BseSource *sub_synth;
 } BseSongVoice;
 typedef struct {
+  guint		n_voices;
   BseSource    *lmixer;
   BseSource    *rmixer;
   BseSource    *output;
-  BseSongVoice *voices;	/* [n_channels] */
+  BseSongVoice *voices;	/* [n_voices] */
 } BseSongNet;
 struct _BseSong
 {
-  BseSNet parent_object;
+  BseSNet           parent_instance;
   
   guint             bpm;
   gfloat            volume_factor;      /* 1-based factor */
   
-  guint             pattern_length;     /* >= 4 by convention */
-  guint             n_channels;         /* >= 2 by convention */
-  
   GList            *instruments;        /* of type BseInstrument* */
-  GList            *patterns;           /* of type BsePattern* */
-  GList            *pattern_groups;     /* of type BsePatternGroup* */
-
-  guint             n_pgroups;
-  BsePatternGroup **pgroups;		/* play list */
+  GList            *parts;              /* of type BsePart* */
 
   BseSongNet	    net;
 
   /*< private >*/
   BseSongSequencer *sequencer;
-  BseIndex          sequencer_index;
+
+  /* legacy */
+  GList            *patterns;           /* of type BsePattern* */
+  GList            *pattern_groups;     /* of type BsePatternGroup* */
+  guint             n_pgroups;
+  BsePatternGroup **pgroups;		/* play list */
 };
 struct _BseSongClass
 {
@@ -78,8 +79,6 @@ struct _BseSongClass
 
 
 /* --- prototypes --- */
-void             bse_song_set_pattern_length         (BseSong         *song,
-						      guint            pattern_length);
 void             bse_song_set_bpm                    (BseSong         *song,
 						      guint            bpm);
 BseSong*         bse_song_lookup                     (BseProject      *project,

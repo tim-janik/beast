@@ -96,9 +96,9 @@ struct _GslLoader
    * following three must
    * be non-NULL
    */
-  gchar *extension;  /* "mp3" or "ogg" or "gslwave" */
-  gchar *mime_type;  /* "audio/x-mpg3" or "audio/x-wav" */
-  gchar *magic_spec; /* "0 string RIFF\n8 string WAVE" or "0 string #GslWave\n" */
+  const gchar **extensions;	/* e.g.: "mp3", "ogg" or "gslwave" */
+  const gchar **mime_types;	/* e.g.: "audio/x-mpg3" or "audio/x-wav" */
+  const gchar **magic_specs;	/* e.g.: "0 string RIFF\n8 string WAVE\n" or "0 string #GslWave\n" */
 
   gint   priority;   /* -100=high, +100=low, 0=default */
 

@@ -18,11 +18,11 @@
 #include	"bsesong.h"
 
 #include	"bseinstrument.h"
+#include	"bsepart.h"
 #include	"bsepattern.h"
 #include	"bsepatterngroup.h"
 #include	"bsesongthread.h"
 #include	"bseproject.h"
-#include	"bsechunk.h"
 #include	"bsestorage.h"
 #include	"bsemarshal.h"
 #include	"bsemain.h"
@@ -32,8 +32,7 @@
 enum
 {
   PARAM_0,
-  PARAM_N_CHANNELS,
-  PARAM_PATTERN_LENGTH,
+  PARAM_N_VOICES,
   PARAM_VOLUME_f,
   PARAM_VOLUME_dB,
   PARAM_VOLUME_PERC,
@@ -77,8 +76,8 @@ static GTokenType bse_song_restore              (BseObject         *object,
 						 BseStorage        *storage);
 static void	 bse_song_prepare		(BseSource	   *source);
 static void	 bse_song_reset			(BseSource	   *source);
-static void	 song_set_n_channels		(BseSong	   *song,
-						 guint		    n_channels);
+static void	 song_set_n_voices		(BseSong	   *song,
+						 guint		    n_voices);
 
 
 /* --- variables --- */
@@ -136,44 +135,38 @@ bse_song_class_init (BseSongClass *class)
   container_class->forall_items = bse_song_forall_items;
   
   bse_object_class_add_param (object_class, NULL,
-			      PARAM_N_CHANNELS,
-			      bse_param_spec_uint ("n_channels", "Number of Channels", NULL,
-						 1, BSE_MAX_N_CHANNELS,
-						 BSE_DFL_SONG_N_CHANNELS, BSE_STP_N_CHANNELS,
-						 BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, NULL,
-			      PARAM_PATTERN_LENGTH,
-			      bse_param_spec_uint ("pattern_length", "Pattern length", NULL,
-						 BSE_MIN_PATTERN_LENGTH, BSE_MAX_PATTERN_LENGTH,
-						 BSE_DFL_SONG_PATTERN_LENGTH, BSE_STP_PATTERN_LENGTH,
-						 BSE_PARAM_DEFAULT));
+			      PARAM_N_VOICES,
+			      bse_param_spec_uint ("n_voices", "Max # of Voices", NULL,
+						   1, 256,
+						   16, 1,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
 			      bse_param_spec_float ("volume_f", "Master [float]", NULL,
-						  0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
-						  bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB), 0.1,
-						  BSE_PARAM_STORAGE));
+						    0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
+						    bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB), 0.1,
+						    BSE_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_dB,
 			      bse_param_spec_float ("volume_dB", "Master [dB]", NULL,
-						  BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-						  BSE_DFL_MASTER_VOLUME_dB, BSE_STP_VOLUME_dB,
-						  BSE_PARAM_GUI |
-						  BSE_PARAM_HINT_DIAL));
+						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+						    BSE_DFL_MASTER_VOLUME_dB, BSE_STP_VOLUME_dB,
+						    BSE_PARAM_GUI |
+						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_PERC,
 			      bse_param_spec_uint ("volume_perc", "Master [%]", NULL,
-						 0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-						 bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100, 1,
-						 BSE_PARAM_GUI |
-						 BSE_PARAM_HINT_DIAL));
+						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
+						   bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100, 1,
+						   BSE_PARAM_GUI |
+						   BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_BPM,
 			      bse_param_spec_uint ("bpm", "Beats per minute", NULL,
-						 BSE_MIN_BPM, BSE_MAX_BPM,
-						 BSE_DFL_SONG_BPM, BSE_STP_BPM,
-						 BSE_PARAM_DEFAULT |
-						 BSE_PARAM_HINT_SCALE));
+						   BSE_MIN_BPM, BSE_MAX_BPM,
+						   BSE_DFL_SONG_BPM, BSE_STP_BPM,
+						   BSE_PARAM_DEFAULT |
+						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Playback Settings",
 			      PARAM_AUTO_ACTIVATE,
 			      g_param_spec_boolean ("auto_activate", NULL, NULL,
@@ -182,10 +175,12 @@ bse_song_class_init (BseSongClass *class)
   
   song_signals[SIGNAL_PATTERN_GROUP_INSERTED] = bse_object_class_add_signal (object_class, "pattern_group_inserted",
 									     bse_marshal_VOID__OBJECT_UINT,
+									     bse_marshal_VOID__POINTER_UINT,
 									     G_TYPE_NONE,
 									     2, BSE_TYPE_PATTERN_GROUP, G_TYPE_UINT);
   song_signals[SIGNAL_PATTERN_GROUP_REMOVED] = bse_object_class_add_signal (object_class, "pattern_group_removed",
 									    bse_marshal_VOID__OBJECT_UINT,
+									    bse_marshal_VOID__POINTER_UINT,
 									    G_TYPE_NONE,
 									    2, BSE_TYPE_PATTERN_GROUP, G_TYPE_UINT);
 }
@@ -193,21 +188,22 @@ bse_song_class_init (BseSongClass *class)
 static void
 bse_song_init (BseSong *song)
 {
-  BSE_OBJECT_UNSET_FLAGS (song, BSE_SNET_FLAG_FINAL);
+  BSE_OBJECT_UNSET_FLAGS (song, BSE_SNET_FLAG_USER_SYNTH);
   BSE_SUPER (song)->auto_activate = TRUE;
   song->bpm = BSE_DFL_SONG_BPM;
   song->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
-  song->pattern_length = BSE_DFL_SONG_PATTERN_LENGTH;
-  song->n_channels = 0;
+  song->net.n_voices = 0;
   
   song->instruments = NULL;
+  song->parts = NULL;
+
+  song_set_n_voices (song, 16);
+
+  /* legacy */
   song->patterns = NULL;
   song->pattern_groups = NULL;
-  
   song->n_pgroups = 0;
   song->pgroups = NULL;
-
-  song_set_n_channels (song, BSE_DFL_SONG_N_CHANNELS);
 }
 
 static void
@@ -223,10 +219,12 @@ bse_song_do_destroy (BseObject *object)
   song->pgroups = NULL;
   while (song->patterns)
     bse_container_remove_item (BSE_CONTAINER (song), song->patterns->data);
+  while (song->parts)
+    bse_container_remove_item (BSE_CONTAINER (song), song->parts->data);
   while (song->instruments)
     bse_container_remove_item (BSE_CONTAINER (song), song->instruments->data);
 
-  song_set_n_channels (song, 0);
+  song_set_n_voices (song, 0);
 
   if (song->net.lmixer)
     {
@@ -254,26 +252,14 @@ bse_song_set_property (BseSong     *song,
 {
   switch (param_id)
     {
-      GList *list;
       gfloat volume_factor;
       guint bpm;
 
-    case PARAM_N_CHANNELS:
+    case PARAM_N_VOICES:
       /* we silently ignore this parameter during playing phase */
       if (!BSE_OBJECT_IS_LOCKED (song))
 	{
-	  song_set_n_channels (song, g_value_get_uint (value));
-	  for (list = song->patterns; list; list = list->next)
-	    bse_pattern_set_n_channels (list->data, song->n_channels);
-	}
-      break;
-    case PARAM_PATTERN_LENGTH:
-      /* we silently ignore this parameter during playing phase */
-      if (!BSE_OBJECT_IS_LOCKED (song))
-	{
-	  song->pattern_length = g_value_get_uint (value);
-	  for (list = song->patterns; list; list = list->next)
-	    bse_pattern_set_n_rows (list->data, song->pattern_length);
+	  song_set_n_voices (song, g_value_get_uint (value));
 	}
       break;
     case PARAM_VOLUME_f:
@@ -319,11 +305,8 @@ bse_song_get_property (BseSong     *song,
 {
   switch (param_id)
     {
-    case PARAM_PATTERN_LENGTH:
-      g_value_set_uint (value, song->pattern_length);
-      break;
-    case PARAM_N_CHANNELS:
-      g_value_set_uint (value, song->n_channels);
+    case PARAM_N_VOICES:
+      g_value_set_uint (value, song->net.n_voices);
       break;
     case PARAM_VOLUME_f:
       g_value_set_float (value, song->volume_factor);
@@ -357,19 +340,6 @@ bse_song_lookup (BseProject  *project,
   return BSE_IS_SONG (item) ? BSE_SONG (item) : NULL;
 }
 
-void
-bse_song_set_pattern_length (BseSong *song,
-			     guint    pattern_length)
-{
-  g_return_if_fail (BSE_IS_SONG (song));
-  g_return_if_fail (pattern_length >= BSE_MIN_PATTERN_LENGTH);
-  g_return_if_fail (pattern_length <= BSE_MAX_PATTERN_LENGTH);
-  
-  bse_object_set (BSE_OBJECT (song),
-		  "pattern_length", pattern_length,
-		  NULL);
-}
-
 static void
 bse_song_add_item (BseContainer *container,
 		   BseItem	*item)
@@ -382,6 +352,8 @@ bse_song_add_item (BseContainer *container,
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
     song->instruments = g_list_append (song->instruments, item);
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
+    song->parts = g_list_append (song->parts, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
     song->patterns = g_list_append (song->patterns, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN_GROUP))
@@ -416,6 +388,17 @@ bse_song_forall_items (BseContainer	 *container,
 	return;
     }
   
+  list = song->parts;
+  while (list)
+    {
+      BseItem *item;
+      
+      item = list->data;
+      list = list->next;
+      if (!func (item, data))
+	return;
+    }
+
   list = song->patterns;
   while (list)
     {
@@ -453,6 +436,8 @@ bse_song_remove_item (BseContainer *container,
   
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
     list_p = &song->instruments;
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
+    list_p = &song->parts;
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
     {
       BsePattern *pattern = BSE_PATTERN (item);
@@ -832,7 +817,7 @@ bse_song_restore (BseObject  *object,
   expected_token = BSE_OBJECT_CLASS (parent_class)->restore (object, storage);
 
   /* ok, parsing is done, now we just want to make
-   * usre that all pattern_groups of this song are actually
+   * sure that all pattern_groups of this song are actually
    * listed in the pgroups list
    */
   for (list = song->pattern_groups; list; list = list->next)
@@ -853,8 +838,8 @@ bse_song_restore (BseObject  *object,
 }
 
 static void
-song_set_n_channels (BseSong *song,
-		     guint    n_channels)
+song_set_n_voices (BseSong *song,
+		   guint    n_voices)
 {
   BseContainer *container = BSE_CONTAINER (song);
   BseSongNet *net = &song->net;
@@ -878,26 +863,26 @@ song_set_n_channels (BseSong *song,
       bse_container_add_item (container, BSE_ITEM (net->output));
       g_object_unref (net->output);
 
-      _bse_source_set_input (net->output, 0, net->lmixer, 0);
-      _bse_source_set_input (net->output, 1, net->rmixer, 0);
+      bse_source_set_input (net->output, 0, net->lmixer, 0);
+      bse_source_set_input (net->output, 1, net->rmixer, 0);
     }
 
-  for (i = n_channels; i < song->n_channels; i++)
+  for (i = n_voices; i < song->net.n_voices; i++)
     {
       BseItem *item;
 
-      item = BSE_ITEM (net->voices[i].ofreq);
+      item = BSE_ITEM (net->voices[i].constant);
       bse_container_remove_item (container, item);
 
-      item = BSE_ITEM (net->voices[i].synth);
+      item = BSE_ITEM (net->voices[i].sub_synth);
       bse_container_remove_item (container, item);
     }
 
-  i = song->n_channels;
-  song->n_channels = n_channels;
-  net->voices = g_renew (BseSongVoice, net->voices, song->n_channels);
+  i = song->net.n_voices;
+  song->net.n_voices = n_voices;
+  net->voices = g_renew (BseSongVoice, net->voices, song->net.n_voices);
 
-  for (; i < song->n_channels; i++)
+  for (; i < song->net.n_voices; i++)
     {
       BseSource *source;
 
@@ -908,7 +893,7 @@ song_set_n_channels (BseSong *song,
 			     "value_4", 0.0,
 			     NULL);
       BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
-      net->voices[i].ofreq = source;
+      net->voices[i].constant = source;
       bse_container_add_item (container, BSE_ITEM (source));
       g_object_unref (source);
       
@@ -923,19 +908,19 @@ song_set_n_channels (BseSong *song,
 			     "out_port_4", "synth_done",
 			     NULL);
       BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
-      net->voices[i].synth = source;
+      net->voices[i].sub_synth = source;
       bse_container_add_item (container, BSE_ITEM (source));
       g_object_unref (source);
 
-      _bse_source_set_input (net->voices[i].synth, 0, net->voices[i].ofreq, 0);
-      _bse_source_set_input (net->voices[i].synth, 1, net->voices[i].ofreq, 1);
-      _bse_source_set_input (net->voices[i].synth, 2, net->voices[i].ofreq, 2);
-      _bse_source_set_input (net->voices[i].synth, 3, net->voices[i].ofreq, 3);
+      bse_source_set_input (net->voices[i].sub_synth, 0, net->voices[i].constant, 0);
+      bse_source_set_input (net->voices[i].sub_synth, 1, net->voices[i].constant, 1);
+      bse_source_set_input (net->voices[i].sub_synth, 2, net->voices[i].constant, 2);
+      bse_source_set_input (net->voices[i].sub_synth, 3, net->voices[i].constant, 3);
 
       if (i < 4) // FIXME
 	{
-	  _bse_source_set_input (net->lmixer, i, net->voices[i].synth, 0);
-	  _bse_source_set_input (net->rmixer, i, net->voices[i].synth, 1);
+	  bse_source_set_input (net->lmixer, i, net->voices[i].sub_synth, 0);
+	  bse_source_set_input (net->rmixer, i, net->voices[i].sub_synth, 1);
 	}
     }
 }
@@ -950,7 +935,6 @@ bse_song_prepare (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
   
-  song->sequencer_index = 0;
   song->sequencer = bse_song_sequencer_setup (song);
 }
 
@@ -959,7 +943,6 @@ bse_song_reset (BseSource *source)
 {
   BseSong *song = BSE_SONG (source);
 
-  song->sequencer_index = 0;
   bse_song_sequencer_destroy (song->sequencer);
   
   /* chain parent class' handler */

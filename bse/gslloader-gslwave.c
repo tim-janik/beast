@@ -125,8 +125,8 @@ gsl_wave_token (GslWaveTokenType token)
 }
 
 static GTokenType
-skip_rest_statement (GScanner *scanner,
-		     guint     level)
+gslwave_skip_rest_statement (GScanner *scanner,
+			     guint     level)
 {
   g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
 
@@ -146,9 +146,9 @@ skip_rest_statement (GScanner *scanner,
 }
 
 static GslWaveFileInfo*
-load_file_info (gpointer      data,
-		const gchar  *_file_name,
-		GslErrorType *error_p)
+gslwave_load_file_info (gpointer      data,
+			const gchar  *_file_name,
+			GslErrorType *error_p)
 {
   FileInfo *fi = NULL;
   gboolean in_wave = FALSE, abort = FALSE;
@@ -199,7 +199,7 @@ load_file_info (gpointer      data,
 	    }
 	  break;
 	case '{':
-	  if (skip_rest_statement (scanner, 1) != G_TOKEN_NONE)
+	  if (gslwave_skip_rest_statement (scanner, 1) != G_TOKEN_NONE)
 	    abort = TRUE;
 	  break;
 	case GSL_WAVE_TOKEN_NAME:
@@ -212,7 +212,7 @@ load_file_info (gpointer      data,
 		  
 		  g_scanner_get_next_token (scanner); /* eat string */
 		  wave_name = g_strdup (scanner->value.v_string);
-		  if (skip_rest_statement (scanner, 1) == G_TOKEN_NONE)
+		  if (gslwave_skip_rest_statement (scanner, 1) == G_TOKEN_NONE)
 		    {
 		      in_wave = FALSE;
 		      wave_names = gsl_ring_append (wave_names, wave_name);
@@ -256,8 +256,8 @@ load_file_info (gpointer      data,
 }
 
 static void
-free_file_info (gpointer         data,
-		GslWaveFileInfo *file_info)
+gslwave_free_file_info (gpointer         data,
+			GslWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
   guint i;
@@ -270,8 +270,8 @@ free_file_info (gpointer         data,
 }
 
 static guint
-parse_chunk_dsc (GScanner        *scanner,
-		 GslWaveChunkDsc *chunk)
+gslwave_parse_chunk_dsc (GScanner        *scanner,
+			 GslWaveChunkDsc *chunk)
 {
   parse_or_return (scanner, '{');
   do
@@ -357,9 +357,9 @@ parse_chunk_dsc (GScanner        *scanner,
 }
 
 static guint
-parse_wave_dsc (GScanner    *scanner,
-		WaveDsc     *dsc,
-		const gchar *wave_name)
+gslwave_parse_wave_dsc (GScanner    *scanner,
+			WaveDsc     *dsc,
+			const gchar *wave_name)
 {
   parse_or_return (scanner, '{');
   do
@@ -380,7 +380,7 @@ parse_wave_dsc (GScanner    *scanner,
 	    if (strcmp (wave_name, scanner->value.v_string) == 0)
 	      dsc->wdsc.name = g_strdup (scanner->value.v_string);
 	    else
-	      return skip_rest_statement (scanner, 1);
+	      return gslwave_skip_rest_statement (scanner, 1);
 	  }
 	else
 	  dsc->wdsc.name = g_strdup (scanner->value.v_string);
@@ -401,7 +401,7 @@ parse_wave_dsc (GScanner    *scanner,
 	dsc->wdsc.chunks[i].loader_length = 0;			/* length in n_values */
 	dsc->wdsc.chunks[i].loader_data1 = NULL;		/* file_name */
 	dsc->wdsc.chunks[i].loader_data2 = NULL;		/* wave_name */
-	token = parse_chunk_dsc (scanner, dsc->wdsc.chunks + i);
+	token = gslwave_parse_chunk_dsc (scanner, dsc->wdsc.chunks + i);
 	if (token != G_TOKEN_NONE)
 	  return token;
 	if (dsc->wdsc.chunks[i].loop_end < dsc->wdsc.chunks[i].loop_start)
@@ -465,7 +465,7 @@ parse_wave_dsc (GScanner    *scanner,
 }
 
 static void
-wave_dsc_free (WaveDsc *dsc)
+gslwave_wave_dsc_free (WaveDsc *dsc)
 {
   guint i;
 
@@ -480,10 +480,10 @@ wave_dsc_free (WaveDsc *dsc)
 }
 
 static GslWaveDsc*
-load_wave_dsc (gpointer         data,
-	       GslWaveFileInfo *file_info,
-	       guint            nth_wave,
-	       GslErrorType    *error_p)
+gslwave_load_wave_dsc (gpointer         data,
+		       GslWaveFileInfo *file_info,
+		       guint            nth_wave,
+		       GslErrorType    *error_p)
 {
   GScanner *scanner;
   WaveDsc *dsc;
@@ -518,10 +518,10 @@ load_wave_dsc (gpointer         data,
   if (g_scanner_get_next_token (scanner) != GSL_WAVE_TOKEN_WAVE)
     token = GSL_WAVE_TOKEN_WAVE;
   else
-    token = parse_wave_dsc (scanner, dsc, file_info->waves[nth_wave].name);
+    token = gslwave_parse_wave_dsc (scanner, dsc, file_info->waves[nth_wave].name);
   if (token != G_TOKEN_NONE || scanner->parse_errors)
     {
-      wave_dsc_free (dsc);
+      gslwave_wave_dsc_free (dsc);
       dsc = NULL;
       if (!scanner->parse_errors)
 	g_scanner_unexp_token (scanner, token, "identifier", "keyword", NULL, "discarding wave", TRUE); /* FIXME */
@@ -535,7 +535,7 @@ load_wave_dsc (gpointer         data,
       else
 	{
 	  /* got invalid/wrong wave */
-	  wave_dsc_free (dsc);
+	  gslwave_wave_dsc_free (dsc);
 	  dsc = NULL;
 	  goto continue_scanning;	/* next attempt */
 	}
@@ -547,18 +547,18 @@ load_wave_dsc (gpointer         data,
 }
 
 static void
-free_wave_dsc (gpointer    data,
-	       GslWaveDsc *wave_dsc)
+gslwave_free_wave_dsc (gpointer    data,
+		       GslWaveDsc *wave_dsc)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
 
-  wave_dsc_free (dsc);
+  gslwave_wave_dsc_free (dsc);
 }
 
 static GslDataHandle*
-load_singlechunk_wave (GslWaveFileInfo *fi,
-		       const gchar     *wave_name,
-		       GslErrorType    *error_p)
+gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
+			       const gchar     *wave_name,
+			       GslErrorType    *error_p)
 {
   GslWaveDsc *wdsc;
   guint i;
@@ -602,10 +602,10 @@ load_singlechunk_wave (GslWaveFileInfo *fi,
 }
 
 static GslDataHandle*
-create_chunk_handle (gpointer      data,
-		     GslWaveDsc   *wave_dsc,
-		     guint         nth_chunk,
-		     GslErrorType *error_p)
+gslwave_create_chunk_handle (gpointer      data,
+			     GslWaveDsc   *wave_dsc,
+			     guint         nth_chunk,
+			     GslErrorType *error_p)
 {
   WaveDsc *dsc = (WaveDsc*) wave_dsc;
   FileInfo *fi = (FileInfo*) dsc->wdsc.file_info;
@@ -635,9 +635,9 @@ create_chunk_handle (gpointer      data,
 	   * wave's chunk point to its own wave. this'll trigger recursions until
 	   * stack overflow
 	   */
-	  dhandle = load_singlechunk_wave (cfi,
-					   chunk->loader_data2,	/* wave_name */
-					   error_p);
+	  dhandle = gslwave_load_singlechunk_wave (cfi,
+						   chunk->loader_data2,	/* wave_name */
+						   error_p);
 	  gsl_wave_file_info_free (cfi);
 	  g_free (string);
 	  return dhandle;
@@ -676,23 +676,26 @@ create_chunk_handle (gpointer      data,
 void
 _gsl_init_loader_gslwave (void)
 {
-  static gboolean initialized = FALSE;
-  static GslLoader gslwave_loader = {
+  static const gchar *file_exts[] = { "gslwave", NULL, };
+  static const gchar *mime_types[] = { "audio/x-gslwave", NULL, };
+  static const gchar *magics[] = { "0 string #GslWave", NULL, };
+  static GslLoader loader = {
     "GslWave",
-    "gslwave",
-    "audio/x-gslwave",
-    "0 string #GslWave",
-    0,
+    file_exts,
+    mime_types,
+    magics,
+    0,  /* priority */
     NULL,
-    load_file_info,
-    free_file_info,
-    load_wave_dsc,
-    free_wave_dsc,
-    create_chunk_handle,
+    gslwave_load_file_info,
+    gslwave_free_file_info,
+    gslwave_load_wave_dsc,
+    gslwave_free_wave_dsc,
+    gslwave_create_chunk_handle,
   };
+  static gboolean initialized = FALSE;
 
   g_assert (initialized == FALSE);
   initialized = TRUE;
 
-  gsl_loader_register (&gslwave_loader);
+  gsl_loader_register (&loader);
 }

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine        -*-mode: c;-*-
- * Copyright (C) 2000-2001 Tim Janik
+ * Copyright (C) 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 
 
 AUTHOR  = "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Tim Janik";
 DATE    = "2001";
 
 

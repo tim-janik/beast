@@ -19,18 +19,34 @@
 #define __BSE_SONG_SEQUENCER_H__
 
 #include <bse/bsesong.h>
+#include <bse/bsepart.h>
+#include <bse/bseconstant.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 
+typedef struct {
+  BsePart       *part;
+  BseInstrument *instrument;
+  guint	         tick;	/* next unhandled part tick */
+  BseConstant   *constant;
+} BseSongSequencerTrack;
+
 #define	bse_song_sequencer_recalc(song)		({})
 struct _BseSongSequencer
 {
   BseSong *song;
-  guint64  next_tick;
-  guint    row;
+
+  guint64  start_stamp;
+  guint64  cur_stamp;
+  guint64  next_stamp;
+  gdouble  beats_per_second;
+  guint    beat_tick;
+
+  guint	   n_tracks;
+  BseSongSequencerTrack *tracks;
 };
 
 

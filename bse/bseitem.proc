@@ -22,7 +22,7 @@
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik";
 DATE	= "2001";
 
 
@@ -31,7 +31,7 @@ METHOD (BseItem, get-type) {
   IN	= g_param_spec_object ("item", "Item", NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
   OUT	= g_param_spec_ulong ("type_id", "Type ID", NULL,
-			      0, G_MAXINT, 0,
+			      0, G_MAXULONG, 0,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	GValue            *in_values,
@@ -291,6 +291,29 @@ METHOD (BseItem, common-ancestor) {
 
   /* set output parameters */
   g_value_set_object (out_values++, bse_item_common_ancestor (item, item2));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, get-seqid) {
+  HELP	= "Retrive Sequential ID";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_uint ("seqid", "Sequential ID", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_uint (out_values++, bse_item_get_seqid (item));
   
   return BSE_ERROR_NONE;
 }

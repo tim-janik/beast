@@ -20,19 +20,26 @@
 #include "gslengine.h"
 #include "bsepattern.h"
 #include "bseconstant.h"
+#include "bsesubsynth.h"
+#include "bseinstrument.h"
+#include "bsemain.h"
+#include "bsepart.h"
 
 
 /* --- prototypes --- */
-static void	sequencer_thread	(gpointer		 data);
-static void	seq_init		(BseSongSequencer	*seq,
-					 guint64		 cur_tick);
-static void	seq_step		(BseSongSequencer	*seq,
-					 guint64		 cur_tick);
+static void	sequencer_thread	(gpointer		data);
+static void	seq_init_SL		(BseSongSequencer      *seq,
+					 guint64		cur_tick);
+static void	seq_step_SL		(BseSongSequencer      *seq,
+					 const guint64		start_tick);
+static void	track_step_SL		(BseSongSequencer	*seq,
+					 BseSongSequencerTrack *track,
+					 const guint	        n_ticks,
+					 gdouble		ticks2stamp);
 
 
 /* --- variables --- */
 static GslThread *seq_thread = NULL;
-static GslMutex   seq_mutex;
 static GslRing   *seq_list = NULL;
 
 
@@ -44,7 +51,6 @@ bse_song_sequencer_setup (BseSong *song)
 
   if (!seq_thread)
     {
-      gsl_mutex_init (&seq_mutex);
       seq_thread = gsl_thread_new (sequencer_thread, NULL);
       if (!seq_thread)
 	g_error (G_STRLOC ": failed to create sequencer thread");
@@ -52,12 +58,14 @@ bse_song_sequencer_setup (BseSong *song)
 
   seq = g_new0 (BseSongSequencer, 1);
   seq->song = song;
-  seq->next_tick = 0;
-  
-  GSL_SYNC_LOCK (&seq_mutex);
+  seq->next_stamp = 0;
+  seq->n_tracks = 0;
+  seq->tracks = NULL;
+
+  BSE_SEQUENCER_LOCK ();
   seq_list = gsl_ring_prepend (seq_list, seq);
   gsl_thread_wakeup (seq_thread);
-  GSL_SYNC_UNLOCK (&seq_mutex);
+  BSE_SEQUENCER_UNLOCK ();
 
   return seq;
 }
@@ -65,10 +73,11 @@ bse_song_sequencer_setup (BseSong *song)
 void
 bse_song_sequencer_destroy (BseSongSequencer *seq)
 {
-  GSL_SYNC_LOCK (&seq_mutex);
+  BSE_SEQUENCER_LOCK ();
   seq_list = gsl_ring_remove (seq_list, seq);
-  GSL_SYNC_UNLOCK (&seq_mutex);
+  BSE_SEQUENCER_UNLOCK ();
 
+  g_free (seq->tracks);
   g_free (seq);
 
   if (!seq_list)
@@ -84,62 +93,136 @@ sequencer_thread (gpointer data)
   g_printerr ("SST: start\n");
   do
     {
-      const guint64 cur_tick = gsl_tick_stamp ();
+      const guint64 cur_stamp = gsl_tick_stamp ();
+      guint seq_leap = gsl_engine_block_size () * 10;
+      guint64 awake = G_MAXUINT64;
       GslRing *ring;
-      guint tick_latency = gsl_engine_block_size () * 10;
-      guint64 future_tick = cur_tick + tick_latency;
-
-      GSL_SPIN_LOCK (&seq_mutex);
+      
+      BSE_SEQUENCER_LOCK ();
       for (ring = seq_list; ring; ring = gsl_ring_walk (seq_list, ring))
 	{
 	  BseSongSequencer *seq = ring->data;
+	  guint64 future_stamp = cur_stamp + seq_leap * 2;
+	  
+	  if (!seq->next_stamp)	
+	    seq_init_SL (seq, cur_stamp + seq_leap);
 
-	  if (!seq->next_tick)	
-	    seq_init (seq, cur_tick);
+	  g_assert (seq->cur_stamp <= seq->next_stamp);
 
-	  while (seq->next_tick < future_tick)
-	    seq_step (seq, cur_tick);
+	  seq->next_stamp = MAX (seq->next_stamp, future_stamp);
+	  
+	  while (seq->cur_stamp < seq->next_stamp)
+	    {
+	      guint64 check_stamp = seq->cur_stamp;
+	      
+	      seq_step_SL (seq, seq->next_stamp - seq->cur_stamp);
+	      if (seq->cur_stamp <= check_stamp)
+		{
+		  g_printerr ("sequencer %p didn't advance tick count (%llu <= %llu)\n", seq, seq->cur_stamp, check_stamp);
+		  break;
+		}
+	    }
 
-	  gsl_thread_awake_before (MAX (seq->next_tick, tick_latency) - tick_latency);
+	  awake = MIN (awake, seq->next_stamp - seq_leap);
 	}
-      GSL_SPIN_UNLOCK (&seq_mutex);
+      BSE_SEQUENCER_UNLOCK ();
+
+      if (awake != G_MAXUINT64)
+	gsl_thread_awake_before (awake);
     }
   while (gsl_thread_sleep (-1));
   g_printerr ("SST: end\n");
 }
 
 static void
-seq_init (BseSongSequencer *seq,
-	  const guint64     cur_tick)
+seq_init_SL (BseSongSequencer *seq,
+	     const guint64     start_stamp)
 {
-  g_assert (seq->next_tick == 0 && cur_tick > 0);
+  g_assert (seq->next_stamp == 0 && start_stamp > 0);
 
-  seq->next_tick = cur_tick;
+  seq->start_stamp = start_stamp;
+  seq->cur_stamp = start_stamp;
+  seq->next_stamp = start_stamp;
+  seq->beats_per_second = seq->song->bpm;
+  seq->beats_per_second /= 60.;
+  seq->beat_tick = 0;
+  if (seq->song->parts && seq->song->instruments)
+    {
+      seq->n_tracks = 1;
+      seq->tracks = g_new (BseSongSequencerTrack, seq->n_tracks);
+      seq->tracks[0].part = seq->song->parts->data;
+      seq->tracks[0].instrument = seq->song->instruments->data;
+      seq->tracks[0].tick = 0;
+      seq->tracks[0].constant = BSE_CONSTANT (seq->song->net.voices[0].constant);
+      bse_sub_synth_set_snet (BSE_SUB_SYNTH (seq->song->net.voices[0].sub_synth), seq->tracks[0].instrument->seq_snet);
+    }
 }
 
 static void
-seq_step (BseSongSequencer *seq,
-	  const guint64     cur_tick)
+seq_step_SL (BseSongSequencer *seq,
+	     const guint64     stamp_diff)
 {
-  BseSong *song = seq->song;
-  BseSongNet *snet = &song->net;
-  BsePattern *pattern;
-  BsePatternNote *note;
-  guint64 next_tick = seq->next_tick;
+  gdouble pps, stamp_inc, ticks2stamp, ppqn = 384; // FIXME: track->ppqn
+  guint beat_ticks;
 
-  pattern = song->patterns->data;
+  /* calc bpm tick increment */
+  pps = ppqn * seq->beats_per_second;
+  ticks2stamp = ((gfloat) gsl_engine_sample_freq()) / pps;
+  beat_ticks = stamp_diff / ticks2stamp;
 
-  note = bse_pattern_peek_note (pattern, 0, seq->row);
+  /* process bpm ticks */
+  if (seq->n_tracks)
+    track_step_SL (seq, seq->tracks + 0, beat_ticks, ticks2stamp);
 
-  bse_constant_stamped_set_note (BSE_CONSTANT (snet->voices[0].ofreq), next_tick, 0, note->note);
-  bse_constant_stamped_set_float (BSE_CONSTANT (snet->voices[0].ofreq), next_tick, 1, 1.0);
-  bse_constant_stamped_set_float (BSE_CONSTANT (snet->voices[0].ofreq), next_tick + 1, 1, 0.0);
+  /* advance bpm ticks */
+  seq->beat_tick += beat_ticks;
 
-  g_printerr ("SST: tick(for:%llu at:%lld): note %u instr %p\n", next_tick, cur_tick, note->note, note->instrument);
+  /* calc stamp increment */
+  stamp_inc = beat_ticks;
+  stamp_inc *= ticks2stamp;
 
-  /* next step setup */
-  seq->row++;
-  if (seq->row >= song->pattern_length)
-    seq->row = 0;
-  seq->next_tick += gsl_engine_sample_freq () * (60. / 4.) / (double) seq->song->bpm;
+  /* advance stamp */
+  seq->cur_stamp += stamp_inc;
+}
+
+static void
+track_step_SL (BseSongSequencer      *seq,
+	       BseSongSequencerTrack *track,
+	       const guint	      n_ticks,
+	       gdouble		      ticks2stamp)
+{
+  BsePart *part = track->part;
+  guint i, tick_bound = track->tick + n_ticks;
+
+  i = bse_part_node_lookup_SL (part, track->tick);
+  while (i < part->n_nodes && part->nodes[i].tick < tick_bound)
+    {
+      BsePartEvent *ev = part->nodes[i].events;
+      guint tick = part->nodes[i].tick;
+
+      for (ev = part->nodes[i].events; ev; ev = ev->any.next)
+	if (ev && ev->type == BSE_PART_EVENT_NOTE)
+	  {
+	    BseConstant *constant = track->constant;
+	    
+	    /* frequency */
+	    bse_constant_stamped_set_freq_SL (constant,
+					      seq->start_stamp + tick * ticks2stamp,
+					      0, BSE_PART_FREQ (ev->note.ifreq));
+	    
+	    /* gate */
+	    bse_constant_stamped_set_float_SL (constant,
+					       seq->start_stamp + tick * ticks2stamp,
+					       1, 1.0);
+	    
+	    /* gate */
+	    bse_constant_stamped_set_float_SL (constant,
+					       seq->start_stamp + (tick + ev->note.duration) * ticks2stamp,
+					       1, 0.0);
+	    
+	    g_printerr ("TSS: note %f at %u (%f)\n", BSE_PART_FREQ (ev->note.ifreq), tick, tick * ticks2stamp);
+	  }
+      i = bse_part_node_lookup_SL (part, tick + 1);
+    }
+  track->tick += n_ticks;
 }

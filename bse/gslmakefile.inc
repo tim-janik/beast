@@ -20,12 +20,12 @@
 GSL_H_SRC     =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h \
 		gslloader.h gslmath.h gslfilter.h gsldatautils.h gsldatahandle-vorbis.h \
 		gslconvert.h gslfft.h gslieee754.h gslsignal.h gslmagic.h \
-		gslengine.h gslwaveosc.h gslwavechunk.h
+		gslengine.h gslwaveosc.h gslwavechunk.h gsldatahandle-mad.h
 GSL_C_SRC     =	gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorbis.c \
 		gslmath.c gslfilter.c gslcommon.c gsldatautils.c gslmagic.c \
-		gslloader-wav.c gslloader-gslwave.c gslloader-oggvorbis.c \
+		gslloader-wav.c gslloader-gslwave.c gslloader-mad.c gslloader-oggvorbis.c \
 		gslconvert.c gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
-		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c
+		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c gsldatahandle-mad.c
 GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h gslwaveosc-aux.c
 GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header gslglib.c gslglib.h gsl-fftgen.pl
 EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT)
@@ -40,7 +40,7 @@ gslffttest_LDADD = $(GSL_progs_ldadd)
 gslglibhashtest_SOURCES = gslglibhashtest.cc # C++ already
 gslglibhashtest_LDADD = $(GSL_progs_ldadd)
 
-gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
+$(srcdir)/gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(srcdir)/gsl-fftconf.sh $(srcdir)/gsl-fftgen.pl \"gslfft.h\" >$@
 MAINTAINERCLEANFILES += gslfft.c
 
@@ -61,10 +61,12 @@ gslconfig.h: $(top_srcdir)/configure Makefile
 CLEANFILES += gslconfig.h xgen-gch
 $(OBJECTS): gslconfig.h
 
+gsl_public_headers = $(GSL_H_SRC) gslconfig.h
+
 install-data-local:	gsl-install-data-local
 gsl-install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(gslincludedir)
-	@list='$(GSL_H_SRC)'; \
+	@list='$(gsl_public_headers)'; \
 	test -z "$(gslincludedir)" || for hfile in $$list ; do \
 	  if test -f "$$hfile"; then d= ; else d="$(srcdir)/"; fi; \
 	  echo " $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile"; \

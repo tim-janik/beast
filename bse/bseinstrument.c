@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,17 @@
 
 #include	"bseglobals.h"
 #include	"bsewave.h"
+#include	"bsesnet.h"
+#include	"bsemain.h"
+#include	"bsestandardsynths.h"
 
 
 enum {
   PARAM_0,
+  PARAM_SYNTH_TYPE,
   PARAM_WAVE,
-  PARAM_SYNTH,
-  PARAM_SAMPLE,
-  PARAM_INTERPOLATION,
-  PARAM_POLYPHONY,
+  PARAM_SYNTH_NET,
+  PARAM_SEQ_SYNTH,
   PARAM_VOLUME_f,
   PARAM_VOLUME_dB,
   PARAM_VOLUME_PERC,
@@ -81,16 +83,16 @@ static BseDot env_dflt_dots[ENV_N_DOTS] = {
 static void	bse_instrument_class_init	(BseInstrumentClass	*class);
 static void	bse_instrument_init		(BseInstrument		*instrument);
 static void	bse_instrument_do_destroy	(BseObject		*object);
-static void	bse_instrument_set_property	(BseInstrument		*instrument,
+static void	bse_instrument_set_property	(GObject		*object,
+						 guint                   param_id,
+						 const GValue           *value,
+						 GParamSpec             *pspec);
+static void	bse_instrument_get_property	(GObject		*object,
 						 guint                   param_id,
 						 GValue                 *value,
-						 GParamSpec             *pspec,
-						 const gchar            *trailer);
-static void	bse_instrument_get_property	(BseInstrument		*instrument,
-						 guint                   param_id,
-						 GValue                 *value,
-						 GParamSpec             *pspec,
-						 const gchar            *trailer);
+						 GParamSpec             *pspec);
+static void	instrument_set_synth_type	(BseInstrument		*instrument,
+						 BseInstrumentType	 type);
 
 
 /* --- variables --- */
@@ -128,16 +130,34 @@ bse_instrument_class_init (BseInstrumentClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_instrument_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_instrument_get_property;
+  gobject_class->set_property = bse_instrument_set_property;
+  gobject_class->get_property = bse_instrument_get_property;
   
   object_class->destroy = bse_instrument_do_destroy;
   
-  bse_object_class_add_param (object_class, "Sample Input",
+  bse_object_class_add_param (object_class, "Synth Input",
+			      PARAM_SYNTH_TYPE,
+			      bse_param_spec_enum ("synth_type", "Synth Type",
+						   "The synthesis type specifies the synthesis kind to be "
+						   "used for this instrument",
+						   BSE_TYPE_INSTRUMENT_TYPE,
+						   BSE_INSTRUMENT_STANDARD_PIANO,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Synth Input",
 			      PARAM_WAVE,
-			      g_param_spec_object ("wave", "Wave", "Wave to play",
+			      g_param_spec_object ("wave", "Custom Wave", "The wave to be used for wave synthesis",
 						   BSE_TYPE_WAVE,
 						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Synth Input",
+			      PARAM_SYNTH_NET,
+			      g_param_spec_object ("user_snet", "Custom Synth Net", "Synthesis network for customized synthesis",
+						   BSE_TYPE_SNET,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Synth Input",
+			      PARAM_SEQ_SYNTH,
+			      g_param_spec_object ("seq_snet", "Seq Synth", NULL,
+						   BSE_TYPE_SNET,
+						   BSE_PARAM_SERVE_GUI | BSE_PARAM_READABLE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
 			      bse_param_spec_float ("volume_f", "Volume [float]", NULL,
@@ -263,7 +283,10 @@ static void
 bse_instrument_init (BseInstrument *instrument)
 {
   instrument->type = BSE_INSTRUMENT_NONE;
-  
+  instrument->wave = NULL;
+  instrument->user_snet = NULL;
+  instrument->seq_snet = NULL;
+
   instrument->volume_factor = bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB);
   instrument->balance = BSE_DFL_INSTRUMENT_BALANCE;
   instrument->transpose = BSE_DFL_INSTRUMENT_TRANSPOSE;
@@ -277,30 +300,28 @@ bse_instrument_init (BseInstrument *instrument)
   instrument->env.sustain_time = ENV_SUSTAIN_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME;
   instrument->env.release_level = ENV_RELEASE_LEVEL (env_dflt_dots);
   instrument->env.release_time = ENV_RELEASE_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME;
+
+  instrument_set_synth_type (instrument, BSE_INSTRUMENT_STANDARD_PIANO);
 }
 
 static void
 bse_instrument_do_destroy (BseObject *object)
 {
   BseInstrument *instrument = BSE_INSTRUMENT (object);
-  
-  g_assert (instrument->type == BSE_INSTRUMENT_NONE); /* paranoid */
 
-  g_assert (instrument->wave == NULL);	/* automatically uncorssed */
+  instrument_set_synth_type (instrument, BSE_INSTRUMENT_NONE);
+  g_object_set (instrument,
+		"wave", NULL,
+		"user_snet", NULL,
+		NULL);
+
+  /* automatically uncrossed: */
+  g_assert (instrument->wave == NULL);
+  g_assert (instrument->user_snet == NULL);
+  g_assert (instrument->seq_snet == NULL);
   
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-static void
-instrument_input_changed (BseInstrument *instrument)
-{
-  if (instrument->type == BSE_INSTRUMENT_SYNTH)
-    ; // bse_object_param_changed (BSE_OBJECT (instrument), "sinstrument");
-  else if (instrument->type == BSE_INSTRUMENT_SAMPLE)
-    bse_object_param_changed (BSE_OBJECT (instrument), "sample");
-  else
-    g_assert_not_reached ();
 }
 
 static void
@@ -310,35 +331,57 @@ notify_wave_changed (BseInstrument *instrument)
 }
 
 static void
+notify_user_snet_changed (BseInstrument *instrument)
+{
+  g_object_notify (G_OBJECT (instrument), "user_snet");
+}
+
+static void
 wave_uncross (BseItem *owner,
 	      BseItem *ref_item)
 {
   BseInstrument *instrument = BSE_INSTRUMENT (owner);
 
+  g_object_disconnect (instrument->wave,
+		       "any_signal", notify_wave_changed, instrument,
+		       NULL);
   instrument->wave = NULL;
   g_object_notify (G_OBJECT (instrument), "wave");
 }
 
 static void
-bse_instrument_set_property (BseInstrument *instrument,
-			     guint          param_id,
-			     GValue        *value,
-			     GParamSpec    *pspec,
-			     const gchar   *trailer)
+user_snet_uncross (BseItem *owner,
+		   BseItem *ref_item)
 {
+  BseInstrument *instrument = BSE_INSTRUMENT (owner);
+
+  g_object_disconnect (instrument->user_snet,
+		       "any_signal", notify_user_snet_changed, instrument,
+		       NULL);
+  instrument->user_snet = NULL;
+  g_object_notify (G_OBJECT (instrument), "user_snet");
+}
+
+static void
+bse_instrument_set_property (GObject      *object,
+			     guint         param_id,
+			     const GValue *value,
+			     GParamSpec   *pspec)
+{
+  BseInstrument *instrument = BSE_INSTRUMENT (object);
   BseEnvelope *env = &instrument->env;
   
   switch (param_id)
     {
       guint total;
+    case PARAM_SYNTH_TYPE:
+      instrument_set_synth_type (instrument, g_value_get_enum (value));
+      break;
     case PARAM_WAVE:
       if (instrument->wave)
 	{
-	  g_object_disconnect (instrument->wave,
-			       "any_signal", notify_wave_changed, instrument,
-			       NULL);
-	  bse_item_cross_unref (BSE_ITEM (instrument), BSE_ITEM (instrument->wave));
-	  instrument->wave = NULL;
+	  bse_item_uncross (BSE_ITEM (instrument), BSE_ITEM (instrument->wave));
+	  g_assert (instrument->wave == NULL);
 	}
       instrument->wave = g_value_get_object (value);
       if (instrument->wave)
@@ -349,8 +392,20 @@ bse_instrument_set_property (BseInstrument *instrument,
 			    NULL);
 	}
       break;
-    case PARAM_SYNTH:
-      // FIXME
+    case PARAM_SYNTH_NET:
+      if (instrument->user_snet)
+	{
+	  bse_item_uncross (BSE_ITEM (instrument), BSE_ITEM (instrument->user_snet));
+	  g_assert (instrument->user_snet == NULL);
+	}
+      instrument->user_snet = g_value_get_object (value);
+      if (instrument->user_snet)
+	{
+	  bse_item_cross_ref (BSE_ITEM (instrument), BSE_ITEM (instrument->user_snet), user_snet_uncross);
+	  g_object_connect (instrument->user_snet,
+			    "swapped_signal::notify::name", notify_user_snet_changed, instrument,
+			    NULL);
+	}
       break;
     case PARAM_VOLUME_f:
       instrument->volume_factor = g_value_get_float (value);
@@ -486,22 +541,29 @@ bse_instrument_set_property (BseInstrument *instrument,
 }
 
 static void
-bse_instrument_get_property (BseInstrument *instrument,
-			     guint          param_id,
-			     GValue        *value,
-			     GParamSpec    *pspec,
-			     const gchar   *trailer)
+bse_instrument_get_property (GObject    *object,
+			     guint       param_id,
+			     GValue     *value,
+			     GParamSpec *pspec)
 {
+  BseInstrument *instrument = BSE_INSTRUMENT (object);
   BseEnvelope *env = &instrument->env;
   
   switch (param_id)
     {
       BseDot dots[ENV_N_DOTS];
       guint total;
+    case PARAM_SYNTH_TYPE:
+      g_value_set_enum (value, instrument->type);
+      break;
     case PARAM_WAVE:
       g_value_set_object (value, instrument->wave);
       break;
-    case PARAM_SYNTH:
+    case PARAM_SYNTH_NET:
+      g_value_set_object (value, instrument->user_snet);
+      break;
+    case PARAM_SEQ_SYNTH:
+      g_value_set_object (value, instrument->seq_snet);
       break;
     case PARAM_VOLUME_f:
       g_value_set_float (value, instrument->volume_factor);
@@ -569,4 +631,36 @@ bse_instrument_get_property (BseInstrument *instrument,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (instrument, param_id, pspec);
       break;
     }
+}
+
+static void
+instrument_set_synth_type (BseInstrument    *instrument,
+			   BseInstrumentType type)
+{
+  BseProject *project = bse_item_get_project (BSE_ITEM (instrument));
+
+  if (instrument->seq_snet)
+    {
+      BSE_SEQUENCER_LOCK ();
+      instrument->seq_snet = NULL;
+      BSE_SEQUENCER_UNLOCK ();
+    }
+  instrument->type = type;
+  if (project)
+    {
+      switch (instrument->type)
+	{
+	  BseStandardSynth *synth;
+	case BSE_INSTRUMENT_STANDARD_PIANO:
+	  synth = bse_project_standard_piano (project);
+	  BSE_SEQUENCER_LOCK ();
+	  instrument->seq_snet = synth->snet;
+	  BSE_SEQUENCER_UNLOCK ();
+	  break;
+	default:
+	  break;
+	}
+    }
+  g_object_notify (G_OBJECT (instrument), "synth_type");
+  g_object_notify (G_OBJECT (instrument), "seq_snet");
 }

@@ -51,7 +51,8 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
 	    {   /* pathologic */
 	      peekbuf->data[k - peekbuf->start] = 0;
 	      inc = 1;
-	      gsl_message_send (G_STRLOC, GSL_ERROR_READ_FAILED, "unable to read from data handle (%p)", dhandle);
+	      gsl_message_send (GSL_MSG_DATA_HANDLE, "PeekBuffer",
+				GSL_ERROR_READ_FAILED, "unable to read from data handle (%p)", dhandle);
 	    }
 	}
     }
@@ -391,3 +392,52 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 
   return TRUE;
 }
+
+/**
+ * gsl_data_find_block
+ * @handle:   an open GslDataHandle
+ * @n_values: amount of values to look for
+ * @values:   values to find
+ * @epsilon:  maximum difference upon comparisions
+ * @RETURNS:  position of values in data handle or -1
+ *
+ * Find the position of a block of values within a
+ * data handle, where all values compare to the reference
+ * values with a delta smaller than epsilon.
+ */
+GslLong
+gsl_data_find_block (GslDataHandle *handle,
+		     guint          n_values,
+		     const gfloat  *values,
+		     gfloat         epsilon)
+{
+  GslDataPeekBuffer pbuf = { +1 /* random access: 0 */ };
+  guint i;
+
+  g_return_val_if_fail (handle != NULL, -1);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (handle), -1);
+
+  if (n_values < 1)
+    return -1;
+  else
+    g_return_val_if_fail (values != NULL, -1);
+
+  for (i = 0; i < handle->n_values; i++)
+    {
+      guint j;
+
+      if (n_values > handle->n_values - i)
+	return -1;
+
+      for (j = 0; j < n_values; j++)
+	{
+	  if (fabs (values[j] - gsl_data_handle_peek_value (handle, i + j, &pbuf)) >= epsilon)
+	    break;
+	}
+      if (j >= n_values)
+	return i;
+    }
+  return -1;
+}
+
+/* vim:set ts=8 sts=2 sw=2: */

@@ -99,7 +99,7 @@ bse_project_class_init (BseProjectClass *class)
   container_class->forall_items = bse_project_forall_items;
 
   project_signals[SIGNAL_COMPLETE_RESTORE] = bse_object_class_add_signal (object_class, "complete-restore",
-									  bse_marshal_VOID__POINTER_BOOLEAN,
+									  bse_marshal_VOID__POINTER_BOOLEAN, NULL, // FIXME: OBJECT
 									  G_TYPE_NONE,
 									  2, G_TYPE_POINTER, // FIXME TYPE_OBJECT
 									  G_TYPE_BOOLEAN);
@@ -468,10 +468,11 @@ bse_project_start_playback (BseProject *project)
 	  
 	  if (super->auto_activate)
 	    {
-	      BseSource *source = BSE_SOURCE (super);
-	      
-	      super->auto_activate_context_handle = bse_source_create_context (source, trans);
-	      bse_source_connect_context (source, super->auto_activate_context_handle, trans);
+	      BseSNet *snet = BSE_SNET (super);
+
+	      super->auto_activate_context_handle = 0;
+	      super->auto_activate_context_handle = bse_snet_create_context (snet, trans);
+	      bse_source_connect_context (BSE_SOURCE (snet), super->auto_activate_context_handle, trans);
 	    }
 	  else
 	    super->auto_activate_context_handle = ~0;

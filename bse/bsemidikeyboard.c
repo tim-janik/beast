@@ -49,11 +49,15 @@ static void	 bse_midi_keyboard_get_property		(BseMidiKeyboard	*scard,
 static void	 bse_midi_keyboard_do_destroy		(BseObject		*object);
 static void	 bse_midi_keyboard_set_parent		(BseItem		*item,
 							 BseItem		*parent);
-static void	 bse_midi_keyboard_prepare		(BseSource		*source);
 static void	 bse_midi_keyboard_context_create	(BseSource		*source,
 							 guint			 instance_id,
 							 GslTrans		*trans);
-static void	 bse_midi_keyboard_reset		(BseSource		*source);
+static void	 bse_midi_keyboard_context_connect	(BseSource		*source,
+							 guint			 instance_id,
+							 GslTrans		*trans);
+static void	 bse_midi_keyboard_context_dismiss	(BseSource		*source,
+							 guint			 instance_id,
+							 GslTrans		*trans);
 
 
 /* --- variables --- */
@@ -112,9 +116,9 @@ bse_midi_keyboard_class_init (BseMidiKeyboardClass *class)
 
   item_class->set_parent = bse_midi_keyboard_set_parent;
   
-  source_class->prepare = bse_midi_keyboard_prepare;
   source_class->context_create = bse_midi_keyboard_context_create;
-  source_class->reset = bse_midi_keyboard_reset;
+  source_class->context_connect = bse_midi_keyboard_context_connect;
+  source_class->context_dismiss = bse_midi_keyboard_context_dismiss;
 
   ochannel_id = bse_source_class_add_ochannel (source_class, "Frequency", "MIDI Note Frequency");
   g_assert (ochannel_id == BSE_MIDI_KEYBOARD_OCHANNEL_FREQUENCY);
@@ -185,19 +189,21 @@ static void
 bse_midi_keyboard_set_parent (BseItem *item,
 			      BseItem *parent)
 {
-  BseMidiKeyboard *keyb = BSE_MIDI_KEYBOARD (item);
+  BseMidiKeyboard *self = BSE_MIDI_KEYBOARD (item);
 
   /* remove from old parent */
   if (item->parent)
     {
-      bse_snet_remove_in_port (BSE_SNET (item->parent), keyb->cname1);
-      bse_snet_remove_in_port (BSE_SNET (item->parent), keyb->cname2);
-      bse_snet_remove_in_port (BSE_SNET (item->parent), keyb->cname3);
-      bse_snet_remove_in_port (BSE_SNET (item->parent), keyb->cname4);
-      keyb->cname1 = BSE_SOURCE_OCHANNEL_CNAME (item, BSE_MIDI_KEYBOARD_OCHANNEL_FREQUENCY);
-      keyb->cname2 = BSE_SOURCE_OCHANNEL_CNAME (item, BSE_MIDI_KEYBOARD_OCHANNEL_GATE);
-      keyb->cname3 = BSE_SOURCE_OCHANNEL_CNAME (item, BSE_MIDI_KEYBOARD_OCHANNEL_VELOCITY);
-      keyb->cname4 = BSE_SOURCE_OCHANNEL_CNAME (item, BSE_MIDI_KEYBOARD_OCHANNEL_AFTERTOUCH);
+      BseSNet *snet = BSE_SNET (item->parent);
+
+      bse_snet_iport_name_unregister (snet, self->cname1);
+      self->cname1 = BSE_SOURCE_OCHANNEL_CNAME (item, BSE_MIDI_KEYBOARD_OCHANNEL_FREQUENCY);
+      bse_snet_iport_name_unregister (snet, self->cname2);
+      self->cname2 = BSE_SOURCE_OCHANNEL_CNAME (item, BSE_MIDI_KEYBOARD_OCHANNEL_GATE);
+      bse_snet_iport_name_unregister (snet, self->cname3);
+      self->cname3 = BSE_SOURCE_OCHANNEL_CNAME (item, BSE_MIDI_KEYBOARD_OCHANNEL_VELOCITY);
+      bse_snet_iport_name_unregister (snet, self->cname4);
+      self->cname4 = BSE_SOURCE_OCHANNEL_CNAME (item, BSE_MIDI_KEYBOARD_OCHANNEL_AFTERTOUCH);
     }
 
   /* chain parent class' handler */
@@ -206,24 +212,11 @@ bse_midi_keyboard_set_parent (BseItem *item,
   /* add to new parent */
   if (item->parent)
     {
-      keyb->cname1 = bse_snet_add_in_port (BSE_SNET (item->parent), keyb->cname1,
-					   BSE_SOURCE (item), BSE_MIDI_KEYBOARD_OCHANNEL_FREQUENCY, 0);
-      keyb->cname2 = bse_snet_add_in_port (BSE_SNET (item->parent), keyb->cname2,
-					   BSE_SOURCE (item), BSE_MIDI_KEYBOARD_OCHANNEL_GATE, 1);
-      keyb->cname3 = bse_snet_add_in_port (BSE_SNET (item->parent), keyb->cname3,
-					   BSE_SOURCE (item), BSE_MIDI_KEYBOARD_OCHANNEL_VELOCITY, 2);
-      keyb->cname4 = bse_snet_add_in_port (BSE_SNET (item->parent), keyb->cname4,
-					   BSE_SOURCE (item), BSE_MIDI_KEYBOARD_OCHANNEL_AFTERTOUCH, 3);
+      self->cname1 = bse_snet_iport_name_register (BSE_SNET (item->parent), self->cname1);
+      self->cname2 = bse_snet_iport_name_register (BSE_SNET (item->parent), self->cname2);
+      self->cname3 = bse_snet_iport_name_register (BSE_SNET (item->parent), self->cname3);
+      self->cname4 = bse_snet_iport_name_register (BSE_SNET (item->parent), self->cname4);
     }
-}
-
-static void
-bse_midi_keyboard_prepare (BseSource *source)
-{
-  // BseMidiKeyboard *keyb = BSE_MIDI_KEYBOARD (source);
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
 static void
@@ -254,11 +247,10 @@ bse_midi_keyboard_context_create (BseSource *source,
     NULL,			/* free */
     GSL_COST_CHEAP,		/* cost */
   };
-  // BseMidiKeyboard *keyb = BSE_MIDI_KEYBOARD (source);
   GslModule *module = gsl_module_new (&midi_keyboard_mclass, NULL);
 
   /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_module (source, context_handle, module);
+  bse_source_set_context_omodule (source, context_handle, module);
   
   /* commit module to engine */
   gsl_trans_add (trans, gsl_job_integrate (module));
@@ -268,10 +260,38 @@ bse_midi_keyboard_context_create (BseSource *source,
 }
 
 static void
-bse_midi_keyboard_reset (BseSource *source)
+bse_midi_keyboard_context_connect (BseSource *source,
+				   guint      context_handle,
+				   GslTrans  *trans)
 {
-  // BseMidiKeyboard *keyb = BSE_MIDI_KEYBOARD (source);
+  BseMidiKeyboard *self = BSE_MIDI_KEYBOARD (source);
+  BseItem *item = BSE_ITEM (self);
+  BseSNet *snet = BSE_SNET (item->parent);
+  GslModule *module = bse_source_get_context_omodule (source, context_handle);
   
+  bse_snet_set_iport_dest (snet, self->cname1, context_handle, module, 0, trans);
+  bse_snet_set_iport_dest (snet, self->cname2, context_handle, module, 1, trans);
+  bse_snet_set_iport_dest (snet, self->cname3, context_handle, module, 2, trans);
+  bse_snet_set_iport_dest (snet, self->cname4, context_handle, module, 3, trans);
+
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->reset (source);
+  BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
+}
+
+static void
+bse_midi_keyboard_context_dismiss (BseSource *source,
+				   guint      context_handle,
+				   GslTrans  *trans)
+{
+  BseMidiKeyboard *self = BSE_MIDI_KEYBOARD (source);
+  BseItem *item = BSE_ITEM (self);
+  BseSNet *snet = BSE_SNET (item->parent);
+
+  bse_snet_set_iport_dest (snet, self->cname1, context_handle, NULL, 0, trans);
+  bse_snet_set_iport_dest (snet, self->cname2, context_handle, NULL, 1, trans);
+  bse_snet_set_iport_dest (snet, self->cname3, context_handle, NULL, 2, trans);
+  bse_snet_set_iport_dest (snet, self->cname4, context_handle, NULL, 3, trans);
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }

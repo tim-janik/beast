@@ -61,7 +61,7 @@ struct _BseContainerClass
 /* --- prototypes --- */
 void		bse_container_add_item		(BseContainer	*container,
 						 BseItem	*item);
-BseItem*        bse_container_new_item          (BseContainer   *container,
+gpointer        bse_container_new_item          (BseContainer   *container,
 						 GType           item_type,
 						 const gchar    *first_param_name,
 						 ...);
@@ -98,7 +98,8 @@ void            bse_container_cross_ref         (BseContainer    *container,
 						 BseItemUncross   uncross_func);
 void            bse_container_cross_unref       (BseContainer    *container,
 						 BseItem         *owner,
-						 BseItem         *ref_item);
+						 BseItem         *ref_item,
+						 gboolean	 notify);
 void		bse_container_uncross_item	(BseContainer    *container,
 						 BseItem         *item);
 void		bse_container_cross_forall	(BseContainer	*container,

@@ -81,7 +81,7 @@ bse_editable_sample_class_init (BseEditableSampleClass *class)
   object_class->destroy = bse_editable_sample_destroy;
   
   signal_changed = bse_object_class_add_signal (object_class, "changed",
-						bse_marshal_VOID__NONE,
+						bse_marshal_VOID__NONE, NULL,
 						G_TYPE_NONE, 0);
 }
 

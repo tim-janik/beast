@@ -48,7 +48,8 @@ struct _BFile
 
 
 /* --- prototypes --- */
-static Magic*	magic_create		(gchar		*magic_string);
+static Magic*	magic_create		(gchar		*magic_string,
+					 const gchar	*original);
 static gboolean	magic_match_file	(BFile		*bfile,
 					 Magic       	*magics);
 static gboolean	bfile_open		(BFile		*bfile,
@@ -144,7 +145,7 @@ gsl_magic_create (gpointer     data,
   g_return_val_if_fail (magic_spec != NULL, NULL);
 
   magic_string = g_strdup (magic_spec);
-  match_list = magic_create (magic_string);
+  match_list = magic_create (magic_string, magic_spec);
   g_free (magic_string);
   if (!match_list)
     return NULL;
@@ -206,21 +207,21 @@ magic_parse_test (Magic       *magic,
       
       if (string[0] == '<' || string[0] == '>')
 	{
-	  string += 1;
 	  if (magic->cmp_unsigned)
 	    magic->magic_check = string[0] == '<' ? MAGIC_CHECK_UINT_SMALLER : MAGIC_CHECK_UINT_GREATER;
 	  else
 	    magic->magic_check = string[0] == '<' ? MAGIC_CHECK_INT_SMALLER : MAGIC_CHECK_INT_GREATER;
+	  string += 1;
 	}
       else if (string[0] == '^' || string[0] == '&')
 	{
-	  string += 1;
 	  magic->magic_check = string[0] == '&' ? MAGIC_CHECK_UINT_ONES : MAGIC_CHECK_UINT_ZEROS;
+	  string += 1;
 	}
       else if (string[0] == 'x')
 	{
-	  string += 1;
 	  magic->magic_check = MAGIC_CHECK_ANY;
+	  string += 1;
 	}
       else
 	{
@@ -241,8 +242,8 @@ magic_parse_test (Magic       *magic,
       
       if (string[0] == '<' || string[0] == '>')
 	{
-	  string += 1;
 	  magic->magic_check = string[0] == '<' ? MAGIC_CHECK_STRING_SMALLER : MAGIC_CHECK_STRING_GREATER;
+	  string += 1;
 	}
       else
 	{
@@ -313,18 +314,18 @@ magic_parse_type (Magic       *magic,
   else if (strncmp (string, "short", 5) == 0)
     {
       string += 5;
-      magic->data_size = 4;
+      magic->data_size = 2;
     }
   else if (strncmp (string, "leshort", 7) == 0)
     {
       string += 7;
-      magic->data_size = 4;
+      magic->data_size = 2;
       magic->need_swap = G_BYTE_ORDER != G_LITTLE_ENDIAN;
     }
   else if (strncmp (string, "beshort", 7) == 0)
     {
       string += 7;
-      magic->data_size = 4;
+      magic->data_size = 2;
       magic->need_swap = G_BYTE_ORDER != G_BIG_ENDIAN;
     }
   else if (strncmp (string, "long", 4) == 0)
@@ -344,6 +345,7 @@ magic_parse_type (Magic       *magic,
       magic->data_size = 4;
       magic->need_swap = G_BYTE_ORDER != G_BIG_ENDIAN;
     }
+#if 0
   else if (strncmp (string, "size", 4) == 0)
     {
       string += 4;
@@ -351,6 +353,7 @@ magic_parse_type (Magic       *magic,
       magic->read_size = TRUE;
       magic->cmp_unsigned = TRUE;
     }
+#endif
   else if (strncmp (string, "string", 6) == 0)
     {
       string += 6;
@@ -366,6 +369,8 @@ magic_parse_type (Magic       *magic,
 	magic->data_mask = strtol (string, &f, 10);
       if (f && *f != 0)
 	return FALSE;
+      while (*string)
+	string++;
     }
   else
     magic->data_mask = 0xffffffff;
@@ -388,7 +393,8 @@ magic_parse_offset (Magic *magic,
 }
 
 static Magic*
-magic_create (gchar *magic_string)
+magic_create (gchar       *magic_string,
+	      const gchar *original)
 {
 #define SKIP_CLEAN(s)	{ while (*s && !strchr (magic_field_delims, *s)) s++; \
                           do *(s++) = 0; while (strchr (magic_field_delims, *s)); }
@@ -416,14 +422,14 @@ magic_create (gchar *magic_string)
 	  SKIP_CLEAN (p);
 	  if (!magic_parse_offset (magics, magic_string))
 	    {
-	      g_warning ("unable to parse magic offset \"%s\"", magic_string);
+	      g_warning ("unable to parse magic offset \"%s\" from \"%s\"", magic_string, original);
 	      return NULL;
 	    }
 	  magic_string = p;
 	  SKIP_CLEAN (p);
 	  if (!magic_parse_type (magics, magic_string))
 	    {
-	      g_warning ("unable to parse magic type \"%s\"", magic_string);
+	      g_warning ("unable to parse magic type \"%s\" from \"%s\"", magic_string, original);
 	      return NULL;
 	    }
           magic_string = p;
@@ -434,7 +440,7 @@ magic_create (gchar *magic_string)
 	    SKIP_CLEAN (p);
 	  if (!magic_parse_test (magics, magic_string))
 	    {
-	      g_warning ("unable to parse magic test \"%s\"", magic_string);
+	      g_warning ("unable to parse magic test \"%s\" from \"%s\"", magic_string, original);
 	      return NULL;
 	    }
 	}
@@ -540,13 +546,13 @@ magic_read_data (BFile     *bfile,
           if (!bfile_read (bfile, magic->offset, &uint16, 2))
 	    return FALSE;
 	  if (magic->need_swap)
-	    uint16 = GUINT32_SWAP_LE_BE (uint16);
+	    uint16 = GUINT16_SWAP_LE_BE (uint16);
 	  if (magic->cmp_unsigned)
 	    data->v_uint32 = uint16;
 	  else
 	    data->v_int32 = (signed) uint16;
 	}
-      else /* magic->data_size == 1 */
+      else if (magic->data_size == 1)
 	{
 	  guint8 uint8;
 
@@ -557,6 +563,8 @@ magic_read_data (BFile     *bfile,
 	  else
 	    data->v_int32 = (signed) uint8;
 	}
+      else
+	g_assert_not_reached ();
     }
 
   return TRUE;

@@ -57,7 +57,7 @@ typedef enum
 } BseMagicFlags;
 typedef enum
 {
-  /* GSL errors mirrored into BSE */
+  /* GSL errors are mirrored into BSE */
   BSE_ERROR_NONE		= GSL_ERROR_NONE,	/* 0 */
   BSE_ERROR_INTERNAL		= GSL_ERROR_INTERNAL,
   BSE_ERROR_UNKNOWN		= GSL_ERROR_UNKNOWN,
@@ -120,11 +120,15 @@ typedef enum
   BSE_ERROR_SOURCE_BAD_LOOPBACK,
   BSE_ERROR_SOURCE_BUSY,
   BSE_ERROR_SOURCE_TYPE_INVALID,
-  /* BseProcedure errors */
+  /* BseProcedure invocation errors */
   BSE_ERROR_PROC_BUSY,
   BSE_ERROR_PROC_PARAM_INVAL,
   BSE_ERROR_PROC_EXECUTION,
   BSE_ERROR_PROC_ABORT,
+  /* misc procedure errors */
+  BSE_ERROR_INVALID_OFFSET,
+  BSE_ERROR_INVALID_DURATION,
+  BSE_ERROR_INVALID_OVERLAP,
   /* BseServer errors */
   BSE_ERROR_NO_PCM_DEVICE,
   BSE_ERROR_PCM_DEVICE_ACTIVE,

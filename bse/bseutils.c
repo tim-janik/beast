@@ -844,7 +844,7 @@ bse_note_from_string (const gchar *note_string)
   note = BSE_NOTE_UNPARSABLE;
   
   fit = FALSE;
-  for (i = 0; i < bse_note_table_length && !fit; i++)
+  for (i = 0; i < bse_note_table_length; i++)
     {
       register guint p;
       
@@ -852,9 +852,9 @@ bse_note_from_string (const gchar *note_string)
       do
 	fit = bse_note_table[i].name[p] == string[p];
       while (bse_note_table[i].name[++p] && fit);
+      if (fit)
+	break;
     }
-  g_assert (i > 0); /* paranoid */
-  i--;
   
   if (fit)
     {
@@ -911,9 +911,9 @@ bse_note_examine (gint      note,
 		  gboolean *ht_up_p,
 		  gchar	   *letter_p)
 {
+  static const gint8 ht_flags[12] = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0 };
   register guint half_tone;
   register gint octave;
-  gboolean ht_flags[12] = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0 };
   
   g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
   
@@ -978,7 +978,7 @@ bse_value_arrays_match_freq (gfloat       match_freq,
 	GValue *value = exclusive_set->values + i;
 
 	if (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)) == G_TYPE_FLOAT &&
-	    fabs (value->data[0].v_float - match_freq) < BSE_EPSILON_FREQUENCY)
+	    fabs (value->data[0].v_float - match_freq) < BSE_FREQUENCY_EPSILON)
 	  return FALSE;
       }
 
@@ -990,7 +990,7 @@ bse_value_arrays_match_freq (gfloat       match_freq,
       GValue *value = inclusive_set->values + i;
       
       if (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)) == G_TYPE_FLOAT &&
-	  fabs (value->data[0].v_float - match_freq) < BSE_EPSILON_FREQUENCY)
+	  fabs (value->data[0].v_float - match_freq) < BSE_FREQUENCY_EPSILON)
 	return TRUE;
     }
   return FALSE;
@@ -1008,7 +1008,7 @@ bse_darrays_match_freq (gfloat   match_freq,
       {
 	gdouble *value = exclusive_set->values + i;
 
-	if (fabs (*value - match_freq) < BSE_EPSILON_FREQUENCY)
+	if (fabs (*value - match_freq) < BSE_FREQUENCY_EPSILON)
 	  return FALSE;
       }
 
@@ -1019,7 +1019,7 @@ bse_darrays_match_freq (gfloat   match_freq,
     {
       gdouble *value = inclusive_set->values + i;
       
-      if (fabs (*value - match_freq) < BSE_EPSILON_FREQUENCY)
+      if (fabs (*value - match_freq) < BSE_FREQUENCY_EPSILON)
 	return TRUE;
     }
   return FALSE;

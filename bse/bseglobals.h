@@ -49,6 +49,9 @@ extern "C" {
 #define	BSE_NOTE_UNPARSABLE		(BSE_NOTE_VOID + 1)
 #define	BSE_KAMMER_NOTE			((gint) (57) /* A' */)
 #define	BSE_KAMMER_OCTAVE		((gint) (+1))
+#define	BSE_NOTE_OCTAVE(n)		((((gint) (n)) - (BSE_KAMMER_NOTE - 9)) / 12 + BSE_KAMMER_OCTAVE)
+#define	BSE_MIN_OCTAVE			(BSE_NOTE_OCTAVE (BSE_MIN_NOTE))
+#define	BSE_MAX_OCTAVE			(BSE_NOTE_OCTAVE (BSE_MAX_NOTE))
 #define	BSE_NOTE_C(o)			(CLAMP (BSE_KAMMER_NOTE - 9 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
 #define	BSE_NOTE_Cis(o)			(CLAMP (BSE_KAMMER_NOTE - 8 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
 #define	BSE_NOTE_Des(o)			(BSE_NOTE_Cis (o))
@@ -66,7 +69,7 @@ extern "C" {
 #define	BSE_NOTE_Ais(o)			(CLAMP (BSE_KAMMER_NOTE + 1 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
 #define	BSE_NOTE_Bes(o)			(BSE_NOTE_Ais (o))
 #define	BSE_NOTE_B(o)			(CLAMP (BSE_KAMMER_NOTE + 2 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_GENERIC(ht_i,o)	(BSE_NOTE_C (o) + (ht_i) - 1 >= BSE_MIN_NOTE && BSE_NOTE_C (o) + (ht_i) - 1 <= BSE_MAX_NOTE ? BSE_NOTE_C (o) + (ht_i) - 1 : BSE_NOTE_VOID)
+#define	BSE_NOTE_GENERIC(ht_i,o)	(BSE_NOTE_C (o) + (ht_i) >= BSE_MIN_NOTE && BSE_NOTE_C (o) + (ht_i) <= BSE_MAX_NOTE ? BSE_NOTE_C (o) + (ht_i) : BSE_NOTE_VOID)
 #define	BSE_NOTE_OCTAVE_UP(n)		((n) + 12 <= BSE_MAX_NOTE && (n) + 12 >= BSE_MIN_NOTE ? (n) + 12 : (n))
 #define	BSE_NOTE_OCTAVE_DOWN(n)		((n) >= BSE_MIN_NOTE + 12 && (n) - 12 <= BSE_MAX_NOTE ? (n) - 12 : (n))
 #define	BSE_NOTE_VALID(n)		((n) >= BSE_MIN_NOTE && (n) <= (BSE_MAX_NOTE))
@@ -83,7 +86,7 @@ extern "C" {
 #define	BSE_MAX_FREQUENCY_d		 ((gdouble) BSE_MAX_FREQUENCY)
 #define	BSE_FREQ_FROM_VALUE(value)	 (((gfloat) (value)) * BSE_MAX_FREQUENCY_f)
 #define	BSE_VALUE_FROM_FREQ(freq)	 ((gfloat) ((freq) * (1.0 / BSE_MAX_FREQUENCY_f)))
-#define	BSE_EPSILON_FREQUENCY		 ((gdouble) 0.01)
+#define	BSE_FREQUENCY_EPSILON		 ((gdouble) 0.001)
 
 
 /* --- time ranges --- */
@@ -104,10 +107,7 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 #define	BSE_MAX_VOLUME_dB		(+10)
 #define	BSE_MIN_BPM			(1)
 #define	BSE_MAX_BPM			(1024)
-#define	BSE_MIN_PATTERN_LENGTH		(4)
-#define	BSE_MAX_PATTERN_LENGTH		(256)
-#define	BSE_MAX_N_CHANNELS		(256)
-#define	BSE_MAX_N_ROWS			(BSE_MAX_PATTERN_LENGTH)
+#define	BSE_MAX_N_TRACKS		(256)
 #define	BSE_MIN_BALANCE			(- BSE_MAX_BALANCE)
 #define	BSE_MAX_BALANCE			(50.0)
 #define	BSE_MIN_TRANSPOSE		(-12)
@@ -123,8 +123,6 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 #define	BSE_MAX_OSC_FREQ_d		((gdouble) 20000)
 #define BSE_MIN_TIME			(631148400)	/* 1990-01-01 00:00:00 */
 #define	BSE_MAX_TIME			(2147483647)	/* 2038-01-19 04:14:07 */
-#define	BSE_MAX_SAMPLE_CHANNELS		(2)
-#define	BSE_MAX_SAMPLE_MUNKS		(BSE_MAX_NOTE + 1)
 #define	BSE_MIN_BIT_SIZE		(8)
 #define	BSE_MAX_BIT_SIZE		(16)
 #define	BSE_MIN_N_VALUES		(1)
@@ -139,14 +137,11 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 /* --- BseSource limits --- */
 #define	BSE_MAX_N_ICHANNELS		(128)
 #define	BSE_MAX_N_OCHANNELS		(128)
-#define	BSE_MAX_N_TRACKS		(8)	// FIXME
 
 
 /* --- hard defaults (used for saving) --- */
 #define	BSE_DFL_MASTER_VOLUME_dB	(0.0)
 #define	BSE_DFL_SONG_BPM		(160)
-#define	BSE_DFL_SONG_N_CHANNELS		(16)
-#define	BSE_DFL_SONG_PATTERN_LENGTH	(64)
 #define	BSE_DFL_INSTRUMENT_VOLUME_dB	(- 0.969)
 #define BSE_DFL_INSTRUMENT_BALANCE	(0)
 #define BSE_DFL_INSTRUMENT_TRANSPOSE	(0)
@@ -158,8 +153,6 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 
 /* --- memory preallocations --- */
 #define	BSE_PREALLOC_N_EFFECTS		(32)
-#define	BSE_PREALLOC_N_PATTERNS		(16)
-#define	BSE_PREALLOC_N_PATTERN_GROUPS	(4)
 #define	BSE_PREALLOC_N_SAMPLES		(8)
 #define	BSE_PREALLOC_N_INSTRUMENTS	(4)
 #define	BSE_PREALLOC_N_SUPERS		(4)
@@ -179,9 +172,6 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 /* --- BseGlobals - configurable defaults --- */
 #define	BSE_STP_VOLUME_dB		(bse_globals->step_volume_dB)
 #define	BSE_STP_BPM			(bse_globals->step_bpm)
-#define	BSE_STP_N_CHANNELS		(bse_globals->step_n_channels)
-#define	BSE_STP_PATTERN_LENGTH		(bse_globals->step_pattern_length)
-#define	BSE_STP_N_ROWS			(BSE_STP_PATTERN_LENGTH)
 #define	BSE_STP_BALANCE			(bse_globals->step_balance)
 #define	BSE_STP_TRANSPOSE		(bse_globals->step_transpose)
 #define	BSE_STP_FINE_TUNE		(bse_globals->step_fine_tune)
@@ -230,8 +220,6 @@ struct _BseGlobals
    */
   gfloat step_volume_dB;
   guint	 step_bpm;
-  guint	 step_n_channels;
-  guint	 step_pattern_length;
   guint	 step_balance;
   guint	 step_transpose;
   guint	 step_fine_tune;

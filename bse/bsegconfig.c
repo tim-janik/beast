@@ -31,8 +31,6 @@ enum
   PARAM_0,
   PARAM_STEP_VOLUME_dB,
   PARAM_STEP_BPM,
-  PARAM_STEP_N_CHANNELS,
-  PARAM_STEP_PATTERN_LENGTH,
   PARAM_STEP_BALANCE,
   PARAM_STEP_TRANSPOSE,
   PARAM_STEP_FINE_TUNE,
@@ -144,7 +142,7 @@ bse_gconfig_class_init (BseGConfigClass *class)
   class->default_revert = bse_gconfig_do_default_revert;
   
   gconfig_signals[SIGNAL_LOCK_CHANGED] = bse_object_class_add_signal (object_class, "lock_changed",
-								      bse_marshal_VOID__NONE,
+								      bse_marshal_VOID__NONE, NULL,
 								      G_TYPE_NONE, 0);
   
   bse_globals_copy (NULL, &globals_defaults);
@@ -174,18 +172,6 @@ bse_gconfig_class_init (BseGConfigClass *class)
 			      bse_param_spec_uint ("step_bpm", "BPM Steps", "Step width for beats per minute",
 						   1, 50,
 						   globals_defaults.step_bpm, 1,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_N_CHANNELS,
-			      bse_param_spec_uint ("step_n_channels", "Channel Count Steps", "Step width for number of channels",
-						   1, 16,
-						   globals_defaults.step_n_channels, 1,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_PATTERN_LENGTH,
-			      bse_param_spec_uint ("step_pattern_length", "Pattern Length Steps", "Step width for pattern length",
-						   1, 16,
-						   globals_defaults.step_pattern_length, 1,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Step Widths",
 			      PARAM_STEP_BALANCE,
@@ -229,12 +215,6 @@ bse_gconfig_set_property (BseGConfig  *gconf,
     case PARAM_STEP_BPM:
       gconf->globals.step_bpm = g_value_get_uint (value);
       break;
-    case PARAM_STEP_N_CHANNELS:
-      gconf->globals.step_n_channels = g_value_get_uint (value);
-      break;
-    case PARAM_STEP_PATTERN_LENGTH:
-      gconf->globals.step_pattern_length = g_value_get_uint (value);
-      break;
     case PARAM_STEP_BALANCE:
       gconf->globals.step_balance = g_value_get_uint (value);
       break;
@@ -273,12 +253,6 @@ bse_gconfig_get_property (BseGConfig  *gconf,
       break;
     case PARAM_STEP_BPM:
       g_value_set_uint (value, gconf->globals.step_bpm);
-      break;
-    case PARAM_STEP_N_CHANNELS:
-      g_value_set_uint (value, gconf->globals.step_n_channels);
-      break;
-    case PARAM_STEP_PATTERN_LENGTH:
-      g_value_set_uint (value, gconf->globals.step_pattern_length);
       break;
     case PARAM_STEP_BALANCE:
       g_value_set_uint (value, gconf->globals.step_balance);

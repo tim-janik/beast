@@ -18,7 +18,6 @@
 #include	"bseglobals.h"
 
 #include	"bseconfig.h"
-#include	"bsechunk.h"	/* for bse_chunks_nuke() */
 
 
 /* --- defines --- */
@@ -87,8 +86,6 @@ const BseGlobals * const bse_globals = &bse_globals_current;
 static const BseGlobals	 bse_globals_defaults = {
   0.1		/* step_volume_dB */,
   10		/* step_bpm */,
-  4		/* step_n_channels */,
-  4		/* step_pattern_length */,
   8		/* step_balance */,
   4		/* step_transpose */,
   4		/* step_fine_tune */,
@@ -120,23 +117,6 @@ bse_check_version (guint required_major,
   return NULL;
 }
 
-static void
-newinit (void)
-{
-  gdouble k = BSE_KAMMER_NOTE, k2 = BSE_KAMMER_NOTE << 1;
-  gdouble f = BSE_KAMMER_FREQ_f;
-  gdouble a, b, c;
-
-  a = f / 576.;
-  b = f * (18. - k) / 288.;
-  c = f - (a * k + b) * k;
-
-  return;
-  
-  g_print ("(%10f*x + %10f)*x + %10f \n", a, b, c);
-  exit(0);
-}
-
 void
 bse_globals_init (void)
 {
@@ -147,8 +127,6 @@ bse_globals_init (void)
   
   g_return_if_fail (_bse_halftone_factor_table == NULL);
 
-  newinit();
-  
   /* setup half tone factorization table
    */
   g_assert (BSE_MIN_NOTE == 0);
@@ -236,7 +214,6 @@ bse_globals_unlock (void)
       bse_globals_lock_count--;
       if (bse_globals_lock_count == 0)
 	{
-	  bse_chunks_nuke ();
 	  bse_gconfig_notify_lock_changed ();
 	}
     }

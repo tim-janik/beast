@@ -36,13 +36,13 @@ extern "C" {
 #define BSE_IS_SNET(object)	   (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SNET))
 #define BSE_IS_SNET_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SNET))
 #define BSE_SNET_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SNET, BseSNetClass))
-#define BSE_SNET_FINAL(src)	   ((BSE_OBJECT_FLAGS (src) & BSE_SNET_FLAG_FINAL) != 0)
+#define BSE_SNET_USER_SYNTH(src)   ((BSE_OBJECT_FLAGS (src) & BSE_SNET_FLAG_USER_SYNTH) != 0)
 
 
 /* --- BseSNet flags --- */
-typedef enum
+typedef enum	/*< skip >*/
 {
-  BSE_SNET_FLAG_FINAL		= 1 << (BSE_SUPER_FLAGS_USHIFT + 0)
+  BSE_SNET_FLAG_USER_SYNTH	= 1 << (BSE_SUPER_FLAGS_USHIFT + 0)
 } BseSNetFlags;
 #define BSE_SNET_FLAGS_USHIFT	(BSE_SUPER_FLAGS_USHIFT + 1)
 
@@ -51,20 +51,25 @@ typedef enum
 typedef struct
 {
   gchar     *name;
-  BseSource *source;
-  guint      channel;
-  guint	     module_stream;
-} BseSNetVPort;
+  guint      context : 31;
+  guint	     input : 1;
+  GslModule *src_omodule;	/* output */
+  guint	     src_ostream;
+  GslModule *dest_imodule;	/* input */
+  guint	     dest_istream;
+} BseSNetPort;
 struct _BseSNet
 {
   BseSuper	 parent_object;
 
   GList		*sources;	/* of type BseSource* */
+  GSList	*iport_names;
+  GSList	*oport_names;
+  gpointer	 port_array;	/* of type BseSNetPort* */
 
-  guint		 n_in_ports;
-  BseSNetVPort	*in_ports;
-  guint		 n_out_ports;
-  BseSNetVPort	*out_ports;
+  guint		 cid_counter;
+  guint		 n_cids;
+  guint		*cids;
 };
 struct _BseSNetClass
 {
@@ -73,28 +78,41 @@ struct _BseSNetClass
 
 
 /* --- prototypes --- */
-const gchar*	bse_snet_add_in_port	 	(BseSNet	*snet,
-						 const gchar	*tmpl_name,
-						 BseSource	*source,
-						 guint		 ochannel,
-						 guint		 module_istream);
-void		bse_snet_remove_in_port	 	(BseSNet	*snet,
+guint		bse_snet_create_context		(BseSNet	*snet,
+						 GslTrans	*trans);
+const gchar*	bse_snet_iport_name_register	(BseSNet	*snet,
+						 const gchar	*tmpl_name);
+void		bse_snet_iport_name_unregister	(BseSNet	*snet,
 						 const gchar	*name);
-const gchar*	bse_snet_add_out_port	 	(BseSNet	*snet,
-						 const gchar	*tmpl_name,
-						 BseSource	*source,
-						 guint		 ichannel,
-						 guint		 module_ostream);
-void		bse_snet_remove_out_port 	(BseSNet	*snet,
+const gchar*	bse_snet_oport_name_register	(BseSNet	*snet,
+						 const gchar	*tmpl_name);
+void		bse_snet_oport_name_unregister	(BseSNet	*snet,
 						 const gchar	*name);
-GslModule*	bse_snet_get_in_port_module	(BseSNet	*snet,
-						 const gchar	*name,
-						 guint		 context_handle,
-						 guint		*module_istream_p);
-GslModule*	bse_snet_get_out_port_module	(BseSNet	*snet,
-						 const gchar	*name,
-						 guint		 context_handle,
-						 guint		*module_istream_p);
+void		bse_snet_set_iport_src		(BseSNet	*snet,
+						 const gchar	*port_name,
+						 guint		 snet_context,
+						 GslModule	*omodule,
+						 guint		 ostream,
+						 GslTrans	*trans);
+void		bse_snet_set_iport_dest		(BseSNet	*snet,
+						 const gchar	*port_name,
+						 guint		 snet_context,
+						 GslModule	*imodule,
+						 guint		 istream,
+						 GslTrans	*trans);
+void		bse_snet_set_oport_src		(BseSNet	*snet,
+						 const gchar	*port_name,
+						 guint		 snet_context,
+						 GslModule	*omodule,
+						 guint		 ostream,
+						 GslTrans	*trans);
+void		bse_snet_set_oport_dest		(BseSNet	*snet,
+						 const gchar	*port_name,
+						 guint		 snet_context,
+						 GslModule	*imodule,
+						 guint		 istream,
+						 GslTrans	*trans);
+
 
 #ifdef __cplusplus
 }

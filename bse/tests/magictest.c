@@ -50,9 +50,9 @@ main (gint   argc,
     { "GIF image data",				"0,string,GIF8", },
     { "X window image dump (v7)",		("# .xwd files\n"
 						 "0x04,ubelong,0x0000007"), },
-    { "RIFF (little-endian), WAVE audio",	("0 string RIFF\n"
+    { "RIFF/WAVE audio",			("0 string RIFF\n"
 						 "8 string WAVE"), },
-    { "RIFF (little-endian) data",		"0 string RIFF", },
+    { "RIFF data",				"0 string RIFF", },
     { "GslWave file",				"0 string #GslWave\n", },
   };
   static const guint n_magic_presets = sizeof (magic_presets) / sizeof (magic_presets[0]);
@@ -103,12 +103,15 @@ main (gint   argc,
 	  pad = g_strnfill (MAX (40, l) - l, ' ');
 	  g_print (pad);
 	  g_free (pad);
-	  if (magic)
-	    g_print (" %s", (char*) magic->data);
+	  if (!magic && !loader)
+	    g_print (" no magic/loader found");
 	  else
-	    g_print (" no match");
-	  if (loader)
-	    g_print ("   ***Loader: %s", loader->name);
+	    {
+	      if (magic)
+		g_print (" MAGIC: %s", (char*) magic->data);
+	      if (loader)
+		g_print (" LOADER: %s", loader->name);
+	    }
 	  g_print ("\n");
 	}
     }

@@ -1,0 +1,137 @@
+/* BSE - Bedevilled Sound Engine        -*-mode: c;-*-
+ * Copyright (C) 2002 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include        <bse/bseplugin.h>
+#include        <bse/bseprocedure.h>
+#include        <bse/bsesong.h>
+#include        <bse/bsepart.h>
+#include        <bse/bseinstrument.h>
+
+AUTHOR  = "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Tim Janik";
+DATE    = "2002";
+
+
+METHOD (BseSong, create-part) {
+  HELP  = "Create a new Part in a Song";
+  IN    = g_param_spec_object ("song", "Song", NULL,
+                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_object ("part", "Part", NULL,
+                               BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        GValue            *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *song = g_value_get_object (in_values++);
+  BsePart *part;
+
+  /* check parameters */
+  if (!BSE_IS_SONG (song))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  part = bse_object_new (BSE_TYPE_PART,
+                         NULL);
+  bse_container_add_item (BSE_CONTAINER (song), BSE_ITEM (part));
+
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (part));
+  g_object_unref (part);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, remove-part) {
+  HELP  = "Delete a Part from a Song";
+  IN    = g_param_spec_object ("song", "Song", NULL,
+                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_object ("part", "Part", NULL,
+                               BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        GValue            *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *song = g_value_get_object (in_values++);
+  BsePart *part = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SONG (song) || !BSE_IS_PART (part) || BSE_ITEM (part)->parent != BSE_ITEM (song))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_container_remove_item (BSE_CONTAINER (song), BSE_ITEM (part));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, create-instrument) {
+  HELP  = "Create a new Instrument in a Song";
+  IN    = g_param_spec_object ("song", "Song", NULL,
+                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_object ("instrument", "Instrument", NULL,
+                               BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        GValue            *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *song = g_value_get_object (in_values++);
+  BseInstrument *instrument;
+
+  /* check parameters */
+  if (!BSE_IS_SONG (song))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  instrument = bse_object_new (BSE_TYPE_INSTRUMENT,
+			       NULL);
+  bse_container_add_item (BSE_CONTAINER (song), BSE_ITEM (instrument));
+
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (instrument));
+  g_object_unref (instrument);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, remove-instrument) {
+  HELP  = "Delete an Instrument from a Song";
+  IN    = g_param_spec_object ("song", "Song", NULL,
+                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_object ("instrument", "Instrument", NULL,
+                               BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        GValue            *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *song             = g_value_get_object (in_values++);
+  BseInstrument *instrument = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SONG (song) || !BSE_IS_INSTRUMENT (instrument) ||
+      BSE_ITEM (instrument)->parent != BSE_ITEM (song))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_container_remove_item (BSE_CONTAINER (song), BSE_ITEM (instrument));
+
+  return BSE_ERROR_NONE;
+}

@@ -357,6 +357,15 @@ bse_midi_event_process (BseMidiEvent  *event,
 	      BSE_IF_DEBUG (MIDI)
 		g_printerr ("MIDI: note-on: %u %+.2fHz %u %u (%u)\n", ch->notes[i].note, bse_note_to_freq (ch->notes[i].note), ch->notes[i].velocity, ch->notes[i].aftertouch, i);
 	    }
+	  else
+	    {
+	      BSE_IF_DEBUG (MIDI)
+		g_printerr ("MIDI: note-on: %u %+.2fHz %u %u (unused midi channel %u)\n",
+			    event->data.note.note, bse_note_to_freq (event->data.note.note),
+			    event->data.note.velocity,
+			    event->data.note.velocity,
+			    event->channel);
+	    }
 	  break;
 	case BSE_MIDI_NOTE_OFF:
 	case BSE_MIDI_KEY_PRESSURE:
@@ -372,6 +381,13 @@ bse_midi_event_process (BseMidiEvent  *event,
 		g_message ("MIDI: %s: %u %u %u (%u)",
 			   event->status == BSE_MIDI_KEY_PRESSURE ? "key-pressure" : "note-off",
 			   ch->notes[i].note, ch->notes[i].velocity, ch->notes[i].aftertouch, i);
+	    }
+	  else
+	    {
+	      g_message ("MIDI: %s: %u %u %u (unused midi channel %u)",
+			 event->status == BSE_MIDI_KEY_PRESSURE ? "key-pressure" : "note-off",
+			 event->data.note.note, event->data.note.velocity, event->data.note.velocity,
+			 event->channel);
 	    }
 	  break;
 	case BSE_MIDI_CONTROL_CHANGE:

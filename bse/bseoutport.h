@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1999, 2000-2001 Tim Janik
+ * Copyright (C) 1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -15,8 +15,6 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * bseoutport.h: BSE virtual output connector
  */
 #ifndef __BSE_OUT_PORT_H__
 #define __BSE_OUT_PORT_H__
@@ -43,7 +41,7 @@ typedef struct _BseOutPortClass BseOutPortClass;
 struct _BseOutPort
 {
   BseSource	 parent_object;
-
+  
   gchar		*port_name;
 };
 struct _BseOutPortClass
@@ -57,8 +55,6 @@ enum
 {
   BSE_OUT_PORT_ICHANNEL_VOUT
 };
-
-
 
 
 

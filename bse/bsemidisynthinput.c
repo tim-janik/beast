@@ -157,7 +157,7 @@ bse_midi_synth_input_context_create (BseSource *source,
    * the only thing we need to do is to setup module i/o streams
    * with BseSource i/o channels to enable connections
    */
-  bse_source_set_context_module (source, context_handle, msi->midi_input_module);
+  bse_source_set_context_omodule (source, context_handle, msi->midi_input_module);
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -168,21 +168,17 @@ bse_midi_synth_input_context_dismiss (BseSource *source,
 				      guint      context_handle,
 				      GslTrans  *trans)
 {
-  // BseMidiSynthInput *msi = BSE_MIDI_SYNTH_INPUT (source);
-  // GslModule *module = msi->midi_input_module;
-  
-  /* keep this function in sync with bse_source_real_context_dismiss() and
-   * bse_source_real_context_connect() as we override the disconnecting/
-   * discarding behaviour completely.
-   * thing is, the GslModule isn't ours, so theoretically we would just need
+  /* the GslModule isn't ours, so theoretically we would just need
    * to disconnect and not discard it.
    * but since connecting/disconnecting src to dest modules is handled by
-   * the dest modules, we actually have to do nothing.
+   * the dest modules, we actually have to do nothing besides preventing
+   * BseSource to discard the foreign module.
    */
 
-  /* don't chain parent class' handler
-   * BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
-   */
+  bse_source_set_context_omodule (source, context_handle, NULL);
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }
 
 static void

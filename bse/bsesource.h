@@ -45,13 +45,24 @@ extern "C" {
 #define BSE_SOURCE_ICHANNEL_NAME(src,id)  (BSE_SOURCE (src)->channel_defs->ichannel_names[(id)])
 #define BSE_SOURCE_ICHANNEL_CNAME(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_cnames[(id)])
 #define BSE_SOURCE_ICHANNEL_BLURB(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_blurbs[(id)])
-#define BSE_SOURCE_IS_JOINT_ICHANNEL(s,i) (BSE_SOURCE (s)->channel_defs->jchannel_flags[(i)] != 0)
+#define BSE_SOURCE_IS_JOINT_ICHANNEL(s,i) ((BSE_SOURCE (s)->channel_defs->ijstreams[(i)] & BSE_SOURCE_JSTREAM_FLAG) != 0)
+#define BSE_SOURCE_N_JOINT_ICHANNELS(src) (BSE_SOURCE (src)->channel_defs->n_jstreams)
 #define BSE_SOURCE_N_OCHANNELS(src)	  (BSE_SOURCE (src)->channel_defs->n_ochannels)
 #define BSE_SOURCE_OCHANNEL_NAME(src,id)  (BSE_SOURCE (src)->channel_defs->ochannel_names[(id)])
 #define BSE_SOURCE_OCHANNEL_CNAME(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_cnames[(id)])
 #define BSE_SOURCE_OCHANNEL_BLURB(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_blurbs[(id)])
 /*< private >*/
 #define	BSE_SOURCE_INPUT(src,id)	  (BSE_SOURCE (src)->inputs + (guint) (id))
+#define	BSE_SOURCE_OCHANNEL_OSTREAM(s,oc) ((oc) < BSE_SOURCE_N_OCHANNELS (s) ? (oc) : 0xffffffff)
+#define	BSE_SOURCE_ICHANNEL_ISTREAM(s,ic) ((ic) < BSE_SOURCE_N_ICHANNELS (s) \
+                                           && !BSE_SOURCE_IS_JOINT_ICHANNEL ((s), (ic)) ? \
+                                           BSE_SOURCE (s)->channel_defs->ijstreams[(ic)] & ~BSE_SOURCE_JSTREAM_FLAG : \
+                                           0xffffffff)
+#define	BSE_SOURCE_ICHANNEL_JSTREAM(s,ic) ((ic) < BSE_SOURCE_N_ICHANNELS (s) \
+                                           && BSE_SOURCE_IS_JOINT_ICHANNEL ((s), (ic)) ? \
+                                           BSE_SOURCE (s)->channel_defs->ijstreams[(ic)] & ~BSE_SOURCE_JSTREAM_FLAG : \
+                                           0xffffffff)
+#define	BSE_SOURCE_JSTREAM_FLAG		  ((guint) 1 << 31)
 
 
 /* --- BseSource flags --- */
@@ -66,7 +77,6 @@ typedef enum
 typedef union  _BseSourceInput		BseSourceInput;
 typedef struct _BseSourceOutput		BseSourceOutput;
 typedef struct _BseSourceChannelDefs	BseSourceChannelDefs;
-typedef struct _BseSourceContext	BseSourceContext;
 struct _BseSourceOutput
 {
   BseSource *osource;
@@ -80,13 +90,6 @@ union _BseSourceInput
     BseSourceOutput *joints;
   }                  jdata;
 };
-struct _BseSourceContext
-{
-  GslModule  **ichannel_modules;
-  guint	      *module_istreams;
-  GslModule  **ochannel_modules;
-  guint	      *module_ostreams;
-};
 struct _BseSource
 {
   BseItem               parent_object;
@@ -94,8 +97,7 @@ struct _BseSource
   BseSourceChannelDefs *channel_defs;
   BseSourceInput       *inputs;	/* [n_ichannels] */
   GSList	       *outputs;
-  guint			n_contexts;
-  BseSourceContext     *contexts;
+  gpointer		contexts; /* bsearch array of type BseSourceContext */
 };
 struct _BseSourceChannelDefs
 {
@@ -103,7 +105,8 @@ struct _BseSourceChannelDefs
   gchar **ichannel_names;
   gchar **ichannel_cnames;
   gchar **ichannel_blurbs;
-  guint8 *jchannel_flags;
+  guint  *ijstreams;
+  guint	  n_jstreams;
   guint   n_ochannels;
   gchar **ochannel_names;
   gchar **ochannel_cnames;
@@ -144,11 +147,11 @@ guint		bse_source_find_ichannel	(BseSource	*source,
 						 const gchar    *ichannel_cname);
 guint		bse_source_find_ochannel	(BseSource	*source,
 						 const gchar    *ochannel_cname);
-BseErrorType	_bse_source_set_input		(BseSource	*source,
+BseErrorType	bse_source_set_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
-BseErrorType	_bse_source_unset_input		(BseSource	*source,
+BseErrorType	bse_source_unset_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
@@ -165,51 +168,49 @@ guint		bse_source_class_add_ochannel	(BseSourceClass	*source_class,
 						 const gchar	*name,
 						 const gchar	*blurb);
 void		bse_source_set_context_imodule	(BseSource	*source,
-						 guint		 ichannel,
 						 guint		 context_handle,
-						 GslModule	*imodule,
-						 guint		 istream);
+						 GslModule	*imodule);
 void		bse_source_set_context_omodule	(BseSource	*source,
-						 guint		 ochannel,
 						 guint		 context_handle,
-						 GslModule	*omodule,
-						 guint		 ostream);
-GslModule*	bse_source_get_ichannel_module	(BseSource	*source,
-						 guint		 ichannel,
+						 GslModule	*omodule);
+GslModule*	bse_source_get_context_imodule	(BseSource	*source,
+						 guint		 context_handle);
+GslModule*	bse_source_get_context_omodule	(BseSource	*source,
+						 guint		 context_handle);
+void		bse_source_flow_access_module	(BseSource	*source,
 						 guint		 context_handle,
-						 guint		*module_istream_p);
-GslModule*	bse_source_get_ochannel_module	(BseSource	*source,
-						 guint		 ochannel,
-						 guint		 context_handle,
-						 guint		*module_ostream_p);
-/* convenience */
-void		bse_source_set_context_module	(BseSource	*source,
-						 guint		 context_handle,
-						 GslModule	*module);
+						 guint64	 tick_stamp,
+						 GslAccessFunc   access_func,
+						 gpointer	 data,
+						 GslFreeFunc	 data_free_func,
+						 GslTrans	*trans);
 void		bse_source_flow_access_modules	(BseSource	*source,
 						 guint64	 tick_stamp,
 						 GslAccessFunc   access_func,
 						 gpointer	 data,
 						 GslFreeFunc	 data_free_func,
 						 GslTrans	*trans);
-void		bse_source_update_omodules	(BseSource	*source,
-						 guint		 ichannel,
-						 guint		 member_offset,
-						 gpointer	 member_p,
-						 guint		 member_size,
-						 GslTrans	*trans);
-void		bse_source_access_omodules	(BseSource	*source,
-						 guint		 ochannel,
+void		bse_source_access_modules	(BseSource	*source,
 						 GslAccessFunc   access_func,
 						 gpointer	 data,
 						 GslFreeFunc	 data_free_func,
 						 GslTrans	*trans);
-void		_bse_source_clear_ichannels	(BseSource	*source);
-void		_bse_source_clear_ochannels	(BseSource	*source);
+/* convenience */
+void		bse_source_set_context_module	(BseSource	*source,
+						 guint		 context_handle,
+						 GslModule	*module);
+void		bse_source_update_modules	(BseSource	*source,
+						 guint		 member_offset,
+						 gpointer	 member_data,
+						 guint		 member_size,
+						 GslTrans	*trans);
+void		bse_source_clear_ichannels	(BseSource	*source);
+void		bse_source_clear_ochannels	(BseSource	*source);
 
 
 /* --- internal --- */
-guint		bse_source_create_context	(BseSource	*source,
+void		bse_source_create_context	(BseSource	*source,
+						 guint		 context_handle,
 						 GslTrans	*trans);
 void		bse_source_connect_context	(BseSource	*source,
 						 guint		 context_handle,
@@ -217,10 +218,15 @@ void		bse_source_connect_context	(BseSource	*source,
 void		bse_source_dismiss_context	(BseSource	*source,
 						 guint		 context_handle,
 						 GslTrans	*trans);
+void		bse_source_recreate_context	(BseSource	*source,
+						 guint		 context_handle,
+						 GslTrans	*trans);
 void		bse_source_prepare		(BseSource	*source);
 void		bse_source_reset		(BseSource	*source);
-
-
+guint*		bse_source_context_ids		(BseSource	*source,
+						 guint		*n_ids);
+gboolean	bse_source_has_context		(BseSource	*source,
+						 guint		 context_handle);
 
 
 #ifdef __cplusplus

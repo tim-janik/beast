@@ -103,10 +103,12 @@ bse_pattern_group_class_init (BsePatternGroupClass *class)
 
   pattern_group_signals[SIGNAL_PATTERN_INSERTED] = bse_object_class_add_signal (object_class, "pattern-inserted",
 										bse_marshal_VOID__OBJECT_UINT,
+										bse_marshal_VOID__POINTER_UINT,
 										G_TYPE_NONE,
 										2, BSE_TYPE_PATTERN, G_TYPE_UINT);
   pattern_group_signals[SIGNAL_PATTERN_REMOVED] = bse_object_class_add_signal (object_class, "pattern-removed",
 										bse_marshal_VOID__OBJECT_UINT,
+										bse_marshal_VOID__POINTER_UINT,
 										G_TYPE_NONE,
 										2, BSE_TYPE_PATTERN, G_TYPE_UINT);
 }

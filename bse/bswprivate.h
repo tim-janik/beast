@@ -31,24 +31,39 @@ extern "C" {
 /* --- BSW value iterators --- */
 #define BSW_IS_VITER(vi)	((vi) && \
                                  ((vi)->type == BSW_TYPE_VITER_INT || \
-                                  (vi)->type == BSW_TYPE_VITER_STRING ||\
+                                  (vi)->type == BSW_TYPE_VITER_STRING || \
+                                  (vi)->type == BSW_TYPE_VITER_BOXED || \
                                   (vi)->type == BSW_TYPE_VITER_PROXY))
 #define	BSW_VALUE_WITH_VITER(v)	(G_VALUE_TYPE (v) == BSW_TYPE_VITER_INT || \
-                                 G_VALUE_TYPE (v) == BSW_TYPE_VITER_STRING ||\
+                                 G_VALUE_TYPE (v) == BSW_TYPE_VITER_STRING || \
+                                 G_VALUE_TYPE (v) == BSW_TYPE_VITER_BOXED || \
                                  G_VALUE_TYPE (v) == BSW_TYPE_VITER_PROXY))
-BswVIter*	bsw_viter_create		(GType		 type,
-						 guint		 prealloc);
-void		bsw_viter_append_int		(BswVIterInt	*iter,
-						 gint		 v_int);
-void		bsw_viter_append_string_take_ownership		(BswVIterString	*iter,
-								 const gchar	*string);
+BswVIter*	bsw_viter_create			(GType		 type,
+							 guint		 prealloc);
+void		bsw_viter_append_int			(BswVIterInt	*iter,
+							 gint		 v_int);
+void		bsw_viter_append_string_take_ownership	(BswVIterString	*iter,
+							 const gchar	*string);
 #define	bsw_viter_append_string(vi,s)	bsw_viter_append_string_take_ownership ((vi), g_strdup (s))
-void		bsw_viter_append_proxy		(BswVIterProxy	*iter,
-						 BswProxy	 proxy);
+void		bsw_viter_append_boxed_take_ownership	(BswVIterBoxed	*iter,
+							 gpointer	 boxed);
+void		bsw_viter_append_boxed			(BswVIterBoxed	*iter,
+							 gconstpointer	 boxed);
+void		bsw_viter_append_proxy			(BswVIterProxy	*iter,
+							 BswProxy	 proxy);
 #define bsw_viter_append_object(iter,obj)	G_STMT_START{ \
   gpointer __o = (obj); BswProxy __p = BSE_IS_OBJECT (__o) ? BSE_OBJECT_ID (__o) : 0; \
   bsw_viter_append_proxy ((iter), __p); \
 }G_STMT_END
+
+
+/* --- private boxed types --- */
+BswPartNote*		bsw_part_note		(guint	tick,
+						 guint	duration,
+						 gfloat	freq,
+						 gfloat	velocity);
+BswNoteDescription*	bsw_note_description	(guint	note,
+						 gint	fine_tune);
 
 
 /* --- value type glue code --- */

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bseinstrument.h: BSE instrument definition
  */
 #ifndef __BSE_INSTRUMENT_H__
 #define __BSE_INSTRUMENT_H__
@@ -39,12 +37,13 @@ extern "C" {
 
 /* --- BseInstrument --- */
 typedef struct _BseEnvelope BseEnvelope;
-typedef enum				/*< skip >*/
+typedef enum
 {
-  BSE_INSTRUMENT_NONE,
-  BSE_INSTRUMENT_SYNTH,
-  BSE_INSTRUMENT_SAMPLE,
-  BSE_INSTRUMENT_LAST                   /*< skip >*/
+  BSE_INSTRUMENT_NONE,			/*< skip >*/
+  BSE_INSTRUMENT_WAVE,			/*< nick=Custom Wave >*/
+  BSE_INSTRUMENT_SYNTH_NET,		/*< nick=Custom Synth Net >*/
+  BSE_INSTRUMENT_STANDARD_PIANO,	/*< nick=Piano >*/
+  BSE_INSTRUMENT_LAST			/*< skip >*/
 } BseInstrumentType;
 struct _BseEnvelope
 {
@@ -59,24 +58,19 @@ struct _BseEnvelope
 };
 struct _BseInstrument
 {
-  BseItem	parent_object;
+  BseItem	     parent_instance;
   
   BseInstrumentType  type;
+  BseWave	    *wave;
+  BseSNet	    *user_snet;
+  BseSNet	    *seq_snet;	/* sequencer snet */
 
-  BseWave	*wave;
+  gfloat	     volume_factor;
+  gint		     balance;
+  gint		     transpose;
+  gint		     fine_tune;
 
-  /* sample specific fields */
-  guint		  polyphony : 1;
-  BseInterpolType interpolation : 8;
-
-  BseSource     *input; /* for sample and sinstrument */
-
-  gfloat	 volume_factor;
-  gint		 balance;
-  gint		 transpose;
-  gint		 fine_tune;
-
-  BseEnvelope	 env;
+  BseEnvelope	     env;
 };
 struct _BseInstrumentClass
 {

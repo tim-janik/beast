@@ -249,12 +249,11 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
   g_return_val_if_fail (file_name != NULL, NULL);
 
   vhandle = gsl_new_struct0 (VorbisHandle, 1);
-  success = gsl_data_handle_common_init (&vhandle->dhandle, NULL, 16);
+  success = gsl_data_handle_common_init (&vhandle->dhandle, file_name, 16);
   if (success)
     {
       gint err;
 
-      vhandle->dhandle.name = g_strdup (file_name);
       vhandle->dhandle.vtable = &dh_vorbis_vtable;
       vhandle->dhandle.n_values = 0;
       vhandle->n_streams = 0;

@@ -71,6 +71,42 @@ typedef struct {
 
 
 /* --- standard functions --- */
+gboolean
+gsl_data_handle_common_init (GslDataHandle *dhandle,
+			     const gchar   *file_name,
+			     guint          bit_depth)
+{
+  g_return_val_if_fail (dhandle != NULL, FALSE);
+  g_return_val_if_fail (dhandle->vtable == NULL, FALSE);
+  g_return_val_if_fail (dhandle->name == NULL, FALSE);
+  g_return_val_if_fail (dhandle->ref_count == 0, FALSE);
+  g_return_val_if_fail (bit_depth > 0, FALSE);
+  
+  if (file_name)
+    {
+      struct stat statbuf = { 0, };
+      
+      if (stat (file_name, &statbuf) < 0 || statbuf.st_size < 1)
+	return FALSE;
+      
+      dhandle->name = g_strdup (file_name);
+      dhandle->mtime = statbuf.st_mtime;
+      dhandle->n_values = statbuf.st_size;
+    }
+  else
+    {
+      dhandle->name = NULL;
+      dhandle->mtime = time (NULL);
+      dhandle->n_values = 0;
+    }
+  dhandle->bit_depth = bit_depth;
+  gsl_mutex_init (&dhandle->mutex);
+  dhandle->ref_count = 1;
+  dhandle->open_count = 0;
+  
+  return TRUE;
+}
+
 GslDataHandle*
 gsl_data_handle_ref (GslDataHandle *dhandle)
 {
@@ -180,42 +216,6 @@ gsl_data_handle_read (GslDataHandle *dhandle,
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   
   return l;
-}
-
-gboolean
-gsl_data_handle_common_init (GslDataHandle *dhandle,
-			     const gchar   *file_name,
-			     guint          bit_depth)
-{
-  g_return_val_if_fail (dhandle != NULL, FALSE);
-  g_return_val_if_fail (dhandle->vtable == NULL, FALSE);
-  g_return_val_if_fail (dhandle->name == NULL, FALSE);
-  g_return_val_if_fail (dhandle->ref_count == 0, FALSE);
-  g_return_val_if_fail (bit_depth > 0, FALSE);
-  
-  if (file_name)
-    {
-      struct stat statbuf = { 0, };
-      
-      if (stat (file_name, &statbuf) < 0 || statbuf.st_size < 1)
-	return FALSE;
-      
-      dhandle->name = g_strdup (file_name);
-      dhandle->mtime = statbuf.st_mtime;
-      dhandle->n_values = statbuf.st_size;
-    }
-  else
-    {
-      dhandle->name = NULL;
-      dhandle->mtime = time (NULL);
-      dhandle->n_values = 0;
-    }
-  dhandle->bit_depth = bit_depth;
-  gsl_mutex_init (&dhandle->mutex);
-  dhandle->ref_count = 1;
-  dhandle->open_count = 0;
-  
-  return TRUE;
 }
 
 

@@ -29,7 +29,7 @@
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik";
 DATE	= "2001";
 
 
@@ -135,8 +135,6 @@ METHOD (BseProject, create-song) {
   HELP	= "Create a new song in project";
   IN	= g_param_spec_object ("project", "Project", NULL,
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("n-channels", "Number of Channels", NULL,
-			     1, BSE_MAX_N_CHANNELS, 1, BSE_PARAM_DEFAULT);
   OUT	= g_param_spec_object ("song", "Song", NULL,
 			       BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
@@ -145,7 +143,6 @@ METHOD (BseProject, create-song) {
 {
   /* extract parameter values */
   BseProject *project = g_value_get_object (in_values++);
-  guint n_channels = g_value_get_uint (in_values++);
   BseSong *song;
   
   /* check parameters */
@@ -154,7 +151,6 @@ METHOD (BseProject, create-song) {
 
   /* action */
   song = bse_object_new (BSE_TYPE_SONG,
-			 "n-channels", n_channels,
 			 NULL);
   bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (song));
 

@@ -22,10 +22,11 @@
 #include        <bse/bseserver.h>
 #include        <bse/bseproject.h>
 #include        <bse/gslloader.h>
+#include        <bse/bswprivate.h>
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik";
 DATE	= "2001";
 
 
@@ -142,14 +143,14 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseServer, loader-name) {
-  HELP	= "Find a loader for a wave file and return the loader name";
+METHOD (BseServer, can-load) {
+  HELP	= "Check whether a loader can be found for a wave file";
   IN	= g_param_spec_object ("server", "Server", NULL,
  			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
   IN    = g_param_spec_string ("file_name", "File Name", "The file to find a loader for",
 			       NULL, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_string ("loader", NULL, NULL,
-			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boolean ("can-load", NULL, NULL,
+				FALSE, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       GValue            *in_values,
@@ -166,9 +167,156 @@ BODY (BseProcedureClass *proc,
 
   /* find a loader */
   finfo = gsl_wave_file_info_load (file_name, NULL);
-  g_value_set_string (out_values++, finfo ? finfo->loader->name : NULL);
+  g_value_set_boolean (out_values++, finfo != NULL);
   if (finfo)
     gsl_wave_file_info_free (finfo);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, describe-note) {
+  HELP	= "Describe a note, providing information about its octave, half tone, frequency, etc.";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_uint ("note", "Note", NULL,
+			       BSE_MIN_NOTE, BSE_MAX_NOTE,
+			       BSE_KAMMER_NOTE, 1,
+			       BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_int ("fine_tune", "Fine Tune", NULL,
+			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
+			      0, 1, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
+			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server	= g_value_get_object (in_values++);
+  gint       note	= g_value_get_uint (in_values++);
+  gint       fine_tune	= g_value_get_int (in_values++);
+  BswNoteDescription *info;
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* describe note */
+  info = bsw_note_description (note, fine_tune);
+
+  /* set output parameters */
+  g_value_set_boxed_take_ownership (out_values++, info);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, note-from-freq) {
+  HELP	= "Describe a note, given its frequency.";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_float ("freq", "Frequency", NULL,
+				0, BSE_MAX_FREQUENCY,
+				BSE_KAMMER_FREQ_f, 10.0,
+				BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
+			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server	= g_value_get_object (in_values++);
+  gfloat     freq	= g_value_get_float (in_values++);
+  BswNoteDescription *info;
+  gint note;
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* describe note */
+  note = bse_note_from_freq (freq);
+  info = bsw_note_description (note, 0);
+
+  /* set output parameters */
+  g_value_set_boxed_take_ownership (out_values++, info);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, note-from-string) {
+  HELP	= "Describe a note, given its name and octave offset.";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_string ("name", "Name", NULL,
+				 "", BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
+			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server	= g_value_get_object (in_values++);
+  gchar     *name     	= g_value_get_string (in_values++);
+  BswNoteDescription *info;
+  gint note;
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (server) || !name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* describe note */
+  note = bse_note_from_string (name);
+  info = bsw_note_description (note, 0);
+
+  /* set output parameters */
+  g_value_set_boxed_take_ownership (out_values++, info);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, construct-note) {
+  HELP	= "Describe a note, given its half tone, octave and fine tune.";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_uint ("half-tone", NULL, NULL,
+			       0, 11,
+			       9, 1, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_int ("octave", NULL, NULL,
+			      BSE_MIN_OCTAVE, BSE_MAX_OCTAVE,
+			      BSE_KAMMER_OCTAVE, 1, BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_int ("fine_tune", "Fine Tune", NULL,
+			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
+			      0, 1, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
+			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server	= g_value_get_object (in_values++);
+  guint      half_tone	= g_value_get_uint (in_values++);
+  gint       octave	= g_value_get_int (in_values++);
+  gint       fine_tune	= g_value_get_int (in_values++);
+  BswNoteDescription *info;
+  gint note;
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* describe note */
+  note = BSE_NOTE_GENERIC (half_tone, octave);
+  info = bsw_note_description (note, fine_tune);
+
+  /* set output parameters */
+  g_value_set_boxed_take_ownership (out_values++, info);
   
   return BSE_ERROR_NONE;
 }

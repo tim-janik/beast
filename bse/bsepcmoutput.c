@@ -279,7 +279,7 @@ bse_pcm_output_context_create (BseSource *source,
   mdata->volume_set = BSE_EPSILON_CMP (mdata->volume, 1.0) != 0;
   
   /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_module (source, context_handle, module);
+  bse_source_set_context_imodule (source, context_handle, module);
   
   /* commit module to engine */
   gsl_trans_add (trans, gsl_job_integrate (module));
@@ -297,11 +297,11 @@ bse_pcm_output_context_connect (BseSource *source,
   GslModule *module;
   
   /* get context specific module */
-  module = bse_source_get_ichannel_module (source, BSE_PCM_OUTPUT_ICHANNEL_LEFT, context_handle, NULL);
+  module = bse_source_get_context_imodule (source, context_handle);
   
   /* connect module to server uplink */
-  gsl_trans_add (trans, gsl_job_connect (module, 0, oput->uplink, 0));
-  gsl_trans_add (trans, gsl_job_connect (module, 1, oput->uplink, 1));
+  gsl_trans_add (trans, gsl_job_iconnect (module, 0, oput->uplink, 0));
+  gsl_trans_add (trans, gsl_job_iconnect (module, 1, oput->uplink, 1));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);

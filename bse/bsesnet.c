@@ -19,12 +19,14 @@
 
 #include        "bseproject.h"
 #include        "bsecategories.h"
-#include        "bsehunkmixer.h"
 #include        "bsestorage.h"
 #include        <string.h>
 #include        <time.h>
 #include        <fcntl.h>
 #include        <unistd.h>
+#include        <stdlib.h>
+#include        "gbsearcharray.h"
+#include        <gsl/gslengine.h>
 
 
 /* --- parameters --- */
@@ -39,11 +41,11 @@ enum
 static void      bse_snet_class_init             (BseSNetClass   *class);
 static void      bse_snet_init                   (BseSNet        *snet);
 static void      bse_snet_do_destroy             (BseObject      *object);
-static void      bse_snet_set_property           (BseSNet        *snet,
+static void      bse_snet_set_property           (GObject	 *object,
 						  guint           param_id,
-						  GValue         *value,
+						  const GValue   *value,
 						  GParamSpec     *pspec);
-static void      bse_snet_get_property           (BseSNet        *snet,
+static void      bse_snet_get_property           (GObject        *object,
 						  guint           param_id,
 						  GValue         *value,
 						  GParamSpec     *pspec);
@@ -56,10 +58,20 @@ static void      bse_snet_remove_item            (BseContainer   *container,
 						  BseItem        *item);
 static void      bse_snet_prepare                (BseSource      *source);
 static void      bse_snet_reset                  (BseSource      *source);
+static gint	 snet_ports_compare              (gconstpointer   bsearch_node1, /* key */
+						  gconstpointer   bsearch_node2);
+static void      bse_snet_context_dismiss	 (BseSource      *source,
+						  guint           context_handle,
+						  GslTrans       *trans);
 
 
 /* --- variables --- */
-static GTypeClass     *parent_class = NULL;
+static GTypeClass          *parent_class = NULL;
+static const GBSearchConfig port_array_config = {
+  sizeof (BseSNetPort),
+  snet_ports_compare,
+  0, /* G_BSEARCH_ARRAY_ALIGN_POWER2 */
+};
 
 
 /* --- functions --- */
@@ -100,12 +112,13 @@ bse_snet_class_init (BseSNetClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_snet_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_snet_get_property;
+  gobject_class->set_property = bse_snet_set_property;
+  gobject_class->get_property = bse_snet_get_property;
 
   object_class->destroy = bse_snet_do_destroy;
   
   source_class->prepare = bse_snet_prepare;
+  source_class->context_dismiss = bse_snet_context_dismiss;
   source_class->reset = bse_snet_reset;
 
   container_class->add_item = bse_snet_add_item;
@@ -123,9 +136,15 @@ bse_snet_class_init (BseSNetClass *class)
 static void
 bse_snet_init (BseSNet *snet)
 {
-  BSE_OBJECT_SET_FLAGS (snet, BSE_SNET_FLAG_FINAL);
+  BSE_OBJECT_SET_FLAGS (snet, BSE_SNET_FLAG_USER_SYNTH);
   BSE_SUPER (snet)->auto_activate = FALSE;
   snet->sources = NULL;
+  snet->iport_names = NULL;
+  snet->oport_names = NULL;
+  snet->port_array = NULL;
+  snet->cid_counter = 0;
+  snet->n_cids = 0;
+  snet->cids = NULL;
 }
 
 static void
@@ -135,41 +154,49 @@ bse_snet_do_destroy (BseObject *object)
   
   while (snet->sources)
     bse_container_remove_item (BSE_CONTAINER (snet), snet->sources->data);
+  if (snet->iport_names)
+    g_warning ("%s: leaking %cport \"%s\"", G_STRLOC, 'i', (gchar*) snet->iport_names->data);
+  if (snet->oport_names)
+    g_warning ("%s: leaking %cport \"%s\"", G_STRLOC, 'o', (gchar*) snet->oport_names->data);
 
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
-bse_snet_set_property (BseSNet     *snet,
-		       guint        param_id,
-		       GValue      *value,
-		       GParamSpec  *pspec)
+bse_snet_set_property (GObject      *object,
+		       guint         param_id,
+		       const GValue *value,
+		       GParamSpec   *pspec)
 {
+  BseSNet *self = BSE_SNET (object);
+
   switch (param_id)
     {
     case PARAM_AUTO_ACTIVATE:
-      BSE_SUPER (snet)->auto_activate = g_value_get_boolean (value);
+      BSE_SUPER (self)->auto_activate = g_value_get_boolean (value);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (snet, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_snet_get_property (BseSNet     *snet,
-		       guint        param_id,
-		       GValue      *value,
-		       GParamSpec  *pspec)
+bse_snet_get_property (GObject    *object,
+		       guint       param_id,
+		       GValue     *value,
+		       GParamSpec *pspec)
 {
+  BseSNet *self = BSE_SNET (object);
+
   switch (param_id)
     {
     case PARAM_AUTO_ACTIVATE:
-      g_value_set_boolean (value, BSE_SUPER (snet)->auto_activate);
+      g_value_set_boolean (value, BSE_SUPER (self)->auto_activate);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (snet, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
@@ -182,7 +209,7 @@ bse_snet_add_item (BseContainer *container,
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = g_list_append (snet->sources, item);
-  else if (BSE_SNET_FINAL (snet))
+  else if (BSE_SNET_USER_SYNTH (snet))
     g_warning ("BseSNet: cannot hold non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
 
@@ -220,7 +247,7 @@ bse_snet_remove_item (BseContainer *container,
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = g_list_remove (snet->sources, item);
-  else if (BSE_SNET_FINAL (snet))
+  else if (BSE_SNET_USER_SYNTH (snet))
     g_warning ("BseSNet: cannot hold non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
 
@@ -228,196 +255,364 @@ bse_snet_remove_item (BseContainer *container,
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
 }
 
-static BseSNetVPort*
-snet_find_port (BseSNet     *snet,
-		const gchar *name,
-		gboolean     in_port)
+static GSList*
+snet_find_port_name (BseSNet     *snet,
+		     const gchar *name,
+		     gboolean     in_port)
 {
-  guint i;
+  GSList *slist;
 
-  if (!in_port)
-    for (i = 0; i < snet->n_out_ports; i++)
-      if (strcmp (name, snet->out_ports[i].name) == 0)
-	return snet->out_ports + i;
-  if (in_port)
-    for (i = 0; i < snet->n_in_ports; i++)
-      if (strcmp (name, snet->in_ports[i].name) == 0)
-	return snet->in_ports + i;
+  for (slist = in_port ? snet->iport_names : snet->oport_names; slist; slist = slist->next)
+    if (strcmp (name, slist->data) == 0)
+      return slist;
   return NULL;
 }
 
 const gchar*
-bse_snet_add_in_port (BseSNet     *snet,
-		      const gchar *tmpl_name,
-		      BseSource   *source,
-		      guint        ochannel,
-		      guint	   module_istream)
+bse_snet_iport_name_register (BseSNet     *snet,
+			      const gchar *tmpl_name)
 {
-  BseSNetVPort *vport;
+  GSList *slist;
   gchar *name;
   guint i;
-  
+
   g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
   g_return_val_if_fail (tmpl_name != NULL, NULL);
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
-  g_return_val_if_fail (ochannel < BSE_SOURCE_N_OCHANNELS (source), NULL);
-  g_return_val_if_fail (BSE_ITEM (source)->parent == BSE_ITEM (snet), NULL);
-  
-  vport = snet_find_port (snet, tmpl_name, TRUE);
+
+  slist = snet_find_port_name (snet, tmpl_name, TRUE);
   name = NULL;
   i = 1;
-  while (vport)
+  while (slist)
     {
       g_free (name);
       name = g_strdup_printf ("%s-%u", tmpl_name, i++);
-      vport = snet_find_port (snet, name, TRUE);
+      slist = snet_find_port_name (snet, name, TRUE);
     }
   if (!name)
     name = g_strdup (tmpl_name);
-  i = snet->n_in_ports++;
-  snet->in_ports = g_renew (BseSNetVPort, snet->in_ports, snet->n_in_ports);
-  snet->in_ports[i].name = name;
-  snet->in_ports[i].source = source;
-  snet->in_ports[i].channel = ochannel;
-  snet->in_ports[i].module_stream = module_istream;
-  
+  snet->iport_names = g_slist_prepend (snet->iport_names, name);
+
   return name;
 }
 
 void
-bse_snet_remove_in_port (BseSNet     *snet,
-			 const gchar *name)
+bse_snet_iport_name_unregister (BseSNet     *snet,
+				const gchar *name)
 {
-  BseSNetVPort *vport;
-  
+  GSList *slist;
+
   g_return_if_fail (BSE_IS_SNET (snet));
   g_return_if_fail (name != NULL);
-  
-  vport = snet_find_port (snet, name, TRUE);
-  if (vport)
-    {
-      guint i = vport - snet->in_ports;
-      
-      g_free (vport->name);
-      snet->n_in_ports -= 1;
-      g_memmove (snet->in_ports + i, snet->in_ports + i + 1, sizeof (snet->in_ports[0]) * (snet->n_in_ports - i));
-    }
-  else
-    g_return_if_fail (snet_find_port (snet, name, TRUE)  != NULL);
+
+  slist = snet_find_port_name (snet, name, TRUE);
+  g_return_if_fail (slist != NULL);
+
+  g_free (slist->data);
+  snet->iport_names = g_slist_delete_link (snet->iport_names, slist);
 }
 
 const gchar*
-bse_snet_add_out_port (BseSNet     *snet,
-		       const gchar *tmpl_name,
-		       BseSource   *source,
-		       guint        ichannel,
-		       guint	    module_ostream)
+bse_snet_oport_name_register (BseSNet     *snet,
+			      const gchar *tmpl_name)
 {
-  BseSNetVPort *vport;
+  GSList *slist;
   gchar *name;
   guint i;
 
   g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
   g_return_val_if_fail (tmpl_name != NULL, NULL);
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
-  g_return_val_if_fail (ichannel < BSE_SOURCE_N_ICHANNELS (source), NULL);
-  g_return_val_if_fail (BSE_ITEM (source)->parent == BSE_ITEM (snet), NULL);
 
-  vport = snet_find_port (snet, tmpl_name, FALSE);
+  slist = snet_find_port_name (snet, tmpl_name, FALSE);
   name = NULL;
   i = 1;
-  while (vport)
+  while (slist)
     {
       g_free (name);
       name = g_strdup_printf ("%s-%u", tmpl_name, i++);
-      vport = snet_find_port (snet, name, FALSE);
+      slist = snet_find_port_name (snet, name, FALSE);
     }
   if (!name)
     name = g_strdup (tmpl_name);
-  i = snet->n_out_ports++;
-  snet->out_ports = g_renew (BseSNetVPort, snet->out_ports, snet->n_out_ports);
-  snet->out_ports[i].name = name;
-  snet->out_ports[i].source = source;
-  snet->out_ports[i].channel = ichannel;
-  snet->out_ports[i].module_stream = module_ostream;
+  snet->oport_names = g_slist_prepend (snet->oport_names, name);
 
   return name;
 }
 
 void
-bse_snet_remove_out_port (BseSNet     *snet,
-			  const gchar *name)
+bse_snet_oport_name_unregister (BseSNet     *snet,
+				const gchar *name)
 {
-  BseSNetVPort *vport;
+  GSList *slist;
 
   g_return_if_fail (BSE_IS_SNET (snet));
   g_return_if_fail (name != NULL);
 
-  vport = snet_find_port (snet, name, FALSE);
-  if (vport)
-    {
-      guint i = vport - snet->out_ports;
+  slist = snet_find_port_name (snet, name, FALSE);
+  g_return_if_fail (slist != NULL);
 
-      g_free (vport->name);
-      snet->n_out_ports -= 1;
-      g_memmove (snet->out_ports + i, snet->out_ports + i + 1, sizeof (snet->out_ports[0]) * (snet->n_out_ports - i));
-    }
-  else
-    g_return_if_fail (snet_find_port (snet, name, FALSE)  != NULL);
+  g_free (slist->data);
+  snet->oport_names = g_slist_delete_link (snet->oport_names, slist);
 }
 
-GslModule*
-bse_snet_get_in_port_module (BseSNet     *snet,
-			     const gchar *name,
-			     guint        context_handle,
-			     guint       *module_istream_p)
+static gint
+snet_ports_compare (gconstpointer bsearch_node1, /* key */
+		    gconstpointer bsearch_node2)
 {
-  BseSNetVPort *vport;
-  GslModule *module;
+  const BseSNetPort *p1 = bsearch_node1;
+  const BseSNetPort *p2 = bsearch_node2;
+  gint cmp;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
-  g_return_val_if_fail (context_handle < BSE_SOURCE (snet)->n_contexts, NULL);
+  cmp = G_BSEARCH_ARRAY_CMP (p1->context, p2->context);
+  if (!cmp)
+    cmp = G_BSEARCH_ARRAY_CMP (p1->input, p2->input);
+  if (!cmp)
+    cmp = strcmp (p1->name, p2->name);
 
-  vport = snet_find_port (snet, name, TRUE);
-  if (vport)
-    {
-      module = bse_source_get_ochannel_module (vport->source, vport->channel, context_handle, NULL);
-      *module_istream_p = vport->module_stream;
-    }
-  else
-    {
-      module = NULL;
-      *module_istream_p = ~0;
-    }
-  return module;
+  return cmp;
 }
 
-GslModule*
-bse_snet_get_out_port_module (BseSNet     *snet,
-			      const gchar *name,
-			      guint        context_handle,
-			      guint       *module_ostream_p)
+static BseSNetPort*
+port_lookup (BseSNet     *snet,
+	     const gchar *name,
+	     guint        snet_context,
+	     gboolean	  is_input)
 {
-  BseSNetVPort *vport;
-  GslModule *module;
+  BseSNetPort key;
 
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
-  g_return_val_if_fail (name != NULL, NULL);
-  g_return_val_if_fail (context_handle < BSE_SOURCE (snet)->n_contexts, NULL);
+  key.name = (gchar*) name;
+  key.context = snet_context;
+  key.input = is_input != FALSE;
+  return g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
+}
 
-  vport = snet_find_port (snet, name, FALSE);
-  if (vport)
-    {
-      module = bse_source_get_ichannel_module (vport->source, vport->channel, context_handle, NULL);
-      *module_ostream_p = vport->module_stream;
-    }
-  else
-    {
-      module = NULL;
-      *module_ostream_p = ~0;
-    }
-  return module;
+static BseSNetPort*
+port_insert (BseSNet     *snet,
+	     const gchar *name,
+	     guint        snet_context,
+	     gboolean     is_input)
+{
+  BseSNetPort key = { NULL, }, *port;
+
+  key.name = (gchar*) name;
+  key.context = snet_context;
+  key.input = is_input != FALSE;
+
+  port = g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
+  g_return_val_if_fail (port == NULL, port);	/* shouldn't fail */
+
+  key.name = g_strdup (key.name);
+  key.src_omodule = NULL;
+  key.src_ostream = G_MAXUINT;
+  key.dest_imodule = NULL;
+  key.dest_istream = G_MAXUINT;
+  snet->port_array = g_bsearch_array_insert (snet->port_array, &port_array_config, &key);
+  return g_bsearch_array_lookup (snet->port_array, &port_array_config, &key);
+}
+
+static void
+port_delete (BseSNet     *snet,
+	     BseSNetPort *port)
+{
+  guint index = g_bsearch_array_get_index (snet->port_array, &port_array_config, port);
+
+  g_return_if_fail (index < g_bsearch_array_get_n_nodes (snet->port_array));
+  g_return_if_fail (port->src_omodule == NULL && port->dest_imodule == NULL);
+
+  g_free (port->name);
+  g_bsearch_array_remove (snet->port_array, &port_array_config, index);
+}
+
+void
+bse_snet_set_iport_src (BseSNet     *snet,
+			const gchar *name,
+			guint        snet_context,
+			GslModule   *omodule,
+			guint        ostream,
+			GslTrans    *trans)
+{
+  BseSNetPort *port;
+
+  g_return_if_fail (BSE_IS_SNET (snet));
+  g_return_if_fail (name != NULL);
+  g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
+  if (omodule)
+    g_return_if_fail (ostream < GSL_MODULE_N_OSTREAMS (omodule));
+  g_return_if_fail (trans != NULL);
+
+  port = port_lookup (snet, name, snet_context, TRUE);
+  if (!port && !omodule)
+    return;
+  else if (!port)
+    port = port_insert (snet, name, snet_context, TRUE);
+  else if (!omodule)
+    ostream = G_MAXUINT;
+    
+  if (port->src_omodule && port->dest_imodule)
+    gsl_trans_add (trans, gsl_job_disconnect (port->dest_imodule, port->dest_istream));
+  port->src_omodule = omodule;
+  port->src_ostream = ostream;
+  if (port->src_omodule && port->dest_imodule)
+    gsl_trans_add (trans, gsl_job_iconnect (port->src_omodule, port->src_ostream,
+					    port->dest_imodule, port->dest_istream));
+  if (!port->dest_imodule && !port->src_omodule)
+    port_delete (snet, port);
+}
+
+void
+bse_snet_set_iport_dest (BseSNet     *snet,
+			 const gchar *name,
+			 guint        snet_context,
+			 GslModule   *imodule,
+			 guint        istream,
+			 GslTrans    *trans)
+{
+  BseSNetPort *port;
+
+  g_return_if_fail (BSE_IS_SNET (snet));
+  g_return_if_fail (name != NULL);
+  g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
+  if (imodule)
+    g_return_if_fail (istream < GSL_MODULE_N_ISTREAMS (imodule));
+  g_return_if_fail (trans != NULL);
+
+  port = port_lookup (snet, name, snet_context, TRUE);
+  if (!port && !imodule)
+    return;
+  else if (!port)
+    port = port_insert (snet, name, snet_context, TRUE);
+  else if (!imodule)
+    istream = G_MAXUINT;
+    
+  if (port->src_omodule && port->dest_imodule)
+    gsl_trans_add (trans, gsl_job_disconnect (port->dest_imodule, port->dest_istream));
+  port->dest_imodule = imodule;
+  port->dest_istream = istream;
+  if (port->src_omodule && port->dest_imodule)
+    gsl_trans_add (trans, gsl_job_iconnect (port->src_omodule, port->src_ostream,
+					    port->dest_imodule, port->dest_istream));
+  if (!port->dest_imodule && !port->src_omodule)
+    port_delete (snet, port);
+}
+
+void
+bse_snet_set_oport_src (BseSNet     *snet,
+			const gchar *name,
+			guint        snet_context,
+			GslModule   *omodule,
+			guint        ostream,
+			GslTrans    *trans)
+{
+  BseSNetPort *port;
+
+  g_return_if_fail (BSE_IS_SNET (snet));
+  g_return_if_fail (name != NULL);
+  g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
+  if (omodule)
+    g_return_if_fail (ostream < GSL_MODULE_N_OSTREAMS (omodule));
+  g_return_if_fail (trans != NULL);
+
+  port = port_lookup (snet, name, snet_context, FALSE);
+  if (!port && !omodule)
+    return;
+  else if (!port)
+    port = port_insert (snet, name, snet_context, FALSE);
+  else if (!omodule)
+    ostream = G_MAXUINT;
+    
+  if (port->src_omodule && port->dest_imodule)
+    gsl_trans_add (trans, gsl_job_disconnect (port->dest_imodule, port->dest_istream));
+  port->src_omodule = omodule;
+  port->src_ostream = ostream;
+  if (port->src_omodule && port->dest_imodule)
+    gsl_trans_add (trans, gsl_job_iconnect (port->src_omodule, port->src_ostream,
+					    port->dest_imodule, port->dest_istream));
+  if (!port->dest_imodule && !port->src_omodule)
+    port_delete (snet, port);
+}
+
+void
+bse_snet_set_oport_dest (BseSNet     *snet,
+			 const gchar *name,
+			 guint        snet_context,
+			 GslModule   *imodule,
+			 guint        istream,
+			 GslTrans    *trans)
+{
+  BseSNetPort *port;
+
+  g_return_if_fail (BSE_IS_SNET (snet));
+  g_return_if_fail (name != NULL);
+  g_return_if_fail (bse_source_has_context (BSE_SOURCE (snet), snet_context));
+  if (imodule)
+    g_return_if_fail (istream < GSL_MODULE_N_ISTREAMS (imodule));
+  g_return_if_fail (trans != NULL);
+
+  port = port_lookup (snet, name, snet_context, FALSE);
+  if (!port && !imodule)
+    return;
+  else if (!port)
+    port = port_insert (snet, name, snet_context, FALSE);
+  else if (!imodule)
+    istream = G_MAXUINT;
+    
+  if (port->src_omodule && port->dest_imodule)
+    gsl_trans_add (trans, gsl_job_disconnect (port->dest_imodule, port->dest_istream));
+  port->dest_imodule = imodule;
+  port->dest_istream = istream;
+  if (port->src_omodule && port->dest_imodule)
+    gsl_trans_add (trans, gsl_job_iconnect (port->src_omodule, port->src_ostream,
+					    port->dest_imodule, port->dest_istream));
+  if (!port->dest_imodule && !port->src_omodule)
+    port_delete (snet, port);
+}
+
+static void
+bse_snet_free_cid (BseSNet *snet,
+		   guint    cid)
+{
+  guint i;
+
+  g_return_if_fail (BSE_SOURCE_PREPARED (snet));
+
+  i = snet->n_cids++;
+  snet->cids = g_renew (guint, snet->cids, snet->n_cids);
+  snet->cids[i] = cid;
+}
+
+static guint
+bse_snet_alloc_cid (BseSNet *snet)
+{
+  guint i, cid;
+
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (snet), 0);
+
+  while (snet->n_cids < 2)
+    bse_snet_free_cid (snet, ++snet->cid_counter);
+
+  i = rand () % snet->n_cids;
+  cid = snet->cids[i];
+  snet->n_cids--;
+  snet->cids[i] = snet->cids[snet->n_cids];
+  return cid;
+}
+
+guint
+bse_snet_create_context (BseSNet  *snet,
+			 GslTrans *trans)
+{
+  guint cid;
+
+  g_return_val_if_fail (BSE_IS_SNET (snet), 0);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (snet), 0);
+  g_return_val_if_fail (trans != NULL, 0);
+  
+  cid = bse_snet_alloc_cid (snet);
+  g_return_val_if_fail (cid > 0, 0);
+  g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (snet), cid) == FALSE, 0);
+
+  bse_source_create_context (BSE_SOURCE (snet), cid, trans);
+
+  return cid;
 }
 
 static void
@@ -425,7 +620,10 @@ bse_snet_prepare (BseSource *source)
 {
   BseSNet *snet = BSE_SNET (source);
 
+  g_return_if_fail (snet->port_array == NULL);
+
   bse_object_lock (BSE_OBJECT (snet));
+  snet->port_array = g_bsearch_array_create (&port_array_config);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
@@ -434,10 +632,45 @@ bse_snet_prepare (BseSource *source)
 static void
 bse_snet_reset (BseSource *source)
 {
-  BseSNet *snet = BSE_SNET (source);
+  BseSNet *self = BSE_SNET (source);
+  guint i;
+
+  g_return_if_fail (self->port_array != NULL);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 
-  bse_object_unlock (BSE_OBJECT (snet));
+  if (g_bsearch_array_get_n_nodes (self->port_array))
+    {
+      BseSNetPort *port = g_bsearch_array_get_nth (self->port_array, &port_array_config, 0);
+
+      g_warning ("%s: %cport \"%s\" still active: context=%u src=%p dest=%p",
+		 G_STRLOC, port->input ? 'i' : 'o', port->name,
+		 port->context, port->src_omodule, port->dest_imodule);
+    }
+  g_bsearch_array_free (self->port_array, &port_array_config);
+  self->port_array = NULL;
+
+  i = self->cid_counter - self->n_cids;
+  if (i)
+    g_warning ("%s: %u context IDs still in use", G_STRLOC, i);
+  g_free (self->cids);
+  self->cid_counter = 0;
+  self->n_cids = 0;
+  self->cids = NULL;
+
+  bse_object_unlock (BSE_OBJECT (self));
+}
+
+static void
+bse_snet_context_dismiss (BseSource *source,
+			  guint      context_handle,
+			  GslTrans  *trans)
+{
+  BseSNet *self = BSE_SNET (source);
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
+
+  bse_snet_free_cid (self, context_handle);
 }

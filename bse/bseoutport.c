@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1999, 2000-2001 Tim Janik
+ * Copyright (C) 1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -24,7 +24,6 @@
 #include "gslengine.h"
 
 
-
 /* --- parameters --- */
 enum
 {
@@ -37,11 +36,11 @@ enum
 static void	 bse_out_port_init		(BseOutPort		*scard);
 static void	 bse_out_port_class_init	(BseOutPortClass	*class);
 static void	 bse_out_port_class_finalize	(BseOutPortClass	*class);
-static void	 bse_out_port_set_property	(BseOutPort		*scard,
+static void	 bse_out_port_set_property	(GObject                *object,
 						 guint			 param_id,
-						 GValue			*value,
+						 const GValue		*value,
 						 GParamSpec		*pspec);
-static void	 bse_out_port_get_property	(BseOutPort		*scard,
+static void	 bse_out_port_get_property	(GObject                *object,
 						 guint			 param_id,
 						 GValue			*value,
 						 GParamSpec		*pspec);
@@ -51,6 +50,16 @@ static void	 bse_out_port_set_parent	(BseItem		*item,
 static void	 bse_out_port_context_create	(BseSource		*source,
 						 guint			 instance_id,
 						 GslTrans		*trans);
+static void      bse_out_port_context_connect   (BseSource              *source,
+						 guint                   context_handle,
+						 GslTrans               *trans);
+static void      bse_out_port_context_dismiss   (BseSource              *source,
+						 guint                   context_handle,
+						 GslTrans               *trans);
+static void   bse_out_port_update_port_contexts (BseOutPort             *self,
+						 const gchar            *old_name,
+						 const gchar            *new_name,
+						 guint                   port);
 
 
 /* --- variables --- */
@@ -102,14 +111,16 @@ bse_out_port_class_init (BseOutPortClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_out_port_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_out_port_get_property;
+  gobject_class->set_property = bse_out_port_set_property;
+  gobject_class->get_property = bse_out_port_get_property;
   
   object_class->destroy = bse_out_port_do_destroy;
   
   item_class->set_parent = bse_out_port_set_parent;
-
+  
   source_class->context_create = bse_out_port_context_create;
+  source_class->context_connect = bse_out_port_context_connect;
+  source_class->context_dismiss = bse_out_port_context_dismiss;
   
   bse_object_class_add_param (object_class, "Assignments",
 			      PARAM_PORT_NAME,
@@ -118,7 +129,7 @@ bse_out_port_class_init (BseOutPortClass *class)
 						     "port relationships",
 						     "synth_out",
 						     BSE_PARAM_DEFAULT));
-
+  
   ichannel_id = bse_source_class_add_ichannel (source_class, "Input", "Virtual synthesis network output connection");
   g_assert (ichannel_id == BSE_OUT_PORT_ICHANNEL_VOUT);
 }
@@ -129,31 +140,32 @@ bse_out_port_class_finalize (BseOutPortClass *class)
 }
 
 static void
-bse_out_port_init (BseOutPort *oport)
+bse_out_port_init (BseOutPort *self)
 {
-  oport->port_name = g_strdup ("synth_out");
+  self->port_name = g_strdup ("synth_out");
 }
 
 static void
 bse_out_port_do_destroy (BseObject *object)
 {
-  BseOutPort *oport = BSE_OUT_PORT (object);
-
-  g_free (oport->port_name);
-  oport->port_name = NULL;
-
+  BseOutPort *self = BSE_OUT_PORT (object);
+  
+  g_free (self->port_name);
+  self->port_name = NULL;
+  
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
-bse_out_port_set_property (BseOutPort  *oport,
-			   guint        param_id,
-			   GValue      *value,
-			   GParamSpec  *pspec)
+bse_out_port_set_property (GObject      *object,
+			   guint         param_id,
+			   const GValue *value,
+			   GParamSpec   *pspec)
 {
-  BseItem *item = BSE_ITEM (oport);
-
+  BseOutPort *self = BSE_OUT_PORT (object);
+  BseItem *item = BSE_ITEM (self);
+  
   switch (param_id)
     {
       const gchar *name;
@@ -161,32 +173,35 @@ bse_out_port_set_property (BseOutPort  *oport,
       name = g_value_get_string (value);
       if (item->parent)
 	{
-	  bse_snet_remove_out_port (BSE_SNET (item->parent), oport->port_name);
-	  name = bse_snet_add_out_port (BSE_SNET (item->parent), name,
-					BSE_SOURCE (item), BSE_OUT_PORT_ICHANNEL_VOUT, 0);
+	  bse_snet_oport_name_unregister (BSE_SNET (item->parent), self->port_name);
+	  name = bse_snet_oport_name_register (BSE_SNET (item->parent), name);
 	}
-      g_free (oport->port_name);
-      oport->port_name = g_strdup (name);
+      if (BSE_SOURCE_PREPARED (self))
+	bse_out_port_update_port_contexts (self, self->port_name, name, 0);
+      g_free (self->port_name);
+      self->port_name = g_strdup (name);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (oport, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_out_port_get_property (BseOutPort  *oport,
-			   guint        param_id,
-			   GValue      *value,
-			   GParamSpec  *pspec)
+bse_out_port_get_property (GObject    *object,
+			   guint       param_id,
+			   GValue     *value,
+			   GParamSpec *pspec)
 {
+  BseOutPort *self = BSE_OUT_PORT (object);
+
   switch (param_id)
     {
     case PARAM_PORT_NAME:
-      g_value_set_string (value, oport->port_name);
+      g_value_set_string (value, self->port_name);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (oport, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
@@ -195,26 +210,25 @@ static void
 bse_out_port_set_parent (BseItem *item,
 			 BseItem *parent)
 {
-  BseOutPort *oport = BSE_OUT_PORT (item);
-
-  /* remove from old parent */
+  BseOutPort *self = BSE_OUT_PORT (item);
+  
+  /* remove port name from old parent */
   if (item->parent)
-    bse_snet_remove_out_port (BSE_SNET (item->parent), oport->port_name);
-
+    bse_snet_oport_name_unregister (BSE_SNET (item->parent), self->port_name);
+  
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
-
-  /* add to new parent */
+  
+  /* add port name to new parent */
   if (item->parent)
     {
       const gchar *name;
-
-      name = bse_snet_add_out_port (BSE_SNET (item->parent), oport->port_name,
-				    BSE_SOURCE (item), BSE_OUT_PORT_ICHANNEL_VOUT, 0);
-      if (strcmp (name, oport->port_name) != 0)
+      
+      name = bse_snet_oport_name_register (BSE_SNET (item->parent), self->port_name);
+      if (strcmp (name, self->port_name) != 0)
 	{
-	  g_free (oport->port_name);
-	  oport->port_name = g_strdup (name);
+	  g_free (self->port_name);
+	  self->port_name = g_strdup (name);
 	  g_object_notify (G_OBJECT (item), "port_name");
 	}
     }
@@ -225,7 +239,7 @@ out_port_process (GslModule *module,
 		  guint      n_values)
 {
   const BseSampleValue *src = GSL_MODULE_IBUFFER (module, 0);
-
+  
   GSL_MODULE_OBUFFER (module, 0) = (gfloat*) src;
 }
 
@@ -245,11 +259,68 @@ bse_out_port_context_create (BseSource *source,
   GslModule *module = gsl_module_new (&out_port_mclass, NULL);
   
   /* setup module i/o streams with BseSource i/o channels */
-  bse_source_set_context_module (source, context_handle, module);
+  bse_source_set_context_imodule (source, context_handle, module);
   
   /* commit module to engine */
   gsl_trans_add (trans, gsl_job_integrate (module));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
+}
+
+static void
+bse_out_port_context_connect (BseSource *source,
+			      guint      context_handle,
+			      GslTrans  *trans)
+{
+  BseOutPort *self = BSE_OUT_PORT (source);
+  BseItem *item = BSE_ITEM (self);
+  GslModule *module = bse_source_get_context_imodule (source, context_handle);
+  
+  bse_snet_set_oport_src (BSE_SNET (item->parent), self->port_name, context_handle,
+			  module, 0, trans);
+  
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
+}
+
+static void
+bse_out_port_context_dismiss (BseSource *source,
+			      guint      context_handle,
+			      GslTrans  *trans)
+{
+  BseOutPort *self = BSE_OUT_PORT (source);
+  BseItem *item = BSE_ITEM (self);
+  
+  bse_snet_set_oport_src (BSE_SNET (item->parent), self->port_name, context_handle,
+			  NULL, 0, trans);
+  
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
+}
+
+static void
+bse_out_port_update_port_contexts (BseOutPort   *self,
+				   const gchar *old_name,
+				   const gchar *new_name,
+				   guint        port)
+{
+  BseItem *item = BSE_ITEM (self);
+  BseSNet *snet = BSE_SNET (item->parent);
+  BseSource *source = BSE_SOURCE (self);
+  GslTrans *trans = gsl_trans_open ();
+  guint *cids, n, i;
+  
+  g_return_if_fail (BSE_SOURCE_PREPARED (self));
+  
+  cids = bse_source_context_ids (source, &n);
+  for (i = 0; i < n; i++)
+    {
+      GslModule *imodule = bse_source_get_context_imodule (source, cids[i]);
+      
+      bse_snet_set_oport_src (snet, old_name, cids[i], NULL, port, trans);
+      bse_snet_set_oport_src (snet, new_name, cids[i], imodule, port, trans);
+    }
+  g_free (cids);
+  gsl_trans_commit (trans);
 }

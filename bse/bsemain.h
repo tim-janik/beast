@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bsemain.h: general bse routines
  */
 #ifndef __BSE_MAIN_H__
 #define __BSE_MAIN_H__
@@ -59,7 +57,8 @@ void		bse_main_global_lock		(void);
 void		bse_main_global_unlock		(void);
 void		bse_main_sequencer_lock		(void);
 void		bse_main_sequencer_unlock	(void);
-
+extern gboolean	bse_developer_extensions;
+#define		BSE_DVL_EXT			(bse_developer_extensions != FALSE)
 
 
 

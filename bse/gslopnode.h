@@ -42,6 +42,13 @@ extern "C" {
 #define	OP_NODE_UNLOCK(node)		gsl_rec_mutex_unlock (&(node)->rec_mutex)
 
 
+/* --- debugging and messages --- */
+#define ENG_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_ENGINE, NULL)
+#define MAS_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_MASTER, NULL)
+#define JOB_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_JOBS, NULL)
+#define SCHED_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_SCHED, NULL)
+
+
 /* --- transactions --- */
 typedef union _GslFlowJob GslFlowJob;
 typedef enum {
@@ -222,14 +229,8 @@ _gsl_node_peek_flow_job_stamp (OpNode *node)
   return GSL_MAX_TICK_STAMP;
 }
 
-#if defined(__GNUC__) || defined(__DECC__)
-#define OP_DEBUG	_gsl_op_debug
-void _gsl_op_debug    (GslEngineDebugLevel lvl,
-		       const gchar        *format,
-		       ...) G_GNUC_PRINTF (2,3);
-#endif
-
 void	_op_engine_inc_counter	(guint64	delta);
+
 
 #ifdef __cplusplus
 }

@@ -24,7 +24,7 @@
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik";
 DATE	= "2001";
 
 
@@ -59,7 +59,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* connect */
-  error = _bse_source_set_input (isource, ichannel, osource, ochannel);
+  error = bse_source_set_input (isource, ichannel, osource, ochannel);
   
   /* set output parameters */
   g_value_set_enum (out_values++, error);
@@ -98,7 +98,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
-  error = _bse_source_unset_input (isource, ichannel, osource, ochannel);
+  error = bse_source_unset_input (isource, ichannel, osource, ochannel);
 
   /* set output parameters */
   g_value_set_enum (out_values++, error);
@@ -123,7 +123,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
-  _bse_source_clear_ichannels (isource);
+  bse_source_clear_ichannels (isource);
   
   return BSE_ERROR_NONE;
 }
@@ -145,7 +145,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
-  _bse_source_clear_ochannels (isource);
+  bse_source_clear_ochannels (isource);
   
   return BSE_ERROR_NONE;
 }

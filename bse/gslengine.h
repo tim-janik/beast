@@ -31,6 +31,7 @@ extern "C" {
 #define	GSL_STREAM_MAX_VALUES		   (16384)	/* FIXME */
 #define	GSL_MODULE_N_OSTREAMS(module)	   ((module)->klass->n_ostreams)
 #define	GSL_MODULE_N_ISTREAMS(module)	   ((module)->klass->n_istreams)
+#define	GSL_MODULE_N_JSTREAMS(module)	   ((module)->klass->n_jstreams)
 #define	GSL_MODULE_ISTREAM(module, stream) ((module)->istreams[(stream)])
 #define	GSL_MODULE_JSTREAM(module, stream) ((module)->jstreams[(stream)])
 #define	GSL_MODULE_OSTREAM(module, stream) ((module)->ostreams[(stream)])
@@ -106,10 +107,11 @@ struct _GslOStream
 GslModule*	gsl_module_new		(const GslClass	 *klass,
 					 gpointer	  user_data);
 guint64		gsl_module_tick_stamp	(GslModule	 *module);
-GslJob*		gsl_job_connect		(GslModule	 *src_module,
+GslJob*		gsl_job_iconnect	(GslModule	 *src_module,
 					 guint		  src_ostream,
 					 GslModule	 *dest_module,
 					 guint		  dest_istream);
+#define		gsl_job_jconnect	gsl_job_iconnect	// FIXME
 GslJob*		gsl_job_disconnect	(GslModule	 *dest_module,
 					 guint		  dest_istream);
 GslJob*		gsl_job_integrate	(GslModule	 *module);
@@ -173,19 +175,6 @@ void	      gsl_engine_wait_on_trans		(void);
 #define	      gsl_engine_block_size()		(/* guint */	gsl_externvar_bsize + 0)
 #define	      gsl_engine_sample_freq()		(/* guint */	gsl_externvar_sample_freq + 0)
 
-
-/* --- debugging --- */
-typedef enum
-{
-  GSL_ENGINE_DEBUG_NONE         = 0,
-  GSL_ENGINE_DEBUG_ENGINE       = (1 << 0),
-  GSL_ENGINE_DEBUG_JOBS         = (1 << 1),
-  GSL_ENGINE_DEBUG_SCHED        = (1 << 2),
-  GSL_ENGINE_DEBUG_MASTER       = (1 << 3),
-  GSL_ENGINE_DEBUG_SLAVE        = (1 << 4)
-} GslEngineDebugLevel;
-void gsl_engine_debug_enable  (GslEngineDebugLevel level);
-void gsl_engine_debug_disable (GslEngineDebugLevel level);
 
 
 /*< private >*/

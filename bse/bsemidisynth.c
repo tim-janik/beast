@@ -153,6 +153,7 @@ bse_midi_synth_init (BseMidiSynth *msynth)
 {
   BseErrorType error;
 
+  BSE_OBJECT_UNSET_FLAGS (msynth, BSE_SNET_FLAG_USER_SYNTH);
   BSE_SUPER (msynth)->auto_activate = TRUE;
   msynth->midi_channel_id = 1;
   msynth->n_voices = 0;
@@ -181,11 +182,11 @@ bse_midi_synth_init (BseMidiSynth *msynth)
   g_object_unref (msynth->pcm_out);
 
   /* multiport <-> pcm output connections */
-  error = _bse_source_set_input (msynth->pcm_out, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
-				 msynth->lmixer, BSE_MIXER_OCHANNEL_MONO);
+  error = bse_source_set_input (msynth->pcm_out, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
+				msynth->lmixer, BSE_MIXER_OCHANNEL_MONO);
   g_assert (error == BSE_ERROR_NONE);
-  error = _bse_source_set_input (msynth->pcm_out, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
-				 msynth->rmixer, BSE_MIXER_OCHANNEL_MONO);
+  error = bse_source_set_input (msynth->pcm_out, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
+				msynth->rmixer, BSE_MIXER_OCHANNEL_MONO);
   g_assert (error == BSE_ERROR_NONE);
   
   midi_synth_set_n_voices (msynth, 1);
@@ -195,7 +196,7 @@ static void
 midi_synth_set_n_voices (BseMidiSynth *msynth,
 			 guint         n_voices)
 {
-  BseErrorType error, perror;
+  BseErrorType error;
   guint i, org_voices;
   GSList *slist = NULL;
 
@@ -213,8 +214,7 @@ midi_synth_set_n_voices (BseMidiSynth *msynth,
     {
       GSList *tmp = slist->next;
 
-      error = bse_item_exec_proc (BSE_ITEM (msynth), "remove_source", slist->data, &perror);
-      g_assert (error == BSE_ERROR_NONE && perror == BSE_ERROR_NONE);
+      bse_container_remove_item (BSE_CONTAINER (msynth), slist->data);
       g_slist_free_1 (slist);
       slist = tmp;
     }
@@ -246,21 +246,21 @@ midi_synth_set_n_voices (BseMidiSynth *msynth,
       bse_container_add_item (BSE_CONTAINER (msynth), BSE_ITEM (voice->sub_synth));
       g_object_unref (voice->sub_synth);
 
-      error = _bse_source_set_input (voice->sub_synth, 0,
-				     voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_FREQUENCY);
+      error = bse_source_set_input (voice->sub_synth, 0,
+				    voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_FREQUENCY);
       g_assert (error == BSE_ERROR_NONE);
-      error = _bse_source_set_input (voice->sub_synth, 1,
-				     voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_GATE);
+      error = bse_source_set_input (voice->sub_synth, 1,
+				    voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_GATE);
       g_assert (error == BSE_ERROR_NONE);
-      error = _bse_source_set_input (voice->sub_synth, 2,
-				     voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_VELOCITY);
+      error = bse_source_set_input (voice->sub_synth, 2,
+				    voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_VELOCITY);
       g_assert (error == BSE_ERROR_NONE);
-      error = _bse_source_set_input (voice->sub_synth, 3,
-				     voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_AFTERTOUCH);
+      error = bse_source_set_input (voice->sub_synth, 3,
+				    voice->midi_synth_input, BSE_MIDI_SYNTH_INPUT_OCHANNEL_AFTERTOUCH);
       g_assert (error == BSE_ERROR_NONE);
 
-      error = _bse_source_set_input (msynth->lmixer, i, voice->sub_synth, 0);
-      error = _bse_source_set_input (msynth->rmixer, i, voice->sub_synth, 1);
+      error = bse_source_set_input (msynth->lmixer, i, voice->sub_synth, 0);
+      error = bse_source_set_input (msynth->rmixer, i, voice->sub_synth, 1);
       g_assert (error == BSE_ERROR_NONE);
     }
 }

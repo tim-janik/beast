@@ -35,9 +35,9 @@ typedef struct
 
 /* --- functions --- */
 static GslWaveFileInfo*
-load_file_info (gpointer      data,
-		const gchar  *file_name,
-		GslErrorType *error_p)
+oggv_load_file_info (gpointer      data,
+		     const gchar  *file_name,
+		     GslErrorType *error_p)
 {
   FileInfo *fi = gsl_new_struct0 (FileInfo, 1);
   FILE *file;
@@ -80,8 +80,8 @@ load_file_info (gpointer      data,
 }
 
 static void
-free_file_info (gpointer         data,
-		GslWaveFileInfo *file_info)
+oggv_free_file_info (gpointer         data,
+		     GslWaveFileInfo *file_info)
 {
   FileInfo *fi = (FileInfo*) file_info;
   guint i;
@@ -94,10 +94,10 @@ free_file_info (gpointer         data,
 }
 
 static GslWaveDsc*
-load_wave_dsc (gpointer         data,
-	       GslWaveFileInfo *file_info,
-	       guint            nth_wave,
-	       GslErrorType    *error_p)
+oggv_load_wave_dsc (gpointer         data,
+		    GslWaveFileInfo *file_info,
+		    guint            nth_wave,
+		    GslErrorType    *error_p)
 {
   FileInfo *fi = (FileInfo*) file_info;
   GslWaveDsc *wdsc = gsl_new_struct0 (GslWaveDsc, 1);
@@ -115,8 +115,8 @@ load_wave_dsc (gpointer         data,
 }
 
 static void
-free_wave_dsc (gpointer    data,
-	       GslWaveDsc *wdsc)
+oggv_free_wave_dsc (gpointer    data,
+		    GslWaveDsc *wdsc)
 {
   g_free (wdsc->name);
   g_free (wdsc->chunks);
@@ -124,10 +124,10 @@ free_wave_dsc (gpointer    data,
 }
 
 static GslDataHandle*
-create_chunk_handle (gpointer      data,
-		     GslWaveDsc   *wdsc,
-		     guint         nth_chunk,
-		     GslErrorType *error_p)
+oggv_create_chunk_handle (gpointer      data,
+			  GslWaveDsc   *wdsc,
+			  guint         nth_chunk,
+			  GslErrorType *error_p)
 {
   FileInfo *fi = (FileInfo*) wdsc->file_info;
   GslDataHandle *dhandle;
@@ -144,24 +144,26 @@ create_chunk_handle (gpointer      data,
 void
 _gsl_init_loader_oggvorbis (void)
 {
-  static gboolean initialized = FALSE;
-  static GslLoader ov_loader = {
+  static const gchar *file_exts[] = { "ogg", NULL, };
+  static const gchar *mime_types[] = { "audio/x-ogg", NULL, };
+  static const gchar *magics[] = { "0 string OggS\n" "29 string vorbis", NULL, };
+  static GslLoader loader = {
     "Ogg/Vorbis",
-    "ogg",
-    "audio/x-ogg",
-    "0 string OggS\n"
-    "29 string vorbis",
-    0,
+    file_exts,
+    mime_types,
+    magics,
+    0,  /* priority */
     NULL,
-    load_file_info,
-    free_file_info,
-    load_wave_dsc,
-    free_wave_dsc,
-    create_chunk_handle,
+    oggv_load_file_info,
+    oggv_free_file_info,
+    oggv_load_wave_dsc,
+    oggv_free_wave_dsc,
+    oggv_create_chunk_handle,
   };
+  static gboolean initialized = FALSE;
 
   g_assert (initialized == FALSE);
   initialized = TRUE;
 
-  gsl_loader_register (&ov_loader);
+  gsl_loader_register (&loader);
 }

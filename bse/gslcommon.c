@@ -47,8 +47,9 @@
 
 
 /* --- variables --- */
-volatile guint64 gsl_externvar_tick_stamp = 0;
-static guint     global_tick_stamp_leaps = 0;
+volatile guint64     gsl_externvar_tick_stamp = 0;
+static guint         global_tick_stamp_leaps = 0;
+static GslDebugFlags gsl_debug_flags = 0;
 
 
 /* --- memory allocation --- */
@@ -161,8 +162,29 @@ gsl_free_memblock (gsize    block_size,
 void
 gsl_alloc_report (void)
 {
-  g_message ("Gsl-Memory: %lu bytes currently used",
-	     memory_allocated);
+  guint cell, cached = 0;
+
+  GSL_SPIN_LOCK (&global_memory);
+  for (cell = 0; cell < SIMPLE_CACHE_SIZE; cell++)
+    {
+      GTrashStack *trash = simple_cache[cell];
+      guint memsize, n = 0;
+
+      while (trash)
+	{
+	  n++;
+	  trash = trash->next;
+	}
+
+      if (n)
+	{
+	  memsize = (cell + 1) << 3;
+	  g_message ("cell %4u): %u bytes in %u nodes", memsize, memsize * n, n);
+	  cached += memsize * n;
+	}
+    }
+  g_message ("%lu bytes allocated from system, %u bytes unused in cache", memory_allocated, cached);
+  GSL_SPIN_UNLOCK (&global_memory);
 }
 
 gpointer
@@ -418,6 +440,8 @@ typedef struct
   gint		wpipe[2];
   volatile gint abort;
   guint64       awake_stamp;
+  GslDebugFlags auxlog_reporter;
+  const gchar  *auxlog_section;
 } ThreadData;
 static GslMutex    global_thread = { 0, };
 static GslRing    *global_thread_list = NULL;
@@ -479,6 +503,8 @@ create_tdata (void)
   tdata->wpipe[0] = -1;
   tdata->wpipe[1] = -1;
   tdata->abort = FALSE;
+  tdata->auxlog_reporter = 0;
+  tdata->auxlog_section = NULL;
   error = pipe (tdata->wpipe);
   if (error == 0)
     {
@@ -508,7 +534,6 @@ GslThread*
 gsl_thread_new (GslThreadFunc func,
 		gpointer      user_data)
 {
-  const gboolean joinable = TRUE;
   gpointer gthread = NULL;
   ThreadData *tdata;
   GError *gerror = NULL;
@@ -519,6 +544,12 @@ gsl_thread_new (GslThreadFunc func,
 
   if (tdata)
     {
+      const gboolean joinable = FALSE;
+
+      /* don't dare setting joinable to TRUE, that prevents the thread's
+       * resources from being freed, since we don't offer pthread_join().
+       * so we'd just rn out of stack at some point.
+       */
       tdata->func = func;
       tdata->data = user_data;
       gthread = g_thread_create_full (thread_wrapper, tdata, 0, joinable, FALSE,
@@ -1106,46 +1137,179 @@ gsl_strerror (GslErrorType error)
     }
 }
 
+static const gchar*
+reporter_name (GslDebugFlags reporter)
+{
+  switch (reporter)
+    {
+    case GSL_MSG_NOTIFY:	return "Notify";
+    case GSL_MSG_DATA_CACHE:	return "DataCache";
+    case GSL_MSG_DATA_HANDLE:	return "DataHandle";
+    case GSL_MSG_LOADER:	return "Loader";
+    case GSL_MSG_ENGINE:	return "Engine";	/* Engine */
+    case GSL_MSG_JOBS:		return "Jobs";		/* Engine */
+    case GSL_MSG_SCHED:		return "Sched";		/* Engine */
+    case GSL_MSG_MASTER:	return "Master";	/* Engine */
+    case GSL_MSG_SLAVE:		return "Slave";		/* Engine */
+    default:			return "Custom";
+    }
+}
+
 void
-gsl_message_send (const gchar *reporter,
-		  GslErrorType error,
-		  const gchar *messagef,
+gsl_message_send (GslDebugFlags reporter,
+		  const gchar  *section,
+		  GslErrorType  error,
+		  const gchar  *messagef,
 		  ...)
 {
   struct {
-    gchar        reporter[1024];
-    GslErrorType error;
-    const gchar	*error_str;
-    gchar	 message[1024];
+    GslDebugFlags reporter;
+    gchar         reporter_name[64];
+    gchar         section[64];	/* auxillary information about reporter code portion */
+    GslErrorType  error;
+    const gchar	 *error_str;	/* gsl_strerror() of error */
+    gchar	  message[1024];
   } tmsg, *msg = &tmsg;
-  gchar *tmp;
+  gchar *string;
   va_list args;
     
-  g_return_if_fail (reporter != NULL);
   g_return_if_fail (messagef != NULL);
 
-  strncpy (msg->reporter, reporter, 1023);
-  msg->reporter[1023] = 0;
-
+  /* create message */
+  memset (msg, 0, sizeof (*msg));
+  msg->reporter = reporter;
+  strncpy (msg->reporter_name, reporter_name (msg->reporter), 63);
+  if (section)
+    strncpy (msg->section, section, 63);
   msg->error = error;
   msg->error_str = error ? gsl_strerror (msg->error) : NULL;
 
   /* vsnprintf() replacement */
   va_start (args, messagef);
-  tmp = g_strdup_vprintf (messagef, args);
+  string = g_strdup_vprintf (messagef, args);
   va_end (args);
-  strncpy (msg->message, tmp, 1023);
-  msg->message[1023] = 0;
-  g_free (tmp);
+  strncpy (msg->message, string, 1023);
+  g_free (string);
 
-  /* always puke the message to stderr */
-  if (msg->error_str)
-    g_printerr ("GSL **: %s: %s: %s\n", msg->reporter, msg->message, msg->error_str);
-  else
-    g_printerr ("GSL **: %s: %s\n", msg->reporter, msg->message);
+  /* in current lack of a decent message queue, puke the message to stderr */
+  g_printerr ("GSL-%s%s%s: %s%s%s\n",
+	      msg->reporter_name,
+	      msg->section ? ":" : "",
+	      msg->section ? msg->section : "",
+	      msg->message,
+	      msg->error_str ? ": " : "",
+	      msg->error_str ? msg->error_str : "");
+}
 
-  /* in current lack of a decent message queue, do nothing here */
-  ;
+void
+gsl_debug_enable (GslDebugFlags dbg_flags)
+{
+  gsl_debug_flags |= dbg_flags;
+}
+
+void
+gsl_debug_disable (GslDebugFlags dbg_flags)
+{
+  gsl_debug_flags &= dbg_flags;
+}
+
+gboolean
+gsl_debug_check (GslDebugFlags dbg_flags)
+{
+  return (gsl_debug_flags & dbg_flags) != 0;
+}
+
+void
+gsl_debug (GslDebugFlags reporter,
+	   const gchar  *section,
+	   const gchar  *format,
+	   ...)
+{
+  g_return_if_fail (format != NULL);
+
+  if (reporter & gsl_debug_flags)
+    {
+      va_list args;
+      gchar *string;
+
+      va_start (args, format);
+      string = g_strdup_vprintf (format, args);
+      va_end (args);
+      g_printerr (/* "GSL-" */ "%s%s%s: %s\n",
+		  reporter_name (reporter),
+		  section ? ":" : "",
+		  section ? section : "",
+		  string);
+      g_free (string);
+    }
+}
+
+void
+gsl_auxlog_push (GslDebugFlags reporter,
+		 const gchar  *section)
+{
+  ThreadData *tdata = thread_data_from_gsl_thread (gsl_thread_self ());
+
+  if (tdata)
+    {
+      tdata->auxlog_reporter = reporter;
+      tdata->auxlog_section = section;
+    }
+}
+
+void
+gsl_auxlog_debug (const gchar *format,
+		  ...)
+{
+  ThreadData *tdata = thread_data_from_gsl_thread (gsl_thread_self ());
+  GslDebugFlags reporter = GSL_MSG_NOTIFY;
+  const gchar *section = NULL;
+  va_list args;
+  gchar *string;
+
+  if (tdata)
+    {
+      reporter = tdata->auxlog_reporter;
+      section = tdata->auxlog_section;
+      tdata->auxlog_reporter = 0;
+      tdata->auxlog_section = NULL;
+    }
+
+  g_return_if_fail (format != NULL);
+
+  va_start (args, format);
+  string = g_strdup_vprintf (format, args);
+  va_end (args);
+  gsl_debug (reporter, section, "%s", string);
+  g_free (string);
+}
+
+void
+gsl_auxlog_message (GslErrorType error,
+		    const gchar *format,
+		    ...)
+{
+  ThreadData *tdata = thread_data_from_gsl_thread (gsl_thread_self ());
+  GslDebugFlags reporter = GSL_MSG_NOTIFY;
+  const gchar *section = NULL;
+  va_list args;
+  gchar *string;
+
+  if (tdata)
+    {
+      reporter = tdata->auxlog_reporter;
+      section = tdata->auxlog_section;
+      tdata->auxlog_reporter = 0;
+      tdata->auxlog_section = NULL;
+    }
+
+  g_return_if_fail (format != NULL);
+
+  va_start (args, format);
+  string = g_strdup_vprintf (format, args);
+  va_end (args);
+  gsl_message_send (reporter, section, error, "%s", string);
+  g_free (string);
 }
 
 
@@ -1230,6 +1394,20 @@ gsl_check_file (const gchar *file_name,
     case EIO:		return GSL_ERROR_IO;
     default:		return GSL_ERROR_OPEN_FAILED;
     }
+}
+
+gboolean
+gsl_check_file_mtime (const gchar *file_name,
+		      GTime        mtime)
+{
+  struct stat statbuf = { 0, };
+
+  g_return_val_if_fail (file_name != NULL, FALSE);
+
+  if (stat (file_name, &statbuf) < 0)
+    return FALSE;
+
+  return statbuf.st_mtime == mtime;
 }
 
 
@@ -1326,4 +1504,5 @@ gsl_init (const GslConfigValue values[],
   _gsl_init_loader_gslwave ();
   _gsl_init_loader_wav ();
   _gsl_init_loader_oggvorbis ();
+  _gsl_init_loader_mad ();
 }

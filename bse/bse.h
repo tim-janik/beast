@@ -26,7 +26,6 @@
 #include        <bse/bseglobals.h>
 #include        <bse/bsebindata.h>
 #include        <bse/bsecategories.h>
-#include        <bse/bsechunk.h>
 #include        <bse/bseconfig.h>
 #include        <bse/bsecontainer.h>
 #include        <bse/bsedefs.h>
@@ -39,7 +38,6 @@
 #include        <bse/bseitem.h>
 #include        <bse/bsemain.h>
 #include        <bse/bsemath.h>
-#include        <bse/bsehunkmixer.h>
 #include	<bse/bsemidisynth.h>
 #include        <bse/bseobject.h>
 #include        <bse/bseparam.h>

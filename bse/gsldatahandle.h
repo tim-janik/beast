@@ -28,8 +28,8 @@ extern "C" {
 
 
 /* --- macros --- */
-#define	GSL_DATA_HANDLE_OPENED(handle)	 (((GslDataHandle*) (handle))->open_count > 0)
-#define	GSL_DATA_HANDLE_READ_LINEAR(hdl) (((GslDataHandle*) (handle))->vtable->coarse_seek != NULL)
+#define	GSL_DATA_HANDLE_OPENED(handle)	    (((GslDataHandle*) (handle))->open_count > 0)
+#define	GSL_DATA_HANDLE_READ_LINEAR(handle) (((GslDataHandle*) (handle))->vtable->coarse_seek != NULL)
 
 
 /* --- typedefs & structures --- */

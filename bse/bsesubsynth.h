@@ -32,8 +32,8 @@ extern "C" {
 #define BSE_TYPE_SUB_SYNTH		(BSE_TYPE_ID (BseSubSynth))
 #define BSE_SUB_SYNTH(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SUB_SYNTH, BseSubSynth))
 #define BSE_SUB_SYNTH_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SUB_SYNTH, BseSubSynthClass))
-#define BSE_IS_SYNTH(object)		(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SUB_SYNTH))
-#define BSE_IS_SYNTH_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUB_SYNTH))
+#define BSE_IS_SUB_SYNTH(object)	(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SUB_SYNTH))
+#define BSE_IS_SUB_SYNTH_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUB_SYNTH))
 #define BSE_SUB_SYNTH_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUB_SYNTH, BseSubSynthClass))
 
 #define BSE_SUB_SYNTH_N_IOPORTS (5)
@@ -53,6 +53,11 @@ struct _BseSubSynthClass
 {
   BseSourceClass     parent_class;
 };
+
+
+/* --- prototypes --- */
+void	bse_sub_synth_set_snet (BseSubSynth	*sub_synth,
+				BseSNet		*snet);
 
 
 #ifdef __cplusplus

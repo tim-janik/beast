@@ -86,6 +86,7 @@ static GQuark	   quark_blurb = 0;
 static GQuark	   quark_name = 0;
 static GHashTable *object_ulocs_ht = NULL;
 static GHashTable *object_id_ht = NULL;
+static GHashTable *marshaller_ht = NULL;
 static GQuark	   quark_property_changed_queue = 0;
 static guint       object_signals[SIGNAL_LAST] = { 0, };
 
@@ -185,6 +186,7 @@ bse_object_class_init (BseObjectClass *class)
   quark_blurb = g_quark_from_static_string ("bse-object-blurb");
   object_ulocs_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
   object_id_ht = g_hash_table_new (NULL, NULL);
+  marshaller_ht = g_hash_table_new (NULL, NULL);
   
   gobject_class->get_property = (GObjectGetPropertyFunc) bse_object_do_get_property;
   gobject_class->set_property = (GObjectSetPropertyFunc) bse_object_do_set_property;
@@ -225,13 +227,13 @@ bse_object_class_init (BseObjectClass *class)
 						     BSE_PARAM_HINT_CHECK_NULL));
   
   object_signals[SIGNAL_DESTROY] = bse_object_class_add_signal (class, "destroy",
-								bse_marshal_VOID__NONE,
+								bse_marshal_VOID__NONE, NULL,
 								G_TYPE_NONE, 0);
   object_signals[SIGNAL_STORE] = bse_object_class_add_signal (class, "store",
-							      bse_marshal_VOID__POINTER,  // FIXME __OBJECT
+							      bse_marshal_VOID__POINTER, NULL, // FIXME __OBJECT
 							      G_TYPE_NONE, 1, G_TYPE_POINTER); // FIXME: G_TYPE_STORAGE);
   object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (class, "icon_changed",
-								     bse_marshal_VOID__NONE,
+								     bse_marshal_VOID__NONE, NULL,
 								     G_TYPE_NONE, 0);
   
   /* feature parasites */
@@ -458,13 +460,15 @@ guint
 bse_object_class_add_signal (BseObjectClass    *oclass,
 			     const gchar       *signal_name,
 			     GSignalCMarshaller c_marshaller,
+			     GSignalCMarshaller proxy_marshaller,
 			     GType              return_type,
 			     guint              n_params,
 			     ...)
 {
   va_list args;
   guint signal_id;
-  
+  gpointer old_proxy_marshaller;
+
   g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
   g_return_val_if_fail (signal_name != NULL, 0);
   g_return_val_if_fail (c_marshaller != NULL, 0);
@@ -478,8 +482,28 @@ bse_object_class_add_signal (BseObjectClass    *oclass,
 				   return_type,
 				   n_params, args);
   va_end (args);
+
+  old_proxy_marshaller = g_hash_table_lookup (marshaller_ht, c_marshaller);
+  if (old_proxy_marshaller && old_proxy_marshaller != proxy_marshaller)
+    g_warning ("proxy marshaller mismatch for signal \"%s::%s\": %p != %p",
+	       g_type_name (G_TYPE_FROM_CLASS (oclass)), signal_name,
+	       old_proxy_marshaller, proxy_marshaller);
+  else
+    g_hash_table_insert (marshaller_ht, c_marshaller, proxy_marshaller);
   
   return signal_id;
+}
+
+GSignalCMarshaller
+bse_proxy_marshaller_lookup (GSignalCMarshaller c_marshaller)
+{
+  GSignalCMarshaller proxy_marshaller;
+
+  g_return_val_if_fail (c_marshaller != NULL, NULL);
+
+  proxy_marshaller = g_hash_table_lookup (marshaller_ht, c_marshaller);
+
+  return proxy_marshaller ? proxy_marshaller : c_marshaller;
 }
 
 gpointer

@@ -45,11 +45,9 @@ loader_find_by_name (const gchar *name)
 void
 gsl_loader_register (GslLoader *loader)
 {
-  GslMagic *magic = NULL;
-
   g_return_if_fail (loader != NULL);
   g_return_if_fail (loader->name != NULL);
-  g_return_if_fail (loader->extension || loader->mime_type || loader->magic_spec);
+  g_return_if_fail (loader->extensions || loader->mime_types || loader->magic_specs);
   g_return_if_fail (loader_find_by_name (loader->name) == NULL);
   g_return_if_fail (loader->next == NULL);
   g_return_if_fail (loader->load_file_info != NULL);
@@ -61,17 +59,28 @@ gsl_loader_register (GslLoader *loader)
   loader->next = gsl_loader_list;
   gsl_loader_list = loader;
 
-  if (loader->magic_spec)
+  if (loader->magic_specs)
     {
-      magic = gsl_magic_create (loader,
-				loader->priority,
-				loader->extension,
-				loader->magic_spec);
-      g_return_if_fail (magic != NULL);
+      GslMagic *magic;
+      guint i, j;
+
+      for (i = 0; loader->magic_specs[i]; i++)
+	{
+	  if (loader->extensions)
+	    for (j = 0; loader->extensions[j]; j++)
+	      {
+		magic = gsl_magic_create (loader, loader->priority,
+					  loader->extensions[j], loader->magic_specs[i]);
+		gsl_magic_list = gsl_ring_append (gsl_magic_list, magic);
+	      }
+	  else
+	    {
+	      magic = gsl_magic_create (loader, loader->priority,
+					NULL, loader->magic_specs[i]);
+	      gsl_magic_list = gsl_ring_append (gsl_magic_list, magic);
+	    }
+	}
     }
-  
-  if (magic)
-    gsl_magic_list = gsl_ring_append (gsl_magic_list, magic);
 }
 
 GslLoader*

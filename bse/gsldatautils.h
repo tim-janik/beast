@@ -58,6 +58,10 @@ gboolean	gsl_data_find_tailmatch		(GslDataHandle		*dhandle,
 						 const GslLoopSpec	*lspec,
 						 GslLong		*loop_start_p,
 						 GslLong		*loop_end_p);
+GslLong		gsl_data_find_block		(GslDataHandle		*handle,
+						 guint			 n_values,
+						 const gfloat		*values,
+						 gfloat			 epsilon);
 
 
 /* --- data handle utils --- */
@@ -901,3 +905,5 @@ gsl_conv_to_double (GslWaveFormatType format,
 #endif /* __cplusplus */
 
 #endif /* __GSL_DATA_UTILS_H__ */
+
+/* vim:set ts=8 sts=2 sw=2: */

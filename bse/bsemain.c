@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
+#include	"gslconfig.h"
+#if     (GSL_HAVE_MUTEXATTR_SETTYPE > 0)
 #define	_XOPEN_SOURCE	600	/* for full pthread facilities */
+#endif	/* defining _XOPEN_SOURCE on random systems can have bad effects */
 #include	"bsemain.h"
 
 #include	"bseplugin.h"
@@ -23,6 +26,7 @@
 #include	"gslengine.h"
 #include	<string.h>
 #include	<stdlib.h>
+#include	<sys/time.h>
 
 
 /* --- prototypes --- */
@@ -30,9 +34,10 @@ static void	call_gsl_init (const GslConfigValue values[]);
 
 
 /* --- variables --- */
-static gboolean        bse_is_initialized = FALSE;
-static GslMutex	       sequencer_mutex;
-BseDebugFlags          bse_debug_flags = 0;
+static gboolean bse_is_initialized = FALSE;
+static GslMutex sequencer_mutex;
+BseDebugFlags   bse_debug_flags = 0;
+gboolean	bse_developer_extensions = FALSE;
 
 
 /* --- functions --- */
@@ -48,14 +53,18 @@ bse_parse_args (gint    *argc_p,
 {
   extern GFlagsValue *bse_debug_key_flag_values;	/* bseenums.c feature */
   extern guint        bse_debug_key_n_flag_values;	/* bseenums.c feature */
-  static const GDebugKey op_debug_keys[] = {
-    { "engine",	GSL_ENGINE_DEBUG_ENGINE },
-    { "jobs",	GSL_ENGINE_DEBUG_JOBS },
-    { "sched",	GSL_ENGINE_DEBUG_SCHED },
-    { "master",	GSL_ENGINE_DEBUG_MASTER },
-    { "slave",	GSL_ENGINE_DEBUG_SLAVE },
+  static const GDebugKey gsl_debug_keys[] = {
+    { "notify",		GSL_MSG_NOTIFY },
+    { "dcache",		GSL_MSG_DATA_CACHE },
+    { "dhandle",	GSL_MSG_DATA_HANDLE },
+    { "loader",		GSL_MSG_LOADER },
+    { "engine",		GSL_MSG_ENGINE },
+    { "jobs",		GSL_MSG_JOBS },
+    { "sched",		GSL_MSG_SCHED },
+    { "master",		GSL_MSG_MASTER },
+    { "slave",		GSL_MSG_SLAVE },
   };
-  static const guint op_n_debug_keys = sizeof (op_debug_keys) / sizeof (op_debug_keys[0]);
+  static const guint gsl_n_debug_keys = G_N_ELEMENTS (gsl_debug_keys);
   GDebugKey *debug_keys;
   guint n_debug_keys;
   guint argc = *argc_p;
@@ -77,8 +86,8 @@ bse_parse_args (gint    *argc_p,
       guint op_lvl;
 
       bse_debug_flags |= g_parse_debug_string (envar, debug_keys, n_debug_keys);
-      op_lvl = g_parse_debug_string (envar, op_debug_keys, op_n_debug_keys);
-      gsl_engine_debug_enable (op_lvl);
+      op_lvl = g_parse_debug_string (envar, gsl_debug_keys, gsl_n_debug_keys);
+      gsl_debug_enable (op_lvl);
     }
   envar = getenv ("BSE_NO_DEBUG");
   if (envar)
@@ -86,8 +95,8 @@ bse_parse_args (gint    *argc_p,
       guint op_lvl;
       
       bse_debug_flags &= ~g_parse_debug_string (envar, debug_keys, n_debug_keys);
-      op_lvl = g_parse_debug_string (envar, op_debug_keys, op_n_debug_keys);
-      gsl_engine_debug_disable (op_lvl);
+      op_lvl = g_parse_debug_string (envar, gsl_debug_keys, gsl_n_debug_keys);
+      gsl_debug_disable (op_lvl);
     }
 
   for (i = 1; i < argc; i++)
@@ -111,18 +120,18 @@ bse_parse_args (gint    *argc_p,
 	  if (*equal == '=')
 	    {
 	      bse_debug_flags |= g_parse_debug_string (equal + 1, debug_keys, n_debug_keys);
-	      op_lvl = g_parse_debug_string (equal + 1, op_debug_keys, op_n_debug_keys);
+	      op_lvl = g_parse_debug_string (equal + 1, gsl_debug_keys, gsl_n_debug_keys);
 	    }
 	  else if (i + 1 < argc)
 	    {
 	      bse_debug_flags |= g_parse_debug_string (argv[i + 1],
 						       debug_keys,
 						       n_debug_keys);
-	      op_lvl = g_parse_debug_string (argv[i + 1], op_debug_keys, op_n_debug_keys);
+	      op_lvl = g_parse_debug_string (argv[i + 1], gsl_debug_keys, gsl_n_debug_keys);
 	      argv[i] = NULL;
 	      i += 1;
 	    }
-	  gsl_engine_debug_enable (op_lvl);
+	  gsl_debug_enable (op_lvl);
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-no-debug", argv[i]) == 0 ||
@@ -134,21 +143,22 @@ bse_parse_args (gint    *argc_p,
 	  if (*equal == '=')
 	    {
 	      bse_debug_flags &= ~g_parse_debug_string (equal + 1, debug_keys, n_debug_keys);
-	      op_lvl = g_parse_debug_string (equal + 1, op_debug_keys, op_n_debug_keys);
+	      op_lvl = g_parse_debug_string (equal + 1, gsl_debug_keys, gsl_n_debug_keys);
 	    }
 	  else if (i + 1 < argc)
 	    {
 	      bse_debug_flags &= ~g_parse_debug_string (argv[i + 1],
 							debug_keys,
 							n_debug_keys);
-	      op_lvl = g_parse_debug_string (argv[i + 1], op_debug_keys, op_n_debug_keys);
+	      op_lvl = g_parse_debug_string (argv[i + 1], gsl_debug_keys, gsl_n_debug_keys);
 	      argv[i] = NULL;
 	      i += 1;
 	    }
-	  gsl_engine_debug_disable (op_lvl);
+	  gsl_debug_disable (op_lvl);
 	  argv[i] = NULL;
 	}
     }
+  g_free (debug_keys);
   
   e = 0;
   for (i = 1; i < argc; i++)
@@ -166,8 +176,6 @@ bse_parse_args (gint    *argc_p,
     }
   if (e)
     *argc_p = e;
-
-  g_free (debug_keys);
 }
 
 static void
@@ -182,6 +190,8 @@ bse_init (int	             *argc_p,
 	  char	           ***argv_p,
 	  const BseLockFuncs *lock_funcs)
 {
+  struct timeval tv;
+
   g_return_if_fail (bse_is_initialized == FALSE);
 
   bse_is_initialized = TRUE;
@@ -191,6 +201,10 @@ bse_init (int	             *argc_p,
   g_assert (BSE_BYTE_ORDER == BSE_LITTLE_ENDIAN || BSE_BYTE_ORDER == BSE_BIG_ENDIAN);
 
   gsl_mutex_init (&sequencer_mutex);
+
+  /* initialize random numbers */
+  gettimeofday (&tv, NULL);
+  srand (tv.tv_sec ^ tv.tv_usec);
 
   if (argc_p && argv_p)
     {

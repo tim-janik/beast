@@ -92,10 +92,11 @@ bse_item_class_init (BseItemClass *class)
   class->get_seqid = bse_item_do_get_seqid;
 
   item_signals[SIGNAL_SEQID_CHANGED] = bse_object_class_add_signal (object_class, "seqid_changed",
-								    bse_marshal_VOID__NONE,
+								    bse_marshal_VOID__NONE, NULL,
 								    G_TYPE_NONE, 0);
   item_signals[SIGNAL_SET_PARENT] = bse_object_class_add_signal (object_class, "set_parent",
 								 bse_marshal_VOID__OBJECT,
+								 bse_marshal_VOID__POINTER,
 								 G_TYPE_NONE, 1, BSE_TYPE_CONTAINER);
 }
 
@@ -270,6 +271,18 @@ bse_item_common_ancestor (BseItem *item1,
   return NULL;
 }
 
+/**
+ * bse_item_cross_ref
+ * @owner:        reference owner
+ * @ref_item:     item to be referenced by @owner
+ * @uncross_func: notifier to be executed on uncrossing
+ *
+ * Install a weak cross reference from @owner to @ref_item.
+ * The two items must have a common ancestor when the cross
+ * reference is installed. Once their ancestry changes so that
+ * they don't have a common ancestor anymore, @uncross_func()
+ * is executed.
+ */
 void
 bse_item_cross_ref (BseItem         *owner,
 		    BseItem         *ref_item,
@@ -291,6 +304,14 @@ bse_item_cross_ref (BseItem         *owner,
 	       BSE_OBJECT_TYPE_NAME (ref_item));
 }
 
+/**
+ * bse_item_cross_unref
+ * @owner:        reference owner
+ * @ref_item:     item referenced by @owner
+ *
+ * Removes a cross reference previously installed via
+ * bse_item_cross_ref() without executing the associated notifier.
+ */
 void
 bse_item_cross_unref (BseItem *owner,
 		      BseItem *ref_item)
@@ -303,7 +324,34 @@ bse_item_cross_unref (BseItem *owner,
   container = bse_item_common_ancestor (owner, ref_item);
 
   if (container)
-    bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item);
+    bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item, FALSE);
+  else
+    g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
+	       BSE_OBJECT_TYPE_NAME (owner),
+	       BSE_OBJECT_TYPE_NAME (ref_item));
+}
+
+/**
+ * bse_item_uncross
+ * @owner:        reference owner
+ * @ref_item:     item referenced by @owner
+ *
+ * Destroys an existing cross reference previously installed via
+ * bse_item_cross_ref() by executing the associated notifier.
+ */
+void
+bse_item_uncross (BseItem *owner,
+		  BseItem *ref_item)
+{
+  BseItem *container;
+
+  g_return_if_fail (BSE_IS_ITEM (owner));
+  g_return_if_fail (BSE_IS_ITEM (ref_item));
+
+  container = bse_item_common_ancestor (owner, ref_item);
+
+  if (container)
+    bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item, TRUE);
   else
     g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
 	       BSE_OBJECT_TYPE_NAME (owner),

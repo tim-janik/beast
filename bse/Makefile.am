@@ -41,10 +41,7 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 bse_public_h_sources = @STRIP_BEGIN@ \
 	bse.h \
 	bsebindata.h \
-	bsebuffermixer.h \
-	bsecapture.h \
 	bsecategories.h \
-	bsechunk.h \
 	bseconfig.h \
 	bseconstant.h \
 	bsecontainer.h \
@@ -67,7 +64,6 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseitem.h \
 	bsemain.h \
 	bsemath.h \
-	bsehunkmixer.h \
 	bsemididevice.h \
 	bsemididevice-null.h \
 	bsemididevice-oss.h \
@@ -78,6 +74,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsemidisynthinput.h \
 	bseobject.h \
 	bseoutport.h \
+	bsepart.h \
 	bsepcminput.h \
 	bsepcmoutput.h \
 	bseparam.h \
@@ -95,6 +92,8 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsesong.h \
 	bsesongthread.h \
 	bsesource.h \
+	bsestandardosc.h \
+	bsestandardsynths.h \
 	bsestorage.h \
 	bsesubsynth.h \
 	bsesuper.h \
@@ -113,10 +112,7 @@ bse_private_h_sources = @STRIP_BEGIN@ \
 # BSE C sources to build the library from
 bse_c_sources = @STRIP_BEGIN@ \
 	bsebindata.c \
-	bsebuffermixer.c \
-	bsecapture.c \
 	bsecategories.c \
-	bsechunk.c \
 	bseconstant.c \
 	bsecontainer.c \
 	bsedatapocket.c \
@@ -136,7 +132,6 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseitem.c \
 	bsemain.c \
 	bsemath.c \
-	bsehunkmixer.c \
 	bsemididevice.c \
 	bsemididevice-null.c \
 	bsemididevice-oss.c \
@@ -147,6 +142,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsemidisynthinput.c \
 	bseobject.c \
 	bseoutport.c \
+	bsepart.c \
 	bsepcminput.c \
 	bsepcmoutput.c \
 	bseparam.c \
@@ -164,6 +160,8 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsesong.c \
 	bsesongthread.c \
 	bsesource.c \
+	bsestandardosc.c \
+	bsestandardsynths.c \
 	bsestorage.c \
 	bsesubsynth.c \
 	bsesuper.c \
@@ -184,8 +182,10 @@ bse_proc_sources = @STRIP_BEGIN@ \
 	bseenums.proc \
 	bsehelloworld.proc \
 	bseobject.proc \
+	bsepart.proc \
 	bseproject.proc \
 	bseserver.proc \
+	bsesong.proc \
 	bsesource.proc \
 	bsesnet.proc \
 	bseitem.proc \
@@ -199,8 +199,10 @@ bse_proc_gen_sources = @STRIP_BEGIN@ \
 	bseeditablesample.gen-proc.c \
 	bsehelloworld.gen-proc.c \
 	bseobject.gen-proc.c \
+	bsepart.gen-proc.c \
 	bseproject.gen-proc.c \
 	bseserver.gen-proc.c \
+	bsesong.gen-proc.c \
 	bsesource.gen-proc.c \
 	bsesnet.gen-proc.c \
 	bseitem.gen-proc.c \
@@ -218,7 +220,6 @@ bse_extra_sources = @STRIP_BEGIN@ \
 	mktypes.pl \
 	mkcalls.pl \
 	bseconfig.h.in \
-	bsebuffermixercore.c \
 	bsepcmmodule.c \
 	bsemidimodule.c \
 	bsemarshal.list \
@@ -243,12 +244,10 @@ bse_built_c_sources = @STRIP_BEGIN@ \
 	bsebuiltin_array.c \
 	bsegentypes.c \
 	bsegentype_array.c \
-	bsebuffermixer_gen.c \
 	bsemarshal.h \
 	bsemarshal.c \
 @STRIP_END@
 # built-deps
-bsebuffermixer.c: bsebuffermixer_gen.c
 bseenums.c: bseenum_arrays.c bseenum_list.c
 bseobject.c: bsemarshal.c
 bseplugin.c: bsebuiltin_externs.c bsebuiltin_array.c
@@ -331,23 +330,6 @@ bsebuiltin_array.c: @MISSING_PERL5@ $(bse_builtin_c_sources) $(srcdir)/mkbuiltin
 	&& $(PERL) $(srcdir)/mkbuiltinlist.pl --array $(bse_builtin_c_sources) > xgen-bbac \
 	&& cp xgen-bbac $@ \
 	&& rm -f xgen-bbac
-bsebuffermixer_gen.c: @MISSING_PERL5@ bsebuffermixer.c $(srcdir)/mkcalls.pl bsebuffermixercore.c
-	cd $(srcdir) \
-	&& $(PERL) $(srcdir)//mkcalls.pl \
-	  --magic MAKE_MIXER_CALLS_FOR \
-	  --prod1 "#define MIXER_FUNCTION_ID \t buffer_mixer_function__@n@\n" \
-	  --prod1 "#define MIXER_FLAGS \t (@value@)\n" \
-	  --prod1 "#include \"bsebuffermixercore.c\"\n" \
-	  --prod1 "#undef MIXER_FUNCTION_ID\n" \
-	  --prod1 "#undef MIXER_FLAGS" \
-	  --head2 "\nstatic BufferMixerFunc\n" \
-	  --head2 "fetch_buffer_mixer_function (guint flags)\n" \
-	  --head2 "{\n  switch (flags)\n    {" \
-	  --prod2 "    case (@value@): \t return buffer_mixer_function__@n@;" \
-	  --tail2 "    default: \t return NULL;\n    }\n}" \
-	    bsebuffermixer.c > xgen-bmx \
-	&& cp xgen-bmx $@ \
-	&& rm -f xgen-bmx
 $(srcdir)/bsemarshal.h: @MISSING_PERL5@ bsemarshal.list
 	cd $(srcdir) \
 	&& glib-genmarshal --prefix=bse_marshal bsemarshal.list --header >> xgen-bmh \

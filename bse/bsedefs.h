@@ -77,6 +77,8 @@ typedef struct  _BseMidiSynth           BseMidiSynth;
 typedef struct  _BseMidiSynthClass      BseMidiSynthClass;
 typedef struct  _BseObject              BseObject;
 typedef struct  _BseObjectClass         BseObjectClass;
+typedef struct  _BsePart		BsePart;
+typedef struct  _BsePartClass		BsePartClass;
 typedef struct  _BsePattern             BsePattern;
 typedef struct  _BsePatternClass        BsePatternClass;
 typedef struct  _BsePatternGroup        BsePatternGroup;

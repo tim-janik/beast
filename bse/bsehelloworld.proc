@@ -23,7 +23,7 @@
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik";
 DATE	= "1999";
 
 

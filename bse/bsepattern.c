@@ -107,14 +107,14 @@ bse_pattern_class_init (BsePatternClass	*class)
   item_class->set_parent = bse_pattern_do_set_parent;
 
   pattern_signals[SIGNAL_SIZE_CHANGED] = bse_object_class_add_signal (object_class, "size-changed",
-								      bse_marshal_VOID__NONE,
+								      bse_marshal_VOID__NONE, NULL,
 								      G_TYPE_NONE, 0);
   pattern_signals[SIGNAL_NOTE_CHANGED] = bse_object_class_add_signal (object_class, "note-changed",
-								      bse_marshal_VOID__UINT_UINT,
+								      bse_marshal_VOID__UINT_UINT, NULL,
 								      G_TYPE_NONE,
 								      2, G_TYPE_UINT, G_TYPE_UINT);
   pattern_signals[SIGNAL_NOTE_SELECTION_CHANGED] = bse_object_class_add_signal (object_class, "note-selection-changed",
-										bse_marshal_VOID__UINT_UINT,
+										bse_marshal_VOID__UINT_UINT, NULL,
 										G_TYPE_NONE,
 										2, G_TYPE_UINT, G_TYPE_UINT);
 }
@@ -167,8 +167,8 @@ bse_pattern_do_set_parent (BseItem *item,
     {
       BseSong *song = BSE_SONG (parent);
       
-      bse_pattern_set_n_channels (pattern, song->n_channels);
-      bse_pattern_set_n_rows (pattern, song->pattern_length);
+      bse_pattern_set_n_channels (pattern, BSE_SONG_N_CHANNELS (song));
+      bse_pattern_set_n_rows (pattern, BSE_SONG_PATTERN_LENGTH (song));
     }
 }
 
@@ -203,7 +203,7 @@ bse_pattern_set_n_channels (BsePattern *pattern,
 			    guint	n_channels)
 {
   g_return_if_fail (BSE_IS_PATTERN (pattern));
-  g_return_if_fail (n_channels >= 1 && n_channels <= BSE_MAX_N_CHANNELS);
+  g_return_if_fail (n_channels >= 1 && n_channels <= 256);
 
   if (BSE_OBJECT_IS_LOCKED (pattern))
     return;
@@ -247,7 +247,7 @@ bse_pattern_set_n_rows (BsePattern *pattern,
 			guint	    n_rows)
 {
   g_return_if_fail (BSE_IS_PATTERN (pattern));
-  g_return_if_fail (n_rows >= BSE_MIN_PATTERN_LENGTH && n_rows <= BSE_MAX_PATTERN_LENGTH);
+  g_return_if_fail (n_rows >= 4 && n_rows <= 256);
   
   if (BSE_OBJECT_IS_LOCKED (pattern))
     return;
@@ -548,8 +548,8 @@ bse_pattern_selection_new (guint n_channels,
 {
   guint32 *selection;
 
-  g_return_val_if_fail (n_channels >= 1 && n_channels <= BSE_MAX_N_CHANNELS, NULL);
-  g_return_val_if_fail (n_rows >= 1 && n_rows <= BSE_MAX_N_ROWS, NULL);
+  g_return_val_if_fail (n_channels >= 1 && n_channels <= 256, NULL);
+  g_return_val_if_fail (n_rows >= 1 && n_rows <= 256, NULL);
 
   selection = g_new0 (guint32, (n_channels * n_rows + 31) / 32 + 2);
   BSE_PATTERN_SELECTION_N_CHANNELS (selection) = n_channels;

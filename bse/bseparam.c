@@ -480,7 +480,7 @@ bse_param_types_init (void)	/* sync with btype.c */
       value_note_lcopy_value,   /* lcopy_value */
     };
     info.value_table = &value_table;
-    type = g_type_register_fundamental (BSE_TYPE_NOTE, "BNote", &info, &finfo, 0);
+    type = g_type_register_fundamental (BSE_TYPE_NOTE, "BseNote", &info, &finfo, 0);
     g_assert (type == BSE_TYPE_NOTE);
   }
   

@@ -19,12 +19,36 @@
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>
 #include        <bse/bsesnet.h>
+#include        <bse/bsemain.h>
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
-CRIGHTS	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik";
 DATE	= "2001";
 
+
+METHOD (BseSNet, supports_user_synths) {
+  HELP	= "Check whether users may edit synthesis modules of this network";
+  IN	= g_param_spec_object ("snet", "Synth Net", NULL,
+			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_boolean ("user_synth", "User Synth", NULL,
+				FALSE, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSNet *snet = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SNET (snet))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_boolean (out_values++, BSE_SNET_USER_SYNTH (snet));
+  
+  return BSE_ERROR_NONE;
+}
 
 METHOD (BseSNet, can_create_source) {
   HELP	= "Check whether inserting a new module into a synthesis network is possible";
@@ -50,8 +74,10 @@ METHOD (BseSNet, can_create_source) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
-      g_type_is_a (type, BSE_TYPE_CONTAINER))
+  if (!BSE_SNET_USER_SYNTH (snet) && !BSE_DVL_EXT)
+    error = BSE_ERROR_PERMS;
+  else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
+	   g_type_is_a (type, BSE_TYPE_CONTAINER))
     error = BSE_ERROR_SOURCE_TYPE_INVALID;
 
   /* set output parameters */
@@ -117,23 +143,12 @@ METHOD (BseSNet, remove_source) {
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */
-  if (!BSE_IS_SNET (snet) || !BSE_IS_SOURCE (source) || BSE_ITEM (source)->parent != BSE_ITEM (snet))
+  if (!BSE_IS_SNET (snet) || !BSE_IS_SOURCE (source) || BSE_ITEM (source)->parent != BSE_ITEM (snet) ||
+      (!BSE_SNET_USER_SYNTH (snet) && !BSE_DVL_EXT))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  if (0)	/* FIXME: deny to remove vport sources when locked */
-    {
-      guint i;
-
-      for (i = 0; i < snet->n_in_ports && !error; i++)
-	if (snet->in_ports[i].source == source)
-	  error = BSE_ERROR_SOURCE_BUSY;
-      for (i = 0; i < snet->n_out_ports && !error; i++)
-	if (snet->out_ports[i].source == source)
-	  error = BSE_ERROR_SOURCE_BUSY;
-    }
-  if (!error)
-    bse_container_remove_item (BSE_CONTAINER (snet), BSE_ITEM (source));
+  bse_container_remove_item (BSE_CONTAINER (snet), BSE_ITEM (source));
   
   /* set output parameters */
   g_value_set_enum (out_values++, error);
