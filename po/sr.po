@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-27 00:53+0100\n"
-"PO-Revision-Date: 2003-10-27 00:10+0100\n"
+"POT-Creation-Date: 2003-10-27 14:25+0100\n"
+"PO-Revision-Date: 2003-10-27 14:27+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -1159,27 +1159,27 @@ msgstr "Таласи"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
-msgstr ""
+msgstr "ЗВЕР"
 
 #: data/beast.desktop.in.h:2
 msgid "Music Composer"
-msgstr ""
+msgstr "Компоновање музике"
 
 #: data/beast.desktop.in.h:3
 msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
-msgstr ""
+msgstr "Алат за синтезу музике, компоновање MIDI датотека и песама"
 
 #: data/bse.keys.in.h:1
 msgid "Audio"
-msgstr ""
+msgstr "Звук"
 
 #: data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
-msgstr ""
+msgstr "BSE вишеделна Wave датотека"
 
 #: data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
-msgstr ""
+msgstr "BSE датотека за синтезу"
 
 #~ msgid "Deleting file `%s'"
 #~ msgstr "Брише датотеку „%s“"
