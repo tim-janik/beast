@@ -18,8 +18,6 @@
  */
 #include <sfi.h>
 
-#include "circle.c"
-#include "bazz.c"
 
 #define	MSG(what)	do g_print ("%s [", what); while (0)
 #define	TICK()		do g_print ("-"); while (0)
