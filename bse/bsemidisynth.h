@@ -44,10 +44,12 @@ struct _BseMidiSynth
   gfloat	 volume_factor;         /* 1-based factor */
 
   BseSNet       *snet;
+  BseSNet       *pnet;
 
   BseSource	*voice_input;
   BseSource	*voice_switch;
   BseSource	*context_merger;
+  BseSource	*postprocess;
   BseSource	*output;
   BseSource	*sub_synth;
 };
