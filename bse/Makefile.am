@@ -61,8 +61,8 @@ bse_public_h_sources = $(strip \
 	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
 	bsecompat.h		bseundostack.h		bsemidiinput.h			bsemididecoder.h \
 	bsenote.h		bsemidifile.h		\
-	bsecxxvalue.h		bsecxxutils.h		bsecxxbase.h			bsecxxclosure.h \
-	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			\
+	bsecxxvalue.hh		bsecxxutils.hh		bsecxxbase.hh			bsecxxclosure.hh \
+	bsecxxarg.hh		bsecxxmodule.hh		bsecxxplugin.hh			\
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -104,7 +104,7 @@ bse_idl_sources = $(strip \
 )
 $(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
 $(srcdir)/bsebusmodule.cc: bsebusmodule.gen-idl.h
-$(srcdir)/bsecxxplugin.h: bsecore.gen-idl.h
+$(srcdir)/bsecxxplugin.hh: bsecore.gen-idl.h
 $(srcdir)/bseprobe.cc: bseprobe.gen-idl.h
 $(srcdir)/bsesummation.cc: bsesummation.gen-idl.h
 idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)

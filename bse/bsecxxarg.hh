@@ -18,7 +18,7 @@
 #ifndef __BSE_CXX_ARG_H__
 #define __BSE_CXX_ARG_H__
 
-#include <bse/bsecxxvalue.h>
+#include <bse/bsecxxvalue.hh>
 
 /* Closure Argument implementation. For a given type, these templates
  * provide a class Arg with get() and set() functions on class Value,

@@ -18,8 +18,8 @@
 #ifndef __BSE_CXX_CLOSURE_H__
 #define __BSE_CXX_CLOSURE_H__
 
-#include <bse/bsecxxvalue.h>
-#include <bse/bsecxxarg.h>
+#include <bse/bsecxxvalue.hh>
+#include <bse/bsecxxarg.hh>
 
 namespace Bse {
 

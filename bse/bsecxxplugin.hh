@@ -27,7 +27,7 @@
 #  endif /* !BSE_PLUGIN_NAME && !BSE_PLUGIN_FALLBACK */
 #endif /* !BSE_PLUGIN_NAME */
 
-#include <bse/bsecxxmodule.h>
+#include <bse/bsecxxmodule.hh>
 #include <bse/bseexports.h>
 #include <bse/bseparam.h>
 
@@ -298,7 +298,7 @@ public:
 } // Bse
 
 /* include generated C++ core types */
-#include <bse/bsecore.gen-idl.h>        /* includes bsecxxplugin.h itself */
+#include <bse/bsecore.gen-idl.h>        /* includes bsecxxplugin.hh itself */
 
 /* define types dependant on bsecore.idl */
 namespace Bse {

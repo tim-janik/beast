@@ -18,7 +18,7 @@
 #ifndef __BSE_CXX_VALUE_H__
 #define __BSE_CXX_VALUE_H__
 
-#include <bse/bsecxxutils.h>
+#include <bse/bsecxxutils.hh>
 
 namespace Bse {
 

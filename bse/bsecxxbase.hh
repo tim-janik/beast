@@ -19,8 +19,8 @@
 #define __BSE_CXX_BASE_H__
 
 #include <bse/bsesource.h>
-#include <bse/bsecxxvalue.h>
-#include <bse/bsecxxclosure.h>
+#include <bse/bsecxxvalue.hh>
+#include <bse/bsecxxclosure.hh>
 
 namespace Bse {
 #define BSE_CXX_INSTANCE_OFFSET    BSE_CXX_SIZEOF (BseSource)
@@ -239,7 +239,7 @@ template<class ObjectType, typename PropertyID> static void
 cxx_get_candidates_trampoline (BseItem               *item,
                                guint                  prop_id,
                                BsePropertyCandidates *pc,
-                               GParamSpec            *pspec);   /* defined in bsecxxplugin.h */
+                               GParamSpec            *pspec);   /* defined in bsecxxplugin.hh */
 
 template<class ObjectType, typename PropertyID> static void
 cxx_property_updated_trampoline (BseSource             *source,

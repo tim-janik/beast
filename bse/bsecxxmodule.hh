@@ -18,7 +18,7 @@
 #ifndef __BSE_CXX_MODULE_H__
 #define __BSE_CXX_MODULE_H__
 
-#include <bse/bsecxxbase.h>
+#include <bse/bsecxxbase.hh>
 #include <bse/bseieee754.h>
 
 namespace Bse {

@@ -1,4 +1,4 @@
-#include <bse/bsecxxbase.h>
+#include <bse/bsecxxbase.hh>
 #include <bse/bsemain.h>
 #include <bse/bseamplifier.gen-idl.h>
 

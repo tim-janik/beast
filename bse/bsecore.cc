@@ -21,7 +21,7 @@
 #include "bsemain.h"
 #include "bseengine.h"
 #include "bsesequencer.h"
-#include "bsecxxplugin.h" /* includes bsecore.gen-idl.h for us */
+#include "bsecxxplugin.hh" /* includes bsecore.gen-idl.h for us */
 
 namespace Bse {
 

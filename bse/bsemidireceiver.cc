@@ -21,7 +21,7 @@
 #include "gslcommon.h"
 #include "bseengine.h"
 #include "bsemathsignal.h"
-#include "bsecxxutils.h"
+#include "bsecxxutils.hh"
 #include <string.h>
 #include <sfi/gbsearcharray.h>
 #include <map>
