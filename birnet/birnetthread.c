@@ -26,7 +26,9 @@
 #include "sfilog.h"
 #include <sys/time.h>
 #include <sched.h>
+#include <unistd.h>
 #include <time.h>
+#include <errno.h>
 #include <string.h>
 
 
@@ -44,6 +46,7 @@ struct _SfiThread
   GDestroyNotify  wakeup_destroy;
   guint64	  awake_stamp;
   GData		 *qdata;
+  gint            tid;
 };
 
 
@@ -70,6 +73,7 @@ sfi_thread_handle_new (const gchar *name)
   thread->wakeup_cond = NULL;
   thread->wakeup_func = NULL;
   thread->wakeup_destroy = NULL;
+  thread->tid = -1;
   if (!error)
     {
       if (!name)
@@ -93,6 +97,32 @@ sfi_thread_handle_new (const gchar *name)
   return thread;
 }
 
+#ifdef  __linux__
+#include <sys/types.h>
+#include <sys/syscall.h>
+#include <linux/unistd.h>
+#ifdef  __NR_gettid             /* present on linux >= 2.4.20 */
+static inline _syscall0(pid_t,gettid);
+#endif
+#endif
+static void
+thread_get_tid (SfiThread *thread)
+{
+  gint ppid = thread->tid;      /* creator process id */
+  gint tid = -1;
+
+#ifdef  __NR_gettid             /* present on linux >= 2.4.20 */
+  tid = gettid ();
+#endif
+  if (tid < 0)
+    tid = getpid();
+  if (tid != ppid &&            /* thread pid different from creator pid, probably correct */
+      tid > 0)
+    thread->tid = tid;
+  else
+    thread->tid = 0;            /* failed to figure id */
+}
+
 static gpointer
 sfi_thread_exec (gpointer thread)
 {
@@ -101,6 +131,8 @@ sfi_thread_exec (gpointer thread)
 
   self = sfi_thread_self ();
   g_assert (self == thread);
+
+  thread_get_tid (thread);
 
   SFI_SYNC_LOCK (&global_thread_mutex);
   global_thread_list = sfi_ring_append (global_thread_list, self);
@@ -144,6 +176,19 @@ sfi_thread_handle_deleted (SfiThread *thread)
   sfi_delete_struct (SfiThread, thread);
 }
 
+static void
+filter_priority_warning (const gchar    *log_domain,
+                         GLogLevelFlags  log_level,
+                         const gchar    *message,
+                         gpointer        unused_data)
+{
+  static const char *fmsg = "Priorities can only be increased by root.";
+  if (message && strcmp (message, fmsg) == 0)
+    ;   /* ignore warning */
+  else
+    g_log_default_handler (log_domain, log_level, message, unused_data);
+}
+
 /**
  * sfi_thread_run
  * @name:      thread name
@@ -160,11 +205,15 @@ sfi_thread_run (const gchar  *name,
   GThread *gthread = NULL;
   SfiThread *thread;
   GError *gerror = NULL;
-
+  guint hid = 0;
+  
   g_return_val_if_fail (func != NULL, FALSE);
 
+  /* silence those stupid priority warnings triggered by glib */
+  hid = g_log_set_handler ("GLib", G_LOG_LEVEL_WARNING, filter_priority_warning, NULL);
+
+  /* create thread */
   thread = sfi_thread_handle_new (name);
-  
   if (thread)
     {
       const gboolean joinable = FALSE;
@@ -175,6 +224,7 @@ sfi_thread_run (const gchar  *name,
        */
       thread->func = func;
       thread->data = user_data;
+      thread->tid = getpid();
       gthread = g_thread_create_full (sfi_thread_exec, thread, 0, joinable, FALSE,
 				      G_THREAD_PRIORITY_NORMAL, &gerror);
     }
@@ -197,12 +247,15 @@ sfi_thread_run (const gchar  *name,
       g_error_free (gerror);
     }
 
+  /* withdraw warning filter */
+  g_log_remove_handler ("GLib", hid);
+
   return thread;
 }
 
 /**
  * sfi_thread_self
- * @returns: thread handle
+ * @RETURNS: thread handle
  * Return the thread handle of the currently running thread.
  */
 SfiThread*
@@ -213,6 +266,7 @@ sfi_thread_self (void)
   if (!thread)
     {
       thread = sfi_thread_handle_new (NULL);
+      thread_get_tid (thread);
       if (!thread)
 	g_error ("failed to create thread handle for foreign thread");
       sfi_thread_table.thread_set_handle (thread);
@@ -221,6 +275,20 @@ sfi_thread_self (void)
       SFI_SYNC_UNLOCK (&global_thread_mutex);
     }
   return thread;
+}
+
+/**
+ * sfi_thread_self_pid
+ * @RETURNS: thread id
+ * Return the thread specific id. This function is highly
+ * system dependant. The thread id may deviate from the overall
+ * process id or not. On linux, threads have their own id,
+ * allthough since kernel 2.6, they share the same process id.
+ */
+gint
+sfi_thread_self_pid (void)
+{
+  return sfi_thread_self ()->tid;
 }
 
 static void

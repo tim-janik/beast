@@ -1,3 +1,12 @@
+Wed Feb 25 14:46:33 2004  Tim Janik  <timj@gtk.org>
+
+	* sficomwire.c (sfi_com_spawn_async): drop nice-level after forking.
+
+	* sfithreads.[hc]: added sfi_thread_self_pid() which returns the threads
+	thread id, regardless of multiple threads using the same pid.
+	(sfi_thread_run): added hack to filter out bogus "Priorities can only be
+	increased by root." warnings from glib around thread creation.
+
 Mon Feb 23 23:34:28 CET 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-cbase.*

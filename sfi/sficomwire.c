@@ -17,7 +17,6 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sficomwire.h"
-
 #include "sfiprimitives.h"
 #include <errno.h>
 #include <unistd.h>
@@ -25,6 +24,8 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 
 /* --- prototypes --- */
@@ -941,6 +942,8 @@ pre_exec_child_setup (gpointer data)
     unset_cloexec (cdata->keepexec1);
   if (cdata->keepexec2)
     unset_cloexec (cdata->keepexec2);
+  /* drop scheduling priorities if we have any */
+  setpriority (PRIO_PROCESS, getpid(), 0);
 }
 
 gchar*

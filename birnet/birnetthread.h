@@ -39,6 +39,7 @@ SfiThread*    sfi_thread_run		(const gchar    *name,
 					 SfiThreadFunc	 func,
 					 gpointer	 user_data);
 SfiThread*    sfi_thread_self		(void);
+gint          sfi_thread_self_pid	(void);
 void	      sfi_thread_set_wakeup	(SfiThreadWakeup wakeup_func,
 					 gpointer	 wakeup_data,
 					 GDestroyNotify	 destroy);
