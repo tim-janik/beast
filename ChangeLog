@@ -1,3 +1,7 @@
+Thu Jun 10 01:00:22 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-standard.xml: enable tooltips on menu-items.
+
 Wed Jun  9 18:36:53 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpianorollctrl.c: fix full vs. whole note wording.

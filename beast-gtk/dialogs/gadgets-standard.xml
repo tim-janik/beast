@@ -9,7 +9,7 @@
   <!-- widget-patcher -->
   <xdef:tooltip inherit="GxkWidgetPatcher"
     prop:tooltip="$(null-collapse,$text)"
-    prop:tooltip-visible="$(ifdef,latent-tooltip,$(not,$latent-tooltip),1)" />
+    prop:tooltip-visible="$(ifdef,tooltip-only-latent,$(not,$tooltip-only-latent),1)" />
   <xdef:hidden-when-insensitive inherit="GxkWidgetPatcher"
     prop:hide-insensitive="$(ifdef,hidden-when-insensitive,$hidden-when-insensitive,1)" />
   <xdef:widget-patcher inherit="GxkWidgetPatcher"
@@ -221,7 +221,7 @@
     accel="$action-accel"
     accel-path="$action-path"
     stock-image="$action-stock" >
-    <tooltip text="$action-tooltip" latent-tooltip="1" />
+    <tooltip text="$action-tooltip" tooltip-only-latent="0" />
   </xdef:menu-factory-per-action>
   <!-- menu-action-separator: produce a menu separator if actions are present: action-root= actions=  -->
   <xdef:menu-action-separator inherit="gadget-factory"
