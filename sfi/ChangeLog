@@ -1,3 +1,8 @@
+Thu Jan  6 18:50:27 2005  Tim Janik  <timj@gtk.org>
+
+	* sfistore.[hc]: added sfi_rstore_parse_zbinary() to parse binary
+	block offset+length adresses zero mark relative.
+
 Fri Dec 31 01:35:09 2004  Tim Janik  <timj@gtk.org>
 
 	* sfifilecrawler.c (errno_check_file): fixed mode="e", which

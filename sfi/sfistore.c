@@ -706,13 +706,10 @@ sfi_rstore_get_bin_offset (SfiRStore *rstore)
 }
 
 GTokenType
-sfi_rstore_parse_binary (SfiRStore *rstore,
-			 SfiNum    *offset_p,
-			 SfiNum    *length_p)
+sfi_rstore_parse_zbinary (SfiRStore *rstore,
+                          SfiNum    *offset_p,
+                          SfiNum    *length_p)
 {
-  SfiNum offset, length;
-  GTokenType token;
-
   g_return_val_if_fail (rstore != NULL, G_TOKEN_ERROR);
   g_return_val_if_fail (offset_p && length_p, G_TOKEN_ERROR);
 
@@ -723,17 +720,29 @@ sfi_rstore_parse_binary (SfiRStore *rstore,
     return G_TOKEN_IDENTIFIER;
   if (g_scanner_get_next_token (rstore->scanner) != G_TOKEN_INT)
     return G_TOKEN_INT;
-  offset = rstore->scanner->value.v_int64;
+  SfiNum offset = rstore->scanner->value.v_int64;
   if (g_scanner_get_next_token (rstore->scanner) != G_TOKEN_INT)
     return G_TOKEN_INT;
-  length = rstore->scanner->value.v_int64;
+  SfiNum length = rstore->scanner->value.v_int64;
   if (g_scanner_get_next_token (rstore->scanner) != ')')
     return ')';
-  token = sfi_rstore_ensure_bin_offset (rstore);
+  *offset_p = offset;
+  *length_p = length;
+  return G_TOKEN_NONE;
+}
+
+GTokenType
+sfi_rstore_parse_binary (SfiRStore *rstore,
+			 SfiNum    *offset_p,
+			 SfiNum    *length_p)
+{
+  GTokenType token = sfi_rstore_ensure_bin_offset (rstore);
   if (token != G_TOKEN_NONE)
     return token;
-  *offset_p = rstore->bin_offset + offset;
-  *length_p = length;
+  token = sfi_rstore_parse_zbinary (rstore, offset_p, length_p);
+  if (token != G_TOKEN_NONE)
+    return token;
+  *offset_p += rstore->bin_offset;
   return G_TOKEN_NONE;
 }
 

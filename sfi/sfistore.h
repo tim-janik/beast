@@ -105,6 +105,9 @@ guint64         sfi_rstore_get_bin_offset     (SfiRStore      *rstore);
 GTokenType      sfi_rstore_parse_binary       (SfiRStore      *rstore,
                                                SfiNum         *offset_p,
                                                SfiNum         *length_p);
+GTokenType      sfi_rstore_parse_zbinary      (SfiRStore      *rstore,
+                                               SfiNum         *offset_p,
+                                               SfiNum         *length_p);
 GTokenType      sfi_rstore_parse_until        (SfiRStore      *rstore,
                                                GTokenType      closing_token,
                                                gpointer        context_data,
