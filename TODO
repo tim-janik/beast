@@ -1,4 +1,5 @@
 FIXME(release-critical):
+- fix probes for multi-module objects
 - (beast:29238): BEAST-CRITICAL **: file bstutils.c: line 802 (bst_gmask_set_aux2): assertion `GTK_IS_WIDGET (widget)' failed
 - menu-button should keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
 - bseprocidl: generate "Info blurb" not "Info BLURB"

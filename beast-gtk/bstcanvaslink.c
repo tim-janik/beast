@@ -287,7 +287,7 @@ bst_canvas_link_build_async (gpointer data)
       if (!clink->arrow)
         clink->arrow = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
                                                                 GNOME_TYPE_CANVAS_POLYGON,
-                                                                "outline_color_rgba", 0x0000ffff,
+                                                                "outline_color_rgba", 0x000000ff,
                                                                 "fill_color_rgba", 0xff0000ff,
                                                                 NULL),
                                          "signal::destroy", gtk_widget_destroyed, &clink->arrow,
