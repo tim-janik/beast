@@ -321,7 +321,10 @@ bse_wave_remove_chunk (BseWave      *wave,
   if (wave->n_wchunks)
     BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
   else
-    BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
+    {
+      wave->n_channels = 0;
+      BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
+    }
 }
 
 static gint
@@ -342,6 +345,11 @@ bse_wave_add_chunk (BseWave      *wave,
   g_return_if_fail (wchunk != NULL);
   g_return_if_fail (wchunk->dcache != NULL);
   g_return_if_fail (wchunk->owner_data == NULL);
+
+  if (!wave->n_wchunks)
+    wave->n_channels = wchunk->n_channels;
+  else
+    g_return_if_fail (wave->n_channels == wchunk->n_channels);
 
   wchunk->owner_data = wave;
   wave->wave_chunks = g_slist_insert_sorted (wave->wave_chunks, wchunk, wchunk_cmp);

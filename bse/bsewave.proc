@@ -119,3 +119,27 @@ BODY (BseProcedureClass *proc,
 
   return BSE_ERROR_NONE;
 }
+
+METHOD (BseWave, n-channels) {
+  HELP  = "Get the number of channels of a wave";
+  IN    = g_param_spec_object ("wave", "Wave", NULL,
+			       BSE_TYPE_WAVE, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseWave *wave = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_WAVE (wave))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_uint (out_values++, wave->n_channels);
+
+  return BSE_ERROR_NONE;
+}

@@ -46,6 +46,8 @@ struct _BseWave
 {
   BseSource	     parent_object;
 
+  guint		     n_channels;
+
   /* locator */
   guint		     locator_set : 1;
   gchar		    *file_name;

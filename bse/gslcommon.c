@@ -1074,6 +1074,7 @@ gsl_strerror (GslErrorType error)
     case GSL_ERROR_FORMAT_INVALID:	return "Invalid format";
     case GSL_ERROR_FORMAT_UNKNOWN:	return "Unknown format";
     case GSL_ERROR_DATA_CORRUPT:        return "data corrupt";
+    case GSL_ERROR_CONTENT_GLITCH:      return "data glitch (junk) detected";
     case GSL_ERROR_CODEC_FAILURE:	return "CODEC failure";
     default:				return NULL;
     }

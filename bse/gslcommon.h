@@ -105,6 +105,7 @@ void		gsl_ring_free		(GslRing	*head);
 #define	GSL_MSG_NOTIFY		"Notify"
 #define	GSL_MSG_DATA_CACHE	"DataCache"
 #define	GSL_MSG_DATA_HANDLE	"DataHandle"
+#define	GSL_MSG_LOADER		"GslLoader"
 void		gsl_message_send	(const gchar   *reporter, /* GSL_MSG_* */
 					 GslErrorType	error,	  /* maybe 0 */
 					 const gchar   *messagef,

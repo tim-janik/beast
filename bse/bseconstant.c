@@ -108,7 +108,7 @@ bse_constant_class_init (BseConstantClass *class)
     {
       gchar *string, *name, *group = g_strdup_printf ("Constant Output %u", i);
 
-      string = g_strdup_printf ("value%u", i);
+      string = g_strdup_printf ("value_%u", i);
       name = g_strdup_printf ("Value [float]");
       bse_object_class_add_param (object_class, group, PARAM_VALUE + (i - 1) * 3,
 				  bse_param_spec_float (string, name, NULL,
@@ -116,7 +116,7 @@ bse_constant_class_init (BseConstantClass *class)
 							BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
       g_free (string);
       g_free (name);
-      string = g_strdup_printf ("frequency%u", i);
+      string = g_strdup_printf ("frequency_%u", i);
       name = g_strdup_printf ("Frequency");
       bse_object_class_add_param (object_class, group, PARAM_FREQ + (i - 1) * 3,
 				  bse_param_spec_float (string, name, NULL,
@@ -125,7 +125,7 @@ bse_constant_class_init (BseConstantClass *class)
 							BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
       g_free (string);
       g_free (name);
-      string = g_strdup_printf ("note%u", i);
+      string = g_strdup_printf ("note_%u", i);
       name = g_strdup_printf ("Note");
       bse_object_class_add_param (object_class, group, PARAM_NOTE + (i - 1) * 3,
 				  bse_param_spec_note (string, name, NULL,
@@ -172,30 +172,30 @@ bse_constant_set_property (GObject      *object,
 	case PARAM_VALUE - PARAM_VALUE:
 	  constant->constants[n] = g_value_get_float (value);
 	  bse_constant_update_modules (constant, NULL);
-	  prop = g_strdup_printf ("frequency%u", n + 1);
+	  prop = g_strdup_printf ("frequency_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
-	  prop = g_strdup_printf ("note%u", n + 1);
+	  prop = g_strdup_printf ("note_%u", n + 1);
           g_object_notify (object, prop);
 	  g_free (prop);
 	  break;
 	case PARAM_FREQ - PARAM_VALUE:
 	  constant->constants[n] = BSE_VALUE_FROM_FREQ (g_value_get_float (value));
           bse_constant_update_modules (constant, NULL);
-          prop = g_strdup_printf ("value%u", n + 1);
+          prop = g_strdup_printf ("value_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
-	  prop = g_strdup_printf ("note%u", n + 1);
+	  prop = g_strdup_printf ("note_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
 	  break;
 	case PARAM_NOTE - PARAM_VALUE:
 	  constant->constants[n] = BSE_VALUE_FROM_FREQ (bse_note_to_freq (bse_value_get_note (value)));
           bse_constant_update_modules (constant, NULL);
-	  prop = g_strdup_printf ("value%u", n + 1);
+	  prop = g_strdup_printf ("value_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
-          prop = g_strdup_printf ("frequency%u", n + 1);
+          prop = g_strdup_printf ("frequency_%u", n + 1);
 	  g_object_notify (object, prop);
 	  g_free (prop);
 	  break;

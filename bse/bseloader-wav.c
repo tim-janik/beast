@@ -39,34 +39,14 @@ typedef guint16 Word;
 #define	GSL_DEBUG_LOADER	g_message
 
 
-/* --- structures --- */
+
+/* --- functions --- */
 typedef struct
 {
   DWord main_chunk;     /* 'RIFF', big endian as int */
   DWord file_length;	/* file length */
   DWord chunk_type;     /* 'WAVE', big endian as int */
 } WavHeader;
-
-typedef struct
-{
-  DWord sub_chunk;              /* 'fmt ', bg endian as int */
-  DWord length;                 /* sub chunk length, must be 16 */
-  Word  format;                 /* 1 for PCM */
-  Word  n_channels;             /* 1 = Mono, 2 = Stereo */
-  DWord sample_freq;
-  DWord byte_per_second;
-  Word  byte_per_sample;        /* 1 = 8bit, 2 = 16bit */
-  Word  bit_per_sample;         /* 8, 12 or 16 */
-} FmtHeader;
-
-typedef struct
-{
-  DWord data_chunk;             /* 'data', big endian as int */
-  DWord data_length;
-} DataHeader;
-
-
-/* --- functions --- */
 static GslErrorType
 read_header (gint       fd,
              WavHeader *header)
@@ -109,6 +89,17 @@ read_header (gint       fd,
   return GSL_ERROR_NONE;
 }
 
+typedef struct
+{
+  DWord sub_chunk;              /* 'fmt ', bg endian as int */
+  DWord length;                 /* sub chunk length, must be 16 */
+  Word  format;                 /* 1 for PCM */
+  Word  n_channels;             /* 1 = Mono, 2 = Stereo */
+  DWord sample_freq;
+  DWord byte_per_second;
+  Word  byte_per_sample;        /* 1 = 8bit, 2 = 16bit */
+  Word  bit_per_sample;         /* 8, 12 or 16 */
+} FmtHeader;
 static GslErrorType
 read_fmt_header (gint       fd,
                  FmtHeader *header)
@@ -142,15 +133,15 @@ read_fmt_header (gint       fd,
       GSL_DEBUG_LOADER ("unmatched token 'fmt '");
       return GSL_ERROR_FORMAT_UNKNOWN;
     }
-  if (header->length != 16 || header->n_channels < 1)
-    {
-      GSL_DEBUG_LOADER ("invalid format length (%u) or n_channels (%u)", header->length, header->n_channels);
-      return GSL_ERROR_FORMAT_INVALID;
-    }
-  if (header->format != 1 || header->n_channels > 2)
+  if (header->format != 1 || header->n_channels > 2 || header->n_channels < 1)
     {
       GSL_DEBUG_LOADER ("invalid format (%u) or n_channels (%u)", header->format, header->n_channels);
       return GSL_ERROR_FORMAT_UNKNOWN;
+    }
+  if (header->length < 16)
+    {
+      GSL_DEBUG_LOADER ("WAVE header too short (%u)", header->length);
+      return GSL_ERROR_FORMAT_INVALID;
     }
   if (header->sample_freq < 1378 || header->sample_freq > 96000)
     {
@@ -171,10 +162,39 @@ read_fmt_header (gint       fd,
 			header->byte_per_sample, (header->bit_per_sample + 7) / 8 * header->n_channels);
       return GSL_ERROR_FORMAT_INVALID;
     }
+  if (header->length > 16)
+    {
+      guint n;
+
+      GSL_DEBUG_LOADER ("WAVE header too long (%u)", header->length);
+
+      n = header->length - 16;
+      while (n)
+	{
+	  guint8 junk[64];
+	  guint l = MIN (n, 64);
+
+	  l = read (fd, junk, l);
+	  if (l < 1 || l > n)
+	    {
+	      GSL_DEBUG_LOADER ("failed to read FmtHeader");
+	      return GSL_ERROR_IO;
+	    }
+	  n -= l;
+	}
+
+      gsl_message_send (GSL_MSG_LOADER, GSL_ERROR_CONTENT_GLITCH,
+			"skipping %u bytes of junk in WAVE header", header->length - 16);
+    }
 
   return GSL_ERROR_NONE;
 }
 
+typedef struct
+{
+  DWord data_chunk;             /* 'data', big endian as int */
+  DWord data_length;
+} DataHeader;
 static GslErrorType
 read_data_header (gint        fd,
                   DataHeader *header,
@@ -200,7 +220,18 @@ read_data_header (gint        fd,
   /* validation */
   if (header->data_chunk != ('d' << 24 | 'a' << 16 | 't' << 8 | 'a'))
     {
-      GSL_DEBUG_LOADER ("unmatched token 'data'");
+      guchar chunk[5] = {
+	header->data_chunk >> 24,
+	(header->data_chunk >> 16) & 0xff,
+	(header->data_chunk >> 8) & 0xff,
+	header->data_chunk & 0xff,
+	0,
+      };
+      gchar *esc = g_strescape (chunk, NULL);
+      
+      GSL_DEBUG_LOADER ("unmatched token 'data' (found '%s')", esc);
+      g_free (esc);
+
       return GSL_ERROR_FORMAT_UNKNOWN;
     }
   if (header->data_length < 1 || header->data_length % byte_alignment != 0)

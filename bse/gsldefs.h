@@ -76,6 +76,7 @@ typedef enum    /*< skip >*/
   GSL_ERROR_FORMAT_INVALID,
   GSL_ERROR_FORMAT_UNKNOWN,
   GSL_ERROR_DATA_CORRUPT,
+  GSL_ERROR_CONTENT_GLITCH,
   /* miscellaneous errors */
   GSL_ERROR_CODEC_FAILURE,
   GSL_ERROR_LAST        /* administrative */
