@@ -41,6 +41,28 @@ static gulong viewable_changed_id = 0;
 
 
 /* --- functions --- */
+#if     GTK_CHECK_VERSION (2, 4, 0)
+static gboolean
+widget_ancestry_mapped (GtkWidget *widget)
+{
+  while (widget)
+    {
+      if (!GTK_WIDGET_MAPPED (widget))
+        return FALSE;
+      widget = widget->parent;
+    }
+  return TRUE;
+}
+
+static gboolean
+gxk_widget_real_can_activate_accel (GtkWidget *widget, // GTKFIX: #145270, FIXME: remove this
+                                    guint      signal_id)
+{
+  /* widgets must be onscreen for accels to take effect */
+  return GTK_WIDGET_IS_SENSITIVE (widget) && GTK_WIDGET_DRAWABLE (widget) && gdk_window_is_viewable (widget->window) && widget_ancestry_mapped (widget);
+}
+#endif
+
 void
 _gxk_init_utils (void)
 {
@@ -55,6 +77,10 @@ _gxk_init_utils (void)
 				       NULL, NULL,
 				       gtk_marshal_VOID__VOID,
 				       G_TYPE_NONE, 0, NULL);
+#if     GTK_CHECK_VERSION (2, 4, 0)
+  GtkWidgetClass *widget_class = gtk_type_class (GTK_TYPE_WIDGET);
+  widget_class->can_activate_accel = gxk_widget_real_can_activate_accel;
+#endif
 }
 
 /**

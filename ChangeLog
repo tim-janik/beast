@@ -1,3 +1,10 @@
+Thu Jul  1 23:00:03 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.c: work around widget_class->can_activate_accel
+	not checking a widget's MAPPED state by providing our own default handler
+	gxk_widget_real_can_activate_accel() (non-kosher, should be removed as
+	soon as gtk is fixed).
+
 Thu Jul  1 21:52:59 2004  Tim Janik  <timj@gtk.org>
 
 	* library/skins/*.skin: added pattern editor skin setup.

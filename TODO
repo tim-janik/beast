@@ -4,7 +4,6 @@ FIXMES:
 - pattern editor: add note LENGTH editing!
 - pattern editor: keep focus line (i.e. tick) across zoom changes
 - pattern editor: delete line and insert line (Del Ins) implementations
-- pattern editor: nth-line background shading
 - piano roll: undo-group movements while button is pressed 
 - piano roll: drag-and-drop should preserve channel numbers if possible
 - track view: when middle button is pressed to position song pointer, set keep-pos-til-song-start flag
