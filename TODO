@@ -1,4 +1,6 @@
 FIXMES:
+- implement (GUI for) locked properties
+- creating 3 SongBusses and openeing a new view shows 6 song busses, saving, reloading shows 12 busses...
 - save loop coordinbates
 - when loading/merging bse files, make sure all orphan parts are in a new muted track and delete part-item-view
 - implement ordinary save functionality
@@ -19,7 +21,6 @@ FIXMES:
 - take a look at the cdrecord source for their __dtoa() implementation
 - if mmap() is available, write autosave.bse to it every couple minutes (no need to flush unless crashes take the data with them)
 - make View/Rebuild --devel or -:d only
-- provide "+"/"-" buttons for "path" property editors with own tooltips
 - fix continue_after_deletion in gslwavetool.c for i==n_chunks-1
 - beast depends on texithequemacros.texi but texitheque doesn't install it
 - add tooltip and Filedialog-button to "WAVE File" entry
@@ -43,7 +44,6 @@ FIXMES:
 - evaluate elimination of seqid
 - implement auto-save feature
 - undo across midi file import is broken
-- implement (GUI for) locked properties
 - add clone tool for csynths
 - fix undo for: BseDataPocket
 - BseCategories need to provide an untranslated version (for menu paths)
