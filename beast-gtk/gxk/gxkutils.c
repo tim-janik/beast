@@ -152,10 +152,8 @@ _gxk_init_utils (void)
 				       NULL, NULL,
 				       gtk_marshal_VOID__VOID,
 				       G_TYPE_NONE, 0, NULL);
-#if     GTK_CHECK_VERSION (2, 4, 0)
   GtkWidgetClass *widget_class = gtk_type_class (GTK_TYPE_WIDGET);
   widget_class->can_activate_accel = gxk_widget_real_can_activate_accel;
-#endif
 
   /* patch up scrolling+focus behaviour */
   g_type_class_unref (g_type_class_ref (GTK_TYPE_CONTAINER));   /* create static class */

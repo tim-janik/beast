@@ -1,5 +1,6 @@
 FIXMES:	(release-critical)
 - add extra flag to GxkDialog to prevent Escape, use it only for bstapp
+- close piano roll on Escape
 - sequencer: export asserts
 - gslmath->bsemath
 - sequencer: dtoull
@@ -21,14 +22,12 @@ FIXMES:	(release-critical)
 - update gtk/glib dependency to 2.4 in README and configure.in
 - add srcdir==builddir requirement for CVS builds to download area
 TODO:
-- SfiLogger(_("Question"), key): make key optional, remove logger from sfi_error, introduce sfi_gui_warn or similar
 - add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - add executable versioning to sfidl 
 - davsyndrum needs gate-out (or done)
 - beast --debug=all --no-debug=comport doesn't disable comport messages
 - revisit bse_object_lock()
 - rename cast() to convert()
-- close piano roll on Escape
 - when starting to record events in automation, make sure an event at stamp=0 exists for default setup
 - add controller dialog popup for tracks to alter sliders corresponding to midi controls
 - implement part copying
