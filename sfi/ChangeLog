@@ -1,3 +1,13 @@
+Fri Oct 15 23:59:46 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: 
+	sfi_pointer_cmp(): renamed from sfi_compare_pointers(), changed users.
+	sfi_ring_uniq(): made this an ring modifying rather than copying
+	function. this plugs some leaks in current function usages.
+	sfi_ring_copy_uniq(): copy ring and remove duplicates.
+
+	* testsfi.c: adapt to sfi_ring_uniq() modifying inplace now.
+
 Wed Oct 13 18:50:19 2004  Tim Janik  <timj@gtk.org>
 
 	* sfithreads.[hc]: reworked hazard pointer guard API.

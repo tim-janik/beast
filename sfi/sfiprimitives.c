@@ -1315,9 +1315,9 @@ sfi_rec_get_proxy (SfiRec      *rec,
 
 /* --- basic comparisons --- */
 gint
-sfi_compare_pointers (gconstpointer   value1,
-                      gconstpointer   value2,
-                      gpointer        dummy)
+sfi_pointer_cmp (gconstpointer   value1,
+                 gconstpointer   value2,
+                 gpointer        dummy)
 {
   const char *p1 = value1;
   const char *p2 = value2;
@@ -1858,9 +1858,19 @@ sfi_ring_sort (SfiRing        *head,
 }
 
 SfiRing* /* eliminates duplicate nodes */
-sfi_ring_uniq (const SfiRing  *sorted_ring1,
+sfi_ring_uniq (SfiRing        *sorted_ring1,
                SfiCompareFunc  cmp,
                gpointer        data)
+{
+  const SfiRing *ring = sfi_ring_copy_uniq (sorted_ring1, cmp, data);
+  sfi_ring_free (sorted_ring1);
+  return ring;
+}
+
+SfiRing* /* eliminates duplicate nodes */
+sfi_ring_copy_uniq (const SfiRing  *sorted_ring1,
+                    SfiCompareFunc  cmp,
+                    gpointer        data)
 {
   const SfiRing *r1 = sorted_ring1;
   SfiRing *r2 = NULL;

@@ -251,7 +251,7 @@ SfiProxy     sfi_rec_get_proxy	(SfiRec		*rec,
 typedef gint (*SfiCompareFunc)          (gconstpointer   value1,
                                          gconstpointer   value2,
                                          gpointer        data);
-gint     sfi_compare_pointers           (gconstpointer   value1,
+gint     sfi_pointer_cmp                (gconstpointer   value1,
                                          gconstpointer   value2,
                                          gpointer        dummy);
 
@@ -335,10 +335,13 @@ SfiRing* sfi_ring_merge_sorted          (SfiRing        *head1,
 SfiRing* sfi_ring_sort                  (SfiRing        *head,
                                          SfiCompareFunc  cmp,
                                          gpointer        data);
+SfiRing* sfi_ring_uniq                  (SfiRing        *sorted_ring1,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data);
 SfiRing* sfi_ring_reorder               (SfiRing        *unordered_ring,
                                          const SfiRing  *new_ring_order);
 /* ring-copying cmp-based operations */
-SfiRing* sfi_ring_uniq                  (const SfiRing  *sorted_ring1,
+SfiRing* sfi_ring_copy_uniq             (const SfiRing  *sorted_ring1,
                                          SfiCompareFunc  cmp,
                                          gpointer        data);
 SfiRing* sfi_ring_union                 (const SfiRing  *sorted_set1,

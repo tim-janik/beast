@@ -867,73 +867,72 @@ test_sfi_ring (void)
   r1= sfi_ring_append (r1, (void*) 13);
   r1= sfi_ring_append (r1, (void*) 18);
   ASSERT (sfi_ring_length (r1) == 5);
-  ASSERT (sfi_ring_equals (r1, r1, sfi_compare_pointers, NULL));
+  ASSERT (sfi_ring_equals (r1, r1, sfi_pointer_cmp, NULL));
 
   d = sfi_ring_append (d, (void*) 13);
   d = sfi_ring_append (d, (void*) 7);
   d = sfi_ring_append (d, (void*) 18);
   d = sfi_ring_append (d, (void*) 3);
   d = sfi_ring_append (d, (void*) 8);
-  ASSERT (sfi_ring_equals (d, d, sfi_compare_pointers, NULL));
-  ASSERT (sfi_ring_min (d, sfi_compare_pointers, NULL) == (void*) 3);
-  ASSERT (sfi_ring_max (d, sfi_compare_pointers, NULL) == (void*) 18);
+  ASSERT (sfi_ring_equals (d, d, sfi_pointer_cmp, NULL));
+  ASSERT (sfi_ring_min (d, sfi_pointer_cmp, NULL) == (void*) 3);
+  ASSERT (sfi_ring_max (d, sfi_pointer_cmp, NULL) == (void*) 18);
 
-  ASSERT (sfi_ring_equals (r1, d, sfi_compare_pointers, NULL) == FALSE);
-  d = sfi_ring_sort (d, sfi_compare_pointers, NULL);
-  ASSERT (sfi_ring_equals (r1, d, sfi_compare_pointers, NULL));
-  ASSERT (sfi_ring_includes (r1, d, sfi_compare_pointers, NULL));
-  ASSERT (sfi_ring_includes (d, r1, sfi_compare_pointers, NULL));
+  ASSERT (sfi_ring_equals (r1, d, sfi_pointer_cmp, NULL) == FALSE);
+  d = sfi_ring_sort (d, sfi_pointer_cmp, NULL);
+  ASSERT (sfi_ring_equals (r1, d, sfi_pointer_cmp, NULL));
+  ASSERT (sfi_ring_includes (r1, d, sfi_pointer_cmp, NULL));
+  ASSERT (sfi_ring_includes (d, r1, sfi_pointer_cmp, NULL));
   sfi_ring_free (d);
 
   r2 = sfi_ring_append (r2, (void*) 4);
   r2 = sfi_ring_append (r2, (void*) 7);
   r2 = sfi_ring_append (r2, (void*) 13);
   ASSERT (sfi_ring_length (r2) == 3);
-  d = sfi_ring_sort (sfi_ring_copy (r2), sfi_compare_pointers, NULL);
-  ASSERT (sfi_ring_equals (r2, d, sfi_compare_pointers, NULL));
-  ASSERT (sfi_ring_equals (r1, r2, sfi_compare_pointers, NULL) == FALSE);
-  ASSERT (sfi_ring_includes (r1, r2, sfi_compare_pointers, NULL) == FALSE);
+  d = sfi_ring_sort (sfi_ring_copy (r2), sfi_pointer_cmp, NULL);
+  ASSERT (sfi_ring_equals (r2, d, sfi_pointer_cmp, NULL));
+  ASSERT (sfi_ring_equals (r1, r2, sfi_pointer_cmp, NULL) == FALSE);
+  ASSERT (sfi_ring_includes (r1, r2, sfi_pointer_cmp, NULL) == FALSE);
   sfi_ring_free (d);
 
-  d = sfi_ring_difference (r1, r2, sfi_compare_pointers, NULL);
+  d = sfi_ring_difference (r1, r2, sfi_pointer_cmp, NULL);
   ASSERT (sfi_ring_pop_head (&d) == (void*) 3);
   ASSERT (sfi_ring_pop_head (&d) == (void*) 8);
   ASSERT (sfi_ring_pop_head (&d) == (void*) 18);
   ASSERT (d == NULL);
 
-  d = sfi_ring_symmetric_difference (r1, r2, sfi_compare_pointers, NULL);
+  d = sfi_ring_symmetric_difference (r1, r2, sfi_pointer_cmp, NULL);
   ASSERT (sfi_ring_pop_head (&d) == (void*) 3);
   ASSERT (sfi_ring_pop_head (&d) == (void*) 4);
   ASSERT (sfi_ring_pop_head (&d) == (void*) 8);
   ASSERT (sfi_ring_pop_head (&d) == (void*) 18);
   ASSERT (d == NULL);
 
-  SfiRing *t1 = sfi_ring_symmetric_difference (r1, r2, sfi_compare_pointers, NULL);
-  SfiRing *t2 = sfi_ring_intersection (r1, r2, sfi_compare_pointers, NULL);
-  d = sfi_ring_intersection (t1, t2, sfi_compare_pointers, NULL);
+  SfiRing *t1 = sfi_ring_symmetric_difference (r1, r2, sfi_pointer_cmp, NULL);
+  SfiRing *t2 = sfi_ring_intersection (r1, r2, sfi_pointer_cmp, NULL);
+  d = sfi_ring_intersection (t1, t2, sfi_pointer_cmp, NULL);
   ASSERT (d == NULL);
-  d = sfi_ring_union (t1, t2, sfi_compare_pointers, NULL);
-  ASSERT (sfi_ring_includes (d, t1, sfi_compare_pointers, NULL));
-  ASSERT (sfi_ring_includes (d, t2, sfi_compare_pointers, NULL));
+  d = sfi_ring_union (t1, t2, sfi_pointer_cmp, NULL);
+  ASSERT (sfi_ring_includes (d, t1, sfi_pointer_cmp, NULL));
+  ASSERT (sfi_ring_includes (d, t2, sfi_pointer_cmp, NULL));
   sfi_ring_free (t1);
   sfi_ring_free (t2);
-  ASSERT (sfi_ring_includes (d, r1, sfi_compare_pointers, NULL));
-  ASSERT (sfi_ring_includes (d, r2, sfi_compare_pointers, NULL));
+  ASSERT (sfi_ring_includes (d, r1, sfi_pointer_cmp, NULL));
+  ASSERT (sfi_ring_includes (d, r2, sfi_pointer_cmp, NULL));
 
-  d = sfi_ring_union (r1, r2, sfi_compare_pointers, NULL);
+  d = sfi_ring_union (r1, r2, sfi_pointer_cmp, NULL);
   ASSERT (sfi_ring_length (d) == 6);
   t1 = r1, t2 = d;
-  sfi_ring_mismatch (&t1, &t2, sfi_compare_pointers, NULL);
+  sfi_ring_mismatch (&t1, &t2, sfi_pointer_cmp, NULL);
   ASSERT (t1->data == (void*) 7);
   ASSERT (t2->data == (void*) 4);
   t2 = sfi_ring_concat (sfi_ring_copy (r1), sfi_ring_copy (r2));
   ASSERT (sfi_ring_length (t2) == 8);
-  t2 = sfi_ring_sort (t2, sfi_compare_pointers, NULL);
+  t2 = sfi_ring_sort (t2, sfi_pointer_cmp, NULL);
   ASSERT (sfi_ring_length (t2) == 8);
-  t1 = sfi_ring_uniq (t2, sfi_compare_pointers, NULL);
+  t1 = sfi_ring_uniq (t2, sfi_pointer_cmp, NULL);
   ASSERT (sfi_ring_length (t1) == 6);
-  sfi_ring_free (t2);
-  ASSERT (sfi_ring_equals (d, t1, sfi_compare_pointers, NULL));
+  ASSERT (sfi_ring_equals (d, t1, sfi_pointer_cmp, NULL));
   sfi_ring_free (t1);
   sfi_ring_free (d);
 
@@ -946,11 +945,11 @@ test_sfi_ring (void)
   r1 = sfi_ring_append (r1, (void*) 4);
   r1 = sfi_ring_append (r1, (void*) 8);
   r1 = sfi_ring_append (r1, (void*) 1);
-  r2 = sfi_ring_sort (sfi_ring_copy (r1), sfi_compare_pointers, NULL);
+  r2 = sfi_ring_sort (sfi_ring_copy (r1), sfi_pointer_cmp, NULL);
   t1 = sfi_ring_reorder (sfi_ring_copy (r2), r1);
   if (0)
     print_rings_side_by_side (t1, r1);
-  ASSERT (sfi_ring_equals (t1, r1, sfi_compare_pointers, NULL));
+  ASSERT (sfi_ring_equals (t1, r1, sfi_pointer_cmp, NULL));
   sfi_ring_free (t1);
   r2 = sfi_ring_remove (r2, (void*) 4);
   r2 = sfi_ring_append (r2, (void*) 9);
@@ -959,7 +958,7 @@ test_sfi_ring (void)
   r1 = sfi_ring_append (r1, (void*) 9);
   if (0)
     print_rings_side_by_side (t1, r1);
-  ASSERT (sfi_ring_equals (t1, r1, sfi_compare_pointers, NULL));
+  ASSERT (sfi_ring_equals (t1, r1, sfi_pointer_cmp, NULL));
   sfi_ring_free (r1);
   sfi_ring_free (r2);
   sfi_ring_free (t1);
@@ -1003,7 +1002,7 @@ test_sfi_ring (void)
   r2 = sfi_ring_append (r2, (void*) 0x02);
   r2 = sfi_ring_append (r2, (void*) 0x03);
   r1 = sfi_ring_reorder (r1, r2);
-  ASSERT (sfi_ring_equals (r1, r2, sfi_compare_pointers, NULL));
+  ASSERT (sfi_ring_equals (r1, r2, sfi_pointer_cmp, NULL));
   sfi_ring_free (r1);
   sfi_ring_free (r2);
 
