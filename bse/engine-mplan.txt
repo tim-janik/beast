@@ -119,43 +119,45 @@ Scheduling:
 * within leaf-levels, processing is determined by a per-node
   processing costs hint (cheap, normal, expensive)
 
-Suspension and Sample accurate Activation
+Suspending and sample accurate activation
 -----------------------------------------
 In music synthesis practice, large branches of a flow-graph are
 often unused, e.g. a certain branch might make up a logical voice
 which is muted for long times. To save processing power, nodes
 can be suspended and resumed at arbitrary times (not necessarily
-block boundaries), causing their processing method to be skipped
-and its output buffers to be filled up with zeros.
+block boundaries). Being suspended causes a node's processing method
+to be skipped and its output buffers to be filled up with zeros.
 Ordinary connection/disconnection of nodes is not sufficient to
 fullfill this purpose, because connection changes can only happen
 at block boundaries, while sample accurate timing is required
 (for voice activation), and nodes which hold internal state usually
 need to be reset (by means of calling their reset() method) upon
 resumption.
-Suspension of a node automatically suspends it's input nodes unless
+Suspending a node automatically suspends its input nodes unless
 they have outputs connected to other nodes which are not suspended.
 Due to the structural nature of connections within branches
-(connections may form cycles or rhomboids of nodes), two recursion
-passes are required to propagate suspension state through a branch.
-In order to determine suspension state of a node for which an
-output node is known to have been suspended (this output node doesn't
-need to be directly connected), all directly connected output nodes
-need to be examined and must contain updated suspension state
-already. It is thus mandatory to maintain information about the
-validity of a node's suspension state which results in the
-requirement for a second recursion pass to propagate suspension
-state.
-Upon the first pass, all possibly affected nodes, these are all
-inputs of the node which changed suspension state, are flagged to
-require updates of their suspension state.
-During the second pass, a node's suspension state is determined
-from the suspension state of the nodes connected to its outputs
-(which may first need updating themselves).
+(connections may form cycles or rhomboids of nodes), two propagation
+passes are required to propagate the activation (suspend) time
+through a branch.
+In order to determine the activation time of a node for which an output
+node is known to have been suspended (this output node doesn't need to 
+be directly connected), all directly connected output nodes need to be
+examined and must contain updated activation time stamps already.
+It is thus mandatory to maintain information about the validity of a
+node's activation time stamp which results in the requirement for
+a second recursion pass.
+Upon the first pass, all possibly affected nodes, these are all inputs
+of the node which changed activation time, are flagged to require
+updates of their activation time.
+During the second pass, a node's activation time is determined from the
+activation time of the nodes connected to its outputs (which may first
+need updating themselves).
 Various optimizations are possible during the two recursion passes,
-e.g. by allowing suspension only at block boundaries, by integrating
-one recursion pass with other recursive tasks on the graph
-(scheduling), and by doing various flag tests during the passes.
+e.g. by allowing suspending only at block boundaries or by integrating
+one recursion pass with other recursive tasks on the graph (scheduling).
+Node should not be activated or suspended due to a cyclic connection
+to one of their outputs, so to determine the activation time of a node
+cyclic connection paths must be ignored.
 
 Virtual modules
 ---------------
@@ -165,12 +167,12 @@ Virtual modules are not scheduled and thus don't consume processor
 cycles during calculation phase. Their input/output streams are
 mere reconnection points for streams of real processing modules.
 As virtual modules are not part of the active calculation schedule,
-flow and suspension jobs may not be queued on them, but input recursive
-suspension propagation (and thus indirect resumption) propagates
-correctly across virtual modules (though not seperately along their
-input/output streams).
-To let automatic suspension state propagate per-stream, multiple
-virtual modules can be used.
+flow and suspend jobs may not be queued on them, but input recursive
+suspend/activation propagation (and thus indirect resumption)
+propagates correctly across virtual modules (though not seperately
+along their input/output streams).
+To let activation time propagate per-stream, multiple virtual
+modules can be used.
 
 Deferred Node Implementation Considerations:
 --------------------------------------------
@@ -254,17 +256,14 @@ The engine provides API entry points to:
 
 TODO:
 =====
-- virtual connection nodes, these are identified during scheduling
-  and are skipped upon processing (gsl_module_new_virtual() simply
-  creates a pass-through node currently)
 - self-input cycles need to be resolved in parent as well
 - needs description of pollfd/callback jobs
 - load control for slave threads
-- the suspension state update logic breaks (and with that proper
-  invokation of ->reset()) for cycles across more than one node and
-  for inputs of unconnected non-consumer nodes which have only
-  suspended inputs besides the dead output branch.
 
+Sep 06 2003	Tim Janik
+	* introduce time stamps indicating suspend state
+	  of a node (activation time)
+	* update TODO
 Jul 15 2002	Tim Janik
 	* describe virtual modules
 Jun 30 2002	Tim Janik

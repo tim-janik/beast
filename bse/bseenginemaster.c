@@ -119,18 +119,18 @@ remove_consumer (EngineNode *node)
 }
 
 static void
-recurse_flag_suspension_update (EngineNode *node)
+propagate_update_suspend (EngineNode *node)
 {
-  if (!node->local_suspend && !node->suspension_update)
+  if (!node->update_suspend)
     {
       guint i, j;
-      node->suspension_update = TRUE;
+      node->update_suspend = TRUE;
       for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
 	if (node->inputs[i].src_node)
-	  recurse_flag_suspension_update (node->inputs[i].src_node);
+	  propagate_update_suspend (node->inputs[i].src_node);
       for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
 	for (i = 0; i < node->module.jstreams[j].jcount; i++)
-	  recurse_flag_suspension_update (node->jinputs[j][i].src_node);
+	  propagate_update_suspend (node->jinputs[j][i].src_node);
     }
 }
 
@@ -155,7 +155,7 @@ master_idisconnect_node (EngineNode *node,
   NODE_FLAG_RECONNECT (node);
   NODE_FLAG_RECONNECT (src_node);
   /* update suspension state of input */
-  recurse_flag_suspension_update (src_node);
+  propagate_update_suspend (src_node);
   /* add to consumer list */
   if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
     add_consumer (src_node);
@@ -184,7 +184,7 @@ master_jdisconnect_node (EngineNode *node,
   NODE_FLAG_RECONNECT (node);
   NODE_FLAG_RECONNECT (src_node);
   /* update suspension state of input */
-  recurse_flag_suspension_update (src_node);
+  propagate_update_suspend (src_node);
   /* add to consumer list */
   if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
     add_consumer (src_node);
@@ -213,6 +213,7 @@ master_process_job (GslJob *job)
       EngineNode *node, *src_node;
       Poll *poll, *poll_last;
       Timer *timer;
+      guint64 stamp;
       guint istream, jstream, ostream, con;
       EngineFlowJob *fjob;
       gboolean was_consumer;
@@ -224,10 +225,11 @@ master_process_job (GslJob *job)
       _engine_mnl_integrate (node);
       if (ENGINE_NODE_IS_CONSUMER (node))
 	add_consumer (node);
-      node->counter = 0;
+      node->counter = GSL_TICK_STAMP;
       NODE_FLAG_RECONNECT (node);
-      node->outputs_suspended = TRUE;
-      node->suspension_update = TRUE;
+      node->local_active = 0;   /* by default not suspended */
+      node->update_suspend = TRUE;
+      node->needs_reset = node->module.klass->reset != NULL;
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_KILL_INPUTS:
@@ -298,16 +300,27 @@ master_process_job (GslJob *job)
 	}
       break;
     case ENGINE_JOB_SUSPEND:
-      node = job->data.node;
-      JOB_DEBUG ("suspend(%p)", node);
+      node = job->data.tick.node;
+      stamp = job->data.tick.stamp;
+      JOB_DEBUG ("suspend(%p,%llu)", node, stamp);
       g_return_if_fail (node->integrated == TRUE);
-      if (!node->local_suspend)
+      if (node->local_active < stamp)
 	{
-	  /* order matters for the next two lines, because
-	   * recurse_flag_suspension_update() aborts on local_suspend==TRUE
-	   */
-	  recurse_flag_suspension_update (node);
-	  node->local_suspend = TRUE;
+	  propagate_update_suspend (node);
+	  node->local_active = stamp;
+	  node->needs_reset = node->module.klass->reset != NULL;
+	  master_need_reflow |= TRUE;
+	}
+      break;
+    case ENGINE_JOB_RESUME:
+      node = job->data.tick.node;
+      stamp = job->data.tick.stamp;
+      JOB_DEBUG ("resume(%p,%llu)", node, stamp);
+      g_return_if_fail (node->integrated == TRUE);
+      if (node->local_active > stamp)
+	{
+	  propagate_update_suspend (node);
+	  node->local_active = stamp;
 	  node->needs_reset = node->module.klass->reset != NULL;
 	  master_need_reflow |= TRUE;
 	}
@@ -332,7 +345,7 @@ master_process_job (GslJob *job)
       NODE_FLAG_RECONNECT (node);
       NODE_FLAG_RECONNECT (src_node);
       /* update suspension state of input */
-      recurse_flag_suspension_update (src_node);
+      propagate_update_suspend (src_node);
       if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
       master_need_reflow |= TRUE;
@@ -359,7 +372,7 @@ master_process_job (GslJob *job)
       NODE_FLAG_RECONNECT (node);
       NODE_FLAG_RECONNECT (src_node);
       /* update suspension state of input */
-      recurse_flag_suspension_update (src_node);
+      propagate_update_suspend (src_node);
       if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
       master_need_reflow |= TRUE;
@@ -396,6 +409,7 @@ master_process_job (GslJob *job)
       node = job->data.node;
       JOB_DEBUG ("reset(%p)", node);
       g_return_if_fail (node->integrated == TRUE);
+      node->counter = GSL_TICK_STAMP;
       if (node->module.klass->reset)
         node->module.klass->reset (&node->module);
       node->needs_reset = FALSE;
@@ -404,6 +418,7 @@ master_process_job (GslJob *job)
       node = job->data.access.node;
       JOB_DEBUG ("access node(%p): %p(%p)", node, job->data.access.access_func, job->data.access.data);
       g_return_if_fail (node->integrated == TRUE);
+      node->counter = GSL_TICK_STAMP;
       job->data.access.access_func (&node->module, job->data.access.data);
       break;
     case ENGINE_JOB_FLOW_JOB:
@@ -545,46 +560,6 @@ master_tick_stamp_inc (void)
     }
 }
 
-static void
-propagate_resume (EngineNode *node)
-{
-  guint i, j;
-
-  /* though resumption propagation can only work within scheduled
-   * node branches (since non-scheduled nodes don't have properly
-   * updated suspension state), we use src_node (not real_node) and
-   * jcount (not n_connections) for the propagation walk, in order
-   * to ensure that virtual nodes behave like normal nodes regarding
-   * suspension propagation (they cannot be suspended/resumed locally
-   * though).
-   */
-  g_return_if_fail (!ENGINE_NODE_IS_SUSPENDED (node));
-
-  for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
-    {
-      EngineNode *src_node = node->inputs[i].src_node;
-      if (src_node && src_node->outputs_suspended)
-	{
-	  src_node->outputs_suspended = FALSE;
-	  src_node->needs_reset = src_node->module.klass->reset != NULL;
-	  if (!ENGINE_NODE_IS_SUSPENDED (src_node))
-	    propagate_resume (src_node);
-	}
-    }
-  for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
-    for (i = 0; i < node->module.jstreams[j].n_connections; i++)
-      {
-	EngineNode *src_node = node->jinputs[j][i].src_node;
-	if (src_node->outputs_suspended)
-	  {
-	    src_node->outputs_suspended = FALSE;
-	    src_node->needs_reset = src_node->module.klass->reset != NULL;
-	    if (!ENGINE_NODE_IS_SUSPENDED (src_node))
-	      propagate_resume (src_node);
-	  }
-      }
-}
-
 static inline guint64
 master_handle_flow_jobs (EngineNode *node,
 			 guint64     max_tick)
@@ -597,21 +572,12 @@ master_handle_flow_jobs (EngineNode *node,
     do
       {
 	FJOB_DEBUG ("FJob (%s) for (%p:s=%u) at:%lld current:%lld\n",
-		    fjob->fjob_id == ENGINE_FLOW_JOB_RESUME ? "resume" : "access",
+		    fjob->fjob_id == 0/*FIXME:ENGINE_FLOW_JOB_RESUME*/ ? "resume" : "access",
 		    node, node->sched_tag, fjob->any.tick_stamp, node->counter);
 	switch (fjob->fjob_id)
 	  {
 	  case ENGINE_FLOW_JOB_ACCESS:
 	    fjob->access.access_func (&node->module, fjob->access.data);
-	    break;
-	  case ENGINE_FLOW_JOB_RESUME:
-	    if (node->local_suspend)
-	      {
-		node->local_suspend = FALSE;
-		node->needs_reset = node->module.klass->reset != NULL;
-		if (ENGINE_NODE_IS_SCHEDULED (node) && !ENGINE_NODE_IS_SUSPENDED (node))
-		  propagate_resume (node);
-	      }
 	    break;
 	  default:
 	    g_assert_not_reached ();
@@ -627,16 +593,27 @@ static void
 master_process_locked_node (EngineNode *node,
 			    guint       n_values)
 {
-  guint64 final_counter = GSL_TICK_STAMP + n_values;
-
+  guint64 next_counter, new_counter, final_counter = GSL_TICK_STAMP + n_values;
+  guint i, j, diff;
+  
   g_return_if_fail (node->integrated && node->sched_tag);
   
   while (node->counter < final_counter)
     {
-      guint64 next_counter = master_handle_flow_jobs (node, node->counter);
-      guint64 new_counter = MIN (next_counter, final_counter);
-      guint i, j, diff = node->counter - GSL_TICK_STAMP;
-      
+      /* reset node */
+      if_reject (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter))
+        {
+          node->module.klass->reset (&node->module);
+          node->needs_reset = FALSE;
+        }
+      /* exec flow jobs */
+      next_counter = master_handle_flow_jobs (node, node->counter);
+      /* figure n_values to process */
+      new_counter = MIN (next_counter, final_counter);
+      if (node->next_active > node->counter)
+        new_counter = MIN (node->next_active, new_counter);
+      diff = node->counter - GSL_TICK_STAMP;
+      /* ensure all istream inputs have n_values available */
       for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
 	{
 	  EngineNode *inode = node->inputs[i].real_node;
@@ -653,6 +630,7 @@ master_process_locked_node (EngineNode *node,
 	  else
 	    node->module.istreams[i].values = gsl_engine_master_zero_block;
 	}
+      /* ensure all jstream inputs have n_values available */
       for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
 	for (i = 0; i < node->module.jstreams[j].n_connections; i++) /* assumes scheduled node */
 	  {
@@ -665,22 +643,21 @@ master_process_locked_node (EngineNode *node,
 	    node->module.jstreams[j].values[i] += diff;
 	    ENGINE_NODE_UNLOCK (inode);
 	  }
+      /* update obuffer pointer */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	node->module.ostreams[i].values = node->outputs[i].buffer + diff;
-      if_reject (node->needs_reset)
+      /* process() node */
+      if_reject (ENGINE_NODE_IS_SUSPENDED (node, node->counter))
 	{
-	  node->module.klass->reset (&node->module);
-	  node->needs_reset = FALSE;
-	}
-      if (ENGINE_NODE_IS_SUSPENDED (node))
-	{
-	  /* suspended node processing method */
+	  /* suspended node processing behaviour */
 	  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	    if (node->module.ostreams[i].connected)
 	      node->module.ostreams[i].values = gsl_engine_const_values (0.0);
+          node->needs_reset = node->module.klass->reset != NULL;
 	}
       else
-	node->module.klass->process (&node->module, new_counter - node->counter);
+        node->module.klass->process (&node->module, new_counter - node->counter);
+      /* catch obuffer pointer changes */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	{
 	  /* FIXME: this takes the worst possible performance hit to support virtualization */
@@ -688,6 +665,7 @@ master_process_locked_node (EngineNode *node,
 	    memcpy (node->outputs[i].buffer + diff, node->module.ostreams[i].values,
 		    (new_counter - node->counter) * sizeof (gfloat));
 	}
+      /* update node counter */
       node->counter = new_counter;
     }
 }
@@ -759,8 +737,8 @@ master_process_flow (void)
       while (node && GSL_MNL_UNSCHEDULED_FLOW_NODE (node))
 	{
 	  EngineNode *tmp = node->mnl_next;
-
-	  master_handle_flow_jobs (node, final_counter);
+          node->counter = final_counter;
+          master_handle_flow_jobs (node, node->counter);
 	  _engine_mnl_reorder (node);
 	  node = tmp;
 	}

@@ -1,3 +1,35 @@
+Sat Sep  6 20:18:00 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.[hc]: allow sub voices per switchable voice.
+	major code cleanup. merge voice module and mono synth module.
+	introduces designated structure for midi channels.
+
+	* bsemidivoice.[hc]: adapt to new midi receiver API.
+	let the switch module handle voice creation on the midi receiver.
+
+	* bsemonokeyboard.c: adapt to ne midi receiver API.
+
+	* bsesnet.h: add voice_id to midi context.
+
+	* gslengine.[hc]: added gsl_module_has_source(), changed
+	suspend/resume job creators to gsl_job_suspend_now() and
+	gsl_job_resume_at().
+
+	* gslopmaster.c: propagate activation time sptamps for suspend
+	and resume jobs. ensure that module->counter is updated
+	before invoking any callbacks. fix reset() methods to be executed
+	before flow jobs for a specific tick stamp. enfore initial reset()
+	after node integration.
+
+	* gslopnode.h: adapt nodes and jobs to allow suspend/activation
+	tick stamps instead of just flags.
+
+	* gslopschedule.c: calculate and propagate activation stamps instead
+	of suspend flags. fixed suspend calculation for cycles.
+
+	* gsl-mplan.txt: explain introduction of activation stamps used to
+	implement suspend state for nodes.
+
 Thu Sep  4 18:55:56 2003  Tim Janik  <timj@gtk.org>
 
 	* bsesnet.[hc]: introduce BseMidiContext structure which holds

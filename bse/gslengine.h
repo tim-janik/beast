@@ -113,6 +113,8 @@ GslModule*	gsl_module_new_virtual	(guint		  n_iostreams,
 					 gpointer	  user_data,
 					 GslFreeFunc	  free_data);
 guint64		gsl_module_tick_stamp	(GslModule	 *module);
+gboolean        gsl_module_has_source   (GslModule       *module,
+                                         guint            istream);
 GslJob*		gsl_job_connect		(GslModule	 *src_module,
 					 guint		  src_ostream,
 					 GslModule	 *dest_module,
@@ -138,7 +140,9 @@ GslJob*		gsl_job_access		(GslModule	 *module,
 					 GslFreeFunc	  free_func);	/* UserThread */
 GslJob*		gsl_job_set_consumer	(GslModule	 *module,
 					 gboolean	  is_toplevel_consumer);
-GslJob*		gsl_job_suspend		(GslModule	 *module);
+GslJob*		gsl_job_suspend_now	(GslModule	 *module);
+GslJob*		gsl_job_resume_at	(GslModule	 *module,
+					 guint64	  tick_stamp);
 GslJob*		gsl_job_debug		(const gchar	 *debug);
 GslJob*		gsl_job_add_poll	(GslPollFunc	  poll_func,
 					 gpointer	  data,
@@ -166,8 +170,6 @@ GslJob*		gsl_flow_job_access	(GslModule	 *module,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
 					 GslFreeFunc	  free_func);	/* UserThread */
-GslJob*		gsl_flow_job_resume	(GslModule	 *module,
-					 guint64	  tick_stamp);
 
 
 /* --- module utilities --- */

@@ -30,7 +30,7 @@ G_BEGIN_DECLS
 #define ENGINE_NODE_N_JSTREAMS(node)	((node)->module.klass->n_jstreams)
 #define	ENGINE_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
 					 (node)->output_nodes == NULL)
-#define	ENGINE_NODE_IS_SUSPENDED(node)	((node)->local_suspend || (node)->outputs_suspended)
+#define	ENGINE_NODE_IS_SUSPENDED(nod,s) ((s) < (nod)->next_active)
 #define	ENGINE_NODE_IS_VIRTUAL(node)	((node)->virtual_node)
 #define	ENGINE_NODE_IS_DEFERRED(node)	(FALSE)
 #define	ENGINE_NODE_IS_SCHEDULED(node)	(ENGINE_NODE (node)->sched_tag)
@@ -58,6 +58,7 @@ typedef enum {
   ENGINE_JOB_FORCE_RESET,
   ENGINE_JOB_ACCESS,
   ENGINE_JOB_SUSPEND,
+  ENGINE_JOB_RESUME,
   ENGINE_JOB_ADD_POLL,
   ENGINE_JOB_REMOVE_POLL,
   ENGINE_JOB_ADD_TIMER,
@@ -71,6 +72,10 @@ struct _GslJob
   GslJob	     *next;
   union {
     EngineNode	     *node;
+    struct {
+      EngineNode     *node;
+      guint64         stamp;
+    } tick;
     struct {
       EngineNode     *dest_node;
       guint	      dest_ijstream;
@@ -111,7 +116,7 @@ struct _GslTrans
 };
 typedef enum {
   ENGINE_FLOW_JOB_NOP,
-  ENGINE_FLOW_JOB_RESUME,
+  // ENGINE_FLOW_JOB_RESUME,
   ENGINE_FLOW_JOB_ACCESS,
   ENGINE_FLOW_JOB_LAST
 } EngineFlowJobType;
@@ -174,6 +179,9 @@ struct _EngineNode		/* fields sorted by order of processing access */
   EngineFlowJob	*flow_jobs;			/* active jobs */
   EngineFlowJob	*fjob_first, *fjob_last;	/* trash list */
 
+  /* suspend/activation time */
+  guint64        next_active;           /* result of suspend state updates */
+
   /* master-node-list */
   EngineNode	*mnl_next;
   EngineNode	*mnl_prev;
@@ -183,9 +191,8 @@ struct _EngineNode		/* fields sorted by order of processing access */
   guint		 is_consumer : 1;
 
   /* suspension */
-  guint		 local_suspend : 1;	/* whether this node is suspended */
-  guint		 outputs_suspended : 1;	/* whether all outputs are suspended */
-  guint		 suspension_update : 1;	/* whether suspension state needs updating */
+  guint		 update_suspend : 1;	/* whether suspend state needs updating */
+  guint		 in_suspend_call : 1;	/* recursion barrier during suspend state updates */
   guint		 needs_reset : 1;	/* flagged at resumption */
 
   /* scheduler */
@@ -193,8 +200,9 @@ struct _EngineNode		/* fields sorted by order of processing access */
   guint		 sched_tag : 1;		/* whether this node is contained in the schedule */
   guint		 sched_recurse_tag : 1;	/* recursion flag used during scheduling */
   guint		 sched_leaf_level;
-  EngineNode	*toplevel_next;	/* master-consumer-list, FIXME: overkill, using a SfiRing is good enough */
-  SfiRing	*output_nodes;	/* EngineNode* ring of nodes in ->outputs[] */
+  guint64        local_active;          /* local suspend state stamp */
+  EngineNode	*toplevel_next;	        /* master-consumer-list, FIXME: overkill, using a SfiRing is good enough */
+  SfiRing	*output_nodes;	        /* EngineNode* ring of nodes in ->outputs[] */
 };
 
 static void

@@ -20,11 +20,9 @@
 #define __BSE_MIDI_VOICE_H__
 
 #include <bse/bsesource.h>
+#include <bse/bsesnet.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_VOICE_INPUT	        (BSE_TYPE_ID (BseMidiVoiceInput))
@@ -61,16 +59,18 @@ struct _BseMidiVoiceSwitch
 
 
 /* --- prototypes --- */
-void	bse_midi_voice_switch_set_midi_channel	(BseMidiVoiceSwitch	*self,
-						 guint			 midi_channel);
-guint   bse_midi_voice_switch_ref_midi_voice    (BseMidiVoiceSwitch     *self,
-                                                 guint                   context_handle,
-                                                 GslTrans               *trans);
-void    bse_midi_voice_switch_unref_midi_voice  (BseMidiVoiceSwitch     *self,
-                                                 guint                   context_handle,
-                                                 GslTrans               *trans);
-void	bse_midi_voice_input_set_voice_switch	(BseMidiVoiceInput	*self,
-						 BseMidiVoiceSwitch	*voice_switch);
+void           bse_midi_voice_switch_set_midi_channel (BseMidiVoiceSwitch *self,
+                                                       guint               midi_channel);
+BseMidiContext bse_midi_voice_switch_ref_poly_voice   (BseMidiVoiceSwitch *self,
+                                                       guint               context_handle,
+                                                       GslTrans           *trans);
+BseMidiContext bse_midi_voice_switch_peek_poly_voice  (BseMidiVoiceSwitch *self,
+                                                       guint               context_handle);
+void           bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
+                                                       guint               context_handle,
+                                                       GslTrans           *trans);
+void           bse_midi_voice_input_set_voice_switch  (BseMidiVoiceInput  *self,
+                                                       BseMidiVoiceSwitch *voice_switch);
 
 
 /* --- channels --- */
@@ -94,10 +94,6 @@ enum
   BSE_MIDI_VOICE_SWITCH_OCHANNEL_DISCONNECT
 };
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_MIDI_VOICE_H__ */

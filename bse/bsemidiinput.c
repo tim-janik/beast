@@ -170,7 +170,7 @@ typedef struct {
   BseMidiReceiver *midi_receiver;
   guint            midi_channel;
   guint            default_channel;
-  GslModule       *msynth_module;
+  GslModule       *mvoice_module;
 } ModuleData;
 
 static void
@@ -179,7 +179,7 @@ module_data_free (gpointer data)
   ModuleData *mdata = data;
   GslTrans *trans = gsl_trans_open ();
   
-  bse_midi_receiver_discard_mono_synth (mdata->midi_receiver, mdata->msynth_module, trans);
+  bse_midi_receiver_discard_mono_voice (mdata->midi_receiver, mdata->midi_channel, mdata->mvoice_module, trans);
   gsl_trans_commit (trans);
   g_free (mdata);
 }
@@ -199,7 +199,7 @@ bse_mono_keyboard_context_create (BseSource *source,
   mdata->midi_receiver = mcontext.midi_receiver;
   mdata->default_channel = mcontext.midi_channel;
   mdata->midi_channel = self->midi_channel > 0 ? self->midi_channel : mdata->default_channel;
-  mdata->msynth_module = bse_midi_receiver_retrieve_mono_synth (mdata->midi_receiver,
+  mdata->mvoice_module = bse_midi_receiver_retrieve_mono_voice (mdata->midi_receiver,
                                                                 mdata->midi_channel,
                                                                 trans);
 
@@ -222,10 +222,10 @@ bse_mono_keyboard_context_connect (BseSource *source,
   ModuleData *mdata = module->user_data;
   
   /* connect module to mono control uplink */
-  gsl_trans_add (trans, gsl_job_connect (mdata->msynth_module, 0, module, 0));
-  gsl_trans_add (trans, gsl_job_connect (mdata->msynth_module, 1, module, 1));
-  gsl_trans_add (trans, gsl_job_connect (mdata->msynth_module, 2, module, 2));
-  gsl_trans_add (trans, gsl_job_connect (mdata->msynth_module, 3, module, 3));
+  gsl_trans_add (trans, gsl_job_connect (mdata->mvoice_module, 0, module, 0));
+  gsl_trans_add (trans, gsl_job_connect (mdata->mvoice_module, 1, module, 1));
+  gsl_trans_add (trans, gsl_job_connect (mdata->mvoice_module, 2, module, 2));
+  gsl_trans_add (trans, gsl_job_connect (mdata->mvoice_module, 3, module, 3));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
@@ -256,20 +256,20 @@ bse_mono_keyboard_update_modules (BseMonoKeyboard *self)
 	  gsl_trans_add (trans, gsl_job_disconnect (module, 3));
 	  
 	  /* discard old module */
-	  bse_midi_receiver_discard_mono_synth (mdata->midi_receiver, mdata->msynth_module, trans);
+	  bse_midi_receiver_discard_mono_voice (mdata->midi_receiver, mdata->midi_channel, mdata->mvoice_module, trans);
 
           /* update midi channel */
           mdata->midi_channel = self->midi_channel > 0 ? self->midi_channel : mdata->default_channel;
 	  
 	  /* fetch new module */
-	  mdata->msynth_module = bse_midi_receiver_retrieve_mono_synth (mdata->midi_receiver,
+	  mdata->mvoice_module = bse_midi_receiver_retrieve_mono_voice (mdata->midi_receiver,
                                                                         mdata->midi_channel,
                                                                         trans);
 	  /* connect to new module */
-	  gsl_trans_add (trans, gsl_job_connect (mdata->msynth_module, 0, module, 0));
-	  gsl_trans_add (trans, gsl_job_connect (mdata->msynth_module, 1, module, 1));
-	  gsl_trans_add (trans, gsl_job_connect (mdata->msynth_module, 2, module, 2));
-	  gsl_trans_add (trans, gsl_job_connect (mdata->msynth_module, 3, module, 3));
+	  gsl_trans_add (trans, gsl_job_connect (mdata->mvoice_module, 0, module, 0));
+	  gsl_trans_add (trans, gsl_job_connect (mdata->mvoice_module, 1, module, 1));
+	  gsl_trans_add (trans, gsl_job_connect (mdata->mvoice_module, 2, module, 2));
+	  gsl_trans_add (trans, gsl_job_connect (mdata->mvoice_module, 3, module, 3));
 	}
       
       /* commit and cleanup */

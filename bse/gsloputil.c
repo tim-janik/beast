@@ -133,9 +133,6 @@ free_flow_job (EngineFlowJob *fjob)
 {
   switch (fjob->fjob_id)
     {
-    case ENGINE_FLOW_JOB_RESUME:
-      sfi_delete_struct (EngineFlowJobAny, &fjob->any);
-      break;
     case ENGINE_FLOW_JOB_ACCESS:
       if (fjob->access.free_func)
 	fjob->access.free_func (fjob->access.data);

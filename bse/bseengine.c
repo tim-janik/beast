@@ -116,6 +116,30 @@ gsl_module_tick_stamp (GslModule *module)
 }
 
 /**
+ * gsl_module_has_source
+ * @module:  a GSL engine module
+ * @istream: Index of input stream
+ * @RETURNS: whether the module has a possible input
+ *
+ * Check whether @istream may be disconnected via
+ * gsl_job_disconnect(). This is not an indication for whether
+ * @istream will be connected during process(), as the source
+ * may be a dangling virtual module, resulting in an unconnected
+ * input stream after the next scheduling phase.
+ * See also gsl_module_new_virtual().
+ * This function is MT-safe and may be called from any thread.
+ */
+gboolean
+gsl_module_has_source (GslModule *module,
+                       guint      istream)
+{
+  g_return_val_if_fail (module != NULL, FALSE);
+  g_return_val_if_fail (istream < module->klass->n_istreams, FALSE);
+  
+  return ENGINE_NODE (module)->inputs[istream].src_node != NULL;
+}
+
+/**
  * gsl_job_integrate
  * @module: The module to integrate
  * @Returns: New job suitable for gsl_trans_add()
@@ -405,9 +429,9 @@ gsl_job_force_reset (GslModule *module)
 /**
  * gsl_job_access
  * @module: The module to access
- * @access_func: The accessor function
+ * @access_func: The accessor function (executed in master thread)
  * @data: Data passed in to the accessor
- * @free_func: Function to free @data
+ * @free_func: Function to free @data (executed in user thread)
  * @Returns: New job suitable for gsl_trans_add()
  *
  * Create a new transaction job which will invoke @access_func 
@@ -484,7 +508,7 @@ gsl_flow_job_access (GslModule    *module,
 }
 
 /**
- * gsl_job_suspend
+ * gsl_job_suspend_now
  * @module: Module not currently suspended
  * @Returns: New job suitable for gsl_trans_add()
  *
@@ -496,7 +520,7 @@ gsl_flow_job_access (GslModule    *module,
  * This function is MT-safe and may be called from any thread.
  */
 GslJob*
-gsl_job_suspend (GslModule *module)
+gsl_job_suspend_now (GslModule *module)
 {
   GslJob *job;
 
@@ -505,48 +529,43 @@ gsl_job_suspend (GslModule *module)
   
   job = sfi_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_SUSPEND;
-  job->data.node = ENGINE_NODE (module);
+  job->data.tick.node = ENGINE_NODE (module);
+  job->data.tick.stamp = GSL_MAX_TICK_STAMP;
 
   return job;
 }
 
 /**
- * gsl_flow_job_resume
- * @module:     Module not currently suspended
+ * gsl_job_resume_at
+ * @module:     Module to resume
  * @tick_stamp: Sample tick at which to resume @module
  * @Returns:    New job suitable for gsl_trans_add()
  *
  * Create a new transaction job which inserts a resumption
- * event into the flow job queue of @module.
- * Flow jobs are jobs with limited impact on modules, which
- * are executed during flow system progress at specific times.
+ * event into the job queue of @module.
  * Once the time stamp counter of @module passed @tick_stamp,
- * its reset() method is called and the module is resumed,
- * causing it's process() method to be called again.
+ * if it is supended, its reset() method is called and the
+ * module is resumed, causing it's process() method to be
+ * called again.
  * Resuming a module also resumes all input modules it has,
- * unless those were explicitely suspended via gsl_job_suspend().
+ * unless those were explicitely suspended via gsl_job_suspend_now().
  * This function is MT-safe and may be called from any thread.
  */
 GslJob*
-gsl_flow_job_resume (GslModule *module,
-		     guint64    tick_stamp)
+gsl_job_resume_at (GslModule *module,
+                   guint64    tick_stamp)
 {
   GslJob *job;
-  EngineFlowJob *fjob;
   
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   
-  fjob = (EngineFlowJob*) sfi_new_struct0 (EngineFlowJobAny, 1);
-  fjob->fjob_id = ENGINE_FLOW_JOB_RESUME;
-  fjob->any.tick_stamp = tick_stamp;
-  
   job = sfi_new_struct0 (GslJob, 1);
-  job->job_id = ENGINE_JOB_FLOW_JOB;
-  job->data.flow_job.node = ENGINE_NODE (module);
-  job->data.flow_job.fjob = fjob;
-  
+  job->job_id = ENGINE_JOB_RESUME;
+  job->data.tick.node = ENGINE_NODE (module);
+  job->data.tick.stamp = tick_stamp;
+
   return job;
 }
 

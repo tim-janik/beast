@@ -75,6 +75,7 @@ struct _BseSNetClass
 struct _BseMidiContext {
   BseMidiReceiver *midi_receiver;
   guint            midi_channel;
+  guint            voice_id;
 };
 
 

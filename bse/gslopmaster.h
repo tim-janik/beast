@@ -33,7 +33,6 @@ typedef struct {
 } EngineMasterData;
 void		_engine_master_thread		(EngineMasterData	*mdata);
 
-
 G_END_DECLS
 
 #endif /* __GSL_ENGINE_MASTER_H__ */

@@ -397,34 +397,57 @@ _engine_schedule_consumer_node (EngineSchedule *schedule,
 
 
 /* --- depth scheduling --- */
-static void
+static guint64
+approx_suspension_state (EngineNode *node,
+                         gboolean   *seen_cycle_p)
+{
+  gboolean seen_cycle = FALSE;
+  guint64 stamp;
+  g_assert (node->in_suspend_call == FALSE);
+  if (node->update_suspend)
+    {
+      SfiRing *ring;    /* calculate outer suspend constraints */
+      stamp = ENGINE_NODE_IS_CONSUMER (node) ? 0 : GSL_MAX_TICK_STAMP;
+      node->in_suspend_call = TRUE;
+      for (ring = node->output_nodes; ring; ring = sfi_ring_walk (ring, node->output_nodes))
+        {
+          EngineNode *dest_node = ring->data;
+          if (!dest_node->in_suspend_call)      /* catch cycles */
+            {
+              guint64 ostamp = approx_suspension_state (ring->data, &seen_cycle);
+              stamp = MIN (ostamp, stamp);
+            }
+          else
+            seen_cycle = TRUE;
+        }
+      /* bound against inner suspend constraint */
+      stamp = MAX (stamp, node->local_active);
+      if (!seen_cycle)
+        {
+          node->next_active = stamp;
+          node->update_suspend = FALSE;
+        }
+      node->in_suspend_call = FALSE;
+    }
+  else
+    stamp = node->next_active;
+  *seen_cycle_p = *seen_cycle_p || seen_cycle;
+  return stamp;
+}
+
+static inline void
 update_suspension_state (EngineNode *node)
 {
-  SfiRing *ring;
-  guint seen_suspended = 0, seen_active = 0;
-  gboolean outputs_suspended;
-
-  node->suspension_update = FALSE;
-  for (ring = node->output_nodes; ring && !seen_active; ring = sfi_ring_walk (ring, node->output_nodes))
+  if (node->update_suspend)
     {
-      EngineNode *dest_node = ring->data;
-      if (dest_node != node)	/* self-feedback cycles */
-	{
-	  if (dest_node->suspension_update)
-	    update_suspension_state (dest_node);
-	  if (ENGINE_NODE_IS_SUSPENDED (dest_node))
-	    seen_suspended++;
-	  else
-	    seen_active++;
-	}
+      gboolean seen_cycle = FALSE;
+      guint64 stamp = approx_suspension_state (node, &seen_cycle);
+      if (node->update_suspend)         /* break cycles */
+        {
+          node->next_active = stamp;
+          node->update_suspend = FALSE;
+        }
     }
-  outputs_suspended = seen_suspended && !seen_active;
-  if (outputs_suspended != node->outputs_suspended)
-    {
-      node->outputs_suspended = outputs_suspended;
-      node->needs_reset = node->module.klass->reset != NULL;
-    }
-  /* FIXME: suspension state updates need back propagation within cycles */
 }
 
 static SfiRing*
@@ -647,8 +670,7 @@ subschedule_query_node (EngineSchedule *schedule,
   g_return_if_fail (query->leaf_level == 0);
 
   /* update suspension state if necessary */
-  if (node->suspension_update)
-    update_suspension_state (node);
+  update_suspension_state (node);
   /* reset ostream[].connected flags */
   clean_ostreams (node);
   

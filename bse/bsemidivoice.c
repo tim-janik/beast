@@ -199,35 +199,17 @@ bse_midi_voice_input_context_create (BseSource *source,
 				     GslTrans  *trans)
 {
   BseMidiVoiceInput *self = BSE_MIDI_VOICE_INPUT (source);
-  BseMidiContext mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
-  guint voice = bse_midi_voice_switch_ref_midi_voice (self->voice_switch, context_handle, trans);
-  // FIXME: handle no-switch
-  
+  BseMidiContext mcontext = bse_midi_voice_switch_ref_poly_voice (self->voice_switch, context_handle, trans);
+  // FIXME: handle no voice-switch
+
   /* we simply wrap the module from BseMidiReceiver */
   bse_source_set_context_omodule (source, context_handle,
-				  bse_midi_receiver_get_note_module (mcontext.midi_receiver, voice));
-  
+				  bse_midi_receiver_create_sub_voice (mcontext.midi_receiver,
+                                                                      mcontext.midi_channel,
+                                                                      mcontext.voice_id, trans));
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (voice_input_parent_class)->context_create (source, context_handle, trans);
-}
-
-static void
-bse_midi_voice_switch_context_create (BseSource *source,
-				      guint      context_handle,
-				      GslTrans  *trans)
-{
-  BseMidiVoiceSwitch *self = BSE_MIDI_VOICE_SWITCH (source);
-  BseMidiContext mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
-  guint voice = bse_midi_voice_switch_ref_midi_voice (self, context_handle, trans);
-
-  /* we simply wrap the modules from BseMidiReceiver */
-  bse_source_set_context_imodule (source, context_handle,
-				  bse_midi_receiver_get_input_module (mcontext.midi_receiver, voice));
-  bse_source_set_context_omodule (source, context_handle,
-				  bse_midi_receiver_get_output_module (mcontext.midi_receiver, voice));
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (voice_switch_parent_class)->context_create (source, context_handle, trans);
 }
 
 static void
@@ -236,20 +218,44 @@ bse_midi_voice_input_context_dismiss (BseSource *source,
 				      GslTrans  *trans)
 {
   BseMidiVoiceInput *self = BSE_MIDI_VOICE_INPUT (source);
-  
+  BseMidiContext mcontext = bse_midi_voice_switch_peek_poly_voice (self->voice_switch, context_handle);
+  GslModule *module;
+
   /* the GslModule isn't ours, so theoretically we would just need
    * to disconnect and not discard it.
    * but since connecting/disconnecting src to dest modules is handled by
    * the dest modules, we actually have to do nothing besides preventing
    * BseSource to discard the foreign module.
    */
-  
+
+  module = bse_source_get_context_omodule (source, context_handle);
+  bse_midi_receiver_discard_sub_voice (mcontext.midi_receiver, mcontext.midi_channel, mcontext.voice_id, module, trans);
   bse_source_set_context_omodule (source, context_handle, NULL);
   
-  bse_midi_voice_switch_unref_midi_voice (self->voice_switch, context_handle, trans);
+  bse_midi_voice_switch_unref_poly_voice (self->voice_switch, context_handle, trans);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (voice_input_parent_class)->context_dismiss (source, context_handle, trans);
+}
+
+static void
+bse_midi_voice_switch_context_create (BseSource *source,
+				      guint      context_handle,
+				      GslTrans  *trans)
+{
+  BseMidiVoiceSwitch *self = BSE_MIDI_VOICE_SWITCH (source);
+  BseMidiContext mcontext = bse_midi_voice_switch_ref_poly_voice (self, context_handle, trans);
+
+  /* we simply wrap the modules from BseMidiReceiver */
+  bse_source_set_context_imodule (source, context_handle,
+                                  bse_midi_receiver_get_poly_voice_input (mcontext.midi_receiver,
+                                                                          mcontext.midi_channel, mcontext.voice_id));
+  bse_source_set_context_omodule (source, context_handle,
+				  bse_midi_receiver_get_poly_voice_output (mcontext.midi_receiver,
+                                                                           mcontext.midi_channel, mcontext.voice_id));
+  
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (voice_switch_parent_class)->context_create (source, context_handle, trans);
 }
 
 static void
@@ -267,7 +273,7 @@ bse_midi_voice_switch_context_dismiss (BseSource *source,
   bse_source_set_context_imodule (source, context_handle, NULL);
   bse_source_set_context_omodule (source, context_handle, NULL);
   
-  bse_midi_voice_switch_unref_midi_voice (self, context_handle, trans);
+  bse_midi_voice_switch_unref_poly_voice (self, context_handle, trans);
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (voice_switch_parent_class)->context_dismiss (source, context_handle, trans);
@@ -286,21 +292,24 @@ bse_midi_voice_switch_set_midi_channel (BseMidiVoiceSwitch *self,
 typedef struct {
   guint		   context_handle;
   guint		   ref_count;
-  guint            voice;
+  guint            voice_id;
 } MidiVoice;
 
-guint
-bse_midi_voice_switch_ref_midi_voice (BseMidiVoiceSwitch     *self,
+BseMidiContext
+bse_midi_voice_switch_ref_poly_voice (BseMidiVoiceSwitch     *self,
                                       guint                   context_handle,
                                       GslTrans               *trans)
 {
+  BseMidiContext mcontext = { 0, };
   MidiVoice *mvoice;
   GSList *slist;
 
-  g_return_val_if_fail (BSE_IS_MIDI_VOICE_SWITCH (self), 0);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), 0);
-  g_return_val_if_fail (trans != NULL, 0);
+  g_return_val_if_fail (BSE_IS_MIDI_VOICE_SWITCH (self), mcontext);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), mcontext);
+  g_return_val_if_fail (trans != NULL, mcontext);
 
+  mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
+  mcontext.midi_channel = self->midi_channel;
   for (slist = self->midi_voices; slist; slist = slist->next)
     {
       mvoice = slist->data;
@@ -309,23 +318,50 @@ bse_midi_voice_switch_ref_midi_voice (BseMidiVoiceSwitch     *self,
     }
   if (!slist)
     {
-      BseMidiContext mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
       mvoice = sfi_new_struct (MidiVoice, 1);
       mvoice->context_handle = context_handle;
       mvoice->ref_count = 1;
-      mvoice->voice = bse_midi_receiver_create_voice (mcontext.midi_receiver, self->midi_channel, trans);
+      mvoice->voice_id = bse_midi_receiver_create_poly_voice (mcontext.midi_receiver, mcontext.midi_channel, trans);
       self->midi_voices = g_slist_prepend (self->midi_voices, mvoice);
     }
   else
     mvoice->ref_count++;
-  return mvoice->voice;
+  mcontext.voice_id = mvoice->voice_id;
+  return mcontext;
+}
+
+BseMidiContext
+bse_midi_voice_switch_peek_poly_voice (BseMidiVoiceSwitch     *self,
+                                       guint                   context_handle)
+{
+  BseMidiContext mcontext = { 0, };
+  MidiVoice *mvoice;
+  GSList *slist;
+
+  g_return_val_if_fail (BSE_IS_MIDI_VOICE_SWITCH (self), mcontext);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), mcontext);
+
+  for (slist = self->midi_voices; slist; slist = slist->next)
+    {
+      mvoice = slist->data;
+      if (mvoice->context_handle == context_handle)
+	break;
+    }
+  if (slist)
+    {
+      mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
+      mcontext.midi_channel = self->midi_channel;
+      mcontext.voice_id = mvoice->voice_id;
+    }
+  return mcontext;
 }
 
 void
-bse_midi_voice_switch_unref_midi_voice (BseMidiVoiceSwitch *self,
+bse_midi_voice_switch_unref_poly_voice (BseMidiVoiceSwitch *self,
                                         guint               context_handle,
                                         GslTrans           *trans)
 {
+  BseMidiContext mcontext;
   MidiVoice *mvoice;
   GSList *slist;
 
@@ -333,6 +369,8 @@ bse_midi_voice_switch_unref_midi_voice (BseMidiVoiceSwitch *self,
   g_return_if_fail (BSE_SOURCE_PREPARED (self));
   g_return_if_fail (trans != NULL);
 
+  mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
+  mcontext.midi_channel = self->midi_channel;
   for (slist = self->midi_voices; slist; slist = slist->next)
     {
       mvoice = slist->data;
@@ -341,16 +379,14 @@ bse_midi_voice_switch_unref_midi_voice (BseMidiVoiceSwitch *self,
     }
   if (!slist)
     g_warning ("module %s has no midi voice for context %u",
-	       bse_object_debug_name (self),
-	       context_handle);
+	       bse_object_debug_name (self), context_handle);
   else
     {
       mvoice->ref_count--;
       if (!mvoice->ref_count)
 	{
-          BseMidiContext mcontext = bse_snet_get_midi_context (BSE_SNET (BSE_ITEM (self)->parent), context_handle);
           self->midi_voices = g_slist_remove (self->midi_voices, mvoice);
-	  bse_midi_receiver_discard_voice (mcontext.midi_receiver, mvoice->voice, trans);
+	  bse_midi_receiver_discard_poly_voice (mcontext.midi_receiver, mcontext.midi_channel, mvoice->voice_id, trans);
 	  sfi_delete_struct (MidiVoice, mvoice);
 	}
     }

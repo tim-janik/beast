@@ -24,17 +24,12 @@
 #include <string.h>
 #include <sfi/gbsearcharray.h>
 
-#define	DEBUG	sfi_debug_keyfunc ("midi-receiver")
+#define	DEBUG_EVENTS    sfi_debug_keyfunc ("midi-events")
+#define	DEBUG	        sfi_debug_keyfunc ("midi-receiver")
 
 
-typedef enum {
-  VOICE_ON = 1,
-  VOICE_PRESSURE,
-  VOICE_SUSTAIN,
-  VOICE_OFF,
-  VOICE_KILL_SUSTAIN,
-  VOICE_KILL
-} VoiceChangeType;
+#define	BSE_MIDI_RECEIVER_LOCK(self)            GSL_SPIN_LOCK (&midi_mutex)
+#define	BSE_MIDI_RECEIVER_UNLOCK(self)          GSL_SPIN_UNLOCK (&midi_mutex)
 
 
 /* --- prototypes --- */
@@ -47,11 +42,6 @@ static gint	midi_control_slots_compare	(gconstpointer		bsearch_node1, /* key */
 /* --- variables --- */
 static SfiMutex             midi_mutex = { 0, };
 static SfiRing             *farm_residents = NULL;
-static const GBSearchConfig ctrl_slot_config = {
-  sizeof (BseMidiControlSlot),
-  midi_control_slots_compare,
-  0, /* G_BSEARCH_ARRAY_ALIGN_POWER2 */
-};
 
 
 /* --- function --- */
@@ -63,18 +53,6 @@ _bse_midi_init (void)
   g_assert (initialized++ == FALSE);
   
   sfi_mutex_init (&midi_mutex);
-}
-
-void
-bse_midi_global_lock (void)
-{
-  GSL_SPIN_LOCK (&midi_mutex);
-}
-
-void
-bse_midi_global_unlock (void)
-{
-  GSL_SPIN_UNLOCK (&midi_mutex);
 }
 
 static gint
@@ -172,6 +150,19 @@ bse_midi_receiver_process_events (BseMidiReceiver *self,
 
 
 /* --- MIDI Control Slots --- */
+typedef struct {
+  BseMidiSignalType	 type;
+  guint			 midi_channel;
+  gfloat		 value;
+  GSList		*cmodules;
+} BseMidiControlSlot;
+
+static const GBSearchConfig ctrl_slot_config = {
+  sizeof (BseMidiControlSlot),
+  midi_control_slots_compare,
+  0, /* G_BSEARCH_ARRAY_ALIGN_POWER2 */
+};
+
 static gint
 midi_control_slots_compare (gconstpointer bsearch_node1, /* key */
 			    gconstpointer bsearch_node2)
@@ -375,21 +366,60 @@ match_cmodule (GslModule *cmodule,
 }
 
 
-/* --- BseMidiMonoSynth modules --- */
+/* --- BseMidiMonoSynth --- */
+typedef enum {
+  VOICE_ON = 1,
+  VOICE_PRESSURE,
+  VOICE_SUSTAIN,
+  VOICE_OFF,
+  VOICE_KILL_SUSTAIN,
+  VOICE_KILL
+} VoiceChangeType;
+static const char*
+voice_change_to_string (VoiceChangeType t)
+{
+  switch (t)
+    {
+    case VOICE_ON:              return "voice-on";
+    case VOICE_PRESSURE:        return "pressure";
+    case VOICE_SUSTAIN:         return "sustain";
+    case VOICE_OFF:             return "voice-off";
+    case VOICE_KILL_SUSTAIN:    return "kill-sustain";
+    case VOICE_KILL:            return "voice-kill";
+    }
+  return "<invalid>";
+}
+
+typedef enum {
+  VSTATE_IDLE,
+  VSTATE_BUSY,      /* got note-on, waiting for note-off */
+  VSTATE_SUSTAINED, /* holding due to sustain, after note-off */
+} VoiceState;
+static const char*
+voice_state_to_string (VoiceState s)
+{
+  switch (s)
+    {
+    case VSTATE_IDLE:           return "idle";
+    case VSTATE_BUSY:           return "busy";
+    case VSTATE_SUSTAINED:      return "sustained";
+    }
+  return "<invalid>";
+}
+
 struct _BseMidiMonoSynth
 {
   /* module state */
   gfloat     freq_value;
   gfloat     gate;
   gfloat     velocity;
-  gfloat     aftertouch;
-  gboolean   within_note;
-  gboolean   sustained;
+  gfloat     aftertouch;        /* mutatable while within_note */
+  VoiceState vstate;
   /* mono synth */
-  guint      midi_channel;
   guint      ref_count;
-  GslModule *fmodule;		/* note module */
-  gboolean   discarded;
+  GslModule *fmodule;		/* freq module */
+  guint64    tick_stamp;        /* time of last event change */
+  VoiceState queue_state;       /* vstate according to jobs queued so far */
 };
 
 static void
@@ -415,12 +445,27 @@ typedef struct {
 } BseMidiMonoSynthData;
 
 static void
+mono_synth_module_reset (GslModule *module)
+{
+  BseMidiMonoSynth *msynth = module->user_data;
+  msynth->freq_value = 0;
+  msynth->gate = 0;
+  msynth->velocity = 0.5;
+  msynth->aftertouch = 0.5;
+  msynth->vstate = VSTATE_IDLE;
+}
+
+static void
 mono_synth_module_access (GslModule *module,
                           gpointer   data)
 {
   BseMidiMonoSynth *msynth = module->user_data;
   BseMidiMonoSynthData *mdata = data;
 
+  DEBUG ("Synth<%p:%08llx>: ProcessEvent=%s Freq=%.2fHz",
+         msynth, gsl_module_tick_stamp (module),
+         voice_change_to_string (mdata->vtype),
+         BSE_FREQ_FROM_VALUE (mdata->freq_value));
   switch (mdata->vtype)
     {
     case VOICE_ON:
@@ -428,48 +473,42 @@ mono_synth_module_access (GslModule *module,
       msynth->gate = 1.0;
       msynth->velocity = mdata->velocity;
       msynth->aftertouch = mdata->velocity;
-      msynth->within_note = TRUE;
-      msynth->sustained = FALSE;
+      msynth->vstate = VSTATE_BUSY;
       break;
     case VOICE_PRESSURE:
-      if (msynth->within_note && GSL_SIGNAL_FREQ_EQUALS (msynth->freq_value,
-                                                         mdata->freq_value))
+      if (msynth->vstate == VSTATE_BUSY &&
+          GSL_SIGNAL_FREQ_EQUALS (msynth->freq_value, mdata->freq_value))
         msynth->aftertouch = mdata->velocity;
       break;
     case VOICE_SUSTAIN:
-      if (msynth->within_note && GSL_SIGNAL_FREQ_EQUALS (msynth->freq_value,
-                                                         mdata->freq_value))
-        {
-          msynth->within_note = FALSE;
-          msynth->sustained = TRUE;
-        }
+      if (msynth->vstate == VSTATE_BUSY &&
+          GSL_SIGNAL_FREQ_EQUALS (msynth->freq_value, mdata->freq_value))
+        msynth->vstate = VSTATE_SUSTAINED;
       break;
     case VOICE_OFF:
-      if ((msynth->within_note || msynth->sustained) &&
-          GSL_SIGNAL_FREQ_EQUALS (msynth->freq_value,
-                                  mdata->freq_value))
+      if (msynth->vstate >= VSTATE_BUSY &&
+          GSL_SIGNAL_FREQ_EQUALS (msynth->freq_value, mdata->freq_value))
         goto kill_voice;
       break;
     case VOICE_KILL_SUSTAIN:
-      if (msynth->sustained)
+      if (msynth->vstate == VSTATE_SUSTAINED)
         goto kill_voice;
       break;
     case VOICE_KILL:
     kill_voice:
       msynth->gate = 0.0;
-      msynth->within_note = FALSE;
-      msynth->sustained = FALSE;
+      msynth->vstate = VSTATE_IDLE;
       break;
     }
 }
 
 static void
-change_mono_synth_voice (BseMidiMonoSynth *msynth,
-                         guint64           tick_stamp,
-                         VoiceChangeType   vtype,
-                         gfloat            freq_value,
-                         gfloat            velocity,
-                         GslTrans         *trans)
+change_mono_synth (BseMidiMonoSynth *msynth,
+                   guint64           tick_stamp,
+                   VoiceChangeType   vtype,
+                   gfloat            freq_value,
+                   gfloat            velocity,
+                   GslTrans         *trans)
 {
   BseMidiMonoSynthData mdata;
 
@@ -480,6 +519,30 @@ change_mono_synth_voice (BseMidiMonoSynth *msynth,
   gsl_trans_add (trans, gsl_flow_job_access (msynth->fmodule, tick_stamp,
 					     mono_synth_module_access,
 					     g_memdup (&mdata, sizeof (mdata)), g_free));
+  switch (mdata.vtype)
+    {
+    case VOICE_ON:
+      // g_assert (msynth->queue_state == VSTATE_IDLE);
+      msynth->queue_state = VSTATE_BUSY;
+    case VOICE_PRESSURE:
+      break;
+    case VOICE_SUSTAIN:
+      // g_assert (msynth->queue_state == VSTATE_BUSY);
+      msynth->queue_state = VSTATE_SUSTAINED;
+      break;
+    case VOICE_KILL_SUSTAIN:
+      // g_assert (msynth->queue_state == VSTATE_SUSTAINED);
+    case VOICE_OFF:
+      // g_assert (msynth->queue_state >= VSTATE_BUSY);
+    case VOICE_KILL:
+      msynth->queue_state = VSTATE_IDLE;
+      break;
+    }
+  msynth->tick_stamp = tick_stamp;
+  DEBUG ("Synth<%p:%08llx>: QueueEvent=%s Freq=%.2fHz",
+         msynth, tick_stamp,
+         voice_change_to_string (vtype),
+         BSE_FREQ_FROM_VALUE (freq_value));
 }
 
 static void
@@ -492,8 +555,7 @@ mono_synth_module_free (gpointer        data,
 }
 
 static BseMidiMonoSynth*
-create_mono_synth (guint     midi_channel,
-		   GslTrans *trans)
+create_mono_synth (GslTrans *trans)
 {
   static const GslClass mono_synth_module_class = {
     0,                                  /* n_istreams */
@@ -501,22 +563,20 @@ create_mono_synth (guint     midi_channel,
     BSE_MIDI_VOICE_MODULE_N_CHANNELS,   /* n_ostreams */
     mono_synth_module_process,          /* process */
     NULL,                               /* process_defer */
-    NULL,                               /* reset */
+    mono_synth_module_reset,            /* reset */
     mono_synth_module_free,		/* free */
     GSL_COST_CHEAP
   };
   BseMidiMonoSynth *msynth = g_new0 (BseMidiMonoSynth, 1);
 
-  msynth->midi_channel = midi_channel;
   msynth->fmodule = gsl_module_new (&mono_synth_module_class, msynth);
   msynth->freq_value = 0;
   msynth->gate = 0;
   msynth->velocity = 0.5;
   msynth->aftertouch = 0.5;
-  msynth->within_note = FALSE;
-  msynth->sustained = FALSE;
-  msynth->discarded = FALSE;
+  msynth->vstate = VSTATE_IDLE;
   msynth->ref_count = 1;
+  msynth->tick_stamp = 0;
   gsl_trans_add (trans, gsl_job_integrate (msynth->fmodule));
   
   return msynth;
@@ -526,10 +586,8 @@ static void
 destroy_mono_synth (BseMidiMonoSynth *msynth,
 		    GslTrans         *trans)
 {
-  g_return_if_fail (msynth->discarded == FALSE);
   g_return_if_fail (msynth->ref_count == 0);
   
-  msynth->discarded = TRUE;
   gsl_trans_add (trans, gsl_job_discard (msynth->fmodule));
 }
 
@@ -537,25 +595,55 @@ destroy_mono_synth (BseMidiMonoSynth *msynth,
 /* --- BseMidiVoice modules --- */
 struct _BseMidiVoice
 {
-  guint      midi_channel;
-  GslModule *fmodule;		/* note module */
-  GslModule *smodule;		/* input module (switches and suspends) */
-  GslModule *omodule;		/* output module (virtual) */
-  guint      module_ref;
-  gfloat     freq_value;
-  gfloat     gate;		/* mutatable while active */
-  gfloat     velocity;
-  gfloat     aftertouch;	/* mutatable while active */
-  gboolean   active;		/* reset in process() method */
-  gboolean   within_note;       /* waiting for NOTE_OFF */
-  gboolean   sustained;
-  gboolean   discarded;
-  guint      ref_count;
+  /* module state: */
+  guint64            alive_stamp;       /* module stays connected until alive_stamp */
+  gboolean           connect_pending;   /* whether reconnect jobs are pending */
+  gboolean           disconnected;      /* a hint towards module currently being non-busy */
+  /* switchable midi voice */
+  guint              activate_pending;
+  guint              n_msynths;
+  BseMidiMonoSynth **msynths;
+  guint              ref_count;
+  GslModule         *smodule;           /* input module (switches and suspends) */
+  GslModule         *vmodule;           /* output module (virtual) */
 };
 
 static void
+switch_module_reset_pending_flag (GslModule *module,
+                                  gpointer   data)
+{
+  BseMidiVoice *voice = module->user_data;
+  voice->connect_pending = FALSE;
+}
+
+static void
+switch_module_check_connections (GslModule *module,
+                                 gpointer   data)
+{
+  BseMidiVoice *voice = module->user_data;
+  if (data)
+    {
+      guint64 *stamp = data;
+      voice->alive_stamp = MAX (voice->alive_stamp, *stamp);
+    }
+  if ((data || gsl_module_tick_stamp (module) <= voice->alive_stamp) &&
+      !voice->connect_pending && !gsl_module_has_source (voice->vmodule, 0))
+    {
+      GslTrans *trans = gsl_trans_open ();
+      guint i;
+      for (i = 0; i < GSL_MODULE_N_ISTREAMS (voice->vmodule); i++)
+        gsl_trans_add (trans, gsl_job_connect (voice->smodule, i, voice->vmodule, i));
+      voice->connect_pending = TRUE;
+      gsl_trans_add (trans, gsl_job_resume_at (voice->smodule, voice->alive_stamp));
+      gsl_trans_add (trans, gsl_job_access (voice->smodule, switch_module_reset_pending_flag, NULL, NULL));
+      gsl_trans_commit (trans);
+      voice->disconnected = FALSE;      /* reset hint early */
+    }
+}
+
+static void
 switch_module_process (GslModule *module,
-		       guint      n_values)
+                       guint      n_values)
 {
   BseMidiVoice *voice = module->user_data;
   guint i;
@@ -566,118 +654,33 @@ switch_module_process (GslModule *module,
       GSL_MODULE_OSTREAM (module, i).values = (gfloat*) GSL_MODULE_IBUFFER (module, i);
   
   /* check Done state on last stream */
-  if (GSL_MODULE_IBUFFER (module, GSL_MODULE_N_ISTREAMS (module) - 1)[n_values - 1] >= 1.0)
+  if (GSL_MODULE_IBUFFER (module, GSL_MODULE_N_ISTREAMS (module) - 1)[n_values - 1] >= 1.0 &&
+      gsl_module_tick_stamp (module) > voice->alive_stamp)
     {
       GslTrans *trans = gsl_trans_open ();
-      
       /* disconnect all inputs */
-      for (i = 0; i < GSL_MODULE_N_OSTREAMS (module); i++)
-        gsl_trans_add (trans, gsl_job_disconnect (voice->omodule, i));
-      gsl_trans_add (trans, gsl_job_suspend (module));
+      gsl_trans_add (trans, gsl_job_suspend_now (module));
+      gsl_trans_add (trans, gsl_job_kill_inputs (voice->vmodule));
+      gsl_trans_add (trans, gsl_job_access (voice->smodule, switch_module_check_connections, NULL, NULL));
+      /* reset all msynths */
       gsl_trans_commit (trans);
-      
-      /* may be reconnected again */
-      voice->active = FALSE;
+      voice->disconnected = TRUE;       /* hint towards possible reuse */
     }
 }
 
 static void
-midi_voice_module_process (GslModule *module,
-                           guint      n_values)
-{
-  BseMidiVoice *voice = module->user_data;
-  
-  if (GSL_MODULE_OSTREAM (module, 0).connected)
-    GSL_MODULE_OSTREAM (module, 0).values = gsl_engine_const_values (voice->freq_value);
-  if (GSL_MODULE_OSTREAM (module, 1).connected)
-    GSL_MODULE_OSTREAM (module, 1).values = gsl_engine_const_values (voice->gate);
-  if (GSL_MODULE_OSTREAM (module, 2).connected)
-    GSL_MODULE_OSTREAM (module, 2).values = gsl_engine_const_values (voice->velocity);
-  if (GSL_MODULE_OSTREAM (module, 3).connected)
-    GSL_MODULE_OSTREAM (module, 3).values = gsl_engine_const_values (voice->aftertouch);
-}
-
-static void
-midi_voice_module_access (GslModule *module,
-                          gpointer   data)
-{
-  BseMidiVoice *voice = module->user_data;
-  gfloat *values = data;
-  
-  voice->gate = values[0];
-  if (values[1] >= 0)
-    voice->aftertouch = values[1];
-}
-
-static void
-change_midi_voice (BseMidiVoice *voice,
-		   guint64       tick_stamp,
-		   gboolean      gate_on,
-		   gfloat        aftertouch,
-		   GslTrans     *trans)
-{
-  gfloat values[2];
-  
-  values[0] = gate_on ? 1.0 : 0.0;
-  if (gate_on)
-    values[1] = aftertouch;
-  else
-    values[1] = -1;
-  gsl_trans_add (trans, gsl_flow_job_access (voice->fmodule, tick_stamp,
-					     midi_voice_module_access,
-					     g_memdup (values, sizeof (values)), g_free));
-}
-
-static void
-activate_midi_voice (BseMidiVoice *voice,
-		     guint64       tick_stamp,
-		     gfloat        freq_value,
-		     gfloat        velocity,
-		     GslTrans     *trans)
-{
-  guint i;
-  
-  g_return_if_fail (voice->active == FALSE);
-  
-  voice->freq_value = freq_value;
-  voice->gate = 1.0;
-  voice->velocity = velocity;
-  voice->aftertouch = velocity;
-  voice->active = TRUE;
-  voice->within_note = TRUE;
-  voice->sustained = FALSE;
-  /* connect modules */
-  for (i = 0; i < GSL_MODULE_N_ISTREAMS (voice->smodule); i++)
-    gsl_trans_add (trans, gsl_job_connect (voice->smodule, i, voice->omodule, i));
-  gsl_trans_add (trans, gsl_flow_job_resume (voice->smodule, tick_stamp));
-}
-
-static void
-midi_voice_module_free (gpointer        data,
-                        const GslClass *klass)
+switch_module_free (gpointer        data,
+                    const GslClass *klass)
 {
   BseMidiVoice *voice = data;
   
-  g_return_if_fail (voice->module_ref > 0);
-  voice->module_ref--;
-  if (!voice->module_ref)
-    g_free (voice);
+  g_free (voice);
+  g_free (voice->msynths);
 }
 
 static BseMidiVoice*
-create_midi_voice (guint     midi_channel,
-		   GslTrans *trans)
+create_switch_module (GslTrans *trans)
 {
-  static const GslClass voice_module_class = {
-    0,                                  /* n_istreams */
-    0,                                  /* n_jstreams */
-    BSE_MIDI_VOICE_MODULE_N_CHANNELS,   /* n_ostreams */
-    midi_voice_module_process,          /* process */
-    NULL,                               /* process_defer */
-    NULL,                               /* reset */
-    midi_voice_module_free,		/* free */
-    GSL_COST_CHEAP
-  };
   static const GslClass switch_module_class = {
     BSE_MIDI_VOICE_N_CHANNELS,          /* n_istreams */
     0,                                  /* n_jstreams */
@@ -685,36 +688,63 @@ create_midi_voice (guint     midi_channel,
     switch_module_process,              /* process */
     NULL,                               /* process_defer */
     NULL,                               /* reset */
-    midi_voice_module_free,             /* free */
+    switch_module_free,                 /* free */
     GSL_COST_CHEAP
   };
   BseMidiVoice *voice = g_new0 (BseMidiVoice, 1);
   
-  voice->midi_channel = midi_channel;
-  voice->fmodule = gsl_module_new (&voice_module_class, voice);
-  voice->smodule = gsl_module_new (&switch_module_class, voice);
-  voice->omodule = gsl_module_new_virtual (BSE_MIDI_VOICE_N_CHANNELS, NULL, NULL);
-  voice->module_ref = 2;		/* voice module, switch module */
-  voice->freq_value = 0;
-  voice->gate = 0;
-  voice->velocity = 0;
-  voice->aftertouch = 0;
-  voice->active = FALSE;
-  voice->within_note = FALSE;
-  voice->sustained = FALSE;
-  voice->discarded = FALSE;
+  voice->alive_stamp = 0;
+  voice->connect_pending = FALSE;
+  voice->disconnected = TRUE;
+  voice->activate_pending = 0;
   voice->ref_count = 1;
-  gsl_trans_add (trans, gsl_job_integrate (voice->fmodule));
+  voice->smodule = gsl_module_new (&switch_module_class, voice);
+  voice->vmodule = gsl_module_new_virtual (BSE_MIDI_VOICE_N_CHANNELS, NULL, NULL);
   gsl_trans_add (trans, gsl_job_integrate (voice->smodule));
-  gsl_trans_add (trans, gsl_job_integrate (voice->omodule));
-  gsl_trans_add (trans, gsl_job_suspend (voice->smodule));
+  gsl_trans_add (trans, gsl_job_integrate (voice->vmodule));
+  gsl_trans_add (trans, gsl_job_suspend_now (voice->smodule));
   
   return voice;
 }
 
+typedef struct {
+  guint64 avail_stamp;
+  BseMidiVoice *voice;
+} SwitchModuleActivateData;
+
 static void
-discard_accessor (GslModule *module,
-		  gpointer   data)
+free_switch_module_activate_data (gpointer data)
+{
+  SwitchModuleActivateData *adata = data;
+  adata->voice->activate_pending--;
+  g_free (adata);
+}
+
+static void
+activate_switch_module (BseMidiVoice *voice,
+                        guint64       tick_stamp,
+                        GslTrans     *trans)
+{
+  SwitchModuleActivateData *adata = g_new (SwitchModuleActivateData, 1);
+  adata->avail_stamp = tick_stamp;
+  adata->voice = voice;
+  voice->activate_pending++;
+  /* make sure the module is connected before tick_stamp */
+  gsl_trans_add (trans, gsl_job_access (voice->smodule, switch_module_check_connections, adata, free_switch_module_activate_data));
+  /* make sure the module is not suspended at tick_stamp */
+  gsl_trans_add (trans, gsl_job_resume_at (voice->smodule, tick_stamp));
+  voice->disconnected = FALSE;  /* reset hint early */
+}
+
+static inline gboolean
+check_switch_module_available (BseMidiVoice *voice)
+{
+  return (voice->disconnected && !voice->activate_pending);
+}
+
+static void
+commit_trans_accessor (GslModule *module,
+                       gpointer   data)
 {
   GslTrans *trans = data;
   
@@ -722,26 +752,216 @@ discard_accessor (GslModule *module,
 }
 
 static void
-destroy_midi_voice (BseMidiVoice *voice,
-		    GslTrans     *trans)
+destroy_switch_module (BseMidiVoice *voice,
+                       GslTrans     *trans)
 {
   GslTrans *tmp_trans;
   
-  g_return_if_fail (voice->discarded == FALSE);
   g_return_if_fail (voice->ref_count == 0);
+  g_return_if_fail (voice->n_msynths == 0);
   
-  voice->discarded = TRUE;
   tmp_trans = gsl_trans_open ();
-  gsl_trans_add (tmp_trans, gsl_job_discard (voice->fmodule));
   gsl_trans_add (tmp_trans, gsl_job_discard (voice->smodule));
-  gsl_trans_add (tmp_trans, gsl_job_discard (voice->omodule));
+  gsl_trans_add (tmp_trans, gsl_job_discard (voice->vmodule));
   /* we can't commit the transaction right away, because the switch
    * module might currently be processing and is about to queue
    * disconnection jobs on the modules we're just discarding.
-   * so we use a normal accessor which makes sure that pending
-   * disconnect jobs have been processed already.
+   * so we use a normal accessor to defer destruction which makes
+   * sure that pending disconnect jobs have been processed already.
    */
-  gsl_trans_add (trans, gsl_job_access (voice->smodule, discard_accessor, tmp_trans, NULL));
+  gsl_trans_add (trans, gsl_job_access (voice->smodule, commit_trans_accessor, tmp_trans, NULL));
+}
+
+
+/* --- BseMidiChannel --- */
+static gint
+midi_channels_compare (gconstpointer bsearch_node1, /* key */
+                       gconstpointer bsearch_node2)
+{
+  const BseMidiChannel *ch1 = bsearch_node1;
+  const BseMidiChannel *ch2 = bsearch_node2;
+  return G_BSEARCH_ARRAY_CMP (ch1->midi_channel, ch2->midi_channel);
+}
+
+static const GBSearchConfig midi_channel_config = { sizeof (BseMidiChannel), midi_channels_compare, 0 };
+
+static inline BseMidiChannel*
+peek_midi_channel (BseMidiReceiver *self,
+                   guint            midi_channel)
+{
+  BseMidiChannel key;
+  key.midi_channel = midi_channel;
+  return g_bsearch_array_lookup (self->midi_channel_array, &midi_channel_config, &key);
+}
+
+static BseMidiChannel*
+get_midi_channel (BseMidiReceiver *self,
+                  guint            midi_channel)
+{
+  BseMidiChannel *ch = peek_midi_channel (self, midi_channel);
+  if (!ch)
+    {
+      BseMidiChannel key = { 0, };
+      key.midi_channel = midi_channel;
+      self->midi_channel_array = g_bsearch_array_insert (self->midi_channel_array, &midi_channel_config, &key);
+      ch = peek_midi_channel (self, midi_channel);
+    }
+  return ch;
+}
+
+static inline gboolean
+check_mono_synth_improvement (BseMidiMonoSynth *msynth1, /* msynth1 better than msynth2? */
+                              BseMidiMonoSynth *msynth2)
+{
+  if (msynth1->vstate == msynth2->vstate)
+    return msynth1->tick_stamp < msynth2->tick_stamp;
+  if (msynth1->vstate == VSTATE_IDLE)
+    return TRUE;
+  if (msynth1->vstate == VSTATE_SUSTAINED)
+    return msynth2 == VSTATE_IDLE ? FALSE : TRUE;
+  return FALSE; /* msynth1->vstate == VSTATE_BUSY && msynth1->vstate != msynth2->vstate */
+}
+
+static void
+midi_channel_start_note_L (BseMidiChannel *mchannel,
+                           guint64         tick_stamp,
+                           gfloat          freq,
+                           gfloat          velocity,
+                           GslTrans       *trans)
+{
+  gfloat freq_val = BSE_VALUE_FROM_FREQ (freq);
+  BseMidiVoice *voice, *override_candidate = NULL;
+  guint i;
+  
+  g_return_if_fail (freq > 0);
+
+  /* adjust channel global mono synth */
+  if (mchannel->msynth)
+    change_mono_synth (mchannel->msynth, tick_stamp, VOICE_ON, freq_val, velocity, trans);
+  
+  /* figure voice from event */
+  voice = NULL; // voice numbers on events not currently supported
+  /* find free poly voice */
+  if (!voice)
+    for (i = 0; i < mchannel->n_voices; i++)
+      if (mchannel->voices[i] && mchannel->voices[i]->n_msynths)
+        {
+          override_candidate = mchannel->voices[i];
+          if (check_switch_module_available (mchannel->voices[i]))
+            {
+              voice = mchannel->voices[i];
+              break;
+            }
+        }
+  /* grab voice to override */
+  if (!voice)
+    ; // FIXME: voice = override_candidate;
+
+  /* start note */
+  if (voice && voice->n_msynths)
+    {
+      BseMidiMonoSynth *msynth = voice->msynths[0];
+      /* figure mono synth */
+      for (i = 1; i < voice->n_msynths; i++)
+        if (check_mono_synth_improvement (voice->msynths[i], msynth))
+          msynth = voice->msynths[i];
+      /* setup voice */
+      activate_switch_module (voice, tick_stamp, trans);
+      change_mono_synth (msynth, tick_stamp, VOICE_ON, freq_val, velocity, trans);
+    }
+  else
+    sfi_info ("MidiChannel(%u): no voice available for note-on (%fHz)", mchannel->midi_channel, freq);
+}
+
+static void
+midi_channel_adjust_note_L (BseMidiChannel  *mchannel,
+                            guint64          tick_stamp,
+                            gfloat           freq,
+                            BseMidiEventType etype, /* BSE_MIDI_KEY_PRESSURE or BSE_MIDI_NOTE_OFF */
+                            gfloat           velocity,
+                            gboolean         sustain_note, /* may be TRUE for BSE_MIDI_NOTE_OFF */
+                            GslTrans        *trans)
+{
+  VoiceChangeType vctype = etype == BSE_MIDI_KEY_PRESSURE ? VOICE_PRESSURE : (sustain_note ? VOICE_SUSTAIN : VOICE_OFF);
+  gfloat freq_val = BSE_VALUE_FROM_FREQ (freq);
+  BseMidiVoice *voice;
+  BseMidiMonoSynth *msynth = NULL;
+  guint i, j;
+
+  g_return_if_fail (freq > 0 && velocity >= 0);
+
+  /* adjust channel global mono synth */
+  if (mchannel->msynth)
+    change_mono_synth (mchannel->msynth, tick_stamp, vctype, freq_val, velocity, trans);
+
+  /* find corresponding msynth */
+  for (i = 0; i < mchannel->n_voices; i++)
+    {
+      voice = mchannel->voices[i];
+      if (voice && voice->n_msynths && !check_switch_module_available (voice))
+        for (j = 0; j < voice->n_msynths; j++)
+          if (voice->msynths[j]->queue_state == VSTATE_BUSY &&
+              !GSL_SIGNAL_FREQ_CHANGED (voice->msynths[j]->freq_value, freq_val))
+            {
+              msynth = voice->msynths[j];
+              i = mchannel->n_voices;   // break outer loop
+              break;
+            }
+    }
+
+  /* adjust note */
+  if (msynth)
+    change_mono_synth (msynth, tick_stamp, vctype, freq_val, velocity, trans);
+  else
+    sfi_info ("MidiChannel(%u): no voice available for %s (%fHz)", mchannel->midi_channel,
+              etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity", freq);
+}
+
+static void
+midi_channel_kill_notes_L (BseMidiChannel  *mchannel,
+                           guint64          tick_stamp,
+                           gboolean         sustained_only,
+                           GslTrans        *trans)
+{
+  guint i, j;
+
+  if (mchannel->msynth && sustained_only && mchannel->msynth->queue_state == VSTATE_SUSTAINED)
+    change_mono_synth (mchannel->msynth, tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
+  else if (mchannel->msynth && !sustained_only)
+    change_mono_synth (mchannel->msynth, tick_stamp, VOICE_KILL, 0, 0, trans);
+
+  for (i = 0; i < mchannel->n_voices; i++)
+    {
+      BseMidiVoice *voice = mchannel->voices[i];
+      if (voice && voice->n_msynths)
+        {
+          for (j = 0; j < voice->n_msynths; j++)
+            if (sustained_only && voice->msynths[j]->queue_state == VSTATE_SUSTAINED)
+              change_mono_synth (voice->msynths[j], tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
+            else if (!sustained_only)
+              change_mono_synth (voice->msynths[j], tick_stamp, VOICE_KILL, 0, 0, trans);
+        }
+    }
+}
+
+static void
+midi_channel_debug_notes_L (BseMidiChannel  *mchannel,
+                            guint64          tick_stamp,
+                            GslTrans        *trans)
+{
+  guint i, j;
+  for (i = 0; i < mchannel->n_voices; i++)
+    {
+      BseMidiVoice *voice = mchannel->voices[i];
+      if (voice)
+        for (j = 0; j < voice->n_msynths; j++)
+          sfi_info ("MidiChannel(%u):Voice<%p>=%c: Synth<%p:%08llx>: State=%s Queued=%s Freq=%.2fHz",
+                    mchannel->midi_channel, voice, voice->disconnected ? 'd' : 'C',
+                    voice->msynths[j], gsl_module_tick_stamp (voice->msynths[j]->fmodule),
+                    voice_state_to_string (voice->msynths[j]->vstate),
+                    voice_state_to_string (voice->msynths[j]->queue_state),
+                    BSE_FREQ_FROM_VALUE (voice->msynths[j]->freq_value));
+    }
 }
 
 
@@ -755,13 +975,10 @@ bse_midi_receiver_new (const gchar *receiver_name)
   
   self = g_new0 (BseMidiReceiver, 1);
   self->receiver_name = g_strdup (receiver_name);
-  self->n_msynths = 0;
-  self->msynths = NULL;
-  self->n_pvoices = 0;
-  self->pvoices = NULL;
   self->n_cmodules = 0;
   self->cmodules = NULL;
   self->ctrl_slot_array = g_bsearch_array_create (&ctrl_slot_config);
+  self->midi_channel_array = g_bsearch_array_create (&midi_channel_config);
   self->events = NULL;
   self->ref_count = 1;
   
@@ -802,28 +1019,22 @@ bse_midi_receiver_unref (BseMidiReceiver *self)
 
   if (need_destroy)
     {
-      guint i;
-
+      guint i, j;
       if (leave_farm)
         bse_midi_receiver_leave_farm (self);
-
-      for (i = 0; i < self->n_msynths; i++)
-	if (self->msynths[i])
-	  {
-	    g_warning ("destroying MIDI receiver (%p) with active mono synth modules", self);
-	    break;
-	  }
-      for (i = 0; i < self->n_pvoices; i++)
-	if (self->pvoices[i])
-	  {
-	    g_warning ("destroying MIDI receiver (%p) with active voice modules", self);
-	    break;
-	  }
+      for (i = 0; i < g_bsearch_array_get_n_nodes (self->midi_channel_array); i++)
+	{
+          BseMidiChannel *mchannel = g_bsearch_array_get_nth (self->midi_channel_array, &midi_channel_config, i);
+          if (mchannel->msynth)
+            g_warning ("destroying MIDI channel (%u) with active mono synth", mchannel->midi_channel);
+          for (j = 0; j < mchannel->n_voices; j++)
+            if (mchannel->voices[j])
+              g_warning ("destroying MIDI channel (%u) with active voices", mchannel->midi_channel);
+          g_free (mchannel->voices);
+        }
+      g_bsearch_array_free (self->midi_channel_array, &midi_channel_config);
       if (self->n_cmodules)
 	g_warning ("destroying MIDI receiver (%p) with active control modules (%u)", self, self->n_cmodules);
-      g_free (self->receiver_name);
-      g_free (self->msynths);
-      g_free (self->pvoices);
       g_free (self->cmodules);
       g_bsearch_array_free (self->ctrl_slot_array, &ctrl_slot_config);
       while (self->events)
@@ -836,6 +1047,7 @@ bse_midi_receiver_unref (BseMidiReceiver *self)
 	  BseMidiEvent *event = sfi_ring_pop_head (&self->notifier_events);
 	  bse_midi_free_event (event);
 	}
+      g_free (self->receiver_name);
       g_free (self);
     }
 }
@@ -984,192 +1196,234 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
 }
 
 GslModule*
-bse_midi_receiver_retrieve_mono_synth (BseMidiReceiver *self,
+bse_midi_receiver_retrieve_mono_voice (BseMidiReceiver *self,
                                        guint            midi_channel,
                                        GslTrans        *trans)
 {
-  BseMidiMonoSynth *msynth;
-  guint i;
+  BseMidiChannel *mchannel;
   
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (midi_channel > 0, NULL);
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  for (i = 0; i < self->n_msynths; i++)
-    {
-      msynth = self->msynths[i];
-      if (msynth && midi_channel == msynth->midi_channel)
-        {
-          msynth->ref_count++;
-	  BSE_MIDI_RECEIVER_UNLOCK (self);
-          return msynth->fmodule;
-        }
-    }
-
-  i = self->n_msynths++;
-  self->msynths = g_renew (BseMidiMonoSynth*, self->msynths, self->n_msynths);
-
-  msynth = create_mono_synth (midi_channel, trans);
-  self->msynths[i] = msynth;
+  mchannel = get_midi_channel (self, midi_channel);
+  if (mchannel->msynth)
+    mchannel->msynth->ref_count++;
+  else
+    mchannel->msynth = create_mono_synth (trans);
   BSE_MIDI_RECEIVER_UNLOCK (self);
-
-  return msynth->fmodule;
+  return mchannel->msynth->fmodule;
 }
 
 void
-bse_midi_receiver_discard_mono_synth (BseMidiReceiver *self,
+bse_midi_receiver_discard_mono_voice (BseMidiReceiver *self,
+                                      guint            midi_channel,
                                       GslModule       *fmodule,
                                       GslTrans        *trans)
 {
-  BseMidiMonoSynth *msynth;
-  guint i;
+  BseMidiChannel *mchannel;
   
   g_return_if_fail (self != NULL);
   g_return_if_fail (fmodule != NULL);
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  for (i = 0; i < self->n_msynths; i++)
+  mchannel = get_midi_channel (self, midi_channel);
+  if (mchannel->msynth && mchannel->msynth->fmodule == fmodule)
     {
-      msynth = self->msynths[i];
-      if (msynth->fmodule == fmodule)
+      mchannel->msynth->ref_count--;
+      if (!mchannel->msynth->ref_count)
         {
-          g_return_if_fail (msynth->ref_count > 0);
-          msynth->ref_count--;
-          if (!msynth->ref_count)
-            {
-              self->n_msynths--;
-              self->msynths[i] = self->msynths[self->n_msynths];
-	      destroy_mono_synth (msynth, trans);
-	    }
-	  BSE_MIDI_RECEIVER_UNLOCK (self);
-          return;
+          destroy_mono_synth (mchannel->msynth, trans);
+          mchannel->msynth = NULL;
         }
+      BSE_MIDI_RECEIVER_UNLOCK (self);
+      return;
     }
   BSE_MIDI_RECEIVER_UNLOCK (self);
   g_warning ("no such mono synth module: %p", fmodule);
 }
 
 guint
-bse_midi_receiver_create_voice (BseMidiReceiver *self,
-				guint            midi_channel,
-				GslTrans        *trans)
+bse_midi_receiver_create_poly_voice (BseMidiReceiver *self,
+                                     guint            midi_channel,
+                                     GslTrans        *trans)
 {
+  BseMidiChannel *mchannel;
   guint i;
   
   g_return_val_if_fail (self != NULL, 0);
   g_return_val_if_fail (midi_channel > 0, 0);
   
   BSE_MIDI_RECEIVER_LOCK (self);
+  mchannel = get_midi_channel (self, midi_channel);
   /* find free voice slot */
-  for (i = 0; i < self->n_pvoices; i++)
-    if (self->pvoices[i] == NULL)
+  for (i = 0; i < mchannel->n_voices; i++)
+    if (mchannel->voices[i] == NULL)
       break;
   /* alloc voice slot */
-  if (i >= self->n_pvoices)
+  if (i >= mchannel->n_voices)
     {
-      i = self->n_pvoices++;
-      self->pvoices = g_renew (BseMidiVoice*, self->pvoices, self->n_pvoices);
+      i = mchannel->n_voices++;
+      mchannel->voices = g_renew (BseMidiVoice*, mchannel->voices, mchannel->n_voices);
     }
-  self->pvoices[i] = create_midi_voice (midi_channel, trans);
+  mchannel->voices[i] = create_switch_module (trans);
   BSE_MIDI_RECEIVER_UNLOCK (self);
   
   return i + 1;
 }
 
 void
-bse_midi_receiver_discard_voice (BseMidiReceiver *self,
-				 guint            voice_id,
-				 GslTrans        *trans)
+bse_midi_receiver_discard_poly_voice (BseMidiReceiver *self,
+                                      guint            midi_channel,
+                                      guint            voice_id,
+                                      GslTrans        *trans)
 {
+  BseMidiChannel *mchannel;
   BseMidiVoice *voice;
 
   g_return_if_fail (self != NULL);
+  g_return_if_fail (midi_channel > 0);
   g_return_if_fail (voice_id > 0);
-  g_return_if_fail (voice_id <= self->n_pvoices);
   voice_id -= 1;
 
   BSE_MIDI_RECEIVER_LOCK (self);
-  voice = self->pvoices[voice_id];
+  mchannel = get_midi_channel (self, midi_channel);
+  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  if (voice)
+    {
+      g_return_if_fail (voice->ref_count > 0);
+      voice->ref_count--;
+      if (!voice->ref_count)
+        {
+          destroy_switch_module (voice, trans);
+          mchannel->voices[voice_id] = NULL;
+        }
+    }
+  BSE_MIDI_RECEIVER_UNLOCK (self);
   if (!voice)
-    {
-      BSE_MIDI_RECEIVER_UNLOCK (self);
-      g_warning ("MIDI receiver %p has no voice %u", self, voice_id);
-      return;
-    }
-  g_return_if_fail (voice->ref_count > 0);
-  voice->ref_count--;
-  if (!voice->ref_count)
-    {
-      destroy_midi_voice (self->pvoices[voice_id], trans);
-      self->pvoices[voice_id] = NULL;
-    }
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+    g_warning ("MIDI channel %u has no voice %u", midi_channel, voice_id + 1);
 }
 
 GslModule*
-bse_midi_receiver_get_note_module (BseMidiReceiver *self,
-                                   guint            voice_id)
+bse_midi_receiver_get_poly_voice_input (BseMidiReceiver   *self,
+                                        guint              midi_channel,
+                                        guint              voice_id)
 {
+  BseMidiChannel *mchannel;
   BseMidiVoice *voice;
   GslModule *module;
   
   g_return_val_if_fail (self != NULL, NULL);
+  g_return_val_if_fail (midi_channel > 0, NULL);
   g_return_val_if_fail (voice_id > 0, NULL);
-  g_return_val_if_fail (voice_id <= self->n_pvoices, NULL);
   voice_id -= 1;
-  
-  BSE_MIDI_RECEIVER_LOCK (self);
-  voice = self->pvoices[voice_id];
-  module = voice ? voice->fmodule : NULL;
-  BSE_MIDI_RECEIVER_UNLOCK (self);
-  
-  return module;
-}
 
-GslModule*
-bse_midi_receiver_get_input_module (BseMidiReceiver *self,
-                                    guint            voice_id)
-{
-  BseMidiVoice *voice;
-  GslModule *module;
-  
-  g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (voice_id > 0, NULL);
-  g_return_val_if_fail (voice_id <= self->n_pvoices, NULL);
-  voice_id -= 1;
-  
   BSE_MIDI_RECEIVER_LOCK (self);
-  voice = self->pvoices[voice_id];
+  mchannel = get_midi_channel (self, midi_channel);
+  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
   module = voice ? voice->smodule : NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
-  
   return module;
 }
 
 GslModule*
-bse_midi_receiver_get_output_module (BseMidiReceiver *self,
-                                     guint            voice_id)
+bse_midi_receiver_get_poly_voice_output (BseMidiReceiver   *self,
+                                         guint              midi_channel,
+                                         guint              voice_id)
 {
+  BseMidiChannel *mchannel;
   BseMidiVoice *voice;
   GslModule *module;
   
   g_return_val_if_fail (self != NULL, NULL);
+  g_return_val_if_fail (midi_channel > 0, NULL);
   g_return_val_if_fail (voice_id > 0, NULL);
-  g_return_val_if_fail (voice_id <= self->n_pvoices, NULL);
+  voice_id -= 1;
+
+  BSE_MIDI_RECEIVER_LOCK (self);
+  mchannel = get_midi_channel (self, midi_channel);
+  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  module = voice ? voice->vmodule : NULL;
+  BSE_MIDI_RECEIVER_UNLOCK (self);
+  return module;
+}
+
+GslModule*
+bse_midi_receiver_create_sub_voice (BseMidiReceiver   *self,
+                                    guint              midi_channel,
+                                    guint              voice_id,
+                                    GslTrans          *trans)
+{
+  BseMidiChannel *mchannel;
+  BseMidiVoice *voice;
+  GslModule *module = NULL;
+
+  g_return_val_if_fail (self != NULL, NULL);
+  g_return_val_if_fail (midi_channel > 0, NULL);
+  g_return_val_if_fail (voice_id > 0, NULL);
+  voice_id -= 1;
+
+  BSE_MIDI_RECEIVER_LOCK (self);
+  mchannel = get_midi_channel (self, midi_channel);
+  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  if (voice)
+    {
+      guint i = voice->n_msynths++;
+      voice->msynths = g_renew (BseMidiMonoSynth*, voice->msynths, voice->n_msynths);
+      voice->msynths[i] = create_mono_synth (trans);
+      voice->ref_count++;
+      module = voice->msynths[i]->fmodule;
+    }
+  BSE_MIDI_RECEIVER_UNLOCK (self);
+  return module;
+}
+
+void
+bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
+                                     guint              midi_channel,
+                                     guint              voice_id,
+                                     GslModule         *fmodule,
+                                     GslTrans          *trans)
+{
+  BseMidiChannel *mchannel;
+  BseMidiVoice *voice;
+  guint i, need_unref = FALSE;
+
+  g_return_if_fail (self != NULL);
+  g_return_if_fail (midi_channel > 0);
+  g_return_if_fail (fmodule != NULL);
+  g_return_if_fail (voice_id > 0);
   voice_id -= 1;
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  voice = self->pvoices[voice_id];
-  module = voice ? voice->omodule : NULL;
+  mchannel = get_midi_channel (self, midi_channel);
+  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  if (voice)
+    for (i = 0; i < voice->n_msynths; i++)
+      if (voice->msynths[i]->fmodule == fmodule)
+        {
+          voice->msynths[i]->ref_count--;
+          if (!voice->msynths[i]->ref_count)
+            {
+              destroy_mono_synth (voice->msynths[i], trans);
+              voice->msynths[i] = voice->msynths[--voice->n_msynths];
+              need_unref = TRUE;
+            }
+          fmodule = NULL;
+          break;
+        }
   BSE_MIDI_RECEIVER_UNLOCK (self);
-  
-  return module;
+  if (need_unref)
+    bse_midi_receiver_discard_poly_voice (self, midi_channel, voice_id + 1, trans);
+  if (fmodule)
+    g_warning ("MIDI channel %u, poly voice %u, no such sub voice: %p", midi_channel, voice_id, fmodule);
 }
 
 gboolean
 bse_midi_receiver_voices_pending (BseMidiReceiver *self,
                                   guint            midi_channel)
 {
+  BseMidiChannel *mchannel;
   SfiRing *ring = NULL;
   guint i, active = 0;
 
@@ -1180,17 +1434,14 @@ bse_midi_receiver_voices_pending (BseMidiReceiver *self,
     return TRUE;
 
   BSE_MIDI_RECEIVER_LOCK (self);
-  /* find busy voice */
-  for (i = 0; i < self->n_msynths && !active; i++)
+  mchannel = get_midi_channel (self, midi_channel);
+  if (mchannel)
     {
-      BseMidiMonoSynth *msynth = self->msynths[i];
-      active += msynth && msynth->midi_channel == midi_channel && (msynth->within_note || msynth->sustained);
-    }
-  /* find busy poly voice */
-  for (i = 0; i < self->n_pvoices && !active; i++)
-    {
-      BseMidiVoice *voice = self->pvoices[i];
-      active += voice && voice->midi_channel == midi_channel && voice->active;
+      active = active || (mchannel->msynth && (mchannel->msynth->vstate != VSTATE_IDLE ||
+                                               mchannel->msynth->queue_state != VSTATE_IDLE));
+      /* find busy poly voice */
+      for (i = 0; i < mchannel->n_voices && !active; i++)
+        active = active || !check_switch_module_available (mchannel->voices[i]);
     }
   /* find pending events */
   for (ring = self->events; ring && !active; ring = sfi_ring_next (ring, self->events))
@@ -1205,173 +1456,6 @@ bse_midi_receiver_voices_pending (BseMidiReceiver *self,
 
 
 /* --- event processing --- */
-static void
-activate_voice_L (BseMidiReceiver *self,
-		  guint            midi_channel,
-		  guint64          tick_stamp,
-		  gfloat           freq,
-		  gfloat           velocity,
-		  GslTrans        *trans)
-{
-  gfloat freq_val = BSE_VALUE_FROM_FREQ (freq);
-  BseMidiVoice *voice;
-  guint i;
-  
-  g_return_if_fail (freq > 0);
-
-  /* adjust mono synth if any */
-  for (i = 0; i < self->n_msynths; i++)
-    {
-      BseMidiMonoSynth *msynth = self->msynths[i];
-      if (msynth && midi_channel == msynth->midi_channel)
-        {
-          change_mono_synth_voice (msynth, tick_stamp, VOICE_ON, freq_val, velocity, trans);
-          break;
-        }
-    }
-
-  /* find free poly voice */
-  for (i = 0; i < self->n_pvoices; i++)
-    {
-      voice = self->pvoices[i];
-      if (voice && midi_channel == voice->midi_channel && !voice->active)
-	break;
-    }
-  if (i >= self->n_pvoices)
-    {
-      DEBUG ("Receiver<%s:%u>: no voice available for note-on (%fHz)", self->receiver_name, midi_channel, freq);
-      return;
-    }
-  /* setup voice */
-  activate_midi_voice (voice, tick_stamp, freq_val, velocity, trans);
-}
-
-static void
-adjust_voice_L (BseMidiReceiver *self,
-		guint            midi_channel,
-		guint64          tick_stamp,
-		gfloat           freq,
-                BseMidiEventType etype, /* BSE_MIDI_KEY_PRESSURE or BSE_MIDI_NOTE_OFF */
-		gfloat           velocity,
-		GslTrans        *trans)
-{
-  gfloat freq_val = BSE_VALUE_FROM_FREQ (freq);
-  BseMidiVoice *voice;
-  guint i;
-  gboolean sustained_note = etype == BSE_MIDI_NOTE_OFF &&
-                            (BSE_GCONFIG (invert_sustain) ^
-                             (midi_control_get_L (self, midi_channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5));
-  
-  g_return_if_fail (freq > 0 && velocity >= 0);
-  
-  /* adjust mono synth if any */
-  for (i = 0; i < self->n_msynths; i++)
-    {
-      BseMidiMonoSynth *msynth = self->msynths[i];
-      if (msynth && midi_channel == msynth->midi_channel)
-        {
-          if (sustained_note)
-            change_mono_synth_voice (msynth, tick_stamp, VOICE_SUSTAIN, freq_val, velocity, trans);
-          else if (etype == BSE_MIDI_KEY_PRESSURE)
-            change_mono_synth_voice (msynth, tick_stamp, VOICE_PRESSURE, freq_val, velocity, trans);
-          else
-            change_mono_synth_voice (msynth, tick_stamp, VOICE_OFF, freq_val, velocity, trans);
-          break;
-        }
-    }
-
-  /* adjust poly voice if any */
-  for (i = 0; i < self->n_pvoices; i++)
-    {
-      voice = self->pvoices[i];
-      if (voice && midi_channel == voice->midi_channel && voice->active &&
-	  voice->within_note && !GSL_SIGNAL_FREQ_CHANGED (voice->freq_value, freq_val))
-	{
-	  if (etype == BSE_MIDI_NOTE_OFF)
-	    voice->within_note = FALSE;
-	  break;
-	}
-    }
-  if (i >= self->n_pvoices)
-    {
-      DEBUG ("Receiver<%s:%u>: no voice available for %s (%fHz)", self->receiver_name, midi_channel,
-	     etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity",
-	     freq);
-      return;
-    }
-  /* set voice outputs */
-  if (etype == BSE_MIDI_NOTE_OFF &&	/* sustain check: */
-      (BSE_GCONFIG (invert_sustain) ^ (midi_control_get_L (self, midi_channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5)))
-    {
-      voice->sustained = TRUE;
-      change_midi_voice (voice, tick_stamp, TRUE, velocity, trans);
-    }
-  else
-    change_midi_voice (voice, tick_stamp, etype == BSE_MIDI_KEY_PRESSURE, velocity, trans);
-}
-
-static void
-kill_voices_L (BseMidiReceiver *self,
-	       guint            midi_channel,
-	       guint64          tick_stamp,
-	       gboolean         sustained_only,
-	       GslTrans        *trans)
-{
-  BseMidiVoice *voice;
-  guint i, count = 0;
-
-  for (i = 0; i < self->n_msynths; i++)
-    {
-      BseMidiMonoSynth *msynth = self->msynths[i];
-      if (msynth && midi_channel == msynth->midi_channel)
-        {
-          if (sustained_only)
-            change_mono_synth_voice (msynth, tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
-          else
-            change_mono_synth_voice (msynth, tick_stamp, VOICE_KILL, 0, 0, trans);
-          break;
-        }
-    }
-
-  for (i = 0; i < self->n_pvoices; i++)
-    {
-      voice = self->pvoices[i];
-      if (voice && midi_channel == voice->midi_channel && voice->active)
-	{
-	  if ((sustained_only && !voice->within_note && voice->sustained) ||
-	      (!sustained_only && (voice->within_note || voice->sustained)))
-	    {
-	      voice->within_note = FALSE;
-	      voice->sustained = FALSE;
-	      change_midi_voice (voice, tick_stamp, FALSE, 0, trans);
-	      count++;
-	    }
-	}
-    }
-  if (count)
-    DEBUG ("Receiver<%s:%u>: Voices Killed: %u", self->receiver_name, midi_channel, count);
-}
-
-static void
-debug_voices_L (BseMidiReceiver *self,
-		guint            midi_channel,
-		guint64          tick_stamp,
-		GslTrans        *trans)
-{
-  BseMidiVoice *voice;
-  guint i;
-  
-  if (sfi_debug_test_key ("midi"))
-    for (i = 0; i < self->n_pvoices; i++)
-      {
-	voice = self->pvoices[i];
-	if (voice)
-	  DEBUG ("Receiver<%s>: Voice: Channel=%u SynthActive=%u Playing=%u Sustained=%u Freq=%fHz", self->receiver_name,
-		 voice->midi_channel, voice->active, voice->within_note, voice->sustained,
-		 BSE_FREQ_FROM_VALUE (voice->freq_value));
-      }
-}
-
 static inline void
 update_midi_signal_L (BseMidiReceiver  *self,
 		      guint             channel,
@@ -1470,9 +1554,11 @@ process_midi_control_L (BseMidiReceiver *self,
 					 trans);
   else switch (control)
     {
+      BseMidiChannel *mchannel;
     case 64:			/* Damper Pedal Switch (Sustain) */
-      if (BSE_GCONFIG (invert_sustain) ^ (value < 0.5))
-	kill_voices_L (self, channel, tick_stamp, TRUE, trans);
+      mchannel = peek_midi_channel (self, channel);
+      if (mchannel && (BSE_GCONFIG (invert_sustain) ^ (value < 0.5)))
+	midi_channel_kill_notes_L (mchannel, tick_stamp, TRUE, trans);
       break;
     case 98:			/* Non-Registered Parameter MSB */
       update_midi_signal_continuous_msb_L (self, channel, tick_stamp,
@@ -1504,11 +1590,14 @@ process_midi_control_L (BseMidiReceiver *self,
       break;
     case 120:			/* All Sound Off ITrigger */
     case 123:			/* All Notes Off ITrigger */
-      kill_voices_L (self, channel, tick_stamp, FALSE, trans);
+      mchannel = peek_midi_channel (self, channel);
+      if (mchannel)
+        midi_channel_kill_notes_L (mchannel, tick_stamp, FALSE, trans);
       break;
     case 122:			/* Local Control Switch */
-      if (value < 0.00006)
-	debug_voices_L (self, channel, tick_stamp, trans);
+      mchannel = peek_midi_channel (self, channel);
+      if (mchannel && value < 0.00006)
+        midi_channel_debug_notes_L (mchannel, tick_stamp, trans);
       break;
     }
 }
@@ -1530,63 +1619,73 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
       self->events = sfi_ring_remove_node (self->events, self->events);
       switch (event->status)
 	{
-	case BSE_MIDI_NOTE_ON:
-	  DEBUG ("Receiver<%s:%u>: NoteOn  %fHz Velo=%f (stamp:%llu)", self->receiver_name, event->channel,
-		 event->data.note.frequency, event->data.note.velocity, event->tick_stamp);
-	  activate_voice_L (self, event->channel, event->tick_stamp,
-			    event->data.note.frequency,
-			    event->data.note.velocity,
-			    trans);
+          BseMidiChannel *mchannel;
+        case BSE_MIDI_NOTE_ON:
+          mchannel = peek_midi_channel (self, event->channel);
+	  DEBUG_EVENTS ("Receiver<%s:%u>: NoteOn  %fHz Velo=%f (stamp:%llu)", self->receiver_name, event->channel,
+                        event->data.note.frequency, event->data.note.velocity, event->tick_stamp);
+	  if (mchannel)
+            midi_channel_start_note_L (mchannel, event->tick_stamp,
+                                       event->data.note.frequency,
+                                       event->data.note.velocity,
+                                       trans);
 	  break;
 	case BSE_MIDI_KEY_PRESSURE:
 	case BSE_MIDI_NOTE_OFF:
-	  DEBUG ("Receiver<%s:%u>: %s %fHz (stamp:%llu)", self->receiver_name, event->channel,
-		 event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
-		 event->data.note.frequency, event->tick_stamp);
-	  adjust_voice_L (self, event->channel, event->tick_stamp,
-			  event->data.note.frequency, event->status,
-			  event->data.note.velocity, trans);
+          mchannel = peek_midi_channel (self, event->channel);
+          DEBUG_EVENTS ("Receiver<%s:%u>: %s %fHz (stamp:%llu)", self->receiver_name, event->channel,
+                        event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
+                        event->data.note.frequency, event->tick_stamp);
+          if (mchannel)
+            {
+              gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
+                                        (BSE_GCONFIG (invert_sustain) ^
+                                         (midi_control_get_L (self, event->channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5));
+              midi_channel_adjust_note_L (mchannel, event->tick_stamp,
+                                          event->data.note.frequency, event->status,
+                                          event->data.note.velocity, sustained_note, trans);
+            }
 	  break;
 	case BSE_MIDI_CONTROL_CHANGE:
-	  DEBUG ("Receiver<%s:%u>: Control %2u Value=%f (stamp:%llu)", self->receiver_name, event->channel,
-		 event->data.control.control, event->data.control.value, event->tick_stamp);
+	  DEBUG_EVENTS ("Receiver<%s:%u>: Control %2u Value=%f (stamp:%llu)", self->receiver_name, event->channel,
+                        event->data.control.control, event->data.control.value, event->tick_stamp);
 	  process_midi_control_L (self, event->channel, event->tick_stamp,
 				  event->data.control.control, event->data.control.value,
 				  FALSE,
                                   trans);
 	  break;
 	case BSE_MIDI_X_CONTINUOUS_CHANGE:
-	  DEBUG ("Receiver<%s:%u>: X Continuous Control %2u Value=%f (stamp:%llu)", self->receiver_name, event->channel,
-		 event->data.control.control, event->data.control.value, event->tick_stamp);
+	  DEBUG_EVENTS ("Receiver<%s:%u>: X Continuous Control %2u Value=%f (stamp:%llu)", self->receiver_name, event->channel,
+                        event->data.control.control, event->data.control.value, event->tick_stamp);
 	  process_midi_control_L (self, event->channel, event->tick_stamp,
 				  event->data.control.control, event->data.control.value,
                                   TRUE,
 				  trans);
 	  break;
 	case BSE_MIDI_PROGRAM_CHANGE:
-	  DEBUG ("Receiver<%s:%u>: Program %u (Value=%f) (stamp:%llu)", self->receiver_name, event->channel,
-		 event->data.program, event->data.program / (gfloat) 0x7f, event->tick_stamp);
+	  DEBUG_EVENTS ("Receiver<%s:%u>: Program %u (Value=%f) (stamp:%llu)", self->receiver_name, event->channel,
+                        event->data.program, event->data.program / (gfloat) 0x7f, event->tick_stamp);
 	  update_midi_signal_L (self, event->channel, event->tick_stamp,
 				BSE_MIDI_SIGNAL_PROGRAM, event->data.program / (gfloat) 0x7f,
 				trans);
 	  break;
 	case BSE_MIDI_CHANNEL_PRESSURE:
-	  DEBUG ("Receiver<%s:%u>: Channel Pressure Value=%f (stamp:%llu)", self->receiver_name, event->channel,
-		 event->data.intensity, event->tick_stamp);
+	  DEBUG_EVENTS ("Receiver<%s:%u>: Channel Pressure Value=%f (stamp:%llu)", self->receiver_name, event->channel,
+                        event->data.intensity, event->tick_stamp);
 	  update_midi_signal_L (self, event->channel, event->tick_stamp,
 				BSE_MIDI_SIGNAL_PRESSURE, event->data.intensity,
 				trans);
 	  break;
 	case BSE_MIDI_PITCH_BEND:
-	  DEBUG ("Receiver<%s:%u>: Pitch Bend Value=%f (stamp:%llu)", self->receiver_name, event->channel,
-		 event->data.pitch_bend, event->tick_stamp);
+	  DEBUG_EVENTS ("Receiver<%s:%u>: Pitch Bend Value=%f (stamp:%llu)", self->receiver_name, event->channel,
+                        event->data.pitch_bend, event->tick_stamp);
 	  update_midi_signal_L (self, event->channel, event->tick_stamp,
 				BSE_MIDI_SIGNAL_PITCH_BEND, event->data.pitch_bend,
 				trans);
 	  break;
 	default:
-	  DEBUG ("Receiver<%s:%u>: Ignoring Event %u (stamp:%llu)", self->receiver_name, event->channel,
-		 event->status, event->tick_stamp);
+	  DEBUG_EVENTS ("Receiver<%s:%u>: Ignoring Event %u (stamp:%llu)", self->receiver_name, event->channel,
+                        event->status, event->tick_stamp);
 	  break;
 	}
       if (self->notifier)
@@ -1605,6 +1704,6 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
   if (need_wakeup)
     sfi_thread_wakeup (sfi_thread_main ());
 #endif
-
+  
   return TRUE;
 }
