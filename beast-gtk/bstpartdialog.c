@@ -383,7 +383,6 @@ resizer_adjustment_value_changed (GtkAdjustment *adj)
   u = v / f;
   if (u != client->upper)
     {
-      g_print ("upper(%f)=%f\n", client->upper, u);
       client->upper = u;
       gtk_adjustment_changed (client);
     }
