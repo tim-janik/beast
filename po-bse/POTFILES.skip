@@ -6,6 +6,7 @@ beast-gtk/bstcanvassource.c
 beast-gtk/bsteventrollctrl.c
 beast-gtk/bstfiledialog.c
 beast-gtk/bstinstrumentview.c
+beast-gtk/bstitemview.c
 beast-gtk/bstmain.c
 beast-gtk/bstmessages.c
 beast-gtk/bstparam-entry.c
@@ -20,14 +21,14 @@ beast-gtk/bstrackitem.c
 beast-gtk/bstradiotools.c
 beast-gtk/bstsampleeditor.c
 beast-gtk/bstsnetrouter.c
-beast-gtk/bstsnetshell.c
-beast-gtk/bstsongshell.c
 beast-gtk/bststest.c
+beast-gtk/bstsupershell.c
 beast-gtk/bsttrackrollctrl.c
 beast-gtk/bsttrackview.c
 beast-gtk/bstusermessage.c
 beast-gtk/bstwaveeditor.c
-beast-gtk/bstwavereposhell.c
+beast-gtk/bstwaveview.c
+beast-gtk/dialogs/gadgets-beast.xml
 beast-gtk/gxk/gxklistwrapper.c
 data/beast.desktop.in
 data/bse.keys.in

@@ -1,3 +1,8 @@
+2003-11-16  Christian Neumair  <chris@gnome-de.org>
+
+	* POTFILES.skip: Added/removed some new/nonexisting files.
+	* de.po: Updated German translation.
+
 2003-11-09  Kostas Papadimas <pkst@gnome.org>
 
 	* el.po: Added Greek translation.

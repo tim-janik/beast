@@ -1,14 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# German BSE translation.
+# Copyright (C) 2003 Tim Janik <timj@gtk.org>
+# This file is distributed under the same license as the BSE package.
+# Christian Neumair <chris@gnome-de.org>, 2003.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: BSE 0.55\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-27 00:53+0100\n"
-"PO-Revision-Date: 2003-10-19 11:25+0200\n"
+"POT-Creation-Date: 2003-11-16 13:36+0100\n"
+"PO-Revision-Date: 2003-11-16 13:36+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -79,31 +79,56 @@ msgstr ""
 "Anzahl der von der exponentiellen Frequenzmodulation betroffenen Oktaven"
 
 # CHECK
-#: bse/bsebiquadfilter.c:184
+#: bse/bsebiquadfilter.c:185
+#, no-c-format
 msgid "Gain Modulation [%]"
 msgstr "Modulationszuwachs [%]"
 
 # CHECK
-#: bse/bsebiquadfilter.c:185
+#: bse/bsebiquadfilter.c:186
 msgid "Strength of gain modulation"
 msgstr "Ausprägung des Modulationszuwachses"
 
-#: bse/bsebiquadfilter.c:189
+#: bse/bsebiquadfilter.c:190
 msgid "Unfiltered Audio Signal"
 msgstr "Ungefiltertes Audio-Signal"
 
-#: bse/bsebiquadfilter.c:191
+#: bse/bsebiquadfilter.c:192
 msgid "Center Frequency Input"
 msgstr "Frequenzeingabe zentrieren"
 
-#: bse/bsebiquadfilter.c:193
+#: bse/bsebiquadfilter.c:194
 msgid "Frequency Modulation Input"
 msgstr "Frequenzmodulationseingabe"
 
-#: bse/bsebiquadfilter.c:195
+#: bse/bsebiquadfilter.c:196
 msgid "Gain Modulation Input"
 msgstr "Modulationszuwachseingabe"
 
-#: bse/bsebiquadfilter.c:197
+#: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
 msgstr "Gefiltertes Audio-Signal"
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr "Autor"
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr "Person, die dieses Objekt erstellt oder verändert"
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr "Lizenz"
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr "Copyright-Lizenz, die auf dieses Objekt angewandt wird"
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr "Erstellungsdatum"
+
+#: bse/bsesuper.c:118
+msgid "Last modification time"
+msgstr "Datum der letzten Änderung"
