@@ -1,6 +1,6 @@
-* Effects support for sequencer notes
+* Various effects are supported for sequencer notes now
+* Sequencer and mixer cleanups and speedups
 * Added support for Cubic Interpolation
-* Sequencer mixer cleanups and speedups
 * Complete reimplementation of the type and parameter systems
   for integration with upcomming GLib 1.4 facilities.
 * New synthesis modules:
