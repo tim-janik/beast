@@ -194,29 +194,29 @@ rc_file_try_statement (gpointer   context_data,
 }
 
 static void
-bse_server_init (BseServer *server)
+bse_server_init (BseServer *self)
 {
   gchar *file_name;
   gint fd;
 
-  g_assert (BSE_OBJECT_ID (server) == 1);	/* assert being the first object */
+  g_assert (BSE_OBJECT_ID (self) == 1);	/* assert being the first object */
+  BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_SINGLETON);
 
-  server->engine_source = NULL;
-  server->projects = NULL;
-  server->dev_use_count = 0;
-  server->pcm_latency = 50;
-  server->pcm_device = NULL;
-  server->pcm_imodule = NULL;
-  server->pcm_omodule = NULL;
-  server->pcm_writer = NULL;
-  server->midi_device = NULL;
-  BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
+  self->engine_source = NULL;
+  self->projects = NULL;
+  self->dev_use_count = 0;
+  self->pcm_latency = 50;
+  self->pcm_device = NULL;
+  self->pcm_imodule = NULL;
+  self->pcm_omodule = NULL;
+  self->pcm_writer = NULL;
+  self->midi_device = NULL;
   
   /* keep the server singleton alive */
-  bse_item_use (BSE_ITEM (server));
+  bse_item_use (BSE_ITEM (self));
   
   /* start dispatching main thread stuff */
-  main_thread_source_setup (server);
+  main_thread_source_setup (self);
   
   /* read rc file */
   file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
@@ -225,7 +225,7 @@ bse_server_init (BseServer *server)
     {
       SfiRStore *rstore = sfi_rstore_new ();
       sfi_rstore_input_fd (rstore, fd, file_name);
-      sfi_rstore_parse_all (rstore, server, rc_file_try_statement, NULL);
+      sfi_rstore_parse_all (rstore, self, rc_file_try_statement, NULL);
       sfi_rstore_destroy (rstore);
       close (fd);
     }

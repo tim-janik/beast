@@ -37,7 +37,7 @@ G_BEGIN_DECLS
 #define BSE_SUPER_NEEDS_SEQUENCER(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_SUPER_FLAG_NEEDS_SEQUENCER) != 0)
 
 
-/* --- bse item flags --- */
+/* --- bse super flags --- */
 typedef enum                            /*< skip >*/
 {
   BSE_SUPER_FLAG_NEEDS_CONTEXT		 = 1 << (BSE_CONTAINER_FLAGS_USHIFT + 0),

@@ -224,8 +224,6 @@ main (gint   argc,
   sfi_init ();
   config = sfi_rec_new();
   
-  root = BSE_TYPE_OBJECT;
-
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-s", argv[i]) == 0)
@@ -323,6 +321,8 @@ main (gint   argc,
 
   if (root_name)
     root = g_type_from_name (root_name);
+  else
+    root = BSE_TYPE_OBJECT;
 
   if (!gen_froots && !gen_tree && !gen_cats && !gen_procdoc && !list_synths && !show_synth)
     return help (argv[i-1]);
