@@ -6,6 +6,9 @@ Sun Dec 28 10:24:29 2003  Tim Janik  <timj@gtk.org>
 
 Thu Dec 25 07:25:51 2003  Tim Janik  <timj@gtk.org>
 
+	* bsemidifile.[hc]: new files, containing a MIDI file parser (based on
+	BseMidiDecoder) and a rudimentary MIDI file to BseSong converter.
+
 	* bsemidievent.[hc]: comment fixups. added SMF meta event types.
 	renamed event tick_stamp field to delta_time. added global macros
 	to check for channel-voice, system-common and system-realtime
