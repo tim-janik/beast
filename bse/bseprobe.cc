@@ -115,9 +115,9 @@ private:
     if (probe.probe_features->probe_range)
       for (gfloat *v = values; v < values + n_values; v++)
         {
-          if_reject (*v < probe.min)
+          if (G_UNLIKELY (*v < probe.min))
             probe.min = *v;
-          if_reject (*v > probe.max)
+          if (G_UNLIKELY (*v > probe.max))
             probe.max = *v;
         }
     SfiFBlock *fblock = probe.sample_data.fblock();

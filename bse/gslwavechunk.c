@@ -286,7 +286,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
   GslLong pos = iter->pos;
   GslLong one = wchunk->n_channels;
   
-  if_reject (pos < wchunk->head.first)					/* outside wave boundaries */
+  if (UNLIKELY (pos < wchunk->head.first))					/* outside wave boundaries */
     {
       iter->lbound = 0;
       iter->rel_pos = wchunk->n_pad_values;
@@ -295,7 +295,7 @@ wave_identify_offset (GslWaveChunk *wchunk,
 	g_print ("PHASE_UNDEF, pre-head %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
       return PHASE_UNDEF (wchunk);
     }
-  if_reject (pos > wchunk->tail.last)					/* outside wave boundaries */
+  if (UNLIKELY (pos > wchunk->tail.last))					/* outside wave boundaries */
     {
       iter->lbound = 0;
       iter->rel_pos = wchunk->n_pad_values;

@@ -386,7 +386,7 @@ _engine_set_schedule (EngineSchedule *sched)
   g_return_if_fail (sched->secured == TRUE);
   
   GSL_SPIN_LOCK (&pqueue_mutex);
-  if_reject (pqueue_schedule != NULL)
+  if (UNLIKELY (pqueue_schedule != NULL))
                                 {
                                   GSL_SPIN_UNLOCK (&pqueue_mutex);
                                   g_warning (G_STRLOC ": schedule already set");
@@ -405,13 +405,13 @@ _engine_unset_schedule (EngineSchedule *sched)
   g_return_if_fail (sched != NULL);
   
   GSL_SPIN_LOCK (&pqueue_mutex);
-  if_reject (pqueue_schedule != sched)
+  if (UNLIKELY (pqueue_schedule != sched))
                                 {
                                   GSL_SPIN_UNLOCK (&pqueue_mutex);
                                   g_warning (G_STRLOC ": schedule(%p) not currently set", sched);
                                   return;
                                 }
-  if_reject (pqueue_n_nodes || pqueue_n_cycles)
+  if (UNLIKELY (pqueue_n_nodes || pqueue_n_cycles))
     g_warning (G_STRLOC ": schedule(%p) still busy", sched);
   sched->in_pqueue = FALSE;
   pqueue_schedule = NULL;
@@ -450,7 +450,7 @@ _engine_pop_unprocessed_node (void)
 static inline void
 collect_user_jobs_L (EngineNode *node)
 {
-  if_reject (node->ujob_first != NULL)
+  if (UNLIKELY (node->ujob_first != NULL))
                                  {
                                    /* move into timed jobs trash queue */
                                    node->ujob_last->next = pqueue_trash_ujobs_first;
@@ -572,7 +572,7 @@ _engine_mnl_node_changed (EngineNode *node)
    * are agglomerated at the head.
    */
   sibling = node->mnl_prev ? node->mnl_prev : node->mnl_next;
-  if_reject (sibling && BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node) != BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (sibling))
+  if (UNLIKELY (sibling && BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node) != BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (sibling)))
                                                                        {
                                                                          /* remove */
                                                                          if (node->mnl_prev)
@@ -600,7 +600,7 @@ _engine_mnl_node_changed (EngineNode *node)
                                                                              node->mnl_next = NULL;
                                                                            }
                                                                        }
-  if_reject (node->ujob_first != NULL)
+  if (UNLIKELY (node->ujob_first != NULL))
                                  {
                                    GSL_SPIN_LOCK (&pqueue_mutex);
                                    collect_user_jobs_L (node);

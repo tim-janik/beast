@@ -51,7 +51,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
       if (CHECK_SYNC)
 	{
 	  gfloat sync_level = *sync_in++;
-	  if_reject (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level))
+	  if (UNLIKELY (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level)))
 	    {
 	      wosc->j = wosc_j;
 	      gsl_wave_osc_retrigger (wosc, CHECK_FREQ ? GSL_SIGNAL_TO_FREQ (*freq_in) : wosc->config.cfreq);
@@ -67,14 +67,14 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
       if (CHECK_MOD && CHECK_FREQ)
 	{
 	  gfloat mod_level = *mod_in++, freq_level = *freq_in++;
-	  if_reject (GSL_SIGNAL_FREQ_CHANGED (last_freq_level, freq_level))
+	  if (UNLIKELY (GSL_SIGNAL_FREQ_CHANGED (last_freq_level, freq_level)))
 	    {
 	      last_freq_level = freq_level;
 	      if (GSL_SIGNAL_MOD_CHANGED (last_mod_level, mod_level))
 		last_mod_level = mod_level;
 	      goto UPDATE_FREQ;
 	    }
-          else if_reject (GSL_SIGNAL_MOD_CHANGED (last_mod_level, mod_level))
+          else if (UNLIKELY (GSL_SIGNAL_MOD_CHANGED (last_mod_level, mod_level)))
 	    {
 	      gfloat new_freq;
 	      last_mod_level = mod_level;
@@ -118,7 +118,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	  gfloat d, d0, d1, d2, d3, d4, d5, d6, d7;
 	  gfloat *x;
 
-	  if_reject (wosc->x >= boundary)       /* wchunk block boundary */
+	  if (UNLIKELY (wosc->x >= boundary))       /* wchunk block boundary */
 	    {
 	      GslLong next_offset = block->next_offset;
 
@@ -130,7 +130,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      boundary = block->end;
 	    }
 	  
-	  if_expect (block->dirstride > 0)
+	  if (LIKELY (block->dirstride > 0))
 	    {
 	      x = wosc->x;
 	      d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;

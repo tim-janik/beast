@@ -96,7 +96,7 @@ skipchr (const guint8 *mem,
   const guint8 *p = mem, *bound = p + maxlen;
 
   while (p < bound)
-    if_reject (*p++ != byte)
+    if (UNLIKELY (*p++ != byte))
       return (guint8*) p - 1;
   return NULL;
 }

@@ -59,7 +59,7 @@ osc_update_pwm_offset (GslOscData *osc,
   min = fabs (min + osc->pwm_center);
   max = fabs (max + osc->pwm_center);
   max = MAX (max, min);
-  if_reject (max < GSL_FLOAT_MIN_NORMAL)
+  if (UNLIKELY (max < GSL_FLOAT_MIN_NORMAL))
     {
       osc->pwm_center = foffset < 0.5 ? -1.0 : +1.0;
       osc->pwm_max = 1.0;
@@ -129,7 +129,7 @@ osc_process (GslOscData   *osc,
   else if (imod)
     mode |= OSC_FLAG_LINEAR_MOD;
   
-  if_reject (mode != osc->last_mode)
+  if (UNLIKELY (mode != osc->last_mode))
     {
       guint change_mask = osc->last_mode >= OSC_FLAG_INVAL ? OSC_FLAG_INVAL : osc->last_mode ^ mode;
       

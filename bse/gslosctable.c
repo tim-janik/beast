@@ -188,7 +188,7 @@ osc_table_entry_lookup_best (const GslOscTable *table,
   /* get exact match or a match which is one off into either direction */
   key.mfreq = mfreq;
   ep = g_bsearch_array_lookup_sibling (table->entry_array, &osc_taconfig, &k);
-  if_reject (!ep)
+  if (UNLIKELY (!ep))
     return NULL;	/* ugh, bad */
   
   if (mfreq > (*ep)->mfreq)	/* need better filter */

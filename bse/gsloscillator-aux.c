@@ -66,14 +66,14 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 #if (ISYNC1_OSYNC0)		/* input sync only */
       {
 	gfloat sync_level = *sync_in++;
-	if_reject (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level))
+	if (UNLIKELY (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level)))
 	  cur_pos = sync_pos;
 	last_sync_level = sync_level;
       }
 #elif (ISYNC1_OSYNC1)		/* input and output sync */
       {
 	gfloat sync_level = *sync_in++;
-	if_reject (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level))
+	if (UNLIKELY (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level)))
 	  {
 	    cur_pos = sync_pos;
 	    *sync_out++ = 1.0;
@@ -101,7 +101,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 	freq_level = GSL_SIGNAL_TO_FREQ (freq_level);
 	if (GSL_SIGNAL_FREQ_CHANGED (last_freq_level, freq_level))
 	  {
-	    if_reject (freq_level <= wave->min_freq || freq_level > wave->max_freq)
+	    if (UNLIKELY (freq_level <= wave->min_freq || freq_level > wave->max_freq))
 	      {
 		gdouble fcpos, flpos;
 		const gfloat *orig_values = wave->values;

@@ -92,14 +92,14 @@ class Amplifier : public AmplifierBase {
               else if (CCASE == CCASE_C1n_C2y)
                 cv_sum = cl2 * *cv2in++;
 
-              if_reject (cv_sum < 0)
+              if (G_UNLIKELY (cv_sum < 0))
                 cv_sum = 0;
               else
                 cv_sum *= ocs;
               if (FLAGS & WITH_EXP_CONTROLS)            /* exponential controls */
                 cv_sum = gsl_approx_qcircle2 (cv_sum);
               cv_sum += bl;
-              if_reject (cv_sum > 1.0)
+              if (G_UNLIKELY (cv_sum > 1.0))
                 cv_sum = 1.0;
             }
 

@@ -223,7 +223,7 @@ node_pop_flow_job (EngineNode  *node,
                    guint64      tick_stamp)
 {
   EngineTimedJob *tjob = node->flow_jobs;
-  if_reject (tjob != NULL)
+  if (UNLIKELY (tjob != NULL))
                      {
                        if (tjob->tick_stamp <= tick_stamp)
                          {
@@ -297,7 +297,7 @@ static inline guint64
 node_peek_flow_job_stamp (EngineNode *node)
 {
   EngineTimedJob *tjob = node->flow_jobs;
-  if_reject (tjob != NULL)
+  if (UNLIKELY (tjob != NULL))
                      return tjob->tick_stamp;
   return GSL_MAX_TICK_STAMP;
 }
@@ -306,7 +306,7 @@ static inline guint64
 node_peek_boundary_job_stamp (EngineNode *node)
 {
   EngineTimedJob *tjob = node->boundary_jobs;
-  if_reject (tjob != NULL)
+  if (UNLIKELY (tjob != NULL))
                      return tjob->tick_stamp;
   return GSL_MAX_TICK_STAMP;
 }
@@ -760,7 +760,7 @@ master_update_node_state (EngineNode *node,
   /* if a reset is pending, it needs to be handled *before*
    * flow jobs change state.
    */
-  if_reject (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter))
+  if (UNLIKELY (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter)))
     {
       /* for suspended nodes, reset() occours later */
       if (node->module.klass->reset)
@@ -768,7 +768,7 @@ master_update_node_state (EngineNode *node,
       node->needs_reset = FALSE;
     }
   tjob = node_pop_flow_job (node, max_tick);
-  if_reject (tjob != NULL)
+  if (UNLIKELY (tjob != NULL))
                      do
                        {
                          TJOB_DEBUG ("flow-access for (%p:s=%u) at:%lld current:%lld\n",
@@ -833,7 +833,7 @@ master_process_locked_node (EngineNode *node,
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	node->module.ostreams[i].values = node->outputs[i].buffer + diff;
       /* process() node */
-      if_reject (ENGINE_NODE_IS_SUSPENDED (node, node->counter))
+      if (UNLIKELY (ENGINE_NODE_IS_SUSPENDED (node, node->counter)))
 	{
 	  /* suspended node processing behaviour */
 	  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
@@ -884,12 +884,12 @@ master_process_flow (void)
 	{
 	  ToyprofStamp profile_stamp1, profile_stamp2;
 	  
-	  if_reject (profile_modules)
+	  if (UNLIKELY (profile_modules))
 	    toyprof_stamp (profile_stamp1);
 	  
 	  master_process_locked_node (node, n_values);
           
-	  if_reject (profile_modules)
+	  if (UNLIKELY (profile_modules))
 	    {
 	      toyprof_stamp (profile_stamp2);
 	      guint64 duration = toyprof_elapsed (profile_stamp1, profile_stamp2);
@@ -924,7 +924,7 @@ master_process_flow (void)
       for (ring = master_schedule->vnodes; ring; ring = sfi_ring_walk (ring, master_schedule->vnodes))
         master_take_probes (ring->data, current_stamp, n_values, PROBE_VIRTUAL);
       
-      if_reject (profile_modules)
+      if (UNLIKELY (profile_modules))
 	{
 	  if (profile_node)
 	    {
@@ -1057,7 +1057,7 @@ _engine_master_dispatch_jobs (void)
       job = _engine_pop_job ();
     }
   /* process boundary jobs and possibly newly queued jobs after that. */
-  if_reject (boundary_node_list != NULL)
+  if (UNLIKELY (boundary_node_list != NULL))
                                    do
                                      {
                                        SfiRing *ring = boundary_node_list;

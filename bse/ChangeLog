@@ -1,3 +1,11 @@
+Sat Jul 24 05:33:58 2004  Tim Janik  <timj@gtk.org>
+
+	* gsldefs.h: removed if_reject() and if_expect() variants.
+	G_LIKELY() and G_UNLIKELY() may be used instead. provide
+	LIKELY(), ISLIKELY() and UNLIKELY() for convenience.
+
+	* *.[hc]*: fixed if_reject() and if_expect() usage.
+
 Fri Jul 23 20:05:53 2004  Tim Janik  <timj@gtk.org>
 
 	* *.h, *.c, *.cc: globally renamed GSL Engine to BSE Engine.

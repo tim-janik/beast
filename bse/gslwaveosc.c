@@ -113,7 +113,7 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
   g_return_val_if_fail (n_values > 0, FALSE);
   g_return_val_if_fail (mono_out != NULL, FALSE);
 
-  if_reject (!wosc->config.wchunk_from_freq)
+  if (UNLIKELY (!wosc->config.wchunk_from_freq))
     return FALSE;
 
   /* mode changes:
@@ -133,7 +133,7 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
     mode |= WOSC_MIX_WITH_EXP_FM;
 
   /* adapt to mode changes */
-  if_reject (mode != wosc->last_mode)
+  if (UNLIKELY (mode != wosc->last_mode))
     {
       guint mask = wosc->last_mode ^ mode;
 
@@ -247,7 +247,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 
   g_return_if_fail (play_freq > 0);
 
-  if_reject (!wosc->config.wchunk_from_freq)
+  if (UNLIKELY (!wosc->config.wchunk_from_freq))
     return;
 
   wosc->step_factor = zero_padding * wosc->wchunk->mix_freq;
@@ -323,7 +323,7 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
 {
   g_return_if_fail (wosc != NULL);
 
-  if_reject (!wosc->config.wchunk_from_freq)
+  if (UNLIKELY (!wosc->config.wchunk_from_freq))
     return;
 
   if (wosc->wchunk)

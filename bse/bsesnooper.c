@@ -187,13 +187,13 @@ snooper_process (BseModule *module,
 	  min = MIN (min, v);
 	  avg += v;
 	  max = MAX (max, v);
-	  if_reject (GSL_FLOAT_IS_NANINF (v))
+	  if (UNLIKELY (GSL_FLOAT_IS_NANINF (v)))
 	    {
 	      seen_nan |= GSL_FLOAT_IS_NAN (v);
 	      seen_pinf |= GSL_FLOAT_IS_INF_POSITIVE (v);
 	      seen_ninf |= GSL_FLOAT_IS_INF_POSITIVE (v);
 	    }
-	  else if_reject (GSL_FLOAT_IS_SUBNORMAL (v))
+	  else if (UNLIKELY (GSL_FLOAT_IS_SUBNORMAL (v)))
 		 seen_subn = TRUE;
 	}
       avg /= (gdouble) n_values;

@@ -433,7 +433,7 @@ biquad_filter_process (BseModule *module,
 	{
 	  guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
-	  if_reject (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq))
+	  if (UNLIKELY (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq)))
 	    {
 	      last_freq = *sig_out;
 	      freq = GSL_SIGNAL_TO_FREQ (last_freq) * nyquist;
@@ -445,7 +445,7 @@ biquad_filter_process (BseModule *module,
 		}
 	      gsl_biquad_filter_config (&fmod->biquad, &fmod->config, FALSE);
 	    }
-	  else if_reject (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain))
+	  else if (UNLIKELY (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain)))
 	    {
 	      last_gain = *gain_in;
 	      gsl_biquad_config_approx_gain (&fmod->config, fmod->gain * (1.0 + last_gain * fmod->gain_strength));
@@ -467,7 +467,7 @@ biquad_filter_process (BseModule *module,
 	{
           guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
-          if_reject (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq))
+          if (UNLIKELY (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq)))
 	    {
 	      last_freq = *sig_out;
 	      freq = GSL_SIGNAL_TO_FREQ (last_freq) * nyquist;
@@ -488,7 +488,7 @@ biquad_filter_process (BseModule *module,
 	{
           guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
-	  if_reject (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain))
+	  if (UNLIKELY (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain)))
 	    {
 	      last_gain = *gain_in;
               gsl_biquad_config_approx_gain (&fmod->config, fmod->gain * (1.0 + last_gain * fmod->gain_strength));
