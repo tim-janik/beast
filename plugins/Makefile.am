@@ -61,13 +61,13 @@ include Makefile.plugins
 ## Makefile.plugins contains generated plugin rules:
 ##
 ##foo_la_SOURCES         = foo.cc
-##foo_la_LDFLAGS         = $(plugin_ldflags)
+##foo_la_LDFLAGS         = -module $(plugin_ldflags)
 ##foo_la_LIBADD          = $(plugin_libs)
 ##$(srcdir)/foo.cc:        foo.gen-idl.h
 ##plugins_built_sources += foo.gen-idl.h
 ##plugin_LTLIBRARIES    += foo.la
 #
-plugin_ldflags = -module -avoid-version
+plugin_ldflags = -avoid-version
 plugin_libs    = $(BSE_LIBS) -lm # $(top_builddir)/bse/libbse.la
 
 EXTRA_DIST += $(strip \

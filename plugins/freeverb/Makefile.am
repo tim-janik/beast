@@ -7,12 +7,9 @@ INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 # install plugins under:
 plugindir = $(bseplugindir)
 
-# all plugins want to link against:
-plugin_libs = $(BSE_LIBS) -lm
-
 freeverb_la_SOURCES = allpass.cpp comb.cpp revmodel.cpp bsefreeverbcpp.cpp bsefreeverb.c
 freeverb_la_LDFLAGS = -module -avoid-version
-freeverb_la_LIBADD  = $(plugin_libs)
+freeverb_la_LIBADD  = $(BSE_LIBS) -lm
 
 plugin_LTLIBRARIES = freeverb.la
 
