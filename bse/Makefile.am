@@ -5,7 +5,9 @@
 
 SUBDIRS = icons
 
-INCLUDES = -I$(top_srcdir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+# need -I$(top_srcdir) for <gsl/gsldefs.h>
+# need -I. for "../PKG_config.h"
+INCLUDES = -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #
 # libraries to compile and install
@@ -15,22 +17,22 @@ lib_LTLIBRARIES = libbse.la
 # due to automake-1.3 not featuring target specific defines,
 # the G_LOG_DOMAIN needs to be special cased, depending on
 # the source file sets ;(
-DEFS += @STRIP_BEGIN@ \
+DEFS += $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_c_sources))) \
 	$(patsubst %, -DBSE_BUILTIN_NAME=$(strip $(subst -,_, $(subst .,_,$(basename $(<F))))) \
                       -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\"" \
 	              -DG_LOG_DOMAIN=BSE_PLUGIN_NAME -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_builtin_c_sources))) \
-@STRIP_END@
+)
 
 # libtool stuff: set version and export symbols for resolving
 libbseincludedir = $(includedir)/bse
-libbse_la_LDFLAGS = @STRIP_BEGIN@ \
+libbse_la_LDFLAGS = $(strip \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-release $(LT_RELEASE) \
 	-export-dynamic \
-@STRIP_END@
+)
 libbse_la_LIBADD = $(BSE_LIBS) -lm
 
 
@@ -38,7 +40,7 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 # setup source file variables
 #
 # BSE header files for public installation (non-generated)
-bse_public_h_sources = @STRIP_BEGIN@ \
+bse_public_h_sources = $(strip \
 	bse.h \
 	bseamplifier.h \
 	bsebindata.h \
@@ -108,12 +110,12 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bswprivate.h \
 	glib-extra.h \
 	$(TOYPROF_H_SOURCES) \
-@STRIP_END@
+)
 # BSE header files that don't get installed
-bse_private_h_sources = @STRIP_BEGIN@ \
-@STRIP_END@
+bse_private_h_sources = $(strip \
+)
 # BSE C sources to build the library from
-bse_c_sources = @STRIP_BEGIN@ \
+bse_c_sources = $(strip \
 	bseamplifier.c \
 	bsebindata.c \
 	bsebiquadfilter.c \
@@ -179,9 +181,9 @@ bse_c_sources = @STRIP_BEGIN@ \
 	glib-extra.c \
 	$(GSL_C_SRC) \
 	$(TOYPROF_C_SOURCES) \
-@STRIP_END@
+)
 # procedure sources
-bse_proc_sources = @STRIP_BEGIN@ \
+bse_proc_sources = $(strip \
 	bsecontainer.proc \
 	bsedatapocket.proc \
 	bseeditablesample.proc \
@@ -202,8 +204,8 @@ bse_proc_sources = @STRIP_BEGIN@ \
 	bsewave.proc \
 	bsewaveosc.proc \
 	bsewaverepo.proc \
-@STRIP_END@
-bse_proc_gen_sources = @STRIP_BEGIN@ \
+)
+bse_proc_gen_sources = $(strip \
 	bsecontainer.gen-proc.c \
 	bsedatapocket.gen-proc.c \
 	bseenums.gen-proc.c \
@@ -224,22 +226,22 @@ bse_proc_gen_sources = @STRIP_BEGIN@ \
 	bsewave.gen-proc.c \
 	bsewaveosc.gen-proc.c \
 	bsewaverepo.gen-proc.c \
-@STRIP_END@
+)
 # c sources for builtin plugins
-bse_builtin_c_sources = @STRIP_BEGIN@ \
+bse_builtin_c_sources = $(strip \
 	$(bse_proc_gen_sources) \
-@STRIP_END@
+)
 # non-compile and non-install sources required
-bse_extra_sources = @STRIP_BEGIN@ \
+bse_extra_sources = $(strip \
 	mkbuiltinlist.pl \
 	mktypes.pl \
 	mkcalls.pl \
 	bseamplifier-aux.c \
 	bseconfig.h.in \
 	bsepcmmodule.c \
-	bsemidimodule.c \
 	bsemarshal.list \
-@STRIP_END@
+	gbsearcharray.h \
+)
 # we use our own built_sources variable rules instead of BUILT_SOURCES,
 # since handles BUILT_SOURCES strange and wrong on some occasions (mostly
 # wrt dependancies)
@@ -248,12 +250,12 @@ bse_extra_sources = @STRIP_BEGIN@ \
 # content
 #
 # h-sources to build and install
-bse_built_h_sources = @STRIP_BEGIN@ \
+bse_built_h_sources = $(strip \
 	bsegentypes.h \
 	bsemarshal.h \
-@STRIP_END@
+)
 # c-sources to build and compile
-bse_built_c_sources = @STRIP_BEGIN@ \
+bse_built_c_sources = $(strip \
 	bseenum_arrays.c \
 	bseenum_list.c \
 	bsebuiltin_externs.c \
@@ -262,12 +264,12 @@ bse_built_c_sources = @STRIP_BEGIN@ \
 	bsegentype_array.c \
 	bsemarshal.h \
 	bsemarshal.c \
-@STRIP_END@
+)
 # built-deps
-bseenums.c: bseenum_arrays.c bseenum_list.c
-bseobject.c: bsemarshal.c
-bseplugin.c: bsebuiltin_externs.c bsebuiltin_array.c
-bsetype.c: bsegentypes.c bsegentype_array.c
+$(srcdir)/bseenums.c: bseenum_arrays.c bseenum_list.c
+$(srcdir)/bseobject.c: bsemarshal.c
+$(srcdir)/bseplugin.c: bsebuiltin_externs.c bsebuiltin_array.c
+$(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 
 #
 # setup BSE sources and their dependancies
@@ -288,10 +290,10 @@ GLIB_MKENUMS = glib-mkenums
 gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac xgen-bnac xgen-bmx xgen-bmh xgen-bmc
 CLEANFILES += $(gen_sources) @MISSING_PERL5@ $(bse_proc_gen_sources)
 $(OBJECTS): $(bse_built_h_sources)
-# piggyback generation through sideeffects needs NOP-rules for dep-tracking
-bsegentypes.h: stamp-bsegentypes.h ;
+# piggyback generation through sideeffects, needs NOP-rule for dep-tracking, must be in srcdir
+$(srcdir)/bsegentypes.h: stamp-bsegentypes.h ;
 # normal autogeneration rules
-stamp-bsegentypes.h: @MISSING_PERL5@ $(srcdir)/mktypes.pl
+stamp-bsegentypes.h: @MISSING_PERL5@ mktypes.pl
 stamp-bsegentypes.h: @MISSING_PERL5@ @BIRNET_N@ $(bse_c_sources)
 stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_public_h_sources)
 	cd $(srcdir) \
@@ -300,22 +302,22 @@ stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_public_h_sources)
 	  --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
 	  --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	    $(bse_public_h_sources) > xgen-sbgth \
-	&& $(PERL) $(srcdir)/mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
+	&& $(PERL) mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
-	&& echo timestamp > $@
-bsegentypes.c: @MISSING_PERL5@ bsegentypes.h $(srcdir)/mktypes.pl
+	&& echo timestamp > $(@F)
+bsegentypes.c: @MISSING_PERL5@ bsegentypes.h mktypes.pl
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
 	    $(bse_public_h_sources) > xgen-bgtc \
-	&& $(PERL) $(srcdir)/mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
-	&& cp xgen-bgtc $@ \
+	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
+	&& cp xgen-bgtc $(@F) \
 	&& rm -f xgen-bgtc
 bsegentype_array.c: @MISSING_PERL5@ bsegentypes.c
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mktypes.pl --array $(bse_c_sources) > xgen-bgtac \
-	&& cp xgen-bgtac $@ \
+	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-bgtac \
+	&& cp xgen-bgtac $(@F) \
 	&& rm -f xgen-bgtac
 bseenum_arrays.c: @MISSING_PERL5@ $(bse_public_h_sources)
 	cd $(srcdir) \
@@ -326,7 +328,7 @@ bseenum_arrays.c: @MISSING_PERL5@ $(bse_public_h_sources)
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
 	    $(bse_public_h_sources) > xgen-sbeac \
-	&& cp xgen-sbeac $@ \
+	&& cp xgen-sbeac $(@F) \
 	&& rm -f xgen-sbeac
 bseenum_list.c: @MISSING_PERL5@ bseenum_arrays.c
 	cd $(srcdir) \
@@ -334,29 +336,29 @@ bseenum_list.c: @MISSING_PERL5@ bseenum_arrays.c
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
 	    $(bse_public_h_sources) > xgen-belc \
-	&& cp xgen-belc $@ \
+	&& cp xgen-belc $(@F) \
 	&& rm -f xgen-belc
-bsebuiltin_externs.c: @MISSING_PERL5@ $(bse_builtin_c_sources) $(srcdir)/mkbuiltinlist.pl
+bsebuiltin_externs.c: @MISSING_PERL5@ $(bse_builtin_c_sources) mkbuiltinlist.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkbuiltinlist.pl --externs $(bse_builtin_c_sources) > xgen-bbec \
-	&& cp xgen-bbec $@ \
+	&& $(PERL) mkbuiltinlist.pl --externs $(bse_builtin_c_sources) > xgen-bbec \
+	&& cp xgen-bbec $(@F) \
 	&& rm -f xgen-bbec
-bsebuiltin_array.c: @MISSING_PERL5@ $(bse_builtin_c_sources) $(srcdir)/mkbuiltinlist.pl
+bsebuiltin_array.c: @MISSING_PERL5@ $(bse_builtin_c_sources) mkbuiltinlist.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkbuiltinlist.pl --array $(bse_builtin_c_sources) > xgen-bbac \
-	&& cp xgen-bbac $@ \
+	&& $(PERL) mkbuiltinlist.pl --array $(bse_builtin_c_sources) > xgen-bbac \
+	&& cp xgen-bbac $(@F) \
 	&& rm -f xgen-bbac
-$(srcdir)/bsemarshal.h: @MISSING_PERL5@ bsemarshal.list
+bsemarshal.h: @MISSING_PERL5@ bsemarshal.list
 	cd $(srcdir) \
 	&& glib-genmarshal --prefix=bse_marshal bsemarshal.list --header >> xgen-bmh \
-	&& cp xgen-bmh bsemarshal.h \
+	&& cp xgen-bmh $(@F) \
 	&& rm -f xgen-bmh
-$(srcdir)/bsemarshal.c: @MISSING_PERL5@ bsemarshal.h
+bsemarshal.c: @MISSING_PERL5@ bsemarshal.h
 	cd $(srcdir) \
 	&& glib-genmarshal --prefix=bse_marshal bsemarshal.list --body >> xgen-bmc \
-	&& cp xgen-bmc bsemarshal.c \
+	&& cp xgen-bmc $(@F) \
 	&& rm -f xgen-bmc
-%.gen-proc.c: %.proc $(srcdir)/mkcproc.pl
+%.gen-proc.c: %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl $< >$@
 
 

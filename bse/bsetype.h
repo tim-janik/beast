@@ -106,12 +106,11 @@ extern GType BSE_TYPE_PARAM_DOTS;
  */
 #define	BSE_TYPE_ID(BseTypeName)	(bse_type_builtin_id_##BseTypeName)
 #ifdef BSE_COMPILATION
-#  define BSE_BUILTIN_PROTO(BseTypeName) extern GType bse_type_builtin_register_##BseTypeName (void)
-#  define BSE_BUILTIN_TYPE(BseTypeName)	 BSE_BUILTIN_PROTO (BseTypeName); \
+#  define BSE_BUILTIN_PROTO(BseTypeName) GType bse_type_builtin_register_##BseTypeName (void)
+#  define BSE_BUILTIN_TYPE(BseTypeName)	 extern BSE_BUILTIN_PROTO (BseTypeName); \
                                          GType bse_type_builtin_register_##BseTypeName (void)
-#  define BSE_DUMMY_TYPE(BseTypeName)	 BSE_BUILTIN_PROTO (BseTypeName); \
-                                         GType bse_type_builtin_register_##BseTypeName (void) \
-                                         { return 0; } BSE_BUILTIN_PROTO (BseTypeName)
+#  define BSE_DUMMY_TYPE(BseTypeName)	 BSE_BUILTIN_PROTO (BseTypeName) { return 0; } \
+                                         extern BSE_BUILTIN_PROTO (BseTypeName)
 #endif /* BSE_COMPILATION */
 
 

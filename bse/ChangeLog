@@ -1,3 +1,14 @@
+Sat Jul 27 18:17:49 2002  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: distcheck-fixing: include -I., prefix
+	deps with srcdir, fix file arguments wrg srcdir
+	prefixing.
+
+	* mktypes.pl:
+	* bsetype.h: fixup builtin type macros.
+
+	* gslmakefile.inc: add missing files.
+
 Sat Jul 27 12:48:07 2002  Tim Janik  <timj@gtk.org>
 
 	* bswcommon.[hc]: support callback notification from
