@@ -1,4 +1,8 @@
 FIXMES:
+- open() may return -EINVAL (e.g. for non-readable cards),
+  we shouldn't map that onto BSE_ERROR_INTERNAL
+- CSL driver has a prio higher than OSS? leads to no device being
+  found, though OSS could be found?
 - fix piano roll [VH]PANEL_BG_GC() usage and GDK_Escape (ala trackroll)
 - use one global ID allocator
 - add IDs to part links in tracks
