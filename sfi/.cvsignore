@@ -7,3 +7,4 @@ Makefile.in
 libsfi.la
 sfimarshal.[hc]
 sfidl
+testsfi

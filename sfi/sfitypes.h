@@ -50,9 +50,6 @@ void	sfi_set_error	(GError       **errorp,	// do nothing if *errorp is set alrea
 			 gint           code,
 			 const gchar   *format,
 			 ...) G_GNUC_PRINTF (4, 5);
-gchar*  sfi_note_to_string      (gint            note);
-gint    sfi_note_from_string    (const gchar    *note_string,
-				 GError        **errorp);
 gboolean sfi_choice_match_detailed (const gchar *choice_val1,
 				    const gchar *choice_val2,
 				    gboolean     l1_ge_l2);

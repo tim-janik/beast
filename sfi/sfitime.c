@@ -23,6 +23,7 @@
 #include <stdio.h>
 
 
+#define	SFI_ERROR_DOMAIN	g_quark_from_static_string ("sfi-error-domain")
 enum {
   ERROR_DATE_INVALID	= 1,
   ERROR_DATE_CLUTTERED,
@@ -51,10 +52,10 @@ _sfi_init_time (void)
   g_assert (initialized++ == FALSE);
 
   ustime = sfi_time_system ();
-  t = ustime / 1000000;
+  t = ustime / SFI_USEC_FACTOR;
   localtime (&t);
   gmt_diff = timezone;
-  gmt_diff *= 1000000;
+  gmt_diff *= SFI_USEC_FACTOR;
   time_zones[0] = g_strdup (tzname[0]);
   time_zones[1] = g_strdup (tzname[1]);
 }
@@ -65,7 +66,7 @@ _sfi_init_time (void)
  *
  * Get the current system time in micro seconds.
  * Subsequent calls to this function do not necessarily
- * return growing values. In fact, a second call may return
+ * return greater values. In fact, a second call may return
  * a value smaller than the first call under certain system
  * conditions.
  * This function is MT-safe and may be called from any thread.
@@ -80,7 +81,7 @@ sfi_time_system (void)
   if (error)
     g_error ("gettimeofday() failed: %s", g_strerror (errno));
   ustime = tv.tv_sec;
-  ustime = ustime * 1000000 + tv.tv_usec;
+  ustime = ustime * SFI_USEC_FACTOR + tv.tv_usec;
 
   return ustime;
 }
@@ -127,7 +128,7 @@ sfi_time_from_utc (SfiTime ustime)
 gchar*
 sfi_time_to_string (SfiTime ustime)
 {
-  time_t t = ustime / 1000000;
+  time_t t = ustime / SFI_USEC_FACTOR;
   struct tm bt;
   
   bt = *localtime (&t);	/* not thread safe */
@@ -426,7 +427,7 @@ sfi_time_from_string (const gchar *time_string,
   
   if (!success[i])
     {
-      sfi_set_error (errorp, 0, ERROR_DATE_INVALID, "invalid date specification: %s", time_string);
+      sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_INVALID, "invalid date specification: %s", time_string);
       ttime = 0;
     }
   else
@@ -434,35 +435,35 @@ sfi_time_from_string (const gchar *time_string,
       struct tm tm_data = { 0 };
       
       if (garbage[i])
-	sfi_set_error (errorp, 0, ERROR_DATE_CLUTTERED, "junk characters at end of date: %s", time_string);
+	sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_CLUTTERED, "junk characters at end of date: %s", time_string);
       if (year[i] < 1990)
 	{
-	  sfi_set_error (errorp, 0, ERROR_DATE_YEAR_BOUNDS, "%s out of bounds in date: %s", "year", time_string);
+	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_YEAR_BOUNDS, "%s out of bounds in date: %s", "year", time_string);
 	  year[i] = 1990;
 	}
       if (month[i] < 1 || month[i] > 12)
 	{
-	  sfi_set_error (errorp, 0, ERROR_DATE_MONTH_BOUNDS, "%s out of bounds in date: %s", "month", time_string);
+	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_MONTH_BOUNDS, "%s out of bounds in date: %s", "month", time_string);
 	  month[i] = CLAMP (month[i], 1, 12);
 	}
       if (day[i] < 1 || day[i] > 31)
 	{
-	  sfi_set_error (errorp, 0, ERROR_DATE_DAY_BOUNDS, "%s out of bounds in date: %s", "day", time_string);
+	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_DAY_BOUNDS, "%s out of bounds in date: %s", "day", time_string);
 	  month[i] = CLAMP (day[i], 1, 31);
 	}
       if (hour[i] < 0 || hour[i] > 23)
 	{
-	  sfi_set_error (errorp, 0, ERROR_DATE_HOUR_BOUNDS, "%s out of bounds in date: %s", "hour", time_string);
+	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_HOUR_BOUNDS, "%s out of bounds in date: %s", "hour", time_string);
 	  hour[i] = CLAMP (hour[i], 0, 23);
 	}
       if (minute[i] < 0 || minute[i] > 59)
 	{
-	  sfi_set_error (errorp, 0, ERROR_DATE_MINUTE_BOUNDS, "%s out of bounds in date: %s", "minute", time_string);
+	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_MINUTE_BOUNDS, "%s out of bounds in date: %s", "minute", time_string);
 	  minute[i] = CLAMP (minute[i], 0, 59);
 	}
       if (second[i] < 0 || second[i] > 61)
 	{
-	  sfi_set_error (errorp, 0, ERROR_DATE_SECOND_BOUNDS, "%s out of bounds in date: %s", "second", time_string);
+	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_SECOND_BOUNDS, "%s out of bounds in date: %s", "second", time_string);
 	  second[i] = CLAMP (second[i], 0, 61);
 	}
 
@@ -487,13 +488,13 @@ sfi_time_from_string (const gchar *time_string,
       
       if (ttime < 631148400) /* limit ttime to 1.1.1990 */
 	{
-	  sfi_set_error (errorp, 0, ERROR_DATE_INVALID, "invalid date specification: %s", time_string);
+	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_INVALID, "invalid date specification: %s", time_string);
 	  ttime = 631148400;
 	}
     }
 
   g_free (string);
   ustime = ttime;
-  ustime *= 1000000;
+  ustime *= SFI_USEC_FACTOR;
   return ustime;
 }

@@ -1,3 +1,14 @@
+Fri Oct  4 08:37:25 2002  Tim Janik  <timj@gtk.org>
+
+	* testsfi.c: new file, executed by make check.
+	currently contains small tests for notes and time.
+
+	* sfinote.[hc]: midi note definitions and string conversion
+	routines.
+
+	* sfidl.cc: we don't need sfi functions, so include just
+	glib-extra.h.
+
 Fri Oct  4 05:13:39 2002  Tim Janik  <timj@gtk.org>
 
 	* sfidl.cc: call sequence elements "element" not

@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <sfi.h>
+#include <glib-extra.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -1327,7 +1327,7 @@ void exitUsage(char *name)
 
 int main (int argc, char **argv)
 {
-  sfi_init ();
+  // sfi_init ();
 
   /*
    * parse command line options

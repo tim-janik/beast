@@ -19,6 +19,7 @@
 #ifndef __SFI_H__
 #define __SFI_H__
 
+#include <sfi/sfinote.h>
 #include <sfi/sfiparams.h>
 #include <sfi/sfiprimitives.h>
 #include <sfi/sfiserial.h>

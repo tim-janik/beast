@@ -61,21 +61,6 @@ sfi_set_error (GError       **errorp,
     }
 }
 
-gchar*
-sfi_note_to_string (gint note)
-{
-  return NULL;
-#warning NEED: return bse_note_to_string (note);
-}
-
-gint
-sfi_note_from_string (const gchar *note_string,
-		      GError     **errorp)
-{
-  return 0;
-#warning NEED: return bse_note_from_string (note_string);
-}
-
 static inline gchar
 char_canon (gchar c)
 {

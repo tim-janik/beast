@@ -21,6 +21,7 @@ libsfi_la_LIBADD = $(SFI_LIBS) -lm
 sfi_headers = $(strip \
 	glib-extra.h	\
 	sfi.h		\
+	sfinote.h	\
 	sfiparams.h	\
 	sfiprimitives.h	\
 	sfiserial.h	\
@@ -30,6 +31,7 @@ sfi_headers = $(strip \
 )
 sfi_c_sources = $(strip \
 	glib-extra.c	\
+	sfinote.c	\
 	sfiparams.c	\
 	sfiprimitives.c	\
 	sfiserial.c	\
@@ -68,13 +70,20 @@ libsfi_la_SOURCES = $(sfi_c_sources)
 #
 # program to build
 #
-noinst_PROGRAMS = sfidl
+noinst_PROGRAMS = sfidl testsfi
 # source files
 sfidl_SOURCES = sfidl.cc sfidl-namespace.cc
 progs_extra_sources += sfidl-namespace.h
+testsfi_SOURCES = testsfi.c
 # program linkage
 progs_LDADD = libsfi.la
 sfidl_LDADD = $(progs_LDADD)
+testsfi_LDADD = $(progs_LDADD)
+
+#
+# TESTS
+#
+TESTS = testsfi
 
 
 EXTRA_DIST += $(sfi_headers) $(sfi_extra_sources) $(sfi_built_sources)
