@@ -87,7 +87,7 @@
     prop:combo-arrow="$(ifdef,arrow,$arrow,1)" />
   <!-- buttons: stock= label= focus= default= relief= -->
   <xdef:button                inherit="GtkButton"
-    prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
+    prop:label="$(null-collapse,$(ifdef,label,$(if,$ignore-label,,$label),$stock))"
     prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
     prop:relief="$(ifdef,relief,$relief,normal)"
     prop:can-default="$(ifdef,default,$default,0)"
@@ -285,7 +285,7 @@
     </vbox>
   </xdef:tool-area>
   <!-- labeled-tool-area: label= tooltip= -->
-  <xdef:labeled-tool-area           inherit="muted-button"
+  <xdef:labeled-tool-area           inherit="muted-button" ignore-label="1"
     hseparator="0" vseparator="0" relief="none" default-area="image-area" >
     <tooltip text="$(null-collapse,$tooltip)" />
     <vbox>
@@ -320,7 +320,7 @@
     </vbox>
   </xdef:image-button>
   <!-- label-image-button: image-button, label= -->
-  <xdef:label-image-button inherit="image-button" >
+  <xdef:label-image-button inherit="image-button" ignore-label="1" >
     <ulabel prop:label="$label" />
   </xdef:label-image-button>
   <!-- big-button: label-image-button -->
