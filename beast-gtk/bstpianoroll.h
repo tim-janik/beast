@@ -72,6 +72,7 @@ struct _BstPianoRoll
   guint		 draw_qqn_grid : 1;
 
   /* scroll offset */
+  guint		 init_vpos : 1;
   gint		 x_offset, y_offset;
 
   guint		 hpanel_height;
@@ -90,6 +91,7 @@ struct _BstPianoRoll
 
   /* drag operations */
   guint		   canvas_drag : 1;
+  guint		   piano_drag : 1;
   BstPianoRollDrag drag;
 };
 struct _BstPianoRollClass
@@ -101,9 +103,15 @@ struct _BstPianoRollClass
 						 GtkAdjustment	  *vadjustment);
   void		(*canvas_drag)			(BstPianoRoll	  *self,
 						 BstPianoRollDrag *drag);
-  void		(*canvas_press)			(BstPianoRoll	  *proll,
+  void		(*canvas_clicked)		(BstPianoRoll	  *proll,
 						 guint		   button,
 						 guint		   tick_position,
+						 gint              note,
+						 GdkEvent	  *event);
+  void		(*piano_drag)			(BstPianoRoll	  *self,
+						 BstPianoRollDrag *drag);
+  void		(*piano_clicked)		(BstPianoRoll	  *proll,
+						 guint		   button,
 						 gint              note,
 						 GdkEvent	  *event);
 };

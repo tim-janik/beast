@@ -1,3 +1,13 @@
+Mon Jan 20 13:30:40 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianoroll.[hc]: implement ::pino_clicked() and
+	::piano_drag() signals, renamed ::canvas_press() to ::canvas_clicked().
+	(piano_roll_update_adjustments): initialize vertical scroll
+	position to 50%.
+
+	* beast-gtk/bstpianorollctrl.c: play notes upon clicks onto the piano
+	area of a BstPianoRoll widget.
+
 Mon Jan 20 11:36:41 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprojectctrl.c:

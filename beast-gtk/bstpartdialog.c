@@ -26,7 +26,7 @@ static void	bst_part_dialog_class_init	(BstPartDialogClass	*klass);
 static void	bst_part_dialog_init		(BstPartDialog		*part_dialog);
 static void	bst_part_dialog_finalize	(GObject		*object);
 static void	part_dialog_update_tool		(BstPartDialog		*part_dialog);
-static void	piano_canvas_press		(BstPartDialog		*part_dialog,
+static void	piano_canvas_clicked		(BstPartDialog		*part_dialog,
 						 guint			 button,
 						 guint			 tick_position,
 						 gint			 note,
@@ -185,7 +185,7 @@ bst_part_dialog_init (BstPartDialog *self)
   self->proll_ctrl = bst_piano_roll_controller_new (BST_PIANO_ROLL (self->proll));
   g_object_connect (self->proll,
 		    "swapped_signal::destroy", g_nullify_pointer, &self->proll,
-		    "swapped_signal::canvas_press", piano_canvas_press, self,
+		    "swapped_signal::canvas-clicked", piano_canvas_clicked, self,
 		    NULL);
 
   /* radio tools */
@@ -379,12 +379,12 @@ part_dialog_run_proc (GtkWidget *widget,
 }
 
 static void
-piano_canvas_press (BstPartDialog *self,
-                    guint          button,
-                    guint          tick,
-                    gint           note,
-		    GdkEvent      *event,
-                    BstPianoRoll  *proll)
+piano_canvas_clicked (BstPartDialog *self,
+		      guint          button,
+		      guint          tick,
+		      gint           note,
+		      GdkEvent      *event,
+		      BstPianoRoll  *proll)
 {
   if (button == 3 && event)
     {

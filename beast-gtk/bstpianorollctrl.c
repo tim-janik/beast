@@ -20,7 +20,9 @@
 
 
 /* --- prototypes --- */
-void		controller_canvas_drag		(BstPianoRollController	*self,
+static void	controller_canvas_drag		(BstPianoRollController	*self,
+						 BstPianoRollDrag	*drag);
+static void	controller_piano_drag		(BstPianoRollController	*self,
 						 BstPianoRollDrag	*drag);
 static void	controller_update_cursor	(BstPianoRollController *self,
 						 BstPianoRollTool	 tool);
@@ -62,7 +64,10 @@ bst_piano_roll_controller_new (BstPianoRoll *proll)
 			 G_CALLBACK (controller_canvas_drag),
 			 self, (GClosureNotify) bst_piano_roll_controller_unref,
 			 G_CONNECT_SWAPPED);
-
+  g_signal_connect_data (proll, "piano-drag",
+			 G_CALLBACK (controller_piano_drag),
+			 self, NULL,
+			 G_CONNECT_SWAPPED);
   return self;
 }
 
@@ -651,4 +656,37 @@ controller_canvas_drag (BstPianoRollController *self,
   if (drag->type == BST_DRAG_DONE ||
       drag->type == BST_DRAG_ABORT)
     controller_update_cursor (self, self->bg_tool1);
+}
+
+void
+controller_piano_drag (BstPianoRollController *self,
+		       BstPianoRollDrag       *drag)
+{
+  SfiProxy part = self->proll->proxy;
+  SfiProxy song = bse_item_get_parent (part);
+  SfiProxy project = song ? bse_item_get_parent (song) : 0;
+  SfiProxy track = song ? bse_song_find_track_for_part (song, part) : 0;
+
+  sfi_debug ("piano drag event, note=%d (valid=%d)", drag->current_note, drag->current_valid);
+
+  if (project && track)
+    {
+      if (drag->type == BST_DRAG_START ||
+	  (drag->type == BST_DRAG_MOTION &&
+	   self->obj_note != drag->current_note))
+	{
+	  BseErrorType error;
+	  bse_project_auto_deactivate (project, 5 * 1000);
+	  error = bse_project_activate (project);
+	  self->obj_note = drag->current_note;
+	  if (error == BSE_ERROR_NONE)
+	    bse_song_synthesize_note (song, track, 384, self->obj_note, 0, 1.0);
+	  bst_status_eprintf (error, "Play note");
+	  drag->state = BST_DRAG_CONTINUE;
+	}
+    }
+
+  if (drag->type == BST_DRAG_START ||
+      drag->type == BST_DRAG_MOTION)
+    drag->state = BST_DRAG_CONTINUE;
 }
