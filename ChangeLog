@@ -1,3 +1,8 @@
+Tue Apr 11 05:44:38 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_create): don't let scales and
+	dials grab focus.
+
 Tue Apr 11 04:23:56 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstgconfig.[hc]: port over to use GParamSpec, GValue

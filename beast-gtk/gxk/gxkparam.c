@@ -687,6 +687,7 @@ bst_param_create (gpointer	owner,
 	dial = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
 			       "label", "(dial)", /* FIXME: we need a real dial */
+				"can_focus", FALSE,
 			       NULL);
       if (pspec->flags & B_PARAM_HINT_SCALE
 	  || pspec->flags & B_PARAM_HINT_DIAL) /* FIXME: we need a real dial */
@@ -695,6 +696,7 @@ bst_param_create (gpointer	owner,
 				"adjustment", adjustment,
 				"draw_value", FALSE,
 				"signal_after::size_request", hscale_size_request, NULL,
+				"can_focus", FALSE,
 				NULL);
       
       gtk_object_unref (GTK_OBJECT (adjustment));
