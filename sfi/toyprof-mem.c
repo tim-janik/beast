@@ -6,6 +6,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 #include <stdlib.h>
+#include <string.h>
 #include "toyprof-mem.h"
 
 /* Gdb hooks */

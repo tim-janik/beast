@@ -160,9 +160,9 @@ sfi_strdup_canon (const gchar *identifier)
 
   if (str)
     {
-      gchar *p = str;
-      while (*p)
-	*p++ = char_canon (*p);
+      gchar *p;
+      for (p = str; *p; p++)
+	*p = char_canon (*p);
     }
   return str;
 }

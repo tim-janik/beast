@@ -1,3 +1,8 @@
+Tue Feb 18 16:39:38 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfimemory.c sfinote.c sfiprimitives.c sfithreads.c sfitypes.c
+	testsfi.c toyprof-mem.c: fixes to build without warnings on gcc-3.2.
+
 Tue Feb 18 16:29:17 2003  Tim Janik  <timj@gtk.org>
 
 	* sfilog.c (sfi_log_message): refine debugging messages.

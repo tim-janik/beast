@@ -18,6 +18,7 @@
  */
 #include "sfimemory.h"
 #include "sfithreads.h"
+#include <string.h>
 
 
 #define PREALLOC                (8)

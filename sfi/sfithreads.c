@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <sched.h>
 #include <time.h>
+#include <string.h>
 
 
 /* --- structures --- */

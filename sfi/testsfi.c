@@ -18,6 +18,7 @@
  */
 #include <sfi.h>
 #include <unistd.h>
+#include <string.h>
 
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(name, nick, blurb, dflt, min, max, step, hints)  \
