@@ -33,12 +33,10 @@ G_BEGIN_DECLS
 /* --- API --- */
 typedef struct {
   GtkWidget parent_instance;
-  SfiProxy track;
 } BstSnifferScope;
 typedef GtkWidgetClass BstSnifferScopeClass;
 GType      bst_sniffer_scope_get_type (void);
-GtkWidget* bst_sniffer_scope_new      (SfiProxy track);
-
+GtkWidget* bst_sniffer_scope_new      (void);
 G_END_DECLS
 
 #endif /* __BST_SNIFFER_SCOPE_H__ */

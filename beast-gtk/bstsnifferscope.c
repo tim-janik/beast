@@ -28,15 +28,13 @@ bst_sniffer_scope_init (BstSnifferScope *self)
 
   GTK_WIDGET_SET_FLAGS (self, GTK_NO_WINDOW);
   gtk_widget_set_double_buffered (widget, FALSE);
-  gtk_widget_set_redraw_on_allocate (widget, TRUE);
   gtk_widget_show (widget);
 }
 
 GtkWidget*
-bst_sniffer_scope_new (SfiProxy track)
+bst_sniffer_scope_new (void)
 {
   BstSnifferScope *self = g_object_new (BST_TYPE_SNIFFER_SCOPE, NULL);
-  self->track = track;
   return GTK_WIDGET (self);
 }
 

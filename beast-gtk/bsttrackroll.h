@@ -19,7 +19,6 @@
 #define __BST_TRACK_ROLL_H__
 
 #include "bstdragutils.h"
-#include "bstsnifferscope.h"
 #include "bstmarker.h"
 
 G_BEGIN_DECLS
@@ -67,7 +66,7 @@ struct _BstTrackRoll
   SfiProxy          proxy;
   GtkTreeView      *tree;
   guint             n_scopes;   /* does not always reflect number of rows */
-  BstSnifferScope **scopes;
+  GtkWidget       **scopes;
   guint             scope_update;
   
   /* horizontal layout */

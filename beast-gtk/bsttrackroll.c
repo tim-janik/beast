@@ -244,7 +244,7 @@ bst_track_roll_destroy (GtkObject *object)
   bst_track_roll_set_hadjustment (self, NULL);
   bst_track_roll_set_vadjustment (self, NULL);
   for (i = 0; i < self->n_scopes; i++)
-    gtk_widget_unparent (GTK_WIDGET (self->scopes[i]));
+    gtk_widget_unparent (self->scopes[i]);
   g_free (self->scopes);
   self->scopes = NULL;
   self->n_scopes = 0;
@@ -277,7 +277,7 @@ bst_track_roll_finalize (GObject *object)
     }
   bst_marker_finalize (&self->vmarker);
   for (i = 0; i < self->n_scopes; i++)
-    gtk_widget_unparent (GTK_WIDGET (self->scopes[i]));
+    gtk_widget_unparent (self->scopes[i]);
   g_free (self->scopes);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -362,7 +362,7 @@ track_roll_forall (GtkContainer    *container,
   guint i;
   for (i = 0; i < self->n_scopes; i++)
     if (include_internals)
-      callback (GTK_WIDGET (self->scopes[i]), callback_data);
+      callback (self->scopes[i], callback_data);
   if (self->ecell && include_internals)
     callback ((GtkWidget*) self->ecell, callback_data);
 }
@@ -521,7 +521,7 @@ track_roll_reallocate_children (BstTrackRoll *self)
   bst_track_roll_allocate_ecell (self);
   bst_marker_resize (&self->vmarker);
   for (i = 0; i < self->n_scopes; i++)
-    bst_track_roll_allocate_scope (self, GTK_WIDGET (self->scopes[i]), i);
+    bst_track_roll_allocate_scope (self, self->scopes[i], i);
   bst_track_roll_check_update_scopes (self);
   bst_track_roll_reselect (self);
 }
@@ -552,6 +552,19 @@ bst_track_roll_reallocate (BstTrackRoll *self)
   track_roll_reallocate_children (self);
 }
 
+static void
+scope_set_track (GtkWidget *scope,
+                 SfiProxy   track)
+{
+  g_object_set_long (scope, "BstTrackRoll-Track", track);
+}
+
+static SfiProxy
+scope_get_track (GtkWidget *scope)
+{
+  return g_object_get_long (scope, "BstTrackRoll-Track");
+}
+
 static gboolean
 track_roll_idle_update_scopes (gpointer data)
 {
@@ -570,18 +583,18 @@ track_roll_idle_update_scopes (gpointer data)
   self->n_scopes = 0;
 
   /* match or create needed scopes */
-  if (self->get_track && GTK_WIDGET_REALIZED (self) && 0) // FIXME:
+  if (self->get_track && GTK_WIDGET_REALIZED (self))
     for (i = 0; ; i++)
       {
         SfiProxy track = self->get_track (self->proxy_data, i);
-        BstSnifferScope *scope = NULL;
+        GtkWidget *scope = NULL;
         GSList *slist;
         if (!track)
           break;
         for (slist = scope_list; slist; slist = slist->next)
           {
             scope = slist->data;
-            if (scope->track == track)  /* match existing */
+            if (scope_get_track (scope) == track)  /* match existing */
               {
                 scope_list = g_slist_remove (scope_list, scope);
                 break;
@@ -589,13 +602,15 @@ track_roll_idle_update_scopes (gpointer data)
           }
         if (!slist)     /* create new if not matched */
           {
-            scope = (BstSnifferScope*) bst_sniffer_scope_new (track);
-            gtk_widget_set_parent_window (GTK_WIDGET (scope), self->vpanel);
-            gtk_widget_set_parent (GTK_WIDGET (scope), GTK_WIDGET (self));
+            scope = g_object_new (BST_TYPE_SNIFFER_SCOPE, NULL);
+            gtk_widget_show (scope);
+            scope_set_track (scope, track);
+            gtk_widget_set_parent_window (scope, self->vpanel);
+            gtk_widget_set_parent (scope, GTK_WIDGET (self));
           }
         /* add to scope list */
         self->n_scopes++;
-        self->scopes = g_renew (BstSnifferScope*, self->scopes, self->n_scopes);
+        self->scopes = g_renew (GtkWidget*, self->scopes, self->n_scopes);
         self->scopes[i] = scope;
       }
 
@@ -603,7 +618,7 @@ track_roll_idle_update_scopes (gpointer data)
   while (scope_list)
     {
       GtkWidget *child = g_slist_pop_head (&scope_list);
-      gtk_widget_unparent (GTK_WIDGET (child));
+      gtk_widget_unparent (child);
     }
   
   /* allocate scopes 'n stuff */
@@ -627,7 +642,7 @@ bst_track_roll_check_update_scopes (BstTrackRoll *self)
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
 
   /* check whether scope update is necessary and schedule one */
-  if (!GTK_WIDGET_REALIZED (self) || !self->get_track || 1) // FIXME:
+  if (!GTK_WIDGET_REALIZED (self) || !self->get_track)
     {
       if (self->n_scopes)
         queue_scope_update (self);
@@ -636,7 +651,7 @@ bst_track_roll_check_update_scopes (BstTrackRoll *self)
   for (i = 0; i < self->n_scopes; i++)
     {
       SfiProxy track = self->get_track (self->proxy_data, i);
-      if (self->scopes[i]->track != track)
+      if (scope_get_track (self->scopes[i]) != track)
         {
           queue_scope_update (self);
           return;
@@ -655,7 +670,7 @@ bst_track_roll_realize (GtkWidget *widget)
   BstTrackRoll *self = BST_TRACK_ROLL (widget);
   GdkWindowAttr attributes;
   GdkCursorType cursor_type;
-  guint attributes_mask;
+  guint i, attributes_mask;
   
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
 
@@ -735,12 +750,19 @@ bst_track_roll_realize (GtkWidget *widget)
   self->hpanel_cursor = -1;
   bst_track_roll_set_hpanel_cursor (self, cursor_type);
   bst_marker_realize (&self->vmarker, self->canvas);
+
+  /* update children */
+  for (i = 0; i < self->n_scopes; i++)
+    gtk_widget_set_parent_window (self->scopes[i], self->vpanel);
+  if (self->ecell)
+    gtk_widget_set_parent_window (GTK_WIDGET (self->ecell), self->canvas);
 }
 
 static void
 bst_track_roll_unrealize (GtkWidget *widget)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (widget);
+  guint i;
 
   bst_track_roll_abort_edit (self);
   gdk_window_set_user_data (self->canvas, NULL);
@@ -753,6 +775,12 @@ bst_track_roll_unrealize (GtkWidget *widget)
   gdk_window_destroy (self->vpanel);
   self->vpanel = NULL;
   bst_marker_unrealize (&self->vmarker);
+
+  /* update children */
+  for (i = 0; i < self->n_scopes; i++)
+    gtk_widget_set_parent_window (self->scopes[i], self->vpanel);
+  if (self->ecell)
+    gtk_widget_set_parent_window (GTK_WIDGET (self->ecell), self->canvas);
 
   if (GTK_WIDGET_CLASS (parent_class)->unrealize)
     GTK_WIDGET_CLASS (parent_class)->unrealize (widget);

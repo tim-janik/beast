@@ -1,3 +1,11 @@
+Sat Jan 17 14:55:09 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackroll.[hc]: treat scopes as ordinary GtkWidgets.
+	cleanup/reset parent_window for children in realize/unrealize, this
+	fixes reparentation crashes. reenabled scopes.
+
+	* beast-gtk/bstsnifferscope.[hc]: remove BseTrack special casing.
+
 Sat Jan 17 03:05:49 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/sfidl.texi: Started sfidl documentation.
