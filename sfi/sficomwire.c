@@ -992,7 +992,7 @@ sfi_com_spawn_async (const gchar *executable,
       setup_data.keepexec1 = command_output_pipe[1];
       setup_data.keepexec2 = command_input_pipe[0];
     }
-  cargs = sfi_ring_prepend (cargs, g_strdup_printf ("SFI-Spawn:%s", executable));
+  cargs = sfi_ring_prepend (cargs, g_strdup_printf (/*"SFI-Spawn:%s"*/"%s", executable));
   cargs = sfi_ring_prepend (cargs, g_strdup (executable));
   
   l = sfi_ring_length (cargs) + sfi_ring_length (args);
