@@ -1,3 +1,8 @@
+Sat Dec 20 20:56:29 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cxx.*: Support properties. Generate proper implamantations for
+	_to_rec and _to_seq for records/sequences.
+
 Thu Dec 18 00:56:55 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: use g_intern_strconcat() in generated static member

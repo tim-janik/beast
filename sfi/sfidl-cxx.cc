@@ -113,7 +113,7 @@ void CodeGeneratorCxx::run ()
 	  printf("public:\n");
 	  /* TODO: make this a constructor? */
 	  printf("  static %s _from_seq (SfiSeq *seq);\n", ret.c_str(), ret.c_str());
-	  printf("  SfiSeq *_to_seq () { return 0; }\n", arg.c_str());
+	  printf("  SfiSeq *_to_seq ();\n", arg.c_str());
 	  printf("};\n");
 	}
 
@@ -147,6 +147,7 @@ void CodeGeneratorCxx::run ()
 	  printf("  SfiProxy _proxy() const { return _object_id; }\n");
 	  printf("  operator bool() const { return _object_id != 0; }\n");
 	  printMethods(*ci);
+	  printProperties(*ci);
 	  printf("};\n");
 	}
 
@@ -167,7 +168,7 @@ void CodeGeneratorCxx::run ()
 		                   pi->name.c_str());
 	    }
 	  printf("  static %sPtr _from_rec (SfiRec *rec);\n", name.c_str());
-	  printf("  static SfiRec *_to_rec (%sPtr ptr) { return 0; }\n", name.c_str());
+	  printf("  static SfiRec *_to_rec (%sPtr ptr);\n", name.c_str());
 	  printf("};\n");
 	}
     }
@@ -210,6 +211,21 @@ void CodeGeneratorCxx::run ()
           printf("  }\n");
           printf("  return seq;\n");
           printf("}\n\n");
+
+	  /* FIXME: ugly code (*this[i]) */
+	  string elementToValue = createTypeCode (si->content.type, "(*this)[i]", MODEL_TO_VALUE);
+	  printf("SfiSeq *\n");
+	  printf("%s::_to_seq ()\n", name.c_str());
+	  printf("{\n");
+	  printf("  SfiSeq *sfi_seq = sfi_seq_new ();\n");
+	  printf("  for (guint i = 0; i < size(); i++)\n");
+	  printf("  {\n");
+	  printf("    GValue *element = %s;\n", elementToValue.c_str());
+	  printf("    sfi_seq_append (sfi_seq, element);\n");
+	  printf("    sfi_value_free (element);\n");        // FIXME: couldn't we have take_append
+	  printf("  }\n");
+	  printf("  return sfi_seq;\n");
+	  printf("}\n\n");
 	}
 
       /* record members */
@@ -240,6 +256,25 @@ void CodeGeneratorCxx::run ()
             }
           printf("  return rec;\n");
           printf("}\n\n");
+
+	  printf("SfiRec *\n");
+	  printf("%s::_to_rec (%s rec)\n", name.c_str(), arg.c_str());
+	  printf("{\n");
+	  printf("  SfiRec *sfi_rec;\n");
+	  printf("  GValue *element;\n");
+	  printf("\n");
+	  printf("  g_return_val_if_fail (rec, NULL);\n");
+          printf("\n");
+	  printf("  sfi_rec = sfi_rec_new ();\n");
+	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+	    {
+	      string elementToValue = createTypeCode (pi->type, "rec->" + pi->name, MODEL_TO_VALUE);
+	      printf("  element = %s;\n", elementToValue.c_str());
+	      printf("  sfi_rec_set (sfi_rec, \"%s\", element);\n", pi->name.c_str());
+	      printf("  sfi_value_free (element);\n");        // FIXME: couldn't we have take_set
+	    }
+	  printf("  return sfi_rec;\n");
+	  printf("}\n\n");
 	}
 
       /* methods */
@@ -247,6 +282,7 @@ void CodeGeneratorCxx::run ()
 	{
 	  if (parser.fromInclude (ci->name)) continue;
 	  printMethods(*ci);
+	  printProperties(*ci);
 	}
 
     }
@@ -305,6 +341,61 @@ void CodeGeneratorCxx::printMethods (const Class& cdef)
     }
 }
 
+void CodeGeneratorCxx::printProperties(const Class& cdef)
+{
+  vector<Param>::const_iterator pi;
+  bool proto = options.doHeader;
+
+  for (pi = cdef.properties.begin(); pi != cdef.properties.end(); pi++)
+    {
+      string setProperty = makeStyleName ("set_" + pi->name);
+      string getProperty = makeStyleName (pi->name);
+      string newName = makeLowerName ("new_" + pi->name);
+      string propName = makeLowerName (pi->name, '-');
+      string ret = createTypeCode (pi->type, MODEL_RET);
+      if (proto) {
+	/* property getter */
+	printf ("  %s %s ();\n", ret.c_str(), getProperty.c_str());
+
+	/* property setter */
+	printf ("  void %s (%s %s);\n", setProperty.c_str(),
+	        createTypeCode (pi->type, MODEL_ARG).c_str(), newName.c_str());
+      }
+      else {
+	/* property getter */
+	printf ("%s\n", ret.c_str());
+	printf ("%s::%s ()\n", cdef.name.c_str(), getProperty.c_str());
+	printf ("{\n");
+	printf ("  const GValue *val;\n");
+	printf ("  val = sfi_glue_proxy_get_property (_proxy(), \"%s\");\n", propName.c_str());
+	printf ("  return %s;\n", createTypeCode (pi->type, "val", MODEL_FROM_VALUE).c_str());
+	printf ("}\n");
+	printf ("\n");
+	/* property setter */
+	printf ("void\n");
+	printf ("%s::%s (%s %s)\n", cdef.name.c_str(), setProperty.c_str(),
+	        createTypeCode (pi->type, MODEL_ARG).c_str(), newName.c_str());
+	printf ("{\n");
+	string conv = createTypeCode (pi->type, newName.c_str(), MODEL_VCALL_CONV);
+	if (conv != "")
+	  {
+	    string carg = createTypeCode(pi->type, MODEL_VCALL_CARG);
+	    newName += "__c"; // use the converted name new_x__c now, instead of new_x
+	    printf("  %s %s = %s;\n", carg.c_str(), newName.c_str(), conv.c_str());
+	  }
+	string to_val = createTypeCode (pi->type, newName, MODEL_TO_VALUE).c_str();
+	printf ("  GValue *val = %s;\n", to_val.c_str());
+	printf ("  sfi_glue_proxy_set_property (_proxy(), \"%s\", val);\n", propName.c_str());
+	printf ("  sfi_value_free (val);\n");
+	string free = createTypeCode (pi->type, newName.c_str(), MODEL_VCALL_CFREE);
+	if (free != "")
+	  printf("  %s;\n", free.c_str());
+	printf ("}\n");
+	printf ("\n");
+      }
+    }
+}
+
 static string fail (const string& error)
 {
   g_error ("%s\n", error.c_str());
@@ -359,7 +450,7 @@ string CodeGeneratorCxx::createTypeCode (const std::string& type, const std::str
 	    case MODEL_ARG:	    return "const " + type + "&";
 	    case MODEL_MEMBER:	    return type;
 	    case MODEL_RET:	    return type;
-	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+type+"::_to_seq ("+name+"))";
+	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+name+"._to_seq ())";
 	    case MODEL_FROM_VALUE:  return type + "::_from_seq (sfi_value_get_seq ("+name+"))";
 	    case MODEL_VCALL_CONV:  return type + "::_to_seq ("+name+")";
 	    case MODEL_VCALL_RCONV: return type + "::_from_seq ("+name+")";
