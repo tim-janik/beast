@@ -1,3 +1,8 @@
+Wed Dec 15 23:58:50 2004  Tim Janik  <timj@gtk.org>
+
+	* zintern/mono-wave.bse: adapt to beast 0.6.4. this fixes song compat
+	code adding extra track->master connections to tracks using wave files.
+
 Mon Dec 13 15:31:37 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseprocidl.cc bsecore.idl: Info strings should be lower case.
