@@ -1,3 +1,8 @@
+Sun Jan 25 08:36:28 2004  Tim Janik  <timj@gtk.org>
+
+	* bsesniffer.idl: enable record and sequence generation, still
+	need to comment out object references though.
+
 Sun Jan 25 05:28:23 2004  Tim Janik  <timj@gtk.org>
 
 	* bseplugin.c: use new boxed registration functions.

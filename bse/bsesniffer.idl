@@ -63,7 +63,6 @@ void sniffer_request_samples (Sniffer     obj,
 Num  sniffer_get_tick_stamp  (Sniffer obj);
 Int  sniffer_get_mix_freq    (Sniffer obj);
 
-/* FIXME: need records and sequences in plugins
 choice SnifferTimeType {
   SNIFFER_TIME_ABSOLUTE_TICK_STAMP,
   SNIFFER_TIME_RELATIVE_TICK_STAMP,
@@ -71,7 +70,7 @@ choice SnifferTimeType {
 };
 
 record SnifferRequest {
-  Sniffer         sniffer;
+  // FIXME: Sniffer         sniffer;
   SnifferTimeType time_type;
   Num             variable_time;
   Int             n_samples;
@@ -82,5 +81,5 @@ sequence SnifferRequestSeq {
 };
 
 void sniffer_request_combined (SnifferRequestSeq srs);
-//*/
+
 };
