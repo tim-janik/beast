@@ -1,3 +1,7 @@
+Fri Mar  7 03:46:44 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackrollctrl.c: fixup status messages.
+
 Thu Mar  6 06:09:18 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackview.c: removed SEQID column, since the SeqId

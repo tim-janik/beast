@@ -440,7 +440,7 @@ delete_start (BstTrackRollController *self,
   if (self->obj_part)	/* got part to delete */
     {
       bse_track_remove_tick (self->obj_track, self->obj_tick);
-      gxk_status_set (GXK_STATUS_WAIT, "Delete Part", NULL);
+      gxk_status_set (GXK_STATUS_DONE, "Delete Part", NULL);
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, "Delete Part", "No target");
@@ -457,7 +457,7 @@ move_link_start (BstTrackRollController *self,
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
       controller_update_canvas_cursor (self, link_pending ? BST_TRACK_ROLL_TOOL_LINK : BST_TRACK_ROLL_TOOL_MOVE);
-      gxk_status_set (GXK_STATUS_WAIT, action, NULL);
+      gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
       drag->state = BST_DRAG_CONTINUE;
       self->skip_deletion = link_pending;
     }
@@ -486,6 +486,7 @@ static void
 move_motion (BstTrackRollController *self,
 	     BstTrackRollDrag       *drag)
 {
+  const gchar *action = self->skip_deletion ? "Link Part" : "Move Part";
   gint new_tick;
   gboolean track_changed;
 
@@ -506,6 +507,7 @@ move_motion (BstTrackRollController *self,
 	    }
 	  self->obj_track = drag->current_track;
 	  self->obj_tick = new_tick;
+	  gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
 	}
       /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", bse_error_blurb (error)); */
     }
