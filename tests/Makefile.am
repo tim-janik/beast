@@ -60,17 +60,17 @@ generated: $(tests_built_sources)
 # the test programs:
 #
 
-#TESTS = cxxbinding perftest
-#progs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
-#cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
-#cxxbinding_LDADD = $(progs_ldadd)
-#$(srcdir)/cxxbinding.cc: bsecxxapi.h
-#
-#perftest_SOURCES = perftest.cc bsecxxapi.cc
-#perftest_LDADD = $(progs_ldadd)
-#$(srcdir)/perftest.cc: bsecxxapi.h
-#
-#noinst_PROGRAMS = $(TESTS)
+TESTS = cxxbinding perftest
+progs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
+cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
+cxxbinding_LDADD = $(progs_ldadd)
+$(srcdir)/cxxbinding.cc: bsecxxapi.h
+
+perftest_SOURCES = perftest.cc bsecxxapi.cc
+perftest_LDADD = $(progs_ldadd)
+$(srcdir)/perftest.cc: bsecxxapi.h
+
+noinst_PROGRAMS = $(TESTS)
 
 # test plugin: setup generation of C++ plugins from idl files
 BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
@@ -87,7 +87,6 @@ $(srcdir)/testplugin.cc: testplugin.idl
 lib_LTLIBRARIES = testplugin.la
 # Prevent those libs from being installed
 install-libLTLIBRARIES:
-        :
 
 $(srcdir)/testplugin.cc: testplugin.gen-idl.h
 
