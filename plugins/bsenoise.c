@@ -144,16 +144,16 @@ bse_noise_reset (BseSource *source)
 
 
 /* --- Export to BSE --- */
-#include "./icons/noicon.c"
+#include "./icons/noise.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_noise, "BseNoise", "BseSource",
     "BseNoise is a noise generator source",
     &type_info_noise,
     "/Source/Noise",
-    { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_WIDTH, NOICON_HEIGHT,
-      NOICON_RLE_PIXEL_DATA, },
+    { NOISE_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      NOISE_IMAGE_WIDTH, NOISE_IMAGE_HEIGHT,
+      NOISE_IMAGE_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };

@@ -1,3 +1,14 @@
+Fri Mar 10 00:10:04 2000  Tim Janik  <timj@gtk.org>
+
+	* icons/canyon.xcf:
+	* icons/filter.xcf:
+	* icons/noise.xcf: New plugin icons,
+	kindly submitted by Cyria Arweiler <c_arweiler@yahoo.com>.
+
+	* davcanyondelay.c: 
+	* bsefirfilter.c: 
+	* bsenoise.c: include the new icons.
+
 Wed Mar  8 16:29:56 2000  Tim Janik  <timj@gtk.org>
 
 	* davbassfilter.[hc]: a TB-303 filter clone based on the VCF303 portions

@@ -445,16 +445,16 @@ bse_fir_filter_reset (BseSource *source)
 
 
 /* --- Export to BSE --- */
-#include "./icons/noicon.c"
+#include "./icons/filter.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_fir_filter, "BseFIRFilter", "BseSource",
     "BseFIRFilter is a finite impulse response filter",
     &type_info_fir_filter,
     "/Source/FIRFilter",
-    { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_WIDTH, NOICON_HEIGHT,
-      NOICON_RLE_PIXEL_DATA, },
+    { FILTER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      FILTER_IMAGE_WIDTH, FILTER_IMAGE_HEIGHT,
+      FILTER_IMAGE_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };

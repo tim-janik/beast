@@ -403,16 +403,16 @@ dav_canyon_delay_reset (BseSource *source)
 }
 
 /* --- Export to DAV --- */
-#include "./icons/noicon.c"
+#include "./icons/canyon.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_canyon_delay, "DavCanyonDelay", "BseSource",
     "DavCanyonDelay is a deep, long delay",
     &type_info_canyon_delay,
     "/Source/CanyonDelay",
-    { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_WIDTH, NOICON_HEIGHT,
-      NOICON_RLE_PIXEL_DATA, },
+    { CANYON_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      CANYON_IMAGE_WIDTH, CANYON_IMAGE_HEIGHT,
+      CANYON_IMAGE_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };
