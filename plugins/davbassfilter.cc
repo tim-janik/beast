@@ -33,16 +33,15 @@ class BassFilter : public BassFilterBase {
     double resonance;
     double a, b, c0;
     double d1, d2;
-    double e0, e1;
+    double e0;
     gint envbound; /* 64 at 44100 */
     gint envpos;
   public:
     void
     reset ()
     {
-      decay = resonance = 0;
-      a = b = c0 = 0;
-      d1 = d2 = e0 = e1 = 0;
+      c0 = 0;
+      d1 = d2 = 0;
       envpos = 0;
     }
     void
@@ -54,16 +53,16 @@ class BassFilter : public BassFilterBase {
       b = -k * k;
     }
     void
-    config (BassFilterProperties *params)
+    config (BassFilterProperties *props)
     {
-      double filt_cutoff = params->cutoff_perc * 0.01;
-      double filt_reso = params->reso_perc * 0.01;
-      double env_mod = params->env_mod * 0.01;
-      double env_decay = params->env_decay * 0.01;
+      double filt_cutoff = props->cutoff_perc * 0.01;
+      double filt_reso = props->reso_perc * 0.01;
+      double env_mod = props->env_mod * 0.01;
+      double env_decay = props->env_decay * 0.01;
       
       /* Update vars given envmod, cutoff, and reso. */
       e0 = exp (5.613 - 0.8 * env_mod + 2.1553 * filt_cutoff - 0.7696 * (1.0 - filt_reso));
-      e1 = exp (6.109 + 1.5876 * env_mod + 2.1553 * filt_cutoff - 1.2 * (1.0 - filt_reso));
+      double e1 = exp (6.109 + 1.5876 * env_mod + 2.1553 * filt_cutoff - 1.2 * (1.0 - filt_reso));
       e0 *= PI / mix_freq();
       e1 *= PI / mix_freq();
       e1 -= e0;
@@ -82,7 +81,7 @@ class BassFilter : public BassFilterBase {
       /* remaining coefficients */
       recalc_a_b ();
 
-      if (params->trigger)
+      if (props->trigger)
         {
           /* Reset filter delta freq. */
           c0 = e1;
@@ -96,35 +95,20 @@ class BassFilter : public BassFilterBase {
       const float *in = istream (ICHANNEL_AUDIO_IN).values;
       float *out = ostream (OCHANNEL_AUDIO_OUT).values;
       float *bound = out + n_values;
-      if (!istream (ICHANNEL_AUDIO_IN).connected)
-        while (out < bound)
-          {
-            double v = a * d1 + b * d2;
-            d2 = d1;
-            d1 = v;
-            *out++ = v;
-            if (envpos++ >= envbound)
-              {
-                envpos = 0;
-                c0 *= decay;
-                recalc_a_b ();
-              }
-          }
-      else
-        while (out < bound)
-          {
-            double c = (1.0 - a - b) * 0.2;
-            double v = a * d1 + b * d2 + c * *in++;
-            d2 = d1;
-            d1 = v;
-            *out++ = v;
-            if (envpos++ >= envbound)
-              {
-                envpos = 0;
-                c0 *= decay;
-                recalc_a_b ();
-              }
-          }
+      while (out < bound)
+        {
+          double c = (1.0 - a - b) * 0.2;
+          double v = a * d1 + b * d2 + c * *in++;
+          d2 = d1;
+          d1 = v;
+          *out++ = v;
+          if (++envpos >= envbound)
+            {
+              envpos = 0;
+              c0 *= decay;
+              recalc_a_b ();
+            }
+        }
     }
   };
 public:

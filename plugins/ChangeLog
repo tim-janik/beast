@@ -1,3 +1,9 @@
+Sat Sep 11 14:35:11 2004  Tim Janik  <timj@gtk.org>
+
+	* davbassfilter.cc: don't reset coefficients in reset().
+	slight renames, removed temporary from class, fixed envelope
+	counter in process() and removed useless code.
+
 Wed Sep  8 17:00:04 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* artscompressor.idl artscompressor.cc: Cleanup: new documentation,
