@@ -77,15 +77,13 @@ extern "C" {
  * notes<->sample value: 0 .. 127 (BSE_VALUE_FROM_NOTE)
  * freq<->sample value: 0 .. 24000 (BSE_FREQ_FROM_VALUE)
  */
-#define	BSE_VALUE_FROM_BOUNDED_UINT(k, bound)	((gfloat) ((k) * (1.0 / ((gfloat) (bound)))))
-#define	BSE_VALUE_FROM_NOTE(note)	(BSE_VALUE_FROM_BOUNDED_UINT ((note), BSE_MAX_NOTE))
-#define	BSE_NOTE_FROM_VALUE(value)	((gint) (((gfloat) (value)) * BSE_MAX_NOTE))
-#define	BSE_MAX_FREQUENCY		(24000 /* don't change this, used for scaling to 0.0 .. 1.0 */)
-#define	BSE_MAX_FREQUENCY_f		((gfloat) BSE_MAX_FREQUENCY)
-#define	BSE_MAX_FREQUENCY_d		((gdouble) BSE_MAX_FREQUENCY)
-#define	BSE_FREQ_FROM_VALUE(value)	(((gfloat) (value)) * BSE_MAX_FREQUENCY_f)
-#define	BSE_VALUE_FROM_FREQ(freq)	((gfloat) ((freq) * (1.0 / BSE_MAX_FREQUENCY_f)))
-#define	BSE_EPSILON_FREQUENCY		((gdouble) 0.01)
+#define	BSE_VALUE_FROM_BOUNDED_UINT(k,b) ((gfloat) ((k) * (1.0 / ((gfloat) (b)))))
+#define	BSE_MAX_FREQUENCY		 (24000 /* don't change this, used for scaling to 0.0 .. 1.0 */)
+#define	BSE_MAX_FREQUENCY_f		 ((gfloat) BSE_MAX_FREQUENCY)
+#define	BSE_MAX_FREQUENCY_d		 ((gdouble) BSE_MAX_FREQUENCY)
+#define	BSE_FREQ_FROM_VALUE(value)	 (((gfloat) (value)) * BSE_MAX_FREQUENCY_f)
+#define	BSE_VALUE_FROM_FREQ(freq)	 ((gfloat) ((freq) * (1.0 / BSE_MAX_FREQUENCY_f)))
+#define	BSE_EPSILON_FREQUENCY		 ((gdouble) 0.01)
 
 
 /* --- time ranges --- */

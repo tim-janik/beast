@@ -18,7 +18,6 @@
 #include	"bsemain.h"
 
 #include	"bsesong.h"
-#include	"bsesongsequencer.h"
 #include	"bseplugin.h"
 #include	"gslcommon.h"
 #include	"gslengine.h"

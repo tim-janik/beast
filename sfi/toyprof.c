@@ -37,7 +37,6 @@
 /* --- implementation --- */
 #define	_GNU_SOURCE
 #include <string.h>
-#include <malloc.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <execinfo.h>

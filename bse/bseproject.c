@@ -19,7 +19,6 @@
 
 #include	"bsesuper.h"
 #include	"bsestorage.h"
-#include	"bsesample.h"
 #include	"bsesong.h"
 #include	"bsesnet.h"
 #include	"bsemarshal.h"
@@ -393,9 +392,7 @@ bse_project_store_bse (BseProject  *project,
 
   mflags = storage->wblocks ? BSE_MAGIC_BSE_BIN_EXTENSION : 0;
   for (slist = project->supers; slist; slist = slist->next)
-    if (BSE_IS_SAMPLE (slist->data))
-      mflags |= BSE_MAGIC_BSE_SAMPLE;
-    else if (BSE_IS_SONG (slist->data))
+    if (BSE_IS_SONG (slist->data))
       mflags |= BSE_MAGIC_BSE_SONG;
 
   string = g_strdup_printf (";BseProjectV0\n\n"); /* %010o mflags */

@@ -1,3 +1,19 @@
+Tue Feb  5 04:32:04 2002  Tim Janik  <timj@gtk.org>
+
+	* remove bsesample.[hc] from the tree as it's hopelessly
+	outdated and has been superceeded by BseWave.
+
+	* removed bsevoice.[hc], though songs don't work yet, they
+	don't use BseVoice anymore.
+
+	* added BseSequence, a new property type (boxed) containing
+	sequences of notes.
+
+	* bsesong.c: fix auto activation property.
+
+	* gslopmaster.c: eeek, added a FIXME about not freeing flow
+	jobs when discarding modules.
+
 Sun Feb  3 23:01:45 2002  Tim Janik  <timj@gtk.org>
 
 	* bseitem.[hc]:

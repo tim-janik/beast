@@ -19,7 +19,6 @@
 
 
 #include        "bsecategories.h"
-#include        "bsevoice.h"
 
 
 enum {
@@ -139,5 +138,5 @@ bse_effect_balance_setup_voice (BseEffect *effect,
 {
   BseEffectBalance *balance_effect = BSE_EFFECT_BALANCE (effect);
 
-  _bse_voice_set_balance (voice, balance_effect->balance);
+  // _bse_voice_set_balance (voice, balance_effect->balance);
 }

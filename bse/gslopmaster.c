@@ -158,6 +158,7 @@ master_process_job (GslJob *job)
       master_need_reflow |= TRUE;
       break;
     case OP_JOB_DISCARD:
+      /* FIXME: free pending flow jobs */
       node = job->data.node;
       OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "discard(%p)", node);
       g_return_if_fail (node->integrated == TRUE);

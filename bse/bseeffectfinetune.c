@@ -19,7 +19,6 @@
 
 
 #include        "bsecategories.h"
-#include        "bsevoice.h"
 
 
 enum {
@@ -140,5 +139,5 @@ bse_effect_fine_tune_setup_voice (BseEffect *effect,
 {
   BseEffectFineTune *ft_effect = BSE_EFFECT_FINE_TUNE (effect);
 
-  _bse_voice_set_fine_tune (voice, ft_effect->fine_tune);
+  // _bse_voice_set_fine_tune (voice, ft_effect->fine_tune);
 }

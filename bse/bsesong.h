@@ -101,10 +101,6 @@ BsePattern*      bse_song_get_pattern_from_list      (BseSong         *song,
 						      guint            pattern_index);
 
 
-/*< private >*/
-void             bse_song_update_sequencer      (BseSong        *song);
-
-
 
 #ifdef __cplusplus
 }

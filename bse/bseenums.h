@@ -53,7 +53,6 @@ typedef enum
 typedef enum
 {
   BSE_MAGIC_BSE_BIN_EXTENSION   = 1 << 0,
-  BSE_MAGIC_BSE_SAMPLE          = 1 << 1,
   BSE_MAGIC_BSE_SONG            = 1 << 2
 } BseMagicFlags;
 typedef enum

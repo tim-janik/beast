@@ -471,7 +471,6 @@ oss_device_write (BsePcmHandle *handle,
   do
     {
       gsize n = MIN (buf_size, n_values << 1);
-      gint16 *b, *d = buf;
       gssize l;
 
       gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_16,
@@ -480,14 +479,6 @@ oss_device_write (BsePcmHandle *handle,
 				buf,
 				n >> 1);
       s += n >> 1;
-#if 0
-      for (b = d + (n >> 1); d < b; d++)
-	{
-	  gfloat v = *s++;
-
-	  *d = v > 1.0 ? 32767 : v < -1.0 ? -32767 : (gint16) (v * 32767.0);
-	}
-#endif
       do
 	l = write (fd, buf, n);
       while (l < 0 && errno == EINTR); /* don't mind signals */

@@ -17,7 +17,6 @@
  */
 #include	"bsesong.h"
 
-#include	"bsesample.h"
 #include	"bseinstrument.h"
 #include	"bsepattern.h"
 #include	"bsepatterngroup.h"
@@ -38,7 +37,8 @@ enum
   PARAM_VOLUME_f,
   PARAM_VOLUME_dB,
   PARAM_VOLUME_PERC,
-  PARAM_BPM
+  PARAM_BPM,
+  PARAM_AUTO_ACTIVATE
 };
 
 enum {
@@ -174,7 +174,12 @@ bse_song_class_init (BseSongClass *class)
 						 BSE_DFL_SONG_BPM, BSE_STP_BPM,
 						 BSE_PARAM_DEFAULT |
 						 BSE_PARAM_HINT_SCALE));
-
+  bse_object_class_add_param (object_class, "Playback Settings",
+			      PARAM_AUTO_ACTIVATE,
+			      g_param_spec_boolean ("auto_activate", NULL, NULL,
+						    TRUE, /* change default */
+						    /* override parent property */ 0));
+  
   song_signals[SIGNAL_PATTERN_GROUP_INSERTED] = bse_object_class_add_signal (object_class, "pattern_group_inserted",
 									     bse_marshal_VOID__OBJECT_UINT,
 									     G_TYPE_NONE,
@@ -189,6 +194,7 @@ static void
 bse_song_init (BseSong *song)
 {
   BSE_OBJECT_UNSET_FLAGS (song, BSE_SNET_FLAG_FINAL);
+  BSE_SUPER (song)->auto_activate = TRUE;
   song->bpm = BSE_DFL_SONG_BPM;
   song->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   song->pattern_length = BSE_DFL_SONG_PATTERN_LENGTH;
@@ -200,9 +206,6 @@ bse_song_init (BseSong *song)
   
   song->n_pgroups = 0;
   song->pgroups = NULL;
-
-  song->sequencer = NULL;
-  song->sequencer_index = 0;
 
   song_set_n_channels (song, BSE_DFL_SONG_N_CHANNELS);
 }

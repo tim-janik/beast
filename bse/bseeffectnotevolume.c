@@ -19,7 +19,6 @@
 
 
 #include        "bsecategories.h"
-#include        "bsevoice.h"
 
 
 enum {
@@ -157,5 +156,5 @@ bse_effect_note_volume_setup_voice (BseEffect *effect,
 {
   BseEffectNoteVolume *nv_effect = BSE_EFFECT_NOTE_VOLUME (effect);
 
-  _bse_voice_set_volume (voice, nv_effect->volume_factor);
+  // _bse_voice_set_volume (voice, nv_effect->volume_factor);
 }

@@ -20,8 +20,8 @@
 #include "bseitem.h"
 #include "bsebindata.h"
 #include "bseproject.h"
-#include "bsesample.h"
 #include "bsesong.h"
+#include "bsesequence.h"
 #include "gsldatahandle.h"
 #include "gsldatautils.h"
 #include <fcntl.h>
@@ -48,6 +48,11 @@ struct _BseStorageBBlock
                                           if (g_scanner_get_next_token (scanner) != _t) \
                                             return _t; \
                                         }
+#define peek_or_return(scanner, token) { GScanner *__s = (scanner); guint _t = (token); \
+                                          if (g_scanner_peek_next_token (__s) != _t) { \
+                                            g_scanner_get_next_token (__s); \
+                                            return _t; \
+                                        } }
 
 
 /* --- variables --- */
@@ -1046,6 +1051,32 @@ bse_storage_put_param (BseStorage *storage,
       bse_storage_puts (storage, string);
       g_free (string);
       break;
+    case G_TYPE_BOXED:
+      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SEQUENCE))
+	{
+	  BseSequence *sdata = g_value_get_boxed (value);
+	  guint i;
+
+	  if (sdata->offset != BSE_KAMMER_NOTE)
+	    g_warning ("%s: unable to handle detuned (%u!=%u) note sequence",
+		       G_STRLOC, sdata->offset, BSE_KAMMER_NOTE);
+
+	  bse_storage_printf (storage, "%u", sdata->n_notes);
+	  bse_storage_push_level (storage);
+	  for (i = 0; i < sdata->n_notes; i++)
+	    {
+	      if (i % 4)
+		bse_storage_putc (storage, ' ');
+	      else
+		bse_storage_break (storage);
+	      string = bse_note_to_string (sdata->notes[i].note);
+	      bse_storage_printf (storage, "(%s)", string);
+	      g_free (string);
+	    }
+	  bse_storage_pop_level (storage);
+	  break;
+	}
+      /* fall through */
     default:
       bse_storage_putc (storage, '?');
       g_warning (G_STRLOC ": unhandled parameter \"%s\" type `%s'",
@@ -1055,6 +1086,44 @@ bse_storage_put_param (BseStorage *storage,
     }
   
   bse_storage_putc (storage, ')');
+}
+
+static GTokenType
+parse_note (BseStorage *storage,
+	    gboolean    maybe_void,
+	    gint       *v_note)
+{
+  GScanner *scanner = storage->scanner;
+  gchar *string, buffer[2];
+  
+  g_scanner_get_next_token (scanner);
+  if (scanner->token == G_TOKEN_IDENTIFIER)
+    {
+      string = scanner->value.v_identifier;
+      if (string[0] == '\'')
+	string++;
+    }
+  else if ((scanner->token >= 'A' && scanner->token <= 'Z') ||
+	   (scanner->token >= 'a' && scanner->token <= 'z'))
+    {
+      buffer[0] = scanner->token;
+      buffer[1] = 0;
+      string = buffer;
+    }
+  else
+    return G_TOKEN_IDENTIFIER;
+
+  *v_note = bse_note_from_string (string);
+
+  if (*v_note == BSE_NOTE_UNPARSABLE || (*v_note == BSE_NOTE_VOID && !maybe_void))
+    {
+      *v_note = maybe_void ? BSE_NOTE_VOID : BSE_KAMMER_NOTE;
+      return bse_storage_warn_skip (storage,
+				    "invalid note definition `%s'",
+				    string);
+    }
+
+  return G_TOKEN_NONE;
 }
 
 GTokenType
@@ -1078,7 +1147,8 @@ bse_storage_parse_param_value (BseStorage *storage,
       guint v_flags;
       gint v_note;
       gdouble v_double;
-      gchar *string, buffer[2];
+      GTokenType token;
+      gchar *string;
       
     case G_TYPE_BOOLEAN:
       g_scanner_get_next_token (scanner);
@@ -1353,39 +1423,52 @@ bse_storage_parse_param_value (BseStorage *storage,
         }
       break;
     case BSE_TYPE_NOTE:
-      g_scanner_get_next_token (scanner);
-      if (scanner->token == G_TOKEN_IDENTIFIER)
-        {
-          string = scanner->value.v_identifier;
-          if (string[0] == '\'')
-            string++;
-        }
-      else if ((scanner->token >= 'A' && scanner->token <= 'Z') ||
-               (scanner->token >= 'a' && scanner->token <= 'z'))
-        {
-          buffer[0] = scanner->token;
-          buffer[1] = 0;
-          string = buffer;
-        }
-      else
-        return G_TOKEN_IDENTIFIER;
-      v_note = bse_note_from_string (string);
-      if (v_note == BSE_NOTE_UNPARSABLE ||
-          (v_note == BSE_NOTE_VOID &&
-           !BSE_PARAM_SPEC_NOTE (pspec)->allow_void))
-        return bse_storage_warn_skip (storage,
-                                      "invalid note definition `%s'",
-                                      string);
+      token = parse_note (storage, BSE_PARAM_SPEC_NOTE (pspec)->allow_void, &v_note);
+      if (token != G_TOKEN_NONE)
+	return token;
       else
 	{
 	  bse_value_set_note (value, v_note);
           if (g_param_value_validate (pspec, value))
-	    return bse_storage_warn_skip (storage,
-					  "note value `%s' out of bounds for parameter `%s'",
-					  string,
-					  pspec->name);
+	    {
+	      string = bse_note_to_string (v_note);
+	      return bse_storage_warn_skip (storage,
+					    "note value `%s' out of bounds for parameter `%s'",
+					    string,
+					    pspec->name);
+	      g_free (string);
+	    }
 	}
       break;
+    case G_TYPE_BOXED:
+      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SEQUENCE))
+	{
+	  BseSequence *sdata = NULL;
+
+	  if (g_scanner_peek_next_token (scanner) != ')')
+	    {
+	      guint i = 0;
+
+	      parse_or_return (scanner, G_TOKEN_INT);
+	      sdata = bse_sequence_new (scanner->value.v_int, BSE_KAMMER_NOTE);
+
+	      while (g_scanner_peek_next_token (scanner) == '(')
+		{
+		  if (i >= sdata->n_notes)
+		    return bse_storage_warn_skip (storage, "too many notes specified");
+		  g_scanner_get_next_token (scanner);	/* eat '(' */
+		  token = parse_note (storage, TRUE, &v_note);
+		  if (token != G_TOKEN_NONE)
+		    return token;
+		  parse_or_return (scanner, ')');
+		  sdata->notes[i++].note = v_note;
+		}
+	      peek_or_return (scanner, ')');
+	    }
+	  g_value_set_boxed (value, sdata);
+	  break;
+	}
+      /* fall through */
     default:
       return bse_storage_warn_skip (storage,
                                     "unhandled parameter type `%s' for parameter `%s'",

@@ -50,7 +50,7 @@
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>
 #include        <bse/bseproject.h>
-#include        <bse/bsesample.h>
+#include        <bse/bsesequence.h>
 #include        <bse/bseserver.h>
 #include        <bse/bsesnet.h>
 #include        <bse/bsesong.h>

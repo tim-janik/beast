@@ -87,7 +87,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseplugin.h \
 	bseprocedure.h \
 	bseproject.h \
-	bsesample.h \
+	bsesequence.h \
 	bseserver.h \
 	bsesnet.h \
 	bsesong.h \
@@ -107,7 +107,6 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 # BSE header files that don't get installed
 bse_private_h_sources = @STRIP_BEGIN@ \
 	$(GSL_PRIVATE_H_SOURCES) \
-	bsevoice.h \
 @STRIP_END@
 # BSE C sources to build the library from
 bse_c_sources = @STRIP_BEGIN@ \
@@ -155,7 +154,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseplugin.c \
 	bseprocedure.c \
 	bseproject.c \
-	bsesample.c \
+	bsesequence.c \
 	bseserver.c \
 	bsesnet.c \
 	bsesong.c \
@@ -168,7 +167,6 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseutils.c \
 	bsewave.c \
 	bsewaverepo.c \
-	bsevoice.c \
 	glib-extra.c \
 	$(GSL_C_SOURCES) \
 	$(TOYPROF_C_SOURCES) \

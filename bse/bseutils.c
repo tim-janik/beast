@@ -889,7 +889,7 @@ bse_note_to_string (gint note)
       guint ht;
       gint o;
       
-      g_return_val_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE, NULL);
+      g_return_val_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE, g_strdup ("void"));
       
       bse_note_examine (note, &o, &ht, NULL, NULL);
       

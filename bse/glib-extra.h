@@ -37,6 +37,7 @@ extern "C" {
 #define	g_scanner_remove_symbol( scanner, symbol )	G_STMT_START { \
   g_scanner_scope_remove_symbol ((scanner), 0, (symbol)); \
 } G_STMT_END
+#define g_object_notify(o,s)	g_object_notify ((gpointer) (o), (s))
 
 
 /* --- string functions --- */

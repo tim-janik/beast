@@ -86,21 +86,19 @@ typedef struct  _BseProject             BseProject;
 typedef struct  _BseProjectClass        BseProjectClass;
 typedef struct  _BseServer              BseServer;
 typedef struct  _BseServerClass         BseServerClass;
-typedef struct  _BseSample              BseSample;
-typedef struct  _BseSampleClass         BseSampleClass;
-typedef struct  _BseSInstrument         BseSInstrument;
-typedef struct  _BseSInstrumentClass    BseSInstrumentClass;
 typedef struct  _BseSNet                BseSNet;
 typedef struct  _BseSNetClass           BseSNetClass;
 typedef struct  _BseSong                BseSong;
 typedef struct  _BseSongClass           BseSongClass;
+typedef struct  _BseSongSequencer       BseSongSequencer;
 typedef struct  _BseSource              BseSource;
 typedef struct  _BseSourceClass         BseSourceClass;
 typedef struct  _BseSuper               BseSuper;
 typedef struct  _BseSuperClass          BseSuperClass;
 typedef struct  _BseWave                BseWave;
-typedef struct _BseWaveRepo             BseWaveRepo;
-typedef struct _BseWaveRepoClass        BseWaveRepoClass;
+typedef struct  _BseVoice               BseVoice;
+typedef struct  _BseWaveRepo            BseWaveRepo;
+typedef struct  _BseWaveRepoClass       BseWaveRepoClass;
 
 
 /* --- BSE aux structures --- */
@@ -117,10 +115,7 @@ typedef struct  _BseMunk                BseMunk;
 typedef struct  _BsePatternNote         BsePatternNote;
 typedef struct  _BsePlugin              BsePlugin;
 typedef struct  _BsePluginClass         BsePluginClass;
-typedef struct  _BseSongSequencer       BseSongSequencer;
 typedef struct  _BseStorage             BseStorage;
-typedef struct  _BseVoice               BseVoice;
-typedef struct  _BseVoiceAllocator      BseVoiceAllocator;
 typedef struct  _BseNotifyHook          BseNotifyHook;
 
 
