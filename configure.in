@@ -592,6 +592,7 @@ library/demo/Makefile
 library/keys/Makefile
 library/skins/Makefile
 library/skins/images/Makefile
+tools/Makefile
 tests/Makefile
 data/Makefile
 data/sfi.pc

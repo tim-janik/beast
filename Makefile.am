@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BEAST/BSE
 
-SUBDIRS = . data sfi bse plugins bsw shell beast-gtk launchers library tests docs po test
+SUBDIRS = . data sfi bse plugins bsw shell beast-gtk launchers library tools tests docs po test
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4

@@ -1,3 +1,18 @@
+Fri Sep  3 03:14:35 2004  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: added tools/.
+
+	* tools/bsewavetool.[hc]: tool to create bsewave file, supporting
+	features such as ogg/vorbis encoding, head/tail soft-clipping and an
+	automatic loop finder.
+
+	* tools/bseloopfuncs.[hc]: six different sample loop detectors.
+
+	* tools/sfiutils.[hc]: various program utilities for argument
+	parsing and file list handling.
+
+	* configure.in: generate tools/Makefile.am.
+
 Thu Sep  2 21:51:35 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdbmeter.c: fix mixer value resets upon size_allocations.
