@@ -1,3 +1,13 @@
+Mon Sep 20 01:12:01 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: added class_has_automation_properties().
+	implemented code geenration for automated property handling.
+	call set_accessors() from class_init() and supply trampolines
+	for set_property(), get_property(), editable_property(),
+	get_candidates() and property_updated().
+	editable_property() and get_candidates() are virtual to allow
+	custom implementations in effects.
+
 Thu Sep 16 15:59:05 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: provide a IDType typedef in the synthesis module

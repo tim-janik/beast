@@ -858,6 +858,15 @@ public:
         push_type ("EFFECT", pure_TypeName (ci->name));
       }
   }
+  bool
+  class_has_automation_properties (const Class &klass)
+  {
+    /* figure whether automation properties are required */
+    for (vector<Param>::const_iterator pi = klass.properties.begin(); pi != klass.properties.end(); pi++)
+      if (g_option_check (pi->literal_options.c_str(), "automate"))
+        return true;
+    return false;
+  }
   void
   generate_class_definitions (NamespaceHelper& nspace)
   {
@@ -964,19 +973,33 @@ public:
         
         /* auto-update type */
         printf ("protected:\n");
-        bool has_automation_property = false;   /* figure whether automation properties are required */
-        for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-          has_automation_property |= g_option_check (pi->literal_options.c_str(), "automate");
-        printf ("  typedef %s AutoUpdateCategory;\n", has_automation_property ? "::Bse::SynthesisModule::NeedAutoUpdateTag" : "void");
+        printf ("  typedef %s AutoUpdateCategory;\n", class_has_automation_properties (*ci) ? "::Bse::SynthesisModule::NeedAutoUpdateTag" : "void");
 
         /* property fields */
         printf ("protected:\n");
         for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-          printf ("  %s %s;\n", TypeField (pi->type), pi->name.c_str());
+          {
+            printf ("  %s %s;\n", TypeField (pi->type), pi->name.c_str());
+            if (g_option_check (pi->literal_options.c_str(), "automate"))
+              printf ("  guint64 last__%s;\n", pi->name.c_str());
+          }
         
-        /* property setter */
+        /* get_property() */
         printf ("public:\n");
-        printf ("  void set_property (guint prop_id, const ::Bse::Value &value, GParamSpec *pspec)\n");
+        printf ("  void get_property (%s prop_id, ::Bse::Value &value, GParamSpec *pspec)\n", ctPropertyID);
+        printf ("  {\n");
+        printf ("    switch (prop_id) {\n");
+        for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+          {
+            printf ("    case PROP_%s:\n", pure_UPPER (pi->name));
+            printf ("      %s (&value, %s);\n", func_value_set_param (pi->type), pi->name.c_str());
+            printf ("    break;\n");
+          }
+        printf ("    };\n");
+        printf ("  }\n");
+        
+        /* set_property() */
+        printf ("  void set_property (%s prop_id, const ::Bse::Value &value, GParamSpec *pspec)\n", ctPropertyID);
         printf ("  {\n");
         printf ("    switch (prop_id) {\n");
         for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
@@ -1001,20 +1024,36 @@ public:
         printf ("    default: ;\n");
         printf ("    };\n");
         printf ("  }\n");
-        
-        /* property getter */
-        printf ("  void get_property (guint prop_id, ::Bse::Value &value, GParamSpec *pspec)\n");
+
+        /* editable_property() */
+        printf ("  virtual bool editable_property (%s prop_id, GParamSpec *pspec)\n", ctPropertyID);
+        printf ("  {\n");
+        printf ("    return true;\n");
+        printf ("  }\n");
+
+        /* get_candidates() */
+        printf ("  virtual void get_candidates (%s prop_id, ::Bse::PropertyCandidatesHandle &pch, GParamSpec *pspec)\n", ctPropertyID);
+        printf ("  {\n");
+        printf ("  }\n");
+
+        /* property_updated() */
+        printf ("  void property_updated (%s prop_id, guint64 tick_stamp, double prop_value, GParamSpec *pspec)\n", ctPropertyID);
         printf ("  {\n");
         printf ("    switch (prop_id) {\n");
         for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
           {
+            if (!g_option_check (pi->literal_options.c_str(), "automate"))
+              continue;
             printf ("    case PROP_%s:\n", pure_UPPER (pi->name));
-            printf ("      %s (&value, %s);\n", func_value_set_param (pi->type), pi->name.c_str());
+            printf ("      if (tick_stamp >= ::std::max (last__%s, module_update_tick_stamp()))\n", pi->name.c_str());
+            printf ("        %s = prop_value;\n", pi->name.c_str());
+            printf ("      last__%s = tick_stamp;\n", pi->name.c_str());
             printf ("    break;\n");
           }
+        printf ("    default: ;\n");
         printf ("    };\n");
         printf ("  }\n");
-        
+
         /* static data */
         printf ("private:\n");
         printf ("  static struct StaticData {\n");
@@ -1084,6 +1123,9 @@ public:
         if (parser.fromInclude (ci->name))
           continue;
         nspace.setFromSymbol(ci->name);
+        const char *ctName = pure_TypeName (ci->name);
+        const char *ctNameBase = intern (ctName + string ("Base"));
+        const char *ctPropertyID = intern (ctName + string ("PropertyID"));
         const char *nname = nspace.printable_form (ci->name);
         vector<string> destroy_jobs;
         
@@ -1091,6 +1133,14 @@ public:
         printf ("void\n");
         printf ("%sBase::class_init (::Bse::CxxBaseClass *klass)\n", nname);
         printf ("{\n");
+        printf ("  klass->set_accessors (::Bse::cxx_get_property_trampoline<%s, %s>,\n", ctNameBase, ctPropertyID);
+        printf ("                        ::Bse::cxx_set_property_trampoline<%s, %s>,\n", ctNameBase, ctPropertyID);
+        printf ("                        ::Bse::cxx_editable_property_trampoline<%s, %s>,\n", ctNameBase, ctPropertyID);
+        printf ("                        ::Bse::cxx_get_candidates_trampoline<%s, %s>,\n", ctNameBase, ctPropertyID);
+        if (class_has_automation_properties (*ci))
+          printf ("                        ::Bse::cxx_property_updated_trampoline<%s, %s>);\n", ctNameBase, ctPropertyID);
+        else
+          printf ("                        NULL);\n");
         for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
           printf ("  klass->add_param (PROP_%s, %s);\n", pure_UPPER (pi->name), typed_pspec_constructor (*pi).c_str());
         for (vector<Stream>::const_iterator si = ci->istreams.begin(); si != ci->istreams.end(); si++)
