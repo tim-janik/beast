@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-11 09:34+0100\n"
+"POT-Creation-Date: 2004-02-24 03:38+0100\n"
 "PO-Revision-Date: 2004-01-24 04:05+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
@@ -87,7 +87,7 @@ msgid "_Redo"
 msgstr "O_pnieuw"
 
 # schonen wissen
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:67
+#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "Herstelbuffer _opschonen"
 
@@ -196,6 +196,15 @@ msgstr "Procedurebeheer"
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release Notes"
+
+#: beast-gtk/bstauxdialogs.c:389
+#, c-format
+msgid "Please press the keyboard shortcut to be installed for function: %s"
+msgstr ""
+
+#: beast-gtk/bstauxdialogs.c:394
+msgid "Please press the keyboard shortcut to be installed..."
+msgstr ""
 
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
@@ -411,11 +420,11 @@ msgstr "Laden van wave `%s'"
 msgid "Add"
 msgstr "Toevoegen"
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:40
-#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:863 beast-gtk/bstsnetrouter.c:905
-#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:63
-#: beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:56
+#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
+#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
+#: beast-gtk/bsttrackview.c:63 beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Verwijderen"
 
@@ -435,93 +444,165 @@ msgstr "Opmerking"
 msgid "Type"
 msgstr "Type"
 
-#: beast-gtk/bstmain.c:130
+#: beast-gtk/bstkeybindings.c:48
+#, fuzzy
+msgid "Add..."
+msgstr "Toevoegen"
+
+#: beast-gtk/bstkeybindings.c:48
+msgid "Bind a new key combination to a program function"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:50
+#, fuzzy
+msgid "Change..."
+msgstr "Bezig met laden..."
+
+# huidige geselecteerde golf? wave-bestand?
+#: beast-gtk/bstkeybindings.c:50
+#, fuzzy
+msgid "Change the currently selected key binding"
+msgstr "De geselecteerde wave verwijderen"
+
+#: beast-gtk/bstkeybindings.c:52
+#, fuzzy
+msgid "Raise"
+msgstr "Verhouding"
+
+#: beast-gtk/bstkeybindings.c:52
+msgid "Raise the currently selected key binding, relative to its neighbours"
+msgstr ""
+
+#. GRUT modified this item
+#: beast-gtk/bstkeybindings.c:54
+msgid "Lower"
+msgstr "Verlaag"
+
+#: beast-gtk/bstkeybindings.c:54
+msgid "Lower the currently selected key binding, relative to its neighbours"
+msgstr ""
+
+# huidige geselecteerde golf? wave-bestand?
+#: beast-gtk/bstkeybindings.c:56
+#, fuzzy
+msgid "Delete the currently selected key binding"
+msgstr "De geselecteerde wave verwijderen"
+
+#: beast-gtk/bstkeybindings.c:391
+msgid "Key Binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:392
+msgid "Key combinations used to activate a function"
+msgstr ""
+
+#. GRUT modified this item
+#: beast-gtk/bstkeybindings.c:394 beast-gtk/bstkeybindings.c:418
+msgid "Function"
+msgstr "Functie"
+
+#: beast-gtk/bstkeybindings.c:395
+msgid "Functions to be activated for a key binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:397
+#, fuzzy
+msgid "Parameter"
+msgstr "Parameters"
+
+#: beast-gtk/bstkeybindings.c:398
+msgid "Parameter to pass to functions upon activation"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:419
+msgid "Function used to create new key bindings"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:421 beast-gtk/bstprocedure.c:206
+msgid "Description"
+msgstr "Beschrijving"
+
+#: beast-gtk/bstmain.c:127
 msgid "BEAST Startup"
 msgstr "BEAST Opstartprocedure"
 
-#: beast-gtk/bstmain.c:137
+#: beast-gtk/bstmain.c:134
 msgid "Startup"
 msgstr "Opstarten"
 
+# betere vertaling?
 #. BEAST initialization
-#.
-#: beast-gtk/bstmain.c:142
-msgid "Objects"
-msgstr "Objecten"
+#: beast-gtk/bstmain.c:138
+#, fuzzy
+msgid "Initializers"
+msgstr "Identificatie:"
 
-#: beast-gtk/bstmain.c:147
-msgid "Language"
-msgstr "Taal"
-
-#: beast-gtk/bstmain.c:154
-msgid "RC File"
+#. parse rc file
+#: beast-gtk/bstmain.c:145
+#, fuzzy
+msgid "RC Files"
 msgstr "RC Bestand"
 
-#: beast-gtk/bstmain.c:157
-msgid "Skin RC"
-msgstr ""
-
 #. show splash images
-#.
-#: beast-gtk/bstmain.c:163
+#: beast-gtk/bstmain.c:149
 msgid "Splash Image"
 msgstr "Intro-afbeelding"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:175
+#: beast-gtk/bstmain.c:161
 msgid "BSE Core"
 msgstr "BSE Kern"
 
-#: beast-gtk/bstmain.c:194
+#: beast-gtk/bstmain.c:180
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:213
+#: beast-gtk/bstmain.c:199
 msgid "LADSPA Plugins"
 msgstr "LADSPA Plugins"
 
-#: beast-gtk/bstmain.c:241
+#: beast-gtk/bstmain.c:227
 msgid "Scripts"
 msgstr "Scripts"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:259
+#: beast-gtk/bstmain.c:245
 msgid "Dialogs"
 msgstr "Dialoogvensters"
 
-#: beast-gtk/bstmain.c:266
+#: beast-gtk/bstmain.c:252
 msgid "Loading..."
 msgstr "Bezig met laden..."
 
-#: beast-gtk/bstmain.c:296 beast-gtk/bstmain.c:298
+#: beast-gtk/bstmain.c:282 beast-gtk/bstmain.c:284
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Bezig met laden van \"%s\""
 
-#: beast-gtk/bstmain.c:315
+#: beast-gtk/bstmain.c:301
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Laden van project \"%s\""
 
-#: beast-gtk/bstmain.c:716
+#: beast-gtk/bstmain.c:702
 msgid "BEAST About"
 msgstr "BEAST Info"
 
-#: beast-gtk/bstmain.c:717
+#: beast-gtk/bstmain.c:703
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versie %s"
 
-#: beast-gtk/bstmain.c:718
+#: beast-gtk/bstmain.c:704
 msgid "Contributions made by:"
 msgstr "Met dank aan:"
 
-#: beast-gtk/bstparam-choice.c:144
+#: beast-gtk/bstparam-choice.c:145
 msgid "Drop Down Box (Option Menu)"
 msgstr "Drop Down Box (Optiemenu)"
 
-#: beast-gtk/bstparam-choice.c:150
+#: beast-gtk/bstparam-choice.c:151
 msgid "Drop Down Button"
 msgstr "Drop Down Button"
 
@@ -581,57 +662,329 @@ msgstr "Tekstinvoer"
 msgid "Time Entry"
 msgstr "Tijd invoer"
 
-#: beast-gtk/bstpartdialog.c:57
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear"
 msgstr "Wissen"
 
-#: beast-gtk/bstpartdialog.c:57
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear the current selection"
 msgstr "Huidige selectie wissen"
 
-#: beast-gtk/bstpartdialog.c:58
+#: beast-gtk/bstpartdialog.c:61
 msgid "Cut"
 msgstr "Knippen"
 
-#: beast-gtk/bstpartdialog.c:58
+#: beast-gtk/bstpartdialog.c:61
 msgid "Move the current selection into clipboard"
 msgstr "Huidige selectie verplaatsen naar het klembord"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy"
 msgstr "Kopiëren"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy the current selection into clipboard"
 msgstr "Huidige selectie kopiëren naar het klembord"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:63
 msgid "Paste"
 msgstr "Plakken"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:63
 msgid "Insert clipboard contents as current selection"
 msgstr "Inhoud van het klembord plakken als huidige selectie"
 
-#: beast-gtk/bstpartdialog.c:63
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo"
 msgstr "Ongedaan maken"
 
-#: beast-gtk/bstpartdialog.c:63
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo last editing step"
 msgstr "Laatste verandering herstellen"
 
-#: beast-gtk/bstpartdialog.c:64
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo"
 msgstr "Opnieuw"
 
-#: beast-gtk/bstpartdialog.c:64
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo the last undone editing step"
 msgstr "De laatst herstelde stap weer toepassen"
 
 #: beast-gtk/bstpartview.c:41 beast-gtk/bstwaveview.c:47
 msgid "Editor"
 msgstr "Editor"
+
+#: beast-gtk/bstpatterncolumns.c:501
+msgid ""
+"The pattern editor column layout is specified by listing column types with "
+"possible modifiers in display order."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:503
+msgid "COLUMN TYPES:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:505
+msgid "note-1, note-2, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:506
+msgid "  display notes of the first, second, ... channel"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:508
+msgid "offset-1, length-2, velocity-3, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:509
+msgid ""
+"  display offset, length or velocity of notes in the first, second, ... "
+"channel"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:511
+msgid "control-0, ..., control-63, cc-0, cc-31"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:512
+msgid "  select various event types (controls, continuous controllers)"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:514
+msgid "bar, |"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:515
+msgid "  display solid vertical bar"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:517
+msgid "dbar, :"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:518
+msgid "  display dotted vertical bar"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:520
+msgid "space, _"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:521
+msgid "  insert vertical space"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:522
+msgid "EVENTS:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:524
+msgid "  balance, volume, cc-8, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:525
+msgid "MODIFIERS:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:527
+msgid "hex2, hex4"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:528
+msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:530
+msgid "shex2, shex4"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:531
+msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:533
+msgid "dec2, dec3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:534
+msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:536
+msgid "sdec2, sdec3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:537
+msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:539
+msgid "col1, col2, col3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:540
+msgid "  selects one of 3 predefined colors"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:542
+msgid "lfold, rfold"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:543
+msgid "  allow folding the column into left/right neighbour"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:544
+msgid "EXAMPLE:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:546
+msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+msgstr ""
+
+#. GXK_DIALOG_MODAL
+#: beast-gtk/bstpatterncolumns.c:556
+msgid "Pattern Editor Layout"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:39
+#, fuzzy
+msgid "Steps"
+msgstr "_Stoppen"
+
+#: beast-gtk/bstpatternctrl.c:40
+msgid ""
+"The number of cells to move across each time an event or note was edited"
+msgstr ""
+
+# of gitaar 'distortion'
+#: beast-gtk/bstpatternctrl.c:44
+#, fuzzy
+msgid "Direction"
+msgstr "_Vervorming"
+
+#: beast-gtk/bstpatternctrl.c:45
+msgid "The direction of cell movement each time an event or note was edited"
+msgstr ""
+
+#. movement
+#: beast-gtk/bstpatternctrl.c:161
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:162
+msgid "Move focus cell upwards"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:163
+msgid "Move focus cell to the left"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:164
+msgid "Move focus cell to the right"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:165
+msgid "Move focus cell downwards"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:166
+msgid "Move focus cell upwards page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:167
+msgid "Move focus cell to the left page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:168
+msgid "Move focus cell to the right page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:169
+msgid "Move focus cell downwards page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:170
+msgid "Set the focus cell to the topmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:171
+msgid "Set the focus cell to the leftmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:172
+msgid "Set the focus cell to the rightmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:173
+msgid "Set the focus cell to the bottommost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:177
+msgid "Remove any events in the focus cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:180
+msgid "Remove any events in the focus cell and move to the next cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:184
+#, fuzzy
+msgid "Set the focus cell note"
+msgstr "Hele noten invoegen"
+
+#: beast-gtk/bstpatternctrl.c:187
+msgid "Set the focus cell note and move to the next cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:190
+msgid "Set the focus cell note relative to the base octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:193
+msgid ""
+"Set the focus cell note relative to the base octave and move to the next cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:197
+msgid "Set the focus cell octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:200
+msgid "Set the focus cell octave and move to the next cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:203
+msgid "Change the focus cell octave by a given amount"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:206
+msgid ""
+"Change the focus cell octave by a given amount and move to the next cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:210
+msgid "Set the base octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:213
+msgid "Change the base octave by a given amount"
+msgstr ""
 
 #: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert"
@@ -803,13 +1156,20 @@ msgstr "Noot afspelen"
 msgid "Playback"
 msgstr "Afspelen"
 
-#: beast-gtk/bstpreferences.c:69
-msgid "Skin"
+# noten
+#: beast-gtk/bstpreferences.c:76
+#, fuzzy
+msgid "Piano Keys"
+msgstr "Pianotonen"
+
+#: beast-gtk/bstpreferences.c:83
+msgid "Generic Keys"
 msgstr ""
 
-#: beast-gtk/bstprocedure.c:206
-msgid "Description"
-msgstr "Beschrijving"
+#. GRUT modified this item
+#: beast-gtk/bstpreferences.c:88
+msgid "Skin"
+msgstr "Skin"
 
 #: beast-gtk/bstprocedure.c:296
 #, c-format
@@ -845,7 +1205,7 @@ msgstr ""
 "van de code (dus uw projecten regelmatig opslaan). "
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
 msgid "_Edit"
 msgstr "Be_werken"
 
@@ -878,10 +1238,176 @@ msgstr "Horizontaal krimpen"
 msgid "Shrink Vertically"
 msgstr "Verticaal krimpen"
 
-#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:55
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:78
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Label"
+
+#. GRUT modified this item
+#: beast-gtk/bstrecords.idl:35
+msgid "Up"
+msgstr "Omhoog"
+
+#: beast-gtk/bstrecords.idl:35
+#, fuzzy
+msgid "Move upwards"
+msgstr "Deel verplaatsen"
+
+#: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "Links"
+
+#: beast-gtk/bstrecords.idl:36
+#, fuzzy
+msgid "Move to the left"
+msgstr "Noot verplaatsen"
+
+#: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "Rechts"
+
+#: beast-gtk/bstrecords.idl:37
+#, fuzzy
+msgid "Move to the right"
+msgstr "Noot verplaatsen"
+
+#. GRUT modified this item
+#: beast-gtk/bstrecords.idl:38
+msgid "Down"
+msgstr "Omlaag"
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Step downwards"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:43
+#, fuzzy
+msgid "Release counter"
+msgstr "_Release notes..."
+
+#. GRUT modified this item
+#: beast-gtk/bstrecords.idl:45
+msgid "Font Size"
+msgstr "Lettertypegrootte"
+
+#: beast-gtk/bstrecords.idl:45
+msgid "Font size in pixels for labels displayed in synthesis networks"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:47
+msgid "Anti-Alias"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:47
+msgid "Draw synthesis networks anti-aliased?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:49
+msgid "Single Edit"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:49
+msgid "Fallback into Edit mode after creating synthesis modules?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:51
+msgid "Swap IO"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:51
+msgid "Swap input with output channels when displaying synthesis modules?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:55
+#, fuzzy
+msgid "Tab Width"
+msgstr "Pulsbreedte"
+
+#: beast-gtk/bstrecords.idl:55
+msgid "Specify project tab width in pixels"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:57
+msgid "Homogeneous Input Fields"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:58
+msgid ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:66
+#, fuzzy
+msgid "Skin Name"
+msgstr "Naam"
+
+#: beast-gtk/bstrecords.idl:66
+msgid "Name for the current skin configuration (used for skin selections)."
+msgstr ""
+
+#. GRUT modified this item
+#: beast-gtk/bstrecords.idl:68 beast-gtk/bstrecords.idl:78
+msgid "Background Image"
+msgstr "Achtergrondafbeelding"
+
+#: beast-gtk/bstrecords.idl:68
+msgid "Background image used by the piano-roll widget."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:69 beast-gtk/bstrecords.idl:79
+msgid "Image shade"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:69 beast-gtk/bstrecords.idl:79
+msgid "Percentage of background image pixel to blend over background color."
+msgstr ""
+
+#. GRUT modified this item
+#: beast-gtk/bstrecords.idl:70 beast-gtk/bstrecords.idl:80
+msgid "Background Color"
+msgstr "Achtergrondkleur"
+
+#: beast-gtk/bstrecords.idl:71 beast-gtk/bstrecords.idl:81
+#, fuzzy
+msgid "Horizontal Bar Color"
+msgstr "Horizontale trackzoom"
+
+#: beast-gtk/bstrecords.idl:72
+#, fuzzy
+msgid "Vertical Bar Color"
+msgstr "Verticaale pianozoom"
+
+#: beast-gtk/bstrecords.idl:73
+#, fuzzy
+msgid "Horizontal Grid Color"
+msgstr "Horizontale pianozoom"
+
+#: beast-gtk/bstrecords.idl:74
+#, fuzzy
+msgid "Vertical Grid Color"
+msgstr "Verticaale pianozoom"
+
+#: beast-gtk/bstrecords.idl:75 beast-gtk/bstrecords.idl:82
+msgid "Middle Bar Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:78
+msgid "Background image used by the control events widget."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:83
+msgid "Positive Value Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:84
+#, fuzzy
+msgid "Zero Value Color"
+msgstr "Selecteren"
+
+#: beast-gtk/bstrecords.idl:85
+msgid "Negative Value Color"
+msgstr ""
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
@@ -1134,10 +1660,6 @@ msgid "Delete parts"
 msgstr "Delen verwijderen"
 
 #: beast-gtk/bsttrackrollctrl.c:64
-msgid "Left"
-msgstr "Links"
-
-#: beast-gtk/bsttrackrollctrl.c:64
 msgid "Use the horizontal ruler to adjust the left loop pointer"
 msgstr ""
 "Gebruik de horizontale lineaal om de linkergrens van de lus aan te passen"
@@ -1149,10 +1671,6 @@ msgstr "Positie"
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Use the horizontal ruler to adjust the play position pointer"
 msgstr "Gebruik de horizontale lineaal om de afspeelpositie aan te passen"
-
-#: beast-gtk/bsttrackrollctrl.c:68
-msgid "Right"
-msgstr "Rechts"
 
 #: beast-gtk/bsttrackrollctrl.c:68
 msgid "Use the horizontal ruler to adjust the right loop pointer"
@@ -1281,171 +1799,208 @@ msgid "Edit the currently selected wave"
 msgstr "De geselecteerde wave bewerken"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
+msgid "Adjust right view boundary"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Adjust the zoom factor of the router display"
 msgstr "Zoomfactor van de router-weergave aanpassen "
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+msgid "Aplly configuration changes to the pattern editor layout"
+msgstr ""
+
+#. GRUT modified this item
+#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+msgid "Configure"
+msgstr "Configureren"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+msgid "Configure the column layout of the pattern editor"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:6
 msgid "Control Type:"
 msgstr "Controletype:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#: beast-gtk/dialogs/gadgets-beast.xml.h:7
 msgid "Development"
 msgstr "Ontwikkeling"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+msgid "Discard changes and close dialog"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:9
 msgid "E_xamples"
 msgstr "_Voorbeelden"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#: beast-gtk/dialogs/gadgets-beast.xml.h:10
 msgid "Events"
 msgstr "Gebeurtenissen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#: beast-gtk/dialogs/gadgets-beast.xml.h:11
 msgid "HZoom"
 msgstr "HZoom"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+#: beast-gtk/dialogs/gadgets-beast.xml.h:12
 msgid "Horizontal piano zoom"
 msgstr "Horizontale pianozoom"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/gadgets-beast.xml.h:13
 msgid "Horizontal track zoom"
 msgstr "Horizontale trackzoom"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#. GRUT modified this item
+#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+msgid "Layout:"
+msgstr "Layout:"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:15
 msgid "Note _Length"
 msgstr "Noot _lengte"
 
 # noten
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/gadgets-beast.xml.h:16
 msgid "Piano Notes"
 msgstr "Pianotonen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
 msgid "Repeat"
 msgstr "Herhalen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
 msgid "Repeat playback within loop points"
 msgstr "Afspelen herhalen tussen de 'loop-points'"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
 msgid "Synthesis Modules"
 msgstr "Synthesemodules"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
 msgid "VZoom"
 msgstr "VZoom"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+#: beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "Vertical piano zoom"
 msgstr "Verticaale pianozoom"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
 msgid "Virtual Rack"
 msgstr "Virtueel rack"
 
 # golven? of .wav?
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "Wave_s"
 msgstr "Wave_s"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
 msgid "Zoom"
 msgstr "Zoomen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#. GRUT modified this item
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+msgid "_Apply"
+msgstr "_Toepassen"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
 msgid "_Audio Sources"
 msgstr "_Geluidsbronnen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#. GRUT modified this item
+# verhelderen
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+msgid "_Cancel"
+msgstr "_Annuleren"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
 msgid "_Demo"
 msgstr "_Demo"
 
 # of gitaar 'distortion'
-#: beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
 msgid "_Distortion"
 msgstr "_Vervorming"
 
 # verhelderen
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Enhance"
 msgstr "Ver_beteren"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
 msgid "_File"
 msgstr "_Bestand"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_Filters"
 msgstr "_Filters"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
 msgid "_Help"
 msgstr "_Hulp"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Input & Output"
 msgstr "_Invoer & uitvoer"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Misc"
 msgstr "_Overig"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Other Sources"
 msgstr "Overige _bronnen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Project"
 msgstr "_Project"
 
 # Kwantisatie
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_Quantization"
 msgstr "_Quantisatie"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_Routing"
 msgstr "_Routing"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/gadgets-beast.xml.h:42
 msgid "_Skins"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:43
 msgid "_Song"
 msgstr "_Nummer"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:44
 msgid "_Spatial"
 msgstr "_Ruimtelijk"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:45
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:46
 msgid "_Synthesizers"
 msgstr "_Synthesizers"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:47
 msgid "_Tools"
 msgstr "E_xtra"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:48
 msgid "_Utilities"
 msgstr "_Hulpmiddelen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/gadgets-beast.xml.h:49
 msgid "_View"
 msgstr "Beel_d"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:42
+#: beast-gtk/dialogs/gadgets-beast.xml.h:50
 msgid "_Virtualization"
 msgstr "_Virtualisatie"
 
@@ -1513,7 +2068,13 @@ msgstr "Aantal rijen"
 msgid "Text Entry"
 msgstr "Tekstinvoer"
 
-#: beast-gtk/gxk/gxkparam-label.c:49
+# betere vertaling?
+#: beast-gtk/gxk/gxkparam-label.c:66
+#, fuzzy
+msgid "Property Identifier"
+msgstr "Identificatie:"
+
+#: beast-gtk/gxk/gxkparam-label.c:72
 msgid "Property Name"
 msgstr "Eigenschapnaam"
 
@@ -1533,11 +2094,11 @@ msgstr "Horizontale schaal (logaritmisch)"
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Verticale schaal (logaritmisch)"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:74
+#: beast-gtk/gxk/gxkparam-spinner.c:82
 msgid "Spin Button"
 msgstr "Spinknop"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:80
+#: beast-gtk/gxk/gxkparam-spinner.c:88
 msgid "Spin Button (Logarithmic)"
 msgstr "Spinknop (logaritmisch)"
 
@@ -1612,6 +2173,15 @@ msgstr "Snel-widget"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 "Het te activeren widget wanneer de sneltoets van het label wordt gebruikt"
+
+# huh?
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/gxk/gxksimplelabel.c:575
+#, fuzzy
+msgid "..."
+msgstr "Lib..."
 
 #: bse/bseamplifier.idl:32 plugins/bsebalance.idl:26
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
@@ -2410,6 +2980,12 @@ msgstr "Status"
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr "Status waarmee foutmeldingen worden uitgevoerd"
+
+#~ msgid "Objects"
+#~ msgstr "Objecten"
+
+#~ msgid "Language"
+#~ msgstr "Taal"
 
 #~ msgid "Name:"
 #~ msgstr "Naam:"
