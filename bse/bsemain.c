@@ -38,11 +38,6 @@ static void	bse_async_parse_args	(gint	       *argc_p,
 
 
 /* --- variables --- */
-GMainContext            *bse_main_context = NULL;
-SfiMutex	         bse_main_sequencer_mutex = { 0, };
-gboolean	         bse_main_debug_extensions = FALSE;
-SfiThread               *bse_main_thread = NULL;
-static volatile gboolean bse_initialization_stage = 0;
 /* from bse.h */
 const guint		 bse_major_version = BSE_MAJOR_VERSION;
 const guint		 bse_minor_version = BSE_MINOR_VERSION;
@@ -50,9 +45,26 @@ const guint		 bse_micro_version = BSE_MICRO_VERSION;
 const guint		 bse_interface_age = BSE_INTERFACE_AGE;
 const guint		 bse_binary_age = BSE_BINARY_AGE;
 const gchar		*bse_version = BSE_VERSION;
+GMainContext            *bse_main_context = NULL;
+SfiMutex	         bse_main_sequencer_mutex = { 0, };
+gboolean	         bse_main_debug_extensions = FALSE;
+SfiThread               *bse_main_thread = NULL;
+static volatile gboolean bse_initialization_stage = 0;
+static gboolean          textdomain_setup = FALSE;
 
 
 /* --- functions --- */
+const gchar*
+bse_gettext (const gchar *text)
+{
+#if 0
+  g_assert (textdomain_setup == TRUE);
+  if (textdomain_setup != TRUE)
+    g_warning ("assertion failed: %s", "textdomain_setup == TRUE");
+#endif
+  return dgettext (BSE_GETTEXT_DOMAIN, text);
+}
+
 void
 bse_init_async (gint    *argc,
 		gchar ***argv,
@@ -68,7 +80,8 @@ bse_init_async (gint    *argc,
 
   bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-  
+  textdomain_setup = TRUE;
+
   /* this function is running in the user thread and needs to start the main BSE thread */
   
   /* initialize submodules */
@@ -235,7 +248,8 @@ bse_init_intern (gint    *argc,
 
   bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-
+  textdomain_setup = TRUE;
+  
   /* initialize submodules */
   sfi_init ();
   if (!config)

@@ -29,10 +29,7 @@
 #include <math.h>
 #include <bse/bseconfig.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- some globally used macros --- */
@@ -169,16 +166,10 @@ typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
 
 
 /* --- i18n and gettext helpers --- */
-#define _(str)		dgettext (BSE_GETTEXT_DOMAIN, str)
-#ifdef gettext_noop
-#  define N_(str)	gettext_noop (str)
-#else
-#  define N_(str)	(str)
-#endif
+const gchar* bse_gettext (const gchar *text);
+#define _(str)	bse_gettext (str)
+#define N_(str) (str)
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_DEFS_H__ */

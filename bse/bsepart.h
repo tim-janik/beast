@@ -119,6 +119,7 @@ BsePartNoteSeq*    bse_part_list_notes                (BsePart           *self,
                                                        gint               max_note,
                                                        gboolean           include_crossings);
 BsePartControlSeq* bse_part_list_controls             (BsePart           *self,
+                                                       guint              channel, /* for note events */
                                                        guint              tick,
                                                        guint              duration,
                                                        BseMidiSignalType  ctype);

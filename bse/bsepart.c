@@ -1125,6 +1125,7 @@ bse_part_list_notes (BsePart *self,
 
 BsePartControlSeq*
 bse_part_list_controls (BsePart          *self,
+                        guint             match_channel, /* for note events */
                         guint             tick,
                         guint             duration,
                         BseMidiSignalType ctype)
@@ -1144,6 +1145,8 @@ bse_part_list_controls (BsePart          *self,
           BsePartEventNote *note = bse_part_note_channel_lookup_ge (&self->channels[channel], tick);
           BsePartEventNote *last = bse_part_note_channel_lookup_lt (&self->channels[channel], tick + duration);
           if (!note)
+            continue;
+          if (channel != match_channel && match_channel != ~0)
             continue;
           while (note <= last)
             {

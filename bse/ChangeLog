@@ -1,3 +1,16 @@
+Mon Feb 23 05:13:34 2004  Tim Janik  <timj@gtk.org>
+
+	* bsedefs.h: 
+	* bsemain.[hc]: use bse_gettext() to translate strings, so we can
+	catch places triggering translations prematurely (before
+	bindtextdomain() is called), e.g. due to static C++ constructors.
+
+	* bsepart.[hc]: support per-channel matches for note-specific events
+	in bse_part_list_controls().
+	* bsepart.proc: removed get-range-controls() which is a clone of
+	list-controls(). added get-channel-controls() to get note-specific
+	control events. 
+
 Sun Feb 22 02:03:51 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* Makefile.am: Use new sfidl options.

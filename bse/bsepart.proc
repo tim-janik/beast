@@ -483,7 +483,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, tick, duration, ctype));
+  bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, duration, ctype));
   
   return BSE_ERROR_NONE;
 }
@@ -690,15 +690,17 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, tick, 1, ctype));
+  bse_value_take_boxed (out_values++, bse_part_list_controls (self, ~0, tick, 1, ctype));
   
   return BSE_ERROR_NONE;
 }
 
-METHOD (BsePart, get-range-controls) {
-  HELP	= "Retrieve all control events of a specific type within range.";
+METHOD (BsePart, get-channel-controls) {
+  HELP	= "Retrieve all control events of a specific type within range of a channel.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_int ("channel", "Channel", NULL,
+			 0, 0, BSE_PART_MAX_CHANNELS, 4, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", NULL,
 			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("duration", "Tick Duration", NULL,
@@ -715,6 +717,7 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BsePart *self     = bse_value_get_object (in_values++);
+  guint    channel  = sfi_value_get_int (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
   guint    ctype    = g_value_get_enum (in_values++);
@@ -724,7 +727,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_controls (self, tick, duration, ctype));
+  bse_value_take_boxed (out_values++, bse_part_list_controls (self, channel, tick, duration, ctype));
   
   return BSE_ERROR_NONE;
 }
