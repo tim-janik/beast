@@ -234,7 +234,7 @@ bse_pcm_device_oss_close (BsePcmDevice *pdev)
   OSSHandle *oss = (OSSHandle*) pdev->handle;
   
   pdev->handle = NULL;
-  (void) ioctl (oss->fd, SNDCTL_DSP_RESET);
+  (void) ioctl (oss->fd, SNDCTL_DSP_RESET, NULL);
   (void) close (oss->fd);
   g_free (oss->frag_buf);
   g_free (oss);

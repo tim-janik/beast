@@ -44,18 +44,6 @@ static GQuark quark_script_args = 0;
 
 
 /* --- functions --- */
-static SfiRing*
-string_list_copy_deep (SfiRing *ring)
-{
-  return sfi_ring_copy_deep (ring, (SfiRingDataFunc) g_strdup, NULL);
-}
-
-static void
-string_list_free_deep (SfiRing *ring)
-{
-  sfi_ring_free_deep (ring, g_free);
-}
-
 static void
 bse_script_procedure_init (BseScriptProcedureClass *class,
 			   BseScriptData           *sdata)
@@ -135,7 +123,8 @@ bse_script_proc_register (const gchar *script_file,
   sdata->help = g_strdup (help);
   sdata->authors = g_strdup (authors);
   sdata->copyright = g_strdup (copyright);
-  sdata->params = string_list_copy_deep (params);
+  sdata->params = sfi_ring_copy_deep (params, (SfiRingDataFunc) g_strdup, NULL);
+
   script_info.class_data = sdata;
   
   tname = g_strconcat ("bse-script-", name, NULL);
@@ -169,7 +158,7 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   error = bse_server_run_remote (server, shellpath,
 				 params, sdata->script_file, proc->name, &janitor);
   g_free (shellpath);
-  string_list_free_deep (params);
+  sfi_ring_free_deep (params, g_free);
   
   if (error)
     g_message ("failed to start script \"%s::%s\": %s",
@@ -263,7 +252,7 @@ bse_script_file_register (const gchar *file_name,
   error = bse_server_run_remote (server, shellpath,
 				 params, file_name, proc_name, janitor_p);
   g_free (shellpath);
-  string_list_free_deep (params);
+  sfi_ring_free_deep (params, g_free);
   
   return error;
 }

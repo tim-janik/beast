@@ -1,3 +1,9 @@
+Mon Jul 14 14:37:19 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-oss.c (bse_pcm_device_oss_close): added third argument to
+	ioctl() since, on NetBSD it's a 3-argument-macro, reported by
+	collver1@comcast.net.
+
 Tue Jul  8 02:31:30 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidisynth.[hc]: added slot for postprocessing synthesizer.

@@ -314,7 +314,7 @@ void printInterface (const std::string& iface, const std::string& parent = "")
 	  print("/* type %s (%s) is not intantiable */\n", g_type_name (type_id), iface.c_str());
 	}
 
-      gchar **children = sfi_glue_iface_children (iface.c_str());
+      const gchar **children = sfi_glue_iface_children (iface.c_str());
       while (*children) printInterface (*children++, idliface);
     }
 }
