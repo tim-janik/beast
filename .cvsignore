@@ -11,4 +11,5 @@ configure
 PKG_config.h.in
 PKG_config.h
 PKG_paths.h
-bsi
+sfi.pc
+bse.pc
