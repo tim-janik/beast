@@ -152,7 +152,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_mult, "BseMult", "BseSource",
     "Mult is a channel multiplier for ring-modulating incoming signals",
     &type_info_mult,
-    "/Source/Mult",
+    "/Modules/Mult",
     { PROD_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       PROD_IMAGE_WIDTH, PROD_IMAGE_HEIGHT,
       PROD_IMAGE_RLE_PIXEL_DATA, },

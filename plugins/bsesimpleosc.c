@@ -637,7 +637,7 @@ BSE_EXPORT_OBJECTS = {
     "SimpleOsc is a basis oscillator that supports frequency, "
     "modulation and sync inputs",
     &type_info_simple_osc,
-    "/Source/Oscillators/Simple Oscillator",
+    "/Modules/Oscillators/Simple Oscillator",
     { OSC_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       OSC_IMAGE_WIDTH, OSC_IMAGE_HEIGHT,
       OSC_IMAGE_RLE_PIXEL_DATA, },

@@ -656,7 +656,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_gen_osc, "BseGenOsc", "BseSource",
     "BseGenOsc is a generic oscillator source",
     &type_info_gen_osc,
-    "/Source/Oscillators/Generic Oscillator",
+    "/Modules/Oscillators/Generic Oscillator",
     { GEN_OSC_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       GEN_OSC_IMAGE_WIDTH, GEN_OSC_IMAGE_HEIGHT,
       GEN_OSC_IMAGE_RLE_PIXEL_DATA, },

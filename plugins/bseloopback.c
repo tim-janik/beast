@@ -184,7 +184,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_loopback, "BseLoopback", "BseSource",
     "BseLoopback simply puts out it's input",
     &type_info_loopback,
-    "/Source/Loopback",
+    "/Modules/Loopback",
     { PIPE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       PIPE_WIDTH, PIPE_HEIGHT,
       PIPE_RLE_PIXEL_DATA, },

@@ -1,3 +1,10 @@
+Thu Jan 24 01:38:49 2002  Tim Janik  <timj@gtk.org>
+
+	* *.c: fix categories so /Modules/ is used instead of /Source/.
+
+	* bsewaveosc.c: make n_octaves stepping more fine grained.
+	fix description.
+
 Tue Jan 15 17:38:57 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesnooper.[hc]: deal with multiple incarnations by letting

@@ -280,7 +280,7 @@ BSE_EXPORT_OBJECTS = {		/* our plugin implements an object */
     "the formula: output = atan (input * (Pi ^ Strength)), which allowes for "
     "fine grained adjustments from extenuated volume to maximum limiting",
     &type_info_compressor,	/* type information */
-    "/Source/Compressor",	/* category (menu heirachy entry) */
+    "/Modules/Compressor",	/* category (menu heirachy entry) */
     { ATAN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       ATAN_IMAGE_WIDTH, ATAN_IMAGE_HEIGHT,
       ATAN_IMAGE_RLE_PIXEL_DATA, },

@@ -119,7 +119,7 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
 			      bse_param_spec_float ("fm_n_octaves", "Octaves",
 						    "Number of octaves to be affected by exponential frequency modulation",
 						    0, 3.0,
-						    1.0, 0.5,
+						    1.0, 0.01,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_SCALE));
 
@@ -410,9 +410,13 @@ bse_wave_osc_reset (BseSource *source)
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_wave_osc, "BseWaveOsc", "BseSource",
-    "BseWaveOsc is a waveeric oscillator source",
+    "BseWaveOsc is a wave based oscillator module. "
+    "It plays waves at arbitrary frequency with little to no "
+    "aliasing artefacts by using a tschbyscheff type II resampling filter. "
+    "The plaback frequency can be specified through an incoming signal, featuring "
+    "an extra signal input for linear or exponential frequency modulation.",
     &type_info_wave_osc,
-    "/Source/Oscillators/Wave Oscillator",
+    "/Modules/Oscillators/Wave Oscillator",
     { WAVE_OSC_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       WAVE_OSC_IMAGE_WIDTH, WAVE_OSC_IMAGE_HEIGHT,
       WAVE_OSC_IMAGE_RLE_PIXEL_DATA, },

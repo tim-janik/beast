@@ -654,7 +654,7 @@ BSE_EXPORT_OBJECTS = {
     "DavGuitar is a physical modelling acoustic guitar synthesizer - "
     "Any commercial use of this module requires a license from Stanford University",
     &type_info_guitar,
-    "/Source/Guitar",
+    "/Modules/Guitar",
     { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       NOICON_WIDTH, NOICON_HEIGHT,
       NOICON_RLE_PIXEL_DATA, },

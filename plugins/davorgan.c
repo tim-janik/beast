@@ -444,7 +444,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_organ, "DavOrgan", "BseSource",
     "DavOrgan is a modifiable additive organ synthesizer",
     &type_info_organ,
-    "/Source/Organ",
+    "/Modules/Organ",
     { ORGAN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       ORGAN_IMAGE_WIDTH, ORGAN_IMAGE_HEIGHT,
       ORGAN_IMAGE_RLE_PIXEL_DATA, },

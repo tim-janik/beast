@@ -419,7 +419,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_canyon_delay, "DavCanyonDelay", "BseSource",
     "DavCanyonDelay is a deep, long delay",
     &type_info_canyon_delay,
-    "/Source/CanyonDelay",
+    "/Modules/CanyonDelay",
     { CANYON_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       CANYON_IMAGE_WIDTH, CANYON_IMAGE_HEIGHT,
       CANYON_IMAGE_RLE_PIXEL_DATA, },

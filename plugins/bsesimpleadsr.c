@@ -397,7 +397,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_simple_adsr, "BseSimpleADSR", "BseSource",
     "Simple ADSR envelope generator",
     &type_info_simple_adsr,
-    "/Source/SimpleADSR",
+    "/Modules/SimpleADSR",
     { ADSR_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       ADSR_IMAGE_WIDTH, ADSR_IMAGE_HEIGHT,
       ADSR_IMAGE_RLE_PIXEL_DATA, },

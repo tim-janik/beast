@@ -285,7 +285,7 @@ BSE_EXPORT_OBJECTS = {
     "The Adder is a very simplisitic prototype mixer that just sums up "
     "incomiong signals (it does allow for switching to subtract mode though)",
     &type_info_adder,
-    "/Source/Adder",
+    "/Modules/Adder",
     { SUM_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       SUM_IMAGE_WIDTH, SUM_IMAGE_HEIGHT,
       SUM_IMAGE_RLE_PIXEL_DATA, },

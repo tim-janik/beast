@@ -454,7 +454,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_fir_filter, "BseFIRFilter", "BseSource",
     "BseFIRFilter is a finite impulse response filter",
     &type_info_fir_filter,
-    "/Source/FIRFilter",
+    "/Modules/FIRFilter",
     { FILTER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       FILTER_IMAGE_WIDTH, FILTER_IMAGE_HEIGHT,
       FILTER_IMAGE_RLE_PIXEL_DATA, },

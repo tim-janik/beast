@@ -236,7 +236,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_constant, "BseConstant", "BseSource",
     "This module provides a constant output value",
     &type_info_constant,
-    "/Source/Constant",
+    "/Modules/Constant",
     { CONST_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       CONST_IMAGE_WIDTH, CONST_IMAGE_HEIGHT,
       CONST_IMAGE_RLE_PIXEL_DATA, },

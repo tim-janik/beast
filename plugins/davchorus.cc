@@ -281,7 +281,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_chorus, "DavChorus", "BseSource",
     "DavChorus adds more depth to sounds",
     &type_info_chorus,
-    "/Source/Chorus",
+    "/Modules/Chorus",
     { CHORUS_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       CHORUS_IMAGE_WIDTH, CHORUS_IMAGE_HEIGHT,
       CHORUS_IMAGE_RLE_PIXEL_DATA, },

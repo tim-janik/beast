@@ -441,7 +441,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_xtal_strings, "DavXtalStrings", "BseSource",
     "DavXtalStrings is a string synthesizer - Any commercial use of this module requires a license from Stanford University",
     &type_info_xtal_strings,
-    "/Source/XtalStrings",
+    "/Modules/XtalStrings",
     { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       NOICON_WIDTH, NOICON_HEIGHT,
       NOICON_RLE_PIXEL_DATA, },

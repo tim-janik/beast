@@ -326,7 +326,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_syn_drum, "DavSynDrum", "BseSource",
     "DavSynDrum is a synthesized drum",
     &type_info_syn_drum,
-    "/Source/SynDrum",
+    "/Modules/SynDrum",
     { DRUM_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       DRUM_IMAGE_WIDTH, DRUM_IMAGE_HEIGHT,
       DRUM_IMAGE_RLE_PIXEL_DATA, },

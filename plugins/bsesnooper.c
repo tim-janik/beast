@@ -219,7 +219,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_snooper, "BseSnooper", "BseSource",
     "The Snooper module prints statistics about the incoming signal",
     &type_info_snooper,
-    "/Source/Snooper",
+    "/Modules/Snooper",
   },
   { NULL, },
 };

@@ -357,7 +357,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_bass_filter, "DavBassFilter", "BseSource",
     "DavBassFilter is a low-pass resonant filter",
     &type_info_bass_filter,
-    "/Source/BassFilter",
+    "/Modules/BassFilter",
     { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       NOICON_WIDTH, NOICON_HEIGHT,
       NOICON_RLE_PIXEL_DATA, },
