@@ -1,6 +1,6 @@
 #!/bin/sh
 # listplugins.sh - create an automake conformant list to build plugins
-# Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+# Copyright (C) 1998-2002 Tim Janik
 
 test -z "$1" && {
 	echo "$0: No input files"
