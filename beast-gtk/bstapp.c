@@ -562,7 +562,9 @@ skin_entries_setup (void)
 {
   if (!skin_entries)
     {
-      SfiRing *files = sfi_file_crawler_list_files (BST_PATH_SKINS, "*.skin", 0);
+      gchar *skindirs = BST_STRDUP_SKIN_PATH ();
+      SfiRing *files = sfi_file_crawler_list_files (skindirs, "*.skin", 0);
+      g_free (skindirs);
       while (files)
         {
           gchar *file = sfi_ring_pop_head (&files);

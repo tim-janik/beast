@@ -525,6 +525,7 @@ bst_early_parse_args (int    *argc_p,
 	       strncmp ("--print-dir=", argv[i], 12) == 0)
 	{
 	  gchar *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
+          gchar *freeme = NULL;
 	  if (strcmp (arg, "docs") == 0)
 	    g_print ("%s\n", BST_PATH_DOCS);
 	  else if (strcmp (arg, "images") == 0)
@@ -532,7 +533,7 @@ bst_early_parse_args (int    *argc_p,
 	  else if (strcmp (arg, "locale") == 0)
 	    g_print ("%s\n", BST_PATH_LOCALE);
 	  else if (strcmp (arg, "skins") == 0)
-	    g_print ("%s\n", BST_PATH_SKINS);
+	    g_print ("%s\n", freeme = BST_STRDUP_SKIN_PATH ());
 	  else if (strcmp (arg, "ladspa") == 0)
 	    g_print ("%s\n", BSE_PATH_LADSPA);
 	  else if (strcmp (arg, "plugins") == 0)
@@ -553,6 +554,7 @@ bst_early_parse_args (int    *argc_p,
                 g_message ("no such resource path: %s", arg);
 	      g_message ("supported resource paths: docs, images, locale, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
 	    }
+          g_free (freeme);
 	  exit (0);
 	}
     }
@@ -580,6 +582,7 @@ static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
   const gchar *c;
+  gchar *freeme = NULL;
   /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
   bse_init_async (NULL, NULL, NULL);
   sfi_glue_context_push (bse_init_glue_context ("BEAST"));
@@ -604,7 +607,7 @@ bst_exit_print_version (void)
   g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
   g_print ("Image Path:      %s\n", BST_PATH_IMAGES);
   g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
-  g_print ("Skin Path:       %s\n", BST_PATH_SKINS);
+  g_print ("Skin Path:       %s\n", freeme = BST_STRDUP_SKIN_PATH());
   g_print ("Sample Path:     %s\n", bse_server_get_sample_path (BSE_SERVER));
   g_print ("Script Path:     %s\n", bse_server_get_script_path (BSE_SERVER));
   g_print ("Effect Path:     %s\n", bse_server_get_effect_path (BSE_SERVER));
@@ -618,6 +621,7 @@ bst_exit_print_version (void)
   g_print ("the GNU General Public License which can be found in the\n");
   g_print ("BEAST source package. Sources, examples and contact\n");
   g_print ("information are available at http://beast.gtk.org\n");
+  g_free (freeme);
   exit (0);
 }
 

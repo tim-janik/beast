@@ -1,3 +1,12 @@
+Fri Feb  6 15:29:42 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c:
+	* beast-gtk/bstdefs.h:
+	* beast-gtk/bstmain.c: support skinrc files in ~/.beast/skins/.
+	
+	* docs/site-news.texi: permanently announce irc channel and
+	mailing list on the front page.
+	
 Wed Feb  4 06:15:21 2004  Tim Janik  <timj@gtk.org>
 
 	* distcheck fixes.

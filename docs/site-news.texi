@@ -8,6 +8,18 @@
 @hasbanner{large}
 @navigation{navigation.xml}
 
+
+@unnumbered @beast - Your Solution for Music Composition and Synthesis
+@c @unnumberedsubsec @strong{Your Solution for Music Composition and Synthesis}
+
+@multitable {IRC Channel:} {}
+@item IRC Channel:
+@tab	#beast on @uref{http://beast.gtk.org/wiki.php?id=GimpNet,,GimpNet}
+@item Email:
+@tab	@uref{http://mail.gnome.org/mailman/listinfo/beast/,, Mailing List} and @uref{http://mail.gnome.org/archives/beast/,, Archive}
+@end multitable
+
+
 @unnumbered What's New?
 
 
