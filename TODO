@@ -1,4 +1,5 @@
 FIXMES:
+- fix initial_granule in gslvorbis-cutter.c wrg page flushing
 - rename gsl_strerror()
 - fix 64bit v_int usage of GScanner in BSE?
 - fix undo for: BseDataPocket

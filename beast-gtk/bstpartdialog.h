@@ -46,6 +46,7 @@ struct _BstPartDialog
   BstPianoRollController *proll_ctrl;
   GxkToolbar	*toolbar;
   BstRadioTools	*rtools;
+  SfiProxy       project;
 };
 struct _BstPartDialogClass
 {

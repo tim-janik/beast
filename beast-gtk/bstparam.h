@@ -78,8 +78,8 @@ struct _BstParamBinding
 					 const GValue	*value);
   void		(*get_value)		(BstParam	*bparam,
 					 GValue		*value);
-  void		(*destroy)		(BstParam	*bparam);
   /* optional: */
+  void		(*destroy)		(BstParam	*bparam);
   gboolean	(*check_writable)	(BstParam	*bparam);
   SfiProxy	(*rack_item)		(BstParam	*bparam);
   BseProxySeq*	(*list_proxies)		(BstParam	*bparam);
@@ -130,6 +130,7 @@ SfiProxy	bst_proxy_seq_list_match  (GSList	   *proxy_seq_slist,
 
 
 /* --- param implementation utils --- */
+extern BstParamBinding *bst_dummy_binding;
 void	      _bst_init_params		(void);
 BstParam*     bst_param_alloc		(BstParamImpl	*impl,
 					 GParamSpec	*pspec);

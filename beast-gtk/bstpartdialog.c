@@ -46,6 +46,7 @@ static void     bst_part_dialog_activate        (BstActivatable         *activat
                                                  gulong                  action);
 static gboolean bst_part_dialog_can_activate    (BstActivatable         *activatable,
                                                  gulong                  action);
+static void     bst_part_dialog_update_activatable (BstActivatable *activatable);
 static void	menu_activate_tool		(GtkWidget              *owner,
 						 gulong                  callback_action,
 						 gpointer                popup_data);
@@ -111,7 +112,7 @@ bst_part_dialog_get_type (void)
       bst_type_implement_activatable (type,
                                       bst_part_dialog_activate,
                                       bst_part_dialog_can_activate,
-                                      NULL);
+                                      bst_part_dialog_update_activatable);
     }
   
   return type;
@@ -321,14 +322,34 @@ void
 bst_part_dialog_set_proxy (BstPartDialog *self,
 			   SfiProxy       part)
 {
+  SfiProxy project;
+
   g_return_if_fail (BST_IS_PART_DIALOG (self));
   if (part)
     g_return_if_fail (BSE_IS_PART (part));
 
-  if (part)
-    bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
-  if (self->proll)
-    bst_piano_roll_set_proxy (self->proll, part);
+  if (self->project)
+    {
+      bse_proxy_disconnect (self->project,
+                            "any_signal", bst_widget_update_activatable, self,
+                            NULL);
+      self->project = 0;
+    }
+
+  project = part ? bse_item_get_project (part) : 0;
+
+  if (project)
+    {
+      bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
+      if (self->proll)
+        bst_piano_roll_set_proxy (self->proll, part);
+      self->project = project;
+      bse_proxy_connect (self->project,
+                         "swapped_signal::property-notify::dirty", bst_widget_update_activatable, self,
+                         NULL);
+    }
+
+  bst_widget_update_activatable (self);
 }
 
 static void
@@ -497,12 +518,34 @@ bst_part_dialog_can_activate (BstActivatable         *activatable,
     case ACTION_PASTE:
       return TRUE;
     case ACTION_UNDO:
-      return bse_item_undo_depth (self->proll->proxy) > 0;
+      return self->project && bse_project_undo_depth (self->project) > 0;
     case ACTION_REDO:
-      return bse_item_redo_depth (self->proll->proxy) > 0;
+      return self->project && bse_project_redo_depth (self->project) > 0;
     case ACTION_CLEAR_UNDO:
-      return bse_item_undo_depth (self->proll->proxy) + bse_item_undo_depth (self->proll->proxy) > 0;
+      return self->project && bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
     default:
       return FALSE;
+    }
+}
+
+static void
+bst_part_dialog_update_activatable (BstActivatable *activatable)
+{
+  BstPartDialog *self = BST_PART_DIALOG (activatable);
+  GtkItemFactory *popup_factory = BST_PART_DIALOG_GET_CLASS (self)->popup_factory;
+  GtkWidget *widget;
+  gulong i;
+
+  /* check if the app (its widget tree) was already destroyed */
+  if (!GTK_BIN (self)->child)
+    return;
+
+  /* update app actions */
+  for (i = 0; i < G_N_ELEMENTS (popup_entries); i++)
+    {
+      gulong action = popup_entries[i].callback_action;
+      widget = gtk_item_factory_get_widget_by_action (popup_factory, action);
+      if (widget && action)
+        gtk_widget_set_sensitive (widget, bst_activatable_can_activate (activatable, action));
     }
 }

@@ -356,6 +356,7 @@ bst_rack_item_set_proxy (BstRackItem	*item,
 	  if (!name || strcmp (name, view_name) != 0)
 	    bse_data_pocket_set_string (item->pocket, item->entry, "property-controller", view_name);
 	  bst_param_update (item->bparam);
+          g_return_if_fail (item->bparam->binding != NULL);
 	}
     }
 }

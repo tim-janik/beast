@@ -323,8 +323,10 @@ void
 bst_param_destroy (BstParam *bparam)
 {
   g_return_if_fail (bparam != NULL);
+  g_return_if_fail (bparam->binding != NULL);
 
-  bparam->binding->destroy (bparam);
+  if (bparam->binding->destroy)
+    bparam->binding->destroy (bparam);
   bparam->binding = NULL;
   if (BST_PARAM_IS_GMASK (bparam) && bparam->gdata.gmask)
     {
@@ -340,6 +342,26 @@ bst_param_destroy (BstParam *bparam)
   g_value_unset (&bparam->value);
   g_free (bparam);
 }
+
+
+/* --- dummy binding --- */
+static void
+dummy_binding_set_value (BstParam       *bparam,
+                         const GValue   *value)
+{
+}
+
+static void
+dummy_binding_get_value (BstParam       *bparam,
+                         GValue         *value)
+{
+}
+
+static BstParamBinding dummy_binding = {
+  dummy_binding_set_value,
+  dummy_binding_get_value,
+};
+BstParamBinding *bst_dummy_binding = &dummy_binding;
 
 
 /* --- proxy binding --- */
@@ -382,7 +404,7 @@ proxy_binding_weakref (gpointer data,
   BstParam *bparam = data;
   bparam->mdata[0].v_long = 0;
   bparam->mdata[1].v_long = 0;	/* already disconnected */
-  bparam->binding = NULL;
+  bparam->binding = bst_dummy_binding;
 }
 
 static void
@@ -395,7 +417,7 @@ proxy_binding_destroy (BstParam *bparam)
       sfi_glue_proxy_weak_unref (proxy, proxy_binding_weakref, bparam);
       bparam->mdata[0].v_long = 0;
       bparam->mdata[1].v_long = 0;
-      bparam->binding = NULL;
+      bparam->binding = bst_dummy_binding;
     }
 }
 

@@ -1,3 +1,17 @@
+Fri Jun 13 20:11:08 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpartdialog.c (bst_part_dialog_set_proxy): listen to undo/
+	redo stack changes on the corresponding project.
+
+	* beast-gtk/bstpartdialog.c:
+	(bst_part_dialog_update_activatable): update menu items when actions
+	change their activatable state.
+
+Thu Jun 12 22:18:00 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c: provide dummy binding for params that lost
+	bindings (e.g. because of proxy destruction).
+
 Fri Jun 13 19:37:08 2003  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4 (ac_vm): remove GCC option -frename-registers which is
