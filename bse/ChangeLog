@@ -1,3 +1,14 @@
+Fri Dec 17 21:19:25 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecxxutils.h: removed assert_derivation() and assert_ptr_derivation().
+	added template class EnforceDerivedFrom<>; with partial derivation to check
+	for type derivations and pointers tehreof. implemented assert_derived_from<>()
+	in terms of class EnforceDerivedFrom<>; so it can check for derivation of
+	types and pointers thereof (without needing a partial specialization of
+	a function template which C++ doesn't allow).
+
+	* bsestandardosc.c (bse_standard_osc_class_init): added missing descriptions.
+
 Thu Dec 16 02:11:26 2004  Tim Janik  <timj@gtk.org>
 
 	* gsldatautils.h: 

@@ -254,7 +254,7 @@ public:
   ClosureP1 (void (T::*f) (P*), P *p)
     : func (f), data (p)
   {
-    assert_derivation<T,SynthesisModule>();
+    assert_derived_from<T,SynthesisModule>();
   }
   void operator() (SynthesisModule *p)
   {

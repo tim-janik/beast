@@ -1,5 +1,5 @@
 /* BseStandardOsc - BSE Standard Oscillator
- * Copyright (C) 1999, 2000-2002 Tim Janik
+ * Copyright (C) 1999, 2000-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,7 @@
 #include <bse/bsesource.h>
 #include <bse/gsloscillator.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_STANDARD_OSC              (BSE_TYPE_ID (BseStandardOsc))
@@ -84,10 +81,6 @@ enum
   BSE_STANDARD_OSC_N_OCHANNELS
 };
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_STANDARD_OSC_H__ */

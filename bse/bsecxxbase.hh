@@ -127,7 +127,7 @@ public:
   template<class CxxType> static inline CxxType
   value_get_object (const GValue *v)
   {
-    assert_ptr_derivation<CxxType, CxxBase*>();
+    assert_derived_from<CxxType, CxxBase*>();
     GObject *p = value_get_gobject<GObject> (v);
     CxxBase *b = CxxBase::base_from_gobject (p);
     CxxType to = static_cast<CxxType> (b);

@@ -134,56 +134,53 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Wave Form"),
 			      PROP_PHASE,
-			      sfi_pspec_real ("phase", _("Phase"), NULL,
+			      sfi_pspec_real ("phase", _("Phase"), _("Initial phase of the oscillator wave form (cycle offset in degree)"),
 					      0.0, -180.0, 180.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:dial:skip-default"));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_BASE_FREQ,
-			      bse_param_spec_freq_simple ("base_freq", _("Frequency"), NULL,
+			      bse_param_spec_freq_simple ("base_freq", _("Frequency"), _("Number of oscillator cycles per second"),
 							  SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_BASE_NOTE,
-			      bse_pspec_note_simple ("base_note", _("Note"), NULL, SFI_PARAM_GUI));
+			      bse_pspec_note_simple ("base_note", _("Note"), _("Musical notation corresponding to the oscillator frequency"),
+                                                     SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_FINE_TUNE,
-			      sfi_pspec_int ("fine_tune", _("Fine Tune"), NULL,
+			      sfi_pspec_int ("fine_tune", _("Fine Tune"), _("Amount of detuning in cent (hundredth part of a note)"),
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
 					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
   bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_FM_PERC,
-			      sfi_pspec_real ("fm_perc", _("Input Modulation [%]"),
-					      _("Strength of linear frequency modulation"),
+			      sfi_pspec_real ("fm_perc", _("Input Modulation [%]"), _("Strength of linear frequency modulation"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:scale"));
   bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_FM_EXP,
-			      sfi_pspec_bool ("exponential_fm", _("Exponential FM"),
-					      _("Perform exponential frequency modulation "
+			      sfi_pspec_bool ("exponential_fm", _("Exponential FM"), _("Perform exponential frequency modulation "
                                                 "instead of linear"),
 					      FALSE, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_FM_OCTAVES,
-			      sfi_pspec_real ("fm_n_octaves", _("Octaves"),
-					      _("Number of octaves to be affected by exponential frequency modulation"),
+			      sfi_pspec_real ("fm_n_octaves", _("Octaves"), _("Number of octaves to be affected by exponential frequency modulation"),
 					      1.0, 0, 5.0, 0.01,
 					      SFI_PARAM_STANDARD ":f:scale"));
   bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_SELF_PERC,
-			      sfi_pspec_real ("self_perc", _("Self Modulation [%]"),
-					      _("Strength of self modulation"),
+			      sfi_pspec_real ("self_perc", _("Self Modulation [%]"), _("Strength of self modulation"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:scale:skip-default"));
   bse_object_class_add_param (object_class, _("Pulse Modulation"),
 			      PROP_PULSE_WIDTH,
 			      sfi_pspec_real ("pulse_width", _("Pulse Width"),
-					      _("Proportion of the positive component duration of the pulse wave form "
+                                              _("Proportion of the positive component duration of the pulse wave form "
                                                 "(Pulse has to be selected as wave form for this to take effect)"),
 					      50.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, _("Pulse Modulation"),
 			      PROP_PULSE_MOD_PERC,
 			      sfi_pspec_real ("pulse_mod_perc", _("Pulse Modulation [%]"),
-					      _("Strength of pulse width modulation input "
+                                              _("Strength of pulse width modulation input "
                                                 "(Pulse has to be selected as wave form for this to take effect)"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:dial"));

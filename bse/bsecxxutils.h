@@ -58,21 +58,29 @@ delete_this (Data *d)
 {
   delete d;
 }
-template<class Derived, class Parent> inline void
-assert_derivation()
+/* check derivation of Derived from Base */
+template<class Derived, class Base>     // ex: EnforceDerivedFrom<Child, Base> assertion;
+struct EnforceDerivedFrom {
+  EnforceDerivedFrom (Derived *derived = 0,
+                      Base    *base = 0)
+  {
+    base = derived;
+  }
+};
+/* check derivation of Derived* from Base* */
+template<class Derived, class Base>     // ex: EnforceDerivedFrom<Child*, Base*> assertion;
+struct EnforceDerivedFrom<Derived*, Base*> {
+  EnforceDerivedFrom (Derived *derived = 0,
+                      Base    *base = 0)
+  {
+    base = derived;
+  }
+};
+/* check derivation through EnforceDerivedFrom<>; */
+template<class Derived, class Base> void
+assert_derived_from (void)
 {
-  register Derived *_derived = 0;
-  register Parent *_parent;
-  /* this generates a compiler error if Derived is not derived from Parent */
-  _parent = _derived;
-}
-template<class Derived, class Parent> inline void
-assert_ptr_derivation()
-{
-  register Derived _derived = 0;
-  register Parent _parent;
-  /* this generates a compiler error if Derived is not derived from Parent */
-  _parent = _derived;
+  EnforceDerivedFrom<Derived, Base> assertion;
 }
 
 
