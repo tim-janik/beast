@@ -1,3 +1,7 @@
+Wed Dec 17 23:49:49 2003  Tim Janik  <timj@gtk.org>
+
+	* *.[hci]*: renamed SFI_PARAM_DEFAULT to SFI_PARAM_STANDARD.
+
 Wed Dec 17 19:39:48 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxksimplelabel.c: work around label logic not dealing

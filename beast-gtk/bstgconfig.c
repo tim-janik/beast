@@ -37,7 +37,7 @@ _bst_gconfig_init (void)
 
   /* global config record description */
   pspec_global_config = sfi_pspec_rec ("beast-preferences", NULL, NULL,
-				       bst_gconfig_fields, SFI_PARAM_DEFAULT);
+				       bst_gconfig_fields, SFI_PARAM_STANDARD);
   g_param_spec_ref (pspec_global_config);
   g_param_spec_sink (pspec_global_config);
   /* create empty config record */

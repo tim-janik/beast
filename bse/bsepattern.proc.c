@@ -46,7 +46,7 @@ clear_content_setup (BseProcedureClass *proc,
   
   /* input parameters */
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
-					BSE_TYPE_PATTERN, SFI_PARAM_DEFAULT);
+					BSE_TYPE_PATTERN, SFI_PARAM_STANDARD);
   /* output parameters */
 }
 
@@ -97,11 +97,11 @@ random_fill_setup (BseProcedureClass *proc,
   
   /* input parameters */
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
-					BSE_TYPE_PATTERN, SFI_PARAM_DEFAULT);
+					BSE_TYPE_PATTERN, SFI_PARAM_STANDARD);
   *(in_pspecs++) = sfi_pspec_int ("seed_value", "Random Seed Value",
 				  "Enter any number here, it will be used "
 				  "as seed value for the note generator",
-				  1, 0, 1000, 1, SFI_PARAM_DEFAULT);
+				  1, 0, 1000, 1, SFI_PARAM_STANDARD);
   /* output parameters */
 }
 
@@ -173,7 +173,7 @@ multi_select_setup (BseProcedureClass *proc,
   
   /* input parameters */
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
-					BSE_TYPE_PATTERN, SFI_PARAM_DEFAULT);
+					BSE_TYPE_PATTERN, SFI_PARAM_STANDARD);
   /* output parameters */
 }
 

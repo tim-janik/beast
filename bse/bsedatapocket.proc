@@ -28,9 +28,9 @@ METHOD (BseDataPocket, create-entry) {
   HELP	= ("Create a new entry in a data pocket. "
 	   "Entries have a unique ID which is required to set values in a data pocket.");
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", NULL,
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -55,12 +55,12 @@ METHOD (BseDataPocket, create-entry) {
 METHOD (BseDataPocket, delete-entry) {
   HELP	= "Delete an existing entry from a data pocket";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", NULL,
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -87,9 +87,9 @@ METHOD (BseDataPocket, delete-entry) {
 METHOD (BseDataPocket, get-n-entries) {
   HELP	= "Retrieve the number of entries created in a data pocket.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_int ("n_entries", "N Entries", "The number of entries in use",
-			 1, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -110,11 +110,11 @@ METHOD (BseDataPocket, get-n-entries) {
 METHOD (BseDataPocket, get-nth-entry-id) {
   HELP	= "Retrieve the ID of an entry in the data pocket by sequential index.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_index", "Entry Index", "index into number of entries present",
-			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID (or 0 if there's no such entry)",
-			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -138,16 +138,16 @@ METHOD (BseDataPocket, set-float) {
 	   "Names are required to distinguish different values from each other "
 	   "when accessing values in a data pocket.");
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Name", "Name for the value",
-			    NULL, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_real ("number", "Number", "The value to store in the data pocket entry",
-			  0, -G_MAXDOUBLE, G_MAXDOUBLE, 1, SFI_PARAM_DEFAULT);
+			  0, -G_MAXDOUBLE, G_MAXDOUBLE, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -180,16 +180,16 @@ METHOD (BseDataPocket, set-int) {
 	   "Names are required to distinguish different values from each other "
 	   "when accessing values in a data pocket.");
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Name", "Name for the value",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("number", "Number", "The value to store in the data pocket entry",
-			 0, G_MININT, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 0, G_MININT, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -222,16 +222,16 @@ METHOD (BseDataPocket, set-object) {
 	   "Object references stored in a data pocket must exist within the "
 	   "same project that the data pocket belongs to");
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Name", "Name for the value",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
   IN	= bse_param_spec_object ("item", "Item", "The value to store in the data pocket entry",
-				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -263,16 +263,16 @@ METHOD (BseDataPocket, set-object) {
 METHOD (BseDataPocket, set-string) {
   HELP	= ("Set a named string in a data pocket entry.");
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Name", "Name for the value",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("string", "String", "The value to store in the data pocket entry",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "BSE error code",
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -303,13 +303,13 @@ METHOD (BseDataPocket, set-string) {
 METHOD (BseDataPocket, get-float) {
   HELP	= "Retrieve a previously set floating point value from a data pocket entry.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Name", "Name for the value",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_real ("number", "Number", "The value stored in the data pocket entry",
-			  0, -G_MAXDOUBLE, G_MAXDOUBLE, 1, SFI_PARAM_DEFAULT);
+			  0, -G_MAXDOUBLE, G_MAXDOUBLE, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -337,13 +337,13 @@ METHOD (BseDataPocket, get-float) {
 METHOD (BseDataPocket, get-int) {
   HELP	= "Retrieve a previously set integer value from a data pocket entry.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Name", "Name for the value",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_int ("number", "Number", "The value stored in the data pocket entry",
-			 0, G_MININT, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 0, G_MININT, G_MAXINT, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -371,13 +371,13 @@ METHOD (BseDataPocket, get-int) {
 METHOD (BseDataPocket, get-object) {
   HELP	= "Retrieve a previously set object reference from a data pocket entry.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Name", "Name for the value",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("item", "Item", "The value stored in the data pocket entry",
-				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -405,13 +405,13 @@ METHOD (BseDataPocket, get-object) {
 METHOD (BseDataPocket, get-string) {
   HELP	= "Retrieve a previously set string from a data pocket entry.";
   IN	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("entry_id", "Entry ID", "The unique pocket entry ID",
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Name", "Name for the value",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_string ("string", "String", "The value stored in the data pocket entry",
-			    0, SFI_PARAM_DEFAULT);
+			    0, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)

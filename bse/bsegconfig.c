@@ -39,7 +39,7 @@ _bse_gconfig_init (void)
 
   /* global config record description */
   pspec_global_config = sfi_pspec_rec ("bse-preferences", NULL, NULL,
-				       bse_gconfig_fields, SFI_PARAM_DEFAULT);
+				       bse_gconfig_fields, SFI_PARAM_STANDARD);
   g_param_spec_ref (pspec_global_config);
   g_param_spec_sink (pspec_global_config);
   /* create empty config record */

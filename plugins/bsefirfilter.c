@@ -98,17 +98,17 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 			      PARAM_ALLPASS,
 			      sfi_pspec_bool ("allpass", "AllPass", NULL,
 						 FALSE,
-						 SFI_PARAM_DEFAULT SFI_PARAM_HINT_RADIO));
+						 SFI_PARAM_STANDARD SFI_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_LOWPASS,
 			      sfi_pspec_bool ("lowpass", "LowPass", NULL,
 						 TRUE,
-						 SFI_PARAM_DEFAULT SFI_PARAM_HINT_RADIO));
+						 SFI_PARAM_STANDARD SFI_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Filter Type",
 			      PARAM_HIGHPASS,
 			      sfi_pspec_bool ("highpass", "HighPass", NULL,
 						 FALSE,
-						 SFI_PARAM_DEFAULT SFI_PARAM_HINT_RADIO));
+						 SFI_PARAM_STANDARD SFI_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_DEGREE,
 			      bse_param_spec_uint ("degree", "Degree", "Number of filter coefficients",
@@ -119,12 +119,12 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 			      PARAM_HANN,
 			      sfi_pspec_bool ("hann_smooth", "von Hann", NULL,
 						 FALSE,
-						 SFI_PARAM_DEFAULT));
+						 SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Smoothing",
 			      PARAM_LANCZOS,
 			      sfi_pspec_bool ("lanczos_smooth", "C. Lanczos", NULL,
 						 FALSE,
-						 SFI_PARAM_DEFAULT));
+						 SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Cut off",
 			      PARAM_CUT_OFF_FREQ,
 			      bse_param_spec_float ("cut_off_freq", "Frequency", NULL,

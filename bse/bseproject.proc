@@ -34,9 +34,9 @@ LICENSE = "GNU General Public License";
 METHOD (BseProject, is-playing) {
   HELP  = "Check whether a project is currently playing";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_bool ("is_playing", "Is Playing", "Whether the project is currently playing songs or synths",
-                          FALSE, SFI_PARAM_DEFAULT);
+                          FALSE, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -59,9 +59,9 @@ METHOD (BseProject, is-playing) {
 METHOD (BseProject, is-active) {
   HELP  = "Check whether a project is active";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_bool ("is_active", NULL, "Whether the project is currently producing sound",
-                          FALSE, SFI_PARAM_DEFAULT);
+                          FALSE, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -84,12 +84,12 @@ METHOD (BseProject, is-active) {
 METHOD (BseProject, restore-from-file, "File/Restore") {
   HELP  = "Load a project from file";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("file-name", "File", "Source file name",
-                            NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_enum ("error", "Error", "Error indicating possible failures",
                                BSE_ERROR_NONE, BSE_TYPE_ERROR_TYPE,
-                               SFI_PARAM_DEFAULT);
+                               SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -129,18 +129,18 @@ METHOD (BseProject, store-bse, "File/Store") {
   HELP  = "Save supers of a project into a BSE file. "
           "If no super is specified, the project itself is stored.";
   IN    = bse_param_spec_object ("project", "Project", NULL,
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("super", "Super", NULL,
-                                 BSE_TYPE_SUPER, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_SUPER, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("file-name", "File", "Destination file name",
-                            NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_bool ("self-contained", "Self Contained",
                           "Whether references to other objects (e.g. samples) should "
                           "be stored or whether to include everything in a self-contained .bse file",
-                          FALSE, SFI_PARAM_DEFAULT);
+                          FALSE, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", "Error indicating possible failures",
                                 BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -169,11 +169,11 @@ METHOD (BseProject, store-bse, "File/Store") {
 METHOD (BseProject, create-song) {
   BLURB = "Create a song for this project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", "Song name",
-                            NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("song", "Song", "The new song",
-                                 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -205,9 +205,9 @@ METHOD (BseProject, create-song) {
 METHOD (BseProject, get-wave-repo) {
   HELP  = "Ensure the project has a wave repository";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("wrepo", "Wave Repo", "The project's unique wave repo",
-                                 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_WAVE_REPO, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -232,11 +232,11 @@ METHOD (BseProject, get-wave-repo) {
 METHOD (BseProject, get-data-pocket) {
   HELP  = "Retrieve a specifically named data pocket for this project";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", "Name of the data pocket",
-                            NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket",
-                                 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_DATA_POCKET, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -266,11 +266,11 @@ METHOD (BseProject, get-data-pocket) {
 METHOD (BseProject, create-csynth) {
   BLURB = "Create a synthsizer network for this project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", "Synth network name",
-                            NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("csynth", "Synthesizer Network", "New synth network",
-                                 BSE_TYPE_CSYNTH, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -302,11 +302,11 @@ METHOD (BseProject, create-csynth) {
 METHOD (BseProject, create-midi-synth) {
   BLURB = "Create a MIDI synthesizer network for this project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", "MIDI synth name",
-                            NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("midi_synth", "MIDI Synthesizer", "New MIDI synth",
-                                 BSE_TYPE_MIDI_SYNTH, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_MIDI_SYNTH, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -338,9 +338,9 @@ METHOD (BseProject, create-midi-synth) {
 METHOD (BseProject, remove-snet) {
   BLURB = "Remove an existing synthesizer network from this project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("snet", "SNet", "Synthesizer Network",
-                                 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_SNET, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -375,10 +375,10 @@ METHOD (BseProject, list-uname-paths) {
   HELP  = ("List uname paths for all items of a specified type within this project. "
            "By their uname paths, items are uniquely identifyable within a project.");
   IN    = bse_param_spec_object ("project", NULL, NULL,
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("item_type", NULL, NULL,
-                            NULL, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("uname_paths", "Uname Paths", NULL, BSE_TYPE_STRING_SEQ, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("uname_paths", "Uname Paths", NULL, BSE_TYPE_STRING_SEQ, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -401,11 +401,11 @@ METHOD (BseProject, list-uname-paths) {
 METHOD (BseProject, find-item) {
   HELP  = "Find an item within a project, given its uname path.";
   IN    = bse_param_spec_object ("project", NULL, NULL,
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("uname_path", NULL, NULL,
-                            NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("item", NULL, NULL,
-                                 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -427,12 +427,12 @@ METHOD (BseProject, find-item) {
 METHOD (BseProject, match-items-by-uname) {
   HELP  = "Retrieve all items of a specific type within a project with matching uname";
   IN    = bse_param_spec_object ("project", NULL, NULL,
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("item_type", NULL, NULL,
-                            NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("uname", NULL, NULL,
-                            NULL, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("item_list", "Item List", NULL, BSE_TYPE_PROXY_SEQ, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("item_list", "Item List", NULL, BSE_TYPE_PROXY_SEQ, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -469,8 +469,8 @@ METHOD (BseProject, match-items-by-uname) {
 METHOD (BseProject, get-supers) {
   HELP  = "Retrieve all supers of this project.";
   IN    = bse_param_spec_object ("project", NULL, NULL,
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("super_list", NULL, NULL, BSE_TYPE_PROXY_SEQ, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("super_list", NULL, NULL, BSE_TYPE_PROXY_SEQ, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -498,9 +498,9 @@ METHOD (BseProject, get-supers) {
 METHOD (BseProject, can-play) {
   HELP  = "Check whether project playback would makes sense.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_bool ("can_play", "Can Play", "Whether project playback makes sense",
-                          FALSE, SFI_PARAM_DEFAULT);
+                          FALSE, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -523,9 +523,9 @@ METHOD (BseProject, can-play) {
 METHOD (BseProject, get-state) {
   HELP  = "Retrieve the current project state.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("state", "State", "Project playback/activation state",
-                                BSE_TYPE_PROJECT_STATE, BSE_PROJECT_INACTIVE, SFI_PARAM_DEFAULT);
+                                BSE_TYPE_PROJECT_STATE, BSE_PROJECT_INACTIVE, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -577,10 +577,10 @@ project_push_undo_silent_deactivate (BseProject *self)
 METHOD (BseProject, activate) {
   HELP  = "Activate a project, precondition to start playback.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
                                 BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -610,7 +610,7 @@ METHOD (BseProject, activate) {
 METHOD (BseProject, start-playback) {
   HELP  = "Start playback in an activated project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -637,10 +637,10 @@ METHOD (BseProject, start-playback) {
 METHOD (BseProject, play) {
   HELP  = "Activate a project and start project playback (and already playing project is first halted).";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
                                 BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -676,7 +676,7 @@ METHOD (BseProject, play) {
 METHOD (BseProject, deactivate) {
   HELP  = "Deactivate the project, automatically stop playback.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -696,7 +696,7 @@ METHOD (BseProject, deactivate) {
 METHOD (BseProject, stop-playback) {
   HELP  = "Stop project playback.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -716,7 +716,7 @@ METHOD (BseProject, stop-playback) {
 METHOD (BseProject, stop) {
   HELP  = "Stop project playback and deactivate project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -736,9 +736,9 @@ METHOD (BseProject, stop) {
 METHOD (BseProject, auto-deactivate) {
   HELP  = "Automatically deactivate a project once playback stopped.";
   IN    = bse_param_spec_object ("project", NULL, "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("msec_delay", NULL, "Delay for deactivation in milliseconds",
-                         0, -1, G_MAXINT, 1000, SFI_PARAM_DEFAULT);
+                         0, -1, G_MAXINT, 1000, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -759,9 +759,9 @@ METHOD (BseProject, auto-deactivate) {
 METHOD (BseProject, undo-depth) {
   HELP  = "Check whether a project can perform undo steps";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_int ("undo_depth", NULL, "Number of times undo can be called on the project",
-                         0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+                         0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -782,7 +782,7 @@ METHOD (BseProject, undo-depth) {
 METHOD (BseProject, undo) {
   HELP  = "Undo a previous operation in a project";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -814,9 +814,9 @@ METHOD (BseProject, undo) {
 METHOD (BseProject, redo-depth) {
   HELP  = "Check whether a project can perform redo steps";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_int ("redo_depth", NULL, "Number of times redo can be called on the project",
-                         0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+                         0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -837,7 +837,7 @@ METHOD (BseProject, redo-depth) {
 METHOD (BseProject, redo) {
   HELP  = "Redo a previously undone operaiton in a project";
   IN    = bse_param_spec_object ("project", "Project", "The project",
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -869,7 +869,7 @@ METHOD (BseProject, redo) {
 METHOD (BseProject, clear-undo) {
   HELP  = "Delete all recorded undo or redo steps.";
   IN    = bse_param_spec_object ("project", "Project", NULL,
-                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)

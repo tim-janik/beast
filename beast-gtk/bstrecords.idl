@@ -22,19 +22,19 @@ record GConfig {
   String rc_version			= (NULL, _("Release counter"), NULL, SFI_PARAM_STORAGE);
   group "Synthesis Networks" {
     Bool        snet_anti_aliased	= (_("Anti-Alias"), _("Draw synthesis networks anti-aliased?"),
-					    TRUE, SFI_PARAM_DEFAULT);
+					    TRUE, SFI_PARAM_STANDARD);
     Bool        snet_edit_fallback	= (_("Single Edit"), _("Fallback into Edit mode after creating synthesis modules?"),
-					    TRUE, SFI_PARAM_DEFAULT);
+					    TRUE, SFI_PARAM_STANDARD);
     Bool        snet_swap_io_channels	= (_("Swap IO"), _("Swap input with output channels when displaying synthesis modules?"),
-                                           FALSE, SFI_PARAM_DEFAULT);
+                                           FALSE, SFI_PARAM_STANDARD);
   };
   group "Misc" {
     Int         tab_width		= (_("Tab Width"), _("Specify project tab width in pixels"),
-                                           0, 0, 5000, 5, SFI_PARAM_DEFAULT);
+                                           0, 0, 5000, 5, SFI_PARAM_STANDARD);
     Bool        size_group_input_fields = (_("Homogeneous Input Fields"),
                                            _("Enable homogeneous sizes for most (numeric and text) input fields. "
                                              "For some fields, this will only take effect after a restart."),
-                                           TRUE, SFI_PARAM_DEFAULT);
+                                           TRUE, SFI_PARAM_STANDARD);
   };
 };
 

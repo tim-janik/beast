@@ -90,7 +90,7 @@ bst_super_shell_class_init (BstSuperShellClass *class)
 
   g_object_class_install_property (gobject_class,
 				   PROP_SUPER,
-				   sfi_pspec_proxy ("super", NULL, NULL, SFI_PARAM_DEFAULT));
+				   sfi_pspec_proxy ("super", NULL, NULL, SFI_PARAM_STANDARD));
 }
 
 static void

@@ -82,7 +82,7 @@ bse_effect_volume_delta_class_init (BseEffectClass *class)
 			      sfi_pspec_int ("delta_perc", "Delta [%]", NULL,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * -100,
 					     bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-					     SFI_PARAM_DEFAULT | SFI_PARAM_HINT_DIAL));
+					     SFI_PARAM_STANDARD | SFI_PARAM_HINT_DIAL));
 }
 
 static void

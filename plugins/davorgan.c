@@ -79,7 +79,7 @@ harm_param (gchar *name,
 	    gchar *blurb,
 	    gint   dft)
 {
-  return sfi_pspec_real (name, nick, blurb, dft * 100., 0, 100.0, 1.0, SFI_PARAM_DEFAULT ":scale");
+  return sfi_pspec_real (name, nick, blurb, dft * 100., 0, 100.0, 1.0, SFI_PARAM_STANDARD ":scale");
 }
 
 static void
@@ -102,19 +102,19 @@ dav_organ_class_init (DavOrganClass *class)
   bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
 						   BSE_KAMMER_FREQUENCY_f,
-						   SFI_PARAM_DEFAULT ":dial"));
+						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, "Base Frequency",
                               PARAM_BASE_NOTE,
                               bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_BRASS,
 			      sfi_pspec_bool ("brass", "Brass Sounds", "Changes the organ to sound more brassy",
-                                              FALSE, SFI_PARAM_DEFAULT));
+                                              FALSE, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_REED,
 			      sfi_pspec_bool ("reed", "Reed Sounds", "Adds reeds sound",
-                                              FALSE, SFI_PARAM_DEFAULT));
+                                              FALSE, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_FLUTE,
 			      sfi_pspec_bool ("flute", "Flute Sounds", "Adds flute sounds",
-                                              FALSE, SFI_PARAM_DEFAULT));
+                                              FALSE, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM0,
 			      harm_param ("harm0", "16th", "16th Harmonic", 1.0));
   bse_object_class_add_param (object_class, "Harmonics", PARAM_HARM1,

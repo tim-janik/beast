@@ -37,11 +37,11 @@ LICENSE = "GNU General Public License";
 METHOD (BseServer, use-new-project) {
   HELP	= "Create a new project, owned by the caller (name is modified to be unique if necessary)";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("name", "Project Name", NULL,
-			    NULL, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
   OUT	= bse_param_spec_object ("project", "Project", NULL,
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -81,9 +81,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-midi-notifier) {
   HELP	= "Retrieve the global midi notifier object.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   OUT	= bse_param_spec_object ("midi_notifier", "Midi Notifier", NULL,
-				 BSE_TYPE_MIDI_NOTIFIER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_MIDI_NOTIFIER, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -118,11 +118,11 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, can-load) {
   HELP	= "Check whether a loader can be found for a wave file";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("file_name", "File Name", "The file to find a loader for",
-			    NULL, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_bool ("can-load", NULL, NULL,
-			  FALSE, SFI_PARAM_DEFAULT);
+			  FALSE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -149,11 +149,11 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, describe-note) {
   HELP	= "Describe a note, providing information about its octave, semitone, frequency, etc.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
-			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_DEFAULT);
+			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -177,13 +177,13 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, note-from-freq) {
   HELP	= "Describe a note, given its frequency.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_real ("freq", "Frequency", NULL,
 			  BSE_KAMMER_FREQUENCY_f,
 			  0, BSE_MAX_FREQUENCY_f,
-			  10.0, SFI_PARAM_DEFAULT);
+			  10.0, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
-			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_DEFAULT);
+			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -208,11 +208,11 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, note-from-string) {
   HELP	= "Describe a note, given its name and octave offset.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", NULL,
-			    "", SFI_PARAM_DEFAULT);
+			    "", SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
-			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_DEFAULT);
+			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -237,14 +237,14 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, construct-note) {
   HELP	= "Describe a note, given its semitone, octave and fine tune.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("semitone", NULL, NULL,
 			 9, 0, 11, 1,
-			 SFI_PARAM_DEFAULT);
+			 SFI_PARAM_STANDARD);
   IN    = bse_param_spec_octave ("octave", NULL, NULL);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
-			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_DEFAULT);
+			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -271,10 +271,10 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, n-scripts) {
   HELP	= "Return the number of scripts currently running on this server.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_int ("n_connections", NULL, "Number of Connections",
 			 0, 0, G_MAXINT, 1,
-			 SFI_PARAM_DEFAULT);
+			 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -303,9 +303,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, preferences-locked) {
   HELP	= "Returns whether the bse-preferences property is currently locked against modifications or not.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_bool ("locked", NULL, NULL,
-			  FALSE, SFI_PARAM_DEFAULT);
+			  FALSE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -371,7 +371,7 @@ register_scripts (gpointer data)
 METHOD (BseServer, register-scripts) {
   HELP	= "Register external scripts.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -436,7 +436,7 @@ register_core_plugins (gpointer data)
 METHOD (BseServer, register-core-plugins) {
   HELP	= "Register core plugins.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -498,7 +498,7 @@ register_ladspa_plugins (gpointer data)
 METHOD (BseServer, register-ladspa-plugins) {
   HELP	= "Register LADSPA (Linux Audio Developer's Simple Plugin API) plugins.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -536,7 +536,7 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, save-preferences) {
   HELP	= "Request the bse-preferences property to be saved into BSE's configuration file.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -585,8 +585,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-version) {
   HELP	= "Retrieve BSE version.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("version", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("version", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -599,8 +599,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-demo-path) {
   HELP	= "Retrieve demo search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -613,8 +613,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-sample-path) {
   HELP	= "Retrieve sample search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -627,8 +627,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-custom-effect-dir) {
   HELP	= "Retrieve user specific effects directory.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("directory", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("directory", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -643,8 +643,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-effect-path) {
   HELP	= "Retrieve effect search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -657,8 +657,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-custom-instrument-dir) {
   HELP	= "Retrieve user specific instruments directory.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("directory", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("directory", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -673,8 +673,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-instrument-path) {
   HELP	= "Retrieve instrument search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -687,8 +687,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-script-path) {
   HELP	= "Retrieve script search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -701,8 +701,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-plugin-path) {
   HELP	= "Retrieve plugin search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -715,8 +715,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-ladspa-path) {
   HELP	= "Retrieve ladspa search path.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("path", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -731,8 +731,8 @@ BODY (BseProcedureClass *proc,
 METHOD (BseServer, get-mp3-version) {
   HELP	= "Retrieve BSE MP3 handler version.";
   IN	= bse_param_spec_object ("server", "Server", NULL,
-				 BSE_TYPE_SERVER, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_string ("version", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SERVER, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_string ("version", NULL, NULL, NULL, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,

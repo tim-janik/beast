@@ -142,17 +142,17 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						    "used for this instrument",
 						    BSE_TYPE_INSTRUMENT_TYPE,
 						    BSE_INSTRUMENT_STANDARD_PIANO,
-						    SFI_PARAM_DEFAULT));
+						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PARAM_WAVE,
 			      g_param_spec_object ("wave", "Custom Wave", "The wave to be used for wave synthesis",
 						   BSE_TYPE_WAVE,
-						   SFI_PARAM_DEFAULT));
+						   SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PARAM_SYNTH_NET,
 			      g_param_spec_object ("user_snet", "Custom Synth Net", "Synthesis network for customized synthesis",
 						   BSE_TYPE_SNET,
-						   SFI_PARAM_DEFAULT));
+						   SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PARAM_SEQ_SYNTH,
 			      g_param_spec_object ("seq_snet", "Seq Synth", NULL,
@@ -182,17 +182,17 @@ bse_instrument_class_init (BseInstrumentClass *class)
 			      PARAM_BALANCE,
 			      sfi_pspec_int ("balance", "Balance", NULL,
 					     0, BSE_MIN_BALANCE_f, BSE_MAX_BALANCE_f, 10,
-					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_STANDARD SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_TRANSPOSE,
 			      sfi_pspec_int ("transpose", "Transpose", NULL,
 					     0, BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE, 10,
-					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_STANDARD SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_FINE_TUNE,
 			      sfi_pspec_int ("fine_tune", "Fine tune", NULL,
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
-					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_STANDARD SFI_PARAM_HINT_SCALE));
   /* envelope
    */
   bse_object_class_add_param (object_class, "Envelope",
@@ -208,7 +208,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						   0, BSE_MAX_ENV_TIME,
 						   ENV_DELAY_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
 						   BSE_STP_ENV_TIME,
-						   SFI_PARAM_DEFAULT |
+						   SFI_PARAM_STANDARD |
 						   SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ATTACK_TIME,
@@ -216,14 +216,14 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						   0, BSE_MAX_ENV_TIME,
 						   ENV_ATTACK_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
 						   BSE_STP_ENV_TIME,
-						   SFI_PARAM_DEFAULT |
+						   SFI_PARAM_STANDARD |
 						   SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ATTACK_LEVEL,
 			      bse_param_spec_uint ("attack_level", "Attack Level", NULL,
 						   0, 100,
 						   ENV_ATTACK_LEVEL (env_dflt_dots) * 100, 1,
-						   SFI_PARAM_DEFAULT |
+						   SFI_PARAM_STANDARD |
 						   SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DECAY_TIME,
@@ -231,14 +231,14 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						   0, BSE_MAX_ENV_TIME,
 						   ENV_DECAY_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
 						   BSE_STP_ENV_TIME,
-						   SFI_PARAM_DEFAULT |
+						   SFI_PARAM_STANDARD |
 						   SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_LEVEL,
 			      bse_param_spec_uint ("sustain_level", "Sustain Level", NULL,
 						   0, 100,
 						   ENV_SUSTAIN_LEVEL (env_dflt_dots) * 100, 1,
-						   SFI_PARAM_DEFAULT |
+						   SFI_PARAM_STANDARD |
 						   SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_TIME,
@@ -246,14 +246,14 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						   0, BSE_MAX_ENV_TIME,
 						   ENV_SUSTAIN_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
 						   BSE_STP_ENV_TIME,
-						   SFI_PARAM_DEFAULT |
+						   SFI_PARAM_STANDARD |
 						   SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_LEVEL,
 			      bse_param_spec_uint ("release_level", "Release Level", NULL,
 						   0, 100,
 						   ENV_RELEASE_LEVEL (env_dflt_dots) * 100, 1,
-						   SFI_PARAM_DEFAULT |
+						   SFI_PARAM_STANDARD |
 						   SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_TIME,
@@ -261,7 +261,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						   0, BSE_MAX_ENV_TIME,
 						   ENV_RELEASE_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
 						   BSE_STP_ENV_TIME,
-						   SFI_PARAM_DEFAULT |
+						   SFI_PARAM_STANDARD |
 						   SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DURATION,

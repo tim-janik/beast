@@ -30,10 +30,10 @@ G_BEGIN_DECLS
   bse_param_spec_freq (name, nick, blurb, BSE_KAMMER_FREQUENCY_f, hints)
 #define bse_param_spec_fine_tune(name, nick, blurb)	\
   sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, \
-                 "scale:" SFI_PARAM_DEFAULT)
+                 "scale:" SFI_PARAM_STANDARD)
 #define	bse_param_spec_octave(name, nick, blurb)	\
   sfi_pspec_int (name, nick, blurb, BSE_KAMMER_OCTAVE, \
-                 BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 2, SFI_PARAM_DEFAULT)
+                 BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 2, SFI_PARAM_STANDARD)
 #define bse_pspec_note(name, nick, blurb, default_value, hints) \
   sfi_pspec_note (name, nick, blurb, default_value, SFI_MIN_NOTE, SFI_MAX_NOTE, FALSE, hints)
 #define bse_pspec_note_simple(name, nick, blurb, hints) \

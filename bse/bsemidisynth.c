@@ -131,13 +131,13 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
   bse_object_class_add_param (object_class, "MIDI Instrument",
 			      PROP_SNET,
 			      bse_param_spec_object ("snet", "Synthesis Network", "The MIDI instrument synthesis network",
-						     BSE_TYPE_CSYNTH, SFI_PARAM_DEFAULT));
+						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "MIDI Instrument",
                               PROP_POST_NET,
                               bse_param_spec_object ("pnet", "Custom Postprocess Net",
                                                      "Synthesis network to postprocess MIDI sound",
                                                      BSE_TYPE_CSYNTH,
-                                                     SFI_PARAM_DEFAULT));
+                                                     SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_VOLUME_f,
 			      sfi_pspec_real ("volume_f", "Master [float]", NULL,

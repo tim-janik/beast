@@ -130,7 +130,7 @@ bse_sub_oport_class_init (BseSubOPortClass *class)
                                   sfi_pspec_string (string, name,
 						    "The port name is a unique name to establish input<->output "
 						    "port relationships",
-						    value, SFI_PARAM_DEFAULT ":skip-default"));
+						    value, SFI_PARAM_STANDARD ":skip-default"));
       g_free (string);
       g_free (name);
       g_free (value);

@@ -281,7 +281,7 @@ make_sname (const gchar *string)
   return cname;
 }
 
-#define PARAM_HINTS	SFI_PARAM_DEFAULT ":lax-validation:"
+#define PARAM_HINTS	SFI_PARAM_STANDARD ":lax-validation:"
 
 static GParamSpec*
 bse_script_param_spec (gchar       *pspec_desc,

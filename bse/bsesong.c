@@ -182,28 +182,28 @@ bse_song_class_init (BseSongClass *class)
   bse_object_class_add_param (object_class, "Timing",
 			      PROP_TPQN,
 			      sfi_pspec_int ("tpqn", "Ticks", "Number of ticks per quarter note",
-					     timing.tpqn, 384, 384, 0, SFI_PARAM_DEFAULT_RDONLY));
+					     timing.tpqn, 384, 384, 0, SFI_PARAM_STANDARD_RDONLY));
   bse_object_class_add_param (object_class, "Timing",
 			      PROP_NOMINATOR,
 			      sfi_pspec_int ("nominator", "Nominator", "Measure nominator",
-					     timing.nominator, 1, 256, 1, SFI_PARAM_DEFAULT));
+					     timing.nominator, 1, 256, 1, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Timing",
 			      PROP_DENOMINATOR,
 			      sfi_pspec_int ("denominator", "Denominator", "Measure denominator, must be a power of 2",
-					     timing.denominator, 1, 256, 0, SFI_PARAM_DEFAULT));
+					     timing.denominator, 1, 256, 0, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Timing",
 			      PROP_BPM,
 			      sfi_pspec_real ("bpm", "Beats per minute", NULL,
 					      timing.bpm,
 					      BSE_MIN_BPM, BSE_MAX_BPM,
 					      BSE_GCONFIG (step_bpm),
-					      SFI_PARAM_DEFAULT ":scale"));
+					      SFI_PARAM_STANDARD ":scale"));
   bse_object_class_add_param (object_class, "Synth Postprocess",
                               PROP_POST_NET,
                               bse_param_spec_object ("pnet", "Custom Postprocess Net",
                                                      "Synthesis network to postprocess song sound",
                                                      BSE_TYPE_CSYNTH,
-                                                     SFI_PARAM_DEFAULT));
+                                                     SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Playback Settings",
 			      PROP_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,

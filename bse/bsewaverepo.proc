@@ -93,12 +93,12 @@ LICENSE = "GNU General Public License";
 METHOD (BseWaveRepo, load-file) {
   HELP	= "Load wave from file";
   IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
-				 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_WAVE_REPO, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("file_name", "File Name", "The file to import waves from",
-			    NULL, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -130,9 +130,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BseWaveRepo, remove-wave) {
   HELP  = "Remove a wave from repository";
   IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
-				 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_WAVE_REPO, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("wave", "Wave", NULL,
-				 BSE_TYPE_WAVE, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_WAVE, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -164,8 +164,8 @@ METHOD (BseWaveRepo, remove-wave) {
 PROCEDURE (bse-sample-file-info, "Sample File Info") {
   HELP	= "Load sample file info from file";
   IN	= sfi_pspec_string ("file_name", "File Name", "The file to load info from",
-			    NULL, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("sample_file_info", NULL, NULL, BSE_TYPE_SAMPLE_FILE_INFO, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("sample_file_info", NULL, NULL, BSE_TYPE_SAMPLE_FILE_INFO, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,

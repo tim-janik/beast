@@ -81,7 +81,7 @@ bse_effect_pattern_jump_class_init (BseEffectClass *class)
 			      PARAM_PATTERN_ID,
 			      sfi_pspec_int ("pattern_id", "Pattern Id", NULL,
 					     1, 1, BSE_MAX_SEQ_ID, 1,
-					     SFI_PARAM_DEFAULT));
+					     SFI_PARAM_STANDARD));
 }
 
 static void

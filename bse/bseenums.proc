@@ -29,9 +29,9 @@ PROCEDURE (bse-error-name, "Error Name") {
   HELP	= "Retrieve the name of an error value";
   IN	= bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_string ("name", "Name", NULL,
-			    NULL, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -53,9 +53,9 @@ PROCEDURE (bse-error-blurb, "Error Blurb") {
   HELP	= "Retrieve the description of an error value";
   IN	= bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_string ("blurb", "Blurb", NULL,
-			    NULL, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)

@@ -86,22 +86,22 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *class)
 			      PARAM_ATTACK_TIME,
 			      sfi_pspec_real ("attack_time", "Attack Time [%]", NULL,
 					      10.0, 0.0, 100.0, 1.0,
-					      SFI_PARAM_DEFAULT ":f:dial"));
+					      SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DECAY_TIME,
 			      sfi_pspec_real ("decay_time", "Decay Time [%]", NULL,
 					      30.0, 0.0, 100.0, 1.0,
-					      SFI_PARAM_DEFAULT ":f:dial"));
+					      SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_LEVEL,
 			      sfi_pspec_real ("sustain_level", "Sustain Level [%]", NULL,
 					      50.0, 0.0, 100.0, 1.0,
-					      SFI_PARAM_DEFAULT ":f:dial"));
+					      SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_TIME,
 			      sfi_pspec_real ("release_time", "Release Time [%]", NULL,
 					      40.0, 0.0, 100.0, 1.0,
-					      SFI_PARAM_DEFAULT ":f:dial"));
+					      SFI_PARAM_STANDARD ":f:dial"));
   desc = g_strdup_printf ("Time ranges in seconds: %.1f %.1f %.1f",
 			  BSE_TIME_RANGE_SHORT_ms / 1000.0,
 			  BSE_TIME_RANGE_MEDIUM_ms / 1000.0,
@@ -111,7 +111,7 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *class)
 			      bse_param_spec_genum ("time_range", "Time Range", desc,
 						    BSE_TYPE_TIME_RANGE_TYPE,
 						    BSE_TIME_RANGE_SHORT,
-						    SFI_PARAM_DEFAULT));
+						    SFI_PARAM_STANDARD));
   g_free (desc);
   
   ichannel = bse_source_class_add_ichannel (source_class, "Gate In", "Gate input (activates/deactivates envelope)");

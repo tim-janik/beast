@@ -27,10 +27,10 @@ LICENSE	= "GNU General Public License";
 PROCEDURE (bse-categories-match-typed, "Categories/Match Typed") {
   HELP  = "List BSE categories according to a pattern and type match.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
-			    "*", SFI_PARAM_DEFAULT);
+			    "*", SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("type", "Type", "Base type for categories to conform to.",
-			    NULL, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -60,8 +60,8 @@ BODY (BseProcedureClass *proc,
 PROCEDURE (bse-categories-match, "Categories/Match") {
   HELP  = "List BSE categories according to a pattern match.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
-			    "*", SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_DEFAULT);
+			    "*", SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -88,8 +88,8 @@ BODY (BseProcedureClass *proc,
 PROCEDURE (bse-category-from-id, "Categories/From ID") {
   HELP  = "Find a BSE category from it's unique ID.";
   IN	= sfi_pspec_int ("category_id", "Category ID", NULL,
-			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("category", "Category", NULL, BSE_TYPE_CATEGORY, SFI_PARAM_DEFAULT);
+			 1, 1, G_MAXINT, 1, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("category", "Category", NULL, BSE_TYPE_CATEGORY, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -128,10 +128,10 @@ categories_check_method (BseCategory *cat,
 PROCEDURE (bse-categories-match-method, "Categories/Match Method") {
   HELP  = "List BSE categories according to a pattern, of type procedure and applying to a certain object type.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
-			    "*", SFI_PARAM_DEFAULT);
+			    "*", SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("type", "Type", "Object base type for methods to conform to.",
-			    NULL, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_DEFAULT);
+			    NULL, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,

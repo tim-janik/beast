@@ -33,9 +33,9 @@ LICENSE = "GNU Lesser General Public License";
 METHOD (BseSong, create-part) {
   HELP  = "Create a new Part in a Song";
   IN    = bse_param_spec_object ("song", "Song", NULL,
-				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -64,9 +64,9 @@ METHOD (BseSong, create-part) {
 METHOD (BseSong, remove-part) {
   HELP  = "Delete a Part from a Song";
   IN    = bse_param_spec_object ("song", "Song", NULL,
-				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -102,9 +102,9 @@ METHOD (BseSong, remove-part) {
 METHOD (BseSong, create-track) {
   HELP  = "Create a new Track for a Song";
   IN    = bse_param_spec_object ("song", "Song", NULL,
-				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -138,9 +138,9 @@ METHOD (BseSong, create-track) {
 METHOD (BseSong, remove-track) {
   HELP  = "Delete a Track from a Song";
   IN    = bse_param_spec_object ("song", "Song", NULL,
-				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -177,11 +177,11 @@ METHOD (BseSong, remove-track) {
 METHOD (BseSong, find-track-for-part) {
   HELP  = "Find a track suitable for playing notes of a given part.";
   IN    = bse_param_spec_object ("song", "Song", NULL,
-				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -222,17 +222,17 @@ METHOD (BseSong, find-track-for-part) {
 METHOD (BseSong, synthesize-note) {
   HELP  = "Synthesize a note on a song of an active project.";
   IN    = bse_param_spec_object ("song", "Song", NULL,
-				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN    = bse_pspec_note_simple ("note", "Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
   IN    = sfi_pspec_real ("velocity", "Velocity", NULL,
 			  1.0, 0, 1.0, 0.01,
-			  SFI_PARAM_DEFAULT ":scale");
+			  SFI_PARAM_STANDARD ":scale");
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -271,9 +271,9 @@ METHOD (BseSong, synthesize-note) {
 
 METHOD (BseSong, get-timing) {
   HELP  = "Retrieve song timing information at a specific tick.";
-  IN    = bse_param_spec_object ("song", "Song", NULL, BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
-  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("song", "Song", NULL, BSE_TYPE_SONG, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)

@@ -148,7 +148,7 @@ bse_snet_class_init (BseSNetClass *class)
 			      sfi_pspec_bool ("auto_activate", "Auto Activate",
 					      "Automatic activation only needs to be enabled for synthesis networks "
 					      "that don't use virtual ports for their input and output",
-					      FALSE, SFI_PARAM_DEFAULT));
+					      FALSE, SFI_PARAM_STANDARD));
   signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered",
 							  G_TYPE_NONE, 0);
 }

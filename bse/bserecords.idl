@@ -326,9 +326,9 @@ sequence DotSeq {
 
 class Part;
 record TrackPart {
-  Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
   Part          part;
-  Int           duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  Int           duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
 };
 sequence TrackPartSeq {
   TrackPart tparts;
@@ -337,24 +337,24 @@ sequence TrackPartSeq {
 /* BSE Song timing structure */
 record SongTiming {
   /* song position timing applies to */
-  Int   tick        = ("Current tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  Int   tick        = ("Current tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
   /* tempo */
-  Real  bpm         = ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, SFI_PARAM_DEFAULT);
+  Real  bpm         = ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, SFI_PARAM_STANDARD);
   /* signature */
-  Int   nominator   = ("Nominator", "Number of notes per measure", 4, 1, 256, 2, SFI_PARAM_DEFAULT);
-  Int   denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, SFI_PARAM_DEFAULT);
+  Int   nominator   = ("Nominator", "Number of notes per measure", 4, 1, 256, 2, SFI_PARAM_STANDARD);
+  Int   denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, SFI_PARAM_STANDARD);
   /* sequencer timing */
-  Int   tpqn        = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
-  Int   tpt         = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
+  Int   tpqn        = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_STANDARD);
+  Int   tpt         = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_STANDARD);
 };
 
 record SampleFileInfo {
-  String        file    = ("Filename", NULL, NULL, SFI_PARAM_DEFAULT);
-  Int           size    = ("File Size", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_DEFAULT);
-  Num           mtime   = ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, SFI_PARAM_DEFAULT);
-  String        loader  = ("Loader", NULL, NULL, SFI_PARAM_DEFAULT);
-  StringSeq     waves   = (NULL, NULL, SFI_PARAM_DEFAULT);
-  Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_DEFAULT); // FIXME: use BseErrorType here
+  String        file    = ("Filename", NULL, NULL, SFI_PARAM_STANDARD);
+  Int           size    = ("File Size", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_STANDARD);
+  Num           mtime   = ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, SFI_PARAM_STANDARD);
+  String        loader  = ("Loader", NULL, NULL, SFI_PARAM_STANDARD);
+  StringSeq     waves   = (NULL, NULL, SFI_PARAM_STANDARD);
+  Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_STANDARD); // FIXME: use BseErrorType here
 };
 
 /* BSE Global Config */
@@ -389,21 +389,21 @@ record GConfig {
                               "Synthesis buffer size, smaller values may reduce latency but "
                               "increase CPU overhead",
                               256, 4, 4096, 4,
-                              SFI_PARAM_DEFAULT ":scale");
+                              SFI_PARAM_STANDARD ":scale");
     Int  synth_mixing_freq = ("Synth Mixing Frequency",
                               "Synthesis mixing frequency, common values are: 22050, 44100, 48000",
-                              44100, 8000, 192000, 0, SFI_PARAM_DEFAULT);
+                              44100, 8000, 192000, 0, SFI_PARAM_STANDARD);
   };
   group "MIDI" {
     Bool invert_sustain = ("Invert Sustain Pedal",
                            "Invert the state of sustain (damper) pedal so on/off meanings are reversed",
-                           FALSE, SFI_PARAM_DEFAULT);
+                           FALSE, SFI_PARAM_STANDARD);
   };
   group "Stepping Rates" {
     Real step_volume_dB = ("Volume [dB] Steps", "Step width for volume in decibell",
-                           0.1, 0.001, 5, 0.01, SFI_PARAM_DEFAULT);
+                           0.1, 0.001, 5, 0.01, SFI_PARAM_STANDARD);
     Int  step_bpm       = ("BPM Steps", "Step width for beats per minute",
-                           10, 1, 50, 1, SFI_PARAM_DEFAULT);
+                           10, 1, 50, 1, SFI_PARAM_STANDARD);
   };
 };
 

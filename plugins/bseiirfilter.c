@@ -118,28 +118,28 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
 			      bse_param_spec_genum ("filter_algorithm", _("Filter Algorithm"), _("The filter design type"),
 						    BSE_TYPE_IIR_FILTER_ALGORITHM,
 						    BSE_IIR_FILTER_BUTTERWORTH,
-						    SFI_PARAM_DEFAULT));
+						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Filter Choice"),
 			      PARAM_FILTER_TYPE,
 			      bse_param_spec_genum ("filter_type", _("Filter Type"), _("The type of filter to use"),
 						    BSE_TYPE_IIR_FILTER_TYPE,
 						    BSE_IIR_FILTER_LOW_PASS,
-						    SFI_PARAM_DEFAULT));
+						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Filter Specification"),
 			      PARAM_ORDER,
 			      sfi_pspec_int ("order", _("Order"), _("Order of Filter"),
 					     6, 1, BSE_IIR_FILTER_MAX_ORDER, 2,
-					     SFI_PARAM_DEFAULT));
+					     SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Filter Specification"),
 			      PARAM_EPSILON,
 			      sfi_pspec_real ("epsilon", _("Epsilon"), _("Passband falloff at cutoff frequency"),
 					      0.1, 0.0, 0.98,0.01,
-					      SFI_PARAM_DEFAULT));
+					      SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Cutoff Frequency (All Filters)"),
 			      PARAM_CUT_OFF_FREQ1,
 			      bse_param_spec_freq ("cut_off_freq", _("Cutoff [Hz]"), NULL,
 						   BSE_KAMMER_FREQUENCY_f / 2,
-						   SFI_PARAM_DEFAULT ":f:dial"));
+						   SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, _("Cutoff Frequency (All Filters)"),
 			      PARAM_CUT_OFF_NOTE1,
 			      bse_pspec_note ("cut_off_note", _("Note"), NULL,
@@ -149,7 +149,7 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
 			      PARAM_CUT_OFF_FREQ2,
 			      bse_param_spec_freq ("cut_off_freq_2", _("Cutoff [Hz]"), NULL,
 						   BSE_KAMMER_FREQUENCY_f / 2 + FREQ_DELTA,
-						   SFI_PARAM_DEFAULT ":f:dial"));
+						   SFI_PARAM_STANDARD ":f:dial"));
   bse_object_class_add_param (object_class, _("Cutoff Frequency 2 (Band Pass/Stop)"),
 			      PARAM_CUT_OFF_NOTE2,
 			      bse_pspec_note ("cut_off_note_2", _("Note"), NULL,

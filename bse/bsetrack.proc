@@ -29,13 +29,13 @@ LICENSE = "Copyright (C) 2003 Tim Janik";
 METHOD (BseTrack, insert-part) {
   HELP  = "Insert a part into a track and retrieve the corresponding link id.";
   IN    = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("tick", "Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_int ("id", "Link ID", NULL,
-                         0, 0, SFI_MAXINT, 1, SFI_PARAM_DEFAULT);
+                         0, 0, SFI_MAXINT, 1, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -70,9 +70,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BseTrack, remove-tick) {
   HELP  = "Remove a part at specified tick from a track.";
   IN    = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("tick", "Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -101,9 +101,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BseTrack, remove-link) {
   HELP  = "Remove a specific part link by ID from a track.";
   IN    = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("id", "Link ID", NULL,
-			 0, 0, SFI_MAXINT, 384, SFI_PARAM_DEFAULT);
+			 0, 0, SFI_MAXINT, 384, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -131,9 +131,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BseTrack, list-parts) {
   HELP  = "List parts scheduled in a track, sorted by tick.";
   IN    = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("part_list", "Part List", NULL,
-				BSE_TYPE_TRACK_PART_SEQ, SFI_PARAM_DEFAULT);
+				BSE_TYPE_TRACK_PART_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -155,11 +155,11 @@ BODY (BseProcedureClass *proc,
 METHOD (BseTrack, get-part) {
   HELP  = "Get the part starting at a specific tick position.";
   IN    = bse_param_spec_object ("track", "Track", NULL,
-				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("tick", "Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -183,9 +183,9 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BseTrack, get-timing) {
   HELP  = "Retrieve song timing information at a specific tick.";
-  IN    = bse_param_spec_object ("track", "Track", NULL, BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
-  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("track", "Track", NULL, BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)

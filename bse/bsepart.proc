@@ -28,19 +28,19 @@ LICENSE = "GNU General Public License";
 METHOD (BsePart, insert-note) {
   HELP	= "Insert a new note into a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("note", "Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
   IN	= bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
   IN	= sfi_pspec_real ("velocity", "Velocity", NULL,
 			  1.0, 0, 1.0, 0.01,
-			  SFI_PARAM_DEFAULT ":scale");
+			  SFI_PARAM_STANDARD ":scale");
   OUT	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -76,17 +76,17 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, insert-control) {
   HELP	= "Insert a new control event into a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
                                 BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
   IN	= sfi_pspec_real ("value", "Value", NULL,
 			  0.0, -1.0, +1.0, 0.1,
-			  SFI_PARAM_DEFAULT ":scale");
+			  SFI_PARAM_STANDARD ":scale");
   OUT	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -120,22 +120,22 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, change-note) {
   HELP	= "Change an existing note within a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("note", "Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
   IN	= bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
   IN	= sfi_pspec_real ("velocity", "Velocity", NULL,
 			  1.0, 0, 1.0, 0.01,
-			  SFI_PARAM_DEFAULT ":scale");
+			  SFI_PARAM_STANDARD ":scale");
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -183,20 +183,20 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, change-control) {
   HELP	= "Change an existing control event within a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
                                 BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
   IN	= sfi_pspec_real ("value", "Value", NULL,
 			  0.0, -1.0, +1.0, 0.1,
-			  SFI_PARAM_DEFAULT ":scale");
+			  SFI_PARAM_STANDARD ":scale");
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -260,12 +260,12 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, delete-event) {
   HELP	= "Delete an existing event from a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -310,11 +310,11 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, is-selected-event) {
   HELP	= "Check whether a specific event is selected.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_bool ("selected", "Selected", NULL,
-			  FALSE, SFI_PARAM_DEFAULT);
+			  FALSE, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -341,13 +341,13 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, list-notes-crossing) {
   HELP	= "List all notes within or crossing a tick range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
-				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_DEFAULT);
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -371,16 +371,16 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, list-controls) {
   HELP	= "List all control events within a tick range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
                                 BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
-                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_DEFAULT);
+                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -405,15 +405,15 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, queue-notes) {
   HELP	= "Queue updates for all notes starting within the given rectangle.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("min_note", "Minimum Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("max_note", "Maximum Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -439,11 +439,11 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, queue-controls) {
   HELP	= "Queue updates for all notes starting within the given range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -467,9 +467,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, list-selected-notes) {
   HELP	= "List all currently selected notes.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
-				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_DEFAULT);
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -491,12 +491,12 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, list-selected-controls) {
   HELP	= "List all currently selected control events of a specific type.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
                                 BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
-                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_DEFAULT);
+                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -519,14 +519,14 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, check-overlap) {
   HELP	= "Check whether a note would overlap with neighbours.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
-			 1, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
-  IN	= bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_DEFAULT);
+			 1, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
+  IN	= bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
-				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_DEFAULT);
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -551,13 +551,13 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, get-notes) {
   HELP	= "Retrieve all notes of specific frequency at a specific tick.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("note", "Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
-				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_DEFAULT);
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -581,14 +581,14 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, get-controls) {
   HELP	= "Retrieve all control events of a specific type at specified tick.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
                                 BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
-                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_DEFAULT);
+                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -612,16 +612,16 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, get-range-controls) {
   HELP	= "Retrieve all control events of a specific type within range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", NULL,
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_int ("duration", "Tick Duration", NULL,
-                         1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+                         1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
                                 BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
-                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_DEFAULT);
+                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -646,9 +646,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, get-min-note) {
   HELP	= "Retrieve the minimum note supported in this part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   OUT	= bse_pspec_note_simple ("note", "Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -670,9 +670,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, get-max-note) {
   HELP	= "Retrieve the maximum note supported in this part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   OUT	= bse_pspec_note_simple ("note", "Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -694,9 +694,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, get-max-tick) {
   HELP	= "Retrieve the maximum tick count represented in a part.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_int ("tick", "Tick", "Maximum Tick",
-			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -718,15 +718,15 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, select-notes-exclusive) {
   HELP	= "Select all notes within rectangle and deselect all others.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", "Selection Tick",
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
-			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("min_note", "Minimum Selection Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("max_note", "Maximum Selection Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -751,14 +751,14 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, select-controls-exclusive) {
   HELP	= "Select all control events within range and deselect all others.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", "Selection Tick",
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
-			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
                                 BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -782,15 +782,15 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, select-notes) {
   HELP	= "Select all notes within rectangle.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", "Selection Tick",
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
-			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("min_note", "Minimum Selection Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("max_note", "Maximum Selection Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -815,15 +815,15 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, deselect-notes) {
   HELP	= "Deselect all notes within rectangle.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", "Selection Tick",
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
-			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("min_note", "Minimum Selection Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
   IN	= bse_pspec_note_simple ("max_note", "Maximum Selection Note", NULL,
-				 SFI_PARAM_DEFAULT);
+				 SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -848,14 +848,14 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, deselect-controls) {
   HELP	= "Deselect all controls within given range.";
   IN	= bse_param_spec_object ("part", "Part", "Part",
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", "Selection Tick",
-			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Duration", "Selection Duration",
-			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
                                 BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
-                                SFI_PARAM_DEFAULT);
+                                SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -879,9 +879,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, select-event) {
   HELP	= "Select an existing event.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -905,9 +905,9 @@ BODY (BseProcedureClass *proc,
 METHOD (BsePart, deselect-event) {
   HELP	= "Deselect an existing event.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -930,9 +930,9 @@ BODY (BseProcedureClass *proc,
 
 METHOD (BsePart, get-timing) {
   HELP  = "Retrieve song timing information at a specific tick.";
-  IN    = bse_param_spec_object ("part", "Part", NULL, BSE_TYPE_PART, SFI_PARAM_DEFAULT);
-  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
-  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("part", "Part", NULL, BSE_TYPE_PART, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)

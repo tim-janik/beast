@@ -124,17 +124,17 @@ bse_track_class_init (BseTrackClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MUTED,
 			      sfi_pspec_bool ("muted", "Muted", NULL,
-					      FALSE, SFI_PARAM_DEFAULT ":skip-default"));
+					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PROP_SYNTH_NET,
 			      bse_param_spec_object ("snet", "Custom Synth Net", "Synthesis network to be used as instrument",
 						     BSE_TYPE_CSYNTH,
-						     SFI_PARAM_DEFAULT));
+						     SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PROP_WAVE,
 			      bse_param_spec_object ("wave", "Custom Wave", "Wave to be used as instrument",
 						     BSE_TYPE_WAVE,
-						     SFI_PARAM_DEFAULT));
+						     SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PROP_N_SYNTH_VOICES,
 			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
@@ -151,7 +151,7 @@ bse_track_class_init (BseTrackClass *class)
 			      bse_param_spec_object ("pnet", "Custom Postprocess Net",
                                                      "Synthesis network to postprocess track sound",
 						     BSE_TYPE_CSYNTH,
-						     SFI_PARAM_DEFAULT));
+						     SFI_PARAM_STANDARD));
   signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }
 

@@ -91,17 +91,17 @@ bse_sequencer_class_init (BseSequencerClass *class)
 			      PARAM_NOTES,
 			      bse_param_spec_boxed ("notes", "Notes", NULL,
 						    BSE_TYPE_NOTE_SEQUENCE,
-						    "note-sequence:" SFI_PARAM_DEFAULT));
+						    "note-sequence:" SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Sequence",
 			      PARAM_TRANSPOSE,
 			      sfi_pspec_int ("transpose", "Transpose", NULL,
 					     0, -36, +36, 3,
-					     SFI_PARAM_DEFAULT ":scale:skip-default"));
+					     SFI_PARAM_STANDARD ":scale:skip-default"));
   bse_object_class_add_param (object_class, "Sequence",
 			      PARAM_COUNTER,
 			      sfi_pspec_real ("counter", "Timing [ms]", NULL,
 					      100, 0, 1000, 5,
-					      SFI_PARAM_DEFAULT ":f:scale"));
+					      SFI_PARAM_STANDARD ":f:scale"));
   
   ochannel = bse_source_class_add_ochannel (source_class, "Freq Out", "Frequency Signal");
   g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_FREQ);

@@ -119,25 +119,25 @@ bse_midi_controller_class_init (BseMidiControllerClass *class)
 			      bse_param_spec_genum ("control_1", "Signal 1", NULL,
 						    BSE_TYPE_MIDI_SIGNAL_TYPE,
 						    BSE_MIDI_SIGNAL_PITCH_BEND,
-						    SFI_PARAM_DEFAULT));
+						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_2,
 			      bse_param_spec_genum ("control_2", "Signal 2", NULL,
 						    BSE_TYPE_MIDI_SIGNAL_TYPE,
 						    BSE_MIDI_SIGNAL_CONTINUOUS_1,
-						    SFI_PARAM_DEFAULT));
+						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_3,
 			      bse_param_spec_genum ("control_3", "Signal 3", NULL,
 						    BSE_TYPE_MIDI_SIGNAL_TYPE,
 						    BSE_MIDI_SIGNAL_CONTINUOUS_7,
-						    SFI_PARAM_DEFAULT));
+						    SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_4,
 			      bse_param_spec_genum ("control_4", "Signal 4", NULL,
 						    BSE_TYPE_MIDI_SIGNAL_TYPE,
 						    BSE_MIDI_SIGNAL_PRESSURE,
-						    SFI_PARAM_DEFAULT));
+						    SFI_PARAM_STANDARD));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out1", "MIDI Signal 1");
   g_assert (ochannel_id == BSE_MIDI_CONTROLLER_OCHANNEL_CONTROL1);

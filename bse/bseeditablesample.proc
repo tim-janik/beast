@@ -28,10 +28,10 @@ LICENSE = "GNU General Public License";
 METHOD (BseEditableSample, open) {
   HELP	= ("Open the sample for reading.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
-				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+				SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -68,7 +68,7 @@ METHOD (BseEditableSample, open) {
 METHOD (BseEditableSample, close) {
   HELP	= ("Close an opened sample.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
-				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -91,9 +91,9 @@ METHOD (BseEditableSample, close) {
 METHOD (BseEditableSample, get-length) {
   HELP	= ("Return the number of values in the sample.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
-				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_int ("length", NULL, "Number of values",
-			 1, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 1, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -117,9 +117,9 @@ METHOD (BseEditableSample, get-length) {
 METHOD (BseEditableSample, get-n-channels) {
   HELP	= ("Return the number of channels in the sample.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
-				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_int ("n-channels", NULL, "Number of channels",
-			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -140,9 +140,9 @@ METHOD (BseEditableSample, get-n-channels) {
 METHOD (BseEditableSample, get-osc-freq) {
   HELP	= ("Return the oscillator frequency for the sample.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
-				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_STANDARD);
   OUT	= bse_param_spec_freq_simple ("osc-freq", NULL, "Oscillator Frequency",
-				      SFI_PARAM_DEFAULT);
+				      SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -163,10 +163,10 @@ METHOD (BseEditableSample, get-osc-freq) {
 METHOD (BseEditableSample, read-samples) {
   HELP	= ("Read a set of samples from a specific offset.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
-				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("voffset", NULL, "Value offset",
-			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_fblock ("sample_block", NULL, "Block of samples", SFI_PARAM_DEFAULT);
+			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_fblock ("sample_block", NULL, "Block of samples", SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -207,18 +207,18 @@ METHOD (BseEditableSample, read-samples) {
 METHOD (BseEditableSample, collect-stats) {
   HELP	= ("Collect statistics from sample blocks as (minimum, maximum) pairs.");
   IN	= bse_param_spec_object ("esample", "Editable Sample", NULL,
-				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
+				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("voffset", NULL, "Offset of first stat block",
-			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_real ("offset_scale", NULL, "Factor to scale voffset increments with",
-			  0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			  0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("block_size", NULL, "Block size to compute stat pairs from",
-			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("stepping", NULL, "Stepping within a stat block",
-			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("max_pairs", NULL, "Maximum number of (min, max) pairs to collect",
-			 1, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_fblock ("sample_block", NULL, "Block of samples", SFI_PARAM_DEFAULT);
+			 1, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_fblock ("sample_block", NULL, "Block of samples", SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)

@@ -127,7 +127,7 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
   bse_object_class_add_param (object_class, "Assignments",
 			      PARAM_SNET,
 			      bse_param_spec_object ("snet", "Synthesis Network", "The synthesis network to interface to",
-						     BSE_TYPE_CSYNTH, SFI_PARAM_DEFAULT));
+						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
   for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
       gchar *string, *name, *value;
@@ -137,7 +137,7 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
       value = g_strdup_printf ("synth_in_%u", i + 1);
       bse_object_class_add_param (object_class, "Input Assignments", PARAM_IPORT_NAME + i * 2,
 				  sfi_pspec_string (string, name, "Output port name to interface from",
-						    value, SFI_PARAM_DEFAULT ":skip-default"));
+						    value, SFI_PARAM_STANDARD ":skip-default"));
       g_free (string);
       g_free (name);
       g_free (value);
@@ -147,7 +147,7 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
       value = g_strdup_printf ("synth_out_%u", i + 1);
       bse_object_class_add_param (object_class, "Output Assignments", PARAM_OPORT_NAME + i * 2,
 				  sfi_pspec_string (string, name, "Input port name to interface to",
-						    value, SFI_PARAM_DEFAULT ":skip-default"));
+						    value, SFI_PARAM_STANDARD ":skip-default"));
       g_free (string);
       g_free (name);
       g_free (value);

@@ -238,9 +238,9 @@ GParamSpec*      sfi_pspec_to_serializable   (GParamSpec *pspec);
 /* common option combinations: */
 #define	SFI_PARAM_READWRITE      ":r:w:"
 #define	SFI_PARAM_STORAGE	 ":r:w:S:"
-#define	SFI_PARAM_DEFAULT        ":r:w:G:S:"
+#define	SFI_PARAM_STANDARD        ":r:w:G:S:"
 #define	SFI_PARAM_GUI		 ":r:w:G:"
-#define SFI_PARAM_DEFAULT_RDONLY ":r:w:G:S:ro:"
+#define SFI_PARAM_STANDARD_RDONLY ":r:w:G:S:ro:"
 #define	SFI_PARAM_GUI_RDONLY	 ":r:w:G:ro:"
 
 
