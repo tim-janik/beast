@@ -429,7 +429,7 @@ gslwave_parse_wave_dsc (GScanner    *scanner,
 	dsc->wdsc.chunks = g_realloc (dsc->wdsc.chunks, sizeof (dsc->wdsc.chunks[0]) * dsc->wdsc.n_chunks);
 	memset (dsc->wdsc.chunks + i, 0, sizeof (dsc->wdsc.chunks[0]) * 1);
 	dsc->wdsc.chunks[i].mix_freq = dsc->dfl_mix_freq;
-	dsc->wdsc.chunks[i].osc_freq = dsc->dfl_mix_freq;	/* we check this later */
+	dsc->wdsc.chunks[i].osc_freq = -1;
 	dsc->wdsc.chunks[i].loop_type = GSL_WAVE_LOOP_JUMP;
 	dsc->wdsc.chunks[i].loop_start = GSL_MAXLONG;
 	dsc->wdsc.chunks[i].loop_end = -1;
@@ -448,12 +448,17 @@ gslwave_parse_wave_dsc (GScanner    *scanner,
 	    dsc->wdsc.chunks[i].loop_end = 0;
 	    dsc->wdsc.chunks[i].loop_count = 0;
 	  }
-	if (dsc->wdsc.chunks[i].osc_freq >= dsc->wdsc.chunks[i].mix_freq / 2.)
-	  g_scanner_error (scanner, "wave chunk \"%s\" mixing frequency is invalid: mix_freq=%f osc_freq=%f",
+	if (dsc->wdsc.chunks[i].osc_freq <= 0)
+	  g_scanner_error (scanner, "wave chunk \"%s\" without oscilator frequency: mix_freq=%f osc_freq=%f",
 			   dsc->wdsc.chunks[i].loader_data1 ? (gchar*) dsc->wdsc.chunks[i].loader_data1 : "",
 			   dsc->wdsc.chunks[i].mix_freq,
 			   dsc->wdsc.chunks[i].osc_freq);
-	break;
+        if (dsc->wdsc.chunks[i].osc_freq >= dsc->wdsc.chunks[i].mix_freq / 2.)
+          g_scanner_error (scanner, "wave chunk \"%s\" with invalid mixing/oscilator frequency: mix_freq=%f osc_freq=%f",
+                           dsc->wdsc.chunks[i].loader_data1 ? (gchar*) dsc->wdsc.chunks[i].loader_data1 : "",
+                           dsc->wdsc.chunks[i].mix_freq,
+                           dsc->wdsc.chunks[i].osc_freq);
+        break;
       case GSL_WAVE_TOKEN_BYTE_ORDER:
 	parse_or_return (scanner, '=');
 	token = g_scanner_get_next_token (scanner);
@@ -595,6 +600,7 @@ gslwave_free_wave_dsc (gpointer    data,
 static GslDataHandle*
 gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
 			       const gchar     *wave_name,
+                               gfloat           osc_freq,
 			       GslErrorType    *error_p)
 {
   GslWaveDsc *wdsc;
@@ -625,7 +631,8 @@ gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
   if (wdsc->n_chunks == 1)
     {
       GslDataHandle *dhandle = gsl_wave_handle_create (wdsc, 0, error_p);
-
+      if (osc_freq > 0 && dhandle)
+        gsl_data_handle_override (dhandle, -1, -1, osc_freq);
       gsl_wave_dsc_free (wdsc);
       return dhandle;
     }
@@ -670,6 +677,7 @@ gslwave_create_chunk_handle (gpointer      data,
 	   */
 	  dhandle = gslwave_load_singlechunk_wave (cfi,
 						   chunk->loader_data2,	/* wave_name */
+                                                   chunk->osc_freq,
 						   error_p);
 	  gsl_wave_file_info_unref (cfi);
 	  g_free (string);
@@ -688,7 +696,7 @@ gslwave_create_chunk_handle (gpointer      data,
 				     dsc->wdsc.n_channels,
 				     dsc->format,
 				     dsc->byte_order,
-                                     chunk->mix_freq,
+                                     chunk->mix_freq <= 0 ? dsc->dfl_mix_freq : chunk->mix_freq,
                                      chunk->osc_freq,
 				     chunk->loader_offset,	/* byte_offset */
 				     chunk->loader_length > 0	/* n_values */
@@ -707,7 +715,7 @@ gslwave_create_chunk_handle (gpointer      data,
 						 dsc->wdsc.n_channels,
 						 dsc->format,
 						 dsc->byte_order,
-                                                 chunk->mix_freq,
+                                                 chunk->mix_freq <= 0 ? dsc->dfl_mix_freq : chunk->mix_freq,
                                                  chunk->osc_freq,
 						 chunk->loader_offset,	/* byte_offset */
 						 chunk->loader_length);	/* byte length */

@@ -101,6 +101,7 @@ gsl_data_handle_common_init (GslDataHandle *dhandle,
   sfi_mutex_init (&dhandle->mutex);
   dhandle->ref_count = 1;
   dhandle->open_count = 0;
+  g_datalist_init (&dhandle->qdata);
   memset (&dhandle->setup, 0, sizeof (dhandle->setup));
   
   return TRUE;
@@ -126,6 +127,7 @@ gsl_data_handle_common_free (GslDataHandle *dhandle)
   g_return_if_fail (dhandle->vtable != NULL);
   g_return_if_fail (dhandle->ref_count == 0);
   
+  g_datalist_clear (&dhandle->qdata);
   g_free (dhandle->name);
   dhandle->name = NULL;
   sfi_mutex_destroy (&dhandle->mutex);
@@ -150,6 +152,40 @@ gsl_data_handle_unref (GslDataHandle *dhandle)
     }
 }
 
+void
+gsl_data_handle_override (GslDataHandle    *dhandle,
+                          gint              bit_depth,
+                          gfloat            mix_freq,
+                          gfloat            osc_freq)
+{
+  gfloat *fp;
+
+  g_return_if_fail (dhandle != NULL);
+
+  if (bit_depth <= 0)
+    g_datalist_set_data (&dhandle->qdata, "bse-bit-depth", NULL);
+  else
+    g_datalist_set_data (&dhandle->qdata, "bse-bit-depth", GINT_TO_POINTER (MIN (bit_depth, 32)));
+
+  if (mix_freq <= 0)
+    g_datalist_set_data (&dhandle->qdata, "bse-mix-freq", NULL);
+  else
+    {
+      fp = g_new (gfloat, 1);
+      *fp = mix_freq;
+      g_datalist_set_data_full (&dhandle->qdata, "bse-mix-freq", fp, g_free);
+    }
+
+  if (osc_freq <= 0)
+    g_datalist_set_data (&dhandle->qdata, "bse-osc-freq", NULL);
+  else
+    {
+      fp = g_new (gfloat, 1);
+      *fp = osc_freq;
+      g_datalist_set_data_full (&dhandle->qdata, "bse-osc-freq", fp, g_free);
+    }
+}
+
 GslErrorType
 gsl_data_handle_open (GslDataHandle *dhandle)
 {
@@ -159,30 +195,41 @@ gsl_data_handle_open (GslDataHandle *dhandle)
   GSL_SPIN_LOCK (&dhandle->mutex);
   if (dhandle->open_count == 0)
     {
+      GslDataHandleSetup setup = { 0, };
       GslErrorType error;
+      gfloat *fp;
+      gint i;
 
-      memset (&dhandle->setup, 0, sizeof (dhandle->setup));
-      error = dhandle->vtable->open (dhandle, &dhandle->setup);
-      if (!error && (dhandle->setup.n_values < 0 ||
-		     dhandle->setup.n_channels < 1 ||
-		     dhandle->setup.bit_depth < 1 ||
-                     dhandle->setup.mix_freq < 3999 ||
-                     dhandle->setup.osc_freq <= 0))
+      error = dhandle->vtable->open (dhandle, &setup);
+      if (!error && (setup.n_values < 0 ||
+		     setup.n_channels < 1 ||
+		     setup.bit_depth < 1 ||
+                     setup.mix_freq < 3999 ||
+                     setup.osc_freq <= 0))
 	{
 	  g_warning ("internal error in data handle open() (%p): nv=%ld nc=%u bd=%u mf=%g of=%g",
-		     dhandle->vtable->open, dhandle->setup.n_values, dhandle->setup.n_channels,
-                     dhandle->setup.bit_depth, dhandle->setup.mix_freq, dhandle->setup.osc_freq);
+		     dhandle->vtable->open, setup.n_values, setup.n_channels,
+                     setup.bit_depth, setup.mix_freq, setup.osc_freq);
 	  dhandle->vtable->close (dhandle);
 	  error = GSL_ERROR_INTERNAL;
 	}
       if (error)
 	{
-	  memset (&dhandle->setup, 0, sizeof (dhandle->setup));
 	  GSL_SPIN_UNLOCK (&dhandle->mutex);
 	  return error;
 	}
       dhandle->ref_count++;
       dhandle->open_count++;
+      dhandle->setup = setup;
+      i = GPOINTER_TO_INT (g_datalist_get_data (&dhandle->qdata, "bse-bit-depth"));
+      if (i > 0)
+        dhandle->setup.bit_depth = i;
+      fp = g_datalist_get_data (&dhandle->qdata, "bse-mix-freq");
+      if (fp)
+        dhandle->setup.mix_freq = *fp;
+      fp = g_datalist_get_data (&dhandle->qdata, "bse-osc-freq");
+      if (fp)
+        dhandle->setup.osc_freq = *fp;
     }
   else
     dhandle->open_count++;
@@ -204,7 +251,10 @@ gsl_data_handle_close (GslDataHandle *dhandle)
   dhandle->open_count--;
   need_unref = !dhandle->open_count;
   if (!dhandle->open_count)
-    dhandle->vtable->close (dhandle);
+    {
+      dhandle->vtable->close (dhandle);
+      memset (&dhandle->setup, 0, sizeof (dhandle->setup));
+    }
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   if (need_unref)
     gsl_data_handle_unref (dhandle);

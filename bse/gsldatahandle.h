@@ -47,6 +47,7 @@ struct _GslDataHandle
   SfiMutex	      mutex;
   guint		      ref_count;
   guint		      open_count;
+  GData              *qdata;
   /* opened data handle setup (open_count > 0) */
   GslDataHandleSetup  setup;
 };
@@ -80,6 +81,10 @@ struct _GslDataHandleFuncs
 /* --- standard functions --- */
 GslDataHandle*	  gsl_data_handle_ref		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_unref		(GslDataHandle	  *dhandle);
+void    	  gsl_data_handle_override	(GslDataHandle	  *dhandle,
+                                                 gint              bit_depth,
+                                                 gfloat            mix_freq,
+                                                 gfloat            osc_freq);
 GslErrorType	  gsl_data_handle_open		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_close		(GslDataHandle	  *dhandle);
 GslLong		  gsl_data_handle_length	(GslDataHandle	  *data_handle);
