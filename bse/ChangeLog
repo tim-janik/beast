@@ -1,3 +1,12 @@
+Sat Nov 27 18:57:11 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepcmwriter.c (bse_pcm_writer_open): truncate .wav files when 
+	opening. wrtie out the initial wav header with a very long data
+	block size, so abortion of the wav saving process (which needs
+	adaption of the data size later on) leaves a wav file with
+	non-0 data block length. (required for most programs to read
+	wav files).
+
 Sat Nov 27 18:39:38 2004  Tim Janik  <timj@gtk.org>
 
 	* bseprobe.idl:

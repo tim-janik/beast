@@ -110,14 +110,14 @@ bse_pcm_writer_open (BsePcmWriter *self,
   error = 0;
 
   self->n_bytes = 0;
-  fd = open (file, O_WRONLY | O_CREAT, 0666);
+  fd = open (file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
   if (fd < 0)
     {
       SFI_SYNC_UNLOCK (&self->mutex);
       return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
     }
 
-  errno = gsl_wave_file_dump_header (fd, 0, 16, n_channels, sample_freq);
+  errno = gsl_wave_file_dump_header (fd, 0x7fff0000, 16, n_channels, sample_freq);
   if (errno)
     {
       close (fd);
