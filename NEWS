@@ -6,7 +6,7 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * Implemented ability to use sequencer as modulation source
 * Added support for external MIDI events in song tracks
 * Added support for C++ Plugins
-* Now installs bse-module-generator for simple creation of C++ Modules
+* Now installs bse-plugin-generator for simple creation of C++ Modules
 * Added prototype support to IDL compiler [Stefan Westerfeld]
 * Work around PTH poll() bug on NetBSD [Ben Collver, Tim Janik]
 * Support NetBSD sound device names [Ben Collver]

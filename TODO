@@ -1,4 +1,9 @@
 FIXMES:
+- support records and sequences in bse-plugin-generator and bseprocidl
+- reenable signals i nbseprocidl
+- add dump-include-path option to bse-plugin-generator
+- supply man page for bse-plugin-generator
+- add "bypass" option to audio output channels
 - enable Clear Undo only for --hints
 - alias --hints to --devel
 - if Track::Synth is NULL, disconnect post-process-subsynth from track-context-merger
