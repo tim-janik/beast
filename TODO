@@ -341,8 +341,7 @@ sfidl:
       typeArray
       funcFromValue, funcToValue,
       funcCopy, funcFree, funcNew,
-
-      codeVCallArgs,
+      codeVCallArgs
 
 bseprocidl:
   - doesn't really work when it comes to implementing _some_ objects yourself
