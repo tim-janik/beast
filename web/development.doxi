@@ -16,10 +16,30 @@ overall track keeping, the release specific
 @uref{beast-doc://release-news,, NEWS file} is used.
 
 
+@unnumbered Translations
+
+@beast is being translated into various different languages. Status of individual
+translations can be obtained from the following pages.
+
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/index.html,, Translation statistics for the gnome-2.6 release: }
+@c status page links to all translations listed in ALL_LINGUAS:
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/az/extras/index.html,, az},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/ca/extras/index.html,, ca},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/de/extras/index.html,, de},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/el/extras/index.html,, el},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/es/extras/index.html,, es},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/nl/extras/index.html,, nl},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/pt/extras/index.html,, pt},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/sr/extras/index.html,, sr},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/sr@@Latn/extras/index.html,, sr@@Latn},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/sv/extras/index.html,, sv},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/ru/extras/index.html,, ru}
+
+
 @unnumbered Web Site Development
 
 Most of the BEAST website is kept in CVS, to aid development, here're
-various validator results:
+the links to various validator results:
 
 @itemize
 @item @uref{http://jigsaw.w3.org/css-validator/validator?uri=http://beast.gtk.org,

@@ -1,3 +1,9 @@
+Mon Dec 15 18:51:05 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: add note to translators about docs/site-development.texi.
+
+	* docs/site-development.texi: added links to translation status pages.
+
 Mon Dec 15 15:03:58 2003  Tim Janik  <timj@gtk.org>
 
 	* merged po/ with po-bse/. remove the po-bse/ directory.
