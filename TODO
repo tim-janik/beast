@@ -1,4 +1,5 @@
 FIXMES:
+- remove bse-plugin-generator
 - document options: :filename, :rgb, :hex
 - remove bstdragutils.[hc]
 - cause gxkscrollcanvas to center itself if max_canvas_height is exceeded
