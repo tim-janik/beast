@@ -619,17 +619,9 @@ bse_init_loader_gus_patch (void)
 {
   static const gchar *file_exts[] = { "pat", NULL, };
   static const gchar *mime_types[] = { "audio/x-pat", NULL, }; // FIXME: correct?
-  /*
-   * file uses:
-   * 0   string      GF1PATCH110\0ID#000002\0    GUS patch
-   * 0   string      GF1PATCH100\0ID#000002\0    Old GUS patch
-   *
-   * we use GF1PATCH1 which is a superset (but maybe more than desired?)
-   */
   static const gchar *magics[] = {
-    (
-     "0  string  GF1PATCH1"
-     ),
+    "0  string  GF1PATCH110\0ID#000002\0",      // GUS patch V1.1
+    "0  string  GF1PATCH100\0ID#000002\0",      // GUS patch V1.0
     NULL,
   };
   static GslLoader loader = {
