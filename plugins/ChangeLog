@@ -1,3 +1,8 @@
+Tue Aug  6 08:36:32 2002  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: remove BseGenOsc, BseStandardOsc fullfills all its
+	purposes already.
+
 Sat Jul 27 18:20:54 2002  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: fix deps.
