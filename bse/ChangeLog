@@ -1,3 +1,30 @@
+Wed Dec 29 04:06:07 2004  Tim Janik  <timj@gtk.org>
+
+	* gsldatacache.[hc]: tweaked caching algorithm, so 25% cache memory of
+	low persistency data handles is kept upon cache sweeps, this makes the
+	low persistency cache mode attractive enough for e.g. WAV files.
+	changed flags, there's a high_persistency flag now which is valid only
+	for opened data caches.
+
+	* gsldatahandle-vorbis.c:
+	* gsldatahandle-mad.c: set .needs-cache xinfo flag.
+
+	* gsldatahandle-mad.c: 
+	* gsldatahandle-vorbis.c:
+	* gsldatahandle.h:
+	* gsldatahandle.c:
+	data handle cleanups and vtable consolidations. introduced
+	gsl_data_handle_get_source() which returns the source data handle if
+	availabele. the source data handle must have the exact same length and
+	values like the originating data handle to validly be handed out.
+	gsl_data_handle_needs_cache(): implemented in terms of returning
+	the .needs-cache xinfo flag.
+	gsl_wave_handle_new_zoffset():
+	gsl_wave_handle_new(): on __linux__, unset the .needs-cache xinfo
+	flag on wave handles to spare cache performance for OGGs and MP3s.
+
+	* bseutils.[hc]: moved *_xinfo_* accessor functions here.
+
 Mon Dec 27 23:59:19 2004  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle.[hc]: added xinfos[] array to opened data handles.

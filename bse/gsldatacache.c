@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik
+ * Copyright (C) 2001-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,8 +33,8 @@
 #define	NODEP_INDEX(dcache, node_p)	((node_p) - (dcache)->nodes)
 #define	UPPER_POWER2(n)			(sfi_alloc_upper_power2 (MAX (n, 4)))
 #define	CONFIG_NODE_SIZE()		(gsl_get_config ()->dcache_block_size)
-#define	AGE_EPSILON			(3)	/* must be < smallest sweep */
-#define	LOW_PERSISTENCY_SWEEP		(5)
+#define	AGE_EPSILON			(3)	/* must be < resident set */
+#define	LOW_PERSISTENCY_RESIDENT_SET    (5)
 
 /* we use one global lock to protect the dcache list, the list
  * count (length) and the number of aged (unused) nodes.
@@ -81,7 +81,7 @@ _gsl_init_data_caches (void)
   g_assert (initialized == FALSE);
   initialized++;
 
-  g_assert (AGE_EPSILON < LOW_PERSISTENCY_SWEEP);
+  g_static_assert (AGE_EPSILON < LOW_PERSISTENCY_RESIDENT_SET);
   sfi_cond_init (&global_dcache_cond_node_filled);
   sfi_mutex_init (&global_dcache_mutex);
 }
@@ -108,7 +108,7 @@ gsl_data_cache_new (GslDataHandle *dhandle,
   dcache->node_size = node_size;
   dcache->padding = padding;
   dcache->max_age = 0;
-  dcache->low_persistency = !gsl_data_handle_needs_cache (dcache->dhandle);
+  dcache->high_persistency = FALSE;
   dcache->n_nodes = 0;
   dcache->nodes = g_renew (GslDataCacheNode*, NULL, UPPER_POWER2 (dcache->n_nodes));
 
@@ -139,6 +139,7 @@ gsl_data_cache_open (GslDataCache *dcache)
 	}
       else
 	{
+          dcache->high_persistency = gsl_data_handle_needs_cache (dcache->dhandle);
 	  dcache->open_count = 1;
 	  dcache->ref_count++;
 	}
@@ -161,7 +162,10 @@ gsl_data_cache_close (GslDataCache *dcache)
   dcache->open_count--;
   need_unref = !dcache->open_count;
   if (!dcache->open_count)
-    gsl_data_handle_close (dcache->dhandle);
+    {
+      dcache->high_persistency = FALSE;
+      gsl_data_handle_close (dcache->dhandle);
+    }
   GSL_SPIN_UNLOCK (&dcache->mutex);
   if (need_unref)
     gsl_data_cache_unref (dcache);
@@ -545,11 +549,10 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
       guint cache_mem = gsl_get_config ()->dcache_cache_memory;
       guint current_mem;
 
-      /* FIXME: cache sweeping should not be done from _unref_node for high persistency caches */
       GSL_SPIN_LOCK (&global_dcache_mutex);
       global_dcache_n_aged_nodes++;
       current_mem = node_size * global_dcache_n_aged_nodes;
-      if (current_mem > cache_mem)
+      if (current_mem > cache_mem)              /* round-robin cache trashing */
 	{
 	  guint dcache_count, needs_unlock;
 	  dcache = sfi_ring_pop_head (&global_dcache_list);
@@ -558,26 +561,41 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
 	  global_dcache_list = sfi_ring_append (global_dcache_list, dcache);
 	  dcache_count = global_dcache_count;
 	  GSL_SPIN_UNLOCK (&global_dcache_mutex);
-	  if (dcache->low_persistency)
-	    needs_unlock = data_cache_free_olders_Lunlock (dcache, LOW_PERSISTENCY_SWEEP);
-	  else
-	    {
-	      guint max_lru;
-	      /* try to free the actual cache overflow from the
-	       * dcache we just picked, but don't free more than
-	       * 25% of its nodes yet.
-	       * overflow is actual overhang + ~6% of cache size,
-	       * so cache sweeps are triggered less frequently.
-	       */
-	      current_mem -= cache_mem;		/* overhang */
-	      current_mem += cache_mem >> 4;	/* overflow = overhang + 6% */
-	      current_mem /= node_size;		/* n_nodes to free */
-	      current_mem = MIN (current_mem, dcache->n_nodes);
-	      max_lru = dcache->n_nodes >> 1;
-	      max_lru += max_lru >> 1;		/* 75% of n_nodes */
-	      max_lru = MAX (max_lru, dcache->n_nodes - current_mem);
-	      needs_unlock = data_cache_free_olders_Lunlock (dcache, MAX (max_lru, LOW_PERSISTENCY_SWEEP));
-	    }
+#if DEBUG_TRASHING
+          gint debug_gnaged = global_dcache_n_aged_nodes;
+#endif
+          if (dcache->high_persistency) /* hard/slow to refill */
+            {
+              /* try to free the actual cache overflow from the
+               * dcache we just picked, but don't free more than
+               * 25% of its nodes yet.
+               * overflow is actual overhang + ~6% of cache size,
+               * so cache sweeps are triggered less frequently.
+               */
+              current_mem -= cache_mem;		/* overhang */
+              current_mem += cache_mem >> 4;	/* overflow = overhang + 6% */
+              current_mem /= node_size;		/* n_nodes to free */
+              current_mem = MIN (current_mem, dcache->n_nodes);
+              guint max_lru = dcache->n_nodes;
+              max_lru >>= 1;                    /* keep at least 75% of n_nodes */
+              max_lru += max_lru >> 1;
+              max_lru = MAX (max_lru, dcache->n_nodes - current_mem);
+              needs_unlock = data_cache_free_olders_Lunlock (dcache, MAX (max_lru, LOW_PERSISTENCY_RESIDENT_SET));
+            }
+          else  /* low persistency - easy to refill */
+            {
+              guint max_lru = dcache->n_nodes;
+              max_lru >>= 2;                    /* keep only 25% of n_nodes */
+              needs_unlock = data_cache_free_olders_Lunlock (dcache, MAX (max_lru, LOW_PERSISTENCY_RESIDENT_SET));
+            }
+#if DEBUG_TRASHING
+          if (dcache->dhandle->open_count)
+            g_printerr ("shrunk dcache by: dhandle=%p - %s - highp=%d: %d bytes (kept: %d)\n",
+                        dcache->dhandle, gsl_data_handle_name (dcache->dhandle),
+                        dcache->high_persistency,
+                        -(gint) node_size * (debug_gnaged - global_dcache_n_aged_nodes),
+                        node_size * dcache->n_nodes);
+#endif
 	  if (needs_unlock)
 	    GSL_SPIN_UNLOCK (&dcache->mutex);
 	}

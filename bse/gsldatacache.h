@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik
+ * Copyright (C) 2001-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,10 +21,7 @@
 
 #include <bse/gslcommon.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- macros --- */
 #define	GSL_DATA_CACHE_NODE_SIZE(dcache)	(((GslDataCache*) (dcache))->node_size)
@@ -39,10 +36,10 @@ struct _GslDataCache
   guint			open_count;
   SfiMutex		mutex;
   guint			ref_count;
-  guint			node_size;	/* power of 2, const for all dcaches */
-  guint			padding;	/* n_values around blocks */
+  guint			node_size;	        /* power of 2, const for all dcaches */
+  guint			padding;	        /* n_values around blocks */
   guint			max_age;
-  gboolean		low_persistency;
+  gboolean		high_persistency;       /* valid for opened caches only */
   guint			n_nodes;
   GslDataCacheNode    **nodes;
 };
@@ -78,10 +75,6 @@ void		  gsl_data_cache_free_olders	(GslDataCache	    *dcache,
 GslDataCache*	  gsl_data_cache_from_dhandle	(GslDataHandle	    *dhandle,
 						 guint		     min_padding);
 						 
-						 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_DATA_CACHE_H__ */

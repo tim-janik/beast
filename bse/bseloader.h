@@ -19,8 +19,7 @@
 #ifndef __GSL_LOADER_H__
 #define __GSL_LOADER_H__
 
-#include <bse/gsldefs.h>
-#include <bse/gslcommon.h>
+#include <bse/bseutils.h>
 #include <bse/gslwavechunk.h>
 
 G_BEGIN_DECLS
@@ -124,23 +123,6 @@ struct _GslLoader
 
 void	      gsl_loader_register	        (GslLoader	 *loader);
 GslLoader*    gsl_loader_match	                (const gchar	 *file_name);
-gchar**       bse_xinfos_add_value              (gchar          **xinfos,
-                                                 const gchar     *key,
-                                                 const gchar     *value);
-gchar**       bse_xinfos_add_float              (gchar          **xinfos,
-                                                 const gchar     *key,
-                                                 gfloat           fvalue);
-gchar**       bse_xinfos_add_num                (gchar          **xinfos,
-                                                 const gchar     *key,
-                                                 SfiNum           num);
-const gchar*  bse_xinfos_get_value              (gchar          **xinfos,
-                                                 const gchar     *key);
-gfloat        bse_xinfos_get_float              (gchar          **xinfos,
-                                                 const gchar     *key);
-SfiNum        bse_xinfos_get_num                (gchar          **xinfos,
-                                                 const gchar     *key);
-gchar**       bse_xinfos_del_value              (gchar          **xinfos,
-                                                 const gchar     *key);
 
 G_END_DECLS
 

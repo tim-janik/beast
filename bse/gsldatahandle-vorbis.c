@@ -150,10 +150,10 @@ static ov_callbacks rfile_ov_callbacks = {
 };
 
 static BseErrorType
-dh_vorbis_open (GslDataHandle      *data_handle,
+dh_vorbis_open (GslDataHandle      *dhandle,
 		GslDataHandleSetup *setup)
 {
-  VorbisHandle *vhandle = (VorbisHandle*) data_handle;
+  VorbisHandle *vhandle = (VorbisHandle*) dhandle;
   RFile *rfile;
   vorbis_info *vi;
   GslLong n, i;
@@ -229,6 +229,7 @@ dh_vorbis_open (GslDataHandle      *data_handle,
   vhandle->pcm_pos = 0;
   vhandle->pcm_length = 0;
   
+  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".needs-cache", 1);
   return BSE_ERROR_NONE;
 }
 
@@ -337,35 +338,20 @@ dh_vorbis_close (GslDataHandle *dhandle)
 {
   VorbisHandle *vhandle = (VorbisHandle*) dhandle;
 
+  g_strfreev (dhandle->setup.xinfos);
+  dhandle->setup.xinfos = NULL;
   ov_clear (&vhandle->ofile);
   vhandle->pcm_pos = 0;
   vhandle->pcm_length = 0;
 }
 
 static void
-dh_vorbis_destroy (GslDataHandle *data_handle)
+dh_vorbis_destroy (GslDataHandle *dhandle)
 {
-  VorbisHandle *vhandle = (VorbisHandle*) data_handle;
+  VorbisHandle *vhandle = (VorbisHandle*) dhandle;
 
-  gsl_data_handle_common_free (data_handle);
+  gsl_data_handle_common_free (dhandle);
   sfi_delete_struct (VorbisHandle, vhandle);
-}
-
-static gboolean
-dh_vorbis_ojob (GslDataHandle    *dhandle,
-		GslDataHandleOJob ojob,
-		gpointer          data)
-{
-  switch (ojob)
-    {
-      gboolean *needs_cache;
-    case GSL_DATA_HANDLE_NEEDS_CACHE:
-      needs_cache = data;
-      *needs_cache = TRUE;
-      return TRUE;      /* case implemented */
-    default:
-      return FALSE;     /* unimplemented cases */
-    }
 }
 
 static GslDataHandleFuncs dh_vorbis_vtable = {
@@ -374,7 +360,6 @@ static GslDataHandleFuncs dh_vorbis_vtable = {
   dh_vorbis_close,
   NULL,
   dh_vorbis_destroy,
-  dh_vorbis_ojob,
 };
 
 static GslDataHandle*

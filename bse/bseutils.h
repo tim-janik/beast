@@ -87,6 +87,26 @@ gulong	bse_id_alloc	(void);
 void	bse_id_free	(gulong	id);
 
 
+/* --- string array manipulation --- */
+gchar**       bse_xinfos_add_value              (gchar          **xinfos,
+                                                 const gchar     *key,
+                                                 const gchar     *value);
+gchar**       bse_xinfos_add_float              (gchar          **xinfos,
+                                                 const gchar     *key,
+                                                 gfloat           fvalue);
+gchar**       bse_xinfos_add_num                (gchar          **xinfos,
+                                                 const gchar     *key,
+                                                 SfiNum           num);
+const gchar*  bse_xinfos_get_value              (gchar          **xinfos,
+                                                 const gchar     *key);
+gfloat        bse_xinfos_get_float              (gchar          **xinfos,
+                                                 const gchar     *key);
+SfiNum        bse_xinfos_get_num                (gchar          **xinfos,
+                                                 const gchar     *key);
+gchar**       bse_xinfos_del_value              (gchar          **xinfos,
+                                                 const gchar     *key);
+
+
 /* --- miscellaeous --- */
 guint		bse_string_hash			(gconstpointer   string);
 gint		bse_string_equals		(gconstpointer	 string1,

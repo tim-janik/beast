@@ -19,8 +19,7 @@
 #ifndef __GSL_DATA_HANDLE_H__
 #define __GSL_DATA_HANDLE_H__
 
-#include <bse/gsldefs.h>
-#include <bse/bseenums.h>
+#include <bse/bseutils.h>
 
 G_BEGIN_DECLS
 
@@ -54,27 +53,17 @@ struct _GslDataHandle
 };
 typedef void (*GslDataHandleRecurse)	(GslDataHandle		*data_handle,
 					 gpointer		 data);
-typedef enum	/*< skip >*/
-{
-  GSL_DATA_HANDLE_NEEDS_CACHE	= 1,	/* gboolean *needs_cache; */
-} GslDataHandleOJob;
 struct _GslDataHandleFuncs
 {
-  BseErrorType	(*open)			(GslDataHandle		*data_handle,
+  BseErrorType	 (*open)		(GslDataHandle		*data_handle,
 					 GslDataHandleSetup	*setup);
-  GslLong	(*read)			(GslDataHandle		*data_handle,
+  GslLong	 (*read)		(GslDataHandle		*data_handle,
 					 GslLong		 voffset, /* in values */
 					 GslLong		 n_values,
 					 gfloat			*values);
-  void		(*close)		(GslDataHandle		*data_handle);
-  void		(*recurse)		(GslDataHandle		*data_handle,
-					 GslDataHandleRecurse	 recurse,
-					 gpointer		 data);
-  void          (*destroy)		(GslDataHandle		*data_handle);
-  /* optional (for optimizations) */
-  gboolean	(*ojob)			(GslDataHandle		*data_handle,
-					 GslDataHandleOJob	 ojob,
-					 gpointer		 data);
+  void		 (*close)		(GslDataHandle		*data_handle);
+  GslDataHandle* (*get_source)          (GslDataHandle          *data_handle);
+  void           (*destroy)		(GslDataHandle		*data_handle);
 };
 
 
@@ -100,6 +89,7 @@ GslLong		  gsl_data_handle_read		(GslDataHandle	  *data_handle,
 						 GslLong	   value_offset,
 						 GslLong	   n_values,
 						 gfloat		  *values);
+GslDataHandle*    gsl_data_handle_get_source    (GslDataHandle    *dhandle);
 GslDataHandle*	  gsl_data_handle_new_cut	(GslDataHandle	  *src_handle,
 						 GslLong	   cut_offset,
 						 GslLong	   n_cut_values);

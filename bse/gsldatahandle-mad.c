@@ -84,7 +84,7 @@ typedef struct
 
 
 /* --- prototypes --- */
-static GslLong	dh_mad_coarse_seek	(GslDataHandle *data_handle,
+static GslLong	dh_mad_coarse_seek	(GslDataHandle *dhandle,
 					 GslLong        voffset);
 
 
@@ -448,6 +448,7 @@ dh_mad_open (GslDataHandle      *dhandle,
       goto OPEN_FAILED;
     }
   
+  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".needs-cache", 1);
   return BSE_ERROR_NONE;
 
  OPEN_FAILED:
@@ -634,10 +635,12 @@ dh_mad_coarse_seek (GslDataHandle *dhandle,
 }
 
 static void
-dh_mad_close (GslDataHandle *data_handle)
+dh_mad_close (GslDataHandle *dhandle)
 {
-  MadHandle *handle = (MadHandle*) data_handle;
+  MadHandle *handle = (MadHandle*) dhandle;
 
+  g_strfreev (dhandle->setup.xinfos);
+  dhandle->setup.xinfos = NULL;
   handle->bfill = 0;
   handle->eof = FALSE;
   handle->pcm_pos = 0;
@@ -652,32 +655,15 @@ dh_mad_close (GslDataHandle *data_handle)
 }
 
 static void
-dh_mad_destroy (GslDataHandle *data_handle)
+dh_mad_destroy (GslDataHandle *dhandle)
 {
-  MadHandle *handle = (MadHandle*) data_handle;
+  MadHandle *handle = (MadHandle*) dhandle;
 
   g_free (handle->seeks);
   handle->seeks = NULL;
   handle->n_seeks = 0;
-  gsl_data_handle_common_free (data_handle);
+  gsl_data_handle_common_free (dhandle);
   sfi_delete_struct (MadHandle, handle);
-}
-
-static gboolean
-dh_mad_ojob (GslDataHandle    *dhandle,
-	     GslDataHandleOJob ojob,
-	     gpointer          data)
-{
-  switch (ojob)
-    {
-      gboolean *needs_cache;
-    case GSL_DATA_HANDLE_NEEDS_CACHE:
-      needs_cache = data;
-      *needs_cache = TRUE;
-      return TRUE;      /* case implemented */
-    default:
-      return FALSE;     /* unimplemented cases */
-    }
 }
 
 static GslDataHandleFuncs dh_mad_vtable = {
@@ -686,7 +672,6 @@ static GslDataHandleFuncs dh_mad_vtable = {
   dh_mad_close,
   NULL,
   dh_mad_destroy,
-  dh_mad_ojob,
 };
 
 static GslDataHandle*

@@ -451,6 +451,142 @@ bse_id_alloc (void)
 }
 
 
+/* --- string array manipulation --- */
+static gchar*
+canonify_xinfo_key (const gchar *key)
+{
+  gchar *ckey = g_strdup (key);
+  g_strcanon (ckey, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS, '-');
+  /* preserve leading dot */
+  if (key[0] == '.')
+    ckey[0] = '.';
+  return ckey;
+}
+
+gchar**
+bse_xinfos_add_value (gchar          **xinfos,
+                      const gchar     *key,
+                      const gchar     *value)
+{
+  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, xinfos);
+  if (!value || !value[0])
+    return bse_xinfos_del_value (xinfos, key);
+  else
+    {
+      gchar *ckey = canonify_xinfo_key (key);
+      guint i, l = strlen (ckey);
+      if (xinfos)
+        {
+          for (i = 0; xinfos[i]; i++)
+            if (strncmp (xinfos[i], ckey, l) == 0 &&
+                xinfos[i][l] == '=')
+              break;
+          if (xinfos[i]) /* found value to replace */
+            {
+              g_free (xinfos[i]);
+              xinfos[i] = g_strconcat (ckey, "=", value, NULL);
+              g_free (ckey);
+              return xinfos;
+            }
+        }
+      i = xinfos ? g_strlenv (xinfos) : 0;
+      i++;
+      xinfos = g_renew (gchar*, xinfos, i + 1);
+      xinfos[i--] = NULL;
+      xinfos[i] = g_strconcat (ckey, "=", value, NULL);
+      g_free (ckey);
+      return xinfos;
+    }
+}
+
+gchar**
+bse_xinfos_del_value (gchar       **xinfos,
+                      const gchar  *key)
+{
+  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, xinfos);
+  if (xinfos)
+    {
+      gchar *ckey = canonify_xinfo_key (key);
+      guint i, l = strlen (ckey);
+      for (i = 0; xinfos[i]; i++)
+        if (strncmp (xinfos[i], ckey, l) == 0 &&
+            xinfos[i][l] == '=')
+          break;
+      g_free (ckey);
+      if (xinfos[i]) /* found value to delete */
+        {
+          g_free (xinfos[i]);
+          while (xinfos[i + 1])
+            {
+              xinfos[i] = xinfos[i + 1];
+              i++;
+            }
+          xinfos[i] = NULL;
+        }
+    }
+  return xinfos;
+}
+
+gchar**
+bse_xinfos_add_float (gchar          **xinfos,
+                      const gchar     *key,
+                      gfloat           fvalue)
+{
+  gchar buffer[G_ASCII_DTOSTR_BUF_SIZE * 2 + 1024];
+  return bse_xinfos_add_value (xinfos, key, g_ascii_dtostr (buffer, sizeof (buffer), fvalue));
+}
+
+gchar**
+bse_xinfos_add_num (gchar          **xinfos,
+                    const gchar     *key,
+                    SfiNum           num)
+{
+  gchar buffer[128];
+  g_snprintf (buffer, sizeof (buffer), "%lld", num);
+  return bse_xinfos_add_value (xinfos, key, buffer);
+}
+
+const gchar*
+bse_xinfos_get_value (gchar          **xinfos,
+                      const gchar     *key)
+{
+  g_return_val_if_fail (key != NULL && strchr (key, '=') == NULL, NULL);
+  if (xinfos)
+    {
+      guint i, l = strlen (key);
+      for (i = 0; xinfos[i]; i++)
+        if (strncmp (xinfos[i], key, l) == 0 &&
+            xinfos[i][l] == '=')
+          break;
+      if (xinfos[i]) /* found value */
+        return xinfos[i] + l + 1;
+    }
+  return NULL;
+}
+
+gfloat
+bse_xinfos_get_float (gchar          **xinfos,
+                      const gchar     *key)
+{
+  const gchar *v = bse_xinfos_get_value (xinfos, key);
+  if (v)
+    return g_ascii_strtod (v, NULL);
+  else
+    return 0.0;
+}
+
+SfiNum
+bse_xinfos_get_num (gchar          **xinfos,
+                    const gchar     *key)
+{
+  const gchar *v = bse_xinfos_get_value (xinfos, key);
+  if (v)
+    return g_ascii_strtoull (v, NULL, 10);
+  else
+    return 0.0;
+}
+
+
 /* --- miscellaeous --- */
 guint
 bse_string_hash (gconstpointer string)

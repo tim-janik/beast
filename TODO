@@ -1,5 +1,8 @@
 FIXME(urgent):
+- add gsl_data_handle_is_vorbis()
+- add gsl_data_handle_store_vorbis()
 - bsewave.c: FIXME: set authors, license, comment
+- install bsewavetool
 - GslWaveFileInfo -> BseWaveLibraryInfo
 - disable StandardOsc->selfmod
 - add a "Creating Skins" section to the beast manual page
