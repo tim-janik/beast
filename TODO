@@ -335,6 +335,8 @@ sfidl:
     - records in bseprocidl: how can we figure out the type?
     - #include-impl should be implemented
     - dynamic invocation interface missing in C++ binding (properties, methods)
+    - port arts driver from csl to port-audio
+    - write port-audio driver for beast
 
 bseprocidl:
   - doesn't really work when it comes to implementing _some_ objects yourself
