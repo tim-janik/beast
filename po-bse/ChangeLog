@@ -1,3 +1,7 @@
+Mon Oct 20 18:24:26 2003  Tim Janik  <timj@gtk.org>
+
+	* nl.po: add empty file to keep beast compiling.
+
 2003-10-19  Christian Neumair  <chris@gnome-de.org>
 
 	* de.po: Added German translation.
