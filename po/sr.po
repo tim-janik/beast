@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-05 19:54+0100\n"
+"POT-Creation-Date: 2004-03-06 13:59+0100\n"
 "PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -17,180 +17,171 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:49
+#: beast-gtk/bstapp.c:50
 msgid "_New"
 msgstr "_Нови"
 
-#: beast-gtk/bstapp.c:49
+#: beast-gtk/bstapp.c:50
 msgid "Create new project"
 msgstr "Направи нови пројекат"
 
-#: beast-gtk/bstapp.c:51
+#: beast-gtk/bstapp.c:52
 msgid "_Open..."
 msgstr "_Отвори..."
 
-#: beast-gtk/bstapp.c:51
+#: beast-gtk/bstapp.c:52
 msgid "Open existing project"
 msgstr "Отвари постојећи пројекат"
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:54
 msgid "_Merge..."
 msgstr "_Споји..."
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:54
 msgid "Merge an existing project into the current project"
 msgstr "Споји постојећи пројекат са текућим пројектом"
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:56
 msgid "_Import MIDI..."
 msgstr "_Увези МИДИ..."
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:56
 msgid "Import a standard MIDI file into the current project"
 msgstr "Увези обичну МИДИ датотеку у текући пројекат"
 
-#: beast-gtk/bstapp.c:57
+#: beast-gtk/bstapp.c:58
 msgid "_Close"
 msgstr "_Затвори"
 
-#: beast-gtk/bstapp.c:61
+#: beast-gtk/bstapp.c:62
 msgid "_Save"
 msgstr "_Сачувај"
 
-#: beast-gtk/bstapp.c:63
+#: beast-gtk/bstapp.c:64
 msgid "Save _As..."
 msgstr "Сачувај _као..."
 
-#: beast-gtk/bstapp.c:67
+#: beast-gtk/bstapp.c:68
 msgid "_Quit"
 msgstr "_Изађи"
 
-#: beast-gtk/bstapp.c:71
+#: beast-gtk/bstapp.c:72
 msgid "_Preferences..."
 msgstr "_Поставке..."
 
-#: beast-gtk/bstapp.c:74
+#: beast-gtk/bstapp.c:75
 msgid "Rebuild"
 msgstr "Поново _изгради"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:78
 msgid "_About..."
 msgstr "_О програму..."
 
-#: beast-gtk/bstapp.c:80
+#: beast-gtk/bstapp.c:81
 msgid "_Undo"
 msgstr "Опо_зови"
 
-#: beast-gtk/bstapp.c:82
+#: beast-gtk/bstapp.c:83
 msgid "_Redo"
 msgstr "По_нови"
 
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:87 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Очисти враћање"
 
-#: beast-gtk/bstapp.c:90
+#: beast-gtk/bstapp.c:91
 msgid "Procedure _Browser"
 msgstr "_Разгледач процедура"
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:93
 msgid "Rack Editor"
 msgstr "Уређивач полица"
 
-#: beast-gtk/bstapp.c:94
-msgid "Device _Monitor"
-msgstr "Пр_аћење уређаја"
-
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:95
 msgid "New View"
 msgstr "Нови преглед"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:99
 msgid "_Play"
 msgstr "_Пусти"
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:101
 msgid "_Stop"
 msgstr "_Заустави"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:105
 msgid "New Song"
 msgstr "Нова песма"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:107
 msgid "New Custom Synthesizer"
 msgstr "Нови синтетизатор по избору"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:109
 msgid "New MIDI Synthesizer"
 msgstr "Нови MIDI синтетизатор"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:111
 msgid "Remove Song or Synthesizer"
 msgstr "Уклони песму или синтетизатор"
 
-#: beast-gtk/bstapp.c:116
+#: beast-gtk/bstapp.c:115
 msgid "Load _Instrument"
 msgstr "Учитај _инструмент"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:117
 msgid "Load _Effect"
 msgstr "Учитај _ефекат"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:119
 msgid "Save As Instrument"
 msgstr "Сачувај као инструмент"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:121
 msgid "Save As Effect"
 msgstr "Сачувај као ефекат"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:125
 msgid "_Release Notes..."
 msgstr "_Објава издања..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:126
 msgid "Quick Start..."
 msgstr "Брзи почетак..."
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:127
 msgid "_FAQ..."
 msgstr "Питања и _одговори"
 
-#: beast-gtk/bstapp.c:131
+#: beast-gtk/bstapp.c:130
 msgid "GSL Engine..."
 msgstr "GSL машинерија..."
 
-#: beast-gtk/bstapp.c:530 beast-gtk/bstapp.c:537 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:543 beast-gtk/bstapp.c:550 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Отвара пројекат „%s“"
 
-#: beast-gtk/bstapp.c:597
+#: beast-gtk/bstapp.c:610
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Учитавам мотив „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:759
+#: beast-gtk/bstapp.c:772
 msgid "Rack editor"
 msgstr "Уређивач полица"
 
-#: beast-gtk/bstapp.c:773
+#: beast-gtk/bstapp.c:786
 msgid "Preferences"
 msgstr "Поставке"
 
-#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:787
-msgid "Device Monitor"
-msgstr "Праћење уређаја"
-
-#: beast-gtk/bstapp.c:806
+#: beast-gtk/bstapp.c:809
 msgid "Procedure Browser"
 msgstr "Разгледач процедура"
 
-#: beast-gtk/bstapp.c:863
+#: beast-gtk/bstapp.c:866
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ЗВЕР-%s Објава издања"
@@ -915,89 +906,89 @@ msgid "Controls the octave relative to which notes are entered"
 msgstr ""
 
 #. movement
-#: beast-gtk/bstpatternctrl.c:265
+#: beast-gtk/bstpatternctrl.c:268
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr "Фокусирај следећу ћелију (горе/лево/десно/доле према подешавањима)"
 
-#: beast-gtk/bstpatternctrl.c:266
+#: beast-gtk/bstpatternctrl.c:269
 msgid "Move focus cell upwards"
 msgstr "Фокусирај ћелију изнад"
 
-#: beast-gtk/bstpatternctrl.c:267
+#: beast-gtk/bstpatternctrl.c:270
 msgid "Move focus cell to the left"
 msgstr "Фокусирај ћелију лево"
 
-#: beast-gtk/bstpatternctrl.c:268
+#: beast-gtk/bstpatternctrl.c:271
 msgid "Move focus cell to the right"
 msgstr "Фокусирај ћелију десно"
 
-#: beast-gtk/bstpatternctrl.c:269
+#: beast-gtk/bstpatternctrl.c:272
 msgid "Move focus cell downwards"
 msgstr "Фокусирај ћелију испод"
 
-#: beast-gtk/bstpatternctrl.c:270
+#: beast-gtk/bstpatternctrl.c:273
 msgid "Move focus cell upwards page-wise"
 msgstr "Фокусирај ћелију изнад према страници"
 
-#: beast-gtk/bstpatternctrl.c:271
+#: beast-gtk/bstpatternctrl.c:274
 msgid "Move focus cell to the left page-wise"
 msgstr "Фокусирај ћелију лево према страници"
 
-#: beast-gtk/bstpatternctrl.c:272
+#: beast-gtk/bstpatternctrl.c:275
 msgid "Move focus cell to the right page-wise"
 msgstr "Фокусирај ћелију десно према страници"
 
-#: beast-gtk/bstpatternctrl.c:273
+#: beast-gtk/bstpatternctrl.c:276
 msgid "Move focus cell downwards page-wise"
 msgstr "Фокусирај ћелију испод према страници"
 
-#: beast-gtk/bstpatternctrl.c:274
+#: beast-gtk/bstpatternctrl.c:277
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Фокусирај ћелију што је могуће више горе"
 
-#: beast-gtk/bstpatternctrl.c:275
+#: beast-gtk/bstpatternctrl.c:278
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Фокусирај ћелију што је могуће више лево"
 
-#: beast-gtk/bstpatternctrl.c:276
+#: beast-gtk/bstpatternctrl.c:279
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Фокусирај ћелију што је могуће више десно"
 
-#: beast-gtk/bstpatternctrl.c:277
+#: beast-gtk/bstpatternctrl.c:280
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Фокусирај ћелију што је могуће више доле"
 
-#: beast-gtk/bstpatternctrl.c:280
+#: beast-gtk/bstpatternctrl.c:283
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr "Постави број корака при преласку на наредну ћелију"
 
-#: beast-gtk/bstpatternctrl.c:284
+#: beast-gtk/bstpatternctrl.c:287
 msgid "Set the base octave"
 msgstr "Постави основну октаву"
 
-#: beast-gtk/bstpatternctrl.c:287
+#: beast-gtk/bstpatternctrl.c:290
 msgid "Change the base octave by a given amount"
 msgstr "Измени основну октаву за дату вредност"
 
-#: beast-gtk/bstpatternctrl.c:291
+#: beast-gtk/bstpatternctrl.c:294
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 "Измени бројевни садржај у фокусираној ћелији (нпр. октаву) за дату вредност"
 
-#: beast-gtk/bstpatternctrl.c:295
+#: beast-gtk/bstpatternctrl.c:298
 msgid "Set the focus cell octave"
 msgstr "Постави октаву у фокусираној ћелији"
 
-#: beast-gtk/bstpatternctrl.c:299 beast-gtk/bstpatternctrl.c:313
+#: beast-gtk/bstpatternctrl.c:302 beast-gtk/bstpatternctrl.c:316
 msgid "Remove any events in the focus cell"
 msgstr "Уклони све догађаје у фокусираној ћелији"
 
-#: beast-gtk/bstpatternctrl.c:303 beast-gtk/bstpatternctrl.c:317
+#: beast-gtk/bstpatternctrl.c:306 beast-gtk/bstpatternctrl.c:320
 msgid "Set the focus cell note"
 msgstr "Постави ноту у фокусираној ћелији"
 
-#: beast-gtk/bstpatternctrl.c:307 beast-gtk/bstpatternctrl.c:321
+#: beast-gtk/bstpatternctrl.c:310 beast-gtk/bstpatternctrl.c:324
 msgid "Sets the value of the focus digit"
 msgstr "Поставља вредност фокусиране цифре"
 
@@ -2886,6 +2877,37 @@ msgstr "Десни улаз звука"
 msgid "Right channel Input"
 msgstr "Улаз десног канала"
 
+#: bse/bsecore.idl:395
+#, fuzzy
+msgid "Latency [ms]"
+msgstr "Напад [ms]"
+
+#: bse/bsecore.idl:396
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+
+#: bse/bsecore.idl:399
+#, fuzzy
+msgid "Synth Mixing Frequency"
+msgstr "Средишња учестаност"
+
+#: bse/bsecore.idl:400
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr ""
+
+#: bse/bsecore.idl:402
+#, fuzzy
+msgid "Synth Control Frequency"
+msgstr "Средишња учестаност"
+
+#: bse/bsecore.idl:403
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+
 #: bse/bsesnooper.c:113
 msgid "Signal In"
 msgstr "Ул. сигнала"
@@ -3660,6 +3682,12 @@ msgstr "Леви излаз"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Десни излаз"
+
+#~ msgid "Device _Monitor"
+#~ msgstr "Пр_аћење уређаја"
+
+#~ msgid "Device Monitor"
+#~ msgstr "Праћење уређаја"
 
 #~ msgid "Drop Down Box (Option Menu)"
 #~ msgstr "Падајућа листа (мени опција)"

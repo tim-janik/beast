@@ -1,3 +1,26 @@
+Overview of Changes in BEAST/BSE 0.6.1:
+
+* Added suid wrapper which acquires nice level -20, then drops privileges
+* Improved latency/block-size handling of the synthesis engine
+* Fixed i18n bug which prevents demo song from loading in non-C locales
+* Added i18n support for enum values
+* Support for more note formats like Cis-1, C#-1, #C-1
+* SFI cleanups [Stefan Westerfeld]
+* Restructured sfidl and fixed lots of bugs [Stefan]
+* Switched core language bindnig to C++
+* Added support for per-part scripts
+* New harmonic transposition script which allows to convert between major,
+  minor, dorian, phrygian, lydian, mixolydian and locrian scales [Stefan]
+* Added experimetal pattern editor prototype
+* Added keybinding editor to preferences dialog
+* Added ComboBox widgets to the GUI
+* Updated Catalan translation [Xavier Conde Rueda]
+* Updated Czech translation [Miloslav Trmac]
+* Updated Serbian translation [Danilo Segan]
+* Updated Dutch translation [Kees van den Broek]
+* FreeBSD fixes [Rasmus Kaj]
+* Lots of GUI fixes
+
 Overview of Changes in BEAST/BSE 0.6.0:
 
 * Moved RC file from ~/.beastrc to ~/.beast/beastrc

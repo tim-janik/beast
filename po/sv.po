@@ -2,13 +2,13 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.17 2004/03/05 22:01:21 timj Exp $
+# $Id: sv.po,v 1.18 2004/03/06 14:31:17 timj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-05 19:54+0100\n"
+"POT-Creation-Date: 2004-03-06 13:59+0100\n"
 "PO-Revision-Date: 2003-11-02 01:49+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -16,208 +16,198 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:49
+#: beast-gtk/bstapp.c:50
 #, fuzzy
 msgid "_New"
 msgstr "/_Visa"
 
-#: beast-gtk/bstapp.c:49
+#: beast-gtk/bstapp.c:50
 #, fuzzy
 msgid "Create new project"
 msgstr "Öppna projekt"
 
-#: beast-gtk/bstapp.c:51
+#: beast-gtk/bstapp.c:52
 msgid "_Open..."
 msgstr "_Öppna..."
 
-#: beast-gtk/bstapp.c:51
+#: beast-gtk/bstapp.c:52
 #, fuzzy
 msgid "Open existing project"
 msgstr "Öppnar projektet \"%s\""
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:54
 #, fuzzy
 msgid "_Merge..."
 msgstr "/Arkiv/Samman_foga..."
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:54
 msgid "Merge an existing project into the current project"
 msgstr ""
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:56
 msgid "_Import MIDI..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:56
 msgid "Import a standard MIDI file into the current project"
 msgstr ""
 
-#: beast-gtk/bstapp.c:57
+#: beast-gtk/bstapp.c:58
 #, fuzzy
 msgid "_Close"
 msgstr "Stäng"
 
-#: beast-gtk/bstapp.c:61
+#: beast-gtk/bstapp.c:62
 #, fuzzy
 msgid "_Save"
 msgstr "Spara"
 
-#: beast-gtk/bstapp.c:63
+#: beast-gtk/bstapp.c:64
 #, fuzzy
 msgid "Save _As..."
 msgstr "Spara so_m..."
 
-#: beast-gtk/bstapp.c:67
+#: beast-gtk/bstapp.c:68
 msgid "_Quit"
 msgstr "A_vsluta"
 
-#: beast-gtk/bstapp.c:71
+#: beast-gtk/bstapp.c:72
 #, fuzzy
 msgid "_Preferences..."
 msgstr "Inställningar..."
 
-#: beast-gtk/bstapp.c:74
+#: beast-gtk/bstapp.c:75
 #, fuzzy
 msgid "Rebuild"
 msgstr "/Visa/Bygg om"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:78
 msgid "_About..."
 msgstr "_Om..."
 
-#: beast-gtk/bstapp.c:80
+#: beast-gtk/bstapp.c:81
 #, fuzzy
 msgid "_Undo"
 msgstr "/Redigera/_Ångra"
 
-#: beast-gtk/bstapp.c:82
+#: beast-gtk/bstapp.c:83
 #, fuzzy
 msgid "_Redo"
 msgstr "/Redigera/_Gör om"
 
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:87 beast-gtk/bstpartdialog.c:70
 #, fuzzy
 msgid "_Clear Undo"
 msgstr "/Redigera/_Töm ångra"
 
-#: beast-gtk/bstapp.c:90
+#: beast-gtk/bstapp.c:91
 #, fuzzy
 msgid "Procedure _Browser"
 msgstr "Procedurbläddrare"
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:93
 #, fuzzy
 msgid "Rack Editor"
 msgstr "Rackredigerare"
 
-#: beast-gtk/bstapp.c:94
-#, fuzzy
-msgid "Device _Monitor"
-msgstr "Enhetsövervakare"
-
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:95
 #, fuzzy
 msgid "New View"
 msgstr "/_Visa"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:99
 #, fuzzy
 msgid "_Play"
 msgstr "Uppspelning"
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:101
 #, fuzzy
 msgid "_Stop"
 msgstr "Stoppa"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:105
 #, fuzzy
 msgid "New Song"
 msgstr "Spara låt"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:107
 #, fuzzy
 msgid "New Custom Synthesizer"
 msgstr "/Projekt/Ny anpassad synthesizer"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:109
 #, fuzzy
 msgid "New MIDI Synthesizer"
 msgstr "/Projekt/Ny MIDI-synthesizer"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:111
 #, fuzzy
 msgid "Remove Song or Synthesizer"
 msgstr "/Projekt/Ta bort låt eller synthesizer"
 
-#: beast-gtk/bstapp.c:116
+#: beast-gtk/bstapp.c:115
 msgid "Load _Instrument"
 msgstr "Läs in _instrument"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:117
 #, fuzzy
 msgid "Load _Effect"
 msgstr "Läs in effekt"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:119
 #, fuzzy
 msgid "Save As Instrument"
 msgstr "Spara instrument"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:121
 #, fuzzy
 msgid "Save As Effect"
 msgstr "Spara effekt"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:125
 #, fuzzy
 msgid "_Release Notes..."
 msgstr "_Utgåvenoteringar"
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:126
 #, fuzzy
 msgid "Quick Start..."
 msgstr "/Hjälp/Snabbstart..."
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:127
 #, fuzzy
 msgid "_FAQ..."
 msgstr "/Hjälp/_Frågor och svar..."
 
-#: beast-gtk/bstapp.c:131
+#: beast-gtk/bstapp.c:130
 msgid "GSL Engine..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:530 beast-gtk/bstapp.c:537 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:543 beast-gtk/bstapp.c:550 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Öppnar projektet \"%s\""
 
-#: beast-gtk/bstapp.c:597
+#: beast-gtk/bstapp.c:610
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "Läser in vågen \"%s\""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:759
+#: beast-gtk/bstapp.c:772
 msgid "Rack editor"
 msgstr "Rackredigerare"
 
-#: beast-gtk/bstapp.c:773
+#: beast-gtk/bstapp.c:786
 msgid "Preferences"
 msgstr "Inställningar"
 
-#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:787
-msgid "Device Monitor"
-msgstr "Enhetsövervakare"
-
-#: beast-gtk/bstapp.c:806
+#: beast-gtk/bstapp.c:809
 msgid "Procedure Browser"
 msgstr "Procedurbläddrare"
 
-#: beast-gtk/bstapp.c:863
+#: beast-gtk/bstapp.c:866
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Utgåvenoteringar för BEAST-%s"
@@ -955,89 +945,89 @@ msgid "Controls the octave relative to which notes are entered"
 msgstr ""
 
 #. movement
-#: beast-gtk/bstpatternctrl.c:265
+#: beast-gtk/bstpatternctrl.c:268
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:266
+#: beast-gtk/bstpatternctrl.c:269
 msgid "Move focus cell upwards"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:267
+#: beast-gtk/bstpatternctrl.c:270
 msgid "Move focus cell to the left"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:268
+#: beast-gtk/bstpatternctrl.c:271
 msgid "Move focus cell to the right"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:269
+#: beast-gtk/bstpatternctrl.c:272
 msgid "Move focus cell downwards"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:270
+#: beast-gtk/bstpatternctrl.c:273
 msgid "Move focus cell upwards page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:271
+#: beast-gtk/bstpatternctrl.c:274
 msgid "Move focus cell to the left page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:272
+#: beast-gtk/bstpatternctrl.c:275
 msgid "Move focus cell to the right page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:273
+#: beast-gtk/bstpatternctrl.c:276
 msgid "Move focus cell downwards page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:274
+#: beast-gtk/bstpatternctrl.c:277
 msgid "Set the focus cell to the topmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:275
+#: beast-gtk/bstpatternctrl.c:278
 msgid "Set the focus cell to the leftmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:276
+#: beast-gtk/bstpatternctrl.c:279
 msgid "Set the focus cell to the rightmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:277
+#: beast-gtk/bstpatternctrl.c:280
 msgid "Set the focus cell to the bottommost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:280
+#: beast-gtk/bstpatternctrl.c:283
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:284
+#: beast-gtk/bstpatternctrl.c:287
 msgid "Set the base octave"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:287
+#: beast-gtk/bstpatternctrl.c:290
 msgid "Change the base octave by a given amount"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:291
+#: beast-gtk/bstpatternctrl.c:294
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:295
+#: beast-gtk/bstpatternctrl.c:298
 msgid "Set the focus cell octave"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:299 beast-gtk/bstpatternctrl.c:313
+#: beast-gtk/bstpatternctrl.c:302 beast-gtk/bstpatternctrl.c:316
 msgid "Remove any events in the focus cell"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:303 beast-gtk/bstpatternctrl.c:317
+#: beast-gtk/bstpatternctrl.c:306 beast-gtk/bstpatternctrl.c:320
 #, fuzzy
 msgid "Set the focus cell note"
 msgstr "Infoga helnoter"
 
-#: beast-gtk/bstpatternctrl.c:307 beast-gtk/bstpatternctrl.c:321
+#: beast-gtk/bstpatternctrl.c:310 beast-gtk/bstpatternctrl.c:324
 msgid "Sets the value of the focus digit"
 msgstr ""
 
@@ -3013,6 +3003,36 @@ msgstr ""
 msgid "Right channel Input"
 msgstr "Inmatningskanal att använda"
 
+#: bse/bsecore.idl:395
+msgid "Latency [ms]"
+msgstr ""
+
+#: bse/bsecore.idl:396
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+
+#: bse/bsecore.idl:399
+#, fuzzy
+msgid "Synth Mixing Frequency"
+msgstr "Centerfrekvens"
+
+#: bse/bsecore.idl:400
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr ""
+
+#: bse/bsecore.idl:402
+#, fuzzy
+msgid "Synth Control Frequency"
+msgstr "Centerfrekvens"
+
+#: bse/bsecore.idl:403
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+
 #: bse/bsesnooper.c:113
 msgid "Signal In"
 msgstr ""
@@ -3837,6 +3857,13 @@ msgstr "Vänster"
 #, fuzzy
 msgid "Right Output"
 msgstr "Höger"
+
+#, fuzzy
+#~ msgid "Device _Monitor"
+#~ msgstr "Enhetsövervakare"
+
+#~ msgid "Device Monitor"
+#~ msgstr "Enhetsövervakare"
 
 #~ msgid "Objects"
 #~ msgstr "Objekt"

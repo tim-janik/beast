@@ -679,6 +679,7 @@ beast_show_about_box (void)
     "Ben Collver",
     "Tim Janik",
     "Stefan Westerfeld",
+    "Rasmus Kaj",
     /* plugins */
     "David A. Bartold",
     //"Tim Janik",
