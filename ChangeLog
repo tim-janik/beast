@@ -1,3 +1,11 @@
+Fri Nov  7 23:31:40 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkstock.[hc]: renamed GxkStockAction to
+	GxkStockItem, to sync up with Gtk+ naming and make room
+	for Gxk*Action variants. renamed functions accordingly:
+	gxk_stock_item(), gxk_stock_register_item() and
+	gxk_stock_register_items().
+
 2003-11-03  Jordi Mallach  <jordi@sindominio.net>
 
 	* configure.in (ALL_LINGUAS): Added "ca" (Catalan).

@@ -42,7 +42,7 @@ GtkWidget*    gxk_stock_button		(const gchar	*stock_id,
 					 const gchar	*label);
 GtkWidget*    gxk_stock_button_child	(const gchar	*stock_id,
 					 const gchar	*label);
-const gchar*  gxk_stock_action		(const gchar	*stock_id);
+const gchar*  gxk_stock_item		(const gchar	*stock_id);
 GdkPixbuf*    gxk_stock_fallback_pixbuf	(const gchar	*stock_id);
 GtkWidget*    gxk_stock_icon_window	(const gchar	*stock_id);
 
@@ -56,13 +56,13 @@ typedef struct {
   const gchar  *stock_id;
   const gchar  *label;
   const gchar  *stock_fallback;
-} GxkStockAction;
+} GxkStockItem;
 void	    gxk_stock_register_icon	(const GxkStockIcon	*icon);
 void	    gxk_stock_register_icons	(guint			 n_icons,
 					 const GxkStockIcon	*icons);
-void	    gxk_stock_register_action	(const GxkStockAction	*action);
-void	    gxk_stock_register_actions	(guint			 n_actions,
-					 const GxkStockAction	*actions);
+void	    gxk_stock_register_item	(const GxkStockItem	*item);
+void	    gxk_stock_register_items	(guint			 n_items,
+					 const GxkStockItem	*items);
 
 
 /* --- internal --- */

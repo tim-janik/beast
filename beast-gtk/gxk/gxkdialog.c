@@ -678,7 +678,7 @@ gxk_dialog_action_multi (GxkDialog          *self,
 	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
       gtk_box_pack_start (GTK_BOX (hbox),
 			  g_object_new (GTK_TYPE_LABEL,
-					"label", gxk_stock_action (action),
+					"label", gxk_stock_item (action),
 					"use_underline", TRUE,
 					NULL),
 			  FALSE, TRUE, 0);

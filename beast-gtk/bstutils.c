@@ -83,14 +83,14 @@ _bst_init_utils (void)
 
   /* initialize stock actions */
   {
-    static const GxkStockAction stock_actions[] = {
+    static const GxkStockItem stock_items[] = {
       { BST_STOCK_CLONE,		"_Clone",	GTK_STOCK_COPY,			},
       { BST_STOCK_DEFAULT_REVERT,	"_Defaults",	GTK_STOCK_UNDO,			},
       { BST_STOCK_LOAD,			"_Load",	NULL,				},
       { BST_STOCK_OVERWRITE,		"_Overwrite",	GTK_STOCK_SAVE,			},
       { BST_STOCK_REVERT,		"_Revert",	GTK_STOCK_UNDO,			},
     };
-    gxk_stock_register_actions (G_N_ELEMENTS (stock_actions), stock_actions);
+    gxk_stock_register_items (G_N_ELEMENTS (stock_items), stock_items);
   }
 }
 

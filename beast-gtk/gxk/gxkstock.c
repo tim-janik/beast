@@ -156,7 +156,7 @@ gxk_stock_button_child (const gchar *stock_id,
     gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (hbox),
 		      g_object_new (GTK_TYPE_LABEL,
-				    "label", label ? label : gxk_stock_action (stock_id),
+				    "label", label ? label : gxk_stock_item (stock_id),
 				    "use_underline", TRUE,
 				    NULL),
 		      FALSE, TRUE, 0);
@@ -211,79 +211,79 @@ gxk_stock_register_icons (guint               n_icons,
 }
 
 /**
- * gxk_stock_register_action
- * @action: a validly filled out GxkStockAction
+ * gxk_stock_register_item
+ * @item: a validly filled out GxkStockItem
  *
- * Register a new stock action. The new stock action
- * @action->stock_id is registered with an action label
- * of @action->label and the stock icon @action->stock_fallback.
- * If @action->label is %NULL, @action->stock_fallback must
- * not be %NULL, and @action->stock_id becomes merely an
- * alias of @action->stock_fallback.
+ * Register a new stock item. The new stock item
+ * @item->stock_id is registered with an item label
+ * of @item->label and the stock icon @item->stock_fallback.
+ * If @item->label is %NULL, @item->stock_fallback must
+ * not be %NULL, and @item->stock_id becomes merely an
+ * alias of @item->stock_fallback.
  */
 void
-gxk_stock_register_action (const GxkStockAction *action)
+gxk_stock_register_item (const GxkStockItem *item)
 {
-  GtkStockItem item = { NULL, };
+  GtkStockItem tkitem = { NULL, };
 
-  g_return_if_fail (action != NULL);
-  g_return_if_fail (action->stock_id != NULL);
-  g_return_if_fail (action->label != NULL || action->stock_fallback != NULL);
+  g_return_if_fail (item != NULL);
+  g_return_if_fail (item->stock_id != NULL);
+  g_return_if_fail (item->label != NULL || item->stock_fallback != NULL);
 
-  item.stock_id = (gchar*) action->stock_id;
-  if (action->label)
-    item.label = (gchar*) action->label;
+  tkitem.stock_id = (gchar*) item->stock_id;
+  if (item->label)
+    tkitem.label = (gchar*) item->label;
   else
-    item.label = (gchar*) gxk_stock_action (action->stock_fallback);
-  item.modifier = 0;
-  item.keyval = 0;
-  item.translation_domain = NULL;
-  gtk_stock_add (&item, 1);
+    tkitem.label = (gchar*) gxk_stock_item (item->stock_fallback);
+  tkitem.modifier = 0;
+  tkitem.keyval = 0;
+  tkitem.translation_domain = NULL;
+  gtk_stock_add (&tkitem, 1);
 
-  if (action->stock_fallback)
+  if (item->stock_fallback)
     {
-      GtkIconSet *iset = gtk_icon_factory_lookup_default (action->stock_fallback);
+      GtkIconSet *iset = gtk_icon_factory_lookup_default (item->stock_fallback);
       if (iset)
-	gtk_icon_factory_add (stock_icon_factory, action->stock_id, iset);
+	gtk_icon_factory_add (stock_icon_factory, item->stock_id, iset);
     }
 }
 
 /**
- * gxk_stock_register_actions
- * @n_actions: number of actions to register
- * @actions:   a validly filled out array of GxkStockAction
+ * gxk_stock_register_items
+ * @n_items: number of items to register
+ * @items:   a validly filled out array of GxkStockItem
  *
- * For all @n_actions contained in @actions, call gxk_stock_register_action().
+ * For all @n_items contained in @items, call gxk_stock_register_item().
  */
 void
-gxk_stock_register_actions (guint                 n_actions,
-			    const GxkStockAction *actions)
+gxk_stock_register_items (guint               n_items,
+                          const GxkStockItem *items)
 {
-  if (n_actions)
+  if (n_items)
     {
       guint i;
 
-      g_return_if_fail (actions != NULL);
+      g_return_if_fail (items != NULL);
 
-      for (i = 0; i < n_actions; i++)
-	gxk_stock_register_action (actions + i);
+      for (i = 0; i < n_items; i++)
+	gxk_stock_register_item (items + i);
     }
 }
 
 const gchar*
-gxk_stock_action (const gchar *stock_id)
+gxk_stock_item (const gchar *stock_id)
 {
-  const gchar *action = NULL;
-  GtkStockItem item;
+  const gchar *item = NULL;
+  GtkStockItem tkitem;
 
   g_return_val_if_fail (stock_id != NULL, NULL);
 
-  if (gtk_stock_lookup (stock_id, &item))
-    action = item.label;
+  if (gtk_stock_lookup (stock_id, &tkitem))
+    item = tkitem.label;
   else
-    action = stock_id;
+    item = stock_id;
 
-  return action;
+  return item;
 }
 
 /**
