@@ -3,7 +3,7 @@
 @settitle BEAST Architecture
 @footnotestyle end
 @c %**end of header
-@c revision-date: $Id: architecture.texi,v 1.4 2005/01/02 12:29:35 stw Exp $
+@c revision-date: $Id: architecture.texi,v 1.5 2005/01/06 18:08:54 timj Exp $
 
 @include texiutils.texi
 
@@ -85,33 +85,44 @@ Sample Data is organized at three levels:
 @subsection Wave Chunk specific XInfos
 
 @itemize
+@item @strong{osc-freq} -
+	Note frequency (oscillator frequency) the chunk should be played back at.
+	In other words, the note that was played when the chunk was recorded.
 @item @strong{loop-type} -
-      can be set to indicate that the sample should be looped; possible values are
+	The loop type needs to be set to indicate that the sample should be looped. Possible values are:
 @enumerate
   @item "none" - no loop
-  @item "jump" - plays from loop start to loop end, and jumps back to loop start
+  @item "jump" - plays from loop start to loop end, then jumps back to loop start
   @item "ping-pong" - plays from loop start to loop end and then backwards from loop end to loop start
 @end enumerate
 @item @strong{loop-start} -
-      the offset in samples for the start of the loop
+	The offset in samples for the start of the loop.
 @item @strong{loop-end} -
-      the offset in samples for the end of the loop
+	The offset in samples for the end of the loop.
 @item @strong{loop-count} -
-      how often the loop should be repeated
+	A maximum limit for how often the loop should be repeated.
 @item @strong{gus-patch-envelope} -
-      contains the envelope points from the GUS Patch envelope
+	Contains the envelope points for a GUS Patch envelope.
 @end itemize
 
 @subsection Wave specific XInfos
 
 @itemize
+@item @strong{authors} - A list of the authors who participated in creating the wave file.
+@item @strong{license} - The license specifiing redistribution and other legal terms for the wave file.
+@item @strong{blurb} - A descriptive text for the wave file.
 @item @strong{play-type} -
-      can be "mono-wave" for mono wave files or "gus-mono-wave" for GUS Patches (which need a special envelope)
+	Indicates the set of required play back facilities for a wave.
+	Supported values are:
+@enumerate
+  @item mono-wave - for mono wave files,
+  @item gus-mono-wave - for GUS Patches (which need a special envelope).
+@end enumerate
 @end itemize
 
 @subsection Wave Library specific XInfos
 
 There are currently no XInfos defined for Wave Libraries, as Wave Libraries are not yet
-supported (but planned).
+supported.
 
 @bye
