@@ -196,22 +196,20 @@ bst_user_message_popup (BseUserMsgType msg_type,
 }
 
 void
-bst_user_message_log_handler (const char             *log_domain,
-                              unsigned char           level,
-                              const SfiLogContext    *lcontext,
-                              const char             *message)
+bst_user_message_log_handler (SfiLogMessage *msg)
 {
   BseUserMsgType msg_type;
-  switch (level)
+  switch (msg->level)
     {
-    case SFI_LOG_ERROR: msg_type = BSE_USER_MSG_ERROR;   break;
-    case SFI_LOG_WARN:  msg_type = BSE_USER_MSG_WARNING; break;
-    case SFI_LOG_INFO:  msg_type = BSE_USER_MSG_INFO;    break;
-    case SFI_LOG_DIAG:  msg_type = BSE_USER_MSG_DIAG;    break;
-    case SFI_LOG_DEBUG: msg_type = BSE_USER_MSG_DEBUG;   break;
-    default:            msg_type = BSE_USER_MSG_DEBUG;   break;
+    case SFI_LOG_ERROR:   msg_type = BSE_USER_MSG_ERROR;   break;
+    case SFI_LOG_WARNING: msg_type = BSE_USER_MSG_WARNING; break;
+    case SFI_LOG_INFO:    msg_type = BSE_USER_MSG_INFO;    break;
+    case SFI_LOG_DIAG:    msg_type = BSE_USER_MSG_DIAG;    break;
+    case SFI_LOG_DEBUG:   msg_type = BSE_USER_MSG_DEBUG;   break;
+    default:              msg_type = BSE_USER_MSG_DEBUG;   break;
     }
-  bst_user_message_popup (msg_type, message);
+  g_printerr ("BeastLogHandler: thread=%s message=%s\n", sfi_thread_get_name (NULL), msg->message); // FIXME
+  bst_user_message_popup (msg_type, msg->message);
 }
 
 static void

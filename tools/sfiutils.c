@@ -26,9 +26,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define LOG_INTERN      SfiLogger ("internals", NULL, NULL)
-
-
 /* --- option parser (YES!) --- */
 static SfiRing*
 parse_arguments (gint              *argc_p,
@@ -436,7 +433,7 @@ sfi_util_file_entry_get_field (SfiUtilFileEntry *entry,
     return format + 1;
   fnum = strtol (format, &ep, 10);
   if (fnum < 1)
-    sfi_error (LOG_INTERN, "Invalid chunk format given (index:%ld < 1): \"%s\"", fnum, format);
+    sfi_error ("Invalid chunk format given (index:%ld < 1): \"%s\"", fnum, format);
   field = fnum <= entry->n_fields ? entry->fields[fnum - 1] : NULL;
   if (field && ep && *ep)
     *format_p = ep;
@@ -454,7 +451,7 @@ sfi_util_file_entry_get_string (SfiUtilFileEntry *entry,
   if (!field)
     return g_strdup (dflt);
   if (format)
-    sfi_error (LOG_INTERN, "Invalid chunk format given: ...%s", format);
+    sfi_error ("Invalid chunk format given: ...%s", format);
   return g_strdup (field);
 }
 
@@ -484,7 +481,7 @@ sfi_util_file_entry_get_num (SfiUtilFileEntry *entry,
           d = str2num  (base ? base : field, l);
           break;
         default:
-          sfi_error (LOG_INTERN, "Invalid chunk format given: modifier `%c'", *format);
+          sfi_error ("Invalid chunk format given: modifier `%c'", *format);
         }
       if (ep && *ep)
         {
@@ -492,7 +489,7 @@ sfi_util_file_entry_get_num (SfiUtilFileEntry *entry,
             d = gsl_temp_freq (gsl_get_config ()->kammer_freq,
                                d - gsl_get_config ()->midi_kammer_note);
           else
-            sfi_error (LOG_INTERN, "Invalid chunk format given: postmodifier `%c'", *ep);
+            sfi_error ("Invalid chunk format given: postmodifier `%c'", *ep);
         }
     }
   else
@@ -540,7 +537,7 @@ sfi_arguments_extract_num (const gchar *string,
             ep = (char*) format;
           break;
         default:
-          sfi_error (LOG_INTERN, "Invalid chunk format given: modifier `%c'", *format);
+          sfi_error ("Invalid chunk format given: modifier `%c'", *format);
         }
       if (ep && *ep)
         {
@@ -548,7 +545,7 @@ sfi_arguments_extract_num (const gchar *string,
             d = gsl_temp_freq (gsl_get_config ()->kammer_freq,
                                d - gsl_get_config ()->midi_kammer_note);
           else
-            sfi_error (LOG_INTERN, "Invalid chunk format given: postmodifier `%c'", *ep);
+            sfi_error ("Invalid chunk format given: postmodifier `%c'", *ep);
         }
     }
   else

@@ -334,7 +334,7 @@ main (int   argc,
   /* release splash grab, install message dialog handler */
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
-  sfi_log_set_handler (bst_user_message_log_handler);
+  sfi_log_set_handler ((SfiLogHandler) bst_user_message_log_handler, NULL);
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -343,7 +343,7 @@ main (int   argc,
       g_main_iteration (TRUE);
       GDK_THREADS_ENTER ();
     }
-  sfi_log_set_handler (NULL);
+  sfi_log_set_handler (NULL, NULL);
   
   /* stop everything playing
    */
