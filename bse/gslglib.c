@@ -77,7 +77,87 @@ g_stpcpy (gchar       *dest,
 #endif
 }
 
+gchar *
+g_strescape (const gchar *source,
+	     const gchar *exceptions)
+{
+  const guchar *p;
+  gchar *dest;
+  gchar *q;
+  guchar excmap[256];
+  
+  g_return_val_if_fail (source != NULL, NULL);
 
+  p = (guchar *) source;
+  /* Each source byte needs maximally four destination chars (\777) */
+  q = dest = g_malloc (strlen (source) * 4 + 1);
+
+  memset (excmap, 0, 256);
+  if (exceptions)
+    {
+      guchar *e = (guchar *) exceptions;
+
+      while (*e)
+	{
+	  excmap[*e] = 1;
+	  e++;
+	}
+    }
+
+  while (*p)
+    {
+      if (excmap[*p])
+	*q++ = *p;
+      else
+	{
+	  switch (*p)
+	    {
+	    case '\b':
+	      *q++ = '\\';
+	      *q++ = 'b';
+	      break;
+	    case '\f':
+	      *q++ = '\\';
+	      *q++ = 'f';
+	      break;
+	    case '\n':
+	      *q++ = '\\';
+	      *q++ = 'n';
+	      break;
+	    case '\r':
+	      *q++ = '\\';
+	      *q++ = 'r';
+	      break;
+	    case '\t':
+	      *q++ = '\\';
+	      *q++ = 't';
+	      break;
+	    case '\\':
+	      *q++ = '\\';
+	      *q++ = '\\';
+	      break;
+	    case '"':
+	      *q++ = '\\';
+	      *q++ = '"';
+	      break;
+	    default:
+	      if ((*p < ' ') || (*p >= 0177))
+		{
+		  *q++ = '\\';
+		  *q++ = '0' + (((*p) >> 6) & 07);
+		  *q++ = '0' + (((*p) >> 3) & 07);
+		  *q++ = '0' + ((*p) & 07);
+		}
+	      else
+		*q++ = *p;
+	      break;
+	    }
+	}
+      p++;
+    }
+  *q = 0;
+  return dest;
+}
 
 
 

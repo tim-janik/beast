@@ -175,6 +175,14 @@ void	gsl_iir_filter_eval	(GslIIRFilter	*f,
 				 guint		 n_values);
 
 
+/* --- filter scanning -- */
+gdouble	gsl_filter_sine_scan	(guint		 order,
+				 const gdouble	*a,
+				 const gdouble	*b,
+				 gdouble	 freq,
+				 guint		 n_values);
+
+
 /* --- implementations --- */
 static inline GslComplex
 gsl_trans_s2z (GslComplex s)

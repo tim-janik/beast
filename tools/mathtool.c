@@ -63,9 +63,15 @@ main (int   argc,
 {
   gchar *arg;
   
+  /* iir filter parameters */
+  enum { FILTER_GNUPLOT, FILTER_SCAN } filter_mode = FILTER_GNUPLOT;
+  const gchar *filter_label = 0;
+  gdouble *a, *b;
+  guint order;
+  
   shift_argc = argc;
   shift_argv = argv;
-
+  
   g_thread_init (NULL);
   gsl_init (NULL);
   
@@ -74,15 +80,17 @@ main (int   argc,
     usage ();
   
  restart:
+  a = b = 0;
+  
   if (strcmp (arg, "wave-scan") == 0)
     {
       gchar *file = pshift ();
-
+      
       while (file)
 	{
 	  GslWaveFileInfo *fi;
 	  GslErrorType error;
-
+	  
 	  fi = gsl_wave_file_info_load (file, &error);
 	  if (fi)
 	    {
@@ -105,11 +113,12 @@ main (int   argc,
       gchar *file = pshift ();
       
       g_print ("file test for \"%s\":\n", file);
-      g_print ("  is_regular: %u\n", g_file_test (file, G_FILE_TEST_IS_REGULAR));
-      g_print ("  is_symlink: %u\n", g_file_test (file, G_FILE_TEST_IS_SYMLINK));
-      g_print ("  is_dir    : %u\n", g_file_test (file, G_FILE_TEST_IS_DIR));
-      g_print ("  is_exec   : %u\n", g_file_test (file, G_FILE_TEST_IS_EXECUTABLE));
-      g_print ("  exists    : %u\n", g_file_test (file, G_FILE_TEST_EXISTS));
+      g_print ("  is readable   : %s\n", gsl_strerror (gsl_check_file (file, "r")));
+      g_print ("  is writable   : %s\n", gsl_strerror (gsl_check_file (file, "w")));
+      g_print ("  is executable : %s\n", gsl_strerror (gsl_check_file (file, "x")));
+      g_print ("  is file       : %s\n", gsl_strerror (gsl_check_file (file, "f")));
+      g_print ("  is directory  : %s\n", gsl_strerror (gsl_check_file (file, "d")));
+      g_print ("  is link       : %s\n", gsl_strerror (gsl_check_file (file, "l")));
     }
   else if (strcmp (arg, "rf") == 0)
     {
@@ -277,45 +286,37 @@ main (int   argc,
     }
   else if (strcmp (arg, "blp") == 0)
     {
-      guint order;
       double f, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      {
-        double a[order + 1], b[order + 1];
-        gsl_filter_butter_lp (order, f, e, a, b);
-        g_print ("# Lowpass Butterworth filter order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
-                 order, f, e,
-                 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-        g_print ("BL%u(z)=%s/%s\n", order,
-                 gsl_poly_str (order, a, "z"),
-                 gsl_poly_str (order, b, "z"));
-      }
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      gsl_filter_butter_lp (order, f, e, a, b);
+      g_print ("# Lowpass Butterworth filter order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
+	       order, f, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "BL";
     }
   else if (strcmp (arg, "bhp") == 0)
     {
-      guint order;
       double f, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      {
-        double a[order + 1], b[order + 1];
-        gsl_filter_butter_hp (order, f, e, a, b);
-        g_print ("# Highpass Butterworth filter order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
-                 order, f, e,
-                 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-        g_print ("BH%u(z)=%s/%s\n", order,
-                 gsl_poly_str (order, a, "z"),
-                 gsl_poly_str (order, b, "z"));
-      }
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      gsl_filter_butter_hp (order, f, e, a, b);
+      g_print ("# Highpass Butterworth filter order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
+	       order, f, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "BH";
     }
   else if (strcmp (arg, "bbp") == 0)
     {
-      guint order;
       double f1, f2, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f1 = atof (pshift ());
@@ -323,20 +324,17 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= GSL_PI / 2.;
       f2 *= GSL_PI / 2.;
-      {
-        double a[order + 1], b[order + 1];
-        gsl_filter_butter_bp (order, f1, f2, e, a, b);
-        g_print ("# Bandpass Butterworth filter order=%u freq1=%f freq2=%f epsilon(s^2)=%f norm0=%f:\n",
-                 order, f1, f2, e,
-                 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-        g_print ("BP%u(z)=%s/%s\n", order,
-                 gsl_poly_str (order, a, "z"),
-                 gsl_poly_str (order, b, "z"));
-      }
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      gsl_filter_butter_bp (order, f1, f2, e, a, b);
+      g_print ("# Bandpass Butterworth filter order=%u freq1=%f freq2=%f epsilon(s^2)=%f norm0=%f:\n",
+	       order, f1, f2, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "BP";
     }
   else if (strcmp (arg, "bbs") == 0)
     {
-      guint order;
       double f1, f2, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f1 = atof (pshift ());
@@ -344,58 +342,50 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= GSL_PI / 2.;
       f2 *= GSL_PI / 2.;
-      {
-        double a[order + 1], b[order + 1];
-        gsl_filter_butter_bs (order, f1, f2, e, a, b);
-        g_print ("# Bandstop Butterworth filter order=%u freq1=%f freq2=%f epsilon(s^2)=%f norm0=%f:\n",
-                 order, f1, f2, e,
-                 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-        g_print ("BS%u(z)=%s/%s\n", order,
-                 gsl_poly_str (order, a, "z"),
-                 gsl_poly_str (order, b, "z"));
-      }
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      gsl_filter_butter_bs (order, f1, f2, e, a, b);
+      g_print ("# Bandstop Butterworth filter order=%u freq1=%f freq2=%f epsilon(s^2)=%f norm0=%f:\n",
+	       order, f1, f2, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "BS";
     }
   else if (strcmp (arg, "t1l") == 0)
     {
-      guint order;
       double f, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      {
-	double a[order + 1], b[order + 1];
-	gsl_filter_tscheb1_lp (order, f, e, a, b);
-	g_print ("# Lowpass Tschebyscheff Type1 order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
-		 order, f, e,
-		 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-	g_print ("T1L%u(z)=%s/%s\n", order,
-		 gsl_poly_str (order, a, "z"),
-		 gsl_poly_str (order, b, "z"));
-      }
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      gsl_filter_tscheb1_lp (order, f, e, a, b);
+      g_print ("# Lowpass Tschebyscheff Type1 order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
+	       order, f, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "T1L";
     }
   else if (strcmp (arg, "t1h") == 0)
     {
-      guint order;
       double f, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      {
-	double a[order + 1], b[order + 1];
-	gsl_filter_tscheb1_hp (order, f, e, a, b);
-	g_print ("# Highpass Tschebyscheff Type1 order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
-		 order, f, e,
-		 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-	g_print ("T1H%u(z)=%s/%s\n", order,
-		 gsl_poly_str (order, a, "z"),
-		 gsl_poly_str (order, b, "z"));
-      }
+      
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      gsl_filter_tscheb1_hp (order, f, e, a, b);
+      g_print ("# Highpass Tschebyscheff Type1 order=%u freq=%f epsilon(s^2)=%f norm0=%f:\n",
+	       order, f, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "T1H";
     }
   else if (strcmp (arg, "t1s") == 0)
     {
-      guint order;
       double fc, fr, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       fc = atof (pshift ());
@@ -403,20 +393,18 @@ main (int   argc,
       e = atof (pshift ());
       fc *= GSL_PI / 2.;
       fr *= GSL_PI / 2.;
-      {
-	double a[order + 1], b[order + 1];
-	gsl_filter_tscheb1_bs (order, fc, fr, e, a, b);
-	g_print ("# Bandstop Tschebyscheff Type1 order=%u freq_c=%f freq_r=%f epsilon(s^2)=%f norm=%f:\n",
-		 order, fc, fr, e,
-		 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-	g_print ("T1S%u(z)=%s/%s\n", order,
-		 gsl_poly_str (order, a, "z"),
-		 gsl_poly_str (order, b, "z"));
-      }
+      
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      gsl_filter_tscheb1_bs (order, fc, fr, e, a, b);
+      g_print ("# Bandstop Tschebyscheff Type1 order=%u freq_c=%f freq_r=%f epsilon(s^2)=%f norm=%f:\n",
+	       order, fc, fr, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "T1S";
     }
   else if (strcmp (arg, "t1p") == 0)
     {
-      guint order;
       double fc, fr, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       fc = atof (pshift ());
@@ -424,60 +412,54 @@ main (int   argc,
       e = atof (pshift ());
       fc *= GSL_PI / 2.;
       fr *= GSL_PI / 2.;
-      {
-	double a[order + 1], b[order + 1];
-	gsl_filter_tscheb1_bp (order, fc, fr, e, a, b);
-	g_print ("# Bandpass Tschebyscheff Type1 order=%u freq_c=%f freq_r=%f epsilon(s^2)=%f norm=%f:\n",
-		 order, fc, fr, e,
-		 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-	g_print ("T1P%u(z)=%s/%s\n", order,
-		 gsl_poly_str (order, a, "z"),
-		 gsl_poly_str (order, b, "z"));
-      }
+      
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      gsl_filter_tscheb1_bp (order, fc, fr, e, a, b);
+      g_print ("# Bandpass Tschebyscheff Type1 order=%u freq_c=%f freq_r=%f epsilon(s^2)=%f norm=%f:\n",
+	       order, fc, fr, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "T1P";
     }
   else if (strcmp (arg, "t2l") == 0)
     {
-      guint order;
       double f, st, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f = atof (pshift ());
       st = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      {
-	double a[order + 1], b[order + 1];
-	gsl_filter_tscheb2_lp (order, f, st, e, a, b);
-	g_print ("# Lowpass Tschebyscheff Type2 order=%u freq=%f steepness=%f (%f) epsilon(s^2)=%f norm=%f:\n",
-                 order, f, st, f * (1.+st), e,
-		 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-	g_print ("T2L%u(z)=%s/%s\n", order,
-		 gsl_poly_str (order, a, "z"),
-		 gsl_poly_str (order, b, "z"));
-      }
+      
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      gsl_filter_tscheb2_lp (order, f, st, e, a, b);
+      g_print ("# Lowpass Tschebyscheff Type2 order=%u freq=%f steepness=%f (%f) epsilon(s^2)=%f norm=%f:\n",
+	       order, f, st, f * (1.+st), e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      filter_label = "T2L";
     }
   else if (strcmp (arg, "t2h") == 0)
     {
-      guint order;
       double f, st, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f = atof (pshift ());
       st = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      {
-	double a[order + 1], b[order + 1];
-	g_print ("# Highpass Tschebyscheff Type2 order=%u freq=%f steepness=%f (%f, %f) epsilon(s^2)=%f norm=%f:\n",
-		 order, f, st, GSL_PI - f, (GSL_PI - f) * (1.+st), e,
-		 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-	gsl_filter_tscheb2_hp (order, f, st, e, a, b);
-	g_print ("T2H%u(z)=%s/%s\n", order,
-		 gsl_poly_str (order, a, "z"),
-		 gsl_poly_str (order, b, "z"));
-      }
+      
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      g_print ("# Highpass Tschebyscheff Type2 order=%u freq=%f steepness=%f (%f, %f) epsilon(s^2)=%f norm=%f:\n",
+	       order, f, st, GSL_PI - f, (GSL_PI - f) * (1.+st), e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      gsl_filter_tscheb2_hp (order, f, st, e, a, b);
+      filter_label = "T2H";
     }
   else if (strcmp (arg, "t2p") == 0)
     {
-      guint order;
       double f1, f2, st, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f1 = atof (pshift ());
@@ -486,20 +468,18 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= GSL_PI / 2.;
       f2 *= GSL_PI / 2.;
-      {
-	double a[order + 1], b[order + 1];
-	g_print ("# Bandpass Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
-		 order, f1, f2, st, e,
-		 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-	gsl_filter_tscheb2_bp (order, f1, f2, st, e, a, b);
-	g_print ("T2P%u(z)=%s/%s\n", order,
-		 gsl_poly_str (order, a, "z"),
-		 gsl_poly_str (order, b, "z"));
-      }
+      
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      g_print ("# Bandpass Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
+	       order, f1, f2, st, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      gsl_filter_tscheb2_bp (order, f1, f2, st, e, a, b);
+      filter_label = "T2P";
     }
   else if (strcmp (arg, "t2s") == 0)
     {
-      guint order;
       double f1, f2, st, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f1 = atof (pshift ());
@@ -508,16 +488,19 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= GSL_PI / 2.;
       f2 *= GSL_PI / 2.;
-      {
-	double a[order + 1], b[order + 1];
-	g_print ("# Bandstop Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
-		 order, f1, f2, st, e,
-		 gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
-	gsl_filter_tscheb2_bs (order, f1, f2, st, e, a, b);
-	g_print ("T2S%u(z)=%s/%s\n", order,
-		 gsl_poly_str (order, a, "z"),
-		 gsl_poly_str (order, b, "z"));
-      }
+      
+      a = g_new (gdouble, order + 1);
+      b = g_new (gdouble, order + 1);
+      
+      g_print ("# Bandstop Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
+	       order, f1, f2, st, e,
+	       gsl_poly_eval (order, a, 1) / gsl_poly_eval (order, b, 1));
+      gsl_filter_tscheb2_bs (order, f1, f2, st, e, a, b);
+      filter_label = "T2S";
+    }
+  else if (strcmp (arg, "scan") == 0)
+    {
+      filter_mode = FILTER_SCAN;
     }
   else if (strcmp (arg, "fir") == 0)
     {
@@ -590,6 +573,31 @@ main (int   argc,
   else
     usage ();
   
+  if (a && b)
+    {
+      gdouble freq;
+      
+      if (filter_mode == FILTER_SCAN)
+	{
+	  freq = 0.001;
+	  while (freq < 3.14)
+	    {
+	      g_print ("%f %.20f\n", freq, gsl_filter_sine_scan (order, a, b, freq, MAX((int)(1000.0/freq),10000)));
+	      freq = MIN (freq * 1.1, freq + 0.01);
+	    }
+	}
+      else if (filter_mode == FILTER_GNUPLOT)
+	{
+	  g_print ("%s%u(z)=%s/%s\n", filter_label, order,
+		   gsl_poly_str (order, a, "z"),
+		   gsl_poly_str (order, b, "z"));
+	}
+      else
+	g_error ("unknown filter_mode");
+      g_free (a);
+      g_free (b);
+    }
+  
   arg = shift ();
   if (arg)
     goto restart;
@@ -631,6 +639,11 @@ usage (void)
   g_print ("  t2l <order> <freqc> <steepn> <epsilon>    type2 tschebyscheff lowpass filter\n");
   g_print ("  t2h <order> <freqc> <steepn> <epsilon>    type2 tschebyscheff highpass filter\n");
   g_print ("  fir <order> <freq1> <value1> ...          fir approximation\n");
+  g_print ("  scan blp <order> <freq> <epsilon>         scan butterworth lowpass filter\n");
   g_print ("  poly | polyr | polyp                      polynom test (+roots or +poles)\n");
   exit (1);
 }
+
+
+
+/* vim:set ts=8 sts=2 sw=2: */

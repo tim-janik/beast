@@ -1,3 +1,16 @@
+Mon Feb 11 22:31:37 2002  Tim Janik  <timj@gtk.org>
+
+	* gsltests.c (main): applied changes from stefan to support filter
+	function scans.
+	changed file test to use gsl function.
+
+	* gslloader-wav.c: remove junk code.
+
+	* gslglib.[hc]: more compat stuff from stefan.
+
+	* gslfilter.[hc] (gsl_filter_sine_scan): added filter scanning
+	function from stefan.
+
 Mon Feb 11 18:20:57 2002  Tim Janik  <timj@gtk.org>
 
 	* bseitem.proc: add common-ancestor() procedure.

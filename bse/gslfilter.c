@@ -1068,6 +1068,56 @@ gsl_iir_filter_eval (GslIIRFilter *f,
 }
 
 
+/* --- filter scanning -- */
+#define SINE_SCAN_SIZE 1024
+
+gdouble
+gsl_filter_sine_scan (guint order,
+                      const gdouble *a,
+		      const gdouble *b,
+		      gdouble freq,
+		      guint n_values)
+{
+  gfloat x[SINE_SCAN_SIZE], y[SINE_SCAN_SIZE];
+  gdouble pos = 0.0;
+  gdouble result = 0.0;
+  GslIIRFilter filter;
+  gdouble *filter_state;
+  guint scan_start = n_values / 2;
+  
+  g_return_val_if_fail (order > 0, 0.0);
+  g_return_val_if_fail (a != NULL, 0.0);
+  g_return_val_if_fail (b != NULL, 0.0);
+  g_return_val_if_fail (freq > 0 && freq < GSL_PI, 0.0);
+  g_return_val_if_fail (n_values > 0, 0.0);
+  
+  filter_state = g_newa (double, (order + 1) * 4);
+  gsl_iir_filter_setup (&filter, order, a, b, filter_state);
+  
+  while (n_values)
+    {
+      guint todo = MIN (n_values, SINE_SCAN_SIZE);
+      guint i;
+      
+      for (i = 0; i < todo; i++)
+	{
+	  x[i] = sin (pos);
+	  pos += freq;
+	}
+      
+      gsl_iir_filter_eval (&filter, x, y, SINE_SCAN_SIZE);
+      
+      for (i = 0; i < todo; i++)
+        if (n_values - i < scan_start)
+	  result = MAX (y[i], result);
+      
+      n_values -= todo;
+    }
+  return result;
+}
+
+
+
 
 
 /* vim:set ts=8 sts=2 sw=2: */

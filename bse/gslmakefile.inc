@@ -1,15 +1,15 @@
 # GSL targets
-GSL_H_SOURCES =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h gslwavechunk.h \
+GSL_H_SRC =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h gslwavechunk.h \
 		gslmath.h gslfilter.h gsldatautils.h gsldatahandle-vorbis.h \
 		gslconvert.h gslfft.h gslieee754.h gslsignal.h gslmagic.h \
 		gslengine.h gslwaveosc.h
-GSL_PRIVATE_H_SOURCES = gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h gslloader.h
-GSL_C_SOURCES = gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorbis.c \
+GSL_PRIVATE_H_SRC = gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h gslloader.h
+GSL_C_SRC =	gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorbis.c \
 		gslmath.c gslfilter.c gslcommon.c gsldatautils.c gslmagic.c \
 		gslloader-wav.c gslloader-gslwave.c gslloader-oggvorbis.c \
 		gslconvert.c gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
 		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c
-EXTRA_DIST += gslwaveosc-aux.c
+EXTRA_DIST +=	gslwaveosc-aux.c
 GSL_NOINST_PROGS = gslwchunk gsltests gslglibhashtest gslffttest
 gslwchunk_SOURCES = gslwchunk.c
 gslwchunk_LDADD = $(GSL_progs_ldadd)

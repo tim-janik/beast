@@ -348,7 +348,7 @@ master_handle_flow_jobs (OpNode *node,
 	    fjob->access.access_func (&node->module, fjob->access.data);
 	    break;
 	  default:
-	    g_assert_not_reached (); // FIXME
+	    g_assert_not_reached (); /* FIXME */
 	  }
 	fjob = _gsl_node_pop_flow_job (node, max_tick);
       }
@@ -392,7 +392,7 @@ master_process_locked_node (OpNode *node,
       node->module.klass->process (&node->module, new_counter - node->counter);
       for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
 	{
-	  // FIXME: this takes the worst possible performance hit to support virtualization
+	  /* FIXME: this takes the worst possible performance hit to support virtualization */
 	  if (node->module.ostreams[i].values != node->outputs[i].buffer + diff)
 	    memcpy (node->outputs[i].buffer + diff, node->module.ostreams[i].values,
 		    (new_counter - node->counter) * sizeof (gfloat));

@@ -102,12 +102,12 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsewave.h \
 	bsewaverepo.h \
 	glib-extra.h \
-	$(GSL_H_SOURCES) \
+	$(GSL_H_SRC) \
 	$(TOYPROF_H_SOURCES) \
 @STRIP_END@
 # BSE header files that don't get installed
 bse_private_h_sources = @STRIP_BEGIN@ \
-	$(GSL_PRIVATE_H_SOURCES) \
+	$(GSL_PRIVATE_H_SRC) \
 @STRIP_END@
 # BSE C sources to build the library from
 bse_c_sources = @STRIP_BEGIN@ \
@@ -170,7 +170,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsewave.c \
 	bsewaverepo.c \
 	glib-extra.c \
-	$(GSL_C_SOURCES) \
+	$(GSL_C_SRC) \
 	$(TOYPROF_C_SOURCES) \
 @STRIP_END@
 # procedure sources
@@ -373,9 +373,9 @@ all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
 # --- GSL targets ---
 GSL_progs_ldadd = $(progs_LDADD)
 include gslmakefile.inc
-# GSL_H_SOURCES = gslcommon.h ...
-# GSL_PRIVATE_H_SOURCES = gsloputil.h ...
-# GSL_C_SOURCES = gslcommon.c ...
+# GSL_H_SRC = gslcommon.h ...
+# GSL_PRIVATE_H_SRC = gsloputil.h ...
+# GSL_C_SRC = gslcommon.c ...
 # GSL_NOINST_PROGS = gsltests ...
 # gsltests_SOURCES = gsltests.c
 # gsltests_LDADD = $(GSL_progs_ldadd)

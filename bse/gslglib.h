@@ -29,6 +29,15 @@
 #include <stddef.h>
 #include <stdarg.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+/* for -ansi -pedantic */
+#ifdef __GNUC__
+#define asm __asm__
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -147,6 +156,25 @@ typedef struct _GString GString;
     (((guint32) (val) & (guint32) 0x0000ff00U) <<  8) | \
     (((guint32) (val) & (guint32) 0x00ff0000U) >>  8) | \
     (((guint32) (val) & (guint32) 0xff000000U) >> 24)))
+
+#ifdef WORDS_BIGENDIAN
+#define GUINT16_TO_LE(val) GUINT16_SWAP_LE_BE(val)
+#define GUINT32_TO_LE(val) GUINT32_SWAP_LE_BE(val)
+#define GUINT16_TO_BE(val) ((guint16) (val))
+#define GUINT32_TO_BE(val) ((guint32) (val))
+#else /* LITTLEENDIAN */
+#define GUINT16_TO_LE(val) ((guint16) (val))
+#define GUINT32_TO_LE(val) ((guint32) (val))
+#define GUINT16_TO_BE(val) GUINT16_SWAP_LE_BE(val)
+#define GUINT32_TO_BE(val) GUINT32_SWAP_LE_BE(val)
+#endif
+
+#define GUINT16_FROM_LE(val)    (GUINT16_TO_LE (val))
+#define GUINT16_FROM_BE(val)    (GUINT16_TO_BE (val))
+#define GUINT32_FROM_LE(val)    (GUINT32_TO_LE (val))
+#define GUINT32_FROM_BE(val)    (GUINT32_TO_BE (val))
+       
+       
 #define g_memmove memmove
 #define g_assert  GSL_ASSERT
 #define g_assert_not_reached()	g_assert(!G_STRLOC": should not be reached")
@@ -195,6 +223,8 @@ char *alloca ();
 /* --- inline functions --- */
 void
 gsl_g_log (const gchar*msg,const char *format, va_list ap);
+void
+gsl_g_print_fd (int fd,const char *format, va_list ap);
 static inline void
 g_error (const gchar *format,
 	 ...)
@@ -354,12 +384,13 @@ typedef struct { int fd; short events, revents; } GPollFD;
 #define	g_usleep		gsl_g_usleep
 #define	g_strerror		gsl_g_strerror
 #define	g_convert		gsl_g_convert
-#define g_direct_hash 	gsl_g_direct_hash 
-#define g_direct_equal 	gsl_g_direct_equal 
-#define g_str_equal 	gsl_g_str_equal 
-#define g_str_hash 	gsl_g_str_hash 
-#define g_strtod	gsl_g_strtod
-#define g_stpcpy	gsl_g_stpcpy
+#define g_direct_hash	 	gsl_g_direct_hash 
+#define g_direct_equal 		gsl_g_direct_equal 
+#define g_str_equal 		gsl_g_str_equal 
+#define g_str_hash 		gsl_g_str_hash 
+#define g_strtod		gsl_g_strtod
+#define g_stpcpy		gsl_g_stpcpy
+#define	g_strescape		gsl_g_strescape
 #define g_printf_string_upper_bound gsl_g_printf_string_upper_bound
 gpointer g_malloc         (gulong        n_bytes);
 gpointer g_malloc0        (gulong        n_bytes);
@@ -395,7 +426,8 @@ guint g_str_hash (gconstpointer key);
 gdouble	g_strtod (const gchar *nptr, 	  gchar **endptr);
 gsize g_printf_string_upper_bound (const gchar *format,  va_list      args);
 gchar * g_stpcpy (gchar       *dest, 	  const gchar *src);
-     
+gchar * g_strescape (const gchar *source, const gchar *exceptions);
+
 
 
 /* --- function defines --- */

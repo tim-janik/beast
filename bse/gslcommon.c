@@ -1203,9 +1203,14 @@ gsl_check_file (const gchar *file_name,
     {
       struct stat st;
       
-      if (stat (file_name, &st) < 0)
+      if (check_link)
+	{
+	  if (lstat (file_name, &st) < 0)
+	    goto have_errno;
+	}
+      else if (stat (file_name, &st) < 0)
 	goto have_errno;
-      
+
       if ((check_file && !S_ISREG (st.st_mode)) ||
 	  (check_dir && !S_ISDIR (st.st_mode)) ||
 	  (check_link && !S_ISLNK (st.st_mode)))
