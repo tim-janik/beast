@@ -102,6 +102,5 @@ EXTRA_DIST += $(strip \
         $(EXTRA_CFILES) \
         $(plugins_built_sources) \
 	listplugins.sh \
-	TODO \
 )
 
