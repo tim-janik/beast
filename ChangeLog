@@ -1,3 +1,8 @@
+Wed Sep 15 17:02:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Added --avg-energy feature, which extracts the
+	average signal energy in dB.
+
 Tue Sep 14 19:05:02 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam-automation.c: use BseMidiControlType for

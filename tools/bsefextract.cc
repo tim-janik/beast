@@ -41,6 +41,7 @@ struct Options {
   FILE		     *extractEndTime;	    /* NULL if end time feature should not be extracted */
   FILE		     *extractSpectrum;	    /* NULL if spectrum should not be extracted */
   FILE		     *extractAvgSpectrum;   /* NULL if average spectrum should not be extracted */
+  FILE               *extractAvgEnergy;     /* NULL if average energy should not be extracted */
   guint               channel;
 
   map<string, FILE*>  outputFiles;
@@ -132,6 +133,11 @@ void Options::parse (int *argc_p, char **argv_p[])
 	  extractAvgSpectrum = openOutputFile (arg);
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--avg-energy", argv[i]) == 0)
+	{
+	  extractAvgEnergy = openOutputFile (arg);
+	  argv[i] = NULL;
+	}
       else if (strcmp ("--channel", argv[i]) == 0)
 	{
 	  if (!arg)
@@ -172,6 +178,7 @@ void Options::printUsage ()
   fprintf (stderr, " --end-time                  signal end time in ms (last non-zero sample)\n");
   fprintf (stderr, " --spectrum                  frequency spectrum\n");
   fprintf (stderr, " --avg-spectrum              average frequency spectrum\n");
+  fprintf (stderr, " --avg-energy                average signal energy in dB\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "other options:\n");
   fprintf (stderr, " --channel=<channel>         select channel (0: left, 1: right)\n");
@@ -400,6 +407,25 @@ int main (int argc, char **argv)
 	}
     }
 
+  double avg_energy = 0;
+  if (options.extractAvgEnergy)
+    {
+      GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
+      GslLong avg_energy_count = 0;
+
+      for (GslLong k = options.channel; k < length; k++)
+	{
+	  double sample = gsl_data_handle_peek_value (dhandle, k, &peek_buffer);
+	  avg_energy += sample * sample;
+	  avg_energy_count++;
+	}
+
+      if (avg_energy_count)
+	avg_energy /= avg_energy_count;
+
+      avg_energy = 10 * log (avg_energy) / log (10);
+    }
+
   /* print results */
   if (options.extractStartTime)
     {
@@ -429,7 +455,12 @@ int main (int argc, char **argv)
       fprintf (options.extractAvgSpectrum, "# --avg-spectrum: average frequency spectrum\n");
       fput_vector (options.extractAvgSpectrum, avg_spectrum);
     }
-
+  if (options.extractAvgEnergy)
+    {
+      printHeader (options.extractAvgEnergy, argv[1]);
+      fprintf (options.extractAvgEnergy, "# --avg-energy: average signal energy in dB\n");
+      fprintf (options.extractAvgEnergy, "%f\n", avg_energy);
+    }
 }
 
 /* vim:set ts=8 sts=2 sw=2: */
