@@ -1,3 +1,12 @@
+Tue Sep  9 05:22:07 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecxxutils.h: implemented binary-search templates.
+
+	* bsemidireceiver.cc: more C++-ification, properly namespaced
+	stuff. uses stl types in a couple places now.
+	keep currently playing voice input modules in a map, handle
+	duplicate note-ons. squashed remaining stability bugs.
+
 Mon Sep  8 14:59:42 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.[hc]: made reamining structures private (moved
