@@ -94,7 +94,7 @@ gxk_spline_new (guint                   n_points,
                 double                  dy_end)
 {
   g_return_val_if_fail (n_points >= 2, NULL);
-  GxkSpline *spline = g_malloc (sizeof (spline[0]) + (n_points - 1) * sizeof (spline->segs[0]));
+  GxkSpline *spline = g_malloc (sizeof (spline[0]) + n_points * sizeof (spline->segs[0]));
   /* initialize segments */
   spline->n_segs = n_points;
   gint i;
@@ -108,11 +108,10 @@ gxk_spline_new (guint                   n_points,
   /* ensure the segments are sorted in ascending order */
   qsort (spline->segs, spline->n_segs, sizeof (spline->segs[0]), spline_segment_cmp);
   /* check the first derivatives for not-a-knot vs. natural spline */
-  gboolean natural = isnan (dy_start + dy_end);
   double *dyx = g_alloca (sizeof (dyx[0]) * spline->n_segs);
   GxkSplineSegment *ss = spline->segs;
   /* curvature of first point */
-  if (natural)
+  if (isnan (dy_start))
     ss[0].yd2 = dyx[0] = 0.0;
   else
     {
@@ -136,15 +135,15 @@ gxk_spline_new (guint                   n_points,
       dyx[i] = (6. * sld - delta0x * dyx[i - 1]) / denom;
     }
   /* curvature of last point */
-  if (!natural)
+  if (isnan (dy_end))
+    ss[last].yd2 = 0;
+  else
     {
       double deltax = ss[last].x - ss[last - 1].x;
       double deltay = ss[last].y - ss[last - 1].y;
       double t = 6. / deltax * (dy_end - deltay / deltax);
       ss[last].yd2 = (t - dyx[last - 1]) / (ss[last - 1].yd2 + 2.);
     }
-  else
-    ss[last].yd2 = 0;
   /* backsubstitution loop of tridiagonal algorithm */
   for (i = last; i > 0; i--)
     ss[i - 1].yd2 = ss[i - 1].yd2 * ss[i].yd2 + dyx[i - 1];

@@ -1,3 +1,12 @@
+Sat Jul 31 10:24:27 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/splinetest.c: allow swapping the x and y axis in output
+	by specifying negative spline variants. added variant.
+
+	* beast-gtk/gxk/gxkspline.c (gxk_spline_new): fixed up spline allocation
+	size. made NAN checks for first and last point derivatives independant
+	to support one ended natural splines.
+
 Fri Jul 30 11:28:02 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkspline.h: 
