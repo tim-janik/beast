@@ -1,4 +1,5 @@
 FIXME(urgent):
+- don't save BseWave xinfos if they are NULL
 - add stock icons for Select/None Select/All Select/Invert
 - add a "Creating Skins" section to the beast manual page
 - bsewavetool: fix per-command docu to properly account for input.bsewave
