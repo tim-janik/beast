@@ -287,8 +287,8 @@ static const gchar*
 g_option_find_value (const gchar *option_string,
                      const gchar *option)
 {
-  const gchar *p;
-  gboolean valid, retry, l = strlen (option);
+  const gchar *p, *match = NULL;
+  gint l = strlen (option);
 
   g_return_val_if_fail (l > 0, NULL);
 
@@ -297,19 +297,18 @@ g_option_find_value (const gchar *option_string,
 
   /* try first match */
   p = strstr (option_string, option);
-  valid = p && (p == option_string || p[-1] == ':') &&
-          (p[l] == '-' || p[l] == '+' || p[l] == ':' || p[l] == 0);
+  if (p && (p == option_string || p[-1] == ':') &&
+      (p[l] == '-' || p[l] == '+' || p[l] == ':' || p[l] == 0))
+    match = p;
   /* allow later matches to override */
-  retry = valid;
-  while (retry)
+  while (p)
     {
-      const gchar *n = strstr (p + l, option);
-      retry = n && n[-1] == ':' &&
-              (n[l] == '-' || n[l] == '+' || n[l] == ':' || n[l] == 0);
-      if (retry)
-        p = n;
+      p = strstr (p + l, option);
+      if (p && p[-1] == ':' &&
+          (p[l] == '-' || p[l] == '+' || p[l] == ':' || p[l] == 0))
+        match = p;
     }
-  return valid ? p + l : NULL;
+  return match ? match + l : NULL;
 }
 
 gchar*
