@@ -67,8 +67,8 @@ class Amplifier : Effect {
     Real  olevel     = Perc ("Master Volume", "Output stage amplification", 100, STANDARD);
   };
   group "Compat" { // FIXME: remove properties around 0.6.0
-    Real  audio_balance   = Perc (NULL, NULL, 0, "w"); /* -> abalance */
-    Real  ctrl_balance    = Perc (NULL, NULL, 0, "w"); /* -> cbalance */
+    Real  audio_balance   = Balance (NULL, NULL, 0, "w"); /* -> abalance */
+    Real  ctrl_balance    = Balance (NULL, NULL, 0, "w"); /* -> cbalance */
     Real  ctrl_strength_f = Real (NULL, NULL, 1, 0, 1, 0.1, "w"); /* *100 -> ostrength */
     Real  master_gain_f   = Real (NULL, NULL, 1, 0, 1, 0.1, "w"); /* *100 -> olevel */
     Real  audio_gain_f    = Real (NULL, NULL, 0, 0, 1, 0.1, "w"); /* *100 -> base_level */

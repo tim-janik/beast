@@ -31,7 +31,6 @@ enum
   PROP_FILTER_TYPE,
   PROP_FREQ,
   PROP_NOTE,
-  PROP_FINE_TUNE,
   PROP_GAIN,
   PROP_NORM_TYPE,
   PROP_FM_PERC,
@@ -149,11 +148,6 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 					      BSE_MIN_NOTE, BSE_MAX_NOTE,
 					      FALSE,
 					      SFI_PARAM_GUI));
-  bse_object_class_add_param (object_class, _("Center Frequency"),
-			      PROP_FINE_TUNE,
-			      sfi_pspec_int ("fine_tune", "Fine Tune", NULL,
-					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
-					     SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, _("Emphasis"),
 			      PROP_GAIN,
 			      sfi_pspec_real ("gain", _("Gain [dB]"), NULL,
@@ -211,7 +205,6 @@ bse_biquad_filter_init (BseBiquadFilter *self)
   self->type_change = TRUE;
   self->exponential_fm = FALSE;
   self->freq = BSE_KAMMER_FREQUENCY_f * 2;
-  self->fine_tune = 0;
   self->fm_strength = 0.25;
   self->fm_n_octaves = 1;
   self->norm_type = BSE_BIQUAD_FILTER_NORM_PASSBAND;
@@ -243,10 +236,6 @@ bse_biquad_filter_set_property (GObject	     *object,
       self->freq = bse_note_to_freq (sfi_value_get_note (value));
       bse_biquad_filter_update_modules (self);
       g_object_notify (self, "freq");
-      break;
-    case PROP_FINE_TUNE:
-      self->fine_tune = sfi_value_get_int (value);
-      bse_biquad_filter_update_modules (self);
       break;
     case PROP_FM_PERC:
       self->fm_strength = sfi_value_get_real (value) / 100.0;
@@ -297,9 +286,6 @@ bse_biquad_filter_get_property (GObject	   *object,
       break;
     case PROP_NOTE:
       sfi_value_set_note (value, bse_note_from_freq (self->freq));
-      break;
-    case PROP_FINE_TUNE:
-      sfi_value_set_int (value, self->fine_tune);
       break;
     case PROP_FM_PERC:
       sfi_value_set_real (value, self->fm_strength * 100.0);
@@ -366,7 +352,7 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
       cfg->fm.fm_strength = self->exponential_fm ? self->fm_n_octaves : self->fm_strength;
       cfg->fm.exponential_fm = self->exponential_fm;
       cfg->fm.signal_freq = GSL_SIGNAL_FROM_FREQ (cfg->base_freq);
-      cfg->fm.fine_tune = self->fine_tune;
+      cfg->fm.fine_tune = 0;
       gsl_biquad_config_init (&cfg->config, self->filter_type, self->norm_type);
       gsl_biquad_config_setup (&cfg->config, cfg->base_freq / nyquist_freq, cfg->gain, 0);
       bse_source_access_modules (BSE_SOURCE (self),
@@ -551,7 +537,7 @@ bse_biquad_filter_context_create (BseSource *source,
   fmod->fm.fm_strength = self->exponential_fm ? self->fm_n_octaves : self->fm_strength;
   fmod->fm.exponential_fm = self->exponential_fm;
   fmod->fm.signal_freq = GSL_SIGNAL_FROM_FREQ (fmod->base_freq);
-  fmod->fm.fine_tune = self->fine_tune;
+  fmod->fm.fine_tune = 0;
   gsl_biquad_config_init (&fmod->config, self->filter_type, self->norm_type);
   gsl_biquad_config_setup (&fmod->config, fmod->base_freq / nyquist_freq, fmod->gain, 0);
   

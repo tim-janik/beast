@@ -60,7 +60,6 @@ struct _BseBiquadFilter
   guint		      type_change : 1;
   guint		      exponential_fm : 1;
   gfloat	      freq;
-  gint		      fine_tune;
   gfloat	      fm_strength;
   gfloat	      fm_n_octaves;
   BseBiquadFilterNorm norm_type;
