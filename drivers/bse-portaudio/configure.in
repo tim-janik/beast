@@ -66,7 +66,7 @@ fi
 
 
 # initialize automake, don't define PACKAGE and VERSION
-AM_INIT_AUTOMAKE(bse-alsa, $PKG_VERSION, no-define)
+AM_INIT_AUTOMAKE(bse-portaudio, $PKG_VERSION, no-define)
 
 # in case we have subdirectories.
 AC_PROG_MAKE_SET
