@@ -3680,7 +3680,7 @@ gxk_show_url (const gchar *url)
                                           NULL, /* child_pid */
                                           &error);
         g_free (string);
-        g_printerr ("show \"%s\": %s: %s\n", url, args[0], error ? error->message : "Ok");
+        // g_printerr ("show \"%s\": %s: %s\n", url, args[0], error ? error->message : "Ok");
         g_clear_error (&error);
         if (success)
           return TRUE;
