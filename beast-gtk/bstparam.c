@@ -1,3 +1,4 @@
+#define sfi_pspec_require_options g_param_spec_provides_options
 /* BEAST - Bedevilled Audio System
  * Copyright (C) 2002 Tim Janik
  *
