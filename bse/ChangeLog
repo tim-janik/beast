@@ -1,3 +1,14 @@
+Mon Feb 17 22:52:02 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* Makefile.am: libcsl support
+
+	* bsepcmdevice-csl.[hc]: new PCM device implementation for
+	libcsl (Common Sound Layer). This for instance allows using
+	beast with aRts.
+
+	* bsepcmdevice-oss.c: bugfix: close filedescriptor when >= 0,
+	not when < 0.
+
 Mon Feb 17 18:34:46 2003  Tim Janik  <timj@gtk.org>
 
 	* bseplugin.c (bse_plugin_register_exports): register choice<=>enum
