@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include "bstutils.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- type macros --- */
 #define BST_TYPE_APP            (bst_app_get_type ())
@@ -75,12 +72,6 @@ GtkItemFactory*	bst_app_menu_factory		(BstApp		*app);
 void		bst_app_update_can_operate	(BstApp		*app);
 BstApp*		bst_app_find			(SfiProxy	 project);
 
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif  /* __BST_APP_H__ */

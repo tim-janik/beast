@@ -11,7 +11,6 @@ FIXMES:
 - mark intern synths as INTERNAL (track's mono-synth)
 - alow snet flagging as aggregate
 - fix internal items (snets) being listed as tentative property values / fix internal synths being displayed by beast
-- fix SNet derivation
 - fix sub-synth "snet" property setter
 - fix snet property changes in sub synth and instrument
 - implement snet removal

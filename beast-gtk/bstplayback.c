@@ -39,7 +39,7 @@ bst_play_back_handle_new (void)
   if (BST_DBG_EXT)
     gxk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 
-  handle->snet = bse_project_create_snet (handle->project, NULL);
+  handle->snet = bse_project_create_csynth (handle->project, NULL);
   bse_proxy_set (handle->snet, "auto_activate", TRUE, NULL);
   handle->speaker = bse_snet_create_source (handle->snet, "BsePcmOutput");
   handle->wosc = bse_snet_create_source (handle->snet, "BseWaveOsc");

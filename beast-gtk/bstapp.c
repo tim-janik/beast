@@ -74,7 +74,7 @@ static BstMenuConfigEntry menubar_entries[] =
   { "/Project/_Stop",			"<ctrl>S",	BST_OP (PROJECT_STOP),		"<Item>" },
   { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Project/New Song",		NULL,		BST_OP (PROJECT_NEW_SONG),	"<Item>" },
-  { "/Project/New Synthesizer Network",	NULL,		BST_OP (PROJECT_NEW_SNET),	"<Item>" },
+  { "/Project/New Custom Synthesizer",	NULL,		BST_OP (PROJECT_NEW_CSYNTH),	"<Item>" },
   { "/Project/New MIDI Synthesizer",	NULL,		BST_OP (PROJECT_NEW_MIDI_SYNTH),"<Item>" },
   { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Project/Rack Editor",		NULL,		BST_OP (PROJECT_RACK_EDITOR),	"<Item>" },
@@ -621,8 +621,8 @@ bst_app_operate (BstApp *app,
     case BST_OP_PROJECT_NEW_SONG:
       proxy = bse_project_create_song (app->project, NULL);
       break;
-    case BST_OP_PROJECT_NEW_SNET:
-      proxy = bse_project_create_snet (app->project, NULL);
+    case BST_OP_PROJECT_NEW_CSYNTH:
+      proxy = bse_project_create_csynth (app->project, NULL);
       break;
     case BST_OP_PROJECT_NEW_MIDI_SYNTH:
       proxy = bse_project_create_midi_synth (app->project, NULL);
@@ -803,7 +803,7 @@ bst_app_can_operate (BstApp *app,
     case BST_OP_PROJECT_SAVE:
     case BST_OP_PROJECT_SAVE_AS:
     case BST_OP_PROJECT_NEW_SONG:
-    case BST_OP_PROJECT_NEW_SNET:
+    case BST_OP_PROJECT_NEW_CSYNTH:
     case BST_OP_PROJECT_NEW_MIDI_SYNTH:
     case BST_OP_PROJECT_CLOSE:
     case BST_OP_REBUILD:
