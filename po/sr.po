@@ -9,250 +9,256 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-18 14:55+0200\n"
-"PO-Revision-Date: 2003-10-18 14:59+0200\n"
+"POT-Creation-Date: 2003-10-26 02:38+0200\n"
+"PO-Revision-Date: 2003-10-26 02:40+0200\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:64
+#: beast-gtk/bstapp.c:65
 msgid "/_File"
 msgstr "/_Датотека"
 
-#: beast-gtk/bstapp.c:66
+#: beast-gtk/bstapp.c:67
 msgid "/File/_New"
 msgstr "/Датотека/_Нова"
 
-#: beast-gtk/bstapp.c:67
+#: beast-gtk/bstapp.c:68
 msgid "/File/_Open..."
 msgstr "/Датотека/_Отвори..."
 
-#: beast-gtk/bstapp.c:68
+#: beast-gtk/bstapp.c:69
 msgid "/File/_Merge..."
 msgstr "/Датотека/_Споји..."
 
-#: beast-gtk/bstapp.c:69
+#: beast-gtk/bstapp.c:70
 msgid "/File/_Close"
 msgstr "/Датотека/_Затвори"
 
-#: beast-gtk/bstapp.c:71
+#: beast-gtk/bstapp.c:72
 msgid "/File/_Save"
 msgstr "/Датотека/_Сачувај"
 
-#: beast-gtk/bstapp.c:72
+#: beast-gtk/bstapp.c:73
 msgid "/File/Save _As..."
 msgstr "/Датотека/Сачувај _као..."
 
-#: beast-gtk/bstapp.c:74
+#: beast-gtk/bstapp.c:75
 msgid "/File/Preferences..."
 msgstr "/Датотека/_Поставке"
 
-#: beast-gtk/bstapp.c:76
+#: beast-gtk/bstapp.c:77
 msgid "/File/_Quit"
 msgstr "/Датотека/_Изађи"
 
-#: beast-gtk/bstapp.c:77 beast-gtk/bstpartdialog.c:78
+#: beast-gtk/bstapp.c:78 beast-gtk/bstpartdialog.c:78
 msgid "/_Edit"
 msgstr "/_Уређивање"
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:80
 msgid "/Edit/_Undo"
 msgstr "/Уређивање/Опо_зови"
 
-#: beast-gtk/bstapp.c:80
+#: beast-gtk/bstapp.c:81
 msgid "/Edit/_Redo"
 msgstr "/Уређивање/По_нови"
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:82
 msgid "/Edit/_Clear Undo"
 msgstr "/Уређивање/_Очисти враћање"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:84
 msgid "/Edit/Preferences..."
 msgstr "/Уређивање/_Поставке"
 
-#: beast-gtk/bstapp.c:84
+#: beast-gtk/bstapp.c:85
 msgid "/_View"
 msgstr "/П_реглед"
 
-#: beast-gtk/bstapp.c:86
+#: beast-gtk/bstapp.c:87
 msgid "/View/Procedure _Browser"
 msgstr "/Преглед/Раз_гледач процедура"
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:88
 msgid "/View/Rack Editor"
 msgstr "/Преглед/Уређивач полица"
 
-#: beast-gtk/bstapp.c:88
+#: beast-gtk/bstapp.c:89
 msgid "/View/Device _Monitor"
 msgstr "/Преглед/Праћење _уређаја"
 
-#: beast-gtk/bstapp.c:90
+#: beast-gtk/bstapp.c:91
 msgid "/View/Preferences"
 msgstr "/Преглед/Поставке"
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:93
 msgid "/View/Rebuild"
 msgstr "/Преглед/Поново _изгради"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:94
 msgid "/_Project"
 msgstr "/_Пројекат"
 
-#: beast-gtk/bstapp.c:95
+#: beast-gtk/bstapp.c:96
 msgid "/Project/_Play"
 msgstr "/Пројекат/_Пусти"
 
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:97
 msgid "/Project/_Stop"
 msgstr "/Пројекат/_Заустави"
 
-#: beast-gtk/bstapp.c:98
+#: beast-gtk/bstapp.c:99
 msgid "/Project/New Song"
 msgstr "/Пројекат/Нова песма"
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:100
 msgid "/Project/New Custom Synthesizer"
 msgstr "/Пројекат/Нови синтетизатор по избору"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:101
 msgid "/Project/New MIDI Synthesizer"
 msgstr "/Пројекат/Нови MIDI синтетизатор"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:102
 msgid "/Project/Remove Song or Synthesizer"
 msgstr "/Пројекат/Уклони песму или синтетизатор"
 
-#: beast-gtk/bstapp.c:103
+#: beast-gtk/bstapp.c:104
 msgid "/_Song"
 msgstr "/П_есма"
 
-#: beast-gtk/bstapp.c:105
+#: beast-gtk/bstapp.c:106
 msgid "/Song/Add _Part"
 msgstr "/Песма/Додај д_ео"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:107
 msgid "/Song/Delete _Part"
 msgstr "/Песма/_Обриши део"
 
-#: beast-gtk/bstapp.c:107
+#: beast-gtk/bstapp.c:108
 msgid "/Song/Add _Track"
 msgstr "/Песма/_Додај песму"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:109
 msgid "/Song/_Delete Track"
 msgstr "/Песма/_Уклони песму"
 
-#: beast-gtk/bstapp.c:109
+#: beast-gtk/bstapp.c:110
 msgid "/_Synth"
 msgstr "/_Синтетизатор"
 
-#: beast-gtk/bstapp.c:111
+#: beast-gtk/bstapp.c:112
 msgid "/Synth/_Test"
 msgstr "/Синтетизатор/_Проба"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:113
 msgid "/Wave_s"
 msgstr "/_Таласи"
 
-#: beast-gtk/bstapp.c:114
+#: beast-gtk/bstapp.c:115
 msgid "/Waves/_Load Wave..."
 msgstr "/Таласи/_Учитај талас..."
 
-#: beast-gtk/bstapp.c:115
+#: beast-gtk/bstapp.c:116
 msgid "/Waves/Delete Wave"
 msgstr "/Таласи/Обриши талас"
 
-#: beast-gtk/bstapp.c:116
+#: beast-gtk/bstapp.c:117
 msgid "/Waves/_Edit Wave..."
 msgstr "/Таласи/_Уреди талас..."
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:119
 msgid "/_Synthesizers"
 msgstr "/_Синтетизатори"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:121
 msgid "/Synthesizers/Load _Effect"
 msgstr "/Синтетизатори/Учитај _ефекат"
 
-#: beast-gtk/bstapp.c:121
+#: beast-gtk/bstapp.c:122
 msgid "/Synthesizers/Load _Instrument"
 msgstr "/Синтетизатори/Учитај _инструмент"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:123
 msgid "/Synthesizers/Save As Effect"
 msgstr "/Синтетизатори/Сачувај као ефекат"
 
-#: beast-gtk/bstapp.c:123
+#: beast-gtk/bstapp.c:124
 msgid "/Synthesizers/Save As Instrument"
 msgstr "/Синтетизатори/Сачувај као инструмент"
 
-# Хтео сам „проба“, али имамо и „Test“, па је боље ту искористити
-#: beast-gtk/bstapp.c:124
-msgid "/_Demo"
-msgstr "/_Демо"
-
-#: beast-gtk/bstapp.c:126 beast-gtk/bstpartdialog.c:72
+#: beast-gtk/bstapp.c:125 beast-gtk/bstpartdialog.c:72
 msgid "/_Tools"
 msgstr "/_Алати"
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:126
 msgid "/Tools/_Song"
 msgstr "/Алати/_Песма"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:127
 msgid "/Tools/_Synth"
 msgstr "/Алати/_Синтетизатор"
 
-#: beast-gtk/bstapp.c:129
+#: beast-gtk/bstapp.c:128
 msgid "/Tools/Wave_s"
 msgstr "/Алати/_Таласи"
 
-#: beast-gtk/bstapp.c:132
+# Хтео сам „проба“, али имамо и „Test“, па је боље ту искористити
+#: beast-gtk/bstapp.c:129
+msgid "/_Demo"
+msgstr "/_Демо"
+
+#: beast-gtk/bstapp.c:133
 msgid "/_Help"
 msgstr "/_Помоћ"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:135
 msgid "/Help/_Release Notes..."
 msgstr "/Помоћ/_Објава издања..."
 
-#: beast-gtk/bstapp.c:135
+#: beast-gtk/bstapp.c:136
 msgid "/Help/Quick Start..."
 msgstr "/Помоћ/Брзи почетак..."
 
-#: beast-gtk/bstapp.c:136
+#: beast-gtk/bstapp.c:137
 msgid "/Help/_FAQ..."
 msgstr "/Помоћ/Питања и _одговори"
 
-#: beast-gtk/bstapp.c:137
+#: beast-gtk/bstapp.c:138
 msgid "/Help/Development/GSL Engine..."
 msgstr "/Помоћ/Развој/GSL структура..."
 
-#: beast-gtk/bstapp.c:139
+#: beast-gtk/bstapp.c:140
 msgid "/Help/_About..."
 msgstr "/Помоћ/_О програму..."
 
+#: beast-gtk/bstapp.c:631 beast-gtk/bstapp.c:638 beast-gtk/bstfiledialog.c:428
+#: beast-gtk/bstfiledialog.c:435
+#, c-format
+msgid "Opening project `%s'"
+msgstr "Отвара пројекат „%s“"
+
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:730
+#: beast-gtk/bstapp.c:810
 msgid "Rack editor"
 msgstr "Уређивач полица"
 
-#: beast-gtk/bstapp.c:744
+#: beast-gtk/bstapp.c:824
 msgid "Preferences"
 msgstr "Поставке"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:758
+#: beast-gtk/bstapp.c:838
 msgid "Device Monitor"
 msgstr "Праћење уређаја"
 
-#: beast-gtk/bstapp.c:773
+#: beast-gtk/bstapp.c:853
 msgid "Procedure Browser"
 msgstr "Разгледач процедура"
 
-#: beast-gtk/bstapp.c:830
+#: beast-gtk/bstapp.c:910
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ЗВЕР-%s Објава издања"
@@ -345,11 +351,6 @@ msgstr "Отвори пројекат"
 #: beast-gtk/bstfiledialog.c:414
 msgid "Select Directory"
 msgstr "Изабери директоријум"
-
-#: beast-gtk/bstfiledialog.c:428 beast-gtk/bstfiledialog.c:435
-#, c-format
-msgid "Opening project `%s'"
-msgstr "Отвара пројекат „%s“"
 
 #: beast-gtk/bstfiledialog.c:453
 #, c-format
@@ -772,7 +773,15 @@ msgstr "Пуштам"
 msgid "Stopping Playback"
 msgstr "Заустављам пуштање"
 
-#: beast-gtk/bstrackeditor.c:98
+#: beast-gtk/bstrackeditor.c:95
+msgid ""
+"The rack editor is still highly experimental code and guranrteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
+msgstr "Уређивач полица је пробни код и сигурно ће бити покварен до наредних издања. Значи, не поуздајте се да ће изглед уређивача остати исти у будућности, и будите спремни на нестабилност у коду (тј. редовно снимајте ваше пројекте)."
+
+#: beast-gtk/bstrackeditor.c:109
 msgid "_Edit"
 msgstr "_Уреди"
 
