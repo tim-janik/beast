@@ -1916,6 +1916,8 @@ sfi_ring_uniq_free_deep (SfiRing        *sorted_ring1,
                          GDestroyNotify  data_destroy)
 {
   /* always preserves the first of a sublist of consequtive equal elements */
+  if (!data_destroy)
+    return sfi_ring_uniq (sorted_ring1, cmp, data);
   SfiRing *r1 = sorted_ring1;
   SfiRing *r2 = NULL;
   if (r1)
