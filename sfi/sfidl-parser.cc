@@ -133,6 +133,16 @@ bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
   if (__bracket) \
     parse_or_return (')'); \
 }G_STMT_END
+#define parse_istring_or_return(str) G_STMT_START{ \
+  IString& __is = str; /* type safety - assume argument is an IString */ \
+  __is.i18n = (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER && \
+               strcmp (scanner->next_value.v_string, "_") == 0); \
+  if (__is.i18n) { \
+    parse_or_return (G_TOKEN_IDENTIFIER); \
+    peek_or_return ('('); \
+  } \
+  parse_string_or_return (__is); \
+}G_STMT_END
 #define parse_int_or_return(i) G_STMT_START{ \
   bool negate = (g_scanner_peek_next_token (scanner) == GTokenType('-')); \
   if (negate) \
@@ -878,27 +888,8 @@ GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequent
   return G_TOKEN_NONE;
 }
 
-GTokenType
-parse_dot_group (GScanner *scanner,
-                 string   *group)
-{
-  if (g_scanner_peek_next_token (scanner) == '$')
-    {
-      parse_or_return ('$');
-      parse_or_return (G_TOKEN_IDENTIFIER);
-      if (strcmp (scanner->value.v_identifier, "GROUP") != 0)
-        return G_TOKEN_IDENTIFIER;
-      parse_or_return ('=');
-      parse_or_return (G_TOKEN_STRING);
-      *group = scanner->value.v_string;
-      parse_or_return (';');
-    }
-  return G_TOKEN_NONE;
-}
-
 GTokenType Parser::parseRecord ()
 {
-  string group = "";
   Record record;
   DEBUG("parse record\n");
   
@@ -920,18 +911,11 @@ GTokenType Parser::parseRecord ()
       GTokenType expected_token;
       switch (g_scanner_peek_next_token (scanner))
         {
-#if 0
-        case '$':
-          expected_token = parse_dot_group (scanner, &group);
-          if (expected_token != G_TOKEN_NONE)
-            return expected_token;
-          break;
-#endif
         case G_TOKEN_IDENTIFIER:
           {
             Param def;
             
-            expected_token = parseRecordField (def, group);
+            expected_token = parseRecordField (def, "");
             if (expected_token != G_TOKEN_NONE)
               return expected_token;
             
@@ -941,29 +925,17 @@ GTokenType Parser::parseRecord ()
           break;
         case TOKEN_GROUP:
           {
-            string local_group = group;
+            IString group;
             parse_or_return (TOKEN_GROUP);
-            if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
-              {
-                g_scanner_get_next_token (scanner);
-                local_group = scanner->value.v_string;
-              }
+	    parse_istring_or_return (group);
             parse_or_return ('{');
             while (g_scanner_peek_next_token (scanner) != '}' && !g_scanner_eof (scanner))
               {
                 Param property;
-#if 0
-                if (g_scanner_peek_next_token (scanner) == '$')
-                  expected_token = parse_dot_group (scanner, &local_group);
-                else
-#endif
-                  {
-                    expected_token = parseRecordField (property, local_group);
-                    if (expected_token == G_TOKEN_NONE)
-                      record.contents.push_back (property);
-                  }
+                expected_token = parseRecordField (property, group);
                 if (expected_token != G_TOKEN_NONE)
                   return expected_token;
+                record.contents.push_back (property);
               }
             parse_or_return ('}');
             parse_or_return (';');
@@ -987,7 +959,7 @@ GTokenType Parser::parseRecord ()
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseRecordField (Param& def, const string& group)
+GTokenType Parser::parseRecordField (Param& def, const IString& group)
 {
   /* FooVolumeType volume_type; */
   /* float         volume_perc @= ("Volume[%]", "Set how loud something is",
@@ -1037,9 +1009,9 @@ Parser::parseStream (Stream&      stream,
   parse_or_return ('=');
 
   parse_or_return ('(');
-  parse_string_or_return (stream.name);
+  parse_istring_or_return (stream.name);
   parse_or_return (',');
-  parse_string_or_return (stream.blurb);
+  parse_istring_or_return (stream.blurb);
   parse_or_return (')');
 
   parse_or_return (';');
@@ -1128,7 +1100,7 @@ GTokenType Parser::parseParamHints (Param &def)
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseInfoOptional (Map<string,string>& infos)
+GTokenType Parser::parseInfoOptional (Map<string,IString>& infos)
 {
   /*
    * info HELP = "don't panic";
@@ -1136,13 +1108,14 @@ GTokenType Parser::parseInfoOptional (Map<string,string>& infos)
    */
   while (g_scanner_peek_next_token (scanner) == TOKEN_INFO)
   {
-    string key, value;
+    string  key;
+    IString value;
 
     parse_or_return (TOKEN_INFO);
     parse_or_return (G_TOKEN_IDENTIFIER);
     key = scanner->value.v_identifier;
     parse_or_return ('=');
-    parse_string_or_return (value);
+    parse_istring_or_return (value);
     parse_or_return (';');
 
     infos[key] = value;
@@ -1195,7 +1168,6 @@ GTokenType Parser::parseSequence ()
 GTokenType Parser::parseClass ()
 {
   Class cdef;
-  string group = "";
   DEBUG("parse class\n");
   
   parse_or_return (TOKEN_CLASS);
@@ -1244,23 +1216,13 @@ GTokenType Parser::parseClass ()
 	      return expected_token;
 	  }
 	  break;
-#if 0
-        case '$':
-          parse_dot_group (scanner, &group);
-          break;
-#endif
-        case TOKEN_PROPERTY:
+        case TOKEN_PROPERTY: /* FIXME: remove me due to deprecated syntax */
 	  {
 	    parse_or_return (TOKEN_PROPERTY);
 
 	    Param property;
-            string local_group = group;
-            if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
-              {
-                g_scanner_get_next_token (scanner);
-                local_group = scanner->value.v_string;
-              }
-	    expected_token = parseRecordField (property, local_group);
+
+	    expected_token = parseRecordField (property, "");  // no i18n support, deprecated
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
             
@@ -1269,29 +1231,17 @@ GTokenType Parser::parseClass ()
 	  break;
         case TOKEN_GROUP:
           {
-            string local_group = group;
+            IString group;
 	    parse_or_return (TOKEN_GROUP);
-            if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
-              {
-                g_scanner_get_next_token (scanner);
-                local_group = scanner->value.v_string;
-              }
+	    parse_istring_or_return (group);
 	    parse_or_return ('{');
             while (g_scanner_peek_next_token (scanner) != '}' && !g_scanner_eof (scanner))
               {
                 Param property;
-#if 0
-                if (g_scanner_peek_next_token (scanner) == '$')
-                  expected_token = parse_dot_group (scanner, &local_group);
-                else
-#endif
-                  {
-                    expected_token = parseRecordField (property, local_group);
-                    if (expected_token == G_TOKEN_NONE)
-                      cdef.properties.push_back (property);
-                  }
+                expected_token = parseRecordField (property, group);
                 if (expected_token != G_TOKEN_NONE)
                   return expected_token;
+                cdef.properties.push_back (property);
               }
             parse_or_return ('}');
             parse_or_return (';');

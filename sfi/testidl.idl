@@ -26,7 +26,7 @@ record SickGenericThings {
 
 class Blub {
   property Real x;
-  property "X-Group" Real y;
+  // property "X-Group" Real y;
   group "Other Properties" {
     Num z;
   };

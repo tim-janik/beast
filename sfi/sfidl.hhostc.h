@@ -84,7 +84,7 @@ namespace Sfidl {
 
   class CodeGeneratorC : public CodeGeneratorCBase {
   protected:
-    void printInfoStrings (const std::string& name, const std::map<std::string,std::string>& infos);
+    void printInfoStrings (const std::string& name, const Map<std::string,IString>& infos);
     bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
     
   public:

@@ -170,11 +170,11 @@ CodeGeneratorModule::pspec_constructor (const Param &param)
     {
     case OBJECT:
       {
-        const string group = param.group == "" ? "NULL" : param.group;
+	const string group = (param.group != "") ? param.group.escaped() : "NULL";
         string pspec = "sfidl_pspec_Object";
         if (param.args == "")
           pspec += "_default";
-        pspec += " (\"" + group + "\", \"" + param.name + "\", ";
+        pspec += " (" + group + ", \"" + param.name + "\", ";
         if (param.args != "")
           pspec += param.args + ", ";
         vector<string> vs = split_string (param.type);
@@ -187,11 +187,11 @@ CodeGeneratorModule::pspec_constructor (const Param &param)
       }
     case CHOICE:
       {
-        const string group = param.group == "" ? "NULL" : param.group;
+	const string group = (param.group != "") ? param.group.escaped() : "NULL";
         string pspec = "sfidl_pspec_GEnum";
         if (param.args == "")
           pspec += "_default";
-        pspec += " (\"" + group + "\", \"" + param.name + "\", ";
+        pspec += " (" + group + ", \"" + param.name + "\", ";
         if (param.args != "")
           pspec += param.args + ", ";
         vector<string> vs = split_string (param.type);
@@ -298,15 +298,6 @@ CodeGeneratorModule::func_param_free (const Param &param)
     case OBJECT:        return "g_object_unref";
     default:            return func_param_return_free (param);
     }
-}
-
-static string
-escape (const string& str)
-{
-  char *x = g_strescape (str.c_str(), 0);
-  string result = x;
-  g_free (x);
-  return result;
 }
 
 struct Image {
@@ -486,8 +477,8 @@ CodeGeneratorModule::run ()
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* category  () { return \"%s\"; }\n", escape(ci->infos.get("category")).c_str());
-      printf ("  static inline const char* blurb     () { return \"%s\"; }\n", escape(ci->infos.get("blurb")).c_str());
+      printf ("  static inline const char* category  () { return %s; }\n", ci->infos.get("category").escaped().c_str());
+      printf ("  static inline const char* blurb     () { return %s; }\n", ci->infos.get("blurb").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", ctFullName.c_str());
       
       /* i/j/o channel names */
@@ -632,14 +623,14 @@ CodeGeneratorModule::run ()
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
         printf ("    klass->add (PROP_%s, %s);\n", cUC_NAME (pi->name), pspec_constructor (*pi).c_str());
       for (vector<Stream>::const_iterator si = ci->istreams.begin(); si != ci->istreams.end(); si++)
-        printf ("    klass->add_ichannel (\"%s\", \"%s\", ICHANNEL_%s);\n",
-                escape(si->name).c_str(), escape(si->blurb).c_str(), cUC_NAME (si->ident));
+        printf ("    klass->add_ichannel (%s, %s, ICHANNEL_%s);\n",
+                si->name.escaped().c_str(), si->blurb.escaped().c_str(), cUC_NAME (si->ident));
       for (vector<Stream>::const_iterator si = ci->jstreams.begin(); si != ci->jstreams.end(); si++)
-        printf ("    klass->add_jchannel (\"%s\", \"%s\", JCHANNEL_%s);\n",
-                escape(si->name).c_str(), escape(si->blurb).c_str(), cUC_NAME (si->ident));
+        printf ("    klass->add_jchannel (%s, %s, JCHANNEL_%s);\n",
+                si->name.escaped().c_str(), si->blurb.escaped().c_str(), cUC_NAME (si->ident));
       for (vector<Stream>::const_iterator si = ci->ostreams.begin(); si != ci->ostreams.end(); si++)
-        printf ("    klass->add_ochannel (\"%s\", \"%s\", OCHANNEL_%s);\n",
-                escape(si->name).c_str(), escape(si->blurb).c_str(), cUC_NAME (si->ident));
+        printf ("    klass->add_ochannel (%s, %s, OCHANNEL_%s);\n",
+                si->name.escaped().c_str(), si->blurb.escaped().c_str(), cUC_NAME (si->ident));
       printf ("  }\n");
 
       /* done */
@@ -656,7 +647,7 @@ CodeGeneratorModule::run ()
   for (vector<const Method*>::const_iterator ppi = procs.begin(); ppi != procs.end(); ppi++)
     {
       const Method *mi = *ppi;  // FIXME: things containing maps shouldn't be constant
-      const Map<std::string, std::string> &infos = mi->infos;
+      const Map<std::string, IString> &infos = mi->infos;
       string ptName = string ("Procedure_") + TypeName (mi->name);
       string ptFullName = canonify_type (nspace + ptName);
       bool is_void = mi->result.type == "void";
@@ -685,8 +676,8 @@ CodeGeneratorModule::run ()
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* category  () { return \"%s\"; }\n", escape(infos.get("category")).c_str());
-      printf ("  static inline const char* blurb     () { return \"%s\"; }\n", escape(infos.get("blurb")).c_str());
+      printf ("  static inline const char* category  () { return %s; }\n", infos.get("category").escaped().c_str());
+      printf ("  static inline const char* blurb     () { return %s; }\n", infos.get("blurb").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", ptFullName.c_str());
       
       /* return type */
@@ -733,9 +724,9 @@ CodeGeneratorModule::run ()
               "                    GParamSpec       **in_pspecs,\n"
               "                    GParamSpec       **out_pspecs)");
       printf ("  {\n");
-      printf ("    proc->help = \"%s\";\n", escape(infos.get("help")).c_str());
-      printf ("    proc->authors = \"%s\";\n", escape(infos.get("authors")).c_str());
-      printf ("    proc->license = \"%s\";\n", escape(infos.get("license")).c_str());
+      printf ("    proc->help = %s;\n", infos.get("help").escaped().c_str());
+      printf ("    proc->authors = %s;\n", infos.get("authors").escaped().c_str());
+      printf ("    proc->license = %s;\n", infos.get("license").escaped().c_str());
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
         printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
           if (!is_void)

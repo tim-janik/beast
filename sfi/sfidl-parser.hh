@@ -43,6 +43,36 @@ public:
   }
 };
 
+/*
+ * internationalized string: can store a conventional string,
+ * however it can also store whether the string was given in
+ * conventional form    "foo"     (i18n = false)
+ * on in the i18n form  _("foo")  (i18n = true)
+ */
+class IString : public std::string {
+public:
+  bool i18n;
+
+  IString() : i18n (false) {
+  }
+  
+  IString(const char *str) : std::string (str), i18n (false) {
+  }
+
+  /* produces an escaped version "foo" or _("foo") */
+  std::string escaped () const
+  {
+    std::string result;
+    char *x = g_strescape (c_str(), 0);
+    if (i18n)
+      result = "_(\"" + std::string(x) + "\")";
+    else
+      result = "\"" + std::string(x) + "\"";
+    g_free (x);
+    return result;
+  }
+};
+
 struct LineInfo {
   bool isInclude;
   int line;
@@ -64,7 +94,7 @@ struct Param {
   std::string name;
   std::string file;
   
-  std::string group;
+  IString     group;
   std::string pspec;
   int         line;
   std::string args;
@@ -73,9 +103,9 @@ struct Param {
 struct Stream {
   enum Type { IStream, JStream, OStream } type;
   std::string ident;
-  std::string name;
+  IString     name;
   std::string file;
-  std::string blurb;
+  IString     blurb;
   int         line;
 };
  
@@ -99,7 +129,7 @@ struct Choice {
   std::string file;
   
   std::vector<ChoiceValue> contents;
-  Map<std::string, std::string> infos;
+  Map<std::string, IString> infos;
 };
 
 struct Record {
@@ -107,14 +137,14 @@ struct Record {
   std::string file;
   
   std::vector<Param> contents;
-  Map<std::string, std::string> infos;
+  Map<std::string, IString> infos;
 };
 
 struct Sequence {
   std::string name;
   std::string file;
   Param content;
-  Map<std::string, std::string> infos;
+  Map<std::string, IString> infos;
 };
 
 struct Method {
@@ -123,7 +153,7 @@ struct Method {
   
   std::vector<Param> params;
   Param result;
-  Map<std::string, std::string> infos;
+  Map<std::string, IString> infos;
 };
 
 struct Class {
@@ -135,7 +165,7 @@ struct Class {
   std::vector<Method> signals;
   std::vector<Param> properties;
   std::vector<Stream> istreams, jstreams, ostreams;
-  Map<std::string, std::string> infos;
+  Map<std::string, IString> infos;
 };
 
 enum TypeDeclaration {
@@ -216,13 +246,13 @@ protected:
   GTokenType parseChoice ();
   GTokenType parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue);
   GTokenType parseRecord ();
-  GTokenType parseRecordField (Param& comp, const std::string& group);
+  GTokenType parseRecordField (Param& comp, const IString& group);
   GTokenType parseStream (Stream& stream, Stream::Type);
   GTokenType parseSequence ();
   GTokenType parseParamHints (Param &def);
   GTokenType parseClass ();
   GTokenType parseMethod (Method& def);
-  GTokenType parseInfoOptional (Map<std::string,std::string>& infos);
+  GTokenType parseInfoOptional (Map<std::string,IString>& infos);
 public:
   Parser ();
   

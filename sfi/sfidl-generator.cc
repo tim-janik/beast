@@ -172,12 +172,7 @@ string CodeGeneratorCBase::makeGTypeName(const string& name)
 string CodeGeneratorCBase::makeParamSpec(const Param& pdef)
 {
   string pspec;
-  string group = pdef.group;
-
-  if (group != "")
-    group = "\"" + group + "\"";
-  else
-    group = "NULL";
+  const string group = (pdef.group != "") ? pdef.group.escaped() : "NULL";
  
   switch (parser.typeOf (pdef.type))
     {
@@ -233,11 +228,11 @@ string CodeGeneratorCBase::makeParamSpec(const Param& pdef)
   return pspec;
 }
 
-void CodeGeneratorC::printInfoStrings (const string& name, const map<string,string>& infos)
+void CodeGeneratorC::printInfoStrings (const string& name, const Map<string,IString>& infos)
 {
   printf("static const gchar *%s[] = {\n", name.c_str());
 
-  map<string,string>::const_iterator ii;
+  Map<string,IString>::const_iterator ii;
   for (ii = infos.begin(); ii != infos.end(); ii++)
     printf("  \"%s=%s\",\n", ii->first.c_str(), ii->second.c_str());
 
