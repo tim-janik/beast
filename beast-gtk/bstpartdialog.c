@@ -194,6 +194,8 @@ bst_part_dialog_init (BstPartDialog *self)
   srange = gxk_gadget_find (gadget, "pattern-view-vscrollbar");
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->pview), gtk_range_get_adjustment (srange));
   self->pvctrl = bst_pattern_controller_new (self->pview, self->pictrl->quant_rtools);
+  g_signal_connect_swapped (gxk_gadget_find (gadget, "conf-button"), "clicked",
+                            G_CALLBACK (bst_pattern_column_layouter_popup), self->pview);
 
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);

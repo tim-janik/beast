@@ -47,6 +47,8 @@ void		gxk_text_view_cursor_normal	(GtkTextView		*tview);
 void		gxk_text_view_cursor_busy	(GtkTextView		*tview);
 GtkWidget*	gxk_scroll_text_create		(GxkScrollTextFlags	 flags,
 						 const gchar		*string);
+GtkWidget*	gxk_scroll_text_create_for	(GxkScrollTextFlags	 flags,
+						 GtkWidget              *parent);
 void		gxk_scroll_text_set_index	(GtkWidget		*sctext,
 						 const gchar		*uri);
 void		gxk_scroll_text_display		(GtkWidget		*sctext,

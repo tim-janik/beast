@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,12 +16,12 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include	"gxkdialog.h"
-
-#include	"gxkstock.h"
-#include	"gxkstatusbar.h"
-#include	<gdk/gdkkeysyms.h>
-#include	<string.h>
+#include "gxkdialog.h"
+#include "gxkgadget.h"
+#include "gxkstock.h"
+#include "gxkstatusbar.h"
+#include <gdk/gdkkeysyms.h>
+#include <string.h>
 
 #define	DEFAULT_TITLE	"Auxillary Dialog"
 
@@ -354,6 +354,21 @@ gxk_dialog_new (gpointer       pointer_loc,
   gxk_dialog_set_child (dialog, child);
 
   return dialog;
+}
+
+gpointer
+gxk_dialog_new_gadget (gpointer        pointer_loc,
+                       GtkObject      *alive_object,
+                       GxkDialogFlags  flags,
+                       const gchar    *title,
+                       const gchar    *domain_name,
+                       const gchar    *gadget_name)
+{
+  GxkGadget *gadget = gxk_gadget_create (domain_name, gadget_name, NULL);
+  if (gadget)
+    return gxk_dialog_new (pointer_loc, alive_object, flags, title, gadget);
+  else
+    return NULL;
 }
 
 /**

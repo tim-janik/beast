@@ -212,6 +212,12 @@
     </vbox>
     <notebook pack:expand="1">
       <vbox>
+	<alignment xalign="1.0" xscale="0" >
+	  <hbox >
+	    <hstock-button name="conf-button" _label="Configure" stock="BST_STOCK_EDIT"
+	      _tooltip="Configure the display facilities of the pattern editor" />
+	  </hbox>
+	</alignment>
 	<hbox pack:expand="1" >
 	  <frame-shadow-in pack:expand="1" >
 	    <pattern-view />
@@ -295,6 +301,24 @@
     </notebook>
   </xdef:piano-roll-box>
 
+  <!-- pattern editor layout dialog -->
+  <xdef:pattern-editor-layout-box inherit="vbox" spacing="3" border-width="3" >
+    <frame expand="1" >
+      <alignment name="sctext-box" expand="1" />
+    </frame>
+    <hbox>
+      <label _label="Layout:" />
+      <entry name="layout-entry" expand="1" />
+    </hbox>
+    <hseparator/>
+    <hbox spacing="3" homogeneous="1" >
+      <hstock-button name="apply-button" _label="_Apply" stock="gtk-apply" can-default="1"
+	_tooltip="Aplly configuration changes to the pattern editor layout" />
+      <hstock-button name="cancel-button" _label="_Cancel" stock="gtk-cancel" can-default="1"
+	_tooltip="Discard changes and close dialog" />
+    </hbox>
+  </xdef:pattern-editor-layout-box>
+
   <!-- pattern editor keybinding dialog -->
   <xdef:key-bindings-box inherit="vbox" >
     <vbox spacing="3" expand="1" >
@@ -313,7 +337,7 @@
       </scrolled-window>
     </vbox>
   </xdef:key-bindings-box>
-  
+
   <!-- beast-menubar -->
   <xdef:beast-menubar inherit="menubar" >
     <submenu _label="_File">

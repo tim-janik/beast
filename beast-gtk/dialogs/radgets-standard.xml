@@ -25,7 +25,9 @@
 
   <!-- Primitive Gtk+ widget type wrappers -->
   
-  <xdef:entry                 inherit="GtkEntry"        />
+  <xdef:entry                 inherit="GtkEntry"
+    prop:activates-default="1"
+    />
   <!-- frame, alignment -->
   <xdef:alignment             inherit="GtkAlignment"
     prop:xalign="$(first-occupied,$xalign,0.5)"
@@ -117,8 +119,6 @@
     prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
     prop:relief="$(ifdef,relief,$relief,normal)"
     prop:use-stock="$(if,$stock)" />
-  <xdef:can-default-button    inherit="button" can-default="1" />
-  <xdef:default-button        inherit="button" default="1" />
   <xdef:check-button          inherit="GtkCheckButton"
     prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
     prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
@@ -361,7 +361,7 @@
   <!-- hstock-button: button, tooltip= stock= image-size= -->
   <xdef:hstock-button inherit="button" default-area="hbox" label="" stock="" focus="1" >
     <tooltip text="$tooltip" />
-    <alignment xscale="0" xalign="0" >
+    <alignment xscale="0" xalign="0.5" >
       <hbox spacing="3" >
 	<image
 	  stock-image="$stock"

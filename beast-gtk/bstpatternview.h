@@ -122,12 +122,16 @@ void  bst_pattern_view_set_pixmarker   (BstPatternView           *self,
                                         gint                      width,
                                         gint                      height);
 void  bst_pattern_view_add_column      (BstPatternView           *self,
-                                        BstPatternColumnClass    *column_class);
+                                        BstPatternLType           ltype,
+                                        gint                      num,
+                                        BstPatternLFlags          lflags);
 void  bst_pattern_view_set_focus       (BstPatternView           *self,
                                         guint                     focus_col,
                                         guint                     focus_row);
 gint  bst_pattern_view_get_focus_width (BstPatternView           *self);
 gint  bst_pattern_view_get_last_row    (BstPatternView           *self);
+guint bst_pattern_view_set_layout      (BstPatternView           *self,
+                                        const gchar              *layout);
 
 
 G_END_DECLS

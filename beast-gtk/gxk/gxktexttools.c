@@ -1415,6 +1415,17 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   return sctext;
 }
 
+GtkWidget*
+gxk_scroll_text_create_for (GxkScrollTextFlags      flags,
+                            GtkWidget              *parent)
+{
+  GtkWidget *sctext;
+  g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
+  sctext = gxk_scroll_text_create (flags, "");
+  gtk_container_add (GTK_CONTAINER (parent), sctext);
+  return sctext;
+}
+
 static void
 text_tag_remove (GtkTextTag *tag,
                  gpointer    data)

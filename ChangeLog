@@ -1,3 +1,29 @@
+Tue Feb 17 01:40:21 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpartdialog.c: fire up layout configuration dialog when
+	configure button is clicked.
+
+	* beast-gtk/bstpatterncolumns.[hc]: made note column channel sensitive.
+	support spacing and dotted line mode for vbar columns. implemented
+	layout dialog, and column layout parser, as well as a column constructor.
+
+	* beast-gtk/bstpatternview.[hc]: adapt to column layout facilities,
+	added bst_pattern_view_set_layout().
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added configure button to pattern
+	view dialog. added pattern-editor-layout-box to implement a layout
+	editor dialog.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: changed GtkEntry defaults to
+	automatically activate the toplevel default widget upon GDK_Return.
+	adjusted hstock-button, got rid of unused button definitions.
+
+	* beast-gtk/gxk/gxkdialog.[hc]: added convenience function
+	gxk_dialog_new_gadget() to create a dialog with gadget child.
+
+	* beast-gtk/gxk/gxktexttools.[hc]: added convenience function
+	gxk_scroll_text_create_for() to create a scroll text with parent.
+
 Mon Feb 16 18:53:58 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/scripts/Makefile.am: Install harmonic transposition script.

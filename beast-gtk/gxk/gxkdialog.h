@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -78,6 +78,12 @@ gpointer	gxk_dialog_new			  (gpointer	   pointer_loc,
 						   GxkDialogFlags  flags,
 						   const gchar    *title,
 						   GtkWidget	  *child);
+gpointer        gxk_dialog_new_gadget             (gpointer        pointer_loc,
+                                                   GtkObject      *alive_object,
+                                                   GxkDialogFlags  flags,
+                                                   const gchar    *title,
+                                                   const gchar    *domain_name,
+                                                   const gchar    *gadget_name);
 void		gxk_dialog_set_title		  (GxkDialog	  *dialog,
 						   const gchar	  *title);
 void		gxk_dialog_set_focus		  (GxkDialog	  *dialog,

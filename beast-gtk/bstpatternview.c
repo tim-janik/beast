@@ -81,25 +81,7 @@ bst_pattern_view_init (BstPatternView *self)
   gxk_scroll_canvas_set_left_panel_cursor (scc, GDK_HAND2);
   gxk_scroll_canvas_set_top_panel_cursor (scc, GDK_LEFT_PTR);
   bst_pattern_view_vsetup (self, 384, 4, 800 * 384, 384);
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_vbar_get_class ());
-  bst_pattern_view_add_column (self, bst_pattern_column_note_get_class ());
+  bst_pattern_view_add_column (self, BST_PATTERN_LTYPE_NOTE, 0, 0);
 }
 
 static void
@@ -113,12 +95,8 @@ bst_pattern_view_dispose (GObject *object)
 }
 
 static void
-bst_pattern_view_finalize (GObject *object)
+bst_pattern_view_destroy_columns (BstPatternView *self)
 {
-  BstPatternView *self = BST_PATTERN_VIEW (object);
-
-  bst_pattern_view_set_proxy (self, 0);
-
   while (self->n_cols)
     {
       self->n_cols--;
@@ -130,6 +108,16 @@ bst_pattern_view_finalize (GObject *object)
   self->n_focus_cols = 0;
   g_free (self->focus_cols);
   self->focus_cols = NULL;
+  gtk_widget_queue_resize (GTK_WIDGET (self));
+}
+
+static void
+bst_pattern_view_finalize (GObject *object)
+{
+  BstPatternView *self = BST_PATTERN_VIEW (object);
+
+  bst_pattern_view_set_proxy (self, 0);
+  bst_pattern_view_destroy_columns (self);
 
   G_OBJECT_CLASS (bst_pattern_view_parent_class)->finalize (object);
 }
@@ -718,16 +706,17 @@ pattern_view_handle_drag (GxkScrollCanvas     *scc,
 }
 
 void
-bst_pattern_view_add_column (BstPatternView           *self,
-                             BstPatternColumnClass    *column_class)
+bst_pattern_view_add_column (BstPatternView   *self,
+                             BstPatternLType   ltype,
+                             gint              num,
+                             BstPatternLFlags  lflags)
 {
   BstPatternColumn *col;
   guint i;
   g_return_if_fail (BST_PATTERN_VIEW (self));
-  g_return_if_fail (column_class != NULL);
 
   self->cols = g_renew (BstPatternColumn*, self->cols, self->n_cols + 1);
-  col = column_class->create (column_class);
+  col = bst_pattern_column_create (ltype, num, lflags);
   self->cols[self->n_cols++] = col;
   col->focus_base = self->n_focus_cols;
   for (i = 0; i < col->klass->n_focus_positions; i++)
@@ -735,6 +724,7 @@ bst_pattern_view_add_column (BstPatternView           *self,
       self->focus_cols = g_renew (BstPatternColumn*, self->focus_cols, self->n_focus_cols + 1);
       self->focus_cols[self->n_focus_cols++] = col;
     }
+  gtk_widget_queue_resize (GTK_WIDGET (self));
 }
 
 gint
@@ -874,6 +864,41 @@ bst_pattern_view_set_pixmarker (BstPatternView           *self,
       marker->mtype = mtype;
       gxk_scroll_canvas_setup_marker (scc, marker, &CANVAS (self), x, y, width, height);
     }
+}
+
+guint
+bst_pattern_view_set_layout (BstPatternView *self,
+                             const gchar    *layout)
+{
+  const gchar *p2, *p = layout;
+  struct {
+    BstPatternLType  ltype;
+    BstPatternLFlags flags;
+    gint             num;
+  } *column = NULL;
+  guint n = 0;
+  while (*p == ' ')
+    p++;
+  column = g_realloc (column, sizeof (column[0]) * (n + 1));
+  p2 = bst_pattern_layout_parse_column (p, &column[n].ltype, &column[n].num, &column[n].flags);
+  while (p2 > p)
+    {
+      n++;
+      p = p2;
+      while (*p == ' ')
+        p++;
+      column = g_realloc (column, sizeof (column[0]) * (n + 1));
+      p2 = bst_pattern_layout_parse_column (p, &column[n].ltype, &column[n].num, &column[n].flags);
+    }
+  if (!p2[0] && n)
+    {
+      guint i;
+      bst_pattern_view_destroy_columns (self);
+      for (i = 0; i < n; i++)
+        bst_pattern_view_add_column (self, column[i].ltype, column[i].num, column[i].flags);
+    }
+  g_free (column);
+  return p2 - layout;
 }
 
 static void

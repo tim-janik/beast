@@ -29,6 +29,7 @@ typedef struct _BstPatternColumnClass BstPatternColumnClass;
 struct _BstPatternColumn
 {
   BstPatternColumnClass *klass;
+  guint                  num;
   /* fields private to BstPatternView */
   guint                  x;
   guint                  width;
@@ -37,7 +38,8 @@ struct _BstPatternColumn
 struct _BstPatternColumnClass
 {
   guint                   n_focus_positions;
-  BstPatternColumn*     (*create)               (BstPatternColumnClass  *klass);
+  guint                   instance_size;
+  void                  (*init)                 (BstPatternColumn       *self);
   PangoFontDescription* (*create_font_desc)     (BstPatternColumn       *self);
   void                  (*draw_cell)            (BstPatternColumn       *self,
                                                  BstPatternView         *pview,
@@ -55,9 +57,35 @@ struct _BstPatternColumnClass
   void                  (*finalize)             (BstPatternColumn       *self);
 };
 
-BstPatternColumnClass*  bst_pattern_column_note_get_class       (void);
-BstPatternColumnClass*  bst_pattern_column_vbar_get_class       (void);
-
+typedef enum {
+  BST_PATTERN_LTYPE_SPACE,
+  BST_PATTERN_LTYPE_NOTE,       /* plus #channel */
+  BST_PATTERN_LTYPE_OFFSET,     /* plus #channel */
+  BST_PATTERN_LTYPE_LENGTH,     /* plus #channel */
+  BST_PATTERN_LTYPE_VELOCITY,   /* plus #channel */
+  BST_PATTERN_LTYPE_FINE_TUNE,  /* plus #channel */
+  BST_PATTERN_LTYPE_CONTROL,    /* plus #control */
+  BST_PATTERN_LTYPE_BAR,
+  BST_PATTERN_LTYPE_DBAR,
+} BstPatternLType;
+typedef enum {
+  BST_PATTERN_LFLAG_SIGNED      = 1 << 0,
+  BST_PATTERN_LFLAG_HEX2        = 1 << 1,
+  BST_PATTERN_LFLAG_HEX4        = 1 << 2,
+  BST_PATTERN_LFLAG_DEC2        = 1 << 3,
+  BST_PATTERN_LFLAG_DEC3        = 1 << 4,
+  BST_PATTERN_LFLAG_COL1        = 1 << 5,
+  BST_PATTERN_LFLAG_COL2        = 1 << 6,
+  BST_PATTERN_LFLAG_COL3        = 1 << 7,
+} BstPatternLFlags;
+void              bst_pattern_column_layouter_popup (BstPatternView   *pview);
+const gchar*      bst_pattern_layout_parse_column   (const gchar      *string,
+                                                     BstPatternLType  *ltype,
+                                                     gint             *num,
+                                                     BstPatternLFlags *flags);
+BstPatternColumn* bst_pattern_column_create         (BstPatternLType   ltype,
+                                                     gint              num,
+                                                     BstPatternLFlags  lflags);
 
 G_END_DECLS
 
