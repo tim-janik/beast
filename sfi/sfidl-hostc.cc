@@ -257,25 +257,62 @@ string CodeGeneratorCBase::createTypeCode (const std::string& type, TypeCodeMode
 }
 
 string CodeGeneratorCBase::createTypeCode (const string& type, const string &name,
-                                       TypeCodeModel model)
+                                           TypeCodeModel model)
 {
   switch (model)
     {
+      /*
+       * data types: the following models deal with how to represent a certain
+       * SFI type in the binding
+       */
+      // how "type" looks like when passed as argument to a function
       case MODEL_ARG:	      g_return_val_if_fail (name == "", "bad"); break;
+      // how the return type of a function returning "type" looks like
       case MODEL_RET:	      g_return_val_if_fail (name == "", "bad"); break;
+      // how "type" looks like when stored as member in a struct or class
       case MODEL_MEMBER:      g_return_val_if_fail (name == "", "bad"); break;
+      // how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
       case MODEL_ARRAY:	      g_return_val_if_fail (name == "", "bad"); break;
+      
+      /*
+       * memory issues: the following models deal with how to allocate, copy
+       * and free a SFI type
+       */
+      // how to free a "type" called "name"
       case MODEL_FREE:	      g_return_val_if_fail (name != "", "bad"); break;
+      // how to copy a "type" called "name"
       case MODEL_COPY:	      g_return_val_if_fail (name != "", "bad"); break;
+      // how to create a new "type" called "name" (blank return value allowed)
       case MODEL_NEW:	      g_return_val_if_fail (name != "", "bad"); break;
+      
+      /*
+       * GValues: the following models deal with getting types into and out of
+       * GValues
+       */
+      // how to create a new "type" called "name" from a GValue*
       case MODEL_FROM_VALUE:  g_return_val_if_fail (name != "", "bad"); break;
+      // how to convert the "type" called "name" to a GValue*
       case MODEL_TO_VALUE:    g_return_val_if_fail (name != "", "bad"); break;
+      
+      /*
+       * vcall interface: the following models deal with how to perform a
+       * method/procedure invocation using a given data type
+       */
+      // the name of the VCALL function for calling functions returning "type"
       case MODEL_VCALL:	      g_return_val_if_fail (name == "", "bad"); break;
+      // how to pass a "type" called "name" to the VCALL function
       case MODEL_VCALL_ARG:   g_return_val_if_fail (name != "", "bad"); break;
+      // what type a conversion results in (== MODEL_VCALL_RET ?)
+      case MODEL_VCALL_CARG:  g_return_val_if_fail (name == "", "bad"); break;
+      // how to perform the conversion of a vcall parameter called "name" (optional: "" if unused)
       case MODEL_VCALL_CONV:  g_return_val_if_fail (name != "", "bad"); break;
+      // how to free the conversion result of "name" (optional: "" if unused)
       case MODEL_VCALL_CFREE: g_return_val_if_fail (name != "", "bad"); break;
+      // what type a vcall result is
       case MODEL_VCALL_RET:   g_return_val_if_fail (name == "", "bad"); break;
+      // how to convert the result of a vcall called "name" (optional: name if unused)
       case MODEL_VCALL_RCONV: g_return_val_if_fail (name != "", "bad"); break;
+      // how to free (using GC) the result of the conversion (optional: "" if unused)
       case MODEL_VCALL_RFREE: g_return_val_if_fail (name != "", "bad"); break;
     }
 
@@ -301,6 +338,8 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 	  return "sfi_glue_vcall_seq";
 	if (model == MODEL_VCALL_ARG) 
 	  return "'" + scatId (SFI_SCAT_SEQ) + "', "+name+",";
+	if (model == MODEL_VCALL_CARG) 
+	  return "SfiSeq*";
 	if (model == MODEL_VCALL_CONV) 
 	  return makeLowerName (type)+"_to_seq ("+name+")";
 	if (model == MODEL_VCALL_CFREE) 
@@ -320,6 +359,8 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 	  return "sfi_glue_vcall_rec";
 	if (model == MODEL_VCALL_ARG) 
 	  return "'" + scatId (SFI_SCAT_REC) + "', "+name+",";
+	if (model == MODEL_VCALL_CARG) 
+	  return "SfiRec*";
 	if (model == MODEL_VCALL_CONV) 
 	  return makeLowerName (type)+"_to_rec ("+name+")";
 	if (model == MODEL_VCALL_CFREE) 
@@ -355,6 +396,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 	}
       if (model == MODEL_VCALL)       return "sfi_glue_vcall_choice";
       if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_CHOICE) + "', "+makeLowerName (type)+"_to_choice ("+name+"),";
+      if (model == MODEL_VCALL_CARG)  return "";
       if (model == MODEL_VCALL_CONV)  return "";
       if (model == MODEL_VCALL_CFREE) return "";
       if (model == MODEL_VCALL_RET)   return "const gchar *";
@@ -379,6 +421,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
       if (model == MODEL_FROM_VALUE)  return "sfi_value_get_proxy ("+name+")";
       if (model == MODEL_VCALL)       return "sfi_glue_vcall_proxy";
       if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_PROXY) + "', "+name+",";
+      if (model == MODEL_VCALL_CARG)  return "";
       if (model == MODEL_VCALL_CONV)  return "";
       if (model == MODEL_VCALL_CFREE) return "";
       if (model == MODEL_VCALL_RET)   return "SfiProxy";
@@ -400,6 +443,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 	  case MODEL_FROM_VALUE:  return "sfi_value_dup_string ("+name+")";
 	  case MODEL_VCALL:       return "sfi_glue_vcall_string";
 	  case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+",";
+	  case MODEL_VCALL_CARG:  return "";
 	  case MODEL_VCALL_CONV:  return "";
 	  case MODEL_VCALL_CFREE: return "";
 	  case MODEL_VCALL_RET:   return "const gchar*";
@@ -420,6 +464,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
       if (model == MODEL_FROM_VALUE)  return "sfi_bblock_ref (sfi_value_get_bblock ("+name+"))";
       if (model == MODEL_VCALL)       return "sfi_glue_vcall_bblock";
       if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_BBLOCK) + "', "+name+",";
+      if (model == MODEL_VCALL_CARG)  return "";
       if (model == MODEL_VCALL_CONV)  return "";
       if (model == MODEL_VCALL_CFREE) return "";
       if (model == MODEL_VCALL_RET)   return "SfiBBlock*";
@@ -439,6 +484,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
       if (model == MODEL_FROM_VALUE)  return "sfi_fblock_ref (sfi_value_get_fblock ("+name+"))";
       if (model == MODEL_VCALL)       return "sfi_glue_vcall_fblock";
       if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_FBLOCK) + "', "+name+",";
+      if (model == MODEL_VCALL_CARG)  return "";
       if (model == MODEL_VCALL_CONV)  return "";
       if (model == MODEL_VCALL_CFREE) return "";
       if (model == MODEL_VCALL_RET)   return "SfiFBlock*";
@@ -460,6 +506,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
       if (model == MODEL_FROM_VALUE)  return "sfi_pspec_ref (sfi_value_get_pspec ("+name+"))";
       if (model == MODEL_VCALL)       return "sfi_glue_vcall_pspec";
       if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_PSPEC) + "', "+name+",";
+      if (model == MODEL_VCALL_CARG)  return "";
       if (model == MODEL_VCALL_CONV)  return "";
       if (model == MODEL_VCALL_CFREE) return "";
       if (model == MODEL_VCALL_RET)   return "SfiPSpec*";
@@ -480,6 +527,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
       if (model == MODEL_FROM_VALUE)  return "sfi_rec_ref (sfi_value_get_rec ("+name+"))";
       if (model == MODEL_VCALL)       return "sfi_glue_vcall_rec";
       if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_REC) + "', "+name+",";
+      if (model == MODEL_VCALL_CARG)  return "";
       if (model == MODEL_VCALL_CONV)  return "";
       if (model == MODEL_VCALL_CFREE) return "";
       if (model == MODEL_VCALL_RET)   return "SfiRec*";
@@ -507,6 +555,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 	  if (type == "Int")	      return "'" + scatId (SFI_SCAT_INT) + "', "+name+",";
 	  if (type == "Num")	      return "'" + scatId (SFI_SCAT_NUM) + "', "+name+",";
 	}
+      if (model == MODEL_VCALL_CARG)  return "";
       if (model == MODEL_VCALL_CONV)  return "";
       if (model == MODEL_VCALL_CFREE) return "";
       if (model == MODEL_VCALL_RET)   return sfi + type;
@@ -546,6 +595,8 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
   printf("%s%s%s (", ret.c_str(), proto?" ":"\n", mname.c_str());
   for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
     {
+      if (pi->name == "_object_id") continue; // C++ binding: get _object_id from class
+
       string arg = createTypeCode(pi->type, "", MODEL_ARG);
       if(!first) printf(", ");
       first = false;
@@ -562,7 +613,7 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
 
   printf(" {\n");
 
-  string vret = createTypeCode (mdef.result.type, "", MODEL_VCALL_RET);
+  string vret = createTypeCode (mdef.result.type, MODEL_VCALL_RET);
   if (mdef.result.type != "void")
     printf ("  %s _retval;\n", vret.c_str());
 
@@ -578,7 +629,7 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
 	{
 	  cname[pi->name] = pi->name + "__c";
 
-	  string arg = createTypeCode(pi->type, "", MODEL_ARG);
+	  string arg = createTypeCode(pi->type, MODEL_VCALL_CARG);
 	  printf("  %s %s__c = %s;\n", arg.c_str(), pi->name.c_str(), conv.c_str());
 	}
       else
@@ -629,6 +680,54 @@ static bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2)
   reverse (ename2.begin(), ename2.end());
 
   return ename1 < ename2;
+}
+
+void CodeGeneratorCBase::printChoiceConverters()
+{
+  vector<Choice>::const_iterator ei;
+
+  for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
+    {
+      if (parser.fromInclude (ei->name)) continue;
+
+      int minval = 1, maxval = 1;
+      vector<ChoiceValue>::iterator ci;
+      string name = makeLowerName (ei->name);
+      string arg = createTypeCode (ei->name, MODEL_ARG);
+      string ret = createTypeCode (ei->name, MODEL_RET);
+
+      /* produce reverse sorted enum array */
+      vector<ChoiceValue> components = ei->contents;
+      for (ci = components.begin(); ci != components.end(); ci++)
+	ci->name = makeLowerName (NamespaceHelper::namespaceOf(ei->name) + ci->name, '-');
+      sort (components.begin(), components.end(), ::choiceReverseSort);
+
+      printf("static const SfiConstants %s_vals[%d] = {\n",name.c_str(), ei->contents.size());
+      for (ci = components.begin(); ci != components.end(); ci++)
+	{
+	  int value = ci->sequentialValue;
+	  minval = min (value, minval);
+	  maxval = max (value, maxval);
+	  printf("  { \"%s\", %d, %d },\n", ci->name.c_str(), ci->name.size(), value);
+	}
+      printf("};\n\n");
+
+      printf("const gchar*\n");
+      printf("%s_to_choice (%s value)\n", name.c_str(), arg.c_str());
+      printf("{\n");
+      printf("  g_return_val_if_fail (value >= %d && value <= %d, NULL);\n", minval, maxval);
+      printf("  return sfi_constants_get_name (G_N_ELEMENTS (%s_vals), %s_vals, value);\n",
+	  name.c_str(), name.c_str());
+      printf("}\n\n");
+
+      printf("%s\n", ret.c_str());
+      printf("%s_from_choice (const gchar *choice)\n", name.c_str());
+      printf("{\n");
+      printf("  return (%s) (choice ? sfi_constants_get_index (G_N_ELEMENTS (%s_vals), "
+	                    "%s_vals, choice) : 0);\n", ret.c_str(), name.c_str(), name.c_str());
+      printf("}\n");
+      printf("\n");
+    }
 }
 
 void CodeGeneratorC::run ()
@@ -1242,49 +1341,7 @@ void CodeGeneratorC::run ()
     }
 
   if (options.doInterface && options.doSource)
-    {
-      for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
-	{
-	  if (parser.fromInclude (ei->name)) continue;
-
-	  int minval = 1, maxval = 1;
-	  vector<ChoiceValue>::iterator ci;
-	  string name = makeLowerName (ei->name);
-	  string mname = makeMixedName (ei->name);
-
-	  /* produce reverse sorted enum array */
-	  vector<ChoiceValue> components = ei->contents;
-	  for (ci = components.begin(); ci != components.end(); ci++)
-	    ci->name = makeLowerName (NamespaceHelper::namespaceOf(ei->name) + ci->name, '-');
-	  sort (components.begin(), components.end(), ::choiceReverseSort);
-
-	  printf("static const SfiConstants %s_vals[%d] = {\n",name.c_str(), ei->contents.size());
-	  for (ci = components.begin(); ci != components.end(); ci++)
-	    {
-	      int value = ci->sequentialValue;
-	      minval = min (value, minval);
-	      maxval = max (value, maxval);
-	      printf("  { \"%s\", %d, %d },\n", ci->name.c_str(), ci->name.size(), value);
-	    }
-	  printf("};\n\n");
-
-	  printf("const gchar*\n");
-	  printf("%s_to_choice (%s value)\n", name.c_str(), mname.c_str());
-	  printf("{\n");
-	  printf("  g_return_val_if_fail (value >= %d && value <= %d, NULL);\n", minval, maxval);
-	  printf("  return sfi_constants_get_name (G_N_ELEMENTS (%s_vals), %s_vals, value);\n",
-	      name.c_str(), name.c_str());
-	  printf("}\n\n");
-
-	  printf("%s\n", mname.c_str());
-	  printf("%s_from_choice (const gchar *choice)\n", name.c_str());
-	  printf("{\n");
-	  printf("  return choice ? sfi_constants_get_index (G_N_ELEMENTS (%s_vals), %s_vals, choice) : 0;\n",
-	      name.c_str(), name.c_str());
-	  printf("}\n");
-	  printf("\n");
-	}
-    }
+    printChoiceConverters();
 
   if (options.initFunction != "")
     {

@@ -62,12 +62,14 @@ namespace Sfidl {
     enum TypeCodeModel {
       MODEL_ARG, MODEL_MEMBER, MODEL_RET, MODEL_ARRAY,
       MODEL_FREE, MODEL_COPY, MODEL_NEW, MODEL_FROM_VALUE, MODEL_TO_VALUE,
-      MODEL_VCALL, MODEL_VCALL_ARG, MODEL_VCALL_CONV, MODEL_VCALL_CFREE,
+      MODEL_VCALL, MODEL_VCALL_ARG, 
+      MODEL_VCALL_CARG, MODEL_VCALL_CONV, MODEL_VCALL_CFREE,
       MODEL_VCALL_RET, MODEL_VCALL_RCONV, MODEL_VCALL_RFREE
     };
 
     std::string scatId (SfiSCategory c);
     void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
+    void printChoiceConverters ();
     virtual std::string makeProcName (const std::string& className, const std::string& procName);
 
     std::string makeGTypeName (const std::string& name);

@@ -1,3 +1,11 @@
+Fri Nov 28 00:49:15 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cxx.*: Records, sequences, choices, classes are covered now.
+	So its reasonably usable binding (which can handle bse/bse.idl).
+
+	* sfidl-generator.*: New createTypeCode model: MODEL_VCALL_CARG.
+	Comments. Seperated choice conversion into a seperate function.
+
 Thu Nov 27 00:55:40 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-cxx.*: New files: initial check-in of the C++ language binding.

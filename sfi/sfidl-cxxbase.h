@@ -28,6 +28,7 @@ namespace Sfidl {
   protected:
     NamespaceHelper nspace;
     std::string makeProcName (const std::string& className, const std::string& procName);
+    void printMethods (const Class& cdef);
 
     using CodeGeneratorCBase::createTypeCode;
     std::string createTypeCode (const std::string& type, const std::string& name, 
