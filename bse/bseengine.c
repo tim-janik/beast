@@ -88,8 +88,7 @@ bse_module_new (const BseModuleClass *klass,
   node->flow_jobs = NULL;
   node->boundary_jobs = NULL;
   node->probe_jobs = NULL;
-  node->ujob_first = NULL;
-  node->ujob_last = NULL;
+  node->tjob_head = node->tjob_tail = NULL;
   
   return &node->module;
 }
@@ -565,24 +564,24 @@ bse_job_probe_request (BseModule         *module,
   g_return_val_if_fail (n_probe_values > 0, NULL);
   
   guint i, n_oblocks = module->klass->n_ostreams;
-  EngineProbeJob *pjob = g_malloc0 (sizeof (*pjob) +  sizeof (pjob->oblocks[0]) * n_oblocks);
+  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->probe) +  sizeof (tjob->probe.oblocks[0]) * n_oblocks);
   
-  pjob->job_type = ENGINE_JOB_PROBE_JOB;
-  pjob->probe_func = probe_func;
-  pjob->data = data;
-  pjob->tick_stamp = 0;
-  pjob->delay_counter = n_delay_samples;
-  pjob->oblock_length = n_probe_values;
-  pjob->n_values = 0;
-  pjob->n_oblocks = n_oblocks;
+  tjob->type = ENGINE_JOB_PROBE_JOB;
+  tjob->tick_stamp = 0;
+  tjob->probe.data = data;
+  tjob->probe.probe_func = probe_func;
+  tjob->probe.delay_counter = n_delay_samples;
+  tjob->probe.oblock_length = n_probe_values;
+  tjob->probe.n_values = 0;
+  tjob->probe.n_oblocks = n_oblocks;
   for (i = 0; i < n_oblocks; i++)
     if (ochannel_bytemask[i])
-      pjob->oblocks[i] = g_new0 (gfloat, pjob->oblock_length);
+      tjob->probe.oblocks[i] = g_new0 (gfloat, tjob->probe.oblock_length);
   
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;
-  job->probe_job.node = ENGINE_NODE (module);
-  job->probe_job.pjob = pjob;
+  job->timed_job.node = ENGINE_NODE (module);
+  job->timed_job.tjob = tjob;
   
   return job;
 }
@@ -614,19 +613,18 @@ bse_job_flow_access (BseModule    *module,
 		     BseFreeFunc   free_func)
 {
   BseJob *job;
-  EngineTimedJob *tjob;
   
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  tjob = g_new0 (EngineTimedJob, 1);
-  tjob->job_type = ENGINE_JOB_FLOW_JOB;
-  tjob->free_func = free_func;
-  tjob->data = data;
+  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->access));
+  tjob->type = ENGINE_JOB_FLOW_JOB;
   tjob->tick_stamp = tick_stamp;
-  tjob->access_func = access_func;
+  tjob->access.free_func = free_func;
+  tjob->access.data = data;
+  tjob->access.access_func = access_func;
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_FLOW_JOB;
@@ -662,19 +660,18 @@ bse_job_boundary_access (BseModule    *module,
                          BseFreeFunc   free_func)
 {
   BseJob *job;
-  EngineTimedJob *tjob;
   
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  tjob = g_new0 (EngineTimedJob, 1);
-  tjob->job_type = ENGINE_JOB_BOUNDARY_JOB;
-  tjob->free_func = free_func;
-  tjob->data = data;
+  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->access));
+  tjob->type = ENGINE_JOB_BOUNDARY_JOB;
   tjob->tick_stamp = tick_stamp;
-  tjob->access_func = access_func;
+  tjob->access.free_func = free_func;
+  tjob->access.data = data;
+  tjob->access.access_func = access_func;
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
@@ -709,19 +706,16 @@ bse_engine_boundary_discard (BseModule      *module,
 BseJob*
 bse_job_boundary_discard (BseModule *module)
 {
-  BseJob *job;
-  EngineTimedJob *tjob;
-
   g_return_val_if_fail (module != NULL, NULL);
 
-  tjob = g_new0 (EngineTimedJob, 1);
-  tjob->job_type = ENGINE_JOB_BOUNDARY_JOB;
-  tjob->free_func = NULL;
-  tjob->data = NULL;
+  EngineTimedJob *tjob = g_malloc0 (sizeof (tjob->access));
+  tjob->type = ENGINE_JOB_BOUNDARY_JOB;
   tjob->tick_stamp = 0;
-  tjob->access_func = bse_engine_boundary_discard;
+  tjob->access.free_func = NULL;
+  tjob->access.data = NULL;
+  tjob->access.access_func = bse_engine_boundary_discard;
 
-  job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
   job->timed_job.node = ENGINE_NODE (module);
   job->timed_job.tjob = tjob;
@@ -744,12 +738,10 @@ bse_job_boundary_discard (BseModule *module)
 BseJob*
 bse_job_suspend_now (BseModule *module)
 {
-  BseJob *job;
-  
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   
-  job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SUSPEND;
   job->tick.node = ENGINE_NODE (module);
   job->tick.stamp = GSL_MAX_TICK_STAMP;
@@ -777,13 +769,11 @@ BseJob*
 bse_job_resume_at (BseModule *module,
                    guint64    tick_stamp)
 {
-  BseJob *job;
-  
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   
-  job = sfi_new_struct0 (BseJob, 1);
+  BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_RESUME;
   job->tick.node = ENGINE_NODE (module);
   job->tick.stamp = tick_stamp;

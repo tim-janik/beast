@@ -1,3 +1,15 @@
+Sun Dec 12 18:55:36 2004  Tim Janik  <timj@gtk.org>
+
+	* bseenginemaster.c:
+	* bseengineutils.c:
+	general fixups to ensure probe/flow/boundary jobs are collected
+	in order and are given precedence over collecting transaction jobs.
+
+	* bseenginenode.h: turned probe jobs, acces jobs and boundary jobs into
+	a single union EngineTimedJob. this avoids breaking strict aliasing
+	rules which results in wrong code generation with gcc-3.3 and gcc-3.4.
+	adapted all structure usages.
+
 Sun Dec 12 03:13:17 2004  Tim Janik  <timj@gtk.org>
 
 	* bseengineutils.c: make sure pending user trash jobs are collected

@@ -46,9 +46,7 @@ typedef struct _EngineNode     EngineNode;
 typedef struct _EngineSchedule EngineSchedule;
 
 /* --- transactions --- */
-typedef struct _EngineUserJob  EngineUserJob;
-typedef struct _EngineProbeJob EngineProbeJob;
-typedef struct _EngineTimedJob EngineTimedJob;
+typedef union  _EngineTimedJob EngineTimedJob;
 typedef enum /*< skip >*/
 {
   ENGINE_JOB_NOP,
@@ -123,10 +121,6 @@ struct _BseJob
       EngineNode     *node;
       EngineTimedJob *tjob;
     } timed_job;
-    struct {
-      EngineNode     *node;
-      EngineProbeJob *pjob;
-    } probe_job;
   };
 };
 struct _BseTrans
@@ -136,32 +130,33 @@ struct _BseTrans
   guint	    comitted : 1;
   BseTrans *cqt_next;	/* com-thread-queue */
 };
-struct _EngineUserJob
+union _EngineTimedJob
 {
-  EngineUserJob    *next;
-  EngineJobType     job_type;
-};
-struct _EngineProbeJob
-{
-  EngineProbeJob     *next;             /* keep in sync with EngineUserJob */
-  EngineJobType       job_type;         /* keep in sync with EngineUserJob */
-  BseEngineProbeFunc  probe_func;
-  gpointer            data;
-  guint64             tick_stamp;
-  guint               delay_counter;
-  guint               oblock_length;
-  guint               n_values;
-  guint               n_oblocks;
-  gfloat             *oblocks[1];       /* [ENGINE_NODE_N_OSTREAMS()] */
-};
-struct _EngineTimedJob
-{
-  EngineTimedJob   *next;       /* keep in sync with EngineUserJob */
-  EngineJobType     job_type;   /* keep in sync with EngineUserJob */
-  BseFreeFunc       free_func;
-  gpointer          data;
-  guint64	    tick_stamp;
-  BseEngineAccessFunc     access_func;
+  struct {
+    EngineJobType       type;           /* common */
+    EngineTimedJob     *next;           /* common */
+    guint64             tick_stamp;     /* common */
+  };
+  struct {
+    EngineJobType       type;           /* common */
+    EngineTimedJob     *next;           /* common */
+    guint64             tick_stamp;     /* common */
+    gpointer            data;
+    BseEngineProbeFunc  probe_func;
+    guint               delay_counter;
+    guint               oblock_length;
+    guint               n_values;
+    guint               n_oblocks;
+    gfloat             *oblocks[1];     /* [ENGINE_NODE_N_OSTREAMS()] */
+  }                     probe;
+  struct {
+    EngineJobType       type;           /* common */
+    EngineTimedJob     *next;           /* common */
+    guint64             tick_stamp;     /* common */
+    gpointer            data;
+    BseFreeFunc         free_func;
+    BseEngineAccessFunc access_func;
+  }                     access;
 };
 
 
@@ -199,9 +194,9 @@ struct _EngineNode		/* fields sorted by order of processing access */
   
   /* timed jobs */
   EngineTimedJob *flow_jobs;			/* active jobs */
-  EngineProbeJob *probe_jobs;		        /* probe requests */
+  EngineTimedJob *probe_jobs;		        /* probe requests */
   EngineTimedJob *boundary_jobs;		/* active jobs */
-  EngineUserJob  *ujob_first, *ujob_last;	/* trash list */
+  EngineTimedJob *tjob_head, *tjob_tail;	/* trash list */
   
   /* suspend/activation time */
   guint64        next_active;           /* result of suspend state updates */
