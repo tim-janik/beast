@@ -125,7 +125,7 @@ public:
   
   double mix_freq() const
   {
-    return data_handle->setup.mix_freq;
+    return gsl_data_handle_mix_freq (data_handle);
   }
 
   double time_ms (GslLong k) const

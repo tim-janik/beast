@@ -67,7 +67,14 @@ WaveChunk::set_dhandle_from_temporary (const string &fname,
           if (xhandle)
             {
               if (osc_freq > 0)
-                gsl_data_handle_override (xhandle, -1, -1, osc_freq);
+                {
+                  gchar **xinfos = NULL;
+                  xinfos = bse_xinfos_add_float (xinfos, ".osc-freq", osc_freq);
+                  GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (xhandle, xinfos);
+                  g_strfreev (xinfos);
+                  gsl_data_handle_unref (xhandle);
+                  xhandle = tmp_handle;
+                }
               error = gsl_data_handle_open (xhandle);
               if (error)
                 {
@@ -136,7 +143,7 @@ Wave::sort ()
     chunk_cmp (const WaveChunk &wc1,
                const WaveChunk &wc2)
     {
-      return wc1.dhandle->setup.osc_freq - wc2.dhandle->setup.osc_freq;
+      return gsl_data_handle_osc_freq (wc1.dhandle) - gsl_data_handle_osc_freq (wc2.dhandle);
     }
   };
 #if 0 /* brrrr, lists aren't sortable due to iterator issues */
@@ -189,7 +196,7 @@ Wave::store (const string file_name)
       if (midi_note)
         sfi_wstore_printf (wstore, "    midi_note = %u\n", midi_note);
       else
-        sfi_wstore_printf (wstore, "    osc_freq = %.3f\n", chunk->dhandle->setup.osc_freq);
+        sfi_wstore_printf (wstore, "    osc_freq = %.3f\n", gsl_data_handle_osc_freq (chunk->dhandle));
 
       GslDataHandle *dhandle, *tmp_handle = chunk->dhandle;
       do        /* skip comment or cache handles */
@@ -227,7 +234,7 @@ Wave::store (const string file_name)
           sfi_wstore_puts (wstore, "    rawlink = ");
           gsl_data_handle_dump_wstore (chunk->dhandle, wstore, GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN);
           sfi_wstore_puts (wstore, "\n");
-          sfi_wstore_printf (wstore, "    mix_freq = %.3f\n", chunk->dhandle->setup.mix_freq);
+          sfi_wstore_printf (wstore, "    mix_freq = %.3f\n", gsl_data_handle_mix_freq (chunk->dhandle));
         }
 
       if (chunk->dhandle->setup.xinfos)

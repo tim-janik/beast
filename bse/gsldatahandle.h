@@ -32,9 +32,6 @@ G_BEGIN_DECLS
 /* --- typedefs & structures --- */
 typedef struct {
   guint		n_channels;
-  guint		bit_depth;
-  gfloat        mix_freq;
-  gfloat        osc_freq;
   GslLong	n_values;
   gchar       **xinfos;
 } GslDataHandleSetup;
@@ -71,10 +68,6 @@ struct _GslDataHandleFuncs
 /* --- standard functions --- */
 GslDataHandle*	  gsl_data_handle_ref		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_unref		(GslDataHandle	  *dhandle);
-void    	  gsl_data_handle_override	(GslDataHandle	  *dhandle,
-                                                 gint              bit_depth,
-                                                 gfloat            mix_freq,
-                                                 gfloat            osc_freq);
 BseErrorType	  gsl_data_handle_open		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_close		(GslDataHandle	  *dhandle);
 GslLong		  gsl_data_handle_length	(GslDataHandle	  *data_handle);

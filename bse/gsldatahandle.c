@@ -100,42 +100,6 @@ gsl_data_handle_unref (GslDataHandle *dhandle)
     }
 }
 
-void
-gsl_data_handle_override (GslDataHandle    *dhandle,
-                          gint              bit_depth,
-                          gfloat            mix_freq,
-                          gfloat            osc_freq)
-{
-  gfloat *fp;
-  
-  g_return_if_fail (dhandle != NULL);
-  
-  GSL_SPIN_LOCK (&dhandle->mutex);
-  if (bit_depth <= 0)
-    g_datalist_set_data (&dhandle->qdata, "bse-bit-depth", NULL);
-  else
-    g_datalist_set_data (&dhandle->qdata, "bse-bit-depth", GINT_TO_POINTER (MIN (bit_depth, 32)));
-  
-  if (mix_freq <= 0)
-    g_datalist_set_data (&dhandle->qdata, "bse-mix-freq", NULL);
-  else
-    {
-      fp = g_new (gfloat, 1);
-      *fp = mix_freq;
-      g_datalist_set_data_full (&dhandle->qdata, "bse-mix-freq", fp, g_free);
-    }
-  
-  if (osc_freq <= 0)
-    g_datalist_set_data (&dhandle->qdata, "bse-osc-freq", NULL);
-  else
-    {
-      fp = g_new (gfloat, 1);
-      *fp = osc_freq;
-      g_datalist_set_data_full (&dhandle->qdata, "bse-osc-freq", fp, g_free);
-    }
-  GSL_SPIN_UNLOCK (&dhandle->mutex);
-}
-
 BseErrorType
 gsl_data_handle_open (GslDataHandle *dhandle)
 {
@@ -146,22 +110,15 @@ gsl_data_handle_open (GslDataHandle *dhandle)
   if (dhandle->open_count == 0)
     {
       GslDataHandleSetup setup = { 0, };
-      BseErrorType error;
-      gfloat *fp;
-      gint i;
-      
-      error = dhandle->vtable->open (dhandle, &setup);
+
+      BseErrorType error = dhandle->vtable->open (dhandle, &setup);
       if (!error && (setup.n_values < 0 ||
-		     setup.n_channels < 1 ||
-		     setup.bit_depth < 1 ||
-                     setup.mix_freq < 3999 ||
-                     setup.osc_freq <= 0))
+		     setup.n_channels < 1))
 	{
-	  g_warning ("internal error in data handle open() (%p): nv=%ld nc=%u bd=%u mf=%g of=%g",
-		     dhandle->vtable->open, setup.n_values, setup.n_channels,
-                     setup.bit_depth, setup.mix_freq, setup.osc_freq);
+	  sfi_warning ("invalid parameters in data handle open() (%p()): nv=%ld nc=%u",
+                       dhandle->vtable->open, setup.n_values, setup.n_channels);
 	  dhandle->vtable->close (dhandle);
-	  error = BSE_ERROR_INTERNAL;
+	  error = BSE_ERROR_FORMAT_INVALID;
 	}
       if (error)
 	{
@@ -173,15 +130,6 @@ gsl_data_handle_open (GslDataHandle *dhandle)
       dhandle->ref_count++;
       dhandle->open_count++;
       dhandle->setup = setup;
-      i = GPOINTER_TO_INT (g_datalist_get_data (&dhandle->qdata, "bse-bit-depth"));
-      if (i > 0)
-        dhandle->setup.bit_depth = i;
-      fp = g_datalist_get_data (&dhandle->qdata, "bse-mix-freq");
-      if (fp)
-        dhandle->setup.mix_freq = *fp;
-      fp = g_datalist_get_data (&dhandle->qdata, "bse-osc-freq");
-      if (fp)
-        dhandle->setup.osc_freq = *fp;
     }
   else
     dhandle->open_count++;
@@ -288,7 +236,7 @@ gsl_data_handle_bit_depth (GslDataHandle *dhandle)
   g_return_val_if_fail (dhandle->open_count > 0, 0);
   
   GSL_SPIN_LOCK (&dhandle->mutex);
-  n = dhandle->open_count ? dhandle->setup.bit_depth : 0;
+  n = bse_xinfos_get_num (dhandle->setup.xinfos, ".bit-depth");
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   
   return n;
@@ -297,13 +245,11 @@ gsl_data_handle_bit_depth (GslDataHandle *dhandle)
 gfloat
 gsl_data_handle_mix_freq (GslDataHandle *dhandle)
 {
-  gfloat f;
-  
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
   
   GSL_SPIN_LOCK (&dhandle->mutex);
-  f = dhandle->open_count ? dhandle->setup.mix_freq : 0;
+  gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, ".mix-freq");
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   
   return f;
@@ -312,13 +258,11 @@ gsl_data_handle_mix_freq (GslDataHandle *dhandle)
 gfloat
 gsl_data_handle_osc_freq (GslDataHandle *dhandle)
 {
-  gfloat f;
-  
   g_return_val_if_fail (dhandle != NULL, 0);
   g_return_val_if_fail (dhandle->open_count > 0, 0);
   
   GSL_SPIN_LOCK (&dhandle->mutex);
-  f = dhandle->open_count ? dhandle->setup.osc_freq : 0;
+  gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, ".osc-freq");
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   
   return f;
@@ -347,12 +291,10 @@ gsl_data_handle_needs_cache (GslDataHandle *dhandle)
 typedef struct {
   GslDataHandle     dhandle;
   guint             n_channels;
-  guint             bit_depth;
-  gfloat            mix_freq;
-  gfloat            osc_freq;
   GslLong           n_values;
   const gfloat     *values;
   void            (*free_values) (gpointer);
+  gchar           **xinfos;
 } MemHandle;
 
 static BseErrorType
@@ -363,9 +305,7 @@ mem_handle_open (GslDataHandle      *dhandle,
   
   setup->n_values = mhandle->n_values;
   setup->n_channels = mhandle->n_channels;
-  setup->bit_depth = mhandle->bit_depth;
-  setup->mix_freq = mhandle->mix_freq;
-  setup->osc_freq = mhandle->osc_freq;
+  setup->xinfos = mhandle->xinfos;
   
   return BSE_ERROR_NONE;
 }
@@ -374,6 +314,7 @@ static void
 mem_handle_close (GslDataHandle *dhandle)
 {
   // MemHandle *mhandle = (MemHandle*) dhandle;
+  dhandle->setup.xinfos = NULL;
 }
 
 static void
@@ -382,7 +323,8 @@ mem_handle_destroy (GslDataHandle *dhandle)
   MemHandle *mhandle = (MemHandle*) dhandle;
   void (*free_values) (gpointer) = mhandle->free_values;
   const gfloat *mem_values = mhandle->values;
-  
+
+  g_strfreev (mhandle->xinfos);
   gsl_data_handle_common_free (dhandle);
   mhandle->values = NULL;
   mhandle->free_values = NULL;
@@ -441,13 +383,13 @@ gsl_data_handle_new_mem (guint         n_channels,
       mhandle->dhandle.name = g_strconcat ("// #memory /", NULL);
       mhandle->dhandle.vtable = &mem_handle_vtable;
       mhandle->n_channels = n_channels;
-      mhandle->bit_depth = bit_depth;
-      mhandle->mix_freq = mix_freq;
-      mhandle->osc_freq = osc_freq;
       mhandle->n_values = n_values / mhandle->n_channels;
       mhandle->n_values *= mhandle->n_channels;
       mhandle->values = values;
       mhandle->free_values = free;
+      mhandle->xinfos = bse_xinfos_add_float (mhandle->xinfos, ".mix-freq", mix_freq);
+      mhandle->xinfos = bse_xinfos_add_float (mhandle->xinfos, ".osc-freq", osc_freq);
+      mhandle->xinfos = bse_xinfos_add_num (mhandle->xinfos, ".bit-depth", bit_depth);
     }
   else
     {
@@ -1012,9 +954,20 @@ insert_handle_open (GslDataHandle      *dhandle,
     setup->n_values = ihandle->paste_offset + ihandle->n_paste_values;
   else
     setup->n_values += ihandle->n_paste_values;
-  setup->bit_depth = MAX (setup->bit_depth, ihandle->paste_bit_depth);
+  guint n = gsl_data_handle_bit_depth (ihandle->src_handle);
+  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".bit-depth", MAX (n, ihandle->paste_bit_depth));
   
   return BSE_ERROR_NONE;
+}
+
+static void
+insert_handle_close (GslDataHandle *dhandle)
+{
+  InsertHandle *ihandle = (InsertHandle*) dhandle;
+
+  g_strfreev (dhandle->setup.xinfos);
+  dhandle->setup.xinfos = NULL;
+  gsl_data_handle_close (ihandle->src_handle);
 }
 
 static void
@@ -1099,7 +1052,7 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
   static GslDataHandleFuncs insert_handle_vtable = {
     insert_handle_open,
     insert_handle_read,
-    chain_handle_close,
+    insert_handle_close,
     NULL,
     insert_handle_destroy,
   };
@@ -1355,8 +1308,6 @@ typedef struct {
   GslLong	    byte_offset;
   guint             byte_order;
   guint		    n_channels;
-  gfloat            mix_freq;
-  gfloat            osc_freq;
   GslWaveFormatType format;
   guint		    add_zoffset : 1;
   GslLong	    requested_offset;
@@ -1456,9 +1407,6 @@ wave_handle_open (GslDataHandle      *dhandle,
       else
 	setup->n_values = 0;
       setup->n_channels = whandle->n_channels;
-      setup->bit_depth = wave_format_bit_depth (whandle->format);
-      setup->mix_freq = whandle->mix_freq;
-      setup->osc_freq = whandle->osc_freq;
       setup->xinfos = whandle->xinfos;
       return BSE_ERROR_NONE;
     }
@@ -1569,12 +1517,13 @@ gsl_wave_handle_new (const gchar      *file_name,
       whandle->n_channels = n_channels;
       whandle->format = format;
       whandle->byte_order = byte_order;
-      whandle->mix_freq = mix_freq;
-      whandle->osc_freq = osc_freq;
       whandle->requested_offset = byte_offset;
       whandle->requested_length = n_values;
       whandle->hfile = NULL;
       whandle->xinfos = bse_xinfos_dup_consolidated (xinfos);
+      whandle->xinfos = bse_xinfos_add_num (whandle->xinfos, ".bit-depth", wave_format_bit_depth (whandle->format));
+      whandle->xinfos = bse_xinfos_add_float (whandle->xinfos, ".mix-freq", mix_freq);
+      whandle->xinfos = bse_xinfos_add_float (whandle->xinfos, ".osc-freq", osc_freq);
 #ifndef __linux__
       /* linux does proper caching and WAVs are easily readable */
       whandle->xinfos = bse_xinfos_add_num (whandle->xinfos, ".needs-cache", 1);

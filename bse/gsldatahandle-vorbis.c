@@ -218,10 +218,7 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   if (n > 0 && vi && vi->channels && ov_pcm_seek (&vhandle->ofile, vhandle->soffset) >= 0)
     {
       setup->n_channels = vi->channels;
-      setup->mix_freq = vi->rate;
       setup->n_values = n * setup->n_channels;
-      setup->bit_depth = 24;
-      setup->osc_freq = vhandle->osc_freq;
     }
   else
     {
@@ -235,6 +232,9 @@ dh_vorbis_open (GslDataHandle      *dhandle,
   vhandle->pcm_pos = 0;
   vhandle->pcm_length = 0;
   
+  setup->xinfos = bse_xinfos_add_float (setup->xinfos, ".mix-freq", vi->rate);
+  setup->xinfos = bse_xinfos_add_float (setup->xinfos, ".osc-freq", vhandle->osc_freq);
+  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".bit-depth", 24);
   setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".needs-cache", 1);
   return BSE_ERROR_NONE;
 }

@@ -487,12 +487,12 @@ public:
           continue;
         gsl_vorbis_encoder_set_quality (enc, quality);
         gsl_vorbis_encoder_set_n_channels (enc, wave->n_channels);
-        gsl_vorbis_encoder_set_sample_freq (enc, guint (dhandle->setup.mix_freq));
+        gsl_vorbis_encoder_set_sample_freq (enc, guint (gsl_data_handle_mix_freq (dhandle)));
         BseErrorType error = gsl_vorbis_encoder_setup_stream (enc, (rand () << 16) ^ rand ()); // FIXME: better are deterministic serials
         if (error)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to encode: %s",
-                       chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                        bse_error_blurb (error));
             exit (1);
           }
@@ -501,13 +501,13 @@ public:
         if (tmpfd < 0)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to open tmp file \"%s\": %s",
-                       chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                        temp_file, g_strerror (errno));
             exit (1);
           }
         unlink_file_list.push_back (temp_file);
         const guint ENCODER_BUFFER = 16 * 1024;
-        g_printerr ("ENCODING: chunk % 7.2f/%.0f\r", chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq);
+        g_printerr ("ENCODING: chunk % 7.2f/%.0f\r", gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle));
         SfiNum n = 0, l = gsl_data_handle_length (dhandle);
         while (n < l)
           {
@@ -527,14 +527,16 @@ public:
                     if (j < 0)
                       {
                         sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
-                                   chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                                   gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                                    g_strerror (errno));
                         exit (1);
                       }
                     r = gsl_vorbis_encoder_read_ogg (enc, ENCODER_BUFFER, buf);
                   }
               }
-            g_printerr ("ENCODING: chunk % 7.2f/%.0f, processed %0.1f%%       \r", chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq, n * 100.0 / l);
+            g_printerr ("ENCODING: chunk % 7.2f/%.0f, processed %0.1f%%       \r",
+                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
+                        n * 100.0 / l);
           }
         gsl_vorbis_encoder_pcm_done (enc);
         g_printerr ("\n");
@@ -550,7 +552,7 @@ public:
                 if (j < 0)
                   {
                     sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
-                               chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                               gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                                g_strerror (errno));
                     exit (1);
                   }
@@ -560,15 +562,15 @@ public:
         if (close (tmpfd) < 0)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
-                       chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                        g_strerror (errno));
             exit (1);
           }
-        error = chunk->set_dhandle_from_temporary (temp_file, dhandle->setup.osc_freq);
+        error = chunk->set_dhandle_from_temporary (temp_file, gsl_data_handle_osc_freq (dhandle));
         if (error)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to read wave \"%s\": %s",
-                       chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                       gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
                        temp_file, bse_error_blurb (error));
             exit (1);
           }

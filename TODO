@@ -1,4 +1,6 @@
 FIXME(urgent):
+- copy xinfos in set_dhandle_from_temporary
+- nuke data handle qdata
 - fix serialno generation for ogg/vorbis encoder and cutter
 - fix bsewavetool oggenc saving osc_freq, not midi_note
 - consolidate bsewave tokens

@@ -1,3 +1,14 @@
+Fri Dec 31 16:39:21 2004  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle.[hc]: removed bit_depth, osc_freq and mix_freq from
+	GslDataHandleSetup, removed gsl_data_handle_override(). these
+	values are accessible throuzgh accessors and stored in xinfos now.
+
+	* gslloader-bsewave.c: provide osc-freq via xinfo.
+
+	* gsldatahandle-vorbis.c:
+	* gsldatahandle-mad.c: set bit-depth, osc-freq and mix-freq via xinfos.
+
 Fri Dec 31 13:44:16 2004  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle.c:

@@ -386,13 +386,9 @@ dh_mad_open (GslDataHandle      *dhandle,
   seek_invalidated |= n != handle->frame_size;
   handle->frame_size = n;
   handle->sample_rate = handle->frame.header.samplerate;
-  setup->bit_depth = 24;
-  setup->mix_freq = handle->sample_rate;
-  setup->osc_freq = handle->osc_freq;
   if (setup->n_channels < 1 ||
       setup->n_channels > MAX_CHANNELS ||
-      setup->mix_freq < 3999 ||
-      setup->osc_freq <= 0 ||
+      handle->sample_rate < 3999 ||
       handle->frame_size < 1 ||
       handle->sample_rate < 1)
     {
@@ -448,6 +444,9 @@ dh_mad_open (GslDataHandle      *dhandle,
       goto OPEN_FAILED;
     }
   
+  setup->xinfos = bse_xinfos_add_float (setup->xinfos, ".osc-freq", handle->osc_freq);
+  setup->xinfos = bse_xinfos_add_float (setup->xinfos, ".mix-freq", handle->sample_rate);
+  setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".bit-depth", 24);
   setup->xinfos = bse_xinfos_add_num (setup->xinfos, ".needs-cache", 1);
   return BSE_ERROR_NONE;
 
