@@ -1,3 +1,7 @@
+Wed Sep  8 10:57:34 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: added esperanto (eo) to ALL_LINGUAS.
+
 Wed Sep  8 09:02:59 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbusmixer.c: tooltip updates.
