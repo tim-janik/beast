@@ -303,6 +303,34 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		    MC_EVAR_ADD(CXXFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
 		dnl MC_EVAR_ADD(CXXFLAGS, -freg-struct-return, -freg-struct-return) dnl buggy with gcc-3.2
 		dnl -funroll-loops gives problems with -O and templates (see Rep-CppBug_1.C)
+
+		dnl figure current screen width from ncurses to make g++
+		dnl format errors for screensizes!=80 correctly
+		SAVED_LIBS="$LIBS"
+		LIBS="$LIBS -lncurses"
+		AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
+                                    #include <curses.h>
+				    int main()
+				    {
+					FILE *f=fopen("conftestval", "w");
+					int c;
+					if (!f) exit(1);
+					initscr();
+					c = COLS;
+					endwin();
+					fprintf(f, "%d\n",c);
+					exit(0);
+				    }
+				    ]])],
+		    [gxx_columns=`cat conftestval`],
+		    [gxx_columns='80'])
+		LIBS="$SAVED_LIBS"
+		if test -n "$gxx_columns" ; then
+		    MC_PROG_CC_SUPPORTS_OPTION(-fmessage-length=$gxx_columns,
+			MC_EVAR_ADD(CXXFLAGS, -fmessage-length=, -fmessage-length=$gxx_columns))
+		fi
+		dnl
+
 	,	
 		MC_IF_VAR_EQ(CXXFLAGS_include_O, yes,
 			MC_EVAR_ADD(CXXFLAGS, -O, -O2)

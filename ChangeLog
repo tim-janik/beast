@@ -1,3 +1,8 @@
+Mon Sep  8 02:02:10 2003  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4 (ac_vm): add -fmessage-length= compiler option for
+	g++ if ncurses is present.
+
 Thu Sep  4 14:28:12 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparamview.c:
