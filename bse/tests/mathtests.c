@@ -643,7 +643,7 @@ main (int   argc,
 static void
 usage (void)
 {
-  g_print ("usage: gsltests {test} [args...]\n");
+  g_print ("usage: mathtests {test} [args...]\n");
   g_print ("tests:\n");
   g_print ("  wave-scan <file>          scan a wave file for waves\n");
   g_print ("  file-test <file>          test file properties\n");

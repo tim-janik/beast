@@ -40,14 +40,6 @@ GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header \
                 gsl-fftgen.pl gsl-fftconf.sh
 EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT) gslmakefile.inc
 
-GSL_NOINST_PROGS = gslwchunk gsltests gslffttest
-gslwchunk_SOURCES = gslwchunk.c $(GSL_cc_dummy)
-gslwchunk_LDADD = $(GSL_progs_ldadd)
-gsltests_SOURCES = gsltests.c $(GSL_cc_dummy)
-gsltests_LDADD = $(GSL_progs_ldadd)
-gslffttest_SOURCES = gslffttest.c $(GSL_cc_dummy)
-gslffttest_LDADD = $(GSL_progs_ldadd)
-
 $(srcdir)/gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
 	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
 MAINTAINERCLEANFILES += gslfft.c
@@ -62,9 +54,6 @@ gslconfig.h: $(top_srcdir)/configure Makefile
 	&& (cmp -s xgen-gch $@ || cp xgen-gch $@) \
 	&& rm -f xgen-gch
 CLEANFILES += gslconfig.h xgen-gch
-$(srcdir)/gslwchunk.c: gslconfig.h
-$(srcdir)/gsltests.c: gslconfig.h
-$(srcdir)/gslffttest.c: gslconfig.h
 $(OBJECTS): gslconfig.h
 
 gsl_public_headers = $(GSL_H_SRC) gslconfig.h

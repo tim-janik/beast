@@ -99,7 +99,7 @@ ${srcdir}/testsfi.c: testidl.h testidl.c
 TESTS = testsfi
 
 #
-# TOYPROF: ppor man's profiling toy
+# TOYPROF: poor man's profiling toy
 #
 TOYPROF_H_SOURCES = toyprof.h toyprof-mem.h
 TOYPROF_C_SOURCES = toyprof.c toyprof-mem.c

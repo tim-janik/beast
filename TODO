@@ -1,4 +1,5 @@
 FIXMES:
+- rename gslwave files appropriately
 - need detailed "ladspa" info/debug messages which tell when what plugin file is being loaded
 - add option to disable ladspa plugin loading
 - add vorbis cutter test

@@ -1,3 +1,18 @@
+Tue May 20 18:39:03 2003  Tim Janik  <timj@gtk.org>
+
+	* tests/magictest.c: moved here from bsemagictest.c.
+
+	* tests/mathtests.c: moved here from gsltests.c.
+
+	* tests/testfft.c: moved here from gslffttest.c.
+
+	* tests/testwavechunk.c: moved here from gslwchunk.c.
+
+	* tests/Makefile.am: added testwavechunk testfft to TESTS so
+	make check runs these automatically.
+
+	* removed: bsemagictest.c, gsltests.c, gslffttest.c and gslwchunk.c.
+
 Tue May 20 17:46:12 2003  Tim Janik  <timj@gtk.org>
 
 	* tests/cutvorbis.c: added test program for ogg/vorbis file cutting.

@@ -20,13 +20,7 @@ bsegentypes.c
 bsegentype_array.c
 bsequery
 bseautodoc
-bsemagic
 bseprocidl
-testtypes
-testsample
-testsong
-testmixer
-testrefs
 
 *.gen-proc.c
 bseinfo
@@ -34,10 +28,5 @@ bsemarshal.c
 bsemarshal.h
 bse.sfidl
 
-gslloader
-gsltests
-gslwchunk
 gslfft.c
 gslconfig.h
-gslffttest
-gslglibhashtest

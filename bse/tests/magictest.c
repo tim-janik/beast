@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2000-2002 Tim Janik
+ * Copyright (C) 2000-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,21 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bsemain.h"
+#include <bse/bsemain.h>
 #include "PKG_config.h"
-#include "gslmagic.h"
-#include "gslcommon.h"
-#include "gslloader.h"
-#include "gsldatahandle.h"
+#include <bse/gslmagic.h>
+#include <bse/gslcommon.h>
+#include <bse/gslloader.h>
+#include <bse/gsldatahandle.h>
 #include <stdio.h>
 #include <string.h>
 
 static gint
 help (gchar *arg)
 {
-  fprintf (stderr, "usage: bsemagic [-{h|p|}] [files...]\n");
-  fprintf (stderr, "       -p       include plugins\n");
-  fprintf (stderr, "       -h       guess what ;)\n");
+  fprintf (stderr, "usage: magictest [-{h|p|}] [files...]\n");
+  fprintf (stderr, "       -p         include plugins\n");
+  fprintf (stderr, "       -h         guess what ;)\n");
   
   return arg != NULL;
 }
