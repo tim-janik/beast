@@ -1,8 +1,10 @@
 FIXMES:	(release-critical)
-- add BseMidiDecoder *midi_decoder to midi handles
-- midi synthesizer does not work anymore (anable multi-voices like in tracks?)
-- pcmmodule input->reset() should queue a server check for !pcm-handle->readable which then throws a warning (dialog)
+- sequencer: export asserts
+- gslmath->bsemath
+- sequencer: dtoull
+- midi csynth does not work anymore (anable multi-voices like in tracks?)
 - a single CSynth with auto-activate and without a song dosn't keep playback
+- pcmmodule input->reset() should queue a server check for !pcm-handle->readable which then throws a warning (dialog)
 - implement sequencer underrun detection
 - don't record samples to WAV file before *any* song is processed by sequencer
 - midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
