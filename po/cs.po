@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-23 11:02+0200\n"
-"PO-Revision-Date: 2004-08-23 15:00+0200\n"
+"POT-Creation-Date: 2004-08-28 11:02+0200\n"
+"PO-Revision-Date: 2004-08-28 15:05+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -183,7 +183,9 @@ msgstr "Nový vlastní syntetizér"
 #: beast-gtk/bstapp.c:129
 msgid ""
 "Create a new synthesizer mesh to be used as effect or instrument in songs"
-msgstr "Vytvořit novou síť syntetizéru pro použití jako efekt nebo nástroj ve skladbách"
+msgstr ""
+"Vytvořit novou síť syntetizéru pro použití jako efekt nebo nástroj ve "
+"skladbách"
 
 #: beast-gtk/bstapp.c:131
 msgid "New MIDI Synthesizer"
@@ -193,7 +195,8 @@ msgstr "Nový syntetizér MIDI"
 msgid ""
 "Create a new MIDI synthesizer to control an instrument from external MIDI "
 "events"
-msgstr "Vytvořit nový syntetizér MIDI pro ovládání nástroje externími událostmi MIDI"
+msgstr ""
+"Vytvořit nový syntetizér MIDI pro ovládání nástroje externími událostmi MIDI"
 
 #: beast-gtk/bstapp.c:133
 msgid "Remove Song or Synthesizer"
@@ -342,43 +345,43 @@ msgstr "Spojení modulů"
 msgid "Module Info"
 msgstr "Informace o modulu"
 
-#: beast-gtk/bstcanvassource.c:962 beast-gtk/bstsnetrouter.c:1084
+#: beast-gtk/bstcanvassource.c:963 beast-gtk/bstsnetrouter.c:1084
 msgid "Input"
 msgstr "Vstup"
 
-#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:1081
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1081
 #: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
 #: plugins/artscompressor.idl:58
 msgid "Output"
 msgstr "Výstup"
 
-#: beast-gtk/bstcanvassource.c:975
+#: beast-gtk/bstcanvassource.c:976
 msgid "(Hint)"
 msgstr "(Nápověda)"
 
-#: beast-gtk/bstdbmeter.c:761
+#: beast-gtk/bstdbmeter.c:765
 msgid "Draw Values"
 msgstr "Kreslit hodnoty"
 
-#: beast-gtk/bstdbmeter.c:761
+#: beast-gtk/bstdbmeter.c:765
 msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Upravit, jestli kreslit hodnoty dB místo čar"
 
-#: beast-gtk/bstdbmeter.c:764 beast-gtk/bstdbmeter.c:1059
-#: beast-gtk/bstdbmeter.c:1506
+#: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
+#: beast-gtk/bstdbmeter.c:1510
 msgid "Orientation"
 msgstr "Orientace"
 
-#: beast-gtk/bstdbmeter.c:764 beast-gtk/bstdbmeter.c:1059
-#: beast-gtk/bstdbmeter.c:1506
+#: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
+#: beast-gtk/bstdbmeter.c:1510
 msgid "Choose horizontal or vertical orientation"
 msgstr "Zvolte vodorovnou nebo smislou orientaci"
 
-#: beast-gtk/bstdbmeter.c:767
+#: beast-gtk/bstdbmeter.c:771
 msgid "Justify"
 msgstr "Zarovnat"
 
-#: beast-gtk/bstdbmeter.c:767
+#: beast-gtk/bstdbmeter.c:771
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr "Upravit relativní zarovnání kreslených hodnot nebo pruhů"
 
@@ -3146,83 +3149,83 @@ msgstr "Vstup modulace zisku"
 msgid "Filtered Audio Signal"
 msgstr "Filtrovaný signál zvuku"
 
-#: bse/bsebus.c:363
-msgid "Signal Inputs"
-msgstr "Vstupy signálu"
-
-#: bse/bsebus.c:365 bse/bsetrack.c:130
-msgid "Custom Synth Net"
-msgstr "Vlastní síť syntézy"
-
-#: bse/bsebus.c:365 bse/bsetrack.c:130
-msgid "Synthesis network to be used as instrument"
-msgstr "Síť syntézy, kterou používat jako nástroj"
-
-#: bse/bsebus.c:367 bse/bsebus.c:372 bse/bsetrack.c:124
+#: bse/bsebus.c:422 bse/bsebus.c:427 bse/bsetrack.c:124
 msgid "Adjustments"
 msgstr "Úpravy"
 
-#: bse/bsebus.c:369
+#: bse/bsebus.c:424
 msgid "Left Volume [dB]"
 msgstr "Levá hlasitost [dB]"
 
-#: bse/bsebus.c:369
+#: bse/bsebus.c:424
 msgid "Volume adjustment of left bus channel"
 msgstr "Úprava hlasitosti levého kanálu sběrnice"
 
-#: bse/bsebus.c:374
+#: bse/bsebus.c:429
 msgid "Right Volume [dB]"
 msgstr "Pravá hlasitost [dB]"
 
-#: bse/bsebus.c:374
+#: bse/bsebus.c:429
 msgid "Volume adjustment of right bus channel"
 msgstr "Úprava hlasitosti pravého kanálu sběrnice"
 
-#: bse/bsebus.c:377
+#: bse/bsebus.c:432
+msgid "Signal Inputs"
+msgstr "Vstupy signálu"
+
+#: bse/bsebus.c:434
+msgid "Input Synths"
+msgstr "Vstupní syntézy"
+
+#: bse/bsebus.c:434
+msgid "Synthesis modules used as input"
+msgstr "Moduly syntézy používané jako vstup"
+
+#: bse/bsebus.c:436
 msgid "Internals"
 msgstr "Vnitřnosti"
 
-#: bse/bsebus.c:379
+#: bse/bsebus.c:438
 msgid "Master Output"
 msgstr "Hlavní výstup"
 
-#: bse/bsebus.c:382 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:441 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Levý zvuk In"
 
-#: bse/bsebus.c:382 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:441 bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr "Vstup levého kanálu"
 
-#: bse/bsebus.c:384 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:443 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Pravý zvuk In"
 
-#: bse/bsebus.c:384
+#: bse/bsebus.c:443
 msgid "Right channel input"
 msgstr "Vstup pravého kanálu"
 
-#: bse/bsebus.c:386 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:445 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Levý zvuk Out"
 
-#: bse/bsebus.c:386 bse/bsepcminput.c:128
+#: bse/bsebus.c:445 bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr "Výstup levého kanálu"
 
-#: bse/bsebus.c:388 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:447 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Pravý zvuk Out"
 
-#: bse/bsebus.c:388 bse/bsepcminput.c:130
+#: bse/bsebus.c:447 bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr "Výstup pravého kanálu"
 
-#: bse/bsebus.c:407
+#: bse/bsebus.c:466
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -3828,6 +3831,14 @@ msgstr "Umlčeno"
 #: bse/bsetrack.c:128 bse/bsetrack.c:133 bse/bsetrack.c:138
 msgid "Synth Input"
 msgstr "Vstup syntézy"
+
+#: bse/bsetrack.c:130
+msgid "Custom Synth Net"
+msgstr "Vlastní síť syntézy"
+
+#: bse/bsetrack.c:130
+msgid "Synthesis network to be used as instrument"
+msgstr "Síť syntézy, kterou používat jako nástroj"
 
 #: bse/bsetrack.c:135
 msgid "Custom Wave"
