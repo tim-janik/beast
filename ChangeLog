@@ -1,3 +1,8 @@
+Mon Oct 27 19:55:27 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstfiledialog.c: ensure custom effects and instrument paths
+	exist if the instrument or effects file selections are used.
+
 Mon Oct 27 00:25:00 2003  Tim Janik  <timj@gtk.org>
 
 	* moved config-paths.h to data/.
