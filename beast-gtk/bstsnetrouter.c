@@ -567,7 +567,8 @@ bst_snet_router_build_tools (BstSNetRouter *self)
 	"/Modules/Audio Sources/", "/Modules/Filters/",
 	"/Modules/Input & Output/", "/Modules/MIDI/",
 	"/Modules/Other Sources/", "/Modules/Routing/",
-	"/Modules/Virtualization/", "/Modules/Distortion/",
+	"/Modules/Enhance/", "/Modules/Distortion/",
+	"/Modules/Virtualization/",
       };
       guint n, is_palette = 0;
 
