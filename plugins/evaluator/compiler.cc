@@ -23,6 +23,7 @@
 
 using std::vector;
 using std::string;
+using namespace Bse::EvaluatorUtils;
 
 string Compiler::tokenize(Symbols& symbols, const vector<char>& code_without_nl, vector<Token>& tokens)
 {
@@ -72,6 +73,14 @@ string Compiler::tokenize(Symbols& symbols, const vector<char>& code_without_nl,
 	    {
 		tokens.push_back(Token(Token::SEMICOLON));
 	    }
+	    else if (*ci == '(')
+	    {
+		tokens.push_back(Token(Token::LEFT_PAREN));
+	    }
+	    else if (*ci == ')')
+	    {
+		tokens.push_back(Token(Token::RIGHT_PAREN));
+	    }
 	    else
 	    {
 		char s[2] = { *ci, 0 };
@@ -115,8 +124,8 @@ string Compiler::tokenize(Symbols& symbols, const vector<char>& code_without_nl,
 Compiler::Compiler(Symbols& symbols, const vector<Token>& tokens)
     : symbols(symbols), tokens(tokens)
 {
-    for(int i = 0; i < tokens.size(); i++)
-	done.push_back(-1);
+    for(unsigned int i = 0; i < tokens.size(); i++)
+	done.push_back(false);
 }
 
 int Compiler::compile(int begin, int size, vector<Instruction>& instructions)
@@ -135,13 +144,15 @@ int Compiler::compile(int begin, int size, vector<Instruction>& instructions)
     {
 	if (tokens[begin].type == Token::NUMBER)
 	{
-	    done[begin] = reg = symbols.alloc();
+	    done[begin] = true;
+	    reg = symbols.alloc();
 	    instructions.push_back (Instruction::rv(Instruction::SET, reg, tokens[begin].value));
 	}
 	else if (tokens[begin].type == Token::VARIABLE)
 	{
 	    // TODO: optimization pass: to remove redundant moves
-	    done[begin] = reg = symbols.alloc();
+	    done[begin] = true;
+	    reg = symbols.alloc();
 	    instructions.push_back (Instruction::rr(Instruction::MOVE, reg, tokens[begin].reg));
 	}
 	else
@@ -151,43 +162,78 @@ int Compiler::compile(int begin, int size, vector<Instruction>& instructions)
     }
     else for(;;)
     {
-	/* find highest precedent operator for which no code has been generated yet */
+	/* find operator smallest precedence for which no code has been generated yet */
+	int plevel = 0;
 	int best = -1;
 	for(int i = begin; i < begin+size; i++)
 	{
-	    if (done[i] == -1 && tokens[i].is_operator())
+	    if (tokens[i].type == Token::RIGHT_PAREN)
+		plevel--;
+	    if (!done[i] && tokens[i].is_operator() && plevel == 0)
 	    {
-		if (tokens[i].operator_precedence() > tokens[best].operator_precedence())
+		if (best == -1)
+		    best = i;
+		else if (tokens[i].operator_precedence() > tokens[best].operator_precedence())
 		    best = i;
 	    }
+	    if (tokens[i].type == Token::LEFT_PAREN)
+		plevel++;
 	}
 
 	printf("best is %d\n", best);
 	if (best == -1)
 	    break;
 
-	if (tokens[best].type == Token::MUL)
+	if (size >= 2 && tokens[best].type == Token::LEFT_PAREN && tokens[end-1].type == Token::RIGHT_PAREN)
+	{
+	    if (best == begin) /* (expr) */
+	    {
+		done[end-1] = done[best] = true;
+		reg = compile(begin+1,size-2,instructions);
+	    }
+	    else if (best == begin + 1) /* function call */
+	    {
+		if (tokens[begin].type == Token::VARIABLE && symbols.name(tokens[begin].reg) == "sin")
+		{
+		    int reg1 = compile(begin+2,size-3,instructions);
+		    instructions.push_back(Instruction::rr(Instruction::SIN, reg1, reg1));
+		    done[end-1] = done[best] = true;
+		    reg = reg1;
+		}
+	    }
+	}
+	else if (tokens[best].type == Token::MUL) /* expr * expr */
 	{
 	    int reg1 = compile(begin,best-begin,instructions);
 	    int reg2 = compile(best+1,end-best-1,instructions);
 	    instructions.push_back (Instruction::rr(Instruction::MUL, reg1, reg2));
-	    done[best] = reg = reg1;
+	    done[best] = true;
+	    reg = reg1;
 	}
-	else if (tokens[best].type == Token::PLUS)
+	else if (tokens[best].type == Token::PLUS) /* expr + expr */
 	{
 	    int reg1 = compile(begin,best-begin,instructions);
 	    int reg2 = compile(best+1,end-best-1,instructions);
 	    instructions.push_back (Instruction::rr(Instruction::ADD, reg1, reg2));
-	    done[best] = reg = reg1;
+	    done[best] = true;
+	    reg = reg1;
 	}
-	else if(tokens[best].type == Token::EQUALS)
+	else if(tokens[best].type == Token::EQUALS) /* var = expr */
 	{
 	    // CHECK that reg1 is an LVALUE
 	    assert(best-begin == 1 && tokens[begin].type == Token::VARIABLE);
 	    int reg1 = tokens[begin].reg;
 	    int reg2 = compile(best+1,end-best-1,instructions);
 	    instructions.push_back (Instruction::rr(Instruction::MOVE, reg1, reg2));
-	    done[best] = reg = reg1;
+	    done[best] = true;
+	    reg = reg1;
+	}
+	else if(tokens[best].type == Token::SEMICOLON) /* expr ; expr */
+	{
+	    compile(begin,best-begin,instructions);
+	    reg = compile(best+1,end-best-1,instructions);
+
+	    done[best] = true;
 	}
 	else
 	{
@@ -224,7 +270,7 @@ int Compiler::compile(int begin, int size, vector<Instruction>& instructions)
 string Compiler::compile(Symbols& symbols, const vector<Token>& tokens, vector<Instruction>& instructions)
 {
     Compiler c(symbols, tokens);
+    c.compile(0, tokens.size(), instructions);
 
-    int reg = c.compile(0, tokens.size(), instructions);
     return "";
 }

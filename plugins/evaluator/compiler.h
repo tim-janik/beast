@@ -28,10 +28,13 @@
 #include <vector>
 #include <string>
 
+namespace Bse {
+namespace EvaluatorUtils {
+
 struct Compiler {
     Symbols& symbols;
     const std::vector<Token>& tokens;
-    std::vector<int> done;
+    std::vector<bool> done;
 
     Compiler(Symbols& symbols, const std::vector<Token>& tokens);
     int compile(int begin, int size, std::vector<Instruction>& instructions);
@@ -39,5 +42,8 @@ public:
     static std::string tokenize(Symbols& symbols, const std::vector<char>& source, std::vector<Token>& tokens);
     static std::string compile(Symbols& sybols, const std::vector<Token>& tokens, std::vector<Instruction>& instructions);
 };
+
+}
+}
 
 #endif // BSE_EVALUATOR_COMPILER_H

@@ -20,6 +20,8 @@
 
 #include "instruction.h"
 
+using namespace Bse::EvaluatorUtils;
+
 Instruction Instruction::rr(Instruction::Type ins, int reg1, int reg2)
 {
     Instruction i;
@@ -56,6 +58,10 @@ void Instruction::rw_registers(int& read1, int& read2, int& write1, int& write2)
 	read2 = p2.reg;
 	write1 = p1.reg;
     }
+    if (ins == SIN)
+    {
+	read1 = write1 = p1.reg;
+    }
 }
 
 void Instruction::print(const Symbols& symbols) const
@@ -72,6 +78,8 @@ void Instruction::print(const Symbols& symbols) const
 		    break;
 	case MUL:   printf("MUL  %s, %s\n", symbols.name(p1.reg).c_str(),
 					    symbols.name(p2.reg).c_str());
+		    break;
+    	case SIN:   printf("SIN  %s\n",     symbols.name(p1.reg).c_str());
 		    break;
     }
 }

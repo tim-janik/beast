@@ -26,6 +26,9 @@
 
 #include <vector>
 
+namespace Bse {
+namespace EvaluatorUtils {
+
 class CPU {
 private:
     int n_registers;
@@ -42,6 +45,9 @@ public:
     void execute();
     void execute_1_1_block(int sreg, int dreg, const float *sdata, float *ddata, int samples);
 };
+
+}
+}
 
 #endif // BSE_EVALUATOR_CPU_H
 

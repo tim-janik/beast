@@ -24,6 +24,9 @@
 #include <string>
 #include <map>
 
+namespace Bse {
+namespace EvaluatorUtils {
+
 class Symbols {
     std::map<std::string,int> symbol_map;
     int n_registers;
@@ -68,5 +71,8 @@ public:
 	n_registers = 0;
     }
 };
+
+}
+}
 
 #endif // BSE_EVALUATOR_SYMBOLS_H

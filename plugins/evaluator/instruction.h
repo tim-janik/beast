@@ -22,6 +22,10 @@
 #define BSE_EVALUATOR_INSTRUCTION_H
 
 #include "symbols.h"
+#include <math.h>
+
+namespace Bse {
+namespace EvaluatorUtils {
 
 class Instruction {
 private:
@@ -38,7 +42,8 @@ public:
 	SET,   /* dest, value */
 	MOVE,  /* dest, src */
 	ADD,   /* dest, src */
-	MUL    /* dest, src */
+	MUL,   /* dest, src */
+	SIN    /* dest */
     } ins;
 
     inline void exec(double *regs) const
@@ -56,6 +61,9 @@ public:
 
 	    case MUL:	regs[p1.reg] *= regs[p2.reg];
 			break;
+
+	    case SIN:	regs[p1.reg] = sin(regs[p1.reg]);
+			break;
 	}
     }
 
@@ -66,5 +74,8 @@ public:
     static Instruction rr(Type ins, int reg1, int reg2);  // register register instruction
     static Instruction rv(Type ins, int reg, double val); // register value instruction
 };
+
+}
+}
 
 #endif // BSE_EVALUATOR_INSTRUCTION_H

@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <vector>
+#include <string>
 
 #include "symbols.h"
 #include "compiler.h"
@@ -27,6 +28,8 @@
 #include "instruction.h"
 
 using std::vector;
+using std::string;
+using namespace Bse::EvaluatorUtils;
 
 int main(int argc, char **argv)
 {
@@ -44,8 +47,20 @@ int main(int argc, char **argv)
 
     vector<Token> tokens;
     vector<Instruction> instructions;
-    Compiler::tokenize(symbols, source, tokens);
+    string error;
+    
+    error = Compiler::tokenize(symbols, source, tokens);
+    if (error != "")
+    {
+	fprintf(stderr, "tokenization error: %s\n", error.c_str());
+	exit(1);
+    }
     Compiler::compile(symbols, tokens, instructions);
+    if (error != "")
+    {
+	fprintf(stderr, "compilation error: %s\n", error.c_str());
+	exit(1);
+    }
 
     printf("\nPROGRAM:\n\n");
     CPU cpu;

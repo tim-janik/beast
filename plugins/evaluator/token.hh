@@ -23,6 +23,9 @@
 
 #include <string>
 
+namespace Bse {
+namespace EvaluatorUtils {
+
 struct Token {
     enum TokenType {
 	NONE, 
@@ -30,6 +33,8 @@ struct Token {
 	MUL,
 	EQUALS,
 	SEMICOLON,
+	LEFT_PAREN,
+	RIGHT_PAREN,
 	NUMBER,
 	VARIABLE
     } type;
@@ -52,10 +57,13 @@ struct Token {
 	/* higher numbers mean higher precedence */
 	switch(type)
 	{
-	    case MUL:	    return 1;
-	    case PLUS:	    return 3;
-	    case EQUALS:    return 5;
-	    default:	    return -1;
+	    case LEFT_PAREN:    return 1;
+	    case RIGHT_PAREN:   return 1;
+	    case MUL:	        return 2;
+	    case PLUS:	        return 3;
+	    case EQUALS:        return 4;
+	    case SEMICOLON:	return 5;
+	    default:	        return -1;
 	}
     }
 
@@ -63,15 +71,20 @@ struct Token {
     {
 	switch(type)
 	{
-	    case SEMICOLON: return ";";
-	    case MUL:	    return "*";
-	    case PLUS:	    return "+";
-	    case EQUALS:    return "=";
-	    case VARIABLE:  return "VAR";
-	    case NUMBER:    return "NUM";
+	    case SEMICOLON:	    return ";";
+	    case MUL:		    return "*";
+	    case PLUS:		    return "+";
+	    case LEFT_PAREN:	    return "(";
+	    case RIGHT_PAREN:	    return ")";
+	    case EQUALS:	    return "=";
+	    case VARIABLE:	    return "VAR";
+	    case NUMBER:	    return "NUM";
 	    default:	    return "?";
 	}
     }
 };
+
+}
+}
 
 #endif

@@ -25,6 +25,7 @@
 
 using std::vector;
 using std::max;
+using namespace Bse::EvaluatorUtils;
 
 CPU::CPU()
 {

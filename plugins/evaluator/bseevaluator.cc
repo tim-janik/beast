@@ -27,6 +27,7 @@
 
 namespace Bse {
 using namespace std;
+using namespace EvaluatorUtils;
 
 class Evaluator : public EvaluatorBase
 {
