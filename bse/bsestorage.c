@@ -767,21 +767,40 @@ bse_storage_unexp_token (BseStorage *storage,
 }
 
 static BseErrorType
-bse_storage_ensure_bin_offset (BseStorage *storage)
+bse_storage_restore_offset (BseStorage *storage,
+			    glong       offset)
 {
+  gint fd = storage->fd;
+
+  if (fd < 0)
+    return BSE_ERROR_FILE_NOT_FOUND;
+  else if (lseek (fd, offset, SEEK_SET) != offset)
+    return BSE_ERROR_FILE_IO;
+  else
+    return BSE_ERROR_NONE;
+}
+
+static BseErrorType
+bse_storage_ensure_bin_offset (BseStorage *storage,
+			       glong      *cur_offs)
+{
+  gint fd = storage->fd;
+  glong coffs;
+  
+  if (fd < 0)
+    return BSE_ERROR_FILE_NOT_FOUND;
+  
+  coffs = lseek (fd, 0, SEEK_CUR);
+  if (coffs < 0)
+    return BSE_ERROR_FILE_IO;
+  
   if (!storage->bin_offset)
     {
-      gint fd = storage->fd;
-      glong coffs;
       glong bin_offset, l;
       gboolean seen_zero = FALSE;
 
-      if (fd < 0)
-	return BSE_ERROR_FILE_NOT_FOUND;
-
-      coffs = lseek (fd, 0, SEEK_CUR);
       bin_offset = lseek (fd, 0, SEEK_SET);
-      if (coffs < 0 || bin_offset != 0)
+      if (bin_offset != 0)
 	return BSE_ERROR_FILE_IO;
 
       do
@@ -806,11 +825,16 @@ bse_storage_ensure_bin_offset (BseStorage *storage)
 	}
       while (!seen_zero && l);
 
-      if (lseek (fd, coffs, SEEK_SET) != coffs)
-	return BSE_ERROR_FILE_IO;
       if (seen_zero)
 	storage->bin_offset = bin_offset;
+      else
+	return BSE_ERROR_FILE_IO;
     }
+
+  if (lseek (fd, coffs, SEEK_SET) != coffs)
+    return BSE_ERROR_FILE_IO;
+
+  *cur_offs = coffs;
 
   return BSE_ERROR_NONE;
 }
@@ -928,11 +952,12 @@ bse_storage_parse_bin_data (BseStorage  *storage,
   if (!bblock)
     {
       BseErrorType error;
+      glong saved_offset;
       
       /* except for BSE_ERROR_FILE_NOT_FOUND, all errors are fatal ones,
        * we can't guarantee that further parsing is possible.
        */
-      error = bse_storage_ensure_bin_offset (storage);
+      error = bse_storage_ensure_bin_offset (storage, &saved_offset);
       if (error == BSE_ERROR_FILE_NOT_FOUND)
 	{
 	  bse_storage_warn (storage, "no device to retrive binary data from");
@@ -941,6 +966,9 @@ bse_storage_parse_bin_data (BseStorage  *storage,
 
       if (!error)
 	error = bse_storage_create_rblock (storage, offset, length, byte_order, bits_per_value);
+
+      if (!error)
+	error = bse_storage_restore_offset (storage, saved_offset);
 
       if (error)
 	{
