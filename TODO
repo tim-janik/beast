@@ -1,7 +1,6 @@
 FIXME(urgent):
 - loading bsewave overrides mixing frequencies from wav-file chunks with the default bsewave mix frequency
   (should only happen if mixfreq is specified per chunk)
-- fix beast argument parser: beast foo.notexistant doesn't give an error message
 - ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - pianoroll: select-all/none
@@ -18,8 +17,6 @@ FIXME(urgent):
   implement time parser for this in beast, merge with travelad parser
 - driver interface: support multilpe MIDI devices
 - add Left and Right channels to BseAmplifier to allow stereo amplification
-- add: /demo/simple/stereo pipe
-       /demo/simple/MIDI piano
 TODO:
 - support various fft windows for fft probes
 - implement float-ffts

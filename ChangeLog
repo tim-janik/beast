@@ -1,3 +1,12 @@
+Thu Dec 16 03:02:10 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: sort demos by filename. support csynth and 
+	midisynth demos.
+
+	* library/demo/x2-midi-test.bse: external MIDI Keyboard test.
+
+	* library/demo/stereo-through.bse: input->output test.
+
 Thu Dec 16 01:56:17 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (main): install user message dialog handler early 

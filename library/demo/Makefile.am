@@ -6,6 +6,8 @@
 
 demo_DATA = $(strip		\
 	partymonster.bse	\
+	stereo-through.bse	\
+	x2-midi-test.bse	\
 )
 demodir = $(bsedemodir)
 

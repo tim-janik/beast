@@ -1,0 +1,19 @@
+; BseProject
+
+(bse-version "0.6.4")
+
+(container-child "BseWaveRepo::Wave-Repository"
+  (modification-time "2004-12-16 01:22:39")
+  (creation-time "2004-12-16 01:22:39"))
+(container-child "BseCSynth::Stereo-Through"
+  (auto-activate #t)
+  (modification-time "2004-12-16 01:22:49")
+  (creation-time "2004-12-16 01:22:49")
+  (container-child "BsePcmInput::PcmInput-1"
+    (pos-y 1)
+    (pos-x -2))
+  (container-child "BsePcmOutput::PcmOutput-1"
+    (pos-y 1)
+    (pos-x 2)
+    (source-input "left-audio-in" (link 1 "PcmInput-1") "left-audio-out")
+    (source-input "right-audio-in" (link 1 "PcmInput-1") "right-audio-out")))

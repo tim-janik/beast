@@ -30,6 +30,7 @@
 #include "bstprocedure.h"
 #include "bstprojectctrl.h"
 #include "bstprofiler.h"
+#include <string.h>
 
 
 /* --- prototypes --- */
@@ -290,7 +291,6 @@ bst_app_init (BstApp *self)
   gxk_widget_publish_action_list (widget, "tools-wave-repo", al1);
   /* add demo songs */
   al1 = demo_entries_create (self);
-  gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "demo-songs", al1);
   /* add skins */
   al1 = skin_entries_create (self);
@@ -589,7 +589,16 @@ typedef struct {
 } DemoEntry;
 
 static DemoEntry *demo_entries = NULL;
-static guint     n_demo_entries = 0;
+static guint      n_demo_entries = 0;
+
+static int
+demo_entries_compare (const void *v1,
+                      const void *v2)
+{
+  const DemoEntry *d1 = v1;
+  const DemoEntry *d2 = v2;
+  return strcmp (d1->file, d2->file);
+}
 
 static void
 demo_entries_setup (void)
@@ -601,6 +610,10 @@ demo_entries_setup (void)
         {
           gchar *file = sfi_ring_pop_head (&files);
           gchar *name = bst_file_scan_find_key (file, "container-child", "BseSong::");
+          if (!name)
+            name = bst_file_scan_find_key (file, "container-child", "BseMidiSynth::"); // FIXME
+          if (!name)
+            name = bst_file_scan_find_key (file, "container-child", "BseCSynth::"); // FIXME
           if (name && n_demo_entries < 0xffff)
             {
               guint i = n_demo_entries++;
@@ -614,6 +627,7 @@ demo_entries_setup (void)
               g_free (file);
             }
         }
+      qsort (demo_entries, n_demo_entries, sizeof (demo_entries[0]), demo_entries_compare);
     }
 }
 
