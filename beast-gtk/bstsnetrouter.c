@@ -22,6 +22,7 @@
 #include "bstcanvaslink.h"
 #include "bstmenus.h"
 #include "bstgconfig.h"
+#include "bstprocedure.h"
 #include <gdk/gdkkeysyms.h>
 
 
@@ -54,13 +55,18 @@ static void	  bst_router_tool_set		(BstSNetRouter		*router);
 static void	  bst_router_popup_select       (GtkWidget		*widget,
 						 gulong                  category_id,
 						 gpointer                popup_data);
+static void	  bst_router_run_method         (GtkWidget		*widget,
+						 gulong                  category_id,
+						 gpointer                popup_data);
 
 
 /* --- menus --- */
 static BstMenuConfigEntry popup_entries[] =
 {
-  { "/Modules",		NULL,		NULL,	0,	"<Title>",	0 },
+  { "/Scripts",		NULL,		NULL,	0,	"<Title>",	0 },
+  { "/_Utils",		NULL,		NULL,	0,	"<Branch>",	0 },
   { "/-----",		NULL,		NULL,	0,	"<Separator>",	0 },
+  { "/Modules",		NULL,		NULL,	0,	"<Title>",	0 },
   { "/Audio _Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Other Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Routing",	NULL,		NULL,	0,	"<Branch>",	0 },
@@ -108,7 +114,7 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   BseCategorySeq *cseq;
-  BstMenuConfig *m1, *m2;
+  BstMenuConfig *m1, *m2, *m3;
 
   parent_class = g_type_class_peek_parent (class);
   bst_snet_router_class = class;
@@ -124,12 +130,17 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
 
   /* standard entries */
   m1 = bst_menu_config_from_entries (G_N_ELEMENTS (popup_entries), popup_entries);
-  /* script entries */
+  /* module entries */
   cseq = bse_categories_match_typed ("/Modules/*", "BseSource");
   m2 = bst_menu_config_from_cats (cseq, bst_router_popup_select, 1);
   bst_menu_config_sort (m2);
+  /* methods */
+  cseq = bse_categories_match_method ("/Scripts/Utils/*", "BseSNet");
+  m3 = bst_menu_config_from_cats (cseq, bst_router_run_method, 1);
+  bst_menu_config_sort (m3);
   /* merge them */
   m1 = bst_menu_config_merge (m1, m2);
+  m1 = bst_menu_config_merge (m1, m3);
   /* create menu items */
   bst_menu_config_create_items (m1, class->popup_factory, NULL);
   /* cleanup */
@@ -314,10 +325,23 @@ bst_router_popup_select (GtkWidget *widget,
 			 gulong     category_id,
 			 gpointer   popup_data)
 {
-  BstSNetRouter *router = BST_SNET_ROUTER (widget);
+  BstSNetRouter *self = BST_SNET_ROUTER (widget);
 
-  if (router->rtools)
-    bst_radio_tools_set_tool (router->rtools, category_id);
+  if (self->rtools)
+    bst_radio_tools_set_tool (self->rtools, category_id);
+}
+
+static void
+bst_router_run_method (GtkWidget *widget,
+                       gulong     category_id,
+                       gpointer   popup_data)
+{
+  BstSNetRouter *self = BST_SNET_ROUTER (widget);
+  BseCategory *cat = bse_category_from_id (category_id);
+
+  bst_procedure_exec_auto (cat->type,
+                           "snet", SFI_TYPE_PROXY, self->snet,
+                           NULL);
 }
 
 static void

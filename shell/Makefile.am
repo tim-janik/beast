@@ -36,5 +36,6 @@ script_DATA = $(public_scripts)
 public_scripts = $(strip	\
 	bse-scm-glue.boot	\
 	progressor-example.scm	\
+	modules2grid.scm	\
 )
 EXTRA_DIST += $(public_scripts) test.scm
