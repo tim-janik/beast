@@ -30,27 +30,6 @@
 #include "sfidl-parser.h"
 #include "sfidl-cbase.h"
 
-namespace Sfidl {
-  
-  class CodeGeneratorCoreC : public CodeGeneratorCBase {
-  protected:
-    std::string generateInitFunction;
-
-    void printInfoStrings (const std::string& name, const Map<std::string,IString>& infos);
-    bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
-    
-  public:
-    CodeGeneratorCoreC(const Parser& parser) : CodeGeneratorCBase (parser) {
-    }
-    void help();
-    bool run();
-
-    OptionVector getOptions();
-    void setOption (const std::string& option, const std::string& value);
-  };
-
-};
-
 #endif  /* __SFIDL_COREC_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */

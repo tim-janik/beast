@@ -1,3 +1,11 @@
+Fri Feb 27 13:54:56 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corec.h: 
+	* sfidl-corec.cc: major reorganization of the code. split up 
+	generation into multiple digestible functions.
+	implement CoreC code generator in internal namespace and inline
+	methods.
+
 Fri Feb 27 06:23:36 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: fixed i18n and identifier issues with
