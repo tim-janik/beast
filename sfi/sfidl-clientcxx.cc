@@ -42,7 +42,7 @@ CodeGeneratorCxxBase::typeArg (const string& type)
 {
   switch (parser.typeOf (type))
     {
-      case STRING:    return "const std::string&";
+      case STRING:    return "const Sfi::String&";
       case RECORD:    return type + "Ptr";
       case SEQUENCE:  return "const " + type + "&";
       case CHOICE:    return type;
@@ -56,7 +56,7 @@ CodeGeneratorCxxBase::typeField (const string& type)
 {
   switch (parser.typeOf (type))
     {
-      case STRING:    return "std::string";
+      case STRING:    return "Sfi::String";
       case RECORD:    return type + "Ptr";
       case CHOICE:
       case OBJECT:
@@ -70,7 +70,7 @@ CodeGeneratorCxxBase::typeRet (const string& type)
 {
   switch (parser.typeOf (type))
     {
-      case STRING:    return "std::string";
+      case STRING:    return "Sfi::String";
       case RECORD:    return type + "Ptr";
       case CHOICE:
       case OBJECT:

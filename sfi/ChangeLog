@@ -1,3 +1,8 @@
+Tue Jan 20 00:39:48 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-module.cc sfidl-cxx.cc: Use Sfi::String instead of
+	std::string.
+
 Tue Jan 20 00:20:07 2004  Tim Janik  <timj@gtk.org>
 
 	* sficxx.h: define Bool, Int, Num, Real, BBlock, FBlock and Rec

@@ -217,7 +217,7 @@ CodeGeneratorModule::func_value_set_param (const Param &param)
     case INT:           return "sfi_value_set_int";
     case NUM:           return "sfi_value_set_num";
     case REAL:          return "sfi_value_set_real";
-    case STRING:        return "sfi_value_set_string";
+    case STRING:        return "sfi_value_set_cxxstring";
     case CHOICE:        return "g_value_set_enum";
     case BBLOCK:        return "sfi_value_set_bblock";
     case FBLOCK:        return "sfi_value_set_fblock";
@@ -244,7 +244,7 @@ CodeGeneratorModule::func_value_get_param (const Param &param,
     case INT:           return "sfi_value_get_int";
     case NUM:           return "sfi_value_get_num";
     case REAL:          return "sfi_value_get_real";
-    case STRING:        return "sfi_value_get_string";
+    case STRING:        return "sfi_value_get_cxxstring";
     case CHOICE:        return string ("(") + TypeName (param.type) + ") g_value_get_enum";
     case BBLOCK:        return "sfi_value_get_bblock";
     case FBLOCK:        return "sfi_value_get_fblock";
@@ -283,7 +283,7 @@ CodeGeneratorModule::func_param_return_free (const Param &param)
     case INT:           return "";
     case NUM:           return "";
     case REAL:          return "";
-    case STRING:        return "g_free";
+    case STRING:        return "";
     case CHOICE:        return "";      /* enum value */
     case BBLOCK:        return "sfi_bblock_unref";
     case FBLOCK:        return "sfi_fblock_unref";
