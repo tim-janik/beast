@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-03 11:53-0400\n"
-"PO-Revision-Date: 2004-10-03 19:50-0400\n"
+"POT-Creation-Date: 2004-10-04 11:29-0400\n"
+"PO-Revision-Date: 2004-10-04 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -752,80 +752,80 @@ msgid "Description"
 msgstr "Description"
 
 #. overriding Gdk's program name
-#: beast-gtk/bstmain.c:118 data/beast.desktop.in.h:1
+#: beast-gtk/bstmain.c:119 data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:130
+#: beast-gtk/bstmain.c:131
 msgid "BEAST Startup"
 msgstr "BEAST Startup"
 
-#: beast-gtk/bstmain.c:137
+#: beast-gtk/bstmain.c:138
 msgid "Startup"
 msgstr "Startup"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:141
+#: beast-gtk/bstmain.c:142
 msgid "Initializers"
 msgstr "Initializers"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:148
+#: beast-gtk/bstmain.c:150
 msgid "RC Files"
 msgstr "RC Files"
 
 #. show splash images
-#: beast-gtk/bstmain.c:152
+#: beast-gtk/bstmain.c:154
 msgid "Splash Image"
 msgstr "Splash Image"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:164
+#: beast-gtk/bstmain.c:166
 msgid "BSE Core"
 msgstr "BSE Core"
 
-#: beast-gtk/bstmain.c:186
+#: beast-gtk/bstmain.c:188
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:205
+#: beast-gtk/bstmain.c:207
 msgid "LADSPA Plugins"
 msgstr "LADSPA Plugins"
 
-#: beast-gtk/bstmain.c:233
+#: beast-gtk/bstmain.c:235
 msgid "Scripts"
 msgstr "Scripts"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:251
+#: beast-gtk/bstmain.c:253
 msgid "Dialogs"
 msgstr "Dialogues"
 
-#: beast-gtk/bstmain.c:258
+#: beast-gtk/bstmain.c:260
 msgid "Loading..."
 msgstr "Loading..."
 
-#: beast-gtk/bstmain.c:288 beast-gtk/bstmain.c:290
+#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Loading \"%s\""
 
-#: beast-gtk/bstmain.c:307
+#: beast-gtk/bstmain.c:309
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Loading project \"%s\""
 
-#: beast-gtk/bstmain.c:788
+#: beast-gtk/bstmain.c:784
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:789
+#: beast-gtk/bstmain.c:785
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:790
+#: beast-gtk/bstmain.c:786
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -1500,15 +1500,19 @@ msgstr "Play note"
 msgid "Playback"
 msgstr "Playback"
 
-#: beast-gtk/bstpreferences.c:76
+#: beast-gtk/bstpreferences.c:77
 msgid "Piano Keys"
 msgstr "Piano Keys"
 
-#: beast-gtk/bstpreferences.c:83
+#: beast-gtk/bstpreferences.c:84
 msgid "Generic Keys"
 msgstr "Generic Keys"
 
 #: beast-gtk/bstpreferences.c:88
+msgid "Messages"
+msgstr "Messages"
+
+#: beast-gtk/bstpreferences.c:93
 msgid "Skin"
 msgstr "Skin"
 
@@ -1517,7 +1521,7 @@ msgstr "Skin"
 msgid "Executing `%s'"
 msgstr "Executing `%s'"
 
-#: beast-gtk/bstprocedure.c:446
+#: beast-gtk/bstprocedure.c:445
 msgid "Procedure"
 msgstr "Procedure"
 
@@ -1525,7 +1529,7 @@ msgstr "Procedure"
 msgid "Totals"
 msgstr "Totals"
 
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:578
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:594
 msgid "Thread Name"
 msgstr "Thread Name"
 
@@ -2532,32 +2536,60 @@ msgstr "Mixer busses connected to track output"
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesis network to be used as postprocessor"
 
-#: beast-gtk/bstusermessage.c:91
+#: beast-gtk/bstusermessage.c:95
 msgid "Error"
 msgstr "Error"
 
-#: beast-gtk/bstusermessage.c:95
+#: beast-gtk/bstusermessage.c:99
 msgid "Warning"
 msgstr "Warning"
 
-#: beast-gtk/bstusermessage.c:99
-msgid "Notice"
-msgstr "Notice"
-
 #: beast-gtk/bstusermessage.c:103
-msgid "Diagnostic"
-msgstr "Diagnostic"
+msgid "Info"
+msgstr "Info"
 
-#. shouldn't end up in dialogs
-#: beast-gtk/bstusermessage.c:107
-msgid "Debug"
-msgstr "Debug"
-
-#: beast-gtk/bstusermessage.c:111
+#: beast-gtk/bstusermessage.c:108
 msgid "Miscellaneous Message"
 msgstr "Miscellaneous Message"
 
-#: beast-gtk/bstusermessage.c:240 beast-gtk/bstusermessage.c:242
+#: beast-gtk/bstusermessage.c:195
+msgid "Details:"
+msgstr "Details:"
+
+#: beast-gtk/bstusermessage.c:202
+#, c-format
+msgid "Origin:  %s\n"
+msgstr "Origin:  %s\n"
+
+#: beast-gtk/bstusermessage.c:204
+#, c-format
+msgid "Process: %s\n"
+msgstr "Process: %s\n"
+
+#: beast-gtk/bstusermessage.c:206
+#, c-format
+msgid "PID:     %u\n"
+msgstr "PID:     %u\n"
+
+#: beast-gtk/bstusermessage.c:230
+msgid ""
+"This setting can be changed in the \"Messages\" section of the preferences "
+"dialog"
+msgstr ""
+"This setting can be changed in the \"Messages\" section of the preferences "
+"dialogue"
+
+#: beast-gtk/bstusermessage.c:277
+#, c-format
+msgid "Message has been repeated %u time"
+msgstr "Message has been repeated %u time"
+
+#: beast-gtk/bstusermessage.c:277
+#, c-format
+msgid "Message has been repeated %u times"
+msgstr "Message has been repeated %u times"
+
+#: beast-gtk/bstusermessage.c:375 beast-gtk/bstusermessage.c:377
 msgid "processing"
 msgstr "processing"
 
@@ -4186,27 +4218,27 @@ msgstr "Control 127 Polyphonic Mode On ITrigger"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Continuous MIDI Control #1 - Bank Select"
 
-#: bse/bsecore.idl:579
+#: bse/bsecore.idl:595
 msgid "State"
 msgstr "State"
 
-#: bse/bsecore.idl:579
+#: bse/bsecore.idl:595
 msgid "The execution state of the thread"
 msgstr "The execution state of the thread"
 
-#: bse/bsecore.idl:580
+#: bse/bsecore.idl:596
 msgid "Thread ID"
 msgstr "Thread ID"
 
-#: bse/bsecore.idl:580
+#: bse/bsecore.idl:596
 msgid "A unique number identifying this thread"
 msgstr "A unique number identifying this thread"
 
-#: bse/bsecore.idl:582
+#: bse/bsecore.idl:598
 msgid "Priority"
 msgstr "Priority"
 
-#: bse/bsecore.idl:582
+#: bse/bsecore.idl:598
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -4214,66 +4246,66 @@ msgstr ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 
-#: bse/bsecore.idl:585
+#: bse/bsecore.idl:601
 msgid "Processor"
 msgstr "Processor"
 
-#: bse/bsecore.idl:585
+#: bse/bsecore.idl:601
 msgid "The processor that this thread is currently being executed on"
 msgstr "The processor that this thread is currently being executed on"
 
-#: bse/bsecore.idl:587
+#: bse/bsecore.idl:603
 msgid "User Time"
 msgstr "User Time"
 
-#: bse/bsecore.idl:587
+#: bse/bsecore.idl:603
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "The CPU time spent executing instructions of this thread"
 
-#: bse/bsecore.idl:589
+#: bse/bsecore.idl:605
 msgid "System Time"
 msgstr "System Time"
 
-#: bse/bsecore.idl:589
+#: bse/bsecore.idl:605
 msgid "The CPU time spent in the system for this thread"
 msgstr "The CPU time spent in the system for this thread"
 
-#: bse/bsecore.idl:591
+#: bse/bsecore.idl:607
 msgid "Child User Time"
 msgstr "Child User Time"
 
-#: bse/bsecore.idl:591
+#: bse/bsecore.idl:607
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "The CPU time spent executing instructions of children of this thread"
 
-#: bse/bsecore.idl:593
+#: bse/bsecore.idl:609
 msgid "Child System Time"
 msgstr "Child System Time"
 
-#: bse/bsecore.idl:593
+#: bse/bsecore.idl:609
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "The CPU time spent in the system for children of this thread"
 
-#: bse/bsecore.idl:608
+#: bse/bsecore.idl:624
 msgid "Search Paths"
 msgstr "Search Paths"
 
-#: bse/bsecore.idl:609
+#: bse/bsecore.idl:625
 msgid "Sample Path"
 msgstr "Sample Path"
 
-#: bse/bsecore.idl:610
+#: bse/bsecore.idl:626
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
 "Search path of directories, separated by \"%s\", used to find audio samples."
 
-#: bse/bsecore.idl:613
+#: bse/bsecore.idl:629
 msgid "Effect Path"
 msgstr "Effect Path"
 
-#: bse/bsecore.idl:614
+#: bse/bsecore.idl:630
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
@@ -4282,11 +4314,11 @@ msgstr ""
 "Search path of directories, separated by \"%s\", used to find BSE effect "
 "files."
 
-#: bse/bsecore.idl:617
+#: bse/bsecore.idl:633
 msgid "Instrument Path"
 msgstr "Instrument Path"
 
-#: bse/bsecore.idl:618
+#: bse/bsecore.idl:634
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
@@ -4295,11 +4327,11 @@ msgstr ""
 "Search path of directories, separated by \"%s\", used to find BSE instrument "
 "files."
 
-#: bse/bsecore.idl:621
+#: bse/bsecore.idl:637
 msgid "Script Path"
 msgstr "Script Path"
 
-#: bse/bsecore.idl:622
+#: bse/bsecore.idl:638
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
@@ -4308,11 +4340,11 @@ msgstr ""
 "Search path of directories, separated by \"%s\", used to find BSE scheme "
 "scripts."
 
-#: bse/bsecore.idl:625
+#: bse/bsecore.idl:641
 msgid "Plugin Path"
 msgstr "Plugin Path"
 
-#: bse/bsecore.idl:626
+#: bse/bsecore.idl:642
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE plugins. "
@@ -4323,11 +4355,11 @@ msgstr ""
 "This path is searched in addition to the standard BSE plugin location on "
 "this system."
 
-#: bse/bsecore.idl:630
+#: bse/bsecore.idl:646
 msgid "LADSPA Path"
 msgstr "LADSPA Path"
 
-#: bse/bsecore.idl:631
+#: bse/bsecore.idl:647
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find LADSPA "
@@ -4342,15 +4374,15 @@ msgstr ""
 "More informations about LADSPA plugins can be found at http://www.ladspa."
 "org/."
 
-#: bse/bsecore.idl:637
+#: bse/bsecore.idl:653
 msgid "Synthesis Settings"
 msgstr "Synthesis Settings"
 
-#: bse/bsecore.idl:638
+#: bse/bsecore.idl:654
 msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
-#: bse/bsecore.idl:639
+#: bse/bsecore.idl:655
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -4358,19 +4390,19 @@ msgstr ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 
-#: bse/bsecore.idl:641
+#: bse/bsecore.idl:657
 msgid "Synth Mixing Frequency"
 msgstr "Synth Mixing Frequency"
 
-#: bse/bsecore.idl:642
+#: bse/bsecore.idl:658
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:644
+#: bse/bsecore.idl:660
 msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
-#: bse/bsecore.idl:645
+#: bse/bsecore.idl:661
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -4378,37 +4410,37 @@ msgstr ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
 
-#: bse/bsecore.idl:649
+#: bse/bsecore.idl:665
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsecore.idl:650
+#: bse/bsecore.idl:666
 msgid "Invert Sustain Pedal"
 msgstr "Invert Sustain Pedal"
 
-#: bse/bsecore.idl:651
+#: bse/bsecore.idl:667
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 
-#: bse/bsecore.idl:654
+#: bse/bsecore.idl:670
 msgid "Stepping Rates"
 msgstr "Stepping Rates"
 
-#: bse/bsecore.idl:655
+#: bse/bsecore.idl:671
 msgid "Volume [dB] Steps"
 msgstr "Volume [dB] Steps"
 
-#: bse/bsecore.idl:655
+#: bse/bsecore.idl:671
 msgid "Step width for volume in decibell"
 msgstr "Step width for volume in decibels"
 
-#: bse/bsecore.idl:657
+#: bse/bsecore.idl:673
 msgid "BPM Steps"
 msgstr "BPM Steps"
 
-#: bse/bsecore.idl:657
+#: bse/bsecore.idl:673
 msgid "Step width for beats per minute"
 msgstr "Step width for beats per minute"
 
@@ -4639,7 +4671,7 @@ msgstr "High indicates the instrument is done synthesizing"
 msgid "/Input & Output/Instrument Output"
 msgstr "/Input & Output/Instrument Output"
 
-#: bse/bsemain.c:268
+#: bse/bsemain.c:269
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -4647,7 +4679,7 @@ msgstr ""
 "\n"
 "Available PCM drivers:\n"
 
-#: bse/bsemain.c:270
+#: bse/bsemain.c:271
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -4881,29 +4913,29 @@ msgstr "WAVE File"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Name of the WAVE file used for recording BSE sound output"
 
-#: bse/bseserver.c:471
+#: bse/bseserver.c:469
 msgid "Show messages about PCM device selections problems"
 msgstr "Show messages about PCM device selection problems"
 
-#: bse/bseserver.c:472
+#: bse/bseserver.c:470
 #, c-format
 msgid "Failed to open PCM devices, giving up: %s"
 msgstr "Failed to open PCM devices; giving up: %s"
 
-#: bse/bseserver.c:490
+#: bse/bseserver.c:488
 msgid "Show messages about MIDI device selections problems"
 msgstr "Show messages about MIDI device selection problems"
 
-#: bse/bseserver.c:491
+#: bse/bseserver.c:489
 #, c-format
 msgid "Failed to open MIDI devices (reverting to null device): %s"
 msgstr "Failed to open MIDI devices (reverting to null device): %s"
 
-#: bse/bseserver.c:542
+#: bse/bseserver.c:540
 msgid "Show recording file errors"
 msgstr "Show recording file errors"
 
-#: bse/bseserver.c:543
+#: bse/bseserver.c:541
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Failed to open output file \"%s\": %s"
@@ -5311,12 +5343,12 @@ msgstr "BSE Synthesis File"
 msgid "Audio"
 msgstr "Audio"
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:294
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:537
+#: drivers/bse-alsa/bsemididevice-alsa.c:309
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:554
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:CARD,DEV,SUBDEV"
 
-#: drivers/bse-alsa/bsemididevice-alsa.c:296
+#: drivers/bse-alsa/bsemididevice-alsa.c:311
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture MIDI driver, using\n"
@@ -5345,7 +5377,7 @@ msgstr ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:539
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:556
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
