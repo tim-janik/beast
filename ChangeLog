@@ -1,3 +1,7 @@
+Fri Jul 18 05:42:06 2003  Tim Janik  <timj@gtk.org>
+
+	* test/velocity-test.bse: added test for velocity sequencing functionality.
+
 Fri Jul 18 05:03:21 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: 
