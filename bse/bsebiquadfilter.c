@@ -437,7 +437,7 @@ biquad_filter_process (GslModule *module,
       nyquist = 1.0 / nyquist;
       do
 	{
-	  guint n = MIN (bound - sig_out, gsl_engine_sub_sample_steps ());
+	  guint n = MIN (bound - sig_out, gsl_engine_control_raster ());
 	  
 	  if_reject (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq))
 	    {
@@ -471,7 +471,7 @@ biquad_filter_process (GslModule *module,
       nyquist = 1.0 / nyquist;
       do
 	{
-          guint n = MIN (bound - sig_out, gsl_engine_sub_sample_steps ());
+          guint n = MIN (bound - sig_out, gsl_engine_control_raster ());
 	  
           if_reject (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq))
 	    {
@@ -492,7 +492,7 @@ biquad_filter_process (GslModule *module,
       gfloat last_gain = fmod->config.gain / fmod->gain_strength;
       do
 	{
-          guint n = MIN (bound - sig_out, gsl_engine_sub_sample_steps ());
+          guint n = MIN (bound - sig_out, gsl_engine_control_raster ());
 	  
 	  if_reject (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain))
 	    {

@@ -46,6 +46,7 @@ typedef struct _EngineReplyJob EngineReplyJob;
 typedef struct _EngineTimedJob EngineTimedJob;
 typedef enum {
   ENGINE_JOB_NOP,
+  ENGINE_JOB_SYNC,
   ENGINE_JOB_INTEGRATE,
   ENGINE_JOB_DISCARD,
   ENGINE_JOB_ICONNECT,
@@ -75,6 +76,11 @@ struct _GslJob
   GslJob	     *next;
   union {
     EngineNode	     *node;
+    struct {
+      SfiMutex  *lock_mutex;
+      SfiCond   *lock_cond;
+      gboolean  *lock_p;
+    } sync;
     struct {
       EngineNode     *node;
       guint64         stamp;

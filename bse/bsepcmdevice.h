@@ -88,6 +88,7 @@ struct _BsePcmHandle
   guint			 n_channels;
   gfloat		 mix_freq;
   guint			 playback_watermark;
+  guint			 minimum_watermark;
   SfiMutex		 mutex;
   gsize	(*read)		(BsePcmHandle		*handle,
 			 gsize			 n_values,

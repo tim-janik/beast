@@ -34,21 +34,14 @@ struct JStream {
   unsigned int  n_connections;
 private:
   unsigned int  jcount; /* reserved */
-  unsigned int  reserved : 16;
 };
 struct IStream {
   const float  *values;
-private:
-  unsigned int  reserved : 16;
-public:
-  unsigned int  connected : 1;
+  gboolean      connected;
 };
 struct OStream {
   float        *values;
-private:
-  unsigned int  sub_sample_pattern : 16;
-public:
-  unsigned int  connected : 1;
+  gboolean      connected;
 };
 
 class SynthesisModule {

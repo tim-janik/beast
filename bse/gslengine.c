@@ -85,10 +85,7 @@ gsl_module_new (const GslClass *klass,
   node->integrated = FALSE;
   sfi_rec_mutex_init (&node->rec_mutex);
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-    {
-      node->outputs[i].buffer = node->module.ostreams[i].values;
-      node->module.ostreams[i].sub_sample_pattern = gsl_engine_sub_sample_test (node->module.ostreams[i].values);
-    }
+    node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
   node->boundary_jobs = NULL;
   node->reply_jobs = NULL;
@@ -1152,45 +1149,170 @@ static SfiThread       *master_thread = NULL;
 static EngineMasterData master_data;
 guint			gsl_externvar_block_size = 0;
 guint			gsl_externvar_sample_freq = 0;
-guint			gsl_externvar_sub_sample_mask = 0;
-guint			gsl_externvar_sub_sample_steps = 0;
+guint			gsl_externvar_control_mask = 0;
+
+/**
+ * gsl_engine_constrain
+ * @latency_ms:       calculation latency in milli seconds
+ * @sample_freq:      mixing frequency
+ * @control_freq:     frequency at which to check control values or 0
+ * @block_size_p:     location of number of values to process block wise
+ * @control_raster_p: location of number of values to skip between control values
+ *
+ * Calculate a suitable block size and control raster for a
+ * @sample_freq at a specific @latency_ms (the latency shouldn't be 0).
+ * The @control_freq if specified should me much smaller than the
+ * @sample_freq. It determines how often control values are to be
+ * checked when calculating blocks of sample values.
+ * The block size determines the amount by which the global tick
+ * stamp (see gsl_tick_stamp()) is updated everytime the whole
+ * module network completed processing block size values.
+ */
+void
+gsl_engine_constrain (guint            latency_ms,
+                      guint            sample_freq,
+                      guint            control_freq,
+                      guint           *block_size_p,
+                      guint           *control_raster_p)
+{
+  guint tmp, block_size, control_raster;
+  g_return_if_fail (sample_freq >= 100);
+
+  /* constrain latency to avoid overflow */
+  latency_ms = CLAMP (latency_ms, 1, 10000);
+  /* derive block size from latency and sample frequency,
+   * account for an effective latency split of 3 buffers
+   */
+  block_size = latency_ms * sample_freq / 1000 / 3;
+  /* constrain block size */
+  block_size = CLAMP (block_size, 8, MIN (GSL_STREAM_MAX_VALUES, sample_freq / 3));
+  /* shrink block size to a 2^n boundary */
+  tmp = sfi_alloc_upper_power2 (block_size);
+  block_size = block_size < tmp ? tmp >> 1 : tmp;
+  /* constrain control_freq */
+  control_freq = MIN (control_freq, sample_freq);
+  if (!control_freq)
+    control_freq = (sample_freq + block_size - 1) / block_size;
+  /* calc control stepping */
+  control_raster = (sample_freq + control_freq - 1) / control_freq;
+  /* control_raster > block_size doesn't make much sense */
+  control_raster = CLAMP (control_raster, 1, block_size);
+  /* shrink control_raster to a 2^n boundary */
+  tmp = sfi_alloc_upper_power2 (control_raster);
+  control_raster = control_raster < tmp ? tmp >> 1 : tmp;
+  /* return values */
+  if (block_size_p)
+    *block_size_p = block_size;
+  if (control_raster_p)
+    *control_raster_p = control_raster;
+}
+
+/**
+ * gsl_engine_configure
+ * @latency_ms:       calculation latency in milli seconds
+ * @sample_freq:      mixing frequency
+ * @control_freq:     frequency at which to check control values or 0
+ * @returns:          whether reconfiguration was successful
+ *
+ * Reconfigure engine parameters. This function may only be called
+ * after engine initialization and can only succeed if no modules
+ * are currently integrated.
+ */
+gboolean
+gsl_engine_configure (guint            latency_ms,
+                      guint            sample_freq,
+                      guint            control_freq)
+{
+  static SfiMutex sync_mutex = { 0, };
+  static SfiCond  sync_cond = { 0, };
+  static gboolean sync_lock = FALSE;
+  guint block_size, control_raster, success = FALSE;
+  GslTrans *trans;
+  GslJob *job;
+  g_return_val_if_fail (gsl_engine_initialized == TRUE, FALSE);
+
+  /* optimize */
+  gsl_engine_constrain (latency_ms, sample_freq, control_freq, &block_size, &control_raster);
+  if (0 && block_size == gsl_engine_block_size() && control_raster == gsl_engine_control_raster())
+    return TRUE;
+
+  /* pseudo-sync first */
+  gsl_engine_wait_on_trans();
+  /* paranoia checks */
+  if (_engine_mnl_head() || sync_lock)
+    return FALSE;
+
+  /* block master */
+  GSL_SPIN_LOCK (&sync_mutex);
+  job = sfi_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_SYNC;
+  job->data.sync.lock_mutex = &sync_mutex;
+  job->data.sync.lock_cond = &sync_cond;
+  job->data.sync.lock_p = &sync_lock;
+  sync_lock = FALSE;
+  trans = gsl_trans_open();
+  gsl_trans_add (trans, job);
+  if (gsl_engine_threaded)
+    gsl_trans_commit (trans);
+  else
+    {
+      gsl_trans_dismiss (trans);
+      /* simulate master */
+      sync_lock = TRUE;
+    }
+  while (!sync_lock)
+    sfi_cond_wait (&sync_cond, &sync_mutex);
+  GSL_SPIN_UNLOCK (&sync_mutex);
+
+  if (!_engine_mnl_head())
+    {
+      /* cleanup */
+      gsl_engine_garbage_collect();
+      _engine_recycle_const_values (TRUE);
+      /* adjust parameters */
+      gsl_externvar_block_size = block_size;
+      gsl_externvar_sample_freq = sample_freq;
+      gsl_externvar_control_mask = control_raster - 1;
+      /* fixup timer */
+      _gsl_tick_stamp_set_leap (gsl_engine_block_size());
+      _gsl_tick_stamp_inc ();   /* ensure stamp validity (>0 and systime mark) */
+      success = TRUE;
+    }
+
+  /* unblock master */
+  GSL_SPIN_LOCK (&sync_mutex);
+  sync_lock = FALSE;
+  sfi_cond_signal (&sync_cond);
+  GSL_SPIN_UNLOCK (&sync_mutex);
+
+  if (success)
+    DEBUG ("configured%s: mixfreq=%uHz bsize=%uvals craster=%u (cfreq=%f)",
+           gsl_engine_threaded ? "(threaded)" : "",
+           gsl_engine_sample_freq(), gsl_engine_block_size(), gsl_engine_control_raster(),
+           gsl_engine_sample_freq() / (float) gsl_engine_control_raster());
+  
+  return success;
+}
 
 /**
  * gsl_engine_init
  * @run_threaded:    whether the engine should be run threaded
- * @block_size:      number of values to process block wise
- * @sample_freq:     mixing frequency
- * @sub_sample_mask: not yet funcitonal
  *
  * Initialize the GSL engine, this function must be called prior to
  * any other engine related function and can only be invoked once.
- * The @block_size determines the amount by which the global tick
- * stamp (see gsl_tick_stamp()) is updated everytime the whole
- * module network completed processing @block_size values.
  */
 void
-gsl_engine_init (gboolean run_threaded,
-		 guint	  block_size,
-		 guint	  sample_freq,
-		 guint    sub_sample_mask)
+gsl_engine_init (gboolean run_threaded)
 {
   g_return_if_fail (gsl_engine_initialized == FALSE);
-  g_return_if_fail (block_size > 0 && block_size <= GSL_STREAM_MAX_VALUES);
-  g_return_if_fail (sample_freq > 0);
-  g_return_if_fail (sub_sample_mask < block_size);
-  g_return_if_fail ((sub_sample_mask & (sub_sample_mask + 1)) == 0);	/* power of 2 */
-  
+
   gsl_engine_initialized = TRUE;
+  /* first configure */
+  gsl_engine_configure (50, 44100, 50);
+
+  /* then setup threading */
   gsl_engine_threaded = run_threaded;
-  gsl_externvar_block_size = block_size;
-  gsl_externvar_sample_freq = sample_freq;
-  gsl_externvar_sub_sample_mask = sub_sample_mask << 2;	/* shift out sizeof (float) alignment */
-  gsl_externvar_sub_sample_steps = sub_sample_mask + 1;
-  _gsl_tick_stamp_set_leap (block_size);
-  _gsl_tick_stamp_inc ();	/* ensure stamp validity (>0 and systime mark) */
-  
-  DEBUG ("initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
-  
+
   if (gsl_engine_threaded)
     {
       gint err = pipe (master_data.wakeup_pipe);

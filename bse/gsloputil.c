@@ -35,7 +35,7 @@ _engine_alloc_ostreams (guint n)
   if (n)
     {
       guint i = sizeof (GslOStream) * n + sizeof (gfloat) * gsl_engine_block_size () * n;
-      GslOStream *streams = sfi_alloc_memblock0 (i);
+      GslOStream *streams = g_malloc0 (i);
       gfloat *buffers = (gfloat*) (streams + n);
 
       for (i = 0; i < n; i++)
@@ -82,10 +82,7 @@ free_node (EngineNode *node)
   sfi_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
-      guint n = ENGINE_NODE_N_OSTREAMS (node);
-      guint i = sizeof (GslOStream) * n + sizeof (gfloat) * gsl_engine_block_size () * n;
-
-      sfi_free_memblock (i, node->module.ostreams);
+      g_free (node->module.ostreams);   /* gsl_engine_block_size() may have changed since allocation */
       sfi_delete_structs (EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
     }
   if (node->module.istreams)
@@ -723,7 +720,7 @@ gsl_engine_const_values (gfloat value)
 }
 
 void
-_engine_recycle_const_values (void)
+_engine_recycle_const_values (gboolean nuke_all)
 {
   gfloat **nodes = cvalue_array.nodes;
   guint8 *used = cvalue_array.nodes_used;
@@ -731,8 +728,11 @@ _engine_recycle_const_values (void)
   
   for (i = 0; i < count; i++)
     {
-      used[i]--;  /* invariant: use counts are never 0 */
-      
+      if (nuke_all)
+        used[i] = 0;
+      else
+        used[i]--;      /* invariant: use counts are never 0 */
+
       if (used[i] == 0)
 	g_free (nodes[i]);
       else /* preserve node */

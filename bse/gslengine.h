@@ -23,7 +23,7 @@
 G_BEGIN_DECLS
 
 /* --- constants --- */
-#define	GSL_STREAM_MAX_VALUES		        (2048 /* power of 2, <= 16384 */)	/* FIXME */
+#define	GSL_STREAM_MAX_VALUES		        (1024 /* power of 2 and <= 16384 */)
 #define	GSL_MODULE_N_OSTREAMS(module)	        ((module)->klass->n_ostreams)
 #define	GSL_MODULE_N_ISTREAMS(module)	        ((module)->klass->n_istreams)
 #define	GSL_MODULE_N_JSTREAMS(module)	        ((module)->klass->n_jstreams)
@@ -91,20 +91,18 @@ struct _GslJStream
 {
   const gfloat **values;
   guint          n_connections;	/* scheduler update */
+  /*< private >*/
   guint		 jcount;	/* internal field */
-  guint		 reserved : 16;
 };
 struct _GslIStream
 {
   const gfloat *values;
-  guint		reserved : 16;
-  guint		connected : 1;	/* scheduler update */
+  gboolean	connected;	/* scheduler update */
 };
 struct _GslOStream
 {
   gfloat     *values;
-  guint	      sub_sample_pattern : 16;
-  guint	      connected : 1;
+  gboolean    connected;
 };
 
 
@@ -189,10 +187,15 @@ gpointer      gsl_module_process_reply  (GslModule       *module);
 
 
 /* --- initialization & main loop --- */
-void	        gsl_engine_init		(gboolean	  threaded,
-					 guint		  block_size,
+void            gsl_engine_constrain    (guint            latency_ms,
+                                         guint            sample_freq,
+                                         guint            control_freq,
+                                         guint           *block_size_p,
+                                         guint           *control_raster_p);
+void	        gsl_engine_init		(gboolean	  threaded);
+gboolean        gsl_engine_configure    (guint		  latency_ms,
 					 guint		  sample_freq,
-					 guint		  sub_sample_mask);
+					 guint		  control_freq);
 typedef struct
 {
   glong		timeout;
@@ -211,19 +214,17 @@ gboolean      gsl_engine_has_garbage		 (void);
 void	      gsl_engine_garbage_collect	 (void);
 void	      gsl_engine_wait_on_trans		 (void);
 guint64	      gsl_engine_tick_stamp_from_systime (guint64	systime);
-#define	      gsl_engine_block_size()		 ((const guint)	gsl_externvar_block_size + 0)
-#define	      gsl_engine_sample_freq()		 ((const guint)	gsl_externvar_sample_freq + 0)
-#define	      gsl_engine_sub_sample_mask()	 ((const guint)	gsl_externvar_sub_sample_mask + 0)
-#define	      gsl_engine_sub_sample_steps()	 ((const guint)	gsl_externvar_sub_sample_steps + 0)
-#define	      gsl_engine_sub_sample_test(ptr)	 (((guint) (ptr)) & gsl_engine_sub_sample_mask ())
-#define	      GSL_SUB_SAMPLE_MATCH(ptr,sspatrn)	 (gsl_engine_sub_sample_test (ptr) == (sspatrn))
+#define	      gsl_engine_block_size()		 (0 + (const guint) gsl_externvar_block_size)
+#define	      gsl_engine_sample_freq()		 (0 + (const guint) gsl_externvar_sample_freq)
+#define	      gsl_engine_control_raster()	 (1 + (const guint) gsl_externvar_control_mask)
+#define	      gsl_engine_control_mask()	         (0 + (const guint) gsl_externvar_control_mask)
+#define	      GSL_CONTROL_CHECK(index)	         ((gsl_engine_control_mask() & (index)) == 0)
 
 
 /*< private >*/
 extern guint	gsl_externvar_block_size;
 extern guint	gsl_externvar_sample_freq;
-extern guint	gsl_externvar_sub_sample_mask;
-extern guint	gsl_externvar_sub_sample_steps;
+extern guint	gsl_externvar_control_mask;
 
 G_END_DECLS
 

@@ -327,6 +327,17 @@ master_process_job (GslJob *job)
       EngineTimedJob *tjob;
       EngineReplyJob *rjob;
       gboolean was_consumer;
+    case ENGINE_JOB_SYNC:
+      JOB_DEBUG ("sync");
+      master_need_reflow |= TRUE;
+      master_schedule_discard();
+      GSL_SPIN_LOCK (job->data.sync.lock_mutex);
+      *job->data.sync.lock_p = TRUE;
+      sfi_cond_signal (job->data.sync.lock_cond);
+      while (*job->data.sync.lock_p)
+        sfi_cond_wait (job->data.sync.lock_cond, job->data.sync.lock_mutex);
+      GSL_SPIN_UNLOCK (job->data.sync.lock_mutex);
+      break;
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
       JOB_DEBUG ("integrate(%p)", node);
@@ -896,7 +907,7 @@ master_process_flow (void)
       
       _engine_unset_schedule (master_schedule);
       master_tick_stamp_inc ();
-      _engine_recycle_const_values ();
+      _engine_recycle_const_values (FALSE);
     }
   master_need_process = FALSE;
 }

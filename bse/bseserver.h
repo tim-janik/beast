@@ -46,7 +46,6 @@ struct _BseServer
   gchar		  *wave_file;
   
   guint		   dev_use_count;
-  guint		   pcm_latency;
   BsePcmDevice    *pcm_device;
   GslModule       *pcm_imodule;
   GslModule       *pcm_omodule;

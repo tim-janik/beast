@@ -42,7 +42,6 @@ enum
 {
   PROP_0,
   PROP_GCONFIG,
-  PROP_PCM_LATENCY,
   PROP_WAVE_FILE
 };
 
@@ -139,11 +138,6 @@ bse_server_class_init (BseServerClass *class)
   bse_object_class_add_param (object_class, "BSE Configuration",
 			      PROP_GCONFIG,
 			      bse_gconfig_pspec ());	/* "bse-preferences" */
-  bse_object_class_add_param (object_class, "PCM Settings",
-			      PROP_PCM_LATENCY,
-			      sfi_pspec_int ("latency", "Latency [ms]", NULL,
-					     50, 1, 2000, 5,
-					     SFI_PARAM_GUI));
   bse_object_class_add_param (object_class, "PCM Recording",
 			      PROP_WAVE_FILE,
 			      sfi_pspec_string ("wave_file", "WAVE File", NULL,
@@ -205,7 +199,6 @@ bse_server_init (BseServer *self)
   self->engine_source = NULL;
   self->projects = NULL;
   self->dev_use_count = 0;
-  self->pcm_latency = 50;
   self->pcm_device = NULL;
   self->pcm_imodule = NULL;
   self->pcm_omodule = NULL;
@@ -251,18 +244,11 @@ bse_server_set_property (GObject      *object,
   BseServer *server = BSE_SERVER (object);
   switch (param_id)
     {
-      BsePcmHandle *handle;
       SfiRec *rec;
     case PROP_GCONFIG:
       rec = sfi_value_get_rec (value);
       if (rec)
 	bse_gconfig_apply (rec);
-      break;
-    case PROP_PCM_LATENCY:
-      server->pcm_latency = g_value_get_int (value);
-      handle = server->pcm_device ? bse_pcm_device_get_handle (server->pcm_device) : NULL;
-      if (handle)
-	bse_pcm_handle_set_watermark (handle, server->pcm_latency);
       break;
     case PROP_WAVE_FILE:
       if (!bse_gconfig_locked ())
@@ -295,9 +281,6 @@ bse_server_get_property (GObject    *object,
       rec = bse_gconfig_to_rec (bse_global_config);
       sfi_value_set_rec (value, rec);
       sfi_rec_unref (rec);
-      break;
-    case PROP_PCM_LATENCY:
-      g_value_set_int (value, server->pcm_latency);
       break;
     case PROP_WAVE_FILE:
       g_value_set_string (value, server->wave_file);
@@ -547,8 +530,7 @@ bse_server_open_devices (BseServer *self)
   if (!error)
     {
       GslTrans *trans = gsl_trans_open ();
-      bse_pcm_handle_set_watermark (bse_pcm_device_get_handle (self->pcm_device),
-				    self->pcm_latency);
+      bse_pcm_handle_set_watermark (bse_pcm_device_get_handle (self->pcm_device), BSE_GCONFIG (synth_latency));
       engine_init (self, bse_pcm_device_get_handle (self->pcm_device)->mix_freq);
       self->pcm_imodule = bse_pcm_imodule_insert (bse_pcm_device_get_handle (self->pcm_device), trans);
       if (self->wave_file)
@@ -1072,20 +1054,18 @@ engine_init (BseServer *server,
   server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));
   g_source_set_priority (server->engine_source, BSE_PRIORITY_HIGH);
   
-  if (!engine_is_initialized)	// FIXME: hack because we can't deinitialize the engine
+  if (!engine_is_initialized)
     {
       guint mypid = bse_main_getpid();
       int current_priority;
       engine_is_initialized = TRUE;
-      gsl_engine_init (1, BSE_GCONFIG (synth_block_size), mix_freq, 63);
+      gsl_engine_init (TRUE);
       /* lower priorities compared to engine if our priority range permits */
       current_priority = getpriority (PRIO_PROCESS, mypid);
       if (current_priority <= -2 && mypid)
         setpriority (PRIO_PROCESS, mypid, current_priority + 1);
     }
-  else if (mix_freq != gsl_engine_sample_freq () || BSE_GCONFIG (synth_block_size) != gsl_engine_block_size ())
-    g_warning ("mix frequency or block size mistmatch (%f == %u, %u == %u) restart recommended", /* FIXME */
-               mix_freq, gsl_engine_sample_freq (), BSE_GCONFIG (synth_block_size), gsl_engine_block_size ());
+  gsl_engine_configure (BSE_GCONFIG (synth_latency), mix_freq, BSE_GCONFIG (synth_control_freq));
 
   g_source_attach (server->engine_source, bse_main_context);
 }

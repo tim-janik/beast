@@ -392,14 +392,17 @@ record GConfig {
                               NULL, STANDARD ":searchpath");
   };
   group "Synthesis Settings" {
-    Int  synth_block_size  = ("Synth Block Size",
-                              "Synthesis buffer size, smaller values may reduce latency but "
-                              "increase CPU overhead",
-                              256, 4, 4096, 4,
-                              SFI_PARAM_STANDARD ":scale");
-    Int  synth_mixing_freq = ("Synth Mixing Frequency",
-                              "Synthesis mixing frequency, common values are: 22050, 44100, 48000",
-                              44100, 8000, 192000, 0, SFI_PARAM_STANDARD);
+    Int synth_latency           = (_("Latency [ms]"),
+                                   _("Processing duration between input and output of a single sample, "
+                                     "smaller values increase CPU load"),
+                                   50, 1, 2000, 5, STANDARD);
+    Int synth_mixing_freq       = (_("Synth Mixing Frequency"),
+                                   _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
+                                   44100, 8000, 192000, 0, STANDARD);
+    Int synth_control_freq      = (_("Synth Control Frequency"),
+                                   _("Frequency at which control values are evaluated, "
+                                     "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
+                                   1000, 1, 192000, 0, STANDARD);
   };
   group "MIDI" {
     Bool invert_sustain = ("Invert Sustain Pedal",

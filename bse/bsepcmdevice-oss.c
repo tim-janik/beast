@@ -59,6 +59,7 @@ typedef struct
   guint		frag_size;
   guint		bytes_per_value;
   gint16       *frag_buf;
+  gboolean      needs_trigger;
 } OSSHandle;
 #define	FRAG_BUF_SIZE(oss)	((oss)->frag_size * 4)
 
@@ -147,11 +148,12 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
   handle->read = NULL;
   handle->write = NULL;
   handle->status = NULL;
-  oss->n_frags = 256;
-  oss->frag_size = 512;
+  oss->n_frags = 1024;
+  oss->frag_size = 128;
   oss->bytes_per_value = 2;
   oss->frag_buf = NULL;
   oss->fd = -1;
+  oss->needs_trigger = TRUE;
 
   /* try open */
   if (!error)
@@ -194,7 +196,8 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
   if (!error)
     {
       oss->frag_buf = g_malloc (FRAG_BUF_SIZE (oss));
-      handle->playback_watermark = MIN (oss->n_frags, 5) * oss->frag_size;
+      handle->minimum_watermark = oss->frag_size / oss->bytes_per_value;
+      handle->playback_watermark = MIN (oss->n_frags, 5) * oss->frag_size / oss->bytes_per_value;
       BSE_OBJECT_SET_FLAGS (pdev, BSE_PCM_FLAG_OPEN);
       if (handle->readable)
 	{
@@ -372,6 +375,8 @@ oss_device_retrigger (OSSHandle *oss)
       /* FD_SET (dev->pfd.fd, &out_fds); */
       select (oss->fd + 1, &in_fds, &out_fds, NULL, &tv);
     }
+
+  oss->needs_trigger = FALSE;
 }
 
 static void
@@ -382,6 +387,9 @@ oss_device_status (BsePcmHandle *handle,
   gint fd = oss->fd;
   audio_buf_info info;
   
+  if (handle->writable && oss->needs_trigger)
+    oss_device_retrigger (oss);
+
   if (handle->readable)
     {
       memset (&info, 0, sizeof (info));
@@ -407,12 +415,13 @@ oss_device_status (BsePcmHandle *handle,
     }
   if (handle->writable)
     {
+      guint value_count, frag_fill;
       memset (&info, 0, sizeof (info));
       (void) ioctl (fd, SNDCTL_DSP_GETOSPACE, &info);
       status->total_playback_values = info.fragstotal * info.fragsize / oss->bytes_per_value;
-      status->n_playback_values_available = info.fragments * info.fragsize / oss->bytes_per_value;
-      /* probably more accurate: */
-      status->n_playback_values_available = info.bytes / oss->bytes_per_value;
+      frag_fill = info.fragments * info.fragsize / oss->bytes_per_value;
+      value_count = info.bytes / oss->bytes_per_value;  /* probably more accurate */
+      status->n_playback_values_available = MAX (frag_fill, value_count);
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
       status->n_playback_values_available = MIN (status->total_playback_values, status->n_playback_values_available);
       LATENCY_DEBUG ("OSS-OSPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",

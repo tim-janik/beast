@@ -1,3 +1,39 @@
+Sat Mar  6 12:17:46 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl: remove gconfig option synth_block_size, added 
+	synth_latency and synth_control_freq.
+
+	* gslengine.[hc], gslopnode.h: removed sub-sample cruft. export just
+	GSL_CONTROL_CHECK(), gsl_engine_control_mask() and
+	gsl_engine_control_raster(), changed callers. added SYNC jobs.
+	removed configuration parameters from gsl_engine_init().
+	added gsl_engine_constrain() to calculate and constrain block and
+	control blocck sizes.
+	added gsl_engine_configure() to reconfigure engine configuration
+	parameters.
+	removed cruft from Stream structures. changed GSL_STREAM_MAX_VALUES
+	to 1024.
+
+	* gslopmaster.c: implement ENGINE_JOB_SYNC, needed to reconfigure
+	the engine.
+
+	* gsloputil.[hc]: prepare for gsl_engine_block_size() changes, allow
+	complete nukage of all const-value blocks.
+
+	* bseserver.[hc]: remove pcm-latency property. properly reconfigure
+	engine with gsl_engine_configure().
+
+	* bsepcmdevice.[hc]: added minimum watermark field to constrain
+	watermark in bse_pcm_handle_set_watermark() for devices with
+	fragment sizes, where too small watermarks can confuse the
+	fill/poll calculation code.
+
+	* bsepcmdevice-oss.c: request the smallest possible fragment size.
+	retrigger device operation after open, setup minimum playback
+	watermark.
+
+	* bsecxxmodule.h: adapt to gslengine.h API changes.
+
 Tue Mar  2 12:59:38 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepart.c (bse_part_insert_note): ensure enough octaves are present
