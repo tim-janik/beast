@@ -1,3 +1,8 @@
+Sat Oct 30 17:38:46 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-development.texi: moved po statistic links from gnome-2.10/
+	to gnome-HEAD/.
+
 Sat Oct 30 16:20:10 2004  Tim Janik  <timj@gtk.org>
 
 	* configure.in: depend on gtk+-2.4.11, as earlier versions have severe
