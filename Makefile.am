@@ -9,6 +9,9 @@ SRC_SUBDIRS = sfi bse plugins bsw bsw-shell beast-gtk
 # other subdirs
 SUBDIRS = . $(SRC_SUBDIRS) docs test
 
+site site-update site-update-contents site-update-navigation:
+	$(MAKE) -C docs/ $(AM_MAKEFLAGS) $@
+
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4
 

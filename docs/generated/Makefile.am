@@ -207,7 +207,7 @@ site-update-navigation: site
 	  "echo Receiving... \
 	   && uudecode \
 	   && echo Extracting... \
-	   && tar zxmpf ${XPREFIX}-beast-site-nav.tar.gz -C /web/beast/dyn2 \
+	   && tar zxpf ${XPREFIX}-beast-site-nav.tar.gz -C /web/beast/dyn2 \
 	   && echo Cleaning up... \
 	   && rm ${XPREFIX}-beast-site-nav.tar.gz \
 	   && echo Rebuilding... \

@@ -739,7 +739,7 @@
     <!-- FIXME Alper, until the makeinfo's @verbatim support is fixed, @example blocks
          will not be indented. This way we emulate @verbatim blocks with @example blocks
 	 and indent the real @example blocks ourselves. -->
-    <xsl:if test="not(local-name()='format' or local-name()='smallformat' or local-name()='example' or local-name()='smallexample'">
+    <xsl:if test="not(local-name()='format' or local-name()='smallformat' or local-name()='example' or local-name()='smallexample')">
       <xsl:attribute name="class">indented-block</xsl:attribute>
     </xsl:if>
     <pre>

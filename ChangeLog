@@ -1,3 +1,9 @@
+Thu Jan  2 18:19:19 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/html.xsl: small fix from alper.
+
+	* docs/site-development.texi: use @example for markup.
+
 Thu Jan  2 17:23:54 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/*.xsl: 
