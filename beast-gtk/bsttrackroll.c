@@ -570,7 +570,7 @@ track_roll_idle_update_scopes (gpointer data)
   self->n_scopes = 0;
 
   /* match or create needed scopes */
-  if (self->get_track && GTK_WIDGET_REALIZED (self))
+  if (self->get_track && GTK_WIDGET_REALIZED (self) && 0) // FIXME:
     for (i = 0; ; i++)
       {
         SfiProxy track = self->get_track (self->proxy_data, i);
@@ -627,7 +627,7 @@ bst_track_roll_check_update_scopes (BstTrackRoll *self)
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
 
   /* check whether scope update is necessary and schedule one */
-  if (!GTK_WIDGET_REALIZED (self) || !self->get_track)
+  if (!GTK_WIDGET_REALIZED (self) || !self->get_track || 1) // FIXME:
     {
       if (self->n_scopes)
         queue_scope_update (self);
