@@ -1,3 +1,10 @@
+Wed Sep  3 00:56:42 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: reworked generated plugin code to allow
+	derivation from the generated object and to integrate with
+	the new BSE export mechanisms. also, procedure implementations
+	in plugins are now supported.
+
 Fri Aug 29 18:17:49 2003  Tim Janik  <timj@gtk.org>
 
 	* bse-plugin-generator.cc: cvs rename.

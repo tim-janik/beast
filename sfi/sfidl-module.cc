@@ -79,18 +79,28 @@ TypeName (const string &str)
 static string
 Qualified (const string &str)
 {
+  int pos = str.rfind (':');
+  if (pos < 0)  // not fully qualified, prolly an Sfi type
+    return TypeName (str);
   // return fully C++ qualified name
   return str;
 }
 #define cQualified(s)    Qualified (s).c_str()
 
 static string
-TypeRef (const string &str)
+TypeRef (const string &type)
 {
-  string s = TypeName (str);
-  if (the_parser->isClass (str))
-    s += " &";
-  return s;
+  string tname = Qualified (type);
+  switch (sfidl_type (type))
+    {
+    case BBLOCK:
+    case FBLOCK:
+    case PSPEC:
+    case SEQUENCE:
+    case RECORD:
+    case OBJECT:        return tname + "*";
+    default:            return tname;
+    }
 }
 #define cTypeRef(s)    TypeRef (s).c_str()
 
@@ -148,10 +158,30 @@ pspec_constructor (const Param &param)
 {
   switch (sfidl_type (param.type))
     {
+    case OBJECT:
+      {
+        const string group = param.group == "" ? "NULL" : param.group;
+        string pspec = "sfidl_pspec_Object";
+        if (param.args == "")
+          pspec += "_default";
+        pspec += " (\"" + group + "\", \"" + param.name + "\", ";
+        if (param.args != "")
+          pspec += param.args + ", ";
+        vector<string> vs = split_string (param.type);
+        string pname = vs.back();
+        vs.pop_back();
+        string nspace = join_string (vs, ":");
+        pspec += UC_NAME (nspace) + "_TYPE_" + cUC_NAME (pname);
+        pspec += ")";
+        return pspec;
+      }
     case CHOICE:
       {
         const string group = param.group == "" ? "NULL" : param.group;
-        string pspec = "sfidl_pspec_GEnum (" + group + ", \"" + param.name + "\", ";
+        string pspec = "sfidl_pspec_GEnum";
+        if (param.args == "")
+          pspec += "_default";
+        pspec += " (\"" + group + "\", \"" + param.name + "\", ";
         if (param.args != "")
           pspec += param.args + ", ";
         vector<string> vs = split_string (param.type);
@@ -163,48 +193,6 @@ pspec_constructor (const Param &param)
         return pspec;
       }
     default:    return the_cgc->makeParamSpec (param);
-    }
-}
-
-static string
-func_param_free (const Param &param)
-{
-  switch (sfidl_type (param.type))
-    {
-    case BOOL:          return "";
-    case INT:           return "";
-    case NUM:           return "";
-    case REAL:          return "";
-    case STRING:        return "g_free";
-    case CHOICE:        return "";      /* enum value */
-    case BBLOCK:        return "sfi_bblock_unref";
-    case FBLOCK:        return "sfi_fblock_unref";
-    case PSPEC:         return "g_param_spec_unref";
-    case SEQUENCE:      return "sfi_seq_unref";
-    case RECORD:        return "sfi_rec_unref";
-    case OBJECT:        return "g_object_unref";
-    default:            return "*** ERROR ***";
-    }
-}
-
-static string
-func_value_dup_param (const Param &param)
-{
-  switch (sfidl_type (param.type))
-    {
-    case BOOL:          return "sfi_value_get_bool";
-    case INT:           return "sfi_value_get_int";
-    case NUM:           return "sfi_value_get_num";
-    case REAL:          return "sfi_value_get_real";
-    case STRING:        return "sfi_value_dup_string";
-    case CHOICE:        return "(" + TypeName (param.type) + ") g_value_get_enum";
-    case BBLOCK:        return "sfi_value_dup_bblock";
-    case FBLOCK:        return "sfi_value_dup_fblock";
-    case PSPEC:         return "sfi_value_dup_pspec";
-    case SEQUENCE:      return "sfi_value_dup_seq";
-    case RECORD:        return "sfi_value_dup_rec";
-    case OBJECT:        return "g_value_dup_object";
-    default:            return "*** ERROR ***";
     }
 }
 
@@ -229,6 +217,79 @@ func_value_set_param (const Param &param)
     }
 }
 
+static string
+func_value_get_param (const Param &param,
+                      const string dest = "")
+{
+  switch (sfidl_type (param.type))
+    {
+    case BOOL:          return "sfi_value_get_bool";
+    case INT:           return "sfi_value_get_int";
+    case NUM:           return "sfi_value_get_num";
+    case REAL:          return "sfi_value_get_real";
+    case STRING:        return "sfi_value_get_string";
+    case CHOICE:        return "(" + TypeName (param.type) + ") g_value_get_enum";
+    case BBLOCK:        return "sfi_value_get_bblock";
+    case FBLOCK:        return "sfi_value_get_fblock";
+    case PSPEC:         return "sfi_value_get_pspec";
+    case SEQUENCE:      return "sfi_value_get_seq";
+    case RECORD:        return "sfi_value_get_rec";
+    case OBJECT:
+      if (dest != "")
+        return "::Bse::g_value_get_object<"+ dest +">";
+      else
+        return "(GObject*) g_value_get_object";
+    default:            return "*** ERROR ***";
+    }
+}
+
+static string
+func_value_dup_param (const Param &param)
+{
+  switch (sfidl_type (param.type))
+    {
+    case STRING:        return "sfi_value_dup_string";
+    case BBLOCK:        return "sfi_value_dup_bblock";
+    case FBLOCK:        return "sfi_value_dup_fblock";
+    case PSPEC:         return "sfi_value_dup_pspec";
+    case SEQUENCE:      return "sfi_value_dup_seq";
+    case RECORD:        return "sfi_value_dup_rec";
+    case OBJECT:        return "g_value_dup_object";
+    default:            return func_value_get_param (param);
+    }
+}
+
+static string
+func_param_return_free (const Param &param)
+{
+  switch (sfidl_type (param.type))
+    {
+    case BOOL:          return "";
+    case INT:           return "";
+    case NUM:           return "";
+    case REAL:          return "";
+    case STRING:        return "g_free";
+    case CHOICE:        return "";      /* enum value */
+    case BBLOCK:        return "sfi_bblock_unref";
+    case FBLOCK:        return "sfi_fblock_unref";
+    case PSPEC:         return "g_param_spec_unref";
+    case SEQUENCE:      return "sfi_seq_unref";
+    case RECORD:        return "sfi_rec_unref";
+    case OBJECT:        return "";
+    default:            return "*** ERROR ***";
+    }
+}
+
+static string
+func_param_free (const Param &param)
+{
+  switch (sfidl_type (param.type))
+    {
+    case OBJECT:        return "g_object_unref";
+    default:            return func_param_return_free (param);
+    }
+}
+
 struct Image {
   string file;
   string method;
@@ -246,8 +307,8 @@ CodeGeneratorModule::run ()
   the_cgc = new CodeGeneratorC (parser);
   
   string nspace = "Foo";
-  vector<string> enum_exports;
   vector<Image> images;
+  std::vector<const Method*> procs;
   
   /* standard includes */
   printf ("\n#include <bse/bsecxxplugin.h>\n");
@@ -265,9 +326,6 @@ CodeGeneratorModule::run ()
       }
   printf ("\nnamespace %s {\n", nspace.c_str());
 
-  /* type list declaration */
-  printf ("extern \"C\" ::BseExportNode *BSE_EXPORT_CHAIN_SYMBOL;\n");
-
   /* class prototypes */
   printf ("\n/* class prototypes */\n");
   for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
@@ -275,6 +333,7 @@ CodeGeneratorModule::run ()
       if (parser.fromInclude (ci->name))
         continue;
       /* class prototypes */
+      printf ("class %s%s;\n", cTypeName (ci->name), "Base");
       printf ("class %s;\n", cTypeName (ci->name));
     }
   
@@ -285,53 +344,56 @@ CodeGeneratorModule::run ()
       if (parser.fromInclude (ci->name))
         continue;
 
-      string enum_type_keeper = TypeName (ci->name) + string ("__TypeKeeper");
-      printf ("#define %s_TYPE_%s (%s::get_type())\n",
-              cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)),
-              enum_type_keeper.c_str());
+      printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_ENUM_TYPE (%s))\n",
+              cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)), TypeName (ci->name).c_str());
       printf ("enum %s {\n", cTypeName (ci->name));
       int i = 1; // FIXME: vi->value needs to be set != 0
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
         printf ("  %s = %d,\n", cUC_NAME (vi->name), i++ /* vi->value */ );
       printf ("};\n");
-      printf ("BSE_CXX_ENUM_TYPE_KEEPER (%s, \"%s\" \"%s\", %u,\n",
+      printf ("BSE_CXX_DECLARE_ENUM (%s, \"%s\" \"%s\", %u,\n",
               cTypeName (ci->name), nspace.c_str(), cTypeName (ci->name), ci->contents.size());
       i = 1;
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
-        printf ("                          *v++ = ::Bse::EnumValue (%d, \"%s\", \"%s\" );\n",
+        printf ("                      *v++ = ::Bse::EnumValue (%d, \"%s\", \"%s\" );\n",
                 i++ /* vi->value */, cUC_NAME (vi->name), vi->text.c_str());
-      printf ("                          );\n");
-      enum_exports.push_back (enum_type_keeper + "::enter_type_chain (export_identity)");
+      printf ("                      );\n");
     }
 
-  /* class declarations */
+  /* class definitions */
   printf ("\n/* classes */\n");
   for (vector<Class>::iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
     {
-      string ctName = TypeName (ci->name);
+      string ctName = TypeName (ci->name) + "Base";
+      string ctProperties = TypeName (ci->name) + "Properties";
       vector<string> destroy_jobs;
       if (parser.fromInclude (ci->name))
         continue;
       
-      /* skeleton class declaration */
+      /* skeleton class declaration + type macro */
       printf ("class %s : public ::%s {\n", ctName.c_str(), cQualified (ci->inherits));
-
-      /* prototype module class for effects */
-      if (ci->properties.size() && ci->istreams.size() + ci->jstreams.size() + ci->ostreams.size())
-        printf ("  class %sModule;\n", ctName.c_str());
-
-      /* pixstream() prototype */
+      printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_CLASS_TYPE (%s))\n",
+              cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)), TypeName (ci->name).c_str());
+      
+      /* class Info strings */
+      /* pixstream(), this is a bit of a hack, we make it a template rather than
+       * a normal inline method to avoid huge images in debugging code
+       */
       string icon = ci->infos["icon"];
-      if (icon == "")
-        printf ("  static const unsigned char* pixstream() { return NULL; }\n");
-      else
+      string pstream = "NULL";
+      if (icon != "")
         {
-          printf ("  static const unsigned char* pixstream();\n");
+          printf ("  template<bool> static inline const unsigned char* pixstream();\n");
           images.push_back (Image (icon,
-                                   "const unsigned char*\n" +
+                                   "template<bool> const unsigned char*\n" +
                                    ctName +
                                    "::pixstream()"));
+          pstream = "pixstream<true>()";
         }
+      printf ("public:\n");
+      printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
+      printf ("  static inline const char* category () { return \"%s\"; }\n", ci->infos["category"].c_str());
+      printf ("  static inline const char* blurb    () { return \"%s\"; }\n", ci->infos["blurb"].c_str());
 
       /* i/j/o channel names */
       int is_public = 0;
@@ -363,16 +425,16 @@ CodeGeneratorModule::run ()
           printf ("    N_OCHANNELS\n  };\n");
         }
 
-      /* "Parameters" structure for synthesis modules */
+      /* "Properties" structure for synthesis modules */
       if (ci->properties.size() && ci->istreams.size() + ci->jstreams.size() + ci->ostreams.size())
         {
           if (!is_public++)
             printf ("public:\n");
           printf ("  /* \"transport\" structure to configure synthesis modules from properties */\n");
-          printf ("  struct Parameters {\n");
+          printf ("  struct %s {\n", ctProperties.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
             printf ("    %s %s;\n", cTypeName (pi->type), pi->name.c_str());
-          printf ("    explicit Parameters (%s *p) ", ctName.c_str());
+          printf ("    explicit %s (%s *p) ", ctProperties.c_str(), ctName.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
             printf ("%c\n      %s (p->%s)", pi == ci->properties.begin() ? ':' : ',', pi->name.c_str(), pi->name.c_str());
           printf ("\n    {\n");
@@ -383,7 +445,7 @@ CodeGeneratorModule::run ()
       /* property members */
       printf ("protected:\n");
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-        printf ("  %s %s;\n", cTypeName (pi->type), pi->name.c_str());
+        printf ("  %s %s;\n", cTypeRef (pi->type), pi->name.c_str());
       
       /* property IDs */
       if (ci->properties.begin() != ci->properties.end())
@@ -398,7 +460,7 @@ CodeGeneratorModule::run ()
       
       /* property setter */
       printf ("public:\n");
-      printf ("  void set_property (guint prop_id, const Bse::Value &value, GParamSpec *pspec)\n");
+      printf ("  void set_property (guint prop_id, const ::Bse::Value &value, GParamSpec *pspec)\n");
       printf ("  {\n");
       printf ("    switch (prop_id) {\n");
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
@@ -415,7 +477,7 @@ CodeGeneratorModule::run ()
       printf ("  }\n");
       
       /* property getter */
-      printf ("  void get_property (guint prop_id, Bse::Value &value, GParamSpec *pspec)\n");
+      printf ("  void get_property (guint prop_id, ::Bse::Value &value, GParamSpec *pspec)\n");
       printf ("  {\n");
       printf ("    switch (prop_id) {\n");
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
@@ -428,29 +490,9 @@ CodeGeneratorModule::run ()
       printf ("  }\n");
 
       /* methods */
-      if (ci->methods.begin() != ci->methods.end())
-        printf ("protected:\n");
       for (vector<Method>::const_iterator mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
-        {
-          /* return type */
-          printf ("  virtual %s ", cTypeName (mi->result.type));
-          /* method name */
-          printf ("%s (", mi->name.c_str());
-          /* args */
-          for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
-            {
-              if (pi != mi->params.begin())
-                printf (", ");
-              printf ("%s %s", cTypeRef (pi->type), pi->name.c_str());
-            }
-          printf (") = 0;\n");
-        }
+        procs.push_back (&(*mi));
       
-      /* effect prototypes */
-      printf ("protected:\n");
-      printf ("  virtual Bse::Module*           create_module       (unsigned int context_handle, GslTrans *trans);\n");
-      printf ("  virtual Bse::Module::Accessor* module_configurator ();\n");
-
       /* destructor */
       printf ("  virtual ~%s ()\n", ctName.c_str());
       printf ("  {\n");
@@ -482,34 +524,112 @@ CodeGeneratorModule::run ()
                 si->name.c_str(), si->blurb.c_str(), cUC_NAME (si->ident));
       printf ("  }\n");
 
-      /* type registration */
-      printf ("private:\n");
-      printf ("  static ::BseExportNodeClass export_node;\n");
-      printf ("  static void enter_type_chain (BseExportIdentity *export_identity)\n");
-      printf ("  {\n");
-      printf ("    if (!export_node.node.next) {\n");
-      printf ("      export_node.node.category = \"%s\";\n", ci->infos["category"].c_str());
-      printf ("      export_node.node.blurb = \"%s\";\n", ci->infos["blurb"].c_str());
-      printf ("      export_node.node.pixstream = pixstream();\n");
-      printf ("      export_node.node.next = export_identity->type_chain;\n");
-      printf ("      export_identity->type_chain = &export_node.node;\n");
-      printf ("    }\n");
-      printf ("  }\n");
-      printf ("public:\n");
-      printf ("  static GType      get_type();\n");
-      printf ("  struct TypeInit {\n");
-      printf ("    TypeInit (BseExportIdentity *export_identity)\n");
-      printf ("    {\n");
-      printf ("      enter_type_chain (export_identity);\n");
-      for (vector<string>::const_iterator ei = enum_exports.begin(); ei != enum_exports.end(); ei++)
-        printf ("      %s;\n", ei->c_str());
-      printf ("    }\n");
-      printf ("  };\n");
-
+      /* done */
       printf ("};\n"); /* finish: class ... { }; */
+      printf ("BSE_CXX_DECLARE_CLASS (%s);\n", cTypeName (ci->name));
     }
+  printf ("\n");
+  
+  /* collect procedures */
+  for (vector<Method>::const_iterator mi = parser.getProcedures().begin(); mi != parser.getProcedures().end(); mi++)
+    procs.push_back (&(*mi));
 
-  /* function definitions */
+  /* generate procedures */
+  for (vector<const Method*>::const_iterator ppi = procs.begin(); ppi != procs.end(); ppi++)
+    {
+      const Method *mi = *ppi;  // FIXME: things containing maps shouldn't be constant
+      const std::map<std::string, std::string> &const_infos = mi->infos;
+      std::map<std::string, std::string> &infos = const_cast<std::map<std::string, std::string>&> (const_infos);
+      string ptName = string ("Procedure_") + TypeName (mi->name);
+      bool is_void = mi->result.type == "void";
+      if (parser.fromInclude (mi->name))
+        continue;
+      
+      /* skeleton class declaration + type macro */
+      printf ("class %s {\n", ptName.c_str());
+      printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_PROC_TYPE (%s))\n",
+              cUC_NAME (nspace), cUC_NAME (cTypeName (mi->name)), ptName.c_str());
+
+      /* class Info strings */
+      /* pixstream(), this is a bit of a hack, we make it a template rather than
+       * a normal inline method to avoid huge images in debugging code
+       */
+      string icon = infos["icon"];
+      string pstream = "NULL";
+      if (icon != "")
+        {
+          printf ("  template<bool> static inline const unsigned char* pixstream();\n");
+          images.push_back (Image (icon,
+                                   "template<bool> const unsigned char*\n" +
+                                   ptName +
+                                   "::pixstream()"));
+          pstream = "pixstream<true>()";
+        }
+      printf ("public:\n");
+      printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
+      printf ("  static inline const char* category () { return \"%s\"; }\n", infos["category"].c_str());
+      printf ("  static inline const char* blurb    () { return \"%s\"; }\n", infos["blurb"].c_str());
+      
+      /* return type */
+      printf ("  static %s exec (", cTypeRef (mi->result.type));
+      /* args */
+      for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
+        {
+          if (ai != mi->params.begin())
+            printf (", ");
+          printf ("%s %s", cTypeRef (ai->type), ai->name.c_str());
+        }
+      printf (");\n");
+      
+      /* marshal */
+      printf ("  static BseErrorType marshal (BseProcedureClass *procedure,\n"
+              "                               const GValue      *in_values,\n"
+              "                               GValue            *out_values)\n");
+      printf ("  {\n");
+      printf ("    try {\n");
+      if (!is_void)
+        printf ("      %s __return_value =\n", cTypeRef (mi->result.type));
+      printf ("        exec (\n");
+      int i = 0;
+      for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
+        printf ("              %s (in_values + %u)%c\n", func_value_get_param (*pi, cTypeRef (pi->type)).c_str(), i++,
+                &(*pi) == &(mi->params.back()) ? ' ' : ',');
+      printf ("             );\n");
+      if (!is_void)
+        printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result).c_str());
+      if (!is_void && func_param_return_free (mi->result) != "")
+        printf ("      if (__return_value) %s (__return_value);\n", func_param_return_free (mi->result).c_str());
+      printf ("    } catch (std::exception &e) {\n");
+      printf ("      sfi_debug (\"%%s: %%s\", \"%s\", e.what());\n", ptName.c_str());
+      printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
+      printf ("    } catch (...) {\n");
+      printf ("      sfi_debug (\"%%s: %%s\", \"%s\", \"unknown exception\");\n", ptName.c_str());
+      printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
+      printf ("    }\n");
+      printf ("    return BSE_ERROR_NONE;\n");
+      printf ("  }\n");
+
+      /* init */
+      printf ("  static void init (BseProcedureClass *proc,\n"
+              "                    GParamSpec       **in_pspecs,\n"
+              "                    GParamSpec       **out_pspecs)");
+      printf ("  {\n");
+      printf ("    proc->help = \"%s\";\n", infos["help"].c_str());
+      printf ("    proc->authors = \"%s\";\n", infos["authors"].c_str());
+      printf ("    proc->copyright = \"%s\";\n", infos["copyright"].c_str());
+      for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
+        printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
+          if (!is_void)
+        printf ("    *(out_pspecs++) = %s;\n", pspec_constructor (mi->result).c_str());
+      printf ("  }\n");
+      
+      /* done */
+      printf ("};\n"); /* finish: class ... { }; */
+      printf ("BSE_CXX_DECLARE_PROC (%s);\n", ptName.c_str());
+    }
+  printf ("\n");
+  
+  /* image method implementations */
   for (vector<Image>::const_iterator ii = images.begin(); ii != images.end(); ii++)
     {
       printf ("%s\n", ii->method.c_str());
