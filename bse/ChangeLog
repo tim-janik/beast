@@ -1,3 +1,14 @@
+Sun Jul 21 04:39:59 2002  Tim Janik  <timj@gtk.org>
+
+	* bseglobals.[hc]: provide saner (and clearer) GSource priorities
+	and bse_idle_*() helper functions to install async handlers at
+	the various priority levels.
+
+	* *.c: use bse_idle_* functions to queue async handlers.
+
+	* bsepart.[hcp]*: provide notes with event ids, select notes by
+	ids and not by range.
+	
 Mon Jul 15 05:07:37 2002  Tim Janik  <timj@gtk.org>
 
 	* bsecontextmerger.[hc]: new internal module which merges signal

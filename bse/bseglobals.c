@@ -268,3 +268,49 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
     }
   return 0;	/* can't be triggered */
 }
+
+
+/* --- idle handlers --- */
+/* important ordering constrains:
+ * BSE_PRIORITY_HIGH		= G_PRIORITY_HIGH - 10
+ * BSE_PRIORITY_NOW		= G_PRIORITY_HIGH - 5
+ * G_PRIORITY_HIGH		(-100)
+ * BSE_PRIORITY_NOTIFY		= G_PRIORITY_DEFAULT - 1
+ * G_PRIORITY_DEFAULT		(0)
+ * GDK_PRIORITY_EVENTS		= G_PRIORITY_DEFAULT
+ * BSE_PRIORITY_PROG_IFACE	= G_PRIORITY_DEFAULT
+ * G_PRIORITY_HIGH_IDLE		(100)
+ * BSE_PRIORITY_UPDATES		= G_PRIORITY_HIGH_IDLE + 5
+ * GTK_PRIORITY_RESIZE		= G_PRIORITY_HIGH_IDLE + 10
+ * GDK_PRIORITY_REDRAW		= G_PRIORITY_HIGH_IDLE + 20
+ * G_PRIORITY_DEFAULT_IDLE	(200)
+ * G_PRIORITY_LOW		(300)
+ * BSE_PRIORITY_BACKGROUND	= G_PRIORITY_LOW + 500
+ */
+guint
+bse_idle_now (GSourceFunc function,
+	      gpointer    data)
+{
+  return g_idle_add_full (BSE_PRIORITY_NOW, function, data, NULL);
+}
+
+guint
+bse_idle_notify (GSourceFunc function,
+		 gpointer    data)
+{
+  return g_idle_add_full (BSE_PRIORITY_NOTIFY, function, data, NULL);
+}
+
+guint
+bse_idle_update (GSourceFunc function,
+		 gpointer    data)
+{
+  return g_idle_add_full (BSE_PRIORITY_UPDATE, function, data, NULL);
+}
+
+guint
+bse_idle_background (GSourceFunc function,
+		     gpointer    data)
+{
+  return g_idle_add_full (BSE_PRIORITY_BACKGROUND, function, data, NULL);
+}

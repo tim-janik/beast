@@ -98,6 +98,11 @@ bse_part_class_init (BsePartClass *class)
 static void
 bse_part_init (BsePart *self)
 {
+  self->n_ids = 1;
+  self->ids = g_renew (guint, NULL, 1);
+  self->ids[0] = BSE_PART_INVAL_TICK_FLAG + 0;
+  self->head_id = 1;
+  self->tail_id = 1;
   self->n_nodes = 0;
   self->nodes = g_renew (BsePartNode, NULL, upper_power2 (self->n_nodes));
   self->ppqn = 384;
@@ -117,7 +122,7 @@ bse_part_destroy (BseObject *object)
   self->range_bound = BSE_PART_MAX_TICK;
   self->range_min_freq = 0;
   self->range_max_freq = BSE_MAX_FREQUENCY;
-  
+    
   /* chain parent class' handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -129,6 +134,12 @@ bse_part_finalize (GObject *object)
   BsePartEvent *ev, *next;
   guint i;
 
+  g_free (self->ids);
+  self->n_ids = 0;
+  self->ids = NULL;
+  self->head_id = 0;
+  self->tail_id = 0;
+  
   for (i = 0; i < self->n_nodes; i++)
     for (ev = self->nodes[i].events; ev; ev = next)
       {
@@ -140,6 +151,65 @@ bse_part_finalize (GObject *object)
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static guint
+bse_part_alloc_id (BsePart *self,
+		   guint    tick)
+{
+  guint next, id;
+
+  g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
+
+  id = self->head_id;
+  next = self->ids[id - 1];
+  g_assert (next >= BSE_PART_INVAL_TICK_FLAG);	// FIXME: paranoid
+  next -= BSE_PART_INVAL_TICK_FLAG;
+  if (!next)	/* last id, allocate new next */
+    {
+      self->n_ids++;
+      self->ids = g_renew (guint, self->ids, self->n_ids);
+      self->ids[self->n_ids - 1] = BSE_PART_INVAL_TICK_FLAG + 0;
+      self->head_id = self->n_ids;
+      self->tail_id = self->n_ids;
+    }
+  else
+    self->head_id = next;
+  self->ids[id - 1] = tick;
+  return id;
+}
+
+static guint
+bse_part_move_id (BsePart *self,
+		  guint	   id,
+		  guint    tick)
+{
+  g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, 0);
+  g_return_val_if_fail (id > 0 && id <= self->n_ids, 0);
+  g_return_val_if_fail (self->ids[id - 1] <= BSE_PART_MAX_TICK, 0);	/* check !freed id */
+
+  self->ids[id - 1] = tick;
+
+  return id;
+}
+
+static void
+bse_part_free_id (BsePart *self,
+		  guint    id)
+{
+  g_return_if_fail (id > 0 && id <= self->n_ids);
+  g_return_if_fail (self->ids[id - 1] <= BSE_PART_MAX_TICK);	/* check !freed id */
+
+  self->ids[self->tail_id - 1] = BSE_PART_INVAL_TICK_FLAG + id;
+  self->tail_id = id;
+  self->ids[id - 1] = BSE_PART_INVAL_TICK_FLAG + 0;
+}
+
+static guint	/* returns tick (<= BSE_PART_MAX_TICK) if id is valid */
+bse_part_tick_from_id (BsePart *self,
+		       guint    id)
+{
+  return id > 0 && id <= self->n_ids ? self->ids[id - 1] : BSE_PART_INVAL_TICK_FLAG;
 }
 
 static gboolean
@@ -180,14 +250,17 @@ queue_update (BsePart *self,
 
   g_return_if_fail (duration > 0);
 
-  if (self->range_tick >= self->range_bound)
-    range_changed_parts = g_slist_prepend (range_changed_parts, self);
-  self->range_tick = MIN (self->range_tick, tick);
-  self->range_bound = MAX (self->range_bound, bound);
-  self->range_min_freq = MIN (self->range_min_freq, freq);
-  self->range_max_freq = MAX (self->range_max_freq, freq);
-  if (!range_changed_handler)
-    range_changed_handler = g_idle_add_full (BSE_NOTIFY_PRIORITY, range_changed_notify_handler, NULL, NULL);
+  if (!BSE_OBJECT_DISPOSED (self))
+    {
+      if (self->range_tick >= self->range_bound)
+	range_changed_parts = g_slist_prepend (range_changed_parts, self);
+      self->range_tick = MIN (self->range_tick, tick);
+      self->range_bound = MAX (self->range_bound, bound);
+      self->range_min_freq = MIN (self->range_min_freq, freq);
+      self->range_max_freq = MAX (self->range_max_freq, freq);
+      if (!range_changed_handler)
+	range_changed_handler = bse_idle_update (range_changed_notify_handler, NULL);
+    }
 }
 
 static guint
@@ -217,6 +290,37 @@ lookup_tick (BsePart *self,
    * into either direction
    */
   return i;	/* last mismatch */
+}
+
+static void
+queue_rectangle_update (BsePart *self,
+			guint    tick,
+			guint    duration,
+			gfloat   min_freq,
+			gfloat   max_freq)
+{
+  guint end_tick = tick + MAX (duration, 1);
+
+  /* widen area to right if notes span across right boundary */
+  if (self->n_nodes)
+    {
+      guint min_ifreq = BSE_PART_IFREQ (min_freq);
+      guint max_ifreq = BSE_PART_IFREQ (max_freq);
+      guint bound = end_tick;
+      guint index = lookup_tick (self, tick);   /* nextmost */
+      if (self->nodes[index].tick < tick)
+	index++;        /* adjust index to be >= tick */
+      /* search forward against boundary */
+      for (; index < self->n_nodes && self->nodes[index].tick < bound; index++)
+	{
+	  BsePartEvent *ev;
+	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	    if (ev->type == BSE_PART_EVENT_NOTE && ev->note.ifreq >= min_ifreq && ev->note.ifreq <= max_ifreq)
+	      end_tick = MAX (end_tick, self->nodes[index].tick + ev->note.duration);
+	}
+    }
+  queue_update (self, tick, end_tick - tick, min_freq);
+  queue_update (self, tick, end_tick - tick, max_freq);
 }
 
 static void
@@ -288,6 +392,27 @@ insert_event (BsePart      *self,
 }
 
 static BsePartEvent*
+find_event (BsePart *self,
+	    guint    id,
+	    guint   *tick_p)
+{
+  guint etick = bse_part_tick_from_id (self, id);
+  guint index = lookup_tick (self, etick);   /* nextmost */
+  if (index < self->n_nodes && self->nodes[index].tick == etick)
+    {
+      BsePartEvent *ev;
+      for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	if (ev->any.id == id)
+	  {
+	    if (tick_p)
+	      *tick_p = etick;
+	    return ev;
+	  }
+    }
+  return NULL;
+}
+
+static BsePartEvent*
 find_note_at (BsePart *self,
 	      guint    tick,
 	      guint    ifreq,
@@ -352,125 +477,190 @@ find_note_within (BsePart *self,
   return NULL;
 }
 
-static void
-queue_rectangle (BsePart *self,
-		 guint    tick,
-		 guint    duration,
-		 gfloat   min_freq,
-		 gfloat   max_freq)
-{
-  guint end_tick = tick + MAX (duration, 1);
-
-  /* widen area to right if notes span across right boundary */
-  if (self->n_nodes)
-    {
-      guint bound = end_tick;
-      guint min_ifreq = BSE_PART_IFREQ (min_freq);
-      guint max_ifreq = BSE_PART_IFREQ (max_freq);
-      guint index = lookup_tick (self, tick);   /* nextmost */
-      if (self->nodes[index].tick < tick)
-	index++;        /* adjust index to be >= tick */
-      /* search forward against boundary */
-      for (; index < self->n_nodes && self->nodes[index].tick < bound; index++)
-	{
-	  BsePartEvent *ev;
-	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
-	    if (ev->type == BSE_PART_EVENT_NOTE && ev->note.ifreq >= min_ifreq && ev->note.ifreq <= max_ifreq)
-	      end_tick = MAX (end_tick, self->nodes[index].tick + ev->note.duration);
-	}
-    }
-  queue_update (self, tick, end_tick - tick, min_freq);
-  queue_update (self, tick, end_tick - tick, max_freq);
-}
-
 void
-bse_part_set_selection (BsePart *self,
-			guint    tick,
-			guint    duration,
-			gfloat   min_freq,
-			gfloat   max_freq)
+bse_part_select_rectangle (BsePart *self,
+			   guint    tick,
+			   guint    duration,
+			   gfloat   min_freq,
+			   gfloat   max_freq)
 {
-  guint64 tick_end;
+  guint bound;
 
   g_return_if_fail (BSE_IS_PART (self));
 
-  tick = MIN (tick, BSE_PART_MAX_TICK - 1);
-  tick_end = tick;
-  tick_end += duration;
-  tick_end = MIN (tick_end, BSE_PART_MAX_TICK);
-  min_freq = MIN (min_freq, BSE_MAX_FREQUENCY);
-  max_freq = MIN (max_freq, BSE_MAX_FREQUENCY);
-  /* quantize frequencies */
-  min_freq = BSE_PART_FREQ (BSE_PART_IFREQ (min_freq));
-  max_freq = BSE_PART_FREQ (BSE_PART_IFREQ (max_freq));
-  if (tick_end <= tick || min_freq > max_freq)
+  bound = MIN (tick, BSE_PART_MAX_TICK - 1) + MIN (duration, BSE_PART_MAX_TICK);
+  if (self->n_nodes)
     {
-      /* queue old selection */
-      if (self->selection_bound > self->selection_tick)
-	queue_rectangle (self, self->selection_tick, self->selection_bound - self->selection_tick,
-			 self->selection_min_freq, self->selection_max_freq);
-      /* delete selection */
-      self->selection_tick = 0;
-      self->selection_bound = 0;
-      self->selection_min_freq = BSE_MAX_FREQUENCY;
-      self->selection_max_freq = 0;
-    }
-  else if (tick != self->selection_tick ||
-	   tick_end != self->selection_bound ||
-	   min_freq != self->selection_min_freq ||
-	   max_freq != self->selection_max_freq )
-    {
-      /* queue old selection */
-      queue_rectangle (self, self->selection_tick, self->selection_bound - self->selection_tick,
-		       self->selection_min_freq, self->selection_max_freq);
-      /* update selection */
-      self->selection_tick = tick;
-      self->selection_bound = tick_end;
-      self->selection_min_freq = min_freq;
-      self->selection_max_freq = max_freq;
-      /* queue new selection */
-      queue_rectangle (self, self->selection_tick, self->selection_bound - self->selection_tick,
-		       self->selection_min_freq, self->selection_max_freq);
+      guint index = lookup_tick (self, tick);   /* nextmost */
+      guint min_ifreq = BSE_PART_IFREQ (min_freq);
+      guint max_ifreq = BSE_PART_IFREQ (max_freq);
+      if (self->nodes[index].tick < tick)
+	index++;                                /* adjust nextmost to >= tick */
+      for (; index < self->n_nodes && self->nodes[index].tick < bound; index++)
+	{
+	  guint etick = self->nodes[index].tick;
+	  BsePartEvent *ev;
+
+	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	    if (ev->type == BSE_PART_EVENT_NOTE && !ev->note.selected &&
+		ev->note.ifreq >= min_ifreq && ev->note.ifreq <= max_ifreq)
+	      {
+		ev->note.selected = TRUE;
+		queue_update (self, etick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
+	      }
+	}
     }
 }
 
-BseErrorType
-bse_part_insert_note (BsePart *self,
-		      guint    tick,
-		      guint    duration,
-		      gfloat   freq,
-		      gfloat   velocity)
+void
+bse_part_deselect_rectangle (BsePart *self,
+			     guint    tick,
+			     guint    duration,
+			     gfloat   min_freq,
+			     gfloat   max_freq)
+{
+  guint bound, min_ifreq, max_ifreq;
+
+  g_return_if_fail (BSE_IS_PART (self));
+
+  min_ifreq = BSE_PART_IFREQ (min_freq);
+  max_ifreq = BSE_PART_IFREQ (max_freq);
+  bound = MIN (tick, BSE_PART_MAX_TICK - 1) + MIN (duration, BSE_PART_MAX_TICK);
+  if (self->n_nodes)
+    {
+      guint index = lookup_tick (self, tick);   /* nextmost */
+      if (self->nodes[index].tick < tick)
+	index++;                                /* adjust nextmost to >= tick */
+      for (; index < self->n_nodes && self->nodes[index].tick < bound; index++)
+	{
+	  guint etick = self->nodes[index].tick;
+	  BsePartEvent *ev;
+
+	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	    if (ev->type == BSE_PART_EVENT_NOTE && ev->note.selected &&
+		ev->note.ifreq >= min_ifreq && ev->note.ifreq <= max_ifreq)
+	      {
+		ev->note.selected = FALSE;
+		queue_update (self, etick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
+	      }
+	}
+    }
+}
+
+void
+bse_part_select_rectangle_ex (BsePart *self,
+			      guint    tick,
+			      guint    duration,
+			      gfloat   min_freq,
+			      gfloat   max_freq)
+{
+  guint bound, index, min_ifreq, max_ifreq;
+
+  g_return_if_fail (BSE_IS_PART (self));
+
+  min_ifreq = BSE_PART_IFREQ (min_freq);
+  max_ifreq = BSE_PART_IFREQ (max_freq);
+  bound = MIN (tick, BSE_PART_MAX_TICK - 1) + MIN (duration, BSE_PART_MAX_TICK);
+  if (self->n_nodes)
+    {
+      BsePartEvent *ev;
+      for (index = 0; index < self->n_nodes && self->nodes[index].tick < tick; index++)
+	{
+	  guint etick = self->nodes[index].tick;
+	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	    if (ev->type == BSE_PART_EVENT_NOTE && ev->note.selected)
+	      {
+		ev->note.selected = FALSE;
+		queue_update (self, etick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
+	      }
+	}
+      for (; index < self->n_nodes && self->nodes[index].tick < bound; index++)
+	{
+	  guint etick = self->nodes[index].tick;
+	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	    if (ev->type == BSE_PART_EVENT_NOTE)
+	      {
+		if (!ev->note.selected && ev->note.ifreq >= min_ifreq && ev->note.ifreq <= max_ifreq)
+		  {
+		    ev->note.selected = TRUE;
+		    queue_update (self, etick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
+		  }
+		else if (ev->note.selected && (ev->note.ifreq < min_ifreq || ev->note.ifreq > max_ifreq))
+		  {
+		    ev->note.selected = FALSE;
+		    queue_update (self, etick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
+		  }
+	      }
+	}
+      for (; index < self->n_nodes; index++)
+	{
+	  guint etick = self->nodes[index].tick;
+	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	    if (ev->type == BSE_PART_EVENT_NOTE && ev->note.selected)
+	      {
+		ev->note.selected = FALSE;
+		queue_update (self, etick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
+	      }
+	}
+    }
+}
+
+gboolean
+bse_part_select_event (BsePart *self,
+		       guint    id)
 {
   BsePartEvent *ev;
-  guint64 tick_end;
-  guint index, ifreq;
+  guint etick;
 
-  g_return_val_if_fail (BSE_IS_PART (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (freq <= BSE_MAX_FREQUENCY, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
 
-  if (tick >= BSE_PART_MAX_TICK)
-    return BSE_ERROR_INVALID_OFFSET;
-  tick_end = tick;
-  tick_end += duration;
-  if (duration < 1 || tick_end > BSE_PART_MAX_TICK)
-    return BSE_ERROR_INVALID_DURATION;
-
-  ifreq = BSE_PART_IFREQ (freq);
-  ev = find_note_at (self, tick, ifreq, &index);
-  if (!ev)
-    ev = find_note_within (self, tick, tick + duration, ifreq, &index);
-  if (ev)
+  ev = find_event (self, id, &etick);
+  if (ev && !ev->any.selected)
     {
-      g_message ("not inserting note %f from %u to %u which overlaps with note from %u to %u",
-		 BSE_PART_FREQ (ifreq), tick, tick + duration - 1,
-		 self->nodes[index].tick, self->nodes[index].tick + ev->note.duration - 1);
-      return BSE_ERROR_INVALID_OVERLAP;
+      ev->any.selected = TRUE;
+      if (ev->type == BSE_PART_EVENT_NOTE)
+	queue_update (self, etick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
     }
+  return ev != NULL;
+}
+
+gboolean
+bse_part_deselect_event (BsePart *self,
+			 guint    id)
+{
+  BsePartEvent *ev;
+  guint etick;
+  
+  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+
+  ev = find_event (self, id, &etick);
+  if (ev && ev->any.selected)
+    {
+      ev->any.selected = FALSE;
+      if (ev->type == BSE_PART_EVENT_NOTE)
+	queue_update (self, etick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
+    }
+  return ev != NULL;
+}
+
+static guint
+insert_note (BsePart *self,
+	     guint    id,
+	     guint    tick,
+	     guint    duration,
+	     gfloat   freq,
+	     gfloat   velocity,
+	     gboolean selected)
+{
+  BsePartEvent *ev;
+  guint index;
 
   ev = gsl_new_struct0 (BsePartEvent, 1);
   ev->type = BSE_PART_EVENT_NOTE;
-  ev->note.ifreq = ifreq;
+  ev->note.id = id;
+  ev->note.selected = selected;
   ev->note.duration = duration;
+  ev->note.ifreq = BSE_PART_IFREQ (freq);
   ev->note.velocity = velocity;
 
   BSE_SEQUENCER_LOCK ();
@@ -478,29 +668,30 @@ bse_part_insert_note (BsePart *self,
   insert_event (self, index, ev);
   BSE_SEQUENCER_UNLOCK ();
 
-  queue_update (self, tick, duration, BSE_PART_FREQ (ifreq));
+  queue_update (self, tick, duration, freq);
 
-  return BSE_ERROR_NONE;
+  return ev->note.id;
 }
 
-void
-bse_part_delete_note (BsePart *self,
-		      guint    tick,
-		      gfloat   freq)
+static gboolean
+delete_event (BsePart *self,
+	      guint    id)
 {
   BsePartEvent *last = NULL, *ev = NULL;
-  guint index, ifreq;
+  guint tick, index;
 
-  g_return_if_fail (BSE_IS_PART (self));
+  tick = bse_part_tick_from_id (self, id);
+  g_return_val_if_fail (tick <= BSE_PART_MAX_TICK, FALSE);
 
-  ifreq = BSE_PART_IFREQ (freq);
   index = lookup_tick (self, tick);	/* nextmost */
   if (index < self->n_nodes && self->nodes[index].tick == tick)
     for (ev = self->nodes[index].events; ev; last = ev, ev = last->any.next)
-      if (ev->type == BSE_PART_EVENT_NOTE && ev->note.ifreq == ifreq)
+      if (ev->any.id == id)
 	break;
   if (ev)
     {
+      gboolean selected = ev->any.selected;	// FIXME: hack
+
       queue_update (self, self->nodes[index].tick, ev->note.duration, BSE_PART_FREQ (ev->note.ifreq));
 
       BSE_SEQUENCER_LOCK ();
@@ -511,41 +702,128 @@ bse_part_delete_note (BsePart *self,
       BSE_SEQUENCER_UNLOCK ();
       
       gsl_delete_struct (BsePartEvent, ev);
+      /* caller does: bse_part_free_id (self, id); */
+
+      return selected;
     }
   else
-    g_warning ("note %f to delete does not start at %u",
-	       BSE_PART_FREQ (ifreq), tick);
+    {
+      g_warning ("%s: event (id=%u) not found at tick=%u",
+		 G_STRLOC, id, tick);
+      return FALSE;
+    }
 }
 
-static BswPartNote*
-make_part_note (BsePart *self,
-		guint    tick,
-		guint    duration,
-		gfloat   freq,
-		gfloat   velocity)
+guint
+bse_part_insert_note (BsePart *self,
+		      guint    tick,
+		      guint    duration,
+		      gfloat   freq,
+		      gfloat   velocity)
 {
-  gboolean selected = (tick >= self->selection_tick &&
-		       tick < self->selection_bound &&
-		       freq >= self->selection_min_freq &&
-		       freq <= self->selection_max_freq);
-  return bsw_part_note (tick, duration, freq, velocity, selected);
+  g_return_val_if_fail (BSE_IS_PART (self), BSE_ERROR_INTERNAL);
+
+  if (!(freq > 0 &&
+	freq <= BSE_MAX_FREQUENCY &&
+	tick < BSE_PART_MAX_TICK &&
+	duration > 0 &&
+	duration < BSE_PART_MAX_TICK &&
+	tick + duration <= BSE_PART_MAX_TICK))
+    return 0;
+
+  return insert_note (self,
+		      bse_part_alloc_id (self, tick),
+		      tick, duration, freq, velocity,
+		      FALSE);
+}
+
+gboolean
+bse_part_delete_event (BsePart *self,
+		       guint    id)
+{
+  guint tick;
+
+  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+
+  tick = bse_part_tick_from_id (self, id);
+  if (tick <= BSE_PART_MAX_TICK)
+    {
+      delete_event (self, id);
+      bse_part_free_id (self, id);
+      return TRUE;
+    }
+  return FALSE;
+}
+
+gboolean
+bse_part_change_note (BsePart *self,
+		      guint    id,
+		      guint    tick,
+		      guint    duration,
+		      gfloat   freq,
+		      gfloat   velocity)
+{
+  guint old_tick;
+
+  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+
+  if (!(freq > 0 &&
+	freq <= BSE_MAX_FREQUENCY &&
+	tick < BSE_PART_MAX_TICK &&
+	duration > 0 &&
+	duration < BSE_PART_MAX_TICK &&
+	tick + duration <= BSE_PART_MAX_TICK))
+    return FALSE;
+
+  old_tick = bse_part_tick_from_id (self, id);
+  if (old_tick <= BSE_PART_MAX_TICK)
+    {
+      gboolean selected = delete_event (self, id);
+      insert_note (self,
+		   bse_part_move_id (self, id, tick),
+		   tick, duration, freq, velocity, selected);
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
+gboolean
+bse_part_is_selected_event (BsePart *self,
+			    guint    id)
+{
+  guint tick;
+
+  g_return_val_if_fail (BSE_IS_PART (self), FALSE);
+
+  tick = bse_part_tick_from_id (self, id);
+  if (tick <= BSE_PART_MAX_TICK)
+    {
+      guint index = lookup_tick (self, tick);     /* nextmost */
+      BsePartEvent *ev;
+      if (index < self->n_nodes && self->nodes[index].tick == tick)
+	for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	  if (ev->any.id == id)
+	    return ev->any.selected;
+    }
+  return FALSE;
 }
 
 BswIterPartNote*
-bse_part_list_notes (BsePart *self,
-		     guint    tick,
-		     guint    duration,
-		     gfloat   min_freq,
-		     gfloat   max_freq)
+bse_part_list_notes_around (BsePart *self,
+			    guint    tick,
+			    guint    duration,
+			    gfloat   min_freq,
+			    gfloat   max_freq)
 {
   guint bound, min_ifreq, max_ifreq, index;
   BswIterPartNote *iter;
 
   g_return_val_if_fail (BSE_IS_PART (self), NULL);
-  g_return_val_if_fail (duration > 0, NULL);
-  bound = tick + duration;
-  g_return_val_if_fail (bound > tick, NULL);	/* stupid wrap-around check */
+  g_return_val_if_fail (tick < BSE_PART_MAX_TICK, NULL);
+  g_return_val_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK, NULL);
 
+  bound = tick + duration;
   min_ifreq = BSE_PART_IFREQ (min_freq);
   max_ifreq = BSE_PART_IFREQ (max_freq);
   iter = bsw_iter_create (BSW_TYPE_ITER_PART_NOTE, 16);
@@ -564,61 +842,61 @@ bse_part_list_notes (BsePart *self,
 	  {
 	    if (etick + ev->note.duration > tick)
 	      bsw_iter_add_part_note_take_ownership (iter,
-						     make_part_note (self,
-								     etick, ev->note.duration,
-								     BSE_PART_FREQ (ev->note.ifreq),
-								     ev->note.velocity));
+						     bsw_part_note (ev->note.id,
+								    etick, ev->note.duration,
+								    BSE_PART_FREQ (ev->note.ifreq),
+								    ev->note.velocity,
+								    ev->note.selected));
 	  }
     }
 
   return iter;
 }
 
+void
+bse_part_queue_notes_within (BsePart *self,
+			     guint    tick,
+			     guint    duration,
+			     gfloat   min_freq,
+			     gfloat   max_freq)
+{
+  g_return_if_fail (BSE_IS_PART (self));
+  g_return_if_fail (tick < BSE_PART_MAX_TICK);
+  g_return_if_fail (duration > 0 && duration <= BSE_PART_MAX_TICK);
+
+  queue_rectangle_update (self, tick, duration, min_freq, max_freq);
+}
+
 BswIterPartNote*
 bse_part_list_selected_notes (BsePart *self)
 {
-  guint bound, min_ifreq, max_ifreq, tick;
   BswIterPartNote *iter;
-
+  guint index;
+  
   g_return_val_if_fail (BSE_IS_PART (self), NULL);
-
-  tick = self->selection_tick;
-  bound = self->selection_bound;
-
-  min_ifreq = BSE_PART_IFREQ (self->selection_min_freq);
-  max_ifreq = BSE_PART_IFREQ (self->selection_max_freq);
+  
   iter = bsw_iter_create (BSW_TYPE_ITER_PART_NOTE, 16);
-
   if (self->n_nodes)
-    {
-      guint index = lookup_tick (self, tick);   /* nextmost */
-      if (self->nodes[index].tick < tick)
-	index++;        /* adjust index to be >= tick */
-      for (; index < self->n_nodes && self->nodes[index].tick < bound; index++)
-	{
-	  guint etick = self->nodes[index].tick;
-	  BsePartEvent *ev;
-	  
-	  for (ev = self->nodes[index].events; ev; ev = ev->any.next)
-	    if (ev->type == BSE_PART_EVENT_NOTE &&
-		ev->note.ifreq >= min_ifreq && ev->note.ifreq <= max_ifreq)
-	      {
-		if (etick + ev->note.duration > tick)
-		  bsw_iter_add_part_note_take_ownership (iter,
-							 make_part_note (self,
-									 etick, ev->note.duration,
-									 BSE_PART_FREQ (ev->note.ifreq),
-									 ev->note.velocity));
-	      }
-	}
-    }
+    for (index = 0; index < self->n_nodes; index++)
+      {
+	guint etick = self->nodes[index].tick;
+	BsePartEvent *ev;
+	for (ev = self->nodes[index].events; ev; ev = ev->any.next)
+	  if (ev->type == BSE_PART_EVENT_NOTE && ev->note.selected)
+	    bsw_iter_add_part_note_take_ownership (iter,
+						   bsw_part_note (ev->note.id,
+								  etick, ev->note.duration,
+								  BSE_PART_FREQ (ev->note.ifreq),
+								  ev->note.velocity,
+								  ev->note.selected));
+      }
   return iter;
 }
 
 BswIter*
-bse_part_get_note_at (BsePart *self,
-		      guint    tick,
-		      gfloat   freq)
+bse_part_list_notes_at (BsePart *self,
+			guint    tick,
+			gfloat   freq)
 {
   BswIterPartNote *iter;
   BsePartEvent *ev;
@@ -629,12 +907,13 @@ bse_part_get_note_at (BsePart *self,
   iter = bsw_iter_create (BSW_TYPE_ITER_PART_NOTE, 1);
   ev = find_note_at (self, tick, BSE_PART_IFREQ (freq), &index);
   if (ev)
-    bsw_iter_add_part_note_take_ownership (iter,
-					   make_part_note (self,
-							   self->nodes[index].tick,
-							   ev->note.duration,
-							   BSE_PART_FREQ (ev->note.ifreq),
-							   ev->note.velocity));
+    bsw_iter_add_part_note_take_ownership (iter,	// FIXME: return _all_ notes
+					   bsw_part_note (ev->note.id,
+							  self->nodes[index].tick,
+							  ev->note.duration,
+							  BSE_PART_FREQ (ev->note.ifreq),
+							  ev->note.velocity,
+							  ev->note.selected));
   return iter;
 }
 
@@ -714,9 +993,8 @@ bse_part_restore_private (BseObject  *object,
 
   if (token_quark == quark_insert_note)
     {
-      guint tick, duration;
+      guint id, tick, duration;
       gfloat freq, velocity = 1.0;
-      BseErrorType error;
 
       g_scanner_get_next_token (scanner);	/* eat quark */
 
@@ -733,10 +1011,10 @@ bse_part_restore_private (BseObject  *object,
 	}
       parse_or_return (scanner, ')');
 
-      error = bse_part_insert_note (self, tick, duration, freq, velocity);
-      if (error)
-	bse_storage_warn (storage, "note insertion (freq: %f at: %u duration: %u) failed: %s",
-			  freq, tick, duration, bse_error_blurb (error));
+      id = bse_part_insert_note (self, tick, duration, freq, velocity);
+      if (!id)
+	bse_storage_warn (storage, "note insertion (freq: %f at: %u duration: %u) failed",
+			  freq, tick, duration);
 
       return G_TOKEN_NONE;
     }

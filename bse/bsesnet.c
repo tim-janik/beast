@@ -229,7 +229,7 @@ static void
 bse_snet_queue_port_unregistered (BseSNet *snet)
 {
   if (!snet->port_unregistered_id)
-    snet->port_unregistered_id = g_idle_add_full (BSE_NOTIFY_PRIORITY, snet_notify_port_unregistered, snet, NULL);
+    snet->port_unregistered_id = bse_idle_notify (snet_notify_port_unregistered, snet);
 }
 
 static void

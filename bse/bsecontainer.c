@@ -782,10 +782,7 @@ static inline void
 container_queue_cross_changes (BseContainer *container)
 {
   if (!containers_cross_changes_handler)
-    containers_cross_changes_handler = g_idle_add_full (BSE_NOTIFY_PRIORITY,
-							notify_cross_changes,
-							NULL,
-							NULL);
+    containers_cross_changes_handler = bse_idle_notify (notify_cross_changes, NULL);
   containers_cross_changes = g_slist_prepend (containers_cross_changes, container);
 }
 

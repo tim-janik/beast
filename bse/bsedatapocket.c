@@ -204,7 +204,7 @@ changed_notify_add (BseDataPocket *pocket,
   Notify *notify;
 
   if (!changed_notify_list)
-    g_idle_add_full (BSE_NOTIFY_PRIORITY, changed_notify_handler, NULL, NULL);
+    bse_idle_notify (changed_notify_handler, NULL);
   for (notify = changed_notify_list; notify; notify = notify->next)
     if (notify->pocket == pocket && notify->entry_id == entry_id)
       return;

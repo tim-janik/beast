@@ -48,7 +48,8 @@ void	bsw_iter_add_part_note_take_ownership	(BswIterPartNote*iter,
 
 
 /* --- boxed type constructurs --- */
-BswPartNote*		bsw_part_note		(guint	  tick,
+BswPartNote*		bsw_part_note		(guint    id,
+						 guint	  tick,
 						 guint	  duration,
 						 gfloat	  freq,
 						 gfloat	  velocity,

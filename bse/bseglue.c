@@ -837,8 +837,6 @@ bglue_signal_connection (GslGlueContext *context,
   BseItem *item = bse_object_from_id (proxy);
   gboolean connected = FALSE;
 
-  g_print ("SIGNAL: %s\n", enable_connection ? "ENABLE" : "DISABLE");
-
   if (BSE_IS_ITEM (item))
     {
       gchar *qname;

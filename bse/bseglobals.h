@@ -256,7 +256,28 @@ gdouble		bse_dB_to_factor	(gfloat		dB);
 gfloat		bse_dB_from_factor	(gdouble	factor,
 					 gfloat		min_dB);
 
-
+/* --- async handlers --- */
+/* very important, used for io/engine handlers */
+#define BSE_PRIORITY_HIGH               (G_PRIORITY_HIGH - 10)
+/* still very important, used for need-to-be-async operations */
+#define BSE_PRIORITY_NOW                (G_PRIORITY_HIGH - 5)
+/* important, delivers async signals */
+#define BSE_PRIORITY_NOTIFY             (G_PRIORITY_DEFAULT - 1)
+/* normal importantance, interfaces to glue layer */
+#define BSE_PRIORITY_PROG_IFACE         (G_PRIORITY_DEFAULT)
+/* mildly important, used for GUI updates or user information */
+#define BSE_PRIORITY_UPDATE             (G_PRIORITY_HIGH_IDLE + 5)
+/* unimportant, used when everything else done */
+#define BSE_PRIORITY_BACKGROUND         (G_PRIORITY_LOW + 500)
+guint   bse_idle_now            (GSourceFunc    function,
+				 gpointer       data);
+guint   bse_idle_notify         (GSourceFunc    function,
+				 gpointer       data);
+guint   bse_idle_update         (GSourceFunc    function,
+				 gpointer       data);
+guint   bse_idle_background     (GSourceFunc    function,
+				 gpointer       data);
+#define bse_idle_remove         g_source_remove
 
 
 

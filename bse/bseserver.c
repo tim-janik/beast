@@ -73,7 +73,6 @@ static void	iowatch_add			(BseServer	   *server,
 						 BseIOWatch	    watch_func,
 						 gpointer	    data);
 static void	main_thread_source_setup	(BseServer	   *self,
-						 gint               priority,
 						 GslGlueContext    *context);
 static void	engine_init			(BseServer	   *server,
 						 gfloat		    mix_freq);
@@ -167,7 +166,7 @@ bse_server_init (BseServer *server)
   BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
 
   /* start dispatching main thread stuff */
-  main_thread_source_setup (server, BSE_NOTIFY_PRIORITY, bse_glue_context ());
+  main_thread_source_setup (server, bse_glue_context ());
 }
 
 static void
@@ -720,7 +719,6 @@ main_source_dispatch (GSource    *source,
 
 static void
 main_thread_source_setup (BseServer      *self,
-			  gint            priority,
 			  GslGlueContext *context)
 {
   static GSourceFuncs main_source_funcs = {
@@ -737,7 +735,7 @@ main_thread_source_setup (BseServer      *self,
   xsource->context = context;
   xsource->server = self;
   gsl_thread_get_pollfd (&xsource->pfd);
-  g_source_set_priority (source, priority);
+  g_source_set_priority (source, BSE_PRIORITY_PROG_IFACE);
   g_source_add_poll (source, &xsource->pfd);
   g_source_attach (source, g_main_context_default ());
 }
@@ -813,7 +811,7 @@ iowatch_add (BseServer   *server,
   wsource->pfd.events = events;
   wsource->watch_func = watch_func;
   wsource->data = data;
-  g_source_set_priority (source, G_PRIORITY_HIGH);
+  g_source_set_priority (source, BSE_PRIORITY_HIGH);
   g_source_add_poll (source, &wsource->pfd);
   g_source_attach (source, g_main_context_default ());
 }
@@ -924,7 +922,7 @@ engine_init (BseServer *server,
 
   bse_globals_lock ();		// FIXME: globals mix_freq
   server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));
-  g_source_set_priority (server->engine_source, G_PRIORITY_DEFAULT); 	// FIXME: prio settings
+  g_source_set_priority (server->engine_source, BSE_PRIORITY_HIGH);
 
   if (!engine_is_initialized)	// FIXME: hack because we can't deinitialize the engine
     {

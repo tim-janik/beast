@@ -426,7 +426,7 @@ queue_kill (BseScriptControl *self)
 
   bse_com_wire_close_remote (self->wire, TRUE);
   self->wire = NULL;
-  g_idle_add (script_control_kill_wire, g_object_ref (self));
+  bse_idle_now (script_control_kill_wire, g_object_ref (self));
   g_signal_emit (self, signal_killed, 0);
   bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, ident, -1, self->error_status);
   g_object_notify (self, "running");
@@ -590,7 +590,7 @@ script_control_add_wsource (BseScriptControl *self)
   wsource->sctrl = self;
   wsource->wire = self->wire;
   wsource->n_pfds = 0;
-  g_source_set_priority (source, G_PRIORITY_LOW);       // FIXME: prio settings
+  g_source_set_priority (source, BSE_PRIORITY_PROG_IFACE);
   g_source_attach (source, g_main_context_default ()); // bse_server_get ()->main_context);
   self->source = source;
 }

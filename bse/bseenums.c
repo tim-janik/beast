@@ -134,6 +134,7 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_INVALID_OFFSET:		return "Invalid offset";
     case BSE_ERROR_INVALID_DURATION:		return "Invalid duration";
     case BSE_ERROR_INVALID_OVERLAP:		return "Invalid overlap";
+    case BSE_ERROR_NO_TARGET:			return "No target";
     case BSE_ERROR_NO_PCM_DEVICE:		return "No active PCM device present";
     case BSE_ERROR_PCM_DEVICE_ACTIVE:		return "PCM device is active";
     default:

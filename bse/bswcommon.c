@@ -485,6 +485,8 @@ part_note_to_record (gpointer crecord)
   GslGlueRec *rec;
 
   rec = gsl_glue_rec ();
+  val = gsl_glue_value_int (note->id);		// FIXME: uint
+  gsl_glue_rec_take (rec, "id", &val);
   val = gsl_glue_value_int (note->tick);	// FIXME: uint
   gsl_glue_rec_take (rec, "tick", &val);
   val = gsl_glue_value_int (note->duration);	// FIXME: uint
@@ -509,7 +511,8 @@ bsw_part_note_get_type (void)
 }
 
 BswPartNote*
-bsw_part_note (guint    tick,
+bsw_part_note (guint    id,
+	       guint    tick,
 	       guint    duration,
 	       gfloat   freq,
 	       gfloat   velocity,
@@ -517,6 +520,7 @@ bsw_part_note (guint    tick,
 {
   BswPartNote *pnote = gsl_new_struct (BswPartNote, 1);
 
+  pnote->id = id;
   pnote->tick = tick;
   pnote->freq = freq;
   pnote->duration = duration;

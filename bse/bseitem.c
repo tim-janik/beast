@@ -242,7 +242,7 @@ bse_item_queue_seqid_changed (BseItem *item)
   g_return_if_fail (BSE_ITEM (item)->parent != NULL);
 
   if (!item_seqid_changed_queue)
-    g_idle_add_full (BSE_NOTIFY_PRIORITY, idle_handler_seqid_changed, NULL, NULL);
+    bse_idle_notify (idle_handler_seqid_changed, NULL);
 
   if (!g_slist_find (item_seqid_changed_queue, item))
     item_seqid_changed_queue = g_slist_prepend (item_seqid_changed_queue, item);
