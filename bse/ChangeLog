@@ -1,3 +1,7 @@
+Tue Jan 20 00:58:49 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecxxsmart.h: Remove redundant typedefs (now in sfi/sficxx.h).
+
 Mon Jan 19 20:31:28 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* Makefile.am bseprocidl.c: Exclude types which are from bse.idl (and
