@@ -325,7 +325,7 @@ serialize_cmp (GValue     *value,
 	    }
 	}
       ASSERT (cmp == 0);
-      if (0) /* FIXME: generate testoutput */
+      if (0) /* generate testoutput */
 	g_print ("OK=================(%s)=================:\n%s\n", pspec->name, gstring->str);
     }
   g_scanner_destroy (scanner);

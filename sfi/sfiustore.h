@@ -63,6 +63,8 @@ void		sfi_upool_foreach	(SfiUPool	 *pool,
 					 SfiUPoolForeach  foreach,
 					 gpointer	  data);
 void		sfi_upool_destroy	(SfiUPool	 *pool);
+gulong*         sfi_upool_list          (SfiUPool        *pool,
+                                         guint           *n_ids);
 
 
 /* --- pointer pool --- */

@@ -155,6 +155,7 @@ void	sfi_value_free		(GValue		*value);
 
 
 /* --- transformation --- */
+#define SFI_CHOICE_ERROR_QUARK            (g_quark_from_string ("sfi-choice-error"))
 void         sfi_value_choice2enum        (const GValue *choice_value,
                                            GValue       *enum_value,
                                            GParamSpec   *fallback_param);
@@ -162,6 +163,9 @@ void         sfi_value_choice2enum_simple (const GValue *choice_value,
                                            GValue       *enum_value);
 void         sfi_value_enum2choice        (const GValue *enum_value,
                                            GValue       *choice_value);
+gint         sfi_choice2enum_checked      (const gchar  *choice_value,
+                                           GType         enum_type,
+                                           GError      **errorp);
 gint         sfi_choice2enum              (const gchar  *choice_value,
                                            GType         enum_type);
 const gchar* sfi_enum2choice              (gint          enum_value,

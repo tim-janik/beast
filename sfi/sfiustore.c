@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfiustore.h"
+#include "sfimemory.h"
 
 /* --- strcutures --- */
 static inline SfiUStore*
@@ -165,6 +166,38 @@ sfi_upool_foreach (SfiUPool        *pool,
 		   gpointer         data)
 {
   sfi_ustore_foreach (ustore_cast (pool), (SfiUStoreForeach) foreach, data);
+}
+
+typedef struct {
+  guint   capacity;
+  guint   n_ids;
+  gulong *ids;
+} UPoolList;
+
+static gboolean
+upool_enlist (gpointer        data,
+              gulong          unique_id)
+{
+  UPoolList *list = data;
+  guint i = list->n_ids++;
+  if (list->n_ids > list->capacity)
+    {
+      list->capacity = sfi_alloc_upper_power2 (list->n_ids);
+      list->ids = g_renew (gulong, list->ids, list->capacity);
+    }
+  list->ids[i] = unique_id;
+  return TRUE;
+}
+
+gulong*
+sfi_upool_list (SfiUPool        *pool,
+                guint           *n_ids)
+{
+  UPoolList list = { 0 };
+  sfi_upool_foreach (pool, upool_enlist, &list);
+  if (n_ids)
+    *n_ids = list.n_ids;
+  return list.ids;
 }
 
 void

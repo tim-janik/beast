@@ -1,3 +1,21 @@
+Sun Feb  8 03:48:36 2004  Tim Janik  <timj@gtk.org>
+
+	* sfitypes.c (sfi_choice_match_detailed): only match partial choice
+	names starting at word boundaries.
+
+	* sfiustore.[hc]: added sfi_upool_list() function to list ids in a pool.
+
+	* sfivalues.[hc]:
+	(sfi_value_choice2enum):
+	(sfi_choice2enum): match choices against enum value names only, since
+	nicks are going to be used for the GUI and since the partial and
+	canonifying matching supported by sfi_choice_match_detailed() already
+	xceeds the flexibility provided by nicks by orders of magnitude.
+	(sfi_choice2enum_checked): introduced error-checking version of
+	sfi_choice2enum().
+	(sfi_enum2choice): provide choices in schme-canonified form (lower
+	case, delimited by '-').
+
 Wed Feb  4 22:37:56 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfilog.c: Speed optimization: Lookup the GQuark for the sfi log

@@ -657,8 +657,8 @@ sfi_value_choice2enum (const GValue *choice_value,
   eval = sfi_value_get_choice (choice_value);
   if (eval)
     for (i = 0; i < eclass->n_values; i++)
-      if (sfi_choice_match_detailed (eclass->values[i].value_name, eval, TRUE) ||
-	  sfi_choice_match_detailed (eclass->values[i].value_nick, eval, TRUE))
+      if (sfi_choice_match_detailed (eclass->values[i].value_name, eval, TRUE))
+        /* || sfi_choice_match_detailed (eclass->values[i].value_nick, eval, TRUE) */
 	{
 	  ev = eclass->values + i;
 	  break;
@@ -714,8 +714,9 @@ sfi_value_enum2choice (const GValue *enum_value,
 }
 
 gint
-sfi_choice2enum (const gchar    *choice_value,
-                 GType           enum_type)
+sfi_choice2enum_checked (const gchar    *choice_value,
+                         GType           enum_type,
+                         GError        **errorp)
 {
   GEnumClass *eclass;
   GEnumValue *ev = NULL;
@@ -725,16 +726,27 @@ sfi_choice2enum (const gchar    *choice_value,
   eclass = g_type_class_ref (enum_type);
   if (choice_value)
     for (i = 0; i < eclass->n_values; i++)
-      if (sfi_choice_match_detailed (eclass->values[i].value_name, choice_value, TRUE) ||
-	  sfi_choice_match_detailed (eclass->values[i].value_nick, choice_value, TRUE))
+      if (sfi_choice_match_detailed (eclass->values[i].value_name, choice_value, TRUE))
+        /* || sfi_choice_match_detailed (eclass->values[i].value_nick, choice_value, TRUE) */
 	{
 	  ev = eclass->values + i;
 	  break;
 	}
+  if (!ev)
+    g_set_error (errorp, SFI_CHOICE_ERROR_QUARK, 1,
+                 "%s contains no value: %s",
+                 g_type_name (enum_type), choice_value ? choice_value : "<NULL>");
   enum_value = ev ? ev->value : 0;
   g_type_class_unref (eclass);
 
   return enum_value;
+}
+
+gint
+sfi_choice2enum (const gchar    *choice_value,
+                 GType           enum_type)
+{
+  return sfi_choice2enum_checked (choice_value, enum_type, NULL);
 }
 
 const gchar*
@@ -744,12 +756,15 @@ sfi_enum2choice (gint            enum_value,
   GEnumClass *eclass;
   GEnumValue *ev;
   const gchar *choice;
+  gchar *cident;
 
   eclass = g_type_class_ref (enum_type);
   ev = g_enum_get_value (eclass, enum_value);
   if (!ev)
     ev = eclass->values;
-  choice = g_intern_string (ev->value_name);
+  cident = sfi_strdup_canon (ev->value_name);
+  choice = g_intern_string (cident);
+  g_free (cident);
   g_type_class_unref (eclass);
 
   return choice;
