@@ -1,3 +1,11 @@
+Fri Jan  7 23:26:26 2000  Tim Janik  <timj@gtk.org>
+
+	* bsecompressor.[hc]: added adjustable compressor.
+
+Mon Jan  3 16:50:55 2000  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am (plugindir): use value from $(bseplugindir).
+
 Wed Dec 29 12:19:34 1999  Tim Janik  <timj@gtk.org>
 
 	* bsecapture.c (bse_capture_calc_chunk): removed capture cache cludge,

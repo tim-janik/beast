@@ -1,6 +1,7 @@
 ## Generated data (by make Makefile.icons)
 icon_list += amp.c
 icon_list += any.c
+icon_list += atan.c
 icon_list += mic.c
 icon_list += noicon.c
 icon_list += pipe.c
@@ -10,6 +11,7 @@ icon_list += speaker.c
 icon_list += sub.c
 icon_list += sum.c
 icon_list += amp.xcf
+icon_list += atan.xcf
 icon_list += mic.xcf
 icon_list += noicon.xcf
 icon_list += pipe.xcf

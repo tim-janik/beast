@@ -9,7 +9,7 @@ INCLUDES += -I$(top_srcdir) $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
 INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 
 # install plugins under:
-plugindir = $(bselibdir)/plugins
+plugindir = $(bseplugindir)
 
 # all plugins want to link against:
 plugin_libs = $(BSE_LIBS) -lm

@@ -17,6 +17,14 @@ bsecapture_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS += bsecapture.h
 
 ##
+## Plugin bsecompressor
+##
+bsecompressor_la_SOURCES = bsecompressor.c
+bsecompressor_la_LDFLAGS = -module -avoid-version
+bsecompressor_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS += bsecompressor.h
+
+##
 ## Plugin bsefirfilter
 ##
 bsefirfilter_la_SOURCES = bsefirfilter.c
@@ -74,6 +82,7 @@ hello_space_la_LIBADD  = $(plugin_libs)
 plugin_LTLIBRARIES += \
 	bseadder.la \
 	bsecapture.la \
+	bsecompressor.la \
 	bsefirfilter.la \
 	bsegenosc.la \
 	bseloopback.la \
