@@ -16,6 +16,7 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * Lots of small MIDI handling fixes
 * Fixed MP3 loader
 * Major GUI improvements
+* Registered MIME types for .bse files, provided .desktop file
 * Made search paths for various resources user configurable
 * Added prototype support to IDL compiler [Stefan Westerfeld]
 * Work around PTH poll() bug on NetBSD [Ben Collver, Tim Janik]

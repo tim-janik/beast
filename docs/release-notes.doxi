@@ -13,20 +13,22 @@
 
 This new development series of BEAST comes with a lot of the internals
 redone, many new GUI features and a sound generation
-back-end separated from any GUI activities.
+back-end separated from all GUI activities.
 Specifics can be found in the
 @uref{beast-doc://release-news,,NEWS section}.
 
-The most outstanding new features are the track editor which allowes
+The most outstanding new features are the demo song, the effect and
+instrument management abilities, the track editor which allowes
 for easy selection of synthesizers or samples as track sources, loop
-support and unlimited UnDo/ReDo capabilities.
+support in songs and unlimited Undo/Redo capabilities.
 
-NOTE: The .bse file format hasn't fully stabilized yet, so
-incompatibilities with future versions may occur, though we're
-making every possible attempt to maintain backwards compatibility.
+NOTE: If you encounter problems with .bse files from previous
+BEAST versions, this may indicate bugs at the compatibility
+layer. A bug report accompanied by the problematic file can be send
+to the mailing list and is likely to get you a fixed file in return.
 
-A good starting point are the test files shipped in the
-@path{tests/} subdirectory of the source package, or the
+Good starting points are the effects and instruments or the demo
+song shipped with BEAST, and of course the
 @uref{beast-doc://quickstart,,Quick Start Guide} in the
 @menupath{Help} menu.
 
