@@ -30,6 +30,10 @@
 
 #define	GXK_IS_SCROLL_TEXT	GTK_IS_VBOX
 
+typedef struct {
+  gchar  *url;
+  gdouble vpos;
+} HEntry;	/* History entry */
 
 typedef struct {
   GtkWidget *sctext;
@@ -41,9 +45,11 @@ typedef struct {
   gchar     *path;
   gchar     *file;
   gchar     *anchor;
-  gchar     *current;
-  GSList    *back_stack;
-  GSList    *fore_stack;
+  GtkAdjustment *vadjustment;
+  gdouble    vert_frac;
+  HEntry    *current;
+  GSList    *back_stack;	/* HEntry* */
+  GSList    *fore_stack;	/* HEntry* */
 } TextNavigation;
 
 
@@ -1146,6 +1152,14 @@ scroll_text_patchup_size_request (GtkWidget      *scwin,
     }
 }
 
+static void
+tnav_update_vpos (GtkAdjustment  *a,
+		  TextNavigation *tnav)
+{
+  if (tnav->current)
+    tnav->current->vpos = a->value > a->lower ? (a->value - a->lower) / (a->upper - a->lower) : 0;
+}
+
 /**
  * gxk_scroll_text_create
  * @flags:  scroll text flags
@@ -1210,6 +1224,8 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
     {
       GtkWidget *button;
       TextNavigation *tnav = navigation_from_sctext (sctext);
+      tnav->vadjustment = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scwin));
+      g_object_connect (tnav->vadjustment, "signal::value_changed", tnav_update_vpos, tnav, NULL);
       g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (gxk_scroll_text_advance), sctext);
       tnav->backb = gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Back", "Go back one page", GTK_STOCK_GO_BACK);
       g_object_connect (g_object_ref (tnav->backb),
@@ -1585,7 +1601,8 @@ navigation_test_file (const gchar *dir,
 
 static void
 navigation_set_url (TextNavigation *tnav,
-		    const gchar    *src_url)
+		    const gchar    *src_url,
+		    gdouble	    vert_frac)
 {
   gchar *p, *url = g_strdup (src_url), *buffer = url;
 
@@ -1660,6 +1677,7 @@ navigation_set_url (TextNavigation *tnav,
     }
 
   g_free (buffer);
+  tnav->vert_frac = vert_frac;
 }
 
 static gchar*
@@ -1676,7 +1694,11 @@ navigation_clear_fore_stack (TextNavigation *tnav)
 {
   GSList *slist;
   for (slist = tnav->fore_stack; slist; slist = slist->next)
-    g_free (slist->data);
+    {
+      HEntry *hentry = slist->data;
+      g_free (hentry->url);
+      g_free (hentry);
+    }
   g_slist_free (tnav->fore_stack);
   tnav->fore_stack = NULL;
 }
@@ -1691,7 +1713,7 @@ navigation_update_widgets (TextNavigation *tnav)
     gtk_widget_set_sensitive (tnav->forwardb, tnav->fore_stack != NULL);
   /* update location */
   if (tnav->refe)
-    gtk_entry_set_text (GTK_ENTRY (tnav->refe), tnav->current);
+    gtk_entry_set_text (GTK_ENTRY (tnav->refe), tnav->current ? tnav->current->url : "");
 }
 
 static void
@@ -1710,10 +1732,18 @@ free_navigation (gpointer data)
   g_free (tnav->path);
   g_free (tnav->file);
   g_free (tnav->anchor);
-  g_free (tnav->current);
+  if (tnav->current)
+    {
+      g_free (tnav->current->url);
+      g_free (tnav->current);
+    }
   navigation_clear_fore_stack (tnav);
   for (slist = tnav->back_stack; slist; slist = slist->next)
-    g_free (slist->data);
+    {
+      HEntry *hentry = slist->data;
+      g_free (hentry->url);
+      g_free (hentry);
+    }
   g_slist_free (tnav->back_stack);
   g_free (tnav);
 }
@@ -1788,6 +1818,23 @@ g_string_add_xmlstr (GString     *gstring,
       case '\'': g_string_append (gstring, "&apos;");	break;
       default:	 g_string_append_c (gstring, *p);
       }
+}
+
+static gboolean
+adjust_vscroll_offset (gpointer data)
+{
+  GtkWidget *sctext = data;
+  TextNavigation *tnav;
+  GDK_THREADS_ENTER ();
+  tnav = navigation_from_sctext (sctext);
+  if (GTK_WIDGET_REALIZED (sctext) && tnav->vert_frac >= 0)
+    {
+      GtkAdjustment *a = tnav->vadjustment;
+      gdouble v = a->lower + tnav->vert_frac * (a->upper - a->lower);
+      gtk_adjustment_set_value (a, CLAMP (v, a->lower, a->upper - a->page_size));
+    }
+  GDK_THREADS_LEAVE ();
+  return FALSE;
 }
 
 static void
@@ -1876,6 +1923,8 @@ scroll_text_reload (GtkWidget *sctext)
       g_free (loc);
       gxk_text_view_cursor_to_end (gxk_scroll_text_get_text_view (sctext));
     }
+  if (tnav->vert_frac >= 0)
+    g_idle_add_full (G_PRIORITY_LOW + 100, adjust_vscroll_offset, g_object_ref (sctext), g_object_unref);
 }
 
 /**
@@ -1896,7 +1945,7 @@ gxk_scroll_text_display (GtkWidget   *sctext,
   g_return_if_fail (uri != NULL);
   
   tnav = navigation_from_sctext (sctext);
-  navigation_set_url (tnav, uri);
+  navigation_set_url (tnav, uri, -1);
 
   scroll_text_reload (sctext);
 }
@@ -1915,30 +1964,41 @@ gxk_scroll_text_advance (GtkWidget   *sctext,
 			 const gchar *uri)
 {
   TextNavigation *tnav;
+  HEntry *last;
 
   g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
   g_return_if_fail (uri != NULL);
 
   tnav = navigation_from_sctext (sctext);
   /* handle history */
+  last = tnav->back_stack ? tnav->back_stack->data : NULL;
   if (tnav->current)
     {
-      if (tnav->back_stack && strcmp (tnav->back_stack->data, tnav->current) == 0)
-	g_free (tnav->current);
+      if (last && strcmp (last->url, tnav->current->url) == 0)
+	{
+	  g_free (tnav->current->url);
+	  g_free (tnav->current);
+	}
       else
-	tnav->back_stack = g_slist_prepend (tnav->back_stack, tnav->current);
+	{
+	  tnav->back_stack = g_slist_prepend (tnav->back_stack, tnav->current);
+	  last = tnav->current;
+	}
       tnav->current = NULL;
     }
   navigation_clear_fore_stack (tnav);
   /* set new uri */
-  navigation_set_url (tnav, uri);
+  navigation_set_url (tnav, uri, -1);
   /* prepare for next history */
-  tnav->current = navigation_strdup_url (tnav);
+  tnav->current = g_new (HEntry, 1);
+  tnav->current->url = navigation_strdup_url (tnav);
+  tnav->current->vpos = -1;
   /* dedup history */
-  if (tnav->back_stack && strcmp (tnav->back_stack->data, tnav->current) == 0)
+  if (last && strcmp (last->url, tnav->current->url) == 0)
     {
-      g_free (tnav->back_stack->data);
-      tnav->back_stack = g_slist_delete_link (tnav->back_stack, tnav->back_stack);
+      last = g_slist_pop_head (&tnav->back_stack);
+      g_free (last->url);
+      g_free (last);
     }
   /* show away */
   scroll_text_reload (sctext);
@@ -2008,18 +2068,21 @@ gxk_scroll_text_rewind (GtkWidget *sctext)
     {
       if (tnav->current)
 	{
-	  if (tnav->fore_stack && strcmp (tnav->fore_stack->data, tnav->current) == 0)
-	    g_free (tnav->current);
+	  HEntry *next = tnav->fore_stack ? tnav->fore_stack->data : NULL;
+	  if (next && strcmp (next->url, tnav->current->url) == 0)
+	    {
+	      g_free (tnav->current->url);
+	      g_free (tnav->current);
+	    }
 	  else
 	    tnav->fore_stack = g_slist_prepend (tnav->fore_stack, tnav->current);
 	}
-      tnav->current = tnav->back_stack->data;
-      tnav->back_stack = g_slist_delete_link (tnav->back_stack, tnav->back_stack);
+      tnav->current = g_slist_pop_head (&tnav->back_stack);
     }
   if (tnav->current)
     {
       navigation_reset_url (tnav);
-      navigation_set_url (tnav, tnav->current);
+      navigation_set_url (tnav, tnav->current->url, -1);
       scroll_text_reload (sctext);
     }
   navigation_update_widgets (tnav);
@@ -2034,15 +2097,18 @@ navigate_back (GtkWidget *sctext)
     {
       if (tnav->current)
 	{
-	  if (tnav->fore_stack && strcmp (tnav->fore_stack->data, tnav->current) == 0)
-	    g_free (tnav->current);
+          HEntry *next = tnav->fore_stack ? tnav->fore_stack->data : NULL;
+	  if (next && strcmp (next->url, tnav->current->url) == 0)
+	    {
+	      g_free (tnav->current->url);
+	      g_free (tnav->current);
+	    }
 	  else
 	    tnav->fore_stack = g_slist_prepend (tnav->fore_stack, tnav->current);
 	}
-      tnav->current = tnav->back_stack->data;
-      tnav->back_stack = g_slist_delete_link (tnav->back_stack, tnav->back_stack);
+      tnav->current = g_slist_pop_head (&tnav->back_stack);
       navigation_reset_url (tnav);
-      navigation_set_url (tnav, tnav->current);
+      navigation_set_url (tnav, tnav->current->url, tnav->current->vpos);
       scroll_text_reload (sctext);
       navigation_update_widgets (tnav);
     }
@@ -2056,15 +2122,18 @@ navigate_forward (GtkWidget *sctext)
     {
       if (tnav->current)
 	{
-	  if (tnav->back_stack && strcmp (tnav->back_stack->data, tnav->current) == 0)
-	    g_free (tnav->current);
+          HEntry *last = tnav->back_stack ? tnav->back_stack->data : NULL;
+	  if (last && strcmp (last->url, tnav->current->url) == 0)
+	    {
+	      g_free (tnav->current->url);
+	      g_free (tnav->current);
+	    }
 	  else
 	    tnav->back_stack = g_slist_prepend (tnav->back_stack, tnav->current);
 	}
-      tnav->current = tnav->fore_stack->data;
-      tnav->fore_stack = g_slist_delete_link (tnav->fore_stack, tnav->fore_stack);
+      tnav->current = g_slist_pop_head (&tnav->fore_stack);
       navigation_reset_url (tnav);
-      navigation_set_url (tnav, tnav->current);
+      navigation_set_url (tnav, tnav->current->url, tnav->current->vpos);
       scroll_text_reload (sctext);
       navigation_update_widgets (tnav);
     }
@@ -2086,6 +2155,8 @@ navigate_find (GtkWidget *sctext)
 static void
 navigate_reload (GtkWidget *sctext)
 {
+  TextNavigation *tnav = navigation_from_sctext (sctext);
+  tnav->vert_frac = -1;
   scroll_text_reload (sctext);
 }
 

@@ -1,3 +1,8 @@
+Sun Apr  6 20:04:29 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxktexttools.c: add current vertical scroll position
+	to history list and restore it upon forward/backward moves.
+
 Sun Apr  6 15:57:24 2003  Tim Janik  <timj@gtk.org>
 
 	* update to libtool 1.4.3.
