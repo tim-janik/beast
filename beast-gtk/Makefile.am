@@ -143,7 +143,7 @@ bstgentypes.h: stamp-bstenum_arrays.c $(srcdir)/bstrecords.idl $(SFIDL)
 	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
-bstutils.c:	bstgentypes.c
+$(srcdir)/bstutils.c:	bstgentypes.c
 bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
 	cd . \
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
@@ -152,7 +152,7 @@ bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
 	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-bgtc \
         && cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
-bstutils.c:	bstenum_list.c
+$(srcdir)/bstutils.c:	bstenum_list.c
 bstenum_list.c: stamp-bstenum_arrays.c
 	cd . \
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
@@ -169,7 +169,7 @@ stamp-bstgenbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	&& (cmp -s xgen-bgbah bstgenbseapi.h || cp xgen-bgbah bstgenbseapi.h) \
 	&& rm -f xgen-bgbah \
 	&& echo timestamp > $@
-bstbseutils.c: bstgenbseapi.c
+$(srcdir)/bstbseutils.c: bstgenbseapi.c
 bstgenbseapi.c: bstgenbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	cd .	\
 	&& echo -e "/* #include \"bstgenbseapi.h\" */\n" > xgen-bgbac \
@@ -180,7 +180,7 @@ bstmarshal.h: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-bmh \
 	&& cp xgen-bmh $@ \
 	&& rm -f xgen-bmh
-bstutils.c:	bstmarshal.c
+$(srcdir)/bstutils.c:	bstmarshal.c
 bstmarshal.c: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-bmc \
 	&& cp xgen-bmc $@ \
@@ -199,7 +199,7 @@ bstdebugkeys.defs: @DVLBUILD@ $(debug_key_globs)
 	| sort >> xgen-bdkd \
 	&& cp xgen-bdkd $@ \
 	&& rm -f xgen-bdkd
-bstutils.c: bstdebugkeys.defs
+$(srcdir)/bstutils.c: bstdebugkeys.defs
 
 #
 # setup BEAST sources and their dependancies
