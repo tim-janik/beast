@@ -363,7 +363,7 @@ gsl_progress_printerr (gpointer          message,
 {
   gchar *str, format[128] = "%s%sprocessed %5.1f%% %s%s%s";
   gchar *ppos = strchr (format, '1');
-  guint prec = pstate->precision;
+  guint l, prec = pstate->precision;
   ppos[0] = '0' + CLAMP (prec, 0, 9);
   str = g_strdup_printf (format,
                          message ? (gchar*) message : "",
@@ -372,7 +372,7 @@ gsl_progress_printerr (gpointer          message,
                          detail ? "(" : "",
                          detail ? detail : "",
                          detail ? ")" : "");
-  guint l = strlen (str);
+  l = strlen (str);
   g_printerr ("%s            \r", str);
   g_free (str);
   return l;
