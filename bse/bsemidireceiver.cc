@@ -776,7 +776,7 @@ check_mono_synth_improvement (BseMidiMonoSynth *msynth1, /* msynth1 better than 
   if (msynth1->vstate == VSTATE_IDLE)
     return TRUE;
   if (msynth1->vstate == VSTATE_SUSTAINED)
-    return msynth2 == VSTATE_IDLE ? FALSE : TRUE;
+    return msynth2->vstate == VSTATE_IDLE ? FALSE : TRUE;
   return FALSE; /* msynth1->vstate == VSTATE_BUSY && msynth1->vstate != msynth2->vstate */
 }
 
