@@ -65,6 +65,8 @@ void	gxk_window_set_cursor_type	(GdkWindow		*window,
 					 GdkCursorType		 cursor);
 void	gxk_window_process_next		(GdkWindow		*window,
 					 gboolean		 update_children);
+void	gxk_color_alloc			(GdkColormap		*colormap,
+					 GdkColor		*color);
 
 
 /* --- Gtk convenience --- */

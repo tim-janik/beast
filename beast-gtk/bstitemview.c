@@ -32,6 +32,8 @@ static void	item_view_listen_on		(BstItemView		*self,
 						 SfiProxy		 item);
 static void	item_view_unlisten_on		(BstItemView		*self,
 						 SfiProxy		 item);
+static void	item_view_set_container		(BstItemView		*self,
+						 SfiProxy		 new_container);
 
 
 /* --- columns --- */
@@ -95,6 +97,8 @@ bst_item_view_class_init (BstItemViewClass *class)
   class->create_tree = bst_item_view_create_tree;
   class->listen_on = item_view_listen_on;
   class->unlisten_on = item_view_unlisten_on;
+
+  class->set_container = item_view_set_container;
 }
 
 static void
@@ -436,14 +440,10 @@ bst_item_view_release_container (BstItemView  *item_view)
   bst_item_view_set_container (item_view, 0);
 }
 
-void
-bst_item_view_set_container (BstItemView *self,
-			     SfiProxy     new_container)
+static void
+item_view_set_container (BstItemView *self,
+			 SfiProxy     new_container)
 {
-  g_return_if_fail (BST_IS_ITEM_VIEW (self));
-  if (new_container)
-    g_return_if_fail (BSE_IS_CONTAINER (new_container));
-
   if (self->container)
     {
       BseProxySeq *pseq = bse_container_list_items (self->container);
@@ -480,6 +480,17 @@ bst_item_view_set_container (BstItemView *self,
 	      gxk_list_wrapper_notify_append (self->wlist, 1);
 	  }
     }
+}
+
+void
+bst_item_view_set_container (BstItemView *self,
+			     SfiProxy     new_container)
+{
+  g_return_if_fail (BST_IS_ITEM_VIEW (self));
+  if (new_container)
+    g_return_if_fail (BSE_IS_CONTAINER (new_container));
+
+  BST_ITEM_VIEW_GET_CLASS (self)->set_container (self, new_container);
 }
 
 void

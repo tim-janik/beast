@@ -9,6 +9,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	clipboard.xcf		\
 	editor.xcf		\
 	knob.xcf		\
+	loopleft.xcf		\
 	mouse_tool.xcf		\
 	no_olink.xcf		\
 	noicon.xcf		\
@@ -19,6 +20,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	pattern-tool.xcf	\
 	pattern.xcf		\
 	railway.xcf		\
+	repeat.xcf		\
 	rect-select.xcf		\
 	target.xcf		\
 	text.xcf		\
@@ -64,8 +66,12 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_QNOTE_8			$(srcdir)/qnote-8.png		\
 	STOCK_QNOTE_16			$(srcdir)/qnote-16.png		\
 	STOCK_RECT_SELECT		$(srcdir)/rect-select.png	\
+	STOCK_REPEAT			$(srcdir)/repeat.png		\
 	STOCK_TARGET			$(srcdir)/target.png		\
 	STOCK_TEXT			$(srcdir)/text.png		\
+	STOCK_TICK_LOOP_LEFT		$(srcdir)/loopleft.png		\
+	STOCK_TICK_LOOP_RIGHT		$(srcdir)/loopright.png		\
+	STOCK_TICK_POINTER		$(srcdir)/tickpointer.png	\
 	STOCK_TRACK			$(srcdir)/railway.png		\
 	STOCK_TRASH_SCISSORS		$(srcdir)/trash-scissors.png	\
 	STOCK_TRASHCAN			$(srcdir)/trashcan.png		\

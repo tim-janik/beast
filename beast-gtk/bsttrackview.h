@@ -42,8 +42,10 @@ struct _BstTrackView
   BstItemView	          parent_object;
   BstTrackRoll	         *troll;
   BstTrackRollController *troll_ctrl;
-  BstRadioTools		 *rtools;
+  BstRadioTools		 *canvas_rtools;
+  BstRadioTools		 *hpanel_rtools;
   GxkToolbar		 *toolbar;
+  GtkWidget		 *repeat_toggle;
 };
 struct _BstTrackViewClass
 {

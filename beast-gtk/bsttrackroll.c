@@ -23,6 +23,9 @@
 /* --- defines --- */
 /* helpers */
 #define	STYLE(self)		(GTK_WIDGET (self)->style)
+#define	STATE(self)		(GTK_WIDGET (self)->state)
+#define	SELECTED_STATE(self)	(GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_SELECTED : GTK_STATE_INSENSITIVE)
+#define	ACTIVE_STATE(self)	(GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_ACTIVE : GTK_STATE_INSENSITIVE)
 #define	XTHICKNESS(self)	(STYLE (self)->xthickness)
 #define	YTHICKNESS(self)	(STYLE (self)->ythickness)
 #define	ALLOCATION(self)	(&GTK_WIDGET (self)->allocation)
@@ -30,23 +33,44 @@
 /* layout (requisition) */
 #define	ROW_HEIGHT(self)	((gint) 5)
 #define	HPANEL_HEIGHT(self)	(self->area_offset)
+#define	VPANEL_WIDTH(self)	(30)
+#define	CANVAS_X(self)		(VPANEL_WIDTH (self))
 #define	CANVAS_Y(self)		(HPANEL_HEIGHT (self))
 
 /* layout (allocation) */
-#define	CANVAS_WIDTH(self)	(ALLOCATION (self)->width)
+#define	CANVAS_WIDTH(self)	(ALLOCATION (self)->width - CANVAS_X (self))
 #define	CANVAS_HEIGHT(self)	(ALLOCATION (self)->height - CANVAS_Y (self))
+#define	MARK_OFFSET		-4
+#define	MARK_WIDTH		(2 * ABS (MARK_OFFSET) + 1)
 
 /* aliases */
+#define VPANEL_HEIGHT(self)	(CANVAS_HEIGHT (self))
 #define	HPANEL_WIDTH(self)	(CANVAS_WIDTH (self))
+#define VPANEL_X(self)		(0)
+#define VPANEL_Y(self)		(CANVAS_Y (self))
+#define	HPANEL_X(self)		(CANVAS_X (self))
+#define	HPANEL_Y(self)		(0)
 
 /* appearance */
-#define	HPANEL_BG_GC(self)	(&STYLE (self)->bg[GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_SELECTED : GTK_STATE_INSENSITIVE])
-#define	CANVAS_BG_GC(self)	(&STYLE (self)->base[GTK_WIDGET_STATE (self)])
+#define VPANEL_BG_GC(self)	(STYLE (self)->bg_gc[GTK_STATE_INSENSITIVE])
+#define VPANEL_BG_COLOR(self)	(&STYLE (self)->bg[GTK_STATE_INSENSITIVE])
+#define	HPANEL_BG_GC(self)	(STYLE (self)->bg_gc[GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE])
+#define	HPANEL_BG_COLOR(self)	(&STYLE (self)->bg[GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE])
+#define	CANVAS_BG_COLOR(self)	(&STYLE (self)->base[GTK_WIDGET_STATE (self)])
+#define	CANVAS_BG_GC(self)	(STYLE (self)->base_gc[GTK_WIDGET_STATE (self)])
 #define TACT_HPIXELS		(50)	/* guideline */
 
 /* behaviour */
 #define AUTO_SCROLL_TIMEOUT	(33)
 #define	AUTO_SCROLL_SCALE	(0.2)
+
+/* possible drag areas */
+enum {
+  DRAG_UNCHANGED,
+  DRAG_CANVAS,
+  DRAG_VPANEL,
+  DRAG_HPANEL
+};
 
 
 /* --- prototypes --- */
@@ -98,10 +122,8 @@ static void	bst_track_roll_allocate_ecell		(BstTrackRoll		*self);
 /* --- static variables --- */
 static gpointer	parent_class = NULL;
 static guint	signal_select_row = 0;
-static guint	signal_canvas_drag = 0;
-static guint	signal_canvas_clicked = 0;
-static guint	signal_hpanel_drag = 0;
-static guint	signal_hpanel_clicked = 0;
+static guint	signal_drag = 0;
+static guint	signal_clicked = 0;
 static guint	signal_stop_edit = 0;
 
 
@@ -160,35 +182,25 @@ bst_track_roll_class_init (BstTrackRollClass *class)
   widget_class->button_release_event = bst_track_roll_button_release;
 
   class->set_scroll_adjustments = bst_track_roll_set_scroll_adjustments;
-  class->canvas_clicked = NULL;
+  class->drag = NULL;
+  class->clicked = NULL;
   
   signal_select_row = g_signal_new ("select-row", G_OBJECT_CLASS_TYPE (class),
 				    G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, select_row),
 				    NULL, NULL,
 				    bst_marshal_NONE__INT,
 				    G_TYPE_NONE, 1, G_TYPE_INT);
-  signal_canvas_drag = g_signal_new ("canvas-drag", G_OBJECT_CLASS_TYPE (class),
-				     G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, canvas_drag),
-				     NULL, NULL,
-				     bst_marshal_NONE__POINTER,
-				     G_TYPE_NONE, 1, G_TYPE_POINTER);
-  signal_canvas_clicked = g_signal_new ("canvas-clicked", G_OBJECT_CLASS_TYPE (class),
-					G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, canvas_clicked),
-					NULL, NULL,
-					bst_marshal_NONE__UINT_UINT_INT_BOXED,
-					G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_INT,
-					GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
-  signal_hpanel_drag = g_signal_new ("hpanel-drag", G_OBJECT_CLASS_TYPE (class),
-				     G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, hpanel_drag),
-				     NULL, NULL,
-				     bst_marshal_NONE__POINTER,
-				     G_TYPE_NONE, 1, G_TYPE_POINTER);
-  signal_hpanel_clicked = g_signal_new ("hpanel-clicked", G_OBJECT_CLASS_TYPE (class),
-					G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, hpanel_clicked),
-					NULL, NULL,
-					bst_marshal_NONE__UINT_INT_BOXED,
-					G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_INT,
-					GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
+  signal_drag = g_signal_new ("drag", G_OBJECT_CLASS_TYPE (class),
+			      G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, drag),
+			      NULL, NULL,
+			      bst_marshal_NONE__POINTER,
+			      G_TYPE_NONE, 1, G_TYPE_POINTER);
+  signal_clicked = g_signal_new ("clicked", G_OBJECT_CLASS_TYPE (class),
+				 G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, clicked),
+				 NULL, NULL,
+				 bst_marshal_NONE__UINT_UINT_INT_BOXED,
+				 G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_INT,
+				 GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_stop_edit = g_signal_new ("stop-edit", G_OBJECT_CLASS_TYPE (class),
 				   G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstTrackRollClass, stop_edit),
 				   NULL, NULL,
@@ -220,9 +232,11 @@ bst_track_roll_init (BstTrackRoll *self)
   self->y_offset = 0;
   self->prelight_row = 0;
   self->hpanel_height = 20;
+  self->vpanel = NULL;
   self->hpanel = NULL;
   self->canvas = NULL;
   self->canvas_cursor = GDK_LEFT_PTR;
+  self->vpanel_cursor = GDK_HAND2;
   self->hpanel_cursor = GDK_LEFT_PTR;
   self->hadjustment = NULL;
   self->vadjustment = NULL;
@@ -230,8 +244,8 @@ bst_track_roll_init (BstTrackRoll *self)
   self->area_offset = 20;
   self->size_data = NULL;
   self->get_area_pos = NULL;
-  self->canvas_drag = FALSE;
-  self->hpanel_drag = FALSE;
+  bst_marker_init_vertical (&self->vmarker);
+  self->in_drag = FALSE;
   bst_track_roll_hsetup (self, 384 * 4, 800 * 384, 1);
   bst_track_roll_set_hadjustment (self, NULL);
   bst_track_roll_set_vadjustment (self, NULL);
@@ -263,6 +277,7 @@ bst_track_roll_finalize (GObject *object)
       g_source_remove (self->scroll_timer);
       self->scroll_timer = 0;
     }
+  bst_marker_finalize (&self->vmarker);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -344,12 +359,11 @@ track_roll_reset_backgrounds (BstTrackRoll *self)
   if (GTK_WIDGET_REALIZED (self))
     {
       gtk_style_set_background (widget->style, widget->window, GTK_WIDGET_STATE (self));
-      gdk_window_set_background (self->hpanel,
-				 (GTK_WIDGET_IS_SENSITIVE (self)
-				  ? &STYLE (self)->bg[GTK_STATE_SELECTED]
-				  : &STYLE (self)->bg[GTK_STATE_INSENSITIVE]));
-      gdk_window_set_background (self->canvas, &STYLE (self)->base[GTK_WIDGET_STATE (self)]);
+      gdk_window_set_background (self->vpanel, VPANEL_BG_COLOR (self));
+      gdk_window_set_background (self->hpanel, HPANEL_BG_COLOR (self));
+      gdk_window_set_background (self->canvas, CANVAS_BG_COLOR (self));
       gdk_window_clear (widget->window);
+      gdk_window_clear (self->vpanel);
       gdk_window_clear (self->hpanel);
       gdk_window_clear (self->canvas);
       gtk_widget_queue_draw (widget);
@@ -418,6 +432,7 @@ bst_track_roll_size_allocate (GtkWidget	    *widget,
 
   bst_track_roll_reallocate (self);
   bst_track_roll_allocate_ecell (self);
+  bst_marker_resize (&self->vmarker);
 }
 
 void
@@ -432,11 +447,14 @@ bst_track_roll_reallocate (BstTrackRoll *self)
       gdk_window_move_resize (widget->window,
 			      widget->allocation.x, widget->allocation.y,
 			      widget->allocation.width, widget->allocation.height);
+      gdk_window_move_resize (self->vpanel,
+			      VPANEL_X (self), VPANEL_Y (self),
+			      VPANEL_WIDTH (self), VPANEL_HEIGHT (self));
       gdk_window_move_resize (self->hpanel,
-			      0, 0,
+			      HPANEL_X (self), HPANEL_Y (self),
 			      HPANEL_WIDTH (self), HPANEL_HEIGHT (self));
       gdk_window_move_resize (self->canvas,
-			      0, CANVAS_Y (self),
+			      CANVAS_X (self), CANVAS_Y (self),
 			      CANVAS_WIDTH (self), CANVAS_HEIGHT (self));
     }
   track_roll_update_adjustments (self, TRUE, TRUE);
@@ -463,14 +481,29 @@ bst_track_roll_realize (GtkWidget *widget)
   attributes.y = widget->allocation.y;
   attributes.width = widget->allocation.width;
   attributes.height = widget->allocation.height;
-  attributes.event_mask = gtk_widget_get_events (widget) | (GDK_ENTER_NOTIFY_MASK |
+  attributes.event_mask = gtk_widget_get_events (widget) | (GDK_EXPOSURE_MASK |
+							    GDK_ENTER_NOTIFY_MASK |
 							    GDK_LEAVE_NOTIFY_MASK);
   widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
   gdk_window_set_user_data (widget->window, self);
 
+  /* self->vpanel */
+  attributes.x = VPANEL_X (self);
+  attributes.y = VPANEL_Y (self);
+  attributes.width = VPANEL_WIDTH (self);
+  attributes.height = VPANEL_HEIGHT (self);
+  attributes.event_mask = gtk_widget_get_events (widget) | (GDK_EXPOSURE_MASK |
+							    GDK_BUTTON_PRESS_MASK |
+							    GDK_BUTTON_RELEASE_MASK |
+							    GDK_BUTTON_MOTION_MASK |
+							    GDK_POINTER_MOTION_HINT_MASK);
+  self->vpanel = gdk_window_new (widget->window, &attributes, attributes_mask);
+  gdk_window_set_user_data (self->vpanel, self);
+  gdk_window_show (self->vpanel);
+
   /* self->hpanel */
-  attributes.x = 0;
-  attributes.y = 0;
+  attributes.x = HPANEL_X (self);
+  attributes.y = HPANEL_Y (self);
   attributes.width = HPANEL_WIDTH (self);
   attributes.height = HPANEL_HEIGHT (self);
   attributes.event_mask = gtk_widget_get_events (widget) | (GDK_EXPOSURE_MASK |
@@ -483,7 +516,7 @@ bst_track_roll_realize (GtkWidget *widget)
   gdk_window_show (self->hpanel);
 
   /* self->canvas */
-  attributes.x = 0;
+  attributes.x = CANVAS_X (self);
   attributes.y = CANVAS_Y (self);
   attributes.width = CANVAS_WIDTH (self);
   attributes.height = CANVAS_HEIGHT (self);
@@ -506,9 +539,13 @@ bst_track_roll_realize (GtkWidget *widget)
   cursor_type = self->canvas_cursor;
   self->canvas_cursor = -1;
   bst_track_roll_set_canvas_cursor (self, cursor_type);
+  cursor_type = self->vpanel_cursor;
+  self->vpanel_cursor = -1;
+  bst_track_roll_set_vpanel_cursor (self, cursor_type);
   cursor_type = self->hpanel_cursor;
   self->hpanel_cursor = -1;
   bst_track_roll_set_hpanel_cursor (self, cursor_type);
+  bst_marker_realize (&self->vmarker, self->canvas);
 }
 
 static void
@@ -523,6 +560,10 @@ bst_track_roll_unrealize (GtkWidget *widget)
   gdk_window_set_user_data (self->hpanel, NULL);
   gdk_window_destroy (self->hpanel);
   self->hpanel = NULL;
+  gdk_window_set_user_data (self->vpanel, NULL);
+  gdk_window_destroy (self->vpanel);
+  self->vpanel = NULL;
+  bst_marker_unrealize (&self->vmarker);
 
   if (GTK_WIDGET_CLASS (parent_class)->unrealize)
     GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
@@ -767,7 +808,7 @@ bst_track_roll_draw_hpanel (BstTrackRoll *self,
   GdkWindow *drawable = self->hpanel;
   GtkWidget *widget = GTK_WIDGET (self);
   GdkFont *font = gtk_style_get_font (STYLE (self));
-  GdkGC *bg_gc = STYLE (self)->bg_gc[widget->state];
+  GdkGC *bg_gc = HPANEL_BG_GC (self);
   GdkGC *fg_gc = STYLE (self)->fg_gc[widget->state]; // GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_SELECTED : GTK_STATE_INSENSITIVE];
   gint text_y = HPANEL_HEIGHT (self) - (HPANEL_HEIGHT (self) - gdk_string_height (font, "0123456789:")) / 2;
   gchar buffer[64];
@@ -776,6 +817,7 @@ bst_track_roll_draw_hpanel (BstTrackRoll *self,
   gdk_draw_rectangle (drawable, bg_gc, TRUE,
 		      0, 0, HPANEL_WIDTH (self), HPANEL_HEIGHT (self));
 
+  /* tact numbers */
   for (i = x; i < xbound; i++)
     {
       guint next_pixel, width;
@@ -820,8 +862,124 @@ bst_track_roll_draw_hpanel (BstTrackRoll *self,
   gtk_paint_shadow (widget->style, drawable,
 		    widget->state, GTK_SHADOW_OUT,
 		    NULL, NULL, NULL,
-		    tick_to_coord (self, 0), 0,
-		    ticks_to_pixels (self, self->max_ticks), HPANEL_HEIGHT (self));
+		    -XTHICKNESS (self), 0,
+		    HPANEL_WIDTH (self) + 2 * XTHICKNESS (self), HPANEL_HEIGHT (self));
+
+  /* draw markers */
+  for (i = 0; i < self->vmarker.n_marks; i++)
+    {
+      GdkGC *gc = bst_marker_get_gc (&self->vmarker, self->vmarker.marks + i);
+      gint x = self->vmarker.marks[i].pixoffset;
+      gdk_draw_rectangle (drawable, gc, TRUE,
+			  x + MARK_OFFSET,
+			  2 * YTHICKNESS (self),
+			  MARK_WIDTH,
+			  HPANEL_HEIGHT (self) - 4 * YTHICKNESS (self));
+      gtk_paint_shadow (widget->style, drawable,
+			widget->state, GTK_SHADOW_IN,
+			NULL, NULL, NULL,
+			x + MARK_OFFSET - XTHICKNESS (self),
+			YTHICKNESS (self),
+			MARK_WIDTH + 2 * XTHICKNESS (self),
+			HPANEL_HEIGHT (self) - 2 * YTHICKNESS (self));
+      gtk_paint_shadow (widget->style, drawable,
+			widget->state, GTK_SHADOW_OUT,
+			NULL, NULL, NULL,
+			x + MARK_OFFSET,
+			2 * YTHICKNESS (self),
+			MARK_WIDTH,
+			HPANEL_HEIGHT (self) - 4 * YTHICKNESS (self));
+    }
+}
+
+static void
+bst_track_roll_expose_mark (BstTrackRoll *self,
+			    BstMarker    *mark)
+{
+  if (GTK_WIDGET_DRAWABLE (self))
+    {
+      GdkRectangle area;
+      area.x = mark->pixoffset + MARK_OFFSET - XTHICKNESS (self);
+      area.y = 0;
+      area.width = MARK_WIDTH + 2 * XTHICKNESS (self);
+      area.height = HPANEL_HEIGHT (self);
+      gdk_window_invalidate_rect (self->hpanel, &area, TRUE);
+      gxk_window_process_next (self->hpanel, TRUE);
+    }
+}
+
+static void
+bst_track_roll_draw_vpanel (BstTrackRoll *self,
+			    gint	  y,
+			    gint	  ybound)
+{
+  GdkWindow *drawable = self->vpanel;
+  GtkWidget *widget = GTK_WIDGET (self);
+  GdkGC *bg_gc = VPANEL_BG_GC (self);
+  gint row = coord_to_row (self, y, NULL);
+  gint ry, rheight, validrow;
+  validrow = row_to_coords (self, row, &ry, &rheight);
+
+  gdk_draw_rectangle (drawable, bg_gc, TRUE,
+		      0, 0, VPANEL_WIDTH (self), VPANEL_HEIGHT (self));
+  while (validrow && ry < ybound)
+    {
+      gdk_draw_rectangle (drawable,
+                          STYLE (self)->base_gc[row == self->prelight_row ? ACTIVE_STATE (self) : STATE (self)],
+			  TRUE,
+			  2 * XTHICKNESS (self) + 1,
+			  ry + YTHICKNESS (self) + 1,
+			  VPANEL_WIDTH (self) - 4 * XTHICKNESS (self) - 2,
+			  rheight - 2 * YTHICKNESS (self) - 2);
+      gtk_paint_shadow (widget->style, drawable,
+			widget->state, GTK_SHADOW_IN,
+			NULL, NULL, NULL,
+			XTHICKNESS (self) + 1,
+			ry + 1,
+			VPANEL_WIDTH (self) - 2 * XTHICKNESS (self) - 2,
+			rheight - 2);
+      validrow = row_to_coords (self, ++row, &ry, &rheight);
+    }
+  gtk_paint_shadow (widget->style, drawable,
+		    widget->state, GTK_SHADOW_OUT,
+		    NULL, NULL, NULL,
+		    0, -YTHICKNESS (self),
+		    VPANEL_WIDTH (self), VPANEL_HEIGHT (self) + 2 * YTHICKNESS (self));
+}
+
+static void
+bst_track_roll_draw_window (BstTrackRoll *self,
+			    gint          x,
+			    gint          y,
+			    gint          xbound,
+			    gint          ybound)
+{
+  GdkWindow *drawable = GTK_WIDGET (self)->window;
+  GtkWidget *widget = GTK_WIDGET (self);
+  GdkGC *bg_gc = STYLE (self)->bg_gc[GTK_WIDGET_STATE (self)];
+  gint width = HPANEL_X (self);
+  gint height = VPANEL_Y (self);
+
+  gdk_draw_rectangle (drawable, bg_gc, TRUE,
+		      0, 0, width, height);
+
+  /* draw hpanel and vpanel scrolling boundaries */
+  gtk_paint_shadow (widget->style, drawable,
+		    widget->state, GTK_SHADOW_ETCHED_IN,
+		    NULL, NULL, NULL,
+		    - XTHICKNESS (self), - YTHICKNESS (self),
+		    width + XTHICKNESS (self), height + YTHICKNESS (self));
+  /* draw outer scrollpanel shadow */
+  gtk_paint_shadow (widget->style, drawable,
+		    widget->state, GTK_SHADOW_OUT,
+		    NULL, NULL, NULL,
+		    0, 0, width + XTHICKNESS (self), height + YTHICKNESS (self));
+  /* draw inner scrollpanel corner */
+  gtk_paint_shadow (widget->style, drawable,
+		    widget->state, GTK_SHADOW_IN,
+		    NULL, NULL, NULL,
+		    width - XTHICKNESS (self), height - YTHICKNESS (self),
+		    2 * XTHICKNESS (self), 2 * YTHICKNESS (self));
 }
 
 static gboolean
@@ -838,6 +996,15 @@ bst_track_roll_expose (GtkWidget      *widget,
    */
   if (event->window == widget->window)
     {
+      gdk_window_begin_paint_rect (event->window, &area);
+      bst_track_roll_draw_window (self, area.x, area.y, area.x + area.width, area.y + area.height);
+      gdk_window_end_paint (event->window);
+    }
+  else if (event->window == self->vpanel)
+    {
+      gdk_window_begin_paint_rect (event->window, &area);
+      bst_track_roll_draw_vpanel (self, area.y, area.y + area.height);
+      gdk_window_end_paint (event->window);
     }
   else if (event->window == self->hpanel)
     {
@@ -849,36 +1016,14 @@ bst_track_roll_expose (GtkWidget      *widget,
     }
   else if (event->window == self->canvas)
     {
-      gdk_window_begin_paint_rect (event->window, &area);
       // gdk_window_clear_area (widget->window, area.x, area.y, area.width, area.height);
+      gdk_window_begin_paint_rect (event->window, &area);
       bst_track_roll_draw_canvas (self, area.x, area.y, area.x + area.width, area.y + area.height);
+      bst_marker_save_backing (&self->vmarker, &area);
+      bst_marker_expose (&self->vmarker, &area);
       gdk_window_end_paint (event->window);
     }
   return FALSE;
-}
-
-static void
-track_roll_queue_expose (BstTrackRoll *self,
-			 GdkWindow    *window,
-			 guint	       row,
-			 guint	       tick_start,
-			 guint	       tick_end)
-{
-  gint x1 = tick_to_coord (self, tick_start);
-  gint x2 = tick_to_coord (self, tick_end);
-  gint y1 = ROW_HEIGHT (self) * row;
-  GdkRectangle area;
-
-  area.x = x1 - 3;		/* add fudge */
-  area.y = y1;
-  area.width = x2 - x1 + 3 + 3;	/* add fudge */
-  area.height = ROW_HEIGHT (self);
-  if (window == self->hpanel)
-    {
-      area.y = 0;
-      area.height = HPANEL_HEIGHT (self);
-    }
-  gdk_window_invalidate_rect (window, &area, TRUE);
 }
 
 static void
@@ -902,6 +1047,7 @@ track_roll_adjustment_value_changed (BstTrackRoll  *self,
 
 	  gdk_window_scroll (self->hpanel, diff, 0);
 	  gdk_window_scroll (self->canvas, diff, 0);
+	  bst_marker_scroll (&self->vmarker, diff, 0);
 	  area.x = diff < 0 ? CANVAS_WIDTH (self) + diff : 0;
 	  area.y = 0;
 	  area.width = ABS (diff);
@@ -923,7 +1069,14 @@ track_roll_adjustment_value_changed (BstTrackRoll  *self,
 	{
 	  GdkRectangle area = { 0, };
 
+          gdk_window_scroll (self->vpanel, 0, diff);
 	  gdk_window_scroll (self->canvas, 0, diff);
+	  bst_marker_scroll (&self->vmarker, 0, diff);
+	  area.x = 0;
+	  area.y = diff < 0 ? VPANEL_HEIGHT (self) + diff : 0;
+	  area.width = VPANEL_WIDTH (self);
+	  area.height = ABS (diff);
+	  gdk_window_invalidate_rect (self->vpanel, &area, TRUE);
 	  area.x = 0;
 	  area.y = diff < 0 ? CANVAS_HEIGHT (self) + diff : 0;
 	  area.width = CANVAS_WIDTH (self);
@@ -1054,80 +1207,48 @@ bst_track_roll_set_hzoom (BstTrackRoll *self,
 }
 
 static void
-bst_track_roll_canvas_drag_abort (BstTrackRoll *self)
+bst_track_roll_drag_abort (BstTrackRoll *self)
 {
-  if (self->canvas_drag)
+  if (self->in_drag)
     {
-      self->canvas_drag = FALSE;
+      self->in_drag = FALSE;
       self->drag.type = BST_DRAG_ABORT;
-      g_signal_emit (self, signal_canvas_drag, 0, &self->drag);
+      g_signal_emit (self, signal_drag, 0, &self->drag);
     }
 }
 
 static gboolean
-bst_track_roll_canvas_drag (BstTrackRoll *self,
-			    gint	  coord_x,
-			    gint	  coord_y,
-			    gboolean      initial)
+bst_track_roll_drag (BstTrackRoll *self,
+		     gint	   coord_x,
+		     gint	   coord_y,
+		     guint         drag_area)
 {
-  if (self->canvas_drag)
+  if (self->in_drag)
     {
       self->drag.current_row = coord_to_row (self, coord_y, &self->drag.current_valid);
       self->drag.current_track = row_to_track (self, self->drag.current_row);
       self->drag.current_tick = coord_to_tick (self, MAX (coord_x, 0), FALSE);
-      if (initial)
+      if (drag_area != DRAG_UNCHANGED)
+	{
+	  self->drag.canvas_drag = drag_area == DRAG_CANVAS;
+	  self->drag.hpanel_drag = drag_area == DRAG_HPANEL;
+	  self->drag.vpanel_drag = drag_area == DRAG_VPANEL;
+	}
+      if (self->drag.type == BST_DRAG_START)
 	{
 	  self->drag.start_row = self->drag.current_row;
 	  self->drag.start_valid = self->drag.current_valid;
 	  self->drag.start_track = self->drag.current_track;
 	  self->drag.start_tick = self->drag.current_tick;
-	  g_signal_emit (self, signal_select_row, 0, self->drag.current_row);
+	  if (self->drag.current_valid && (drag_area == DRAG_CANVAS || drag_area == DRAG_VPANEL))
+	    g_signal_emit (self, signal_select_row, 0, self->drag.current_row);
 	}
-      g_signal_emit (self, signal_canvas_drag, 0, &self->drag);
+      g_signal_emit (self, signal_drag, 0, &self->drag);
       if (self->drag.state == BST_DRAG_HANDLED)
-	self->canvas_drag = FALSE;
+	self->in_drag = FALSE;
       else if (self->drag.state == BST_DRAG_ERROR)
-	bst_track_roll_canvas_drag_abort (self);
-      else if (initial && self->drag.state == BST_DRAG_UNHANDLED)
-	return TRUE;
-    }
-  return FALSE;
-}
-
-static void
-bst_track_roll_hpanel_drag_abort (BstTrackRoll *self)
-{
-  if (self->hpanel_drag)
-    {
-      self->hpanel_drag = FALSE;
-      self->drag.type = BST_DRAG_ABORT;
-      g_signal_emit (self, signal_hpanel_drag, 0, &self->drag);
-    }
-}
-
-static gboolean
-bst_track_roll_hpanel_drag (BstTrackRoll *self,
-			    gint	  coord_x,
-			    gint	  coord_y,
-			    gboolean      initial)
-{
-  if (self->hpanel_drag)
-    {
-      self->drag.current_row = ~0;
-      self->drag.current_track = 0;
-      self->drag.current_tick = coord_to_tick (self, MAX (coord_x, 0), FALSE);
-      if (initial)
-	{
-	  self->drag.start_row = self->drag.current_row;
-	  self->drag.start_track = self->drag.current_track;
-	  self->drag.start_tick = self->drag.current_tick;
-	}
-      g_signal_emit (self, signal_hpanel_drag, 0, &self->drag);
-      if (self->drag.state == BST_DRAG_HANDLED)
-	self->hpanel_drag = FALSE;
-      else if (self->drag.state == BST_DRAG_ERROR)
-	bst_track_roll_hpanel_drag_abort (self);
-      else if (initial && self->drag.state == BST_DRAG_UNHANDLED)
+	bst_track_roll_drag_abort (self);
+      else if (self->drag.type == BST_DRAG_START && self->drag.state == BST_DRAG_UNHANDLED)
 	return TRUE;
     }
   return FALSE;
@@ -1145,8 +1266,10 @@ bst_track_roll_button_press (GtkWidget	    *widget,
       bst_track_roll_stop_edit (self);
       return TRUE;
     }
+  if (self->in_drag)
+    return TRUE;
 
-  if (event->window == self->canvas && !self->canvas_drag)
+  if (event->window == self->canvas)
     {
       handled = TRUE;
       self->drag.proll = self;
@@ -1154,14 +1277,22 @@ bst_track_roll_button_press (GtkWidget	    *widget,
       self->drag.mode = bst_drag_modifier_start (event->state);
       self->drag.button = event->button;
       self->drag.state = BST_DRAG_UNHANDLED;
-      self->canvas_drag = TRUE;
-      if (bst_track_roll_canvas_drag (self, event->x, event->y, TRUE) == TRUE)
+      self->in_drag = TRUE;
+      if (bst_track_roll_drag (self, event->x, event->y, DRAG_CANVAS) == TRUE)
 	{
-	  self->canvas_drag = FALSE;
-	  g_signal_emit (self, signal_canvas_clicked, 0, self->drag.button, self->drag.start_row, self->drag.start_tick, event);
+	  self->in_drag = FALSE;
+	  g_signal_emit (self, signal_clicked, 0, self->drag.button, self->drag.start_row, self->drag.start_tick, event);
 	}
     }
-  else if (event->window == self->hpanel && !self->hpanel_drag)
+  else if (event->window == self->vpanel)
+    {
+      gboolean is_valid;
+      gint current_row = coord_to_row (self, event->y, &is_valid);
+      if (is_valid)
+	g_signal_emit (self, signal_select_row, 0, current_row);
+      handled = TRUE;
+    }
+  else if (event->window == self->hpanel)
     {
       handled = TRUE;
       self->drag.proll = self;
@@ -1169,11 +1300,11 @@ bst_track_roll_button_press (GtkWidget	    *widget,
       self->drag.mode = bst_drag_modifier_start (event->state);
       self->drag.button = event->button;
       self->drag.state = BST_DRAG_UNHANDLED;
-      self->hpanel_drag = TRUE;
-      if (bst_track_roll_hpanel_drag (self, event->x, event->y, TRUE) == TRUE)
+      self->in_drag = TRUE;
+      if (bst_track_roll_drag (self, event->x, event->y, DRAG_HPANEL) == TRUE)
 	{
-	  self->hpanel_drag = FALSE;
-	  g_signal_emit (self, signal_hpanel_clicked, 0, self->drag.button, self->drag.start_row, self->drag.start_tick, event);
+          self->in_drag = FALSE;
+	  g_signal_emit (self, signal_clicked, 0, self->drag.button, self->drag.start_row, self->drag.start_tick, event);
 	}
     }
 
@@ -1188,7 +1319,7 @@ timeout_scroller (gpointer data)
 
   GDK_THREADS_ENTER ();
   self = BST_TRACK_ROLL (data);
-  if (self->canvas_drag && GTK_WIDGET_DRAWABLE (self))
+  if (self->in_drag && self->drag.canvas_drag && GTK_WIDGET_DRAWABLE (self))
     {
       gint x, y, width, height, xdiff = 0, ydiff = 0;
       GdkModifierType modifiers;
@@ -1208,12 +1339,33 @@ timeout_scroller (gpointer data)
 	  track_roll_scroll_adjustments (self, xdiff, ydiff);
 	  self->drag.type = BST_DRAG_MOTION;
 	  self->drag.mode = bst_drag_modifier_next (modifiers, self->drag.mode);
-	  bst_track_roll_canvas_drag (self, x, y, FALSE);
+	  bst_track_roll_drag (self, x, y, DRAG_UNCHANGED);
 	}
       else
 	self->scroll_timer = remain = 0;
     }
-  else if (self->hpanel_drag && GTK_WIDGET_DRAWABLE (self))
+  else if (self->in_drag && self->drag.vpanel_drag && GTK_WIDGET_DRAWABLE (self))
+    {
+      gint x, y, height, ydiff = 0;
+      GdkModifierType modifiers;
+
+      gdk_window_get_size (self->vpanel, NULL, &height);
+      gdk_window_get_pointer (self->vpanel, &x, &y, &modifiers);
+      if (y < 0)
+	ydiff = y;
+      else if (y >= height)
+	ydiff = y - height + 1;
+      if (ydiff)
+	{
+          track_roll_scroll_adjustments (self, 0, ydiff);
+          self->drag.type = BST_DRAG_MOTION;
+	  self->drag.mode = bst_drag_modifier_next (modifiers, self->drag.mode);
+	  bst_track_roll_drag (self, x, y, DRAG_UNCHANGED);
+	}
+      else
+	self->scroll_timer = remain = 0;
+    }
+  else if (self->in_drag && self->drag.hpanel_drag && GTK_WIDGET_DRAWABLE (self))
     {
       gint x, y, width, xdiff = 0;
       GdkModifierType modifiers;
@@ -1221,7 +1373,7 @@ timeout_scroller (gpointer data)
       gdk_window_get_size (self->hpanel, &width, NULL);
       gdk_window_get_pointer (self->hpanel, &x, &y, &modifiers);
       if (x < 0)
-	xdiff = y;
+	xdiff = x;
       else if (x >= width)
 	xdiff = x - width + 1;
       if (xdiff)
@@ -1229,7 +1381,7 @@ timeout_scroller (gpointer data)
 	  track_roll_scroll_adjustments (self, xdiff, 0);
 	  self->drag.type = BST_DRAG_MOTION;
 	  self->drag.mode = bst_drag_modifier_next (modifiers, self->drag.mode);
-	  bst_track_roll_hpanel_drag (self, x, y, FALSE);
+	  bst_track_roll_drag (self, x, y, DRAG_UNCHANGED);
 	}
       else
 	self->scroll_timer = remain = 0;
@@ -1248,13 +1400,13 @@ bst_track_roll_motion (GtkWidget      *widget,
   BstTrackRoll *self = BST_TRACK_ROLL (widget);
   gboolean handled = FALSE;
 
-  if (event->window == self->canvas && self->canvas_drag)
+  if (self->in_drag && event->window == self->canvas)
     {
       gint width, height;
       handled = TRUE;
       self->drag.type = BST_DRAG_MOTION;
       self->drag.mode = bst_drag_modifier_next (event->state, self->drag.mode);
-      bst_track_roll_canvas_drag (self, event->x, event->y, FALSE);
+      bst_track_roll_drag (self, event->x, event->y, DRAG_UNCHANGED);
       gdk_window_get_size (self->canvas, &width, &height);
       if (!self->scroll_timer && (event->x < 0 || event->x >= width ||
 				  event->y < 0 || event->y >= height))
@@ -1265,13 +1417,29 @@ bst_track_roll_motion (GtkWidget      *widget,
       /* trigger motion events (since we use motion-hint) */
       gdk_window_get_pointer (self->canvas, NULL, NULL, NULL);
     }
-  if (event->window == self->hpanel && self->hpanel_drag)
+  if (self->in_drag && event->window == self->vpanel)
+    {
+      gint height;
+      handled = TRUE;
+      self->drag.type = BST_DRAG_MOTION;
+      self->drag.mode = bst_drag_modifier_next (event->state, self->drag.mode);
+      bst_track_roll_drag (self, event->x, event->y, DRAG_UNCHANGED);
+      gdk_window_get_size (self->vpanel, NULL, &height);
+      if (!self->scroll_timer && (event->y < 0 || event->y >= height))
+	self->scroll_timer = g_timeout_add_full (G_PRIORITY_DEFAULT,
+						 AUTO_SCROLL_TIMEOUT,
+						 timeout_scroller,
+						 self, NULL);
+      /* trigger motion events (since we use motion-hint) */
+      gdk_window_get_pointer (self->vpanel, NULL, NULL, NULL);
+    }
+  if (self->in_drag && event->window == self->hpanel)
     {
       gint width;
       handled = TRUE;
       self->drag.type = BST_DRAG_MOTION;
       self->drag.mode = bst_drag_modifier_next (event->state, self->drag.mode);
-      bst_track_roll_hpanel_drag (self, event->x, event->y, FALSE);
+      bst_track_roll_drag (self, event->x, event->y, DRAG_UNCHANGED);
       gdk_window_get_size (self->hpanel, &width, NULL);
       if (!self->scroll_timer && (event->x < 0 || event->x >= width))
 	self->scroll_timer = g_timeout_add_full (G_PRIORITY_DEFAULT,
@@ -1292,21 +1460,13 @@ bst_track_roll_button_release (GtkWidget      *widget,
   BstTrackRoll *self = BST_TRACK_ROLL (widget);
   gboolean handled = FALSE;
 
-  if (event->window == self->canvas && self->canvas_drag && event->button == self->drag.button)
+  if (self->in_drag && event->button == self->drag.button)
     {
       handled = TRUE;
       self->drag.type = BST_DRAG_DONE;
       self->drag.mode = bst_drag_modifier_next (event->state, self->drag.mode);
-      bst_track_roll_canvas_drag (self, event->x, event->y, FALSE);
-      self->canvas_drag = FALSE;
-    }
-  else if (event->window == self->hpanel && self->hpanel_drag && event->button == self->drag.button)
-    {
-      handled = TRUE;
-      self->drag.type = BST_DRAG_DONE;
-      self->drag.mode = bst_drag_modifier_next (event->state, self->drag.mode);
-      bst_track_roll_hpanel_drag (self, event->x, event->y, FALSE);
-      self->hpanel_drag = FALSE;
+      bst_track_roll_drag (self, event->x, event->y, DRAG_UNCHANGED);
+      self->in_drag = FALSE;
     }
 
   return handled;
@@ -1320,10 +1480,7 @@ bst_track_roll_key_press (GtkWidget   *widget,
   gboolean handled = TRUE;
 
   if (event->keyval == GDK_Escape)
-    {
-      bst_track_roll_canvas_drag_abort (self);
-      bst_track_roll_hpanel_drag_abort (self);
-    }
+    bst_track_roll_drag_abort (self);
 
   return handled;
 }
@@ -1349,6 +1506,20 @@ bst_track_roll_set_canvas_cursor (BstTrackRoll *self,
       self->canvas_cursor = cursor_type;
       if (GTK_WIDGET_REALIZED (self))
 	gxk_window_set_cursor_type (self->canvas, self->canvas_cursor);
+    }
+}
+
+void
+bst_track_roll_set_vpanel_cursor (BstTrackRoll *self,
+				  GdkCursorType cursor_type)
+{
+  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
+  if (cursor_type != self->vpanel_cursor)
+    {
+      self->vpanel_cursor = cursor_type;
+      if (GTK_WIDGET_REALIZED (self))
+	gxk_window_set_cursor_type (self->vpanel, self->vpanel_cursor);
     }
 }
 
@@ -1407,7 +1578,12 @@ bst_track_roll_queue_draw_row (BstTrackRoll *self,
   rect.width = CANVAS_WIDTH (self);
   if (GTK_WIDGET_DRAWABLE (self) &&
       row_to_coords (self, row, &rect.y, &rect.height))
-    gdk_window_invalidate_rect (self->canvas, &rect, TRUE);
+    {
+      gdk_window_invalidate_rect (self->canvas, &rect, TRUE);
+      rect.x = 0;
+      rect.width = VPANEL_WIDTH (self);
+      gdk_window_invalidate_rect (self->vpanel, &rect, TRUE);
+    }
 }
 
 void
@@ -1520,4 +1696,36 @@ bst_track_roll_stop_edit (BstTrackRoll *self)
   g_return_if_fail (BST_IS_TRACK_ROLL (self));
 
   track_roll_stop_edit (self, FALSE);
+}
+
+void
+bst_track_roll_set_mark (BstTrackRoll *self,
+                         guint         mark_index,
+                         guint         position,
+                         BstMarkerType type)
+{
+  BstMarker *mark;
+
+  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  g_return_if_fail (mark_index > 0);
+  if (type)
+    g_return_if_fail (position < position + 1);       /* catch guint wraps */
+
+  mark = bst_marker_get (&self->vmarker, mark_index);
+  if (!type)
+    {
+      if (mark)
+	{
+	  bst_track_roll_expose_mark (self, mark);
+	  bst_marker_delete (&self->vmarker, mark);
+	}
+      return;
+    }
+  if (!mark)
+    mark = bst_marker_add (&self->vmarker, mark_index);
+  else
+    bst_track_roll_expose_mark (self, mark);
+  mark->position = position;
+  bst_marker_set (&self->vmarker, mark, type, tick_to_coord (self, mark->position));
+  bst_track_roll_expose_mark (self, mark);
 }

@@ -18,7 +18,8 @@
 #ifndef __BST_TRACK_ROLL_H__
 #define __BST_TRACK_ROLL_H__
 
-#include	"bstdragutils.h"
+#include "bstdragutils.h"
+#include "bstmarker.h"
 
 G_BEGIN_DECLS
 
@@ -51,9 +52,12 @@ typedef SfiProxy (*BstTrackRollTrackFunc)   (gpointer proxy_data,
 /* --- structures & typedefs --- */
 typedef struct {
   BstTrackRoll *proll;
-  BstDragStatus type;		/* emission type: start/motion/done/abort */
-  BstDragMode   mode;
-  guint	        button;
+  BstDragStatus type : 16;		/* emission type: start/motion/done/abort */
+  guint		canvas_drag : 1;
+  guint		vpanel_drag : 1;
+  guint		hpanel_drag : 1;
+  BstDragMode   mode : 16;
+  guint16       button;
   guint         start_row;
   SfiProxy      start_track;
   guint	        start_tick;
@@ -80,8 +84,8 @@ struct _BstTrackRoll
 
   guint		 prelight_row;
   guint		 hpanel_height;
-  GdkWindow	*hpanel, *canvas;
-  GdkCursorType	 canvas_cursor, hpanel_cursor;
+  GdkWindow	*canvas, *vpanel, *hpanel;
+  GdkCursorType	 canvas_cursor, vpanel_cursor, hpanel_cursor;
 
   GtkAdjustment	*hadjustment, *vadjustment;
   guint		 scroll_timer;
@@ -103,9 +107,11 @@ struct _BstTrackRoll
   gpointer              proxy_data;
   BstTrackRollTrackFunc get_track;
 
+  /* marks */
+  BstMarkerSetup	vmarker;
+
   /* drag operations */
-  guint		   canvas_drag : 1;
-  guint		   hpanel_drag : 1;
+  guint		   in_drag : 1;
   BstTrackRollDrag drag;
 };
 struct _BstTrackRollClass
@@ -117,17 +123,11 @@ struct _BstTrackRollClass
 						 GtkAdjustment	  *vadjustment);
   void		(*select_row)			(BstTrackRoll	  *proll,
 						 gint		   row);
-  void		(*canvas_drag)			(BstTrackRoll	  *self,
+  void		(*drag)				(BstTrackRoll	  *self,
 						 BstTrackRollDrag *drag);
-  void		(*canvas_clicked)		(BstTrackRoll	  *proll,
+  void		(*clicked)			(BstTrackRoll	  *proll,
 						 guint		   button,
 						 guint             row,
-						 guint		   tick_position,
-						 GdkEvent	  *event);
-  void		(*hpanel_drag)			(BstTrackRoll	  *self,
-						 BstTrackRollDrag *drag);
-  void		(*hpanel_clicked)		(BstTrackRoll	  *proll,
-						 guint		   button,
 						 guint		   tick_position,
 						 GdkEvent	  *event);
   void		(*stop_edit)			(BstTrackRoll	  *self,
@@ -138,8 +138,6 @@ struct _BstTrackRollClass
 
 /* --- prototypes --- */
 GType	bst_track_roll_get_type			(void);
-void	bst_track_roll_set_proxy		(BstTrackRoll	*proll,
-						 SfiProxy	 proxy);
 void	bst_track_roll_set_hadjustment		(BstTrackRoll	*proll,
 						 GtkAdjustment	*adjustment);
 void	bst_track_roll_set_vadjustment		(BstTrackRoll	*proll,
@@ -149,6 +147,8 @@ gdouble	bst_track_roll_set_hzoom		(BstTrackRoll	*proll,
 void	bst_track_roll_set_canvas_cursor	(BstTrackRoll	*proll,
 						 GdkCursorType	 cursor);
 void	bst_track_roll_set_hpanel_cursor	(BstTrackRoll	*proll,
+						 GdkCursorType	 cursor);
+void	bst_track_roll_set_vpanel_cursor	(BstTrackRoll	*proll,
 						 GdkCursorType	 cursor);
 void	bst_track_roll_set_track_callback	(BstTrackRoll   *self,
 						 gpointer        data,
@@ -170,6 +170,10 @@ void	bst_track_roll_start_edit		(BstTrackRoll	*self,
 						 GtkCellEditable*ecell);
 void	bst_track_roll_stop_edit		(BstTrackRoll	*self);
 void	bst_track_roll_abort_edit		(BstTrackRoll	*self);
+void	bst_track_roll_set_mark			(BstTrackRoll	*self,
+						 guint		 mark_index,
+						 guint		 position,
+						 BstMarkerType	 type);
 
 
 G_END_DECLS

@@ -31,22 +31,23 @@ typedef enum /*< skip >*/
   BST_TRACK_ROLL_TOOL_EDIT_NAME,
   BST_TRACK_ROLL_TOOL_EDITOR_ONCE,
   BST_TRACK_ROLL_TOOL_MOVE,
-  BST_TRACK_ROLL_TOOL_DELETE
+  BST_TRACK_ROLL_TOOL_DELETE,
+  BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,
+  BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,
+  BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,
 } BstTrackRollTool;
 
 typedef struct {
-  BstTrackRollTool obj_tool1;
-  BstTrackRollTool obj_tool2;
-  BstTrackRollTool obj_tool3;
-  BstTrackRollTool bg_tool1;
-  BstTrackRollTool bg_tool2;
-  BstTrackRollTool bg_tool3;
+  BstTrackRollTool object_tool[3];
+  BstTrackRollTool canvas_tool[3];
+  BstTrackRollTool hpanel_tool[3];
   guint		   ref_count;
   BstTrackRoll	  *troll;
+  SfiProxy	   song;
   guint		   note_length;
-  /* reset */
-  void (*reset)   (gpointer data);
-  gpointer         reset_data;
+  /* reset canvas tool reset */
+  void           (*canvas_reset) (gpointer data);
+  gpointer         canvas_reset_data;
   /* drag data */
   guint		   tool_index;
   SfiProxy	   obj_track, obj_part;
@@ -60,15 +61,21 @@ typedef struct {
 BstTrackRollController*	bst_track_roll_controller_new		(BstTrackRoll		*troll);
 BstTrackRollController*	bst_track_roll_controller_ref		(BstTrackRollController	*self);
 void			bst_track_roll_controller_unref		(BstTrackRollController	*self);
-void                    bst_track_roll_controller_set_bg_tools  (BstTrackRollController *self,
+void		bst_track_roll_controller_set_song		(BstTrackRollController	*self,
+								 SfiProxy		 song);
+void		bst_track_roll_controller_set_canvas_tools	(BstTrackRollController *self,
 								 BstTrackRollTool        tool1,
 								 BstTrackRollTool        tool2,
 								 BstTrackRollTool        tool3);
-void                    bst_track_roll_controller_set_obj_tools (BstTrackRollController *self,
+void		bst_track_roll_controller_set_object_tools	(BstTrackRollController *self,
 								 BstTrackRollTool        tool1,
 								 BstTrackRollTool        tool2,
 								 BstTrackRollTool        tool3);
-void			bst_track_roll_controller_reset_handler	(BstTrackRollController	*self,
+void		bst_track_roll_controller_set_hpanel_tools	(BstTrackRollController *self,
+								 BstTrackRollTool        tool1,
+								 BstTrackRollTool        tool2,
+								 BstTrackRollTool        tool3);
+void		bst_track_roll_controller_set_canvas_reset	(BstTrackRollController	*self,
 								 void (*handler) (gpointer data),
 								 gpointer                data);
 

@@ -21,9 +21,11 @@
 
 
 /* --- prototypes --- */
-static void	controller_canvas_drag		(BstTrackRollController	*self,
+static void	controller_drag			(BstTrackRollController	*self,
 						 BstTrackRollDrag	*drag);
-static void	controller_update_cursor	(BstTrackRollController *self,
+static void	controller_update_canvas_cursor	(BstTrackRollController *self,
+						 BstTrackRollTool	 tool);
+static void	controller_update_hpanel_cursor	(BstTrackRollController *self,
 						 BstTrackRollTool	 tool);
 static void	controller_stop_edit		(BstTrackRollController *self,
 						 gboolean                canceled,
@@ -44,8 +46,8 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
 
   self->ref_count++;
   self->note_length = 1;
-  g_signal_connect_data (troll, "canvas-drag",
-			 G_CALLBACK (controller_canvas_drag),
+  g_signal_connect_data (troll, "drag",
+			 G_CALLBACK (controller_drag),
 			 self, (GClosureNotify) bst_track_roll_controller_unref,
 			 G_CONNECT_SWAPPED);
   g_signal_connect_data (troll, "stop-edit",
@@ -78,47 +80,95 @@ bst_track_roll_controller_unref (BstTrackRollController *self)
 }
 
 void
-bst_track_roll_controller_reset_handler (BstTrackRollController   *self,
-					 void (*handler) (gpointer data),
-					 gpointer                  data)
+bst_track_roll_controller_set_song (BstTrackRollController *self,
+				    SfiProxy                song)
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->ref_count >= 1);
 
-  self->reset = handler;
-  self->reset_data = self->reset ? data : NULL;
+  if (BSE_IS_SONG (song))
+    self->song = song;
+  else
+    self->song = 0;
 }
 
 void
-bst_track_roll_controller_set_obj_tools (BstTrackRollController *self,
-					 BstTrackRollTool        tool1,
-					 BstTrackRollTool        tool2,
-					 BstTrackRollTool        tool3)
+bst_track_roll_controller_set_canvas_reset (BstTrackRollController   *self,
+					    void (*handler) (gpointer data),
+					    gpointer                  data)
 {
   g_return_if_fail (self != NULL);
+  g_return_if_fail (self->ref_count >= 1);
 
-  self->obj_tool1 = tool1;
-  self->obj_tool2 = tool2;
-  self->obj_tool3 = tool3;
+  self->canvas_reset = handler;
+  self->canvas_reset_data = self->canvas_reset ? data : NULL;
 }
 
 void
-bst_track_roll_controller_set_bg_tools (BstTrackRollController *self,
-					BstTrackRollTool        tool1,
-					BstTrackRollTool        tool2,
-					BstTrackRollTool        tool3)
+bst_track_roll_controller_set_object_tools (BstTrackRollController *self,
+					    BstTrackRollTool        tool1,
+					    BstTrackRollTool        tool2,
+					    BstTrackRollTool        tool3)
 {
   g_return_if_fail (self != NULL);
 
-  self->bg_tool1 = tool1;
-  self->bg_tool2 = tool2;
-  self->bg_tool3 = tool3;
-  controller_update_cursor (self, self->bg_tool1);
+  self->object_tool[0] = tool1;
+  self->object_tool[1] = tool2;
+  self->object_tool[2] = tool3;
+}
+
+void
+bst_track_roll_controller_set_hpanel_tools (BstTrackRollController *self,
+					    BstTrackRollTool        tool1,
+					    BstTrackRollTool        tool2,
+					    BstTrackRollTool        tool3)
+{
+  g_return_if_fail (self != NULL);
+
+  self->hpanel_tool[0] = tool1;
+  self->hpanel_tool[1] = tool2;
+  self->hpanel_tool[2] = tool3;
+  controller_update_hpanel_cursor (self, self->hpanel_tool[0]);
+}
+
+void
+bst_track_roll_controller_set_canvas_tools (BstTrackRollController *self,
+					    BstTrackRollTool        tool1,
+					    BstTrackRollTool        tool2,
+					    BstTrackRollTool        tool3)
+{
+  g_return_if_fail (self != NULL);
+  
+  self->canvas_tool[0] = tool1;
+  self->canvas_tool[1] = tool2;
+  self->canvas_tool[2] = tool3;
+  controller_update_canvas_cursor (self, self->canvas_tool[0]);
 }
 
 static void
-controller_update_cursor (BstTrackRollController *self,
-			  BstTrackRollTool        tool)
+controller_update_hpanel_cursor (BstTrackRollController *self,
+				 BstTrackRollTool        tool)
+{
+  switch (tool)
+    {
+    case BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER:
+      bst_track_roll_set_hpanel_cursor (self->troll, GDK_SB_DOWN_ARROW);
+      break;
+    case BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT:
+      bst_track_roll_set_hpanel_cursor (self->troll, GDK_LEFT_SIDE);
+      break;
+    case BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT:
+      bst_track_roll_set_hpanel_cursor (self->troll, GDK_RIGHT_SIDE);
+      break;
+    default:
+      bst_track_roll_set_hpanel_cursor (self->troll, GXK_DEFAULT_CURSOR);
+      break;
+    }
+}
+
+static void
+controller_update_canvas_cursor (BstTrackRollController *self,
+				 BstTrackRollTool        tool)
 {
   switch (tool)
     {
@@ -161,7 +211,7 @@ edit_name_start (BstTrackRollController *self,
 				 GTK_CELL_EDITABLE (entry));
       g_signal_connect_data (entry, "editing_done", G_CALLBACK (bst_track_roll_stop_edit),
 			     self->troll, NULL, G_CONNECT_SWAPPED);
-      controller_update_cursor (self, BST_TRACK_ROLL_TOOL_EDIT_NAME);
+      controller_update_canvas_cursor (self, BST_TRACK_ROLL_TOOL_EDIT_NAME);
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, "Edit Part", "No Part");
@@ -178,7 +228,7 @@ controller_stop_edit (BstTrackRollController *self,
       bse_item_set_name (self->obj_part, gtk_entry_get_text (GTK_ENTRY (ecell)));
       gxk_status_set (GXK_STATUS_DONE, "Edit Part", NULL);
     }
-  controller_update_cursor (self, self->bg_tool1);
+  controller_update_canvas_cursor (self, self->canvas_tool[0]);
 }
 
 static void
@@ -226,7 +276,7 @@ move_start (BstTrackRollController *self,
   if (self->obj_part)	/* got part to move */
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
-      controller_update_cursor (self, BST_TRACK_ROLL_TOOL_MOVE);
+      controller_update_canvas_cursor (self, BST_TRACK_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, "Move Part", NULL);
       drag->state = BST_DRAG_CONTINUE;
     }
@@ -277,8 +327,8 @@ editor_once (BstTrackRollController *self,
       bst_part_dialog_set_proxy (BST_PART_DIALOG (pdialog), self->obj_part);
       g_signal_connect_object (self->troll, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
       gxk_status_set (GXK_STATUS_DONE, "Start Editor", NULL);
-      if (self->reset)
-	self->reset (self->reset_data);
+      if (self->canvas_reset)
+	self->canvas_reset (self->canvas_reset_data);
       gtk_widget_show (pdialog);
     }
   else
@@ -286,31 +336,90 @@ editor_once (BstTrackRollController *self,
   drag->state = BST_DRAG_HANDLED;
 }
 
+static void
+pointer_move (BstTrackRollController *self,
+	      BstTrackRollDrag       *drag)
+{
+  if (self->song &&
+      drag->type != BST_DRAG_DONE) /* skip release events */
+    {
+      bse_proxy_set (self->song, "tick-pointer", drag->current_tick, NULL);
+      drag->state = BST_DRAG_CONTINUE;
+    }
+}
+
+static void
+tick_left_move (BstTrackRollController *self,
+		BstTrackRollDrag       *drag)
+{
+  if (self->song)
+    {
+      bse_proxy_set (self->song, "loop-left", drag->current_tick, NULL);
+      drag->state = BST_DRAG_CONTINUE;
+    }
+}
+
+static void
+tick_right_move (BstTrackRollController *self,
+		 BstTrackRollDrag       *drag)
+{
+  if (self->song)
+    {
+      bse_proxy_set (self->song, "loop-right", drag->current_tick, NULL);
+      drag->state = BST_DRAG_CONTINUE;
+    }
+}
+
 typedef void (*DragFunc) (BstTrackRollController *,
 			  BstTrackRollDrag       *);
 
 void
-controller_canvas_drag (BstTrackRollController *self,
-			BstTrackRollDrag       *drag)
+controller_drag (BstTrackRollController *self,
+		 BstTrackRollDrag       *drag)
 {
-  static struct {
+  typedef struct {
     BstTrackRollTool tool;
     DragFunc start, motion, abort;
-  } tool_table[] = {
-    { BST_TRACK_ROLL_TOOL_INSERT,      insert_start,	NULL,		NULL,		},
-    { BST_TRACK_ROLL_TOOL_MOVE,	       move_start,	move_motion,	move_abort,	},
-    { BST_TRACK_ROLL_TOOL_DELETE,      delete_start,	NULL,		NULL,		},
-    { BST_TRACK_ROLL_TOOL_EDIT_NAME,   edit_name_start,	NULL,		NULL,		},
-    { BST_TRACK_ROLL_TOOL_EDITOR_ONCE, editor_once,	NULL,		NULL,		},
+  } TrackRollTool;
+  static const TrackRollTool canvas_tool_table[] = {
+    { BST_TRACK_ROLL_TOOL_INSERT,	insert_start,		NULL,		NULL,		},
+    { BST_TRACK_ROLL_TOOL_MOVE,		move_start,		move_motion,	move_abort,	},
+    { BST_TRACK_ROLL_TOOL_DELETE,	delete_start,		NULL,		NULL,		},
+    { BST_TRACK_ROLL_TOOL_EDIT_NAME,	edit_name_start,	NULL,		NULL,		},
+    { BST_TRACK_ROLL_TOOL_EDITOR_ONCE,	editor_once,		NULL,		NULL,		},
   };
-  guint i;
+  static const TrackRollTool hpanel_tool_table[] = {
+    { BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,	pointer_move,	 pointer_move,	  NULL,		},
+    { BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,	tick_left_move,	 tick_left_move,  NULL,		},
+    { BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,	tick_right_move, tick_right_move, NULL,		},
+  };
+  const TrackRollTool *tool_table;
+  BstTrackRollTool obj_tool, tool;
+  guint i, n_tools;
 
+  /* area specific handling */
+  if (drag->canvas_drag)
+    {
+      tool_table = canvas_tool_table;
+      n_tools = G_N_ELEMENTS (canvas_tool_table);
+      obj_tool = self->object_tool[CLAMP (drag->button, 1, 3) - 1];
+      tool = self->canvas_tool[CLAMP (drag->button, 1, 3) - 1];
+    }
+  else if (drag->hpanel_drag)
+    {
+      tool_table = hpanel_tool_table;
+      n_tools = G_N_ELEMENTS (hpanel_tool_table);
+      tool = self->hpanel_tool[CLAMP (drag->button, 1, 3) - 1];
+      obj_tool = tool;
+    }
+  else
+    return;
+
+  /* initial drag handling */
   if (drag->type == BST_DRAG_START)
     {
-      BstTrackRollTool tool = BST_TRACK_ROLL_TOOL_NONE;
       BseTrackPartSeq *tps;
       BseTrackPart *tpart = NULL;
-
       /* setup drag data */
       if (!drag->start_valid)
 	drag->start_track = 0;
@@ -332,32 +441,20 @@ controller_canvas_drag (BstTrackRollController *self,
       self->obj_duration = tpart ? tpart->duration : 0;
       self->xoffset = 0;
       self->tick_bound = 0;
-
+      
       /* find drag tool */
-      tool = BST_TRACK_ROLL_TOOL_NONE;
       if (self->obj_part)		/* have object */
-	switch (drag->button)
-	  {
-	  case 1:	tool = self->obj_tool1;	break;
-	  case 2:	tool = self->obj_tool2;	break;
-	  case 3:	tool = self->obj_tool3;	break;
-	  }
-      else
-	switch (drag->button)
-	  {
-	  case 1:	tool = self->bg_tool1;	break;
-	  case 2:	tool = self->bg_tool2;	break;
-	  case 3:	tool = self->bg_tool3;	break;
-	  }
-      for (i = 0; i < G_N_ELEMENTS (tool_table); i++)
+	tool = obj_tool;
+      for (i = 0; i < n_tools; i++)
 	if (tool_table[i].tool == tool)
 	  break;
       self->tool_index = i;
-      if (i >= G_N_ELEMENTS (tool_table))
-	return;		/* unhandled */
     }
+
+  /* generic drag handling */
   i = self->tool_index;
-  g_return_if_fail (i < G_N_ELEMENTS (tool_table));
+  if (i >= n_tools)
+    return;	/* unhandled */
   switch (drag->type)
     {
     case BST_DRAG_START:
@@ -374,7 +471,9 @@ controller_canvas_drag (BstTrackRollController *self,
 	tool_table[i].abort (self, drag);
       break;
     }
-  if (drag->type == BST_DRAG_DONE ||
-      drag->type == BST_DRAG_ABORT)
-    controller_update_cursor (self, self->bg_tool1);
+  if (drag->type == BST_DRAG_DONE || drag->type == BST_DRAG_ABORT)
+    {
+      controller_update_canvas_cursor (self, self->canvas_tool[0]);
+      controller_update_hpanel_cursor (self, self->hpanel_tool[0]);
+    }
 }

@@ -1,3 +1,28 @@
+Sat Feb 22 17:10:34 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstitemview.[hc]: virtualize set_container().
+
+	* beast-gtk/bsttrackroll.[hc]: provide just ::drag and ::clicked signals
+	for control widgets. support tick markers. added vpanel for miniscopes.
+	polished overall layout. 
+
+	* beast-gtk/bsttrackrollctrl.[hc]: support track roll position pointers.
+	adoptions to track roll changes.
+
+	* beast-gtk/bsttrackview.[hc]: support song position and loop pointers
+	and offer loop toggle button.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added convenience function gxk_color_alloc().
+	fixed up gxk_tree_view_get_row_area() to return FALSE for empty trees.
+
+	* beast-gtk/icons/Makefile.am: 
+	* beast-gtk/icons/loopleft.xcf:
+	* beast-gtk/icons/loopleft.png:
+	* beast-gtk/icons/loopright.png:
+	* beast-gtk/icons/repeat.xcf:
+	* beast-gtk/icons/repeat.png:
+	* beast-gtk/icons/tickpointer.png: new tick loop/pointer/repeat icons.
+
 Sun Feb 23 18:54:17 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/css/default.css: darken title backgrounds somewhat and

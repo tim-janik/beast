@@ -63,14 +63,16 @@ struct _BstItemViewClass
   guint		    horizontal_ops : 1;
   guint		    show_properties : 1;
 
-  void          (*operate)	(BstItemView	*item_view,
+  void	      (*set_container)	(BstItemView	*self,
+				 SfiProxy	 new_container);
+  void        (*operate)	(BstItemView	*item_view,
 				 BstOps	 	 op);
-  gboolean      (*can_operate)	(BstItemView	*item_view,
+  gboolean    (*can_operate)	(BstItemView	*item_view,
 				 BstOps          op);
-  void		(*create_tree)	(BstItemView	*self);
-  void		(*listen_on)	(BstItemView	*self,
+  void	      (*create_tree)	(BstItemView	*self);
+  void	      (*listen_on)	(BstItemView	*self,
 				 SfiProxy	 item);
-  void		(*unlisten_on)	(BstItemView	*self,
+  void	      (*unlisten_on)	(BstItemView	*self,
 				 SfiProxy	 item);
 };
 struct _BstItemViewOp

@@ -182,6 +182,22 @@ gxk_window_process_next (GdkWindow *window,
 }
 
 /**
+ * gxk_color_alloc
+ * @colormap: valid #GdkColormap
+ * @color:    valid #GdkColor
+ *
+ * Allocate a color like gdk_color_alloc() with automated
+ * error checking.
+ */
+void
+gxk_color_alloc (GdkColormap *colormap,
+		 GdkColor    *color)
+{
+  if (!gdk_color_alloc (colormap, color))
+    g_message ("failed to allocate color: { %d, %d, %d }", color->red, color->green, color->blue);
+}
+
+/**
  * gxk_widget_make_insensitive
  * @widget: a valid GtkWidget
  *
@@ -1095,7 +1111,15 @@ gxk_tree_view_get_row_area (GtkTreeView *tree,
     *y_p = rect.y;
   if (height_p)
     *height_p = rect.height;
-  return !(rect.y == 0 && rect.height == 0);
+  if (rect.height != 0)
+    {
+      GtkTreeModel *model = gtk_tree_view_get_model (tree);
+      GtkTreeIter iter;
+      if (!gtk_tree_model_get_iter_first (model, &iter))
+	return FALSE;	/* empty tree */
+      return TRUE;	/* valid row */
+    }
+  return FALSE;		/* no row */
 }
 
 /**

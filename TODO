@@ -1,4 +1,5 @@
 FIXMES:
+- fix piano roll [VH]PANEL_BG_GC() usage and GDK_Escape (ala trackroll)
 - use one global ID allocator
 - add IDs to part links in tracks
 - track editor is grey if no tracks are present

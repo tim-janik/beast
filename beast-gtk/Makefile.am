@@ -42,7 +42,7 @@ beast_headers = $(strip \
 	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	bstsnetshell.h	\
 	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstdial.h	\
 	bstfreeradiobutton.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
-	bstlogadjustment.h	bstitemview.h				bstknob.h	\
+	bstlogadjustment.h	bstitemview.h	bstmarker.h		bstknob.h	\
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
 	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
 	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
@@ -59,7 +59,7 @@ beast_sources = $(strip \
 	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	bstsnetshell.c	\
 	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstdial.c	\
 	bstfreeradiobutton.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
-	bstlogadjustment.c	bstitemview.c				bstknob.c	\
+	bstlogadjustment.c	bstitemview.c	bstmarker.c		bstknob.c	\
 	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
 	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	\
 	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	\
