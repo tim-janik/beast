@@ -23,7 +23,6 @@
 
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
-#include <bse/bsesequence.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,17 +39,17 @@ extern "C" {
 
 
 /* --- BseSequencer source --- */
-typedef struct _BseSequencer     BseSequencer;
+typedef struct _BseSequencer   BseSequencer;
 typedef struct _BseSourceClass BseSequencerClass;
 struct _BseSequencer
 {
-  BseSource      parent_object;
+  BseSource        parent_object;
 
-  gfloat	 counter;
-  gint		 transpose;
-  BseSequence	*sdata;
-  guint		 n_freq_values;
-  gfloat	*freq_values;
+  gfloat	   counter;
+  gint		   transpose;
+  BswNoteSequence *sdata;
+  guint		   n_freq_values;
+  gfloat	  *freq_values;
 };
 
 

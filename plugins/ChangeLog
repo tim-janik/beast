@@ -1,3 +1,7 @@
+Tue May 21 09:24:25 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.[hc]: changes due to BswNoteSequence changes in BSE.
+
 Tue May 14 21:05:49 2002  Tim Janik  <timj@gtk.org>
 
 	* bsecompressor.[hc]: get rid of this, it's a misnamed and badly

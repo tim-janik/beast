@@ -97,7 +97,7 @@ bse_sequencer_class_init (BseSequencerClass *class)
   bse_object_class_add_param (object_class, "Sequence",
 			      PARAM_NOTES,
 			      g_param_spec_boxed ("notes", "Notes", NULL,
-						  BSE_TYPE_SEQUENCE,
+						  BSW_TYPE_NOTE_SEQUENCE,
 						  BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Sequence",
 			      PARAM_TRANSPOSE,
@@ -121,7 +121,7 @@ bse_sequencer_class_init (BseSequencerClass *class)
 static void
 bse_sequencer_init (BseSequencer *seq)
 {
-  seq->sdata = bse_sequence_new (8, BSE_KAMMER_NOTE);
+  seq->sdata = bsw_note_sequence_new (8);
   seq->n_freq_values = 0;
   seq->freq_values = NULL;
   seq->transpose = 0;
@@ -132,7 +132,7 @@ bse_sequencer_finalize (GObject *object)
 {
   BseSequencer *seq = BSE_SEQUENCER (object);
 
-  bse_sequence_free (seq->sdata);
+  bsw_note_sequence_free (seq->sdata);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -146,19 +146,19 @@ bse_sequencer_set_property (BseSequencer *seq,
 {
   switch (param_id)
     {
-      BseSequence *sdata;
+      BswNoteSequence *sdata;
     case PARAM_LENGTH:
       if (g_value_get_uint (value) != seq->sdata->n_notes)
 	{
-	  seq->sdata = bse_sequence_resize (seq->sdata, g_value_get_uint (value));
+	  seq->sdata = bsw_note_sequence_resize (seq->sdata, g_value_get_uint (value));
 	  bse_sequencer_update_modules (seq);
 	  g_object_notify (seq, "notes");
 	}
       break;
     case PARAM_NOTES:
-      bse_sequence_free (seq->sdata);
+      bsw_note_sequence_free (seq->sdata);
       sdata = g_value_get_boxed (value);
-      seq->sdata = sdata ? bse_sequence_copy (sdata) : bse_sequence_new (8, BSE_KAMMER_NOTE);
+      seq->sdata = sdata ? bsw_note_sequence_copy (sdata) : bsw_note_sequence_new (8);
       bse_sequencer_update_modules (seq);
       g_object_notify (seq, "length");
       break;
@@ -203,8 +203,8 @@ bse_sequencer_get_property (BseSequencer *seq,
 }
 
 static gfloat*
-freq_values_from_seq (BseSequence *sdata,
-		      gint         transpose)
+freq_values_from_seq (BswNoteSequence *sdata,
+		      gint             transpose)
 {
   gfloat *v = g_new (gfloat, sdata->n_notes);
   guint i;
