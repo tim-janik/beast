@@ -124,6 +124,71 @@ GSource*	g_source_simple	(gint		 priority,
 				 ...);
 
 
+/* --- bit matrix --- */
+typedef struct {
+  guint32 width, height;
+  guint32 bits[1]; /* flexible array */
+} GBitMatrix;
+
+static inline GBitMatrix*
+g_bit_matrix_new (guint           width,
+                  guint           height)
+{
+  GBitMatrix *matrix = (GBitMatrix*) g_new0 (guint32, MAX ((width * height + 31) / 32, 1) + 2);
+  matrix->width = width;
+  matrix->height = height;
+  return matrix;
+}
+
+static inline void
+g_bit_matrix_change (GBitMatrix     *matrix,
+                     guint           x,
+                     guint           y,
+                     gboolean        bit_set)
+{
+  guint32 cons, index, shift;
+  g_return_if_fail (matrix && x < matrix->width && y < matrix->height);
+  cons = y * matrix->width + x;
+  index = cons >> 5; /* / 32 */
+  shift = cons & 0x1f;  /* % 32 */
+  if (bit_set)
+    matrix->bits[index] |= 1 << shift;
+  else
+    matrix->bits[index] &= ~(1 << shift);
+}
+
+#define g_bit_matrix_set(matrix,x,y)    g_bit_matrix_change (matrix, x, y, TRUE)
+#define g_bit_matrix_unset(matrix,x,y)  g_bit_matrix_change (matrix, x, y, FALSE)
+
+static inline guint32
+g_bit_matrix_peek (GBitMatrix     *matrix,
+                   guint           x,
+                   guint           y)
+{
+  guint32 cons = y * matrix->width + x;
+  guint32 index = cons >> 5; /* / 32 */
+  guint32 shift = cons & 0x1f;  /* % 32 */
+  return matrix->bits[index] & (1 << shift);
+}
+
+static inline gboolean
+g_bit_matrix_test (GBitMatrix *matrix,
+                   guint       x,
+                   guint       y)
+{
+  if (x < matrix->width && y < matrix->height)
+    return g_bit_matrix_peek (matrix, x, y) != 0;
+  else
+    return 0;
+}
+
+static inline void
+g_bit_matrix_free (GBitMatrix *matrix)
+{
+  g_free (matrix);
+}
+
+
 /* --- unix signal queue --- */
 #if 0
 typedef gboolean (*GUSignalFunc) (gint8          usignal,
