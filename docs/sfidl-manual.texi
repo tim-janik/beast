@@ -29,6 +29,13 @@ in @beast{} for two purposes:
 
 @chapter What is SFI?
 
+@c FIXME(Tim):
+@c 1 - What is SFI?:
+@c der absatz erklaert eigentlich nicht, dass es
+@c einen unterschied zwischen sfidl und sfi giebt, das eine ist der
+@c idl compiler, das andere ist eine unterstuetzungs library, die
+@c das glue layder implementiert.
+
 @section Overview
 
 To provide an API to more than one programming language, we first specify
@@ -68,7 +75,7 @@ sections the elements will be described. First of all, you need to know that
 everything needs to be declared within the scope of a namespace. This avoids
 collisions.
 
-The syntax for namespace is @c FIXME: should be fixed
+The syntax for namespace is @c FIXME: should be fixed (no ; allowed)
 
 @example
 // IDL Code
@@ -92,9 +99,9 @@ from a different namespace:
 
 namespace Bar @{
   ... declarations go here ...
-  using namespace Foo;
-  Foo::IntSeq getEvenNumbers (Sfi::Int bound); // returns all even numbers between 1 and bound
-  IntSeq getPrimeNumbers (Sfi::Int bound);     // returns all prime numbers between 1 and bound
+  Foo::IntSeq getEvenNumbers (Sfi::Int bound);	// need to namespace Foo::
+  using namespace Foo;				// add Foo:: to namespace search list
+  IntSeq getPrimeNumbers (Sfi::Int bound);	// IntSeq is found in Foo:: automatically
   ... more declarations go here ...
 @};
 
@@ -127,7 +134,7 @@ SFI provides a number of predefined primitive data types. These are
 @item @strong{@emph{Sfi::FBlock}}
 @* a block of 32bit floating point values (optimized for bulk data transfer)
 @item @strong{@emph{Sfi::Rec}}
-@* a special type, which can hold any record (for records see @uref{beast-doc://quickstart#composite-types,,below})
+@* a special type, which can hold any record (for records see @uref{beast-doc://sfidl#composite-types,,below})
 @end itemize
 
 @subsection Choices

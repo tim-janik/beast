@@ -26,7 +26,8 @@ CLEANFILES += $(gen_sources)
 # normal autogeneration rules
 bsecxxapi.h: $(top_builddir)/bse/bse.idl $(SFIDL)
 	cd . \
-	&& echo -e "#include <bsw/bswcxxutils.h>\n" > xgen-bcah \
+	&& echo -e "#include <sfi/sficxx.h>\n" > xgen-bcah \
+	&& echo -e "#include <bse/bsecxxsmart.h>\n" >> xgen-bcah \
 	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcah \
 	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcah \
 	&& cp xgen-bcah $@ \

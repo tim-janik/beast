@@ -22,10 +22,4 @@
 #include <bse/bsecxxsmart.h>
 #include <string>
 
-/* remove NULL pointers */
-inline std::string sfi_value_get_cxxstring (const GValue *value) {
-	const char *str = sfi_value_get_string (value);
-	return str ? str : "";
-}
-
 #endif /* __BSW_H__ */

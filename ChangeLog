@@ -1,3 +1,12 @@
+Tue Jan 20 01:17:06 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/Makefile.am: Fix includes (changes due to sficxx.h).
+
+	* docs/sfidl.texi: Small fixes.
+
+	* bsw/bswcxxutils.h: String to/from GValue conversions are in sficxx.h
+	now.
+
 Mon Jan 19 20:46:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am tests/perftest.cc: Added a small program to
