@@ -1,3 +1,8 @@
+Thu Dec 30 04:59:54 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparamview.c (bst_param_view_rebuild): work around a size
+	allocation/background computation bug in gtkhscale.c.
+
 Thu Dec 30 03:25:43 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterndialog.c (pe_cell_clicked): disabled procedure

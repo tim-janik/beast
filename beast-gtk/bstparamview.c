@@ -237,7 +237,19 @@ bst_param_view_rebuild (BstParamView *param_view)
 	  }
     }
   g_slist_free (class_list);
-  
+
+  /* FIXME: work around a gtk bug 
+   */
+  if (GTK_WIDGET_REALIZED (param_view))
+    {
+      GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (param_view));
+
+      gtk_container_check_resize (GTK_CONTAINER (toplevel));
+      gtk_container_check_resize (GTK_CONTAINER (toplevel));
+      gtk_container_check_resize (GTK_CONTAINER (toplevel));
+      gtk_widget_queue_resize (toplevel);
+    }
+
   bst_param_view_update (param_view);
 }
 
