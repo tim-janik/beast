@@ -122,6 +122,8 @@ namespace Conf {
   bool        generateData = false;
   bool        generateTypeH = false;
   bool        generateTypeC = false;
+  string      namespaceCut = "";
+  string      namespaceAdd = "";
 };
 
 struct ParamDef {
@@ -739,6 +741,7 @@ protected:
   const IdlParser& parser;
   
   string makeParamSpec (const ParamDef& pdef);
+  string makeNamespaceSubst (const string& name);
   string makeLowerName (const string& name);
   string makeUpperName (const string& name);
   string makeMixedName (const string& name);
@@ -750,13 +753,22 @@ public:
   void run (string srcname);
 };
 
+string CodeGeneratorC::makeNamespaceSubst (const string& name)
+{
+  if(name.substr (0, Conf::namespaceCut.length ()) == Conf::namespaceCut)
+    return Conf::namespaceAdd + name.substr (Conf::namespaceCut.length ());
+  else
+    return name; /* pattern not matched */
+}
+
 string CodeGeneratorC::makeLowerName (const string& name)
 {
   bool lastupper = true, upper = true, lastunder = true;
   string::const_iterator i;
   string result;
+  string sname = makeNamespaceSubst (name);
   
-  for(i = name.begin(); i != name.end(); i++)
+  for(i = sname.begin(); i != sname.end(); i++)
     {
       lastupper = upper;
       upper = isupper(*i);
@@ -798,8 +810,9 @@ string CodeGeneratorC::makeMixedName (const string& name)
   bool lastupper = true, upper = true, lastunder = true;
   string::const_iterator i;
   string result;
+  string sname = makeNamespaceSubst (name);
   
-  for(i = name.begin(); i != name.end(); i++)
+  for(i = sname.begin(); i != sname.end(); i++)
     {
       lastupper = upper;
       upper = isupper(*i);
@@ -1322,6 +1335,8 @@ void exitUsage(char *name)
   fprintf(stderr, " -i <name>    generate init function\n");
   fprintf(stderr, " -t           generate c code for types (header)\n");
   fprintf(stderr, " -T           generate c code for types (impl)\n");
+  fprintf(stderr, " -n <subst>   specify target namespace, either directly\n");
+  fprintf(stderr, "              (-n Brahms) or as substitution (-n Bse/Bsw)\n");
   exit(1);
 }
 
@@ -1333,7 +1348,7 @@ int main (int argc, char **argv)
    * parse command line options
    */
   int c;
-  while((c = getopt(argc, argv, "xdi:tT")) != -1)
+  while((c = getopt(argc, argv, "xdi:tTn:")) != -1)
     {
       switch(c)
 	{
@@ -1346,6 +1361,21 @@ int main (int argc, char **argv)
 	case 't': Conf::generateTypeH = true;
 	  break;
 	case 'T': Conf::generateTypeC = true;
+	  break;
+	case 'n': {
+		    string sub = optarg;
+
+		    int i = sub.find ("/", 0);
+		    if(i > 0)
+		    {
+		      Conf::namespaceCut = sub.substr (0, i);
+		      Conf::namespaceAdd = sub.substr (i+1, sub.size()-(i+1));
+		    }
+		    else
+		    {
+		      Conf::namespaceAdd = sub;
+		    }
+		  }
 	  break;
 	default:  exitUsage(argv[0]);
 	  break;

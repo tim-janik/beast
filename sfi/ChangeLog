@@ -1,3 +1,7 @@
+Fri Oct  4 11:30:07 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: support namespace substitution (sfidl -n Bse/Bsw)
+
 Fri Oct  4 10:01:53 2002  Tim Janik  <timj@gtk.org>
 
 	* sfiparams.c: pass nick and blurb of "" as NULL into GLib pspecs.
@@ -39,9 +43,9 @@ Fri Oct  4 02:06:15 2002  Tim Janik  <timj@gtk.org>
 
 Fri Oct  4 01:18:21 2002  Stefan Westerfeld <stefan@space.twc.de>
 
-        * sfi/sfidl.cc: generate proper default initialization for sequences when
-        @= is omitted (instead of segfaulting), FBlock support, cleanup: add name
-        of arguments/arrays by the caller, not by createTypeCode
+        * sfi/sfidl.cc: generate proper default initialization for sequences
+	when @= is omitted (instead of segfaulting), FBlock support, cleanup:
+	add name of arguments/arrays by the caller, not by createTypeCode
 
 Thu Oct  3 23:31:26 2002  Tim Janik  <timj@gtk.org>
 
