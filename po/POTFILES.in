@@ -6,6 +6,7 @@ beast-gtk/bstcanvassource.c
 beast-gtk/bsteventrollctrl.c
 beast-gtk/bstfiledialog.c
 beast-gtk/bstinstrumentview.c
+beast-gtk/bstitemview.c
 beast-gtk/bstmain.c
 beast-gtk/bstmessages.c
 beast-gtk/bstparam-entry.c

@@ -2,19 +2,19 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.8 2003/10/27 22:43:07 timj Exp $
+# $Id: sv.po,v 1.9 2003/11/02 00:50:14 menthos Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-27 22:59+0100\n"
-"PO-Revision-Date: 2003-10-27 02:06+0100\n"
+"POT-Creation-Date: 2003-11-02 01:49+0100\n"
+"PO-Revision-Date: 2003-11-02 01:49+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: beast-gtk/bstapp.c:65
 msgid "/_File"
@@ -233,31 +233,31 @@ msgstr "/Hjälp/Utveckling/GSL-motor..."
 msgid "/Help/_About..."
 msgstr "/Hjälp/_Om..."
 
-#: beast-gtk/bstapp.c:631 beast-gtk/bstapp.c:638 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:604 beast-gtk/bstapp.c:611 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Öppnar projektet \"%s\""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:810
+#: beast-gtk/bstapp.c:783
 msgid "Rack editor"
 msgstr "Rackredigerare"
 
-#: beast-gtk/bstapp.c:824
+#: beast-gtk/bstapp.c:797
 msgid "Preferences"
 msgstr "Inställningar"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:838
+#: beast-gtk/bstapp.c:811
 msgid "Device Monitor"
 msgstr "Enhetsövervakare"
 
-#: beast-gtk/bstapp.c:853
+#: beast-gtk/bstapp.c:826
 msgid "Procedure Browser"
 msgstr "Procedurbläddrare"
 
-#: beast-gtk/bstapp.c:910
+#: beast-gtk/bstapp.c:883
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Utgåvenoteringar för BEAST-%s"
@@ -270,19 +270,19 @@ msgstr "Modullänk: "
 msgid "Module link"
 msgstr "Modullänk"
 
-#: beast-gtk/bstcanvassource.c:484
+#: beast-gtk/bstcanvassource.c:483
 msgid "Module Info"
 msgstr "Modulinformation"
 
-#: beast-gtk/bstcanvassource.c:972
+#: beast-gtk/bstcanvassource.c:971
 msgid "Input"
 msgstr "Inmatning"
 
-#: beast-gtk/bstcanvassource.c:981
+#: beast-gtk/bstcanvassource.c:980
 msgid "Output"
 msgstr "Utmatning"
 
-#: beast-gtk/bstcanvassource.c:985
+#: beast-gtk/bstcanvassource.c:984
 msgid "(Hint)"
 msgstr "(Tips)"
 
@@ -455,16 +455,32 @@ msgid "Loading wave `%s'"
 msgstr "Läser in vågen \"%s\""
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bsttrackview.c:60
 msgid "Add"
 msgstr "Lägg till"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstmessages.c:81
 #: beast-gtk/bstpartview.c:38 beast-gtk/bstrackitem.c:182
 #: beast-gtk/bstsnetrouter.c:1017 beast-gtk/bstsnetrouter.c:1059
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:62
 msgid "Delete"
 msgstr "Ta bort"
+
+#: beast-gtk/bstitemview.c:267
+msgid "ID"
+msgstr "ID"
+
+#: beast-gtk/bstitemview.c:270
+msgid "Name"
+msgstr "Namn"
+
+#: beast-gtk/bstitemview.c:273 beast-gtk/bsttrackview.c:589
+msgid "Comment"
+msgstr "Kommentar"
+
+#: beast-gtk/bstitemview.c:277
+msgid "Type"
+msgstr "Typ"
 
 #. now, we can popup the splash screen
 #.
@@ -519,16 +535,16 @@ msgstr "Skript"
 msgid "Dialogs"
 msgstr "Dialoger"
 
-#: beast-gtk/bstmain.c:279
+#: beast-gtk/bstmain.c:280
 msgid "Loading..."
 msgstr "Läser in..."
 
-#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
+#: beast-gtk/bstmain.c:310 beast-gtk/bstmain.c:312
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Läser in \"%s\""
 
-#: beast-gtk/bstmain.c:328
+#: beast-gtk/bstmain.c:329
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Läser in projektet \"%s\""
@@ -998,20 +1014,20 @@ msgstr "Ta bort länk"
 msgid "Insert Module"
 msgstr "Infoga modul"
 
-#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:173
+#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:165
 msgid "Routing"
 msgstr "Vägval"
 
-#: beast-gtk/bstsnetshell.c:131 beast-gtk/bstsongshell.c:157
-#: beast-gtk/bstwavereposhell.c:146
+#: beast-gtk/bstsnetshell.c:128 beast-gtk/bstsongshell.c:149
+#: beast-gtk/bstwavereposhell.c:143
 msgid "Parameters"
 msgstr "Parametrar"
 
-#: beast-gtk/bstsongshell.c:152
+#: beast-gtk/bstsongshell.c:144
 msgid "Tracks"
 msgstr "Spår"
 
-#: beast-gtk/bstsongshell.c:162
+#: beast-gtk/bstsongshell.c:154
 msgid "Parts"
 msgstr "Delar"
 
@@ -1097,17 +1113,29 @@ msgstr "Flytta del"
 msgid "Start Editor"
 msgstr "Starta redigerare"
 
-#: beast-gtk/bsttrackview.c:62
+#: beast-gtk/bsttrackview.c:61
 msgid "Add a new track to this song"
 msgstr "Lägg till ett nytt spår till denna låt"
 
-#: beast-gtk/bsttrackview.c:64
+#: beast-gtk/bsttrackview.c:63
 msgid "Delete the currently selected track"
 msgstr "Ta bort det för tillfället markerade spåret"
 
-#: beast-gtk/bsttrackview.c:640
-msgid "Comment"
-msgstr "Kommentar"
+#: beast-gtk/bsttrackview.c:538
+msgid "Repeat"
+msgstr "Upprepa"
+
+#: beast-gtk/bsttrackview.c:538
+msgid "Repeat playback within loop points"
+msgstr "Upprepa uppspelning inom slingpunkterna"
+
+#: beast-gtk/bsttrackview.c:558
+msgid "Zoom"
+msgstr "Zoom"
+
+#: beast-gtk/bsttrackview.c:558
+msgid "Horizontal Zoom"
+msgstr "Horisontell zoom"
 
 #: beast-gtk/bstusermessage.c:91
 msgid "Notice"
@@ -1150,7 +1178,7 @@ msgid "Scroll Right"
 msgstr "Rulla höger"
 
 #. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
-#: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
+#: beast-gtk/bstwavereposhell.c:138 beast-gtk/bstwavereposhell.c:153
 msgid "Waves"
 msgstr "Vågor"
 
@@ -1428,9 +1456,6 @@ msgstr "BSE-syntesfil"
 
 #~ msgid "Control Type:"
 #~ msgstr "Kontrolltyp:"
-
-#~ msgid "Zoom"
-#~ msgstr "Zoom"
 
 #~ msgid "VScale"
 #~ msgstr "VSkala"
@@ -2468,9 +2493,6 @@ msgstr "BSE-syntesfil"
 
 #~ msgid "H"
 #~ msgstr "H"
-
-#~ msgid "D"
-#~ msgstr "D"
 
 #~ msgid "Right [%]:"
 #~ msgstr "Höger [%]:"
