@@ -20,7 +20,7 @@
 #include <bse/gsldatautils.h>
 #include <bse/gsldatahandle-vorbis.h>
 #include <bse/gslloader.h>
-#include <bse/bsecxxutils.h>
+#include <bse/bsecxxutils.hh>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>

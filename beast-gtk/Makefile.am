@@ -37,7 +37,7 @@ beast_headers = $(strip \
 	bstpatterncolumns.h	bstxkb.h	bstpatternview.h	bstpatternctrl.h    \
 	bstkeybindings.h	bstprofiler.h	bstgrowbar.h		bstbusview.h        \
 	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	    \
-	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	    \
+	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.hh	    \
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	    \
 	bstsnifferscope.h	bstwaveview.h	bstfiledialog.h		bstgconfig.h	    \
 	bstlogadjustment.h	bstitemview.h	bstservermonitor.h	bstknob.h	    \

@@ -1,3 +1,9 @@
+Mon Mar  7 07:55:46 2005  Tim Janik  <timj@gtk.org>
+
+        * removed obsolete .h C++ headers.
+
+        * adapted sources to compile against .hh C++ headers.
+
 Mon Mar  7 07:33:06 2005  Tim Janik  <timj@gtk.org>
 
 	* *.hh: added .hh variants for .h C++ headers.

@@ -74,8 +74,8 @@ EXTRA_DIST += ${build_tools}
 #
 # reference docu generation
 #
-sfi_refsrc_globs=$(top_srcdir)/sfi/sfi*.[hc]
-bse_refsrc_globs=$(top_srcdir)/bse/bse*.[hc] $(top_srcdir)/bse/gsl*.[hc]
+sfi_refsrc_globs=$(top_srcdir)/sfi/sfi*.[hc] $(top_srcdir)/sfi/sfi*.[hc][hc]
+bse_refsrc_globs=$(top_srcdir)/bse/bse*.[hc] $(top_srcdir)/bse/bse*.[hc][hc] $(top_srcdir)/bse/gsl*.[hc]
 gxk_refsrc_globs=$(top_srcdir)/beast-gtk/bstutils.[hc] $(top_srcdir)/beast-gtk/gxk/gxk*.[hc]
 AUTODOC=$(top_builddir)/bse/bseautodoc
 SCANDOCS=$(srcdir)/scandocs.pl
