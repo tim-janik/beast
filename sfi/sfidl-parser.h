@@ -29,7 +29,7 @@ namespace Sfidl {
 struct LineInfo {
   bool isInclude;
   int line;
-  string filename;
+  std::string filename;
 };
 
 struct ConstantDef {
@@ -123,8 +123,8 @@ protected:
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
   void printError (const gchar *format, ...);
 
-  void preprocess (const string& filename);
-  bool haveIncluded (const string& filename) const;
+  void preprocess (const std::string& filename);
+  bool haveIncluded (const std::string& filename) const;
   bool insideInclude () const;
   
   void addConstantTodo(const ConstantDef& cdef);
@@ -149,7 +149,7 @@ protected:
 public:
   Parser ();
   
-  bool parse (const string& fileName);
+  bool parse (const std::string& fileName);
  
   std::string fileName() const				  { return scanner->input_name; }
   const std::vector<std::string>& getIncludes () const	  { return includes; }

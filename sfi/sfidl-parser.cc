@@ -24,6 +24,7 @@
 #include "sfidl-parser.h"
 #include "sfidl-namespace.h"
 #include "sfidl-options.h"
+#include <iostream>
 
 using namespace Sfidl;
 using namespace std;

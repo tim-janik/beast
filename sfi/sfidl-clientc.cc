@@ -24,6 +24,7 @@
 #include <ctype.h>
 #include <vector>
 #include <map>
+#include <iostream>
 #include <algorithm>
 #include "sfidl-namespace.h"
 #include "sfidl-options.h"

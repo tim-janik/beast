@@ -1,3 +1,8 @@
+Thu Feb  6 19:31:55 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.* sfidl.cc: necessary #includes and std
+	namespacing to compile with gcc-3.2
+
 Fri Jan 31 19:36:20 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: new function to append en element to an slist
