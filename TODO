@@ -6,18 +6,11 @@ FIXMES:
 - part editor UI, add fields:
   Last Tick: _____, Max (used) Channel: ___, Base Octave: ___
 - add author and license to procedure execution dialog
-- copy/paste in piano roll produces two selected note blocks
 - fix ref-count initilization for Bst*Controller
-- rename *_reallocate_children to *_reallocate_contents for GxkScrollCanvas and derived
 - fix repeat not working if left/right exchanged
 - create one canonical place for supported sample formats and keep that updated
 - document options: :filename, :rgb, :hex
 - make sample editor play stereo
-- complete sfidl.1 manual page
-- bseautodoc.c: use bse_type_get_license() instead of sfi_info_string_find()
-- remove sfi_boxed_get_record_info
-- remove sfi_info_string_find
-- remove sfi_boxed_make_sequence
 - allow inverted synth-done (i.e. suitable for gate connecitons)
 - let the ADSR provide Gate-Out
 - default-initialize authors field of objects with user name

@@ -498,8 +498,8 @@ gxk_scroll_canvas_reallocate (GxkScrollCanvas *self)
                               CANVAS_X (self), CANVAS_Y (self),
                               CANVAS_WIDTH (self), CANVAS_HEIGHT (self));
     }
-  if (class->reallocate_children)
-    class->reallocate_children (self, 0, 0);
+  if (class->reallocate_contents)
+    class->reallocate_contents (self, 0, 0);
   gxk_scroll_canvas_update_adjustments (self, TRUE, TRUE);
 }
 
@@ -1215,8 +1215,8 @@ scroll_canvas_adjustment_value_changed (GxkScrollCanvas *self,
                         marker->windowp == &self->right_panel))
             marker->extends.y += ydiff;
         }
-      if (class->reallocate_children)
-        class->reallocate_children (self, xdiff, ydiff);
+      if (class->reallocate_contents)
+        class->reallocate_contents (self, xdiff, ydiff);
     }
 }
 

@@ -404,7 +404,7 @@ track_roll_move_2markers (BstTrackRoll    *self,
 }
 
 static void
-track_roll_reallocate_children (GxkScrollCanvas *scc,
+track_roll_reallocate_contents (GxkScrollCanvas *scc,
                                 gint             xdiff,
                                 gint             ydiff)
 {
@@ -1180,7 +1180,7 @@ bst_track_roll_class_init (BstTrackRollClass *class)
   scroll_canvas_class->colors = colors;
   scroll_canvas_class->get_layout = track_roll_get_layout;
   scroll_canvas_class->update_adjustments = track_roll_update_adjustments;
-  scroll_canvas_class->reallocate_children = track_roll_reallocate_children;
+  scroll_canvas_class->reallocate_contents = track_roll_reallocate_contents;
   scroll_canvas_class->draw_canvas = bst_track_roll_draw_canvas;
   scroll_canvas_class->draw_top_panel = bst_track_roll_draw_hpanel;
   scroll_canvas_class->draw_left_panel = bst_track_roll_draw_vpanel;

@@ -164,7 +164,7 @@ event_roll_get_layout (GxkScrollCanvas       *scc,
 }
 
 static void
-event_roll_reallocate_children (GxkScrollCanvas *scc,
+event_roll_reallocate_contents (GxkScrollCanvas *scc,
                                 gint             xdiff,
                                 gint             ydiff)
 {
@@ -814,7 +814,7 @@ bst_event_roll_class_init (BstEventRollClass *class)
   scroll_canvas_class->hscrollable = TRUE;
   scroll_canvas_class->get_layout = event_roll_get_layout;
   scroll_canvas_class->update_adjustments = event_roll_update_adjustments;
-  scroll_canvas_class->reallocate_children = event_roll_reallocate_children;
+  scroll_canvas_class->reallocate_contents = event_roll_reallocate_contents;
   scroll_canvas_class->draw_left_panel = event_roll_draw_vpanel;
   scroll_canvas_class->draw_canvas = event_roll_draw_canvas;
   scroll_canvas_class->handle_drag = event_roll_handle_drag;

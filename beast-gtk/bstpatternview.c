@@ -1033,7 +1033,7 @@ bst_pattern_view_class_init (BstPatternViewClass *class)
   scroll_canvas_class->colors = colors;
   scroll_canvas_class->get_layout = pattern_view_get_layout;
   scroll_canvas_class->update_adjustments = pattern_view_update_adjustments;
-  scroll_canvas_class->reallocate_children = pattern_view_reallocate_contents;
+  scroll_canvas_class->reallocate_contents = pattern_view_reallocate_contents;
   scroll_canvas_class->draw_canvas = bst_pattern_view_draw_canvas;
   scroll_canvas_class->draw_top_panel = bst_pattern_view_draw_hpanel;
   scroll_canvas_class->draw_left_panel = bst_pattern_view_draw_vpanel;

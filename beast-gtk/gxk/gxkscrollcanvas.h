@@ -154,7 +154,7 @@ typedef struct
                                                  gboolean                vadj);
   void          (*adjustment_changed)           (GxkScrollCanvas        *self,
                                                  GtkAdjustment          *adj);
-  void          (*reallocate_children)          (GxkScrollCanvas        *self,
+  void          (*reallocate_contents)          (GxkScrollCanvas        *self,
                                                  gint                    xdiff,
                                                  gint                    ydiff);
   void          (*draw_window)                  (GxkScrollCanvas        *self,
