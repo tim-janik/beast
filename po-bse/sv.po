@@ -2,19 +2,19 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.4 2003/10/27 00:07:27 timj Exp $
+# $Id: sv.po,v 1.5 2003/10/27 00:56:06 menthos Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: po-bse\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-27 00:53+0100\n"
-"PO-Revision-Date: 2003-10-15 21:17+0200\n"
+"POT-Creation-Date: 2003-10-27 01:54+0100\n"
+"PO-Revision-Date: 2003-10-27 01:54+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: bse/bsebiquadfilter.c:130
 msgid "Filter"
@@ -103,6 +103,30 @@ msgstr "Förstärkningsmodulationsinmatning"
 #: bse/bsebiquadfilter.c:197
 msgid "Filtered Audio Signal"
 msgstr "Filtrerad ljudsignal"
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr "Författare"
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr "Person som ändrar eller skapar detta objekt"
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr "Licens"
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr "Upphovsrättslicens som är tillämplig på detta objekt"
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr "Tid för skapande"
+
+#: bse/bsesuper.c:118
+msgid "Last modification time"
+msgstr "Tid för senaste ändring"
 
 #~ msgid "Cutoff"
 #~ msgstr "Avskärning"
@@ -1698,9 +1722,6 @@ msgstr "Filtrerad ljudsignal"
 
 #~ msgid "Sample Name"
 #~ msgstr "Samplingsnamn"
-
-#~ msgid "Linear"
-#~ msgstr "Linjär"
 
 #~ msgid "Amiga"
 #~ msgstr "Amiga"
