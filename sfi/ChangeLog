@@ -1,3 +1,7 @@
+Tue Jan 20 03:09:34 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-module.cc: Don't include bse/bsecxxsmart.h.
+
 Tue Jan 20 02:49:23 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sficxx.h sfidl-cxx.cc: Migrate to Sfi::Sequence (instead of

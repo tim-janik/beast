@@ -425,7 +425,6 @@ CodeGeneratorModule::run ()
 
   /* standard includes */
   printf ("\n#include <bse/bsecxxplugin.h>\n");
-  printf ("#include <bse/bsecxxsmart.h>\n");
   
   /* sigh, we can't query things by namespace from the parser. // FIXME
    * so here's a gross hack, figure the namespace from the
