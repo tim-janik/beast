@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-08 16:44-0400\n"
-"PO-Revision-Date: 2004-10-08 19:50-0400\n"
+"POT-Creation-Date: 2004-10-12 01:03-0400\n"
+"PO-Revision-Date: 2004-10-12 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -828,6 +828,22 @@ msgstr "BEAST Version %s"
 #: beast-gtk/bstmain.c:786
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
+
+#: beast-gtk/bstmsgabsorb.c:226
+msgid "Enable or disable message display of a specific message type"
+msgstr "Enable or disable message display of a specific message type"
+
+#: beast-gtk/bstmsgabsorb.c:228
+msgid "Message Type"
+msgstr "Message Type"
+
+#: beast-gtk/bstmsgabsorb.c:231
+msgid "Version"
+msgstr "Version"
+
+#: beast-gtk/bstmsgabsorb.c:232
+msgid "The last program version that displayed this message type"
+msgstr "The last program version that displayed this message type"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
 #: beast-gtk/bstparam-automation.c:97
@@ -2502,6 +2518,12 @@ msgstr "Move Part"
 msgid "Start Editor"
 msgstr "Start Editor"
 
+#. TRANSLATORS: this is a dialog title and %s is replaced by an object name
+#: beast-gtk/bsttracksynthdialog.c:264
+#, c-format
+msgid "Synthesizer Selection: %s"
+msgstr "Synthesizer Selection: %s"
+
 #: beast-gtk/bsttrackview.c:63
 msgid "Add a new track to this song"
 msgstr "Add a new track to this song"
@@ -2601,6 +2623,10 @@ msgstr "Message has been repeated %u times"
 #: beast-gtk/bstusermessage.c:375 beast-gtk/bstusermessage.c:377
 msgid "processing"
 msgstr "processing"
+
+#: beast-gtk/bstutils.c:318 beast-gtk/bstutils.c:340 beast-gtk/bstutils.c:343
+msgid "Updating View"
+msgstr "Updating View"
 
 #: beast-gtk/bstwaveeditor.c:241
 msgid "Scroll None"
