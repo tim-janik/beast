@@ -113,6 +113,7 @@ gxk_text_add_tsm_path (const gchar *path)
 	{
 	  gchar *tmp = g_get_current_dir ();
 	  str = g_strconcat (tmp, "/", path, "/", NULL);
+          g_free (tmp);
 	}
       else
 	str = g_strconcat (path, "/", NULL);

@@ -91,8 +91,8 @@ static void
 bst_param_view_destroy_contents (BstParamView *param_view)
 {
   gtk_container_foreach (GTK_CONTAINER (param_view), (GtkCallback) gtk_widget_destroy, NULL);
-  g_slist_free (param_view->bparams);
-  param_view->bparams = NULL;
+  while (param_view->bparams)
+    bst_param_destroy (g_slist_pop_head (&param_view->bparams));
 }
 
 static void
