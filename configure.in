@@ -103,6 +103,8 @@ dnl Define package requirements.
 dnl
 AC_DEFUN(AC_GSL_REQUIREMENTS,
 [
+    GSL_CFLAGS=
+    GSL_LIBS=
     dnl === Ogg/Vorbis check ===
     ov_headers=0
     # check for ogg_stream_reset_serialno() to identify rc4 which changes ov_read_float()
@@ -113,7 +115,7 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
       ,
       ov_headers=0, -lvorbisenc -lvorbis -logg)
     if test $ov_headers = 3 ; then
-      GSL_LIBS="$GSL_LIBS -lvorbisfile -lvorbisenc -lvorbis -logg"
+      GSL_LIBS="-lvorbisfile -lvorbisenc -lvorbis -logg $GSL_LIBS"
     else
       AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0rc3) or headers])
     fi
@@ -125,7 +127,7 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
       ,
       mad_detect=0, -lmad)
     if test $mad_detect = 1 ; then
-      GSL_LIBS="$GSL_LIBS -lmad"
+      GSL_LIBS="-lmad $GSL_LIBS"
       GSL_HAVE_LIBMAD=1
     else
       AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
@@ -141,6 +143,7 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
       AC_MSG_RESULT([])
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
+    AC_SUBST(GSL_CFLAGS)
     AC_SUBST(GSL_LIBS)
 
     dnl === sizeof types ===
@@ -176,7 +179,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
     dnl We need GLib with friends
     PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.0.0 gobject-2.0 gmodule-2.0 gthread-2.0)
-    BSE_CFLAGS="$GLIB_CFLAGS"
+    BSE_CFLAGS="$GSL_CFLAGS $GLIB_CFLAGS"
     BSE_LIBS="$GSL_LIBS $GLIB_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
@@ -186,6 +189,25 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     bseplugindir=$bselibdir/plugins
     AC_SUBST(bseplugindir)
 ])
+AC_DEFUN(AC_BSW_SHELL_REQUIREMENTS,
+[
+    BSW_SHELL_CFLAGS="$BSE_CFLAGS"
+    BSW_SHELL_LIBS="$BSE_LIBS"
+    dnl === libguile check ===
+    gh_headers=0
+    AC_CHECK_LIB(guile, gh_scm2doubles,
+      [AC_CHECK_HEADER(guile/gh.h, gh_headers=`expr $gh_headers + 1`)]
+      ,
+      gh_headers=0, -lguile)
+    if test $gh_headers = 1 ; then
+      BSW_SHELL_LIBS="-lguile $BSW_SHELL_LIBS"
+    else
+      BSW_SHELL_LIBS="$BSE_LIBS"
+      AC_MSG_WARN([failed to detect guile library (>= 1.4) or headers])
+    fi
+    AC_SUBST(BSW_SHELL_CFLAGS)
+    AC_SUBST(BSW_SHELL_LIBS)
+])
 AC_DEFUN(AC_BEAST_REQUIREMENTS,
 [
     dnl Require libraries
@@ -194,6 +216,7 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     DEPENDANCIES="$DEPENDANCIES pangoft2 >= 1.0"
     DEPENDANCIES="$DEPENDANCIES libart-2.0 >= 2.3.8"
     DEPENDANCIES="$DEPENDANCIES libgnomecanvas-2.0 >= 1.112.0"
+    dnl define GUI_CFLAGS and GUI_LIBS:
     PKG_CHECK_MODULES(GUI, $DEPENDANCIES)
 
     BEAST_CFLAGS="$GUI_CFLAGS"
@@ -331,6 +354,8 @@ MC_ASSERT_PKG_CONFIG()
 AC_GSL_REQUIREMENTS
 # BSE requirements
 AC_BSE_REQUIREMENTS
+# BSW shell requirements
+AC_BSW_SHELL_REQUIREMENTS
 # check for sound devices
 AC_BSE_SNDDEV_CHECK
 # BEAST requirements
@@ -406,6 +431,7 @@ plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile
 bsw/Makefile
+bsw-shell/Makefile
 beast-gtk/Makefile
 beast-gtk/icons/Makefile
 docs/Makefile

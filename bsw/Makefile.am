@@ -35,6 +35,7 @@ libbsw_la_LIBADD = # $(top_builddir)/bse/libbse.la # -lm
 # BSW header files for public installation (non-generated)
 bsw_public_h_sources = @STRIP_BEGIN@ \
 	bsw.h \
+	bswglue.h \
 	bswproxy.h \
 	bswsignal.h \
 @STRIP_END@
@@ -43,6 +44,7 @@ bsw_private_h_sources = @STRIP_BEGIN@ \
 @STRIP_END@
 # BSW C sources to build the library from
 bsw_c_sources = @STRIP_BEGIN@ \
+	bswglue.c \
 	bswproxy.c \
 	bswgenapi.c \
 	bswsignal.c \

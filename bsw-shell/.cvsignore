@@ -1,0 +1,7 @@
+.deps
+.libs
+Makefile
+Makefile.in
+bswscm-genglue.c
+mkglue
+bswshell

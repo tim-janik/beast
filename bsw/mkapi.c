@@ -66,10 +66,16 @@ indent (guint n_spaces)
 static void
 add_type_wrapper (GType type)
 {
-  if (g_type_is_a (type, BSE_TYPE_OBJECT) && !g_hash_table_lookup (type_wrapper_ht, (gpointer) type))
+  if (G_TYPE_IS_OBJECT (type) ||
+      G_TYPE_IS_ENUM (type) ||
+      G_TYPE_IS_FLAGS (type) ||
+      G_TYPE_IS_BOXED (type))
     {
-      g_hash_table_insert (type_wrapper_ht, (gpointer) type, GUINT_TO_POINTER (TRUE));
-      add_type_wrapper (g_type_parent (type));
+      if (G_TYPE_IS_DERIVED (type) && !g_hash_table_lookup (type_wrapper_ht, (gpointer) type))
+	{
+	  g_hash_table_insert (type_wrapper_ht, (gpointer) type, GUINT_TO_POINTER (TRUE));
+	  add_type_wrapper (g_type_parent (type));
+	}
     }
 }
 
@@ -79,18 +85,36 @@ type_wrapper_foreach (gpointer key,
 		      gpointer dummy2)
 {
   GType type = (GType) key;
-  gchar *macro = tmacro_from_type (type);
+  gchar *macro = g_type_name_to_type_macro (g_type_name (type));
   gchar *delim = strchr (macro, '_'); /* skip namespace prefix */
+  gboolean have_bsw_type = FALSE;
 
   *delim = 0;
   delim = strchr (delim + 1, '_');	/* skip _TYPE portion */
   *delim = 0;
   if (macro[0] == 'B' && macro[1] == 'S' && macro[2] == 'E')
     macro[2] = 'W';
-  
-  fprintf (f_out, "#define %s_IS_%s(proxy)\t(bsw_object_is_a ((proxy), \"%s\"))\n",
-	   macro, delim + 1,
-	   g_type_name (type));
+  else if (macro[0] == 'B' && macro[1] == 'S' && macro[2] == 'W')
+    have_bsw_type = TRUE;	/* from bswcommon.h */
+
+  delim += 1;
+  if (gen_header)
+    {
+      if (!have_bsw_type)
+	{
+	  fprintf (f_out, "GType bsw_type_wrap_%s (void);\n", delim);
+	  fprintf (f_out, "#define %s_TYPE_%s\t(bsw_type_wrap_%s ())\n",
+		   macro, delim, delim);
+	}
+      if (g_type_is_a (type, G_TYPE_OBJECT))
+	fprintf (f_out, "#define %s_IS_%s(proxy)\t(bsw_proxy_check_is_a ((proxy), bsw_type_wrap_%s ()))\n",
+		 macro, delim, delim);
+    }
+  else
+    {
+      if (!have_bsw_type)
+	fprintf (f_out, "GType bsw_type_wrap_%s (void) { return BSE_TYPE_%s; }\n", delim, delim);
+    }
   g_free (macro);
 }
 
@@ -183,18 +207,7 @@ marshal_add (GType  type,
 static const gchar *cfile_header =
 ("#include \"bsw.h\"\n"
  "#include <bse/bse.h>\n"
- "#define bsw_value_initset_boolean(val,t,vbool)  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_boolean ((val), (vbool)); }\n"
- "#define bsw_value_initset_char(val,t,vchar)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_char ((val), (vchar)); }\n"
- "#define bsw_value_initset_uchar(val,t,vuchar)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uchar ((val), (vuchar)); }\n"
- "#define bsw_value_initset_int(val,t,vint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_int ((val), (vint)); }\n"
- "#define bsw_value_initset_uint(val,t,vuint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_uint ((val), (vuint)); }\n"
- "#define bsw_value_initset_ulong(val,t,vulong)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_ulong ((val), (vulong)); }\n"
- "#define bsw_value_initset_enum(val,t,vuint)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_enum ((val), (vuint)); }\n"
- "#define bsw_value_initset_float(val,t,vfloat)	  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_float ((val), (vfloat)); }\n"
- "#define bsw_value_initset_double(val,t,vdouble) { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_double ((val), (vdouble)); }\n"
- "#define bsw_value_initset_string(val,t,string)  { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_static_string ((val), (string)); }\n"
- "#define bsw_value_initset_boxed(val,t,b)        { (val)->g_type = 0; g_value_init ((val), (t)); g_value_set_static_boxed ((val), (b)); }\n"
- "#define bsw_value_initset_proxy(val,t,vproxy)	  { (val)->g_type = 0; g_value_init ((val), BSW_TYPE_PROXY); bsw_value_set_proxy ((val), (vproxy)); }\n"
+ "#include \"bswglue.h\"\n"
  );
 
 static void
@@ -544,20 +557,7 @@ main (gint   argc,
 	}
       else if (strcmp ("-p", argv[i]) == 0)
 	{
-	  GList *free_list, *list;
-
-	  /* check load BSE plugins to register types */
-	  free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
-	  for (list = free_list; list; list = list->next)
-	    {
-	      gchar *error, *string = list->data;
-
-	      error = bse_plugin_check_load (string);
-	      if (error)
-		g_warning ("failed to load plugin \"%s\": %s", string, error);
-	      g_free (string);
-	    }
-	  g_list_free (free_list);
+	  bsw_register_plugins (NULL, TRUE, NULL);
 	}
       else if (strcmp ("-h", argv[i]) == 0 ||
 	  strcmp ("--help", argv[i]) == 0)
@@ -573,8 +573,7 @@ main (gint   argc,
   if (gen_header)
     print_enums ();
   print_procs ("*");
-  if (gen_header)
-    print_type_wrappers ();
+  print_type_wrappers ();
   
   return 0;
 }

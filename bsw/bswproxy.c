@@ -189,3 +189,11 @@ bsw_proxy_type (BswProxy proxy)
 
   return BSE_IS_OBJECT (object) ? G_OBJECT_TYPE (object) : 0;
 }
+
+gboolean
+bsw_proxy_check_is_a (BswProxy proxy,
+		      GType    type)
+{
+  return g_type_check_instance_is_a (bse_object_from_id (proxy), type);
+}
+				     

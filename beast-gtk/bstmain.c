@@ -143,24 +143,7 @@ main (int   argc,
   /* check load BSE plugins to register types
    */
   if (bst_load_plugins)
-    {
-      GList *free_list, *list;
-      
-      free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
-      for (list = free_list; list; list = list->next)
-	{
-	  gchar *error, *string = list->data;
-	  
-	  g_message ("loading plugin \"%s\"...", string);
-	  error = bse_plugin_check_load (string);
-	  if (error)
-	    g_message ("error encountered loading plugin \"%s\": %s", string, error);
-	  g_free (string);
-	}
-      g_list_free (free_list);
-      if (!free_list)
-	g_message ("strange, can't find any plugins, please check %s", BSE_PATH_PLUGINS);
-    }
+    bsw_register_plugins (NULL, TRUE, NULL);
   
   /* open files given on command line
    */

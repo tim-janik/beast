@@ -1,6 +1,7 @@
 Overview of Changes in BEAST/BSE 0.4.1:
 
 * Added part support for songs with piano roll editor
+* A Guile based scheme shell for BSE has been added: bswshell
 * Added MIDI synthesis support
 * Added sample/wave display and preview facilities
 * Added sample loaders for .wav, .ogg and .mp3 files

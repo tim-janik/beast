@@ -1,3 +1,48 @@
+Wed May 22 16:53:02 2002  Tim Janik  <timj@gtk.org>
+
+	* added a scheme based bswshell using libguile.
+
+	* bsw-shell/mkglue.c: generate glue code to call procedures
+	from scheme.
+
+	* bsw-shell/bswshell.c: bswshell main executable, starts a
+	read-eval-print-loop after initializing the BSW glue code.
+
+	* bsw-shell/bswscminterp.[hc]: scheme<->c glue code, includes
+	generated procedure wrappers from bswscm-genglue.c.
+
+	* bsw-shell/bswscmhandle.[hc]: storage handle, used by procedure
+	wrappers to marshal/demarshal procedure calls and their return
+	values to/from strings.
+
+	* bsw-shell/test.scm: simple test that loads a .bse file from
+	the ../test directory and starts playback.
+	
+	* bsw/bswproxy.c (bsw_proxy_check_is_a): new function to check
+	proxies directly via a GType.
+
+	* bsw/mkapi.c: gor rid of bsw_value_initset_*() defines, those are
+	provided by bswglue.[hc] now.
+	(add_type_wrapper): provide BSW_TYPE_* wrappers
+	for enums, flags and boxed types (besides objects/proxies).
+	(type_wrapper_foreach): generate GType wrappers for the BSW_TYPE_*
+	macros.
+	(main): use bsw_register_plugins() to load plugins.
+	
+	* bsw/bswglue.[hc]: new files, containing bsw_value_initset_*()
+	functions for quick value setup from generated glue code and
+	type name conversion functions.
+	
+	* configure.in (AC_BSW_SHELL_REQUIREMENTS): check for libguile.
+
+	* beast-gtk/bstmain.c (main): use bsw_register_plugins() to load
+	plugins.
+
+	* docs/reference/bse-procs.dat: removed.
+	* docs/reference/bsw-procs.dat: added, basically a rename, but
+	we also use scheme names with bsw- prefix for the procedure names
+	now.
+
 Tue May 21 09:25:23 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvassource.c: fix info updates, keep a use-count

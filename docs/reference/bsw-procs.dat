@@ -1,21 +1,21 @@
 @DOC-VARIABLE-DEFINITIONS@
-name    = BSE-Procedures
+name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1
-date    = 21 May 2002
-image   = bse-procedures
+date    = 22 May 2002
+image   = bsw-procedures
 
 @DOC-TITLE@
-BSE-Procedures
+BSW-Procedures
 
 @DOC-HEAD@
-BSE-Procedures 21 May 2002 BEAST-0.4.1
+BSW-Procedures 22 May 2002 BEAST-0.4.1
 
 @DOC-NAME@
-BSE-Procedures - BSE Procedure Reference
+BSW-Procedures - BSE Procedure Reference
 
 @DOC-SYNOPSIS@
-@STRONG BseContainer::list-items@ (@EMPH container@);
+@STRONG bsw-container-list-items@ (@EMPH container@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -37,7 +37,7 @@ item-list:
 @DOC-DESCRIPTION@
 Retrive all items within a container  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::create-entry@ (@EMPH data-pocket@);
+@STRONG bsw-data-pocket-create-entry@ (@EMPH data-pocket@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -59,7 +59,7 @@ entry-id: The unique pocket entry ID
 @DOC-DESCRIPTION@
 Create a new entry in a data pocket. Entries have a unique ID which is required to set values in a data pocket.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::delete-entry@ (@EMPH data-pocket@, @EMPH entry-id@);
+@STRONG bsw-data-pocket-delete-entry@ (@EMPH data-pocket@, @EMPH entry-id@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -89,7 +89,7 @@ error: BSE error code
 @DOC-DESCRIPTION@
 Delete an existing entry from a data pocket  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::get-float@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
+@STRONG bsw-data-pocket-get-float@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -127,7 +127,7 @@ number: The value stored in the data pocket entry
 @DOC-DESCRIPTION@
 Retrive a previously set floating point value from a data pocket entry.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::get-int@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
+@STRONG bsw-data-pocket-get-int@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -165,7 +165,7 @@ number: The value stored in the data pocket entry
 @DOC-DESCRIPTION@
 Retrive a previously set integer value from a data pocket entry.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::get-n-entries@ (@EMPH data-pocket@);
+@STRONG bsw-data-pocket-get-n-entries@ (@EMPH data-pocket@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -187,7 +187,7 @@ n-entries: The number of entries in use
 @DOC-DESCRIPTION@
 Retrive the number of entries created in a data pocket.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::get-nth-entry-id@ (@EMPH data-pocket@, @EMPH entry-index@);
+@STRONG bsw-data-pocket-get-nth-entry-id@ (@EMPH data-pocket@, @EMPH entry-index@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -217,7 +217,7 @@ entry-id: The unique pocket entry ID (or 0 if there's no such entry)
 @DOC-DESCRIPTION@
 Retrive the ID of an entry in the data pocket by sequential index.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::get-object@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
+@STRONG bsw-data-pocket-get-object@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -255,7 +255,7 @@ item: The value stored in the data pocket entry
 @DOC-DESCRIPTION@
 Retrive a previously set object reference from a data pocket entry.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::get-string@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
+@STRONG bsw-data-pocket-get-string@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -293,7 +293,7 @@ string: The value stored in the data pocket entry
 @DOC-DESCRIPTION@
 Retrive a previously set string from a data pocket entry.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::set-float@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH number@);
+@STRONG bsw-data-pocket-set-float@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH number@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -339,7 +339,7 @@ error: BSE error code
 @DOC-DESCRIPTION@
 Set a named floating point value in a data pocket entry. Names are required to distinguish different values from each other when accessing values in a data pocket.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::set-int@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH number@);
+@STRONG bsw-data-pocket-set-int@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH number@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -385,7 +385,7 @@ error: BSE error code
 @DOC-DESCRIPTION@
 Set a named integer value in a data pocket entry. Names are required to distinguish different values from each other when accessing values in a data pocket.  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::set-object@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH item@);
+@STRONG bsw-data-pocket-set-object@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -431,7 +431,7 @@ error: BSE error code
 @DOC-DESCRIPTION@
 Set a named object reference in a data pocket entry. Object references stored in a data pocket must exist within the same project that the data pocket belongs to  
 @DOC-SYNOPSIS@
-@STRONG BseDataPocket::set-string@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH string@);
+@STRONG bsw-data-pocket-set-string@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH string@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -477,7 +477,7 @@ error: BSE error code
 @DOC-DESCRIPTION@
 Set a named string in a data pocket entry.  
 @DOC-SYNOPSIS@
-@STRONG BseEditableSample::collect-stats@ (@EMPH esample@, @EMPH voffset@, @EMPH offset-scale@, @EMPH block-size@, @EMPH stepping@, @EMPH max-pairs@);
+@STRONG bsw-editable-sample-collect-stats@ (@EMPH esample@, @EMPH voffset@, @EMPH offset-scale@, @EMPH block-size@, @EMPH stepping@, @EMPH max-pairs@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 15
@@ -539,7 +539,7 @@ sample-block: Block of samples
 @DOC-DESCRIPTION@
 Collect statistics from sample blocks as (minimum, maximum) pairs.  
 @DOC-SYNOPSIS@
-@STRONG BseEditableSample::get-length@ (@EMPH esample@);
+@STRONG bsw-editable-sample-get-length@ (@EMPH esample@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -561,7 +561,7 @@ length: Number of values
 @DOC-DESCRIPTION@
 Return the number of values in the sample.  
 @DOC-SYNOPSIS@
-@STRONG BseEditableSample::get-n-channels@ (@EMPH esample@);
+@STRONG bsw-editable-sample-get-n-channels@ (@EMPH esample@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -583,7 +583,7 @@ n-channels: Number of channels
 @DOC-DESCRIPTION@
 Return the number of channels in the sample.  
 @DOC-SYNOPSIS@
-@STRONG BseEditableSample::get-osc-freq@ (@EMPH esample@);
+@STRONG bsw-editable-sample-get-osc-freq@ (@EMPH esample@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -605,7 +605,7 @@ osc-freq: Oscillator Frequency
 @DOC-DESCRIPTION@
 Return the oscillator frequency for the sample.  
 @DOC-SYNOPSIS@
-@STRONG BseEditableSample::read-samples@ (@EMPH esample@, @EMPH voffset@);
+@STRONG bsw-editable-sample-read-samples@ (@EMPH esample@, @EMPH voffset@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -635,7 +635,7 @@ sample-block: Block of samples
 @DOC-DESCRIPTION@
 Read a set of samples from a specific offset.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::common-ancestor@ (@EMPH item@, @EMPH item2@);
+@STRONG bsw-item-common-ancestor@ (@EMPH item@, @EMPH item2@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -665,7 +665,7 @@ ancestor: Common ancestor of both items
 @DOC-DESCRIPTION@
 Retrive the common ancestor of two items if there's any.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-name@ (@EMPH item@);
+@STRONG bsw-item-get-name@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -687,7 +687,7 @@ name:
 @DOC-DESCRIPTION@
 Retrive an item's name.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-name-or-type@ (@EMPH item@);
+@STRONG bsw-item-get-name-or-type@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -709,7 +709,7 @@ name:
 @DOC-DESCRIPTION@
 Retrive an item's name or type if it has no name.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-parent@ (@EMPH item@);
+@STRONG bsw-item-get-parent@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -731,7 +731,7 @@ parent:
 @DOC-DESCRIPTION@
 Retrive an item's parent.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-project@ (@EMPH item@);
+@STRONG bsw-item-get-project@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -753,7 +753,7 @@ project:
 @DOC-DESCRIPTION@
 Retrive an item's project.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-seqid@ (@EMPH item@);
+@STRONG bsw-item-get-seqid@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -775,7 +775,7 @@ seqid:
 @DOC-DESCRIPTION@
 Retrive an item's sequential ID. The sequential ID depends on the item's type an it's position inbetween siblings of the same type within it's immediate container.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-type@ (@EMPH item@);
+@STRONG bsw-item-get-type@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -797,7 +797,7 @@ type-id:
 @DOC-DESCRIPTION@
 Retrive an item's type ID.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-type-blurb@ (@EMPH item@);
+@STRONG bsw-item-get-type-blurb@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -819,7 +819,7 @@ type-blurb:
 @DOC-DESCRIPTION@
 Retrieve an item's type description.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-type-name@ (@EMPH item@);
+@STRONG bsw-item-get-type-name@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -841,7 +841,7 @@ type-name:
 @DOC-DESCRIPTION@
 Retrieve an item's type name.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::get-uname-path@ (@EMPH item@);
+@STRONG bsw-item-get-uname-path@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -863,7 +863,7 @@ uloc-path:
 @DOC-DESCRIPTION@
 Retrieve the project relative uname path for this item.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::unuse@ (@EMPH item@);
+@STRONG bsw-item-unuse@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 7
@@ -883,7 +883,7 @@ retspace = 7
 @DOC-DESCRIPTION@
 Decrement use count for when an item is not needed anymore.  
 @DOC-SYNOPSIS@
-@STRONG BseItem::use@ (@EMPH item@);
+@STRONG bsw-item-use@ (@EMPH item@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -905,7 +905,7 @@ used-item:
 @DOC-DESCRIPTION@
 Increment use count to keep an item alive.  
 @DOC-SYNOPSIS@
-@STRONG BseObject::is-a@ (@EMPH item@, @EMPH type-name@);
+@STRONG bsw-object-is-a@ (@EMPH item@, @EMPH type-name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -935,7 +935,7 @@ is-a-check:
 @DOC-DESCRIPTION@
 Check object type  
 @DOC-SYNOPSIS@
-@STRONG BsePart::check-overlap@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@);
+@STRONG bsw-part-check-overlap@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -981,7 +981,7 @@ note-list:
 @DOC-DESCRIPTION@
 Check whether a note would overlap with neighbours.  
 @DOC-SYNOPSIS@
-@STRONG BsePart::delete-note@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
+@STRONG bsw-part-delete-note@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 7
@@ -1017,7 +1017,7 @@ retspace = 7
 @DOC-DESCRIPTION@
 Delete an existing note from a part.  
 @DOC-SYNOPSIS@
-@STRONG BsePart::find-notes@ (@EMPH part@, @EMPH tick@, @EMPH duration@);
+@STRONG bsw-part-find-notes@ (@EMPH part@, @EMPH tick@, @EMPH duration@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1055,7 +1055,7 @@ note-list:
 @DOC-DESCRIPTION@
 List all notes within or crossing a tick range.  
 @DOC-SYNOPSIS@
-@STRONG BsePart::freq-equals@ (@EMPH part@, @EMPH freq1@, @EMPH freq2@);
+@STRONG bsw-part-freq-equals@ (@EMPH part@, @EMPH freq1@, @EMPH freq2@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1093,7 +1093,7 @@ equals:
 @DOC-DESCRIPTION@
 Check whether two frequencies are equal.  
 @DOC-SYNOPSIS@
-@STRONG BsePart::get-max-octave@ (@EMPH part@);
+@STRONG bsw-part-get-max-octave@ (@EMPH part@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1115,7 +1115,7 @@ octave:
 @DOC-DESCRIPTION@
 Retrive the maximum octave supported.  
 @DOC-SYNOPSIS@
-@STRONG BsePart::get-min-octave@ (@EMPH part@);
+@STRONG bsw-part-get-min-octave@ (@EMPH part@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1137,7 +1137,7 @@ octave:
 @DOC-DESCRIPTION@
 Retrive the minimum octave supported.  
 @DOC-SYNOPSIS@
-@STRONG BsePart::get-note@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
+@STRONG bsw-part-get-note@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1175,7 +1175,7 @@ note-list:
 @DOC-DESCRIPTION@
 List a note of specific frequency at a specific tick.  
 @DOC-SYNOPSIS@
-@STRONG BsePart::insert-note@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@, @EMPH velocity@);
+@STRONG bsw-part-insert-note@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@, @EMPH velocity@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1229,7 +1229,7 @@ error:
 @DOC-DESCRIPTION@
 Insert a new note into a part.  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::clear-content@ (@EMPH pattern@);
+@STRONG bsw-pattern-clear-content@ (@EMPH pattern@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 10
@@ -1249,7 +1249,7 @@ retspace = 10
 @DOC-DESCRIPTION@
 Reset note and instrument contents of the selectionto none  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::clear-instrument@ (@EMPH pattern@);
+@STRONG bsw-pattern-clear-instrument@ (@EMPH pattern@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 10
@@ -1269,7 +1269,7 @@ retspace = 10
 @DOC-DESCRIPTION@
 Reset instrument for selected notes  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::delete-note@ (@EMPH pattern@, @EMPH focus-channel@, @EMPH focus-row@);
+@STRONG bsw-pattern-delete-note@ (@EMPH pattern@, @EMPH focus-channel@, @EMPH focus-row@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -1305,7 +1305,7 @@ retspace = 16
 @DOC-DESCRIPTION@
 Delete current note and shift remaining notes up  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::fill-instrument@ (@EMPH pattern@, @EMPH instrument@);
+@STRONG bsw-pattern-fill-instrument@ (@EMPH pattern@, @EMPH instrument@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 13
@@ -1333,7 +1333,7 @@ retspace = 13
 @DOC-DESCRIPTION@
 Reset instrument for selected notes  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::insert-note@ (@EMPH pattern@, @EMPH focus-channel@, @EMPH focus-row@);
+@STRONG bsw-pattern-insert-note@ (@EMPH pattern@, @EMPH focus-channel@, @EMPH focus-row@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -1369,7 +1369,7 @@ retspace = 16
 @DOC-DESCRIPTION@
 Insert new note and shift remaining notes down  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::select-all@ (@EMPH pattern@);
+@STRONG bsw-pattern-select-all@ (@EMPH pattern@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 10
@@ -1389,7 +1389,7 @@ retspace = 10
 @DOC-DESCRIPTION@
 Select all notes  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::select-invert@ (@EMPH pattern@);
+@STRONG bsw-pattern-select-invert@ (@EMPH pattern@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 10
@@ -1409,7 +1409,7 @@ retspace = 10
 @DOC-DESCRIPTION@
 Invert the current selection  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::select-none@ (@EMPH pattern@);
+@STRONG bsw-pattern-select-none@ (@EMPH pattern@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 10
@@ -1429,7 +1429,7 @@ retspace = 10
 @DOC-DESCRIPTION@
 Unselect all notes  
 @DOC-SYNOPSIS@
-@STRONG BsePattern::random-fill@ (@EMPH pattern@, @EMPH seed-value@);
+@STRONG bsw-pattern-random-fill@ (@EMPH pattern@, @EMPH seed-value@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 13
@@ -1457,7 +1457,7 @@ retspace = 13
 @DOC-DESCRIPTION@
 Reset note and instrument contents of the selectionto none  
 @DOC-SYNOPSIS@
-@STRONG BseProject::restore-from-file@ (@EMPH project@, @EMPH file-name@);
+@STRONG bsw-project-restore-from-file@ (@EMPH project@, @EMPH file-name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -1487,7 +1487,7 @@ error:
 @DOC-DESCRIPTION@
 Load a project from file  
 @DOC-SYNOPSIS@
-@STRONG BseProject::store-bse@ (@EMPH project@, @EMPH file-name@, @EMPH self-contained@);
+@STRONG bsw-project-store-bse@ (@EMPH project@, @EMPH file-name@, @EMPH self-contained@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 17
@@ -1525,7 +1525,7 @@ error:
 @DOC-DESCRIPTION@
 Save a project into a BSE file  
 @DOC-SYNOPSIS@
-@STRONG BseProject::create-midi-synth@ (@EMPH project@);
+@STRONG bsw-project-create-midi-synth@ (@EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1547,7 +1547,7 @@ midi-synth:
 @DOC-DESCRIPTION@
 Create a MIDI synthesizer network in project  
 @DOC-SYNOPSIS@
-@STRONG BseProject::create-snet@ (@EMPH project@);
+@STRONG bsw-project-create-snet@ (@EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1569,7 +1569,7 @@ snet:
 @DOC-DESCRIPTION@
 Create a synthsizer network in project  
 @DOC-SYNOPSIS@
-@STRONG BseProject::create-song@ (@EMPH project@);
+@STRONG bsw-project-create-song@ (@EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1591,7 +1591,7 @@ song:
 @DOC-DESCRIPTION@
 Create a new song in project  
 @DOC-SYNOPSIS@
-@STRONG BseProject::ensure-wave-repo@ (@EMPH project@);
+@STRONG bsw-project-ensure-wave-repo@ (@EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1613,7 +1613,7 @@ wrepo:
 @DOC-DESCRIPTION@
 Ensure the project has a wave repository  
 @DOC-SYNOPSIS@
-@STRONG BseProject::find-item@ (@EMPH project@, @EMPH uname-path@);
+@STRONG bsw-project-find-item@ (@EMPH project@, @EMPH uname-path@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 13
@@ -1643,7 +1643,7 @@ item:
 @DOC-DESCRIPTION@
 Find an item within a project, given its uname path.  
 @DOC-SYNOPSIS@
-@STRONG BseProject::get-data-pocket@ (@EMPH project@, @EMPH name@);
+@STRONG bsw-project-get-data-pocket@ (@EMPH project@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1673,7 +1673,7 @@ data-pocket:
 @DOC-DESCRIPTION@
 Retrive a specifically named data pocket for this project  
 @DOC-SYNOPSIS@
-@STRONG BseProject::is_playing@ (@EMPH project@);
+@STRONG bsw-project-is-playing@ (@EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1695,7 +1695,7 @@ is-playing:
 @DOC-DESCRIPTION@
 Check whether a project is currently playing  
 @DOC-SYNOPSIS@
-@STRONG BseProject::list-uname-paths@ (@EMPH project@, @EMPH item-type@);
+@STRONG bsw-project-list-uname-paths@ (@EMPH project@, @EMPH item-type@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -1725,7 +1725,7 @@ uname-paths:
 @DOC-DESCRIPTION@
 List uname paths for all items of a specified type within this project. By their uname paths, items are uniquely identifyable within a project.  
 @DOC-SYNOPSIS@
-@STRONG BseProject::match-items-by-uname@ (@EMPH project@, @EMPH item-type@, @EMPH uname@);
+@STRONG bsw-project-match-items-by-uname@ (@EMPH project@, @EMPH item-type@, @EMPH uname@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -1763,7 +1763,7 @@ item-list:
 @DOC-DESCRIPTION@
 Retrive all items of a specific type within a project with matching uname  
 @DOC-SYNOPSIS@
-@STRONG BseSNet::can_create_source@ (@EMPH snet@, @EMPH source-type@);
+@STRONG bsw-snet-can-create-source@ (@EMPH snet@, @EMPH source-type@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -1793,7 +1793,7 @@ error:
 @DOC-DESCRIPTION@
 Check whether inserting a new module into a synthesis network is possible  
 @DOC-SYNOPSIS@
-@STRONG BseSNet::create_source@ (@EMPH snet@, @EMPH source-type@);
+@STRONG bsw-snet-create-source@ (@EMPH snet@, @EMPH source-type@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -1823,7 +1823,7 @@ source:
 @DOC-DESCRIPTION@
 Insert a new module into a synthesis network  
 @DOC-SYNOPSIS@
-@STRONG BseSNet::remove_source@ (@EMPH snet@, @EMPH source@);
+@STRONG bsw-snet-remove-source@ (@EMPH snet@, @EMPH source@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1853,7 +1853,7 @@ error:
 @DOC-DESCRIPTION@
 Remove an existing module from its synthesis network  
 @DOC-SYNOPSIS@
-@STRONG BseSNet::supports_user_synths@ (@EMPH snet@);
+@STRONG bsw-snet-supports-user-synths@ (@EMPH snet@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1875,7 +1875,7 @@ user-synth:
 @DOC-DESCRIPTION@
 Check whether users may edit synthesis modules of this network  
 @DOC-SYNOPSIS@
-@STRONG BseServer::can-load@ (@EMPH server@, @EMPH file-name@);
+@STRONG bsw-server-can-load@ (@EMPH server@, @EMPH file-name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -1905,7 +1905,7 @@ can-load:
 @DOC-DESCRIPTION@
 Check whether a loader can be found for a wave file  
 @DOC-SYNOPSIS@
-@STRONG BseServer::construct-note@ (@EMPH server@, @EMPH half-tone@, @EMPH octave@, @EMPH fine-tune@);
+@STRONG bsw-server-construct-note@ (@EMPH server@, @EMPH half-tone@, @EMPH octave@, @EMPH fine-tune@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -1951,7 +1951,7 @@ note-description:
 @DOC-DESCRIPTION@
 Describe a note, given its half tone, octave and fine tune.  
 @DOC-SYNOPSIS@
-@STRONG BseServer::describe-note@ (@EMPH server@, @EMPH note@, @EMPH fine-tune@);
+@STRONG bsw-server-describe-note@ (@EMPH server@, @EMPH note@, @EMPH fine-tune@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -1989,7 +1989,7 @@ note-description:
 @DOC-DESCRIPTION@
 Describe a note, providing information about its octave, half tone, frequency, etc.  
 @DOC-SYNOPSIS@
-@STRONG BseServer::halt-project@ (@EMPH server@, @EMPH project@);
+@STRONG bsw-server-halt-project@ (@EMPH server@, @EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 10
@@ -2017,7 +2017,7 @@ retspace = 10
 @DOC-DESCRIPTION@
 Stop processing a project generating sound  
 @DOC-SYNOPSIS@
-@STRONG BseServer::note-from-freq@ (@EMPH server@, @EMPH freq@);
+@STRONG bsw-server-note-from-freq@ (@EMPH server@, @EMPH freq@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2047,7 +2047,7 @@ note-description:
 @DOC-DESCRIPTION@
 Describe a note, given its frequency.  
 @DOC-SYNOPSIS@
-@STRONG BseServer::note-from-string@ (@EMPH server@, @EMPH name@);
+@STRONG bsw-server-note-from-string@ (@EMPH server@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2077,7 +2077,7 @@ note-description:
 @DOC-DESCRIPTION@
 Describe a note, given its name and octave offset.  
 @DOC-SYNOPSIS@
-@STRONG BseServer::run-project@ (@EMPH server@, @EMPH project@);
+@STRONG bsw-server-run-project@ (@EMPH server@, @EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2107,7 +2107,7 @@ error:
 @DOC-DESCRIPTION@
 Process a project to generate sound  
 @DOC-SYNOPSIS@
-@STRONG BseServer::use-new-project@ (@EMPH server@, @EMPH name@);
+@STRONG bsw-server-use-new-project@ (@EMPH server@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2137,7 +2137,7 @@ project:
 @DOC-DESCRIPTION@
 Create a new project, owned by the caller (name is modified to be unique if necessary)  
 @DOC-SYNOPSIS@
-@STRONG BseSong::create-instrument@ (@EMPH song@);
+@STRONG bsw-song-create-instrument@ (@EMPH song@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2159,7 +2159,7 @@ instrument:
 @DOC-DESCRIPTION@
 Create a new Instrument in a Song  
 @DOC-SYNOPSIS@
-@STRONG BseSong::create-part@ (@EMPH song@);
+@STRONG bsw-song-create-part@ (@EMPH song@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2181,7 +2181,7 @@ part:
 @DOC-DESCRIPTION@
 Create a new Part in a Song  
 @DOC-SYNOPSIS@
-@STRONG BseSong::remove-instrument@ (@EMPH song@, @EMPH instrument@);
+@STRONG bsw-song-remove-instrument@ (@EMPH song@, @EMPH instrument@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 13
@@ -2209,7 +2209,7 @@ retspace = 13
 @DOC-DESCRIPTION@
 Delete an Instrument from a Song  
 @DOC-SYNOPSIS@
-@STRONG BseSong::remove-part@ (@EMPH song@, @EMPH part@);
+@STRONG bsw-song-remove-part@ (@EMPH song@, @EMPH part@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 7
@@ -2237,7 +2237,7 @@ retspace = 7
 @DOC-DESCRIPTION@
 Delete a Part from a Song  
 @DOC-SYNOPSIS@
-@STRONG BseSource::clear-inputs@ (@EMPH source@);
+@STRONG bsw-source-clear-inputs@ (@EMPH source@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 9
@@ -2257,7 +2257,7 @@ retspace = 9
 @DOC-DESCRIPTION@
 Disconnect all source inputs  
 @DOC-SYNOPSIS@
-@STRONG BseSource::clear-outputs@ (@EMPH source@);
+@STRONG bsw-source-clear-outputs@ (@EMPH source@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 9
@@ -2277,7 +2277,7 @@ retspace = 9
 @DOC-DESCRIPTION@
 Disconnect all source outputs  
 @DOC-SYNOPSIS@
-@STRONG BseSource::ichannel-blurb@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ichannel-blurb@ (@EMPH source@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2307,7 +2307,7 @@ channel-blurb:
 @DOC-DESCRIPTION@
 Get input channel description  
 @DOC-SYNOPSIS@
-@STRONG BseSource::ichannel-get-n-joints@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ichannel-get-n-joints@ (@EMPH source@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2337,7 +2337,7 @@ n-joints:
 @DOC-DESCRIPTION@
 Retrive the number of input connections of an input channel  
 @DOC-SYNOPSIS@
-@STRONG BseSource::ichannel-get-ochannel@ (@EMPH source@, @EMPH input-channel@, @EMPH input-joint@);
+@STRONG bsw-source-ichannel-get-ochannel@ (@EMPH source@, @EMPH input-channel@, @EMPH input-joint@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2375,7 +2375,7 @@ ochannel:
 @DOC-DESCRIPTION@
 Retrive output channel of the source connected to a specific joint of an input channel  
 @DOC-SYNOPSIS@
-@STRONG BseSource::ichannel-get-osource@ (@EMPH source@, @EMPH input-channel@, @EMPH input-joint@);
+@STRONG bsw-source-ichannel-get-osource@ (@EMPH source@, @EMPH input-channel@, @EMPH input-joint@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2413,7 +2413,7 @@ osource:
 @DOC-DESCRIPTION@
 Retrive output source connected to a specific joint of an input channel  
 @DOC-SYNOPSIS@
-@STRONG BseSource::ichannel-name@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ichannel-name@ (@EMPH source@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2443,7 +2443,7 @@ channel-name:
 @DOC-DESCRIPTION@
 Get input channel name  
 @DOC-SYNOPSIS@
-@STRONG BseSource::is-joint-ichannel@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-is-joint-ichannel@ (@EMPH source@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2473,7 +2473,7 @@ is-jchannel:
 @DOC-DESCRIPTION@
 Check if an input channel is a joint (multi-connect) channel  
 @DOC-SYNOPSIS@
-@STRONG BseSource::n-ichannels@ (@EMPH source@);
+@STRONG bsw-source-n-ichannels@ (@EMPH source@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2495,7 +2495,7 @@ n-channels:
 @DOC-DESCRIPTION@
 Get the number of input channels of a source  
 @DOC-SYNOPSIS@
-@STRONG BseSource::n-ochannels@ (@EMPH source@);
+@STRONG bsw-source-n-ochannels@ (@EMPH source@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2517,7 +2517,7 @@ n-channels:
 @DOC-DESCRIPTION@
 Get the number of output channels of a source  
 @DOC-SYNOPSIS@
-@STRONG BseSource::ochannel-blurb@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ochannel-blurb@ (@EMPH source@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2547,7 +2547,7 @@ channel-blurb:
 @DOC-DESCRIPTION@
 Get output channel description  
 @DOC-SYNOPSIS@
-@STRONG BseSource::ochannel-name@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ochannel-name@ (@EMPH source@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2577,7 +2577,7 @@ channel-name:
 @DOC-DESCRIPTION@
 Get output channel name  
 @DOC-SYNOPSIS@
-@STRONG BseSource::set-input@ (@EMPH input-source@, @EMPH input-channel@, @EMPH output-source@, @EMPH output-channel@);
+@STRONG bsw-source-set-input@ (@EMPH input-source@, @EMPH input-channel@, @EMPH output-source@, @EMPH output-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 17
@@ -2623,7 +2623,7 @@ error:
 @DOC-DESCRIPTION@
 Connect a source input to another source's output  
 @DOC-SYNOPSIS@
-@STRONG BseSource::unset-input@ (@EMPH source@, @EMPH input-channel@, @EMPH output-source@, @EMPH output-channel@);
+@STRONG bsw-source-unset-input@ (@EMPH source@, @EMPH input-channel@, @EMPH output-source@, @EMPH output-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 17
@@ -2669,7 +2669,7 @@ error:
 @DOC-DESCRIPTION@
 Disconnect a source input  
 @DOC-SYNOPSIS@
-@STRONG BseWave::load-wave@ (@EMPH wave@, @EMPH file-name@, @EMPH wave-name@);
+@STRONG bsw-wave-load-wave@ (@EMPH wave@, @EMPH file-name@, @EMPH wave-name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -2707,7 +2707,7 @@ error: BSE error type
 @DOC-DESCRIPTION@
 Load sample chunks from a wave file  
 @DOC-SYNOPSIS@
-@STRONG BseWave::n-channels@ (@EMPH wave@);
+@STRONG bsw-wave-n-channels@ (@EMPH wave@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2729,7 +2729,7 @@ n-channels:
 @DOC-DESCRIPTION@
 Get the number of channels of a wave  
 @DOC-SYNOPSIS@
-@STRONG BseWave::use-editable@ (@EMPH wave@, @EMPH chunk-index@);
+@STRONG bsw-wave-use-editable@ (@EMPH wave@, @EMPH chunk-index@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -2759,7 +2759,7 @@ esample: Editable sample
 @DOC-DESCRIPTION@
 Retrive an editable sample object for a wave chunk.  
 @DOC-SYNOPSIS@
-@STRONG BseWaveOsc::request_pcm_position@ (@EMPH wosc@);
+@STRONG bsw-wave-osc-request-pcm-position@ (@EMPH wosc@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 7
@@ -2779,7 +2779,7 @@ retspace = 7
 @DOC-DESCRIPTION@
 Request emission of the ::notify_pcm_position signal.  
 @DOC-SYNOPSIS@
-@STRONG BseWaveRepo::load-file@ (@EMPH wave-repo@, @EMPH file-name@);
+@STRONG bsw-wave-repo-load-file@ (@EMPH wave-repo@, @EMPH file-name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -2809,7 +2809,7 @@ error:
 @DOC-DESCRIPTION@
 Load Wave from file  
 @DOC-SYNOPSIS@
-@STRONG BseWaveRepo::remove-wave@ (@EMPH wave-repo@, @EMPH wave@);
+@STRONG bsw-wave-repo-remove-wave@ (@EMPH wave-repo@, @EMPH wave@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 12
@@ -2837,7 +2837,7 @@ retspace = 12
 @DOC-DESCRIPTION@
 Remove a wave from repository  
 @DOC-SYNOPSIS@
-@STRONG bse-hello-world@ ();
+@STRONG bsw-hello-world@ ();
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 3
@@ -2849,7 +2849,7 @@ retspace = 3
 @DOC-DESCRIPTION@
 Hello World - First Plugin ever executed by BSE. Its purpose is to say "Hello World" to BSE and the general outside. This plugin takes no input or outputparameters.  
 @DOC-SYNOPSIS@
-@STRONG bse-progressor@ (@EMPH n-iterations@, @EMPH n-wait-spins@, @EMPH update-progress@);
+@STRONG bsw-progressor@ (@EMPH n-iterations@, @EMPH n-wait-spins@, @EMPH update-progress@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 18
@@ -2889,7 +2889,7 @@ text2:
 @DOC-DESCRIPTION@
 Progressor takes two seed values and then starts progressing. It doesn't do anything particularly usefull, other than sharing CPU time with the main program from time to time.  
 @DOC-SYNOPSIS@
-@STRONG bse-randomizer@ (@EMPH use-seed@, @EMPH seed@);
+@STRONG bsw-randomizer@ (@EMPH use-seed@, @EMPH seed@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2919,7 +2919,7 @@ text:
 @DOC-DESCRIPTION@
 Randomizer will take on integer as input parameter, use it as seed value and return a string containing a random number. The deeper sense behind this plugin is to test out the parameter passing functionality.  
 @DOC-SYNOPSIS@
-@STRONG bse-error-blurb@ (@EMPH error@);
+@STRONG bsw-error-blurb@ (@EMPH error@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -2941,7 +2941,7 @@ blurb:
 @DOC-DESCRIPTION@
 Retrive the description of an error value  
 @DOC-SYNOPSIS@
-@STRONG bse-error-name@ (@EMPH error@);
+@STRONG bsw-error-name@ (@EMPH error@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11

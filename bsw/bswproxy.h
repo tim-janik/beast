@@ -53,11 +53,13 @@ void		bsw_proxy_set			(BswProxy		 proxy,
 GParamSpec*	bsw_proxy_get_pspec		(BswProxy		 proxy,
 						 const gchar		*name);
 GType		bsw_proxy_type			(BswProxy		 proxy);
-
+gboolean	bsw_proxy_check_is_a		(BswProxy		 proxy,
+						 GType			 type);
 
 
 /* --- garbage collection --- */
 gchar*		bsw_collector_get_string	(GValue			*value);
+
 
 #ifdef __cplusplus
 }

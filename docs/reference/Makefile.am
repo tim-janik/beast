@@ -2,8 +2,8 @@
 
 DOC_SOURCE_GLOB = $(top_srcdir)/bse/bse*.[hcp]*
 
-MAN_PAGES_3 = gsl.3 bse.3 bse-procs.3 bst.3
-DATA_FILES = gsl.dat bse.dat bse-procs.dat bst.dat
+MAN_PAGES_3 = gsl.3 bse.3 bsw-procs.3 bst.3
+DATA_FILES = gsl.dat bse.dat bsw-procs.dat bst.dat
 
 BSE_MAN_SRC_GLOBS=$(top_srcdir)/bse/bse*.[hc]
 GSL_MAN_SRC_GLOBS=$(top_srcdir)/bse/gsl*.[hc]
@@ -30,16 +30,16 @@ bse.dat: $(BSE_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl
                             --blurb "BSE Function Reference" \
                             --package "BEAST-$(VERSION)" \
                             $(BSE_MAN_SRC_GLOBS) >$@
-bse-procs.dat: $(top_builddir)/bse/bsequery $(srcdir)/scandocs.pl
+bsw-procs.dat: $(top_builddir)/bse/bsequery $(srcdir)/scandocs.pl
 	$(top_builddir)/bse/bsequery -p procdoc >temp-bsw-gen1.doc \
-        && $(srcdir)/scandocs.pl --name "BSE-Procedures" \
+        && $(srcdir)/scandocs.pl --name "BSW-Procedures" \
                                --blurb "BSE Procedure Reference" \
                                --package "BEAST-$(VERSION)" \
                                temp-bsw-gen1.doc >$@ \
         && rm -f temp-bsw-gen1.doc
 bst.dat: $(BST_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl
 	$(srcdir)/scandocs.pl --name "BST-Functions" \
-                            --blurb "BST Function Reference" \
+                            --blurb "BEAST Function Reference" \
                             --package "BEAST-$(VERSION)" \
                             $(BST_MAN_SRC_GLOBS) >$@
 
@@ -53,8 +53,8 @@ gsl.3:		gsl.dat $(MAN_DEPS)
 	$(DOC2MAN) < gsl.dat > $@
 bse.3:		bse.dat $(MAN_DEPS)
 	$(DOC2MAN) < bse.dat > $@
-bse-procs.3:	bse-procs.dat $(MAN_DEPS)
-	$(DOC2MAN) < bse-procs.dat > $@
+bsw-procs.3:	bsw-procs.dat $(MAN_DEPS)
+	$(DOC2MAN) < bsw-procs.dat > $@
 bst.3:		bst.dat $(MAN_DEPS)
 	$(DOC2MAN) < bst.dat > $@
 
