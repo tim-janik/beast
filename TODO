@@ -552,7 +552,6 @@ GSL:
 76- [stw]         1 8 3-stage joining FFT code
 76- [stw]         4   /usr/share/doc/sfftw-dev/README.hacks
 76- [stw]         1 7 FFT L-case optimiaztions
-  - [stw]         5 1 .PAT loader (timidity file format) (move)
 74- [stw/timj]    6 5 filter evaluate function (to draw graph)
   - [stw/timj]    6 3 1) OscTableEntry sizes (wave_table_size ())
   - [stw/timj]    7 3 2) development of gsl_osc_table_create() frequencies
@@ -581,7 +580,6 @@ sfidl:
   - typeArg(), typeField(), typeRet() and typeArray() in sfidl-cbase.[hc]*
     should be moved into the non-base class that needs them (i.e. out of
     cbase)
-  - sfidl-manual.texi: complete the documentation
 80- handle Procedure {} namespace in namespacehelper
 85- rename nspace.printableForm() to something that expresses namespace relativity
   - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
@@ -636,6 +634,7 @@ modules:
   freeverb:
     - parameters are broken (it _says_ dB, but it definitely _is not_ dB)
     - parameters don't appear to change sound (bug?)
+    - the category for freeverb should probably not be filters (enhance?)
 
 gui:
   general:
@@ -643,17 +642,27 @@ gui:
     - small icons in toolbars
     - beautify icons
     - rack editor is missing
+    - scheme console via xterm
   song:
     - hotkey to jump to loop marker
     - beast should not suggest to put instruments in postproc
+    - starting beast with a .mid file should import it
     - theming for track view
     - parts in track view should be directly on top of the pixmap
     - parts should be colorizable
+    - add: playback cursor follows song (like sweep does: with jumps)
+    - track view and piano roll view should show proper numbers
+    - when opening the instrument assignment dialog in the track view,
+      after using the "load" button, the newly loaded instrument should
+      be the default
   pianoroll:
     - Farbe fuer h (nicht blau), damit selektionen blau sein koennen
       bstpianoroll.c: "light blue"
     - add helper bars for c#,d#,f#,g#,a#, to provide alternate column
       shading like effect
+    - make default velocity for pianoroll either 100 (since it might be useful
+      if you have edited some notes, to make some individual notes louder,
+      which is not possible if the default is already 127), or configurable
   snet router:
     - grid
     - theming for SNetRouter
@@ -661,6 +670,7 @@ gui:
     - non-transparent icons
     - more beautiful arrows (no line crossing)
     - die Bauelemente im SNetView sollten mehr aussehen wie Kloetze
+    - support selection and cut/copy/paste in synth-edit view
   mixer:
     - looks broken on some gtk themes (button shading)
     - looks incoherent
@@ -680,36 +690,37 @@ interop:
       the time, and patchbays can be used in a sane way (with PortAudio,
       BEAST is only visible during playback, which is not useful for using
       qjackctl)
+  ladspa:
+    - provide a wrapper so that libbse plugins are available as LADSPA plugins
+    - look at the RDF spec (or whatever meta data there is to get "more"
+      information about what a LADSPA plugin does)
+  dssi:
+    - investigate implementing dssi support (client/host)
+  midi:
+    - provide midi output
+    - provide midi recording
+    - Bse::MidiEvent: should be wire-passable
 
 design instruments:
+  pat support:
+    - provide way to import timidity cfg files
+    - .pat files need to be played with (ADSR or similar) volume envelope
+    - .pat files loops are not respected if they are directly loaded
   samples:
     - korg samples
-    - timidity GM samples
   synthesis:
     - design some
 
-STEFAN TODO:
-  - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
-    libtool
-70- Bse::MidiEvent: should be wire-passable
-  - Makefile.plugins doesn't get regenerated properly
-82- C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
-  - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
+documentation:
+ - C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
+  - sfidl-manual.texi: complete the documentation
 
 Misc Buglets/Feature Requests:
- - starting beast with a .mid file should import it
+ - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
+ - Makefile.plugins doesn't get regenerated properly
+ - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
+   libtool
  - the midi importer doesn't create a master bus
  - silencing out an instrument (in drum maps) should be easier
- - .pat files need to be played with (ADSR or similar) volume envelope
- - support selection and cut/copy/paste in synth-edit view
- - .pat files loops are not respected if they are directly loaded
- - track view and piano roll view should show proper numbers
- - when opening the instrument assignment dialog in the track view,
-   after using the "load" button, the newly loaded instrument should
-   be the default
- - add: playback cursor follows song (like sweep does: with jumps)
- - scheme console via xterm
- - make default velocity for pianoroll either 100 (since it might be useful
-   if you have edited some notes, to make some individual notes louder,
-   which is not possible if the default is already 127), or configurable
+
 vim:set ts=8 sts=2 sw=2:
