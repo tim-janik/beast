@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-11 18:37+0100\n"
-"PO-Revision-Date: 2004-12-11 21:54+0100\n"
+"POT-Creation-Date: 2004-12-13 18:37+0100\n"
+"PO-Revision-Date: 2004-12-13 22:14+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -331,8 +331,8 @@ msgstr "Spustit WWW prohlížeč s demonstračními skladbami online"
 msgid "Export Audio"
 msgstr "Exportovat zvuk"
 
-#: beast-gtk/bstapp.c:628 beast-gtk/bstapp.c:635 beast-gtk/bstfiledialog.c:423
-#: beast-gtk/bstfiledialog.c:430
+#: beast-gtk/bstapp.c:628 beast-gtk/bstapp.c:635 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otevírám projekt `%s'"
@@ -498,81 +498,48 @@ msgstr "Vyberte oblast"
 msgid "Abortion"
 msgstr "Přerušení"
 
-#: beast-gtk/bstfiledialog.c:168
+#: beast-gtk/bstfiledialog.c:169
 msgid "Contents"
 msgstr "Obsah"
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:200
+#: beast-gtk/bstfiledialog.c:201
 msgid "File Selection"
 msgstr "Výběr souborů"
 
-#: beast-gtk/bstfiledialog.c:381
+#: beast-gtk/bstfiledialog.c:382
 msgid "Open Project"
 msgstr "Otevřít projekt"
 
-#: beast-gtk/bstfiledialog.c:395
+#: beast-gtk/bstfiledialog.c:396
 msgid "Select File"
 msgstr "Vyberte soubor"
 
-#: beast-gtk/bstfiledialog.c:409
+#: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
 msgstr "Zvolit adresář"
 
-#: beast-gtk/bstfiledialog.c:448
+#: beast-gtk/bstfiledialog.c:449
 #, c-format
 msgid "Merge: %s"
 msgstr "Sloučit: %s"
 
-#: beast-gtk/bstfiledialog.c:461
+#: beast-gtk/bstfiledialog.c:462
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Slučuji projekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:477
+#: beast-gtk/bstfiledialog.c:478
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Import MIDI: %s"
 
-#: beast-gtk/bstfiledialog.c:488
+#: beast-gtk/bstfiledialog.c:489
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importuji soubor MIDI `%s'"
 
 #: beast-gtk/bstfiledialog.c:508
-#, c-format
-msgid ""
-"Failed to delete file\n"
-"`%s'\n"
-"due to:\n"
-"%s"
-msgstr ""
-"Nemohu odstranit soubor\n"
-"`%s'\n"
-"kvůli:\n"
-"%s"
-
-#: beast-gtk/bstfiledialog.c:537
-#, c-format
-msgid "Save: %s"
-msgstr "Uložit: %s"
-
-#. setup radio buttons
-#: beast-gtk/bstfiledialog.c:539
-msgid "Fully include wave files"
-msgstr "Přímo zahrnout soubory vln"
-
-#: beast-gtk/bstfiledialog.c:540
-msgid "Store references to wave files"
-msgstr "Uložit odkazy na soubory vln"
-
-#: beast-gtk/bstfiledialog.c:561 beast-gtk/bstfiledialog.c:571
-#, c-format
-msgid "Saving project `%s'"
-msgstr "Ukládám projekt `%s'"
-
-#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:638
-#: beast-gtk/bstfiledialog.c:714
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -587,47 +554,93 @@ msgstr ""
 "`%s':\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:586
+#. error != BSE_ERROR_FILE_EXISTS
+#: beast-gtk/bstfiledialog.c:532 beast-gtk/bstfiledialog.c:546
+#, c-format
+msgid ""
+"Failed to save to file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Nemohu uložit soubor\n"
+"`%s'\n"
+"kvůli:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:537
+#, c-format
+msgid ""
+"Failed to replace file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Nemohu nahradit soubor\n"
+"`%s'\n"
+"kvůli:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:574
+#, c-format
+msgid "Save: %s"
+msgstr "Uložit: %s"
+
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:576
+msgid "Fully include wave files"
+msgstr "Přímo zahrnout soubory vln"
+
+#: beast-gtk/bstfiledialog.c:577
+msgid "Store references to wave files"
+msgstr "Uložit odkazy na soubory vln"
+
+#: beast-gtk/bstfiledialog.c:591
+#, c-format
+msgid "Saving project `%s'"
+msgstr "Ukládám projekt `%s'"
+
+#: beast-gtk/bstfiledialog.c:606
 msgid "Load Effect"
 msgstr "Načíst efekt"
 
-#: beast-gtk/bstfiledialog.c:599
+#: beast-gtk/bstfiledialog.c:619
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Slučuji efekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:616
+#: beast-gtk/bstfiledialog.c:636
 msgid "Save Effect"
 msgstr "Uložit efekt"
 
-#: beast-gtk/bstfiledialog.c:637 beast-gtk/bstfiledialog.c:647
+#: beast-gtk/bstfiledialog.c:650
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Ukládám efekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:662
+#: beast-gtk/bstfiledialog.c:665
 msgid "Load Instrument"
 msgstr "Načíst nástroj"
 
-#: beast-gtk/bstfiledialog.c:675
+#: beast-gtk/bstfiledialog.c:678
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Slučuji nástroj `%s'"
 
-#: beast-gtk/bstfiledialog.c:692
+#: beast-gtk/bstfiledialog.c:695
 msgid "Save Instrument"
 msgstr "Uložit nástroj"
 
-#: beast-gtk/bstfiledialog.c:713 beast-gtk/bstfiledialog.c:723
+#: beast-gtk/bstfiledialog.c:709
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Ukládám nástroj `%s'"
 
-#: beast-gtk/bstfiledialog.c:739
+#: beast-gtk/bstfiledialog.c:725
 msgid "Load Wave"
 msgstr "Načíst vlnu"
 
-#: beast-gtk/bstfiledialog.c:751 beast-gtk/bstfiledialog.c:753
+#: beast-gtk/bstfiledialog.c:737 beast-gtk/bstfiledialog.c:739
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Načítám vlnu `%s'"
@@ -1185,7 +1198,7 @@ msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "Počet buněk, o které se posunout po každé úpravě události nebo noty"
 
-#: beast-gtk/bstpatternctrl.c:128 beast-gtk/bstscrollgraph.c:515
+#: beast-gtk/bstpatternctrl.c:128 beast-gtk/bstscrollgraph.c:561
 msgid "Direction"
 msgstr "Směr"
 
@@ -2379,38 +2392,42 @@ msgstr "Maximum návrhu"
 msgid "Preview"
 msgstr "Náslech"
 
-#: beast-gtk/bstscrollgraph.c:511 beast-gtk/bstscrollgraph.c:514
-#: beast-gtk/bstscrollgraph.c:517 beast-gtk/bstscrollgraph.c:520
+#: beast-gtk/bstscrollgraph.c:557 beast-gtk/bstscrollgraph.c:560
+#: beast-gtk/bstscrollgraph.c:563 beast-gtk/bstscrollgraph.c:566
 msgid "Spectrograph"
 msgstr "Spektrograf"
 
-#: beast-gtk/bstscrollgraph.c:512
+#: beast-gtk/bstscrollgraph.c:558
 msgid "Flip Spectrum"
 msgstr "Obrátit spektrum"
 
-#: beast-gtk/bstscrollgraph.c:512
+#: beast-gtk/bstscrollgraph.c:558
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
 msgstr "Obrátit zobrazení spektra, prohodit nízké a vysoké frekvence"
 
-#: beast-gtk/bstscrollgraph.c:515
+#: beast-gtk/bstscrollgraph.c:561
 msgid "Choose display scrolling direction"
 msgstr "Zvolte směr posunu displeje"
 
-#: beast-gtk/bstscrollgraph.c:518
+#: beast-gtk/bstscrollgraph.c:564
 msgid "Boost"
 msgstr ""
 
-#: beast-gtk/bstscrollgraph.c:518
+#: beast-gtk/bstscrollgraph.c:564
 msgid "Adjust frequency level threshold"
 msgstr "Upravit úroveň prahu frekvence"
 
-#: beast-gtk/bstscrollgraph.c:521
+#: beast-gtk/bstscrollgraph.c:567
 msgid "Window Size"
 msgstr "Velikost okna"
 
-#: beast-gtk/bstscrollgraph.c:521
+#: beast-gtk/bstscrollgraph.c:567
 msgid "Adjust FFT window size"
 msgstr "Upravit velikost okna FFT"
+
+#: beast-gtk/bstscrollgraph.c:657
+msgid "Unconnected Output Channel"
+msgstr "Nepřipojený výstupn kanály"
 
 #: beast-gtk/bstsnetrouter.c:43
 msgid ""
@@ -2477,8 +2494,8 @@ msgid "Show Info"
 msgstr "Zobrazit informace"
 
 #: beast-gtk/bstsnetrouter.c:710
-msgid "Monitor Output Signal"
-msgstr "Sledovat výstupní signál"
+msgid "Output Signal Monitor"
+msgstr "Sledování výstupního signálu"
 
 #: beast-gtk/bstsnetrouter.c:737
 msgid "Remove Module"
@@ -2818,7 +2835,7 @@ msgstr "Zpráva byla zopakována %u-krát"
 msgid "processing"
 msgstr "zpracování"
 
-#: beast-gtk/bstutils.c:320 beast-gtk/bstutils.c:342 beast-gtk/bstutils.c:345
+#: beast-gtk/bstutils.c:297 beast-gtk/bstutils.c:319 beast-gtk/bstutils.c:322
 msgid "Updating View"
 msgstr "Aktualizuji pohled"
 
