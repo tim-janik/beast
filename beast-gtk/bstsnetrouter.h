@@ -19,7 +19,6 @@
 #define __BST_SNET_ROUTER_H__
 
 #include	"bstcanvassource.h"
-#include	"bstradiotools.h"
 
 
 G_BEGIN_DECLS

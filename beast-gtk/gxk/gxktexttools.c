@@ -17,9 +17,8 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxktexttools.h"
+#include "gxkgadget.h"
 #include <gdk/gdkkeysyms.h>
-#include "gxktoolbar.h"
-#include "gxkutils.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -1311,22 +1310,22 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
 {
   GtkWidget *widget, *sctext, *scwin;
   GtkTextBuffer *tbuffer;
-  GxkToolbar *tbar;
+  GxkGadget *toolbar = NULL;
 
   gxk_text_buffer_init_custom ();
 
-  /* sctext outer container
-   */
+  /* sctext outer container */
   sctext = g_object_new (GTK_TYPE_VBOX,
                          "visible", TRUE,
                          NULL);
-  /* navigation toolbar
-   */
-  tbar = gxk_toolbar_new (NULL);
-  gtk_box_pack_start (GTK_BOX (sctext), GTK_WIDGET (tbar), FALSE, TRUE, 0);
+  /* navigation toolbar */
+  if (flags & GXK_SCROLL_TEXT_NAVIGATABLE)
+    {
+      toolbar = gxk_gadget_create ("beast", "gxk-scroll-text-toolbar", NULL); // FIXME: dmain name
+      gtk_box_pack_start (GTK_BOX (sctext), toolbar, FALSE, TRUE, 0);
+    }
 
-  /* scrollable text area
-   */
+  /* scrollable text area */
   scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
                         "visible", TRUE,
                         "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -1341,50 +1340,38 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   gtk_widget_grab_focus (widget);
   tbuffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
 
-  /* navigation bits
-   */
-  if (flags & GXK_SCROLL_TEXT_NAVIGATABLE)
+  /* navigation bits */
+  if (toolbar)
     {
       GtkWidget *button;
       TextNavigation *tnav = navigation_from_sctext (sctext);
       tnav->vadjustment = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scwin));
       g_object_connect (tnav->vadjustment, "signal::value_changed", tnav_update_vpos, tnav, NULL);
       g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (gxk_scroll_text_advance), sctext);
-      tnav->backb = gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Back", "Go back one page", GTK_STOCK_GO_BACK);
-      g_object_connect (g_object_ref (tnav->backb),
-                        "swapped_signal::clicked", navigate_back, sctext,
-                        NULL);
+      tnav->backb = gxk_gadget_find (toolbar, "back-button");
+      g_object_connect (g_object_ref (tnav->backb), "swapped_signal::clicked", navigate_back, sctext, NULL);
       gtk_widget_set_sensitive (tnav->backb, FALSE);
-      tnav->forwardb = gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "Forw_ard", "Go forward one page", GTK_STOCK_GO_FORWARD);
-      g_object_connect (g_object_ref (tnav->forwardb),
-                        "swapped_signal::clicked", navigate_forward, sctext,
-                        NULL);
+      tnav->forwardb = gxk_gadget_find (toolbar, "forward-button");
+      g_object_connect (g_object_ref (tnav->forwardb), "swapped_signal::clicked", navigate_forward, sctext, NULL);
       gtk_widget_set_sensitive (tnav->forwardb, FALSE);
-      g_object_connect (gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Reload", "Reload current page", GTK_STOCK_REFRESH),
+      g_object_connect (gxk_gadget_find (toolbar, "reload-button"),
                         "swapped_signal::clicked", navigate_reload, sctext,
                         NULL);
-      g_object_connect (gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Index", NULL, GTK_STOCK_INDEX),
+      g_object_connect (gxk_gadget_find (toolbar, "index-button"),
                         "swapped_signal::clicked", navigate_index, sctext,
                         NULL);
-      button = gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Find", "Searching not yet implemented", GTK_STOCK_FIND);
+      button = gxk_gadget_find (toolbar, "find-button");
       g_object_connect (button,
                         "swapped_signal::clicked", navigate_find, sctext,
                         NULL);
       gtk_widget_set_sensitive (button, FALSE); // FIXME: implement Find
-      tnav->refe = g_object_new (GTK_TYPE_ENTRY,
-                                 "visible", TRUE,
-                                 "width_request", 10,
-                                 NULL);
+      tnav->refe = gxk_gadget_find (toolbar, "location-entry");
       g_object_connect (g_object_ref (tnav->refe),
                         "swapped_signal::activate", navigate_goto, sctext,
                         "swapped_signal::key_press_event", scroll_text_key_event, sctext,
                         NULL);
-      gxk_toolbar_append (tbar, GXK_TOOLBAR_FILL_WIDGET, "Location", NULL, tnav->refe);
-      gtk_widget_show (GTK_WIDGET (tbar));
     }
-  else
-    gtk_widget_hide (GTK_WIDGET (tbar));
-
+  
   if (flags & GXK_SCROLL_TEXT_EDITABLE)
     g_object_set (widget,
                   "editable", TRUE,

@@ -1,4 +1,5 @@
 FIXMES:
+- add Zoom spinner to snet router
 - add "folder" icon to submenu items (like in gnome menus)
 - queue action updates upon grouped action execution 
 - introduce gxk_action_group_select()-freeze/thaw to surround select/exec pair

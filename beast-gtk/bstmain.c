@@ -480,7 +480,7 @@ bst_early_parse_args (int    *argc_p,
 	}
       else if (strcmp ("--debug-list", argv[i]) == 0)
 	{
-	  const gchar **keys = bst_log_scan_keys ();
+	  const gchar **keys = _bst_log_scan_keys ();
 	  guint i;
 	  g_print ("debug keys: all");
 	  for (i = 0; keys[i]; i++)

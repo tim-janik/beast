@@ -1,3 +1,24 @@
+Mon Nov 17 16:33:17 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-standard.xml: more toolbar widget
+	definitions, defined toolbar for gxk-scroll-text.
+
+	* beast-gtk/gxk/gxktoolbar.[hc]: deleted, code isn't used anymore,
+	replacements are xml GUI stencils and GxkMenuButton.
+
+	* beast-gtk/gxk/gxktexttools.[hc]: switched to xml stencil toolbar.
+
+	* beast-gtk/bstutils.[hc]: lots of cleanups, removed cruft. moved
+	bst_action_list_add_cat() and bst_action_list_from_cats() here from
+	bstmenus.[hc].
+
+	* beast-gtk/bstradiotools.[hc]: deleted, radio-tools aren't
+	used anymore, GxkActionGroup is a suitable replacement.
+
+	* beast-gtk/bstmenus.[hc]: removed all non-BstChoice menu/factory
+	cruft, workaround and helper code as it's not anymore needed, due
+	to GxkActionList.
+
 Mon Nov 17 01:16:40 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-beast.xml: added stock image to /Utils

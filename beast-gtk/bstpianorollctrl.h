@@ -19,7 +19,6 @@
 #define __BST_PIANO_ROLL_CONTROLLER_H__
 
 #include "bstpianoroll.h"
-#include "bstradiotools.h"
 
 G_BEGIN_DECLS
 

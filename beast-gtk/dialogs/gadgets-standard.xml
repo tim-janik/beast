@@ -81,7 +81,7 @@
     prop:combo-arrow="$(ifdef,arrow,$arrow,1)" />
   <!-- buttons: stock= label= focus= default= relief= -->
   <xdef:button                inherit="GtkButton"
-    prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
+    prop:label="$(null-collapse,$(ifdef,button-label,$button-label,$stock))"
     prop:relief="$(ifdef,relief,$relief,normal)"
     prop:can-default="$(ifdef,default,$default,0)"
     prop:can-focus="$(ifdef,focus,$focus,1)"
@@ -100,7 +100,7 @@
     prop:draw-indicator="0" />
   <!-- label: label= -->
   <xdef:label                 inherit="GtkLabel"
-    prop:label="$label" />
+    prop:label="$label" prop:use-underline="$use-underline" />
   <!-- decks (notebook) -->
   <xdef:notebook              inherit="GtkNotebook"         />
   <xdef:deck                  inherit="notebook"
@@ -254,6 +254,7 @@
   <!-- toolbar items -->
   <xdef:tool-separator      inherit="separator" hseparator="0" vseparator="1" />
   <xdef:tool-space          inherit="separator" hseparator="0" vseparator="0" />
+  <!-- tool-area: ="label-area" tooltip= -->
   <xdef:tool-area           inherit="muted-button"
     hseparator="0" vseparator="0" relief="none" default-area="image-area" >
     <tooltip text="$(null-collapse,$tooltip)" />
@@ -262,6 +263,18 @@
       <vbox name="label-area" pack:pack-type="end" />
     </vbox>
   </xdef:tool-area>
+  <!-- labeled-tool-area: label= tooltip= -->
+  <xdef:labeled-tool-area           inherit="muted-button"
+    hseparator="0" vseparator="0" relief="none" default-area="image-area" >
+    <tooltip text="$(null-collapse,$tooltip)" />
+    <vbox>
+      <vbox name="image-area" expand="1" />
+      <vbox name="label-area" pack:pack-type="end" >
+	<label area="label-area"
+	  prop:label="$label" use-underline="1" />
+      </vbox>
+    </vbox>
+  </xdef:labeled-tool-area>
   
   <xdef:text-toggle-factory inherit="gadget-factory"
     per-action="action-text-toggle" />
@@ -274,5 +287,54 @@
     </alignment>
   </xdef:action-text-toggle>
   <xdef:tool-text-toggle-factory   inherit="text-toggle-factory" image-size="big-button" relief="none" />
+
+  <!-- image-button: button, tooltip= stock-image= image-size= -->
+  <xdef:image-button inherit="button" default-area="vbox" >
+    <tooltip text="$tooltip" />
+    <vbox>
+      <image expand="1"
+	prop:stock="$stock-image"
+	visible="$(ifdef,stock-image,1,0)"
+	stock-size="$image-size" />
+    </vbox>
+  </xdef:image-button>
+  <!-- label-image-button: image-button, label= -->
+  <xdef:label-image-button inherit="image-button" >
+    <label prop:label="$label" use-underline="1" />
+  </xdef:label-image-button>
+  <!-- big-button: label-image-button -->
+  <xdef:big-button inherit="label-image-button" image-size="big-button" />
+  <!-- big-tool-button: big-button -->
+  <xdef:big-tool-button inherit="big-button" relief="none" focus="0" />
   
+  <!-- gxk-scroll-text-toolbar -->
+  <xdef:gxk-scroll-text-toolbar inherit="frame-shadow-out" >
+    <hbox >
+      <big-tool-button name="back-button" size:hgroup="gxksttbtns"
+	_label="_Back"
+	_tooltip="Go back one page"
+	stock-image="gtk-go-back" />
+      <big-tool-button name="forward-button" size:hgroup="gxksttbtns"
+	_label="_Forward"
+	_tooltip="Go forward one page"
+	stock-image="gtk-go-forward" />
+      <big-tool-button name="reload-button" size:hgroup="gxksttbtns"
+	_label="_Reload"
+	_tooltip="Reload current page"
+	stock-image="gtk-refresh" />
+      <big-tool-button name="index-button" size:hgroup="gxksttbtns"
+	_label="_Index"
+	_tooltip="Go to browser index"
+	stock-image="gtk-index" />
+      <big-tool-button name="find-button" size:hgroup="gxksttbtns"
+	_label="_Find"
+	_tooltip="Find in current document"
+	prop:sensitive="0"
+	stock-image="gtk-find" />
+      <labeled-tool-area expand="1" _label="Location" >
+	<entry name="location-entry" />
+      </labeled-tool-area>
+    </hbox>
+  </xdef:gxk-scroll-text-toolbar>
+
 </gxk-gadget-definitions>

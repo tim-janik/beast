@@ -40,7 +40,7 @@ beast_headers = $(strip \
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
 	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
 	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
-	bstrackeditor.h		bstrackitem.h	bstracktable.h		bstradiotools.h	\
+	bstrackeditor.h		bstrackitem.h	bstracktable.h		\
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	\
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	\
 				bstwaveview.h				bstxkb.h	\
@@ -59,7 +59,7 @@ beast_sources = $(strip \
 	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
 	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	\
 	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	\
-	bstrackeditor.c		bstrackitem.c	bstracktable.c		bstradiotools.c	\
+	bstrackeditor.c		bstrackitem.c	bstracktable.c		\
 	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	\
 	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	\
 				bstwaveview.c				bstxkb.c	\
