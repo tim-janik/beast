@@ -251,7 +251,7 @@ bse_type_id_wrapper (const char *type_name)
   BSE_CXX_DEFINE_SET_PROPERTY (ObjectType);                                     \
   BSE_CXX_DEFINE_GET_PROPERTY (ObjectType);                                     \
   BSE_CXX_DEFINE_CLASS_INIT (ObjectType, BSE_CXX_SYM(ObjectType,set_property),  \
-                                        BSE_CXX_SYM(ObjectType,get_property));  \
+                                         BSE_CXX_SYM(ObjectType,get_property)); \
   static Bse::TypeRegistry                                                      \
     ObjectType ## _type_keeper (sizeof (ObjectType), "Bse" #ObjectType, parent, \
                                 cinfo, binit,                                   \
