@@ -1,0 +1,776 @@
+<html>
+<head>
+<title>BSE-Procedures - 24 Jan 2002 - BEAST/BSE-0.4.0</title>
+</head>
+<body>
+<h1>NAME</h1>
+<blockquote>BSE-Procedures - BSE Procedure Reference</blockquote>
+<h1>SYNOPSIS</h1>
+<blockquote>
+<strong>BseItem::get-name (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::get-name-or-type (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::get-parent (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::get-project (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::get-type (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::get-type-blurb (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::get-type-name (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::is-a (</strong><u>item</u>, <u>type-name</u><strong>)</strong>;
+<br>
+<strong>BseItem::unuse (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::use (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BsePattern::clear-content (</strong><u>pattern</u><strong>)</strong>;
+<br>
+<strong>BsePattern::clear-instrument (</strong><u>pattern</u><strong>)</strong>;
+<br>
+<strong>BsePattern::delete-note (</strong><u>pattern</u>, <u>focus-channel</u>, <u>focus-row</u><strong>)</strong>;
+<br>
+<strong>BsePattern::fill-instrument (</strong><u>pattern</u>, <u>instrument</u><strong>)</strong>;
+<br>
+<strong>BsePattern::insert-note (</strong><u>pattern</u>, <u>focus-channel</u>, <u>focus-row</u><strong>)</strong>;
+<br>
+<strong>BsePattern::select-all (</strong><u>pattern</u><strong>)</strong>;
+<br>
+<strong>BsePattern::select-invert (</strong><u>pattern</u><strong>)</strong>;
+<br>
+<strong>BsePattern::select-none (</strong><u>pattern</u><strong>)</strong>;
+<br>
+<strong>BsePattern::random-fill (</strong><u>pattern</u>, <u>seed-value</u><strong>)</strong>;
+<br>
+<strong>BseProject::restore-from-file (</strong><u>project</u>, <u>file-name</u><strong>)</strong>;
+<br>
+<strong>BseProject::create-midi-synth (</strong><u>project</u><strong>)</strong>;
+<br>
+<strong>BseProject::create-snet (</strong><u>project</u><strong>)</strong>;
+<br>
+<strong>BseProject::create-song (</strong><u>project</u>, <u>n-channels</u><strong>)</strong>;
+<br>
+<strong>BseProject::ensure-wave-repo (</strong><u>project</u><strong>)</strong>;
+<br>
+<strong>BseProject::is_playing (</strong><u>project</u><strong>)</strong>;
+<br>
+<strong>BseSNet::can_create_source (</strong><u>snet</u>, <u>source-type</u><strong>)</strong>;
+<br>
+<strong>BseSNet::create_source (</strong><u>snet</u>, <u>source-type</u><strong>)</strong>;
+<br>
+<strong>BseSNet::remove_source (</strong><u>snet</u>, <u>source</u><strong>)</strong>;
+<br>
+<strong>BseServer::halt-project (</strong><u>server</u>, <u>project</u><strong>)</strong>;
+<br>
+<strong>BseServer::run-project (</strong><u>server</u>, <u>project</u><strong>)</strong>;
+<br>
+<strong>BseServer::use-new-project (</strong><u>server</u>, <u>name</u><strong>)</strong>;
+<br>
+<strong>BseSource::clear-inputs (</strong><u>source</u><strong>)</strong>;
+<br>
+<strong>BseSource::clear-outputs (</strong><u>source</u><strong>)</strong>;
+<br>
+<strong>BseSource::ichannel-blurb (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<br>
+<strong>BseSource::ichannel-get-n-joints (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<br>
+<strong>BseSource::ichannel-get-ochannel (</strong><u>source</u>, <u>input-channel</u>, <u>input-joint</u><strong>)</strong>;
+<br>
+<strong>BseSource::ichannel-get-osource (</strong><u>source</u>, <u>input-channel</u>, <u>input-joint</u><strong>)</strong>;
+<br>
+<strong>BseSource::ichannel-name (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<br>
+<strong>BseSource::is-joint-ichannel (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<br>
+<strong>BseSource::n-ichannels (</strong><u>source</u><strong>)</strong>;
+<br>
+<strong>BseSource::n-ochannels (</strong><u>source</u><strong>)</strong>;
+<br>
+<strong>BseSource::ochannel-blurb (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<br>
+<strong>BseSource::ochannel-name (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<br>
+<strong>BseSource::set-input (</strong><u>input-source</u>, <u>input-channel</u>, <u>output-source</u>, <u>output-channel</u><strong>)</strong>;
+<br>
+<strong>BseSource::unset-input (</strong><u>source</u>, <u>input-channel</u>, <u>output-source</u>, <u>output-channel</u><strong>)</strong>;
+<br>
+<strong>BseWave::load-wave (</strong><u>wave</u>, <u>file-name</u>, <u>wave-name</u>, <u>read-chunks</u>, <u>skip-chunks</u><strong>)</strong>;
+<br>
+<strong>BseWaveRepo::read-file (</strong><u>wave-repo</u>, <u>file-name</u><strong>)</strong>;
+<br>
+<strong>BseWaveRepo::remove-wave (</strong><u>wave-repo</u>, <u>wave</u><strong>)</strong>;
+<br>
+<strong>bse-hello-world (</strong><strong>)</strong>;
+<br>
+<strong>bse-progressor (</strong><u>n-iterations</u>, <u>n-wait-spins</u>, <u>update-progress</u><strong>)</strong>;
+<br>
+<strong>bse-randomizer (</strong><u>use-seed</u>, <u>seed</u><strong>)</strong>;
+<br>
+<strong>bse-error-blurb (</strong><u>error</u><strong>)</strong>;
+<br>
+<strong>bse-error-name (</strong><u>error</u><strong>)</strong>;
+<br>
+</blockquote>
+<h1>DESCRIPTION</h1>
+<blockquote>
+<strong>BseItem::get-name (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Get an item's name  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::get-name-or-type (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Get an item's name or type if it has no name  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::get-parent (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrive item's parent  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::get-project (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrive item's parent  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::get-type (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrive Type ID  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::get-type-blurb (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrieve Type Description  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::get-type-name (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrieve Type Name  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::is-a (</strong><u>item</u>, <u>type-name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td><u></u><td><u>type-name</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Check item type  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::unuse (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+</table>
+</blockquote>
+<blockquote>
+Decrement use count for when an object is not needed anymore  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::use (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+</table>
+</blockquote>
+<blockquote>
+Increment use count to keep the object alive  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::clear-content (</strong><u>pattern</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+</table>
+</blockquote>
+<blockquote>
+Reset note and instrument contents of the selectionto none  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::clear-instrument (</strong><u>pattern</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+</table>
+</blockquote>
+<blockquote>
+Reset instrument for selected notes  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::delete-note (</strong><u>pattern</u>, <u>focus-channel</u>, <u>focus-row</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+<tr><td><u></u><td><u>focus-channel</u><td>
+<tr><td><u></u><td><u>focus-row</u><td>
+</table>
+</blockquote>
+<blockquote>
+Delete current note and shift remaining notes up  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::fill-instrument (</strong><u>pattern</u>, <u>instrument</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+<tr><td><u></u><td><u>instrument</u><td>Instrument to use
+</table>
+</blockquote>
+<blockquote>
+Reset instrument for selected notes  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::insert-note (</strong><u>pattern</u>, <u>focus-channel</u>, <u>focus-row</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+<tr><td><u></u><td><u>focus-channel</u><td>
+<tr><td><u></u><td><u>focus-row</u><td>
+</table>
+</blockquote>
+<blockquote>
+Insert new note and shift remaining notes down  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::select-all (</strong><u>pattern</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+</table>
+</blockquote>
+<blockquote>
+Select all notes  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::select-invert (</strong><u>pattern</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+</table>
+</blockquote>
+<blockquote>
+Invert the current selection  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::select-none (</strong><u>pattern</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+</table>
+</blockquote>
+<blockquote>
+Unselect all notes  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BsePattern::random-fill (</strong><u>pattern</u>, <u>seed-value</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>pattern</u><td>
+<tr><td><u></u><td><u>seed-value</u><td>Enter any number here, it will be used as seed value for the note generator
+</table>
+</blockquote>
+<blockquote>
+Reset note and instrument contents of the selectionto none  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseProject::restore-from-file (</strong><u>project</u>, <u>file-name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td><u></u><td><u>file-name</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Load a project from file  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseProject::create-midi-synth (</strong><u>project</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Create a MIDI synthesizer network in project  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseProject::create-snet (</strong><u>project</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Create a synthsizer network in project  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseProject::create-song (</strong><u>project</u>, <u>n-channels</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td><u></u><td><u>n-channels</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Create a new song in project  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseProject::ensure-wave-repo (</strong><u>project</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Ensure the project has a wave repository  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseProject::is_playing (</strong><u>project</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Check whether a project is currently playing  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSNet::can_create_source (</strong><u>snet</u>, <u>source-type</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>snet</u><td>
+<tr><td><u></u><td><u>source-type</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Check whether inserting a new module into a synthesis network is possible  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSNet::create_source (</strong><u>snet</u>, <u>source-type</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>snet</u><td>
+<tr><td><u></u><td><u>source-type</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Insert a new module into a synthesis network  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSNet::remove_source (</strong><u>snet</u>, <u>source</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>snet</u><td>
+<tr><td><u></u><td><u>source</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Remove an existing module from its synthesis network  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseServer::halt-project (</strong><u>server</u>, <u>project</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>server</u><td>
+<tr><td><u></u><td><u>project</u><td>
+</table>
+</blockquote>
+<blockquote>
+Stop processing a project generating sound  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseServer::run-project (</strong><u>server</u>, <u>project</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>server</u><td>
+<tr><td><u></u><td><u>project</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Process a project to generate sound  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseServer::use-new-project (</strong><u>server</u>, <u>name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>server</u><td>
+<tr><td><u></u><td><u>name</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Create a new project, owned by the caller  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::clear-inputs (</strong><u>source</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+</table>
+</blockquote>
+<blockquote>
+Disconnect all source inputs  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::clear-outputs (</strong><u>source</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+</table>
+</blockquote>
+<blockquote>
+Disconnect all source outputs  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::ichannel-blurb (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Get input channel description  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::ichannel-get-n-joints (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrive the number of input connections of an input channel  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::ichannel-get-ochannel (</strong><u>source</u>, <u>input-channel</u>, <u>input-joint</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td><u></u><td><u>input-joint</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrive output channel of the source connected to a specific joint of an input channel  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::ichannel-get-osource (</strong><u>source</u>, <u>input-channel</u>, <u>input-joint</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td><u></u><td><u>input-joint</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrive output source connected to a specific joint of an input channel  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::ichannel-name (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Get input channel name  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::is-joint-ichannel (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Check if an input channel is a joint (multi-connect) channel  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::n-ichannels (</strong><u>source</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Get the number of input channels of a source  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::n-ochannels (</strong><u>source</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Get the number of output channels of a source  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::ochannel-blurb (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Get output channel description  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::ochannel-name (</strong><u>source</u>, <u>input-channel</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Get output channel name  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::set-input (</strong><u>input-source</u>, <u>input-channel</u>, <u>output-source</u>, <u>output-channel</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>input-source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td><u></u><td><u>output-source</u><td>
+<tr><td><u></u><td><u>output-channel</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Connect a source input to another source's output  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseSource::unset-input (</strong><u>source</u>, <u>input-channel</u>, <u>output-source</u>, <u>output-channel</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>source</u><td>
+<tr><td><u></u><td><u>input-channel</u><td>
+<tr><td><u></u><td><u>output-source</u><td>
+<tr><td><u></u><td><u>output-channel</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Disconnect a source input  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseWave::load-wave (</strong><u>wave</u>, <u>file-name</u>, <u>wave-name</u>, <u>read-chunks</u>, <u>skip-chunks</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>wave</u><td>Wave object to store loaded contents
+<tr><td><u></u><td><u>file-name</u><td>The wave file to read wave chunks from
+<tr><td><u></u><td><u>wave-name</u><td>The name of the wave to read wave chunks from
+<tr><td><u></u><td><u>read-chunks</u><td>If read_chunks is non-NULL, only chunks with their oscillator frequency listed here will be loaded, all chunks otherwise
+<tr><td><u></u><td><u>skip-chunks</u><td>If skip_chunks is non-NULL, wave chunks with their oscillator frequency listed here will not be loaded
+<tr><td colspan=2><u>RETURNS:</u><td>BSE error type
+</table>
+</blockquote>
+<blockquote>
+Load sample chunks from a wave file  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseWaveRepo::read-file (</strong><u>wave-repo</u>, <u>file-name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>wave-repo</u><td>
+<tr><td><u></u><td><u>file-name</u><td>The file to read waves from
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Read Wave from file  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseWaveRepo::remove-wave (</strong><u>wave-repo</u>, <u>wave</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>wave-repo</u><td>
+<tr><td><u></u><td><u>wave</u><td>
+</table>
+</blockquote>
+<blockquote>
+Remove a wave from repository  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>bse-hello-world (</strong><strong>)</strong>;
+<blockquote>
+Hello World - First Plugin ever executed by BSE. Its purpose is to say "Hello World" to BSE and the general outside. This plugin takes no input or outputparameters.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>bse-progressor (</strong><u>n-iterations</u>, <u>n-wait-spins</u>, <u>update-progress</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>n-iterations</u><td>Number of total Iterations
+<tr><td><u></u><td><u>n-wait-spins</u><td>Number of internal iterations
+<tr><td><u></u><td><u>update-progress</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Progressor takes two seed values and then starts progressing. It doesn't do anything particularly usefull, other than sharing CPU time with the main program from time to time.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>bse-randomizer (</strong><u>use-seed</u>, <u>seed</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>use-seed</u><td>
+<tr><td><u></u><td><u>seed</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Randomizer will take on integer as input parameter, use it as seed value and return a string containing a random number. The deeper sense behind this plugin is to test out the parameter passing functionality.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>bse-error-blurb (</strong><u>error</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>error</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrive the description of an error value  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>bse-error-name (</strong><u>error</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>error</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>
+</table>
+</blockquote>
+<blockquote>
+Retrive the name of an error value  
+</blockquote>
+</blockquote>
+
+</body>
+</html>
