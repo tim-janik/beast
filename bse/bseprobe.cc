@@ -219,7 +219,8 @@ public:
         for (SfiRing *node = ring; node; node = sfi_ring_walk (node, ring))
           {
             bse_trans_add (trans, bse_job_probe_request ((BseModule*) node->data,
-                                                         bse_engine_block_size() * 3, bse_engine_block_size(),
+                                                         3 * bse_engine_block_size(),
+                                                         bse_engine_block_size(),
                                                          &channel_ages[0], source_probe_callback, pdata));
             pdata->n_modules++;
           }

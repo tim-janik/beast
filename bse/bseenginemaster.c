@@ -743,6 +743,7 @@ master_take_probes (EngineNode   *node,
           memcpy (pjob->oblocks[i] + pjob->n_values, node->module.ostreams[i].values + offset, n * sizeof (gfloat));
       pjob->n_values += n;
       pjob->value_counter -= n;
+      /* jobs are collected upon push_processd */
       break;
     case PROBE_VIRTUAL:
       n = MIN (pjob->value_counter, n_values - offset);
