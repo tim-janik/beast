@@ -182,35 +182,37 @@
   
   <!-- piano-roll-box -->
   <xdef:piano-roll-box inherit="vbox" spacing="3" >
-    <vbox name="toolbar-area" area="north" >
-      <toolbar >
-	<tool-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
-	<tool-separator pack:padding="2" />
-	<tool-button-factory action-root="" actions="piano-edit-actions" relief="none" />
-	<tool-separator pack:padding="2" />
-	<menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
-	  <popup-menu >
-	    <menu-factory action-root="" actions="pctrl-quant-tools" />
-	  </popup-menu>
-	</menu-button>
-	<menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
-	  <popup-menu >
-	    <menu-factory action-root="" actions="pctrl-note-tools" />
-	  </popup-menu>
-	</menu-button>
-	<tool-separator pack:padding="2" />
-	<tool-area name="hzoom-area" _tooltip="Horizontal piano zoom" >
-	  <ulabel area="label-area"
-	    _label="HZoom" />
-	</tool-area>
-	<tool-area name="vzoom-area" _tooltip="Vertical piano zoom" >
-	  <ulabel area="label-area"
-	    _label="VZoom" />
-	</tool-area>
-      </toolbar>
-    </vbox>
     <notebook pack:expand="1">
-      <vbox>
+      <!-- PianoRoll-vbox -->
+      <vbox pack:tab-label="Piano Roll" >
+	<vbox name="toolbar-area" area="north" >
+	  <toolbar >
+	    <tool-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
+	    <tool-separator pack:padding="2" />
+	    <tool-button-factory action-root="" actions="piano-edit-actions" relief="none" />
+	    <tool-separator pack:padding="2" />
+	    <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	      <popup-menu >
+		<menu-factory action-root="" actions="pctrl-quant-tools" />
+	      </popup-menu>
+	    </menu-button>
+	    <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	      <popup-menu >
+		<menu-factory action-root="" actions="pctrl-note-tools" />
+	      </popup-menu>
+	    </menu-button>
+	    <tool-separator pack:padding="2" />
+	    <tool-area name="hzoom-area" _tooltip="Horizontal piano zoom" >
+	      <ulabel area="label-area"
+		_label="HZoom" />
+	    </tool-area>
+	    <tool-area name="vzoom-area" _tooltip="Vertical piano zoom" >
+	      <ulabel area="label-area"
+		_label="VZoom" />
+	    </tool-area>
+	  </toolbar>
+	</vbox>
+	<!-- PianoRoll-vpaned -->
 	<vpaned name="piano-paned" height="500" position="400" pack:expand="1" >
 	  <!--! child1 of the vpaned is meant to expand, but only gtk+-2.4 has
 	  !   ! child properties on paned, so C code patches up "piano-paned"
@@ -289,7 +291,8 @@
 	  <alignment size:hgroup="scroll-size" />
 	</hbox>
       </vbox>
-      <vbox>
+      <!-- PatternEditor-vbox -->
+      <vbox pack:tab-label="Pattern Editor (highly experimental)" >
 	<hbox spacing="2" border-width="2" >
 	  <hbox name="pattern-control-box" spacing="2" />
 	  <hstock-button name="configure-button" pack:pack-type="end"
