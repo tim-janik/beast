@@ -50,9 +50,18 @@ bst_scrollgraph_destroy (GtkObject *object)
 {
   BstScrollgraph *self = BST_SCROLLGRAPH (object);
   bst_scrollgraph_set_source (self, 0, 0);
-  // FIXME: delete buffers
   /* chain parent class' handler */
   GTK_OBJECT_CLASS (bst_scrollgraph_parent_class)->destroy (object);
+}
+
+static void
+bst_scrollgraph_finalize (GObject *object)
+{
+  BstScrollgraph *self = BST_SCROLLGRAPH (object);
+  g_free (self->values);
+  self->values = NULL;
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (bst_scrollgraph_parent_class)->finalize (object);
 }
 
 static void
@@ -540,6 +549,7 @@ bst_scrollgraph_class_init (BstScrollgraphClass *class)
 
   gobject_class->set_property = bst_scrollgraph_set_property;
   gobject_class->get_property = bst_scrollgraph_get_property;
+  gobject_class->finalize = bst_scrollgraph_finalize;
 
   object_class->destroy = bst_scrollgraph_destroy;
   

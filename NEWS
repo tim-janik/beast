@@ -2,6 +2,15 @@ Overview of Changes in BEAST/BSE 0.6.4:
 
 * Fixed storage logic that caused data loss when overwriting BSE files
 * Added -N and -n=<nicelevel> options to drop nice level priorities
+* Removed libbsw from package, glue code is inlined now
+* GCC-3.4 build fixes
+* Fixed high CPU consumption on scope updates
+* Added spectrogram view for module outputs
+* Minor GUI fixups and miscellaneous other buglet fixes
+* Updated Canadian English translation [Adam Weinberger]
+* Updated British English translation [David Lodge]
+* Updated Czech translation [Miloslav Trmac]
+* Updated Dutch translation [Tino Meinen]
 
 Overview of Changes in BEAST/BSE 0.6.3:
 
