@@ -3,7 +3,7 @@
 <title>BEAST/BSE-0.4.0: BSE-Procedures</title>
 </head>
 <body text="#000000" bgcolor="#ffffff" link="#cc0000" alink="#cc0000" vlink="#990000">
-<h0>BSE-Procedures &nbsp &nbsp - &nbsp 31 Jan 2002 &nbsp - &nbsp BEAST/BSE-0.4.0 </h0>
+<h0>BSE-Procedures &nbsp &nbsp - &nbsp 02 Feb 2002 &nbsp - &nbsp BEAST/BSE-0.4.0 </h0>
 
 <h1>NAME</h1>
 <blockquote>BSE-Procedures - BSE Procedure Reference</blockquote>
@@ -99,7 +99,7 @@
 <br>
 <strong>BseSource::unset-input (</strong><u>source</u>, <u>input-channel</u>, <u>output-source</u>, <u>output-channel</u><strong>)</strong>;
 <br>
-<strong>BseWave::load-wave (</strong><u>wave</u>, <u>file-name</u>, <u>wave-name</u>, <u>read-chunks</u>, <u>skip-chunks</u><strong>)</strong>;
+<strong>BseWave::load-wave (</strong><u>wave</u>, <u>file-name</u>, <u>wave-name</u><strong>)</strong>;
 <br>
 <strong>BseWave::n-channels (</strong><u>wave</u><strong>)</strong>;
 <br>
@@ -677,14 +677,12 @@ Disconnect a source input
 </blockquote>
 </blockquote>
 <blockquote>
-<strong>BseWave::load-wave (</strong><u>wave</u>, <u>file-name</u>, <u>wave-name</u>, <u>read-chunks</u>, <u>skip-chunks</u><strong>)</strong>;
+<strong>BseWave::load-wave (</strong><u>wave</u>, <u>file-name</u>, <u>wave-name</u><strong>)</strong>;
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>wave</u><td>Wave object to store loaded contents
 <tr><td><u></u><td><u>file-name</u><td>The wave file to read wave chunks from
 <tr><td><u></u><td><u>wave-name</u><td>The name of the wave to read wave chunks from
-<tr><td><u></u><td><u>read-chunks</u><td>If read_chunks is non-NULL, only chunks with their oscillator frequency listed here will be loaded, all chunks otherwise
-<tr><td><u></u><td><u>skip-chunks</u><td>If skip_chunks is non-NULL, wave chunks with their oscillator frequency listed here will not be loaded
 <tr><td colspan=2><u>RETURNS:</u><td>BSE error type
 </table>
 </blockquote>

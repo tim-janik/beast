@@ -1,3 +1,8 @@
+Sat Feb  2 08:31:42 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in (AC_GSL_REQUIREMENTS): require Ogg/Vorbis version
+	1.0rc3 or better.
+
 Thu Jan 31 17:49:27 2002  Tim Janik  <timj@gtk.org>
 
 	* bstsnetrouter.c: support PcmInput as default module.

@@ -3,7 +3,7 @@
 <title>GSL (BSE-0.4.0): GSL-Functions</title>
 </head>
 <body text="#000000" bgcolor="#ffffff" link="#cc0000" alink="#cc0000" vlink="#990000">
-<h0>GSL-Functions &nbsp &nbsp - &nbsp 31 Jan 2002 &nbsp - &nbsp GSL (BSE-0.4.0) </h0>
+<h0>GSL-Functions &nbsp &nbsp - &nbsp 02 Feb 2002 &nbsp - &nbsp GSL (BSE-0.4.0) </h0>
 
 <h1>NAME</h1>
 <blockquote>GSL-Functions - GSL Function Reference</blockquote>
@@ -70,6 +70,10 @@
 <strong>gsl_power2_fftar (</strong><u>n_values</u>, <u>r_values_in</u>, <u>ri_values_out</u><strong>)</strong>;
 <br>
 <strong>gsl_power2_fftsr (</strong><u>n_values</u>, <u>ri_values_in</u>, <u>r_values_out</u><strong>)</strong>;
+<br>
+<strong>gsl_filter_tscheb2_steepness_db (</strong><u>iorder</u>, <u>c_freq</u>, <u>epsilon</u>, <u>stopband_db</u><strong>)</strong>;
+<br>
+<strong>gsl_filter_tscheb2_steepness (</strong><u>iorder</u>, <u>c_freq</u>, <u>epsilon</u>, <u>residue</u><strong>)</strong>;
 <br>
 <strong>gsl_filter_butter_lp (</strong><u>iorder</u>, <u>freq</u>, <u>epsilon</u>, <u>a</u>, <u>b</u><strong>)</strong>;
 <br>
@@ -482,6 +486,34 @@ Real valued variant of <strong>gsl_power2_fftac()</strong>, the input array cont
 </blockquote>
 <blockquote>
 Real valued variant of <strong>gsl_power2_fftsc()</strong>, counterpart to <strong>gsl_power2_fftar()</strong>, using the same frequency storage format. A real valued data set transformed into the frequency domain with <strong>gsl_power2_fftar()</strong> can be reconstructed using this function. Note that the transformation is performed out of place, the input array is not modified, and may not overlap with the output array.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>gsl_filter_tscheb2_steepness_db (</strong><u>iorder</u>, <u>c_freq</u>, <u>epsilon</u>, <u>stopband_db</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u>unsigned int </u><td><u>iorder</u><td>filter order
+<tr><td><u>double    </u><td><u>c_freq</u><td>passband cutoff frequency (0..pi)
+<tr><td><u>double    </u><td><u>epsilon</u><td>fall off at passband frequency (0..1)
+<tr><td><u>double    </u><td><u>stopband_db</u><td>reduction in stopband in dB (>= 0)
+</table>
+</blockquote>
+<blockquote>
+Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter, based on the ripple residue in the stop band.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>gsl_filter_tscheb2_steepness (</strong><u>iorder</u>, <u>c_freq</u>, <u>epsilon</u>, <u>residue</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u>unsigned int </u><td><u>iorder</u><td>filter order
+<tr><td><u>double    </u><td><u>c_freq</u><td>passband cutoff frequency (0..pi)
+<tr><td><u>double    </u><td><u>epsilon</u><td>fall off at passband frequency (0..1)
+<tr><td><u>double    </u><td><u>residue</u><td>maximum of transfer function in stopband (0..1)
+</table>
+</blockquote>
+<blockquote>
+Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter, based on ripple residue in the stop band.  
 </blockquote>
 </blockquote>
 <blockquote>
