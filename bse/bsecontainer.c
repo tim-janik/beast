@@ -139,7 +139,8 @@ bse_container_class_init (BseContainerClass *class)
   container_signals[SIGNAL_ITEM_ADDED] = bse_object_class_add_signal (object_class, "item_added",
 								      G_TYPE_NONE, 1, BSE_TYPE_ITEM);
   container_signals[SIGNAL_ITEM_REMOVED] = bse_object_class_add_signal (object_class, "item_removed",
-									G_TYPE_NONE, 1, BSE_TYPE_ITEM);
+									G_TYPE_NONE, 2, BSE_TYPE_ITEM,
+									SFI_TYPE_INT);
 }
 
 static void
@@ -340,6 +341,7 @@ bse_container_remove_item (BseContainer *container,
 			   BseItem      *item)
 {
   gboolean finalizing_container;
+  guint seqid;
 
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (item));
@@ -350,12 +352,13 @@ bse_container_remove_item (BseContainer *container,
   if (!finalizing_container)
     g_object_ref (container);
   g_object_ref (item);
-  
-  BSE_CONTAINER_GET_CLASS (container)->remove_item (container, item);
+
+  seqid = bse_container_get_item_seqid (container, item);
   g_object_freeze_notify (G_OBJECT (container));
   g_object_freeze_notify (G_OBJECT (item));
+  BSE_CONTAINER_GET_CLASS (container)->remove_item (container, item);
   if (!finalizing_container)
-    g_signal_emit (container, container_signals[SIGNAL_ITEM_REMOVED], 0, item);
+    g_signal_emit (container, container_signals[SIGNAL_ITEM_REMOVED], 0, item, seqid);
   g_object_thaw_notify (G_OBJECT (item));
   g_object_thaw_notify (G_OBJECT (container));
   

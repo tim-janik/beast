@@ -70,3 +70,32 @@ METHOD (BseContainer, lookup-item) {
   
   return BSE_ERROR_NONE;
 }
+
+METHOD (BseContainer, get-item) {
+  BLURB = "Get an item by seqid";
+  HELP  = "Retrieve a containers immediate child from it's sequential id.";
+  IN	= bse_param_spec_object ("container", NULL, NULL, BSE_TYPE_CONTAINER, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("item_type", NULL, "Type of the item to retrieve",
+			    NULL, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("seq_id", NULL, "Sequential ID",
+			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("item", NULL, "The item with seqid as requested", BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseContainer *container = bse_value_get_object (in_values++);
+  const gchar *type_name  = sfi_value_get_string (in_values++);
+  guint seqid             = sfi_value_get_int (in_values++);
+  GType type = type_name ? g_type_from_name (type_name) : 0;
+
+  /* check parameters */
+  if (!BSE_IS_CONTAINER (container) || !g_type_is_a (type, BSE_TYPE_ITEM))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  bse_value_set_object (out_values++, bse_container_get_item (container, type, seqid));
+
+  return BSE_ERROR_NONE;
+}
