@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-12 01:03-0400\n"
-"PO-Revision-Date: 2004-10-12 19:50-0400\n"
+"POT-Creation-Date: 2004-10-15 11:13-0400\n"
+"PO-Revision-Date: 2004-10-15 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -1512,7 +1512,7 @@ msgstr "Vertical Region"
 msgid "Play note"
 msgstr "Play note"
 
-#: beast-gtk/bstplayback.c:76
+#: beast-gtk/bstplayback.c:80
 msgid "Playback"
 msgstr "Playback"
 
@@ -2532,7 +2532,7 @@ msgstr "Add a new track to this song"
 msgid "Delete the currently selected track"
 msgstr "Delete the currently selected track"
 
-#: beast-gtk/bsttrackview.c:301 bse/bsetrack.c:282 bse/bsewaveosc.c:125
+#: beast-gtk/bsttrackview.c:301 bse/bsetrack.c:282 bse/bsewaveosc.c:127
 msgid "Available Waves"
 msgstr "Available Waves"
 
@@ -2546,7 +2546,7 @@ msgid ""
 msgstr ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 
-#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:427 bse/bsetrack.c:941
+#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:449 bse/bsetrack.c:941
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum number of voices for simultaneous playback"
 
@@ -2562,7 +2562,7 @@ msgstr "Midi channel assigned to this track. 0 uses private per-track channel."
 msgid "Mixer busses connected to track output"
 msgstr "Mixer busses connected to track output"
 
-#: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:436 bse/bsesong.c:729
+#: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:458 bse/bsesong.c:729
 #: bse/bsetrack.c:952
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesis network to be used as postprocessor"
@@ -3129,7 +3129,7 @@ msgid "Second control input"
 msgstr "Second control input"
 
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
-#: bse/bsewaveosc.c:564 plugins/bseadder.c:101 plugins/bseatandistort.c:92
+#: bse/bsewaveosc.c:596 plugins/bseadder.c:101 plugins/bseatandistort.c:92
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
 #: plugins/davbassfilter.idl:36 plugins/davchorus.idl:32
 #: plugins/davorgan.c:133 plugins/davsyndrum.c:122
@@ -3327,8 +3327,8 @@ msgstr ""
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
 #: bse/bsestandardosc.c:152 bse/bsestandardosc.c:158 bse/bsestandardosc.c:164
-#: bse/bsestandardosc.c:170 bse/bsewaveosc.c:534 bse/bsewaveosc.c:540
-#: bse/bsewaveosc.c:546
+#: bse/bsestandardosc.c:170 bse/bsewaveosc.c:566 bse/bsewaveosc.c:572
+#: bse/bsewaveosc.c:578
 msgid "Modulation"
 msgstr "Modulation"
 
@@ -3336,11 +3336,11 @@ msgstr "Modulation"
 msgid "Strength of linear frequency modulation"
 msgstr "Strength of linear frequency modulation"
 
-#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:161 bse/bsewaveosc.c:543
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:161 bse/bsewaveosc.c:575
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Perform exponential frequency modulation instead of linear"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:167 bse/bsewaveosc.c:549
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:167 bse/bsewaveosc.c:581
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Number of octaves to be affected by exponential frequency modulation"
 
@@ -3363,7 +3363,7 @@ msgstr "Audio In"
 msgid "Unfiltered Audio Signal"
 msgstr "Unfiltered Audio Signal"
 
-#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:191 bse/bsewaveosc.c:558
+#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:191 bse/bsewaveosc.c:590
 #: plugins/davorgan.c:132 plugins/davsyndrum.c:116
 #: plugins/davxtalstrings.c:141
 msgid "Freq In"
@@ -3411,8 +3411,8 @@ msgstr "List of available mixer busses to be used as bus output"
 
 #. FIXME: fix volume
 #: bse/bsebus.c:825 bse/bsebus.c:827 bse/bsebus.c:829 bse/bsebus.c:831
-#: bse/bsebus.c:835 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
-#: bse/bsemidisynth.c:452 bse/bsesong.c:689 bse/bsesong.c:695
+#: bse/bsebus.c:835 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
+#: bse/bsemidisynth.c:474 bse/bsesong.c:689 bse/bsesong.c:695
 #: bse/bsesong.c:702 bse/bsetrack.c:925
 msgid "Adjustments"
 msgstr "Adjustments"
@@ -4782,63 +4782,63 @@ msgstr ""
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/Input & Output/MIDI Voice Input"
 
-#: bse/bsemidisynth.c:226 bse/bsesubsynth.c:157 bse/bsetrack.c:291
+#: bse/bsemidisynth.c:227 bse/bsesubsynth.c:157 bse/bsetrack.c:291
 msgid "Available Synthesizers"
 msgstr "Available Synthesizers"
 
-#: bse/bsemidisynth.c:226
+#: bse/bsemidisynth.c:227
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr ""
 "List of available synthesis networks from which to choose a MIDI instrument"
 
-#: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:295
+#: bse/bsemidisynth.c:231 bse/bsesong.c:145 bse/bsetrack.c:295
 msgid "Available Postprocessors"
 msgstr "Available Postprocessors"
 
-#: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:295
+#: bse/bsemidisynth.c:231 bse/bsesong.c:145 bse/bsetrack.c:295
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr ""
 "List of available synthesis networks from which to choose a postprocessor"
 
-#: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
-#: bse/bsemidisynth.c:434 bse/bsesong.c:727 bse/bsetrack.c:944
+#: bse/bsemidisynth.c:442 bse/bsemidisynth.c:447 bse/bsemidisynth.c:452
+#: bse/bsemidisynth.c:456 bse/bsesong.c:727 bse/bsetrack.c:944
 #: bse/bsetrack.c:950
 msgid "MIDI Instrument"
 msgstr "MIDI Instrument"
 
-#: bse/bsemidisynth.c:422 bse/bsetrack.c:946
+#: bse/bsemidisynth.c:444 bse/bsetrack.c:946
 msgid "MIDI Channel"
 msgstr "MIDI Channel"
 
-#: bse/bsemidisynth.c:427
+#: bse/bsemidisynth.c:449
 msgid "Max Voices"
 msgstr "Max Voices"
 
-#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:513 bse/bsetrack.c:931
+#: bse/bsemidisynth.c:454 bse/bsesubsynth.c:513 bse/bsetrack.c:931
 msgid "Synthesizer"
 msgstr "Synthesizer"
 
-#: bse/bsemidisynth.c:432
+#: bse/bsemidisynth.c:454
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Synthesis network to be used as MIDI instrument"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:729 bse/bsetrack.c:952
+#: bse/bsemidisynth.c:458 bse/bsesong.c:729 bse/bsetrack.c:952
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
-#: bse/bsemidisynth.c:441 bse/bsesong.c:691
+#: bse/bsemidisynth.c:463 bse/bsesong.c:691
 msgid "Master [float]"
 msgstr "Master [float]"
 
-#: bse/bsemidisynth.c:447 bse/bsesong.c:697
+#: bse/bsemidisynth.c:469 bse/bsesong.c:697
 msgid "Master [dB]"
 msgstr "Master [dB]"
 
-#: bse/bsemidisynth.c:454 bse/bsesong.c:704
+#: bse/bsemidisynth.c:476 bse/bsesong.c:704
 msgid "Master [%]"
 msgstr "Master [%]"
 
-#: bse/bsemidisynth.c:458 bse/bsesong.c:731
+#: bse/bsemidisynth.c:480 bse/bsesong.c:731
 msgid "Playback Settings"
 msgstr "Playback Settings"
 
@@ -4846,7 +4846,7 @@ msgstr "Playback Settings"
 msgid "Freq Out"
 msgstr "Freq Out"
 
-#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:566
+#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:598
 msgid "Gate Out"
 msgstr "Gate Out"
 
@@ -5105,8 +5105,8 @@ msgstr "/Audio Sources/Standard Oscillator"
 msgid "Wave Form"
 msgstr "Wave Form"
 
-#: bse/bsestandardosc.c:131 bse/bsetrack.c:936 bse/bsewaveosc.c:530
-#: bse/bsewaveosc.c:532
+#: bse/bsestandardosc.c:131 bse/bsetrack.c:936 bse/bsewaveosc.c:558
+#: bse/bsewaveosc.c:560 bse/bsewaveosc.c:562
 msgid "Wave"
 msgstr "Wave"
 
@@ -5126,15 +5126,15 @@ msgstr "Base Frequency"
 msgid "Fine Tune"
 msgstr "Fine Tune"
 
-#: bse/bsestandardosc.c:154 bse/bsewaveosc.c:536
+#: bse/bsestandardosc.c:154 bse/bsewaveosc.c:568
 msgid "Input Modulation [%]"
 msgstr "Input Modulation [%]"
 
-#: bse/bsestandardosc.c:160 bse/bsewaveosc.c:542
+#: bse/bsestandardosc.c:160 bse/bsewaveosc.c:574
 msgid "Exponential FM"
 msgstr "Exponential FM"
 
-#: bse/bsestandardosc.c:166 bse/bsewaveosc.c:548
+#: bse/bsestandardosc.c:166 bse/bsewaveosc.c:580
 msgid "Octaves"
 msgstr "Octaves"
 
@@ -5186,11 +5186,11 @@ msgstr "PWM In"
 msgid "Pulse Width Modulation Input"
 msgstr "Pulse Width Modulation Input"
 
-#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:560
+#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:592
 msgid "Sync In"
 msgstr "Sync In"
 
-#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:560
+#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:592
 msgid "Syncronization Input"
 msgstr "Syncronization Input"
 
@@ -5334,39 +5334,47 @@ msgstr "Max Voices"
 msgid "Mixer busses used as output for this track"
 msgstr "Mixer busses used as output for this track"
 
-#: bse/bsewaveosc.c:94
+#: bse/bsewaveosc.c:95
 msgid "/Audio Sources/Wave Oscillator"
 msgstr "/Audio Sources/Wave Oscillator"
 
-#: bse/bsewaveosc.c:125
+#: bse/bsewaveosc.c:127
 msgid "List of available waves to choose as oscillator source"
 msgstr "List of available waves to choose as oscillator source"
 
-#: bse/bsewaveosc.c:532
+#: bse/bsewaveosc.c:560
 msgid "Wave used as oscillator source"
 msgstr "Wave used as oscillator source"
 
-#: bse/bsewaveosc.c:537
+#: bse/bsewaveosc.c:564
+msgid "Channel"
+msgstr "Channel"
+
+#: bse/bsewaveosc.c:564
+msgid "The audio channel to play, usually 1 is left, 2 is right"
+msgstr "The audio channel to play. Usually, 1 is left, and 2 is right"
+
+#: bse/bsewaveosc.c:569
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Modulation Strength for linear frequency modulation"
 
-#: bse/bsewaveosc.c:558 plugins/davorgan.c:132
+#: bse/bsewaveosc.c:590 plugins/davorgan.c:132
 msgid "Frequency Input"
 msgstr "Frequency Input"
 
-#: bse/bsewaveosc.c:562
+#: bse/bsewaveosc.c:594
 msgid "Mod In"
 msgstr "Mod In"
 
-#: bse/bsewaveosc.c:562
+#: bse/bsewaveosc.c:594
 msgid "Modulation Input"
 msgstr "Modulation Input"
 
-#: bse/bsewaveosc.c:564
+#: bse/bsewaveosc.c:596
 msgid "Wave Output"
 msgstr "Wave Output"
 
-#: bse/bsewaveosc.c:566
+#: bse/bsewaveosc.c:598
 msgid "Gate Output"
 msgstr "Gate Output"
 
