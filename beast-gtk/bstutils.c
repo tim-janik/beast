@@ -1085,22 +1085,25 @@ gnome_canvas_item_keep_between (GnomeCanvasItem *between,
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (between));
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (item1));
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (item2));
-  
-  if (between->parent && item1->parent == between->parent && item2->parent == between->parent)
+
+  if (between->parent && item1->parent && item2->parent)
     {
-      guint n, i, z;
-      
-      n = gnome_canvas_item_get_stacking (item1);
-      i = gnome_canvas_item_get_stacking (item2);
-      z = gnome_canvas_item_get_stacking (between);
-      n = (n + i + (z > MIN (n, i))) / 2;
-      if (z < n)
-	gnome_canvas_item_raise (between, n - z);
-      else if (n < z)
-	gnome_canvas_item_lower (between, z - n);
+      if (item1->parent == between->parent && item2->parent == between->parent)
+	{
+	  guint n, i, z;
+	  
+	  n = gnome_canvas_item_get_stacking (item1);
+	  i = gnome_canvas_item_get_stacking (item2);
+	  z = gnome_canvas_item_get_stacking (between);
+	  n = (n + i + (z > MIN (n, i))) / 2;
+	  if (z < n)
+	    gnome_canvas_item_raise (between, n - z);
+	  else if (n < z)
+	    gnome_canvas_item_lower (between, z - n);
+	}
+      else
+	g_warning ("gnome_canvas_item_keep_between() called for non-siblings");
     }
-  else
-    g_warning ("gnome_canvas_item_keep_between() called for non-siblings");
 }
 
 void
@@ -1112,23 +1115,25 @@ gnome_canvas_item_keep_above (GnomeCanvasItem *above,
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (item1));
   g_return_if_fail (GNOME_IS_CANVAS_ITEM (item2));
   
-  if (above->parent && item1->parent == above->parent && item2->parent == above->parent)
+  if (above->parent && item1->parent && item2->parent)
     {
-      guint n, i, z;
-      
-      n = gnome_canvas_item_get_stacking (item1);
-      i = gnome_canvas_item_get_stacking (item2);
-      z = gnome_canvas_item_get_stacking (above);
-      n = MAX (n, i) + 1;
-      if (z < n)
-	gnome_canvas_item_raise (above, n - z);
-      else if (n < z)
-	gnome_canvas_item_lower (above, z - n);
+      if (item1->parent == above->parent && item2->parent == above->parent)
+	{
+	  guint n, i, z;
+	  
+	  n = gnome_canvas_item_get_stacking (item1);
+	  i = gnome_canvas_item_get_stacking (item2);
+	  z = gnome_canvas_item_get_stacking (above);
+	  n = MAX (n, i) + 1;
+	  if (z < n)
+	    gnome_canvas_item_raise (above, n - z);
+	  else if (n < z)
+	    gnome_canvas_item_lower (above, z - n);
+	}
+      else
+	g_warning ("gnome_canvas_item_keep_above() called for non-siblings");
     }
-  else
-    g_warning ("gnome_canvas_item_keep_above() called for non-siblings");
 }
-
 
 /* --- Auxillary Dialogs --- */
 static gpointer adialog_parent_class = NULL;

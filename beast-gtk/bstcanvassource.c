@@ -366,12 +366,13 @@ bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
 				gdouble         *x_p,
 				gdouble         *y_p)
 {
-  gdouble x, y;
+  gdouble x = 0, y = 0;
   
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
   
   x = ICHANNEL_X (csource) + CHANNEL_WIDTH / 2;
-  y = CHANNEL_HEIGHT / BSE_SOURCE_N_ICHANNELS (csource->source);
+  if (csource->source)
+    y = CHANNEL_HEIGHT / BSE_SOURCE_N_ICHANNELS (csource->source);
   y *= ochannel_id - 0.5;
   y += ICHANNEL_Y;
   gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (csource), &x, &y);
@@ -392,7 +393,8 @@ bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
   
   x = OCHANNEL_X (csource) + CHANNEL_WIDTH / 2;
-  y = CHANNEL_HEIGHT / BSE_SOURCE_N_OCHANNELS (csource->source);
+  if (csource->source)
+    y = CHANNEL_HEIGHT / BSE_SOURCE_N_OCHANNELS (csource->source);
   y *= ichannel_id - 0.5;
   y += OCHANNEL_Y;
   gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (csource), &x, &y);
@@ -543,10 +545,11 @@ static void
 bst_canvas_icon_set (GnomeCanvasItem *item,
 		     BseIcon         *icon)
 {
-  ArtPixBuf *apixbuf;
   GdkPixbuf *pixbuf;
   
   bse_icon_ref (icon);
+#if 0
+  ArtPixBuf *apixbuf;
   apixbuf = (icon->bytes_per_pixel > 3
 	     ? art_pixbuf_new_const_rgba
 	     : art_pixbuf_new_const_rgb) (icon->pixels,
@@ -555,6 +558,11 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 					  icon->width *
 					  icon->bytes_per_pixel);
   pixbuf = gdk_pixbuf_new_from_art_pixbuf (apixbuf);
+#endif
+  pixbuf = gdk_pixbuf_new_from_data (icon->pixels, GDK_COLORSPACE_RGB, TRUE,
+				     8, icon->width, icon->height,
+				     icon->width * icon->bytes_per_pixel,
+				     NULL, NULL);
   bst_object_set (GTK_OBJECT (item),
 		  "pixbuf", pixbuf,
 		  "x_in_pixels", FALSE,

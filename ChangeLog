@@ -1,3 +1,24 @@
+Thu Apr 20 00:27:28 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvaslink.c (bst_canvas_link_set_icsource): 
+	(bst_canvas_link_set_ocsource): check whether the isource/csource's
+	BseSource is still valid before removing notifier.
+
+Wed Apr 19 23:51:04 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.c (gnome_canvas_item_keep_above): 
+	(gnome_canvas_item_keep_between): shut up the warning for
+	unparented items.
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_icon_set): use
+	gdk_pixbuf_new_from_data() to create the pixbuf now.
+
+Mon Apr 17 21:30:46 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_source_ichannel_pos): 
+	(bst_canvas_source_ochannel_pos): these functions may get called
+	after we lost our BseSource, guard access.
+
 Tue Apr 11 05:44:38 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_param_create): don't let scales and

@@ -260,9 +260,10 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
   
   if (clink->ocsource)
     {
-      bse_object_remove_notifiers_by_func (BSE_OBJECT (clink->ocsource->source),
-					   clink_view_check_update,
-					   clink);
+      if (clink->ocsource->source) /* source may be destroyed already */
+	bse_object_remove_notifiers_by_func (BSE_OBJECT (clink->ocsource->source),
+					     clink_view_check_update,
+					     clink);
       if (!GTK_OBJECT_DESTROYED (clink->ocsource))
 	gtk_signal_disconnect (GTK_OBJECT (clink->ocsource), clink->oc_handler);
       gtk_object_unref (GTK_OBJECT (clink->ocsource));
@@ -295,9 +296,10 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
   
   if (clink->icsource)
     {
-      bse_object_remove_notifiers_by_func (BSE_OBJECT (clink->icsource->source),
-					   clink_view_check_update,
-					   clink);
+      if (clink->icsource->source) /* source may be destroyed already */
+	bse_object_remove_notifiers_by_func (BSE_OBJECT (clink->icsource->source),
+					     clink_view_check_update,
+					     clink);
       if (!GTK_OBJECT_DESTROYED (clink->icsource))
         gtk_signal_disconnect (GTK_OBJECT (clink->icsource), clink->ic_handler);
       gtk_object_unref (GTK_OBJECT (clink->icsource));
