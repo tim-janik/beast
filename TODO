@@ -1,10 +1,6 @@
 FIXMES:
 - enable Clear Undo only for --hints
 - alias --hints to --devel
-- flag voices in midi receiver for monosynth tracks as monosynth
-- queue note-on and note-off as voice-changes on mono-synth voices
-- ignore note-off for monosynth voices if note-off-freq!=voice->freq
-- add BseMonoKeyboard with midi-channel selection, duplicating mono-synth voice signals 
 - if Track::Synth is NULL, disconnect post-process-subsynth from track-context-merger
 - show Messgae: progress seen 19/15 items only with -:d
 - fix nominator/denomiator settings in songs
@@ -64,7 +60,6 @@ FIXMES:
   can be demarshalled in non-validated form after incompatible changes)
 - cleanup helper/util code in sfitype.h
 - choice type should have validation function
-- does BseMidiIController need a MIDI channel property?
 - song->master volume doesn't affect anything
 - fix and canonify decibell naming everywhere
 - need volume properties per track
@@ -83,7 +78,7 @@ FIXMES:
 * eliminate everything that fgrep -i fixme/hack reveals
 
 TODO:
-- implament humanizer scheme script that offsets notes by a few random ticks
+- implement humanizer scheme script that offsets notes by a few random ticks
 - add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
 
 DOCS:
