@@ -710,7 +710,7 @@ bse_track_add_modules (BseTrack        *self,
 {
   g_return_if_fail (BSE_IS_TRACK (self));
   g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_CONTEXT_MERGER (merger));
+  g_return_if_fail (BSE_IS_SOURCE (merger));
   g_return_if_fail (self->sub_synth == NULL);
   g_return_if_fail (midi_receiver != NULL);
 
@@ -719,17 +719,17 @@ bse_track_add_modules (BseTrack        *self,
   bse_item_set_internal (self->voice_input, TRUE);
   
   /* sub synth */
-  self->sub_synth = bse_container_new_child (container, BSE_TYPE_SUB_SYNTH,
-                                             "in_port_1", "frequency",
-                                             "in_port_2", "gate",
-                                             "in_port_3", "velocity",
-                                             "in_port_4", "aftertouch",
-                                             "out_port_1", "left-audio",
-                                             "out_port_2", "right-audio",
-                                             "out_port_3", "unused",
-                                             "out_port_4", "synth-done",
-                                             "snet", self->snet,
-                                             NULL);
+  self->sub_synth = bse_container_new_child_bname (container, BSE_TYPE_SUB_SYNTH, "Track-Instrument",
+                                                   "in_port_1", "frequency",
+                                                   "in_port_2", "gate",
+                                                   "in_port_3", "velocity",
+                                                   "in_port_4", "aftertouch",
+                                                   "out_port_1", "left-audio",
+                                                   "out_port_2", "right-audio",
+                                                   "out_port_3", "unused",
+                                                   "out_port_4", "synth-done",
+                                                   "snet", self->snet,
+                                                   NULL);
   bse_item_set_internal (self->sub_synth, TRUE);
   
   /* voice input <-> sub-synth */
@@ -766,7 +766,7 @@ bse_track_add_modules (BseTrack        *self,
 			     self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT);
   
   /* postprocess */
-  self->postprocess = bse_container_new_child (container, BSE_TYPE_SUB_SYNTH, NULL);
+  self->postprocess = bse_container_new_child_bname (container, BSE_TYPE_SUB_SYNTH, "Track-Postprocess", NULL);
   bse_item_set_internal (self->postprocess, TRUE);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
   

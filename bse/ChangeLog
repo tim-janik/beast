@@ -1,3 +1,14 @@
+Sat Jul 10 20:01:47 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.[hc]: added bse_container_new_child_bname() which allowes
+	to specify a base-name for the newly created child.
+	turned bse_container_new_child() into a macro.
+
+	* bsesong.[hc]: added convenience function bse_song_create_merger().
+
+	* bsetrack.c: provide base-names when creating snets, so the
+	generated snet name numbers match the track number.
+
 Sat Jul 10 18:27:53 2004  Tim Janik  <timj@gtk.org>
 
 	* icons/summation.xcf:

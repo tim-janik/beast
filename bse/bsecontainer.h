@@ -94,6 +94,13 @@ gpointer        bse_container_new_child         (BseContainer   *container,
 						 GType           child_type,
 						 const gchar    *first_param_name,
 						 ...);
+gpointer        bse_container_new_child_bname   (BseContainer   *container,
+						 GType           child_type,
+						 const gchar    *base_name,
+						 const gchar    *first_param_name,
+						 ...);
+#define         bse_container_new_child(         container, child_type, ...) \
+                bse_container_new_child_bname(   container, child_type, NULL, __VA_ARGS__)
 void		bse_container_add_item          (BseContainer	*container,
 						 BseItem	*item);
 void		bse_container_remove_item	(BseContainer	*container,

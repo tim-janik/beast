@@ -257,12 +257,14 @@ bse_container_add_item (BseContainer *container,
       guint i = 0, l;
       
       if (!uname)
+        uname = g_object_get_data (container, "BseContainer-base-name");
+      if (!uname)
         {
           uname = BSE_OBJECT_TYPE_NAME (item);
           if (strncmp (uname, "Bse", 3) == 0 && uname[3])
             uname += 3; /* strip namespace for convenient naming */
         }
-      
+
       l = strlen (uname);
       buffer = g_new (gchar, l + 12);
       strcpy (buffer, uname);
@@ -274,7 +276,8 @@ bse_container_add_item (BseContainer *container,
       g_object_set (item, "uname", buffer, NULL); /* no undo */
       g_free (buffer);
     }
-  
+  g_object_set_data (container, "BseContainer-base-name", NULL);
+
   BSE_CONTAINER_GET_CLASS (container)->add_item (container, item);
   if (item->parent != NULL)
     g_signal_emit (container, container_signals[SIGNAL_ITEM_ADDED], 0, item);
@@ -288,10 +291,11 @@ bse_container_add_item (BseContainer *container,
 }
 
 gpointer
-bse_container_new_child (BseContainer *container,
-                         GType         child_type,
-                         const gchar  *first_param_name,
-                         ...)
+bse_container_new_child_bname (BseContainer *container,
+                               GType         child_type,
+                               const gchar  *base_name,
+                               const gchar  *first_param_name,
+                               ...)
 {
   gpointer child;
   va_list var_args;
@@ -299,7 +303,8 @@ bse_container_new_child (BseContainer *container,
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
   g_return_val_if_fail (g_type_is_a (child_type, BSE_TYPE_ITEM), NULL);
   g_return_val_if_fail (!G_TYPE_IS_ABSTRACT (child_type), NULL);
-  
+
+  g_object_set_data_full (container, "BseContainer-base-name", g_strdup (base_name), g_free);
   va_start (var_args, first_param_name);
   child = g_object_new_valist (child_type, first_param_name, var_args);
   va_end (var_args);

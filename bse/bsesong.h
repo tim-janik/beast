@@ -89,6 +89,7 @@ void		bse_song_get_timing		(BseSong	*self,
 						 guint		 tick,
 						 BseSongTiming	*timing);
 void		bse_song_timing_get_default	(BseSongTiming	*timing);
+BseSource*      bse_song_create_merger          (BseSong        *self);
 
 
 G_END_DECLS
