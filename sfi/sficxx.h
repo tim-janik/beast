@@ -20,6 +20,7 @@
 #define __SFI_CXX_H__
 
 #include <sfi/sfi.h>
+#include <string>
 
 namespace Sfi {
 
@@ -92,6 +93,66 @@ public:
   ~String()
   {
     g_free (cstring);
+  }
+};
+
+typedef enum {
+  INIT_NULL,
+  INIT_EMPTY,
+  INIT_DEFAULT,
+} InitializationType;
+
+template<typename Type>
+class RecordHandle {
+  Type *record;
+public:
+  RecordHandle (InitializationType t = INIT_NULL)
+  {
+    record = NULL;
+    if (t == INIT_DEFAULT || t == INIT_EMPTY)
+      record = new Type();
+  }
+  RecordHandle (const RecordHandle &rh)
+  {
+    if (rh.record)
+      record = new Type (*rh.record);
+    else
+      record = NULL;
+  }
+  RecordHandle (const Type &rec)
+  {
+    record = new Type (rec);
+  }
+  RecordHandle& operator= (const Type &rec)
+  {
+    delete record;
+    record = new Type (rec);
+    return *this;
+  }
+  void take (Type *rec)
+  {
+    delete record;
+    record = rec;
+  }
+  RecordHandle& operator= (const RecordHandle &src)
+  {
+    delete record;
+    if (src.record)
+      record = new Type (*src.record);
+    else
+      record = NULL;
+  }
+  Type* c_ptr() const
+  {
+    return record;
+  }
+  ~RecordHandle()
+  {
+    delete record;
+  }
+  Type* operator-> () const
+  {
+    return record;
   }
 };
 

@@ -1,3 +1,12 @@
+Mon Jan 19 22:50:20 2004  Tim Janik  <timj@gtk.org>
+
+	* sficxx.h: added RecordHandle<>(), which implements smart
+	by-value handling of record pointers.
+
+	* testcxx.cc: test RecordHandle<>().
+
+	* Makefile.am: added testcxx to make check.
+
 Mon Jan 19 21:46:15 2004  Tim Janik  <timj@gtk.org>
 
 	* sficxx.h: first start at C++ header.
