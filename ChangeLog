@@ -1,3 +1,8 @@
+Fri Dec  3 16:56:36 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* configure.in:
+	* tests/Makefile.am: Properly integrated tests/scripts directory.
+
 Fri Dec  3 16:55:13 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/scripts/waveloadtest.scm: Flush at newline boundary.

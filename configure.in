@@ -618,6 +618,7 @@ po-helper.sh
 tests/Makefile
 tests/audio/Makefile
 tests/latency/Makefile
+tests/scripts/Makefile
 test/Makefile
 ])
 

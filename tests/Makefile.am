@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BEAST tests
 
-SUBDIRS = audio latency
+SUBDIRS = audio latency scripts
 
 CFLAGS   += $(EXTRA_CFLAGS)
 CPPFLAGS += $(EXTRA_CXXFLAGS)
