@@ -143,8 +143,10 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, options), group)
 #define sfidl_pspec_LogScale(group, name, nick, blurb, dflt, min, max, step, center, base, n_steps, options) \
   sfi_pspec_set_group (sfi_pspec_log_scale (name, nick, blurb, dflt, min, max, step, center, base, n_steps, "scale:" options), group)
+#define	sfidl_pspec_Choice(group, name, nick, blurb, dval, options, cvalues)	\
+  sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, dval, cvalues, SFI_PARAM_STANDARD), group)
 #define	sfidl_pspec_Choice_default(group, name, cvalues)	\
-  sfi_pspec_set_group (sfi_pspec_choice (name, NULL, NULL, NULL, cvalues, SFI_PARAM_STANDARD), group)
+  sfidl_pspec_Choice (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
 #define	sfidl_pspec_GEnum(group, name, nick, blurb, dval, options, etype)	\
   sfi_pspec_set_group (bse_param_spec_genum (name, nick, blurb, etype, dval, options), group)
 #define	sfidl_pspec_GEnum_default(group, name, etype)	\
@@ -161,12 +163,22 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_STANDARD), group)
 #define	sfidl_pspec_Object_default(group, name, otype)	\
   sfi_pspec_set_group (bse_param_spec_object (name, NULL, NULL, otype, SFI_PARAM_STANDARD), group)
-#define	sfidl_pspec_BoxedSeq(group, name, nick, blurb, options, element_pspec)		\
-  sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element_pspec, options), group)
-#define	sfidl_pspec_BoxedRec(group, name, nick, blurb, options, fields)			\
+#define	sfidl_pspec_Record(group, name, nick, blurb, options, fields)			\
   sfi_pspec_set_group (sfi_pspec_rec (name, nick, blurb, fields, options), group)
-#define	sfidl_pspec_BoxedRec_default(group, name, fields)	\
-  sfi_pspec_set_group (sfi_pspec_rec (name, NULL, NULL, fields, SFI_PARAM_STANDARD), group)
+#define	sfidl_pspec_Record_default(group, name, fields)	\
+  sfidl_pspec_Record (group, name, NULL, NULL, SFI_PARAM_STANDARD, fields)
+#define	sfidl_pspec_Sequence(group, name, nick, blurb, options, element)			\
+  sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element, options), group)
+#define	sfidl_pspec_Sequence_default(group, name, element)	\
+  sfidl_pspec_Sequence (group, name, NULL, NULL, SFI_PARAM_STANDARD, element)
+#define	sfidl_pspec_BoxedRec(group, name, nick, blurb, options, rectype)			\
+  sfi_pspec_set_group (bse_param_spec_boxed (name, nick, blurb, rectype, options), group)
+#define	sfidl_pspec_BoxedRec_default(group, name, rectype)	\
+  sfidl_pspec_BoxedRec (group, name, NULL, NULL, SFI_PARAM_STANDARD, rectype)
+#define	sfidl_pspec_BoxedSeq(group, name, nick, blurb, options, seqtype)			\
+  sfi_pspec_set_group (bse_param_spec_boxed (name, nick, blurb, seqtype, options), group)
+#define	sfidl_pspec_BoxedSeq_default(group, name, seqtype)	\
+  sfidl_pspec_BoxedSeq (group, name, NULL, NULL, SFI_PARAM_STANDARD, seqtype)
 #define	sfidl_pspec_BBlock(group, name, nick, blurb, options)				\
   sfi_pspec_set_group (sfi_pspec_bblock (name, nick, blurb, options), group)
 

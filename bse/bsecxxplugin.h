@@ -116,16 +116,14 @@ EnumValue (int         int_value,
     if (!bnode.node.name) {                                             \
       bnode.node.name = RecordType::type_name();                        \
       bnode.node.options = RecordType::options();                       \
-      bnode.node.category = NULL;                                       \
       bnode.node.authors = RecordType::authors();                       \
       bnode.node.license = RecordType::license();                       \
-      bnode.node.pixstream = NULL;                                      \
       bnode.node.blurb = RecordType::blurb();                           \
-      bnode.copy = NULL; /* RecordType::boxed_copy; */                             \
-      bnode.free = NULL; /* RecordType::boxed_free; */                             \
-      bnode.seqrec2boxed = NULL; /* RecordType::from_rec; */                       \
-      bnode.boxed2recseq = NULL; /* RecordType::to_rec; */                         \
-      /* bnode.fields = NULL; /* RecordType::rec_fields(); */                         \
+      bnode.copy = ::Sfi::cxx_boxed_copy<RecordType>;                   \
+      bnode.free = ::Sfi::cxx_boxed_free<RecordType>;                   \
+      bnode.seqrec2boxed = ::Sfi::cxx_boxed_from_rec<RecordType>;       \
+      bnode.boxed2recseq = ::Sfi::cxx_boxed_to_rec<RecordType>;         \
+      bnode.fields = RecordType::get_fields();                          \
     }                                                                   \
     return &bnode.node;                                                 \
   }                                                                     \
@@ -133,15 +131,40 @@ EnumValue (int         int_value,
 #define BSE_CXX_REGISTER_RECORD(RecordType)                             \
   ::Bse::ExportTypeKeeper                                               \
          bse_type_keeper__1##RecordType (bse_export_node<RecordType>,   \
-                                         &BSE_CXX_EXPORT_IDENTITY);     \
-  SfiRec* sfidl__to_rec_##RecordType (const RecordType##Handle &h)      \
-  {                                                                     \
-    return RecordType::to_rec (h);                                      \
-  }                                                                     \
-  RecordType##Handle sfidl__from_rec_##RecordType (SfiRec *rec)         \
-  {                                                                     \
-    return RecordType::from_rec (rec);                                  \
-  }
+                                         &BSE_CXX_EXPORT_IDENTITY);
+
+
+/* --- sequence registration --- */
+/* sequence registration works similar to record registration */
+#define BSE_CXX_DECLARED_SEQUENCE_TYPE(SequenceType)                            \
+  (bse_type_keeper__1##SequenceType.get_type ())
+#define BSE_CXX_DECLARE_SEQUENCE(SequenceType,SequenceName)                     \
+  template<class E> static BseExportNode* bse_export_node ();                   \
+  template<> static BseExportNode*                                              \
+  bse_export_node<SequenceType> ()                                              \
+  {                                                                             \
+    static BseExportNodeBoxed bnode = {                                         \
+      { NULL, BSE_EXPORT_NODE_SEQUENCE, SequenceName, },                        \
+    };                                                                          \
+    if (!bnode.node.name) {                                                     \
+      bnode.node.name = SequenceType::type_name();                              \
+      bnode.node.options = SequenceType::options();                             \
+      bnode.node.authors = SequenceType::authors();                             \
+      bnode.node.license = SequenceType::license();                             \
+      bnode.node.blurb = SequenceType::blurb();                                 \
+      bnode.copy = ::Sfi::cxx_boxed_copy<SequenceType>;                         \
+      bnode.free = ::Sfi::cxx_boxed_free<SequenceType>;                         \
+      bnode.seqrec2boxed = ::Sfi::cxx_boxed_from_seq<SequenceType>;             \
+      bnode.boxed2recseq = ::Sfi::cxx_boxed_to_seq<SequenceType>;               \
+      bnode.fields = SequenceType::get_fields();                                \
+    }                                                                           \
+    return &bnode.node;                                                         \
+  }                                                                             \
+  extern ::Bse::ExportTypeKeeper bse_type_keeper__1##SequenceType;
+#define BSE_CXX_REGISTER_SEQUENCE(SequenceType)                                 \
+  ::Bse::ExportTypeKeeper                                                       \
+         bse_type_keeper__1##SequenceType (bse_export_node<SequenceType>,       \
+                                           &BSE_CXX_EXPORT_IDENTITY);
 
 
 /* --- procedure registration --- */
