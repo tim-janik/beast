@@ -1,7 +1,3 @@
-RELEASE:
-- help: QuickStart-Samples
-- provide a sample song
-
 URGENT:
 - nuke OPEN_FAILED and similar errors in favour of real descriptions
 - track volume
@@ -41,3 +37,4 @@ GENERAL:
 * wave editor: provide transpose spinner for wave preview
 - dialogs without a menu should feature Escape for pop-down
 - middle mouse button on router canvas background should scroll
+- add QuickStart-Samples docs once we support sample editing

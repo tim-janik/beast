@@ -88,7 +88,7 @@ main (int   argc,
   GtkWidget *splash;
   BstApp *app = NULL;
   gchar *string;
-  guint i, this_rc_version;
+  guint i;
   
   /* initialize BSE, BSW and preferences
    */
@@ -291,11 +291,10 @@ main (int   argc,
   
   /* fire up release notes dialog
    */
-  this_rc_version = 1;	/* <- increment to trigger greeting dialog */
-  if (bst_globals->rc_version != this_rc_version)
+  if (!bst_globals->rc_version || strcmp (bst_globals->rc_version, BST_VERSION))
     {
       bst_app_operate (app, BST_OP_HELP_RELEASE_NOTES);
-      bst_globals_set_rc_version (this_rc_version);
+      bst_globals_set_rc_version (BST_VERSION);
     }
 
   /* destroy splash to release grabs,

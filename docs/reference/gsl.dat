@@ -1,19 +1,49 @@
 @DOC-VARIABLE-DEFINITIONS@
 name    = GSL-Functions
 blurb   = GSL Function Reference
-package = BEAST-0.4.1-rc3
-date    = 30 Aug 2002
+package = BEAST-0.4.1-rc4
+date    = 01 Sep 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 30 Aug 2002 BEAST-0.4.1-rc3
+GSL-Functions 01 Sep 2002 BEAST-0.4.1-rc4
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
 
+@DOC-SYNOPSIS@
+@STRONG gsl_ring_split@ (@EMPH head1@, @EMPH head2@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRing*
+typeraw = GslRing*
+@DOC-PARAMETER@
+head1
+@DOC-PARDESC@
+a non-empty ring
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRing*
+typeraw = GslRing*
+@DOC-PARAMETER@
+head2
+@DOC-PARDESC@
+a ring node different from @EMPH head1@ contained in @EMPH head1@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+@EMPH head2@ for convenience
+
+@DOC-DESCRIPTION@
+Split a ring into two parts, starting the second ring with @EMPH head2@. @EMPH head2@ must therefore be non-NULL and must be contained in the ring formed by @EMPH head1@.  
 @DOC-SYNOPSIS@
 @STRONG gsl_thread_wakeup@ (@EMPH thread@);
 

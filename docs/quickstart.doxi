@@ -100,9 +100,9 @@ oscillator.
 	oscillating tone and to provide actual output, connect the
 	output channel @channel{Audio Out} of the @module{Standard Oscillator}
 	to one of the @channel{Audio} input channels of the @module{Amplifier} and
-	connect it's output channel @channel{Audio Out} the two input
-	channels @channel{Right Audio} and @channel{Left Audio} of the
-	@module{SubInstrument}.
+	connect the @module{Amplifier}'s output channel @channel{Audio Out} to
+	the two input channels @channel{Right Audio} and @channel{Left Audio}
+	of the @module{SubInstrument}.
 @item	It is recommended to intially reduce the @prop{Master Volume}
 	property of the @module{Amplifier} to avoid overdriving the
 	output later on. The properties of a module can be adjusted in
@@ -110,7 +110,7 @@ oscillator.
 	of each module.
 @item	Connect the input channel @channel{Gate In} of the @module{Simple ADSR}
 	to the output channel @channel{Gate} of the @module{SubKeyboard} to
-	trigger the envelope at at note start. Connect the @channel{Ctrl Out}
+	trigger the envelope at note start. Connect the @channel{Ctrl Out}
 	output channel of the @module{Simple ADSR} to one of the @channel{Control} input
 	channels of the @module{Amplifier}.
 @item	@important{IMPORTANT:} Synthesis instruments are used to play multiple

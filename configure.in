@@ -19,7 +19,6 @@ BSE_MINOR_VERSION=4
 BSE_MICRO_VERSION=1
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
-BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
 AC_DIVERT_POP()dnl
 dnl#
 dnl# Making releases:
@@ -29,10 +28,11 @@ dnl#   BSE_BINARY_AGE += 1;
 dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
 dnl# if backwards compatibility has been broken,
 dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
-dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]* or nothing
-BST_RELEASE_CANDIDATE=rc4
+dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]+ or nothing
+BST_RELEASE_CANDIDATE= # rc4
 
 # version number setup
+BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
 BST_VERSION=$BSE_VERSION
 if test -n "$BST_RELEASE_CANDIDATE" ; then
     BST_VERSION=$BST_VERSION-$BST_RELEASE_CANDIDATE

@@ -65,6 +65,7 @@ static gpointer          parent_class = NULL;
 static BstGlobals        bst_globals_current = { 0, };
 const BstGlobals * const bst_globals = &bst_globals_current;
 static const BstGlobals  bst_globals_defaults = {
+  NULL			/* rc_version */,
   NULL			/* xkb_symbol */,
   FALSE			/* xkb_force_query */,
   TRUE			/* snet_anti_aliased */,
@@ -74,7 +75,6 @@ static const BstGlobals  bst_globals_defaults = {
   TRUE			/* sample_sweep */,
   FALSE			/* pe_key_focus_unselects */,
   0			/* tab_width */,
-  0			/* rc_version */,
 };
 
 
@@ -150,70 +150,70 @@ bst_gconfig_class_init (BstGConfigClass *class)
   bse_object_class_add_param (object_class, "Keyboard Layout",
 			      PARAM_XKB_FORCE_QUERY,
 			      bse_param_spec_bool ("xkb_force_query", "Always query X server on startup", NULL,
-						 globals_defaults.xkb_force_query,
-						 BSE_PARAM_DEFAULT));
+						   globals_defaults.xkb_force_query,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Internal",
+			      PARAM_RC_VERSION,
+			      bse_param_spec_string ("rc_version", "RC Version", NULL,
+						     globals_defaults.rc_version,
+						     BSE_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Keyboard Layout",
 			      PARAM_XKB_SYMBOL,
 			      bse_param_spec_string ("xkb_symbol", "Keyboard Layout", NULL,
-						   globals_defaults.xkb_symbol,
-						   BSE_PARAM_DEFAULT));
+						     globals_defaults.xkb_symbol,
+						     BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Samples",
 			      PARAM_SAMPLE_SWEEP,
 			      bse_param_spec_bool ("sample_sweep", "Auto sweep",
-						 "Automatically remove (sweep) unused samples of a project",
-						 globals_defaults.sample_sweep,
-						 BSE_PARAM_DEFAULT));
+						   "Automatically remove (sweep) unused samples of a project",
+						   globals_defaults.sample_sweep,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_ANTI_ALIASED,
 			      bse_param_spec_bool ("snet_anti_aliased", "Anti aliased display", NULL,
-						 globals_defaults.snet_anti_aliased,
-						 BSE_PARAM_DEFAULT));
+						   globals_defaults.snet_anti_aliased,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_EDIT_FALLBACK,
 			      bse_param_spec_bool ("snet_edit_fallback", "Auto fallback into Edit mode",
-						 "Fallback into Edit mode after a new source has been added",
-						 globals_defaults.snet_edit_fallback,
-						 BSE_PARAM_DEFAULT));
+						   "Fallback into Edit mode after a new source has been added",
+						   globals_defaults.snet_edit_fallback,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_SWAP_IO_CHANNELS,
 			      bse_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
-						 globals_defaults.snet_swap_io_channels,
-						 BSE_PARAM_DEFAULT));
+						   globals_defaults.snet_swap_io_channels,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Pattern Editor",
 			      PARAM_PE_KEY_FOCUS_UNSELECTS,
 			      bse_param_spec_bool ("pe_key_focus_unselects", "Focus moves reset selection",
-						 "Reset the pattern editor's selection when keyboard moves"
-						 "the focus",
-						 globals_defaults.pe_key_focus_unselects,
-						 BSE_PARAM_DEFAULT));
+						   "Reset the pattern editor's selection when keyboard moves"
+						   "the focus",
+						   globals_defaults.pe_key_focus_unselects,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Geometry",
 			      PARAM_TAB_WIDTH,
 			      bse_param_spec_uint ("tab_width", "Project tabulator width",
-						 "This is the width of the project notebook's "
-						 "tabulators that show the song, network or sample names. "
-						 "Setting it to a fixed width avoids window resizing when "
-						 "samples are added or removed.",
-						 0, 1024, globals_defaults.tab_width, 5,
-						 BSE_PARAM_DEFAULT));
+						   "This is the width of the project notebook's "
+						   "tabulators that show the song, network or sample names. "
+						   "Setting it to a fixed width avoids window resizing when "
+						   "samples are added or removed.",
+						   0, 1024, globals_defaults.tab_width, 5,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Debugging",
 			      PARAM_DISABLE_ALSA,
 			      bse_param_spec_bool ("disable_alsa", "Disable support for ALSA PCM driver", NULL,
-						 globals_defaults.disable_alsa,
-						 BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Internal",
-			      PARAM_RC_VERSION,
-			      bse_param_spec_uint ("rc_version", "RC Version", NULL,
-						   0, G_MAXUINT, globals_defaults.rc_version, 1,
-						   BSE_PARAM_STORAGE));
+						   globals_defaults.disable_alsa,
+						   BSE_PARAM_DEFAULT));
   bst_globals_unset (&globals_defaults);
 }
 
 static void
 bst_gconfig_set_property (BstGConfig  *gconf,
-                       guint        param_id,
-		       GValue      *value,
-		       GParamSpec  *pspec,
-		       const gchar *trailer)
+			  guint        param_id,
+			  GValue      *value,
+			  GParamSpec  *pspec,
+			  const gchar *trailer)
 {
   switch (param_id)
     {
@@ -228,6 +228,10 @@ bst_gconfig_set_property (BstGConfig  *gconf,
       break;
     case PARAM_XKB_FORCE_QUERY:
       gconf->globals.xkb_force_query = g_value_get_boolean (value);
+      break;
+    case PARAM_RC_VERSION:
+      g_free (gconf->globals.rc_version);
+      gconf->globals.rc_version = g_value_dup_string (value);
       break;
     case PARAM_XKB_SYMBOL:
       g_free (gconf->globals.xkb_symbol);
@@ -244,9 +248,6 @@ bst_gconfig_set_property (BstGConfig  *gconf,
       break;
     case PARAM_PE_KEY_FOCUS_UNSELECTS:
       gconf->globals.pe_key_focus_unselects = g_value_get_boolean (value);
-      break;
-    case PARAM_RC_VERSION:
-      gconf->globals.rc_version = g_value_get_uint (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gconf, param_id, pspec);
@@ -275,6 +276,9 @@ bst_gconfig_get_property (BstGConfig  *gconf,
     case PARAM_XKB_FORCE_QUERY:
       g_value_set_boolean (value, gconf->globals.xkb_force_query);
       break;
+    case PARAM_RC_VERSION:
+      g_value_set_string (value, gconf->globals.rc_version);
+      break;
     case PARAM_XKB_SYMBOL:
       g_value_set_string (value, gconf->globals.xkb_symbol);
       break;
@@ -289,9 +293,6 @@ bst_gconfig_get_property (BstGConfig  *gconf,
       break;
     case PARAM_PE_KEY_FOCUS_UNSELECTS:
       g_value_set_boolean (value, gconf->globals.pe_key_focus_unselects);
-      break;
-    case PARAM_RC_VERSION:
-      g_value_set_uint (value, gconf->globals.rc_version);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gconf, param_id, pspec);
@@ -337,6 +338,7 @@ bst_globals_copy (const BstGlobals *globals_src,
     }
 
   *globals = *globals_src;
+  globals->rc_version = g_strdup (globals_src->rc_version);
   globals->xkb_symbol = g_strdup (globals_src->xkb_symbol);
 }
 
@@ -345,8 +347,18 @@ bst_globals_unset (BstGlobals *globals)
 {
   g_return_if_fail (globals != NULL);
 
+  g_free (globals->rc_version);
   g_free (globals->xkb_symbol);
   memset (globals, 0, sizeof (*globals));
+}
+
+void
+bst_globals_set_rc_version (const gchar *rc_version)
+{
+  g_return_if_fail (bse_globals_locked () == FALSE);
+
+  g_free (bst_globals_current.rc_version);
+  bst_globals_current.rc_version = g_strdup (rc_version);
 }
 
 void
@@ -356,12 +368,4 @@ bst_globals_set_xkb_symbol (const gchar *xkb_symbol)
 
   g_free (bst_globals_current.xkb_symbol);
   bst_globals_current.xkb_symbol = g_strdup (xkb_symbol);
-}
-
-void
-bst_globals_set_rc_version (guint rc_version)
-{
-  g_return_if_fail (bse_globals_locked () == FALSE);
-
-  bst_globals_current.rc_version = rc_version;
 }

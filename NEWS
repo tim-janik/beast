@@ -1,18 +1,21 @@
 Overview of Changes in BEAST/BSE 0.4.1:
 
-* Added GSL - a common sound backend for BSE and aRts
+* Added cool startup splash-screen from Jimmac
+* Added GSL - a common sound routine library for BSE and aRts
 * Added part support for songs with piano roll editor
 * A Guile based scheme shell for BSE has been added: bswshell
-* Added support for execution of scheme scripts
+* Added support for execution of scheme scripts in BEAST
 * Added MIDI synthesis support
 * Added sample/wave display and preview facilities
 * Added sample loaders for .wav, .ogg, .mp3 and .gslwave files
+* Added file descriptor caching layer to lessen the impact of
+  unix' MAX_OPEN_FD limitation
 * Added sophisticated sample caching layer to spare file I/O
-  and mp3 or Vorbis decoded sample data
-* New threaded sound engine which can share synthesis
-  module calculations between processors
-* Major speed improvements to the threading layer by using pthreads
-  directly where possible
+  and mp3 or Vorbis decoding
+* New threaded sound engine which can process synthesis
+  modules in the background or on a seperate processor
+* Many (not yet all) synthesis modules got ported to the
+  new engine and got improved in quality and speed
 * New synthesis modules:
   FreeVerb	  - a reverb based on code by Jeremy Wakefield
   BiquadFilter    - various basic IIR (resonance) filter types
@@ -23,13 +26,12 @@ Overview of Changes in BEAST/BSE 0.4.1:
   WaveOsc         - Anti-aliasing wave playback
   Sequencer	  - a mini sequencer for harmonic tone switches
   Amplifier	  - a VCA equivalent with featurefull control variants
-* Many (not yet all) synthesis modules got ported to the
-  new engine and got improved in quality and speed
-* New 19"-rack alike GUI front-end for customized GUI presentation
-  of .bse projects
 * Joint (multi-connect) channel support, allowing multiple input
   connections per channel on some modules
-* New file caching layer
+* Major speed improvements to the threading layer by using pthreads
+  directly where possible
+* New 19"-rack alike GUI front-end for customized GUI presentation
+  of .bse projects
 * Major GUI cleanups and improvements
 * Major documentation improvements
 * Ported BEAST/BSE to Gtk+2.0 and GLib-2.0

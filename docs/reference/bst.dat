@@ -1,15 +1,15 @@
 @DOC-VARIABLE-DEFINITIONS@
 name    = BST-Functions
 blurb   = BEAST Function Reference
-package = BEAST-0.4.1-rc3
-date    = 30 Aug 2002
+package = BEAST-0.4.1-rc5
+date    = 02 Sep 2002
 image   = bst-functions
 
 @DOC-TITLE@
 BST-Functions
 
 @DOC-HEAD@
-BST-Functions 30 Aug 2002 BEAST-0.4.1-rc3
+BST-Functions 02 Sep 2002 BEAST-0.4.1-rc5
 
 @DOC-NAME@
 BST-Functions - BEAST Function Reference

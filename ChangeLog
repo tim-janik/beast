@@ -1,3 +1,12 @@
+Mon Sep  2 07:13:50 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to 0.4.1, non-rc.
+
+	* beast-gtk/bstgconfig.[hc]: store rc-version as string.
+	* beast-gtk/bstmain.c: use BST_VERSION as rc-version.
+
+	* test/test-song.bse: provide a sample song.
+
 Fri Aug 30 03:21:31 2002  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up version to v0.4.1rc4.

@@ -7,7 +7,7 @@
 
 @include teximacros.texi
 
-@chapter RELEASE-NOTES
+@unnumbered RELEASE-NOTES
 
 @keepspaceSTART
 		Much has changed in the new development version of BEAST.

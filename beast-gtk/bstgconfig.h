@@ -29,6 +29,7 @@ extern "C" {
 
 /* --- BstGlobals - configurable defaults --- */
 #define BST_XKB_FORCE_QUERY		(bst_globals->xkb_force_query)
+#define	BST_RC_VERSION			(bst_globals->rc_version)
 #define BST_XKB_SYMBOL			(bst_globals->xkb_symbol)
 #define BST_DISABLE_ALSA		(bst_globals->disable_alsa)
 #define BST_TAB_WIDTH			(bst_globals->tab_width)
@@ -37,13 +38,13 @@ extern "C" {
 #define BST_SNET_SWAP_IO_CHANNELS	(bst_globals->snet_swap_io_channels)
 #define BST_SAMPLE_SWEEP		(bst_globals->sample_sweep)
 #define BST_PE_KEY_FOCUS_UNSELECTS	(bst_globals->pe_key_focus_unselects)
-#define	BST_RC_VERSION			(bst_globals->rc_version)
 
 
 /* --- BstGlobals --- */
 typedef struct _BstGlobals BstGlobals;
 struct _BstGlobals
 {
+  gchar *rc_version;
   gchar *xkb_symbol;
   guint  xkb_force_query : 1;
   guint  snet_anti_aliased : 1;
@@ -53,7 +54,6 @@ struct _BstGlobals
   guint  sample_sweep : 1;
   guint  pe_key_focus_unselects : 1;
   guint  tab_width : 16;
-  guint	 rc_version;
 };
 extern const BstGlobals * const bst_globals;
 
@@ -85,8 +85,8 @@ struct _BstGConfigClass
 
 /* --- prototypes --- */
 void     bst_globals_init               (void);
+void	 bst_globals_set_rc_version	(const gchar *rc_version);
 void	 bst_globals_set_xkb_symbol	(const gchar *xkb_symbol);
-void	 bst_globals_set_rc_version	(guint	      rc_version);
 
 
 
