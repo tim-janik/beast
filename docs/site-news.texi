@@ -11,6 +11,24 @@
 @unnumbered What's New?
 
 
+@newsTitle{Wednesday 25 Jun 2003, BEAST Bugfix Realease}
+
+BEAST/BSE version 0.5.3 is available in the
+@uref{beast-doc://download,,download section}.
+@c , here is the
+@c @uref{http://www.gnomedesktop.org/article.php?sid=1176,,FootNotes announcement}.
+
+Tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.3.tar.gz,, beast-0.5.3.tar.gz}
+and patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.2-0.5.3.bz2,, patch-beast-0.5.2-0.5.3.bz2}.
+
+Aparently version 0.5.2 crashed during script initialization on some systems
+due to bugs in the child communication code. So here is a quick update, fixing
+the crash and
+@uref{beast-doc://release-news,,other minor bugs}.
+
+
 @newsTitle{Saturday 21 Jun 2003, The i-didn't-mean-to Realease}
 
 BEAST/BSE version 0.5.2 is available in the
@@ -26,39 +44,6 @@ With this release, @beast allowes to gracefully backup from erroneous
 user actions, by offering unlimited Undo/Redo facilities for all operations.
 Other highlights are greatly simplified sample and synthesizer
 selection for tracks and WAV recording abilities.
-As usual, more release details are outlined in the
-@uref{beast-doc://release-news,,NEWS section}.
-
-
-@newsTitle{Sunday 20 Apr 2003, BEAST-0.5.1 patch fixed}
-
-The @beast patch to update from version 0.5.0 to 0.5.1 unfortunately
-missed an image file (due to it being detected as binary by diff),
-causing the 0.5.1 build to fail for some users. We've put up a new
-patch as
-@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.0-0.5.1.fixed.gz,,patch-beast-0.5.0-0.5.1.fixed.gz}
-now, which contains the missing file and correctly updates from 0.5.0 to
-@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.1.tar.gz,,beast-0.5.1.tar.gz}.
-We apologise for the inconvenience this may have caused.
-
-On a related topic, many users encountered crashes upon creation of synthesis
-networks with the newer versions, there is now a
-@uref{beast-doc://faq#gnome-canvas-idle-id-crash,,FAQ entry}
-adressing the specifics of the issue.
-
-
-@newsTitle{Monday 14 Apr 2003, BEAST Featuring LADSPA}
-
-BEAST/BSE version 0.5.1 is available in the
-@uref{beast-doc://download,,download section}, here is the
-@uref{http://www.gnomedesktop.org/article.php?sid=1050,,FootNotes announcement}.
-
-The most exciting new feature in this release is the support for
-@uref{http://www.ladspa.org/,, LADSPA} plugins. With that, @beast
-gains support for a wide variety of excellent plugins available on
-the net, for instance the
-@uref{http://plugin.org.uk/,,plugin collection from Steve Harris}.
-
 As usual, more release details are outlined in the
 @uref{beast-doc://release-news,,NEWS section}.
 

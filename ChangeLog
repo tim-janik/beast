@@ -1,3 +1,7 @@
+Wed Jun 25 01:22:54 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: rotate news, announce release.
+
 Wed Jun 25 00:18:25 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: release 0.5.3, interface and binary age 0.
