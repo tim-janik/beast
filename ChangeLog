@@ -1,3 +1,7 @@
+Mon Mar  7 08:47:58 2005  Tim Janik  <timj@gtk.org>
+
+	* *: changed references to former C++ .h headers to .hh.
+
 Mon Mar  7 07:55:46 2005  Tim Janik  <timj@gtk.org>
 
         * removed obsolete .h C++ headers.

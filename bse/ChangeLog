@@ -458,7 +458,7 @@ Fri Dec 24 22:39:48 2004  Tim Janik  <timj@gtk.org>
 	bse_project_push_undo_silent_deactivate(), so other code portions
 	can force project deactivation for specific undo steps.
 
-	* bsecxxplugin.h: export *_choice_values() getter when declaring
+	* bsecxxplugin.hh: export *_choice_values() getter when declaring
 	enumeration types.
 
 	* bseplugin.c: provide choice value getter for exported enum types.
@@ -513,7 +513,7 @@ Sat Dec 18 23:58:04 2004  Tim Janik  <timj@gtk.org>
 
 Fri Dec 17 21:19:25 2004  Tim Janik  <timj@gtk.org>
 
-	* bsecxxutils.h: removed assert_derivation() and assert_ptr_derivation().
+	* bsecxxutils.hh: removed assert_derivation() and assert_ptr_derivation().
 	added template class EnforceDerivedFrom<>; with partial derivation to check
 	for type derivations and pointers tehreof. implemented assert_derived_from<>()
 	in terms of class EnforceDerivedFrom<>; so it can check for derivation of
@@ -604,7 +604,7 @@ Mon Dec  6 22:47:00 2004  Stefan Westerfeld  <stefan@space.twc.de>
 	* bseplugin.h: To allow implementing C-style plugins in C++ sources,
 	as required for the PortAudio driver, declare extern "C" linkage for
 	the symbol defined by BSE_DEFINE_EXPORTS when compiled within a C++
-	source. The extern "C" code was taken from bsecxxplugin.h.
+	source. The extern "C" code was taken from bsecxxplugin.hh.
 
 Fri Dec  3 21:31:26 2004  Tim Janik  <timj@gtk.org>
 
@@ -1183,7 +1183,7 @@ Mon Sep 20 00:44:12 2004  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: fixed dependencies, install bsecore.genidl.hh.
 
-	* bsecxxmodule.cc: include bsecore.genidl.hh through bsecxxplugin.h,
+	* bsecxxmodule.cc: include bsecore.genidl.hh through bsecxxplugin.hh,
 	so bsecore.genidl.hh is publically available.
 
 	* bsecore.idl: use bse_intern_path_user_data() instead of macros from
@@ -1203,7 +1203,7 @@ Mon Sep 20 00:44:12 2004  Tim Janik  <timj@gtk.org>
 	values. fixed user_data setup of midi control handler.
 	record tick_stamp  of last module update.
 
-	* bsecxxplugin.h: removed function definition macros. instead, use
+	* bsecxxplugin.hh: removed function definition macros. instead, use
 	trampoline generation templates. include <bse/bsecore.genidl.hh>
 	after defining all required macros, implement get_candidate()
 	trampoline template which depends on class PropertyCandidates,
@@ -1242,7 +1242,7 @@ Tue Sep 14 19:06:12 2004  Tim Janik  <timj@gtk.org>
 	* bsecore.idl: added i18n markup. added MidiControlType, which 
 	duplicates the portions of MidiSignalType that are usable by automation.
 
-	* bsecxxplugin.h: provide enum value initialization funciton, instead
+	* bsecxxplugin.hh: provide enum value initialization funciton, instead
 	of initializing from static constructor (and calling i18n code prema-
 	turely).
 
@@ -1327,7 +1327,7 @@ Wed Sep  8 21:50:10 2004  Tim Janik  <timj@gtk.org>
 
 Wed Sep  8 16:52:32 2004  Tim Janik  <timj@gtk.org>
 
-	* bsecxxutils.h: changed TEMPLATE_ERROR::invalid_type() and
+	* bsecxxutils.hh: changed TEMPLATE_ERROR::invalid_type() and
 	TEMPLATE_ERROR::invalid_argument_type() to throw an error upon
 	instantiation and not parsing with g++-3.4.
 
@@ -1891,7 +1891,7 @@ Thu May 20 13:36:35 2004  Tim Janik  <timj@gtk.org>
 	(bse_categories_register_stock_module): new function to register
 	internal modules and do the right thing wrg translation.
 
-	* bsecxxplugin.h: provide a callback function to fill in translatable
+	* bsecxxplugin.hh: provide a callback function to fill in translatable
 	strings of export node structures, so gettext isn't invoked until
 	after bse has been initialized.
 
@@ -1988,7 +1988,7 @@ Sat Mar  6 12:17:46 2004  Tim Janik  <timj@gtk.org>
 	retrigger device operation after open, setup minimum playback
 	watermark.
 
-	* bsecxxmodule.h: adapt to gslengine.h API changes.
+	* bsecxxmodule.hh: adapt to gslengine.h API changes.
 
 Tue Mar  2 12:59:38 2004  Tim Janik  <timj@gtk.org>
 
@@ -2022,7 +2022,7 @@ Mon Mar  1 20:08:12 2004  Tim Janik  <timj@gtk.org>
 	* bsecore.cc: new file, needed to implement bsecore.idl contents
 	and the C wrapper bindings. 
 
-	* bsecxxplugin.h: provide constants used in idl files. fixed namespace
+	* bsecxxplugin.hh: provide constants used in idl files. fixed namespace
 	issues in BSE_CXX_DECLARED_*_TYPE() macros by making them absolute.
 
 	* bsegconfig.c: retrieve record fields via bse_gconfig_get_fields() now.
@@ -2056,8 +2056,8 @@ Fri Feb 27 06:19:32 2004  Tim Janik  <timj@gtk.org>
 	* bseconstant.c:
 	* bsecontextmerger.c:
 	* bsecxxbase.cc:
-	* bsecxxbase.h:
-	* bsecxxmodule.h:
+	* bsecxxbase.hh:
+	* bsecxxmodule.hh:
 	* bseinstrumentinput.c:
 	* bseinstrumentoutput.c:
 	* bseladspamodule.c:
@@ -2205,15 +2205,15 @@ Tue Jan 27 16:41:45 2004  Tim Janik  <timj@gtk.org>
 
 Tue Jan 27 16:03:01 2004  Tim Janik  <timj@gtk.org>
 
-	* bsecxxbase.h: added instance_is_a(), value_get_gobject<>()
+	* bsecxxbase.hh: added instance_is_a(), value_get_gobject<>()
 	and value_set_gobject().
 
 	* bseexports.h:
-	* bsecxxplugin.h: adapted to sficxx.h changes, don't call
+	* bsecxxplugin.hh: adapted to sficxx.h changes, don't call
 	record/sequence functions from static constructor as the
 	type system may not yet be initialized.
 
-	* bsecxxutils.h: tweak InvalidArgument() exception.
+	* bsecxxutils.hh: tweak InvalidArgument() exception.
 
 	* bsesniffer.cc: implement combined requests.
 
@@ -2239,7 +2239,7 @@ Mon Jan 26 02:36:07 2004  Tim Janik  <timj@gtk.org>
 	* bsecxxbase.[hc]*: make gobject() const. implement value_get_object(),
 	value_set_object() and value_set_casted().
 
-	* bsecxxvalue.h: removed g_value_get_object<>() template.
+	* bsecxxvalue.hh: removed g_value_get_object<>() template.
 
 	* bsecxxmodule.[hc]: provide conventional BSE_TYPE_EFFECT and base class.
 
@@ -2261,7 +2261,7 @@ Sun Jan 25 05:28:23 2004  Tim Janik  <timj@gtk.org>
 
 Sat Jan 24 19:14:46 2004  Tim Janik  <timj@gtk.org>
 
-	* bsecxxplugin.h: remove TypeName argument from BSE_CXX_DECLARE_RECORD()
+	* bsecxxplugin.hh: remove TypeName argument from BSE_CXX_DECLARE_RECORD()
 	and BSE_CXX_DECLARE_SEQUENCE(), get the type names via type_name().
 
 Sat Jan 24 07:04:59 2004  Tim Janik  <timj@gtk.org>
@@ -2269,7 +2269,7 @@ Sat Jan 24 07:04:59 2004  Tim Janik  <timj@gtk.org>
 	* bseexports.h: specify the field array of boxed types directly
 	in BseExportNodeBoxed.
 
-	* bsecxxplugin.h: adaptions due to bseexport.h changes.
+	* bsecxxplugin.hh: adaptions due to bseexport.h changes.
 
 	* bsetype.c:
 	(bse_type_reinit_boxed): 
@@ -2288,7 +2288,7 @@ Fri Jan 23 22:38:57 2004  Tim Janik  <timj@gtk.org>
 
 Fri Jan 23 02:28:58 2004  Tim Janik  <timj@gtk.org>
 
-	* bsecxxplugin.h: complete record and sequence registration macros.
+	* bsecxxplugin.hh: complete record and sequence registration macros.
 
 	* bseexports.h: boxed types supply SfiBoxedFields.
 
@@ -2296,7 +2296,7 @@ Fri Jan 23 02:28:58 2004  Tim Janik  <timj@gtk.org>
 
 Wed Jan 21 03:35:59 2004  Tim Janik  <timj@gtk.org>
 
-	* bsecxxplugin.h (BSE_CXX_DECLARE_RECORD): implementation fixups.
+	* bsecxxplugin.hh (BSE_CXX_DECLARE_RECORD): implementation fixups.
 
 Tue Jan 20 15:30:44 2004  Tim Janik  <timj@gtk.org>
 
@@ -2312,7 +2312,7 @@ Tue Jan 20 15:30:44 2004  Tim Janik  <timj@gtk.org>
 
 	* bsetype.[hc]: implement dynamic boxed.
 
-	* bsecxxplugin.h: started implementing RECORD type registration.
+	* bsecxxplugin.hh: started implementing RECORD type registration.
 
 Tue Jan 20 05:47:04 2004  Tim Janik  <timj@gtk.org>
 
@@ -2344,9 +2344,9 @@ Mon Jan 19 18:54:11 2004  Tim Janik  <timj@gtk.org>
 	* Makefile.am: generate bsehack.idl from procidl.
 	made bse.idl the canonical client-binding API idl file.
 
-	* bsecxxutils.h: provide assert_ptr_derivation().
+	* bsecxxutils.hh: provide assert_ptr_derivation().
 
-	* bsecxxvalue.h: use assert_ptr_derivation() in
+	* bsecxxvalue.hh: use assert_ptr_derivation() in
 	g_value_get_object<>() to fix object offset.
 
 	* bsemidireceiver.cc: fix assertion.
@@ -2523,7 +2523,7 @@ Mon Dec 29 21:00:23 2003  Tim Janik  <timj@gtk.org>
 	more advanced modules dealing with BseSource or engine internals can
 	still be written in C++.
 	moved BSE_CXX_DEFINE_CREATE_MODULE(), BSE_EFFECT_INTEGRATE_MODULE()
-	and BSE_CXX_DEFINE_MODULE_CONFIGURATOR() here from bsecxxplugin.h.
+	and BSE_CXX_DEFINE_MODULE_CONFIGURATOR() here from bsecxxplugin.hh.
 
 	* bsemidireceiver.cc (voice_switch_module_free): fix free'd
 	memory access.
@@ -2599,7 +2599,7 @@ Tue Dec 23 05:24:53 2003  Tim Janik  <timj@gtk.org>
 
 Mon Dec 22 23:59:28 2003  Tim Janik  <timj@gtk.org>
 
-	* bsecxxplugin.h: initialize options field in export nodes.
+	* bsecxxplugin.hh: initialize options field in export nodes.
 
 	* bseplugin.c: register type options from plugins.
 
@@ -2639,7 +2639,7 @@ Wed Dec 17 19:14:11 2003  Tim Janik  <timj@gtk.org>
 
 Tue Dec 16 11:59:43 2003  Tim Janik  <timj@gtk.org>
 
-	* bsecxxplugin.h: assign authors and license fields in BseExportNode.
+	* bsecxxplugin.hh: assign authors and license fields in BseExportNode.
 
 	* bseexports.h: added authors and license fields.
 
@@ -2932,7 +2932,7 @@ Mon Oct  6 02:55:49 2003  Tim Janik  <timj@gtk.org>
 	* bsecategories.c: adapt to new documented toplevel category set.
 	check category fundamental types.
 
-	* bse/bsecxxplugin.h: remove namespace prefix from effect and procedure
+	* bse/bsecxxplugin.hh: remove namespace prefix from effect and procedure
 	registration macros.
 
 	* bse/bseitem.c: make seqid a non-gui property.
@@ -2999,7 +2999,7 @@ Sun Sep 21 04:42:33 2003  Tim Janik  <timj@gtk.org>
 
 Tue Sep  9 05:22:07 2003  Tim Janik  <timj@gtk.org>
 
-	* bsecxxutils.h: implemented binary-search templates.
+	* bsecxxutils.hh: implemented binary-search templates.
 
 	* bsemidireceiver.cc: more C++-ification, properly namespaced
 	stuff. uses stl types in a couple places now.
@@ -3124,7 +3124,7 @@ Thu Sep  4 14:34:36 2003  Tim Janik  <timj@gtk.org>
 	* bsetype.h: added pspec constructors for Trigger and Perc.
 	removed Frequency constructor, there's one for Freq.
 
-	* bsecxxplugin.h: support static data i ninitialization of generated classes.
+	* bsecxxplugin.hh: support static data i ninitialization of generated classes.
 
 	* bseutils.h:
 	* bseutils.c:
@@ -3145,7 +3145,7 @@ Wed Sep  3 00:59:09 2003  Tim Janik  <timj@gtk.org>
 	* bsecxxutils.[hc]*: fix category registration. get rid of C++ classes
 	having to prototye a get_type() function.
 
-	* bsecxxvalue.h: provide g_value_get_object<>() template to retrieve
+	* bsecxxvalue.hh: provide g_value_get_object<>() template to retrieve
 	specific Cxx classes from values.
 
 	* bseexports.h: mostly cosmetic patchups on the new export structure.

@@ -244,7 +244,7 @@ Wed Sep 15 21:37:17 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 Wed Sep 15 21:23:29 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
-	* sfidl-parser.h sfidl-parser.cc: Provide label, blurb and options of
+	* sfidl-parser.hh sfidl-parser.cc: Provide label, blurb and options of
 	a pspec constructor in the Param struct. Also try to unescape and
 	evaluate options to options_literal, a ready-to-use concatenated
 	version of the string without \" and similar constructs. Throw a
@@ -273,7 +273,7 @@ Sat Sep  4 04:59:57 2004  Tim Janik  <timj@gtk.org>
 	* sfidl-corecxx.cc:
 	* sfidl-corec.cc: pspec constructor fixups.
 
-	* sfi/sfidl-parser.h:
+	* sfi/sfidl-parser.hh:
 	* sfi/sfidl-parser.cc: implemented ConstIdent, a constant able to hold
 	an identifier.
 
@@ -393,7 +393,7 @@ Wed Jul  7 13:49:30 2004  Tim Janik  <timj@gtk.org>
 
 Sun Jul  4 08:09:48 2004  Tim Janik  <timj@gtk.org>
 
-	* sfidl-parser.h: with gcc-3.4, finding memebers of a dependant base
+	* sfidl-parser.hh: with gcc-3.4, finding memebers of a dependant base
 	in template definitions will only work with qualified names, so use 
 	this->end() instead of just end() as iterator from the base.
 
@@ -491,7 +491,7 @@ Fri Feb 27 13:57:52 2004  Tim Janik  <timj@gtk.org>
 
 Fri Feb 27 13:54:56 2004  Tim Janik  <timj@gtk.org>
 
-	* sfidl-corec.h: 
+	* sfidl-corec.hh: 
 	* sfidl-corec.cc: major reorganization of the code. split up 
 	generation into multiple digestible functions.
 	implement CoreC code generator in internal namespace and inline
@@ -631,16 +631,16 @@ Sat Feb 21 23:28:58 2004  Tim Janik  <timj@gtk.org>
 
 	* cvs copied sfidl sources:
 
-	* sfidl-cbase.cc, sfidl-cbase.h:
-	* sfidl-hostc.cc, sfidl-hostc.h: 
-	* sfidl-corec.cc, sfidl-corec.h:
-	* sfidl-clientc.cc, sfidl-clientc.h: from sfidl-generator.*
+	* sfidl-cbase.cc, sfidl-cbase.hh:
+	* sfidl-hostc.cc, sfidl-hostc.hh: 
+	* sfidl-corec.cc, sfidl-corec.hh:
+	* sfidl-clientc.cc, sfidl-clientc.hh: from sfidl-generator.*
 
-	* sfidl-clientcxx.cc, sfidl-clientcxx.h: from sfidl-cxx.*
+	* sfidl-clientcxx.cc, sfidl-clientcxx.hh: from sfidl-cxx.*
 
-	* sfidl-corecxx.cc, sfidl-corecxx.h: from sfidl-module.*
+	* sfidl-corecxx.cc, sfidl-corecxx.hh: from sfidl-module.*
 
-	* sfidl-cxxbase.cc, sfidl-cxxbase.h: from sfidl-cxx.*
+	* sfidl-cxxbase.cc, sfidl-cxxbase.hh: from sfidl-cxx.*
 
 Thu Feb 19 03:59:07 2004  Tim Janik  <timj@gtk.org>
 
@@ -835,7 +835,7 @@ Sun Jan 25 08:38:36 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.h: removed unused code.
 
-	* sfidl-namespace.h, sfidl-namespace.cc:
+	* sfidl-namespace.hh, sfidl-namespace.cc:
 	added printable_form() to return a constant c-string from
 	printableForm().
 
@@ -1576,7 +1576,7 @@ Mon Aug 25 19:34:05 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: generate only a single object header file
 	from .mdef (module definition file) files.
-	based on the export macros from bsecxxplugin.h, the generated header
+	based on the export macros from bsecxxplugin.hh, the generated header
 	contains a complete class implementation as requested in the .mdef
 	file, except for the actual *Module object. users need to only
 	implement the *Module object and add two export macros to their
@@ -1918,7 +1918,7 @@ Fri Feb 14 07:46:01 2003  Tim Janik  <timj@gtk.org>
 	digits to avoid roundoff junk being stored.
 
 	* sfiserial.[hc]: export sfi_serial_check_parse_null_token() and
-	SFI_SERIAL_NULL_TOKEN to have a single point of NULL/nil token handling.
+	SFI_SERIAL_NULL_TOKEN to have a single point of NULL/nil token.hhandling.
 
 Fri Feb 14 11:17:51 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
@@ -2283,8 +2283,8 @@ Mon Nov  4 11:38:56 2002  Tim Janik  <timj@gtk.org>
 
 	* sfidl.cc: remove unneeded code generation.
 
-	* sfidl-parser.h: 
-	* sfidl-namespace.h: start comments with one asterisk, not two
+	* sfidl-parser.hh: 
+	* sfidl-namespace.hh: start comments with one asterisk, not two
 	which is a special token used by the documentation parser.
 
 Mon Nov  4 07:32:22 2002  Tim Janik  <timj@gtk.org>

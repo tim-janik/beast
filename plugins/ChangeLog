@@ -312,7 +312,7 @@ Sun Nov 16 22:40:58 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* evaluator/compiler.*: Support for parenthesis, and sin(x).
 	* evaluator/instruction.*: New Instruction::SIN instruction.
-	* evaluator/token.h: Parenthesis.
+	* evaluator/token.hh: Parenthesis.
 
 	* evaluator/*: Put implementation in the Bse::EvaluatorUtils
 	namespace.
