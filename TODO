@@ -21,6 +21,7 @@ FIXMES:	(release-critical)
 - update gtk/glib dependency to 2.4 in README and configure.in
 - add srcdir==builddir requirement for CVS builds to download area
 TODO:
+- SfiLogger(_("Question"), key): make key optional, remove logger from sfi_error, introduce sfi_gui_warn or similar
 - add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - add executable versioning to sfidl 
 - davsyndrum needs gate-out (or done)

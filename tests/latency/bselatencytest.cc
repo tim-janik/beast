@@ -18,7 +18,8 @@
  */
 #include "bselatencytest.gen-idl.h"
 #include <sys/time.h>
-#include <vector>
+#include <string>
+#include <errno.h>
 
 using namespace std;
 using namespace Sfi;
@@ -57,28 +58,57 @@ class LatencyTest : public LatencyTestBase {
 
       return double(tv.tv_sec) + double(tv.tv_usec) * (1.0 / 1000000.0);
     }
-
+    void
+    close_devices()
+    {
+      if (midi_output_file)
+	{
+	  fwrite (note_off, 3, 1, midi_output_file); /* don't leak note_ons */
+	  fflush (midi_output_file);
+	  fclose (midi_output_file);
+          midi_output_file = NULL;
+	}
+      if (logfile && logfile != stdout)
+        fclose (logfile);
+      logfile = NULL;
+    }
     Module()
     {
       midi_output_file = NULL;
       logfile = NULL;
     }
+    ~Module()
+    {
+      close_devices();
+    }
+    string midi_output_name;
+    string logfile_name;
+    void
+    reset()
+    {
+      close_devices();
+      midi_output_file = fopen (midi_output_name.c_str(), "w");
+      if (!midi_output_file)
+        sfi_error (SfiLogger(NULL,NULL,NULL), "failed to open midi output \"%s\": %s\n", midi_output_name.c_str(), g_strerror (errno));
+      if (logfile_name == "")
+        logfile = stdout;
+      else
+	{
+	  logfile = fopen (logfile_name.c_str(), "w");
+	  if (!logfile)
+            sfi_error (SfiLogger(NULL,NULL,NULL), "failed to open log file \"%s\": %s\n", logfile_name.c_str(), g_strerror (errno));
+	}
+    }
     void
     config (Properties *properties)
     {
+      midi_output_name = properties->midi_output.c_str();
+      logfile_name = properties->logfile_name.c_str();
+
+      /* send pending note-off events, close and reopen devices */
       reset();
 
-      midi_output_file = fopen (properties->midi_output.c_str(), "w");
-      if (!midi_output_file)
-	fprintf (stderr, "can't open midi output: %s\n", properties->midi_output.c_str());
-
-      if (properties->logfile_name != "")
-	{
-	  logfile = fopen (properties->logfile_name.c_str(), "w");
-	  if (!logfile)
-	    fprintf (stderr, "can't open log file: %s\n");
-	}
-
+      /* configure events */
       note_on[0] = 0x90 | (properties->midi_channel - 1);
       note_on[1] = properties->midi_note;
       note_on[2] = 100; /* velocity */
@@ -87,36 +117,18 @@ class LatencyTest : public LatencyTestBase {
       note_off[1] = properties->midi_note;
       note_off[2] = 0; /* velocity */
 
-      bpm_samples = mix_freq() * 60 / properties->bpm; /* quarter note duration */
+      /* setup timing */
+      bpm_samples = guint (mix_freq() * 60 / properties->bpm); /* quarter note duration */
       note_on_wait = bpm_samples / 2;
       note_off_wait = bpm_samples;
       threshold = bse_db_to_factor (properties->threshold_db);
       start_time = 0.0;
     }
     void
-    reset()
-    {
-      if (midi_output_file)
-	{
-	  fwrite (note_off, 3, 1, midi_output_file); /* don't leak note_ons */
-	  fflush (midi_output_file);
-	  fclose (midi_output_file);
-	  midi_output_file = NULL;
-	}
-      if (logfile)
-	{
-	  fclose (logfile);
-	  logfile = NULL;
-	}
-    }
-    void
     process (unsigned int n_values)
     {
-      if (!midi_output_file)
-	return;
-
       const gfloat *auin = istream (ICHANNEL_AUDIO_IN).values;
-      for (int i = 0; i < n_values; i++)
+      for (guint i = 0; i < n_values; i++)
 	{
 	  if (!note_on_wait)
 	    {
@@ -143,8 +155,9 @@ class LatencyTest : public LatencyTestBase {
 	      double delta_time = double (i) / mix_freq();
 	      double end_time = gettime();
 
-	      fprintf (logfile ? logfile : stdout, "%f # start=%f end=%f in_block_delta=%f\n", end_time + delta_time - start_time,
-		                                                                               start_time, end_time, delta_time);
+	      if (logfile)
+                fprintf (stdout, "%f # latency in ms between note-on and signal-start; (block-offset=%u)\n",
+                         end_time + delta_time - start_time, i);
 	      start_time = 0.0;
 	    }
 	}
