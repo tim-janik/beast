@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BEAST/GTK 0.6.2cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-14 19:14+0200\n"
+"POT-Creation-Date: 2004-06-14 19:18+0200\n"
 "PO-Revision-Date: 2004-06-14 20:57+0300\n"
 "Last-Translator: Alexandre Prokoudine <avp@altlinux.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -172,7 +172,6 @@ msgstr "Загружается проект '%s'"
 msgid "Loading skin `%s'"
 msgstr "Загружается файл темы '%s'"
 
-#  FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #: beast-gtk/bstapp.c:791
 msgid "Rack editor"
@@ -278,7 +277,6 @@ msgstr "Прерывание"
 msgid "Contents"
 msgstr "Содержимое"
 
-#  setup remaining bits
 #. setup remaining bits
 #: beast-gtk/bstfiledialog.c:201
 msgid "File Selection"
@@ -334,7 +332,6 @@ msgstr ""
 msgid "Save: %s"
 msgstr "Сохранить: %s"
 
-#  setup radio buttons
 #. setup radio buttons
 #: beast-gtk/bstfiledialog.c:540
 msgid "Fully include wave files"
@@ -527,8 +524,6 @@ msgstr "Запуск BEAST"
 msgid "Startup"
 msgstr "Запуск"
 
-#  BEAST initialization
-#  BEAST initialization
 #. BEAST initialization
 #: beast-gtk/bstmain.c:140
 msgid "Initializers"
@@ -724,9 +719,6 @@ msgstr ""
 msgid "COLUMN TYPES:"
 msgstr "ТИПЫ СТОЛБЦОВ:"
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:687
 msgid "note-1, note-2, ..."
@@ -736,9 +728,6 @@ msgstr ""
 msgid "  display notes of the first, second, ... channel"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:690
 msgid "offset-1, length-2, velocity-3, ..."
@@ -750,9 +739,6 @@ msgid ""
 "channel"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:693
 msgid "control-0, ..., control-63, cc-0, cc-31"
@@ -762,9 +748,6 @@ msgstr ""
 msgid "  select various event types (controls, continuous controllers)"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:696
 msgid "bar, |"
@@ -774,9 +757,6 @@ msgstr ""
 msgid "  display solid vertical bar"
 msgstr " отображать вертикальную тактовую черту"
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:699
 msgid "dbar, :"
@@ -786,9 +766,6 @@ msgstr ""
 msgid "  display dotted vertical bar"
 msgstr " отображать пунктирную тактовую черту"
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:702
 msgid "space, _"
@@ -802,9 +779,6 @@ msgstr " вставить знак пробела"
 msgid "EVENTS:"
 msgstr "СОБЫТИЯ:"
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:706
 msgid "  balance, volume, cc-8, ..."
@@ -814,9 +788,6 @@ msgstr ""
 msgid "MODIFIERS:"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:709
 msgid "hex2, hex4"
@@ -826,9 +797,6 @@ msgstr ""
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:712
 msgid "shex2, shex4"
@@ -838,9 +806,6 @@ msgstr ""
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:715
 msgid "dec2, dec3"
@@ -850,9 +815,6 @@ msgstr ""
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:718
 msgid "sdec2, sdec3"
@@ -862,9 +824,6 @@ msgstr ""
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:721
 msgid "col1, col2, col3"
@@ -874,9 +833,6 @@ msgstr ""
 msgid "  selects one of 3 predefined colors"
 msgstr ""
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:724
 msgid "lfold, rfold"
@@ -890,15 +846,11 @@ msgstr ""
 msgid "EXAMPLE:"
 msgstr "ПРИМЕР:"
 
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
-#  !!! LEAVE UNTRANSLATED !!!
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:728
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgstr ""
 
-#  GXK_DIALOG_MODAL
 #. GXK_DIALOG_MODAL
 #: beast-gtk/bstpatterncolumns.c:738
 msgid "Pattern Editor Layout"
@@ -946,9 +898,6 @@ msgstr "Базовая октава"
 msgid "Controls the octave relative to which notes are entered"
 msgstr ""
 
-#  movement
-#  movement
-#  movement
 #. movement
 #: beast-gtk/bstpatternctrl.c:271
 msgid ""
@@ -2021,7 +1970,6 @@ msgstr "Уведомление"
 msgid "Diagnostic"
 msgstr "Диагностика"
 
-#  shouldn't end up in dialogs
 #. shouldn't end up in dialogs
 #: beast-gtk/bstusermessage.c:107
 msgid "Debug"
