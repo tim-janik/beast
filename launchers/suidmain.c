@@ -115,6 +115,8 @@ main (int    argc,
       }
     else if (strcmp (argv[i], "-N") == 0)
       dropped_priority = original_priority;
+    else if (custom_check_arg_stopper (argv[i]))        /* check for "--" and similar args */
+      break;
 
   /* handle -N and -n options */
   if (dropped_priority != -2147483647)

@@ -414,7 +414,12 @@ bst_early_parse_args (int    *argc_p,
   gboolean initialize_bse_and_exit = FALSE;
   for (i = 1; i < argc; i++)
     {
-      if (strncmp (argv[i], "-:", 2) == 0)
+      if (strcmp (argv[i], "--") == 0)
+        {
+          argv[i] = NULL;
+          break;
+        }
+      else if (strncmp (argv[i], "-:", 2) == 0)
 	{
 	  const gchar *flags = argv[i] + 2;
 	  g_printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());

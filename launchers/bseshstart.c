@@ -43,3 +43,13 @@ custom_find_executable (int    *argc_p,
   strcat (string, version);
   return string;
 }
+
+int
+custom_check_arg_stopper (const char *argument)
+{
+  if (strcmp (argument, "--") == 0 ||
+      strcmp (argument, "-s") == 0 ||
+      strcmp (argument, "-c") == 0)
+    return 1;
+  return 0;
+}

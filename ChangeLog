@@ -1,3 +1,16 @@
+Fri Dec  3 19:05:27 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (bst_early_parse_args): stop argument 
+	parsing at "--".
+
+	* launchers/suidmain.c (main): check for "--" arguments via a function
+	custom_check_arg_stopper() in unpriviledged code.
+
+	* launchers/beaststart.c (custom_check_arg_stopper): check for "--".
+
+	* launchers/bseshstart.c (custom_check_arg_stopper): check for "--",
+	"-s" and "-c", because guile stops argument parsing here also.
+
 Fri Dec  3 18:49:28 2004  Tim Janik  <timj@gtk.org>
 
 	* launchers/suidmain.c (main): removed nice level printf from
