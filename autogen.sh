@@ -5,14 +5,19 @@ PROJECT=BEAST
 TEST_TYPE=-d
 FILE=bse
 AUTOMAKE=automake
+AUTOMAKE_POSTFIX=1.4
 AUTOMAKE_VERSION=1.4
+AUTOMAKE_MAXVERSION=1.4
 ACLOCAL=aclocal
 AUTOCONF=autoconf
-AUTOCONF_VERSION=2.58
+AUTOCONF_POSTFIX=2.50
+AUTOCONF_VERSION=2.57
 AUTOHEADER=autoheader
-GETTEXTIZE=glib-gettextize
+GLIB_GETTEXTIZE=glib-gettextize
 INTLTOOLIZE=intltoolize
+INTLTOOLIZE_VERSION=0.28
 LIBTOOLIZE=libtoolize
+LIBTOOLIZE_VERSION=1.5.0
 CONFIGURE_OPTIONS=--enable-devel-rules=yes
 
 srcdir=`dirname $0`
@@ -24,71 +29,100 @@ DIE=0
 # check build directory
 test $TEST_TYPE $FILE || {
 	echo
-	echo "$0 needs to be invoked in the toplevel directory of $PROJECT"
+	echo "$0: must be invoked in the toplevel directory of $PROJECT"
 	DIE=1
 }
 
+# check_version(given,required) compare two versions in up to 6 decimal numbers
+check_version()
+{
+  # extract all numbers from given-version into ac_v?
+  eval `echo "$1:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g' \
+    -e 's/\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\(.*\)/ac_v1=\1 ac_v2=\2 ac_v3=\3 ac_v4=\4 ac_v5=\5 ac_v6=\6/' `
+  # extract all numbers from required-version into ac_r?
+  eval `echo "$2:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g' \
+    -e 's/\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\(.*\)/ac_r1=\1 ac_r2=\2 ac_r3=\3 ac_r4=\4 ac_r5=\5 ac_r6=\6/' `
+  # do the actual comparison (yielding 1 on success)
+  ac_vm=`expr \( $ac_v1 \> $ac_r1 \) \| \( \( $ac_v1 \= $ac_r1 \) \& \(          \
+               \( $ac_v2 \> $ac_r2 \) \| \( \( $ac_v2 \= $ac_r2 \) \& \(         \
+                \( $ac_v3 \> $ac_r3 \) \| \( \( $ac_v3 \= $ac_r3 \) \& \(        \
+                 \( $ac_v4 \> $ac_r4 \) \| \( \( $ac_v4 \= $ac_r4 \) \& \(       \
+                  \( $ac_v5 \> $ac_r5 \) \| \( \( $ac_v5 \= $ac_r5 \) \& \(      \
+                   \( $ac_v6 \>= $ac_r6 \)                                       \
+                  \) \)  \
+                 \) \)   \
+                \) \)    \
+               \) \)     \
+              \) \)      `
+  #echo -n G: ; echo "$1:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g'
+  #echo -n R: ; echo "$2:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g'
+  #echo = $ac_vm
+  test $ac_vm = 1
+}
+
 # check for automake
-if $AUTOMAKE --version 2>/dev/null | grep >/dev/null " $AUTOMAKE_VERSION\b" ; then
+if check_version "`$AUTOMAKE --version 2>/dev/null | sed 1q`" $AUTOMAKE_VERSION ; then
 	:	# all fine
-elif $AUTOMAKE$AUTOMAKE_VERSION --version 2>/dev/null | grep >/dev/null " $AUTOMAKE_VERSION\b" ; then
-	AUTOMAKE=$AUTOMAKE$AUTOMAKE_VERSION
-	ACLOCAL=$ACLOCAL$AUTOMAKE_VERSION
-elif $AUTOMAKE-$AUTOMAKE_VERSION --version 2>/dev/null | grep >/dev/null " $AUTOMAKE_VERSION\b" ; then
-	AUTOMAKE=$AUTOMAKE-$AUTOMAKE_VERSION
-	ACLOCAL=$ACLOCAL-$AUTOMAKE_VERSION
+elif check_version "`$AUTOMAKE$AUTOMAKE_POSTFIX --version 2>/dev/null | sed 1q`" $AUTOMAKE_VERSION ; then
+	AUTOMAKE=$AUTOMAKE$AUTOMAKE_POSTFIX
+	ACLOCAL=$ACLOCAL$AUTOMAKE_POSTFIX
+elif check_version "`$AUTOMAKE-$AUTOMAKE_POSTFIX --version 2>/dev/null | sed 1q`" $AUTOMAKE_VERSION ; then
+	AUTOMAKE=$AUTOMAKE-$AUTOMAKE_POSTFIX
+	ACLOCAL=$ACLOCAL-$AUTOMAKE_POSTFIX
 else
-	echo
-	echo "You need to have $AUTOMAKE (version $AUTOMAKE_VERSION) installed to compile $PROJECT."
+	echo "You need to have $AUTOMAKE (version >= $AUTOMAKE_VERSION) installed to compile $PROJECT."
 	echo "Download the appropriate package for your distribution,"
 	echo "or get the source tarball at http://ftp.gnu.org/gnu/automake"
 	DIE=1
 fi
 
+# due to automake release incompatibilities, check max-version
+check_version $AUTOMAKE_MAXVERSION.9999 "`$AUTOMAKE --version 2>/dev/null | sed 1q`" || {
+	echo "You need to have $AUTOMAKE (version <= $AUTOMAKE_MAXVERSION) installed to compile $PROJECT."
+	echo "Download the appropriate package for your distribution,"
+	echo "or get the source tarball at http://ftp.gnu.org/gnu/automake"
+	DIE=1
+}
+
 # check for autoconf
-if $AUTOCONF --version 2>/dev/null | grep >/dev/null " $AUTOCONF_VERSION\b" ; then
+if check_version "`$AUTOCONF --version 2>/dev/null | sed 1q`" $AUTOCONF_VERSION ; then
 	:	# all fine
-elif $AUTOCONF$AUTOCONF_VERSION --version 2>/dev/null | grep >/dev/null "GNU Autoconf\b" ; then
-	AUTOCONF=$AUTOCONF$AUTOCONF_VERSION
-	AUTOHEADER=$AUTOHEADER$AUTOCONF_VERSION
-elif $AUTOCONF-$AUTOCONF_VERSION --version 2>/dev/null | grep >/dev/null "GNU Autoconf\b" ; then
-	AUTOCONF=$AUTOCONF-$AUTOCONF_VERSION
-	AUTOHEADER=$AUTOHEADER-$AUTOCONF_VERSION
+elif check_version "`$AUTOCONF$AUTOCONF_POSTFIX --version 2>/dev/null | sed 1q`" $AUTOCONF_VERSION ; then
+	AUTOCONF=$AUTOCONF$AUTOCONF_POSTFIX
+	AUTOHEADER=$AUTOHEADER$AUTOCONF_POSTFIX
+elif check_version "`$AUTOCONF-$AUTOCONF_POSTFIX --version 2>/dev/null | sed 1q`" $AUTOCONF_VERSION ; then
+	AUTOCONF=$AUTOCONF-$AUTOCONF_POSTFIX
+	AUTOHEADER=$AUTOHEADER-$AUTOCONF_POSTFIX
 else
-	echo
-	echo "You need to have $AUTOCONF (version $AUTOCONF_VERSION) installed to compile $PROJECT."
+	echo "You need to have $AUTOCONF (version >= $AUTOCONF_VERSION) installed to compile $PROJECT."
 	echo "Download the appropriate package for your distribution,"
 	echo "or get the source tarball at http://ftp.gnu.org/gnu/autoconf"
 	DIE=1
 fi
 
 # check for gettextize
-$GETTEXTIZE --version >/dev/null 2>&1 || {
-	echo
-	echo "You need to have $GETTEXTIZE installed to compile $PROJECT."
-	echo "Get the source tarball at http://ftp.gnu.org/gnu/"
+$GLIB_GETTEXTIZE --version >/dev/null 2>&1 || {
+	echo "You need to have $GLIB_GETTEXTIZE installed to compile $PROJECT."
+	echo "Get the source tarball at http://www.gtk.org/download/"
 	DIE=1
 }
 
 # check for intltoolize
-$INTLTOOLIZE --version >/dev/null 2>&1 || {
-	echo
-	echo "You need to have $INTLTOOLIZE installed to compile $PROJECT."
+check_version "`$INTLTOOLIZE --version 2>/dev/null | sed 1q`" $INTLTOOLIZE_VERSION || {
+	echo "You need to have $INTLTOOLIZE (version >= $INTLTOOLIZE_VERSION) installed to compile $PROJECT."
 	echo "Get the source tarball at http://ftp.gnu.org/gnu/"
 	DIE=1
 }
 
 # check for libtool
-$LIBTOOLIZE --version >/dev/null 2>&1 || {
-	echo
-	echo "You need to have $LIBTOOL installed to compile $PROJECT."
+check_version "`$LIBTOOLIZE --version 2>/dev/null | sed 1q`" $LIBTOOLIZE_VERSION || {
+	echo "You need to have $LIBTOOLIZE (version >= $LIBTOOLIZE_VERSION) installed to compile $PROJECT."
 	echo "Get the source tarball at http://ftp.gnu.org/gnu/libtool"
 	DIE=1
 }
 
 # sanity test aclocal
 $ACLOCAL --version >/dev/null 2>&1 || {
-	echo
 	echo "Unable to run $ACLOCAL though $AUTOMAKE is available."
 	echo "Please correct the above error first."
 	DIE=1
@@ -96,7 +130,6 @@ $ACLOCAL --version >/dev/null 2>&1 || {
 
 # sanity test autoheader
 $AUTOHEADER --version >/dev/null 2>&1 || {
-	echo
 	echo "Unable to run $AUTOHEADER though $AUTOCONF is available."
 	echo "Please correct the above error first."
 	DIE=1
@@ -119,34 +152,30 @@ if test -z "$ACLOCAL_FLAGS"; then
 	done
 fi
 
+echo "Running: $LIBTOOLIZE"
 $LIBTOOLIZE --force || exit $?
 
-# run gettext
-echo "Running gettextize...  Ignore non-fatal messages."
-# We specify --force here, since otherwise things are
-# not added reliably, but we don't want to overwrite intl
-# while making dist.
-echo "no" | $GETTEXTIZE --force || exit $?
+echo "Running: $GLIB_GETTEXTIZE"
+echo "no" | $GLIB_GETTEXTIZE --force || exit $?
 
-# run intltool
-echo "Running intltoolize..."
+echo "Running: $INTLTOOLIZE"
 $INTLTOOLIZE --force --automake || exit $?
 
-# run aclocal
+echo "Running: $ACLOCAL $ACLOCAL_FLAGS"
 $ACLOCAL $ACLOCAL_FLAGS	|| exit $?
 
-# feature autoheader
+echo "Running: $AUTOHEADER"
 $AUTOHEADER || exit $?
 
-# invoke automake
+echo "Running: $AUTOMAKE"
 case $CC in
 *xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
 esac
 $AUTOMAKE --add-missing $am_opt || exit $?
 
-# invoke autoconf
+echo "Running: $AUTOCONF"
 $AUTOCONF || exit $?
 
-# invoke configure
 cd $ORIGDIR
+echo "Running: $srcdir/configure $CONFIGURE_OPTIONS $@"
 $srcdir/configure $CONFIGURE_OPTIONS "$@" || exit $?

@@ -1,3 +1,14 @@
+Sat Jan 10 10:00:19 2004  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: major cleanup. downgraded autoconf dependancy to 2.57.
+	disentangled versions from executable postfix.
+	added check_version(), a function to compare two version strings,
+	fixed all version checks to use check_version().
+	improved messages, don't pretend to use gettextize if instead
+	glib-gettextize is used and required (since it's a good deal
+	different from gettextize). added version checks for intltool
+	and libtool.
+	
 Fri Jan  9 15:41:53 2004  Tim Janik  <timj@gtk.org>
 
         * beast-gtk/bstapp.c:
