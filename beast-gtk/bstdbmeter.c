@@ -1464,13 +1464,13 @@ static void
 db_meter_build_channels (BstDBMeter *self,
                          guint       n_channels)
 {
-  const gint padding = 2;
+  const gint padding = 1;
   if (n_channels == 1)
     {
       /* scale + dash + number + dash + beam */
       bst_db_meter_create_scale (self, padding);
       bst_db_meter_create_dashes (self, GTK_JUSTIFY_LEFT, padding);
-      bst_db_meter_create_numbers (self, padding);
+      bst_db_meter_create_numbers (self, MAX (padding - 1, 0));
       bst_db_meter_create_dashes (self, GTK_JUSTIFY_RIGHT, padding);
       bst_db_meter_create_beam (self, padding);
     }
@@ -1482,7 +1482,7 @@ db_meter_build_channels (BstDBMeter *self,
       bst_db_meter_create_beam (self, padding);
       /* dash + number + dash */
       bst_db_meter_create_dashes (self, GTK_JUSTIFY_LEFT, padding);
-      bst_db_meter_create_numbers (self, padding);
+      bst_db_meter_create_numbers (self, MAX (padding - 1, 0));
       bst_db_meter_create_dashes (self, GTK_JUSTIFY_RIGHT, padding);
       /* beam + dash + scale */
       bst_db_meter_create_beam (self, padding);
