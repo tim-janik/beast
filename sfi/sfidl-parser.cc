@@ -907,7 +907,7 @@ GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequent
   */
   
   parse_or_return (G_TOKEN_IDENTIFIER);
-  comp.name = scanner->value.v_identifier;
+  comp.name = defineSymbol(scanner->value.v_identifier);
   comp.file = fileName();
   comp.neutral = false;
   

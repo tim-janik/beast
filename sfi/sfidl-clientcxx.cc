@@ -694,7 +694,7 @@ void CodeGeneratorCxx::run ()
             {
               /* don't export server side assigned choice values to the client */
               gint value = options.doInterface ? ci->sequentialValue : ci->value;
-              string ename = makeUpperName (ci->name);
+              string ename = makeUpperName (nspace.printableForm (ci->name));
               printf("  %s = %d,\n", ename.c_str(), value);
             }
           printf("};\n");

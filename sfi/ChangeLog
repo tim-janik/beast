@@ -1,3 +1,8 @@
+Sun Jan 25 19:42:31 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cxx.cc sfidl-generator.cc sfidl-parser.cc: Put fully qualified
+	name into the ChoiceValue data structure while parsing.
+
 Sun Jan 25 08:38:36 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: removed lots of old ad-hoc string conversion

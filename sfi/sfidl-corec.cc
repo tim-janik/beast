@@ -836,7 +836,7 @@ void CodeGeneratorCBase::printChoiceConverters()
       /* produce reverse sorted enum array */
       vector<ChoiceValue> components = ei->contents;
       for (ci = components.begin(); ci != components.end(); ci++)
-	ci->name = makeLowerName (NamespaceHelper::namespaceOf(ei->name) + ci->name, '-');
+	ci->name = makeLowerName (ci->name, '-');
       sort (components.begin(), components.end(), ::choiceReverseSort);
 
       printf("static const SfiConstants %s_vals[%d] = {\n",name.c_str(), ei->contents.size());
@@ -982,7 +982,7 @@ void CodeGeneratorC::run ()
 	    {
 	      /* don't export server side assigned choice values to the client */
 	      gint value = options.doInterface ? ci->sequentialValue : ci->value;
-	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
+	      string ename = makeUpperName (ci->name);
 	      printf("  %s = %d,\n", ename.c_str(), value);
 	    }
 	  printf("} %s;\n", mname.c_str());
@@ -1361,7 +1361,7 @@ void CodeGeneratorC::run ()
 	  printf("static const GEnumValue %s_value[%d] = {\n", name.c_str(), ei->contents.size() + 1);
 	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
-	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
+	      string ename = makeUpperName (ci->name);
 	      printf("  { %d, \"%s\", \"%s\" },\n", ci->value, ename.c_str(), ci->text.c_str());
 	    }
 	  printf("  { 0, NULL, NULL }\n");
@@ -1369,7 +1369,7 @@ void CodeGeneratorC::run ()
 	  printf("static const SfiChoiceValue %s_cvalue[%d] = {\n", name.c_str(), ei->contents.size());
 	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
-	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
+	      string ename = makeUpperName (ci->name);
 	      printf("  { \"%s\", \"%s\" },\n", ename.c_str(), ci->text.c_str());
 	    }
 	  printf("};\n");
