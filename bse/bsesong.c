@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-2002 Tim Janik
+ * Copyright (C) 1997-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,11 +240,11 @@ bse_song_init (BseSong *self)
   self->loop_right_SL = -1;
 
   /* context merger */
-  self->context_merger = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
+  self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
   BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_AGGREGATE);
 
   /* output */
-  self->output = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
+  self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   BSE_OBJECT_SET_FLAGS (self->output, BSE_ITEM_FLAG_AGGREGATE);
 
   /* context merger <-> output */
@@ -576,17 +576,6 @@ bse_song_remove_item (BseContainer *container,
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
-}
-
-static void
-bse_song_ht_foreach (gpointer key,
-		     gpointer value,
-		     gpointer user_data)
-{
-  GList **list_p;
-  
-  list_p = user_data;
-  *list_p = g_list_prepend (*list_p, value);
 }
 
 static gboolean

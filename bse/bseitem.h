@@ -65,6 +65,7 @@ struct _BseItemClass
   void		(*set_parent)	(BseItem	*item,
 				 BseItem	*parent);
   guint		(*get_seqid)	(BseItem	*item);
+  BseUndoStack* (*get_undo)     (BseItem        *item);
 };
 
 typedef void     (*BseItemUncross)	     (BseItem        *owner,
@@ -95,6 +96,7 @@ guint           bse_item_get_seqid           (BseItem         *item);
 void            bse_item_queue_seqid_changed (BseItem         *item);
 BseSuper*       bse_item_get_super           (BseItem         *item);
 BseProject*     bse_item_get_project         (BseItem         *item);
+BseItem*        bse_item_get_toplevel        (BseItem         *item);
 gboolean        bse_item_has_ancestor        (BseItem         *item,
 					      BseItem         *ancestor);
 BseItem*        bse_item_common_ancestor     (BseItem         *item1,
@@ -107,23 +109,46 @@ void            bse_item_cross_unlink	     (BseItem         *owner,
 					      BseItemUncross   uncross_func);
 void            bse_item_uncross	     (BseItem         *owner,
 					      BseItem         *link);
-BseErrorType    bse_item_exec_proc           (gpointer	       item,
-					      const gchar     *procedure,
-					      ...);
-#define	bse_item_exec /* (item, in_params..., &out_params...) */	bse_item_exec_proc
-BseErrorType    bse_item_exec_void_proc      (gpointer	       item,
-					      const gchar     *procedure,
-					      ...);
-BseStorage*     bse_item_open_undo           (BseItem         *item,
-					      const gchar     *undo_group);
-void            bse_item_close_undo          (BseItem         *item,
-					      BseStorage      *storage);
 BseItem*	bse_item_use		     (BseItem	      *item);
 void		bse_item_unuse		     (BseItem	      *item);
-void            bse_item_set_parent	     (BseItem        *item,
-					      BseItem        *parent);
-
-
+void            bse_item_set_parent	     (BseItem         *item,
+					      BseItem         *parent);
+BseErrorType    bse_item_exec                (gpointer	       item,
+					      const gchar     *procedure,
+					      ...);
+BseErrorType    bse_item_exec_void_proc      (gpointer	       item,
+					      const gchar     *procedure,
+					      ...); /* ignore return values */
+/* undo-aware functions */
+void          bse_item_set_valist_undoable   (gpointer         object,
+                                              const gchar     *first_property_name,
+                                              va_list          var_args);
+void          bse_item_set_undoable          (gpointer        object,
+                                              const gchar    *first_property_name,
+                                              ...);
+void          bse_item_set_property_undoable (BseItem         *self,
+                                              const gchar     *name,
+                                              const GValue    *value);
+/* undo admin functions */
+BseUndoStack* bse_item_undo_open             (gpointer         item,
+                                              const gchar     *format,
+                                              ...);
+void          bse_item_undo_close            (BseUndoStack    *ustack);
+/* undo helper functions */
+void          bse_item_push_undo_proc        (gpointer	       item,
+					      const gchar     *procedure,
+					      ...);
+void          bse_item_push_redo_proc        (gpointer	       item,
+					      const gchar     *procedure,
+					      ...);
+void          bse_item_backup_to_undo        (BseItem         *self,
+                                              BseUndoStack    *ustack);
+void          bse_item_push_undo_storage     (BseItem         *self,
+                                              BseUndoStack    *ustack,
+                                              BseStorage      *storage);
+/* convenience */
+#define bse_item_set             bse_item_set_undoable
+#define bse_item_get             g_object_get
 
 G_END_DECLS
 

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,7 @@
 #include	<bse/bseglobals.h> /* FIXME */
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- object type macros --- */
@@ -128,9 +126,6 @@ void		bse_snet_set_oport_dest		(BseSNet	 *snet,
 						 guint		  istream,
 						 GslTrans	 *trans);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SNET_H__ */

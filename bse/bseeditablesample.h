@@ -41,8 +41,6 @@ extern "C" {
 
 
 /* --- structures --- */
-typedef struct _BseEditableSample	BseEditableSample;
-typedef struct _BseEditableSampleClass	BseEditableSampleClass;
 struct _BseEditableSample
 {
   BseItem	 parent_object;

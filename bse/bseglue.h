@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include <bse/bsetype.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* FIXME: creation of a new context source should be done
  * by a janitor constructor
@@ -53,10 +50,7 @@ GValue*	bse_value_to_sfi	(const GValue	*value);
 GValue*	bse_value_from_sfi	(const GValue	*value,
 				 GParamSpec	*pspec);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_GLUE_H__ */
 

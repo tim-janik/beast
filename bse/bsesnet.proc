@@ -16,10 +16,10 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bsesnet.h>
-#include        <bse/bsemain.h>
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsesnet.h>
+#include <bse/bsemain.h>
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -98,27 +98,27 @@ METHOD (BseSNet, create-source) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *snet = bse_value_get_object (in_values++);
-  const gchar *type_name = sfi_value_get_string (in_values++);
-  BseContainer *container;
-  BseSource *source;
+  BseContainer *container = bse_value_get_object (in_values++);
+  const gchar *type_name  = sfi_value_get_string (in_values++);
+  BseItem *child;
+  BseUndoStack *ustack;
   BseErrorType error;
-  
+
   /* check parameters */
-  if (!BSE_IS_SNET (snet))
+  if (!BSE_IS_SNET (container))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  if (bse_item_exec (snet, "can-create-source", type_name, &error) != 0 ||
+  if (bse_item_exec (container, "can-create-source", type_name, &error) != 0 ||
       error != 0)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  container = BSE_CONTAINER (snet);
-  source = g_object_new (g_type_from_name (type_name), NULL);
-  bse_container_add_item (container, BSE_ITEM (source));
-  
+  ustack = bse_item_undo_open (container, "create-source");
+  child = bse_container_new_child (container, g_type_from_name (type_name), NULL);
+  bse_item_push_undo_proc (container, "remove-source", child);
+  bse_item_undo_close (ustack);
+
   /* set output parameters */
-  bse_value_set_object (out_values++, source);
-  g_object_unref (source);
+  bse_value_set_object (out_values++, child);
   
   return BSE_ERROR_NONE;
 }
@@ -137,17 +137,26 @@ METHOD (BseSNet, remove-source) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseSNet *snet = bse_value_get_object (in_values++);
-  BseSource *source = bse_value_get_object (in_values++);
+  BseSNet *self      = bse_value_get_object (in_values++);
+  BseItem *child     = bse_value_get_object (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-  
+  BseUndoStack *ustack;
+
   /* check parameters */
-  if (!BSE_IS_SNET (snet) || !BSE_IS_SOURCE (source) || BSE_ITEM (source)->parent != BSE_ITEM (snet) ||
-      (!BSE_SNET_USER_SYNTH (snet) && !BSE_DBG_EXT))
+  if (!BSE_IS_SNET (self) || !BSE_IS_SOURCE (child) || child->parent != (BseItem*) self ||
+      (!BSE_SNET_USER_SYNTH (self) && !BSE_DBG_EXT))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_container_remove_item (BSE_CONTAINER (snet), BSE_ITEM (source));
+  ustack = bse_item_undo_open (self, "remove-child %s", bse_object_debug_name (child));
+  /* remove object references */
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  /* how to get rid of the item once backed up */
+  bse_item_push_redo_proc (self, "remove-source", child);
+  /* remove (without redo queueing) */
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  /* done */
+  bse_item_undo_close (ustack);
   
   /* set output parameters */
   g_value_set_enum (out_values++, error);

@@ -70,10 +70,6 @@ struct _BseSuperClass
 };
 
 
-/* --- prototypes --- */
-BseProject*     bse_super_get_project		(BseSuper	*super);
-
-
 G_END_DECLS
 
 #endif /* __BSE_SUPER_H__ */

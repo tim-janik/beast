@@ -96,6 +96,10 @@ BseErrorType bse_procedure_marshal        (GType		 proc_type,
 					   GValue		*ovalues,
 					   BseProcedureMarshal	 marshal,
 					   gpointer		 marshal_data);
+BseErrorType bse_procedure_collect_input_args (BseProcedureClass  *proc,
+                                               const GValue       *first_value,
+                                               va_list             var_args,
+                                               GValue              ivalues[BSE_PROCEDURE_MAX_IN_PARAMS]);
 BseErrorType bse_procedure_execvl	  (BseProcedureClass	*proc,
 					   GSList		*in_value_list,
 					   GSList		*out_value_list,

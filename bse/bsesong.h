@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-2002 Tim Janik
+ * Copyright (C) 1997-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,7 @@
 #include        <bse/bsesnet.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- BSE type macros --- */
@@ -87,8 +85,6 @@ void		bse_song_get_timing		(BseSong	*self,
 void		bse_song_timing_get_default	(BseSongTiming	*timing);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SONG_H__ */

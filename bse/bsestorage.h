@@ -143,6 +143,7 @@ void		bse_storage_put_data_handle	(BseStorage	*storage,
 						 GslLong	 vlength);
 void		bse_storage_flush_fd		(BseStorage	*storage,
 						 gint		 fd);
+gchar*		bse_storage_mem_flush		(BseStorage	*storage);
 const gchar*	bse_storage_peek_text		(BseStorage	*storage,
 						 guint		*length);
 BseErrorType	bse_storage_store_procedure	(gpointer	   storage,
@@ -155,9 +156,6 @@ void		bse_storage_put_item_link	(BseStorage	*storage,
 
 
 /* --- reading --- */
-void		bse_storage_set_upath_resolver	(BseStorage	*storage,
-						 BseUPathResolver resolver,
-						 gpointer        func_data);
 gboolean	bse_storage_input_eof		(BseStorage	*storage);
 void		bse_storage_error		(BseStorage	*storage,
 						 const gchar	*format,

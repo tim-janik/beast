@@ -1,4 +1,4 @@
-/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+/* BSE - Bedevilled Sound Engine        -*-mode: c;-*-
  * Copyright (C) 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
@@ -15,30 +15,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bseproject.h>
-#include        <bse/bsestorage.h>
-#include        <bse/bsesong.h>
-#include        <bse/bsewaverepo.h>
-#include        <bse/bsecsynth.h>
-#include        <bse/bsemidisynth.h>
-#include        <bse/bsedatapocket.h>
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bseproject.h>
+#include <bse/bsestorage.h>
+#include <bse/bsesong.h>
+#include <bse/bseundostack.h>
+#include <bse/bsewaverepo.h>
+#include <bse/bsecsynth.h>
+#include <bse/bsemidisynth.h>
+#include <bse/bsedatapocket.h>
 
 
-AUTHORS	= "Tim Janik <timj@gtk.org>";
+AUTHORS = "Tim Janik <timj@gtk.org>";
 CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
 
 
 METHOD (BseProject, is-playing) {
-  HELP	= "Check whether a project is currently playing";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_bool ("is_playing", "Is Playing", "Whether the project is currently playing songs or synths",
-			  FALSE, SFI_PARAM_DEFAULT);
+  HELP  = "Check whether a project is currently playing";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("is_playing", "Is Playing", "Whether the project is currently playing songs or synths",
+                          FALSE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -56,14 +57,14 @@ METHOD (BseProject, is-playing) {
 }
 
 METHOD (BseProject, is-active) {
-  HELP	= "Check whether a project is active";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_bool ("is_active", NULL, "Whether the project is currently producing sound",
-			  FALSE, SFI_PARAM_DEFAULT);
+  HELP  = "Check whether a project is active";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("is_active", NULL, "Whether the project is currently producing sound",
+                          FALSE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -81,22 +82,21 @@ METHOD (BseProject, is-active) {
 }
 
 METHOD (BseProject, restore-from-file, "File/Restore") {
-  HELP	= "Load a project from file";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  IN	= sfi_pspec_string ("file-name", "File", "Source file name",
-			    NULL, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_enum ("error", "Error", "Error indicating possible failures",
-			       BSE_ERROR_NONE, BSE_TYPE_ERROR_TYPE,
-			       SFI_PARAM_DEFAULT);
+  HELP  = "Load a project from file";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("file-name", "File", "Source file name",
+                            NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_enum ("error", "Error", "Error indicating possible failures",
+                               BSE_ERROR_NONE, BSE_TYPE_ERROR_TYPE,
+                               SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
   gchar *file_name = sfi_value_get_string (in_values++);
-  BseStorage *storage;
   BseErrorType error;
   
   /* check parameters */
@@ -104,17 +104,21 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  storage = g_object_new (BSE_TYPE_STORAGE, NULL);
-
-  error = bse_storage_input_file (storage, file_name);
-  if (!error)
+  if (!project->in_undo && !project->in_redo)
     {
-      // bse_storage_set_upath_resolver (storage, bse_project_upath_resolver, project);
-      error = bse_project_restore (project, storage);
+      BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+      error = bse_storage_input_file (storage, file_name);
+      if (!error)
+        error = bse_project_restore (project, storage);
+      bse_storage_reset (storage);
+      g_object_unref (storage);
+      bse_undo_stack_clear (project->undo_stack);
+      bse_undo_stack_clear (project->redo_stack);
+      g_object_notify (project, "dirty");
     }
-  bse_storage_reset (storage);
-  g_object_unref (storage);
-  
+  else
+    error = BSE_ERROR_PROC_BUSY;
+
   /* set output parameters */
   bse_value_set_enum (out_values++, error);
   
@@ -122,21 +126,21 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
 }
 
 METHOD (BseProject, store-bse, "File/Store") {
-  HELP	= "Save a project into a BSE file";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  IN	= sfi_pspec_string ("file-name", "File", "Destination file name",
-			    NULL, SFI_PARAM_DEFAULT);
-  IN	= sfi_pspec_bool ("self-contained", "Self Contained",
-			  "Whether references to other objects (e.g. samples) should "
-			  "be stored or whether to include everything in a self-contained .bse file",
-			  FALSE, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_genum ("error", "Error", "Error indicating possible failures",
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+  HELP  = "Save a project into a BSE file";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("file-name", "File", "Destination file name",
+                            NULL, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_bool ("self-contained", "Self Contained",
+                          "Whether references to other objects (e.g. samples) should "
+                          "be stored or whether to include everything in a self-contained .bse file",
+                          FALSE, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", "Error indicating possible failures",
+                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+                                SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -157,48 +161,50 @@ METHOD (BseProject, store-bse, "File/Store") {
 }
 
 METHOD (BseProject, create-song) {
-  BLURB	= "Create a song for this project.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  BLURB = "Create a song for this project.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("name", "Name", "Song name",
-			    NULL, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_object ("song", "Song", "The new song",
-				 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("song", "Song", "The new song",
+                                 BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  gchar *name         = sfi_value_get_string (in_values++);
-  BseSong *song;
-  
+  BseContainer *container = bse_value_get_object (in_values++);
+  const gchar *name       = sfi_value_get_string (in_values++);
+  BseUndoStack *ustack;
+  BseItem *child;
+
   /* check parameters */
-  if (!BSE_IS_PROJECT (project))
+  if (!BSE_IS_PROJECT (container))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
+
   /* action */
-  song = g_object_new (BSE_TYPE_SONG,
-		       name ? "uname" : NULL, name,
-		       NULL);
-  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (song));
-  
+  ustack = bse_item_undo_open (container, "create-song");
+  child = bse_container_new_child (container, BSE_TYPE_SONG, NULL);
+  if (name)
+    bse_item_set (child, "uname", name, NULL);
+  bse_item_push_undo_proc (container, "remove-snet", child);
+  bse_item_undo_close (ustack);
+
   /* set output parameters */
-  bse_value_set_object (out_values++, G_OBJECT (song));
-  g_object_unref (song);
-  
+  bse_value_set_object (out_values++, child);
+
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseProject, ensure-wave-repo) {
-  HELP	= "Ensure the project has a wave repository";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_object ("wrepo", "Wave Repo", "The project's unique wave repo",
-				 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
+METHOD (BseProject, get-wave-repo) {
+  HELP  = "Ensure the project has a wave repository";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("wrepo", "Wave Repo", "The project's unique wave repo",
+                                 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -210,30 +216,24 @@ METHOD (BseProject, ensure-wave-repo) {
   
   /* action */
   wrepo = bse_project_get_wave_repo (project);
-  if (!wrepo)
-    {
-      wrepo = g_object_new (BSE_TYPE_WAVE_REPO, NULL);
-      bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (wrepo));
-      g_object_unref (wrepo);
-    }
   
   /* set output parameters */
-  bse_value_set_object (out_values++, G_OBJECT (wrepo));
+  bse_value_set_object (out_values++, wrepo);
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, get-data-pocket) {
-  HELP	= "Retrieve a specifically named data pocket for this project";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  IN	= sfi_pspec_string ("name", "Name", "Name of the data pocket",
-			    NULL, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket",
-				 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
+  HELP  = "Retrieve a specifically named data pocket for this project";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("name", "Name", "Name of the data pocket",
+                            NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("data_pocket", "Data Pocket", "The data pocket",
+                                 BSE_TYPE_DATA_POCKET, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -247,11 +247,9 @@ METHOD (BseProject, get-data-pocket) {
   /* action */
   item = bse_project_lookup_typed_item (project, BSE_TYPE_DATA_POCKET, name);
   if (!item)
-    {
-      item = g_object_new (BSE_TYPE_DATA_POCKET, "uname", name, NULL);
-      bse_container_add_item (BSE_CONTAINER (project), item);
-      g_object_unref (item);
-    }
+    item = bse_container_new_child (BSE_CONTAINER (project), BSE_TYPE_DATA_POCKET,
+                                    "uname", name,
+                                    NULL);
   
   /* set output parameters */
   bse_value_set_object (out_values++, item);
@@ -260,109 +258,124 @@ METHOD (BseProject, get-data-pocket) {
 }
 
 METHOD (BseProject, create-csynth) {
-  BLURB	= "Create a synthsizer network for this project.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  BLURB = "Create a synthsizer network for this project.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("name", "Name", "Synth network name",
-			    NULL, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_object ("csynth", "Synthesizer Network", "New synth network",
-				 BSE_TYPE_CSYNTH, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("csynth", "Synthesizer Network", "New synth network",
+                                 BSE_TYPE_CSYNTH, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  gchar *name         = sfi_value_get_string (in_values++);
-  BseCSynth *csynth;
+  BseContainer *container = bse_value_get_object (in_values++);
+  const gchar *name       = sfi_value_get_string (in_values++);
+  BseUndoStack *ustack;
+  BseItem *child;
   
   /* check parameters */
-  if (!BSE_IS_PROJECT (project))
+  if (!BSE_IS_PROJECT (container))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  csynth = g_object_new (BSE_TYPE_CSYNTH,
-                         name ? "uname" : NULL, name,
-                         NULL);
-  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (csynth));
+  ustack = bse_item_undo_open (container, "create-csynth");
+  child = bse_container_new_child (container, BSE_TYPE_CSYNTH, NULL);
+  if (name)
+    bse_item_set (child, "uname", name, NULL);
+  bse_item_push_undo_proc (container, "remove-snet", child);
+  bse_item_undo_close (ustack);
   
   /* set output parameters */
-  bse_value_set_object (out_values++, G_OBJECT (csynth));
-  g_object_unref (csynth);
+  bse_value_set_object (out_values++, child);
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, create-midi-synth) {
-  BLURB	= "Create a MIDI synthesizer network for this project.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  BLURB = "Create a MIDI synthesizer network for this project.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("name", "Name", "MIDI synth name",
-			    NULL, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_object ("midi_synth", "MIDI Synthesizer", "New MIDI synth",
-				 BSE_TYPE_MIDI_SYNTH, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_object ("midi_synth", "MIDI Synthesizer", "New MIDI synth",
+                                 BSE_TYPE_MIDI_SYNTH, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
-  BseProject *project = bse_value_get_object (in_values++);
-  gchar *name         = sfi_value_get_string (in_values++);
-  BseMidiSynth *midi_synth;
-  
+  BseContainer *container = bse_value_get_object (in_values++);
+  gchar *name             = sfi_value_get_string (in_values++);
+  BseUndoStack *ustack;
+  BseItem *child;
+
   /* check parameters */
-  if (!BSE_IS_PROJECT (project))
+  if (!BSE_IS_PROJECT (container))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  midi_synth = g_object_new (BSE_TYPE_MIDI_SYNTH,
-			     name ? "uname" : NULL, name,
-			     NULL);
-  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (midi_synth));
-  
+  ustack = bse_item_undo_open (container, "create-midi-synth");
+  child = bse_container_new_child (container, BSE_TYPE_MIDI_SYNTH, NULL);
+  if (name)
+    bse_item_set (child, "uname", name, NULL);
+  bse_item_push_undo_proc (container, "remove-snet", child);
+  bse_item_undo_close (ustack);
+
   /* set output parameters */
-  bse_value_set_object (out_values++, G_OBJECT (midi_synth));
-  g_object_unref (midi_synth);
+  bse_value_set_object (out_values++, child);
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, remove-snet) {
-  BLURB	= "Remove an existing synthesizer network from this project.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  IN	= bse_param_spec_object ("snet", "SNet", "Synthesizer Network",
-				 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
+  BLURB = "Remove an existing synthesizer network from this project.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("snet", "SNet", "Synthesizer Network",
+                                 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
-  BseContainer *project = bse_value_get_object (in_values++);
-  BseItem      *snet    = bse_value_get_object (in_values++);
+  BseContainer *self  = bse_value_get_object (in_values++);
+  BseItem      *child = bse_value_get_object (in_values++);
+  BseUndoStack *ustack;
   
   /* check parameters */
-  if (!BSE_IS_PROJECT (project) || !BSE_IS_SNET (snet) || snet->parent != (BseItem*) project)
+  if (!BSE_IS_PROJECT (self) || !BSE_IS_SNET (child) || child->parent != (BseItem*) self)
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  if (!BSE_SOURCE_PREPARED (project))
-    bse_container_remove_item (project, snet);
+  if (!BSE_SOURCE_PREPARED (self))
+    {
+      ustack = bse_item_undo_open (self, "remove-child %s", bse_object_debug_name (child));
+      /* remove object references */
+      bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+      /* how to get rid of the item once backed up */
+      bse_item_push_redo_proc (self, "remove-snet", child);
+      /* remove (without redo queueing) */
+      bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+      /* done */
+      bse_item_undo_close (ustack);
+    }
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, list-uname-paths) {
   HELP  = ("List uname paths for all items of a specified type within this project. "
-	   "By their uname paths, items are uniquely identifyable within a project.");
+           "By their uname paths, items are uniquely identifyable within a project.");
   IN    = bse_param_spec_object ("project", NULL, NULL,
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("item_type", NULL, NULL,
-			    NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_DEFAULT);
   OUT   = bse_param_spec_boxed ("uname_paths", "Uname Paths", NULL, BSE_TYPE_STRING_SEQ, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -382,14 +395,14 @@ METHOD (BseProject, list-uname-paths) {
 METHOD (BseProject, find-item) {
   HELP  = "Find an item within a project, given its uname path.";
   IN    = bse_param_spec_object ("project", NULL, NULL,
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("uname_path", NULL, NULL,
-			    NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_DEFAULT);
   OUT   = bse_param_spec_object ("item", NULL, NULL,
-				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -408,15 +421,15 @@ METHOD (BseProject, find-item) {
 METHOD (BseProject, match-items-by-uname) {
   HELP  = "Retrieve all items of a specific type within a project with matching uname";
   IN    = bse_param_spec_object ("project", NULL, NULL,
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("item_type", NULL, NULL,
-			    NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("uname", NULL, NULL,
-			    NULL, SFI_PARAM_DEFAULT);
+                            NULL, SFI_PARAM_DEFAULT);
   OUT   = bse_param_spec_boxed ("item_list", "Item List", NULL, BSE_TYPE_PROXY_SEQ, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -436,8 +449,8 @@ METHOD (BseProject, match-items-by-uname) {
   for (list = free_list; list; list = list->next)
     if (bse_item_get_project (list->data) == project)
       {
-	bse_proxy_seq_append (pseq, BSE_OBJECT_ID (list->data));
-	break;
+        bse_proxy_seq_append (pseq, BSE_OBJECT_ID (list->data));
+        break;
       }
   g_list_free (free_list);
   
@@ -450,11 +463,11 @@ METHOD (BseProject, match-items-by-uname) {
 METHOD (BseProject, get-supers) {
   HELP  = "Retrieve all supers of this project.";
   IN    = bse_param_spec_object ("project", NULL, NULL,
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
   OUT   = bse_param_spec_boxed ("super_list", NULL, NULL, BSE_TYPE_PROXY_SEQ, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
@@ -477,37 +490,39 @@ METHOD (BseProject, get-supers) {
 }
 
 METHOD (BseProject, can-play) {
-  HELP	= "Check whether project playback would makes sense.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_bool ("can_play", "Can Play", "Whether project playback makes sense",
-			  FALSE, SFI_PARAM_DEFAULT);
+  HELP  = "Check whether project playback would makes sense.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_bool ("can_play", "Can Play", "Whether project playback makes sense",
+                          FALSE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
+  gpointer wrepo;
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  /* set output parameters */
-  sfi_value_set_bool (out_values++, project->supers != NULL);
+
+  /* playback works if we have supers other than wave repo */
+  wrepo = bse_project_get_wave_repo (project);
+  sfi_value_set_bool (out_values++, project->supers->data != wrepo || project->supers->next);
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, get-state) {
-  HELP	= "Retrieve the current project state.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_genum ("state", "State", "Project playback/activation state",
-				BSE_TYPE_PROJECT_STATE, BSE_PROJECT_INACTIVE, SFI_PARAM_DEFAULT);
+  HELP  = "Retrieve the current project state.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("state", "State", "Project playback/activation state",
+                                BSE_TYPE_PROJECT_STATE, BSE_PROJECT_INACTIVE, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *self = bse_value_get_object (in_values++);
@@ -523,78 +538,111 @@ METHOD (BseProject, get-state) {
 }
 
 METHOD (BseProject, activate) {
-  HELP	= "Activate a project, precondition to start playback.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+  HELP  = "Activate a project, precondition to start playback.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+                                SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *self = bse_value_get_object (in_values++);
+  BseProjectState state_before;
   BseErrorType error;
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
+  state_before = self->state;
   error = bse_project_activate (self);
-
+  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+    {
+      /* certain things work only (can only be undone) in deactivated projects */
+      bse_item_push_undo_proc (self, "deactivate");
+    }
+  
   g_value_set_enum (out_values++, error);
 
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, start-playback) {
-  HELP	= "Start playback in an activated project.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  HELP  = "Start playback in an activated project.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *self = bse_value_get_object (in_values++);
+  BseProjectState state_before;
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
+  state_before = self->state;
   bse_project_start_playback (self);
+  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+    {
+      /* certain things work only (can only be undone) in deactivated projects */
+      bse_item_push_undo_proc (self, "deactivate");
+    }
 
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseProject, stop-playback) {
-  HELP	= "Stop project playback.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+METHOD (BseProject, play) {
+  HELP  = "Activate a project and start project playback (and already playing project is first halted).";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL,
+                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+                                SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *self = bse_value_get_object (in_values++);
-
+  BseErrorType error;
+  BseProjectState state_before;
+  
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
-  bse_project_stop_playback (self);
+  state_before = self->state;
+  error = bse_project_activate (self);
+  if (!error)
+    {
+      if (self->state == BSE_PROJECT_PLAYING)
+        bse_project_stop_playback (self);
+      bse_project_start_playback (self);
+    }
+  if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
+    {
+      /* certain things work only (can only be undone) in deactivated projects */
+      bse_item_push_undo_proc (self, "deactivate");
+    }
+
+  g_value_set_enum (out_values++, error);
 
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, deactivate) {
-  HELP	= "Deactivate the project, automatically stop playback.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  HELP  = "Deactivate the project, automatically stop playback.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *self = bse_value_get_object (in_values++);
@@ -608,45 +656,33 @@ METHOD (BseProject, deactivate) {
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseProject, play) {
-  HELP	= "Activate a project and start project playback (and already playing project is first halted).";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_genum ("error", "Error", NULL,
-				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-				SFI_PARAM_DEFAULT);
+METHOD (BseProject, stop-playback) {
+  HELP  = "Stop project playback.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *self = bse_value_get_object (in_values++);
-  BseErrorType error;
 
   /* check parameters */
   if (!BSE_IS_PROJECT (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
-  error = bse_project_activate (self);
-  if (!error)
-    {
-      if (self->state == BSE_PROJECT_PLAYING)
-	bse_project_stop_playback (self);
-      bse_project_start_playback (self);
-    }
-
-  g_value_set_enum (out_values++, error);
+  bse_project_stop_playback (self);
 
   return BSE_ERROR_NONE;
 }
 
 METHOD (BseProject, stop) {
-  HELP	= "Stop project playback and deactivate project.";
-  IN	= bse_param_spec_object ("project", "Project", "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  HELP  = "Stop project playback and deactivate project.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *self = bse_value_get_object (in_values++);
@@ -661,14 +697,14 @@ METHOD (BseProject, stop) {
 }
 
 METHOD (BseProject, auto-deactivate) {
-  HELP	= "Automatically deactivate a project once playback stopped.";
-  IN	= bse_param_spec_object ("project", NULL, "The project",
-				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
-  IN	= sfi_pspec_int ("msec_delay", NULL, "Delay for deactivation in milliseconds",
-			 0, -1, G_MAXINT, 1000, SFI_PARAM_DEFAULT);
+  HELP  = "Automatically deactivate a project once playback stopped.";
+  IN    = bse_param_spec_object ("project", NULL, "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("msec_delay", NULL, "Delay for deactivation in milliseconds",
+                         0, -1, G_MAXINT, 1000, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *self  = bse_value_get_object (in_values++);
@@ -679,6 +715,142 @@ METHOD (BseProject, auto-deactivate) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   self->deactivate_usecs = msecs < 0 ? -1 : msecs * 1000;
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, undo-depth) {
+  HELP  = "Check whether a project can perform undo steps";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("undo_depth", NULL, "Number of times undo can be called on the project",
+                         0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_int (out_values++, bse_undo_stack_depth (project->undo_stack));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, undo) {
+  HELP  = "Undo a previous operaiton in a project";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (!project->in_undo && !project->in_redo)
+    {
+      const gchar *name = bse_undo_stack_peek (project->undo_stack);
+      if (name)
+        {
+          project->in_undo = TRUE;
+          bse_undo_group_open (project->redo_stack, name);
+          bse_undo_stack_undo (project->undo_stack);
+          bse_undo_group_close (project->redo_stack);
+          project->in_undo = FALSE;
+        }
+    }
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, redo-depth) {
+  HELP  = "Check whether a project can perform redo steps";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT   = sfi_pspec_int ("redo_depth", NULL, "Number of times redo can be called on the project",
+                         0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_int (out_values++, bse_undo_stack_depth (project->redo_stack));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, redo) {
+  HELP  = "Redo a previously undone operaiton in a project";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (!project->in_undo && !project->in_redo)
+    {
+      const gchar *name = bse_undo_stack_peek (project->redo_stack);
+      if (name)
+        {
+          project->in_redo = TRUE;
+          bse_undo_group_open (project->undo_stack, name);
+          bse_undo_stack_undo (project->redo_stack);
+          bse_undo_group_close (project->undo_stack);
+          project->in_redo = FALSE;
+        }
+    }
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, clear-undo) {
+  HELP  = "Delete all recorded undo or redo steps.";
+  IN    = bse_param_spec_object ("project", "Project", NULL,
+                                 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (!project->in_undo && !project->in_redo)
+    {
+      bse_undo_stack_clear (project->undo_stack);
+      bse_undo_stack_clear (project->redo_stack);
+      g_object_notify (project, "dirty");
+    }
 
   return BSE_ERROR_NONE;
 }

@@ -40,10 +40,15 @@ typedef enum {
 } BseProjectState;
 struct _BseProject
 {
-  BseContainer	 parent_object;
+  BseContainer	      parent_object;
 
   GSList	     *supers;
   GSList	     *items;
+
+  guint               in_undo : 1;
+  guint               in_redo : 1;
+  BseUndoStack       *undo_stack;
+  BseUndoStack       *redo_stack;
 
   BseProjectState     state;
   guint		      deactivate_timer;

@@ -40,7 +40,7 @@ METHOD (BsePart, insert-note) {
 			  1.0, 0, 1.0, 0.01,
 			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
   OUT	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -73,7 +73,7 @@ METHOD (BsePart, change-note) {
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
 			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
@@ -120,7 +120,7 @@ METHOD (BsePart, delete-event) {
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 				SFI_PARAM_DEFAULT);
@@ -152,7 +152,7 @@ METHOD (BsePart, is-selected-event) {
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
   OUT   = sfi_pspec_bool ("selected", "Selected", NULL,
 			  FALSE, SFI_PARAM_DEFAULT);
 }
@@ -504,7 +504,7 @@ METHOD (BsePart, select-event) {
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -530,7 +530,7 @@ METHOD (BsePart, deselect-event) {
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("id", "ID", NULL,
-			 0, 0, BSE_PART_MAX_TICK, 10, SFI_PARAM_DEFAULT);
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,

@@ -211,6 +211,16 @@ void		bse_source_access_modules	(BseSource	*source,
 						 gpointer	 data,
 						 GslFreeFunc	 data_free_func,
 						 GslTrans	*trans);
+BseErrorType    bse_source_check_input          (BseSource      *source,
+                                                 guint           ichannel,
+                                                 BseSource      *osource,
+                                                 guint           ochannel);
+void       bse_source_backup_ichannels_to_undo  (BseSource      *source);
+void       bse_source_backup_ochannels_to_undo  (BseSource      *source);
+void       bse_source_input_backup_to_undo      (BseSource      *source,
+                                                 guint           ichannel,
+                                                 BseSource      *osource,
+                                                 guint           ochannel);
 /* convenience */
 guint		bse_source_class_add_ichannel	(BseSourceClass	*source_class,
 						 const gchar	*name,

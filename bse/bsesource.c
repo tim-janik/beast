@@ -1299,18 +1299,20 @@ bse_source_real_remove_input (BseSource *source,
 }
 
 BseErrorType
-bse_source_unset_input (BseSource *source,
+bse_source_check_input (BseSource *source,
 			guint      ichannel,
 			BseSource *osource,
 			guint      ochannel)
 {
   g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_SOURCE (osource), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_ITEM (source)->parent == BSE_ITEM (osource)->parent, BSE_ERROR_INTERNAL);
+
+  if (BSE_ITEM (source)->parent != BSE_ITEM (osource)->parent)
+    return BSE_ERROR_SOURCE_PARENT_MISMATCH;
   if (BSE_SOURCE_PREPARED (source))     /* FIXME: check context sets */
     {
       g_return_val_if_fail (BSE_SOURCE_PREPARED (osource), BSE_ERROR_INTERNAL);	/* paranoid, checked parent already */
-      g_return_val_if_fail (BSE_SOURCE_N_CONTEXTS (source) == BSE_SOURCE_N_CONTEXTS (osource), BSE_ERROR_INTERNAL);
+      /* prolly wrong: */ g_return_val_if_fail (BSE_SOURCE_N_CONTEXTS (source) == BSE_SOURCE_N_CONTEXTS (osource), BSE_ERROR_INTERNAL);
     }
   else
     g_return_val_if_fail (!BSE_SOURCE_PREPARED (osource), BSE_ERROR_INTERNAL);
@@ -1321,6 +1323,19 @@ bse_source_unset_input (BseSource *source,
     return BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
   if (check_jchannel_connection (source, ichannel, osource, ochannel) < 0)
     return BSE_ERROR_SOURCE_NO_SUCH_CONNECTION;
+
+  return BSE_ERROR_NONE;
+}
+
+BseErrorType
+bse_source_unset_input (BseSource *source,
+			guint      ichannel,
+			BseSource *osource,
+			guint      ochannel)
+{
+  BseErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
+  if (error != BSE_ERROR_NONE)
+    return error;
 
   g_object_ref (source);
   g_object_ref (osource);
@@ -1439,6 +1454,35 @@ bse_source_clear_ichannels (BseSource *source)
 }
 
 void
+bse_source_backup_ichannels_to_undo (BseSource *source)
+{
+  BseUndoStack *ustack;
+
+  g_return_if_fail (BSE_IS_SOURCE (source));
+
+  ustack = bse_item_undo_open (source, "unset-input %s", bse_object_debug_name (source));
+  if (ustack)
+    {
+      guint i, j;
+      for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
+        {
+          BseSourceInput *input = BSE_SOURCE_INPUT (source, i);
+          
+          if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
+            for (j = 0; j < input->jdata.n_joints; j++)
+              bse_source_input_backup_to_undo (source, i,
+                                               input->jdata.joints[j].osource,
+                                               input->jdata.joints[j].ochannel);
+          else if (input->idata.osource)
+            bse_source_input_backup_to_undo (source, i,
+                                             input->idata.osource,
+                                             input->idata.ochannel);
+        }
+    }
+  bse_item_undo_close (ustack);
+}
+
+void
 bse_source_clear_ochannels (BseSource *source)
 {
   gboolean io_changed = FALSE;
@@ -1488,6 +1532,47 @@ bse_source_clear_ochannels (BseSource *source)
   g_object_unref (source);
 }
 
+void
+bse_source_backup_ochannels_to_undo (BseSource *source)
+{
+  BseUndoStack *ustack;
+
+  g_return_if_fail (BSE_IS_SOURCE (source));
+
+  ustack = bse_item_undo_open (source, "unset-input %s", bse_object_debug_name (source));
+  if (ustack)
+    {
+      GSList *slist, *uniq_outputs = NULL;
+
+      for (slist = source->outputs; slist; slist = slist->next)
+        if (!g_slist_find (uniq_outputs, slist->data))
+          uniq_outputs = g_slist_prepend (uniq_outputs, slist->data);
+      
+      for (slist = uniq_outputs; slist; slist = slist->next)
+        {
+          BseSource *isource = slist->data;
+          guint i;
+          for (i = 0; i < BSE_SOURCE_N_ICHANNELS (isource); i++)
+            {
+              BseSourceInput *input = BSE_SOURCE_INPUT (isource, i);
+              if (BSE_SOURCE_IS_JOINT_ICHANNEL (isource, i))
+                {
+                  guint j;
+                  for (j = 0; j < input->jdata.n_joints; j++)
+                    if (input->jdata.joints[j].osource == source)
+                      bse_source_input_backup_to_undo (isource, i,
+                                                       input->jdata.joints[j].osource,
+                                                       input->jdata.joints[j].ochannel);
+                }
+              else if (input->idata.osource == source)
+                bse_source_input_backup_to_undo (isource, i, source, input->idata.ochannel);
+            }
+        }
+      g_slist_free (uniq_outputs);
+    }
+  bse_item_undo_close (ustack);
+}
+
 static void
 bse_source_real_store_private (BseObject  *object,
 			       BseStorage *storage)
@@ -1523,6 +1608,36 @@ bse_source_real_store_private (BseObject  *object,
 	}
       g_slist_free (outputs);
     }
+}
+
+void
+bse_source_input_backup_to_undo (BseSource      *source,
+                                 guint           ichannel,
+                                 BseSource      *osource,
+                                 guint           ochannel)
+{
+  BseErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
+  BseUndoStack *ustack;
+  BseStorage *storage;
+
+  g_return_if_fail (error == BSE_ERROR_NONE);
+
+  ustack = bse_item_undo_open (source, "unset-input %s", bse_object_debug_name (source));
+
+  storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+  bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS);
+
+  bse_storage_break (storage);
+  bse_storage_printf (storage,
+                      "(source-input \"%s\" ",
+                      BSE_SOURCE_ICHANNEL_IDENT (source, ichannel));
+  bse_storage_put_item_link (storage, BSE_ITEM (source), BSE_ITEM (osource));
+  bse_storage_printf (storage, " \"%s\")", BSE_SOURCE_OCHANNEL_IDENT (osource, ochannel));
+
+  bse_item_push_undo_storage (BSE_ITEM (source), ustack, storage);
+  g_object_unref (storage);
+
+  bse_item_undo_close (ustack);
 }
 
 typedef struct _DeferredInput DeferredInput;

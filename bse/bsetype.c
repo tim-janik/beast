@@ -23,6 +23,7 @@
 
 /* --- variables --- */
 static GQuark	quark_blurb = 0;
+GType bse_type_id_packed_pointer = 0;
 
 
 /* --- functions --- */
@@ -208,7 +209,13 @@ bse_type_init (void)
   g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, 0);
   bse_type_set_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type");
   g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
-  
+
+  /* initialize extra types */
+  {
+    static const GTypeInfo dummy = { 0, };
+    bse_type_id_packed_pointer = g_type_register_static (G_TYPE_STRING, "BseTypePackedPointer", &dummy, 0);
+  }
+
   /* initialize builtin types */
   for (i = 0; i < n_builtin_types; i++)
     *(builtin_types[i].type_p) = builtin_types[i].register_type ();

@@ -166,14 +166,14 @@ bse_midi_synth_init (BseMidiSynth *self)
   self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
   /* midi voice modules */
-  self->voice_input = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
+  self->voice_input = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
   BSE_OBJECT_SET_FLAGS (self->voice_input, BSE_ITEM_FLAG_AGGREGATE);
-  self->voice_switch = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
+  self->voice_switch = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
   BSE_OBJECT_SET_FLAGS (self->voice_switch, BSE_ITEM_FLAG_AGGREGATE);
   bse_midi_voice_switch_set_voice_input (BSE_MIDI_VOICE_SWITCH (self->voice_switch), BSE_MIDI_VOICE_INPUT (self->voice_input));
   
   /* context merger */
-  self->context_merger = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
+  self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
   BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_AGGREGATE);
   
   /* midi voice switch <-> context merger */
@@ -185,7 +185,7 @@ bse_midi_synth_init (BseMidiSynth *self)
   g_assert (error == BSE_ERROR_NONE);
   
   /* output */
-  self->output = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
+  self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   BSE_OBJECT_SET_FLAGS (self->output, BSE_ITEM_FLAG_AGGREGATE);
   
   /* context merger <-> output */
@@ -197,16 +197,16 @@ bse_midi_synth_init (BseMidiSynth *self)
   g_assert (error == BSE_ERROR_NONE);
   
   /* sub synth */
-  self->sub_synth = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
-					    "in_port_1", "frequency",
-					    "in_port_2", "gate",
-					    "in_port_3", "velocity",
-					    "in_port_4", "aftertouch",
-					    "out_port_1", "left-audio",
-					    "out_port_2", "right-audio",
-					    "out_port_3", "unused",
-					    "out_port_4", "synth-done",
-					    NULL);
+  self->sub_synth = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
+                                             "in_port_1", "frequency",
+                                             "in_port_2", "gate",
+                                             "in_port_3", "velocity",
+                                             "in_port_4", "aftertouch",
+                                             "out_port_1", "left-audio",
+                                             "out_port_2", "right-audio",
+                                             "out_port_3", "unused",
+                                             "out_port_4", "synth-done",
+                                             NULL);
   BSE_OBJECT_SET_FLAGS (self->sub_synth, BSE_ITEM_FLAG_AGGREGATE);
   
   /* voice input <-> sub-synth */
@@ -284,7 +284,9 @@ bse_midi_synth_set_property (GObject      *object,
   switch (param_id)
     {
     case PARAM_SNET:
-      g_object_set (self->sub_synth, "snet", bse_value_get_object (value), NULL);
+      g_object_set (self->sub_synth, /* no undo */
+                    "snet", bse_value_get_object (value),
+                    NULL);
       break;
     case PARAM_MIDI_CHANNEL:
       if (!BSE_SOURCE_PREPARED (self))	/* midi channel is locked while prepared */
@@ -296,19 +298,25 @@ bse_midi_synth_set_property (GObject      *object,
       break;
     case PARAM_VOLUME_f:
       self->volume_factor = sfi_value_get_real (value);
-      g_object_set (self->output, "master_volume_f", self->volume_factor, NULL);
+      g_object_set (self->output, /* no undo */
+                    "master_volume_f", self->volume_factor,
+                    NULL);
       g_object_notify (self, "volume_dB");
       g_object_notify (self, "volume_perc");
       break;
     case PARAM_VOLUME_dB:
       self->volume_factor = bse_dB_to_factor (sfi_value_get_real (value));
-      g_object_set (self->output, "master_volume_f", self->volume_factor, NULL);
+      g_object_set (self->output, /* no undo */
+                    "master_volume_f", self->volume_factor,
+                    NULL);
       g_object_notify (self, "volume_f");
       g_object_notify (self, "volume_perc");
       break;
     case PARAM_VOLUME_PERC:
       self->volume_factor = sfi_value_get_int (value) / 100.0;
-      g_object_set (self->output, "master_volume_f", self->volume_factor, NULL);
+      g_object_set (self->output, /* no undo */
+                    "master_volume_f", self->volume_factor,
+                    NULL);
       g_object_notify (self, "volume_f");
       g_object_notify (self, "volume_dB");
       break;

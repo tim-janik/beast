@@ -184,7 +184,9 @@ rc_file_try_statement (gpointer   context_data,
       token = sfi_rstore_parse_param (rstore, value, bse_gconfig_pspec ());
       rec = sfi_value_get_rec (value);
       if (token == G_TOKEN_NONE && rec)
-	g_object_set (server, "bse-preferences", rec, NULL);
+	bse_item_set (server,
+                      "bse-preferences", rec,
+                      NULL);
       sfi_value_free (value);
       return token;
     }

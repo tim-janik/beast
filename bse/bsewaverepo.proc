@@ -30,7 +30,8 @@
 /* --- auxlillary functions --- */
 static BseErrorType
 load_file (BseWaveRepo *wrepo,
-	   const gchar *file_name)
+	   const gchar *file_name,
+           BseWave    **wave_p)
 {
   GslErrorType error;
   GslWaveFileInfo *finfo;
@@ -38,7 +39,8 @@ load_file (BseWaveRepo *wrepo,
   BseWave *wave;
   gchar *fname;
   guint i;
-  
+
+  *wave_p = NULL;
   finfo = gsl_wave_file_info_load (file_name, &error);
   if (!finfo)
     return error;
@@ -72,6 +74,7 @@ load_file (BseWaveRepo *wrepo,
   if (wave->n_wchunks)
     {
       bse_container_add_item (BSE_CONTAINER (wrepo), BSE_ITEM (wave));
+      *wave_p = wave;
       error = GSL_ERROR_NONE;
     }
   else
@@ -102,18 +105,58 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseWaveRepo *wrepo    = (BseWaveRepo*) bse_value_get_object (in_values++);
-  gchar *file_name      = sfi_value_get_string (in_values++);
+  BseWaveRepo *self    = (BseWaveRepo*) bse_value_get_object (in_values++);
+  gchar *file_name     = sfi_value_get_string (in_values++);
+  BseUndoStack *ustack;
   BseErrorType error;
+  BseWave *wave;
   
   /* check parameters */
-  if (!BSE_IS_WAVE_REPO (wrepo) || !file_name)
+  if (!BSE_IS_WAVE_REPO (self) || !file_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  error = load_file (wrepo, file_name);
+  ustack = bse_item_undo_open (self, "load-wave");
+  error = load_file (self, file_name, &wave);
+  if (wave)
+    bse_item_push_undo_proc (self, "remove-wave", wave);
+  bse_item_undo_close (ustack);
   
   /* set output parameters */
   g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseWaveRepo, remove-wave) {
+  HELP  = "Remove a wave from repository";
+  IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
+				 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_object ("wave", "Wave", NULL,
+				 BSE_TYPE_WAVE, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseWaveRepo *self = (BseWaveRepo*) bse_value_get_object (in_values++);
+  BseItem *child    = (BseItem*) bse_value_get_object (in_values++);
+  BseUndoStack *ustack;
+
+  /* check parameters */
+  if (!BSE_IS_WAVE_REPO (self) || !BSE_IS_WAVE (child) ||
+      child->parent != BSE_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  ustack = bse_item_undo_open (self, "remove-wave %s", bse_object_debug_name (child));
+  /* remove object references */
+  bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+  /* how to get rid of the item once backed up */
+  bse_item_push_redo_proc (self, "remove-wave", child);
+  /* remove (without redo queueing) */
+  bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+  /* done */
+  bse_item_undo_close (ustack);
   
   return BSE_ERROR_NONE;
 }
@@ -165,32 +208,5 @@ BODY (BseProcedureClass *proc,
   if (wfi)
     gsl_wave_file_info_unref (wfi);
 
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseWaveRepo, remove-wave) {
-  HELP  = "Remove a wave from repository";
-  IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
-				 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
-  IN    = bse_param_spec_object ("wave", "Wave", NULL,
-				 BSE_TYPE_WAVE, SFI_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseWaveRepo *wrepo = (BseWaveRepo*) bse_value_get_object (in_values++);
-  BseItem *wave      = (BseItem*) bse_value_get_object (in_values++);
-  
-  /* check parameters */
-  if (!BSE_IS_WAVE_REPO (wrepo) || !BSE_IS_WAVE (wave) ||
-      wave->parent != BSE_ITEM (wrepo))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  /* action */
-  bse_container_remove_item (BSE_CONTAINER (wrepo), wave);
-  
-  /* set output parameters */
-  
   return BSE_ERROR_NONE;
 }

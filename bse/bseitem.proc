@@ -20,6 +20,7 @@
 #include <bse/bseprocedure.h>
 #include <bse/bseitem.h>
 #include <bse/bsecontainer.h>
+#include <bse/bseundostack.h>
 #include <bse/bseparasite.h>	// FIXME
 
 
@@ -240,7 +241,8 @@ METHOD (BseItem, set-name) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  g_object_set (item, "uname", name, NULL);
+  if (!bse_string_equals (name, BSE_OBJECT_UNAME (item)))
+    bse_item_set (item, "uname", name, NULL);
 
   return BSE_ERROR_NONE;
 }
@@ -424,6 +426,55 @@ METHOD (BseItem, get-icon) {
   
   /* set output parameters */
   bse_value_set_boxed (out_values++, bse_object_get_icon (BSE_OBJECT (self)));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, group-undo) {
+  HELP	= "Request multiple modifying actions on an item to be grouped together as single undo operation.";
+  IN	= bse_param_spec_object ("item", NULL, NULL,
+				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("name", NULL, "A name for the undo group to be created",
+                            NULL, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = bse_value_get_object (in_values++);
+  gchar *name       = sfi_value_get_string (in_values++);
+  BseUndoStack *ustack;
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (self) || !name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  ustack = bse_item_undo_open (self, "item-group-undo");
+  bse_undo_stack_add_merger (ustack, name);
+  bse_item_undo_close (ustack);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, ungroup-undo) {
+  HELP	= "Ends the undo grouping opened up by a previous group-undo() call.";
+  IN	= bse_param_spec_object ("item", NULL, NULL,
+				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = bse_value_get_object (in_values++);
+  BseUndoStack *ustack;
+
+  /* check parameters */
+  if (!BSE_IS_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  ustack = bse_item_undo_open (self, "item-ungroup-undo");
+  bse_undo_stack_remove_merger (ustack);
+  bse_item_undo_close (ustack);
   
   return BSE_ERROR_NONE;
 }

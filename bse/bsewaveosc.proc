@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,12 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bsewaveosc.h>
-#include        <bse/bseprocedure.h>
+#include <bse/bseplugin.h>
+#include <bse/bsewaveosc.h>
+#include <bse/bseprocedure.h>
+#include <bse/bseeditablesample.h>
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2002 Tim Janik";
+CRIGHTS = "Copyright (C) 2002-2003 Tim Janik";
 
 
 METHOD (BseWaveOsc, request-pcm-position) {
@@ -63,6 +64,29 @@ METHOD (BseWaveOsc, pcm-seek-perc) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   bse_wave_osc_request_pcm_position (self, CLAMP (pos, 0, 100));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseWaveOsc, set-from-editable-sample) {
+  HELP	= "Set wave to play from editable sample, bypassing undo and storage mechanisms.";
+  IN	= bse_param_spec_object ("wosc", NULL, "Wave Oscilator",
+				 BSE_TYPE_WAVE_OSC, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("esample", NULL, "Editable Sample",
+				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseWaveOsc *self           = bse_value_get_object (in_values++);
+  BseEditableSample *esample = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_WAVE_OSC (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  bse_wave_osc_set_from_esample (self, esample);
   
   return BSE_ERROR_NONE;
 }

@@ -55,15 +55,6 @@ _bse_gconfig_init (void)
   sfi_rec_unref (rec);
 }
 
-static BseGConfig*
-copy_gconfig (BseGConfig *src_config)
-{
-  SfiRec *rec = bse_gconfig_to_rec (src_config);
-  BseGConfig *gconfig = bse_gconfig_from_rec (rec);
-  sfi_rec_unref (rec);
-  return gconfig;
-}
-
 static void
 set_gconfig (BseGConfig *gconfig)
 {

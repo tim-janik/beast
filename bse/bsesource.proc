@@ -16,14 +16,15 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bseprocedure.h>
-#include        <bse/bsesource.h>
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsesource.h>
+#include <bse/bseundostack.h>
+#include <bse/gslieee754.h>
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
 CRIGHTS = "Copyright (C) 2001-2003 Tim Janik";
-
 
 METHOD (BseSource, set-input-by-id) {
   HELP	= "Connect a module input to another module's output.";
@@ -57,7 +58,9 @@ BODY (BseProcedureClass *proc,
   
   /* connect */
   error = bse_source_set_input (isource, ichannel, osource, ochannel);
-  
+  if (error == BSE_ERROR_NONE)
+    bse_item_push_undo_proc (isource, "unset-input-by-id", ichannel, osource, ochannel);
+
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
@@ -83,21 +86,25 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = bse_value_get_object (in_values++);
-  gchar *ichannel    = sfi_value_get_string (in_values++);
-  BseSource *osource = bse_value_get_object (in_values++);
-  gchar *ochannel    = sfi_value_get_string (in_values++);
+  BseSource *isource   = bse_value_get_object (in_values++);
+  gchar *ichannel_name = sfi_value_get_string (in_values++);
+  BseSource *osource   = bse_value_get_object (in_values++);
+  gchar *ochannel_name = sfi_value_get_string (in_values++);
+  guint ichannel, ochannel;
   BseErrorType error;
   
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
       BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
-      !ichannel || !ochannel)
+      !ichannel_name || !ochannel_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* connect */
-  error = bse_source_set_input (isource, bse_source_find_ichannel (isource, ichannel),
-				osource, bse_source_find_ochannel (osource, ochannel));
+  ichannel = bse_source_find_ichannel (isource, ichannel_name);
+  ochannel = bse_source_find_ochannel (osource, ochannel_name);
+  error = bse_source_set_input (isource, ichannel, osource, ochannel);
+  if (error == BSE_ERROR_NONE)
+    bse_item_push_undo_proc (isource, "unset-input-by-id", ichannel, osource, ochannel);
   
   /* set output parameters */
   g_value_set_enum (out_values++, error);
@@ -131,13 +138,20 @@ BODY (BseProcedureClass *proc,
   BseErrorType error = BSE_ERROR_NONE;
   
   /* check parameters */
-  if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
-      BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent)
+  if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
-  error = bse_source_unset_input (isource, ichannel, osource, ochannel);
-  
+  error = bse_source_check_input (isource, ichannel, osource, ochannel);
+  if (error == BSE_ERROR_NONE)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (isource, "unset-input-by-id");
+      bse_source_input_backup_to_undo (isource, ichannel, osource, ochannel);
+      bse_item_push_redo_proc (isource, "unset-input-by-id", ichannel, osource, ochannel);
+      bse_item_undo_close (ustack);
+      error = bse_source_unset_input (isource, ichannel, osource, ochannel);
+    }
+
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
@@ -163,21 +177,30 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BseSource *isource = bse_value_get_object (in_values++);
-  gchar *ichannel    = sfi_value_get_string (in_values++);
-  BseSource *osource = bse_value_get_object (in_values++);
-  gchar *ochannel    = sfi_value_get_string (in_values++);
+  BseSource *isource   = bse_value_get_object (in_values++);
+  gchar *ichannel_name = sfi_value_get_string (in_values++);
+  BseSource *osource   = bse_value_get_object (in_values++);
+  gchar *ochannel_name = sfi_value_get_string (in_values++);
+  guint ichannel, ochannel;
   BseErrorType error = BSE_ERROR_NONE;
   
   /* check parameters */
   if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
-      BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
-      !ichannel || !ochannel)
+      !ichannel_name || !ochannel_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
-  error = bse_source_unset_input (isource, bse_source_find_ichannel (isource, ichannel),
-				  osource, bse_source_find_ochannel (osource, ochannel));
+  ichannel = bse_source_find_ichannel (isource, ichannel_name);
+  ochannel = bse_source_find_ochannel (osource, ochannel_name);
+  error = bse_source_check_input (isource, ichannel, osource, ochannel);
+  if (error == BSE_ERROR_NONE)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (isource, "unset-input-by-id");
+      bse_source_input_backup_to_undo (isource, ichannel, osource, ochannel);
+      bse_item_push_redo_proc (isource, "unset-input-by-id", ichannel, osource, ochannel);
+      bse_item_undo_close (ustack);
+      error = bse_source_unset_input (isource, ichannel, osource, ochannel);
+    }
   
   /* set output parameters */
   g_value_set_enum (out_values++, error);
@@ -196,12 +219,17 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseSource *isource = bse_value_get_object (in_values++);
+  BseUndoStack *ustack;
   
   /* check parameters */
   if (!BSE_IS_SOURCE (isource))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
+  ustack = bse_item_undo_open (isource, "clear-inputs %s", bse_object_debug_name (isource));
+  bse_source_backup_ichannels_to_undo (isource);
+  bse_item_push_redo_proc (isource, "clear-inputs");
+  bse_item_undo_close (ustack);
   bse_source_clear_ichannels (isource);
   
   return BSE_ERROR_NONE;
@@ -218,12 +246,17 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseSource *isource = bse_value_get_object (in_values++);
-  
+  BseUndoStack *ustack;
+
   /* check parameters */
   if (!BSE_IS_SOURCE (isource))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
+  ustack = bse_item_undo_open (isource, "clear-outputs %s", bse_object_debug_name (isource));
+  bse_source_backup_ochannels_to_undo (isource);
+  bse_item_push_redo_proc (isource, "clear-outputs");
+  bse_item_undo_close (ustack);
   bse_source_clear_ochannels (isource);
   
   return BSE_ERROR_NONE;
@@ -625,3 +658,47 @@ BODY (BseProcedureClass *proc,
   
   return BSE_ERROR_NONE;
 }
+
+METHOD (BseSource, set-pos) {
+  HELP	= "Set the x and y position of a module. In contrast to setting the position "
+          "through ordinary object property setters, this function will not update "
+          "the module position if the passed in arguments are sufficiently equal to "
+          "the values already set on the object. As such, it does not record an extra "
+          "undo step for setting properties to values they already have and if necessary "
+          "turns setting of x and y positions into an atomic undo operation.";
+  IN	= bse_param_spec_object ("module", "Module", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_real ("x-pos", "X Position", NULL,
+                          0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_real ("y-pos", "Y Position", NULL,
+                          0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = bse_value_get_object (in_values++);
+  SfiReal xpos      = sfi_value_get_real (in_values++);
+  SfiReal ypos      = sfi_value_get_real (in_values++);
+  SfiReal epsilon = 1e-5;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || GSL_DOUBLE_IS_NANINF (xpos) || GSL_DOUBLE_IS_NANINF (ypos))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (fabs (xpos - source->pos_x) > epsilon ||
+      fabs (ypos - source->pos_y) > epsilon)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (source, "set-xy-pos");
+      bse_item_set (source,
+                    "pos_x", xpos,
+                    "pos_y", ypos,
+                    NULL);
+      bse_item_undo_close (ustack);
+    }
+
+  return BSE_ERROR_NONE;
+}
+

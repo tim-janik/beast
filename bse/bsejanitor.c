@@ -230,9 +230,8 @@ bse_janitor_new (SfiComPort *port)
   
   g_return_val_if_fail (port != NULL, NULL);
   
-  self = g_object_new (BSE_TYPE_JANITOR, NULL);
-  bse_container_add_item (BSE_CONTAINER (bse_server_get ()), BSE_ITEM (self));
-  g_assert (((BseItem*) self)->parent != NULL);
+  self = bse_container_new_child ((BseContainer*) bse_server_get (), BSE_TYPE_JANITOR, NULL);
+  g_object_ref (self);
 
   /* store the port */
   self->port = sfi_com_port_ref (port);

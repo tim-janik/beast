@@ -353,7 +353,7 @@ METHOD (BseJanitor, set-msg) {
     }
   
   /* action */
-  g_object_set (self,
+  bse_item_set (self,
 		"user_msg_type", mtype,
 		"user_msg", message,
 		NULL);

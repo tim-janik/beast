@@ -351,6 +351,9 @@ bse_object_do_set_property (GObject      *gobject,
 		  *p++ = '?';
 		  p = strchr (p, ':');
 		}
+              /* initial character must be >= \007 */
+              if (string[0] > 0 && string[0] < 7)
+                string[0] = '_';
 	    }
 	  BSE_OBJECT_GET_CLASS (object)->set_uname (object, string);
 	  g_free (string);
@@ -734,7 +737,10 @@ eclosure_marshal (GClosure       *closure,
 		  gpointer        marshal_data)
 {
   EClosure *e = (EClosure*) closure;
-  g_signal_emit (e->closure.data, e->dest_signal, e->dest_detail);
+  if (e->dest_signal)
+    g_signal_emit (e->closure.data, e->dest_signal, e->dest_detail);
+  else
+    g_object_notify (e->closure.data, g_quark_to_string (e->dest_detail));
 }
 
 void
@@ -744,8 +750,8 @@ bse_object_reemit_signal (gpointer     src_object,
 			  const gchar *dest_signal)
 {
   EClosure key;
-  if (g_signal_parse_name (dest_signal, G_OBJECT_TYPE (dest_object), &key.dest_signal, &key.dest_detail, TRUE) &&
-      g_signal_parse_name (src_signal, G_OBJECT_TYPE (src_object), &key.src_signal, &key.src_detail, TRUE))
+  if (g_signal_parse_name (src_signal, G_OBJECT_TYPE (src_object), &key.src_signal, &key.src_detail, TRUE) &&
+      g_signal_parse_name (dest_signal, G_OBJECT_TYPE (dest_object), &key.dest_signal, &key.dest_detail, TRUE))
     {
       EClosure *e;
       key.closure.data = dest_object;
@@ -754,12 +760,14 @@ bse_object_reemit_signal (gpointer     src_object,
       if (!e)
 	{
 	  GSignalQuery query;
+          gboolean property_notify = key.dest_detail && strncmp (dest_signal, "notify", 6) == 0;
 	  g_signal_query (key.dest_signal, &query);
 	  if (!(query.return_type == G_TYPE_NONE &&
-		query.n_params == 0 &&
-		(query.signal_flags & G_SIGNAL_ACTION ||
-		 strcmp (query.signal_name, "notify") == 0 ||
-		 strncmp (query.signal_name, "notify::", 8) == 0)))
+		((query.n_params == 0 &&
+                  query.signal_flags & G_SIGNAL_ACTION) ||
+		 (property_notify &&
+                  g_object_class_find_property (G_OBJECT_GET_CLASS (dest_object),
+                                                g_quark_to_string (key.dest_detail))))))
 	    {
 	      g_warning ("%s: invalid signal for reemission: \"%s\"", G_STRLOC, dest_signal);
 	      return;
@@ -768,7 +776,7 @@ bse_object_reemit_signal (gpointer     src_object,
 	  e->erefs = 1;
 	  e->closure.data = dest_object;
 	  e->src_object = src_object;
-	  e->dest_signal = key.dest_signal;
+	  e->dest_signal = property_notify ? 0 : key.dest_signal;
 	  e->dest_detail = key.dest_detail;
 	  e->src_signal = key.src_signal;
 	  e->src_detail = key.src_detail;
@@ -798,9 +806,11 @@ bse_object_remove_reemit (gpointer     src_object,
   if (g_signal_parse_name (dest_signal, G_OBJECT_TYPE (dest_object), &key.dest_signal, &key.dest_detail, TRUE) &&
       g_signal_parse_name (src_signal, G_OBJECT_TYPE (src_object), &key.src_signal, &key.src_detail, TRUE))
     {
+      gboolean property_notify = key.dest_detail && strncmp (dest_signal, "notify", 6) == 0;
       EClosure *e;
       key.closure.data = dest_object;
       key.src_object = src_object;
+      key.dest_signal = property_notify ? 0 : key.dest_signal;
       e = g_hash_table_lookup (eclosures_ht, &key);
       if (e)
 	{
@@ -819,7 +829,7 @@ bse_object_remove_reemit (gpointer     src_object,
 	    }
 	}
       else
-	g_warning ("%s: no reemission for object \"%s\" signal \"%s\" to object \"%s\" signal \"%s\"",
+	g_warning ("%s: no reemission for object %s signal \"%s\" to object %s signal \"%s\"",
 		   G_STRLOC, bse_object_debug_name (src_object), src_signal,
 		   bse_object_debug_name (dest_object), dest_signal);
     }

@@ -33,7 +33,7 @@
 #include "bsewaverepo.h"
 #include <string.h>
 
-#define	DEBUG	sfi_nodebug
+#define	XREF_DEBUG	sfi_debug_keyfunc ("xref")
 
 #define upper_power2(uint_n)	sfi_alloc_upper_power2 (MAX ((uint_n), 4))
 #define parse_or_return		bse_storage_scanner_parse_or_return
@@ -186,7 +186,7 @@ bse_track_finalize (GObject *object)
 static void	track_uncross_part	(BseItem *owner,
 					 BseItem *ref_item);
 
-static void
+static BseTrackEntry*
 track_add_entry (BseTrack *self,
 		 guint     index,
 		 guint     tick,
@@ -194,11 +194,11 @@ track_add_entry (BseTrack *self,
 {
   guint n, size;
 
-  g_return_if_fail (index <= self->n_entries_SL);
+  g_return_val_if_fail (index <= self->n_entries_SL, NULL);
   if (index > 0)
-    g_return_if_fail (self->entries_SL[index - 1].tick < tick);
+    g_return_val_if_fail (self->entries_SL[index - 1].tick < tick, NULL);
   if (index < self->n_entries_SL)
-    g_return_if_fail (self->entries_SL[index].tick > tick);
+    g_return_val_if_fail (self->entries_SL[index].tick > tick, NULL);
 
   BSE_SEQUENCER_LOCK ();
   n = self->n_entries_SL++;
@@ -207,13 +207,15 @@ track_add_entry (BseTrack *self,
     self->entries_SL = g_renew (BseTrackEntry, self->entries_SL, size);
   g_memmove (self->entries_SL + index + 1, self->entries_SL + index, (n - index) * sizeof (self->entries_SL[0]));
   self->entries_SL[index].tick = tick;
+  self->entries_SL[index].id = bse_id_alloc ();
   self->entries_SL[index].part = part;
   self->track_done_SL = FALSE;	/* let sequencer recheck if playing */
   BSE_SEQUENCER_UNLOCK ();
   bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
-  DEBUG ("cross-link: %p %p", self, part);
+  XREF_DEBUG ("cross-link: %p %p", self, part);
   bse_object_proxy_notifies (part, self, "changed");
   bse_object_reemit_signal (part, "notify::last-tick", self, "changed");
+  return self->entries_SL + index;
 }
 
 static void
@@ -228,10 +230,11 @@ track_delete_entry (BseTrack *self,
   part = self->entries_SL[index].part;
   bse_object_remove_reemit (part, "notify::last-tick", self, "changed");
   bse_object_unproxy_notifies (part, self, "changed");
-  DEBUG ("cross-unlink: %p %p", self, part);
+  XREF_DEBUG ("cross-unlink: %p %p", self, part);
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
   BSE_SEQUENCER_LOCK ();
   n = self->n_entries_SL--;
+  bse_id_free (self->entries_SL[index].id);
   g_memmove (self->entries_SL + index, self->entries_SL + index + 1, (self->n_entries_SL - index) * sizeof (self->entries_SL[0]));
   BSE_SEQUENCER_UNLOCK ();
 }
@@ -275,10 +278,11 @@ track_uncross_part (BseItem *owner,
   for (i = 0; i < self->n_entries_SL; i++)
     if (self->entries_SL[i].part == part)
       {
-	DEBUG ("uncrossing[start]: %p %p", self, part);
-	track_delete_entry (self, i);
-	DEBUG ("uncrossing[done]: %p %p", self, part);
-	g_signal_emit (self, signal_changed, 0);
+        guint tick = self->entries_SL[i].tick;
+	XREF_DEBUG ("uncrossing[start]: %p %p (%d)", self, part, tick);
+        /* delete track via procedure so deletion is recorded to undo */
+        bse_item_exec_void_proc (owner, "remove-tick", tick);
+	XREF_DEBUG ("uncrossing[done]: %p %p (%d)", self, part, tick);
 	return;
       }
 }
@@ -316,7 +320,7 @@ track_uncross_snet (BseItem *owner,
 		    BseItem *ref_item)
 {
   BseTrack *self = BSE_TRACK (owner);
-  g_object_set (self, "snet", NULL, NULL);
+  bse_item_set (self, "snet", NULL, NULL);
 }
 
 static void
@@ -324,7 +328,7 @@ track_uncross_wave (BseItem *owner,
 		    BseItem *ref_item)
 {
   BseTrack *self = BSE_TRACK (owner);
-  g_object_set (self, "wave", NULL, NULL);
+  bse_item_set (self, "wave", NULL, NULL);
 }
 
 static void
@@ -334,7 +338,7 @@ clear_snet_and_wave (BseTrack *self,
   g_return_if_fail (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth));
 
   if (self->sub_synth && !(self->wnet && need_wnet))
-    g_object_set (self->sub_synth,
+    g_object_set (self->sub_synth, /* no undo */
 		  "snet", NULL,
 		  NULL);
   if (self->snet)
@@ -360,11 +364,11 @@ clear_snet_and_wave (BseTrack *self,
 							BSE_TYPE_SNET);
 	  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wnet), track_uncross_wave);
 	}
-      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"),
+      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
 		    "wave", NULL,
 		    NULL);
       if (self->sub_synth)
-	g_object_set (self->sub_synth,
+	g_object_set (self->sub_synth, /* no undo */
 		      "snet", self->wnet,
 		      NULL);
     }
@@ -406,7 +410,7 @@ bse_track_set_property (GObject      *object,
 		  bse_object_proxy_notifies (self->snet, self, "changed");
 		}
 	      if (self->sub_synth)
-		g_object_set (self->sub_synth,
+		g_object_set (self->sub_synth, /* no undo */
 			      "snet", self->snet,
 			      NULL);
 	    }
@@ -424,7 +428,7 @@ bse_track_set_property (GObject      *object,
 		{
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
 		  bse_object_proxy_notifies (self->wave, self, "changed");
-		  g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"),
+		  g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
 				"wave", self->wave,
 				NULL);
 		}
@@ -468,27 +472,26 @@ bse_track_get_property (GObject    *object,
     }
 }
 
-BseErrorType
+guint
 bse_track_insert_part (BseTrack *self,
 		       guint     tick,
 		       BsePart  *part)
 {
   BseTrackEntry *entry;
-  gint i;
 
   g_return_val_if_fail (BSE_IS_TRACK (self), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_PART (part), BSE_ERROR_INTERNAL);
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
-    return BSE_ERROR_POS_ALLOC;
+    return 0;
   else
     {
-      i = entry ? entry - self->entries_SL : 0;
-      track_add_entry (self, entry ? i + 1 : 0, tick, part);
+      gint i = entry ? entry - self->entries_SL : 0;
+      entry = track_add_entry (self, entry ? i + 1 : 0, tick, part);
     }
   g_signal_emit (self, signal_changed, 0);
-  return BSE_ERROR_NONE;
+  return entry ? entry->id : 0;
 }
 
 void
@@ -562,7 +565,7 @@ bse_track_find_part (BseTrack *self,
   return FALSE;
 }
 
-BsePart*
+BseTrackEntry*
 bse_track_lookup_tick (BseTrack               *self,
 		       guint                   tick)
 {
@@ -572,9 +575,22 @@ bse_track_lookup_tick (BseTrack               *self,
 
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
-    return entry->part;
-  else
-    return NULL;
+    return entry;
+  return NULL;
+}
+
+BseTrackEntry*
+bse_track_find_link (BseTrack *self,
+                     guint     id)
+{
+  guint i;
+
+  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+
+  for (i = 0; i < self->n_entries_SL; i++)
+    if (self->entries_SL[i].id == id)
+      return self->entries_SL + i;
+  return NULL;
 }
 
 BsePart*
@@ -618,32 +634,32 @@ bse_track_add_modules (BseTrack     *self,
   g_return_if_fail (self->sub_synth == NULL);
 
   /* midi voice input */
-  self->voice_input = bse_container_new_item (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
+  self->voice_input = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
   BSE_OBJECT_SET_FLAGS (self->voice_input, BSE_ITEM_FLAG_AGGREGATE);
   bse_midi_voice_input_set_midi_receiver (BSE_MIDI_VOICE_INPUT (self->voice_input), self->midi_receiver_SL, 0);
   
   /* sub synth */
-  self->sub_synth = bse_container_new_item (container, BSE_TYPE_SUB_SYNTH,
-					    "in_port_1", "frequency",
-					    "in_port_2", "gate",
-					    "in_port_3", "velocity",
-					    "in_port_4", "aftertouch",
-					    "out_port_1", "left-audio",
-					    "out_port_2", "right-audio",
-					    "out_port_3", "unused",
-					    "out_port_4", "synth-done",
-					    "snet", self->snet,
-					    NULL);
+  self->sub_synth = bse_container_new_child (container, BSE_TYPE_SUB_SYNTH,
+                                             "in_port_1", "frequency",
+                                             "in_port_2", "gate",
+                                             "in_port_3", "velocity",
+                                             "in_port_4", "aftertouch",
+                                             "out_port_1", "left-audio",
+                                             "out_port_2", "right-audio",
+                                             "out_port_3", "unused",
+                                             "out_port_4", "synth-done",
+                                             "snet", self->snet,
+                                             NULL);
   BSE_OBJECT_SET_FLAGS (self->sub_synth, BSE_ITEM_FLAG_AGGREGATE);
   bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->sub_synth), self->midi_receiver_SL, 0);
   
   /* midi voice switch */
-  self->voice_switch = bse_container_new_item (container, BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
+  self->voice_switch = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
   BSE_OBJECT_SET_FLAGS (self->voice_switch, BSE_ITEM_FLAG_AGGREGATE);
   bse_midi_voice_switch_set_voice_input (BSE_MIDI_VOICE_SWITCH (self->voice_switch), BSE_MIDI_VOICE_INPUT (self->voice_input));
   
   /* context merger */
-  self->context_merger = bse_container_new_item (container, BSE_TYPE_CONTEXT_MERGER, NULL);
+  self->context_merger = bse_container_new_child (container, BSE_TYPE_CONTEXT_MERGER, NULL);
   BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_AGGREGATE);
   
   /* voice input <-> sub-synth */
@@ -755,11 +771,9 @@ part_link_resolved (gpointer        data,
   else
     {
       guint tick = GPOINTER_TO_UINT (data);
-      BseErrorType error = bse_track_insert_part (self, tick, BSE_PART (to_item));
-      if (error)
-	bse_storage_warn (storage, "failed to insert part reference to \"%s\": %s",
-			  bse_object_debug_name (to_item),
-			  bse_error_blurb (error));
+      if (bse_track_insert_part (self, tick, BSE_PART (to_item)) < 1)
+	bse_storage_warn (storage, "failed to insert part reference to %s",
+			  bse_object_debug_name (to_item));
     }
 }
 

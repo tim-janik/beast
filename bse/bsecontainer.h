@@ -68,14 +68,6 @@ struct _BseContainerClass
 
 
 /* --- prototypes --- */
-void		bse_container_add_item		(BseContainer	*container,
-						 BseItem	*item);
-gpointer        bse_container_new_item          (BseContainer   *container,
-						 GType           item_type,
-						 const gchar    *first_param_name,
-						 ...);
-void		bse_container_remove_item	(BseContainer	*container,
-						 BseItem	*item);
 void		bse_container_forall_items	(BseContainer	*container,
 						 BseForallItemsFunc func,
 						 gpointer	 data);
@@ -97,6 +89,21 @@ gchar* /*fr*/	bse_container_make_upath	(BseContainer	*container,
 						 BseItem	*item);
 gboolean	bse_container_check_restore	(BseContainer	*container,
 						 const gchar	*child_type);
+/* non-undo functions */
+gpointer        bse_container_new_child         (BseContainer   *container,
+						 GType           child_type,
+						 const gchar    *first_param_name,
+						 ...);
+void		bse_container_add_item          (BseContainer	*container,
+						 BseItem	*item);
+void		bse_container_remove_item	(BseContainer	*container,
+						 BseItem	*item);
+/* undo+redo functions or undo-only (backup) functions */
+void        bse_container_uncross_undoable      (BseContainer   *container,
+                                                 BseItem        *child);
+void        bse_container_remove_backedup       (BseContainer   *container,
+                                                 BseItem        *child,
+                                                 BseUndoStack   *ustack);
 
 
 /* --- internal functions --- */
@@ -111,9 +118,7 @@ void          _bse_container_cross_unlink	(BseContainer    *container,
 void          _bse_container_uncross		(BseContainer    *container,
 						 BseItem         *owner,
 						 BseItem         *link);
-void	      _bse_container_uncross_descendant	(BseContainer    *container,
-						 BseItem         *item);
-
+void          bse_container_debug_tree          (BseContainer    *container);
 
 
 G_END_DECLS

@@ -1,3 +1,84 @@
+Fri May 30 18:55:52 2003  Tim Janik  <timj@gtk.org>
+
+	* implemented undo for BSE. We've got unlimited undo/redo for most
+	functions now, undo is still missing out for: BseDataPocket and
+	BsePart. restoring BseWave from undo only works partially.
+
+	* bsewaverepo.proc: made load-file() and remove-wave() undo aware.
+
+	* bseproject.proc: made create-song(), create-midi-synth(), play(),
+	create-csynth(), remove-snet(), activate() and start-playback() undo
+	aware. renamed ensure-wave-repo() to get-wave-repo(). added undo(),
+	redo(), undo-depth(), redo-depth() and clear-undo().
+	made restore-from-file() clear undo stack, because we can't maintain
+	undo across merging.
+	
+	* bsesnet.proc: made create-source() and remove-source() undo aware.
+
+	* bsesong.proc: made create-part(), remove-part(), create-track() and
+	remove-track() undo aware.
+
+	* bsesource.proc: made set-input-by-id(), unset-input-by-id(),
+	set-input(), unset-input(), clear-inputs() and clear-outputs() undo
+	aware. added undo-aware set-pos() to set ::pos-x and ::pos-y.
+
+	* bsetrack.proc: changed procedures to use part link IDs.
+	made insert-part(), remove-tick() and remove-link() undo aware.
+
+	* bseitem.proc: added group-undo() and ungroup-undo() procedures for
+	BSE clients to request undo grouping as well. internally we don#t open
+	up actual undo groups for this, that could mess up internal state.
+	instead, if group-undo() was called, everytime we're closing an undo
+	group internally, we merge it with a previously queued undo group.
+
+	* bsewaveosc.[hc]: fixed up cross links and signal reemissions.
+
+	* bsetype.[hc]: added BSE_TYPE_PACKED_POINTER which is an undo
+	implementation specific string type.
+
+	* bsestorage.[hc]: restoring items generally does not queue undo/redo
+	steps. added function to save an object entirely to memory.
+
+	* bsetrack.[hc]: added IDs to part links.
+
+	* bsesource.[hc]: added bse_source_backup_ichannels_to_undo(),
+	bse_source_backup_ochannels_to_undo() and
+	bse_source_input_backup_to_undo() which save i/o channels to undo
+	without queueing subsequent redo though. added bse_source_check_input().
+
+	* bseundostack.[hc]: new files, implementing a simple undo stack.
+
+	* bsecontainer.[hc]: added undo aware functions to create/remove
+	and uncross items. renamed ::item-removed to ::item-remove.
+
+	* bseglue.[hc]:
+	(bglue_proxy_set_property): set properties undo-aware.
+
+	* bseobject.[hc]: changed ::uname setter. basically, we have a new uname
+	convention now, unames may not contain ':' and the first character (if
+	any) must be >=\007.
+	fixed up reemission of property notify signals.
+
+	* bseprocedure.[hc]: added bse_procedure_collect_input_args() which 
+	just collects procedurer call args from the stack.
+
+	* bseproject.[hc]: added undo/redo stacks and ::dirty property.
+	::dirty doesn't work like expected currently, but provides reliable
+	change notification for undo changes.
+
+	* bseitem.[hc]: added bse_item_get_toplevel(), and facilities
+	to queue procedure calls to undo/redo stack. added bse_item_undo_open()
+	and bse_item_undo_close() which are used to group any undoable
+	operation. added ->get_undo() method to retrieve the current
+	undo stack. fixed up bse_item_get_project() to work on projects
+	as well. cleaned up procedure code.
+	added undo aware property setters, the current implementation
+	ignores resetting a property to a value it already has (for a limited
+	property set at least), which saves the user lots of undo operations.
+
+	* *.c: changed g_object_set() to undo aware bse_item_set() where
+	appropriate and marked the intentionaly unchanged rest with /* no undo */
+
 Tue May 27 03:33:52 2003  Tim Janik  <timj@gtk.org>
 
 	* bseladspa.c: applied patch from Sam Hocevar <sam@zoy.org> which

@@ -421,7 +421,8 @@ item_link_resolved (gpointer     data,
 
       g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
       g_value_set_object (&value, dest_item);
-      g_object_set_property (G_OBJECT (item), pspec->name, &value);
+      g_object_set_property (G_OBJECT (item), /* no undo */
+                             pspec->name, &value);
       g_value_unset (&value);
     }
 }
@@ -478,7 +479,8 @@ restore_item_property (BseItem    *item,
     }
 
   /* set property value while preserving the object uname */
-  g_object_set_property (G_OBJECT (item), pspec->name, &value);
+  g_object_set_property (G_OBJECT (item), /* no undo */
+                         pspec->name, &value);
   g_value_unset (&value);
 
   return G_TOKEN_NONE;
@@ -703,8 +705,9 @@ storage_path_table_lookup (BseStorage   *self,
   DEBUG ("LOOKUP: (%p,%s) => %p", container, uname, uchild ? uchild->item : NULL);
   if (uchild)
     return uchild->item;
-  /* we resort to container lookups, though the uname
-   * reference is most probably broken
+  /* we resort to container lookups in case
+   * object links refer across external
+   * containers.
    */
   return bse_container_lookup_item (container, uname);
 }
@@ -994,6 +997,23 @@ bse_storage_peek_text (BseStorage *storage,
   if (length)
     *length = storage->gstring->len;
   return storage->gstring->str;
+}
+
+gchar*
+bse_storage_mem_flush (BseStorage *storage)
+{
+  gchar *mem;
+
+  g_return_val_if_fail (BSE_IS_STORAGE (storage), NULL);
+  g_return_val_if_fail (BSE_STORAGE_WRITABLE (storage), NULL);
+
+  bse_storage_handle_break (storage);
+
+  mem = g_new (gchar, storage->gstring->len + 1);
+  memcpy (mem, storage->gstring->str, storage->gstring->len + 1);
+
+  // FIXME: we're not handling binary appendices here
+  return mem;
 }
 
 void
@@ -1409,20 +1429,6 @@ bse_storage_unexp_token (BseStorage *storage,
         message = NULL;
       g_scanner_unexp_token (storage->scanner, expected_token, NULL, NULL, NULL, message, TRUE);
     }
-}
-
-static BseErrorType
-bse_storage_restore_offset (BseStorage *storage,
-                            glong       offset)
-{
-  gint fd = storage->fd;
-  
-  if (fd < 0)
-    return BSE_ERROR_FILE_NOT_FOUND;
-  else if (lseek (fd, offset, SEEK_SET) != offset)
-    return BSE_ERROR_FILE_IO;
-  else
-    return BSE_ERROR_NONE;
 }
 
 static BseErrorType

@@ -130,7 +130,7 @@ bse_super_init (BseSuper *super,
   bse_super_objects = g_slist_prepend (bse_super_objects, super);
   
   /* we want Unnamed-xxx default unames */
-  g_object_set (object,
+  bse_item_set (super,
 		"uname", "Unnamed",
 		NULL);
 }
@@ -217,16 +217,4 @@ bse_super_do_modified (BseSuper *super,
 		       SfiTime	 stamp)
 {
   super->mod_time = MAX (super->mod_time, stamp);
-}
-
-BseProject*
-bse_super_get_project (BseSuper *super)
-{
-  BseItem *item;
-  
-  g_return_val_if_fail (BSE_IS_SUPER (super), NULL);
-  
-  item = BSE_ITEM (super);
-  
-  return BSE_IS_PROJECT (item->parent) ? BSE_PROJECT (item->parent) : NULL;
 }

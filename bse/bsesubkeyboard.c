@@ -129,19 +129,23 @@ bse_sub_keyboard_reset_names (BseSubKeyboard *self)
   name = BSE_SOURCE_OCHANNEL_IDENT (self, 0);
   if (strcmp (iport->input_ports[0], name) != 0 &&
       (!snet || !bse_snet_iport_name_registered (snet, name)))
-    g_object_set (self, "BseSubIPort::in_port_1", name, NULL);
+    g_object_set (self, /* no undo */
+                  "BseSubIPort::in_port_1", name, NULL);
   name = BSE_SOURCE_OCHANNEL_IDENT (self, 1);
   if (strcmp (iport->input_ports[1], name) != 0 &&
       (!snet || !bse_snet_iport_name_registered (snet, name)))
-    g_object_set (self, "BseSubIPort::in_port_2", name, NULL);
+    g_object_set (self, /* no undo */
+                  "BseSubIPort::in_port_2", name, NULL);
   name = BSE_SOURCE_OCHANNEL_IDENT (self, 2);
   if (strcmp (iport->input_ports[2], name) != 0 &&
       (!snet || !bse_snet_iport_name_registered (snet, name)))
-    g_object_set (self, "BseSubIPort::in_port_3", name, NULL);
+    g_object_set (self, /* no undo */
+                  "BseSubIPort::in_port_3", name, NULL);
   name = BSE_SOURCE_OCHANNEL_IDENT (self, 3);
   if (strcmp (iport->input_ports[3], name) != 0 &&
       (!snet || !bse_snet_iport_name_registered (snet, name)))
-    g_object_set (self, "BseSubIPort::in_port_4", name, NULL);
+    g_object_set (self, /* no undo */
+                  "BseSubIPort::in_port_4", name, NULL);
   g_object_thaw_notify (G_OBJECT (self));
 }
 

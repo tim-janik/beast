@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -821,7 +821,7 @@ bglue_proxy_set_property (SfiGlueContext *context,
 			  const gchar    *prop,
 			  const GValue   *value)
 {
-  GObject *object = bse_object_from_id (proxy);
+  gpointer object = bse_object_from_id (proxy);
   
   if (BSE_IS_OBJECT (object) && G_IS_VALUE (value))
     {
@@ -842,7 +842,14 @@ bglue_proxy_set_property (SfiGlueContext *context,
 	    {
 	      /* silent validation */
 	      g_param_value_validate (pspec, &tmp_value);
-	      g_object_set_property (object, prop, &tmp_value);
+              if (BSE_IS_ITEM (object))
+                {
+                  BseUndoStack *ustack = bse_item_undo_open (object, "set-property %s", prop);
+                  bse_item_set_property_undoable (object, prop, &tmp_value);
+                  bse_item_undo_close (ustack);
+                }
+              else
+                g_object_set_property (object, prop, &tmp_value);
 	    }
 	  g_value_unset (&tmp_value);
 	  if (pvalue)

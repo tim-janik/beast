@@ -32,6 +32,10 @@ G_BEGIN_DECLS
 #define	BSE_CLASS_TYPE(class)		(G_TYPE_FROM_CLASS (class))
 #define	BSE_TYPE_IS_OBJECT(type)	(g_type_is_a ((type), BSE_TYPE_OBJECT))
 
+/* --- extra types --- */
+extern GType bse_type_id_packed_pointer;
+#define BSE_TYPE_PACKED_POINTER (bse_type_id_packed_pointer)
+
 
 /* --- prototypes --- */
 void		bse_type_init		  (void);

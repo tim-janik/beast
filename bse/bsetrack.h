@@ -34,6 +34,7 @@ G_BEGIN_DECLS
 /* --- BseTrack --- */
 typedef struct {
   guint    tick;
+  guint    id;
   BsePart *part;
 } BseTrackEntry;
 struct _BseTrack
@@ -76,7 +77,7 @@ void	bse_track_clone_voices		(BseTrack		*self,
 					 BseSNet		*snet,
 					 guint			 context,
 					 GslTrans		*trans);
-BseErrorType	 bse_track_insert_part	(BseTrack		*self,
+guint        	 bse_track_insert_part	(BseTrack		*self,
 					 guint			 tick,
 					 BsePart		*part);
 void		 bse_track_remove_tick	(BseTrack		*self,
@@ -85,8 +86,10 @@ BseTrackPartSeq* bse_track_list_parts	(BseTrack		*self);
 gboolean	 bse_track_find_part	(BseTrack		*self,
 					 BsePart		*part,
 					 guint			*start_p);
-BsePart*	 bse_track_lookup_tick	(BseTrack		*self,
+BseTrackEntry*	 bse_track_lookup_tick	(BseTrack		*self,
 					 guint			 tick);
+BseTrackEntry*   bse_track_find_link    (BseTrack               *self,
+                                         guint                   id);
 BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 					 guint			 tick,
 					 guint			*start,

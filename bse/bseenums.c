@@ -110,6 +110,7 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_SOURCE_NO_SUCH_CONNECTION:	return "Input/Output channels not connected";
     case BSE_ERROR_SOURCE_ICHANNEL_IN_USE:	return "Input channel already in use";
     case BSE_ERROR_SOURCE_CHANNELS_CONNECTED:	return "Input/Output channels already connected";
+    case BSE_ERROR_SOURCE_PARENT_MISMATCH:	return "Parent mismatch";
     case BSE_ERROR_SOURCE_BAD_LOOPBACK:		return "Bad loopback";
     case BSE_ERROR_SOURCE_BUSY:			return "Synthesis module currently busy";
     case BSE_ERROR_SOURCE_TYPE_INVALID:		return "Invalid synthsis module type";
@@ -120,7 +121,6 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_PROC_ABORT:			return "Procedure execution aborted";
     case BSE_ERROR_PARSE_ERROR:			return "Parsing error";
     case BSE_ERROR_SPAWN:			return "Failed to spawn child process";
-    case BSE_ERROR_POS_ALLOC:			return "Position already allocated";
       /* various procedure errors */
     case BSE_ERROR_NO_ENTRY:			return "No such entry";
     case BSE_ERROR_NO_EVENT:			return "No such event";
