@@ -310,7 +310,6 @@ gsl_wave_dsc_free (GslWaveDsc *wave_dsc)
   wave_dsc->file_info = NULL;
   
   file_info->loader->free_wave_dsc (file_info->loader->data, wave_dsc);
-  g_strfreev (wave_dsc->xinfos);
 
   gsl_wave_file_info_unref (file_info);
 }
