@@ -247,24 +247,24 @@ void    g_usignal_notify         (gint8          usignal);
 
 /* --- GType boilerplate --- */
 #ifndef G_DEFINE_TYPE
-#define G_DEFINE_TYPE(TN, t_n, T_P)                         G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, parent_class, {})
-#define G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_)          G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, parent_class, _C_)
-#define G_DEFINE_ABSTRACT_TYPE(TN, t_n, T_P)                G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, parent_class, {})
-#define G_DEFINE_ABSTRACT_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, parent_class, _C_)
+#define G_DEFINE_TYPE(TN, t_n, T_P)                         G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, {})
+#define G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_)          G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, _C_)
+#define G_DEFINE_ABSTRACT_TYPE(TN, t_n, T_P)                G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, {})
+#define G_DEFINE_ABSTRACT_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, _C_)
 #define G_IMPLEMENT_INTERFACE(TYPE_IFACE, iface_init)       { \
   static const GInterfaceInfo g_implement_interface_info = { \
     (GInterfaceInitFunc) iface_init \
   }; \
   g_type_add_interface_static (g_define_type_id, TYPE_IFACE, &g_implement_interface_info); \
 }
-#define G_DEFINE_TYPE_EXTENDED(TypeName, type_name, TYPE_PARENT, flags, type_parent_class, CODE) \
+#define G_DEFINE_TYPE_EXTENDED(TypeName, type_name, TYPE_PARENT, flags, CODE) \
 \
 static void     type_name##_init              (TypeName        *self); \
 static void     type_name##_class_init        (TypeName##Class *klass); \
-static gpointer type_parent_class = NULL; \
+static gpointer type_name##_parent_class = NULL; \
 static void     type_name##_class_intern_init (gpointer klass) \
 { \
-  type_parent_class = g_type_class_peek_parent (klass); \
+  type_name##_parent_class = g_type_class_peek_parent (klass); \
   type_name##_class_init ((TypeName##Class*) klass); \
 } \
 \
