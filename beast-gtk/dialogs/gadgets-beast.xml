@@ -16,7 +16,7 @@
       <label label="$action-name" />
     </vbox>
   </xdef:factory-button>
-  <xdef:factory-togglebutton inherit="togglebutton"
+  <xdef:factory-toggle-button inherit="toggle-button"
     focus="0" prop:relief="$(ifdef,relief,$relief,normal)" >
     <tooltip text="$action-tooltip" />
     <widget-patcher prop:width-from-height="1" />
@@ -28,7 +28,7 @@
         stock-size="$image-size" />
       <label label="$action-name" />
     </vbox>
-  </xdef:factory-togglebutton>
+  </xdef:factory-toggle-button>
   <!-- factories: actions= -->
   <xdef:button-factory inherit="gadget-factory"
     per-action="factory-button"
@@ -36,9 +36,9 @@
     regulate="factory-button" />
   <xdef:big-button-factory inherit="button-factory" image-size="big-button" />
   <xdef:toggle-factory inherit="gadget-factory"
-    per-action="factory-togglebutton"
-    activatable="factory-togglebutton"
-    regulate="factory-togglebutton" />
+    per-action="factory-toggle-button"
+    activatable="factory-toggle-button"
+    regulate="factory-toggle-button" />
   <xdef:big-toggle-factory inherit="toggle-factory" image-size="big-button" />
   
   <!-- misc BEAST widgets -->
@@ -56,7 +56,7 @@
 	    </hbox>
 	  </alignment>
 	  <frame-shadow-in size:vgroup="tree-size" pack:expand="1" >
-	    <treeview name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
+	    <tree-view name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
 	  </frame-shadow-in>
 	  <hscrollbar name="tree-hscrollbar" size:vgroup="scroll-size" />
 	</vbox>
@@ -77,9 +77,9 @@
   <!-- wave view -->
   <xdef:wave-view inherit="BstWaveView" prop:visible="1" prop:border-width="3" >
     <hbox spacing="3" >
-      <scrolledwindow name="tree-area" prop:shadow-type="shadow-in" pack:expand="1" >
-	<treeview name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
-      </scrolledwindow>
+      <scrolled-window name="tree-area" prop:shadow-type="shadow-in" pack:expand="1" >
+	<tree-view name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
+      </scrolled-window>
       <alignment prop:yscale="0" prop:yalign="0" >
 	<vbox prop:homogeneous="1" spacing="3" >
 	  <big-button-factory actions="wave-view-actions" />
@@ -92,9 +92,9 @@
   <xdef:part-view inherit="BstPartView" prop:visible="1" prop:border-width="3" >
     <vpaned>
       <hbox spacing="3" >
-	<scrolledwindow name="tree-area" prop:shadow-type="shadow-in" pack:expand="1" >
-	  <treeview name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
-	</scrolledwindow>
+	<scrolled-window name="tree-area" prop:shadow-type="shadow-in" pack:expand="1" >
+	  <tree-view name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
+	</scrolled-window>
 	<alignment prop:yscale="0" prop:yalign="0" >
 	  <vbox prop:homogeneous="1" spacing="3" >
 	    <big-button-factory actions="part-view-actions" />

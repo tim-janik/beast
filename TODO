@@ -1,11 +1,8 @@
 FIXMES:
-- fix multi-action factories
-- implement gdgdata_get_stencil_gadget() for a default factory boundary
 - add one-shot property to factories
 - implement toolbar separator
 - implement menubutton
 - implement menu title
-- add dashes to stencil names
 - fix event-roll controller
 - move bst_action_list_add_cat() to bstutils.[hc]
 - recreate partdialog toolbar

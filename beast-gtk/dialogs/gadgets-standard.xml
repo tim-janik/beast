@@ -5,7 +5,7 @@
 
   <!-- frame, alignment -->
   <xdef:alignment             inherit="GtkAlignment"        />
-  <xdef:eventbox              inherit="GtkEventBox"         />
+  <xdef:event-box             inherit="GtkEventBox"         />
   <xdef:frame                 inherit="GtkFrame"            />
   <xdef:frame-shadow-in       inherit="frame"               prop:shadow="shadow-in" />
   <xdef:frame-shadow-out      inherit="frame"               prop:shadow="shadow-out" />
@@ -36,12 +36,12 @@
     prop:can-default="1" />
   <xdef:default-button        inherit="can-default-button"
     prop:has-default="1" />
-  <xdef:checkbutton           inherit="GtkCheckButton"
+  <xdef:check-button          inherit="GtkCheckButton"
     prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
     prop:can-default="$(ifdef,default,$default,0)"
     prop:can-focus="$(ifdef,focus,$focus,1)"
     prop:use-stock="$(if,$stock)" />
-  <xdef:togglebutton          inherit="checkbutton"
+  <xdef:toggle-button         inherit="check-button"
     prop:draw-indicator="0" />
   <!-- label: label= -->
   <xdef:label                 inherit="GtkLabel"
@@ -68,8 +68,8 @@
   <!-- menubar -->
   <xdef:menubar               inherit="GtkMenuBar" />
   <xdef:popup-menu            inherit="GtkMenu" />
-  <!-- menuitem: label= accel-path= accel= stock-image= -->
-  <xdef:menuitem              inherit="GxkMenuItem"
+  <!-- menu-item: label= accel-path= accel= stock-image= -->
+  <xdef:menu-item             inherit="GxkMenuItem"
     prop:uline-label="$label"
     prop:accel-path="$(null-collapse,$accel-path)"
     prop:accel="$accel"
@@ -81,7 +81,7 @@
     prop:stock-image="$stock-image" >
     <GtkMenu name="menu" tearoff-title="$label" />
   </xdef:submenu>
-  <xdef:submenu-last        inherit="submenu"
+  <xdef:submenu-last          inherit="submenu"
     prop:right-justify="1" />
   <!-- paned containers -->
   <xdef:hpaned                inherit="GtkHPaned" />
@@ -92,10 +92,10 @@
   <xdef:hscrollbar            inherit="GtkHScrollbar" />
   <xdef:vscrollbar            inherit="GtkVScrollbar" />
   <!-- misc containers -->
-  <xdef:scrolledwindow        inherit="GtkScrolledWindow" />
-  <xdef:treeview              inherit="GtkTreeView" />
-  <xdef:window                inherit="GtkWindow"           />
-  <xdef:table                 inherit="GtkTable"            />
+  <xdef:scrolled-window       inherit="GtkScrolledWindow" />
+  <xdef:tree-view             inherit="GtkTreeView"       />
+  <xdef:window                inherit="GtkWindow"         />
+  <xdef:table                 inherit="GtkTable"          />
   
 
   <!-- Construction of composite containers -->
@@ -134,7 +134,7 @@
     regulate="menu-factory-per-action" >
   </xdef:menu-factory>
   <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
-  <xdef:menu-factory-per-action inherit="menuitem"
+  <xdef:menu-factory-per-action inherit="menu-item"
     label="$action-name"
     accel="$action-accel"
     accel-path="$action-path"
