@@ -438,9 +438,11 @@
       <beast-menubar />
     </vbox>
     <vbox name="toolbar-area" area="north" />
-    <bottom-deck name="main-notebook" pack:expand="1" />
+    <bottom-deck name="main-notebook" expand="1" />
     <hbox area="north" >
       <hbox name="control-area" />
+      <hbox name="control-area-file-label" pack:pack-type="last" />
+      <hbox name="control-area-file-entry" pack:pack-type="last" expand="1" />
     </hbox>
   </xdef:application-box>
 

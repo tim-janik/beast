@@ -171,39 +171,43 @@ update_infos (GSList         *slist,
     }
 }
 
+static void
+profiler_update (void)
+{
+  GxkListWrapper *lwrapper = g_object_get_data (profiler_dialog, "list-wrapper");
+  BseThreadTotals *tt = bse_collect_thread_totals ();
+  sfi_thread_sleep (0); /* update accounting for self */
+  SfiThreadInfo *si = sfi_thread_info_collect (sfi_thread_self());
+  BseThreadInfo bi = { 0, };
+  GSList *slist = NULL;
+  guint i;
+  bi.name = si->name;
+  bi.state = thread_state_from_char_state (si->state);
+  bi.priority = si->priority;
+  bi.processor = si->processor;
+  bi.utime = si->utime;
+  bi.stime = si->stime;
+  bi.cutime = si->cutime;
+  bi.cstime = si->cstime;
+  for (i = 0; i < tt->synthesis->n_thread_infos; i++)
+    slist = g_slist_prepend (slist, tt->synthesis->thread_infos[i]);
+  if (tt->sequencer)
+    slist = g_slist_prepend (slist, tt->sequencer);
+  slist = g_slist_prepend (slist, tt->main);
+  slist = g_slist_prepend (slist, &bi);
+  update_infos (slist, lwrapper);
+  g_slist_free (slist);
+  sfi_thread_info_free (si);
+}
+
 static gboolean
-profile_timer (gpointer data)
+profiler_timer (gpointer data)
 {
   gboolean visible;
   GDK_THREADS_ENTER ();
   visible = profiler_dialog && GTK_WIDGET_VISIBLE (profiler_dialog);
   if (visible)
-    {
-      GxkListWrapper *lwrapper = g_object_get_data (profiler_dialog, "list-wrapper");
-      BseThreadTotals *tt = bse_collect_thread_totals ();
-      sfi_thread_sleep (0); /* update accounting for self */
-      SfiThreadInfo *si = sfi_thread_info_collect (sfi_thread_self());
-      BseThreadInfo bi = { 0, };
-      GSList *slist = NULL;
-      guint i;
-      bi.name = si->name;
-      bi.state = thread_state_from_char_state (si->state);
-      bi.priority = si->priority;
-      bi.processor = si->processor;
-      bi.utime = si->utime;
-      bi.stime = si->stime;
-      bi.cutime = si->cutime;
-      bi.cstime = si->cstime;
-      for (i = 0; i < tt->synthesis->n_thread_infos; i++)
-        slist = g_slist_prepend (slist, tt->synthesis->thread_infos[i]);
-      if (tt->sequencer)
-        slist = g_slist_prepend (slist, tt->sequencer);
-      slist = g_slist_prepend (slist, tt->main);
-      slist = g_slist_prepend (slist, &bi);
-      update_infos (slist, lwrapper);
-      g_slist_free (slist);
-      sfi_thread_info_free (si);
-    }
+    profiler_update ();
   else
     timer_id = 0;
   GDK_THREADS_LEAVE ();
@@ -258,8 +262,9 @@ bst_profiler_window_get (void)
       gxk_tree_view_add_text_column (tview, TCOL_PRIO, "AG", 0.5, _("Nice"), _("Thread priority from -20 (high) to +19 (low)"), NULL, NULL, 0);
       gxk_tree_view_add_text_column (tview, TCOL_PROC, "A", 0.5, _("#CPU"), _("CPU the thread is currently running on"), NULL, NULL, 0);
       g_object_set_data (profiler_dialog, "list-wrapper", lwrapper);
+      profiler_update ();
     }
   if (!timer_id)
-    timer_id = g_timeout_add (500, profile_timer, NULL);
+    timer_id = g_timeout_add (500, profiler_timer, NULL);
   return profiler_dialog;
 }

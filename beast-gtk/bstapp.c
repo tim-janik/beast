@@ -270,10 +270,10 @@ bst_app_init (BstApp *self)
   gxk_gadget_add (self->box, "control-area", self->pcontrols);
   
   /* setup WAVE file entry */
-  self->wave_file = bst_param_new_proxy (bse_proxy_get_pspec (BSE_SERVER, "wave_file"), BSE_SERVER);
   gxk_gadget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
-  gxk_gadget_add (self->box, "control-area", gxk_param_create_editor (self->wave_file, "name"));
-  gxk_gadget_add (self->box, "control-area", gxk_param_create_editor (self->wave_file, NULL));
+  self->wave_file = bst_param_new_proxy (bse_proxy_get_pspec (BSE_SERVER, "wave_file"), BSE_SERVER);
+  gxk_gadget_add (self->box, "control-area-file-label", gxk_param_create_editor (self->wave_file, "name"));
+  gxk_gadget_add (self->box, "control-area-file-entry", gxk_param_create_editor (self->wave_file, NULL));
   gxk_param_update (self->wave_file);
   
   /* setup the main notebook */

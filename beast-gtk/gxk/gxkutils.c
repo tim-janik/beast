@@ -516,6 +516,8 @@ idle_shower (GtkWidget **widget_p)
       gtk_signal_disconnect_by_func (GTK_OBJECT (*widget_p),
 				     GTK_SIGNAL_FUNC (gtk_widget_destroyed),
 				     widget_p);
+      if (GTK_WIDGET_DRAWABLE (*widget_p) && GTK_IS_WINDOW (*widget_p))
+        gdk_window_raise ((*widget_p)->window);
       gtk_widget_show (*widget_p);
     }
   g_free (widget_p);
