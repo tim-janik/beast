@@ -569,6 +569,7 @@ track_view_set_container (BstItemView *iview,
 			 "swapped_signal::property-notify::loop-enabled", track_view_repeat_changed, self,
 			 NULL);
       track_view_marks_changed (self);
+      track_view_repeat_changed (self);
     }
 }
 
