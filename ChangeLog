@@ -1,3 +1,9 @@
+Mon Feb 23 02:44:57 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsw/Makefile.am:
+	* bsw/bswcxxutils.h: Removed bswcxxutils.h, as it is no longer
+	required - sfi provides C++ utility classes in sfi/sficxx.h.
+
 Sun Feb 22 01:57:36 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsw/Makefile.am:

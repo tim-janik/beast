@@ -315,7 +315,6 @@ sfidl:
   - handle non-validated sequences and records in generation code (things
     can be demarshalled in non-validated form after incompatible changes)
   - finish Sfidl::CodeGenerator::rename (relative naming)
-99- what about bswcxxutils.h? is this now obsolete (I think it is -- stw)
   parser:
   - sfidl-parser.cc: property keyword should be nuked
   - clean up enum code to use ChoiceValue value or sequentialValue, without
