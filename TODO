@@ -310,11 +310,20 @@ sfidl:
   - choice type should have validation function
   - handle non-validated sequences and records in generation code (things
     can be demarshalled in non-validated form after incompatible changes)
+  - finish Sfidl::CodeGenerator::rename (relative naming)
+  - install sfidl
+  - what about bswcxxutils.h? is this now obsolete (I think it is -- stw)
+  parser:
   - sfidl-parser.cc: property keyword should be nuked
   - sfidl-parser.cc: choices i18n
   - sfidl-parser should assign increemental numbers to enum values as they are
     parsed (starting at 1). i.e. implement the C++ enum numeration mechanism
-  - install sfidl
+  - why is Value.value always 0? you actually generate the choice value integers
+    on the fly, instead of applying them to Value so other code generators don't
+    need to duplicate logic (it's already special cased multiple times in the
+    C code generator)
+  - sfidl-parser.cc: should report file/line with the error message of missing
+    includes instead of include file 'bse/bsecxxmodule.idl' not found
   extensions:
 30- choices need support for icons per value
 30- choices need support for tooltips per value
@@ -341,8 +350,6 @@ sfidl:
     - records in bseprocidl: how can we figure out the type?
     - dynamic invocation interface missing in C++ binding (properties, methods)
     - later: introduce iterators into sequences
-    - port arts driver from csl to port-audio
-    - write port-audio driver for beast
     - optional conversion routines C++ -> C (and back)
     - createTypeCode refactoring
       funcFromValue, funcToValue,
@@ -361,6 +368,8 @@ other stuff:
   - Makefile.plugins doesn't get regenerated properly
   - C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
   - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
-  - rename bindings to client and server (instead of interface and implementation)
+  - rename bindings to client and core (instead of interface and implementation)
+  - port arts driver from csl to port-audio
+  - write port-audio driver for beast
 
 vim:set ts=8 sts=2 sw=2:
