@@ -1,4 +1,7 @@
 FIXMES:
+- add sfisclock.h to sfi.h
+- add QuickStart section on wave seleciton
+- add QuickStart section on postprocessing effects
 - <mg> quick rfe based on 0.5.3: implement multiple selection in the wave loader file selector and have an add button that does not close the dialog
 - add demo song
 - check whether */icons/Makefile.icons is included in dist tarball

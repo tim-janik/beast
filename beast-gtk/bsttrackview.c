@@ -49,6 +49,7 @@ enum {
   COL_MUTE,
   COL_VOICES,
   COL_SYNTH,
+  COL_POST_SYNTH,
   COL_BLURB,
   N_COLS
 };
@@ -191,6 +192,12 @@ track_view_fill_value (BstItemView *iview,
       bse_proxy_get (item, "snet", &snet, "wave", &wave, NULL);
       g_value_set_string (value, snet || wave ? bse_item_get_name (snet ? snet : wave) : "");
       break;
+    case COL_POST_SYNTH:
+      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
+      snet = 0;
+      bse_proxy_get (item, "pnet", &snet, NULL);
+      g_value_set_string (value, snet ? bse_item_get_name (snet) : "");
+      break;
     case COL_BLURB:
       item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       bse_proxy_get (item, "blurb", &string, NULL);
@@ -233,6 +240,36 @@ track_view_synth_edited (BstTrackView *self,
 }
 
 static void
+track_view_post_synth_edited (BstTrackView *self,
+                              const gchar  *strpath,
+                              const gchar  *text)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      if (text)
+	{
+	  SfiProxy proxy = 0;
+	  GSList *slist = NULL;
+	  /* list possible snet candidates */
+	  slist = g_slist_append (slist, bse_item_list_proxies (item, "pnet"));
+	  /* find best match */
+	  proxy = bst_proxy_seq_list_match (slist, text);
+	  g_slist_free (slist);
+	  if (proxy && BSE_IS_SNET (proxy))
+	    bse_proxy_set (item, "pnet", proxy, NULL);
+	  else
+	    bse_proxy_set (item, "pnet", 0, NULL);
+	}
+      else
+	bse_proxy_set (item, "pnet", 0, NULL);
+    }
+}
+
+static void
 track_view_synth_popup_cb (GxkCellRendererPopup *pcell,
                            SfiProxy              proxy,
                            BstTrackSynthDialog  *tsdialog)
@@ -259,6 +296,25 @@ track_view_synth_popup (BstTrackView         *self,
       GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
                                                         pseq,
                                                         bse_project_get_wave_repo (bse_item_get_project (item)),
+                                                        track_view_synth_popup_cb, pcell);
+      gxk_cell_renderer_popup_dialog (pcell, dialog);
+    }
+}
+
+static void
+track_view_post_synth_popup (BstTrackView         *self,
+                             const gchar          *strpath,
+                             const gchar          *text,
+                             GxkCellRendererPopup *pcell)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      BseProxySeq *pseq = bse_item_list_proxies (item, "pnet");
+      GtkWidget *dialog = bst_track_synth_dialog_popup (self, item, pseq, 0,
                                                         track_view_synth_popup_cb, pcell);
       gxk_cell_renderer_popup_dialog (pcell, dialog);
     }
@@ -380,6 +436,7 @@ bst_track_view_create_tree (BstItemView *iview)
 				   G_TYPE_BOOLEAN,	/* COL_MUTE */
 				   G_TYPE_STRING,	/* COL_VOICES */
 				   G_TYPE_STRING,	/* COL_SYNTH */
+				   G_TYPE_STRING,	/* COL_POST_SYNTH */
 				   G_TYPE_STRING	/* COL_BLURB */
 				   );
   smodel = bst_item_view_adapt_list_wrapper (iview, lwrapper);
@@ -546,6 +603,9 @@ bst_track_view_create_tree (BstItemView *iview)
   gxk_tree_view_add_popup_column (iview->tree, COL_SYNTH, "#",
 				  0.5, "Synth", "Synthesizer network or wave to be used by this track",
 				  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_popup_column (iview->tree, COL_POST_SYNTH, "#",
+				  0.5, "Post", "Postprocessing Synthesizer network for this track",
+				  track_view_post_synth_edited, track_view_post_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_BLURB, "",
 				 0.0, "Comment", NULL,
 				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
@@ -621,6 +681,7 @@ track_view_listen_on (BstItemView *iview,
                      "signal::property-notify::muted", track_property_changed, iview, /* COL_MUTE */
                      "signal::property-notify::n_voices", track_property_changed, iview, /* COL_VOICES */
                      "signal::property-notify::snet", track_property_changed, iview, /* COL_SYNTH */
+                     "signal::property-notify::pnet", track_property_changed, iview, /* COL_POST_SYNTH */
                      /* COL_BLURB handled by GxkListWrapper */
                      NULL);
 }

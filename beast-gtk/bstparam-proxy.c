@@ -110,10 +110,10 @@ param_proxy_change_value (GtkWidget *action,
     {
       GtkWidget *chunter = bst_clue_hunter_from_entry (action);
       ParamProxyPopulation *pop = g_object_get_data (G_OBJECT (chunter), "pop");
+      gchar *string = g_strdup_stripped (gtk_entry_get_text (GTK_ENTRY (action)));
       SfiProxy item = 0;
       if (pop)
 	{
-	  gchar *string = g_strdup_stripped (gtk_entry_get_text (GTK_ENTRY (action)));
 	  guint i, l = strlen (string);
 	  if (pop->prefix && l)			/* try exact match with prefix */
 	    {
@@ -155,7 +155,6 @@ param_proxy_change_value (GtkWidget *action,
 		    break;
 		  }
 	      }
-	  g_free (string);
 	}
       /* we get lots of notifications from focus-out, so try to optimize */
       if (sfi_value_get_proxy (&bparam->value) != item)
@@ -163,6 +162,9 @@ param_proxy_change_value (GtkWidget *action,
 	  sfi_value_set_proxy (&bparam->value, item);
 	  bst_param_apply_value (bparam);
 	}
+      else if (!item && string[0]) /* make sure the entry is correctly updated */
+        bst_param_update (bparam);
+      g_free (string);
     }
 }
 

@@ -30,6 +30,7 @@
 #include <sfi/sfinote.h>
 #include <sfi/sfiparams.h>
 #include <sfi/sfiprimitives.h>
+/* #include <sfi/sfisclock.h> */
 #include <sfi/sfiserial.h>
 #include <sfi/sfithreads.h>
 /* no bin-compat: #include <sfi/sfistore.h> */

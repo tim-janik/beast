@@ -1,3 +1,11 @@
+Sat Jul  5 02:47:44 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-proxy.c (param_proxy_change_value): properly clean
+	proxy field if the current proxy is 0.
+
+	* beast-gtk/bsttrackview.c: support per-track setting of
+	postprocessing synthesis network.
+
 Sat Jul  5 01:03:13 2003  Tim Janik  <timj@gtk.org>
 
 	* shell/modules2grid.scm: ignore non-BseSource children.
