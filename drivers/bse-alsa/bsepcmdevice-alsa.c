@@ -365,6 +365,8 @@ alsa_device_setup (AlsaPcmHandle       *alsa,
 static void
 alsa_device_retrigger (AlsaPcmHandle *alsa)
 {
+  snd_lib_error_set_handler (silent_error_handler);
+
   PCM_DEBUG ("ALSA: retriggering device (r=%s w=%s)...",
              !alsa->read_handle ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (alsa->read_handle)),
              !alsa->write_handle ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (alsa->write_handle)));
@@ -391,6 +393,8 @@ alsa_device_retrigger (AlsaPcmHandle *alsa)
       while (n == -EAGAIN); /* retry on signals */
       g_free (silence);
     }
+
+  snd_lib_error_set_handler (NULL);
 }
 
 static gboolean
@@ -472,7 +476,9 @@ alsa_device_read (BsePcmHandle *handle,
       if (n_frames < 0) /* errors during read, could be underrun (-EPIPE) */
         {
           PCM_DEBUG ("ALSA: read() error: %s", snd_strerror (n_frames));
+          snd_lib_error_set_handler (silent_error_handler);
           snd_pcm_prepare (alsa->read_handle);  /* force retrigger */
+          snd_lib_error_set_handler (NULL);
           memset (buf, 0, n * alsa->frame_size);
           n_frames = n;
         }
@@ -518,7 +524,9 @@ alsa_device_write (BsePcmHandle *handle,
           if (n < 0)    /* errors during read, could be underrun (-EPIPE) */
             {
               PCM_DEBUG ("ALSA: write() error: %s", snd_strerror (n));
+              snd_lib_error_set_handler (silent_error_handler);
               snd_pcm_prepare (alsa->read_handle);  /* force retrigger */
+              snd_lib_error_set_handler (NULL);
               return;
             }
           n = snd_pcm_writei (alsa->write_handle, buf, j);
