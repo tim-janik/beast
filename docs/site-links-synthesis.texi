@@ -97,8 +97,8 @@ Selected @uref{http://www.soundonsound.com,,Sound On Sound} Articles:
 	@uref{http://www.soundonsound.com/sos/oct03/articles/synthsecrets.htm,,Part54}
 	@uref{http://www.soundonsound.com/sos/nov03/articles/synthsecrets.htm,,Part55}
 	@uref{http://www.soundonsound.com/sos/dec03/articles/synthsecrets.htm,,Part56}
-@c @item Synth Secrets 2004:
-	@c @uref{http://www.soundonsound.com/sos/jan04/articles/synthsecrets.htm,,Part57}
+@item Synth Secrets 2004:
+	@uref{http://www.soundonsound.com/sos/jan04/articles/synthsecrets.htm,,Part57}
 	@c @uref{http://www.soundonsound.com/sos/feb04/articles/synthsecrets.htm,,Part58}
 	@c @uref{http://www.soundonsound.com/sos/mar04/articles/synthsecrets.htm,,Part59}
 	@c @uref{http://www.soundonsound.com/sos/apr04/articles/synthsecrets.htm,,Part60}
