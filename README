@@ -1,15 +1,18 @@
 General Information
 ===================
 
-This is the ALPHA version of BEAST/BSE, the bedevilled audio system and
+This is an ALPHA version of BEAST/BSE, the bedevilled audio system and
 the bedevilled sound engine.
 BEAST is in very early development stage, the GUI is still pretty rough
-and the BSE API is far from stable yet.
+in some places and the BSE API has not really stabelized yet.
 The rough goal of this project is to get an audio system that supports
 multiple song and sample formats (besides the newly introduced .bse
-formats) and allowes full fledged editing and manipultation for both.
+format) as well as synthesis networks and allowes full fledged editing
+and manipultation of them.
 Sample manipulation includes generation of new sounds from module
 networks, based on subtractive synthesis.
+More information on the fundamental principles can be found in the
+./docs subdirectory.
 
 To get a basic start, you'll also need the beast-data-*.tar.gz package,
 which comes with a set of default samples, songs, etc...

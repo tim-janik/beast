@@ -1,3 +1,22 @@
+Thu Dec 30 22:27:40 1999  Tim Janik  <timj@gtk.org>
+
+	* configure.in:
+	* beast-gtk/Makefile.am:
+	* PKG_config.h:
+	up to version 0.3.0. install plugins in $libdir/bse/v* with major,
+	minor _and_ micro version encoded.
+	nuked $beastpdatadir.
+	define BST_VERSION.
+	
+	* more release preparation.
+
+Thu Dec 30 19:26:58 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (main): laod and save ~/.beastrc.
+
+	* beast-gtk/bstpreferences.[hc]: provide bst_rc_dump() and
+	bst_rc_parse().
+
 Thu Dec 30 05:33:54 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdefs.h:

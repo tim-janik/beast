@@ -241,3 +241,147 @@ bst_preferences_default_revert (BstPreferences *prefs)
 
   bse_gconfig_default_revert (prefs->gconf);
 }
+
+
+/* --- rc file --- */
+#include <fcntl.h>
+#include <errno.h>
+#include "../PKG_config.h"
+static void
+ifactory_print_func (gpointer  user_data,
+		     gchar    *str)
+{
+  BseStorage *storage = user_data;
+
+  bse_storage_break (storage);
+  // bse_storage_indent (storage);
+  bse_storage_puts (storage, str);
+  if (str[0] == ';')
+    bse_storage_needs_break (storage);
+}
+
+BseErrorType
+bst_rc_dump (const gchar *file_name)
+{
+  BseStorage *storage;
+  BseGConfig *gconf;
+  gint fd;
+
+  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
+  fd = open (file_name,
+	     O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
+	     0666);
+
+  if (fd < 0)
+    return (errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_FILE_IO);
+
+  storage = bse_storage_new ();
+  bse_storage_prepare_write (storage, TRUE);
+
+  /* put blurb
+   */
+  bse_storage_puts (storage, "; rc-file for BEAST v" BST_VERSION);
+
+  bse_storage_break (storage);
+  
+  /* store BseGlobals
+   */
+  bse_storage_break (storage);
+  bse_storage_puts (storage, "; BseGlobals dump");
+  gconf = bse_object_new (BSE_TYPE_GCONFIG, NULL);
+  bse_gconfig_revert (gconf);
+  bse_storage_break (storage);
+  bse_storage_puts (storage, "(preferences");
+  bse_storage_push_level (storage);
+  bse_object_store (BSE_OBJECT (gconf), storage);
+  bse_storage_pop_level (storage);
+  bse_object_unref (BSE_OBJECT (gconf));
+
+  bse_storage_break (storage);
+
+  /* store item factory paths
+   */
+  bse_storage_break (storage);
+  bse_storage_puts (storage, "; GtkItemFactory path dump");
+  bse_storage_break (storage);
+  bse_storage_puts (storage, "(menu-accelerators");
+  bse_storage_push_level (storage);
+  gtk_item_factory_dump_items (NULL, TRUE, ifactory_print_func, storage);
+  bse_storage_pop_level (storage);
+  bse_storage_handle_break (storage);
+  bse_storage_putc (storage, ')');
+  
+  /* flush stuff to rc file
+   */
+  bse_storage_flush_fd (storage, fd);
+  bse_storage_destroy (storage);
+
+  return close (fd) < 0 ? BSE_ERROR_FILE_IO : BSE_ERROR_NONE;
+}
+
+BseErrorType
+bst_rc_parse (const gchar *file_name)
+{
+  BseStorage *storage;
+  GScanner *scanner;
+  GTokenType expected_token = G_TOKEN_NONE;
+  BseErrorType error;
+
+  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
+  storage = bse_storage_new ();
+  error = bse_storage_input_file (storage, file_name);
+  if (error)
+    {
+      bse_storage_destroy (storage);
+      return error;
+    }
+  scanner = storage->scanner;
+
+  while (!bse_storage_input_eof (storage) && expected_token == G_TOKEN_NONE)
+    {
+      g_scanner_get_next_token (scanner);
+
+      if (scanner->token == G_TOKEN_EOF)
+	break;
+      else if (scanner->token == '(' && g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
+	{
+	  g_scanner_get_next_token (scanner);
+	  if (bse_string_equals ("preferences", scanner->value.v_identifier))
+	    {
+	      BseGConfig *gconf = bse_object_new (BSE_TYPE_GCONFIG, NULL);
+
+	      bse_gconfig_revert (gconf);
+	      expected_token = bse_object_restore (BSE_OBJECT (gconf), storage);
+	      if (expected_token == G_TOKEN_NONE)
+		bse_gconfig_apply (gconf);
+	      bse_object_unref (BSE_OBJECT (gconf));
+	    }
+	  else if (bse_string_equals ("menu-accelerators", scanner->value.v_identifier))
+	    {
+	      guint symbol_2_token = scanner->config->symbol_2_token;
+
+	      scanner->config->symbol_2_token = FALSE;
+	      gtk_item_factory_parse_rc_scanner (scanner);
+	      scanner->config->symbol_2_token = symbol_2_token;
+
+	      if (g_scanner_get_next_token (scanner) != ')')
+		expected_token = ')';
+	    }
+	  else
+	    expected_token = G_TOKEN_IDENTIFIER;
+	}
+      else
+	expected_token = G_TOKEN_EOF;
+    }
+
+  if (expected_token != G_TOKEN_NONE)
+    bse_storage_unexp_token (storage, expected_token);
+
+  bse_storage_destroy (storage);
+
+  error = scanner->parse_errors >= scanner->max_parse_errors ? BSE_ERROR_PARSE_ERROR : BSE_ERROR_NONE;
+
+  return error;
+}

@@ -16,4 +16,4 @@ AUTOMAKE_OPTIONS = 1.4
 configure: acbeast.m4
 
 EXTRA_DIST += \
-	TODO
+	acbeast.m4

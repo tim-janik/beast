@@ -24,7 +24,8 @@
 #include	"bstxkb.h"
 #include	"bstkeytables.h"
 #include	"bstmenus.h"
-#include	<PKG_config.h>
+#include	"bstpreferences.h"
+#include	"../PKG_config.h"
 
 
 
@@ -82,6 +83,18 @@ main (int   argc,
   bst_free_radio_button_get_type ();
   bst_parse_args (&argc, &argv);
   
+  /* parse rc file */
+  if (1)
+    {
+      BseErrorType error;
+      gchar *file_name;
+
+      file_name = g_strconcat (g_get_home_dir (), "/.beastrc", NULL);
+      error = bst_rc_parse (file_name);
+      if (error)
+	g_warning ("error parsing rc-file \"%s\": %s", file_name, bse_error_blurb (error));
+      g_free (file_name);
+    }
 
   /* setup default keytable for pattern editor class
    */
@@ -215,7 +228,20 @@ main (int   argc,
   /* perform necessary cleanup cycles */
   while (g_main_iteration (FALSE))
     ;
-  
+
+  /* save rc file */
+  if (1)
+    {
+      BseErrorType error;
+      gchar *file_name;
+
+      file_name = g_strconcat (g_get_home_dir (), "/.beastrc", NULL);
+      error = bst_rc_dump (file_name);
+      if (error)
+	g_warning ("error saving rc-file \"%s\": %s", file_name, bse_error_blurb (error));
+      g_free (file_name);
+    }
+
   /* remove pcm devices */
   bse_heart_unregister_all_devices ();
 

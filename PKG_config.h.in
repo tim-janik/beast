@@ -9,6 +9,7 @@
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
+#undef  BST_VERSION
 #undef  BST_DFL_KEYTABLE
 #undef  BST_WITH_XKB
 #undef  BST_WITH_GDK_PIXBUF

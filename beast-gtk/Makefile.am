@@ -18,9 +18,6 @@ DEFS += $(strip \
 	-DG_LOG_DOMAIN=\"BEAST\" \
 )
 
-# installation directory for BEAST program data
-beast_pdatadir = $(beastpdatadir)
-
 # link programs against BSE and other neccessary libraries
 progs_LDADD = $(top_builddir)/bse/libbse.la $(LDFLAGS) $(BEAST_LIBS)
 beast_LDADD = $(progs_LDADD)
@@ -97,9 +94,6 @@ beast_extra_sources = $(strip \
 	bstkeytable-us.c \
 	bstkeytable-de.c \
 )
-# BEAST program data files
-beast_pdata_DATA = $(strip \
-)
 # BEAST built sources that don't get installed
 beast_built_sources = $(strip \
 	bstconfigpaths.h \
@@ -111,7 +105,7 @@ beast_built_sources = $(strip \
 beast_SOURCES = $(beast_sources)
 EXTRA_DIST += $(beast_headers) $(beast_extra_sources)
 MAINTAINERCLEANFILES += $(beast_built_sources)
-EXTRA_DIST += $(beast_pdata_DATA) $(beast_built_sources)
+EXTRA_DIST += $(beast_built_sources)
 
 #
 # rules to generate built sources
@@ -125,7 +119,6 @@ bstconfigpaths.h: $(top_srcdir)/configure Makefile
 	&& echo "/* Generated data from $< (by make $@) */" > $(gen_source) \
 	&& echo >> $(gen_source) \
 	&& echo "#define BST_DATA_DIR \"${beastdatadir}\"" >> $(gen_source) \
-	&& echo "#define BST_PDATA_DIR \"${beastpdatadir}\"" >> $(gen_source) \
 	&& echo >> $(gen_source) \
 	&& echo "/* Generated data ends here */" >> $(gen_source) \
 	&& mv $(gen_source) $@

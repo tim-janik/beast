@@ -17,7 +17,7 @@
  */
 #include	"bstxkb.h"
 
-#include	<PKG_config.h>
+#include	"../PKG_config.h"
 #include	<string.h>
 
 #ifdef	BST_WITH_XKB

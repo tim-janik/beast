@@ -67,6 +67,11 @@ void		 bst_preferences_default_revert	(BstPreferences *prefs);
 #define	bst_preferences_update	bst_preferences_revert
 
 
+/* --- rc file --- */
+BseErrorType	 bst_rc_dump			(const gchar	*file_name);
+BseErrorType	 bst_rc_parse			(const gchar	*file_name);
+
+
 
 #ifdef __cplusplus
 #pragma {
