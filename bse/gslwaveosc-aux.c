@@ -80,7 +80,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	    UPDATE_FREQ:
 	      new_freq = BSE_SIGNAL_TO_FREQ (freq_level);
 	      if (EXPONENTIAL_FM)
-		new_freq *= bse_signal_exp2 (wosc->config.fm_strength * mod_level);
+		new_freq *= bse_approx5_exp2 (wosc->config.fm_strength * mod_level);
 	      else /* LINEAR_FM */
 		new_freq *= 1.0 + wosc->config.fm_strength * mod_level;
 	      wave_osc_transform_filter (wosc, new_freq);
@@ -93,7 +93,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	    {
 	      gfloat new_freq = wosc->config.cfreq;
 	      if (EXPONENTIAL_FM)
-		new_freq *= bse_signal_exp2 (wosc->config.fm_strength * mod_level);
+		new_freq *= bse_approx5_exp2 (wosc->config.fm_strength * mod_level);
 	      else /* LINEAR_FM */
 		new_freq *= 1.0 + wosc->config.fm_strength * mod_level;
 	      last_mod_level = mod_level;

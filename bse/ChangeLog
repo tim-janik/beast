@@ -1,3 +1,13 @@
+Mon Dec 20 19:51:07 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemathsignal.h: removed bse_approx_exp2() and bse_signal_exp2().
+	added bse_approx2_exp2() .. bse_approx9_exp2() functions to approximate
+	2^x with varying precision and speed.
+	added bse_approx2_tanh() .. bse_approx9_tanh() functions to approximate
+	tanh(x) with varying precision and speed.
+	added bse_saturate_hard() and bse_saturate_branching() to implement
+	fast CLAMP()-ing.
+
 Sun Dec 19 13:44:43 2004  Tim Janik  <timj@gtk.org>
 
 	* bseparam.[hc]: added minimum and maximum parameters to 

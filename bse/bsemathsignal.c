@@ -42,11 +42,11 @@ bse_frequency_modulator (const BseFrequencyModulator *fm,
 	{
 	  if (with_fine_tune)
 	    do {
-	      *fm_buffer++ = *ifreq++ * bse_approx_exp2 (fm_strength * *ifmod++) * fine_tune;
+	      *fm_buffer++ = *ifreq++ * bse_approx5_exp2 (fm_strength * *ifmod++) * fine_tune;
 	    } while (fm_buffer < bound);
 	  else
 	    do {
-	      *fm_buffer++ = *ifreq++ * bse_approx_exp2 (fm_strength * *ifmod++);
+	      *fm_buffer++ = *ifreq++ * bse_approx5_exp2 (fm_strength * *ifmod++);
 	    } while (fm_buffer < bound);
 	}
       else
@@ -67,7 +67,7 @@ bse_frequency_modulator (const BseFrequencyModulator *fm,
 
       if (fm->exponential_fm)
 	do {
-	  *fm_buffer++ = signal_freq * bse_approx_exp2 (fm_strength * *ifmod++);
+	  *fm_buffer++ = signal_freq * bse_approx5_exp2 (fm_strength * *ifmod++);
 	} while (fm_buffer < bound);
       else
 	do {
@@ -238,14 +238,14 @@ main (int   argc,
     for (x = -3; x < 3.01; x += 0.1)
       {
 	g_print ("%+f %+1.20f \t (%.20f - %.20f)\n",
-		 x, exp (x * BSE_LN2) - bse_signal_exp2 (x),
-		 exp (x * BSE_LN2), bse_signal_exp2 (x));
+		 x, exp (x * BSE_LN2) - bse_approx5_exp2 (x),
+		 exp (x * BSE_LN2), bse_approx5_exp2 (x));
       }
 
   if (0)	/* bench test */
     for (x = -l; x < l; x += 0.000001)
       {
-	dummy += bse_signal_exp2 (x);
+	dummy += bse_approx5_exp2 (x);
 	// dummy += exp2f (x);
       }
 

@@ -84,22 +84,13 @@ main (int   argc,
  restart:
   a = b = 0;
   
-  if (strcmp (arg, "approx-exp2-run") == 0)
+  if (strcmp (arg, "approx5-exp2-run") == 0)
     {
       gfloat f;
       gdouble r = 0;
       for (i = 0; i < 10; i++)
 	for (f = -1; f <= 1.0; f += 1.0 / 10000000.0)
-	  r += bse_approx_exp2 (f);
-      return (r > 0) & 8;
-    }
-  else if (strcmp (arg, "old-exp2-run") == 0)
-    {
-      gfloat f;
-      gdouble r = 0;
-      for (i = 0; i < 10; i++)
-	for (f = -1; f <= 1.0; f += 1.0 / 10000000.0)
-	  r += _bse_signal_exp2_fraction (f); // bse_signal_exp2 (f);
+	  r += bse_approx5_exp2 (f);
       return (r > 0) & 8;
     }
   else if (strcmp (arg, "libc-exp-run") == 0)

@@ -186,7 +186,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 #elif (WITH_EMOD)		/* exponential fm */
       {
 	gfloat mod_level = *mod_in++;
-	cur_pos += pos_inc * bse_signal_exp2 (osc->config.fm_strength * mod_level);
+	cur_pos += pos_inc * bse_approx5_exp2 (osc->config.fm_strength * mod_level);
       }
 #else				/* no modulation */
       cur_pos += pos_inc;

@@ -89,24 +89,16 @@ void	bse_frequency_modulator	(const BseFrequencyModulator	*fm,
 				 gfloat				*fm_buffer);
 
 
+/* --- windows --- */
+double	bse_window_bartlett	(double x);	/* narrowest */
+double	bse_window_blackman	(double x);
+double	bse_window_cos		(double x);
+double	bse_window_hamming	(double x);
+double	bse_window_sinc		(double x);
+double	bse_window_rect		(double x);	/* widest */
+
+
 /* --- function approximations --- */
-
-/**
- * bse_signal_exp2
- * Deprecated in favour of bse_approx_exp2().
- */
-static inline float	bse_signal_exp2 (float x)  G_GNUC_CONST;
-
-/**
- * bse_approx_exp2
- * @ex:      exponent within [-127..127]
- * @RETURNS: y approximating 2^x
- * Fast approximation of 2 raised to the power of x.
- * Multiplicative error stays below 8e-6 and aproaches zero
- * for integer values of x (i.e. x - floor (x) -> 0).
- */
-static inline double	bse_approx_exp2	(float ex)	G_GNUC_CONST;
-
 
 /**
  * bse_approx_atan1
@@ -175,15 +167,219 @@ static inline double	bse_approx_qcircle3	  (register double x)  G_GNUC_CONST;
  */
 static inline double	bse_approx_qcircle4	  (register double x)  G_GNUC_CONST;
 
+/**
+ * bse_approx2_exp2
+ * @ex:      exponent within [-127..+127]
+ * @RETURNS: y approximating 2^ex
+ * Fast approximation of 2 raised to the power of ex.
+ * Within -1..+1, the error stays below 0.01275 which corresponds to a sample
+ * precision of 6.2 bit, the average error amounts to 0.001914.
+ * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * approaches zero. On a 2GHz machine, execution takes roughly 12.81 ns.
+ */
+static inline double    bse_approx2_exp2        (float ex)      G_GNUC_CONST;
 
-/* --- windows --- */
-double	bse_window_bartlett	(double x);	/* narrowest */
-double	bse_window_blackman	(double x);
-double	bse_window_cos		(double x);
-double	bse_window_hamming	(double x);
-double	bse_window_sinc		(double x);
-double	bse_window_rect		(double x);	/* widest */
+/**
+ * bse_approx3_exp2
+ * @ex:      exponent within [-127..+127]
+ * @RETURNS: y approximating 2^ex
+ * Fast approximation of 2 raised to the power of ex.
+ * Within -1..+1, the error stays below 0.001123415 which corresponds to a sample
+ * precision of 9.7 bit, the average error amounts to 0.000133.
+ * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * approaches zero. On a 2GHz machine, execution takes roughly 13.74 ns.
+ */
+static inline double    bse_approx3_exp2        (float ex)      G_GNUC_CONST;
 
+/**
+ * bse_approx4_exp2
+ * @ex:      exponent within [-127..+127]
+ * @RETURNS: y approximating 2^ex
+ * Fast approximation of 2 raised to the power of ex.
+ * Within -1..+1, the error stays below 7.876055e-05 which corresponds to a sample
+ * precision of 13.6 bit, the average error amounts to 7.7012792e-06.
+ * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * approaches zero. On a 2GHz machine, execution takes roughly 16.46 ns.
+ */
+static inline double    bse_approx4_exp2        (float ex)      G_GNUC_CONST;
+
+/**
+ * bse_approx5_exp2
+ * @ex:      exponent within [-127..+127]
+ * @RETURNS: y approximating 2^ex
+ * Fast approximation of 2 raised to the power of ex.
+ * Within -1..+1, the error stays below 4.60807023e-06 which corresponds to a sample
+ * precision of 17.7 bit, the average error amounts to 3.842199e-07.
+ * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * approaches zero. On a 2GHz machine, execution takes roughly 18.51 ns.
+ */
+static inline double    bse_approx5_exp2        (float ex)      G_GNUC_CONST;
+
+/**
+ * bse_approx6_exp2
+ * @ex:      exponent within [-127..+127]
+ * @RETURNS: y approximating 2^ex
+ * Fast approximation of 2 raised to the power of ex.
+ * Within -1..+1, the error stays below 2.5505813e-07 which corresponds to a sample
+ * precision of 21.9 bit, the average error amounts to 2.1028377e-08.
+ * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * approaches zero. On a 2GHz machine, execution takes roughly 21.84 ns.
+ */
+static inline double    bse_approx6_exp2        (float ex)      G_GNUC_CONST;
+
+/**
+ * bse_approx7_exp2
+ * @ex:      exponent within [-127..+127]
+ * @RETURNS: y approximating 2^ex
+ * Fast approximation of 2 raised to the power of ex.
+ * Within -1..+1, the error stays below 4.1074325e-08 which corresponds to a sample
+ * precision of 24.5 bit, the average error amounts to 7.7448985e-09.
+ * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * approaches zero. On a 2GHz machine, execution takes roughly 23.79 ns.
+ */
+static inline double    bse_approx7_exp2        (float ex)      G_GNUC_CONST;
+
+/**
+ * bse_approx8_exp2
+ * @ex:      exponent within [-127..+127]
+ * @RETURNS: y approximating 2^ex
+ * Fast approximation of 2 raised to the power of ex.
+ * Within -1..+1, the error stays below 4.1074325e-08 which corresponds to a sample
+ * precision of 24.5 bit, the average error amounts to 7.6776048e-09.
+ * Note that there is no significant precision increment over bse_approx7_exp2().
+ * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * approaches zero. On a 2GHz machine, execution takes roughly 26.59 ns.
+ */
+static inline double    bse_approx8_exp2        (float ex)      G_GNUC_CONST;
+
+/**
+ * bse_approx9_exp2
+ * @ex:      exponent within [-127..+127]
+ * @RETURNS: y approximating 2^ex
+ * Fast approximation of 2 raised to the power of ex.
+ * Within -1..+1, the error stays below 4.1074325e-08 which corresponds to a sample
+ * precision of 24.5 bit, the average error amounts to 7.677515903e-09.
+ * Note that there is no significant precision increment over bse_approx7_exp2().
+ * For integer values of @ex (i.e. @ex - floor (@ex) -> 0), the error
+ * approaches zero. On a 2GHz machine, execution takes roughly 29.40 ns.
+ */
+static inline double    bse_approx9_exp2        (float ex)      G_GNUC_CONST;
+
+/**
+ * bse_approx2_tanh
+ * @x:       exponent within [-127..+127]
+ * @RETURNS: y approximating tanh(x)
+ * Fast approximation of the hyperbolic tangent of x.
+ * Within -1..+1, the error stays below 0.00436 which corresponds to a sample
+ * precision of 7.8 bit, the average error amounts to 0.00069220.
+ * On a 2GHz machine, execution takes roughly 24.48 ns.
+ */
+static inline double    bse_approx2_tanh        (float x)       G_GNUC_CONST;
+
+/**
+ * bse_approx3_tanh
+ * @x:       exponent within [-127..+127]
+ * @RETURNS: y approximating tanh(x)
+ * Fast approximation of the hyperbolic tangent of x.
+ * Within -1..+1, the error stays below 0.0003857 which corresponds to a sample
+ * precision of 7.8 bit, the average error amounts to 0.00004827.
+ * On a 2GHz machine, execution takes roughly 25.78 ns.
+ */
+static inline double    bse_approx3_tanh        (float x)       G_GNUC_CONST;
+
+/**
+ * bse_approx4_tanh
+ * @x:       exponent within [-127..+127]
+ * @RETURNS: y approximating tanh(x)
+ * Fast approximation of the hyperbolic tangent of x.
+ * Within -1..+1, the error stays below 2.7017507e-05 which corresponds to a sample
+ * precision of 15.1 bit, the average error amounts to 2.799594e-06.
+ * On a 2GHz machine, execution takes roughly 28.41 ns.
+ */
+static inline double    bse_approx4_tanh        (float x)       G_GNUC_CONST;
+
+/**
+ * bse_approx5_tanh
+ * @x:       exponent within [-127..+127]
+ * @RETURNS: y approximating tanh(x)
+ * Fast approximation of the hyperbolic tangent of x.
+ * Within -1..+1, the error stays below 1.582042006e-06 which corresponds to a sample
+ * precision of 19.2 bit, the average error amounts to 1.42780810e-07.
+ * On a 2GHz machine, execution takes roughly 30.35 ns.
+ */
+static inline double    bse_approx5_tanh        (float x)       G_GNUC_CONST;
+
+/**
+ * bse_approx6_tanh
+ * @x:       exponent within [-127..+127]
+ * @RETURNS: y approximating tanh(x)
+ * Fast approximation of the hyperbolic tangent of x.
+ * Within -1..+1, the error stays below 9.7878796e-08 which corresponds to a sample
+ * precision of 23.2 bit, the average error amounts to 1.3016999e-08.
+ * On a 2GHz machine, execution takes roughly 34.29 ns.
+ */
+static inline double    bse_approx6_tanh        (float x)       G_GNUC_CONST;
+
+/**
+ * bse_approx7_tanh
+ * @x:       exponent within [-127..+127]
+ * @RETURNS: y approximating tanh(x)
+ * Fast approximation of the hyperbolic tangent of x.
+ * Within -1..+1, the error stays below 4.4375671e-08 which corresponds to a sample
+ * precision of 24.4 bit, the average error amounts to 9.5028421e-09.
+ * On a 2GHz machine, execution takes roughly 36.86 ns.
+ */
+static inline double    bse_approx7_tanh        (float x)       G_GNUC_CONST;
+
+/**
+ * bse_approx8_tanh
+ * @x:       exponent within [-127..+127]
+ * @RETURNS: y approximating tanh(x)
+ * Fast approximation of the hyperbolic tangent of x.
+ * Within -1..+1, the error stays below 4.4375671e-08 which corresponds to a sample
+ * precision of 24.4 bit, the average error amounts to 9.49155722e-09.
+ * Note that there is no significant precision increment over bse_approx7_tanh().
+ * On a 2GHz machine, execution takes roughly 42.03 ns.
+ */
+static inline double    bse_approx8_tanh        (float x)       G_GNUC_CONST;
+
+/**
+ * bse_approx9_tanh
+ * @x:       exponent within [-127..+127]
+ * @RETURNS: y approximating tanh(x)
+ * Fast approximation of the hyperbolic tangent of x.
+ * Within -1..+1, the error stays below 4.4375671e-08 which corresponds to a sample
+ * precision of 24.4 bit, the average error amounts to 9.49141881e-09.
+ * Note that there is no significant precision increment over bse_approx7_tanh().
+ * On a 2GHz machine, execution takes roughly 43.83 ns.
+ */
+static inline double    bse_approx9_tanh        (float x)       G_GNUC_CONST;
+
+/**
+ * bse_saturate_hard
+ * @value:   value to saturate
+ * @limit:   limit not to be exceeded by value
+ * @RETURNS: @value bounded by -@limit and @limit
+ * Clamp @value within -@limit and +@limit. Limiting is performed
+ * by floating point operations only, thus executing faster than
+ * condition based branching code on most modern architectures.
+ * On a 2GHz machine, execution takes roughly 6.86 ns.
+ */
+static inline double    bse_saturate_hard       (double value,
+                                                 double limit)  G_GNUC_CONST;
+
+/**
+ * bse_saturate_branching
+ * @value:   value to saturate
+ * @limit:   limit not to be exceeded by value
+ * @RETURNS: @value bounded by -@limit and @limit
+ * Clamp @value within -@limit and +@limit. Limiting is performed
+ * by executing conditions and branches, so it will probably run
+ * slower than bse_saturate_hard() on many machines.
+ * On a 2GHz machine, execution takes roughly 8.29 ns.
+ */
+static inline double    bse_saturate_branching (double value,
+                                                double limit)   G_GNUC_CONST;
 
 /* --- cents (1/100th of a semitone) --- */
 #define	bse_cent_factor(index /* -100..100 */)	(bse_cent_table[index])
@@ -257,87 +453,227 @@ bse_approx_qcircle4 (register double x)
 }
 
 static inline double G_GNUC_CONST
-bse_approx_exp2 (float ex)
+bse_approx2_exp2 (float ex)
 {
   register BseFloatIEEE754 fp = { 0, };
-  register double numer, denom, x;
-  gint i;
-
-  i = bse_ftoi (ex);
+  register int i = bse_ftoi (ex);
   fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
-  x = ex - i;
-  numer = x * 1.022782938747283388104723674300322141276;
-  denom = x - 8.72117024533378044415954808601135282456;
-  numer += 8.786902350800703562041965087953613538091;
-  denom *= x;
-  numer *= x;
-  denom += 25.25880955504064143887016455761526606757;
-  numer += 25.2588095552441757401874424757283407864;
-
-  return numer / denom * fp.v_float;
+  register double x = ex - i;
+  return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
+                                  x * (0.24022650695910071233355126316333)));
 }
 
-static inline float  G_GNUC_CONST
-_bse_signal_exp2_fraction (float x)	/* 2^x, -0.5 <= x <= 0.5 */
+static inline double G_GNUC_CONST
+bse_approx3_exp2 (float ex)
 {
-  static const float exp2taylorC0 = 1.0000000000000000000000000000000000000000;
-  static const float exp2taylorC1 = 0.6931471805599452862267639829951804131269;
-  static const float exp2taylorC2 = 0.2402265069591006940719069007172947749496;
-  static const float exp2taylorC3 = 0.0555041086648215761800706502526736585423;
-  static const float exp2taylorC4 = 0.0096181291076284768787330037298488605302;
-  static const float exp2taylorC5 = 0.0013333558146428443284131626356270317046;
-#if 0
-  static const float exp2taylorC6 = 0.0001540353039338160877607525334198612654;
-  static const float exp2taylorC7 = 0.0000152527338040598393887042200089965149;
-  static const float exp2taylorC8 = 0.0000013215486790144307390984122416166535;
-  static const float exp2taylorC9 = 0.0000001017808600923969859895309888857262;
-#endif
-  float r = 0.0;
-  
-  /* order 5 taylor series aproximation */
-  r += exp2taylorC5;
-  r *= x;
-  r += exp2taylorC4;
-  r *= x;
-  r += exp2taylorC3;
-  r *= x;
-  r += exp2taylorC2;
-  r *= x;
-  r += exp2taylorC1;
-  r *= x;
-  r += exp2taylorC0;
-  
-  return r;
+  register BseFloatIEEE754 fp = { 0, };
+  register int i = bse_ftoi (ex);
+  fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
+  register double x = ex - i;
+  return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
+                                  x * (0.24022650695910071233355126316333 +
+                                       x * (0.055504108664821579953142263768622))));
 }
-static inline float  G_GNUC_CONST
-bse_signal_exp2 (float x)		/* 2^x, -3.5 <= x <= 3.5, prec>16bit */
+
+static inline double G_GNUC_CONST
+bse_approx4_exp2 (float ex)
 {
-  if (G_UNLIKELY (x < -0.5))
-    {
-      if (G_UNLIKELY (x < -1.5))
-	{
-	  if (x < -2.5)
-	    return 0.125 * _bse_signal_exp2_fraction (x + 3);
-	  else /* -2.5 <= x < -1.5 */
-	    return 0.25 * _bse_signal_exp2_fraction (x + 2);
-	}
-      else /* -1.5 <= x < -0.5 */
-	return 0.5 * _bse_signal_exp2_fraction (x + 1);
-    }
-  else if (G_UNLIKELY (x > 0.5))
-    {
-      if (G_UNLIKELY (x > 1.5))
-	{
-	  if (x > 2.5)
-	    return 8 * _bse_signal_exp2_fraction (x - 3);
-	  else /* 1.5 < x <= 2.5 */
-	    return 4 * _bse_signal_exp2_fraction (x - 2);
-	}
-      else /* 0.5 < x <= 1.5 */
-	return 2 * _bse_signal_exp2_fraction (x - 1);
-    }
-  else
-    return _bse_signal_exp2_fraction (x);
+  register BseFloatIEEE754 fp = { 0, };
+  register int i = bse_ftoi (ex);
+  fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
+  register double x = ex - i;
+  return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
+                                  x * (0.24022650695910071233355126316333 +
+                                       x * (0.055504108664821579953142263768622 +
+                                            x * (0.0096181291076284771619790715736589)))));
+}
+
+static inline double G_GNUC_CONST
+bse_approx5_exp2 (float ex)
+{
+  register BseFloatIEEE754 fp = { 0, };
+  register int i = bse_ftoi (ex);
+  fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
+  register double x = ex - i;
+  return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
+                                  x * (0.24022650695910071233355126316333 +
+                                       x * (0.055504108664821579953142263768622 +
+                                            x * (0.0096181291076284771619790715736589 +
+                                                 x * (0.0013333558146428443423412221987996))))));
+}
+
+static inline double G_GNUC_CONST
+bse_approx6_exp2 (float ex)
+{
+  register BseFloatIEEE754 fp = { 0, };
+  register int i = bse_ftoi (ex);
+  fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
+  register double x = ex - i;
+  return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
+                                  x * (0.24022650695910071233355126316333 +
+                                       x * (0.055504108664821579953142263768622 +
+                                            x * (0.0096181291076284771619790715736589 +
+                                                 x * (0.0013333558146428443423412221987996 +
+                                                      x * (0.00015403530393381609954437097332742)))))));
+}
+
+static inline double G_GNUC_CONST
+bse_approx7_exp2 (float ex)
+{
+  register BseFloatIEEE754 fp = { 0, };
+  register int i = bse_ftoi (ex);
+  fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
+  register double x = ex - i;
+  return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
+                                  x * (0.24022650695910071233355126316333 +
+                                       x * (0.055504108664821579953142263768622 +
+                                            x * (0.0096181291076284771619790715736589 +
+                                                 x * (0.0013333558146428443423412221987996 +
+                                                      x * (0.00015403530393381609954437097332742 +
+                                                           x * (0.00001525273380405984028002543901201))))))));
+}
+
+static inline double G_GNUC_CONST
+bse_approx8_exp2 (float ex)
+{
+  register BseFloatIEEE754 fp = { 0, };
+  register int i = bse_ftoi (ex);
+  fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
+  register double x = ex - i;
+  return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
+                                  x * (0.24022650695910071233355126316333 +
+                                       x * (0.055504108664821579953142263768622 +
+                                            x * (0.0096181291076284771619790715736589 +
+                                                 x * (0.0013333558146428443423412221987996 +
+                                                      x * (0.00015403530393381609954437097332742 +
+                                                           x * (0.00001525273380405984028002543901201 +
+                                                                x * (0.0000013215486790144309488403758228288)))))))));
+}
+
+static inline double G_GNUC_CONST
+bse_approx9_exp2 (float ex)
+{
+  register BseFloatIEEE754 fp = { 0, };
+  register int i = bse_ftoi (ex);
+  fp.mpn.biased_exponent = BSE_FLOAT_BIAS + i;
+  register double x = ex - i;
+  return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
+                                  x * (0.24022650695910071233355126316333 +
+                                       x * (0.055504108664821579953142263768622 +
+                                            x * (0.0096181291076284771619790715736589 +
+                                                 x * (0.0013333558146428443423412221987996 +
+                                                      x * (0.00015403530393381609954437097332742 +
+                                                           x * (0.00001525273380405984028002543901201 +
+                                                                x * (0.0000013215486790144309488403758228288 +
+                                                                     x * 0.00000010178086009239699727490007597745)))))))));
+}
+
+static inline double G_GNUC_CONST
+bse_approx2_tanh (float x)
+{
+  if (G_UNLIKELY (x < -20))
+    return -1;
+  if (G_UNLIKELY (x > 20))
+    return 1;
+  register double bpot = bse_approx2_exp2 (x * BSE_2_DIV_LN2);
+  return (bpot - 1) / (bpot + 1);
+}
+
+static inline double G_GNUC_CONST
+bse_approx3_tanh (float x)
+{
+  if (G_UNLIKELY (x < -20))
+    return -1;
+  if (G_UNLIKELY (x > 20))
+    return 1;
+  register double bpot = bse_approx3_exp2 (x * BSE_2_DIV_LN2);
+  return (bpot - 1) / (bpot + 1);
+}
+
+static inline double G_GNUC_CONST
+bse_approx4_tanh (float x)
+{
+  if (G_UNLIKELY (x < -20))
+    return -1;
+  if (G_UNLIKELY (x > 20))
+    return 1;
+  register double bpot = bse_approx4_exp2 (x * BSE_2_DIV_LN2);
+  return (bpot - 1) / (bpot + 1);
+}
+
+static inline double G_GNUC_CONST
+bse_approx5_tanh (float x)
+{
+  if (G_UNLIKELY (x < -20))
+    return -1;
+  if (G_UNLIKELY (x > 20))
+    return 1;
+  register double bpot = bse_approx5_exp2 (x * BSE_2_DIV_LN2);
+  return (bpot - 1) / (bpot + 1);
+}
+
+static inline double G_GNUC_CONST
+bse_approx6_tanh (float x)
+{
+  if (G_UNLIKELY (x < -20))
+    return -1;
+  if (G_UNLIKELY (x > 20))
+    return 1;
+  register double bpot = bse_approx6_exp2 (x * BSE_2_DIV_LN2);
+  return (bpot - 1) / (bpot + 1);
+}
+
+static inline double G_GNUC_CONST
+bse_approx7_tanh (float x)
+{
+  if (G_UNLIKELY (x < -20))
+    return -1;
+  if (G_UNLIKELY (x > 20))
+    return 1;
+  register double bpot = bse_approx7_exp2 (x * BSE_2_DIV_LN2);
+  return (bpot - 1) / (bpot + 1);
+}
+
+static inline double G_GNUC_CONST
+bse_approx8_tanh (float x)
+{
+  if (G_UNLIKELY (x < -20))
+    return -1;
+  if (G_UNLIKELY (x > 20))
+    return 1;
+  register double bpot = bse_approx8_exp2 (x * BSE_2_DIV_LN2);
+  return (bpot - 1) / (bpot + 1);
+}
+
+static inline double G_GNUC_CONST
+bse_approx9_tanh (float x)
+{
+  if (G_UNLIKELY (x < -20))
+    return -1;
+  if (G_UNLIKELY (x > 20))
+    return 1;
+  register double bpot = bse_approx9_exp2 (x * BSE_2_DIV_LN2);
+  return (bpot - 1) / (bpot + 1);
+}
+
+static inline double G_GNUC_CONST
+bse_saturate_hard (double value,
+                   double limit)
+{
+  register double v1 = fabsf (value + limit);
+  register double v2 = fabsf (value - limit);
+  return 0.5 * (v1 - v2); /* CLAMP() without branching */
+}
+
+static inline double G_GNUC_CONST
+bse_saturate_branching (double value,
+                        double limit)
+{
+  if (G_UNLIKELY (value >= limit))
+    return limit;
+  if (G_UNLIKELY (value <= limit))
+    return -limit;
+  return value;
 }
 
 void    _bse_init_signal (void);

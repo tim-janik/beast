@@ -1124,7 +1124,7 @@ gsl_biquad_config_approx_gain (GslBiquadConfig *c,
 			       gfloat           gain)
 {
   c->gain = gain;
-  c->v = bse_approx_exp2 (c->gain * BSE_LOG2POW20_10);
+  c->v = bse_approx5_exp2 (c->gain * BSE_LOG2POW20_10);
   c->dirty = TRUE;
   c->approx_values = TRUE;
 }
