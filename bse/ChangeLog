@@ -1,3 +1,9 @@
+Wed Dec 29 11:37:55 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslloader-pat.cc: Use the new xinfo API.
+
+	* bseieee754.h: Fix compiler warnings in bse_ftoi/bse_dtoi on AMD64.
+
 Wed Dec 29 04:06:07 2004  Tim Janik  <timj@gtk.org>
 
 	* gsldatacache.[hc]: tweaked caching algorithm, so 25% cache memory of

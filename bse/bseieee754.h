@@ -242,12 +242,12 @@ bse_dtoi (register double f)
 static inline int G_GNUC_CONST
 bse_ftoi (register float v)
 {
-  return v < -0.0 ? v - 0.5 : v + 0.5;
+  return (int) (v < -0.0 ? v - 0.5 : v + 0.5);
 }
 static inline int G_GNUC_CONST
 bse_dtoi (register double v)
 {
-  return v < -0.0 ? v - 0.5 : v + 0.5;
+  return (int) (v < -0.0 ? v - 0.5 : v + 0.5);
 }
 #endif
 static inline guint64

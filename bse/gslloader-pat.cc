@@ -364,15 +364,15 @@ struct FileInfo
 	printf ("scale_factor = %d\n", patches[i]->freqScaleFactor);
 
 	int frame_size = bytes_per_frame (patches[i]->waveFormat);
-	wdsc.chunks[i].loop_type = loop_type (patches[i]->waveFormat);
-	wdsc.chunks[i].loop_start = patches[i]->loopStart / frame_size;
-	wdsc.chunks[i].loop_end = patches[i]->loopEnd / frame_size;
-	wdsc.chunks[i].loop_count = loop_type (patches[i]->waveFormat) ? 1000000 : 0; /* FIXME */
-	printf ("loop settings: from %ld to %ld (total %d) type %d\n",
-	                      wdsc.chunks[i].loop_start,
-			      wdsc.chunks[i].loop_end,
-			      patches[i]->wavesize / frame_size,
-			      wdsc.chunks[i].loop_type);
+        if (loop_type (patches[i]->waveFormat))
+          {
+            char**& xinfos = wdsc.chunks[i].xinfos;
+
+            xinfos = bse_xinfos_add_value (xinfos, "loop-type", gsl_wave_loop_type_to_string (loop_type (patches[i]->waveFormat)));
+            xinfos = bse_xinfos_add_num (xinfos, "loop-count", 1000000);
+            xinfos = bse_xinfos_add_num (xinfos, "loop-start", patches[i]->loopStart / frame_size);
+            xinfos = bse_xinfos_add_num (xinfos, "loop-end", patches[i]->loopEnd / frame_size);
+          }
       }
   }
 
@@ -446,7 +446,8 @@ pat_create_chunk_handle (gpointer      data,
   g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
 
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
-  PatPatch *patch = file_info->patches[nth_chunk];
+  const PatPatch *patch = file_info->patches[nth_chunk];
+  const GslWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
 
   printf ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %ld %d\n",
           nth_chunk,
@@ -454,20 +455,21 @@ pat_create_chunk_handle (gpointer      data,
 	  wave_dsc->n_channels,
 	  file_info->wave_format (patch->waveFormat),
 	  G_LITTLE_ENDIAN,
-	  wave_dsc->chunks[nth_chunk].mix_freq,
-	  wave_dsc->chunks[nth_chunk].osc_freq,
+	  chunk->mix_freq,
+	  chunk->osc_freq,
 	  file_info->data_offsets[nth_chunk],
 	  patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
 
   GslDataHandle *dhandle;
   dhandle = gsl_wave_handle_new (file_info->wfi.file_name,
 	                         wave_dsc->n_channels,
-				 file_info->wave_format (file_info->patches[nth_chunk]->waveFormat),
+				 file_info->wave_format (patch->waveFormat),
 				 G_LITTLE_ENDIAN,
-				 wave_dsc->chunks[nth_chunk].mix_freq,
-				 wave_dsc->chunks[nth_chunk].osc_freq,
+				 chunk->mix_freq,
+				 chunk->osc_freq,
 				 file_info->data_offsets[nth_chunk],
-				 patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
+				 patch->wavesize / file_info->bytes_per_frame (patch->waveFormat),
+                                 chunk->xinfos);
   return dhandle;
 }
 
