@@ -94,7 +94,8 @@ static const GxkStockAction rebuild_actions[] = {
   { N_("Rebuild"),              NULL,           NULL,   BST_ACTION_REBUILD, },
 };
 static const GxkStockAction about_actions[] = {
-  { N_("_About..."),            NULL,           NULL,   ACTION_HELP_ABOUT,          BST_STOCK_ABOUT },
+  { N_("_About..."),            NULL,           N_("Display developer and contributor credits"),
+    ACTION_HELP_ABOUT,          BST_STOCK_ABOUT },
 };
 static const GxkStockAction undo_actions[] = {
   { N_("_Undo"),                "<ctrl>Z",      N_("Undo the effect of the last action"),
@@ -145,7 +146,7 @@ static const GxkStockAction library_files_actions[] = {
 static const GxkStockAction simple_help_actions[] = {
   { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),
     ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
-  { N_("Quick Start..."),       NULL,           N_("Provides an introduction into the most common tasks"),
+  { N_("Quick Start..."),       NULL,           N_("Provides an introduction about how to accomplish the most common tasks"),
     ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
   { N_("_FAQ..."),              NULL,           N_("Frequently asked questions"),
     ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
