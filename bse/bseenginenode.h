@@ -35,12 +35,15 @@ extern "C" {
 #define ENGINE_NODE_N_JSTREAMS(node)	((node)->module.klass->n_jstreams)
 #define	ENGINE_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
 					 (node)->output_nodes == NULL)
+#define	ENGINE_NODE_IS_SUSPENDED(node)	((node)->local_suspend || (node)->outputs_suspended)
+#define	ENGINE_NODE_IS_VIRTUAL(node)	((node)->virtual_node)
 #define	ENGINE_NODE_IS_DEFERRED(node)	(FALSE)
 #define	ENGINE_NODE_IS_SCHEDULED(node)	(ENGINE_NODE (node)->sched_tag)
 #define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module.klass->mflags & GSL_COST_CHEAP) != 0)
 #define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & GSL_COST_EXPENSIVE) != 0)
 #define	ENGINE_NODE_LOCK(node)		gsl_rec_mutex_lock (&(node)->rec_mutex)
 #define	ENGINE_NODE_UNLOCK(node)	gsl_rec_mutex_unlock (&(node)->rec_mutex)
+#define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
 
 
 /* --- debugging and messages --- */
@@ -63,6 +66,7 @@ typedef enum {
   ENGINE_JOB_SET_CONSUMER,
   ENGINE_JOB_UNSET_CONSUMER,
   ENGINE_JOB_ACCESS,
+  ENGINE_JOB_SUSPEND,
   ENGINE_JOB_ADD_POLL,
   ENGINE_JOB_REMOVE_POLL,
   ENGINE_JOB_FLOW_JOB,
@@ -110,7 +114,6 @@ struct _GslTrans
 };
 typedef enum {
   ENGINE_FLOW_JOB_NOP,
-  ENGINE_FLOW_JOB_SUSPEND,
   ENGINE_FLOW_JOB_RESUME,
   ENGINE_FLOW_JOB_ACCESS,
   ENGINE_FLOW_JOB_LAST
@@ -172,10 +175,16 @@ struct _EngineNode		/* fields sorted by order of processing access */
   EngineNode	*mnl_next;
   EngineNode	*mnl_prev;
   guint		 integrated : 1;
-  guint		 reconnected : 1;
+  guint		 virtual_node : 1;
 
   guint		 is_consumer : 1;
-  
+
+  /* suspension */
+  guint		 local_suspend : 1;	/* whether this node is suspended */
+  guint		 outputs_suspended : 1;	/* whether all outputs are suspended */
+  guint		 suspension_update : 1;	/* whether suspension state needs updating */
+  guint		 needs_reset : 1;	/* flagged at resumption */
+
   /* scheduler */
   guint		 sched_tag : 1;
   guint		 sched_router_tag : 1;

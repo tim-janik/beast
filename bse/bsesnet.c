@@ -22,6 +22,7 @@
 #include        "bsestorage.h"
 #include        "bsemarshal.h"
 #include        "bsemain.h"
+#include        "bsemidireceiver.h"
 #include        <string.h>
 #include        <time.h>
 #include        <fcntl.h>
@@ -30,6 +31,14 @@
 #include        "gbsearcharray.h"
 #include        <gsl/gslengine.h>
 
+
+typedef struct
+{
+  guint            context_id;
+  BseMidiReceiver *midi_receiver;
+  guint            midi_channel;
+  guint            voice;
+} ContextData;
 
 /* --- parameters --- */
 enum
@@ -672,23 +681,89 @@ bse_snet_alloc_cid (BseSNet *snet)
   return cid;
 }
 
+static void
+add_context_data (BseSNet         *self,
+		  guint            context_id,
+		  BseMidiReceiver *midi_receiver,
+		  guint            midi_channel)
+{
+  ContextData *cdata = g_new0 (ContextData, 1);
+
+  cdata->context_id = context_id;
+  cdata->midi_receiver = bse_midi_receiver_ref (midi_receiver);
+  cdata->midi_channel = midi_channel;
+  cdata->voice = G_MAXUINT;
+
+  self->context_data = g_slist_prepend (self->context_data, cdata);
+}
+
+static ContextData*
+find_context_data (BseSNet *self,
+		   guint    context_id)
+{
+  GSList *slist;
+
+  for (slist = self->context_data; slist; slist = slist->next)
+    {
+      ContextData *cdata = slist->data;
+
+      if (cdata->context_id == context_id)
+	return cdata;
+    }
+  return NULL;
+}
+
+static void
+remove_context_data (BseSNet *self,
+		     guint    context_id)
+{
+  ContextData *cdata = find_context_data (self, context_id);
+
+  g_return_if_fail (cdata != NULL);
+
+  self->context_data = g_slist_remove (self->context_data, cdata);
+  if (cdata->voice != G_MAXUINT)
+    bse_midi_reciver_discard_voice (cdata->midi_receiver, cdata->voice);
+  bse_midi_receiver_unref (cdata->midi_receiver);
+  g_free (cdata);
+}
+
 guint
-bse_snet_create_context (BseSNet  *snet,
-			 GslTrans *trans)
+bse_snet_create_context (BseSNet         *self,
+			 BseMidiReceiver *midi_receiver,
+			 guint		  midi_channel,
+			 GslTrans        *trans)
 {
   guint cid;
   
-  g_return_val_if_fail (BSE_IS_SNET (snet), 0);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (snet), 0);
+  g_return_val_if_fail (BSE_IS_SNET (self), 0);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), 0);
+  g_return_val_if_fail (midi_receiver != NULL, 0);
   g_return_val_if_fail (trans != NULL, 0);
   
-  cid = bse_snet_alloc_cid (snet);
+  cid = bse_snet_alloc_cid (self);
   g_return_val_if_fail (cid > 0, 0);
-  g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (snet), cid) == FALSE, 0);
-  
-  bse_source_create_context (BSE_SOURCE (snet), cid, trans);
+  g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), cid) == FALSE, 0);
+
+  add_context_data (self, cid, midi_receiver, midi_channel);
+  bse_source_create_context (BSE_SOURCE (self), cid, trans);
   
   return cid;
+}
+
+BseMidiReceiver*
+bse_sent_get_midi_receiver (BseSNet *self,
+			    guint    context_handle,
+			    guint   *midi_channel)
+{
+  ContextData *cdata;
+
+  g_return_val_if_fail (BSE_IS_SNET (self), 0);
+
+  cdata = find_context_data (self, context_handle);
+  if (midi_channel)
+    *midi_channel = cdata ? cdata->midi_channel : 0;
+  return cdata ? cdata->midi_receiver : NULL;
 }
 
 static void
@@ -748,5 +823,7 @@ bse_snet_context_dismiss (BseSource *source,
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
   
+  remove_context_data (self, context_handle);
+
   bse_snet_free_cid (self, context_handle);
 }

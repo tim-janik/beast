@@ -540,7 +540,7 @@ bse_biquad_filter_context_create (BseSource *source,
     BSE_BIQUAD_FILTER_N_OCHANNELS,	/* n_ostreams */
     biquad_filter_process,		/* process */
     NULL,                       	/* process_defer */
-    biquad_filter_reconnect,		/* reconnect */
+    biquad_filter_reconnect,		/* reset */
     (GslModuleFreeFunc) g_free,		/* free */
     GSL_COST_NORMAL,			/* flags */
   };

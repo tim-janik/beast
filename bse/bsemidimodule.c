@@ -26,7 +26,7 @@
 
 /* --- functions --- */
 static gfloat
-pick_signal (BseMidiChannel *channel,
+pick_signal (BseMidiKanal *channel,
 	     guint           signal,
 	     guint	     nth_note)
 {
@@ -36,7 +36,7 @@ pick_signal (BseMidiChannel *channel,
     {
       if (nth_note < channel->n_notes)
 	{
-	  BseMidiNote *note = channel->notes + nth_note;
+	  BseMidiKNote *note = channel->notes + nth_note;
 
 	  switch (signal)
 	    {
@@ -72,7 +72,7 @@ bse_midi_module_process (GslModule *module,
   BseMidiModuleData *mdata = module->user_data;
   guint *signals = mdata->signals;
   guint nth_note = mdata->nth_note;
-  BseMidiChannel *channel;
+  BseMidiKanal *channel;
   gfloat values[BSE_MIDI_MODULE_N_CHANNELS];
   guint i;
 
@@ -103,7 +103,7 @@ bse_midi_module_insert (BseMidiDecoder *decoder,
     BSE_MIDI_MODULE_N_CHANNELS,	/* n_ostreams */
     bse_midi_module_process,	/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP
   };

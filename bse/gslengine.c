@@ -334,23 +334,17 @@ gsl_flow_job_access (GslModule    *module,
 }
 
 GslJob*
-gsl_flow_job_suspend (GslModule *module,
-		      guint64    tick_stamp)
+gsl_job_suspend (GslModule *module)
 {
   GslJob *job;
-  EngineFlowJob *fjob;
-  
+
   g_return_val_if_fail (module != NULL, NULL);
-  
-  fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAny, 1);
-  fjob->fjob_id = ENGINE_FLOW_JOB_SUSPEND;
-  fjob->any.tick_stamp = tick_stamp;
+  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = ENGINE_JOB_FLOW_JOB;
-  job->data.flow_job.node = ENGINE_NODE (module);
-  job->data.flow_job.fjob = fjob;
-  
+  job->job_id = ENGINE_JOB_SUSPEND;
+  job->data.node = ENGINE_NODE (module);
+
   return job;
 }
 
@@ -362,6 +356,7 @@ gsl_flow_job_resume (GslModule *module,
   EngineFlowJob *fjob;
   
   g_return_val_if_fail (module != NULL, NULL);
+  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   
   fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAny, 1);
   fjob->fjob_id = ENGINE_FLOW_JOB_RESUME;
@@ -602,6 +597,54 @@ gsl_transact (GslJob *job,
     }
   va_end (var_args);
   gsl_trans_commit (trans);
+}
+
+
+/* --- Virtual Modules --- */
+static void
+virtual_module_process (GslModule *module,
+			guint      n_values)
+{
+  guint i;
+
+  /* dumb pass-through task (FIXME: virtualization works without _process()) */
+  for (i = 0; i < GSL_MODULE_N_OSTREAMS (module); i++)
+    if (module->ostreams[i].connected)
+      module->ostreams[i].values = (gfloat*) module->istreams[i].values;
+}
+
+static void
+virtual_module_free (gpointer        data,
+		     const GslClass *klass)
+{
+  g_free ((gpointer) klass);
+}
+
+GslModule*
+gsl_module_new_virtual (guint n_iostreams)
+{
+  GslClass virtual_module_class = {
+    0,				/* n_istreams */
+    0,				/* n_jstreams */
+    0,				/* n_ostreams */
+    virtual_module_process,	/* process */
+    NULL,			/* process_defer */
+    NULL,			/* reset */
+    virtual_module_free,	/* free */
+    GSL_COST_CHEAP
+  };
+  GslClass *klass;
+  GslModule *module;
+
+  g_return_val_if_fail (n_iostreams > 0, NULL);
+
+  klass = g_memdup (&virtual_module_class, sizeof (virtual_module_class));
+  klass->n_istreams = n_iostreams;
+  klass->n_ostreams = n_iostreams;
+  module = gsl_module_new (klass, NULL);	/* FIXME: support virtual modules */
+  ENGINE_NODE (module)->virtual_node = TRUE;
+
+  return module;
 }
 
 

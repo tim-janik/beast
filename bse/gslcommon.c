@@ -235,8 +235,7 @@ gsl_ring_prepend_i (GslRing  *head,
     {
       ring->prev = head->prev;
       ring->next = head;
-      if (head->prev)
-	head->prev->next = ring;
+      head->prev->next = ring;
       head->prev = ring;
     }
   return ring;
@@ -429,6 +428,43 @@ gsl_ring_pop_tail (GslRing **head_p)
   *head_p = gsl_ring_remove_node (*head_p, (*head_p)->prev);
   
   return data;
+}
+
+GslRing*
+gsl_ring_insert_sorted (GslRing	    *head,
+			gpointer     data,
+			GCompareFunc func)
+{
+  gint cmp;
+
+  g_return_val_if_fail (func != NULL, head);
+
+  if (!head)
+    return gsl_ring_prepend (head, data);
+
+  /* typedef gint (*GCompareFunc) (gconstpointer a,
+   *                               gconstpointer b);
+   */
+  cmp = func (data, head->data);
+
+  if (cmp >= 0)	/* insert after head */
+    {
+      GslRing *tmp, *tail = head->prev;
+      
+      /* make appending an O(1) operation */
+      if (head == tail || func (data, tail->data) >= 0)
+	return gsl_ring_append (head, data);
+
+      /* walk forward while data >= tmp (skipping equal nodes) */
+      for (tmp = head->next; cmp >= 0 && tmp != tail; tmp = tmp->next)
+	cmp = func (data, tmp->data);
+
+      /* insert before sibling which is greater than data */
+      gsl_ring_prepend (tmp, data);	/* keep current head */
+      return head;
+    }
+  else /* cmp < 0 */
+    return gsl_ring_prepend (head, data);
 }
 
 

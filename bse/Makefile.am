@@ -74,6 +74,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsemidievent.h \
 	bsemidimodule.h \
 	bsemidinotifier.h \
+	bsemidireceiver.h \
 	bsemidisynth.h \
 	bsemidisynthinput.h \
 	bseobject.h \
@@ -152,6 +153,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsemidievent.c \
 	bsemidimodule.c \
 	bsemidinotifier.c \
+	bsemidireceiver.c \
 	bsemidisynth.c \
 	bsemidisynthinput.c \
 	bseobject.c \

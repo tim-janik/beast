@@ -275,7 +275,7 @@ bse_midi_icontroller_context_create (BseSource *source,
     BSE_MIDI_ICONTROLLER_N_OCHANNELS, 	/* n_ostreams */
     midi_icontroller_process,	     	/* process */
     NULL,                       	/* process_defer */
-    NULL,                       	/* reconnect */
+    NULL,                       	/* reset */
     NULL,			     	/* free */
     GSL_COST_CHEAP,		     	/* cost */
   };

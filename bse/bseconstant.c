@@ -297,7 +297,7 @@ bse_constant_context_create (BseSource *source,
     BSE_CONSTANT_N_OUTPUTS,	/* n_ostreams */
     constant_process,		/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* flags */
   };

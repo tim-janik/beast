@@ -28,6 +28,7 @@
 #include "bsemidinotifier.h"
 #include "bsemain.h"		/* threads enter/leave */
 #include "bsecomwire.h"
+#include "bsemidireceiver.h"
 #include "bsescriptcontrol.h"
 
 
@@ -385,7 +386,13 @@ bse_server_pick_default_devices (BseServer *server)
     }
   g_free (children);
   if (rating)
-    server->midi_device = g_object_new (choice, NULL);
+    {
+      if (!server->midi_receiver)
+	server->midi_receiver = bse_midi_receiver_new ("default");
+      server->midi_device = g_object_new (choice,
+					  "midi_receiver", server->midi_receiver,
+					  NULL);
+    }
 }
 
 BseErrorType
@@ -520,6 +527,18 @@ bse_server_discard_pcm_input_module (BseServer *server,
   g_return_if_fail (server->pcm_imodule == module); // FIXME
 
   server->pcm_ref_count -= 1;
+}
+
+BseMidiReceiver*
+bse_server_get_midi_receiver (BseServer   *self,
+			      const gchar *midi_name)
+{
+  g_return_val_if_fail (BSE_IS_SERVER (self), NULL);
+  g_return_val_if_fail (midi_name != NULL, NULL);
+
+  // FIXME: we don't actually check the midi_receiver name
+
+  return self->midi_receiver;
 }
 
 GslModule*

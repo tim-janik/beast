@@ -165,7 +165,7 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
     0,				/* n_ostreams */
     bse_pcm_omodule_process,	/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     bse_pcm_module_data_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
   };
@@ -244,7 +244,7 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
     BSE_PCM_MODULE_N_OSTREAMS,	/* n_ostreams */
     bse_pcm_imodule_process,	/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     bse_pcm_module_data_free,	/* free */
     GSL_COST_EXPENSIVE,		/* cost */
   };

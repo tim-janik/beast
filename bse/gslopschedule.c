@@ -334,6 +334,29 @@ _engine_schedule_unsecure (EngineSchedule *sched)
 
 
 /* --- depth scheduling --- */
+static void
+update_suspension_state (EngineNode *node)
+{
+  GslRing *ring;
+  guint seen_suspended = 0, seen_active = 0;
+
+  for (ring = node->output_nodes; ring && !seen_active; ring = gsl_ring_walk (node->output_nodes, ring))
+    {
+      EngineNode *dest_node = ring->data;
+      if (dest_node != node)	/* self-feedback cycles */
+	{
+	  if (dest_node->suspension_update)
+	    update_suspension_state (dest_node);
+	  if (ENGINE_NODE_IS_SUSPENDED (dest_node))
+	    seen_suspended++;
+	  else
+	    seen_active++;
+	}
+    }
+  node->outputs_suspended = seen_suspended && !seen_active;
+  node->suspension_update = FALSE;
+}
+
 static GslRing*
 merge_untagged_node_lists_uniq (GslRing *ring1,
 				GslRing *ring2)
@@ -480,13 +503,18 @@ subschedule_query_node (EngineSchedule *schedule,
   guint i, j, leaf_level = 0;
   
   g_return_if_fail (node->sched_router_tag == FALSE);
+
+  /* update suspension state if necessary */
+  if (node->suspension_update)
+    update_suspension_state (node);
   
   SCHED_DEBUG ("start_query(%p)", node);
   node->sched_router_tag = TRUE;
   for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
     {
       EngineNode *child = node->inputs[i].src_node;
-      
+
+      node->module.istreams[i].connected = child != NULL;
       if (!child)
 	continue;
       else if (ENGINE_NODE_IS_SCHEDULED (child))
@@ -521,6 +549,8 @@ subschedule_query_node (EngineSchedule *schedule,
 	  g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
 	}
     }
+  for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
+    node->module.jstreams[j].n_connections = node->module.jstreams[j].jcount;
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
     for (i = 0; i < node->module.jstreams[j].n_connections; i++)
       {

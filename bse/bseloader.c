@@ -183,6 +183,8 @@ gsl_wave_file_info_ref (GslWaveFileInfo *wave_file_info)
   g_return_val_if_fail (wave_file_info->ref_count > 0, NULL);
 
   wave_file_info->ref_count++;
+
+  return wave_file_info;
 }
 
 GslWaveDsc*

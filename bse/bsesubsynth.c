@@ -350,7 +350,7 @@ bse_sub_synth_context_create (BseSource *source,
     BSE_SUB_SYNTH_N_IOPORTS,	/* n_ostreams */
     sub_synths_process,		/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
   };
@@ -364,7 +364,15 @@ bse_sub_synth_context_create (BseSource *source,
 
   /* create new context for foreign synth */
   if (snet)
-    foreign_context_handle = bse_snet_create_context (snet, trans);
+    {
+      BseItem *parent = BSE_ITEM (source)->parent;
+      BseMidiReceiver *midi_reciver;
+      guint midi_channel;
+
+      midi_reciver = bse_sent_get_midi_receiver (BSE_SNET (parent), context_handle, &midi_channel);
+
+      foreign_context_handle = bse_snet_create_context (snet, midi_reciver, midi_channel, trans);
+    }
 
   mdata_in->synth_context_handle = foreign_context_handle;
   mdata_out->synth_context_handle = foreign_context_handle;

@@ -1,3 +1,40 @@
+Wed Jul  3 05:34:10 2002  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.[hc]: new MIDI event handling core which creates
+	the required engine modules on demand (not currently deployed).
+
+	* bsemain.[hc]: delay plugin initialization and initialize MIDI core.
+
+	* bsemididevice-oss.c: pipe event data into the new midi receiver.
+
+	* bsemididevice.[hc]: add BseMidiReceiver property.
+
+	* bsemidievent.[hc]: rename, this code is scheduled for removal once
+	the new MIDI core is deployed.
+
+	* bseproject.c: create synth nets together with a default MIDI
+	receiver.
+
+	* bseserver.[hc]: add API to manage default MIDI receiver.
+
+	* bsesnet.[hc]: add API to maintain an associated MIDI receiver
+	per context.
+
+	* bsesubsynth.c: create contexts on the target snet with the
+	MIDI receiver and midi_channel from the current context of
+	the sub synth.
+
+	* gsl-mplan.txt: describe reset(), describe suspension,
+	fix consumer node definition, TODO cleanups.
+
+	* gslcommon.[hc]: add gsl_ring_insert_sorted().
+
+	* gslopmaster.[hc]:
+	* gslopschedule.[hc]:
+	* gsloputil.[hc]:
+	* gslengine.[hc]: implement first stab at virtual modules (not
+	yet completed). complete suspension and resume job implementations.
+
 Wed Jun 19 03:47:45 2002  Tim Janik  <timj@gtk.org>
 
 	* incorporated fixes/changes suggested by stefan and

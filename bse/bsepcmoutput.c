@@ -270,7 +270,7 @@ bse_pcm_output_context_create (BseSource *source,
     BSE_PCM_OUTPUT_N_ICHANNELS,	/* n_ostreams */
     pcm_output_process,		/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
   };

@@ -36,8 +36,9 @@ Node Model:
 * some nodes always react delayed ("deferred" nodes) and can
   guarantee that they can always produce n output values ahead
   of receiving the corresponding n input values, with n>=1
-* a node that has no output facilities (n_ostreams==0) is
-  considered a "consumer" and has to be processed // FIXME
+* a node that has no output facilities (n_ostreams==0) or
+  has none of its output streams connected and is flagged by
+  the user as a "consumer node" must be processed
 
 Node Methods:
 -------------
@@ -53,6 +54,10 @@ Node Methods:
   The number of input values may be smaller than the number
   of output values requested, in which case the node may return
   less output values than requested.
+->reset()
+  The purpose of this method is to reset local state kept in
+  a node to the initial state it possed before the first call
+  to process() or process_deferred().
 
 Node Relationships:
 -------------------
@@ -80,7 +85,6 @@ the following is true:
   (C==A or C==B or (if C is completely disconnected, the nodes
   A and B do not anymore form the cycle))
 
-
 Implementation Notes
 ====================
 * if a node is deferred, all output channels are delayed
@@ -105,8 +109,8 @@ Query and Schedule Node:
 * untag node
 
 Resolving Cycles:
-* eliminate child from precondition list, once the list
-  is empty the cycle is resolved
+* at each scheduling stage, eliminate immediate child from
+  precondition list; once the list is empty the cycle is resolved
 * at least one node being eliminated has to be deferred
   for the cycle to be valid
 
@@ -115,8 +119,46 @@ Scheduling:
 * within leaf-levels, processing is determined by a per-node
   processing costs hint (cheap, normal, expensive)
 
-Implementation Considerations:
-------------------------------
+Suspension and Sample accurate Activation
+-----------------------------------------
+In music synthesis practice, large branches of a flow-graph are
+often unused, e.g. a certain branch might make up a logical voice
+which is muted for long times. To save processing power, nodes
+can be suspended and resumed at arbitrary times (not necessarily
+block boundaries), causing their processing method to be skipped
+and its output buffers to be filled up with zeros.
+Ordinary connection/disconnection of nodes is not sufficient to
+fullfill this purpose, because connection changes can only happen
+at block boundaries, while sample accurate timing is required
+(for voice activation), and nodes which hold internal state usually
+need to be reset (by means of calling their reset() method) upon
+resumption.
+Suspension of a node automatically suspends it's input nodes unless
+they have outputs connected to other nodes which are not suspended.
+Due to the structural nature of connections within branches
+(connections may form cycles or rhomboids of nodes), two recursion
+passes are required to propagate suspension state through a branch.
+In order to determine suspension state of a node for which an
+output node is known to have been suspended (this output node doesn't
+need to be directly connected), all directly connected output nodes
+need to be examined and must contain updated suspension state
+already. It is thus mandatory to maintain information about the
+validity of a node's suspension state which results in the
+requirement for a second recursion pass to propagate suspension
+state.
+Upon the first pass, all possibly affected nodes, these are all
+inputs of the node which changed suspension state, are flagged to
+require updates of their suspension state.
+During the second pass, a node's suspension state is determined
+from the suspension state of the nodes connected to its outputs
+(which may first need updating themselves).
+Various optimizations are possible during the two recursion passes,
+e.g. by allowing suspension only at block boundaries, by integrating
+one recusion pass with other recursive tasks on the graph
+(scheduling), and by doing various flag tests during the passes.
+
+Deferred Node Implementation Considerations:
+--------------------------------------------
 For deferred nodes, the number n specifying the amount of output
 values that are produced ahead of input can be considered
 mostly-fixed. that is, it's unlikely to change often and will do
@@ -193,26 +235,21 @@ The engine provides API entry points to:
   such as poll(2)
 - check whether dispatching is necessary
 - dispatch outstanding work to be performed by the engine
-FIXME: needs mentioning of pollfd/callback jobs
+FIXME: needs description of pollfd/callback jobs
 
 
 TODO:
 =====
-- virtualization (poke ibuffer into outbuffer) flag (needs memcpy for deferred nodes)
-- flag UserThread nodes
-- sample timed jobs
-- need global timestamp
-- need async-queues that have time-stamped jobs
-- process only so much samples until a time-stamped
-  job needs to be processed
+- virtual connection nodes, these are identified during scheduling
+  and are skipped upon processing (gsl_module_new_virtual() simply
+  creates a pass-through node currently)
 - self-input cycles need to be resolved in parent as well
-- node-locale async timestamped jobs
-- engine-init: { block(pipe-fd), check } 
-- sample-timed activation can offset node's block-boundary
-- need complete_blocks_only flag in node classes
-- cost rating: cost*n_inputs+cost*n_outputs
-- multi-input(joint) streams: job_disconnect(dmod,distr,smod,sistr); (jstreams)
 
+Jun 30 2002	Tim Janik
+	* describe reset()
+	* describe suspension
+	* fix consumer node definition
+	* TODO cleanups
 Jan 07 2002	Tim Janik
 	* cosmetic updates, flow jobs
 Aug 19 2001	Tim Janik

@@ -23,6 +23,7 @@
 #include	"bsesnet.h"
 #include	"bsemarshal.h"
 #include	"bsewaverepo.h"
+#include	"bseserver.h"
 #include	"bswprivate.h"
 #include	"gslengine.h"
 #include	<string.h>
@@ -478,7 +479,11 @@ bse_project_start_playback (BseProject *project)
 	      BseSNet *snet = BSE_SNET (super);
 
 	      super->auto_activate_context_handle = 0;
-	      super->auto_activate_context_handle = bse_snet_create_context (snet, trans);
+	      super->auto_activate_context_handle = bse_snet_create_context (snet,
+									     bse_server_get_midi_receiver (bse_server_get (),
+													   "default"),
+									     0,
+									     trans);
 	      bse_source_connect_context (BSE_SOURCE (snet), super->auto_activate_context_handle, trans);
 	    }
 	  else

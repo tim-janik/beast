@@ -76,6 +76,7 @@ typedef struct  _BseItemClass           BseItemClass;
 typedef struct	_BseMidiDecoder		BseMidiDecoder;
 typedef struct  _BseMidiNotifier        BseMidiNotifier;
 typedef struct  _BseMidiNotifierClass   BseMidiNotifierClass;
+typedef struct  _BseMidiReceiver        BseMidiReceiver;
 typedef struct  _BseMidiSynth           BseMidiSynth;
 typedef struct  _BseMidiSynthClass      BseMidiSynthClass;
 typedef struct  _BseObject              BseObject;

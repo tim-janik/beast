@@ -53,6 +53,8 @@ _engine_alloc_ostreams (guint n)
 static void
 free_node (EngineNode *node)
 {
+  const GslClass *klass;
+  gpointer user_data;
   guint j;
 
   g_return_if_fail (node != NULL);
@@ -61,8 +63,6 @@ free_node (EngineNode *node)
   g_return_if_fail (node->sched_tag == FALSE);
   g_return_if_fail (node->sched_router_tag == FALSE);
   
-  if (node->module.klass->free)
-    node->module.klass->free (node->module.user_data, node->module.klass);
   gsl_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
@@ -87,7 +87,13 @@ free_node (EngineNode *node)
       gsl_delete_structs (GslJStream, ENGINE_NODE_N_JSTREAMS (node), node->module.jstreams);
       gsl_delete_structs (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
     }
+  klass = node->module.klass;
+  user_data = node->module.user_data;
   gsl_delete_struct (EngineNode, node);
+
+  /* allow the free function to free the klass as well */
+  if (klass->free)
+    klass->free (user_data, klass);
 }
 
 static void
@@ -123,7 +129,6 @@ free_flow_job (EngineFlowJob *fjob)
 {
   switch (fjob->fjob_id)
     {
-    case ENGINE_FLOW_JOB_SUSPEND:
     case ENGINE_FLOW_JOB_RESUME:
       gsl_delete_struct (EngineFlowJobAny, &fjob->any);
       break;

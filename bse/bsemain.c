@@ -211,8 +211,6 @@ bse_init (int	             *argc_p,
   bse_com_set_spawn_dir (dir);
   g_free (dir);
 
-  bse_plugins_init ();
-
   {
     static const GslConfigValue gslconfig[] = {
       { "wave_chunk_padding",		BSE_MAX_BLOCK_PADDING, },
@@ -225,6 +223,10 @@ bse_init (int	             *argc_p,
 
     call_gsl_init (gslconfig);
   }
+
+  _bse_midi_init ();
+
+  bse_plugins_init ();
 
   /* make sure the server is alive */
   bse_server_get ();

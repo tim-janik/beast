@@ -217,6 +217,8 @@ io_handler (BseMidiDevice *mdev,
       guint64 stamp = tv.tv_sec;
 
       stamp = stamp * 1000000 + tv.tv_usec;
+      if (mdev->midi_receiver)
+	bse_midi_receiver_push_data (mdev->midi_receiver, l, buffer, stamp);
       _bse_midi_decoder_push_data_ASYNC (handle->decoder, l, buffer, stamp);
     }
 }

@@ -23,6 +23,10 @@
 
 #include <errno.h>
 
+#define BSE_MIDI_CHANNEL_VOICE_MESSAGE(s)       ((s) < 0xf0)
+#define BSE_MIDI_SYSTEM_COMMON_MESSAGE(s)       (((s) & 0xf8) == 0xf0)
+#define BSE_MIDI_SYSTEM_REALTIME_MESSAGE(s)     (((s) & 0xf8) == 0xf8)
+
 
 /* --- prototypes --- */
 static void		decoder_read_event_data_ASYNC	(BseMidiDecoder	*decoder,
@@ -33,7 +37,7 @@ static BseMidiEvent*	decoder_extract_event_ASYNC	(BseMidiDecoder	*decoder,
 static void		decoder_enqueue_event_ASYNC	(BseMidiDecoder	*decoder,
 							 BseMidiEvent	*event);
 static void		midi_event_process_ASYNC	(BseMidiEvent  *event,
-							 BseMidiChannel channels[BSE_MIDI_MAX_CHANNELS]);
+							 BseMidiKanal channels[BSE_MIDI_MAX_CHANNELS]);
 
 
 /* --- variables --- */
@@ -337,7 +341,7 @@ _bse_midi_free_event_ASYNC (BseMidiEvent *event)
 
 static void
 midi_event_process_ASYNC (BseMidiEvent  *event,
-			  BseMidiChannel channels[BSE_MIDI_MAX_CHANNELS])
+			  BseMidiKanal channels[BSE_MIDI_MAX_CHANNELS])
 {
   g_return_if_fail (event != NULL);
   g_return_if_fail (event->status >= 0x80);
@@ -360,7 +364,7 @@ midi_event_process_ASYNC (BseMidiEvent  *event,
       }
   else
     {
-      BseMidiChannel *ch = channels + event->channel;
+      BseMidiKanal *ch = channels + event->channel;
 
       g_return_if_fail (event->channel < BSE_MIDI_MAX_CHANNELS);
 
@@ -378,7 +382,7 @@ midi_event_process_ASYNC (BseMidiEvent  *event,
 	      if (ch->n_notes > ch->n_alloced_notes)
 		{
 		  ch->n_alloced_notes = ch->n_notes;
-		  ch->notes = g_renew (BseMidiNote, ch->notes, ch->n_alloced_notes);
+		  ch->notes = g_renew (BseMidiKNote, ch->notes, ch->n_alloced_notes);
 		}
 	      ch->notes[i].note = event->data.note.note;
 	      ch->notes[i].velocity = event->data.note.velocity;
@@ -498,7 +502,7 @@ decoder_process_events_ASYNC (BseMidiDecoder *decoder)
     }
 }
 
-BseMidiChannel*
+BseMidiKanal*
 bse_midi_decoder_lock_channel_ASYNC (BseMidiDecoder *decoder,
 				     guint           channel)
 {
@@ -515,7 +519,7 @@ bse_midi_decoder_lock_channel_ASYNC (BseMidiDecoder *decoder,
 
 void
 bse_midi_decoder_unlock_channel_ASYNC (BseMidiDecoder *decoder,
-				       BseMidiChannel *channel)
+				       BseMidiKanal *channel)
 {
   g_return_if_fail (decoder != NULL);
   g_return_if_fail (channel != NULL);
@@ -551,7 +555,7 @@ void
 bse_midi_decoder_use_channel (BseMidiDecoder *decoder,
 			      guint           channel_indx)
 {
-  BseMidiChannel *channel;
+  BseMidiKanal *channel;
 
   g_return_if_fail (decoder != NULL);
   g_return_if_fail (channel_indx < BSE_MIDI_MAX_CHANNELS);
@@ -560,7 +564,7 @@ bse_midi_decoder_use_channel (BseMidiDecoder *decoder,
   if (!channel->use_count)
     {
       channel->n_alloced_notes = 16;
-      channel->notes = g_new0 (BseMidiNote, channel->n_alloced_notes);
+      channel->notes = g_new0 (BseMidiKNote, channel->n_alloced_notes);
     }
   channel->use_count++;
   bse_midi_decoder_unlock_channel_ASYNC (decoder, channel);
@@ -570,7 +574,7 @@ void
 bse_midi_decoder_unuse_channel (BseMidiDecoder *decoder,
 				guint           channel_indx)
 {
-  BseMidiChannel *channel;
+  BseMidiKanal *channel;
 
   g_return_if_fail (decoder != NULL);
   g_return_if_fail (channel_indx < BSE_MIDI_MAX_CHANNELS);

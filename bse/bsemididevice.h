@@ -68,6 +68,8 @@ struct _BseMidiDevice
 {
   BseObject		parent_object;
 
+  BseMidiReceiver	*midi_receiver;
+
   /* operational handle */
   BseMidiHandle	       *handle;
 };

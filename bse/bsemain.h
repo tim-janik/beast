@@ -59,6 +59,7 @@ void		bse_main_sequencer_lock		(void);
 void		bse_main_sequencer_unlock	(void);
 extern gboolean	bse_developer_extensions;
 #define		BSE_DVL_EXT			(bse_developer_extensions != FALSE)
+void		_bse_midi_init			(void);
 
 
 #ifdef __cplusplus

@@ -52,7 +52,7 @@ typedef void     (*GslProcessFunc)	(GslModule	 *module,
 typedef guint    (*GslProcessDeferFunc)	(GslModule	 *module,
 					 guint		  n_ivalues,
 					 guint		  n_ovalues);
-typedef void     (*GslReconnectFunc)	(GslModule	 *module);
+typedef void     (*GslResetFunc)	(GslModule	 *module);
 /* gsldefs.h:
  * typedef void  (*GslAccessFunc)	(GslModule	*module,
  *					 gpointer	 data);
@@ -74,7 +74,7 @@ struct _GslClass
   guint		      n_ostreams;
   GslProcessFunc      process;		/* EngineThread */
   GslProcessDeferFunc process_defer;	/* EngineThread */
-  GslReconnectFunc    reconnect;	/* EngineThread */
+  GslResetFunc	      reset;		/* EngineThread */
   GslModuleFreeFunc   free;		/* UserThread */
   GslModuleFlags      mflags;
 };
@@ -91,14 +91,15 @@ struct _GslModule
 struct _GslJStream
 {
   const gfloat **values;
-  guint          n_connections;
+  guint          n_connections;	/* scheduler update */
+  guint		 jcount;	/* internal field */
   guint		 reserved : 16;
 };
 struct _GslIStream
 {
   const gfloat *values;
   guint		reserved : 16;
-  guint		connected : 1;
+  guint		connected : 1;	/* scheduler update */
 };
 struct _GslOStream
 {
@@ -111,6 +112,7 @@ struct _GslOStream
 /* --- interface (UserThread functions) --- */
 GslModule*	gsl_module_new		(const GslClass	 *klass,
 					 gpointer	  user_data);
+GslModule*	gsl_module_new_virtual	(guint		  n_iostreams);
 guint64		gsl_module_tick_stamp	(GslModule	 *module);
 GslJob*		gsl_job_connect		(GslModule	 *src_module,
 					 guint		  src_ostream,
@@ -134,6 +136,7 @@ GslJob*		gsl_job_access		(GslModule	 *module,
 					 GslFreeFunc	  free_func);	/* UserThread */
 GslJob*		gsl_job_set_consumer	(GslModule	 *module,
 					 gboolean	  is_toplevel_consumer);
+GslJob*		gsl_job_suspend		(GslModule	 *module);
 GslJob*		gsl_job_debug		(const gchar	 *debug);
 GslJob*		gsl_job_add_poll	(GslPollFunc	  poll_func,
 					 gpointer	  data,
@@ -154,8 +157,6 @@ GslJob*		gsl_flow_job_access	(GslModule	 *module,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
 					 GslFreeFunc	  free_func);	/* UserThread */
-GslJob*		gsl_flow_job_suspend	(GslModule	 *module,
-					 guint64	  tick_stamp);
 GslJob*		gsl_flow_job_resume	(GslModule	 *module,
 					 guint64	  tick_stamp);
 

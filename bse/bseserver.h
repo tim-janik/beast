@@ -59,6 +59,7 @@ struct _BseServer
   guint		   midi_ref_count;
   BseMidiDevice	  *midi_device;
   BseMidiDecoder  *midi_decoder;
+  BseMidiReceiver *midi_receiver;
   GSList	  *midi_modules;
 
   GSList	  *watch_list;
@@ -98,6 +99,8 @@ GslModule*	bse_server_retrive_pcm_input_module	(BseServer	*server,
 							 const gchar	*uplink_name);
 void		bse_server_discard_pcm_input_module	(BseServer	*server,
 							 GslModule	*module);
+BseMidiReceiver*bse_server_get_midi_receiver		(BseServer	*self,
+							 const gchar	*midi_name);
 GslModule*	bse_server_retrive_midi_input_module	(BseServer	*server,
 							 const gchar	*downlink_name,
 							 guint		 midi_channel_id,
