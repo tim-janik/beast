@@ -77,7 +77,8 @@ class Balance : public BalanceBase {
     }
   };
 protected:
-  void property_changed (BalancePropertyID prop_id)
+  bool
+  property_changed (BalancePropertyID prop_id)
   {
     /* this is called after a property changed and _before_ the
      * modules are updated.
@@ -107,6 +108,7 @@ protected:
         break;
       default: ;
       }
+    return false;
   }
 public:
   /* implement creation and config methods for synthesis Module */

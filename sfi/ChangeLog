@@ -1,3 +1,10 @@
+Mon Dec 20 15:03:57 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: call property_changed() in response to automated
+	properties. changed property_changed() to return a bool which indicates
+	whether update_modules() needs to be called after property_changed().
+	adapted all usages.
+
 Sun Dec 19 01:01:41 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiserial.c (sfi_serialize_primitives): relaxed parsing strictness 

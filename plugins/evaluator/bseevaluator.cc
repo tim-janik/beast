@@ -50,18 +50,19 @@ class Evaluator : public EvaluatorBase
     CPU cpu;
     int input_reg, output_reg;
   public:
-    void reset()
+    void
+    reset()
     {
     }
-    
-    void config(Properties *params)
+    void
+    config(Properties *params)
     {
       cpu.set_program (params->instructions);
       input_reg = params->input_reg;
       output_reg = params->output_reg;
     }
-    
-    void process(unsigned int samples)
+    void
+    process(unsigned int samples)
     {
       const float *input = istream (ICHANNEL_INPUT).values;
       float *output = ostream (OCHANNEL_OUTPUT).values;
@@ -70,47 +71,54 @@ class Evaluator : public EvaluatorBase
     }
   };
 public:
-  void set_status(const Sfi::String& new_status)
+  void
+  set_status(const Sfi::String& new_status)
   {
     status = new_status;
     notify ("status");
   }
-
-  void property_changed (EvaluatorPropertyID prop_id)
+  bool
+  property_changed (EvaluatorPropertyID prop_id)
   {
-    if (prop_id == PROP_SOURCE)
+    switch (prop_id)
       {
-	vector<char>  source_vec (source.c_str(), source.c_str() + source.length());
-	vector<Token> tokens;
-	vector<Instruction> new_instructions;
-	Symbols symbols;
-	string error;
-
-	input_reg = symbols.alloc("input");
-	output_reg = symbols.alloc("output");
-
-	error = Compiler::tokenize (symbols, source_vec, tokens);
-	if (error != "")
-	  {
-	    set_status("ERROR: " + error);
-	    return;
-	  }
-
-	error = Compiler::compile (symbols, tokens, new_instructions);
-	if (error != "")
-	  {
-	    set_status("ERROR: " + error);
-	    return;
-	  }
-
-	instructions = new_instructions;
-
-	CPU cpu;
-	cpu.set_program(instructions);
-	cpu.print_program(symbols);
-
-	set_status("compile ok.");
+      case PROP_SOURCE:
+        {
+          vector<char>  source_vec (source.c_str(), source.c_str() + source.length());
+          vector<Token> tokens;
+          vector<Instruction> new_instructions;
+          Symbols symbols;
+          string error;
+          
+          input_reg = symbols.alloc("input");
+          output_reg = symbols.alloc("output");
+          
+          error = Compiler::tokenize (symbols, source_vec, tokens);
+          if (error != "")
+            {
+              set_status("ERROR: " + error);
+              break;
+            }
+          
+          error = Compiler::compile (symbols, tokens, new_instructions);
+          if (error != "")
+            {
+              set_status("ERROR: " + error);
+              break;
+            }
+          
+          instructions = new_instructions;
+          
+          CPU cpu;
+          cpu.set_program(instructions);
+          cpu.print_program(symbols);
+          
+          set_status("compile ok.");
+        }
+        break;
+      default: ;
       }
+    return false;
   }
   BSE_EFFECT_INTEGRATE_MODULE (Evaluator, Module, Properties);
 

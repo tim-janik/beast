@@ -163,7 +163,7 @@ class Amplifier : public AmplifierBase {
     }
   };
 protected:
-  void
+  bool
   property_changed (AmplifierPropertyID prop_id)
   {
     switch (prop_id)
@@ -220,6 +220,7 @@ protected:
         break;
       default: ;
       }
+    return false;
   }
   void
   compat_setup (guint          vmajor,

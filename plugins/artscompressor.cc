@@ -48,12 +48,13 @@ class Compressor : public CompressorBase
     double output;		      /* linear factor */
     double attackfactor, releasefactor;
   public:
-    void reset()
+    void
+    reset()
     {
       volume = 0;
     }
-    
-    void config (CompressorProperties *params)
+    void
+    config (CompressorProperties *params)
     {
       threshold_db = params->threshold_db;
       threshold = comp_db2linear (threshold_db);
@@ -67,19 +68,21 @@ class Compressor : public CompressorBase
       attackfactor = LN2 / max (params->attack / 1000 * mix_freq(), LN2);
       releasefactor = LN2 / max (params->release / 1000 * mix_freq(), LN2);
     }
-
     /* conversion doesn't test for linear == 0,
      * as the input (a volume) is guaranteed to be above threshold
      */
-    double comp_linear2db (double linear)
+    double
+    comp_linear2db (double linear)
     {
       return 20 * log (linear) / log (10);
     }
-    double comp_db2linear (double db)
+    double
+    comp_db2linear (double db)
     {
       return exp (db / 20 * log (10));
     }
-    double compress (double input_signal)
+    double
+    compress (double input_signal)
     {
       double volume_db = comp_linear2db (volume);
       double output_signal = comp_db2linear ((volume_db - threshold_db) * ratio + threshold_db) / volume * input_signal * output;
@@ -94,8 +97,8 @@ class Compressor : public CompressorBase
     static const int CHANNELS_A1n_A2y = CHANNEL_A2;
     static const int CHANNELS_A1y_A2y = CHANNEL_A1 + CHANNEL_A2;
 
-    template<int channels>
-    void process_loop (unsigned int samples)
+    template<int channels> void
+    process_loop (unsigned int samples)
     {
       const float *invalue1 = istream (ICHANNEL_AUDIO_IN1).values;
       const float *invalue2 = istream (ICHANNEL_AUDIO_IN2).values;
@@ -137,7 +140,8 @@ class Compressor : public CompressorBase
 	  }
       }
     }
-    void process (unsigned int n_values)
+    void
+    process (unsigned int n_values)
     {
       if (istream (ICHANNEL_AUDIO_IN1).connected)
 	{
@@ -168,7 +172,8 @@ class Compressor : public CompressorBase
     }
   };
 public:
-  void property_changed (CompressorPropertyID prop_id)
+  bool
+  property_changed (CompressorPropertyID prop_id)
   {
     switch (prop_id)
       {
@@ -201,8 +206,11 @@ public:
         break;
       default: ;
       }
+    return false;
   }
-  bool editable_property (CompressorPropertyID prop_id, GParamSpec *)
+  bool
+  editable_property (CompressorPropertyID prop_id,
+                     GParamSpec          *)
   {
     if (prop_id == PROP_OUTPUT_DB && auto_output)
       return false;

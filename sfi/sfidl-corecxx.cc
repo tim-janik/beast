@@ -1009,7 +1009,7 @@ public:
             printf ("    break;\n");
           }
         printf ("    };\n");
-        printf ("    property_changed ((%s) prop_id);\n", ctPropertyID);
+        printf ("    property_changed (%s (prop_id));\n", ctPropertyID);
         printf ("    update_modules();\n");
         /* reset triggers */
         printf ("    switch (prop_id) {\n");
@@ -1039,6 +1039,7 @@ public:
         /* property_updated() */
         printf ("  void property_updated (%s prop_id, guint64 tick_stamp, double prop_value, GParamSpec *pspec)\n", ctPropertyID);
         printf ("  {\n");
+        printf ("    bool seen_change = false;\n");
         printf ("    switch (prop_id) {\n");
         for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
           {
@@ -1046,12 +1047,18 @@ public:
               continue;
             printf ("    case PROP_%s:\n", pure_UPPER (pi->name));
             printf ("      if (tick_stamp >= ::std::max (last__%s, module_update_tick_stamp()))\n", pi->name.c_str());
-            printf ("        %s = prop_value;\n", pi->name.c_str());
+            printf ("        {\n");
+            printf ("          seen_change = true;\n");
+            printf ("          %s = prop_value;\n", pi->name.c_str());
+            printf ("        }\n");
             printf ("      last__%s = tick_stamp;\n", pi->name.c_str());
             printf ("    break;\n");
           }
         printf ("    default: ;\n");
         printf ("    };\n");
+        printf ("    if (seen_change &&\n");
+        printf ("        property_changed (%s (prop_id)))\n", ctPropertyID);
+        printf ("      update_modules();\n");
         printf ("  }\n");
 
         /* static data */
@@ -1067,7 +1074,7 @@ public:
         
         /* property-changed hooking */
         printf ("protected:\n");
-        printf ("  virtual void property_changed (%s) {}\n", ctPropertyID);
+        printf ("  virtual bool property_changed (%s) { return false; }\n", ctPropertyID);
         
         /* methods */
         for (vector<Method>::const_iterator mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
