@@ -500,7 +500,7 @@ save_note (BseStorage *storage,
     }
   
   if (note->instrument)
-    bse_storage_printf (storage, " %02u",
+    bse_storage_printf (storage, " %u",
 			bse_item_get_seqid (BSE_ITEM (note->instrument)));
   
   bse_storage_putc (storage, ')');

@@ -1,3 +1,8 @@
+1999-05-28  Tim Janik  <timj@couch.wilmington.net>
+
+	* bsepattern.c (save_note): don't prefix seq ids with an 0, which
+	would make them octal nombers.
+
 Mon May 17 02:52:49 1999  Tim Janik  <timj@gtk.org>
 
 	* bunch of Makefile and configure changes so make distcheck works.
