@@ -165,13 +165,13 @@ bse_source_do_shutdown (BseObject *object)
   source = BSE_SOURCE (object);
 
   if (bse_object_get_qdata (object, quark_deferred_input))
-    g_warning ("bse_source_do_shutdown(): Uhh ohh, source still contains deferred_input data");
+    g_warning (G_STRLOC ": Uhh ohh, source still contains deferred_input data");
 
   bse_source_clear_ochannels (source);
 
   if (BSE_SOURCE_PREPARED (source))
     {
-      g_warning ("bse_source_do_shutdown(): Uhh ohh, source still prepared during shutdown");
+      g_warning (G_STRLOC ": Uhh ohh, source still prepared during shutdown");
       bse_source_reset (source);
     }
 
@@ -184,7 +184,7 @@ bse_source_do_shutdown (BseObject *object)
       BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
 
       if (oc->ring_length)
-	g_warning ("bse_source_do_shutdown(): Eeek, output channel %d isn't reset?",
+	g_warning (G_STRLOC ": Eeek, output channel %d isn't reset?",
 		   i + 1);
       g_free (oc->chunks);
     }
@@ -519,7 +519,7 @@ bse_source_do_reset (BseSource *source)
 
       if (oc->in_calc)
 	{
-	  g_warning ("can't reset ochannel contents for %s \"%s\", in_calc flag not cleared",
+	  g_warning (G_STRLOC ": can't reset ochannel contents for %s \"%s\", in_calc flag not cleared",
 		     BSE_OBJECT_TYPE_NAME (source),
 		     BSE_OBJECT_NAME (source));
 	  continue;

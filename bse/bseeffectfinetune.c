@@ -27,9 +27,11 @@ enum {
 static void bse_effect_fine_tune_class_init (BseEffectClass      *class);
 static void bse_effect_fine_tune_init       (BseEffectFineTune *effect);
 static void bse_effect_fine_tune_set_param  (BseEffectFineTune *effect,
-					     BseParam          *param);
+					     BseParam          *param,
+					     guint              param_id);
 static void bse_effect_fine_tune_get_param  (BseEffectFineTune *effect,
-					     BseParam          *param);
+					     BseParam          *param,
+					     guint              param_id);
 
 
 /* --- functions --- */
@@ -83,36 +85,32 @@ bse_effect_fine_tune_init (BseEffectFineTune *effect)
 
 static void
 bse_effect_fine_tune_set_param (BseEffectFineTune *effect,
-				BseParam          *param)
+				BseParam          *param,
+				guint              param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_FINE_TUNE:
       effect->fine_tune = param->value.v_int;
       break;
     default:
-      g_warning ("%s: invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (effect),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (effect, param, param_id);
       break;
     }
 }
 
 static void
 bse_effect_fine_tune_get_param (BseEffectFineTune *effect,
-				BseParam          *param)
+                                BseParam          *param,
+				guint              param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_FINE_TUNE:
       param->value.v_int = effect->fine_tune;
       break;
     default:
-      g_warning ("%s: invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (effect),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (effect, param, param_id);
       break;
     }
 }

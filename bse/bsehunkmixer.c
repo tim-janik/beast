@@ -253,7 +253,7 @@ bse_hunk_mix (guint                 n_dest_tracks,
 		 dest_hunk + BSE_TRACK_LENGTH * n_dest_tracks,
 		 src_hunk);
   else
-    g_warning (G_GNUC_PRETTY_FUNCTION "(): mixing from %u source tracks to "
+    g_warning (G_STRLOC ": mixing from %u source tracks to "
 	       "%u destination tracks is not imlemented (probably underspecified)",
 	       n_src_tracks,
 	       n_dest_tracks);

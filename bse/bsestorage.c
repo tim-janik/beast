@@ -461,7 +461,7 @@ bse_storage_put_param (BseStorage *storage,
       break;
     default:
       bse_storage_putc (storage, '?');
-      g_warning ("invalid parameter type `%s' (%d)",
+      g_warning (G_STRLOC ": unhandled parameter type `%s' (%d)",
 		 bse_type_name (param->pspec->type),
 		 param->pspec->type);
       break;
@@ -664,7 +664,7 @@ bse_storage_parse_rest (BseStorage     *storage,
 	    {
 	      if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
 		{
-		  g_warning ("bse_storage_parse_rest(): try_statement() implementation <%p> is broken", try_statement);
+		  g_warning (G_STRLOC ": try_statement() implementation <%p> is broken", try_statement);
 		  return G_TOKEN_ERROR;
 		}
 	      expected_token = bse_storage_warn_skip (storage,

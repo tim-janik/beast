@@ -35,9 +35,11 @@ static void	bse_bin_data_class_init		(BseBinDataClass	*class);
 static void	bse_bin_data_init		(BseBinData		*bin_data);
 static void	bse_bin_data_destroy		(BseObject		*object);
 static void     bse_bin_data_set_param          (BseBinData		*bin_data,
-						 BseParam               *param);
+						 BseParam               *param,
+						 guint                   param_id);
 static void     bse_bin_data_get_param 		(BseBinData        	*bin_data,
-						 BseParam               *param);
+						 BseParam               *param,
+						 guint                   param_id);
 static void	bse_bin_data_free_values	(BseBinData		*bin_data);
 
 
@@ -118,12 +120,13 @@ bse_bin_data_destroy (BseObject *object)
 }
 
 static void
-bse_bin_data_set_param (BseBinData  *bin_data,
-			BseParam    *param)
+bse_bin_data_set_param (BseBinData *bin_data,
+			BseParam   *param,
+			guint       param_id)
 {
   if (bin_data->values)
     bse_bin_data_free_values (bin_data);
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_N_BITS:
       bin_data->bits_per_value = param->value.v_uint;
@@ -132,20 +135,17 @@ bse_bin_data_set_param (BseBinData  *bin_data,
       bin_data->bits_per_value = param->value.v_uint * 8;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (bin_data),
-		 BSE_OBJECT_NAME (bin_data),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (bin_data, param, param_id);
       break;
     }
 }
 
 static void
 bse_bin_data_get_param (BseBinData *bin_data,
-			BseParam   *param)
+                        BseParam   *param,
+			guint       param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_N_BITS:
       param->value.v_uint = bin_data->bits_per_value;
@@ -154,11 +154,7 @@ bse_bin_data_get_param (BseBinData *bin_data,
       param->value.v_uint = bin_data->bits_per_value * 8;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (bin_data),
-		 BSE_OBJECT_NAME (bin_data),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (bin_data, param, param_id);
       break;
     }
 }

@@ -27,9 +27,11 @@ enum {
 static void bse_effect_volume_delta_class_init (BseEffectClass      *class);
 static void bse_effect_volume_delta_init       (BseEffectVolumeDelta *effect);
 static void bse_effect_volume_delta_set_param  (BseEffectVolumeDelta *effect,
-						BseParam             *param);
+						BseParam             *param,
+						guint                 param_id);
 static void bse_effect_volume_delta_get_param  (BseEffectVolumeDelta *effect,
-						BseParam             *param);
+						BseParam             *param,
+						guint                 param_id);
      
 
 /* --- functions --- */
@@ -84,36 +86,32 @@ bse_effect_volume_delta_init (BseEffectVolumeDelta *effect)
 
 static void
 bse_effect_volume_delta_set_param (BseEffectVolumeDelta *effect,
-				   BseParam             *param)
+                                   BseParam             *param,
+				   guint                 param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_DELTA_PERC:
       effect->volume_delta = ((gfloat) param->value.v_uint) / 100;
       break;
     default:
-      g_warning ("%s: invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (effect),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (effect, param, param_id);
       break;
     }
 }
 
 static void
 bse_effect_volume_delta_get_param (BseEffectVolumeDelta *effect,
-				   BseParam             *param)
+                                   BseParam             *param,
+				   guint                 param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_DELTA_PERC:
       param->value.v_uint = effect->volume_delta * ((gfloat) 100) + 0.5;
       break;
     default:
-      g_warning ("%s: invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (effect),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (effect, param, param_id);
       break;
     }
 }

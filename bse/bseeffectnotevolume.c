@@ -28,9 +28,11 @@ enum {
 static void bse_effect_note_volume_class_init (BseEffectClass      *class);
 static void bse_effect_note_volume_init       (BseEffectNoteVolume *effect);
 static void bse_effect_note_volume_set_param  (BseEffectNoteVolume *effect,
-					       BseParam            *param);
+					       BseParam            *param,
+					       guint                param_id);
 static void bse_effect_note_volume_get_param  (BseEffectNoteVolume *effect,
-					       BseParam            *param);
+					       BseParam            *param,
+					       guint                param_id);
      
 
 /* --- functions --- */
@@ -92,9 +94,10 @@ bse_effect_note_volume_init (BseEffectNoteVolume *effect)
 
 static void
 bse_effect_note_volume_set_param (BseEffectNoteVolume *effect,
-				  BseParam            *param)
+				  BseParam            *param,
+				  guint                param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_VOLUME_PERC:
       effect->volume_factor = ((gfloat) param->value.v_uint) / 100;
@@ -105,19 +108,17 @@ bse_effect_note_volume_set_param (BseEffectNoteVolume *effect,
       bse_object_param_changed (BSE_OBJECT (effect), "volume_perc");
       break;
     default:
-      g_warning ("%s: invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (effect),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (effect, param, param_id);
       break;
     }
 }
 
 static void
 bse_effect_note_volume_get_param (BseEffectNoteVolume *effect,
-				  BseParam            *param)
+				  BseParam            *param,
+				  guint                param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_VOLUME_dB:
       param->value.v_float = bse_dB_from_factor (effect->volume_factor, BSE_MIN_VOLUME_dB);
@@ -126,10 +127,7 @@ bse_effect_note_volume_get_param (BseEffectNoteVolume *effect,
       param->value.v_uint = effect->volume_factor * ((gfloat) 100) + 0.5;
       break;
     default:
-      g_warning ("%s: invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (effect),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (effect, param, param_id);
       break;
     }
 }

@@ -37,9 +37,11 @@ static void	 bse_sinstrument_class_init	(BseSInstrumentClass *class);
 static void	 bse_sinstrument_class_destroy	(BseSInstrumentClass *class);
 static void	 bse_sinstrument_do_shutdown	(BseObject     	     *object);
 static void      bse_sinstrument_set_param      (BseSInstrument      *sinstrument,
-						 BseParam            *param);
+						 BseParam            *param,
+						 guint                param_id);
 static void      bse_sinstrument_get_param      (BseSInstrument      *sinstrument,
-						 BseParam            *param);
+						 BseParam            *param,
+						 guint                param_id);
 static void      bse_sinstrument_prepare        (BseSource           *source,
 						 BseIndex             index);
 static BseChunk* bse_sinstrument_calc_chunk     (BseSource           *source,
@@ -132,27 +134,25 @@ bse_sinstrument_init (BseSInstrument *sinstrument)
 
 static void
 bse_sinstrument_set_param (BseSInstrument *sinstrument,
-			   BseParam       *param)
+			   BseParam       *param,
+			   guint           param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_INSTRUMENT:
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (sinstrument),
-		 BSE_OBJECT_NAME (sinstrument),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (sinstrument, param, param_id);
       break;
     }
 }
 
 static void
 bse_sinstrument_get_param (BseSInstrument *sinstrument,
-			   BseParam       *param)
+                           BseParam       *param,
+			   guint           param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_INSTRUMENT:
       if (param->value.v_item)
@@ -162,11 +162,7 @@ bse_sinstrument_get_param (BseSInstrument *sinstrument,
 	bse_object_ref (BSE_OBJECT (param->value.v_item));
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (sinstrument),
-		 BSE_OBJECT_NAME (sinstrument),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (sinstrument, param, param_id);
       break;
     }
 }

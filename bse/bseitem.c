@@ -216,7 +216,7 @@ bse_item_cross_ref (BseItem         *owner,
   if (container)
     bse_container_cross_ref (BSE_CONTAINER (container), owner, ref_item, destroy_func, data);
   else
-    g_warning (G_STRLOC "`%s' and `%s' have no common anchestor",
+    g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
 	       BSE_OBJECT_TYPE_NAME (owner),
 	       BSE_OBJECT_TYPE_NAME (ref_item));
 }
@@ -235,7 +235,7 @@ bse_item_cross_unref (BseItem *owner,
   if (container)
     bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item);
   else
-    g_warning (G_STRLOC "`%s' and `%s' have no common anchestor",
+    g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
 	       BSE_OBJECT_TYPE_NAME (owner),
 	       BSE_OBJECT_TYPE_NAME (ref_item));
 }

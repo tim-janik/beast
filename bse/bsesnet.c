@@ -45,9 +45,11 @@ static void      bse_snet_init                   (BseSNet        *snet);
 static BseIcon*  bse_snet_do_get_icon            (BseObject      *object);
 static void      bse_snet_do_shutdown            (BseObject      *object);
 static void      bse_snet_set_param              (BseSNet        *snet,
-						  BseParam       *param);
+						  BseParam       *param,
+						  guint           param_id);
 static void      bse_snet_get_param              (BseSNet        *snet,
-						  BseParam       *param);
+						  BseParam       *param,
+						  guint           param_id);
 static void      bse_snet_add_item               (BseContainer   *container,
 						  BseItem        *item);
 static void      bse_snet_forall_items           (BseContainer   *container,
@@ -188,9 +190,10 @@ bse_snet_do_get_icon (BseObject *object)
 
 static void
 bse_snet_set_param (BseSNet  *snet,
-                    BseParam *param)
+                    BseParam *param,
+		    guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_VOLUME_f:
       snet->volume_factor = param->value.v_float;
@@ -208,20 +211,17 @@ bse_snet_set_param (BseSNet  *snet,
       bse_object_param_changed (BSE_OBJECT (snet), "volume_dB");
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-                 BSE_OBJECT_TYPE_NAME (snet),
-                 BSE_OBJECT_NAME (snet),
-                 param->pspec->any.name,
-                 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (snet, param, param_id);
       break;
     }
 }
 
 static void
 bse_snet_get_param (BseSNet  *snet,
-                    BseParam *param)
+                    BseParam *param,
+		    guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_VOLUME_f:
       param->value.v_float = snet->volume_factor;
@@ -233,11 +233,7 @@ bse_snet_get_param (BseSNet  *snet,
       param->value.v_uint = snet->volume_factor * 100.0 + 0.5;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-                 BSE_OBJECT_TYPE_NAME (snet),
-                 BSE_OBJECT_NAME (snet),
-                 param->pspec->any.name,
-                 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (snet, param, param_id);
       break;
     }
 }

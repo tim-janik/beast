@@ -41,9 +41,11 @@ static void	    bse_sample_class_init		(BseSampleClass *class);
 static void	    bse_sample_init			(BseSample	*sample);
 static void	    bse_sample_do_shutdown		(BseObject	*object);
 static void	    bse_sample_set_param		(BseSample	*sample,
-							 BseParam	*param);
+							 BseParam	*param,
+							 guint           param_id);
 static void	    bse_sample_get_param		(BseSample	*sample,
-							 BseParam	*param);
+							 BseParam	*param,
+							 guint           param_id);
 static void	    bse_sample_do_store_private		(BseObject	*object,
 							 BseStorage	*storage);
 static GTokenType   bse_sample_do_restore		(BseObject	*object,
@@ -160,9 +162,10 @@ bse_sample_do_shutdown (BseObject *object)
 
 static void
 bse_sample_set_param (BseSample *sample,
-		      BseParam *param)
+		      BseParam  *param,
+		      guint      param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_N_TRACKS:
       sample->n_tracks = param->value.v_uint;
@@ -171,20 +174,17 @@ bse_sample_set_param (BseSample *sample,
       sample->rec_freq = param->value.v_uint;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (sample),
-		 BSE_OBJECT_NAME (sample),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (sample, param, param_id);
       break;
     }
 }
 
 static void
 bse_sample_get_param (BseSample *sample,
-		      BseParam *param)
+		      BseParam  *param,
+		      guint      param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_N_TRACKS:
       param->value.v_uint = sample->n_tracks;
@@ -193,11 +193,7 @@ bse_sample_get_param (BseSample *sample,
       param->value.v_uint = sample->rec_freq;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (sample),
-		 BSE_OBJECT_NAME (sample),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (sample, param, param_id);
       break;
     }
 }

@@ -59,13 +59,15 @@ static void		bse_object_init			(BseObject	*object);
 static void		bse_object_do_shutdown		(BseObject	*object);
 static void		bse_object_do_destroy		(BseObject	*object);
 static void     	bse_object_do_set_param		(BseObject      *object,
-							 BseParam       *param);
+							 BseParam       *param,
+							 guint           param_id);
 static void     	bse_object_do_get_param		(BseObject      *object,
-							 BseParam       *param);
+							 BseParam       *param,
+							 guint           param_id);
 static void     	bse_object_do_set_name		(BseObject      *object,
 							 const gchar	*name);
-static guint		bse_pspec_hash			(gconstpointer	 key_spec);
-static gint		bse_pspec_equals		(gconstpointer	 key_spec_1,
+static guint		bse_ospec_hash			(gconstpointer	 key_spec);
+static gint		bse_ospec_equals		(gconstpointer	 key_spec_1,
 							 gconstpointer	 key_spec_2);
 static void		bse_object_do_store_private	(BseObject      *object,
 							 BseStorage     *storage);
@@ -85,7 +87,7 @@ GQuark		   _bse_quark_name = 0;
 static GQuark      quark_blurb = 0;
 static GQuark      quark_hook_list = 0;
 static GHashTable *bse_object_names_ht = NULL;
-static GHashTable *bse_pspec_ht = NULL;
+static GHashTable *bse_ospec_ht = NULL;
 static GQuark      quark_param_changed_queue = 0;
 
 
@@ -191,7 +193,7 @@ bse_object_class_base_init (BseObjectClass *class)
 {
   guint i;
   
-  class->n_params = 0;
+  class->n_param_specs = 0;
   class->param_specs = NULL;
   
   class->n_notifiers = 0;
@@ -223,10 +225,11 @@ bse_object_class_base_destroy (BseObjectClass *class)
 {
   guint i;
 
-  for (i = 0; i < class->n_params; i++)
+  for (i = 0; i < class->n_param_specs; i++)
     {
-      g_hash_table_remove (bse_pspec_ht, class->param_specs[i]);
-      bse_param_spec_free (class->param_specs[i]);
+      g_hash_table_remove (bse_ospec_ht, class->param_specs[i]);
+      bse_param_spec_free_fields (&class->param_specs[i]->pspec);
+      g_free (class->param_specs[i]);
     }
   g_free (class->param_specs);
 
@@ -244,7 +247,7 @@ bse_object_class_init (BseObjectClass *class)
 
   _bse_quark_name = g_quark_from_static_string ("BseName");
   bse_object_names_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
-  bse_pspec_ht = g_hash_table_new (bse_pspec_hash, bse_pspec_equals);
+  bse_ospec_ht = g_hash_table_new (bse_ospec_hash, bse_ospec_equals);
 
   class->store_termination = bse_object_do_store_termination;
   class->try_statement = bse_object_do_try_statement;
@@ -356,9 +359,10 @@ bse_object_do_set_name (BseObject   *object,
 
 static void
 bse_object_do_set_param (BseObject *object,
-			 BseParam  *param)
+			 BseParam  *param,
+			 guint      param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
       gchar *string;
 
@@ -379,19 +383,17 @@ bse_object_do_set_param (BseObject *object,
       bse_object_set_qdata_full (object, quark_blurb, string, g_free);
       break;
     default:
-      g_warning (G_STRLOC "%s: invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (object),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (object, param, param_id);
       break;
     }
 }
 
 static void
 bse_object_do_get_param (BseObject *object,
-			 BseParam  *param)
+			 BseParam  *param,
+			 guint      param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_NAME:
       g_free (param->value.v_string);
@@ -402,10 +404,7 @@ bse_object_do_get_param (BseObject *object,
       param->value.v_string = g_strdup (bse_object_get_qdata (object, quark_blurb));
       break;
     default:
-      g_warning (G_STRLOC "%s: invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (object),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (object, param, param_id);
       break;
     }
 }
@@ -553,9 +552,6 @@ bse_object_unref (BseObject *object)
   if (object->ref_count == 1 && !BSE_OBJECT_DESTROYED (object))
     {
       BseObjectClass *class = BSE_OBJECT_GET_CLASS (object);
-
-      if (BSE_OBJECT_IN_PARAM_CHANGED (object))
-	g_warning (G_STRLOC "object destructed while in param_changed(), probably ref_count mess");
 
       /* amongst other things, invoke destroy notifiers and set destroyed flag */
       class->shutdown (object);
@@ -770,7 +766,7 @@ bse_hook_list_destroy (gpointer data)
   g_hook_list_clear (hook_list);
   /* FIXME hook_list needs destruction notifier */
   if (hook_list->hooks || hook_list->hook_memchunk)
-    g_warning (G_STRLOC "hook_list destruction failed, leaking memory...");
+    g_warning (G_STRLOC ": hook_list destruction failed, leaking memory...");
   else
     g_free (hook_list);
 }
@@ -808,7 +804,7 @@ bse_object_add_notifier_i (BseObject     *object,
 
       if (!quark || !bse_object_class_check_notifier (BSE_OBJECT_GET_CLASS (object), quark))
 	{
-	  g_warning (G_STRLOC "unable to find notify method \"%s\" in the `%s' class",
+	  g_warning (G_STRLOC ": unable to find notify method \"%s\" in the `%s' class",
 		     method,
 		     BSE_OBJECT_TYPE_NAME (object));
 	  return 0;
@@ -932,7 +928,7 @@ bse_object_remove_notifiers_i (BseObject   *object,
     }
 
   if (!found_one)
-    g_warning (G_STRLOC "couldn't remove notifier from %s \"%s\"",
+    g_warning (G_STRLOC ": couldn't remove notifier from %s \"%s\"",
 	       BSE_OBJECT_TYPE_NAME (object),
 	       BSE_OBJECT_NAME (object));
 }
@@ -964,7 +960,7 @@ bse_object_remove_notifier (gpointer _object,
     id = !g_hook_destroy (hook_list, id);
 
   if (id)
-    g_warning (G_STRLOC "couldn't remove notifier (%u) from %s \"%s\"",
+    g_warning (G_STRLOC ": couldn't remove notifier (%u) from %s \"%s\"",
 	       oid,
 	       BSE_OBJECT_TYPE_NAME (object),
 	       BSE_OBJECT_NAME (object));
@@ -1152,144 +1148,162 @@ bse_object_class_add_param (BseObjectClass *class,
 			    guint	    param_id,
 			    BseParamSpec   *pspec)
 {
+  BseObjectParamSpec *ospec;
   guint i;
   
   g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
   g_return_if_fail (BSE_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (pspec->any.parent_type == 0);
-  g_return_if_fail (pspec->any.param_group == 0);
-  g_return_if_fail (pspec->any.param_id == 0);
   if (pspec->any.flags & BSE_PARAM_WRITABLE)
     g_return_if_fail (class->set_param != NULL);
   if (pspec->any.flags & BSE_PARAM_READABLE)
     g_return_if_fail (class->get_param != NULL);
   
-  for (i = 0; i < class->n_params; i++)
+  for (i = 0; i < class->n_param_specs; i++)
     {
-      if (class->param_specs[i]->any.param_id == param_id)
+      if (class->param_specs[i]->param_id == param_id)
 	{
-	  g_warning (G_STRLOC "class `%s' already contains a parameter with id %u",
+	  g_warning (G_STRLOC ": class `%s' already contains a parameter with id %u",
 		     BSE_CLASS_NAME (class),
 		     param_id);
 	  return;
 	}
     }
-  
-  pspec->any.parent_type = BSE_CLASS_TYPE (class);
-  if (g_hash_table_lookup (bse_pspec_ht, pspec))
+  if (bse_object_class_find_param_spec (class, pspec->any.name))
     {
-      g_warning (G_STRLOC "class `%s' already contains a parameter named `%s'",
+      g_warning (G_STRLOC ": class `%s' already contains a parameter named `%s'",
 		 BSE_CLASS_NAME (class),
 		 pspec->any.name);
-      pspec->any.parent_type = 0;
       return;
     }
-  g_hash_table_insert (bse_pspec_ht, pspec, pspec);
-  
-  pspec->any.param_group = param_group ? g_quark_from_string (param_group) : 0;
-  i = class->n_params++;
-  class->param_specs = g_renew (BseParamSpec*, class->param_specs, class->n_params + 1);
-  class->param_specs[i] = pspec;
-  pspec->any.param_id = param_id;
-  i++;
-  class->param_specs[i] = NULL;
+
+  ospec = bse_param_spec_renew (pspec, G_STRUCT_OFFSET (BseObjectParamSpec, pspec));
+  ospec->param_id = param_id;
+  ospec->param_group = param_group ? g_quark_from_string (param_group) : 0;
+  ospec->object_type = BSE_CLASS_TYPE (class);
+  i = class->n_param_specs++;
+  class->param_specs = g_renew (BseObjectParamSpec*, class->param_specs, class->n_param_specs);
+  class->param_specs[i] = ospec;
+
+  g_hash_table_insert (bse_ospec_ht, ospec, ospec);
 }
 
 static guint
-bse_pspec_hash (gconstpointer key_spec)
+bse_ospec_hash (gconstpointer key_spec)
 {
-  const BseParamSpecAny *key = key_spec;
+  const BseObjectParamSpec *key = key_spec;
   const gchar *p;
-  guint h = BSE_TYPE_SEQNO (key->parent_type);
+  guint h = key->object_type >> 8; /* keep the number low so we don't shift too early */
 
-  for (p = key->name; *p; p++)
+  for (p = key->pspec.any.name; *p; p++)
     {
       register guint g;
 
       h = (h << 4) + *p;
       g = h & 0xf0000000;
       if (g)
-	h = h ^ (g >> 26);
+	h = h ^ (g | g >> 25);
     }
 
   return h;
 }
 
 static gint
-bse_pspec_equals (gconstpointer key_spec_1,
+bse_ospec_equals (gconstpointer key_spec_1,
 		  gconstpointer key_spec_2)
 {
-  const BseParamSpecAny *key1 = key_spec_1;
-  const BseParamSpecAny *key2 = key_spec_2;
+  const BseObjectParamSpec *key1 = key_spec_1;
+  const BseObjectParamSpec *key2 = key_spec_2;
 
-  return (key1->parent_type == key2->parent_type &&
-	  strcmp (key1->name, key2->name) == 0);
+  return (key1->object_type == key2->object_type &&
+	  strcmp (key1->pspec.any.name, key2->pspec.any.name) == 0);
+}
+
+static BseObjectParamSpec*
+bse_object_class_find_object_param_spec (BseObjectClass *class,
+					 const gchar    *param_name)
+{
+  BseObjectParamSpec *ospec;
+  BseObjectParamSpec key;
+  
+  key.object_type = BSE_CLASS_TYPE (class);
+  key.pspec.any.name = g_strdup (param_name);
+  g_strcanon (key.pspec.any.name, "-", '-');
+
+  do
+    {
+      ospec = g_hash_table_lookup (bse_ospec_ht, &key);
+      if (ospec)
+	break;
+      key.object_type = bse_type_parent (key.object_type);
+    }
+  while (key.object_type);
+
+  g_free (key.pspec.any.name);
+
+  return ospec;
+}
+
+BseParamSpec*
+bse_object_class_find_param_spec (BseObjectClass *class,
+				  const gchar    *param_name)
+{
+  BseObjectParamSpec *ospec;
+
+  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (class), NULL);
+  g_return_val_if_fail (param_name != NULL, NULL);
+
+  ospec = bse_object_class_find_object_param_spec (class, param_name);
+
+  return ospec ? &ospec->pspec : NULL;
+}
+
+guint
+bse_object_class_get_n_param_specs (BseObjectClass *class)
+{
+  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (class), 0);
+
+  return class->n_param_specs;
 }
 
 BseParamSpec*
 bse_object_class_get_param_spec (BseObjectClass *class,
-				 const gchar    *param_name)
+				 guint           nth,
+				 GQuark         *param_group)
 {
-  BseParamSpec *pspec;
-  BseParamSpecAny key;
-  
   g_return_val_if_fail (BSE_IS_OBJECT_CLASS (class), NULL);
-  g_return_val_if_fail (param_name != NULL, NULL);
+  g_return_val_if_fail (nth < class->n_param_specs, NULL);
 
-  key.parent_type = BSE_CLASS_TYPE (class);
-  key.name = g_strdup (param_name);
-  g_strcanon (key.name, "-", '-');
+  if (param_group)
+    *param_group = class->param_specs[nth]->param_group;
 
-  do
-    {
-      pspec = g_hash_table_lookup (bse_pspec_ht, &key);
-      if (pspec)
-	break;
-      key.parent_type = bse_type_parent (key.parent_type);
-    }
-  while (key.parent_type);
-
-  g_free (key.name);
-
-  return pspec;
+  return &class->param_specs[nth]->pspec;
 }
 
 static gboolean
 notify_param_changed (gpointer data)
 {
   BseObject *object = BSE_OBJECT (data);
-
+  GSList *slist = bse_object_get_qdata (object, quark_param_changed_queue);
+  
   /* a reference count is still being held */
-
-  if (BSE_OBJECT_IN_PARAM_CHANGED (object))
-    g_warning (G_STRLOC "object `%s' still flagged `IN_PARAM_CHANGED' in idle handler, something's messed",
-	       BSE_OBJECT_TYPE_NAME (object));
-  else
-    {
-      GSList *slist = bse_object_get_qdata (object, quark_param_changed_queue);
-      
-      BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
-      
-      for (; slist; slist = slist->next)
-	if (slist->data)
-	  {
-	    BseParamSpec *pspec = slist->data;
-	    
-	    slist->data = NULL;
-	    BSE_NOTIFY (object, param_changed, NOTIFY (OBJECT, pspec, DATA));
-	  }
-      
-      BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
-
-      bse_object_set_qdata (object, quark_param_changed_queue, NULL);
-    }
+  
+  for (; slist; slist = slist->next)
+    if (slist->data)
+      {
+	BseObjectParamSpec *ospec = slist->data;
+	
+	slist->data = NULL;
+	BSE_NOTIFY (object, param_changed, NOTIFY (OBJECT, &ospec->pspec, DATA));
+      }
+  
+  bse_object_set_qdata (object, quark_param_changed_queue, NULL);
   
   return FALSE;
 }
 
 static inline void
-bse_object_queue_param_changed (BseObject    *object,
-				BseParamSpec *pspec)
+bse_object_queue_param_changed (BseObject          *object,
+				BseObjectParamSpec *ospec)
 {
   GSList *slist, *last = NULL;
 
@@ -1301,7 +1315,7 @@ bse_object_queue_param_changed (BseObject    *object,
   
   slist = bse_object_get_qdata (object, quark_param_changed_queue);
   for (; slist; last = slist, slist = last->next)
-    if (slist->data == pspec)
+    if (slist->data == ospec)
       return;
   
   if (!last)
@@ -1313,27 +1327,29 @@ bse_object_queue_param_changed (BseObject    *object,
 		       (GDestroyNotify) bse_object_unref);
       bse_object_set_qdata_full (object,
 				 quark_param_changed_queue,
-				 g_slist_prepend (NULL, pspec),
+				 g_slist_prepend (last, ospec),
 				 (GDestroyNotify) g_slist_free);
     }
   else
-    last->next = g_slist_append (NULL, pspec);
+    last->next = g_slist_prepend (NULL, ospec);
 }
 
 void
 bse_object_param_changed (BseObject   *object,
 			  const gchar *param_name)
 {
-  BseParamSpec *pspec;
+  BseObjectParamSpec *ospec;
   
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (param_name != NULL);
 
-  pspec = bse_object_class_get_param_spec (BSE_OBJECT_GET_CLASS (object), param_name);
-  if (!pspec)
-    g_warning (G_STRLOC "invalid parameter name `%s'", param_name);
+  ospec = bse_object_class_find_object_param_spec (BSE_OBJECT_GET_CLASS (object), param_name);
+  if (!ospec)
+    g_warning ("%s: object class `%s' has no parameter named `%s'", G_STRLOC,
+	       BSE_OBJECT_NAME (object),
+	       param_name);
   else
-    bse_object_queue_param_changed (object, pspec);
+    bse_object_queue_param_changed (object, ospec);
 }
 
 void
@@ -1343,7 +1359,6 @@ bse_object_set_valist (BseObject   *object,
 {
   BseObjectClass *class;
   const gchar *name;
-  gboolean in_param_changed;
   
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (!BSE_OBJECT_DESTROYED (object));
@@ -1352,28 +1367,27 @@ bse_object_set_valist (BseObject   *object,
 
   class = BSE_OBJECT_GET_CLASS (object);
 
-  in_param_changed = BSE_OBJECT_IN_PARAM_CHANGED (object);
-  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
-  
   name = first_param_name;
   while (name)
     {
-      BseParamSpec *pspec;
+      BseObjectParamSpec *ospec;
       BseParam param = { NULL };
       gchar *error;
       
-      pspec = bse_object_class_get_param_spec (class, name);
-      if (!pspec)
+      ospec = bse_object_class_find_object_param_spec (class, name);
+      if (!ospec)
 	{
-	  g_warning (G_STRLOC "invalid parameter name `%s'", name);
+	  g_warning ("%s: object class `%s' has no parameter named `%s'", G_STRLOC,
+		     BSE_OBJECT_NAME (object),
+		     name);
 	  goto bail_out;
 	}
       
-      bse_param_init (&param, pspec);
+      bse_param_init (&param, &ospec->pspec);
       BSE_PARAM_COLLECT_VALUE (&param, var_args, error);
       if (error)
 	{
-	  g_warning (G_STRLOC "%s", error);
+	  g_warning (G_STRLOC ": %s", error);
 	  g_free (error);
           goto bail_out;
 	}
@@ -1386,9 +1400,6 @@ bse_object_set_valist (BseObject   *object,
     }
   
  bail_out:
-
-  if (!in_param_changed)
-    BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
   
   bse_object_unref (object);
 }
@@ -1398,25 +1409,47 @@ bse_object_set_param (BseObject	*object,
 		      BseParam	*param)
 {
   BseObjectClass *class;
-  gboolean in_param_changed;
+  BseObjectParamSpec *ospec;
+  BseParam tmp_param = { NULL, };
   
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (BSE_IS_PARAM (param));
   g_return_if_fail (param->pspec->any.flags & BSE_PARAM_WRITABLE);
-  g_return_if_fail (bse_type_is_a (BSE_OBJECT_TYPE (object), param->pspec->any.parent_type));
   g_return_if_fail (!BSE_OBJECT_DESTROYED (object));
-  
-  class = bse_type_class_peek (param->pspec->any.parent_type);
-  g_return_if_fail (class != NULL); /* paranoid */
 
+  class = BSE_OBJECT_GET_CLASS (object);
+  ospec = bse_object_class_find_object_param_spec (class, param->pspec->any.name);
+  if (!ospec)
+    {
+      g_warning ("%s: object class `%s' has no parameter named `%s'", G_STRLOC,
+		 BSE_OBJECT_NAME (object),
+		 param->pspec->any.name);
+      return;
+    }
+
+  /* provide a copy to work from, or convert if necessary */
+  bse_param_init (&tmp_param, &ospec->pspec);
+  if (&ospec->pspec != param->pspec)
+    {
+      if (!bse_param_value_convert (param, &tmp_param))
+	{
+	  g_warning ("%s: can't convert object parameter `%s' from `%s' to `%s'", G_STRLOC,
+		     param->pspec->any.name,
+		     bse_type_name (param->pspec->type),
+		     bse_type_name (ospec->pspec.type));
+	  return;
+	}
+    }
+  else
+    bse_param_copy_value (param, &tmp_param);
+  
   bse_object_ref (object);
 
-  in_param_changed = BSE_OBJECT_IN_PARAM_CHANGED (object);
-  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
-  class->set_param (object, param);
-  if (!in_param_changed)
-    BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
-  bse_object_queue_param_changed (object, param->pspec);
+  class = bse_type_class_peek (ospec->object_type);
+  class->set_param (object, &tmp_param, ospec->param_id);
+  bse_object_queue_param_changed (object, ospec);
+
+  bse_param_free_value (&tmp_param);
 
   bse_object_unref (object);
 }
@@ -1426,24 +1459,48 @@ bse_object_get_param (BseObject *object,
 		      BseParam  *param)
 {
   BseObjectClass *class;
+  BseObjectParamSpec *ospec;
+  BseParam tmp_param = { NULL, };
   
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (BSE_IS_PARAM (param));
   g_return_if_fail (param->pspec->any.flags & BSE_PARAM_READABLE);
-  g_return_if_fail (bse_type_is_a (BSE_OBJECT_TYPE (object), param->pspec->any.parent_type));
   
-  class = bse_type_class_peek (param->pspec->any.parent_type);
-  g_return_if_fail (class != NULL); /* paranoid */
+  class = BSE_OBJECT_GET_CLASS (object);
+  ospec = bse_object_class_find_object_param_spec (class, param->pspec->any.name);
+  if (!ospec)
+    {
+      g_warning ("%s: object class `%s' has no parameter named `%s'", G_STRLOC,
+		 BSE_OBJECT_NAME (object),
+		 param->pspec->any.name);
+      return;
+    }
+
+  /* provide a copy to work from and later convert if necessary, so
+   * _get_param() implementations need *not* care about freeing values
+   * that might be already set in the parameter to get
+   */
+  bse_param_init (&tmp_param, &ospec->pspec);
 
   bse_object_ref (object);
 
-  /* _get_param functions need to free current parameter values
-   * themselves.
-   *
-   * bse_param_free_value (param);
-   */
+  class = bse_type_class_peek (ospec->object_type);
+  class->get_param (object, &tmp_param, ospec->param_id);
 
-  class->get_param (object, param);
+  if (tmp_param.pspec != param->pspec)
+    {
+      if (!bse_param_values_exchange (&tmp_param, param))
+	{
+	  g_warning ("%s: can't convert object parameter `%s' from `%s' to `%s'", G_STRLOC,
+		     tmp_param.pspec->any.name,
+		     bse_type_name (tmp_param.pspec->type),
+		     bse_type_name (param->pspec->type));
+	}
+    }
+  else
+    bse_param_copy_value (&tmp_param, param);
+
+  bse_param_free_value (&tmp_param);
 
   bse_object_unref (object);
 }
@@ -1498,9 +1555,9 @@ bse_object_do_store_private (BseObject  *object,
 
       class = slist->data;
       
-      for (i = 0; i < class->n_params; i++)
+      for (i = 0; i < class->n_param_specs; i++)
 	{
-	  BseParamSpec *pspec = class->param_specs[i];
+	  BseParamSpec *pspec = &class->param_specs[i]->pspec;
 	  
 	  if (pspec->any.flags & BSE_PARAM_SERVE_STORAGE)
 	    {
@@ -1629,8 +1686,8 @@ bse_object_do_restore_private (BseObject  *object,
    * restrict them to BSE_PARAM_SERVE_STORAGE and
    * BSE_PARAM_SERVE_GUI at some point...)
    */
-  pspec = bse_object_class_get_param_spec (BSE_OBJECT_GET_CLASS (object),
-					   scanner->next_value.v_identifier);
+  pspec = bse_object_class_find_param_spec (BSE_OBJECT_GET_CLASS (object),
+					    scanner->next_value.v_identifier);
   if (!pspec)
     return BSE_TOKEN_UNMATCHED;
 

@@ -863,7 +863,7 @@ bse_container_cross_unref (BseContainer *container,
     }
 
   if (!found_one)
-    g_warning (G_STRLOC "unable to find cross ref from `%s' to `%s' on `%s'",
+    g_warning (G_STRLOC ": unable to find cross ref from `%s' to `%s' on `%s'",
 	       BSE_OBJECT_TYPE_NAME (owner),
 	       BSE_OBJECT_TYPE_NAME (ref_item),
 	       BSE_OBJECT_TYPE_NAME (container));

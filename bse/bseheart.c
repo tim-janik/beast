@@ -34,9 +34,11 @@ static void        bse_heart_class_init    (BseHeartClass *class);
 static void        bse_heart_shutdown      (BseObject     *object);
 static void        bse_heart_destroy       (BseObject     *object);
 static void        bse_heart_set_param     (BseHeart	  *heart,
-					    BseParam      *param);
+					    BseParam      *param,
+					    guint          param_id);
 static void        bse_heart_get_param     (BseHeart	  *heart,
-					    BseParam      *param);
+					    BseParam      *param,
+					    guint          param_id);
 static gboolean	   bse_heart_prepare	   (gpointer       source_data,
 					    GTimeVal      *current_time,
 					    gint          *timeout,
@@ -174,38 +176,32 @@ bse_heart_destroy (BseObject *object)
 
 static void
 bse_heart_set_param (BseHeart *heart,
-		     BseParam *param)
+		     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_LATENCY:
       heart->latency = param->value.v_uint;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (heart),
-		 BSE_OBJECT_NAME (heart),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (heart, param, param_id);
       break;
     }
 }
 
 static void
 bse_heart_get_param (BseHeart *heart,
-		     BseParam *param)
+                     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_LATENCY:
       param->value.v_uint = heart->latency;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (heart),
-		 BSE_OBJECT_NAME (heart),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (heart, param, param_id);
       break;
     }
 }

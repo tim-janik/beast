@@ -70,14 +70,6 @@ struct _BseDot
   gfloat y;
 };
 
-struct _BseImage
-{
-  guint          width;
-  guint          height;
-  guint          bytes_per_pixel; /* 3:RGB, 4:RGBA */
-  guint8         pixel_data[521 * 208 * 4];
-};
-
 union _BseParamValue
 {
   gboolean       v_bool;
@@ -104,24 +96,18 @@ struct _BseParam
 struct _BseParamSpecAny
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
 };
 struct _BseParamSpecBool
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   gboolean       default_value;
   
@@ -131,13 +117,10 @@ struct _BseParamSpecBool
 struct _BseParamSpecInt
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   gint          minimum;
   gint          maximum;
@@ -147,13 +130,10 @@ struct _BseParamSpecInt
 struct _BseParamSpecUInt
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   guint         minimum;
   guint         maximum;
@@ -163,13 +143,10 @@ struct _BseParamSpecUInt
 struct _BseParamSpecEnum
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   BseEnumClass  *enum_class;
   gint           default_value;
@@ -177,13 +154,10 @@ struct _BseParamSpecEnum
 struct _BseParamSpecFlags
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   BseFlagsClass *flags_class;
   guint          default_value;
@@ -191,13 +165,10 @@ struct _BseParamSpecFlags
 struct _BseParamSpecFloat
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   gfloat        minimum;
   gfloat        maximum;
@@ -207,13 +178,10 @@ struct _BseParamSpecFloat
 struct _BseParamSpecDouble
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   gdouble       minimum;
   gdouble       maximum;
@@ -223,26 +191,20 @@ struct _BseParamSpecDouble
 struct _BseParamSpecTime
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   BseTime       default_value;
 };
 struct _BseParamSpecNote
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   gint          minimum;
   gint          maximum;
@@ -253,28 +215,22 @@ struct _BseParamSpecNote
 struct _BseParamSpecIndex2D
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   guint          horz_maximum;
   guint          vert_maximum;
-  guint         default_value;
+  guint          default_value;
 };
 struct _BseParamSpecString
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   gchar         *default_value;
   
@@ -285,13 +241,10 @@ struct _BseParamSpecString
 struct _BseParamSpecDots
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   guint          n_dots;
   BseDot        *default_dots;
@@ -299,13 +252,10 @@ struct _BseParamSpecDots
 struct _BseParamSpecItem
 {
   BseTypeClass   bse_class;
-  BseType        parent_type;
   gchar         *name;
-  GQuark         param_group;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
-  guint          param_id;
   
   BseType        item_type;
 };
@@ -338,10 +288,10 @@ void            bse_param_init          (BseParam       *param,
 void            bse_param_init_default  (BseParam       *param,
                                          BseParamSpec   *pspec);
 gboolean        bse_param_validate      (BseParam       *param);
-gboolean        bse_param_defaults      (BseParam       *param);
-gint            bse_param_values_cmp    (BseParam       *param1,
-                                         BseParam       *param2);
-void            bse_param_copy_value    (BseParam       *param_src,
+gboolean        bse_param_defaults      (const BseParam *param);
+gint            bse_param_values_cmp    (const BseParam *param1,
+                                         const BseParam *param2);
+void            bse_param_copy_value    (const BseParam *param_src,
                                          BseParam       *param_dest);
 void            bse_param_move_value    (BseParam       *param,
                                          gpointer        value_p);
@@ -378,12 +328,12 @@ gboolean        bse_param_set_dot       (BseParam       *param,
 gboolean        bse_param_set_item      (BseParam       *param,
                                          BseItem        *v_item);
 /* bonbons */
-gboolean        bse_param_value_convert     (BseParam   *param_src,
-                                             BseParam   *param_dest);
-gboolean        bse_param_values_exchange   (BseParam   *param1,
-                                             BseParam   *param2);
-gboolean        bse_param_types_exchangable (BseType     param_type1,
-                                             BseType     param_type2);
+gboolean    bse_param_value_convert     (const BseParam *param_src,
+					 BseParam       *param_dest);
+gboolean    bse_param_values_exchange   (BseParam       *param1,
+					 BseParam       *param2);
+gboolean    bse_param_types_exchangable (BseType         param_type1,
+					 BseType         param_type2);
 
 
 /* --- param specs --- */
@@ -481,6 +431,10 @@ BseParamSpec*   bse_param_spec_item     (const gchar    *name,
                                          BseParamBits    flags);
 
 
+/* --- internal (for derivation) --- */
+gpointer     bse_param_spec_renew       (BseParamSpec   *pspec,
+					 guint           n_prepend_bytes);
+void         bse_param_spec_free_fields (BseParamSpec   *static_pspec);
 
 
 #ifdef __cplusplus

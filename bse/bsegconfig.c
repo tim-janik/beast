@@ -43,9 +43,11 @@ static void	   bse_gconfig_init		   (BseGConfig	     *gconf);
 static void	   bse_gconfig_class_init	   (BseGConfigClass  *class);
 static void	   bse_gconfig_class_destroy	   (BseGConfigClass  *class);
 static void        bse_gconfig_set_param           (BseGConfig	     *gconf,
-						    BseParam         *param);
+						    BseParam         *param,
+						    guint             param_id);
 static void        bse_gconfig_get_param           (BseGConfig	     *gconf,
-						    BseParam         *param);
+						    BseParam         *param,
+						    guint             param_id);
 static void	   bse_gconfig_do_shutdown	   (BseObject        *object);
 static void	   bse_gconfig_do_destroy	   (BseObject        *object);
 static void        bse_gconfig_do_apply            (BseGConfig       *gconf);
@@ -227,9 +229,10 @@ bse_gconfig_class_init (BseGConfigClass *class)
 
 static void
 bse_gconfig_set_param (BseGConfig *gconf,
-		       BseParam   *param)
+		       BseParam   *param,
+		       guint       param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_STEP_VOLUME_dB:
       gconf->globals.step_volume_dB = param->value.v_float;
@@ -265,20 +268,17 @@ bse_gconfig_set_param (BseGConfig *gconf,
       gconf->globals.heart_priority = param->value.v_int;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (gconf),
-		 BSE_OBJECT_NAME (gconf),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (gconf, param, param_id);
       break;
     }
 }
 
 static void
 bse_gconfig_get_param (BseGConfig *gconf,
-		       BseParam   *param)
+                       BseParam   *param,
+		       guint       param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_STEP_VOLUME_dB:
       param->value.v_float = gconf->globals.step_volume_dB;
@@ -314,11 +314,7 @@ bse_gconfig_get_param (BseGConfig *gconf,
       param->value.v_int = gconf->globals.heart_priority;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (gconf),
-		 BSE_OBJECT_NAME (gconf),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (gconf, param, param_id);
       break;
     }
 }
@@ -367,11 +363,11 @@ bse_gconfig_revert (BseGConfig *gconf)
   class = BSE_OBJECT_GET_CLASS (gconf);
   do
     {
-      for (i = 0; i < class->n_params; i++)
+      for (i = 0; i < class->n_param_specs; i++)
 	{
-	  BseParamSpec *pspec = class->param_specs[i];
+	  BseObjectParamSpec *ospec = class->param_specs[i];
 	  
-	  bse_object_param_changed (BSE_OBJECT (gconf), pspec->any.name);
+	  bse_object_param_changed (BSE_OBJECT (gconf), ospec->pspec.any.name);
 	}
       class = bse_type_class_peek_parent (class);
     }
@@ -407,12 +403,12 @@ bse_gconfig_do_default_revert (BseGConfig *gconf)
   class = BSE_OBJECT_GET_CLASS (gconf);
   do
     {
-      for (i = 0; i < class->n_params; i++)
+      for (i = 0; i < class->n_param_specs; i++)
 	{
 	  BseParam param = { NULL };
-	  BseParamSpec *pspec = class->param_specs[i];
+	  BseObjectParamSpec *ospec = class->param_specs[i];
 	  
-	  bse_param_init_default (&param, pspec);
+	  bse_param_init_default (&param, &ospec->pspec);
 	  
 	  bse_object_set_param (object, &param);
 	  bse_param_free_value (&param);

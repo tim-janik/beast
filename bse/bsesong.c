@@ -45,9 +45,11 @@ static void	bse_song_class_init		(BseSongClass	*class);
 static void	bse_song_init			(BseSong	*song);
 static void	bse_song_do_shutdown		(BseObject	*object);
 static void	bse_song_set_param		(BseSong	*song,
-						 BseParam	*param);
+						 BseParam	*param,
+						 guint           param_id);
 static void	bse_song_get_param		(BseSong	*song,
-						 BseParam	*param);
+						 BseParam	*param,
+						 guint           param_id);
 static void	bse_song_add_item		(BseContainer	*container,
 						 BseItem	*item);
 static void	bse_song_forall_items		(BseContainer	*container,
@@ -218,9 +220,10 @@ bse_song_do_shutdown (BseObject *object)
 
 static void
 bse_song_set_param (BseSong  *song,
-		    BseParam *param)
+		    BseParam *param,
+		    guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
       GList *list;
       
@@ -270,20 +273,17 @@ bse_song_set_param (BseSong  *song,
       break;
       
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-                 BSE_OBJECT_TYPE_NAME (song),
-		 BSE_OBJECT_NAME (song),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (song, param, param_id);
       break;
     }
 }
 
 static void
 bse_song_get_param (BseSong  *song,
-		    BseParam *param)
+		    BseParam *param,
+		    guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_PATTERN_LENGTH:
       param->value.v_uint = song->pattern_length;
@@ -304,11 +304,7 @@ bse_song_get_param (BseSong  *song,
       param->value.v_uint = song->bpm;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-                 BSE_OBJECT_TYPE_NAME (song),
-		 BSE_OBJECT_NAME (song),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (song, param, param_id);
       break;
     }
 }

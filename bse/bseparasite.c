@@ -94,7 +94,7 @@ store_parasite_list (BseObject  *object,
 	    }
 	  break;
 	default:
-	  g_warning (G_GNUC_PRETTY_FUNCTION "(): unknown parasite type `%c' for \"%s\" in \"%s\"",
+	  g_warning (G_STRLOC ": unknown parasite type `%c' for \"%s\" in \"%s\"",
 		     parasite->type,
 		     name,
 		     BSE_OBJECT_NAME (object));

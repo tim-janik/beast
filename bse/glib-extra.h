@@ -116,9 +116,9 @@ _bse_datalist_id_remove_no_notify (GData **datalist,
 #endif /* !GLIB_CHECK_VERSION (1, 3, 1) */
 
 #ifdef  __GNUC__
-#define G_STRLOC	"[" __FILE__ ":" G_STRINGIFY (__LINE__) ":" __PRETTY_FUNCTION__ "()]: "
+#define G_STRLOC	__FILE__ ":" G_STRINGIFY (__LINE__) ":" __PRETTY_FUNCTION__ "()"
 #else
-#define G_STRLOC	"[" __FILE__ ":" G_STRINGIFY (__LINE__) "]: "
+#define G_STRLOC	__FILE__ ":" G_STRINGIFY (__LINE__)
 #endif
 
 

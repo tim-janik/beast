@@ -32,11 +32,11 @@ static BseParamSpec*    bse_param_spec_alloc            (BseType         type,
 
 /* --- functions --- */
 gint
-bse_param_values_cmp (BseParam *param1,
-                      BseParam *param2)
+bse_param_values_cmp (const BseParam *param1,
+                      const BseParam *param2)
 {
-  BseParamValue *value1;
-  BseParamValue *value2;
+  const BseParamValue *value1;
+  const BseParamValue *value2;
   const gint failed = -2;
 #define CMP_VALS(m, v1, v2)     ((v1)->m < (v2)->m ? -1 : (v1)->m > (v2)->m)
   
@@ -113,7 +113,7 @@ bse_param_values_cmp (BseParam *param1,
     case BSE_TYPE_PARAM_ITEM:
       return CMP_VALS (v_item, value1, value2); /* FIXME: modification time? */
     default:
-      g_warning ("bse_param_values_equal() used with type `%s'",
+      g_warning ("%s: used with type `%s'", G_STRLOC,
                  bse_type_name (param1->pspec->type));
       return failed;
     }
@@ -180,7 +180,7 @@ bse_param_init_i (BseParam     *param,
       param->value.v_item = NULL;
       break;
     default:
-      g_warning ("bse_param_init() used with type `%s'",
+      g_warning ("%s: used with type `%s'", G_STRLOC,
                  bse_type_name (pspec->type));
       break;
     }
@@ -218,7 +218,7 @@ bse_param_reset_value (BseParam *param)
 }
 
 gboolean
-bse_param_defaults (BseParam *param)
+bse_param_defaults (const BseParam *param)
 {
   BseParam dparam = { NULL, };
   gboolean defaults;
@@ -261,8 +261,8 @@ bse_param_free_value (BseParam *param)
 }
 
 void
-bse_param_copy_value (BseParam *param_src,
-                      BseParam *param_dest)
+bse_param_copy_value (const BseParam *param_src,
+                      BseParam       *param_dest)
 {
   BseParamSpec *pspec;
 
@@ -376,7 +376,7 @@ bse_param_move_value (BseParam *param,
       param->value.v_item = NULL;
       break;
     default:
-      g_warning ("bse_param_move_value() used with type `%s'",
+      g_warning ("%s: used with type `%s'", G_STRLOC,
                  bse_type_name (pspec->type));
       break;
     }
@@ -495,7 +495,7 @@ bse_param_validate (BseParam *param)
         }
       break;
     default:
-      g_warning ("bse_param_validate() used with type `%s'",
+      g_warning ("%s: used with type `%s'", G_STRLOC,
                  bse_type_name (param->pspec->type));
       break;
     }
@@ -564,35 +564,32 @@ bse_param_spec_alloc (BseType       type,
                        G_ALLOC_AND_FREE);
   pspec = g_chunk_new0 (BseParamSpec, bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST]);
   pspec->type = type;
-  pspec->any.parent_type = 0;
   pspec->any.name = g_strdup (name);
   g_strcanon (pspec->any.name, "-", '-');
   pspec->any.nick = g_strdup (nick ? nick : pspec->any.name);
   pspec->any.blurb = g_strdup (blurb);
-  pspec->any.param_group = 0;
   pspec->any.flags = flags & (BSE_PARAM_MASK |
                               BSE_PARAM_SERVE_MASK |
                               BSE_PARAM_HINT_MASK);
-  pspec->any.param_id = 0;
   
   return pspec;
 }
 
 void
-bse_param_spec_free (BseParamSpec *pspec)
+bse_param_spec_free_fields (BseParamSpec *static_pspec)
 {
   BseType type;
   
-  g_return_if_fail (BSE_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (pspec->type >= BSE_TYPE_PARAM_FIRST && pspec->type <= BSE_TYPE_PARAM_LAST);
+  g_return_if_fail (BSE_IS_PARAM_SPEC (static_pspec));
+  g_return_if_fail (static_pspec->type >= BSE_TYPE_PARAM_FIRST && static_pspec->type <= BSE_TYPE_PARAM_LAST);
   
-  type = pspec->type;
+  type = static_pspec->type;
   
   switch (type)
     {
     case BSE_TYPE_PARAM_BOOL:
-      g_free (pspec->s_bool.true_identifier);
-      g_free (pspec->s_bool.false_identifier);
+      g_free (static_pspec->s_bool.true_identifier);
+      g_free (static_pspec->s_bool.false_identifier);
       break;
     case BSE_TYPE_PARAM_INT:
     case BSE_TYPE_PARAM_UINT:
@@ -604,29 +601,64 @@ bse_param_spec_free (BseParamSpec *pspec)
     case BSE_TYPE_PARAM_ITEM:
       break;
     case BSE_TYPE_PARAM_ENUM:
-      bse_type_class_unref (pspec->s_enum.enum_class);
+      bse_type_class_unref (static_pspec->s_enum.enum_class);
       break;
     case BSE_TYPE_PARAM_FLAGS:
-      bse_type_class_unref (pspec->s_flags.flags_class);
+      bse_type_class_unref (static_pspec->s_flags.flags_class);
       break;
     case BSE_TYPE_PARAM_STRING:
-      g_free (pspec->s_string.default_value);
-      g_free (pspec->s_string.cset_first);
-      g_free (pspec->s_string.cset_nth);
+      g_free (static_pspec->s_string.default_value);
+      g_free (static_pspec->s_string.cset_first);
+      g_free (static_pspec->s_string.cset_nth);
       break;
     case BSE_TYPE_PARAM_DOTS:
-      g_free (pspec->s_dots.default_dots);
+      g_free (static_pspec->s_dots.default_dots);
       break;
     default:
       break;
     }
-  g_free (pspec->any.name);
-  g_free (pspec->any.nick);
-  g_free (pspec->any.blurb);
+  g_free (static_pspec->any.name);
+  g_free (static_pspec->any.nick);
+  g_free (static_pspec->any.blurb);
   
-  memset (pspec, 0, bse_param_spec_sizes[type - BSE_TYPE_PARAM_FIRST].ssize);
-  
-  g_return_if_fail (bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST] != NULL); /* paranoid */
+  memset (static_pspec, 0, bse_param_spec_sizes[type - BSE_TYPE_PARAM_FIRST].ssize);
+}
+
+gpointer
+bse_param_spec_renew (BseParamSpec *pspec,
+		      guint         n_prepend_bytes)
+{
+  guint8 *data;
+  BseType type;
+  guint spec_size;
+
+  g_return_val_if_fail (BSE_IS_PARAM_SPEC (pspec), NULL);
+  g_return_val_if_fail (pspec->type >= BSE_TYPE_PARAM_FIRST && pspec->type <= BSE_TYPE_PARAM_LAST, NULL);
+
+  type = pspec->type;
+
+  spec_size = bse_param_spec_sizes[type - BSE_TYPE_PARAM_FIRST].ssize;
+  data = g_malloc0 (n_prepend_bytes + spec_size);
+  memcpy (data + n_prepend_bytes, pspec, spec_size);
+
+  memset (pspec, 0, spec_size);
+
+  g_chunk_free (pspec, bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST]);
+
+  return data;
+}
+
+void
+bse_param_spec_free (BseParamSpec *pspec)
+{
+  BseType type;
+
+  g_return_if_fail (BSE_IS_PARAM_SPEC (pspec));
+  g_return_if_fail (pspec->type >= BSE_TYPE_PARAM_FIRST && pspec->type <= BSE_TYPE_PARAM_LAST);
+
+  type = pspec->type;
+
+  bse_param_spec_free_fields (pspec);
   
   g_chunk_free (pspec, bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST]);
 }
@@ -1285,8 +1317,8 @@ bse_param_values_exchange (BseParam *param1,
 }
 
 gboolean
-bse_param_value_convert (BseParam *param_src,
-                         BseParam *param_dest)
+bse_param_value_convert (const BseParam *param_src,
+                         BseParam       *param_dest)
 {
   BseParam tmp = { NULL, };
   gboolean success;

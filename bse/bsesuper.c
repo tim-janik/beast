@@ -37,9 +37,11 @@ static void	bse_super_init		(BseSuper		*super,
 					 gpointer		 rclass);
 static void	bse_super_destroy	(BseObject		*object);
 static void	bse_super_set_param	(BseSuper		*super,
-					 BseParam		*param);
+					 BseParam		*param,
+					 guint			 param_id);
 static void	bse_super_get_param	(BseSuper		*super,
-					 BseParam		*param);
+					 BseParam		*param,
+					 guint			 param_id);
 static gboolean	bse_super_do_is_dirty	(BseSuper		*super);
 static void	bse_super_do_modified	(BseSuper		*super,
 					 BseTime		 stamp);
@@ -155,9 +157,10 @@ bse_super_destroy (BseObject *object)
 
 static void
 bse_super_set_param (BseSuper *super,
-		     BseParam *param)
+		     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_AUTHOR:
       bse_object_set_qdata_full (BSE_OBJECT (super),
@@ -184,20 +187,17 @@ bse_super_set_param (BseSuper *super,
 	}
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (super),
-		 BSE_OBJECT_NAME (super),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (super, param, param_id);
       break;
     }
 }
 
 static void
 bse_super_get_param (BseSuper *super,
-		     BseParam *param)
+		     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_AUTHOR:
       g_free (param->value.v_string);
@@ -214,11 +214,7 @@ bse_super_get_param (BseSuper *super,
       param->value.v_time = super->creation_time;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (super),
-		 BSE_OBJECT_NAME (super),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (super, param, param_id);
       break;
     }
 }

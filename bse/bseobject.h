@@ -59,7 +59,6 @@ extern "C" {
 #define BSE_OBJECT_SET_FLAGS(object, f)   (BSE_OBJECT_FLAGS (object) |= (f))
 #define BSE_OBJECT_UNSET_FLAGS(object, f) (BSE_OBJECT_FLAGS (object) &= ~(f))
 #define BSE_OBJECT_DESTROYED(object)      ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_DESTROYED) != 0)
-#define BSE_OBJECT_IN_PARAM_CHANGED(obj)  ((BSE_OBJECT_FLAGS (obj) & BSE_OBJECT_FLAG_IN_PARAM_CHANGED) != 0)
 #define BSE_OBJECT_IS_LOCKED(obj)         (((BseObject*) (obj))->lock_count > 0)
 
 
@@ -67,21 +66,23 @@ extern "C" {
 typedef enum                            /*< skip >*/
 {
   BSE_OBJECT_FLAG_CONSTRUCTED           = 1 << 0,
-  BSE_OBJECT_FLAG_DESTROYED             = 1 << 1,
-  BSE_OBJECT_FLAG_IN_PARAM_CHANGED      = 1 << 2
+  BSE_OBJECT_FLAG_DESTROYED             = 1 << 1
 } BseObjectFlags;
-#define BSE_OBJECT_FLAGS_USHIFT     (3)
+#define BSE_OBJECT_FLAGS_USHIFT     (2)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
 
-typedef struct _BseObjectParser BseObjectParser;
+typedef struct _BseObjectParser    BseObjectParser;
+typedef struct _BseObjectParamSpec BseObjectParamSpec;
 
 
 /* --- typedefs & structures --- */
 typedef gpointer   (*BseInterfaceDataNew)     (BseObject     *object);
 typedef void       (*BseObjectGetParamFunc)   (BseObject     *object,
-					       BseParam      *param);
+					       BseParam      *param,
+					       guint          param_id);
 typedef void       (*BseObjectSetParamFunc)   (BseObject     *object,
-					       BseParam      *param);
+					       BseParam      *param,
+					       guint          param_id);
 typedef GTokenType (*BseObjectParseStatement) (BseObject     *object,
 					       BseStorage    *storage,
 					       gpointer       user_data);
@@ -102,12 +103,19 @@ struct _BseObject
    */
   GData                  *datalist;
 };
+struct _BseObjectParamSpec
+{
+  guint        param_id;
+  GQuark       param_group;
+  BseType      object_type;
+  BseParamSpec pspec;
+};
 struct _BseObjectClass
 {
   BseTypeClass           bse_class;
 
-  guint                  n_params;
-  BseParamSpec         **param_specs;
+  guint                  n_param_specs;
+  BseObjectParamSpec   **param_specs;
 
   /* internal stuff */
   guint                  n_notifiers;
@@ -143,9 +151,13 @@ struct _BseObjectClass
 void            bse_object_class_add_param      (BseObjectClass *oclass,
                                                  const gchar    *param_group,
                                                  guint           param_id,
-                                                 BseParamSpec   *pspec);
-BseParamSpec*   bse_object_class_get_param_spec (BseObjectClass *oclass,
+                                                 BseParamSpec   *pspec /* taken over */);
+BseParamSpec* bse_object_class_find_param_spec  (BseObjectClass *oclass,
                                                  const gchar    *param_name);
+guint         bse_object_class_get_n_param_specs(BseObjectClass *oclass);
+BseParamSpec* bse_object_class_get_param_spec   (BseObjectClass *oclass,
+						 guint           nth,
+						 GQuark         *param_group);
 void            bse_object_class_add_parser     (BseObjectClass *oclass,
                                                  const gchar    *token,
                                                  BseObjectParseStatement parse_func,
@@ -294,8 +306,13 @@ G_STMT_START { \
     } \
   bse_object_unref (__object); \
 } G_STMT_END
-
-
+#define BSE_UNHANDLED_PARAM_ID(object, param, param_id) \
+  g_warning ("%s: unhandled parameter id %u for \"%s\" of type `%s' in `%s'", \
+	     G_STRLOC, \
+	     param_id, \
+	     param->pspec->any.name, \
+	     bse_type_name (param->pspec->type), \
+	     BSE_OBJECT_TYPE_NAME (object))
 
 
 #ifdef __cplusplus

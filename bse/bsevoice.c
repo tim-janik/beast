@@ -125,7 +125,7 @@ bse_voice_reset (BseVoice *voice)
 	}
       while (cur);
       if (!cur)
-	g_error (G_STRLOC "unable to find and free poly voice (index=%u)", index);
+	g_error (G_STRLOC ": unable to find and free poly voice (index=%u)", index);
 
       g_trash_stack_push (&allocator->free_voices, voice);
     }

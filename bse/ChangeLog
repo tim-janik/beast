@@ -1,3 +1,20 @@
+Wed Feb  9 12:58:48 2000  Tim Janik  <timj@gtk.org>
+
+	* bseparam.[hc]: major parameter cleanups, scratched the param_group,
+	param_id and parent_type memebers so params are more appropriate for
+	general use.
+
+	* bseobject.[hc]: changed the way we store per-class parameter specs,
+	so we can still suply a param_id and a param_group, and have the
+	object_type for hash lookups.
+	got rid of the IN_PARAM_CHANGED flag.
+	we pass the param_id as a seperate argument to the classes
+	get_param() and set_param() functions now.
+	(bse_object_class_get_n_param_specs):
+	(bse_object_class_get_param_spec): accessors for param specs.
+
+	* *.c: changed all get_param() and set_param() functions accordingly.
+
 Wed Feb  9 03:17:18 2000  Tim Janik  <timj@gtk.org>
 
 	* bseparam.c (param_exchange_lookup): a conversion rule for

@@ -166,8 +166,6 @@ bse_procedure_init (BseProcedureClass        *proc,
 	  g_warning ("procedure \"%s\": input parameter \"%s\" has invalid flags",
 		     proc->name,
 		     in_param_specs[i]->any.name);
-	in_param_specs[i]->any.parent_type = BSE_PROCEDURE_TYPE (proc);
-	in_param_specs[i]->any.param_group = g_quark_from_static_string ("Input Parameters");
       }
     else
       break;
@@ -188,8 +186,6 @@ bse_procedure_init (BseProcedureClass        *proc,
 	  g_warning ("procedure \"%s\": output parameter \"%s\" has invalid flags",
 		     proc->name,
 		     out_param_specs[i]->any.name);
-	out_param_specs[i]->any.parent_type = BSE_PROCEDURE_TYPE (proc);
-	out_param_specs[i]->any.param_group = g_quark_from_static_string ("Output Parameters");
       }
     else
       break;
@@ -280,7 +276,7 @@ bse_procedure_execvl (BseProcedureClass *proc,
       lparam = slist ? slist->data : NULL;
       if (!lparam || lparam->pspec != proc->in_param_specs[i])
 	{
-	  g_warning (G_GNUC_PRETTY_FUNCTION "(): input parameter \"%s\" of procedure \"%s\" is invalid or unspecified",
+	  g_warning (G_STRLOC ": input parameter \"%s\" of procedure \"%s\" is invalid or unspecified",
 		     proc->in_param_specs[i]->any.name,
 		     proc->name);
 	  return BSE_ERROR_INTERNAL;
@@ -294,7 +290,7 @@ bse_procedure_execvl (BseProcedureClass *proc,
       lparam = slist ? slist->data : NULL;
       if (!lparam || lparam->pspec != proc->out_param_specs[i])
 	{
-	  g_warning (G_GNUC_PRETTY_FUNCTION "(): output parameter \"%s\" of procedure \"%s\" is invalid or unspecified",
+	  g_warning (G_STRLOC ": output parameter \"%s\" of procedure \"%s\" is invalid or unspecified",
 		     proc->out_param_specs[i]->any.name,
 		     proc->name);
 	  return BSE_ERROR_INTERNAL;
@@ -374,7 +370,7 @@ bse_procedure_execva_i (BseProcedureClass *proc,
       BSE_PARAM_COLLECT_VALUE (param, var_args, error_msg);
       if (error_msg)
 	{
-	  g_warning (G_GNUC_PRETTY_FUNCTION "(): %s", error_msg);
+	  g_warning (G_STRLOC ": %s", error_msg);
 	  g_free (error_msg);
 	  va_end (var_args);
 
