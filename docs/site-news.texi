@@ -32,7 +32,7 @@ and patch:
 Newly added features in this release involve Canyon Delay, MIDI Input, Panorama
 and Compressor modules, a demo song, stock instruments and effects, extended
 integration with external MIDI events, a new C++ based plugin interface,
-MIME type support and @emph{lots} of language bindings.
+MIME type support and @emph{lots} of language translations.
 The details are outlined in the
 @uref{beast-doc://release-news,,NEWS section}.
 
