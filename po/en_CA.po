@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-27 17:55-0400\n"
-"PO-Revision-Date: 2004-09-27 19:50-0400\n"
+"POT-Creation-Date: 2004-10-03 11:53-0400\n"
+"PO-Revision-Date: 2004-10-03 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -379,7 +379,7 @@ msgstr "Add"
 #: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
 #: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:710 beast-gtk/bstsnetrouter.c:752
+#: beast-gtk/bstsnetrouter.c:701 beast-gtk/bstsnetrouter.c:743
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
 #: beast-gtk/bstwaveview.c:45
 msgid "Delete"
@@ -398,28 +398,28 @@ msgstr "Add a new bus to the mixer"
 msgid "Delete the currently selected bus"
 msgstr "Delete the currently selected bus"
 
-#: beast-gtk/bstcanvaslink.c:177
+#: beast-gtk/bstcanvaslink.c:179
 msgid "Module Link: "
 msgstr "Module Link: "
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:748
+#: beast-gtk/bstcanvaslink.c:235 beast-gtk/bstsnetrouter.c:739
 msgid "Module link"
 msgstr "Module link"
 
-#: beast-gtk/bstcanvassource.c:463
+#: beast-gtk/bstcanvassource.c:464
 msgid "Module Info"
 msgstr "Module Info"
 
-#: beast-gtk/bstcanvassource.c:963 beast-gtk/bstsnetrouter.c:1085
+#: beast-gtk/bstcanvassource.c:992 beast-gtk/bstsnetrouter.c:1076
 msgid "Input"
 msgstr "Input"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1082
+#: beast-gtk/bstcanvassource.c:1001 beast-gtk/bstsnetrouter.c:1073
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Output"
 
-#: beast-gtk/bstcanvassource.c:976
+#: beast-gtk/bstcanvassource.c:1005
 msgid "(Hint)"
 msgstr "(Hint)"
 
@@ -800,7 +800,7 @@ msgstr "Scripts"
 #.
 #: beast-gtk/bstmain.c:251
 msgid "Dialogs"
-msgstr "Dialogs"
+msgstr "Dialogues"
 
 #: beast-gtk/bstmain.c:258
 msgid "Loading..."
@@ -2218,7 +2218,7 @@ msgstr "Edit"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Edit/Move/Menu (mouse buttons 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:924
+#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:915
 msgid "Palette"
 msgstr "Palette"
 
@@ -2226,85 +2226,85 @@ msgstr "Palette"
 msgid "Toggle visibility of the tool palette"
 msgstr "Toggle visibility of the tool palette"
 
-#: beast-gtk/bstsnetrouter.c:619
+#: beast-gtk/bstsnetrouter.c:610
 msgid "Input channel in use"
 msgstr "Input channel in use"
 
-#: beast-gtk/bstsnetrouter.c:646 beast-gtk/bstsnetrouter.c:648
-#: beast-gtk/bstsnetrouter.c:684
+#: beast-gtk/bstsnetrouter.c:637 beast-gtk/bstsnetrouter.c:639
+#: beast-gtk/bstsnetrouter.c:675
 msgid "Create Link"
 msgstr "Create Link"
 
-#: beast-gtk/bstsnetrouter.c:646
+#: beast-gtk/bstsnetrouter.c:637
 msgid "Select output module"
 msgstr "Select output module"
 
-#: beast-gtk/bstsnetrouter.c:648
+#: beast-gtk/bstsnetrouter.c:639
 msgid "Select input module"
 msgstr "Select input module"
 
-#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsnetrouter.c:695 beast-gtk/bstsupershell.c:234
 #: beast-gtk/bstsupershell.c:266 beast-gtk/bstsupershell.c:280
 msgid "Properties"
 msgstr "Properties"
 
-#: beast-gtk/bstsnetrouter.c:705
+#: beast-gtk/bstsnetrouter.c:696
 msgid "Reset Properties"
 msgstr "Reset Properties"
 
-#: beast-gtk/bstsnetrouter.c:706
+#: beast-gtk/bstsnetrouter.c:697
 msgid "Delete Inputs"
 msgstr "Delete Inputs"
 
-#: beast-gtk/bstsnetrouter.c:707
+#: beast-gtk/bstsnetrouter.c:698
 msgid "Delete Outputs"
 msgstr "Delete Outputs"
 
-#: beast-gtk/bstsnetrouter.c:708 beast-gtk/bstsnetrouter.c:750
+#: beast-gtk/bstsnetrouter.c:699 beast-gtk/bstsnetrouter.c:741
 msgid "Show Info"
 msgstr "Show Info"
 
-#: beast-gtk/bstsnetrouter.c:734
+#: beast-gtk/bstsnetrouter.c:725
 msgid "Remove Module"
 msgstr "Remove Module"
 
-#: beast-gtk/bstsnetrouter.c:761
+#: beast-gtk/bstsnetrouter.c:752
 msgid "Delete Link"
 msgstr "Delete Link"
 
-#: beast-gtk/bstsnetrouter.c:815
+#: beast-gtk/bstsnetrouter.c:806
 msgid "Insert Module"
 msgstr "Insert Module"
 
-#: beast-gtk/bstsnetrouter.c:1082
+#: beast-gtk/bstsnetrouter.c:1073
 msgid "PCM Output module"
 msgstr "PCM Output module"
 
-#: beast-gtk/bstsnetrouter.c:1083
+#: beast-gtk/bstsnetrouter.c:1074
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:1083
+#: beast-gtk/bstsnetrouter.c:1074
 msgid "Standard amplifier module"
 msgstr "Standard amplifier module"
 
-#: beast-gtk/bstsnetrouter.c:1084
+#: beast-gtk/bstsnetrouter.c:1075
 msgid "Snooper"
 msgstr "Snooper"
 
-#: beast-gtk/bstsnetrouter.c:1084
+#: beast-gtk/bstsnetrouter.c:1075
 msgid "Signal debugging module"
 msgstr "Signal debugging module"
 
-#: beast-gtk/bstsnetrouter.c:1085
+#: beast-gtk/bstsnetrouter.c:1076
 msgid "PCM Input module"
 msgstr "PCM Input module"
 
-#: beast-gtk/bstsnetrouter.c:1133
+#: beast-gtk/bstsnetrouter.c:1124
 msgid "Channel Hints"
 msgstr "Channel Hints"
 
-#: beast-gtk/bstsnetrouter.c:1133
+#: beast-gtk/bstsnetrouter.c:1124
 msgid "Toggle channel name hints"
 msgstr "Toggle channel name hints"
 
@@ -2557,7 +2557,7 @@ msgstr "Debug"
 msgid "Miscellaneous Message"
 msgstr "Miscellaneous Message"
 
-#: beast-gtk/bstusermessage.c:242 beast-gtk/bstusermessage.c:244
+#: beast-gtk/bstusermessage.c:240 beast-gtk/bstusermessage.c:242
 msgid "processing"
 msgstr "processing"
 
@@ -2636,7 +2636,7 @@ msgstr "Current Items:"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "Discard changes and close dialog"
-msgstr "Discard changes and close dialog"
+msgstr "Discard changes and close dialogue"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "E_xamples"
@@ -4639,7 +4639,7 @@ msgstr "High indicates the instrument is done synthesizing"
 msgid "/Input & Output/Instrument Output"
 msgstr "/Input & Output/Instrument Output"
 
-#: bse/bsemain.c:266
+#: bse/bsemain.c:268
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -4647,7 +4647,7 @@ msgstr ""
 "\n"
 "Available PCM drivers:\n"
 
-#: bse/bsemain.c:268
+#: bse/bsemain.c:270
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -4699,7 +4699,7 @@ msgstr ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 
-#: bse/bsemididevice-oss.c:264
+#: bse/bsemididevice-oss.c:270
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4881,33 +4881,29 @@ msgstr "WAVE File"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Name of the WAVE file used for recording BSE sound output"
 
+#: bse/bseserver.c:471
+msgid "Show messages about PCM device selections problems"
+msgstr "Show messages about PCM device selection problems"
+
 #: bse/bseserver.c:472
-msgid "Advice about PCM device selections problems"
-msgstr "Advice about PCM device selection problems"
-
-#: bse/bseserver.c:473
-msgid "Alert me about PCM device selections problems"
-msgstr "Alert me about PCM device selection problems"
-
-#: bse/bseserver.c:474
 #, c-format
 msgid "Failed to open PCM devices, giving up: %s"
 msgstr "Failed to open PCM devices; giving up: %s"
 
-#: bse/bseserver.c:493
-msgid "Advice about MIDI device selections problems"
-msgstr "Advice about MIDI device selection problems"
+#: bse/bseserver.c:490
+msgid "Show messages about MIDI device selections problems"
+msgstr "Show messages about MIDI device selection problems"
 
-#: bse/bseserver.c:494
-msgid "Alert me about MIDI device selections problems"
-msgstr "Alert me about MIDI device selection problems"
-
-#: bse/bseserver.c:495
+#: bse/bseserver.c:491
 #, c-format
-msgid "Failed to open MIDI devices (reverting to null driver): %s"
-msgstr "Failed to open MIDI devices (reverting to null driver): %s"
+msgid "Failed to open MIDI devices (reverting to null device): %s"
+msgstr "Failed to open MIDI devices (reverting to null device): %s"
 
-#: bse/bseserver.c:547
+#: bse/bseserver.c:542
+msgid "Show recording file errors"
+msgstr "Show recording file errors"
+
+#: bse/bseserver.c:543
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Failed to open output file \"%s\": %s"
@@ -4962,51 +4958,51 @@ msgstr "Beats per minute"
 msgid "Looping"
 msgstr "Looping"
 
-#: bse/bsesong.proc:37
+#: bse/bsesong.proc:35
 msgid "Create a new mixer bus for a Song."
 msgstr "Create a new mixer bus for a Song."
 
-#: bse/bsesong.proc:74
+#: bse/bsesong.proc:72
 msgid "Delete a mixer bus from a Song."
 msgstr "Delete a mixer bus from a Song."
 
-#: bse/bsesong.proc:127
+#: bse/bsesong.proc:125
 msgid "Retrieve master output bus of a song."
 msgstr "Retrieve master output bus of a song."
 
-#: bse/bsesong.proc:154
+#: bse/bsesong.proc:152
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr "Ensure that each part in a song is inserted into at least one track."
 
-#: bse/bsesong.proc:175
+#: bse/bsesong.proc:173
 msgid "Connect all unconnected track of a song to the master output bus."
 msgstr "Connect all unconnected tracks of a song to the master output bus."
 
-#: bse/bsesong.proc:215
+#: bse/bsesong.proc:213
 msgid "Create a new Part in a Song."
 msgstr "Create a new Part in a Song."
 
-#: bse/bsesong.proc:246
+#: bse/bsesong.proc:244
 msgid "Delete a Part from a Song."
 msgstr "Delete a Part from a Song."
 
-#: bse/bsesong.proc:284
+#: bse/bsesong.proc:282
 msgid "Create a new Track for a Song."
 msgstr "Create a new Track for a Song."
 
-#: bse/bsesong.proc:320
+#: bse/bsesong.proc:318
 msgid "Delete a Track from a Song."
 msgstr "Delete a Track from a Song."
 
-#: bse/bsesong.proc:359
+#: bse/bsesong.proc:357
 msgid "Find a track suitable for playing notes of a given part."
 msgstr "Find a track suitable for playing notes of a given part."
 
-#: bse/bsesong.proc:402
+#: bse/bsesong.proc:400
 msgid "Synthesize a note on a song of an active project."
 msgstr "Synthesize a note on a song of an active project."
 
-#: bse/bsesong.proc:452
+#: bse/bsesong.proc:450
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Retrieve song timing information at a specific tick."
 
@@ -5315,11 +5311,41 @@ msgstr "BSE Synthesis File"
 msgid "Audio"
 msgstr "Audio"
 
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:529
+#: drivers/bse-alsa/bsemididevice-alsa.c:294
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:537
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:CARD,DEV,SUBDEV"
 
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:531
+#: drivers/bse-alsa/bsemididevice-alsa.c:296
+#, c-format
+msgid ""
+"Advanced Linux Sound Architecture MIDI driver, using\n"
+"ALSA %s.\n"
+"The device specification follows the ALSA device naming\n"
+"conventions, a detailed description of which is available\n"
+"at the project's website:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/midi.html\n"
+"Various ALSA plugins can be used here, 'hw' allows direct\n"
+"adressing of hardware channels by card, device and subdevice.\n"
+"  PLUGIN - the ALSA plugin, 'default' is usually good enough\n"
+"  CARD   - the card number for plugins like 'hw'\n"
+"  DEV    - the device number for plugins like 'hw'\n"
+"  SUBDEV - the subdevice number for plugins like 'hw'\n"
+msgstr ""
+"Advanced Linux Sound Architecture MIDI driver, using\n"
+"ALSA %s.\n"
+"The device specification follows the ALSA device naming\n"
+"conventions, a detailed description of which is available\n"
+"at the project's website:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/midi.html\n"
+"Various ALSA plugins can be used here: 'hw' allows direct\n"
+"adressing of hardware channels by card, device and subdevice.\n"
+"  PLUGIN - the ALSA plugin, 'default' is usually good enough\n"
+"  CARD   - the card number for plugins like 'hw'\n"
+"  DEV    - the device number for plugins like 'hw'\n"
+"  SUBDEV - the subdevice number for plugins like 'hw'\n"
+
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:539
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
