@@ -599,6 +599,9 @@ bse_server_close_devices (BseServer *self)
       self->pcm_imodule = NULL;
       bse_pcm_omodule_remove (self->pcm_omodule, trans);
       self->pcm_omodule = NULL;
+      bse_trans_commit (trans);
+      /* wait until transaction has been processed */
+      bse_engine_wait_on_trans ();
       if (self->pcm_writer)
 	{
 	  if (self->pcm_writer->open)
@@ -606,9 +609,6 @@ bse_server_close_devices (BseServer *self)
 	  g_object_unref (self->pcm_writer);
 	  self->pcm_writer = NULL;
 	}
-      bse_trans_commit (trans);
-      /* wait until transaction has been processed */
-      bse_engine_wait_on_trans ();
       bse_device_close (BSE_DEVICE (self->pcm_device));
       bse_device_close (BSE_DEVICE (self->midi_device));
       engine_shutdown (self);
