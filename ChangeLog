@@ -1,3 +1,19 @@
+Sun May 11 04:36:05 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: supply @NOTDVLBUILD@ Makefile substitution and
+	IF_NOTDVLBUILD automake conditional.
+
+	* beast-gtk/Makefile.am: fixup dependancies (automake manages to
+	forget about previous values if += is used).
+
+	* beast-gtk/bsttrackview.c: auto popup synth selection dialog
+	for Synth cell renderer editing.
+
+	* beast-gtk/gxk/gxkcellrendererpopup.[hc]: added auto-popup proeprty
+	to automatically popup custom dialog when edits start.
+
+	* beast-gtk/gxk/gxkutils.c: support auto popups.
+
 Sat May 10 21:33:25 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/Makefile.am: added rule that copies texi files from

@@ -1,6 +1,5 @@
 FIXMES:
 - fix compillation without texitheque
-- support auto-popup for cell renderer popup in track synth
 - fix seqid property notify
 - indicate directories as dirs in lib-list
 - don't always rebuild lib-list [Rebuild]-button

@@ -151,7 +151,7 @@ stamp-ckeycheck: @DVLBUILD@ $(beast_sources) $(beast_extra_sources)
 	     --tmplkey '  { CKEY (%s),\t\t"Name",\n  BST_STOCK_,\t\t\t\t"",\n    "tip", NULL,\n  },\n' \
 	     --needkeys $(beast_sources) $(beast_extra_sources)
 	touch $@
-beast_DEPENDENCIES += stamp-ckeycheck
+beast: stamp-ckeycheck
 
 debug_key_globs = $(top_srcdir)/beast-gtk/*.[hc] $(top_srcdir)/bse/*.[hc] $(top_srcdir)/sfi/*.[hc]
 bstdebugkeys.defs: @DVLBUILD@ $(debug_key_globs)

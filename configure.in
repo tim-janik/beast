@@ -435,12 +435,16 @@ if test x"$enable_devel_rules" = xyes ; then
 	AC_MSG_ERROR([failed to detect correct perl version (>= 5.002)])
     fi
     DVLBUILD=""
+    NOTDVLBUILD=#
 else
     AC_MSG_RESULT(no)
     DVLBUILD=#
+    NOTDVLBUILD=""
 fi
 AC_SUBST(DVLBUILD)
+AC_SUBST(NOTDVLBUILD)
 AM_CONDITIONAL(IF_DVLBUILD, test -z "$DVLBUILD")
+AM_CONDITIONAL(IF_NOTDVLBUILD, test -z "$NOTDVLBUILD")
 
 # Check requirement sets
 AC_SFI_REQUIREMENTS

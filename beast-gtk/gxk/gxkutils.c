@@ -880,7 +880,8 @@ gxk_tree_view_add_column (GtkTreeView       *tree_view,
  * @* %R - column is user-resizable;
  * @* %r - column is not user-resizable;
  * @* %P - add extra padding between multiple cells of the same column;
- * @* %p - cancel a previous %P flag.
+ * @* %p - cancel a previous %P flag;
+ * @* %# - automatically popup dialogs for popup cell renderers.
  */
 void
 gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
@@ -924,7 +925,7 @@ tree_view_add_column (GtkTreeView  *tree_view,
   const gchar *prop = NULL;
   GtkTreeViewColumn *tcol;
   GtkTreeViewColumnSizing sizing = GTK_TREE_VIEW_COLUMN_GROW_ONLY;
-  gboolean reorderable = FALSE, resizable = TRUE, sortable = FALSE;
+  gboolean reorderable = FALSE, resizable = TRUE, sortable = FALSE, auto_popup = FALSE;
   gchar *p, *column_flags = g_strconcat (" ", dcolumn_flags, ucolumn_flags, NULL);
   guint fixed_width = 0, padding = 0;
 
@@ -965,6 +966,9 @@ tree_view_add_column (GtkTreeView  *tree_view,
       case 'p':	/* add cell padding */
 	padding = MAX (padding, 3) - 3;
 	break;
+      case '#':	/* auto popup popup cell renderers */
+	auto_popup = TRUE;
+	break;
       }
 
   switch (column_type)
@@ -984,6 +988,7 @@ tree_view_add_column (GtkTreeView  *tree_view,
       cell = g_object_new (GXK_TYPE_CELL_RENDERER_POPUP,
 			   "xalign", xalign,
 			   "editable", callback1 != NULL,
+                           "auto_popup", auto_popup,
 			   NULL);
       prop = "text";
       if (callback1)

@@ -29,6 +29,7 @@
 
 enum {
   PROP_NONE,
+  PROP_AUTO_POPUP,
   PROP_SHOW_BUTTON
 };
 
@@ -114,15 +115,6 @@ gxk_cell_renderer_popup_get_type (void)
 }
 
 static void
-gxk_cell_renderer_popup_init (GxkCellRendererPopup *self)
-{
-  self->show_button = TRUE;
-  // GTK_CELL_RENDERER (self)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
-  // GTK_CELL_RENDERER (self)->xpad = 2;
-  // GTK_CELL_RENDERER (self)->ypad = 2;
-}
-
-static void
 gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
@@ -142,6 +134,10 @@ gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *class)
 				   PROP_SHOW_BUTTON,
 				   g_param_spec_boolean ("show_button", "Show Button", "Whether the popup button is visible",
 							 TRUE, G_PARAM_READWRITE));
+  g_object_class_install_property (object_class,
+				   PROP_AUTO_POPUP,
+				   g_param_spec_boolean ("auto_popup", "Auto Popup", "Whether to automatically popup the popup window once editing started",
+							 FALSE, G_PARAM_READWRITE));
   signal_popup = g_signal_new ("popup",
 			       G_OBJECT_CLASS_TYPE (object_class),
 			       G_SIGNAL_RUN_LAST,
@@ -151,6 +147,16 @@ gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *class)
 			       G_TYPE_NONE, 2,
 			       G_TYPE_STRING,
 			       G_TYPE_STRING);
+}
+
+static void
+gxk_cell_renderer_popup_init (GxkCellRendererPopup *self)
+{
+  self->show_button = TRUE;
+  self->auto_popup = FALSE;
+  // GTK_CELL_RENDERER (self)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
+  // GTK_CELL_RENDERER (self)->xpad = 2;
+  // GTK_CELL_RENDERER (self)->ypad = 2;
 }
 
 static void
@@ -165,6 +171,9 @@ gxk_cell_renderer_popup_set_property (GObject      *object,
     {
     case PROP_SHOW_BUTTON:
       self->show_button = g_value_get_boolean (value);
+      break;
+    case PROP_AUTO_POPUP:
+      self->auto_popup = g_value_get_boolean (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -184,6 +193,9 @@ gxk_cell_renderer_popup_get_property (GObject    *object,
     {
     case PROP_SHOW_BUTTON:
       g_value_set_boolean (value, self->show_button);
+      break;
+    case PROP_AUTO_POPUP:
+      g_value_set_boolean (value, self->auto_popup);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -313,6 +325,18 @@ gxk_cell_renderer_popup_clicked (GxkCellRendererPopup *self)
   return TRUE;	/* we handled the event */
 }
 
+static gboolean
+gxk_cell_renderer_popup_timeout (gpointer data)
+{
+  GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (data);
+
+  GDK_THREADS_ENTER ();
+  if (self->entry && self->auto_popup && !self->dialog)
+    gxk_cell_renderer_popup_clicked (self);
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
 static GtkCellEditable*
 gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
 				       GdkEvent             *event,
@@ -376,6 +400,11 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
   gtk_box_pack_start (GTK_BOX (hbox), popup_area, FALSE, FALSE, 0);
   gxk_proxy_editable_set_cell_editable (eproxy, ecell);
   g_object_set_data_full (cell, "gxk-cell-edit-path", g_strdup (path), g_free);
+  if (self->auto_popup)
+    g_idle_add_full (G_PRIORITY_LOW + 100,
+                     gxk_cell_renderer_popup_timeout,
+                     g_object_ref (cell),
+                     g_object_unref);
   return GTK_CELL_EDITABLE (eproxy);
 }
 
