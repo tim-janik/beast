@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-13 17:05+0100\n"
-"PO-Revision-Date: 2004-08-13 17:35+0000\n"
+"POT-Creation-Date: 2004-08-15 01:26+0100\n"
+"PO-Revision-Date: 2004-08-15 01:30+0000\n"
 "Last-Translator: Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Language-Team: Portuguese <gnome_pt@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -2988,6 +2988,7 @@ msgid "/Other Sources/Constant"
 msgstr "/Outras Fontes/Constante"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
+#, c-format
 msgid "Constant Output %u"
 msgstr "Saída Constante %u"
 
@@ -3030,8 +3031,9 @@ msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 msgstr ""
-"O valor de prioridade de uma thread, -20 indica uma thread de prioridade elevada "
-"e +19 uma de prioridade reduzida que é simpática ('nice') para as demais"
+"O valor de prioridade de uma thread, -20 indica uma thread de prioridade "
+"elevada e +19 uma de prioridade reduzida que é simpática ('nice') para as "
+"demais"
 
 #: bse/bsecore.idl:385
 msgid "Processor"
@@ -3063,7 +3065,8 @@ msgstr "Tempo de Utilizador das Filhas"
 
 #: bse/bsecore.idl:391
 msgid "The CPU time spent executing instructions of children of this thread"
-msgstr "O tempo de CPU dispendido a executar instruções das filhas desta thread"
+msgstr ""
+"O tempo de CPU dispendido a executar instruções das filhas desta thread"
 
 #: bse/bsecore.idl:393
 msgid "Child System Time"
@@ -3335,7 +3338,8 @@ msgstr "Alertar sobre a selecção de dispositivos MIDI"
 #: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr "falha ao abrir o dispositivo midi %s (a reverter para dispositivo nulo): %s"
+msgstr ""
+"falha ao abrir o dispositivo midi %s (a reverter para dispositivo nulo): %s"
 
 #: bse/bseserver.c:548
 #, c-format
@@ -3368,11 +3372,13 @@ msgstr "Obter o canal de saída principal de uma música."
 
 #: bse/bsesong.proc:133
 msgid "Ensure that each part in a song is inserted into at least one track."
-msgstr "Assegurar que cada parte numa música é inserida em pelo menos uma pista."
+msgstr ""
+"Assegurar que cada parte numa música é inserida em pelo menos uma pista."
 
 #: bse/bsesong.proc:154
 msgid "Ensure that each track in a song is connected to an output bus."
-msgstr "Assegurar de que cada pista numa música está ligada a um canal de saída."
+msgstr ""
+"Assegurar de que cada pista numa música está ligada a um canal de saída."
 
 #: bse/bsesong.proc:194
 msgid "Create a new Part in a Song."
@@ -3411,8 +3417,8 @@ msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
 msgstr ""
-"Implementação de canal para músicas, utilizado para encaminhar sinais "
-"audio de pista para a saída principal."
+"Implementação de canal para músicas, utilizado para encaminhar sinais audio "
+"de pista para a saída principal."
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -3698,7 +3704,7 @@ msgstr "Entrada audio"
 
 #: plugins/artscompressor.idl:33
 msgid "Compressed audio output"
-msgstr "Saida audio comprimida"
+msgstr "Saída audio comprimida"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Attack [ms]"
@@ -3734,7 +3740,7 @@ msgstr "Definir o rácio de compressão"
 
 #: plugins/artscompressor.idl:39 plugins/artscompressor.idl:58
 msgid "Set the output amplification"
-msgstr "Definir a amplificação de saida"
+msgstr "Definir a amplificação de saída"
 
 #: plugins/artscompressor.idl:47
 msgid "/Enhance/ArtsStereoCompressor"
@@ -4090,7 +4096,7 @@ msgstr "Saída audio de coro"
 
 #: plugins/davchorus.idl:34
 msgid "Wet out [%]"
-msgstr "Saida molhada [%]"
+msgstr "Saída molhada [%]"
 
 #: plugins/davchorus.idl:34
 msgid "Set the amount of modified data to mix"
