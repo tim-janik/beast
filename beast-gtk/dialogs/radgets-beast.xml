@@ -13,6 +13,10 @@
   <xdef:event-roll    inherit="BstEventRoll" />
   <xdef:hgrow-bar     inherit="BstHGrowBar" />
   <xdef:vgrow-bar     inherit="BstVGrowBar" />
+  <xdef:db-beam       inherit="BstDBBeam" />
+  <xdef:db-labeling   inherit="BstDBLabeling" />
+  <xdef:db-meter      inherit="BstDBMeter"
+    prop:n-scales="$(ifdef,n-scales,$n-scales,0)" />
   
   <!-- track view -->
   <xdef:track-view inherit="BstTrackView" border-width="3" >
@@ -277,7 +281,7 @@
 	  <button label="Bypass" size:window-vgroup="bus-bypass"/>
 	  <!-- Volume -->
 	  <hbox expand="1" >
-	    <vscale expand="1" />
+	    <db-meter n-scales="2" />
 	  </hbox>
 	  <!-- VolumeEntry -->
 	  <entry text="Volume" width="10" size:window-vgroup="bus-volume-entry" />

@@ -1,3 +1,20 @@
+Fri Aug 20 11:38:22 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/Makefile.am: added bstdbmeter.[hc], build testgui.
+
+	* beast-gtk/bstdbmeter.[hc]: new files, implementing:
+	BstDBSetup: a helper structure, containing the setup for a dB scale,
+	including coloring and spline approximated curvature.
+	BstDBLabeling: a new widget, able to draw dB numbers or dB scale dashes.
+	BstDBBeam: a new widget, able to display a led beam indicating dB values.
+	BstDBMeter: container widget to manage an arrangement of db-labeling,
+	db-beam and h/v-scale widgets, regarding borders, dbsetup, etc.
+
+	* beast-gtk/testgui.c: added db widget test.
+
+	* beast-gtk/dialogs/radgets-beast.xml: define db-labeling, db-beam,
+	db-meter. added db-meter to bus-editor.
+
 Tue Aug 17 17:31:52 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbusmixer.c: added bus-description radget to mixer.

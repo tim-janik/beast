@@ -29,6 +29,37 @@ void beast_show_about_box (void) {}
      
 
 /* --- functions --- */
+static GtkWidget*
+create_db_meter (GtkOrientation  orientation)
+{
+  GtkWidget *widget = bst_db_meter_new (orientation);
+  BstDBMeter *self = BST_DB_METER (widget);
+  
+  bst_db_meter_create_dashes (self, GTK_JUSTIFY_RIGHT, 2);
+  bst_db_meter_create_scale (self, 2);
+  bst_db_meter_create_dashes (self, GTK_JUSTIFY_FILL, 2);
+
+  bst_db_meter_create_beam (self, 2);
+  bst_db_meter_create_dashes (self, GTK_JUSTIFY_LEFT, 2);
+
+  bst_db_meter_create_numbers (self, 2);
+  bst_db_meter_create_dashes (self, GTK_JUSTIFY_CENTER, 2);
+
+  return widget;
+}
+
+static void
+build_db_meter_test (GtkBox *box)
+{
+  GtkWidget *meter;
+  meter = create_db_meter (GTK_ORIENTATION_VERTICAL);
+  gtk_box_pack_start (box, meter, TRUE, TRUE, 5);
+  meter = create_db_meter (GTK_ORIENTATION_HORIZONTAL);
+  gtk_box_pack_start (box, meter, FALSE, TRUE, 5);
+  meter = bst_db_meter_new_stereo (GTK_ORIENTATION_VERTICAL);
+  gtk_box_pack_start (box, meter, TRUE, TRUE, 5);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -87,13 +118,15 @@ main (int   argc,
 		"default_width", 25, // 560,
 		"default_height", 25, // 640,
 		NULL);
-  GtkWidget *meter = g_object_new (BST_TYPE_DB_METER, NULL);
+  GtkWidget *box = g_object_new (GTK_TYPE_VBOX, "visible", TRUE, NULL);
   gxk_dialog_set_child (GXK_DIALOG (dialog),
                         g_object_new (GTK_TYPE_ALIGNMENT,
                                       "visible", TRUE,
                                       "border_width", 10,
-                                      "child", meter,
+                                      "child", box,
                                       NULL));
+
+  build_db_meter_test (GTK_BOX (box));
 
   gtk_widget_show_now (dialog);
   g_object_set (dialog,
