@@ -1,3 +1,24 @@
+Wed Apr 24 08:13:26 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesource.c (bse_source_reset): before invoking the ->reset() method,
+	wait_on_trans()-action completions unconidionally.
+
+	* bseproject.c (bse_project_stop_playback): eeek, forgot to
+	wait_on_trans() after dismissing contexts, before calling
+	bse_source_reset().
+
+	* gsldatahandle.[hc]: for consistency, change:
+	s/gsl_data_handle_new_reversed/gsl_data_handle_new_reverse/.
+
+	* gsldatahandle.c (gsl_data_handle_new_dcached): make use of
+	the padding around a node's value block.
+
+	* gslopmaster.[hc]:
+	* gslengine.[hc], gslopnode.h:
+	* gslopschedule.[hc]:
+	* gsloputil.[hc]:
+	major namespace cleanup.
+
 Sun Apr 21 21:10:17 2002  Tim Janik  <timj@gtk.org>
 
 	* bseglobals.[hc]: change fine-tune to match GSL fine-tune

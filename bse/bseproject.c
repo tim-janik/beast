@@ -504,7 +504,10 @@ bse_project_stop_playback (BseProject *project)
 	    }
 	}
       gsl_trans_commit (trans);
-      
+
+      /* wait until after all modules have actually been dismissed */
+      gsl_engine_wait_on_trans ();
+
       bse_source_reset (BSE_SOURCE (project));
     }
 }

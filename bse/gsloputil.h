@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_OP_UTIL_H__
-#define __GSL_OP_UTIL_H__
+#ifndef __GSL_ENGINE_UTIL_H__
+#define __GSL_ENGINE_UTIL_H__
 
 #include <gsl/gsldefs.h>
 
@@ -27,13 +27,13 @@ extern "C" {
 
 
 /* --- typedefs --- */
-typedef struct _OpNode     OpNode;
-typedef struct _OpSchedule OpSchedule;
+typedef struct _EngineNode     EngineNode;
+typedef struct _EngineSchedule EngineSchedule;
 
 
 /* --- UserThread --- */
-void		_gsl_free_trans			(GslTrans      *trans);
-GslOStream*	_gsl_alloc_ostreams		(guint		n);
+void		_engine_free_trans		(GslTrans      *trans);
+GslOStream*	_engine_alloc_ostreams		(guint		n);
 #if 0	/* gslengine.h: */
 void            gsl_engine_garbage_collect	(void);
 gfloat*		gsl_engine_const_values		(gfloat		value);
@@ -41,13 +41,13 @@ gfloat*		gsl_engine_const_values		(gfloat		value);
 
 
 /* --- MasterThread --- */
-void	       _gsl_recycle_const_values (void);
+void		_engine_recycle_const_values	(void);
 /* master node list */
-void		_gsl_mnl_remove			(OpNode		*node);
-void		_gsl_mnl_reorder		(OpNode		*node);
-void		_gsl_mnl_integrate		(OpNode		*node);
+void		_engine_mnl_remove		(EngineNode	*node);
+void		_engine_mnl_reorder		(EngineNode	*node);
+void		_engine_mnl_integrate		(EngineNode	*node);
 #define	GSL_MNL_HEAD_NODE(node)			((node)->flow_jobs && !(node)->sched_tag)
-OpNode*		_gsl_mnl_head			(void);
+EngineNode*	_engine_mnl_head		(void);
 
 /* communication routines for threads:
  * UserThread   - main application
@@ -59,23 +59,23 @@ OpNode*		_gsl_mnl_head			(void);
 
 /* --- job transactions --- */
 /* UserThread */
-void		op_com_enqueue_trans	(GslTrans	*trans);
-GslTrans*	op_com_collect_trans	(void);
-void		op_com_wait_on_trans	(void);
+void		_engine_enqueue_trans	(GslTrans	*trans);
+GslTrans*	_engine_collect_trans	(void);
+void		_engine_wait_on_trans	(void);
 /* MasterThread */
-/* GslJob*	op_com_pop_job_timed	(glong		 max_useconds); */
-GslJob*		gsl_com_pop_job		(void);
-gboolean	op_com_job_pending	(void);
+/* GslJob*	_engine_pop_job_timed	(glong		 max_useconds); */
+GslJob*		_engine_pop_job		(void);
+gboolean	_engine_job_pending	(void);
 
 
 /* --- node processing queue --- */
-void	 _gsl_com_set_schedule		(OpSchedule	*schedule);
-void	 _gsl_com_unset_schedule	(OpSchedule	*schedule);
-OpNode*  _gsl_com_pop_unprocessed_node	(void);
-void	 _gsl_com_push_processed_node	(OpNode		*node);
-GslRing* _gsl_com_pop_unprocessed_cycle	(void);
-void	 _gsl_com_push_processed_cycle	(GslRing	*cycle);
-void	 _gsl_com_wait_on_unprocessed	(void);
+void	    _engine_set_schedule		(EngineSchedule	*schedule);
+void	    _engine_unset_schedule		(EngineSchedule	*schedule);
+EngineNode* _engine_pop_unprocessed_node	(void);
+void	    _engine_push_processed_node		(EngineNode	*node);
+GslRing*    _engine_pop_unprocessed_cycle	(void);
+void	    _engine_push_processed_cycle	(GslRing	*cycle);
+void	    _engine_wait_on_unprocessed		(void);
 
        
 
@@ -83,4 +83,4 @@ void	 _gsl_com_wait_on_unprocessed	(void);
 }
 #endif /* __cplusplus */
 
-#endif /* __GSL_OP_UTIL_H__ */
+#endif /* __GSL_ENGINE_UTIL_H__ */

@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_OP_NODE_H__
-#define __GSL_OP_NODE_H__
+#ifndef __GSL_ENGINE_NODE_H__
+#define __GSL_ENGINE_NODE_H__
 
 #include "gslengine.h"
 #include "gsloputil.h"
@@ -29,18 +29,18 @@ extern "C" {
 
 
 
-#define	OP_NODE(module)			((OpNode*) (module))
+#define	ENGINE_NODE(module)		((EngineNode*) (module))
 #define ENGINE_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
 #define ENGINE_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
 #define ENGINE_NODE_N_JSTREAMS(node)	((node)->module.klass->n_jstreams)
-#define	OP_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
+#define	ENGINE_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
 					 (node)->output_nodes == NULL)
-#define	OP_NODE_IS_DEFERRED(node)	(FALSE)
-#define	OP_NODE_IS_SCHEDULED(node)	(OP_NODE (node)->sched_tag)
-#define	OP_NODE_IS_CHEAP(node)		(((node)->module.klass->mflags & GSL_COST_CHEAP) != 0)
-#define	OP_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & GSL_COST_EXPENSIVE) != 0)
-#define	OP_NODE_LOCK(node)		gsl_rec_mutex_lock (&(node)->rec_mutex)
-#define	OP_NODE_UNLOCK(node)		gsl_rec_mutex_unlock (&(node)->rec_mutex)
+#define	ENGINE_NODE_IS_DEFERRED(node)	(FALSE)
+#define	ENGINE_NODE_IS_SCHEDULED(node)	(ENGINE_NODE (node)->sched_tag)
+#define	ENGINE_NODE_IS_CHEAP(node)	(((node)->module.klass->mflags & GSL_COST_CHEAP) != 0)
+#define	ENGINE_NODE_IS_EXPENSIVE(node)	(((node)->module.klass->mflags & GSL_COST_EXPENSIVE) != 0)
+#define	ENGINE_NODE_LOCK(node)		gsl_rec_mutex_lock (&(node)->rec_mutex)
+#define	ENGINE_NODE_UNLOCK(node)	gsl_rec_mutex_unlock (&(node)->rec_mutex)
 
 
 /* --- debugging and messages --- */
@@ -51,38 +51,38 @@ extern "C" {
 
 
 /* --- transactions --- */
-typedef union _GslFlowJob GslFlowJob;
+typedef union _EngineFlowJob EngineFlowJob;
 typedef enum {
-  OP_JOB_NOP,
-  OP_JOB_INTEGRATE,
-  OP_JOB_DISCARD,
+  ENGINE_JOB_NOP,
+  ENGINE_JOB_INTEGRATE,
+  ENGINE_JOB_DISCARD,
   ENGINE_JOB_ICONNECT,
   ENGINE_JOB_JCONNECT,
   ENGINE_JOB_IDISCONNECT,
   ENGINE_JOB_JDISCONNECT,
-  GSL_JOB_SET_CONSUMER,
-  GSL_JOB_UNSET_CONSUMER,
-  GSL_JOB_ACCESS,
-  OP_JOB_ADD_POLL,
-  OP_JOB_REMOVE_POLL,
-  GSL_JOB_FLOW_JOB,
-  OP_JOB_DEBUG,
-  OP_JOB_LAST
-} GslJobType;
+  ENGINE_JOB_SET_CONSUMER,
+  ENGINE_JOB_UNSET_CONSUMER,
+  ENGINE_JOB_ACCESS,
+  ENGINE_JOB_ADD_POLL,
+  ENGINE_JOB_REMOVE_POLL,
+  ENGINE_JOB_FLOW_JOB,
+  ENGINE_JOB_DEBUG,
+  ENGINE_JOB_LAST
+} EngineJobType;
 struct _GslJob
 {
-  GslJobType          job_id;
+  EngineJobType       job_id;
   GslJob	     *next;
   union {
-    OpNode	     *node;
+    EngineNode	     *node;
     struct {
-      OpNode	     *dest_node;
+      EngineNode     *dest_node;
       guint	      dest_ijstream;
-      OpNode	     *src_node;
+      EngineNode     *src_node;
       guint	      src_ostream;
     } connection;
     struct {
-      OpNode         *node;
+      EngineNode     *node;
       GslAccessFunc   access_func;
       gpointer	      data;
       GslFreeFunc     free_func;
@@ -95,8 +95,8 @@ struct _GslJob
       GPollFD	     *fds;
     } poll;
     struct {
-      OpNode	     *node;
-      GslFlowJob     *fjob;
+      EngineNode     *node;
+      EngineFlowJob  *fjob;
     } flow_job;
     gchar	     *debug;
   } data;
@@ -109,52 +109,52 @@ struct _GslTrans
   GslTrans *cqt_next;	/* com-thread-queue */
 };
 typedef enum {
-  GSL_FLOW_JOB_NOP,
-  GSL_FLOW_JOB_SUSPEND,
-  GSL_FLOW_JOB_RESUME,
-  GSL_FLOW_JOB_ACCESS,
-  GSL_FLOW_JOB_LAST
-} GslFlowJobType;
+  ENGINE_FLOW_JOB_NOP,
+  ENGINE_FLOW_JOB_SUSPEND,
+  ENGINE_FLOW_JOB_RESUME,
+  ENGINE_FLOW_JOB_ACCESS,
+  ENGINE_FLOW_JOB_LAST
+} EngineFlowJobType;
 typedef struct
 {
-  GslFlowJobType   fjob_id;
-  GslFlowJob      *next;
-  guint64          tick_stamp;
-} GslFlowJobAny;
+  EngineFlowJobType fjob_id;
+  EngineFlowJob    *next;
+  guint64           tick_stamp;
+} EngineFlowJobAny;
 typedef struct
 {
-  GslFlowJobType   fjob_id;
-  GslFlowJob	  *next;
-  guint64	   tick_stamp;
-  GslAccessFunc    access_func;
-  gpointer         data;
-  GslFreeFunc      free_func;
-} GslFlowJobAccess;
-union _GslFlowJob
+  EngineFlowJobType fjob_id;
+  EngineFlowJob	   *next;
+  guint64	    tick_stamp;
+  GslAccessFunc     access_func;
+  gpointer          data;
+  GslFreeFunc       free_func;
+} EngineFlowJobAccess;
+union _EngineFlowJob
 {
-  GslFlowJobType   fjob_id;
-  GslFlowJobAny	   any;
-  GslFlowJobAccess access;
+  EngineFlowJobType   fjob_id;
+  EngineFlowJobAny    any;
+  EngineFlowJobAccess access;
 };
 
 
 /* --- module nodes --- */
 typedef struct
 {
-  OpNode *src_node;
-  guint	  src_stream;		/* ostream of src_node */
+  EngineNode *src_node;
+  guint	      src_stream;	/* ostream of src_node */
 } EngineInput;
 typedef struct
 {
-  OpNode *src_node;
-  guint	  src_stream;		/* ostream of src_node */
+  EngineNode *src_node;
+  guint	      src_stream;	/* ostream of src_node */
 } EngineJInput;
 typedef struct
 {
   gfloat *buffer;
   guint	  n_outputs;
 } EngineOutput;
-struct _OpNode	/* fields sorted by order of processing access */
+struct _EngineNode		/* fields sorted by order of processing access */
 {
   GslModule	 module;
 
@@ -165,12 +165,12 @@ struct _OpNode	/* fields sorted by order of processing access */
   EngineOutput	*outputs;	/* [ENGINE_NODE_N_OSTREAMS()] */
 
   /* flow jobs */
-  GslFlowJob	*flow_jobs;			/* active jobs */
-  GslFlowJob	*fjob_first, *fjob_last;	/* trash list */
+  EngineFlowJob	*flow_jobs;			/* active jobs */
+  EngineFlowJob	*fjob_first, *fjob_last;	/* trash list */
 
   /* master-node-list */
-  OpNode	*mnl_next;
-  OpNode	*mnl_prev;
+  EngineNode	*mnl_next;
+  EngineNode	*mnl_prev;
   guint		 integrated : 1;
 
   guint		 is_consumer : 1;
@@ -179,15 +179,15 @@ struct _OpNode	/* fields sorted by order of processing access */
   guint		 sched_tag : 1;
   guint		 sched_router_tag : 1;
   guint		 sched_leaf_level;
-  OpNode	*toplevel_next;	/* master-consumer-list, FIXME: overkill, using a GslRing is good enough */
-  GslRing	*output_nodes;	/* OpNode* ring of nodes in ->outputs[] */
+  EngineNode	*toplevel_next;	/* master-consumer-list, FIXME: overkill, using a GslRing is good enough */
+  GslRing	*output_nodes;	/* EngineNode* ring of nodes in ->outputs[] */
 };
 
 static void
-_gsl_node_insert_flow_job (OpNode     *node,
-			   GslFlowJob *fjob)
+_engine_node_insert_flow_job (EngineNode    *node,
+			      EngineFlowJob *fjob)
 {
-  GslFlowJob *last = NULL, *tmp = node->flow_jobs;
+  EngineFlowJob *last = NULL, *tmp = node->flow_jobs;
 
   /* find next position */
   while (tmp && tmp->any.tick_stamp <= fjob->any.tick_stamp)
@@ -203,11 +203,11 @@ _gsl_node_insert_flow_job (OpNode     *node,
     node->flow_jobs = fjob;
 }
 
-static inline GslFlowJob*
-_gsl_node_pop_flow_job (OpNode *node,
-			guint64 tick_stamp)
+static inline EngineFlowJob*
+_engine_node_pop_flow_job (EngineNode *node,
+			   guint64     tick_stamp)
 {
-  GslFlowJob *fjob = node->flow_jobs;
+  EngineFlowJob *fjob = node->flow_jobs;
 
   if_reject (fjob)
     {
@@ -228,9 +228,9 @@ _gsl_node_pop_flow_job (OpNode *node,
 }
 
 static inline guint64
-_gsl_node_peek_flow_job_stamp (OpNode *node)
+_engine_node_peek_flow_job_stamp (EngineNode *node)
 {
-  GslFlowJob *fjob = node->flow_jobs;
+  EngineFlowJob *fjob = node->flow_jobs;
 
   if_reject (fjob)
     return fjob->any.tick_stamp;
@@ -238,11 +238,9 @@ _gsl_node_peek_flow_job_stamp (OpNode *node)
   return GSL_MAX_TICK_STAMP;
 }
 
-void	_op_engine_inc_counter	(guint64	delta);
-
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __GSL_OP_NODE_H__ */
+#endif /* __GSL_ENGINE_NODE_H__ */

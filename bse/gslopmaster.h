@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_OP_MASTER_H__
-#define __GSL_OP_MASTER_H__
+#ifndef __GSL_ENGINE_MASTER_H__
+#define __GSL_ENGINE_MASTER_H__
 
 #include	<gsl/gslengine.h>
 
@@ -27,11 +27,11 @@ extern "C" {
 
 
 /* --- internal (EngineThread) --- */
-gboolean	_gsl_master_prepare		(GslEngineLoop		*loop);
-gboolean	_gsl_master_check		(const GslEngineLoop	*loop);
-void		_gsl_master_dispatch_jobs	(void);
-void		_gsl_master_dispatch		(void);
-void		_gsl_master_thread		(gpointer		 data);
+gboolean	_engine_master_prepare		(GslEngineLoop		*loop);
+gboolean	_engine_master_check		(const GslEngineLoop	*loop);
+void		_engine_master_dispatch_jobs	(void);
+void		_engine_master_dispatch		(void);
+void		_engine_master_thread		(gpointer		 data);
 
 
 
@@ -39,4 +39,4 @@ void		_gsl_master_thread		(gpointer		 data);
 }
 #endif /* __cplusplus */
 
-#endif /* __GSL_OP_MASTER_H__ */
+#endif /* __GSL_ENGINE_MASTER_H__ */

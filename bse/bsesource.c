@@ -427,8 +427,8 @@ bse_source_reset (BseSource *source)
 	  n_contexts = BSE_SOURCE_N_CONTEXTS (source);
 	}
       gsl_trans_commit (trans);
-      gsl_engine_wait_on_trans ();
     }
+  gsl_engine_wait_on_trans ();
   BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
   BSE_SOURCE_GET_CLASS (source)->reset (source);
   g_bsearch_array_free (source->contexts, &context_config);

@@ -75,7 +75,7 @@ GslDataHandle*	  gsl_data_handle_new_translate	(GslDataHandle	  *src_handle,
 						 GslLong	   cut_offset,
 						 GslLong	   n_cut_values,
 						 GslLong	   tail_cut);
-GslDataHandle*	  gsl_data_handle_new_reversed	(GslDataHandle	  *src_handle);
+GslDataHandle*	  gsl_data_handle_new_reverse	(GslDataHandle	  *src_handle);
 GslDataHandle*	  gsl_data_handle_new_insert	(GslDataHandle	  *src_handle,
 						 guint             paste_bit_depth,
 						 GslLong	   insertion_offset,
@@ -87,11 +87,11 @@ GslDataHandle*	  gsl_data_handle_new_merge	(GslDataHandle	  *src_handle,
 						 GslLong	   n_insertions,
 						 GslDataHandle	  *merge_handle,
 						 GslLong	   merge_value_offset);
+GslDataHandle*	  gsl_data_handle_new_dcached	(GslDataCache	  *dcache);
 /* cheap and inefficient, testpurpose only */
 GslDataHandle*	  gsl_data_handle_new_looped	(GslDataHandle	  *src_handle,
 						 GslLong	   loop_start,
 						 GslLong	   loop_end);
-GslDataHandle*	  gsl_data_handle_new_dcached	(GslDataCache	  *dcache);
 
 
 /* --- wave specific functions --- */

@@ -32,22 +32,22 @@ GslModule*
 gsl_module_new (const GslClass *klass,
 		gpointer        user_data)
 {
-  OpNode *node;
+  EngineNode *node;
   guint i;
 
   g_return_val_if_fail (klass != NULL, NULL);
   g_return_val_if_fail (klass->process != NULL, NULL);
   
-  node = gsl_new_struct0 (OpNode, 1);
+  node = gsl_new_struct0 (EngineNode, 1);
   
   /* setup GslModule */
   node->module.klass = klass;
   node->module.user_data = user_data;
   node->module.istreams = klass->n_istreams ? gsl_new_struct0 (GslIStream, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
   node->module.jstreams = klass->n_jstreams ? gsl_new_struct0 (GslJStream, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
-  node->module.ostreams = _gsl_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (node));
+  node->module.ostreams = _engine_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (node));
   
-  /* setup OpNode */
+  /* setup EngineNode */
   node->inputs = ENGINE_NODE_N_ISTREAMS (node) ? gsl_new_struct0 (EngineInput, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
   node->jinputs = ENGINE_NODE_N_JSTREAMS (node) ? gsl_new_struct0 (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
   node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? gsl_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
@@ -78,7 +78,7 @@ gsl_module_tick_stamp (GslModule *module)
 {
   g_return_val_if_fail (module != NULL, 0);
   
-  return OP_NODE (module)->counter;
+  return ENGINE_NODE (module)->counter;
 }
 
 /**
@@ -96,8 +96,8 @@ gsl_job_integrate (GslModule *module)
   g_return_val_if_fail (module != NULL, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = OP_JOB_INTEGRATE;
-  job->data.node = OP_NODE (module);
+  job->job_id = ENGINE_JOB_INTEGRATE;
+  job->data.node = ENGINE_NODE (module);
   
   return job;
 }
@@ -118,8 +118,8 @@ gsl_job_discard (GslModule *module)
   g_return_val_if_fail (module != NULL, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = OP_JOB_DISCARD;
-  job->data.node = OP_NODE (module);
+  job->job_id = ENGINE_JOB_DISCARD;
+  job->data.node = ENGINE_NODE (module);
   
   return job;
 }
@@ -152,9 +152,9 @@ gsl_job_connect (GslModule *src_module,
   
   job = gsl_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_ICONNECT;
-  job->data.connection.dest_node = OP_NODE (dest_module);
+  job->data.connection.dest_node = ENGINE_NODE (dest_module);
   job->data.connection.dest_ijstream = dest_istream;
-  job->data.connection.src_node = OP_NODE (src_module);
+  job->data.connection.src_node = ENGINE_NODE (src_module);
   job->data.connection.src_ostream = src_ostream;
   
   return job;
@@ -175,9 +175,9 @@ gsl_job_jconnect (GslModule *src_module,
   
   job = gsl_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_JCONNECT;
-  job->data.connection.dest_node = OP_NODE (dest_module);
+  job->data.connection.dest_node = ENGINE_NODE (dest_module);
   job->data.connection.dest_ijstream = dest_jstream;
-  job->data.connection.src_node = OP_NODE (src_module);
+  job->data.connection.src_node = ENGINE_NODE (src_module);
   job->data.connection.src_ostream = src_ostream;
   
   return job;
@@ -204,7 +204,7 @@ gsl_job_disconnect (GslModule *dest_module,
   
   job = gsl_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_IDISCONNECT;
-  job->data.connection.dest_node = OP_NODE (dest_module);
+  job->data.connection.dest_node = ENGINE_NODE (dest_module);
   job->data.connection.dest_ijstream = dest_istream;
   job->data.connection.src_node = NULL;
   job->data.connection.src_ostream = ~0;
@@ -227,9 +227,9 @@ gsl_job_jdisconnect (GslModule *dest_module,
   
   job = gsl_new_struct0 (GslJob, 1);
   job->job_id = ENGINE_JOB_JDISCONNECT;
-  job->data.connection.dest_node = OP_NODE (dest_module);
+  job->data.connection.dest_node = ENGINE_NODE (dest_module);
   job->data.connection.dest_ijstream = dest_jstream;
-  job->data.connection.src_node = OP_NODE (src_module);
+  job->data.connection.src_node = ENGINE_NODE (src_module);
   job->data.connection.src_ostream = src_ostream;
   
   return job;
@@ -244,8 +244,8 @@ gsl_job_set_consumer (GslModule *module,
   g_return_val_if_fail (module != NULL, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = is_toplevel_consumer ? GSL_JOB_SET_CONSUMER : GSL_JOB_UNSET_CONSUMER;
-  job->data.node = OP_NODE (module);
+  job->job_id = is_toplevel_consumer ? ENGINE_JOB_SET_CONSUMER : ENGINE_JOB_UNSET_CONSUMER;
+  job->data.node = ENGINE_NODE (module);
   
   return job;
 }
@@ -285,8 +285,8 @@ gsl_job_access (GslModule    *module,
   g_return_val_if_fail (access_func != NULL, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = GSL_JOB_ACCESS;
-  job->data.access.node = OP_NODE (module);
+  job->job_id = ENGINE_JOB_ACCESS;
+  job->data.access.node = ENGINE_NODE (module);
   job->data.access.access_func = access_func;
   job->data.access.data = data;
   job->data.access.free_func = free_func;
@@ -305,21 +305,21 @@ gsl_flow_job_access (GslModule    *module,
 		     GslFreeFunc   free_func)
 {
   GslJob *job;
-  GslFlowJob *fjob;
+  EngineFlowJob *fjob;
 
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
-  fjob = (GslFlowJob*) gsl_new_struct0 (GslFlowJobAccess, 1);
-  fjob->fjob_id = GSL_FLOW_JOB_ACCESS;
+  fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAccess, 1);
+  fjob->fjob_id = ENGINE_FLOW_JOB_ACCESS;
   fjob->any.tick_stamp = tick_stamp;
   fjob->access.access_func = access_func;
   fjob->access.data = data;
   fjob->access.free_func = free_func;
 
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = GSL_JOB_FLOW_JOB;
-  job->data.flow_job.node = OP_NODE (module);
+  job->job_id = ENGINE_JOB_FLOW_JOB;
+  job->data.flow_job.node = ENGINE_NODE (module);
   job->data.flow_job.fjob = fjob;
   
   return job;
@@ -330,17 +330,17 @@ gsl_flow_job_suspend (GslModule *module,
 		      guint64    tick_stamp)
 {
   GslJob *job;
-  GslFlowJob *fjob;
+  EngineFlowJob *fjob;
   
   g_return_val_if_fail (module != NULL, NULL);
   
-  fjob = (GslFlowJob*) gsl_new_struct0 (GslFlowJobAny, 1);
-  fjob->fjob_id = GSL_FLOW_JOB_SUSPEND;
+  fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAny, 1);
+  fjob->fjob_id = ENGINE_FLOW_JOB_SUSPEND;
   fjob->any.tick_stamp = tick_stamp;
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = GSL_JOB_FLOW_JOB;
-  job->data.flow_job.node = OP_NODE (module);
+  job->job_id = ENGINE_JOB_FLOW_JOB;
+  job->data.flow_job.node = ENGINE_NODE (module);
   job->data.flow_job.fjob = fjob;
   
   return job;
@@ -351,17 +351,17 @@ gsl_flow_job_resume (GslModule *module,
 		     guint64    tick_stamp)
 {
   GslJob *job;
-  GslFlowJob *fjob;
+  EngineFlowJob *fjob;
   
   g_return_val_if_fail (module != NULL, NULL);
   
-  fjob = (GslFlowJob*) gsl_new_struct0 (GslFlowJobAny, 1);
-  fjob->fjob_id = GSL_FLOW_JOB_RESUME;
+  fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAny, 1);
+  fjob->fjob_id = ENGINE_FLOW_JOB_RESUME;
   fjob->any.tick_stamp = tick_stamp;
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = GSL_JOB_FLOW_JOB;
-  job->data.flow_job.node = OP_NODE (module);
+  job->job_id = ENGINE_JOB_FLOW_JOB;
+  job->data.flow_job.node = ENGINE_NODE (module);
   job->data.flow_job.fjob = fjob;
   
   return job;
@@ -416,7 +416,7 @@ gsl_job_add_poll (GslPollFunc      poll_func,
     g_return_val_if_fail (fds != NULL, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = OP_JOB_ADD_POLL;
+  job->job_id = ENGINE_JOB_ADD_POLL;
   job->data.poll.poll_func = poll_func;
   job->data.poll.data = data;
   job->data.poll.n_fds = n_fds;
@@ -443,7 +443,7 @@ gsl_job_remove_poll (GslPollFunc poll_func,
   g_return_val_if_fail (poll_func != NULL, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = OP_JOB_REMOVE_POLL;
+  job->job_id = ENGINE_JOB_REMOVE_POLL;
   job->data.poll.poll_func = poll_func;
   job->data.poll.data = data;
   job->data.poll.free_func = NULL;
@@ -469,7 +469,7 @@ gsl_job_debug (const gchar *debug)
   g_return_val_if_fail (debug != NULL, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = OP_JOB_DEBUG;
+  job->job_id = ENGINE_JOB_DEBUG;
   job->data.debug = g_strdup (debug);
   
   return job;
@@ -542,7 +542,7 @@ gsl_trans_commit (GslTrans *trans)
   if (trans->jobs_head)
     {
       trans->comitted = TRUE;
-      op_com_enqueue_trans (trans);
+      _engine_enqueue_trans (trans);
       wakeup_master ();
     }
   else
@@ -565,7 +565,7 @@ gsl_trans_dismiss (GslTrans *trans)
   g_return_if_fail (trans->comitted == FALSE);
   g_return_if_fail (trans->cqt_next == NULL);
   
-  _gsl_free_trans (trans);
+  _engine_free_trans (trans);
 
   gsl_engine_garbage_collect ();
 }
@@ -657,7 +657,7 @@ gsl_engine_init (gboolean run_threaded,
   
   if (gsl_engine_threaded)
     {
-      master_thread = gsl_thread_new (_gsl_master_thread, NULL);
+      master_thread = gsl_thread_new (_engine_master_thread, NULL);
       if (0)
 	gsl_thread_new (slave, NULL);
     }
@@ -677,7 +677,7 @@ gsl_engine_prepare (GslEngineLoop *loop)
   g_return_val_if_fail (gsl_engine_initialized == TRUE, FALSE);
 
   if (!gsl_engine_threaded)
-    return _gsl_master_prepare (loop);
+    return _engine_master_prepare (loop);
   else
     {
       loop->timeout = -1;
@@ -696,7 +696,7 @@ gsl_engine_check (const GslEngineLoop *loop)
     g_return_val_if_fail (loop->revents_filled == TRUE, FALSE);
   
   if (!gsl_engine_threaded)
-    return _gsl_master_check (loop);
+    return _engine_master_check (loop);
   else
     return FALSE;
 }
@@ -707,7 +707,7 @@ gsl_engine_dispatch (void)
   g_return_if_fail (gsl_engine_initialized == TRUE);
 
   if (!gsl_engine_threaded)
-    _gsl_master_dispatch ();
+    _engine_master_dispatch ();
 }
 
 /**
@@ -725,10 +725,10 @@ gsl_engine_wait_on_trans (void)
   
   /* non-threaded */
   if (!gsl_engine_threaded)
-    _gsl_master_dispatch_jobs ();
+    _engine_master_dispatch_jobs ();
 
   /* threaded */
-  op_com_wait_on_trans ();
+  _engine_wait_on_trans ();
   
   /* call all free() functions */
   gsl_engine_garbage_collect ();

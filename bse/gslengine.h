@@ -82,7 +82,7 @@ struct _GslModule
   GslOStream	 *ostreams;	/* output streams */
 };
 /* streams, constructed by engine */
-#ifndef	__GSL_MASTER_C__	/* sync this with gslopmaster.c */
+#ifndef	__GSL_ENGINE_MASTER_H__ /* sync this with gslopmaster.c */
 struct _GslJStream
 {
   const gfloat **values;

@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#define	__GSL_MASTER_C__
+#define	__GSL_ENGINE_MASTER_C__
 #include "gslopmaster.h"
 
 #include "gslcommon.h"
@@ -89,33 +89,33 @@ static void	master_schedule_discard	(void);
 
 
 /* --- variables --- */
-static gboolean	    master_need_reflow = FALSE;
-static gboolean	    master_need_process = FALSE;
-static OpNode	   *master_consumer_list = NULL;
-const gfloat        gsl_engine_master_zero_block[GSL_STREAM_MAX_VALUES] = { 0, }; /* FIXME */
-static Poll	   *master_poll_list = NULL;
-static guint        master_n_pollfds = 0;
-static guint        master_pollfds_changed = FALSE;
-static GslPollFD    master_pollfds[GSL_ENGINE_MAX_POLLFDS];
-static OpSchedule  *master_schedule = NULL;
+static gboolean	       master_need_reflow = FALSE;
+static gboolean	       master_need_process = FALSE;
+static EngineNode     *master_consumer_list = NULL;
+const gfloat           gsl_engine_master_zero_block[GSL_STREAM_MAX_VALUES] = { 0, }; /* FIXME */
+static Poll	      *master_poll_list = NULL;
+static guint           master_n_pollfds = 0;
+static guint           master_pollfds_changed = FALSE;
+static GslPollFD       master_pollfds[GSL_ENGINE_MAX_POLLFDS];
+static EngineSchedule *master_schedule = NULL;
 
 
 /* --- functions --- */
 static void
-add_consumer (OpNode *node)
+add_consumer (EngineNode *node)
 {
-  g_return_if_fail (OP_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
-
+  g_return_if_fail (ENGINE_NODE_IS_CONSUMER (node) && node->toplevel_next == NULL && node->integrated);
+  
   node->toplevel_next = master_consumer_list;
   master_consumer_list = node;
 }
 
 static void
-remove_consumer (OpNode *node)
+remove_consumer (EngineNode *node)
 {
-  OpNode *tmp, *last = NULL;
-
-  g_return_if_fail (!OP_NODE_IS_CONSUMER (node) || !node->integrated);
+  EngineNode *tmp, *last = NULL;
+  
+  g_return_if_fail (!ENGINE_NODE_IS_CONSUMER (node) || !node->integrated);
   
   for (tmp = master_consumer_list; tmp; last = tmp, tmp = last->toplevel_next)
     if (tmp == node)
@@ -129,59 +129,59 @@ remove_consumer (OpNode *node)
 }
 
 static void
-master_idisconnect_node (OpNode *node,
-			 guint   istream)
+master_idisconnect_node (EngineNode *node,
+			 guint       istream)
 {
-  OpNode *src_node = node->inputs[istream].src_node;
+  EngineNode *src_node = node->inputs[istream].src_node;
   guint ostream = node->inputs[istream].src_stream;
   gboolean was_consumer;
-
+  
   g_assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
 	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
-
+  
   node->inputs[istream].src_node = NULL;
   node->inputs[istream].src_stream = ~0;
   node->module.istreams[istream].connected = FALSE;
-  was_consumer = OP_NODE_IS_CONSUMER (src_node);
+  was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
   src_node->outputs[ostream].n_outputs -= 1;
   src_node->module.ostreams[ostream].connected = src_node->outputs[ostream].n_outputs > 0;
   src_node->output_nodes = gsl_ring_remove (src_node->output_nodes, node);
   /* add to consumer list */
-  if (!was_consumer && OP_NODE_IS_CONSUMER (src_node))
+  if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
     add_consumer (src_node);
 }
 
 static void
-master_jdisconnect_node (OpNode *node,
-			 guint   jstream,
-			 guint	 con)
+master_jdisconnect_node (EngineNode *node,
+			 guint       jstream,
+			 guint       con)
 {
-  OpNode *src_node = node->jinputs[jstream][con].src_node;
+  EngineNode *src_node = node->jinputs[jstream][con].src_node;
   guint i, ostream = node->jinputs[jstream][con].src_stream;
   gboolean was_consumer;
-
+  
   g_assert (ostream < ENGINE_NODE_N_OSTREAMS (src_node) &&
 	    node->module.jstreams[jstream].n_connections > 0 &&
 	    src_node->outputs[ostream].n_outputs > 0);	/* these checks better pass */
-
+  
   i = --node->module.jstreams[jstream].n_connections;
   node->jinputs[jstream][con] = node->jinputs[jstream][i];
   node->module.jstreams[jstream].values[i] = NULL; /* float**values 0-termination */
-  was_consumer = OP_NODE_IS_CONSUMER (src_node);
+  was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
   src_node->outputs[ostream].n_outputs -= 1;
   src_node->module.ostreams[ostream].connected = src_node->outputs[ostream].n_outputs > 0;
   src_node->output_nodes = gsl_ring_remove (src_node->output_nodes, node);
   /* add to consumer list */
-  if (!was_consumer && OP_NODE_IS_CONSUMER (src_node))
+  if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
     add_consumer (src_node);
 }
 
 static void
-master_disconnect_node_outputs (OpNode *src_node,
-				OpNode *dest_node)
+master_disconnect_node_outputs (EngineNode *src_node,
+				EngineNode *dest_node)
 {
   gint i, j;
-
+  
   for (i = 0; i < ENGINE_NODE_N_ISTREAMS (dest_node); i++)
     if (dest_node->inputs[i].src_node == src_node)
       master_idisconnect_node (dest_node, i);
@@ -196,23 +196,23 @@ master_process_job (GslJob *job)
 {
   switch (job->job_id)
     {
-      OpNode *node, *src_node;
+      EngineNode *node, *src_node;
       Poll *poll, *poll_last;
       guint istream, jstream, ostream, con;
-      GslFlowJob *fjob;
+      EngineFlowJob *fjob;
       gboolean was_consumer;
-    case OP_JOB_INTEGRATE:
+    case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
       JOB_DEBUG ("integrate(%p)", node);
       g_return_if_fail (node->integrated == FALSE);
       g_return_if_fail (node->sched_tag == FALSE);
-      _gsl_mnl_integrate (node);
-      if (OP_NODE_IS_CONSUMER (node))
+      _engine_mnl_integrate (node);
+      if (ENGINE_NODE_IS_CONSUMER (node))
 	add_consumer (node);
       node->counter = 0;
       master_need_reflow |= TRUE;
       break;
-    case OP_JOB_DISCARD:
+    case ENGINE_JOB_DISCARD:
       /* FIXME: free pending flow jobs */
       node = job->data.node;
       JOB_DEBUG ("discard(%p)", node);
@@ -228,26 +228,26 @@ master_process_job (GslJob *job)
       while (node->output_nodes)
 	master_disconnect_node_outputs (node, node->output_nodes->data);
       /* remove from consumer list */
-      if (OP_NODE_IS_CONSUMER (node))
+      if (ENGINE_NODE_IS_CONSUMER (node))
 	{
-	  _gsl_mnl_remove (node);
+	  _engine_mnl_remove (node);
 	  remove_consumer (node);
 	}
       else
-	_gsl_mnl_remove (node);
+	_engine_mnl_remove (node);
       node->counter = 0;
       master_need_reflow |= TRUE;
       master_schedule_discard ();	/* discard schedule so node may be freed */
       break;
-    case GSL_JOB_SET_CONSUMER:
-    case GSL_JOB_UNSET_CONSUMER:
+    case ENGINE_JOB_SET_CONSUMER:
+    case ENGINE_JOB_UNSET_CONSUMER:
       node = job->data.node;
       JOB_DEBUG ("toggle_consumer(%p)", node);
-      was_consumer = OP_NODE_IS_CONSUMER (node);
-      node->is_consumer = job->job_id == GSL_JOB_SET_CONSUMER;
-      if (was_consumer != OP_NODE_IS_CONSUMER (node))
+      was_consumer = ENGINE_NODE_IS_CONSUMER (node);
+      node->is_consumer = job->job_id == ENGINE_JOB_SET_CONSUMER;
+      if (was_consumer != ENGINE_NODE_IS_CONSUMER (node))
 	{
-	  if (OP_NODE_IS_CONSUMER (node))
+	  if (ENGINE_NODE_IS_CONSUMER (node))
 	    add_consumer (node);
 	  else
 	    remove_consumer (node);
@@ -267,12 +267,12 @@ master_process_job (GslJob *job)
       node->inputs[istream].src_stream = ostream;
       node->module.istreams[istream].connected = TRUE;
       /* remove from consumer list */
-      was_consumer = OP_NODE_IS_CONSUMER (src_node);
+      was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
       src_node->module.ostreams[ostream].connected = TRUE;
       src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
       src_node->counter = 0;	// FIXME: counter reset?
-      if (was_consumer && !OP_NODE_IS_CONSUMER (src_node))
+      if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
       master_need_reflow |= TRUE;
       break;
@@ -291,12 +291,12 @@ master_process_job (GslJob *job)
       node->jinputs[jstream][con].src_node = src_node;
       node->jinputs[jstream][con].src_stream = ostream;
       /* remove from consumer list */
-      was_consumer = OP_NODE_IS_CONSUMER (src_node);
+      was_consumer = ENGINE_NODE_IS_CONSUMER (src_node);
       src_node->outputs[ostream].n_outputs += 1;
       src_node->module.ostreams[ostream].connected = TRUE;
       src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
       src_node->counter = 0;	// FIXME: counter reset?
-      if (was_consumer && !OP_NODE_IS_CONSUMER (src_node))
+      if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
       master_need_reflow |= TRUE;
       break;
@@ -328,26 +328,26 @@ master_process_job (GslJob *job)
       else
 	g_warning ("jdisconnect(dest:%p,%u,src:%p,%u): no such connection", node, jstream, src_node, ostream);
       break;
-    case GSL_JOB_ACCESS:
+    case ENGINE_JOB_ACCESS:
       node = job->data.access.node;
       JOB_DEBUG ("access node(%p): %p(%p)", node, job->data.access.access_func, job->data.access.data);
       g_return_if_fail (node->integrated == TRUE);
       job->data.access.access_func (&node->module, job->data.access.data);
       break;
-    case GSL_JOB_FLOW_JOB:
+    case ENGINE_JOB_FLOW_JOB:
       node = job->data.flow_job.node;
       fjob = job->data.flow_job.fjob;
       JOB_DEBUG ("add flow_job(%p,%p)", node, fjob);
       g_return_if_fail (node->integrated == TRUE);
       job->data.flow_job.fjob = NULL;	/* ownership taken over */
-      _gsl_node_insert_flow_job (node, fjob);
-      _gsl_mnl_reorder (node);
+      _engine_node_insert_flow_job (node, fjob);
+      _engine_mnl_reorder (node);
       break;
-    case OP_JOB_DEBUG:
+    case ENGINE_JOB_DEBUG:
       JOB_DEBUG ("debug");
       g_printerr ("JOB-DEBUG: %s\n", job->data.debug);
       break;
-    case OP_JOB_ADD_POLL:
+    case ENGINE_JOB_ADD_POLL:
       JOB_DEBUG ("add poll %p(%p,%u)", job->data.poll.poll_func, job->data.poll.data, job->data.poll.n_fds);
       if (job->data.poll.n_fds + master_n_pollfds > GSL_ENGINE_MAX_POLLFDS)
 	g_error ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
@@ -366,7 +366,7 @@ master_process_job (GslJob *job)
       poll->next = master_poll_list;
       master_poll_list = poll;
       break;
-    case OP_JOB_REMOVE_POLL:
+    case ENGINE_JOB_REMOVE_POLL:
       JOB_DEBUG ("remove poll %p(%p)", job->data.poll.poll_func, job->data.poll.data);
       for (poll = master_poll_list, poll_last = NULL; poll; poll_last = poll, poll = poll_last->next)
 	if (poll->poll_func == job->data.poll.poll_func && poll->data == job->data.poll.data)
@@ -410,7 +410,7 @@ master_poll_check (glong   *timeout_p,
 {
   gboolean need_processing = FALSE;
   Poll *poll;
-
+  
   if (master_need_process || *timeout_p == 0)
     {
       master_need_process = TRUE;
@@ -419,7 +419,7 @@ master_poll_check (glong   *timeout_p,
   for (poll = master_poll_list; poll; poll = poll->next)
     {
       glong timeout = -1;
-
+      
       if (poll->poll_func (poll->data, gsl_engine_block_size (), &timeout,
 			   poll->n_fds, poll->n_fds ? poll->fds : NULL, check_with_revents)
 	  || timeout == 0)
@@ -435,10 +435,10 @@ master_poll_check (glong   *timeout_p,
 }
 
 static inline guint64
-master_handle_flow_jobs (OpNode *node,
-			 guint64 max_tick)
+master_handle_flow_jobs (EngineNode *node,
+			 guint64     max_tick)
 {
-  GslFlowJob *fjob = _gsl_node_pop_flow_job (node, max_tick);
+  EngineFlowJob *fjob = _engine_node_pop_flow_job (node, max_tick);
   
   if_reject (fjob)
     do
@@ -446,43 +446,43 @@ master_handle_flow_jobs (OpNode *node,
 	g_printerr ("FJob: at:%lld from:%lld \n", node->counter, fjob->any.tick_stamp);
 	switch (fjob->fjob_id)
 	  {
-	  case GSL_FLOW_JOB_ACCESS:
+	  case ENGINE_FLOW_JOB_ACCESS:
 	    fjob->access.access_func (&node->module, fjob->access.data);
 	    break;
 	  default:
 	    g_assert_not_reached (); /* FIXME */
 	  }
-	fjob = _gsl_node_pop_flow_job (node, max_tick);
+	fjob = _engine_node_pop_flow_job (node, max_tick);
       }
     while (fjob);
   
-  return _gsl_node_peek_flow_job_stamp (node);
+  return _engine_node_peek_flow_job_stamp (node);
 }
 
 static void
-master_process_locked_node (OpNode *node,
-			    guint   n_values)
+master_process_locked_node (EngineNode *node,
+			    guint       n_values)
 {
   guint64 final_counter = GSL_TICK_STAMP + n_values;
-
+  
   while (node->counter < final_counter)
     {
       guint64 next_counter = master_handle_flow_jobs (node, node->counter);
       guint64 new_counter = MIN (next_counter, final_counter);
       guint i, j, diff = node->counter - GSL_TICK_STAMP;
-
+      
       for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
 	{
-	  OpNode *inode = node->inputs[i].src_node;
+	  EngineNode *inode = node->inputs[i].src_node;
 	  
 	  if (inode)
 	    {
-	      OP_NODE_LOCK (inode);
+	      ENGINE_NODE_LOCK (inode);
 	      if (inode->counter < final_counter)
 		master_process_locked_node (inode, final_counter - node->counter);
 	      node->module.istreams[i].values = inode->outputs[node->inputs[i].src_stream].buffer;
 	      node->module.istreams[i].values += diff;
-	      OP_NODE_UNLOCK (inode);
+	      ENGINE_NODE_UNLOCK (inode);
 	    }
 	  else
 	    node->module.istreams[i].values = gsl_engine_master_zero_block;
@@ -490,14 +490,14 @@ master_process_locked_node (OpNode *node,
       for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
 	for (i = 0; i < node->module.jstreams[j].n_connections; i++)
 	  {
-	    OpNode *inode = node->jinputs[j][i].src_node;
+	    EngineNode *inode = node->jinputs[j][i].src_node;
 	    
-	    OP_NODE_LOCK (inode);
+	    ENGINE_NODE_LOCK (inode);
 	    if (inode->counter < final_counter)
 	      master_process_locked_node (inode, final_counter - node->counter);
 	    node->module.jstreams[j].values[i] = inode->outputs[node->jinputs[j][i].src_stream].buffer;
 	    node->module.jstreams[j].values[i] += diff;
-	    OP_NODE_UNLOCK (inode);
+	    ENGINE_NODE_UNLOCK (inode);
 	  }
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	node->module.ostreams[i].values = node->outputs[i].buffer + diff;
@@ -521,25 +521,25 @@ master_process_flow (void)
   guint64 new_counter = GSL_TICK_STAMP + gsl_engine_block_size ();
   GslLong trace_slowest = 0;
   GslLong trace_delay = gsl_trace_delay;
-  OpNode *trace_node = NULL;
+  EngineNode *trace_node = NULL;
   
   g_return_if_fail (master_need_process == TRUE);
-
+  
   g_assert (gsl_fpu_okround () == TRUE);
-
+  
   MAS_DEBUG ("process_flow");
   if (master_schedule)
     {
-      OpNode *node;
-
-      _op_schedule_restart (master_schedule);
-      _gsl_com_set_schedule (master_schedule);
+      EngineNode *node;
       
-      node = _gsl_com_pop_unprocessed_node ();
+      _engine_schedule_restart (master_schedule);
+      _engine_set_schedule (master_schedule);
+      
+      node = _engine_pop_unprocessed_node ();
       while (node)
 	{
 	  ToyprofStamp trace_stamp1, trace_stamp2;
-
+	  
 	  if_reject (trace_delay)
 	    toyprof_stamp (trace_stamp1);
 	  
@@ -548,7 +548,7 @@ master_process_flow (void)
 	  if_reject (trace_delay)
 	    {
 	      GslLong duration;
-
+	      
 	      toyprof_stamp (trace_stamp2);
 	      duration = toyprof_elapsed (trace_stamp1, trace_stamp2);
 	      if (duration > trace_slowest)
@@ -558,10 +558,10 @@ master_process_flow (void)
 		}
 	    }
 	  
-	  _gsl_com_push_processed_node (node);
-	  node = _gsl_com_pop_unprocessed_node ();
+	  _engine_push_processed_node (node);
+	  node = _engine_pop_unprocessed_node ();
 	}
-
+      
       if_reject (trace_delay)
 	{
 	  if (trace_node)
@@ -574,32 +574,32 @@ master_process_flow (void)
 			 trace_node, trace_slowest, trace_node->module.klass->process);
 	    }
 	}
-
+      
       /* walk unscheduled nodes which have flow jobs */
-      node = _gsl_mnl_head ();
+      node = _engine_mnl_head ();
       while (node && GSL_MNL_HEAD_NODE (node))
 	{
-	  OpNode *tmp = node->mnl_next;
-	  GslFlowJob *fjob = _gsl_node_pop_flow_job (node, new_counter);
-
+	  EngineNode *tmp = node->mnl_next;
+	  EngineFlowJob *fjob = _engine_node_pop_flow_job (node, new_counter);
+	  
 	  if (fjob)
 	    {
 	      while (fjob)
 		{
 		  g_printerr ("ignoring flow_job %p\n", fjob);
-		  fjob = _gsl_node_pop_flow_job (node, new_counter);
+		  fjob = _engine_node_pop_flow_job (node, new_counter);
 		}
-	      _gsl_mnl_reorder (node);
+	      _engine_mnl_reorder (node);
 	    }
 	  node = tmp;
 	}
-
+      
       /* nothing new to process, wait on slaves */
-      _gsl_com_wait_on_unprocessed ();
-
-      _gsl_com_unset_schedule (master_schedule);
+      _engine_wait_on_unprocessed ();
+      
+      _engine_unset_schedule (master_schedule);
       _gsl_tick_stamp_inc ();
-      _gsl_recycle_const_values ();
+      _engine_recycle_const_values ();
     }
   master_need_process = FALSE;
 }
@@ -607,21 +607,21 @@ master_process_flow (void)
 static void
 master_reschedule_flow (void)
 {
-  OpNode *node;
-
+  EngineNode *node;
+  
   g_return_if_fail (master_need_reflow == TRUE);
-
+  
   MAS_DEBUG ("flow_reschedule");
   if (!master_schedule)
-    master_schedule = _op_schedule_new ();
+    master_schedule = _engine_schedule_new ();
   else
     {
-      _op_schedule_unsecure (master_schedule);
-      _op_schedule_clear (master_schedule);
+      _engine_schedule_unsecure (master_schedule);
+      _engine_schedule_clear (master_schedule);
     }
   for (node = master_consumer_list; node; node = node->toplevel_next)
-    _op_schedule_consumer_node (master_schedule, node);
-  _op_schedule_secure (master_schedule);
+    _engine_schedule_consumer_node (master_schedule, node);
+  _engine_schedule_secure (master_schedule);
   master_need_reflow = FALSE;
 }
 
@@ -629,11 +629,11 @@ static void
 master_schedule_discard (void)
 {
   g_return_if_fail (master_need_reflow == TRUE);
-
+  
   if (master_schedule)
     {
-      _op_schedule_unsecure (master_schedule);
-      _op_schedule_destroy (master_schedule);
+      _engine_schedule_unsecure (master_schedule);
+      _engine_schedule_destroy (master_schedule);
       master_schedule = NULL;
     }
 }
@@ -641,13 +641,13 @@ master_schedule_discard (void)
 
 /* --- MasterThread main loop --- */
 gboolean
-_gsl_master_prepare (GslEngineLoop *loop)
+_engine_master_prepare (GslEngineLoop *loop)
 {
   gboolean need_dispatch;
   guint i;
-
+  
   g_return_val_if_fail (loop != NULL, FALSE);
-
+  
   /* setup and clear pollfds here already, so master_poll_check() gets no junk (and IRIX can't handle non-0 revents) */
   loop->fds_changed = master_pollfds_changed;
   master_pollfds_changed = FALSE;
@@ -656,13 +656,13 @@ _gsl_master_prepare (GslEngineLoop *loop)
   for (i = 0; i < loop->n_fds; i++)
     loop->fds[i].revents = 0;
   loop->revents_filled = FALSE;
-
+  
   loop->timeout = -1;
   /* cached checks first */
   need_dispatch = master_need_reflow || master_need_process;
   /* lengthy query */
   if (!need_dispatch)
-    need_dispatch = op_com_job_pending ();
+    need_dispatch = _engine_job_pending ();
   /* invoke custom poll checks */
   if (!need_dispatch)
     {
@@ -671,59 +671,59 @@ _gsl_master_prepare (GslEngineLoop *loop)
     }
   if (need_dispatch)
     loop->timeout = 0;
-
+  
   MAS_DEBUG ("PREPARE: need_dispatch=%u timeout=%6ld n_fds=%u",
 	     need_dispatch,
 	     loop->timeout, loop->n_fds);
-
+  
   return need_dispatch;
 }
 
 gboolean
-_gsl_master_check (const GslEngineLoop *loop)
+_engine_master_check (const GslEngineLoop *loop)
 {
   gboolean need_dispatch;
-
+  
   g_return_val_if_fail (loop != NULL, FALSE);
   g_return_val_if_fail (loop->n_fds == master_n_pollfds, FALSE);
   g_return_val_if_fail (loop->fds == master_pollfds, FALSE);
   if (loop->n_fds)
     g_return_val_if_fail (loop->revents_filled == TRUE, FALSE);
-
+  
   /* cached checks first */
   need_dispatch = master_need_reflow || master_need_process;
   /* lengthy query */
   if (!need_dispatch)
-    need_dispatch = op_com_job_pending ();
+    need_dispatch = _engine_job_pending ();
   /* invoke custom poll checks */
   if (!need_dispatch)
     {
       glong dummy = -1;
-
+      
       master_poll_check (&dummy, TRUE);
       need_dispatch = master_need_process;
     }
-
+  
   MAS_DEBUG ("CHECK: need_dispatch=%u", need_dispatch);
-
+  
   return need_dispatch;
 }
 
 void
-_gsl_master_dispatch_jobs (void)
+_engine_master_dispatch_jobs (void)
 {
   GslJob *job;
-
-  job = gsl_com_pop_job ();
+  
+  job = _engine_pop_job ();
   while (job)
     {
       master_process_job (job);
-      job = gsl_com_pop_job ();	/* have to process _all_ jobs */
+      job = _engine_pop_job ();	/* have to process _all_ jobs */
     }
 }
 
 void
-_gsl_master_dispatch (void)
+_engine_master_dispatch (void)
 {
   /* processing has prime priority, but we can't process the
    * network, until all jobs have been handled and if necessary
@@ -731,7 +731,7 @@ _gsl_master_dispatch (void)
    * that's why we have to handle everything at once and can't
    * preliminarily return after just handling jobs or rescheduling.
    */
-  _gsl_master_dispatch_jobs ();
+  _engine_master_dispatch_jobs ();
   if (master_need_reflow)
     master_reschedule_flow ();
   if (master_need_process)
@@ -739,50 +739,50 @@ _gsl_master_dispatch (void)
 }
 
 void
-_gsl_master_thread (gpointer data)
+_engine_master_thread (gpointer data)
 {
   gboolean run = TRUE;
-
+  
   /* assert sane configuration checks, since we're simply casting structures */
   g_assert (sizeof (struct pollfd) == sizeof (GslPollFD) &&
 	    G_STRUCT_OFFSET (GslPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd) &&
 	    G_STRUCT_OFFSET (GslPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events) &&
 	    G_STRUCT_OFFSET (GslPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
-
+  
   /* add the thread wakeup pipe to master pollfds, so we get woken
    * up in time (even though we evaluate the pipe contents later)
    */
   gsl_thread_get_pollfd (master_pollfds);
   master_n_pollfds += 1;
   master_pollfds_changed = TRUE;
-
+  
   toyprof_stampinit ();
   
   while (run)
     {
       GslEngineLoop loop;
       gboolean need_dispatch;
-
-      need_dispatch = _gsl_master_prepare (&loop);
-
+      
+      need_dispatch = _engine_master_prepare (&loop);
+      
       if (!need_dispatch)
 	{
 	  gint err;
-
+	  
 	  err = poll ((struct pollfd*) loop.fds, loop.n_fds, loop.timeout);
 	  
 	  if (err >= 0)
 	    loop.revents_filled = TRUE;
 	  else
 	    g_printerr (G_STRLOC ": poll() error: %s\n", g_strerror (errno));
-
+	  
 	  if (loop.revents_filled)
-	    need_dispatch = _gsl_master_check (&loop);
+	    need_dispatch = _engine_master_check (&loop);
 	}
-
+      
       if (need_dispatch)
-	_gsl_master_dispatch ();
-
+	_engine_master_dispatch ();
+      
       /* handle thread pollfd messages */
       run = gsl_thread_sleep (0);
     }

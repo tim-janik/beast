@@ -292,7 +292,7 @@ reversed_handle_read (GslDataHandle *data_handle,
 }
 
 GslDataHandle*
-gsl_data_handle_new_reversed (GslDataHandle *src_handle)
+gsl_data_handle_new_reverse (GslDataHandle *src_handle)
 {
   static GslDataHandleFuncs reversed_handle_vtable = {
     chain_handle_open,
@@ -676,7 +676,7 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
       dhandle->dhandle.vtable = &dcache_handle_vtable;
       dhandle->dhandle.n_values = dcache->dhandle->n_values;
       dhandle->dcache = gsl_data_cache_ref (dcache);
-      dhandle->node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
+      dhandle->node_size = GSL_DATA_CACHE_NODE_SIZE (dcache) + dcache->padding;
     }
   else
     {
