@@ -10,7 +10,11 @@ AUTOMAKE_OPTIONS = 1.4
 
 site site-upgrade site-update site-preview site-update-con site-update-img site-update-nav:
 	$(MAKE) -C docs/ $(AM_MAKEFLAGS) $@
+test:
+	$(MAKE) -C tests/ $(AM_MAKEFLAGS) $@
 
+.PHONY: test
+        
 # extra dependancies
 configure: acbeast.m4
 

@@ -46,10 +46,13 @@ tests_built_sources = @STRIP_BEGIN@ \
 	bsecxxapi.h \
 @STRIP_END@
 
+test:
+	$(MAKE) -C audio/ $(AM_MAKEFLAGS) $@
+
 #
 # convenience targets for the builtsources
 #
-.PHONY: generated clean-generated
+.PHONY: generated clean-generated test
 clean-generated:
 	cd $(srcdir) \
 	&& rm -f $(tests_built_sources)
