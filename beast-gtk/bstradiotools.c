@@ -256,7 +256,7 @@ bst_radio_tools_add_tool_generic (BstRadioTools     *self,
   self->tools[i].tool_id = tool_id;
   self->tools[i].tool.cat_key = NULL;
   self->tools[i].tool.name = g_strdup (tool_name);
-  self->tools[i].tool.stock_key = g_strdup (stock_icon);
+  self->tools[i].tool.stock_id = g_strdup (stock_icon);
   self->tools[i].tool.accelerator = g_strdup (tool_accel);
   self->tools[i].tool.tooltip = g_strdup (tool_tip);
   self->tools[i].tool.blurb = g_strdup (tool_blurb);
@@ -354,7 +354,7 @@ bst_radio_tools_clear_tools (BstRadioTools *self)
 	{
 	  g_free (self->tools[i].tool.cat_key);
 	  g_free (self->tools[i].tool.name);
-	  g_free (self->tools[i].tool.stock_key);
+	  g_free (self->tools[i].tool.stock_id);
 	  g_free (self->tools[i].tool.accelerator);
 	  g_free (self->tools[i].tool.tooltip);
 	  g_free (self->tools[i].tool.blurb);
@@ -427,8 +427,8 @@ bst_radio_tools_build_toolbar (BstRadioTools *self,
       
       if (self->tools[i].icon)
         image = bst_image_from_icon (self->tools[i].icon, BST_SIZE_TOOLBAR);
-      else if (self->tools[i].tool.stock_key)
-        image = gxk_stock_image (self->tools[i].tool.stock_key, BST_SIZE_TOOLBAR);
+      else if (self->tools[i].tool.stock_id)
+        image = gxk_stock_image (self->tools[i].tool.stock_id, BST_SIZE_TOOLBAR);
       if (!image)
         image = gxk_stock_image (BST_STOCK_NO_ICON, BST_SIZE_TOOLBAR);
       button = gxk_toolbar_append (toolbar, GXK_TOOLBAR_TOGGLE,
@@ -489,8 +489,8 @@ bst_radio_tools_build_toolbar_choice (BstRadioTools *self,
       
       if (self->tools[i].icon)
         image = bst_image_from_icon (self->tools[i].icon, BST_SIZE_TOOLBAR);
-      else if (self->tools[i].tool.stock_key)
-        image = gxk_stock_image (self->tools[i].tool.stock_key, BST_SIZE_TOOLBAR);
+      else if (self->tools[i].tool.stock_id)
+        image = gxk_stock_image (self->tools[i].tool.stock_id, BST_SIZE_TOOLBAR);
       if (!image)
         image = gxk_stock_image (BST_STOCK_NO_ICON, BST_SIZE_TOOLBAR);
       item = gxk_toolbar_choice_add (choice_widget,
@@ -574,8 +574,8 @@ bst_radio_tools_build_palette (BstRadioTools *self,
       
       if (self->tools[i].icon)
         image = bst_image_from_icon (self->tools[i].icon, BST_SIZE_PALETTE);
-      else if (self->tools[i].tool.stock_key)
-        image = gxk_stock_image (self->tools[i].tool.stock_key, BST_SIZE_PALETTE);
+      else if (self->tools[i].tool.stock_id)
+        image = gxk_stock_image (self->tools[i].tool.stock_id, BST_SIZE_PALETTE);
       if (!image)
         image = gxk_stock_image (BST_STOCK_NO_ICON, BST_SIZE_PALETTE);
       button = g_object_connect (gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,

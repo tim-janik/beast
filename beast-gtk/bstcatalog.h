@@ -26,7 +26,7 @@ G_BEGIN_DECLS
 typedef struct {
   gchar *cat_key;
   gchar *name;
-  gchar *stock_key;
+  gchar *stock_id;
   gchar *accelerator;
   gchar *tooltip;
   gchar *blurb;

@@ -17,7 +17,7 @@
  */
 
 static const BstCatalogTool tools_en[] = {
-  /* catalog_key, name, stock_icon, accelerator, tooltip, blurb */
+  /* catalog_key, name, stock_id, accelerator, tooltip, blurb */
   { CKEY ("TrackRoll/TickLeft"),	"Left",
     BST_STOCK_TICK_LOOP_LEFT,		"L",
     "Use the horizontal ruler to adjust the left loop pointer", NULL,
