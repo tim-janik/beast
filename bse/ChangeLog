@@ -1,6 +1,6 @@
 Thu Dec 30 05:47:24 1999  Tim Janik  <timj@gtk.org>
 
-	* bseheart.c (bse_heart_unregister_all_devices): provide function to
+	* bseheart.[hc] (bse_heart_unregister_all_devices): provide function to
 	perform necessary cleanups after all sources got detached.
 
 Wed Dec 29 22:41:27 1999  Tim Janik  <timj@gtk.org>
