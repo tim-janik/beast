@@ -9,7 +9,7 @@ ZFILE_DEFS = $(strip \
 	BST_RADGETS_BEAST	$(srcdir)/radgets-beast.xml	\
 )
 XML_FILES  = $(filter-out BST_%, $(ZFILE_DEFS))
-EXTRA_DIST = $(XML_FILES)
+EXTRA_DIST += $(XML_FILES)
 
 ZINTERN=$(top_builddir)/bse/zintern/zintern
 

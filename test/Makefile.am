@@ -1,4 +1,4 @@
-EXTRA_DIST = $(strip \
+EXTRA_DIST += $(strip \
 	drum-test.bse \
 	midi-test.bse \
 	osc-test.bse \

@@ -15,4 +15,4 @@ skins_DATA = $(strip		\
 )
 skinsdir = $(beastskinsdir)
 
-EXTRA_DIST = $(skins_DATA)
+EXTRA_DIST += $(skins_DATA)

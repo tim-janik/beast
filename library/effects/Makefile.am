@@ -9,4 +9,4 @@ effects_DATA = $(strip	\
 )
 effectsdir = $(bseeffectdir)
 
-EXTRA_DIST = $(effects_DATA)
+EXTRA_DIST += $(effects_DATA)

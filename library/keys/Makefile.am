@@ -9,4 +9,4 @@ keys_DATA = $(strip		\
 )
 keysdir = $(beastkeysdir)
 
-EXTRA_DIST = $(keys_DATA)
+EXTRA_DIST += $(keys_DATA)

@@ -10,4 +10,4 @@ instruments_DATA = $(strip 	\
 )
 instrumentsdir = $(bseinstrumentdir)
 
-EXTRA_DIST = $(instruments_DATA)
+EXTRA_DIST += $(instruments_DATA)

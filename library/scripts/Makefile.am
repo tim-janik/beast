@@ -12,4 +12,4 @@ scripts_DATA = $(strip			\
 )
 scriptsdir = $(bsescriptdir)
 
-EXTRA_DIST = $(scripts_DATA)
+EXTRA_DIST += $(scripts_DATA)

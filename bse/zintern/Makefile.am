@@ -12,7 +12,7 @@ ZFILE_DEFS = $(strip \
 gen_sources = xgen-bzc xgen-bzh
 CLEANFILES += $(gen_sources) bse-zfile.c bse-zfile.h
 noinst_DATA = bse-zfile.c # bse-zfile.h
-EXTRA_DIST  = $(filter-out BSE_%, $(ZFILE_DEFS))
+EXTRA_DIST += $(filter-out BSE_%, $(ZFILE_DEFS))
 
 bse-zfile.c:	zintern $(srcdir)/*.bse # bse-zfile.h
 	./zintern -b -z $(ZFILE_DEFS) > xgen-bzc					\

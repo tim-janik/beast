@@ -13,4 +13,4 @@ images_DATA = $(strip		\
 )
 imagesdir = $(beastskinsdir)/images
 
-EXTRA_DIST = $(images_DATA)
+EXTRA_DIST += $(images_DATA)
