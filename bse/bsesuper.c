@@ -128,8 +128,7 @@ bse_super_init (BseSuper *super,
   super->mod_time = bse_time_current ();
   super->creation_time = super->mod_time;
   super->saved_mod_time = super->mod_time;
-  super->auto_activate = FALSE;
-  super->auto_activate_context_handle = ~0;
+  super->context_handle = ~0;
   
   bse_super_objects = g_slist_prepend (bse_super_objects, super);
   

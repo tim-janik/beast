@@ -583,6 +583,20 @@ bse_idle_background (GSourceFunc function,
   return id;
 }
 
+guint
+bse_idle_timed (guint64     usec_delay,
+		GSourceFunc function,
+		gpointer    data)
+{
+  GSource *source = g_timeout_source_new (CLAMP (usec_delay / 1000, 0, G_MAXUINT));
+  guint id;
+  g_source_set_priority (source, BSE_PRIORITY_NOW);
+  g_source_set_callback (source, function, data, NULL);
+  id = g_source_attach (source, bse_main_context);
+  g_source_unref (source);
+  return id;
+}
+
 gboolean
 bse_idle_remove (guint id)
 {

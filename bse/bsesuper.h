@@ -31,7 +31,22 @@ G_BEGIN_DECLS
 #define BSE_IS_SUPER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SUPER))
 #define BSE_IS_SUPER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUPER))
 #define BSE_SUPER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUPER, BseSuperClass))
-#define BSE_SUPER_FLAGS_USHIFT	    (BSE_CONTAINER_FLAGS_USHIFT + 0)
+
+
+/* --- BseSuper member macros --- */
+#define BSE_SUPER_NEEDS_CONTEXT(object)		  ((BSE_OBJECT_FLAGS (object) & BSE_SUPER_FLAG_NEEDS_CONTEXT) != 0)
+#define BSE_SUPER_NEEDS_SEQUENCER_CONTEXT(object) ((BSE_OBJECT_FLAGS (object) & BSE_SUPER_FLAG_NEEDS_SEQUENCER_CONTEXT) != 0)
+#define BSE_SUPER_NEEDS_SEQUENCER(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_SUPER_FLAG_NEEDS_SEQUENCER) != 0)
+
+
+/* --- bse item flags --- */
+typedef enum                            /*< skip >*/
+{
+  BSE_SUPER_FLAG_NEEDS_CONTEXT		 = 1 << (BSE_CONTAINER_FLAGS_USHIFT + 0),
+  BSE_SUPER_FLAG_NEEDS_SEQUENCER_CONTEXT = 1 << (BSE_CONTAINER_FLAGS_USHIFT + 1),
+  BSE_SUPER_FLAG_NEEDS_SEQUENCER	 = 1 << (BSE_CONTAINER_FLAGS_USHIFT + 2)
+} BseSuperFlags;
+#define BSE_SUPER_FLAGS_USHIFT	       (BSE_CONTAINER_FLAGS_USHIFT + 3)
 
 
 /* --- BseSuper object --- */
@@ -44,8 +59,7 @@ struct _BseSuper
   BseTime	 saved_mod_time;
 
   /* for BseProject */
-  gboolean       auto_activate;
-  guint          auto_activate_context_handle;
+  guint          context_handle;
 };
 struct _BseSuperClass
 {

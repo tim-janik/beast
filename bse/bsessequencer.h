@@ -26,40 +26,32 @@ G_BEGIN_DECLS
 #define	BSE_SSEQUENCER_PREPROCESS	(gsl_engine_block_size () * 7)
 
 
-typedef struct _BseSSequencerTrack BseSSequencerTrack;
-struct _BseSSequencerTrack
-{
-  BseSSequencerTrack	*next;
-  BseSong		*song;
-  BsePart		*part;
-  BseMidiReceiver	*midi_receiver;
-  SfiTime		 start_stamp;
-  guint			 tick;	/* next unhandled part tick */
-};
-
 typedef enum {
-  BSE_SSEQUENCER_JOB_ADD	= 1,
+  BSE_SSEQUENCER_JOB_NOP,
+  BSE_SSEQUENCER_JOB_ADD,
   BSE_SSEQUENCER_JOB_REMOVE,
 } BseSSequencerJobType;
 
 typedef struct {
   BseSSequencerJobType	 type;
-  BseSong		*song;
+  BseSuper		*super;
   SfiTime		 stamp;
 } BseSSequencerJob;
 
 typedef struct {
   SfiTime		 stamp;	/* sequencer time (ahead of real time) */
   SfiRing		*jobs;
-  SfiRing		*songs;
+  SfiRing		*supers;
 } BseSSequencer;
 
 
-void			bse_ssequencer_start		(void);
-BseSSequencerJob*	bse_ssequencer_add_song		(BseSong	 *song);
-BseSSequencerJob*	bse_ssequencer_remove_song	(BseSong	 *song);
+void			bse_ssequencer_init_thread	(void);
+void			bse_ssequencer_start_supers	(SfiRing	*supers,
+							 GslTrans	*trans);
+BseSSequencerJob*	bse_ssequencer_job_stop_super	(BseSuper	*super);
 SfiTime			bse_ssequencer_queue_jobs	(SfiRing	 *jobs);
 void			bse_ssequencer_handle_jobs	(SfiRing	 *jobs);
+void			bse_ssequencer_remove_super_SL	(BseSuper	*super);
 
 
 G_END_DECLS

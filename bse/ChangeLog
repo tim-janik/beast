@@ -1,3 +1,55 @@
+Mon Jan 20 11:18:02 2003  Tim Janik  <timj@gtk.org>
+
+	* bseproject.[hcp]: changed playback and activation logic.
+	project playback happens in stages activate, start_playback,
+	stop_playback and deactivate. a project can be automatically
+	stopped due to the sequencer reaching song ends, and a project
+	can be automatically deactivated through a timeout.
+	export the new interface in procedures.
+
+	* bseglobals.[hc] (bse_idle_timed): added timeout functions.
+
+Thu Jan 16 23:27:51 2003  Tim Janik  <timj@gtk.org>
+
+	* bseproject.[hcp]*:
+
+	* bsemain.c (bse_main_loop): start sequencer thread.
+
+	* bsemididevice.[hc]: removed cruft.
+
+	* bsemidireceiver.[hc]: added accessor to check whether some
+	voices are still active.
+
+	* bsepart.[hc]: keep track of the last tick and export it as
+	property. more _SL fixes for functions/memebers protected by
+	the sequencer lock.
+
+	* bsemidisynth.c: set early context creation flag.
+
+	* bsesnet.c: maintain user context creation setting.
+
+	* bsesong.[hc]: integrate with sequencer updates.
+	(bse_song_init): set early context creation and sequencing flags.
+
+	* bsessequencer.[hc]: start switching sequencer code over from
+	songs to supers. detect song playback ends.
+
+	* bsesuper.[hc]: introduce flags to indicate need of early or
+	sequencer context creation and need for sequencing. could remove
+	auto_activate field after introduction of the flags.
+
+	* bsetrack.c: cause the sequencer to re-check whether a track is
+	done after properties were altered.
+
+	* bsewaverepo.c: nuke auto_activate setting.
+
+	* bseserver.[hc]: simplify device management by exporting just
+	bse_server_open_devices() and bse_server_close_devices() and
+	suport use counting for them.
+
+	* bseserver.proc: scratch run/halt-project procedures since
+	projects export the necessary mechanisms themselves now.
+
 Wed Jan  8 20:15:01 2003  Tim Janik  <timj@gtk.org>
 
 	* bseenums.[hc]:

@@ -119,9 +119,10 @@ static void
 bse_track_init (BseTrack *self)
 {
   self->snet = NULL;
-  self->part_SL = NULL;
   self->max_voices = 8;
+  self->part_SL = NULL;
   self->midi_receiver_SL = bse_midi_receiver_new ("intern");
+  self->track_done_SL = FALSE;
 }
 
 static void
@@ -265,6 +266,7 @@ bse_track_set_property (GObject      *object,
 	}
       BSE_SEQUENCER_LOCK ();
       self->part_SL = bse_value_get_object (value);
+      self->track_done_SL = FALSE;	/* let sequencer recheck if playing */
       BSE_SEQUENCER_UNLOCK ();
       if (self->part_SL)
 	{

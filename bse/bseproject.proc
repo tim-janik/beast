@@ -470,3 +470,164 @@ METHOD (BseProject, get-state) {
   
   return BSE_ERROR_NONE;
 }
+
+METHOD (BseProject, activate) {
+  HELP	= "Activate a project, precondition to start playback.";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT	= bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *self = bse_value_get_object (in_values++);
+  BseErrorType error;
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  error = bse_project_activate (self);
+
+  g_value_set_enum (out_values++, error);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, start-playback) {
+  HELP	= "Start playback in an activated project.";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *self = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  bse_project_start_playback (self);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, stop-playback) {
+  HELP	= "Stop project playback.";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *self = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  bse_project_stop_playback (self);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, deactivate) {
+  HELP	= "Deactivate the project, automatically stop playback.";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *self = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  bse_project_deactivate (self);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, play) {
+  HELP	= "Activate a project and start project playback (and already playing project is first halted).";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  OUT	= bse_param_spec_genum ("error", "Error", NULL,
+				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+				SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *self = bse_value_get_object (in_values++);
+  BseErrorType error;
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  error = bse_project_activate (self);
+  if (!error)
+    {
+      if (self->state == BSE_PROJECT_PLAYING)
+	bse_project_stop_playback (self);
+      bse_project_start_playback (self);
+    }
+
+  g_value_set_enum (out_values++, error);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, stop) {
+  HELP	= "Stop project playback and deactivate project.";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *self = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  bse_project_deactivate (self);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, auto-deactivate) {
+  HELP	= "Automatically deactivate a project once playback stopped.";
+  IN	= bse_param_spec_object ("project", NULL, "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("msec_delay", NULL, "Delay for deactivation in milliseconds",
+			 0, -1, G_MAXINT, 1000, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *self  = bse_value_get_object (in_values++);
+  gint64      msecs = sfi_value_get_int (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  self->deactivate_usecs = msecs < 0 ? -1 : msecs * 1000;
+
+  return BSE_ERROR_NONE;
+}

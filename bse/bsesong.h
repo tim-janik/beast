@@ -59,6 +59,8 @@ struct _BseSong
   SfiTime	    start_SL;		/* playback start */
   gdouble	    delta_stamp_SL;	/* start + delta_stamp => tick */
   guint		    tick_SL;		/* tick at stamp_SL */
+  guint		    song_done_SL : 1;
+  guint		    sequencer_pending_SL : 1;
 };
 struct _BseSongClass
 {
@@ -67,11 +69,11 @@ struct _BseSongClass
 
 
 /* --- prototypes --- */
-void             bse_song_set_bpm                    (BseSong         *song,
-						      guint            bpm);
-BseSong*         bse_song_lookup                     (BseProject      *project,
-						      const gchar     *name);
-
+void		bse_song_set_bpm		(BseSong	*self,
+						 guint		 bpm);
+BseSong*	bse_song_lookup			(BseProject	*project,
+						 const gchar	*name);
+void		bse_song_stop_sequencing_SL	(BseSong	*self);
 
 
 #ifdef __cplusplus

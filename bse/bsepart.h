@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,20 +38,27 @@ extern "C" {
 typedef struct _BsePartNode  BsePartNode;
 struct _BsePart
 {
-  BseItem      parent_instance;
+  BseItem	parent_instance;
 
-  guint	       n_ids;
-  guint	      *ids;
-  guint	       head_id, tail_id;	/* free id list */
+  guint		ppqn;
 
-  guint	       n_nodes;
-  BsePartNode *nodes;
-  guint	       ppqn;
+  guint		n_ids;
+  guint	       *ids;
+  guint		head_id, tail_id;	/* free id list */
 
-  guint	       range_tick;
-  guint	       range_bound;
-  gint         range_min_note;
-  gint         range_max_note;
+  guint		n_nodes;
+  BsePartNode  *nodes;
+  guint		last_tick_SL;
+
+  guint		ltu_queued : 1;
+  guint		ltu_recalc : 1;
+  guint		range_queued : 1;
+
+  /* queued updates */
+  guint		range_tick;
+  guint		range_bound;
+  gint		range_min_note;
+  gint		range_max_note;
 };
 struct _BsePartClass
 {

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,25 @@
 #define peek_or_return          bse_storage_scanner_peek_or_return
 
 
+/* --- properties --- */
+enum
+{
+  PROP_0,
+  PROP_LAST_TICK,
+};
+
+
 /* --- prototypes --- */
 static void	    bse_part_class_init		(BsePartClass	*class);
 static void	    bse_part_init		(BsePart	*self);
+static void	    bse_part_set_property	(GObject        *object,
+						 guint           param_id,
+						 const GValue   *value,
+						 GParamSpec     *pspec);
+static void	    bse_part_get_property	(GObject	*object,
+						 guint           param_id,
+						 GValue         *value,
+						 GParamSpec     *pspec);
 static void	    bse_part_dispose		(GObject	*object);
 static void	    bse_part_finalize		(GObject	*object);
 static void	    bse_part_store_private	(BseObject	*object,
@@ -41,8 +57,10 @@ static BseTokenType bse_part_restore_private	(BseObject	*object,
 /* --- variables --- */
 static gpointer parent_class = NULL;
 static guint    signal_range_changed = 0;
-static guint    range_changed_handler = 0;
-static GSList  *range_changed_parts = NULL;
+static guint	handler_id_range_changed = 0;
+static GSList  *plist_range_changed = NULL;
+static guint	handler_id_last_tick_changed = 0;
+static GSList  *plist_last_tick_changed = NULL;
 static GQuark   quark_insert_note = 0;
 
 
@@ -80,12 +98,20 @@ bse_part_class_init (BsePartClass *class)
   
   quark_insert_note = g_quark_from_static_string ("insert-note");
   
+  gobject_class->set_property = bse_part_set_property;
+  gobject_class->get_property = bse_part_get_property;
   gobject_class->dispose = bse_part_dispose;
   gobject_class->finalize = bse_part_finalize;
   
   object_class->store_private = bse_part_store_private;
   object_class->restore_private = bse_part_restore_private;
-  
+
+  bse_object_class_add_param (object_class, "Limits",
+			      PROP_LAST_TICK,
+			      sfi_pspec_int ("last_tick", "Last Tick", NULL,
+					     0, 0, BSE_PART_MAX_TICK, 384,
+					     SFI_PARAM_GUI_READABLE));
+
   signal_range_changed = bse_object_class_add_signal (object_class, "range-changed",
 						      G_TYPE_NONE, 4,
 						      G_TYPE_INT, G_TYPE_INT,
@@ -95,6 +121,7 @@ bse_part_class_init (BsePartClass *class)
 static void
 bse_part_init (BsePart *self)
 {
+  self->ppqn = 384;
   self->n_ids = 1;
   self->ids = g_renew (guint, NULL, 1);
   self->ids[0] = BSE_PART_INVAL_TICK_FLAG + 0;
@@ -102,7 +129,10 @@ bse_part_init (BsePart *self)
   self->tail_id = 1;
   self->n_nodes = 0;
   self->nodes = g_renew (BsePartNode, NULL, upper_power2 (self->n_nodes));
-  self->ppqn = 384;
+  self->last_tick_SL = 0;
+  self->ltu_queued = FALSE;
+  self->ltu_recalc = FALSE;
+  self->range_queued = FALSE;
   self->range_tick = BSE_PART_MAX_TICK;
   self->range_bound = 0;
   self->range_min_note = BSE_MAX_NOTE;
@@ -110,11 +140,48 @@ bse_part_init (BsePart *self)
 }
 
 static void
+bse_part_set_property (GObject        *object,
+		       guint           param_id,
+		       const GValue   *value,
+		       GParamSpec     *pspec)
+{
+  BsePart *self = BSE_PART (object);
+  switch (param_id)
+    {
+    case PROP_LAST_TICK:
+      g_assert_not_reached ();
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+}
+
+static void
+bse_part_get_property (GObject	  *object,
+		       guint       param_id,
+		       GValue     *value,
+		       GParamSpec *pspec)
+{
+  BsePart *self = BSE_PART (object);
+  switch (param_id)
+    {
+    case PROP_LAST_TICK:
+      g_value_set_int (value, self->last_tick_SL);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+}
+
+static void
 bse_part_dispose (GObject *object)
 {
   BsePart *self = BSE_PART (object);
-  
-  range_changed_parts = g_slist_remove (range_changed_parts, self);
+
+  plist_range_changed = g_slist_remove (plist_range_changed, self);
+  self->range_queued = FALSE;
   self->range_tick = BSE_PART_MAX_TICK;
   self->range_bound = 0;
   self->range_min_note = BSE_MAX_NOTE;
@@ -131,7 +198,10 @@ bse_part_finalize (GObject *object)
   BsePartEvent *ev, *next;
   guint i;
   
-  range_changed_parts = g_slist_remove (range_changed_parts, self);
+  self->ltu_queued = TRUE;
+  plist_last_tick_changed = g_slist_remove (plist_last_tick_changed, self);
+  self->range_queued = TRUE;
+  plist_range_changed = g_slist_remove (plist_range_changed, self);
 
   g_free (self->ids);
   self->n_ids = 0;
@@ -212,18 +282,63 @@ bse_part_tick_from_id (BsePart *self,
 }
 
 static gboolean
+last_tick_update_handler (gpointer data)
+{
+  while (plist_last_tick_changed)
+    {
+      GSList *slist = plist_last_tick_changed;
+      BsePart *self = slist->data;
+      plist_last_tick_changed = slist->next;
+      g_slist_free_1 (slist);
+      self->ltu_queued = FALSE;
+      if (self->ltu_recalc)
+	{
+	  guint i, last_tick = 0;
+	  self->ltu_recalc = FALSE;
+	  for (i = 0; i < self->n_nodes; i++)
+	    {
+	      BsePartEvent *ev;
+	      guint duration = 1;
+	      for (ev = self->nodes[i].events; ev; ev = ev->any.next)
+		if (ev && ev->type == BSE_PART_EVENT_NOTE)
+		  duration = MAX (duration, ev->note.duration);
+	      if (self->nodes[i].events)
+		last_tick = MAX (last_tick, self->nodes[i].tick + duration);
+	    }
+	  BSE_SEQUENCER_LOCK ();
+	  self->last_tick_SL = last_tick;
+	  BSE_SEQUENCER_UNLOCK ();
+	}
+      g_object_notify (self, "last-tick");
+    }
+  handler_id_last_tick_changed = 0;
+  return FALSE;
+}
+
+static void
+queue_ltu (BsePart *self,
+	   gboolean needs_recalc)
+{
+  self->ltu_recalc |= needs_recalc != FALSE;
+  if (!self->ltu_queued)
+    {
+      self->ltu_queued = TRUE;
+      plist_last_tick_changed = g_slist_prepend (plist_last_tick_changed, self);
+    }
+  if (!handler_id_last_tick_changed)
+    handler_id_last_tick_changed = bse_idle_now (last_tick_update_handler, NULL);
+}
+
+static gboolean
 range_changed_notify_handler (gpointer data)
 {
-  BSE_THREADS_ENTER ();
-  
-  while (range_changed_parts)
+  while (plist_range_changed)
     {
-      GSList *slist = range_changed_parts;
+      GSList *slist = plist_range_changed;
       BsePart *self = slist->data;
       guint tick = self->range_tick, duration = self->range_bound - tick;
       gint min_note = self->range_min_note, max_note = self->range_max_note;
-      
-      range_changed_parts = slist->next;
+      plist_range_changed = slist->next;
       g_slist_free_1 (slist);
       
       self->range_tick = BSE_PART_MAX_TICK;
@@ -233,9 +348,7 @@ range_changed_notify_handler (gpointer data)
       if (min_note <= max_note)
 	g_signal_emit (self, signal_range_changed, 0, tick, duration, min_note, max_note);
     }
-  range_changed_handler = 0;
-  
-  BSE_THREADS_LEAVE ();
+  handler_id_range_changed = 0;
   
   return FALSE;
 }
@@ -253,13 +366,13 @@ queue_update (BsePart *self,
   if (!BSE_OBJECT_DISPOSING (self))
     {
       if (self->range_tick >= self->range_bound)
-	range_changed_parts = g_slist_prepend (range_changed_parts, self);
+	plist_range_changed = g_slist_prepend (plist_range_changed, self);
       self->range_tick = MIN (self->range_tick, tick);
       self->range_bound = MAX (self->range_bound, bound);
       self->range_min_note = MIN (self->range_min_note, note);
       self->range_max_note = MAX (self->range_max_note, note);
-      if (!range_changed_handler)
-	range_changed_handler = bse_idle_update (range_changed_notify_handler, NULL);
+      if (!handler_id_range_changed)
+	handler_id_range_changed = bse_idle_update (range_changed_notify_handler, NULL);
     }
 }
 
@@ -322,9 +435,9 @@ queue_rectangle_update (BsePart *self,
 }
 
 static void
-insert_tick (BsePart *self,
-	     guint    index,
-	     guint    tick)
+insert_tick_SL (BsePart *self,
+		guint    index,
+		guint    tick)
 {
   guint n, size;
   
@@ -344,12 +457,12 @@ insert_tick (BsePart *self,
 }
 
 static guint	/* new index */
-ensure_tick (BsePart *self,
-	     guint    tick)
+ensure_tick_SL (BsePart *self,
+		guint    tick)
 {
   if (!self->n_nodes)
     {
-      insert_tick (self, 0, tick);
+      insert_tick_SL (self, 0, tick);
       return 0;
     }
   else
@@ -357,9 +470,9 @@ ensure_tick (BsePart *self,
       guint index = lookup_tick (self, tick);
       
       if (self->nodes[index].tick < tick)
-	insert_tick (self, ++index, tick);
+	insert_tick_SL (self, ++index, tick);
       else if (self->nodes[index].tick > tick)
-	insert_tick (self, index, tick);
+	insert_tick_SL (self, index, tick);
       return index;
     }
 }
@@ -378,9 +491,9 @@ remove_tick (BsePart *self,
 }
 
 static void
-insert_event (BsePart      *self,
-	      guint         index,
-	      BsePartEvent *ev)
+insert_event_SL (BsePart      *self,
+		 guint         index,
+		 BsePartEvent *ev)
 {
   g_return_if_fail (index < self->n_nodes);
   g_return_if_fail (ev->any.next == NULL);
@@ -652,8 +765,9 @@ insert_note (BsePart *self,
 	     gboolean selected)
 {
   BsePartEvent *ev;
-  guint index;
-  
+  guint index, last_tick;
+  gboolean last_tick_changed;
+
   ev = sfi_new_struct0 (BsePartEvent, 1);
   ev->type = BSE_PART_EVENT_NOTE;
   ev->note.id = id;
@@ -663,11 +777,18 @@ insert_note (BsePart *self,
   ev->note.fine_tune = fine_tune;
   ev->note.velocity = velocity;
   
-  BSE_SEQUENCER_LOCK ();
-  index = ensure_tick (self, tick);
-  insert_event (self, index, ev);
-  BSE_SEQUENCER_UNLOCK ();
+  last_tick = tick + ev->note.duration;
+  last_tick_changed = last_tick > self->last_tick_SL;
   
+  BSE_SEQUENCER_LOCK ();
+  index = ensure_tick_SL (self, tick);
+  insert_event_SL (self, index, ev);
+  if (last_tick_changed)
+    self->last_tick_SL = last_tick;
+  BSE_SEQUENCER_UNLOCK ();
+
+  if (last_tick_changed)
+    queue_ltu (self, FALSE);
   queue_update (self, tick, duration, note);
   
   return ev->note.id;
@@ -691,15 +812,26 @@ delete_event (BsePart *self,
   if (ev)
     {
       gboolean selected = ev->any.selected;	// FIXME: hack
-      
-      queue_update (self, self->nodes[index].tick, ev->note.duration, ev->note.note);
-      
+      guint need_ltu, last_tick = tick;
+
+      if (ev->type == BSE_PART_EVENT_NOTE)
+	{
+	  last_tick += ev->note.duration;
+	  queue_update (self, self->nodes[index].tick, ev->note.duration, ev->note.note);
+	}
+      else
+	queue_update (self, self->nodes[index].tick, 1, 0 /* FIXME: non-note update */);
+
       BSE_SEQUENCER_LOCK ();
       if (last)
 	last->any.next = ev->any.next;
       else
 	self->nodes[index].events = ev->any.next;
+      need_ltu = last_tick >= self->last_tick_SL;
       BSE_SEQUENCER_UNLOCK ();
+
+      if (need_ltu)
+	queue_ltu (self, TRUE);
       
       sfi_delete_struct (BsePartEvent, ev);
       /* caller does: bse_part_free_id (self, id); */

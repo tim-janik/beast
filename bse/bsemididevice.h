@@ -79,14 +79,12 @@ struct _BseMidiDeviceClass
   guint			driver_rating;
   BseErrorType	(*open)		(BseMidiDevice	*mdev);
   void		(*suspend)	(BseMidiDevice	*mdev);
-  void		(*trigger)	(BseMidiDevice	*mhandle);
 };
 
 
 /* --- prototypes --- */
 BseErrorType	bse_midi_device_open		(BseMidiDevice		*mdev);
 void		bse_midi_device_suspend		(BseMidiDevice		*mdev);
-void		bse_midi_device_trigger		(BseMidiDevice		*mdev);
 
 
 /* --- internal utils --- */

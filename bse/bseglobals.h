@@ -103,6 +103,9 @@ guint	  bse_idle_update	(GSourceFunc    function,
 guint	  bse_idle_background	(GSourceFunc    function,
 				 gpointer       data);
 gboolean  bse_idle_remove	(guint		id);
+guint	  bse_idle_timed	(guint64	usec_delay,
+				 GSourceFunc    function,
+				 gpointer       data);
 
 
 /* semitone factorization tables, i.e.

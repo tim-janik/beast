@@ -85,7 +85,6 @@ bse_midi_device_class_init (BseMidiDeviceClass *class)
   class->driver_rating = 0;
   class->open = NULL;
   class->suspend = NULL;
-  class->trigger = NULL;
   
   bse_object_class_add_param (object_class, NULL,
 			      PROP_MIDI_RECEIVER,
@@ -151,7 +150,7 @@ bse_midi_device_dispose (GObject *object)
   
   if (BSE_MIDI_DEVICE_OPEN (self))
     {
-      g_warning (G_STRLOC ": midi device still opened");
+      g_warning ("%s: midi device still opened", G_STRLOC);
       bse_midi_device_suspend (self);
     }
   if (self->handle)
@@ -196,13 +195,4 @@ bse_midi_device_suspend (BseMidiDevice *mdev)
 				 BSE_MIDI_FLAG_READABLE |
 				 BSE_MIDI_FLAG_WRITABLE));
   errno = 0;
-}
-
-void
-bse_midi_device_trigger (BseMidiDevice *mdev)
-{
-  g_return_if_fail (BSE_IS_MIDI_DEVICE (mdev));
-  
-  if (BSE_MIDI_DEVICE_OPEN (mdev))
-    BSE_MIDI_DEVICE_GET_CLASS (mdev)->trigger (mdev);
 }

@@ -198,9 +198,7 @@ bse_server_init (BseServer *server)
   server->pcm_device = NULL;
   server->pcm_imodule = NULL;
   server->pcm_omodule = NULL;
-  server->pcm_ref_count = 0;
   server->midi_device = NULL;
-  server->midi_fallback = NULL;
   BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
   
   /* keep the server singleton alive */
@@ -421,25 +419,20 @@ bse_server_find_project (BseServer   *server,
   return NULL;
 }
 
-void
-bse_server_pick_default_devices (BseServer *server)
+static BseErrorType
+bse_server_open_pcm_device (BseServer *server)
 {
   GType *children, choice = 0;
-  guint n, i, rating;
+  guint n, i, rating = 0;
+  BseErrorType error;
   
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (server->pcm_device == NULL);
-  g_return_if_fail (server->midi_device == NULL);
-  g_return_if_fail (server->midi_fallback == NULL);
+  g_return_val_if_fail (server->pcm_device == NULL, BSE_ERROR_INTERNAL);
   
-  /* pcm device driver implementations all derive from BsePcmDevice */
+  /* pick PCM driver implementation and try to open device */
   children = g_type_children (BSE_TYPE_PCM_DEVICE, &n);
-  /* pick class with highest rating */
-  rating = 0;
   for (i = 0; i < n; i++)
     {
       BsePcmDeviceClass *class = g_type_class_ref (children[i]);
-      
       if (class->driver_rating > rating)
 	{
 	  rating = class->driver_rating;
@@ -448,17 +441,34 @@ bse_server_pick_default_devices (BseServer *server)
       g_type_class_unref (class);
     }
   g_free (children);
-  if (rating)
-    server->pcm_device = g_object_new (choice, NULL);
   
-  /* midi device driver implementations all derive from BseMidiDevice */
+  if (!choice)
+    return BSE_ERROR_DEVICE_NOT_AVAILABLE;
+  
+  server->pcm_device = g_object_new (choice, NULL);
+  error = bse_pcm_device_open (server->pcm_device);
+  if (error)
+    {
+      g_object_unref (server->pcm_device);
+      server->pcm_device = NULL;
+    }
+  return error;
+}
+
+static BseErrorType
+bse_server_open_midi_device (BseServer *server)
+{
+  GType *children, choice = 0;
+  guint n, i, rating = 0;
+  BseErrorType error;
+  
+  g_return_val_if_fail (server->midi_device == NULL, BSE_ERROR_INTERNAL);
+  
+  /* pick MIDI driver implementation and try to open device */
   children = g_type_children (BSE_TYPE_MIDI_DEVICE, &n);
-  /* pick class with highest rating */
-  rating = 0;
   for (i = 0; i < n; i++)
     {
       BseMidiDeviceClass *class = g_type_class_ref (children[i]);
-      
       if (class->driver_rating > rating)
 	{
 	  rating = class->driver_rating;
@@ -467,146 +477,159 @@ bse_server_pick_default_devices (BseServer *server)
       g_type_class_unref (class);
     }
   g_free (children);
-  if (!rating)
-    choice = BSE_TYPE_MIDI_DEVICE_NULL;
+
+  if (!choice)
+    {
+      /* return BSE_ERROR_DEVICE_NOT_AVAILABLE; */
+    retry_with_null_device:
+      choice = BSE_TYPE_MIDI_DEVICE_NULL;
+    }
+
   server->midi_device = g_object_new (choice,
 				      "midi_receiver", bse_server_get_midi_receiver (server, "default"),
 				      NULL);
-  if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
-    server->midi_fallback = g_object_new (BSE_TYPE_MIDI_DEVICE_NULL,
-					  "midi_receiver", bse_server_get_midi_receiver (server, "default"),
-					  NULL);
+  error = bse_midi_device_open (server->midi_device);
+  if (error)
+    {
+      if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
+	sfi_info ("failed to open midi device \"%s\" (reverting to null device): %s",
+		  bse_object_debug_name (server->midi_device), bse_error_blurb (error));
+      g_object_unref (server->midi_device);
+      server->midi_device = NULL;
+      if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
+	goto retry_with_null_device;
+    }
+  return error;
 }
 
 BseErrorType
-bse_server_activate_devices (BseServer *server)
+bse_server_open_devices (BseServer *self)
 {
   BseErrorType error = BSE_ERROR_NONE;
   
-  g_return_val_if_fail (BSE_IS_SERVER (server), BSE_ERROR_INTERNAL);
-  
-  if (!server->pcm_device || !server->midi_device)
-    bse_server_pick_default_devices (server);
-  if (!server->pcm_device)
-    return BSE_ERROR_INTERNAL;	/* shouldn't happen */
-  
+  g_return_val_if_fail (BSE_IS_SERVER (self), BSE_ERROR_INTERNAL);
+
+  /* check whether devices are already opened */
+  if (self->dev_use_count)
+    {
+      self->dev_use_count++;
+      return BSE_ERROR_NONE;
+    }
+
   if (!error)
-    error = bse_pcm_device_open (server->pcm_device);
+    error = bse_server_open_pcm_device (self);
+  if (!error)
+    error = bse_server_open_midi_device (self);
   if (!error)
     {
-      BseErrorType midi_error;
-      midi_error = bse_midi_device_open (server->midi_device);
-      if (midi_error)
+      GslTrans *trans = gsl_trans_open ();
+      bse_pcm_handle_set_watermark (bse_pcm_device_get_handle (self->pcm_device),
+				    self->pcm_latency);
+      engine_init (self, bse_pcm_device_get_handle (self->pcm_device)->mix_freq);
+      self->pcm_imodule = bse_pcm_imodule_insert (bse_pcm_device_get_handle (self->pcm_device), trans);
+      self->pcm_omodule = bse_pcm_omodule_insert (bse_pcm_device_get_handle (self->pcm_device), trans);
+      gsl_trans_commit (trans);
+      self->dev_use_count++;
+    }
+  else
+    {
+      if (self->midi_device)
 	{
-	  g_message ("failed to open midi device %s (reverting to null device): %s",
-		     bse_object_debug_name (server->midi_device), bse_error_blurb (midi_error));
-	  midi_error = bse_midi_device_open (server->midi_fallback);
-	  g_assert (midi_error == BSE_ERROR_NONE);
+	  bse_midi_device_suspend (self->midi_device);
+	  g_object_unref (self->midi_device);
+	  self->midi_device = NULL;
+	}
+      if (self->pcm_device)
+	{
+	  bse_pcm_device_suspend (self->pcm_device);
+	  g_object_unref (self->pcm_device);
+	  self->pcm_device = NULL;
 	}
     }
-  if (!error)
-    {
-      GslTrans *trans;
-      
-      bse_pcm_handle_set_watermark (bse_pcm_device_get_handle (server->pcm_device),
-				    server->pcm_latency);
-      engine_init (server, bse_pcm_device_get_handle (server->pcm_device)->mix_freq);
-      
-      trans = gsl_trans_open ();
-      server->pcm_imodule = bse_pcm_imodule_insert (bse_pcm_device_get_handle (server->pcm_device), trans);
-      server->pcm_omodule = bse_pcm_omodule_insert (bse_pcm_device_get_handle (server->pcm_device), trans);
-      gsl_trans_commit (trans);
-    }
-  
   return error;
 }
 
 void
-bse_server_suspend_devices (BseServer *server)
+bse_server_close_devices (BseServer *self)
 {
-  GslTrans *trans;
-  
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (server->pcm_ref_count == 0);
-  
-  trans = gsl_trans_open ();
-  if (server->pcm_omodule)
+  g_return_if_fail (BSE_IS_SERVER (self));
+  g_return_if_fail (self->dev_use_count > 0);
+
+  self->dev_use_count--;
+  if (!self->dev_use_count)
     {
-      bse_pcm_imodule_remove (server->pcm_imodule, trans);
-      server->pcm_imodule = NULL;
-      bse_pcm_omodule_remove (server->pcm_omodule, trans);
-      server->pcm_omodule = NULL;
+      GslTrans *trans = gsl_trans_open ();
+      bse_pcm_imodule_remove (self->pcm_imodule, trans);
+      self->pcm_imodule = NULL;
+      bse_pcm_omodule_remove (self->pcm_omodule, trans);
+      self->pcm_omodule = NULL;
+      /* we don't need to discard the midi_receiver */
+      // FIXME: discard midi_receiver modules
+      gsl_trans_commit (trans);
+      /* wait until transaction has been processed */
+      gsl_engine_wait_on_trans ();
+      bse_pcm_device_suspend (self->pcm_device);
+      bse_midi_device_suspend (self->midi_device);
+      engine_shutdown (self);
+      g_object_unref (self->pcm_device);
+      self->pcm_device = NULL;
+      g_object_unref (self->midi_device);
+      self->midi_device = NULL;
     }
-  /* we don't need to discard the midi_receiver */
-  // FIXME: discard midi_receiver modules
-  gsl_trans_commit (trans);
-  
-  /* wait until transaction has been processed */
-  gsl_engine_wait_on_trans ();
-  
-  bse_pcm_device_suspend (server->pcm_device);
-  if (BSE_MIDI_DEVICE_OPEN (server->midi_device))
-    bse_midi_device_suspend (server->midi_device);
-  else
-    bse_midi_device_suspend (server->midi_fallback);
-  
-  engine_shutdown (server);
 }
 
 GslModule*
-bse_server_retrieve_pcm_output_module (BseServer   *server,
+bse_server_retrieve_pcm_output_module (BseServer   *self,
 				       BseSource   *source,
 				       const gchar *uplink_name)
 {
-  g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
+  g_return_val_if_fail (BSE_IS_SERVER (self), NULL);
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   g_return_val_if_fail (uplink_name != NULL, NULL);
-  g_return_val_if_fail (server->pcm_omodule != NULL, NULL); // FIXME server->pcm_devices_open
+  g_return_val_if_fail (self->dev_use_count > 0, NULL);
   
-  server->pcm_ref_count += 1;
+  self->dev_use_count += 1;
   
-  return server->pcm_omodule;
+  return self->pcm_omodule;
 }
 
 void
-bse_server_discard_pcm_output_module (BseServer *server,
+bse_server_discard_pcm_output_module (BseServer *self,
 				      GslModule *module)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
+  g_return_if_fail (BSE_IS_SERVER (self));
   g_return_if_fail (module != NULL);
-  g_return_if_fail (server->pcm_ref_count > 0);
-  
-  g_return_if_fail (server->pcm_omodule == module); // FIXME
-  
-  server->pcm_ref_count -= 1;
+  g_return_if_fail (self->dev_use_count > 0);
+
+  /* decrement dev_use_count */
+  bse_server_close_devices (self);
 }
 
 GslModule*
-bse_server_retrieve_pcm_input_module (BseServer   *server,
+bse_server_retrieve_pcm_input_module (BseServer   *self,
 				      BseSource   *source,
 				      const gchar *uplink_name)
 {
-  g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
+  g_return_val_if_fail (BSE_IS_SERVER (self), NULL);
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   g_return_val_if_fail (uplink_name != NULL, NULL);
-  g_return_val_if_fail (server->pcm_imodule != NULL, NULL); // FIXME server->pcm_devices_open
+  g_return_val_if_fail (self->dev_use_count > 0, NULL);
   
-  server->pcm_ref_count += 1;
+  self->dev_use_count += 1;
   
-  return server->pcm_imodule;
+  return self->pcm_imodule;
 }
 
 void
-bse_server_discard_pcm_input_module (BseServer *server,
+bse_server_discard_pcm_input_module (BseServer *self,
 				     GslModule *module)
 {
-  g_return_if_fail (BSE_IS_SERVER (server));
+  g_return_if_fail (BSE_IS_SERVER (self));
   g_return_if_fail (module != NULL);
-  g_return_if_fail (server->pcm_ref_count > 0);
-  
-  g_return_if_fail (server->pcm_imodule == module); // FIXME
-  
-  server->pcm_ref_count -= 1;
+  g_return_if_fail (self->dev_use_count > 0);
+
+  /* decrement dev_use_count */
+  bse_server_close_devices (self);
 }
 
 BseMidiReceiver*

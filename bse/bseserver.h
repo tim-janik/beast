@@ -46,14 +46,12 @@ struct _BseServer
   GList	          *projects;
   GSList	  *children;
   
+  guint		   dev_use_count;
   guint		   pcm_latency;
-  guint		   pcm_ref_count;
   BsePcmDevice    *pcm_device;
   GslModule       *pcm_imodule;
   GslModule       *pcm_omodule;
-  guint		   dev_use_count;
   BseMidiDevice	  *midi_device;
-  BseMidiDevice	  *midi_fallback;
   BseMidiReceiver *midi_receiver;
   
   GSList	  *watch_list;
@@ -70,9 +68,8 @@ BseProject*	bse_server_create_project		(BseServer	*server,
 							 const gchar	*name);
 BseProject*	bse_server_find_project			(BseServer	*server,
 							 const gchar	*name);
-void		bse_server_pick_default_devices		(BseServer	*server);
-BseErrorType	bse_server_activate_devices		(BseServer	*server);
-void		bse_server_suspend_devices		(BseServer	*server);
+BseErrorType	bse_server_open_devices			(BseServer	*server);
+void		bse_server_close_devices		(BseServer	*server);
 GslModule*	bse_server_retrieve_pcm_output_module	(BseServer	*server,
 							 BseSource	*source,
 							 const gchar	*uplink_name);

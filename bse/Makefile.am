@@ -262,7 +262,7 @@ $(srcdir)/bseplugin.c: bsebuiltin_externs.c bsebuiltin_array.c
 $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 
 #
-# setup BSE sources and their dependancies
+# setup sources, their dependancies and commands
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
 libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources)
@@ -273,13 +273,18 @@ EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
 EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
 GLIB_MKENUMS = glib-mkenums
 SFIDL = ../sfi/sfidl	# FIXME: cd $(srcdir) && $(SFIDL) doesn't work for builddir
+PPROCESS = $(CPP) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)  # analogous to $COMPILE
+# don't $(strip) the next two commands
+GREP_DEBUG_KEYS = sed -n '/sfi_debug_with_key[ 	]*("[^")]\+")/{ s/.*sfi_debug_with_key[  ]*(\("[^")]\+"\)).*/\1,/; p; }' | sort | uniq
+GREP_INFO_KEYS  = sed -n '/sfi_info_with_key[ 	]*("[^")]\+")/{ s/.*sfi_info_with_key[  ]*(\("[^")]\+"\)).*/\1,/; p; }' | sort | uniq
+
 
 #
 # rules to generate built sources
 #
 # setup autogeneration dependancies
-gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac xgen-bnac xgen-bmx xgen-bmh xgen-bmc \
-  xgen-bgasi
+gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
+	      xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi xgen-dbk.c
 CLEANFILES += $(gen_sources) @MISSING_PERL5@ $(bse_proc_gen_sources)
 $(OBJECTS): $(bse_built_h_sources)
 # piggyback generation through sideeffects, needs NOP-rule for dep-tracking, must be in srcdir
@@ -299,15 +304,25 @@ stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_public_h_sources) bserecords.sfidl $(
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
-bsegentypes.c: @MISSING_PERL5@ bsegentypes.h mktypes.pl bserecords.sfidl $(SFIDL)
-	cd $(srcdir) \
+bsegentypes.c: @MISSING_PERL5@ bsegentypes.h mktypes.pl bserecords.sfidl $(SFIDL) $(bse_builtin_c_sources) # $(bse_c_sources)
+	cat $(bse_builtin_c_sources)	 > $(srcdir)/xgen-dbk.c \
+	&& cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
-	    $(bse_public_h_sources) > xgen-bgtc \
+	    $(bse_public_h_sources) >> xgen-bgtc \
 	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
+	&& cat $(bse_c_sources)		>> xgen-dbk.c \
+	&& echo "static const gchar **bse_gen_debug_keys[] = {" >> xgen-bgtc \
+	&& $(PPROCESS) 2>/dev/null -DSFI_LOG_PROTECT_KEY_VARIANTS xgen-dbk.c \
+	| $(GREP_DEBUG_KEYS) >> xgen-bgtc \
+	&& echo "  NULL };" >> xgen-bgtc \
+	&& echo "static const gchar **bse_gen_info_keys[] = {" >> xgen-bgtc \
+	&& $(PPROCESS) 2>/dev/null -DSFI_LOG_PROTECT_KEY_VARIANTS xgen-dbk.c \
+	| $(GREP_INFO_KEYS) >> xgen-bgtc \
+	&& echo "  NULL };" >> xgen-bgtc \
 	&& $(SFIDL) --source --implementation --boxed --init _sfidl_types_init bserecords.sfidl >> xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
-	&& rm -f xgen-bgtc
+	&& rm -f xgen-bgtc xgen-dbk.c
 bsegentype_array.c: @MISSING_PERL5@ bsegentypes.c
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-bgtac \
@@ -344,6 +359,7 @@ bsebuiltin_array.c: @MISSING_PERL5@ $(bse_builtin_c_sources) mkbuiltinlist.pl
 	&& rm -f xgen-bbac
 %.gen-proc.c: %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl $< >$@
+
 
 #
 # this file describes the BSE public API and needs to be generated at the

@@ -1055,6 +1055,26 @@ bse_midi_receiver_get_output_module (BseMidiReceiver *self,
   return module;
 }
 
+gboolean
+bse_midi_receiver_has_active_voices (BseMidiReceiver *self)
+{
+  guint i;
+
+  g_return_val_if_fail (self != NULL, FALSE);
+
+  BSE_MIDI_RECEIVER_LOCK (self);
+  /* find busy voice */
+  for (i = 0; i < self->n_voices; i++)
+    {
+      BseMidiVoice *voice = self->voices[i];
+      if (voice && voice->active)
+	break;
+    }
+  BSE_MIDI_RECEIVER_UNLOCK (self);
+
+  return i < self->n_voices;
+}
+
 
 /* --- event processing --- */
 static void

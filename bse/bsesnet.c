@@ -157,7 +157,7 @@ bse_snet_class_init (BseSNetClass *class)
 			      PARAM_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", "Auto Activate",
 					      "Automatic activation only needs to be enabled for synthesis networks "
-					      "that don't use virtual ports for their input or output",
+					      "that don't use virtual ports for their input and output",
 					      FALSE, SFI_PARAM_DEFAULT));
   signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered",
 							  G_TYPE_NONE, 0);
@@ -167,7 +167,6 @@ static void
 bse_snet_init (BseSNet *snet)
 {
   BSE_OBJECT_SET_FLAGS (snet, BSE_SNET_FLAG_USER_SYNTH);
-  BSE_SUPER (snet)->auto_activate = FALSE;
   snet->sources = NULL;
   snet->iport_names = NULL;
   snet->oport_names = NULL;
@@ -258,7 +257,10 @@ bse_snet_set_property (GObject      *object,
   switch (param_id)
     {
     case PARAM_AUTO_ACTIVATE:
-      BSE_SUPER (self)->auto_activate = sfi_value_get_bool (value);
+      if (sfi_value_get_bool (value))
+	BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_SEQUENCER_CONTEXT);
+      else
+	BSE_OBJECT_UNSET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_SEQUENCER_CONTEXT);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -277,7 +279,7 @@ bse_snet_get_property (GObject    *object,
   switch (param_id)
     {
     case PARAM_AUTO_ACTIVATE:
-      sfi_value_set_bool (value, BSE_SUPER (self)->auto_activate);
+      sfi_value_set_bool (value, BSE_SUPER_NEEDS_SEQUENCER_CONTEXT (self));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

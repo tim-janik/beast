@@ -40,16 +40,18 @@ struct _BseTrack
 {
   BseItem	   parent_instance;
 
-  BsePart	  *part_SL;
   BseSNet	  *snet;
   guint		   max_voices;
-
-  BseMidiReceiver *midi_receiver_SL;
 
   BseSource       *voice_input;
   BseSource       *sub_synth;
   BseSource       *voice_switch;
   BseSource       *context_merger;
+
+  /* fields protected by sequencer mutex */
+  BsePart	  *part_SL;
+  BseMidiReceiver *midi_receiver_SL;
+  gboolean	   track_done_SL;
 };
 struct _BseTrackClass
 {

@@ -100,7 +100,6 @@ bse_wave_repo_class_init (BseWaveRepoClass *class)
 static void
 bse_wave_repo_init (BseWaveRepo *wrepo)
 {
-  BSE_SUPER (wrepo)->auto_activate = FALSE;
   wrepo->waves = NULL;
 }
 

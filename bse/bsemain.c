@@ -18,6 +18,7 @@
 #include "bsemain.h"
 #include "bseconfig.h"	/* for *_VERSION and *_AGE */
 #include "bseserver.h"
+#include "bsessequencer.h"
 #include "bsejanitor.h"
 #include "bseplugin.h"
 #include "bsecategories.h"
@@ -252,7 +253,10 @@ bse_main_loop (gpointer data)
   /* notify client about completion */
   bse_initialization_stage++;
   sfi_thread_wakeup (client);
-  
+
+  /* start other threads */
+  bse_ssequencer_init_thread ();
+
   /* and away into the main loop */
   do
     {

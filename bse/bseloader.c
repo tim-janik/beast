@@ -22,6 +22,7 @@
 #include "gsldatahandle.h"
 #include "gslmagic.h"
 #include "gslfilehash.h"
+#include <string.h>
 
 
 /* --- variables --- */

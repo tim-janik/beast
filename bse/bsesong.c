@@ -169,7 +169,7 @@ static void
 bse_song_init (BseSong *self)
 {
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
-  BSE_SUPER (self)->auto_activate = TRUE;
+  BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT | BSE_SUPER_FLAG_NEEDS_SEQUENCER);
   self->bpm = BSE_DFL_SONG_BPM;
   self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
@@ -309,21 +309,20 @@ static void
 bse_song_add_item (BseContainer *container,
 		   BseItem	*item)
 {
-  BseSong *song;
-  
-  song = BSE_SONG (container);
+  BseSong *self = BSE_SONG (container);
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
-    bse_track_add_modules (BSE_TRACK (item), BSE_CONTAINER (song), song->context_merger);
+    bse_track_add_modules (BSE_TRACK (item), container, self->context_merger);
 
   BSE_SEQUENCER_LOCK ();
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
-    song->tracks_SL = sfi_ring_append (song->tracks_SL, item);
+    self->tracks_SL = sfi_ring_append (self->tracks_SL, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
-    song->parts = g_list_append (song->parts, item);
+    self->parts = g_list_append (self->parts, item);
   else
     /* parent class manages BseSources */ ;
+  self->song_done_SL = FALSE;	/* let sequencer recheck if playing */
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
@@ -412,13 +411,13 @@ bse_song_remove_item (BseContainer *container,
 }
 
 void
-bse_song_set_bpm (BseSong *song,
-		  guint	    bpm)
+bse_song_set_bpm (BseSong *self,
+		  guint	   bpm)
 {
-  g_return_if_fail (BSE_IS_SONG (song));
+  g_return_if_fail (BSE_IS_SONG (self));
   g_return_if_fail (bpm >= BSE_MIN_BPM && bpm <= BSE_MAX_BPM);
   
-  g_object_set (song,
+  g_object_set (self,
 		"bpm", bpm,
 		NULL);
 }
@@ -503,15 +502,6 @@ bse_song_prepare (BseSource *source)
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 
   bse_song_update_tpsi_SL (song);
-
-  {
-    static gboolean seq_initialized = FALSE;
-    if (!seq_initialized)
-      {
-	seq_initialized = TRUE;
-	bse_ssequencer_start ();
-      }
-  }
 }
 
 static void
@@ -536,10 +526,24 @@ bse_song_reset (BseSource *source)
 {
   BseSong *song = BSE_SONG (source);
 
-  bse_ssequencer_handle_jobs (sfi_ring_prepend (NULL, bse_ssequencer_remove_song (song)));
+  bse_ssequencer_handle_jobs (sfi_ring_prepend (NULL, bse_ssequencer_job_stop_super (BSE_SUPER (song))));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 
   bse_object_unlock (BSE_OBJECT (song));
+}
+
+void
+bse_song_stop_sequencing_SL (BseSong *self)
+{
+  BseItem *item;
+
+  g_return_if_fail (BSE_IS_SONG (self));
+
+  bse_ssequencer_remove_super_SL (BSE_SUPER (self));
+  item = BSE_ITEM (self);
+  while (item->parent)
+    item = item->parent;
+  bse_project_queue_auto_stop_SL (BSE_PROJECT (item));
 }
