@@ -87,7 +87,7 @@ BSE_BUILTIN_TYPE (BseSubIPort)
                                          "Virtual input port connector, used to provide a synthesis network "
                                          "with input signals from other synthesis networks",
                                          &type_info);
-  bse_categories_register_stock_module (N_("Virtualization/Virtual Input"), type, virtual_input_pixstream);
+  bse_categories_register_stock_module (N_("/Virtualization/Virtual Input"), type, virtual_input_pixstream);
   return type;
 }
 

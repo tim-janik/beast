@@ -79,7 +79,7 @@ BSE_BUILTIN_TYPE (BseMidiInput)
                                          "Monophonic MIDI input module. With this module, monophonic "
                                          "keyboard control signals can be used in synthesis networks.",
                                          &midi_input_info);
-  bse_categories_register_stock_module (N_("Input & Output/MIDI Voice Input"), type, mono_synth_pixstream);
+  bse_categories_register_stock_module (N_("/Input & Output/MIDI Voice Input"), type, mono_synth_pixstream);
   return type;
 }
 

@@ -82,7 +82,7 @@ BSE_BUILTIN_TYPE (BsePcmOutput)
                                          "Stereo PCM sound output module, per default, signals routed into "
                                          "this module are played back on the standard soundcard",
                                          &pcm_output_info);
-  bse_categories_register_stock_module (N_("Input & Output/PCM Output"), type, speaker_pixstream);
+  bse_categories_register_stock_module (N_("/Input & Output/PCM Output"), type, speaker_pixstream);
   return type;
 }
 

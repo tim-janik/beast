@@ -65,7 +65,7 @@ BSE_BUILTIN_TYPE (BseInstrumentInput)
                                          "Virtual input module for synthesis networks which "
                                          "implement instruments",
                                          &type_info);
-  bse_categories_register_stock_module (N_("Input & Output/Instrument Voice Input"), type, keyboard_pixstream);
+  bse_categories_register_stock_module (N_("/Input & Output/Instrument Voice Input"), type, keyboard_pixstream);
   return type;
 }
 

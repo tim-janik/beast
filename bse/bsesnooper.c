@@ -74,7 +74,7 @@ BSE_BUILTIN_TYPE (BseSnooper)
 				      "BseSnooper",
 				      "The Snooper module prints statistics about the incoming signal",
 				      &type_info);
-  bse_categories_register_stock_module (N_("Misc/Snooper"), type_id, snooper_pixstream);
+  bse_categories_register_stock_module (N_("/Misc/Snooper"), type_id, snooper_pixstream);
   
   return type_id;
 }

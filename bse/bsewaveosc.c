@@ -94,7 +94,7 @@ BSE_BUILTIN_TYPE (BseWaveOsc)
                                    "modulated by another control signal with linear or exponential frequency "
                                    "response.",
                                    &type_info);
-  bse_categories_register_stock_module(N_("Audio Sources/Wave Oscillator"), type, waveosc_pixstream);
+  bse_categories_register_stock_module(N_("/Audio Sources/Wave Oscillator"), type, waveosc_pixstream);
   return type;
 }
 

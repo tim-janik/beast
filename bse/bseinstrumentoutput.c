@@ -65,7 +65,7 @@ BSE_BUILTIN_TYPE (BseInstrumentOutput)
                                          "Virtual output module for synthesis networks which "
                                          "implement instruments",
                                          &type_info);
-  bse_categories_register_stock_module (N_("Input & Output/Instrument Output"), type, instrument_pixstream);
+  bse_categories_register_stock_module (N_("/Input & Output/Instrument Output"), type, instrument_pixstream);
   return type;
 }
 
