@@ -200,7 +200,6 @@ bse_parasite_restore (BseObject  *object,
 		      BseStorage *storage)
 {
   GScanner *scanner = storage->scanner;
-  gboolean char_2_token;
   GQuark quark;
   guint type;
   guint n_values;
@@ -214,21 +213,18 @@ bse_parasite_restore (BseObject  *object,
   /* eat "parasite" identifier */
   g_scanner_get_next_token (scanner);
 
-  /* ignore these for compat reasons (FIXME: remove post 0.4.2) */
+  /* ignore these for compat reasons (FIXME: remove post 0.5.0) */
   if (g_scanner_peek_next_token (scanner) == '#')
     g_scanner_get_next_token (scanner);
   if (g_scanner_peek_next_token (scanner) == '\\')
     g_scanner_get_next_token (scanner);
 
   /* parse parasite type */
-  char_2_token = scanner->config->char_2_token;
-  scanner->config->char_2_token = FALSE;
   g_scanner_get_next_token (scanner);
-  scanner->config->char_2_token = char_2_token;
-  if (scanner->token != G_TOKEN_CHAR)
+  if (!(scanner->token >= 'a' && scanner->token <= 'z'))
     return G_TOKEN_CHAR;
-  type = scanner->value.v_char;
-  
+  type = scanner->token;
+
   /* parse parasite name */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
     return G_TOKEN_STRING;
@@ -249,18 +245,23 @@ bse_parasite_restore (BseObject  *object,
       for (i = 0; i < n_values; i++)
 	{
 	  gboolean negate = FALSE;
-	  
+	  gfloat vfloat;
+
 	  if (g_scanner_get_next_token (scanner) == '-')
 	    {
 	      g_scanner_get_next_token (scanner);
 	      negate = TRUE;
 	    }
-	  if (scanner->token != G_TOKEN_FLOAT)
+	  if (scanner->token == G_TOKEN_INT)
+	    vfloat = scanner->config->store_int64 ? scanner->value.v_int64 : scanner->value.v_int;
+	  else if (scanner->token == G_TOKEN_FLOAT)
+	    vfloat = scanner->value.v_float;
+	  else
 	    {
 	      g_free (floats);
 	      return G_TOKEN_FLOAT;
 	    }
-	  floats[i] = negate ? - scanner->value.v_float : scanner->value.v_float;
+	  floats[i] = negate ? - vfloat : vfloat;
 	}
       data = floats;
       break;

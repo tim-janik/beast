@@ -1,3 +1,10 @@
+Thu Mar 13 18:39:10 2003  Tim Janik  <timj@gtk.org>
+
+	* bseproject.c (bse_project_finalize): urgs, remove project from
+	auto-stop list, rather than adding to it.
+
+	* bseparasite.c: fixed newly introduced parasite parsing bugs.
+
 Thu Mar 13 13:51:49 2003  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.[hc]: added bse_storage_putf(), bse_storage_putd() and

@@ -180,7 +180,7 @@ bse_project_finalize (GObject *object)
   BseProject *self = BSE_PROJECT (object);
   
   BSE_SEQUENCER_LOCK ();
-  plist_auto_stop_SL = g_slist_prepend (plist_auto_stop_SL, self);
+  plist_auto_stop_SL = g_slist_remove (plist_auto_stop_SL, self);
   BSE_SEQUENCER_UNLOCK ();
 
   /* chain parent class' handler */
