@@ -1,6 +1,6 @@
 Sat Jul 17 19:03:33 2004  Tim Janik  <timj@gtk.org>
 
-	* bsesniffer.cc: fix C++ LessThanComparable implementation for sort().
+	* bseprobe.cc: fix C++ LessThanComparable implementation for sort().
 
 Sat Jul 17 12:40:38 2004  Tim Janik  <timj@gtk.org>
 
