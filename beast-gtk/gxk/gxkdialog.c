@@ -132,54 +132,55 @@ gxk_dialog_class_init (GxkDialogClass *class)
 }
 
 static void
-gxk_dialog_init (GxkDialog *dialog)
+gxk_dialog_init (GxkDialog *self)
 {
-  GtkWindow *window = GTK_WINDOW (dialog);
-
-  dialog->flags = 0;
-  dialog->pointer_loc = NULL;
-  dialog->alive_object = NULL;
-  gxk_dialog_set_title (dialog, DEFAULT_TITLE);
-
+  GtkWindow *window = GTK_WINDOW (self);
+  
+  self->flags = 0;
+  self->pointer_loc = NULL;
+  self->alive_object = NULL;
+  gtk_window_set_role (window, G_OBJECT_TYPE_NAME (self));
+  gxk_dialog_set_title (self, DEFAULT_TITLE);
+  
   /* main box */
-  dialog->mbox = g_object_new (GTK_TYPE_VBOX,
-			       "visible", TRUE,
-			       "homogeneous", FALSE,
-			       "spacing", 0,
-			       "parent", window,
-			       NULL);
-  g_signal_connect_swapped (dialog->mbox, "destroy", G_CALLBACK (g_nullify_pointer), &dialog->mbox);
-
+  self->mbox = g_object_new (GTK_TYPE_VBOX,
+                             "visible", TRUE,
+                             "homogeneous", FALSE,
+                             "spacing", 0,
+                             "parent", window,
+                             NULL);
+  g_signal_connect_swapped (self->mbox, "destroy", G_CALLBACK (g_nullify_pointer), &self->mbox);
+  
   /* user vbox */
-  dialog->vbox = g_object_new (GTK_TYPE_VBOX,
-			       "visible", TRUE,
-			       "homogeneous", FALSE,
-			       "spacing", 0,
-			       "parent", dialog->mbox,
-			       NULL);
-  g_signal_connect_swapped (dialog->vbox, "destroy", G_CALLBACK (g_nullify_pointer), &dialog->vbox);
-
+  self->vbox = g_object_new (GTK_TYPE_VBOX,
+                             "visible", TRUE,
+                             "homogeneous", FALSE,
+                             "spacing", 0,
+                             "parent", self->mbox,
+                             NULL);
+  g_signal_connect_swapped (self->vbox, "destroy", G_CALLBACK (g_nullify_pointer), &self->vbox);
+  
   /* status bar */
-  dialog->status_bar = gxk_status_bar_create ();
-  g_signal_connect_swapped (dialog->status_bar, "destroy", G_CALLBACK (g_nullify_pointer), &dialog->status_bar);
-  gtk_box_pack_end (GTK_BOX (dialog->mbox), dialog->status_bar, FALSE, FALSE, 0);
-
+  self->status_bar = gxk_status_bar_create ();
+  g_signal_connect_swapped (self->status_bar, "destroy", G_CALLBACK (g_nullify_pointer), &self->status_bar);
+  gtk_box_pack_end (GTK_BOX (self->mbox), self->status_bar, FALSE, FALSE, 0);
+  
   /* button box */
-  dialog->hbox = g_object_new (GTK_TYPE_HBOX,
-			       "visible", FALSE,
-			       "homogeneous", TRUE,
-			       "spacing", GXK_INNER_PADDING,
-			       "border_width", GXK_INNER_PADDING,
-			       NULL);
-  g_signal_connect_swapped (dialog->hbox, "destroy", G_CALLBACK (g_nullify_pointer), &dialog->hbox);
-  gtk_box_pack_end (GTK_BOX (dialog->mbox), dialog->hbox, FALSE, TRUE, GXK_INNER_PADDING);
-
+  self->hbox = g_object_new (GTK_TYPE_HBOX,
+                             "visible", FALSE,
+                             "homogeneous", TRUE,
+                             "spacing", GXK_INNER_PADDING,
+                             "border_width", GXK_INNER_PADDING,
+                             NULL);
+  g_signal_connect_swapped (self->hbox, "destroy", G_CALLBACK (g_nullify_pointer), &self->hbox);
+  gtk_box_pack_end (GTK_BOX (self->mbox), self->hbox, FALSE, TRUE, GXK_INNER_PADDING);
+  
   /* separator */
-  dialog->sep = g_object_new (GTK_TYPE_HSEPARATOR,
-			      "visible", FALSE,
-			      NULL);
-  g_signal_connect_swapped (dialog->sep, "destroy", G_CALLBACK (g_nullify_pointer), &dialog->sep);
-  gtk_box_pack_end (GTK_BOX (dialog->mbox), dialog->sep, FALSE, FALSE, GXK_INNER_PADDING);
+  self->sep = g_object_new (GTK_TYPE_HSEPARATOR,
+                            "visible", FALSE,
+                            NULL);
+  g_signal_connect_swapped (self->sep, "destroy", G_CALLBACK (g_nullify_pointer), &self->sep);
+  gtk_box_pack_end (GTK_BOX (self->mbox), self->sep, FALSE, FALSE, GXK_INNER_PADDING);
 }
 
 static void
@@ -212,12 +213,6 @@ gxk_dialog_set_property (GObject      *object,
       cstring = g_value_get_string (value);
       if (!cstring)
 	cstring = "";
-      if (!GTK_WIDGET_VISIBLE (self))
-	{
-	  if (GTK_WIDGET_REALIZED (self))
-	    gtk_widget_unrealize (GTK_WIDGET (self));
-	  gtk_window_set_role (GTK_WINDOW (self), cstring);
-	}
       string = g_strconcat (cstring, " - ", g_get_prgname (), NULL);
       g_object_set (self, "GtkWindow::title", string, NULL);
       g_free (string);
@@ -521,16 +516,23 @@ gxk_dialog_show (GtkWidget *widget)
   GTK_WIDGET_CLASS (parent_class)->show (widget);
 
   gxk_widget_viewable_changed (widget);
+
+  /* GTKFIX: gtk doesn't take away focus from a widget on a hidden notebook page when realizing the window */
+  if (self->focus_widget && !gxk_widget_viewable (self->focus_widget))
+    gtk_window_set_focus (GTK_WINDOW (self), NULL);
 }
 
 static void
 gxk_dialog_hide (GtkWidget *widget)
 {
-  // GxkDialog *dialog = GXK_DIALOG (widget);
+  GxkDialog *self = GXK_DIALOG (widget);
   
   GTK_WIDGET_CLASS (parent_class)->hide (widget);
 
   gxk_widget_viewable_changed (widget);
+
+  if (!(self->flags & GXK_DIALOG_PRESERVE_STATE))
+    gxk_idle_unrealize_widget (widget);
 }
 
 static gboolean

@@ -95,6 +95,7 @@ void	gxk_widget_make_insensitive	(GtkWidget	*widget);
 void	gxk_widget_make_sensitive	(GtkWidget	*widget);
 void	gxk_widget_showraise		(GtkWidget	*widget);
 void	gxk_idle_show_widget		(GtkWidget	*widget);
+void	gxk_idle_unrealize_widget	(GtkWidget	*widget);
 void    gxk_notebook_add_page		(GtkNotebook	*notebook,
 					 GtkWidget	*child,
 					 const gchar	*tab_text,

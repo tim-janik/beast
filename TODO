@@ -3,18 +3,19 @@ FIXMES:
 - nuke BSE file crawling functions
 - fix API for file matching in SFI
 - redesign object operations and updating object operations
-- fix internal items (snets) being listed as tentative property values
+- alow snet flagging as aggregate
+- show aggregates with BST_DBG_EXT
+- mark intern synths as INTERNAL (track's mono-synth)
+- fix internal items (snets) being listed as tentative property values / fix internal synths being displayed by beast
+- never gather INTERNAL items in bse_item_gather_proxies()
 - fix BST_OP_PROJECT_SAVE
 - get compilation with guile-1.6 to work
 - add new test song containing a wave track
 - fix saving of internal objects
 - fix sub-synth "snet" property setter
 - fix SNet derivation
-- fix internal synths being displayed by beast
 - implement (GUI for) locked properties
 - fixup filemenu/dialog for WAVE recording
-- mark intern synths as INTERNAL (track's mono-synth)
-- never gather INTERNAL items in bse_item_gather_proxies()
 - loading cmt LADSPA plugins from the cmt debian package causes beast abort:
   BSE-ERROR **: Fatal: failed to reinitialize plugin "/usr/lib/ladspa/cmt.so": plugin types changed on disk
 - check whether */icons/Makefile.icons is included in dist tarball
@@ -38,14 +39,9 @@ FIXMES:
 - MidiEvent (serialization)
 - make bst_catalog_get_action() always return an action, so callers don't need to check
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
-- open() may return -EINVAL (e.g. for non-readable cards),
-  we shouldn't map that onto BSE_ERROR_INTERNAL
 - create modules via category identifier, not type name
 - fix piano roll [VH]PANEL_BG_GC() usage and GDK_Escape (ala trackroll)
 - add IDs to part links in tracks
-- alow snet flagging as aggregate
-- add project_get_wave_snet
-- show aggregates with BST_DEVEL
 - allow .bse files to start out with #bsesh ?
 - update /Help index to cover new docs
 - insensitive gmasks should keep xframes sensitive for tooltips and rackeditor

@@ -398,7 +398,6 @@ idle_shower (GtkWidget **widget_p)
 				     widget_p);
       gtk_widget_show (*widget_p);
     }
-
   g_free (widget_p);
 
   GDK_THREADS_LEAVE ();
@@ -408,7 +407,7 @@ idle_shower (GtkWidget **widget_p)
 
 /**
  * gxk_idle_show_widget
- * @widget: a valid widget
+ * @widget: a valid #GtkWidget
  *
  * Defer showing this widget until the next idle handler
  * is run. This is usefull if other things are pending
@@ -430,6 +429,53 @@ gxk_idle_show_widget (GtkWidget *widget)
 		      GTK_SIGNAL_FUNC (gtk_widget_destroyed),
 		      widget_p);
   gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_shower, widget_p);
+}
+
+static gint
+idle_unrealizer (GtkWidget **widget_p)
+{
+  GDK_THREADS_ENTER ();
+
+  if (GTK_IS_WINDOW (*widget_p))
+    {
+      gtk_signal_disconnect_by_func (GTK_OBJECT (*widget_p),
+				     GTK_SIGNAL_FUNC (gtk_widget_destroyed),
+				     widget_p);
+      if (!GTK_WIDGET_VISIBLE (*widget_p) &&
+          GTK_WIDGET_REALIZED (*widget_p))
+        gtk_widget_unrealize (*widget_p);
+    }
+  g_free (widget_p);
+
+  GDK_THREADS_LEAVE ();
+
+  return FALSE;
+}
+
+/**
+ * gxk_idle_unrealize_widget
+ * @widget: a valid #GtkWindow
+ *
+ * Defer unrealizing this widget until the next idle handler
+ * is run. This is usefull if other things are pending
+ * which need to be processed first, e.g. completing a running
+ * signal emission.
+ */
+void
+gxk_idle_unrealize_widget (GtkWidget *widget)
+{
+  GtkWidget **widget_p;
+
+  g_return_if_fail (GTK_IS_WINDOW (widget));
+
+  widget_p = g_new (GtkWidget*, 1);
+
+  *widget_p = widget;
+  gtk_signal_connect (GTK_OBJECT (widget),
+		      "destroy",
+		      GTK_SIGNAL_FUNC (gtk_widget_destroyed),
+		      widget_p);
+  gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_unrealizer, widget_p);
 }
 
 void

@@ -99,6 +99,7 @@ bst_file_dialog_init (BstFileDialog *self)
 		"default_width", 500,
 		"default_height", 450,
 		"flags", (GXK_DIALOG_HIDE_ON_DELETE |
+                          GXK_DIALOG_PRESERVE_STATE |
 			  GXK_DIALOG_POPUP_POS |
 			  GXK_DIALOG_MODAL),
 		NULL);

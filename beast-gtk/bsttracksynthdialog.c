@@ -84,6 +84,7 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
                 "default_width", 500,
                 "default_height", 450,
                 "flags", (GXK_DIALOG_HIDE_ON_DELETE |
+                          GXK_DIALOG_PRESERVE_STATE |
                           GXK_DIALOG_POPUP_POS |
                           GXK_DIALOG_MODAL),
                 NULL);

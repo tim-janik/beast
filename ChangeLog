@@ -1,3 +1,17 @@
+Sun May 11 20:07:05 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkdialog.c (gxk_dialog_show): take away focus from
+	unmapped children (gtk bug workaround).
+
+	* beast-gtk/bsttracksynthdialog.c (bst_track_synth_dialog_init): 
+	* beast-gtk/bstfiledialog.c (bst_file_dialog_init): 
+	set GXK_DIALOG_PRESERVE_STATE flag.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_idle_unrealize_widget().
+
+	* beast-gtk/gxk/gxkdialog.[hc]: set window manager role from type name.
+	added GXK_DIALOG_PRESERVE_STATE to keep size across hiding windows.
+
 Sun May 11 15:54:44 2003  Tim Janik  <timj@gtk.org>
 
 	* shell/bse-scm-glue.boot: added stubs for bse-item-get.

@@ -41,7 +41,8 @@ typedef enum
   GXK_DIALOG_STATUS_SHELL	= 1 << 1,
   GXK_DIALOG_MODAL		= 1 << 2,
   GXK_DIALOG_POPUP_POS		= 1 << 3,	/* popup at mouse pointer */
-  GXK_DIALOG_DELETE_BUTTON	= 1 << 4	/* has "Close" button */
+  GXK_DIALOG_DELETE_BUTTON	= 1 << 4,	/* has "Close" button */
+  GXK_DIALOG_PRESERVE_STATE     = 1 << 5        /* don't always reset size etc. upon hiding */
 } GxkDialogFlags;
 
 
