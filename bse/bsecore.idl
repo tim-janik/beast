@@ -436,32 +436,32 @@ ThreadTotals    collect_thread_totals ();
 
 /* BSE Global Config */
 record GConfig {
-  group "Search Paths" {
-    String sample_path     = ("Sample Path",
-                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                              "find audio samples. ", BSE_PATH_USER_DATA("/samples"), STANDARD ":searchpath");
-    String effect_path     = ("Effect Path",
-                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                              "find BSE effect files. ", BSE_PATH_USER_DATA("/effects"), STANDARD ":searchpath");
-    String instrument_path = ("Instrument Path",
-                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                              "find BSE instrument files. ", BSE_PATH_USER_DATA("/instruments"), STANDARD ":searchpath");
-    String script_path     = ("Script Path",
-                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                              "find BSE scheme scripts. ", BSE_PATH_USER_DATA("/scripts"), STANDARD ":searchpath");
-    String plugin_path     = ("Plugin Path",
-                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                              "find BSE plugins. This path is searched for in addition to the standard BSE plugin "
-                              "location on this system.",
+  group _("Search Paths") {
+    String sample_path     = (_("Sample Path"),
+                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                                "find audio samples. "), BSE_PATH_USER_DATA("/samples"), STANDARD ":searchpath");
+    String effect_path     = (_("Effect Path"),
+                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                                "find BSE effect files. "), BSE_PATH_USER_DATA("/effects"), STANDARD ":searchpath");
+    String instrument_path = (_("Instrument Path"),
+                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                                "find BSE instrument files. "), BSE_PATH_USER_DATA("/instruments"), STANDARD ":searchpath");
+    String script_path     = (_("Script Path"),
+                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                                "find BSE scheme scripts. "), BSE_PATH_USER_DATA("/scripts"), STANDARD ":searchpath");
+    String plugin_path     = (_("Plugin Path"),
+                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                                "find BSE plugins. This path is searched for in addition to the standard BSE plugin "
+                                "location on this system."),
                               NULL, STANDARD ":searchpath");
-    String ladspa_path     = ("LADSPA Path",
-                              "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                              "find LADSPA plugins. This path is searched for in addition to the standard LADSPA "
-                              "location on this system. LADSPA is the Linux Audio Developer's Simple Plugin API, "
-                              "more informations about LADSPA plugins can be found at http://www.ladspa.org/.",
+    String ladspa_path     = (_("LADSPA Path"),
+                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
+                                "find LADSPA plugins. This path is searched for in addition to the standard LADSPA "
+                                "location on this system. LADSPA is the Linux Audio Developer's Simple Plugin API, "
+                                "more informations about LADSPA plugins can be found at http://www.ladspa.org/."),
                               NULL, STANDARD ":searchpath");
   };
-  group "Synthesis Settings" {
+  group _("Synthesis Settings") {
     Int synth_latency           = (_("Latency [ms]"),
                                    _("Processing duration between input and output of a single sample, "
                                      "smaller values increase CPU load"),
@@ -474,15 +474,15 @@ record GConfig {
                                      "should be much smaller than Synth Mixing Frequency to reduce CPU load"),
                                    1000, 1, 192000, 0, STANDARD);
   };
-  group "MIDI" {
-    Bool invert_sustain = ("Invert Sustain Pedal",
-                           "Invert the state of sustain (damper) pedal so on/off meanings are reversed",
+  group _("MIDI") {
+    Bool invert_sustain = (_("Invert Sustain Pedal"),
+                           _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
                            FALSE, SFI_PARAM_STANDARD);
   };
-  group "Stepping Rates" {
-    Real step_volume_dB = ("Volume [dB] Steps", "Step width for volume in decibell",
+  group _("Stepping Rates") {
+    Real step_volume_dB = (_("Volume [dB] Steps"), _("Step width for volume in decibell"),
                            0.1, 0.001, 5, 0.01, SFI_PARAM_STANDARD);
-    Int  step_bpm       = ("BPM Steps", "Step width for beats per minute",
+    Int  step_bpm       = (_("BPM Steps"), _("Step width for beats per minute"),
                            10, 1, 50, 1, SFI_PARAM_STANDARD);
   };
 };
