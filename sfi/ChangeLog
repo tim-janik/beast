@@ -1,3 +1,12 @@
+Wed Jan 28 15:46:16 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: remove --module option. select the core
+	C++ language binding via --core-cxx or via --plugin.
+
+	* sfidl-cxx.cc: fixed option description.
+
+	* bse-plugin-generator.cc: adapt to --plugin option.
+
 Tue Jan 27 16:31:13 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: cleaned up some cruft.

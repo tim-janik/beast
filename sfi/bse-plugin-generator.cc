@@ -182,11 +182,11 @@ main (int   argc,
   if (!parser.parse (argv[1]))
     return 1;
 
-  /* find and use --module code generator factory */
+  /* find and use --plugin code generator factory */
   list<Factory*> factories = Factory::listFactories();
   Factory *factory = NULL;
   for (list<Factory*>::const_iterator fi = factories.begin(); fi != factories.end(); fi++)
-    if ((*fi)->option() == "--module")
+    if ((*fi)->option() == "--plugin")
       {
         factory = *fi;
         factory->init (options);

@@ -45,7 +45,7 @@ public:
   virtual CodeGenerator *create (const Parser& parser) const = 0;
 
   /*
-   * returns the command line option (i.e. --module)
+   * returns the command line option (e.g. --plugin)
    */
   virtual std::string option () const = 0;
 

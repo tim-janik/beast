@@ -887,7 +887,7 @@ namespace {
 class CxxFactory : public Factory {
 public:
   string option() const	      { return "--cxx"; }
-  string description() const  { return "generate core C++ language binding"; }
+  string description() const  { return "generate client C++ language binding"; }
 
   void init (Options& options) const
   {

@@ -1199,9 +1199,8 @@ public:
 
 class LanguageBindingCoreCxxFactory : public Factory {
 public:
-  string option() const	      { return "--module"; }
-  string description() const  { return "generate core C++ language binding"; }
-  
+  string option() const	      { return "--core-cxx"; }
+  string description() const  { return "generate core C++ binding"; }
   void init (Options& options) const
   {
     /* FIXME: keep in sync with bse-plugin-generator.cc */
@@ -1211,12 +1210,30 @@ public:
     options.doSource = false;
     options.generateBoxedTypes = true;
   }
-  
   CodeGenerator *create (const Parser& parser) const
   {
     return new LanguageBindingCoreCxx (parser);
   }
 } static_factory;
+
+class LanguageBindingPluginFactory : public Factory {
+public:
+  string option() const	      { return "--plugin"; }
+  string description() const  { return "generate C++ plugin binding"; }
+  void init (Options& options) const
+  {
+    /* FIXME: keep in sync with bse-plugin-generator.cc */
+    options.doImplementation = true;
+    options.doInterface = false;
+    options.doHeader = true;
+    options.doSource = false;
+    options.generateBoxedTypes = true;
+  }
+  CodeGenerator *create (const Parser& parser) const
+  {
+    return new LanguageBindingCoreCxx (parser);
+  }
+} static_factory2;
 
 } // anon
 
