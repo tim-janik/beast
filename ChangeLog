@@ -1,3 +1,7 @@
+Wed Nov 14 03:51:37 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_create): s/param_get/param_spec_get/.
+
 Tue Nov 13 01:37:35 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpreferences.c (accel_map_print): fix according

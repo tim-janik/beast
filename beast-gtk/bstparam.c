@@ -461,8 +461,8 @@ bst_param_create (gpointer	owner,
       gtk_object_unref (GTK_OBJECT (adjustment));
     }
   
-  name = g_param_get_nick (pspec);
-  tooltip = g_param_get_blurb (pspec);
+  name = g_param_spec_get_nick (pspec);
+  tooltip = g_param_spec_get_blurb (pspec);
   
   expandable = FALSE;
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec)))
@@ -597,7 +597,7 @@ bst_param_create (gpointer	owner,
 			       NULL);
       action = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
-			       "label", g_param_get_blurb (pspec),
+			       "label", g_param_spec_get_blurb (pspec),
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
 			       NULL);
