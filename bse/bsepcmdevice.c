@@ -81,6 +81,20 @@ bse_pcm_device_init (BsePcmDevice *pdev)
   pdev->handle = NULL;
 }
 
+void
+bse_pcm_device_request (BsePcmDevice  *self,
+			guint          n_channels,
+			BsePcmFreqMode freq_mode)
+{
+  g_return_if_fail (BSE_IS_PCM_DEVICE (self));
+  g_return_if_fail (!BSE_PCM_DEVICE_OPEN (self));
+  g_return_if_fail (n_channels >= 1 && n_channels <= 128);
+  g_return_if_fail (freq_mode >= BSE_PCM_FREQ_8000 && freq_mode <= BSE_PCM_FREQ_192000);
+
+  self->req_n_channels = n_channels;
+  self->req_freq_mode = freq_mode;
+}
+
 static void
 bse_pcm_device_dispose (GObject *object)
 {

@@ -124,6 +124,9 @@ struct _BsePcmDeviceClass
 
 
 /* --- prototypes --- */
+void		bse_pcm_device_request		(BsePcmDevice		*pdev,
+						 guint			 n_channels,
+						 BsePcmFreqMode		 freq_mode);
 BseErrorType	bse_pcm_device_open		(BsePcmDevice		*pdev);
 void		bse_pcm_device_suspend		(BsePcmDevice		*pdev);
 BsePcmHandle*	bse_pcm_device_get_handle	(BsePcmDevice		*pdev);

@@ -42,7 +42,8 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
 
-#define DEBUG   sfi_debug_keyfunc ("pcm")
+#define OSS_DEBUG      sfi_debug_keyfunc ("oss")
+#define LATENCY_DEBUG  sfi_debug_keyfunc ("latency")
 
 
 /* --- OSS PCM handle --- */
@@ -309,14 +310,14 @@ oss_device_setup (OSSHandle *oss)
       oss->n_frags = info.fragstotal;
     }
   
-  DEBUG ("OSS-SETUP: w=%d r=%d n_channels=%d sample_freq=%.0f fsize=%u nfrags=%u bufsz=%u\n",
-	 handle->writable,
-	 handle->readable,
-	 handle->n_channels,
-	 handle->mix_freq,
-	 oss->frag_size,
-	 oss->n_frags,
-	 oss->n_frags * oss->frag_size);
+  OSS_DEBUG ("OSS-SETUP: w=%d r=%d n_channels=%d sample_freq=%.0f fsize=%u nfrags=%u bufsz=%u\n",
+	     handle->writable,
+	     handle->readable,
+	     handle->n_channels,
+	     handle->mix_freq,
+	     oss->frag_size,
+	     oss->n_frags,
+	     oss->n_frags * oss->frag_size);
   
   return BSE_ERROR_NONE;
 }
@@ -387,13 +388,13 @@ oss_device_status (BsePcmHandle *handle,
       status->n_capture_values_available = info.bytes / oss->bytes_per_value;
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
       status->n_capture_values_available = MIN (status->total_capture_values, status->n_capture_values_available);
-      DEBUG ("OSS-ISPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
-	     status->n_capture_values_available,
-	     status->total_capture_values,
-	     info.fragstotal,
-	     info.fragsize,
-	     info.fragments,
-	     info.bytes);
+      LATENCY_DEBUG ("OSS-ISPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
+		     status->n_capture_values_available,
+		     status->total_capture_values,
+		     info.fragstotal,
+		     info.fragsize,
+		     info.fragments,
+		     info.bytes);
     }
   else
     {
@@ -410,13 +411,13 @@ oss_device_status (BsePcmHandle *handle,
       status->n_playback_values_available = info.bytes / oss->bytes_per_value;
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
       status->n_playback_values_available = MIN (status->total_playback_values, status->n_playback_values_available);
-      DEBUG ("OSS-OSPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
-	     status->n_playback_values_available,
-	     status->total_playback_values,
-	     info.fragstotal,
-	     info.fragsize,
-	     info.fragments,
-	     info.bytes);
+      LATENCY_DEBUG ("OSS-OSPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
+		     status->n_playback_values_available,
+		     status->total_playback_values,
+		     info.fragstotal,
+		     info.fragsize,
+		     info.fragments,
+		     info.bytes);
     }
   else
     {

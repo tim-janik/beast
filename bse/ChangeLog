@@ -1,3 +1,14 @@
+Sun Apr 27 02:52:31 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-oss.c: split up debugging messages into "oss" and
+	"latency" keys.
+
+	* bsepcmdevice.[hc]: added bse_pcm_device_request() to request
+	specific sampling rates and number of channels.
+
+	* bseserver.c: make the mixing frequency preference setting
+	actually take effect on the PCM device.
+
 Fri Apr 18 19:48:59 2003  Tim Janik  <timj@gtk.org>
 
 	* bsepcmwriter.[hc]: new object dumping PCM output to a WAV file.

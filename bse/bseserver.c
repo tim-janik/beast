@@ -470,6 +470,7 @@ bse_server_open_pcm_device (BseServer *server)
     return BSE_ERROR_DEVICE_NOT_AVAILABLE;
   
   server->pcm_device = g_object_new (choice, NULL);
+  bse_pcm_device_request (server->pcm_device, 2, bse_pcm_freq_mode_from_freq (BSE_GCONFIG (synth_mixing_freq)));
   error = bse_pcm_device_open (server->pcm_device);
   if (error)
     {
