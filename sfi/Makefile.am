@@ -57,10 +57,10 @@ temp_files =  xgen-tih xgen-tic xgen-sch
 CLEANFILES += $(temp_files)
 CLEANFILES += testidl.h testidl.c
 testidl.h: $(srcdir)/testidl.idl sfidl
-	$(SFIDL) --core-c --header $(srcdir)/testidl.idl > xgen-tih \
+	$(SFIDL) --host-c --header $(srcdir)/testidl.idl > xgen-tih \
 	&& mv xgen-tih testidl.h
 testidl.c: $(srcdir)/testidl.idl sfidl
-	$(SFIDL) --core-c --source --init test_types_init $(srcdir)/testidl.idl > xgen-tic \
+	$(SFIDL) --host-c --source --init test_types_init $(srcdir)/testidl.idl > xgen-tic \
 	&& mv xgen-tic testidl.c
 EXTRA_DIST += testidl.idl
 

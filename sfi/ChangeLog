@@ -1,3 +1,23 @@
+Mon Mar  1 23:33:56 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: provide namespace to BSE_CXX_DECLARED_*_TYPE()
+	macro generations. fix to_rec() and to_seq() method generations
+	by using SFI types instead of boxed types for the resulting record
+	fields. provide resizing constructor for egenrated sequences. 
+	initialize GEnumValue values from actual enum value symbols.
+	assign implementation values as specified in the idl files to
+	enum value symbols, since this is a core binding.
+
+	* sfidl-corec.cc: turned the core-c binding into a C++ wrapper that
+	depends on the core-cxx binding. lots of cleanups and fixes.
+
+	* sficxx.h: added set_boxed() method to record handles.
+
+	* Makefile.am: generate a testidl binding with --host-c as
+	--core-c depends on a C++ binding.
+
+	* testsfi.c: disabled tests that depend on the old --core-c.
+
 Fri Feb 27 13:57:52 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: added --macro option wich generates a macro to

@@ -213,6 +213,14 @@ public:
       }
     return *this;
   }
+  void set_boxed (Type *rec)
+  {
+    delete record;
+    if (rec)
+      record = new Type (*rec);
+    else
+      record = NULL;
+  }
   void take (Type *rec)
   {
     delete record;
@@ -345,7 +353,8 @@ public:
     cseq = g_new0 (CSeq, 1);
     set_boxed (&cs);
   }
-  void take (CSeq *cs)
+  void
+  take (CSeq *cs)
   {
     resize (0);
     if (cs)
@@ -356,7 +365,8 @@ public:
         /* a take(); steal(); sequence needs to preserve pointer */
       }
   }
-  CSeq* steal ()
+  CSeq*
+  steal ()
   {
     CSeq *cs = cseq;
     cseq = g_new0 (CSeq, 1);
@@ -364,11 +374,13 @@ public:
     /* a take(); steal(); sequence needs to preserve pointer */
     return cs;
   }
-  CSeq* c_ptr() const
+  CSeq*
+  c_ptr() const
   {
     return cseq;
   }
-  void resize (unsigned int n)
+  void
+  resize (unsigned int n)
   {
     guint i;
     // Note that this does *not* use an explicit copy-constructor call to relocate existing elements
@@ -380,19 +392,22 @@ public:
     for (; i < length(); i++)
       new (cseq->elements + i) Type ();
   }
-  Type& operator[] (unsigned int index)
+  Type&
+  operator[] (unsigned int index)
   {
     if (index >= cseq->n_elements)
       g_critical ("%s: invalid array subscript: %u", G_STRFUNC, index);
     return cseq->elements[index];
   }
-  const Type& operator[] (unsigned int index) const
+  const Type&
+  operator[] (unsigned int index) const
   {
     if (index >= cseq->n_elements)
       g_critical ("%s: invalid array subscript: %u", G_STRFUNC, index);
     return cseq->elements[index];
   }
-  Sequence& operator+= (const Type &elm)
+  Sequence&
+  operator+= (const Type &elm)
   {
     // Note that this does *not* use an explicit copy-constructor call to relocate existing elements
     guint i = cseq->n_elements++;
@@ -400,7 +415,8 @@ public:
     new (cseq->elements + i) Type (elm);
     return *this;
   }
-  void set_boxed (const CSeq *cs)
+  void
+  set_boxed (const CSeq *cs)
   {
     if (cseq == cs)
       return;
@@ -412,14 +428,16 @@ public:
     for (guint i = 0; i < length(); i++)
       new (cseq->elements + i) Type (cs->elements[i]);
   }
-  Sequence& operator= (const Sequence &sh)
+  Sequence&
+  operator= (const Sequence &sh)
   {
     set_boxed (sh.cseq);
     return *this;
   }
-  unsigned int length() const
+  unsigned int
+  length() const
   {
-    return cseq->n_elements;
+    return cseq ? cseq->n_elements : 0;
   }
   ~Sequence()
   {

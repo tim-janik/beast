@@ -466,6 +466,17 @@ public:
       default:          g_assert_not_reached(); return NULL;
       }
   }
+  const char*
+  make_SFI_TYPE_NAME (const string &type)
+  {
+    switch (parser.typeOf (type))
+      {
+      case RECORD:      return "SFI_TYPE_REC";
+      case SEQUENCE:    return "SFI_TYPE_SEQ";
+      case OBJECT:      return "SFI_TYPE_PROXY";
+      default:          return make_TYPE_NAME (type);
+      }
+  }
   void
   generate_choice_prototypes (NamespaceHelper& nspace)
   {
@@ -519,8 +530,10 @@ public:
           continue;
         nspace.setFromSymbol(ci->name);
         // const char *name = nspace.printable_form (ci->name);
-        printf ("#define %s (BSE_CXX_DECLARED_ENUM_TYPE (%s))\n",
-                make_TYPE_NAME (ci->name), pure_TypeName (ci->name));
+        printf ("#define %s\t\tBSE_CXX_DECLARED_ENUM_TYPE (%s, %s)\n",
+                make_TYPE_NAME (ci->name),
+                nspace.namespaceOf (ci->name).c_str(),
+                pure_TypeName (ci->name));
         push_type ("ENUM", pure_TypeName (ci->name));
       }
   }
@@ -536,7 +549,7 @@ public:
         const char *name = nspace.printable_form (ci->name);
         printf ("enum %s {\n", name);
         for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
-          printf ("  %s = %d,\n", pure_UPPER (vi->name), vi->sequentialValue);
+          printf ("  %s = %d,\n", pure_UPPER (vi->name), vi->value);
         printf ("};\n");
       }
   }
@@ -553,9 +566,9 @@ public:
         printf ("BSE_CXX_DECLARE_ENUM (%s, \"%s\", %u,\n",
                 pure_TypeName (ci->name), make_PrefixedTypeName (ci->name), ci->contents.size());
         for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
-          printf ("                      *v++ = ::Bse::EnumValue (%d, \"%s\", %s );\n",
-                  vi->sequentialValue, make_FULL_UPPER (vi->name), vi->label.escaped().c_str());
-        printf ("                      );\n");
+          printf ("  *v++ = ::Bse::EnumValue (%s, \"%s\", %s );\n",
+                  pure_UPPER (vi->name), make_FULL_UPPER (vi->name), vi->label.escaped().c_str());
+        printf (");\n");
       }
   }
   void
@@ -572,8 +585,10 @@ public:
         
         printf ("class %s;\n", pure_TypeName (ri->name));
         printf ("typedef Sfi::RecordHandle<%s> %sHandle;\n", name, name);
-        printf ("#define %s BSE_CXX_DECLARED_RECORD_TYPE (%s)\n",
-                make_TYPE_NAME (ri->name), pure_TypeName (ri->name));
+        printf ("#define %s\t\tBSE_CXX_DECLARED_RECORD_TYPE (%s, %s)\n",
+                make_TYPE_NAME (ri->name),
+                nspace.namespaceOf (ri->name).c_str(),
+                pure_TypeName (ri->name));
         push_type ("RECORD", pure_TypeName (ri->name));
       }
   }
@@ -662,7 +677,8 @@ public:
         printf ("  sfi_rec = sfi_rec_new ();\n");
         for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
           {
-            printf ("  element = sfi_rec_forced_get (sfi_rec, \"%s\", %s);\n", pi->name.c_str(), make_TYPE_NAME (pi->type));
+            printf ("  element = sfi_rec_forced_get (sfi_rec, \"%s\", %s);\n",
+                    pi->name.c_str(), make_SFI_TYPE_NAME (pi->type));
             printf ("  %s (element, rec->%s);\n", func_value_set_param (pi->type), pi->name.c_str());
           }
         printf ("  return sfi_rec;\n");
@@ -710,8 +726,10 @@ public:
         nspace.setFromSymbol(si->name);
         
         printf ("class %s;\n", pure_TypeName (si->name));
-        printf ("#define %s BSE_CXX_DECLARED_SEQUENCE_TYPE (%s)\n",
-                make_TYPE_NAME (si->name), pure_TypeName (si->name));
+        printf ("#define %s\t\tBSE_CXX_DECLARED_SEQUENCE_TYPE (%s, %s)\n",
+                make_TYPE_NAME (si->name),
+                nspace.namespaceOf (si->name).c_str(),
+                pure_TypeName (si->name));
         push_type ("SEQUENCE", pure_TypeName (si->name));
       }
   }
@@ -727,7 +745,7 @@ public:
         
         printf ("class %s : public Sfi::Sequence< %s > {\n", pure_TypeName (si->name), TypeField (si->content.type));
         printf ("public:\n");
-        /* TODO: make this a constructor? */
+        printf ("  %s (unsigned int n = 0) : Sfi::Sequence< %s > (n) {}\n", pure_TypeName (si->name), TypeField (si->content.type));
         printf ("  static inline %s from_seq (SfiSeq *seq);\n", TypeRet (si->name));
         printf ("  static inline SfiSeq *to_seq (%s seq);\n", TypeArg (si->name));
         printf ("  static inline %s value_get_boxed (const GValue *value);\n", TypeRet (si->name));
@@ -770,31 +788,31 @@ public:
         printf ("%s\n", TypeRet (si->name));
         printf ("%s::from_seq (SfiSeq *sfi_seq)\n", nname);
         printf ("{\n");
-        printf ("  %s seq;\n", TypeRet (si->name));
+        printf ("  %s cseq;\n", TypeRet (si->name));
         printf ("  guint i, length;\n");
         printf ("\n");
         printf ("  if (!sfi_seq)\n");
-        printf ("    return seq;\n");
+        printf ("    return cseq;\n");
         printf ("\n");
         printf ("  length = sfi_seq_length (sfi_seq);\n");
-        printf ("  seq.resize (length);\n");
+        printf ("  cseq.resize (length);\n");
         printf ("  for (i = 0; i < length; i++)\n");
         printf ("    {\n");
         printf ("      GValue *element = sfi_seq_get (sfi_seq, i);\n");
-        printf ("      seq[i] = %s (element);\n", func_value_get_param (si->content.type));
+        printf ("      cseq[i] = %s (element);\n", func_value_get_param (si->content.type));
         printf ("    }\n");
-        printf ("  return seq;\n");
+        printf ("  return cseq;\n");
         printf ("}\n\n");
         
         printf ("SfiSeq *\n");
-        printf ("%s::to_seq (%s seq)\n", nname, TypeArg (si->name));
+        printf ("%s::to_seq (%s cseq)\n", nname, TypeArg (si->name));
         printf ("{\n");
         printf ("  SfiSeq *sfi_seq = sfi_seq_new ();\n");
-        printf ("  for (guint i = 0; i < seq.length(); i++)\n");
-        printf ("  {\n");
-        printf ("    GValue *element = sfi_seq_append_empty (sfi_seq, %s);\n", make_TYPE_NAME (si->content.type));
-        printf ("    %s (element, seq[i]);\n", func_value_set_param (si->content.type));
-        printf ("  }\n");
+        printf ("  for (guint i = 0; i < cseq.length(); i++)\n");
+        printf ("    {\n");
+        printf ("      GValue *element = sfi_seq_append_empty (sfi_seq, %s);\n", make_SFI_TYPE_NAME (si->content.type));
+        printf ("      %s (element, cseq[i]);\n", func_value_set_param (si->content.type));
+        printf ("    }\n");
         printf ("  return sfi_seq;\n");
         printf ("}\n\n");
         
@@ -831,8 +849,10 @@ public:
         nspace.setFromSymbol(ci->name);
         printf ("class %sBase;\n", pure_TypeName (ci->name));
         printf ("class %s;\n", pure_TypeName (ci->name));
-        printf ("#define %s  (BSE_CXX_DECLARED_CLASS_TYPE (%s))\n",
-                make_TYPE_NAME (ci->name), pure_TypeName (ci->name));
+        printf ("#define %s\t\tBSE_CXX_DECLARED_CLASS_TYPE (%s, %s)\n",
+                make_TYPE_NAME (ci->name),
+                nspace.namespaceOf (ci->name).c_str(),
+                pure_TypeName (ci->name));
         printf ("#define %s(o) (::Bse::CxxBase::instance_is_a (o, %s))\n",
                 make_IS_NAME (ci->name), make_TYPE_NAME (ci->name));
         push_type ("EFFECT", pure_TypeName (ci->name));
@@ -1103,8 +1123,10 @@ public:
 
         printf ("namespace Procedure {\n");
         printf ("class %s;\n", pure_lower (mi->name));
-        printf ("#define %s (BSE_CXX_DECLARED_PROC_TYPE (%s))\n",
-                make_TYPE_NAME (mi->name), pure_lower (mi->name));
+        printf ("#define %s\t\tBSE_CXX_DECLARED_PROC_TYPE (%s, %s)\n",
+                make_TYPE_NAME (mi->name),
+                nspace.namespaceOf (mi->name).c_str(),
+                pure_lower (mi->name));
         printf ("} // Procedure\n\n");
         push_type ("PROCEDURE", pure_TypeName (mi->name));
       }
