@@ -1,3 +1,17 @@
+Tue Aug 26 08:57:54 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.[hc]*: fixed buglet.
+
+	* bse-module-generator.[hc]*: new parser/code-generator front-end
+	that just uses the Module code generator and parses .mdef files
+	(module definition files).
+
+	* sfidl-generator.[hc]*: renamed from sfild.* (per cvs-copy).
+	stripped to contain only code-generator code.
+	
+	* sfidl.h: removed.
+	* sfidl.cc: stripped to contain only main().
+	
 Mon Aug 25 19:34:05 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: generate only a single object header file

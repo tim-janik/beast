@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sfidl.h"
+#include "sfidl-generator.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -1439,58 +1439,6 @@ void CodeGeneratorQt::run ()
 	    }
 	}
     }
-}
-
-int main (int argc, char **argv)
-{
-  Options options;
-  if (!options.parse (&argc, &argv))
-    {
-      /* invalid options */
-      return 1;
-    }
-
-  if (options.doHelp)
-    {
-      options.printUsage ();
-      return 0;
-    }
-
-  if((argc-optind) != 1)
-    {
-      options.printUsage ();
-      return 1;
-    }
-
-  Parser parser;
-  if (!parser.parse(argv[1]))
-    {
-      /* parse error */
-      return 1;
-    }
-
-  CodeGenerator *codeGenerator = 0;
-  if (options.targetC)
-    codeGenerator = new CodeGeneratorC (parser);
-
-  if (options.targetQt)
-    codeGenerator = new CodeGeneratorQt (parser);
-
-  if (options.targetModule)
-    codeGenerator = new CodeGeneratorModule (parser);
-
-  if (!codeGenerator)
-    {
-      fprintf(stderr, "no target given\n");
-      return 1;
-    }
-
-  printf("\n/*-------- begin %s generated code --------*/\n\n\n",argv[0]);
-  codeGenerator->run ();
-  printf("\n\n/*-------- end %s generated code --------*/\n\n\n",argv[0]);
-
-  delete codeGenerator;
-  return 0;
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

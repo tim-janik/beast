@@ -519,7 +519,7 @@ CodeGeneratorModule::run ()
       gchar *out, *err = NULL;
       string cmd = string() + "gdk-pixbuf-csource " + "--name=local_pixstream " + ii->file;
       g_spawn_command_line_sync (cmd.c_str(), &out, &err, &estatus, &error);
-      if (err)
+      if (err && *err)
         g_printerr ("gdk-pixbuf-csource: %s", err);
       if (error || estatus)
         {
@@ -534,20 +534,6 @@ CodeGeneratorModule::run ()
       g_free (out);
       printf ("  return local_pixstream;\n");
       printf ("}\n");
-    }
-
-  if (options.doSource)
-    {
-      printf ("\n/* generate exports */\n");
-      if (enum_exports.size ())
-        {
-          printf ("#include <bse/bseexports.h>\n");
-          printf ("BSE_EXPORT_STATIC_ENUMS = {\n");
-          for (vector<string>::const_iterator ei = enum_exports.begin(); ei != enum_exports.end(); ei++)
-            printf ("  %s,\n", ei->c_str());
-          printf ("  { NULL, },\n");
-          printf ("};\n");
-        }
     }
   
   /* close namespace */

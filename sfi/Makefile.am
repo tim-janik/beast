@@ -83,12 +83,19 @@ $(OBJECTS): sficonfig.h
 #
 # programs to build
 #
-noinst_PROGRAMS = sfidl testsfi
 # source files
-sfidl_SOURCES = sfidl.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-module.cc glib-extra.c
-EXTRA_DIST += sfidl-namespace.h sfidl-options.h sfidl-parser.h sfidl-module.h
-progs_extra_sources += sfidl-namespace.h
+common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-module.cc glib-extra.c
+
+noinst_PROGRAMS = sfidl testsfi
+sfidl_SOURCES = sfidl.cc $(common_idl_sources)
 sfidl_LDADD = $(SFI_LIBS) -lm
+
+bin_PROGRAMS = bse-module-generator
+bse_module_generator_SOURCES = bse-module-generator.cc $(common_idl_sources)
+bse_module_generator_LDADD = $(SFI_LIBS) -lm
+
+EXTRA_DIST += sfidl-generator.h sfidl-namespace.h sfidl-options.h sfidl-parser.h sfidl-module.h
+progs_extra_sources += sfidl-namespace.h
 testsfi_SOURCES = testsfi.c
 testsfi_LDADD = libsfi.la
 ${srcdir}/testsfi.c: testidl.h testidl.c

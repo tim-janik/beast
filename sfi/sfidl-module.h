@@ -19,7 +19,7 @@
 #ifndef _SFIDL_MODULE_H__
 #define _SFIDL_MODULE_H__
 
-#include "sfidl.h"
+#include "sfidl-generator.h"
 #include "sfidl-parser.h"
 #include <stdio.h>
 #include <string>

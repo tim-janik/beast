@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef _SFIDL_H__
-#define _SFIDL_H__
+#ifndef __SFIDL_GENERATOR_H__
+#define __SFIDL_GENERATOR_H__
 
 #include <sfi/glib-extra.h>
 #include <vector>
@@ -88,6 +88,6 @@ namespace Sfidl {
   
 };
 
-#endif  /* _SFIDL_H__ */
+#endif  /* __SFIDL_GENERATOR_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */
