@@ -1,3 +1,16 @@
+Wed Jan 12 02:04:19 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianoroll.[hc]: turned colors into an enum, added POINTER
+	and SELECT colors. added marker drawing, resizing and reallocation code.
+	connect to the song of the part, watch the song pointer and update
+	the part accordingly. use binary lookup in part links to calculate
+	accurate part pointer position. 
+
+	* beast-gtk/gxk/gxkscrollcanvas.c: force marker reallocation upon 
+	realization. clip markers to their assigned regions when redrawing
+	markers (by means of gdk_window_begin_paint_rect()) to spot marker
+	drawing bugs more easily. 
+
 Sat Jan  8 03:53:01 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.h:

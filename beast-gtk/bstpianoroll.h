@@ -34,6 +34,12 @@ G_BEGIN_DECLS
 /* --- typedefs & enums --- */
 typedef struct _BstPianoRoll        BstPianoRoll;
 typedef struct _BstPianoRollClass   BstPianoRollClass;
+typedef enum    /*< skip >*/
+{
+  BST_PIANO_ROLL_MARKER_NONE,
+  BST_PIANO_ROLL_MARKER_POINTER,
+  BST_PIANO_ROLL_MARKER_SELECT
+} BstPianoRollMarkerType;
 
 
 /* --- structures & typedefs --- */
@@ -53,6 +59,8 @@ struct _BstPianoRoll
   GxkScrollCanvas parent_instance;
 
   SfiProxy	 proxy;
+  SfiProxy	 song;
+  BsePartLinkSeq*plinks;
   gint		 min_note;
   gint		 max_note;
   guint		 vzoom;
@@ -117,6 +125,10 @@ gint	bst_piano_roll_get_vpanel_width		(BstPianoRoll	*self);
 void    bst_piano_roll_get_paste_pos		(BstPianoRoll	*self,
 						 guint          *tick_p,
 						 gint		*note_p);
+void    bst_piano_roll_set_marker               (BstPianoRoll          *self,
+                                                 guint                  mark_index,
+                                                 guint                  position,
+                                                 BstPianoRollMarkerType mtype);
 
      
 G_END_DECLS

@@ -42,6 +42,8 @@
 #define COLOR_GC_HBAR(self)     (COLOR_GC (self, CINDEX_HBAR))
 #define COLOR_GC_VBAR(self)     (COLOR_GC (self, CINDEX_VBAR))
 #define COLOR_GC_MBAR(self)     (COLOR_GC (self, CINDEX_MBAR))
+#define COLOR_GC_POINTER(self)  (COLOR_GC (self, CINDEX_POINTER))
+#define COLOR_GC_SELECT(self)   (COLOR_GC (self, CINDEX_SELECT))
 #define CANVAS(self)            (GXK_SCROLL_CANVAS (self)->canvas)
 #define HPANEL(self)            (GXK_SCROLL_CANVAS (self)->top_panel)
 #define VPANEL(self)            (GXK_SCROLL_CANVAS (self)->left_panel)
@@ -50,10 +52,33 @@
 #define	OCTAVE_HEIGHT(self)	(14 * (self)->vzoom + 7 * NOTE_HEIGHT (self))	/* coord_to_note() */
 #define KEYBOARD_WIDTH(self)    (32 + 2 * XTHICKNESS (self))
 #define	KEYBOARD_RATIO(self)	(2.9 / 5.)	/* black/white key ratio */
+#define CMARK_WIDTH(self)       (1 + XTHICKNESS (self) + 1)
 /* appearance */
 #define	KEY_DEFAULT_VPIXELS	(4)
 #define	QNOTE_HPIXELS		(30)	/* guideline */
 
+enum {
+  CINDEX_C,
+  CINDEX_Cis,
+  CINDEX_D,
+  CINDEX_Dis,
+  CINDEX_E,
+  CINDEX_F,
+  CINDEX_Fis,
+  CINDEX_G,
+  CINDEX_Gis,
+  CINDEX_A,
+  CINDEX_Ais,
+  CINDEX_B,
+  CINDEX_HGRID,
+  CINDEX_VGRID,
+  CINDEX_HBAR,
+  CINDEX_VBAR,
+  CINDEX_MBAR,
+  CINDEX_POINTER,
+  CINDEX_SELECT,
+  CINDEX_COUNT
+};
 
 /* --- prototypes --- */
 static void	bst_piano_roll_hsetup			(BstPianoRoll		*self,
@@ -75,7 +100,7 @@ G_DEFINE_TYPE (BstPianoRoll, bst_piano_roll, GXK_TYPE_SCROLL_CANVAS);
 static void
 piano_roll_class_setup_skin (BstPianoRollClass *class)
 {
-  static GdkColor colors[] = {
+  static GdkColor colors[CINDEX_COUNT] = {
     /* C: */
     { 0, 0x8080, 0x0000, 0x0000 },  /* dark red */
     { 0, 0xa000, 0x0000, 0xa000 },  /* dark magenta */
@@ -101,11 +126,9 @@ piano_roll_class_setup_skin (BstPianoRollClass *class)
     { 0, 0x8000, 0x0000, 0x0000 },  /* hbar */
     { 0, 0x9e00, 0x9a00, 0x9100 },  /* vbar */
     { 0, 0xff00, 0x8000, 0x0000 },  /* mbar */
-#define CINDEX_HGRID    12
-#define CINDEX_VGRID    13
-#define CINDEX_HBAR     14
-#define CINDEX_VBAR     15
-#define CINDEX_MBAR     16
+    /* unconfigurable */
+    { 0, 0xca00, 0x2000, 0xcd00 },  /* pointer */
+    { 0, 0x0000, 0x0000, 0xff00 },  /* select (blue) */
   };
   GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (class);
   scroll_canvas_class->n_colors = G_N_ELEMENTS (colors);
@@ -506,6 +529,76 @@ coord_to_note (BstPianoRoll *self,
     }
   
   return info->bmatch != 0;
+}
+
+static void
+piano_roll_allocate_marker (BstPianoRoll    *self,
+                            GxkScrollMarker *marker)
+{
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
+  gint ch = 10, x = tick_to_coord (self, marker[0].coords.x);
+  if (CANVAS (self))
+    gdk_window_get_size (CANVAS (self), NULL, &ch);
+  gxk_scroll_canvas_setup_marker (scc, &marker[0], &scc->canvas,
+                                  x - CMARK_WIDTH (self) / 2, 0,
+                                  CMARK_WIDTH (self), ch);
+}
+
+static void
+piano_roll_move_marker (BstPianoRoll    *self,
+                        GxkScrollMarker *marker)
+{
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
+  gint x = tick_to_coord (self, marker[0].coords.x);
+  gxk_scroll_canvas_move_marker (scc, &marker[0], x - CMARK_WIDTH (self) / 2, 0);
+}
+
+static void
+bst_piano_roll_draw_marker (GxkScrollCanvas *scc,
+                            GdkWindow       *drawable,
+                            GdkRectangle    *area,
+                            GxkScrollMarker *marker)
+{
+  BstPianoRoll *self = BST_PIANO_ROLL (scc);
+  BstPianoRollMarkerType mtype = marker->mtype;
+  gint x = marker->extends.x, y = marker->extends.y, width = marker->extends.width, height = marker->extends.height;
+  GdkGC *draw_gc;
+  switch (mtype)
+    {
+    case BST_PIANO_ROLL_MARKER_POINTER:
+      draw_gc = COLOR_GC_POINTER (self);
+      gdk_draw_rectangle (drawable, COLOR_GC_VBAR (self), FALSE, /* FALSE grows the rectangle by one pixel */
+                          x, y, width - 1, height - 1);
+      gdk_draw_rectangle (drawable, COLOR_GC_POINTER (self), TRUE,
+                          x + 1, y + 1, width - 2 * 1, height - 2 * 1);
+      break;
+    case BST_PIANO_ROLL_MARKER_SELECT:
+      draw_gc = COLOR_GC_SELECT (self);
+      gdk_draw_rectangle (drawable, draw_gc, TRUE,
+                          x + XTHICKNESS (self), y + YTHICKNESS (self),
+                          width - 2 * XTHICKNESS (self),
+                          height - 2 * YTHICKNESS (self));
+      gtk_paint_shadow (STYLE (self), drawable, STATE (self),
+                        GTK_SHADOW_IN, NULL, NULL, NULL,
+                        x, y, width, height);
+      break;
+    default:
+      break;
+    }
+}
+
+static void
+piano_roll_reallocate_contents (GxkScrollCanvas *scc,
+                                gint             xdiff,
+                                gint             ydiff)
+{
+  BstPianoRoll *self = BST_PIANO_ROLL (scc);
+  guint i;
+  for (i = 0; i < scc->n_markers; i++)
+    if (xdiff || ydiff)
+      piano_roll_move_marker (self, scc->markers + i);
+    else
+      piano_roll_allocate_marker (self, scc->markers + i);
 }
 
 static void
@@ -975,9 +1068,14 @@ gfloat
 bst_piano_roll_set_hzoom (BstPianoRoll *self,
 			  gfloat        hzoom)
 {
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
   g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
   
   bst_piano_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, hzoom);
+  guint i;
+  /* readjust markers */
+  for (i = 0; i < scc->n_markers; i++)
+    piano_roll_allocate_marker (self, scc->markers + i);
   
   return self->hzoom;
 }
@@ -1037,6 +1135,53 @@ piano_roll_handle_drag (GxkScrollCanvas     *scc,
 }
 
 static void
+piano_roll_song_pointer_changed (BstPianoRoll *self,
+                                 SfiInt        position)
+{
+  BsePartLink *plink = NULL;
+  if (self->plinks && position >= 0)
+    {
+      /* find size via binary lookup */
+      guint offset = 0, n_elements = self->plinks->n_plinks;
+      while (offset < n_elements)
+        {
+          guint i = (offset + n_elements) >> 1;
+          BsePartLink *current = self->plinks->plinks[i];
+          gint cmp = position < current->tick ? -1 : position > current->tick;
+          if (cmp > 0) /* clamp to within duration */
+            cmp = position < current->tick + current->duration ? 0 : 1;
+          if (cmp == 0)
+            {
+              plink = current;
+              break;
+            }
+          else if (cmp < 0)
+            n_elements = i;
+          else /* (cmp > 0) */
+            offset = i + 1;
+        }
+    }
+  if (plink)
+    bst_piano_roll_set_marker (self, 1, position - plink->tick, BST_PIANO_ROLL_MARKER_POINTER);
+  else
+    bst_piano_roll_set_marker (self, 1, position, 0);
+}
+
+static void
+piano_roll_links_changed (BstPianoRoll *self)
+{
+  if (self->plinks)
+    bse_part_link_seq_free (self->plinks);
+  self->plinks = NULL;
+  if (self->proxy)
+    {
+      self->plinks = bse_part_list_links (self->proxy);
+      if (self->plinks)
+        self->plinks = bse_part_link_seq_copy_shallow (self->plinks);
+    }
+}
+
+static void
 piano_roll_range_changed (BstPianoRoll *self)
 {
   guint max_ticks;
@@ -1078,12 +1223,26 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
   
   if (self->proxy)
     {
+      if (self->song)
+        {
+          bse_proxy_disconnect (self->song,
+                                "any_signal", piano_roll_release_proxy, self,
+                                "any_signal", piano_roll_song_pointer_changed, self,
+                                NULL);
+          bse_item_unuse (self->song);
+          self->song = 0;
+        }
+      if (self->plinks)
+        bse_part_link_seq_free (self->plinks);
+      self->plinks = NULL;
       bse_proxy_disconnect (self->proxy,
 			    "any_signal", piano_roll_release_proxy, self,
 			    "any_signal", piano_roll_range_changed, self,
+			    "any_signal", piano_roll_links_changed, self,
 			    "any_signal", piano_roll_update, self,
 			    NULL);
       bse_item_unuse (self->proxy);
+      piano_roll_song_pointer_changed (self, -1);
     }
   self->proxy = proxy;
   if (self->proxy)
@@ -1092,11 +1251,24 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
       bse_proxy_connect (self->proxy,
 			 "swapped_signal::release", piano_roll_release_proxy, self,
                          "swapped_signal::property-notify::last-tick", piano_roll_range_changed, self,
+                         "swapped_signal::links-changed", piano_roll_links_changed, self,
 			 "swapped_signal::range-changed", piano_roll_update, self,
 			 NULL);
       self->min_note = bse_part_get_min_note (self->proxy);
       self->max_note = bse_part_get_max_note (self->proxy);
       piano_roll_range_changed (self);
+      SfiProxy song = bse_item_get_parent (self->proxy);
+      if (song)
+        {
+          self->song = song;
+          bse_item_use (self->song);
+          bse_proxy_connect (self->song,
+                             "swapped_signal::release", piano_roll_release_proxy, self,
+                             "swapped_signal::pointer-changed", piano_roll_song_pointer_changed, self,
+                             NULL);
+        }
+      piano_roll_links_changed (self);
+      piano_roll_song_pointer_changed (self, -1);
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
@@ -1239,6 +1411,47 @@ bst_piano_roll_get_paste_pos (BstPianoRoll *self,
     *tick_p = tick;
 }
 
+void
+bst_piano_roll_set_marker (BstPianoRoll          *self,
+                           guint                  mark_index,
+                           guint                  position,
+                           BstPianoRollMarkerType mtype)
+{
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
+  GxkScrollMarker *marker;
+  guint count;
+  g_return_if_fail (mark_index > 0);
+
+  marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
+  if (!marker && !mtype)
+    return;
+  else if (!marker && mtype)
+    {
+      gxk_scroll_canvas_add_marker (scc, mark_index);
+      marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, &count);
+    }
+  else if (marker && !mtype)
+    {
+      while (marker)
+        {
+          gxk_scroll_canvas_remove_marker (scc, marker);
+          marker = gxk_scroll_canvas_lookup_marker (scc, mark_index, NULL);
+        }
+      return;
+    }
+
+  g_return_if_fail (count == 1);
+
+  marker[0].coords.x = position;
+  if (marker[0].mtype != mtype || !marker[0].pixmap)
+    {
+      marker[0].mtype = mtype;
+      piano_roll_allocate_marker (self, marker);
+    }
+  else
+    piano_roll_move_marker (self, marker);
+}
+
 static void
 bst_piano_roll_class_init (BstPianoRollClass *class)
 {
@@ -1257,6 +1470,8 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
   scroll_canvas_class->hscrollable = TRUE;
   scroll_canvas_class->vscrollable = TRUE;
   scroll_canvas_class->get_layout = piano_roll_get_layout;
+  scroll_canvas_class->reallocate_contents = piano_roll_reallocate_contents;
+  scroll_canvas_class->draw_marker = bst_piano_roll_draw_marker;
   scroll_canvas_class->draw_canvas = bst_piano_roll_draw_canvas;
   scroll_canvas_class->draw_top_panel = bst_piano_roll_draw_hpanel;
   scroll_canvas_class->draw_left_panel = bst_piano_roll_draw_vpanel;

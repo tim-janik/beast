@@ -631,6 +631,9 @@ scroll_canvas_realize (GtkWidget *widget)
   /* realize markers */
   for (i = 0; i < self->n_markers; i++)
     scroll_canvas_realize_marker (self, self->markers + i);
+
+  /* update sizes */
+  gxk_scroll_canvas_reallocate (self);
 }
 
 static void
@@ -841,7 +844,11 @@ scroll_canvas_redraw_markers (GxkScrollCanvas *self,
         {
           GdkRectangle isec;
           if (gdk_rectangle_intersect (&area, &marker->extends, &isec))
-            class->draw_marker (self, drawable, &isec, marker);
+            {
+              gdk_window_begin_paint_rect (*marker->windowp, &isec);
+              class->draw_marker (self, drawable, &isec, marker);
+              gdk_window_end_paint (*marker->windowp);
+            }
         }
     }
 }
@@ -1791,7 +1798,7 @@ gxk_scroll_canvas_move_marker (GxkScrollCanvas        *self,
         }
     }
 
-  /* redraw new marker area */
+  /* redraw old and new marker area */
   gdk_window_begin_paint_rect (*marker->windowp, &marker->extends);
   gdk_draw_drawable (*marker->windowp, draw_gc, marker->pixmap,
                      0, 0, marker->extends.x, marker->extends.y,
