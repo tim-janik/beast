@@ -588,6 +588,18 @@ scripts:
   - pianoroll transpose up/down
   - pianorool lengthen/shorten notes
 
+gui:
+  - hotkey to jump to loop marker
+  - beast should not suggest to put instruments in postproc
+  - Farbe fuer h (nicht blau), damit selektionen blau sein koennen
+    bstpianoroll.c: "light blue"
+  - library proposal
+
+interop:
+  portaudio driver:
+    - fix JACK blocking interface in PortAudio
+  jack driver:
+
 STEFAN TODO:
   - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
     libtool
