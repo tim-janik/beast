@@ -18,8 +18,8 @@
 #include "bstutils.h"
 #include "bstqsampler.h"
 // #include "bstcellptrack.h"
-#include <gsl/gsldatacache.h>
-#include <gsl/gsldatahandle.h>
+#include <bse/gsldatacache.h>
+#include <bse/gsldatahandle.h>
 #include <string.h>
 
 #include <math.h>
@@ -378,7 +378,7 @@ score_loop (GslDataHandle *shandle,
   return score;
 }
 
-#include <gsl/gsldatautils.h>
+#include <bse/gsldatautils.h>
 
 static void
 find (WaveView *view)

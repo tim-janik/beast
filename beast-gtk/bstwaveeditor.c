@@ -20,9 +20,9 @@
 #include	"bstplayback.h"
 #include	"bstprocedure.h"
 #include	"bstmenus.h"
-#include	<gsl/gsldatacache.h>
-#include	<gsl/gslwavechunk.h>
-#include	<gsl/gsldatahandle.h>
+#include	<bse/gsldatacache.h>	// FIXME
+#include	<bse/gslwavechunk.h>	// FIXME
+#include	<bse/gsldatahandle.h>	// FIXME
 #include	<gdk/gdkkeysyms.h>
 
 
