@@ -191,8 +191,10 @@ bus_mixer_action_exec (gpointer data,
     {
       SfiProxy item;
     case ACTION_ADD_BUS:
-      bse_song_get_master_bus (song);   /* work around buggy songs (master bus missing) */
+      bse_item_group_undo (song, "Create Bus");
       item = bse_song_create_bus (song);
+      bse_bus_ensure_output (item);
+      bse_item_ungroup_undo (song);
       if (item)
         bst_item_view_select (iview, item);
       break;

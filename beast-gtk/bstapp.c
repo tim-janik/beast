@@ -106,7 +106,7 @@ static const GxkStockAction about_actions[] = {
 static const GxkStockAction undo_actions[] = {
   { N_("_Undo"),                "<ctrl>Z",      N_("Undo the effect of the last action"),
     BST_ACTION_UNDO,            BST_STOCK_UNDO, },
-  { N_("_Redo"),                "<ctrl>R",      N_("Redo the last undone action"),
+  { N_("_Redo"),                "<ctrl>Y",      N_("Redo the last undone action"),
     BST_ACTION_REDO,            BST_STOCK_REDO, },
 };
 static const GxkStockAction undo_dvl_actions[] = {
@@ -815,7 +815,10 @@ app_action_exec (gpointer data,
       bst_file_dialog_popup_save_instrument (self, self->project, bst_app_get_current_super (self));
       break;
     case BST_ACTION_NEW_SONG:
+      bse_item_group_undo (self->project, "Create Song");
       proxy = bse_project_create_song (self->project, NULL);
+      bse_song_ensure_master_bus (proxy);
+      bse_item_ungroup_undo (self->project);
       self->select_unseen_super = TRUE;
       break;
     case BST_ACTION_NEW_CSYNTH:

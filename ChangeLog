@@ -1,3 +1,17 @@
+Sat Oct 16 09:52:35 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: make sure new songs have a master bus.
+
+	* beast-gtk/bstbusmixer.c: auto-connect new busses to master.
+
+	* beast-gtk/bstutils.c: don't auto-connect tracks without output to
+	master bus. if tracks deliberately have no output, this state needs
+	to be preserved.
+
+	* beast-gtk/bstapp.c:
+	* beast-gtk/bstmenus.c:
+	* beast-gtk/bstpartdialog.c: changed redo accel to <control>Y.
+
 Sat Oct 16 00:57:06 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsupershell.c: show "Parts" page of a song only for

@@ -1,15 +1,14 @@
 FIXMES:	(release-critical)
+- rename call_proc to bse_procedure_invoke
 - don't record samples to WAV file before *any* song is processed by sequencer
 - midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
 - midireceiver: revisit sched_tag as condition, it's probably too weak due to temporary enginescheduler resets
-- implement solo for master
-- ensure there always is a master
-- auto-conenct new busses to master
 - auto-add orphan tracks to master when loading
 - auto-add orphan parts to a new track when loading
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - deleteing last track + undo doesn't redraw trackroll
+- add compat code to auto-connect tracks for songs<=0.6.2
 TODO:
 - add GxkDialog minimum shrink sizes support
 - preserve part-link ids in tracks across part-tick movement and remove-tick+insert-part undo

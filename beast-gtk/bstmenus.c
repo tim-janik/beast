@@ -444,7 +444,7 @@ bst_choice_get_last (GtkWidget *widget)
  { "/Select/None",		"<Shift><Control>A",	},
  { "/Select/Invert",		"<Control>I",		},
  { "/Edit/Undo",		"<Control>Z",		},
- { "/Edit/Redo",		"<Control>R",		},
+ { "/Edit/Redo",		"<Control>Y",		},
  { "/Edit/Copy",		"<Control>C",		},
  { "/Edit/Duplicate",		"<Control>C",		},
  { "/Edit/Cut",			"<Control>X",		},

@@ -64,7 +64,7 @@ static const GxkStockAction piano_edit_actions[] = {
 };
 static const GxkStockAction piano_edit_undo[] = {
   { N_("Undo"),         "<ctrl>Z",   N_("Undo last editing step"),                          ACTION_UNDO,       BST_STOCK_UNDO },
-  { N_("Redo"),         "<ctrl>R",   N_("Redo the last undone editing step"),               ACTION_REDO,       BST_STOCK_REDO },
+  { N_("Redo"),         "<ctrl>Y",   N_("Redo the last undone editing step"),               ACTION_REDO,       BST_STOCK_REDO },
 };
 static const GxkStockAction piano_clear_undo[] = {
   { N_("_Clear Undo"),          NULL,           NULL,
