@@ -105,7 +105,8 @@ struct _GxkScrollCanvas
   GxkScrollCanvasLayout layout;
   GdkWindow            *canvas, *top_panel, *left_panel, *right_panel, *bottom_panel;
   GdkPixmap            *canvas_pixmap;
-  GdkGC               **color_gc;
+  GdkGC               **color_gc;       /* array of size class->n_colors */
+  PangoLayout         **pango_layout;   /* array of size class->n_pango_layouts */
   /* scroll offset */
   gint                  x_offset, y_offset;
   GtkAdjustment        *hadjustment, *vadjustment;
@@ -124,6 +125,7 @@ typedef struct
   guint                 hscrollable : 1;
   guint                 vscrollable : 1;
   /* skin config */
+  guint                 n_pango_layouts;
   guint                 n_colors;       /* must be const across skin changes */
   const GdkColor       *colors;
   gchar                *image_file_name;

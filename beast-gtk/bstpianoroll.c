@@ -35,12 +35,14 @@
 #define	MIN_SEMITONE(self)	(SFI_NOTE_SEMITONE ((self)->min_note))
 #define X_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->x_offset)
 #define Y_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->y_offset)
+#define PLAYOUT(self, i)        (GXK_SCROLL_CANVAS (self)->pango_layout[i])
+#define PLAYOUT_HPANEL(self)    (PLAYOUT (self, PINDEX_HPANEL))
 #define COLOR_GC(self, i)       (GXK_SCROLL_CANVAS (self)->color_gc[i])
-#define COLOR_GC_HGRID(self)    (COLOR_GC (self, INDEX_HGRID))
-#define COLOR_GC_VGRID(self)    (COLOR_GC (self, INDEX_VGRID))
-#define COLOR_GC_HBAR(self)     (COLOR_GC (self, INDEX_HBAR))
-#define COLOR_GC_VBAR(self)     (COLOR_GC (self, INDEX_VBAR))
-#define COLOR_GC_MBAR(self)     (COLOR_GC (self, INDEX_MBAR))
+#define COLOR_GC_HGRID(self)    (COLOR_GC (self, CINDEX_HGRID))
+#define COLOR_GC_VGRID(self)    (COLOR_GC (self, CINDEX_VGRID))
+#define COLOR_GC_HBAR(self)     (COLOR_GC (self, CINDEX_HBAR))
+#define COLOR_GC_VBAR(self)     (COLOR_GC (self, CINDEX_VBAR))
+#define COLOR_GC_MBAR(self)     (COLOR_GC (self, CINDEX_MBAR))
 #define CANVAS(self)            (GXK_SCROLL_CANVAS (self)->canvas)
 #define HPANEL(self)            (GXK_SCROLL_CANVAS (self)->top_panel)
 #define VPANEL(self)            (GXK_SCROLL_CANVAS (self)->left_panel)
@@ -75,6 +77,11 @@ static guint	signal_piano_clicked = 0;
 /* --- functions --- */
 G_DEFINE_TYPE (BstPianoRoll, bst_piano_roll, GXK_TYPE_SCROLL_CANVAS);
 
+enum {
+  PINDEX_HPANEL,
+  PINDEX_COUNT
+};
+
 static void
 piano_roll_class_setup_skin (BstPianoRollClass *class)
 {
@@ -104,20 +111,21 @@ piano_roll_class_setup_skin (BstPianoRollClass *class)
     { 0, 0x8000, 0x0000, 0x0000 },  /* hbar */
     { 0, 0x9e00, 0x9a00, 0x9100 },  /* vbar */
     { 0, 0xff00, 0x8000, 0x0000 },  /* mbar */
-#define INDEX_HGRID     12
-#define INDEX_VGRID     13
-#define INDEX_HBAR      14
-#define INDEX_VBAR      15
-#define INDEX_MBAR      16
+#define CINDEX_HGRID    12
+#define CINDEX_VGRID    13
+#define CINDEX_HBAR     14
+#define CINDEX_VBAR     15
+#define CINDEX_MBAR     16
   };
   GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (class);
+  scroll_canvas_class->n_pango_layouts = PINDEX_COUNT;
   scroll_canvas_class->n_colors = G_N_ELEMENTS (colors);
   scroll_canvas_class->colors = colors;
-  colors[INDEX_HGRID] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_hgrid));
-  colors[INDEX_VGRID] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_vgrid));
-  colors[INDEX_HBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_hbar));
-  colors[INDEX_VBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_vbar));
-  colors[INDEX_MBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_mbar));
+  colors[CINDEX_HGRID] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_hgrid));
+  colors[CINDEX_VGRID] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_vgrid));
+  colors[CINDEX_HBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_hbar));
+  colors[CINDEX_VBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_vbar));
+  colors[CINDEX_MBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_mbar));
   g_free (scroll_canvas_class->image_file_name);
   scroll_canvas_class->image_file_name = BST_SKIN_CONFIG_STRDUP_PATH (piano_image);
   scroll_canvas_class->image_tint = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_color));
@@ -215,6 +223,9 @@ piano_roll_get_layout (GxkScrollCanvas        *scc,
                        GxkScrollCanvasLayout  *layout)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
+  PangoRectangle rect;
+  pango_layout_get_extents (PLAYOUT_HPANEL (self), NULL, &rect);
+  layout->top_panel_height = PANGO_PIXELS (rect.height);
   layout->left_panel_width = 30;
   layout->right_panel_width = 0;
   layout->bottom_panel_height = 0;
@@ -769,7 +780,7 @@ bst_piano_roll_overlap_grow_hpanel_area (BstPianoRoll *self,
   x = tick_to_coord (self, i);
   i = coord_to_tick (self, xbound + 1, TRUE);
   i /= self->ppqn * self->qnpt;
-  i += 1;		/* fudge 1 tact to the right */
+  i += 2;		/* fudge 1 tact to the right (+1 for round-off) */
   i *= self->ppqn * self->qnpt;
   xbound = tick_to_coord (self, i);
   
@@ -783,15 +794,15 @@ bst_piano_roll_draw_hpanel (GxkScrollCanvas *scc,
                             GdkRectangle    *area)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
-  GdkFont *font = gtk_style_get_font (STYLE (self));
-  GdkGC *fg_gc = STYLE (self)->fg_gc[STATE (self)];
+  GdkGC *draw_gc = STYLE (self)->fg_gc[STATE (self)];
+  PangoRectangle rect;
   gchar buffer[64];
-  gint i, width, height, text_y;
+  gint i, width, height;
   gdk_window_get_size (drawable, &width, &height);
   bst_piano_roll_overlap_grow_hpanel_area (self, area);
-  text_y = height - (height - gdk_string_height (font, "0123456789:")) / 2;
   
   /* draw tact/note numbers */
+  gdk_gc_set_clip_rectangle (draw_gc, area);
   for (i = area->x; i < area->x + area->width; i++)
     {
       guint next_pixel, width;
@@ -808,32 +819,40 @@ bst_piano_roll_draw_hpanel (GxkScrollCanvas *scc,
 	  next_pixel = tick_to_coord (self, (tact + 1) * (self->ppqn * self->qnpt));
           
 	  g_snprintf (buffer, 64, "%u", tact + 1);
-          
+          pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
+          pango_layout_get_extents (PLAYOUT_HPANEL (self), NULL, &rect);
+
 	  /* draw this tact if there's enough space */
-	  width = gdk_string_width (font, buffer);
+	  width = PANGO_PIXELS (rect.width);
 	  if (i + width / 2 < (i + next_pixel) / 2)
-	    gdk_draw_string (drawable, font, fg_gc,
-			     i - width / 2, text_y,
-			     buffer);
+	    gdk_draw_layout (drawable, draw_gc,
+			     i - width / 2, 0,
+			     PLAYOUT_HPANEL (self));
 	}
       else if (self->draw_qqn_grid && coord_check_crossing (self, i, CROSSING_QNOTE))
 	{
           guint tact = coord_to_tick (self, i, TRUE) + 1, qn = tact;
-          
+
 	  tact /= (self->ppqn * self->qnpt);
 	  qn /= self->ppqn;
 	  next_pixel = tick_to_coord (self, (qn + 1) * self->ppqn);
-          
-	  g_snprintf (buffer, 64, ":%u", /* tact + 1, */ qn % self->qnpt + 1);
+          qn = qn % self->qnpt + 1;
+          if (qn == 1)
+            continue;   /* would draw on top of tact number */
+
+	  g_snprintf (buffer, 64, ":%u", qn);
+          pango_layout_set_text (PLAYOUT_HPANEL (self), buffer, -1);
+          pango_layout_get_extents (PLAYOUT_HPANEL (self), NULL, &rect);
           
 	  /* draw this tact if there's enough space */
-	  width = gdk_string_width (font, buffer);
+          width = PANGO_PIXELS (rect.width);
 	  if (i + width < (i + next_pixel) / 2)		/* don't half width, leave some more space */
-	    gdk_draw_string (drawable, font, fg_gc,
-			     i - width / 2, text_y,
-			     buffer);
+	    gdk_draw_layout (drawable, draw_gc,
+			     i - width / 2, 0,
+                             PLAYOUT_HPANEL (self));
 	}
     }
+  gdk_gc_set_clip_rectangle (draw_gc, NULL);
 }
 
 static void

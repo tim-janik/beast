@@ -122,14 +122,13 @@ TODO:
 - add "bypass" option to audio output channels
 - virtual MIDI keyboard
 - fix tracks used only as modulation input (party-monster.bse)
-- delay class destruction and plugin unloading through async handlers (slight timeout)
 - piano and track roll scrolling implemented with secondary scrollbar
 - piano roll dialog gains partlink property editor
 - item links: (where (link 3 "TrackLink::LinkTrack::Cool"))
               (where (3 "tree:sopidgsdf:sdggsdf"))
               (where (link 3 "tree::sopidgsdf::sdggsdf"))
 - prop flag: SFI_PARAM_SKIP_DEFAULT
-- implement humanizer scheme script that offsets notes by a few random ticks
+- implement humanizer note offsetting in sequencer, let the user specify randomization range
 - add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
 - support loading of Effects from Effect Library directory from a button in the router/rackview display
 - add "Insert Property" menu to rack view which lists all objects and their proeprties hirachically

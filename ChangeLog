@@ -1,3 +1,14 @@
+Mon Feb  9 05:15:52 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkscrollcanvas.[hc]: merge skin reset code with
+	background reset and style/color setup code.
+	added support for pango layout allocation and deallocation.
+
+	* beast-gtk/bstpianoroll.c: draw hpanel tact/note numbers with a
+	pango layout. widen expose area to avoid drawing artefacts. fixed
+	quarter note :1 being drawn on top of tact number. request height
+	for hpanel from text height.
+
 Mon Feb  9 00:23:14 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsteventroll.[hc]: ported to derive from GxkScrollCanvas.

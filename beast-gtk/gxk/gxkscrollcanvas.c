@@ -255,12 +255,37 @@ scroll_canvas_set_scroll_adjustments (GxkScrollCanvas *self,
 }
 
 static void
-scroll_canvas_reset_backgrounds (GxkScrollCanvas *self)
+scroll_canvas_ensure_pango_layouts (GxkScrollCanvas *self)
+{
+  GxkScrollCanvasClass *class;
+  GtkWidget *widget;
+  guint i;
+  if (self->pango_layout)
+    return;
+  class = GXK_SCROLL_CANVAS_GET_CLASS (self);
+  if (!class->n_pango_layouts)
+    return;
+
+  widget = GTK_WIDGET (self);
+  self->pango_layout = g_new0 (PangoLayout*, class->n_pango_layouts);
+  for (i = 0; i < class->n_pango_layouts; i++)
+    {
+      self->pango_layout[i] = gtk_widget_create_pango_layout (widget, NULL);
+      pango_layout_set_single_paragraph_mode (self->pango_layout[i], TRUE);
+      pango_layout_set_text (self->pango_layout[i], "", -1);
+      pango_layout_context_changed (self->pango_layout[i]);
+    }
+}
+
+static void
+scroll_canvas_reset_skin_and_style (GxkScrollCanvas *self)
 {
   GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
   GtkWidget *widget = GTK_WIDGET (self);
   if (GTK_WIDGET_REALIZED (self))
     {
+      guint i;
+      /* reset backgrounds */
       gdk_window_set_background (widget->window, PANEL_BG_COLOR (self));
       if (self->top_panel)
         gdk_window_set_background (self->top_panel, PANEL_BG_COLOR (self));
@@ -271,17 +296,8 @@ scroll_canvas_reset_backgrounds (GxkScrollCanvas *self)
       if (self->bottom_panel)
         gdk_window_set_background (self->bottom_panel, PANEL_BG_COLOR (self));
       gdk_window_set_background (self->canvas, CANVAS_BG_COLOR (self));
-      gdk_window_clear (widget->window);
-      if (self->top_panel)
-        gdk_window_clear (self->top_panel);
-      if (self->left_panel)
-        gdk_window_clear (self->left_panel);
-      if (self->right_panel)
-        gdk_window_clear (self->right_panel);
-      if (self->bottom_panel)
-        gdk_window_clear (self->bottom_panel);
-      gdk_window_clear (self->canvas);
       gtk_widget_queue_draw (widget);
+      /* reset background pixmap */
       if (self->canvas_pixmap)
         gxk_image_cache_unuse_pixmap (self->canvas_pixmap);
       self->canvas_pixmap = gxk_image_cache_use_pixmap (class->image_file_name,
@@ -292,6 +308,16 @@ scroll_canvas_reset_backgrounds (GxkScrollCanvas *self)
         self->canvas_pixmap = gxk_image_cache_use_pixmap (GXK_IMAGE_BLACK32,
                                                           class->image_tint, class->image_saturation,
                                                           gdk_drawable_get_colormap (self->canvas));
+      /* reset colors */
+      for (i = 0; i < class->n_colors; i++)
+        {
+          GdkColor color = class->colors[i];
+          gdk_gc_set_rgb_fg_color (self->color_gc[i], &color);
+        }
+      /* reset pango layouts */
+      scroll_canvas_ensure_pango_layouts (self);
+      for (i = 0; i < class->n_pango_layouts; i++)
+        pango_layout_context_changed (self->pango_layout[i]);
     }
 }
 
@@ -300,7 +326,7 @@ scroll_canvas_style_set (GtkWidget *widget,
                          GtkStyle  *previous_style)
 {
   GxkScrollCanvas *self = GXK_SCROLL_CANVAS (widget);
-  scroll_canvas_reset_backgrounds (self);
+  scroll_canvas_reset_skin_and_style (self);
   GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->style_set (widget, previous_style);
 }
 
@@ -309,7 +335,7 @@ scroll_canvas_state_changed (GtkWidget *widget,
                              guint      previous_state)
 {
   GxkScrollCanvas *self = GXK_SCROLL_CANVAS (widget);
-  scroll_canvas_reset_backgrounds (self);
+  scroll_canvas_reset_skin_and_style (self);
   GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->state_changed (widget, previous_state);
 }
 
@@ -329,6 +355,7 @@ gxk_scroll_canvas_get_layout (GxkScrollCanvas       *self,
   tlayout.max_canvas_height = G_MAXINT;
   if (class->get_layout)
     {
+      scroll_canvas_ensure_pango_layouts (self);
       class->get_layout (self, &tlayout);
       tlayout.top_panel_height = MAX (0, tlayout.top_panel_height);
       tlayout.left_panel_width = MAX (0, tlayout.left_panel_width);
@@ -543,42 +570,17 @@ scroll_canvas_realize (GtkWidget *widget)
   gxk_window_set_cursor_type (self->canvas, g_object_get_long (self, "canvas_cursor"));
   gdk_window_show (self->canvas);
 
-  /* setup style and colors */
+  /* setup style, allocate colors */
   widget->style = gtk_style_attach (widget->style, widget->window);
   self->color_gc = g_new0 (GdkGC*, class->n_colors);
   for (i = 0; i < class->n_colors; i++)
-    {
-      GdkColor color = class->colors[i];
-      self->color_gc[i] = gdk_gc_new (widget->window);
-      gdk_gc_set_rgb_fg_color (self->color_gc[i], &color);
-    }
-
-  /* setup backgrounds */
-  scroll_canvas_reset_backgrounds (self);
+    self->color_gc[i] = gdk_gc_new (widget->window);
 
   /* catch skin changes */
   class->realized_widgets = g_slist_prepend (class->realized_widgets, self);
-}
 
-static void
-scroll_canvas_skin_changed (GxkScrollCanvas *self)
-{
-  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
-  guint i;
-  for (i = 0; i < class->n_colors; i++)
-    {
-      GdkColor color = class->colors[i];
-      gdk_gc_set_rgb_fg_color (self->color_gc[i], &color);
-    }
-  /* reset backgrounds and pixmap */
-  scroll_canvas_reset_backgrounds (self);
-}
-
-static void
-child_unset_parent_window (GtkWidget *child,
-                           gpointer   data)
-{
-  gtk_widget_set_parent_window (child, NULL);
+  /* setup backgrounds, colors and pango layouts */
+  scroll_canvas_reset_skin_and_style (self);
 }
 
 static void
@@ -595,6 +597,13 @@ scroll_canvas_unrealize (GtkWidget *widget)
   for (i = 0; i < class->n_colors; i++)
     g_object_unref (self->color_gc[i]);
   g_free (self->color_gc);
+  self->color_gc = NULL;
+
+  /* release pango layouts */
+  for (i = 0; i < class->n_pango_layouts; i++)
+    g_object_unref (self->pango_layout[i]);
+  g_free (self->pango_layout);
+  self->pango_layout = NULL;
 
   /* destroy windows */
   gdk_window_set_user_data (self->canvas, NULL);
@@ -631,7 +640,7 @@ scroll_canvas_unrealize (GtkWidget *widget)
     }
 
   /* unset parent windows of children */
-  gtk_container_forall (GTK_CONTAINER (self), child_unset_parent_window, NULL);
+  gtk_container_forall (GTK_CONTAINER (self), (GtkCallback) gtk_widget_set_parent_window, NULL);
 
   GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->unrealize (widget);
 }
@@ -1456,5 +1465,5 @@ gxk_scroll_canvas_class_skin_changed (GxkScrollCanvasClass *class)
   GSList *slist;
   g_return_if_fail (GXK_IS_SCROLL_CANVAS_CLASS (class));
   for (slist = class->realized_widgets; slist; slist = slist->next)
-    scroll_canvas_skin_changed (slist->data);
+    scroll_canvas_reset_skin_and_style (slist->data);
 }
