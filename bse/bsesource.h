@@ -145,6 +145,8 @@ struct _BseSourceClass
 			 BseSource	*osource,
 			 guint		 ochannel);
   BseModuleClass *engine_class;
+  gboolean        filtered_properties;
+  SfiRing        *unprepared_properties;
 };
 
 

@@ -30,8 +30,14 @@ class BusModule : public BusModuleBase {
     void
     config (BusModuleProperties *params)
     {
-      level1 = bse_db_to_factor (params->volume1db);
-      level2 = bse_db_to_factor (params->volume2db);
+      if (params->volume1db <= BSE_MIN_VOLUME_dB)
+        level1 = 0;
+      else
+        level1 = bse_db_to_factor (params->volume1db);
+      if (params->volume2db <= BSE_MIN_VOLUME_dB)
+        level2 = 0;
+      else
+        level2 = bse_db_to_factor (params->volume2db);
     }
     void
     reset ()
@@ -45,6 +51,8 @@ class BusModule : public BusModuleBase {
           const float *audio_in = istream (ICHANNEL_AUDIO_IN1).values;
           if (level1 == 1.0)
             ostream_set (OCHANNEL_AUDIO_OUT1, audio_in);
+          else if (level1 == 0.0)
+            ostream_set (OCHANNEL_AUDIO_OUT1, const_values (0.0));
           else
             {
               float *audio_out = ostream (OCHANNEL_AUDIO_OUT1).values;
@@ -58,6 +66,8 @@ class BusModule : public BusModuleBase {
           const float *audio_in = istream (ICHANNEL_AUDIO_IN2).values;
           if (level2 == 1.0)
             ostream_set (OCHANNEL_AUDIO_OUT2, audio_in);
+          else if (level2 == 0.0)
+            ostream_set (OCHANNEL_AUDIO_OUT2, const_values (0.0));
           else
             {
               float *audio_out = ostream (OCHANNEL_AUDIO_OUT2).values;

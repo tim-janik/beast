@@ -421,7 +421,7 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
 			      PROP_MIDI_CHANNEL,
 			      sfi_pspec_int ("midi_channel", _("MIDI Channel"), NULL,
 					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default:unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_N_VOICES,
 			      sfi_pspec_int ("n_voices", _("Max Voices"), _("Maximum number of voices for simultaneous playback"),
@@ -430,12 +430,12 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_SNET,
 			      bse_param_spec_object ("snet", _("Synthesizer"), _("Synthesis network to be used as MIDI instrument"),
-						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
+						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
                                                      BSE_TYPE_CSYNTH,
-                                                     SFI_PARAM_STANDARD));
+                                                     SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_VOLUME_f,
 			      sfi_pspec_real ("volume_f", _("Master [float]"), NULL,

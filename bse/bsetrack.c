@@ -43,7 +43,7 @@
 enum {
   PROP_0,
   PROP_MUTED,
-  PROP_SYNTH_NET,
+  PROP_SNET,
   PROP_WAVE,
   PROP_MIDI_CHANNEL,
   PROP_N_VOICES,
@@ -271,7 +271,7 @@ bse_track_get_candidates (BseItem               *item,
   switch (param_id)
     {
       BseProject *project;
-    case PROP_SYNTH_NET:
+    case PROP_SNET:
       bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a track instrument from"));
       bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
@@ -384,7 +384,7 @@ bse_track_set_property (GObject      *object,
       self->muted_SL = sfi_value_get_bool (value);
       BSE_SEQUENCER_UNLOCK ();
       break;
-    case PROP_SYNTH_NET:
+    case PROP_SNET:
       if (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth))
 	{
 	  BseSNet *snet = bse_value_get_object (value);
@@ -476,7 +476,7 @@ bse_track_get_property (GObject    *object,
     case PROP_MUTED:
       sfi_value_set_bool (value, self->muted_SL);
       break;
-    case PROP_SYNTH_NET:
+    case PROP_SNET:
       bse_value_set_object (value, self->snet);
       break;
     case PROP_PNET:
@@ -877,29 +877,29 @@ bse_track_class_init (BseTrackClass *class)
 			      sfi_pspec_bool ("muted", _("Muted"), NULL,
 					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, _("Synth Input"),
-			      PROP_SYNTH_NET,
+			      PROP_SNET,
 			      bse_param_spec_object ("snet", _("Synthesizer"), _("Synthesis network to be used as instrument"),
 						     BSE_TYPE_CSYNTH,
-						     SFI_PARAM_STANDARD));
+						     SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("Synth Input"),
 			      PROP_WAVE,
 			      bse_param_spec_object ("wave", _("Wave"), _("Wave to be used as instrument"),
 						     BSE_TYPE_WAVE,
-						     SFI_PARAM_STANDARD));
+						     SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("Synth Input"),
 			      PROP_N_VOICES,
 			      sfi_pspec_int ("n_voices", _("Max Voixes"), _("Maximum number of voices for simultaneous playback"),
 					     16, 1, 256, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_MIDI_CHANNEL,
                               sfi_pspec_int ("midi_channel", _("MIDI Channel"),
                                              _("Midi channel assigned to this track, 0 uses private per-track channel"),
                                              0, 0, BSE_MIDI_MAX_CHANNELS, 1,
-                                             SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
+                                             SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default:unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_PNET,
 			      bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
-						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
+						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
   signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }

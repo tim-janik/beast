@@ -1,3 +1,35 @@
+Thu Sep  2 04:14:29 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.[hc]: added ::mute, ::solo and ::sync properties.
+	implement bse_bus_editable_property() to toggle ::solo
+	editability for master bus. moved song<->master connection 
+	logic here.
+
+	* bsebusmodule.cc: special case left/right volume factors of
+	0 (BSE_MIN_VOLUME_dB) to set constant 0 outputs.
+
+	* bsesong.c: support solo busses.
+
+	* bseitem.proc: provide bse-item-editable-property() to figure
+	whether a property is currently editable.
+
+	* bsesource.c: support "unprepared" option by implementing
+	source_check_pspec_editable() to check for an objects prepared
+	state, and by notifying property changes when preparing and
+	resetting objects.
+
+	* bseitem.c: default initialize get_candidates() to NULL.
+
+	* bsemidisynth.c:
+	* bsesubsynth.c:
+	* bsetrack.c:
+	* bsesong.c: added missing "unprepared" option to properties.
+
+	* bseobject.[hc]: implemented bse_object_editable_property() to
+	figure via a chainable class handler (check_pspec_editable)
+	and a per-class handler (editable_property) whether a property
+	is currently editable.
+
 Wed Sep  1 14:37:24 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslsignal.h: Don't use UNLIKELY in headers (but G_UNLIKELY), as this

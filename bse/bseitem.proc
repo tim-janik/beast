@@ -484,6 +484,31 @@ METHOD (BseItem, get-property-candidates) {
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseItem, editable-property) {
+  HELP	= "Test whether a property is editable according to object state and property options.";
+  IN	= bse_param_spec_object ("item", NULL, NULL,
+				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_string ("property_name", NULL, "Item property name",
+			    NULL, SFI_PARAM_STANDARD);
+  OUT	= sfi_pspec_bool ("editable", NULL, NULL, FALSE, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *self     = bse_value_get_object (in_values++);
+  gchar   *property = sfi_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (self) || !property)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  sfi_value_set_bool (out_values++, bse_object_editable_property (self, property));
+
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseItem, get-icon) {
   HELP	= "Get the current icon of an item.";
   IN	= bse_param_spec_object ("item", NULL, NULL,

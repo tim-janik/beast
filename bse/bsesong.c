@@ -482,6 +482,8 @@ bse_song_remove_item (BseContainer *container,
     }
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
     {
+      if (self->solo_bus == (BseBus*) item)
+        bse_song_set_solo_bus (self, NULL);
       SfiRing *tmp, *ring = sfi_ring_find (self->busses, item);
       for (tmp = sfi_ring_walk (ring, self->busses); tmp; tmp = sfi_ring_walk (tmp, self->busses))
 	bse_item_queue_seqid_changed (tmp->data);
@@ -613,16 +615,16 @@ bse_song_find_master (BseSong *self)
 }
 
 void
-bse_song_connect_master (BseSong        *self,
-                         BseBus         *bus)
+bse_song_set_solo_bus (BseSong        *self,
+                       BseBus         *bus)
 {
-  if (BSE_ITEM (bus)->parent == BSE_ITEM (self))
-    {
-      bse_source_clear_ichannels (self->postprocess);
-      BseSource *osource = BSE_SOURCE (bus);
-      bse_source_must_set_input (self->postprocess, 0, osource, 0);
-      bse_source_must_set_input (self->postprocess, 1, osource, 1);
-    }
+  BseBus *master = bse_song_find_master (self);
+  if (bus == master || (bus && BSE_ITEM (bus)->parent != BSE_ITEM (self)))
+    bus = NULL;
+  SfiRing *ring;
+  self->solo_bus = bus;
+  for (ring = self->busses; ring; ring = sfi_ring_walk (ring, self->busses))
+    bse_bus_change_solo (ring->data, self->solo_bus && ring->data != self->solo_bus && ring->data != master);
 }
 
 static void
@@ -744,7 +746,7 @@ bse_song_class_init (BseSongClass *class)
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_PNET,
                               bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
-                                                     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
+                                                     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
   bse_object_class_add_param (object_class, _("Playback Settings"),
 			      PROP_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,

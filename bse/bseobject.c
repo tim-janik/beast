@@ -40,28 +40,6 @@ enum
 
 
 /* --- prototypes --- */
-static void		bse_object_class_base_init	(BseObjectClass	*class);
-static void		bse_object_class_base_finalize	(BseObjectClass	*class);
-static void		bse_object_class_init		(BseObjectClass	*class);
-static void		bse_object_init			(BseObject	*object);
-static void		bse_object_do_dispose		(GObject	*gobject);
-static void		bse_object_do_finalize		(GObject	*object);
-static void		bse_object_do_set_property	(GObject        *gobject,
-							 guint           property_id,
-							 const GValue   *value,
-							 GParamSpec     *pspec);
-static void		bse_object_do_get_property	(GObject        *gobject,
-							 guint           property_id,
-							 GValue         *value,
-							 GParamSpec     *pspec);
-static void		bse_object_do_set_uname		(BseObject	*object,
-							 const gchar	*uname);
-static void		bse_object_store_private	(BseObject	*object,
-							 BseStorage	*storage);
-static SfiTokenType	bse_object_restore_private	(BseObject     *object,
-							 BseStorage    *storage,
-                                                         GScanner      *scanner);
-static BseIcon*		bse_object_do_get_icon		(BseObject	*object);
 static guint		eclosure_hash			(gconstpointer	 c);
 static gint		eclosure_equals			(gconstpointer	 c1,
 							 gconstpointer	 c2);
@@ -80,86 +58,6 @@ static guint       object_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
-BSE_BUILTIN_TYPE (BseObject)
-{
-  static const GTypeInfo object_info = {
-    sizeof (BseObjectClass),
-    
-    (GBaseInitFunc) bse_object_class_base_init,
-    (GBaseFinalizeFunc) bse_object_class_base_finalize,
-    (GClassInitFunc) bse_object_class_init,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    
-    sizeof (BseObject),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_object_init,
-  };
-  
-  return bse_type_register_abstract (G_TYPE_OBJECT,
-                                     "BseObject",
-                                     "BSE Object Hierarchy base type",
-                                     &object_info);
-}
-
-static void
-bse_object_class_base_init (BseObjectClass *class)
-{
-}
-
-static void
-bse_object_class_base_finalize (BseObjectClass *class)
-{
-}
-
-static void
-bse_object_class_init (BseObjectClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  bse_quark_uname = g_quark_from_static_string ("bse-object-uname");
-  bse_quark_icon = g_quark_from_static_string ("bse-object-icon");
-  quark_property_changed_queue = g_quark_from_static_string ("bse-property-changed-queue");
-  quark_blurb = g_quark_from_static_string ("bse-object-blurb");
-  object_unames_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
-  eclosures_ht = g_hash_table_new (eclosure_hash, eclosure_equals);
-  object_id_ustore = sfi_ustore_new ();
-  
-  gobject_class->set_property = bse_object_do_set_property;
-  gobject_class->get_property = bse_object_do_get_property;
-  gobject_class->dispose = bse_object_do_dispose;
-  gobject_class->finalize = bse_object_do_finalize;
-  
-  class->set_uname = bse_object_do_set_uname;
-  class->store_private = bse_object_store_private;
-  class->restore_private = bse_object_restore_private;
-  class->unlocked = NULL;
-  class->get_icon = bse_object_do_get_icon;
-  
-  bse_object_class_add_param (class, NULL,
-			      PROP_UNAME,
-			      sfi_pspec_string ("uname", "Name", "Unique name of this object",
-						NULL,
-						SFI_PARAM_GUI ":lax-validation"
-						/* watch out, unames are specially
-						 * treated within the various
-						 * objects, specifically BseItem
-						 * and BseContainer.
-						 */));
-  bse_object_class_add_param (class, NULL,
-			      PROP_BLURB,
-			      sfi_pspec_string ("blurb", "Comment", NULL,
-						NULL,
-						SFI_PARAM_STANDARD ":skip-default"));
-  
-  object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (class, "release",
-								G_TYPE_NONE, 0);
-  object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (class, "icon_changed",
-								     G_TYPE_NONE, 0);
-}
-
 void
 bse_object_debug_leaks (void)
 {
@@ -595,6 +493,29 @@ bse_objects_list (GType	  type)
   return NULL;
 }
 
+static gboolean
+object_check_pspec_editable (BseObject      *object,
+                             GParamSpec     *pspec)
+{
+  if (sfi_pspec_check_option (pspec, "ro"))     /* RDONLY option (GUI) */
+    return FALSE;
+  BseObjectClass *class = g_type_class_peek (pspec->owner_type);
+  if (class && class->editable_property)
+    return class->editable_property (object, pspec->param_id, pspec) != FALSE;
+  else
+    return TRUE;
+}
+
+gboolean
+bse_object_editable_property (gpointer        object,
+                              const gchar    *property)
+{
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (object), property);
+  if (!pspec || !(pspec->flags & G_PARAM_WRITABLE))
+    return FALSE;
+  return BSE_OBJECT_GET_CLASS (object)->check_pspec_editable (object, pspec);
+}
+
 void
 bse_object_notify_icon_changed (BseObject *object)
 {
@@ -807,4 +728,86 @@ bse_object_remove_reemit (gpointer     src_object,
   else
     g_warning ("%s: invalid signal specs: \"%s\", \"%s\"",
 	       G_STRLOC, src_signal, dest_signal);
+}
+
+static void
+bse_object_class_base_init (BseObjectClass *class)
+{
+  class->editable_property = NULL;
+}
+
+static void
+bse_object_class_base_finalize (BseObjectClass *class)
+{
+}
+
+static void
+bse_object_class_init (BseObjectClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  bse_quark_uname = g_quark_from_static_string ("bse-object-uname");
+  bse_quark_icon = g_quark_from_static_string ("bse-object-icon");
+  quark_property_changed_queue = g_quark_from_static_string ("bse-property-changed-queue");
+  quark_blurb = g_quark_from_static_string ("bse-object-blurb");
+  object_unames_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
+  eclosures_ht = g_hash_table_new (eclosure_hash, eclosure_equals);
+  object_id_ustore = sfi_ustore_new ();
+  
+  gobject_class->set_property = bse_object_do_set_property;
+  gobject_class->get_property = bse_object_do_get_property;
+  gobject_class->dispose = bse_object_do_dispose;
+  gobject_class->finalize = bse_object_do_finalize;
+  
+  class->check_pspec_editable = object_check_pspec_editable;
+  class->set_uname = bse_object_do_set_uname;
+  class->store_private = bse_object_store_private;
+  class->restore_private = bse_object_restore_private;
+  class->unlocked = NULL;
+  class->get_icon = bse_object_do_get_icon;
+  
+  bse_object_class_add_param (class, NULL,
+			      PROP_UNAME,
+			      sfi_pspec_string ("uname", "Name", "Unique name of this object",
+						NULL,
+						SFI_PARAM_GUI ":lax-validation"
+						/* watch out, unames are specially
+						 * treated within the various
+						 * objects, specifically BseItem
+						 * and BseContainer.
+						 */));
+  bse_object_class_add_param (class, NULL,
+			      PROP_BLURB,
+			      sfi_pspec_string ("blurb", "Comment", NULL,
+						NULL,
+						SFI_PARAM_STANDARD ":skip-default"));
+  
+  object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (class, "release",
+								G_TYPE_NONE, 0);
+  object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (class, "icon_changed",
+								     G_TYPE_NONE, 0);
+}
+
+BSE_BUILTIN_TYPE (BseObject)
+{
+  static const GTypeInfo object_info = {
+    sizeof (BseObjectClass),
+    
+    (GBaseInitFunc) bse_object_class_base_init,
+    (GBaseFinalizeFunc) bse_object_class_base_finalize,
+    (GClassInitFunc) bse_object_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    
+    sizeof (BseObject),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_object_init,
+  };
+  
+  return bse_type_register_abstract (G_TYPE_OBJECT,
+                                     "BseObject",
+                                     "BSE Object Hierarchy base type",
+                                     &object_info);
 }

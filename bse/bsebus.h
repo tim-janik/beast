@@ -39,6 +39,9 @@ struct _BseBus
   SfiRing      *inputs;
   double        left_volume;
   double        right_volume;
+  guint         muted : 1;
+  guint         synced : 1;
+  guint         solo_muted : 1;
   BseSource    *summation;
   BseSource    *vin;
   BseSource    *bmodule;        /* implicitely vout */
@@ -58,7 +61,6 @@ BseErrorType    bse_bus_disconnect              (BseBus         *self,
                                                  BseItem        *item);
 SfiRing*        bse_bus_list_inputs             (BseBus         *self);
 SfiRing*        bse_bus_list_outputs            (BseBus         *self);
-void            bse_bus_disconnect_outputs      (BseBus         *self);
 gboolean        bse_bus_get_stack               (BseBus         *self,
                                                  BseContainer  **snet,
                                                  BseSource     **vin,
@@ -70,6 +72,8 @@ BseErrorType    bse_bus_delete_slot             (BseBus         *self,
 BseErrorType    bse_bus_replace_effect          (BseBus         *self,
                                                  guint           slot,
                                                  const gchar    *etype);
+void            bse_bus_change_solo             (BseBus         *self,
+                                                 gboolean        solo_muted);
 #define         bse_bus_create_stack(b)         bse_bus_get_stack (b,0,0,0)
 
 

@@ -75,7 +75,12 @@ struct _BseObjectClass
 {
   GObjectClass		 parent_class;
 
+  gboolean              (*editable_property)    (BseObject      *object, /* for set_property/get_property implementations */
+                                                 guint           param_id,
+                                                 GParamSpec     *pspec);
   /* custom methods for specific object needs, most of them require chaining */
+  gboolean              (*check_pspec_editable) (BseObject      *object, /* for containers */
+                                                 GParamSpec     *pspec);
   void			(*set_uname)		(BseObject	*object,
 						 const gchar	*uname);
   void			(*store_private)	(BseObject	*object,
@@ -117,6 +122,8 @@ guint		bse_object_class_add_dsignal	(BseObjectClass	*oclass,
 /* --- object prototypes --- */
 void		bse_object_lock			(gpointer	 object);
 void		bse_object_unlock		(gpointer	 object);
+gboolean        bse_object_editable_property	(gpointer	 object,
+                                                 const gchar    *property);
 BseIcon*	bse_object_get_icon		(BseObject	*object);
 void		bse_object_notify_icon_changed	(BseObject	*object);
 gpointer	bse_object_from_id		(guint		 unique_id);

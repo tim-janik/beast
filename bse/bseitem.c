@@ -89,17 +89,9 @@ BSE_BUILTIN_TYPE (BseItem)
 }
 
 static void
-bse_item_get_no_candidates (BseItem               *item,
-                            guint                  param_id,
-                            BsePropertyCandidates *pc,
-                            GParamSpec            *pspec)
-{
-}
-
-static void
 bse_item_class_init_base (BseItemClass *class)
 {
-  class->get_candidates = bse_item_get_no_candidates;
+  class->get_candidates = NULL;
 }
 
 static void
@@ -443,7 +435,8 @@ bse_item_get_candidates (BseItem                *item,
   if (!pc->partitions)
     pc->partitions = bse_type_seq_new();
   class = g_type_class_peek (pspec->owner_type);
-  class->get_candidates (item, pspec->param_id, pc, pspec);
+  if (class && class->get_candidates)
+    class->get_candidates (item, pspec->param_id, pc, pspec);
   return TRUE;
 }
 

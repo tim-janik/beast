@@ -83,6 +83,18 @@ bse_source_init (BseSource      *source,
   source->probes = NULL;
 }
 
+static gboolean
+source_check_pspec_editable (BseObject      *object,
+                             GParamSpec     *pspec)
+{
+  if (!BSE_OBJECT_CLASS (parent_class)->check_pspec_editable (object, pspec))
+    return FALSE;
+  else if (BSE_SOURCE_PREPARED (object))
+    return !sfi_pspec_check_option (pspec, "unprepared");
+  else
+    return TRUE;
+}
+
 static void
 bse_source_set_property (GObject      *object,
 			 guint         param_id,
@@ -333,6 +345,26 @@ bse_source_find_ochannel (BseSource   *source,
   return ~0;
 }
 
+static void
+source_notify_properties (BseSource *self)
+{
+  BseSourceClass *class = BSE_SOURCE_GET_CLASS (self);
+  if (!class->filtered_properties)
+    {
+      guint n, i;
+      GParamSpec **pspecs = g_object_class_list_properties (G_OBJECT_CLASS (class), &n);
+      for (i = 0; i < n; i++)
+        if (sfi_pspec_check_option (pspecs[i], "prepared") ||
+            sfi_pspec_check_option (pspecs[i], "unprepared"))
+          class->unprepared_properties = sfi_ring_append (class->unprepared_properties, pspecs[i]);
+      g_free (pspecs);
+      class->filtered_properties = TRUE;
+    }
+  SfiRing *ring;
+  for (ring = class->unprepared_properties; ring; ring = sfi_ring_walk (ring, class->unprepared_properties))
+    g_object_notify (self, G_PARAM_SPEC (ring->data)->name);
+}
+
 static gint
 contexts_compare (gconstpointer bsearch_node1, /* key */
 		  gconstpointer bsearch_node2)
@@ -356,9 +388,12 @@ bse_source_prepare (BseSource *source)
   g_return_if_fail (source->contexts == NULL);
   
   g_object_ref (source);
+  g_object_freeze_notify (G_OBJECT (source));
   source->contexts = g_bsearch_array_create (&context_config);
   BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
+  source_notify_properties (source);
+  g_object_thaw_notify (G_OBJECT (source));
   g_object_unref (source);
 }
 
@@ -377,6 +412,7 @@ bse_source_reset (BseSource *source)
   g_return_if_fail (source->contexts != NULL);
   
   g_object_ref (source);
+  g_object_freeze_notify (G_OBJECT (source));
   n_contexts = BSE_SOURCE_N_CONTEXTS (source);
   if (n_contexts)
     {
@@ -396,6 +432,8 @@ bse_source_reset (BseSource *source)
   BSE_SOURCE_GET_CLASS (source)->reset (source);
   g_bsearch_array_free (source->contexts, &context_config);
   source->contexts = NULL;
+  source_notify_properties (source);
+  g_object_thaw_notify (G_OBJECT (source));
   g_object_unref (source);
 }
 
@@ -1705,6 +1743,8 @@ bse_source_class_base_init (BseSourceClass *class)
   class->channel_defs.ochannel_labels = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
   class->engine_class = NULL;
+  class->filtered_properties = FALSE;
+  class->unprepared_properties = NULL;
 }
 
 static void
@@ -1743,6 +1783,7 @@ bse_source_class_base_finalize (BseSourceClass *class)
   class->channel_defs.ochannel_blurbs = NULL;
   g_free (class->engine_class);
   class->engine_class = NULL;
+  sfi_ring_free (class->unprepared_properties);
 }
 
 static void
@@ -1758,6 +1799,7 @@ bse_source_class_init (BseSourceClass *class)
   gobject_class->dispose = bse_source_dispose;
   gobject_class->finalize = bse_source_finalize;
 
+  object_class->check_pspec_editable = source_check_pspec_editable;
   object_class->store_private = bse_source_real_store_private;
   object_class->restore_private = bse_source_restore_private;
 

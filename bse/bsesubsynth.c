@@ -493,7 +493,7 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
 			      PARAM_SNET,
 			      bse_param_spec_object ("snet", _("Synthesizer"),
                                                      _("Synthesis network to use as embedded sub network"),
-						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
+						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
   for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
       gchar *ident, *label, *value;
