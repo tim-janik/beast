@@ -500,9 +500,9 @@ AM_PROG_LIBTOOL
 MC_IF_VAR_EQ(GCC, yes,,
     AC_MSG_ERROR(This package requires GNU gcc)
 )
-dnl MC_IF_VAR_EQ(GXX, yes,,
-dnl	AC_MSG_ERROR(This package requires GNU g++)
-dnl )
+MC_IF_VAR_EQ(GXX, yes,,
+    AC_MSG_ERROR(This package requires GNU g++)
+)
 
 # Figure build requirement
 AC_MSG_CHECKING(whether make is GNU Make)
