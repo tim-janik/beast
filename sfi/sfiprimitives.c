@@ -1631,6 +1631,46 @@ sfi_ring_pop_tail (SfiRing **head_p)
 }
 
 SfiRing*
+sfi_ring_from_list (GList *list)
+{
+  SfiRing *ring = NULL;
+  for (; list; list = list->next)
+    ring = sfi_ring_append (ring, list->data);
+  return ring;
+}
+
+SfiRing*
+sfi_ring_from_list_and_free (GList *list)
+{
+  SfiRing *ring = NULL;
+  GList *free_list = list;
+  for (; list; list = list->next)
+    ring = sfi_ring_append (ring, list->data);
+  g_list_free (free_list);
+  return ring;
+}
+
+SfiRing*
+sfi_ring_from_slist (GSList *slist)
+{
+  SfiRing *ring = NULL;
+  for (; slist; slist = slist->next)
+    ring = sfi_ring_append (ring, slist->data);
+  return ring;
+}
+
+SfiRing*
+sfi_ring_from_slist_and_free (GSList *slist)
+{
+  SfiRing *ring = NULL;
+  GSList *free_slist = slist;
+  for (; slist; slist = slist->next)
+    ring = sfi_ring_append (ring, slist->data);
+  g_slist_free (free_slist);
+  return ring;
+}
+
+SfiRing*
 sfi_ring_insert_sorted (SfiRing	      *head,
 			gpointer       insertion_data,
                         SfiCompareFunc cmp,

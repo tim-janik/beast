@@ -302,6 +302,11 @@ void            sfi_ring_free_deep      (SfiRing        *head,
 #define sfi_ring_walk(node,head_bound)  ((node)->next != (head_bound) ? (node)->next : NULL)
 #define sfi_ring_next                   sfi_ring_walk
 
+SfiRing* sfi_ring_from_list             (GList          *list);
+SfiRing* sfi_ring_from_list_and_free    (GList          *list);
+SfiRing* sfi_ring_from_slist            (GSList         *slist);
+SfiRing* sfi_ring_from_slist_and_free   (GSList         *slist);
+
 /* ring-modifying cmp-based operations */
 SfiRing* sfi_ring_insert_sorted         (SfiRing        *head,
 					 gpointer        insertion_data,

@@ -1,3 +1,9 @@
+Sun Jul 11 23:57:10 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: added sfi_ring_from_list(),
+	sfi_ring_from_list_and_free(), sfi_ring_from_slist() and
+	sfi_ring_from_slist_and_free() ring constructors.
+
 Sun Jul 11 23:37:46 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.[hc]:
