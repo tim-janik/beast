@@ -1,3 +1,10 @@
+Fri Jan 14 01:11:47 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c: added compatibility defines for ALSA lib < 0.5.0
+	to alias snd_pcm_playback_drain(), snd_pcm_channel_flush() work around
+	lack of snd_card_get_longname() and snd_card_get_name().
+	fixed up the rest to work with 0.5.0.
+
 Thu Jan 13 18:12:51 2000  Tim Janik  <timj@gtk.org>
 
 	* bsedevice.[hc]: new object, taking over part of BsePcmDevice's

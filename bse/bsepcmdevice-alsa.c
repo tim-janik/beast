@@ -27,6 +27,13 @@ BSE_DUMMY_TYPE (BsePcmDeviceAlsa);
 #include        <errno.h>
 
 
+#if (SND_LIB_MAJOR == 0) && (SND_LIB_MINOR < 5)
+#  define snd_pcm_playback_drain	snd_pcm_drain_playback
+#  define snd_pcm_channel_flush		snd_pcm_flush_channel
+#  define snd_card_get_longname(y,l)	((*(l)) = NULL)
+#  define snd_card_get_name(y,l)	((*(l)) = NULL)
+#endif
+
 /* --- BsePcmDeviceAlsa structs --- */
 struct _BsePcmDeviceAlsa
 {
@@ -75,7 +82,7 @@ static guint	    bse_pcm_device_alsa_write		 (BseDevice		 *dev,
 							  guint8                  *bytes);
 static guint        pcm_rates_from_alsa_rates            (guint                   alsa_rates);
 
-const char* snd_card_type_name (unsigned int card_type); // FIXME
+static gchar*       pcm_alsa_dup_name                    (unsigned int            card_type);
 
 
 /* --- variables --- */
@@ -180,7 +187,7 @@ bse_pcm_device_alsa_open (BsePcmDevice  *pdev,
   BseDevice *dev = BSE_DEVICE (alsa);
   BseErrorType error;
   gint omode = 0;
-  gint perrno, fd;
+  gint perrno;
   
   if (readable && writable)
     omode = SND_PCM_OPEN_DUPLEX;
@@ -192,12 +199,13 @@ bse_pcm_device_alsa_open (BsePcmDevice  *pdev,
   perrno = snd_pcm_open (&alsa->handle, alsa->card, alsa->device, omode);
   if (perrno >= 0)
     {
-      fd = snd_pcm_file_descriptor (alsa->handle);
-      if (fd < 0)
-        {
-          snd_pcm_close (alsa->handle);
-          perrno = fd;
-        }
+      /* fd = snd_pcm_file_descriptor (alsa->handle);
+       * if (fd < 0)
+       * {
+       * snd_pcm_close (alsa->handle);
+       * perrno = fd;
+       * }
+       */
     }
   if (perrno < 0)
     {
@@ -210,7 +218,7 @@ bse_pcm_device_alsa_open (BsePcmDevice  *pdev,
       else
         return BSE_ERROR_DEVICE_IO;
     }
-  dev->pfd.fd = fd;
+  dev->pfd.fd = -1;
   
   error = bse_pcm_device_alsa_setup (alsa, readable, writable, n_channels, rate, 128, fragment_size);
   if (error)
@@ -234,7 +242,7 @@ bse_pcm_device_alsa_close (BseDevice *dev)
 {
   BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (dev);
   
-  snd_pcm_drain_playback (alsa->handle);
+  snd_pcm_playback_drain (alsa->handle);
   snd_pcm_close (alsa->handle);
   alsa->handle = NULL;
 
@@ -377,7 +385,7 @@ bse_pcm_device_alsa_setup (BsePcmDeviceAlsa *alsa,
   if (snd_pcm_info (alsa->handle, &pcm_info) < 0)
     return BSE_ERROR_DEVICE_GET_CAPS;
   g_free (alsa->card_name);
-  alsa->card_name = g_strdup (snd_card_type_name (pcm_info.type));
+  alsa->card_name = pcm_alsa_dup_name (pcm_info.type);
   g_free (alsa->card_id);
   alsa->card_id = g_strdup (pcm_info.id);
 
@@ -399,7 +407,7 @@ bse_pcm_device_alsa_setup (BsePcmDeviceAlsa *alsa,
       if (!(channel_info.formats & SND_PCM_FMT_S16))
         return BSE_ERROR_DEVICE_CAPS_MISMATCH;
 
-      if (snd_pcm_flush_channel (alsa->handle, channel_info.channel) < 0)
+      if (snd_pcm_channel_flush (alsa->handle, channel_info.channel) < 0)
         return BSE_ERROR_DEVICE_IO;
 
       channel_params.mode = SND_PCM_MODE_BLOCK;
@@ -436,7 +444,7 @@ bse_pcm_device_alsa_update_caps (BsePcmDevice *pdev)
   BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (pdev);
   snd_pcm_info_t pcm_info = { 0, };
   snd_pcm_t *handle = NULL;
-  gint perrno, fd;
+  gint perrno;
   guint rep;
 
   perrno = snd_pcm_open (&handle, alsa->card, alsa->device, SND_PCM_OPEN_DUPLEX);
@@ -446,12 +454,13 @@ bse_pcm_device_alsa_update_caps (BsePcmDevice *pdev)
     perrno = snd_pcm_open (&handle, alsa->card, alsa->device, SND_PCM_OPEN_PLAYBACK);
   if (perrno >= 0)
     {
-      fd = snd_pcm_file_descriptor (handle);
-      if (fd < 0)
-        {
-          snd_pcm_close (handle);
-          perrno = fd;
-        }
+      /* fd = snd_pcm_file_descriptor (handle);
+       * if (fd < 0)
+       * {
+       * snd_pcm_close (handle);
+       * perrno = fd;
+       * }
+       */
     }
   if (perrno < 0)
     {
@@ -467,7 +476,7 @@ bse_pcm_device_alsa_update_caps (BsePcmDevice *pdev)
   if (snd_pcm_info (handle, &pcm_info) < 0)
     return BSE_ERROR_DEVICE_GET_CAPS;
   g_free (alsa->card_name);
-  alsa->card_name = g_strdup (snd_card_type_name (pcm_info.type));
+  alsa->card_name = pcm_alsa_dup_name (pcm_info.type);
   g_free (alsa->card_id);
   alsa->card_id = g_strdup (pcm_info.id);
 
@@ -552,57 +561,74 @@ pcm_rates_from_alsa_rates (guint alsa_rates)
 }
 
 #include <linux/asoundid.h>
-const char* snd_card_type_name (unsigned int card_type)
+#include <malloc.h>
+gchar*
+pcm_alsa_dup_name (unsigned int card_type)
 {
+  gchar *name;
+  char *longname = NULL;
+
+  snd_card_get_longname (card_type, &longname);
+
+  name = g_strdup (longname);
+  free (longname);
+
+  if (name)
+    return name;
+			 
   switch (card_type)
     {
       /* Gravis UltraSound */
-    case SND_CARD_TYPE_GUS_CLASSIC:             return "GUS Classic";
-    case SND_CARD_TYPE_GUS_EXTREME:             return "GUS Extreme";
-    case SND_CARD_TYPE_GUS_ACE:                 return "GUS ACE";
-    case SND_CARD_TYPE_GUS_MAX:                 return "GUS MAX";
-    case SND_CARD_TYPE_AMD_INTERWAVE:           return "AMD Interwave";
+    case SND_CARD_TYPE_GUS_CLASSIC:             name = "GUS Classic";					break;
+    case SND_CARD_TYPE_GUS_EXTREME:             name = "GUS Extreme";					break;
+    case SND_CARD_TYPE_GUS_ACE:                 name = "GUS ACE";					break;
+    case SND_CARD_TYPE_GUS_MAX:                 name = "GUS MAX";					break;
+    case SND_CARD_TYPE_AMD_INTERWAVE:           name = "AMD Interwave";					break;
       /* Sound Blaster */
-    case SND_CARD_TYPE_SB_10:                   return "Sound Blaster 10";
-    case SND_CARD_TYPE_SB_20:                   return "Sound Blaster 20";
-    case SND_CARD_TYPE_SB_PRO:                  return "Sound Blaster Pro";
-    case SND_CARD_TYPE_SB_16:                   return "Sound Blaster 16";
-    case SND_CARD_TYPE_SB_AWE:                  return "Sound Blaster AWE";
+    case SND_CARD_TYPE_SB_10:                   name = "Sound Blaster 10";				break;
+    case SND_CARD_TYPE_SB_20:                   name = "Sound Blaster 20";				break;
+    case SND_CARD_TYPE_SB_PRO:                  name = "Sound Blaster Pro";				break;
+    case SND_CARD_TYPE_SB_16:                   name = "Sound Blaster 16";				break;
+    case SND_CARD_TYPE_SB_AWE:                  name = "Sound Blaster AWE";				break;
       /* Various */
-    case SND_CARD_TYPE_ESS_ES1688:              return "ESS AudioDrive ESx688";
-    case SND_CARD_TYPE_OPL3_SA:                 return "Yamaha OPL3 SA";
-    case SND_CARD_TYPE_MOZART:                  return "OAK Mozart";
-    case SND_CARD_TYPE_S3_SONICVIBES:           return "S3 SonicVibes";
-    case SND_CARD_TYPE_ENS1370:                 return "Ensoniq ES1370";
-    case SND_CARD_TYPE_ENS1371:                 return "Ensoniq ES1371";
-    case SND_CARD_TYPE_CS4232:                  return "CS4232/CS4232A";
-    case SND_CARD_TYPE_CS4236:                  return "CS4235/CS4236B/CS4237B/CS4238B/CS4239";
-    case SND_CARD_TYPE_AMD_INTERWAVE_STB:       return "AMD InterWave + TEA6330T";
-    case SND_CARD_TYPE_ESS_ES1938:              return "ESS Solo-1 ES1938";
-    case SND_CARD_TYPE_ESS_ES18XX:              return "ESS AudioDrive ES18XX";
-    case SND_CARD_TYPE_CS4231:                  return "CS4231";
-    case SND_CARD_TYPE_SERIAL:                  return "Serial MIDI driver";
-    case SND_CARD_TYPE_AD1848:                  return "Generic AD1848 driver";
-    case SND_CARD_TYPE_TRID4DWAVEDX:            return "Trident 4DWave DX";
-    case SND_CARD_TYPE_TRID4DWAVENX:            return "Trident 4DWave NX";
-    case SND_CARD_TYPE_SGALAXY:                 return "Aztech Sound Galaxy";
-    case SND_CARD_TYPE_CS461X:                  return "Sound Fusion CS4610/12/15";
+    case SND_CARD_TYPE_ESS_ES1688:              name = "ESS AudioDrive ESx688";				break;
+    case SND_CARD_TYPE_OPL3_SA:                 name = "Yamaha OPL3 SA";				break;
+    case SND_CARD_TYPE_MOZART:                  name = "OAK Mozart";					break;
+    case SND_CARD_TYPE_S3_SONICVIBES:           name = "S3 SonicVibes";					break;
+    case SND_CARD_TYPE_ENS1370:                 name = "Ensoniq ES1370";				break;
+    case SND_CARD_TYPE_ENS1371:                 name = "Ensoniq ES1371";				break;
+    case SND_CARD_TYPE_CS4232:                  name = "CS4232/CS4232A";				break;
+    case SND_CARD_TYPE_CS4236:                  name = "CS4235/CS4236B/CS4237B/CS4238B/CS4239";		break;
+    case SND_CARD_TYPE_AMD_INTERWAVE_STB:       name = "AMD InterWave + TEA6330T";			break;
+    case SND_CARD_TYPE_ESS_ES1938:              name = "ESS Solo-1 ES1938";				break;
+    case SND_CARD_TYPE_ESS_ES18XX:              name = "ESS AudioDrive ES18XX";				break;
+    case SND_CARD_TYPE_CS4231:                  name = "CS4231";					break;
+    case SND_CARD_TYPE_SERIAL:                  name = "Serial MIDI driver";				break;
+    case SND_CARD_TYPE_AD1848:                  name = "Generic AD1848 driver";				break;
+    case SND_CARD_TYPE_TRID4DWAVEDX:            name = "Trident 4DWave DX";				break;
+    case SND_CARD_TYPE_TRID4DWAVENX:            name = "Trident 4DWave NX";				break;
+    case SND_CARD_TYPE_SGALAXY:                 name = "Aztech Sound Galaxy";				break;
+    case SND_CARD_TYPE_CS461X:                  name = "Sound Fusion CS4610/12/15";			break;
       /* Turtle Beach WaveFront series */
-    case SND_CARD_TYPE_WAVEFRONT:               return "TB WaveFront generic";
-    case SND_CARD_TYPE_TROPEZ:                  return "TB Tropez";
-    case SND_CARD_TYPE_TROPEZPLUS:              return "TB Tropez+";
-    case SND_CARD_TYPE_MAUI:                    return "TB Maui";
-    case SND_CARD_TYPE_CMI8330:                 return "C-Media CMI8330";
-    case SND_CARD_TYPE_DUMMY:                   return "Dummy Soundcard";
+    case SND_CARD_TYPE_WAVEFRONT:               name = "TB WaveFront generic";				break;
+    case SND_CARD_TYPE_TROPEZ:                  name = "TB Tropez";					break;
+    case SND_CARD_TYPE_TROPEZPLUS:              name = "TB Tropez+";					break;
+    case SND_CARD_TYPE_MAUI:                    name = "TB Maui";					break;
+    case SND_CARD_TYPE_CMI8330:                 name = "C-Media CMI8330";				break;
+    case SND_CARD_TYPE_DUMMY:                   name = "Dummy Soundcard";				break;
       /* --- */
-    case SND_CARD_TYPE_ALS100:                  return "Avance Logic ALS100";
+    case SND_CARD_TYPE_ALS100:                  name = "Avance Logic ALS100";				break;
       /* --- */
-    case SND_CARD_TYPE_SHARE:                   return "Soundcard share module";
+    case SND_CARD_TYPE_SHARE:                   name = "Soundcard share module";			break;
     default:
       if (card_type < SND_CARD_TYPE_LAST)
-	return "Unknown";
-      return "Invalid";
+	name = "Unknown";
+      else
+	name = "Invalid";
+      break;
     }
+
+  return g_strdup (name);
 }
 
 #endif	/* BSE_PCM_DEVICE_CONF_ALSA */
