@@ -30,12 +30,13 @@ PKG_paths.h: $(top_srcdir)/configure Makefile
 
 #	&& (cmp -s xgen-pph $@ || cp xgen-pph $@) 
 
-# always built PKG_paths.h
-PKG_config.h: PKG_paths.h
+# always built PKG_paths.h and create gsl link
+stamp-h: PKG_paths.h gsl
+gsl:
+	ln -s bse gsl
 
-MAINTAINERCLEANFILES += PKG_paths.h
+MAINTAINERCLEANFILES += PKG_paths.h gsl
 
 EXTRA_DIST += \
-	gsl \
 	PKG_paths.h \
 	acbeast.m4

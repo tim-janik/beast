@@ -1,3 +1,7 @@
+Thu Sep 27 14:22:41 2001  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: ensure that a gsl->bse link is in place.
+
 Thu Sep 27 14:10:55 2001  Tim Janik  <timj@gtk.org>
 
 	* bsw/bsw.h: 
