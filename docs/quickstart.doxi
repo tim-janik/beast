@@ -43,9 +43,9 @@ as "Synthesis".
 @enumerate
 @item Select @menupath{/Project/New Synthesizer Network} from the menu to
       create a new network.
-@item On the notebook page @pagepath{BseSNet:Unnamed} of the newly created
-      network, enable the @prop{Auto Activate} property to later allow
-      playback of this network.
+@item In the newly created synthesizer network @pagepath{BseSNet:Unnamed},
+      on the notebook page @pagepath{Parameters}, enable the @prop{Auto Activate}
+      property to enable automated playback of this network.
 @item Select the @pagepath{Routing} notebook page.
 @end enumerate
 
@@ -164,16 +164,14 @@ what instrument is used to play a certain part.
 So the steps to a simple test setup for a synthesis instrument are:
 
 @enumerate
-@item	Switch to the @pagepath{Parts} notebook page of a song and add a
-	@object{Part} to the song.
-@item	Use the part editor to create some notes in the part to be played back.
 @item	Switch to the @pagepath{Tracks} notebook page of a song and add
 	a @object{Track} to the song.
-@item	Select the previously created part as @prop{Part} property for this
-	track.
+@item   Click into the track's tact area to create a new @object{Part} within it.
+@item   Select the ``Editor'' tool and click on the part to start up a piano
+        roll editor to arrange notes within parts.
+@item	Use the piano roll editor to create some notes in the part to be played back.
 @item	Select a synthesis network (created as shown in the last section) as
-	synthesis input for this track by editing the @prop{Custom Synth Net}
-	property.
+	synthesis input for this track by editing the @prop{Synth} property.
 @end enumerate
 
 A song with parts, instruments and tracks setup can be played back via

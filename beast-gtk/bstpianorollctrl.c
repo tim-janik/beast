@@ -667,7 +667,7 @@ controller_piano_drag (BstPianoRollController *self,
   SfiProxy project = song ? bse_item_get_parent (song) : 0;
   SfiProxy track = song ? bse_song_find_track_for_part (song, part) : 0;
 
-  sfi_debug ("piano drag event, note=%d (valid=%d)", drag->current_note, drag->current_valid);
+  // sfi_debug ("piano drag event, note=%d (valid=%d)", drag->current_note, drag->current_valid);
 
   if (project && track)
     {

@@ -1,12 +1,12 @@
 FIXMES:
-- update quickstart
 - fix button sensitivity
+- fix BSE mime logo to say BSE instead of BEAST
+- install bsw/* into bse/.
+- remove SFI(signal): spurious unknown signal "release" on proxy (23)
+- remove SFI(signal): spurious unknown signal "io_changed" on proxy (35)
 - implement snet removal
 - nuke SFI memblocks, malloc() is good enough
-- update QuickStart to match 0.5 behaviour
-- fix BSE mime logo to say BSE instead of BEAST
 - GslModuleClass.free should be renamed free_user_data
-- install bsw/* into bse/.
 - add demo song
 - fix plugins in bsesh
 - fix engine deinitialization assertions in bseserver.c

@@ -1,3 +1,21 @@
+Sun Apr  6 15:57:24 2003  Tim Janik  <timj@gtk.org>
+
+	* update to libtool 1.4.3.
+	
+	* docs/quickstart.texi (Parts And Tracks): adapt this to the new
+	track roll display.
+
+	* beast-gtk/bstpianorollctrl.c (controller_piano_drag): shut up debug
+	messages.
+	
+	* beast-gtk/bstrecords.sfidl: fix preference pspec groups.
+	
+	* beast-gtk/gxk/gxktexttools.c: cosmetic fixes to history stack code.
+
+Sun Apr  6 00:55:08 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/generated/scandocs.pl: escape commas in macro parameters.
+
 Sun Apr  6 15:10:42 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_toggle_palette): add tool

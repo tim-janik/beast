@@ -42,8 +42,8 @@ typedef struct {
   gchar     *file;
   gchar     *anchor;
   gchar     *current;
-  GSList    *gxkack;
-  GSList    *fstack;
+  GSList    *back_stack;
+  GSList    *fore_stack;
 } TextNavigation;
 
 
@@ -1672,13 +1672,13 @@ navigation_strdup_url (TextNavigation *tnav)
 }
 
 static void
-navigation_clear_fstack (TextNavigation *tnav)
+navigation_clear_fore_stack (TextNavigation *tnav)
 {
   GSList *slist;
-  for (slist = tnav->fstack; slist; slist = slist->next)
+  for (slist = tnav->fore_stack; slist; slist = slist->next)
     g_free (slist->data);
-  g_slist_free (tnav->fstack);
-  tnav->fstack = NULL;
+  g_slist_free (tnav->fore_stack);
+  tnav->fore_stack = NULL;
 }
 
 static void
@@ -1686,9 +1686,9 @@ navigation_update_widgets (TextNavigation *tnav)
 {
   /* handle sensitivity */
   if (tnav->backb)
-    gtk_widget_set_sensitive (tnav->backb, tnav->gxkack != NULL);
+    gtk_widget_set_sensitive (tnav->backb, tnav->back_stack != NULL);
   if (tnav->forwardb)
-    gtk_widget_set_sensitive (tnav->forwardb, tnav->fstack != NULL);
+    gtk_widget_set_sensitive (tnav->forwardb, tnav->fore_stack != NULL);
   /* update location */
   if (tnav->refe)
     gtk_entry_set_text (GTK_ENTRY (tnav->refe), tnav->current);
@@ -1711,10 +1711,10 @@ free_navigation (gpointer data)
   g_free (tnav->file);
   g_free (tnav->anchor);
   g_free (tnav->current);
-  navigation_clear_fstack (tnav);
-  for (slist = tnav->gxkack; slist; slist = slist->next)
+  navigation_clear_fore_stack (tnav);
+  for (slist = tnav->back_stack; slist; slist = slist->next)
     g_free (slist->data);
-  g_slist_free (tnav->gxkack);
+  g_slist_free (tnav->back_stack);
   g_free (tnav);
 }
 
@@ -1923,22 +1923,22 @@ gxk_scroll_text_advance (GtkWidget   *sctext,
   /* handle history */
   if (tnav->current)
     {
-      if (tnav->gxkack && strcmp (tnav->gxkack->data, tnav->current) == 0)
+      if (tnav->back_stack && strcmp (tnav->back_stack->data, tnav->current) == 0)
 	g_free (tnav->current);
       else
-	tnav->gxkack = g_slist_prepend (tnav->gxkack, tnav->current);
+	tnav->back_stack = g_slist_prepend (tnav->back_stack, tnav->current);
       tnav->current = NULL;
     }
-  navigation_clear_fstack (tnav);
+  navigation_clear_fore_stack (tnav);
   /* set new uri */
   navigation_set_url (tnav, uri);
   /* prepare for next history */
   tnav->current = navigation_strdup_url (tnav);
   /* dedup history */
-  if (tnav->gxkack && strcmp (tnav->gxkack->data, tnav->current) == 0)
+  if (tnav->back_stack && strcmp (tnav->back_stack->data, tnav->current) == 0)
     {
-      g_free (tnav->gxkack->data);
-      tnav->gxkack = g_slist_delete_link (tnav->gxkack, tnav->gxkack);
+      g_free (tnav->back_stack->data);
+      tnav->back_stack = g_slist_delete_link (tnav->back_stack, tnav->back_stack);
     }
   /* show away */
   scroll_text_reload (sctext);
@@ -2004,17 +2004,17 @@ gxk_scroll_text_rewind (GtkWidget *sctext)
   g_return_if_fail (GXK_IS_SCROLL_TEXT (sctext));
 
   tnav = navigation_from_sctext (sctext);
-  while (tnav->gxkack)
+  while (tnav->back_stack)
     {
       if (tnav->current)
 	{
-	  if (tnav->fstack && strcmp (tnav->fstack->data, tnav->current) == 0)
+	  if (tnav->fore_stack && strcmp (tnav->fore_stack->data, tnav->current) == 0)
 	    g_free (tnav->current);
 	  else
-	    tnav->fstack = g_slist_prepend (tnav->fstack, tnav->current);
+	    tnav->fore_stack = g_slist_prepend (tnav->fore_stack, tnav->current);
 	}
-      tnav->current = tnav->gxkack->data;
-      tnav->gxkack = g_slist_delete_link (tnav->gxkack, tnav->gxkack);
+      tnav->current = tnav->back_stack->data;
+      tnav->back_stack = g_slist_delete_link (tnav->back_stack, tnav->back_stack);
     }
   if (tnav->current)
     {
@@ -2030,17 +2030,17 @@ static void
 navigate_back (GtkWidget *sctext)
 {
   TextNavigation *tnav = navigation_from_sctext (sctext);
-  if (tnav->gxkack)
+  if (tnav->back_stack)
     {
       if (tnav->current)
 	{
-	  if (tnav->fstack && strcmp (tnav->fstack->data, tnav->current) == 0)
+	  if (tnav->fore_stack && strcmp (tnav->fore_stack->data, tnav->current) == 0)
 	    g_free (tnav->current);
 	  else
-	    tnav->fstack = g_slist_prepend (tnav->fstack, tnav->current);
+	    tnav->fore_stack = g_slist_prepend (tnav->fore_stack, tnav->current);
 	}
-      tnav->current = tnav->gxkack->data;
-      tnav->gxkack = g_slist_delete_link (tnav->gxkack, tnav->gxkack);
+      tnav->current = tnav->back_stack->data;
+      tnav->back_stack = g_slist_delete_link (tnav->back_stack, tnav->back_stack);
       navigation_reset_url (tnav);
       navigation_set_url (tnav, tnav->current);
       scroll_text_reload (sctext);
@@ -2052,17 +2052,17 @@ static void
 navigate_forward (GtkWidget *sctext)
 {
   TextNavigation *tnav = navigation_from_sctext (sctext);
-  if (tnav->fstack)
+  if (tnav->fore_stack)
     {
       if (tnav->current)
 	{
-	  if (tnav->gxkack && strcmp (tnav->gxkack->data, tnav->current) == 0)
+	  if (tnav->back_stack && strcmp (tnav->back_stack->data, tnav->current) == 0)
 	    g_free (tnav->current);
 	  else
-	    tnav->gxkack = g_slist_prepend (tnav->gxkack, tnav->current);
+	    tnav->back_stack = g_slist_prepend (tnav->back_stack, tnav->current);
 	}
-      tnav->current = tnav->fstack->data;
-      tnav->fstack = g_slist_delete_link (tnav->fstack, tnav->fstack);
+      tnav->current = tnav->fore_stack->data;
+      tnav->fore_stack = g_slist_delete_link (tnav->fore_stack, tnav->fore_stack);
       navigation_reset_url (tnav);
       navigation_set_url (tnav, tnav->current);
       scroll_text_reload (sctext);

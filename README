@@ -19,7 +19,8 @@ To get a basic start, you'll also need Gtk+-2.0, a recent version
 of the Gtk+-2.0 based GnomeCanvas, Guile-1.4 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
-decoder library) around when compiling BEAST. Most distributions
+decoder library) around when compiling BEAST.
+Most distributions
 already ship these packages, their sources can be found at:
 
 GnomeCanvas (GNOME-2.0):
@@ -41,6 +42,15 @@ The official web site for BEAST/BSE is:
 
 And finally there's a mailing list as well (beast@gnome.org):
   http://mail.gnome.org/mailman/listinfo/beast/
+
+BEAST also supports the LADSPA plugin API, so various kinds of third
+party plugins can be loaded and executed by BEAST. LADSPA plugins are
+available from:
+	http://www.ladspa.org
+and places linked there from. BEAST will look for LADSPA plugins under
+lib/ladspa/ of it's own installation prefix, and in the directories
+listed in $LADSPA_PATH.
+
 
 Installation
 ============

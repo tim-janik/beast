@@ -207,6 +207,8 @@ sub tags_highlight {
     # A constant
     $t =~ s/  % ( $ident ) /\@refConstant{$1}/gx;
 
+    $t =~ s/(\@ref[^{]+){([^}]+)}/$1 . '{' . fix_commas($2) . '}'/ge;
+
     return $t;
 }
 sub tags_print_description {
@@ -254,6 +256,14 @@ sub sort_items {
     return unless ref($list) eq 'ARRAY';
 
     @{$list} = sort { ${$a}{name} cmp ${$b}{name} } @{$list};
+}
+sub fix_commas {
+    my $t = shift;
+    return unless defined $t;
+
+    $t =~ s/,/\\\\,/g;
+
+    return $t;
 }
 
 sort_items(\@records);
