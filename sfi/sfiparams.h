@@ -219,9 +219,10 @@ GParamSpec*      sfi_pspec_to_serializable   (GParamSpec *pspec);
 #define	SFI_PARAM_SERVE_GUI	  "gui:"	/* GUI representation */
 #define	SFI_PARAM_SERVE_STORAGE	  "storage:"	/* gets serialized */
 /* storage flags */
-#define	SFI_PARAM_FORCE_DIRTY	  "dirty:"
+#define	SFI_PARAM_SKIP_DEFAULT	  "skipd:"	/* don't store defaulting values */
+#define	SFI_PARAM_FLOAT		  "float:"	/* reduce precision to IEEE 754 Single */
 /* GUI hints */
-#define	SFI_PARAM_HINT_RDONLY	  "rdonly:"
+#define	SFI_PARAM_HINT_RDONLY	  "rdonly:"	/* not modifyable for GUI */
 #define	SFI_PARAM_HINT_RADIO	  "radio:"
 #define	SFI_PARAM_HINT_DIAL	  "dial:"
 #define	SFI_PARAM_HINT_SCALE	  "scale:"

@@ -173,11 +173,20 @@ test_threads (void)
   DONE ();
 }
 
-#define SCANNER_ASSERT(scanner, printout, token, text, svalue) { \
+#define SCANNER_ASSERT64(scanner, printout, token, text, svalue) { \
   g_scanner_input_text (scanner, text, strlen (text)); \
   ASSERT (g_scanner_get_next_token (scanner) == token); \
-  if (printout) g_print ("{scanner64value:%llu}", scanner->value.v_int64); \
+  if (printout) g_print ("{scanner.v_int64:%llu}", scanner->value.v_int64); \
   ASSERT (scanner->value.v_int64 == svalue); \
+  ASSERT (g_scanner_get_next_token (scanner) == '#'); \
+}
+#define SCANNER_ASSERTf(scanner, printout, vtoken, text, svalue) { \
+  g_scanner_input_text (scanner, text, strlen (text)); \
+  if (g_scanner_get_next_token (scanner) != vtoken) \
+    g_scanner_unexp_token (scanner, vtoken, NULL, NULL, NULL, NULL, TRUE); \
+  ASSERT (scanner->token == vtoken); \
+  if (printout) g_print ("{scanner.v_float:%17g}", scanner->value.v_float); \
+  ASSERT (scanner->value.v_float == svalue); \
   ASSERT (g_scanner_get_next_token (scanner) == '#'); \
 }
 
@@ -187,21 +196,24 @@ test_scanner64 (void)
   GScanner *scanner = g_scanner_new (sfi_storage_scanner_config);
   MSG ("64Bit Scanner:");
   scanner->config->numbers_2_int = FALSE;
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_BINARY, " 0b0 #", 0);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_BINARY, " 0b10000000000000000 #", 65536);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_BINARY, " 0b11111111111111111111111111111111 #", 4294967295U);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_BINARY, " 0b1111111111111111111111111111111111111111111111111111111111111111 #", 18446744073709551615U);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_OCTAL, " 0 #", 0);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_OCTAL, " 0200000 #", 65536);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_OCTAL, " 037777777777 #", 4294967295U);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_OCTAL, " 01777777777777777777777 #", 18446744073709551615U);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_HEX, " 0x0 #", 0);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_HEX, " 0x10000 #", 65536);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_HEX, " 0xffffffff #", 4294967295U);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_HEX, " 0xffffffffffffffff #", 18446744073709551615U);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_INT, " 65536 #", 65536);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_INT, " 4294967295 #", 4294967295U);
-  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_INT, " 18446744073709551615 #", 18446744073709551615U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b0 #", 0);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b10000000000000000 #", 65536);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b11111111111111111111111111111111 #", 4294967295U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b1111111111111111111111111111111111111111111111111111111111111111 #", 18446744073709551615U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_OCTAL, " 0 #", 0);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_OCTAL, " 0200000 #", 65536);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_OCTAL, " 037777777777 #", 4294967295U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_OCTAL, " 01777777777777777777777 #", 18446744073709551615U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_HEX, " 0x0 #", 0);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_HEX, " 0x10000 #", 65536);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_HEX, " 0xffffffff #", 4294967295U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_HEX, " 0xffffffffffffffff #", 18446744073709551615U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_INT, " 65536 #", 65536);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_INT, " 4294967295 #", 4294967295U);
+  SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_INT, " 18446744073709551615 #", 18446744073709551615U);
+  SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 0.0 #", 0);
+  SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 2.2250738585072014e-308 #", 2.2250738585072014e-308);
+  SCANNER_ASSERTf (scanner, FALSE, G_TOKEN_FLOAT, " 1.7976931348623157e+308 #", 1.7976931348623157e+308);
   g_scanner_destroy (scanner);
   DONE ();
 }
@@ -256,6 +268,7 @@ serialize_cmp (GValue     *value,
     serial_pspec_check (pspec, scanner);
   else
     {
+      // if (pspec && strcmp (pspec->name, "real-max") == 0) G_BREAKPOINT ();
       if (serial_test_type == SERIAL_TEST_TYPED)
 	sfi_value_store_typed (value, gstring);
       else /* SERIAL_TEST_PARAM */
@@ -300,7 +313,8 @@ serialize_cmp (GValue     *value,
 	    }
 	}
       ASSERT (cmp == 0);
-      /* generate testoutput: g_print ("OK=================(%s)=================:\n%s\n", pspec->name, gstring->str); */
+      if (1) /* generate testoutput */
+	g_print ("OK=================(%s)=================:\n%s\n", pspec->name, gstring->str);
     }
   g_scanner_destroy (scanner);
   g_string_free (gstring, TRUE);
@@ -347,10 +361,10 @@ test_typed_serialization (SerialTest test_type)
 		 sfi_pspec_num ("num-max", NULL, NULL, 0, SFI_MINNUM, SFI_MAXNUM, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_num (SFI_MINNUM),
 		 sfi_pspec_num ("num-min", NULL, NULL, 0, SFI_MINNUM, SFI_MAXNUM, 1, SFI_PARAM_DEFAULT));
-  serialize_cmp (sfi_value_real (SFI_MAXREAL),
-		 sfi_pspec_real ("real-max", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (SFI_MINREAL),
 		 sfi_pspec_real ("real-min", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
+  serialize_cmp (sfi_value_real (SFI_MAXREAL),
+		 sfi_pspec_real ("real-max", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (-SFI_MINREAL),
 		 sfi_pspec_real ("real-min-neg", NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_real (-SFI_MAXREAL),

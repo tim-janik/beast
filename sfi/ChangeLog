@@ -1,3 +1,12 @@
+Thu Mar 13 12:35:50 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-parser.cc (parseParamDefHints): use %.17g to print doubles,
+	so we don't print out virtual digit precision artefacts.
+
+	* sfiserial.c (sfi_serialize_primitives): use %.17g to print doubles,
+	and use %.7g if SFI_PARAM_FLOAT was given. let g_ascii_formatd() handle
+	the actual printout to fix locale dependencies.
+
 Mon Mar 10 06:18:51 2003  Tim Janik  <timj@gtk.org>
 
 	* sficomport.[hc]: debugging cleanup.

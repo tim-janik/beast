@@ -235,7 +235,8 @@ static GTokenType
 sfi_serialize_primitives (SfiSCategory scat,
 			  GValue      *value,
 			  GString     *gstring,
-			  GScanner    *scanner)
+			  GScanner    *scanner,
+			  const gchar *hints)
 {
   switch (scat)
     {
@@ -297,7 +298,12 @@ sfi_serialize_primitives (SfiSCategory scat,
     case SFI_SCAT_REAL:
       if (gstring)
 	{
-	  gstring_printf (gstring, "%.17g", sfi_value_get_real (value));
+	  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+	  
+	  if (hints && strstr (hints, ":"SFI_PARAM_FLOAT))
+	    gstring_puts (gstring, g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.7g", sfi_value_get_real (value)));
+	  else
+	    gstring_puts (gstring, g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.17g", sfi_value_get_real (value)));
 	}
       else
 	{
@@ -563,7 +569,7 @@ sfi_value_store_typed (const GValue *value,
     case SFI_SCAT_FBLOCK:
     case SFI_SCAT_PSPEC:
       gstring_printf (gstring, "(%c ", scat);
-      sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL);
+      sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL, NULL);
       gstring_putc (gstring, ')');
       break;
     case SFI_SCAT_SEQ:
@@ -626,7 +632,7 @@ sfi_value_parse_typed (GValue   *value,
     case SFI_SCAT_FBLOCK:
     case SFI_SCAT_PSPEC:
       g_value_init (value, sfi_category_type (scat));
-      token = sfi_serialize_primitives (scat, value, NULL, scanner);
+      token = sfi_serialize_primitives (scat, value, NULL, scanner, NULL);
       if (token != G_TOKEN_NONE)
 	return token;
       parse_or_return (scanner, ')');
@@ -700,7 +706,7 @@ value_store_param (const GValue *value,
     case SFI_SCAT_PSPEC:
     case SFI_SCAT_NOTE:
     case SFI_SCAT_TIME:
-      sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL);
+      sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL, sfi_pspec_get_hints (pspec));
       break;
     case SFI_SCAT_SEQ:
       seq = sfi_value_get_seq (value);
@@ -813,7 +819,7 @@ value_parse_param (GValue     *value,
     case SFI_SCAT_PSPEC:
     case SFI_SCAT_NOTE:
     case SFI_SCAT_TIME:
-      token = sfi_serialize_primitives (scat, value, NULL, scanner);
+      token = sfi_serialize_primitives (scat, value, NULL, scanner, sfi_pspec_get_hints (pspec));
       if (token != G_TOKEN_NONE)
 	return token;
       break;
