@@ -20,7 +20,7 @@
 #ifndef __BSE_MIDI_DEVICE_H__
 #define __BSE_MIDI_DEVICE_H__
 
-#include        <bse/bseobject.h>
+#include        <bse/bsedevice.h>
 #include        <bse/bsemidievent.h>
 
 G_BEGIN_DECLS
@@ -32,20 +32,6 @@ G_BEGIN_DECLS
 #define BSE_IS_MIDI_DEVICE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_DEVICE))
 #define BSE_IS_MIDI_DEVICE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_DEVICE))
 #define BSE_MIDI_DEVICE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_DEVICE, BseMidiDeviceClass))
-/* flag tests */
-#define BSE_MIDI_DEVICE_OPEN(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_MIDI_FLAG_OPEN) != 0)
-#define BSE_MIDI_DEVICE_READABLE(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_MIDI_FLAG_READABLE) != 0)
-#define BSE_MIDI_DEVICE_WRITABLE(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_MIDI_FLAG_WRITABLE) != 0)
-
-
-/* --- enums --- */
-typedef enum	/*< skip >*/
-{
-  BSE_MIDI_FLAG_OPEN		= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
-  BSE_MIDI_FLAG_READABLE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
-  BSE_MIDI_FLAG_WRITABLE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
-} BseMidiFlags;
-#define	BSE_MIDI_FLAGS_USHIFT	(BSE_OBJECT_FLAGS_USHIFT + 3)
 
 
 /* --- BseMidiDevice structs --- */
@@ -61,26 +47,17 @@ struct _BseMidiHandle	/* this should be nuked, it's useless */
 };
 struct _BseMidiDevice
 {
-  BseObject		parent_object;
+  BseDevice              parent_object;
 
   BseMidiDecoder	*midi_decoder;
 
   /* operational handle */
-  BseMidiHandle	       *handle;
+  BseMidiHandle	        *handle;
 };
 struct _BseMidiDeviceClass
 {
-  BseObjectClass	parent_class;
-
-  guint			driver_rating;
-  BseErrorType	(*open)		(BseMidiDevice	*mdev);
-  void		(*suspend)	(BseMidiDevice	*mdev);
+  BseDeviceClass	parent_class;
 };
-
-
-/* --- prototypes --- */
-BseErrorType	bse_midi_device_open		(BseMidiDevice		*mdev);
-void		bse_midi_device_suspend		(BseMidiDevice		*mdev);
 
 
 /* --- internal utils --- */

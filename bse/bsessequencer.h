@@ -25,7 +25,7 @@ G_BEGIN_DECLS
 #define	BSE_SSEQUENCER_PREPROCESS	(bse_engine_block_size () * 7)
 
 typedef struct {
-  SfiTime		 stamp;	/* sequencer time (ahead of real time) */
+  guint64		 stamp;	/* sequencer time (ahead of real time) */
   SfiRing		*songs;
 } BseSSequencer;
 
@@ -35,6 +35,7 @@ void			bse_ssequencer_init_thread	(void);
 void			bse_ssequencer_start_song	(BseSong        *song,
                                                          guint64         start_stamp);
 void                    bse_ssequencer_remove_song	(BseSong        *song);
+gboolean                bse_sequencer_thread_lagging    (void);
 
 G_END_DECLS
 

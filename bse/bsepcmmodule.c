@@ -94,10 +94,13 @@ bse_pcm_module_poll (gpointer       data,
 
   /* get playback status */
   bse_pcm_handle_status (mdata->handle, &status);
-  
+
+  /* calculate minimum acceptable watermark for required buffer fill level */
   watermark = status.total_playback_values - MIN (mdata->n_values, status.total_playback_values);
   watermark = MIN (watermark, handle->playback_watermark);
+  /* calculate current fill level */
   fillmark = status.total_playback_values - status.n_playback_values_available;
+  /* fill if required */
   if (fillmark <= watermark)
     {
       if (!debug_hint++)

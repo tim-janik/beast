@@ -20,8 +20,7 @@
 #ifndef __BSE_PCM_DEVICE_H__
 #define __BSE_PCM_DEVICE_H__
 
-#include <bse/bseitem.h>
-#include <bse/gsldefs.h>
+#include <bse/bsedevice.h>
 
 G_BEGIN_DECLS
 
@@ -32,10 +31,6 @@ G_BEGIN_DECLS
 #define BSE_IS_PCM_DEVICE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PCM_DEVICE))
 #define BSE_IS_PCM_DEVICE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_DEVICE))
 #define BSE_PCM_DEVICE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PCM_DEVICE, BsePcmDeviceClass))
-/* flag tests */
-#define BSE_PCM_DEVICE_OPEN(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_OPEN) != 0)
-#define BSE_PCM_DEVICE_READABLE(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_READABLE) != 0)
-#define BSE_PCM_DEVICE_WRITABLE(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_WRITABLE) != 0)
 
 
 /* --- capabilities --- */
@@ -60,13 +55,6 @@ typedef enum	/*< skip >*/
   BSE_PCM_CMODE_MONO	= 1,
   BSE_PCM_CMODE_STEREO
 } BsePcmChannelMode;
-typedef enum	/*< skip >*/
-{
-  BSE_PCM_FLAG_OPEN	= 1 << (BSE_ITEM_FLAGS_USHIFT + 0),
-  BSE_PCM_FLAG_READABLE	= 1 << (BSE_ITEM_FLAGS_USHIFT + 1),
-  BSE_PCM_FLAG_WRITABLE	= 1 << (BSE_ITEM_FLAGS_USHIFT + 2)
-} BsePcmFlags;
-#define	BSE_PCM_FLAGS_USHIFT	(BSE_ITEM_FLAGS_USHIFT + 3)
 
 
 /* --- BsePcmDevice structs --- */
@@ -101,7 +89,7 @@ struct _BsePcmHandle
 };
 struct _BsePcmDevice
 {
-  BseItem		parent_instance;
+  BseDevice		parent_instance;
 
   /* requested caps */
   BsePcmFreqMode	req_freq_mode;
@@ -112,11 +100,7 @@ struct _BsePcmDevice
 };
 struct _BsePcmDeviceClass
 {
-  BseItemClass		parent_class;
-
-  guint			driver_rating;
-  BseErrorType	(*open)		(BsePcmDevice	*pdev);
-  void		(*suspend)	(BsePcmDevice	*pdev);
+  BseDeviceClass	parent_class;
 };
 
 
@@ -124,8 +108,6 @@ struct _BsePcmDeviceClass
 void		bse_pcm_device_request		(BsePcmDevice		*pdev,
 						 guint			 n_channels,
 						 BsePcmFreqMode		 freq_mode);
-BseErrorType	bse_pcm_device_open		(BsePcmDevice		*pdev);
-void		bse_pcm_device_suspend		(BsePcmDevice		*pdev);
 BsePcmHandle*	bse_pcm_device_get_handle	(BsePcmDevice		*pdev);
 gsize		bse_pcm_handle_read		(BsePcmHandle		*handle,
 						 gsize			 n_values,

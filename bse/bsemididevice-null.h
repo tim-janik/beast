@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2000-2002 Tim Janik
+ * Copyright (C) 2000-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,7 @@
 
 #include	<bse/bsemididevice.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_DEVICE_NULL		(BSE_TYPE_ID (BseMidiDeviceNULL))
@@ -35,7 +31,6 @@ extern "C" {
 #define BSE_IS_MIDI_DEVICE_NULL(object)		(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIDI_DEVICE_NULL))
 #define BSE_IS_MIDI_DEVICE_NULL_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIDI_DEVICE_NULL))
 #define BSE_MIDI_DEVICE_NULL_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIDI_DEVICE_NULL, BseMidiDeviceNULLClass))
-
 
 /* --- BseMidiDeviceNULL object --- */
 typedef	struct _BseMidiDeviceNULL      BseMidiDeviceNULL;
@@ -49,9 +44,6 @@ struct _BseMidiDeviceNULLClass
   BseMidiDeviceClass parent_class;
 };
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_MIDI_DEVICE_NULL_H__ */

@@ -102,7 +102,8 @@ extern "C" {
 #define BSE_MAGIC                       (('B' << 24) | ('S' << 16) | \
 	    /* 1112753441 0x42534521 */	 ('E' <<  8) | ('!' <<  0))
 /* driver rating */
-#define	BSE_RATING_DEFAULT		(500)
+#define	BSE_RATING_PREFERRED		(100)
+#define	BSE_RATING_DEFAULT		(50)
 #define	BSE_RATING_FALLBACK		(1)
 
 

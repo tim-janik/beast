@@ -46,11 +46,12 @@ bse_public_h_sources = $(strip \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
 	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
 	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
-	bsemain.h		bsemath.h		bsemidicontroller.h		bsemididevice.h \
+	bsemain.h		bsemath.h		bseladspa.h			bsedevice.h \
+	bsemidicontroller.h	bsemididevice.h \
 	bsemididevice-null.h	bsemididevice-oss.h	bsemidievent.h			bsemidinotifier.h \
 	bsemidireceiver.h	bsemidisynth.h		bseobject.h			bsepart.h \
 	bsepcminput.h		bsepcmoutput.h		bseparam.h			bseparasite.h \
-	bsepcmdevice.h		bsepcmdevice-oss.h	bseplugin.h			bseladspa.h \
+	bsepcmdevice.h		bsepcmdevice-oss.h	bsepcmdevice-null.h		bseplugin.h \
 	bseprocedure.h		bseproject.h		bsescripthelper.h		bseserver.h \
 	bsesnet.h		bsesnooper.h		bsesong.h			bsessequencer.h \
 	bsesource.h		bsestandardosc.h	bsestandardsynths.h		bsestorage.h \
@@ -74,11 +75,12 @@ bse_c_sources = $(strip \
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
-	bsemain.c		bsemath.c		bsemidicontroller.c		bsemididevice.c \
+	bsemain.c		bsemath.c		bseladspa.c			bsedevice.c \
+	bsemidicontroller.c	bsemididevice.c 	\
 	bsemididevice-null.c	bsemididevice-oss.c	bsemidievent.c			bsemidinotifier.c \
 	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.c \
 	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \
-	bsepcmdevice.c		bsepcmdevice-oss.c	bseplugin.c			bseladspa.c \
+	bsepcmdevice.c		bsepcmdevice-oss.c	bsepcmdevice-null.c		bseplugin.c \
 	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.c \
 	bsesnet.c		bsesnooper.c		bsesong.c			bsessequencer.c \
 	bsesource.c		bsestandardosc.c	bsestandardsynths.c		bsestorage.c \

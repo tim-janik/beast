@@ -24,6 +24,8 @@
 #include "bsecategories.h"
 #include "bsemidireceiver.h"
 #include "gslcommon.h"
+#include "bsepcmdevice.h"
+#include "bsemididevice.h"
 #include "bseengine.h"
 #include <string.h>
 #include <stdlib.h>
@@ -246,7 +248,12 @@ bse_init_core (void)
 
   /* argument handling */
   if (bse_main_args->dump_driver_list)
-    g_printerr ("PCM and MIDI drivers: oss and null\n");
+    {
+      g_printerr (_("Available PCM drivers:\n"));
+      bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
+      g_printerr (_("Available MIDI drivers:\n"));
+      bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
+    }
 }
 
 void
@@ -440,7 +447,6 @@ bse_async_parse_args (gint        *argc_p,
 	    {
 	      argv[i++] = NULL;
               margs->pcm_drivers = sfi_ring_append (margs->pcm_drivers, argv[i]);
-              g_printerr ("PCM += %s\n", argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -450,7 +456,6 @@ bse_async_parse_args (gint        *argc_p,
 	    {
 	      argv[i++] = NULL;
               margs->midi_drivers = sfi_ring_append (margs->midi_drivers, argv[i]);
-              g_printerr ("MIDI += %s\n", argv[i]);
 	    }
 	  argv[i] = NULL;
 	}

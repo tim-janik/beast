@@ -65,10 +65,6 @@ typedef struct
 
 
 /* --- prototypes --- */
-static void	    bse_pcm_device_oss_class_init	(BsePcmDeviceOSSClass	*class);
-static void	    bse_pcm_device_oss_init		(BsePcmDeviceOSS	*pcm_device_oss);
-static void	    bse_pcm_device_oss_finalize		(GObject		*object);
-static BseErrorType bse_pcm_device_oss_open		(BsePcmDevice		*pdev);
 static BseErrorType oss_device_setup			(OSSHandle		*oss);
 static void	    oss_device_retrigger		(OSSHandle		*oss);
 static gsize	    oss_device_read			(BsePcmHandle		*handle,
@@ -79,7 +75,6 @@ static void	    oss_device_write			(BsePcmHandle		*handle,
 							 const gfloat		*values);
 static void	    oss_device_status			(BsePcmHandle		*handle,
 							 BsePcmStatus		*status);
-static void	    bse_pcm_device_oss_close		(BsePcmDevice		*pdev);
 
 
 /* --- variables --- */
@@ -87,64 +82,70 @@ static gpointer parent_class = NULL;
 
 
 /* --- functions --- */
-BSE_BUILTIN_TYPE (BsePcmDeviceOSS)
-{
-  GType pcm_device_oss_type;
-  
-  static const GTypeInfo pcm_device_oss_info = {
-    sizeof (BsePcmDeviceOSSClass),
-    
-    (GBaseInitFunc) NULL,
-    (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_pcm_device_oss_class_init,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    
-    sizeof (BsePcmDeviceOSS),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_pcm_device_oss_init,
-  };
-  
-  pcm_device_oss_type = bse_type_register_static (BSE_TYPE_PCM_DEVICE,
-						  "BsePcmDeviceOSS",
-						  "PCM device implementation for OSS Lite /dev/dsp",
-						  &pcm_device_oss_info);
-  return pcm_device_oss_type;
-}
-
-static void
-bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BsePcmDeviceClass *pcm_device_class = BSE_PCM_DEVICE_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  gobject_class->finalize = bse_pcm_device_oss_finalize;
-  
-  pcm_device_class->open = bse_pcm_device_oss_open;
-  pcm_device_class->suspend = bse_pcm_device_oss_close;
-  pcm_device_class->driver_rating = BSE_RATING_DEFAULT;
-}
-
 static void
 bse_pcm_device_oss_init (BsePcmDeviceOSS *oss)
 {
   oss->device_name = g_strdup (BSE_PCM_DEVICE_CONF_OSS);
 }
 
-static BseErrorType
-bse_pcm_device_oss_open (BsePcmDevice *pdev)
+static SfiRing*
+bse_pcm_device_oss_list_devices (BseDevice    *device)
 {
+  const gchar *postfixes[] = { "", "0", "1", "2", "3" };
+  SfiRing *ring = NULL;
+  guint i;
+  gchar *last = NULL;
+  for (i = 0; i < G_N_ELEMENTS (postfixes); i++)
+    {
+      gchar *dname = g_strconcat (BSE_PCM_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
+      if (!gsl_check_file_equals (last, dname))
+        {
+          if (gsl_check_file (dname, "crw") == GSL_ERROR_NONE)
+            ring = sfi_ring_append (ring,
+                                    bse_device_entry_new (device,
+                                                          g_strdup_printf ("%s,rw", dname),
+                                                          g_strdup_printf ("%s (read-write)", dname)));
+          else if (gsl_check_file (dname, "cw") == GSL_ERROR_NONE)
+            ring = sfi_ring_append (ring,
+                                    bse_device_entry_new (device,
+                                                          g_strdup_printf ("%s,wo", dname),
+                                                          g_strdup_printf ("%s (write only)", dname)));
+        }
+      g_free (last);
+      last = dname;
+    }
+  g_free (last);
+  if (!ring)
+    ring = sfi_ring_append (ring, bse_device_error_new (device, g_strdup_printf ("No devices found")));
+  return ring;
+}
+
+static BseErrorType
+bse_pcm_device_oss_open (BseDevice     *device,
+                         gboolean       require_readable,
+                         gboolean       require_writable,
+                         guint          n_args,
+                         const gchar  **args)
+{
+  const gchar *dname;
+  if (n_args >= 1)      /* DEVICE */
+    dname = args[0];
+  else
+    dname = BSE_PCM_DEVICE_OSS (device)->device_name;
+  gint omode, retry_mode = 0;
+  if (n_args >= 2)      /* MODE */
+    omode = strcmp (args[1], "rw") == 0 ? O_RDWR : strcmp (args[1], "ro") == 0 ? O_RDONLY : O_WRONLY;   /* parse: ro rw wo */
+  else
+    {
+      omode = O_RDWR;
+      retry_mode = O_WRONLY;
+    }
   OSSHandle *oss = g_new0 (OSSHandle, 1);
   BsePcmHandle *handle = &oss->handle;
-  BseErrorType error = BSE_ERROR_NONE;
   
   /* setup request */
-  handle->writable = TRUE;
-  handle->readable = TRUE;
   handle->n_channels = 2;
-  handle->mix_freq = bse_pcm_freq_from_freq_mode (pdev->req_freq_mode);
+  handle->mix_freq = bse_pcm_freq_from_freq_mode (BSE_PCM_DEVICE (device)->req_freq_mode);
   handle->read = NULL;
   handle->write = NULL;
   handle->status = NULL;
@@ -156,41 +157,28 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
   oss->needs_trigger = TRUE;
 
   /* try open */
-  if (!error)
+  BseErrorType error;
+  gint fd = -1;
+  handle->readable = (omode & O_RDWR) == O_RDWR || (omode & O_RDONLY) == O_RDONLY;
+  handle->writable = (omode & O_RDWR) == O_RDWR || (omode & O_WRONLY) == O_WRONLY;
+  if ((handle->readable || !require_readable) && (handle->writable || !require_writable))
+    fd = open (dname, omode | O_NONBLOCK, 0);           /* open non blocking to avoid waiting for other clients */
+  if (fd < 0 && retry_mode)
     {
-      struct { gchar *postfix; gint mode; } devices[] = {
-	{  "", O_RDWR, }, {  "", O_WRONLY, }, // {  "", O_RDONLY, },
-	{ "0", O_RDWR, }, { "0", O_WRONLY, }, // { "0", O_RDONLY, },
-	{ "1", O_RDWR, }, { "1", O_WRONLY, }, // { "1", O_RDONLY, },
-	{ "2", O_RDWR, }, { "2", O_WRONLY, }, // { "2", O_RDONLY, },
-	{ "3", O_RDWR, }, { "3", O_WRONLY, }, // { "3", O_RDONLY, },
-      };
-      guint i;
-      for (i = 0; i < G_N_ELEMENTS (devices) && oss->fd < 0; i++)
-	{
-	  gint fd, omode = devices[i].mode | O_NONBLOCK; /* non blocking to avoid waiting for other clients */
-	  gchar *dname = g_strconcat (BSE_PCM_DEVICE_OSS (pdev)->device_name, devices[i].postfix, NULL);
-	  fd = open (dname, omode, 0);
-	  if (fd >= 0)
-	    {
-	      oss->fd = fd;
-	      error = 0;
-	      handle->writable = (devices[i].mode == O_RDWR || devices[i].mode == O_WRONLY);
-	      handle->readable = (devices[i].mode == O_RDWR || devices[i].mode == O_RDONLY);
-	    }
-	  else
-	    {
-	      // g_printerr ("open(\"%s\") failed: %s\n", dname, g_strerror (errno));
-	      if (!error)
-		error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
-	    }
-	  g_free (dname);
-	}
+      omode = retry_mode;
+      handle->writable = (omode & O_RDWR) == O_RDWR || (omode & O_WRONLY) == O_WRONLY;
+      handle->readable = (omode & O_RDWR) == O_RDWR || (omode & O_RDONLY) == O_RDONLY;
+      if ((handle->readable || !require_readable) && (handle->writable || !require_writable))
+        fd = open (dname, omode | O_NONBLOCK, 0);       /* open non blocking to avoid waiting for other clients */
     }
-
-  /* try setup */
-  if (!error)
-    error = oss_device_setup (oss);
+  if (fd >= 0)
+    {
+      oss->fd = fd;
+      /* try setup */
+      error = oss_device_setup (oss);
+    }
+  else
+    error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
   
   /* setup pdev or shutdown */
   if (!error)
@@ -198,19 +186,19 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
       oss->frag_buf = g_malloc (FRAG_BUF_SIZE (oss));
       handle->minimum_watermark = oss->frag_size / oss->bytes_per_value;
       handle->playback_watermark = MIN (oss->n_frags, 5) * oss->frag_size / oss->bytes_per_value;
-      BSE_OBJECT_SET_FLAGS (pdev, BSE_PCM_FLAG_OPEN);
+      BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
       if (handle->readable)
 	{
-	  BSE_OBJECT_SET_FLAGS (pdev, BSE_PCM_FLAG_READABLE);
+	  BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_READABLE);
 	  handle->read = oss_device_read;
 	}
       if (handle->writable)
 	{
-	  BSE_OBJECT_SET_FLAGS (pdev, BSE_PCM_FLAG_WRITABLE);
+	  BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
 	  handle->write = oss_device_write;
 	}
       handle->status = oss_device_status;
-      pdev->handle = handle;
+      BSE_PCM_DEVICE (device)->handle = handle;
     }
   else
     {
@@ -224,6 +212,18 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
 }
 
 static void
+bse_pcm_device_oss_close (BseDevice *device)
+{
+  OSSHandle *oss = (OSSHandle*) BSE_PCM_DEVICE (device)->handle;
+  BSE_PCM_DEVICE (device)->handle = NULL;
+
+  (void) ioctl (oss->fd, SNDCTL_DSP_RESET, NULL);
+  (void) close (oss->fd);
+  g_free (oss->frag_buf);
+  g_free (oss);
+}
+
+static void
 bse_pcm_device_oss_finalize (GObject *object)
 {
   BsePcmDeviceOSS *pdev_oss = BSE_PCM_DEVICE_OSS (object);
@@ -233,18 +233,6 @@ bse_pcm_device_oss_finalize (GObject *object)
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
-}
-
-static void
-bse_pcm_device_oss_close (BsePcmDevice *pdev)
-{
-  OSSHandle *oss = (OSSHandle*) pdev->handle;
-  
-  pdev->handle = NULL;
-  (void) ioctl (oss->fd, SNDCTL_DSP_RESET, NULL);
-  (void) close (oss->fd);
-  g_free (oss->frag_buf);
-  g_free (oss);
 }
 
 static BseErrorType
@@ -509,6 +497,55 @@ oss_device_write (BsePcmHandle *handle,
       n_values -= l >> 1;
     }
   while (n_values);
+}
+
+static void
+bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->finalize = bse_pcm_device_oss_finalize;
+  
+  device_class->list_devices = bse_pcm_device_oss_list_devices;
+  bse_device_class_setup (class,
+                          BSE_RATING_DEFAULT,
+                          "oss",
+                          _("DEVICE,MODE"),
+                          /* TRANSLATORS: keep this text to 70 chars in width */
+                          _("Open Sound System PCM driver:\n"
+                            "DEVICE - PCM device file name\n"
+                            "MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
+                            "         read-only, read-write or write-only access."));
+  device_class->open = bse_pcm_device_oss_open;
+  device_class->close = bse_pcm_device_oss_close;
+}
+
+BSE_BUILTIN_TYPE (BsePcmDeviceOSS)
+{
+  GType pcm_device_oss_type;
+  
+  static const GTypeInfo pcm_device_oss_info = {
+    sizeof (BsePcmDeviceOSSClass),
+    
+    (GBaseInitFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
+    (GClassInitFunc) bse_pcm_device_oss_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    
+    sizeof (BsePcmDeviceOSS),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_pcm_device_oss_init,
+  };
+  
+  pcm_device_oss_type = bse_type_register_static (BSE_TYPE_PCM_DEVICE,
+						  "BsePcmDeviceOSS",
+						  "PCM device implementation for OSS Lite /dev/dsp",
+						  &pcm_device_oss_info);
+  return pcm_device_oss_type;
 }
 
 #endif	/* BSE_PCM_DEVICE_CONF_OSS */

@@ -431,89 +431,59 @@ bse_server_find_project (BseServer   *server,
   return NULL;
 }
 
+typedef struct {
+  guint          n_channels;
+  BsePcmFreqMode freq_mode;
+} PcmRequest;
+
+static void
+pcm_request_callback (BseDevice *device,
+                      gpointer   data)
+{
+  PcmRequest *pr = data;
+  bse_pcm_device_request (BSE_PCM_DEVICE (device), pr->n_channels, pr->freq_mode);
+}
+
 static BseErrorType
 bse_server_open_pcm_device (BseServer *server)
 {
-  GType *children, choice = 0;
-  guint n, i, rating = 0;
-  BseErrorType error;
-  
   g_return_val_if_fail (server->pcm_device == NULL, BSE_ERROR_INTERNAL);
-  
-  /* pick PCM driver implementation and try to open device */
-  children = g_type_children (BSE_TYPE_PCM_DEVICE, &n);
-  for (i = 0; i < n; i++)
-    {
-      BsePcmDeviceClass *class = g_type_class_ref (children[i]);
-      if (class->driver_rating > rating)
-	{
-	  rating = class->driver_rating;
-	  choice = children[i];
-	}
-      g_type_class_unref (class);
-    }
-  g_free (children);
-  
-  if (!choice)
-    return BSE_ERROR_DEVICE_NOT_AVAILABLE;
-  
-  server->pcm_device = g_object_new (choice, NULL);
-  bse_pcm_device_request (server->pcm_device, 2, bse_pcm_freq_mode_from_freq (BSE_GCONFIG (synth_mixing_freq)));
-  error = bse_pcm_device_open (server->pcm_device);
-  if (error)
-    {
-      g_object_unref (server->pcm_device);
-      server->pcm_device = NULL;
-    }
-  return error;
+
+  PcmRequest pr;
+  pr.n_channels = 2;
+  pr.freq_mode = bse_pcm_freq_mode_from_freq (BSE_GCONFIG (synth_mixing_freq));
+  BseErrorType error;
+  server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, TRUE, TRUE, bse_main_args->pcm_drivers,
+                                                             pcm_request_callback, &pr, &error);
+  if (!server->pcm_device)
+    sfi_warn (SfiLogger ("pcm",
+                         _("Advice about PCM device selections problems"),
+                         _("Alert me about PCM device selections problems")),
+              _("Failed to open PCM devices, givng up: %s"),
+              bse_error_blurb (error));
+  return server->pcm_device ? BSE_ERROR_NONE : error;
 }
 
 static BseErrorType
 bse_server_open_midi_device (BseServer *server)
 {
-  GType *children, choice = 0;
-  guint n, i, rating = 0;
-  BseErrorType error;
-  
   g_return_val_if_fail (server->midi_device == NULL, BSE_ERROR_INTERNAL);
-  
-  /* pick MIDI driver implementation and try to open device */
-  children = g_type_children (BSE_TYPE_MIDI_DEVICE, &n);
-  for (i = 0; i < n; i++)
-    {
-      BseMidiDeviceClass *class = g_type_class_ref (children[i]);
-      if (class->driver_rating > rating)
-	{
-	  rating = class->driver_rating;
-	  choice = children[i];
-	}
-      g_type_class_unref (class);
-    }
-  g_free (children);
 
-  if (!choice)
+  BseErrorType error;
+  server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE, TRUE, FALSE, bse_main_args->midi_drivers, NULL, NULL, &error);
+  if (!server->midi_device)
     {
-      /* return BSE_ERROR_DEVICE_NOT_AVAILABLE; */
-    retry_with_null_device:
-      choice = BSE_TYPE_MIDI_DEVICE_NULL;
-    }
-
-  server->midi_device = g_object_new (choice, NULL);
-  error = bse_midi_device_open (server->midi_device);
-  if (error)
-    {
-      if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
+      SfiRing *ring = sfi_ring_prepend (NULL, "null");
+      server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE_NULL, TRUE, FALSE, ring, NULL, NULL, NULL);
+      sfi_ring_free (ring);
+      if (server->midi_device)
 	sfi_warn (SfiLogger ("midi",
-                             _("Advice about MIDI device selections"),
-                             _("Alert me about MIDI device selections")),
-                  _("failed to open midi device %s (reverting to null device): %s"),
-                  bse_object_debug_name (server->midi_device), bse_error_blurb (error));
-      g_object_unref (server->midi_device);
-      server->midi_device = NULL;
-      if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
-	goto retry_with_null_device;
+                             _("Advice about MIDI device selections problems"),
+                             _("Alert me about MIDI device selections problems")),
+                  _("Failed to open MIDI devices (reverting to null driver): %s"),
+                  bse_error_blurb (error));
     }
-  return error;
+  return server->midi_device ? BSE_ERROR_NONE : error;
 }
 
 BseErrorType
@@ -548,7 +518,7 @@ bse_server_open_devices (BseServer *self)
 	  if (error)
 	    {
               sfi_warn (SfiLogger ("recording", NULL, NULL),
-                        _("failed to open output file \"%s\": %s"),
+                        _("Failed to open output file \"%s\": %s"),
                         self->wave_file, bse_error_blurb (error));
 	      g_object_unref (self->pcm_writer);
 	      self->pcm_writer = NULL;
@@ -563,13 +533,13 @@ bse_server_open_devices (BseServer *self)
     {
       if (self->midi_device)
 	{
-	  bse_midi_device_suspend (self->midi_device);
+	  bse_device_close (BSE_DEVICE (self->midi_device));
 	  g_object_unref (self->midi_device);
 	  self->midi_device = NULL;
 	}
       if (self->pcm_device)
 	{
-	  bse_pcm_device_suspend (self->pcm_device);
+	  bse_device_close (BSE_DEVICE (self->pcm_device));
 	  g_object_unref (self->pcm_device);
 	  self->pcm_device = NULL;
 	}
@@ -601,8 +571,8 @@ bse_server_close_devices (BseServer *self)
       bse_trans_commit (trans);
       /* wait until transaction has been processed */
       bse_engine_wait_on_trans ();
-      bse_pcm_device_suspend (self->pcm_device);
-      bse_midi_device_suspend (self->midi_device);
+      bse_device_close (BSE_DEVICE (self->pcm_device));
+      bse_device_close (BSE_DEVICE (self->midi_device));
       engine_shutdown (self);
       g_object_unref (self->pcm_device);
       self->pcm_device = NULL;

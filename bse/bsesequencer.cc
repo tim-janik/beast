@@ -143,8 +143,8 @@ bse_ssequencer_thread_main (gpointer data)
   DEBUG ("SST: start\n");
   do
     {
-      const SfiTime cur_stamp = gsl_tick_stamp ();
-      SfiTime next_stamp = cur_stamp + BSE_SSEQUENCER_PREPROCESS;
+      const guint64 cur_stamp = gsl_tick_stamp ();
+      guint64 next_stamp = cur_stamp + BSE_SSEQUENCER_PREPROCESS;
       SfiRing *ring;
       
       BSE_SEQUENCER_LOCK ();
@@ -166,12 +166,24 @@ bse_ssequencer_thread_main (gpointer data)
 		}
 	    }
 	}
+      global_sequencer->stamp = next_stamp;
       BSE_SEQUENCER_UNLOCK ();
 
       sfi_thread_awake_after (cur_stamp + bse_engine_block_size ());
     }
   while (sfi_thread_sleep (-1));
   DEBUG ("SST: end\n");
+}
+
+gboolean
+bse_sequencer_thread_lagging (void)
+{
+  const guint64 cur_stamp = gsl_tick_stamp ();
+  guint64 next_stamp = cur_stamp + BSE_SSEQUENCER_PREPROCESS;
+  BSE_SEQUENCER_LOCK ();
+  gboolean lagging = global_sequencer->stamp < next_stamp;
+  BSE_SEQUENCER_UNLOCK ();
+  return lagging;
 }
 
 static void
@@ -190,7 +202,7 @@ bse_ssequencer_process_song_unlooped_SL (BseSong *song,
   BseMidiReceiver *midi_receiver = song->midi_receiver_SL;
   gdouble current_stamp = song->sequencer_start_SL + song->delta_stamp_SL;
   gdouble stamps_per_tick = 1.0 / song->tpsi_SL;
-  SfiTime next_stamp = current_stamp + n_ticks * stamps_per_tick;
+  guint64 next_stamp = current_stamp + n_ticks * stamps_per_tick;
   guint tick_bound = song->tick_SL + n_ticks;
   guint n_done_tracks = 0, n_tracks = 0;
   SfiRing *ring;

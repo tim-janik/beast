@@ -77,6 +77,8 @@ GslErrorType gsl_error_select           (guint           n_errors,
                                          ...);
 GslErrorType gsl_check_file		(const gchar	*file_name,
 					 const gchar	*mode);
+gboolean     gsl_check_file_equals	(const gchar	*file1,
+					 const gchar	*file2);
 
 
 /* --- progress notification --- */

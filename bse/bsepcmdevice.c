@@ -21,61 +21,14 @@
 #include <errno.h>
 
 
-/* --- prototypes --- */
-static void	   bse_pcm_device_init			(BsePcmDevice      *pdev);
-static void	   bse_pcm_device_class_init		(BsePcmDeviceClass *class);
-static void	   bse_pcm_device_dispose		(GObject           *object);
-
-
 /* --- variables --- */
 static gpointer parent_class = NULL;
 
 
 /* --- functions --- */
-BSE_BUILTIN_TYPE (BsePcmDevice)
-{
-  static const GTypeInfo pcm_device_info = {
-    sizeof (BsePcmDeviceClass),
-    
-    (GBaseInitFunc) NULL,
-    (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_pcm_device_class_init,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    
-    sizeof (BsePcmDevice),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_pcm_device_init,
-  };
-  
-  g_assert (BSE_PCM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
-  
-  return bse_type_register_abstract (BSE_TYPE_ITEM,
-                                     "BsePcmDevice",
-                                     "PCM device base type",
-                                     &pcm_device_info);
-}
-
-static void
-bse_pcm_device_class_init (BsePcmDeviceClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  gobject_class->dispose = bse_pcm_device_dispose;
-  
-  class->open = NULL;
-  class->suspend = NULL;
-  class->driver_rating = 0;
-}
-
 static void
 bse_pcm_device_init (BsePcmDevice *pdev)
 {
-  BSE_OBJECT_UNSET_FLAGS (pdev, (BSE_PCM_FLAG_OPEN |
-				 BSE_PCM_FLAG_READABLE |
-				 BSE_PCM_FLAG_WRITABLE));
   pdev->req_freq_mode = BSE_PCM_FREQ_44100;
   pdev->req_n_channels = 2;
   pdev->handle = NULL;
@@ -87,7 +40,7 @@ bse_pcm_device_request (BsePcmDevice  *self,
 			BsePcmFreqMode freq_mode)
 {
   g_return_if_fail (BSE_IS_PCM_DEVICE (self));
-  g_return_if_fail (!BSE_PCM_DEVICE_OPEN (self));
+  g_return_if_fail (!BSE_DEVICE_OPEN (self));
   g_return_if_fail (n_channels >= 1 && n_channels <= 128);
   g_return_if_fail (freq_mode >= BSE_PCM_FREQ_8000 && freq_mode <= BSE_PCM_FREQ_192000);
 
@@ -100,10 +53,10 @@ bse_pcm_device_dispose (GObject *object)
 {
   BsePcmDevice *pdev = BSE_PCM_DEVICE (object);
   
-  if (BSE_PCM_DEVICE_OPEN (pdev))
+  if (BSE_DEVICE_OPEN (pdev))
     {
       g_warning (G_STRLOC ": pcm device still opened");
-      bse_pcm_device_suspend (pdev);
+      bse_device_close (BSE_DEVICE (pdev));
     }
   if (pdev->handle)
     g_warning (G_STRLOC ": pcm device with stale pcm handle");
@@ -112,51 +65,26 @@ bse_pcm_device_dispose (GObject *object)
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
-BseErrorType
-bse_pcm_device_open (BsePcmDevice *pdev)
+static void
+pcm_device_post_open (BseDevice *device)
 {
-  BseErrorType error;
-  
-  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_PCM_DEVICE_OPEN (pdev), BSE_ERROR_INTERNAL);
-  
-  error = BSE_PCM_DEVICE_GET_CLASS (pdev)->open (pdev);
-  
-  if (!error)
-    {
-      g_return_val_if_fail (BSE_PCM_DEVICE_OPEN (pdev) && pdev->handle, BSE_ERROR_INTERNAL);
-      
-      sfi_mutex_init (&pdev->handle->mutex);
-    }
-  else
-    g_return_val_if_fail (!BSE_PCM_DEVICE_OPEN (pdev), BSE_ERROR_INTERNAL);
-  
-  errno = 0;
-  
-  return error;
+  BsePcmDevice *self = BSE_PCM_DEVICE (device);
+  g_return_if_fail (BSE_DEVICE_OPEN (self) && self->handle);
+  sfi_mutex_init (&self->handle->mutex);
 }
 
-void
-bse_pcm_device_suspend (BsePcmDevice *pdev)
+static void
+pcm_device_pre_close (BseDevice *device)
 {
-  g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
-  g_return_if_fail (BSE_PCM_DEVICE_OPEN (pdev));
-  
-  sfi_mutex_destroy (&pdev->handle->mutex);
-  
-  BSE_PCM_DEVICE_GET_CLASS (pdev)->suspend (pdev);
-  
-  BSE_OBJECT_UNSET_FLAGS (pdev, (BSE_PCM_FLAG_OPEN |
-				 BSE_PCM_FLAG_READABLE |
-				 BSE_PCM_FLAG_WRITABLE));
-  errno = 0;
+  BsePcmDevice *self = BSE_PCM_DEVICE (device);
+  sfi_mutex_destroy (&self->handle->mutex);
 }
 
 BsePcmHandle*
 bse_pcm_device_get_handle (BsePcmDevice *pdev)
 {
   g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), NULL);
-  g_return_val_if_fail (BSE_PCM_DEVICE_OPEN (pdev), NULL);
+  g_return_val_if_fail (BSE_DEVICE_OPEN (pdev), NULL);
   
   return pdev->handle;
 }
@@ -261,4 +189,40 @@ bse_pcm_freq_mode_from_freq (gfloat freq)
   if (freq < (176400 + 192000) / 2) return BSE_PCM_FREQ_176400;
   if (freq < (192000 + 200000) / 2) return BSE_PCM_FREQ_192000;
   return 0;
+}
+
+static void
+bse_pcm_device_class_init (BsePcmDeviceClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseDeviceClass *device_class = BSE_DEVICE_CLASS (class);
+
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->dispose = bse_pcm_device_dispose;
+
+  device_class->post_open = pcm_device_post_open;
+  device_class->pre_close = pcm_device_pre_close;
+}
+
+BSE_BUILTIN_TYPE (BsePcmDevice)
+{
+  static const GTypeInfo pcm_device_info = {
+    sizeof (BsePcmDeviceClass),
+    
+    (GBaseInitFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
+    (GClassInitFunc) bse_pcm_device_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    
+    sizeof (BsePcmDevice),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_pcm_device_init,
+  };
+  
+  return bse_type_register_abstract (BSE_TYPE_DEVICE,
+                                     "BsePcmDevice",
+                                     "PCM device base type",
+                                     &pcm_device_info);
 }

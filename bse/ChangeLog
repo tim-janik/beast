@@ -1,3 +1,27 @@
+Thu Sep 23 15:43:02 2004  Tim Janik  <timj@gtk.org>
+
+	* bsedevice.[hc]: added base class for BseMidiDevice and BsePcmDevice.
+	move open() and close() (former suspend()) methods here. implemented
+	automated device selection and listing.
+
+	* bsepcmdevice-null.[hc]: added null PCM device.
+
+	* gslcommon.[hc]:
+	gsl_check_file(): added char device, block device and pipe checks.
+	gsl_check_file_equals(): check whether two files point to the same inode.
+
+	* bse*device-*.[hc]: adaptions to new device API.
+
+	* bsemididevice.[hc]:
+	* bsepcmdevice.[hc]: adaptions to bsedevice.[hc].
+
+	* bsemain.c: implemented proper device listing.
+
+	* bseserver.c: adaptions to new device API.
+
+	* bsessequencer.[hc]: provide bse_sequencer_thread_lagging() for
+	null PCM device integration.
+
 Wed Sep 22 14:28:11 2004  Tim Janik  <timj@gtk.org>
 
 	* bsegconfig.[hc]: added bse_gconfig_merge_args() to merge
