@@ -30,9 +30,8 @@
   </navigation-node>
   
   <navigation-node title="Resources"               target="resources.html">
-    <!-- move synth links and related links into their own
-    own toplevel "Link" once we gained more resource content
-    -->
+    <navigation-node title="Contributions"         target="browse-bse-files.html" />
+    <navigation-node title="Contribute"            target="upload-bse-files.html" />
     <navigation-node title="Synthesis Links"       target="links-synthesis.html" />
     <navigation-node title="Related Links"         target="links-related.html" />
   </navigation-node>

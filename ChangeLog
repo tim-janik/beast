@@ -1,3 +1,22 @@
+Fri Sep 26 22:51:09 2003  Tim Janik  <timj@gtk.org>
+
+	* modified alpers last patch to not use template files.
+	
+	* docs/site-navigation.xml: added contrib area items.
+	
+	* docs/site-browse-bse-files.html: browse site contributions.
+	
+	* docs/site-upload-bse-files.texi: offer file upload facility.
+
+Mon Sep 22 23:30:49 2003  Alper Ersoy  <dirt@gtk.org>
+ 
+        * docs/generated/Makefile.am: added rule for CGI templates, and added
+        file-upload and fbrowse templates to html targets list. added --css
+        option for texitheque's html targets.
+ 
+        * docs/site-fbrowse.tmpl.texi:
+        * docs/site-file-upload.tmpl.texi: template files for cgi scripts.
+ 
 Fri Sep 26 06:45:03 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/bse-plugin-generator.1.texi: get bst version from version.texi.

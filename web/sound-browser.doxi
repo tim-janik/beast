@@ -1,0 +1,14 @@
+\input texinfo
+@c %**start of header
+@settitle Contributed BEAST/BSE Files
+@c %**end of header
+
+@include teximacros.texi
+
+@hasbanner{large}
+@navigation{navigation.xml}
+@docfont{tech}
+
+@cgitemplate
+
+@bye

@@ -3,7 +3,7 @@ Makefile.in
 *.xml
 *.markup
 *.html
-*.3
+*.[13]
 *.texi
 *.ps
 *.pdf

@@ -33,6 +33,8 @@ html_targets = $(strip		\
 	download.html		\
 	contact.html		\
 	resources.html		\
+	browse-bse-files.html	\
+	upload-bse-files.html	\
 	links-related.html	\
 	links-synthesis.html	\
 	documentation.html	\
