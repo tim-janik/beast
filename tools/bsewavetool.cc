@@ -164,7 +164,7 @@ main (int   argc,
     sfi_warning ("failed to load wave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
   if (!wave)
     {
-      sfi_error ("no wave to process, aborting...");
+      sfi_error ("problems encountered loading bsewave file, aborting...");
       exit (1);
     }
 
