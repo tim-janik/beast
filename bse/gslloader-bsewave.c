@@ -638,7 +638,7 @@ gslwave_create_chunk_handle (gpointer      data,
 	  dhandle = gslwave_load_singlechunk_wave (cfi,
 						   chunk->loader_data2,	/* wave_name */
 						   error_p);
-	  gsl_wave_file_info_free (cfi);
+	  gsl_wave_file_info_unref (cfi);
 	  g_free (string);
 	  return dhandle;
 	}

@@ -16,7 +16,6 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#define	__GSL_ENGINE_MASTER_C__
 #include "gslopmaster.h"
 
 #include "gslcommon.h"
@@ -30,29 +29,6 @@
 #include <errno.h>
 
 
-
-/* force public constantness but allow us to change values
- * in these structures.
- * *** sync this with gslengine.h ***
- */
-struct _GslJStream
-{
-  const gfloat      **values;
-  /* const */ guint   n_connections;
-  guint               user_flags : 16;
-};
-struct _GslIStream
-{
-  const gfloat     *values;
-  guint             user_flags : 16;
-  /* const */ guint connected : 1;
-};
-struct _GslOStream
-{
-  gfloat           *values;
-  guint             user_flags : 16;
-  /* const */ guint connected : 1;
-};
 
 #define	NODE_FLAG_RECONNECT(node)	G_STMT_START { (node)->reconnected = (node)->module.klass->reconnect != NULL; } G_STMT_END
 

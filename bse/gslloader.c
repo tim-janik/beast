@@ -22,8 +22,6 @@
 #include        "gsldatahandle.h"
 #include        "gslmagic.h"
 
-#define	USER_REFCOUNT	(1 << 31)
-
 
 /* --- variables --- */
 static GslLoader *gsl_loader_list = NULL;
@@ -135,7 +133,7 @@ gsl_wave_file_info_load (const gchar  *file_name,
 	      
 	      finfo->file_name = g_strdup (file_name);
 	      finfo->loader = loader;
-	      finfo->ref_count = USER_REFCOUNT;
+	      finfo->ref_count = 1;
 	    }
 	  else
 	    {
@@ -159,9 +157,10 @@ gsl_wave_file_info_load (const gchar  *file_name,
   return finfo;
 }
 
-static void
-wave_file_info_unref (GslWaveFileInfo *wave_file_info)
+void
+gsl_wave_file_info_unref (GslWaveFileInfo *wave_file_info)
 {
+  g_return_if_fail (wave_file_info != NULL);
   g_return_if_fail (wave_file_info->ref_count > 0);
 
   wave_file_info->ref_count--;
@@ -177,16 +176,13 @@ wave_file_info_unref (GslWaveFileInfo *wave_file_info)
     }
 }
 
-void
-gsl_wave_file_info_free (GslWaveFileInfo *wave_file_info)
+GslWaveFileInfo*
+gsl_wave_file_info_ref (GslWaveFileInfo *wave_file_info)
 {
-  g_return_if_fail (wave_file_info != NULL);
-  g_return_if_fail (wave_file_info->loader != NULL);
-  g_return_if_fail (wave_file_info->ref_count >= USER_REFCOUNT);
+  g_return_val_if_fail (wave_file_info != NULL, NULL);
+  g_return_val_if_fail (wave_file_info->ref_count > 0, NULL);
 
   wave_file_info->ref_count++;
-  wave_file_info->ref_count -= USER_REFCOUNT;
-  wave_file_info_unref (wave_file_info);
 }
 
 GslWaveDsc*
@@ -223,7 +219,7 @@ gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
 	  g_return_val_if_fail (wdsc->name && strcmp (wdsc->name, wave_file_info->waves[nth_wave].name) == 0, NULL);
 	  
 	  wdsc->file_info = wave_file_info;
-	  wave_file_info->ref_count++;
+	  gsl_wave_file_info_ref (wave_file_info);
 	}
       else
 	{
@@ -252,7 +248,7 @@ gsl_wave_dsc_free (GslWaveDsc *wave_dsc)
   
   file_info->loader->free_wave_dsc (file_info->loader->data, wave_dsc);
 
-  wave_file_info_unref (file_info);
+  gsl_wave_file_info_unref (file_info);
 }
 
 GslDataHandle*

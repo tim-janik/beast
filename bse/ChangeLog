@@ -1,3 +1,16 @@
+Wed Jun 19 03:47:45 2002  Tim Janik  <timj@gtk.org>
+
+	* incorporated fixes/changes suggested by stefan and
+	Hans Meine <hans_meine@gmx.net>.
+
+	* gsldatahandle-mad.c (create_seek_table): fix // comments.
+
+	* gslengine.h: 
+	* gslopmaster.c: sigh, remove const integer fields from structures,
+	this is simply not C++ compatible.
+
+	* gslloader.[hc]: make GslWaveFileInfo a ref-counted structure.
+
 Thu Jun 13 07:28:34 2002  Tim Janik  <timj@gtk.org>
 
 	* bsemidinotifier.[hcp]*: new object, emitting notification of incomming

@@ -39,12 +39,12 @@ load_file (BseWaveRepo *wrepo,
     return error;
   if (finfo->n_waves != 1)
     {
-      gsl_wave_file_info_free (finfo);
+      gsl_wave_file_info_unref (finfo);
       return GSL_ERROR_FORMAT_UNKNOWN;
     }
 
   wdsc = gsl_wave_dsc_load (finfo, 0, &error);
-  gsl_wave_file_info_free (finfo);
+  gsl_wave_file_info_unref (finfo);
   if (!wdsc)
     return error;
   

@@ -72,17 +72,18 @@ struct _GslWaveChunkDsc
 
 
 /* --- functions --- */
-GslWaveFileInfo*	gsl_wave_file_info_load	(const gchar	 *file_name,
+GslWaveFileInfo*       gsl_wave_file_info_load	(const gchar	 *file_name,
 						 GslErrorType	 *error);
-void			gsl_wave_file_info_free	(GslWaveFileInfo *wave_file_info);
-GslWaveDsc*		gsl_wave_dsc_load	(GslWaveFileInfo *wave_file_info,
+GslWaveFileInfo*       gsl_wave_file_info_ref   (GslWaveFileInfo *wave_file_info);
+void                   gsl_wave_file_info_unref (GslWaveFileInfo *wave_file_info);
+GslWaveDsc*	       gsl_wave_dsc_load	(GslWaveFileInfo *wave_file_info,
 						 guint		  nth_wave,
 						 GslErrorType	 *error);
-void			gsl_wave_dsc_free	(GslWaveDsc	 *wave_dsc);
-GslDataHandle*		gsl_wave_handle_create	(GslWaveDsc	 *wave_dsc,
+void		       gsl_wave_dsc_free	(GslWaveDsc	 *wave_dsc);
+GslDataHandle*	       gsl_wave_handle_create	(GslWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
 						 GslErrorType	 *error);
-GslWaveChunk*		gsl_wave_chunk_create	(GslWaveDsc	 *wave_dsc,
+GslWaveChunk*	       gsl_wave_chunk_create	(GslWaveDsc	 *wave_dsc,
 						 guint		  nth_chunk,
 						 GslErrorType	 *error);
 

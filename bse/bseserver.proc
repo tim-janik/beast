@@ -214,7 +214,7 @@ BODY (BseProcedureClass *proc,
   finfo = gsl_wave_file_info_load (file_name, NULL);
   g_value_set_boolean (out_values++, finfo != NULL);
   if (finfo)
-    gsl_wave_file_info_free (finfo);
+    gsl_wave_file_info_unref (finfo);
   
   return BSE_ERROR_NONE;
 }

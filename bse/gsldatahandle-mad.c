@@ -41,7 +41,7 @@
 
 /* --- defines --- */
 #define	FILE_BUFFER_SIZE	(1024 * 44)	/* approximately 1 second at 320 kbit */
-#define	SEEK_BY_READ_AHEAD(h)	(((h)->sample_rate / ((h)->frame_size * 2))) // FIXME
+#define	SEEK_BY_READ_AHEAD(h)	(((h)->sample_rate / ((h)->frame_size * 2))) /* FIXME */
 #define	MAX_CHANNELS		(5)
 
 
@@ -247,7 +247,7 @@ create_seek_table (MadHandle *handle,
   offs = 0;
   if (lseek (handle->fd, offs, SEEK_SET) != offs &&
       lseek (handle->fd, offs, SEEK_SET) != offs) /* retry */
-    return NULL;	// FIXME: errno
+    return NULL;	/* FIXME: errno */
   handle->eof = FALSE;
   handle->bfill = 0;
   handle->file_pos = 0;
@@ -259,7 +259,7 @@ create_seek_table (MadHandle *handle,
 	  guint this_pos = handle->file_pos - handle->bfill + handle->stream.this_frame - handle->buffer;
 	  guint i = n_seeks++;
 	  
-	  if (n_seeks > 256 * 1024)	// FIXME: max_frames
+	  if (n_seeks > 256 * 1024)	/* FIXME: max_frames */
 	    {
 	      g_free (seeks);
 	      return NULL;		/* FIXME: ETOOBIG */
