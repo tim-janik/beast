@@ -190,6 +190,24 @@ bse_pcm_device_portaudio_open (BseDevice     *device,
       else
 	return BSE_ERROR_DEVICE_NOT_AVAILABLE;
     }
+  if (n_args >= 2)
+    {
+      if (strcmp (args[1], "rw") == 0)
+	{
+	  handle->readable = TRUE;
+	  handle->writable = TRUE;
+	}
+      else if (strcmp (args[1], "ro") == 0)
+	{
+	  handle->readable = TRUE;
+	  handle->writable = FALSE;
+	}
+      else if (strcmp (args[1], "wo") == 0)
+	{
+	  handle->readable = FALSE;
+	  handle->writable = TRUE;
+	}
+    }
 
   inputParameters.channelCount  = handle->n_channels;
   outputParameters.channelCount = handle->n_channels;
@@ -286,8 +304,8 @@ portaudio_device_check_io (BsePcmHandle *handle,
 			   glong        *timeoutp)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) handle;
-  guint read_frames_avail = Pa_GetStreamReadAvailable (portaudio->stream);
-  guint write_frames_avail = Pa_GetStreamWriteAvailable (portaudio->stream);
+  guint read_frames_avail = handle->readable ? Pa_GetStreamReadAvailable (portaudio->stream) : 0;
+  guint write_frames_avail = handle->writable ? Pa_GetStreamWriteAvailable (portaudio->stream) : 0;
   guint n_frames_avail = handle->readable ? read_frames_avail : write_frames_avail;
 
   if (handle->readable && handle->writable && write_frames_avail >= (2 * handle->block_length) && read_frames_avail == 0)

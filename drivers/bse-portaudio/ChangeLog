@@ -1,3 +1,8 @@
+Sun Nov 28 16:20:25 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsepcmdevice-portaudio.cc: Added support "rw", "ro" and "wo" options
+	for readwrite, readonly or writeonly open.
+
 Sun Nov 28 15:38:12 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsepcmdevice-portaudio.cc: initial version of a PortAudioV19 driver
