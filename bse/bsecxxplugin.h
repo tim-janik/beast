@@ -116,6 +116,7 @@ EnumValue (int         int_value,
     };                                                                          \
     if (!pnode.node.name) {                                                     \
       pnode.node.name = Procedure_##ProcType::type_name();                      \
+      pnode.node.options = Procedure_##ProcType::options();                     \
       pnode.node.category = Procedure_##ProcType::category();                   \
       pnode.node.authors = Procedure_##ProcType::authors();                     \
       pnode.node.license = Procedure_##ProcType::license();                     \
@@ -160,6 +161,7 @@ EnumValue (int         int_value,
     };                                                                          \
     if (!cnode.node.name) {                                                     \
       cnode.node.name = Effect::type_name();                                    \
+      cnode.node.options = Effect::options();                                   \
       cnode.node.category = Effect::category();                                 \
       cnode.node.authors = Effect::authors();                                   \
       cnode.node.license = Effect::license();                                   \

@@ -35,6 +35,7 @@ struct _BseExportNode {
   BseExportNode    *next;
   BseExportNodeType ntype;
   const char       *name;
+  const char       *options;
   const char       *category;
   const char       *authors;
   const char       *license;

@@ -1,3 +1,17 @@
+Mon Dec 22 23:59:28 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecxxplugin.h: initialize options field in export nodes.
+
+	* bseplugin.c: register type options from plugins.
+
+	* bseplugin.h: let C plugins default to NULL options.
+
+	* mkcproc.pl: let C procedures default to NULL options.
+
+	* bseprocedure.proc: provide bse-type-options().
+
+	* bsetype.[hc]: allow for storing per-type options.
+
 Sun Dec 21 20:41:46 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsecxxsmart.h tests/testsmart.cc: Cleaned up the Bse::Sequence

@@ -399,6 +399,8 @@ bse_plugin_init_types (BsePlugin *plugin)
       if (type)
         {
           guint n;
+          if (node->options && node->options[0])
+            bse_type_add_options (type, node->options);
           if (node->category)
             bse_categories_register (node->category, type, node->pixstream);
           if (node->authors && node->authors[0])

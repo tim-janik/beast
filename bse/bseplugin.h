@@ -78,7 +78,7 @@ BsePlugin*	bse_plugin_lookup		(const gchar	*name);
   BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__bse_export_identity
 #define BSE_REGISTER_OBJECT_P(PREV,ObjectType,ParentType,category,pix,blurb,cinit,cfina,iinit) \
   static BseExportNodeClass __enode_ ## ObjectType = {                                  \
-    { PREV, BSE_EXPORT_NODE_CLASS, #ObjectType, category, NULL, NULL, pix, blurb },     \
+    { PREV, BSE_EXPORT_NODE_CLASS, #ObjectType, NULL, category, NULL, NULL, pix, blurb }, \
     #ParentType, sizeof (ObjectType ## Class), (GClassInitFunc) cinit,                  \
     (GClassFinalizeFunc) cfina, sizeof (ObjectType), (GInstanceInitFunc) iinit,         \
   };                                                                                    \

@@ -22,6 +22,7 @@
 
 
 /* --- variables --- */
+static GQuark	quark_options = 0;
 static GQuark	quark_blurb = 0;
 static GQuark	quark_authors = 0;
 static GQuark	quark_license = 0;
@@ -29,6 +30,20 @@ GType bse_type_id_packed_pointer = 0;
 
 
 /* --- functions --- */
+const gchar*
+bse_type_get_options (GType   type)
+{
+  return g_type_get_qdata (type, quark_options);
+}
+
+void
+bse_type_add_options (GType        type,
+                      const gchar *options)
+{
+  g_return_if_fail (bse_type_get_options (type) == NULL);
+  g_type_set_qdata (type, quark_options, g_strdup (options));
+}
+
 const gchar*
 bse_type_get_blurb (GType   type)
 {
@@ -213,6 +228,7 @@ bse_type_init (void)
   
   /* type system initialization
    */
+  quark_options = g_quark_from_static_string ("BseType-options");
   quark_blurb = g_quark_from_static_string ("BseType-blurb");
   quark_authors = g_quark_from_static_string ("BseType-authors");
   quark_license = g_quark_from_static_string ("BseType-license");

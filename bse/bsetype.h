@@ -39,6 +39,9 @@ extern GType bse_type_id_packed_pointer;
 
 /* --- prototypes --- */
 void         bse_type_init                  (void);
+void         bse_type_add_options           (GType            type,
+                                             const gchar     *options);
+const gchar* bse_type_get_options           (GType            type);
 void         bse_type_add_blurb             (GType            type,
                                              const gchar     *blurb);
 const gchar* bse_type_get_blurb             (GType            type);

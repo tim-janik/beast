@@ -198,7 +198,7 @@ while (<>) {
 
 	$externs .= "static BseExportNodeProc __enode_". ncanon ($proc_name) ." = {\n";
 	$externs .= "  { $last_node, BSE_EXPORT_NODE_PROC,\n";
-	$externs .= "    $proc_method, $proc_category, ". get_variable ("BLURB", "NULL") ." },\n";
+	$externs .= "    $proc_method, NULL, $proc_category, ". get_variable ("BLURB", "NULL") ." },\n";
 	$externs .= "  0, ";                               # private_id
 	$externs .= ncanon ($proc_name) . "_setup, ";      # init
 	$externs .= ncanon ($proc_name) . "_exec, ";       # exec
