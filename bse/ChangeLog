@@ -1,3 +1,16 @@
+Tue Aug 31 08:50:26 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecxxeffect.*: applied slightly modified patch from stefan.
+	applied const fixes to various methods.
+
+Sun Jul 18 21:47:54 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecxxeffect.*:
+	Added Effect::block_size(), so that effects (not their modules) can
+	obtain the block size. Provide prepare1/prepare2 and reset1/reset2
+	hooks for effects, so they can execute code before/after prepare/
+	reset.
+
 Tue Aug 31 07:13:37 2004  Tim Janik  <timj@gtk.org>
 
 	* bseproject.c (bse_project_activate): disabled timed auto-activate

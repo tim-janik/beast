@@ -204,6 +204,14 @@ Effect::dismiss_bse_module (BseModule       *gslmodule,
     bse_trans_add (trans, bse_job_discard (gslmodule));
 }
 
+unsigned int
+Effect::block_size() const
+{
+  g_return_val_if_fail (is_prepared(), 0);
+
+  return bse_engine_block_size();
+}
+
 void
 Effect::class_init (CxxBaseClass *klass)
 {
@@ -256,12 +264,42 @@ Effect::class_init (CxxBaseClass *klass)
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_dismiss (source, context_handle, trans);
     }
+    static void effect_prepare (BseSource *source)
+    {
+      CxxBase *base = cast (source);
+      Effect *self = static_cast<Effect*> (base);
+
+      /* invoke code that the effect might want to execute before prepare */
+      self->prepare1();
+
+      /* chain parent class' handler */
+      BSE_SOURCE_CLASS (effect_parent_class)->prepare (source);
+
+      /* invoke code that the effect might want to execute after prepare */
+      self->prepare2();
+    }
+    static void effect_reset (BseSource *source)
+    {
+      CxxBase *base = cast (source);
+      Effect *self = static_cast<Effect*> (base);
+
+      /* invoke code that the effect might want to execute before reset */
+      self->reset1();
+
+      /* chain parent class' handler */
+      BSE_SOURCE_CLASS (effect_parent_class)->reset (source);
+
+      /* invoke code that the effect might want to execute after reset */
+      self->reset2();
+    }
   };
   BseSourceClass *source_class = klass;
 
   effect_parent_class = g_type_class_peek_parent (klass);
   source_class->context_create = Local::effect_context_create;
   source_class->context_dismiss = Local::effect_context_dismiss;
+  source_class->prepare = Local::effect_prepare;
+  source_class->reset = Local::effect_reset;
 }
 
 
