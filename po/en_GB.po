@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-05 22:29+0100\n"
-"PO-Revision-Date: 2004-10-05 22:41+0100\n"
+"POT-Creation-Date: 2004-10-13 22:51+0100\n"
+"PO-Revision-Date: 2004-10-13 22:51+0100\n"
 "Last-Translator: David Lodge <dave@cirt.net>\n"
 "Language-Team: English/GB <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -693,12 +693,12 @@ msgid "ID"
 msgstr "ID"
 
 #: beast-gtk/bstitemview.c:208
-#: beast-gtk/bsttrackview.c:583
+#: beast-gtk/bsttrackview.c:608
 msgid "Name"
 msgstr "Name"
 
 #: beast-gtk/bstitemview.c:211
-#: beast-gtk/bsttrackview.c:604
+#: beast-gtk/bsttrackview.c:629
 msgid "Comment"
 msgstr "Comment"
 
@@ -868,6 +868,22 @@ msgstr "BEAST Version %s"
 #: beast-gtk/bstmain.c:786
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
+
+#: beast-gtk/bstmsgabsorb.c:226
+msgid "Enable or disable message display of a specific message type"
+msgstr "Enable or disable message display of a specific message type"
+
+#: beast-gtk/bstmsgabsorb.c:228
+msgid "Message Type"
+msgstr "Message Type"
+
+#: beast-gtk/bstmsgabsorb.c:231
+msgid "Version"
+msgstr "Version"
+
+#: beast-gtk/bstmsgabsorb.c:232
+msgid "The last program version that displayed this message type"
+msgstr "The last program version that displayed this message type"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
 #: beast-gtk/bstparam-automation.c:97
@@ -1576,7 +1592,8 @@ msgstr "Skin"
 msgid "Executing `%s'"
 msgstr "Executing `%s'"
 
-#: beast-gtk/bstprocedure.c:445
+#. | GXK_DIALOG_WINDOW_GROUP,
+#: beast-gtk/bstprocedure.c:447
 msgid "Procedure"
 msgstr "Procedure"
 
@@ -2569,6 +2586,12 @@ msgstr "Move Part"
 msgid "Start Editor"
 msgstr "Start Editor"
 
+#. TRANSLATORS: this is a dialog title and %s is replaced by an object name
+#: beast-gtk/bsttracksynthdialog.c:264
+#, c-format
+msgid "Synthesizer Selection: %s"
+msgstr "Synthesizer Selection: %s"
+
 #: beast-gtk/bsttrackview.c:63
 msgid "Add a new track to this song"
 msgstr "Add a new track to this song"
@@ -2577,30 +2600,40 @@ msgstr "Add a new track to this song"
 msgid "Delete the currently selected track"
 msgstr "Delete the currently selected track"
 
-#: beast-gtk/bsttrackview.c:586
+#: beast-gtk/bsttrackview.c:301
+#: bse/bsetrack.c:282
+#: bse/bsewaveosc.c:125
+msgid "Available Waves"
+msgstr "Available Waves"
+
+#: beast-gtk/bsttrackview.c:302
+msgid "List of available waves to choose a track instrument from"
+msgstr "List of available waves to choose a track instrument from"
+
+#: beast-gtk/bsttrackview.c:611
 msgid "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "Notes from unchecked tracks are ignored by the sequencer during playback"
 
-#: beast-gtk/bsttrackview.c:589
+#: beast-gtk/bsttrackview.c:614
 #: bse/bsemidisynth.c:427
 #: bse/bsetrack.c:941
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum number of voices for simultaneous playback"
 
-#: beast-gtk/bsttrackview.c:592
+#: beast-gtk/bsttrackview.c:617
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Synthesis network or wave to be used as instrument by this track"
 
-#: beast-gtk/bsttrackview.c:595
+#: beast-gtk/bsttrackview.c:620
 #: bse/bsetrack.c:947
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Midi channel assigned to this track, 0 uses private per-track channel"
 
-#: beast-gtk/bsttrackview.c:598
+#: beast-gtk/bsttrackview.c:623
 msgid "Mixer busses connected to track output"
 msgstr "Mixer busses connected to track output"
 
-#: beast-gtk/bsttrackview.c:601
+#: beast-gtk/bsttrackview.c:626
 #: bse/bsemidisynth.c:436
 #: bse/bsesong.c:729
 #: bse/bsetrack.c:952
@@ -2660,6 +2693,12 @@ msgstr "Message has been repeated %u times"
 #: beast-gtk/bstusermessage.c:377
 msgid "processing"
 msgstr "processing"
+
+#: beast-gtk/bstutils.c:318
+#: beast-gtk/bstutils.c:340
+#: beast-gtk/bstutils.c:343
+msgid "Updating View"
+msgstr "Updating View"
 
 #: beast-gtk/bstwaveeditor.c:241
 msgid "Scroll None"
@@ -3146,7 +3185,7 @@ msgstr "Second control input"
 
 #: bse/bseamplifier.idl:49
 #: bse/bsebiquadfilter.c:192
-#: bse/bsestandardosc.c:200
+#: bse/bsestandardosc.c:199
 #: bse/bsewaveosc.c:564
 #: plugins/bseadder.c:101
 #: plugins/bseatandistort.c:92
@@ -3353,7 +3392,7 @@ msgstr "Cutoff [Hz]"
 
 #: bse/bsebiquadfilter.c:140
 #: bse/bseconstant.c:128
-#: bse/bsestandardosc.c:147
+#: bse/bsestandardosc.c:146
 #: plugins/bseiirfilter.c:148
 #: plugins/bseiirfilter.c:158
 msgid "Note"
@@ -3380,10 +3419,10 @@ msgstr "The filter gain normalisation type (supported only by highpass and lowpa
 #: bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170
 #: bse/bsebiquadfilter.c:176
-#: bse/bsestandardosc.c:153
-#: bse/bsestandardosc.c:159
-#: bse/bsestandardosc.c:165
-#: bse/bsestandardosc.c:171
+#: bse/bsestandardosc.c:152
+#: bse/bsestandardosc.c:158
+#: bse/bsestandardosc.c:164
+#: bse/bsestandardosc.c:170
 #: bse/bsewaveosc.c:534
 #: bse/bsewaveosc.c:540
 #: bse/bsewaveosc.c:546
@@ -3391,18 +3430,18 @@ msgid "Modulation"
 msgstr "Modulation"
 
 #: bse/bsebiquadfilter.c:161
-#: bse/bsestandardosc.c:156
+#: bse/bsestandardosc.c:155
 msgid "Strength of linear frequency modulation"
 msgstr "Strength of linear frequency modulation"
 
 #: bse/bsebiquadfilter.c:167
-#: bse/bsestandardosc.c:162
+#: bse/bsestandardosc.c:161
 #: bse/bsewaveosc.c:543
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Perform exponential frequency modulation instead of linear"
 
 #: bse/bsebiquadfilter.c:173
-#: bse/bsestandardosc.c:168
+#: bse/bsestandardosc.c:167
 #: bse/bsewaveosc.c:549
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Number of octaves to be affected by exponential frequency modulation"
@@ -3430,7 +3469,7 @@ msgid "Unfiltered Audio Signal"
 msgstr "Unfiltered Audio Signal"
 
 #: bse/bsebiquadfilter.c:186
-#: bse/bsestandardosc.c:192
+#: bse/bsestandardosc.c:191
 #: bse/bsewaveosc.c:558
 #: plugins/davorgan.c:132
 #: plugins/davsyndrum.c:116
@@ -3443,12 +3482,12 @@ msgid "Center Frequency Input"
 msgstr "Centre Frequency Input"
 
 #: bse/bsebiquadfilter.c:188
-#: bse/bsestandardosc.c:194
+#: bse/bsestandardosc.c:193
 msgid "Freq Mod In"
 msgstr "Freq Mod In"
 
 #: bse/bsebiquadfilter.c:188
-#: bse/bsestandardosc.c:194
+#: bse/bsestandardosc.c:193
 msgid "Frequency Modulation Input"
 msgstr "Frequency Modulation Input"
 
@@ -3637,7 +3676,7 @@ msgstr "Value [float]"
 #: bse/bseconstant.c:117
 #: bse/bseinstrumentinput.c:120
 #: bse/bsemidiinput.c:109
-#: bse/bsestandardosc.c:143
+#: bse/bsestandardosc.c:142
 msgid "Frequency"
 msgstr "Frequency"
 
@@ -4919,7 +4958,7 @@ msgstr "High indicates the instrument is done synthesising"
 msgid "/Input & Output/Instrument Output"
 msgstr "/Input & Output/Instrument Output"
 
-#: bse/bsemain.c:269
+#: bse/bsemain.c:271
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -4927,7 +4966,7 @@ msgstr ""
 "\n"
 "Available PCM drivers:\n"
 
-#: bse/bsemain.c:271
+#: bse/bsemain.c:273
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -5075,7 +5114,7 @@ msgid "Playback Settings"
 msgstr "Playback Settings"
 
 #: bse/bsemidivoice.c:109
-#: plugins/bsesequencer.c:107
+#: plugins/bsesequencer.c:106
 msgid "Freq Out"
 msgstr "Freq Out"
 
@@ -5194,29 +5233,37 @@ msgstr "WAVE File"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Name of the WAVE file used for recording BSE sound output"
 
-#: bse/bseserver.c:469
+#: bse/bseserver.c:439
+msgid "Show messages about audio recording problems"
+msgstr "Show messages about audio recording problems"
+
+#: bse/bseserver.c:440
+msgid "An audio input module is in use, but the audio device has not been opened in recording mode. A quiet audio signal is used as input instead of a recorded signal, so playback operation may produce results not actually intended (such as reducing the output signal to pure silence)."
+msgstr "An audio input module is in use, but the audio device has not been opened in recording mode. A quiet audio signal is used as input instead of a recorded signal, so playback operation may produce results not actually intended (such as reducing the output signal to pure silence)."
+
+#: bse/bseserver.c:486
 msgid "Show messages about PCM device selections problems"
 msgstr "Show messages about PCM device selections problems"
 
-#: bse/bseserver.c:470
+#: bse/bseserver.c:487
 #, c-format
 msgid "Failed to open PCM devices, giving up: %s"
 msgstr "Failed to open PCM devices, giving up: %s"
 
-#: bse/bseserver.c:488
+#: bse/bseserver.c:506
 msgid "Show messages about MIDI device selections problems"
 msgstr "Show messages about MIDI device selections problems"
 
-#: bse/bseserver.c:489
+#: bse/bseserver.c:507
 #, c-format
 msgid "Failed to open MIDI devices (reverting to null device): %s"
 msgstr "Failed to open MIDI devices (reverting to null device): %s"
 
-#: bse/bseserver.c:540
+#: bse/bseserver.c:558
 msgid "Show recording file errors"
 msgstr "Show recording file errors"
 
-#: bse/bseserver.c:541
+#: bse/bseserver.c:559
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Failed to open output file \"%s\": %s"
@@ -5324,119 +5371,119 @@ msgstr "Synthesize a note on a song of an active project."
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Retrieve song timing information at a specific tick."
 
-#: bse/bsestandardosc.c:106
+#: bse/bsestandardosc.c:105
 msgid "StandardOsc is the BSE basis oscillator which supports various types of wave forms and modulation inputs."
 msgstr "StandardOsc is the BSE basis oscillator which supports various types of wave forms and modulation inputs."
 
-#: bse/bsestandardosc.c:109
+#: bse/bsestandardosc.c:108
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Audio Sources/Standard Oscillator"
 
-#: bse/bsestandardosc.c:130
-#: bse/bsestandardosc.c:136
+#: bse/bsestandardosc.c:129
+#: bse/bsestandardosc.c:135
 msgid "Wave Form"
 msgstr "Wave Form"
 
-#: bse/bsestandardosc.c:132
+#: bse/bsestandardosc.c:131
 #: bse/bsetrack.c:936
 #: bse/bsewaveosc.c:530
 #: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr "Wave"
 
-#: bse/bsestandardosc.c:132
+#: bse/bsestandardosc.c:131
 msgid "Oscillator wave form"
 msgstr "Oscillator wave form"
 
-#: bse/bsestandardosc.c:138
+#: bse/bsestandardosc.c:137
 msgid "Phase"
 msgstr "Phase"
 
-#: bse/bsestandardosc.c:141
-#: bse/bsestandardosc.c:145
-#: bse/bsestandardosc.c:148
+#: bse/bsestandardosc.c:140
+#: bse/bsestandardosc.c:144
+#: bse/bsestandardosc.c:147
 msgid "Base Frequency"
 msgstr "Base Frequency"
 
-#: bse/bsestandardosc.c:150
+#: bse/bsestandardosc.c:149
 msgid "Fine Tune"
 msgstr "Fine Tune"
 
-#: bse/bsestandardosc.c:155
+#: bse/bsestandardosc.c:154
 #: bse/bsewaveosc.c:536
 msgid "Input Modulation [%]"
 msgstr "Input Modulation [%]"
 
-#: bse/bsestandardosc.c:161
+#: bse/bsestandardosc.c:160
 #: bse/bsewaveosc.c:542
 msgid "Exponential FM"
 msgstr "Exponential FM"
 
-#: bse/bsestandardosc.c:167
+#: bse/bsestandardosc.c:166
 #: bse/bsewaveosc.c:548
 msgid "Octaves"
 msgstr "Octaves"
 
-#: bse/bsestandardosc.c:173
+#: bse/bsestandardosc.c:172
 msgid "Self Modulation [%]"
 msgstr "Self Modulation [%]"
 
-#: bse/bsestandardosc.c:174
+#: bse/bsestandardosc.c:173
 msgid "Strength of self modulation"
 msgstr "Strength of self modulation"
 
-#: bse/bsestandardosc.c:177
-#: bse/bsestandardosc.c:184
+#: bse/bsestandardosc.c:176
+#: bse/bsestandardosc.c:183
 msgid "Pulse Modulation"
 msgstr "Pulse Modulation"
 
-#: bse/bsestandardosc.c:179
+#: bse/bsestandardosc.c:178
 msgid "Pulse Width"
 msgstr "Pulse Width"
 
-#: bse/bsestandardosc.c:180
+#: bse/bsestandardosc.c:179
 msgid "Proportion of the positive component duration of the pulse wave form (Pulse has to be selected as wave form for this to take effect)"
 msgstr "Proportion of the positive component duration of the pulse wave form (Pulse has to be selected as wave form for this to take effect)"
 
-#: bse/bsestandardosc.c:186
+#: bse/bsestandardosc.c:185
 msgid "Pulse Modulation [%]"
 msgstr "Pulse Modulation [%]"
 
-#: bse/bsestandardosc.c:187
+#: bse/bsestandardosc.c:186
 msgid "Strength of pulse width modulation input (Pulse has to be selected as wave form for this to take effect)"
 msgstr "Strength of pulse width modulation input (Pulse has to be selected as wave form for this to take effect)"
 
-#: bse/bsestandardosc.c:192
+#: bse/bsestandardosc.c:191
 msgid "Oscillating Frequency Input"
 msgstr "Oscillating Frequency Input"
 
-#: bse/bsestandardosc.c:196
+#: bse/bsestandardosc.c:195
 msgid "PWM In"
 msgstr "PWM In"
 
-#: bse/bsestandardosc.c:196
+#: bse/bsestandardosc.c:195
 msgid "Pulse Width Modulation Input"
 msgstr "Pulse Width Modulation Input"
 
-#: bse/bsestandardosc.c:198
+#: bse/bsestandardosc.c:197
 #: bse/bsewaveosc.c:560
 msgid "Sync In"
 msgstr "Sync In"
 
-#: bse/bsestandardosc.c:198
+#: bse/bsestandardosc.c:197
 #: bse/bsewaveosc.c:560
 msgid "Syncronization Input"
 msgstr "Syncronisation Input"
 
-#: bse/bsestandardosc.c:200
+#: bse/bsestandardosc.c:199
 msgid "Oscillated Output"
 msgstr "Oscillated Output"
 
-#: bse/bsestandardosc.c:202
+#: bse/bsestandardosc.c:201
 msgid "Sync Out"
 msgstr "Sync Out"
 
-#: bse/bsestandardosc.c:202
+#: bse/bsestandardosc.c:201
 msgid "Syncronization Output"
 msgstr "Syncronisation Output"
 
@@ -5534,11 +5581,6 @@ msgstr "Creation Time"
 #: bse/bsesuper.c:191
 msgid "Last modification time"
 msgstr "Last modification time"
-
-#: bse/bsetrack.c:282
-#: bse/bsewaveosc.c:125
-msgid "Available Waves"
-msgstr "Available Waves"
 
 #: bse/bsetrack.c:282
 msgid "List of available waves to choose as track instrument"
@@ -6031,15 +6073,15 @@ msgstr "Noise Out"
 msgid "Noise Output"
 msgstr "Noise Output"
 
-#: plugins/bsesequencer.c:107
+#: plugins/bsesequencer.c:106
 msgid "Frequency Signal"
 msgstr "Frequency Signal"
 
-#: plugins/bsesequencer.c:109
+#: plugins/bsesequencer.c:108
 msgid "Note Sync"
 msgstr "Note Sync"
 
-#: plugins/bsesequencer.c:109
+#: plugins/bsesequencer.c:108
 msgid "Note Sync Signal"
 msgstr "Note Sync Signal"
 
