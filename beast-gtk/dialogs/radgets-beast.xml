@@ -162,7 +162,6 @@
   <!-- scrollgraph-dialog -->
   <xdef:scrollgraph-dialog inherit="vbox" >
     <vbox border-width="5" expand="1" >
-      <label label="test1"/>
       <!-- Scrollgraph -->
       <alignment id="scrollgraph-alignment" expand="1" >
 	<frame shadow-type="shadow-in" >

@@ -369,6 +369,11 @@ bst_scrollgraph_probes_notify (SfiProxy     source,
   for (i = 0; i < pseq->n_probes && !probe; i++)
     if (pseq->probes[i]->channel_id == self->ochannel)
       probe = pseq->probes[i];
+  if (probe && probe->mix_freq != self->mix_freq && probe->mix_freq > 0)
+    {
+      self->mix_freq = probe->mix_freq;
+      bst_scrollgraph_resize_values (self, self->direction);
+    }
   if (probe && probe->probe_features->probe_fft && probe->fft_data->n_values)
     {
       gfloat *bar = BAR (self, self->n_bars - 1); /* update last bar */
@@ -401,6 +406,8 @@ bst_scrollgraph_release_item (SfiProxy        item,
 {
   g_assert (self->source == item);
   bst_scrollgraph_set_source (self, 0, 0);
+  if (self->delete_toplevel)
+    gxk_toplevel_delete (GTK_WIDGET (self));
 }
 
 void
@@ -465,8 +472,11 @@ bst_scrollgraph_init (BstScrollgraph *self)
   GtkWidget *widget = GTK_WIDGET (self);
   gtk_widget_set_double_buffered (widget, FALSE);
   self->direction = BST_LEFT;
+  self->mix_freq = 44100;
   self->boost = 1;
   self->window_size = 512;
+  self->flip = FALSE;
+  self->delete_toplevel = TRUE;
   self->bar_offset = 0;
   self->n_points = 0;
   self->n_bars = 0;
@@ -536,14 +546,13 @@ scrollgraph_resize_rulers (BstScrollgraph *self,
   GtkWidget *vruler = g_object_get_data (self, "BstScrollgraph-vruler");
   if (self->source)
     {
-      gdouble mix_freq = bse_source_get_mix_freq (self->source);
-      gdouble secs = self->window_size / mix_freq;
+      gdouble secs = self->window_size / (gdouble) self->mix_freq;
       if (HORIZONTAL (self))
         {
           gdouble lower = 0, upper = widget->allocation.width * secs;
           gboolean sflip = self->direction == BST_LEFT;
           gtk_ruler_set_range (GTK_RULER (hruler), sflip ? upper : lower, sflip ? lower : upper, 0, MAX (lower, upper));
-          lower = 0, upper = mix_freq / 2;
+          lower = 0, upper = self->mix_freq / 2;
           gtk_ruler_set_range (GTK_RULER (vruler), FLIP (self) ? upper : lower, FLIP (self) ? lower : upper, 0, MAX (lower, upper));
         }
       if (VERTICAL (self))
@@ -551,7 +560,7 @@ scrollgraph_resize_rulers (BstScrollgraph *self,
           gdouble lower = 0, upper = widget->allocation.height * secs;
           gboolean sflip = self->direction == BST_UP;
           gtk_ruler_set_range (GTK_RULER (vruler), sflip ? upper : lower, sflip ? lower : upper, 0, MAX (lower, upper));
-          lower = 0, upper = mix_freq / 2;
+          lower = 0, upper = self->mix_freq / 2;
           gtk_ruler_set_range (GTK_RULER (hruler),  FLIP (self) ? upper : lower, FLIP (self) ? lower : upper, 0, MAX (lower, upper));
         }
     }
@@ -588,15 +597,13 @@ scrollgraph_resize_alignment (BstScrollgraph *self,
 }
 
 GtkWidget*
-bst_scrollgraph_build_dialog (const gchar *radget_domain,
-                              const gchar *radget_name,
+bst_scrollgraph_build_dialog (GtkWidget   *alive_object,
                               SfiProxy     source,
                               guint        ochannel)
 {
-  if (source)
-    g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
 
-  GxkRadget *radget = gxk_radget_create (radget_domain, radget_name, NULL);
+  GxkRadget *radget = gxk_radget_create ("beast", "scrollgraph-dialog", NULL);
   BstScrollgraph *scg = gxk_radget_find (radget, "scrollgraph");
   if (BST_IS_SCROLLGRAPH (scg))
     {
@@ -607,9 +614,9 @@ bst_scrollgraph_build_dialog (const gchar *radget_domain,
       if (GTK_IS_CONTAINER (pbox))
         {
           bst_param_create_span_gmask (scrollgraph_build_param (scg, "boost"), NULL, pbox, 2);
-          bst_param_create_col_gmask (scrollgraph_build_param (scg, "direction"), NULL, pbox, 2);
           bst_param_create_col_gmask (scrollgraph_build_param (scg, "window-size"), NULL, pbox, 0);
-          bst_param_create_col_gmask (scrollgraph_build_param (scg, "flip"), NULL, pbox, 1);
+          bst_param_create_col_gmask (scrollgraph_build_param (scg, "direction"), NULL, pbox, 1);
+          bst_param_create_col_gmask (scrollgraph_build_param (scg, "flip"), NULL, pbox, 2);
         }
       GtkWidget *hruler = gxk_radget_find (radget, "hruler");
       GtkWidget *vruler = gxk_radget_find (radget, "vruler");
@@ -625,5 +632,9 @@ bst_scrollgraph_build_dialog (const gchar *radget_domain,
       if (alignment)
         g_signal_connect_object (scg, "resize-values", G_CALLBACK (scrollgraph_resize_alignment), alignment, G_CONNECT_AFTER);
     }
-  return radget;
+  GtkWidget *dialog = gxk_dialog_new (NULL, (GtkObject*) alive_object, GXK_DIALOG_HIDE_ON_DELETE, "Scrollgraph", radget);
+  gchar *title = g_strdup_printf ("Spectrogram: %%s (%s)", bse_source_ochannel_label (source, ochannel));
+  bst_window_sync_title_to_proxy (dialog, source, title);
+  g_free (title);
+  return dialog;
 }

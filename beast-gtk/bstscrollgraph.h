@@ -39,6 +39,8 @@ struct _BstScrollgraph
   BstDirection    direction;
   guint           window_size : 24;
   guint           flip : 1;
+  guint           delete_toplevel : 1;  /* upon proxy::release */
+  guint           mix_freq;
   gdouble         boost;
   guint           n_points;
   guint           n_bars;
@@ -61,8 +63,7 @@ void            bst_scrollgraph_clear           (BstScrollgraph *self);
 void            bst_scrollgraph_set_source      (BstScrollgraph *self,
                                                  SfiProxy        source,
                                                  guint           ochannel);
-GtkWidget*      bst_scrollgraph_build_dialog    (const gchar    *radget_domain,
-                                                 const gchar    *radget_name,
+GtkWidget*      bst_scrollgraph_build_dialog    (GtkWidget      *alive_object,
                                                  SfiProxy        source,
                                                  guint           ochannel);
 

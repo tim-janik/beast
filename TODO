@@ -1,8 +1,6 @@
 FIXME(release-critical):
 - fix probes for multi-module objects
-- (beast:29238): BEAST-CRITICAL **: file bstutils.c: line 802 (bst_gmask_set_aux2): assertion `GTK_IS_WIDGET (widget)' failed
 - menu-button should keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
-- bseprocidl: generate "Info blurb" not "Info BLURB"
 - play + play doesn't reset wave oscillator state
 - implement Monitor Output Signal dialogs:
   - histogram
@@ -14,7 +12,7 @@ FIXME(release-critical):
   compiler support and missing libc support will fail on accessing a __thread variable
 - TIME: ISO 8601: http://www.cl.cam.ac.uk/~mgk25/iso-time.html
   implement time parser for this in beast, merge with travelad parser
-- driver interface: support multilpe MIDI channels
+- driver interface: support multilpe MIDI devices
 - popdown scrollgraph on ::release
 - menu button: keep the popup menu *onscreen*, even if the button is partially offscreen
 - add Left and Right channels to BseAmplifier to allow stereo amplification

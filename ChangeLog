@@ -1,3 +1,15 @@
+Fri Dec 10 15:08:07 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstscrollgraph.[hc]: adapt to mix frequency changes.
+	delete toplevel automatically when proxy is released. set window title.
+	bst_scrollgraph_build_dialog(): build complete dialogs, adjust title.
+
+	* beast-gtk/dialogs/radgets-beast.xml: removed test widgets.
+
+	* bsesource.proc: docu fixes.
+
+	* docs/beast-index.texi: added signals to object doc headline.
+
 Fri Dec 10 12:18:41 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvaslink.c (bst_canvas_link_build_async): changed 

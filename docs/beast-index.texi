@@ -31,7 +31,7 @@
 
 @unnumbered Reference
 @itemize
-@item @uref{beast-doc://objdoc,,        BSE Objects and Plugins (Properties and Channels)}
+@item @uref{beast-doc://objdoc,,        BSE Objects and Plugins} (Properties, Signals, Channels)
 @item @uref{beast-man://3/bse-structs,, BSE Structures (public API)}
 @item @uref{beast-man://3/bse-procs,,   BSE Procedures (public API)}
 @item @uref{beast-man://3/bse,,         BSE - Bedevilled Sound Engine (internal API)}
