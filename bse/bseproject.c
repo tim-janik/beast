@@ -259,10 +259,12 @@ bse_project_release_children (BseContainer *container)
 static void
 bse_project_dispose (GObject *object)
 {
-  BseProject *project = BSE_PROJECT (object);
+  BseProject *self = BSE_PROJECT (object);
 
-  bse_undo_stack_limit (project->undo_stack, 0);
-  bse_undo_stack_limit (project->redo_stack, 0);
+  bse_project_deactivate (self);
+
+  bse_undo_stack_limit (self->undo_stack, 0);
+  bse_undo_stack_limit (self->redo_stack, 0);
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);

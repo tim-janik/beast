@@ -1,3 +1,8 @@
+Fri Oct  3 13:34:53 2003  Tim Janik  <timj@gtk.org>
+
+	* bseproject.c (bse_project_dispose): stop and deactivate playing
+	projects before attempting to dispose.
+
 Fri Oct  3 07:37:37 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.cc (bse_midi_receiver_leave_farm): fix wrong assertion.

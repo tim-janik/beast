@@ -173,21 +173,9 @@ public:
     if (!result.second)
       {
         static guint i = 23478634;
-        g_print ("insertion: ipos=%p peek=%p - ",
-                 result.first == midi_channels.end() ? NULL : *result.first,
-                 peek_channel(midi_channel));
         result.first = midi_channels.insert (result.first, new MidiChannel (midi_channel));
         if (i != midi_channel)
-          {
-            i = midi_channel;
-            g_print ("midi channel lookup : %u : %p\n", i, *result.first);
-          }
-        // if (i==103)
-          {
-            for (Channels::iterator it = midi_channels.begin(); it != midi_channels.end(); it++)
-              g_print ("v[%u]=%u %p ", it - midi_channels.begin(), (*it)->midi_channel, *it);
-            g_print ("\n");
-          }
+          i = midi_channel;
       }
     return *result.first;
   }

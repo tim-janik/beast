@@ -193,8 +193,6 @@ bse_storage_reset (BseStorage *self)
       bse_storage_resolve_item_links (self);
       g_hash_table_destroy (self->path_table);
       self->path_table = NULL;
-      if (self->rstore->fd >= 0)
-        close (self->rstore->fd);
       sfi_rstore_destroy (self->rstore);
       self->rstore = NULL;
     }
@@ -290,12 +288,10 @@ bse_storage_input_file (BseStorage  *self,
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
 
   bse_storage_reset (self);
-  fd = open (file_name, O_RDONLY, 0);
-  if (fd < 0)
+  self->rstore = sfi_rstore_new_open (file_name);
+  if (!self->rstore)
     return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
-  self->rstore = sfi_rstore_new ();
   self->rstore->parser_this = self;
-  sfi_rstore_input_fd (self->rstore, fd, file_name);
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
 
   return BSE_ERROR_NONE;
