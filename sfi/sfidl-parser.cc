@@ -309,6 +309,8 @@ void Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_e
     }
   if (is_error)
     fprintf (stderr, "error: ");
+  else
+    fprintf (stderr, "warning: ");
   fprintf (stderr, "%s\n", message);
 }
 
@@ -1481,7 +1483,7 @@ GTokenType Parser::parseParamHints (Param &def)
     }
   def.args = args;
   if (!makeLiteralOptions (def.options, def.literal_options))
-    printWarning ("can't parse option string: %s\n", def.options.c_str());
+    printWarning ("can't parse option string: %s", def.options.c_str());
   return G_TOKEN_NONE;
 }
 
@@ -1895,7 +1897,7 @@ void Parser::addType (const std::string& type, TypeDeclaration typeDecl)
     }
   else if (m == typeDecl)
     {
-      printError ("double definition of '%s' as same type\n", type.c_str());
+      printError ("double definition of '%s' as same type", type.c_str());
     }
   else if (m == (typeDecl | tdProto))
     {
@@ -1903,7 +1905,7 @@ void Parser::addType (const std::string& type, TypeDeclaration typeDecl)
     }
   else
     {
-      printError ("double definition of '%s' as different types\n", type.c_str());
+      printError ("double definition of '%s' as different types", type.c_str());
     }
 }
 

@@ -1,3 +1,9 @@
+Wed Sep 15 21:37:17 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: Fixes: printWarning/printError should never be
+	called with a "\n", as this is added implicitely. When a warning is
+	printed, the output now says so ("warning: ...").
+
 Wed Sep 15 21:23:29 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.h sfidl-parser.cc: Provide label, blurb and options of
