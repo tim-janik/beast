@@ -13,6 +13,7 @@ bstgentypes.c
 bstgentypes.h
 bstmarshal.c
 bstmarshal.h
+bstdebugkeys.defs
 bststest
 bstrtest
 tsmview
