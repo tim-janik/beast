@@ -112,7 +112,7 @@ string ModuleHelper::qualify(const char *name)
     }
   else
     {
-      g_warning ("qualifyName failed for %s\n",name);
+      g_error ("unknown identifier \"%s\" (qualifyName failed)\n",name);
       result = name;
     }
   
