@@ -17,6 +17,11 @@ FIXME(urgent):
 - driver interface: support multilpe MIDI devices
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 TODO:
+- the instruments selection dialog for tracks should default-select the currently used instrument
+- the "Export Audio" file dialog should not share state with the save/load dialogs (to avoid suggesting .bse files as WAV targets)
+- center vscrollbar of piano-roll upon realization
+- light-up piano roll color for "C" to better distinguish consecutive notes
+- reduce the number of fractinal values for the bpm display to 3 (add frac1:frac2:frac3:frac4 etc. pspec hints)
 - support various fft windows for fft probes
 - implement float-ffts
 - test engine block size changes (Subject: blocksize vs. cpu)
@@ -225,6 +230,7 @@ DRIVER DIALOG:
 - Driver NAme
 
 TASKS:
+- Project/Song: move project+song properties into an extra File->Properties dialog
 - PianoRoll: allow editing parts from multiple tracks in a single window (syncronizing horizontal scroll position)
 - support sequencer input from and to ALSA and JACK
 - Icons: delete-track and delete-part shouldn't have the same item in track-roll
