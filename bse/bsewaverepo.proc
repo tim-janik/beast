@@ -32,6 +32,7 @@ load_file (BseWaveRepo *wrepo,
   GslWaveFileInfo *finfo;
   GslWaveDsc *wdsc;
   BseWave *wave;
+  gchar *fname;
   guint i;
   
   finfo = gsl_wave_file_info_load (file_name, &error);
@@ -48,9 +49,11 @@ load_file (BseWaveRepo *wrepo,
   if (!wdsc)
     return error;
   
+  fname = g_path_get_basename (file_name);
   wave = g_object_new (BSE_TYPE_WAVE,
-		       "uname", g_basename (file_name),
+		       "uname", fname,
 		       NULL);
+  g_free (fname);
   for (i = 0; i < wdsc->n_chunks; i++)
     {
       GslWaveChunk *wchunk = gsl_wave_chunk_create (wdsc, i, error ? NULL : &error);

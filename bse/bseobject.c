@@ -137,7 +137,7 @@ bse_object_type_register (const gchar *name,
   type = bse_type_register_dynamic (type,
 				    name,
 				    blurb,
-				    plugin);
+				    G_TYPE_PLUGIN (plugin));
   *ret_type = type;
   
   return NULL;

@@ -234,7 +234,7 @@ bse_procedure_type_register (const gchar *name,
   type = bse_type_register_dynamic (BSE_TYPE_PROCEDURE,
 				    name,
 				    blurb,
-				    plugin);
+				    G_TYPE_PLUGIN (plugin));
   
   *ret_type = type;
   
