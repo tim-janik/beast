@@ -453,13 +453,13 @@ METHOD (BseItem, check-is-a) {
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseItem, list-items) {
-  HELP	= "List possible values for an item property of an item.";
+METHOD (BseItem, get-property-candidates) {
+  HELP	= "Retrieve tentative values for an item or item sequence property.";
   IN	= bse_param_spec_object ("item", NULL, NULL,
 				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_string ("property_name", NULL, "Item property name",
 			    NULL, SFI_PARAM_STANDARD);
-  OUT	= bse_param_spec_boxed ("item_list", "Item List", NULL, BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD);
+  OUT	= bse_param_spec_boxed ("candidates", "Candidates", NULL, BSE_TYPE_PROPERTY_CANDIDATES, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -473,8 +473,14 @@ METHOD (BseItem, list-items) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  bse_value_take_boxed (out_values++, bse_item_list_items (self, property));
-  
+  BsePropertyCandidates *pc = bse_property_candidates_new();
+  if (!bse_item_get_candidates (self, property, pc))
+    {
+      bse_property_candidates_free (pc);
+      pc = NULL;
+    }
+  bse_value_take_boxed (out_values++, pc);
+
   return BSE_ERROR_NONE;
 }
 

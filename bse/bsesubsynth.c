@@ -48,9 +48,6 @@ static void	 bse_sub_synth_get_property	(GObject                *object,
 						 guint                   param_id,
 						 GValue                 *value,
 						 GParamSpec             *pspec);
-static BseItemSeq* bse_sub_synth_list_items	(BseItem		*item,
-						 guint			 param_id,
-						 GParamSpec		*pspec);
 static void	 bse_sub_synth_do_dispose	(GObject		*object);
 static void	 bse_sub_synth_context_create	(BseSource		*source,
 						 guint			 instance_id,
@@ -99,72 +96,6 @@ BSE_BUILTIN_TYPE (BseSubSynth)
 }
 
 static void
-bse_sub_synth_class_init (BseSubSynthClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint channel_id, i;
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  gobject_class->set_property = bse_sub_synth_set_property;
-  gobject_class->get_property = bse_sub_synth_get_property;
-  gobject_class->dispose = bse_sub_synth_do_dispose;
-  
-  item_class->list_items = bse_sub_synth_list_items;
-  
-  source_class->context_create = bse_sub_synth_context_create;
-  source_class->context_connect = bse_sub_synth_context_connect;
-  source_class->context_dismiss = bse_sub_synth_context_dismiss;
-  
-  bse_object_class_add_param (object_class, _("Assignments"),
-			      PARAM_SNET,
-			      bse_param_spec_object ("snet", _("Synthesis Network"),
-                                                     _("The synthesis network to interface to"),
-						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
-  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
-    {
-      gchar *ident, *label, *value;
-      
-      ident = g_strdup_printf ("in_port_%u", i + 1);
-      label = g_strdup_printf (_("Input Port %u"), i + 1);
-      value = g_strdup_printf ("synth_in_%u", i + 1);
-      bse_object_class_add_param (object_class, _("Input Assignments"), PARAM_IPORT_NAME + i * 2,
-				  sfi_pspec_string (ident, label, _("Output port name to interface from"),
-						    value, SFI_PARAM_STANDARD ":skip-default"));
-      g_free (ident);
-      g_free (label);
-      g_free (value);
-      
-      ident = g_strdup_printf ("out_port_%u", i + 1);
-      label = g_strdup_printf (_("Output Port %u"), i + 1);
-      value = g_strdup_printf ("synth_out_%u", i + 1);
-      bse_object_class_add_param (object_class, _("Output Assignments"), PARAM_OPORT_NAME + i * 2,
-				  sfi_pspec_string (ident, label, _("Input port name to interface to"),
-						    value, SFI_PARAM_STANDARD ":skip-default"));
-      g_free (ident);
-      g_free (label);
-      g_free (value);
-      
-      ident = g_strdup_printf ("input-%u", i + 1);
-      label = g_strdup_printf (_("Virtual input %u"), i + 1);
-      channel_id = bse_source_class_add_ichannel (source_class, ident, label, NULL);
-      g_assert (channel_id == i);
-      g_free (ident);
-      g_free (label);
-      
-      ident = g_strdup_printf ("output-%u", i + 1);
-      label = g_strdup_printf (_("Virtual output %u"), i + 1);
-      channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
-      g_assert (channel_id == i);
-      g_free (ident);
-      g_free (label);
-    }
-}
-
-static void
 bse_sub_synth_init (BseSubSynth *synth)
 {
   guint i;
@@ -202,23 +133,23 @@ bse_sub_synth_do_dispose (GObject *object)
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
-static BseItemSeq*
-bse_sub_synth_list_items (BseItem    *item,
-                          guint       param_id,
-                          GParamSpec *pspec)
+static void
+bse_sub_synth_get_candidates (BseItem               *item,
+                              guint                  param_id,
+                              BsePropertyCandidates *pc,
+                              GParamSpec            *pspec)
 {
   BseSubSynth *self = BSE_SUB_SYNTH (item);
-  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
     case PARAM_SNET:
-      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a sub network from"));
+      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return iseq;
 }
 
 static gboolean
@@ -535,4 +466,70 @@ bse_sub_synth_update_port_contexts (BseSubSynth *self,
       }
   g_free (cids);
   bse_trans_commit (trans);
+}
+
+static void
+bse_sub_synth_class_init (BseSubSynthClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  guint channel_id, i;
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->set_property = bse_sub_synth_set_property;
+  gobject_class->get_property = bse_sub_synth_get_property;
+  gobject_class->dispose = bse_sub_synth_do_dispose;
+  
+  item_class->get_candidates = bse_sub_synth_get_candidates;
+  
+  source_class->context_create = bse_sub_synth_context_create;
+  source_class->context_connect = bse_sub_synth_context_connect;
+  source_class->context_dismiss = bse_sub_synth_context_dismiss;
+  
+  bse_object_class_add_param (object_class, _("Assignments"),
+			      PARAM_SNET,
+			      bse_param_spec_object ("snet", _("Synthesizer"),
+                                                     _("Synthesis network to use as embedded sub network"),
+						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
+  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+    {
+      gchar *ident, *label, *value;
+      
+      ident = g_strdup_printf ("in_port_%u", i + 1);
+      label = g_strdup_printf (_("Input Port %u"), i + 1);
+      value = g_strdup_printf ("synth_in_%u", i + 1);
+      bse_object_class_add_param (object_class, _("Input Assignments"), PARAM_IPORT_NAME + i * 2,
+				  sfi_pspec_string (ident, label, _("Output port name to interface from"),
+						    value, SFI_PARAM_STANDARD ":skip-default"));
+      g_free (ident);
+      g_free (label);
+      g_free (value);
+      
+      ident = g_strdup_printf ("out_port_%u", i + 1);
+      label = g_strdup_printf (_("Output Port %u"), i + 1);
+      value = g_strdup_printf ("synth_out_%u", i + 1);
+      bse_object_class_add_param (object_class, _("Output Assignments"), PARAM_OPORT_NAME + i * 2,
+				  sfi_pspec_string (ident, label, _("Input port name to interface to"),
+						    value, SFI_PARAM_STANDARD ":skip-default"));
+      g_free (ident);
+      g_free (label);
+      g_free (value);
+      
+      ident = g_strdup_printf ("input-%u", i + 1);
+      label = g_strdup_printf (_("Virtual input %u"), i + 1);
+      channel_id = bse_source_class_add_ichannel (source_class, ident, label, NULL);
+      g_assert (channel_id == i);
+      g_free (ident);
+      g_free (label);
+      
+      ident = g_strdup_printf ("output-%u", i + 1);
+      label = g_strdup_printf (_("Virtual output %u"), i + 1);
+      channel_id = bse_source_class_add_ochannel (source_class, ident, label, NULL);
+      g_assert (channel_id == i);
+      g_free (ident);
+      g_free (label);
+    }
 }

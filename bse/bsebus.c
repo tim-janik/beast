@@ -71,23 +71,51 @@ bse_bus_finalize (GObject *object)
   G_OBJECT_CLASS (bus_parent_class)->finalize (object);
 }
 
-static BseItemSeq*
-bse_bus_list_items (BseItem    *item,
-                    guint       param_id,
-                    GParamSpec *pspec)
+static BseBus*
+get_master (BseBus *self)
+{
+  BseItem *parent = BSE_ITEM (self)->parent;
+  if (BSE_IS_SONG (parent))
+    {
+      BseSong *song = BSE_SONG (parent);
+      return bse_song_find_master (song);
+    }
+  return NULL;
+}
+
+static void
+bus_list_candidates (BseBus     *self,
+                     BseItemSeq *iseq)
+{
+  BseItem *item = BSE_ITEM (self);
+  bse_item_gather_items_typed (item, iseq, BSE_TYPE_BUS, BSE_TYPE_SONG, FALSE);
+  bse_item_gather_items_typed (item, iseq, BSE_TYPE_TRACK, BSE_TYPE_SONG, FALSE);
+  BseBus *master = get_master (self);
+  if (master)
+    bse_item_seq_remove (iseq, BSE_ITEM (master));
+}
+
+static void
+bse_bus_get_candidates (BseItem               *item,
+                        guint                  param_id,
+                        BsePropertyCandidates *pc,
+                        GParamSpec            *pspec)
 {
   BseBus *self = BSE_BUS (item);
-  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
+      SfiRing *ring;
     case PROP_INPUTS:
-      bse_item_gather_items_typed (item, iseq, BSE_TYPE_BUS, BSE_TYPE_SONG, FALSE);
+      bse_property_candidate_relabel (pc, _("Available Inputs"), _("List of available synthesis signals to be used as bus input"));
+      bus_list_candidates (self, pc->items);
+      ring = bse_bus_list_inputs (self);
+      while (ring)
+        bse_item_seq_remove (pc->items, sfi_ring_pop_head (&ring));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return iseq;
 }
 
 static void
@@ -99,9 +127,36 @@ bse_bus_set_property (GObject      *object,
   BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
+      SfiRing *inputs, *candidates, *ring, *saved_inputs;
+      BseItemSeq *iseq;
       BseItem *parent;
       double db;
     case PROP_INPUTS:
+      saved_inputs = bse_item_seq_to_ring (g_value_get_boxed (value));
+      /* provide sorted rings: self->inputs, inputs */
+      inputs = sfi_ring_sort (sfi_ring_copy (saved_inputs), sfi_compare_pointers, NULL);
+      self->inputs = sfi_ring_sort (self->inputs, sfi_compare_pointers, NULL);
+      /* get all input candidates */
+      iseq = bse_item_seq_new();
+      bus_list_candidates (self, iseq);
+      candidates = sfi_ring_sort (bse_item_seq_to_ring (iseq), sfi_compare_pointers, NULL);
+      bse_item_seq_free (iseq);
+      g_printerr ("inputs: old=%u new=%u candi=%u\n", sfi_ring_length (self->inputs), sfi_ring_length (inputs), sfi_ring_length (candidates));//FIXME
+      /* constrain the new input list */
+      ring = sfi_ring_intersection (inputs, candidates, sfi_compare_pointers, NULL);
+      sfi_ring_free (candidates);
+      sfi_ring_free (inputs);
+      inputs = ring;
+      /* eliminate stale inputs */
+      ring = sfi_ring_difference (self->inputs, inputs, sfi_compare_pointers, NULL);
+      while (ring)
+        bse_bus_disconnect (self, sfi_ring_pop_head (&ring));
+      /* add new inputs */
+      ring = sfi_ring_difference (inputs, self->inputs, sfi_compare_pointers, NULL);
+      while (ring)
+        bse_bus_connect (self, sfi_ring_pop_head (&ring));
+      sfi_ring_free (inputs);
+      sfi_ring_free (saved_inputs);
       break;
     case PROP_LEFT_VOLUME_dB:
       db = sfi_value_get_real (value);
@@ -156,8 +211,14 @@ bse_bus_get_property (GObject    *object,
   switch (param_id)
     {
       BseItem *parent;
+      BseItemSeq *iseq;
+      SfiRing *ring;
     case PROP_INPUTS:
-      g_value_set_boxed (value, NULL);
+      iseq = bse_item_seq_new();
+      ring = bse_bus_list_inputs (self);
+      while (ring)
+        bse_item_seq_append (iseq, sfi_ring_pop_head (&ring));
+      g_value_take_boxed (value, iseq);
       break;
     case PROP_LEFT_VOLUME_dB:
       sfi_value_set_real (value, bse_db_from_factor (self->left_volume, BSE_MIN_VOLUME_dB));
@@ -412,7 +473,7 @@ bse_bus_class_init (BseBusClass *class)
   gobject_class->finalize = bse_bus_finalize;
   
   item_class->set_parent = bse_bus_set_parent;
-  item_class->list_items = bse_bus_list_items;
+  item_class->get_candidates = bse_bus_get_candidates;
   
   source_class->prepare = bse_bus_prepare;
   source_class->context_create = bse_bus_context_create;
@@ -431,7 +492,7 @@ bse_bus_class_init (BseBusClass *class)
 					      0.1, SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, _("Signal Inputs"),
                               PROP_INPUTS,
-                              bse_param_spec_boxed ("inputs", _("Input Synths"), _("Synthesis modules used as input"),
+                              bse_param_spec_boxed ("inputs", _("Input Signals"), _("Synthesis signals used as bus input"),
                                                     BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Internals"),
 			      PROP_MASTER_OUTPUT,

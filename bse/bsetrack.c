@@ -47,7 +47,7 @@ enum {
   PROP_WAVE,
   PROP_MIDI_CHANNEL,
   PROP_N_VOICES,
-  PROP_POST_NET
+  PROP_PNET
 };
 
 /* --- prototypes --- */
@@ -62,9 +62,6 @@ static void         bse_track_set_property        (GObject       *object,
 static void         bse_track_get_property        (GObject       *object,
                                                    guint          param_id,
                                                    GValue        *value,
-                                                   GParamSpec    *pspec);
-static BseItemSeq*  bse_track_list_items          (BseItem       *item,
-                                                   guint          param_id,
                                                    GParamSpec    *pspec);
 static void         bse_track_store_private       (BseObject     *object,
                                                    BseStorage    *storage);
@@ -100,59 +97,6 @@ BSE_BUILTIN_TYPE (BseTrack)
 				   "BseTrack",
 				   "BSE track type",
 				   &track_info);
-}
-
-static void
-bse_track_class_init (BseTrackClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  gobject_class->set_property = bse_track_set_property;
-  gobject_class->get_property = bse_track_get_property;
-  gobject_class->dispose = bse_track_dispose;
-  gobject_class->finalize = bse_track_finalize;
-
-  object_class->store_private = bse_track_store_private;
-  object_class->restore_private = bse_track_restore_private;
-  
-  item_class->list_items = bse_track_list_items;
-  
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_MUTED,
-			      sfi_pspec_bool ("muted", _("Muted"), NULL,
-					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
-  bse_object_class_add_param (object_class, _("Synth Input"),
-			      PROP_SYNTH_NET,
-			      bse_param_spec_object ("snet", _("Custom Synth Net"), _("Synthesis network to be used as instrument"),
-						     BSE_TYPE_CSYNTH,
-						     SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, _("Synth Input"),
-			      PROP_WAVE,
-			      bse_param_spec_object ("wave", _("Custom Wave"), _("Wave to be used as instrument"),
-						     BSE_TYPE_WAVE,
-						     SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, _("Synth Input"),
-			      PROP_N_VOICES,
-			      sfi_pspec_int ("n_voices", _("Max Voixes"), _("Maximum number of voices for simultaneous playback"),
-					     16, 1, 256, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
-  bse_object_class_add_param (object_class, _("MIDI Instrument"),
-                              PROP_MIDI_CHANNEL,
-                              sfi_pspec_int ("midi_channel", _("MIDI Channel"),
-                                             _("Midi channel assigned to this track, 0 uses private per-track channel"),
-                                             0, 0, BSE_MIDI_MAX_CHANNELS, 1,
-                                             SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
-  bse_object_class_add_param (object_class, _("Synth Postprocess"),
-			      PROP_POST_NET,
-			      bse_param_spec_object ("pnet", _("Custom Postprocess Net"),
-                                                     _("Synthesis network to postprocess track sound"),
-						     BSE_TYPE_CSYNTH,
-						     SFI_PARAM_STANDARD));
-  signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }
 
 static gulong
@@ -317,35 +261,37 @@ track_uncross_part (BseItem *owner,
       }
 }
 
-static BseItemSeq*
-bse_track_list_items (BseItem    *item,
-                      guint       param_id,
-                      GParamSpec *pspec)
+static void
+bse_track_get_candidates (BseItem               *item,
+                          guint                  param_id,
+                          BsePropertyCandidates *pc,
+                          GParamSpec            *pspec)
 {
   BseTrack *self = BSE_TRACK (item);
-  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
       BseProject *project;
     case PROP_SYNTH_NET:
-      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a track instrument from"));
+      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
-    case PROP_POST_NET:
-      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+    case PROP_PNET:
+      bse_property_candidate_relabel (pc, _("Available Postprocessors"), _("List of available synthesis networks to choose a postprocessor from"));
+      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     case PROP_WAVE:
+      bse_property_candidate_relabel (pc, _("Available Waves"), _("List of available waves to choose as track instrument"));
       project = bse_item_get_project (item);
       if (project)
 	{
 	  BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
-	  bse_item_gather_items_typed (BSE_ITEM (wrepo), iseq, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
+	  bse_item_gather_items_typed (BSE_ITEM (wrepo), pc->items, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
 	}
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return iseq;
 }
 
 static void
@@ -490,7 +436,7 @@ bse_track_set_property (GObject      *object,
           bse_track_update_midi_channel (self);
         }
       break;
-    case PROP_POST_NET:
+    case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
 	{
           if (self->pnet)
@@ -533,7 +479,7 @@ bse_track_get_property (GObject    *object,
     case PROP_SYNTH_NET:
       bse_value_set_object (value, self->snet);
       break;
-    case PROP_POST_NET:
+    case PROP_PNET:
       bse_value_set_object (value, self->pnet);
       break;
     case PROP_WAVE:
@@ -905,4 +851,55 @@ bse_track_restore_private (BseObject  *object,
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
+}
+
+static void
+bse_track_class_init (BseTrackClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->set_property = bse_track_set_property;
+  gobject_class->get_property = bse_track_get_property;
+  gobject_class->dispose = bse_track_dispose;
+  gobject_class->finalize = bse_track_finalize;
+
+  object_class->store_private = bse_track_store_private;
+  object_class->restore_private = bse_track_restore_private;
+  
+  item_class->get_candidates = bse_track_get_candidates;
+  
+  bse_object_class_add_param (object_class, _("Adjustments"),
+			      PROP_MUTED,
+			      sfi_pspec_bool ("muted", _("Muted"), NULL,
+					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
+  bse_object_class_add_param (object_class, _("Synth Input"),
+			      PROP_SYNTH_NET,
+			      bse_param_spec_object ("snet", _("Synthesizer"), _("Synthesis network to be used as instrument"),
+						     BSE_TYPE_CSYNTH,
+						     SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("Synth Input"),
+			      PROP_WAVE,
+			      bse_param_spec_object ("wave", _("Wave"), _("Wave to be used as instrument"),
+						     BSE_TYPE_WAVE,
+						     SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("Synth Input"),
+			      PROP_N_VOICES,
+			      sfi_pspec_int ("n_voices", _("Max Voixes"), _("Maximum number of voices for simultaneous playback"),
+					     16, 1, 256, 1,
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
+  bse_object_class_add_param (object_class, _("MIDI Instrument"),
+                              PROP_MIDI_CHANNEL,
+                              sfi_pspec_int ("midi_channel", _("MIDI Channel"),
+                                             _("Midi channel assigned to this track, 0 uses private per-track channel"),
+                                             0, 0, BSE_MIDI_MAX_CHANNELS, 1,
+                                             SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
+  bse_object_class_add_param (object_class, _("MIDI Instrument"),
+			      PROP_PNET,
+			      bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
+						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
+  signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }

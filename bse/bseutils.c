@@ -139,6 +139,42 @@ bse_note_sequence_length (BseNoteSequence *rec)
   return rec->notes->n_notes;
 }
 
+void
+bse_property_candidate_relabel (BsePropertyCandidates *pc,
+                                const gchar           *nick,
+                                const gchar           *tooltip)
+{
+  g_free (pc->nick);
+  pc->nick = g_strdup (nick);
+  g_free (pc->tooltip);
+  pc->tooltip = g_strdup (tooltip);
+}
+
+void
+bse_item_seq_remove (BseItemSeq *iseq,
+                     BseItem    *item)
+{
+  guint i;
+ restart:
+  for (i = 0; i < iseq->n_items; i++)
+    if (iseq->items[i] == item)
+      {
+        iseq->n_items--;
+        g_memmove (iseq->items + i, iseq->items + i + 1, (iseq->n_items - i) * sizeof (iseq->items[0]));
+        goto restart;
+      }
+}
+
+SfiRing*
+bse_item_seq_to_ring (BseItemSeq *iseq)
+{
+  SfiRing *ring = NULL;
+  guint i;
+  if (iseq)
+    for (i = 0; i < iseq->n_items; i++)
+      ring = sfi_ring_append (ring, iseq->items[i]);
+  return ring;
+}
 
 /* --- balance calculation --- */
 double

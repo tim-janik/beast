@@ -51,9 +51,6 @@ static void     bse_wave_osc_get_property       (GObject                *object,
                                                  guint                   param_id,
                                                  GValue                 *value,
                                                  GParamSpec             *pspec);
-static BseItemSeq* bse_wave_osc_list_items      (BseItem                *item,
-                                                 guint                   param_id,
-                                                 GParamSpec             *pspec);
 static void     bse_wave_osc_context_create     (BseSource              *source,
                                                  guint                   context_handle,
                                                  BseTrans               *trans);
@@ -99,66 +96,6 @@ BSE_BUILTIN_TYPE (BseWaveOsc)
 }
 
 static void
-bse_wave_osc_class_init (BseWaveOscClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint ochannel, ichannel;
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  gobject_class->set_property = bse_wave_osc_set_property;
-  gobject_class->get_property = bse_wave_osc_get_property;
-  gobject_class->finalize = bse_wave_osc_finalize;
-  gobject_class->dispose = bse_wave_osc_dispose;
-  
-  item_class->list_items = bse_wave_osc_list_items;
-  
-  source_class->context_create = bse_wave_osc_context_create;
-  
-  bse_object_class_add_param (object_class, _("Wave"),
-                              PARAM_WAVE,
-                              bse_param_spec_object ("wave", _("Wave"), _("Wave to play"),
-                                                     BSE_TYPE_WAVE, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, _("Modulation"),
-                              PARAM_FM_PERC,
-                              sfi_pspec_real ("fm_perc", _("Input Modulation [%]"),
-                                              _("Modulation Strength for linear frequency modulation"),
-                                              10.0, 0, 100.0,5.0,
-                                              SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, _("Modulation"),
-                              PARAM_FM_EXP,
-                              sfi_pspec_bool ("exponential_fm", _("Exponential FM"),
-                                              _("Perform exponential frequency modulation "
-                                                "instead of linear"),
-                                              FALSE, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, _("Modulation"),
-                              PARAM_FM_OCTAVES,
-                              sfi_pspec_real ("fm_n_octaves", _("Octaves"),
-                                              _("Number of octaves to be affected by exponential frequency modulation"),
-                                              1.0, 0, 3.0, 0.01,
-                                              SFI_PARAM_STANDARD ":scale"));
-  
-  signal_notify_pcm_position = bse_object_class_add_signal (object_class, "notify_pcm_position",
-                                                            G_TYPE_NONE, 2,
-                                                            SFI_TYPE_NUM,
-                                                            G_TYPE_INT);
-  
-  ichannel = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Frequency Input"));
-  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
-  ichannel = bse_source_class_add_ichannel (source_class, "sync-in", _("Sync In"), _("Syncronization Input"));
-  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_SYNC);
-  ichannel = bse_source_class_add_ichannel (source_class, "mod-in", _("Mod In"), _("Modulation Input"));
-  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_MOD);
-  ochannel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Wave Output"));
-  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_WAVE);
-  ochannel = bse_source_class_add_ochannel (source_class, "gate-out", _("Gate Out"), _("Gate Output"));
-  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_GATE);
-}
-
-static void
 bse_wave_osc_init (BseWaveOsc *self)
 {
   self->wave = NULL;
@@ -174,30 +111,29 @@ bse_wave_osc_init (BseWaveOsc *self)
   self->config.cfreq = 440.;
 }
 
-static BseItemSeq*
-bse_wave_osc_list_items (BseItem    *item,
-                         guint       param_id,
-                         GParamSpec *pspec)
+static void
+bse_wave_osc_get_candidates (BseItem               *item,
+                             guint                  param_id,
+                             BsePropertyCandidates *pc,
+                             GParamSpec            *pspec)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (item);
-  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
       BseProject *project;
     case PARAM_WAVE:
+      bse_property_candidate_relabel (pc, _("Available Waves"), _("List of available waves to choose as oscillator source"));
       project = bse_item_get_project (item);
       if (project)
         {
           BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
-          
-          bse_item_gather_items_typed (BSE_ITEM (wrepo), iseq, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
+          bse_item_gather_items_typed (BSE_ITEM (wrepo), pc->items, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
         }
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return iseq;
 }
 
 static void
@@ -569,4 +505,64 @@ bse_wave_osc_request_pcm_position (BseWaveOsc *self,
                                  pcm_pos_access_free,
                                  NULL);
     }
+}
+
+static void
+bse_wave_osc_class_init (BseWaveOscClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  guint ochannel, ichannel;
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->set_property = bse_wave_osc_set_property;
+  gobject_class->get_property = bse_wave_osc_get_property;
+  gobject_class->finalize = bse_wave_osc_finalize;
+  gobject_class->dispose = bse_wave_osc_dispose;
+  
+  item_class->get_candidates = bse_wave_osc_get_candidates;
+  
+  source_class->context_create = bse_wave_osc_context_create;
+  
+  bse_object_class_add_param (object_class, _("Wave"),
+                              PARAM_WAVE,
+                              bse_param_spec_object ("wave", _("Wave"), _("Wave used as oscillator source"),
+                                                     BSE_TYPE_WAVE, SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("Modulation"),
+                              PARAM_FM_PERC,
+                              sfi_pspec_real ("fm_perc", _("Input Modulation [%]"),
+                                              _("Modulation Strength for linear frequency modulation"),
+                                              10.0, 0, 100.0,5.0,
+                                              SFI_PARAM_STANDARD ":scale"));
+  bse_object_class_add_param (object_class, _("Modulation"),
+                              PARAM_FM_EXP,
+                              sfi_pspec_bool ("exponential_fm", _("Exponential FM"),
+                                              _("Perform exponential frequency modulation "
+                                                "instead of linear"),
+                                              FALSE, SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("Modulation"),
+                              PARAM_FM_OCTAVES,
+                              sfi_pspec_real ("fm_n_octaves", _("Octaves"),
+                                              _("Number of octaves to be affected by exponential frequency modulation"),
+                                              1.0, 0, 3.0, 0.01,
+                                              SFI_PARAM_STANDARD ":scale"));
+  
+  signal_notify_pcm_position = bse_object_class_add_signal (object_class, "notify_pcm_position",
+                                                            G_TYPE_NONE, 2,
+                                                            SFI_TYPE_NUM,
+                                                            G_TYPE_INT);
+  
+  ichannel = bse_source_class_add_ichannel (source_class, "freq-in", _("Freq In"), _("Frequency Input"));
+  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
+  ichannel = bse_source_class_add_ichannel (source_class, "sync-in", _("Sync In"), _("Syncronization Input"));
+  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_SYNC);
+  ichannel = bse_source_class_add_ichannel (source_class, "mod-in", _("Mod In"), _("Modulation Input"));
+  g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_MOD);
+  ochannel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Wave Output"));
+  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_WAVE);
+  ochannel = bse_source_class_add_ochannel (source_class, "gate-out", _("Gate Out"), _("Gate Output"));
+  g_assert (ochannel == BSE_WAVE_OSC_OCHANNEL_GATE);
 }

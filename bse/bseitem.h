@@ -60,20 +60,20 @@ struct _BseItemClass
 {
   BseObjectClass parent_class;
   
-  BseItemSeq*   (*list_items)    (BseItem       *item,
-                                  guint          param_id,
-                                  GParamSpec    *pspec);
-  
-  void          (*set_parent)    (BseItem       *item,
-                                  BseItem       *parent);
-  gboolean      (*needs_storage) (BseItem       *item,
-                                  BseStorage    *storage);
-  void          (*compat_setup)  (BseItem       *item,
-                                  guint          vmajor,
-                                  guint          vminor,
-                                  guint          vmicro);
-  guint         (*get_seqid)     (BseItem       *item);
-  BseUndoStack* (*get_undo)      (BseItem       *item);
+  void          (*get_candidates) (BseItem               *item,
+                                   guint                  param_id,
+                                   BsePropertyCandidates *pc,
+                                   GParamSpec            *pspec);
+  void          (*set_parent)     (BseItem               *item,
+                                   BseItem               *parent);
+  gboolean      (*needs_storage)  (BseItem               *item,
+                                   BseStorage            *storage);
+  void          (*compat_setup)   (BseItem               *item,
+                                   guint                  vmajor,
+                                   guint                  vminor,
+                                   guint                  vmicro);
+  guint         (*get_seqid)      (BseItem               *item);
+  BseUndoStack* (*get_undo)       (BseItem               *item);
 };
 
 typedef void     (*BseItemUncross)           (BseItem        *owner,
@@ -87,19 +87,20 @@ typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
 
 
 /* --- prototypes --- */
-BseItemSeq*    bse_item_gather_items         (BseItem              *item,
-                                              BseItemSeq           *iseq,
-                                              GType                 base_type,
-                                              BseItemCheckContainer ccheck,
-                                              BseItemCheckProxy     pcheck,
-                                              gpointer              data);
-BseItemSeq*    bse_item_gather_items_typed   (BseItem              *item,
-                                              BseItemSeq           *iseq,
-                                              GType                 proxy_type,
-                                              GType                 container_type,
-                                              gboolean              allow_ancestor);
-BseItemSeq*    bse_item_list_items           (BseItem         *item,
-                                              const gchar     *property);
+BseItemSeq*    bse_item_gather_items         (BseItem                *item,
+                                              BseItemSeq             *iseq,
+                                              GType                   base_type,
+                                              BseItemCheckContainer   ccheck,
+                                              BseItemCheckProxy       pcheck,
+                                              gpointer                data);
+BseItemSeq*    bse_item_gather_items_typed   (BseItem                *item,
+                                              BseItemSeq             *iseq,
+                                              GType                   proxy_type,
+                                              GType                   container_type,
+                                              gboolean                allow_ancestor);
+gboolean        bse_item_get_candidates      (BseItem                *item,
+                                              const gchar            *property,
+                                              BsePropertyCandidates  *pc);
 void            bse_item_set_internal        (gpointer         item,
                                               gboolean         internal);
 gboolean        bse_item_needs_storage       (BseItem         *item,

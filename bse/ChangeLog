@@ -1,3 +1,27 @@
+Sat Aug 28 14:54:39 2004  Tim Janik  <timj@gtk.org>
+
+	* bseutils.c (bse_item_seq_to_ring): implemented ::inputs property
+	handling.
+
+	* bsecore.idl: added PropertyCandidates structure.
+
+	* bseitem.[hc]: replaced bse_item_list_items() by
+	bse_item_get_candidates() which has additional support for an i18n
+	label and tooltip for the candidates.
+
+	* bseitem.proc: provide get-property-candidates() instead of list-items().
+
+	* bseutils.[hc]: added helper functions: bse_property_candidate_relabel(),
+	bse_item_seq_remove(), bse_item_seq_to_ring().
+
+	* bsesong.c:
+	* bsetrack.c:
+	* bsewaveosc.c:
+	* bsesubsynth.c:
+	* bsemidisynth.c: get_candidates() adaptions, cleanups.
+
+	* bsesong.c: i18n fixups.
+
 Wed Aug 25 23:24:23 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseenginemaster.c: Fix memcpy in master_take_probes to copy the

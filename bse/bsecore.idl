@@ -236,6 +236,13 @@ sequence ItemSeq {
   Item   items;
 };
 
+record PropertyCandidates {
+  Info    BLURB = ("A strcuture describing tentative property values.");
+  String  nick;
+  String  tooltip;
+  ItemSeq items;
+};
+
 record PartNote
 {
   Info     BLURB        = "Part specific note representation";

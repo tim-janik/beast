@@ -37,7 +37,7 @@ enum
   PROP_MIDI_CHANNEL,
   PROP_N_VOICES,
   PROP_SNET,
-  PROP_POST_NET,
+  PROP_PNET,
   PROP_VOLUME_f,
   PROP_VOLUME_dB,
   PROP_VOLUME_PERC,
@@ -56,9 +56,6 @@ static void         bse_midi_synth_set_property        (GObject           *objec
 static void         bse_midi_synth_get_property        (GObject           *msynth,
                                                         guint              param_id,
                                                         GValue            *value,
-                                                        GParamSpec        *pspec);
-static BseItemSeq*  bse_midi_synth_list_items          (BseItem           *item,
-                                                        guint              param_id,
                                                         GParamSpec        *pspec);
 static void         bse_midi_synth_context_create      (BseSource         *source,
                                                         guint              context_handle,
@@ -96,70 +93,6 @@ BSE_BUILTIN_TYPE (BseMidiSynth)
 					      &snet_info);
   
   return midi_synth_type;
-}
-
-static void
-bse_midi_synth_class_init (BseMidiSynthClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  gobject_class->set_property = bse_midi_synth_set_property;
-  gobject_class->get_property = bse_midi_synth_get_property;
-  gobject_class->finalize = bse_midi_synth_finalize;
-  
-  item_class->list_items = bse_midi_synth_list_items;
-  
-  source_class->context_create = bse_midi_synth_context_create;
-  
-  bse_object_class_add_param (object_class, "MIDI Instrument",
-			      PROP_MIDI_CHANNEL,
-			      sfi_pspec_int ("midi_channel", "MIDI Channel", NULL,
-					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
-  bse_object_class_add_param (object_class, "MIDI Instrument",
-			      PROP_N_VOICES,
-			      sfi_pspec_int ("n_voices", "Max Voices", "Maximum number of voices for simultaneous playback",
-					     16, 1, 256, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
-  bse_object_class_add_param (object_class, "MIDI Instrument",
-			      PROP_SNET,
-			      bse_param_spec_object ("snet", "Synthesis Network", "The MIDI instrument synthesis network",
-						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "MIDI Instrument",
-                              PROP_POST_NET,
-                              bse_param_spec_object ("pnet", "Custom Postprocess Net",
-                                                     "Synthesis network to postprocess MIDI sound",
-                                                     BSE_TYPE_CSYNTH,
-                                                     SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Adjustments",
-			      PROP_VOLUME_f,
-			      sfi_pspec_real ("volume_f", "Master [float]", NULL,
-					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
-					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB), 0.1,
-					      SFI_PARAM_STORAGE));
-  bse_object_class_add_param (object_class, "Adjustments",
-			      PROP_VOLUME_dB,
-			      sfi_pspec_real ("volume_dB", "Master [dB]", NULL,
-					      BSE_DFL_MASTER_VOLUME_dB,
-					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-					      BSE_GCONFIG (step_volume_dB),
-					      SFI_PARAM_GUI ":dial"));
-  bse_object_class_add_param (object_class, "Adjustments",
-			      PROP_VOLUME_PERC,
-			      sfi_pspec_int ("volume_perc", "Master [%]", NULL,
-					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
-					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-					     SFI_PARAM_GUI ":dial"));
-  bse_object_class_add_param (object_class, "Playback Settings",
-			      PROP_AUTO_ACTIVATE,
-			      sfi_pspec_bool ("auto_activate", NULL, NULL,
-					      TRUE, /* change default */
-					      /* override parent property */ 0));
 }
 
 static void
@@ -280,26 +213,27 @@ bse_midi_synth_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static BseItemSeq*
-bse_midi_synth_list_items (BseItem    *item,
-                           guint       param_id,
-                           GParamSpec *pspec)
+static void
+bse_midi_synth_get_candidates (BseItem               *item,
+                               guint                  param_id,
+                               BsePropertyCandidates *pc,
+                               GParamSpec            *pspec)
 {
   BseMidiSynth *self = BSE_MIDI_SYNTH (item);
-  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
     case PROP_SNET:
-      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a MIDI instrument from"));
+      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
-    case PROP_POST_NET:
-      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+    case PROP_PNET:
+      bse_property_candidate_relabel (pc, _("Available Postprocessors"), _("List of available synthesis networks to choose a postprocessor from"));
+      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return iseq;
 }
 
 static void
@@ -347,7 +281,7 @@ bse_midi_synth_set_property (GObject      *object,
                         NULL);
         }
       break;
-    case PROP_POST_NET:
+    case PROP_PNET:
       if (!BSE_SOURCE_PREPARED (self))
         {
           if (self->pnet)
@@ -421,7 +355,7 @@ bse_midi_synth_get_property (GObject    *object,
     case PROP_SNET:
       bse_value_set_object (value, self->snet);
       break;
-    case PROP_POST_NET:
+    case PROP_PNET:
       bse_value_set_object (value, self->pnet);
       break;
     case PROP_MIDI_CHANNEL:
@@ -463,4 +397,67 @@ bse_midi_synth_context_create (BseSource *source,
       for (i = 0; i < self->n_voices; i++)
 	bse_snet_context_clone_branch (snet, context_handle, self->context_merger, mcontext, trans);
     }
+}
+
+static void
+bse_midi_synth_class_init (BseMidiSynthClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->set_property = bse_midi_synth_set_property;
+  gobject_class->get_property = bse_midi_synth_get_property;
+  gobject_class->finalize = bse_midi_synth_finalize;
+  
+  item_class->get_candidates = bse_midi_synth_get_candidates;
+  
+  source_class->context_create = bse_midi_synth_context_create;
+  
+  bse_object_class_add_param (object_class, _("MIDI Instrument"),
+			      PROP_MIDI_CHANNEL,
+			      sfi_pspec_int ("midi_channel", _("MIDI Channel"), NULL,
+					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
+  bse_object_class_add_param (object_class, _("MIDI Instrument"),
+			      PROP_N_VOICES,
+			      sfi_pspec_int ("n_voices", _("Max Voices"), _("Maximum number of voices for simultaneous playback"),
+					     16, 1, 256, 1,
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
+  bse_object_class_add_param (object_class, _("MIDI Instrument"),
+			      PROP_SNET,
+			      bse_param_spec_object ("snet", _("Synthesizer"), _("Synthesis network to be used as MIDI instrument"),
+						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("MIDI Instrument"),
+                              PROP_PNET,
+                              bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
+                                                     BSE_TYPE_CSYNTH,
+                                                     SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("Adjustments"),
+			      PROP_VOLUME_f,
+			      sfi_pspec_real ("volume_f", _("Master [float]"), NULL,
+					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB), 0.1,
+					      SFI_PARAM_STORAGE));
+  bse_object_class_add_param (object_class, _("Adjustments"),
+			      PROP_VOLUME_dB,
+			      sfi_pspec_real ("volume_dB", _("Master [dB]"), NULL,
+					      BSE_DFL_MASTER_VOLUME_dB,
+					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+					      BSE_GCONFIG (step_volume_dB),
+					      SFI_PARAM_GUI ":dial"));
+  bse_object_class_add_param (object_class, _("Adjustments"),
+			      PROP_VOLUME_PERC,
+			      sfi_pspec_int ("volume_perc", _("Master [%]"), NULL,
+					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
+					     SFI_PARAM_GUI ":dial"));
+  bse_object_class_add_param (object_class, _("Playback Settings"),
+			      PROP_AUTO_ACTIVATE,
+			      sfi_pspec_bool ("auto_activate", NULL, NULL,
+					      TRUE, /* change default */
+					      /* override parent property */ 0));
 }

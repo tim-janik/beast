@@ -48,9 +48,6 @@ static void             bse_item_get_property_internal  (GObject                
 static void             bse_item_update_state           (BseItem                *self);
 static gboolean         bse_item_real_needs_storage     (BseItem                *self,
                                                          BseStorage             *storage);
-static BseItemSeq*      bse_item_list_no_items          (BseItem                *item,
-                                                         guint                   param_id,
-                                                         GParamSpec             *pspec);
 static void             bse_item_do_dispose             (GObject                *object);
 static void             bse_item_do_finalize            (GObject                *object);
 static void             bse_item_do_set_uname           (BseObject              *object,
@@ -92,9 +89,17 @@ BSE_BUILTIN_TYPE (BseItem)
 }
 
 static void
+bse_item_get_no_candidates (BseItem               *item,
+                            guint                  param_id,
+                            BsePropertyCandidates *pc,
+                            GParamSpec            *pspec)
+{
+}
+
+static void
 bse_item_class_init_base (BseItemClass *class)
 {
-  class->list_items = bse_item_list_no_items;
+  class->get_candidates = bse_item_get_no_candidates;
 }
 
 static void
@@ -195,14 +200,6 @@ bse_item_do_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
   
   g_return_if_fail (item->use_count == 0);
-}
-
-static BseItemSeq*
-bse_item_list_no_items (BseItem    *item,
-                        guint       param_id,
-                        GParamSpec *pspec)
-{
-  return bse_item_seq_new ();
 }
 
 static void
@@ -426,21 +423,26 @@ bse_item_gather_items_typed (BseItem              *item,
                                   gather_typed_ccheck, gather_typed_acheck, (gpointer) container_type);
 }
 
-BseItemSeq*
-bse_item_list_items (BseItem     *item,
-                     const gchar *property)
+gboolean
+bse_item_get_candidates (BseItem                *item,
+                         const gchar            *property,
+                         BsePropertyCandidates  *pc)
 {
   BseItemClass *class;
   GParamSpec *pspec;
   
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-  g_return_val_if_fail (property != NULL, NULL);
-  
+  g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
+  g_return_val_if_fail (property != NULL, FALSE);
+  g_return_val_if_fail (pc != NULL, FALSE);
+
   pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), property);
   if (!pspec)
-    return NULL;
+    return FALSE;
+  if (!pc->items)
+    pc->items = bse_item_seq_new();
   class = g_type_class_peek (pspec->owner_type);
-  return class->list_items (item, pspec->param_id, pspec);
+  class->get_candidates (item, pspec->param_id, pc, pspec);
+  return TRUE;
 }
 
 BseItem*

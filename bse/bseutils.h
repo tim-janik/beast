@@ -30,28 +30,34 @@ void    bse_cxx_checks    (void);
 
 
 /* --- record utils --- */
-BseNoteDescription* bse_note_description            (SfiInt              note,
-                                                     gint                fine_tune);
-BsePartNote*        bse_part_note                    (guint              id,
-                                                      guint              channel,
-                                                      guint              tick,
-                                                      guint              duration,
-                                                      gint               note,
-                                                      gint               fine_tune,
-                                                      gfloat             velocity,
-                                                      gboolean           selected);
-void                bse_part_note_seq_take_append    (BsePartNoteSeq    *seq,
-                                                      BsePartNote       *element);
-BsePartControl*     bse_part_control                 (guint              id,
-                                                      guint              tick,
-                                                      BseMidiSignalType  ctype,
-                                                      gfloat             value,
-                                                      gboolean           selected);
-void                bse_part_control_seq_take_append (BsePartControlSeq *seq,
-                                                      BsePartControl    *element);
-void                bse_note_sequence_resize         (BseNoteSequence   *rec,
-                                                      guint              length);
-guint               bse_note_sequence_length         (BseNoteSequence   *rec);
+BseNoteDescription* bse_note_description             (SfiInt                 note,
+                                                      gint                   fine_tune);
+BsePartNote*        bse_part_note                    (guint                  id,
+                                                      guint                  channel,
+                                                      guint                  tick,
+                                                      guint                  duration,
+                                                      gint                   note,
+                                                      gint                   fine_tune,
+                                                      gfloat                 velocity,
+                                                      gboolean               selected);
+void                bse_part_note_seq_take_append    (BsePartNoteSeq        *seq,
+                                                      BsePartNote           *element);
+BsePartControl*     bse_part_control                 (guint                  id,
+                                                      guint                  tick,
+                                                      BseMidiSignalType      ctype,
+                                                      gfloat                 value,
+                                                      gboolean               selected);
+void                bse_part_control_seq_take_append (BsePartControlSeq     *seq,
+                                                      BsePartControl        *element);
+void                bse_note_sequence_resize         (BseNoteSequence       *rec,
+                                                      guint                  length);
+guint               bse_note_sequence_length         (BseNoteSequence       *rec);
+void                bse_property_candidate_relabel   (BsePropertyCandidates *pc,
+                                                      const gchar           *nick,
+                                                      const gchar           *tooltip);
+void                bse_item_seq_remove              (BseItemSeq            *iseq,
+                                                      BseItem               *item);
+SfiRing*            bse_item_seq_to_ring             (BseItemSeq            *iseq);
 
 
 /* --- balance calculation --- */

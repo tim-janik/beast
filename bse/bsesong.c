@@ -42,7 +42,7 @@ enum
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
   PROP_BPM,
-  PROP_POST_NET,
+  PROP_PNET,
   PROP_AUTO_ACTIVATE,
   PROP_LOOP_ENABLED,
   PROP_LOOP_LEFT,
@@ -132,23 +132,23 @@ bse_song_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static BseItemSeq*
-bse_song_list_items (BseItem    *item,
-                     guint       param_id,
-                     GParamSpec *pspec)
+static void
+bse_song_get_candidates (BseItem               *item,
+                         guint                  param_id,
+                         BsePropertyCandidates *pc,
+                         GParamSpec            *pspec)
 {
   BseSong *self = BSE_SONG (item);
-  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
-    case PROP_POST_NET:
-      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+    case PROP_PNET:
+      bse_property_candidate_relabel (pc, _("Available Postprocessors"), _("List of available synthesis networks to choose a postprocessor from"));
+      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return iseq;
 }
 
 static void
@@ -199,7 +199,7 @@ bse_song_set_property (GObject      *object,
       self->bpm = sfi_value_get_real (value);
       bse_song_update_tpsi_SL (self);
       break;
-    case PROP_POST_NET:
+    case PROP_PNET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         {
           if (self->pnet)
@@ -314,7 +314,7 @@ bse_song_get_property (GObject     *object,
     case PROP_BPM:
       sfi_value_set_real (value, self->bpm);
       break;
-    case PROP_POST_NET:
+    case PROP_PNET:
       bse_value_set_object (value, self->pnet);
       break;
     case PROP_NUMERATOR:
@@ -690,7 +690,7 @@ bse_song_class_init (BseSongClass *class)
   gobject_class->finalize = bse_song_finalize;
   
   item_class->set_parent = bse_song_set_parent;
-  item_class->list_items = bse_song_list_items;
+  item_class->get_candidates = bse_song_get_candidates;
 
   source_class->prepare = bse_song_prepare;
   source_class->context_create = bse_song_context_create;
@@ -703,70 +703,68 @@ bse_song_class_init (BseSongClass *class)
 
   bse_song_timing_get_default (&timing);
 
-  bse_object_class_add_param (object_class, "Adjustments",
+  bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_VOLUME_f,
-			      sfi_pspec_real ("volume_f", "Master [float]", NULL,
+			      sfi_pspec_real ("volume_f", _("Master [float]"), NULL,
 					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
 					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB),
 					      0.1, SFI_PARAM_STORAGE ":skip-default")); // FIXME: fix volume
-  bse_object_class_add_param (object_class, "Adjustments",
+  bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_VOLUME_dB,
-			      sfi_pspec_real ("volume_dB", "Master [dB]", NULL,
+			      sfi_pspec_real ("volume_dB", _("Master [dB]"), NULL,
 					      BSE_DFL_MASTER_VOLUME_dB,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
 					      SFI_PARAM_GUI ":dial"));
-  bse_object_class_add_param (object_class, "Adjustments",
+  bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_VOLUME_PERC,
-			      sfi_pspec_int ("volume_perc", "Master [%]", NULL,
+			      sfi_pspec_int ("volume_perc", _("Master [%]"), NULL,
 					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 					     SFI_PARAM_GUI ":dial"));
-  bse_object_class_add_param (object_class, "Timing",
+  bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_TPQN,
-			      sfi_pspec_int ("tpqn", "Ticks", "Number of ticks per quarter note",
+			      sfi_pspec_int ("tpqn", _("Ticks"), _("Number of ticks per quarter note"),
 					     timing.tpqn, 384, 384, 0, SFI_PARAM_STANDARD_RDONLY));
-  bse_object_class_add_param (object_class, "Timing",
+  bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_NUMERATOR,
-			      sfi_pspec_int ("numerator", "Numerator", "Measure numerator",
+			      sfi_pspec_int ("numerator", _("Numerator"), _("Measure numerator"),
 					     timing.numerator, 1, 256, 1, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Timing",
+  bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_DENOMINATOR,
-			      sfi_pspec_int ("denominator", "Denominator", "Measure denominator, must be a power of 2",
+			      sfi_pspec_int ("denominator", _("Denominator"), _("Measure denominator, must be a power of 2"),
 					     timing.denominator, 1, 256, 0, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Timing",
+  bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_BPM,
-			      sfi_pspec_real ("bpm", "Beats per minute", NULL,
+			      sfi_pspec_real ("bpm", _("Beats per minute"), NULL,
 					      timing.bpm,
 					      BSE_MIN_BPM, BSE_MAX_BPM,
 					      BSE_GCONFIG (step_bpm),
 					      SFI_PARAM_STANDARD ":scale"));
-  bse_object_class_add_param (object_class, "Synth Postprocess",
-                              PROP_POST_NET,
-                              bse_param_spec_object ("pnet", "Custom Postprocess Net",
-                                                     "Synthesis network to postprocess song sound",
-                                                     BSE_TYPE_CSYNTH,
-                                                     SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Playback Settings",
+  bse_object_class_add_param (object_class, _("MIDI Instrument"),
+                              PROP_PNET,
+                              bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
+                                                     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("Playback Settings"),
 			      PROP_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,
 					      TRUE, /* change default */
 					      /* override parent property */ 0));
-  bse_object_class_add_param (object_class, "Looping",
+  bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_ENABLED,
 			      sfi_pspec_bool ("loop_enabled", NULL, NULL,
 					      FALSE, SFI_PARAM_READWRITE ":skip-undo"));
-  bse_object_class_add_param (object_class, "Looping",
+  bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_LEFT,
 			      sfi_pspec_int ("loop_left", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
 					     SFI_PARAM_READWRITE ":skip-undo"));
-  bse_object_class_add_param (object_class, "Looping",
+  bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_LOOP_RIGHT,
 			      sfi_pspec_int ("loop_right", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
 					     SFI_PARAM_READWRITE ":skip-undo"));
-  bse_object_class_add_param (object_class, "Looping",
+  bse_object_class_add_param (object_class, _("Looping"),
 			      PROP_TICK_POINTER,
 			      sfi_pspec_int ("tick_pointer", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
