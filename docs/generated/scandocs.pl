@@ -198,6 +198,15 @@ sub tags_print_description {
 	print "@*\n\n";
     }
 }
+sub sort_items {
+    my $list = shift;
+
+    return unless ref($list) eq 'ARRAY';
+
+    @{$list} = sort { ${$a}{name} cmp ${$b}{name} } @{$list};
+}
+
+sort_items(\@records);
 
 my %test_hash = ();
 my @dups = ();
@@ -256,7 +265,7 @@ if (@seealso) {
 print <<FOOTER;
 
 \@*
-\@revision{Document Revision:}
+\@revision{Document Revised:}
 \@bye
 FOOTER
 

@@ -1,3 +1,9 @@
+Sat Jan  4 12:42:10 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* bse/bseautodoc.c: s/Document Revision/Document Revised/.
+	
+	* docs/generated/scandocs.pl: fix sorting of function descriptions.
+	
 Fri Jan  3 08:46:46 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: 
