@@ -163,15 +163,13 @@
     prop:activatable="$(null-collapse,$per-action)" prop:regulate="$(null-collapse,$per-action)" />
   <xdef:factory-branch        inherit="GxkFactoryBranch"
     prop:uline-label="$label"
-    prop:hidden="$hidden"
-    prop:last-branch="$last"
     />
   <!-- menu-factory: actions= separator= -->
   <xdef:menu-factory inherit="gadget-factory"
     prop:per-branch="menu-factory-branch"
     per-list="$(if,$separator,menu-factory-per-list,)"
     per-action="menu-factory-per-action" />
-  <xdef:menu-factory-branch inherit="submenu" label="$action-name" hide-insensitive="$action-hidden" last="$action-last" />
+  <xdef:menu-factory-branch inherit="submenu" label="$action-name" hide-insensitive="$hidden" />
   <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
   <xdef:menu-factory-per-action inherit="menu-item"
     label="$action-name"

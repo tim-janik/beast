@@ -75,10 +75,9 @@ void    gxk_gadget_factory_match                (GxkGadgetFactory       *self,
 #define GXK_IS_FACTORY_BRANCH_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_FACTORY_BRANCH))
 #define GXK_FACTORY_BRANCH_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_FACTORY_BRANCH, GxkFactoryBranchClass))
 typedef struct {
-  GObject parent_instance;
-  gchar  *uline_label;
-  guint   hidden : 1;
-  guint   last_branch : 1;
+  GObject       parent_instance;
+  gchar        *uline_label;
+  GxkGadgetOpt *branch_options;
 } GxkFactoryBranch;
 typedef GObjectClass GxkFactoryBranchClass;
 GType   gxk_factory_branch_get_type          (void);

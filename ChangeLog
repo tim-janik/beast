@@ -1,3 +1,17 @@
+Mon Nov 17 01:16:40 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added stock image to /Utils
+	submenu of snet-popup.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: removed explicit property
+	settings from factory-branch, the call-variables are pass on now.
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: removed proeprties except
+	uline-label from GxkFactoryBranch. copy call-options for
+	GxkFactoryBranch at adopt() time and pass them on to branch creation.
+
+	* beast-gtk/gxk/gxkgadgetfactory.c (factory_branch_adopt): 
+
 Mon Nov 17 00:40:11 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkutils.[hc]: added gxk_factory_path_unescape_uline()
