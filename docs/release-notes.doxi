@@ -20,8 +20,8 @@ Specifics can be found in the
 Outstanding new features include support for skins, many sample
 file formats, MIDI file import abilities, an improved piano roll
 widget, the track editor which allows for easy selection of
-synthesisers or samples as track sources, loop support in songs
-and unlimited Undo/Redo capabilities.
+synthesisers or samples as track sources, loop support in songs,
+various scope types and unlimited Undo/Redo capabilities.
 
 Good starting points are the effects and instruments or the demo
 song shipped with BEAST, and of course the
