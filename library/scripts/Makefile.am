@@ -9,6 +9,7 @@ scripts_DATA = $(strip			\
 	modules2grid.scm		\
 	song-parts-operations.scm	\
 	part-harmonic-transposer.scm	\
+	mixer-splitup-by-track.scm	\
 )
 scriptsdir = $(bsescriptdir)
 
