@@ -1,3 +1,21 @@
+Wed Dec 29 14:36:17 1999  Tim Janik  <timj@gtk.org>
+
+	* bseheart.[hc]: completely revised the GSource part according to
+	docs/bse-heart.txt, highlights are over- and under-run detection
+	with retriggering and variable latency setting.
+	(bse_heart_mix_chunks): changed semantics, we unref and free the
+	chunk list now and return a newly created chunk.
+
+	* bsepcmdevice.[hc]: removed a lot of cruft such as the _iready() and
+	oready() interfaces and the capture cache.
+	implemented high level data processing API with input and output queues
+	according to docs/bse-heart.txt. added ability to retrigger input and
+	output for over-/under-run situations.
+	
+	* bsepcmdevice-oss.c:
+	* bsepcmdevice-alsa.c: bug fixes, minor adaptions to the BsePcmDevice
+	structure changes, more debug messages.
+
 Sun Dec 26 18:51:35 1999  Tim Janik  <timj@gtk.org>
 
 	* bseobject.[hc]: finally introduce a get_icon() class function and

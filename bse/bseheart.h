@@ -46,6 +46,8 @@ struct _BseHeart
 {
   BseObject	  parent_object;
 
+  guint		   latency;
+
   guint		   n_sources;
   BseSource	 **sources;
   guint		   n_devices;
@@ -106,8 +108,8 @@ BseIndex	bse_heart_get_beat_index	(void);
 void		bse_heart_beat			(BseHeart	*heart);
 GSList* /*fr*/	bse_heart_collect_chunks	(BseHeart	*heart,
 						 BseHeartDevice *odevice);
-BseSampleValue*	bse_heart_mix_chunks		(BseHeart	*heart,
-						 GSList		*chunk_list,
+BseChunk*/*fr*/	bse_heart_mix_chunks		(BseHeart	*heart,
+						 GSList /*af*/	*chunk_list,
 						 guint           n_tracks);
 void		bse_heart_queue_device		(BseHeart	*heart,
 						 BseHeartDevice	*hdevice);

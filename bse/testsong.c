@@ -74,7 +74,7 @@ main (int argc, char *argv[])
   
   /* Open output stream
    */
-  error = bse_pcm_device_open (pdev, FALSE, TRUE, 2, 44100, 1024);
+  error = bse_pcm_device_open (pdev, FALSE, TRUE, 2, 44100);
   if (error)
     {
       g_warning ("Opening %s \"%s\" failed: %s\n",
@@ -85,12 +85,11 @@ main (int argc, char *argv[])
     }
   else
     {
-      g_print ("Using %s \"%s\" with %uHz in %u channel mode, fragment size %d\n",
+      g_print ("Using %s \"%s\" with %uHz in %u channel mode\n",
 	       BSE_OBJECT_TYPE_NAME (pdev),
 	       bse_pcm_device_get_device_name (pdev),
 	       (guint) pdev->sample_freq,
-	       pdev->n_channels,
-	       pdev->fragment_size);
+	       pdev->n_channels);
       g_print ("output buffer size: %d\n", bse_globals->pcm_buffer_size);
     }
   

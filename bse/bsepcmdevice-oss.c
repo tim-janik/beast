@@ -25,7 +25,6 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 
 #include	<sys/soundcard.h>
 #include	<sys/ioctl.h>
-#include	<sys/time.h>
 #include	<unistd.h>
 #include	<errno.h>
 #include	<fcntl.h>
@@ -59,10 +58,12 @@ static BseErrorType bse_pcm_device_oss_open		(BsePcmDevice		*pdev,
 							 guint          	 fragment_size);
 static BseErrorType bse_pcm_device_oss_setup		(BsePcmDevice		*pdev,
 							 gboolean		 writable,
+							 gboolean		 readable,
 							 guint                   n_channels,
 							 BsePcmFreqMask 	 rate,
 							 guint                   n_fragments,
 							 guint          	 fragment_size);
+static void	    bse_pcm_device_oss_retrigger	(BsePcmDevice		*pdev);
 static void	    bse_pcm_device_oss_update_state	(BsePcmDevice   	*pdev);
 static gboolean	    bse_pcm_device_oss_in_playback	(BsePcmDevice		*pdev);
 static void	    bse_pcm_device_oss_close		(BsePcmDevice		*pdev);
@@ -115,6 +116,7 @@ bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
   pcm_device_class->device_name = bse_pcm_device_oss_device_name;
   pcm_device_class->update_caps = bse_pcm_device_oss_update_caps;
   pcm_device_class->open = bse_pcm_device_oss_open;
+  pcm_device_class->retrigger = bse_pcm_device_oss_retrigger;
   pcm_device_class->update_state = bse_pcm_device_oss_update_state;
   pcm_device_class->in_playback = bse_pcm_device_oss_in_playback;
   pcm_device_class->close = bse_pcm_device_oss_close;
@@ -182,7 +184,7 @@ bse_pcm_device_oss_open (BsePcmDevice  *pdev,
     }
   pdev->pfd.fd = fd;
   
-  error = bse_pcm_device_oss_setup (pdev, writable, n_channels, rate, 128, fragment_size);
+  error = bse_pcm_device_oss_setup (pdev, writable, readable, n_channels, rate, 128, fragment_size);
   if (error)
     close (fd);
   else
@@ -191,37 +193,6 @@ bse_pcm_device_oss_open (BsePcmDevice  *pdev,
 	BSE_OBJECT_SET_FLAGS (oss, BSE_PCM_FLAG_READABLE);
       if (writable)
 	BSE_OBJECT_SET_FLAGS (oss, BSE_PCM_FLAG_WRITABLE);
-    }
-
-  if (1)
-    {
-      fd_set in_fds;
-      struct timeval tv = { 0, 0, };
-      guint8 zero_buffer[32] = { 0, };
-      
-      /* Jaroslav Kysela <perex@jcu.cz>:
-       *  Important sequence:
-       *     1) turn on capture
-       *     2) write at least one fragment to create appropriate delay between
-       *        capture and playback; we need some time for process wakeup and
-       *        data copy in the user space
-       * e.g.:
-       * we write two fragments to playback
-       * software latency is:
-       *   2 * frag_size + delay between capture start & playback start
-       *
-       * TIMJ:
-       * what we do is, we actually fill up the whole write queue, since we
-       * don't (currently) care about small latency.
-       */
-      FD_ZERO (&in_fds);
-      FD_SET (pdev->pfd.fd, &in_fds);
-      select (pdev->pfd.fd + 1, &in_fds, NULL, NULL, &tv);
-      if (writable)
-	while (bse_pcm_device_oready (pdev, 32))
-	  write (pdev->pfd.fd, zero_buffer, 32);
-      if (readable)
-	read (pdev->pfd.fd, zero_buffer, 32);
     }
 
   return error;
@@ -236,34 +207,59 @@ bse_pcm_device_oss_close (BsePcmDevice *pdev)
 }
 
 static void
-bse_pcm_device_oss_update_state	(BsePcmDevice *pdev)
+bse_pcm_device_oss_retrigger (BsePcmDevice *pdev)
+{
+  int d_int;
+
+  /* historically, it used to be enough to select() on the
+   * fd to trigger capture/playback, but with some new OSS
+   * drivers (clones) this is not the case anymore, so we
+   * use the SNDCTL_DSP_SETTRIGGER ioctl to achive this.
+   */
+
+  d_int = 0;
+  if (BSE_PCM_DEVICE_READABLE (pdev))
+    d_int |= PCM_ENABLE_INPUT;
+  if (BSE_PCM_DEVICE_WRITABLE (pdev))
+    d_int |= PCM_ENABLE_OUTPUT;
+  (void) ioctl (pdev->pfd.fd, SNDCTL_DSP_SETTRIGGER, &d_int);
+}
+
+static void
+bse_pcm_device_oss_update_state (BsePcmDevice *pdev)
 {
   BsePcmDeviceOSS *oss = BSE_PCM_DEVICE_OSS (pdev);
   audio_buf_info info;
   
   memset (&info, 0, sizeof (info));
   (void) ioctl (pdev->pfd.fd, SNDCTL_DSP_GETISPACE, &info);
+  pdev->capture_buffer_size = info.fragstotal * info.fragsize;
   pdev->n_capture_bytes = info.fragments * info.fragsize;
+  pdev->n_capture_bytes = info.bytes;
   BSE_IF_DEBUG (PCM)
-    g_message ("ISPACE(%s) frags: total=%d size=%d count=%d bytes=%d n=%u\n",
+    g_message ("ISPACE(%s): left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
 	       oss->device_name,
+	       pdev->n_capture_bytes,
+	       pdev->capture_buffer_size,
 	       info.fragstotal,
 	       info.fragsize,
 	       info.fragments,
-	       info.bytes,
-	       pdev->n_capture_bytes);
+	       info.bytes);
   
   memset (&info, 0, sizeof (info));
   (void) ioctl (pdev->pfd.fd, SNDCTL_DSP_GETOSPACE, &info);
+  pdev->playback_buffer_size = info.fragstotal * info.fragsize;
   pdev->n_playback_bytes = info.fragments * info.fragsize;
+  pdev->n_playback_bytes = info.bytes;
   BSE_IF_DEBUG (PCM)
-    g_message ("OSPACE(%s) frags: total=%d size=%d count=%d bytes=%d n=%u\n",
+    g_message ("OSPACE(%s): left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
 	       oss->device_name,
+	       pdev->n_playback_bytes,
+	       pdev->playback_buffer_size,
 	       info.fragstotal,
 	       info.fragsize,
 	       info.fragments,
-	       info.bytes,
-	       pdev->n_playback_bytes);
+	       info.bytes);
 }
 
 static gboolean
@@ -279,12 +275,13 @@ bse_pcm_device_oss_in_playback (BsePcmDevice *pdev)
 static BseErrorType
 bse_pcm_device_oss_setup (BsePcmDevice	*pdev,
 			  gboolean       writable,
+			  gboolean       readable,
 			  guint          n_channels,
 			  BsePcmFreqMask rate,
 			  guint          n_fragments,
 			  guint          fragment_size)
 {
-  audio_buf_info info = { 0, };
+  BsePcmDeviceOSS *oss = BSE_PCM_DEVICE_OSS (pdev);
   gint fd = pdev->pfd.fd;
   glong d_long;
   gint d_int;
@@ -329,13 +326,37 @@ bse_pcm_device_oss_setup (BsePcmDevice	*pdev,
       d_int > 131072 ||
       (d_int & 1))
     return BSE_ERROR_DEVICE_GET_CAPS;
-  pdev->block_size = d_int;
+  /* pdev->block_size = d_int; */
+
+  if (writable)
+    {
+      audio_buf_info info = { 0, };
+
+      if (ioctl (fd, SNDCTL_DSP_GETOSPACE, &info) < 0)
+	return BSE_ERROR_DEVICE_GET_CAPS;
+      pdev->playback_buffer_size = info.fragstotal * info.fragsize;
+      pdev->n_playback_bytes = 0;
+    }
+  if (readable)
+    {
+      audio_buf_info info = { 0, };
+
+      if (ioctl (fd, SNDCTL_DSP_GETISPACE, &info) < 0)
+	return BSE_ERROR_DEVICE_GET_CAPS;
+      pdev->capture_buffer_size = info.fragstotal * info.fragsize;
+      pdev->n_capture_bytes = 0;
+    }
   
-  if (ioctl (fd, writable ? SNDCTL_DSP_GETOSPACE : SNDCTL_DSP_GETISPACE, &info) < 0)
-    return BSE_ERROR_DEVICE_GET_CAPS;
-  pdev->n_fragments = info.fragstotal;
-  pdev->fragment_size = info.fragsize;
-  
+  BSE_IF_DEBUG (PCM)
+    g_message ("SETUP(%s): w=%d r=%d n_channels=%d sample_freq=%.0f playback_bufsz=%d capture_bufsz=%d\n",
+               oss->device_name,
+	       writable,
+	       readable,
+	       pdev->n_channels,
+	       pdev->sample_freq,
+	       pdev->playback_buffer_size,
+	       pdev->capture_buffer_size);
+
   return BSE_ERROR_NONE;
 }
 

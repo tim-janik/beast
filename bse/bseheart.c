@@ -20,11 +20,23 @@
 #include "bsechunk.h"
 
 
+/* --- parameters --- */
+enum
+{
+  PARAM_0,
+  PARAM_LATENCY
+};
+
+
 /* --- prototypes --- */
 static void        bse_heart_init          (BseHeart      *heart);
 static void        bse_heart_class_init    (BseHeartClass *class);
 static void        bse_heart_shutdown      (BseObject     *object);
 static void        bse_heart_destroy       (BseObject     *object);
+static void        bse_heart_set_param     (BseHeart	  *heart,
+					    BseParam      *param);
+static void        bse_heart_get_param     (BseHeart	  *heart,
+					    BseParam      *param);
 static gboolean	   bse_heart_prepare	   (gpointer       source_data,
 					    GTimeVal      *current_time,
 					    gint          *timeout,
@@ -81,13 +93,24 @@ bse_heart_class_init (BseHeartClass *class)
   parent_class = bse_type_class_peek (BSE_TYPE_OBJECT);
   object_class = BSE_OBJECT_CLASS (class);
 
+  object_class->set_param = (BseObjectSetParamFunc) bse_heart_set_param;
+  object_class->get_param = (BseObjectGetParamFunc) bse_heart_get_param;
   object_class->shutdown = bse_heart_shutdown;
   object_class->destroy = bse_heart_destroy;
+
+  bse_object_class_add_param (object_class, NULL,
+			      PARAM_LATENCY,
+			      bse_param_spec_uint ("latency", "Latency [msecs]", NULL,
+						   10, 2 * 1000,
+						   50,
+						   1000,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_SCALE));
 }
 
 static void
 bse_heart_init (BseHeart *heart)
 {
+  heart->latency = 1000;
   heart->n_sources = 0;
   heart->sources = NULL;
   heart->n_devices = 0;
@@ -145,6 +168,44 @@ bse_heart_destroy (BseObject *object)
 
   g_message ("BseIndex: %lld", bse_heart_beat_index);
   bse_chunk_debug ();
+}
+
+static void
+bse_heart_set_param (BseHeart *heart,
+		     BseParam *param)
+{
+  switch (param->pspec->any.param_id)
+    {
+    case PARAM_LATENCY:
+      heart->latency = param->value.v_uint;
+      break;
+    default:
+      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
+		 BSE_OBJECT_TYPE_NAME (heart),
+		 BSE_OBJECT_NAME (heart),
+		 param->pspec->any.name,
+		 bse_type_name (param->pspec->type));
+      break;
+    }
+}
+
+static void
+bse_heart_get_param (BseHeart *heart,
+		     BseParam *param)
+{
+  switch (param->pspec->any.param_id)
+    {
+    case PARAM_LATENCY:
+      param->value.v_uint = heart->latency;
+      break;
+    default:
+      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
+		 BSE_OBJECT_TYPE_NAME (heart),
+		 BSE_OBJECT_NAME (heart),
+		 param->pspec->any.name,
+		 bse_type_name (param->pspec->type));
+      break;
+    }
 }
 
 BseHeart*
@@ -548,18 +609,14 @@ device_open_handler (gpointer data)
 					 hdevice->n_isources,
 					 hdevice->n_osources,
 					 2,
-					 BSE_MIX_FREQ,
-					 2 * BSE_TRACK_LENGTH * sizeof (BseSampleValue));
+					 BSE_MIX_FREQ);
 	  if (error)
 	    g_warning ("failed to open PCM Device \"%s\": %s",
 		       bse_pcm_device_get_device_name (pdev),
 		       bse_error_blurb (error));
 	  if (BSE_PCM_DEVICE_OPEN (pdev))
 	    {
-	      bse_pcm_device_set_capture_cache (pdev,
-						g_new0 (BseSampleValue,
-							BSE_TRACK_LENGTH * pdev->n_channels),
-						g_free);
+	      bse_pcm_device_retrigger (pdev);
 	      if (!heart->n_open_devices)
 		heart->mix_buffer = g_new (BseMixValue, BSE_TRACK_LENGTH * BSE_MAX_N_TRACKS);
 	      heart->n_open_devices++;
@@ -568,7 +625,6 @@ device_open_handler (gpointer data)
       else if (BSE_PCM_DEVICE_OPEN (pdev) && !hdevice->n_isources && !hdevice->n_osources)
 	{
 	  bse_pcm_device_close (pdev);
-	  bse_pcm_device_set_capture_cache (pdev, NULL, NULL);
 	  heart->n_open_devices--;
 	  if (!heart->n_open_devices)
 	    {
@@ -650,12 +706,13 @@ bse_heart_collect_chunks (BseHeart       *heart,
   return slist;
 }
 
-BseSampleValue*
+BseChunk* /* unref result */
 bse_heart_mix_chunks (BseHeart *heart,
-		      GSList   *chunk_list,
+		      GSList   *chunk_list, /* auto frees list and unrefs chunks */
 		      guint     n_tracks)
 {
   BseMixValue *mb, *mbe, *mv;
+  BseChunk *chunk;
   BseSampleValue *sv;
   GSList *slist;
   guint track_length = BSE_TRACK_LENGTH;
@@ -690,9 +747,12 @@ bse_heart_mix_chunks (BseHeart *heart,
 	  }
       else
 	g_assert_not_reached ();
+      bse_chunk_unref (chunk);
     }
+  g_slist_free (chunk_list);
 
-  sv = (BseSampleValue*) mb;
+  chunk = bse_chunk_new (n_tracks);
+  sv = chunk->hunk;
   for (mv = mb; mv < mbe; mv++)
     {
       register BseMixValue v = *mv;
@@ -703,8 +763,9 @@ bse_heart_mix_chunks (BseHeart *heart,
 	v = -32768;
       *(sv++) = v;
     }
+  chunk->hunk_filled = TRUE;
 
-  return (BseSampleValue*) mb;
+  return chunk;
 }
 
 static gboolean
@@ -714,42 +775,33 @@ bse_heart_prepare (gpointer  source_data,
 		   gpointer  user_data)
 {
   BseHeart *heart = BSE_HEART (source_data);
-  gboolean can_dispatch;
+  gulong msecs_wait = ~0;
   guint i;
-
-  can_dispatch = heart->n_open_devices > 0;
 
   for (i = 0; i < heart->n_devices; i++)
     {
       BseHeartDevice *hdevice = heart->devices + i;
       BsePcmDevice *pdev = hdevice->device;
 
-      if (hdevice->n_osources && BSE_PCM_DEVICE_WRITABLE (pdev))
+      if (BSE_PCM_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
 	{
-	  if (!bse_pcm_device_oready (pdev, BSE_TRACK_LENGTH * pdev->n_channels))
-	    {
-	      can_dispatch = FALSE;
-	      pdev->pfd.events |= G_IO_OUT;
-	    }
-	  else
-	    pdev->pfd.events &= ~G_IO_OUT;
-	}
-      if (hdevice->n_isources && BSE_PCM_DEVICE_READABLE (pdev))
-	{
-	  if (!bse_pcm_device_iready (pdev, BSE_TRACK_LENGTH * pdev->n_channels))
-	    {
-	      can_dispatch = FALSE;
-	      pdev->pfd.events |= G_IO_IN;
-	    }
-	  else
-	    pdev->pfd.events &= ~G_IO_IN;
+	  guint msecs;
+
+	  bse_pcm_device_time_warp (pdev);
+	  msecs = bse_pcm_device_need_processing (pdev, heart->latency);
+	  msecs_wait = MIN (msecs_wait, msecs);
+	  if (msecs == 0)
+	    break;
 	}
     }
 
   BSE_IF_DEBUG (LOOP)
-    g_message ("prepare, can_dispatch=%d", can_dispatch);
+    g_message ("prepare, timeout=%ld", msecs_wait);
 
-  return can_dispatch;
+  if (msecs_wait < ~0)
+    *timeout = msecs_wait;
+
+  return !msecs_wait;
 }
 
 static gboolean
@@ -758,42 +810,29 @@ bse_heart_check (gpointer  source_data,
 		 gpointer  user_data)
 {
   BseHeart *heart = BSE_HEART (source_data);
-  gboolean can_dispatch;
+  gboolean need_dispatch = FALSE;
   guint i;
-
-  can_dispatch = heart->n_open_devices > 0;
 
   for (i = 0; i < heart->n_devices; i++)
     {
       BseHeartDevice *hdevice = heart->devices + i;
       BsePcmDevice *pdev = hdevice->device;
 
-      if (BSE_PCM_DEVICE_WRITABLE (pdev) && pdev->pfd.events & G_IO_OUT)
+      if (BSE_PCM_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
 	{
-	  if (pdev->pfd.revents & G_IO_OUT)
+	  bse_pcm_device_time_warp (pdev);
+	  if (bse_pcm_device_need_processing (pdev, heart->latency) == 0)
 	    {
-	      pdev->pfd.events &= ~G_IO_OUT;
-	      pdev->pfd.revents &= ~G_IO_OUT;
+	      need_dispatch = TRUE;
+	      break;
 	    }
-	  else
-	    can_dispatch = FALSE;
-	}
-      if (BSE_PCM_DEVICE_READABLE (pdev) && pdev->pfd.events & G_IO_IN)
-	{
-	  if (pdev->pfd.revents & G_IO_IN)
-	    {
-	      pdev->pfd.events &= ~G_IO_IN;
-	      pdev->pfd.revents &= ~G_IO_IN;
-	    }
-	  else
-	    can_dispatch = FALSE;
 	}
     }
-  
-  BSE_IF_DEBUG (LOOP)
-    g_message ("check, can_dispatch=%d", can_dispatch);
 
-  return can_dispatch;
+  BSE_IF_DEBUG (LOOP)
+    g_message ("check, need_dispatch=%d", need_dispatch);
+
+  return need_dispatch;
 }
 
 static gboolean
@@ -802,59 +841,91 @@ bse_heart_dispatch (gpointer  source_data,
 		    gpointer  user_data)
 {
   BseHeart *heart = BSE_HEART (source_data);
+  gboolean need_cycle = FALSE;
   guint i;
-
+  
   BSE_IF_DEBUG (LOOP)
     g_message ("dispatching");
-
+  
   for (i = 0; i < heart->n_devices; i++)
     {
       BseHeartDevice *hdevice = heart->devices + i;
       BsePcmDevice *pdev = hdevice->device;
-
-      if (BSE_PCM_DEVICE_READABLE (pdev))
-	bse_pcm_device_read (pdev, BSE_TRACK_LENGTH * pdev->n_channels, pdev->capture_cache);
-    }
-
-  bse_heart_beat (heart); /* pet shop action ;) */
-
-  for (i = 0; i < heart->n_devices; i++)
-    {
-      BseHeartDevice *hdevice = heart->devices + i;
-      BsePcmDevice *pdev = hdevice->device;
-
-      if (BSE_PCM_DEVICE_WRITABLE (pdev) && hdevice->n_osources)
+      
+      if (BSE_PCM_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
 	{
-	  BseSampleValue *obuf;
-	  GSList *node, *slist = bse_heart_collect_chunks (heart, hdevice);
-	  guint blocks_over;
-	  guint threshold_max = 2 * pdev->n_fragments / 3;
-	  guint threshold_min = pdev->n_fragments / 3;
-
-#if 0
-	  blocks_over = bse_pcm_device_oready (pdev, BSE_TRACK_LENGTH * pdev->n_channels);
-	  if (blocks_over > threshold_max)
-	    {
-	      g_message ("playback underrun (%d), filling up...", blocks_over - threshold_min);
-	      memset (heart->mix_buffer,
-		      0,
-		      BSE_TRACK_LENGTH * pdev->n_channels * sizeof (BseSampleValue));
-	      do
-		bse_pcm_device_write (pdev,
-				      BSE_TRACK_LENGTH * pdev->n_channels,
-				      (gpointer) heart->mix_buffer);
-	      while (--blocks_over > threshold_min);
-	    }
-#endif
-	  
-	  /* FIXME: optimize here for 1 chunk with n_tracks == odev->n_channels */
-	  obuf = bse_heart_mix_chunks (heart, slist, pdev->n_channels);
-	  bse_pcm_device_write (pdev, BSE_TRACK_LENGTH * pdev->n_channels, obuf);
-	  for (node = slist; node; node = node->next)
-	    bse_chunk_unref (node->data);
-	  g_slist_free (slist);
+	  bse_pcm_device_time_warp (pdev);
+	  need_cycle |= bse_pcm_device_process (pdev, heart->latency);
 	}
     }
+  
+  if (need_cycle)
+    {
+      for (i = 0; i < heart->n_devices; i++)
+	{
+	  BseHeartDevice *hdevice = heart->devices + i;
+	  BsePcmDevice *pdev = hdevice->device;
+	  
+	  if (BSE_PCM_DEVICE_READABLE (pdev) &&
+	      bse_pcm_device_iqueue_peek (pdev) == NULL)
+	    {
+	      BseChunk *chunk = bse_chunk_new_static_zero (pdev->n_channels);
+	      
+	      g_message ("UNDERRUN detected for \"%s\", padding...\007",
+			 bse_pcm_device_get_device_name (pdev));
+	      
+              bse_pcm_device_retrigger (pdev);
+	      bse_pcm_device_iqueue_push (pdev, chunk);
+	      bse_chunk_unref (chunk);
+	    }
+	}
+      
+      bse_heart_beat (heart); /* pet shop action ;) */
+      
+      for (i = 0; i < heart->n_devices; i++)
+	{
+	  BseHeartDevice *hdevice = heart->devices + i;
+	  BsePcmDevice *pdev = hdevice->device;
+	  
+	  if (BSE_PCM_DEVICE_WRITABLE (pdev) && hdevice->n_osources)
+	    {
+	      BseChunk *chunk;
+	      GSList *slist = bse_heart_collect_chunks (heart, hdevice);
+	      
+	      /* FIXME: optimize here for 1 chunk with n_tracks == odev->n_channels */
+	      chunk = bse_heart_mix_chunks (heart, slist, pdev->n_channels);
+	      bse_pcm_device_oqueue_push (pdev, chunk);
+	      bse_chunk_unref (chunk);
+	    }
+	}
 
+      for (i = 0; i < heart->n_devices; i++)
+	{
+	  BseHeartDevice *hdevice = heart->devices + i;
+	  BsePcmDevice *pdev = hdevice->device;
+	  
+	  if (BSE_PCM_DEVICE_READABLE (pdev))
+	    bse_pcm_device_iqueue_pop (pdev);
+	}
+    }
+  else
+    {
+      for (i = 0; i < heart->n_devices; i++)
+	{
+	  BseHeartDevice *hdevice = heart->devices + i;
+	  BsePcmDevice *pdev = hdevice->device;
+	  
+	  if (BSE_PCM_DEVICE_READABLE (pdev) &&
+	      pdev->iqueue && pdev->iqueue->next)
+	    {
+	      g_message ("OVERRUN detected for \"%s\", skipping...\007",
+			 bse_pcm_device_get_device_name (pdev));
+	      
+	      while (pdev->iqueue->next)
+		bse_pcm_device_iqueue_pop (pdev);
+	    }
+	}
+    }
+  
   return TRUE /* stay alive */;
 }

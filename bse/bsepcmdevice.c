@@ -17,21 +17,25 @@
  */
 #include "bsepcmdevice.h"
 
+#include "bsechunk.h"
+#include <sys/types.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <errno.h>
 
 
 /* --- prototypes --- */
-static void	   bse_pcm_device_init		(BsePcmDevice      *pdev);
-static void	   bse_pcm_device_class_init	(BsePcmDeviceClass *class);
-static guint       bse_pcm_device_default_read  (BsePcmDevice      *pdev,
-						 guint              n_bytes,
-						 guint8            *bytes);
-static guint       bse_pcm_device_default_write (BsePcmDevice      *pdev,
-						 guint              n_bytes,
-						 guint8            *bytes);
-static inline void bse_pcm_device_reset_state   (BsePcmDevice      *pdev);
-static void	   bse_pcm_device_shutdown	(BseObject         *object);
+static void	   bse_pcm_device_init			(BsePcmDevice      *pdev);
+static void	   bse_pcm_device_class_init		(BsePcmDeviceClass *class);
+static void        bse_pcm_device_default_retrigger	(BsePcmDevice      *pdev);
+static guint       bse_pcm_device_default_read  	(BsePcmDevice      *pdev,
+							 guint              n_bytes,
+							 guint8            *bytes);
+static guint       bse_pcm_device_default_write 	(BsePcmDevice      *pdev,
+							 guint              n_bytes,
+							 guint8            *bytes);
+static inline void bse_pcm_device_reset_device  	(BsePcmDevice      *pdev);
+static void	   bse_pcm_device_shutdown		(BseObject         *object);
 
 
 /* --- variables --- */
@@ -76,6 +80,7 @@ bse_pcm_device_class_init (BsePcmDeviceClass *class)
   class->update_caps = NULL;
   class->open = NULL;
   class->update_state = NULL;
+  class->retrigger = bse_pcm_device_default_retrigger;
   class->read = bse_pcm_device_default_read;
   class->write = bse_pcm_device_default_write;
   class->in_playback = NULL;
@@ -84,18 +89,18 @@ bse_pcm_device_class_init (BsePcmDeviceClass *class)
 }
 
 static inline void
-bse_pcm_device_reset_state (BsePcmDevice *pdev)
+bse_pcm_device_reset_device (BsePcmDevice *pdev)
 {
   pdev->pfd.fd = -1;
   pdev->pfd.events = 0;
   pdev->pfd.revents = 0;
   pdev->n_channels = 0;
   pdev->sample_freq = 0;
-  pdev->n_fragments = 0;
-  pdev->fragment_size = 0;
-  pdev->block_size = 0;
-  pdev->n_playback_bytes = 0;
-  pdev->n_capture_bytes = 0;
+  bse_pcm_device_time_warp (pdev);
+  while (pdev->iqueue)
+    bse_pcm_device_iqueue_pop (pdev);
+  while (pdev->oqueue)
+    bse_pcm_device_oqueue_pop (pdev);
 }
 
 static void
@@ -103,9 +108,21 @@ bse_pcm_device_init (BsePcmDevice *pdev)
 {
   pdev->last_error = BSE_ERROR_NONE;
   memset (&pdev->caps, 0, sizeof (pdev->caps));
-  pdev->capture_cache = NULL;
-  pdev->capture_cache_destroy = NULL;
-  bse_pcm_device_reset_state (pdev);
+  pdev->iqueue = NULL;
+  pdev->oqueue = NULL;
+  bse_pcm_device_reset_device (pdev);
+}
+
+void
+bse_pcm_device_time_warp (BsePcmDevice *pdev)
+{
+  g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
+
+  BSE_OBJECT_UNSET_FLAGS (pdev, BSE_PCM_FLAG_STATE_SYNC);
+  pdev->playback_buffer_size = 0;
+  pdev->n_playback_bytes = 0;
+  pdev->capture_buffer_size = 0;
+  pdev->n_capture_bytes = 0;
 }
 
 static void
@@ -115,7 +132,6 @@ bse_pcm_device_shutdown (BseObject *object)
   
   if (BSE_PCM_DEVICE_OPEN (pdev))
     bse_pcm_device_close (pdev);
-  bse_pcm_device_set_capture_cache (pdev, NULL, NULL);
   
   /* chain parent class' shutdown handler */
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
@@ -195,10 +211,10 @@ bse_pcm_device_open (BsePcmDevice *pdev,
 		     gboolean      readable,
 		     gboolean      writable,
 		     guint         n_channels,
-		     gdouble       sample_freq,
-		     guint         fragment_size)
+		     gdouble       sample_freq)
 {
   BsePcmFreqMask rate;
+  guint fragment_size;
   
   g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_PCM_DEVICE_OPEN (pdev), BSE_ERROR_INTERNAL);
@@ -216,7 +232,6 @@ bse_pcm_device_open (BsePcmDevice *pdev,
   readable = readable != FALSE;
   writable = writable != FALSE;
   rate = bse_pcm_freq_from_freq (sample_freq);
-  fragment_size = MAX (fragment_size, 32);
   
   /* check arguments */
   pdev->last_error = BSE_ERROR_INTERNAL;
@@ -235,11 +250,12 @@ bse_pcm_device_open (BsePcmDevice *pdev,
       g_return_val_if_fail (pdev->caps.playback_freq_mask & rate, BSE_ERROR_INTERNAL);
     }
   g_return_val_if_fail (n_channels >= 1 && n_channels <= pdev->caps.max_n_channels, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (fragment_size <= pdev->caps.max_fragment_size, BSE_ERROR_INTERNAL);
 
   bse_globals_lock ();
   
   /* attempt opening */
+  fragment_size = BSE_TRACK_LENGTH * n_channels * sizeof (BseSampleValue);
+  fragment_size = CLAMP (fragment_size, 32, pdev->caps.max_fragment_size);
   pdev->last_error = BSE_PCM_DEVICE_GET_CLASS (pdev)->open (pdev,
 							    readable,
 							    writable,
@@ -247,7 +263,7 @@ bse_pcm_device_open (BsePcmDevice *pdev,
 							    rate,
 							    fragment_size);
   if (pdev->last_error)
-    bse_pcm_device_reset_state (pdev);
+    bse_pcm_device_reset_device (pdev);
   else
     {
       bse_object_lock (BSE_OBJECT (pdev));
@@ -273,75 +289,43 @@ bse_pcm_device_close (BsePcmDevice *pdev)
   g_main_remove_poll (&pdev->pfd);
   BSE_PCM_DEVICE_GET_CLASS (pdev)->close (pdev);
   
-  errno = 0;
-  
+  bse_pcm_device_reset_device (pdev);
   BSE_OBJECT_UNSET_FLAGS (pdev,
 			  BSE_PCM_FLAG_OPEN |
 			  BSE_PCM_FLAG_READABLE |
 			  BSE_PCM_FLAG_WRITABLE);
-  bse_pcm_device_reset_state (pdev);
+
+  errno = 0;
+
   bse_object_unlock (BSE_OBJECT (pdev));
 }
 
-guint
-bse_pcm_device_oready (BsePcmDevice *pdev,
-		       guint         n_values)
-{
-  guint n_bytes;
-
-  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), FALSE);
-  
-  pdev->last_error = BSE_ERROR_NONE;
-  
-  n_bytes = sizeof (BseSampleValue) * n_values;
-  if (BSE_PCM_DEVICE_OPEN (pdev) &&
-      BSE_PCM_DEVICE_WRITABLE (pdev) &&
-      pdev->n_playback_bytes < n_bytes)
-    {
-      pdev->n_playback_bytes = 0;
-      BSE_PCM_DEVICE_GET_CLASS (pdev)->update_state (pdev);
-    }
-  
-  errno = 0;
-  
-  return pdev->n_playback_bytes / n_bytes;
-}
-
-guint
-bse_pcm_device_iready (BsePcmDevice *pdev,
-		       guint         n_values)
-{
-  guint n_bytes;
-
-  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), FALSE);
-
-  pdev->last_error = BSE_ERROR_NONE;
-
-  n_bytes = sizeof (BseSampleValue) * n_values;
-  if (BSE_PCM_DEVICE_OPEN (pdev) &&
-      BSE_PCM_DEVICE_READABLE (pdev) &&
-      pdev->n_capture_bytes < n_bytes)
-    {
-      pdev->n_capture_bytes = 0;
-      BSE_PCM_DEVICE_GET_CLASS (pdev)->update_state (pdev);
-    }
-  
-  errno = 0;
-  
-  return pdev->n_capture_bytes / n_bytes;
-}
-
 void
-bse_pcm_device_set_capture_cache (BsePcmDevice   *pdev,
-				  BseSampleValue *cache,
-				  GDestroyNotify  destroy)
+bse_pcm_device_retrigger (BsePcmDevice *pdev)
 {
   g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
+  g_return_if_fail (BSE_PCM_DEVICE_OPEN (pdev));
   
-  if (pdev->capture_cache_destroy)
-    pdev->capture_cache_destroy (pdev->capture_cache);
-  pdev->capture_cache = cache;
-  pdev->capture_cache_destroy = destroy;
+  bse_pcm_device_time_warp (pdev);
+
+  pdev->last_error = BSE_ERROR_NONE;
+
+  BSE_PCM_DEVICE_GET_CLASS (pdev)->retrigger (pdev);
+  
+  errno = 0;
+}
+
+static void
+bse_pcm_device_default_retrigger (BsePcmDevice *pdev)
+{
+  fd_set in_fds, out_fds;
+  struct timeval tv = { 0, 0 };
+
+  FD_ZERO (&in_fds);
+  FD_SET (pdev->pfd.fd, &in_fds);
+  FD_ZERO (&out_fds);
+  FD_SET (pdev->pfd.fd, &out_fds);
+  select (pdev->pfd.fd + 1, &in_fds, &out_fds, NULL, &tv);
 }
 
 void
@@ -363,17 +347,17 @@ bse_pcm_device_read (BsePcmDevice   *pdev,
       n = BSE_PCM_DEVICE_GET_CLASS (pdev)->read (pdev, n_bytes, (guint8*) values);
       if (n < n_bytes)
 	{
-	  pdev->n_capture_bytes = 0;
+	  bse_pcm_device_time_warp (pdev);
 	  g_warning ("%s: failed to read %u bytes of %u (%s)",
 		     BSE_OBJECT_TYPE_NAME (pdev),
 		     n_bytes - n,
 		     n_bytes,
 		     g_strerror (errno));
 	}
-      if (n < pdev->n_capture_bytes)
+      else if (BSE_PCM_DEVICE_STATE_SYNC (pdev) && n < pdev->n_capture_bytes)
 	pdev->n_capture_bytes -= n;
       else
-	pdev->n_capture_bytes = 0;
+	bse_pcm_device_time_warp (pdev);
     }
   
   errno = 0;
@@ -409,21 +393,20 @@ bse_pcm_device_write (BsePcmDevice   *pdev,
       
       g_return_if_fail (values != NULL);
       
-      pdev->n_playback_bytes = 0;
       n = BSE_PCM_DEVICE_GET_CLASS (pdev)->write (pdev, n_bytes, (guint8*) values);
       if (n < n_bytes)
 	{
-	  pdev->n_playback_bytes = 0;
+	  bse_pcm_device_time_warp (pdev);
 	  g_warning ("%s: failed to write %u bytes of %u (%s)",
 		     BSE_OBJECT_TYPE_NAME (pdev),
 		     n_bytes - n,
 		     n_bytes,
 		     g_strerror (errno));
 	}
-      if (n < pdev->n_playback_bytes)
+      else if (BSE_PCM_DEVICE_STATE_SYNC (pdev) && n < pdev->n_playback_bytes)
 	pdev->n_playback_bytes -= n;
       else
-	pdev->n_playback_bytes = 0;
+	bse_pcm_device_time_warp (pdev);
     }
   
   errno = 0;
@@ -441,6 +424,287 @@ bse_pcm_device_default_write (BsePcmDevice *pdev,
   while (n < 0 && errno == EINTR); /* don't mind signals */
   
   return MAX (n, 0);
+}
+
+void
+bse_pcm_device_update_state (BsePcmDevice *pdev)
+{
+  g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
+
+  pdev->last_error = BSE_ERROR_NONE;
+
+  if (BSE_PCM_DEVICE_OPEN (pdev) && !BSE_PCM_DEVICE_STATE_SYNC (pdev))
+    {
+      BSE_PCM_DEVICE_GET_CLASS (pdev)->update_state (pdev);
+      BSE_OBJECT_SET_FLAGS (pdev, BSE_PCM_FLAG_STATE_SYNC);
+    }
+
+  errno = 0;
+}
+
+void
+bse_pcm_device_iqueue_push (BsePcmDevice *pdev,
+			    BseChunk     *chunk)
+{
+  g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
+  g_return_if_fail (BSE_PCM_DEVICE_READABLE (pdev));
+  g_return_if_fail (chunk != NULL);
+  g_return_if_fail (chunk->n_tracks == pdev->n_channels);
+
+  bse_chunk_ref (chunk);
+  pdev->iqueue = g_slist_append (pdev->iqueue, chunk);
+}
+
+BseChunk*
+bse_pcm_device_iqueue_peek (BsePcmDevice *pdev)
+{
+  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), NULL);
+
+  return pdev->iqueue ? pdev->iqueue->data : NULL;
+}
+
+void
+bse_pcm_device_iqueue_pop (BsePcmDevice *pdev)
+{
+  GSList *slist;
+  BseChunk *chunk;
+  guint n_chunk_values, n_ivalues;
+  
+  g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
+  g_return_if_fail (BSE_PCM_DEVICE_READABLE (pdev));
+  g_return_if_fail (pdev->iqueue != NULL);
+
+  slist = pdev->iqueue;
+  pdev->iqueue = slist->next;
+  chunk = slist->data;
+  g_slist_free_1 (slist);
+  bse_chunk_unref (chunk);
+
+  n_chunk_values = BSE_TRACK_LENGTH * pdev->n_channels;
+  bse_pcm_device_update_state (pdev);
+  n_ivalues = pdev->n_capture_bytes / sizeof (BseSampleValue);
+  if (n_ivalues)
+    while (n_chunk_values <= n_ivalues)
+      {
+	chunk = bse_chunk_new (pdev->n_channels);
+	
+	bse_pcm_device_read (pdev, chunk->n_tracks * BSE_TRACK_LENGTH, chunk->hunk);
+	chunk->hunk_filled = TRUE;
+	bse_pcm_device_iqueue_push (pdev, chunk);
+	bse_chunk_unref (chunk);
+	n_ivalues = pdev->n_capture_bytes / sizeof (BseSampleValue);
+      }
+}
+
+void
+bse_pcm_device_oqueue_push (BsePcmDevice *pdev,
+			    BseChunk     *chunk)
+{
+  guint n_chunk_values, n_ovalues;
+
+  g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
+  g_return_if_fail (BSE_PCM_DEVICE_WRITABLE (pdev));
+  g_return_if_fail (chunk != NULL);
+  g_return_if_fail (chunk->n_tracks == pdev->n_channels);
+
+  bse_chunk_ref (chunk);
+  pdev->oqueue = g_slist_append (pdev->oqueue, chunk);
+
+  n_chunk_values = BSE_TRACK_LENGTH * pdev->n_channels;
+  bse_pcm_device_update_state (pdev);
+  n_ovalues = pdev->n_playback_bytes / sizeof (BseSampleValue);
+  while (n_chunk_values <= n_ovalues && pdev->oqueue)
+    {
+      BseChunk *chunk = pdev->oqueue->data;
+      
+      bse_pcm_device_write (pdev, chunk->n_tracks * BSE_TRACK_LENGTH, bse_chunk_complete_hunk (chunk));
+      bse_pcm_device_oqueue_pop (pdev);
+      n_ovalues = pdev->n_playback_bytes / sizeof (BseSampleValue);
+    }
+}
+
+BseChunk*
+bse_pcm_device_oqueue_peek (BsePcmDevice *pdev)
+{
+  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), NULL);
+
+  return pdev->oqueue ? pdev->oqueue->data : NULL;
+}
+
+void
+bse_pcm_device_oqueue_pop (BsePcmDevice *pdev)
+{
+  GSList *slist;
+  BseChunk *chunk;
+
+  g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
+  g_return_if_fail (BSE_PCM_DEVICE_WRITABLE (pdev));
+  g_return_if_fail (pdev->oqueue != NULL);
+
+  slist = pdev->oqueue;
+  pdev->oqueue = slist->next;
+  chunk = slist->data;
+  g_slist_free_1 (slist);
+  bse_chunk_unref (chunk);
+}
+
+gulong
+bse_pcm_device_n_values_to_msecs (BsePcmDevice *pdev,
+				  gulong      	n_values)
+{
+  gulong msecs = 0;
+
+  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), ~msecs);
+  g_return_val_if_fail (BSE_PCM_DEVICE_OPEN (pdev), ~msecs);
+
+  if (n_values)
+    {
+      gdouble d = n_values;
+
+      d *= 1000;
+      d /= pdev->n_channels * pdev->sample_freq;
+      msecs = d + 0.5;
+    }
+
+  return msecs;
+}
+
+gulong
+bse_pcm_device_msecs_to_n_values (BsePcmDevice *pdev,
+				  gulong        msecs)
+{
+  gulong n_values = 0;
+
+  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), ~n_values);
+  g_return_val_if_fail (BSE_PCM_DEVICE_OPEN (pdev), ~n_values);
+
+  if (msecs)
+    {
+      gdouble d = msecs;
+
+      d /= 1000;
+      d *= pdev->n_channels * pdev->sample_freq;
+      n_values = d + 0.5;
+    }
+
+  return n_values;
+}
+
+gulong
+bse_pcm_device_need_processing (BsePcmDevice *pdev,
+				gulong        latency)
+{
+  guint n_chunk_values, n_values_left = ~0;
+
+  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), ~0);
+  g_return_val_if_fail (BSE_PCM_DEVICE_OPEN (pdev), ~0);
+
+  /* check whether we need to process incoming or outgoing data
+   * return 0 timeout here.
+   * if we don't currently need to process data, we return an
+   * estimated timout value (milli seconds) on when the need is
+   * likely to occour.
+   * refer to docs/bse-heart.txt for further details
+   */
+
+  n_chunk_values = BSE_TRACK_LENGTH * pdev->n_channels;
+  bse_pcm_device_update_state (pdev);
+  if (BSE_PCM_DEVICE_READABLE (pdev))
+    {
+      guint n_ivalues = pdev->n_capture_bytes / sizeof (BseSampleValue);
+
+      if (n_chunk_values <= n_ivalues)
+	return 0;
+      n_values_left = MIN (n_values_left, n_chunk_values - n_ivalues);
+    }
+  if (BSE_PCM_DEVICE_WRITABLE (pdev))
+    {
+      guint n_ovalues = pdev->n_playback_bytes / sizeof (BseSampleValue);
+      guint n_required, n_buffered, n_queued;
+
+      if (pdev->oqueue)
+	{
+	  if (n_chunk_values <= n_ovalues)
+	    return 0;
+	  n_values_left = MIN (n_values_left, n_chunk_values - n_ovalues);
+	}
+
+      n_required = bse_pcm_device_msecs_to_n_values (pdev, latency);
+      /* normalize latency queue to chunk bounds */
+      n_required /= BSE_TRACK_LENGTH * pdev->n_channels;
+      n_required = MAX (n_required, 1);
+      n_required *= BSE_TRACK_LENGTH * pdev->n_channels;
+
+      n_buffered = (pdev->playback_buffer_size - pdev->n_playback_bytes) / sizeof (BseSampleValue);
+      n_queued = g_slist_length (pdev->oqueue) * BSE_TRACK_LENGTH * pdev->n_channels;
+      if (n_buffered + n_queued <= n_required)
+	return 0;
+      n_values_left = MIN (n_values_left, n_buffered + n_queued - n_required);
+    }
+
+  return bse_pcm_device_n_values_to_msecs (pdev, n_values_left);
+}
+
+gboolean
+bse_pcm_device_process (BsePcmDevice *pdev,
+			gulong        latency)
+{
+  guint n_chunk_values;
+  gboolean need_oqueue_fill = FALSE;
+
+  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), FALSE);
+  g_return_val_if_fail (BSE_PCM_DEVICE_OPEN (pdev), FALSE);
+
+  /* process outgoing and incoming data, report whether the
+   * output queue needs to be filled.
+   * refer to docs/bse-heart.txt for further details
+   */
+
+  n_chunk_values = BSE_TRACK_LENGTH * pdev->n_channels;
+  bse_pcm_device_update_state (pdev);
+  if (BSE_PCM_DEVICE_WRITABLE (pdev))
+    {
+      guint n_ovalues = pdev->n_playback_bytes / sizeof (BseSampleValue);
+
+      while (n_chunk_values <= n_ovalues && pdev->oqueue)
+	{
+	  BseChunk *chunk = pdev->oqueue->data;
+
+	  bse_pcm_device_write (pdev, chunk->n_tracks * BSE_TRACK_LENGTH, bse_chunk_complete_hunk (chunk));
+	  bse_pcm_device_oqueue_pop (pdev);
+	  n_ovalues = pdev->n_playback_bytes / sizeof (BseSampleValue);
+	}
+    }
+  if (BSE_PCM_DEVICE_READABLE (pdev))
+    {
+      guint n_ivalues = pdev->n_capture_bytes / sizeof (BseSampleValue);
+
+      while (n_chunk_values <= n_ivalues)
+	{
+	  BseChunk *chunk = bse_chunk_new (pdev->n_channels);
+
+	  bse_pcm_device_read (pdev, chunk->n_tracks * BSE_TRACK_LENGTH, chunk->hunk);
+	  chunk->hunk_filled = TRUE;
+	  bse_pcm_device_iqueue_push (pdev, chunk);
+	  bse_chunk_unref (chunk);
+	  n_ivalues = pdev->n_capture_bytes / sizeof (BseSampleValue);
+	}
+    }
+  if (BSE_PCM_DEVICE_WRITABLE (pdev))
+    {
+      guint n_required = bse_pcm_device_msecs_to_n_values (pdev, latency);
+      guint n_buffered = (pdev->playback_buffer_size - pdev->n_playback_bytes) / sizeof (BseSampleValue);
+      guint n_queued = g_slist_length (pdev->oqueue) * BSE_TRACK_LENGTH * pdev->n_channels;
+
+      /* normalize latency queue to chunk bounds */
+      n_required /= BSE_TRACK_LENGTH * pdev->n_channels;
+      n_required = MAX (n_required, 1);
+      n_required *= BSE_TRACK_LENGTH * pdev->n_channels;
+
+      need_oqueue_fill = n_buffered + n_queued <= n_required;
+    }
+
+  return need_oqueue_fill;
 }
 
 

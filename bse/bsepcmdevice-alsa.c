@@ -241,7 +241,6 @@ bse_pcm_device_alsa_update_state (BsePcmDevice *pdev)
   BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (pdev);
   snd_pcm_channel_setup_t channel_setup;
   
-  pdev->n_playback_bytes = 0;
   memset (&channel_setup, 0, sizeof (channel_setup));
   channel_setup.channel = SND_PCM_CHANNEL_PLAYBACK;
   if (snd_pcm_channel_setup (alsa->handle, &channel_setup) >= 0)
@@ -251,26 +250,27 @@ bse_pcm_device_alsa_update_state (BsePcmDevice *pdev)
       channel_status.channel = channel_setup.channel;
       if (snd_pcm_channel_status (alsa->handle, &channel_status) >= 0)
         {
-          pdev->n_playback_bytes = MAX (0, channel_status.count - channel_setup.buf.block.frag_size);
+          pdev->n_playback_bytes = channel_status.count;
+	  pdev->playback_buffer_size = channel_setup.buf.block.frags * channel_setup.buf.block.frag_size;
           BSE_IF_DEBUG (PCM)
-            g_message ("OSPACE(%s:%d#%d) frags: total=%d max=%d min=%d size=%d cur=%d bytes=%d free=%d o=%d u=%d n=%u\n",
+            g_message ("OSPACE(%s:%d#%d): left=%5d/%d frags: total=%d max=%d min=%d size=%d cur=%d bytes=%d free=%d o=%d u=%d\n",
                        alsa->card_id,
                        alsa->card,
                        alsa->device,
+                       pdev->n_playback_bytes,
+                       pdev->playback_buffer_size,
                        channel_setup.buf.block.frags,
                        channel_setup.buf.block.frags_max,
                        channel_setup.buf.block.frags_min,
                        channel_setup.buf.block.frag_size,
                        channel_status.frag,
                        channel_status.count,
-                       channel_status.overrun,
-                       channel_status.underrun,
                        channel_status.free,
-                       pdev->n_playback_bytes);
+                       channel_status.overrun,
+                       channel_status.underrun);
         }
     }
   
-  pdev->n_capture_bytes = 0;
   memset (&channel_setup, 0, sizeof (channel_setup));
   channel_setup.channel = SND_PCM_CHANNEL_CAPTURE;
   if (snd_pcm_channel_setup (alsa->handle, &channel_setup) >= 0)
@@ -280,22 +280,24 @@ bse_pcm_device_alsa_update_state (BsePcmDevice *pdev)
       channel_status.channel = channel_setup.channel;
       if (snd_pcm_channel_status (alsa->handle, &channel_status) >= 0)
         {
-          pdev->n_capture_bytes = MAX (0, channel_status.count - channel_setup.buf.block.frag_size);
+          pdev->n_capture_bytes = channel_status.count;
+	  pdev->capture_buffer_size = channel_setup.buf.block.frags * channel_setup.buf.block.frag_size;
           BSE_IF_DEBUG (PCM)
-            g_message ("ISPACE(%s:%d#%d) frags: total=%d max=%d min=%d size=%d cur=%d bytes=%d free=%d o=%d u=%d n=%u\n",
+            g_message ("ISPACE(%s:%d#%d): left=%5d/%d frags: total=%d max=%d min=%d size=%d cur=%d bytes=%d free=%d o=%d u=%d\n",
                        alsa->card_id,
                        alsa->card,
                        alsa->device,
+                       pdev->n_capture_bytes,
+                       pdev->capture_buffer_size,
                        channel_setup.buf.block.frags,
                        channel_setup.buf.block.frags_max,
                        channel_setup.buf.block.frags_min,
                        channel_setup.buf.block.frag_size,
                        channel_status.frag,
                        channel_status.count,
-                       channel_status.overrun,
-                       channel_status.underrun,
                        channel_status.free,
-                       pdev->n_capture_bytes);
+                       channel_status.overrun,
+                       channel_status.underrun);
         }
     }
 }
@@ -413,9 +415,6 @@ bse_pcm_device_alsa_setup (BsePcmDeviceAlsa *alsa,
 
       pdev->n_channels = channel_setup.format.voices;
       pdev->sample_freq = channel_setup.format.rate;
-      pdev->n_fragments = channel_setup.buf.block.frags;
-      pdev->fragment_size = channel_setup.buf.block.frag_size;
-      pdev->block_size = pdev->n_fragments * pdev->fragment_size;
     }
   
   return BSE_ERROR_NONE;
@@ -572,7 +571,6 @@ const char* snd_card_type_name (unsigned int card_type)
     case SND_CARD_TYPE_ESS_ES1938:              return "ESS Solo-1 ES1938";
     case SND_CARD_TYPE_ESS_ES18XX:              return "ESS AudioDrive ES18XX";
     case SND_CARD_TYPE_CS4231:                  return "CS4231";
-    case SND_CARD_TYPE_OPTI9XX:                 return "Opti 9xx chipset";
     case SND_CARD_TYPE_SERIAL:                  return "Serial MIDI driver";
     case SND_CARD_TYPE_AD1848:                  return "Generic AD1848 driver";
     case SND_CARD_TYPE_TRID4DWAVEDX:            return "Trident 4DWave DX";

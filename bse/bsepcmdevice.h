@@ -43,18 +43,20 @@ extern "C" {
 #define BSE_PCM_DEVICE_READABLE(pdev)    ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_READABLE) != 0)
 #define BSE_PCM_DEVICE_WRITABLE(pdev)    ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_WRITABLE) != 0)
 #define BSE_PCM_DEVICE_REGISTERED(pdev)  ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_REGISTERED) != 0)
+#define BSE_PCM_DEVICE_STATE_SYNC(pdev)  ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_STATE_SYNC) != 0)
 
 
 /* --- PcmDevice flags --- */
 typedef enum
 {
   BSE_PCM_FLAG_HAS_CAPS   = (1 << (BSE_OBJECT_FLAGS_USHIFT + 0)),
-  BSE_PCM_FLAG_OPEN	   = (1 << (BSE_OBJECT_FLAGS_USHIFT + 1)),
+  BSE_PCM_FLAG_OPEN	  = (1 << (BSE_OBJECT_FLAGS_USHIFT + 1)),
   BSE_PCM_FLAG_READABLE   = (1 << (BSE_OBJECT_FLAGS_USHIFT + 2)),
   BSE_PCM_FLAG_WRITABLE   = (1 << (BSE_OBJECT_FLAGS_USHIFT + 3)),
-  BSE_PCM_FLAG_REGISTERED = (1 << (BSE_OBJECT_FLAGS_USHIFT + 4))
+  BSE_PCM_FLAG_REGISTERED = (1 << (BSE_OBJECT_FLAGS_USHIFT + 4)),
+  BSE_PCM_FLAG_STATE_SYNC = (1 << (BSE_OBJECT_FLAGS_USHIFT + 5))
 } BsePcmFlags;
-#define BSE_PCM_FLAGS_USHIFT     (BSE_OBJECT_FLAGS_USHIFT + 5)
+#define BSE_PCM_FLAGS_USHIFT     (BSE_OBJECT_FLAGS_USHIFT + 6)
 
 
 /* --- possible frequencies --- */
@@ -101,15 +103,15 @@ struct _BsePcmDevice
   /* current state */
   guint              n_channels;
   gdouble            sample_freq;
-  guint              n_fragments;
-  guint              fragment_size;
-  guint              block_size;
+
+  /* state */
+  guint              playback_buffer_size;
   guint		     n_playback_bytes;	/* left to write */
+  guint              capture_buffer_size;
   guint		     n_capture_bytes;	/* left to read */
 
-  /* capture cache */
-  BseSampleValue    *capture_cache;
-  GDestroyNotify     capture_cache_destroy;
+  GSList	    *iqueue;	/* of type BseChunk* */
+  GSList	    *oqueue;	/* of type BseChunk* */
 };
 struct _BsePcmDeviceClass
 {
@@ -125,6 +127,7 @@ struct _BsePcmDeviceClass
 				 BsePcmFreqMask  rate,
 				 guint           fragment_size);
   void		(*update_state)	(BsePcmDevice	*pdev);
+  void		(*retrigger)	(BsePcmDevice	*pdev);
   guint		(*read)		(BsePcmDevice	*pdev,
 				 guint		 n_bytes,
 				 guint8		*bytes);
@@ -137,30 +140,44 @@ struct _BsePcmDeviceClass
 
 
 /* --- prototypes --- */
+gchar*		bse_pcm_device_get_device_name   (BsePcmDevice	 *pdev);
+gchar*		bse_pcm_device_get_device_blurb  (BsePcmDevice	 *pdev);
 BseErrorType 	bse_pcm_device_update_caps	 (BsePcmDevice	 *pdev);
+void	 	bse_pcm_device_invalidate_caps	 (BsePcmDevice	 *pdev);
 BseErrorType 	bse_pcm_device_open		 (BsePcmDevice	 *pdev,
 						  gboolean	  readable,
 						  gboolean	  writable,
 						  guint           n_channels,
-						  gdouble         sample_freq,
-						  guint           fragment_size);
+						  gdouble         sample_freq);
 void	     	bse_pcm_device_close		 (BsePcmDevice	 *pdev);
-guint     	bse_pcm_device_oready		 (BsePcmDevice	 *pdev,
-						  guint		  n_values);
-guint     	bse_pcm_device_iready		 (BsePcmDevice	 *pdev,
-						  guint		  n_values);
+void	     	bse_pcm_device_retrigger	 (BsePcmDevice	 *pdev);
 void	     	bse_pcm_device_read		 (BsePcmDevice	 *pdev,
 						  guint		  n_values,
 						  BseSampleValue *values);
 void	     	bse_pcm_device_write		 (BsePcmDevice	 *pdev,
 						  guint           n_values,
 						  BseSampleValue *values);
-void	     	bse_pcm_device_set_capture_cache (BsePcmDevice	 *pdev,
-						  BseSampleValue *cache,
-						  GDestroyNotify  destroy);
-void	 	bse_pcm_device_invalidate_caps	 (BsePcmDevice	 *pdev);
-gchar*		bse_pcm_device_get_device_name   (BsePcmDevice	 *pdev);
-gchar*		bse_pcm_device_get_device_blurb  (BsePcmDevice	 *pdev);
+void		bse_pcm_device_time_warp	 (BsePcmDevice	 *pdev);
+void		bse_pcm_device_update_state	 (BsePcmDevice	 *pdev);
+gulong		bse_pcm_device_n_values_to_msecs (BsePcmDevice	 *pdev,
+						  gulong	  n_values);
+gulong		bse_pcm_device_msecs_to_n_values (BsePcmDevice	 *pdev,
+						  gulong	  msecs);
+
+
+/* --- queue/process API --- */
+void		bse_pcm_device_iqueue_push	 (BsePcmDevice	 *pdev,
+						  BseChunk	 *chunk);
+BseChunk*	bse_pcm_device_iqueue_peek	 (BsePcmDevice	 *pdev);
+void		bse_pcm_device_iqueue_pop	 (BsePcmDevice	 *pdev);
+void		bse_pcm_device_oqueue_push	 (BsePcmDevice	 *pdev,
+						  BseChunk	 *chunk);
+BseChunk*	bse_pcm_device_oqueue_peek	 (BsePcmDevice	 *pdev);
+void		bse_pcm_device_oqueue_pop	 (BsePcmDevice	 *pdev);
+gulong		bse_pcm_device_need_processing	 (BsePcmDevice	 *pdev,
+						  gulong	  latency);
+gboolean	bse_pcm_device_process		 (BsePcmDevice	 *pdev,
+						  gulong          latency);
 
 
 /* --- frequency utilities --- */

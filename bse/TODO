@@ -1,15 +1,8 @@
 general:
--	get rid of pcm stream
 -	rework undo, gotta decide on what hirarchy and function level undo
 	should be implemented.
--	finish up the ALSA interface (especially before complaining about CPU
-	usage!)
 -	param_changed(): update modified stamp and record undo
--	instead of parser hooks, we need to announce per class try_statement()
-	implementations
--	nuke BseText, or so...
 -	BseStorage must not contain type references above BSE_TYPE_ITEM (cleanlyness)
--	maybe merge BseMaster and BseProject?
 -	bse_object_do_store_private() should not save equally named params (from
 	different heirarchy levels), actually this is a general problem with GUIs
 	as well.
@@ -20,21 +13,24 @@ general:
 -	delay class destruction and plugin unloading through timeout handlers
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
 
-BseSource
--	passing history to bse_source_set_input() is braindead, should come from
-	ichanneldef
+BseSNet
+-	add master volume
+
 Song/Pattern
 -	mutable channels! (make them silent)
 	use procedure types for this
 
-Identifier
+Identifiers
 -	we need a string conversion routine, which converts invalid characters
+-	there're some shortcomings in object namings e.g. "--- Minus ---" was
+	not possible (there're also some bugs with making them into '_'s)
 
 Mixer/Sequencer
 -	bse_mixer_add_voice_to_buffer:	balance asserts
 
 Instrument
 -	smooth up the dot array behaviour, editing is somewhat sluggish
+-	need to put envelope logic into a sperate file anyways
 
 Voice
 -	we need refrencing/locking here, sample can be pulled under our ass
@@ -54,9 +50,6 @@ Balance
 Munks
 -	automatische munk berechnung durch frequenz transformation
 	hm, koennte nen memory hog werden...
-
-BseLfo
--	wave_form, speed, intensity, modulation (through other LFO)
 
 Effects
 -	there is no code at all yet ;)
