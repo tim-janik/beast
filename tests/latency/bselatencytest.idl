@@ -1,0 +1,58 @@
+/* BseNoise - BSE Latency Test
+ * Copyright (C) 2004 Stefan Westerfeld
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include <bse/bsecxxmodule.idl>
+
+namespace Bse {
+
+class LatencyTest : Effect {
+  Info    authors     = "Stefan Westerfeld";
+  Info    license     = _("GNU Lesser General Public License");
+  Info    category    = _("/Misc/Latency Test");
+  Info    blurb       = _("This module is an automated midi latency tester.\n\n"
+			  "It writes midi events on a certain channel on a certain device,"
+			  " regularily. You are supposed to set this up in a way that beast"
+			  " will receive these midi events and produce some sound upon receiving"
+			  "them.\n"
+			  "After sending a midi event, the latency tester will count the number"
+			  " of samples until it sees some signal on its input channel. From"
+			  " that number a latency is computed and printed (or logged, if you specified a log file)");
+
+  group _("Test configuration") {
+    Real   bpm = (_("Beats per Minute"), _("The speed at which test events (quarter notes) are generated"),
+                  120, 10, 1000, 5, STANDARD);
+    Real   threshold_db = Gain (_("Threshold [dB]"),
+				_("Input signal needs to be louder than this to be counted as active"),
+				-24, -96, 0, 1, STANDARD ":scale");
+    String logfile_name	= (_("Log File Name"), _("When set, the latency information will be written to this log file, stdout otherwise."),
+                          "", STANDARD);
+  };
+  group _("MIDI setup") {
+    Int	   midi_note	= Note (_("Note"), NULL, bse_note_from_freq (BSE_KAMMER_FREQUENCY_f), STANDARD);
+    Int    midi_channel = (_("Midi Output Channel"), _("The midi output device where the tester sends its events"),
+                          1, 1, 16, 1, STANDARD);
+    String midi_output	= (_("Midi Output Device"), _("The midi output device where the tester sends its events"),
+                          "", STANDARD);
+  };
+
+ 
+  IStream audio_in   = (_("Audio In"), _("Test signal input, which the latency tester waits for"));
+  OStream audio_out  = (_("Audio Out"), _("Test signal output"));
+};
+
+} // Bse
