@@ -615,8 +615,6 @@ bool Parser::parse (const string& filename)
   defineSymbol ("Rec");
   leaveNamespace ();
 
-  usingNamespace ("Sfi");
-  
   GTokenType expected_token = G_TOKEN_NONE;
   
   while (!g_scanner_eof (scanner) && expected_token == G_TOKEN_NONE)
@@ -724,7 +722,10 @@ GTokenType Parser::parseNamespace()
   while (!ready);
   
   parse_or_return (G_TOKEN_RIGHT_CURLY);
-  parse_or_return (';');
+
+  /* semicolon after namespaces is optional (like in C++) */
+  if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
+    parse_or_return (';');
   
   leaveNamespace();
   

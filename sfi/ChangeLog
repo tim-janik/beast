@@ -1,3 +1,8 @@
+Tue Jan 20 04:50:39 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: Make ; following the namespace declaration
+	optional. Don't automatically do a "using namespace Sfi;".
+
 Tue Jan 20 03:09:34 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-module.cc: Don't include bse/bsecxxsmart.h.

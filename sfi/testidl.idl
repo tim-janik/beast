@@ -13,15 +13,18 @@ choice YesNoUndecided {
 };
 
 record Position {
-  Real x = ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
-  Real y = ("Y", "", 3.0, -10.0, 10.0, 1, ":readwrite");
+  Sfi::Real x = ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
+  Sfi::Real y = ("Y", "", 3.0, -10.0, 10.0, 1, ":readwrite");
   YesNoUndecided relevant = ("Relevant", "", "test-yes", ":readwrite");
 };
 
 record SickGenericThings {
   // $GROUP = "foo";
-  Rec   rec   = ("Rec", "", ":readwrite");
+  Sfi::Rec   rec   = ("Rec", "", ":readwrite");
 };
+
+// no more Sfi:: prefixing beyond this line
+using namespace Sfi;
 
 class Blub {
   property Real x;
