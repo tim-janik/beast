@@ -25,6 +25,7 @@ G_BEGIN_DECLS
 /* --- BSE type macros --- */
 #define	BSE_PROCEDURE_TYPE(proc)	(G_TYPE_FROM_CLASS (proc))
 #define	BSE_IS_PROCEDURE_CLASS(proc)	(G_TYPE_CHECK_CLASS_TYPE ((proc), BSE_TYPE_PROCEDURE))
+#define	BSE_PROCEDURE_NAME(proc)	(g_type_name (BSE_PROCEDURE_TYPE (proc)))
 
 
 /* --- limits --- */
@@ -42,21 +43,16 @@ typedef BseErrorType  (*BseProcedureExec)   (BseProcedureClass *procedure,
 struct _BseProcedureClass
 {
   GTypeClass      bse_class;
-  gchar          *name;
-  gchar          *blurb;
+
+  /* implementation hint */
   guint           private_id;
 
-  /* setup upon init */
-  gchar          *help;
-  gchar          *authors;
-  gchar          *license;
-  
-  /* implementation */
+  /* in/out parameters */
   guint           n_in_pspecs;
   GParamSpec	**in_pspecs;
   guint           n_out_pspecs;
   GParamSpec	**out_pspecs;
-  /* base_init references */
+  /* keep type references during class lifetime */
   GTypeClass    **class_refs;
 
   BseProcedureExec execute;
@@ -106,7 +102,6 @@ BseErrorType bse_procedure_execvl	  (BseProcedureClass	*proc,
 
 /* --- internal --- */
 const gchar* bse_procedure_type_register (const gchar		*name,
-					  const gchar		*blurb,
 					  BsePlugin		*plugin,
 					  GType  		*ret_type);
 

@@ -1,3 +1,37 @@
+Tue Dec 23 05:24:53 2003  Tim Janik  <timj@gtk.org>
+
+	* bseplugin.[hc] (bse_plugin_check_load): disabled .la loading, expect
+	readily loadable .so files instead.
+	(bse_plugin_path_list_files): allow plugin path to contain executable
+	files (instead of directories).
+
+	* bseprocedure.[hc]: removed blurb, name, authors, help and license
+	fields from procedures as these informations are kept on types now.
+	provide BSE_PROCEDURE_NAME() for easy name access.
+
+	* bsescripthelper.[hc]: introduced "options" field for scripts.
+
+	* mkcproc.pl: 
+	* bseplugin.[hc]:
+	* bsescripthelper.[hc]:
+	* bseexports.h: unified type info field order, keep blurb etc. only
+	via bse_type_*() accessors.
+
+	* mkcproc.pl: support OPTIONS.
+
+	* *.proc: BLURB => HELP fixes.
+
+	* bseautodoc.c: don't generate @refBlurb{} andymore since procedures
+	only have "help" now.
+
+	* bsequery.c: added -:f option for fatal warnings.
+
+	* bseparasite.proc: removed i18n markup, which is not supported for C
+	procedures (procedures need to be ported to C++ long-term).
+
+	* *.c: fixes about accessing authors/license/blurb through bsetype.h,
+	removed code to keep type info on procedures.
+
 Mon Dec 22 23:59:28 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecxxplugin.h: initialize options field in export nodes.

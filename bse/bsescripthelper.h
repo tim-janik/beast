@@ -30,10 +30,6 @@ typedef struct
 {
   gchar	  *script_file;
   gchar	  *name;
-  gchar	  *blurb;
-  gchar	  *help;
-  gchar	  *authors;
-  gchar	  *license;
   SfiRing *params;
 } BseScriptData;
 typedef struct
@@ -46,9 +42,9 @@ typedef struct
 /* --- API --- */
 GType		bse_script_proc_register	(const gchar	*script_file,
 						 const gchar	*name,
+						 const gchar	*options,
 						 const gchar	*category,
 						 const gchar	*blurb,
-						 const gchar	*help,
 						 const gchar	*authors,
 						 const gchar	*license,
 						 SfiRing	*params);

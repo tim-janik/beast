@@ -422,7 +422,7 @@ METHOD (BseItem, get-seqid) {
 }
 
 METHOD (BseItem, check-is-a) {
-  BLURB = "Check whether an item has a certain type.";
+  HELP  = "Check whether an item has a certain type.";
   IN    = bse_param_spec_object ("item", "Item", "The Item",
 				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("type_name", "Type Name", NULL,

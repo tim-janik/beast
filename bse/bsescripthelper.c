@@ -52,11 +52,6 @@ bse_script_procedure_init (BseScriptProcedureClass *class,
   SfiRing *ring;
   guint n;
   
-  proc->name = g_type_name (G_TYPE_FROM_CLASS (proc));
-  proc->blurb = sdata->blurb;
-  proc->help = sdata->help;
-  proc->authors = sdata->authors;
-  proc->license = sdata->license;
   class->sdata = sdata;
   proc->execute = bse_script_procedure_exec;
   
@@ -84,9 +79,9 @@ bse_script_procedure_init (BseScriptProcedureClass *class,
 GType
 bse_script_proc_register (const gchar *script_file,
 			  const gchar *name,
+			  const gchar *options,
 			  const gchar *category,
 			  const gchar *blurb,
-			  const gchar *help,
 			  const gchar *authors,
 			  const gchar *license,
 			  SfiRing     *params)
@@ -119,10 +114,6 @@ bse_script_proc_register (const gchar *script_file,
   sdata = g_new0 (BseScriptData, 1);
   sdata->script_file = g_strdup (script_file);
   sdata->name = g_strdup (name);
-  sdata->blurb = g_strdup (blurb);
-  sdata->help = g_strdup (help);
-  sdata->authors = g_strdup (authors);
-  sdata->license = g_strdup (license);
   sdata->params = sfi_ring_copy_deep (params, (SfiRingDataFunc) g_strdup, NULL);
 
   script_info.class_data = sdata;
@@ -130,8 +121,19 @@ bse_script_proc_register (const gchar *script_file,
   tname = g_strconcat ("bse-script-", name, NULL);
   type = g_type_register_static (BSE_TYPE_PROCEDURE, tname, &script_info, 0);
   g_free (tname);
-  if (type && category && category[0])
-    bse_categories_register (category, type, NULL);
+  if (type)
+    {
+      if (category && category[0])
+        bse_categories_register (category, type, NULL);
+      if (options && options[0])
+        bse_type_add_options (type, options);
+      if (blurb && blurb[0])
+        bse_type_add_blurb (type, blurb);
+      if (authors && authors[0])
+        bse_type_add_authors (type, authors);
+      if (license && license[0])
+        bse_type_add_license (type, license);
+    }
   return type;
 }
 
@@ -156,13 +158,13 @@ bse_script_procedure_exec (BseProcedureClass *proc,
 						     sdata->name));
   shellpath = g_strdup_printf ("%s/%s", BSE_PATH_BINARIES, "bsesh");
   error = bse_server_run_remote (server, shellpath,
-				 params, sdata->script_file, proc->name, &janitor);
+				 params, sdata->script_file, BSE_PROCEDURE_NAME (proc), &janitor);
   g_free (shellpath);
   sfi_ring_free_deep (params, g_free);
   
   if (error)
     g_message ("failed to start script \"%s::%s\": %s",
-	       sdata->script_file, proc->name, bse_error_blurb (error));
+	       sdata->script_file, BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
   else
     {
       SfiSeq *seq = sfi_seq_new ();

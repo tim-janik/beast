@@ -91,7 +91,7 @@ bse_plugin_dispose (GObject *object)
 {
   BsePlugin *plugin = BSE_PLUGIN (object);
   
-  g_warning (G_STRLOC ": dispose should never happen for static plugins");
+  g_warning ("%s: dispose should never happen for static plugins", G_STRFUNC);
   
   g_object_ref (object);
   
@@ -371,8 +371,7 @@ bse_plugin_init_types (BsePlugin *plugin)
         case BSE_EXPORT_NODE_LINK:
           break;
         case BSE_EXPORT_NODE_ENUM:
-          type = bse_type_register_dynamic (G_TYPE_ENUM, node->name, NULL,
-                                            G_TYPE_PLUGIN (plugin));
+          type = bse_type_register_dynamic (G_TYPE_ENUM, node->name, G_TYPE_PLUGIN (plugin));
           /* FIXME: can't register dynamic type transforms with glib-2.2.1
            * g_value_register_transform_func (SFI_TYPE_CHOICE, type, sfi_value_choice2enum_simple);
            * g_value_register_transform_func (type, SFI_TYPE_CHOICE, sfi_value_enum2choice);
@@ -381,12 +380,10 @@ bse_plugin_init_types (BsePlugin *plugin)
         case BSE_EXPORT_NODE_CLASS:
           cnode = (BseExportNodeClass*) node;
           type = bse_type_register_dynamic (g_type_from_name (cnode->parent),
-                                            node->name, node->blurb,
-                                            G_TYPE_PLUGIN (plugin));
+                                            node->name, G_TYPE_PLUGIN (plugin));
           break;
         case BSE_EXPORT_NODE_PROC:
-          error = bse_procedure_type_register (node->name, node->blurb,
-                                               plugin, &type);
+          error = bse_procedure_type_register (node->name, plugin, &type);
           if (error)
             g_message ("%s: while registering procedure \"%s\": %s",
                        plugin->name, node->name, error);
@@ -403,6 +400,8 @@ bse_plugin_init_types (BsePlugin *plugin)
             bse_type_add_options (type, node->options);
           if (node->category)
             bse_categories_register (node->category, type, node->pixstream);
+          if (node->blurb && node->blurb[0])
+            bse_type_add_blurb (type, node->blurb);
           if (node->authors && node->authors[0])
             bse_type_add_authors (type, node->authors);
           if (node->license && node->license[0])
@@ -432,58 +431,62 @@ bse_plugin_find (GModule *gmodule)
 }
 
 const gchar*
-bse_plugin_check_load (const gchar *_file_name)
+bse_plugin_check_load (const gchar *const_file_name)
 {
-  const gint TOKEN_DLNAME = G_TOKEN_LAST + 1;
   BseExportIdentity *plugin_identity;
-  gchar *file_name = (gchar*) _file_name;
-  gint fd;
-  GScanner *scanner;
+  gchar *file_name;
   GModule *gmodule;
   gchar *error = NULL;
   
-  g_return_val_if_fail (file_name != NULL, NULL);
-  
-  /* open libtool archive */
-  fd = open (file_name, O_RDONLY, 0);
-  if (fd < 0)
-    return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-	    bse_error_blurb (BSE_ERROR_FILE_NOT_FOUND) :
-	    "Unable to access plugin");
-  
-  /* and search libtool's dlname specification */
-  scanner = g_scanner_new (NULL);
-  g_scanner_input_file (scanner, fd);
-  scanner->config->symbol_2_token = TRUE;
-  g_scanner_add_symbol (scanner, "dlname", GUINT_TO_POINTER (TOKEN_DLNAME));
-  
-  /* skip ahead */
-  while (!g_scanner_eof (scanner) &&
-	 g_scanner_peek_next_token (scanner) != TOKEN_DLNAME)
-    g_scanner_get_next_token (scanner);
-  
-  /* parse dlname */
-  if (g_scanner_get_next_token (scanner) != TOKEN_DLNAME ||
-      g_scanner_get_next_token (scanner) != '=' ||
-      g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
+  g_return_val_if_fail (const_file_name != NULL, NULL);
+
+  if (0)        /* want to read .la files? */
     {
+      const gint TOKEN_DLNAME = G_TOKEN_LAST + 1;
+      GScanner *scanner;
+      /* open libtool archive */
+      gint fd = open (const_file_name, O_RDONLY, 0);
+      if (fd < 0)
+        return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
+                bse_error_blurb (BSE_ERROR_FILE_NOT_FOUND) :
+                "Unable to access plugin");
+      
+      /* and search libtool's dlname specification */
+      scanner = g_scanner_new (NULL);
+      g_scanner_input_file (scanner, fd);
+      scanner->config->symbol_2_token = TRUE;
+      g_scanner_add_symbol (scanner, "dlname", GUINT_TO_POINTER (TOKEN_DLNAME));
+      
+      /* skip ahead */
+      while (!g_scanner_eof (scanner) &&
+             g_scanner_peek_next_token (scanner) != TOKEN_DLNAME)
+        g_scanner_get_next_token (scanner);
+      
+      /* parse dlname */
+      if (g_scanner_get_next_token (scanner) != TOKEN_DLNAME ||
+          g_scanner_get_next_token (scanner) != '=' ||
+          g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
+        {
+          g_scanner_destroy (scanner);
+          close (fd);
+          
+          return "Plugin's dlname broken";
+        }
+      
+      /* construct real module name */
+      if (g_path_is_absolute (scanner->value.v_string))
+        file_name = g_strdup (scanner->value.v_string);
+      else
+        {
+          gchar *string = g_path_get_dirname (const_file_name);
+          file_name = g_strconcat (string, G_DIR_SEPARATOR_S, scanner->value.v_string, NULL);
+          g_free (string);
+        }
       g_scanner_destroy (scanner);
       close (fd);
-      
-      return "Plugin's dlname broken";
     }
-  
-  /* construct real module name */
-  if (g_path_is_absolute (scanner->value.v_string))
-    file_name = g_strdup (scanner->value.v_string);
   else
-    {
-      gchar *string = g_path_get_dirname (file_name);
-      file_name = g_strconcat (string, G_DIR_SEPARATOR_S, scanner->value.v_string, NULL);
-      g_free (string);
-    }
-  g_scanner_destroy (scanner);
-  close (fd);
+    file_name = g_strdup (const_file_name);
   
   /* load module */
   gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);
@@ -565,14 +568,19 @@ bse_plugin_lookup (const gchar *name)
 SfiRing*
 bse_plugin_path_list_files (void)
 {
-  SfiRing *ring1, *ring2 = NULL;
+  SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
 
-  ring1 = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.la", 0);
+  ring1 = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.so", G_FILE_TEST_IS_REGULAR);
   ring1 = sfi_ring_sort (ring1, (GCompareFunc) strcmp);
 
   if (BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
-    ring2 = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.la", 0);
+    ring2 = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.so", G_FILE_TEST_IS_REGULAR);
   ring2 = sfi_ring_sort (ring2, (GCompareFunc) strcmp);
 
-  return sfi_ring_concat (ring1, ring2);
+  /* allow file names in plugin_path */
+  if (BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
+    ring3 = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), NULL, G_FILE_TEST_IS_REGULAR);
+  ring3 = sfi_ring_sort (ring3, (GCompareFunc) strcmp);
+
+  return sfi_ring_concat (ring1, sfi_ring_concat (ring2, ring3));
 }

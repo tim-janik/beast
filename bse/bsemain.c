@@ -261,7 +261,7 @@ bse_init_intern (gint    *argc,
           gchar *name = sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
-            sfi_warn ("%s: %s", name, error);
+            sfi_warn ("while loading \"%s\": %s", name, error);
           g_free (name);
         }
     }

@@ -553,10 +553,9 @@ bglue_describe_proc (SfiGlueContext *context,
       guint i;
       
       p = sfi_glue_proc_new (g_type_name (type));
-      p->blurb = g_strdup (proc->blurb);
-      p->help = g_strdup (proc->help);
-      p->authors = g_strdup (proc->authors);
-      p->license = g_strdup (proc->license);
+      p->help = g_strdup (bse_type_get_blurb (type));
+      p->authors = g_strdup (bse_type_get_authors (type));
+      p->license = g_strdup (bse_type_get_license (type));
       if (proc->n_out_pspecs)
 	{
 	  GParamSpec *pspec = bglue_pspec_to_serializable (proc->out_pspecs[0]);
@@ -710,9 +709,9 @@ bglue_exec_proc (SfiGlueContext *context,
       if (error)
         {
           if (BSE_DBG_EXT)
-            g_warning ("while executing \"%s\": %s\n", proc->name, bse_error_blurb (error));
+            g_warning ("while executing \"%s\": %s\n", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
           else
-            g_message ("while executing \"%s\": %s\n", proc->name, bse_error_blurb (error));
+            g_message ("while executing \"%s\": %s\n", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
         }
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);

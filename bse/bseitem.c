@@ -854,7 +854,7 @@ undo_call_proc (BseUndoStep  *ustep,
     {
       const gchar *packed_item_pointer = g_value_get_string (ivalues + 0);
       BseItem *item = bse_undo_pointer_unpack (packed_item_pointer, ustack);
-      BseUndoStack *redo_stack = bse_item_undo_open (item, proc->name);
+      BseUndoStack *redo_stack = bse_item_undo_open (item, BSE_PROCEDURE_NAME (proc));
       BseUndoStep *redo_step;
       redo_step = bse_undo_step_new (undo_call_proc, unde_free_proc, 3);
       redo_step->data[0].v_pointer = proc;
@@ -889,7 +889,7 @@ undo_call_proc (BseUndoStep  *ustep,
         }
       /* we're not tolerating any errors */
       if (error)
-        g_warning ("while executing undo method \"%s\" of item %s: %s", proc->name,
+        g_warning ("while executing undo method \"%s\" of item %s: %s", BSE_PROCEDURE_NAME (proc),
                    bse_object_debug_name (g_value_get_object (ivalues + 0)), bse_error_blurb (error));
     }
 }

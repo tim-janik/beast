@@ -47,8 +47,7 @@ METHOD (BseContainer, list-items) {
 }
 
 METHOD (BseContainer, lookup-item) {
-  BLURB = "Find an item within a container.";
-  HELP	= ("Lookup an immediate child of a container from its uname (the uname "
+  HELP	= ("Find an immediate child of a container from its uname (the uname "
 	   "is the name of the item, unique between all immediate children of a container).");
   IN	= bse_param_spec_object ("container", "Container", "The Container", BSE_TYPE_CONTAINER, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("uname", "UName", "Unique item name", NULL, SFI_PARAM_STANDARD);
@@ -72,7 +71,6 @@ METHOD (BseContainer, lookup-item) {
 }
 
 METHOD (BseContainer, get-item) {
-  BLURB = "Get an item by seqid";
   HELP  = "Retrieve a containers immediate child from it's sequential id.";
   IN	= bse_param_spec_object ("container", NULL, NULL, BSE_TYPE_CONTAINER, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("item_type", NULL, "Type of the item to retrieve",

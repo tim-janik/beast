@@ -61,7 +61,6 @@ GType        bse_type_register_abstract     (GType            parent_type,
                                              const GTypeInfo *info);
 GType        bse_type_register_dynamic      (GType            parent_type,
                                              const gchar     *type_name,
-                                             const gchar     *type_blurb,
                                              GTypePlugin     *plugin);
 void         bse_type_register_export_chain (BseExportNode   *chain,
                                              const gchar     *owner);

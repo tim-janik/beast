@@ -149,7 +149,9 @@ show_procdoc (void)
   cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
   for (i = 0; i < cseq->n_cats; i++)
     {
-      BseProcedureClass *class = g_type_class_ref (g_type_from_name (cseq->cats[i]->type));
+      GType type = g_type_from_name (cseq->cats[i]->type);
+      BseProcedureClass *class = g_type_class_ref (type);
+      const gchar *blurb = bse_type_get_blurb (type);
       gchar *cname = g_type_name_to_cname (cseq->cats[i]->type);
       gchar *sname = g_type_name_to_sname (cseq->cats[i]->type);
       guint j;
@@ -176,8 +178,10 @@ show_procdoc (void)
 	}
       g_print (");");
       
+#if 0
       if (class->blurb)
 	g_print (" - @refBlurb{%s}", class->blurb);
+#endif
       
       g_print ("\n");
       
@@ -225,8 +229,8 @@ show_procdoc (void)
 	  g_print ("@end multitable\n\n");
 	}
       
-      if (class->help)
-	g_print ("%s\n", class->help);
+      if (blurb)
+	g_print ("%s\n", blurb);
       else
 	g_print ("@*\n");
       

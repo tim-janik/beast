@@ -24,7 +24,7 @@ AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
 
 METHOD (BseItem, list-parasites) {
-  HELP	= _("List parasites within a parasite path segment.");
+  HELP	= "List parasites within a parasite path segment.";
   IN    = bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("path", _("Path"), NULL, NULL, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("paths", _("Parasite Paths"), NULL, BSE_TYPE_STRING_SEQ, SFI_PARAM_STANDARD);
@@ -48,7 +48,7 @@ METHOD (BseItem, list-parasites) {
 
 METHOD (BseItem, get-parasite) {
   SfiRecFields zero_fields = { 0, };
-  HELP	= _("Retrieve a parasite from an item.");
+  HELP	= "Retrieve a parasite from an item.";
   IN	= bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   IN 	= sfi_pspec_string ("path", _("Path"), NULL, NULL, SFI_PARAM_STANDARD);
   OUT	= sfi_pspec_rec ("parasite", _("Parasite"), NULL, zero_fields, SFI_PARAM_STANDARD);
@@ -66,7 +66,7 @@ METHOD (BseItem, get-parasite) {
 
 METHOD (BseItem, set-parasite) {
   SfiRecFields zero_fields = { 0, };
-  HELP	= _("Set or change a parasite on an item.");
+  HELP	= "Set or change a parasite on an item.";
   IN    = bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("path", _("Path"), NULL, NULL, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_rec ("parasite", _("Parasite"), NULL, zero_fields, SFI_PARAM_STANDARD);
@@ -85,7 +85,7 @@ METHOD (BseItem, set-parasite) {
 
 METHOD (BseItem, add-parasite) {
   SfiRecFields zero_fields = { 0, };
-  HELP	= _("Add a new parasite to an item.");
+  HELP	= "Add a new parasite to an item.";
   IN    = bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("path", _("Path"), NULL, NULL, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_rec ("parasite", _("Parasite"), NULL, zero_fields, SFI_PARAM_STANDARD);

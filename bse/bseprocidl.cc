@@ -234,6 +234,7 @@ void printMethods (const std::string& iface)
   for (i = 0; i < cseq->n_cats; i++)
     {
       GType type_id = g_type_from_name (cseq->cats[i]->type);
+      const gchar *blurb = bse_type_get_blurb (type_id);
       BseProcedureClass *klass = (BseProcedureClass *)g_type_class_ref (type_id);
       
       /* procedures */
@@ -261,9 +262,9 @@ void printMethods (const std::string& iface)
 	  print(") {\n");
 	  indent++;
           
-	  if (klass->help)
+	  if (blurb)
 	    {
-	      char *ehelp = g_strescape (klass->help, 0);
+	      char *ehelp = g_strescape (blurb, 0);
 	      printIndent ();
 	      print ("Info HELP = \"%s\";\n", ehelp);
 	      g_free (ehelp);

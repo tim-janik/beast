@@ -26,7 +26,7 @@ LICENSE = "GNU Lesser General Public License";
 
 
 PROCEDURE (bse-proxy-check, "Proxy Check") {
-  BLURB	= "Check whether a proxy has a certain type.";
+  HELP	= "Check whether a proxy has a certain type.";
   IN	= bse_param_spec_object ("item", "Item", "The Item",
 				 BSE_TYPE_ITEM, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("type_name", "Type Name", NULL,

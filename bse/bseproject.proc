@@ -167,7 +167,7 @@ METHOD (BseProject, store-bse, "File/Store") {
 }
 
 METHOD (BseProject, create-song) {
-  BLURB = "Create a song for this project.";
+  HELP  = "Create a song for this project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
                                  BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", "Song name",
@@ -264,7 +264,7 @@ METHOD (BseProject, get-data-pocket) {
 }
 
 METHOD (BseProject, create-csynth) {
-  BLURB = "Create a synthsizer network for this project.";
+  HELP  = "Create a synthsizer network for this project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
                                  BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", "Synth network name",
@@ -300,7 +300,7 @@ METHOD (BseProject, create-csynth) {
 }
 
 METHOD (BseProject, create-midi-synth) {
-  BLURB = "Create a MIDI synthesizer network for this project.";
+  HELP  = "Create a MIDI synthesizer network for this project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
                                  BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("name", "Name", "MIDI synth name",
@@ -336,7 +336,7 @@ METHOD (BseProject, create-midi-synth) {
 }
 
 METHOD (BseProject, remove-snet) {
-  BLURB = "Remove an existing synthesizer network from this project.";
+  HELP  = "Remove an existing synthesizer network from this project.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
                                  BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_object ("snet", "SNet", "Synthesizer Network",

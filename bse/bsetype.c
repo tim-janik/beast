@@ -143,13 +143,9 @@ bse_type_register_abstract (GType            parent_type,
 GType  
 bse_type_register_dynamic (GType        parent_type,
 			   const gchar *type_name,
-			   const gchar *type_blurb,
 			   GTypePlugin *plugin)
 {
   GType type = g_type_register_dynamic (parent_type, type_name, plugin, 0);
-  
-  bse_type_add_blurb (type, type_blurb);
-  
   return type;
 }
 

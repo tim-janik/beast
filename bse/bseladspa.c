@@ -267,7 +267,7 @@ ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
 	      continue;
 	    }
 	  self->types[j].type = bse_type_register_dynamic (BSE_TYPE_LADSPA_MODULE, name,
-							   "LADSPA Undocumented", G_TYPE_PLUGIN (self));
+                                                           G_TYPE_PLUGIN (self));
 	  g_free (name);
 	  string = g_strdup (self->types[j].info->name);
 	  for (k = 0; string[k]; k++)

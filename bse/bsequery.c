@@ -146,8 +146,10 @@ show_procdoc (void)
   cseq = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE);
   for (i = 0; i < cseq->n_cats; i++)
     {
-      BseProcedureClass *class = g_type_class_ref (g_type_from_name (cseq->cats[i]->type));
+      GType type = g_type_from_name (cseq->cats[i]->type);
+      BseProcedureClass *class = g_type_class_ref (type);
       gchar *pname = g_type_name_to_sname (cseq->cats[i]->type);
+      const gchar *blurb = bse_type_get_blurb (type);
       guint j;
 
       fprintf (f_out, "/**\n * %s\n", pname);
@@ -167,10 +169,8 @@ show_procdoc (void)
 		   pspec->name,
 		   g_param_spec_get_blurb (pspec) ? g_param_spec_get_blurb (pspec) : nullstr);
 	}
-      if (class->help)
-	fprintf (f_out, " * %s\n", class->help);
-      else if (class->blurb)
-	fprintf (f_out, " * %s\n", class->blurb);
+      if (blurb)
+	fprintf (f_out, " * %s\n", blurb);
       fprintf (f_out, " **/\n");
       g_type_class_unref (class);
       g_free (pname);
@@ -191,6 +191,7 @@ help (gchar *arg)
   fprintf (stderr, "       -b       specifiy indent string\n");
   fprintf (stderr, "       -i       specifiy incremental indent string\n");
   fprintf (stderr, "       -s       specifiy line spacing\n");
+  fprintf (stderr, "       -:f      make all warnings fatal\n");
   fprintf (stderr, "qualifiers:\n");
   fprintf (stderr, "       froots     iterate over fundamental roots\n");
   fprintf (stderr, "       tree       print BSE type tree\n");
@@ -304,6 +305,10 @@ main (gint   argc,
       else if (strcmp ("-p", argv[i]) == 0)
 	{
           sfi_rec_set_bool (config, "load-core-plugins", TRUE);
+	}
+      else if (strcmp ("-:f", argv[i]) == 0)
+	{
+	  g_log_set_always_fatal (G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL | g_log_set_always_fatal (G_LOG_FATAL_MASK));
 	}
       else if (strcmp ("-h", argv[i]) == 0)
 	{

@@ -37,10 +37,10 @@ struct _BseExportNode {
   const char       *name;
   const char       *options;
   const char       *category;
+  const char       *blurb;
   const char       *authors;
   const char       *license;
   const guint8     *pixstream;
-  const char       *blurb;
   GType             type;
 };
 typedef struct {

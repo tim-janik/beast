@@ -63,12 +63,7 @@ bse_type_register_procedure_info (GTypeInfo *info)
 static void
 bse_procedure_base_init (BseProcedureClass *proc)
 {
-  proc->name = NULL;
-  proc->blurb = NULL;
   proc->private_id = 0;
-  proc->help = NULL;
-  proc->authors = NULL;
-  proc->license = NULL;
   proc->n_in_pspecs = 0;
   proc->in_pspecs = NULL;
   proc->n_out_pspecs = 0;
@@ -80,12 +75,6 @@ static void
 bse_procedure_base_finalize (BseProcedureClass *proc)
 {
   guint i;
-  
-  proc->name = NULL;
-  proc->blurb = NULL;
-  proc->help = NULL;
-  proc->authors = NULL;
-  proc->license = NULL;
   
   /* give up type references */
   for (i = 0; proc->class_refs[i]; i++)
@@ -110,31 +99,16 @@ bse_procedure_init (BseProcedureClass       *proc,
   GParamSpec *in_pspecs[BSE_PROCEDURE_MAX_IN_PARAMS + 8];
   GParamSpec *out_pspecs[BSE_PROCEDURE_MAX_OUT_PARAMS + 8];
   guint i, j;
-  gchar *const_name, *const_blurb;
   
   memset (in_pspecs, 0, sizeof (in_pspecs));
   memset (out_pspecs, 0, sizeof (out_pspecs));
   
-  proc->name = g_type_name (BSE_PROCEDURE_TYPE (proc));
-  proc->blurb = (gchar*) bse_type_get_blurb (BSE_PROCEDURE_TYPE (proc));
   proc->private_id = pnode->private_id;
   
   /* init procedure class from plugin,
    * paranoia check certain class members
    */
-  const_name = proc->name;
-  const_blurb = proc->blurb;
   pnode->init (proc, in_pspecs, out_pspecs);
-  if (proc->name != const_name)
-    {
-      proc->name = const_name;
-      g_warning ("procedure \"%s\" redefines procedure name", proc->name);
-    }
-  if (proc->blurb != const_blurb)
-    {
-      proc->blurb = const_blurb;
-      g_warning ("procedure \"%s\" redefines procedure blurb", proc->name);
-    }
   if (proc->n_in_pspecs || proc->in_pspecs ||
       proc->n_out_pspecs || proc->out_pspecs ||
       proc->execute)
@@ -144,7 +118,7 @@ bse_procedure_init (BseProcedureClass       *proc,
       proc->n_out_pspecs = 0;
       proc->out_pspecs = NULL;
       proc->execute = NULL;
-      g_warning ("procedure \"%s\" messes with reserved class members", proc->name);
+      g_warning ("procedure \"%s\" messes with reserved class members", BSE_PROCEDURE_NAME (proc));
     }
   
   /* check input parameters and setup specifications */
@@ -153,8 +127,7 @@ bse_procedure_init (BseProcedureClass       *proc,
       {
         if ((in_pspecs[i]->flags & G_PARAM_READWRITE) != G_PARAM_READWRITE)
           g_warning ("procedure \"%s\": input parameter \"%s\" has invalid flags",
-                     proc->name,
-                     in_pspecs[i]->name);
+                     BSE_PROCEDURE_NAME (proc), in_pspecs[i]->name);
         g_param_spec_ref (in_pspecs[i]);
         g_param_spec_sink (in_pspecs[i]);
       }
@@ -162,7 +135,7 @@ bse_procedure_init (BseProcedureClass       *proc,
       break;
   if (i == BSE_PROCEDURE_MAX_IN_PARAMS && in_pspecs[i])
     g_warning ("procedure \"%s\" exceeds maximum number of input parameters (%u)",
-               proc->name, BSE_PROCEDURE_MAX_IN_PARAMS);
+               BSE_PROCEDURE_NAME (proc), BSE_PROCEDURE_MAX_IN_PARAMS);
   proc->n_in_pspecs = i;
   proc->in_pspecs = g_new (GParamSpec*, proc->n_in_pspecs + 1);
   memcpy (proc->in_pspecs, in_pspecs, sizeof (in_pspecs[0]) * proc->n_in_pspecs);
@@ -174,8 +147,7 @@ bse_procedure_init (BseProcedureClass       *proc,
       {
         if ((out_pspecs[i]->flags & G_PARAM_READWRITE) != G_PARAM_READWRITE)
           g_warning ("procedure \"%s\": output parameter \"%s\" has invalid flags",
-                     proc->name,
-                     out_pspecs[i]->name);
+                     BSE_PROCEDURE_NAME (proc), out_pspecs[i]->name);
         g_param_spec_ref (out_pspecs[i]);
         g_param_spec_sink (out_pspecs[i]);
       }
@@ -183,7 +155,7 @@ bse_procedure_init (BseProcedureClass       *proc,
       break;
   if (i == BSE_PROCEDURE_MAX_OUT_PARAMS && out_pspecs[i])
     g_warning ("procedure \"%s\" exceeds maximum number of output parameters (%u)",
-               proc->name, BSE_PROCEDURE_MAX_OUT_PARAMS);
+               BSE_PROCEDURE_NAME (proc), BSE_PROCEDURE_MAX_OUT_PARAMS);
   proc->n_out_pspecs = i;
   proc->out_pspecs = g_new (GParamSpec*, proc->n_out_pspecs + 1);
   memcpy (proc->out_pspecs, out_pspecs, sizeof (out_pspecs[0]) * proc->n_out_pspecs);
@@ -216,7 +188,6 @@ bse_procedure_complete_info (const BseExportNodeProc *pnode,
 
 const gchar*
 bse_procedure_type_register (const gchar *name,
-                             const gchar *blurb,
                              BsePlugin   *plugin,
                              GType       *ret_type)
 {
@@ -246,10 +217,7 @@ bse_procedure_type_register (const gchar *name,
         return "Procedure base type invalid";
     }
   
-  type = bse_type_register_dynamic (BSE_TYPE_PROCEDURE,
-                                    name,
-                                    blurb,
-                                    G_TYPE_PLUGIN (plugin));
+  type = bse_type_register_dynamic (BSE_TYPE_PROCEDURE, name, G_TYPE_PLUGIN (plugin));
   
   *ret_type = type;
   
@@ -280,10 +248,10 @@ signal_exec_status (BseErrorType       error,
     {
       BseErrorType verror = g_value_get_enum (first_ovalue);
       
-      bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, proc->name, verror ? 0 : 1, verror);
+      bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, BSE_PROCEDURE_NAME (proc), verror ? 0 : 1, verror);
     }
   else
-    bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, proc->name, error ? 0 : 1, error);
+    bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, BSE_PROCEDURE_NAME (proc), error ? 0 : 1, error);
 #endif
 }
 
@@ -304,7 +272,7 @@ call_proc (BseProcedureClass  *proc,
       if (g_param_value_validate (pspec, ivalues + i) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
         {
           g_warning ("%s: input arg `%s' contains invalid value",
-                     proc->name,
+                     BSE_PROCEDURE_NAME (proc),
                      pspec->name);
           bail_out = TRUE;
         }
@@ -318,9 +286,9 @@ call_proc (BseProcedureClass  *proc,
         {
           if (proc->n_in_pspecs && G_TYPE_IS_OBJECT (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0])))
             DEBUG ("executing procedure \"%s\" on object %s",
-                   proc->name, bse_object_debug_name (g_value_get_object (ivalues + 0)));
+                   BSE_PROCEDURE_NAME (proc), bse_object_debug_name (g_value_get_object (ivalues + 0)));
           else
-            DEBUG ("executing procedure \"%s\"", proc->name);
+            DEBUG ("executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
         }
       if (marshal)
         error = marshal (marshal_data, proc, ivalues, ovalues);
@@ -334,7 +302,7 @@ call_proc (BseProcedureClass  *proc,
       
       if (g_param_value_validate (pspec, ivalues + i) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
         g_warning ("%s: internal procedure error: output arg `%s' had invalid value",
-                   proc->name,
+                   BSE_PROCEDURE_NAME (proc),
                    pspec->name);
     }
   
@@ -366,7 +334,7 @@ bse_procedure_marshal (GType               proc_type,
       if (!sfi_value_transform (ivalues + i, tmp_ivalues + i))
         {
           g_warning ("%s: input arg `%s' has invalid type `%s' (expected `%s')",
-                     proc->name,
+                     BSE_PROCEDURE_NAME (proc),
                      pspec->name,
                      G_VALUE_TYPE_NAME (ivalues + i),
                      g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
@@ -393,7 +361,7 @@ bse_procedure_marshal (GType               proc_type,
       
       if (!sfi_value_transform (tmp_ovalues + i, ovalues + i))
         g_warning ("%s: output arg `%s' of type `%s' cannot be converted into `%s'",
-                   proc->name,
+                   BSE_PROCEDURE_NAME (proc),
                    pspec->name,
                    g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
                    G_VALUE_TYPE_NAME (ovalues + i));
@@ -418,14 +386,14 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
   guint i, bail_out = FALSE;
   BseErrorType error = BSE_ERROR_NONE;
 
-  HACK_DEBUG ("call %s: ", proc->name);
+  HACK_DEBUG ("call %s: ", BSE_PROCEDURE_NAME (proc));
 
   /* collect first arg */
   if (first_value && first_value != ivalues) /* may skip this since call_proc() does extra validation */
     {
       if (proc->n_in_pspecs < 1)
         g_warning ("%s: input arg supplied for procedure taking `void'",
-                   proc->name);
+                   BSE_PROCEDURE_NAME (proc));
       else
         {
           GParamSpec *pspec = proc->in_pspecs[0];
@@ -434,7 +402,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
           if (!sfi_value_transform (first_value, ivalues + 0))
             {
               g_warning ("%s: input arg `%s' has invalid type `%s' (expected `%s')",
-                         proc->name,
+                         BSE_PROCEDURE_NAME (proc),
                          pspec->name,
                          G_VALUE_TYPE_NAME (first_value),
                          g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
@@ -457,7 +425,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
       if (error_msg)
         {
           g_warning ("%s: failed to collect arg `%s' of type `%s': %s",
-                     proc->name,
+                     BSE_PROCEDURE_NAME (proc),
                      pspec->name,
                      G_VALUE_TYPE_NAME (ivalues + i),
                      error_msg);
@@ -499,7 +467,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
           if (error_msg)
             {
               g_warning ("%s: failed to return arg `%s' of type `%s': %s",
-                         proc->name,
+                         BSE_PROCEDURE_NAME (proc),
                          pspec->name,
                          G_VALUE_TYPE_NAME (ovalues + i),
                          error_msg);
@@ -651,14 +619,14 @@ bse_procedure_execvl (BseProcedureClass  *proc,
     memcpy (tmp_ivalues + i, slist->data, sizeof (tmp_ivalues[0]));
   if (slist || i != proc->n_in_pspecs)
     {
-      g_warning ("%s: invalid number of arguments supplied to procedure \"%s\"", G_STRLOC, proc->name);
+      g_warning ("%s: invalid number of arguments supplied to procedure \"%s\"", G_STRLOC, BSE_PROCEDURE_NAME (proc));
       return BSE_ERROR_PROC_PARAM_INVAL;
     }
   for (i = 0, slist = out_value_list; slist && i < proc->n_out_pspecs; i++, slist = slist->next)
     memcpy (tmp_ovalues + i, slist->data, sizeof (tmp_ovalues[0]));
   if (slist || i != proc->n_out_pspecs)
     {
-      g_warning ("%s: invalid number of arguments supplied to procedure \"%s\"", G_STRLOC, proc->name);
+      g_warning ("%s: invalid number of arguments supplied to procedure \"%s\"", G_STRLOC, BSE_PROCEDURE_NAME (proc));
       return BSE_ERROR_PROC_PARAM_INVAL;
     }
   error = bse_procedure_marshal (BSE_PROCEDURE_TYPE (proc), tmp_ivalues, tmp_ovalues, marshal, marshal_data);

@@ -48,7 +48,7 @@ if (@ARGV > 1) {
     die "$0: too many file names\n";
 }
 
-my $var_pattern = "HELP|BLURB|AUTHORS|LICENSE";
+my $var_pattern = "HELP|OPTIONS|AUTHORS|LICENSE";
 my %var_defs = ();
 my %proc_defs = ();
 
@@ -198,16 +198,19 @@ while (<>) {
 
 	$externs .= "static BseExportNodeProc __enode_". ncanon ($proc_name) ." = {\n";
 	$externs .= "  { $last_node, BSE_EXPORT_NODE_PROC,\n";
-	$externs .= "    $proc_method, NULL, $proc_category, ". get_variable ("BLURB", "NULL") ." },\n";
+	$externs .= "    $proc_method, \n";
+	$externs .= "    ". get_variable ("OPTIONS", "NULL") .",\n";
+	$externs .= "    $proc_category,\n";
+	$externs .= "    ". get_variable ("HELP", "NULL") .",\n";
+	$externs .= "    ". get_variable ("AUTHORS", "NULL") .",\n";
+	$externs .= "    ". get_variable ("LICENSE", "NULL") .",\n";
+        $externs .= "  },\n";
 	$externs .= "  0, ";                               # private_id
 	$externs .= ncanon ($proc_name) . "_setup, ";      # init
 	$externs .= ncanon ($proc_name) . "_exec, ";       # exec
 	$externs .= "\n};\n";
 	$last_node = "(BseExportNode*) &__enode_". ncanon ($proc_name);
 
-	print_assignment ("proc->help", "HELP");
-	print_assignment ("proc->authors", "AUTHORS");
-	print_assignment ("proc->license", "LICENSE");
 	print "#line $line \"$file\"\n$1 }\n";
 	print "static BseErrorType\n";
 	print "#line $line \"$file\"\n";
