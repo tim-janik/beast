@@ -60,15 +60,16 @@ G_BEGIN_DECLS
                                            BSE_SOURCE (s)->channel_defs->ijstreams[(ic)] & ~BSE_SOURCE_JSTREAM_FLAG : \
                                            0xffffffff)
 #define	BSE_SOURCE_JSTREAM_FLAG		  ((guint) 1 << 31)
-
+#define BSE_SOURCE_PRIVATE_INPUTS(src)    ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_PRIVATE_INPUTS) != 0)
 
 /* --- BseSource flags --- */
 typedef enum	/*< skip >*/
 {
-  BSE_SOURCE_FLAG_PREPARED		= 1 << (BSE_ITEM_FLAGS_USHIFT + 0),
-  BSE_SOURCE_FLAG_COLLECTED		= 1 << (BSE_ITEM_FLAGS_USHIFT + 1)
+  BSE_SOURCE_FLAG_PRIVATE_INPUTS	= 1 << (BSE_ITEM_FLAGS_USHIFT + 0),
+  BSE_SOURCE_FLAG_PREPARED		= 1 << (BSE_ITEM_FLAGS_USHIFT + 1),
+  BSE_SOURCE_FLAG_COLLECTED		= 1 << (BSE_ITEM_FLAGS_USHIFT + 2)
 } BseSourceFlags;
-#define BSE_SOURCE_FLAGS_USHIFT        (BSE_ITEM_FLAGS_USHIFT + 2)
+#define BSE_SOURCE_FLAGS_USHIFT        (BSE_ITEM_FLAGS_USHIFT + 3)
 
 
 /* --- typedefs & structures --- */
@@ -160,17 +161,17 @@ BseErrorType	bse_source_unset_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
-#define	bse_source_must_set_input(is,ic,os,oc)	G_STMT_START {   \
-  BseSource *_is = (is), *_os = (os);				 \
-  guint _ic = (ic), _oc = (oc);					 \
-  BseErrorType _err = bse_source_set_input (_is, _ic, _os, _oc); \
-  if (_err != BSE_ERROR_NONE)					 \
-    g_warning ("%s: failed to connect module %s channel %u "	 \
-	       "to module %s channel %u: %s", G_STRLOC,		 \
-	       bse_object_debug_name (_is), _ic,		 \
-	       bse_object_debug_name (_os), _oc,		 \
-               bse_error_blurb (_err));				 \
-} G_STMT_END
+gboolean        bse_source_get_input            (BseSource      *source,
+                                                 guint           ichannel,
+                                                 BseSource     **osourcep,
+                                                 guint          *ochannelp);
+void           	bse_source_must_set_input_loc	(BseSource	*source,
+						 guint		 ichannel,
+						 BseSource	*osource,
+						 guint		 ochannel,
+                                                 const gchar    *strloc);
+#define bse_source_must_set_input(is,ic,os,oc)  \
+  bse_source_must_set_input_loc (is, ic, os, oc, G_STRLOC)
 
 
 /* --- source implementations --- */

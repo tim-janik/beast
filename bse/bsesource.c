@@ -1210,6 +1210,41 @@ bse_source_unset_input (BseSource *source,
   return BSE_ERROR_NONE;
 }
 
+gboolean
+bse_source_get_input (BseSource      *source,
+                      guint           ichannel,
+                      BseSource     **osourcep,
+                      guint          *ochannelp)
+{
+  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
+  if (ichannel < BSE_SOURCE_N_ICHANNELS (source) &&
+      !BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
+    {
+      BseSourceInput *input = BSE_SOURCE_INPUT (source, ichannel);
+      if (osourcep)
+        *osourcep = input->idata.osource;
+      if (ochannelp)
+        *ochannelp = input->idata.ochannel;
+      return TRUE;
+    }
+  return FALSE;
+}
+
+void
+bse_source_must_set_input_loc (BseSource      *source,
+                               guint           ichannel,
+                               BseSource      *osource,
+                               guint           ochannel,
+                               const gchar    *strloc)
+{
+  BseErrorType error = bse_source_set_input (source, ichannel, osource, ochannel);
+  if (error)
+    g_warning ("%s: failed to connect module %s channel %u to module %s channel %u: %s", strloc,
+               bse_object_debug_name (source), ichannel,
+	       bse_object_debug_name (osource), ochannel,
+               bse_error_blurb (error));
+}
+
 static SfiRing*
 collect_inputs_flat (SfiRing   *ring,
                      BseSource *source)
@@ -1486,29 +1521,32 @@ bse_source_real_store_private (BseObject  *object,
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->store_private)
     BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
-  
+
+  if (BSE_SOURCE_PRIVATE_INPUTS (source))
+    return;
+
   for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
     {
       BseSourceInput *input = BSE_SOURCE_INPUT (source, i);
       GSList *slist, *outputs = NULL;
       
       if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
-	for (j = 0; j < input->jdata.n_joints; j++)
-	  outputs = g_slist_append (outputs, input->jdata.joints + j);
+        for (j = 0; j < input->jdata.n_joints; j++)
+          outputs = g_slist_append (outputs, input->jdata.joints + j);
       else if (input->idata.osource)
-	outputs = g_slist_append (outputs, &input->idata);
+        outputs = g_slist_append (outputs, &input->idata);
       
       for (slist = outputs; slist; slist = slist->next)
-	{
-	  BseSourceOutput *output = slist->data;
-	  
-	  bse_storage_break (storage);
-	  bse_storage_printf (storage,
-			      "(source-input \"%s\" ",
-			      BSE_SOURCE_ICHANNEL_IDENT (source, i));
-	  bse_storage_put_item_link (storage, BSE_ITEM (source), BSE_ITEM (output->osource));
-	  bse_storage_printf (storage, " \"%s\")", BSE_SOURCE_OCHANNEL_IDENT (output->osource, output->ochannel));
-	}
+        {
+          BseSourceOutput *output = slist->data;
+          
+          bse_storage_break (storage);
+          bse_storage_printf (storage,
+                              "(source-input \"%s\" ",
+                              BSE_SOURCE_ICHANNEL_IDENT (source, i));
+          bse_storage_put_item_link (storage, BSE_ITEM (source), BSE_ITEM (output->osource));
+          bse_storage_printf (storage, " \"%s\")", BSE_SOURCE_OCHANNEL_IDENT (output->osource, output->ochannel));
+        }
       g_slist_free (outputs);
     }
 }
@@ -1524,6 +1562,9 @@ bse_source_input_backup_to_undo (BseSource      *source,
   BseStorage *storage;
 
   g_return_if_fail (error == BSE_ERROR_NONE);
+
+  if (BSE_SOURCE_PRIVATE_INPUTS (source))
+    return;
 
   ustack = bse_item_undo_open (source, "unset-input %s", bse_object_debug_name (source));
 
@@ -1581,6 +1622,8 @@ resolve_osource_input (gpointer     data,
 	cerror = BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
       else if (!dinput->ochannel_ident)
 	cerror = BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
+      else if (BSE_SOURCE_PRIVATE_INPUTS (source))
+        cerror = BSE_ERROR_SOURCE_PRIVATE_ICHANNEL;
       else
 	cerror = bse_source_set_input (source,
 				       bse_source_find_ichannel (source, dinput->ichannel_ident),

@@ -102,6 +102,21 @@ METHOD (BseSong, remove-bus) {
   return error;
 }
 
+static BseSource*
+bse_song_ensure_master (BseSong *self)
+{
+  BseSource *child = (BseSource*) bse_song_find_master (self);
+  if (!child)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "create-master");
+      child = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, "Master", NULL);
+      g_object_set (child, "master-output", TRUE, NULL); /* no undo */
+      bse_item_push_undo_proc (self, "remove-bus", child);
+      bse_item_undo_close (ustack);
+    }
+  return child;
+}
+
 METHOD (BseSong, get-master-bus) {
   HELP  = _("Retrieve master output bus of a song.");
   IN    = bse_param_spec_object ("song", NULL, NULL,
@@ -121,8 +136,8 @@ METHOD (BseSong, get-master-bus) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  child = bse_song_get_master (self);
-  
+  child = bse_song_ensure_master (self);
+
   /* set output parameters */
   bse_value_set_object (out_values++, child);
   
@@ -151,7 +166,7 @@ METHOD (BseSong, ensure-track-links) {
 }
 
 METHOD (BseSong, ensure-output-busses) {
-  HELP  = _("Ensure that each track in a song is connected to an output bus.");
+  HELP  = _("Connect all unconnected track of a song to the master output bus.");
   IN    = bse_param_spec_object ("song", NULL, NULL,
 				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
@@ -178,7 +193,7 @@ METHOD (BseSong, ensure-output-busses) {
   sfi_ring_free (tracks);
   tracks = node;
   /* connect remaining tracks */
-  BseSource *master = bse_song_get_master (self);
+  BseSource *master = bse_song_ensure_master (self);
   for (node = master ? tracks : NULL; node; node = sfi_ring_walk (node, tracks))
     {
       BseErrorType error = bse_bus_connect (BSE_BUS (master), node->data);

@@ -30,6 +30,7 @@ enum
   PROP_INPUTS,
   PROP_LEFT_VOLUME_dB,
   PROP_RIGHT_VOLUME_dB,
+  PROP_MASTER_OUTPUT,
 };
 
 
@@ -41,6 +42,7 @@ static gpointer		 bus_parent_class = NULL;
 static void
 bse_bus_init (BseBus *self)
 {
+  BSE_OBJECT_SET_FLAGS (self, BSE_SOURCE_FLAG_PRIVATE_INPUTS);
   self->left_volume = 1.0;
   self->right_volume = 1.0;
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self), TRUE);
@@ -94,6 +96,7 @@ bse_bus_set_property (GObject      *object,
   BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
+      BseItem *parent;
     case PROP_INPUTS:
       break;
     case PROP_LEFT_VOLUME_dB:
@@ -101,7 +104,32 @@ bse_bus_set_property (GObject      *object,
       break;
     case PROP_RIGHT_VOLUME_dB:
       self->right_volume = bse_db_to_factor (sfi_value_get_real (value));
-     break;
+      break;
+    case PROP_MASTER_OUTPUT:
+      parent = BSE_ITEM (self)->parent;
+      if (BSE_IS_SONG (parent))
+        {
+          BseSong *song = BSE_SONG (parent);
+          BseBus *master = bse_song_find_master (song);
+          if (sfi_value_get_bool (value))
+            {
+              if (master != self)
+                {
+                  if (master)
+                    bse_bus_disconnect_outputs (master);
+                  bse_bus_disconnect_outputs (self);
+                  bse_song_connect_master (song, self);
+                  if (master)
+                    g_object_notify (master, "master-output");
+                }
+            }
+          else
+            {
+              if (master == self)
+                bse_bus_disconnect_outputs (self);
+            }
+        }
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -117,6 +145,7 @@ bse_bus_get_property (GObject    *object,
   BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
+      BseItem *parent;
     case PROP_INPUTS:
       g_value_set_boxed (value, NULL);
       break;
@@ -125,6 +154,17 @@ bse_bus_get_property (GObject    *object,
       break;
     case PROP_RIGHT_VOLUME_dB:
       sfi_value_set_real (value, bse_db_from_factor (self->right_volume, BSE_MIN_VOLUME_dB));
+      break;
+    case PROP_MASTER_OUTPUT:
+      parent = BSE_ITEM (self)->parent;
+      if (BSE_IS_SONG (parent))
+        {
+          BseSong *song = BSE_SONG (parent);
+          BseBus *master = bse_song_find_master (song);
+          sfi_value_set_bool (value, self == master);
+        }
+      else
+        sfi_value_set_bool (value, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -227,7 +267,8 @@ bse_bus_connect (BseBus  *self,
     osource = BSE_SOURCE (trackbus);
   else
     return BSE_ERROR_SOURCE_TYPE_INVALID;
-  if (!osource || !bse_bus_ensure_summation (self))
+  if (!osource || !bse_bus_ensure_summation (self) ||
+      BSE_ITEM (osource)->parent != BSE_ITEM (self)->parent)    /* restrict to siblings */
     return BSE_ERROR_SOURCE_PARENT_MISMATCH;
   BseErrorType error = bse_source_set_input (self->summation, 0, osource, 0);
   if (!error)
@@ -261,10 +302,38 @@ bse_bus_disconnect (BseBus  *self,
   return error1 ? error1 : error2;
 }
 
+void
+bse_bus_disconnect_outputs (BseBus *self)
+{
+  SfiRing *ring, *outputs = bse_bus_list_outputs (self);
+  for (ring = outputs; ring; ring = sfi_ring_walk (ring, outputs))
+    {
+      BseErrorType error = bse_bus_disconnect (ring->data, BSE_ITEM (self));
+      bse_assert_ok (error);
+    }
+  bse_source_clear_ochannels (BSE_SOURCE (self));       /* also disconnects master */
+}
+
 SfiRing*
 bse_bus_list_inputs (BseBus *self)
 {
   return sfi_ring_copy (self->inputs);
+}
+
+SfiRing*
+bse_bus_list_outputs (BseBus *self)
+{
+  BseItem *parent = BSE_ITEM (self)->parent;
+  SfiRing *outputs = NULL;
+  if (BSE_IS_SONG (parent))
+    {
+      BseSong *song = BSE_SONG (parent);
+      SfiRing *ring;
+      for (ring = song->busses; ring; ring = sfi_ring_walk (ring, song->busses))
+        if (ring->data != self && sfi_ring_find (BSE_BUS (ring->data)->inputs, self))
+          outputs = sfi_ring_append (outputs, ring->data);
+    }
+  return outputs;
 }
 
 static void
@@ -305,7 +374,11 @@ bse_bus_class_init (BseBusClass *class)
 			      sfi_pspec_real ("right-volume-db", _("Right Volume [dB]"), _("Volume adjustment of right bus channel"),
                                               0, BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      0.1, SFI_PARAM_GUI ":dial"));
-  
+  bse_object_class_add_param (object_class, _("Internals"),
+			      PROP_MASTER_OUTPUT,
+			      sfi_pspec_bool ("master-output", _("Master Output"), NULL,
+                                              FALSE, SFI_PARAM_STORAGE ":skip-default"));
+
   channel_id = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left channel input"));
   g_assert (channel_id == BSE_BUS_ICHANNEL_LEFT);
   channel_id = bse_source_class_add_ichannel (source_class, "right-audio-in", _("Right Audio In"), _("Right channel input"));

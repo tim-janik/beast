@@ -1,3 +1,24 @@
+Sun Aug 22 19:26:23 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.[hc]: made bus input channels private to avoid undo or disk
+	storage of channel states. busses maintain connections on their own.
+	added ::master-output bool property to set whether a bus is the master
+	bus of a song. 
+	added bse_bus_disconnect_outputs() and bse_bus_list_outputs().
+
+	* bseenums.[hc]: const-corrections. added i18n markup to error blurbs.
+	added BSE_ERROR_SOURCE_PRIVATE_ICHANNEL and bse_assert_ok().
+
+	* bsesong.[hc]: got rid of master_bus member. detect master-bus-ness
+	through signal connections. removed bse_song_get_master(), added
+	bse_song_find_master() and bse_song_connect_master().
+
+	* bsesong.proc: create master bus undoable.
+
+	* bsesource.[hc]: added bse_source_get_input(). cleaned up
+	bse_source_must_set_input(). added PRIVATE_INPUTS flag, skipped
+	channel storage/restoring for private inputs.
+
 Fri Aug 20 18:31:59 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.[hc]: added left/right db-volume properties.

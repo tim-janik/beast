@@ -33,8 +33,6 @@ G_BEGIN_DECLS
 
 
 /* --- BseBus source --- */
-typedef struct _BseBus      BseBus;
-typedef struct _BseBusClass BseBusClass;
 struct _BseBus
 {
   BseSubSynth   parent_object;
@@ -50,12 +48,13 @@ struct _BseBusClass
 
 
 /* --- API --- */
-BseErrorType bse_bus_connect          (BseBus    *self,
-                                       BseItem   *item);
-BseErrorType bse_bus_disconnect       (BseBus    *self,
-                                       BseItem   *item);
-SfiRing*     bse_bus_list_inputs      (BseBus    *self);
-
+BseErrorType    bse_bus_connect                 (BseBus         *self,
+                                                 BseItem        *item);
+BseErrorType    bse_bus_disconnect              (BseBus         *self,
+                                                 BseItem        *item);
+SfiRing*        bse_bus_list_inputs             (BseBus         *self);
+SfiRing*        bse_bus_list_outputs            (BseBus         *self);
+void            bse_bus_disconnect_outputs      (BseBus         *self);
 
 /* --- channels --- */
 enum

@@ -42,6 +42,8 @@ G_BEGIN_DECLS
 /* --- BSE objects, classes & interfaces --- */
 typedef struct  _BseBinData             BseBinData;
 typedef struct  _BseBinDataClass        BseBinDataClass;
+typedef struct  _BseBus                 BseBus;
+typedef struct  _BseBusClass            BseBusClass;
 typedef struct  _BseCapture             BseCapture;
 typedef struct  _BseCaptureClass        BseCaptureClass;
 typedef struct  _BseContainer           BseContainer;

@@ -62,7 +62,7 @@ bse_type_register_enums (void)
 /* BseErrorType is a static type */
 static GEnumClass *bse_error_class = NULL;
 
-gchar*
+const gchar*
 bse_error_name (BseErrorType error_value)
 {
   GEnumValue *ev;
@@ -74,7 +74,7 @@ bse_error_name (BseErrorType error_value)
   return ev ? ev->value_name : NULL;
 }
 
-gchar*
+const gchar*
 bse_error_nick (BseErrorType error_value)
 {
   GEnumValue *ev;
@@ -86,7 +86,7 @@ bse_error_nick (BseErrorType error_value)
   return ev ? ev->value_nick : NULL;
 }
 
-gchar*
+const gchar*
 bse_error_blurb (BseErrorType error_value)
 {
   GEnumValue *ev;
@@ -96,39 +96,40 @@ bse_error_blurb (BseErrorType error_value)
   
   switch (error_value)
     {
-    case BSE_ERROR_NONE:	/* GSL */	return "Everything went well";
-    case BSE_ERROR_UNIMPLEMENTED:		return "Functionality not implemented";
-    case BSE_ERROR_DEVICE_NOT_AVAILABLE:	return "No device (driver) available";
-    case BSE_ERROR_DEVICE_ASYNC:		return "Device not async capable";
-    case BSE_ERROR_DEVICE_BUSY:			return "Device busy";
-    case BSE_ERROR_DEVICE_GET_CAPS:		return "Failed to query device capabilities";
-    case BSE_ERROR_DEVICE_CAPS_MISMATCH:	return "Device capabilities not sufficient";
-    case BSE_ERROR_DEVICE_SET_CAPS:		return "Failed to set device capabilities";
-    case BSE_ERROR_SOURCE_NO_SUCH_MODULE:	return "No such synthesis module";
-    case BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL:	return "No such input channel";
-    case BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL:	return "No such output channel";
-    case BSE_ERROR_SOURCE_NO_SUCH_CONNECTION:	return "Input/Output channels not connected";
-    case BSE_ERROR_SOURCE_ICHANNEL_IN_USE:	return "Input channel already in use";
-    case BSE_ERROR_SOURCE_CHANNELS_CONNECTED:	return "Input/Output channels already connected";
-    case BSE_ERROR_SOURCE_PARENT_MISMATCH:	return "Parent mismatch";
-    case BSE_ERROR_SOURCE_BAD_LOOPBACK:		return "Bad loopback";
-    case BSE_ERROR_SOURCE_BUSY:			return "Synthesis module currently busy";
-    case BSE_ERROR_SOURCE_TYPE_INVALID:		return "Invalid synthsis module type";
-    case BSE_ERROR_PROC_NOT_FOUND:		return "No such procedure";
-    case BSE_ERROR_PROC_BUSY:			return "Procedure currently busy"; /* recursion */
-    case BSE_ERROR_PROC_PARAM_INVAL:		return "Procedure parameter invalid";
-    case BSE_ERROR_PROC_EXECUTION:		return "Procedure execution failed";
-    case BSE_ERROR_PROC_ABORT:			return "Procedure execution aborted";
-    case BSE_ERROR_PARSE_ERROR:			return "Parsing error";
-    case BSE_ERROR_SPAWN:			return "Failed to spawn child process";
+    case BSE_ERROR_NONE:	/* GSL */	return _("Everything went well");
+    case BSE_ERROR_UNIMPLEMENTED:		return _("Functionality not implemented");
+    case BSE_ERROR_DEVICE_NOT_AVAILABLE:	return _("No device (driver) available");
+    case BSE_ERROR_DEVICE_ASYNC:		return _("Device not async capable");
+    case BSE_ERROR_DEVICE_BUSY:			return _("Device busy");
+    case BSE_ERROR_DEVICE_GET_CAPS:		return _("Failed to query device capabilities");
+    case BSE_ERROR_DEVICE_CAPS_MISMATCH:	return _("Device capabilities not sufficient");
+    case BSE_ERROR_DEVICE_SET_CAPS:		return _("Failed to set device capabilities");
+    case BSE_ERROR_SOURCE_NO_SUCH_MODULE:	return _("No such synthesis module");
+    case BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL:	return _("No such input channel");
+    case BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL:	return _("No such output channel");
+    case BSE_ERROR_SOURCE_NO_SUCH_CONNECTION:	return _("Input/Output channels not connected");
+    case BSE_ERROR_SOURCE_PRIVATE_ICHANNEL:	return _("Input channel is private");
+    case BSE_ERROR_SOURCE_ICHANNEL_IN_USE:	return _("Input channel already in use");
+    case BSE_ERROR_SOURCE_CHANNELS_CONNECTED:	return _("Input/Output channels already connected");
+    case BSE_ERROR_SOURCE_PARENT_MISMATCH:	return _("Parent mismatch");
+    case BSE_ERROR_SOURCE_BAD_LOOPBACK:		return _("Bad loopback");
+    case BSE_ERROR_SOURCE_BUSY:			return _("Synthesis module currently busy");
+    case BSE_ERROR_SOURCE_TYPE_INVALID:		return _("Invalid synthsis module type");
+    case BSE_ERROR_PROC_NOT_FOUND:		return _("No such procedure");
+    case BSE_ERROR_PROC_BUSY:			return _("Procedure currently busy"); /* recursion */
+    case BSE_ERROR_PROC_PARAM_INVAL:		return _("Procedure parameter invalid");
+    case BSE_ERROR_PROC_EXECUTION:		return _("Procedure execution failed");
+    case BSE_ERROR_PROC_ABORT:			return _("Procedure execution aborted");
+    case BSE_ERROR_PARSE_ERROR:			return _("Parsing error");
+    case BSE_ERROR_SPAWN:			return _("Failed to spawn child process");
       /* various procedure errors */
-    case BSE_ERROR_NO_ENTRY:			return "No such entry";
-    case BSE_ERROR_NO_EVENT:			return "No such event";
-    case BSE_ERROR_NO_TARGET:			return "No target";
-    case BSE_ERROR_NOT_OWNER:			return "Ownership mismatch";
-    case BSE_ERROR_INVALID_OFFSET:		return "Invalid offset";
-    case BSE_ERROR_INVALID_DURATION:		return "Invalid duration";
-    case BSE_ERROR_INVALID_OVERLAP:		return "Invalid overlap";
+    case BSE_ERROR_NO_ENTRY:			return _("No such entry");
+    case BSE_ERROR_NO_EVENT:			return _("No such event");
+    case BSE_ERROR_NO_TARGET:			return _("No target");
+    case BSE_ERROR_NOT_OWNER:			return _("Ownership mismatch");
+    case BSE_ERROR_INVALID_OFFSET:		return _("Invalid offset");
+    case BSE_ERROR_INVALID_DURATION:		return _("Invalid duration");
+    case BSE_ERROR_INVALID_OVERLAP:		return _("Invalid overlap");
     default:
       if (error_value < GSL_ERROR_LAST)
 	return (gchar*) gsl_strerror (error_value);

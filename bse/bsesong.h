@@ -50,7 +50,6 @@ struct _BseSong
   
   SfiRing          *parts;              /* of type BsePart* */
   SfiRing          *busses;             /* of type BseBus* */
-  BseSource        *master_bus;
 
   BseSource	   *postprocess;
   BseSource	   *output;
@@ -90,7 +89,9 @@ void		bse_song_get_timing		(BseSong	*self,
 						 BseSongTiming	*timing);
 void		bse_song_timing_get_default	(BseSongTiming	*timing);
 BseSource*      bse_song_create_summation       (BseSong        *self);
-BseSource*      bse_song_get_master             (BseSong        *self);
+BseBus*         bse_song_find_master            (BseSong        *self);
+void            bse_song_connect_master         (BseSong        *self,
+                                                 BseBus         *bus);
 
 G_END_DECLS
 

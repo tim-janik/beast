@@ -110,6 +110,7 @@ typedef enum
   BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL,
   BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL,
   BSE_ERROR_SOURCE_NO_SUCH_CONNECTION,
+  BSE_ERROR_SOURCE_PRIVATE_ICHANNEL,
   BSE_ERROR_SOURCE_ICHANNEL_IN_USE,
   BSE_ERROR_SOURCE_CHANNELS_CONNECTED,
   BSE_ERROR_SOURCE_PARENT_MISMATCH,
@@ -137,11 +138,20 @@ typedef enum
 
 
 /* --- convenience functions --- */
-gchar*		bse_error_name			(BseErrorType	 error_value);
-gchar*		bse_error_nick			(BseErrorType	 error_value);
-gchar*		bse_error_blurb			(BseErrorType	 error_value);
+const gchar*	bse_error_name			(BseErrorType	 error_value);
+const gchar*	bse_error_nick			(BseErrorType	 error_value);
+const gchar*	bse_error_blurb			(BseErrorType	 error_value);
 BseErrorType	bse_error_from_errno		(gint		 v_errno,
 						 BseErrorType    fallback);
+
+#define bse_assert_ok(error)    G_STMT_START{                           \
+     if G_UNLIKELY (error)                                              \
+       {                                                                \
+         g_log (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR,                        \
+                "%s:%d: unexpected error: %s",                          \
+                __FILE__, __LINE__, bse_error_blurb (error));           \
+       }                                                                \
+}G_STMT_END
 
 G_END_DECLS
 

@@ -483,8 +483,6 @@ bse_song_remove_item (BseContainer *container,
       for (tmp = sfi_ring_walk (ring, self->busses); tmp; tmp = sfi_ring_walk (tmp, self->busses))
 	bse_item_queue_seqid_changed (tmp->data);
       self->busses = sfi_ring_remove_node (self->busses, ring);
-      if (item == (BseItem*) self->master_bus)
-        self->master_bus = NULL;
     }
   else
     /* parent class manages BseSources */;
@@ -599,19 +597,28 @@ bse_song_create_summation (BseSong *self)
   return merger;
 }
 
-BseSource*
-bse_song_get_master (BseSong *self)
+BseBus*
+bse_song_find_master (BseSong *self)
 {
-  if (!self->master_bus && self->postprocess)
+  BseSource *osource;
+  if (self->postprocess &&
+      (bse_source_get_input (self->postprocess, 0, &osource, NULL) ||
+       bse_source_get_input (self->postprocess, 1, &osource, NULL)) &&
+      BSE_IS_BUS (osource))
+    return BSE_BUS (osource);
+  return NULL;
+}
+
+void
+bse_song_connect_master (BseSong        *self,
+                         BseBus         *bus)
+{
+  if (BSE_ITEM (bus)->parent == BSE_ITEM (self))
     {
-      self->master_bus = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, "Master", NULL);
-      bse_snet_intern_child (BSE_SNET (self), self->master_bus);
-      bse_source_must_set_input (self->postprocess, 0,
-                                 self->master_bus, 0);
-      bse_source_must_set_input (self->postprocess, 1,
-                                 self->master_bus, 1);
+      bse_source_clear_ichannels (self->postprocess);
+      bse_source_must_set_input (self->postprocess, 0, BSE_SOURCE (bus), 0);
+      bse_source_must_set_input (self->postprocess, 1, BSE_SOURCE (bus), 1);
     }
-  return self->master_bus;
 }
 
 static void
@@ -633,7 +640,6 @@ bse_song_init (BseSong *self)
   
   self->parts = NULL;
   self->busses = NULL;
-  self->master_bus = NULL;
 
   self->pnet = NULL;
 
