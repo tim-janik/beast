@@ -70,6 +70,43 @@ pattern_controller_vraster_notify (gpointer             notify_data,
                            pview->max_ticks, vraster);
 }
 
+static void
+pattern_controller_row_shading_notify (gpointer  notify_data,
+                                       GxkParam *param)
+{
+  BstPatternController *self = notify_data;
+  BstPatternView *pview = self->pview;
+  static const struct { int value, r1, r2, r3, r4; } choices[] = {
+    { BST_ROW_SHADING_NONE,      0, 0, 0, 0 },
+    { BST_ROW_SHADING_2,         2 },
+    { BST_ROW_SHADING_4,         4 },
+    { BST_ROW_SHADING_8,         8 },
+    { BST_ROW_SHADING_16,       16 },
+    { BST_ROW_SHADING_2_4,       4, 2 },
+    { BST_ROW_SHADING_4_8,       8, 4 },
+    { BST_ROW_SHADING_4_12,     12, 4 },
+    { BST_ROW_SHADING_4_16,     16, 4 },
+    { BST_ROW_SHADING_8_16,     16, 8 },
+    { BST_ROW_SHADING_3,         3 },
+    { BST_ROW_SHADING_6,         6 },
+    { BST_ROW_SHADING_12,       12 },
+    { BST_ROW_SHADING_3_6,       6, 3 },
+    { BST_ROW_SHADING_3_12,     12, 3 },
+    { BST_ROW_SHADING_6_12,     12, 6 },
+  };
+  int i, r1 = 0, r2 = 0, r3 = 0, r4 = 0, vsval = bst_row_shading_from_choice (sfi_value_get_choice (&self->row_shading->value));
+  for (i = 0; i < G_N_ELEMENTS (choices); i++)
+    if (choices[i].value == vsval)
+      {
+        r1 = choices[i].r1;
+        r2 = choices[i].r2;
+        r3 = choices[i].r3;
+        r4 = choices[i].r4;
+        break;
+      }
+  bst_pattern_view_set_shading (pview, r1, r2, r3, r4);
+}
+
 BstPatternController*
 bst_pattern_controller_new (BstPatternView         *pview,
                             GxkActionGroup         *quant_rtools)
@@ -101,6 +138,10 @@ bst_pattern_controller_new (BstPatternView         *pview,
                                                           _("Controls the octave relative to which notes are entered"),
                                                           1, -4, +6, 1, SFI_PARAM_STANDARD),
                                            NULL, NULL);
+  self->row_shading = gxk_param_new_value (sfi_pspec_choice ("row-shading", _("Row Shading"),
+                                                             _("Adjust the number of rows between each shaded row"),
+                                                             "row-shading-4-16", bst_row_shading_get_values(), SFI_PARAM_STANDARD),
+                                           pattern_controller_row_shading_notify, self);
   self->pview = pview;
   self->ref_count = 1;
   
@@ -111,6 +152,7 @@ bst_pattern_controller_new (BstPatternView         *pview,
                          G_CONNECT_SWAPPED);
   self->quant_rtools = quant_rtools ? g_object_ref (quant_rtools) : NULL;
   pattern_controller_vraster_notify (self, NULL);
+  pattern_controller_row_shading_notify (self, NULL);
   
   gxk_scroll_canvas_set_canvas_cursor (GXK_SCROLL_CANVAS (pview), GDK_XTERM);
   return self;

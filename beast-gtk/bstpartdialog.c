@@ -218,6 +218,9 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_radget_add (radget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
   gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->base_octave, "name"));
   gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->base_octave, NULL));
+  gxk_radget_add (radget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->row_shading, "name"));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->row_shading, "combo-button"));
 
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);

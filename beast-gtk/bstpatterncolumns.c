@@ -139,12 +139,13 @@ pattern_column_note_draw_cell (BstPatternColumn       *column,
                                guint                   tick,
                                guint                   duration,
                                GdkRectangle           *crect,
-                               GdkRectangle           *expose_area)
+                               GdkRectangle           *expose_area,
+                               GdkGC                  *gcs[BST_PATTERN_COLUMN_GC_LAST])
 {
   BstPatternColumnNote *self = (BstPatternColumnNote*) column;
   PangoRectangle prect = { 0 };
-  GdkGC *dark_gc = STYLE (pview)->dark_gc[GTK_STATE_NORMAL];
-  GdkGC *black_gc = STYLE (pview)->black_gc;
+  GdkGC *inactive_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT0];
+  GdkGC *text_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT1];
   GdkGC *draw_gc;
   SfiProxy proxy = pview->proxy;
   BsePartNoteSeq *pseq = proxy ? bse_part_list_notes_within (proxy, column->num, tick, duration) : NULL;
@@ -153,7 +154,7 @@ pattern_column_note_draw_cell (BstPatternColumn       *column,
 
   accu = crect->x + FOCUS_WIDTH (pview);
   ch = pattern_column_note_char (self, pseq, 0);
-  draw_gc = ch == '-' ? dark_gc : black_gc;      /* choose gc dependant on note letter */
+  draw_gc = ch == '-' ? inactive_gc : text_gc;      /* choose gc dependant on note letter */
   pango_layout_set_text (pango_layout, &ch, 1);
   pango_layout_get_pixel_extents (pango_layout, NULL, &prect);
   yline = crect->y + (crect->height - prect.height) / 2;
@@ -439,16 +440,17 @@ pattern_column_event_draw_cell (BstPatternColumn       *column,
                                 guint                   tick,
                                 guint                   duration,
                                 GdkRectangle           *crect,
-                                GdkRectangle           *expose_area)
+                                GdkRectangle           *expose_area,
+                                GdkGC                  *gcs[BST_PATTERN_COLUMN_GC_LAST])
 {
   BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
-  GdkGC *dark_gc = STYLE (pview)->dark_gc[GTK_STATE_NORMAL];
-  GdkGC *black_gc = STYLE (pview)->black_gc;
+  GdkGC *inactive_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT0];
+  GdkGC *text_gc = gcs[BST_PATTERN_COLUMN_GC_TEXT1];
   gchar placeholder;
   BsePartControl *pctrl = pattern_column_event_lookup (column, pview, tick, duration, NULL, &placeholder);
   gchar buffer[64] = { 0, };
   guint n = pattern_column_event_to_string (column, buffer, pctrl, placeholder, NULL);
-  GdkGC *draw_gc = placeholder == '-' ? dark_gc : black_gc;
+  GdkGC *draw_gc = placeholder == '-' ? inactive_gc : text_gc;
   gint i, yline, accu = crect->x + FOCUS_WIDTH (pview) + 1;
 
   for (i = 0; i < n; i++)
@@ -622,9 +624,10 @@ pattern_column_vbar_draw_cell (BstPatternColumn       *self,
                                guint                   tick,
                                guint                   duration,
                                GdkRectangle           *crect,
-                               GdkRectangle           *expose_area)
+                               GdkRectangle           *expose_area,
+                               GdkGC                  *gcs[BST_PATTERN_COLUMN_GC_LAST])
 {
-  GdkGC *draw_gc = STYLE (pview)->dark_gc[GTK_STATE_NORMAL];
+  GdkGC *draw_gc = gcs[BST_PATTERN_COLUMN_GC_VBAR];
   gint dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
   if (self->num < 0)
     {

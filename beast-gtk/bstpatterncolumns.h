@@ -54,7 +54,13 @@ typedef enum /*< skip >*/
   BST_PATTERN_SET_STEP_WIDTH      = 0xe << 16,
 #define BST_PATTERN_MASK_MOVEMENT  (0x00ff0000)
 } BstPatternFunction;
-
+typedef enum /*< skip >*/
+{
+  BST_PATTERN_COLUMN_GC_TEXT0,
+  BST_PATTERN_COLUMN_GC_TEXT1,
+  BST_PATTERN_COLUMN_GC_VBAR,
+  BST_PATTERN_COLUMN_GC_LAST
+} BstPatternColumnCellGcType;
 
 /* --- typedefs & structures --- */
 typedef struct _BstPatternView        BstPatternView;
@@ -89,7 +95,8 @@ struct _BstPatternColumnClass
                                                  guint                   tick,
                                                  guint                   duration,
                                                  GdkRectangle           *cell_rect,
-                                                 GdkRectangle           *expose_area);
+                                                 GdkRectangle           *expose_area,
+                                                 GdkGC                  *gcs[BST_PATTERN_COLUMN_GC_LAST]);
   void                  (*get_focus_pos)        (BstPatternColumn       *self,
                                                  BstPatternView         *pview,
                                                  GdkWindow              *drawable,

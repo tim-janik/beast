@@ -1,3 +1,20 @@
+Thu Jul  1 20:56:23 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstrecords.idl: added RowShading choice enumeration.
+	added pattern editor skin parameters to SkinConfig record.
+
+	* beast-gtk/bstpartdialog.c: added row-shading parameter widgets.
+
+	* beast-gtk/bstpatterncolumns.[hc]: added GdkGCs to draw_cell() method
+	to support various skins.
+
+	* beast-gtk/bstpatternctrl.[hc]: added row-shading parameter which
+	controls row-shading of a pattern view via bst_pattern_view_set_shading().
+
+	* beast-gtk/bstpatternview.[hc]: added bst_pattern_view_set_shading() to
+	shade background color of certain rows. added skin support. provide
+	skin colors to draw_cell().
+
 Wed Jun 30 19:06:34 2004  Tim Janik  <timj@gtk.org>
 
 	* configure.in: beast version 0.6.2-rc2, age 0, binary 0.

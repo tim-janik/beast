@@ -66,6 +66,25 @@ choice NoteLength {
   NOTE_LENGTH_128T      = (_("1/128T"),_("Triplet hundred twenty-eighth note")),
 };
 
+choice RowShading {
+  ROW_SHADING_NONE    = (Neutral,       _("None")),
+  ROW_SHADING_2       = (_("2"),        _("Every second row")),
+  ROW_SHADING_4       = (_("4"),        _("Every fourth row")),
+  ROW_SHADING_8       = (_("8"),        _("Every eighth row")),
+  ROW_SHADING_16      = (_("16"),       _("Every sixteenth row")),
+  ROW_SHADING_2_4     = (_("2 & 4"),    _("Every second and fourth row")),
+  ROW_SHADING_4_8     = (_("4 & 8"),    _("Every fourth and eighth row")),
+  ROW_SHADING_4_12    = (_("4 & 12"),   _("Every fourth and twelfth row")),
+  ROW_SHADING_4_16    = (_("4 & 16"),   _("Every fourth and sixteenth row")),
+  ROW_SHADING_8_16    = (_("8 & 16"),   _("Every eighth and sixteenth row")),
+  ROW_SHADING_3       = (_("3"),        _("Every third row")),
+  ROW_SHADING_6       = (_("6"),        _("Every sixth row")),
+  ROW_SHADING_12      = (_("12"),       _("Every twelfth row")),
+  ROW_SHADING_3_6     = (_("3 & 6"),    _("Every third and sixth row")),
+  ROW_SHADING_3_12    = (_("3 & 12"),   _("Every third and twelfth row")),
+  ROW_SHADING_6_12    = (_("6 & 12"),   _("Every sixth and twelfth row")),
+};
+
 /* BEAST Global Config */
 record GConfig {
   String rc_version			= (NULL, _("Release counter"), NULL, STORAGE);
@@ -92,9 +111,19 @@ record GConfig {
 /* skin config */
 record SkinConfig {
   String         skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), NULL, STANDARD);
+  group "Pattern Editor" {
+    String   pattern_image   = (_("Background Image"), _("Background image used by the pattern editor."), NULL, STANDARD ":filename:image");
+    Real     pattern_shade   = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
+    Int      pattern_color   = (_("Background Color"),      NULL, 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_scolor1 = (_("Background Shade 1"),    NULL, 0xd3d1cb, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_scolor2 = (_("Background Shade 2"),    NULL, 0xe0ded8, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_text0   = (_("Empty Field Color"),     NULL, 0x303030, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_text1   = (_("Text Color"),            NULL, 0x000000, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int      pattern_vbar1   = (_("Vertical Bar Color"),    NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+  };
   group "Piano Roll" {
-    String       piano_image = (_("Background Image"), _("Background image used by the piano-roll widget."), NULL, STANDARD ":filename:image");
-    Real         piano_shade = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 10, 0, 100, 5, STANDARD ":scale");
+    String       piano_image = (_("Background Image"), _("Background image used by the piano-roll editor."), NULL, STANDARD ":filename:image");
+    Real         piano_shade = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
     Int          piano_color = (_("Background Color"),      NULL, 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int          piano_hbar  = (_("Horizontal Bar Color"),  NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int          piano_vbar  = (_("Vertical Bar Color"),    NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
@@ -103,8 +132,8 @@ record SkinConfig {
     Int          piano_mbar  = (_("Middle Bar Color"),      NULL, 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
   group "Control Events" {
-    String controls_image    = (_("Background Image"), _("Background image used by the control events widget."), NULL, STANDARD ":filename:image");
-    Real   controls_shade    = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 10, 0, 100, 5, STANDARD ":scale");
+    String controls_image    = (_("Background Image"), _("Background image used by the control events editor."), NULL, STANDARD ":filename:image");
+    Real   controls_shade    = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 2.5, 0, 100, 5, STANDARD ":scale");
     Int    controls_color    = (_("Background Color"),      NULL, 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int    controls_hbar     = (_("Horizontal Bar Color"),  NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
     Int    controls_mbar     = (_("Middle Bar Color"),      NULL, 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");

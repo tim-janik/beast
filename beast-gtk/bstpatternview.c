@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstpatternview.h"
+#include "bstskinconfig.h"
 #include <string.h>
 
 
@@ -36,9 +37,11 @@
 #define PLAYOUT_CANVAS(self)    (PLAYOUT (self, 2))
 #define COLUMN_PLAYOUT_INDEX(i) (i + 3)
 #define COLOR_GC(self, i)       (GXK_SCROLL_CANVAS (self)->color_gc[i])
-#define COLOR_GC_POS(self)      (COLOR_GC (self, CINDEX_POS))
-#define COLOR_GC_LOOP(self)     (COLOR_GC (self, CINDEX_LOOP))
-#define COLOR_GC_SELECT(self)   (COLOR_GC (self, CINDEX_SELECT))
+#define COLOR_GC_SHADE1(self)   (COLOR_GC (self, CINDEX_SHADE1))
+#define COLOR_GC_SHADE2(self)   (COLOR_GC (self, CINDEX_SHADE2))
+#define COLOR_GC_TEXT0(self)    (COLOR_GC (self, CINDEX_TEXT0))
+#define COLOR_GC_TEXT1(self)    (COLOR_GC (self, CINDEX_TEXT1))
+#define COLOR_GC_VBAR(self)     (COLOR_GC (self, CINDEX_VBAR))
 #define CANVAS(self)            (GXK_SCROLL_CANVAS (self)->canvas)
 #define HPANEL(self)            (GXK_SCROLL_CANVAS (self)->top_panel)
 #define VPANEL(self)            (GXK_SCROLL_CANVAS (self)->left_panel)
@@ -65,11 +68,32 @@ static guint	signal_clicked = 0;
 G_DEFINE_TYPE (BstPatternView, bst_pattern_view, GXK_TYPE_SCROLL_CANVAS);
 
 enum {
-  CINDEX_POS,
-  CINDEX_LOOP,
-  CINDEX_SELECT,
-  CINDEX_COUNT
+  CINDEX_SHADE1,
+  CINDEX_SHADE2,
+  CINDEX_TEXT0,
+  CINDEX_TEXT1,
+  CINDEX_VBAR,
+  CINDEX_LAST
 };
+
+static void
+pattern_view_class_setup_skin (BstPatternViewClass *class)
+{
+  static GdkColor colors[CINDEX_LAST];
+  GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (class);
+  scroll_canvas_class->n_colors = G_N_ELEMENTS (colors);
+  scroll_canvas_class->colors = colors;
+  colors[CINDEX_SHADE1] = gdk_color_from_rgb (BST_SKIN_CONFIG (pattern_scolor1));
+  colors[CINDEX_SHADE2] = gdk_color_from_rgb (BST_SKIN_CONFIG (pattern_scolor2));
+  colors[CINDEX_TEXT0] = gdk_color_from_rgb (BST_SKIN_CONFIG (pattern_text0));
+  colors[CINDEX_TEXT1] = gdk_color_from_rgb (BST_SKIN_CONFIG (pattern_text1));
+  colors[CINDEX_VBAR] = gdk_color_from_rgb (BST_SKIN_CONFIG (pattern_vbar1));
+  g_free (scroll_canvas_class->image_file_name);
+  scroll_canvas_class->image_file_name = BST_SKIN_CONFIG_STRDUP_PATH (pattern_image);
+  scroll_canvas_class->image_tint = gdk_color_from_rgb (BST_SKIN_CONFIG (pattern_color));
+  scroll_canvas_class->image_saturation = BST_SKIN_CONFIG (pattern_shade) * 0.01;
+  gxk_scroll_canvas_class_skin_changed (scroll_canvas_class);
+}
 
 static void
 bst_pattern_view_init (BstPatternView *self)
@@ -534,6 +558,22 @@ pattern_view_realize (GtkWidget *widget)
 }
 
 static void
+draw_row_shading (BstPatternView *self,
+                  GdkWindow      *drawable,
+                  gint            row,
+                  gint            drawable_width,
+                  gint            y,
+                  gint            height)
+{
+  if (self->srow1 && row % self->srow1 == 0)
+    gdk_draw_rectangle (drawable, COLOR_GC_SHADE1 (self), TRUE,
+                        0, y, drawable_width, height);
+  else if (self->srow2 && row % self->srow2 == 0)
+    gdk_draw_rectangle (drawable, COLOR_GC_SHADE2 (self), TRUE,
+                        0, y, drawable_width, height);
+}
+
+static void
 bst_pattern_view_draw_canvas (GxkScrollCanvas *scc,
                               GdkWindow       *drawable,
                               GdkRectangle    *area)
@@ -546,11 +586,17 @@ bst_pattern_view_draw_canvas (GxkScrollCanvas *scc,
   GXK_SCROLL_CANVAS_CLASS (bst_pattern_view_parent_class)->draw_canvas (scc, drawable, area);
   gdk_window_get_size (CANVAS (self), &width, &height);
   
+  GdkGC *gcs[BST_PATTERN_COLUMN_GC_LAST] = { NULL, };
+  gcs[BST_PATTERN_COLUMN_GC_TEXT0] = COLOR_GC_TEXT0 (self);
+  gcs[BST_PATTERN_COLUMN_GC_TEXT1] = COLOR_GC_TEXT1 (self);
+  gcs[BST_PATTERN_COLUMN_GC_VBAR] = COLOR_GC_VBAR (self);
+
   validrow = row_to_coords (self, row, &rect.y, &rect.height);
   while (validrow && rect.y < area->y + area->height)
     {
       gint tick, duration;
       guint i;
+      draw_row_shading (self, drawable, row, width, rect.y, rect.height);
       row_to_ticks (self, row, &tick, &duration);
       for (i = 0; i < self->n_cols; i++)
         {
@@ -558,7 +604,7 @@ bst_pattern_view_draw_canvas (GxkScrollCanvas *scc,
           rect.width = self->cols[i]->width;
           self->cols[i]->klass->draw_cell (self->cols[i], self, drawable,
                                            gxk_scroll_canvas_peek_pango_layout (scc, COLUMN_PLAYOUT_INDEX (i)),
-                                           tick, duration, &rect, area);
+                                           tick, duration, &rect, area, gcs);
         }
       validrow = row_to_coords (self, ++row, &rect.y, &rect.height);
     }
@@ -1148,14 +1194,21 @@ bst_pattern_view_set_layout (BstPatternView *self,
   return p2 - layout;
 }
 
+void
+bst_pattern_view_set_shading (BstPatternView            *self,
+                              guint                      row1,
+                              guint                      row2,
+                              guint                      row3,
+                              guint                      row4)
+{
+  self->srow1 = row1;
+  self->srow2 = row2;
+  gtk_widget_queue_draw (GTK_WIDGET (self));
+}
+
 static void
 bst_pattern_view_class_init (BstPatternViewClass *class)
 {
-  static GdkColor colors[CINDEX_COUNT] = {
-    { 0, 0xffff, 0x0000, 0x0000 },  /* red */
-    { 0, 0x0000, 0xffff, 0x0000 },  /* green */
-    { 0, 0x0000, 0x0000, 0xffff },  /* blue */
-  };
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (class);
@@ -1167,8 +1220,6 @@ bst_pattern_view_class_init (BstPatternViewClass *class)
 
   scroll_canvas_class->hscrollable = TRUE;
   scroll_canvas_class->vscrollable = TRUE;
-  scroll_canvas_class->n_colors = CINDEX_COUNT;
-  scroll_canvas_class->colors = colors;
   scroll_canvas_class->get_layout = pattern_view_get_layout;
   scroll_canvas_class->update_adjustments = pattern_view_update_adjustments;
   scroll_canvas_class->adjustment_changed = pattern_view_adjustment_changed;
@@ -1180,7 +1231,7 @@ bst_pattern_view_class_init (BstPatternViewClass *class)
   scroll_canvas_class->handle_drag = pattern_view_handle_drag;
   scroll_canvas_class->image_tint = gdk_color_from_rgb (0x00ffffff);
   scroll_canvas_class->image_saturation = 0;
-  
+
   class->drag = NULL;
   class->clicked = NULL;
   
@@ -1195,4 +1246,7 @@ bst_pattern_view_class_init (BstPatternViewClass *class)
 				 bst_marshal_NONE__UINT_UINT_INT_BOXED,
 				 G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_INT,
 				 GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
+
+  bst_skin_config_add_notify ((BstSkinConfigNotify) pattern_view_class_setup_skin, class);
+  pattern_view_class_setup_skin (class);
 }

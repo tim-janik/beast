@@ -81,6 +81,9 @@ struct _BstPatternView
   guint              n_focus_cols;
   BstPatternColumn **focus_cols;
 
+  /* shading */
+  guint16            srow1, srow2;
+
   /* last drag state */
   guint              start_col;
   guint              start_row;
@@ -111,6 +114,11 @@ void              bst_pattern_view_vsetup          (BstPatternView            *s
                                                     guint                      qnpt,
                                                     guint                      max_ticks,
                                                     guint                      vticks);
+void              bst_pattern_view_set_shading     (BstPatternView            *self,
+                                                    guint                      row1,
+                                                    guint                      row2,
+                                                    guint                      row3,
+                                                    guint                      row4);
 void              bst_pattern_view_set_marker      (BstPatternView            *self,
                                                     guint                      mark_index,
                                                     guint                      position,
