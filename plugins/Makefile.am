@@ -42,18 +42,6 @@ PLUGIN_CFILES = $(strip		\
 EXTRA_CFILES = $(strip		\
 	bsesimpleadsr-aux.c	\
 )
-Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
-	$(srcdir)/listplugins.sh $(PLUGIN_CFILES) >$@
-
-plugins_built_sources =
-
-EXTRA_DIST += $(strip \
-        $(EXTRA_HEADERS) \
-        $(EXTRA_CFILES) \
-        $(plugins_built_sources) \
-	listplugins.sh \
-	TODO \
-)
 
 # *.enums generation rule
 %.enums: %.h
@@ -79,6 +67,22 @@ EXTRA_DIST += $(strip \
 	&& rm -f xgen-enums-$(@F)
 CLEANFILES += $(plugins_built_sources) xgen-enums-*
 
+#
+# C++ Plugins
+#
+plugin_idl_files = $(strip	\
+	davchorus.idl		\
+)
+# setup generation of C++ plugins from idl files
+BSEPGEN = ../sfi/bse-plugin-generator
+%.gen-idl.h: %.idl $(BSEPGEN)
+	$(BSEPGEN) $< > $@ || (rm $@ ; exit 1 )
+
+plugins_built_sources =
+Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
+	$(srcdir)/listplugins.sh $(PLUGIN_CFILES) >$@
+	$(srcdir)/listplugins.sh --idl $(plugin_idl_files:.idl=) >>$@
+
 ## include generated plugin Makefile
 include Makefile.plugins
 ## Makefile.plugins contains a generated make rule list of the *.c
@@ -92,3 +96,12 @@ include Makefile.plugins
 ##EXTRA_HEADERS += foo.h
 ##
 ##plugin_LTLIBRARIES += foo.la
+
+EXTRA_DIST += $(strip \
+        $(EXTRA_HEADERS) \
+        $(EXTRA_CFILES) \
+        $(plugins_built_sources) \
+	listplugins.sh \
+	TODO \
+)
+

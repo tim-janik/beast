@@ -1,3 +1,14 @@
+Sun Sep 21 15:18:00 2003  Tim Janik  <timj@gtk.org>
+
+	* listplugins.sh:
+	* Makefile.am: added support for C++ plugins with header
+	generation from idl files via bse-plugin-generator.
+
+	* davchorus.cc:
+	* davchorus.idl: ported DavChorus to C++.
+
+	* davchorus.[hc]: removed unported C implementation.
+
 Thu Sep  4 15:13:55 2003  Tim Janik  <timj@gtk.org>
 
 	* davxtalstrings.c: fix hinting for trigger property.
