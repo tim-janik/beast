@@ -43,7 +43,7 @@ void		_engine_node_collect_jobs	(EngineNode	*node);
 void		_engine_mnl_remove		(EngineNode	*node);
 void		_engine_mnl_node_changed	(EngineNode	*node);
 void		_engine_mnl_integrate		(EngineNode	*node);
-#define	GSL_MNL_UNSCHEDULED_FLOW_NODE(node)	((node)->flow_jobs && !(node)->sched_tag)
+#define	GSL_MNL_UNSCHEDULED_UJOB_NODE(node)	(!(node)->sched_tag && ((node)->flow_jobs || (node)->probe_jobs))
 EngineNode*	_engine_mnl_head		(void);
 
 /* communication routines for threads:

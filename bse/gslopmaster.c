@@ -209,13 +209,13 @@ master_disconnect_node_outputs (EngineNode *src_node,
 
 /* --- timed job handling --- */
 static inline void
-insert_trash_job (EngineNode      *node,
-                  EngineReplyJob  *rjob)
+insert_trash_job (EngineNode     *node,
+                  EngineUserJob  *ujob)
 {
-  rjob->next = node->rjob_first;
-  node->rjob_first = rjob;
-  if (!node->rjob_last)
-    node->rjob_last = node->rjob_first;
+  ujob->next = node->ujob_first;
+  node->ujob_first = ujob;
+  if (!node->ujob_last)
+    node->ujob_last = node->ujob_first;
 }
 
 static inline EngineTimedJob*
@@ -228,7 +228,7 @@ node_pop_flow_job (EngineNode  *node,
       if (tjob->tick_stamp <= tick_stamp)
         {
           node->flow_jobs = tjob->next;
-          insert_trash_job (node, (EngineReplyJob*) tjob);
+          insert_trash_job (node, (EngineUserJob*) tjob);
         }
       else
         tjob = NULL;
@@ -247,7 +247,7 @@ node_pop_boundary_job (EngineNode  *node,
       if (tjob->tick_stamp <= tick_stamp)
         {
           node->boundary_jobs = tjob->next;
-          insert_trash_job (node, (EngineReplyJob*) tjob);
+          insert_trash_job (node, (EngineUserJob*) tjob);
           if (!node->boundary_jobs)
             boundary_node_list = sfi_ring_remove_node (boundary_node_list, blist_node);
         }
@@ -324,7 +324,7 @@ master_process_job (GslJob *job)
       guint64 stamp;
       guint istream, jstream, ostream, con;
       EngineTimedJob *tjob;
-      EngineReplyJob *rjob;
+      EngineProbeJob *pjob;
       gboolean was_consumer;
     case ENGINE_JOB_SYNC:
       JOB_DEBUG ("sync");
@@ -544,14 +544,14 @@ master_process_job (GslJob *job)
       node->counter = GSL_TICK_STAMP;
       job->data.access.access_func (&node->module, job->data.access.data);
       break;
-    case ENGINE_JOB_REQUEST_REPLY:
+    case ENGINE_JOB_PROBE_JOB:
       node = job->data.timed_job.node;
-      rjob = job->data.reply_job.rjob;
-      JOB_DEBUG ("add reply_request(%p,%p)", node, rjob);
+      pjob = job->data.probe_job.pjob;
+      JOB_DEBUG ("add probe_job(%p,%p)", node, pjob);
       g_return_if_fail (node->integrated == TRUE);
-      job->data.reply_job.rjob = NULL;  /* ownership taken over */
-      rjob->next = node->reply_jobs;
-      node->reply_jobs = rjob;
+      job->data.probe_job.pjob = NULL;  /* ownership taken over */
+      pjob->next = node->probe_jobs;
+      node->probe_jobs = pjob;
       break;
     case ENGINE_JOB_FLOW_JOB:
       node = job->data.timed_job.node;
@@ -701,6 +701,22 @@ master_tick_stamp_inc (void)
     }
 }
 
+static inline void
+master_zero_probes (EngineNode   *node,
+                    const guint64 current_stamp,
+                    guint         n_values)
+{
+  if (G_UNLIKELY (node->probe_jobs))
+    {
+      EngineProbeJob *pjob = node->probe_jobs;
+      node->probe_jobs = pjob->next;
+      insert_trash_job (node, (EngineUserJob*) pjob);
+      pjob->tick_stamp = current_stamp;
+      pjob->n_values = n_values;
+      /* the blocks are already zero initialised */
+    }
+}
+
 static inline guint64
 master_update_node_state (EngineNode *node,
                           guint64     max_tick)
@@ -730,38 +746,16 @@ master_update_node_state (EngineNode *node,
   return node_peek_flow_job_stamp (node);
 }
 
-gpointer
-gsl_module_peek_reply (GslModule *module)
-{
-  EngineNode *node = ENGINE_NODE (module);
-  g_return_val_if_fail (ENGINE_NODE_IS_SCHEDULED (node), NULL);
-  return node->reply_jobs ? node->reply_jobs->data : NULL;
-}
-
-gpointer
-gsl_module_process_reply (GslModule *module)
-{
-  EngineNode *node = ENGINE_NODE (module);
-  g_return_val_if_fail (ENGINE_NODE_IS_SCHEDULED (node), NULL);
-  if (G_UNLIKELY (node->reply_jobs))
-    {
-      EngineReplyJob *rjob = node->reply_jobs;
-      node->reply_jobs = rjob->next;
-      insert_trash_job (node, rjob);
-      return rjob->data;
-    }
-  return NULL;
-}
-
 static void
 master_process_locked_node (EngineNode *node,
 			    guint       n_values)
 {
-  guint64 next_counter, new_counter, final_counter = GSL_TICK_STAMP + n_values;
+  const guint64 current_stamp = GSL_TICK_STAMP;
+  guint64 next_counter, new_counter, final_counter = current_stamp + n_values;
   guint i, j, diff;
-  
+
   g_return_if_fail (node->integrated && node->sched_tag);
-  
+
   while (node->counter < final_counter)
     {
       /* call reset() and exec flow jobs */
@@ -770,7 +764,7 @@ master_process_locked_node (EngineNode *node,
       new_counter = MIN (next_counter, final_counter);
       if (node->next_active > node->counter)
         new_counter = MIN (node->next_active, new_counter);
-      diff = node->counter - GSL_TICK_STAMP;
+      diff = node->counter - current_stamp;
       /* ensure all istream inputs have n_values available */
       for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
 	{
@@ -823,6 +817,17 @@ master_process_locked_node (EngineNode *node,
 	    memcpy (node->outputs[i].buffer + diff, node->module.ostreams[i].values,
 		    (new_counter - node->counter) * sizeof (gfloat));
 	}
+      if (G_UNLIKELY (node->probe_jobs))
+        {
+          EngineProbeJob *pjob = node->probe_jobs;
+          node->probe_jobs = pjob->next;
+          insert_trash_job (node, (EngineUserJob*) pjob);
+          pjob->tick_stamp = current_stamp;
+          pjob->n_values = n_values;
+          for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+            if (pjob->oblocks[i])
+              memcpy (pjob->oblocks[i], node->outputs[i].buffer, pjob->n_values);
+        }
       /* update node counter */
       node->counter = new_counter;
     }
@@ -833,7 +838,9 @@ static GslLong gsl_profile_modules = 0;	/* set to 1 in gdb to get profile output
 static void
 master_process_flow (void)
 {
-  guint64 final_counter = GSL_TICK_STAMP + gsl_engine_block_size ();
+  const guint64 current_stamp = GSL_TICK_STAMP;
+  guint n_values = gsl_engine_block_size();
+  guint64 final_counter = current_stamp + n_values;
   GslLong profile_maxtime = 0;
   GslLong profile_modules = gsl_profile_modules;
   EngineNode *profile_node = NULL;
@@ -857,8 +864,8 @@ master_process_flow (void)
 	  if_reject (profile_modules)
 	    toyprof_stamp (profile_stamp1);
 	  
-	  master_process_locked_node (node, gsl_engine_block_size ());
-	  
+	  master_process_locked_node (node, n_values);
+
 	  if_reject (profile_modules)
 	    {
 	      GslLong duration;
@@ -875,6 +882,21 @@ master_process_flow (void)
 	  _engine_push_processed_node (node);
 	  node = _engine_pop_unprocessed_node ();
 	}
+
+      /* walk unscheduled nodes with flow jobs */
+      node = _engine_mnl_head ();
+      while (node && GSL_MNL_UNSCHEDULED_UJOB_NODE (node))
+	{
+	  EngineNode *tmp = node->mnl_next;
+          node->counter = final_counter;
+          master_update_node_state (node, node->counter - 1);
+          master_zero_probes (node, current_stamp, n_values);
+	  _engine_mnl_node_changed (node);      /* collects trash jobs and reorders */
+	  node = tmp;
+	}
+
+      /* nothing new to process, wait for slaves */
+      _engine_wait_on_unprocessed ();
       
       if_reject (profile_modules)
 	{
@@ -888,20 +910,6 @@ master_process_flow (void)
 			 profile_node, profile_maxtime, profile_node->module.klass->process);
 	    }
 	}
-
-      /* walk unscheduled nodes with flow jobs */
-      node = _engine_mnl_head ();
-      while (node && GSL_MNL_UNSCHEDULED_FLOW_NODE (node))
-	{
-	  EngineNode *tmp = node->mnl_next;
-          node->counter = final_counter;
-          master_update_node_state (node, node->counter - 1);
-	  _engine_mnl_node_changed (node);      /* collects trash jobs */
-	  node = tmp;
-	}
-
-      /* nothing new to process, wait for slaves */
-      _engine_wait_on_unprocessed ();
       
       _engine_unset_schedule (master_schedule);
       master_tick_stamp_inc ();
@@ -1011,8 +1019,8 @@ _engine_master_check (const GslEngineLoop *loop)
 void
 _engine_master_dispatch_jobs (void)
 {
-  guint64 CURRENT_STAMP = GSL_TICK_STAMP;
-  guint64 last_block_tick = CURRENT_STAMP + gsl_engine_block_size() - 1;
+  const guint64 current_stamp = GSL_TICK_STAMP;
+  guint64 last_block_tick = current_stamp + gsl_engine_block_size() - 1;
   GslJob *job = _engine_pop_job ();
   /* here, we have to process _all_ pending jobs in a row. a popped job
    * stays valid until the next call to _engine_pop_job().
@@ -1036,7 +1044,7 @@ _engine_master_dispatch_jobs (void)
             ring = sfi_ring_walk (ring, boundary_node_list);
             tjob = node_pop_boundary_job (node, last_block_tick, current);
             if (tjob)
-              node->counter = CURRENT_STAMP;
+              node->counter = current_stamp;
             while (tjob)
               {
                 TJOB_DEBUG ("boundary-access for (%p:s=%u) at:%lld current:%lld\n",

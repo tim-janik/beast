@@ -58,7 +58,7 @@ class Sniffer : public SnifferBase {
           jstream (JCHANNEL_AUDIO_IN2).n_connections)
         return;
 
-      SnifferData *data = static_cast<SnifferData*> (gsl_module_peek_reply (gslmodule()));
+      SnifferData *data = static_cast<SnifferData*> (NULL); // gsl_module_peek_reply (gslmodule()));
       while (data && data->tick_stamp < tick_stamp() + n_values)
         {
           guint64 offset = data->tick_stamp > tick_stamp() ? data->tick_stamp - tick_stamp() : 0;
@@ -133,8 +133,8 @@ class Sniffer : public SnifferBase {
           
           if (data->n_filled >= data->fblock1->n_values)
             {
-              gsl_module_process_reply (gslmodule());
-              data = static_cast<SnifferData*> (gsl_module_peek_reply (gslmodule()));
+              // gsl_module_process_reply (gslmodule());
+              data = static_cast<SnifferData*> (NULL); // gsl_module_peek_reply (gslmodule()));
             }
           else
             data = NULL;
@@ -209,7 +209,7 @@ class Sniffer : public SnifferBase {
         data->fblock1 = sfi_fblock_new_sized (sr.n_samples);
         data->fblock2 = sfi_fblock_new_sized (sr.n_samples);
         data->stype = sr.stype;
-        gsl_trans_add (trans, gsl_job_request_reply (single_sniff, data, sniffer_reply));
+        // gsl_trans_add (trans, gsl_job_request_reply (single_sniff, data, sniffer_reply));
       }
     if (tmptrans)
       gsl_trans_commit (tmptrans);

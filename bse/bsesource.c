@@ -59,45 +59,6 @@ typedef struct
 
 
 /* --- prototypes --- */
-static void         bse_source_class_base_init		(BseSourceClass	*class);
-static void         bse_source_class_base_finalize	(BseSourceClass	*class);
-static void         bse_source_class_init		(BseSourceClass	*class);
-static void         bse_source_init			(BseSource	*source,
-							 BseSourceClass	*class);
-static void	    bse_source_set_property		(GObject	*object,
-							 guint           param_id,
-							 const GValue   *value,
-							 GParamSpec     *pspec);
-static void	    bse_source_get_property		(GObject        *object,
-							 guint           param_id,
-							 GValue         *value,
-							 GParamSpec     *pspec);
-static void         bse_source_dispose			(GObject	*object);
-static void         bse_source_finalize			(GObject	*object);
-static void         bse_source_real_prepare		(BseSource	*source);
-static void	    bse_source_real_context_create	(BseSource      *source,
-							 guint           context_handle,
-							 GslTrans       *trans);
-static void	    bse_source_real_context_connect	(BseSource      *source,
-							 guint           context_handle,
-							 GslTrans       *trans);
-static void	    bse_source_real_context_dismiss	(BseSource      *source,
-							 guint           context_handle,
-							 GslTrans       *trans);
-static void         bse_source_real_reset		(BseSource	*source);
-static void	    bse_source_real_add_input		(BseSource	*source,
-							 guint     	 ichannel,
-							 BseSource 	*osource,
-							 guint     	 ochannel);
-static void	    bse_source_real_remove_input	(BseSource	*source,
-							 guint		 ichannel,
-							 BseSource      *osource,
-							 guint           ochannel);
-static void	    bse_source_real_store_private	(BseObject	*object,
-							 BseStorage	*storage);
-static SfiTokenType bse_source_restore_private		(BseObject      *object,
-							 BseStorage     *storage,
-                                                         GScanner       *scanner);
 static gint	    contexts_compare			(gconstpointer	 bsearch_node1, /* key */
 							 gconstpointer	 bsearch_node2);
 
@@ -113,123 +74,6 @@ static const GBSearchConfig context_config = {
 
 
 /* --- functions --- */
-BSE_BUILTIN_TYPE (BseSource)
-{
-  static const GTypeInfo source_info = {
-    sizeof (BseSourceClass),
-    
-    (GBaseInitFunc) bse_source_class_base_init,
-    (GBaseFinalizeFunc) bse_source_class_base_finalize,
-    (GClassInitFunc) bse_source_class_init,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    
-    sizeof (BseSource),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_source_init,
-  };
-
-  g_assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
-  
-  return bse_type_register_abstract (BSE_TYPE_ITEM,
-                                     "BseSource",
-                                     "Base type for sound sources",
-                                     &source_info);
-}
-
-static void
-bse_source_class_base_init (BseSourceClass *class)
-{
-  class->channel_defs.n_ichannels = 0;
-  class->channel_defs.ichannel_idents = NULL;
-  class->channel_defs.ichannel_labels = NULL;
-  class->channel_defs.ichannel_blurbs = NULL;
-  class->channel_defs.ijstreams = NULL;
-  class->channel_defs.n_jstreams = 0;
-  class->channel_defs.n_ochannels = 0;
-  class->channel_defs.ochannel_idents = NULL;
-  class->channel_defs.ochannel_labels = NULL;
-  class->channel_defs.ochannel_blurbs = NULL;
-  class->gsl_class = NULL;
-}
-
-static void
-bse_source_class_base_finalize (BseSourceClass *class)
-{
-  guint i;
-  
-  for (i = 0; i < class->channel_defs.n_ichannels; i++)
-    {
-      g_free (class->channel_defs.ichannel_idents[i]);
-      g_free (class->channel_defs.ichannel_labels[i]);
-      g_free (class->channel_defs.ichannel_blurbs[i]);
-    }
-  g_free (class->channel_defs.ichannel_idents);
-  g_free (class->channel_defs.ichannel_labels);
-  g_free (class->channel_defs.ichannel_blurbs);
-  g_free (class->channel_defs.ijstreams);
-  class->channel_defs.n_jstreams = 0;
-  class->channel_defs.n_ichannels = 0;
-  class->channel_defs.ichannel_idents = NULL;
-  class->channel_defs.ichannel_labels = NULL;
-  class->channel_defs.ichannel_blurbs = NULL;
-  class->channel_defs.ijstreams = NULL;
-  for (i = 0; i < class->channel_defs.n_ochannels; i++)
-    {
-      g_free (class->channel_defs.ochannel_idents[i]);
-      g_free (class->channel_defs.ochannel_labels[i]);
-      g_free (class->channel_defs.ochannel_blurbs[i]);
-    }
-  g_free (class->channel_defs.ochannel_idents);
-  g_free (class->channel_defs.ochannel_labels);
-  g_free (class->channel_defs.ochannel_blurbs);
-  class->channel_defs.n_ochannels = 0;
-  class->channel_defs.ochannel_idents = NULL;
-  class->channel_defs.ochannel_labels = NULL;
-  class->channel_defs.ochannel_blurbs = NULL;
-  g_free (class->gsl_class);
-  class->gsl_class = NULL;
-}
-
-static void
-bse_source_class_init (BseSourceClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
-  
-  gobject_class->set_property = bse_source_set_property;
-  gobject_class->get_property = bse_source_get_property;
-  gobject_class->dispose = bse_source_dispose;
-  gobject_class->finalize = bse_source_finalize;
-
-  object_class->store_private = bse_source_real_store_private;
-  object_class->restore_private = bse_source_restore_private;
-
-  class->prepare = bse_source_real_prepare;
-  class->context_create = bse_source_real_context_create;
-  class->context_connect = bse_source_real_context_connect;
-  class->context_dismiss = bse_source_real_context_dismiss;
-  class->reset = bse_source_real_reset;
-  class->add_input = bse_source_real_add_input;
-  class->remove_input = bse_source_real_remove_input;
-
-  bse_object_class_add_param (object_class, "Position",
-			      PROP_POS_X,
-			      sfi_pspec_real ("pos_x", "Position X", NULL,
-					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
-					      SFI_PARAM_STORAGE ":skip-default"));
-  bse_object_class_add_param (object_class, "Position",
-			      PROP_POS_Y,
-			      sfi_pspec_real ("pos_y", "Position Y", NULL,
-					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
-					      SFI_PARAM_STORAGE ":skip-default"));
-
-  source_signals[SIGNAL_IO_CHANGED] = bse_object_class_add_signal (object_class, "io_changed",
-								   G_TYPE_NONE, 0);
-}
-
 static void
 bse_source_init (BseSource      *source,
 		 BseSourceClass *class)
@@ -998,10 +842,10 @@ bse_source_flow_access_module (BseSource    *source,
 
       if (m1)
 	gsl_trans_add (my_trans, gsl_job_flow_access (m1, tick_stamp, access_func, data,
-						      m2 ? NULL : (GslReplyFunc) data_free_func));
+						      m2 ? NULL : data_free_func));
       if (m2)
 	gsl_trans_add (my_trans, gsl_job_flow_access (m2, tick_stamp, access_func, data,
-						      (GslReplyFunc) data_free_func));
+						      data_free_func));
       if (!trans)
 	gsl_trans_commit (my_trans);
     }
@@ -1042,7 +886,7 @@ bse_source_flow_access_modules (BseSource    *source,
       
       for (slist = modules; slist; slist = slist->next)
 	gsl_trans_add (my_trans, gsl_job_flow_access (slist->data, tick_stamp, access_func, data,
-						      slist->next ? NULL : (GslReplyFunc) data_free_func));
+						      slist->next ? NULL : data_free_func));
       if (!trans)
 	gsl_trans_commit (my_trans);
       g_slist_free (modules);
@@ -1782,4 +1626,121 @@ bse_source_restore_private (BseObject  *object,
     }
   else /* chain parent class' handler */
     return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
+}
+
+static void
+bse_source_class_base_init (BseSourceClass *class)
+{
+  class->channel_defs.n_ichannels = 0;
+  class->channel_defs.ichannel_idents = NULL;
+  class->channel_defs.ichannel_labels = NULL;
+  class->channel_defs.ichannel_blurbs = NULL;
+  class->channel_defs.ijstreams = NULL;
+  class->channel_defs.n_jstreams = 0;
+  class->channel_defs.n_ochannels = 0;
+  class->channel_defs.ochannel_idents = NULL;
+  class->channel_defs.ochannel_labels = NULL;
+  class->channel_defs.ochannel_blurbs = NULL;
+  class->gsl_class = NULL;
+}
+
+static void
+bse_source_class_base_finalize (BseSourceClass *class)
+{
+  guint i;
+  
+  for (i = 0; i < class->channel_defs.n_ichannels; i++)
+    {
+      g_free (class->channel_defs.ichannel_idents[i]);
+      g_free (class->channel_defs.ichannel_labels[i]);
+      g_free (class->channel_defs.ichannel_blurbs[i]);
+    }
+  g_free (class->channel_defs.ichannel_idents);
+  g_free (class->channel_defs.ichannel_labels);
+  g_free (class->channel_defs.ichannel_blurbs);
+  g_free (class->channel_defs.ijstreams);
+  class->channel_defs.n_jstreams = 0;
+  class->channel_defs.n_ichannels = 0;
+  class->channel_defs.ichannel_idents = NULL;
+  class->channel_defs.ichannel_labels = NULL;
+  class->channel_defs.ichannel_blurbs = NULL;
+  class->channel_defs.ijstreams = NULL;
+  for (i = 0; i < class->channel_defs.n_ochannels; i++)
+    {
+      g_free (class->channel_defs.ochannel_idents[i]);
+      g_free (class->channel_defs.ochannel_labels[i]);
+      g_free (class->channel_defs.ochannel_blurbs[i]);
+    }
+  g_free (class->channel_defs.ochannel_idents);
+  g_free (class->channel_defs.ochannel_labels);
+  g_free (class->channel_defs.ochannel_blurbs);
+  class->channel_defs.n_ochannels = 0;
+  class->channel_defs.ochannel_idents = NULL;
+  class->channel_defs.ochannel_labels = NULL;
+  class->channel_defs.ochannel_blurbs = NULL;
+  g_free (class->gsl_class);
+  class->gsl_class = NULL;
+}
+
+static void
+bse_source_class_init (BseSourceClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->set_property = bse_source_set_property;
+  gobject_class->get_property = bse_source_get_property;
+  gobject_class->dispose = bse_source_dispose;
+  gobject_class->finalize = bse_source_finalize;
+
+  object_class->store_private = bse_source_real_store_private;
+  object_class->restore_private = bse_source_restore_private;
+
+  class->prepare = bse_source_real_prepare;
+  class->context_create = bse_source_real_context_create;
+  class->context_connect = bse_source_real_context_connect;
+  class->context_dismiss = bse_source_real_context_dismiss;
+  class->reset = bse_source_real_reset;
+  class->add_input = bse_source_real_add_input;
+  class->remove_input = bse_source_real_remove_input;
+
+  bse_object_class_add_param (object_class, "Position",
+			      PROP_POS_X,
+			      sfi_pspec_real ("pos_x", "Position X", NULL,
+					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
+					      SFI_PARAM_STORAGE ":skip-default"));
+  bse_object_class_add_param (object_class, "Position",
+			      PROP_POS_Y,
+			      sfi_pspec_real ("pos_y", "Position Y", NULL,
+					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
+					      SFI_PARAM_STORAGE ":skip-default"));
+
+  source_signals[SIGNAL_IO_CHANGED] = bse_object_class_add_signal (object_class, "io_changed",
+								   G_TYPE_NONE, 0);
+}
+
+BSE_BUILTIN_TYPE (BseSource)
+{
+  static const GTypeInfo source_info = {
+    sizeof (BseSourceClass),
+    
+    (GBaseInitFunc) bse_source_class_base_init,
+    (GBaseFinalizeFunc) bse_source_class_base_finalize,
+    (GClassInitFunc) bse_source_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    
+    sizeof (BseSource),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_source_init,
+  };
+
+  g_assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  
+  return bse_type_register_abstract (BSE_TYPE_ITEM,
+                                     "BseSource",
+                                     "Base type for sound sources",
+                                     &source_info);
 }

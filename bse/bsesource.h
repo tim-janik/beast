@@ -75,6 +75,7 @@ typedef enum	/*< skip >*/
 typedef union  _BseSourceInput		BseSourceInput;
 typedef struct _BseSourceOutput		BseSourceOutput;
 typedef struct _BseSourceChannelDefs	BseSourceChannelDefs;
+typedef struct _BseSourceProbes		BseSourceProbes;
 typedef void (*BseSourceFreeContextData) (BseSource *source,
 					  gpointer   data,
 					  GslTrans  *trans);
@@ -100,6 +101,7 @@ struct _BseSource
   GSList	       *outputs;
   gpointer		contexts; /* bsearch array of type BseSourceContext */
   SfiReal		pos_x, pos_y;
+  BseSourceProbes      *probes;
 };
 struct _BseSourceChannelDefs
 {

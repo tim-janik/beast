@@ -36,6 +36,7 @@ G_BEGIN_DECLS
 
 
 /* --- typedefs --- */
+typedef struct _GslProbe GslProbe;
 typedef gboolean (*GslPollFunc)		(gpointer	data,
 					 guint		n_values,
 					 glong	       *timeout_p,
@@ -50,8 +51,11 @@ typedef guint    (*GslProcessDeferFunc)	(GslModule     *module,
 					 guint		n_ivalues,
 					 guint		n_ovalues);
 typedef void     (*GslResetFunc)	(GslModule     *module);
-typedef void     (*GslReplyFunc)	(gpointer       data,   /* sync with GslFreeFunc */
-                                         gboolean       processed);
+typedef void     (*GslProbeFunc)	(gpointer       data,
+                                         guint64        tick_stamp,
+                                         guint          n_values,
+                                         gfloat       **oblocks); /* [ENGINE_NODE_N_OSTREAMS()] */
+
 /* gsldefs.h:
  * typedef void  (*GslAccessFunc)	(GslModule	*module,
  *					 gpointer	 data);
@@ -165,25 +169,24 @@ void		gsl_trans_commit_delayed(GslTrans	 *trans,
 void		gsl_trans_dismiss	(GslTrans	 *trans);
 void		gsl_transact		(GslJob		 *job,
 					 ...);
-GslJob*		gsl_job_request_reply	(GslModule	 *module,
-					 gpointer	  data,
-					 GslReplyFunc	  reply_func);	/* UserThread */
+GslJob*         gsl_job_probe_request   (GslModule       *module,
+                                         guint8          *ochannel_bytemask,
+                                         GslProbeFunc     probe,        /* UserThread */
+                                         gpointer         data);
 GslJob*		gsl_job_flow_access	(GslModule	 *module,
 					 guint64	  tick_stamp,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
-					 GslReplyFunc	  reply_func);	/* UserThread */
+					 GslFreeFunc	  free_func);	/* UserThread */
 GslJob*		gsl_job_boundary_access	(GslModule	 *module,
 					 guint64	  tick_stamp,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
-					 GslReplyFunc     reply_func);	/* UserThread */
+					 GslFreeFunc      free_func);	/* UserThread */
 
 
 /* --- module utilities (EngineThread functions) --- */
 gfloat*	      gsl_engine_const_values   (gfloat		  value);
-gpointer      gsl_module_peek_reply     (GslModule       *module);
-gpointer      gsl_module_process_reply  (GslModule       *module);
 
 
 /* --- initialization & main loop --- */

@@ -1,3 +1,25 @@
+Thu Jul 15 01:15:01 2004  Tim Janik  <timj@gtk.org>
+
+	* bsesniffer.cc:
+	* bsesniffer.idl: disabled any code that depended on reply jobs,
+	this essentially breaks sniffers.
+
+	* bsesource.[hc]: reordered code for brevity. added BseSourceProbes*
+	structure member (currently unused).
+
+	* gslopnode.h:
+	* gslengine.[hc]: removed reply jobs. added probe jobs. changed
+	all uses of GslReplyFunc as free func back to GslFreeFunc.
+
+	* gslopmaster.[hc]: nuked reply jobs. implemented probe job handling
+	which means returning an output block copy to the user thread after
+	each node calculation. execute module profiling code after all nodes
+	have been processed.
+
+	* gsloputil.[hc]: nuked reply jobs. handle probe jobs and ordinary
+	free functions. sort unscheduled nodes with probe jobs with nodes
+	which have flow jobs pending.
+
 Wed Jul 14 01:43:05 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecore.idl: added thread id to ThreadInfo.

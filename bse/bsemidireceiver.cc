@@ -323,7 +323,7 @@ change_midi_control_modules (GSList           *modules,
 					       tick_stamp,
 					       midi_control_module_access,
 					       adata,
-					       slist->next ? NULL : (GslReplyFunc) g_free));
+					       slist->next ? NULL : g_free));
 }
 
 static gboolean
@@ -516,7 +516,7 @@ change_voice_input (VoiceInput      *vinput,
   
   gsl_trans_add (trans, gsl_job_flow_access (vinput->fmodule, tick_stamp,
 					     voice_input_module_access,
-					     g_memdup (&mdata, sizeof (mdata)), (GslReplyFunc) g_free));
+					     g_memdup (&mdata, sizeof (mdata)), g_free));
   switch (mdata.vtype)
     {
     case VOICE_ON:

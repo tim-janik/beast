@@ -27,6 +27,8 @@
 #include <errno.h>
 #include <math.h>
 
+#define LOG_INTERN      SfiLogger ("internals", NULL, NULL)
+
 
 /* --- UserThread --- */
 GslOStream*
@@ -50,12 +52,29 @@ _engine_alloc_ostreams (guint n)
 }
 
 static void
-free_reply_job (EngineReplyJob *rjob,
-                gboolean        processed)
+free_user_job (EngineUserJob *ujob)
 {
-  if (rjob->reply_func)
-    rjob->reply_func (rjob->data, processed);
-  g_free (rjob);
+  switch (ujob->job_type)
+    {
+      EngineProbeJob *pjob;
+      EngineTimedJob *tjob;
+    case ENGINE_JOB_PROBE_JOB:
+      pjob = (EngineProbeJob*) ujob;
+      if (pjob->probe_func)
+        pjob->probe_func (pjob->data, pjob->tick_stamp, pjob->n_values, pjob->oblocks);
+      g_free (pjob);
+      break;
+    case ENGINE_JOB_FLOW_JOB:
+    case ENGINE_JOB_BOUNDARY_JOB:
+      tjob = (EngineTimedJob*) ujob;
+      if (tjob->free_func)
+        tjob->free_func (tjob->data);
+      g_free (tjob);
+      break;
+    default:
+      g_warning ("Engine: invalid user job type: %d", ujob->job_type);
+      break;
+    }
 }
 
 static void
@@ -70,15 +89,15 @@ free_node (EngineNode *node)
   g_return_if_fail (node->integrated == FALSE);
   g_return_if_fail (node->sched_tag == FALSE);
   g_return_if_fail (node->sched_recurse_tag == FALSE);
-  g_return_if_fail (node->flow_jobs == NULL && node->boundary_jobs == NULL && node->rjob_first == NULL);
+  g_return_if_fail (node->flow_jobs == NULL && node->boundary_jobs == NULL && node->ujob_first == NULL);
 
-  while (node->reply_jobs)
+  while (node->probe_jobs)
     {
-      EngineReplyJob *rjob = node->reply_jobs;
-      node->reply_jobs = rjob->next;
-      free_reply_job (rjob, FALSE);
+      EngineProbeJob *ujob = node->probe_jobs;
+      node->probe_jobs = ujob->next;
+      free_user_job ((EngineUserJob*) ujob);
     }
-  
+
   sfi_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
@@ -135,14 +154,14 @@ free_job (GslJob *job)
       if (job->data.timer.free_func)
 	job->data.timer.free_func (job->data.timer.data);
       break;
-    case ENGINE_JOB_REQUEST_REPLY:
-      if (job->data.reply_job.rjob)
-        free_reply_job (job->data.reply_job.rjob, FALSE);
+    case ENGINE_JOB_PROBE_JOB:
+      if (job->data.probe_job.pjob)
+        free_user_job ((EngineUserJob*) job->data.probe_job.pjob);
       break;
     case ENGINE_JOB_FLOW_JOB:
     case ENGINE_JOB_BOUNDARY_JOB:
       if (job->data.timed_job.tjob)
-        free_reply_job ((EngineReplyJob*) job->data.timed_job.tjob, FALSE);
+        free_user_job ((EngineUserJob*) job->data.timed_job.tjob);
       break;
     case ENGINE_JOB_DEBUG:
       g_free (job->data.debug);
@@ -182,7 +201,7 @@ static SfiCond         cqueue_trans_cond = { 0, };
 static GslTrans       *cqueue_trans_trash = NULL;
 static GslTrans       *cqueue_trans_active_head = NULL;
 static GslTrans       *cqueue_trans_active_tail = NULL;
-static EngineReplyJob *cqueue_trash_rjobs = NULL;
+static EngineUserJob  *cqueue_trash_ujobs = NULL;
 static GslJob         *cqueue_trans_job = NULL;
 
 void
@@ -310,21 +329,21 @@ void
 gsl_engine_garbage_collect (void)
 {
   GslTrans *trans;
-  EngineReplyJob *jlist;
+  EngineUserJob *jlist;
 
   GSL_SPIN_LOCK (&cqueue_trans);
   trans = cqueue_trans_trash;
   cqueue_trans_trash = NULL;
-  jlist = cqueue_trash_rjobs;
-  cqueue_trash_rjobs = NULL;
+  jlist = cqueue_trash_ujobs;
+  cqueue_trash_ujobs = NULL;
   GSL_SPIN_UNLOCK (&cqueue_trans);
 
   while (jlist)
     {
-      EngineReplyJob *rjob = jlist;
-      jlist = rjob->next;
-      rjob->next = NULL;
-      free_reply_job (rjob, TRUE);
+      EngineUserJob *ujob = jlist;
+      jlist = ujob->next;
+      ujob->next = NULL;
+      free_user_job (ujob);
     }
 
   while (trans)
@@ -343,7 +362,7 @@ gsl_engine_garbage_collect (void)
 gboolean
 gsl_engine_has_garbage (void)
 {
-  return cqueue_trans_trash || cqueue_trash_rjobs;
+  return cqueue_trans_trash || cqueue_trash_ujobs;
 }
 
 
@@ -353,8 +372,8 @@ static EngineSchedule   *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
 static SfiCond		 pqueue_done_cond = { 0, };
-static EngineReplyJob   *pqueue_trash_rjobs_first = NULL;
-static EngineReplyJob   *pqueue_trash_rjobs_last = NULL;
+static EngineUserJob    *pqueue_trash_ujobs_first = NULL;
+static EngineUserJob    *pqueue_trash_ujobs_last = NULL;
 
 void
 _engine_set_schedule (EngineSchedule *sched)
@@ -377,7 +396,7 @@ _engine_set_schedule (EngineSchedule *sched)
 void
 _engine_unset_schedule (EngineSchedule *sched)
 {
-  EngineReplyJob *trash_rjobs_first, *trash_rjobs_last;
+  EngineUserJob *trash_ujobs_first, *trash_ujobs_last;
 
   g_return_if_fail (sched != NULL);
   
@@ -392,17 +411,17 @@ _engine_unset_schedule (EngineSchedule *sched)
     g_warning (G_STRLOC ": schedule(%p) still busy", sched);
   sched->in_pqueue = FALSE;
   pqueue_schedule = NULL;
-  trash_rjobs_first = pqueue_trash_rjobs_first;
-  trash_rjobs_last = pqueue_trash_rjobs_last;
-  pqueue_trash_rjobs_first = NULL;
-  pqueue_trash_rjobs_last = NULL;
+  trash_ujobs_first = pqueue_trash_ujobs_first;
+  trash_ujobs_last = pqueue_trash_ujobs_last;
+  pqueue_trash_ujobs_first = NULL;
+  pqueue_trash_ujobs_last = NULL;
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 
-  if (trash_rjobs_first)	/* move trash timed jobs */
+  if (trash_ujobs_first)	/* move trash timed jobs */
     {
       GSL_SPIN_LOCK (&cqueue_trans);
-      trash_rjobs_last->next = cqueue_trash_rjobs;
-      cqueue_trash_rjobs = trash_rjobs_first;
+      trash_ujobs_last->next = cqueue_trash_ujobs;
+      cqueue_trash_ujobs = trash_ujobs_first;
       GSL_SPIN_UNLOCK (&cqueue_trans);
     }
 }
@@ -425,17 +444,17 @@ _engine_pop_unprocessed_node (void)
 }
 
 static inline void
-collect_reply_jobs_L (EngineNode *node)
+collect_user_jobs_L (EngineNode *node)
 {
-  if_reject (node->rjob_first != NULL)
+  if_reject (node->ujob_first != NULL)
     {
       /* move into timed jobs trash queue */
-      node->rjob_last->next = pqueue_trash_rjobs_first;
-      pqueue_trash_rjobs_first = node->rjob_first;
-      if (!pqueue_trash_rjobs_last)
-	pqueue_trash_rjobs_last = node->rjob_last;
-      node->rjob_first = NULL;
-      node->rjob_last = NULL;
+      node->ujob_last->next = pqueue_trash_ujobs_first;
+      pqueue_trash_ujobs_first = node->ujob_first;
+      if (!pqueue_trash_ujobs_last)
+	pqueue_trash_ujobs_last = node->ujob_last;
+      node->ujob_first = NULL;
+      node->ujob_last = NULL;
     }
 }
 
@@ -446,7 +465,7 @@ _engine_node_collect_jobs (EngineNode *node)
   g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (node));
 
   GSL_SPIN_LOCK (&pqueue_mutex);
-  collect_reply_jobs_L (node);
+  collect_user_jobs_L (node);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
 }
 
@@ -459,7 +478,7 @@ _engine_push_processed_node (EngineNode *node)
   
   GSL_SPIN_LOCK (&pqueue_mutex);
   g_assert (pqueue_n_nodes > 0);        /* paranoid */
-  collect_reply_jobs_L (node);
+  collect_user_jobs_L (node);
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))
@@ -546,11 +565,11 @@ _engine_mnl_node_changed (EngineNode *node)
   g_return_if_fail (node->integrated == TRUE);
 
   /* the master node list is partially sorted. that is, all
-   * nodes which are not scheduled and have pending flow_jobs
+   * nodes which are not scheduled and have pending user jobs
    * are agglomerated at the head.
    */
   sibling = node->mnl_prev ? node->mnl_prev : node->mnl_next;
-  if_reject (sibling && GSL_MNL_UNSCHEDULED_FLOW_NODE (node) != GSL_MNL_UNSCHEDULED_FLOW_NODE (sibling))
+  if_reject (sibling && GSL_MNL_UNSCHEDULED_UJOB_NODE (node) != GSL_MNL_UNSCHEDULED_UJOB_NODE (sibling))
     {
       /* remove */
       if (node->mnl_prev)
@@ -561,7 +580,7 @@ _engine_mnl_node_changed (EngineNode *node)
 	node->mnl_next->mnl_prev = node->mnl_prev;
       else
 	master_node_list_tail = node->mnl_prev;
-      if (GSL_MNL_UNSCHEDULED_FLOW_NODE (node))	/* move towards head */
+      if (GSL_MNL_UNSCHEDULED_UJOB_NODE (node))	/* move towards head */
 	{
 	  /* prepend to non-NULL list */
 	  master_node_list_head->mnl_prev = node;
@@ -578,10 +597,10 @@ _engine_mnl_node_changed (EngineNode *node)
 	  node->mnl_next = NULL;
 	}
     }
-  if_reject (node->rjob_first != NULL)
+  if_reject (node->ujob_first != NULL)
     {
       GSL_SPIN_LOCK (&pqueue_mutex);
-      collect_reply_jobs_L (node);
+      collect_user_jobs_L (node);
       GSL_SPIN_UNLOCK (&pqueue_mutex);
     }
 }

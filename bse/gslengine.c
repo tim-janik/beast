@@ -88,9 +88,9 @@ gsl_module_new (const GslClass *klass,
     node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
   node->boundary_jobs = NULL;
-  node->reply_jobs = NULL;
-  node->rjob_first = NULL;
-  node->rjob_last = NULL;
+  node->probe_jobs = NULL;
+  node->ujob_first = NULL;
+  node->ujob_last = NULL;
   
   return &node->module;
 }
@@ -462,41 +462,66 @@ gsl_job_access (GslModule    *module,
 }
 
 /**
- * gsl_job_request_reply
+ * gsl_job_request_probe
  * @module:      The module to access
+ * @ochannel_bytemask: One byte per ochannel, bytes != 0 indicate a probe request
+ * @probe_func:  Function invoked with @data in the user thread
  * @data:        Data passed in to the accessor
- * @reply_func:  Function invoked with @data in the user thread upon reply
  * @Returns:     New job suitable for gsl_trans_add()
  *
- * Create a new transaction job which inserts @reply_func
- * with @data into the reply job queue of @module.
- * Reply jobs are jobs with limited impact on modules, which
- * processed by the module on demand. Once a module has processed
- * a reply job, the job is returned to the user thread before the
- * next block boundary, so @reply_func() can be invoked as early
- * as possible.
+ * Create a new transaction job which inserts @probe_func
+ * with @data into the job queue of @module.
+ * Probe jobs are jobs which collect data from a given set of output
+ * channels of a module as probe data. The job then is returned to
+ * the user thread before the next block boundary, so @probe_func()
+ * will be invoked as early as possible.
+ * There's no free_func() supplied to delete @data, because such a
+ * function would always be called immediately after @probe_func().
+ * So instead, any @data specific release handling should be integrated
+ * into @probe_func().
+ * The @ochannel_bytemask must point to an array of bytes with a size
+ * equal to the number of output channels of @module.
  * This function is MT-safe and may be called from any thread.
  */
 GslJob*
-gsl_job_request_reply (GslModule    *module,
-                       gpointer      data,
-                       GslReplyFunc  reply_func)
+gsl_job_probe_request (GslModule    *module,
+                       guint8       *ochannel_bytemask,
+                       GslProbeFunc  probe_func,
+                       gpointer      data)
 {
-  GslJob *job;
-  EngineReplyJob *rjob;
-
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
-  g_return_val_if_fail (reply_func != NULL, NULL);
-  
-  rjob = g_new0 (EngineReplyJob, 1);
-  rjob->reply_func = reply_func;
-  rjob->data = data;
+  g_return_val_if_fail (probe_func != NULL, NULL);
+  g_return_val_if_fail (ochannel_bytemask != NULL, NULL);
 
-  job = sfi_new_struct0 (GslJob, 1);
-  job->job_id = ENGINE_JOB_REQUEST_REPLY;
-  job->data.reply_job.node = ENGINE_NODE (module);
-  job->data.reply_job.rjob = rjob;
+  guint i, n_blocks = 0, n_ostreams = module->klass->n_ostreams;
+  for (i = 0; i < n_ostreams; i++)
+    if (ochannel_bytemask[i])
+      n_blocks++;
+
+  EngineProbeJob *pjob;
+  guint jsize = sizeof (*pjob) + sizeof (pjob->oblocks[0]) * n_ostreams;
+  guint8 *bmem = g_malloc0 (jsize + gsl_engine_block_size() * sizeof (float) * n_blocks);
+  pjob = (EngineProbeJob*) bmem;
+  gfloat *floats = (gfloat*) (bmem + jsize);
+
+  pjob->job_type = ENGINE_JOB_PROBE_JOB;
+  pjob->probe_func = probe_func;
+  pjob->data = data;
+  pjob->tick_stamp = 0;
+  pjob->n_values = 0;
+
+  for (i = 0; i < n_ostreams; i++)
+    if (ochannel_bytemask[i])
+      {
+        pjob->oblocks[i] = floats;
+        floats += gsl_engine_block_size();
+      }
+
+  GslJob *job = sfi_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_PROBE_JOB;
+  job->data.probe_job.node = ENGINE_NODE (module);
+  job->data.probe_job.pjob = pjob;
   
   return job;
 }
@@ -523,7 +548,7 @@ gsl_job_flow_access (GslModule    *module,
 		     guint64       tick_stamp,
 		     GslAccessFunc access_func,
 		     gpointer      data,
-		     GslReplyFunc  reply_func)
+		     GslFreeFunc   free_func)
 {
   GslJob *job;
   EngineTimedJob *tjob;
@@ -534,7 +559,8 @@ gsl_job_flow_access (GslModule    *module,
   g_return_val_if_fail (access_func != NULL, NULL);
   
   tjob = g_new0 (EngineTimedJob, 1);
-  tjob->reply_func = reply_func;
+  tjob->job_type = ENGINE_JOB_FLOW_JOB;
+  tjob->free_func = free_func;
   tjob->data = data;
   tjob->tick_stamp = tick_stamp;
   tjob->access_func = access_func;
@@ -568,7 +594,7 @@ gsl_job_boundary_access (GslModule    *module,
                          guint64       tick_stamp,
                          GslAccessFunc access_func,
                          gpointer      data,
-                         GslReplyFunc  reply_func)
+                         GslFreeFunc   free_func)
 {
   GslJob *job;
   EngineTimedJob *tjob;
@@ -579,7 +605,8 @@ gsl_job_boundary_access (GslModule    *module,
   g_return_val_if_fail (access_func != NULL, NULL);
   
   tjob = g_new0 (EngineTimedJob, 1);
-  tjob->reply_func = reply_func;
+  tjob->job_type = ENGINE_JOB_BOUNDARY_JOB;
+  tjob->free_func = free_func;
   tjob->data = data;
   tjob->tick_stamp = tick_stamp;
   tjob->access_func = access_func;

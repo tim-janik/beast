@@ -42,7 +42,8 @@ G_BEGIN_DECLS
 
 
 /* --- transactions --- */
-typedef struct _EngineReplyJob EngineReplyJob;
+typedef struct _EngineUserJob  EngineUserJob;
+typedef struct _EngineProbeJob EngineProbeJob;
 typedef struct _EngineTimedJob EngineTimedJob;
 typedef enum {
   ENGINE_JOB_NOP,
@@ -64,7 +65,7 @@ typedef enum {
   ENGINE_JOB_ADD_POLL,
   ENGINE_JOB_REMOVE_POLL,
   ENGINE_JOB_ADD_TIMER,
-  ENGINE_JOB_REQUEST_REPLY,
+  ENGINE_JOB_PROBE_JOB,
   ENGINE_JOB_FLOW_JOB,
   ENGINE_JOB_BOUNDARY_JOB,
   ENGINE_JOB_DEBUG,
@@ -115,8 +116,8 @@ struct _GslJob
     } timed_job;
     struct {
       EngineNode     *node;
-      EngineReplyJob *rjob;
-    } reply_job;
+      EngineProbeJob *pjob;
+    } probe_job;
     gchar	     *debug;
   } data;
 };
@@ -127,17 +128,27 @@ struct _GslTrans
   guint	    comitted : 1;
   GslTrans *cqt_next;	/* com-thread-queue */
 };
-struct _EngineReplyJob
+struct _EngineUserJob
 {
-  EngineReplyJob   *next;       /* keep in sync with EngineTimedJob */
-  GslReplyFunc      reply_func; /* keep in sync with EngineTimedJob */
-  gpointer          data;       /* keep in sync with EngineTimedJob */
+  EngineUserJob    *next;
+  EngineJobType     job_type;
+};
+struct _EngineProbeJob
+{
+  EngineProbeJob   *next;       /* keep in sync with EngineUserJob */
+  EngineJobType     job_type;   /* keep in sync with EngineUserJob */
+  GslProbeFunc      probe_func;
+  gpointer          data;
+  guint64           tick_stamp;
+  guint             n_values;
+  gfloat           *oblocks[1]; /* [ENGINE_NODE_N_OSTREAMS()] */
 };
 struct _EngineTimedJob
 {
-  EngineTimedJob   *next;       /* keep in sync with EngineReplyJob */
-  GslReplyFunc      reply_func; /* keep in sync with EngineReplyJob */
-  gpointer          data;       /* keep in sync with EngineReplyJob */
+  EngineTimedJob   *next;       /* keep in sync with EngineUserJob */
+  EngineJobType     job_type;   /* keep in sync with EngineUserJob */
+  GslFreeFunc       free_func;
+  gpointer          data;
   guint64	    tick_stamp;
   GslAccessFunc     access_func;
 };
@@ -177,9 +188,9 @@ struct _EngineNode		/* fields sorted by order of processing access */
 
   /* timed jobs */
   EngineTimedJob *flow_jobs;			/* active jobs */
+  EngineProbeJob *probe_jobs;		        /* probe requests */
   EngineTimedJob *boundary_jobs;		/* active jobs */
-  EngineReplyJob *reply_jobs;		        /* reply requests */
-  EngineReplyJob *rjob_first, *rjob_last;	/* trash list */
+  EngineUserJob  *ujob_first, *ujob_last;	/* trash list */
 
   /* suspend/activation time */
   guint64        next_active;           /* result of suspend state updates */
