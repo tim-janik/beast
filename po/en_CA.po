@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-26 09:57-0400\n"
-"PO-Revision-Date: 2004-09-26 19:50-0400\n"
+"POT-Creation-Date: 2004-09-27 17:55-0400\n"
+"PO-Revision-Date: 2004-09-27 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -4412,7 +4412,7 @@ msgstr "BPM Steps"
 msgid "Step width for beats per minute"
 msgstr "Step width for beats per minute"
 
-#: bse/bsedevice.c:287
+#: bse/bsedevice.c:312
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
 "automatic driver selection."
@@ -4699,7 +4699,7 @@ msgstr ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 
-#: bse/bsemididevice-oss.c:262
+#: bse/bsemididevice-oss.c:264
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4835,7 +4835,7 @@ msgstr "Parasite Paths"
 msgid "Parasite"
 msgstr "Parasite"
 
-#: bse/bsepcmdevice-null.c:142
+#: bse/bsepcmdevice-null.c:145
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
 "driver is not part of the automatic PCM device selection list."
@@ -4843,11 +4843,11 @@ msgstr ""
 "Discard all PCM output and provide zero blocks as input. This\n"
 "driver is not part of the automatic PCM device selection list."
 
-#: bse/bsepcmdevice-oss.c:650
+#: bse/bsepcmdevice-oss.c:651
 msgid "DEVICE,MODE"
 msgstr "DEVICE,MODE"
 
-#: bse/bsepcmdevice-oss.c:652
+#: bse/bsepcmdevice-oss.c:653
 msgid ""
 "Open Sound System PCM driver:\n"
 "  DEVICE - PCM device file name\n"
@@ -5314,6 +5314,39 @@ msgstr "BSE Synthesis File"
 #: data/bse.keys.in.h:1
 msgid "Audio"
 msgstr "Audio"
+
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:529
+msgid "PLUGIN:CARD,DEV,SUBDEV"
+msgstr "PLUGIN:CARD,DEV,SUBDEV"
+
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:531
+#, c-format
+msgid ""
+"Advanced Linux Sound Architecture PCM driver, using\n"
+"ALSA %s.\n"
+"The device specification follows the ALSA device naming\n"
+"conventions, a detailed description of which is available\n"
+"at the project's website:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
+"Various ALSA plugins can be used here, 'hw' allows direct\n"
+"adressing of hardware channels by card, device and subdevice.\n"
+"  PLUGIN - the ALSA plugin, 'default' is usually good enough\n"
+"  CARD   - the card number for plugins like 'hw'\n"
+"  DEV    - the device number for plugins like 'hw'\n"
+"  SUBDEV - the subdevice number for plugins like 'hw'\n"
+msgstr ""
+"Advanced Linux Sound Architecture PCM driver, using\n"
+"ALSA %s.\n"
+"The device specification follows the ALSA device naming\n"
+"conventions, a detailed description of which is available\n"
+"at the project's website:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
+"Various ALSA plugins can be used here, 'hw' allows direct\n"
+"adressing of hardware channels by card, device and subdevice.\n"
+"  PLUGIN - the ALSA plugin; 'default' is usually good enough\n"
+"  CARD   - the card number for plugins like 'hw'\n"
+"  DEV    - the device number for plugins like 'hw'\n"
+"  SUBDEV - the subdevice number for plugins like 'hw'\n"
 
 #: plugins/artscompressor.idl:28 plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
