@@ -1,3 +1,4 @@
+# traducción de es.po al Spanish
 # translation of es.po to Spanish
 # translation of beast.po to Spanish
 # This file is distributed under the same license as the BEAST package.
@@ -11,7 +12,7 @@ msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-07-07 19:59+0200\n"
-"PO-Revision-Date: 2004-04-12 22:33+0200\n"
+"PO-Revision-Date: 2004-08-17 00:03+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -101,9 +102,8 @@ msgid "Rack Editor"
 msgstr "Editor de racks"
 
 #: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
-#, fuzzy
 msgid "Profiler"
-msgstr "Orden de filtrado"
+msgstr "Perfilador"
 
 #: beast-gtk/bstapp.c:115
 msgid "New View"
@@ -166,9 +166,8 @@ msgid "GSL Engine..."
 msgstr "Motor GSL..."
 
 #: beast-gtk/bstapp.c:280
-#, fuzzy
 msgid "Export Audio"
-msgstr "Sonido izquierdo"
+msgstr "Exportar sonido"
 
 #: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
@@ -202,11 +201,11 @@ msgstr "Notas de publicación de BEAST-%s"
 #: beast-gtk/bstauxdialogs.c:389
 #, c-format
 msgid "Please press the keyboard shortcut to be installed for function: %s"
-msgstr ""
+msgstr "Pulse la combinación de teclas para vincularla a la función: %s"
 
 #: beast-gtk/bstauxdialogs.c:394
 msgid "Please press the keyboard shortcut to be installed..."
-msgstr ""
+msgstr "Pulse la combinación de teclas para ser instalada..."
 
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
@@ -418,11 +417,11 @@ msgstr "Cargando onda «%s»"
 
 #: beast-gtk/bstgrowbar.c:91
 msgid "Shrink the scrollable area"
-msgstr ""
+msgstr "Encojer el área desplazable"
 
 #: beast-gtk/bstgrowbar.c:93
 msgid "Grow the scrollable area"
-msgstr ""
+msgstr "Agrandar el área desplazable"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
 #: beast-gtk/bsttrackview.c:61
@@ -459,7 +458,7 @@ msgstr "Añadir..."
 
 #: beast-gtk/bstkeybindings.c:51
 msgid "Bind a new key combination to a program function"
-msgstr ""
+msgstr "Vincular una combinación de teclas nueva a una función del programa"
 
 #: beast-gtk/bstkeybindings.c:53
 msgid "Change..."
@@ -475,15 +474,15 @@ msgstr "Elevar"
 
 #: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
-msgstr ""
+msgstr "Elevar la combinación de teclas seleccionada, respecto a sus vecinas"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower"
-msgstr ""
+msgstr "Bajar"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
-msgstr ""
+msgstr "Bajar la combinación de teclas seleccionada, respecto a sus vecinas"
 
 #: beast-gtk/bstkeybindings.c:59
 msgid "Delete the currently selected key binding"
@@ -499,15 +498,15 @@ msgstr "Carga un conjunto de combinaciones de teclas"
 
 #: beast-gtk/bstkeybindings.c:237
 msgid "Load Key Binding"
-msgstr ""
+msgstr "Cargar combinación de teclas"
 
 #: beast-gtk/bstkeybindings.c:432
 msgid "Key Binding"
-msgstr ""
+msgstr "Combinación de teclas"
 
 #: beast-gtk/bstkeybindings.c:433
 msgid "Key combinations used to activate a function"
-msgstr ""
+msgstr "Combinaciones de teclas usadas para activar una función"
 
 #: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
 msgid "Function"
@@ -544,7 +543,7 @@ msgstr "Inicio rápido"
 #. BEAST initialization
 #: beast-gtk/bstmain.c:140
 msgid "Initializers"
-msgstr ""
+msgstr "Inicializadores"
 
 #. parse rc file
 #: beast-gtk/bstmain.c:147
@@ -608,7 +607,7 @@ msgstr "Contribuciones hechas por:"
 
 #: beast-gtk/bstparam-choice.c:142
 msgid "Popup Options"
-msgstr ""
+msgstr "Opciones emergentes"
 
 #: beast-gtk/bstparam-choice.c:148
 msgid "Drop Down Combo"
@@ -886,8 +885,7 @@ msgid "Steps"
 msgstr "Pasos"
 
 #: beast-gtk/bstpatternctrl.c:124
-msgid ""
-"The number of cells to move across each time an event or note was edited"
+msgid "The number of cells to move across each time an event or note was edited"
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:128
@@ -903,8 +901,7 @@ msgid "HWrap"
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:134
-msgid ""
-"Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgid "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:137
@@ -925,8 +922,7 @@ msgstr ""
 
 #. movement
 #: beast-gtk/bstpatternctrl.c:313
-msgid ""
-"Move focus to the next cell (up/left/right/down according to configuration)"
+msgid "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:314
@@ -1050,9 +1046,8 @@ msgid "1\\/1"
 msgstr "1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:67
-#, fuzzy
 msgid "Insert whole notes"
-msgstr "Insertar medias notas"
+msgstr "Insertar notas completas"
 
 #: beast-gtk/bstpianorollctrl.c:69
 msgid "1\\/2"
@@ -1087,9 +1082,8 @@ msgid "Insert sixteenth note"
 msgstr "Insertar dieciseisavas notas"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "1\\/32"
-msgstr "1/32"
+msgstr "1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:77
 #, fuzzy
@@ -1097,9 +1091,8 @@ msgid "Insert thirty-second note"
 msgstr "Un treintadosavo de nota"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "1\\/64"
-msgstr "1/64"
+msgstr "1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:79
 #, fuzzy
@@ -1107,9 +1100,8 @@ msgid "Insert sixty-fourth note"
 msgstr "Insertar dieciseisavas notas"
 
 #: beast-gtk/bstpianorollctrl.c:81
-#, fuzzy
 msgid "1\\/128"
-msgstr "1\\/1"
+msgstr "1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:81
 #, fuzzy
@@ -1174,9 +1166,8 @@ msgid "Quantize to sixteenth note boundaries"
 msgstr "Cuantizar al dieciseisavos del límite de nota"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
-#, fuzzy
 msgid "Q: 1\\/32"
-msgstr "C: 1\\/2"
+msgstr "C: 1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
 #, fuzzy
@@ -1259,9 +1250,8 @@ msgid "Procedure"
 msgstr "Procedimiento"
 
 #: beast-gtk/bstprofiler.c:167
-#, fuzzy
 msgid "Totals"
-msgstr "_Herramientas"
+msgstr "Totales"
 
 #: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
 msgid "Thread Name"
@@ -1280,8 +1270,7 @@ msgid "UTime"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:247
-msgid ""
-"Average number of milliseconds per second of user CPU time used by thread"
+msgid "Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:248
@@ -1289,8 +1278,7 @@ msgid "STime"
 msgstr ""
 
 #: beast-gtk/bstprofiler.c:248
-msgid ""
-"Average number of milliseconds per second of system CPU time used by thread"
+msgid "Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
 
 #.
@@ -1307,9 +1295,8 @@ msgstr ""
 #. NULL, NULL, 0);
 #.
 #: beast-gtk/bstprofiler.c:262
-#, fuzzy
 msgid "Nice"
-msgstr "Notificación"
+msgstr "Nice"
 
 #: beast-gtk/bstprofiler.c:262
 msgid "Thread priority from -20 (high) to +19 (low)"
@@ -1485,9 +1472,8 @@ msgid "Sixty-fourth note"
 msgstr "Insertar dieciseisavas notas"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "1/128"
-msgstr "1\\/1"
+msgstr "1/128"
 
 #: beast-gtk/bstrecords.idl:50
 #, fuzzy
@@ -1553,9 +1539,8 @@ msgid "Dotted sixty-fourth note"
 msgstr "Un dieciséisavo de nota puntuada"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "1/128."
-msgstr "1\\/1"
+msgstr "1/128."
 
 #: beast-gtk/bstrecords.idl:58
 #, fuzzy
@@ -1621,9 +1606,8 @@ msgid "Triplet sixty-fourth note"
 msgstr "Un triplete de un sesenta y ochoavo de nota"
 
 #: beast-gtk/bstrecords.idl:66
-#, fuzzy
 msgid "1/128T"
-msgstr "1\\/1"
+msgstr "1/128T"
 
 #: beast-gtk/bstrecords.idl:66
 #, fuzzy
@@ -1656,9 +1640,8 @@ msgid "Every eighth row"
 msgstr "Insertar octavas notas"
 
 #: beast-gtk/bstrecords.idl:74
-#, fuzzy
 msgid "16"
-msgstr "1/64"
+msgstr "16"
 
 #: beast-gtk/bstrecords.idl:74
 #, fuzzy
@@ -1722,9 +1705,8 @@ msgid "Every sixth row"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:82
-#, fuzzy
 msgid "12"
-msgstr "1/2"
+msgstr "12"
 
 #: beast-gtk/bstrecords.idl:82
 msgid "Every twelfth row"
@@ -1853,9 +1835,8 @@ msgid "Empty Field Color"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:121
-#, fuzzy
 msgid "Text Color"
-msgstr "Seleccione el color"
+msgstr "Color del texto"
 
 #: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:129
 msgid "Vertical Bar Color"
@@ -2152,8 +2133,7 @@ msgstr "Borrar partes"
 
 #: beast-gtk/bsttrackrollctrl.c:64
 msgid "Use the horizontal ruler to adjust the left loop pointer"
-msgstr ""
-"Utilizar la regla horizontal para ajustar el puntero de bucle izquierdo"
+msgstr "Utilizar la regla horizontal para ajustar el puntero de bucle izquierdo"
 
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Position"
@@ -2601,8 +2581,7 @@ msgid "Auto cut"
 msgstr "Auto cortar"
 
 #: beast-gtk/gxk/gxksimplelabel.c:143
-msgid ""
-"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgid "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
 "Si está seleccionado, el texto sobresaliente es cortado y en su lugar se "
 "muestran puntos suspensivos «...»"
@@ -2871,9 +2850,8 @@ msgid "Output Channels:"
 msgstr "Canales de salida:"
 
 #: bse/bsebiquadfilter.c:105
-#, fuzzy
 msgid "/Filters/Biquad Types"
-msgstr "Tipo de filtro"
+msgstr "/Filtros/Tipos bicuad"
 
 #: bse/bsebiquadfilter.c:124
 msgid "Filter"
@@ -2914,8 +2892,7 @@ msgid "Norm Type"
 msgstr "Tipo de norma"
 
 #: bse/bsebiquadfilter.c:153
-msgid ""
-"The filter gain normalization type (supported only by highpass and lowpass)"
+msgid "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
 "El tipo de normalización de ganancia del filtro (soportado sólo por paso "
 "alto y paso bajo)"
@@ -2938,8 +2915,7 @@ msgstr "Realiza modulación de frecuencia exponencial en vez de lineal"
 
 #: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:140
 msgid "Number of octaves to be affected by exponential frequency modulation"
-msgstr ""
-"Número de octavas a ser afectadas por la modulación exponencial de frecuencia"
+msgstr "Número de octavas a ser afectadas por la modulación exponencial de frecuencia"
 
 #: bse/bsebiquadfilter.c:179
 #, no-c-format
@@ -3477,8 +3453,7 @@ msgid "Assignments"
 msgstr "Asignaciones"
 
 #: bse/bsesubiport.c:126 bse/bsesuboport.c:126
-msgid ""
-"The port name is a unique name to establish input<->output port relationships"
+msgid "The port name is a unique name to establish input<->output port relationships"
 msgstr ""
 "El nombre del puerto es un nombre único para establecer relaciones de "
 "puertos de entrada<->salida"
@@ -4180,3 +4155,4 @@ msgstr "Salida derecha"
 
 #~ msgid "Name:"
 #~ msgstr "Nombre:"
+
