@@ -337,7 +337,7 @@ typedef struct
 #define	LADSPA_CVALUES_SIZE(bli) (bli->n_cports * sizeof (gfloat))
 
 static void
-ladspa_module_access (BseModule *module,
+ladspa_module_access (BseModule *module,        /* EngineThread */
 		      gpointer   data)
 {
   LadspaData *ldata = module->user_data;
