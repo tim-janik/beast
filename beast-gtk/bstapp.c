@@ -26,6 +26,7 @@
 #include	"bststatusbar.h"
 #include	"bstgconfig.h"
 #include	"bstpreferences.h"
+#include	"bstprocbrowser.h"
 #include	"bstpatterneditor.h"
 #include	"bstservermonitor.h"
 #include	"bstrackeditor.h"
@@ -54,6 +55,7 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/File/_Dialogs",			NULL,		NULL, 0,			"<Branch>" },
   { "/File/Dialogs/<<<<<<",		NULL,		NULL, 0,			"<Tearoff>" },
+  { "/File/Dialogs/Procedure _Browser...", NULL,	BST_OP (DIALOG_PROC_BROWSER),	"<Item>" },
   { "/File/Dialogs/_Preferences...", 	NULL,		BST_OP (DIALOG_PREFERENCES),	"<Item>" },
   { "/File/Dialogs/Device _Monitor...",	NULL,		BST_OP (DIALOG_DEVICE_MONITOR),	"<Item>" },
   { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
@@ -500,6 +502,7 @@ bst_app_operate (BstApp *app,
   static GtkWidget *bst_dialog_open = NULL;
   static GtkWidget *bst_dialog_save = NULL;
   static GtkWidget *bst_preferences = NULL;
+  static GtkWidget *bst_proc_browser = NULL;
   GtkWidget *widget, *shell;
   gchar *help_file = NULL, *help_title = NULL;
   GString *help_string = NULL;
@@ -633,6 +636,22 @@ bst_app_operate (BstApp *app,
       if (!GTK_WIDGET_VISIBLE (bst_preferences))
 	bst_preferences_revert (BST_PREFERENCES (bst_dialog_get_child (BST_DIALOG (bst_preferences))));
       gtk_widget_showraise (bst_preferences);
+      break;
+    case BST_OP_DIALOG_PROC_BROWSER:
+      if (!bst_proc_browser)
+	{
+	  GtkWidget *widget;
+
+	  widget = bst_proc_browser_new ();
+	  gtk_widget_show (widget);
+	  bst_proc_browser = bst_dialog_new (&bst_proc_browser,
+					     NULL,
+					     BST_DIALOG_HIDE_ON_DELETE,
+					     "Procedure Browser",
+					     widget);
+	  bst_proc_browser_create_buttons (BST_PROC_BROWSER (widget), BST_DIALOG (bst_proc_browser));
+	}
+      gtk_widget_showraise (bst_proc_browser);
       break;
     case BST_OP_DIALOG_DEVICE_MONITOR:
       any = g_object_new (BST_TYPE_SERVER_MONITOR, NULL);
@@ -798,6 +817,7 @@ bst_app_can_operate (BstApp *app,
       return FALSE;
     case BST_OP_PROJECT_RACK_EDITOR:
     case BST_OP_DIALOG_PREFERENCES:
+    case BST_OP_DIALOG_PROC_BROWSER:
     case BST_OP_DIALOG_DEVICE_MONITOR:
       return TRUE;
       // case BST_OP_HELP_ABOUT:

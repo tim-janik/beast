@@ -207,6 +207,11 @@ AC_DEFUN(AC_BSW_SHELL_REQUIREMENTS,
     fi
     AC_SUBST(BSW_SHELL_CFLAGS)
     AC_SUBST(BSW_SHELL_LIBS)
+
+    # setup BSW install paths
+    bswsharedir=\${datadir}/beast/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
+    bswscriptdir=$bswsharedir/scripts
+    AC_SUBST(bswscriptdir)
 ])
 AC_DEFUN(AC_BEAST_REQUIREMENTS,
 [

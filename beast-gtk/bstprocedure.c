@@ -256,6 +256,13 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
   bst_procedure_shell_reset (shell);
 }
 
+static gboolean
+deferred_uncatch (gpointer data)
+{
+  bst_status_bar_uncatch_procs ();
+  return FALSE;
+}
+
 void
 bst_procedure_shell_execute (BstProcedureShell *shell)
 {
@@ -270,15 +277,6 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
   
   gtk_widget_ref (widget);
   
-  /* process any pending GUI updates
-   */
-  gdk_flush ();
-  GDK_THREADS_LEAVE ();
-  do
-    g_main_iteration (FALSE);
-  while (g_main_pending ());
-  GDK_THREADS_ENTER ();
-  
   for (slist = shell->first_out_bparam; slist; slist = slist->next)
     bst_param_reset (slist->data);
   bst_procedure_shell_update (shell);
@@ -286,28 +284,23 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
   if (widget)
     {
       BseErrorType error;
-      
-      bst_status_bar_catch_script ();
+
+      /* enable procedure notification */
+      bst_status_bar_catch_procs ();
+
       shell->in_execution = TRUE;
       error = bse_procedure_execvl (shell->proc,
                                     shell->bparams,
                                     shell->first_out_bparam);
       shell->in_execution = FALSE;
-      bst_status_bar_uncatch_script ();
+
+      /* somewhat hackish, since notification is delivered asyncron
+       * (like all BSW signals), we wait a bit before disabling
+       * notification again
+       */
+      g_timeout_add (1 * 1000, deferred_uncatch, NULL);
       
       bst_procedure_shell_update (shell);
-      /* feature procedures with error out parameter */
-      if (!error && shell->n_out_params)
-	{
-	  BstParam *bparam = shell->first_out_bparam->data;
-
-	  /* the execvl error return was set automatically,
-	   * so only act on out_param errors
-	   */
-	  if (g_type_is_a (G_VALUE_TYPE (&bparam->value), BSE_TYPE_ERROR_TYPE))
-	    error = g_value_get_enum (&bparam->value);
-	}
-      bst_status_set (error ? BST_STATUS_ERROR : BST_STATUS_DONE, shell->proc->name, bse_error_blurb (error));
     }
   
   gtk_widget_unref (widget);
@@ -444,6 +437,12 @@ bst_procedure_shell_global (void)
       gtk_object_sink (GTK_OBJECT (global_proc_shell));
       dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_STATUS | BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_MODAL,
 			       "Procedure", NULL);
+
+      /* we're the best window to indicate procedure/script progress */
+      g_object_connect (dialog,
+			"signal::show", bst_status_push_progress_window, NULL,
+			"signal::hide", bst_status_pop_progress_window, NULL,
+			NULL);
       gtk_container_add (GTK_CONTAINER (BST_DIALOG (dialog)->vbox), GTK_WIDGET (global_proc_shell));
       gtk_widget_show (GTK_WIDGET (global_proc_shell));
 
@@ -455,17 +454,17 @@ bst_procedure_shell_global (void)
   return global_proc_shell;
 }
 
-void
-bst_procedure_exec_modal (GType        procedure_type,
-			  const gchar *preset_param,
-			  ...)
+static void
+bst_procedure_exec_internal (GType        procedure_type,
+			     const gchar *preset_param,
+			     gboolean     modal,
+			     gboolean     auto_start,
+			     gboolean	  main_loop_recurse,
+			     va_list      var_args)
 {
   BseProcedureClass *proc = g_type_class_ref (procedure_type);
   BstProcedureShell *shell;
   GtkWidget *dialog;
-  va_list var_args;
-
-  g_return_if_fail (BSE_IS_PROCEDURE_CLASS (proc));
 
   /* structure setup */
   shell = bst_procedure_shell_global ();
@@ -474,7 +473,6 @@ bst_procedure_exec_modal (GType        procedure_type,
 
   /* set preset parameters */
   bst_procedure_shell_unpreset (shell);
-  var_args = va_start (var_args, preset_param);
   while (preset_param)
     {
       GType vtype = va_arg (var_args, GType);
@@ -493,29 +491,77 @@ bst_procedure_exec_modal (GType        procedure_type,
       g_value_unset (&value);
       preset_param = va_arg (var_args, const gchar*);
     }
-  va_end (var_args);
+
+  if (modal)
+    bst_dialog_add_flags (BST_DIALOG (dialog), BST_DIALOG_MODAL);
+  else
+    bst_dialog_clear_flags (BST_DIALOG (dialog), BST_DIALOG_MODAL);
 
   /* execution */
+  bst_status_window_push (dialog);
   g_object_ref (dialog);
-  if (shell->n_preset_params == shell->n_in_params && shell->n_out_params == 0)
+  if (auto_start && shell->n_preset_params == shell->n_in_params && shell->n_out_params == 0)
     bst_procedure_shell_execute (shell);
   else
     {
-      bst_status_window_push (dialog);
-
       /* hand control over to user
        */
       gtk_widget_show_now (dialog);
-      do
+      if (main_loop_recurse)
 	{
-	  GDK_THREADS_LEAVE ();
-	  g_main_iteration (TRUE);
-	  GDK_THREADS_ENTER ();
+	  do
+	    {
+	      GDK_THREADS_LEAVE ();
+	      g_main_iteration (TRUE);
+	      GDK_THREADS_ENTER ();
+	    }
+	  while (GTK_WIDGET_DRAWABLE (dialog));
 	}
-      while (GTK_WIDGET_DRAWABLE (dialog));
-      bst_status_window_pop ();
     }
+  bst_status_window_pop ();
   g_object_unref (dialog);
 
   g_type_class_unref (proc);
+}
+
+void
+bst_procedure_exec_modal (GType        procedure_type,
+			  const gchar *preset_param,
+			  ...)
+{
+  va_list var_args;
+
+  g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
+
+  var_args = va_start (var_args, preset_param);
+  bst_procedure_exec_internal (procedure_type, preset_param, TRUE, TRUE, TRUE, var_args);
+  va_end (var_args);
+}
+
+void
+bst_procedure_exec (GType        procedure_type,
+		    const gchar *preset_param,
+		    ...)
+{
+  va_list var_args;
+
+  g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
+
+  var_args = va_start (var_args, preset_param);
+  bst_procedure_exec_internal (procedure_type, preset_param, FALSE, FALSE, FALSE, var_args);
+  va_end (var_args);
+}
+
+void
+bst_procedure_exec_auto (GType        procedure_type,
+			 const gchar *preset_param,
+			 ...)
+{
+  va_list var_args;
+
+  g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
+
+  var_args = va_start (var_args, preset_param);
+  bst_procedure_exec_internal (procedure_type, preset_param, FALSE, TRUE, FALSE, var_args);
+  va_end (var_args);
 }

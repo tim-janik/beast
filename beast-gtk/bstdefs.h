@@ -51,6 +51,7 @@ typedef enum
   /* spawn new dialogs
    */
   BST_OP_DIALOG_PREFERENCES,
+  BST_OP_DIALOG_PROC_BROWSER,
   BST_OP_DIALOG_DEVICE_MONITOR,
 
   /* debugging */

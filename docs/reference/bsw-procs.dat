@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1
-date    = 22 May 2002
+date    = 27 May 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 22 May 2002 BEAST-0.4.1
+BSW-Procedures 27 May 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -2849,46 +2849,6 @@ retspace = 3
 @DOC-DESCRIPTION@
 Hello World - First Plugin ever executed by BSE. Its purpose is to say "Hello World" to BSE and the general outside. This plugin takes no input or outputparameters.  
 @DOC-SYNOPSIS@
-@STRONG bsw-progressor@ (@EMPH n-iterations@, @EMPH n-wait-spins@, @EMPH update-progress@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 18
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-n-iterations
-@DOC-PARDESC@
-Number of total Iterations
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-n-wait-spins
-@DOC-PARDESC@
-Number of internal iterations
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-update-progress
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 18
-
-@DOC-RETURNS@
-text1: 
-@DOC-RETURNS@
-text2: 
-
-@DOC-DESCRIPTION@
-Progressor takes two seed values and then starts progressing. It doesn't do anything particularly usefull, other than sharing CPU time with the main program from time to time.  
-@DOC-SYNOPSIS@
 @STRONG bsw-randomizer@ (@EMPH use-seed@, @EMPH seed@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -2962,3 +2922,71 @@ name:
 
 @DOC-DESCRIPTION@
 Retrive the name of an error value  
+@DOC-SYNOPSIS@
+@STRONG bsw-exit@ (@EMPH error@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 8
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+error
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 8
+
+
+@DOC-DESCRIPTION@
+Exit a script indicating error or success.  
+@DOC-SYNOPSIS@
+@STRONG bsw-exit-msg@ (@EMPH msg-type@, @EMPH message@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+msg-type
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+message
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Exit a script, leaving a message.  
+@DOC-SYNOPSIS@
+@STRONG bsw-progress@ (@EMPH progress@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+progress
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Indicate progress (from 0.0 to 1.0 or -1 for unknown amount).  

@@ -2,14 +2,14 @@
 name    = BSE-Functions
 blurb   = BSE Function Reference
 package = BEAST-0.4.1
-date    = 22 May 2002
+date    = 27 May 2002
 image   = bse-functions
 
 @DOC-TITLE@
 BSE-Functions
 
 @DOC-HEAD@
-BSE-Functions 22 May 2002 BEAST-0.4.1
+BSE-Functions 27 May 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSE-Functions - BSE Function Reference
@@ -120,3 +120,139 @@ Global BSE Server
 
 @DOC-DESCRIPTION@
 Retrive the global BSE server object.  
+@DOC-SYNOPSIS@
+@STRONG bse_search_path_list_matches@ (@EMPH search_path@, @EMPH cwd@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 26
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+search_path
+@DOC-PARDESC@
+semicolon seperated search path with '?' and '*' wildcards
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+cwd
+@DOC-PARDESC@
+assumed current working directoy (to interpret './' in search_path)
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 26
+
+@DOC-RETURNS@
+a singly linked list with newly allocated strings
+
+@DOC-DESCRIPTION@
+This function takes a search path with wildcards and lists all existing directories matching components of the search path.  
+@DOC-SYNOPSIS@
+@STRONG bse_search_path_list_files@ (@EMPH search_path@, @EMPH file_pattern@, @EMPH cwd@, @EMPH file_test@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 27
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+search_path
+@DOC-PARDESC@
+semicolon seperated search path with '?' and '*' wildcards
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+file_pattern
+@DOC-PARDESC@
+wildcard pattern for file names
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+cwd
+@DOC-PARDESC@
+assumed current working directoy (to interpret './' in search_path)
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GFileTest\ \ \ 
+typeraw = GFileTest   
+@DOC-PARAMETER@
+file_test
+@DOC-PARDESC@
+GFileTest file test condition (e.g. G_FILE_TEST_IS_REGULAR) or 0
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 27
+
+@DOC-RETURNS@
+a singly linked list with newly allocated strings
+
+@DOC-DESCRIPTION@
+Given a search path with wildcards, list all files matching @EMPH file_pattern@, contained in the directories which the search path matches. Files that do not pass @EMPH file_test@ are not listed.  
+@DOC-SYNOPSIS@
+@STRONG bse_search_path_list_entries@ (@EMPH search_path@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 26
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+search_path
+@DOC-PARDESC@
+semicolon seperated search path
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 26
+
+@DOC-RETURNS@
+a singly linked list with newly allocated strings
+
+@DOC-DESCRIPTION@
+This function takes a search path and returns a singly linked list containing the seperated path entries.  
+@DOC-SYNOPSIS@
+@STRONG bse_path_pattern_list_matches@ (@EMPH file_pattern@, @EMPH cwd@, @EMPH file_test@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 27
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+file_pattern
+@DOC-PARDESC@
+a filename spanning directories containing wildcards '?' or '*'
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+cwd
+@DOC-PARDESC@
+assumed current working directoy (to interpret relative file_pattern)
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GFileTest\ \ \ 
+typeraw = GFileTest   
+@DOC-PARAMETER@
+file_test
+@DOC-PARDESC@
+GFileTest file test condition (e.g. G_FILE_TEST_IS_REGULAR) or 0
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 27
+
+@DOC-RETURNS@
+a singly linked list with newly allocated strings
+
+@DOC-DESCRIPTION@
+This function takes filename with wildcards, transforms it into an absolute pathname using @EMPH cwd@ if necessary and lists all files matching the resulting file name pattern and passing @EMPH file_test@.  

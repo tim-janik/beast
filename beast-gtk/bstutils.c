@@ -103,30 +103,35 @@ static StockIcon stock_pixdata_icons[] = {
   { BST_STOCK_ZOOM_ANY,		stock_zoom_any,		},
 };
 static StockIcon stock_gtk_stock_ids[] = {
-  { BST_STOCK_APPLY,		GTK_STOCK_APPLY,	},
-  { BST_STOCK_CANCEL,		GTK_STOCK_CANCEL,	},
-  { BST_STOCK_CDROM,		GTK_STOCK_CDROM,	},
-  { BST_STOCK_CLONE,		GTK_STOCK_COPY,		},
-  { BST_STOCK_CLOSE,		GTK_STOCK_CLOSE,	},
-  { BST_STOCK_DEFAULT_REVERT,	GTK_STOCK_UNDO,		},
-  { BST_STOCK_DELETE,		GTK_STOCK_DELETE,	},
-  { BST_STOCK_EXECUTE,		GTK_STOCK_EXECUTE,	},
-  { BST_STOCK_OK,		GTK_STOCK_OK,		},
-  { BST_STOCK_OVERWRITE,	GTK_STOCK_SAVE,		},
-  { BST_STOCK_PROPERTIES,	GTK_STOCK_PROPERTIES,	},
-  { BST_STOCK_REDO,		GTK_STOCK_REDO,		},
-  { BST_STOCK_REVERT,		GTK_STOCK_UNDO,		},
-  { BST_STOCK_UNDO,		GTK_STOCK_UNDO,		},
-  { BST_STOCK_ZOOM_100,		GTK_STOCK_ZOOM_100,	},
-  { BST_STOCK_ZOOM_FIT,		GTK_STOCK_ZOOM_FIT,	},
-  { BST_STOCK_ZOOM_IN,		GTK_STOCK_ZOOM_IN,	},
-  { BST_STOCK_ZOOM_OUT,		GTK_STOCK_ZOOM_OUT,	},
+  { BST_STOCK_APPLY,		GTK_STOCK_APPLY,		},
+  { BST_STOCK_CANCEL,		GTK_STOCK_CANCEL,		},
+  { BST_STOCK_CDROM,		GTK_STOCK_CDROM,		},
+  { BST_STOCK_CLONE,		GTK_STOCK_COPY,			},
+  { BST_STOCK_CLOSE,		GTK_STOCK_CLOSE,		},
+  { BST_STOCK_DEFAULT_REVERT,	GTK_STOCK_UNDO,			},
+  { BST_STOCK_DELETE,		GTK_STOCK_DELETE,		},
+  { BST_STOCK_EXECUTE,		GTK_STOCK_EXECUTE,		},
+  { BST_STOCK_OK,		GTK_STOCK_OK,			},
+  { BST_STOCK_OVERWRITE,	GTK_STOCK_SAVE,			},
+  { BST_STOCK_PROPERTIES,	GTK_STOCK_PROPERTIES,		},
+  { BST_STOCK_REDO,		GTK_STOCK_REDO,			},
+  { BST_STOCK_REVERT,		GTK_STOCK_UNDO,			},
+  { BST_STOCK_UNDO,		GTK_STOCK_UNDO,			},
+  { BST_STOCK_ZOOM_100,		GTK_STOCK_ZOOM_100,		},
+  { BST_STOCK_ZOOM_FIT,		GTK_STOCK_ZOOM_FIT,		},
+  { BST_STOCK_ZOOM_IN,		GTK_STOCK_ZOOM_IN,		},
+  { BST_STOCK_ZOOM_OUT,		GTK_STOCK_ZOOM_OUT,		},
+  { BST_STOCK_INFO,		GTK_STOCK_DIALOG_INFO,		},
+  { BST_STOCK_QUESTION,		GTK_STOCK_DIALOG_QUESTION,	},
+  { BST_STOCK_WARNING,		GTK_STOCK_DIALOG_WARNING,	},
+  { BST_STOCK_ERROR,		GTK_STOCK_DIALOG_ERROR,		},
 };
 /* stock icon sizes */
 guint    bst_size_button = 0;
 guint    bst_size_big_button = 0;
 guint    bst_size_canvas = 0;
 guint    bst_size_toolbar = 0;
+guint    bst_size_info_sign = 0;
 guint    bst_size_menu = 0;
 static GtkIconFactory *stock_icon_factory = NULL;
 static GdkPixbuf      *stock_pixbuf_no_icon = NULL;
@@ -146,6 +151,7 @@ _bst_utils_init (void)
   /* setup icon sizes */
   bst_size_button = GTK_ICON_SIZE_BUTTON;	/* 20x20 */
   bst_size_big_button = GTK_ICON_SIZE_DND;	/* 32x32 */
+  bst_size_info_sign = GTK_ICON_SIZE_DIALOG;	/* 48x48 */
   bst_size_menu = GTK_ICON_SIZE_MENU;		/* 16x16 */
   bst_size_toolbar = bst_size_big_button;
   bst_size_canvas = gtk_icon_size_register ("BstIconSizeCanvas", 64, 64);
@@ -490,6 +496,39 @@ gtk_tree_view_add_column (GtkTreeView       *tree_view,
   g_object_unref (cell);
 
   return n_cols;
+}
+
+void
+gtk_tree_view_append_text_columns (GtkTreeView *tree_view,
+				   guint	n_cols,
+				   ...)
+{
+  va_list var_args;
+  
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+  
+  va_start (var_args, n_cols);
+  while (n_cols--)
+    {
+      guint col = va_arg (var_args, guint);
+      gfloat xalign = va_arg (var_args, double);
+      gchar *title = va_arg (var_args, gchar*);
+      
+      g_print ("%u %f %s\n", col, xalign, title);
+      
+      gtk_tree_view_add_column (tree_view, -1,
+				g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
+					      "title", title,
+					      "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+					      "resizable", TRUE,
+					      NULL),
+				g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
+					      "xalign", xalign,
+					      NULL),
+				"text", col,
+				NULL);
+    }
+  va_end (var_args);
 }
 
 void
@@ -1715,7 +1754,7 @@ text_view_append (GtkTextView *view,
 }
 
 GtkWidget*
-bst_wrap_text_create (gboolean     junk,
+bst_wrap_text_create (gboolean     center,
 		      const gchar *string)
 {
   GtkWidget *tview, *text_view;
@@ -1733,6 +1772,7 @@ bst_wrap_text_create (gboolean     junk,
 			    "cursor_visible", FALSE,
 			    "wrap_mode", GTK_WRAP_WORD,
 			    "parent", tview,
+			    !center ? NULL : "justification", GTK_JUSTIFY_CENTER,
 			    NULL);
   bst_widget_modify_base_as_bg (text_view);
 

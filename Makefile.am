@@ -21,6 +21,8 @@ PKG_paths.h: $(top_srcdir)/configure Makefile
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-pph \
 	&& echo >> xgen-pph \
 	&& echo "#define BSE_PATH_PLUGINS      \"${bseplugindir}\"" >> xgen-pph \
+	&& echo "#define BSW_PATH_SCRIPTS      \"${bswscriptdir}\"" >> xgen-pph \
+	&& echo "#define BSW_PATH_BINARIES     \"${bindir}\"" >> xgen-pph \
 	&& echo "#define BST_PATH_DOCS         \"${beastdocsdir}\"" >> xgen-pph \
 	&& echo "#define BST_PATH_DATA_SAMPLES \"${beastsampledatadir}\"" >> xgen-pph \
 	&& echo >> xgen-pph \

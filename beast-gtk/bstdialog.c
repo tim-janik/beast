@@ -333,6 +333,32 @@ bst_dialog_set_title (BstDialog   *dialog,
   g_object_set (dialog, "title", title, NULL);
 }
 
+void
+bst_dialog_add_flags (BstDialog     *dialog,
+		      BstDialogFlags flags)
+{
+  gint f;
+
+  g_return_if_fail (BST_IS_DIALOG (dialog));
+
+  f = dialog->flags;
+  f |= flags;
+  g_object_set (dialog, "flags", f, NULL);
+}
+
+void
+bst_dialog_clear_flags (BstDialog     *dialog,
+			BstDialogFlags flags)
+{
+  gint f;
+
+  g_return_if_fail (BST_IS_DIALOG (dialog));
+
+  f = dialog->flags;
+  f &= ~flags;
+  g_object_set (dialog, "flags", f, NULL);
+}
+
 GtkWidget*
 bst_dialog_get_child (BstDialog *dialog)
 {

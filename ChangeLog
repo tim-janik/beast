@@ -1,3 +1,68 @@
+Mon May 27 06:58:30 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c (bst_procedure_shell_execute): remove hack
+	to set the status bar after procedure execution, BseServer signals this.
+
+	* beast-gtk/bstprocedure.[hc]: added new functions to fire
+	up the procedure execution dialog non-modal.
+
+	* beast-gtk/bstutils.[hc]: added new stock icon types (from gtk)
+	for info/question/warning/error dialogs. added convenience
+	function gtk_tree_view_append_text_columns() to reduce code
+	duplication.
+	(bst_wrap_text_create):allow text to be horizontally centered.
+
+	* beast-gtk/bstapp.[hc]: support procedure browser.
+
+	* beast-gtk/bstdialog.[hc]: added functions to change dialog
+	flags.
+
+	* beast-gtk/bstmain.c: register scripts together with plugins
+	and setup user-message handlers.
+
+	* beast-gtk/bstusermessage.[hc]: install a BseServer handler to 
+	popup message dialogs upon request (with various types: INFO,
+	QUESTION, WARNING and ERROR).
+
+	* beast-gtk/bstprocbrowser.[hc]: fire up a browsing dialog, listing
+	all BSE procedures.
+
+	* Makefile.am: define BSW_PATH_SCRIPTS (path where script files
+	reside) and BSW_PATH_BINARIES (path where the bswshell interpreter
+	resides).
+
+	* bsw-shell/bswshell.c: added argument parser to support:
+	--g-fatal-warnings: make glib warnings fatal.
+	--bse-command-pipe: setup input/output pipes when being invoked
+	  remotely.
+	--bse-enable-register: enable script function registration for
+	  the remote invokation case.
+	--bse-enable-server: enable bsw-server function, either for the
+	  remote case when not registering scripts, or (automatically
+	  enabled) for the standalone case.
+	-p: register plugins upon startup (could be auto-enabled for the
+	 standalone case).
+	(gh_main): sort out remote vs. standalone invokation.
+
+	* bsw-shell/mkglue.c: fix float handling.
+
+	* bsw-shell/bswscminterp.[hc]: added SCM stubs to register
+	scripts. 
+
+	* bsw-shell/bswscmhandle.c (bsw_scm_handle_eval): invoke
+	procedures over the wire if we're spawned from another
+	process. added BseComWire handling routines.
+
+	* bsw-shell/Makefile.am: added rule to install scripts (might
+	want to move these into a seperate dir at some point).
+
+	* bsw-shell/progressor-example.scm: simple example script.
+
+Wed May 22 19:01:35 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw/mkapi.c (print_proc): make sure values have a type of 0
+	when initializing them.
+
 Wed May 22 16:53:02 2002  Tim Janik  <timj@gtk.org>
 
 	* added a scheme based bswshell using libguile.

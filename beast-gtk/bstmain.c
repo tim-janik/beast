@@ -21,6 +21,8 @@
 #include	"bstxkb.h"
 #include	"bstkeytables.h"
 #include	"bstgconfig.h"
+#include	"bstusermessage.h"
+#include	"bststatusbar.h"
 #include	"bstpreferences.h"
 #include	"bstpatterndialog.h"	// FIXME
 #include	"../PKG_config.h"
@@ -143,7 +145,10 @@ main (int   argc,
   /* check load BSE plugins to register types
    */
   if (bst_load_plugins)
-    bsw_register_plugins (NULL, TRUE, NULL);
+    {
+      bsw_register_plugins (NULL, TRUE, NULL);
+      bsw_register_scripts (NULL, TRUE, NULL);
+    }
   
   /* open files given on command line
    */
@@ -206,8 +211,12 @@ main (int   argc,
       bsw_item_unuse (project);
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
-  
-  
+
+  /* listen to BseServer notification
+   */
+  bst_user_messages_listen ();
+  bst_status_bar_listen_exec_status ();
+
   /* setup default keytable for pattern editor class
    */
   bst_key_table_install_patch (bst_key_table_from_xkb (gdk_get_display ()));
@@ -228,6 +237,10 @@ main (int   argc,
   /* stop everything playing
    */
   // bse_heart_reset_all_attach ();
+
+  /* take down GUI leftovers
+   */
+  bst_user_messages_kill ();
   
   /* perform necessary cleanup cycles
    */

@@ -37,10 +37,24 @@ extern "C" {
 
 
 /* --- prototypes --- */
-SCM	bsw_scm_from_enum	(gint		eval,
-				 GType		type);
-void	bsw_scm_interp_init	(void);
-
+SCM	bsw_scm_from_enum		(gint		 eval,
+					 GType		 type);
+void	bsw_scm_interp_init		(void);
+void	bsw_scm_interp_exec_script	(const gchar	*file_name,
+					 const gchar	*call_expr,
+					 GValue		*value);
+SCM	bsw_scm_server_get		(void);
+SCM	bsw_scm_script_register		(SCM		 name,
+					 SCM		 category,
+					 SCM		 blurb,
+					 SCM		 help,
+					 SCM		 author,
+					 SCM		 copyright,
+					 SCM		 date,
+					 SCM		 params);
+void	bsw_scm_enable_script_register	(gboolean	 enabled);
+void	bsw_scm_enable_server		(gboolean	 enabled);
+					 
 
 #ifdef __cplusplus
 }

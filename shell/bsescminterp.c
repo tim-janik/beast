@@ -95,8 +95,6 @@ bsw_scm_free_handle (SCM image_smob)
   BswSCMHandle *handle = (BswSCMHandle*) SCM_CDR (image_smob);
   scm_sizet size = sizeof (1024);	/* rough guess */
 
-  // g_print ("freeing handle!!!\n");
-
   BSW_SCM_DEFER_INTS ();
   bsw_scm_handle_destroy (handle);
   BSW_SCM_ALLOW_INTS ();
@@ -142,6 +140,110 @@ bsw_scm_from_enum (gint  eval,
 #include "bswscm-genglue.c"
 
 
+/* --- SCM procedures --- */
+static gboolean script_register_enabled = FALSE;
+
+void
+bsw_scm_enable_script_register (gboolean enabled)
+{
+  script_register_enabled = enabled != FALSE;
+}
+
+static void
+string_list_free_deep (GSList *slist)
+{
+  while (slist)
+    {
+      GSList *tmp = slist->next;
+      g_free (slist->data);
+      slist = tmp;
+    }
+}
+
+SCM
+bsw_scm_script_register (SCM s_name,
+			 SCM s_category,
+			 SCM s_blurb,
+			 SCM s_help,
+			 SCM s_author,
+			 SCM s_copyright,
+			 SCM s_date,
+			 SCM s_params)
+{
+  SCM node;
+  guint i;
+
+  SCM_ASSERT (SCM_SYMBOLP (s_name),      s_name,      SCM_ARG1, "bsw-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_category),  s_category,  SCM_ARG2, "bsw-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_blurb),     s_blurb,     SCM_ARG3, "bsw-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_help),      s_help,      SCM_ARG4, "bsw-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_author),    s_author,    SCM_ARG5, "bsw-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_copyright), s_copyright, SCM_ARG6, "bsw-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_date),      s_date,      SCM_ARG7, "bsw-script-register");
+  for (node = s_params, i = 8; SCM_CONSP (node); node = SCM_CDR (node), i++)
+    {
+      SCM arg = SCM_CAR (node);
+      if (!SCM_STRINGP (arg))
+	scm_wrong_type_arg ("bsw-script-register", i, arg);
+    }
+
+  BSW_SCM_DEFER_INTS ();
+  if (script_register_enabled)
+    {
+      gchar *name = g_strndup (SCM_ROCHARS (s_name), SCM_LENGTH (s_name));
+      gchar *category = g_strndup (SCM_ROCHARS (s_category), SCM_LENGTH (s_category));
+      gchar *blurb = g_strndup (SCM_ROCHARS (s_blurb), SCM_LENGTH (s_blurb));
+      gchar *help = g_strndup (SCM_ROCHARS (s_help), SCM_LENGTH (s_help));
+      gchar *author = g_strndup (SCM_ROCHARS (s_author), SCM_LENGTH (s_author));
+      gchar *copyright = g_strndup (SCM_ROCHARS (s_copyright), SCM_LENGTH (s_copyright));
+      gchar *date = g_strndup (SCM_ROCHARS (s_date), SCM_LENGTH (s_date));
+      GSList *params = NULL;
+
+      for (node = s_params; SCM_CONSP (node); node = SCM_CDR (node))
+	{
+	  SCM arg = SCM_CAR (node);
+	  params = g_slist_prepend (params, g_strndup (SCM_ROCHARS (arg), SCM_LENGTH (arg)));
+	}
+      params = g_slist_reverse (params);
+      bsw_scm_send_register (name, category, blurb, help,
+			     author, copyright, date, params);
+      g_free (name);
+      g_free (category);
+      g_free (blurb);
+      g_free (help);
+      g_free (author);
+      g_free (copyright);
+      g_free (date);
+      string_list_free_deep (params);
+    }
+  BSW_SCM_ALLOW_INTS ();
+  
+  return SCM_UNSPECIFIED;
+}
+
+static gboolean server_enabled = FALSE;
+
+void
+bsw_scm_enable_server (gboolean enabled)
+{
+  server_enabled = enabled != FALSE;
+}
+
+SCM
+bsw_scm_server_get (void)
+{
+  BswProxy server;
+  SCM s_retval;
+
+  BSW_SCM_DEFER_INTS ();
+  server = server_enabled ? BSW_SERVER : 0;
+  BSW_SCM_ALLOW_INTS ();
+  s_retval = gh_ulong2scm (server);
+
+  return s_retval;
+}
+
+
 /* --- initialization --- */
 void
 bsw_scm_interp_init (void)
@@ -150,6 +252,9 @@ bsw_scm_interp_init (void)
 
   bsw_scm_init_handle_tag ();
 
+  gh_new_procedure0_0 ("bsw-server-get", bsw_scm_server_get);
+  gh_new_procedure ("bsw-script-register", bsw_scm_script_register, 7, 0, 1);
+  
   for (i = 0; i < G_N_ELEMENTS (bsw_scm_wrap_table); i++)
     gh_new_procedure (bsw_scm_wrap_table[i].fname, bsw_scm_wrap_table[i].func, bsw_scm_wrap_table[i].rargs, 0, 0);
 }

@@ -23,12 +23,21 @@
 #include <bsw/bsw.h>
 #include <bsw/bswglue.h>
 #include "bswscminterp.h"
+#include "bswscmhandle.h"
+#include "../PKG_config.h"
 
 
 
 /* --- prototypes --- */
-static void	gh_main	(gint	 argc,
-			 gchar	*argv[]);
+static void	gh_main			(gint	 argc,
+					 gchar	*argv[]);
+static void	shell_parse_args	(gint    *argc_p,
+					 gchar ***argv_p);
+
+
+/* --- variables --- */
+static BswSCMWire *bsw_scm_wire = NULL;
+static gchar      *bsw_scm_remote_expr = NULL;
 
 
 /* --- functions --- */
@@ -37,37 +46,126 @@ main (int   argc,
       char *argv[])
 {
   g_thread_init (NULL);
-  // g_log_set_always_fatal (g_log_set_always_fatal (G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
   bsw_init (&argc, &argv, NULL);
-  bsw_register_plugins (NULL, FALSE, NULL);
+  shell_parse_args (&argc, &argv);
 
   gh_enter (argc, argv, gh_main);
 
   return 0;
 }
 
-static SCM
-bsw_scm_wrap_server_get (void)
+static void
+shell_parse_args (gint    *argc_p,
+		  gchar ***argv_p)
 {
-  BswProxy server;
-  SCM s_retval;
+  guint argc = *argc_p;
+  gchar **argv = *argv_p;
+  guint i, e;
 
-  BSW_SCM_DEFER_INTS ();
-  server = BSW_SERVER;
-  BSW_SCM_ALLOW_INTS ();
-  s_retval = gh_ulong2scm (server);
+  for (i = 1; i < argc; i++)
+    {
+      if (strcmp (argv[i], "--") == 0)
+	break;
+      else if (strcmp (argv[i], "--g-fatal-warnings") == 0)
+	{
+	  GLogLevelFlags fatal_mask;
 
-  return s_retval;
+	  fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
+	  fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
+	  g_log_set_always_fatal (fatal_mask);
+	  argv[i] = NULL;
+	}
+      else if (strcmp (argv[i], "--bse-command-pipe") == 0)
+	{
+	  /* first two arguments are input and output pipes from BseServer,
+	   * the third is supplied by the BSE Scheme code and is an
+	   * expression for us to evaulate
+	   */
+	  if (i + 3 < argc)
+	    {
+	      gint remote_input = atoi (argv[i + 1]);
+	      gint remote_output = atoi (argv[i + 2]);
+
+	      bsw_scm_remote_expr = argv[i + 3];
+	      if (remote_input > 2 && remote_output > 2 && bsw_scm_remote_expr)
+		bsw_scm_wire = bsw_scm_wire_from_pipe ("BSW-Shell", remote_input, remote_output);
+	      argv[i] = NULL;
+	      i += 1;
+	      argv[i] = NULL;
+	      i += 1;
+	      argv[i] = NULL;
+	      i += 1;
+	    }
+	  argv[i] = NULL;
+	  if (!bsw_scm_wire)
+	    {
+	      g_printerr ("bswshell: invalid arguments supplied for: --bse-command-pipe <inpipe> <outpipe> <expr>\n");
+	      exit (1);
+	    }
+	}
+      else if (strcmp (argv[i], "--bse-enable-register") == 0)
+	{
+	  bsw_scm_enable_script_register (TRUE);
+	  argv[i] = NULL;
+	}
+      else if (strcmp (argv[i], "--bse-enable-server") == 0)
+	{
+	  bsw_scm_enable_server (TRUE);
+	  argv[i] = NULL;
+	}
+      else if (strcmp (argv[i], "-p") == 0)
+	{
+	  static gboolean registered_plugins = FALSE;
+
+	  if (!registered_plugins)
+	    {
+	      registered_plugins = TRUE;
+	      bsw_register_plugins (NULL, TRUE, NULL);
+	    }
+	  argv[i] = NULL;
+	}
+    }
+
+  e = 0;
+  for (i = 1; i < argc; i++)
+    {
+      if (e)
+	{
+	  if (argv[i])
+	    {
+	      argv[e++] = argv[i];
+	      argv[i] = NULL;
+	    }
+	}
+      else if (!argv[i])
+	e = i;
+    }
+  if (e)
+    *argc_p = e;
 }
+
+#define	BOILERPLATE_SCM		BSW_PATH_SCRIPTS ## "/bsw-boilerplate.scm.x"
 
 static void
 gh_main (int   argc,
 	 char *argv[])
 {
-  gh_define ("bsw-server", gh_ulong2scm (BSW_SERVER));
-  gh_new_procedure0_0 ("bsw-server-get", bsw_scm_wrap_server_get);
+  if (!bsw_scm_wire)
+    bsw_scm_enable_server (TRUE);	/* do this before interp_init */
 
   bsw_scm_interp_init ();
 
-  gh_repl (argc, argv);
+  gh_load (BOILERPLATE_SCM);
+
+  if (bsw_scm_wire)
+    {
+      BSW_SCM_DEFER_INTS ();
+      bsw_scm_handle_set_wire (bsw_scm_wire);
+      gh_eval_str (bsw_scm_remote_expr);
+      bsw_scm_handle_set_wire (NULL);
+      bsw_scm_wire_died (bsw_scm_wire);
+      BSW_SCM_ALLOW_INTS ();
+    }
+  else
+    gh_repl (argc, argv);
 }

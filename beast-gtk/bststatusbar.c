@@ -41,6 +41,7 @@ static void             status_bar_set          (BstStatusBar   *sbar,
 /* --- variables --- */
 static GQuark     quark_status_bar = 0;
 static GSList    *status_window_stack = NULL;
+static GSList    *progress_window_stack = NULL;
 static guint      proc_catch_count = 0;
 
 /* --- functions --- */
@@ -207,7 +208,6 @@ status_bar_set (BstStatusBar *sbar,
     }
   else if (PERC_CMP (percentage, BST_STATUS_PROGRESS))
     {
-      clear_timeout = 0;        /* no timeout */
       activity_pulse = TRUE;
     }
   else if (PERC_CMP (percentage, BST_STATUS_DONE))
@@ -217,7 +217,6 @@ status_bar_set (BstStatusBar *sbar,
     }
   else  /* percentage should be 0..<100 */
     {
-      clear_timeout = 0;        /* no timeout */
       format = "%P %%";
       fraction = CLAMP (percentage, 0, 100) / 100.0;
     }
@@ -360,49 +359,81 @@ status_bar_get_current (void)
 }
 
 static void
-script_status (BseServer      *server,
-	       BswScriptStatus status,
-	       const gchar    *script_name,
-	       gfloat          progress,
-	       BseErrorType    error,
-	       gpointer        data)
+exec_status (BseServer    *server,
+	     BswExecStatus status,
+	     const gchar  *exec_name,
+	     gfloat        progress,
+	     BseErrorType  error,
+	     gpointer      data)
 {
   switch (status)
     {
-    case BSW_SCRIPT_STATUS_START:
-      bst_status_set (0, script_name, NULL);
+      gboolean have_progress_window;
+    case BSW_EXEC_STATUS_START:
+      if (proc_catch_count)
+	bst_status_set (0, exec_name, "Starting");
       break;
-    case BSW_SCRIPT_STATUS_PROGRESS:
+    case BSW_EXEC_STATUS_PROGRESS:
+      /* if possible, indicate progress on progress_window */
+      have_progress_window = progress_window_stack != NULL;
+      if (have_progress_window)
+	bst_status_window_push (progress_window_stack->data);
+      /* conscious notification from procedure/script, so we always pass
+       * this on to the user
+       */
       if (progress < 0)
-	bst_status_set (BST_STATUS_PROGRESS, script_name, NULL);
+	bst_status_set (BST_STATUS_PROGRESS, exec_name, "processing");
       else
-	bst_status_set (progress * 100.0, script_name, NULL);
+	bst_status_set (progress * 100.0, exec_name, "processing");
+      /* cleanup */
+      if (have_progress_window)
+	bst_status_window_pop ();
       break;
-    case BSW_SCRIPT_STATUS_END:
-      bst_status_eprintf (error, script_name);
-      break;
-    case BSW_SCRIPT_STATUS_PROC_END:	/* single procedure script */
-      bst_status_eprintf (error, script_name);
+    case BSW_EXEC_STATUS_DONE:
+      if (proc_catch_count)
+	bst_status_eprintf (error, exec_name);
       break;
     }
 }
 
 void
-bst_status_bar_catch_script (void)
+bst_status_bar_listen_exec_status (void)
 {
-  if (!proc_catch_count++)
-    bsw_proxy_connect (BSW_SERVER,
-		       "signal::script_status", script_status, NULL,
-		       NULL);
+  bsw_proxy_connect (BSW_SERVER,
+		     "signal::exec_status", exec_status, NULL,
+		     NULL);
 }
 
 void
-bst_status_bar_uncatch_script (void)
+bst_status_bar_catch_procs (void)
+{
+  proc_catch_count++;
+}
+
+void
+bst_status_bar_uncatch_procs (void)
 {
   g_return_if_fail (proc_catch_count > 0);
   
-  if (!--proc_catch_count)
-    bsw_proxy_disconnect (BSW_SERVER,
-			  "any_signal", script_status, NULL,
-			  NULL);
+  proc_catch_count--;
+}
+
+void
+bst_status_push_progress_window (gpointer widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  widget = gtk_widget_get_toplevel (widget);
+  g_return_if_fail (GTK_IS_WINDOW (widget));
+
+  gtk_widget_ref (widget);
+  progress_window_stack = g_slist_prepend (progress_window_stack, widget);
+}
+
+void
+bst_status_pop_progress_window (void)
+{
+  g_return_if_fail (progress_window_stack != NULL);
+
+  gtk_widget_unref (progress_window_stack->data);
+  progress_window_stack = g_slist_remove (progress_window_stack, progress_window_stack->data);
 }

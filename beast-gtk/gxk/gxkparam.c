@@ -91,7 +91,7 @@ static void
 bst_param_entry_activate (GtkWidget *widget,
 			  BstParam  *bparam)
 {
-  GtkEntry *entry = GTK_ENTRY (widget);
+  /* GtkEntry *entry = GTK_ENTRY (widget); */
 
   bst_param_gtk_changed (bparam);
 }
@@ -1116,8 +1116,6 @@ bst_param_apply (BstParam *bparam,
 	  if (!item && strchr (string, ':'))
 	    {
 	      item = bsw_project_find_item (project, string);
-
-	      g_printerr ("porject-find-item: %lu\n", item);
 	      
 	      if (item && !g_type_is_a (bsw_proxy_type (item), G_PARAM_SPEC_VALUE_TYPE (pspec)))
 		item = 0;

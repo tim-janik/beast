@@ -155,17 +155,6 @@ bsw_type_name_to_cname (const gchar *type_name)
 }
 
 gchar*
-bsw_type_name_to_sname (const gchar *type_name)
-{
-  gchar *name = g_type_name_to_sname (type_name);
-
-  if (name && name[0] == 'b' && name[1] == 's' && name[2] == 'e')
-    name[2] = 'w';
-
-  return name;
-}
-
-gchar*
 bsw_type_name_to_cupper (const gchar *type_name)
 {
   gchar *name = g_type_name_to_cupper (type_name);

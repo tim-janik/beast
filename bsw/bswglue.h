@@ -68,7 +68,6 @@ void	bsw_value_initset_proxy_notype	(GValue		*value,
 #define	bsw_value_initset_proxy(value, type, proxy)	bsw_value_initset_proxy_notype ((value), (proxy))
 
 gchar*	bsw_type_name_to_cname		(const gchar	*type_name);
-gchar*	bsw_type_name_to_sname		(const gchar	*type_name);
 gchar*	bsw_type_name_to_cupper		(const gchar	*type_name);
 gchar*	bsw_type_name_to_type_macro	(const gchar	*type_name);
 gchar*  bsw_cupper_to_sname		(const gchar	*cupper);

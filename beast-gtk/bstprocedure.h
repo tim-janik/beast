@@ -78,6 +78,12 @@ gboolean	   bst_procedure_shell_preset	   (BstProcedureShell *procedure_shell,
 
 /* --- convenience --- */
 BstProcedureShell* bst_procedure_shell_global	(void);
+void		   bst_procedure_exec		(GType		 procedure_type,
+						 const gchar	*preset_param,
+						 ...);
+void		   bst_procedure_exec_auto	(GType		 procedure_type,
+						 const gchar	*preset_param,
+						 ...);
 void		   bst_procedure_exec_modal	(GType		 procedure_type,
 						 const gchar	*preset_param,
 						 ...);

@@ -67,6 +67,7 @@ beast_headers = $(strip \
 	bstplayback.h \
 	bstplaylist.h \
 	bstpreferences.h \
+	bstprocbrowser.h \
 	bstprocedure.h \
 	bstqsampler.h \
 	bstrackeditor.h \
@@ -81,6 +82,7 @@ beast_headers = $(strip \
 	bstsongshell.h \
 	bststatusbar.h \
 	bstsupershell.h \
+	bstusermessage.h \
 	bstutils.h \
 	bstwavedialog.h \
 	bstwaveeditor.h \
@@ -123,6 +125,7 @@ beast_sources = $(strip \
 	bstplayback.c \
 	bstplaylist.c \
 	bstpreferences.c \
+	bstprocbrowser.c \
 	bstprocedure.c \
 	bstqsampler.c \
 	bstradiotools.c \
@@ -137,6 +140,7 @@ beast_sources = $(strip \
 	bstsongshell.c \
 	bststatusbar.c \
 	bstsupershell.c \
+	bstusermessage.c \
 	bstutils.c \
 	bstwavedialog.c \
 	bstwaveeditor.c \

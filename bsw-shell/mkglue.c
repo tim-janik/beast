@@ -140,7 +140,7 @@ bsw_scm_register_glue_types (void)
   bsw_scm_register_glue_type (BSE_TYPE_ITEM, "BswProxy", "proxy", "gh_scm2ulong", NULL, "gh_ulong2scm");
   bsw_scm_register_iglue_type (G_TYPE_STRING, "gchar*", "string", "bsw_scm_to_str", "free", FALSE);
   bsw_scm_register_oglue_type (G_TYPE_STRING, "const gchar*", "string", "gh_str02scm", FALSE);
-  bsw_scm_register_glue_type (G_TYPE_FLOAT, "gdouble", "double", "gh_scm2double", NULL, "gh_double2scm");
+  bsw_scm_register_glue_type (G_TYPE_FLOAT, "gfloat", "float", "gh_scm2double", NULL, "gh_double2scm");
   bsw_scm_register_glue_type (G_TYPE_DOUBLE, "gdouble", "double", "gh_scm2double", NULL, "gh_double2scm");
   // bsw_scm_register_iglue_type (G_TYPE_ENUM, "gint", "enum", "bsw_scm_to_enum", NULL, TRUE);
   bsw_scm_register_oglue_type (G_TYPE_ENUM, "gint", "enum", "bsw_scm_from_enum", TRUE);

@@ -45,7 +45,7 @@ typedef enum
   BST_DIALOG_STATUS		= 1 << 1,
   BST_DIALOG_MODAL		= 1 << 2,
   BST_DIALOG_POPUP_POS		= 1 << 3,
-  BST_DIALOG_DELETE_BUTTON	= 1 << 4
+  BST_DIALOG_DELETE_BUTTON	= 1 << 4	/* auto-add "Close" button */
 } BstDialogFlags;
 
 
@@ -90,6 +90,10 @@ BstDialog*	bst_dialog_get_status_window	  (void);
 void		bst_dialog_sync_title_to_proxy	  (BstDialog	  *dialog,
 						   BswProxy	   proxy,
 						   const gchar	  *title_format);
+void		bst_dialog_add_flags		  (BstDialog	  *dialog,
+						   BstDialogFlags  flags);
+void		bst_dialog_clear_flags		  (BstDialog	  *dialog,
+						   BstDialogFlags  flags);
 #define		bst_dialog_action(		   dialog, action, callback, data)	\
                                                   bst_dialog_action_multi ((dialog), (action), (callback), (data), 0, 0)
 #define		bst_dialog_default_action(	   dialog, action, callback, data)	\

@@ -37,6 +37,16 @@ EXTRA_DIST += bswscmhandle.h
 
 
 #
+# scripts
+#
+scriptdir = $(bswscriptdir)
+script_DATA = $(public_scripts)
+public_scripts = \
+	bsw-boilerplate.scm.x	\
+	progressor-example.scm
+
+
+#
 # auxillary files
 #
 EXTRA_DIST += test.scm  # TODO

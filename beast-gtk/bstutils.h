@@ -84,11 +84,17 @@ void		bst_init_gentypes	(void);
 #define	BST_STOCK_ZOOM_IN		("bst-stock-zoom-in")
 #define	BST_STOCK_ZOOM_OUT		("bst-stock-zoom-out")
 
+#define	BST_STOCK_INFO			("bst-stock-info")
+#define	BST_STOCK_QUESTION		("bst-stock-question")
+#define	BST_STOCK_WARNING		("bst-stock-warning")
+#define	BST_STOCK_ERROR			("bst-stock-error")
+
 #define	BST_SIZE_BUTTON		(bst_size_button)
 #define	BST_SIZE_BIG_BUTTON	(bst_size_big_button)
 #define	BST_SIZE_CANVAS		(bst_size_canvas)
 #define	BST_SIZE_TOOLBAR	(bst_size_toolbar)
 #define	BST_SIZE_MENU		(bst_size_menu)
+#define	BST_SIZE_INFO_SIGN	(bst_size_info_sign)
 #define	BST_SIZE_PALETTE	(BST_SIZE_TOOLBAR)
 
 /* really of type GtkIconSize: */
@@ -96,6 +102,7 @@ extern guint	bst_size_button;
 extern guint	bst_size_big_button;
 extern guint	bst_size_canvas;
 extern guint	bst_size_toolbar;
+extern guint	bst_size_info_sign;
 extern guint	bst_size_menu;
 
 /* retrive static icons (no reference count needs) */
@@ -142,6 +149,9 @@ guint	   gtk_tree_view_add_column	 (GtkTreeView	        *tree_view,
 					  GtkTreeViewColumn     *column,
 					  GtkCellRenderer       *cell,
 					  const gchar           *attrib_name,
+					  ...);
+void   gtk_tree_view_append_text_columns (GtkTreeView		*tree_view,
+					  guint			 n_cols,
 					  ...);
 void   gtk_tree_selection_select_spath   (GtkTreeSelection	*selection,
 					  const gchar		*str_path);
@@ -221,7 +231,7 @@ void	        bst_widget_modify_base_as_bg	(GtkWidget	*widget);
 GtkWidget*	bst_text_view_from		(GString        *gstring,
 						 const gchar    *file_name,
 						 const gchar    *font_name);
-GtkWidget*	bst_wrap_text_create		(gboolean        duplicate_newlines,
+GtkWidget*	bst_wrap_text_create		(gboolean        center,
 						 const gchar    *string);
 void		bst_wrap_text_set		(GtkWidget      *text,
 						 const gchar    *string);
