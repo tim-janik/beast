@@ -1,3 +1,8 @@
+Mon Jun  9 18:07:50 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianorollctrl.c: undo group selection operations and
+	moves/resizes.
+
 Wed Jun  4 21:58:05 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpianorollctrl.c (controller_piano_drag): lengthen

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,11 +131,13 @@ bst_piano_roll_controller_clear (BstPianoRollController *self)
 
   proxy = self->proll->proxy;
   pseq = bse_part_list_selected_notes (proxy);
+  bse_item_group_undo (proxy, "Clear Selection");
   for (i = 0; i < pseq->n_pnotes; i++)
     {
       BsePartNote *pnote = pseq->pnotes[i];
       bse_part_delete_event (proxy, pnote->id);
     }
+  bse_item_ungroup_undo (proxy);
 }
 
 void
@@ -149,12 +151,14 @@ bst_piano_roll_controller_cut (BstPianoRollController *self)
 
   proxy = self->proll->proxy;
   pseq = bse_part_list_selected_notes (proxy);
+  bse_item_group_undo (proxy, "Cut Selection");
   for (i = 0; i < pseq->n_pnotes; i++)
     {
       BsePartNote *pnote = pseq->pnotes[i];
       bse_part_delete_event (proxy, pnote->id);
     }
   bst_piano_roll_controller_set_clipboard (pseq);
+  bse_item_ungroup_undo (proxy);
 }
 
 void
@@ -306,6 +310,7 @@ move_group_motion (BstPianoRollController *self,
   delta_note = old_note;
   delta_tick -= new_tick;
   delta_note -= new_note;
+  bse_item_group_undo (part, "Move Selection");
   for (i = 0; i < self->sel_pseq->n_pnotes; i++)
     {
       BsePartNote *pnote = self->sel_pseq->pnotes[i];
@@ -324,6 +329,7 @@ move_group_motion (BstPianoRollController *self,
       bse_part_note_seq_free (self->sel_pseq);
       self->sel_pseq = NULL;
     }
+  bse_item_ungroup_undo (part);
 }
 
 static void
@@ -347,6 +353,7 @@ move_motion (BstPianoRollController *self,
       !check_hoverlap (part, new_tick, self->obj_duration, drag->current_note,
 		       self->obj_tick, note_changed ? 0 : self->obj_duration))
     {
+      bse_item_group_undo (part, "Move Note");
       if (bse_part_delete_event (part, self->obj_id) != BSE_ERROR_NONE)
 	drag->state = BST_DRAG_ERROR;
       else
@@ -358,6 +365,7 @@ move_motion (BstPianoRollController *self,
 	  if (!self->obj_id)
 	    drag->state = BST_DRAG_ERROR;
 	}
+      bse_item_ungroup_undo (part);
     }
 }
 
@@ -416,6 +424,7 @@ resize_motion (BstPianoRollController *self,
       !check_hoverlap (part, new_tick, new_duration, self->obj_note,
 		       self->obj_tick, self->obj_duration))
     {
+      bse_item_group_undo (part, "Resize Note");
       if (self->obj_id)
 	{
 	  BseErrorType error = bse_part_delete_event (part, self->obj_id);
@@ -432,6 +441,7 @@ resize_motion (BstPianoRollController *self,
 	  if (!self->obj_id)
 	    drag->state = BST_DRAG_ERROR;
 	}
+      bse_item_ungroup_undo (part);
     }
 }
 

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,7 @@
 
 #include "bstpianoroll.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 typedef enum /*< skip >*/
 {
@@ -78,8 +76,6 @@ void			bst_piano_roll_controller_copy		(BstPianoRollController	*self);
 void			bst_piano_roll_controller_paste		(BstPianoRollController	*self);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_PIANO_ROLL_CONTROLLER_H__ */
