@@ -19,6 +19,7 @@ bsebuffermixer_gen.c
 bsegentypes.c
 bsegentype_array.c
 bsequery
+bsemagic
 testtypes
 testsample
 testsong
