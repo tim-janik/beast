@@ -228,7 +228,7 @@ public:
 };
 
 template<class C> const GType
-bse_type_keeper_object (const char *type_name)
+bse_type_id_wrapper (const char *type_name)
 {
   static GType type = 0;
   if (!type)
@@ -240,7 +240,7 @@ bse_type_keeper_object (const char *type_name)
 }
 
 #define BSE_CXX_TYPE_GET_REGISTERED(NameSpace, ObjectType) \
-  (bse_type_keeper_object<ObjectType> (#NameSpace #ObjectType))
+  (::Bse::bse_type_id_wrapper<ObjectType> (#NameSpace #ObjectType))
 #define BSE_CXX_TYPE_REGISTER_INITIALIZED(ObjectType, parent, cinfo, binit, flags) \
   BSE_CXX_DEFINE_INSTANCE_INIT (ObjectType);                                       \
   BSE_CXX_TYPE_REGISTER_INTERN (ObjectType, parent, cinfo, binit,                  \

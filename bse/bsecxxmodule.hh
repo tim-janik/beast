@@ -15,8 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __BSE_EFFECT_H__
-#define __BSE_EFFECT_H__
+#ifndef __BSE_CXX_MODULE_H__
+#define __BSE_CXX_MODULE_H__
 
 #include <bse/bsecxxbase.h>
 #include <bse/gslieee754.h>
@@ -88,7 +88,9 @@ public:
   void                      set_module      (GslModule *module);
 };
 
-class Effect : public CxxBase {
+#define BSE_TYPE_EFFECT         (BSE_CXX_TYPE_GET_REGISTERED (Bse, Effect))
+class EffectBase : public CxxBase {};
+class Effect : public EffectBase {
 public:
   /* BseObject functionality */
   explicit                  Effect               ();
@@ -226,4 +228,4 @@ SynthesisModule::accessor (void   (C::*accessor) (D*),
 
 } // Bse
 
-#endif /* __BSE_EFFECT_H__ */
+#endif /* __BSE_CXX_MODULE_H__ */

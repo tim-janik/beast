@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2003-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,12 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-
-#include <bse/bserecords.idl>
-namespace Bse { // FIXME: bad workaround
-  class Effect;
-  Const STANDARD = ":r:w:G:S:";
-};
+#include <bse/bsecxxmodule.idl>
 
 namespace Bse {
 
@@ -70,7 +65,7 @@ choice SnifferTimeType {
 };
 
 record SnifferRequest {
-  // FIXME: Sniffer         sniffer;
+  Sniffer         sniffer;
   SnifferTimeType time_type;
   Num             variable_time;
   Int             n_samples;

@@ -54,7 +54,7 @@ class CxxBase {
 public:
   static CxxBase* base_from_gobject (GObject *o) { return cast_from_gobject (o); }
 protected:
-  GObject*        gobject           ();
+  GObject*        gobject           () const;
   BseItem*        item              ();
 public:
   /*Con*/         CxxBase           ();
@@ -93,7 +93,31 @@ public:
   virtual         ~CxxBase          ();
 
   static void     class_init        (CxxBaseClass *klass);
-  
+
+  template<class CxxType> static inline CxxType
+  value_get_object (const GValue *v)
+  {
+    assert_ptr_derivation<CxxType, CxxBase*>();
+    GObject *p = (GObject*) g_value_get_object (v);
+    CxxBase *b = CxxBase::base_from_gobject (p);
+    CxxType to = static_cast<CxxType> (b);
+    return to;
+  }
+  static inline void
+  value_set_object (GValue        *value,
+                    const CxxBase *self)
+  {
+    g_value_set_object (value, self ? self->gobject() : NULL);
+  }
+  template<class Accepted, class Casted>
+  static inline void
+  value_set_casted (GValue         *value,
+                    const Accepted *obj)
+  {
+    const Casted *self = static_cast<const Casted*> (obj);
+    value_set_object (value, self);
+  }
+
   class Pointer {
     CxxBase *p;
   public:

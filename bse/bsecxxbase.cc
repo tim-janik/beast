@@ -221,9 +221,9 @@ CxxBase::cast_to_gobject ()
 }
 
 GObject*
-CxxBase::gobject ()
+CxxBase::gobject () const
 {
-  return (GObject*) cast_to_gobject ();
+  return (GObject*) const_cast<CxxBase*> (this)->cast_to_gobject ();
 }
 
 BseItem*

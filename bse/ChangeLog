@@ -1,3 +1,26 @@
+Mon Jan 26 02:36:07 2004  Tim Janik  <timj@gtk.org>
+
+	* bseeffectbalance.[hc]:
+	* bseeffectfinetune.[hc]:
+	* bseeffectnotevolume.[hc]:
+	* bseeffectpatternbreak.[hc]:
+	* bseeffectpatternjump.[hc]:
+	* bseeffectvolumedelta.[hc]:
+	* bseeffect.[hc]: remove all bseeffect* files, all the code within
+	was outdated and unused for several years.
+
+	* bse.idl: added bsecxxbase.idl and bsecxxmodule.idl.
+
+	* bsecxxbase.[hc]*: make gobject() const. implement value_get_object(),
+	value_set_object() and value_set_casted().
+
+	* bsecxxvalue.h: removed g_value_get_object<>() template.
+
+	* bsecxxmodule.[hc]: provide conventional BSE_TYPE_EFFECT and base class.
+
+	* bsesniffer.idl: removed parentation hacks by including
+	bsecxxmodule.idl, added Sniffer (object) field in record.
+
 Sun Jan 25 08:36:28 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesniffer.idl: enable record and sequence generation, still
