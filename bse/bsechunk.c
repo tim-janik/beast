@@ -466,17 +466,17 @@ bse_chunk_complete_state (BseChunk *chunk)
     }
 }
 
-void
+BseSampleValue*
 bse_chunk_complete_hunk (BseChunk *chunk)
 {
-  g_return_if_fail (chunk != NULL);
-  g_return_if_fail (chunk->ref_count > 0);
+  g_return_val_if_fail (chunk != NULL, NULL);
+  g_return_val_if_fail (chunk->ref_count > 0, NULL);
 
   if (!chunk->hunk_filled)
     {
       guint i;
 
-      g_return_if_fail (chunk->state_filled == TRUE);
+      g_return_val_if_fail (chunk->state_filled == TRUE, NULL);
 
       if (!chunk->hunk)
 	{
@@ -489,6 +489,8 @@ bse_chunk_complete_hunk (BseChunk *chunk)
 
       chunk->hunk_filled = TRUE;
     }
+
+  return chunk->hunk;
 }
 
 void

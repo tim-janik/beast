@@ -61,7 +61,7 @@ BseChunk*	bse_chunk_new_static_zero	(guint		 n_tracks);
 void		bse_chunk_ref			(BseChunk	*chunk);
 void		bse_chunk_unref			(BseChunk	*chunk);
 void		bse_chunk_complete_state 	(BseChunk	*chunk);
-void		bse_chunk_complete_hunk 	(BseChunk	*chunk);
+BseSampleValue*	bse_chunk_complete_hunk 	(BseChunk	*chunk);
 
 BseSampleValue*	bse_hunk_alloc			(guint		 n_tracks);
 BseSampleValue*	bse_hunk_copy			(guint		 n_tracks,

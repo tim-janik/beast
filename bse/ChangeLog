@@ -1,3 +1,13 @@
+Thu Dec  9 03:23:30 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesource.c (bse_source_set_input): don't allow shortcircuiting
+	within the same source (BSE_ERROR_SOURCE_BAD_LOOPBACK).
+
+	* bseenums.[hc]: BSE_ERROR_STREAM_* cleanups.
+
+	* bsechunk.[hc]: return chunk->hunk from bse_chunk_complete_hunk() 
+	for convenience.
+
 Sat Dec  4 23:48:57 1999  Tim Janik  <timj@gtk.org>
 
 	* bseproject.[hc]: added functions

@@ -620,11 +620,13 @@ bse_source_set_input (BseSource *source,
   g_return_val_if_fail (BSE_IS_SOURCE (input), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_OBJECT_DESTROYED (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_OBJECT_DESTROYED (input), BSE_ERROR_INTERNAL);
-  
+
   if (ichannel_id < 1 || ichannel_id > BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
   if (ochannel_id < 1 || ochannel_id > BSE_SOURCE_N_OCHANNELS (input))
     return BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
+  if (source == input)
+    return BSE_ERROR_SOURCE_BAD_LOOPBACK;
 
   ic_def = BSE_SOURCE_ICHANNEL_DEF (source, ichannel_id);
   oc_def = BSE_SOURCE_OCHANNEL_DEF (input, ochannel_id);
