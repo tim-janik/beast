@@ -61,7 +61,7 @@ Here's how to setup a very simple test case:
 	pallete window or from the Button-3 popup menu of the
 	@pagepath{Routing} notebook page and then clicking
 	into the routing area. The two modules you need
-	are @module{PcmOutput} and @module{StandardOscillator}.
+	are @module{PcmOutput} and @module{StandardOsc}.
 @item	Connect the @channel{Audio Out} output channel of the oscillator
 	to the input channels @channel{Left Audio In} and
 	@channel{Right Audio In} of the output module.
@@ -111,39 +111,38 @@ an amplifier to adjust overall volume and apply the envelope to the
 oscillator.
 
 @enumerate
-@item	Select @menupath{/Project/New Synthesizer Network} from the menu.
+@item	Select @menupath{/Project/New Custom Synthesizer} from the menu.
 @item	Switch to the networks's @pagepath{Routing} notebook page.
-@item	Create a @module{SubKeyboard} module for the input, and
-	a @module{SubInstrument} for the instrument output.
+@item	Create an @module{InstrumentInput} and an @module{InstrumentOutput} module.
 @item   Create the three modules making up the actual instrument:
-        a @module{StandardOscillator}, a @module{SimpleADSR} (the
+        a @module{StandardOsc}, a @module{SimpleADSR} (the
         envelope) and an @module{Amplifier}.
 @item   To control the oscillating frequency, and to trigger the
 	oscillator wave at note start, connect the output channels
-	@channel{Frequency} and @channel{Gate} of the @module{SubKeyboard}
+	@channel{Frequency} and @channel{Gate} of the @module{InstrumentInput}
 	module to the input channels @channel{Freq In} and @channel{Sync In}
-	of the @module{StandardOscillator} module respectively.
+	of the @module{StandardOsc} module respectively.
 @item	To let the @module{Amplifier} shape the volume of the
 	oscillating tone and to provide actual output, connect the
-	output channel @channel{Audio Out} of the @module{StandardOscillator}
+	output channel @channel{Audio Out} of the @module{StandardOsc}
 	to one of the @channel{Audio} input channels of the @module{Amplifier} and
 	connect the @module{Amplifier}'s output channel @channel{Audio Out} to
 	the two input channels @channel{Right Audio} and @channel{Left Audio}
-	of the @module{SubInstrument}.
+	of the @module{InstrumentOutput}.
 @item	It is recommended to intially reduce the @prop{Master Volume}
 	property of the @module{Amplifier} to avoid overdriving the
 	output later on. The properties of a module can be adjusted in
 	it's property dialog which is offered by the Button-3 popup menu
 	of each module.
 @item	Connect the input channel @channel{Gate In} of the @module{SimpleADSR}
-	to the output channel @channel{Gate} of the @module{SubKeyboard} to
+	to the output channel @channel{Gate} of the @module{InstrumentInput} to
 	trigger the envelope at note start. Connect the @channel{Ctrl Out}
 	output channel of the @module{SimpleADSR} to one of the @channel{Control} input
 	channels of the @module{Amplifier}.
 @item	@important{IMPORTANT:} Synthesis instruments are used to play multiple
 	notes sequentially. In order to determine when an instrument has finished
 	playing a certain note and is thusly free to play a new note, the
-	@channel{Synth Done} channel of the @module{SubInstrument} must be
+	@channel{Synth Done} channel of the @module{InstrumentOutput} must be
 	connected to a signal going high at note end. For this example, connect
 	the @channel{Synth Done} channel to the @channel{Done Out} output channel
 	of the @module{SimpleADSR} module, this output channel produces a signal
@@ -151,7 +150,7 @@ oscillator.
 	end.
 @end enumerate
 
-While the synthesis instrument is basically ready for use now, it can't be
+While the synthesis instrument is ready for use now, it can't be
 used or tested directly, but has to be deployed in a song or @object{MidiSynth}
 (offered by the main menu under @menupath{/Project/New MIDI Synthesizer}) which
 leads us to the next Topic.

@@ -1,3 +1,7 @@
+Sun Oct  5 10:34:54 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/quickstart.texi: adapt to changes in beast.
+
 Sun Oct  5 08:49:22 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: add /Modules/Spatial/ to palette.
