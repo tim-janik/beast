@@ -47,16 +47,19 @@ G_BEGIN_DECLS
 #define SFI_TYPE_PARAM_ENUM		(G_TYPE_PARAM_ENUM)
 #define SFI_IS_PARAM_SPEC_ENUM(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_ENUM))
 #define SFI_PARAM_SPEC_ENUM(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_ENUM, SfiParamSpecEnum))
-#define SFI_TYPE_PARAM_FBLOCK		(sfi__param_spec_types[1])
+#define SFI_TYPE_PARAM_BBLOCK		(sfi__param_spec_types[1])
+#define SFI_IS_PARAM_SPEC_BBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_BBLOCK))
+#define SFI_PARAM_SPEC_BBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_BBLOCK, SfiParamSpecBBlock))
+#define SFI_TYPE_PARAM_FBLOCK		(sfi__param_spec_types[2])
 #define SFI_IS_PARAM_SPEC_FBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_FBLOCK))
 #define SFI_PARAM_SPEC_FBLOCK(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_FBLOCK, SfiParamSpecFBlock))
-#define SFI_TYPE_PARAM_SEQ		(sfi__param_spec_types[2])
+#define SFI_TYPE_PARAM_SEQ		(sfi__param_spec_types[3])
 #define SFI_IS_PARAM_SPEC_SEQ(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_SEQ))
 #define SFI_PARAM_SPEC_SEQ(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_SEQ, SfiParamSpecSeq))
-#define SFI_TYPE_PARAM_REC		(sfi__param_spec_types[3])
+#define SFI_TYPE_PARAM_REC		(sfi__param_spec_types[4])
 #define SFI_IS_PARAM_SPEC_REC(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_REC))
 #define SFI_PARAM_SPEC_REC(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_REC, SfiParamSpecRec))
-#define SFI_TYPE_PARAM_PROXY		(sfi__param_spec_types[4])
+#define SFI_TYPE_PARAM_PROXY		(sfi__param_spec_types[5])
 #define SFI_IS_PARAM_SPEC_PROXY(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), SFI_TYPE_PARAM_PROXY))
 #define SFI_PARAM_SPEC_PROXY(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), SFI_TYPE_PARAM_PROXY, SfiParamSpecProxy))
 #define SFI_TYPE_PARAM_OBJECT		(G_TYPE_PARAM_OBJECT)
@@ -83,6 +86,9 @@ typedef struct {
   GParamSpecString   pspec;
   SfiChoiceValues    cvalues;
 } SfiParamSpecChoice;
+typedef struct {
+  GParamSpecBoxed    pspec;
+} SfiParamSpecBBlock;
 typedef struct {
   GParamSpecBoxed    pspec;
 } SfiParamSpecFBlock;
@@ -157,6 +163,10 @@ GParamSpec*	sfi_param_spec_enum	(const gchar    *name,
 					 gint            default_value,
 					 GType           enum_type,
 					 const gchar	*hints);
+GParamSpec*	sfi_param_spec_bblock	(const gchar    *name,
+					 const gchar    *nick,
+					 const gchar    *blurb,
+					 const gchar	*hints);
 GParamSpec*	sfi_param_spec_fblock	(const gchar    *name,
 					 const gchar    *nick,
 					 const gchar    *blurb,
@@ -221,6 +231,7 @@ typedef enum {
   SFI_PSPEC_OBJECT	= 'o',
   SFI_PSPEC_CHOICE	= 'c',
   SFI_PSPEC_ENUM	= 'e',
+  SFI_PSPEC_BBLOCK	= 'B',
   SFI_PSPEC_FBLOCK	= 'F',
   SFI_PSPEC_SEQ		= 'Q',
   SFI_PSPEC_REC		= 'R',

@@ -19,6 +19,104 @@
 #include "sfiprimitives.h"
 
 
+/* --- SfiBBlock primitive type --- */
+SfiBBlock*
+sfi_bblock_new (void)
+{
+  SfiBBlock *bblock = g_new (SfiBBlock, 1);
+
+  bblock->ref_count = 1;
+  bblock->n_bytes = 0;
+  bblock->bytes = NULL;
+  return bblock;
+}
+
+SfiBBlock*
+sfi_bblock_ref (SfiBBlock *bblock)
+{
+  g_return_val_if_fail (bblock != NULL, NULL);
+  g_return_val_if_fail (bblock->ref_count > 0, NULL);
+
+  bblock->ref_count++;
+  return bblock;
+}
+
+void
+sfi_bblock_unref (SfiBBlock *bblock)
+{
+  g_return_if_fail (bblock != NULL);
+  g_return_if_fail (bblock->ref_count > 0);
+
+  bblock->ref_count--;
+  if (bblock->ref_count == 0)
+    {
+      g_free (bblock->bytes);
+      g_free (bblock);
+    }
+}
+
+SfiBBlock*
+sfi_bblock_copy_deep (const SfiBBlock *bblock)
+{
+  SfiBBlock *fb;
+
+  g_return_val_if_fail (bblock != NULL, NULL);
+  g_return_val_if_fail (bblock->ref_count > 0, NULL);
+
+  fb = sfi_bblock_new ();
+  fb->n_bytes = bblock->n_bytes;
+  fb->bytes = g_memdup (bblock->bytes, bblock->n_bytes * sizeof (bblock->bytes[0]));
+  return fb;
+}
+
+void
+sfi_bblock_append (SfiBBlock    *bblock,
+		   guint         n_bytes,
+		   const guint8 *bytes)
+{
+  g_return_if_fail (bblock != NULL);
+
+  if (n_bytes)
+    {
+      guint i;
+
+      g_return_if_fail (bytes != NULL);
+
+      i = bblock->n_bytes;
+      bblock->n_bytes += n_bytes;
+      bblock->bytes = g_renew (guint8, bblock->bytes, bblock->n_bytes);
+      memcpy (bblock->bytes + i, bytes, n_bytes * sizeof (bblock->bytes[0]));
+    }
+}
+
+void
+sfi_bblock_append1 (SfiBBlock *bblock,
+		    guint8     byte0)
+{
+  guint i;
+
+  g_return_if_fail (bblock != NULL);
+
+  i = bblock->n_bytes++;
+  bblock->bytes = g_renew (guint8, bblock->bytes, bblock->n_bytes);
+  bblock->bytes[i] = byte0;
+}
+
+guint
+sfi_bblock_length (const SfiBBlock *bblock)
+{
+  g_return_val_if_fail (bblock != NULL, 0);
+  return bblock->n_bytes;
+}
+
+guint8*
+sfi_bblock_get (const SfiBBlock *bblock)
+{
+  g_return_val_if_fail (bblock != NULL, NULL);
+  return bblock->bytes;
+}
+
+
 /* --- SfiFBlock primitive type --- */
 SfiFBlock*
 sfi_fblock_new (void)

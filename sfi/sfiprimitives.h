@@ -24,6 +24,26 @@
 G_BEGIN_DECLS
 
 
+/* --- SfiBBlock primitive type --- */
+struct _SfiBBlock {
+  guint   ref_count;
+  guint   n_bytes;
+  guint8 *bytes;
+};
+SfiBBlock* sfi_bblock_new	   (void);
+SfiBBlock* sfi_bblock_ref	   (SfiBBlock	    *bblock);
+void	   sfi_bblock_unref	   (SfiBBlock	    *bblock);
+SfiBBlock* sfi_bblock_copy_deep	   (const SfiBBlock *bblock);
+#define	   sfi_bblock_copy_shallow sfi_bblock_ref
+void	   sfi_bblock_append	   (SfiBBlock	    *bblock,
+				    guint            n_bytes,
+				    const guint8    *bytes);
+void	   sfi_bblock_append1	   (SfiBBlock	    *bblock,
+				    guint8	     byte0);
+guint	   sfi_bblock_length	   (const SfiBBlock *bblock);
+guint8*	   sfi_bblock_get	   (const SfiBBlock *bblock);
+
+
 /* --- SfiFBlock primitive type --- */
 struct _SfiFBlock {
   guint   ref_count;

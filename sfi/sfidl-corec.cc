@@ -325,6 +325,7 @@ void IdlParser::parse()
   ModuleHelper::define("Int");
   ModuleHelper::define("Real");
   ModuleHelper::define("String");
+  ModuleHelper::define("BBlock");
   ModuleHelper::define("FBlock");
   
   GTokenType expected_token = G_TOKEN_NONE;
@@ -930,6 +931,17 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
       if (model == MODEL_TO_VALUE)    return "sfi_value_string ("+name+")";
       // FIXME: do we want sfi_value_dup_string?
       if (model == MODEL_FROM_VALUE)  return "g_strdup (sfi_value_get_string ("+name+"))";
+    }
+  else if (type == "BBlock")
+    {
+      if (model == MODEL_ARG)         return "SfiBBlock*";
+      if (model == MODEL_RET)         return "SfiBBlock*";
+      if (model == MODEL_ARRAY)       return "SfiBBlock**";
+      if (model == MODEL_FREE)        return "sfi_bblock_unref (" + name + ")";
+      if (model == MODEL_COPY)        return "sfi_bblock_ref (" + name + ")";;
+      if (model == MODEL_NEW)         return name + " = sfi_bblock_new ()";
+      if (model == MODEL_TO_VALUE)    return "sfi_value_bblock ("+name+")";
+      if (model == MODEL_FROM_VALUE)  return "sfi_bblock_ref (sfi_value_get_bblock ("+name+"))";
     }
   else if (type == "FBlock")
     {

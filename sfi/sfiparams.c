@@ -42,7 +42,7 @@ _sfi_init_params (void)
     0,				/* n_preallocs */
     NULL,			/* instance_init */
   };
-  static GType pspec_types[5] = { 0, };
+  static GType pspec_types[6] = { 0, };
   
   g_assert (sfi__param_spec_types == NULL);
 
@@ -55,6 +55,8 @@ _sfi_init_params (void)
   /* pspec types */
   info.instance_size = sizeof (SfiParamSpecChoice);
   SFI_TYPE_PARAM_CHOICE = g_type_register_static (G_TYPE_PARAM_STRING, "SfiParamSpecChoice", &info, 0);
+  info.instance_size = sizeof (SfiParamSpecBBlock);
+  SFI_TYPE_PARAM_BBLOCK = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecBBlock", &info, 0);
   info.instance_size = sizeof (SfiParamSpecFBlock);
   SFI_TYPE_PARAM_FBLOCK = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecFBlock", &info, 0);
   info.instance_size = sizeof (SfiParamSpecSeq);
@@ -225,6 +227,22 @@ sfi_param_spec_enum (const gchar    *name,
 
   pspec = g_param_spec_enum (name, nick, blurb, enum_type, default_value, pspec_flags (hints));
   g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
+
+  return pspec;
+}
+
+GParamSpec*
+sfi_param_spec_bblock (const gchar    *name,
+		       const gchar    *nick,
+		       const gchar    *blurb,
+		       const gchar    *hints)
+{
+  GParamSpec *pspec;
+  // SfiParamSpecBBlock *bspec;
+
+  pspec = g_param_spec_internal (SFI_TYPE_PARAM_BBLOCK, name, nick, blurb, pspec_flags (hints));
+  g_param_spec_set_qdata (pspec, quark_hints, (gchar*) hints);
+  pspec->value_type = SFI_TYPE_BBLOCK;
 
   return pspec;
 }
@@ -631,6 +649,7 @@ sfi_pspec_category_type (SfiPSpecFlags cat_type)
     case SFI_PSPEC_STRING:      return SFI_TYPE_STRING;
     case SFI_PSPEC_OBJECT:      return SFI_TYPE_OBJECT;
     case SFI_PSPEC_CHOICE:      return SFI_TYPE_CHOICE;
+    case SFI_PSPEC_BBLOCK:      return SFI_TYPE_BBLOCK;
     case SFI_PSPEC_FBLOCK:      return SFI_TYPE_FBLOCK;
     case SFI_PSPEC_SEQ:         return SFI_TYPE_SEQ;
     case SFI_PSPEC_REC:         return SFI_TYPE_REC;
@@ -652,6 +671,7 @@ sfi_pspec_category_pspec_type (SfiPSpecFlags cat_type)
     case SFI_PSPEC_STRING:      return SFI_TYPE_PARAM_STRING;
     case SFI_PSPEC_OBJECT:      return SFI_TYPE_PARAM_OBJECT;
     case SFI_PSPEC_CHOICE:      return SFI_TYPE_PARAM_CHOICE;
+    case SFI_PSPEC_BBLOCK:      return SFI_TYPE_PARAM_BBLOCK;
     case SFI_PSPEC_FBLOCK:      return SFI_TYPE_PARAM_FBLOCK;
     case SFI_PSPEC_SEQ:         return SFI_TYPE_PARAM_SEQ;
     case SFI_PSPEC_REC:         return SFI_TYPE_PARAM_REC;
@@ -682,6 +702,8 @@ pspec_type_categorize (GType value_type)
       /* boxed types */
     case G_TYPE_BOXED:
       /* test direct match */
+      if (value_type == SFI_TYPE_BBLOCK)
+	return SFI_PSPEC_BBLOCK;
       if (value_type == SFI_TYPE_FBLOCK)
 	return SFI_PSPEC_FBLOCK;
       if (value_type == SFI_TYPE_SEQ)

@@ -56,6 +56,21 @@ free_rec (gpointer boxed)
 }
 
 static gpointer
+copy_bblock (gpointer boxed)
+{
+  SfiBBlock *bblock = boxed;
+  return bblock ? sfi_bblock_ref (bblock) : NULL;
+}
+
+static void
+free_bblock (gpointer boxed)
+{
+  SfiBBlock *bblock = boxed;
+  if (bblock)
+    sfi_bblock_unref (bblock);
+}
+
+static gpointer
 copy_fblock (gpointer boxed)
 {
   SfiFBlock *fblock = boxed;
@@ -84,7 +99,7 @@ _sfi_init_values (void)
     0,		/* n_preallocs */
     NULL,	/* instance_init */
   };
-  static GType value_types[5] = { 0, };
+  static GType value_types[6] = { 0, };
 
   g_assert (sfi__value_types == NULL);
 
@@ -92,6 +107,7 @@ _sfi_init_values (void)
   
   /* value types */
   SFI_TYPE_CHOICE = g_type_register_static (G_TYPE_STRING, "SfiChoice", &info, 0);
+  SFI_TYPE_BBLOCK = g_boxed_type_register_static ("SfiBBlock", copy_bblock, free_bblock);
   SFI_TYPE_FBLOCK = g_boxed_type_register_static ("SfiFBlock", copy_fblock, free_fblock);
   SFI_TYPE_SEQ = g_boxed_type_register_static ("SfiSeq", copy_seq, free_seq);
   SFI_TYPE_REC = g_boxed_type_register_static ("SfiRec", copy_rec, free_rec);
@@ -117,12 +133,60 @@ sfi_value_set_choice (GValue      *value,
   g_value_set_string (value, choice_value);
 }
 
+SfiBBlock*
+sfi_value_get_bblock (const GValue *value)
+{
+  g_return_val_if_fail (SFI_VALUE_HOLDS_BBLOCK (value), NULL);
+
+  return g_value_get_boxed (value);
+}
+
+SfiBBlock*
+sfi_value_dup_bblock (const GValue *value)
+{
+  SfiBBlock *bblock;
+
+  g_return_val_if_fail (SFI_VALUE_HOLDS_BBLOCK (value), NULL);
+
+  bblock = g_value_get_boxed (value);
+  return bblock ? sfi_bblock_ref (bblock) : NULL;
+}
+
+void
+sfi_value_set_bblock (GValue    *value,
+		      SfiBBlock *bblock)
+{
+  g_return_if_fail (SFI_VALUE_HOLDS_BBLOCK (value));
+
+  g_value_set_boxed (value, bblock);
+}
+
+void
+sfi_value_take_bblock (GValue    *value,
+		       SfiBBlock *bblock)
+{
+  g_return_if_fail (SFI_VALUE_HOLDS_BBLOCK (value));
+  
+  g_value_set_boxed_take_ownership (value, bblock);
+}
+
 SfiFBlock*
 sfi_value_get_fblock (const GValue *value)
 {
   g_return_val_if_fail (SFI_VALUE_HOLDS_FBLOCK (value), NULL);
 
   return g_value_get_boxed (value);
+}
+
+SfiFBlock*
+sfi_value_dup_fblock (const GValue *value)
+{
+  SfiFBlock *fblock;
+
+  g_return_val_if_fail (SFI_VALUE_HOLDS_FBLOCK (value), NULL);
+
+  fblock = g_value_get_boxed (value);
+  return fblock ? sfi_fblock_ref (fblock) : NULL;
 }
 
 void
@@ -228,6 +292,11 @@ sfi_value_copy_deep (const GValue *src_value,
     {
       g_return_if_fail (SFI_VALUE_HOLDS_REC (dest_value));
       sfi_value_take_rec (dest_value, sfi_rec_copy_deep (sfi_value_get_rec (src_value)));
+    }
+  else if (SFI_VALUE_HOLDS_BBLOCK (src_value))
+    {
+      g_return_if_fail (SFI_VALUE_HOLDS_BBLOCK (dest_value));
+      sfi_value_take_bblock (dest_value, sfi_bblock_copy_deep (sfi_value_get_bblock (src_value)));
     }
   else if (SFI_VALUE_HOLDS_FBLOCK (src_value))
     {
@@ -372,6 +441,14 @@ sfi_value_enum (GType enum_type,
 
   value = alloc_value (enum_type);
   sfi_value_set_enum (value, evalue);
+  return value;
+}
+
+GValue*
+sfi_value_bblock (SfiBBlock *vbblock)
+{
+  GValue *value = alloc_value (SFI_TYPE_BBLOCK);
+  sfi_value_set_bblock (value, vbblock);
   return value;
 }
 

@@ -36,10 +36,11 @@ G_BEGIN_DECLS
 
 /* --- Sfi value types --- */
 #define SFI_TYPE_CHOICE		(sfi__value_types[0])
-#define SFI_TYPE_FBLOCK		(sfi__value_types[1])
-#define SFI_TYPE_SEQ		(sfi__value_types[2])
-#define SFI_TYPE_REC		(sfi__value_types[3])
-#define SFI_TYPE_PROXY		(sfi__value_types[4])
+#define SFI_TYPE_BBLOCK		(sfi__value_types[1])
+#define SFI_TYPE_FBLOCK		(sfi__value_types[2])
+#define SFI_TYPE_SEQ		(sfi__value_types[3])
+#define SFI_TYPE_REC		(sfi__value_types[4])
+#define SFI_TYPE_PROXY		(sfi__value_types[5])
 
 
 /* --- Sfi value macros --- */
@@ -50,6 +51,7 @@ G_BEGIN_DECLS
 #define SFI_VALUE_HOLDS_STRING(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_STRING))
 #define SFI_VALUE_HOLDS_CHOICE(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_CHOICE))
 #define SFI_VALUE_HOLDS_ENUM(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_ENUM))
+#define SFI_VALUE_HOLDS_BBLOCK(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_BBLOCK))
 #define SFI_VALUE_HOLDS_FBLOCK(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_FBLOCK))
 #define SFI_VALUE_HOLDS_SEQ(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_SEQ))
 #define SFI_VALUE_HOLDS_REC(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_REC))
@@ -81,7 +83,14 @@ G_BEGIN_DECLS
 gchar*	   sfi_value_get_choice		(const GValue	*value);
 void	   sfi_value_set_choice		(GValue		*value,
 					 const gchar	*choice_value);
+SfiBBlock* sfi_value_get_bblock		(const GValue	*value);
+SfiBBlock* sfi_value_dup_bblock		(const GValue	*value);
+void	   sfi_value_set_bblock		(GValue		*value,
+					 SfiBBlock	*bblock);
+void	   sfi_value_take_bblock	(GValue		*value,
+					 SfiBBlock	*bblock);
 SfiFBlock* sfi_value_get_fblock		(const GValue	*value);
+SfiFBlock* sfi_value_dup_fblock		(const GValue	*value);
 void	   sfi_value_set_fblock		(GValue		*value,
 					 SfiFBlock	*fblock);
 void	   sfi_value_take_fblock	(GValue		*value,
@@ -117,6 +126,7 @@ GValue*	sfi_value_choice	(const gchar	*vchoice);
 GValue*	sfi_value_choice_enum	(const GValue	*enum_value);
 GValue*	sfi_value_enum		(GType		 enum_type,
 				 gint		 evalue);
+GValue*	sfi_value_bblock	(SfiBBlock	*vfblock);
 GValue*	sfi_value_fblock	(SfiFBlock	*vfblock);
 GValue*	sfi_value_seq		(SfiSeq		*vseq);
 GValue*	sfi_value_rec		(SfiRec		*vrec);

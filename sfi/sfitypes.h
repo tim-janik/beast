@@ -32,6 +32,7 @@ typedef guint64			SfiTime;
 typedef gdouble			SfiReal;
 typedef gchar*			SfiString;
 typedef const gchar*		SfiChoice;
+typedef struct _SfiBBlock	SfiBBlock;
 typedef struct _SfiFBlock	SfiFBlock;
 typedef struct _SfiSeq		SfiSeq;
 typedef struct _SfiRec		SfiRec;
