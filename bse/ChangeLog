@@ -1,3 +1,7 @@
+Wed Dec 17 19:14:11 2003  Tim Janik  <timj@gtk.org>
+
+	* bse/bsetype.h: allow options argument for Trigger pspecs.
+
 Tue Dec 16 11:59:43 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecxxplugin.h: assign authors and license fields in BseExportNode.

@@ -1121,8 +1121,8 @@ bse_item_set_property_undoable (BseItem      *self,
   g_value_init (tvalue, G_VALUE_TYPE (value));
   g_object_get_property (G_OBJECT (self), name, tvalue);
   if (BSE_ITEM_INTERNAL (self) ||
-      values_equal_for_undo (value, tvalue) ||
-      item_property_check_skip_undo (self, name))
+      item_property_check_skip_undo (self, name) ||
+      values_equal_for_undo (value, tvalue))
     {
       /* we're about to set a value on an internal item or
        * to set the same value again => skip undo
