@@ -543,6 +543,8 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
 			    GdkEventKey *event)
 {
   GxkDialog *dialog = GXK_DIALOG (widget);
+  GtkWindow *window = GTK_WINDOW (widget);
+  gboolean handled = FALSE;
 
   /* decide whether we close the window upon Escape:
    * - we provide Escape as a short cut for the GXK_DIALOG_DELETE_BUTTON
@@ -557,7 +559,44 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
       return TRUE;
     }
 
-  return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
+#if defined (__linux__)         // FIXME: use gtk_window_activate_key() once exposed
+  /* we're iverriding the GtkWindow implementation here to give
+   * the focus widget precedence over unmodified accelerators
+   * before the accelerator activation scheme.
+   */
+  if (!handled && event->state & ~GDK_SHIFT_MASK)
+    handled = _gtk_window_activate_key (window, event);
+  if (!handled)
+    {
+      GtkWidget *focus = window->focus_widget;
+      if (focus)
+        g_object_ref (focus);
+      while (!handled &&
+             focus && focus != widget &&
+             gtk_widget_get_toplevel (focus) == widget)
+        {
+          GtkWidget *parent;
+          if (GTK_WIDGET_IS_SENSITIVE (focus))
+            handled = gtk_widget_event (focus, (GdkEvent*) event);
+          parent = focus->parent;
+          if (parent)
+            g_object_ref (parent);
+          g_object_unref (focus);
+          focus = parent;
+        }
+      if (focus)
+        g_object_unref (focus);
+    }
+  if (!handled && !(event->state & ~GDK_SHIFT_MASK))
+    handled = _gtk_window_activate_key (window, event);
+  /* chain up bypassing gtk_window_key_press(), invokes binding set */
+  if (!handled)
+    handled = GTK_WIDGET_CLASS (g_type_class_peek (g_type_parent (GTK_TYPE_WINDOW)))->key_press_event (widget, event);
+#else
+  handled = GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
+#endif
+
+  return handled;
 }
 
 static gboolean
