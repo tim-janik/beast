@@ -58,6 +58,8 @@ struct _BseTrack
   BseSource       *voice_switch;
   BseSource       *postprocess;
 
+  SfiRing         *bus_outputs; /* maintained by bsebus.[hc] */
+
   /* fields protected by sequencer mutex */
   guint		   n_entries_SL : 30;
   guint		   muted_SL : 1;

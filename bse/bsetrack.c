@@ -22,6 +22,7 @@
 #include "bsecsynth.h"
 #include "bsewave.h"
 #include "bsepart.h"
+#include "bsebus.h"
 #include "bsemain.h"
 #include "gslcommon.h"
 #include "bsesubsynth.h"
@@ -46,7 +47,8 @@ enum {
   PROP_WAVE,
   PROP_MIDI_CHANNEL,
   PROP_N_VOICES,
-  PROP_PNET
+  PROP_PNET,
+  PROP_OUTPUTS
 };
 
 /* --- prototypes --- */
@@ -142,12 +144,16 @@ bse_track_dispose (GObject *object)
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
+
+  g_assert (self->bus_outputs == NULL);
 }
 
 static void
 bse_track_finalize (GObject *object)
 {
   BseTrack *self = BSE_TRACK (object);
+
+  g_assert (self->bus_outputs == NULL);
 
   g_assert (self->n_entries_SL == 0);
   g_free (self->entries_SL);
@@ -271,14 +277,7 @@ bse_track_get_candidates (BseItem               *item,
   switch (param_id)
     {
       BseProject *project;
-    case PROP_SNET:
-      bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a track instrument from"));
-      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
-      break;
-    case PROP_PNET:
-      bse_property_candidate_relabel (pc, _("Available Postprocessors"), _("List of available synthesis networks to choose a postprocessor from"));
-      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
-      break;
+      SfiRing *ring;
     case PROP_WAVE:
       bse_property_candidate_relabel (pc, _("Available Waves"), _("List of available waves to choose as track instrument"));
       project = bse_item_get_project (item);
@@ -287,6 +286,21 @@ bse_track_get_candidates (BseItem               *item,
 	  BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
 	  bse_item_gather_items_typed (BSE_ITEM (wrepo), pc->items, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
 	}
+      break;
+    case PROP_SNET:
+      bse_property_candidate_relabel (pc, _("Available Synthesizers"), _("List of available synthesis networks to choose a track instrument from"));
+      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      break;
+    case PROP_PNET:
+      bse_property_candidate_relabel (pc, _("Available Postprocessors"), _("List of available synthesis networks to choose a postprocessor from"));
+      bse_item_gather_items_typed (item, pc->items, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      break;
+    case PROP_OUTPUTS:
+      bse_property_candidate_relabel (pc, _("Available Outputs"), _("List of available mixer busses to be used as track output"));
+      bse_bus_or_track_list_output_candidates (BSE_ITEM (self), pc->items);
+      /* remove existing outputs */
+      for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
+        bse_item_seq_remove (pc->items, ring->data);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -457,6 +471,9 @@ bse_track_set_property (GObject      *object,
                           NULL);
 	}
       break;
+    case PROP_OUTPUTS:
+      bse_bus_or_track_set_outputs (BSE_ITEM (self), g_value_get_boxed (value));
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -473,6 +490,8 @@ bse_track_get_property (GObject    *object,
   
   switch (param_id)
     {
+      BseItemSeq *iseq;
+      SfiRing *ring;
     case PROP_MUTED:
       sfi_value_set_bool (value, self->muted_SL);
       break;
@@ -481,6 +500,12 @@ bse_track_get_property (GObject    *object,
       break;
     case PROP_PNET:
       bse_value_set_object (value, self->pnet);
+      break;
+    case PROP_OUTPUTS:
+      iseq = bse_item_seq_new();
+      for (ring = self->bus_outputs; ring; ring = sfi_ring_walk (ring, self->bus_outputs))
+        bse_item_seq_append (iseq, ring->data);
+      g_value_take_boxed (value, iseq);
       break;
     case PROP_WAVE:
       bse_value_set_object (value, self->wave);
@@ -897,5 +922,10 @@ bse_track_class_init (BseTrackClass *class)
 			      PROP_PNET,
 			      bse_param_spec_object ("pnet", _("Postprocessor"), _("Synthesis network to be used as postprocessor"),
 						     BSE_TYPE_CSYNTH, SFI_PARAM_STANDARD ":unprepared"));
+  bse_object_class_add_param (object_class, _("Signal Outputs"),
+                              PROP_OUTPUTS,
+                              bse_param_spec_boxed ("outputs", _("Output Signals"),
+                                                    _("Mixer busses used as output for this track"),
+                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_GUI ":item-sequence"));
   signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }

@@ -47,6 +47,8 @@ struct _BseBus
   BseSource    *bmodule;        /* implicitely vout */
   guint         n_effects;      /* # of slots */
   BseSource   **effects;        /* slot maybe NULL */
+
+  SfiRing      *bus_outputs;    /* maintained by bsebus.[hc] */
 };
 struct _BseBusClass
 {
@@ -77,7 +79,10 @@ BseErrorType    bse_bus_replace_effect          (BseBus         *self,
 void            bse_bus_change_solo             (BseBus         *self,
                                                  gboolean        solo_muted);
 #define         bse_bus_create_stack(b)         bse_bus_get_stack (b,0,0,0)
-
+void    bse_bus_or_track_list_output_candidates (BseItem        *trackbus,
+                                                 BseItemSeq     *iseq);
+void    bse_bus_or_track_set_outputs            (BseItem        *trackbus,
+                                                 BseItemSeq     *iseq);
 
 /* --- channels --- */
 enum
