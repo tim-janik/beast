@@ -46,7 +46,8 @@ typedef int sdword;
  */
 #define read_or_return_error(read_me) G_STMT_START{ BseErrorType _error = read_me; if (_error) return _error; }G_STMT_END
 
-inline BseErrorType xRead (FILE *file, int len, void *data)
+static inline BseErrorType
+xRead (FILE *file, int len, void *data)
 {
   if (fread (data, len, 1, file) != 1)
     if (feof (file))
@@ -57,7 +58,8 @@ inline BseErrorType xRead (FILE *file, int len, void *data)
   return BSE_ERROR_NONE;
 }
 
-inline BseErrorType skip (FILE *file, int len)
+static inline BseErrorType
+skip (FILE *file, int len)
 {
   while (len > 0)
     {
@@ -69,24 +71,28 @@ inline BseErrorType skip (FILE *file, int len)
 }
 
 
-inline BseErrorType readBytes (FILE *file, unsigned char *bytes, int len)
+static inline BseErrorType
+readBytes (FILE *file, unsigned char *bytes, int len)
 {
   return xRead (file, len, bytes);
 }
 
-inline BseErrorType readString (FILE *file, char *str, int len)
+static inline BseErrorType
+readString (FILE *file, char *str, int len)
 {
   return xRead (file, len, str);
 }
 
 /* readXXX with sizeof(xxx) == 1 */
-inline BseErrorType readByte (FILE *file, byte& b)
+static inline BseErrorType
+readByte (FILE *file, byte& b)
 {
   return xRead (file, 1, &b);
 }
 
 /* readXXX with sizeof(xxx) == 2 */
-inline BseErrorType readWord (FILE *file, word& w)
+static inline BseErrorType
+readWord (FILE *file, word& w)
 {
   byte h, l;
   
@@ -97,7 +103,8 @@ inline BseErrorType readWord (FILE *file, word& w)
   return BSE_ERROR_NONE;
 }
 
-inline BseErrorType readSWord (FILE *file, sword& sw)
+static inline BseErrorType
+readSWord (FILE *file, sword& sw)
 {
   word w;
   
@@ -108,7 +115,8 @@ inline BseErrorType readSWord (FILE *file, sword& sw)
 }
 
 /* readXXX with sizeof(xxx) == 4 */
-inline BseErrorType readDWord (FILE *file, dword& dw)
+static inline BseErrorType
+readDWord (FILE *file, dword& dw)
 {
   byte h, l, hh, hl;
   
@@ -140,7 +148,8 @@ struct PatHeader
   {
   }
   
-  BseErrorType load (FILE *file)
+  BseErrorType
+  load (FILE *file)
   {
     read_or_return_error (readString (file, id, 12));
     read_or_return_error (readString (file, manufacturer_id, 10));
@@ -179,7 +188,8 @@ struct PatInstrument
   {
   }
   
-  BseErrorType load (FILE *file)
+  BseErrorType
+  load (FILE *file)
   {
     read_or_return_error (readWord (file, number));
     read_or_return_error (readString (file, name, 16));
@@ -239,7 +249,8 @@ struct PatPatch
   {
   }
   
-  BseErrorType load (FILE *file)
+  BseErrorType
+  load (FILE *file)
   {
     read_or_return_error (readString (file, filename, 7));
     read_or_return_error (readByte (file, fractions));
@@ -285,7 +296,8 @@ struct FileInfo
   PatInstrument      *instrument;
   vector<PatPatch *>  patches;
   
-  GslWaveLoopType loop_type (int wave_format)
+  GslWaveLoopType
+  loop_type (int wave_format)
   {
     /* FIXME: is backwards for the loop or for the wave? */
     if (wave_format & PAT_FORMAT_LOOPED)
@@ -321,7 +333,8 @@ struct FileInfo
       }
   }
   
-  guint& data_offset (int chunk_number)
+  guint&
+  data_offset (int chunk_number)
   {
     return wdsc.chunks[chunk_number].loader_data[0].uint;
   }
@@ -369,7 +382,8 @@ struct FileInfo
   }
   
   
-  FileInfo (const gchar *file_name, BseErrorType *error_p)
+  FileInfo (const gchar  *file_name,
+            BseErrorType *error_p)
   {
     /* initialize C structures with zeros */
     memset (&wfi, 0, sizeof (wfi));

@@ -1,3 +1,7 @@
+Mon Jan 24 22:49:16 2005  Tim Janik  <timj@gtk.org>
+
+	* bseloader-guspatch.cc: fixed function linkage and missing newlines.
+
 Mon Jan 24 22:38:21 2005  Tim Janik  <timj@gtk.org>
 
 	* bseproject.proc: implemented bse_project_inject_midi_control() to 
