@@ -280,6 +280,7 @@ TASKS:
   reuse the existing one
 - TrackRoll: implement copying of parts
 - TrackRoll: implement selection and copy and paste of parts
+- TrackRoll: the currently selected track should playback external MIDI Keyboard events
 - Engine: skip ENGINE_NODE_LOCK() in master_process_locked_node() for singleproc
 - let bst_key_combo_popup() display currently pressed modifiers
 - let bst_key_combo_popup() tell the user to press a mouse button to abort
