@@ -1,3 +1,9 @@
+Wed Dec 31 01:06:51 2003  Nedko Arnaudov  <nedko@users.sourceforge.net>
+
+        * bsemididevice-oss.c:
+        * bsepcmdevice-oss.c: Use configure detection of OSS emulation
+        that is not implemented in sys/soundcard.h but in soundcard.h
+
 Tue Dec 30 23:48:17 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecxxmodule.[hc]*: use GslModule type, strip unnecessary casts,

@@ -27,7 +27,11 @@
 BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #else   /* BSE_MIDI_DEVICE_CONF_OSS */
 
+#if HAVE_SYS_SOUNDCARD_H
 #include	<sys/soundcard.h>
+#elif HAVE_SOUNDCARD_H
+#include	<soundcard.h>
+#endif
 #include	<sys/ioctl.h>
 #include	<sys/types.h>
 #include	<sys/time.h>
