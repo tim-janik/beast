@@ -942,12 +942,7 @@ METHOD (BseProject, clear-undo) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  if (!project->in_undo && !project->in_redo)
-    {
-      bse_undo_stack_clear (project->undo_stack);
-      bse_undo_stack_clear (project->redo_stack);
-      g_object_notify (project, "dirty");
-    }
+  bse_project_clear_undo (project);
 
   return BSE_ERROR_NONE;
 }

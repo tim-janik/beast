@@ -85,6 +85,7 @@ void	bse_track_clone_voices		(BseTrack		*self,
                                          BseMidiContext          mcontext,
 					 BseTrans		*trans);
 BseSource*       bse_track_get_output   (BseTrack               *self);
+guint        	 bse_track_get_last_tick(BseTrack		*self);
 guint        	 bse_track_insert_part	(BseTrack		*self,
 					 guint			 tick,
 					 BsePart		*part);

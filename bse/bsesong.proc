@@ -27,6 +27,7 @@
 #include "bseproject.h"
 #include "gslcommon.h"
 #include "bseengine.h"
+#include <string.h>
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
@@ -106,6 +107,13 @@ METHOD (BseSong, remove-bus) {
   return error;
 }
 
+static const gchar*
+master_bus_name (void)
+{
+  /* TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus. */
+  return _("Master");
+}
+
 static BseSource*
 bse_song_ensure_master (BseSong *self)
 {
@@ -113,7 +121,7 @@ bse_song_ensure_master (BseSong *self)
   if (!child)
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "create-master");
-      child = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, "Master", NULL);
+      child = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, master_bus_name(), NULL);
       g_object_set (child, "master-output", TRUE, NULL); /* no undo */
       bse_item_push_undo_proc (self, "remove-bus", child);
       bse_item_undo_close (ustack);
@@ -148,6 +156,49 @@ METHOD (BseSong, get-master-bus) {
   return BSE_ERROR_NONE;
 }
 
+static const gchar*
+orphans_track_name (void)
+{
+  /* TRANSLATORS: this is the name of the track that is used to automatically
+   * adopt orphan (unlinked) parts.
+   */
+  return _("Orphan Parts");
+}
+
+static BseTrack*
+bse_song_ensure_orphans_track_noundo (BseSong *self)
+{
+  SfiRing *ring;
+  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      BseTrack *track = ring->data;
+      gboolean muted = FALSE;
+      g_object_get (track, "muted", &muted, NULL);
+      if (muted && g_object_get_data (track, "BseSong-orphan-track") == bse_song_ensure_orphans_track_noundo) /* detect orphan-parts track */
+        return track;
+    }
+  gpointer child = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_TRACK, orphans_track_name(), NULL);
+  g_object_set (child, "muted", TRUE, NULL); /* no undo */
+  g_object_set_data (child, "BseSong-orphan-track", bse_song_ensure_orphans_track_noundo); /* mark orphan-parts track */
+  return child;
+}
+
+static BseTrack*
+bse_song_find_first_track (BseSong *self,
+                           BsePart *part)
+{
+  SfiRing *ring;
+  /* action */
+  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+    {
+      BseTrack *track = ring->data;
+      guint start;
+      if (bse_track_find_part (track, part, &start))
+        return track;
+    }
+  return NULL;
+}
+
 METHOD (BseSong, ensure-track-links) {
   HELP  = _("Ensure that each part in a song is inserted into at least one track.");
   IN    = bse_param_spec_object ("song", NULL, NULL,
@@ -164,7 +215,21 @@ METHOD (BseSong, ensure-track-links) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  //FIXME: implement ensure-track-links
+  gboolean clear_undo = FALSE;
+  SfiRing *ring;
+  for (ring = self->parts; ring; ring = sfi_ring_walk (ring, self->parts))
+    if (!bse_song_find_first_track (self, ring->data))
+      {
+        BseTrack *track = bse_song_ensure_orphans_track_noundo (self);
+        bse_item_exec_void (track, "insert-part", bse_track_get_last_tick (track), ring->data);
+        clear_undo = TRUE;
+      }
+  if (clear_undo)
+    {
+      BseProject *project = bse_item_get_project (BSE_ITEM (self));
+      if (project)
+        bse_project_clear_undo (project);
+    }
   
   return BSE_ERROR_NONE;
 }
@@ -190,21 +255,29 @@ METHOD (BseSong, ensure-output-busses) {
     inputs = sfi_ring_concat (inputs, bse_bus_list_inputs (node->data));
   /* find tracks that are not in input list */
   tracks = sfi_ring_copy (self->tracks_SL);
-  inputs = sfi_ring_sort (inputs, sfi_compare_pointers, NULL);
-  tracks = sfi_ring_sort (tracks, sfi_compare_pointers, NULL);
-  node = sfi_ring_difference (tracks, inputs, sfi_compare_pointers, NULL);
+  inputs = sfi_ring_sort (inputs, sfi_pointer_cmp, NULL);
+  tracks = sfi_ring_sort (tracks, sfi_pointer_cmp, NULL);
+  node = sfi_ring_difference (tracks, inputs, sfi_pointer_cmp, NULL);
   sfi_ring_free (inputs);
   sfi_ring_free (tracks);
   tracks = node;
   /* connect remaining tracks */
+  gboolean clear_undo = FALSE;
   BseSource *master = bse_song_ensure_master (self);
   for (node = master ? tracks : NULL; node; node = sfi_ring_walk (node, tracks))
     {
       BseErrorType error = bse_bus_connect (BSE_BUS (master), node->data);
       if (error)
         sfi_warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
+      clear_undo = TRUE;
     }
   sfi_ring_free (tracks);
+  if (clear_undo)
+    {
+      BseProject *project = bse_item_get_project (BSE_ITEM (self));
+      if (project)
+        bse_project_clear_undo (project);
+    }
 
   return BSE_ERROR_NONE;
 }
@@ -392,6 +465,33 @@ METHOD (BseSong, find-track-for-part) {
 
   /* set output parameters */
   bse_value_set_object (out_values++, track);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, find-any-track-for-part) {
+  HELP  = _("Find the first track that contains part, suitable to check for orphan parts.");
+  IN    = bse_param_spec_object ("song", "Song", NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
+  IN    = bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self = bse_value_get_object (in_values++);
+  BsePart *part = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SONG (self) || !BSE_IS_PART (part) ||
+      BSE_ITEM (part)->parent != BSE_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  bse_value_set_object (out_values++, bse_song_find_first_track (self, part));
   
   return BSE_ERROR_NONE;
 }

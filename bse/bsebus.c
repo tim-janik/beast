@@ -250,24 +250,24 @@ bse_bus_or_track_set_outputs (BseItem        *trackbus,
   /* save user provided order */
   SfiRing *saved_outputs = bse_item_seq_to_ring (outputs_iseq);
   /* provide sorted rings: bus_outputs, outputs */
-  SfiRing *outputs = sfi_ring_sort (sfi_ring_copy (saved_outputs), sfi_compare_pointers, NULL);
-  *pbus_outputs = sfi_ring_sort (*pbus_outputs, sfi_compare_pointers, NULL);
+  SfiRing *outputs = sfi_ring_sort (sfi_ring_copy (saved_outputs), sfi_pointer_cmp, NULL);
+  *pbus_outputs = sfi_ring_sort (*pbus_outputs, sfi_pointer_cmp, NULL);
   /* get all output candidates */
   BseItemSeq *iseq = bse_item_seq_new();
   bse_bus_or_track_list_output_candidates (trackbus, iseq);
-  SfiRing *candidates = sfi_ring_sort (bse_item_seq_to_ring (iseq), sfi_compare_pointers, NULL);
+  SfiRing *candidates = sfi_ring_sort (bse_item_seq_to_ring (iseq), sfi_pointer_cmp, NULL);
   bse_item_seq_free (iseq);
   /* constrain the new output list */
-  SfiRing *ring = sfi_ring_intersection (outputs, candidates, sfi_compare_pointers, NULL);
+  SfiRing *ring = sfi_ring_intersection (outputs, candidates, sfi_pointer_cmp, NULL);
   sfi_ring_free (candidates);
   sfi_ring_free (outputs);
   outputs = ring;
   /* remove stale outputs */
-  ring = sfi_ring_difference (*pbus_outputs, outputs, sfi_compare_pointers, NULL);
+  ring = sfi_ring_difference (*pbus_outputs, outputs, sfi_pointer_cmp, NULL);
   while (ring)
     bse_bus_disconnect (sfi_ring_pop_head (&ring), trackbus);
   /* add new outputs */
-  ring = sfi_ring_difference (outputs, *pbus_outputs, sfi_compare_pointers, NULL);
+  ring = sfi_ring_difference (outputs, *pbus_outputs, sfi_pointer_cmp, NULL);
   while (ring)
     bse_bus_connect_unchecked (sfi_ring_pop_head (&ring), trackbus);
   sfi_ring_free (outputs);
@@ -292,24 +292,24 @@ bse_bus_set_property (GObject      *object,
       /* save user provided order */
       saved_inputs = bse_item_seq_to_ring (g_value_get_boxed (value));
       /* provide sorted rings: self->inputs, inputs */
-      inputs = sfi_ring_sort (sfi_ring_copy (saved_inputs), sfi_compare_pointers, NULL);
-      self->inputs = sfi_ring_sort (self->inputs, sfi_compare_pointers, NULL);
+      inputs = sfi_ring_sort (sfi_ring_copy (saved_inputs), sfi_pointer_cmp, NULL);
+      self->inputs = sfi_ring_sort (self->inputs, sfi_pointer_cmp, NULL);
       /* get all input candidates */
       iseq = bse_item_seq_new();
       bus_list_input_candidates (self, iseq);
-      candidates = sfi_ring_sort (bse_item_seq_to_ring (iseq), sfi_compare_pointers, NULL);
+      candidates = sfi_ring_sort (bse_item_seq_to_ring (iseq), sfi_pointer_cmp, NULL);
       bse_item_seq_free (iseq);
       /* constrain the new input list */
-      ring = sfi_ring_intersection (inputs, candidates, sfi_compare_pointers, NULL);
+      ring = sfi_ring_intersection (inputs, candidates, sfi_pointer_cmp, NULL);
       sfi_ring_free (candidates);
       sfi_ring_free (inputs);
       inputs = ring;
       /* remove stale inputs */
-      ring = sfi_ring_difference (self->inputs, inputs, sfi_compare_pointers, NULL);
+      ring = sfi_ring_difference (self->inputs, inputs, sfi_pointer_cmp, NULL);
       while (ring)
         bse_bus_disconnect (self, sfi_ring_pop_head (&ring));
       /* add new inputs */
-      ring = sfi_ring_difference (inputs, self->inputs, sfi_compare_pointers, NULL);
+      ring = sfi_ring_difference (inputs, self->inputs, sfi_pointer_cmp, NULL);
       while (ring)
         bse_bus_connect_unchecked (self, sfi_ring_pop_head (&ring));
       sfi_ring_free (inputs);

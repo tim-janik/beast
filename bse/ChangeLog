@@ -1,3 +1,22 @@
+Sat Oct 16 00:50:40 2004  Tim Janik  <timj@gtk.org>
+
+	* bseproject.[hc]: provide bse_project_clear_undo().
+
+	* bsesong.proc: clear undo after ensuring bus, track and part
+	connectivity, since we don't maintain proper undo state across 
+	these operations. implemented ensure-track-links().
+	added find-any-track-for-part() which is faster than
+	find-track-for-part() and can be used for orphaned part checks.
+
+	* bsetrack.[hc]: provide bse_track_get_last_tick().
+
+	* bsetrack.proc: added list-parts-uniq(). 
+
+	* bseutils.[hc]: provide bse_item_seq_from_ring().
+
+	* bseprobe.cc:
+	* bsebus.c: adapt to sfi changes.
+
 Fri Oct 15 03:55:11 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepart.c: fixed negative control events and fine tune parsing.

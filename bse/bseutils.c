@@ -176,6 +176,16 @@ bse_item_seq_to_ring (BseItemSeq *iseq)
   return ring;
 }
 
+BseItemSeq*
+bse_item_seq_from_ring (SfiRing *ring)
+{
+  BseItemSeq *iseq = bse_item_seq_new();
+  SfiRing *node;
+  for (node = ring; node; node = sfi_ring_walk (node, ring))
+    bse_item_seq_append (iseq, node->data);
+  return iseq;
+}
+
 /* --- balance calculation --- */
 double
 bse_balance_get (double level1,

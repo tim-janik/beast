@@ -75,6 +75,7 @@ void		bse_project_keep_activated	(BseProject	*project,
 						 guint64	 min_tick);
 void		bse_project_state_changed	(BseProject	*project,
 						 BseProjectState state);
+void            bse_project_clear_undo          (BseProject     *project);
 BseStringSeq*	bse_project_list_upaths		(BseProject	*project,
 						 GType  	 item_type);
 BseItem*	bse_project_item_from_upath	(BseProject	*project,

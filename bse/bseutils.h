@@ -58,6 +58,7 @@ void                bse_property_candidate_relabel   (BsePropertyCandidates *pc,
 void                bse_item_seq_remove              (BseItemSeq            *iseq,
                                                       BseItem               *item);
 SfiRing*            bse_item_seq_to_ring             (BseItemSeq            *iseq);
+BseItemSeq*         bse_item_seq_from_ring           (SfiRing               *ring);
 
 
 /* --- balance calculation --- */

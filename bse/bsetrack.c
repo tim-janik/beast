@@ -748,6 +748,38 @@ bse_track_get_output (BseTrack *self)
   return self->postprocess;
 }
 
+guint
+bse_track_get_last_tick (BseTrack *self)
+{
+  int last_tick = 0;
+
+  /* find last part */
+  BsePart *part = NULL;
+  guint i, offset = 0;
+  for (i = 0; i < self->n_entries_SL; i++)
+    if (self->entries_SL[i].part)
+      {
+        part = self->entries_SL[i].part;
+        offset = self->entries_SL[i].tick;
+      }
+  if (part)
+    {
+      BseItem *item = BSE_ITEM (self);
+      BseSongTiming timing;
+      g_object_get (part, "last-tick", &last_tick, NULL);
+      if (BSE_IS_SONG (item->parent))
+        bse_song_get_timing (BSE_SONG (item->parent), offset, &timing);
+      else
+        bse_song_timing_get_default (&timing);
+      last_tick = MAX (last_tick, timing.tpt);  /* MAX duration with tact size, see bse_track_list_parts() */
+      last_tick += offset;
+    }
+  else
+    last_tick += 1;     /* always return one after */
+  
+  return last_tick;
+}
+
 static void
 bse_track_update_midi_channel (BseTrack *self)
 {

@@ -291,6 +291,18 @@ bse_project_get_undo (BseItem *item)
   return self->in_undo ? self->redo_stack : self->undo_stack;
 }
 
+void
+bse_project_clear_undo (BseProject *self)
+{
+  g_return_if_fail (BSE_IS_PROJECT (self));
+  if (!self->in_undo && !self->in_redo)
+    {
+      bse_undo_stack_clear (self->undo_stack);
+      bse_undo_stack_clear (self->redo_stack);
+      g_object_notify (self, "dirty");
+    }
+}
+
 static void
 bse_project_add_item (BseContainer *container,
 		      BseItem      *item)
