@@ -102,7 +102,7 @@ in this area and love contributing, send off an
 @news_title{Monday 30 October 2000, BEASTIE BITS}
 
 We've recently had a few more logo submissions, so
-@uref{http://beast.gtk.org/logo-submissions.html,,} FXIEM:url?
+@uref{beast-doc://logo-submissions/,,logo submissions page}
 is still worth checking out ;)
 
 BEAST/BSE development has been quite laging recently, mostly because it's type system got
@@ -120,7 +120,7 @@ helping out in this area, please send @uref{mailto://timj@@beast.gtk.org,,us} em
 
 As announced on Sunday 12 March, we are in search of a decent logo.  Submissions are accepted to
 @uref{ftp://beast.gtk.org/incoming/} and are shown on 
-@uref{http://beast.gtk.org/logo-submissions.html}.
+@uref{beast-doc://logo-submissions/}.
 If you have questions/comments/feedback, @uref{mailto://timj@@beast.gtk.org,,contact us}.
 
 
@@ -163,7 +163,7 @@ If you'd like to help, please @uref{mailto://timj@@beast.gtk.org,,email us}.
 
 @news_title{Friday 14 January 2000,}
 
-Version 0.3.1 released. See the @uref{http://beast.gtk.org/docs/cvs-news.html,, NEWS page}
+Version 0.3.1 released. See the @uref{beast-doc://release-news,, NEWS page}
 for details.
 As usual, the ChangeLogs are always available for your perusal (see the links in the left column).
 

@@ -77,8 +77,11 @@
       <tagdef name="important"      underline="single" weight="bold" foreground="#df5fdf" />
 
       <tagdef name="quotation"      indent="10" left_margin="70" />
-      <tagdef name="example"        family="monospace" left_margin="70" wrap_mode="none" />
-      <tagdef name="smallexample"   family="monospace" left_margin="70" wrap_mode="none" scale="0.9" />
+      <!-- FIXME Alper, until the makeinfo's @verbatim support is fixed, @example blocks
+	   will not be indented. This way we emulate @verbatim blocks with @example blocks
+	   and indent the real @example blocks ourselves. -->
+      <tagdef name="example"        family="monospace" wrap_mode="none" />
+      <tagdef name="smallexample"   family="monospace" wrap_mode="none" scale="0.9" />
       <tagdef name="lisp"           family="monospace" left_margin="70" wrap_mode="none" foreground="#000040" />
       <tagdef name="smalllisp"      family="monospace" left_margin="70" wrap_mode="none" foreground="#000040" scale="0.9" />
       <tagdef name="display"        left_margin="70" wrap_mode="none" />
@@ -742,7 +745,10 @@
     <!-- protocol for this link type -->
     <xsl:variable name="protocol" select="substring-before(urefurl, '://')"/>
     <xsl:if test="$protocol=''">
-      <xsl:message terminate="yes">XSL-ERROR: unset protocol for <xsl:value-of select="urefurl"/></xsl:message>
+      <!-- another test before we bail out. Not all protocols need a ://, ie. mailto: -->
+      <xsl:if test="substring-before(urefurl, ':') = ''">
+	<xsl:message terminate="yes">XSL-ERROR: unset protocol for <xsl:value-of select="urefurl"/></xsl:message>
+      </xsl:if>
     </xsl:if>
 
     <!-- actual link -->
@@ -838,6 +844,9 @@
 	<!-- Get the file name and append the target specific extension (markup) -->
 	<xsl:variable name="filename">
 	  <xsl:choose>
+	    <xsl:when test="substring($url, string-length($url), 1) = '/'">
+	      <xsl:value-of select="$url"/>
+	    </xsl:when>
 	    <xsl:when test="substring-before($url, '#') = ''">
 	      <xsl:value-of select="concat($url, '.markup')"/>
 	    </xsl:when>
@@ -871,19 +880,39 @@
       </xsl:when>
       <!-- Unknown Protocol -->
       <xsl:otherwise>
-	<xsl:message>XSL-WARNING: unknown protocol '<xsl:value-of select="$protocol"/>' in <xsl:value-of select="urefurl"/>, using as-is</xsl:message>
-	<span tag="hyperlink">
-	  <xlink>
-	    <xsl:attribute name="ref">
-	      <xsl:value-of select="urefurl"/>
-	    </xsl:attribute>
-	    <xsl:choose>
-	      <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
-	      <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (<xsl:value-of select="urefurl"/>)</xsl:when>
-	      <xsl:otherwise><xsl:value-of select="urefurl"/></xsl:otherwise>
-	    </xsl:choose>
-	  </xlink>
-	</span>
+	<xsl:choose>
+	  <!-- or maybe it is mailto: ? -->
+	  <xsl:when test="substring-before(urefurl, ':') = 'mailto'">
+	    <xsl:variable name="url" select="substring-after(urefurl, ':')"/>
+	    <span tag="hyperlink">
+	      <xlink>
+		<xsl:attribute name="ref">
+		  <xsl:value-of select="concat('mailto:', $url)"/>
+		</xsl:attribute>
+		<xsl:choose>
+		  <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
+		  <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (<xsl:value-of select="$url"/>)</xsl:when>
+		  <xsl:otherwise><xsl:value-of select="$url"/></xsl:otherwise>
+		</xsl:choose>
+	      </xlink>
+	    </span>
+	  </xsl:when>
+	  <xsl:otherwise>
+	    <xsl:message>XSL-WARNING: unknown protocol '<xsl:value-of select="$protocol"/>' in <xsl:value-of select="urefurl"/>, using as-is</xsl:message>
+	    <span tag="hyperlink">
+	      <xlink>
+		<xsl:attribute name="ref">
+		  <xsl:value-of select="urefurl"/>
+		</xsl:attribute>
+		<xsl:choose>
+		  <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
+		  <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (<xsl:value-of select="urefurl"/>)</xsl:when>
+		  <xsl:otherwise><xsl:value-of select="urefurl"/></xsl:otherwise>
+		</xsl:choose>
+	      </xlink>
+	    </span>
+	  </xsl:otherwise>
+	</xsl:choose>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

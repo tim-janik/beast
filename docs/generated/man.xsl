@@ -431,7 +431,10 @@
   <!-- protocol for this link type -->
   <xsl:variable name="protocol" select="substring-before(urefurl, '://')"/>
   <xsl:if test="$protocol=''">
-    <xsl:message terminate="yes">XSL-ERROR: unset protocol for <xsl:value-of select="urefurl"/></xsl:message>
+    <!-- another test before we bail out. Not all protocols need a ://, ie. mailto: -->
+    <xsl:if test="substring-before(urefurl, ':') = ''">
+      <xsl:message terminate="yes">XSL-ERROR: unset protocol for <xsl:value-of select="urefurl"/></xsl:message>
+    </xsl:if>
   </xsl:if>
 
   <!-- actual link -->
@@ -528,11 +531,24 @@
     </xsl:when>
     <!-- Unknown Protocol -->
     <xsl:otherwise>
-      <xsl:message>XSL-WARNING: unknown protocol '<xsl:value-of select="$protocol"/>' in <xsl:value-of select="urefurl"/>, using as-is</xsl:message>
       <xsl:choose>
-	<xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
-	<xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (\fI\f6<xsl:value-of select="urefurl"/>\fP)</xsl:when>
-	<xsl:otherwise>\fI\f6<xsl:value-of select="urefurl"/>\fP</xsl:otherwise>
+        <!-- or maybe it is mailto: ? -->
+	<xsl:when test="substring-before(urefurl, ':') = 'mailto'">
+	  <xsl:variable name="url" select="substring-after(urefurl, ':')"/>
+	  <xsl:choose>
+	    <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
+	    <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (<xsl:value-of select="$url"/>)</xsl:when>
+	    <xsl:otherwise><xsl:value-of select="$url"/></xsl:otherwise>
+	  </xsl:choose>
+	</xsl:when>
+        <xsl:otherwise>
+	  <xsl:message>XSL-WARNING: unknown protocol '<xsl:value-of select="$protocol"/>' in <xsl:value-of select="urefurl"/>, using as-is</xsl:message>
+	  <xsl:choose>
+	    <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
+	    <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (\fI\f6<xsl:value-of select="urefurl"/>\fP)</xsl:when>
+	    <xsl:otherwise>\fI\f6<xsl:value-of select="urefurl"/>\fP</xsl:otherwise>
+	  </xsl:choose>
+	</xsl:otherwise>
       </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>

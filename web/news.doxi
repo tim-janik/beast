@@ -26,7 +26,7 @@ look and much improved content.
 @news_title{Monday 2 Sep 2002, New Development Release}
 
 BEAST/BSE version 0.4.1 is available in the
-@uref{http://beast.gtk.org/download.html,,download section}.
+@uref{beast-doc://download,,download section}.
 
 Much has changed in the new development version of BEAST.
 In brief (specifics can be found in the NEWS section), the
@@ -58,7 +58,7 @@ actually featuring the winner image.
 
 We want to specially thank everyone who sent an entry. You may visit the
 contest entries at the
-@uref{http://beast.gtk.org/logo-submissions.html,,logo submissions} page.
+@uref{beast-doc://logo-submissions/,,logo submissions} page.
 
 
 @bye

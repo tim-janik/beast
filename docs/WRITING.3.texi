@@ -52,6 +52,13 @@ MAILTO:
 @item @code{@@uref@{mailto://timj@@gtk.org,, Maintainer@}}: @uref{mailto://timj@@gtk.org,, Maintainer}
 @end itemize
 
+MAILTO with alternative syntax:
+@itemize
+@item @code{@@uref@{mailto:timj@@gtk.org@}}: @uref{mailto:timj@@gtk.org}
+@item @code{@@uref@{mailto:timj@@gtk.org, Maintainer@}}: @uref{mailto:timj@@gtk.org, Maintainer}
+@item @code{@@uref@{mailto:timj@@gtk.org,, Maintainer@}}: @uref{mailto:timj@@gtk.org,, Maintainer}
+@end itemize
+
 NEWS:
 @itemize
 @item @code{@@uref@{news://news.gtk.org/apps.beast@}}: @uref{news://news.gtk.org/apps.beast}
@@ -107,14 +114,22 @@ default.
 @end quotation
 
 @example
+
 This is a @code{@@example} block. Illustrate code, commands,
-and the like. The text is printed in a fixed-width font,
-and indented but not filled.
+and the like. The text is printed in a fixed-width font, and
+indented but not filled.  (Right now this does not look like
+how it is described here. That is because we have to use
+something instead of the buggy @@verbatim command and
+@@example is a good candidate.)
 @end example
 
 @smallexample
-This is a @code{@@smallexample} block. Same as @code{@@example}, except
-that in TeX this command typesets text in a smaller font.
+This is a @code{@@smallexample} block. Same as
+@code{@@example}, except that in TeX this command typesets
+text in a smaller font. (Right now this does not look like how
+it is described here. That is because we have to use something
+instead of the buggy @@verbatim command and @@example is a
+good candidate.)
 @end smallexample
 
 @lisp

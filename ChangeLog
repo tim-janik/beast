@@ -1,3 +1,12 @@
+Thu Jan  2 17:23:54 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/generated/*.xsl: 
+	* docs/WRITING.3.texi: use @example as a replacement for buggy
+	@verbatim until makeinfo got fixed. support relative (non-//) urls
+	for e.g. mailto:.
+	
+	* docs/generated/site-*.texi: fixed relative urls.
+
 Thu Jan  2 06:05:26 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/Makefile.am: support additional rules
