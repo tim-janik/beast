@@ -29,10 +29,10 @@ namespace Sfidl {
 
 class CodeGeneratorModule : public CodeGeneratorCBase {
 protected:
-  std::string TypeRef (const std::string &type);
+  const gchar* TypeRef (const std::string &type);
   std::string createTypeCode (const std::string& type, const std::string& name,
                               TypeCodeModel model);
-  std::string TypeMember (const std::string& type);
+  const gchar* TypeField (const std::string& type);
 
   std::string pspec_constructor (const Param &param);
   std::string func_value_set_param (const Param &param);

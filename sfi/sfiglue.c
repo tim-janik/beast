@@ -678,7 +678,6 @@ sfi_glue_proc_new (const gchar *proc_name)
 
   proc = g_new0 (SfiGlueProc, 1);
   proc->name = g_strdup (proc_name);
-  proc->blurb = NULL;
   proc->help = NULL;
   proc->authors = NULL;
   proc->license = NULL;
@@ -745,7 +744,6 @@ sfi_glue_proc_unref (SfiGlueProc *proc)
 	g_param_spec_unref (proc->params[i]);
       g_free (proc->params);
       g_free (proc->name);
-      g_free (proc->blurb);
       g_free (proc->help);
       g_free (proc->authors);
       g_free (proc->license);

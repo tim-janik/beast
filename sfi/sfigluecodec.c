@@ -324,7 +324,6 @@ encoder_describe_proc (SfiGlueContext *context,
       SfiSeq *pseq;
       GParamSpec *pspec;
       proc = sfi_glue_proc_new (sfi_rec_get_string (rec, "name"));
-      proc->blurb = g_strdup (sfi_rec_get_string (rec, "blurb"));
       proc->help = g_strdup (sfi_rec_get_string (rec, "help"));
       proc->authors = g_strdup (sfi_rec_get_string (rec, "authors"));
       proc->license = g_strdup (sfi_rec_get_string (rec, "license"));
@@ -354,7 +353,6 @@ decoder_describe_proc (SfiGlueDecoder *decoder,
     {
       rec = sfi_rec_new ();
       sfi_rec_set_string (rec, "name", proc->name);
-      sfi_rec_set_string (rec, "blurb", proc->blurb);
       sfi_rec_set_string (rec, "help", proc->help);
       sfi_rec_set_string (rec, "authors", proc->authors);
       sfi_rec_set_string (rec, "license", proc->license);

@@ -29,15 +29,14 @@
 using namespace std;
 using namespace Sfidl;
 
-static string
+static const gchar*
 TypeName (const string &str)
 {
   int pos = str.rfind (':');
   if (pos < 0)  // not fully qualified, prolly an Sfi type
-    return str == "void" ? "void" : "Sfi" + str;
-  return str.substr (pos + 1);
+    return g_intern_string (str == "void" ? "void" : ("Sfi" + str).c_str());
+  return g_intern_string (str.substr (pos + 1).c_str());
 }
-#define cTypeName(s)    TypeName (s).c_str()
 
 static string
 canonify_type (const string& s)
@@ -62,7 +61,7 @@ Qualified (const string &str)
 }
 #define cQualified(s)    Qualified (s).c_str()
 
-string
+const gchar*
 CodeGeneratorModule::TypeRef (const string &type)
 {
   string tname = Qualified (type);
@@ -72,11 +71,10 @@ CodeGeneratorModule::TypeRef (const string &type)
     case FBLOCK:
     case SEQUENCE:
     case RECORD:
-    case OBJECT:        return tname + "*";
-    default:            return tname;
+    case OBJECT:        return g_intern_string (string (tname + "*").c_str());
+    default:            return g_intern_string (tname.c_str());
     }
 }
-#define cTypeRef(s)    TypeRef (s).c_str()
 
 string
 CodeGeneratorModule::createTypeCode (const string& type, const string& name, TypeCodeModel model)
@@ -94,12 +92,11 @@ CodeGeneratorModule::createTypeCode (const string& type, const string& name, Typ
   return CodeGeneratorCBase::createTypeCode (type, name, model);
 }
 
-string
-CodeGeneratorModule::TypeMember (const string& type)
+const gchar*
+CodeGeneratorModule::TypeField (const string& type)
 {
-  return createTypeCode (type, "", MODEL_MEMBER);
+  return g_intern_string (createTypeCode (type, "", MODEL_MEMBER).c_str());
 }
-#define cTypeMember(s)  TypeMember(s).c_str()
 
 static vector<string>
 split_string (const string &ctype)
@@ -236,7 +233,7 @@ CodeGeneratorModule::func_value_get_param (const Param &param,
     case NUM:           return "sfi_value_get_num";
     case REAL:          return "sfi_value_get_real";
     case STRING:        return "sfi_value_get_string";
-    case CHOICE:        return "(" + TypeName (param.type) + ") g_value_get_enum";
+    case CHOICE:        return string ("(") + TypeName (param.type) + ") g_value_get_enum";
     case BBLOCK:        return "sfi_value_get_bblock";
     case FBLOCK:        return "sfi_value_get_fblock";
     case SEQUENCE:      return "sfi_value_get_seq";
@@ -335,8 +332,8 @@ CodeGeneratorModule::run ()
       if (parser.fromInclude (ci->name))
         continue;
       /* class prototypes */
-      printf ("class %s%s;\n", cTypeName (ci->name), "Base");
-      printf ("class %s;\n", cTypeName (ci->name));
+      printf ("class %s%s;\n", TypeName (ci->name), "Base");
+      printf ("class %s;\n", TypeName (ci->name));
     }
   
   /* enumerations */
@@ -347,13 +344,13 @@ CodeGeneratorModule::run ()
         continue;
 
       printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_ENUM_TYPE (%s))\n",
-              cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)), TypeName (ci->name).c_str());
-      printf ("enum %s {\n", cTypeName (ci->name));
+              cUC_NAME (nspace), cUC_NAME (TypeName (ci->name)), TypeName (ci->name));
+      printf ("enum %s {\n", TypeName (ci->name));
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
         printf ("  %s = %d,\n", cUC_NAME (vi->name), vi->sequentialValue );
       printf ("};\n");
       printf ("BSE_CXX_DECLARE_ENUM (%s, \"%s\" \"%s\", %u,\n",
-              cTypeName (ci->name), nspace.c_str(), cTypeName (ci->name), ci->contents.size());
+              TypeName (ci->name), nspace.c_str(), TypeName (ci->name), ci->contents.size());
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
         printf ("                      *v++ = ::Bse::EnumValue (%d, \"%s\", \"%s\" );\n",
                 vi->sequentialValue, cUC_NAME (vi->name), vi->text.c_str());
@@ -411,7 +408,7 @@ CodeGeneratorModule::run ()
 	  printf("public:\n");
 	  for (vector<Param>::const_iterator pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++)
 	    {
-	      printf("  %s %s;\n", cTypeMember(pi->type), pi->name.c_str());
+	      printf("  %s %s;\n", TypeField(pi->type), pi->name.c_str());
 	    }
 	  printf("  static %sPtr _from_rec (SfiRec *rec) { return 0; }\n", name.c_str());
 	  printf("  static SfiRec *_to_rec (%sPtr ptr) { return 0; }\n", name.c_str());
@@ -443,9 +440,9 @@ CodeGeneratorModule::run ()
     {
       string ctName = TypeName (ci->name);
       string ctFullName = nspace + ctName;
-      string ctNameBase = TypeName (ci->name) + "Base";
-      string ctProperties = TypeName (ci->name) + "Properties";
-      string ctPropertyID = TypeName (ci->name) + "PropertyID";
+      string ctNameBase = TypeName (ci->name) + string ("Base");
+      string ctProperties = TypeName (ci->name) + string ("Properties");
+      string ctPropertyID = TypeName (ci->name) + string ("PropertyID");
       vector<string> destroy_jobs;
       if (parser.fromInclude (ci->name))
         continue;
@@ -453,7 +450,7 @@ CodeGeneratorModule::run ()
       /* skeleton class declaration + type macro */
       printf ("class %s : public ::%s {\n", ctNameBase.c_str(), cQualified (ci->inherits));
       printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_CLASS_TYPE (%s))\n",
-              cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)), TypeName (ci->name).c_str());
+              cUC_NAME (nspace), cUC_NAME (TypeName (ci->name)), TypeName (ci->name));
       
       /* class Info strings */
       /* pixstream(), this is a bit of a hack, we make it a template rather than
@@ -473,8 +470,9 @@ CodeGeneratorModule::run ()
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
       printf ("  static inline const char* options   () { return %s; }\n", ci->infos.get("options").escaped().c_str());
-      printf ("  static inline const char* category  () { static const char *c = NULL; const char *pcat = %s; \n", ci->infos.get("category").escaped().c_str());
-      printf ("    if (!c) c = g_intern_strconcat (\"/Modules\", pcat[0] == '/' ? \"\" : \"/\", pcat, NULL);\n");
+      printf ("  static inline const char* category  () { static const char *c = NULL; const char *category = %s; \n",
+              ci->infos.get("category").escaped().c_str());
+      printf ("    if (!c) c = g_intern_strconcat (\"/Modules\", category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
       printf ("    return c; }\n");
       printf ("  static inline const char* blurb     () { return %s; }\n", ci->infos.get("blurb").escaped().c_str());
       printf ("  static inline const char* authors   () { return %s; }\n", ci->infos.get("authors").escaped().c_str());
@@ -519,7 +517,7 @@ CodeGeneratorModule::run ()
           printf ("  /* \"transport\" structure to configure synthesis modules from properties */\n");
           printf ("  struct %s {\n", ctProperties.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-            printf ("    %s %s;\n", cTypeMember (pi->type), pi->name.c_str());
+            printf ("    %s %s;\n", TypeRef (pi->type), pi->name.c_str());
           printf ("    explicit %s (%s *p) ", ctProperties.c_str(), ctNameBase.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
             printf ("%c\n      %s (p->%s)", pi == ci->properties.begin() ? ':' : ',', pi->name.c_str(), pi->name.c_str());
@@ -528,10 +526,10 @@ CodeGeneratorModule::run ()
           printf ("  };\n");
         }
       
-      /* property members */
+      /* property fields */
       printf ("protected:\n");
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-        printf ("  %s %s;\n", cTypeMember (pi->type), pi->name.c_str());
+        printf ("  %s %s;\n", TypeRef (pi->type), pi->name.c_str());
       
       /* property IDs */
       if (ci->properties.begin() != ci->properties.end())
@@ -635,7 +633,7 @@ CodeGeneratorModule::run ()
 
       /* done */
       printf ("};\n"); /* finish: class ... { }; */
-      printf ("BSE_CXX_DECLARE_CLASS (%s);\n", cTypeName (ci->name));
+      printf ("BSE_CXX_DECLARE_CLASS (%s);\n", TypeName (ci->name));
     }
   printf ("\n");
   
@@ -657,7 +655,7 @@ CodeGeneratorModule::run ()
       /* skeleton class declaration + type macro */
       printf ("class %s {\n", ptName.c_str());
       printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_PROC_TYPE (%s))\n",
-              cUC_NAME (nspace), cUC_NAME (cTypeName (mi->name)), ptName.c_str());
+              cUC_NAME (nspace), cUC_NAME (TypeName (mi->name)), ptName.c_str());
 
       /* class Info strings */
       /* pixstream(), this is a bit of a hack, we make it a template rather than
@@ -677,18 +675,25 @@ CodeGeneratorModule::run ()
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
       printf ("  static inline const char* options   () { return %s; }\n", infos.get("options").escaped().c_str());
-      printf ("  static inline const char* category  () { return %s; }\n", infos.get("category").escaped().c_str());
+      printf ("  static inline const char* category  () { static const char *c = NULL; \n");
+      printf ("    const char *root_category = %s, *category = %s;\n",
+              infos.get("root_category").escaped().c_str(), infos.get("category").escaped().c_str());
+      printf ("    if (!c) c = g_intern_strconcat (root_category && root_category[0] ? root_category : \"/Proc\",\n");
+      printf ("                                    category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
+      printf ("    return c; }\n");
       printf ("  static inline const char* blurb     () { return %s; }\n", infos.get("blurb").escaped().c_str());
+      printf ("  static inline const char* authors   () { return %s; }\n", infos.get("authors").escaped().c_str());
+      printf ("  static inline const char* license   () { return %s; }\n", infos.get("license").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", ptFullName.c_str());
       
       /* return type */
-      printf ("  static %s exec (", cTypeRef (mi->result.type));
+      printf ("  static %s exec (", TypeRef (mi->result.type));
       /* args */
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
         {
           if (ai != mi->params.begin())
             printf (", ");
-          printf ("%s %s", cTypeRef (ai->type), ai->name.c_str());
+          printf ("%s %s", TypeRef (ai->type), ai->name.c_str());
         }
       printf (");\n");
       
@@ -699,11 +704,11 @@ CodeGeneratorModule::run ()
       printf ("  {\n");
       printf ("    try {\n");
       if (!is_void)
-        printf ("      %s __return_value =\n", cTypeRef (mi->result.type));
+        printf ("      %s __return_value =\n", TypeRef (mi->result.type));
       printf ("        exec (\n");
       int i = 0;
       for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
-        printf ("              %s (in_values + %u)%c\n", func_value_get_param (*pi, cTypeRef (pi->type)).c_str(), i++,
+        printf ("              %s (in_values + %u)%c\n", func_value_get_param (*pi, TypeRef (pi->type)).c_str(), i++,
                 &(*pi) == &(mi->params.back()) ? ' ' : ',');
       printf ("             );\n");
       if (!is_void)
@@ -725,9 +730,6 @@ CodeGeneratorModule::run ()
               "                    GParamSpec       **in_pspecs,\n"
               "                    GParamSpec       **out_pspecs)");
       printf ("  {\n");
-      printf ("    proc->help = %s;\n", infos.get("help").escaped().c_str());
-      printf ("    proc->authors = %s;\n", infos.get("authors").escaped().c_str());
-      printf ("    proc->license = %s;\n", infos.get("license").escaped().c_str());
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
         printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
           if (!is_void)

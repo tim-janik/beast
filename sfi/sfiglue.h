@@ -49,7 +49,6 @@ void		sfi_glue_iface_unref	(SfiGlueIFace	*iface);
 typedef struct {
   guint        ref_count;
   gchar       *name;
-  gchar       *blurb;
   gchar       *help;
   gchar       *authors;
   gchar       *license;

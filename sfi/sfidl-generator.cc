@@ -261,54 +261,54 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
        * SFI type in the binding
        */
       // how "type" looks like when passed as argument to a function
-      case MODEL_ARG:	      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_ARG:	      g_assert (name == ""); break;
       // how the return type of a function returning "type" looks like
-      case MODEL_RET:	      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_RET:	      g_assert (name == ""); break;
       // how "type" looks like when stored as member in a struct or class
-      case MODEL_MEMBER:      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_MEMBER:      g_assert (name == ""); break;
       // how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
-      case MODEL_ARRAY:	      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_ARRAY:	      g_assert (name == ""); break;
       
       /*
        * memory issues: the following models deal with how to allocate, copy
        * and free a SFI type
        */
       // how to free a "type" called "name"
-      case MODEL_FREE:	      g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_FREE:	      g_assert (name != ""); break;
       // how to copy a "type" called "name"
-      case MODEL_COPY:	      g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_COPY:	      g_assert (name != ""); break;
       // how to create a new "type" called "name" (blank return value allowed)
-      case MODEL_NEW:	      g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_NEW:	      g_assert (name != ""); break;
       
       /*
        * GValues: the following models deal with getting types into and out of
        * GValues
        */
       // how to create a new "type" called "name" from a GValue*
-      case MODEL_FROM_VALUE:  g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_FROM_VALUE:  g_assert (name != ""); break;
       // how to convert the "type" called "name" to a GValue*
-      case MODEL_TO_VALUE:    g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_TO_VALUE:    g_assert (name != ""); break;
       
       /*
        * vcall interface: the following models deal with how to perform a
        * method/procedure invocation using a given data type
        */
       // the name of the VCALL function for calling functions returning "type"
-      case MODEL_VCALL:	      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_VCALL:	      g_assert (name == ""); break;
       // how to pass a "type" called "name" to the VCALL function
-      case MODEL_VCALL_ARG:   g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_ARG:   g_assert (name != ""); break;
       // what type a conversion results in (== MODEL_VCALL_RET ?)
-      case MODEL_VCALL_CARG:  g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_VCALL_CARG:  g_assert (name == ""); break;
       // how to perform the conversion of a vcall parameter called "name" (optional: "" if unused)
-      case MODEL_VCALL_CONV:  g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_CONV:  g_assert (name != ""); break;
       // how to free the conversion result of "name" (optional: "" if unused)
-      case MODEL_VCALL_CFREE: g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_CFREE: g_assert (name != ""); break;
       // what type a vcall result is
-      case MODEL_VCALL_RET:   g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_VCALL_RET:   g_assert (name == ""); break;
       // how to convert the result of a vcall called "name" (optional: name if unused)
-      case MODEL_VCALL_RCONV: g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_RCONV: g_assert (name != ""); break;
       // how to free (using GC) the result of the conversion (optional: "" if unused)
-      case MODEL_VCALL_RFREE: g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_RFREE: g_assert (name != ""); break;
     }
 
   if (parser.isRecord (type) || parser.isSequence (type))

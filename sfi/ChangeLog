@@ -1,3 +1,18 @@
+Tue Dec 23 05:05:06 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-generator.cc: turn checks in createTypeCode() into assertions
+	to avoid wiritng broken files.
+
+	* sfidl-module.[hc]*: return C strings from TypeName(), TypeRef() and
+	TypeField() (renamed from TypeMember()). adaptions to non-std::string
+	returns. reverted using TypeMember() instead of TypeRef() for property
+	and parameter types (changed by stefan) as this broke enum type usages.
+	added Info root_category; hack for procedures, since categories from
+	idl files are always translated.
+
+	* sfiglue.[hc], sfigluecodec.[hc]: removed blurb from procedure
+	description.
+
 Mon Dec 22 23:56:45 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: support per-type options for procedures and objects.
