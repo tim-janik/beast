@@ -1,3 +1,7 @@
+Sat Jun 21 21:43:37 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: announce release.
+
 Sat Jun 21 19:28:53 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: release 0.5.2, binary & interface ages 0.

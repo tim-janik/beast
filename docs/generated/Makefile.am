@@ -222,7 +222,7 @@ site-update-nav: site
 	   && rm ${XPREFIX}-beast-site-nav.tar.gz \
 	   && echo Rebuilding... \
 	   && (cd /web/beast/dyn && make)"
-BEAST_PREVIEW=~/private_html/beast-preview/.
+BEAST_PREVIEW=~/devel_html/beast-preview/.
 site-preview:	site	$(BEAST_PREVIEW)
 	tar jxmpf beast-site-con.tar.bz2 -C $(BEAST_PREVIEW)
 	tar zxmpf beast-site-img.tar.gz  -C $(BEAST_PREVIEW)

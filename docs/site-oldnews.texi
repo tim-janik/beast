@@ -11,6 +11,17 @@
 @unnumbered What Was New? (Ancient News)
 
 
+@newsTitle{Wednesday 19 Mar 2003, List move and site updates}
+
+The @beast mailing list has moved. People may subscribe to the
+new list at @uref{http://mail.gnome.org/mailman/listinfo/beast/}
+now, or just read the archives at @uref{http://mail.gnome.org/archives/beast/}.
+Also, the @uref{beast-doc://links-synthesis,, link section}
+has been updated, and we got new or updated screen shots
+(amongst them the new track editor) in the
+@uref{beast-doc://screenshots/index,,screen shot area}.
+
+
 @newsTitle{Thursday 13 Mar 2003, New Development Release}
 
 BEAST/BSE version 0.5.0 is available in the
