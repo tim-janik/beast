@@ -1,3 +1,9 @@
+Fri Apr  9 11:48:27 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkdialog.c (call_gtk_window_activate_key): work around
+	beast relying on _gtk_window_activate_key() which isn't exported by
+	Gtk+-2.4 anymore.
+
 Fri Apr  9 10:18:02 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-links-synthesis.texi: link updates.
