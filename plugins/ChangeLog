@@ -1,3 +1,12 @@
+Thu Dec  9 03:56:24 1999  Tim Janik  <timj@gtk.org>
+
+	* bsegenosc.c (bse_gen_osc_calc_chunk): handle amplitude modulation.
+
+	* bseloopback.[hc]: simlpe plugin to reroute it's input to the output
+	(no, no extra buffer copy is necessary).
+
+	* removed testos.c (finally).
+
 Sun Dec  5 02:52:29 1999  Tim Janik  <timj@gtk.org>
 
 	* bsecapture.[hc]: adapted stuff to the new BsePcmDevice and BseHeart
