@@ -132,6 +132,7 @@ bse_bus_set_property (GObject      *object,
       BseItem *parent;
       double db;
     case PROP_INPUTS:
+      /* save user provided order */
       saved_inputs = bse_item_seq_to_ring (g_value_get_boxed (value));
       /* provide sorted rings: self->inputs, inputs */
       inputs = sfi_ring_sort (sfi_ring_copy (saved_inputs), sfi_compare_pointers, NULL);
@@ -141,7 +142,6 @@ bse_bus_set_property (GObject      *object,
       bus_list_candidates (self, iseq);
       candidates = sfi_ring_sort (bse_item_seq_to_ring (iseq), sfi_compare_pointers, NULL);
       bse_item_seq_free (iseq);
-      g_printerr ("inputs: old=%u new=%u candi=%u\n", sfi_ring_length (self->inputs), sfi_ring_length (inputs), sfi_ring_length (candidates));//FIXME
       /* constrain the new input list */
       ring = sfi_ring_intersection (inputs, candidates, sfi_compare_pointers, NULL);
       sfi_ring_free (candidates);
@@ -155,6 +155,11 @@ bse_bus_set_property (GObject      *object,
       ring = sfi_ring_difference (inputs, self->inputs, sfi_compare_pointers, NULL);
       while (ring)
         bse_bus_connect (self, sfi_ring_pop_head (&ring));
+      sfi_ring_free (inputs);
+      /* restore user provided order */
+      self->inputs = sfi_ring_sort (self->inputs, sfi_compare_pointers, NULL);
+      inputs = self->inputs;
+      self->inputs = sfi_ring_reorder (inputs, saved_inputs, sfi_compare_pointers, NULL);
       sfi_ring_free (inputs);
       sfi_ring_free (saved_inputs);
       break;

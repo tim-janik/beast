@@ -236,7 +236,7 @@ bse_undo_group_peek_last_atom (BseUndoStack *self,
       self->undo_groups)
     {
       BseUndoGroup *group = self->undo_groups->data;
-      if (sfi_ring_test_length (group->undo_steps, 1))
+      if (sfi_ring_cmp_length (group->undo_steps, 1) == 0)
         {
           /* last undo commit was atomic step */
           if (stamp_p)
