@@ -29,7 +29,8 @@ enum
   PARAM_XKB_SYMBOL,
   PARAM_DISABLE_ALSA,
   PARAM_TAB_WIDTH,
-  PARAM_SAMPLE_SWEEP
+  PARAM_SAMPLE_SWEEP,
+  PARAM_PE_KEY_FOCUS_UNSELECTS
 };
 
 
@@ -57,13 +58,14 @@ static BseTypeClass     *parent_class = NULL;
 static BstGlobals        bst_globals_current = { 0, };
 const BstGlobals * const bst_globals = &bst_globals_current;
 static const BstGlobals  bst_globals_defaults = {
+  NULL			/* xkb_symbol */,
+  FALSE			/* xkb_force_query */,
   TRUE			/* snet_anti_aliased */,
   TRUE			/* snet_edit_fallback */,
   FALSE			/* snet_swap_io_channels */,
-  FALSE			/* xkb_force_query */,
-  NULL			/* xkb_symbol */,
   FALSE			/* disable_alsa */,
   TRUE			/* sample_sweep */,
+  FALSE			/* pe_key_focus_unselects */,
   0			/* tab_width */,
 };
 
@@ -181,6 +183,13 @@ bst_gconfig_class_init (BstGConfigClass *class)
 			      bse_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
 						   globals_defaults.snet_swap_io_channels,
 						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Pattern Editor",
+			      PARAM_PE_KEY_FOCUS_UNSELECTS,
+			      bse_param_spec_bool ("pe_key_focus_unselects", "Focus moves reset selection",
+						   "Reset the pattern editor's selection when keyboard moves"
+						   "the focus",
+						   globals_defaults.pe_key_focus_unselects,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Geometry",
 			      PARAM_TAB_WIDTH,
 			      bse_param_spec_uint ("tab_width", "Project tabulator width",
@@ -229,6 +238,9 @@ bst_gconfig_set_param (BstGConfig *gconf,
     case PARAM_SAMPLE_SWEEP:
       gconf->globals.sample_sweep = param->value.v_bool;
       break;
+    case PARAM_PE_KEY_FOCUS_UNSELECTS:
+      gconf->globals.pe_key_focus_unselects = param->value.v_bool;
+      break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
 		 BSE_OBJECT_TYPE_NAME (gconf),
@@ -269,6 +281,9 @@ bst_gconfig_get_param (BstGConfig *gconf,
       break;
     case PARAM_SAMPLE_SWEEP:
       param->value.v_bool = gconf->globals.sample_sweep;
+      break;
+    case PARAM_PE_KEY_FOCUS_UNSELECTS:
+      param->value.v_bool = gconf->globals.pe_key_focus_unselects;
       break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",

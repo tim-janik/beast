@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -203,6 +203,7 @@ struct _BstPatternEditor
   guint		in_selection : 1;
   guint		selection_subtract : 1;
   guint32	*saved_selection;
+  guint32	*selection;
   guint16	selection_channel;
   guint16	selection_row;
   guint		selection_timer;
@@ -279,7 +280,8 @@ gint	   bst_pattern_editor_get_cell	      (BstPatternEditor		*pe,
 					       gint			*row_p);
 void	   bst_pattern_editor_set_focus	      (BstPatternEditor		*pe,
 					       guint			 channel,
-					       guint			 row);
+					       guint			 row,
+					       gboolean                  reset_selection);
 void	   bst_pattern_editor_adjust_sas      (BstPatternEditor		*pe,
 					       gboolean			 check_bounds);
 void	   bst_pattern_editor_set_octave      (BstPatternEditor		*pe,
@@ -300,6 +302,16 @@ void	   bst_pattern_editor_class_set_key   (BstPatternEditorClass	*pe_class,
 					       guint16			 modifier,
 					       BstPEActionType		 pe_action);
 GString*   bst_pattern_editor_class_keydump   (BstPatternEditorClass	*pe_class);
+
+
+/* --- selections --- */
+/* we maintain a bitmask of selected notes independantly from the
+ * BsePattern structure, so we provide functions to sync our
+ * our selection with the BsePattern
+ */
+void bst_pattern_editor_apply_selection  (BstPatternEditor *pe);
+void bst_pattern_editor_resync_selection (BstPatternEditor *pe);
+void bst_pattern_editor_reset_selection  (BstPatternEditor *pe);
 
 
 

@@ -219,7 +219,7 @@ pe_cell_clicked (BstPatternEditor *pe,
 								bst_pattern_dialog_factories_path);
       guint index = (channel + 1) << 16 | (row + 1);
 
-      bst_pattern_editor_set_focus (pe, channel, row);
+      bst_pattern_editor_set_focus (pe, channel, row, FALSE);
       
       gtk_item_factory_popup_with_data (popup_factory,
 					GUINT_TO_POINTER (index),
@@ -303,9 +303,10 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
   slist = g_slist_prepend (slist, &param_focus_channel);
   slist = g_slist_prepend (slist, &param_focus_row);
   
-  /* invoke procedure */
-  bse_pattern_select_note (pattern, pattern_editor->focus_channel, pattern_editor->focus_row);
+  /* invoke procedure with selection from pattern editor */
+  bst_pattern_editor_apply_selection (pattern_editor);
   bst_procedure_void_execpl (proc, slist);
+  bst_pattern_editor_resync_selection (pattern_editor);
 
   /* free preset params and destroy their specs again */
   while (slist)

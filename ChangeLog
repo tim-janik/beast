@@ -1,3 +1,16 @@
+Wed Feb  2 23:14:18 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterneditor.[hc]: selection fixups, each view can have
+	its own selection now.
+	many other fixes.
+	(there are still minor problems with the focus field selection state
+	 and procedure invocation).
+	* beast-gtk/bstpatterneditorselection.c: move all the pattern editor
+	selection relevant code here.
+
+	* beast-gtk/bstpatterndialog.c (pattern_dialog_exec_proc): apply the
+	views selection before invoking a procedure and resync afterwards.
+
 Wed Feb  2 06:42:41 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_param_set_editable): make prompt, pre- and

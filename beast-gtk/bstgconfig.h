@@ -35,19 +35,21 @@ extern "C" {
 #define BST_SNET_EDIT_FALLBACK		(bst_globals->snet_edit_fallback)
 #define BST_SNET_SWAP_IO_CHANNELS	(bst_globals->snet_swap_io_channels)
 #define BST_SAMPLE_SWEEP		(bst_globals->sample_sweep)
+#define BST_PE_KEY_FOCUS_UNSELECTS	(bst_globals->pe_key_focus_unselects)
 
 
 /* --- BstGlobals --- */
 typedef struct _BstGlobals BstGlobals;
 struct _BstGlobals
 {
+  gchar *xkb_symbol;
+  guint  xkb_force_query : 1;
   guint  snet_anti_aliased : 1;
   guint  snet_edit_fallback : 1;
   guint  snet_swap_io_channels : 1;
-  guint  xkb_force_query : 1;
-  gchar *xkb_symbol;
   guint  disable_alsa : 1;
   guint  sample_sweep : 1;
+  guint  pe_key_focus_unselects : 1;
   guint  tab_width : 16;
 };
 extern const BstGlobals * const bst_globals;
