@@ -115,6 +115,7 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   BseCategorySeq *cseq;
   BstMenuConfig *m1, *m2, *m3, *m4;
+  guint i;
 
   parent_class = g_type_class_peek_parent (class);
   bst_snet_router_class = class;
@@ -132,7 +133,14 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   m1 = bst_menu_config_from_entries (G_N_ELEMENTS (popup_entries), popup_entries);
   /* module entries */
   cseq = bse_categories_match ("/Modules/*");
-  m2 = bst_menu_config_from_cats (cseq, bst_router_popup_select, 1, NULL, NULL);
+  m2 = bst_menu_config_from_entries (0, NULL);
+  for (i = 0; i < cseq->n_cats; i++)
+    {
+      const gchar *stock_fallback = NULL;
+      if (strncmp (cseq->cats[i]->type, "BseLadspaModule_", 16) == 0)
+        stock_fallback = BST_STOCK_LADSPA;
+      bst_menu_config_append_cat (m2, cseq->cats[i], bst_router_popup_select, 1, NULL, stock_fallback);
+    }
   bst_menu_config_sort (m2);
   /* SNet utilities */
   cseq = bse_categories_match ("/SNet/*");

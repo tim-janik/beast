@@ -18,9 +18,9 @@
 #include "bstcanvassource.h"
 
 #include "topconfig.h"
-
 #include "bstparamview.h"
 #include "bstgconfig.h"
+#include <string.h>
 
 
 /* --- defines --- */
@@ -71,7 +71,8 @@ static gboolean bst_canvas_source_child_event	(BstCanvasSource	*csource,
 						 GnomeCanvasItem        *child);
 static void     bst_canvas_source_changed       (BstCanvasSource        *csource);
 static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
-						 BseIcon         	*icon);
+						 BseIcon         	*icon,
+                                                 const gchar            *module_type);
 static void	csource_info_update		(BstCanvasSource	*csource);
 
 
@@ -239,7 +240,7 @@ source_icon_changed (BstCanvasSource *csource)
   /* update icon in group, revert to a stock icon if none is available
    */
   icon = bse_item_get_icon (csource->source);
-  bst_canvas_icon_set (csource->icon_item, icon);
+  bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source));
 }
 
 static void
@@ -629,7 +630,8 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
 
 static void
 bst_canvas_icon_set (GnomeCanvasItem *item,
-		     BseIcon         *icon)
+		     BseIcon         *icon,
+                     const gchar     *module_type)
 {
   GdkPixbuf *pixbuf;
   gboolean need_unref = FALSE;
@@ -647,6 +649,8 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 			      (GtkDestroyNotify) bse_icon_free);
       need_unref = TRUE;
     }
+  else if (module_type && strncmp (module_type, "BseLadspaModule_", 16) == 0)
+    pixbuf = bst_pixbuf_ladspa ();
   else
     pixbuf = bst_pixbuf_no_icon ();
 

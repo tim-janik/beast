@@ -48,6 +48,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_MUSIC_COPY		$(srcdir)/music-copy.png	\
 	STOCK_MUSIC_PASTE		$(srcdir)/music-paste.png	\
 	STOCK_NO_ICON			$(srcdir)/noicon.png		\
+	STOCK_LADSPA			$(srcdir)/ladspa.png		\
 	STOCK_NO_ILINK			$(srcdir)/no_ilink.png		\
 	STOCK_NO_OLINK			$(srcdir)/no_olink.png		\
 	STOCK_NOTE_1			$(srcdir)/note-1.png		\

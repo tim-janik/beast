@@ -75,13 +75,19 @@ typedef struct {
 
 
 /* --- item factory helpers --- */
+BstMenuConfig*	bst_menu_config_from_entries	(guint			 n_entries,
+						 BstMenuConfigEntry	*entries);
+BstMenuConfig*	bst_menu_config_append_cat	(BstMenuConfig          *mconfig,
+                                                 BseCategory		*cat,
+						 BstMenuCatFunc		 callback,
+						 guint			 skip_levels,
+                                                 const gchar            *new_prefix,
+                                                 const gchar            *stock_fallback);
 BstMenuConfig*	bst_menu_config_from_cats	(BseCategorySeq		*cseq,
 						 BstMenuCatFunc		 callback,
 						 guint			 skip_levels,
                                                  const gchar            *new_prefix,
                                                  const gchar            *stock_fallback);
-BstMenuConfig*	bst_menu_config_from_entries	(guint			 n_entries,
-						 BstMenuConfigEntry	*entries);
 void		bst_menu_config_sort		(BstMenuConfig		*config);
 void		bst_menu_config_reverse		(BstMenuConfig		*config);
 BstMenuConfig*	bst_menu_config_merge		(BstMenuConfig		*config,

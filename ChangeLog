@@ -1,3 +1,14 @@
+Fri Oct 10 15:50:55 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: 
+	* beast-gtk/bstcanvassource.c: fallback to ladspa icon instead
+	of noicon icon if the module is a ladspa plugin (and has no icon).
+
+	* beast-gtk/icons/ladspa.png: variant of noicon.png.
+
+	* beast-gtk/bstmenus.[hc]: allow adding single categories to a menu
+	configuration.
+
 Fri Oct 10 14:53:46 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: nuke palette icon selection special casing.
