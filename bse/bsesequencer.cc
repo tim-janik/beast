@@ -26,6 +26,7 @@
 #include "gslieee754.h" // FIXME: remove
 #include <sys/poll.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <assert.h>
 #include <errno.h>
 #include <vector>
@@ -61,6 +62,10 @@ bse_sequencer_init_thread (void)
 
   if (pipe (sequencer_wake_up_pipe) < 0)
     g_error ("failed to create sequencer wake-up pipe: %s", strerror (errno));
+  glong flags = fcntl (sequencer_wake_up_pipe[0], F_GETFL, 0);
+  fcntl (sequencer_wake_up_pipe[0], F_SETFL, O_NONBLOCK | flags);
+  flags = fcntl (sequencer_wake_up_pipe[1], F_GETFL, 0);
+  fcntl (sequencer_wake_up_pipe[1], F_SETFL, O_NONBLOCK | flags);
 
   /* initialize BseSequencer */
   static BseSequencer sseq = { 0, };
@@ -240,7 +245,11 @@ bse_sequencer_remove_io_watch (BseIOWatch      watch_func,
         }
     }
   else /* can remove (watch_func(watch_data) not in call) */
-    removal_success = sequencer_poll_pool.remove_watch (watch_func, watch_data);
+    {
+      removal_success = sequencer_poll_pool.remove_watch (watch_func, watch_data);
+      /* wake up sequencer thread, so it stops polling on fds it doesn't own anymore */
+      sfi_thread_wakeup (bse_sequencer_thread);
+    }
   BSE_SEQUENCER_UNLOCK ();
   if (!removal_success)
     g_warning ("%s: failed to remove %p(%p)", G_STRFUNC, watch_func, watch_data);
@@ -263,7 +272,7 @@ bse_sequencer_poll_Lm (gint timeout_ms)
   if (result > 0 && pfds[0].revents)
     {
       guint8 buffer[256];
-      read (pfds[0].fd, buffer, 256);                   /* eat wakeup */
+      read (sequencer_wake_up_pipe[0], buffer, 256);    /* eat wake up message */
       result -= 1;
     }
   if (result > 0)
