@@ -354,8 +354,10 @@ xmod_process (GslModule *module,
       sample = xmod->string[xmod->pos] * (1.0 - (((float) xmod->count) / actual_freq_256));
       sample += xmod->string[pos2] * (((float) xmod->count) / actual_freq_256);
       
-      /* Store sample. */
-      wave_out[i] = sample;
+      /* store sample, clipping is required as the algorithm generates
+       * overshoot on purpose
+       */
+      wave_out[i] = CLAMP (sample, -1.0, +1.0);
 
       /* Use Bresenham's algorithm to advance to the next position. */
       xmod->count += real_freq_256;
@@ -415,8 +417,7 @@ dav_xtal_strings_context_create (BseSource *source,
   XtalStringsModule *xmod = g_new0 (XtalStringsModule, 1);
   GslModule *module;
 
-  xmod->string = g_new (gfloat, (BSE_MIX_FREQ + 19) / 20);
-  xmod->string[0] = 0.0;
+  xmod->string = g_new0 (gfloat, (BSE_MIX_FREQ + 19) / 20);
   xmod->size = 1;
   xmod->pos = 0;
   xmod->count = 0;

@@ -1,3 +1,7 @@
+Tue May 14 03:40:39 2002  Tim Janik  <timj@gtk.org>
+
+	* davxtalstrings.c (xmod_process): fix clipping bug i just introduced.
+
 Tue May 14 02:56:23 2002  Tim Janik  <timj@gtk.org>
 
 	* davxtalstrings.c: some cleanups, provide sane trigger facility
