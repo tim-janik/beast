@@ -24,6 +24,7 @@ sub parse_options {
 }
 sub parse_entries {
     my $file = shift;
+    my $file_name = shift;
     
     while (<$file>) {
 	
@@ -50,7 +51,7 @@ sub parse_entries {
 		   ([^*]|\*(?!/))*$
 		   @x) {
 		my $new;
-		defined ($new = <>) || die "Unmatched comment in $ARGV";
+		defined ($new = <>) || die "Unmatched comment in $file_name";
 		$_ .= $new;
 	    }
 	    
@@ -59,7 +60,7 @@ sub parse_entries {
 		([^*]+|\*(?!/))*
 		    \*/@@gx;
 	
-	    if (parse_entries (\*NEWFILE)) {
+	    if (parse_entries (\*NEWFILE, $NEWFILE)) {
 		return 1;
 	    } else {
 		next;
@@ -98,10 +99,13 @@ sub parse_entries {
 	    } else {
 		push @entries, [ $name ];
 	    }
+	} elsif (m@^\s*\#@) {
+	    # ignore preprocessor directives
 	} else {
-	    print STDERR "Can't understand: $_\n";
+	    print STDERR "$0: $file_name:$.: Failed to parse `$_'\n";
 	}
     }
+
     return 0;
 }
 
@@ -192,7 +196,7 @@ while (<>) {
 	@entries = ();
 
 	# Now parse the entries
-	parse_entries (\*ARGV);
+	parse_entries (\*ARGV, $ARGV);
 
 	# figure out if this was a flags or enums enumeration
 

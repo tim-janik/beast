@@ -96,8 +96,10 @@ typedef enum
   BSE_ERROR_UNKNOWN,
   BSE_ERROR_INTERNAL,
   BSE_ERROR_UNIMPLEMENTED,
+  BSE_ERROR_IO,
+  BSE_ERROR_PERMS,
   /* FIle, Loading/Saving errors */
-  BSE_ERROR_FILE_IO,
+#define BSE_ERROR_FILE_IO	BSE_ERROR_IO
   BSE_ERROR_FILE_EXISTS,
   BSE_ERROR_FILE_NOT_FOUND,
   BSE_ERROR_FILE_TOO_SHORT,
@@ -111,10 +113,10 @@ typedef enum
   BSE_ERROR_BINARY_DATA_CORRUPT,
   BSE_ERROR_PARSE_ERROR,
   /* Device errors */
-  BSE_ERROR_DEVICE_PERMS,
+#define BSE_ERROR_DEVICE_IO	BSE_ERROR_IO
+#define BSE_ERROR_DEVICE_PERMS	BSE_ERROR_PERMS
   BSE_ERROR_DEVICE_ASYNC,
   BSE_ERROR_DEVICE_BUSY,
-  BSE_ERROR_DEVICE_IO,
   BSE_ERROR_DEVICE_GET_CAPS,
   BSE_ERROR_DEVICE_CAPS_MISMATCH,
   BSE_ERROR_DEVICE_SET_CAPS,
@@ -164,7 +166,8 @@ BseFlagsValue*	bse_flags_get_value_by_nick	(BseFlagsClass	*flags_class,
 gchar*		bse_error_name			(BseErrorType	 error_value);
 gchar*		bse_error_nick			(BseErrorType	 error_value);
 gchar*		bse_error_blurb			(BseErrorType	 error_value);
-
+BseErrorType	bse_error_from_errno		(gint		 v_errno,
+						 BseErrorType    fallback);
 
 
 #ifdef __cplusplus

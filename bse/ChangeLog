@@ -1,3 +1,13 @@
+Sun Jan  9 12:49:29 2000  Tim Janik  <timj@gtk.org>
+
+	* bsegconfig.[hc]: moved the BseGConfig object from bseglobals.[hc].
+	implement object functions as methods in class so they can be overridden.
+
+	* bseglobals.[hc]: cleanups, provide private interface for BseGConfig.
+
+	* bseenums.[hc] (bse_error_from_errno): new function to map errno values
+        to BSE_ERROR_* values.
+
 Fri Jan  7 23:15:08 2000  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-alsa.c (bse_pcm_device_alsa_retrigger): use ALSA's

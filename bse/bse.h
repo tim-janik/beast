@@ -41,6 +41,7 @@
 #include        <bse/bseeffectvolumedelta.h>
 #include        <bse/bseenums.h>
 #include        <bse/bseexports.h>
+#include        <bse/bsegconfig.h>
 #include        <bse/bseglobals.h>
 #include        <bse/bseheart.h>
 #include        <bse/bseinstrument.h>

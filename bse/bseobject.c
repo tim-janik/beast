@@ -1168,7 +1168,7 @@ bse_object_class_add_param (BseObjectClass *class,
     {
       if (class->param_specs[i]->any.param_id == param_id)
 	{
-	  g_warning ("bse_object_class_add_param(): class `%s' already contains a parameter for %u",
+	  g_warning ("bse_object_class_add_param(): class `%s' already contains a parameter with id %u",
 		     BSE_CLASS_NAME (class),
 		     param_id);
 	  return;

@@ -63,7 +63,10 @@
 
 
 /* --- prototypes --- */
-static void bse_gconfig_notify_lock_changed (void);
+extern void        bse_gconfig_notify_lock_changed (void);			/* from bsegconfig.c */
+extern void        bse_globals_copy                (const BseGlobals *globals_src,
+						    BseGlobals       *globals); /* for bsegconfig.c */
+extern void        bse_globals_reset               (BseGlobals       *globals); /* for bsegconfig.c */
 
 
 /* --- extern variables --- */
@@ -83,8 +86,7 @@ const gdouble*	_bse_fine_tune_factor_table = NULL;
 static guint		 bse_globals_lock_count = 0;
 static BseGlobals	 bse_globals_current = { 0, };
 const BseGlobals * const bse_globals = &bse_globals_current;
-static const BseGlobals	 bse_globals_defaults =
-{
+static const BseGlobals	 bse_globals_defaults = {
   0.1		/* step_volume_dB */,
   10		/* step_bpm */,
   4		/* step_n_channels */,
@@ -170,9 +172,36 @@ bse_globals_init (void)
   
   /* setup BseGlobals
    */
-  bse_globals_current = bse_globals_defaults;
+  bse_globals_copy (&bse_globals_defaults, &bse_globals_current);
   
   bse_globals_lock_count = 0;
+}
+
+void
+bse_globals_copy (const BseGlobals *globals_src,
+		  BseGlobals       *globals)
+{
+  if (!globals_src)
+    globals_src = &bse_globals_defaults;
+  if (!globals)
+    {
+      g_return_if_fail (bse_globals_locked () == FALSE);
+
+      bse_globals_reset (&bse_globals_current);
+      globals = &bse_globals_current;
+    }
+
+  *globals = *globals_src;
+  /* g_strdup()s */
+}
+
+void
+bse_globals_reset (BseGlobals *globals)
+{
+  g_return_if_fail (globals != NULL);
+
+  /* g_free()s */
+  memset (globals, 0, sizeof (*globals));
 }
 
 void
@@ -229,360 +258,4 @@ bse_dB_from_factor (gdouble factor,
     }
   else
     return min_dB;
-}
-
-
-/* --- BseGConfig ---
- * "object-ified" interface to the globals structure
- */
-#include "bseobject.h"		/* for object inheritance */
-#include "bsepcmdevice.h"	/* for frequency alignment */
-
-/* --- structures --- */
-struct _BseGConfig
-{
-  BseObject parent_object;
-
-  BseGlobals globals;
-};
-struct _BseGConfigClass
-{
-  BseObjectClass parent_class;
-};
-
-
-/* --- parameters --- */
-enum
-{
-  PARAM_0,
-  PARAM_STEP_VOLUME_dB,
-  PARAM_STEP_BPM,
-  PARAM_STEP_N_CHANNELS,
-  PARAM_STEP_PATTERN_LENGTH,
-  PARAM_STEP_BALANCE,
-  PARAM_STEP_TRANSPOSE,
-  PARAM_STEP_FINE_TUNE,
-  PARAM_STEP_ENV_TIME,
-  PARAM_TRACK_LENGTH,
-  PARAM_MIXING_FREQUENCY,
-  PARAM_HEART_PRIORITY
-};
-
-
-/* --- prototypes --- */
-static void	 bse_gconfig_init		(BseGConfig	 *gconf);
-static void	 bse_gconfig_class_init		(BseGConfigClass *class);
-static void	 bse_gconfig_class_destroy	(BseGConfigClass *class);
-static void      bse_gconfig_set_param          (BseGConfig	 *gconf,
-						 BseParam        *param);
-static void      bse_gconfig_get_param          (BseGConfig	 *gconf,
-						 BseParam        *param);
-static void	 bse_gconfig_do_shutdown	(BseObject     	 *object);
-
-
-/* --- variables --- */
-static BseTypeClass     *parent_class = NULL;
-static GSList           *bse_gconfig_list = NULL;
-
-
-/* --- functions --- */
-BSE_BUILTIN_TYPE (BseGConfig)
-{
-  static const BseTypeInfo gconfig_info = {
-    sizeof (BseGConfigClass),
-    
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_gconfig_class_init,
-    (BseClassDestroyFunc) bse_gconfig_class_destroy,
-    NULL /* class_data */,
-
-    sizeof (BseGConfig),
-    0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_gconfig_init,
-  };
-
-  return bse_type_register_static (BSE_TYPE_OBJECT,
-				   "BseGConfig",
-				   "Global configuration object",
-				   &gconfig_info);
-}
-
-static void
-bse_gconfig_class_destroy (BseGConfigClass *class)
-{
-}
-
-static void
-bse_gconfig_init (BseGConfig *gconf)
-{
-  gconf->globals = bse_globals_current;
-
-  bse_gconfig_list = g_slist_prepend (bse_gconfig_list, gconf);
-}
-
-static void
-bse_gconfig_do_shutdown (BseObject *object)
-{
-  BseGConfig *gconf;
-  
-  gconf = BSE_GCONFIG (object);
-  
-  bse_gconfig_list = g_slist_remove (bse_gconfig_list, gconf);
-
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
-}
-
-static void
-bse_gconfig_notify_lock_changed (void)
-{
-  GSList *slist;
-
-  for (slist = bse_gconfig_list; slist; slist = slist->next)
-    BSE_NOTIFY (slist->data, lock_changed, NOTIFY (OBJECT, DATA));
-}
-
-static void
-bse_gconfig_class_init (BseGConfigClass *class)
-{
-  BseObjectClass *object_class;
-    
-  parent_class = bse_type_class_peek (BSE_TYPE_OBJECT);
-  object_class = BSE_OBJECT_CLASS (class);
-  
-  object_class->set_param = (BseObjectSetParamFunc) bse_gconfig_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_gconfig_get_param;
-  object_class->shutdown = bse_gconfig_do_shutdown;
-  
-  bse_object_class_add_param (object_class, "Mixing Heart",
-			      PARAM_TRACK_LENGTH,
-			      bse_param_spec_uint ("track_length", "Track Length", "Internal BSE buffer length (hunk size)",
-						   4, 4096, 4,
-						   bse_globals_defaults.track_length,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  bse_object_class_add_param (object_class, "Mixing Heart",
-			      PARAM_MIXING_FREQUENCY,
-			      bse_param_spec_uint ("mixing_frequency", "Mixing Frequency [Hz]",
-						   "Frequency for BSE internal buffer mixing, common "
-						   "values are: 16000, 22050, 44100, 48000",
-						   bse_pcm_freq_to_freq (BSE_PCM_FREQ_MIN),
-						   bse_pcm_freq_to_freq (BSE_PCM_FREQ_MAX),
-						   0,
-						   bse_globals_defaults.mixing_frequency,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Mixing Heart",
-			      PARAM_HEART_PRIORITY,
-			      bse_param_spec_int ("heart_priority", "BseHeart Priority", "GLib Main Loop priority for BseHeart",
-						  G_PRIORITY_HIGH - 100, G_PRIORITY_LOW + 100, 10,
-						  bse_globals_defaults.heart_priority,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RDONLY));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_VOLUME_dB,
-			      bse_param_spec_float ("step_volume_dB", "Volume [dB] Steps", "Step width for volume in decibell",
-						    0.001, 5, 0.01,
-						    bse_globals_defaults.step_volume_dB,
-						    BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_BPM,
-			      bse_param_spec_uint ("step_bpm", "BPM Steps", "Step width for beats per minute",
-						   1, 50, 1,
-						   bse_globals_defaults.step_bpm,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_N_CHANNELS,
-			      bse_param_spec_uint ("step_n_channels", "Channel Count Steps", "Step width for number of channels",
-						   1, 16, 1,
-						   bse_globals_defaults.step_n_channels,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_PATTERN_LENGTH,
-			      bse_param_spec_uint ("step_pattern_length", "Pattern Length Steps", "Step width for pattern length",
-						   1, 16, 1,
-						   bse_globals_defaults.step_pattern_length,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_BALANCE,
-			      bse_param_spec_uint ("step_balance", "Balance Steps", "Step width for balance",
-						   1, 24, 1,
-						   bse_globals_defaults.step_balance,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_TRANSPOSE,
-			      bse_param_spec_uint ("step_transpose", "Transpose Steps", "Step width for transpositions",
-						   1, 12, 1,
-						   bse_globals_defaults.step_transpose,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_FINE_TUNE,
-			      bse_param_spec_uint ("step_fine_tune", "Fine Tune Steps", "Step width for fine tunes",
-						   1, 6, 1,
-						   bse_globals_defaults.step_fine_tune,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Step Widths",
-			      PARAM_STEP_ENV_TIME,
-			      bse_param_spec_uint ("step_env_time", "Envelope Time Steps", "Step width for envelope times",
-						   1, 128, 1,
-						   bse_globals_defaults.step_env_time,
-						   BSE_PARAM_DEFAULT));
-}
-
-static void
-bse_gconfig_set_param (BseGConfig *gconf,
-		       BseParam   *param)
-{
-  switch (param->pspec->any.param_id)
-    {
-    case PARAM_STEP_VOLUME_dB:
-      gconf->globals.step_volume_dB = param->value.v_float;
-      break;
-    case PARAM_STEP_BPM:
-      gconf->globals.step_bpm = param->value.v_uint;
-      break;
-    case PARAM_STEP_N_CHANNELS:
-      gconf->globals.step_n_channels = param->value.v_uint;
-      break;
-    case PARAM_STEP_PATTERN_LENGTH:
-      gconf->globals.step_pattern_length = param->value.v_uint;
-      break;
-    case PARAM_STEP_BALANCE:
-      gconf->globals.step_balance = param->value.v_uint;
-      break;
-    case PARAM_STEP_TRANSPOSE:
-      gconf->globals.step_transpose = param->value.v_uint;
-      break;
-    case PARAM_STEP_FINE_TUNE:
-      gconf->globals.step_fine_tune = param->value.v_uint;
-      break;
-    case PARAM_STEP_ENV_TIME:
-      gconf->globals.step_env_time = param->value.v_uint;
-      break;
-    case PARAM_TRACK_LENGTH:
-      gconf->globals.track_length = param->value.v_uint;
-      break;
-    case PARAM_MIXING_FREQUENCY:
-      gconf->globals.mixing_frequency = bse_pcm_freq_to_freq (bse_pcm_freq_from_freq (param->value.v_uint));
-      break;
-    case PARAM_HEART_PRIORITY:
-      gconf->globals.heart_priority = param->value.v_int;
-      break;
-    default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (gconf),
-		 BSE_OBJECT_NAME (gconf),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
-      break;
-    }
-}
-
-static void
-bse_gconfig_get_param (BseGConfig *gconf,
-		       BseParam   *param)
-{
-  switch (param->pspec->any.param_id)
-    {
-    case PARAM_STEP_VOLUME_dB:
-      param->value.v_float = gconf->globals.step_volume_dB;
-      break;
-    case PARAM_STEP_BPM:
-      param->value.v_uint = gconf->globals.step_bpm;
-      break;
-    case PARAM_STEP_N_CHANNELS:
-      param->value.v_uint = gconf->globals.step_n_channels;
-      break;
-    case PARAM_STEP_PATTERN_LENGTH:
-      param->value.v_uint = gconf->globals.step_pattern_length;
-      break;
-    case PARAM_STEP_BALANCE:
-      param->value.v_uint = gconf->globals.step_balance;
-      break;
-    case PARAM_STEP_TRANSPOSE:
-      param->value.v_uint = gconf->globals.step_transpose;
-      break;
-    case PARAM_STEP_FINE_TUNE:
-      param->value.v_uint = gconf->globals.step_fine_tune;
-      break;
-    case PARAM_STEP_ENV_TIME:
-      param->value.v_uint = gconf->globals.step_env_time;
-      break;
-    case PARAM_TRACK_LENGTH:
-      param->value.v_uint = gconf->globals.track_length;
-      break;
-    case PARAM_MIXING_FREQUENCY:
-      param->value.v_uint = gconf->globals.mixing_frequency;
-      break;
-    case PARAM_HEART_PRIORITY:
-      param->value.v_int = gconf->globals.heart_priority;
-      break;
-    default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (gconf),
-		 BSE_OBJECT_NAME (gconf),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
-      break;
-    }
-}
-
-void
-bse_gconfig_apply (BseGConfig *gconf)
-{
-  g_return_if_fail (BSE_IS_GCONFIG (gconf));
-
-  if (!bse_globals_locked ())
-    bse_globals_current = gconf->globals;
-}
-
-gboolean
-bse_gconfig_can_apply (BseGConfig *gconf)
-{
-  g_return_val_if_fail (BSE_IS_GCONFIG (gconf), FALSE);
-
-  return !bse_globals_locked ();
-}
-
-void
-bse_gconfig_revert (BseGConfig *gconf)
-{
-  BseObjectClass *class;
-  guint i;
-
-  g_return_if_fail (BSE_IS_GCONFIG (gconf));
-
-  gconf->globals = bse_globals_current;
-
-  class = BSE_OBJECT_GET_CLASS (gconf);
-  for (i = 0; i < class->n_params; i++)
-    {
-      BseParamSpec *pspec = class->param_specs[i];
-
-      bse_object_param_changed (BSE_OBJECT (gconf), pspec->any.name);
-    }
-}
-
-void
-bse_gconfig_default_revert (BseGConfig *gconf)
-{
-  BseObject *object;
-  BseObjectClass *class;
-  guint i;
-
-  g_return_if_fail (BSE_IS_GCONFIG (gconf));
-
-  object = BSE_OBJECT (gconf);
-
-  gconf->globals = bse_globals_current;
-
-  class = BSE_OBJECT_GET_CLASS (gconf);
-  for (i = 0; i < class->n_params; i++)
-    {
-      BseParam param = { NULL };
-      BseParamSpec *pspec = class->param_specs[i];
-
-      bse_param_init_default (&param, pspec);
-
-      bse_object_set_param (object, &param);
-      bse_param_free_value (&param);
-    }
 }

@@ -17,6 +17,7 @@
  */
 #include	"bseenums.h"
 
+#include	<errno.h>
 
 /* --- prototypes --- */
 extern void	bse_type_register_enums		(void);
@@ -280,11 +281,12 @@ bse_error_blurb (BseErrorType error_value)
   switch (error_value)
     {
     case BSE_ERROR_NONE:			return "Everything went well";
-    case BSE_ERROR_IGNORE:			return "Something went wrong...";
+    case BSE_ERROR_IGNORE:			return "Temporary headache...";
     case BSE_ERROR_UNKNOWN:			return "Unknown error";
-    case BSE_ERROR_INTERNAL:			return "Internal error";
+    case BSE_ERROR_INTERNAL:			return "Internal error (please report)";
     case BSE_ERROR_UNIMPLEMENTED:		return "Functionality not imlemented";
-    case BSE_ERROR_FILE_IO:			return "File I/O error";
+    case BSE_ERROR_IO:				return "Device/file I/O error";
+    case BSE_ERROR_PERMS:			return "Insufficient permissions";
     case BSE_ERROR_FILE_EXISTS:			return "File exists";
     case BSE_ERROR_FILE_NOT_FOUND:		return "File not found";
     case BSE_ERROR_FILE_TOO_SHORT:		return "File too short";
@@ -296,10 +298,8 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_SUB_HEADER_CORRUPT:		return "Sub-header corrupt";
     case BSE_ERROR_DATA_CORRUPT:		return "Data corrupt";
     case BSE_ERROR_BINARY_DATA_CORRUPT:		return "Binary data corrupt";
-    case BSE_ERROR_DEVICE_PERMS:		return "Device permissions insufficient";
     case BSE_ERROR_DEVICE_ASYNC:		return "Device not async capable";
     case BSE_ERROR_DEVICE_BUSY:			return "Device busy";
-    case BSE_ERROR_DEVICE_IO:			return "Device I/O error";
     case BSE_ERROR_DEVICE_GET_CAPS:		return "Failed to query device capabilities";
     case BSE_ERROR_DEVICE_CAPS_MISMATCH:	return "Device capabilities not sufficient";
     case BSE_ERROR_DEVICE_SET_CAPS:		return "Failed to set device capabilities";
@@ -320,4 +320,24 @@ bse_error_blurb (BseErrorType error_value)
   
   ev = bse_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_nick : NULL;
+}
+
+BseErrorType
+bse_error_from_errno (gint            v_errno,
+		      BseErrorType    fallback)
+{
+  switch (v_errno)
+    {
+    case EBUSY:		return BSE_ERROR_DEVICE_BUSY;
+    case EISDIR:
+    case EACCES:
+    case EPERM:
+    case EROFS:		return BSE_ERROR_DEVICE_PERMS;
+    case ELOOP:
+    case ENOENT:	return BSE_ERROR_FILE_NOT_FOUND;
+    case EEXIST:	return BSE_ERROR_FILE_EXISTS;
+    case EIO:		return BSE_ERROR_FILE_IO;
+    case EBADF:		return BSE_ERROR_INTERNAL;
+    default:		return fallback;
+    }      
 }

@@ -62,6 +62,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseeffectvolumedelta.h \
 	bseenums.h \
 	bseexports.h \
+	bsegconfig.h \
 	bseglobals.h \
 	bseheart.h \
 	bseinstrument.h \
@@ -107,6 +108,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseeffectpatternjump.c \
 	bseeffectvolumedelta.c \
 	bseenums.c \
+	bsegconfig.c \
 	bseglobals.c \
 	bseheart.c \
 	bseinstrument.c \

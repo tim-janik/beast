@@ -189,7 +189,7 @@ struct _BseGlobals
   guint	 step_fine_tune;
   guint	 step_env_time;
   
-  /* BSE pool parameters
+  /* BSE synthesis parameters
    */
   guint	track_length;
   guint mixing_frequency;
@@ -221,19 +221,6 @@ gboolean	bse_globals_locked	(void);
 gdouble		bse_dB_to_factor	(gfloat		dB);
 gfloat		bse_dB_from_factor	(gdouble	factor,
 					 gfloat		min_dB);
-
-
-/* --- BseGConfig object --- */
-#define BSE_TYPE_GCONFIG              (BSE_TYPE_ID (BseGConfig))
-#define BSE_GCONFIG(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_GCONFIG, BseGConfig))
-#define BSE_GCONFIG_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_GCONFIG, BseGConfigClass))
-#define BSE_IS_GCONFIG(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_GCONFIG))
-#define BSE_IS_GCONFIG_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_GCONFIG))
-#define BSE_GCONFIG_GET_CLASS(object) ((BseGConfigClass*) (((BseObject*) (object))->bse_struct.bse_class))
-void	 bse_gconfig_apply	      (BseGConfig	*gconf);
-gboolean bse_gconfig_can_apply	      (BseGConfig	*gconf);
-void	 bse_gconfig_revert	      (BseGConfig	*gconf);
-void	 bse_gconfig_default_revert   (BseGConfig	*gconf);
 
 
 
