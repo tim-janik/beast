@@ -680,6 +680,24 @@ tree_selection (BstWaveEditor    *wave_editor,
 }
 
 static void
+play_back_wchunk (BstWaveEditor *wave_editor)
+{
+  bst_play_back_handle_set (wave_editor->phandle, wave_editor->wchunk, wave_editor->wchunk->osc_freq);
+  bst_play_back_handle_start (wave_editor->phandle);
+}
+
+static void
+tree_row_activated (BstWaveEditor     *wave_editor,
+		    GtkTreePath       *path,
+		    GtkTreeViewColumn *column,
+		    GtkTreeView	      *tree_view)
+{
+  // GtkTreeSelection *tsel = gtk_tree_view_get_selection (tree_view);
+
+  play_back_wchunk (wave_editor);
+}
+
+static void
 change_draw_mode (BstWaveEditor *wave_editor,
 		  GtkOptionMenu *omenu)
 {
@@ -709,13 +727,6 @@ adjustments_changed (BstWaveEditor *wave_editor,
       else if (adjustment == wave_editor->vscale_adjustment)
 	bst_qsampler_set_vscale (qsampler, adjustment->value);
     }
-}
-
-static void
-play_back_wchunk (BstWaveEditor *wave_editor)
-{
-  bst_play_back_handle_set (wave_editor->phandle, wave_editor->wchunk, wave_editor->wchunk->osc_freq);
-  bst_play_back_handle_start (wave_editor->phandle);
 }
 
 void
@@ -752,6 +763,9 @@ bst_wave_editor_rebuild (BstWaveEditor *wave_editor)
 		       "border_width", 10,
 		       "parent", scwin,
 		       NULL);
+  g_object_connect (tree,
+		    "swapped_object_signal::row_activated", tree_row_activated, wave_editor,
+		    NULL);
   tsel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   gtk_tree_selection_set_mode (tsel, GTK_SELECTION_SINGLE);
   gtk_box_pack_start (GTK_BOX (wave_editor->main_vbox), scwin, FALSE, TRUE, 0);

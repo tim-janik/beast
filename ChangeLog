@@ -1,3 +1,8 @@
+Sat Jan 12 11:21:10 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterneditor.c (bst_pattern_editor_init): disable debugging
+	dumbness.
+
 Fri Jan 11 05:54:30 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstracktable.[hc]: GtkTablke derived widget, that

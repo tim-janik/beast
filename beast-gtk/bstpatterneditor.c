@@ -493,6 +493,7 @@ bst_pattern_editor_init (BstPatternEditor *pe)
   pe->ea_data = NULL;
   pe->ea_destroy = NULL;
 
+#if 0
   { // FIXME
     gchar **p, *names[] = {
       "Sans 10", "Sans 8", "Sans 12", "Sans 14",
@@ -510,10 +511,11 @@ bst_pattern_editor_init (BstPatternEditor *pe)
       {
 	PangoFontDescription *font_desc = pango_font_description_from_string (*p);
 	GdkFont *font = gdk_font_from_description (font_desc);
-	
-	g_print ("font \"%s\" = %p\n", *p, font);
+
+ 	g_print ("font \"%s\" = %p\n", *p, font);
       }
   }
+#endif
 }
 
 static void
