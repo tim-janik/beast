@@ -162,7 +162,7 @@ pattern_view_range_changed (BstPatternView *self)
 {
   guint max_ticks;
   bse_proxy_get (self->proxy, "last-tick", &max_ticks, NULL);
-  bst_pattern_view_vsetup (self, 384, 4, MAX (max_ticks, 1), 384);
+  bst_pattern_view_vsetup (self, 384, 4, MAX (max_ticks, 1), self->vticks);
 }
 
 void

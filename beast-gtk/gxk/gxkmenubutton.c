@@ -156,17 +156,53 @@ menu_button_button_press (GtkWidget      *widget,
   return TRUE;
 }
 
+static GtkWidget*
+menu_find_sibling (GtkMenu *menu,
+                   gpointer old_child,
+                   gboolean previous)
+{
+  GList *list;
+  for (list = GTK_MENU_SHELL (menu)->children; list; list = list->next)
+    if (list->data == old_child)
+      break;
+  if (!list)
+    return NULL;        /* failed to find old child */
+  for (list = previous ? list->prev : list->next; list; list = previous ? list->prev : list->next)
+    {
+      GtkWidget *child = list->data;
+      if (GTK_BIN (child)->child && GTK_WIDGET_IS_SENSITIVE (child))
+        return child;
+    }
+  return NULL;
+}
+
 static gboolean
 menu_button_key_press (GtkWidget   *widget,
                        GdkEventKey *event)
 {
   GxkMenuButton *self = GXK_MENU_BUTTON (widget);
+  gboolean previous = FALSE;
   switch (event->keyval)
     {
     case GDK_KP_Enter: case GDK_Return:
     case GDK_KP_Space: case GDK_space:
       menu_button_popup (self, 0, event->time);
       return TRUE;
+    case GDK_KP_Up: case GDK_Up:
+      previous = TRUE;
+      /* fall through */
+    case GDK_KP_Down: case GDK_Down:
+      if (self->mode == GXK_MENU_BUTTON_COMBO_MODE && self->menu && self->menu_item)
+        {
+          GtkWidget *sibling = menu_find_sibling (self->menu, self->menu_item, previous);
+          if (sibling)
+            {
+              gtk_menu_set_active (self->menu, g_list_index (GTK_MENU_SHELL (self->menu)->children, sibling));
+              gxk_menu_button_update (self);
+            }
+          return TRUE;
+        }
+      break;
     }
   return FALSE;
 }
@@ -284,7 +320,7 @@ gxk_menu_button_update (GxkMenuButton *self)
               g_object_connect (self->menu_item, "swapped_signal::state_changed", menu_button_proxy_state, self, NULL);
               menu_button_proxy_state (self);
               tipdata = gtk_tooltips_data_get (self->menu_item);
-              if (tipdata && tipdata->tip_text)
+              if (tipdata && tipdata->tip_text && tipdata->tip_text[0])
                 gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (self), tipdata->tip_text, tipdata->tip_private);
               else
                 gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (self),

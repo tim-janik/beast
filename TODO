@@ -1,4 +1,5 @@
 FIXMES:
+- fix subsample assertion
 - PatternEditor: load default keytable
 - PatternEditor: implement vzoom
 - PatternEditor: implement last tick changes
@@ -8,7 +9,7 @@ FIXMES:
 - piano roll/align events: does insert notes with wrong cursor
 - event roll: align events: outline colors don't honour skin colorization
 - part editor UI, add fields:
-  Last Tick: _____, Max (used) Channel: ___, Base Octave: ___
+  Last Tick: _____, Max (used) Channel: ___
 - add author and license to procedure execution dialog
 - fix ref-count initilization for Bst*Controller
 - fix repeat not working if left/right exchanged

@@ -388,6 +388,22 @@ pattern_column_event_value_from_string (BstPatternColumn *column,
   return pattern_column_event_value_from_int (column, ival);
 }
 
+static guint
+pattern_column_control_type (BstPatternColumn   *column,
+                             gboolean           *isnote_p)
+{
+  gboolean isnote = FALSE;
+  guint control_type = column->ltype;
+  if (control_type == BST_PATTERN_LTYPE_VELOCITY ||
+      control_type == BST_PATTERN_LTYPE_FINE_TUNE)
+    isnote = TRUE;
+  else
+    control_type = BSE_MIDI_SIGNAL_CONTINUOUS_0 + column->num;
+  if (isnote_p)
+    *isnote_p = isnote;
+  return control_type;
+}
+
 static BsePartControl*
 pattern_column_event_lookup (BstPatternColumn   *column,
                              BstPatternView     *pview,
@@ -398,12 +414,8 @@ pattern_column_event_lookup (BstPatternColumn   *column,
 {
   BsePartControl *pctrl = NULL;
   BsePartControlSeq *cseq;
-  if (column->ltype == BST_PATTERN_LTYPE_VELOCITY)
-    cseq = bse_part_get_channel_controls (pview->proxy, column->num, tick, duration, BSE_MIDI_SIGNAL_VELOCITY);
-  else if (column->ltype == BST_PATTERN_LTYPE_FINE_TUNE)
-    cseq = bse_part_get_channel_controls (pview->proxy, column->num, tick, duration, BSE_MIDI_SIGNAL_FINE_TUNE);
-  else
-    cseq = bse_part_list_controls (pview->proxy, tick, duration, BSE_MIDI_SIGNAL_CONTINUOUS_0 + column->num);
+  guint control_type = pattern_column_control_type (column, NULL);
+  cseq = bse_part_get_channel_controls (pview->proxy, column->num, tick, duration, control_type);
   if ((!cseq || cseq->n_pcontrols < 1) && placeholder_p)
     *placeholder_p = '-';
   else if (cseq && cseq->n_pcontrols == 1)
@@ -504,6 +516,21 @@ pattern_column_event_key_event (BstPatternColumn       *column,
         bse_part_delete_event (proxy, cseq->pcontrols[i]->id);
       bse_item_ungroup_undo (proxy);
       handled = TRUE;
+    }
+  else if (action == BST_PATTERN_SET_DIGIT &&   /* insertions */
+           (!cseq || cseq->n_pcontrols == 0))
+    {
+      guint digit = column->n_focus_positions - focus_pos;
+      gint dmax = control_get_max (num_type, 1);
+      gboolean isnote;
+      guint control_type = pattern_column_control_type (column, &isnote);
+      gfloat value;
+      ivalue = MIN (param, dmax) * control_get_digit_increment (num_type, digit);
+      value = pattern_column_event_value_from_int (column, ivalue);
+      if (!isnote && (!is_signed || focus_pos > 0))
+        bse_part_insert_control (proxy, tick, control_type, value);
+      else
+        gdk_beep();
     }
   else if (pctrl && focus_pos < strlen (buffer) && !(modifier & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
     {

@@ -1,3 +1,21 @@
+Fri Mar  5 19:08:45 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstrecords.idl: added NoteLength choice enumeration.
+
+	* beast-gtk/bstpartdialog.c: added vraster combo box.
+
+	* beast-gtk/bstpatternctrl.[hc]: added vraster parameter to adjust
+	the vertical per-line ticks in the pattern editor display. implemented
+	event insertion.
+
+	* beast-gtk/bstpatternview.c: preserve vticks across range changes.
+
+	* beast-gtk/gxk/gxkutils.c (gxk_widget_set_latent_tooltip): ignore
+	empty tooltips.
+
+	* beast-gtk/gxk/gxkmenubutton.c (menu_button_key_press): support
+	cursor up/down in combobox mode. ignore empty tooltips.
+
 Thu Mar  4 14:49:46 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkmenubutton.c: reset button prelight across popups

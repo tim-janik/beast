@@ -891,6 +891,8 @@ void
 gxk_widget_set_latent_tooltip (GtkWidget   *widget,
                                const gchar *tooltip)
 {
+  if (tooltip && !tooltip[0])
+    tooltip = NULL;
   g_object_set_data_full (widget, "gxk-widget-latent-tooltip", g_strdup (tooltip), g_free);
 }
 

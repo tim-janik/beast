@@ -38,6 +38,31 @@ choice Direction {
   DOWN  = (_("Down"), _("Step downwards"))
 };
 
+choice NoteLength {
+  NOTE_LENGTH_NONE      = (Neutral,    _("None"), _("Unspecified length")),
+  NOTE_LENGTH_1         = (_("1/1"),   _("Whole note")),
+  NOTE_LENGTH_2         = (_("1/2"),   _("Half note")),
+  NOTE_LENGTH_4         = (_("1/4"),   _("Quarter note")),
+  NOTE_LENGTH_8         = (_("1/8"),   _("Eighths note")),
+  NOTE_LENGTH_16        = (_("1/16"),  _("Sixteenth note")),
+  NOTE_LENGTH_32        = (_("1/32"),  _("Thirtysecondth note")),
+  NOTE_LENGTH_64        = (_("1/64"),  _("Sixtyfourth note")),
+  NOTE_LENGTH_1P        = (_("1/1."),  _("Dotted whole note")),
+  NOTE_LENGTH_2P        = (_("1/2."),  _("Dotted half note")),
+  NOTE_LENGTH_4P        = (_("1/4."),  _("Dotted quarter note")),
+  NOTE_LENGTH_8P        = (_("1/8."),  _("Dotted eighths note")),
+  NOTE_LENGTH_16P       = (_("1/16."), _("Dotted sixteenth note")),
+  NOTE_LENGTH_32P       = (_("1/32."), _("Dotted thirtysecondth note")),
+  NOTE_LENGTH_64P       = (_("1/64."), _("Dotted sixtyfourth note")),
+  NOTE_LENGTH_1T        = (_("1/1T"),  _("Triplet whole note")),
+  NOTE_LENGTH_2T        = (_("1/2T"),  _("Triplet half note")),
+  NOTE_LENGTH_4T        = (_("1/4T"),  _("Triplet quarter note")),
+  NOTE_LENGTH_8T        = (_("1/8T"),  _("Triplet eighths note")),
+  NOTE_LENGTH_16T       = (_("1/16T"), _("Triplet sixteenth note")),
+  NOTE_LENGTH_32T       = (_("1/32T"), _("Triplet thirtysecondth note")),
+  NOTE_LENGTH_64T       = (_("1/64T"), _("Triplet sixtyfourth note")),
+};
+
 /* BEAST Global Config */
 record GConfig {
   String rc_version			= (NULL, _("Release counter"), NULL, STORAGE);

@@ -27,15 +27,59 @@ static gboolean pattern_controller_key_press    (BstPatternController   *self,
 
 
 /* --- functions --- */
+static void
+pattern_controller_vraster_notify (gpointer             notify_data,
+                                   GxkParam            *param)
+{
+  BstPatternController *self = notify_data;
+  BstPatternView *pview = self->pview;
+  static const struct { int value, ticks; } choices[] = {
+    { BST_NOTE_LENGTH_1,        1536 }, /* 4 * 384 */
+    { BST_NOTE_LENGTH_2,         768 },
+    { BST_NOTE_LENGTH_4,         384 },
+    { BST_NOTE_LENGTH_8,         192 },
+    { BST_NOTE_LENGTH_16,         96 },
+    { BST_NOTE_LENGTH_32,         48 },
+    { BST_NOTE_LENGTH_64,         24 },
+    { BST_NOTE_LENGTH_1_P,      2304 }, /* 4 * 384 * 3 / 2 */
+    { BST_NOTE_LENGTH_2_P,      1152 },
+    { BST_NOTE_LENGTH_4_P,       576 },
+    { BST_NOTE_LENGTH_8_P,       288 },
+    { BST_NOTE_LENGTH_16_P,      144 },
+    { BST_NOTE_LENGTH_32_P,       72 },
+    { BST_NOTE_LENGTH_64_P,       36 },
+    { BST_NOTE_LENGTH_1_T,      1024 }, /* 4 * 384 * 2 / 3 */
+    { BST_NOTE_LENGTH_2_T,       512 },
+    { BST_NOTE_LENGTH_4_T,       256 },
+    { BST_NOTE_LENGTH_8_T,       128 },
+    { BST_NOTE_LENGTH_16_T,       64 },
+    { BST_NOTE_LENGTH_32_T,       32 },
+    { BST_NOTE_LENGTH_64_T,       16 },
+  };
+  int i, vraster = 384, vsval = bst_note_length_from_choice (sfi_value_get_choice (&self->vraster->value));
+  for (i = 0; i < G_N_ELEMENTS (choices); i++)
+    if (choices[i].value == vsval)
+      {
+        vraster = choices[i].ticks;
+        break;
+      }
+  bst_pattern_view_vsetup (pview, pview->tpqn, pview->tpt / pview->tpqn,
+                           pview->max_ticks, vraster);
+}
+
 BstPatternController*
 bst_pattern_controller_new (BstPatternView         *pview,
                             GxkActionGroup         *quant_rtools)
 {
   BstPatternController *self;
-
+  
   g_return_val_if_fail (BST_IS_PATTERN_VIEW (pview), NULL);
-
+  
   self = g_new0 (BstPatternController, 1);
+  self->vraster = gxk_param_new_value (sfi_pspec_choice ("vertical-raster", _("VZoom"),
+                                                         _("The tick/note length per line"),
+                                                         "note-length-4", bst_note_length_get_values(), SFI_PARAM_STANDARD),
+                                       pattern_controller_vraster_notify, self);
   self->steps = gxk_param_new_value (sfi_pspec_int ("steps", _("Steps"),
                                                     _("The number of cells to move across each time "
                                                       "an event or note was edited"),
@@ -56,16 +100,16 @@ bst_pattern_controller_new (BstPatternView         *pview,
                                            NULL, NULL);
   self->pview = pview;
   self->ref_count = 1;
-
+  
   self->ref_count++;
   g_signal_connect_data (pview, "key-press-event",
                          G_CALLBACK (pattern_controller_key_press),
                          self, (GClosureNotify) bst_pattern_controller_unref,
                          G_CONNECT_SWAPPED);
   self->quant_rtools = quant_rtools ? g_object_ref (quant_rtools) : NULL;
-
+  pattern_controller_vraster_notify (self, NULL);
+  
   gxk_scroll_canvas_set_canvas_cursor (GXK_SCROLL_CANVAS (pview), GDK_XTERM);
-
   return self;
 }
 
@@ -74,9 +118,9 @@ bst_pattern_controller_ref (BstPatternController   *self)
 {
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (self->ref_count >= 1, NULL);
-
+  
   self->ref_count++;
-
+  
   return self;
 }
 
@@ -85,7 +129,7 @@ bst_pattern_controller_unref (BstPatternController   *self)
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->ref_count >= 1);
-
+  
   self->ref_count--;
   if (!self->ref_count)
     {

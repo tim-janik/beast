@@ -23,6 +23,7 @@
 G_BEGIN_DECLS
 
 typedef struct {
+  GxkParam        *vraster;
   GxkParam        *steps;
   GxkParam        *step_dir;
   GxkParam        *hwrap;
