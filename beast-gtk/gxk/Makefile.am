@@ -23,7 +23,7 @@ gxk_headers = $(strip \
 	gxkradget.h	gxkaction.h		gxkglobals.h	gxkradgetfactory.h \
 	glewidgets.h	gxkracktable.h		gxkrackitem.h	gxksimplelabel.h \
 	gxkparam.h	gxkscrollcanvas.h	gxkimagecache.h	gxklogadjustment.h \
-	gxkmenubutton.h	\
+	gxkmenubutton.h	gxkspline.h		\
 	gxk.h \
 )
 gxk_c_sources = $(strip \
@@ -33,7 +33,7 @@ gxk_c_sources = $(strip \
 	gxkradget.c	gxkaction.c		gxkglobals.c	gxkradgetfactory.c \
 	glewidgets.c	gxkracktable.c		gxkrackitem.c	gxksimplelabel.c \
 	gxkparam.c	gxkscrollcanvas.c	gxkimagecache.c	gxklogadjustment.c \
-	gxkmenubutton.c	\
+	gxkmenubutton.c	gxkspline.c		\
 )
 gxk_extra_sources = $(strip \
 	gxkparam-entry.c	gxkparam-label.c	\
@@ -99,9 +99,11 @@ progs_LDADD = $(strip \
         $(LDFLAGS) $(BEAST_LIBS) \
 )
 
-noinst_PROGRAMS = gxktest
+noinst_PROGRAMS = gxktest splinetest
 gxktest_SOURCES = gxktest.c
 gxktest_LDADD = $(progs_LDADD)
+splinetest_SOURCES = splinetest.c
+splinetest_LDADD = $(progs_LDADD)
 
 EXTRA_DIST += $(gxk_headers) $(gxk_extra_sources) $(gxk_built_sources)
 MAINTAINERCLEANFILES += $(gxk_built_sources) $(stamp_files)

@@ -1,4 +1,5 @@
 FIXMES:
+- alias id= to name= in radget files
 - delte+undo on tracks kills connections? (busses?)
 - rename bsesnifferscop.* to bsescope.*
 - rename snifferscope to trackscope

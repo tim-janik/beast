@@ -41,6 +41,7 @@
 #include <gxk/gxkrackitem.h>
 #include <gxk/gxkscrollcanvas.h>
 #include <gxk/gxksimplelabel.h>
+#include <gxk/gxkspline.h>
 #include <gxk/gxkstatusbar.h>
 #include <gxk/gxkstock.h>
 #include <gxk/gxktexttools.h>
