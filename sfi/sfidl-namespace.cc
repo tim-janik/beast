@@ -93,7 +93,7 @@ void NamespaceHelper::setFromSymbol(string symbol)
     }
   while(wrong--)
     {
-      fprintf(out,"};\n");
+      fprintf(out,"}\n");
     }
   
   /* enter new components at the end */

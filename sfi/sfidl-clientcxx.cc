@@ -201,7 +201,6 @@ void CodeGeneratorCxxBase::printRecSeqForwardDecl (NamespaceHelper& nspace)
       printf("\n");
       printf("class %s;\n", name.c_str());
     }
-
 }
 
 void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
@@ -220,14 +219,19 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
       string name = nspace.printableForm (si->name);
       string content = typeField (si->content.type);
 
-      printf("\n");
-      printf("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
-      printf("public:\n");
+      printf ("\n");
+      printf ("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
+      printf ("public:\n");
       /* TODO: make this a constructor? */
-      printf("  static %s from_seq (SfiSeq *seq);\n", cTypeRet (si->name));
-      printf("  SfiSeq *to_seq () const;\n");
-      printf("  static %s value_get (const GValue *value);", cTypeRet (si->name));
-      printf("  static void value_set (GValue *value, %s self);", cTypeArg (si->name));
+      printf ("  static inline %s from_seq (SfiSeq *seq);\n", cTypeRet (si->name));
+      printf ("  inline SfiSeq *to_seq () const;\n");
+      printf ("  static inline %s value_get (const GValue *value);\n", cTypeRet (si->name));
+      printf ("  static inline void value_set (GValue *value, %s self);\n", cTypeArg (si->name));
+      printf ("  static inline const char* options   () { return %s; }\n", si->infos.get("options").escaped().c_str());
+      printf ("  static inline const char* blurb     () { return %s; }\n", si->infos.get("blurb").escaped().c_str());
+      printf ("  static inline const char* authors   () { return %s; }\n", si->infos.get("authors").escaped().c_str());
+      printf ("  static inline const char* license   () { return %s; }\n", si->infos.get("license").escaped().c_str());
+      printf ("  static inline const char* type_name () { return \"%s\"; }\n", makeMixedName (si->name).c_str());
       printf("};\n");
     }
 
@@ -238,19 +242,31 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
 
       nspace.setFromSymbol(ri->name);
       string name = nspace.printableForm (ri->name);
+      string type_name = makeMixedName (ri->name).c_str();
 
-      printf("\n");
-      printf("class %s {\n", name.c_str());
-      printf("public:\n");
+      printf ("\n");
+      if (options.doImplementation)
+	{
+	  printf ("#define %s BSE_CXX_DECLARED_RECORD_TYPE(RecordType)\n", makeGTypeName (ri->name).c_str());
+	  printf ("BSE_CXX_DECLARE_RECORD (%s, \"%s\");\n", name.c_str(), type_name.c_str());
+	}
+      printf ("class %s {\n", name.c_str());
+      printf ("public:\n");
       for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	{
-	  printf("  %s %s;\n", cTypeField (pi->type), pi->name.c_str());
+	  printf ("  %s %s;\n", cTypeField (pi->type), pi->name.c_str());
 	}
-      printf("  static %s from_rec (SfiRec *rec);\n", cTypeRet(ri->name));
-      printf("  static SfiRec *to_rec (%s ptr);\n", cTypeArg(ri->name));
-      printf("  static %s value_get (const GValue *value);", cTypeRet(ri->name));
-      printf("  static void value_set (GValue *value, %s self);", cTypeArg (ri->name));
-      printf("};\n");
+      printf ("  static inline %s from_rec (SfiRec *rec);\n", cTypeRet(ri->name));
+      printf ("  static inline SfiRec *to_rec (%s ptr);\n", cTypeArg(ri->name));
+      printf ("  static inline %s value_get (const GValue *value);\n", cTypeRet(ri->name));
+      printf ("  static inline void value_set (GValue *value, %s self);\n", cTypeArg (ri->name));
+      printf ("  static inline const char* options   () { return %s; }\n", ri->infos.get("options").escaped().c_str());
+      printf ("  static inline const char* blurb     () { return %s; }\n", ri->infos.get("blurb").escaped().c_str());
+      printf ("  static inline const char* authors   () { return %s; }\n", ri->infos.get("authors").escaped().c_str());
+      printf ("  static inline const char* license   () { return %s; }\n", ri->infos.get("license").escaped().c_str());
+      printf ("  static inline const char* type_name () { return \"%s\"; }\n", type_name.c_str());
+      printf ("};\n");
+      printf ("\n");
     }
 }
 
@@ -303,7 +319,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
 
       /* FIXME: client only, core needs type system support */
       printf("%s\n", cTypeRet (si->name));
-      printf("%s::value_get (const GValue *value)", name.c_str());
+      printf("%s::value_get (const GValue *value)\n", name.c_str());
       printf("{\n");
       printf("  SfiSeq *sfi_seq = sfi_value_get_seq (value);\n");
       printf("  if (sfi_seq)\n");
@@ -313,7 +329,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("}\n\n");
 
       printf("void\n");
-      printf("%s::value_set (GValue *value, %s self)", name.c_str(), cTypeArg (si->name));
+      printf("%s::value_set (GValue *value, %s self)\n", name.c_str(), cTypeArg (si->name));
       printf("{\n");
       printf("  sfi_value_take_seq (value, self.to_seq());\n");
       printf("}\n\n");
@@ -367,7 +383,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
 
       /* FIXME: client only, core needs type system support */
       printf("%s\n", cTypeRet(ri->name));
-      printf("%s::value_get (const GValue *value)", name.c_str());
+      printf("%s::value_get (const GValue *value)\n", name.c_str());
       printf("{\n");
       printf("  SfiRec *sfi_rec = sfi_value_get_rec (value);\n");
       printf("  if (sfi_rec)\n");
@@ -377,7 +393,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("}\n\n");
 
       printf("void\n");
-      printf("%s::value_set (GValue *value, %s self)", name.c_str(), cTypeArg (ri->name));
+      printf("%s::value_set (GValue *value, %s self)\n", name.c_str(), cTypeArg (ri->name));
       printf("{\n");
       printf("  sfi_value_take_rec (value, to_rec (self));\n");
       printf("}\n\n");
@@ -411,6 +427,17 @@ void CodeGeneratorCxx::run ()
               printf("  %s = %d,\n", ename.c_str(), value);
             }
           printf("};\n");
+	}
+      nspace.leaveAll();
+
+      /* choice converters */
+      for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
+	{
+	  string name = nspace.printableForm (ei->name);
+	  string lname = makeLowerName (ei->name);
+
+	  printf("const gchar* %s_to_choice (%s value);\n", lname.c_str(), name.c_str());
+	  printf("%s %s_from_choice (const gchar *choice);\n", name.c_str(), lname.c_str());
         }
 
       printf("\n");
@@ -461,6 +488,7 @@ void CodeGeneratorCxx::run ()
 	  printf("};\n");
 	}
       printRecSeqDefinition (nspace);
+      printRecSeqImpl (nspace);
     }
 
   if (options.doSource)
@@ -468,13 +496,9 @@ void CodeGeneratorCxx::run ()
       /* choice utils */
       if (options.doInterface)
 	{
-	  printf("namespace {\n");
 	  printChoiceConverters();
-	  printf("}\n");
 	  printf("\n");
 	}
-
-      printRecSeqImpl (nspace);
 
       /* methods */
       for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
