@@ -37,7 +37,9 @@ struct _GslVorbisCutter
   SfiNum                cutpoint;
   GslVorbisCutterMode   cutmode;
   guint                 filtered_serialno;
-  guint                 match_serialno : 1;
+  guint                 forced_serialno;
+  guint                 filter_serialno : 1;
+  guint                 force_serialno : 1;
   /* state flags */
   guint                 vorbis_initialized : 1;
   guint                 eos : 1;
@@ -151,15 +153,22 @@ gsl_vorbis_cutter_filter_serialno (GslVorbisCutter        *self,
 {
   g_return_if_fail (self != NULL);
 
+  /* only read an input Ogg/Vorbis stream with serial number "serialno" */
+
   self->filtered_serialno = serialno;
-  self->match_serialno = TRUE;
+  self->filter_serialno = TRUE;
 }
 
 void
-gsl_vorbis_cutter_unfilter_serialno (GslVorbisCutter *self)
+gsl_vorbis_cutter_force_serialno (GslVorbisCutter        *self,
+                                  guint                   serialno)
 {
   g_return_if_fail (self != NULL);
-  self->match_serialno = FALSE;
+
+  /* change the Ogg/Vorbis stream serial number on output to "serialno" */
+
+  self->forced_serialno = serialno;
+  self->force_serialno = TRUE;
 }
 
 void
@@ -385,12 +394,15 @@ gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
           if (self->n_packets == 0)
             {
               int serialno;
-              if (self->match_serialno)
+              if (self->filter_serialno)
                 serialno = self->filtered_serialno;
               else
                 serialno = ogg_page_serialno (&opage);
               ogg_stream_reset_serialno (&self->istream, serialno);
-              ogg_stream_reset_serialno (&self->ostream, serialno);
+              if (self->force_serialno)
+                ogg_stream_reset_serialno (&self->ostream, self->forced_serialno);
+              else
+                ogg_stream_reset_serialno (&self->ostream, serialno);
             }
           /* unpack page */
           ogg_stream_pagein (&self->istream, &opage);

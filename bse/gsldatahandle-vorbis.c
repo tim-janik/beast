@@ -460,11 +460,13 @@ struct GslVorbis1Handle
   GslRFile        *rfile;
   guint            byte_offset;
   guint            byte_length;
+  guint            forced_serialno;
   GslVorbisCutter *vcutter;
 };
 
 GslVorbis1Handle*
-gsl_vorbis1_handle_new (GslDataHandle *ogg_vorbis_handle)
+gsl_vorbis1_handle_new (GslDataHandle *ogg_vorbis_handle,
+                        guint          serialno)
 {
   GslVorbis1Handle *v1h = NULL;
   if (ogg_vorbis_handle->vtable == &dh_vorbis_vtable &&
@@ -477,6 +479,7 @@ gsl_vorbis1_handle_new (GslDataHandle *ogg_vorbis_handle)
       v1h->rfile_byte_offset = vhandle->rfile_byte_offset;
       v1h->rfile_add_zoffset = vhandle->rfile_add_zoffset;
       v1h->rfile_byte_length = vhandle->rfile_byte_length;
+      v1h->forced_serialno = serialno;
     }
   return v1h;
 }
@@ -508,6 +511,7 @@ gsl_vorbis1_handle_read (GslVorbis1Handle *v1h, /* returns -errno || length */
         v1h->byte_length = MIN (v1h->byte_length, v1h->rfile_byte_length);
       v1h->vcutter = gsl_vorbis_cutter_new();
       gsl_vorbis_cutter_filter_serialno (v1h->vcutter, v1h->bitstream_serialno);
+      gsl_vorbis_cutter_force_serialno (v1h->vcutter, v1h->forced_serialno);
     }
 
   while (1) /* repeats until data is available */
@@ -560,4 +564,11 @@ gsl_vorbis1_handle_put_wstore (GslVorbis1Handle *vorbis1,
                                SfiWStore        *wstore)
 {
   sfi_wstore_put_binary (wstore, vorbis1_handle_reader, vorbis1, vorbis1_handle_destroy);
+}
+
+guint
+gsl_vorbis_make_serialno (void)
+{
+  static guint global_ogg_serial = ('B' << 24) | ('S' << 16) | ('E' << 8) | 128;
+  return g_atomic_int_exchange_and_add (&global_ogg_serial, 1);
 }

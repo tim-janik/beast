@@ -40,7 +40,8 @@ void              gsl_vorbis_cutter_set_cutpoint        (GslVorbisCutter        
                                                          SfiNum                  cutpoint);
 void              gsl_vorbis_cutter_filter_serialno     (GslVorbisCutter        *self,
                                                          guint                   serialno);
-void              gsl_vorbis_cutter_unfilter_serialno   (GslVorbisCutter        *self);
+void              gsl_vorbis_cutter_force_serialno      (GslVorbisCutter        *self,
+                                                         guint                   serialno);
 void              gsl_vorbis_cutter_write_ogg           (GslVorbisCutter        *self,
                                                          guint                   n_bytes,
                                                          guint8                 *bytes);

@@ -1,3 +1,17 @@
+Fri Jan  7 02:01:11 2005  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c: store Ogg/Vorbis data handles with increasing serialnos.
+
+	* gsldatahandle-vorbis.[hc]: enforce specification of a serialno when 
+	creating a store handle with gsl_vorbis1_handle_new().
+	gsl_vorbis_make_serialno(): new function which generates unique
+	serialnos (per program runtime).
+
+	* gslvorbis-cutter.[hc]: allow overriding the output serialno (by 
+	default the same as the input) with a specific serialno via
+	gsl_vorbis_cutter_force_serialno().
+	gsl_vorbis_cutter_unfilter_serialno(): removed.
+
 Fri Jan  7 01:11:04 2005  Tim Janik  <timj@gtk.org>
 
 	* bsewave.header: fixed midi-note docs.

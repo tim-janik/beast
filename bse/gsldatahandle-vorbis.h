@@ -38,7 +38,8 @@ GslDataHandle* gsl_data_handle_new_ogg_vorbis_zoffset (const gchar      *file_na
 
 /* --- writing vorbis files --- */
 typedef struct GslVorbis1Handle GslVorbis1Handle;
-GslVorbis1Handle* gsl_vorbis1_handle_new              (GslDataHandle    *ogg_vorbis_handle);
+GslVorbis1Handle* gsl_vorbis1_handle_new              (GslDataHandle    *ogg_vorbis_handle,
+                                                       guint             serialno);
 gint              gsl_vorbis1_handle_read             (GslVorbis1Handle *vorbis1, /* returns -errno || length */
                                                        guint             blength,
                                                        guint8           *buffer);
@@ -48,6 +49,7 @@ void              gsl_vorbis1_handle_destroy          (GslVorbis1Handle *vorbis1
  */
 void              gsl_vorbis1_handle_put_wstore       (GslVorbis1Handle *vorbis1,
                                                        SfiWStore        *wstore);
+guint             gsl_vorbis_make_serialno            (void);
 
 G_END_DECLS
 

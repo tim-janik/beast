@@ -1421,7 +1421,7 @@ bse_storage_put_data_handle (BseStorage    *self,
       tmp_handle = gsl_data_handle_get_source (test_handle);
     }
   while (tmp_handle);   /* skip comment or cache handles */
-  GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (test_handle); // FIXME: deamnd certain serialno
+  GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (test_handle, gsl_vorbis_make_serialno());
   if (vhandle)  /* save already compressed Ogg/Vorbis data */
     {
       bse_storage_break (self);
