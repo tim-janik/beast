@@ -403,6 +403,10 @@ SCRIPTS:
 - TrackRoll: add script to repeat (loop) parts for a number of times in a track. allow repetition of part sequences (P1P2P1P2P1P2...)
 - provide script to render bse file to WAV. then add File/Export function which:
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
+- PianoRoll: transpose script, which has two parameters: up/down semitones and up/down octaves
+             (maybe provide "light" versions to allow accelerator bindings)
+- PianoRoll: script to lengthen/shorten notes, probably for the beginning a script which allows playing notes
+             at half speed or double speed would be sufficient (the advantage is that it can be accelerator bound)
 
 GSL:
   * sample loader currently hard codes 440.0 for osc_freq
@@ -534,9 +538,6 @@ gui:
     - looks broken on some gtk themes (button shading)
     - looks incoherent
     - lines in ledmeter
-  scripts (refer to SCRIPTS section further up):
-    - pianoroll transpose up/down
-    - pianoroll lengthen/shorten notes
 
 interop:
   portaudio driver:
