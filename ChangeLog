@@ -1,3 +1,9 @@
+Mon Oct  4 23:27:29 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-development.texi: added link to the it translation statistics.
+
+	* configure.in: added it to ALL_LINGUAS.
+
 Mon Oct  4 07:15:54 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmsgabsorb.[hc]: added bst_msg_absorb_config_update()
