@@ -518,11 +518,16 @@ sfi_value_choice2enum (const GValue *choice_value,
 	  ev = eclass->values + i;
 	  break;
 	}
-  if (!ev && fallback_param)
-    ev = g_enum_get_value (eclass, G_PARAM_SPEC_ENUM (fallback_param)->default_value);
-  if (!ev)
-    ev = eclass->values;
-  g_value_set_enum (enum_value, ev->value);
+  if (ev || fallback_param)
+    {
+      if (!ev)
+	ev = g_enum_get_value (eclass, G_PARAM_SPEC_ENUM (fallback_param)->default_value);
+      if (!ev)	/* pspec is broken */
+	ev = eclass->values;
+      g_value_set_enum (enum_value, ev->value);
+    }
+  else
+    g_value_set_enum (enum_value, 0);
   g_type_class_unref (eclass);
 }
 

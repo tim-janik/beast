@@ -240,16 +240,15 @@ sfi_serialize_primitives (SfiSCategory scat,
 	  if (!cstring)
 	    gstring_puts (gstring, "nil");
 	  else
-	    gstring_printf (gstring, "'%s", cstring);
+	    gstring_printf (gstring, "%s", cstring);
 	}
       else
 	{
 	  g_scanner_get_next_token (scanner);
 	  if (check_nil (scanner))
 	    sfi_value_set_choice (value, NULL);
-	  else if (scanner->token == '\'')
+	  else if (scanner->token == G_TOKEN_IDENTIFIER)
 	    {
-	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
 	      sfi_value_set_choice (value, scanner->value.v_identifier);
 	    }
 	  else
@@ -358,15 +357,22 @@ sfi_serialize_primitives (SfiSCategory scat,
       if (gstring)
 	{
 	  gchar *string = sfi_note_to_string (sfi_value_get_int (value));
-	  gstring_printf (gstring, "'%s", string);
+	  gstring_printf (gstring, "%s", string);
 	  g_free (string);
 	}
       else
 	{
 	  gchar *error = NULL;
 	  SfiNum num;
-	  parse_or_return (scanner, '\'');
-	  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+	  if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING) // FIXME: deprecated syntax
+	    {
+	      g_scanner_get_next_token (scanner);
+	      g_scanner_warn (scanner, "deprecated syntax: encountered string instead of note symbol");
+	    }
+	  else
+	    {
+	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+	    }
 	  num = sfi_note_from_string_err (scanner->value.v_identifier, &error);
 	  if (error)
 	    g_scanner_warn (scanner, "%s", error);

@@ -1046,65 +1046,6 @@ void CodeGeneratorC::run (string srcname)
       printf("\n");
     }
   
-  if (Conf::generateData)
-    {
-      for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
-	{
-	  string name = makeLowerName (ei->name);
-	  printf("static const GEnumValue %s_value[%d] = {\n",name.c_str(), ei->contents.size());
-	  for (vector<EnumComponent>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
-	    {
-	      printf("  { %d, \"%s\", \"%s\" },\n", ci->value, ci->name.c_str(), ci->text.c_str());
-	    }
-	  printf("  { 0, NULL, NULL }\n");
-	  printf("};\n");
-	  printf("SfiEnumValues %s_values = { %d, %s_value };\n", name.c_str(), ei->contents.size(), name.c_str());
-	  printf("\n");
-	}
-      
-      for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
-	{
-	  string name = makeLowerName (ri->name);
-	  
-	  printf("static GParamSpec *%s_field[%d];\n", name.c_str(), ri->contents.size());
-	  printf("SfiRecFields %s_fields = { %d, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
-
-	  if (Conf::generateBoxedTypes)
-	  {
-	    string mname = makeMixedName (ri->name);
-
-	    printf("static SfiBoxedRecordInfo %s_boxed_info = {\n", name.c_str());
-	    printf("  \"%s\",\n", mname.c_str());
-	    printf("  { %d, %s_field },\n", ri->contents.size(), name.c_str());
-	    printf("  (SfiBoxedToRec) %s_to_rec,\n", name.c_str());
-	    printf("  (SfiBoxedFromRec) %s_from_rec\n", name.c_str());
-	    printf("};\n");
-	    printf("GType %s = 0;\n", makeGTypeName (ri->name).c_str());
-	  }
-	  printf("\n");
-	}
-      for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
-	{
-	  string name = makeLowerName (si->name);
-	  
-	  printf("static GParamSpec *%s_content;\n", name.c_str());
-
-	  if (Conf::generateBoxedTypes)
-	  {
-	    string mname = makeMixedName (si->name);
-
-	    printf("static SfiBoxedSequenceInfo %s_boxed_info = {\n", name.c_str());
-	    printf("  \"%s\",\n", mname.c_str());
-	    printf("  NULL, /* %s_content */\n", name.c_str());
-	    printf("  (SfiBoxedToSeq) %s_to_seq,\n", name.c_str());
-	    printf("  (SfiBoxedFromSeq) %s_from_seq\n", name.c_str());
-	    printf("};\n");
-	    printf("GType %s = 0;\n", makeGTypeName (si->name).c_str());
-	  }
-	  printf("\n");
-	}
-    }
-  
   if (Conf::generateTypeC)
     {
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
@@ -1296,6 +1237,97 @@ void CodeGeneratorC::run (string srcname)
 	}
     }
   
+  if (Conf::generateData)
+    {
+      for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+	{
+	  string name = makeLowerName (ei->name);
+	  printf("static const GEnumValue %s_value[%d] = {\n",name.c_str(), ei->contents.size());
+	  for (vector<EnumComponent>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
+	    {
+	      printf("  { %d, \"%s\", \"%s\" },\n", ci->value, ci->name.c_str(), ci->text.c_str());
+	    }
+	  printf("  { 0, NULL, NULL }\n");
+	  printf("};\n");
+	  printf("SfiEnumValues %s_values = { %d, %s_value };\n", name.c_str(), ei->contents.size(), name.c_str());
+	  printf("\n");
+	}
+      
+      for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+	{
+	  string name = makeLowerName (ri->name);
+	  
+	  printf("static GParamSpec *%s_field[%d];\n", name.c_str(), ri->contents.size());
+	  printf("SfiRecFields %s_fields = { %d, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
+
+	  if (Conf::generateBoxedTypes)
+	    {
+	      string mname = makeMixedName (ri->name);
+	      
+	      printf("static void\n");
+	      printf("%s_boxed2rec (const GValue *src_value, GValue *dest_value)\n", name.c_str());
+	      printf("{\n");
+	      printf("  sfi_value_take_rec (dest_value,\n");
+	      printf("    %s_to_rec (g_value_get_boxed (src_value)));\n", name.c_str());
+	      printf("}\n");
+	      
+	      printf("static void\n");
+	      printf("%s_rec2boxed (const GValue *src_value, GValue *dest_value)\n", name.c_str());
+	      printf("{\n");
+	      printf("  g_value_set_boxed_take_ownership (dest_value,\n");
+	      printf("    %s_from_rec (sfi_value_get_rec (src_value)));\n", name.c_str());
+	      printf("}\n");
+	      
+	      printf("static SfiBoxedRecordInfo %s_boxed_info = {\n", name.c_str());
+	      printf("  \"%s\",\n", mname.c_str());
+	      printf("  { %d, %s_field },\n", ri->contents.size(), name.c_str());
+	      printf("  (SfiBoxedToRec) %s_to_rec,\n", name.c_str());
+	      printf("  (SfiBoxedFromRec) %s_from_rec,\n", name.c_str());
+	      printf("  %s_boxed2rec,\n", name.c_str());
+	      printf("  %s_rec2boxed,\n", name.c_str());
+	      printf("};\n");
+	      printf("GType %s = 0;\n", makeGTypeName (ri->name).c_str());
+	    }
+	  printf("\n");
+	}
+      for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+	{
+	  string name = makeLowerName (si->name);
+	  
+	  printf("static GParamSpec *%s_content;\n", name.c_str());
+
+	  if (Conf::generateBoxedTypes)
+	    {
+	      string mname = makeMixedName (si->name);
+	      
+	      printf("static void\n");
+	      printf("%s_boxed2seq (const GValue *src_value, GValue *dest_value)\n", name.c_str());
+	      printf("{\n");
+	      printf("  sfi_value_take_seq (dest_value,\n");
+	      printf("    %s_to_seq (g_value_get_boxed (src_value)));\n", name.c_str());
+	      printf("}\n");
+	      
+	      printf("static void\n");
+	      printf("%s_seq2boxed (const GValue *src_value, GValue *dest_value)\n", name.c_str());
+	      printf("{\n");
+	      printf("  g_value_set_boxed_take_ownership (dest_value,\n");
+	      printf("    %s_from_seq (sfi_value_get_seq (src_value)));\n", name.c_str());
+	      printf("}\n");
+	      
+	      printf("static SfiBoxedSequenceInfo %s_boxed_info = {\n", name.c_str());
+	      printf("  \"%s\",\n", mname.c_str());
+	      printf("  NULL, /* %s_content */\n", name.c_str());
+	      printf("  (SfiBoxedToSeq) %s_to_seq,\n", name.c_str());
+	      printf("  (SfiBoxedFromSeq) %s_from_seq,\n", name.c_str());
+	      printf("  %s_boxed2seq,\n", name.c_str());
+	      printf("  %s_seq2boxed,\n", name.c_str());
+	      printf("};\n");
+	      printf("GType %s = 0;\n", makeGTypeName (si->name).c_str());
+	    }
+	  printf("\n");
+	}
+    }
+
   if (Conf::generateInit)
     {
       bool first = true;

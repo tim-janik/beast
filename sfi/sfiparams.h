@@ -269,6 +269,14 @@ void		sfi_pspec_get_real_range	(GParamSpec	*pspec,
 						 SfiReal        *minimum_value,
 						 SfiReal        *maximum_value,
 						 SfiReal        *stepping);
+void		sfi_pspec_set_log_scale		(GParamSpec	*pspec,
+						 SfiReal         center,
+						 SfiReal         base,
+						 SfiReal         n_steps);
+void		sfi_pspec_get_log_scale		(GParamSpec	*pspec,
+						 SfiReal        *center,
+						 SfiReal        *base,
+						 SfiReal        *n_steps);
 const gchar*	sfi_pspec_get_string_default	(GParamSpec	*pspec);
 const gchar*	sfi_pspec_get_choice_default	(GParamSpec	*pspec);
 SfiChoiceValues	sfi_pspec_get_choice_values	(GParamSpec	*pspec);

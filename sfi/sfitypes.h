@@ -62,6 +62,8 @@ typedef struct {
   SfiRecFields    fields;
   SfiBoxedToRec   to_rec;
   SfiBoxedFromRec from_rec;
+  GValueTransform boxed2rec;
+  GValueTransform rec2boxed;
 } SfiBoxedRecordInfo;
 GType                       sfi_boxed_make_record       (const SfiBoxedRecordInfo *info,
 							 GBoxedCopyFunc            copy,
@@ -74,6 +76,8 @@ typedef struct {
   GParamSpec     *element;
   SfiBoxedToSeq   to_seq;
   SfiBoxedFromSeq from_seq;
+  GValueTransform boxed2seq;
+  GValueTransform seq2boxed;
 } SfiBoxedSequenceInfo;
 GType                       sfi_boxed_make_sequence     (const SfiBoxedSequenceInfo *info,
 							 GBoxedCopyFunc              copy,

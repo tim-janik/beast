@@ -359,6 +359,7 @@ param_rec_validate (GParamSpec *pspec,
 	      g_param_value_set_default (fspec, &dummy);
 	      sfi_rec_set (rec, fspec->name, &dummy);
 	      g_value_unset (&dummy);
+	      field = sfi_rec_get (rec, fspec->name);
 	      changed++;
 	    }
 
@@ -1074,12 +1075,16 @@ sfi_param_spec_time (const gchar *name,
 		     const gchar *blurb,
 		     const gchar *hints)
 {
-  return sfi_param_spec_num (name, nick, blurb,
-			     631148400 * (SfiNum) 1000000,	/* 1990-01-01 00:00:00 */
-			     631148400 * (SfiNum) 1000000,
-			     2147483647 * (SfiNum) 1000000,	/* 2038-01-19 04:14:07 */
-			     3600 * (SfiNum) 1000000,
-			     hints);
+  GParamSpec *pspec = sfi_param_spec_num (name, nick, blurb,
+					  631148400 * (SfiNum) 1000000,	/* 1990-01-01 00:00:00 */
+					  631148400 * (SfiNum) 1000000,
+					  2147483647 * (SfiNum) 1000000,	/* 2038-01-19 04:14:07 */
+					  3600 * (SfiNum) 1000000,
+					  NULL);
+  gchar *thints = g_strconcat ("time:", hints, NULL);
+  sfi_pspec_set_hints (pspec, thints);
+  g_free (thints);
+  return pspec;
 }
 
 GParamSpec*
@@ -1093,8 +1098,11 @@ sfi_param_spec_note (const gchar *name,
   const guint BSE_MIN_NOTE = 0;	/* assumed to be 0 in various places */
   const guint BSE_MAX_NOTE = 131; /* 123 */
   const guint BSE_KAMMER_NOTE = 69;	/* A' */
-  
-  return sfi_param_spec_int (name, nick, blurb,
-			     BSE_KAMMER_NOTE, BSE_MIN_NOTE, BSE_MAX_NOTE, 1,
-			     hints);
+  GParamSpec *pspec = sfi_param_spec_int (name, nick, blurb,
+					  BSE_KAMMER_NOTE, BSE_MIN_NOTE, BSE_MAX_NOTE, 1,
+					  NULL);
+  gchar *thints = g_strconcat ("note:", hints, NULL);
+  sfi_pspec_set_hints (pspec, thints);
+  g_free (thints);
+  return pspec;
 }

@@ -1,3 +1,26 @@
+Sun Oct 20 19:06:14 2002  Tim Janik  <timj@gtk.org>
+
+	* sfidl.cc: generate data for boxed types after function definitions.
+
+	* sfidl.cc: generate static GValueTransform functions for boxed<->SfiSeq
+	and boxed<->SfiRec, passed on to sfi_boxed_make_sequence() and
+	sfi_boxed_make_record().
+
+	* sfiparams.c:
+	(param_rec_validate): fix empty field creation.
+	(sfi_param_spec_time): fix hints.
+	(sfi_param_spec_note): fix hints.
+
+	* sfiserial.c: minor syntax tweaks.
+
+	* sfitypes.[hc]: add support for GValueTransform registration
+	for boxed sequence and record types.
+
+	* sfivalues.c (sfi_value_choice2enum): fallback to 0 as enum
+	value if no pspec default is given, and we fail completely at
+	matching the given choice pattern. we use 0 despite enum class
+	contents here, it can later be fixed up through validation.
+
 Fri Oct 18 04:39:00 2002  Tim Janik  <timj@gtk.org>
 
 	* sfiserial.[hc]: removed cruft. use GScanner 64bit int parsing instead

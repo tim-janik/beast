@@ -61,6 +61,10 @@ sfi_boxed_make_record (const SfiBoxedRecordInfo *info,
 
   btype = g_boxed_type_register_static (info->name, copy, free);
   g_type_set_qdata (btype, quark_boxed_record, (gpointer) info);
+  if (info->rec2boxed)
+    g_value_register_transform_func (SFI_TYPE_REC, btype, info->rec2boxed);
+  if (info->boxed2rec)
+    g_value_register_transform_func (btype, SFI_TYPE_REC, info->boxed2rec);
   return btype;
 }
 
@@ -81,6 +85,10 @@ sfi_boxed_make_sequence (const SfiBoxedSequenceInfo *info,
 
   btype = g_boxed_type_register_static (info->name, copy, free);
   g_type_set_qdata (btype, quark_boxed_sequence, (gpointer) info);
+  if (info->seq2boxed)
+    g_value_register_transform_func (SFI_TYPE_SEQ, btype, info->seq2boxed);
+  if (info->boxed2seq)
+    g_value_register_transform_func (btype, SFI_TYPE_SEQ, info->boxed2seq);
   return btype;
 }
 
