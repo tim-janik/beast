@@ -1,0 +1,91 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@c @setfilename INFO-FILE-NAME
+@settitle BEAST/BSE FAQ
+@footnotestyle end
+@c %**end of header
+
+@include teximacros.texi
+
+@chapter @beastbse FAQ
+                
+@section Authors
+The main author of @beastbse is Tim Janik.
+Contributions were made by Olaf Hoehmann, David A. Bartold, Dave Seidel
+and Stefan Westerfeld.
+
+@section Document History
+This FAQ was written by @uref{timj@@beast.gtk.org,Tim Janik}.
+Initial markup was done by Dave Seidel, until
+@uref{dirt@@gtk.org,Alper Ersoy} implemented
+a new markup parser for @beast documentation. Around the
+0.4.1 release, the docs were migrated to texinfo format.
+
+@section Contact Information and Resources
+@itemize
+@item WWW: @uref{http://beast.gtk.org}
+@item FTP: @uref{ftp://beast.gtk.org/pub/beast}
+@item Mailing List: @uref{beast@@beast.gtk.org}.
+Send subscription requests to @uref{timj@@beast.gtk.org}.
+@end itemize
+
+@section Why do I get "Cannot access memory at address 0x706f6e6d" when running @beast in gdb?
+Some versions of gdb have problems figuring dynamic plugins, we can only hope
+that this is going to be fixed some time soon. Newer versions of gdb may
+already figure what's going on with the plugins if you simply restart @beast
+within gdb.
+@* @strong{UPDATE:} This problem hasn't yet been reproduced with gdb versions newer than 5.
+
+@section Why doesn't my synthesis network produce any sound?
+There are various possible causes for this. First, make sure you have
+@beast correctly installed and accessing your sound card by running
+one of the synthesis tests in the ./test/ subdirectory.
+For custom synthesis networks, make sure you have something noisy (e.g.
+the audio output of an oscillator) hooked up to a PcmOutput module, and
+have the network's "Auto Activate" parameter (on it's "Parameters"
+notebook page, section "Playback Settings") enabled.
+
+@section Why can't I get the synthesis networks to work?
+This is probably a plugin loading problem, most synthesis networks
+require plugins and won't work if there are any problems loading/finding
+them.
+@beast loads its plugins from some common installation directory. It therefore
+needs to be properly installed before you can make use of its plugins. Simply
+starting it from within the build directory is not sufficient.
+
+@section Why do I see @code{BEAST-WARNING **: strange, can't find any plugins, please check .../plugins} on startup?
+See previous item.
+
+@section Why can't I get @beast to load my .mp3, .aiff, .something sample files?
+Import functionality for foreign sample types is always being worked on, but due
+to the shear multitude of formats out there chances are that a specific format
+is not yet supported.
+However, sample file loaders have much improved in the last versions, and at
+this point exist for Ogg/Vorbis, MPEG Audio 1.0/2.0/2.5 Layer I/II/III,
+RIFF/WAVE, and .gslwave (@gsl multi sample format) files.
+
+@section Why does @beast sometimes crash with a segmentation fault on startup?
+This was due to a bug in the X Keyboard extension. @beast tries to figure the
+country specifics of the keyboard layout, using the XKB extension. Apparently,
+there are some allocation problems in XkbFreeKeyboard() or XkbFreeClientMap()
+in libX11, which can cause random crashes. Usually @beast will run fine when
+restarted.
+@* @strong{UPDATE:} Recent versions of XKB seem to have fixed this problem.
+
+@section Why doesn't @beast 0.4.0 play songs from earlier versions?
+The song support was completely rewritten for this version. If lots of
+compatiblity problem reports occur, a converter might be implemented
+at some point.
+
+@section What is a @code{.bse} file?
+
+@beast stores saved data in @bse files. These files can hold
+everything associated with a project, such as the definition of
+synthesis networks, songs with their notes and tracks, and even complete music
+sample files. Except for raw sample data, the contents are stored
+in a human readable text form using lisp syntax. The textual file
+contents may even be manually edited, as long as the binary
+appendix used to store wave data doesn't get corrupted.
+@*
+The recommended mime type image for @bse files looks like this:
+@image{beast-mime,,,BSE-Mime-Logo,png}

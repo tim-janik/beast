@@ -1,3 +1,26 @@
+Fri Aug 16 03:17:26 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am: add new .texi doc files, cleanups.
+	* docs/faq.texi: newly formatted and updated FAQ.
+	* docs/quickstart.texi: started out on a quick start guide.
+	* docs/release-notes.texi: newly formatted release notes.
+	* docs/teximacros.texi: texi base macros.
+
+	* docs/generated/Makefile.am: generate docs from the .texi
+	sources with makeinfo and xsltproc now.
+
+	* docs/generated/texinfo.dtd: small DTD that just transforms
+	frequently used texi-sepcial entities into xml tags.
+
+	* docs/generated/html.xsl: XSL stylesheet from alper to produce
+	html from makeinfo --xml output.
+
+	* docs/generated/markup.xsl: bad hackup to generate TagSpanMarkup
+	output from makeinfo --xml. alper, this could need some loving ;)
+
+	* docs/reference/Makefile.am: moved tags2doc.pl into this dir,
+	since the reference docs aren't yet ported to texi/xsl.
+
 Fri Aug 16 02:11:00 2002  Tim Janik  <timj@gtk.org>
 
 	* configure.in: add AC_DOC_REQUIREMENTS() which checks for

@@ -1,0 +1,7 @@
+<!ENTITY tex       "<TeX/>">
+<!ENTITY ellipsis  "<ellipsis/>">
+<!ENTITY bullet    "<bullet/>">
+<!ENTITY copyright "<copyright/>">
+<!ENTITY minus     "<minus/>">
+<!ENTITY linebreak "<linebreak/>">
+<!ENTITY dots      "<dots/>">

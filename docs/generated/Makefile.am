@@ -3,41 +3,61 @@ SUBDIRS = # none
 docsdir = ${beastdocsdir}
 docs_DATA = ${public_docs}
 
-public_docs = $(strip \
-	faq.markup \
-	release-notes.markup \
-	gsl-mplan.markup \
+public_docs = $(strip		\
+	faq.markup		\
+	release-notes.markup	\
+	news.markup		\
+	gsl-mplan.markup	\
+	quickstart.markup	\
 )
-built_sources = $(strip \
-	faq.markup \
-	release-notes.markup \
-	gsl-mplan.markup \
+build_targets = $(strip		\
+	faq.markup		\
+	release-notes.markup	\
+	news.markup		\
+	gsl-mplan.markup	\
+	quickstart.markup	\
 )
-doc_sources = $(strip \
-	faq.dat \
-	release-notes.dat \
+html_targets = $(patsubst %.markup, %.html, $(build_targets))
+texi_docs = $(strip			\
+	$(srcdir)/../faq.texi		\
+	$(srcdir)/../quickstart.texi	\
+	$(srcdir)/../release-notes.texi	\
 )
-build_tools = $(strip \
-	faq-conf.pl \
-	faq-header.markup \
+build_tools = $(strip		\
+	html.xsl		\
+	markup.xsl		\
+	texinfo.dtd		\
 )
+XSLTPROC = xsltproc	# FIXME
 
+if HAVE_XMLMAKEINFO_AND_XSLTPROC
+%.xml: $(srcdir)/../%.texi
+	$(XMLMAKEINFO) -I $(srcdir)/.. --xml $< -o $@
+%.markup: %.xml $(srcdir)/markup.xsl $(srcdir)/texinfo.dtd
+	$(XSLTPROC) $(srcdir)/markup.xsl $< >$@
+%.html: %.xml $(srcdir)/html.xsl $(srcdir)/texinfo.dtd
+	$(XSLTPROC) --param toc 1 --stringparam revision "`date -r $<`" $(srcdir)/html.xsl $< >$@
+gsl-mplan.xml: $(top_srcdir)/bse/gsl-mplan.txt
+	cd . \
+	&& echo '<texinfo>' > $@ \
+	&& echo '<settitle>GSL Flow Engine</settitle><preformat><para>' >> $@ \
+	&& sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' < $< >> $@ \
+	&& echo '</para></preformat></texinfo>' >> $@
+news.xml: $(top_srcdir)/NEWS
+	cd . \
+	&& echo '<texinfo>' > $@ \
+	&& echo '<settitle>BEAST/BSE NEWS</settitle><preformat><para>' >> $@ \
+	&& sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' < $< >> $@ \
+	&& echo '</para></preformat></texinfo>' >> $@
+conditional_clean = $(build_targets) gsl-mplan.xml news.xml
+endif
 
-TAGS2DOC = $(srcdir)/../tags2doc.pl
+html-targets:	$(html_targets)
 
-faq.markup: $(TAGS2DOC) $(srcdir)/faq-header.markup $(srcdir)/faq.dat
-	$(TAGS2DOC) --config $(srcdir)/faq-conf.pl < $(srcdir)/faq.dat > $@
+.PHONY: html-tagets
 
-release-notes.markup: $(srcdir)/release-notes.dat $(srcdir)/../../NEWS
-	cat $(srcdir)/release-notes.dat $(srcdir)/../../NEWS > $@
+CLEANFILES += $(conditional_clean) $(html_targets)
 
-# ok, this is a bit odd, gsl-mplan.txt sits in bse/ for a couple reasons
-# so we need to pull it in here
-GSL_MPLAN = $(srcdir)/../../bse/gsl-mplan.txt
-gsl-mplan.markup: $(GSL_MPLAN)
-	cat $(GSL_MPLAN) > $@
+MAINTAINERCLEANFILES += $(build_tools)
 
-CLEANFILES += $(built_sources)
-# MAINTAINERCLEANFILES += 
-
-EXTRA_DIST = ${public_docs} ${doc_sources} $(build_tools)
+EXTRA_DIST = ${public_docs} ${build_tools}

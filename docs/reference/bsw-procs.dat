@@ -1,15 +1,15 @@
 @DOC-VARIABLE-DEFINITIONS@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
-package = BEAST-0.4.1-rc2
-date    = 07 Aug 2002
+package = BEAST-0.4.1-rc3
+date    = 16 Aug 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 07 Aug 2002 BEAST-0.4.1-rc2
+BSW-Procedures 16 Aug 2002 BEAST-0.4.1-rc3
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference

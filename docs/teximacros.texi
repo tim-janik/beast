@@ -1,0 +1,117 @@
+@c emacs: -*-texinfo-*-
+
+@c --- meta: macros used for macro definitions ---
+@ifxml
+
+@macro rawxml{XMLTEXT}
+@xml
+\XMLTEXT\@end xml
+@end macro
+
+@rmacro ifxmlelse{TEXT,TAG,CMD}
+@rawxml{<\TAG\>}\TEXT\@rawxml{</\TAG\>}
+@end rmacro
+
+@end ifxml
+@ifnotxml
+
+@rmacro ifxmlelse{TEXT,TAG,CMD}
+@\CMD\{\TEXT\}
+@end rmacro
+
+@end ifnotxml
+
+@rmacro doublequote{TEXT}
+"\TEXT\"
+@end rmacro
+
+
+@c --- accentuate phrases ---
+@rmacro emphasize{TEXT}
+@ifxmlelse{\TEXT\,emphasize,emph}
+@end rmacro
+
+@rmacro important{TEXT}
+@ifxmlelse{\TEXT\,important,strong}
+@end rmacro
+
+
+@c --- content markup ---
+@rmacro menupath{TEXT}
+@ifxmlelse{\TEXT\,menupath,doublequote}
+@end rmacro
+
+@rmacro pagepath{TEXT}
+@ifxmlelse{\TEXT\,pagepath,doublequote}
+@end rmacro
+
+@rmacro property{TEXT}
+@ifxmlelse{\TEXT\,property,doublequote}
+@end rmacro
+
+@rmacro object{TEXT}
+@ifxmlelse{<\TEXT\>,object,r}
+@end rmacro
+
+@rmacro channel{TEXT}
+@ifxmlelse{\TEXT\,channel,code}
+@end rmacro
+
+@ifxml
+@rmacro code{TEXT}
+@rawxml{<code>}\TEXT\@rawxml{</code>}
+@end rmacro
+@end ifxml
+
+@rmacro programlisting{TEXT}
+@c in contrast to @code{} this will also preserve formatting
+@ifxmlelse{\TEXT\,programlisting,code}
+@end rmacro
+
+@rmacro keepspaceSTART
+@rawxml{<keepspace>}
+@end rmacro
+@rmacro keepspaceEND
+@rawxml{</keepspace>}
+@end rmacro
+
+@rmacro preformat{TEXT}
+@ifxmlelse{\TEXT\,preformat,code}
+@end rmacro
+
+
+@c --- aliases ---
+@rmacro prop{TEXT}
+@property{\TEXT\}
+@end rmacro
+
+@rmacro module{TEXT}
+@object{\TEXT\}
+@end rmacro
+
+
+@c --- common names ---
+@macro beast
+@emphasize{BEAST}
+@end macro
+
+@macro bse
+@emphasize{BSE}
+@end macro
+
+@macro gsl
+@emphasize{GSL}
+@end macro
+
+@macro beastbse
+@emphasize{BEAST/BSE}
+@end macro
+
+@macro sfk
+@emphasize{SFK}
+@end macro
+
+@macro arts
+@emphasize{aRts}
+@end macro
+

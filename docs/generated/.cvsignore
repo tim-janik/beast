@@ -1,5 +1,5 @@
 Makefile
 Makefile.in
-faq.markup
-gsl-mplan.markup
-release-notes.markup
+*.xml
+*.markup
+*.html

@@ -1,16 +1,17 @@
 SUBDIRS = generated reference
 
-public_docs = $(strip \
+texi_docs = $(strip		\
+	faq.texi		\
+	quickstart.texi		\
+	release-notes.texi	\
+	teximacros.texi		\
 )
-private_docs = $(strip \
-	bse-categories.txt \
-	interpolation.txt \
-)
-build_tools = $(strip \
-	tags2doc.pl \
+private_docs = $(strip		\
+	bse-categories.txt	\
+	interpolation.txt	\
 )
 
 docsdir = ${beastdocsdir}
-docs_DATA = ${public_docs}
+docs_DATA = # ${public_docs}
 
-EXTRA_DIST = ${public_docs} ${private_docs} $(build_tools)
+EXTRA_DIST = ${texi_docs} ${private_docs}

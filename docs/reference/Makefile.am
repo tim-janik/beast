@@ -12,9 +12,9 @@ BSE_MAN_SRC_GLOBS=$(top_srcdir)/bse/bse*.[hc]
 GSL_MAN_SRC_GLOBS=$(top_srcdir)/bse/gsl*.[hc]
 BST_MAN_SRC_GLOBS=$(top_srcdir)/beast-gtk/bst*.[hc]
 
-TAGS2DOC = $(srcdir)/../tags2doc.pl
+TAGS2DOC = $(srcdir)/tags2doc.pl
 
-EXTRA_DIST += scandocs.pl $(MAN_PAGES_3) $(DATA_FILES)
+EXTRA_DIST += scandocs.pl tags2doc.pl $(MAN_PAGES_3) $(DATA_FILES)
 
 all-local: $(DATA_FILES) $(MAN_PAGES_3)
 

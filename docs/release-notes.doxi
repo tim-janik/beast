@@ -1,0 +1,52 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@c @setfilename INFO-FILE-NAME
+@settitle RELEASE-NOTES
+@footnotestyle end
+@c %**end of header
+
+@include teximacros.texi
+
+@chapter RELEASE-NOTES
+
+@keepspaceSTART
+		Much has changed in the new development version of BEAST.
+		In brief (specifics can be found in the NEWS section), the
+		GUI was majorly polished, many new synthesis features have
+		been added and support for various external wave file formats
+		was implemented.
+@keepspaceEND
+
+@keepspaceSTART
+		The current version is already good enough to perform
+		interesting synthesis tasks and to have lots of fun with
+		songs, external MIDI devices and samples.
+		However, this is still an ALPHA version, so things might
+		not always work as expected, reports about misbehaviour
+		are welcome.
+@keepspaceEND
+
+@keepspaceSTART
+		Be warned though, the .bse file format hasn't fully stabelized
+		yet, so incompatibilities whith future versions may occour.
+@keepspaceEND
+
+@keepspaceSTART
+		A good starting point are the test files shipped in the
+		tests/ subdirectory of the source package.
+@keepspaceEND
+
+@keepspaceSTART
+		For uptodate information on BEAST development, please visit:
+@keepspaceEND
+
+@center		@uref{http://beast.gtk.org}
+
+@keepspaceSTART
+		Questions, comments, bug reports and similar stuff should be sent to:
+@keepspaceEND
+
+@center		@uref{!spam-beast@@beast.gtk.org,,beast@@beast.gtk.org}
+
+@*
+@*

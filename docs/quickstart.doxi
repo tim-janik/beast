@@ -1,0 +1,86 @@
+\input texinfo   @c emacs: -*-texinfo-*-
+@c %**start of header
+@settitle BEAST/BSE Quick Start Guide
+@footnotestyle end
+@c %**end of header
+
+@include teximacros.texi
+
+@titlepage
+@title @beastbse Quick Start Guide
+@author Tim Janik
+This guide attempts to give a few very brief hints for new users,
+in order to get started with the most basic tasks that can be
+accomplished with @beast{}.
+@end titlepage
+
+@chapter First Start At Synthesis
+
+The most basic task @beast is able to accomplish is the creation
+of new musical sounds which is done by using a variety of music
+producers, called "Modules". Forming a network of multiple modules
+to create a new sound is most generally being refered to
+as "Synthesis".
+
+@section Creating A Synthesizer Network
+@enumerate
+@item Select @menupath{/Project/New Synthesizer Network} from the menu to
+      create a new network.
+@item On the notebook page @pagepath{BseSNet:Unnamed} of the newly created
+      network, enable the @prop{Auto Activate} property to later allow
+      playback of this network.
+@item Select the @pagepath{Routing} notebook page.
+@end enumerate
+
+@section Creating And Connecting Synthesis Modules
+The synthesis network router editor allowes for creation of
+synthesis modules, establishing connections between module
+inputs and outputs, and for adjustment of a module's parameter set.
+@*
+Here's how to setup a very simple test case:
+@enumerate
+@item	Create two modules by selecting them from either the
+	pallete window or from the Button-3 popup menu of the
+	@pagepath{Routing} notebook page and then clicking
+	into the routing area. The two modules you need
+	are @module{PcmOutput} and @module{StandardOscillator}.
+@item	Connect the @channel{Audio Out} output channel of the oscillator
+	to the input channels @channel{Left Audio In} and
+	@channel{Right Audio In} of the output module.
+@end enumerate
+
+@section Starting And Stopping Playback
+Playback of a @beast project can be started or
+restarted by selecting the menu item @menupath{/Project/Play}.
+Similarly, playback is halted by selecting @menupath{/Project/Stop}.
+
+@chapter Setting Up Songs
+
+To be able to playback songs with @beast{}, synthesis instruments have to
+be created which are used to playback the notes contained in the parts
+of a song.
+
+@section What Is A Synthesis Instrument?
+A synthesis instrument is a special kind of synthesizer network which
+were already introduced in the first section. The special things about
+a synthesis instrument are:
+@itemize
+@item	A synthesis instrument doesn't need to have its @prop{Auto Activate}
+	property enabled. That's because the song using the instrument will
+	take care of activating it when neccessary.
+@item	A dedicated module type is used as input to the synthesis instrument
+	so information about the note to be played can be fed into it.
+@item	A dedicated module type is used as output of the synthesis instrument
+	to jointly compose the soung output together with other synthesis
+	instruments being used.
+@end itemize
+
+@section Creating A Synthesis Instrument
+@enumerate
+@item	Select @menupath{/Project/New Synthesizer Network} from the menu to
+	create a new network.
+@item	Switch to the @pagepath{Routing} notebook page.
+@item	Create a @module{SubKeyboard} module for the input, and
+	a @module{SubInstrument} for the instrument output.
+@item   More important stuff about envelopes and oscillators goes here.
+@end enumerate
