@@ -1,3 +1,20 @@
+Wed Oct 13 18:57:17 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/Makefile.am:
+	* tests/audio/featuretest.sh: Get rid of seperate .test files by
+	moving the information which tests need to be performed with which
+	parameters into the Makefile.
+
+	* tests/audio/bseadder.test.reference:
+	* tests/audio/bseadder.test: Removed, obsoled.
+
+	* tests/audio/bseadder.reference: Same reference data, different name.
+
+	* tests/audio/README: Documentation updated.
+
+	* tools/bsefcompare.cc: Pretty-printing: added spaces between
+	similarities.
+
 Tue Oct 12 09:54:37 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/scandocs.pl: fixed comment reading by using the

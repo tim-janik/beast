@@ -22,23 +22,30 @@ steps:
 
    save foo.bse in this directory (add it to the CVS)
 
-2) write three things into foo.test:
+2) add a new target to Makefile.am, which runs featuretest.sh with
 
    - the .bse filename
+   - the name of the .reference file for the test reference data
    - the features you want to compare (see ../../tools/bsefextract --help)
    - the desired threshold
 
-   an example for the contents of foo.test could be (add it to the CVS):
+   an example for the target test-foo would be:
 
-     filename="foo.bse"
-     features="--avg-spectrum --avg-energy"
-     threshold="99.99"
+   test-foo: beastconf.sh
+      @featuretest.sh foo.bse foo.reference \
+                      --avg-spectrum --avg-energy \
+                   -- --threshold=99.99
 
-3) add it to the FEATURE_TESTS line in Makefile.am
+3) add the target to the FEATURE_TESTS line in Makefile.am
 
-4) run make test once, the test will fail, but you will be given instructions
+4) run make test-foo once, the test will fail, but you will be given instructions
    how to make the results of this test run the test reference data
 
-5) do this (and add newly created foo.test.reference to CVS)
+5) do this (and add newly created foo.reference to CVS)
 
-6) run make test a second time, the test should succeed now
+6) run make test, the newly added test should be executed and succeed now
+
+Note, that if you need multiple tests for the same .bse file (for instance
+because you want to set a different threshold for different features), you
+can do so by adding multiple targets test-foo1, test-foo2,... using difference
+reference file names for the tests, like foo1.reference, foo2.reference,...

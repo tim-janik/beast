@@ -244,7 +244,7 @@ int main (int argc, char **argv)
 	  printf ("similarities: ");
 	  for (size_t i = 0; i < similarity.size(); i++)
 	    {
-	      printf (i == 0 ? "%f" : ",%f", similarity[i] * 100.0); /* percent */
+	      printf (i == 0 ? "%f" : ", %f", similarity[i] * 100.0); /* percent */
 	      s += similarity[i];
 	    }
 	  printf ("\n");

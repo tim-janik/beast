@@ -1,5 +1,5 @@
-FEATURE_TESTS = bseadder.test
-CLEANFILES = *.test.current *.bse.wav xgen-bp beastconf.sh
+FEATURE_TESTS = test-bseadder
+CLEANFILES = *.current *.bse.wav xgen-bp beastconf.sh featuretest.status.sh
 
 noinst_build_sources += beastconf.sh
 beastconf.sh:
@@ -14,5 +14,14 @@ beastconf.sh:
 
 all: beastconf.sh
 
-test: beastconf.sh
-	featuretest.sh $(FEATURE_TESTS)
+test: reset-summary $(FEATURE_TESTS)
+	@featuretest.sh --summary
+	@featuretest.sh --reset-summary
+
+reset-summary:
+	@featuretest.sh --reset-summary
+
+test-bseadder: beastconf.sh
+	@featuretest.sh bseadder.bse bseadder.reference \
+	               --avg-spectrum --avg-energy \
+	            -- --threshold=99.99

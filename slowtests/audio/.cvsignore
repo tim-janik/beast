@@ -1,5 +1,6 @@
-*.test.current
+*.current
 *.bse.wav
 Makefile
 Makefile.in
 beastconf.sh
+featuretest.status.sh
