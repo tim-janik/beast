@@ -1,3 +1,8 @@
+Sun Jan  2 15:24:17 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/dialogs/Makefile.am: Use Scheme identifier style for
+	zintern names.
+
 Sun Jan  2 13:28:50 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/architecture.texi: Started documenting xinfos for wave files.
