@@ -50,10 +50,7 @@ test-balance-right: beastconf.sh
 EXTRA_DIST = $(strip		\
 	balance-left.reference	\
 	balance-right.reference	\
-	bseadder.current	\
 	bsetowav.scm		\
-	balance-left.current	\
-	balance-right.current	\
 	balance.bse		\
 	bseadder.bse		\
 	bseadder.reference	\
