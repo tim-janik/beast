@@ -3,8 +3,6 @@ FIXMES:
 - the idl compiler writes out _("foo") as _ ("foo") but the additional space confuses gettext
 - remove hpack and vpack
 - make plugins/Makefile.am actually pick up *.idl files in distribution tarballs
-- rename bstparam-entry.c to bstparam-searchpath.c
-- remove bstfreeradiobutton.[hc]
 - remove 64bit data fields from BseUndoStep if possible
 - remove bstrack*.[hc] cruft, old parasites and data pocket
 - allow parasite object links only within tree
@@ -115,7 +113,6 @@ Stefan Gui TODOs (priorities: 9=high, 0=low):
     reuse the existing one
 5 - implement copying of parts
 4 - implement selection and copy and paste of parts in the strack roll
-2 - Comment field in Project -> SNet is too small to enter reasonable
 
 TODO:
 - add script to re-quantize piano-roll selections
