@@ -56,7 +56,6 @@ struct _BseExportNodeBoxed {
   GValueTransform boxed2recseq;
   GValueTransform seqrec2boxed;
   SfiRecFields    fields;
-  const gchar   **infos;
 };
 typedef struct {
   BseExportNode      node;
