@@ -63,7 +63,7 @@ bst_track_roll_controller_hpanel_actions (BstTrackRollController *self)
   static const GxkStockAction actions[] = {
     { N_("Left"),               "L",    N_("Use the horizontal ruler to adjust the left loop pointer"),
       BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT,     BST_STOCK_TICK_LOOP_LEFT },
-    { N_("Pos"),                "P",    N_("Use the horizontal ruler to adjust the play position pointer"),
+    { N_("Position"),           "P",    N_("Use the horizontal ruler to adjust the play position pointer"),
       BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER,  BST_STOCK_TICK_POINTER },
     { N_("Right"),              "R",    N_("Use the horizontal ruler to adjust the right loop pointer"),
       BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT,    BST_STOCK_TICK_LOOP_RIGHT },
