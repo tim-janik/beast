@@ -1,0 +1,30 @@
+@DOC-VARIABLE-DEFINITIONS@
+name    = BSE-Functions
+blurb   = BSE Function Reference
+package = BEAST-0.4.0
+date    = 03 Mar 2002
+image   = bse-functions
+
+@DOC-TITLE@
+BSE-Functions
+
+@DOC-HEAD@
+BSE-Functions 03 Mar 2002 BEAST-0.4.0
+
+@DOC-NAME@
+BSE-Functions - BSE Function Reference
+
+@DOC-SYNOPSIS@
+@STRONG bse_server_get@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+Global BSE Server
+
+@DOC-DESCRIPTION@
+Retrive the global BSE server object.  

@@ -1,0 +1,44 @@
+@DOC-VARIABLE-DEFINITIONS@
+name    = BST-Functions
+blurb   = BST Function Reference
+package = BEAST-0.4.0
+date    = 03 Mar 2002
+image   = bst-functions
+
+@DOC-TITLE@
+BST-Functions
+
+@DOC-HEAD@
+BST-Functions 03 Mar 2002 BEAST-0.4.0
+
+@DOC-NAME@
+BST-Functions - BST Function Reference
+
+@DOC-SYNOPSIS@
+@STRONG bst_gmask_container_create@ (@EMPH tooltips@, @EMPH border_width@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ 
+typeraw = gpointer 
+@DOC-PARAMETER@
+tooltips
+@DOC-PARDESC@
+Tooltip widget
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ 
+typeraw = guint    
+@DOC-PARAMETER@
+border_width
+@DOC-PARDESC@
+Border width of this GUI mask
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+
+@DOC-DESCRIPTION@
+Create the container for a new GUI field mask.  

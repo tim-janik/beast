@@ -1,0 +1,2150 @@
+@DOC-VARIABLE-DEFINITIONS@
+name    = BSE-Procedures
+blurb   = BSE Procedure Reference
+package = BEAST-0.4.0
+date    = 03 Mar 2002
+image   = bse-procedures
+
+@DOC-TITLE@
+BSE-Procedures
+
+@DOC-HEAD@
+BSE-Procedures 03 Mar 2002 BEAST-0.4.0
+
+@DOC-NAME@
+BSE-Procedures - BSE Procedure Reference
+
+@DOC-SYNOPSIS@
+@STRONG BseContainer::list-items@ (@EMPH container@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+container
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+item-list: 
+
+@DOC-DESCRIPTION@
+Retrive all items within a container  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::create-entry@ (@EMPH data-pocket@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+entry-id: The unique pocket entry ID
+
+@DOC-DESCRIPTION@
+Create a new entry in a data pocket. Entries have a unique ID which is required to set values in a data pocket.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::delete-entry@ (@EMPH data-pocket@, @EMPH entry-id@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+error: BSE error code
+
+@DOC-DESCRIPTION@
+Delete an existing entry from a data pocket  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::get-float@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Name for the value
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+number: The value stored in the data pocket entry
+
+@DOC-DESCRIPTION@
+Retrive a previously set floating point value from a data pocket entry.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::get-int@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Name for the value
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+number: The value stored in the data pocket entry
+
+@DOC-DESCRIPTION@
+Retrive a previously set integer value from a data pocket entry.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::get-n-entries@ (@EMPH data-pocket@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+n-entries: The number of entries in use
+
+@DOC-DESCRIPTION@
+Retrive the number of entries created in a data pocket.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::get-nth-entry-id@ (@EMPH data-pocket@, @EMPH entry-index@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-index
+@DOC-PARDESC@
+index into number of entries present
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+entry-id: The unique pocket entry ID (or 0 if there's no such entry)
+
+@DOC-DESCRIPTION@
+Retrive the ID of an entry in the data pocket by sequential index.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::get-object@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Name for the value
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+item: The value stored in the data pocket entry
+
+@DOC-DESCRIPTION@
+Retrive a previously set object reference from a data pocket entry.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::get-string@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Name for the value
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+string: The value stored in the data pocket entry
+
+@DOC-DESCRIPTION@
+Retrive a previously set string from a data pocket entry.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::set-float@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH number@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Name for the value
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+number
+@DOC-PARDESC@
+The value to store in the data pocket entry
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+error: BSE error code
+
+@DOC-DESCRIPTION@
+Set a named floating point value in a data pocket entry. Names are required to distinguish different values from each other when accessing values in a data pocket.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::set-int@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH number@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Name for the value
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+number
+@DOC-PARDESC@
+The value to store in the data pocket entry
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+error: BSE error code
+
+@DOC-DESCRIPTION@
+Set a named integer value in a data pocket entry. Names are required to distinguish different values from each other when accessing values in a data pocket.  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::set-object@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Name for the value
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+The value to store in the data pocket entry
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+error: BSE error code
+
+@DOC-DESCRIPTION@
+Set a named object reference in a data pocket entry. Object references stored in a data pocket must exist within the same project that the data pocket belongs to  
+@DOC-SYNOPSIS@
+@STRONG BseDataPocket::set-string@ (@EMPH data-pocket@, @EMPH entry-id@, @EMPH name@, @EMPH string@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data-pocket
+@DOC-PARDESC@
+The data pocket storing values
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+entry-id
+@DOC-PARDESC@
+The unique pocket entry ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Name for the value
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+string
+@DOC-PARDESC@
+The value to store in the data pocket entry
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+error: BSE error code
+
+@DOC-DESCRIPTION@
+Set a named string in a data pocket entry.  
+@DOC-SYNOPSIS@
+@STRONG BseItem::common-ancestor@ (@EMPH item@, @EMPH item2@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+First item
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item2
+@DOC-PARDESC@
+Second item
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+ancestor: Common ancestor of both items
+
+@DOC-DESCRIPTION@
+Retrive the common ancestor of two items if there's any  
+@DOC-SYNOPSIS@
+@STRONG BseItem::get-name@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+name: 
+
+@DOC-DESCRIPTION@
+Get an item's name  
+@DOC-SYNOPSIS@
+@STRONG BseItem::get-name-or-type@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+name: 
+
+@DOC-DESCRIPTION@
+Get an item's name or type if it has no name  
+@DOC-SYNOPSIS@
+@STRONG BseItem::get-parent@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+parent: 
+
+@DOC-DESCRIPTION@
+Retrive item's parent  
+@DOC-SYNOPSIS@
+@STRONG BseItem::get-project@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+project: 
+
+@DOC-DESCRIPTION@
+Retrive item's parent  
+@DOC-SYNOPSIS@
+@STRONG BseItem::get-type@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+type-id: 
+
+@DOC-DESCRIPTION@
+Retrive Type ID  
+@DOC-SYNOPSIS@
+@STRONG BseItem::get-type-blurb@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+type-blurb: 
+
+@DOC-DESCRIPTION@
+Retrieve Type Description  
+@DOC-SYNOPSIS@
+@STRONG BseItem::get-type-name@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+type-name: 
+
+@DOC-DESCRIPTION@
+Retrieve Type Name  
+@DOC-SYNOPSIS@
+@STRONG BseItem::get-uloc-path@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+uloc-path: 
+
+@DOC-DESCRIPTION@
+Retrieve the uloc path for this item.  
+@DOC-SYNOPSIS@
+@STRONG BseItem::unuse@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 7
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 7
+
+
+@DOC-DESCRIPTION@
+Decrement use count for when an object is not needed anymore  
+@DOC-SYNOPSIS@
+@STRONG BseItem::use@ (@EMPH item@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 7
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 7
+
+
+@DOC-DESCRIPTION@
+Increment use count to keep the object alive  
+@DOC-SYNOPSIS@
+@STRONG BseObject::is-a@ (@EMPH item@, @EMPH type-name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+type-name
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+is-a-check: 
+
+@DOC-DESCRIPTION@
+Check object type  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::clear-content@ (@EMPH pattern@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 10
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 10
+
+
+@DOC-DESCRIPTION@
+Reset note and instrument contents of the selectionto none  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::clear-instrument@ (@EMPH pattern@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 10
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 10
+
+
+@DOC-DESCRIPTION@
+Reset instrument for selected notes  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::delete-note@ (@EMPH pattern@, @EMPH focus-channel@, @EMPH focus-row@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+focus-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+focus-row
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+
+@DOC-DESCRIPTION@
+Delete current note and shift remaining notes up  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::fill-instrument@ (@EMPH pattern@, @EMPH instrument@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 13
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+instrument
+@DOC-PARDESC@
+Instrument to use
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 13
+
+
+@DOC-DESCRIPTION@
+Reset instrument for selected notes  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::insert-note@ (@EMPH pattern@, @EMPH focus-channel@, @EMPH focus-row@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+focus-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+focus-row
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+
+@DOC-DESCRIPTION@
+Insert new note and shift remaining notes down  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::select-all@ (@EMPH pattern@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 10
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 10
+
+
+@DOC-DESCRIPTION@
+Select all notes  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::select-invert@ (@EMPH pattern@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 10
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 10
+
+
+@DOC-DESCRIPTION@
+Invert the current selection  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::select-none@ (@EMPH pattern@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 10
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 10
+
+
+@DOC-DESCRIPTION@
+Unselect all notes  
+@DOC-SYNOPSIS@
+@STRONG BsePattern::random-fill@ (@EMPH pattern@, @EMPH seed-value@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 13
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+pattern
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+seed-value
+@DOC-PARDESC@
+Enter any number here, it will be used as seed value for the note generator
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 13
+
+
+@DOC-DESCRIPTION@
+Reset note and instrument contents of the selectionto none  
+@DOC-SYNOPSIS@
+@STRONG BseProject::restore-from-file@ (@EMPH project@, @EMPH file-name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+file-name
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Load a project from file  
+@DOC-SYNOPSIS@
+@STRONG BseProject::store-bse@ (@EMPH project@, @EMPH file-name@, @EMPH self-contained@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+file-name
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+self-contained
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Save a project into a BSE file  
+@DOC-SYNOPSIS@
+@STRONG BseProject::create-midi-synth@ (@EMPH project@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+midi-synth: 
+
+@DOC-DESCRIPTION@
+Create a MIDI synthesizer network in project  
+@DOC-SYNOPSIS@
+@STRONG BseProject::create-snet@ (@EMPH project@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+snet: 
+
+@DOC-DESCRIPTION@
+Create a synthsizer network in project  
+@DOC-SYNOPSIS@
+@STRONG BseProject::create-song@ (@EMPH project@, @EMPH n-channels@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 13
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+n-channels
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 13
+
+@DOC-RETURNS@
+song: 
+
+@DOC-DESCRIPTION@
+Create a new song in project  
+@DOC-SYNOPSIS@
+@STRONG BseProject::ensure-wave-repo@ (@EMPH project@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+wrepo: 
+
+@DOC-DESCRIPTION@
+Ensure the project has a wave repository  
+@DOC-SYNOPSIS@
+@STRONG BseProject::find-item@ (@EMPH project@, @EMPH uloc-path@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+uloc-path
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+item: 
+
+@DOC-DESCRIPTION@
+Find an item within a project, given its uloc path.  
+@DOC-SYNOPSIS@
+@STRONG BseProject::get-data-pocket@ (@EMPH project@, @EMPH name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+data-pocket: 
+
+@DOC-DESCRIPTION@
+Retrive a specifically named data pocket for this project  
+@DOC-SYNOPSIS@
+@STRONG BseProject::is_playing@ (@EMPH project@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+is-playing: 
+
+@DOC-DESCRIPTION@
+Check whether a project is currently playing  
+@DOC-SYNOPSIS@
+@STRONG BseProject::list-items-by-uloc@ (@EMPH project@, @EMPH item-type@, @EMPH uloc@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item-type
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+uloc
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+item-list: 
+
+@DOC-DESCRIPTION@
+Retrive all items of a specific type within a project with matching uloc  
+@DOC-SYNOPSIS@
+@STRONG BseProject::list-uloc-paths@ (@EMPH project@, @EMPH item-type@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item-type
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+uloc-paths: 
+
+@DOC-DESCRIPTION@
+List uloc paths for all items of a specified type within this project. By their uloc paths, items are uniquely identifyable within a project.  
+@DOC-SYNOPSIS@
+@STRONG BseSNet::can_create_source@ (@EMPH snet@, @EMPH source-type@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+snet
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source-type
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Check whether inserting a new module into a synthesis network is possible  
+@DOC-SYNOPSIS@
+@STRONG BseSNet::create_source@ (@EMPH snet@, @EMPH source-type@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+snet
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source-type
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+@DOC-RETURNS@
+source: 
+
+@DOC-DESCRIPTION@
+Insert a new module into a synthesis network  
+@DOC-SYNOPSIS@
+@STRONG BseSNet::remove_source@ (@EMPH snet@, @EMPH source@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+snet
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Remove an existing module from its synthesis network  
+@DOC-SYNOPSIS@
+@STRONG BseServer::halt-project@ (@EMPH server@, @EMPH project@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 10
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 10
+
+
+@DOC-DESCRIPTION@
+Stop processing a project generating sound  
+@DOC-SYNOPSIS@
+@STRONG BseServer::run-project@ (@EMPH server@, @EMPH project@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+project
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Process a project to generate sound  
+@DOC-SYNOPSIS@
+@STRONG BseServer::use-new-project@ (@EMPH server@, @EMPH name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+project: 
+
+@DOC-DESCRIPTION@
+Create a new project, owned by the caller  
+@DOC-SYNOPSIS@
+@STRONG BseSource::clear-inputs@ (@EMPH source@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 9
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 9
+
+
+@DOC-DESCRIPTION@
+Disconnect all source inputs  
+@DOC-SYNOPSIS@
+@STRONG BseSource::clear-outputs@ (@EMPH source@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 9
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 9
+
+
+@DOC-DESCRIPTION@
+Disconnect all source outputs  
+@DOC-SYNOPSIS@
+@STRONG BseSource::ichannel-blurb@ (@EMPH source@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+channel-blurb: 
+
+@DOC-DESCRIPTION@
+Get input channel description  
+@DOC-SYNOPSIS@
+@STRONG BseSource::ichannel-get-n-joints@ (@EMPH source@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+n-joints: 
+
+@DOC-DESCRIPTION@
+Retrive the number of input connections of an input channel  
+@DOC-SYNOPSIS@
+@STRONG BseSource::ichannel-get-ochannel@ (@EMPH source@, @EMPH input-channel@, @EMPH input-joint@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-joint
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+ochannel: 
+
+@DOC-DESCRIPTION@
+Retrive output channel of the source connected to a specific joint of an input channel  
+@DOC-SYNOPSIS@
+@STRONG BseSource::ichannel-get-osource@ (@EMPH source@, @EMPH input-channel@, @EMPH input-joint@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-joint
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+osource: 
+
+@DOC-DESCRIPTION@
+Retrive output source connected to a specific joint of an input channel  
+@DOC-SYNOPSIS@
+@STRONG BseSource::ichannel-name@ (@EMPH source@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+channel-name: 
+
+@DOC-DESCRIPTION@
+Get input channel name  
+@DOC-SYNOPSIS@
+@STRONG BseSource::is-joint-ichannel@ (@EMPH source@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+is-jchannel: 
+
+@DOC-DESCRIPTION@
+Check if an input channel is a joint (multi-connect) channel  
+@DOC-SYNOPSIS@
+@STRONG BseSource::n-ichannels@ (@EMPH source@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+n-channels: 
+
+@DOC-DESCRIPTION@
+Get the number of input channels of a source  
+@DOC-SYNOPSIS@
+@STRONG BseSource::n-ochannels@ (@EMPH source@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+n-channels: 
+
+@DOC-DESCRIPTION@
+Get the number of output channels of a source  
+@DOC-SYNOPSIS@
+@STRONG BseSource::ochannel-blurb@ (@EMPH source@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+channel-blurb: 
+
+@DOC-DESCRIPTION@
+Get output channel description  
+@DOC-SYNOPSIS@
+@STRONG BseSource::ochannel-name@ (@EMPH source@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+channel-name: 
+
+@DOC-DESCRIPTION@
+Get output channel name  
+@DOC-SYNOPSIS@
+@STRONG BseSource::set-input@ (@EMPH input-source@, @EMPH input-channel@, @EMPH output-source@, @EMPH output-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+output-source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+output-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Connect a source input to another source's output  
+@DOC-SYNOPSIS@
+@STRONG BseSource::unset-input@ (@EMPH source@, @EMPH input-channel@, @EMPH output-source@, @EMPH output-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+output-source
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+output-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Disconnect a source input  
+@DOC-SYNOPSIS@
+@STRONG BseWave::load-wave@ (@EMPH wave@, @EMPH file-name@, @EMPH wave-name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wave
+@DOC-PARDESC@
+Wave object to store loaded contents
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+file-name
+@DOC-PARDESC@
+The wave file to read wave chunks from
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wave-name
+@DOC-PARDESC@
+The name of the wave to read wave chunks from
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+error: BSE error type
+
+@DOC-DESCRIPTION@
+Load sample chunks from a wave file  
+@DOC-SYNOPSIS@
+@STRONG BseWave::n-channels@ (@EMPH wave@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wave
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+n-channels: 
+
+@DOC-DESCRIPTION@
+Get the number of channels of a wave  
+@DOC-SYNOPSIS@
+@STRONG BseWaveRepo::read-file@ (@EMPH wave-repo@, @EMPH file-name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wave-repo
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+file-name
+@DOC-PARDESC@
+The file to read waves from
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Read Wave from file  
+@DOC-SYNOPSIS@
+@STRONG BseWaveRepo::remove-wave@ (@EMPH wave-repo@, @EMPH wave@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wave-repo
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+wave
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+
+@DOC-DESCRIPTION@
+Remove a wave from repository  
+@DOC-SYNOPSIS@
+@STRONG bse-hello-world@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 3
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 3
+
+
+@DOC-DESCRIPTION@
+Hello World - First Plugin ever executed by BSE. Its purpose is to say "Hello World" to BSE and the general outside. This plugin takes no input or outputparameters.  
+@DOC-SYNOPSIS@
+@STRONG bse-progressor@ (@EMPH n-iterations@, @EMPH n-wait-spins@, @EMPH update-progress@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 18
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+n-iterations
+@DOC-PARDESC@
+Number of total Iterations
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+n-wait-spins
+@DOC-PARDESC@
+Number of internal iterations
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+update-progress
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 18
+
+@DOC-RETURNS@
+text1: 
+@DOC-RETURNS@
+text2: 
+
+@DOC-DESCRIPTION@
+Progressor takes two seed values and then starts progressing. It doesn't do anything particularly usefull, other than sharing CPU time with the main program from time to time.  
+@DOC-SYNOPSIS@
+@STRONG bse-randomizer@ (@EMPH use-seed@, @EMPH seed@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+use-seed
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+seed
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+text: 
+
+@DOC-DESCRIPTION@
+Randomizer will take on integer as input parameter, use it as seed value and return a string containing a random number. The deeper sense behind this plugin is to test out the parameter passing functionality.  
+@DOC-SYNOPSIS@
+@STRONG bse-error-blurb@ (@EMPH error@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+error
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+blurb: 
+
+@DOC-DESCRIPTION@
+Retrive the description of an error value  
+@DOC-SYNOPSIS@
+@STRONG bse-error-name@ (@EMPH error@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+error
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+name: 
+
+@DOC-DESCRIPTION@
+Retrive the name of an error value  
