@@ -1,3 +1,7 @@
+Tue Dec 21 06:54:26 1999  Tim Janik  <timj@gtk.org>
+
+	* bseobject.[hc] (bse_object_get_name_or_type): added convenience function.
+
 Fri Dec 17 16:57:59 1999  Tim Janik  <timj@gtk.org>
 
 	* bseparam.[hc]: added parameter nick name for GUI uses.

@@ -173,6 +173,7 @@ void            bse_object_unlock               (BseObject      *object);
 void            bse_object_set_name             (BseObject      *object,
                                                  const gchar    *name);
 gchar*          bse_object_get_name             (BseObject      *object);
+gchar*          bse_object_get_name_or_type     (BseObject      *object);
 void            bse_object_set_blurb            (BseObject      *object,
                                                  const gchar    *blurb);
 gchar*          bse_object_get_blurb            (BseObject      *object);

@@ -656,6 +656,18 @@ bse_object_get_name (BseObject *object)
   return BSE_OBJECT_NAME (object);
 }
 
+gchar*
+bse_object_get_name_or_type (BseObject *object)
+{
+  gchar *name;
+
+  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+
+  name = bse_object_get_name (object);
+
+  return name ? name : BSE_OBJECT_TYPE_NAME (object);
+}
+
 void
 bse_object_set_blurb (BseObject   *object,
 		      const gchar *blurb)
