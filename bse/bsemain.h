@@ -39,6 +39,9 @@ void		bse_init_intern		(gint		*argc,
 					 gchar	      ***argv,
 					 SfiRec		*config);
 
+/* BSE thread pid (or 0) */
+guint           bse_main_getpid         (void);
+
 
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()

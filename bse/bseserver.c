@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bseserver.h"
-
-
 #include "bseproject.h"
 #include "gslengine.h"
 #include "gslcommon.h"
@@ -28,6 +26,8 @@
 #include "bsepcmwriter.h"
 #include "bsemididevice-null.h"
 #include "bsejanitor.h"
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
@@ -1074,8 +1074,14 @@ engine_init (BseServer *server,
   
   if (!engine_is_initialized)	// FIXME: hack because we can't deinitialize the engine
     {
+      guint mypid = bse_main_getpid();
+      int current_priority;
       engine_is_initialized = TRUE;
       gsl_engine_init (1, BSE_GCONFIG (synth_block_size), mix_freq, 63);
+      /* lower priorities compared to engine if our priority range permits */
+      current_priority = getpriority (PRIO_PROCESS, mypid);
+      if (current_priority <= -2 && mypid)
+        setpriority (PRIO_PROCESS, mypid, current_priority + 1);
     }
   else if (mix_freq != gsl_engine_sample_freq () || BSE_GCONFIG (synth_block_size) != gsl_engine_block_size ())
     g_warning ("mix frequency or block size mistmatch (%f == %u, %u == %u) restart recommended", /* FIXME */

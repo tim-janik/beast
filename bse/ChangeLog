@@ -1,3 +1,11 @@
+Wed Feb 25 14:43:23 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemain.[hc]: new function bse_main_getpid() which returns a thread id.
+
+	* bseserver.c: if possible, slightly drop priorities after engine
+	initilization, so the BSE thread doesn't get into the way of the sequencer
+	or synthesis threads.
+
 Wed Feb 25 06:00:15 2004  Tim Janik  <timj@gtk.org>
 
 	* bsescripthelper.c: invoke bsesh with BSE version as

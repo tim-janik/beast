@@ -28,6 +28,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 /* --- prototypes --- */
@@ -291,9 +293,9 @@ bse_main_loop (gpointer data)
   bse_main_thread = sfi_thread_self ();
 
   bse_init_core ();
-  
+
   /* notify client about completion */
-  bse_initialization_stage++;
+  bse_initialization_stage++;   /* =2 */
   sfi_thread_wakeup (client);
 
   /* start other threads */
@@ -306,6 +308,15 @@ bse_main_loop (gpointer data)
       g_main_context_iteration (bse_main_context, TRUE);
     }
   while (!sfi_thread_aborted ());
+}
+
+guint
+bse_main_getpid (void)
+{
+  if (bse_initialization_stage >= 2)
+    return sfi_thread_self_pid ();
+  else
+    return 0;
 }
 
 static void
