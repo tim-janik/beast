@@ -119,7 +119,7 @@ file_store_rebuild (GtkTreeModel *model)
   SfiFileCrawler *crawler = sfi_file_crawler_new ();
   glong l;
 
-  sfi_file_crawler_add_search_path (crawler, path);
+  sfi_file_crawler_add_search_path (crawler, path, NULL);
   g_object_set_data_full (store, "file-crawler", crawler, sfi_file_crawler_destroy);
   l = g_timeout_add_full (G_PRIORITY_LOW + 100, 0,
                           file_store_idle_handler,
@@ -151,8 +151,7 @@ bst_file_store_get_sample_list (void)
   static GtkTreeStore *sample_store = NULL;
   if (!sample_store)
     {
-      const gchar *s = g_getenv ("BEAST_SAMPLE_PATH");
-      gchar *path = g_strconcat (BST_PATH_DATA_SAMPLES, s ? G_SEARCHPATH_SEPARATOR_S : NULL, s, NULL);
+      gchar *path = g_strdup (bse_server_get_sample_path (BSE_SERVER));
       sample_store = gtk_tree_store_new (BST_FILE_STORE_N_COLS,
                                          G_TYPE_UINT,   // BST_FILE_STORE_COL_ID
                                          G_TYPE_STRING, // BST_FILE_STORE_COL_FILE

@@ -70,14 +70,15 @@ fi
 # initialize automake, don't define PACKAGE and VERSION
 AM_INIT_AUTOMAKE(beast, $BST_VERSION, no-define)
 
-# Disable automatic maintainer mode.
-AM_MAINTAINER_MODE
-
 # We have subdirectories.
 AC_PROG_MAKE_SET
 
-# Make sure else configure stuff exists.
-AC_CANONICAL_HOST
+# Disable automatic maintainer mode.
+AM_MAINTAINER_MODE
+
+# architecture information
+AC_CANONICAL_TARGET
+AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "$target", [Architecture Description])
 
 # declare --enable-* args and collect ac_help strings
 AC_ARG_ENABLE(debug,       [  --enable-debug=[no/minimum/yes] turn on debugging [default=$debug_default]],,enable_debug=$debug_default)
@@ -150,6 +151,10 @@ AC_DEFUN(AC_SFI_REQUIREMENTS,
     SFI_LIBS="$GLIB_LIBS"
     AC_SUBST(SFI_CFLAGS)
     AC_SUBST(SFI_LIBS)
+
+    dnl --- SFI directories ---
+    sfidlstdincdir=${includedir}
+    AC_SUBST(sfidlstdincdir)
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
@@ -256,14 +261,22 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     ])
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
 
-    dnl --- setup BSE install paths ---
-    bselibdir=\${libdir}/bse/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
-    bseplugindir=$bselibdir/plugins
+    dnl --- setup BSE search/install paths ---
+    bseplugindir=\${libdir}/bse/v$BSE_VERSION/plugins
     AC_SUBST(bseplugindir)
-    bseladspadir=${libdir}/ladspa
-    AC_SUBST(bseladspadir)
-    sfidlstdincdir=${includedir}
-    AC_SUBST(sfidlstdincdir)
+    bseladspapath=${libdir}/ladspa
+    AC_SUBST(bseladspapath)
+    bsesampledir=\${datadir}/bse/samples
+    AC_SUBST(bsesampledir)
+    bsedatadir=\${datadir}/bse/v$BSE_VERSION
+    bseeffectdir=$bsedatadir/effects
+    AC_SUBST(bseeffectdir)
+    bseinstrumentdir=$bsedatadir/instruments
+    AC_SUBST(bseinstrumentdir)
+    bsescriptdir=$bsedatadir/scripts
+    AC_SUBST(bsescriptdir)
+    bseuserdatadir='~/beast'
+    AC_SUBST(bseuserdatadir)
 ])
 AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
 [
@@ -288,11 +301,6 @@ AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
 
     AC_SUBST(BSE_SHELL_CFLAGS)
     AC_SUBST(BSE_SHELL_LIBS)
-
-    # setup BSE install paths
-    bsesharedir=\${datadir}/beast/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
-    bsescriptdir=$bsesharedir/scripts
-    AC_SUBST(bsescriptdir)
 ])
 AC_DEFUN(AC_GXK_REQUIREMENTS,
 [
@@ -358,16 +366,11 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
     AC_DEFINE_UNQUOTED(BST_VERSION_STABLE, $BST_VERSION_STABLE, [On stable branch?])
 
-    # BEAST resource paths
+    # --- BEAST paths ---
     beastbasedir=\${datadir}/beast
-    beastdocsdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION/docs
-    beastimagesdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION/images
-    # beast-data package path
-    beastdatadir=$beastbasedir/data-v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
-    beastsampledatadir=$beastdatadir/samples
-
-    AC_SUBST(beastsampledatadir)
+    beastdocsdir=$beastbasedir/v$BSE_VERSION/docs
     AC_SUBST(beastdocsdir)
+    beastimagesdir=$beastbasedir/v$BSE_VERSION/images
     AC_SUBST(beastimagesdir)
 ])
 AC_DEFUN(AC_BSE_SNDDEV_CHECK,
@@ -532,9 +535,6 @@ AC_BSE_SNDDEV_CHECK
 AC_GXK_REQUIREMENTS
 AC_BEAST_REQUIREMENTS
 AC_DOC_REQUIREMENTS
-
-# architecture information
-AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "${host_alias}", [Architecture])
 
 # Automake @VARIABLE@ exports.
 AC_SUBST(CFLAGS)

@@ -37,7 +37,8 @@
 static void			bst_early_parse_args	(gint        *argc_p,
 							 gchar     ***argv_p,
 							 SfiRec	     *bseconfig);
-static void			bst_print_blurb		(gboolean     print_help);
+static void			bst_print_blurb		(void);
+static void			bst_exit_print_version	(void);
 
 
 /* --- variables --- */
@@ -514,40 +515,44 @@ bst_early_parse_args (int    *argc_p,
       else if (strcmp ("-h", argv[i]) == 0 ||
 	       strcmp ("--help", argv[i]) == 0)
 	{
-	  bst_print_blurb (TRUE);
+	  bst_print_blurb ();
           argv[i] = NULL;
 	  exit (0);
 	}
       else if (strcmp ("-v", argv[i]) == 0 ||
 	       strcmp ("--version", argv[i]) == 0)
 	{
-	  bst_print_blurb (FALSE);
+	  bst_exit_print_version ();
 	  argv[i] = NULL;
 	  exit (0);
 	}
-      else if (strcmp ("--print-path", argv[i]) == 0 ||
-	       strncmp ("--print-path=", argv[i], 13) == 0)
+      else if (strcmp ("--print-dir", argv[i]) == 0 ||
+	       strncmp ("--print-dir=", argv[i], 13) == 0)
 	{
 	  gchar *arg = argv[i][13 - 1] == '=' ? argv[i] + 13 : (argv[i + 1] ? argv[i + 1] : "");
 	  if (strcmp (arg, "docs") == 0)
 	    g_print ("%s\n", BST_PATH_DOCS);
 	  else if (strcmp (arg, "images") == 0)
 	    g_print ("%s\n", BST_PATH_IMAGES);
-	  else if (strcmp (arg, "plugins") == 0)
-	    g_print ("%s\n", BSE_PATH_PLUGINS);
-	  else if (strcmp (arg, "ladspa") == 0)
-	    g_print ("%s\n", BSE_PATH_LADSPA);
-	  else if (strcmp (arg, "scripts") == 0)
-	    g_print ("%s\n", BSE_PATH_SCRIPTS);
-	  else if (strcmp (arg, "samples") == 0)
-	    g_print ("%s\n", BST_PATH_DATA_SAMPLES);
 	  else if (strcmp (arg, "locale") == 0)
 	    g_print ("%s\n", BST_PATH_LOCALE);
+	  else if (strcmp (arg, "ladspa") == 0)
+	    g_print ("%s\n", BSE_PATH_LADSPA);
+	  else if (strcmp (arg, "plugins") == 0)
+	    g_print ("%s\n", BSE_PATH_PLUGINS);
+	  else if (strcmp (arg, "samples") == 0)
+	    g_print ("%s\n", bse_server_get_sample_path (BSE_SERVER));
+	  else if (strcmp (arg, "effects") == 0)
+	    g_print ("%s\n", bse_server_get_effect_path (BSE_SERVER));
+	  else if (strcmp (arg, "scripts") == 0)
+	    g_print ("%s\n", bse_server_get_script_path (BSE_SERVER));
+	  else if (strcmp (arg, "instruments") == 0)
+	    g_print ("%s\n", bse_server_get_instrument_path (BSE_SERVER));
 	  else
 	    {
 	      if (arg[0])
                 g_message ("no such resource path: %s", arg);
-	      g_message ("supported resource paths: docs, images, plugins, scripts, samples, locale");
+	      g_message ("supported resource paths: docs, images, locale, ladspa, plugins, scripts, effects, instruments, samples");
 	    }
 	  exit (0);
 	}
@@ -572,72 +577,82 @@ bst_early_parse_args (int    *argc_p,
 }
 
 static void
-bst_print_blurb (gboolean print_help)
+bst_exit_print_version (void)
 {
-  if (!print_help)
-    {
-      g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
-      g_print ("Libraries: ");
-      g_print ("BSE %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
-      g_print (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
-      g_print (", GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
-#ifdef BST_WITH_GDK_PIXBUF
-      g_print (", GdkPixbuf");
-#endif
+  const gchar *c;
+  /* hack: start BSE, so we can query it for paths, works since we immediately exit() afterwards */
+  bse_init_async (NULL, NULL, NULL);
+  sfi_glue_context_push (bse_init_glue_context ("BEAST"));
+  g_print ("BEAST version %s (%s)\n", BST_VERSION, BST_VERSION_HINT);
+  g_print ("Libraries: ");
+  g_print ("GLib %u.%u.%u", glib_major_version, glib_minor_version, glib_micro_version);
+  g_print (", SFI %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
+  g_print (", BSE %u.%u.%u", bse_major_version, bse_minor_version, bse_micro_version);
+  g_print (", Ogg/Vorbis");
+  c = bse_server_get_mp3_version (BSE_SERVER);
+  if (c)
+    g_print (", %s", c);
+  g_print (", GTK+ %u.%u.%u", gtk_major_version, gtk_minor_version, gtk_micro_version);
+  g_print (", GdkPixbuf");
 #ifdef BST_WITH_XKB
-      g_print (", XKBlib");
+  g_print (", XKBlib");
 #endif
-      g_print ("\n");
-      g_print ("Compiled for: %s\n", BST_ARCH_NAME);
-      g_print ("\n");
-      g_print ("Doc Path:    %s\n", BST_PATH_DOCS);
-      g_print ("Image Path:  %s\n", BST_PATH_IMAGES);
-      g_print ("Plugin Path: %s\n", BSE_PATH_PLUGINS);
-      g_print ("Script Path: %s\n", BSE_PATH_SCRIPTS);
-      g_print ("Locale Path: %s\n", BST_PATH_LOCALE);
-      g_print ("Sample Path: %s:$BEAST_SAMPLE_PATH\n", BST_PATH_DATA_SAMPLES);
-      g_print ("LADSPA Path: %s:$LADSPA_PATH\n", BSE_PATH_LADSPA);
-      g_print ("\n");
-      g_print ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
-      g_print ("You may redistribute copies of BEAST under the terms of\n");
-      g_print ("the GNU General Public License which can be found in the\n");
-      g_print ("BEAST source package. Sources, examples and contact\n");
-      g_print ("information are available at http://beast.gtk.org\n");
-    }
-  else
-    {
-      g_print ("Usage: beast [options] [files...]\n");
-      g_print ("  --devel                 enrich the GUI with hints usefull for (script) developers\n");
+  g_print (", GXK %s", BST_VERSION);
+  g_print ("\n");
+  g_print ("Compiled for: %s\n", BST_ARCH_NAME);
+  g_print ("\n");
+  g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
+  g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
+  g_print ("Image Path:      %s\n", BST_PATH_IMAGES);
+  g_print ("Sample Path:     %s\n", bse_server_get_sample_path (BSE_SERVER));
+  g_print ("Script Path:     %s\n", bse_server_get_script_path (BSE_SERVER));
+  g_print ("Effect Path:     %s\n", bse_server_get_effect_path (BSE_SERVER));
+  g_print ("Instrument Path: %s\n", bse_server_get_instrument_path (BSE_SERVER));
+  g_print ("Plugin Path:     %s\n", bse_server_get_plugin_path (BSE_SERVER));
+  g_print ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server_get_ladspa_path (BSE_SERVER));
+  g_print ("\n");
+  g_print ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
+  g_print ("You may redistribute copies of BEAST under the terms of\n");
+  g_print ("the GNU General Public License which can be found in the\n");
+  g_print ("BEAST source package. Sources, examples and contact\n");
+  g_print ("information are available at http://beast.gtk.org\n");
+  exit (0);
+}
+
+static void
+bst_print_blurb (void)
+{
+  g_print ("Usage: beast [options] [files...]\n");
+  g_print ("  --devel                 enrich the GUI with hints usefull for (script) developers\n");
 #ifdef BST_WITH_XKB
-      g_print ("  --force-xkb             force XKB keytable queries\n");
+  g_print ("  --force-xkb             force XKB keytable queries\n");
 #endif
-      g_print ("  --print-path[=RESOURCE] print the file path for a specific resource\n");
-      g_print ("  -h, --help              show this help message\n");
-      g_print ("  -v, --version           print version and file paths\n");
-      g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
-      g_print ("Development Options:\n");
-      g_print ("  --debug=KEYS            enable certain verbosity stages\n");
-      g_print ("  --debug-list            list possible debug keys\n");
-      g_print ("  -:[flags]               [flags] can be any of:\n");
-      g_print ("                          f - fatal warnings\n");
-      g_print ("                          N - disable script and plugin registration\n");
-      g_print ("                          p - enable core plugin registration\n");
-      g_print ("                          P - disable core plugin registration\n");
-      g_print ("                          l - enable LADSPA plugin registration\n");
-      g_print ("                          L - disable LADSPA plugin registration\n");
-      g_print ("                          s - enable script registration\n");
-      g_print ("                          S - enable script registration\n");
-      g_print ("                          d - developer and debugging extensions (harmfull)\n");
-      if (!BST_VERSION_STABLE)
-        {
-	  g_print ("Gtk+ Options:\n");
-          g_print ("  --gtk-debug=FLAGS       Gtk+ debugging flags to enable\n");
-          g_print ("  --gtk-no-debug=FLAGS    Gtk+ debugging flags to disable\n");
-          g_print ("  --gtk-module=MODULE     load additional Gtk+ modules\n");
-          g_print ("  --gdk-debug=FLAGS       Gdk debugging flags to enable\n");
-          g_print ("  --gdk-no-debug=FLAGS    Gdk debugging flags to disable\n");
-          g_print ("  --g-fatal-warnings      make warnings fatal (abort)\n");
-          g_print ("  --sync                  do all X calls synchronously\n");
-        }
+  g_print ("  --print-dir[=RESOURCE]  print the directory for a specific resource\n");
+  g_print ("  -h, --help              show this help message\n");
+  g_print ("  -v, --version           print version and file paths\n");
+  g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
+  g_print ("Development Options:\n");
+  g_print ("  --debug=KEYS            enable certain verbosity stages\n");
+  g_print ("  --debug-list            list possible debug keys\n");
+  g_print ("  -:[flags]               [flags] can be any of:\n");
+  g_print ("                          f - fatal warnings\n");
+  g_print ("                          N - disable script and plugin registration\n");
+  g_print ("                          p - enable core plugin registration\n");
+  g_print ("                          P - disable core plugin registration\n");
+  g_print ("                          l - enable LADSPA plugin registration\n");
+  g_print ("                          L - disable LADSPA plugin registration\n");
+  g_print ("                          s - enable script registration\n");
+  g_print ("                          S - enable script registration\n");
+  g_print ("                          d - developer and debugging extensions (harmfull)\n");
+  if (!BST_VERSION_STABLE)
+    {
+      g_print ("Gtk+ Options:\n");
+      g_print ("  --gtk-debug=FLAGS       Gtk+ debugging flags to enable\n");
+      g_print ("  --gtk-no-debug=FLAGS    Gtk+ debugging flags to disable\n");
+      g_print ("  --gtk-module=MODULE     load additional Gtk+ modules\n");
+      g_print ("  --gdk-debug=FLAGS       Gdk debugging flags to enable\n");
+      g_print ("  --gdk-no-debug=FLAGS    Gdk debugging flags to disable\n");
+      g_print ("  --g-fatal-warnings      make warnings fatal (abort)\n");
+      g_print ("  --sync                  do all X calls synchronously\n");
     }
 }

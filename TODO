@@ -3,9 +3,9 @@ FIXMES:
 - nuke frequency fine-tune for biquad filter
 - fix syndrum parameter scale
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
-- allow extra plugin path in env variable and rc file
-- add facility to add/remove/edit sample search paths at the GUI (and save to rc file)
-- add BEAST_SAMPLE_DIRS, describe env variables in man page
+
+- /library/: effects,instruments,scripts
+
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
 - fix forcing unique names for children of a project 
 - check whether */icons/Makefile.icons is included in dist tarball
@@ -21,6 +21,7 @@ FIXMES:
   /Synthesizers/Demo
   alternatively, introduce /Insert/ toplevel menu
 - add demo song
+- nuke bsegconfig.[hc]?
 - add new test song containing a wave track
 - default saving (SFI_PARAM_SKIP_DEFAULT)
 - fix non-NULL icons at 0x0, GUI breaks in lots of places for them
@@ -283,6 +284,9 @@ sfidl:
   - choice type should have validation function
   - handle non-validated sequences and records in generation code (things
     can be demarshalled in non-validated form after incompatible changes)
+  - generate foo-i18n.c files for foo.idl to be translated
+  - "http://www.ladspa.org/." produces an unterminated str8ing constant, because the
+    sfidl preprocessor parses "//" within strings as comment start
   fixes:
   - support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
   - Const lookups don't honour namespacing

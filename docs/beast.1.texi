@@ -34,9 +34,9 @@ beast -- Graphical program to simulate audio synthesis and compose music.
 @table @option
 @item ---devel
 	Enrich the GUI with hints usefull for (script) developers
-@item ---print-path[@var{=RESOURCE}]
-	Print the file path for a specific resource (e.g. `plugins' or `images').
-	Giving just @option{---print-path} without an extra argument causes @beast
+@item ---print-dir[@var{=RESOURCE}]
+	Print the directory for a specific resource (e.g. `plugins' or `images').
+	Giving just @option{---print-dir} without an extra argument causes @beast
 	to print the list of available resources.
 @item -h, ---help
 	Shows a brief help message.

@@ -1,3 +1,26 @@
+Sun Oct 12 16:37:29 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: fix BST_ARCH_NAME with newer autoconf.
+
+	* Makefile.am:
+	* configure.in: major install/search paths cleanup.
+	provide standard search paths for effects and instruments,
+	and account for beast/bse data sitting in a users home.
+
+	* beast-gtk/bstmain.c: use BSE procedures to retrieve
+	search/install path locations.
+	renamed --print-path to --print-dir, as this options prints
+	out single directories only. adapted the set of paths
+	printed here.
+
+	* docs/beast.1.texi: reflect --print-dir.
+
+	* beast-gtk/bstparam-entry.c (param_entry_change_value): use
+	G_SEARCHPATH_SEPARATOR_S to split/join paths and horizontally
+	expand entries with path names.
+
+	* beast-gtk/bsttreestores.c: adapt to path/file-crawler changes.
+
 Sun Oct 12 15:49:22 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: i18n-markup menu entries. create the item

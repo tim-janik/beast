@@ -23,15 +23,18 @@ make-paths.h: $(top_builddir)/config.status Makefile
 	cd $(top_builddir) \
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-pph \
 	&& echo >> xgen-pph \
-	&& echo "#define SFIDL_PATH_STDINC     \"${sfidlstdincdir}\"" >> xgen-pph \
-	&& echo "#define BSE_PATH_PLUGINS      \"${bseplugindir}\"" >> xgen-pph \
-	&& echo "#define BSE_PATH_LADSPA       \"${bseladspadir}\"" >> xgen-pph \
-	&& echo "#define BSE_PATH_SCRIPTS      \"${bsescriptdir}\"" >> xgen-pph \
-	&& echo "#define BSE_PATH_BINARIES     \"${bindir}\"" >> xgen-pph \
-	&& echo "#define BST_PATH_DOCS         \"${beastdocsdir}\"" >> xgen-pph \
-	&& echo "#define BST_PATH_IMAGES       \"${beastimagesdir}\"" >> xgen-pph \
-	&& echo "#define BST_PATH_DATA_SAMPLES \"${beastsampledatadir}\"" >> xgen-pph \
-	&& echo "#define BST_PATH_LOCALE       \"${beastlocaledir}\"" >> xgen-pph \
+	&& echo "#define SFIDL_PATH_STDINC        \"${sfidlstdincdir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_BINARIES        \"${bindir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_LADSPA          \"${bseladspapath}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_PLUGINS         \"${bseplugindir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_SAMPLES         \"${bsesampledir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_EFFECTS         \"${bseeffectdir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_INSTRUMENTS     \"${bseinstrumentdir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_SCRIPTS         \"${bsescriptdir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_USER_DATA(dir)  \"${bseuserdatadir}\" dir" >> xgen-pph \
+	&& echo "#define BST_PATH_DOCS            \"${beastdocsdir}\"" >> xgen-pph \
+	&& echo "#define BST_PATH_IMAGES          \"${beastimagesdir}\"" >> xgen-pph \
+	&& echo "#define BST_PATH_LOCALE          \"${beastlocaledir}\"" >> xgen-pph \
 	&& echo >> xgen-pph \
 	&& echo "/* Generated data ends here */" >> xgen-pph \
 	&& (cp xgen-pph $@) \

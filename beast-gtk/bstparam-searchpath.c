@@ -47,7 +47,7 @@ param_entry_path_assign (GtkWidget  *dialog,
                          gpointer    user_data)
 {
   GtkWidget *action = user_data;
-  gchar *paths = g_strjoinv (":", strings);
+  gchar *paths = g_strjoinv (G_SEARCHPATH_SEPARATOR_S, strings);
   gtk_entry_set_text (GTK_ENTRY (action), paths);
   g_free (paths);
   param_entry_change_value (action);
@@ -57,7 +57,7 @@ static void
 param_entry_path_popup_remove (GtkWidget *action)
 {
   GtkEntry *entry = GTK_ENTRY (action);
-  gchar **paths = g_strsplit (gtk_entry_get_text (entry), ":", -1);
+  gchar **paths = g_strsplit (gtk_entry_get_text (entry), G_SEARCHPATH_SEPARATOR_S, -1);
   GtkWidget *dialog = bst_list_popup_new ("Remove Paths", action,
                                           param_entry_path_assign,
                                           action, NULL);
@@ -75,7 +75,7 @@ param_entry_path_add (GtkWidget   *dialog,
 {
   GtkWidget *action = user_data;
   gchar *path = gtk_entry_get_text (GTK_ENTRY (action));
-  gchar *str = g_strconcat (path, path[0] ? ":" : "", file, NULL);
+  gchar *str = g_path_concat (path, file, NULL);
   gtk_entry_set_text (GTK_ENTRY (action), str);
   g_free (str);
   param_entry_change_value (action);
@@ -121,18 +121,20 @@ param_entry_create_gmask (BstParam    *bparam,
 			 "parent", xframe,
 			 NULL);
 
-  gmask = bst_gmask_form (gmask_parent, action, BST_GMASK_FILL);
-  bst_gmask_set_prompt (gmask, prompt);
-  bst_gmask_set_tip (gmask, tooltip);
   if (sfi_pspec_check_option (bparam->pspec, "searchpath"))
     {
       GtkWidget *br, *ba;
+      gmask = bst_gmask_form (gmask_parent, action, BST_GMASK_FILL | BST_GMASK_INTERLEAVE);
       bst_gmask_set_atail (gmask, bst_hpack0 (":", br = bst_stock_icon_button (BST_STOCK_REMOVE),
                                               ":", ba = bst_stock_icon_button (BST_STOCK_ADD),
                                               NULL));
       g_object_connect (br, "swapped_signal::clicked", param_entry_path_popup_remove, action, NULL);
       g_object_connect (ba, "swapped_signal::clicked", param_entry_path_popup_add, action, NULL);
     }
+  else
+    gmask = bst_gmask_form (gmask_parent, action, BST_GMASK_FILL);
+  bst_gmask_set_prompt (gmask, prompt);
+  bst_gmask_set_tip (gmask, tooltip);
 
   return gmask;
 }
