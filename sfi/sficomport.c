@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002,2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,7 @@
 #include <fcntl.h>
 
 
-#define	DEBUG	sfi_nodebug
+#define	DEBUG	sfi_debug_keyfunc ("comport")
 
 
 /* --- functions --- */
@@ -382,7 +382,7 @@ com_port_read_pending (SfiComPort *port)
 	  /* n==0 on pipes/fifos means remote closed the connection (end-of-file) */
 	  if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN && errno != ERESTART))
 	    {
-	      sfi_debug ("%s: remote pipe closed", port->ident);
+	      DEBUG ("%s: during read: remote pipe closed", port->ident);
 	      return FALSE;
 	    }
 	  /* check completed header */
@@ -402,13 +402,13 @@ com_port_read_pending (SfiComPort *port)
 		  port->rbuffer.header[2] != ((SFI_COM_PORT_MAGIC >> 8) & 0xff) ||
 		  port->rbuffer.header[3] != (SFI_COM_PORT_MAGIC & 0xff))
 		{
-		  sfi_debug ("%s: received data with invalid magic", port->ident);
+		  sfi_info ("%s: received data with invalid magic", port->ident);
 		  return FALSE;
 		}
 	      /* check length */
 	      if (port->rbuffer.dlen < 1 || port->rbuffer.dlen > 10 * 1024 * 1024)
 		{
-		  sfi_debug ("%s: received data with excessive length", port->ident);
+		  sfi_info ("%s: received data with excessive length", port->ident);
 		  return FALSE;
 		}
 	    }
@@ -432,7 +432,7 @@ com_port_read_pending (SfiComPort *port)
 	  /* n==0 on pipes/fifos means remote closed the connection (end-of-file) */
 	  if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN && errno != ERESTART))
 	    {
-	      sfi_debug ("%s: remote pipe closed", port->ident);
+	      DEBUG ("%s: during read: remote pipe closed", port->ident);
 	      return FALSE;
 	    }
 	}
@@ -446,7 +446,7 @@ com_port_scanner_msg (GScanner *scanner,
 		      gboolean  error)
 {
   SfiComPort *port = scanner->user_data;
-  sfi_debug ("%s: while processing data: %s", port->ident, message);
+  sfi_info ("%s: while processing data: %s", port->ident, message);
 }
 
 static void

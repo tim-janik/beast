@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002,2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,7 @@
 
 #include <sfi/sfithreads.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 #define	SFI_COM_PORT_MAGIC	(0x42534500 /* "BSE\0" */)
@@ -111,8 +109,6 @@ void		sfi_com_port_close_remote	(SfiComPort	*port,
 						 gboolean	 terminate);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __SFI_COM_PORT_H__ */
