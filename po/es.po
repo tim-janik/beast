@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-16 10:37+0100\n"
+"POT-Creation-Date: 2004-12-18 00:28+0100\n"
 "PO-Revision-Date: 2004-12-17 19:06+0100\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
@@ -180,14 +180,16 @@ msgstr "Nueva canción"
 
 #: beast-gtk/bstapp.c:134
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
-msgstr "Crear una nueva canción, que consista en un mezclador, pistas, piezas y notas"
+msgstr ""
+"Crear una nueva canción, que consista en un mezclador, pistas, piezas y notas"
 
 #: beast-gtk/bstapp.c:136
 msgid "New Custom Synthesizer"
 msgstr "Nuevo sintetizador personalizado"
 
 #: beast-gtk/bstapp.c:136
-msgid "Create a new synthesizer mesh to be used as effect or instrument in songs"
+msgid ""
+"Create a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
 "Crear un nuevo acoplamiento de sintetizador para ser usado como efecto o "
 "instrumento en las canciones"
@@ -258,7 +260,8 @@ msgstr "_Inicio rápido..."
 
 #: beast-gtk/bstapp.c:156
 msgid "Provides an introduction about how to accomplish the most common tasks"
-msgstr "Proporciona una introducción sobre cómo efectuar las tareas más usuales"
+msgstr ""
+"Proporciona una introducción sobre cómo efectuar las tareas más usuales"
 
 #: beast-gtk/bstapp.c:158
 msgid "_FAQ..."
@@ -273,7 +276,8 @@ msgid "Online _Help Desk..."
 msgstr "Ayuda en línea..."
 
 #: beast-gtk/bstapp.c:160
-msgid "Start a web browser pointing to the online help desk at the BEAST website"
+msgid ""
+"Start a web browser pointing to the online help desk at the BEAST website"
 msgstr ""
 "Iniciar un navegador web que lleve directamente a la ayuda en línea de la "
 "página de BEAST"
@@ -327,8 +331,8 @@ msgstr "Archivo de sonidos en línea..."
 #: beast-gtk/bstapp.c:176
 msgid "Start a web browser pointing to the online sound archive"
 msgstr ""
-"Iniciar un navegador web que lleve directamente al archivo de sonidos en lí"
-"nea"
+"Iniciar un navegador web que lleve directamente al archivo de sonidos en "
+"línea"
 
 #: beast-gtk/bstapp.c:180
 msgid "Online Demos..."
@@ -460,7 +464,8 @@ msgstr "Justificar"
 
 #: beast-gtk/bstdbmeter.c:771
 msgid "Adjust relative alignment of the values or bars to be drawn"
-msgstr "Ajustar la alineación relativa de los valores o barras que se mostrarán"
+msgstr ""
+"Ajustar la alineación relativa de los valores o barras que se mostrarán"
 
 #: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
 #: beast-gtk/bsteventrollctrl.c:427
@@ -1078,7 +1083,8 @@ msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: beast-gtk/bstpatterncolumns.c:697
 msgid "  select various event types (controls, continuous controllers)"
-msgstr "  seleccionar varios tipos de eventos (controles, controladores contínuos)"
+msgstr ""
+"  seleccionar varios tipos de eventos (controles, controladores contínuos)"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:699
@@ -1201,7 +1207,8 @@ msgid "Steps"
 msgstr "Pasos"
 
 #: beast-gtk/bstpatternctrl.c:124
-msgid "The number of cells to move across each time an event or note was edited"
+msgid ""
+"The number of cells to move across each time an event or note was edited"
 msgstr ""
 "El número de casillas a moverse a través cada vez que un evento o una nota "
 "fueron editados"
@@ -1221,7 +1228,8 @@ msgid "HWrap"
 msgstr "EnvolturaH"
 
 #: beast-gtk/bstpatternctrl.c:134
-msgid "Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
 "Seleccionar si el movimiento horizontal del enfoque de la casilla envolverá "
 "los bordes"
@@ -1244,7 +1252,8 @@ msgstr "Ajustar el número de filas entre cada fila sombreada"
 
 #. movement
 #: beast-gtk/bstpatternctrl.c:313
-msgid "Move focus to the next cell (up/left/right/down according to configuration)"
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 "Mover el enfoque a la siguiente casilla (arriba/izquierda/derecha/abajo "
 "según la configuración)"
@@ -1287,7 +1296,8 @@ msgstr "Fijar el enfoque de la casilla en la posición más alta posible"
 
 #: beast-gtk/bstpatternctrl.c:323
 msgid "Set the focus cell to the leftmost position possible"
-msgstr "Fijar el enfoque de la casilla en la posición más a la izquierda posible"
+msgstr ""
+"Fijar el enfoque de la casilla en la posición más a la izquierda posible"
 
 #: beast-gtk/bstpatternctrl.c:324
 msgid "Set the focus cell to the rightmost position possible"
@@ -1299,7 +1309,8 @@ msgstr "Fijar el enfoque de la casilla en la posición más abajo posible"
 
 #: beast-gtk/bstpatternctrl.c:328
 msgid "Set the number of steps to make when moving to the next cell"
-msgstr "Establece el número de pasos para hacer al moverse a la celda siguiente"
+msgstr ""
+"Establece el número de pasos para hacer al moverse a la celda siguiente"
 
 #: beast-gtk/bstpatternctrl.c:332
 msgid "Set the base octave"
@@ -1600,7 +1611,8 @@ msgid "UTime"
 msgstr "TiempoU"
 
 #: beast-gtk/bstprofiler.c:250
-msgid "Average number of milliseconds per second of user CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
 "Promedio del número de milisegundos por segundo de uso de CPU del usuario "
 "por las hebras"
@@ -1610,7 +1622,8 @@ msgid "STime"
 msgstr "TiempoS"
 
 #: beast-gtk/bstprofiler.c:251
-msgid "Average number of milliseconds per second of system CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
 "Promedio del número de milisegundos por segundo de uso de CPU del sistema "
 "por las hebras"
@@ -1804,7 +1817,8 @@ msgid "128 Value FFT Window"
 msgstr "Ventana con 128 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:48
-msgid "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
+msgid ""
+"A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
 msgstr ""
 "Una ventana con 128 valores de FFT corresponde a un espectro con 65 picos de "
 "frecuencia"
@@ -1814,7 +1828,8 @@ msgid "256 Value FFT Window"
 msgstr "Ventana con 256 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:49
-msgid "A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
+msgid ""
+"A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
 msgstr ""
 "Una ventana con 256 valores de FFT corresponde a un espectro con 129 picos "
 "de frecuencia"
@@ -1824,7 +1839,8 @@ msgid "512 Value FFT Window"
 msgstr "Ventana con 512 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:50
-msgid "A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
+msgid ""
+"A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
 msgstr ""
 "Una ventana con 512 valores de FFT corresponde a un espectro con 257 picos "
 "de frecuencia"
@@ -1834,7 +1850,8 @@ msgid "1024 Value FFT Window"
 msgstr "Ventana con 1024 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:51
-msgid "A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
+msgid ""
+"A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
 msgstr ""
 "Una ventana con 1024 valores de FFT corresponde a un espectro con 513 picos "
 "de frecuencia"
@@ -1844,7 +1861,8 @@ msgid "2048 Value FFT Window"
 msgstr "Ventana con 2048 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:52
-msgid "A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
+msgid ""
+"A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
 msgstr ""
 "Una ventana con 2048 valores de FFT corresponde a un espectro con 1025 picos "
 "de frecuencia"
@@ -1854,7 +1872,8 @@ msgid "4096 Value FFT Window"
 msgstr "Ventana con 4096 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:53
-msgid "A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
+msgid ""
+"A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
 msgstr ""
 "Una ventana con 4096 valores de FFT corresponde a un espectro con 2049 picos "
 "de frecuencia"
@@ -1864,7 +1883,8 @@ msgid "8192 Value FFT Window"
 msgstr "Ventana con 8192 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:54
-msgid "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
+msgid ""
+"A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
 msgstr ""
 "Una ventana con 8192 valores de FFT corresponde a un espectro con 4097 picos "
 "de frecuencia"
@@ -1874,7 +1894,8 @@ msgid "16384 Value FFT Window"
 msgstr "Ventana con 16384 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:55
-msgid "A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
+msgid ""
+"A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
 msgstr ""
 "Una ventana con 163842 valores de FFT corresponde a un espectro con 8193 "
 "picos de frecuencia"
@@ -1884,7 +1905,8 @@ msgid "32768 Value FFT Window"
 msgstr "Ventana con 32768 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:56
-msgid "A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
+msgid ""
+"A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
 msgstr ""
 "Una ventana con 32768 valores de FFT corresponde a un espectro con 16385 "
 "picos de frecuencia"
@@ -1894,7 +1916,8 @@ msgid "65536 Value FFT Window"
 msgstr "Ventana con 65536 valores de FFT"
 
 #: beast-gtk/bstrecords.idl:57
-msgid "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
+msgid ""
+"A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
 msgstr ""
 "Una ventana con 65536 valores de FFT corresponde a un espectro con 32769 "
 "picos de frecuencia"
@@ -2230,7 +2253,8 @@ msgstr "Tamaño de tipografía"
 
 #: beast-gtk/bstrecords.idl:111
 msgid "Font size in pixels for labels displayed in synthesis networks"
-msgstr "Tamaño de la fuente en píxeles para etiquetas mostradas en redes de síntesis"
+msgstr ""
+"Tamaño de la fuente en píxeles para etiquetas mostradas en redes de síntesis"
 
 #: beast-gtk/bstrecords.idl:113
 msgid "Anti-Alias"
@@ -2315,7 +2339,8 @@ msgstr "Sombra de la imagen"
 #: beast-gtk/bstrecords.idl:141 beast-gtk/bstrecords.idl:151
 #: beast-gtk/bstrecords.idl:161
 msgid "Percentage of background image pixel to blend over background color."
-msgstr "Porcentaje del pixel de la imagen de fondo a mezclar con el color de fondo."
+msgstr ""
+"Porcentaje del pixel de la imagen de fondo a mezclar con el color de fondo."
 
 #: beast-gtk/bstrecords.idl:142 beast-gtk/bstrecords.idl:152
 #: beast-gtk/bstrecords.idl:162
@@ -2688,7 +2713,8 @@ msgstr "Rack"
 
 #: beast-gtk/bstsupershell.c:263
 msgid "Add, edit and connect synthsizer mesh components"
-msgstr "Añadir, editar y conectar los componentes de acoplamiento del sintetizador"
+msgstr ""
+"Añadir, editar y conectar los componentes de acoplamiento del sintetizador"
 
 #: beast-gtk/bstsupershell.c:267
 msgid "Adjust overall synthesizer behaviour"
@@ -2720,7 +2746,8 @@ msgstr "Borrar partes"
 
 #: beast-gtk/bsttrackrollctrl.c:64
 msgid "Use the horizontal ruler to adjust the left loop pointer"
-msgstr "Utilizar la regla horizontal para ajustar el puntero de bucle izquierdo"
+msgstr ""
+"Utilizar la regla horizontal para ajustar el puntero de bucle izquierdo"
 
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Position"
@@ -2805,7 +2832,8 @@ msgid "List of available waves to choose a track instrument from"
 msgstr "Lista de ondas disponibles para elegir un instrumento de la pista"
 
 #: beast-gtk/bsttrackview.c:611
-msgid "Notes from unchecked tracks are ignored by the sequencer during playback"
+msgid ""
+"Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
 "Las notas de las pistas sin seleccionar son ignoradas por el secuenciador "
 "durante la reproducción"
@@ -2938,7 +2966,8 @@ msgstr "Ajustar el factor de ampliación de la visualización del encaminador"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:2
 msgid "Apply configuration changes to the pattern editor layout"
-msgstr "Aplicar los cambios en la configuración al patrón del editor de apariencia"
+msgstr ""
+"Aplicar los cambios en la configuración al patrón del editor de apariencia"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Available Items:"
@@ -3282,7 +3311,8 @@ msgid "Auto cut"
 msgstr "Auto cortar"
 
 #: beast-gtk/gxk/gxksimplelabel.c:143
-msgid "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
 "Si está seleccionado, el texto sobresaliente es cortado y en su lugar se "
 "muestran puntos suspensivos «...»"
@@ -3395,7 +3425,7 @@ msgstr "Entrada de control 2"
 msgid "Second control input"
 msgstr "Segunda entrada de control"
 
-#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:196
 #: bse/bsewaveosc.c:596 plugins/bseadder.c:101 plugins/bseatandistort.c:92
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
 #: plugins/davbassfilter.idl:35 plugins/davchorus.idl:31
@@ -3591,15 +3621,16 @@ msgid "Norm Type"
 msgstr "Tipo de norma"
 
 #: bse/bsebiquadfilter.c:153
-msgid "The filter gain normalization type (supported only by highpass and lowpass)"
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
 "El tipo de normalización de ganancia del filtro (soportado sólo por paso "
 "alto y paso bajo)"
 
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
-#: bse/bsestandardosc.c:152 bse/bsestandardosc.c:158 bse/bsestandardosc.c:164
-#: bse/bsestandardosc.c:170 bse/bsewaveosc.c:566 bse/bsewaveosc.c:572
+#: bse/bsestandardosc.c:153 bse/bsestandardosc.c:158 bse/bsestandardosc.c:163
+#: bse/bsestandardosc.c:168 bse/bsewaveosc.c:566 bse/bsewaveosc.c:572
 #: bse/bsewaveosc.c:578
 msgid "Modulation"
 msgstr "Modulación"
@@ -3608,13 +3639,14 @@ msgstr "Modulación"
 msgid "Strength of linear frequency modulation"
 msgstr "Fuerza de modulación de frecuencia lineal"
 
-#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:161 bse/bsewaveosc.c:575
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:160 bse/bsewaveosc.c:575
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Realiza modulación de frecuencia exponencial en vez de lineal"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:167 bse/bsewaveosc.c:581
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:165 bse/bsewaveosc.c:581
 msgid "Number of octaves to be affected by exponential frequency modulation"
-msgstr "Número de octavas a ser afectadas por la modulación exponencial de frecuencia"
+msgstr ""
+"Número de octavas a ser afectadas por la modulación exponencial de frecuencia"
 
 #: bse/bsebiquadfilter.c:179
 #, no-c-format
@@ -3635,7 +3667,7 @@ msgstr "Entrada de sonido"
 msgid "Unfiltered Audio Signal"
 msgstr "Señal de sonido sin filtrar"
 
-#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:191 bse/bsewaveosc.c:590
+#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:188 bse/bsewaveosc.c:590
 #: plugins/davorgan.c:132 plugins/davsyndrum.c:116
 #: plugins/davxtalstrings.c:141
 msgid "Freq In"
@@ -3645,11 +3677,11 @@ msgstr "Frecuencia entrada"
 msgid "Center Frequency Input"
 msgstr "Entrada de frecuencia central"
 
-#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:193
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:190
 msgid "Freq Mod In"
 msgstr "Entrada de modulación de frecuencia"
 
-#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:193
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:190
 msgid "Frequency Modulation Input"
 msgstr "Entrada de modulación de frecuencia"
 
@@ -3681,7 +3713,8 @@ msgstr "Salidas disponibles"
 
 #: bse/bsebus.c:146
 msgid "List of available mixer busses to be used as bus output"
-msgstr "Lista de los buses de mezcla disponibles para ser usados como buses de salida"
+msgstr ""
+"Lista de los buses de mezcla disponibles para ser usados como buses de salida"
 
 #: bse/bsebus.c:839 bse/bsebus.c:841 bse/bsebus.c:843 bse/bsebus.c:845
 #: bse/bsebus.c:849 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
@@ -4596,7 +4629,8 @@ msgstr ""
 
 #: bse/bsecore.idl:608
 msgid "The CPU time spent executing instructions of children of this thread"
-msgstr "Tiempo que la CPU gasta ejecutando las instrucciones hijas de esta hebra"
+msgstr ""
+"Tiempo que la CPU gasta ejecutando las instrucciones hijas de esta hebra"
 
 #: bse/bsecore.idl:610
 msgid "Child System Time"
@@ -4616,7 +4650,8 @@ msgstr "Ruta de ejemplo"
 
 #: bse/bsecore.idl:627
 #, c-format
-msgid "Search path of directories, seperated by \"%s\", used to find audio samples."
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
 "Buscar rutas de directorios, separados por «%s», usados para encontrar "
 "ejemplos de sonidos."
@@ -4742,7 +4777,8 @@ msgid "Invert Sustain Pedal"
 msgstr "Invertir el pedal fuerte"
 
 #: bse/bsecore.idl:668
-msgid "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgid ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 "Invertir el estado del pedal fuerte (apagador) de manera que el significado "
 "de encendido/apagado se invierte."
@@ -5358,7 +5394,8 @@ msgid "Delete a mixer bus from a Song."
 msgstr "Borrar un bus mezclador de una canción."
 
 #: bse/bsesong.proc:113
-msgid "Retrieve master output bus of a song, will create one if it doesn't exist."
+msgid ""
+"Retrieve master output bus of a song, will create one if it doesn't exist."
 msgstr ""
 "Recuperar la salida del bus maestro de una canción, se creará uno si no "
 "existe."
@@ -5398,10 +5435,12 @@ msgstr "Borrar una pista de una canción."
 
 #: bse/bsesong.proc:388
 msgid "Find a track suitable for playing notes of a given part."
-msgstr "Encontrar una pista conveniente para reproducir notas de una pieza dada."
+msgstr ""
+"Encontrar una pista conveniente para reproducir notas de una pieza dada."
 
 #: bse/bsesong.proc:431
-msgid "Find the first track that contains part, suitable to check for orphan parts."
+msgid ""
+"Find the first track that contains part, suitable to check for orphan parts."
 msgstr ""
 "Encontrar la primera pista que contenga una pieza, conveniente para "
 "comprobar con las piezas huérfanas."
@@ -5443,15 +5482,31 @@ msgstr "Forma de onda del oscilador"
 msgid "Phase"
 msgstr "Fase"
 
-#: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:147
+#: bse/bsestandardosc.c:137
+msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
+msgstr ""
+
+#: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:148
 msgid "Base Frequency"
 msgstr "Frecuencia base"
 
-#: bse/bsestandardosc.c:149
+#: bse/bsestandardosc.c:142
+msgid "Number of oscillator cycles per second"
+msgstr ""
+
+#: bse/bsestandardosc.c:146
+msgid "Musical notation corresponding to the oscillator frequency"
+msgstr ""
+
+#: bse/bsestandardosc.c:150
 msgid "Fine Tune"
 msgstr "Ajuste fino"
 
-#: bse/bsestandardosc.c:154 bse/bsewaveosc.c:568
+#: bse/bsestandardosc.c:150
+msgid "Amount of detuning in cent (hundredth part of a note)"
+msgstr ""
+
+#: bse/bsestandardosc.c:155 bse/bsewaveosc.c:568
 msgid "Input Modulation [%]"
 msgstr "Modulación de entrada [%]"
 
@@ -5459,27 +5514,27 @@ msgstr "Modulación de entrada [%]"
 msgid "Exponential FM"
 msgstr "FM exponencial"
 
-#: bse/bsestandardosc.c:166 bse/bsewaveosc.c:580
+#: bse/bsestandardosc.c:165 bse/bsewaveosc.c:580
 msgid "Octaves"
 msgstr "Octavas"
 
-#: bse/bsestandardosc.c:172
+#: bse/bsestandardosc.c:170
 msgid "Self Modulation [%]"
 msgstr "Automodulación [%]"
 
-#: bse/bsestandardosc.c:173
+#: bse/bsestandardosc.c:170
 msgid "Strength of self modulation"
 msgstr "Fuerza de automodulación"
 
-#: bse/bsestandardosc.c:176 bse/bsestandardosc.c:183
+#: bse/bsestandardosc.c:173 bse/bsestandardosc.c:180
 msgid "Pulse Modulation"
 msgstr "Modulación de pulsos"
 
-#: bse/bsestandardosc.c:178
+#: bse/bsestandardosc.c:175
 msgid "Pulse Width"
 msgstr "Anchura del pulso"
 
-#: bse/bsestandardosc.c:179
+#: bse/bsestandardosc.c:176
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
@@ -5487,11 +5542,11 @@ msgstr ""
 "Proporción de la componente positiva de la forma de onda del pulso (El pulso "
 "tiene que ser seleccionado como forma de onda para que esto surta efecto)."
 
-#: bse/bsestandardosc.c:185
+#: bse/bsestandardosc.c:182
 msgid "Pulse Modulation [%]"
 msgstr "Modulación de pulso [%]"
 
-#: bse/bsestandardosc.c:186
+#: bse/bsestandardosc.c:183
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
@@ -5499,35 +5554,35 @@ msgstr ""
 "Fuerza del pulso de entrada de modulación (El pulso tiene que tener "
 "seleccionada una forma de onda para que esto tenga efecto)"
 
-#: bse/bsestandardosc.c:191
+#: bse/bsestandardosc.c:188
 msgid "Oscillating Frequency Input"
 msgstr "Entrada de frecuencia de oscilación"
 
-#: bse/bsestandardosc.c:195
+#: bse/bsestandardosc.c:192
 msgid "PWM In"
 msgstr "Entrada PWM"
 
-#: bse/bsestandardosc.c:195
+#: bse/bsestandardosc.c:192
 msgid "Pulse Width Modulation Input"
 msgstr "Ancho de la entrada de modulación del pulso (PWM)"
 
-#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:592
+#: bse/bsestandardosc.c:194 bse/bsewaveosc.c:592
 msgid "Sync In"
 msgstr "Entrada de sincronización"
 
-#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:592
+#: bse/bsestandardosc.c:194 bse/bsewaveosc.c:592
 msgid "Syncronization Input"
 msgstr "Entrada de sincr."
 
-#: bse/bsestandardosc.c:199
+#: bse/bsestandardosc.c:196
 msgid "Oscillated Output"
 msgstr "Salidas oscilantes"
 
-#: bse/bsestandardosc.c:201
+#: bse/bsestandardosc.c:198
 msgid "Sync Out"
 msgstr "Salida de sincr."
 
-#: bse/bsestandardosc.c:201
+#: bse/bsestandardosc.c:198
 msgid "Syncronization Output"
 msgstr "Salida de sincronización"
 
@@ -5546,7 +5601,8 @@ msgid "Assignments"
 msgstr "Asignaciones"
 
 #: bse/bsesubiport.c:305 bse/bsesuboport.c:306
-msgid "The port name is a unique name to establish input<->output port relationships"
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
 msgstr ""
 "El nombre del puerto es un nombre único para establecer relaciones de "
 "puertos de entrada<->salida"
@@ -5575,7 +5631,8 @@ msgstr "/Virtualización/Sub síntesis virtual"
 
 #: bse/bsesubsynth.c:157
 msgid "List of available synthesis networks to choose a sub network from"
-msgstr "Lista de las redes de síntesis disponibles de las que elegir una sub red"
+msgstr ""
+"Lista de las redes de síntesis disponibles de las que elegir una sub red"
 
 #: bse/bsesubsynth.c:514
 msgid "Synthesis network to use as embedded sub network"
@@ -5707,7 +5764,8 @@ msgstr "Salida de puerta"
 
 #: data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
-msgstr "Rastreador MIDI, Composición de música y aplicación de síntesis modular"
+msgstr ""
+"Rastreador MIDI, Composición de música y aplicación de síntesis modular"
 
 #: data/beast.desktop.in.h:3
 msgid "Music Composer"
@@ -6211,7 +6269,8 @@ msgstr "Salida completada"
 
 #: plugins/bsesimpleadsr.c:124
 msgid "This signal goes high after the release phase has completed"
-msgstr "Esta señal pasa alta después de que la fase de lanzamiento se ha completado"
+msgstr ""
+"Esta señal pasa alta después de que la fase de lanzamiento se ha completado"
 
 #: plugins/davbassfilter.idl:28
 msgid "/Filters/Bass Filter"
@@ -6224,9 +6283,9 @@ msgid ""
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
 msgstr ""
 "El filtro DavBass es un filtro paso bajo resonante estilo TB-303 basado en "
-"las partes de VCF202 del gsyn v0.2. El algoritmo del filtro está parcialmente "
-"basado en el que está descrito en «Aplicaciones musicales de los "
-"microprocesadores» de Hal Chamberlin."
+"las partes de VCF202 del gsyn v0.2. El algoritmo del filtro está "
+"parcialmente basado en el que está descrito en «Aplicaciones musicales de "
+"los microprocesadores» de Hal Chamberlin."
 
 #: plugins/davbassfilter.idl:33 plugins/davchorus.idl:30
 #: plugins/evaluator/bseevaluator.idl:32
@@ -6336,7 +6395,8 @@ msgstr "Relación de entrada"
 
 #: plugins/davsyndrum.c:118
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
-msgstr "Relación de cambio de la frecuencia (se asume 1.0 si no está conectada)"
+msgstr ""
+"Relación de cambio de la frecuencia (se asume 1.0 si no está conectada)"
 
 #: plugins/davsyndrum.c:120
 #, fuzzy
@@ -6410,4 +6470,3 @@ msgstr "Salida izquierda"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Salida derecha"
-

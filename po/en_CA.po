@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-16 10:49-0500\n"
+"POT-Creation-Date: 2004-12-18 00:28+0100\n"
 "PO-Revision-Date: 2004-12-16 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
@@ -3355,7 +3355,7 @@ msgstr "Ctrl In2"
 msgid "Second control input"
 msgstr "Second control input"
 
-#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
+#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:196
 #: bse/bsewaveosc.c:596 plugins/bseadder.c:101 plugins/bseatandistort.c:92
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
 #: plugins/davbassfilter.idl:35 plugins/davchorus.idl:31
@@ -3558,8 +3558,8 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
-#: bse/bsestandardosc.c:152 bse/bsestandardosc.c:158 bse/bsestandardosc.c:164
-#: bse/bsestandardosc.c:170 bse/bsewaveosc.c:566 bse/bsewaveosc.c:572
+#: bse/bsestandardosc.c:153 bse/bsestandardosc.c:158 bse/bsestandardosc.c:163
+#: bse/bsestandardosc.c:168 bse/bsewaveosc.c:566 bse/bsewaveosc.c:572
 #: bse/bsewaveosc.c:578
 msgid "Modulation"
 msgstr "Modulation"
@@ -3568,11 +3568,11 @@ msgstr "Modulation"
 msgid "Strength of linear frequency modulation"
 msgstr "Strength of linear frequency modulation"
 
-#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:161 bse/bsewaveosc.c:575
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:160 bse/bsewaveosc.c:575
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Perform exponential frequency modulation instead of linear"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:167 bse/bsewaveosc.c:581
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:165 bse/bsewaveosc.c:581
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Number of octaves to be affected by exponential frequency modulation"
 
@@ -3595,7 +3595,7 @@ msgstr "Audio In"
 msgid "Unfiltered Audio Signal"
 msgstr "Unfiltered Audio Signal"
 
-#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:191 bse/bsewaveosc.c:590
+#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:188 bse/bsewaveosc.c:590
 #: plugins/davorgan.c:132 plugins/davsyndrum.c:116
 #: plugins/davxtalstrings.c:141
 msgid "Freq In"
@@ -3605,11 +3605,11 @@ msgstr "Freq In"
 msgid "Center Frequency Input"
 msgstr "Centre Frequency Input"
 
-#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:193
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:190
 msgid "Freq Mod In"
 msgstr "Freq Mod In"
 
-#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:193
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:190
 msgid "Frequency Modulation Input"
 msgstr "Frequency Modulation Input"
 
@@ -5376,15 +5376,31 @@ msgstr "Oscillator wave form"
 msgid "Phase"
 msgstr "Phase"
 
-#: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:147
+#: bse/bsestandardosc.c:137
+msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
+msgstr ""
+
+#: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:148
 msgid "Base Frequency"
 msgstr "Base Frequency"
 
-#: bse/bsestandardosc.c:149
+#: bse/bsestandardosc.c:142
+msgid "Number of oscillator cycles per second"
+msgstr ""
+
+#: bse/bsestandardosc.c:146
+msgid "Musical notation corresponding to the oscillator frequency"
+msgstr ""
+
+#: bse/bsestandardosc.c:150
 msgid "Fine Tune"
 msgstr "Fine Tune"
 
-#: bse/bsestandardosc.c:154 bse/bsewaveosc.c:568
+#: bse/bsestandardosc.c:150
+msgid "Amount of detuning in cent (hundredth part of a note)"
+msgstr ""
+
+#: bse/bsestandardosc.c:155 bse/bsewaveosc.c:568
 msgid "Input Modulation [%]"
 msgstr "Input Modulation [%]"
 
@@ -5392,27 +5408,27 @@ msgstr "Input Modulation [%]"
 msgid "Exponential FM"
 msgstr "Exponential FM"
 
-#: bse/bsestandardosc.c:166 bse/bsewaveosc.c:580
+#: bse/bsestandardosc.c:165 bse/bsewaveosc.c:580
 msgid "Octaves"
 msgstr "Octaves"
 
-#: bse/bsestandardosc.c:172
+#: bse/bsestandardosc.c:170
 msgid "Self Modulation [%]"
 msgstr "Self Modulation [%]"
 
-#: bse/bsestandardosc.c:173
+#: bse/bsestandardosc.c:170
 msgid "Strength of self modulation"
 msgstr "Strength of self modulation"
 
-#: bse/bsestandardosc.c:176 bse/bsestandardosc.c:183
+#: bse/bsestandardosc.c:173 bse/bsestandardosc.c:180
 msgid "Pulse Modulation"
 msgstr "Pulse Modulation"
 
-#: bse/bsestandardosc.c:178
+#: bse/bsestandardosc.c:175
 msgid "Pulse Width"
 msgstr "Pulse Width"
 
-#: bse/bsestandardosc.c:179
+#: bse/bsestandardosc.c:176
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
@@ -5420,11 +5436,11 @@ msgstr ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
 
-#: bse/bsestandardosc.c:185
+#: bse/bsestandardosc.c:182
 msgid "Pulse Modulation [%]"
 msgstr "Pulse Modulation [%]"
 
-#: bse/bsestandardosc.c:186
+#: bse/bsestandardosc.c:183
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
@@ -5432,35 +5448,35 @@ msgstr ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 
-#: bse/bsestandardosc.c:191
+#: bse/bsestandardosc.c:188
 msgid "Oscillating Frequency Input"
 msgstr "Oscillating Frequency Input"
 
-#: bse/bsestandardosc.c:195
+#: bse/bsestandardosc.c:192
 msgid "PWM In"
 msgstr "PWM In"
 
-#: bse/bsestandardosc.c:195
+#: bse/bsestandardosc.c:192
 msgid "Pulse Width Modulation Input"
 msgstr "Pulse Width Modulation Input"
 
-#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:592
+#: bse/bsestandardosc.c:194 bse/bsewaveosc.c:592
 msgid "Sync In"
 msgstr "Sync In"
 
-#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:592
+#: bse/bsestandardosc.c:194 bse/bsewaveosc.c:592
 msgid "Syncronization Input"
 msgstr "Syncronization Input"
 
-#: bse/bsestandardosc.c:199
+#: bse/bsestandardosc.c:196
 msgid "Oscillated Output"
 msgstr "Oscillated Output"
 
-#: bse/bsestandardosc.c:201
+#: bse/bsestandardosc.c:198
 msgid "Sync Out"
 msgstr "Sync Out"
 
-#: bse/bsestandardosc.c:201
+#: bse/bsestandardosc.c:198
 msgid "Syncronization Output"
 msgstr "Syncronization Output"
 
