@@ -19,9 +19,6 @@ EXTRA_HEADERS         += bseatandistort.h
 ##
 ## Plugin bseiirfilter
 ##
-bseiirfilter.enums: bseiirfilter.h 
-plugins_built_sources += bseiirfilter.enums
-$(srcdir)/bseiirfilter.c: bseiirfilter.enums
 bseiirfilter_la_SOURCES = bseiirfilter.c
 bseiirfilter_la_LDFLAGS = -module -avoid-version
 bseiirfilter_la_LIBADD  = $(plugin_libs)

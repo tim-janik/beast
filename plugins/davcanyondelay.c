@@ -54,22 +54,16 @@ static void dav_canyon_delay_context_create (BseSource           *source,
 static void dav_canyon_delay_update_modules (DavCanyonDelay      *self);
 
 
+/* --- Export to DAV --- */
+#include "./icons/canyon.c"
+BSE_REGISTER_OBJECT (DavCanyonDelay, BseSource, "/Modules/Enhance/CanyonDelay", canyon_icon,
+                     "DavCanyonDelay adds deep and long canyon-alike echos to stereo signals.",
+                     dav_canyon_delay_class_init, NULL, dav_canyon_delay_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType             type_id_canyon_delay = 0;
 static gpointer          parent_class = NULL;
-static const GTypeInfo type_info_canyon_delay = {
-  sizeof (DavCanyonDelayClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) dav_canyon_delay_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (DavCanyonDelay),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) dav_canyon_delay_init,
-};
 
 
 /* --- functions --- */
@@ -379,20 +373,3 @@ dav_canyon_delay_update_modules (DavCanyonDelay *self)
                                  NULL);
     }
 }
-
-
-/* --- Export to DAV --- */
-#include "./icons/canyon.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_canyon_delay, "DavCanyonDelay", "BseSource",
-    "DavCanyonDelay adds deep and long canyon-alike echos to stereo signals.",
-    &type_info_canyon_delay,
-    "/Modules/Enhance/CanyonDelay",
-    { CANYON_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      CANYON_IMAGE_WIDTH, CANYON_IMAGE_HEIGHT,
-      CANYON_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

@@ -47,22 +47,19 @@ static void	 bse_atan_distort_context_create      (BseSource		*source,
 static void	 bse_atan_distort_update_modules      (BseAtanDistort		*comp);
 
 
+/* --- Export to BSE --- */
+#include "./icons/atan.c"
+BSE_REGISTER_OBJECT (BseAtanDistort, BseSource, "/Modules/Distortion/Atan Distort", atan_icon,
+                     "BseAtanDistort compresses or expands the input signal with distortion "
+                     "(in a manner similar to the atan(3) mathematical function, thus it's name). "
+                     "The strength with which the input signal is treated is adjustable from "
+                     "maximum attenuation to maximum boost.",
+                     bse_atan_distort_class_init, NULL, bse_atan_distort_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType	       type_id_atan_distort = 0;
 static gpointer	       parent_class = NULL;
-static const GTypeInfo type_info_atan_distort = {
-  sizeof (BseAtanDistortClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_atan_distort_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (BseAtanDistort),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_atan_distort_init,
-};
 
 
 /* --- functions --- */
@@ -246,25 +243,3 @@ bse_atan_distort_context_create (BseSource *source,
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
-
-
-/* --- Export to BSE --- */
-#include "./icons/atan.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);	/* start of macro magic for BSE plugins */
-BSE_EXPORT_OBJECTS = {			/* this plugin implements an object type */
-  { &type_id_atan_distort,		/* variable to store object type id in */
-    "BseAtanDistort",			/* name of this object type */
-    "BseSource",			/* parent type */
-    "BseAtanDistort compresses or expands the input signal with distortion "
-    "(in a manner similar to the atan(3) mathematical function, thus it's name). "
-    "The strength with which the input signal is treated is adjustable from "
-    "maximum attenuation to maximum boost.",
-    &type_info_atan_distort,		/* type information */
-    "/Modules/Distortion/Atan Distort",	/* category (menu hierachy entry) */
-    { ATAN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      ATAN_IMAGE_WIDTH, ATAN_IMAGE_HEIGHT,
-      ATAN_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;			/* end of macro magic for BSE plugins */

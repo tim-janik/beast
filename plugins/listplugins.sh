@@ -25,12 +25,8 @@ for file in $LFILES ; do
 		exit 1
 	}
 
-	grep -F BSE_EXPORTS_BEGIN $cfile >/dev/null || {
-		echo "$cfile: missing BSE_EXPORTS_BEGIN() directive" >&2
-		exit 1
-	}
-	grep -F BSE_EXPORTS_END $cfile >/dev/null || {
-		echo "$cfile: missing BSE_EXPORTS_END directive" >&2
+	grep -E "BSE_EXPORTS_BEGIN|BSE_DEFINE_EXPORTS" $cfile >/dev/null || {
+		echo "$cfile: missing BSE_DEFINE_EXPORTS() directive" >&2
 		exit 1
 	}
 	if grep -F BSE_EXPORT_AND_GENERATE_ENUMS $cfile >/dev/null ; then

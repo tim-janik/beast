@@ -28,7 +28,7 @@
 G_BEGIN_DECLS
 
 /* --- type macros --- */
-#define BSE_TYPE_FREE_VERB              (type_id_free_verb)
+#define BSE_TYPE_FREE_VERB              (BSE_EXPORT_TYPE_ID (BseFreeVerb))
 #define BSE_FREE_VERB(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_FREE_VERB, BseFreeVerb))
 #define BSE_FREE_VERB_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_FREE_VERB, BseFreeVerbClass))
 #define BSE_IS_FREE_VERB(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_FREE_VERB))

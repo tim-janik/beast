@@ -31,11 +31,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-
-
-
 /* --- object type macros --- */
-#define BSE_TYPE_MIXER              (type_id_mixer)
+#define BSE_TYPE_MIXER              (BSE_EXPORT_TYPE_ID (BseMixer))
 #define BSE_MIXER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_MIXER, BseMixer))
 #define BSE_MIXER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_MIXER, BseMixerClass))
 #define BSE_IS_MIXER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MIXER))

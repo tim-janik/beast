@@ -44,7 +44,6 @@ enum
 /* --- prototypes --- */
 static void        dav_organ_init             (DavOrgan       *self);
 static void        dav_organ_class_init       (DavOrganClass  *class);
-static void        dav_organ_class_finalize   (DavOrganClass  *class);
 static void        dav_organ_set_property     (GObject	      *object,
 					       guint           param_id,
 					       const GValue   *value,
@@ -61,22 +60,16 @@ static void        dav_organ_reset            (BseSource      *source);
 static void	   dav_organ_update_modules   (DavOrgan       *self);
 
 
+/* --- Export to DAV --- */
+#include "./icons/organ.c"
+BSE_REGISTER_OBJECT (DavOrgan, BseSource, "/Modules/Audio Sources/Organ", organ_icon,
+                     "DavOrgan is a modifiable additive organ synthesizer",
+                     dav_organ_class_init, NULL, dav_organ_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType             type_id_organ = 0;
 static gpointer          parent_class = NULL;
-static const GTypeInfo type_info_organ = {
-  sizeof (DavOrganClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) dav_organ_class_init,
-  (GClassFinalizeFunc) dav_organ_class_finalize,
-  NULL /* class_data */,
-  
-  sizeof (DavOrgan),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) dav_organ_init,
-};
 
 
 /* --- functions --- */
@@ -137,11 +130,6 @@ dav_organ_class_init (DavOrganClass *class)
   
   channel_id = bse_source_class_add_ichannel (source_class, "Freq In", "Frequency Input");
   channel_id = bse_source_class_add_ochannel (source_class, "Audio Out", "Organ Output");
-}
-
-static void
-dav_organ_class_finalize (DavOrganClass *class)
-{
 }
 
 static void
@@ -485,19 +473,3 @@ dav_organ_reset (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }
-
-/* --- Export to DAV --- */
-#include "./icons/organ.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_organ, "DavOrgan", "BseSource",
-    "DavOrgan is a modifiable additive organ synthesizer",
-    &type_info_organ,
-    "/Modules/Audio Sources/Organ",
-    { ORGAN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      ORGAN_IMAGE_WIDTH, ORGAN_IMAGE_HEIGHT,
-      ORGAN_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

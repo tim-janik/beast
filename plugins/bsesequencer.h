@@ -30,7 +30,7 @@ extern "C" {
 
 
 /* --- object type macros --- */
-#define BSE_TYPE_SEQUENCER              (type_id_sequencer)
+#define BSE_TYPE_SEQUENCER              (BSE_EXPORT_TYPE_ID (BseSequencer))
 #define BSE_SEQUENCER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SEQUENCER, BseSequencer))
 #define BSE_SEQUENCER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SEQUENCER, BseSequencerClass))
 #define BSE_IS_SEQUENCER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SEQUENCER))

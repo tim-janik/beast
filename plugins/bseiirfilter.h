@@ -30,7 +30,7 @@ extern "C" {
 
 
 /* --- type macros --- */
-#define BSE_TYPE_IIR_FILTER              (type_id_iir_filter)
+#define BSE_TYPE_IIR_FILTER              (BSE_EXPORT_TYPE_ID (BseIIRFilter))
 #define BSE_IIR_FILTER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_IIR_FILTER, BseIIRFilter))
 #define BSE_IIR_FILTER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_IIR_FILTER, BseIIRFilterClass))
 #define BSE_IS_IIR_FILTER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_IIR_FILTER))

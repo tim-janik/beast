@@ -1,3 +1,22 @@
+Mon Aug 25 19:27:04 2003  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: 
+	* listplugins.sh: adapted to new bseplugin.h macros.
+	enum generation doesn't work anymore.
+
+	* bseiirfilter.[hc]: hand-coded enum exports, this is the only
+	C plugin left that uses enum values.
+
+	* *.[hc]:
+	* freeverb/bsefreeverb.[hc]: ported all plugins to the new
+	export macros.
+
+	* icons/Makefile.icons:
+	* icons/*.png: added png files for the images used.
+
+	* icons/*.c: regenerated C sources from *.png files with:
+	gdk-pixbuf-csource --name=VariableName foo.png > foo.c
+
 Sun Jul 27 04:31:23 2003  Tim Janik  <timj@gtk.org>
 
 	* davcanyondelay.[hc]: resurrected canyon-delay plugin,

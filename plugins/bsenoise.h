@@ -31,11 +31,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-
-
-
 /* --- object type macros --- */
-#define BSE_TYPE_NOISE              (type_id_noise)
+#define BSE_TYPE_NOISE              (BSE_EXPORT_TYPE_ID (BseNoise))
 #define BSE_NOISE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_NOISE, BseNoise))
 #define BSE_NOISE_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_NOISE, BseNoiseClass))
 #define BSE_IS_NOISE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_NOISE))

@@ -27,7 +27,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* --- object type macros --- */
-#define DAV_TYPE_ORGAN              (type_id_organ)
+#define DAV_TYPE_ORGAN              (BSE_EXPORT_TYPE_ID (DavOrgan))
 #define DAV_ORGAN(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_ORGAN, DavOrgan))
 #define DAV_ORGAN_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_ORGAN, DavOrganClass))
 #define DAV_IS_ORGAN(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_ORGAN))

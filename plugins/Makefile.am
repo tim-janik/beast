@@ -45,6 +45,8 @@ EXTRA_CFILES = $(strip		\
 Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
 	$(srcdir)/listplugins.sh $(PLUGIN_CFILES) >$@
 
+plugins_built_sources =
+
 EXTRA_DIST += $(strip \
         $(EXTRA_HEADERS) \
         $(EXTRA_CFILES) \

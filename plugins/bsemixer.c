@@ -56,22 +56,17 @@ static void	 bse_mixer_update_modules	(BseMixer	*self,
 						 GslTrans       *trans);
 
 
+/* --- Export to BSE --- */
+#include "./icons/mixer.c"
+BSE_REGISTER_OBJECT (BseMixer, BseSource, "/Modules/Routing/Mixer", mixer_icon,
+                     "The Mixer module sums up incomming signals, and allowes for fine "
+                     "adjusted weighting (volume setting) of the input sources",
+                     bse_mixer_class_init, NULL, bse_mixer_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType		 type_id_mixer = 0;
 static gpointer		 parent_class = NULL;
-static const GTypeInfo type_info_mixer = {
-  sizeof (BseMixerClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_mixer_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (BseMixer),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_mixer_init,
-};
 
 
 /* --- functions --- */
@@ -377,20 +372,3 @@ bse_mixer_context_create (BseSource *source,
   /* update module data */
   bse_mixer_update_modules (BSE_MIXER (source), trans);
 }
-
-
-/* --- Export to BSE --- */
-#include "./icons/ampmix.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_mixer, "BseMixer", "BseSource",
-    "The Mixer module sums up incomming signals, and allowes for fine adjusted weighting (volume setting) of the input sources",
-    &type_info_mixer,
-    "/Modules/Routing/Mixer",
-    { AMP_MIX_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      AMP_MIX_IMAGE_WIDTH, AMP_MIX_IMAGE_HEIGHT,
-      AMP_MIX_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

@@ -34,6 +34,7 @@ enum
 /* --- prototypes --- */
 static void	 bse_adder_init			(BseAdder	*self);
 static void	 bse_adder_class_init		(BseAdderClass	*class);
+static void      bse_adder_class_finalize       (BseAdderClass  *class);
 static void	 bse_adder_set_property		(GObject        *object,
 						 guint           param_id,
 						 const GValue   *value,
@@ -50,22 +51,17 @@ static void	 bse_adder_update_modules	(BseAdder	*self,
 						 GslTrans	*trans);
 
 
+/* --- Export to BSE --- */
+#include "./icons/sum.c"
+BSE_REGISTER_OBJECT (BseAdder, BseSource, "/Modules/Routing/Adder", sum_icon,
+                     "The Adder is a very simplisitic prototype mixer that just sums up "
+                     "incomiong signals (it does allow for switching to subtract mode though)",
+                     bse_adder_class_init, bse_adder_class_finalize, bse_adder_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType		 type_id_adder = 0;
 static gpointer		 parent_class = NULL;
-static const GTypeInfo   type_info_adder = {
-  sizeof (BseAdderClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_adder_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (BseAdder),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_adder_init,
-};
 
 
 /* --- functions --- */
@@ -278,21 +274,3 @@ bse_adder_context_create (BseSource *source,
   /* update module data */
   bse_adder_update_modules (adder, trans);
 }
-
-
-/* --- Export to BSE --- */
-#include "./icons/sum.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_adder, "BseAdder", "BseSource",
-    "The Adder is a very simplisitic prototype mixer that just sums up "
-    "incomiong signals (it does allow for switching to subtract mode though)",
-    &type_info_adder,
-    "/Modules/Routing/Adder",
-    { SUM_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      SUM_IMAGE_WIDTH, SUM_IMAGE_HEIGHT,
-      SUM_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

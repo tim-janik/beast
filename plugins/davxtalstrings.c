@@ -70,22 +70,18 @@ static void	   dav_xtal_strings_update_modules   (DavXtalStrings	   *self,
 						      gboolean		    trigger_now);
 
 
+/* --- Export to BSE --- */
+#include "./icons/strings.c"
+BSE_REGISTER_OBJECT (DavXtalStrings, BseSource, "/Modules/Audio Sources/XtalStrings", strings_icon,
+                     "DavXtalStrings is a plucked string synthesizer, using the "
+                     "Karplus-Strong Algorithm. Commercial use of this module "
+                     "until 2004 requires a license from Stanford University.",
+                     dav_xtal_strings_class_init, NULL, dav_xtal_strings_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType	       type_id_xtal_strings = 0;
 static gpointer	       parent_class = NULL;
-static const GTypeInfo type_info_xtal_strings = {
-  sizeof (DavXtalStringsClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) dav_xtal_strings_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (DavXtalStrings),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) dav_xtal_strings_init,
-};
 
 
 /* --- functions --- */
@@ -474,22 +470,3 @@ dav_xtal_strings_update_modules (DavXtalStrings *self,
 				 NULL);
     }
 }
-
-
-/* --- Export to BSE --- */
-#include "./icons/strings.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_xtal_strings, "DavXtalStrings", "BseSource",
-    "DavXtalStrings is a plucked string synthesizer, using the "
-    "Karplus-Strong Algorithm. Commercial use of this module "
-    "until 2004 requires a license from Stanford University.",
-    &type_info_xtal_strings,
-    "/Modules/Audio Sources/XtalStrings",
-    { STRINGS_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      STRINGS_IMAGE_WIDTH, STRINGS_IMAGE_HEIGHT,
-      STRINGS_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

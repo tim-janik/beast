@@ -53,22 +53,16 @@ static void	bse_simple_adsr_update_modules	(BseSimpleADSR		*simple_adsr,
 						 GslTrans		*trans);
 
 
+/* --- Export to BSE --- */
+#include "./icons/adsr.c"
+BSE_REGISTER_OBJECT (BseSimpleADSR, BseSource, "/Modules/Other Sources/Simple ADSR", adsr_icon,
+                     "Simple ADSR envelope generator",
+                     bse_simple_adsr_class_init, NULL, bse_simple_adsr_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType	       type_id_simple_adsr = 0;
 static gpointer	       parent_class = NULL;
-static const GTypeInfo type_info_simple_adsr = {
-  sizeof (BseSimpleADSRClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_simple_adsr_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (BseSimpleADSR),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_simple_adsr_init,
-};
 
 
 /* --- functions --- */
@@ -445,20 +439,3 @@ bse_simple_adsr_context_create (BseSource *source,
   /* update module data */
   bse_simple_adsr_update_modules (simple_adsr, trans);
 }
-
-
-/* --- Export to BSE --- */
-#include "./icons/adsr.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_simple_adsr, "BseSimpleADSR", "BseSource",
-    "Simple ADSR envelope generator",
-    &type_info_simple_adsr,
-    "/Modules/Other Sources/Simple ADSR",
-    { ADSR_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      ADSR_IMAGE_WIDTH, ADSR_IMAGE_HEIGHT,
-      ADSR_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

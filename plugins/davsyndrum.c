@@ -52,22 +52,20 @@ static void dav_syn_drum_update_modules (DavSynDrum      *self,
                                          gboolean         force_trigger);
 
 
+/* --- Export to DAV --- */
+#include "./icons/drum.c"
+BSE_REGISTER_OBJECT (DavSynDrum, BseSource, "/Modules/Audio Sources/SynDrum", drum_icon,
+                     "DavSynDrum produces synthesized drums. It accepts the drum frequency as "
+                     "input channel or parameter setting. Drums are triggered through a trigger "
+                     "parameter or via a trigger input channel which detects raising edges. "
+                     "The initial frequency shift is controllable through the "
+                     "\"Ratio In\" input channel, and adjustable through a parameter.",
+                     dav_syn_drum_class_init, NULL, dav_syn_drum_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType             type_id_syn_drum = 0;
 static gpointer          parent_class = NULL;
-static const GTypeInfo type_info_syn_drum = {
-  sizeof (DavSynDrumClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) dav_syn_drum_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (DavSynDrum),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) dav_syn_drum_init,
-};
 
 
 /* --- functions --- */
@@ -377,24 +375,3 @@ dav_syn_drum_update_modules (DavSynDrum *self,
                                  NULL);
     }
 }
-
-
-/* --- Export to DAV --- */
-#include "./icons/drum.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_syn_drum, "DavSynDrum", "BseSource",
-    "DavSynDrum produces synthesized drums. It accepts the drum frequency as "
-    "input channel or parameter setting. Drums are triggered through a trigger "
-    "parameter or via a trigger input channel which detects raising edges. "
-    "The initial frequency shift is controllable through the "
-    "\"Ratio In\" input channel, and adjustable through a parameter.",
-    &type_info_syn_drum,
-    "/Modules/Audio Sources/SynDrum",
-    { DRUM_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      DRUM_IMAGE_WIDTH, DRUM_IMAGE_HEIGHT,
-      DRUM_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

@@ -30,22 +30,16 @@ static void	 bse_mult_context_create	(BseSource	*source,
 						 GslTrans	*trans);
 
 
+/* --- Export to BSE --- */
+#include "./icons/multiply.c"
+BSE_REGISTER_OBJECT (BseMult, BseSource, "/Modules/Routing/Multiply", multiply_icon,
+                     "Mult is a channel multiplier for ring-modulating incoming signals",
+                     bse_mult_class_init, NULL, bse_mult_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType		 type_id_mult = 0;
 static gpointer		 parent_class = NULL;
-static const GTypeInfo type_info_mult = {
-  sizeof (BseMultClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_mult_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (BseMult),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_mult_init,
-};
 
 
 /* --- functions --- */
@@ -144,20 +138,3 @@ bse_mult_context_create (BseSource *source,
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
-
-
-/* --- Export to BSE --- */
-#include "./icons/prod.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_mult, "BseMult", "BseSource",
-    "Mult is a channel multiplier for ring-modulating incoming signals",
-    &type_info_mult,
-    "/Modules/Routing/Mult",
-    { PROD_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      PROD_IMAGE_WIDTH, PROD_IMAGE_HEIGHT,
-      PROD_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

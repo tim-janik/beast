@@ -23,10 +23,6 @@
 
 #include <string.h>
 
-/* include generated enums
- */
-#include "bseiirfilter.enums"
-
 #define	_(x)	(x)
 #define	FREQ_DELTA	0.1
 
@@ -48,7 +44,6 @@ enum
 /* --- prototypes --- */
 static void	   bse_iir_filter_init			(BseIIRFilter		*iir_filter);
 static void	   bse_iir_filter_class_init		(BseIIRFilterClass	*class);
-static void	   bse_iir_filter_class_finalize	(BseIIRFilterClass	*class);
 static void	   bse_iir_filter_set_property		(GObject		*object,
 							 guint			 param_id,
 							 const GValue		*value,
@@ -64,22 +59,42 @@ static void	   bse_iir_filter_context_create	(BseSource		*source,
 static void	   bse_iir_filter_update_modules	(BseIIRFilter		*filt);
 
 
-/* --- variables --- */
-static GType	       type_id_iir_filter = 0;
-static gpointer	       parent_class = NULL;
-static const GTypeInfo type_info_iir_filter = {
-  sizeof (BseIIRFilterClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_iir_filter_class_init,
-  (GClassFinalizeFunc) bse_iir_filter_class_finalize,
-  NULL /* class_data */,
-  
-  sizeof (BseIIRFilter),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_iir_filter_init,
+/* --- Export to BSE --- */
+#define BSE_TYPE_IIR_FILTER_ALGORITHM   (BSE_EXPORT_TYPE_ID (BseIIRFilterAlgorithm))
+static GEnumValue bse_iir_filter_algorithm_values[] = {
+  { BSE_IIR_FILTER_BUTTERWORTH, "BSE_IIR_FILTER_BUTTERWORTH", "butterworth" },
+  { BSE_IIR_FILTER_CHEBYCHEFF1, "BSE_IIR_FILTER_CHEBYCHEFF1", "chebycheff1" },
+  { BSE_IIR_FILTER_CHEBYCHEFF2, "BSE_IIR_FILTER_CHEBYCHEFF2", "chebycheff2" },
+  { 0, NULL, NULL }
 };
+static BseExportNodeEnum __enode_BseIIRFilterAlgorithm = {
+  { NULL,
+    BSE_EXPORT_NODE_ENUM, "BseIIRFilterAlgorithm", },
+  bse_iir_filter_algorithm_values,
+};
+#define BSE_TYPE_IIR_FILTER_TYPE        (BSE_EXPORT_TYPE_ID (BseIIRFilterType))
+static GEnumValue bse_iir_filter_type_values[] = {
+  { BSE_IIR_FILTER_LOW_PASS, "BSE_IIR_FILTER_LOW_PASS", "low-pass" },
+  { BSE_IIR_FILTER_HIGH_PASS, "BSE_IIR_FILTER_HIGH_PASS", "high-pass" },
+  { BSE_IIR_FILTER_BAND_PASS, "BSE_IIR_FILTER_BAND_PASS", "band-pass" },
+  { BSE_IIR_FILTER_BAND_STOP, "BSE_IIR_FILTER_BAND_STOP", "band-stop" },
+  { 0, NULL, NULL }
+};
+static BseExportNodeEnum __enode_BseIIRFilterType = {
+  { (BseExportNode*) &__enode_BseIIRFilterAlgorithm,
+    BSE_EXPORT_NODE_ENUM, "BseIIRFilterType", },
+  bse_iir_filter_type_values,
+};
+#include "./icons/filter.c"
+BSE_REGISTER_OBJECT_P ((BseExportNode*) &__enode_BseIIRFilterType,
+                       BseIIRFilter, BseSource, "/Modules/Filters/IIR Filter", filter_icon,
+                       "BseIIRFilter is an infinite impulse response filter of variable order",
+                       bse_iir_filter_class_init, NULL, bse_iir_filter_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
+/* --- variables --- */
+static gpointer	       parent_class = NULL;
 
 
 /* --- functions --- */
@@ -146,11 +161,6 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
   g_assert (ichannel_id == BSE_IIR_FILTER_ICHANNEL_MONO);
   ochannel_id = bse_source_class_add_ochannel (source_class, "Audio Out", _("Filtered Output"));
   g_assert (ochannel_id == BSE_IIR_FILTER_OCHANNEL_MONO);
-}
-
-static void
-bse_iir_filter_class_finalize (BseIIRFilterClass *class)
-{
 }
 
 static void
@@ -438,21 +448,3 @@ bse_iir_filter_context_create (BseSource *source,
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
-
-
-/* --- Export to BSE --- */
-#include "./icons/filter.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_iir_filter, "BseIIRFilter", "BseSource",
-    "BseIIRFilter is an infinite impulse response filter of variable order",
-    &type_info_iir_filter,
-    "/Modules/Filters/IIR Filter",
-    { FILTER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      FILTER_IMAGE_WIDTH, FILTER_IMAGE_HEIGHT,
-      FILTER_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORT_AND_GENERATE_ENUMS ();
-BSE_EXPORTS_END;

@@ -30,7 +30,7 @@ extern "C" {
 
 
 /* --- object type macros --- */
-#define BSE_TYPE_SIMPLE_ADSR              (type_id_simple_adsr)
+#define BSE_TYPE_SIMPLE_ADSR              (BSE_EXPORT_TYPE_ID (BseSimpleADSR))
 #define BSE_SIMPLE_ADSR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SIMPLE_ADSR, BseSimpleADSR))
 #define BSE_SIMPLE_ADSR_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SIMPLE_ADSR, BseSimpleADSRClass))
 #define BSE_IS_SIMPLE_ADSR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SIMPLE_ADSR))

@@ -51,22 +51,16 @@ static void	bse_sequencer_reset		(BseSource		*source);
 static void	bse_sequencer_update_modules	(BseSequencer		*seq);
 
 
+/* --- Export to BSE --- */
+#include "./icons/sequencer.c"
+BSE_REGISTER_OBJECT (BseSequencer, BseSource, "/Modules/Other Sources/Sequencer", sequencer_icon,
+                     "The Sequencer produces a frequency signal according to a sequence of notes",
+                     bse_sequencer_class_init, NULL, bse_sequencer_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType		 type_id_sequencer = 0;
 static gpointer		 parent_class = NULL;
-static const GTypeInfo type_info_sequencer = {
-  sizeof (BseSequencerClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_sequencer_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  
-  sizeof (BseSequencer),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_sequencer_init,
-};
 
 
 /* --- functions --- */
@@ -392,19 +386,3 @@ bse_sequencer_reset (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }
-
-/* --- Export to BSE --- */
-#include "./icons/sequencer.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_sequencer, "BseSequencer", "BseSource",
-    "The Sequencer produces a frequency signal according to a sequence of notes",
-    &type_info_sequencer,
-    "/Modules/Other Sources/Sequencer",
-    { SEQUENCER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      SEQUENCER_IMAGE_WIDTH, SEQUENCER_IMAGE_HEIGHT,
-      SEQUENCER_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

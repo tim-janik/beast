@@ -50,20 +50,17 @@ static void	bse_free_verb_context_create	(BseSource		*source,
 static void	bse_free_verb_update_modules	(BseFreeVerb		*self);
 
 
+/* --- Export to BSE --- */
+#include "../icons/reverb.c"
+BSE_REGISTER_OBJECT (BseFreeVerb, BseSource, "/Modules/Filters/Free Verb", reverb_icon,
+                     "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
+                     "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
+                     bse_free_verb_class_init, NULL, bse_free_verb_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType           type_id_free_verb = 0;
 static gpointer        parent_class = NULL;
-static const GTypeInfo type_info_free_verb = {
-  sizeof (BseFreeVerbClass),
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_free_verb_class_init,
-  (GClassFinalizeFunc) NULL,
-  NULL /* class_data */,
-  sizeof (BseFreeVerb),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_free_verb_init,
-};
 
 
 /* --- functions --- */
@@ -298,21 +295,3 @@ bse_free_verb_context_create (BseSource *source,
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
-
-
-/* --- Export to BSE --- */
-#include "../icons/reverb.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_free_verb, "BseFreeVerb", "BseSource",
-    "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
-    "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
-    &type_info_free_verb,
-    "/Modules/Filters/Free Verb",
-    { REVERB_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      REVERB_IMAGE_WIDTH, REVERB_IMAGE_HEIGHT,
-      REVERB_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

@@ -31,11 +31,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-
-
-
 /* --- object type macros --- */
-#define BSE_TYPE_ADDER              (type_id_adder)
+#define BSE_TYPE_ADDER              (BSE_EXPORT_TYPE_ID (BseAdder))
 #define BSE_ADDER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_ADDER, BseAdder))
 #define BSE_ADDER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_ADDER, BseAdderClass))
 #define BSE_IS_ADDER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_ADDER))
@@ -72,8 +69,6 @@ enum
   BSE_ADDER_OCHANNEL_AUDIO_OUT,
   BSE_ADDER_N_OCHANNELS
 };
-
-
 
 
 

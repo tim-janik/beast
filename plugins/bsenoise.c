@@ -25,7 +25,6 @@
 /* --- prototypes --- */
 static void	 bse_noise_init			(BseNoise	*noise);
 static void	 bse_noise_class_init		(BseNoiseClass	*class);
-static void	 bse_noise_class_finalize	(BseNoiseClass	*class);
 static void	 bse_noise_prepare		(BseSource	*source);
 static void	 bse_noise_context_create	(BseSource	*source,
 						 guint		 context_handle,
@@ -33,22 +32,16 @@ static void	 bse_noise_context_create	(BseSource	*source,
 static void	 bse_noise_reset		(BseSource	*source);
 
 
+/* --- Export to BSE --- */
+#include "./icons/noise.c"
+BSE_REGISTER_OBJECT (BseNoise, BseSource, "/Modules/Audio Sources/Noise", noise_icon,
+                     "Noise is a generator of (supposedly) white noise",
+                     bse_noise_class_init, NULL, bse_noise_init);
+BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
+
+
 /* --- variables --- */
-static GType		 type_id_noise = 0;
 static gpointer		 parent_class = NULL;
-static const GTypeInfo type_info_noise = {
-  sizeof (BseNoiseClass),
-  
-  (GBaseInitFunc) NULL,
-  (GBaseFinalizeFunc) NULL,
-  (GClassInitFunc) bse_noise_class_init,
-  (GClassFinalizeFunc) bse_noise_class_finalize,
-  NULL /* class_data */,
-  
-  sizeof (BseNoise),
-  0 /* n_preallocs */,
-  (GInstanceInitFunc) bse_noise_init,
-};
 
 
 /* --- functions --- */
@@ -69,11 +62,6 @@ bse_noise_class_init (BseNoiseClass *class)
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "Noise_Out", "Noise Output");
   g_assert (ochannel_id == BSE_NOISE_OCHANNEL_NOISE);
-}
-
-static void
-bse_noise_class_finalize (BseNoiseClass *class)
-{
 }
 
 static void
@@ -149,20 +137,3 @@ bse_noise_reset (BseSource *source)
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }
-
-
-/* --- Export to BSE --- */
-#include "./icons/noise.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_noise, "BseNoise", "BseSource",
-    "Noise is a generator of (supposedly) white noise",
-    &type_info_noise,
-    "/Modules/Audio Sources/Noise",
-    { NOISE_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOISE_IMAGE_WIDTH, NOISE_IMAGE_HEIGHT,
-      NOISE_IMAGE_RLE_PIXEL_DATA, },
-  },
-  { NULL, },
-};
-BSE_EXPORTS_END;

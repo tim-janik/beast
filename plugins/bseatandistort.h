@@ -30,7 +30,7 @@ extern "C" {
 
 
 /* --- object type macros --- */
-#define BSE_TYPE_ATAN_DISTORT              (type_id_atan_distort)
+#define BSE_TYPE_ATAN_DISTORT              (BSE_EXPORT_TYPE_ID (BseAtanDistort))
 #define BSE_ATAN_DISTORT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_ATAN_DISTORT, BseAtanDistort))
 #define BSE_ATAN_DISTORT_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_ATAN_DISTORT, BseAtanDistortClass))
 #define BSE_IS_ATAN_DISTORT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_ATAN_DISTORT))

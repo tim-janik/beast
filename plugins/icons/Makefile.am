@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BSE Plugin icons
 
-icon_pattern = *.c *.xcf
+icon_pattern = *.c *.png *.xcf
 icon_list = 
 
 # create icon list
@@ -19,14 +19,8 @@ EXTRA_DIST += $(strip \
 	$(icon_list) \
 )
 
+# generate C files:
+# $ gdk-pixbuf-csource --name=adsr_icon adsr.png >adsr.c
+
 ## include generated icon list Makefile
 include Makefile.icons
-
-## Makefile.plugins contains a generated make rule list of the *.c
-## files in this directory, e.g. it'd list a given foo.c as:
-##
-##foo_la_SOURCES = foo.c
-##foo_la_LDFLAGS = -module -avoid-version
-##foo_la_LIBADD  = $(plugin_libs)
-##
-##plugin_LTLIBRARIES += foo.la
