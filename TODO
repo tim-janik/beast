@@ -1,5 +1,4 @@
 FIXME(release-critical):
-- preserve ordering during job collection in bseengineutils.c for user and ordinary jobs
 - ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - pianoroll: select-all/none
