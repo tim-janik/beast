@@ -32,13 +32,13 @@ namespace BseWaveTool {
 WaveChunk::WaveChunk ()
 {
   dhandle = NULL;
-  midi_note = 0;
 }
 
 WaveChunk&
 WaveChunk::operator= (const WaveChunk &rhs)
 {
-  memcpy (this, &rhs, sizeof (*this));
+  temp_file = rhs.temp_file;
+  dhandle = rhs.dhandle;
   if (dhandle)
     gsl_data_handle_open (dhandle);
   return *this;
@@ -49,6 +49,49 @@ WaveChunk::WaveChunk (const WaveChunk &rhs)
   *this = rhs;
   if (dhandle)
     gsl_data_handle_open (dhandle);
+}
+
+BseErrorType
+WaveChunk::set_dhandle_from_temporary (const string &fname,
+                                       gdouble       osc_freq)
+{
+  BseErrorType error = BSE_ERROR_NONE;
+  GslWaveFileInfo *wfi = gsl_wave_file_info_load (fname.c_str(), &error);
+  GslDataHandle *xhandle = NULL;
+  if (wfi)
+    {
+      GslWaveDsc *wdc = gsl_wave_dsc_load (wfi, 0, FALSE, &error);
+      if (wdc)
+        {
+          xhandle = gsl_wave_handle_create (wdc, 0, &error);
+          if (xhandle)
+            {
+              if (osc_freq > 0)
+                gsl_data_handle_override (xhandle, -1, -1, osc_freq);
+              error = gsl_data_handle_open (xhandle);
+              if (error)
+                {
+                  gsl_data_handle_close (xhandle);
+                  gsl_data_handle_unref (xhandle);
+                  xhandle = NULL;
+                }
+              else
+                gsl_data_handle_unref (xhandle);
+            }
+          gsl_wave_dsc_free (wdc);
+        }
+      gsl_wave_file_info_unref  (wfi);
+    }
+  if (xhandle)
+    {
+      if (dhandle)
+        gsl_data_handle_close (dhandle);
+      dhandle = xhandle;
+      temp_file = fname;
+      return BSE_ERROR_NONE;
+    }
+  else
+    return error;
 }
 
 WaveChunk::~WaveChunk ()
@@ -155,7 +198,7 @@ Wave::store (const string file_name)
           tmp_handle = gsl_data_handle_get_source (dhandle);
         }
       while (tmp_handle);
-      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle);
+      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle); // FIXME: deamnd certain serialno
       if (vhandle)      /* save already compressed Ogg/Vorbis data */
         {
           sfi_wstore_puts (wstore, "    ogglink = ");

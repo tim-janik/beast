@@ -21,6 +21,8 @@
 #include "bwtwave.h"
 #include <bse/bsemain.h>	/* for bse_init_intern() */
 #include <bse/gslloader.h>
+#include <bse/gslvorbis-enc.h>
+#include <bse/gsldatahandle-vorbis.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -43,12 +45,15 @@ static string command_name;
 static string input_file;
 static string output_file;
 list<Command*> Command::registry;
+list<string>   unlink_file_list;
 
 /* --- main program --- */
 extern "C" int
 main (int   argc,
       char *argv[])
 {
+  std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
+
   /* initialize random numbers */
   struct timeval tv;
   gettimeofday (&tv, NULL);
@@ -67,7 +72,7 @@ main (int   argc,
   if (command_name == "")
     {
       if (orig_argc > 1)
-        g_printerr ("%s: missing command\n", PRG_NAME);
+        sfi_error ("missing command\n");
       else
         wavetool_print_blurb();
       exit (1);
@@ -81,12 +86,12 @@ main (int   argc,
       }
   if (!command)
     {
-      g_printerr ("%s: unknown command: %s\n", PRG_NAME, command_name.c_str());
+      sfi_error ("unknown command: %s\n", command_name.c_str());
       exit (1);
     }
   if (input_file == "")
     {
-      g_printerr ("%s: missing input file name\n", PRG_NAME);
+      sfi_error ("missing input file name\n");
       exit (1);
     }
 
@@ -103,12 +108,12 @@ main (int   argc,
   argc = e;
   if (missing)
     {
-      g_printerr ("%s: missing %u arguments to command \"%s\"\n", PRG_NAME, missing, command->name.c_str());
+      sfi_error ("missing %u arguments to command \"%s\"\n", missing, command->name.c_str());
       exit (1);
     }
   if (argc > 1)
     {
-      g_printerr ("%s: extra argument given to command \"%s\": %s\n", PRG_NAME, command->name.c_str(), argv[1]);
+      sfi_error ("extra argument given to command \"%s\": %s\n", command->name.c_str(), argv[1]);
       exit (1);
     }
   
@@ -176,6 +181,11 @@ main (int   argc,
       sfi_error ("failed to store wave \"%s\" to file \"%s\": %s", wave->name.c_str(), output_file.c_str(), bse_error_blurb (error));
       exit (1);
     }
+
+  /* cleanup */
+  delete wave;
+  for (list<string>::iterator it = unlink_file_list.begin(); it != unlink_file_list.end(); it++)
+    unlink (it->c_str());
 
   return 0;
 }
@@ -388,7 +398,7 @@ public:
     guint n_channels = g_ascii_strtoull (channel_str.c_str(), NULL, 10);
     if (n_channels < 1 || n_channels > 2)
       {
-        g_printerr ("%s: invalid number of channels: %d\n", PRG_NAME, n_channels);
+        sfi_error ("invalid number of channels: %d\n", n_channels);
         exit (1);
       }
     /* figure name */
@@ -410,17 +420,165 @@ public:
   {
     if (sfi_file_check (output_file.c_str(), "e"))
       {
-        g_printerr ("%s: not creating \"%s\": %s\n", PRG_NAME, output_file.c_str(), g_strerror (EEXIST));
+        sfi_error ("not creating \"%s\": %s\n", output_file.c_str(), g_strerror (EEXIST));
         exit (1);
       }
   }
 } cmd_create ("create");
 
-/* FIXME: commands
-   bsewavetool <samplefile>   store                 # auto-appends .bsewave to samplefile
-   bsewavetool <file.bsewave> create [wavefiles...] # besonders, da file.bsewave nicht existieren/geladen werden muss
+class Oggenc : public Command {
+public:
+  float quality;
+  Oggenc (const char *command_name) :
+    Command (command_name)
+  {
+    quality = 3.0;
+  }
+  void
+  blurb()
+  {
+    g_print ("\n");
+    g_print ("    Compress all chunks with the Vorbis audio codec and store the wave data\n");
+    g_print ("    as Ogg/Vorbis streams inside the bsewave file. Options:\n");
+    g_print ("    -q <n>              use quality level <n>, refer to oggenc(1) for details\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (int    argc,
+              char **argv)
+  {
+    for (int i = 1; i < argc; i++)
+      {
+        if (strcmp (argv[i], "-q") == 0 && i + 1 < argc)
+          {
+            argv[i++] = NULL;
+            quality = g_ascii_strtod (argv[i], NULL);
+            argv[i] = NULL;
+          }
+      }
+    return 0; // no missing args
+  }
+  bool
+  is_ogg_vorbis_dhandle (GslDataHandle *dhandle)
+  {
+    GslDataHandle *tmp_handle = dhandle;
+    do          /* skip comment or cache handles */
+      {
+        dhandle = tmp_handle;
+        tmp_handle = gsl_data_handle_get_source (dhandle);
+      }
+    while (tmp_handle);
+    GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle);
+    if (vhandle)
+      gsl_vorbis1_handle_destroy (vhandle);
+    return vhandle != NULL;
+  }
+  void
+  exec (Wave *wave)
+  {
+    /* ogg encoder */
+    guint nth = 1;
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++, nth++)
+      {
+        WaveChunk *chunk = &*it;
+        GslVorbisEncoder *enc = gsl_vorbis_encoder_new ();
+        GslDataHandle *dhandle = chunk->dhandle;
+        if (is_ogg_vorbis_dhandle (dhandle))
+          continue;
+        gsl_vorbis_encoder_set_quality (enc, quality);
+        gsl_vorbis_encoder_set_n_channels (enc, wave->n_channels);
+        gsl_vorbis_encoder_set_sample_freq (enc, guint (dhandle->setup.mix_freq));
+        BseErrorType error = gsl_vorbis_encoder_setup_stream (enc, (rand () << 16) ^ rand ()); // FIXME: better are deterministic serials
+        if (error)
+          {
+            sfi_error ("chunk % 7.2f/%.0f: failed to encode: %s",
+                       chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                       bse_error_blurb (error));
+            exit (1);
+          }
+        gchar *temp_file = g_strdup_printf ("%s/bsewavetool-pid%u-oggchunk%04X.tmp%06xyXXXXXX", g_get_tmp_dir(), getpid(), 0x1000 + nth, rand() & 0xfffffd);
+        gint tmpfd = mkstemp (temp_file);
+        if (tmpfd < 0)
+          {
+            sfi_error ("chunk % 7.2f/%.0f: failed to open tmp file \"%s\": %s",
+                       chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                       temp_file, g_strerror (errno));
+            exit (1);
+          }
+        unlink_file_list.push_back (temp_file);
+        const guint ENCODER_BUFFER = 16 * 1024;
+        g_printerr ("ENCODING: chunk % 7.2f/%.0f\r", chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq);
+        SfiNum n = 0, l = gsl_data_handle_length (dhandle);
+        while (n < l)
+          {
+            gfloat buffer[ENCODER_BUFFER];
+            SfiNum j, r = gsl_data_handle_read (dhandle, n, ENCODER_BUFFER, buffer);
+            if (r > 0)
+              {
+                n += r;
+                gsl_vorbis_encoder_write_pcm (enc, r, buffer);
+                guint8 *buf = reinterpret_cast<guint8*> (buffer);
+                r = gsl_vorbis_encoder_read_ogg (enc, ENCODER_BUFFER, buf);
+                while (r > 0)
+                  {
+                    do
+                      j = write (tmpfd, buf, r);
+                    while (j < 0 && errno == EINTR);
+                    if (j < 0)
+                      {
+                        sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
+                                   chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                                   g_strerror (errno));
+                        exit (1);
+                      }
+                    r = gsl_vorbis_encoder_read_ogg (enc, ENCODER_BUFFER, buf);
+                  }
+              }
+            g_printerr ("ENCODING: chunk % 7.2f/%.0f, processed %0.1f%%       \r", chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq, n * 100.0 / l);
+          }
+        gsl_vorbis_encoder_pcm_done (enc);
+        g_printerr ("\n");
+        while (!gsl_vorbis_encoder_ogg_eos (enc))
+          {
+            guint8 buf[ENCODER_BUFFER];
+            SfiNum j, r = gsl_vorbis_encoder_read_ogg (enc, ENCODER_BUFFER, buf);
+            if (r > 0)
+              {
+                do
+                  j = write (tmpfd, buf, r);
+                while (j < 0 && errno == EINTR);
+                if (j < 0)
+                  {
+                    sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
+                               chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                               g_strerror (errno));
+                    exit (1);
+                  }
+              }
+          }
+        gsl_vorbis_encoder_destroy (enc);
+        if (close (tmpfd) < 0)
+          {
+            sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
+                       chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                       g_strerror (errno));
+            exit (1);
+          }
+        error = chunk->set_dhandle_from_temporary (temp_file, dhandle->setup.osc_freq);
+        if (error)
+          {
+            sfi_error ("chunk % 7.2f/%.0f: failed to read wave \"%s\": %s",
+                       chunk->dhandle->setup.osc_freq, chunk->dhandle->setup.mix_freq,
+                       temp_file, bse_error_blurb (error));
+            exit (1);
+          }
+        g_free (temp_file);
+      }
+  }
+} cmd_oggenc ("oggenc");
+
+/* FIXME: TODO items:
    bsewavetool <file.bsewave> merge <second.bsewave>
-   bsewavetool <file.bsewave> ogg-pack [-c compressionlevel]
    bsewavetool <file.bsewave> add-wave <wavefile> [-n note] ...
    bsewavetool <file.bsewave> del-wave {<note>|-f <freq>} ...
    bsewavetool <file.bsewave> loop [-a loop-algorithm] ...
@@ -428,14 +586,5 @@ public:
    bsewavetool <file.bsewave> omit [-a remove-algorithm] ...
    bsewavetool.1 # need manual page
 */
-static void
-blurb1()
-{
-  g_print ("    Compress all chunks with the Vorbis audio codec and store the wave data\n");
-  g_print ("    as Ogg/Vorbis streams internally. Options:\n");
-  g_print ("    -q <n>              use quality level <n>, refer to oggenc(1) for details\n");
-  /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
-  g_print ("  oggenc <===========\n");
-}
 
 } // BseWaveTool

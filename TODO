@@ -1,4 +1,6 @@
 FIXME(urgent):
+- fix serialno generation for ogg/vorbis encoder and cutter
+- fix bsewavetool oggenc saving osc_freq, not midi_note
 - consolidate bsewave tokens
 - fix float saving with de_DE
 - remove num from SfiStoreReadBin()?

@@ -1,3 +1,14 @@
+Fri Dec 31 04:04:33 2004  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.[hc]*: fixed error handling.
+	added oggenc command to encode bsewave files.
+
+	* tools/bwtwave.[hc]*: allow exchanging the data handle with a
+	temporary wave file.
+
+	* beast-gtk/bstfiledialog.c (store_bse_file): altered temporary
+	file name for better readability.
+
 Fri Dec 31 01:49:02 2004  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.cc: properly initialize random numbers.

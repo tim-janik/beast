@@ -27,18 +27,15 @@
 namespace BseWaveTool {
 using namespace std;
 
-struct WaveChunk {
-  guint           midi_note; // FIXME: should be in xinfos
-  GslDataHandle  *dhandle;
-
-private:
-  string          dump_name;
-  string          dump_index;
-  string          oggname;
+class WaveChunk {
+  string          temp_file;
 public:
+  GslDataHandle  *dhandle; /* always open */
   /*Con*/         WaveChunk();
   /*Copy*/        WaveChunk (const WaveChunk &rhs);
   WaveChunk&      operator= (const WaveChunk &);
+  BseErrorType    set_dhandle_from_temporary (const string &fname,
+                                              gdouble       osc_freq = -1);
   /*Des*/         ~WaveChunk();
 };
 

@@ -521,7 +521,7 @@ store_bse_file (BstFileDialog *self,
           while (error == BSE_ERROR_FILE_EXISTS)
             {
               g_free (temp_file);
-              temp_file = g_strdup_printf ("%s_%u_XXXXXX", file_name, rand());
+              temp_file = g_strdup_printf ("%s.tmp%06xyXXXXXX", file_name, rand() & 0xfffffd);
               mktemp (temp_file); /* this is save, due to use of: O_CREAT | O_EXCL */
               error = bse_project_store_bse (project, super, temp_file, self_contained);
             }
