@@ -268,7 +268,6 @@ bse_instrument_init (BseInstrument *instrument)
 {
   instrument->type = BSE_INSTRUMENT_NONE;
   instrument->sample = NULL;
-  instrument->locked_sample = NULL;
   
   instrument->interpolation = TRUE;
   instrument->polyphony = FALSE;
@@ -292,16 +291,7 @@ bse_instrument_do_shutdown (BseObject *object)
 {
   BseInstrument *instrument = BSE_INSTRUMENT (object);
   
-  if (instrument->sample)
-    {
-      bse_object_unref (BSE_OBJECT (instrument->sample));
-      instrument->sample = NULL;
-    }
-  if (instrument->locked_sample)
-    {
-      bse_object_unref (BSE_OBJECT (instrument->locked_sample));
-      instrument->locked_sample = NULL;
-    }
+  g_assert (instrument->sample == NULL); /* paranoid */
   
   /* chain parent class' shutdown handler */
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
@@ -310,20 +300,24 @@ bse_instrument_do_shutdown (BseObject *object)
 static void
 bse_instrument_unlocked (BseObject *object)
 {
-  BseInstrument *instrument = BSE_INSTRUMENT (object);
+  BseInstrument *instrument;
+
+  instrument = BSE_INSTRUMENT (object);
   
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->unlocked)
     BSE_OBJECT_CLASS (parent_class)->unlocked (object);
-  
-  if (instrument->sample != instrument->locked_sample)
-    {
-      if (instrument->locked_sample)
-	bse_object_unref (BSE_OBJECT (instrument->locked_sample));
-      instrument->locked_sample = instrument->sample;
-      if (instrument->locked_sample)
-	bse_object_ref (BSE_OBJECT (instrument->locked_sample));
-    }
+}
+
+static void
+unset_sample (BseItem *owner,
+	      BseItem *sample,
+	      gpointer data)
+{
+  BseInstrument *instrument = BSE_INSTRUMENT (owner);
+
+  instrument->sample = NULL;
+  instrument->type = BSE_INSTRUMENT_NONE;
 }
 
 static void
@@ -337,29 +331,13 @@ bse_instrument_set_param (BseInstrument *instrument,
     {
       guint total;
     case PARAM_SAMPLE:
-      if (!param->value.v_item ||
-	  bse_super_get_project (BSE_SUPER (param->value.v_item)) == bse_item_get_project (item))
+      if (instrument->sample)
+	bse_item_cross_unref (item, BSE_ITEM (instrument->sample));
+      instrument->sample = (BseSample*) param->value.v_item;
+      if (instrument->sample)
 	{
-	  if (instrument->sample)
-	    {
-	      bse_object_unref (BSE_OBJECT (instrument->sample));
-	      instrument->type = BSE_INSTRUMENT_NONE;
-	    }
-	  instrument->sample = (BseSample*) param->value.v_item;
-	  if (instrument->sample)
-	    {
-	      bse_object_ref (BSE_OBJECT (instrument->sample));
-	      instrument->type = BSE_INSTRUMENT_SAMPLE;
-	    }
-	}
-      if (!BSE_OBJECT_IS_LOCKED (instrument) &&
-	  instrument->sample != instrument->locked_sample)
-	{
-	  if (instrument->locked_sample)
-	    bse_object_unref (BSE_OBJECT (instrument->locked_sample));
-	  instrument->locked_sample = instrument->sample;
-	  if (instrument->locked_sample)
-	    bse_object_ref (BSE_OBJECT (instrument->locked_sample));
+	  bse_item_cross_ref (item, BSE_ITEM (instrument->sample), unset_sample, NULL);
+	  instrument->type = BSE_INSTRUMENT_SAMPLE;
 	}
       break;
     case PARAM_INTERPOLATION:
@@ -595,7 +573,7 @@ bse_instrument_set_sample (BseInstrument  *instrument,
 {
   g_return_if_fail (BSE_IS_INSTRUMENT (instrument));
   g_return_if_fail (BSE_IS_SAMPLE (sample));
-  g_return_if_fail (bse_super_get_project (BSE_SUPER (sample)) ==
+  g_return_if_fail (bse_item_get_project (BSE_ITEM (sample)) ==
 		    bse_item_get_project (BSE_ITEM (instrument)));
   
   bse_object_set (BSE_OBJECT (instrument),

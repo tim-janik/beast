@@ -28,6 +28,9 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+/* --- defines --- */
+#define BSE_CLIP_SAMPLE_VALUE(value)	(_bse_sample_value_clip (value))
+
 
 /* --- prototypes --- */
 void	bse_hunk_mix			(guint                 n_dest_tracks,
@@ -46,7 +49,35 @@ void	bse_mix_buffer_fill		(guint		       n_tracks,
 					 BseMixValue	      *mix_buffer,
 					 BseSampleValue	       value);
 
-       
+
+
+/* --- implementation details --- */
+#ifdef  __GNUC__
+#define _bse_sample_value_clip(value)	\
+({ \
+  __typeof__ (value) __tmp_value = (value); \
+  if (__tmp_value > BSE_MAX_SAMPLE_VALUE) \
+    __tmp_value = BSE_MAX_SAMPLE_VALUE; \
+  else if (__tmp_value < -BSE_MAX_SAMPLE_VALUE) \
+    __tmp_value = -BSE_MAX_SAMPLE_VALUE; \
+  __tmp_value; \
+})
+#else /* !__GNUC__ */
+static inline BseSampleValue
+_bse_sample_value_clip (BseMixValue value)
+{
+  if (value > BSE_MAX_SAMPLE_VALUE)
+    return BSE_MAX_SAMPLE_VALUE;
+  else if (value < -BSE_MAX_SAMPLE_VALUE)
+    return -BSE_MAX_SAMPLE_VALUE;
+  else
+    return value;
+}
+#endif /* !__GNUC__ */
+
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

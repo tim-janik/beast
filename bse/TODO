@@ -13,9 +13,7 @@ general:
 	/* how to handle groups here? */
 -	delay class destruction and plugin unloading through timeout handlers
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
-
-BseSNet
--	add master volume
+-	optimize weak reference removal
 
 Song/Pattern
 -	mutable channels! (make them silent)
@@ -34,7 +32,6 @@ Instrument
 -	need to put envelope logic into a sperate file anyways
 
 Voice
--	we need refrencing/locking here, sample can be pulled under our ass
 -	make sample_munk_index a BseMunk* pointer
 -	substitute guint n_ochannels; q  guint         *ochannel_volume;
   

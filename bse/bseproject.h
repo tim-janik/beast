@@ -37,7 +37,7 @@ struct _BseProject
 {
   BseContainer	 parent_object;
 
-  GSList	*supers;
+  GSList	     *supers;
 };
 struct _BseProjectClass
 {

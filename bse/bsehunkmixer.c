@@ -103,14 +103,7 @@ _bse_hunk_mix_nv_2_1 (BseSampleValue       *d,
     }
   while (d < bound);
 }
-#define ASSIGN_CLIPPED(dest, value) { \
-  if ((value) > BSE_MAX_SAMPLE_VALUE) \
-    (dest) = BSE_MAX_SAMPLE_VALUE; \
-  else if ((value) < -BSE_MAX_SAMPLE_VALUE) \
-    (dest) = -BSE_MAX_SAMPLE_VALUE; \
-  else \
-    (dest) = (value); \
-}
+
 static void
 _bse_hunk_mix_wv_1_1 (BseSampleValue       *d,
 		      BseSampleValue       *bound,
@@ -122,7 +115,7 @@ _bse_hunk_mix_wv_1_1 (BseSampleValue       *d,
       BseMixValue v = *(s++);
 
       v *= f[0];
-      ASSIGN_CLIPPED (*(d++), v);
+      *(d++) = BSE_CLIP_SAMPLE_VALUE (v);
     }
   while (d < bound);
 }
@@ -137,9 +130,9 @@ _bse_hunk_mix_wv_1_2 (BseSampleValue       *d,
       BseMixValue v1 = *(s++), v2 = v1;
 
       v1 *= f[0];
-      ASSIGN_CLIPPED (*(d++), v1);
+      *(d++) = BSE_CLIP_SAMPLE_VALUE (v1);
       v2 *= f[1];
-      ASSIGN_CLIPPED (*(d++), v2);
+      *(d++) = BSE_CLIP_SAMPLE_VALUE (v2);
     }
   while (d < bound);
 }
@@ -156,7 +149,7 @@ _bse_hunk_mix_wv_2_1 (BseSampleValue       *d,
       v += *(s++);
       v *= f[0];
       v >>= 2;
-      ASSIGN_CLIPPED (*(d++), v);
+      *(d++) = BSE_CLIP_SAMPLE_VALUE (v);
     }
   while (d < bound);
 }
@@ -171,9 +164,9 @@ _bse_hunk_mix_wv_2_2 (BseSampleValue       *d,
       BseMixValue v1 = *(s++), v2 = *(s++);
 
       v1 *= f[0];
-      ASSIGN_CLIPPED (*(d++), v1);
+      *(d++) = BSE_CLIP_SAMPLE_VALUE (v1);
       v2 *= f[1];
-      ASSIGN_CLIPPED (*(d++), v2);
+      *(d++) = BSE_CLIP_SAMPLE_VALUE (v2);
     }
   while (d < bound);
 }
@@ -321,28 +314,10 @@ bse_hunk_clip_mix_buffer (guint           n_tracks,
   bound = src_mix_buffer + n_tracks * BSE_TRACK_LENGTH;
   if (BSE_EPSILON_CMP (1.0, master_volume) != 0)
     do
-      {
-	register BseMixValue mix_value = *src_mix_buffer * master_volume;
-	
-	if (mix_value > BSE_MAX_SAMPLE_VALUE)
-	  *(dest_hunk++) = BSE_MAX_SAMPLE_VALUE;
-	else if (mix_value < -BSE_MAX_SAMPLE_VALUE)
-	  *(dest_hunk++) = -BSE_MAX_SAMPLE_VALUE;
-	else
-	  *(dest_hunk++) = mix_value;
-      }
+      *(dest_hunk++) = BSE_CLIP_SAMPLE_VALUE (*src_mix_buffer * master_volume);
     while (++src_mix_buffer < bound);
   else
     do
-      {
-	register BseMixValue mix_value = *src_mix_buffer;
-	
-	if (mix_value > BSE_MAX_SAMPLE_VALUE)
-	  *(dest_hunk++) = BSE_MAX_SAMPLE_VALUE;
-	else if (mix_value < -BSE_MAX_SAMPLE_VALUE)
-	  *(dest_hunk++) = -BSE_MAX_SAMPLE_VALUE;
-	else
-	  *(dest_hunk++) = mix_value;
-      }
+      *(dest_hunk++) = BSE_CLIP_SAMPLE_VALUE (*src_mix_buffer);
     while (++src_mix_buffer < bound);
 }

@@ -177,6 +177,69 @@ bse_item_get_seqid (BseItem *item)
   return BSE_ITEM_GET_CLASS (item)->get_seqid (item);
 }
 
+static inline BseItem*
+common_anchestor (BseItem *item1,
+		  BseItem *item2)
+{
+  do
+    {
+      BseItem *item = item2;
+
+      do
+	{
+	  if (item == item1)
+	    return item;
+	  item = item->container;
+	}
+      while (item);
+      item1 = item1->container;
+    }
+  while (item1);
+
+  return NULL;
+}
+
+void
+bse_item_cross_ref (BseItem         *owner,
+		    BseItem         *ref_item,
+		    BseItemCrossFunc destroy_func,
+		    gpointer         data)
+{
+  BseItem *container;
+  
+  g_return_if_fail (BSE_IS_ITEM (owner));
+  g_return_if_fail (BSE_IS_ITEM (ref_item));
+  g_return_if_fail (destroy_func != NULL);
+  
+  container = common_anchestor (owner, ref_item);
+  
+  if (container)
+    bse_container_cross_ref (BSE_CONTAINER (container), owner, ref_item, destroy_func, data);
+  else
+    g_warning (G_STRLOC ": `%s' and `%s' have no common anchestor",
+	       BSE_OBJECT_TYPE_NAME (owner),
+	       BSE_OBJECT_TYPE_NAME (ref_item));
+}
+
+void
+bse_item_cross_unref (BseItem *owner,
+		      BseItem *ref_item)
+{
+  BseItem *container;
+
+  g_return_if_fail (BSE_IS_ITEM (owner));
+  g_return_if_fail (BSE_IS_ITEM (ref_item));
+
+  container = common_anchestor (owner, ref_item);
+
+  if (container)
+    bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item);
+  else
+    g_warning (G_STRLOC ": `%s' and `%s' have no common anchestor",
+	       BSE_OBJECT_TYPE_NAME (owner),
+	       BSE_OBJECT_TYPE_NAME (ref_item));
+}
+
 BseSuper*
 bse_item_get_super (BseItem *item)
 {

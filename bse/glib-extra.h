@@ -143,8 +143,11 @@ g_trash_stack_height (GTrashStack **stack_p)
 }
 #endif /* !GLIB_CHECK_VERSION (1, 3, 1) */
 
-
-
+#ifdef  __GNUC__
+#define G_STRLOC	"[" __FILE__ ":" G_STRINGIFY (__LINE__) ":" __PRETTY_FUNCTION__ "]"
+#else
+#define G_STRLOC	"[" __FILE__ ":" G_STRINGIFY (__LINE__) "]"
+#endif
 
 
 

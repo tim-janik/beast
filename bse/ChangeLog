@@ -1,3 +1,32 @@
+Mon Jan 17 11:07:16 2000  Tim Janik  <timj@gtk.org>
+
+	* bsehunkmixer.h: provide BSE_CLIP_SAMPLE_VALUE().
+
+	* bsehunkmixer.c: make use of BSE_CLIP_SAMPLE_VALUE().
+
+	* bseglobals.h: provide BSE_MIX_FREQ_f, BSE_TRACK_LENGTH_f,
+	BSE_MIX_FREQ_d and BSE_TRACK_LENGTH_d.
+
+Sun Jan 16 06:36:54 2000  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.[hc]:
+	(bse_container_shutdown): destroy remaining cross references.
+	(bse_container_do_remove_item): uncross item when removing it.
+	(bse_container_cross_ref): install a cross reference.
+	(bse_container_cross_unref): destroy a cross reference.
+	(bse_container_uncross_item): destroy all cross references that
+	contain item (or any of its children) and another item that
+	is not part of the hirarchy branch spawned by item.
+
+	* bseitem.[hc]:
+	(bse_item_cross_ref):
+	(bse_item_cross_unref): new functions to maintain cross references
+	(a special kind of weak reference between two hirarchy branches)
+	between items within the same project.
+
+	* bseinstrument.c (bse_instrument_set_param): use cross references to
+	keep a pointer to the sample.
+
 Sat Jan 15 18:42:28 2000  Tim Janik  <timj@gtk.org>
 
 	* bsemixer.[hc]: 

@@ -92,6 +92,20 @@ gchar*		bse_container_make_item_path	(BseContainer	*container,
 						 gboolean	 persistent);
 
 
+/* --- internal fucntions --- */
+void            bse_container_cross_ref         (BseContainer    *container,
+						 BseItem         *owner,
+						 BseItem         *ref_item,
+						 BseItemCrossFunc destroy_func,
+						 gpointer         data);
+void            bse_container_cross_unref       (BseContainer    *container,
+						 BseItem         *owner,
+						 BseItem         *ref_item);
+void		bse_container_uncross_item	(BseContainer    *container,
+						 BseItem         *item);
+
+
+
 
 
 #ifdef __cplusplus

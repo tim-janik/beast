@@ -141,11 +141,10 @@ extern "C" {
 #define	BSE_TRACK_LENGTH		(bse_globals->track_length)
 #define	BSE_MIX_FREQ			(bse_globals->mixing_frequency)
 #define BSE_HEART_PRIORITY              (bse_globals->heart_priority)
-
-
-/* --- FIXME --- */
-#define	BSE_VALUE_BLOCK_N_PAD_VALUES	(BSE_MAX_N_MIXER_VALUES * BSE_MAX_N_MIXER_CHANNELS)
-#define	BSE_DFL_LOAD_BUFFER_SIZE	(65536)
+#define	BSE_TRACK_LENGTH_f		((gfloat) BSE_TRACK_LENGTH)
+#define	BSE_MIX_FREQ_f			((gfloat) BSE_MIX_FREQ)
+#define	BSE_TRACK_LENGTH_d		((gdouble) BSE_TRACK_LENGTH)
+#define	BSE_MIX_FREQ_d			((gdouble) BSE_MIX_FREQ)
 
 
 /* halftone factorization tables, i.e.

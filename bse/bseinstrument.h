@@ -58,9 +58,8 @@ struct _BseInstrument
   
   /* sample specific fields */
   BseSample	*sample;
-  BseSample	*locked_sample;
-  
   guint		 interpolation : 1;
+
   guint		 polyphony : 1;
   gfloat	 volume_factor;
   gint		 balance;
