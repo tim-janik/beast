@@ -169,12 +169,10 @@
 	    <hruler x-options="expand|fill"
 	      left-attach="1" right-attach="2"
 	      top-attach="0" bottom-attach="1" />
-	    <event-box
+	    <scrollgraph id="scrollgraph"
 	      left-attach="1" right-attach="2" x-options="expand|fill"
 	      top-attach="1" bottom-attach="2" y-options="expand|fill"
-	      >
-	      <scrollgraph id="scrollgraph" />
-	    </event-box>
+	      />
 	    <vruler y-options="expand|fill"
 	      left-attach="0" right-attach="1"
 	      top-attach="1" bottom-attach="2" />

@@ -707,7 +707,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                                                 BST_CHOICE_S (4, _("Delete Outputs"), NO_OLINK, bse_source_has_outputs (csource->source)),
                                                 BST_CHOICE_SEPERATOR,
                                                 BST_CHOICE (5, _("Show Info"), INFO),
-                                                BST_CHOICE_SUBMENU (_("Monitor Output Signal"), choice, SIGNAL),
+                                                BST_CHOICE_SUBMENU (_("Output Signal Monitor"), choice, SIGNAL),
                                                 BST_CHOICE_SEPERATOR,
                                                 BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != self->snet),
                                                 BST_CHOICE_END);
@@ -738,7 +738,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                   break;
                 case 0: break;
                 default:
-                  dialog = bst_scrollgraph_build_dialog (self, csource->source, i - monitor_ids);
+                  dialog = bst_scrollgraph_build_dialog (GTK_WIDGET (self), csource->source, i - monitor_ids);
                   gtk_widget_show (dialog);
                   break;
                 }

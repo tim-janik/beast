@@ -1,3 +1,11 @@
+Sun Dec 12 03:26:13 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstscrollgraph.[hc]: added label to indicate unconnected 
+	output channels.
+
+	* beast-gtk/dialogs/radgets-beast.xml: removed event-box around
+	scrollgraph since it has its own outer window now.
+
 Sun Dec 12 00:42:24 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstfiledialog.c: changed storage logic, so overwriting

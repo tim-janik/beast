@@ -35,7 +35,7 @@ typedef struct _BstScrollgraph      BstScrollgraph;
 typedef struct _BstScrollgraphClass BstScrollgraphClass;
 struct _BstScrollgraph
 {
-  GtkWidget       parent_instance;
+  GtkBin          parent_instance;
   BstDirection    direction;
   guint           window_size : 24;
   guint           flip : 1;
@@ -47,12 +47,13 @@ struct _BstScrollgraph
   guint           bar_offset; /* start of ring-buffer */
   gfloat         *values;     /* [n_points * n_bars] */
   GdkPixbuf      *pixbuf;     /* n_points wide or high */
+  GdkWindow      *canvas;
   SfiProxy        source;
   guint           ochannel;
 };
 struct _BstScrollgraphClass
 {
-  GtkWidgetClass parent_class;
+  GtkBinClass parent_class;
   void  (*resize_values) (BstScrollgraph *self,
                           BstDirection    direction);
 };
