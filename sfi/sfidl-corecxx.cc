@@ -87,7 +87,7 @@ CodeGeneratorModule::createTypeCode (const string& type, const string& name, Typ
 const gchar*
 CodeGeneratorModule::TypeField (const string& type)
 {
-  return typeField(type);
+  return cTypeField(type);
 }
 
 static vector<string>

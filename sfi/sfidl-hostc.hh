@@ -60,8 +60,7 @@ namespace Sfidl {
   class CodeGeneratorCBase : public CodeGenerator {
   protected:
     enum TypeCodeModel {
-      /* MODEL_ARG, MODEL_MEMBER, MODEL_RET, MODEL_ARRAY, */
-      MODEL_FREE, MODEL_COPY, MODEL_NEW, MODEL_FROM_VALUE, MODEL_TO_VALUE,
+      MODEL_FROM_VALUE, MODEL_TO_VALUE,
       MODEL_VCALL, MODEL_VCALL_ARG, 
       MODEL_VCALL_CARG, MODEL_VCALL_CONV, MODEL_VCALL_CFREE,
       MODEL_VCALL_RET, MODEL_VCALL_RCONV, MODEL_VCALL_RFREE
@@ -84,13 +83,41 @@ namespace Sfidl {
      */
 
     // how "type" looks like when passed as argument to a function
-    virtual const gchar *typeArg (const std::string& type);
+    virtual std::string typeArg (const std::string& type);
+    const gchar *cTypeArg (const std::string& type) { return makeCStr (typeArg (type)); }
+
     // how "type" looks like when stored as member in a struct or class
-    virtual const gchar *typeField (const std::string& type);
+    virtual std::string typeField (const std::string& type);
+    const gchar *cTypeField (const std::string& type) { return makeCStr (typeField (type)); }
+
     // how the return type of a function returning "type" looks like
-    virtual const gchar *typeRet (const std::string& type);
+    virtual std::string typeRet (const std::string& type);
+    const gchar *cTypeRet (const std::string& type) { return makeCStr (typeRet (type)); }
+
     // how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
-    virtual const gchar *typeArray (const std::string& type);
+    virtual std::string typeArray (const std::string& type);
+    const gchar *cTypeArray (const std::string& type) { return makeCStr (typeArray (type)); }
+
+    /*
+     * function required to create a new "type" (blank return value allowed)
+     * example: funcNew ("FBlock") => "sfi_fblock_new" (in C)
+     */
+    virtual std::string funcNew (const std::string& type);
+    const gchar *cFuncNew (const std::string& type) { return makeCStr (funcNew (type)); }
+
+    /*
+     * function required to copy a "type" (blank return value allowed)
+     * example: funcCopy ("FBlock") => "sfi_fblock_ref" (in C)
+     */ 
+    virtual std::string funcCopy (const std::string& type);
+    const gchar *cFuncCopy (const std::string& type) { return makeCStr (funcNew (type)); }
+    
+    /*
+     * function required to free a "type" (blank return value allowed)
+     * example: funcFree ("FBlock") => "sfi_fblock_unref" (in C)
+     */ 
+    virtual std::string funcFree (const std::string& type);
+    const gchar *cFuncFree (const std::string& type) { return makeCStr (funcNew (type)); }
 
     virtual std::string createTypeCode (const std::string& type, const std::string& name, 
 				        TypeCodeModel model);

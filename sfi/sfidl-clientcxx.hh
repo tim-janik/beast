@@ -30,9 +30,13 @@ namespace Sfidl {
     std::string createTypeCode (const std::string& type, const std::string& name, 
 				TypeCodeModel model);
 
-    const gchar *typeArg (const std::string& type);
-    const gchar *typeField (const std::string& type);
-    const gchar *typeRet (const std::string& type);
+    std::string typeArg (const std::string& type);
+    std::string typeField (const std::string& type);
+    std::string typeRet (const std::string& type);
+    std::string funcNew (const std::string& type);
+    std::string funcCopy (const std::string& type);
+    std::string funcFree (const std::string& type);
+
   public:
     CodeGeneratorCxxBase (const Parser& parser) : CodeGeneratorCBase (parser) {
     }

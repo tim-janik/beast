@@ -1,3 +1,12 @@
+Mon Jan  5 14:34:50 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cxx.* sfidl-module.* sfidl-generator.*: Next part of
+	createTypeCode breakup: MODEL_NEW, MODEL_COPY and MODEL_FREE are
+	replaced by funcNew, funcCopy and funcFree instead. These functions
+	return a std::string again (which makes writing them easier), whereas
+	there are new variants (cTypeArg, ... cFuncNew) returning a const
+	gchar* to make using them easy.
+
 Wed Dec 31 01:18:38 2003  Nedko Arnaudov  <nedko@users.sourceforge.net>
 
         * sfifilecrawler.c (get_user_home): Use configure detection of

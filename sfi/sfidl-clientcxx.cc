@@ -37,45 +37,75 @@ static string fail (const string& error)
   return "*fail(" + error + ")*";
 }
 
-const gchar *
+string
 CodeGeneratorCxxBase::typeArg (const string& type)
 {
   switch (parser.typeOf (type))
     {
       case STRING:    return "const std::string&";
-      case RECORD:    return makeCStr (type + "Ptr");
-      case SEQUENCE:  return makeCStr ("const " + type + "&");
-      case CHOICE:    return makeCStr (type);
-      case OBJECT:    return makeCStr (type);
+      case RECORD:    return type + "Ptr";
+      case SEQUENCE:  return "const " + type + "&";
+      case CHOICE:    return type;
+      case OBJECT:    return type;
       default:	      return CodeGeneratorCBase::typeArg (type);
     }
 }
 
-const gchar *
+string
 CodeGeneratorCxxBase::typeField (const string& type)
 {
   switch (parser.typeOf (type))
     {
       case STRING:    return "std::string";
-      case RECORD:    return makeCStr (type + "Ptr");
+      case RECORD:    return type + "Ptr";
       case CHOICE:
       case OBJECT:
-      case SEQUENCE:  return makeCStr (type);
+      case SEQUENCE:  return type;
       default:	      return CodeGeneratorCBase::typeArg (type);
     }
 }
 
-const gchar *
+string
 CodeGeneratorCxxBase::typeRet (const string& type)
 {
   switch (parser.typeOf (type))
     {
       case STRING:    return "std::string";
-      case RECORD:    return makeCStr (type + "Ptr");
+      case RECORD:    return type + "Ptr";
       case CHOICE:
       case OBJECT:
-      case SEQUENCE:  return makeCStr (type);
+      case SEQUENCE:  return type;
       default:	      return CodeGeneratorCBase::typeArg (type);
+    }
+}
+
+string
+CodeGeneratorCxxBase::funcNew (const string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case STRING:    return "";
+      default:	      return CodeGeneratorCBase::funcNew (type);
+    }
+}
+
+string
+CodeGeneratorCxxBase::funcCopy (const string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case STRING:    return "";
+      default:	      return CodeGeneratorCBase::funcCopy (type);
+    }
+}
+
+string
+CodeGeneratorCxxBase::funcFree (const string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case STRING:    return "";
+      default:	      return CodeGeneratorCBase::funcFree (type);
     }
 }
 
@@ -88,9 +118,6 @@ string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std:
       case STRING:
 	switch (model)
 	  {
-	    case MODEL_FREE:        return "";
-	    case MODEL_COPY:        return name;
-	    case MODEL_NEW:         return "";
 	    case MODEL_TO_VALUE:    return "sfi_value_string ("+name+".c_str())";
 	    case MODEL_FROM_VALUE:  return "sfi_value_get_cxxstring ("+name+")";
 	    case MODEL_VCALL:       return "sfi_glue_vcall_string";
@@ -219,7 +246,7 @@ void CodeGeneratorCxx::run ()
 	  printf("class %s : public Bse::Sequence<%s> {\n", name.c_str(), content.c_str());
 	  printf("public:\n");
 	  /* TODO: make this a constructor? */
-	  printf("  static %s _from_seq (SfiSeq *seq);\n", typeRet (si->name));
+	  printf("  static %s _from_seq (SfiSeq *seq);\n", cTypeRet (si->name));
 	  printf("  SfiSeq *_to_seq ();\n");
 	  printf("};\n");
 	}
@@ -271,7 +298,7 @@ void CodeGeneratorCxx::run ()
 	  printf("public:\n");
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
-	      printf("  %s %s;\n", typeField (pi->type), pi->name.c_str());
+	      printf("  %s %s;\n", cTypeField (pi->type), pi->name.c_str());
 	    }
 	  printf("  static %sPtr _from_rec (SfiRec *rec);\n", name.c_str());
 	  printf("  static SfiRec *_to_rec (%sPtr ptr);\n", name.c_str());
@@ -298,10 +325,10 @@ void CodeGeneratorCxx::run ()
 	  string name = si->name;
 
           string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
-          printf("%s\n", typeRet (si->name));
+          printf("%s\n", cTypeRet (si->name));
           printf("%s::_from_seq (SfiSeq *sfi_seq)\n", name.c_str());
           printf("{\n");
-          printf("  %s seq;\n", typeRet (si->name));
+          printf("  %s seq;\n", cTypeRet (si->name));
           printf("  guint i, length;\n");
           printf("\n");
           printf("  g_return_val_if_fail (sfi_seq != NULL, seq);\n");
@@ -339,7 +366,7 @@ void CodeGeneratorCxx::run ()
 
 	  string name = ri->name;
 
-          printf("%s\n", typeRet (ri->name));
+          printf("%s\n", cTypeRet (ri->name));
           printf("%s::_from_rec (SfiRec *sfi_rec)\n", name.c_str());
           printf("{\n");
           printf("  GValue *element;\n");
@@ -347,7 +374,7 @@ void CodeGeneratorCxx::run ()
           printf("  if (!sfi_rec)\n");
 	  printf("    return NULL;\n");
           printf("\n");
-          printf("  %s rec = new %s();\n", typeArg (ri->name), name.c_str());
+          printf("  %s rec = new %s();\n", cTypeArg (ri->name), name.c_str());
           for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
             {
               string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
@@ -360,7 +387,7 @@ void CodeGeneratorCxx::run ()
           printf("}\n\n");
 
 	  printf("SfiRec *\n");
-	  printf("%s::_to_rec (%s rec)\n", name.c_str(), typeArg (ri->name));
+	  printf("%s::_to_rec (%s rec)\n", name.c_str(), cTypeArg (ri->name));
 	  printf("{\n");
 	  printf("  SfiRec *sfi_rec;\n");
 	  printf("  GValue *element;\n");
@@ -443,7 +470,7 @@ void CodeGeneratorCxx::printMethods (const Class& cdef)
     }
 }
 
-void CodeGeneratorCxx::printProperties(const Class& cdef)
+void CodeGeneratorCxx::printProperties (const Class& cdef)
 {
   vector<Param>::const_iterator pi;
   bool proto = options.doHeader;
@@ -460,7 +487,7 @@ void CodeGeneratorCxx::printProperties(const Class& cdef)
 	printf ("  %s %s ();\n", ret.c_str(), getProperty.c_str());
 
 	/* property setter */
-	printf ("  void %s (%s %s);\n", setProperty.c_str(), typeArg (pi->type), newName.c_str());
+	printf ("  void %s (%s %s);\n", setProperty.c_str(), cTypeArg (pi->type), newName.c_str());
       }
       else {
 	/* property getter */
@@ -475,7 +502,7 @@ void CodeGeneratorCxx::printProperties(const Class& cdef)
 	/* property setter */
 	printf ("void\n");
 	printf ("%s::%s (%s %s)\n", cdef.name.c_str(), setProperty.c_str(),
-				    typeArg (pi->type), newName.c_str());
+				    cTypeArg (pi->type), newName.c_str());
 	printf ("{\n");
 	string conv = createTypeCode (pi->type, newName.c_str(), MODEL_VCALL_CONV);
 	if (conv != "")
