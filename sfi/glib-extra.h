@@ -69,10 +69,14 @@ gchar*		g_strdup_lstrip   (const gchar	 *string);
      
 
 /* --- list extensions --- */
-gpointer	g_slist_pop_head	(GSList	**slist_p);
-gpointer	g_list_pop_head		(GList	**list_p);
-GSList*		g_slist_append_uniq	(GSList	 *slist,
-					 gpointer data);
+gpointer	g_slist_pop_head	(GSList	     **slist_p);
+gpointer	g_list_pop_head		(GList	     **list_p);
+GSList*		g_slist_append_uniq	(GSList	      *slist,
+					 gpointer      data);
+void            g_slist_free_deep       (GSList	      *slist,
+					 GDestroyNotify data_destroy);
+void            g_list_free_deep        (GList	       *list,
+					 GDestroyNotify data_destroy);
 
 
 /* --- name conversions --- */

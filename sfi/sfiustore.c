@@ -31,7 +31,7 @@ tcast (register SfiUStore *store)
 }
 
 
-/* --- functions --- */
+/* --- unique ID store --- */
 static gint
 ustore_cmp (gconstpointer a,
 	    gconstpointer b)
@@ -115,4 +115,60 @@ sfi_ustore_destroy (SfiUStore *store)
   g_return_if_fail (store != NULL);
 
   g_tree_destroy (tcast (store));
+}
+
+/* --- unique ID pool --- */
+#define UPOOL_TAG ((gpointer) sfi_upool_new)
+
+static inline SfiUPool*
+upool_cast (register SfiUStore *ustore)
+{
+  return (SfiUPool*) ustore;
+}
+
+static inline SfiUStore*
+ustore_cast (register SfiUPool *upool)
+{
+  return (SfiUStore*) upool;
+}
+
+SfiUPool*
+sfi_upool_new (void)
+{
+  return upool_cast (sfi_ustore_new ());
+}
+
+gboolean
+sfi_upool_lookup (SfiUPool *pool,
+		  gulong    unique_id)
+{
+  return sfi_ustore_lookup (ustore_cast (pool), unique_id) != NULL;
+}
+
+void
+sfi_upool_set (SfiUPool *pool,
+	       gulong    unique_id)
+{
+  sfi_ustore_insert (ustore_cast (pool), unique_id, UPOOL_TAG);
+}
+
+void
+sfi_upool_unset (SfiUPool *pool,
+		 gulong    unique_id)
+{
+  sfi_ustore_remove (ustore_cast (pool), unique_id);
+}
+
+void
+sfi_upool_foreach (SfiUPool        *pool,
+		   SfiUPoolForeach  foreach,
+		   gpointer         data)
+{
+  sfi_ustore_foreach (ustore_cast (pool), (SfiUStoreForeach) foreach, data);
+}
+
+void
+sfi_upool_destroy (SfiUPool *pool)
+{
+  sfi_ustore_destroy (ustore_cast (pool));
 }

@@ -76,12 +76,13 @@ peek_proxy (SfiGlueContext *context,
   return sfi_ustore_lookup (context->proxies, proxy);
 }
 
-static GQuark
-signal_quark (const gchar *signal)
+GQuark
+sfi_glue_proxy_get_signal_quark (const gchar *signal)
 {
   gchar *c, *sig = g_strdup (signal);
   GQuark quark;
-
+  if (!sig)
+    return 0;
   /* need to canonify signal name */
   c = strchr (sig, '_');
   while (c)
@@ -127,7 +128,7 @@ delete_signal (SfiGlueContext *context,
   sfi_glue_gc_add (sig->hlist, free_hook_list);
   p->signals = g_bsearch_array_remove (p->signals, &signals_config, indx);
   if (notify_remote)
-    context->table.proxy_request_notify (context, p->proxy, signal, FALSE);
+    _sfi_glue_proxy_request_notify (p->proxy, signal, FALSE);
 }
 
 static GlueSignal*
@@ -135,14 +136,14 @@ fetch_signal (SfiGlueContext *context,
 	      Proxy          *p,
 	      const gchar    *signal)
 {
-  GQuark quark = signal_quark (signal);
+  GQuark quark = sfi_glue_proxy_get_signal_quark (signal);
   GlueSignal key, *sig = NULL;
 
   key.qsignal = quark;
   sig = g_bsearch_array_lookup (p->signals, &signals_config, &key);
   if (sig)
     return sig;
-  if (!context->table.proxy_request_notify (context, p->proxy, signal, TRUE))
+  if (!_sfi_glue_proxy_request_notify (p->proxy, signal, TRUE))
     return NULL;
   key.qsignal = quark;
   key.hlist = g_new0 (GHookList, 1);
@@ -213,6 +214,8 @@ _sfi_glue_context_clear_proxies (SfiGlueContext *context)
 
   g_return_if_fail (context != NULL);
 
+  /* this is called during context destruction, so remote is probably down already */
+
   sfi_ustore_foreach (context->proxies, proxy_foreach_slist, &plist);
   while (plist)
     {
@@ -258,7 +261,7 @@ sfi_glue_proxy_signal (SfiGlueContext *context,
   p = peek_proxy (context, proxy);
   if (p)
     {
-      GlueSignal *sig = peek_signal (context, p, signal_quark (signal));
+      GlueSignal *sig = peek_signal (context, p, sfi_glue_proxy_get_signal_quark (signal));
       if (sig)
 	{
 	  GHookList *hlist = sig->hlist;
@@ -385,7 +388,7 @@ sfi_glue_signal_disconnect (SfiProxy     proxy,
   g_return_if_fail (proxy > 0);
   g_return_if_fail (connection_id > 0);
 
-  p = fetch_proxy (context, proxy);
+  p = peek_proxy (context, proxy);
   if (!p)
     {
       sfi_proxy_warn_inval (G_STRLOC, proxy);
@@ -430,10 +433,10 @@ _sfi_glue_signal_find_closures (SfiGlueContext *context,
   g_return_val_if_fail (proxy > 0, NULL);
   g_return_val_if_fail (search_data != NULL, NULL);
 
-  p = fetch_proxy (context, proxy);
+  p = peek_proxy (context, proxy);
   if (p && signal)
     {
-      GlueSignal *sig = peek_signal (context, p, signal_quark (signal));
+      GlueSignal *sig = peek_signal (context, p, sfi_glue_proxy_get_signal_quark (signal));
       if (sig)
 	{
 	  GHook *hook = sig->hlist->hooks;
@@ -579,19 +582,6 @@ _sfi_glue_proxy_watch_release (SfiProxy proxy)
   return context->table.proxy_watch_release (context, proxy);
 }
 
-gboolean
-_sfi_glue_proxy_request_notify (SfiProxy     proxy,
-				const gchar *signal,
-				gboolean     enable_notify)
-{
-  SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
-
-  g_return_val_if_fail (proxy != 0, FALSE);
-  g_return_val_if_fail (signal != NULL, FALSE);
-
-  return context->table.proxy_request_notify (context, proxy, signal, enable_notify);
-}
-
 void
 _sfi_glue_proxy_processed_notify (guint notify_id)
 {
@@ -732,7 +722,7 @@ sfi_glue_proxy_weak_unref (SfiProxy        proxy,
   g_return_if_fail (proxy > 0);
   g_return_if_fail (weak_notify != NULL);
 
-  p = fetch_proxy (context, proxy);
+  p = peek_proxy (context, proxy);
   if (!p)
     sfi_proxy_warn_inval (G_STRLOC, proxy);
   else
@@ -987,9 +977,41 @@ _sfi_glue_proxy_dispatch_event (SfiSeq *event)
       if (notify_id)
 	_sfi_glue_proxy_processed_notify (notify_id);
       break;
+    case SFI_GLUE_EVENT_NOTIFY_CANCEL:
+      notify_id = sfi_seq_get_int (event, 2);
+      if (notify_id)
+	_sfi_glue_proxy_processed_notify (notify_id);
+      break;
     default:
       sfi_warn ("%s: ignoring bogus event (type=%u)", G_STRLOC, event_type);
       break;
     }
   glue_proxy_dispatching = FALSE;
+}
+
+void
+sfi_glue_proxy_cancel_matched_event (SfiSeq  *event,
+				     SfiProxy match_proxy,
+				     GQuark   match_quark)
+{
+  SfiGlueEventType event_type;
+
+  event_type = sfi_seq_get_int (event, 0);
+  if (event_type == SFI_GLUE_EVENT_NOTIFY)
+    {
+      const gchar *signal = sfi_seq_get_string (event, 1);
+      if (signal && match_quark == sfi_glue_proxy_get_signal_quark (signal))
+	{
+	  SfiSeq *args = sfi_seq_get_seq (event, 3);
+	  SfiProxy proxy = args ? sfi_seq_get_proxy (args, 0) : 0;
+	  if (proxy == match_proxy)
+	    {
+	      /* we just flag events here, instead of instant cancellation,
+	       * because the notify_id is holding a necessary keep-alife
+	       * reference on the remote object
+	       */
+	      sfi_value_set_int (event->elements + 0, SFI_GLUE_EVENT_NOTIFY_CANCEL);
+	    }
+	}
+    }
 }

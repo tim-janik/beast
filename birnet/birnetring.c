@@ -1535,6 +1535,21 @@ sfi_ring_length (SfiRing *head)
   return i;
 }
 
+gboolean
+sfi_ring_test_length (SfiRing *head,
+		      guint    test_length)
+{
+  SfiRing *ring = head;
+
+  while (test_length && ring)
+    {
+      test_length--;
+      ring = sfi_ring_walk (ring, head);
+    }
+
+  return test_length == 0 && !ring;
+}
+
 SfiRing*
 sfi_ring_find (SfiRing      *head,
 	       gconstpointer data)
@@ -1574,13 +1589,12 @@ sfi_ring_nth_data (SfiRing *head,
 
 void
 sfi_ring_free_deep (SfiRing        *head,
-		    SfiRingDataFunc free_func,
-		    gpointer        func_data)
+		    GDestroyNotify  data_destroy)
 {
-  gpointer data = sfi_ring_pop_head (&head);
-  while (data)
+  while (head)
     {
-      free_func (data, func_data);
+      gpointer data = sfi_ring_pop_head (&head);
+      data_destroy (data);
       data = sfi_ring_pop_head (&head);
     }
 }

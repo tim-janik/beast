@@ -258,6 +258,8 @@ SfiRing*        sfi_ring_remove_node    (SfiRing        *head,
 SfiRing*        sfi_ring_remove         (SfiRing        *head,
 					 gpointer        data);
 guint           sfi_ring_length         (SfiRing        *head);
+gboolean        sfi_ring_test_length    (SfiRing        *head,
+					 guint           test_length);
 SfiRing*        sfi_ring_copy           (SfiRing        *head);
 SfiRing*        sfi_ring_copy_deep      (SfiRing        *head,
 					 SfiRingDataFunc copy,
@@ -282,10 +284,9 @@ gpointer        sfi_ring_pop_head       (SfiRing       **head);
 gpointer        sfi_ring_pop_tail       (SfiRing       **head);
 #define         sfi_ring_push_head      sfi_ring_prepend
 #define         sfi_ring_push_tail      sfi_ring_append
-void            sfi_ring_free_deep      (SfiRing        *head,
-					 SfiRingDataFunc free_func,
-					 gpointer        func_data);
 void            sfi_ring_free           (SfiRing        *head);
+void            sfi_ring_free_deep      (SfiRing        *head,
+					 GDestroyNotify  data_destroy);
 #define sfi_ring_tail(head)             ((head) ? (head)->prev : NULL)
 #define sfi_ring_walk(node,head_bound)  ((node)->next != (head_bound) ? (node)->next : NULL)
 

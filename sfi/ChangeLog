@@ -1,3 +1,34 @@
+Mon May  5 03:16:51 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: added sfi_ring_test_length(l) to figure whether
+	a ring has >=l elements in at most O(l) time.
+	(sfi_ring_free_deep): adapted to g_[s]list_free_deep().
+
+	* sfiustore.[hc]: added SfiUPool which is simply an SfiUStore
+	without a value per key, i.e. a simple id hash set. currently
+	wastefully implemented, should be optimized at some point.
+
+	* glib-extra.[hc]: added g_list_free_deep() and g_slist_free_deep().
+
+	* sfiglueproxy.[hc]: export sfi_glue_proxy_get_signal_quark() to fetch
+	a quark from a cononified signal name.
+	removed _sfi_glue_proxy_request_notify() which is implemented in
+	sfiglue.c now.
+	(delete_signal):
+	(fetch_signal): use _sfi_glue_proxy_request_notify() instead of
+	accessing the vtable directly.
+	(_sfi_glue_signal_find_closures):
+	(sfi_glue_signal_disconnect):
+	(sfi_glue_proxy_weak_unref): don't demand create a local proxy struct.
+	(sfi_glue_proxy_cancel_matched_event): filter signal events from
+	disconnected signals and flag them for cancellation.
+	(_sfi_glue_proxy_dispatch_event): handle cancelled signal events by
+	just acknowledging the notification id.
+
+	* sfiglue.[hc]: moved _sfi_glue_proxy_request_notify() here from
+	sfiglueproxy.c. for disconnecitons, we now filter out the local event
+	queue after calling remote.
+
 Mon Apr 21 03:02:01 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiparams.c: use SFI_MIN_TIME and SFI_MAX_TIME constants.

@@ -29,6 +29,7 @@ typedef enum /*< skip >*/
 {
   SFI_GLUE_EVENT_RELEASE	= ('G' << 16) | ('e' << 8) | 'R',
   SFI_GLUE_EVENT_NOTIFY		= ('G' << 16) | ('e' << 8) | 'N',
+  SFI_GLUE_EVENT_NOTIFY_CANCEL	= ('G' << 16) | ('e' << 8) | 'C'
 } SfiGlueEventType;
 typedef void (*SfiProxyDestroy)	(gpointer	data,
 				 SfiProxy	destroyed_proxy);
@@ -99,12 +100,13 @@ void		sfi_glue_signal_disconnect	(SfiProxy	 proxy,
 
 /* --- internal --- */
 gboolean    _sfi_glue_proxy_watch_release	(SfiProxy	 proxy);
-gboolean    _sfi_glue_proxy_request_notify	(SfiProxy	 proxy,
-						 const gchar	*signal,
-						 gboolean	 enable_notify);
 void	    _sfi_glue_proxy_processed_notify	(guint		 notify_id);
 void	    _sfi_glue_context_clear_proxies	(SfiGlueContext	*context);
 void	    _sfi_glue_proxy_dispatch_event	(SfiSeq		*event);
+GQuark	    sfi_glue_proxy_get_signal_quark	(const gchar	*signal);
+void	    sfi_glue_proxy_cancel_matched_event	(SfiSeq		*event,
+						 SfiProxy        proxy,
+						 GQuark		 signal_quark);
 
 
 G_END_DECLS

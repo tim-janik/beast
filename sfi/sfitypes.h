@@ -49,6 +49,7 @@ typedef struct {
   GParamSpec **fields;
 } SfiRecFields;
 typedef struct _SfiUStore	SfiUStore;
+typedef struct _SfiUPool	SfiUPool;
 
 
 /* --- global --- */

@@ -53,7 +53,7 @@ string_list_copy_deep (SfiRing *ring)
 static void
 string_list_free_deep (SfiRing *ring)
 {
-  sfi_ring_free_deep (ring, (SfiRingDataFunc) g_free, NULL);
+  sfi_ring_free_deep (ring, (SfiRingDataFunc) g_free);
 }
 
 static void

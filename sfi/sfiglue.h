@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,10 +22,7 @@
 #include <sfi/sfiprimitives.h>
 #include <sfi/sfiparams.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* Glue proxy (object handle) description in terms of
  * supported interfaces and property names
@@ -211,6 +208,9 @@ void		sfi_glue_proc_add_param		(SfiGlueProc	*proc,
 						 GParamSpec	*param);
 void		sfi_glue_proc_add_ret_param	(SfiGlueProc	*proc,
 						 GParamSpec	*param);
+gboolean       _sfi_glue_proxy_request_notify	(SfiProxy        proxy,
+						 const gchar    *signal,
+						 gboolean        enable_notify);
 
 
 /* --- implementations --- */
@@ -228,10 +228,7 @@ sfi_glue_fetch_context (const gchar *floc)
   return context;
 }
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __SFI_GLUE_H__ */
 

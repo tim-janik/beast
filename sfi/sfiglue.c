@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -100,13 +100,20 @@ sfi_glue_context_list_poll_fds (void)
   return ring;
 }
 
+static void
+sfi_glue_context_fetch_all_events (SfiGlueContext *context)
+{
+  context->pending_events = sfi_ring_concat (context->pending_events,
+					     context->table.fetch_events (context));
+}
+
 gboolean
 sfi_glue_context_pending (void)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
   
   if (!context->pending_events)
-    context->pending_events = context->table.fetch_events (context);
+    sfi_glue_context_fetch_all_events (context);
   return context->pending_events != NULL;
 }
 
@@ -130,13 +137,34 @@ sfi_glue_context_dispatch (void)
 SfiSeq*
 sfi_glue_context_fetch_event (void)
 {
-  if (sfi_glue_context_pending ())
+  SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
+  SfiSeq *seq = NULL;
+  sfi_glue_context_fetch_all_events (context);
+  seq = sfi_ring_pop_head (&context->pending_events);
+  return seq;
+}
+
+gboolean
+_sfi_glue_proxy_request_notify (SfiProxy        proxy,
+				const gchar    *signal,
+				gboolean        enable_notify)
+{
+  SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
+  gboolean connected;
+
+  g_return_val_if_fail (proxy != 0, FALSE);
+  g_return_val_if_fail (signal != NULL, FALSE);
+
+  connected = context->table.proxy_request_notify (context, proxy, signal, enable_notify);
+  if (!enable_notify)					/* filter current event queue */
     {
-      SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
-      SfiSeq *seq = sfi_ring_pop_head (&context->pending_events);
-      return seq;
+      SfiRing *ring;
+      GQuark signal_quark = sfi_glue_proxy_get_signal_quark (signal);
+      sfi_glue_context_fetch_all_events (context);	/* fetch remaining events */
+      for (ring = context->pending_events; ring; ring = sfi_ring_walk (ring, context->pending_events))
+	sfi_glue_proxy_cancel_matched_event (ring->data, proxy, signal_quark);
     }
-  return NULL;
+  return connected;
 }
 
 void

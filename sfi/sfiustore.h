@@ -25,13 +25,16 @@ G_BEGIN_DECLS
 
 
 /* --- typedefs --- */
+/* typedef struct _SfiUStore SfiUStore; */
+/* typedef struct _SfiUPool  SfiUPool; */
 typedef gboolean (*SfiUStoreForeach)	(gpointer	 data,
 					 gulong		 unique_id,
 					 gpointer	 value);
-/* typedef struct _SfiUStore SfiUStore; */
+typedef gboolean (*SfiUPoolForeach)	(gpointer	 data,
+					 gulong		 unique_id);
 
 
-/* --- functions --- */
+/* --- unique ID store --- */
 SfiUStore*	sfi_ustore_new		(void);
 gpointer	sfi_ustore_lookup	(SfiUStore	 *store,
 					 gulong		  unique_id);
@@ -44,6 +47,21 @@ void		sfi_ustore_foreach	(SfiUStore	 *store,
 					 SfiUStoreForeach foreach,
 					 gpointer	  data);
 void		sfi_ustore_destroy	(SfiUStore	 *store);
+
+
+/* --- unique ID pool --- */
+SfiUPool*	sfi_upool_new		(void);
+gboolean	sfi_upool_lookup	(SfiUPool	 *pool,
+					 gulong		  unique_id);
+void		sfi_upool_set		(SfiUPool	 *pool,
+					 gulong		  unique_id);
+void		sfi_upool_unset		(SfiUPool	 *pool,
+					 gulong		  unique_id);
+void		sfi_upool_foreach	(SfiUPool	 *pool,
+					 SfiUPoolForeach  foreach,
+					 gpointer	  data);
+void		sfi_upool_destroy	(SfiUPool	 *pool);
+
 
 
 G_END_DECLS

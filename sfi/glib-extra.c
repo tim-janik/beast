@@ -170,6 +170,30 @@ g_list_pop_head (GList **list_p)
   return data;
 }
 
+void
+g_slist_free_deep (GSList         *slist,
+		   GDestroyNotify  data_destroy)
+{
+  while (slist)
+    {
+      gpointer data = g_slist_pop_head (&slist);
+      data_destroy (data);
+      data = g_slist_pop_head (&slist);
+    }
+}
+
+void
+g_list_free_deep (GList         *list,
+		  GDestroyNotify data_destroy)
+{
+  while (list)
+    {
+      gpointer data = g_list_pop_head (&list);
+      data_destroy (data);
+      data = g_list_pop_head (&list);
+    }
+}
+
 
 /* --- name conversions --- */
 static inline gchar
