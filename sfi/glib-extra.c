@@ -271,6 +271,25 @@ g_path_concat (const gchar *first_path,
   return s;
 }
 
+GString*
+g_string_prefix_lines (GString     *gstring,
+                       const gchar *pstr)
+{
+  if (gstring->len && pstr)
+    {
+      guint l = strlen (pstr);
+      gchar *p = gstring->str - 1;
+      while (p)
+        {
+          guint pos = p - gstring->str + 1;
+          g_string_insert (gstring, pos, pstr);
+          pos += l;
+          p = strchr (gstring->str + pos, '\n');
+        }
+    }
+  return gstring;
+}
+
 
 /* --- string options --- */
 gchar*

@@ -1,3 +1,8 @@
+Thu Sep 23 15:50:18 2004  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added g_string_prefix_lines() which adds a prefix
+	to every line (before '\n') within a GString, usefull for indenting.
+
 Tue Sep 21 21:31:23 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corec.cc (namespace): don't generate prototypes without 

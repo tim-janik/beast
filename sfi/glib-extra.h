@@ -100,6 +100,8 @@ gchar*          g_strconcat_with_null  (const gchar   *string1, ...);
 
 gchar*          g_path_concat     (const gchar   *first_path,
                                    ...);
+GString*        g_string_prefix_lines (GString     *gstring,
+                                       const gchar *pstr);
 
 
 /* --- string options --- */
