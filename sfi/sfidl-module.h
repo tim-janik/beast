@@ -44,7 +44,7 @@ enum Type {
 
 class CodeGeneratorModule : public CodeGenerator {
 public:
-  CodeGeneratorModule (const Parser &parser) : CodeGenerator (parser) {
+  CodeGeneratorModule (Parser &parser) : CodeGenerator (parser) {
   }
   void run ();
 };

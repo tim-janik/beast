@@ -112,9 +112,11 @@ bool Options::parse (int *argc_p, char **argv_p[])
       else if (strcmp ("--module", argv[i]) == 0)
 	{
 	  targetModule = true;
-          /* provide sane defaults: */
-          if (!doImplementation && !doInterface)
-            doImplementation = true;
+          /* configure for module generation */
+          doImplementation = true;
+          doInterface = false;
+          doHeader = true;
+          doSource = false;
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--help", argv[i]) == 0)
@@ -164,7 +166,6 @@ bool Options::parse (int *argc_p, char **argv_p[])
 	   strncmp ("-I", argv[i], len) == 0))
 	{
 	  char *path = argv[i] + len;
-	  const char *dir = 0;
 
 	  if (*path != 0)
 	    includePath.push_back (path);

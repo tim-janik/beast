@@ -186,7 +186,7 @@ public:
   const std::vector<Choice>& getChoices () const	  { return choices; }
   const std::vector<Sequence>& getSequences () const	  { return sequences; }
   const std::vector<Record>& getRecords () const	  { return records; }
-  const std::vector<Class>& getClasses () const		  { return classes; }
+  std::vector<Class>& getClasses () 		  { return classes; }
   const std::vector<Method>& getProcedures () const	  { return procedures; }
   const std::vector<std::string>& getTypes () const       { return types; }
   

@@ -33,7 +33,7 @@ namespace Sfidl {
   
   class CodeGenerator {
   protected:
-    const Parser& parser;
+    Parser& parser;
     const Options& options;
     
     std::vector<std::string> splitName (const std::string& name);
@@ -43,7 +43,7 @@ namespace Sfidl {
     std::string makeMixedName (const std::string& name);
     std::string makeLMixedName (const std::string& name);
     
-    CodeGenerator(const Parser& parser) : parser (parser), options (*Options::the()) {
+    CodeGenerator(Parser& parser) : parser (parser), options (*Options::the()) {
     }
     
   public:
@@ -64,7 +64,7 @@ namespace Sfidl {
     std::string createTypeCode (const std::string& type, const std::string& name, int model);
     
   public:
-    CodeGeneratorC(const Parser& parser) : CodeGenerator(parser) {
+    CodeGeneratorC(Parser& parser) : CodeGenerator(parser) {
     }
     void run ();
   };

@@ -1,3 +1,18 @@
+Mon Aug 25 19:34:05 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: generate only a single object header file
+	from .mdef (module definition file) files.
+	based on the export macros from bsecxxplugin.h, the generated header
+	contains a complete class implementation as requested in the .mdef
+	file, except for the actual *Module object. users need to only
+	implement the *Module object and add two export macros to their
+	*.cc file.
+	generate inlined icon pixstreams via gdk-pixbuf-csource for
+	Info icon="file.png"; statements.
+
+	* sfidl*.[hc]*: got rid of a couple "const" qualifiers in order
+	to be able to use map<string,string> infos; as non-const.
+
 Fri Aug 22 19:47:55 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-parser.cc (parseChoiceValue): applied patch from stefan which

@@ -580,7 +580,7 @@ void CodeGeneratorC::run ()
   vector<Record>::const_iterator ri;
   vector<Choice>::const_iterator ei;
   vector<Param>::const_iterator pi;
-  vector<Class>::const_iterator ci;
+  vector<Class>::iterator ci;
   vector<Method>::const_iterator mi;
  
   if (options.generateTypeC)
@@ -1411,7 +1411,7 @@ void CodeGeneratorC::run ()
 
 class CodeGeneratorQt : public CodeGenerator {
 public:
-  CodeGeneratorQt(const Parser& parser) : CodeGenerator(parser) {
+  CodeGeneratorQt(Parser& parser) : CodeGenerator(parser) {
   }
   void run ();
 };
