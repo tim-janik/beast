@@ -18,7 +18,7 @@
 #ifndef __BST_XKB_H__
 #define __BST_XKB_H__
 
-#include <gtk/gtk.h>
+#include <glib.h>
 
 #ifdef __cplusplus
 extern "C" {

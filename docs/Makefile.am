@@ -4,4 +4,5 @@ EXTRA_DIST = $(strip \
 	bse-heart.txt \
 	bse-networks.txt \
 	bse-typesystem.txt \
+	faq.txt \
 )

@@ -22,7 +22,7 @@
 
 #ifdef	BST_WITH_XKB
 
-#include	<gdk/gdkx.h>
+#include	<X11/Xlib.h>
 #include	<X11/XKBlib.h>
 #include	<X11/extensions/XKBgeom.h>
 

@@ -1,3 +1,9 @@
+Mon Jan  3 06:47:50 2000  Tim Janik  <timj@gtk.org>
+
+	* docs/faq.txt: new file.
+
+	* beast-gtk/bstxkb.[hc]: minor include fixes.
+
 Fri Dec 31 07:39:12 1999  Tim Janik  <timj@gtk.org>
 
 	* released beast-0.3.0.tar.gz on http://beast.gtk.org.

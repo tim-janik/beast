@@ -1,0 +1,12 @@
+1) Upon startup, BEAST sometimes crashes with a segmentation fault
+
+  This is due to a bug in the X Keyboard extension. BEAST tries to figure
+  the country specifics of the keyboard layout, using the XKB extension.
+  Aparently, there are some allocation problems in XkbFreeKeyboard() or
+  XkbFreeClientMap() in libX11, which can cause random crashes.
+  Usually BEAST will run fine when restarted.
+
+2) I get "Cannot access memory at address 0x706f6e6d" when running BEAST in gdb
+
+  Some versions of gdb have problems figuring dynamic plugins, we can only
+  hope that this is going to be fixed some time soon.
