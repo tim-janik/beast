@@ -17,11 +17,11 @@
  */
 #include "bstscrollgraph.h"
 
-#include <gtk/gtkmain.h>
-#include <gtk/gtksignal.h>
-#include <math.h>
-#include <stdio.h>
-
+#define N_VALUES(scg)   ((scg)->n_points * (scg)->n_bars)
+#define VALUE(scg,b,p)  (BAR (scg, b)[(p)])
+#define BAR(scg,nth)    ((scg)->values + (scg)->n_points * (((scg)->bar_offset + (nth)) % (scg)->n_bars))
+#define HORIZONTAL(scg) ((scg)->update_position == GTK_POS_LEFT || (scg)->update_position == GTK_POS_RIGHT)
+#define VERTICAL(scg)   ((scg)->update_position == GTK_POS_TOP || (scg)->update_position == GTK_POS_BOTTOM)
 
 /* --- prototypes --- */
 
@@ -48,124 +48,115 @@ static void
 bst_scrollgraph_size_allocate (GtkWidget     *widget,
                                GtkAllocation *allocation)
 {
-  // BstScrollgraph *self = BST_SCROLLGRAPH (object);
+  BstScrollgraph *self = BST_SCROLLGRAPH (widget);
 
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->size_allocate (widget, allocation);
+
+  gboolean need_resize = FALSE;
+  if (HORIZONTAL (self))
+    need_resize = widget->allocation.width != self->n_bars || widget->allocation.height != self->n_points;
+  if (VERTICAL (self))
+    need_resize = widget->allocation.width != self->n_points || widget->allocation.height != self->n_bars;
+  if (need_resize)
+    {
+      self->n_points = VERTICAL (self) ? widget->allocation.width : widget->allocation.height;
+      self->n_bars = HORIZONTAL (self) ? widget->allocation.width : widget->allocation.height;
+      self->bar_offset %= self->n_bars;
+      g_free (self->values);
+      self->values = g_new0 (gfloat, N_VALUES (self));
+      if (self->pixbuf)
+        {
+          g_object_unref (self->pixbuf);
+          self->pixbuf = gdk_pixbuf_new_from_data (g_new (guint8, self->n_points * 3),
+                                                   GDK_COLORSPACE_RGB, FALSE, 8,
+                                                   VERTICAL (self) ? self->n_points : 1,
+                                                   HORIZONTAL (self) ? self->n_points : 1,
+                                                   3, (GdkPixbufDestroyNotify) g_free, NULL);
+        }
+      gtk_widget_queue_draw (widget);
+      guint i, j;
+      for (i = 0; i < self->n_bars; i++)
+        for (j = 0; j < self->n_points; j++)
+          VALUE (self, i, j) = (i * self->n_points + j) * 1.0 / N_VALUES (self);
+    }
 }
 
 static void
 bst_scrollgraph_realize (GtkWidget *widget)
 {
-  // BstScrollgraph *self = BST_SCROLLGRAPH (object);
-
+  BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+  
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->realize (widget);
+  
+  self->pixbuf = gdk_pixbuf_new_from_data (g_new (guint8, self->n_points * 3),
+                                           GDK_COLORSPACE_RGB, FALSE, 8,
+                                           VERTICAL (self) ? self->n_points : 1,
+                                           HORIZONTAL (self) ? self->n_points : 1,
+                                           3, (GdkPixbufDestroyNotify) g_free, NULL);
 }
 
 static void
 bst_scrollgraph_unrealize (GtkWidget *widget)
 {
-  // BstScrollgraph *self = BST_SCROLLGRAPH (object);
+  BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+
+  g_object_unref (self->pixbuf);
+  self->pixbuf = NULL;
 
   /* chain parent class' handler */
   GTK_WIDGET_CLASS (bst_scrollgraph_parent_class)->unrealize (widget);
 }
 
 static void
-bst_scrollgraph_paint (BstScrollgraph *self)
+bst_scrollgraph_draw_bar (BstScrollgraph *self,
+                          guint           nth)
 {
-#if 0
-  GtkWidget *widget = GTK_WIDGET (scrollgraph);
-  GdkGC *gc = widget->style->text_gc[GTK_STATE_PRELIGHT];
-  gfloat xc, yc, s, c, angle, radius, dw;
-  gint pointer_width = 3;
-  gint line_width = 1;
-  GdkPoint points[5];
-  
-  /* compute center */
-  xc = widget->allocation.width / 2 + widget->allocation.x + scrollgraph->xofs;
-  yc = widget->allocation.height / 2 + widget->allocation.y + scrollgraph->yofs;
-
-  /* compute pointer coords */
-  angle = scrollgraph->arc_start - scrollgraph->arc_dist * scrollgraph->angle_range;
-  s = sin (angle);
-  c = cos (angle);
-
-  /* draw the pointer */
-  radius = scrollgraph->furrow_radius;
-  gdk_gc_set_line_attributes (gc, 2, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-  gdk_draw_line (widget->window,
-		 widget->style->dark_gc[GTK_STATE_NORMAL],
-		 xc + c * radius, yc - s * radius,
-		 xc, yc);
-  gdk_gc_set_line_attributes (gc, 1, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-  gdk_draw_line (widget->window,
-		 widget->style->light_gc[GTK_STATE_NORMAL],
-		 xc + c * radius, yc - s * radius,
-		 xc, yc);
-  gdk_gc_set_line_attributes (gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-
-  radius = scrollgraph->dot_radius;
-  dw = (scrollgraph->dot_radius - scrollgraph->furrow_radius) * 0.75;
-  gdk_draw_arc (widget->window, gc,
-		TRUE,
-		xc + c * radius - dw, yc - s * radius - dw,
-		2 * dw, 2 * dw,
-		0.0 * 64, 360. * 64);
-  
-
-  if (0)
+  GtkWidget *widget = GTK_WIDGET (self);
+  GdkWindow *drawable = widget->window;
+  GdkGC *gc = widget->style->white_gc;
+  guint8 *rgb = gdk_pixbuf_get_pixels (self->pixbuf);
+  guint i;
+  for (i = 0; i < self->n_points; i++)
     {
-      points[0].x = xc + s * pointer_width + 0.5;
-      points[0].y = yc + c * pointer_width + 0.5;
-      points[1].x = xc - s * pointer_width + 0.5;
-      points[1].y = yc - c * pointer_width + 0.5;
-      points[2].x = points[1].x + c * radius + 0.5;
-      points[2].y = points[1].y - s * radius + 0.5;
-      points[3].x = points[0].x + c * radius + 0.5;
-      points[3].y = points[0].y - s * radius + 0.5;
-      points[4].x = points[0].x;
-      points[4].y = points[0].y;
-      
-      gdk_gc_set_line_attributes (gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-      gdk_draw_polygon (widget->window, gc, TRUE, points, 5);
-      gdk_gc_set_line_attributes (gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+      gfloat v = VALUE (self, nth, i);
+      rgb[i * 3 + 0] = v * 255;
+      rgb[i * 3 + 1] = 255 * !(((i / 16) ^ (nth / 16)) & 1);
+      rgb[i * 3 + 2] = i * 1.0 / self->n_points * 255.;
     }
-#endif
+  gdk_pixbuf_render_to_drawable (self->pixbuf, drawable, gc, 0, 0,
+                                 widget->allocation.x + (HORIZONTAL (self) ? nth : 0),
+                                 widget->allocation.y + (HORIZONTAL (self) ? 0 : nth),
+                                 gdk_pixbuf_get_width (self->pixbuf),
+                                 gdk_pixbuf_get_height (self->pixbuf),
+                                 GDK_RGB_DITHER_MAX, 0, 0);
 }
 
 static gint
 bst_scrollgraph_expose (GtkWidget      *widget,
                         GdkEventExpose *event)
 {
-  // BstScrollgraph *self = BST_SCROLLGRAPH (object);
-
-  return TRUE;
-}
-
-static gboolean
-bst_scrollgraph_button_press (GtkWidget      *widget,
-                              GdkEventButton *event)
-{
-  // BstScrollgraph *self = BST_SCROLLGRAPH (object);
-  return TRUE;
-}
-
-static gboolean
-bst_scrollgraph_motion_notify (GtkWidget      *widget,
-                               GdkEventMotion *event)
-{
-  // BstScrollgraph *self = BST_SCROLLGRAPH (object);
-  return TRUE;
-}
-
-static gboolean
-bst_scrollgraph_button_release (GtkWidget      *widget,
-                                GdkEventButton *event)
-{
-  // BstScrollgraph *self = BST_SCROLLGRAPH (object);
-  return TRUE;
+  BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+  GdkRectangle *areas;
+  gint i, j, n_areas = 1;
+  if (event->region)
+    gdk_region_get_rectangles (event->region, &areas, &n_areas);
+  else
+    areas = g_memdup (&event->area, sizeof (event->area));
+  for (j = 0; j < n_areas; j++)
+    {
+      const GdkRectangle *area = &areas[j];
+      /* double buffering is turned off in init() */
+      if (HORIZONTAL (self))
+        for (i = area->x; i < area->x + area->width; i++)
+          bst_scrollgraph_draw_bar (self, i - widget->allocation.x);
+      if (VERTICAL (self))
+        for (i = area->y; i < area->y + area->height; i++)
+          bst_scrollgraph_draw_bar (self, i - widget->allocation.y);
+    }
+  g_free (areas);
+  return FALSE;
 }
 
 void
@@ -176,10 +167,41 @@ bst_scrollgraph_clear (BstScrollgraph *self)
   gtk_widget_queue_draw (widget);
 }
 
+static gboolean
+bst_scrollgraph_button_press (GtkWidget      *widget,
+                              GdkEventButton *event)
+{
+  // BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+  return TRUE;
+}
+
+static gboolean
+bst_scrollgraph_motion_notify (GtkWidget      *widget,
+                               GdkEventMotion *event)
+{
+  // BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+  return TRUE;
+}
+
+static gboolean
+bst_scrollgraph_button_release (GtkWidget      *widget,
+                                GdkEventButton *event)
+{
+  // BstScrollgraph *self = BST_SCROLLGRAPH (widget);
+  return TRUE;
+}
+
 static void
 bst_scrollgraph_init (BstScrollgraph *self)
 {
+  GtkWidget *widget = GTK_WIDGET (self);
   GTK_WIDGET_SET_FLAGS (self, GTK_NO_WINDOW);
+  self->update_position = GTK_POS_BOTTOM; // RIGHT;
+  self->n_points = 1;
+  self->n_bars = 1;
+  self->bar_offset = 0;
+  self->values = g_new0 (gfloat, N_VALUES (self));
+  gtk_widget_set_double_buffered (widget, FALSE);
 }
 
 static void

@@ -36,7 +36,13 @@ typedef struct _BstScrollgraph BstScrollgraph;
 typedef struct _GtkWidgetClass BstScrollgraphClass;
 struct _BstScrollgraph
 {
-  GtkWidget parent_instance;
+  GtkWidget       parent_instance;
+  GtkPositionType update_position;
+  guint           n_points;
+  guint           n_bars;
+  guint           bar_offset; /* start of ring-buffer */
+  gfloat         *values;     /* [n_points * n_bars] */
+  GdkPixbuf      *pixbuf;     /* n_points wide or high */
 };
   
 /* --- public methods --- */

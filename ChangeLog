@@ -1,3 +1,7 @@
+Fri Nov 26 19:14:00 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstscrollgraph.[hc]: paint testpattern.
+
 Fri Nov 26 16:45:32 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstscrollgraph.[hc]: new NO-WINDOW widget skeleton for
