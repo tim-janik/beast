@@ -21,6 +21,7 @@
 
 #include "gslengine.h"
 #include "gsloputil.h"
+#include "gslcommon.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -167,15 +168,35 @@ struct _OpNode	/* fields sorted by order of processing access */
   GslRing	*output_nodes;	/* OpNode* ring of nodes in ->outputs[] */
 };
 
+static void
+_gsl_node_insert_flow_job (OpNode     *node,
+			   GslFlowJob *fjob)
+{
+  GslFlowJob *last = NULL, *tmp = node->flow_jobs;
+
+  /* find next position */
+  while (tmp && tmp->any.tick_stamp <= fjob->any.tick_stamp)
+    {
+      last = tmp;
+      tmp = last->any.next;
+    }
+  /* insert before */
+  fjob->any.next = tmp;
+  if (last)
+    last->any.next = fjob;
+  else
+    node->flow_jobs = fjob;
+}
+
 static inline GslFlowJob*
 _gsl_node_pop_flow_job (OpNode *node,
 			guint64 tick_stamp)
 {
   GslFlowJob *fjob = node->flow_jobs;
 
-  if (fjob)
+  if_reject (fjob)
     {
-      if (tick_stamp >= fjob->any.tick_stamp)
+      if (fjob->any.tick_stamp <= tick_stamp)
 	{
 	  node->flow_jobs = fjob->any.next;
 	  
@@ -189,6 +210,17 @@ _gsl_node_pop_flow_job (OpNode *node,
     }
 
   return fjob;
+}
+
+static inline guint64
+_gsl_node_peek_flow_job_stamp (OpNode *node)
+{
+  GslFlowJob *fjob = node->flow_jobs;
+
+  if_reject (fjob)
+    return fjob->any.tick_stamp;
+
+  return GSL_MAX_TICK_STAMP;
 }
 
 #if defined(__GNUC__) || defined(__DECC__)

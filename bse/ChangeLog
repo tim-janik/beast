@@ -1,3 +1,44 @@
+Fri Feb  1 02:11:07 2002  Tim Janik  <timj@gtk.org>
+
+	* bseconstant.[hc]: support stamped flow jobs to set an output by
+	frequency, value or note.
+
+	* gslopmaster.c (master_handle_flow_jobs): implement rudimentary flow
+	job handling.
+	(master_process_locked_node): handle flow jobs, fix output buffer
+	virtualization for partial calculations (this is SLOW, desperately
+	needs fixing).
+	fixed stupid mistake where flow jobs weren't sorted by their tick_stamps
+	upon insertion.
+
+	* gslengine.h (struct _GslOStream): removed zero_initialize:1 flag
+	from ostreams as modules can easily memset(,0,) themselves and the
+	engine just becomes slower by checking this.
+
+	* bsesong.c (song_set_n_channels): grmm, initialize channel constants
+	with 0.0 (not the default 1.0).
+
+	* bsesongthread.c: major timing fixes.
+
+	* bseserver.[hc]: removed API/implementation about a magic-matched
+	loader procedures (loaders are plugged into GSL now).
+
+	* bsewave.[hc] (bse_wave_load_wave): new function to load a defined
+	set of chunks from a wave in a file, uses the GslLoader.
+
+	* bsewave.proc (load-wave): simply use bse_wave_load_wave() and get
+	rid of the GValueArrays passed in.
+
+	* bsesource.[hc]: provide bse_source_flow_access_modules() to commit
+	access flow jobs.
+	removed unused bse_source_access_imodules() and
+	bse_source_update_imodules() functions.
+
+	* bseutils.[hc]: provide bse_darrays_match_freq() that operates
+	on GDArray instead of value arrays.
+
+	* gslcommon.h: define GSL_MAX_TICK_STAMP.
+
 Thu Jan 31 17:43:46 2002  Tim Janik  <timj@gtk.org>
 
 	* bsepcminput.[hc]: new module, providing recording abilities,

@@ -73,6 +73,9 @@ gdouble	bse_note_to_tuned_freq	(gint		 note,
 gboolean        bse_value_arrays_match_freq     (gfloat          match_freq,
 						 GValueArray    *inclusive_set,
 						 GValueArray    *exclusive_set);
+gboolean        bse_darrays_match_freq	        (gfloat          match_freq,
+						 GDArray        *inclusive_set,
+						 GDArray        *exclusive_set);
 
 
 /* --- icons --- */

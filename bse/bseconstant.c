@@ -256,6 +256,24 @@ bse_constant_update_modules (BseConstant *constant,
 				trans);
 }
 
+typedef struct {
+  guint  index;
+  guint  n_values;
+  gfloat constants[BSE_CONSTANT_N_OUTPUTS];
+} FlowAccessData;
+
+static void
+flow_access (GslModule *module,
+	     gpointer   data)
+{
+  ConstantModule *cmod = module->user_data;
+  FlowAccessData *fdata = data;
+
+  g_print("FLOWJOBINCONSTANT(%u): %f (%lld)\n", fdata->index, fdata->constants[0], gsl_module_tick_stamp (module));
+
+  memcpy (cmod->constants + fdata->index, fdata->constants, sizeof (cmod->constants[0]) * fdata->n_values);
+}
+
 static void
 constant_process (GslModule *module,
 		  guint      n_values)
@@ -297,4 +315,52 @@ bse_constant_context_create (BseSource *source,
   
   /* update (initialize) module data */
   bse_constant_update_modules (BSE_CONSTANT (source), trans);
+}
+
+void
+bse_constant_stamped_set_float (BseConstant *constant,
+				guint64      tick_stamp,
+				guint	     nth,
+				gfloat       value)
+{
+  FlowAccessData *fdata;
+  
+  g_return_if_fail (BSE_IS_CONSTANT (constant));
+  g_return_if_fail (nth < BSE_CONSTANT_N_OUTPUTS);
+  g_return_if_fail (value >= -1.0 && value <= 1.0);
+  
+  fdata = g_new (FlowAccessData, 1);
+  fdata->index = nth;
+  fdata->n_values = 1;
+  fdata->constants[0] = value;
+  
+  bse_source_flow_access_modules (BSE_SOURCE (constant),
+				  tick_stamp,
+				  flow_access,
+				  fdata,
+				  g_free,
+				  NULL);
+}
+
+void
+bse_constant_stamped_set_freq (BseConstant *constant,
+			       guint64      tick_stamp,
+			       guint        nth,
+			       gfloat       freq)
+{
+  g_return_if_fail (freq >= 0 && freq <= BSE_MAX_FREQUENCY);
+
+  bse_constant_stamped_set_float (constant, tick_stamp, nth, BSE_VALUE_FROM_FREQ (freq));
+}
+
+void
+bse_constant_stamped_set_note (BseConstant *constant,
+			       guint64      tick_stamp,
+			       guint        nth,
+			       gint         note)
+{
+  g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
+
+  bse_constant_stamped_set_float (constant, tick_stamp, nth,
+				  BSE_VALUE_FROM_FREQ (bse_note_to_freq (note)));
 }

@@ -132,6 +132,7 @@ void		gsl_thread_awake_before	(guint64	 tick_stamp);
 void		gsl_thread_get_pollfd	(GslPollFD	*pfd);
 guint64		gsl_tick_stamp		(void);
 #define		GSL_TICK_STAMP		(_GSL_TICK_STAMP_VAL ())
+#define		GSL_MAX_TICK_STAMP	(~((guint64) 0))
 
 
 /* --- GslMutex --- */

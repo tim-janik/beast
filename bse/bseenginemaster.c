@@ -236,8 +236,7 @@ master_process_job (GslJob *job)
       OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "add flow_job(%p,%p)", node, fjob);
       g_return_if_fail (node->integrated == TRUE);
       job->data.flow_job.fjob = NULL;	/* ownership taken over */
-      fjob->any.next = node->flow_jobs;
-      node->flow_jobs = fjob;
+      _gsl_node_insert_flow_job (node, fjob);
       _gsl_mnl_reorder (node);
       break;
     case OP_JOB_DEBUG:
@@ -331,36 +330,73 @@ master_poll_check (glong   *timeout_p,
   master_need_process = need_processing;
 }
 
+static inline guint64
+master_handle_flow_jobs (OpNode *node,
+			 guint64 max_tick)
+{
+  GslFlowJob *fjob = _gsl_node_pop_flow_job (node, max_tick);
+  
+  if_reject (fjob)
+    do
+      {
+	g_print ("FJob: at:%lld from:%lld \n", node->counter, fjob->any.tick_stamp);
+	switch (fjob->fjob_id)
+	  {
+	  case GSL_FLOW_JOB_ACCESS:
+	    fjob->access.access_func (&node->module, fjob->access.data);
+	    break;
+	  default:
+	    g_assert_not_reached (); // FIXME
+	  }
+	fjob = _gsl_node_pop_flow_job (node, max_tick);
+      }
+    while (fjob);
+  
+  return _gsl_node_peek_flow_job_stamp (node);
+}
+
 static void
 master_process_locked_node (OpNode *node,
 			    guint   n_values)
 {
-  guint i;
-  guint64 new_counter = GSL_TICK_STAMP + n_values;
+  guint64 final_counter = GSL_TICK_STAMP + n_values;
 
-  for (i = 0; i < OP_NODE_N_ISTREAMS (node); i++)
+  while (node->counter < final_counter)
     {
-      OpNode *inode = node->inputs[i].src_node;
+      guint64 next_counter = master_handle_flow_jobs (node, node->counter);
+      guint64 new_counter = MIN (next_counter, final_counter);
+      guint i, diff = node->counter - GSL_TICK_STAMP;
 
-      if (inode)
+      for (i = 0; i < OP_NODE_N_ISTREAMS (node); i++)
 	{
-	  OP_NODE_LOCK (inode);
-	  if (inode->counter < new_counter)
-	    master_process_locked_node (inode, new_counter - node->counter);
-	  node->module.istreams[i].values = inode->module.ostreams[node->inputs[i].src_stream].values;
-	  OP_NODE_UNLOCK (inode);
+	  OpNode *inode = node->inputs[i].src_node;
+	  
+	  if (inode)
+	    {
+	      OP_NODE_LOCK (inode);
+	      if (inode->counter < final_counter)
+		master_process_locked_node (inode, final_counter - node->counter);
+	      node->module.istreams[i].values = inode->outputs[node->inputs[i].src_stream].buffer;
+	      node->module.istreams[i].values += diff;
+	      OP_NODE_UNLOCK (inode);
+	    }
+	  else
+	    node->module.istreams[i].values = gsl_engine_master_zero_block;
 	}
-      else
-	node->module.istreams[i].values = gsl_engine_master_zero_block;
+      for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
+	{
+	  node->module.ostreams[i].values = node->outputs[i].buffer + diff;
+	}
+      node->module.klass->process (&node->module, new_counter - node->counter);
+      for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
+	{
+	  // FIXME: this takes the worst possible performance hit to support virtualization
+	  if (node->module.ostreams[i].values != node->outputs[i].buffer + diff)
+	    memcpy (node->outputs[i].buffer + diff, node->module.ostreams[i].values,
+		    (new_counter - node->counter) * sizeof (gfloat));
+	}
+      node->counter = new_counter;
     }
-  for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
-    {
-      node->module.ostreams[i].values = node->outputs[i].buffer;
-      if (node->module.ostreams[i].zero_initialize)
-	memset (node->module.ostreams[i].values, 0, gsl_engine_block_size () * sizeof (gfloat));
-    }
-  node->module.klass->process (&node->module, n_values);
-  node->counter += n_values;
 }
 
 static GslLong gsl_trace_delay = 0;

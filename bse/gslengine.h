@@ -97,7 +97,6 @@ struct _GslOStream
   gfloat     *values;
   guint	      user_flags : 16;
   const guint connected : 1;
-  guint	      zero_initialize : 1;
 };
 
 

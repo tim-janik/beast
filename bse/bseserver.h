@@ -49,8 +49,6 @@ struct _BseServer
 
   GList	         *projects;
 
-  GslRing	 *loader_magics;
-
   guint		  dev_use_count;
 
   BsePcmDevice   *pcm_device;
@@ -97,12 +95,6 @@ GslModule*	bse_server_retrive_midi_input_module	(BseServer	*server,
 							 guint		 signals[4]);
 void		bse_server_discard_midi_input_module	(BseServer	*server,
 							 GslModule	*module);
-void		bse_server_register_loader		(BseServer	*server,
-							 GType		 proc_type,
-							 const gchar    *extension,
-							 const gchar    *magic_spec);
-GType		bse_server_find_loader			(BseServer	*server,
-							 const gchar	*file_name);
 void		bse_server_add_io_watch			(BseServer	*server,
 							 gint		 fd,
 							 GIOCondition	 events,

@@ -996,6 +996,35 @@ bse_value_arrays_match_freq (gfloat       match_freq,
   return FALSE;
 }
 
+gboolean
+bse_darrays_match_freq (gfloat   match_freq,
+			GDArray *inclusive_set,
+			GDArray *exclusive_set)
+{
+  guint i;
+
+  if (exclusive_set)
+    for (i = 0; i < exclusive_set->n_values; i++)
+      {
+	gdouble *value = exclusive_set->values + i;
+
+	if (fabs (*value - match_freq) < BSE_EPSILON_FREQUENCY)
+	  return FALSE;
+      }
+
+  if (!inclusive_set)
+    return TRUE;
+
+  for (i = 0; i < inclusive_set->n_values; i++)
+    {
+      gdouble *value = inclusive_set->values + i;
+      
+      if (fabs (*value - match_freq) < BSE_EPSILON_FREQUENCY)
+	return TRUE;
+    }
+  return FALSE;
+}
+
 
 /* --- icons --- */
 BseIcon*

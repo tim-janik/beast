@@ -1030,7 +1030,12 @@ song_set_n_channels (BseSong *song,
     {
       BseSource *source;
 
-      source = g_object_new (g_type_from_name ("BseConstant"), NULL);
+      source = g_object_new (g_type_from_name ("BseConstant"),
+			     "value_1", 0.0,
+			     "value_2", 0.0,
+			     "value_3", 0.0,
+			     "value_4", 0.0,
+			     NULL);
       BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
       net->voices[i].ofreq = source;
       bse_container_add_item (container, BSE_ITEM (source));

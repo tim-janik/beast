@@ -19,6 +19,7 @@
 #include "gslcommon.h"
 #include "gslengine.h"
 #include "bsepattern.h"
+#include "bseconstant.h"
 
 
 /* --- prototypes --- */
@@ -83,11 +84,10 @@ sequencer_thread (gpointer data)
   g_printerr ("SST: start\n");
   do
     {
+      const guint64 cur_tick = gsl_tick_stamp ();
       GslRing *ring;
-      guint64 pre_tick, cur_tick = gsl_tick_stamp ();
-
-      pre_tick = gsl_engine_block_size ();
-      pre_tick = cur_tick > pre_tick ? cur_tick - pre_tick : cur_tick;
+      guint tick_latency = gsl_engine_block_size () * 10;
+      guint64 future_tick = cur_tick + tick_latency;
 
       GSL_SPIN_LOCK (&seq_mutex);
       for (ring = seq_list; ring; ring = gsl_ring_walk (seq_list, ring))
@@ -97,10 +97,10 @@ sequencer_thread (gpointer data)
 	  if (!seq->next_tick)	
 	    seq_init (seq, cur_tick);
 
-	  if (seq->next_tick <= pre_tick)
+	  while (seq->next_tick < future_tick)
 	    seq_step (seq, cur_tick);
 
-	  gsl_thread_awake_after (seq->next_tick);
+	  gsl_thread_awake_before (MAX (seq->next_tick, tick_latency) - tick_latency);
 	}
       GSL_SPIN_UNLOCK (&seq_mutex);
     }
@@ -110,7 +110,7 @@ sequencer_thread (gpointer data)
 
 static void
 seq_init (BseSongSequencer *seq,
-	  guint64           cur_tick)
+	  const guint64     cur_tick)
 {
   g_assert (seq->next_tick == 0 && cur_tick > 0);
 
@@ -119,20 +119,23 @@ seq_init (BseSongSequencer *seq,
 
 static void
 seq_step (BseSongSequencer *seq,
-	  guint64           cur_tick)
+	  const guint64     cur_tick)
 {
   BseSong *song = seq->song;
   BseSongNet *snet = &song->net;
   BsePattern *pattern;
   BsePatternNote *note;
+  guint64 next_tick = seq->next_tick;
 
   pattern = song->patterns->data;
 
   note = bse_pattern_peek_note (pattern, 0, seq->row);
 
-  g_object_set (snet->voices[0].ofreq, "note_1", note->note, NULL);
+  bse_constant_stamped_set_note (BSE_CONSTANT (snet->voices[0].ofreq), next_tick, 0, note->note);
+  bse_constant_stamped_set_float (BSE_CONSTANT (snet->voices[0].ofreq), next_tick, 1, 1.0);
+  bse_constant_stamped_set_float (BSE_CONSTANT (snet->voices[0].ofreq), next_tick + 1, 1, 0.0);
 
-  g_printerr ("SST: tick(%llu): note %u instr %p\n", cur_tick, note->note, note->instrument);
+  g_printerr ("SST: tick(for:%llu at:%lld): note %u instr %p\n", next_tick, cur_tick, note->note, note->instrument);
 
   /* next step setup */
   seq->row++;

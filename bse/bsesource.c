@@ -645,6 +645,45 @@ bse_source_set_context_module (BseSource *source,
     bse_source_set_context_omodule (source, i, context_handle, module, i);
 }
 
+void
+bse_source_flow_access_modules (BseSource    *source,
+				guint64       tick_stamp,
+				GslAccessFunc access_func,
+				gpointer      data,
+				GslFreeFunc   data_free_func,
+				GslTrans     *trans)
+{
+  GSList *modules = NULL;
+  guint i;
+
+  g_return_if_fail (BSE_IS_SOURCE (source));
+  g_return_if_fail (BSE_SOURCE_PREPARED (source));
+
+  for (i = 0; i < source->n_contexts; i++)
+    {
+      if (BSE_SOURCE_N_ICHANNELS (source) && source->contexts[i].ichannel_modules)
+	modules = g_slist_prepend (modules, source->contexts[i].ichannel_modules[0]);
+      else if (BSE_SOURCE_N_OCHANNELS (source) && source->contexts[i].ochannel_modules)
+	modules = g_slist_prepend (modules, source->contexts[i].ochannel_modules[0]);
+    }
+  
+  if (modules)
+    {
+      GslTrans *my_trans = gsl_trans_open ();
+      GSList *slist;
+      
+      if (!trans)
+	trans = my_trans;
+      for (slist = modules; slist; slist = slist->next)
+	gsl_trans_add (trans, gsl_flow_job_access (slist->data, tick_stamp, access_func, data,
+						   slist->next ? NULL : data_free_func));
+      gsl_trans_commit (my_trans);
+      g_slist_free (modules);
+    }
+  else if (data_free_func)
+    data_free_func (data);
+}
+
 static void
 source_access_modules (BseSource    *source,
 		       guint	     channel,
@@ -669,6 +708,7 @@ source_access_modules (BseSource    *source,
       if (module)
 	modules = g_slist_prepend (modules, module);
     }
+
   if (modules)
     {
       GslTrans *my_trans = gsl_trans_open ();
@@ -681,22 +721,8 @@ source_access_modules (BseSource    *source,
       gsl_trans_commit (my_trans);
       g_slist_free (modules);
     }
-}
-
-void
-bse_source_access_imodules (BseSource    *source,
-			    guint	  ichannel,
-			    GslAccessFunc access_func,
-			    gpointer      data,
-			    GslFreeFunc   data_free_func,
-			    GslTrans     *trans)
-{
-  g_return_if_fail (BSE_IS_SOURCE (source));
-  g_return_if_fail (BSE_SOURCE_PREPARED (source));
-  g_return_if_fail (ichannel < BSE_SOURCE_N_ICHANNELS (source));
-  g_return_if_fail (access_func != NULL);
-
-  source_access_modules (source, ichannel, TRUE, access_func, data, data_free_func, trans);
+  else if (data_free_func)
+    data_free_func (data);
 }
 
 void
@@ -728,29 +754,6 @@ op_access_update (GslModule *module,
   guint8 *m = module->user_data;
 
   memcpy (m + adata->member_offset, adata + 1, adata->member_size);
-}
-
-void
-bse_source_update_imodules (BseSource *source,
-			    guint      ichannel,
-			    guint      member_offset,
-			    gpointer   member_p,
-			    guint      member_size,
-			    GslTrans  *trans)
-{
-  AccessData *adata;
-  
-  g_return_if_fail (BSE_IS_SOURCE (source));
-  g_return_if_fail (BSE_SOURCE_PREPARED (source));
-  g_return_if_fail (ichannel < BSE_SOURCE_N_ICHANNELS (source));
-  g_return_if_fail (member_p != NULL);
-  g_return_if_fail (member_size > 0);
-
-  adata = g_malloc (sizeof (AccessData) + member_size);
-  adata->member_offset = member_offset;
-  adata->member_size = member_size;
-  memcpy (adata + 1, member_p, member_size);
-  source_access_modules (source, ichannel, TRUE, op_access_update, adata, g_free, trans);
 }
 
 void

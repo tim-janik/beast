@@ -22,6 +22,7 @@
 #include	"gslwavechunk.h"
 #include	"gsldatahandle.h"
 #include	"bseserver.h"
+#include        <gsl/gslloader.h>
 
 
 enum {
@@ -140,10 +141,6 @@ bse_wave_class_init (BseWaveClass *class)
   quark_set_locator = g_quark_from_static_string ("set-locator");
   quark_wave_chunk = g_quark_from_static_string ("wave-chunk");
 
-  bse_server_register_loader (bse_server_get (),
-			      g_type_from_name ("BseWave+load-wave"),
-			      ".gslwave",
-			      "0 string #GslWave\n");
   bse_object_class_add_param (object_class, "Locator",
 			      PARAM_LOCATOR_SET,
 			      g_param_spec_boolean ("locator_set", "Locator Set", NULL,
@@ -566,95 +563,62 @@ parse_wave_chunk (BseWave         *wave,
   return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
 }
 
-static gboolean
-bse_procedure_signature_is_loader (BseProcedureClass *proc)
+BseErrorType
+bse_wave_load_wave (BseWave     *wave,
+		    const gchar *file_name,
+		    const gchar *wave_name,
+		    GDArray     *list_array,
+		    GDArray     *skip_array)
 {
-  g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), FALSE);
+  BseErrorType error = BSE_ERROR_NONE;
+  GslWaveFileInfo *fi;
 
-  if (proc->n_in_params == 5 && proc->n_out_params == 1)
-    {
-      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (proc->out_param_specs[0]), BSE_TYPE_ERROR_TYPE) &&
-	  g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (proc->in_param_specs[0]), BSE_TYPE_WAVE) &&
-	  G_IS_PARAM_SPEC_STRING (proc->in_param_specs[1]) &&
-	  G_IS_PARAM_SPEC_STRING (proc->in_param_specs[2]) &&
-	  G_IS_PARAM_SPEC_VALUE_ARRAY (proc->in_param_specs[3]) &&
-	  G_IS_PARAM_SPEC_VALUE_ARRAY (proc->in_param_specs[4]))
-	{
-	  GParamSpec *espec1 = G_PARAM_SPEC_VALUE_ARRAY (proc->in_param_specs[3])->element_spec;
-	  GParamSpec *espec2 = G_PARAM_SPEC_VALUE_ARRAY (proc->in_param_specs[4])->element_spec;
-
-	  if (espec1 && G_IS_PARAM_SPEC_FLOAT (espec1) &&
-	      espec2 && G_IS_PARAM_SPEC_FLOAT (espec2))
-	    return TRUE;
-	}
-    }
-  return FALSE;
-}
-
-static BseErrorType
-call_wave_chunk_loader (GType        proc_type,
-			BseWave     *wave,
-			const gchar *file_name,
-			const gchar *wave_name,
-			GDArray     *list_array,
-			GDArray     *skip_array)
-{
-  GValueArray *skip_value_array = NULL, *list_value_array = NULL;
-  GValue tvalue = { 0, };
-  BseProcedureClass *proc;
-  GDArray *array;
-  BseErrorType perror, error;
-
-  g_return_val_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_WAVE (wave), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (wave_name != NULL, BSE_ERROR_INTERNAL);
 
-  g_print ("parse \"%s\" \"%s\" list %u skip %u\n",
-	   file_name, wave_name, list_array ? list_array->n_values : 0, skip_array ? skip_array->n_values : 0);
-  g_value_init (&tvalue, G_TYPE_FLOAT);
-  array = skip_array;
-  if (array && array->n_values)
+  fi = gsl_wave_file_info_load (file_name, &error);
+  if (fi)
     {
-      GValueArray *value_array = g_value_array_new (array->n_values);
-      guint j;
+      guint i;
 
-      for (j = 0; j < array->n_values; j++)
+      for (i = 0; i < fi->n_waves; i++)
+	if (strcmp (wave_name, fi->waves[i].name) == 0)
+	  break;
+      if (i < fi->n_waves)
 	{
-	  g_value_set_float (&tvalue, array->values[j]);
-	  g_value_array_append (value_array, &tvalue);
-	}
-      skip_value_array = value_array;
-    }
-  array = list_array;
-  if (array && array->n_values)
-    {
-      GValueArray *value_array = g_value_array_new (array->n_values);
-      guint j;
+	  GslWaveDsc *wdsc = gsl_wave_dsc_load (fi, i, &error);
 
-      for (j = 0; j < array->n_values; j++)
-	{
-	  g_value_set_float (&tvalue, array->values[j]);
-	  g_value_array_append (value_array, &tvalue);
-	}
-      list_value_array = value_array;
-    }
-  g_value_unset (&tvalue);
+	  if (wdsc)
+	    {
+	      for (i = 0; i < wdsc->n_chunks; i++)
+		if (bse_darrays_match_freq (wdsc->chunks[i].osc_freq, list_array, skip_array))
+		  {
+		    BseErrorType tmp_error;
+		    GslWaveChunk *wchunk = gsl_wave_chunk_create (wdsc, i, &tmp_error);
 
-  proc = g_type_class_ref (proc_type);
-  if (!bse_procedure_signature_is_loader (proc))
-    error = BSE_ERROR_FORMAT_UNKNOWN;	/* actually, this is a bad mismatch, FIXME? */
+		    if (!wchunk)
+		      {
+			error = tmp_error;
+			g_message ("wave \"%s\": failed to load wave chunk (%f/%f): %s", // FIXME
+				   wdsc->name, wdsc->chunks[i].osc_freq, wdsc->chunks[i].mix_freq,
+				   bse_error_blurb (error));
+		      }
+		    else
+		      bse_wave_add_chunk (wave, wchunk);
+		  }
+	      gsl_wave_dsc_free (wdsc);
+	    }
+	}
+      else
+	error = GSL_ERROR_NOT_FOUND;
+    }
+  else if (!g_file_test (file_name, G_FILE_TEST_IS_REGULAR))
+    error = BSE_ERROR_FILE_NOT_FOUND;
+  else if (!g_file_test (file_name, G_FILE_TEST_IS_REGULAR)) /* FIXME: READABLE */
+    error = BSE_ERROR_PERMS;
   else
-    error = bse_procedure_exec (g_type_name (proc_type),
-				wave, file_name, wave_name,
-				list_value_array, skip_value_array,
-				&perror);
-  g_type_class_unref (proc);
-  if (!error)
-    error = perror;
-  if (skip_value_array)
-    g_value_array_free (skip_value_array);
-  if (list_value_array)
-    g_value_array_free (list_value_array);
+    error = BSE_ERROR_IO;
 
   return error;
 }
@@ -681,7 +645,6 @@ bse_wave_do_restore_private (BseObject  *object,
 	{
 	  GDArray *skip_list, *load_list, *array;
 	  gchar *file_name, *wave_name;
-	  GType proc_type;
 	  BseErrorType error;
 	  
 	  g_scanner_get_next_token (scanner); /* eat quark identifier */
@@ -728,11 +691,7 @@ bse_wave_do_restore_private (BseObject  *object,
 		  goto out_of_load_wave;
 		}
 	    }
-	  proc_type = bse_server_find_loader (bse_server_get (), file_name);
-	  if (proc_type)
-	    error = call_wave_chunk_loader (proc_type, wave, file_name, wave_name, load_list, skip_list);
-	  else
-	    error = BSE_ERROR_FORMAT_UNKNOWN;
+	  error = bse_wave_load_wave (wave, file_name, wave_name, load_list->n_values ? load_list : 0, skip_list);
 	  if (error)
 	    bse_storage_warn (storage, "failed to load wave \"%s\" from \"%s\": %s",
 			      wave_name, file_name, bse_error_blurb (error));
