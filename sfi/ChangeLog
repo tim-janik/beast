@@ -1,3 +1,7 @@
+Sun Apr 25 18:07:13 2004  Tim Janik  <timj@gtk.org>
+
+	* sfithreads.c (thread_get_tid): minor preprocessor condition fix.
+
 Fri Mar 19 13:28:04 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl.cc: Don't use optind any longer, since we also don't use

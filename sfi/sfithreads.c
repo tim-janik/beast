@@ -101,8 +101,8 @@ sfi_thread_handle_new (const gchar *name)
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <linux/unistd.h>
-#ifdef  __NR_gettid             /* present on linux >= 2.4.20 */
-static inline _syscall0(pid_t,gettid);
+#ifdef  __NR_gettid                     /* present on linux >= 2.4.20 */
+static inline _syscall0(pid_t,gettid);  /* declares gettid(); */
 #endif
 #endif
 static void
@@ -111,7 +111,7 @@ thread_get_tid (SfiThread *thread)
   gint ppid = thread->tid;      /* creator process id */
   gint tid = -1;
 
-#ifdef  __NR_gettid             /* present on linux >= 2.4.20 */
+#if     defined (__linux__) && defined (__NR_gettid)    /* present on linux >= 2.4.20 */
   tid = gettid ();
 #endif
   if (tid < 0)
