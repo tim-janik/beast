@@ -28,11 +28,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define DAV_TYPE_CANYON_DELAY              (type_id_canyon_delay)
-#define DAV_CANYON_DELAY(object)           (BSE_CHECK_STRUCT_CAST ((object), DAV_TYPE_CANYON_DELAY, DavCanyonDelay))
-#define DAV_CANYON_DELAY_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), DAV_TYPE_CANYON_DELAY, DavCanyonDelayClass))
-#define DAV_IS_CANYON_DELAY(object)        (BSE_CHECK_STRUCT_TYPE ((object), DAV_TYPE_CANYON_DELAY))
-#define DAV_IS_CANYON_DELAY_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), DAV_TYPE_CANYON_DELAY))
-#define DAV_CANYON_DELAY_GET_CLASS(object) ((DavCanyonDelayClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define DAV_CANYON_DELAY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_CANYON_DELAY, DavCanyonDelay))
+#define DAV_CANYON_DELAY_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_CANYON_DELAY, DavCanyonDelayClass))
+#define DAV_IS_CANYON_DELAY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_CANYON_DELAY))
+#define DAV_IS_CANYON_DELAY_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_CANYON_DELAY))
+#define DAV_CANYON_DELAY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavCanyonDelayClass))
 
 /* --- DavCanyonDelay source --- */
 typedef struct _DavCanyonDelay      DavCanyonDelay;

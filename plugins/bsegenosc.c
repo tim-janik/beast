@@ -64,20 +64,20 @@ static inline void bse_gen_osc_update_locals	(BseGenOsc      *gosc);
 
 
 /* --- variables --- */
-static BseType           type_id_gen_osc = 0;
+static GType             type_id_gen_osc = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_gen_osc = {
+static const GTypeInfo type_info_gen_osc = {
   sizeof (BseGenOscClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) bse_gen_osc_class_init,
-  (BseClassDestroyFunc) bse_gen_osc_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) bse_gen_osc_class_init,
+  (GClassDestroyFunc) bse_gen_osc_class_destroy,
   NULL /* class_data */,
   
   sizeof (BseGenOsc),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) bse_gen_osc_init,
+  (GInstanceInitFunc) bse_gen_osc_init,
 };
 
 
@@ -89,7 +89,7 @@ bse_gen_osc_class_init (BseGenOscClass *class)
   BseSourceClass *source_class;
   guint ochannel_id, ichannel_id;
 
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 

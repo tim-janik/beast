@@ -29,11 +29,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define DAV_TYPE_SYN_DRUM              (type_id_syn_drum)
-#define DAV_SYN_DRUM(object)           (BSE_CHECK_STRUCT_CAST ((object), DAV_TYPE_SYN_DRUM, DavSynDrum))
-#define DAV_SYN_DRUM_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), DAV_TYPE_SYN_DRUM, DavSynDrumClass))
-#define DAV_IS_SYN_DRUM(object)        (BSE_CHECK_STRUCT_TYPE ((object), DAV_TYPE_SYN_DRUM))
-#define DAV_IS_SYN_DRUM_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), DAV_TYPE_SYN_DRUM))
-#define DAV_SYN_DRUM_GET_CLASS(object) ((DavSynDrumClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define DAV_SYN_DRUM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_SYN_DRUM, DavSynDrum))
+#define DAV_SYN_DRUM_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_SYN_DRUM, DavSynDrumClass))
+#define DAV_IS_SYN_DRUM(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_SYN_DRUM))
+#define DAV_IS_SYN_DRUM_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_SYN_DRUM))
+#define DAV_SYN_DRUM_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavSynDrumClass))
 
 /* --- DavSynDrum source --- */
 typedef struct _DavSynDrum      DavSynDrum;

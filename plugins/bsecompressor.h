@@ -36,11 +36,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_COMPRESSOR              (type_id_compressor)
-#define BSE_COMPRESSOR(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_COMPRESSOR, BseCompressor))
-#define BSE_COMPRESSOR_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_COMPRESSOR, BseCompressorClass))
-#define BSE_IS_COMPRESSOR(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_COMPRESSOR))
-#define BSE_IS_COMPRESSOR_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_COMPRESSOR))
-#define BSE_COMPRESSOR_GET_CLASS(object) ((BseCompressorClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_COMPRESSOR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_COMPRESSOR, BseCompressor))
+#define BSE_COMPRESSOR_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_COMPRESSOR, BseCompressorClass))
+#define BSE_IS_COMPRESSOR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_COMPRESSOR))
+#define BSE_IS_COMPRESSOR_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_COMPRESSOR))
+#define BSE_COMPRESSOR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseCompressorClass))
 
 
 /* --- BseCompressor source --- */

@@ -59,20 +59,20 @@ static inline void dav_bass_filter_update_locals    (DavBassFilter       *filter
 
 
 /* --- variables --- */
-static BseType           type_id_bass_filter = 0;
+static GType             type_id_bass_filter = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_bass_filter = {
+static const GTypeInfo type_info_bass_filter = {
   sizeof (DavBassFilterClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) dav_bass_filter_class_init,
-  (BseClassDestroyFunc) dav_bass_filter_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) dav_bass_filter_class_init,
+  (GClassDestroyFunc) dav_bass_filter_class_destroy,
   NULL /* class_data */,
   
   sizeof (DavBassFilter),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) dav_bass_filter_init,
+  (GInstanceInitFunc) dav_bass_filter_init,
 };
 
 
@@ -123,7 +123,7 @@ dav_bass_filter_class_init (DavBassFilterClass *class)
   BseSourceClass *source_class;
   guint ochannel_id, ichannel_id;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   

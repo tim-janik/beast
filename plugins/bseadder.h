@@ -36,11 +36,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_ADDER              (type_id_adder)
-#define BSE_ADDER(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_ADDER, BseAdder))
-#define BSE_ADDER_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_ADDER, BseAdderClass))
-#define BSE_IS_ADDER(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_ADDER))
-#define BSE_IS_ADDER_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ADDER))
-#define BSE_ADDER_GET_CLASS(object) ((BseAdderClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_ADDER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_ADDER, BseAdder))
+#define BSE_ADDER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_ADDER, BseAdderClass))
+#define BSE_IS_ADDER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_ADDER))
+#define BSE_IS_ADDER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ADDER))
+#define BSE_ADDER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseAdderClass))
 
 
 /* --- BseAdder source --- */

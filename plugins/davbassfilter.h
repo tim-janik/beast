@@ -28,11 +28,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define DAV_TYPE_BASS_FILTER              (type_id_bass_filter)
-#define DAV_BASS_FILTER(object)           (BSE_CHECK_STRUCT_CAST ((object), DAV_TYPE_BASS_FILTER, DavBassFilter))
-#define DAV_BASS_FILTER_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), DAV_TYPE_BASS_FILTER, DavBassFilter))
-#define DAV_IS_BASS_FILTER(object)        (BSE_CHECK_STRUCT_TYPE ((object), DAV_TYPE_BASS_FILTER))
-#define DAV_IS_BASS_FILTER_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), DAV_TYPE_BASS_FILTER))
-#define DAV_BASS_FILTER_GET_CLASS(object) ((DavBassFilter (Class*) (((BseObject*) (object))->bse_struct.bse_class))
+#define DAV_BASS_FILTER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), DAV_TYPE_BASS_FILTER, DavBassFilter))
+#define DAV_BASS_FILTER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_BASS_FILTER, DavBassFilter))
+#define DAV_IS_BASS_FILTER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_BASS_FILTER))
+#define DAV_IS_BASS_FILTER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_BASS_FILTER))
+#define DAV_BASS_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavBassFilter))
 
 /* --- DavBassFilter source --- */
 typedef struct _DavBassFilter      DavBassFilter;

@@ -36,11 +36,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_FIR_FILTER              (type_id_fir_filter)
-#define BSE_FIR_FILTER(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_FIR_FILTER, BseFIRFilter))
-#define BSE_FIR_FILTER_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_FIR_FILTER, BseFIRFilterClass))
-#define BSE_IS_FIR_FILTER(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_FIR_FILTER))
-#define BSE_IS_FIR_FILTER_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_FIR_FILTER))
-#define BSE_FIR_FILTER_GET_CLASS(object) ((BseFIRFilterClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_FIR_FILTER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_FIR_FILTER, BseFIRFilter))
+#define BSE_FIR_FILTER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_FIR_FILTER, BseFIRFilterClass))
+#define BSE_IS_FIR_FILTER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_FIR_FILTER))
+#define BSE_IS_FIR_FILTER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_FIR_FILTER))
+#define BSE_FIR_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseFIRFilterClass))
 
 
 /* --- BseFIRFilter source --- */

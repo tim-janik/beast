@@ -45,7 +45,7 @@ if IF_HAVE_PERL5
 	  --vhead "static Bse@Type@Value @enum_name@_values[] = {" \
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	  --vtail "static BseType BSE_TYPE_ID (@EnumName@);" \
+	  --vtail "static GType   BSE_TYPE_ID (@EnumName@);" \
 	    $< > xgen-enums \
 	&& $(PERL) $(mkenums) \
 	  --hprod "\n#include\t<bse/bseexports.h>\n" \

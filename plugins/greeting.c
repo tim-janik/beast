@@ -25,8 +25,8 @@
 
 
 /* --- Greeting --- */
-static BseType type_id_greeting = 0;
-static BseType type_id_greeting_again = 0;
+static GType   type_id_greeting = 0;
+static GType   type_id_greeting_again = 0;
 static void
 greeting_setup (BseProcedureClass *proc,
 		BseParamSpec     **ipspecs,

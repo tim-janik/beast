@@ -36,11 +36,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_LOOPBACK              (type_id_loopback)
-#define BSE_LOOPBACK(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_LOOPBACK, BseLoopback))
-#define BSE_LOOPBACK_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_LOOPBACK, BseLoopbackClass))
-#define BSE_IS_LOOPBACK(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_LOOPBACK))
-#define BSE_IS_LOOPBACK_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_LOOPBACK))
-#define BSE_LOOPBACK_GET_CLASS(object) ((BseLoopbackClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_LOOPBACK(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_LOOPBACK, BseLoopback))
+#define BSE_LOOPBACK_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_LOOPBACK, BseLoopbackClass))
+#define BSE_IS_LOOPBACK(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_LOOPBACK))
+#define BSE_IS_LOOPBACK_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_LOOPBACK))
+#define BSE_LOOPBACK_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseLoopbackClass))
 
 
 /* --- BseLoopback source --- */

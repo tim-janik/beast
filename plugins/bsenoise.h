@@ -36,11 +36,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_NOISE              (type_id_noise)
-#define BSE_NOISE(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_NOISE, BseNoise))
-#define BSE_NOISE_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_NOISE, BseNoiseClass))
-#define BSE_IS_NOISE(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_NOISE))
-#define BSE_IS_NOISE_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_NOISE))
-#define BSE_NOISE_GET_CLASS(object) ((BseNoiseClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_NOISE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_NOISE, BseNoise))
+#define BSE_NOISE_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_NOISE, BseNoiseClass))
+#define BSE_IS_NOISE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_NOISE))
+#define BSE_IS_NOISE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_NOISE))
+#define BSE_NOISE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseNoiseClass))
 
 
 /* --- BseNoise source --- */

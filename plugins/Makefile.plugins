@@ -83,6 +83,14 @@ davcanyondelay_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += davcanyondelay.h
 
 ##
+## Plugin davguitar
+##
+davguitar_la_SOURCES = davguitar.c
+davguitar_la_LDFLAGS = -module -avoid-version
+davguitar_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += davguitar.h
+
+##
 ## Plugin davorgan
 ##
 davorgan_la_SOURCES = davorgan.c
@@ -97,6 +105,14 @@ davsyndrum_la_SOURCES = davsyndrum.c
 davsyndrum_la_LDFLAGS = -module -avoid-version
 davsyndrum_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += davsyndrum.h
+
+##
+## Plugin davxtalstrings
+##
+davxtalstrings_la_SOURCES = davxtalstrings.c
+davxtalstrings_la_LDFLAGS = -module -avoid-version
+davxtalstrings_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += davxtalstrings.h
 
 ##
 ## Plugin fldbsepattern
@@ -131,8 +147,10 @@ plugin_LTLIBRARIES += \
 	bsenoise.la \
 	davbassfilter.la \
 	davcanyondelay.la \
+	davguitar.la \
 	davorgan.la \
 	davsyndrum.la \
+	davxtalstrings.la \
 	fldbsepattern.la \
 	greeting.la \
 	hello-space.la

@@ -60,20 +60,20 @@ static inline void dav_organ_update_locals    (DavOrgan       *organ);
 
 
 /* --- variables --- */
-static BseType           type_id_organ = 0;
+static GType             type_id_organ = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_organ = {
+static const GTypeInfo type_info_organ = {
   sizeof (DavOrganClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) dav_organ_class_init,
-  (BseClassDestroyFunc) dav_organ_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) dav_organ_class_init,
+  (GClassDestroyFunc) dav_organ_class_destroy,
   NULL /* class_data */,
   
   sizeof (DavOrgan),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) dav_organ_init,
+  (GInstanceInitFunc) dav_organ_init,
 };
 
 
@@ -94,7 +94,7 @@ dav_organ_class_init (DavOrganClass *class)
   BseSourceClass *source_class;
   guint ochannel_id;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   

@@ -25,7 +25,7 @@
 
 
 /* --- hello_world --- */
-static BseType type_id_hello_space = 0;
+static GType   type_id_hello_space = 0;
 static void
 hello_space_setup (BseProcedureClass *proc,
 		   BseParamSpec     **ipspecs,

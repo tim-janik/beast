@@ -36,20 +36,20 @@ static void      bse_loopback_reset             (BseSource      	*source);
 
 
 /* --- variables --- */
-static BseType           type_id_loopback = 0;
+static GType             type_id_loopback = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_loopback = {
+static const GTypeInfo type_info_loopback = {
   sizeof (BseLoopbackClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) bse_loopback_class_init,
-  (BseClassDestroyFunc) bse_loopback_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) bse_loopback_class_init,
+  (GClassDestroyFunc) bse_loopback_class_destroy,
   NULL /* class_data */,
   
   sizeof (BseLoopback),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) bse_loopback_init,
+  (GInstanceInitFunc) bse_loopback_init,
 };
 
 
@@ -62,7 +62,7 @@ bse_loopback_class_init (BseLoopbackClass *class)
   BseSourceIChannelDef *ic_def;
   guint ichannel_id, ochannel_id;
 
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 

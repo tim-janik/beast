@@ -50,20 +50,20 @@ static void      bse_compressor_reset                 (BseSource      		*source)
 
 
 /* --- variables --- */
-static BseType           type_id_compressor = 0;
+static GType             type_id_compressor = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_compressor = {
+static const GTypeInfo type_info_compressor = {
   sizeof (BseCompressorClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) bse_compressor_class_init,
-  (BseClassDestroyFunc) bse_compressor_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) bse_compressor_class_init,
+  (GClassDestroyFunc) bse_compressor_class_destroy,
   NULL /* class_data */,
   
   sizeof (BseCompressor),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) bse_compressor_init,
+  (GInstanceInitFunc) bse_compressor_init,
 };
 
 
@@ -75,7 +75,7 @@ bse_compressor_class_init (BseCompressorClass *class)
   BseSourceClass *source_class;
   guint ichannel_id, ochannel_id;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   

@@ -26,10 +26,10 @@
 
 
 /* --- BSE types --- */
-static BseType type_id_delete_note = 0;
-static BseType type_id_insert_note = 0;
-static BseType type_id_clear_instrument = 0;
-static BseType type_id_fill_instrument = 0;
+static GType   type_id_delete_note = 0;
+static GType   type_id_insert_note = 0;
+static GType   type_id_clear_instrument = 0;
+static GType   type_id_fill_instrument = 0;
 
 
 /* --- delete-note --- */
@@ -269,22 +269,22 @@ fill_instrument_exec (BseProcedureClass *proc,
 /* --- Export to BSE --- */
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_PROCEDURES = {
-  { &type_id_delete_note, "BsePattern::delete-note",
+  { &type_id_delete_note, "BsePattern+delete-note",
     "Delete the current note", 0,
     delete_note_setup, delete_note_exec, NULL,
     "/Method/BsePattern/Edit/Delete note",
   },
-  { &type_id_insert_note, "BsePattern::insert-note",
+  { &type_id_insert_note, "BsePattern+insert-note",
     "Insert new note at current cell", 0,
     insert_note_setup, insert_note_exec, NULL,
     "/Method/BsePattern/Edit/Insert note",
   },
-  { &type_id_clear_instrument, "BsePattern::clear-instrument",
+  { &type_id_clear_instrument, "BsePattern+clear-instrument",
     "Reset the instrument for the selected notes", 0,
     clear_instrument_setup, clear_instrument_exec, NULL,
     "/Method/BsePattern/Edit/Clear instrument",
   },
-  { &type_id_fill_instrument, "BsePattern::fill-instrument",
+  { &type_id_fill_instrument, "BsePattern+fill-instrument",
     "Set the instrument for the selected notes", 0,
     fill_instrument_setup, fill_instrument_exec, NULL,
     "/Method/BsePattern/Edit/Fill instrument",

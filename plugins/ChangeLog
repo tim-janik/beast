@@ -1,3 +1,28 @@
+Fri Mar 24 09:44:26 2000  Tim Janik  <timj@gtk.org>
+
+	* *.[hc]: port over from BSE to GLib type system.
+
+Fri Mar 24 01:08:44 2000  Tim Janik  <timj@gtk.org>
+
+	* icons/canyon.xcf:
+	* icons/filter.xcf:
+	* icons/noise.xcf: Updated plugin icons, from Cyria Arweiler.
+
+	* icons/filter.xcf: bit of retouchee on my part to make the
+	inner side darker.
+
+	* davcanyondelay.c: 
+	* bsefirfilter.c: 
+	* bsenoise.c: include the new icons.
+
+Thu Mar 23 23:39:07 2000  Tim Janik  <timj@gtk.org>
+
+	* davxtalstrings.[hc]: new string synthesizer plugin from
+	David A. Bartold.
+
+	* davguitar.[hc]: new physical modelling acoustic guitar
+	synthesizer from David A. Bartold.
+
 Sun Mar 12 23:40:17 2000  Tim Janik  <timj@gtk.org>
 
 	* fldbsepattern.c (insert_note_exec): scratched the note_val and

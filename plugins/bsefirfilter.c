@@ -56,20 +56,20 @@ static inline void bse_fir_filter_update_locals	(BseFIRFilter      *filter);
 
 
 /* --- variables --- */
-static BseType           type_id_fir_filter = 0;
+static GType             type_id_fir_filter = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_fir_filter = {
+static const GTypeInfo type_info_fir_filter = {
   sizeof (BseFIRFilterClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) bse_fir_filter_class_init,
-  (BseClassDestroyFunc) bse_fir_filter_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) bse_fir_filter_class_init,
+  (GClassDestroyFunc) bse_fir_filter_class_destroy,
   NULL /* class_data */,
   
   sizeof (BseFIRFilter),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) bse_fir_filter_init,
+  (GInstanceInitFunc) bse_fir_filter_init,
 };
 
 
@@ -81,7 +81,7 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
   BseSourceClass *source_class;
   guint ochannel_id, ichannel_id;
 
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 

@@ -53,20 +53,20 @@ static inline void dav_canyon_delay_update_locals    (DavCanyonDelay       *dela
 
 
 /* --- variables --- */
-static BseType           type_id_canyon_delay = 0;
+static GType             type_id_canyon_delay = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_canyon_delay = {
+static const GTypeInfo type_info_canyon_delay = {
   sizeof (DavCanyonDelayClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) dav_canyon_delay_class_init,
-  (BseClassDestroyFunc) dav_canyon_delay_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) dav_canyon_delay_class_init,
+  (GClassDestroyFunc) dav_canyon_delay_class_destroy,
   NULL /* class_data */,
   
   sizeof (DavCanyonDelay),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) dav_canyon_delay_init,
+  (GInstanceInitFunc) dav_canyon_delay_init,
 };
 
 
@@ -112,7 +112,7 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
   BseSourceClass *source_class;
   guint ochannel_id, ichannel_id;
 
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 

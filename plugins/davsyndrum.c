@@ -54,20 +54,20 @@ static inline void dav_syn_drum_update_locals    (DavSynDrum       *drum);
 
 
 /* --- variables --- */
-static BseType           type_id_syn_drum = 0;
+static GType             type_id_syn_drum = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_syn_drum = {
+static const GTypeInfo type_info_syn_drum = {
   sizeof (DavSynDrumClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) dav_syn_drum_class_init,
-  (BseClassDestroyFunc) dav_syn_drum_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) dav_syn_drum_class_init,
+  (GClassDestroyFunc) dav_syn_drum_class_destroy,
   NULL /* class_data */,
   
   sizeof (DavSynDrum),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) dav_syn_drum_init,
+  (GInstanceInitFunc) dav_syn_drum_init,
 };
 
 
@@ -99,7 +99,7 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
   BseSourceClass *source_class;
   guint ochannel_id, ichannel_id;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   

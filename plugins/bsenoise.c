@@ -36,20 +36,20 @@ static void      bse_noise_reset                (BseSource      *source);
 
 
 /* --- variables --- */
-static BseType           type_id_noise = 0;
+static GType             type_id_noise = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_noise = {
+static const GTypeInfo type_info_noise = {
   sizeof (BseNoiseClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) bse_noise_class_init,
-  (BseClassDestroyFunc) bse_noise_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) bse_noise_class_init,
+  (GClassDestroyFunc) bse_noise_class_destroy,
   NULL /* class_data */,
   
   sizeof (BseNoise),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) bse_noise_init,
+  (GInstanceInitFunc) bse_noise_init,
 };
 
 
@@ -61,7 +61,7 @@ bse_noise_class_init (BseNoiseClass *class)
   BseSourceClass *source_class;
   guint ochannel_id;
 
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 

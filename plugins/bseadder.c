@@ -50,20 +50,20 @@ static void      bse_adder_reset                 (BseSource      *source);
 
 
 /* --- variables --- */
-static BseType           type_id_adder = 0;
+static GType             type_id_adder = 0;
 static gpointer          parent_class = NULL;
-static const BseTypeInfo type_info_adder = {
+static const GTypeInfo type_info_adder = {
   sizeof (BseAdderClass),
   
-  (BseBaseInitFunc) NULL,
-  (BseBaseDestroyFunc) NULL,
-  (BseClassInitFunc) bse_adder_class_init,
-  (BseClassDestroyFunc) bse_adder_class_destroy,
+  (GBaseInitFunc) NULL,
+  (GBaseDestroyFunc) NULL,
+  (GClassInitFunc) bse_adder_class_init,
+  (GClassDestroyFunc) bse_adder_class_destroy,
   NULL /* class_data */,
   
   sizeof (BseAdder),
   0 /* n_preallocs */,
-  (BseObjectInitFunc) bse_adder_init,
+  (GInstanceInitFunc) bse_adder_init,
 };
 
 
@@ -79,7 +79,7 @@ bse_adder_class_init (BseAdderClass *class)
   BseSourceClass *source_class;
   guint ichannel_id, ochannel_id;
     
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   
