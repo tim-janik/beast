@@ -107,6 +107,7 @@ create synthesis networks or very simple songs, any Pentium II ought to
 suffice. If you want to lay down a few tracks with effects you may need
 something more modern like a CPU with 1 GHz or higher core frequency.
 
+@anchor{gnome-canvas-idle-id-crash}
 @section @beast crashes upon creation of new synthesis networks?
 
 @beast uses the

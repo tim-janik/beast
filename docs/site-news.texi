@@ -24,7 +24,7 @@ We apologise for the inconvenience this may have caused.
 
 On a related topic, many users encountered crashes upon creation of synthesis
 networks with the newer versions, there is now a
-@uref{beast-doc://faq#node-2-13-0-0,,FAQ entry}
+@uref{beast-doc://faq#gnome-canvas-idle-id-crash,,FAQ entry}
 adressing the specifics of the issue.
 
 

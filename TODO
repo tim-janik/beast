@@ -79,10 +79,8 @@ DOCS:
 - nroff files need another build step to get final page numbers [alper]
 - the html description for @func from bstutils.c:bst_gmask_foreach()
   is messed up [alper]
-- the FAQ entry 1.13 (canvas->idle_id!=0 assertion) should use @anchor/@xref
-  to be externally linkable [alper/timj]
 - the FAQ entry 1.13 has an anchor of #node-2-13-0-0 instead of #node-1-13-0-0
-  due tu unnumbered sections being counted as well. unnumbered sections should
+  due to unnumbered sections being counted as well. unnumbered sections should
   be counted seperately (e.g. as #node-u1-0-0-0). [alper]
 
 General BSE:

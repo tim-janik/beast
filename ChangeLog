@@ -1,3 +1,9 @@
+Mon Apr 21 03:55:45 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/faq.texi: insert an anchor #gnome-canvas-idle-id-crash.
+
+	* docs/site-news.texi: link to faq#gnome-canvas-idle-id-crash.
+
 Mon Apr 21 00:19:32 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-links-synthesis.texi: added novemeber 2002 synth
