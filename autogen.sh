@@ -8,7 +8,7 @@ AUTOMAKE=automake
 AUTOMAKE_VERSION=1.4
 ACLOCAL=aclocal
 AUTOCONF=autoconf
-AUTOCONF_VERSION=2.13
+AUTOCONF_VERSION=2.50
 AUTOHEADER=autoheader
 #LIBTOOL=libtool
 CONFIGURE_OPTIONS=--enable-devel-rules=yes
@@ -46,10 +46,10 @@ fi
 # check for autoconf
 if $AUTOCONF --version 2>/dev/null | grep -q " $AUTOCONF_VERSION\b" ; then
 	:	# all fine
-elif $AUTOCONF$AUTOCONF_VERSION --version 2>/dev/null | grep -q " $AUTOCONF_VERSION\b" ; then
+elif $AUTOCONF$AUTOCONF_VERSION --version 2>/dev/null | grep -q "GNU Autoconf\b" ; then
 	AUTOCONF=$AUTOCONF$AUTOCONF_VERSION
 	AUTOHEADER=$AUTOHEADER$AUTOCONF_VERSION
-elif $AUTOCONF-$AUTOCONF_VERSION --version 2>/dev/null | grep -q " $AUTOCONF_VERSION\b" ; then
+elif $AUTOCONF-$AUTOCONF_VERSION --version 2>/dev/null | grep -q "GNU Autoconf\b" ; then
 	AUTOCONF=$AUTOCONF-$AUTOCONF_VERSION
 	AUTOHEADER=$AUTOHEADER-$AUTOCONF_VERSION
 else

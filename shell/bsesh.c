@@ -23,7 +23,7 @@
 #include <guile/gh.h>
 #include <bse/bse.h>
 #include "bsescminterp.h"
-#include "../PKG_config.h"
+#include "topconfig.h"
 
 #define	PRG_NAME	"bsesh"
 

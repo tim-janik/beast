@@ -18,7 +18,7 @@
 #include "bstsplash.h"
 
 
-#include "PKG_config.h"
+#include "topconfig.h"
 #include <string.h>
 
 

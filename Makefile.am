@@ -18,8 +18,8 @@ AUTOMAKE_OPTIONS = 1.4
 # extra dependancies
 configure: acbeast.m4
 
-# build PKG_paths.h
-PKG_paths.h: $(top_builddir)/config.status Makefile
+# build make-paths.h
+make-paths.h: $(top_builddir)/config.status Makefile
 	cd $(top_builddir) \
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-pph \
 	&& echo >> xgen-pph \
@@ -37,10 +37,10 @@ PKG_paths.h: $(top_builddir)/config.status Makefile
 
 #	&& (cmp -s xgen-pph $@ || cp xgen-pph $@) 
 
-# always built PKG_paths.h and create links
-stamp-h: PKG_paths.h
+# always built make-paths.h and create links
+stamp-h: make-paths.h
 
-CLEANFILES += PKG_paths.h
+CLEANFILES += make-paths.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = sfi.pc bse.pc
@@ -53,4 +53,5 @@ EXTRA_DIST += $(strip	\
 	acbeast.m4	\
 	sfi.pc.in	\
 	bse.pc.in	\
+	topconfig.h	\
 )

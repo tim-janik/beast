@@ -18,7 +18,7 @@
 #include <bse/bsemain.h>
 #include <bse/bsetype.h>
 #include <bse/bseglue.h>
-#include "../PKG_config.h"
+#include "topconfig.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

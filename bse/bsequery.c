@@ -20,7 +20,7 @@
 #include        "bseprocedure.h"
 #include        "bsemain.h"
 #include        "bsestandardsynths.h"
-#include        "PKG_config.h"
+#include        "topconfig.h"
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>

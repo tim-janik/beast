@@ -6,20 +6,21 @@ builtin(include, acbeast.m4)dnl
 #
 # Configure script for BEAST/BSE
 #
-AC_INIT(bse/bseconfig.h.in)
-AM_CONFIG_HEADER(PKG_config.h)
-AC_PREREQ(2.13)
+AC_INIT
+AC_CONFIG_SRCDIR([bse/bseconfig.h.in])
+AM_CONFIG_HEADER(configure.h)
+AC_PREREQ(2.57)
 
 #
 # BSE version numbers
 #
-AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
+AC_DIVERT_BEFORE_HELP([
 BSE_MAJOR_VERSION=0
 BSE_MINOR_VERSION=5
 BSE_MICRO_VERSION=5
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
-AC_DIVERT_POP()dnl
+])
 dnl#
 dnl# Making releases:
 dnl#   BSE_MICRO_VERSION += 1;
@@ -57,20 +58,17 @@ AC_SUBST(LT_AGE)
 
 dnl figure debugging default, prior to $ac_help setup
 dnl
-AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
+AC_DIVERT_BEFORE_HELP([
 if test `expr $BSE_MINOR_VERSION \% 2 \| $BSE_MAJOR_VERSION \< 1` = 1 ; then
         debug_default=yes
 else
         debug_default=minimum
 fi
-AC_DIVERT_POP()dnl
+])
 
 
 # initialize automake, don't define PACKAGE and VERSION
 AM_INIT_AUTOMAKE(beast, $BST_VERSION, no-define)
-
-# Support program name conversion.
-AC_ARG_PROGRAM
 
 # Disable automatic maintainer mode.
 AM_MAINTAINER_MODE
@@ -208,20 +206,20 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
 
     dnl --- pthread_mutexattr_settype ---
     AC_MSG_CHECKING([for pthread_mutexattr_settype()])
-    AC_TRY_COMPILE([
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
       #define _XOPEN_SOURCE   600
       #include <pthread.h>
-    ], [
+    ]], [[
       int (*attr_settype) (pthread_mutexattr_t *__attr, int __kind) = pthread_mutexattr_settype;
       int val = PTHREAD_MUTEX_RECURSIVE;
       attr_settype = 0; val = 0;
-    ],
+    ]])],[
       SFI_HAVE_MUTEXATTR_SETTYPE=1
       AC_MSG_RESULT(yes)
-    ,
+    ],[
       SFI_HAVE_MUTEXATTR_SETTYPE=0
       AC_MSG_RESULT(no)
-    )
+    ])
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
 
     dnl --- setup BSE install paths ---
@@ -295,18 +293,18 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     AC_CHECK_HEADER(X11/XKBlib.h, have_xkb=3$have_xkb)
     AC_CHECK_HEADER(X11/extensions/XKBgeom.h, have_xkb=4$have_xkb)
     MC_IF_VAR_EQ(have_xkb, 4321,
-	AC_DEFINE_UNQUOTED(BST_WITH_XKB),
+	AC_DEFINE_UNQUOTED(BST_WITH_XKB, 1, [XKB present]),
     )
     CFLAGS=$cflags
     LDFLAGS=$ldflags
 	
     dnl Default keytable patch
     AC_MSG_CHECKING(what the fallback keytable should be)
-    AC_DEFINE_UNQUOTED(BST_DFL_KEYTABLE, "us")
+    AC_DEFINE_UNQUOTED(BST_DFL_KEYTABLE, "us", [Default Keytable])
     AC_MSG_RESULT([\"us\", there are more americans than germans ;( ])
 
     # BEAST version
-    AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION")
+    AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION", [BEAST Version])
     BST_VERSION_STABLE=0
     case "$BST_VERSION" in
     0.99.*)     BST_VERSION_HINT=BETA ;;
@@ -321,8 +319,8 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 	 	  BST_VERSION_HINT="Stable Branch"
 	        fi ;;
     esac
-    AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT")
-    AC_DEFINE_UNQUOTED(BST_VERSION_STABLE, $BST_VERSION_STABLE)
+    AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT", [Version classification])
+    AC_DEFINE_UNQUOTED(BST_VERSION_STABLE, $BST_VERSION_STABLE, [On stable branch?])
 
     # BEAST resource paths
     beastbasedir=\${datadir}/beast
@@ -369,7 +367,7 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
     fi
     if test -n "$dev" ; then
 	bse_have_pcmdev=yes
-	AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_OSS, "$dev")
+	AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_OSS, "$dev", [Device used for PCM I/O])
 	result="$result""PCM:$dev "
     else
 	result="$result""PCM:none "
@@ -389,7 +387,7 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
         done
     fi
     if test -n "$dev" ; then
-        AC_DEFINE_UNQUOTED(BSE_MIDI_DEVICE_CONF_OSS, "$dev")
+        AC_DEFINE_UNQUOTED(BSE_MIDI_DEVICE_CONF_OSS, "$dev", [Device used for MID I/O])
         result="$result""MIDI:$dev "
     else
         result="$result""MIDI:none "
@@ -499,7 +497,7 @@ AC_BEAST_REQUIREMENTS
 AC_DOC_REQUIREMENTS
 
 # architecture information
-AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "${host_alias}")
+AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "${host_alias}", [Architecture])
 
 # Automake @VARIABLE@ exports.
 AC_SUBST(CFLAGS)
@@ -508,7 +506,7 @@ AC_SUBST(LDFLAGS)
 
 
 # create output files
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 sfi/Makefile
 bse/Makefile
@@ -531,3 +529,4 @@ bse/bseconfig.h
 sfi.pc
 bse.pc
 ])
+AC_OUTPUT

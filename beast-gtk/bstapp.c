@@ -17,7 +17,7 @@
  */
 #include "bstapp.h"
 
-#include "PKG_config.h"
+#include "topconfig.h"
 
 #include "bstactivatable.h"
 #include "bstsongshell.h"

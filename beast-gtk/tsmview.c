@@ -18,7 +18,7 @@
  */
 #include <gxk/gxk.h>
 
-#include "../PKG_paths.h"
+#include "topconfig.h"
 
 #include <string.h>
 

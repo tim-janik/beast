@@ -17,7 +17,7 @@
  */
 #include "bsescripthelper.h"
 
-#include "PKG_config.h"
+#include "topconfig.h"
 #include "bsecategories.h"
 #include "bseserver.h"
 #include "bseglue.h"

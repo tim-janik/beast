@@ -26,7 +26,7 @@
 #include "bstcatalog.h"
 #include "bstparam.h"
 #include "bstpreferences.h"
-#include "PKG_config.h"
+#include "topconfig.h"
 #include "beast-gtk/images/beast-images.h"
 #include <unistd.h>
 #include <string.h>

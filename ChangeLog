@@ -1,3 +1,18 @@
+Mon Aug 25 16:11:36 2003  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: upgrade autoconf dependancy to 2.50.
+
+	* acbeast.m4: add AC_DIVERT_BEFORE_HELP() taken from gtk+,
+	to define stuff in configure.in available for help generation.
+
+	* configure.in: port over to autoconf2.57, use configure.h
+	as new generated configuartion file.
+
+	* Makefile.am:
+	* topconfig.h: provide package-wide configuration results.
+
+	* */*.c: include "topconfig.h" now.
+
 Fri Aug 22 08:06:29 2003  Tim Janik  <timj@gtk.org>
 
         * beast-gtk/bstrecords.idl:

@@ -32,7 +32,7 @@ bse-zfile.c:	zintern $(srcdir)/*.bse # bse-zfile.h
 #	&& rm -f xgen-bzh
 
 # need -I$(top_srcdir) for <gsl/gsldefs.h>
-# need -I. for "../PKG_config.h"
+# need -I. for "../topconfig.h"
 
 noinst_PROGRAMS = zintern
 progs_LDADD = $(top_builddir)/sfi/libsfi.la $(LIBZ)
