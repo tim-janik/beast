@@ -1,3 +1,7 @@
+Fri Nov 28 02:57:56 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-cxx.cc: remove bogus generated includes.
+
 Fri Nov 28 00:49:15 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-cxx.*: Records, sequences, choices, classes are covered now.

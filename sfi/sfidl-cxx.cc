@@ -42,10 +42,6 @@ void CodeGeneratorCxx::run ()
  
   if (options.doHeader)
     {
-      /* include files */
-      printf ("#include <bsw/bswcxxutils.h>\n");
-      printf ("\n");
-
       /* choices */
       for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
         {
