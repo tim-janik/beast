@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-11 03:12+0200\n"
-"PO-Revision-Date: 2004-07-11 15:53+0200\n"
+"POT-Creation-Date: 2004-07-12 14:15+0200\n"
+"PO-Revision-Date: 2004-07-12 19:35+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3319,6 +3319,46 @@ msgstr "Signál In"
 msgid "Snoop Signal"
 msgstr ""
 
+#: bse/bsesong.proc:36
+msgid "Create a new mixer bus for a Song."
+msgstr "Vytvořit novou mixážní sběrnici pro skladbu."
+
+#: bse/bsesong.proc:67
+msgid "Delete a mixer bus from a Song."
+msgstr "Odstranit mixážní sběrnici ze skladby."
+
+#: bse/bsesong.proc:105
+msgid "Retrieve master output bus of a song."
+msgstr "Získat sběrnici hlavního výstupu pro skladbu."
+
+#: bse/bsesong.proc:132
+msgid "Create a new Part in a Song."
+msgstr "Vytvořit nový part skladby."
+
+#: bse/bsesong.proc:163
+msgid "Delete a Part from a Song."
+msgstr "Odstranit part ze skladby."
+
+#: bse/bsesong.proc:201
+msgid "Create a new Track for a Song."
+msgstr "Vytvořit novou stopu ve skladbě."
+
+#: bse/bsesong.proc:237
+msgid "Delete a Track from a Song."
+msgstr "Odstranit stopu ze skladby."
+
+#: bse/bsesong.proc:276
+msgid "Find a track suitable for playing notes of a given part."
+msgstr "Hledat stopu vhodnou pro přehrávání not daného partu."
+
+#: bse/bsesong.proc:319
+msgid "Synthesize a note on a song of an active project."
+msgstr "Syntetizovat notu do skladby z aktuálního projektu."
+
+#: bse/bsesong.proc:369
+msgid "Retrieve song timing information at a specific tick."
+msgstr "Získat informace o časování skladby u konkrétního znaménka."
+
 #: bse/bsesongbus.c:144
 msgid "Right channel input"
 msgstr "Vstup pravého kanálu"
@@ -3327,7 +3367,9 @@ msgstr "Vstup pravého kanálu"
 msgid ""
 "Bus implementation for songs, used to to route track audio signals to the "
 "master output."
-msgstr "Implementace sběrnice pro skladby používaná pro směrování signálů stop zvuku na hlavní výstup."
+msgstr ""
+"Implementace sběrnice pro skladby používaná pro směrování signálů stop zvuku "
+"na hlavní výstup."
 
 #: bse/bsestandardosc.c:106
 msgid ""
