@@ -137,7 +137,7 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 						    0.0,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
-  bse_object_class_add_param (object_class, NULL,
+  bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_FREQ,
                               bse_param_spec_float ("base_freq", "Frequency",
 						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
@@ -145,15 +145,15 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 						    BSE_KAMMER_FREQ,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
-  bse_object_class_add_param (object_class, NULL,
+  bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_NOTE,
                               bse_param_spec_note ("base_note", "Note",
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
 						   1, BSE_KAMMER_NOTE, TRUE,
 						   BSE_PARAM_GUI));
-  bse_object_class_add_param (object_class, NULL,
+  bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_FM_PERC,
-                              bse_param_spec_float ("fm_perc", "Frequency Modulation [%]",
+                              bse_param_spec_float ("fm_perc", "Modulation [%]",
 						    0, 100.0,
 						    5.0,
 						    10.0,
