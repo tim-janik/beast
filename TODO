@@ -8,7 +8,6 @@ FIXME(urgent):
 - pianoroll: close pianoroll window in response to part::release  
 - start playback at play pointer position
 - add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
-- write script which resizes 0-length notes to 1/4 note or similar length (those notes occour from MIDI drum pattern imports)
 - sfidl --client: generate: extern "C" ifdef's, include sfi/sfi.h
 - provide config-parameter (by engine) which provides 16kHz limit listening-threshold used implicitely in osc-code etc. (important for 48K,84K)
 - skip and retrigger updates for scope visibility changes
@@ -20,9 +19,8 @@ FIXME(urgent):
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
   compiler support and missing libc support will fail on accessing a __thread variable
 - add Left and Right channels to BseAmplifier to allow stereo amplification
-- provide script to render bse file to WAV. then add File/Export function which:
-  1) saves the current bse file, 2) renders the saved file to WAV with progress indication
 - add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
+- registering the same script function twice triggers GType assertion
 TODO:
 - driver interface: support multilpe MIDI devices
 - add more menu tooltips
@@ -110,7 +108,6 @@ TODO:
 - verify that no IO channel buffer memory is being allocated for virtual modules
 - Error: "inputchannelalreadyinuse" should popup new error dialog
 - lock band-width property for lp/hp filters
-- save loop coordinates
 - when loading/merging bse files, make sure all orphan parts are in a new muted track and delete part-item-view
 - delete parts upon their last unlink from a track
 - implement ordinary save functionality
@@ -196,7 +193,6 @@ TODO:
 - bsemididevice-oss throws warnings when compiled without midi support
 - MidiEvent (serialization)
 - add IDs to part links in tracks
-- registering the same script function twice triggers GType assertion
 - fix uses of gsl_engine_tick_stamp_from_systime() in bstwaveeditor.c
 - cleanup helper/util code in sfitype.h
 - song->master volume doesn't affect anything
@@ -229,9 +225,6 @@ DOCS:
 - plugin-devel: mention possibility of deriving from BassFilterProperties() for expensive
   table etc. calculations
 - automate uploading of images from docs/ to gtk.org:/web/beast/html/cvs-images/
-
-FEATURE-EXTRACT/-COMPARE:
-- base frequency feature
 
 MONITORING DIALOG:
 * Frame "Thread Info"
@@ -275,7 +268,6 @@ TASKS:
 - PatternEditor: (interpolate) should interpolate values between start and end of a selection,
   regardless whether the selected column is a note or event
 - PatternEditor: Ctrl+R (random) should insert random notes or events
-- PatternEditor: transpose script (up and down by semitone, so that we can use an accelerator)
 - PatternEditor: background colors should be different (darker) every 4 and every 16 steps (maybe
   depending on measure)
 - PatternEditor: selection, cut, copy, paste
@@ -308,7 +300,6 @@ TASKS:
 - CPU monitoring
 - add facility to record MIDI control events
 - implement an object clippboard
-- add script to re-quantize piano-roll selections
 - freeverb bypass toggle
 - add "bypass" option to audio output channels
 - virtual MIDI keyboard
@@ -329,7 +320,6 @@ TASKS:
   - use_count prevents ::release emission
   - ::release on containers removes children
 - implement remote use-count collection
-- complete and intergrate piano-script
 * eliminate everything that fgrep -i fixme/hack reveals
 * move mix_freq and recording_freq into datahandle
 * fix reversed data handle wrg n_channels
@@ -433,18 +423,13 @@ Logging:
    
 
 PianoRoll:
-- implement HFlip selection script
 - play notes when inserted into piano roll
 - change piano roll dialog wrg GDK_Escape (ala trackroll)?
 - cleanup piano tick bar
 - portamento-to-note in piano roll? probably need special effects
 - add to piano roll dialog:
-  part-link properties:
-  - loop-count
-  - length (tact-entry)
-  - part coment
-  this fixes tact-kind queries for piano roll editing
-  and song position pointer placement
+  - part length (tact-entry)
+  - part comment
 - hotkey in piano roll to replay project
 - hscrollbar resizable (like cubase) or last-tick + 1 tact
 - ctrl+move should copy (DND style modifier)
@@ -537,6 +522,15 @@ Effects:
 - device monitor latency setting should be persistent in .bserc
 - implement filters from http://www.harmony-central.com/Computer/Programming/Audio-EQ-Cookbook.txt
   (main source for http://zynaddsubfx.sourceforge.net)
+
+SCRIPTS:
+- PianoRoll: write script which resizes 0-length notes to 1/4 note or similar length (those notes occour from MIDI drum pattern imports)
+- PianoRoll: add script to re-quantize piano-roll selections
+- PianoRoll: implement horizontal flip selection script (does need horizontal seleciton boundary markers?)
+- PianoRoll: implement vertical flip selection script (does need vertical seleciton boundary markers?)
+- PatternEditor: transpose script (up and down by semitone, so that we can use an accelerator)
+- provide script to render bse file to WAV. then add File/Export function which:
+  1) saves the current bse file, 2) renders the saved file to WAV with progress indication
 
 GSL:
   * sample loader currently hard codes 440.0 for osc_freq
@@ -668,7 +662,7 @@ gui:
     - looks broken on some gtk themes (button shading)
     - looks incoherent
     - lines in ledmeter
-  scripts:
+  scripts (refer to SCRIPTS section further up):
     - pianoroll transpose up/down
     - pianoroll lengthen/shorten notes
 
@@ -709,6 +703,9 @@ documentation:
  - C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
   - sfidl-manual.texi: complete the documentation
  - bsewavetool needs to be documented with documentation tool on code level (gsl_data_find_loop*)
+
+FEATURE-EXTRACT/-COMPARE:
+- base frequency feature
 
 Misc Buglets/Feature Requests:
  - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
