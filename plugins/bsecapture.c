@@ -19,7 +19,8 @@
 #include "bsecapture.h"
 
 #include <bse/bsechunk.h>
-#include <bse/bsepcmstream.h>
+#include <bse/bseheart.h>
+#include <bse/bsemixer.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -84,6 +85,9 @@ bse_capture_class_destroy (BseCaptureClass *class)
 static void
 bse_capture_init (BseCapture *capture)
 {
+  /* FIXME: idevice hack */
+  capture->idevice = g_strdup (bse_heart_get_default_idevice ());
+  capture->pdev = NULL;
 }
 
 static void
@@ -93,6 +97,9 @@ bse_capture_do_shutdown (BseObject *object)
 
   capture = BSE_CAPTURE (object);
 
+  g_free (capture->idevice);
+  capture->idevice = NULL;
+
   /* chain parent class' shutdown handler */
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
@@ -101,29 +108,16 @@ bse_capture_do_shutdown (BseObject *object)
 
 static void
 bse_capture_prepare (BseSource *source,
-		   BseIndex   index)
+		     BseIndex   index)
 {
   BseCapture *capture = BSE_CAPTURE (source);
-  BseCaptureClass *class = BSE_CAPTURE_GET_CLASS (capture);
-
-  if (!class->ref_count)
-    {
-      class->buffer = g_new0 (BseSampleValue, 2 * BSE_TRACK_LENGTH);
-      class->n_buffers = bse_pcm_stream_extern_mic ? bse_pcm_stream_extern_mic->n_blocks : 0;
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-    }
-  class->ref_count++;
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+
+  capture->pdev = bse_heart_get_device (capture->idevice);
+  if (capture->pdev)
+    bse_heart_source_add_idevice (source, capture->pdev);
 }
 
 static BseChunk*
@@ -131,33 +125,15 @@ bse_capture_calc_chunk (BseSource *source,
 		      guint      ochannel_id)
 {
   BseCapture *capture = BSE_CAPTURE (source);
-  BseCaptureClass *class = BSE_CAPTURE_GET_CLASS (capture);
   BseSampleValue *hunk;
-  guint i;
   
   g_return_val_if_fail (ochannel_id == BSE_CAPTURE_OCHANNEL_MONO, NULL);
 
-  if (bse_pcm_stream_extern_mic &&
-      BSE_STREAM_READY (bse_pcm_stream_extern_mic) &&
-      BSE_STREAM_READABLE (bse_pcm_stream_extern_mic) &&
-      bse_pcm_stream_extern_mic->attribs.n_channels == 2 &&
-      bse_pcm_stream_extern_mic->attribs.play_frequency ==
-      bse_pcm_stream_extern_mic->attribs.record_frequency &&
-      bse_pcm_stream_extern_mic->n_blocks > class->n_buffers)
-    {
-      //      class->n_buffers = bse_pcm_stream_extern_mic->n_blocks;
-      bse_stream_read_sv (BSE_STREAM (bse_pcm_stream_extern_mic), BSE_TRACK_LENGTH * 2, class->buffer);
-    }
-
   hunk = bse_hunk_alloc (1);
-  for (i = 0; i < BSE_TRACK_LENGTH; i++)
-    {
-      BseMixValue v;
-
-      v = class->buffer[i * 2];
-      v += class->buffer[i * 2 + 1];
-      hunk[i] = v >> 2;
-    }
+  if (capture->pdev && BSE_PCM_DEVICE_READABLE (capture->pdev))
+    bse_hunk_mix (1, hunk, NULL, capture->pdev->n_channels, capture->pdev->capture_cache);
+  else
+    memset (hunk, 0, BSE_TRACK_LENGTH * sizeof (BseSampleValue));
 
   return bse_chunk_new_orphan (1, hunk);
 }
@@ -166,15 +142,10 @@ static void
 bse_capture_reset (BseSource *source)
 {
   BseCapture *capture = BSE_CAPTURE (source);
-  BseCaptureClass *class = BSE_CAPTURE_GET_CLASS (capture);
-  
-  class->ref_count--;
-  if (!class->ref_count)
-    {
-      g_free (class->buffer);
-      class->buffer = NULL;
-      class->n_buffers = 0;
-    }
+
+  if (capture->pdev)
+    bse_heart_source_remove_idevice (source, capture->pdev);
+  capture->pdev = NULL;
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);

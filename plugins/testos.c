@@ -69,6 +69,7 @@ BSE_EXPORT_OBJECTS = {
       TESTOS_WIDTH, TESTOS_HEIGHT,
       TESTOS_RLE_PIXEL_DATA, },
   },
+#if 0
   { &type_id_amp, "BseAmp", "BseSource",
     "Amp is a test object",
     &testos_type_info,
@@ -90,6 +91,7 @@ BSE_EXPORT_OBJECTS = {
     &testos_type_info,
     "/Source/Broken",
   },
+#endif
   { NULL, },
 };
 BSE_EXPORTS_END;

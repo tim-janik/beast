@@ -25,6 +25,7 @@
 
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
+#include <bse/bsepcmdevice.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,14 +50,13 @@ typedef struct _BseCaptureClass BseCaptureClass;
 struct _BseCapture
 {
   BseSource       parent_object;
+
+  gchar		 *idevice;
+  BsePcmDevice   *pdev;
 };
 struct _BseCaptureClass
 {
   BseSourceClass parent_class;
-
-  guint           ref_count;
-  BseIndex        n_buffers;
-  BseSampleValue *buffer;
 };
 
 
