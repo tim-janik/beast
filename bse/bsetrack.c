@@ -147,6 +147,18 @@ bse_track_class_init (BseTrackClass *class)
   signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }
 
+static gulong
+alloc_id_above (guint n)
+{
+  gulong tmp, id = bse_id_alloc ();
+  if (id > n)
+    return id;
+  tmp = id;
+  id = alloc_id_above (n);
+  bse_id_free (tmp);
+  return id;
+}
+
 static void
 bse_track_init (BseTrack *self)
 {
@@ -156,7 +168,7 @@ bse_track_init (BseTrack *self)
   self->muted_SL = FALSE;
   self->n_entries_SL = 0;
   self->entries_SL = g_renew (BseTrackEntry, NULL, upper_power2 (self->n_entries_SL));
-  self->midi_receiver_SL = bse_midi_receiver_new ("intern");
+  self->midi_channel_SL = alloc_id_above (BSE_MIDI_MAX_CHANNELS);
   self->track_done_SL = FALSE;
 }
 
@@ -186,8 +198,7 @@ bse_track_finalize (GObject *object)
 
   g_assert (self->n_entries_SL == 0);
   g_free (self->entries_SL);
-  bse_midi_receiver_unref (self->midi_receiver_SL);
-  self->midi_receiver_SL = NULL;
+  bse_id_free (self->midi_channel_SL);
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -669,19 +680,21 @@ bse_track_get_part_SL (BseTrack *self,
 }
 
 void
-bse_track_add_modules (BseTrack     *self,
-		       BseContainer *container,
-		       BseSource    *merger)
+bse_track_add_modules (BseTrack        *self,
+		       BseContainer    *container,
+                       BseMidiReceiver *midi_receiver,
+		       BseSource       *merger)
 {
   g_return_if_fail (BSE_IS_TRACK (self));
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_CONTEXT_MERGER (merger));
   g_return_if_fail (self->sub_synth == NULL);
+  g_return_if_fail (midi_receiver != NULL);
 
   /* midi voice input */
   self->voice_input = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
   bse_item_set_internal (self->voice_input, TRUE);
-  bse_midi_voice_input_set_midi_receiver (BSE_MIDI_VOICE_INPUT (self->voice_input), self->midi_receiver_SL, 0);
+  bse_midi_voice_input_set_midi_receiver (BSE_MIDI_VOICE_INPUT (self->voice_input), midi_receiver, self->midi_channel_SL);
   
   /* sub synth */
   self->sub_synth = bse_container_new_child (container, BSE_TYPE_SUB_SYNTH,
@@ -696,7 +709,7 @@ bse_track_add_modules (BseTrack     *self,
                                              "snet", self->snet,
                                              NULL);
   bse_item_set_internal (self->sub_synth, TRUE);
-  bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->sub_synth), self->midi_receiver_SL, 0);
+  bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->sub_synth), midi_receiver, self->midi_channel_SL);
   
   /* voice input <-> sub-synth */
   bse_source_must_set_input (self->sub_synth, 0,
@@ -735,7 +748,7 @@ bse_track_add_modules (BseTrack     *self,
   self->postprocess = bse_container_new_child (container, BSE_TYPE_SUB_SYNTH, NULL);
   bse_item_set_internal (self->postprocess, TRUE);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
-  bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->postprocess), self->midi_receiver_SL, 0);
+  bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->postprocess), midi_receiver, self->midi_channel_SL);
   
   /* context merger <-> postprocess */
   bse_source_must_set_input (self->postprocess, 0, self->context_merger, 0);
@@ -767,10 +780,11 @@ bse_track_remove_modules (BseTrack     *self,
 }
 
 void
-bse_track_clone_voices (BseTrack *self,
-			BseSNet  *snet,
-			guint     context,
-			GslTrans *trans)
+bse_track_clone_voices (BseTrack        *self,
+			BseSNet         *snet,
+			guint            context,
+                        BseMidiReceiver *midi_receiver,
+			GslTrans        *trans)
 {
   guint i;
   
@@ -779,7 +793,7 @@ bse_track_clone_voices (BseTrack *self,
   g_return_if_fail (trans != NULL);
   
   for (i = 0; i < self->max_voices - 1; i++)
-    bse_snet_context_clone_branch (snet, context, self->context_merger, self->midi_receiver_SL, 0, trans);
+    bse_snet_context_clone_branch (snet, context, self->context_merger, midi_receiver, self->midi_channel_SL, trans);
 }
 
 static void

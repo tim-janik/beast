@@ -1,3 +1,27 @@
+Thu Jul 24 01:28:33 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidievent.[hc]: remove MIDI_MAX_CHANNEL assertions, up this to 99.
+
+	* bsemidireceiver.[hc]: remove MIDI_MAX_CHANNEL assertions.
+	add voice module ref counting.
+	(bse_midi_receiver_voices_pending): check poending voices for a specific
+	midi-channel.
+
+	* bsemidivoice.c: don't export private functions.
+
+	* bseproject.[hc]: provide a single midi-receiver for the whole project.
+
+	* bsetrack.[hc]: don't provide own midi receiver, use the one from our
+	song instead. added midi-channel property per track, per default, an
+	internal midi-channel > MIDI_MAX_CHANNEL is used.
+
+	* bsesong.[hcp]*: fetch midi-receiver from project once parent changes.
+	provide tracks with midi receiver when creating voices. honour
+	midi-channels of tracks.
+
+	* bsessequencer.c: operate on the song's midi receiver, honour
+	midi-channels of tracks.
+
 Fri Jul 18 07:09:01 2003  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle.c (gsl_data_handle_override): fix locking.

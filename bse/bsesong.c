@@ -22,6 +22,7 @@
 #include "bsecontextmerger.h"
 #include "bsepcmoutput.h"
 #include "bseproject.h"
+#include "bsemidireceiver.h"
 #include "bsestorage.h"
 #include "bsemain.h"
 #include "bsecsynth.h"
@@ -70,6 +71,8 @@ static void         bse_song_get_property     (GObject            *object,
                                                guint               param_id,
                                                GValue             *value,
                                                GParamSpec         *pspec);
+static void         bse_song_set_parent       (BseItem            *item,
+                                               BseItem            *parent);
 static void         bse_song_add_item         (BseContainer       *container,
                                                BseItem            *item);
 static void         bse_song_forall_items     (BseContainer       *container,
@@ -143,6 +146,7 @@ bse_song_class_init (BseSongClass *class)
   gobject_class->get_property = bse_song_get_property;
   gobject_class->finalize = bse_song_finalize;
   
+  item_class->set_parent = bse_song_set_parent;
   item_class->list_proxies = bse_song_list_proxies;
 
   source_class->prepare = bse_song_prepare;
@@ -561,13 +565,35 @@ bse_song_lookup (BseProject  *project,
 }
 
 static void
+bse_song_set_parent (BseItem *item,
+                     BseItem *parent)
+{
+  BseSong *self = BSE_SONG (item);
+
+  if (self->midi_receiver_SL)
+    {
+      bse_midi_receiver_unref (self->midi_receiver_SL);
+      self->midi_receiver_SL = NULL;
+    }
+
+  /* chain parent class' handler */
+  BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
+
+  if (parent)
+    {
+      BseProject *project = BSE_PROJECT (parent);
+      self->midi_receiver_SL = bse_midi_receiver_ref (project->midi_receiver);
+    }
+}
+
+static void
 bse_song_add_item (BseContainer *container,
 		   BseItem	*item)
 {
   BseSong *self = BSE_SONG (container);
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
-    bse_track_add_modules (BSE_TRACK (item), container, self->context_merger);
+    bse_track_add_modules (BSE_TRACK (item), container, self->midi_receiver_SL, self->context_merger);
 
   BSE_SEQUENCER_LOCK ();
 
@@ -723,7 +749,7 @@ bse_song_context_create (BseSource *source,
 
   if (!bse_snet_context_is_branch (snet, context_handle))       /* catch recursion */
     for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
-      bse_track_clone_voices (ring->data, snet, context_handle, trans);
+      bse_track_clone_voices (ring->data, snet, context_handle, self->midi_receiver_SL, trans);
 }
 
 static void
@@ -741,7 +767,9 @@ bse_song_reset (BseSource *source)
       bse_idle_remove (self->position_handler);
       self->position_handler = 0;
     }
+
   bse_object_unlock (BSE_OBJECT (self));
+
   g_object_notify (self, "tick-pointer");
 }
 

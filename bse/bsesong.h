@@ -60,6 +60,8 @@ struct _BseSong
   SfiInt	    last_position;
   guint		    position_handler;
 
+  BseMidiReceiver  *midi_receiver_SL;
+
   /* fields protected by sequencer mutex */
   gdouble	    tpsi_SL;		/* ticks per stamp increment (sample) */
   SfiRing	   *tracks_SL;		/* of type BseTrack* */

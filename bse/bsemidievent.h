@@ -28,7 +28,7 @@ extern "C" {
 
 
 /* --- MIDI constants --- */
-#define	BSE_MIDI_MAX_CHANNELS		(16)
+#define	BSE_MIDI_MAX_CHANNELS		(99)
 
 
 /* --- MIDI event types --- */

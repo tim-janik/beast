@@ -70,15 +70,6 @@ void	bse_midi_voice_input_set_midi_receiver	(BseMidiVoiceInput	*self,
 void	bse_midi_voice_switch_set_voice_input	(BseMidiVoiceSwitch	*self,
 						 BseMidiVoiceInput	*voice_input);
 
-void	bse_midi_voice_input_ref_midi_voice	(BseMidiVoiceInput	*self,
-						 guint			 context_handle,
-						 BseMidiReceiver       **midi_receiver_p,
-						 guint			*voice_p,
-						 GslTrans		*trans);
-void	bse_midi_voice_input_unref_midi_voice	(BseMidiVoiceInput	*self,
-						 guint			 context_handle,
-						 GslTrans		*trans);
-
 
 /* --- channels --- */
 enum

@@ -54,6 +54,8 @@ struct _BseProject
   guint		      deactivate_timer;
   gint64	      deactivate_usecs;
   guint64	      deactivate_min_tick;
+
+  BseMidiReceiver    *midi_receiver;
 };
 struct _BseProjectClass
 {

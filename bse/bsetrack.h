@@ -60,7 +60,7 @@ struct _BseTrack
   guint		   n_entries_SL : 30;
   guint		   muted_SL : 1;
   BseTrackEntry	  *entries_SL;
-  BseMidiReceiver *midi_receiver_SL;
+  guint            midi_channel_SL;
   gboolean	   track_done_SL;
 };
 struct _BseTrackClass
@@ -72,12 +72,14 @@ struct _BseTrackClass
 /* --- prototypes -- */
 void	bse_track_add_modules		(BseTrack		*self,
 					 BseContainer		*container,
+                                         BseMidiReceiver        *midi_receiver,
 					 BseSource		*merger);
 void	bse_track_remove_modules	(BseTrack		*self,
 					 BseContainer		*container);
 void	bse_track_clone_voices		(BseTrack		*self,
 					 BseSNet		*snet,
 					 guint			 context,
+                                         BseMidiReceiver        *midi_receiver,
 					 GslTrans		*trans);
 guint        	 bse_track_insert_part	(BseTrack		*self,
 					 guint			 tick,

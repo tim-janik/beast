@@ -1,4 +1,12 @@
 FIXMES:
+- forward external midi events to project's midi-receiver, then switch midi-synths to it
+- add midi-channel property to tracks
+- flag voices in midi receiver for monosynth tracks as monosynth
+- queue note-on and note-off as voice-changes on mono-synth voices
+- ignore note-off for monosynth voices if note-off-freq!=voice->freq
+- add BseMonoKeyboard with midi-channel selection, duplicating mono-synth voice signals 
+- if Track::Synth is NULL, disconnect post-process-subsynth from track-context-merger
+- show Messgae: progress seen 19/15 items only with -:d
 - fix nominator/denomiator settings in songs
 - fix forcing unique names for children of a project 
 - fix glue gc assertion after sfi_glue_describe_proc("")

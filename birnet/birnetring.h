@@ -290,7 +290,7 @@ void            sfi_ring_free_deep      (SfiRing        *head,
 					 GDestroyNotify  data_destroy);
 #define sfi_ring_tail(head)             ((head) ? (head)->prev : NULL)
 #define sfi_ring_walk(node,head_bound)  ((node)->next != (head_bound) ? (node)->next : NULL)
-
+#define sfi_ring_next                   sfi_ring_walk
 
 G_END_DECLS
 

@@ -601,7 +601,7 @@ bst_track_view_create_tree (BstItemView *iview)
 				 0.5, "V", "Maximum number of voices for simultaneous playback",
 				 track_view_voices_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree, COL_SYNTH, "#",
-				  0.5, "Synth", "Synthesizer network or wave to be used by this track",
+				  0.5, "Synth", "Synthesizer network or wave to be used as voice by this track",
 				  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree, COL_POST_SYNTH, "#",
 				  0.5, "Post", "Postprocessing Synthesizer network for this track",

@@ -27,6 +27,7 @@
 #include "bseundostack.h"
 #include "bsemain.h"
 #include "bsestandardsynths.h"
+#include "bsemidireceiver.h"
 #include "gslcommon.h"
 #include "gslengine.h"
 #include <string.h>
@@ -180,25 +181,23 @@ redo_notify (BseProject     *project,
 }
 
 static void
-bse_project_init (BseProject *project,
+bse_project_init (BseProject *self,
 		  gpointer    rclass)
 {
-  BseObject *object;
   BseWaveRepo *wrepo;
 
-  object = BSE_OBJECT (project);
-
-  project->state = BSE_PROJECT_INACTIVE;
-  project->supers = NULL;
-  project->items = NULL;
-  project->in_undo = FALSE;
-  project->in_redo = FALSE;
-  project->undo_stack = bse_undo_stack_new (project, undo_notify);
-  project->redo_stack = bse_undo_stack_new (project, redo_notify);
-  project->deactivate_usecs = 3 * 1000000;
+  self->state = BSE_PROJECT_INACTIVE;
+  self->supers = NULL;
+  self->items = NULL;
+  self->in_undo = FALSE;
+  self->in_redo = FALSE;
+  self->undo_stack = bse_undo_stack_new (self, undo_notify);
+  self->redo_stack = bse_undo_stack_new (self, redo_notify);
+  self->deactivate_usecs = 3 * 1000000;
+  self->midi_receiver = bse_midi_receiver_new ("BseProjectReceiver");
 
   /* we always have a wave-repo */
-  wrepo = bse_container_new_child (BSE_CONTAINER (project), BSE_TYPE_WAVE_REPO,
+  wrepo = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_WAVE_REPO,
                                    "uname", "Wave-Repository",
                                    NULL);
   /* with fixed uname */
@@ -276,6 +275,9 @@ bse_project_finalize (GObject *object)
   BSE_SEQUENCER_LOCK ();
   plist_auto_stop_SL = g_slist_remove (plist_auto_stop_SL, self);
   BSE_SEQUENCER_UNLOCK ();
+
+  bse_midi_receiver_unref (self->midi_receiver);
+  self->midi_receiver = NULL;
 
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);

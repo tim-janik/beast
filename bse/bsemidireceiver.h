@@ -79,13 +79,13 @@ void             bse_midi_receiver_push_event    	  (BseMidiReceiver	*self,
 void		 bse_midi_receiver_process_events	  (BseMidiReceiver	*self,
 							   guint64		 max_tick_stamp);
 guint		 bse_midi_receiver_create_voice		  (BseMidiReceiver	*self,
-							   guint		 channel_id,
+							   guint		 midi_channel,
 							   GslTrans		*trans);
 void		 bse_midi_receiver_discard_voice	  (BseMidiReceiver	*self,
 							   guint		 voice_id,
 							   GslTrans		*trans);
 GslModule*	 bse_midi_receiver_retrieve_control_module (BseMidiReceiver	*self,
-							    guint		 channel_id,
+							    guint		 midi_channel,
 							    BseMidiSignalType	 signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
 							    GslTrans		*trans);
 void		 bse_midi_receiver_discard_control_module (BseMidiReceiver	*self,
@@ -102,7 +102,8 @@ void             bse_midi_receiver_set_notifier		  (BseMidiReceiver	*self,
 BseMidiNotifier* bse_midi_receiver_get_notifier		  (BseMidiReceiver	*self);
 gboolean	 bse_midi_receiver_has_notify_events	  (BseMidiReceiver	*self);
 SfiRing*	 bse_midi_receiver_fetch_notify_events	  (BseMidiReceiver	*self);
-gboolean	 bse_midi_receiver_voices_pending	  (BseMidiReceiver	*self);
+gboolean	 bse_midi_receiver_voices_pending	  (BseMidiReceiver	*self,
+                                                           guint                 midi_channel);
 
 
 /* --- internal --- */
