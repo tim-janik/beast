@@ -1,4 +1,5 @@
 FIXMES:
+- /Demo			# parse song name from bse files
 - fix copyright/license in song-parts-operations.scm
 - fix copyright/license in party-monster.bse
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
@@ -12,26 +13,15 @@ FIXMES:
 - /Demo
 - check button3 /Tools/ menu in piano rool editor
 - check i18n strings for pianoroll GUI elements
-- registering the same procedure twice trigegrs g_warning()
+- registering the same procedure twice triggers a g_warning()
 - document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
-- File/Open should merge if issued on an empty project
 - fix forcing unique names for children of a project 
 - check whether */icons/Makefile.icons is included in dist tarball
 - check whether plugins/Makefile.plugins is included in dist tarball
-- /library/: effects,instruments,scripts
-- add toplevel menu /Synthesizers/:
-  /Synthesizers/Load from Effect Library
-  /Synthesizers/Load from Instrument Library
-  /Synthesizers/Save to Effect Library
-  /Synthesizers/Save to Instrument Library
-  /Synthesizers/Custom Export
-  /Synthesizers/Custom Import
-  which operate on the currently selected synth (project child)
-  /Synthesizers/Demo
-  alternatively, introduce /Insert/ toplevel menu
 - create ~/beast/instruments ~/beast/effects when saving effect/instrument
 - add new test song containing a wave track so the internal wave csynth is properly testet
 - add demo song
+- File/Open should merge if issued on an empty project
 - add author and license information to module types just like we do for procedures
 - default saving (SFI_PARAM_SKIP_DEFAULT)
 - fix non-NULL icons at 0x0, GUI breaks in lots of places for them
