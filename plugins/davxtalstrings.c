@@ -435,16 +435,12 @@ dav_xtal_strings_context_create (BseSource *source,
 
 
 /* --- Export to BSE --- */
-#include "./icons/noicon.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_xtal_strings, "DavXtalStrings", "BseSource",
     "DavXtalStrings is a string synthesizer - Any commercial use of this module requires a license from Stanford University",
     &type_info_xtal_strings,
     "/Modules/XtalStrings",
-    { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_WIDTH, NOICON_HEIGHT,
-      NOICON_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };

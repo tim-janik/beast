@@ -351,16 +351,12 @@ dav_bass_filter_reset (BseSource *source)
 }
 
 /* --- Export to DAV --- */
-#include "./icons/noicon.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_bass_filter, "DavBassFilter", "BseSource",
     "DavBassFilter is a low-pass resonant filter",
     &type_info_bass_filter,
     "/Modules/BassFilter",
-    { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_WIDTH, NOICON_HEIGHT,
-      NOICON_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };

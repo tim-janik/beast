@@ -1,3 +1,10 @@
+Wed Mar 13 18:17:46 2002  Tim Janik  <timj@gtk.org>
+
+	* remove "no icon" icons from modules which don't have an icon.
+
+	* icons/noicon.c:
+	* icons/noicon.xcf: remove these.
+
 Sun Mar 10 10:05:41 2002  Tim Janik  <timj@gtk.org>
 
 	* fix BswIcon usage due to changes in BSW/BSE.
