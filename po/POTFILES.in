@@ -93,7 +93,7 @@ plugins/bsefirfilter.c
 plugins/bseiirfilter.c
 plugins/bsemixer.c
 plugins/bsemult.c
-plugins/bsenoise.c
+plugins/bsenoise.idl
 plugins/bsesequencer.c
 plugins/bsesimpleadsr.c
 plugins/davbassfilter.idl
