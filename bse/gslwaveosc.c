@@ -249,9 +249,9 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
   if (istep != wosc->istep)
     {
       gfloat nyquist_fact = GSL_PI * 2.0 / wosc->mix_freq, cutoff_freq = 18000, stop_freq = 24000;
-      gfloat experimental_filter_stability_limit = 6.;
+      gfloat empiric_filter_stability_limit = 6.;
       gfloat filt_fact = CLAMP (1. / step,
-				1. / (experimental_filter_stability_limit * zero_padding),
+				1. / (empiric_filter_stability_limit * zero_padding),
 				1. / zero_padding /* spectrum half */);
       gfloat freq_c = cutoff_freq * nyquist_fact * filt_fact;
       gfloat freq_r = stop_freq * nyquist_fact * filt_fact;

@@ -1,3 +1,12 @@
+Wed Feb  6 04:38:01 2002  Tim Janik  <timj@gtk.org>
+
+	* gslfilter.[hc]: added gsl_iir_filter_eval() plus _change and
+	_setup variants to calculate IIR filters (second canonical
+	direct form).
+
+	* gslmakefile: fix tschebyscheff type II steepness in the
+	gsltestoutput rule.
+
 Tue Feb  5 04:32:04 2002  Tim Janik  <timj@gtk.org>
 
 	* remove bsesample.[hc] from the tree as it's hopelessly

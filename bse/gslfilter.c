@@ -927,4 +927,112 @@ gsl_filter_fir_approx (unsigned int  iorder,
 }
 
 
+/* --- filter evaluation --- */
+void
+gsl_iir_filter_setup (GslIIRFilter  *f,
+		      guint          order,
+		      const gdouble *a,
+		      const gdouble *b,
+		      gdouble       *buffer) /* 4*(order+1) */
+{
+  guint i;
+
+  g_return_if_fail (f != NULL && a != NULL && b != NULL && buffer != NULL);
+  g_return_if_fail (order > 0);
+
+  f->order = order;
+  f->a = buffer;
+  f->b = f->a + order + 1;
+  f->w = f->b + order + 1;
+
+  memcpy (f->a, a, sizeof (a[0]) * (order + 1));
+  for (i = 0; i <= order; i++)
+    f->b[i] = -b[i];
+  memset (f->w, 0, sizeof (f->w[0]) * (order + 1) * 2);
+}
+
+void
+gsl_iir_filter_change (GslIIRFilter  *f,
+		       guint          order,
+		       const gdouble *a,
+		       const gdouble *b,
+		       gdouble       *buffer)
+{
+  guint i;
+
+  g_return_if_fail (f != NULL && a != NULL && b != NULL && buffer != NULL);
+  g_return_if_fail (order > 0);
+  
+  /* there's no point in calling this function if f wasn't setup properly
+   * and it's only the As and Bs that changed
+   */
+  g_return_if_fail (f->a == buffer && f->b == f->a + f->order + 1 && f->w == f->b + f->order + 1);
+
+  /* if the order changed there's no chance preserving state */
+  if (f->order != order)
+    {
+      gsl_iir_filter_setup (f, order, a, b, buffer);
+      return;
+    }
+
+  memcpy (f->a, a, sizeof (a[0]) * (order + 1));
+  for (i = 0; i <= order; i++)
+    f->b[i] = -b[i];
+  /* leaving f->w to preserve state */
+}
+
+static inline gdouble /* Y */
+filter_step (GslIIRFilter *f,
+	     gdouble       X)
+{
+  register guint n = f->order;
+  gdouble *a = f->a, *b = f->b, *w = f->w;
+  gdouble x, y, v;
+
+  v = w[n];
+  x = b[n] * v;
+  y = a[n] * v;
+
+  while (--n)
+    {
+      gdouble t1, t2;
+
+      v = w[n];
+      t1 = v * b[n];
+      t2 = v * a[n];
+      w[n+1] = v;
+      x += t1;
+      y += t2;
+    }
+
+  x += X;
+  w[1] = x;
+  y += x * a[0];
+
+  return y;
+}
+
+void
+gsl_iir_filter_eval (GslIIRFilter *f,
+		     const gfloat *x,
+		     gfloat       *y,
+		     guint         n_values)
+{
+  const gfloat *bound;
+  
+  g_return_if_fail (f != NULL && x != NULL && y != NULL);
+  g_return_if_fail (f->order > 0);
+
+  bound = x + n_values;
+  while (x < bound)
+    {
+      *y = filter_step (f, *x);
+      x++;
+      y++;
+    }
+}
+
+
+
+
 /* vim:set ts=8 sts=2 sw=2: */

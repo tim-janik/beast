@@ -36,11 +36,11 @@ gsltestoutput:
 	@./gsltests t1h     8 1.8332		0.1033
 	@./gsltests t1p     6 0.5 0.6		0.1033
 	@./gsltests t1s     8 1.4 1.5		0.25
-	@./gsltests t2l    13 0.1	0.1	0.176
-	@./gsltests t2h    10 1.14	0.2	0.0763
-	@./gsltests t2p    14 0.7 0.8	0.3	0.0763
-	@./gsltests t2p    10 0.9 1.2	0.4	0.15
-	@./gsltests t2s    10 0.9 1.2	0.1	0.15
+	@./gsltests t2l    13 0.1	1.1	0.176
+	@./gsltests t2h    10 1.14	1.2	0.0763
+	@./gsltests t2p    14 0.7 0.8	1.3	0.0763
+	@./gsltests t2p    10 0.9 1.2	1.4	0.15
+	@./gsltests t2s    10 0.9 1.2	1.1	0.15
 	@echo -n "plot [0:pi] [-96:1]"
 	@echo -n " dB(BL7(Z(x))),"
 	@echo -n " dB(BH12(Z(x))),"

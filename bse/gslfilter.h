@@ -152,6 +152,28 @@ void	gsl_filter_fir_approx	(unsigned int  iorder,
 				 const double *value);
 
 
+/* --- filter evaluation --- */
+typedef struct {
+  guint order;
+  gdouble *a;   /* [0..order] */
+  gdouble *b;   /* [0..order] */
+  gdouble *w;   /* [0..2*order] */
+} GslIIRFilter;
+void	gsl_iir_filter_setup	(GslIIRFilter	*f,
+				 guint		 order,
+				 const gdouble	*a,
+				 const gdouble	*b,
+				 gdouble	*buffer); /* 4*(order+1) */
+void	gsl_iir_filter_change	(GslIIRFilter	*f,
+				 guint		 order,
+				 const gdouble	*a,
+				 const gdouble	*b,
+				 gdouble	*buffer); /* 4*(order+1) */
+void	gsl_iir_filter_eval	(GslIIRFilter	*f,
+				 const gfloat	*x,
+				 gfloat		*y,
+				 guint		 n_values);
+
 
 /* --- implementations --- */
 static inline GslComplex
