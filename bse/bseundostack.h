@@ -78,6 +78,8 @@ void               bse_undo_group_open           (BseUndoStack   *self,
 void               bse_undo_stack_ignore_steps   (BseUndoStack   *self);
 void               bse_undo_stack_push           (BseUndoStack   *self,
                                                   BseUndoStep    *ustep);
+void               bse_undo_stack_push_add_on    (BseUndoStack   *self,
+                                                  BseUndoStep    *ustep);
 void               bse_undo_stack_unignore_steps (BseUndoStack   *self);
 void               bse_undo_group_close          (BseUndoStack   *self);
 void               bse_undo_stack_add_merger     (BseUndoStack   *self,

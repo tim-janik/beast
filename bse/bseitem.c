@@ -25,8 +25,6 @@
 #include <gobject/gvaluecollector.h>
 #include <string.h>
 
-#define UNDO_DEBUG      sfi_debug_keyfunc ("undo")
-
 enum {
   PROP_0,
   PROP_SEQID,
@@ -969,8 +967,6 @@ bse_item_push_undo_proc (gpointer         item,
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (procedure != NULL);
 
-  UNDO_DEBUG ("push undo: %s %s", bse_object_debug_name (item), procedure);
-
   va_start (var_args, procedure);
   bse_item_push_undo_proc_valist (item, procedure, FALSE, var_args);
   va_end (var_args);
@@ -985,8 +981,6 @@ bse_item_push_redo_proc (gpointer         item,
 
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (procedure != NULL);
-
-  UNDO_DEBUG ("push redo: %s %s", bse_object_debug_name (item), procedure);
 
   va_start (var_args, procedure);
   bse_item_push_undo_proc_valist (item, procedure, TRUE, var_args);

@@ -135,14 +135,42 @@ bse_undo_stack_push (BseUndoStack *self,
 
   if (self->ignore_steps)
     {
-      UNDO_DEBUG ("undo step: -    ignored: ((BseUndoFunc) %p) (%s)", ustep->undo_func, debug_name);
+      UNDO_DEBUG ("undo step:  -    ignored: ((BseUndoFunc) %p) (%s)", ustep->undo_func, debug_name);
       bse_undo_step_free (ustep);
     }
   else
     {
-      UNDO_DEBUG ("undo step: *    ((BseUndoFunc) %p) (%s)", ustep->undo_func, debug_name);
+      UNDO_DEBUG ("undo step:  *    ((BseUndoFunc) %p) (%s)", ustep->undo_func, debug_name);
       ustep->debug_name = g_strdup (debug_name);
       self->group->undo_steps = sfi_ring_push_head (self->group->undo_steps, ustep);
+    }
+}
+
+void
+bse_undo_stack_push_add_on (BseUndoStack *self,
+                            BseUndoStep  *ustep)
+{
+  g_return_if_fail (ustep != NULL);
+
+  /* add this step to the last undo step if we have one */
+  if (self->group && self->group->undo_steps)
+    {
+      UNDO_DEBUG ("undo step:  *    ((BseUndoFunc) %p) [AddOn to current group]", ustep->undo_func);
+      ustep->debug_name = g_strdup ("AddOn");
+      self->group->undo_steps = sfi_ring_push_head (self->group->undo_steps, ustep);
+    }
+  else if (self->undo_groups)
+    {
+      BseUndoGroup *group = self->undo_groups->data;    /* fetch last group */
+      g_return_if_fail (group->undo_steps != NULL);     /* empty groups are not allowed */
+      UNDO_DEBUG ("undo step:  *    ((BseUndoFunc) %p) [AddOn to last group]", ustep->undo_func);
+      ustep->debug_name = g_strdup ("AddOn");
+      group->undo_steps = sfi_ring_push_head (group->undo_steps, ustep);
+    }
+  else
+    {
+      UNDO_DEBUG ("undo step:  -    ignored: ((BseUndoFunc) %p) [AddOn]", ustep->undo_func);
+      bse_undo_step_free (ustep);
     }
 }
 

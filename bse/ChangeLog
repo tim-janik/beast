@@ -1,3 +1,11 @@
+Mon Oct 13 16:09:38 2003  Tim Janik  <timj@gtk.org>
+
+	* bseproject.proc: use bse_undo_stack_push_add_on() to push the undo step
+	to deactivate a project after playback started.
+
+	* bseundostack.[hc]: added bse_undo_stack_push_add_on() which merges its
+	undo step to the last pushed step if there is any.
+
 Sun Oct 12 16:37:29 2003  Tim Janik  <timj@gtk.org>
 
 	* bseutils.[hc]: removed old search path mathing code.

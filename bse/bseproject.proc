@@ -537,6 +537,37 @@ METHOD (BseProject, get-state) {
   return BSE_ERROR_NONE;
 }
 
+static void
+undo_do_deactivate (BseUndoStep  *ustep,
+                    BseUndoStack *ustack)
+{
+  BseProject *self = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
+  bse_project_stop_playback (self);
+}
+
+static void
+undo_do_deactivate_free (BseUndoStep *ustep)
+{
+  g_free (ustep->data[0].v_pointer);
+}
+
+static void
+project_push_undo_silent_deactivate (BseProject *self)
+{
+  BseUndoStack *ustack = bse_item_undo_open (self, "deactivate-project");
+  BseUndoStep *ustep = bse_undo_step_new (undo_do_deactivate, undo_do_deactivate_free, 1);
+  /* certain things work only (can only be undone) in deactivated projects,
+   * so we need to push an undo step here. this step isn't required however
+   * if there're no undo steps pushed so far, and it shouldn't be visible
+   * as a seperate undo step to the user either. so what we do is to push
+   * an "add-on" step, which just prepares state for execution of further
+   * undo steps, if there are any pending.
+   */
+  ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
+  bse_undo_stack_push_add_on (ustack, ustep);
+  bse_item_undo_close (ustack);
+}
+
 METHOD (BseProject, activate) {
   HELP  = "Activate a project, precondition to start playback.";
   IN    = bse_param_spec_object ("project", "Project", "The project",
@@ -562,7 +593,7 @@ METHOD (BseProject, activate) {
   if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
     {
       /* certain things work only (can only be undone) in deactivated projects */
-      bse_item_push_undo_proc (self, "deactivate");
+      project_push_undo_silent_deactivate (self);
     }
   
   g_value_set_enum (out_values++, error);
@@ -591,7 +622,7 @@ METHOD (BseProject, start-playback) {
   if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
     {
       /* certain things work only (can only be undone) in deactivated projects */
-      bse_item_push_undo_proc (self, "deactivate");
+      project_push_undo_silent_deactivate (self);
     }
 
   return BSE_ERROR_NONE;
@@ -628,7 +659,7 @@ METHOD (BseProject, play) {
   if (state_before == BSE_PROJECT_INACTIVE && self->state != BSE_PROJECT_INACTIVE)
     {
       /* certain things work only (can only be undone) in deactivated projects */
-      bse_item_push_undo_proc (self, "deactivate");
+      project_push_undo_silent_deactivate (self);
     }
 
   g_value_set_enum (out_values++, error);
