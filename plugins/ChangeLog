@@ -1,3 +1,9 @@
+Sat Oct 20 12:51:57 2001  Tim Janik  <timj@gtk.org>
+
+	* icons/filter.xcf: new excellent image by drc.
+
+	* icons/filter.xcf: moved this to cyria-filter.xcf.
+
 Thu Sep 27 14:42:11 2001  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am (%.enums): fix enum autogeneration for parallel builds.
