@@ -72,7 +72,7 @@ main (gint   argc,
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
-	bsw_register_plugins (BSE_PATH_PLUGINS, FALSE, NULL);
+	bsw_register_plugins (BSE_PATH_PLUGINS, FALSE, NULL, NULL, NULL);
       else if (strcmp ("-h", argv[i]) == 0)
 	{
 	  return help (NULL);

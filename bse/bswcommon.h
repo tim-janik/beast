@@ -167,10 +167,16 @@ void		bsw_icon_unref			(BswIcon	*icon);
 /* --- initialize scripts and plugins --- */
 void	bsw_register_plugins	(const gchar	*path,
 				 gboolean	 verbose,
-				 gchar	       **messages);
+				 gchar	       **messages,
+				 void          (*callback) (gpointer     data,
+							    const gchar *name),
+				 gpointer	 data);
 void	bsw_register_scripts	(const gchar	*path,
 				 gboolean	 verbose,
-				 gchar	       **messages);
+				 gchar	       **messages,
+				 void          (*callback) (gpointer     data,
+							    const gchar *name),
+				 gpointer	 data);
 
 
 /* --- missing GLib --- */

@@ -908,7 +908,10 @@ handle_message (GString *gstring,
 void
 bsw_register_plugins (const gchar *path,
 		      gboolean     verbose,
-		      gchar      **messages)
+		      gchar      **messages,
+		      void       (*callback) (gpointer     data,
+					      const gchar *name),
+		      gpointer     data)
 {
   GSList *free_list, *list;
   GString *gstring = g_string_new (NULL);
@@ -922,7 +925,9 @@ bsw_register_plugins (const gchar *path,
       gchar *string = list->data;
       const gchar *error;
 
-      if (verbose)
+      if (callback)
+	callback (data, string);
+      else if (verbose)
 	g_string_printfa (gstring, "register plugin \"%s\"...", string);
       handle_message (gstring, messages);
       error = bse_plugin_check_load (string);
@@ -950,7 +955,10 @@ bsw_register_plugins (const gchar *path,
 void
 bsw_register_scripts (const gchar *path,
 		      gboolean     verbose,
-		      gchar      **messages)
+		      gchar      **messages,
+		      void       (*callback) (gpointer     data,
+					      const gchar *name),
+		      gpointer     data)
 {
   GSList *free_list, *list;
   GString *gstring = g_string_new (NULL);
@@ -964,7 +972,9 @@ bsw_register_scripts (const gchar *path,
       gchar *string = list->data;
       const gchar *error;
 
-      if (verbose)
+      if (callback)
+	callback (data, string);
+      else if (verbose)
 	g_string_printfa (gstring, "register script \"%s\"...", string);
       handle_message (gstring, messages);
       error = bse_script_file_register (string);

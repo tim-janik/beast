@@ -1,3 +1,8 @@
+Sat Jul 27 12:48:07 2002  Tim Janik  <timj@gtk.org>
+
+	* bswcommon.[hc]: support callback notification from
+	bsw_register_scripts() and bsw_register_plugins().
+
 Sat Jul 27 06:26:10 2002  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle.[hc]: redesigned some basic things.

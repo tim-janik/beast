@@ -285,7 +285,7 @@ main (gint   argc,
 	}
       else if (strcmp ("-p", argv[i]) == 0)
 	{
-	  bsw_register_plugins (NULL, TRUE, NULL);
+	  bsw_register_plugins (NULL, TRUE, NULL, NULL, NULL);
 	}
       else if (strcmp ("-h", argv[i]) == 0)
 	{
