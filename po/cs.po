@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-23 23:41+0100\n"
-"PO-Revision-Date: 2003-12-18 18:36+0100\n"
+"POT-Creation-Date: 2003-12-27 14:13+0100\n"
+"PO-Revision-Date: 2003-12-27 20:16+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1196,7 +1196,7 @@ msgstr "Načíst..."
 
 #: beast-gtk/bstwaveview.c:43
 msgid "Load a new wave file from disk"
-msgstr ""
+msgstr "Načíst soubor zvuku z disku"
 
 #: beast-gtk/bstwaveview.c:45
 msgid "Lib..."
@@ -1204,17 +1204,15 @@ msgstr "Knihovna..."
 
 #: beast-gtk/bstwaveview.c:45
 msgid "Load a new wave file from library paths"
-msgstr ""
+msgstr "Načíst soubor zvuku z knihovny"
 
 #: beast-gtk/bstwaveview.c:47
-#, fuzzy
 msgid "Delete the currently selected wave"
-msgstr "Odstranit momentálně vybranou stopu"
+msgstr "Odstranit momentálně vybranou vlnu"
 
 #: beast-gtk/bstwaveview.c:49
-#, fuzzy
 msgid "Edit the currently selected wave"
-msgstr "Odstranit momentálně vybranou stopu"
+msgstr "Upravit momentálně vybranou vlnu"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
 msgid "Adjust the zoom factor of the router display"
@@ -1378,7 +1376,7 @@ msgstr "_Virtualizace"
 
 #: beast-gtk/dialogs/gadgets-standard.xml.h:1
 msgid "Enter document or file location"
-msgstr ""
+msgstr "Zadejte umístění dokumentu nebo souboru"
 
 #: beast-gtk/dialogs/gadgets-standard.xml.h:2
 msgid "Find in current document"
