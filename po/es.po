@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-10 16:16+0200\n"
-"PO-Revision-Date: 2004-04-10 16:34+0200\n"
+"POT-Creation-Date: 2004-04-12 22:23+0200\n"
+"PO-Revision-Date: 2004-04-12 22:33+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1180,7 +1180,6 @@ msgid "Stopping Playback"
 msgstr "Detener reproducción"
 
 #: beast-gtk/bstrackeditor.c:95
-#, fuzzy
 msgid ""
 "The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
@@ -2796,27 +2795,24 @@ msgid "Left Audio Out"
 msgstr "Salida de sonido izquierda"
 
 #: bse/bsepcminput.c:133
-#, fuzzy
 msgid "Left channel output"
-msgstr "Salida izquierda de sonido"
+msgstr "Salida del canal izquierdo"
 
 #: bse/bsepcminput.c:135 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
-msgstr "Salida de sonido derecha"
+msgstr "Salida del canal derecho"
 
 #: bse/bsepcminput.c:135
-#, fuzzy
 msgid "Right channel output"
-msgstr "Salida de sonido derecha"
+msgstr "Salida del canal derecho"
 
 #: bse/bsepcmoutput.c:133 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
-msgstr "Entrada de sonido izquierda"
+msgstr "Entrada del sonido izquierda"
 
 #: bse/bsepcmoutput.c:133
-#, fuzzy
 msgid "Left channel input"
 msgstr "Entrada de sonido izquierda"
 
@@ -2826,48 +2822,44 @@ msgid "Right Audio In"
 msgstr "Entrada de sonido derecha"
 
 #: bse/bsepcmoutput.c:135
-#, fuzzy
 msgid "Right channel Input"
 msgstr "Entrada de sonido derecha"
 
 #: bse/bsecore.idl:395
-#, fuzzy
 msgid "Latency [ms]"
-msgstr "Ataque [ms]"
+msgstr "Latencia [ms]"
 
 #: bse/bsecore.idl:396
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
-msgstr ""
+msgstr "Dureción del proceso entre la entrada y la salida de una muestra sencilla, valores pequeños incrementan la carga de CPU"
 
 #: bse/bsecore.idl:399
-#, fuzzy
 msgid "Synth Mixing Frequency"
-msgstr "Frecuencia central"
+msgstr "Frecuencia de mezcla de síntesis"
 
 #: bse/bsecore.idl:400
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr ""
+msgstr "Frecuencia de mezcla de síntesis, los valores comunes son: 22050, 44100, 48000"
 
 #: bse/bsecore.idl:402
-#, fuzzy
 msgid "Synth Control Frequency"
-msgstr "Frecuencia central"
+msgstr "Frecuencia de control de síntesis"
 
 #: bse/bsecore.idl:403
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
-msgstr ""
+msgstr "Frecuencia a la que los valores de control se evalúan, debería ser mucho más pequeño que La Frecuencia de mezcla de síntesis para reducir la carga de CPU"
 
 #: bse/bsesnooper.c:113
 msgid "Signal In"
-msgstr ""
+msgstr "Entrada de señal"
 
 #: bse/bsesnooper.c:113
 msgid "Snoop Signal"
-msgstr ""
+msgstr "Señal Snoop"
 
 #: bse/bsestandardosc.c:111
 msgid ""
@@ -2960,7 +2952,7 @@ msgstr "Entrada de frecuencia de oscilación"
 
 #: bse/bsestandardosc.c:203
 msgid "PWM In"
-msgstr ""
+msgstr "Entrada PWM"
 
 #: bse/bsestandardosc.c:203
 msgid "Pulse Width Modulation Input"
@@ -2968,7 +2960,7 @@ msgstr "Ancho de la entrada de modulación del pulso"
 
 #: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
 msgid "Sync In"
-msgstr ""
+msgstr "Entrada sincr."
 
 #: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
 msgid "Syncronization Input"
@@ -2980,7 +2972,7 @@ msgstr "Salidas oscilantes"
 
 #: bse/bsestandardosc.c:209
 msgid "Sync Out"
-msgstr ""
+msgstr "Salida sincr."
 
 #: bse/bsestandardosc.c:209
 msgid "Syncronization Output"
@@ -2997,7 +2989,7 @@ msgstr "Asignaciones"
 
 #: bse/bsesubiport.c:131 bse/bsesuboport.c:131
 msgid "The port name is a unique name to establish input<->output port relationships"
-msgstr ""
+msgstr "El nombre del puerto es un nombre único para establecer relaciones de puertos de entrada<->salida"
 
 #: bse/bsesubiport.c:139 bse/bsesubsynth.c:157
 #, c-format
@@ -3020,23 +3012,23 @@ msgstr "Red de síntesis"
 
 #: bse/bsesubsynth.c:130
 msgid "The synthesis network to interface to"
-msgstr ""
+msgstr "La red se síntesis con la que se hace de interfaz"
 
 #: bse/bsesubsynth.c:139
 msgid "Input Assignments"
-msgstr ""
+msgstr "Asignaciones de entrada"
 
 #: bse/bsesubsynth.c:140
 msgid "Output port name to interface from"
-msgstr ""
+msgstr "Nombre del puerto de salida con el que hacer de interfaz"
 
 #: bse/bsesubsynth.c:149
 msgid "Output Assignments"
-msgstr ""
+msgstr "Asignaciones de salida"
 
 #: bse/bsesubsynth.c:150
 msgid "Input port name to interface to"
-msgstr ""
+msgstr "Nombre del puerto de entrada con el que hacer de interfaz"
 
 #: bse/bsesuper.c:101
 msgid "Author"
@@ -3064,12 +3056,11 @@ msgstr "Tiempo de última modificación"
 
 #: bse/bsewaveosc.c:129
 msgid "Wave to play"
-msgstr ""
+msgstr "Onda a reproducir"
 
 #: bse/bsewaveosc.c:134
-#, fuzzy
 msgid "Modulation Strength for linear frequency modulation"
-msgstr "Fuerza de modulación de frecuencia lineal"
+msgstr "Fuerza de modulación para la modulación de frecuencia lineal"
 
 #: bse/bsewaveosc.c:155 plugins/davorgan.c:132
 msgid "Frequency Input"
@@ -3098,7 +3089,7 @@ msgstr "BEAST"
 
 #: data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
-msgstr ""
+msgstr "Tracker MIDI, Composición de música y aplicación de síntesis modular"
 
 #: data/beast.desktop.in.h:3
 msgid "Music Composer"
@@ -3343,7 +3334,7 @@ msgstr "Salidas filtradas"
 
 #: plugins/bsemixer.c:109
 msgid "Sole Output"
-msgstr ""
+msgstr "Salida Sole"
 
 #: plugins/bsemixer.c:115
 #, c-format
@@ -3410,37 +3401,35 @@ msgstr "Entrada de notas"
 
 #: plugins/bsesequencer.c:109
 msgid "Note Sync Signal"
-msgstr ""
+msgstr "Señal de sinc. de nota"
 
 #: plugins/bsesimpleadsr.c:118
 msgid "Gate In"
-msgstr ""
+msgstr "Puerta de entrada"
 
 #: plugins/bsesimpleadsr.c:118
 msgid "Gate input (activates/deactivates envelope)"
-msgstr ""
+msgstr "Puerta de entrada (activa / desactiva envoltura)"
 
 #: plugins/bsesimpleadsr.c:120
 msgid "Retrigger In"
-msgstr ""
+msgstr "Entrada de redisparador"
 
 #: plugins/bsesimpleadsr.c:120
 msgid "Retrigger input (raising edge retriggers envelope)"
 msgstr ""
 
 #: plugins/bsesimpleadsr.c:122
-#, fuzzy
 msgid "Ctrl Out"
-msgstr "Entrada de control"
+msgstr "Salida de control"
 
 #: plugins/bsesimpleadsr.c:122
 msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr ""
 
 #: plugins/bsesimpleadsr.c:124
-#, fuzzy
 msgid "Done Out"
-msgstr "Salida izquierda"
+msgstr ""
 
 #: plugins/bsesimpleadsr.c:124
 msgid "This signal goes high after the release phase has completed"
