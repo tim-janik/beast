@@ -249,15 +249,15 @@ int main (int argc, char **argv)
 	    }
 	  printf ("\n");
 
-	  double overall = s / similarity.size() * 100.0; /* percent */
+	  double average_similarity = s / similarity.size() * 100.0; /* percent */
 
-	  printf ("overall similarity rating: %f%% => ", overall);
-	  if (overall == 100.0)
+	  printf ("average similarity rating: %f%% => ", average_similarity);
+	  if (average_similarity == 100.0)
 	    {
 	      printf ("perfect match.\n");
 	      return 0;
 	    }
-	  else if (overall >= options.threshold)
+	  else if (average_similarity >= options.threshold)
 	    {
 	      printf ("good match.\n");
 	      return 0;
