@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,7 @@
 #include	"bstradiotools.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_SNET_ROUTER		(bst_snet_router_get_type ())
@@ -69,7 +66,7 @@ struct _BstSNetRouterClass
 
 
 /* --- prototypes --- */
-GtkType		 bst_snet_router_get_type	      (void);
+GType		 bst_snet_router_get_type	      (void);
 GtkWidget*	 bst_snet_router_new		      (SfiProxy	     snet);
 void		 bst_snet_router_set_snet 	      (BstSNetRouter *router,
 						       SfiProxy       snet);
@@ -83,8 +80,6 @@ void		 bst_snet_router_toggle_palette	      (BstSNetRouter *snet_router);
 BstSNetRouter*	 bst_snet_router_build_page	      (SfiProxy	     snet);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_SNET_ROUTER_H__ */

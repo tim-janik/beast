@@ -56,6 +56,7 @@ struct _BstCanvasSource
   guint		   swap_channels : 1;
   guint            in_move : 1;
   guint		   show_hints : 1;
+  guint            idle_reposition : 1;
   gdouble	   move_dx, move_dy;
 };
 struct _BstCanvasSourceClass

@@ -505,12 +505,9 @@ bse_item_cross_link (BseItem         *owner,
   if (container)
     _bse_container_cross_link (BSE_CONTAINER (container), owner, link, uncross_func);
   else
-    g_warning ("%s: %s and %s have no common anchestor (parents: %s %s) (pointers: %p %p)", G_STRLOC,
+    g_warning ("%s: %s and %s have no common anchestor", G_STRLOC,
                bse_object_debug_name (owner),
-               bse_object_debug_name (link),
-               bse_object_debug_name (owner->parent),
-               bse_object_debug_name (link->parent),
-               owner, link); // FIXME
+               bse_object_debug_name (link));
 }
 
 /**

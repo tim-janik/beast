@@ -356,7 +356,7 @@ bst_file_dialog_open_project (BstFileDialog *self,
   else
     {
       BstApp *app;
-      bse_project_ensure_wave_repo (project);
+      bse_project_get_wave_repo (project);
       app = bst_app_new (project);
       gxk_status_window_push (app);
       bst_status_eprintf (error, "Opening project `%s'", file_name);

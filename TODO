@@ -1,4 +1,8 @@
 FIXMES:
+- fix undo for: BseWave, BsePart, BseDataPocket
+- get rid of bse_procedure_execvl
+- get rid of super->mod_time
+- add BEAST_SAMPLE_DIRS, describe env variables in man page
 - fix saving of internal objects
 - rename gslwave files appropriately
 - add option to disable ladspa plugin loading
@@ -13,6 +17,8 @@ FIXMES:
 - fix snet property changes in sub synth and instrument
 - fix name of BSE_SNET_FLAG_USER_SYNTH
 - never gather INTERNAL items in bse_item_gather_proxies()
+- INTERNAL must be set recursively on some objects (track's snets)
+- use bse_item_set() in bsetrack.c to set proeprties once undo is disabled for INTERNAL objects
 - fix BST_OP_PROJECT_SAVE
 - add new test song containing a wave track
 - implement (GUI for) locked properties

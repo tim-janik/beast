@@ -263,7 +263,7 @@ main (int   argc,
 	  if (!app)
 	    {
 	      project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
-	      wrepo = bse_project_ensure_wave_repo (project);
+	      wrepo = bse_project_get_wave_repo (project);
 	      error = bse_wave_repo_load_file (wrepo, argv[i]);
 	      if (!error)
 		{
@@ -277,7 +277,7 @@ main (int   argc,
 	    }
 	  else
 	    {
-	      SfiProxy wrepo = bse_project_ensure_wave_repo (app->project);
+	      SfiProxy wrepo = bse_project_get_wave_repo (app->project);
 	      
 	      gxk_status_printf (GXK_STATUS_WAIT, NULL, _("Loading \"%s\""), argv[i]);
 	      error = bse_wave_repo_load_file (wrepo, argv[i]);
@@ -307,7 +307,7 @@ main (int   argc,
     {
       SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
       
-      bse_project_ensure_wave_repo (project);
+      bse_project_get_wave_repo (project);
       app = bst_app_new (project);
       bse_item_unuse (project);
       gxk_idle_show_widget (GTK_WIDGET (app));

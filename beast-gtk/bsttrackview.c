@@ -258,7 +258,7 @@ track_view_synth_popup (BstTrackView         *self,
       BseProxySeq *pseq = bse_item_list_proxies (item, "snet");
       GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
                                                         pseq,
-                                                        bse_project_ensure_wave_repo (bse_item_get_project (item)),
+                                                        bse_project_get_wave_repo (bse_item_get_project (item)),
                                                         track_view_synth_popup_cb, pcell);
       gxk_cell_renderer_popup_dialog (pcell, dialog);
     }
@@ -600,6 +600,14 @@ track_view_set_container (BstItemView *iview,
 }
 
 static void
+track_property_changed (SfiProxy     item,
+                        const gchar *property_name,
+                        BstItemView *iview)
+{
+  bst_item_view_refresh (iview, item);
+}
+
+static void
 track_view_listen_on (BstItemView *iview,
 		      SfiProxy     item)
 {
@@ -607,6 +615,14 @@ track_view_listen_on (BstItemView *iview,
   bse_proxy_connect (item,
 		     "signal::changed", track_changed, iview,
 		     NULL);
+  bse_proxy_connect (item,
+                     /* COL_SEQID handled by GxkListWrapper */
+                     /* COL_NAME handled by GxkListWrapper */
+                     "signal::property-notify::muted", track_property_changed, iview, /* COL_MUTE */
+                     "signal::property-notify::n_voices", track_property_changed, iview, /* COL_VOICES */
+                     "signal::property-notify::snet", track_property_changed, iview, /* COL_SYNTH */
+                     /* COL_BLURB handled by GxkListWrapper */
+                     NULL);
 }
 
 static void
@@ -615,6 +631,7 @@ track_view_unlisten_on (BstItemView *iview,
 {
   bse_proxy_disconnect (item,
 			"any_signal", track_changed, iview,
+			"any_signal", track_property_changed, iview,
 			NULL);
   BST_ITEM_VIEW_CLASS (parent_class)->unlisten_on (iview, item);
 }
@@ -631,14 +648,16 @@ bst_track_view_activate (BstActivatable         *activatable,
     {
       SfiProxy item;
     case BST_ACTION_ADD_TRACK:
+      bse_item_group_undo (song, "Add Track");
       item = bse_song_create_track (song);
       if (item)
 	{
 	  gchar *string = g_strdup_printf ("Track-%02X", bse_item_get_seqid (item));
-	  bse_proxy_set (item, "uname", string, NULL);
+	  bse_item_set_name (item, string);
 	  g_free (string);
 	  bst_item_view_select (item_view, item);
 	}
+      bse_item_ungroup_undo (song);
       break;
     case BST_ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);

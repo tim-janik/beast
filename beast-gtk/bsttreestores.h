@@ -80,6 +80,8 @@ SfiProxy bst_child_list_wrapper_get_from_iter   (GxkListWrapper *self,
 gboolean bst_child_list_wrapper_get_iter        (GxkListWrapper *self,
                                                  GtkTreeIter    *iter,
                                                  SfiProxy        proxy);
+void     bst_child_list_wrapper_proxy_changed   (GxkListWrapper *self,
+                                                 SfiProxy        item);
 
 
 G_END_DECLS

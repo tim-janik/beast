@@ -161,6 +161,56 @@ source_channels_changed (BstCanvasSource *csource)
   bst_canvas_source_update_links (csource);
 }
 
+static gboolean
+idle_move_item (gpointer data)
+{
+  BstCanvasSource *self = data;
+  GnomeCanvasItem *item = GNOME_CANVAS_ITEM (self);
+
+  GDK_THREADS_ENTER ();
+  if (self->source && item->canvas)
+    {
+      SfiReal x, y;
+      bse_proxy_get (self->source,
+                     "pos-x", &x,
+                     "pos-y", &y,
+                     NULL);
+      x *= BST_CANVAS_SOURCE_PIXEL_SCALE;
+      y *= -BST_CANVAS_SOURCE_PIXEL_SCALE;
+      gnome_canvas_item_w2i (item, &x, &y);
+      g_object_freeze_notify (G_OBJECT (self));
+      gnome_canvas_item_move (item, x, y);
+      /* canvas notification bug workaround */
+      g_object_notify (self, "x");
+      g_object_notify (self, "y");
+      g_object_thaw_notify (G_OBJECT (self));
+    }
+  self->idle_reposition = FALSE;
+  g_object_unref (self);
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+static void
+source_pos_changed (BstCanvasSource *self)
+{
+  if (!self->idle_reposition)
+    {
+      self->idle_reposition = TRUE;
+      g_idle_add (idle_move_item, g_object_ref (self));
+    }
+}
+
+static void
+canvas_source_set_position (BstCanvasSource *self)
+{
+  gboolean idle_reposition = self->idle_reposition;
+  GDK_THREADS_LEAVE ();
+  idle_move_item (g_object_ref (self));
+  GDK_THREADS_ENTER ();
+  self->idle_reposition = idle_reposition;
+}
+
 static void
 source_name_changed (BstCanvasSource *csource)
 {
@@ -212,6 +262,7 @@ bst_canvas_source_destroy (GtkObject *object)
 			    "any_signal", gtk_object_destroy, csource,
 			    "any_signal", source_channels_changed, csource,
 			    "any_signal", source_name_changed, csource,
+			    "any_signal", source_pos_changed, csource,
 			    "any_signal", source_icon_changed, csource,
 			    NULL);
       bse_item_unuse (csource->source);
@@ -228,25 +279,9 @@ bse_object_set_parasite_coords (SfiProxy proxy,
 				SfiReal  x,
 				SfiReal  y)
 {
-  bse_proxy_set (proxy,
-		 "pos_x", x / BST_CANVAS_SOURCE_PIXEL_SCALE,
-		 "pos_y", -y / BST_CANVAS_SOURCE_PIXEL_SCALE,
-		 NULL);
-}
-
-static void
-bse_object_get_parasite_coords (SfiProxy proxy,
-				gdouble *x_p,
-				gdouble *y_p)
-{
-  SfiReal x, y;
-
-  bse_proxy_get (proxy,
-		 "pos_x", &x,
-		 "pos_y", &y,
-		 NULL);
-  *x_p = x * BST_CANVAS_SOURCE_PIXEL_SCALE;
-  *y_p = -y * BST_CANVAS_SOURCE_PIXEL_SCALE;
+  bse_source_set_pos (proxy,
+                      x / BST_CANVAS_SOURCE_PIXEL_SCALE,
+                      y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
 }
 
 GnomeCanvasItem*
@@ -255,7 +290,6 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
 {
   BstCanvasSource *csource;
   GnomeCanvasItem *item;
-  SfiReal world_x = 0, world_y = 0;
 
   g_return_val_if_fail (GNOME_IS_CANVAS_GROUP (group), NULL);
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
@@ -269,12 +303,12 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
 		     "swapped_signal::release", gtk_object_destroy, csource,
 		     "swapped_signal::io_changed", source_channels_changed, csource,
 		     "swapped_signal::property-notify::uname", source_name_changed, csource,
+		     "swapped_signal::property-notify::pos-x", source_pos_changed, csource,
+		     "swapped_signal::property-notify::pos-y", source_pos_changed, csource,
 		     "swapped_signal::icon-changed", source_icon_changed, csource,
 		     NULL);
 
-  bse_object_get_parasite_coords (csource->source, &world_x, &world_y);
-  gnome_canvas_item_w2i (item, &world_x, &world_y);
-  gnome_canvas_item_move (item, world_x, world_y);
+  canvas_source_set_position (csource);
   bst_canvas_source_build (BST_CANVAS_SOURCE (item));
   
   GNOME_CANVAS_NOTIFY (item);

@@ -162,10 +162,7 @@ bst_super_shell_destroy (GtkObject *object)
   BstSuperShell *self = BST_SUPER_SHELL (object);
 
   if (self->super)
-    {
-      bse_source_clear_outputs (self->super);
-      bst_super_shell_set_super (self, 0);
-    }
+    bst_super_shell_set_super (self, 0);
   
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }

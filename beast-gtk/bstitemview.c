@@ -214,6 +214,14 @@ bst_item_view_finalize (GObject *object)
 }
 
 void
+bst_item_view_refresh (BstItemView *self,
+                       SfiProxy     item)
+{
+  if (self->wlist)
+    bst_child_list_wrapper_proxy_changed (self->wlist, item);
+}
+
+void
 bst_item_view_name_edited (BstItemView *self,
 			   const gchar *strpath,
 			   const gchar *text)
@@ -381,7 +389,6 @@ item_view_listen_on (BstItemView *self,
 		     SfiProxy     item)
 {
   bse_proxy_connect (item, "swapped_signal::property-notify", bst_widget_update_activatable, self, NULL);
-  bse_proxy_connect (item, "swapped_signal::property-notify", gtk_true, self, NULL);
   if (self->auto_select == item)
     bst_item_view_select (self, item);
   self->auto_select = 0;
@@ -392,7 +399,6 @@ item_view_unlisten_on (BstItemView *self,
 		       SfiProxy     item)
 {
   bse_proxy_disconnect (item, "any_signal", bst_widget_update_activatable, self, NULL);
-  bse_proxy_disconnect (item, "any_signal", gtk_true, self, NULL);
 }
 
 static void

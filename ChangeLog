@@ -1,3 +1,35 @@
+Sat May 31 02:11:31 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstactivatable.c: fix idle handler prio.
+
+	* beast-gtk/bstapp.[hc]: added "Clear Undo" menu item, actually use BSE
+	functions for undo/redo items.
+
+	* beast-gtk/bstcanvassource.[ch]: update GUI in response to ::pos-x and
+	::pos-y proeprty changes. set positions via undo-sensitive
+	bse_source_set_pos().
+
+	* beast-gtk/bstitemview.[hc]: added bst_item_view_refresh() to update
+	a tree view row.
+
+	* beast-gtk/bstsnetrouter.[hc]: bst_snet_router_event() undo-group
+	creation of a new module and setting it's position, so the module
+	doesn't jump around on the user upon undo.
+
+	* beast-gtk/bsttrackrollctrl.c: group undo for creation+insertion
+	of a part and part movement.
+
+	* beast-gtk/bsttrackview.c: properly update tree rows in response to
+	property changes. undo-group creation and name assignment of new tracks.
+
+	* beast-gtk/bsttreestores.[hc]: work around change notification arriving
+	after item removal. provide an interface to explicitely request updates.
+
+	* bstmenus.c: doh, fixup menu popup destroy function.
+
+	* beast-gtk/*.c: adapt to BseContainer signal changes and BseProject
+	procedure changes.
+
 Tue May 27 02:23:01 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.[hc]: support removal of snets.

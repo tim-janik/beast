@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,29 +79,26 @@ static BstSNetRouterClass *bst_snet_router_class = NULL;
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_snet_router_get_type (void)
 {
-  static GtkType snet_router_type = 0;
-  
-  if (!snet_router_type)
+  static GType type = 0;
+  if (!type)
     {
-      GtkTypeInfo snet_router_info =
-      {
-	"BstSNetRouter",
-	sizeof (BstSNetRouter),
-	sizeof (BstSNetRouterClass),
-	(GtkClassInitFunc) bst_snet_router_class_init,
-	(GtkObjectInitFunc) bst_snet_router_init,
-        /* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+      static const GTypeInfo type_info = {
+        sizeof (BstSNetRouterClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) bst_snet_router_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (BstSNetRouter),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) bst_snet_router_init,
       };
-      
-      snet_router_type = gtk_type_unique (GNOME_TYPE_CANVAS, &snet_router_info);
+      type = g_type_register_static (GNOME_TYPE_CANVAS, "BstSNetRouter", &type_info, 0);
     }
-  
-  return snet_router_type;
+  return type;
 }
 
 static void
@@ -1078,11 +1075,13 @@ bst_snet_router_event (GtkWidget *widget,
 	  error = bse_snet_can_create_source (router->snet, cat->type);
 	  if (!error)
 	    {
-	      SfiProxy module = bse_snet_create_source (router->snet, cat->type);
-	      bse_proxy_set (module,
-			     "pos_x", router->world_x / BST_CANVAS_SOURCE_PIXEL_SCALE,
-			     "pos_y", -router->world_y / BST_CANVAS_SOURCE_PIXEL_SCALE,
-			     NULL);
+	      SfiProxy module;
+              bse_item_group_undo (router->snet, "Create Module");
+              module = bse_snet_create_source (router->snet, cat->type);
+              bse_source_set_pos (module,
+                                  router->world_x / BST_CANVAS_SOURCE_PIXEL_SCALE,
+                                  router->world_y / -BST_CANVAS_SOURCE_PIXEL_SCALE);
+              bse_item_ungroup_undo (router->snet);
 	    }
 	  if (BST_SNET_EDIT_FALLBACK)
 	    bst_radio_tools_set_tool (router->rtools, 0);

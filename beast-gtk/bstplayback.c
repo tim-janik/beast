@@ -63,7 +63,7 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
     g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (esample));
 
   bse_proxy_set (handle->constant, "frequency_1", osc_freq, NULL);
-  bse_proxy_set (handle->wosc, "editable_sample", esample, NULL);
+  bse_wave_osc_set_from_editable_sample (handle->wosc, esample);
 }
 
 void

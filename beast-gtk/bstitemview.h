@@ -90,6 +90,8 @@ gint            bst_item_view_get_proxy_row     (BstItemView    *self,
                                                  SfiProxy        item);
 void		bst_item_view_set_container	(BstItemView	*item_view,
 						 SfiProxy	 new_container);
+void		bst_item_view_refresh   	(BstItemView    *self,
+						 SfiProxy        item);
 void		bst_item_view_name_edited	(BstItemView    *self,
 						 const gchar    *strpath,
 						 const gchar    *text);

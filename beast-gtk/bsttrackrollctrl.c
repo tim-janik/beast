@@ -413,11 +413,13 @@ insert_start (BstTrackRollController *self,
       if (!item)
 	{
 	  SfiProxy song = bse_item_get_parent (drag->current_track);
+          bse_item_group_undo (song, "Insert part");
 	  item = bse_song_create_part (song);
-	  if (item && bse_track_insert_part (drag->current_track, tick, item) == BSE_ERROR_NONE)
+	  if (item && bse_track_insert_part (drag->current_track, tick, item) > 0)
 	    gxk_status_set (GXK_STATUS_DONE, "Insert Part", NULL);
 	  else
 	    gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "Lost Part");
+          bse_item_ungroup_undo (song);
 	  drag->state = BST_DRAG_HANDLED;
 	}
       else
@@ -495,8 +497,8 @@ move_motion (BstTrackRollController *self,
   track_changed = self->obj_track != drag->current_track;
   if (new_tick != self->obj_tick || self->obj_track != drag->current_track)
     {
-      BseErrorType error = bse_track_insert_part (drag->current_track, new_tick, self->obj_part);
-      if (error == BSE_ERROR_NONE)
+      bse_item_group_undo (drag->current_track, "Move part");
+      if (bse_track_insert_part (drag->current_track, new_tick, self->obj_part) > 0)
 	{
 	  if (!self->skip_deletion)
 	    bse_track_remove_tick (self->obj_track, self->obj_tick);
@@ -510,6 +512,7 @@ move_motion (BstTrackRollController *self,
 	  gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
 	}
       /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", bse_error_blurb (error)); */
+      bse_item_ungroup_undo (drag->current_track);
     }
 }
 

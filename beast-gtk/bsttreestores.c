@@ -215,7 +215,8 @@ proxy_store_item_property_notify (SfiProxy     item,
                                   ProxyStore  *ps)
 {
   gint row = ps->row_from_proxy (ps, item);
-  gxk_list_wrapper_notify_change (ps->self, row);
+  if (row >= 0) /* the item can be removed already */
+    gxk_list_wrapper_notify_change (ps->self, row);
 }
 
 static void
@@ -224,9 +225,9 @@ proxy_store_item_listen_on (ProxyStore *ps,
 {
   gint row = ps->row_from_proxy (ps, item);
   bse_proxy_connect (item,
-                     "signal::property-notify::name", proxy_store_item_property_notify, ps,
-                     "signal::property-notify::blurb", proxy_store_item_property_notify, ps,
                      "signal::property-notify::seqid", proxy_store_item_property_notify, ps,
+                     "signal::property-notify::uname", proxy_store_item_property_notify, ps,
+                     "signal::property-notify::blurb", proxy_store_item_property_notify, ps,
                      NULL);
   gxk_list_wrapper_notify_insert (ps->self, row);
 }
@@ -351,7 +352,7 @@ bst_child_list_wrapper_setup (GxkListWrapper *self,
       bse_proxy_connect (ps->u.cl.container,
                          "signal::release", child_list_wrapper_release_container, ps,
                          "signal::item_added", child_list_wrapper_item_added, ps,
-                         "signal::item_removed", child_list_wrapper_item_removed, ps,
+                         "signal::item_remove", child_list_wrapper_item_removed, ps,
                          NULL);
       pseq = bse_container_list_items (ps->u.cl.container);
       for (i = 0; i < pseq->n_proxies; i++)
@@ -420,6 +421,16 @@ bst_child_list_wrapper_get_iter (GxkListWrapper *self,
 {
   ProxyStore *ps = g_object_get_data (self, "ProxyStore");
   return ps ? proxy_store_get_iter (ps, iter, proxy) : FALSE;
+}
+
+void
+bst_child_list_wrapper_proxy_changed (GxkListWrapper *self,
+                                      SfiProxy        item)
+{
+  ProxyStore *ps = g_object_get_data (self, "ProxyStore");
+  gint row = ps->row_from_proxy (ps, item);
+  if (row >= 0)
+    gxk_list_wrapper_notify_change (ps->self, row);
 }
 
 

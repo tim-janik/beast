@@ -295,7 +295,7 @@ void
 bst_menu_popup (GtkItemFactory  *ifactory,
 		GtkWidget	*owner,
 		gpointer         popup_data,
-		GtkDestroyNotify popup_data_destroy,
+		GtkDestroyNotify data_destroy,
 		guint            x,
 		guint            y,
 		guint            mouse_button,
@@ -309,7 +309,7 @@ bst_menu_popup (GtkItemFactory  *ifactory,
   pdata = g_new (PopupData, 1);
   pdata->owner = owner;
   pdata->popup_data = popup_data;
-  pdata->destroy = popup_data_destroy;
+  pdata->destroy = data_destroy;
 
   gtk_item_factory_popup_with_data (ifactory,
 				    pdata, popup_data_destroy,

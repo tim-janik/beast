@@ -19,6 +19,9 @@
 #include "bstactivatable.h"
 
 
+#define DEBUG   sfi_debug_keyfunc ("activatable")
+
+
 /* --- prototypes --- */
 static void     bst_activatable_iface_base_init         (BstActivatableIface    *iface);
 static void     bst_activatable_iface_base_finalize     (BstActivatableIface    *iface);
@@ -73,7 +76,8 @@ bst_activatable_activate (BstActivatable *self,
     {
       /* provide user feedback */
       gdk_beep ();
-      /* and request updates so this won#t happen again */
+      DEBUG ("failed to execute action (%lu) for %s", action, G_OBJECT_TYPE_NAME (self));
+      /* and request updates so this won't happen again */
       bst_activatable_request_update (self);
     }
 }
@@ -115,8 +119,14 @@ bst_activatable_queue_update (BstActivatable *self)
   g_object_ref (self);
   update_queue = g_slist_prepend (update_queue, self);
   if (!queue_handler_id)
-    queue_handler_id = g_timeout_add_full (G_PRIORITY_DEFAULT, 0,
-                                           update_queue_handler, NULL, NULL);
+    {
+      /* need to have higher priority than GDK_PRIORITY_EVENTS so we update
+       * activatable states before the next event (pointer move, key press)
+       * is processed
+       */
+      queue_handler_id = g_timeout_add_full (GDK_PRIORITY_EVENTS - 1, 0,
+                                             update_queue_handler, NULL, NULL);
+    }
 }
 
 void

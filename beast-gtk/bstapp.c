@@ -94,6 +94,7 @@ static BstMenuConfigEntry menubar_entries[] =
   { "/Edit/<<<<<<",                     NULL,           NULL, 0,                        "<Tearoff>" },
   { "/Edit/_Undo",                      "<ctrl>Z",      CB (UNDO),                      "<Item>" },
   { "/Edit/_Redo",                      "<ctrl>R",      CB (REDO),                      "<Item>" },
+  { "/Edit/_Clear Undo",                NULL,           CB (CLEAR_UNDO),                "<Item>" },
   { "/S_ong",                           NULL,           NULL, 0,                        "<Branch>" },
   { "/Song/<<<<<<",                     NULL,           NULL, 0,                        "<Tearoff>" },
   { "/Song/Add _Part",                  NULL,           CB (ADD_PART),                  "<Item>" },
@@ -330,8 +331,9 @@ bst_app_new (SfiProxy project)
   bse_item_use (self->project);
   bse_proxy_connect (self->project,
                      "swapped_signal::item-added", bst_app_reload_supers, self,
-                     "swapped_signal::item-removed", bst_app_reload_supers, self,
+                     "swapped_signal::item-remove", bst_app_reload_supers, self,
                      "swapped_signal::state-changed", bst_widget_update_activatable, self,
+                     "swapped_signal::property-notify::dirty", bst_widget_update_activatable, self,
                      NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project, "%s");
   if (self->pcontrols)
@@ -578,7 +580,7 @@ bst_app_activate (BstActivatable *activatable,
           SfiProxy project = bse_server_use_new_project (BSE_SERVER, "Untitled.bse");
           BstApp *new_app;
 
-          bse_project_ensure_wave_repo (project);
+          bse_project_get_wave_repo (project);
           new_app = bst_app_new (project);
           bse_item_unuse (project);
 
@@ -621,6 +623,15 @@ bst_app_activate (BstActivatable *activatable,
       proxy = bst_app_get_current_super (self);
       if (BSE_IS_SNET (proxy) && !bse_project_is_active (self->project))
         bse_project_remove_snet (self->project, proxy);
+      break;
+    case BST_ACTION_CLEAR_UNDO:
+      bse_project_clear_undo (self->project);
+      break;
+    case BST_ACTION_UNDO:
+      bse_project_undo (self->project);
+      break;
+    case BST_ACTION_REDO:
+      bse_project_redo (self->project);
       break;
     case BST_ACTION_START_PLAYBACK:
       bst_project_ctrl_play (BST_PROJECT_CTRL (self->pcontrols));
@@ -800,9 +811,12 @@ bst_app_can_activate (BstActivatable *activatable,
     case BST_ACTION_REMOVE_SYNTH:
       super = bst_app_get_current_super (self);
       return BSE_IS_SNET (super) && !bse_project_is_active (self->project);
+    case BST_ACTION_CLEAR_UNDO:
+      return bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
     case BST_ACTION_UNDO:
+      return bse_project_undo_depth (self->project) > 0;
     case BST_ACTION_REDO:
-      return FALSE;
+      return bse_project_redo_depth (self->project) > 0;
     case BST_ACTION_REBUILD:
     case BST_ACTION_EXIT:
       return TRUE;

@@ -92,6 +92,7 @@ enum {
   BST_ACTION_STOP_PLAYBACK,
   /* misc */
   BST_ACTION_REBUILD,
+  BST_ACTION_CLEAR_UNDO,
   BST_ACTION_UNDO,
   BST_ACTION_REDO,
   /* and shutdown */
