@@ -1,3 +1,8 @@
+Fri Apr 28 21:27:16 2000  Tim Janik  <timj@gtk.org>
+
+	* bseobject.c (bse_object_add_notifier_i): list all valid characters in
+	call to g_strcanon().
+
 Thu Apr 20 00:35:20 2000  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.c (bse_container_do_remove_item): remove child source's
