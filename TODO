@@ -1,6 +1,8 @@
 FIXMES:
 - delte+undo on tracks kills connections? (busses?)
 - rename bsesnifferscop.* to bsescope.*
+- rename snifferscope to trackscope
+- skip no-voice found for snet==NULL tracks
 - check sfi_debug_check ("sched") in --debug-list
 - rename gslopmaster to bseenginemaster
 - move ProbeFeatures into bseprobe.idl (requires BseSource as C++ object)
