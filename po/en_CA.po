@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-28 16:17-0400\n"
+"POT-Creation-Date: 2004-08-29 14:37-0400\n"
 "PO-Revision-Date: 2004-08-29 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
@@ -393,7 +393,7 @@ msgstr "Move Control Event"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
-#: beast-gtk/bsttrackrollctrl.c:568
+#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:128
 msgid "No target"
 msgstr "No target"
 
@@ -573,6 +573,16 @@ msgstr "Shrink the scrollable area"
 #: beast-gtk/bstgrowbar.c:93
 msgid "Grow the scrollable area"
 msgstr "Grow the scrollable area"
+
+#: beast-gtk/bstitemseqdialog.c:139
+#, c-format
+msgid "Adds the selection from the \"%s\" list to the \"%s\" list"
+msgstr "Adds the selection from the \"%s\" list to the \"%s\" list"
+
+#: beast-gtk/bstitemseqdialog.c:142
+#, c-format
+msgid "Removes the selection from the \"%s\" list"
+msgstr "Removes the selection from the \"%s\" list"
 
 #: beast-gtk/bstitemview.c:205
 msgid "ID"
@@ -3168,91 +3178,94 @@ msgstr "Gain Modulation Input"
 msgid "Filtered Audio Signal"
 msgstr "Filtered Audio Signal"
 
-#: bse/bsebus.c:109
+#: bse/bsebus.c:114
 msgid "Available Inputs"
 msgstr "Available Inputs"
 
-#: bse/bsebus.c:109
+#: bse/bsebus.c:114
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "List of available synthesis signals to be used as bus input"
 
-#: bse/bsebus.c:483 bse/bsebus.c:488 bse/bsetrack.c:875
+#. FIXME: fix volume
+#: bse/bsebus.c:502 bse/bsebus.c:507 bse/bsemidisynth.c:439
+#: bse/bsemidisynth.c:445 bse/bsemidisynth.c:452 bse/bsesong.c:706
+#: bse/bsesong.c:712 bse/bsesong.c:719 bse/bsetrack.c:875
 msgid "Adjustments"
 msgstr "Adjustments"
 
-#: bse/bsebus.c:485
+#: bse/bsebus.c:504
 msgid "Left Volume [dB]"
 msgstr "Left Volume [dB]"
 
-#: bse/bsebus.c:485
+#: bse/bsebus.c:504
 msgid "Volume adjustment of left bus channel"
 msgstr "Volume adjustment of left bus channel"
 
-#: bse/bsebus.c:490
+#: bse/bsebus.c:509
 msgid "Right Volume [dB]"
 msgstr "Right Volume [dB]"
 
-#: bse/bsebus.c:490
+#: bse/bsebus.c:509
 msgid "Volume adjustment of right bus channel"
 msgstr "Volume adjustment of right bus channel"
 
-#: bse/bsebus.c:493
+#: bse/bsebus.c:512
 msgid "Signal Inputs"
 msgstr "Signal Inputs"
 
-#: bse/bsebus.c:495
+#: bse/bsebus.c:514
 msgid "Input Signals"
 msgstr "Input Signals"
 
-#: bse/bsebus.c:495
+#: bse/bsebus.c:514
 msgid "Synthesis signals used as bus input"
 msgstr "Synthesis signals used as bus input"
 
-#: bse/bsebus.c:497
+#: bse/bsebus.c:517
 msgid "Internals"
 msgstr "Internals"
 
-#: bse/bsebus.c:499
+#: bse/bsebus.c:519
 msgid "Master Output"
 msgstr "Master Output"
 
-#: bse/bsebus.c:502 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:522 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Left Audio In"
 
-#: bse/bsebus.c:502 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:522 bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr "Left channel input"
 
-#: bse/bsebus.c:504 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:524 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Right Audio In"
 
-#: bse/bsebus.c:504
+#: bse/bsebus.c:524
 msgid "Right channel input"
 msgstr "Right channel input"
 
-#: bse/bsebus.c:506 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:526 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Left Audio Out"
 
-#: bse/bsebus.c:506 bse/bsepcminput.c:128
+#: bse/bsebus.c:526 bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr "Left channel output"
 
-#: bse/bsebus.c:508 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:528 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Right Audio Out"
 
-#: bse/bsebus.c:508 bse/bsepcminput.c:130
+#: bse/bsebus.c:528 bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr "Right channel output"
 
-#: bse/bsebus.c:527
+#: bse/bsebus.c:547
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -3383,6 +3396,137 @@ msgstr ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
 
+#. GSL
+#: bse/bseenums.c:99
+msgid "Everything went well"
+msgstr "Everything went well"
+
+#: bse/bseenums.c:100
+msgid "Functionality not implemented"
+msgstr "Functionality not implemented"
+
+#: bse/bseenums.c:101
+msgid "No device (driver) available"
+msgstr "No device (driver) available"
+
+#: bse/bseenums.c:102
+msgid "Device not async capable"
+msgstr "Device not async capable"
+
+#: bse/bseenums.c:103
+msgid "Device busy"
+msgstr "Device busy"
+
+#: bse/bseenums.c:104
+msgid "Failed to query device capabilities"
+msgstr "Failed to query device capabilities"
+
+#: bse/bseenums.c:105
+msgid "Device capabilities not sufficient"
+msgstr "Device capabilities not sufficient"
+
+#: bse/bseenums.c:106
+msgid "Failed to set device capabilities"
+msgstr "Failed to set device capabilities"
+
+#: bse/bseenums.c:107
+msgid "No such synthesis module"
+msgstr "No such synthesis module"
+
+#: bse/bseenums.c:108
+msgid "No such input channel"
+msgstr "No such input channel"
+
+#: bse/bseenums.c:109
+msgid "No such output channel"
+msgstr "No such output channel"
+
+#: bse/bseenums.c:110
+msgid "Input/Output channels not connected"
+msgstr "Input/Output channels not connected"
+
+#: bse/bseenums.c:111
+msgid "Input channel is private"
+msgstr "Input channel is private"
+
+#: bse/bseenums.c:112
+msgid "Input channel already in use"
+msgstr "Input channel already in use"
+
+#: bse/bseenums.c:113
+msgid "Input/Output channels already connected"
+msgstr "Input/Output channels already connected"
+
+#: bse/bseenums.c:114
+msgid "Parent mismatch"
+msgstr "Parent mismatch"
+
+#: bse/bseenums.c:115
+msgid "Bad loopback"
+msgstr "Bad loopback"
+
+#: bse/bseenums.c:116
+msgid "Synthesis module currently busy"
+msgstr "Synthesis module currently busy"
+
+#: bse/bseenums.c:117
+msgid "Invalid synthsis module type"
+msgstr "Invalid synthsis module type"
+
+#: bse/bseenums.c:118
+msgid "No such procedure"
+msgstr "No such procedure"
+
+#: bse/bseenums.c:119
+msgid "Procedure currently busy"
+msgstr "Procedure currently busy"
+
+#. recursion
+#: bse/bseenums.c:120
+msgid "Procedure parameter invalid"
+msgstr "Procedure parameter invalid"
+
+#: bse/bseenums.c:121
+msgid "Procedure execution failed"
+msgstr "Procedure execution failed"
+
+#: bse/bseenums.c:122
+msgid "Procedure execution aborted"
+msgstr "Procedure execution aborted"
+
+#: bse/bseenums.c:123
+msgid "Parsing error"
+msgstr "Parsing error"
+
+#: bse/bseenums.c:124
+msgid "Failed to spawn child process"
+msgstr "Failed to spawn child process"
+
+#. various procedure errors
+#: bse/bseenums.c:126
+msgid "No such entry"
+msgstr "No such entry"
+
+#: bse/bseenums.c:127
+msgid "No such event"
+msgstr "No such event"
+
+#: bse/bseenums.c:129
+msgid "Ownership mismatch"
+msgstr "Ownership mismatch"
+
+#: bse/bseenums.c:130
+msgid "Invalid offset"
+msgstr "Invalid offset"
+
+#: bse/bseenums.c:131
+msgid "Invalid duration"
+msgstr "Invalid duration"
+
+#: bse/bseenums.c:132
+msgid "Invalid overlap"
+msgstr "Invalid overlap"
+
 #: bse/bseinstrumentinput.c:68
 msgid "/Input & Output/Instrument Voice Input"
 msgstr "/Input & Output/Instrument Voice Input"
@@ -3486,6 +3630,73 @@ msgstr "MIDI Signal 4"
 #: bse/bsemidiinput.c:82
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/Input & Output/MIDI Voice Input"
+
+#: bse/bsemidisynth.c:226 bse/bsesubsynth.c:146 bse/bsetrack.c:275
+msgid "Available Synthesizers"
+msgstr "Available Synthesizers"
+
+#: bse/bsemidisynth.c:226
+msgid "List of available synthesis networks to choose a MIDI instrument from"
+msgstr "List of available synthesis networks from which to choose a MIDI instrument"
+
+#: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:279
+msgid "Available Postprocessors"
+msgstr "Available Postprocessors"
+
+#: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:279
+msgid "List of available synthesis networks to choose a postprocessor from"
+msgstr ""
+"List of available synthesis networks from which to choose a postprocessor"
+
+#: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
+#: bse/bsemidisynth.c:434 bse/bsesong.c:744 bse/bsetrack.c:894
+#: bse/bsetrack.c:900
+msgid "MIDI Instrument"
+msgstr "MIDI Instrument"
+
+#: bse/bsemidisynth.c:422 bse/bsetrack.c:896
+msgid "MIDI Channel"
+msgstr "MIDI Channel"
+
+#: bse/bsemidisynth.c:427
+msgid "Max Voices"
+msgstr "Max Voices"
+
+#: bse/bsemidisynth.c:427 bse/bsetrack.c:891
+msgid "Maximum number of voices for simultaneous playback"
+msgstr "Maximum number of voices for simultaneous playback"
+
+#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:494 bse/bsetrack.c:881
+msgid "Synthesizer"
+msgstr "Synthesizer"
+
+#: bse/bsemidisynth.c:432
+msgid "Synthesis network to be used as MIDI instrument"
+msgstr "Synthesis network to be used as MIDI instrument"
+
+#: bse/bsemidisynth.c:436 bse/bsesong.c:746 bse/bsetrack.c:902
+msgid "Postprocessor"
+msgstr "Postprocessor"
+
+#: bse/bsemidisynth.c:436 bse/bsesong.c:746 bse/bsetrack.c:902
+msgid "Synthesis network to be used as postprocessor"
+msgstr "Synthesis network to be used as postprocessor"
+
+#: bse/bsemidisynth.c:441 bse/bsesong.c:708
+msgid "Master [float]"
+msgstr "Master [float]"
+
+#: bse/bsemidisynth.c:447 bse/bsesong.c:714
+msgid "Master [dB]"
+msgstr "Master [dB]"
+
+#: bse/bsemidisynth.c:454 bse/bsesong.c:721
+msgid "Master [%]"
+msgstr "Master [%]"
+
+#: bse/bsemidisynth.c:458 bse/bsesong.c:748
+msgid "Playback Settings"
+msgstr "Playback Settings"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
 msgid "Freq Out"
@@ -3597,51 +3808,89 @@ msgstr "Signal In"
 msgid "Snoop Signal"
 msgstr "Snoop Signal"
 
+#: bse/bsesong.c:725 bse/bsesong.c:729 bse/bsesong.c:733 bse/bsesong.c:737
+msgid "Timing"
+msgstr "Timing"
+
+#: bse/bsesong.c:727
+msgid "Ticks"
+msgstr "Ticks"
+
+#: bse/bsesong.c:727
+msgid "Number of ticks per quarter note"
+msgstr "Number of ticks per quarter note"
+
+#: bse/bsesong.c:731
+msgid "Numerator"
+msgstr "Numerator"
+
+#: bse/bsesong.c:731
+msgid "Measure numerator"
+msgstr "Measure numerator"
+
+#: bse/bsesong.c:735
+msgid "Denominator"
+msgstr "Denominator"
+
+#: bse/bsesong.c:735
+msgid "Measure denominator, must be a power of 2"
+msgstr "Measure denominator; must be a power of 2"
+
+#: bse/bsesong.c:739
+msgid "Beats per minute"
+msgstr "Beats per minute"
+
+#. change default
+#. override parent property
+#: bse/bsesong.c:753 bse/bsesong.c:757 bse/bsesong.c:762 bse/bsesong.c:767
+msgid "Looping"
+msgstr "Looping"
+
 #: bse/bsesong.proc:37
 msgid "Create a new mixer bus for a Song."
 msgstr "Create a new mixer bus for a Song."
 
-#: bse/bsesong.proc:68
+#: bse/bsesong.proc:74
 msgid "Delete a mixer bus from a Song."
 msgstr "Delete a mixer bus from a Song."
 
-#: bse/bsesong.proc:121
+#: bse/bsesong.proc:127
 msgid "Retrieve master output bus of a song."
 msgstr "Retrieve master output bus of a song."
 
-#: bse/bsesong.proc:148
+#: bse/bsesong.proc:154
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr "Ensure that each part in a song is inserted into at least one track."
 
-#: bse/bsesong.proc:169
+#: bse/bsesong.proc:175
 msgid "Connect all unconnected track of a song to the master output bus."
 msgstr "Connect all unconnected tracks of a song to the master output bus."
 
-#: bse/bsesong.proc:209
+#: bse/bsesong.proc:215
 msgid "Create a new Part in a Song."
 msgstr "Create a new Part in a Song."
 
-#: bse/bsesong.proc:240
+#: bse/bsesong.proc:246
 msgid "Delete a Part from a Song."
 msgstr "Delete a Part from a Song."
 
-#: bse/bsesong.proc:278
+#: bse/bsesong.proc:284
 msgid "Create a new Track for a Song."
 msgstr "Create a new Track for a Song."
 
-#: bse/bsesong.proc:314
+#: bse/bsesong.proc:320
 msgid "Delete a Track from a Song."
 msgstr "Delete a Track from a Song."
 
-#: bse/bsesong.proc:353
+#: bse/bsesong.proc:359
 msgid "Find a track suitable for playing notes of a given part."
 msgstr "Find a track suitable for playing notes of a given part."
 
-#: bse/bsesong.proc:396
+#: bse/bsesong.proc:402
 msgid "Synthesize a note on a song of an active project."
 msgstr "Synthesize a note on a song of an active project."
 
-#: bse/bsesong.proc:446
+#: bse/bsesong.proc:452
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Retrieve song timing information at a specific tick."
 
@@ -3804,18 +4053,10 @@ msgstr "Virtual output %u"
 msgid "/Virtualization/Virtual Sub Synth"
 msgstr "/Virtualization/Virtual Sub Synth"
 
-#: bse/bsesubsynth.c:146 bse/bsetrack.c:275
-msgid "Available Synthesizers"
-msgstr "Available Synthesizers"
-
 #: bse/bsesubsynth.c:146
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr ""
 "List of available synthesis networks from which to choose a sub network"
-
-#: bse/bsesubsynth.c:494 bse/bsetrack.c:881
-msgid "Synthesizer"
-msgstr "Synthesizer"
 
 #: bse/bsesubsynth.c:495
 msgid "Synthesis network to use as embedded sub network"
@@ -3866,15 +4107,6 @@ msgid "List of available synthesis networks to choose a track instrument from"
 msgstr ""
 "List of available synthesis networks from which to choose a track instrument"
 
-#: bse/bsetrack.c:279
-msgid "Available Postprocessors"
-msgstr "Available Postprocessors"
-
-#: bse/bsetrack.c:279
-msgid "List of available synthesis networks to choose a postprocessor from"
-msgstr ""
-"List of available synthesis networks from which to choose a postprocessor"
-
 #: bse/bsetrack.c:283 bse/bsewaveosc.c:125
 msgid "Available Waves"
 msgstr "Available Waves"
@@ -3903,29 +4135,9 @@ msgstr "Wave to be used as instrument"
 msgid "Max Voixes"
 msgstr "Max Voices"
 
-#: bse/bsetrack.c:891
-msgid "Maximum number of voices for simultaneous playback"
-msgstr "Maximum number of voices for simultaneous playback"
-
-#: bse/bsetrack.c:894 bse/bsetrack.c:900
-msgid "MIDI Instrument"
-msgstr "MIDI Instrument"
-
-#: bse/bsetrack.c:896
-msgid "MIDI Channel"
-msgstr "MIDI Channel"
-
 #: bse/bsetrack.c:897
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Midi channel assigned to this track. 0 uses private per-track channel."
-
-#: bse/bsetrack.c:902
-msgid "Postprocessor"
-msgstr "Postprocessor"
-
-#: bse/bsetrack.c:902
-msgid "Synthesis network to be used as postprocessor"
-msgstr "Synthesis network to be used as postprocessor"
 
 #: bse/bsewaveosc.c:94
 msgid "/Audio Sources/Wave Oscillator"
