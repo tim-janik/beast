@@ -526,15 +526,17 @@ sfi_glue_proxy_disconnect (SfiProxy     proxy,
       gpointer data = va_arg (var_args, gpointer);
       GSList *node, *slist = NULL;
 
-      if (strncmp (signal, "any_signal::", 12) == 0)
-	{
+      if (strncmp (signal, "any_signal::", 12) == 0 ||
+          strncmp (signal, "any-signal::", 12) == 0)
+        {
 	  signal += 12;
 	  slist = _sfi_glue_signal_find_closures (context, proxy, signal, data, callback, TRUE);
 	  for (node = slist; node; node = node->next)
 	    sfi_glue_signal_disconnect (proxy, (gulong) node->data);
 	  g_slist_free (slist);
 	}
-      else if (strcmp (signal, "any_signal") == 0)
+      else if (strcmp (signal, "any_signal") == 0 ||
+               strcmp (signal, "any-signal") == 0)
 	{
 	  slist = _sfi_glue_signal_find_closures (context, proxy, NULL, data, callback, TRUE);
 	  for (node = slist; node; node = node->next)

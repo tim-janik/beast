@@ -1,3 +1,8 @@
+Sun Aug 15 11:53:05 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiglueproxy.c (sfi_glue_proxy_disconnect): acdept any_signal as
+	well as any-signal.
+
 Sat Jul 17 13:24:57 2004  Tim Janik  <timj@gtk.org>
 
 	* sficxx.h: implement iterators for sequences and fblocks.
