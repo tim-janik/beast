@@ -37,6 +37,11 @@ namespace Sfidl {
     std::string funcCopy (const std::string& type);
     std::string funcFree (const std::string& type);
 
+    std::string untyped_pspec_constructor (const Param &param);
+    std::string typed_pspec_constructor   (const Param &param);
+
+    void printChoicePrototype   (NamespaceHelper& nspace);
+    void printChoiceImpl        (NamespaceHelper& nspace);
     void printRecSeqForwardDecl (NamespaceHelper& nspace);
     void printRecSeqDefinition (NamespaceHelper& nspace);
     void printRecSeqImpl (NamespaceHelper& nspace);

@@ -1,3 +1,33 @@
+Fri Jan 23 02:30:27 2004  Tim Janik  <timj@gtk.org>
+
+	* sficxx.h: added take() to Sequence, added steal() to Record
+	and Sequence. added templates used by code generator:
+	cxx_boxed_copy, cxx_boxed_free, cxx_boxed_to_rec,
+	cxx_boxed_from_rec, cxx_boxed_to_seq, cxx_boxed_from_seq,
+	cxx_value_get_record, cxx_value_set_record,
+	cxx_value_get_sequence and cxx_value_set_sequence.
+
+	* sfidl-cxx.[hc]*: copied lots of string helpers from sfidl-module.cc
+	here because we still have no single identifier/typename
+	manipulation function. added typed_pspec_constructor() and
+	untyped_pspec_constructor() to create pspec constructors with and
+	without presence of type system respectively.
+	added printChoicePrototype() and printChoiceImpl() to implement
+	choice generation. lots of fixups to printRecSeqForwardDecl(),
+	printRecSeqDecl() and printRecSeqImpl(). added missing record and
+	sequence methods, using the above templates.
+
+	* sfidl-module.[hc]*: use pspec constructor generation code from
+	sfidl-cxx.c, added choice generation. more property fixes.
+
+	* sfidl-namespace.cc: added fixme, this should generate comments
+	telling what namespace was just closed.
+
+	* sfiparams.[hc]: SfiBoxedFields field changes.
+
+	* testsfi.c:
+	* sfidl-generator.cc: pspec constructor fixups.
+
 Wed Jan 21 03:36:21 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-cxx.cc: Added FIXME for indicating where function computing

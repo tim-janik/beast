@@ -75,9 +75,10 @@ NamespaceHelper::~NamespaceHelper()
   leaveAll();
 }
 
-void NamespaceHelper::setFromSymbol(string symbol)
+void
+NamespaceHelper::setFromSymbol(string symbol)
 {
-  list<string> symlist = symbolToList(symbol);
+  list<string> symlist = symbolToList (symbol);
   symlist.pop_back();
   
   /* check that the current namespace doesn't contain wrong parts at end */
@@ -85,19 +86,19 @@ void NamespaceHelper::setFromSymbol(string symbol)
   ni = currentNamespace.begin();
   si = symlist.begin();
   long wrong = currentNamespace.size();
-  while(ni != currentNamespace.end() && si != symlist.end() && *ni == *si)
+  while (ni != currentNamespace.end() && si != symlist.end() && *ni == *si)
     {
       ni++;
       si++;
       wrong--;
     }
-  while(wrong--)
+  while (wrong--)
     {
-      fprintf(out,"}\n");
+      fprintf (out,"}\n"); // FIXME: should print out: // old-namespace
     }
   
   /* enter new components at the end */
-  while(si != symlist.end())
+  while (si != symlist.end())
     {
       fprintf(out,"namespace %s {\n",(*si++).c_str());
     }

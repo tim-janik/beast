@@ -198,6 +198,12 @@ public:
     delete record;
     record = rec;
   }
+  Type* steal ()
+  {
+    Type *t = record;
+    record = NULL;
+    return t;
+  }
   RecordHandle& operator= (const RecordHandle &src)
   {
     if (record != src.record)
@@ -244,10 +250,13 @@ public:
 
 template<typename Type>
 class Sequence {
+public:
+  typedef Type ElementType;
   struct CSeq {
     unsigned int n_elements;
     Type        *elements;
   };
+private:
   CSeq *cseq;
 public:
   Sequence (unsigned int n = 0)
@@ -259,6 +268,25 @@ public:
   {
     cseq = g_new0 (CSeq, 1);
     *this = sh;
+  }
+  void take (CSeq *cs)
+  {
+    resize (0);
+    if (cs)
+      {
+        g_free (cseq->elements);
+        g_free (cseq);
+        cseq = cs;
+        /* a take(); steal(); sequence needs to preserve pointer */
+      }
+  }
+  CSeq* steal ()
+  {
+    CSeq *cs = cseq;
+    cseq = g_new0 (CSeq, 1);
+    resize (0);
+    /* a take(); steal(); sequence needs to preserve pointer */
+    return cs;
   }
   void resize (unsigned int n)
   {
@@ -296,8 +324,7 @@ public:
   {
     if (cseq != sh.cseq)
       {
-        for (guint i = 0; i < length(); i++)
-          cseq->elements[i].~Type();
+        resize (0);
         cseq->n_elements = sh.length();
         cseq->elements = g_renew (Type, cseq->elements, cseq->n_elements);
         for (guint i = 0; i < length(); i++)
@@ -311,8 +338,7 @@ public:
   }
   ~Sequence()
   {
-    for (guint i = 0; i < length(); i++)
-      cseq->elements[i].~Type();
+    resize (0);
     g_free (cseq->elements);
     g_free (cseq);
   }
@@ -783,6 +809,127 @@ public:
     g_value_set_object (value, self.cobj);
   }
 };
+
+
+template<typename Type> gpointer
+cxx_boxed_copy (gpointer data)
+{
+  if (data)
+    {
+      Type *t = reinterpret_cast<Type*> (data);
+      Type *d = new Type (*t);
+      return d;
+    }
+  return NULL;
+}
+
+template<typename Type> void
+cxx_boxed_free (gpointer data)
+{
+  if (data)
+    {
+      Type *t = reinterpret_cast<Type*> (data);
+      delete t;
+    }
+}
+
+template<typename Type> void
+cxx_boxed_to_rec (const GValue *src_value,
+                  GValue       *dest_value)
+{
+  SfiRec *rec = NULL;
+  gpointer boxed = g_value_get_boxed (src_value);
+  if (boxed)
+    {
+      Type *t = reinterpret_cast<Type*> (boxed);
+      rec = Type::to_rec (*t);
+    }
+  sfi_value_take_rec (dest_value, rec);
+}
+
+template<typename Type> void
+cxx_boxed_from_rec (const GValue *src_value,
+                    GValue       *dest_value)
+{
+  gpointer boxed = NULL;
+  SfiRec *rec = sfi_value_get_rec (src_value);
+  if (rec)
+    {
+      RecordHandle<Type> rh = Type::from_rec (rec);
+      Type *t = rh.steal();
+      boxed = t;
+    }
+  g_value_set_boxed_take_ownership (dest_value, boxed);
+}
+
+template<typename SeqType> void
+cxx_boxed_to_seq (const GValue *src_value,
+                  GValue       *dest_value)
+{
+  SfiSeq *seq = NULL;
+  gpointer boxed = g_value_get_boxed (src_value);
+  if (boxed)
+    {
+      typename SeqType::CSeq *t = reinterpret_cast<typename SeqType::CSeq*> (boxed);
+      SeqType cxxseq;
+      cxxseq.take(t);   /* temporarily re-own */
+      seq = cxxseq.to_seq();
+      cxxseq.steal();   /* get back */
+    }
+  sfi_value_take_seq (dest_value, seq);
+}
+
+template<typename SeqType> void
+cxx_boxed_from_seq (const GValue *src_value,
+                    GValue       *dest_value)
+{
+  gpointer boxed = NULL;
+  SfiSeq *seq = sfi_value_get_seq (src_value);
+  if (seq)
+    {
+      SeqType sh = SeqType::from_seq (seq);
+      typename SeqType::CSeq *t = sh.steal();
+      boxed = t;
+    }
+  g_value_set_boxed_take_ownership (dest_value, boxed);
+}
+
+template<typename Type> RecordHandle<Type>
+cxx_value_get_record (const GValue *value)
+{
+  SfiRec *rec = sfi_value_get_rec (value);
+  if (rec)
+    return Type::from_rec (rec);
+  else
+    return INIT_NULL;
+}
+
+template<typename Type> void
+cxx_value_set_record (GValue                   *value,
+                      const RecordHandle<Type> &self)
+{
+  if (self)
+    sfi_value_take_rec (value, Type::to_rec (self));
+  else
+    sfi_value_set_rec (value, NULL);
+}
+
+template<typename SeqType> SeqType
+cxx_value_get_sequence (const GValue *value)
+{
+  SfiSeq *seq = sfi_value_get_seq (value);
+  if (seq)
+    return SeqType::from_seq (seq);
+  else
+    return SeqType();
+}
+
+template<typename SeqType> void
+cxx_value_set_sequence (GValue        *value,
+                        const SeqType &self)
+{
+  sfi_value_take_seq (value, self.to_seq ());
+}
 
 } // Sfi
 

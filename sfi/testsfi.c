@@ -25,7 +25,7 @@
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
   sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints)
-#define sfidl_pspec_BoxedRec(group, name, nick, blurb, hints, fields)            \
+#define sfidl_pspec_Record(group, name, nick, blurb, hints, fields)            \
   sfi_pspec_rec (name, nick, blurb, fields, hints)
 #define sfidl_pspec_Choice(group, name, nick, blurb, default_value, hints, choices) \
   sfi_pspec_choice (name, nick, blurb, default_value, choices, hints)

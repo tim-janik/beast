@@ -170,17 +170,246 @@ string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std:
   return CodeGeneratorCBase::createTypeCode (type, name, model);
 }
 
-void CodeGeneratorCxxBase::printRecSeqForwardDecl (NamespaceHelper& nspace)
+static string
+CxxNameToSymbol (const string &str)     // FIXME: need mammut renaming function
+{
+  static const char *cset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz";
+  string s;
+  for (guint i = 0; i < s.size(); i++)
+    if (!strchr (cset, s[i]))
+      s[i] = '_';
+  return s;
+}
+
+static vector<string>
+split_string (const string &ctype)      // FIXME: remove once we have general renamer
+{
+  vector<string> vs;
+  string type = ctype;
+  int i;
+  while ((i = type.find (':')) >= 0)
+    {
+      vs.push_back (type.substr (0, i));
+      if (type[i + 1] == ':')
+        type = type.substr (i + 2);
+      else
+        type = type.substr (i + 1);
+    }
+  vs.push_back (type);
+  return vs;
+}
+
+static string
+join_string (const vector<string> &vs,  // FIXME: remove once we have general renamer
+             const string         &delim)
+{
+  string r;
+  for (vector<string>::const_iterator vi = vs.begin(); vi != vs.end(); vi++)
+    {
+      if (vi != vs.begin())
+        r += delim;
+      r += *vi;
+    }
+  return r;
+}
+
+static string
+UC_NAME (const string &cstr)    // FIXME: need mammut renaming function
+{
+  vector<string> vs = split_string (cstr);
+  string str = join_string (vs, "_");
+  string r;
+  char l = 0;
+  for (string::const_iterator i = str.begin(); i != str.end(); i++)
+    {
+      if (islower (l) && isupper (*i))
+        r += "_";
+      r += toupper (l = *i);
+    }
+  return r;
+}
+static const char*
+cUC_NAME (const string &cstr) // FIXME: need mammut renaming function
+{
+  return g_intern_string (cstr.c_str());
+}
+
+static string // FIXME: need mammut renaming function
+UC_TYPE_NAME (const string &tname)
+{
+  vector<string> vs = split_string (tname);
+  string lname = vs.back();
+  vs.pop_back();
+  string nspace = join_string (vs, ":");
+  string result = UC_NAME (nspace) + "_TYPE_" + UC_NAME (lname);
+  return result;
+}
+
+static const char*
+cUC_TYPE_NAME (const string &cstr) // FIXME: need mammut renaming function
+{
+  return g_intern_string (UC_TYPE_NAME (cstr).c_str());
+}
+
+/* produce type-system-independant pspec constructors */
+std::string
+CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
+{
+  switch (parser.typeOf (param.type))
+    {
+    case CHOICE:
+      {
+        const string group = (param.group != "") ? param.group.escaped() : "NULL";
+        string pspec = "sfidl_pspec_Choice";
+        if (param.args == "")
+          pspec += "_default";
+        pspec += " (" + group + ", \"" + param.name + "\", ";
+        if (param.args != "")
+          pspec += param.args + ", ";
+        pspec += param.type + "_choice_values()";
+        pspec += ")";
+        return pspec;
+      }
+    case RECORD:
+      {
+        const string group = (param.group != "") ? param.group.escaped() : "NULL";
+        string pspec = "sfidl_pspec_Record";
+        if (param.args == "")
+          pspec += "_default (" + group + ", \"" + param.name + "\", ";
+        else
+          pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
+        pspec += param.type + "::get_fields)";
+        return pspec;
+      }
+    case SEQUENCE:
+      {
+        const string group = (param.group != "") ? param.group.escaped() : "NULL";
+        string pspec = "sfidl_pspec_Sequence";
+        if (param.args == "")
+          pspec += "_default (" + group + ", \"" + param.name + "\", ";
+        else
+          pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
+        pspec += param.type + "::get_fields)";
+        return pspec;
+      }
+    default:    return makeParamSpec (param);
+    }
+}
+
+/* produce type-system-dependant pspec constructors */
+std::string
+CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
+{
+  switch (parser.typeOf (param.type))
+    {
+    case CHOICE:
+      {
+        const string group = (param.group != "") ? param.group.escaped() : "NULL";
+        string pspec = "sfidl_pspec_GEnum";
+        if (param.args == "")
+          pspec += "_default";
+        pspec += " (" + group + ", \"" + param.name + "\", ";
+        if (param.args != "")
+          pspec += param.args + ", ";
+        pspec += cUC_TYPE_NAME (param.type);
+        pspec += ")";
+        return pspec;
+      }
+    case RECORD:
+      {
+        const string group = (param.group != "") ? param.group.escaped() : "NULL";
+        string pspec = "sfidl_pspec_BoxedRec";
+        if (param.args == "")
+          pspec += "_default (" + group + ", \"" + param.name + "\", ";
+        else
+          pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
+        pspec += cUC_TYPE_NAME (param.type);
+        pspec += ")";
+        return pspec;
+      }
+    case SEQUENCE:
+      {
+        const string group = (param.group != "") ? param.group.escaped() : "NULL";
+        string pspec = "sfidl_pspec_BoxedSeq";
+        if (param.args == "")
+          pspec += "_default (" + group + ", \"" + param.name + "\", ";
+        else
+          pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
+        pspec += cUC_TYPE_NAME (param.type);
+        pspec += ")";
+        return pspec;
+      }
+    case OBJECT:
+      {
+        const string group = (param.group != "") ? param.group.escaped() : "NULL";
+        string pspec = "sfidl_pspec_Object";
+        if (param.args == "")
+          pspec += "_default";
+        pspec += " (" + group + ", \"" + param.name + "\", ";
+        if (param.args != "")
+          pspec += param.args + ", ";
+        pspec += cUC_TYPE_NAME (param.type);
+        pspec += ")";
+        return pspec;
+      }
+    default:    return makeParamSpec (param);
+    }
+}
+
+void
+CodeGeneratorCxxBase::printChoicePrototype (NamespaceHelper& nspace)
+{
+  printf ("\n/* choice prototypes */\n");
+  for (vector<Choice>::const_iterator ci = parser.getChoices().begin(); ci != parser.getChoices().end(); ci++)
+    {
+      if (parser.fromInclude (ci->name))
+        continue;
+      nspace.setFromSymbol(ci->name);
+      string name = nspace.printableForm (ci->name);
+      printf ("\n");
+      printf ("static inline SfiChoiceValues %s_choice_values();\n", name.c_str());
+    }
+}
+
+void
+CodeGeneratorCxxBase::printChoiceImpl (NamespaceHelper& nspace)
+{
+  printf ("\n/* choice implementations */\n");
+  for (vector<Choice>::const_iterator ci = parser.getChoices().begin(); ci != parser.getChoices().end(); ci++)
+    {
+      if (parser.fromInclude (ci->name))
+        continue;
+      nspace.setFromSymbol(ci->name);
+      string name = nspace.printableForm (ci->name);
+      printf ("\n");
+      printf ("static inline SfiChoiceValues\n");
+      printf ("%s_choice_values()\n", name.c_str());
+      printf ("{\n");
+      printf ("  static const SfiChoiceValue values[%u] = {\n", ci->contents.size());
+      for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
+        printf ("    { \"%s\", \"%s\" },\n", cUC_NAME (vi->name), vi->text.c_str());
+      printf ("  };\n");
+      printf ("  static const SfiChoiceValues choice_values = {\n");
+      printf ("    sizeof (values), values,\n");
+      printf ("  };\n");
+      printf ("  return choice_values;\n");
+      printf ("}\n\n");
+    }
+}
+
+void
+CodeGeneratorCxxBase::printRecSeqForwardDecl (NamespaceHelper& nspace)
 {
   vector<Sequence>::const_iterator si;
   vector<Record>::const_iterator ri;
 
-  printf ("\n/* record/sequence forward declarations */\n");
+  printf ("\n/* record/sequence prototypes */\n");
 
   /* forward declarations for records */
   for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
     {
-      if (parser.fromInclude (ri->name)) continue;
+      if (parser.fromInclude (ri->name))
+        continue;
 
       nspace.setFromSymbol(ri->name);
       string name = nspace.printableForm (ri->name);
@@ -207,6 +436,8 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
 {
   vector<Param>::const_iterator pi;
 
+  printf ("\n/* record/sequence definitions */\n");
+
   /* sequences */
   for (vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
     {
@@ -218,8 +449,12 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
 
       string name = nspace.printableForm (si->name);
       string content = typeField (si->content.type);
-
+      
       printf ("\n");
+      if (options.doImplementation)
+        {
+          printf ("#define %s BSE_CXX_DECLARED_SEQUENCE_TYPE (%s)\n", makeGTypeName (si->name).c_str(), name.c_str());
+        }
       printf ("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
       printf ("public:\n");
       /* TODO: make this a constructor? */
@@ -232,7 +467,10 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("  static inline const char* authors   () { return %s; }\n", si->infos.get("authors").escaped().c_str());
       printf ("  static inline const char* license   () { return %s; }\n", si->infos.get("license").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", makeMixedName (si->name).c_str());
+      if (options.doImplementation)
+        printf ("  static inline SfiBoxedFields get_fields ();\n");
       printf("};\n");
+      printf ("\n");
     }
 
   /* records */
@@ -247,8 +485,7 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("\n");
       if (options.doImplementation)
 	{
-	  printf ("#define %s BSE_CXX_DECLARED_RECORD_TYPE(RecordType)\n", makeGTypeName (ri->name).c_str());
-	  printf ("BSE_CXX_DECLARE_RECORD (%s, \"%s\");\n", name.c_str(), type_name.c_str());
+	  printf ("#define %s BSE_CXX_DECLARED_RECORD_TYPE (%s)\n", makeGTypeName (ri->name).c_str(), name.c_str());
 	}
       printf ("class %s {\n", name.c_str());
       printf ("public:\n");
@@ -266,10 +503,7 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("  static inline const char* license   () { return %s; }\n", ri->infos.get("license").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", type_name.c_str());
       if (options.doImplementation)
-	{
-	  /* FIXME: need to build record fields here */
-	  // printf ("  static inline ... rec_fields () { return ...; }\n");
-	}
+        printf ("  static inline SfiBoxedFields get_fields ();\n");
       printf ("};\n");
       printf ("\n");
     }
@@ -277,20 +511,23 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
 
 void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
 {
-  vector<Sequence>::const_iterator si;
-  vector<Record>::const_iterator ri;
-  vector<Param>::const_iterator pi;
+  printf ("\n/* record/sequence implementations */\n");
 
   /* sequence members */
-  for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+  for (vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
     {
-      if (parser.fromInclude (si->name)) continue;
+      if (parser.fromInclude (si->name))
+        continue;
+      nspace.setFromSymbol(si->name);
+      string name = nspace.printableForm (si->name);
+      string nname = si->name;
+      string type_name = makeMixedName (si->name).c_str();
 
-      string name = si->name;
-
+      if (options.doImplementation)
+        printf ("BSE_CXX_DECLARE_SEQUENCE (%s, \"%s\");\n", name.c_str(), type_name.c_str());
       string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
       printf("%s\n", cTypeRet (si->name));
-      printf("%s::from_seq (SfiSeq *sfi_seq)\n", name.c_str());
+      printf("%s::from_seq (SfiSeq *sfi_seq)\n", nname.c_str());
       printf("{\n");
       printf("  %s seq;\n", cTypeRet (si->name));
       printf("  guint i, length;\n");
@@ -310,7 +547,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       /* FIXME: ugly code (*this[i]) */
       string elementToValue = createTypeCode (si->content.type, "(*this)[i]", MODEL_TO_VALUE);
       printf("SfiSeq *\n");
-      printf("%s::to_seq () const\n", name.c_str());
+      printf("%s::to_seq () const\n", nname.c_str());
       printf("{\n");
       printf("  SfiSeq *sfi_seq = sfi_seq_new ();\n");
       printf("  for (guint i = 0; i < length(); i++)\n");
@@ -323,32 +560,32 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("}\n\n");
 
       /* FIXME: client only, core needs type system support */
-      printf("%s\n", cTypeRet (si->name));
-      printf("%s::value_get (const GValue *value)\n", name.c_str());
-      printf("{\n");
-      printf("  SfiSeq *sfi_seq = sfi_value_get_seq (value);\n");
-      printf("  if (sfi_seq)\n");
-      printf("    return from_seq (sfi_seq);\n");
-      printf("  else\n");
-      printf("    return %s();\n", cTypeRet (si->name));
-      printf("}\n\n");
-
-      printf("void\n");
-      printf("%s::value_set (GValue *value, %s self)\n", name.c_str(), cTypeArg (si->name));
-      printf("{\n");
-      printf("  sfi_value_take_seq (value, self.to_seq());\n");
-      printf("}\n\n");
+      printf ("%s\n", cTypeRet (si->name));
+      printf ("%s::value_get (const GValue *value)\n", nname.c_str());
+      printf ("{\n");
+      printf ("  return ::Sfi::cxx_value_get_sequence< %s> (value);\n", nname.c_str());
+      printf ("}\n\n");
+      printf ("void\n");
+      printf ("%s::value_set (GValue *value, %s self)\n", nname.c_str(), cTypeArg (si->name));
+      printf ("{\n");
+      printf ("  ::Sfi::cxx_value_set_sequence< %s> (value, self);\n", nname.c_str());
+      printf ("}\n\n");
     }
 
   /* record members */
-  for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+  for (vector<Record>::const_iterator ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
     {
-      if (parser.fromInclude (ri->name)) continue;
-
-      string name = ri->name;
-
+      if (parser.fromInclude (ri->name))
+        continue;
+      nspace.setFromSymbol(ri->name);
+      string name = nspace.printableForm (ri->name);
+      string nname = ri->name;
+      string type_name = makeMixedName (ri->name).c_str();
+      
+      if (options.doImplementation)
+        printf ("BSE_CXX_DECLARE_RECORD (%s, \"%s\");\n", name.c_str(), type_name.c_str());
       printf("%s\n", cTypeRet (ri->name));
-      printf("%s::from_rec (SfiRec *sfi_rec)\n", name.c_str());
+      printf("%s::from_rec (SfiRec *sfi_rec)\n", nname.c_str());
       printf("{\n");
       printf("  GValue *element;\n");
       printf("\n");
@@ -356,7 +593,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("    return Sfi::INIT_NULL;\n");
       printf("\n");
       printf("  %s rec = Sfi::INIT_DEFAULT;\n", cTypeField (ri->name));
-      for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+      for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	{
 	  string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
 
@@ -368,15 +605,16 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("}\n\n");
 
       printf("SfiRec *\n");
-      printf("%s::to_rec (%s rec)\n", name.c_str(), cTypeArg (ri->name));
+      printf("%s::to_rec (%s rec)\n", nname.c_str(), cTypeArg (ri->name));
       printf("{\n");
       printf("  SfiRec *sfi_rec;\n");
       printf("  GValue *element;\n");
       printf("\n");
-      printf("  g_return_val_if_fail (rec, NULL);\n");
+      printf("  if (!rec)\n");
+      printf("    return NULL;\n");
       printf("\n");
       printf("  sfi_rec = sfi_rec_new ();\n");
-      for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+      for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	{
 	  string elementToValue = createTypeCode (pi->type, "rec->" + pi->name, MODEL_TO_VALUE);
 	  printf("  element = %s;\n", elementToValue.c_str());
@@ -387,21 +625,35 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf("}\n\n");
 
       /* FIXME: client only, core needs type system support */
-      printf("%s\n", cTypeRet(ri->name));
-      printf("%s::value_get (const GValue *value)\n", name.c_str());
-      printf("{\n");
-      printf("  SfiRec *sfi_rec = sfi_value_get_rec (value);\n");
-      printf("  if (sfi_rec)\n");
-      printf("    return from_rec (sfi_rec);\n");
-      printf("  else\n");
-      printf("    return Sfi::INIT_NULL;\n");
-      printf("}\n\n");
+      printf ("%s\n", cTypeRet(ri->name));
+      printf ("%s::value_get (const GValue *value)\n", nname.c_str());
+      printf ("{\n");
+      printf ("  return ::Sfi::cxx_value_get_record< %s> (value);\n", nname.c_str());
+      printf ("}\n\n");
+      printf ("void\n");
+      printf ("%s::value_set (GValue *value, %s self)\n", nname.c_str(), cTypeArg (ri->name));
+      printf ("{\n");
+      printf ("  ::Sfi::cxx_value_set_record< %s> (value, self);\n", nname.c_str());
+      printf ("}\n\n");
 
-      printf("void\n");
-      printf("%s::value_set (GValue *value, %s self)\n", name.c_str(), cTypeArg (ri->name));
-      printf("{\n");
-      printf("  sfi_value_take_rec (value, to_rec (self));\n");
-      printf("}\n\n");
+      printf ("SfiBoxedFields\n");
+      printf ("%s::get_fields()\n", nname.c_str());
+      printf ("{\n");
+      printf ("  static SfiBoxedFields bfields = { 0, NULL, TRUE, 0 };\n");
+      printf ("  if (!bfields.n_fields)\n");
+      printf ("    {\n");
+      printf ("      static GParamSpec *fields[%u + 1];\n", ri->contents.size());
+      printf ("      bfields.n_fields = %u;\n", ri->contents.size());
+      guint j = 0;
+      for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+        {
+          // printf("#line %u \"%s\"\n", pi->line, parser.fileName().c_str());
+          printf("      fields[%u] = %s;\n", j++, untyped_pspec_constructor (*pi).c_str());
+        }
+      printf ("      bfields.fields = fields;\n");
+      printf ("    }\n");
+      printf ("  return bfields;\n");
+      printf ("}\n\n");
     }
 }
 

@@ -207,7 +207,8 @@ GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 
 /* --- conversion --- */
 typedef struct {
-  SfiRecFields fields;
+  guint        n_fields;
+  GParamSpec **fields;
   guint        is_rec : 1;
   guint        is_seq : 1;
 } SfiBoxedFields;

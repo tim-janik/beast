@@ -193,7 +193,7 @@ string CodeGeneratorCBase::makeParamSpec(const Param& pdef)
 	break;
       case RECORD:
 	{
-	  pspec = "sfidl_pspec_BoxedRec";
+	  pspec = "sfidl_pspec_Record";
 	  if (pdef.args == "")
 	    pspec += "_default (" + group + ", \"" + pdef.name + "\",";
 	  else
@@ -203,7 +203,7 @@ string CodeGeneratorCBase::makeParamSpec(const Param& pdef)
 	break;
       case SEQUENCE:
 	{
-	  pspec = "sfidl_pspec_BoxedSeq";
+	  pspec = "sfidl_pspec_Sequence";
 	  if (pdef.args == "")
 	    pspec += "_default (" + group + ",\"" + pdef.name + "\",";
 	  else

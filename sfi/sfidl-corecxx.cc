@@ -177,49 +177,6 @@ include_relative (string path,
   return apath;
 }
 
-string
-CodeGeneratorModule::pspec_constructor (const Param &param)
-{
-  switch (parser.typeOf (param.type))
-    {
-    case OBJECT:
-      {
-	const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Object";
-        if (param.args == "")
-          pspec += "_default";
-        pspec += " (" + group + ", \"" + param.name + "\", ";
-        if (param.args != "")
-          pspec += param.args + ", ";
-        vector<string> vs = split_string (param.type);
-        string pname = vs.back();
-        vs.pop_back();
-        string nspace = join_string (vs, ":");
-        pspec += UC_NAME (nspace) + "_TYPE_" + cUC_NAME (pname);
-        pspec += ")";
-        return pspec;
-      }
-    case CHOICE:
-      {
-	const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_GEnum";
-        if (param.args == "")
-          pspec += "_default";
-        pspec += " (" + group + ", \"" + param.name + "\", ";
-        if (param.args != "")
-          pspec += param.args + ", ";
-        vector<string> vs = split_string (param.type);
-        string pname = vs.back();
-        vs.pop_back();
-        string nspace = join_string (vs, ":");
-        pspec += UC_NAME (nspace) + "_TYPE_" + cUC_NAME (pname);
-        pspec += ")";
-        return pspec;
-      }
-    default:    return makeParamSpec (param);
-    }
-}
-
 static const char*
 abs_cxx_type_name (const string &dest)
 {
@@ -370,9 +327,9 @@ CodeGeneratorModule::generate_procedures (const std::string          &outer_nspa
               "                    GParamSpec       **out_pspecs)\n");
       printf ("  {\n");
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
-        printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
+        printf ("    *(in_pspecs++) = %s;\n", typed_pspec_constructor (*ai).c_str());
       if (!is_void)
-        printf ("    *(out_pspecs++) = %s;\n", pspec_constructor (mi->result).c_str());
+        printf ("    *(out_pspecs++) = %s;\n", typed_pspec_constructor (mi->result).c_str());
       printf ("  }\n");
       
       /* done */
@@ -444,8 +401,12 @@ CodeGeneratorModule::run ()
 
   NamespaceHelper nsh(stdout);
 
+  printChoicePrototype (nsh);
   printRecSeqForwardDecl (nsh);
+
   printRecSeqDefinition (nsh);
+
+  printChoiceImpl (nsh);
   printRecSeqImpl (nsh);
 
   nsh.leaveAll();
@@ -536,7 +497,7 @@ CodeGeneratorModule::run ()
           printf ("  /* \"transport\" structure to configure synthesis modules from properties */\n");
           printf ("  struct %s {\n", ctProperties.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-            printf ("    %s %s;\n", TypeRef (pi->type), pi->name.c_str());
+            printf ("    %s %s;\n", cTypeField (pi->type), pi->name.c_str());
           printf ("    explicit %s (%s *p) ", ctProperties.c_str(), ctNameBase.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
             printf ("%c\n      %s (p->%s)", pi == ci->properties.begin() ? ':' : ',', pi->name.c_str(), pi->name.c_str());
@@ -548,7 +509,7 @@ CodeGeneratorModule::run ()
       /* property fields */
       printf ("protected:\n");
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-        printf ("  %s %s;\n", TypeRef (pi->type), pi->name.c_str());
+        printf ("  %s %s;\n", cTypeField (pi->type), pi->name.c_str());
       
       /* property IDs */
       if (ci->properties.begin() != ci->properties.end())
@@ -634,7 +595,7 @@ CodeGeneratorModule::run ()
       printf ("  static void class_init (::Bse::CxxBaseClass *klass)\n");
       printf ("  {\n");
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-        printf ("    klass->add_param (PROP_%s, %s);\n", cUC_NAME (pi->name), pspec_constructor (*pi).c_str());
+        printf ("    klass->add_param (PROP_%s, %s);\n", cUC_NAME (pi->name), typed_pspec_constructor (*pi).c_str());
       for (vector<Stream>::const_iterator si = ci->istreams.begin(); si != ci->istreams.end(); si++)
         printf ("    klass->add_ichannel (%s, %s, ICHANNEL_%s);\n",
                 si->name.escaped().c_str(), si->blurb.escaped().c_str(), cUC_NAME (si->ident));

@@ -963,7 +963,7 @@ sfi_boxed_type_set_fields (GType                 boxed_type,
 {
   g_return_if_fail (G_TYPE_IS_BOXED (boxed_type) && !G_TYPE_IS_ABSTRACT (boxed_type));
   if (bfields != NULL)
-    g_return_if_fail (bfields->fields.n_fields && (bfields->is_rec || bfields->is_seq));
+    g_return_if_fail (bfields->n_fields && (bfields->is_rec || bfields->is_seq));
   g_type_set_qdata (boxed_type, quark_boxed_fields, (SfiBoxedFields*) bfields);
 }
 
@@ -999,12 +999,12 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
         }
       else if (bfields && bfields->is_rec)
         {
-          pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, bfields->fields, NULL);
+          pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, *(SfiRecFields*) bfields, NULL);
           sfi_pspec_copy_commons (xpspec, pspec);
         }
       else if (bfields && bfields->is_seq)
         {
-          pspec = sfi_pspec_seq (xpspec->name, xpspec->_nick, xpspec->_blurb, bfields->fields.fields[0], NULL);
+          pspec = sfi_pspec_seq (xpspec->name, xpspec->_nick, xpspec->_blurb, bfields->fields[0], NULL);
           sfi_pspec_copy_commons (xpspec, pspec);
         }
     }
