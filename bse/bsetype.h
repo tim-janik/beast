@@ -194,6 +194,8 @@ GQuark		bse_type_quark			(BseType	 type);
 gchar*		bse_type_blurb			(BseType	 type);
 BseType		bse_type_from_name		(const gchar	*name);
 BseType		bse_type_parent			(BseType	 type);
+BseType		bse_type_next_base		(BseType	 type,
+						 BseType	 base_type);
 gpointer	bse_type_class_peek_parent	(gpointer	 type_class);
 BseType		bse_type_register_static	(BseType	 parent_type,
 						 const gchar	*type_name,

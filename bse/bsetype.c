@@ -421,6 +421,24 @@ bse_type_register_static (BseType            parent_type,
 }
 
 gpointer
+bse_type_class_peek_parent (gpointer type_class)
+{
+  TypeNode *node;
+  
+  g_return_val_if_fail (type_class != NULL, NULL);
+  
+  node = LOOKUP_TYPE_NODE (BSE_CLASS_TYPE (type_class));
+  if (node && NODE_PARENT_TYPE (node))
+    {
+      node = LOOKUP_TYPE_NODE (NODE_PARENT_TYPE (node));
+      
+      return node->data->classed.class;
+    }
+  
+  return NULL;
+}
+
+gpointer
 bse_type_class_peek (BseType type)
 {
   TypeNode *node;
@@ -1531,22 +1549,26 @@ bse_type_parent (BseType type)
   return node ? NODE_PARENT_TYPE (node) : 0;
 }
 
-gpointer
-bse_type_class_peek_parent (gpointer type_class)
+BseType
+bse_type_next_base (BseType type,
+		    BseType base_type)
 {
-  TypeNode *node;
-  
-  g_return_val_if_fail (type_class != NULL, NULL);
-  
-  node = LOOKUP_TYPE_NODE (BSE_CLASS_TYPE (type_class));
-  if (node && NODE_PARENT_TYPE (node))
+  TypeNode *node = LOOKUP_TYPE_NODE (type);
+
+  if (node)
     {
-      node = LOOKUP_TYPE_NODE (NODE_PARENT_TYPE (node));
+      TypeNode *base_node = LOOKUP_TYPE_NODE (base_type);
       
-      return node->data->classed.class;
+      if (base_node && base_node->n_supers < node->n_supers)
+	{
+	  guint n = node->n_supers - base_node->n_supers;
+	  
+	  if (node->supers[n] == base_type)
+	    return node->supers[n - 1];
+	}
     }
-  
-  return NULL;
+
+  return 0;
 }
 
 gboolean
@@ -1555,14 +1577,12 @@ bse_type_is_a (BseType type,
 {
   if (type != is_a_type)
     {
-      TypeNode *node;
-      
-      node = LOOKUP_TYPE_NODE (type);
+      TypeNode *node = LOOKUP_TYPE_NODE (type);
+
       if (node)
         {
-          TypeNode *a_node;
-          
-          a_node = LOOKUP_TYPE_NODE (is_a_type);
+          TypeNode *a_node = LOOKUP_TYPE_NODE (is_a_type);
+
           if (a_node && a_node->n_supers <= node->n_supers)
             return node->supers[node->n_supers - a_node->n_supers] == is_a_type;
         }

@@ -65,7 +65,7 @@ static BseErrorType bse_pcm_device_alsa_setup            (BsePcmDeviceAlsa      
                                                           guint                   n_fragments,
                                                           guint                   fragment_size);
 static void         bse_pcm_device_alsa_update_state     (BsePcmDevice           *pdev);
-static gboolean     bse_pcm_device_alsa_in_playback      (BsePcmDevice           *pdev);
+static void	    bse_pcm_device_alsa_retrigger        (BsePcmDevice           *pdev);
 static void         bse_pcm_device_alsa_close            (BsePcmDevice           *pdev);
 static guint        bse_pcm_device_alsa_read		 (BsePcmDevice		 *pdev,
 							  guint                   n_bytes,
@@ -128,7 +128,7 @@ bse_pcm_device_alsa_class_init (BsePcmDeviceAlsaClass *class)
   pcm_device_class->update_state = bse_pcm_device_alsa_update_state;
   pcm_device_class->read = bse_pcm_device_alsa_read;
   pcm_device_class->write = bse_pcm_device_alsa_write;
-  pcm_device_class->in_playback = bse_pcm_device_alsa_in_playback;
+  pcm_device_class->retrigger = bse_pcm_device_alsa_retrigger;
   pcm_device_class->close = bse_pcm_device_alsa_close;
 }
 
@@ -250,7 +250,7 @@ bse_pcm_device_alsa_update_state (BsePcmDevice *pdev)
       channel_status.channel = channel_setup.channel;
       if (snd_pcm_channel_status (alsa->handle, &channel_status) >= 0)
         {
-          pdev->n_playback_bytes = channel_status.count;
+          pdev->n_playback_bytes = channel_status.free;
 	  pdev->playback_buffer_size = channel_setup.buf.block.frags * channel_setup.buf.block.frag_size;
           BSE_IF_DEBUG (PCM)
             g_message ("OSPACE(%s:%d#%d): left=%5d/%d frags: total=%d max=%d min=%d size=%d cur=%d bytes=%d free=%d o=%d u=%d\n",
@@ -302,20 +302,23 @@ bse_pcm_device_alsa_update_state (BsePcmDevice *pdev)
     }
 }
 
-static gboolean
-bse_pcm_device_alsa_in_playback (BsePcmDevice *pdev)
+static void
+bse_pcm_device_alsa_retrigger (BsePcmDevice *pdev)
 {
   BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (pdev);
-  snd_pcm_channel_setup_t channel_setup = { 0, };
-  snd_pcm_channel_status_t channel_status = { 0, };
 
-  channel_setup.channel = SND_PCM_CHANNEL_PLAYBACK;
-  channel_status.channel = SND_PCM_CHANNEL_PLAYBACK;
-  if (snd_pcm_channel_setup (alsa->handle, &channel_setup) >= 0 &&
-      snd_pcm_channel_status (alsa->handle, &channel_status) >= 0)
-    return channel_status.frag < channel_setup.buf.block.frags;
+  if (0)
+    {
+      if (BSE_PCM_DEVICE_READABLE (alsa))
+	snd_pcm_channel_prepare (alsa->handle, SND_PCM_CHANNEL_CAPTURE);
+      if (BSE_PCM_DEVICE_WRITABLE (alsa))
+	snd_pcm_channel_prepare (alsa->handle, SND_PCM_CHANNEL_PLAYBACK);
+    }
 
-  return FALSE;
+  if (BSE_PCM_DEVICE_READABLE (alsa))
+    snd_pcm_channel_go (alsa->handle, SND_PCM_CHANNEL_CAPTURE);
+  if (BSE_PCM_DEVICE_WRITABLE (alsa))
+    snd_pcm_channel_go (alsa->handle, SND_PCM_CHANNEL_PLAYBACK);
 }
 
 static guint
@@ -361,7 +364,7 @@ bse_pcm_device_alsa_setup (BsePcmDeviceAlsa *alsa,
   snd_pcm_info_t pcm_info = { 0, };
   guint rep;
 
-  if (snd_pcm_nonblock_mode (alsa->handle, FALSE) < 0)
+  if (snd_pcm_nonblock_mode (alsa->handle, TRUE) < 0)
     return BSE_ERROR_DEVICE_ASYNC;
 
   if (snd_pcm_info (alsa->handle, &pcm_info) < 0)
@@ -401,8 +404,8 @@ bse_pcm_device_alsa_setup (BsePcmDeviceAlsa *alsa,
       channel_params.start_mode = SND_PCM_START_DATA;
       channel_params.stop_mode = SND_PCM_STOP_ROLLOVER;
       channel_params.buf.block.frag_size = fragment_size;
-      channel_params.buf.block.frags_min = 2;
-      channel_params.buf.block.frags_max = -1;
+      channel_params.buf.block.frags_min = 0;
+      channel_params.buf.block.frags_max = 65536;
       if (snd_pcm_channel_params (alsa->handle, &channel_params) < 0)
         return BSE_ERROR_DEVICE_SET_CAPS;
 

@@ -65,7 +65,6 @@ static BseErrorType bse_pcm_device_oss_setup		(BsePcmDevice		*pdev,
 							 guint          	 fragment_size);
 static void	    bse_pcm_device_oss_retrigger	(BsePcmDevice		*pdev);
 static void	    bse_pcm_device_oss_update_state	(BsePcmDevice   	*pdev);
-static gboolean	    bse_pcm_device_oss_in_playback	(BsePcmDevice		*pdev);
 static void	    bse_pcm_device_oss_close		(BsePcmDevice		*pdev);
 
 
@@ -118,7 +117,6 @@ bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
   pcm_device_class->open = bse_pcm_device_oss_open;
   pcm_device_class->retrigger = bse_pcm_device_oss_retrigger;
   pcm_device_class->update_state = bse_pcm_device_oss_update_state;
-  pcm_device_class->in_playback = bse_pcm_device_oss_in_playback;
   pcm_device_class->close = bse_pcm_device_oss_close;
 }
 
@@ -268,16 +266,6 @@ bse_pcm_device_oss_update_state (BsePcmDevice *pdev)
 	       info.fragsize,
 	       info.fragments,
 	       info.bytes);
-}
-
-static gboolean
-bse_pcm_device_oss_in_playback (BsePcmDevice *pdev)
-{
-  audio_buf_info info = { 0, };
-  
-  (void) ioctl (pdev->pfd.fd, SNDCTL_DSP_GETOSPACE, &info);
-  
-  return info.fragments < info.fragstotal;
 }
 
 static BseErrorType

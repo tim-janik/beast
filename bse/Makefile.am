@@ -159,7 +159,6 @@ bse_built_sources = @STRIP_BEGIN@ \
 # built sources that get installed with the header files
 bse_built_public_sources = @STRIP_BEGIN@ \
 	bsegentypes.h \
-	bseconfigpaths.h \
 @STRIP_END@
 # non-header sources (headers should be specified in the above variables)
 # that don't serve as direct make target sources, i.e. they don't have
@@ -187,7 +186,7 @@ EXTRA_DIST += $(bse_built_sources) $(bse_built_public_sources) $(bse_extra_sourc
 # rules to generate built sources
 #
 # setup autogeneration dependancies
-gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac xgen-bnac xgen-bcph
+gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac xgen-bnac
 CLEANFILES += $(gen_sources)
 COPYING: $(bse_built_public_sources) $(bse_built_sources)
 $(OBJECTS): COPYING # this is our oldest-source-stamp
@@ -249,19 +248,6 @@ bsenotifier_array.c: bsedefs.h
 	&& echo "/* Generated data ends here */" >> xgen-bnac \
 	&& cp xgen-bnac $@ \
 	&& rm -f xgen-bnac
-bseconfigpaths.h: $(top_srcdir)/configure bseconfig.h Makefile
-	cd $(srcdir) \
-	&& echo "/* Generated data from $< (by make $@) */" > xgen-bcph \
-	&& echo >> xgen-bcph \
-	&& echo "#define BSE_PATH_INCLUDES \"${libbseincludedir}\"" >> xgen-bcph \
-	&& echo "#define BSE_PATH_DATA     \"${bsedatadir}\"" >> xgen-bcph \
-	&& echo "#define BSE_PATH_LIB      \"${bselibdir}\"" >> xgen-bcph \
-	&& echo "#define BSE_PATH_PLUGINS  (BSE_PATH_LIB \"/plugins\")" >> xgen-bcph \
-	&& echo >> xgen-bcph \
-	&& echo "/* Generated data ends here */" >> xgen-bcph \
-	&& (cmp -s xgen-bcph $@ || cp xgen-bcph $@) \
-	&& rm -f xgen-bcph
-
 
 #
 # convenience targets for the builtsources
@@ -275,7 +261,7 @@ builtsources:		$(bse_built_public_sources) $(bse_built_sources)
 #
 # private (birnet) dependancy to make TAGS file after each build
 #
-all: @MISSING_ETAGS@ @BIRNET_Y@ TAGS
+all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
 
 
 #

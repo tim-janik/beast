@@ -136,7 +136,6 @@ struct _BsePcmDeviceClass
   guint		(*write)	(BsePcmDevice	*pdev,
 				 guint		 n_bytes,
 				 guint8		*bytes);
-  gboolean	(*in_playback)	(BsePcmDevice	*pdev);
   void		(*close)	(BsePcmDevice	*pdev);
 };
 

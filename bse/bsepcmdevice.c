@@ -27,7 +27,6 @@
 /* --- prototypes --- */
 static void	   bse_pcm_device_init			(BsePcmDevice      *pdev);
 static void	   bse_pcm_device_class_init		(BsePcmDeviceClass *class);
-static void        bse_pcm_device_default_retrigger	(BsePcmDevice      *pdev);
 static guint       bse_pcm_device_default_read  	(BsePcmDevice      *pdev,
 							 guint              n_bytes,
 							 guint8            *bytes);
@@ -80,10 +79,9 @@ bse_pcm_device_class_init (BsePcmDeviceClass *class)
   class->update_caps = NULL;
   class->open = NULL;
   class->update_state = NULL;
-  class->retrigger = bse_pcm_device_default_retrigger;
+  class->retrigger = NULL;
   class->read = bse_pcm_device_default_read;
   class->write = bse_pcm_device_default_write;
-  class->in_playback = NULL;
   class->close = NULL;
   class->device_name = NULL;
 }
@@ -305,7 +303,8 @@ bse_pcm_device_retrigger (BsePcmDevice *pdev)
 {
   g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
   g_return_if_fail (BSE_PCM_DEVICE_OPEN (pdev));
-  
+  g_return_if_fail (BSE_PCM_DEVICE_GET_CLASS (pdev)->retrigger != NULL);
+
   bse_pcm_device_time_warp (pdev);
 
   pdev->last_error = BSE_ERROR_NONE;
@@ -313,19 +312,6 @@ bse_pcm_device_retrigger (BsePcmDevice *pdev)
   BSE_PCM_DEVICE_GET_CLASS (pdev)->retrigger (pdev);
   
   errno = 0;
-}
-
-static void
-bse_pcm_device_default_retrigger (BsePcmDevice *pdev)
-{
-  fd_set in_fds, out_fds;
-  struct timeval tv = { 0, 0 };
-
-  FD_ZERO (&in_fds);
-  FD_SET (pdev->pfd.fd, &in_fds);
-  FD_ZERO (&out_fds);
-  FD_SET (pdev->pfd.fd, &out_fds);
-  select (pdev->pfd.fd + 1, &in_fds, &out_fds, NULL, &tv);
 }
 
 void

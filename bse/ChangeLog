@@ -1,3 +1,30 @@
+Fri Jan  7 23:15:08 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c (bse_pcm_device_alsa_retrigger): use ALSA's
+	snd_pcm_channel_go() to retrigger input and output.
+
+	* bseheart.c (bse_heart_dispatch): be a bit laxer in overrun detection,
+	i.e. allow two (+1) extra input chunks.
+
+	* bsepcmdevice.[hc]: scratched obsolete in_playback() method.
+
+	* bsepcmdevice-alsa.c (bse_pcm_device_alsa_setup): operate in
+	non-blocking mode.
+
+	* bsepcmdevice-alsa.c (bse_pcm_device_alsa_update_state): fixed bug,
+	return amount of bytes left to write.
+
+Tue Jan  4 20:25:44 2000  Tim Janik  <timj@gtk.org>
+
+	* bsetype.[hc] (bse_type_next_base): new function that works like
+	bse_type_parent() but in the opposite direction for a given
+	parent<->child inheritance path.
+
+Mon Jan  3 17:08:08 2000  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: removed bseconfigpaths.h build rule.
+	removed building of TAGS file for now.
+
 Thu Dec 30 19:19:22 1999  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.[hc]: prefix flag values, provide one to flag default

@@ -932,7 +932,7 @@ bse_heart_dispatch (gpointer  source_data,
 	  BsePcmDevice *pdev = hdevice->device;
 	  
 	  if (BSE_PCM_DEVICE_READABLE (pdev) &&
-	      pdev->iqueue && pdev->iqueue->next)
+	      pdev->iqueue && pdev->iqueue->next && pdev->iqueue->next->next) /* FIXME: msecs->chunks comparision */
 	    {
 	      g_message ("OVERRUN detected for \"%s\", skipping...\007",
 			 bse_pcm_device_get_device_name (pdev));

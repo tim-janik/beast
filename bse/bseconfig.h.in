@@ -20,8 +20,6 @@
 #ifndef __BSE_CONFIG_H__
 #define __BSE_CONFIG_H__
 
-#include	<bse/bseconfigpaths.h>
-
 
 #ifdef __cplusplus
 extern "C" {

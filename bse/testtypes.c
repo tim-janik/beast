@@ -68,6 +68,14 @@ main (int   argc,
   // type1 = BSE_TYPE_FILE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
   // type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
 
+  type1 = BSE_TYPE_SOURCE;	g_message ("parent of %s: %s", bse_type_name (type1), bse_type_name (bse_type_parent (type1)));
+  type1 = BSE_TYPE_ITEM;	g_message ("parent of %s: %s", bse_type_name (type1), bse_type_name (bse_type_parent (type1)));
+  type1 = BSE_TYPE_OBJECT;	g_message ("parent of %s: %s", bse_type_name (type1), bse_type_name (bse_type_parent (type1)));
+
+  type1 = BSE_TYPE_OBJECT;	type2 = BSE_TYPE_SOURCE;	g_message ("next base of %s from %s: %s", bse_type_name (type2), bse_type_name (type1), bse_type_name (bse_type_next_base (type2, type1)));
+  type1 = BSE_TYPE_ITEM;	type2 = BSE_TYPE_SOURCE;	g_message ("next base of %s from %s: %s", bse_type_name (type2), bse_type_name (type1), bse_type_name (bse_type_next_base (type2, type1)));
+  type1 = BSE_TYPE_SOURCE;	type2 = BSE_TYPE_SOURCE;	g_message ("next base of %s from %s: %s", bse_type_name (type2), bse_type_name (type1), bse_type_name (bse_type_next_base (type2, type1)));
+
   g_message ("zero time (%d) -> %s", 0, bse_time_to_str (0));
   g_message ("minimum time (%d) -> %s", BSE_MIN_TIME, bse_time_to_bbuffer (BSE_MIN_TIME, bbuffer));
   g_message ("maximum time (%d) -> %s", BSE_MAX_TIME, bse_time_to_bbuffer (BSE_MAX_TIME, bbuffer));
