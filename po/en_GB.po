@@ -7,179 +7,183 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-10 02:34+0200\n"
-"PO-Revision-Date: 2004-05-25 19:20-0400\n"
+"POT-Creation-Date: 2004-06-20 16:16-0400\n"
+"PO-Revision-Date: 2004-06-20 16:18-0400\n"
 "Last-Translator: Gareth Owen <gowen72@yahoo.comg>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "_New"
 msgstr "_New"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "Create new project"
 msgstr "Create new project"
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "_Open..."
 msgstr "_Open..."
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "Open existing project"
 msgstr "Open existing project"
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "_Merge..."
 msgstr "_Merge..."
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "Merge an existing project into the current project"
 msgstr "Merge an existing project into the current project"
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "_Import MIDI..."
 msgstr "_Import MIDI..."
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "Import a standard MIDI file into the current project"
 msgstr "Import a standard MIDI file into the current project"
 
-#: beast-gtk/bstapp.c:58
+#: beast-gtk/bstapp.c:76
 msgid "_Close"
 msgstr "_Close"
 
-#: beast-gtk/bstapp.c:62
+#: beast-gtk/bstapp.c:80
 msgid "_Save"
 msgstr "_Save"
 
-#: beast-gtk/bstapp.c:64
+#: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr "Save _As..."
 
-#: beast-gtk/bstapp.c:68
+#: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr "_Quit"
 
-#: beast-gtk/bstapp.c:72
+#: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
 msgstr "_Preferences..."
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:93
 msgid "Rebuild"
 msgstr "Rebuild"
 
-#: beast-gtk/bstapp.c:78
+#: beast-gtk/bstapp.c:96
 msgid "_About..."
 msgstr "_About..."
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:99
 msgid "_Undo"
 msgstr "_Undo"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:101
 msgid "_Redo"
 msgstr "_Redo"
 
-#: beast-gtk/bstapp.c:87 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Clear Undo"
 
-#: beast-gtk/bstapp.c:91
+#: beast-gtk/bstapp.c:109
 msgid "Procedure _Browser"
 msgstr "Procedure _Browser"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:111
 msgid "Rack Editor"
 msgstr "Rack Editor"
 
-#: beast-gtk/bstapp.c:95
+#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
+msgid "Profiler"
+msgstr "Profiler"
+
+#: beast-gtk/bstapp.c:115
 msgid "New View"
 msgstr "New View"
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:119
 msgid "_Play"
 msgstr "_Play"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:121
 msgid "_Stop"
 msgstr "_Stop"
 
-#: beast-gtk/bstapp.c:105
+#: beast-gtk/bstapp.c:125
 msgid "New Song"
 msgstr "New Song"
 
-#: beast-gtk/bstapp.c:107
+#: beast-gtk/bstapp.c:127
 msgid "New Custom Synthesizer"
 msgstr "New Custom Synthesiser"
 
-#: beast-gtk/bstapp.c:109
+#: beast-gtk/bstapp.c:129
 msgid "New MIDI Synthesizer"
 msgstr "New MIDI Synthesiser"
 
-#: beast-gtk/bstapp.c:111
+#: beast-gtk/bstapp.c:131
 msgid "Remove Song or Synthesizer"
 msgstr "Remove Song or Synthesiser"
 
-#: beast-gtk/bstapp.c:115
+#: beast-gtk/bstapp.c:135
 msgid "Load _Instrument"
 msgstr "Load _Instrument"
 
-#: beast-gtk/bstapp.c:117
+#: beast-gtk/bstapp.c:137
 msgid "Load _Effect"
 msgstr "Load _Effect"
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:139
 msgid "Save As Instrument"
 msgstr "Save As Instrument"
 
-#: beast-gtk/bstapp.c:121
+#: beast-gtk/bstapp.c:141
 msgid "Save As Effect"
 msgstr "Save As Effect"
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:145
 msgid "_Release Notes..."
 msgstr "_Release Notes..."
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:146
 msgid "Quick Start..."
 msgstr "Quick Start..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:147
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:150
 msgid "GSL Engine..."
 msgstr "GSL Engine..."
 
-#: beast-gtk/bstapp.c:543 beast-gtk/bstapp.c:550 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Opening project `%s'"
 
-#: beast-gtk/bstapp.c:610
+#: beast-gtk/bstapp.c:630
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Loading skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:772
+#: beast-gtk/bstapp.c:791
 msgid "Rack editor"
 msgstr "Rack editor"
 
-#: beast-gtk/bstapp.c:786
+#: beast-gtk/bstapp.c:805
 msgid "Preferences"
 msgstr "Preferences"
 
-#: beast-gtk/bstapp.c:809
+#: beast-gtk/bstapp.c:832
 msgid "Procedure Browser"
 msgstr "Procedure Browser"
 
-#: beast-gtk/bstapp.c:866
+#: beast-gtk/bstapp.c:889
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release Notes"
@@ -510,76 +514,76 @@ msgstr "Function used to create new key bindings"
 msgid "Description"
 msgstr "Description"
 
-#: beast-gtk/bstmain.c:128
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr "BEAST Startup"
 
-#: beast-gtk/bstmain.c:135
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr "Startup"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:139
+#: beast-gtk/bstmain.c:140
 msgid "Initializers"
 msgstr "Initialisers"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:147
 msgid "RC Files"
 msgstr "RC Files"
 
 #. show splash images
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr "Splash Image"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:162
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr "BSE Core"
 
-#: beast-gtk/bstmain.c:184
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:203
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr "LADSPA Plugins"
 
-#: beast-gtk/bstmain.c:231
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Scripts"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:249
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr "Dialogues"
 
-#: beast-gtk/bstmain.c:256
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr "Loading..."
 
-#: beast-gtk/bstmain.c:286 beast-gtk/bstmain.c:288
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Loading \"%s\""
 
-#: beast-gtk/bstmain.c:305
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Loading project \"%s\""
 
-#: beast-gtk/bstmain.c:719
+#: beast-gtk/bstmain.c:720
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:721
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:722
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -1026,9 +1030,8 @@ msgid "1\\/1"
 msgstr "1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:67
-#, fuzzy
 msgid "Insert whole notes"
-msgstr "Insert half notes"
+msgstr "Insert whole notes"
 
 #: beast-gtk/bstpianorollctrl.c:69
 msgid "1\\/2"
@@ -1063,34 +1066,28 @@ msgid "Insert sixteenth note"
 msgstr "Insert sixteenth note"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "1\\/32"
-msgstr "1/32"
+msgstr "1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "Insert thirty-second note"
-msgstr "Triplet thirtysecondth note"
+msgstr "Insert thirty-second note"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "1\\/64"
-msgstr "1/64"
+msgstr "1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "Insert sixty-fourth note"
-msgstr "Insert sixteenth note"
+msgstr "Insert sixty-fourth note"
 
 #: beast-gtk/bstpianorollctrl.c:81
-#, fuzzy
 msgid "1\\/128"
-msgstr "1\\/1"
+msgstr "1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:81
-#, fuzzy
 msgid "Insert hundred twenty-eighth note"
-msgstr "Insert eighths note"
+msgstr "Insert hundred twenty-eighth note"
 
 #: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
@@ -1113,9 +1110,8 @@ msgid "Q: 1\\/1"
 msgstr "Q: 1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
-#, fuzzy
 msgid "Quantize to whole note boundaries"
-msgstr "Quantise to half note boundaries"
+msgstr "Quantise to whole note boundaries"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
@@ -1150,34 +1146,28 @@ msgid "Quantize to sixteenth note boundaries"
 msgstr "Quantise to sixteenth note boundaries"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
-#, fuzzy
 msgid "Q: 1\\/32"
-msgstr "Q: 1\\/2"
+msgstr "Q: 1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
-#, fuzzy
 msgid "Quantize to thirty-second note boundaries"
-msgstr "Quantise to sixteenth note boundaries"
+msgstr "Quantise to thirty-second note boundaries"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
-#, fuzzy
 msgid "Q: 1\\/64"
-msgstr "Q: 1\\/4"
+msgstr "Q: 1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
-#, fuzzy
 msgid "Quantize to sixty-fourth note boundaries"
-msgstr "Quantise to sixteenth note boundaries"
+msgstr "Quantise to sixty-fourth note boundaries"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
-#, fuzzy
 msgid "Q: 1\\/128"
-msgstr "Q: 1\\/1"
+msgstr "Q: 1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
-#, fuzzy
 msgid "Quantize to hundred twenty-eighth note boundaries"
-msgstr "Quantise to eighths note boundaries"
+msgstr "Quantise to hundred twenty-eighth note boundaries"
 
 #: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:573
@@ -1233,6 +1223,67 @@ msgstr "Executing `%s'"
 #: beast-gtk/bstprocedure.c:446
 msgid "Procedure"
 msgstr "Procedure"
+
+#: beast-gtk/bstprofiler.c:167
+msgid "Totals"
+msgstr "Totals"
+
+#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+msgid "Thread Name"
+msgstr "Thread Name"
+
+#: beast-gtk/bstprofiler.c:246
+msgid "CPU%"
+msgstr "CPU%"
+
+#: beast-gtk/bstprofiler.c:246
+msgid "Percentage of CPU usage"
+msgstr "Percentage of CPU usage"
+
+#: beast-gtk/bstprofiler.c:247
+msgid "UTime"
+msgstr "UTime"
+
+#: beast-gtk/bstprofiler.c:247
+msgid "Milliseconds of user CPU time used by thread"
+msgstr "Milliseconds of user CPU time used by thread"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "STime"
+msgstr "STime"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Milliseconds of system CPU time used by thread"
+msgstr "Milliseconds of system CPU time used by thread"
+
+#.
+#. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+#. _("Thread State:\n"
+#. "'?' - thread state is unknown\n"
+#. "'R' - thread is running\n"
+#. "'S' - thread is sleeping\n"
+#. "'D' - thread waits on disk\n"
+#. "'T' - thread is traced\n"
+#. "'W' - thread is swapping memory\n"
+#. "'Z' - thread died unexpectedly\n"
+#. "'X' - thread exited"),
+#. NULL, NULL, 0);
+#.
+#: beast-gtk/bstprofiler.c:262
+msgid "Nice"
+msgstr "Nice"
+
+#: beast-gtk/bstprofiler.c:262
+msgid "Thread priority from -20 (high) to +19 (low)"
+msgstr "Thread priority from -20 (high) to +19 (low)"
+
+#: beast-gtk/bstprofiler.c:263
+msgid "#CPU"
+msgstr "#CPU"
+
+#: beast-gtk/bstprofiler.c:263
+msgid "CPU the thread is currently running on"
+msgstr "CPU the thread is currently running on"
 
 #: beast-gtk/bstprojectctrl.c:38
 msgid "Restarting Playback"
@@ -1381,28 +1432,24 @@ msgid "1/32"
 msgstr "1/32"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "Thirty-secondth note"
-msgstr "Thirtysecondth note"
+msgstr "Thirty-secondth note"
 
 #: beast-gtk/bstrecords.idl:49
 msgid "1/64"
 msgstr "1/64"
 
 #: beast-gtk/bstrecords.idl:49
-#, fuzzy
 msgid "Sixty-fourth note"
-msgstr "Sixtyfourth note"
+msgstr "Sixty-fourth note"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "1/128"
-msgstr "1\\/1"
+msgstr "1/128"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "Hundred twenty-eighth note"
-msgstr "Insert eighths note"
+msgstr "Hundred twenty-eighth note"
 
 #: beast-gtk/bstrecords.idl:51
 msgid "1/1."
@@ -1449,28 +1496,24 @@ msgid "1/32."
 msgstr "1/32."
 
 #: beast-gtk/bstrecords.idl:56
-#, fuzzy
 msgid "Dotted thirty-secondth note"
-msgstr "Dotted thirtysecondth note"
+msgstr "Dotted thirty-secondth note"
 
 #: beast-gtk/bstrecords.idl:57
 msgid "1/64."
 msgstr "1/64."
 
 #: beast-gtk/bstrecords.idl:57
-#, fuzzy
 msgid "Dotted sixty-fourth note"
-msgstr "Dotted sixtyfourth note"
+msgstr "Dotted sixty-fourth note"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "1/128."
-msgstr "1\\/1"
+msgstr "1/128."
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "Dotted hundred twenty-eighth note"
-msgstr "Insert eighths note"
+msgstr "Dotted hundred twenty-eighth note"
 
 #: beast-gtk/bstrecords.idl:59
 msgid "1/1T"
@@ -1517,28 +1560,24 @@ msgid "1/32T"
 msgstr "1/32T"
 
 #: beast-gtk/bstrecords.idl:64
-#, fuzzy
 msgid "Triplet thirty-secondth note"
-msgstr "Triplet thirtysecondth note"
+msgstr "Triplet thirty-secondth note"
 
 #: beast-gtk/bstrecords.idl:65
 msgid "1/64T"
 msgstr "1/64T"
 
 #: beast-gtk/bstrecords.idl:65
-#, fuzzy
 msgid "Triplet sixty-fourth note"
-msgstr "Triplet sixtyfourth note"
+msgstr "Triplet sixty-fourth note"
 
 #: beast-gtk/bstrecords.idl:66
-#, fuzzy
 msgid "1/128T"
-msgstr "1\\/1"
+msgstr "1/128T"
 
 #: beast-gtk/bstrecords.idl:66
-#, fuzzy
 msgid "Triplet hundred twenty-eighth note"
-msgstr "Insert eighths note"
+msgstr "Triplet hundred twenty-eighth note"
 
 #: beast-gtk/bstrecords.idl:71
 msgid "Release counter"
@@ -2771,11 +2810,71 @@ msgstr "Frequency"
 msgid "Const Out%u"
 msgstr "Const Out%u"
 
-#: bse/bsecore.idl:395
+#: bse/bsecore.idl:379
+msgid "State"
+msgstr "State"
+
+#: bse/bsecore.idl:379
+msgid "The execution state of the thread"
+msgstr "The execution state of the thread"
+
+#: bse/bsecore.idl:380
+msgid "Priority"
+msgstr "Priority"
+
+#: bse/bsecore.idl:380
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+msgstr ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+
+#: bse/bsecore.idl:383
+msgid "Processor"
+msgstr "Processor"
+
+#: bse/bsecore.idl:383
+msgid "The processor that this thread is currently being executed on"
+msgstr "The processor that this thread is currently being executed on"
+
+#: bse/bsecore.idl:385
+msgid "User Time"
+msgstr "User Time"
+
+#: bse/bsecore.idl:385
+msgid "The CPU time spent executing instructions of this thread"
+msgstr "The CPU time spent executing instructions of this thread"
+
+#: bse/bsecore.idl:387
+msgid "System Time"
+msgstr "System Time"
+
+#: bse/bsecore.idl:387
+msgid "The CPU time spent in the system for this thread"
+msgstr "The CPU time spent in the system for this thread"
+
+#: bse/bsecore.idl:389
+msgid "Child User Time"
+msgstr "Child User Time"
+
+#: bse/bsecore.idl:389
+msgid "The CPU time spent executing instructions of children of this thread"
+msgstr "The CPU time spent executing instructions of children of this thread"
+
+#: bse/bsecore.idl:391
+msgid "Child System Time"
+msgstr "Child System Time"
+
+#: bse/bsecore.idl:391
+msgid "The CPU time spent in the system for children of this thread"
+msgstr "The CPU time spent in the system for children of this thread"
+
+#: bse/bsecore.idl:432
 msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
-#: bse/bsecore.idl:396
+#: bse/bsecore.idl:433
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -2783,19 +2882,19 @@ msgstr ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:436
 msgid "Synth Mixing Frequency"
 msgstr "Synth Mixing Frequency"
 
-#: bse/bsecore.idl:400
+#: bse/bsecore.idl:437
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:402
+#: bse/bsecore.idl:439
 msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:440
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -2993,20 +3092,28 @@ msgstr "Right Audio In"
 msgid "Right channel Input"
 msgstr "Right channel Input"
 
-#: bse/bseserver.c:503
+#: bse/bseserver.c:143
+msgid "WAVE File"
+msgstr "WAVE File"
+
+#: bse/bseserver.c:144
+msgid "Name of the WAVE file used for recording BSE sound output"
+msgstr "Name of the WAVE file used for recording BSE sound output"
+
+#: bse/bseserver.c:504
 msgid "Advice about MIDI device selections"
 msgstr "Advice about MIDI device selections"
 
-#: bse/bseserver.c:504
+#: bse/bseserver.c:505
 msgid "Alert me about MIDI device selections"
 msgstr "Alert me about MIDI device selections"
 
-#: bse/bseserver.c:505
+#: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr "failed to open midi device %s (reverting to null device): %s"
 
-#: bse/bseserver.c:547
+#: bse/bseserver.c:548
 #, c-format
 msgid "failed to open output file \"%s\": %s"
 msgstr "failed to open output file \"%s\": %s"
