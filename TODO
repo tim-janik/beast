@@ -3,7 +3,6 @@ FIXMES:
 - take a look at the cdrecord source for their __dtoa() implementation
 - fix gxkutils.c:3166: undefined reference to `uncompress'
 - if mmap() is available, write autosave.bse to it every couple minutes (no need to flush unless crashes take the data with them)
-- work around "/opt/bin/beast-0.6.1: relocation error: /opt/bin/beast-0.6.1: undefined symbol: _gtk_window_activate_key" with gtk+-2.4
 - make VIew/Rebuild --devel or -:d only
 - provide "+"/"-" buttons for "path" property editors with own tooltips
 - fix continue_after_deletion in gslwavetool.c for i==n_chunks-1
