@@ -1,3 +1,12 @@
+Mon Dec 13 01:03:48 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: version 0.6.4, binary 0, interface 0.
+
+	* Makefile.am:
+	* configure.in: removed bsw/.
+
+	* bsw/*: removed.
+
 Mon Dec 13 00:40:08 2004  Tim Janik  <timj@gtk.org>
 
 	* shell/Makefile.am: removed libbsw dependancy.
