@@ -1,3 +1,9 @@
+Thu Mar 21 18:40:12 2002  Tim Janik  <timj@gtk.org>
+
+	* bstpianoroll.[hc]: beginning of a piano roll editing widget.
+
+	* bstasciipixbuf.[hc]: provide us with scaled character pixbufs.
+
 Wed Mar 13 18:19:44 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.[hc]: added BST_STOCK_* defines for stock icons and
