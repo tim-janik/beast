@@ -1,4 +1,5 @@
 FIXME(urgent):
+- improve cutvorbis: add boundaries, non-cut, comment filter and comment adder
 - add gsl_data_handle_is_vorbis()
 - add gsl_data_handle_store_vorbis()
 - bsewave.c: FIXME: set authors, license, comment
