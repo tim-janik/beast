@@ -1,6 +1,8 @@
-Fri Dec 17 22:41:28 2004  Tim Janik  <timj@gtk.org>
+Sat Dec 18 00:02:29 2004  Tim Janik  <timj@gtk.org>
 
 	* released 0.6.4.
+
+Fri Dec 17 22:41:28 2004  Tim Janik  <timj@gtk.org>
 
 	* configure.in: version 0.6.4, interface 0, binary 0.
 	depend on BSE >= 0.6.4. CFLAGS and CXXFLAGS fixes.
