@@ -15,8 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "topconfig.h"          // FIXME: for bsecore.gen-idl.h
-#include "bsecore.gen-idl.h"    // FIXME: ask stefan whether that include should be here
 #include "bseprobe.gen-idl.h"
 #include "gslengine.h"
 #include "gslcommon.h" /* for gsl_tick_stamp() */
@@ -35,10 +33,8 @@ class SourceProbes {
   BseSource          *source;
   guint               n_channels;
   vector<ProbeHandle> channel_probes;
-  vector<guint8>      range_ages, energie_ages, samples_ages, fft_ages;
+  vector<guint8>      range_ages, energie_ages, samples_ages, fft_ages, channel_ages;
   SfiRing            *omodules;
-  guint               n_channel_ages_allocated;
-  guint8             *channel_ages; // [n_channels], shared by engine, *const while prepared
   guint               queued_jobs;
   guint               idle_handler_id;
   void
@@ -49,21 +45,14 @@ class SourceProbes {
     energie_ages.resize (n_channels, 0);
     samples_ages.resize (n_channels, 0);
     fft_ages.resize (n_channels, 0);
-    if (n_channel_ages_allocated < n_channels)
-      {
-        g_assert (!n_channel_ages_allocated || !BSE_SOURCE_PREPARED (source));
-        channel_ages = g_renew (guint8, channel_ages, n_channels);
-        memset (channel_ages + n_channel_ages_allocated, 0, n_channels - n_channel_ages_allocated);
-        n_channel_ages_allocated = n_channels;
-      }
+    channel_ages.resize (n_channels, 0);
     Probe zprobe;
     zprobe.probe_features = ProbeFeatures();
     channel_probes.resize (n_channels, zprobe);
   }
 public:
   SourceProbes (BseSource *src) :
-    source (src), n_channels (0), omodules (NULL),
-    n_channel_ages_allocated (0), channel_ages (NULL)
+    source (src), n_channels (0), omodules (NULL)
   {
     queued_jobs = 0;
     idle_handler_id = 0;
@@ -72,7 +61,6 @@ public:
   ~SourceProbes ()
   {
     g_assert (queued_jobs == 0);
-    g_free (channel_ages);
   }
   void
   reset_omodules ()
@@ -150,10 +138,10 @@ private:
       for (ProbeSeq::iterator it = pdata.pseq.begin(); it != pdata.pseq.end(); it++)
         {
           Probe &probe = **it;
-          gfloat *block = oblocks[(*it)->channel_id];
+          gfloat *block = oblocks[probe.channel_id];
           if (probe.probe_features->probe_samples || probe.probe_features->probe_fft)
             probe.sample_data.take (sfi_fblock_new_foreign (gsl_engine_block_size(), block, g_free));
-          oblocks[(*it)->channel_id] = NULL;    /* steal from engine */
+          oblocks[probe.channel_id] = NULL;    /* steal from engine */
           fill_probe (probe, n_values, block, FALSE);
         }
     else
@@ -212,7 +200,7 @@ public:
         pdata->n_modules = 0;
         for (SfiRing *node = ring; node; node = sfi_ring_walk (node, ring))
           {
-            gsl_trans_add (trans, gsl_job_probe_request ((GslModule*) node->data, channel_ages, source_probe_callback, pdata));
+            gsl_trans_add (trans, gsl_job_probe_request ((GslModule*) node->data, &channel_ages[0], source_probe_callback, pdata));
             pdata->n_modules++;
           }
         pdata->n_pending = pdata->n_modules;
@@ -307,13 +295,16 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
   const ProbeFeatures **channel_features = NULL;
   for (ProbeRequestSeq::iterator it = prs.begin(); it != prs.end(); it++)
     {
-      if ((*it)->source != current)
+      if (!(*it)->source)
+        continue;       /* can happen due to sources getting destroyed before asyncronous delivery */
+      else if ((*it)->source != current)
         {
           if (current)
             {
               SourceProbes *probes = SourceProbes::create_from_source (current);
               probes->queue_probe_request (channel_features);
               g_free (channel_features);
+              channel_features = NULL;
             }
           current = (*it)->source;
           channel_features = g_new0 (const ProbeFeatures*, BSE_SOURCE_N_OCHANNELS (current));
@@ -327,6 +318,7 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
       SourceProbes *probes = SourceProbes::create_from_source (current);
       probes->queue_probe_request (channel_features);
       g_free (channel_features);
+      channel_features = NULL;
     }
 }
 

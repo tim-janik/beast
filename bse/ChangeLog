@@ -1,3 +1,9 @@
+Tue Jul 20 06:33:25 2004  Tim Janik  <timj@gtk.org>
+
+	* bseprobe.idl:
+	* bseprobe.cc: turned channel_ages into a C++ vector. fixed up handling of
+	invalidated source handles due to asyncronous requests.
+
 Sat Jul 17 19:03:33 2004  Tim Janik  <timj@gtk.org>
 
 	* bseprobe.cc: fix C++ LessThanComparable implementation for sort().
