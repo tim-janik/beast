@@ -94,6 +94,7 @@ bse/bsewaveosc.c
 data/beast.desktop.in
 data/beast.xml.in
 data/bse.keys.in
+drivers/bse-alsa/bsemididevice-alsa.c
 drivers/bse-alsa/bsepcmdevice-alsa.c
 plugins/artscompressor.idl
 plugins/bseadder.c
