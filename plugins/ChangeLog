@@ -1,3 +1,12 @@
+Wed Mar  8 16:29:56 2000  Tim Janik  <timj@gtk.org>
+
+	* davbassfilter.[hc]: a TB-303 filter clone based on the VCF303 portions
+	of gsyn v0.2. code partly copyright by Andy Sloane.
+	plugin provided by David A. Bartold <foxx@mail.utexas.edu>.
+
+	* davcanyondelay.c (dav_canyon_delay_class_init): feedback parameter
+	description patch from David A. Bartold <foxx@mail.utexas.edu>.
+
 Tue Feb 22 07:53:04 2000  Tim Janik  <timj@gtk.org>
 
 	* davcanyondelay.[hc]: New version from David A. Bartold

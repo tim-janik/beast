@@ -67,6 +67,14 @@ bsenoise_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsenoise.h
 
 ##
+## Plugin davbassfilter
+##
+davbassfilter_la_SOURCES = davbassfilter.c
+davbassfilter_la_LDFLAGS = -module -avoid-version
+davbassfilter_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += davbassfilter.h
+
+##
 ## Plugin davcanyondelay
 ##
 davcanyondelay_la_SOURCES = davcanyondelay.c
@@ -121,6 +129,7 @@ plugin_LTLIBRARIES += \
 	bsemixer.la \
 	bsemult.la \
 	bsenoise.la \
+	davbassfilter.la \
 	davcanyondelay.la \
 	davorgan.la \
 	davsyndrum.la \

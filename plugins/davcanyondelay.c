@@ -132,7 +132,7 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
 
   bse_object_class_add_param (object_class, "Left to Right", PARAM_LEFT_TO_RIGHT_FEEDBACK,
                               bse_param_spec_float ("left_to_right_feedback", "Feedback [%]",
-                                                   "Set the feedback amount",
+                                                   "Set the feedback amount; a negative feedback inverts the signal",
                                                     -100.0, 100.0, 0.01, 60.0,
                                                     BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
 
@@ -144,7 +144,7 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
 
   bse_object_class_add_param (object_class, "Right to Left", PARAM_RIGHT_TO_LEFT_FEEDBACK,
                               bse_param_spec_float ("right_to_left_feedback", "Feedback [%]",
-                                                    "Set the feedback amount",
+                                                    "Set the feedback amount; a negative feedback inverts the signal",
                                                     -100.0, 100.0, 0.01, -70.0,
                                                     BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
 
