@@ -172,10 +172,10 @@ bst_wave_editor_init (BstWaveEditor *wave_editor)
 		      NULL);
 
   wave_editor->chunk_store = gtk_list_store_new (N_COLS,
-						 G_TYPE_FLOAT,  /* COL_OSC_FREQ */
-						 G_TYPE_FLOAT,  /* COL_MIX_FREQ */
-						 G_TYPE_STRING, /* COL_NAME */
-						 G_TYPE_STRING  /* COL_LOOP */
+						 G_TYPE_STRING,  /* COL_OSC_FREQ */
+						 G_TYPE_STRING,  /* COL_MIX_FREQ */
+						 G_TYPE_STRING,  /* COL_NAME */
+						 G_TYPE_STRING   /* COL_LOOP */
 						 );
 
   /* setup the popup menu
@@ -658,12 +658,18 @@ tree_selection (BstWaveEditor    *wave_editor,
 
   if (gtk_tree_selection_get_selected (tsel, &model, &iter))
     {
+      gchar *osc_str, *mix_str;
       gfloat osc_freq, mix_freq;
 
       gtk_tree_model_get (model, &iter,
-			  COL_OSC_FREQ, &osc_freq,
-			  COL_MIX_FREQ, &mix_freq,
+			  COL_OSC_FREQ, &osc_str,
+			  COL_MIX_FREQ, &mix_str,
 			  -1);
+      osc_freq = g_strtod (osc_str, NULL);
+      mix_freq = g_strtod (mix_str, NULL);
+      g_free (osc_str);
+      g_free (mix_str);
+      
       wave_editor->wchunk = bse_wave_lookup_chunk (bse_object_from_id (wave_editor->wave), osc_freq, mix_freq);
     }
 
@@ -682,6 +688,7 @@ tree_selection (BstWaveEditor    *wave_editor,
 static void
 play_back_wchunk (BstWaveEditor *wave_editor)
 {
+  bst_play_back_handle_stop (wave_editor->phandle);
   bst_play_back_handle_set (wave_editor->phandle, wave_editor->wchunk, wave_editor->wchunk->osc_freq);
   bst_play_back_handle_start (wave_editor->phandle);
 }
@@ -864,14 +871,18 @@ bst_wave_editor_rebuild (BstWaveEditor *wave_editor)
       GslWaveChunk *wchunk = g_slist_nth_data (bwave->wave_chunks, i); // FIXME
       GtkTreeIter iter;
       gchar *l = g_strdup_printf ("L:%u {0x%08lx,0x%08lx}", wchunk->loop_count, wchunk->loop_start, wchunk->loop_end);
+      gchar *str_ofreq = g_strdup_printf ("%.2f", wchunk->osc_freq);
+      gchar *str_mfreq = g_strdup_printf ("%.2f", wchunk->mix_freq);
       
       gtk_list_store_append (wave_editor->chunk_store, &iter);
       gtk_list_store_set (wave_editor->chunk_store, &iter,
-			  COL_OSC_FREQ, wchunk->osc_freq,
-			  COL_MIX_FREQ, wchunk->mix_freq,
+			  COL_OSC_FREQ, str_ofreq,
+			  COL_MIX_FREQ, str_mfreq,
 			  COL_NAME, bwave->wave_name,	// FIXME
 			  COL_LOOP, l,
 			  -1);
+      g_free (str_ofreq);
+      g_free (str_mfreq);
       g_free (l);
     }
 

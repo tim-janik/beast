@@ -17,6 +17,8 @@
  */
 #include "bstxframe.h"
 
+#include "bstutils.h"
+
 
 enum {
   PARAM_0,
@@ -58,6 +60,7 @@ static void     bst_xframe_size_allocate_cover        (GtkWidget	*widget,
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
+static guint    signal_button_check = 0;
 
 
 /* --- functions --- */
@@ -119,6 +122,13 @@ bst_xframe_class_init (BstXFrameClass *class)
 				   g_param_spec_boolean ("steal_button", "Steal Button3", "Whether to steal button2 clicks from cover widget",
 							 FALSE,
 							 G_PARAM_READWRITE));
+  signal_button_check = g_signal_new ("button_check",
+				      G_OBJECT_CLASS_TYPE (class),
+				      G_SIGNAL_RUN_LAST,
+				      G_STRUCT_OFFSET (BstXFrameClass, button_check),
+				      NULL, NULL,
+				      bst_marshal_BOOLEAN__UINT,
+				      G_TYPE_BOOLEAN, 1, G_TYPE_UINT);
 }
 
 static void
@@ -126,7 +136,7 @@ bst_xframe_init (BstXFrame *xframe)
 {
   xframe->iwindow = NULL;
   xframe->cover = NULL;
-  xframe->button_down = FALSE;
+  xframe->button_down = 0;
   xframe->allocation_valid = FALSE;
   xframe->entered = FALSE;
   g_object_set (xframe, "shadow_type", GTK_SHADOW_NONE, NULL);
@@ -286,9 +296,9 @@ bst_xframe_button_press (GtkWidget      *widget,
 {
   BstXFrame *xframe = BST_XFRAME (widget);
 
-  if (event->button == 3)
+  if (!xframe->button_down && xframe->entered)
     {
-      xframe->button_down = TRUE;
+      xframe->button_down = event->button;
       return TRUE;
     }
 
@@ -297,15 +307,17 @@ bst_xframe_button_press (GtkWidget      *widget,
 
 static gint
 bst_xframe_button_release (GtkWidget      *widget,
-                         GdkEventButton *event)
+			   GdkEventButton *event)
 {
   BstXFrame *xframe = BST_XFRAME (widget);
 
-  if (event->button == 3)
+  if (event->button == xframe->button_down)
     {
-      if (xframe->button_down && xframe->entered)
-	g_print ("XFRAME-button-click: unimplemented feature\n");
-      xframe->button_down = FALSE;
+      gboolean valid = FALSE;
+
+      if (xframe->entered)
+	g_signal_emit (widget, signal_button_check, 0, xframe->button_down, &valid);
+      xframe->button_down = 0;
       return TRUE;
     }
 
@@ -317,12 +329,19 @@ bst_xframe_enter_notify (GtkWidget        *widget,
 			 GdkEventCrossing *event)
 {
   BstXFrame *xframe = BST_XFRAME (widget);
-
+  
   if (GTK_WIDGET_IS_SENSITIVE (widget) &&
       (!GTK_BIN (widget)->child || GTK_WIDGET_IS_SENSITIVE (GTK_BIN (widget)->child)))
     {
-      g_object_set (xframe, "shadow_type", GTK_SHADOW_ETCHED_OUT, NULL);
-      xframe->entered = TRUE;
+      gboolean valid = FALSE;
+
+      g_signal_emit (widget, signal_button_check, 0, 0, &valid);
+
+      if (valid)
+	{
+	  g_object_set (xframe, "shadow_type", GTK_SHADOW_ETCHED_OUT, NULL);
+	  xframe->entered = TRUE;
+	}
     }
 
   return FALSE;

@@ -26,14 +26,13 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
-/* --- Gtk+ type macros --- */
-#define	BST_TYPE_PARAM_VIEW		(bst_param_view_get_type ())
-#define	BST_PARAM_VIEW(object)		(GTK_CHECK_CAST ((object), BST_TYPE_PARAM_VIEW, BstParamView))
-#define	BST_PARAM_VIEW_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PARAM_VIEW, BstParamViewClass))
-#define	BST_IS_PARAM_VIEW(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_PARAM_VIEW))
-#define	BST_IS_PARAM_VIEW_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PARAM_VIEW))
-#define BST_PARAM_VIEW_GET_CLASS(obj)	(GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PARAM_VIEW, BstParamViewClass))
+/* --- type macros --- */
+#define BST_TYPE_PARAM_VIEW              (bst_param_view_get_type ())
+#define BST_PARAM_VIEW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PARAM_VIEW, BstParamView))
+#define BST_PARAM_VIEW_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_PARAM_VIEW, BstParamViewClass))
+#define BST_IS_PARAM_VIEW(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_PARAM_VIEW))
+#define BST_IS_PARAM_VIEW_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_PARAM_VIEW))
+#define BST_PARAM_VIEW_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_PARAM_VIEW, BstParamView))
 
 
 /* --- structures & typedefs --- */
@@ -51,6 +50,7 @@ struct _BstParamView
   GType  	 object_type;
   GPatternSpec  *reject_pattern;
   GPatternSpec  *match_pattern;
+  GtkWidget	*nil_container;	/* null group */
   GtkWidget	*container;
 };
 struct _BstParamViewClass
@@ -60,7 +60,7 @@ struct _BstParamViewClass
 
 
 /* --- prototypes --- */
-GtkType		bst_param_view_get_type		(void);
+GType		bst_param_view_get_type		(void);
 GtkWidget*	bst_param_view_new		(BswProxy	 object);
 void		bst_param_view_update		(BstParamView	*param_view);
 void		bst_param_view_rebuild		(BstParamView	*param_view);

@@ -31,7 +31,8 @@ enum
   PARAM_DISABLE_ALSA,
   PARAM_TAB_WIDTH,
   PARAM_SAMPLE_SWEEP,
-  PARAM_PE_KEY_FOCUS_UNSELECTS
+  PARAM_PE_KEY_FOCUS_UNSELECTS,
+  PARAM_RC_VERSION
 };
 
 
@@ -73,6 +74,7 @@ static const BstGlobals  bst_globals_defaults = {
   TRUE			/* sample_sweep */,
   FALSE			/* pe_key_focus_unselects */,
   0			/* tab_width */,
+  0			/* rc_version */,
 };
 
 
@@ -198,6 +200,11 @@ bst_gconfig_class_init (BstGConfigClass *class)
 			      bse_param_spec_bool ("disable_alsa", "Disable support for ALSA PCM driver", NULL,
 						 globals_defaults.disable_alsa,
 						 BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Internal",
+			      PARAM_RC_VERSION,
+			      bse_param_spec_uint ("rc_version", "RC Version", NULL,
+						   0, G_MAXUINT, globals_defaults.rc_version, 1,
+						   BSE_PARAM_STORAGE));
   bst_globals_unset (&globals_defaults);
 }
 
@@ -237,6 +244,9 @@ bst_gconfig_set_property (BstGConfig  *gconf,
       break;
     case PARAM_PE_KEY_FOCUS_UNSELECTS:
       gconf->globals.pe_key_focus_unselects = g_value_get_boolean (value);
+      break;
+    case PARAM_RC_VERSION:
+      gconf->globals.rc_version = g_value_get_uint (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gconf, param_id, pspec);
@@ -279,6 +289,9 @@ bst_gconfig_get_property (BstGConfig  *gconf,
       break;
     case PARAM_PE_KEY_FOCUS_UNSELECTS:
       g_value_set_boolean (value, gconf->globals.pe_key_focus_unselects);
+      break;
+    case PARAM_RC_VERSION:
+      g_value_set_uint (value, gconf->globals.rc_version);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gconf, param_id, pspec);
@@ -343,4 +356,12 @@ bst_globals_set_xkb_symbol (const gchar *xkb_symbol)
 
   g_free (bst_globals_current.xkb_symbol);
   bst_globals_current.xkb_symbol = g_strdup (xkb_symbol);
+}
+
+void
+bst_globals_set_rc_version (guint rc_version)
+{
+  g_return_if_fail (bse_globals_locked () == FALSE);
+
+  bst_globals_current.rc_version = rc_version;
 }

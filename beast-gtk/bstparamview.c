@@ -32,29 +32,31 @@ static BstParamViewClass *bst_param_view_class = NULL;
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_param_view_get_type (void)
 {
-  static GtkType param_view_type = 0;
-  
-  if (!param_view_type)
+  static GType type = 0;
+
+  if (!type)
     {
-      GtkTypeInfo param_view_info =
-      {
-	"BstParamView",
-	sizeof (BstParamView),
+      static const GTypeInfo type_info = {
 	sizeof (BstParamViewClass),
-	(GtkClassInitFunc) bst_param_view_class_init,
-	(GtkObjectInitFunc) bst_param_view_init,
-        /* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) bst_param_view_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	sizeof (BstParamView),
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) bst_param_view_init,
       };
-      
-      param_view_type = gtk_type_unique (GTK_TYPE_VBOX, &param_view_info);
+
+      type = g_type_register_static (GTK_TYPE_VBOX,
+				     "BstParamView",
+				     &type_info, 0);
     }
-  
-  return param_view_type;
+
+  return type;
 }
 
 static void
@@ -204,16 +206,60 @@ bst_param_view_rebuild (BstParamView *param_view)
     return;
   
   param_box = GTK_WIDGET (param_view);
-  param_view->container = g_object_new (GTK_TYPE_HWRAP_BOX,
-					"visible", TRUE,
-					"homogeneous", FALSE,
-					"border_width", 5,
-					"hspacing", 5,
-					"aspect_ratio", 0.0,
-					"parent", param_view,
-					NULL);
+
+  if (0)	/* want Wrap boxes */
+    {
+      param_view->container = g_object_new (GTK_TYPE_HWRAP_BOX,
+					    "visible", TRUE,
+					    "homogeneous", FALSE,
+					    "border_width", 5,
+					    "hspacing", 5,
+					    "aspect_ratio", 0.0,
+					    "parent", param_view,
+					    NULL);
+      param_view->nil_container = param_view->container;
+    }
+  else
+    {
+      GtkScrolledWindow *scrolled_window;
+      GtkWidget *viewport, *separator;
+
+      param_view->nil_container = g_object_new (GTK_TYPE_VBOX,
+						"visible", TRUE,
+						"homogeneous", FALSE,
+						"border_width", 5,
+						NULL);
+      gtk_box_pack_start (GTK_BOX (param_view), param_view->nil_container, FALSE, TRUE, 0);
+      separator = g_object_new (GTK_TYPE_HSEPARATOR,
+				"visible", TRUE,
+				NULL);
+      gtk_box_pack_start (GTK_BOX (param_view), separator, FALSE, FALSE, 0);
+      scrolled_window = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+				      "visible", TRUE,
+				      "hscrollbar_policy", GTK_POLICY_NEVER,
+				      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+				      "parent", param_view,
+				      NULL);
+      viewport = g_object_new (GTK_TYPE_VIEWPORT,
+			       "visible", TRUE,
+			       "shadow_type", GTK_SHADOW_NONE,
+			       "hadjustment", gtk_scrolled_window_get_hadjustment (scrolled_window),
+			       "vadjustment", gtk_scrolled_window_get_vadjustment (scrolled_window),
+			       "parent", scrolled_window,
+			       NULL);
+      param_view->container = g_object_new (GTK_TYPE_VBOX,
+					    "visible", TRUE,
+					    "homogeneous", FALSE,
+					    "border_width", 5,
+					    "parent", viewport,
+					    NULL);
+    }
+    
   g_object_connect (param_view->container,
 		    "swapped_signal::destroy", g_nullify_pointer, &param_view->container,
+		    NULL);
+  g_object_connect (param_view->nil_container,
+		    "swapped_signal::destroy", g_nullify_pointer, &param_view->nil_container,
 		    NULL);
   
   object = bse_object_from_id (param_view->object);
@@ -242,7 +288,7 @@ bst_param_view_rebuild (BstParamView *param_view)
 				     BSE_TYPE_OBJECT,
 				     pspec,
 				     param_group,
-				     param_view->container,
+				     param_group ? param_view->container : param_view->nil_container,
 				     BST_TOOLTIPS);
 	  param_view->bparams = g_slist_prepend (param_view->bparams, bparam);
 	}

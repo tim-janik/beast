@@ -40,7 +40,7 @@ struct _BstXFrame
   GtkFrame	 parent_instance;
   GdkWindow	*iwindow;
   GtkWidget	*cover;
-  guint		 button_down : 1;
+  guint		 button_down : 4;
   guint		 entered : 1;
   guint		 allocation_valid : 1;
   guint		 steal_button : 1;
@@ -49,6 +49,9 @@ struct _BstXFrame
 struct _BstXFrameClass
 {
   GtkFrameClass parent_class;
+
+  gboolean	(*button_check)	(BstXFrame	*xframe,
+				 guint		 button);
 };
   
 

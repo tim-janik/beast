@@ -19,6 +19,8 @@
 #include "bstapp.h"
 #include "bststatusbar.h"
 
+#include "../PKG_config.h"	/* BST_HAVE_BIRNET */
+
 
 /* --- variables --- */
 static BswProxy project = 0;
@@ -37,7 +39,8 @@ bst_play_back_init (void)
       BswProxy speaker;
 
       project = bsw_server_use_new_project (BSW_SERVER, "# BEAST Play Back");
-      gtk_idle_show_widget (GTK_WIDGET (bst_app_new (project)));	// FIXME
+      if (BST_HAVE_BIRNET)
+	gtk_idle_show_widget (GTK_WIDGET (bst_app_new (project)));
       snet = bsw_project_create_snet (project);
       bsw_proxy_set (snet, "auto_activate", TRUE, NULL);
       mixer = bsw_snet_create_source (snet, "BseMixer");
@@ -105,9 +108,17 @@ bst_play_back_handle_start (BstPlayBackHandle *handle)
 }
 
 void
+bst_play_back_handle_stop (BstPlayBackHandle *handle)
+{
+  bsw_server_halt_project (BSW_SERVER, project);
+}
+
+void
 bst_play_back_handle_destroy (BstPlayBackHandle *handle)
 {
   g_return_if_fail (handle != NULL);
+
+  bst_play_back_handle_stop (handle);
 
   bsw_wave_repo_remove_wave (wave_repo, handle->wave);
   handle->wave = 0;

@@ -46,6 +46,7 @@ typedef enum
   BST_OP_PROJECT_CLOSE,
   BST_OP_PROJECT_PLAY,
   BST_OP_PROJECT_STOP,
+  BST_OP_PROJECT_RACK_EDITOR,
 
   /* spawn new dialogs
    */

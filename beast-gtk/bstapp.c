@@ -28,6 +28,7 @@
 #include	"bstpreferences.h"
 #include	"bstpatterneditor.h"
 #include	"bstservermonitor.h"
+#include	"bstrackeditor.h"
 
 
 
@@ -66,6 +67,8 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Project/New Song",		NULL,		BST_OP (PROJECT_NEW_SONG),	"<Item>" },
   { "/Project/New Synthesizer Network",	NULL,		BST_OP (PROJECT_NEW_SNET),	"<Item>" },
   { "/Project/New MIDI Synthesizer",	NULL,		BST_OP (PROJECT_NEW_MIDI_SYNTH),"<Item>" },
+  { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
+  { "/Project/Rack Editor",		NULL,		BST_OP (PROJECT_RACK_EDITOR),	"<Item>" },
   { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Project/Rebuild",			NULL,		BST_OP (REBUILD),		"<Item>" },
   { "/Project/Refresh",			NULL,		BST_OP (REFRESH),		"<Item>" },
@@ -168,10 +171,12 @@ bst_app_init (BstApp *app)
   GtkWindow *window = GTK_WINDOW (app);
   GtkItemFactory *factory;
 
-  g_object_connect (widget,
-		    "signal::map", bst_app_register, NULL,
-		    "signal::unrealize", bst_app_unregister, NULL,
-		    NULL);
+  bst_app_register (app);
+  if (0)
+    g_object_connect (widget,
+		      "signal::map", bst_app_register, NULL,
+		      "signal::unrealize", bst_app_unregister, NULL,
+		      NULL);
   bst_app_register (app);
   gtk_widget_set (widget,
 		  "allow_shrink", TRUE,
@@ -234,6 +239,9 @@ bst_app_destroy (GtkObject *object)
 {
   BstApp *app = BST_APP (object);
 
+  if (app->rack_dialog)
+    gtk_widget_destroy (app->rack_dialog);
+
   if (app->project)
     {
       bsw_server_halt_project (BSW_SERVER, app->project);
@@ -244,6 +252,8 @@ bst_app_destroy (GtkObject *object)
       bsw_item_unuse (app->project);
       app->project = 0;
     }
+
+  bst_app_unregister (app);
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 
@@ -293,6 +303,23 @@ bst_app_new (BswProxy project)
   return app;
 }
 
+BstApp*
+bst_app_find (BswProxy project)
+{
+  GSList *slist;
+  
+  g_return_val_if_fail (BSW_IS_PROJECT (project), NULL);
+
+  for (slist = bst_app_class->apps; slist; slist = slist->next)
+    {
+      BstApp *app = slist->data;
+
+      if (app->project == project)
+	return app;
+    }
+  return NULL;
+}
+
 GtkWidget*
 bst_app_get_current_shell (BstApp *app)
 {
@@ -335,16 +362,16 @@ bst_app_create_super_shell (BstApp  *app,
 			    "visible", TRUE,
 			    NULL);
   else
+    g_warning ("unknown super type `%s'", bsw_item_get_type_name (super));
+
+  if (shell)
     {
-      g_warning ("unknown super type `%s'", bsw_item_get_type_name (super));
-      return NULL;
+      bst_super_shell_set_super (BST_SUPER_SHELL (shell), super);
+      
+      gtk_widget_ref (shell);
+      gtk_object_sink (GTK_OBJECT (shell));
     }
-
-  bst_super_shell_set_super (BST_SUPER_SHELL (shell), super);
-
-  gtk_widget_ref (shell);
-  gtk_object_sink (GTK_OBJECT (shell));
-
+  
   return shell;
 }
 
@@ -382,16 +409,19 @@ bst_app_reload_supers (BstApp *app)
 	  }
       if (!page)
 	page = bst_app_create_super_shell (app, BSE_OBJECT_ID (slist->data));
-      label = gtk_widget_new (GTK_TYPE_LABEL,
-			      "visible", TRUE,
-			      "width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
-			      NULL);
-      gtk_notebook_append_page (app->notebook,
-				page,
-				label);
-      gtk_notebook_set_tab_label_packing (app->notebook, page, FALSE, TRUE, GTK_PACK_START);
-      bst_super_shell_update_parent (BST_SUPER_SHELL (page));
-      gtk_widget_unref (page);
+      if (page)
+	{
+	  label = gtk_widget_new (GTK_TYPE_LABEL,
+				  "visible", TRUE,
+				  "width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
+				  NULL);
+	  gtk_notebook_append_page (app->notebook,
+				    page,
+				    label);
+	  gtk_notebook_set_tab_label_packing (app->notebook, page, FALSE, TRUE, GTK_PACK_START);
+	  bst_super_shell_update_parent (BST_SUPER_SHELL (page));
+	  gtk_widget_unref (page);
+	}
     }
   if (old_page && old_page->parent == GTK_WIDGET (app->notebook))
     gtk_notebook_set_current_page (app->notebook,
@@ -582,6 +612,23 @@ bst_app_operate (BstApp *app,
       bsw_server_halt_project (BSW_SERVER, app->project);
       bst_status_set (0, "Stopping Playback", NULL);
       break;
+    case BST_OP_PROJECT_RACK_EDITOR:
+      if (!app->rack_dialog)
+	{
+	  BstRackEditor *ed = g_object_new (BST_TYPE_RACK_EDITOR,
+					    "visible", TRUE,
+					    NULL);
+
+	  bst_rack_editor_set_rack_view (ed, bsw_project_get_data_pocket (app->project, "BEAST-Rack-View"));
+	  app->rack_dialog = bst_adialog_new (NULL,
+					      &app->rack_dialog, GTK_WIDGET (ed),
+					      0,
+					      "title", "BEAST: Rack",
+					      NULL);
+	  app->rack_editor = g_object_connect (ed, "swapped_signal::destroy", g_nullify_pointer, &app->rack_editor, NULL);
+	}
+      gtk_widget_showraise (app->rack_dialog);
+      break;
     case BST_OP_DIALOG_PREFERENCES:
       if (!bst_preferences)
 	{
@@ -741,6 +788,7 @@ bst_app_can_operate (BstApp *app,
 	      return TRUE;
 	}
       return FALSE;
+    case BST_OP_PROJECT_RACK_EDITOR:
     case BST_OP_DIALOG_PREFERENCES:
     case BST_OP_DIALOG_DEVICE_MONITOR:
       return TRUE;

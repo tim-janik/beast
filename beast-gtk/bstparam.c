@@ -21,6 +21,9 @@
 #include	"bstdial.h"
 #include	"bstxframe.h"
 #include	"bstsequence.h"
+#include	"bstlogadjustment.h"
+#include	"bstapp.h"
+#include	"bstrackeditor.h"
 #include	<stdlib.h>
 #include	<math.h>
 #include	<string.h>
@@ -170,6 +173,35 @@ bst_param_update_clue_hunter (BstParam *bparam)
 	}
       g_list_free (nick_list);
     }
+}
+
+static gboolean
+xframe_check_button (BstParam *bparam,
+		     guint     button)
+{
+  BswProxy item;
+
+  if (!bparam->is_object || !bparam->owner)
+    return FALSE;
+
+  item = BSE_OBJECT_ID (bparam->owner);
+  if (BSW_IS_ITEM (item))
+    {
+      BswProxy project = bsw_item_get_project (item);
+
+      if (project)
+	{
+	  BstApp *app = bst_app_find (project);
+
+	  if (app && app->rack_editor && BST_RACK_EDITOR (app->rack_editor)->rtable->edit_mode)
+	    {
+	      if (button == 1)
+		bst_rack_editor_add_property (BST_RACK_EDITOR (app->rack_editor), item, bparam->pspec->name);
+	      return TRUE;
+	    }
+	}
+    }
+  return FALSE;
 }
 
 static void
@@ -440,16 +472,29 @@ bst_param_create (gpointer	owner,
 	  bst_dial_set_adjustment (BST_DIAL (dial), adjustment);
 	}
       if (pspec->flags & (BSE_PARAM_HINT_SCALE | BSE_PARAM_HINT_DIAL))
-	scale = g_object_connect (gtk_widget_new (GTK_TYPE_HSCALE,
-						  "visible", TRUE,
-						  "adjustment", adjustment,
-						  "draw_value", FALSE,
-						  "can_focus", FALSE,
-						  NULL),
-				  "signal_after::size_request", hscale_size_request, NULL,
-				  NULL);
-      
-      gtk_object_unref (GTK_OBJECT (adjustment));
+	{
+	  GtkAdjustment *scale_adjustment = adjustment;
+	  BseParamLogScale lscale;
+
+	  bse_param_spec_get_log_scale (pspec, &lscale);
+	  if (lscale.n_steps)
+	    {
+	      scale_adjustment = bst_log_adjustment_from_adj (adjustment);
+	      bst_log_adjustment_setup (BST_LOG_ADJUSTMENT (scale_adjustment),
+					lscale.center,
+					lscale.base,
+					lscale.n_steps);
+	    }
+	  scale = g_object_connect (gtk_widget_new (GTK_TYPE_HSCALE,
+						    "visible", TRUE,
+						    "adjustment", scale_adjustment,
+						    "draw_value", FALSE,
+						    "can_focus", FALSE,
+						    NULL),
+				    "signal_after::size_request", hscale_size_request, NULL,
+				    NULL);
+	}
+      g_object_unref (adjustment);
     }
   
   name = g_param_spec_get_nick (pspec);
@@ -472,12 +517,14 @@ bst_param_create (gpointer	owner,
       prompt = g_object_new (GTK_TYPE_LABEL,
 			     "visible", TRUE,
 			     "label", name,
-			     "parent", g_object_new (BST_TYPE_XFRAME,
-						     "visible", TRUE,
-						     "parent", action,
-						     "cover", action,
-						     "steal_button", TRUE,
-						     NULL),
+			     "parent", g_object_connect (g_object_new (BST_TYPE_XFRAME,
+								       "visible", TRUE,
+								       "parent", action,
+								       "cover", action,
+								       "steal_button", TRUE,
+								       NULL),
+							 "swapped_signal::button_check", xframe_check_button, bparam,
+							 NULL),
 			     NULL);
       gtk_misc_set_alignment (GTK_MISC (prompt), 0, 0.5);
       group = bst_gmask_form_big (parent_container, action);
@@ -520,10 +567,12 @@ bst_param_create (gpointer	owner,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "parent", g_object_new (BST_TYPE_XFRAME,
-						       "visible", TRUE,
-						       "cover", action,
-						       NULL),
+			       "parent", g_object_connect (g_object_new (BST_TYPE_XFRAME,
+									 "visible", TRUE,
+									 "cover", action,
+									 NULL),
+							   "swapped_signal::button_check", xframe_check_button, bparam,
+							   NULL),
 			       NULL);
       g_object_set (action,
 		    "visible", TRUE,
@@ -557,10 +606,12 @@ bst_param_create (gpointer	owner,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
 			       "sensitive", !read_only && ev,
-			       "parent", g_object_new (BST_TYPE_XFRAME,
-						       "visible", TRUE,
-						       "cover", action,
-						       NULL),
+			       "parent", g_object_connect (g_object_new (BST_TYPE_XFRAME,
+									 "visible", TRUE,
+									 "cover", action,
+									 NULL),
+							   "swapped_signal::button_check", xframe_check_button, bparam,
+							   NULL),
 			       NULL);
       gtk_widget_set (action,
 		      "visible", TRUE,
@@ -610,10 +661,12 @@ bst_param_create (gpointer	owner,
 			       "label", pspec->name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "parent", g_object_new (BST_TYPE_XFRAME,
-						       "visible", TRUE,
-						       "cover", action,
-						       NULL),
+			       "parent", g_object_connect (g_object_new (BST_TYPE_XFRAME,
+									 "visible", TRUE,
+									 "cover", action,
+									 NULL),
+							   "swapped_signal::button_check", xframe_check_button, bparam,
+							   NULL),
 			       NULL);
       group = bst_gmask_form (parent_container, action, FALSE);
       bst_gmask_set_prompt (group, prompt);
@@ -634,10 +687,12 @@ bst_param_create (gpointer	owner,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "parent", g_object_new (BST_TYPE_XFRAME,
-						       "visible", TRUE,
-						       "cover", action,
-						       NULL),
+			       "parent", g_object_connect (g_object_new (BST_TYPE_XFRAME,
+									 "visible", TRUE,
+									 "cover", action,
+									 NULL),
+							   "swapped_signal::button_check", xframe_check_button, bparam,
+							   NULL),
 			       NULL);
       group = bst_gmask_form (parent_container, action, TRUE);
       bst_gmask_set_prompt (group, prompt);
@@ -671,9 +726,11 @@ bst_param_create (gpointer	owner,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "parent", g_object_new (BST_TYPE_XFRAME,
-						       "visible", TRUE,
-						       NULL),
+			       "parent", g_object_connect (g_object_new (BST_TYPE_XFRAME,
+									 "visible", TRUE,
+									 NULL),
+							   "swapped_signal::button_check", xframe_check_button, bparam,
+							   NULL),
 			       NULL);
       frame = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
@@ -725,10 +782,12 @@ bst_param_create (gpointer	owner,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "parent", g_object_new (BST_TYPE_XFRAME,
-						       "visible", TRUE,
-						       "cover", action,
-						       NULL),
+			       "parent", g_object_connect (g_object_new (BST_TYPE_XFRAME,
+									 "visible", TRUE,
+									 "cover", action,
+									 NULL),
+							   "swapped_signal::button_check", xframe_check_button, bparam,
+							   NULL),
 			       NULL);
       group = bst_gmask_form (parent_container, action, TRUE);
       bst_gmask_set_prompt (group, prompt);
@@ -751,9 +810,11 @@ bst_param_create (gpointer	owner,
 				   "label", name,
 				   "justify", GTK_JUSTIFY_LEFT,
 				   "xalign", 0.0,
-				   "parent", g_object_new (BST_TYPE_XFRAME,
-							   "visible", TRUE,
-							   NULL),
+				   "parent", g_object_connect (g_object_new (BST_TYPE_XFRAME,
+									     "visible", TRUE,
+									     NULL),
+							       "swapped_signal::button_check", xframe_check_button, bparam,
+							       NULL),
 				   NULL);
 	  action = g_object_new (BST_TYPE_SEQUENCE,
 				 "visible", TRUE,
@@ -774,7 +835,7 @@ bst_param_create (gpointer	owner,
       break;
     }
 
-  if (dial)
+  if (BST_IS_DIAL (dial))
     bst_dial_set_align_widget (BST_DIAL (dial), bst_gmask_get_action (group), 0, 1);
   
   bparam->group = group;

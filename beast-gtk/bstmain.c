@@ -81,7 +81,7 @@ main (int   argc,
 {
   BswLockFuncs lfuncs = { NULL, gtk_lock, gtk_unlock };
   BstApp *app = NULL;
-  guint i;
+  guint i, this_rc_version;
   
   /* initialize BSE and preferences
    */
@@ -140,8 +140,33 @@ main (int   argc,
   /* setup default keytable for pattern editor class
    */
   bst_key_table_install_patch (bst_key_table_from_xkb (gdk_get_display ()));
-  
-  
+
+  /* fire up the greetings dialog
+   */
+  this_rc_version = 1;	/* <- increment to trigger greeting dialog */
+  if (bst_globals->rc_version != this_rc_version)
+    {
+      static GtkWidget *txt_dialog = NULL;
+      gchar *txt_file = g_strconcat (BST_PATH_DOCS, "/release-notes.txt", NULL);
+      gchar *dialog_title = g_strdup (txt_file);
+      gchar *string;
+
+      string = g_strconcat ("BEAST: ", dialog_title, NULL);
+      txt_dialog = bst_adialog_new (NULL,
+				    &txt_dialog,
+				    bst_text_view_from (NULL,
+							txt_file,
+							NULL, NULL),
+				    BST_ADIALOG_DESTROY_ON_HIDE,
+				    "title", string,
+				    NULL);
+      g_free (string);
+      g_free (dialog_title);
+      g_free (txt_file);
+      bst_globals_set_rc_version (this_rc_version);
+      gtk_widget_showraise (txt_dialog);
+    }
+
   /* check load BSE plugins to register types
    */
   if (bst_load_plugins)

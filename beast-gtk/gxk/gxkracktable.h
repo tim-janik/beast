@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,20 +26,20 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- Gtk+ type macros --- */
-#define	BST_TYPE_RACK_TABLE		(bst_rack_table_get_type ())
-#define	BST_RACK_TABLE(object)		(GTK_CHECK_CAST ((object), BST_TYPE_RACK_TABLE, BstRackTable))
-#define	BST_RACK_TABLE_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_RACK_TABLE, BstRackTableClass))
-#define	BST_IS_RACK_TABLE(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_RACK_TABLE))
-#define	BST_IS_RACK_TABLE_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_RACK_TABLE))
-#define BST_RACK_TABLE_GET_CLASS(obj)	(GTK_CHECK_GET_CLASS ((obj), BST_TYPE_RACK_TABLE, BstRackTableClass))
+/* --- type macros --- */
+#define BST_TYPE_RACK_TABLE              (bst_rack_table_get_type ())
+#define BST_RACK_TABLE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_RACK_TABLE, BstRackTable))
+#define BST_RACK_TABLE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_RACK_TABLE, BstRackTableClass))
+#define BST_IS_RACK_TABLE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_RACK_TABLE))
+#define BST_IS_RACK_TABLE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_RACK_TABLE))
+#define BST_RACK_TABLE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_RACK_TABLE, BstRackTable))
 
 
 /* --- structures & typedefs --- */
 typedef	struct _BstRackTable	  BstRackTable;
 typedef	struct _BstRackTableClass BstRackTableClass;
-typedef	struct _BstRackWidgetInfo BstRackWidgetInfo;
-struct _BstRackWidgetInfo
+typedef	struct _BstRackChildInfo  BstRackChildInfo;
+struct _BstRackChildInfo
 {
   gint col, row;
   gint hspan, vspan;
@@ -62,7 +62,7 @@ struct _BstRackTable
   GdkWindow	   *iwindow;
   guint		    edit_mode : 1;
   guint		    in_drag : 2;
-  BstRackWidgetInfo drag_info;
+  BstRackChildInfo  drag_info;
   guint		    drag_col;
   guint		    drag_row;
   gint		    xofs;
@@ -97,9 +97,9 @@ gboolean	bst_rack_table_expand_rect	(BstRackTable	*rtable,
 						 guint		 row,
 						 guint		*hspan,
 						 guint		*vspan);
-void		bst_rack_widget_get_info	(GtkWidget	*widget,
-						 BstRackWidgetInfo *info);
-void		bst_rack_widget_set_info	(GtkWidget	*widget,
+void		bst_rack_child_get_info		(GtkWidget	*widget,
+						 BstRackChildInfo *info);
+void		bst_rack_child_set_info		(GtkWidget	*widget,
 						 gint		 col,
 						 gint		 row,
 						 gint		 hspan,

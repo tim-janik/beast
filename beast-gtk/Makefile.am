@@ -49,6 +49,7 @@ beast_headers = $(strip \
 	bstinstrumentview.h \
 	bstitemview.h \
 	bstkeytables.h \
+	bstlogadjustment.h \
 	bstmarshal.h \
 	bstmenus.h \
 	bstparam.h \
@@ -61,6 +62,8 @@ beast_headers = $(strip \
 	bstpreferences.h \
 	bstprocedure.h \
 	bstqsampler.h \
+	bstrackeditor.h \
+	bstrackitem.h \
 	bstracktable.h \
 	bstradiotools.h \
 	bstsequence.h \
@@ -94,6 +97,7 @@ beast_sources = $(strip \
 	bstinstrumentview.c \
 	bstitemview.c \
 	bstkeytables.c \
+	bstlogadjustment.c \
 	bstmain.c \
 	bstmenus.c \
 	bstparam.c \
@@ -107,8 +111,10 @@ beast_sources = $(strip \
 	bstprocedure.c \
 	bstqsampler.c \
 	bstradiotools.c \
-	bstsequence.c \
+	bstrackeditor.c \
+	bstrackitem.c \
 	bstracktable.c \
+	bstsequence.c \
 	bstservermonitor.c \
 	bstsnetshell.c \
 	bstsnetrouter.c \
@@ -130,6 +136,8 @@ beast_sources = $(strip \
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
 	bstpatterneditorselection.c \
+	bstrackeditor-covers.c \
+	bstrackitem-controllers.c \
 	bstkeytable-base.c \
 	bstkeytable-us.c \
 	bstkeytable-de.c \
@@ -205,11 +213,9 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 # setup BEAST sources and their dependancies
 #
 beast_SOURCES = $(beast_sources)
-noinst_PROGRAMS = bststest bstrtest
+noinst_PROGRAMS = bststest
 bststest_SOURCES = bststest.c bstutils.c gnomeforest.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)
-bstrtest_SOURCES = bstrtest.c bstracktable.c bstdial.c
-bstrtest_LDADD = $(progs_LDADD)
 
 EXTRA_DIST += $(beast_headers) $(beast_extra_sources)
 MAINTAINERCLEANFILES += $(beast_built_sources)

@@ -55,8 +55,10 @@ struct _BstApp
   GtkWidget	*main_vbox;
   GtkNotebook	*notebook;
 
-  GtkWidget	*quit_dialog;
   BseSuper	*default_super;
+
+  GtkWidget	*rack_dialog;
+  GtkWidget	*rack_editor;
 };
 struct _BstAppClass
 {
@@ -79,7 +81,7 @@ GtkWidget*	bst_app_get_current_shell	(BstApp		*app);
 BseSuper*	bst_app_get_current_super	(BstApp		*app);
 GtkItemFactory*	bst_app_menu_factory		(BstApp		*app);
 void		bst_app_update_can_operate	(BstApp		*app);
-     
+BstApp*		bst_app_find			(BswProxy	 project);
 
 
 

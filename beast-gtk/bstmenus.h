@@ -36,15 +36,17 @@ extern "C" {
 							    BST_ICON_NONE, (name), 0))
 #define BST_CHOICE(id, name, bst_icon)   (bst_choice_alloc (BST_CHOICE_TYPE_ITEM, \
 							    BST_ICON_ ## bst_icon, \
-                                                            (name), (id)))
+                                                            (name), (gpointer) (id)))
 #define BST_CHOICE_D(id, name, bst_icon) (bst_choice_alloc (BST_CHOICE_TYPE_ITEM | \
 							    BST_CHOICE_FLAG_DEFAULT, \
 							    BST_ICON_ ## bst_icon, \
-                                                            (name), (id)))
+                                                            (name), (gpointer) (id)))
 #define BST_CHOICE_S(id, name, icon, s)  (bst_choice_alloc (BST_CHOICE_TYPE_ITEM | \
 							    ((s) ? 0 : BST_CHOICE_FLAG_INSENSITIVE), \
 							     BST_ICON_ ## icon, \
-                                                            (name), (id)))
+                                                            (name), (gpointer) (id)))
+#define BST_CHOICE_SUBMENU(name,menu)    (bst_choice_alloc (BST_CHOICE_TYPE_SUBMENU, \
+							    BST_ICON_NONE, (name), (menu)))
 #define BST_CHOICE_TEXT(name)            (bst_choice_alloc (BST_CHOICE_TYPE_TEXT, \
 							    BST_ICON_NONE, (name), 0))
 #define BST_CHOICE_SEPERATOR             (bst_choice_alloc (BST_CHOICE_TYPE_SEPARATOR, \
@@ -59,6 +61,7 @@ typedef enum
   BST_CHOICE_TYPE_TITLE		= 1,
   BST_CHOICE_TYPE_TEXT		= 2,
   BST_CHOICE_TYPE_ITEM		= 3,
+  BST_CHOICE_TYPE_SUBMENU	= 4,
   BST_CHOICE_TYPE_MASK		= 0xff,
   BST_CHOICE_FLAG_INSENSITIVE	= (1 << 8),
   BST_CHOICE_FLAG_DEFAULT	= (1 << 9),
@@ -104,6 +107,8 @@ void    bst_menu_entries_create_list      (GtkItemFactory         *ifactory,
 GtkWidget* bst_choice_menu_createv        (const gchar		  *menu_path,
 					   BstChoice              *first_choice,
 					   ...);
+void bst_choice_menu_add_choice_and_free  (GtkWidget		  *menu,
+					   BstChoice		  *choice);
 GtkWidget* bst_choice_dialog_createv      (BstChoice              *first_choice,
 					   ...);
 gboolean   bst_choice_selectable          (GtkWidget              *widget);
@@ -118,7 +123,7 @@ void	   bst_choice_destroy		  (GtkWidget		  *choice);
 BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
 					   BstIconId               icon_id,
 					   const gchar            *choice_name,
-					   guint                   choice_id);
+					   gpointer                choice_id);
 
 
 #ifdef __cplusplus

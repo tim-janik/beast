@@ -37,6 +37,7 @@ extern "C" {
 #define BST_SNET_SWAP_IO_CHANNELS	(bst_globals->snet_swap_io_channels)
 #define BST_SAMPLE_SWEEP		(bst_globals->sample_sweep)
 #define BST_PE_KEY_FOCUS_UNSELECTS	(bst_globals->pe_key_focus_unselects)
+#define	BST_RC_VERSION			(bst_globals->rc_version)
 
 
 /* --- BstGlobals --- */
@@ -52,6 +53,7 @@ struct _BstGlobals
   guint  sample_sweep : 1;
   guint  pe_key_focus_unselects : 1;
   guint  tab_width : 16;
+  guint	 rc_version;
 };
 extern const BstGlobals * const bst_globals;
 
@@ -84,7 +86,7 @@ struct _BstGConfigClass
 /* --- prototypes --- */
 void     bst_globals_init               (void);
 void	 bst_globals_set_xkb_symbol	(const gchar *xkb_symbol);
-
+void	 bst_globals_set_rc_version	(guint	      rc_version);
 
 
 

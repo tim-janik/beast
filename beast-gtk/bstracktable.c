@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@
  */
 #include "bstracktable.h"
 
+#include "bstrackitem.h"
+#include "bstutils.h"
 #include <gtk/gtkalignment.h>
 #include <gtk/gtklabel.h>
-
 
 typedef enum
 {
@@ -55,6 +56,8 @@ static gint		bst_rack_table_expose		(GtkWidget		*widget,
 							 GdkEventExpose		*event);
 static void		bst_rack_table_add		(GtkContainer		*container,
 							 GtkWidget		*child);
+static void		bst_rack_table_remove		(GtkContainer		*container,
+							 GtkWidget		*child);
 static gboolean		bst_rack_table_iwindow_translate(BstRackTable		*rtable,
 							 gint			 x,
 							 gint			 y,
@@ -77,6 +80,7 @@ static void		widget_reparent			(GtkWidget		*child,
 /* --- static variables --- */
 static gpointer	parent_class = NULL;
 static GQuark   quark_rack_info = 0;
+static guint	signal_edit_mode_changed = 0;
 
 
 /* --- functions --- */
@@ -117,7 +121,7 @@ bst_rack_table_class_init (BstRackTableClass *class)
   
   parent_class = g_type_class_peek_parent (class);
 
-  quark_rack_info = g_quark_from_static_string ("BstRackInfo");
+  quark_rack_info = g_quark_from_static_string ("BstRackChildInfo");
   
   gobject_class->finalize = bst_rack_table_finalize;
 
@@ -136,12 +140,22 @@ bst_rack_table_class_init (BstRackTableClass *class)
   widget_class->expose_event = bst_rack_table_expose;
 
   container_class->add = bst_rack_table_add;
+  container_class->remove = bst_rack_table_remove;
+
+  signal_edit_mode_changed = g_signal_new ("edit-mode-changed",
+					   G_OBJECT_CLASS_TYPE (class),
+					   G_SIGNAL_RUN_FIRST,
+					   G_STRUCT_OFFSET (BstRackTableClass, edit_mode_changed),
+					   NULL, NULL,
+					   bst_marshal_NONE__BOOLEAN,
+					   G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
 }
 
 static void
 bst_rack_table_init (BstRackTable *rtable)
 {
   gtk_widget_set_redraw_on_allocate (GTK_WIDGET (rtable), TRUE);
+  gtk_container_set_reallocate_redraws (GTK_CONTAINER (rtable), TRUE);
   rtable->iwindow = NULL;
   g_object_set (rtable,
 		"homogeneous", TRUE,
@@ -169,8 +183,11 @@ bst_rack_table_destroy (GtkObject *object)
 {
   BstRackTable *rtable = BST_RACK_TABLE (object);
 
-  gtk_widget_destroy (rtable->drag_window);
-  rtable->drag_window = NULL;
+  if (rtable->drag_window)
+    {
+      gtk_widget_destroy (rtable->drag_window);
+      rtable->drag_window = NULL;
+    }
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -271,9 +288,9 @@ bst_rack_table_size_allocate (GtkWidget     *widget,
   BstRackTable *rtable = BST_RACK_TABLE (widget);
   GtkTable *table = GTK_TABLE (rtable);
 
-  bst_rtable_update_child_map (rtable);
-
   GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+
+  bst_rtable_update_child_map (rtable);
 
   rtable->cell_width = table->cols[0].allocation;
   rtable->cell_height = table->rows[0].allocation;
@@ -349,7 +366,7 @@ bst_rack_table_button_press (GtkWidget      *widget,
       rtable->in_drag = rtable->child != NULL;
       if (rtable->in_drag)
 	{
-	  bst_rack_widget_get_info (rtable->child, &rtable->drag_info);
+	  bst_rack_child_get_info (rtable->child, &rtable->drag_info);
 	  rtable->xofs = event->x - GTK_CONTAINER (rtable)->border_width;
 	  rtable->yofs = event->y - GTK_CONTAINER (rtable)->border_width;
 	  for (h = 0; h < rtable->drag_info.col; h++)
@@ -375,6 +392,19 @@ bst_rack_table_button_press (GtkWidget      *widget,
 				  rtable->drag_info.row,
 				  rtable->drag_info.hspan,
 				  rtable->drag_info.vspan);
+	}
+    }
+  else if (event->type == GDK_BUTTON_PRESS && event->button == 3 && !rtable->in_drag)
+    {
+      GtkWidget *child = NULL;
+      guint h, v;
+
+      if (bst_rack_table_iwindow_translate (rtable, event->x, event->y, &h, &v))
+	child = bst_rack_table_find_child (rtable, h, v);
+      if (BST_IS_RACK_ITEM (child))
+	{
+	  /* proxy button presses */
+	  g_signal_emit_by_name (child, "button_press", event);
 	}
     }
 
@@ -440,11 +470,11 @@ rtable_abort_drag (BstRackTable *rtable)
     {
       rtable->in_drag = FALSE;
       gtk_widget_hide (rtable->drag_window);
-      bst_rack_widget_set_info (rtable->child,
-				rtable->drag_info.col,
-				rtable->drag_info.row,
-				rtable->drag_info.hspan,
-				rtable->drag_info.vspan);
+      bst_rack_child_set_info (rtable->child,
+			       rtable->drag_info.col,
+			       rtable->drag_info.row,
+			       rtable->drag_info.hspan,
+			       rtable->drag_info.vspan);
       widget_reparent (rtable->child, GTK_WIDGET (rtable));
       rtable->child = NULL;
     }
@@ -610,9 +640,9 @@ bst_rack_table_add (GtkContainer *container,
 {
   BstRackTable *rtable = BST_RACK_TABLE (container);
   GtkTable *table = GTK_TABLE (rtable);
-  BstRackWidgetInfo rinfo;
+  BstRackChildInfo rinfo;
 
-  bst_rack_widget_get_info (child, &rinfo);
+  bst_rack_child_get_info (child, &rinfo);
   if (rinfo.hspan < 1)
     rinfo.hspan = 4;
   rinfo.hspan = CLAMP (rinfo.hspan, 1, table->ncols);
@@ -634,7 +664,7 @@ bst_rack_table_add (GtkContainer *container,
       rinfo.col = col;
       rinfo.row = row;
     }
-  bst_rack_widget_set_info (child, rinfo.col, rinfo.row, rinfo.hspan, rinfo.vspan);
+  bst_rack_child_set_info (child, rinfo.col, rinfo.row, rinfo.hspan, rinfo.vspan);
   gtk_table_attach (table, child,
 		    rinfo.col, rinfo.col + rinfo.hspan,
 		    rinfo.row, rinfo.row + rinfo.vspan,
@@ -642,6 +672,22 @@ bst_rack_table_add (GtkContainer *container,
 		    GTK_EXPAND | GTK_SHRINK | GTK_FILL,
 		    0, 0);
   bst_rtable_update_child_map (rtable);
+  if (BST_IS_RACK_ITEM (child))
+    bst_rack_item_gui_changed (BST_RACK_ITEM (child));
+}
+
+static void
+bst_rack_table_remove (GtkContainer *container,
+		       GtkWidget    *child)
+{
+  BstRackTable *rtable = BST_RACK_TABLE (container);
+
+  /* cause a map-update */
+  rtable->map_cols = 0;
+  rtable->map_rows = 0;
+
+  /* chain parent class' handler */
+  GTK_CONTAINER_CLASS (parent_class)->remove (container, child);
 }
 
 static gboolean
@@ -688,7 +734,7 @@ bst_rack_table_iwindow_translate (BstRackTable		*rtable,
 
   return x >= 0 && *hcell < table->ncols && y >= 0 && *vcell < table->nrows;
 }
-#include <gtk/gtkframe.h> // FIXME
+
 static GtkWidget*
 bst_rack_table_find_child (BstRackTable *rtable,
 			   guint         hcell,
@@ -704,7 +750,9 @@ bst_rack_table_find_child (BstRackTable *rtable,
       if (hcell >= child->left_attach && hcell < child->right_attach &&
 	  vcell >= child->top_attach && vcell < child->bottom_attach)
 	{
-	  if ((rtable->edit_mode && GTK_IS_FRAME (child->widget)) && !GTK_IS_TABLE (GTK_BIN (child->widget)->child) &&
+	  if (rtable->edit_mode &&
+	      BST_IS_RACK_ITEM (child->widget) &&
+	      BST_RACK_ITEM (child->widget)->empty_frame &&
 	      hcell > child->left_attach && hcell + 1 < child->right_attach &&
 	      vcell > child->top_attach && vcell + 1 < child->bottom_attach)
 	    continue;
@@ -862,37 +910,43 @@ bst_rack_table_set_edit_mode (BstRackTable *rtable,
 	}
       gtk_widget_queue_draw (GTK_WIDGET (rtable));
     }
+  g_signal_emit (rtable, signal_edit_mode_changed, 0, rtable->edit_mode);
 }
 
 void
-bst_rack_widget_get_info (GtkWidget         *widget,
-			  BstRackWidgetInfo *info)
+bst_rack_child_get_info (GtkWidget         *widget,
+			 BstRackChildInfo *info)
 {
-  BstRackWidgetInfo *rinfo;
+  BstRackChildInfo *rinfo;
 
   g_return_if_fail (GTK_IS_WIDGET (widget));
   g_return_if_fail (info != NULL);
 
-  rinfo = g_object_get_qdata (G_OBJECT (widget), quark_rack_info);
-  if (!rinfo)
-    {
-      info->col = -1;
-      info->row = -1;
-      info->hspan = -1;
-      info->vspan = -1;
-    }
+  if (BST_IS_RACK_ITEM (widget))
+    *info = BST_RACK_ITEM (widget)->rack_child_info;
   else
-    *info = *rinfo;
+    {
+      rinfo = g_object_get_qdata (G_OBJECT (widget), quark_rack_info);
+      if (!rinfo)
+	{
+	  info->col = -1;
+	  info->row = -1;
+	  info->hspan = -1;
+	  info->vspan = -1;
+	}
+      else
+	*info = *rinfo;
+    }
 }
 
 void
-bst_rack_widget_set_info (GtkWidget *widget,
-			  gint       col,
-			  gint       row,
-			  gint       hspan,
-			  gint       vspan)
+bst_rack_child_set_info (GtkWidget *widget,
+			 gint       col,
+			 gint       row,
+			 gint       hspan,
+			 gint       vspan)
 {
-  BstRackWidgetInfo *rinfo;
+  BstRackChildInfo *rinfo;
   GtkWidget *parent = NULL;
   
   g_return_if_fail (GTK_IS_WIDGET (widget));
@@ -904,21 +958,25 @@ bst_rack_widget_set_info (GtkWidget *widget,
       gtk_container_remove (GTK_CONTAINER (parent), widget);
     }
 
-  rinfo = g_object_get_qdata (G_OBJECT (widget), quark_rack_info);
-  if (!rinfo)
+  if (BST_IS_RACK_ITEM (widget))
+    rinfo = &BST_RACK_ITEM (widget)->rack_child_info;
+  else
     {
-      rinfo = g_new (BstRackWidgetInfo, 1);
-      g_object_set_qdata_full (G_OBJECT (widget), quark_rack_info, rinfo, g_free);
-      rinfo->col = -1;
-      rinfo->row = -1;
-      rinfo->hspan = 1;
-      rinfo->vspan = 1;
+      rinfo = g_object_get_qdata (G_OBJECT (widget), quark_rack_info);
+      if (!rinfo)
+	{
+	  rinfo = g_new (BstRackChildInfo, 1);
+	  g_object_set_qdata_full (G_OBJECT (widget), quark_rack_info, rinfo, g_free);
+	  rinfo->col = -1;
+	  rinfo->row = -1;
+	  rinfo->hspan = 1;
+	  rinfo->vspan = 1;
+	}
     }
   rinfo->col = col >= 0 ? col : rinfo->col;
   rinfo->row = row >= 0 ? row : rinfo->row;
   rinfo->hspan = hspan > 1 ? hspan : rinfo->hspan;
   rinfo->vspan = vspan > 1 ? vspan : rinfo->vspan;
-
   if (parent)
     gtk_container_add (GTK_CONTAINER (parent), widget);
   g_object_unref (widget);

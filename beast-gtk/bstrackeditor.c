@@ -1,0 +1,272 @@
+/* BEAST - Bedevilled Audio System
+ * Copyright (C) 2002 Olaf Hoehmann and Tim Janik
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include "bstrackeditor.h"
+
+
+#include "bstrackitem.h"
+
+
+/* --- include sources --- */
+#include "bstrackeditor-covers.c"
+
+
+/* --- prototypes --- */
+static void	bst_rack_editor_class_init	(BstRackEditorClass	*klass);
+static void	bst_rack_editor_init		(BstRackEditor		*rack_editor);
+static void	bst_rack_editor_destroy		(GtkObject		*object);
+static void	update_covers			(BstRackEditor		*ed);
+static void	update_items			(BstRackEditor		*ed);
+static void	create_rack_item		(BstRackEditor		*ed,
+						 guint			 entry_id);
+
+
+/* --- static variables --- */
+static gpointer		    parent_class = NULL;
+
+
+/* --- functions --- */
+GType
+bst_rack_editor_get_type (void)
+{
+  static GType type = 0;
+
+  if (!type)
+    {
+      static const GTypeInfo type_info = {
+	sizeof (BstRackEditorClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) bst_rack_editor_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	sizeof (BstRackEditor),
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) bst_rack_editor_init,
+      };
+
+      type = g_type_register_static (GTK_TYPE_VBOX,
+				     "BstRackEditor",
+				     &type_info, 0);
+    }
+
+  return type;
+}
+
+static void
+bst_rack_editor_class_init (BstRackEditorClass *class)
+{
+  GtkObjectClass *object_class;
+
+  object_class = GTK_OBJECT_CLASS (class);
+  
+  parent_class = g_type_class_peek_parent (class);
+
+  object_class->destroy = bst_rack_editor_destroy;
+}
+
+static void
+toggle_edit_mode (BstRackEditor *ed)
+{
+  bst_rack_table_set_edit_mode (ed->rtable, !ed->rtable->edit_mode);
+}
+
+static void
+bst_rack_editor_init (BstRackEditor *ed)
+{
+  ed->pocket = 0;
+
+  ed->button_edit = g_object_new (GTK_TYPE_TOGGLE_BUTTON,
+				  "visible", TRUE,
+				  "label", "Edit",
+				  "parent", ed,
+				  NULL);
+  g_object_connect (ed->button_edit,
+		    "swapped_signal::destroy", g_nullify_pointer, &ed->button_edit,
+		    "swapped_signal::clicked", toggle_edit_mode, ed,
+		    NULL);
+
+  ed->rtable = g_object_new (BST_TYPE_RACK_TABLE,
+			     "visible", TRUE,
+			     "parent", ed,
+			     NULL);
+  g_object_connect (ed->rtable,
+		    "swapped_signal::destroy", g_nullify_pointer, &ed->rtable,
+		    "swapped_signal::edit-mode-changed", update_covers, ed,
+		    NULL);
+  gtk_table_resize (GTK_TABLE (ed->rtable), 40, 60);
+  update_covers (ed);
+}
+
+static void
+bst_rack_editor_destroy (GtkObject *object)
+{
+  BstRackEditor *ed = BST_RACK_EDITOR (object);
+
+  bst_rack_editor_set_rack_view (ed, 0);
+
+  while (ed->plate_list)
+    {
+      GSList *slist = ed->plate_list;
+
+      ed->plate_list = slist->next;
+      gtk_widget_destroy (slist->data);
+      g_slist_free_1 (slist);
+    }
+  while (ed->item_list)
+    {
+      GSList *slist = ed->item_list;
+
+      ed->item_list = slist->next;
+      gtk_widget_destroy (slist->data);
+      g_slist_free_1 (slist);
+    }
+  
+  /* chain parent class' handler */
+  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+}
+
+static void
+pocket_entry_changed (BstRackEditor *ed,
+		      guint	     entry_id)
+{
+  GSList *slist;
+
+  for (slist = ed->item_list; slist; slist = slist->next)
+    {
+      BstRackItem *item = slist->data;
+
+      if (item->entry == entry_id)
+	return;
+    }
+  if (bsw_data_pocket_get_object (ed->pocket, entry_id, "property-object") &&
+      bsw_data_pocket_get_string (ed->pocket, entry_id, "property-name"))
+    create_rack_item (ed, entry_id);
+}
+
+static void
+pocket_remove (BstRackEditor *ed)
+{
+  bst_rack_editor_set_rack_view (ed, 0);
+}
+
+void
+bst_rack_editor_set_rack_view (BstRackEditor *ed,
+			       BswProxy      pocket)
+{
+  g_return_if_fail (BST_IS_RACK_EDITOR (ed));
+  if (pocket)
+    g_return_if_fail (BSW_IS_DATA_POCKET (pocket));
+
+  if (ed->pocket)
+    {
+      bsw_proxy_disconnect (ed->pocket,
+			    "any_signal", pocket_remove, ed,
+			    "any_signal", pocket_entry_changed, ed,
+			    NULL);
+    }
+  ed->pocket = pocket;
+  if (ed->pocket)
+    {
+      bsw_proxy_connect (ed->pocket,
+			 "swapped_signal::set_parent", pocket_remove, ed,
+			 "swapped_signal::entry_changed", pocket_entry_changed, ed,
+			 "swapped_signal::entry_removed", pocket_entry_changed, ed,
+			 NULL);
+      update_items (ed);
+    }
+}
+
+void
+bst_rack_editor_add_property (BstRackEditor *ed,
+			      BswProxy       item,
+			      const gchar   *property_name)
+{
+  g_return_if_fail (BST_IS_RACK_EDITOR (ed));
+  g_return_if_fail (BSW_IS_ITEM (item));
+  g_return_if_fail (property_name != NULL);
+
+  if (ed->pocket)
+    {
+      guint id = bsw_data_pocket_create_entry (ed->pocket);
+
+      bsw_data_pocket_set_object (ed->pocket, id, "property-object", item);
+      bsw_data_pocket_set_string (ed->pocket, id, "property-name", property_name);
+    }
+}
+
+static void
+update_covers (BstRackEditor *ed)
+{
+  if (ed->rtable->edit_mode)
+    {
+      while (ed->plate_list)
+	{
+	  GSList *slist = ed->plate_list;
+
+	  ed->plate_list = slist->next;
+	  gtk_widget_destroy (slist->data);
+	  g_slist_free_1 (slist);
+	}
+    }
+  else if (!ed->plate_list)
+    ed->plate_list = rack_cover_add_plates (ed->rtable);
+}
+
+static void
+update_items (BstRackEditor *ed)
+{
+  while (ed->item_list)
+    {
+      GSList *slist = ed->item_list;
+
+      ed->item_list = slist->next;
+      gtk_widget_destroy (slist->data);
+      g_slist_free_1 (slist);
+    }
+
+  bst_rack_table_set_edit_mode (ed->rtable, TRUE);
+  while (0)
+    {
+      GtkWidget *item = g_object_new (BST_TYPE_RACK_ITEM,
+				      "visible", TRUE,
+				      NULL);
+      bst_rack_child_set_info (item, 1, 2, 3, 4);
+      gtk_container_add (GTK_CONTAINER (ed->rtable), item);
+      ed->item_list = g_slist_prepend (ed->item_list, item);
+    }
+  bst_rack_table_set_edit_mode (ed->rtable, FALSE);
+}
+
+static void
+create_rack_item (BstRackEditor *ed,
+		  guint          entry_id)
+{
+  gboolean edit_mdoe = ed->rtable->edit_mode;
+  GtkWidget *item = g_object_new (BST_TYPE_RACK_ITEM,
+				  "visible", TRUE,
+				  NULL);
+
+  if (!edit_mdoe)
+    bst_rack_table_set_edit_mode (ed->rtable, TRUE);
+  bst_rack_child_set_info (item, 1, 2, 3, 4);
+  gtk_container_add (GTK_CONTAINER (ed->rtable), item);
+  bst_rack_item_set_property (BST_RACK_ITEM (item), ed->pocket, entry_id);
+  ed->item_list = g_slist_prepend (ed->item_list, item);
+  if (!edit_mdoe)
+    bst_rack_table_set_edit_mode (ed->rtable, FALSE);
+}
