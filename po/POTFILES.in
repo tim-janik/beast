@@ -43,7 +43,9 @@ beast-gtk/gxk/gxkparam-spinner.c
 beast-gtk/gxk/gxkparam-toggle.c
 beast-gtk/gxk/gxksimplelabel.c
 bse/bseamplifier.idl
+bse/bseautodoc.c
 bse/bsebiquadfilter.c
+bse/bsestandardosc.c
 bse/bsesuper.c
 data/beast.desktop.in
 data/bse.keys.in

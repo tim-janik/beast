@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-04 22:01+0100\n"
+"POT-Creation-Date: 2004-01-04 23:34+0100\n"
 "PO-Revision-Date: 2004-01-04 22:01+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -424,81 +424,81 @@ msgstr "Kommentar"
 msgid "Type"
 msgstr "Typ"
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:127
 msgid "BEAST Startup"
 msgstr "Beast-Startvorgang"
 
-#: beast-gtk/bstmain.c:141
+#: beast-gtk/bstmain.c:134
 msgid "Startup"
 msgstr "Startvorgang"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:139
 msgid "Objects"
 msgstr "Objekte"
 
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:143
 msgid "Language"
 msgstr "Sprache"
 
-#: beast-gtk/bstmain.c:161
+#: beast-gtk/bstmain.c:150
 msgid "RC File"
 msgstr "RC-Datei"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:168
+#: beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Begrüßungsbildschirm"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:180
+#: beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "BSE-Kern"
 
-#: beast-gtk/bstmain.c:199
+#: beast-gtk/bstmain.c:188
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:218
+#: beast-gtk/bstmain.c:207
 msgid "LADSPA Plugins"
 msgstr "LADSPA-Plugins"
 
-#: beast-gtk/bstmain.c:246
+#: beast-gtk/bstmain.c:235
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:264
+#: beast-gtk/bstmain.c:253
 msgid "Dialogs"
 msgstr "Dialoge"
 
-#: beast-gtk/bstmain.c:271
+#: beast-gtk/bstmain.c:260
 msgid "Loading..."
 msgstr "Ladevorgang..."
 
-#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
+#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
 #, c-format
 msgid "Loading \"%s\""
 msgstr "»%s« wird geladen"
 
-#: beast-gtk/bstmain.c:320
+#: beast-gtk/bstmain.c:309
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Projekt »%s« wird geladen"
 
-#: beast-gtk/bstmain.c:695
+#: beast-gtk/bstmain.c:684
 msgid "BEAST About"
 msgstr "Info zu BEAST"
 
-#: beast-gtk/bstmain.c:696
+#: beast-gtk/bstmain.c:685
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST-Version %s"
 
-#: beast-gtk/bstmain.c:697
+#: beast-gtk/bstmain.c:686
 msgid "Contributions made by:"
 msgstr "Mitwirkende:"
 
@@ -1713,8 +1713,8 @@ msgstr "Steuereingaben multiplizieren"
 
 #: bse/bseamplifier.idl:61
 msgid ""
-"Multiply the two control inputs with each other, rather than weighting them "
-"by balance"
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
 msgstr ""
 
 #: bse/bseamplifier.idl:64
@@ -1752,6 +1752,51 @@ msgstr "Master-Lautstärke"
 msgid "Output stage amplification"
 msgstr ""
 
+#: bse/bseautodoc.c:379 bse/bseautodoc.c:381
+msgid "BSE-Plugins"
+msgstr "BSE-Plugins"
+
+#: bse/bseautodoc.c:381
+msgid " Plugin Reference"
+msgstr "Plugin Referenz"
+
+#: bse/bseautodoc.c:393
+msgid "Authors:"
+msgstr "Autoren:"
+
+#: bse/bseautodoc.c:396
+msgid "License:"
+msgstr "Lizenz:"
+
+#: bse/bseautodoc.c:400
+msgid "Properties:"
+msgstr "Eigenschaften:"
+
+#: bse/bseautodoc.c:426 bse/bseautodoc.c:459 bse/bseautodoc.c:476
+msgid "Name:"
+msgstr "Name:"
+
+#: bse/bseautodoc.c:431 bse/bseautodoc.c:437
+msgid "Range:"
+msgstr "Bereich:"
+
+#: bse/bseautodoc.c:441 bse/bseautodoc.c:462 bse/bseautodoc.c:479
+msgid "Description:"
+msgstr "Beschreibung:"
+
+#: bse/bseautodoc.c:451
+msgid "Input Channels:"
+msgstr "Eingabekanäle:"
+
+#: bse/bseautodoc.c:458
+#, fuzzy
+msgid "(Joint Input)"
+msgstr "Steuereingang"
+
+#: bse/bseautodoc.c:469
+msgid "Output Channels:"
+msgstr "Ausgabekanäle:"
+
 #: bse/bsebiquadfilter.c:130
 msgid "Filter"
 msgstr "Filter"
@@ -1774,8 +1819,8 @@ msgstr "Frequenz zentrieren"
 msgid "Cutoff [Hz]"
 msgstr "Abfall [Hz]"
 
-#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:146
-#: plugins/bseiirfilter.c:156
+#: bse/bsebiquadfilter.c:146 bse/bsestandardosc.c:154
+#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr "Note"
 
@@ -1801,18 +1846,20 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
 #: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+#: bse/bsestandardosc.c:160 bse/bsestandardosc.c:166 bse/bsestandardosc.c:172
+#: bse/bsestandardosc.c:178
 msgid "Modulation"
 msgstr "Modulation"
 
-#: bse/bsebiquadfilter.c:167
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:163
 msgid "Strength of linear frequency modulation"
 msgstr "Ausprägung der linearen Frequenzmodulation"
 
-#: bse/bsebiquadfilter.c:173
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Exponentielle Frequenzmodulation statt linearer durchführen"
 
-#: bse/bsebiquadfilter.c:179
+#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Anzahl der von der exponentiellen Frequenzmodulation betroffenen Oktaven"
@@ -1836,7 +1883,7 @@ msgstr "Ungefiltertes Audio-Signal"
 msgid "Center Frequency Input"
 msgstr "Frequenzeingabe zentrieren"
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Frequency Modulation Input"
 msgstr "Frequenzmodulationseingabe"
 
@@ -1847,6 +1894,110 @@ msgstr "Modulationszuwachseingabe"
 #: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
 msgstr "Gefiltertes Audio-Signal"
+
+#: bse/bsestandardosc.c:111
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr ""
+
+#: bse/bsestandardosc.c:114
+msgid "/Modules/Audio Sources/Standard Oscillator"
+msgstr ""
+
+#: bse/bsestandardosc.c:137 bse/bsestandardosc.c:143
+msgid "Wave Form"
+msgstr "Wellenform"
+
+#: bse/bsestandardosc.c:139
+msgid "Wave"
+msgstr "Waveform"
+
+#: bse/bsestandardosc.c:139
+msgid "Oscillator wave form"
+msgstr "Oszillatorwellenform"
+
+#: bse/bsestandardosc.c:145
+msgid "Phase"
+msgstr "Phase"
+
+#: bse/bsestandardosc.c:148 bse/bsestandardosc.c:152 bse/bsestandardosc.c:155
+msgid "Base Frequency"
+msgstr "Grundfrequenz"
+
+#: bse/bsestandardosc.c:150
+msgid "Frequency"
+msgstr "Frequenz"
+
+#: bse/bsestandardosc.c:157
+msgid "Fine Tune"
+msgstr "Feineinstellung"
+
+#: bse/bsestandardosc.c:162
+msgid "Input Modulation [%]"
+msgstr "Eingangsmodulation [%]"
+
+#: bse/bsestandardosc.c:168
+msgid "Exponential FM"
+msgstr "Exponentielle FM"
+
+#: bse/bsestandardosc.c:174
+msgid "Octaves"
+msgstr "Oktaven"
+
+#: bse/bsestandardosc.c:180
+msgid "Self Modulation [%]"
+msgstr "Selbstmodulation [%]"
+
+#: bse/bsestandardosc.c:181
+msgid "Strength of self modulation"
+msgstr "Stärke der Selbstmodulation"
+
+#: bse/bsestandardosc.c:184 bse/bsestandardosc.c:191
+msgid "Pulse Modulation"
+msgstr "Pulsmodulation"
+
+#: bse/bsestandardosc.c:186
+msgid "Pulse Width"
+msgstr "Pulsbreite"
+
+#: bse/bsestandardosc.c:187
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr ""
+
+#: bse/bsestandardosc.c:193
+msgid "Pulse Modulation [%]"
+msgstr "Pulsbreitenmodulation [%]"
+
+#: bse/bsestandardosc.c:194
+msgid ""
+"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr ""
+"Stärke des Pulsbreitenmodulationseingabekanals (es muß Puls als Wellenform "
+"ausgewählt sein, damit diese Einstellung wirksam wird)"
+
+#: bse/bsestandardosc.c:199
+msgid "Oscillating Frequency Input"
+msgstr "Oszillationsfrequenzeingang"
+
+#: bse/bsestandardosc.c:203
+msgid "Pulse Width Modulation Input"
+msgstr "Pulsbreitenmodulationseingang"
+
+#: bse/bsestandardosc.c:205
+msgid "Syncronization Input"
+msgstr "Synchronisierungseingang"
+
+#: bse/bsestandardosc.c:207
+msgid "Oscillated Output"
+msgstr "Oscillationsausgabe"
+
+#: bse/bsestandardosc.c:209
+msgid "Syncronization Output"
+msgstr "Synchronisierungsausgabe"
 
 #: bse/bsesuper.c:101
 msgid "Author"
