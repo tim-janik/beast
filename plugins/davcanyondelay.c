@@ -25,12 +25,11 @@
 enum
 {
   PARAM_0,
-  PARAM_BASE_FREQ,
-  PARAM_BASE_NOTE,
-  PARAM_TRIGGER_VEL,
-  PARAM_TRIGGER_HIT,
-  PARAM_RES,
-  PARAM_RATIO
+  PARAM_LEFT_TO_RIGHT_TIME,
+  PARAM_LEFT_TO_RIGHT_FEEDBACK,
+  PARAM_RIGHT_TO_LEFT_TIME,
+  PARAM_RIGHT_TO_LEFT_FEEDBACK,
+  PARAM_FILTER
 };
 
 
@@ -51,7 +50,6 @@ static BseChunk*   dav_canyon_delay_calc_chunk       (BseSource            *sour
 						      guint                 ochannel_id);
 static void        dav_canyon_delay_reset            (BseSource            *source);
 static inline void dav_canyon_delay_update_locals    (DavCanyonDelay       *delay);
-static inline BseSampleValue clip                    (gint32 sample);
 
 
 /* --- variables --- */
@@ -73,9 +71,38 @@ static const BseTypeInfo type_info_canyon_delay = {
 
 
 /* --- functions --- */
+
+/* Calculate the half life rate given:
+ *  half - the length of the half life
+ *  rate - time divisor (usually the # calcs per second)
+ *
+ * Basically, find r given 1/2 = e^(-r*(half/rate))
+ */
+static inline gfloat
+calc_exponent (gfloat half, gfloat rate)
+{
+  /* ln (1 / 2) = ~-0.69314718056 */
+  return exp (-0.69314718056 / (half * rate));
+}
+
 static inline void
 dav_canyon_delay_update_locals (DavCanyonDelay *delay)
 {
+  delay->l_to_r_mag = delay->l_to_r_feedback / 100.0 * 128.0;
+  delay->l_to_r_invmag = 128 - abs (delay->l_to_r_mag);
+
+  delay->r_to_l_mag = delay->r_to_l_feedback / 100.0 * 128.0;
+  delay->r_to_l_invmag = 128 - abs (delay->r_to_l_mag);
+
+  delay->l_to_r_pos = delay->l_to_r_seconds * BSE_MIX_FREQ;
+  delay->r_to_l_pos = delay->r_to_l_seconds * BSE_MIX_FREQ;
+
+  /* The stuff inside the calc_exponent call (except the multiplicative  */
+  /* inverse) is a guesstimate.  The calculations seem to be right, tho. */
+  /* Compare to the FIR filter for a reference.                          */
+
+  delay->filter_invmag = calc_exponent (1.0 / (4.0 * PI * delay->filter_freq), BSE_MIX_FREQ) * 128.0;
+  delay->filter_mag = 128 - delay->filter_invmag;
 }
 
 static void
@@ -97,6 +124,36 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
   source_class->calc_chunk = dav_canyon_delay_calc_chunk;
   source_class->reset = dav_canyon_delay_reset;
 
+  bse_object_class_add_param (object_class, "Left to Right", PARAM_LEFT_TO_RIGHT_TIME,
+                              bse_param_spec_float ("left_to_right_time", "Delay (seconds)",
+                                                   "Set the time for the left to right delay",
+                                                    0.01, 0.99, 0.01, 0.09,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+
+  bse_object_class_add_param (object_class, "Left to Right", PARAM_LEFT_TO_RIGHT_FEEDBACK,
+                              bse_param_spec_float ("left_to_right_feedback", "Feedback [%]",
+                                                   "Set the feedback amount",
+                                                    -100.0, 100.0, 0.01, 60.0,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+
+  bse_object_class_add_param (object_class, "Right to Left", PARAM_RIGHT_TO_LEFT_TIME,
+                              bse_param_spec_float ("right_to_left_time", "Delay (seconds)",
+                                                    "Set the time for the right to left delay",
+                                                    0.01, 0.99, 0.01, 0.26,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+
+  bse_object_class_add_param (object_class, "Right to Left", PARAM_RIGHT_TO_LEFT_FEEDBACK,
+                              bse_param_spec_float ("right_to_left_feedback", "Feedback [%]",
+                                                    "Set the feedback amount",
+                                                    -100.0, 100.0, 0.01, -70.0,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+
+  bse_object_class_add_param (object_class, "IIR Low-Pass Filter", PARAM_FILTER,
+                              bse_param_spec_float ("base_freq", "Frequency",
+                                                    "Set the filter frequency",
+                                                    1.0, 5000.0, 1.0, 1000.0,
+                                                    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+
   ochannel_id = bse_source_class_add_ochannel (source_class, "stereo_out", "CanyonDelay Output", 2);
   g_assert (ochannel_id == DAV_CANYON_DELAY_OCHANNEL_STEREO);
 
@@ -115,6 +172,14 @@ dav_canyon_delay_init (DavCanyonDelay *delay)
   delay->data_l = NULL;
   delay->data_r = NULL;
 
+  delay->r_to_l_seconds = 0.26;
+  delay->l_to_r_seconds = 0.09;
+
+  delay->l_to_r_feedback = 60.0;
+  delay->r_to_l_feedback = -70.0;
+
+  delay->filter_freq = 1000.0;
+
   dav_canyon_delay_update_locals (delay);
 }
 
@@ -125,10 +190,12 @@ dav_canyon_delay_do_shutdown (BseObject *object)
  
   delay = DAV_CANYON_DELAY (object);
 
-  g_free (delay->data_l);
+  if (delay->data_l != NULL)
+    g_free (delay->data_l);
   delay->data_l = NULL;
 
-  g_free (delay->data_r);
+  if (delay->data_r != NULL)
+    g_free (delay->data_r);
   delay->data_r = NULL;
 
   /* chain parent class' shutdown handler */
@@ -142,6 +209,31 @@ dav_canyon_delay_set_param (DavCanyonDelay *delay,
 {
   switch (param_id)
     {
+    case PARAM_LEFT_TO_RIGHT_TIME:
+      delay->l_to_r_seconds = param->value.v_float;
+      dav_canyon_delay_update_locals (delay);
+      break;
+
+    case PARAM_LEFT_TO_RIGHT_FEEDBACK:
+      delay->l_to_r_feedback = param->value.v_float;
+      dav_canyon_delay_update_locals (delay);
+      break;
+
+    case PARAM_RIGHT_TO_LEFT_TIME:
+      delay->r_to_l_seconds = param->value.v_float;
+      dav_canyon_delay_update_locals (delay);
+      break;
+
+    case PARAM_RIGHT_TO_LEFT_FEEDBACK:
+      delay->r_to_l_feedback = param->value.v_float;
+      dav_canyon_delay_update_locals (delay);
+      break;
+
+    case PARAM_FILTER:
+      delay->filter_freq = param->value.v_float;
+      dav_canyon_delay_update_locals (delay);
+      break;
+
     default:
       BSE_UNHANDLED_PARAM_ID (delay, param, param_id);
       break;
@@ -155,6 +247,26 @@ dav_canyon_delay_get_param (DavCanyonDelay *delay,
 {
   switch (param_id)
     {
+    case PARAM_LEFT_TO_RIGHT_TIME:
+      param->value.v_float = delay->l_to_r_seconds;
+      break;
+
+    case PARAM_LEFT_TO_RIGHT_FEEDBACK:
+      param->value.v_float = delay->l_to_r_feedback;
+      break;
+
+    case PARAM_RIGHT_TO_LEFT_TIME:
+      param->value.v_float = delay->r_to_l_seconds;
+      break;
+
+    case PARAM_RIGHT_TO_LEFT_FEEDBACK:
+      param->value.v_float = delay->r_to_l_feedback;
+      break;
+
+    case PARAM_FILTER:
+      param->value.v_float = delay->filter_freq;
+      break;
+
     default:
       BSE_UNHANDLED_PARAM_ID (delay, param, param_id);
       break;
@@ -170,23 +282,18 @@ dav_canyon_delay_prepare (BseSource *source,
 
   dav_canyon_delay_update_locals (delay);
 
-  delay->rate = BSE_MIX_FREQ;
-
   /* Free tables */
-  g_free (delay->data_l);
-  delay->data_l = NULL;
+  if (delay->data_l != NULL)
+    g_free (delay->data_l);
 
-  g_free (delay->data_r);
-  delay->data_r = NULL;
+  if (delay->data_r != NULL)
+    g_free (delay->data_r);
 
-  delay->datasize = (12000 * delay->rate) / 44100;
+  delay->datasize = BSE_MIX_FREQ;
   delay->data_l = g_new (BseSampleValue, delay->datasize);
   delay->data_r = g_new (BseSampleValue, delay->datasize);
-  delay->sum_l = 0;
-  delay->sum_r = 0;
-
-  delay->past1 = (11309 * delay->rate) / 44100;
-  delay->past2 = (4211 * delay->rate) / 44100;
+  delay->accum_l = 0;
+  delay->accum_r = 0;
 
   delay->pos = 0;
 
@@ -202,18 +309,6 @@ dav_canyon_delay_prepare (BseSource *source,
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
 }
 
-static inline BseSampleValue
-clip (gint32 sample)
-{
-  if (sample > BSE_MAX_SAMPLE_VALUE_d)
-    return BSE_MAX_SAMPLE_VALUE_d;
-  else
-    if (sample < BSE_MIN_SAMPLE_VALUE_d)
-      return BSE_MIN_SAMPLE_VALUE_d;
-
-  return sample;
-}
-
 static BseChunk*
 dav_canyon_delay_calc_chunk (BseSource *source,
 			     guint      ochannel_id)
@@ -225,12 +320,14 @@ dav_canyon_delay_calc_chunk (BseSource *source,
   BseSampleValue *inputs;
   gint i;
   gint pos1, pos2;
-  gint32 sum_l, sum_r;
+  BseMixValue accum_l, accum_r;
+
+  g_return_val_if_fail (ochannel_id == DAV_CANYON_DELAY_OCHANNEL_STEREO, NULL);
 
   hunk = bse_hunk_alloc (2);
   input = bse_source_get_input (source, DAV_CANYON_DELAY_ICHANNEL_MULTI);
 
-  if (input!=NULL)
+  if (input != NULL)
     {
       input_chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
       inputs = input_chunk->hunk;
@@ -245,52 +342,54 @@ dav_canyon_delay_calc_chunk (BseSource *source,
     {
       if (inputs == NULL)  
         {
-          delay->data_l[delay->pos] = 0;
-          delay->data_r[delay->pos] = 0;
+          accum_l = 0;
+          accum_r = 0;
         }
       else if (input_chunk->n_tracks == 1)
         {
-          delay->data_l[delay->pos] = inputs[i];
-          delay->data_r[delay->pos] = inputs[i];
+          accum_l = inputs[i];
+          accum_r = inputs[i];
         }
       else
         {
-          delay->data_l[delay->pos] = inputs[(i << 1)];
-          delay->data_r[delay->pos] = inputs[(i << 1) + 1];
+          accum_l = inputs[i << 1];
+          accum_r = inputs[(i << 1) + 1];
         }
 
-      pos1 = delay->pos - delay->past1 + delay->datasize;
-      while (pos1 > delay->datasize)
+      pos1 = delay->pos - delay->r_to_l_pos + delay->datasize;
+      while (pos1 >= delay->datasize)
         pos1 -= delay->datasize;
 
-      pos2 = delay->pos - delay->past2 + delay->datasize;
-      while (pos2 > delay->datasize)
+      pos2 = delay->pos - delay->l_to_r_pos + delay->datasize;
+      while (pos2 >= delay->datasize)
         pos2 -= delay->datasize;
 
-      sum_l = delay->data_l[delay->pos] + ((gint32) delay->data_r[pos1]) * -7 / 10;
-      sum_r = delay->data_r[delay->pos] + ((gint32) delay->data_l[pos2]) * 6 / 10;
+      /* Mix channels with past samples. */
+      accum_l = (accum_l * delay->r_to_l_invmag + ((BseMixValue) delay->data_r[pos1]) * delay->r_to_l_mag) >> 7;
+      accum_r = (accum_r * delay->l_to_r_invmag + ((BseMixValue) delay->data_l[pos2]) * delay->l_to_r_mag) >> 7;
 
-      delay->data_l[delay->pos] = clip (sum_l);
-      delay->data_r[delay->pos] = clip (sum_r);
+      /* Low-pass filter output. */
+      accum_l = BSE_CLIP_SAMPLE_VALUE ((((BseMixValue) delay->accum_l) * delay->filter_invmag + accum_l * delay->filter_mag) >> 7);
+      accum_r = BSE_CLIP_SAMPLE_VALUE ((((BseMixValue) delay->accum_r) * delay->filter_invmag + accum_r * delay->filter_mag) >> 7);
 
-      sum_l = (((gint32) delay->sum_l) * 7 / 10) + delay->data_l[delay->pos] * 3 / 10;
-      sum_r = (((gint32) delay->sum_r) * 7 / 10) + delay->data_r[delay->pos] * 3 / 10;
+      /* Store IIR samples. */
+      delay->accum_l = accum_l;
+      delay->accum_r = accum_r;
 
-      delay->sum_l = clip (sum_l);
-      delay->sum_r = clip (sum_r);
+      /* Store samples in arrays. */
+      delay->data_l[delay->pos] = accum_l;
+      delay->data_r[delay->pos] = accum_r;
 
-      delay->data_l[delay->pos] = delay->sum_l;
-      delay->data_r[delay->pos] = delay->sum_r;
-
-      hunk [(i << 1)] = delay->sum_l;
-      hunk [(i << 1) + 1] = delay->sum_r;
+      /* Write output. */
+      hunk [(i << 1)] = accum_l;
+      hunk [(i << 1) + 1] = accum_r;
 
       delay->pos++;
-      if (delay->pos > delay->datasize)
+      if (delay->pos >= delay->datasize)
         delay->pos -= delay->datasize;
     }
   
-  if (input_chunk!=NULL)
+  if (input_chunk != NULL)
     bse_chunk_unref (input_chunk);
 
   return bse_chunk_new_orphan (2, hunk);

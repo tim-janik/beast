@@ -1,3 +1,15 @@
+Tue Feb 22 07:53:04 2000  Tim Janik  <timj@gtk.org>
+
+	* davcanyondelay.[hc]: New version from David A. Bartold
+	<foxx@mail.utexas.edu>. Added time adjustments to the module and
+	updated it so one can set the feedback % for each "cross-over".
+	Also, the low-pass filter cutoff frequency is adjustable from the GUI.
+	The code's a bit cleaner too, the calc_chunk() loop now has comments.
+
+	* davorgan.c: new version from David A. Bartold to remove a division
+	operation in the calc_chunk inner loop, and to increase the
+	frequency grainularity to 1/256 hz steps.
+
 Tue Feb 22 07:26:26 2000  Tim Janik  <timj@gtk.org>
 
 	* fldbsepattern.c: removed my test cruft from this file to leave room

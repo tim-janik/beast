@@ -42,15 +42,29 @@ struct _DavCanyonDelay
 {
   BseSource parent_object;
   
-  gint rate;
   BseSampleValue *data_l;
   BseSampleValue *data_r;
-  BseSampleValue sum_l;
-  BseSampleValue sum_r;
-  gint datasize;
-  gint past1;
-  gint past2;
-  gint pos;
+  BseSampleValue accum_l;
+  BseSampleValue accum_r;
+
+  gfloat l_to_r_seconds;
+  gfloat r_to_l_seconds;
+  gint32 l_to_r_pos;
+  gint32 r_to_l_pos;
+
+  gfloat l_to_r_feedback;
+  gfloat r_to_l_feedback;
+  gint32 l_to_r_mag;
+  gint32 r_to_l_mag;
+  gint32 l_to_r_invmag;
+  gint32 r_to_l_invmag;
+
+  gfloat filter_freq;
+  gint32 filter_mag;
+  gint32 filter_invmag;
+
+  gint32 datasize;
+  gint32 pos;
 };
 
 struct _DavCanyonDelayClass

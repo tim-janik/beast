@@ -107,7 +107,7 @@ dav_organ_class_init (DavOrganClass *class)
   source_class->reset = dav_organ_reset;
   
   bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
-			      bse_param_spec_float( "base_freq", "Frequency", NULL,
+			      bse_param_spec_float ("base_freq", "Frequency", NULL,
 						    BSE_MIN_OSC_FREQ_d,
 						    BSE_MAX_OSC_FREQ_d,
 						    10.0,
@@ -288,27 +288,27 @@ dav_organ_class_ref_tables (DavOrganClass *class)
   /* Initialize sine table. */
   class->sine_table = g_new (BseSampleValue, rate);
   for (i = 0; i < rate; i++)
-    class->sine_table[i] = sin ((i / rate) * 2.0 * PI) * BSE_MAX_SAMPLE_VALUE_f;
+    class->sine_table[i] = sin ((i / rate) * 2.0 * PI) * BSE_MAX_SAMPLE_VALUE_f / 6.0;
   
   /* Initialize triangle table. */
   class->triangle_table = g_new (BseSampleValue, rate);
   for (i = 0; i < rate / 2; i++)
-    class->triangle_table[i] = 4 * BSE_MAX_SAMPLE_VALUE_f / rate * i - BSE_MAX_SAMPLE_VALUE_f;
+    class->triangle_table[i] = (4 * BSE_MAX_SAMPLE_VALUE_f / rate * i - BSE_MAX_SAMPLE_VALUE_f) / 6.0;
   for (; i < rate; i++)
-    class->triangle_table[i] = 4 * BSE_MAX_SAMPLE_VALUE_f / rate * (rate / 2 - i - 1) - BSE_MAX_SAMPLE_VALUE_f;
+    class->triangle_table[i] = (4 * BSE_MAX_SAMPLE_VALUE_f / rate * (rate / 2 - i - 1) - BSE_MAX_SAMPLE_VALUE_f) / 6.0;
   
   /* Initialize pulse table. */
   class->pulse_table = g_new (BseSampleValue, rate);
   for (i = 0; i < slope; i++)
-    class->pulse_table[i] = -i * BSE_MAX_SAMPLE_VALUE_f / slope;
+    class->pulse_table[i] = (-i * BSE_MAX_SAMPLE_VALUE_f / slope) / 6.0;
   for (; i < half - slope; i++)
-    class->pulse_table[i] = -BSE_MAX_SAMPLE_VALUE_f;
+    class->pulse_table[i] = -BSE_MAX_SAMPLE_VALUE_f / 6.0;
   for (; i < half + slope; i++)
-    class->pulse_table[i] = (i - half) * BSE_MAX_SAMPLE_VALUE_f / slope;
+    class->pulse_table[i] = ((i - half) * BSE_MAX_SAMPLE_VALUE_f / slope) / 6.0;
   for (; i < rate - slope; i++)
-    class->pulse_table[i] = BSE_MAX_SAMPLE_VALUE_f;
+    class->pulse_table[i] = BSE_MAX_SAMPLE_VALUE_f / 6.0;
   for (; i < rate; i++)
-    class->pulse_table[i] = (rate - i) * BSE_MAX_SAMPLE_VALUE_f / slope;
+    class->pulse_table[i] = ((rate - i) * BSE_MAX_SAMPLE_VALUE_f / slope) / 6.0;
 }
 
 static void
@@ -331,15 +331,15 @@ dav_organ_class_unref_tables (DavOrganClass *class)
 
 static inline BseSampleValue
 table_pos (BseSampleValue *table,
-	   guint           freq_2,
-	   guint           mix_freq_2,
+	   guint           freq_256,
+	   guint           mix_freq_256,
 	   guint32        *accum)
 {
-  *accum += freq_2;
-  while (*accum >= mix_freq_2)
-    *accum -= mix_freq_2;
+  *accum += freq_256;
+  while (*accum >= mix_freq_256)
+    *accum -= mix_freq_256;
   
-  return table[*accum >> 1];
+  return table[*accum >> 8];
 }
 
 static void
@@ -362,7 +362,9 @@ dav_organ_calc_chunk (BseSource *source,
   DavOrganClass *class = DAV_ORGAN_GET_CLASS (source);
   BseSampleValue *sine_table, *flute_table, *reed_table;
   BseSampleValue *hunk;
-  guint freq_2, mix_freq_2;
+  guint freq_256, mix_freq_256;
+  guint freq_256_harm0, freq_256_harm1, freq_256_harm2;
+  guint freq_256_harm3, freq_256_harm4, freq_256_harm5;
   guint i;
   
   g_return_val_if_fail (ochannel_id == DAV_ORGAN_OCHANNEL_MONO, NULL);
@@ -372,35 +374,52 @@ dav_organ_calc_chunk (BseSource *source,
   sine_table = class->sine_table;
   reed_table = organ->reed ? class->pulse_table : sine_table;
   flute_table = organ->flute ? class->triangle_table : sine_table;
-  freq_2 = organ->freq * 2;
-  mix_freq_2 = BSE_MIX_FREQ * 2;
+  freq_256 = organ->freq * 256;
+  mix_freq_256 = BSE_MIX_FREQ * 256;
   
+  freq_256_harm0 = freq_256 / 2;
+  freq_256_harm1 = freq_256;
+
   if (organ->brass)
-    for (i = 0; i < BSE_TRACK_LENGTH; i++)
-      {
-	BseMixValue accum;
+    {
+      freq_256_harm2 = freq_256 * 2;
+      freq_256_harm3 = freq_256_harm2 * 2;
+      freq_256_harm4 = freq_256_harm3 * 2;
+      freq_256_harm5 = freq_256_harm4 * 2;
 
-	accum = table_pos (sine_table, freq_2, mix_freq_2, &organ->harm1_accum) * organ->harm1;
-	accum += table_pos (sine_table, freq_2 / 2, mix_freq_2, &organ->harm0_accum) * organ->harm0;
-	accum += table_pos (reed_table, freq_2 * 2, mix_freq_2, &organ->harm2_accum) * organ->harm2;
-	accum += table_pos (sine_table, freq_2 * 4, mix_freq_2, &organ->harm3_accum) * organ->harm3;
-	accum += table_pos (flute_table, freq_2 * 8, mix_freq_2, &organ->harm4_accum) * organ->harm4;
-	accum += table_pos (flute_table, freq_2 * 16, mix_freq_2, &organ->harm5_accum) * organ->harm5;
-	hunk[i] = accum / (6 * 128);
-      }
+      for (i = 0; i < BSE_TRACK_LENGTH; i++)
+	{
+	  BseMixValue accum;
+
+	  accum = table_pos (sine_table, freq_256_harm0, mix_freq_256, &organ->harm0_accum) * organ->harm0;
+	  accum += table_pos (sine_table, freq_256_harm1, mix_freq_256, &organ->harm1_accum) * organ->harm1;
+	  accum += table_pos (reed_table, freq_256_harm2, mix_freq_256, &organ->harm2_accum) * organ->harm2;
+	  accum += table_pos (sine_table, freq_256_harm3, mix_freq_256, &organ->harm3_accum) * organ->harm3;
+	  accum += table_pos (flute_table, freq_256_harm4, mix_freq_256, &organ->harm4_accum) * organ->harm4;
+	  accum += table_pos (flute_table, freq_256_harm5, mix_freq_256, &organ->harm5_accum) * organ->harm5;
+	  hunk[i] = accum >> 7;
+	}
+    }
   else
-    for (i = 0; i < BSE_TRACK_LENGTH; i++)
-      {
-	BseMixValue accum;
+    {
+      freq_256_harm2 = freq_256 * 3 / 2;
+      freq_256_harm3 = freq_256 * 2;
+      freq_256_harm4 = freq_256 * 3;
+      freq_256_harm5 = freq_256_harm3 * 2;
 
-	accum = table_pos (sine_table, freq_2, mix_freq_2, &organ->harm1_accum) * organ->harm1;
-	accum += table_pos (sine_table, freq_2 / 2, mix_freq_2, &organ->harm0_accum) * organ->harm0;
-	accum += table_pos (sine_table, freq_2 * 3 / 2, mix_freq_2, &organ->harm2_accum) * organ->harm2;
-	accum += table_pos (reed_table, freq_2 * 2, mix_freq_2, &organ->harm3_accum) * organ->harm3;
-	accum += table_pos (sine_table, freq_2 * 3, mix_freq_2, &organ->harm4_accum) * organ->harm4;
-	accum += table_pos (flute_table, freq_2 * 4, mix_freq_2, &organ->harm5_accum) * organ->harm5;
-	hunk[i] = accum / (6 * 128);
-      }
+      for (i = 0; i < BSE_TRACK_LENGTH; i++)
+	{
+	  BseMixValue accum;
+
+	  accum = table_pos (sine_table, freq_256_harm0, mix_freq_256, &organ->harm0_accum) * organ->harm0;
+	  accum += table_pos (sine_table, freq_256_harm1, mix_freq_256, &organ->harm1_accum) * organ->harm1;
+	  accum += table_pos (sine_table, freq_256_harm2, mix_freq_256, &organ->harm2_accum) * organ->harm2;
+	  accum += table_pos (reed_table, freq_256_harm3, mix_freq_256, &organ->harm3_accum) * organ->harm3;
+	  accum += table_pos (sine_table, freq_256_harm4, mix_freq_256, &organ->harm4_accum) * organ->harm4;
+	  accum += table_pos (flute_table, freq_256_harm5, mix_freq_256, &organ->harm5_accum) * organ->harm5;
+	  hunk[i] = accum >> 7;
+	}
+    }
 
   return bse_chunk_new_orphan (1, hunk);
 }
