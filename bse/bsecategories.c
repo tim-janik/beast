@@ -192,7 +192,8 @@ check_type (GType type)
 
 void
 bse_categories_register (const gchar  *category,
-			 GType         type,
+                         const gchar  *i18n_category,
+                         GType         type,
                          const guint8 *pixstream)
 {
   CEntry *centry;
@@ -212,28 +213,14 @@ bse_categories_register (const gchar  *category,
 }
 
 void
-bse_categories_register_icon (const gchar      *category,
-			      GType             type,
-			      const BsePixdata *pixdata)
+bse_categories_register_stock_module (const gchar      *untranslated_category_trunk,
+                                      GType             type,
+                                      const guint8     *pixstream)
 {
-  CEntry *centry;
-  
-  g_return_if_fail (category != NULL);
-  g_return_if_fail (pixdata != NULL);
-  
-  centry = centry_new (G_GNUC_PRETTY_FUNCTION, category, type);
-  check_type (type);
-  if (centry)
-    {
-      centry->type = type;
-      if (pixdata->type && pixdata->width && pixdata->height && pixdata->encoded_pix_data)
-	{
-	  centry->icon = bse_icon_from_pixdata (pixdata); /* static reference */
-	  // bsw_icon_ref_static (centry->icon);
-	}
-      else
-	centry->icon = NULL;
-    }
+  g_return_if_fail (untranslated_category_trunk != NULL);
+  const gchar *category = sfi_category_concat ("/Modules", untranslated_category_trunk);
+  const gchar *i18n_category = sfi_category_concat ("/Modules", _(untranslated_category_trunk));
+  bse_categories_register (category, i18n_category, type, pixstream);
 }
 
 static gint

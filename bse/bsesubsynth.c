@@ -22,7 +22,6 @@
 #include "bsecsynth.h"
 #include "bseproject.h"
 #include "bsemidireceiver.h"
-#include "./icons/subsynth.c"
 #include "gslengine.h"
 
 #include <string.h>
@@ -89,17 +88,13 @@ BSE_BUILTIN_TYPE (BseSubSynth)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_sub_synth_init,
   };
-  static const BsePixdata pixdata = {
-    SUBSYNTH_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    SUBSYNTH_IMAGE_WIDTH, SUBSYNTH_IMAGE_HEIGHT,
-    SUBSYNTH_IMAGE_RLE_PIXEL_DATA,
-  };
+#include "./icons/virtual-synth.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseSubSynth",
                                          "This module encapsulates whole synthesizer networks, by "
                                          "interfacing to/from their virtual input and output ports",
                                          &sub_synth_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Virtual Sub Synth", type, &pixdata);
+  bse_categories_register_stock_module (N_("Virtualization/Virtual Sub Synth"), type, virtual_synth_pixstream);
   return type;
 }
 

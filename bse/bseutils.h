@@ -64,7 +64,6 @@ void    bse_balance_set         (double  balance,
 
 
 /* --- icons --- */
-BseIcon* bse_icon_from_pixdata   (const BsePixdata *pixdata);
 BseIcon* bse_icon_from_pixstream (const guint8     *pixstream);
 
 

@@ -196,14 +196,20 @@ while (<>) {
 	    die "$file:$.: Invalid BODY() directive\n";
 	}
 
+	$externs .= "static void\n";
+	$externs .= "__enode_". ncanon ($proc_name) ."__fill_strings (BseExportStrings *es)\n";
+        $externs .= "{\n";
+	$externs .= "  es->blurb = ". get_variable ("HELP", "NULL") .";\n";
+	$externs .= "  es->authors = ". get_variable ("AUTHORS", "NULL") .";\n";
+	$externs .= "  es->license = ". get_variable ("LICENSE", "NULL") .";\n";
+        $externs .= "}\n";
 	$externs .= "static BseExportNodeProc __enode_". ncanon ($proc_name) ." = {\n";
 	$externs .= "  { $last_node, BSE_EXPORT_NODE_PROC,\n";
 	$externs .= "    $proc_method, \n";
 	$externs .= "    ". get_variable ("OPTIONS", "NULL") .",\n";
 	$externs .= "    $proc_category,\n";
-	$externs .= "    ". get_variable ("HELP", "NULL") .",\n";
-	$externs .= "    ". get_variable ("AUTHORS", "NULL") .",\n";
-	$externs .= "    ". get_variable ("LICENSE", "NULL") .",\n";
+	$externs .= "    NULL,\n"; # pixmaps
+	$externs .= "    __enode_". ncanon ($proc_name) ."__fill_strings,\n";
         $externs .= "  },\n";
 	$externs .= "  0, ";                               # private_id
 	$externs .= ncanon ($proc_name) . "_setup, ";      # init

@@ -122,11 +122,14 @@ EnumValue (int         int_value,
       { NULL, BSE_EXPORT_NODE_RECORD, NULL, },                          \
     };                                                                  \
     if (!bnode.node.name) {                                             \
+      struct Sub { static void fill_strings (BseExportStrings *es) {    \
+        es->blurb = RecordType::blurb();                                \
+        es->authors = RecordType::authors();                            \
+        es->license = RecordType::license();                            \
+      } };                                                              \
       bnode.node.name = RecordType::type_name();                        \
       bnode.node.options = RecordType::options();                       \
-      bnode.node.authors = RecordType::authors();                       \
-      bnode.node.license = RecordType::license();                       \
-      bnode.node.blurb = RecordType::blurb();                           \
+      bnode.node.fill_strings = Sub::fill_strings;                      \
       bnode.copy = Sfi::RecordHandle< RecordType >::boxed_copy;         \
       bnode.free = Sfi::RecordHandle< RecordType >::boxed_free;         \
       bnode.seqrec2boxed = ::Sfi::cxx_boxed_from_rec<RecordType>;       \
@@ -145,7 +148,7 @@ EnumValue (int         int_value,
 /* --- sequence registration --- */
 /* sequence registration works similar to record registration */
 #define BSE_CXX_DECLARED_SEQUENCE_TYPE(NameSpace,SequenceType)                  \
-  (::NameSpace::bse_type_keeper__1##SequenceType.get_type ())
+  (::NameSpace::bse_type_keeper__2##SequenceType.get_type ())
 #define BSE_CXX_DECLARE_SEQUENCE(SequenceType)                                  \
   template<class E> static BseExportNode* bse_export_node ();                   \
   template<> static BseExportNode*                                              \
@@ -155,11 +158,14 @@ EnumValue (int         int_value,
       { NULL, BSE_EXPORT_NODE_SEQUENCE, NULL, },                                \
     };                                                                          \
     if (!bnode.node.name) {                                                     \
+      struct Sub { static void fill_strings (BseExportStrings *es) {            \
+        es->blurb = SequenceType::blurb();                                      \
+        es->authors = SequenceType::authors();                                  \
+        es->license = SequenceType::license();                                  \
+      } };                                                                      \
       bnode.node.name = SequenceType::type_name();                              \
       bnode.node.options = SequenceType::options();                             \
-      bnode.node.authors = SequenceType::authors();                             \
-      bnode.node.license = SequenceType::license();                             \
-      bnode.node.blurb = SequenceType::blurb();                                 \
+      bnode.node.fill_strings = Sub::fill_strings;                              \
       bnode.copy = SequenceType::boxed_copy;                                    \
       bnode.free = SequenceType::boxed_free;                                    \
       bnode.seqrec2boxed = ::Sfi::cxx_boxed_from_seq<SequenceType>;             \
@@ -168,10 +174,10 @@ EnumValue (int         int_value,
     }                                                                           \
     return &bnode.node;                                                         \
   }                                                                             \
-  extern ::Bse::ExportTypeKeeper bse_type_keeper__1##SequenceType;
+  extern ::Bse::ExportTypeKeeper bse_type_keeper__2##SequenceType;
 #define BSE_CXX_REGISTER_SEQUENCE(SequenceType)                                 \
   ::Bse::ExportTypeKeeper                                                       \
-         bse_type_keeper__1##SequenceType (bse_export_node<SequenceType>,       \
+         bse_type_keeper__2##SequenceType (bse_export_node<SequenceType>,       \
                                            &BSE_CXX_EXPORT_IDENTITY);
 
 
@@ -191,13 +197,17 @@ EnumValue (int         int_value,
       0, Procedure::ProcType::init, Procedure::ProcType::marshal,               \
     };                                                                          \
     if (!pnode.node.name) {                                                     \
+      struct Sub { static void fill_strings (BseExportStrings *es) {            \
+        es->blurb = Procedure::ProcType::blurb();                               \
+        es->authors = Procedure::ProcType::authors();                           \
+        es->license = Procedure::ProcType::license();                           \
+        es->i18n_category = Procedure::ProcType::i18n_category();               \
+      } };                                                                      \
       pnode.node.name = Procedure::ProcType::type_name();                       \
       pnode.node.options = Procedure::ProcType::options();                      \
       pnode.node.category = Procedure::ProcType::category();                    \
-      pnode.node.authors = Procedure::ProcType::authors();                      \
-      pnode.node.license = Procedure::ProcType::license();                      \
       pnode.node.pixstream = Procedure::ProcType::pixstream();                  \
-      pnode.node.blurb = Procedure::ProcType::blurb();                          \
+      pnode.node.fill_strings = Sub::fill_strings;                              \
     }                                                                           \
     return &pnode.node;                                                         \
   }                                                                             \
@@ -236,13 +246,17 @@ EnumValue (int         int_value,
       BSE_CXX_SYM (Effect, instance_init),                                      \
     };                                                                          \
     if (!cnode.node.name) {                                                     \
+      struct Sub { static void fill_strings (BseExportStrings *es) {            \
+        es->blurb = Effect::blurb();                                            \
+        es->authors = Effect::authors();                                        \
+        es->license = Effect::license();                                        \
+        es->i18n_category = Effect::i18n_category();                            \
+      } };                                                                      \
       cnode.node.name = Effect::type_name();                                    \
       cnode.node.options = Effect::options();                                   \
       cnode.node.category = Effect::category();                                 \
-      cnode.node.authors = Effect::authors();                                   \
-      cnode.node.license = Effect::license();                                   \
       cnode.node.pixstream = Effect::pixstream();                               \
-      cnode.node.blurb = Effect::blurb();                                       \
+      cnode.node.fill_strings = Sub::fill_strings;                              \
     }                                                                           \
     return &cnode.node;                                                         \
   }                                                                             \

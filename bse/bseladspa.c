@@ -280,7 +280,7 @@ ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
 			      prefix ? "/" : "",
 			      string, NULL);
 	  g_free (string);
-	  bse_categories_register (name, self->types[j].type, NULL);
+	  bse_categories_register (name, NULL, self->types[j].type, NULL);
 	  g_free (name);
 	}
       else

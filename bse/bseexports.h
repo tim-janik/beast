@@ -33,17 +33,25 @@ typedef enum {
   BSE_EXPORT_NODE_CLASS,
   BSE_EXPORT_NODE_PROC
 } BseExportNodeType;
-struct _BseExportNode {
-  BseExportNode    *next;
-  BseExportNodeType ntype;
-  const char       *name;
-  const char       *options;
-  const char       *category;
+typedef struct {
+  /* strings which need to be looked up from catalogs after
+   * initialization (usually i18n strings).
+   */
   const char       *blurb;
   const char       *authors;
   const char       *license;
-  const guint8     *pixstream;
-  GType             type;
+  const char       *i18n_category;
+} BseExportStrings;
+typedef void (*BseExportStringsFunc) (BseExportStrings *strings);
+struct _BseExportNode {
+  BseExportNode       *next;
+  BseExportNodeType    ntype;
+  const char          *name;
+  const char          *options;
+  const char          *category;
+  const guint8        *pixstream;
+  BseExportStringsFunc fill_strings;
+  GType                type;
 };
 typedef struct {
   BseExportNode node;

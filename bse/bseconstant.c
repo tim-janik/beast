@@ -59,7 +59,6 @@ static gpointer	       parent_class = NULL;
 
 
 /* --- functions --- */
-#include "./icons/const.c"
 BSE_BUILTIN_TYPE (BseConstant)
 {
   static const GTypeInfo type_info = {
@@ -75,18 +74,14 @@ BSE_BUILTIN_TYPE (BseConstant)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_constant_init,
   };
-  BsePixdata icon = {
-    CONST_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    CONST_IMAGE_WIDTH, CONST_IMAGE_HEIGHT,
-    CONST_IMAGE_RLE_PIXEL_DATA,
-  };
+#include "./icons/const.c"
   GType type_id;
   
   type_id = bse_type_register_static (BSE_TYPE_SOURCE,
 				      "BseConstant",
 				      "This module provides constant signal outputs",
 				      &type_info);
-  bse_categories_register_icon ("/Modules/Other Sources/Constant", type_id, &icon);
+  bse_categories_register_stock_module (N_("Other Sources/Constant"), type_id, const_pixstream);
   
   return type_id;
 }

@@ -44,7 +44,6 @@ static gpointer		 parent_class = NULL;
 
 
 /* --- functions --- */
-#include "./icons/keyboard.c"
 BSE_BUILTIN_TYPE (BseInstrumentInput)
 {
   static const GTypeInfo type_info = {
@@ -60,17 +59,13 @@ BSE_BUILTIN_TYPE (BseInstrumentInput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_instrument_input_init,
   };
-  static const BsePixdata pixdata = {
-    KEYBOARD_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    KEYBOARD_IMAGE_WIDTH, KEYBOARD_IMAGE_HEIGHT,
-    KEYBOARD_IMAGE_RLE_PIXEL_DATA,
-  };
+#include "./icons/keyboard.c"
   GType type = bse_type_register_static (BSE_TYPE_SUB_IPORT,
                                          "BseInstrumentInput",
                                          "Virtual input module for synthesis networks which "
                                          "implement instruments",
                                          &type_info);
-  bse_categories_register_icon ("/Modules/Input & Output/Instrument Voice Input", type, &pixdata);
+  bse_categories_register_stock_module (N_("Input & Output/Instrument Voice Input"), type, keyboard_pixstream);
   return type;
 }
 

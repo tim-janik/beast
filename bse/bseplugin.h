@@ -69,18 +69,26 @@ BsePlugin*	bse_plugin_lookup		(const gchar	*name);
 
 
 /* --- registration macros --- */
-#define BSE_DEFINE_EXPORTS(PluginName)                                                  \
-  static BseExportIdentity __bse_export_identity =                                      \
-                             BSE_EXPORT_IDENTITY (BSE_PLUGIN_NAME, __enode_chain_head); \
+#define BSE_DEFINE_EXPORTS(PluginName)                                                          \
+  static BseExportIdentity __bse_export_identity =                                              \
+                             BSE_EXPORT_IDENTITY (BSE_PLUGIN_NAME, __enode_chain_head);         \
   BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__bse_export_identity
-#define BSE_REGISTER_OBJECT_P(PREV,ObjectType,ParentType,category,blurb,pix,cinit,cfina,iinit) \
-  static BseExportNodeClass __enode_ ## ObjectType = {                                  \
-    { PREV, BSE_EXPORT_NODE_CLASS, #ObjectType, NULL, category, blurb, NULL, NULL, pix }, \
-    #ParentType, sizeof (ObjectType ## Class), (GClassInitFunc) cinit,                  \
-    (GClassFinalizeFunc) cfina, sizeof (ObjectType), (GInstanceInitFunc) iinit,         \
-  };                                                                                    \
-  static BseExportNode __enode_chain_head = {                                           \
-    (BseExportNode*) &__enode_ ## ObjectType, BSE_EXPORT_NODE_LINK,                     \
+#define BSE_DEFINE_EXPORT_STRINGS_FUNC(FUNCNAME, BLURB, AUTHORS, LICENSE)                       \
+  static void FUNCNAME (BseExportStrings *es) {                                                 \
+    es->blurb = BLURB;                                                                          \
+    es->authors = AUTHORS;                                                                      \
+    es->license = LICENSE;                                                                      \
+}
+#define BSE_REGISTER_OBJECT_P(PREV,ObjectType,ParentType,category,blurb,pix,cinit,cfina,iinit)  \
+  BSE_DEFINE_EXPORT_STRINGS_FUNC (__enode_##ObjectType##__fill_strings, blurb, 0, 0)            \
+  static BseExportNodeClass __enode_ ## ObjectType = {                                          \
+    { PREV, BSE_EXPORT_NODE_CLASS, #ObjectType, NULL, category,                                 \
+      pix, __enode_##ObjectType##__fill_strings },                                              \
+    #ParentType, sizeof (ObjectType ## Class), (GClassInitFunc) cinit,                          \
+    (GClassFinalizeFunc) cfina, sizeof (ObjectType), (GInstanceInitFunc) iinit,                 \
+  };                                                                                            \
+  static BseExportNode __enode_chain_head = {                                                   \
+    (BseExportNode*) &__enode_ ## ObjectType, BSE_EXPORT_NODE_LINK,                             \
   }
 #define BSE_REGISTER_OBJECT(ObjectType,ParentType,category,blurb,pix,cinit,cfina,iinit) \
   BSE_REGISTER_OBJECT_P (NULL, ObjectType, ParentType, category, blurb, pix, cinit, cfina, iinit)

@@ -99,11 +99,6 @@ BSE_BUILTIN_TYPE (BseStandardOsc)
     (GInstanceInitFunc) bse_standard_osc_init,
   };
 #include "./icons/osc.c"
-  static const BsePixdata pixdata = {
-    OSC_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    OSC_IMAGE_WIDTH, OSC_IMAGE_HEIGHT,
-    OSC_IMAGE_RLE_PIXEL_DATA,
-  };
   GType type;
   
   type = bse_type_register_static (BSE_TYPE_SOURCE,
@@ -111,9 +106,7 @@ BSE_BUILTIN_TYPE (BseStandardOsc)
 				   _("StandardOsc is the BSE basis oscillator which supports various types "
                                      "of wave forms and modulation inputs."),
 				   &type_info);
-  bse_categories_register_icon (_("/Modules/Audio Sources/Standard Oscillator"),
-				type,
-				&pixdata);
+  bse_categories_register_stock_module (N_("Audio Sources/Standard Oscillator"), type, osc_pixstream);
   return type;
 }
 

@@ -105,7 +105,7 @@ TypeRegistry::init_types()
       if (li->cinfo)
         {
           if (li->cinfo->category)
-            bse_categories_register (li->cinfo->category, self->gtype_id, NULL);
+            bse_categories_register (li->cinfo->category, NULL, self->gtype_id, NULL);
           if (li->cinfo->blurb)
             bse_type_add_blurb (self->gtype_id, li->cinfo->blurb);
         }

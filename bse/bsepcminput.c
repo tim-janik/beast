@@ -20,7 +20,6 @@
 
 #include "bsecategories.h"
 #include "bseserver.h"
-#include "./icons/mic.c"
 #include "gslengine.h"
 
 
@@ -77,17 +76,13 @@ BSE_BUILTIN_TYPE (BsePcmInput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pcm_input_init,
   };
-  static const BsePixdata mic_pixdata = {
-    MIC_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    MIC_WIDTH, MIC_HEIGHT,
-    MIC_RLE_PIXEL_DATA,
-  };
+#include "./icons/mic.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BsePcmInput",
                                          "Stereo PCM sound input module, per default, signals from this "
                                          "module originate from recording on the standard soundcard",
                                          &pcm_input_info);
-  bse_categories_register_icon ("/Modules/Input & Output/PCM Input", type, &mic_pixdata);
+  bse_categories_register_stock_module (N_("Input & Output/PCM Input"), type, mic_pixstream);
   return type;
 }
 

@@ -83,11 +83,6 @@ BSE_BUILTIN_TYPE (BseWaveOsc)
     (GInstanceInitFunc) bse_wave_osc_init,
   };
 #include "./icons/waveosc.c"
-  static const BsePixdata pixdata = {
-    WAVE_OSC_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    WAVE_OSC_IMAGE_WIDTH, WAVE_OSC_IMAGE_HEIGHT,
-    WAVE_OSC_IMAGE_RLE_PIXEL_DATA,
-  };
   GType type;
   
   type = bse_type_register_static (BSE_TYPE_SOURCE,
@@ -99,8 +94,7 @@ BSE_BUILTIN_TYPE (BseWaveOsc)
                                    "modulated by another control signal with linear or exponential frequency "
                                    "response.",
                                    &type_info);
-  bse_categories_register_icon ("/Modules/Audio Sources/Wave Oscillator",
-                                type, &pixdata);
+  bse_categories_register_stock_module(N_("Audio Sources/Wave Oscillator"), type, waveosc_pixstream);
   return type;
 }
 

@@ -58,7 +58,6 @@ static gpointer		 parent_class = NULL;
 
 
 /* --- functions --- */
-#include "./icons/mono-synth.c"
 BSE_BUILTIN_TYPE (BseMidiInput)
 {
   static const GTypeInfo midi_input_info = {
@@ -74,17 +73,13 @@ BSE_BUILTIN_TYPE (BseMidiInput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_midi_input_init,
   };
-  static const BsePixdata pixdata = {
-    MONO_SYNTH_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    MONO_SYNTH_WIDTH, MONO_SYNTH_HEIGHT,
-    MONO_SYNTH_RLE_PIXEL_DATA,
-  };
+#include "./icons/mono-synth.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseMidiInput",
                                          "Monophonic MIDI input module. With this module, monophonic "
                                          "keyboard control signals can be used in synthesis networks.",
                                          &midi_input_info);
-  bse_categories_register_icon ("/Modules/Input & Output/MIDI Voice Input", type, &pixdata);
+  bse_categories_register_stock_module (N_("Input & Output/MIDI Voice Input"), type, mono_synth_pixstream);
   return type;
 }
 

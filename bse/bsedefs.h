@@ -106,42 +106,8 @@ typedef struct  _BseWaveRepoClass       BseWaveRepoClass;
 typedef struct  _BseExportNode          BseExportNode;
 typedef struct  _BseExportNodeBoxed	BseExportNodeBoxed;
 typedef struct  _BseGlobals             BseGlobals;
-typedef struct  _BsePixdata             BsePixdata;
 typedef struct  _BsePlugin              BsePlugin;
 typedef struct  _BsePluginClass         BsePluginClass;
-
-
-/* --- anticipated enums --- */
-typedef enum                    /*< skip >*/
-{
-  BSE_PIXDATA_RGB               = 3,
-  BSE_PIXDATA_RGBA              = 4,
-  BSE_PIXDATA_RGB_MASK          = 0x07,
-  BSE_PIXDATA_1BYTE_RLE         = (1 << 3),
-  BSE_PIXDATA_ENCODING_MASK     = 0x08
-} BsePixdataType;
-
-
-/* --- FIXME --- */
-#define	BSE_STEREO_SHIFT	 (1)
-#define	BSE_SAMPLE_SHIFT	 (16)
-#define BSE_MAX_SAMPLE_VALUE_f   ((gfloat) BSE_MAX_SAMPLE_VALUE)
-#define BSE_MIN_SAMPLE_VALUE_f   ((gfloat) BSE_MIN_SAMPLE_VALUE)
-#define BSE_MAX_SAMPLE_VALUE_d   ((gdouble) BSE_MAX_SAMPLE_VALUE)
-#define BSE_MIN_SAMPLE_VALUE_d   ((gdouble) BSE_MIN_SAMPLE_VALUE)
-#define BSE_MAX_SAMPLE_VALUE     (32767)
-#define BSE_MIN_SAMPLE_VALUE     (-32768) /* don't use this, assume
-                                          * -BSE_MAX_SAMPLE_VALUE instead
-                                          */
-
-/* --- anticipated structures --- */
-struct _BsePixdata
-{
-  BsePixdataType type : 8;
-  guint          width : 12;
-  guint          height : 12;
-  const guint8  *encoded_pix_data;
-};
 
 
 /* --- BSE function types --- */

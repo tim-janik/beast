@@ -59,11 +59,7 @@ static gboolean          textdomain_setup = FALSE;
 const gchar*
 bse_gettext (const gchar *text)
 {
-#if 0
   g_assert (textdomain_setup == TRUE);
-  if (textdomain_setup != TRUE)
-    g_warning ("assertion failed: %s", "textdomain_setup == TRUE");
-#endif
   return dgettext (BSE_GETTEXT_DOMAIN, text);
 }
 

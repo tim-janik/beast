@@ -124,7 +124,7 @@ bse_script_proc_register (const gchar *script_file,
   if (type)
     {
       if (category && category[0])
-        bse_categories_register (category, type, NULL);
+        bse_categories_register (category, NULL, type, NULL);
       if (options && options[0])
         bse_type_add_options (type, options);
       if (blurb && blurb[0])

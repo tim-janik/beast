@@ -21,7 +21,6 @@
 #include "bsecategories.h"
 #include "bsemidireceiver.h"
 #include "bsesnet.h"
-#include "./icons/midiictrl.c"
 #include "gslengine.h"
 
 
@@ -78,17 +77,13 @@ BSE_BUILTIN_TYPE (BseMidiController)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_midi_controller_init,
   };
-  static const BsePixdata pixdata = {
-    MIDIICTRL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    MIDIICTRL_IMAGE_WIDTH, MIDIICTRL_IMAGE_HEIGHT,
-    MIDIICTRL_IMAGE_RLE_PIXEL_DATA,
-  };
+#include "./icons/midi-ctrl-input.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseMidiController",
                                          "MIDI controller input module. With this module, "
                                          "MIDI control signals can be used in synthesis networks.",
                                          &midi_controller_info);
-  bse_categories_register_icon ("/Modules/Input & Output/MIDI Control Input", type, &pixdata);
+  bse_categories_register_stock_module (N_("Input & Output/MIDI Control Input"), type, midi_ctrl_input_pixstream);
   return type;
 }
 

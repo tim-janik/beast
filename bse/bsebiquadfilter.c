@@ -91,11 +91,6 @@ BSE_BUILTIN_TYPE (BseBiquadFilter)
     (GInstanceInitFunc) bse_biquad_filter_init,
   };
 #include "./icons/biquad.c"
-  static const BsePixdata pixdata = {
-    BIQUAD_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    BIQUAD_IMAGE_WIDTH, BIQUAD_IMAGE_HEIGHT,
-    BIQUAD_IMAGE_RLE_PIXEL_DATA,
-  };
   GType type;
   
   type = bse_type_register_static (BSE_TYPE_SOURCE,
@@ -107,8 +102,7 @@ BSE_BUILTIN_TYPE (BseBiquadFilter)
 				   "modulatable center (Cut-Off) frequency and "
 				   "gain input signals.",
 				   &type_info);
-  bse_categories_register_icon ("/Modules/Filters/Biquad Types",
-				type, &pixdata);
+  bse_categories_register_stock_module (N_("Filters/Biquad Types"), type, biquad_pixstream);
   return type;
 }
 

@@ -20,7 +20,6 @@
 
 #include "bsecategories.h"
 #include "bseserver.h"
-#include "./icons/speaker.c"
 #include "gslengine.h"
 
 
@@ -77,17 +76,13 @@ BSE_BUILTIN_TYPE (BsePcmOutput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_pcm_output_init,
   };
-  static const BsePixdata pixdata = {
-    SPEAKER_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    SPEAKER_WIDTH, SPEAKER_HEIGHT,
-    SPEAKER_RLE_PIXEL_DATA,
-  };
+#include "./icons/speaker.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BsePcmOutput",
                                          "Stereo PCM sound output module, per default, signals routed into "
                                          "this module are played back on the standard soundcard",
                                          &pcm_output_info);
-  bse_categories_register_icon ("/Modules/Input & Output/PCM Output", type, &pixdata);
+  bse_categories_register_stock_module (N_("Input & Output/PCM Output"), type, speaker_pixstream);
   return type;
 }
 

@@ -29,23 +29,26 @@ typedef gboolean (BseCategoryCheck) (BseCategory *category,
 
 
 /* --- prototypes --- */
-void		bse_categories_register      (const gchar      *category,
-					      GType             type,
-                                              const guint8     *pixstream);
-void		bse_categories_register_icon (const gchar      *category,
-					      GType             type,
-					      const BsePixdata *pixdata);
-BseCategorySeq*	bse_categories_match         (const gchar      *pattern,
-					      GType             base_type,
-                                              BseCategoryCheck  check,
-                                              gpointer          data);
-BseCategorySeq*	bse_categories_match_typed   (const gchar      *pattern,
-					      GType             base_type);
-BseCategorySeq*	bse_categories_from_type     (GType             type);
-BseCategory*	bse_category_from_id	     (guint		 id);
+void            bse_categories_register        (const gchar      *category,
+                                                const gchar      *i18n_category,
+                                                GType             type,
+                                                const guint8     *pixstream);
+BseCategorySeq* bse_categories_match           (const gchar      *pattern,
+                                                GType             base_type,
+                                                BseCategoryCheck  check,
+                                                gpointer          data);
+BseCategorySeq* bse_categories_match_typed     (const gchar      *pattern,
+                                                GType             base_type);
+BseCategorySeq* bse_categories_from_type       (GType             type);
+BseCategory*    bse_category_from_id           (guint             id);
+#ifdef BSE_COMPILATION
+void      bse_categories_register_stock_module (const gchar      *untranslated_category_trunk,
+                                                GType             type,
+                                                const guint8     *pixstream);
+#endif
 
 
-/* --- internal --- */
+/* --- implementation --- */
 void		_bse_init_categories	     (void);
 
 G_END_DECLS

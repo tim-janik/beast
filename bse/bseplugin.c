@@ -425,21 +425,29 @@ bse_plugin_init_types (BsePlugin *plugin)
         }
       if (type)
         {
+          const char *i18n_category = NULL;
           guint n;
           if (node->options && node->options[0])
             bse_type_add_options (type, node->options);
-          if (node->category)
-            bse_categories_register (node->category, type, node->pixstream);
-          if (node->blurb && node->blurb[0])
-            bse_type_add_blurb (type, node->blurb);
-          if (node->authors && node->authors[0])
-            bse_type_add_authors (type, node->authors);
-          if (node->license && node->license[0])
-            bse_type_add_license (type, node->license);
           n = plugin->n_types++;
           plugin->types = g_renew (GType, plugin->types, plugin->n_types);
           plugin->types[n] = type;
           node->type = type;
+          if (node->fill_strings)
+            {
+              BseExportStrings export_strings = { 0, };
+              node->fill_strings (&export_strings);
+              if (export_strings.blurb && export_strings.blurb[0])
+                bse_type_add_blurb (type, export_strings.blurb);
+              if (export_strings.authors && export_strings.authors[0])
+                bse_type_add_authors (type, export_strings.authors);
+              if (export_strings.license && export_strings.license[0])
+                bse_type_add_license (type, export_strings.license);
+              if (export_strings.i18n_category && export_strings.i18n_category[0])
+                i18n_category = export_strings.i18n_category;
+            }
+          if (node->category)
+            bse_categories_register (node->category, i18n_category, type, node->pixstream);
         }
     }
 }

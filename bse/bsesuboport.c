@@ -66,7 +66,6 @@ static gpointer          parent_class = NULL;
 
 
 /* --- functions --- */
-#include "./icons/outport.c"
 BSE_BUILTIN_TYPE (BseSubOPort)
 {
   static const GTypeInfo type_info = {
@@ -82,17 +81,13 @@ BSE_BUILTIN_TYPE (BseSubOPort)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_sub_oport_init,
   };
-  static const BsePixdata pixdata = {
-    OUTPORT_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    OUTPORT_IMAGE_WIDTH, OUTPORT_IMAGE_HEIGHT,
-    OUTPORT_IMAGE_RLE_PIXEL_DATA,
-  };
+#include "./icons/virtual-output.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseSubOPort",
                                          "Virtual output port connector, used to provide a synthesis network "
                                          "with output signals from other synthesis networks",
                                          &type_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Virtual Output", type, &pixdata);
+  bse_categories_register_stock_module (N_("Virtualization/Virtual Output"), type, virtual_output_pixstream);
   return type;
 }
 

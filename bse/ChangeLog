@@ -1,3 +1,55 @@
+Thu May 20 13:36:35 2004  Tim Janik  <timj@gtk.org>
+
+	* bsedefs.h: got rid of BsePixdata.
+
+	* bseexports.h: provide means for export nodes to fill in
+	translatable strings through a callback.
+
+	* bseplugin.[hc]: register internationalized categories and invoke a
+	callback to retrieve type blurb/authors/license strings.
+
+	* mkcproc.pl:
+	* bseladspa.c:
+	* bsecxxutils.cc:
+	* bsescripthelper.c:
+	* bsecategories.[hc]: added internationalized category strings
+	to registration functions. got rid of BsePixData. fixed callers.
+	(bse_categories_register_stock_module): new function to register
+	internal modules and do the right thing wrg translation.
+
+	* bsecxxplugin.h: provide a callback function to fill in translatable
+	strings of export node structures, so gettext isn't invoked until
+	after bse has been initialized.
+
+	* bsesnooper.c:
+	* bsestandardosc.c:
+	* bsesubiport.c:
+	* bsesuboport.c:
+	* bsesubsynth.c:
+	* bseconstant.c:
+	* bsebiquadfilter.c:
+	* bseinstrumentinput.c:
+	* bseinstrumentoutput.c:
+	* bsemidicontroller.c:
+	* bsemidiinput.c:
+	* bsepcminput.c:
+	* bsepcmoutput.c:
+	* bsewaveosc.c:
+	register objects with bse_categories_register_stock_module() and
+	changed code to use generated pixstream files in icons/.
+
+	* bsemain.c: properly assert that the textdomain is setup (bse
+	was initialized) when translating a string.
+
+	* bseutils.[hc]: moved BsePixdata from public API to private helper.
+
+	* icons/Makefile.am: got rid of CVS hosted .c images and Makefile.icons.
+	generate C source image files from .png files directly.
+
+	* icons/*.c: removed all CVS hosted C sources.
+
+	* icons/*.png: added png files for all required C sources.
+
 Wed May  5 18:17:31 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemain.c (bse_async_parse_args): fixed parsing bug.

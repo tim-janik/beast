@@ -44,7 +44,6 @@ static gpointer		 parent_class = NULL;
 
 
 /* --- functions --- */
-#include "./icons/instrument.c"
 BSE_BUILTIN_TYPE (BseInstrumentOutput)
 {
   static const GTypeInfo type_info = {
@@ -60,17 +59,13 @@ BSE_BUILTIN_TYPE (BseInstrumentOutput)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_instrument_output_init,
   };
-  static const BsePixdata pixdata = {
-    INSTRUMENT_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    INSTRUMENT_IMAGE_WIDTH, INSTRUMENT_IMAGE_HEIGHT,
-    INSTRUMENT_IMAGE_RLE_PIXEL_DATA,
-  };
+#include "./icons/instrument.c"
   GType type = bse_type_register_static (BSE_TYPE_SUB_OPORT,
                                          "BseInstrumentOutput",
                                          "Virtual output module for synthesis networks which "
                                          "implement instruments",
                                          &type_info);
-  bse_categories_register_icon ("/Modules/Input & Output/Instrument Output", type, &pixdata);
+  bse_categories_register_stock_module (N_("Input & Output/Instrument Output"), type, instrument_pixstream);
   return type;
 }
 

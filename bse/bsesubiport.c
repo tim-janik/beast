@@ -66,7 +66,6 @@ static gpointer          parent_class = NULL;
 
 
 /* --- functions --- */
-#include "./icons/inport.c"
 BSE_BUILTIN_TYPE (BseSubIPort)
 {
   static const GTypeInfo type_info = {
@@ -82,17 +81,13 @@ BSE_BUILTIN_TYPE (BseSubIPort)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_sub_iport_init,
   };
-  static const BsePixdata pixdata = {
-    INPORT_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    INPORT_IMAGE_WIDTH, INPORT_IMAGE_HEIGHT,
-    INPORT_IMAGE_RLE_PIXEL_DATA,
-  };
+#include "./icons/virtual-input.c"
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseSubIPort",
                                          "Virtual input port connector, used to provide a synthesis network "
                                          "with input signals from other synthesis networks",
                                          &type_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Virtual Input", type, &pixdata);
+  bse_categories_register_stock_module (N_("Virtualization/Virtual Input"), type, virtual_input_pixstream);
   return type;
 }
 

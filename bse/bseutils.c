@@ -183,7 +183,22 @@ bse_balance_set (double balance,
 
 
 /* --- icons --- */
-BseIcon*
+typedef enum                    /*< skip >*/
+{
+  BSE_PIXDATA_RGB               = 3,
+  BSE_PIXDATA_RGBA              = 4,
+  BSE_PIXDATA_RGB_MASK          = 0x07,
+  BSE_PIXDATA_1BYTE_RLE         = (1 << 3),
+  BSE_PIXDATA_ENCODING_MASK     = 0x08
+} BsePixdataType;
+typedef struct
+{
+  BsePixdataType type : 8;
+  guint          width : 12;
+  guint          height : 12;
+  const guint8  *encoded_pix_data;
+} BsePixdata;
+static BseIcon*
 bse_icon_from_pixdata (const BsePixdata *pixdata)
 {
   BseIcon *icon;

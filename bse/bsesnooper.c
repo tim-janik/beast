@@ -52,7 +52,6 @@ static gpointer		 parent_class = NULL;
 
 
 /* --- functions --- */
-#include "./icons/snooper.c"
 BSE_BUILTIN_TYPE (BseSnooper)
 {
   static const GTypeInfo type_info = {
@@ -68,18 +67,14 @@ BSE_BUILTIN_TYPE (BseSnooper)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_snooper_init,
   };
-  BsePixdata icon = {
-    SNOOPER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    SNOOPER_IMAGE_WIDTH, SNOOPER_IMAGE_HEIGHT,
-    SNOOPER_IMAGE_RLE_PIXEL_DATA,
-  };
+#include "./icons/snooper.c"
   GType type_id;
   
   type_id = bse_type_register_static (BSE_TYPE_SOURCE,
 				      "BseSnooper",
 				      "The Snooper module prints statistics about the incoming signal",
 				      &type_info);
-  bse_categories_register_icon ("/Modules/Misc/Snooper", type_id, &icon);
+  bse_categories_register_stock_module (N_("Misc/Snooper"), type_id, snooper_pixstream);
   
   return type_id;
 }
