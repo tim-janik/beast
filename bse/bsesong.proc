@@ -45,23 +45,29 @@ METHOD (BseSong, create-bus) {
 {
   /* extract parameter values */
   BseSong *self = bse_value_get_object (in_values++);
+  BseErrorType error = BSE_ERROR_NONE;
   BseUndoStack *ustack;
-  BseItem *child;
+  BseItem *child = NULL;
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  ustack = bse_item_undo_open (self, "create-bus");
-  child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_BUS, NULL);
-  bse_item_push_undo_proc (self, "remove-bus", child);
-  bse_item_undo_close (ustack);
-  
+  if (BSE_SOURCE_PREPARED (self))
+    error = BSE_ERROR_SOURCE_BUSY;
+  else
+    {
+      ustack = bse_item_undo_open (self, "create-bus");
+      child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_BUS, NULL);
+      bse_item_push_undo_proc (self, "remove-bus", child);
+      bse_item_undo_close (ustack);
+    }
+
   /* set output parameters */
   bse_value_set_object (out_values++, child);
   
-  return BSE_ERROR_NONE;
+  return error;
 }
 
 METHOD (BseSong, remove-bus) {
