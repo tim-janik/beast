@@ -45,13 +45,13 @@ typedef struct
   guint         frame_size;
   gint16       *period_buffer;
   guint         read_write_count;
-} ALSAHandle;
+} AlsaPcmHandle;
 
 
 /* --- prototypes --- */
 static void             bse_pcm_device_alsa_class_init  (BsePcmDeviceALSAClass  *class);
 static void             bse_pcm_device_alsa_init        (BsePcmDeviceALSA       *self);
-static BseErrorType     alsa_device_setup               (ALSAHandle             *alsa,
+static BseErrorType     alsa_device_setup               (AlsaPcmHandle          *alsa,
                                                          snd_pcm_t              *phandle,
                                                          guint                   latency_ms,
                                                          guint                  *mix_freq,
@@ -169,7 +169,7 @@ bse_pcm_device_alsa_open (BseDevice     *device,
                           const gchar  **args)
 {
   int aerror = 0;
-  ALSAHandle *alsa = g_new0 (ALSAHandle, 1);
+  AlsaPcmHandle *alsa = g_new0 (AlsaPcmHandle, 1);
   BsePcmHandle *handle = &alsa->handle;
   /* setup request */
   handle->readable = require_readable;
@@ -207,7 +207,7 @@ bse_pcm_device_alsa_open (BseDevice     *device,
   if (!error && snd_pcm_prepare (alsa->read_handle ? alsa->read_handle : alsa->write_handle) < 0)
     error = BSE_ERROR_FILE_OPEN_FAILED;
   
-  /* setup pdev or shutdown */
+  /* setup PCM handle or shutdown */
   if (!error)
     {
       alsa->period_buffer = g_malloc (alsa->period_size * alsa->frame_size);
@@ -228,7 +228,6 @@ bse_pcm_device_alsa_open (BseDevice     *device,
     }
   else
     {
-      PCM_DEBUG ("ALSA: opening \"%s\" readable=%d writable=%d failed: %s", dname, require_readable, require_writable, bse_error_blurb (error));
       if (alsa->read_handle)
         snd_pcm_close (alsa->read_handle);
       if (alsa->write_handle)
@@ -236,6 +235,7 @@ bse_pcm_device_alsa_open (BseDevice     *device,
       g_free (alsa->period_buffer);
       g_free (alsa);
     }
+  PCM_DEBUG ("ALSA: opening PCM \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   g_free (dname);
   
   return error;
@@ -244,7 +244,7 @@ bse_pcm_device_alsa_open (BseDevice     *device,
 static void
 bse_pcm_device_alsa_close (BseDevice *device)
 {
-  ALSAHandle *alsa = (ALSAHandle*) BSE_PCM_DEVICE (device)->handle;
+  AlsaPcmHandle *alsa = (AlsaPcmHandle*) BSE_PCM_DEVICE (device)->handle;
   BSE_PCM_DEVICE (device)->handle = NULL;
   
   if (alsa->read_handle)
@@ -271,7 +271,7 @@ bse_pcm_device_alsa_finalize (GObject *object)
 }
 
 static BseErrorType
-alsa_device_setup (ALSAHandle          *alsa,
+alsa_device_setup (AlsaPcmHandle       *alsa,
                    snd_pcm_t           *phandle,
                    guint                latency_ms,
                    guint               *mix_freq,
@@ -351,7 +351,7 @@ alsa_device_setup (ALSAHandle          *alsa,
 }
 
 static void
-alsa_device_retrigger (ALSAHandle *alsa)
+alsa_device_retrigger (AlsaPcmHandle *alsa)
 {
   PCM_DEBUG ("ALSA: retriggering device (r=%s w=%s)...",
              !alsa->read_handle ? "<CLOSED>" : snd_pcm_state_name (snd_pcm_state (alsa->read_handle)),
@@ -385,7 +385,7 @@ static gboolean
 alsa_device_check_io (BsePcmHandle *handle,
                       glong        *timeoutp)
 {
-  ALSAHandle *alsa = (ALSAHandle*) handle;
+  AlsaPcmHandle *alsa = (AlsaPcmHandle*) handle;
   
   if (0)
     {
@@ -431,7 +431,7 @@ alsa_device_check_io (BsePcmHandle *handle,
 static guint
 alsa_device_latency (BsePcmHandle *handle)
 {
-  ALSAHandle *alsa = (ALSAHandle*) handle;
+  AlsaPcmHandle *alsa = (AlsaPcmHandle*) handle;
   snd_pcm_sframes_t rdelay, wdelay;
   if (!alsa->read_handle || snd_pcm_delay (alsa->read_handle, &rdelay) < 0)
     rdelay = 0;
@@ -446,7 +446,7 @@ static gsize
 alsa_device_read (BsePcmHandle *handle,
                   gfloat       *values)
 {
-  ALSAHandle *alsa = (ALSAHandle*) handle;
+  AlsaPcmHandle *alsa = (AlsaPcmHandle*) handle;
   gpointer buf = alsa->period_buffer;
   gfloat *dest = values;
   gsize n_left = handle->block_length;
@@ -478,7 +478,7 @@ static void
 alsa_device_write (BsePcmHandle *handle,
                    const gfloat *values)
 {
-  ALSAHandle *alsa = (ALSAHandle*) handle;
+  AlsaPcmHandle *alsa = (AlsaPcmHandle*) handle;
   gpointer buf = alsa->period_buffer;                            /* size in bytes = n_values * 2 */
   const gfloat *floats = values;
   gsize n_left = handle->block_length;

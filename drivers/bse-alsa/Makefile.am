@@ -16,7 +16,7 @@ configure: acbeast.m4
 drivers_ldflags     = -avoid-version
 drivers_libs        = $(BSE_LIBS)
 driversdir          = $(bsedriverinstalldir)
-drivers_LTLIBRARIES = bsepcmdevice-alsa.la
+drivers_LTLIBRARIES = bsepcmdevice-alsa.la bsemididevice-alsa.la
 
 
 
@@ -27,6 +27,14 @@ bsepcmdevice_alsa_la_SOURCES = bsepcmdevice-alsa.c
 bsepcmdevice_alsa_la_LDFLAGS = -module $(drivers_ldflags)
 bsepcmdevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
 EXTRA_HEADERS               += bsepcmdevice-alsa.h
+
+##
+## Plugin bsemididevice-alsa
+##
+bsemididevice_alsa_la_SOURCES = bsemididevice-alsa.c
+bsemididevice_alsa_la_LDFLAGS = -module $(drivers_ldflags)
+bsemididevice_alsa_la_LIBADD  = $(drivers_libs) $(ALSA_LIBS)
+EXTRA_HEADERS                += bsemididevice-alsa.h
 
 
 EXTRA_DIST += $(strip		\
