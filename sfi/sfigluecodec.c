@@ -1030,12 +1030,9 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
     }
   
   /* send away queued signals */
+  sfi_com_port_send_bulk (decoder->port, decoder->outgoing);
   while (decoder->outgoing)
-    {
-      GValue *value = sfi_ring_pop_head (&decoder->outgoing);
-      sfi_com_port_send (decoder->port, value);
-      sfi_value_free (value);
-    }
+    sfi_value_free (sfi_ring_pop_head (&decoder->outgoing));
   
   /* FIXME: catch messages */
   
@@ -1081,12 +1078,9 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
     }
   
   /* send away new signals and result */
+  sfi_com_port_send_bulk (decoder->port, decoder->outgoing);
   while (decoder->outgoing)
-    {
-      GValue *value = sfi_ring_pop_head (&decoder->outgoing);
-      sfi_com_port_send (decoder->port, value);
-      sfi_value_free (value);
-    }
+    sfi_value_free (sfi_ring_pop_head (&decoder->outgoing));
   sfi_com_port_process_io (decoder->port);
   
   sfi_glue_gc_run ();

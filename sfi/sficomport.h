@@ -98,6 +98,8 @@ void		sfi_com_port_unref		(SfiComPort	*port);
 /* remote I/O */
 void		sfi_com_port_send		(SfiComPort	*port,
 						 const GValue	*value);
+void		sfi_com_port_send_bulk		(SfiComPort	*port,
+						 SfiRing        *value_ring);
 GValue*		sfi_com_port_recv		(SfiComPort	*port);
 GValue*		sfi_com_port_recv_blocking	(SfiComPort	*port);
 

@@ -185,6 +185,7 @@ typedef enum {
 template<typename Type>
 class RecordHandle {
   Type *record;
+  typedef Type BoxedType;
 public:
   RecordHandle (InitializationType t = INIT_NULL)
   {
@@ -265,16 +266,67 @@ public:
   {
     return !is_null();
   }
+  static gpointer
+  boxed_copy (gpointer data)
+  {
+    if (data)
+      {
+        Type *r = reinterpret_cast<Type*> (data);
+        RecordHandle rh (*r);
+        return rh.steal();
+      }
+    return NULL;
+  }
+  static void
+  boxed_free (gpointer data)
+  {
+    if (data)
+      {
+        Type *r = reinterpret_cast<Type*> (data);
+        RecordHandle rh;
+        rh.take (r);
+      }
+  }
+  static RecordHandle
+  value_get_boxed (const GValue *value)
+  {
+    if (SFI_VALUE_HOLDS_REC (value))
+      {
+        SfiRec *rec = sfi_value_get_rec (value);
+        RecordHandle rh = Type::from_rec (rec);
+        return rh;
+      }
+    else
+      {
+        Type *boxed = reinterpret_cast<Type*> (g_value_get_boxed (value));
+        if (boxed)
+          return *boxed;
+        else
+          return INIT_NULL;
+      }
+  }
+  static void
+  value_set_boxed (GValue             *value,
+                   const RecordHandle &self)
+  {
+    if (SFI_VALUE_HOLDS_REC (value))
+      {
+        SfiRec *rec = Type::to_rec (self);
+        sfi_value_take_rec (value, rec);
+      }
+    else
+      g_value_set_boxed (value, self.c_ptr());
+  }
 };
 
 template<typename Type>
 class Sequence {
 public:
-  typedef Type ElementType;
   struct CSeq {
     unsigned int n_elements;
     Type        *elements;
   };
+  typedef CSeq BoxedType;
 private:
   CSeq *cseq;
 public:
@@ -287,6 +339,11 @@ public:
   {
     cseq = g_new0 (CSeq, 1);
     *this = sh;
+  }
+  Sequence (const BoxedType &cs)
+  {
+    cseq = g_new0 (CSeq, 1);
+    set_boxed (&cs);
   }
   void take (CSeq *cs)
   {
@@ -370,7 +427,61 @@ public:
     g_free (cseq->elements);
     g_free (cseq);
   }
+  static gpointer
+  boxed_copy (gpointer data)
+  {
+    if (data)
+      {
+        CSeq *cs = reinterpret_cast<CSeq*> (data);
+        Sequence s (*cs);
+        return s.steal();
+      }
+    return NULL;
+  }
+  static void
+  boxed_free (gpointer data)
+  {
+    if (data)
+      {
+        CSeq *cs = reinterpret_cast<CSeq*> (data);
+        Sequence s;
+        s.take (cs);
+      }
+  }
 };
+template<typename SeqType> SeqType
+cxx_value_get_boxed_sequence (const GValue *value)
+{
+  if (SFI_VALUE_HOLDS_SEQ (value))
+    {
+      SfiSeq *seq = sfi_value_get_seq (value);
+      return SeqType::from_seq (seq);
+    }
+  else
+    {
+      typename SeqType::CSeq *boxed = reinterpret_cast<typename SeqType::CSeq*> (g_value_get_boxed (value));
+      if (boxed)
+        {
+          SeqType sh;
+          sh.set_boxed (boxed);
+          return sh;
+        }
+      else
+        return SeqType();
+    }
+}
+template<typename SeqType> void
+cxx_value_set_boxed_sequence (GValue        *value,
+                              const SeqType &self)
+{
+  if (SFI_VALUE_HOLDS_SEQ (value))
+    {
+      SfiSeq *seq = SeqType::to_seq (self);
+      sfi_value_take_seq (value, seq);
+    }
+  else
+    g_value_set_boxed (value, self.c_ptr());
+}
 
 class FBlock {
   SfiFBlock *block;
@@ -838,29 +949,6 @@ public:
   }
 };
 
-
-template<typename Type> gpointer
-cxx_boxed_copy (gpointer data)
-{
-  if (data)
-    {
-      Type *t = reinterpret_cast<Type*> (data);
-      Type *d = new Type (*t);
-      return d;
-    }
-  return NULL;
-}
-
-template<typename Type> void
-cxx_boxed_free (gpointer data)
-{
-  if (data)
-    {
-      Type *t = reinterpret_cast<Type*> (data);
-      delete t;
-    }
-}
-
 template<typename Type> void
 cxx_boxed_to_rec (const GValue *src_value,
                   GValue       *dest_value)
@@ -920,44 +1008,6 @@ cxx_boxed_from_seq (const GValue *src_value,
       boxed = t;
     }
   g_value_set_boxed_take_ownership (dest_value, boxed);
-}
-
-template<typename Type> RecordHandle<Type>
-cxx_value_get_boxed_record (const GValue *value)
-{
-  Type *boxed = reinterpret_cast<Type*> (g_value_get_boxed (value));
-  if (boxed)
-    return *boxed;
-  else
-    return INIT_NULL;
-}
-
-template<typename Type> void
-cxx_value_set_boxed_record (GValue                   *value,
-                            const RecordHandle<Type> &self)
-{
-  g_value_set_boxed (value, self.c_ptr());
-}
-
-template<typename SeqType> SeqType
-cxx_value_get_boxed_sequence (const GValue *value)
-{
-  typename SeqType::CSeq *boxed = reinterpret_cast<typename SeqType::CSeq*> (g_value_get_boxed (value));
-  if (boxed)
-    {
-      SeqType sh;
-      sh.set_boxed (boxed);
-      return sh;
-    }
-  else
-    return SeqType();
-}
-
-template<typename SeqType> void
-cxx_value_set_boxed_sequence (GValue        *value,
-                              const SeqType &self)
-{
-  g_value_set_boxed (value, self.c_ptr());
 }
 
 template<typename Type> RecordHandle<Type>

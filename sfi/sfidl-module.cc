@@ -199,6 +199,13 @@ public:
     return intern (rename (ABSOLUTE, type_name, UPPER, "_", astrs, UPPER, "_").c_str());
   }
   const char*
+  make_IS_NAME (const string &type_name)
+  {
+    vector<string> astrs;
+    astrs.push_back ("IS");
+    return intern (rename (ABSOLUTE, type_name, UPPER, "_", astrs, UPPER, "_").c_str());
+  }
+  const char*
   make_fqtn (const string &type_name,
              const string &append = "")
   {
@@ -385,13 +392,15 @@ public:
   const char*
   func_value_set_param (const Param &param)
   {
+    string s;
     switch (parser.typeOf (param.type))
       {
       case BOOL:        return "sfi_value_set_bool";
       case INT:         return "sfi_value_set_int";
       case NUM:         return "sfi_value_set_num";
       case REAL:        return "sfi_value_set_real";
-      case CHOICE:      return "g_value_set_enum";
+      case CHOICE:      return intern (s + "sfi_value_set_enum_auto " +
+                                       "SFI_START_ARGS() " + make_TYPE_NAME (param.type) + ", SFI_END_ARGS2");
       case STRING:      return "::Sfi::String::value_set_string";
       case BBLOCK:      return "::Sfi::BBlock::value_set_bblock";
       case FBLOCK:      return "::Sfi::FBlock::value_set_fblock";
@@ -402,33 +411,34 @@ public:
         if (is_cxx_class (param.type))
           return intern (string() + "::Bse::CxxBase::value_set_casted< " + param.type + ", " + param.type + "Base>");
         else
-          return intern ("g_value_set_object");
+          return intern (string() + "::Bse::CxxBase::value_set_gobject");
       default:          g_assert_not_reached(); return NULL;
       }
   }
   const char*
-  func_value_get_param (const Param &param,
-                        const string dest = "") // FIXME
+  func_value_get_param (const string type)
   {
-    switch (parser.typeOf (param.type))
+    string s;
+    switch (parser.typeOf (type))
       {
       case BOOL:        return "sfi_value_get_bool";
       case INT:         return "sfi_value_get_int";
       case NUM:         return "sfi_value_get_num";
       case REAL:        return "sfi_value_get_real";
-      case CHOICE:      return intern (string ("(") + make_fqtn (param.type) + ") g_value_get_enum");
+      case CHOICE:      return intern (s + "(" + make_fqtn (type) + ") sfi_value_get_enum_auto " +
+                                       "SFI_START_ARGS() " + make_TYPE_NAME (type) + ", SFI_END_ARGS1");
       case STRING:      return "::Sfi::String::value_get_string";
       case BBLOCK:      return "::Sfi::BBlock::value_get_bblock";
       case FBLOCK:      return "::Sfi::FBlock::value_get_fblock";
       case SFIREC:      return "::Sfi::Rec::value_get_rec";
       case RECORD:
-      case SEQUENCE:    return intern (make_fqtn (param.type) + string ("::value_get_boxed"));
+      case SEQUENCE:    return intern (make_fqtn (type) + string ("::value_get_boxed"));
       case OBJECT:
-        if (is_cxx_class (param.type))
-          return intern (string ("(") + make_fqtn (param.type) + "*) " +
-                         "::Bse::CxxBase::value_get_object< " + make_fqtn (param.type) + "Base* >");
+        if (is_cxx_class (type))
+          return intern (string ("(") + make_fqtn (type) + "*) " +
+                         "::Bse::CxxBase::value_get_object< " + make_fqtn (type) + "Base* >");
         else
-          return intern (string ("(") + make_PrefixedTypeName (param.type, "*") + ") g_value_get_object");
+          return intern (string ("::Bse::CxxBase::value_get_gobject< ") + make_PrefixedTypeName (type) + ">");
       default:          g_assert_not_reached(); return NULL;
       }
   }
@@ -632,7 +642,7 @@ public:
           {
             printf ("  element = sfi_rec_get (sfi_rec, \"%s\");\n", pi->name.c_str());
             printf ("  if (element)\n");
-            printf ("    rec->%s = %s (element);\n", pi->name.c_str(), func_value_get_param (*pi));
+            printf ("    rec->%s = %s (element);\n", pi->name.c_str(), func_value_get_param (pi->type));
           }
         printf ("  return rec;\n");
         printf ("}\n\n");
@@ -655,16 +665,15 @@ public:
         printf ("  return sfi_rec;\n");
         printf ("}\n\n");
         
-        /* FIXME: client only, core needs type system support */
         printf ("%s\n", TypeRet (ri->name));
         printf ("%s::value_get_boxed (const GValue *value)\n", nname);
         printf ("{\n");
-        printf ("  return ::Sfi::cxx_value_get_boxed_record< %s> (value);\n", nname);
+        printf ("  return %s::value_get_boxed (value);\n", TypeRet (ri->name));
         printf ("}\n\n");
         printf ("void\n");
         printf ("%s::value_set_boxed (GValue *value, %s self)\n", nname, TypeArg (ri->name));
         printf ("{\n");
-        printf ("  ::Sfi::cxx_value_set_boxed_record< %s> (value, self);\n", nname);
+        printf ("  %s::value_set_boxed (value, self);\n", TypeRet (ri->name));
         printf ("}\n\n");
         
         printf ("SfiRecFields\n");
@@ -705,15 +714,16 @@ public:
         printf ("  %s seq;\n", TypeRet (si->name));
         printf ("  guint i, length;\n");
         printf ("\n");
-        printf ("  g_return_val_if_fail (sfi_seq != NULL, seq);\n");
+        printf ("  if (!sfi_seq)\n");
+        printf ("    return seq;\n");
         printf ("\n");
         printf ("  length = sfi_seq_length (sfi_seq);\n");
         printf ("  seq.resize (length);\n");
         printf ("  for (i = 0; i < length; i++)\n");
-        printf ("  {\n");
-        printf ("    GValue *element = sfi_seq_get (sfi_seq, i);\n");
-        printf ("    seq[i] = %s (element);\n", func_value_get_param (si->content));
-        printf ("  }\n");
+        printf ("    {\n");
+        printf ("      GValue *element = sfi_seq_get (sfi_seq, i);\n");
+        printf ("      seq[i] = %s (element);\n", func_value_get_param (si->content.type));
+        printf ("    }\n");
         printf ("  return seq;\n");
         printf ("}\n\n");
         
@@ -762,8 +772,10 @@ public:
         nspace.setFromSymbol(ci->name);
         printf ("class %sBase;\n", pure_TypeName (ci->name));
         printf ("class %s;\n", pure_TypeName (ci->name));
-        printf ("#define %s (BSE_CXX_DECLARED_CLASS_TYPE (%s))\n",
+        printf ("#define %s  (BSE_CXX_DECLARED_CLASS_TYPE (%s))\n",
                 make_TYPE_NAME (ci->name), pure_TypeName (ci->name));
+        printf ("#define %s(o) (::Bse::CxxBase::instance_is_a (o, %s))\n",
+                make_IS_NAME (ci->name), make_TYPE_NAME (ci->name));
       }
   }
   void
@@ -885,7 +897,7 @@ public:
         for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
           {
             printf ("    case PROP_%s:\n", pure_UPPER (pi->name));
-            printf ("      %s = %s (&value);\n", pi->name.c_str(), func_value_get_param (*pi));
+            printf ("      %s = %s (&value);\n", pi->name.c_str(), func_value_get_param (pi->type));
             printf ("    break;\n");
           }
         printf ("    };\n");
@@ -1105,7 +1117,7 @@ public:
         int i = 0;
         for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
           printf ("              %s (in_values + %u)%c\n",
-                  func_value_get_param (*pi, make_fqtn (pi->type)), i++,
+                  func_value_get_param (pi->type), i++,
                   &(*pi) == &(mi->params.back()) ? ' ' : ',');
         printf ("             );\n");
         if (!is_void)

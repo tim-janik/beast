@@ -541,14 +541,10 @@ sfi_value_choice_enum (const GValue *enum_value)
 GValue*
 sfi_value_choice_genum (gint enum_value, GType enum_type)
 {
-  GValue *value;
-  gchar *choice;
+  const gchar *choice;
 
   choice = sfi_enum2choice (enum_value, enum_type);
-  value = sfi_value_choice (choice);
-  g_free (choice);
-
-  return value;
+  return sfi_value_choice (choice);
 }
 
 
@@ -731,22 +727,43 @@ sfi_choice2enum (const gchar    *choice_value,
   return enum_value;
 }
 
-gchar*
+const gchar*
 sfi_enum2choice (gint            enum_value,
                  GType           enum_type)
 {
   GEnumClass *eclass;
   GEnumValue *ev;
-  gchar *choice;
+  const gchar *choice;
 
   eclass = g_type_class_ref (enum_type);
   ev = g_enum_get_value (eclass, enum_value);
   if (!ev)
     ev = eclass->values;
-  choice = g_strdup (ev->value_name);
+  choice = g_intern_string (ev->value_name);
   g_type_class_unref (eclass);
 
   return choice;
+}
+
+gint
+sfi_value_get_enum_auto (GType         enum_type,
+                         const GValue *value)
+{
+  if (SFI_VALUE_HOLDS_CHOICE (value))
+    return sfi_choice2enum (sfi_value_get_choice (value), enum_type);
+  else
+    return g_value_get_enum (value);
+}
+
+void
+sfi_value_set_enum_auto (GType       enum_type,
+                         GValue     *value,
+                         gint        enum_value)
+{
+  if (SFI_VALUE_HOLDS_CHOICE (value))
+    sfi_value_set_choice (value, sfi_enum2choice (enum_value, enum_type));
+  else
+    g_value_set_enum (value, enum_value);
 }
 
 /* transform function to work around glib bugs */

@@ -1,3 +1,24 @@
+Tue Jan 27 16:07:27 2004  Tim Janik  <timj@gtk.org>
+
+	* sficomport.[hc]: support sending value lists, added ability to
+	receive lists of values to reduze context switches.
+
+	* sficxx.h: reimplement specialized versions of boxed_copy and
+	boxed_free, value_get_boxed and value_set_boxed functions for
+	record handles and sequences which special case SfiRec and
+	SfiSeq vs. boxed record and sequence types.
+
+	* sfidl-module.cc: provide NAMESPACE_IS_OBJECT() macros for generated
+	object types. implement value conversions between boxed and
+	Sfi types (sfirec/records, sfiseq/sequences, choice/enum, object/proxy).
+
+	* sfigluecodec.c: bulk send events if possible to reduce
+	context switches.
+
+	* sfivalues.[hc]: added sfi_value_get_enum_auto() and
+	sfi_value_set_enum_auto() to support the idl compiler.
+	made sfi_enum2choice() return a constant, non-duplicated string.
+
 Tue Jan 27 00:31:35 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.*: Resort classes in a way that derived classes always

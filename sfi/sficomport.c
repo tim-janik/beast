@@ -288,6 +288,8 @@ sfi_com_port_destroy (SfiComPort *port)
   sfi_com_port_close_remote (port, FALSE);
   if (port->scanner)
     g_scanner_destroy (port->scanner);
+  while (port->rvalues)
+    sfi_value_free (sfi_ring_pop_head (&port->rvalues));
   g_free (port->ident);
   g_free (port->wbuffer.data);
   g_free (port->rbuffer.data);
@@ -369,62 +371,82 @@ com_port_write (SfiComPort   *port,
 }
 
 void
-sfi_com_port_send (SfiComPort   *port,
-		   const GValue *value)
+sfi_com_port_send_bulk (SfiComPort   *port,
+                        SfiRing      *value_ring)
 {
-
+  SfiRing *ring;
   g_return_if_fail (port != NULL);
-  g_return_if_fail (value != NULL);
-  if (!port->connected)
+  if (!value_ring)
     return;
+  if (!port->connected)
+    {
+      sfi_ring_free (value_ring);
+      return;
+    }
   g_return_if_fail (port->link || port->pfd[1].fd >= 0);
 
   if (port->link)
     {
       SfiComPortLink *link = port->link;
       gboolean first = port == link->port1;
+      SfiRing *target = NULL;
       SfiThread *thread = NULL;
       /* guard caller against receiver messing with value */
-      GValue *dvalue = sfi_value_clone_deep (value);
+      for (ring = value_ring; ring; ring = sfi_ring_next (ring, value_ring))
+        target = sfi_ring_append (target, sfi_value_clone_deep (ring->data));
 
       SFI_SPIN_LOCK (&link->mutex);
       if (first)
-	link->p1queue = sfi_ring_append (link->p1queue, dvalue);
+	link->p1queue = sfi_ring_concat (link->p1queue, target);
       else
-	link->p2queue = sfi_ring_append (link->p2queue, dvalue);
+	link->p2queue = sfi_ring_concat (link->p2queue, target);
       if (link->waiting)
 	sfi_cond_signal (&link->wcond);
       else
 	thread = first ? link->thread2 : link->thread1;
       SFI_SPIN_UNLOCK (&link->mutex);
-      DEBUG ("[%s: sent ((GValue*)%p)]", port->ident, dvalue);
+      DEBUG ("[%s: sent values]", port->ident);
       if (thread)
 	sfi_thread_wakeup (thread);
     }
   else
-    {
-      /* preserve space for header */
-      GString *gstring = g_string_new ("12345678");
-      gchar *str;
-      guint l;
-      /* serialize value */
-      sfi_value_store_typed (value, gstring);
-      l = gstring->len - 8;
-      str = g_string_free (gstring, FALSE);
-      /* patch magic */
-      str[0] = SFI_COM_PORT_MAGIC >> 24;
-      str[1] = (SFI_COM_PORT_MAGIC >> 16) & 0xff;
-      str[2] = (SFI_COM_PORT_MAGIC >> 8) & 0xff;
-      str[3] = SFI_COM_PORT_MAGIC & 0xff;
-      /* patch length */
-      str[4] = l >> 24;
-      str[5] = (l >> 16) & 0xff;
-      str[6] = (l >> 8) & 0xff;
-      str[7] = l & 0xff;
-      /* write away */
-      com_port_write (port, l + 8, str);
-      g_free (str);
-    }
+    for (ring = value_ring; ring; ring = sfi_ring_next (ring, value_ring))
+      {
+        const GValue *value = ring->data;
+        /* preserve space for header */
+        GString *gstring = g_string_new ("12345678");
+        gchar *str;
+        guint l;
+        /* serialize value */
+        sfi_value_store_typed (value, gstring);
+        l = gstring->len - 8;
+        str = g_string_free (gstring, FALSE);
+        /* patch magic */
+        str[0] = SFI_COM_PORT_MAGIC >> 24;
+        str[1] = (SFI_COM_PORT_MAGIC >> 16) & 0xff;
+        str[2] = (SFI_COM_PORT_MAGIC >> 8) & 0xff;
+        str[3] = SFI_COM_PORT_MAGIC & 0xff;
+        /* patch length */
+        str[4] = l >> 24;
+        str[5] = (l >> 16) & 0xff;
+        str[6] = (l >> 8) & 0xff;
+        str[7] = l & 0xff;
+        /* write away */
+        com_port_write (port, l + 8, str);
+        g_free (str);
+      }
+}
+
+void
+sfi_com_port_send (SfiComPort   *port,
+		   const GValue *value)
+{
+  SfiRing *ring;
+  g_return_if_fail (port != NULL);
+  g_return_if_fail (value != NULL);
+  ring = sfi_ring_append (NULL, (GValue*) value);
+  sfi_com_port_send_bulk (port, ring);
+  sfi_ring_free (ring);
 }
 
 static gboolean
@@ -551,20 +573,18 @@ static GValue*
 sfi_com_port_recv_intern (SfiComPort *port,
 			  gboolean    blocking)
 {
-  GValue *value;
-  
   DEBUG ("[%s: START receiving]", port->ident);
-  if (port->link)
+  if (!port->rvalues && port->link)
     {
       SfiComPortLink *link = port->link;
       
       SFI_SPIN_LOCK (&link->mutex);
     refetch:
       if (port == link->port1)
-	value = sfi_ring_pop_head (&link->p2queue);
+	port->rvalues = link->p2queue, link->p2queue = NULL;
       else
-	value = sfi_ring_pop_head (&link->p1queue);
-      if (!value && blocking)
+	port->rvalues = link->p1queue, link->p1queue = NULL;
+      if (!port->rvalues && blocking)
 	{
 	  link->waiting = TRUE;
 	  sfi_cond_wait (&link->wcond, &link->mutex);
@@ -573,7 +593,7 @@ sfi_com_port_recv_intern (SfiComPort *port,
 	}
       SFI_SPIN_UNLOCK (&link->mutex);
     }
-  else
+  else if (!port->rvalues)
     {
     loop_blocking:
       if (blocking &&   /* flush output buffer if data is pending */
@@ -612,11 +632,9 @@ sfi_com_port_recv_intern (SfiComPort *port,
           blocking = FALSE;
           goto loop_blocking;
         }
-      
-      value = port->connected ? sfi_ring_pop_head (&port->rvalues) : NULL;
     }
-  DEBUG ("[%s: DONE receiving: ((GValue*)%p) ]", port->ident, value);
-  return value;
+  DEBUG ("[%s: DONE receiving]", port->ident);
+  return port->connected ? sfi_ring_pop_head (&port->rvalues) : NULL;
 }
 
 GValue*

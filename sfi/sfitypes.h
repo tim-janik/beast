@@ -113,6 +113,15 @@ gint	     sfi_constants_rcmp		(const gchar	    *canon_identifier1,
 const gchar* sfi_info_string_find	(const gchar	   **infos,
 					 const gchar	    *key);
 
+
+/* --- idl macro magic --- */
+#define SFI_START_ARGS()     (
+#define SFI_END_ARGS()       )
+#define SFI_END_ARGS1(a)     a)
+#define SFI_END_ARGS2(a,b)   a , b)
+#define SFI_END_ARGS3(a,b,c) a , b , c)
+
+
 G_END_DECLS
 
 #endif /* __SFI_TYPES_H__ */

@@ -155,24 +155,29 @@ void	sfi_value_free		(GValue		*value);
 
 
 /* --- transformation --- */
-void	 sfi_value_choice2enum		(const GValue	*choice_value,
-					 GValue		*enum_value,
-					 GParamSpec	*fallback_param);
-void	 sfi_value_choice2enum_simple	(const GValue	*choice_value,
-					 GValue		*enum_value);
-void	 sfi_value_enum2choice		(const GValue	*enum_value,
-					 GValue		*choice_value);
-gint     sfi_choice2enum		(const gchar    *choice_value,
-					 GType           enum_type);
-gchar*   sfi_enum2choice		(gint            enum_value,
-					 GType           enum_type);
-/* transform function to work around glib bugs */
-gboolean sfi_value_transform		(const GValue   *src_value,
-					 GValue         *dest_value);
-gboolean sfi_value_type_compatible	(GType           src_type,
-					 GType           dest_type);
-gboolean sfi_value_type_transformable	(GType           src_type,
-					 GType           dest_type);
+void         sfi_value_choice2enum        (const GValue *choice_value,
+                                           GValue       *enum_value,
+                                           GParamSpec   *fallback_param);
+void         sfi_value_choice2enum_simple (const GValue *choice_value,
+                                           GValue       *enum_value);
+void         sfi_value_enum2choice        (const GValue *enum_value,
+                                           GValue       *choice_value);
+gint         sfi_choice2enum              (const gchar  *choice_value,
+                                           GType         enum_type);
+const gchar* sfi_enum2choice              (gint          enum_value,
+                                           GType         enum_type);
+gint         sfi_value_get_enum_auto      (GType         enum_type,
+                                           const GValue *value);
+void         sfi_value_set_enum_auto      (GType         enum_type,
+                                           GValue       *value,
+                                           gint          enum_value);
+/* transform functions to work around glib bugs */
+gboolean     sfi_value_transform          (const GValue *src_value,
+                                           GValue       *dest_value);
+gboolean     sfi_value_type_compatible    (GType         src_type,
+                                           GType         dest_type);
+gboolean     sfi_value_type_transformable (GType         src_type,
+                                           GType         dest_type);
 
 
 /* --- internal --- */
