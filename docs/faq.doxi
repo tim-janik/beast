@@ -107,4 +107,19 @@ create synthesis networks or very simple songs, any Pentium II ought to
 suffice. If you want to lay down a few tracks with effects you may need
 something more modern like a CPU with 1 GHz or higher core frequency.
 
+@section @beast crashes upon creation of new synthesis networks?
+
+@beast uses the
+@uref{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/,, GnomeCanvas Library}
+to display synthesis networks. That library has a malicious redrawing bug
+in versions up to (including) 2.2.0.1 triggering an assertion if the code
+is compiled with debugging output, which looks like:
+
+@code{GnomeCanvas-ERROR **: file gnome-canvas.c: line 3509 (gnome_canvas_request_update_real): assertion failed: (canvas->idle_id != 0)@*
+aborting...}
+
+This issue got fixed with version 2.2.0.2, so users encountering crashes
+with @beast upon creation of synthesis networks will need to upgrade
+their GnomeCanvas Library to at least 2.2.0.2.
+
 @bye

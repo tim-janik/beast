@@ -1,3 +1,13 @@
+Mon Apr 21 00:19:32 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-links-synthesis.texi: added novemeber 2002 synth
+	secrets link.
+
+	* docs/faq.texi: adress canvas->idle_id!=0 assertion.
+
+	* docs/site-news.texi: point to the new FAQ entry as a lot of people
+	seem to run into this.
+
 Sun Apr 20 21:10:12 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: announce patch-beast-0.5.0-0.5.1.fixed.gz.

@@ -79,6 +79,7 @@ Selected @uref{http://www.sospubs.co.uk,,Sound On Sound} Articles:
 	@uref{http://www.sospubs.co.uk/sos/aug02/articles/synthsecrets0802.asp,,Part40}
 	@uref{http://www.sospubs.co.uk/sos/sep02/articles/synthsecrets09.asp,,Part41}
 	@uref{http://www.sospubs.co.uk/sos/oct02/articles/synthsecrets10.asp,,Part42}
+	@uref{http://www.sospubs.co.uk/sos/nov02/articles/synthsecrets1102.asp,,Part43}
 @end itemize
 
 

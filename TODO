@@ -79,6 +79,9 @@ DOCS:
 - nroff files need another build step to get final page numbers [alper]
 - the html description for @func from bstutils.c:bst_gmask_foreach()
   is messed up [alper]
+- the FAQ entry 1.13 (canvas->idle_id!=0 assertion) has an anchor of
+  #node-2-13-0-0 instead of #node-1-13-0-0 (once this is fixed, site-news
+  needs to be updated) [alper]
 
 General BSE:
 - level-o-meter visualizer at links (adjustable?)

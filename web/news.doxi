@@ -22,6 +22,11 @@ now, which contains the missing file and correctly updates from 0.5.0 to
 @uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.1.tar.gz,,beast-0.5.1.tar.gz}.
 We apologise for the inconvenience this may have caused.
 
+On a related topic, many users encountered crashes upon creation of synthesis
+networks with the newer versions, there is now a
+@uref{beast-doc://faq#node-2-13-0-0,,FAQ entry}
+adressing the specifics of the issue.
+
 
 @newsTitle{Monday 14 Apr 2003, BEAST Featuring LADSPA}
 
