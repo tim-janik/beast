@@ -675,4 +675,13 @@ STEFAN TODO:
 82- C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
   - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
 
+Misc Buglets/Feature Requests:
+ - starting beast with a .mid file should import it
+ - the midi importer doesn't create a master bus
+ - silencing out an instrument (in drum maps) should be easier
+ - .pat files need to be played with (ADSR or similar) volume envelope
+ - support selection and cut/copy/paste in synth-edit view
+ - .pat files loops are not respected if they are directly loaded
+ - track view and piano roll view should show proper numbers
+
 vim:set ts=8 sts=2 sw=2:
