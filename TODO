@@ -1,8 +1,16 @@
 FIXME(release-critical):
+- play + play doesn't reset wave oscillator state
 - implement Monitor Output Signal dialogs:
   - histogram
   - edge detector: ...____..__|^^^'----'^^^^^|__.... (using dots for contiguous regions)
 - s/gslwave/bsewave/ (filenames also)  
+- the data/ files need versioning
+- use __thread to speed up sfi_thread_self(). configure test:
+  http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
+  compiler support and missing libc support will fail on accessing a __thread variable
+- TIME: ISO 8601: http://www.cl.cam.ac.uk/~mgk25/iso-time.html
+  implement time parser for this in beast, merge with travelad parser
+- driver interface: support multilpe MIDI channels
 TODO:
 - test engine block size changes (Subject: blocksize vs. cpu)
 - probes only need to deliver (sample frames) 25 times per second, and need not be continuous
