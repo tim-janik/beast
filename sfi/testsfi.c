@@ -19,6 +19,8 @@
 #include <sfi/sfi.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>	/* G_BREAKPOINT() */
+
 
 /* provide IDL type initializers */
 #define sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)  \
