@@ -442,7 +442,9 @@ bst_procedure_shell_global (void)
       global_proc_shell = (BstProcedureShell*) bst_procedure_shell_new (NULL);
       g_object_ref (global_proc_shell);
       gtk_object_sink (GTK_OBJECT (global_proc_shell));
-      dialog = gxk_dialog_new (NULL, NULL, GXK_DIALOG_STATUS_SHELL | GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_MODAL, _("Procedure"), NULL);
+      dialog = gxk_dialog_new (NULL, NULL,
+                               GXK_DIALOG_STATUS_BAR | GXK_DIALOG_WINDOW_GROUP | GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_MODAL,
+                               _("Procedure"), NULL);
       gxk_dialog_set_sizes (GXK_DIALOG (dialog), -1, -1, 320, -1);
       
       gtk_container_add (GTK_CONTAINER (GXK_DIALOG (dialog)->vbox), GTK_WIDGET (global_proc_shell));

@@ -128,7 +128,7 @@ bst_part_dialog_init (BstPartDialog *self)
   /* configure self */
   g_object_set (self,
                 "name", "BEAST-PartDialog",
-		"flags", GXK_DIALOG_STATUS_SHELL,
+                "flags", GXK_DIALOG_STATUS_BAR,
 		NULL);
   gxk_dialog_set_sizes (GXK_DIALOG (self), 640, 400, 1005, 650);
   

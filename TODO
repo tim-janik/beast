@@ -1,6 +1,4 @@
 FIXMES:	(release-critical)
-- add extra flag to GxkDialog to prevent Escape, use it only for bstapp
-- close piano roll on Escape
 - sequencer: export asserts
 - gslmath->bsemath
 - sequencer: dtoull

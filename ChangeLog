@@ -1,3 +1,12 @@
+Thu Oct  7 02:51:46 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkdialog.[hc]: flag split up, gxk_dialog_new() has the
+	docs. force dialogs to actively ignore Escape key presses to not be 
+	closed. adapted users.
+
+	* beast-gtk/bstsplash.c: fixed up frame border upon resizing.
+	close dialog on Escape key presses.
+
 Wed Oct  6 01:17:59 2004    <timj@birnet.org>
 
 	* beast-gtk/gxk/gxkutils.c (gxk_widget_ancestry_viewable): work around

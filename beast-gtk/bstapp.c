@@ -226,7 +226,7 @@ bst_app_init (BstApp *self)
                 "name", "BEAST-Application",
                 "allow_shrink", TRUE,
                 "allow_grow", TRUE,
-                "flags", GXK_DIALOG_STATUS_SHELL,
+                "flags", GXK_DIALOG_STATUS_BAR | GXK_DIALOG_IGNORE_ESCAPE | GXK_DIALOG_WINDOW_GROUP,
                 NULL);
   bst_app_register (self);
   self->box = gxk_radget_create ("beast", "application-box", NULL);

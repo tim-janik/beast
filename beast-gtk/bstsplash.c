@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstsplash.h"
-
-
+#include <gdk/gdkkeysyms.h>
 #include "topconfig.h"
 #include <string.h>
 
@@ -28,6 +27,8 @@ static void	bst_splash_init			(BstSplash	  *splash);
 static void	bst_splash_finalize		(GObject	  *object);
 static gint     bst_splash_button_press         (GtkWidget        *widget,
                                                  GdkEventButton   *event);
+static gboolean bst_splash_key_press_event      (GtkWidget        *widget,
+                                                 GdkEventKey      *event);
 static void     bst_splash_hide                 (GtkWidget        *widget);
 static void	bst_splash_show			(GtkWidget	  *widget);
 static void	bst_splash_unrealize		(GtkWidget	  *widget);
@@ -76,6 +77,7 @@ bst_splash_class_init (BstSplashClass *class)
   gobject_class->finalize = bst_splash_finalize;
   
   widget_class->delete_event = bst_splash_delete_event;
+  widget_class->key_press_event = bst_splash_key_press_event;
   widget_class->button_press_event = bst_splash_button_press;
   widget_class->hide = bst_splash_hide;
   widget_class->show = bst_splash_show;
@@ -162,6 +164,19 @@ bst_splash_delete_event (GtkWidget   *widget,
   gtk_widget_hide (widget);
 
   return TRUE;
+}
+
+static gboolean
+bst_splash_key_press_event (GtkWidget        *widget,
+                            GdkEventKey      *event)
+{
+  if (event->keyval == GDK_Escape)
+    {
+      /* trigger delete event */
+      gxk_toplevel_delete (widget);
+      return TRUE;
+    }
+  return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
 }
 
 static gint
@@ -385,10 +400,16 @@ bst_splash_set_animation (GtkWidget          *widget,
     {
       GtkWidget *image = g_object_new (GTK_TYPE_IMAGE,
 				       "visible", TRUE,
-                                       "parent", g_object_new (GTK_TYPE_FRAME,
-                                                               "visible", TRUE,
-                                                               "shadow-type", GTK_SHADOW_IN,
-                                                               NULL),
+                                       "parent",
+                                       g_object_new (GTK_TYPE_FRAME,
+                                                     "visible", TRUE,
+                                                     "shadow-type", GTK_SHADOW_IN,
+                                                     "parent", g_object_new (GTK_TYPE_ALIGNMENT,
+                                                                             "visible", TRUE,
+                                                                             "xscale", 0.0,
+                                                                             "yscale", 0.0,
+                                                                             NULL),
+                                                     NULL),
 				       NULL);
       gtk_box_pack_start (GTK_BOX (self->splash_box), gtk_widget_get_toplevel (image), TRUE, TRUE, 0);
       if (gdk_pixbuf_animation_is_static_image (anim))

@@ -37,12 +37,14 @@ typedef struct  _GxkDialog       GxkDialog;
 typedef struct  _GxkDialogClass  GxkDialogClass;
 typedef enum
 {
-  GXK_DIALOG_HIDE_ON_DELETE	= 1 << 0,	/* skips destroy upon delete event */
-  GXK_DIALOG_STATUS_SHELL	= 1 << 1,
-  GXK_DIALOG_MODAL		= 1 << 2,
-  GXK_DIALOG_POPUP_POS		= 1 << 3,	/* popup at mouse pointer */
-  GXK_DIALOG_DELETE_BUTTON	= 1 << 4,	/* has "Close" button */
-  GXK_DIALOG_PRESERVE_STATE     = 1 << 5        /* don't always reset size etc. upon hiding */
+  GXK_DIALOG_HIDE_ON_DELETE	= 1 << 0,	/* hide instead of destroy on window manager delete event */
+  GXK_DIALOG_IGNORE_ESCAPE	= 1 << 1,       /* prevents delete event generation on Escape key presses */
+  GXK_DIALOG_DELETE_BUTTON	= 1 << 2,	/* add a "Close" button */
+  GXK_DIALOG_STATUS_BAR 	= 1 << 3,       /* add a status bar */
+  GXK_DIALOG_WINDOW_GROUP	= 1 << 4,
+  GXK_DIALOG_MODAL		= 1 << 5,
+  GXK_DIALOG_POPUP_POS		= 1 << 6,	/* popup at mouse pointer */
+  GXK_DIALOG_PRESERVE_STATE     = 1 << 7        /* don't always reset size etc. upon hiding */
 } GxkDialogFlags;
 
 

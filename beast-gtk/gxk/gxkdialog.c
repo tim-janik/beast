@@ -196,7 +196,7 @@ gxk_dialog_set_property (GObject      *object,
       GtkWindow *window;
       const gchar *cstring, *astring;
       gchar *string;
-      guint old_flags;
+      guint old_flags, added_flags, removed_flags;
     case PROP_ALIVE_OBJECT:
       if (self->alive_object)
 	g_signal_handlers_disconnect_by_func (self->alive_object, gtk_widget_destroy, self);
@@ -221,36 +221,42 @@ gxk_dialog_set_property (GObject      *object,
     case PROP_FLAGS:
       old_flags = self->flags;
       self->flags = g_value_get_flags (value);
+      added_flags = self->flags & ~old_flags;
+      removed_flags = old_flags & ~self->flags;
       window = GTK_WINDOW (self);
-      if (!(old_flags & GXK_DIALOG_STATUS_SHELL) && (self->flags & GXK_DIALOG_STATUS_SHELL))
+      if (added_flags & GXK_DIALOG_WINDOW_GROUP)
 	{
 	  GtkWindowGroup *wgroup = gtk_window_group_new ();
 	  if (window->group)
 	    gtk_window_group_remove_window (window->group, window);
           gtk_window_group_add_window (wgroup, window); // GTKFIX: Gtk+-2.2.1 window groups seem to be broken wrt menus, but we're using Gtk+-2.4 now */
 	  g_object_unref (wgroup);
-	  if (self->status_bar)
-	    gtk_widget_show (self->status_bar);
 	}
-      else if ((old_flags & GXK_DIALOG_STATUS_SHELL) && !(self->flags & GXK_DIALOG_STATUS_SHELL))
+      else if (removed_flags & GXK_DIALOG_WINDOW_GROUP)
 	{
 	  if (window->group)
 	    gtk_window_group_remove_window (window->group, window);
+	}
+      if (added_flags & GXK_DIALOG_STATUS_BAR)
+	{
+	  if (self->status_bar)
+	    gtk_widget_show (self->status_bar);
+	}
+      else if (removed_flags & GXK_DIALOG_STATUS_BAR)
+	{
 	  if (self->status_bar)
 	    gtk_widget_hide (self->status_bar);
 	}
       gtk_window_set_modal (GTK_WINDOW (self), self->flags & GXK_DIALOG_MODAL);
-      /* some flags can't be unset */
-      if (!(old_flags & GXK_DIALOG_DELETE_BUTTON) &&
-	  (self->flags & GXK_DIALOG_DELETE_BUTTON))
+      if (added_flags & GXK_DIALOG_DELETE_BUTTON)
 	{
 	  /* we synthesize a delete event instead of hiding/destroying
 	   * directly, because derived classes may override delete_event
 	   */
 	  gxk_dialog_default_action (self, GTK_STOCK_CLOSE, gxk_toplevel_delete, NULL);
 	}
-      else if (old_flags & GXK_DIALOG_DELETE_BUTTON)
-	self->flags |= GXK_DIALOG_DELETE_BUTTON;
+      else if (removed_flags & GXK_DIALOG_DELETE_BUTTON)
+	self->flags |= GXK_DIALOG_DELETE_BUTTON;        /* some flags can't be unset */
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -326,15 +332,16 @@ gxk_dialog_finalize (GObject *object)
  *
  * Create a new configurable dialog. Possible values for the
  * flags are:
- * %GXK_DIALOG_HIDE_ON_DELETE: only hide and not desroy the
+ * @* %GXK_DIALOG_HIDE_ON_DELETE: only hide and not destroy the
  * dialog upon window manager delete events;
- * %GXK_DIALOG_STATUS_SHELL: the dialog has a status bar and
- * acts as a shell window for primary application data;
- * %GXK_DIALOG_MODAL: the dialog is modal while visible;
- * %GXK_DIALOG_POPUP_POS: popup the dialog below mouse pointer;
- * %GXK_DIALOG_DELETE_BUTTON: add a "Close" button to the dialog
- * (not recommended for GXK_DIALOG_STATUS_SHELL dialogs, which
- * usually have menus).
+ * @* %GXK_DIALOG_IGNORE_ESCAPE: prevents delete event generation on Escape key presses;
+ * @* %GXK_DIALOG_DELETE_BUTTON: add a "Close" button to the dialog;
+ * @* %GXK_DIALOG_STATUS_BAR: add a status bar widget to the dialog;
+ * @* %GXK_DIALOG_WINDOW_GROUP: open up an extra window group for the dialog;
+ * @* %GXK_DIALOG_MODAL: the dialog is modal while visible;
+ * @* %GXK_DIALOG_POPUP_POS: popup the dialog below mouse pointer;
+ * @* %GXK_DIALOG_PRESERVE_STATE: prevents unrealization of the dialog upon hiding,
+ * which preserves properties like the window size.
  */
 gpointer
 gxk_dialog_new (gpointer       pointer_loc,
@@ -603,7 +610,7 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
    */
   if (event->keyval == GDK_Escape &&
       ((dialog->flags & GXK_DIALOG_DELETE_BUTTON) ||
-       !(dialog->flags & GXK_DIALOG_STATUS_SHELL)))
+       !(dialog->flags & GXK_DIALOG_IGNORE_ESCAPE)))
     {
       /* trigger delete event */
       gxk_toplevel_delete (widget);
@@ -638,10 +645,10 @@ gxk_dialog_delete_event (GtkWidget   *widget,
   GxkDialog *dialog = GXK_DIALOG (widget);
 
   if (dialog->flags & GXK_DIALOG_HIDE_ON_DELETE)
-    gtk_widget_hide (GTK_WIDGET (dialog));
-
-  if (dialog->flags & GXK_DIALOG_HIDE_ON_DELETE)
-    return TRUE;
+    {
+      gtk_widget_hide (GTK_WIDGET (dialog));
+      return TRUE;
+    }
   else
     return FALSE;
 }
