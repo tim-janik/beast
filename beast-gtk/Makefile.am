@@ -103,7 +103,8 @@ beast_extra_sources = $(strip \
 	bstkeytable-base.c \
 	bstkeytable-us.c \
 	bstkeytable-de.c \
-	bstplaylistwidgets.c \
+	bstdraggroup.c \
+	bstdragpattern.c \
 )
 # BEAST built sources that don't get installed
 beast_built_sources = $(strip \
