@@ -30,9 +30,10 @@ static GSList *msg_windows = NULL;
 /* --- functions --- */
 static void
 user_message (SfiProxy        server,
-	      BseUserMsgType  msg_type,
+	      SfiChoice       um_choice,
 	      const gchar    *message)
 {
+  BseUserMsgType msg_type = bse_user_msg_type_from_choice (um_choice);
   bst_user_message_popup (msg_type, message);
 }
 

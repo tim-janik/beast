@@ -1,3 +1,10 @@
+Tue Jun 17 14:30:54 2003  Tim Janik  <timj@gtk.org>
+
+	* shell/progressor-example.scm: simplyfied code, fixed comments.
+
+	* beast-gtk/bstusermessage.c (user_message): fix callback argument which
+	is of type SfiChoice, not an enum type.
+
 Tue Jun 17 04:32:34 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (popup_entries): add snet scripts to
