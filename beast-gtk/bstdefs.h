@@ -20,12 +20,9 @@
 
 #include        <bse/bse.h>
 #include	<gtk/gtk.h>
-#include        <gle/gle.h>
-#include        <gle/gtkcluehunter.h>
-#include        <gle/gtkhwrapbox.h>
-#include        <gle/gtkvwrapbox.h>
 #include	<gnome.h>
 #include	"gnomeforest.h"
+#include	"glewidgets.h"
 #include	"bstzoomedwindow.h"
 #include	"bstfreeradiobutton.h"
 

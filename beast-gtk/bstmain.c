@@ -62,9 +62,6 @@ main (int   argc,
       char *argv[])
 {
   BsePcmDevice *pdev;
-  GleParserData *pdata;
-  gchar *resource_file = BST_PDATA_DIR "/beast.glr";
-  GSList *slist;
   BstApp *app = NULL;
   guint i;
   
@@ -79,7 +76,6 @@ main (int   argc,
   gtk_init (&argc, &argv);
   gtk_rc_parse_string (bst_rc_string);
   gdk_rgb_init ();
-  gle_init (&argc, &argv);
   gnome_type_init ();
   // gnome_init (PROGRAM, VERSION, argc, argv);
   bst_free_radio_button_get_type ();
@@ -132,28 +128,7 @@ main (int   argc,
   bse_heart_set_default_odevice ("Master");
   bse_heart_set_default_idevice ("Master");
 
-  
-  /* register neccessary GLE components
-   */
-  bst_app_register ();
 
-
-  /* parse GLE (GUI) resources
-   */
-  pdata = gle_parser_data_from_file (resource_file);
-  if (!pdata)
-    {
-      g_warning ("Can't retrive neccessary resources from \"%s\"", resource_file);
-      return 1;
-    }
-  for (slist = pdata->gtoplevels; slist; slist = slist->next)
-    {
-      gle_gobject_ref (slist->data);
-      gle_gwidget_set_visible (slist->data, FALSE);
-    }
-  gle_parser_data_destroy (pdata);
-  
-  
   /* register sample repositories
    */
   bst_sample_repo_init ();
@@ -165,16 +140,6 @@ main (int   argc,
     {
       BseStorage *storage = bse_storage_new ();
       BseErrorType error;
-      
-      
-#if 0
-      if (!strcmp (argv[i], "--+debug"))
-	{
-	  gle_shell_popup ();
-	  gtk_main ();
-	  return -1;
-	}
-#endif
       
       error = bse_storage_input_file (storage, argv[i]);
       

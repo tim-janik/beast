@@ -65,7 +65,6 @@ struct _BstAppClass
 
 
 /* --- prototypes --- */
-void		bst_app_register		(void);
 GtkType		bst_app_get_type		(void);
 BstApp*		bst_app_new			(BseProject	*project);
 gboolean	bst_app_can_operate		(BstApp         *app,

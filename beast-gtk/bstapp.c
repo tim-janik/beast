@@ -27,10 +27,10 @@
 
 /* --- prototypes --- */
 static void	bst_app_class_init		(BstAppClass	 *class);
-static void	bst_app_build			(GleGWidget	 *gwidget,
-						 gpointer	  data);
+static void	bst_app_init			(BstApp		 *app);
 static void	bst_app_destroy			(GtkObject	 *object);
-static gint	bst_app_handle_delete_event	(GtkWidget	 *widget);
+static gboolean bst_app_handle_delete_event	(GtkWidget	 *widget,
+						 GdkEventAny	 *event);
 
 
 /* --- menus --- */
@@ -80,18 +80,10 @@ static guint n_menubar_entries = sizeof (menubar_entries) / sizeof (menubar_entr
 
 /* --- variables --- */
 static BstAppClass    *bst_app_class = NULL;
-static GleGToplevel   *bst_app_proxy = NULL;
 static gpointer        parent_class = NULL;
 
 
 /* --- functions --- */
-void
-bst_app_register (void)
-{
-  bst_app_get_type ();
-  gle_handler_register_default ("bst_app_handle_delete_event", bst_app_handle_delete_event, NULL);
-}
-
 GtkType
 bst_app_get_type (void)
 {
@@ -105,7 +97,7 @@ bst_app_get_type (void)
 	sizeof (BstApp),
 	sizeof (BstAppClass),
 	(GtkClassInitFunc) bst_app_class_init,
-	(GtkObjectInitFunc) NULL,
+	(GtkObjectInitFunc) bst_app_init,
 	/* reserved_1 */ NULL,
 	/* reserved_2 */ NULL,
 	(GtkClassInitFunc) NULL,
@@ -121,24 +113,83 @@ static void
 bst_app_class_init (BstAppClass *class)
 {
   GtkObjectClass *object_class;
+  GtkWidgetClass *widget_class;
 
   bst_app_class = class;
   parent_class = gtk_type_class (GTK_TYPE_WINDOW);
   object_class = GTK_OBJECT_CLASS (class);
+  widget_class = GTK_WIDGET_CLASS (class);
 
   object_class->destroy = bst_app_destroy;
+
+  widget_class->delete_event = bst_app_handle_delete_event;
 
   class->apps = NULL;
 }
 
 static void
+bst_app_init (BstApp *app)
+{
+  GtkWidget *widget = GTK_WIDGET (app);
+  GtkWindow *window = GTK_WINDOW (app);
+  GtkItemFactory *factory;
+
+  bst_app_class->apps = g_slist_prepend (bst_app_class->apps, app);
+
+  gtk_widget_set (widget,
+		  "auto_shrink", FALSE,
+		  "allow_shrink", TRUE,
+		  "allow_grow", TRUE,
+		  NULL);
+  app->main_vbox = gtk_widget_new (GTK_TYPE_VBOX,
+				   "visible", TRUE,
+				   "parent", app,
+				   "object_signal::destroy", bse_nullify_pointer, &app->main_vbox,
+				   NULL);
+
+
+  /* setup the menu bar
+   */
+  factory = gtk_item_factory_new (GTK_TYPE_MENU_BAR, bst_app_factories_path, NULL);
+  gtk_window_add_accel_group (window, factory->accel_group);
+  gtk_item_factory_create_items (factory, n_menubar_entries, menubar_entries, app);
+  gtk_container_add_with_args (GTK_CONTAINER (app->main_vbox),
+			       factory->widget,
+			       "expand", FALSE,
+			       "position", 0,
+			       NULL);
+  gtk_widget_show (factory->widget);
+  gtk_object_set_data_full (GTK_OBJECT (app),
+			    bst_app_factories_path,
+			    factory,
+			    (GtkDestroyNotify) gtk_object_unref);
+
+
+  /* setup the main notebook
+   */
+  app->notebook =
+    (GtkNotebook*) gtk_widget_new (GTK_TYPE_NOTEBOOK,
+				   "visible", TRUE,
+				   "parent", app->main_vbox,
+				   "tab_pos", GTK_POS_LEFT,
+				   "scrollable", TRUE,
+				   "can_focus", TRUE,
+				   "object_signal::destroy", bse_nullify_pointer, &app->notebook,
+				   "object_signal_after::switch-page", bst_update_can_operate, app,
+				   NULL);
+  
+}
+
+static void
 app_set_title (BstApp *app)
 {
+  GtkWindow *window = GTK_WINDOW (app);
   gchar *title;
 
   title = g_strconcat ("BEAST: ", BSE_OBJECT_NAME (app->project), NULL);
-  gtk_window_set_title (GTK_WINDOW (app), title);
+  gtk_window_set_title (window, title);
   g_free (title);
+  gtk_window_set_wmclass (window, window->title, g_get_prgname ());
 }
 
 static void
@@ -172,19 +223,8 @@ bst_app_new (BseProject *project)
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
 
-  if (!bst_app_proxy)
-    {
-      bst_app_proxy = (GleGToplevel*) gle_gname_lookup ("BstApp");
-
-      g_return_val_if_fail (bst_app_proxy != NULL, NULL);
-
-      GLE_NOTIFIER_INSTALL (bst_app_proxy, "post_instantiate", bst_app_build, NULL);
-    }
-
-  gle_gtoplevel_instantiate (bst_app_proxy);
-  widget = GLE_GWIDGET_WIDGET (bst_app_proxy);
+  widget = gtk_widget_new (BST_TYPE_APP, NULL);
   app = BST_APP (widget);
-  gle_gtoplevel_disassociate (bst_app_proxy);
 
   bst_status_bar_ensure (GTK_WINDOW (app));
 
@@ -198,53 +238,11 @@ bst_app_new (BseProject *project)
 
   bst_app_reload_supers (app);
 
-  return app;
-}
-
-static void
-bst_app_build (GleGWidget *gwidget,
-	       gpointer	   data)
-{
-  BstApp *app;
-  GtkWidget *widget;
-  GtkItemFactory *factory;
-
-  widget = GLE_GWIDGET_WIDGET (gwidget);
-  app = BST_APP (widget);
-
-  bst_app_class->apps = g_slist_prepend (bst_app_class->apps, app);
-
-  app->main_vbox = gle_widget_from_gname ("MainVBox");
-  app->notebook = (GtkNotebook*) gle_widget_from_gname ("Notebook");
-
-  gtk_window_set_wmclass (GTK_WINDOW (widget), GTK_WINDOW (widget)->title, g_get_prgname ());
-
-  /* setup the menu bar
-   */
-  factory = gtk_item_factory_new (GTK_TYPE_MENU_BAR, bst_app_factories_path, NULL);
-  gtk_window_add_accel_group (GTK_WINDOW (widget), factory->accel_group);
-  gtk_item_factory_create_items (factory, n_menubar_entries, menubar_entries, widget);
-  gtk_container_add_with_args (GTK_CONTAINER (app->main_vbox),
-			       factory->widget,
-			       "expand", FALSE,
-			       "position", 0,
-			       NULL);
-  gtk_widget_show (factory->widget);
-  gtk_object_set_data_full (GTK_OBJECT (widget),
-			    bst_app_factories_path,
-			    factory,
-			    (GtkDestroyNotify) gtk_object_unref);
-
-  /* setup notebook handlers
-   */
-  gtk_signal_connect_object_after (GTK_OBJECT (app->notebook),
-				   "switch-page",
-				   bst_update_can_operate,
-				   GTK_OBJECT (app));
-
   /* update menu entries
    */
   bst_app_update_can_operate (app);
+
+  return app;
 }
 
 GtkWidget*
@@ -318,8 +316,9 @@ bst_app_reload_supers (BstApp *app)
   gtk_widget_show (GTK_WIDGET (app->notebook));
 }
 
-static gint
-bst_app_handle_delete_event (GtkWidget *widget)
+static gboolean
+bst_app_handle_delete_event (GtkWidget   *widget,
+			     GdkEventAny *event)
 {
   BstApp *app;
 
@@ -429,7 +428,7 @@ bst_app_operate (BstApp *app,
       gdk_window_raise (bst_dialog_save->window);
       break;
     case BST_OP_PROJECT_CLOSE:
-      bst_app_handle_delete_event (widget);
+      bst_app_handle_delete_event (widget, NULL);
       break;
     case BST_OP_EXIT:
       if (bst_app_class)

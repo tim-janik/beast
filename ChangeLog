@@ -1,3 +1,26 @@
+Mon Dec  6 02:35:37 1999  Tim Janik  <timj@gtk.org>
+
+	* configure.in: removed gle dependancy.
+
+	* beast-gtk/glewidgets.[hc]: source files containing headers and
+	implementations of gtkcluehunter.[hc], gtkwrapbox.[hc],
+	gtkhwrapbox.[hc], gtkvwrapbox.[hc], gtk_idle_show_widget() and
+	gtk_file_selection_heal() out of the gle source tree.
+
+	* beast-gtk/gle-pull.sh: script to pull gle sources.
+
+	* beast-gtk/bstdefs.h: remove gle includes, include glewidgets.h.
+
+	* beast-gtk/bstapp.[hc]: remove gle dependancies.
+
+	* beast-gtk/bstmain.c: removed gle dependancies.
+	
+	* beast-gtk/beast.glr: got rid of that.
+
+Sun Dec  5 18:11:31 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_create): grow BseTime entry.
+
 Sat Dec  4 22:51:25 1999  Tim Janik  <timj@gtk.org>
 
 	* test/testmixer.bse: new file with olaf's old testmixer.c tune.

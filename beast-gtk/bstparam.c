@@ -227,6 +227,33 @@ bst_param_gtk_update (BstParam *bparam)
     bst_param_get (bparam);
 }
 
+static gboolean
+bst_entry_key_press (GtkWidget   *entry,
+		     GdkEventKey *event,
+		     BstParam    *bparam)
+{
+  if (!gtk_type_is_a (GTK_OBJECT_TYPE (entry), GTK_TYPE_SPIN_BUTTON))
+    switch (event->keyval)
+      {
+      case GDK_Tab:
+      case GDK_ISO_Left_Tab:
+      case GDK_Up:
+      case GDK_KP_Up:
+      case GDK_Down:
+      case GDK_KP_Down:
+	/* bst_param_gtk_update (bparam); */
+	bst_param_gtk_changed (bparam);
+	break;
+      default:
+	break;
+      }
+
+  if (event->keyval == 'f' && (event->state & GDK_MOD1_MASK))
+    gtk_signal_emit_stop_by_name (GTK_OBJECT (entry), "key_press_event");
+
+  return FALSE;
+}
+
 static void
 bst_bparam_bse_changed (BstParam     *bparam,
 			BseParamSpec *pspec)
@@ -524,7 +551,7 @@ bst_param_create (gpointer      owner,
 	  width = 80;
 	  break;
 	case BSE_TYPE_PARAM_TIME:
-	  width = 60;
+	  width = 140;
 	  break;
 	case BSE_TYPE_PARAM_NOTE:
 	  width = 50;
@@ -547,7 +574,12 @@ bst_param_create (gpointer      owner,
 		      "width", width,
 		      "object_signal::activate", bst_param_gtk_changed, bparam,
 		      "sensitive", !read_only,
+		      "signal::key_press_event", bst_entry_key_press, bparam,
 		      NULL);
+      if (!spinner)
+	gtk_widget_set (action,
+			"object_signal::focus_out_event", bst_param_gtk_update, bparam,
+			NULL);
       group = GROUP_FORM (parent_container, action);
       GROUP_ADD_PROMPT (group, prompt);
       if (scale)
@@ -594,8 +626,9 @@ bst_param_create (gpointer      owner,
 			      NULL);
       action = gtk_widget_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
-			       "object_signal::activate", bst_param_gtk_changed, bparam,
 			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
+			       "object_signal::activate", bst_param_gtk_changed, bparam,
+			       "signal::key_press_event", bst_entry_key_press, bparam,
 			       "sensitive", !read_only,
 			       NULL);
       group = GROUP_FORM (parent_container, action);
@@ -673,8 +706,9 @@ bst_param_create (gpointer      owner,
       action = gtk_widget_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
 			       "width", 160,
-			       "object_signal::activate", bst_param_gtk_changed, bparam,
 			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
+			       "object_signal::activate", bst_param_gtk_changed, bparam,
+			       "signal::key_press_event", bst_entry_key_press, bparam,
 			       "sensitive", !read_only,
 			       NULL);
       group = GROUP_FORM (parent_container, action);

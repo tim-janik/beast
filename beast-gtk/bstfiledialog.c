@@ -69,7 +69,7 @@ bst_file_dialog_init (BstFileDialog *fd)
 		  "GtkWindow::title", "BEAST FileDialog",
 		  NULL);
   
-  gle_file_selection_heal (GTK_FILE_SELECTION (fd));
+  gtk_file_selection_heal (GTK_FILE_SELECTION (fd));
 }
 
 static void

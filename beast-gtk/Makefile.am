@@ -55,6 +55,7 @@ beast_headers = $(strip \
 	bstsupershell.h \
 	bstxkb.h \
 	bstzoomedwindow.h \
+	glewidgets.h \
 	gnomeforest.h \
 )
 # BEAST c sources to build the program from
@@ -83,6 +84,7 @@ beast_sources = $(strip \
 	bstsupershell.c \
 	bstxkb.c \
 	bstzoomedwindow.c \
+	glewidgets.c \
 	gnomeforest.c \
 )
 # BEAST c sources that get included (don't have own .lo rules)
@@ -93,7 +95,6 @@ beast_extra_sources = $(strip \
 )
 # BEAST program data files
 beast_pdata_DATA = $(strip \
-	beast.glr \
 )
 # BEAST built sources that don't get installed
 beast_built_sources = $(strip \
