@@ -28,13 +28,38 @@ struct _BstKeyTableKey
 
 
 /* --- convenience macros for keytable definitions --- */
-#define Z_WRAP          (0)
-#define C_WRAP          (BST_PEA_WRAP_AS_CONFIG)
-#define P_WRAP          (BST_PEA_WRAP_TO_PATTERN)
-#define SET_INSTR       (BST_PEA_SET_INSTRUMENT_0F | Z_WRAP)
-#define SHIFT_OCT       (BST_PEA_AFFECT_BASE_OCTAVE | Z_WRAP)
+#define BST_MOD____	BST_MOD_000
+#define BST_MOD___A	BST_MOD_00A
+#define BST_MOD__C_	BST_MOD_0C0
+#define BST_MOD__CA	BST_MOD_0CA
+#define BST_MOD_S__	BST_MOD_S00
+#define BST_MOD_S_A	BST_MOD_S0A
+#define	BST_MOD_SC_	BST_MOD_SC0
+#define BST_MOD_SCA	BST_MOD_SCA
 #define MOD(sca_mask)   (BST_MOD_ ## sca_mask)
-#define ACT             BST_PEA
+#define	WRAP_BORD	BST_PEA_WRAP_TO_NOTE
+#define	WRAP_PAT	BST_PEA_WRAP_TO_PATTERN
+#define	WRAP_CONF	BST_PEA_WRAP_AS_CONFIG
+#define	WRAP_none	0
+#define	MODIFY(note, octave, instrument, wrapping, movement)	( \
+    BST_PEA_TYPE_MODIFY_NOTE | \
+    BST_PEA_CONCAT (ANY, note, octave, instrument, movement) | \
+    WRAP_ ## wrapping \
+)
+#define	CHANGE(dflt_octave, dflt_instrument)	( \
+    BST_PEA_TYPE_CHANGE_DEFAULTS | \
+    BST_PEA_CONCAT (ANY, same, dflt_octave, dflt_instrument, none) \
+)
+#define	ACTIVATE(cell)	( \
+    BST_PEA_TYPE_ACTIVATE_CELL | \
+    BST_PEA_CONCAT (cell, same, same, same, none) \
+)
+#define RECT_SELECT(wrap, movement)	( \
+    BST_PEA_TYPE_MODIFY_NOTE | \
+    WRAP_ ## wrap | \
+    BST_PEA_MOVE_ ## movement | \
+    BST_PEA_RECTANGLE_SELECT \
+)
 
 
 /* --- keytable definitions --- */

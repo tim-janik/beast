@@ -1,3 +1,40 @@
+Mon Mar 27 13:52:49 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterneditor.[hc]: changed BstPEActionType enum,
+	provide means for cell activation and rectangular selection,
+	fixed some key binding bugs.
+	changed signal name s/cell_clicked/cell_activate/.
+
+	* beast-gtk/bstpatterndialog.c: s/cell_clicked/cell_activate/,
+	feature button==0 (keyboard) for menu popups.
+	(bst_pattern_dialog_gtkfix_default_accels): setup default
+	accelerators for BsePattern procedures.
+	(pe_key_press): hard-wire Insert and Delete keys.
+
+	* beast-gtk/bstmain.c: call
+	bst_pattern_dialog_gtkfix_default_accels() before parsing rc
+	file and, directly after gtk_init().
+
+	* beast-gtk/bstkeytable-base.c:
+	* beast-gtk/bstkeytable-us.c:
+	* beast-gtk/bstkeytable-de.c: convert keytables to new macro
+	formats. added <Alt>M for menu popups to base keytable, and
+	enable Shift+movement keys to do rectangular selections.
+
+	* beast-gtk/bstkeytables.c: provide new keytable macros.
+
+	* beast-gtk/bstapp.c (menubar_entries): accelerator cleanups.
+
+	* beast-gtk/bstmenus.c: added accelerator recommendation comment.
+
+Sun Mar 26 09:32:37 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bststatusbar.c (filter_procedure_events): abort procedure
+	execution if Escape is pressed.
+
+	* beast-gtk/bstapp.c (bst_app_reload_supers): save focus widget if on
+	the currently visible notebook page, around page reordering.
+
 Fri Mar 24 09:10:58 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstgconfig.[hc]: port over from BSE to GLib type system.

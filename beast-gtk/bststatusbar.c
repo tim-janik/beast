@@ -165,11 +165,14 @@ bst_status_destroyed (GtkWidget *widget)
 
 static gint
 filter_procedure_events (GtkWidget *widget,
-			 GdkEvent  *event)
+			 GdkEvent  *event,
+			 GtkWidget *abort)
 {
   switch (event->type)
     {
     case GDK_KEY_PRESS:
+      if (event->key.keyval == GDK_Escape)
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (abort), TRUE);
     case GDK_KEY_RELEASE:
     case GDK_DELETE:
       return TRUE;
@@ -247,7 +250,7 @@ procedure_share (gpointer     func_data,
       event_signal_handler = gtk_signal_connect_after (GTK_OBJECT (proc_window),
 						       "event",
 						       GTK_SIGNAL_FUNC (filter_procedure_events),
-						       NULL);
+						       abort);
       gtk_grab_add (abort);
       do
 	g_main_iteration (FALSE);

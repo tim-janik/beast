@@ -297,3 +297,31 @@ bst_pattern_editor_reset_selection (BstPatternEditor *pe)
       bse_pattern_selection_free (tmp_selection);
     }
 }
+
+void
+bst_pattern_editor_select_rectangle (BstPatternEditor *pe,
+				     guint             start_channel,
+				     guint             start_row,
+				     guint             end_channel,
+				     guint             end_row)
+{
+  g_return_if_fail (BST_IS_PATTERN_EDITOR (pe));
+  g_return_if_fail (pe->pattern != NULL);
+
+  if (!pe->in_selection)
+    {
+      guint32 *tmp_selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
+      guint c, r;
+
+      start_channel = MIN (start_channel, pe->pattern->n_channels - 1);
+      start_row = MIN (start_row, pe->pattern->n_rows - 1);
+      end_channel = MIN (end_channel, pe->pattern->n_channels - 1);
+      end_row = MIN (end_row, pe->pattern->n_rows - 1);
+
+      for (c = MIN (start_channel, end_channel); c <= MAX (start_channel, end_channel); c++)
+	for (r = MIN (start_row, end_row); r <= MAX (start_row, end_row); r++)
+	  BSE_PATTERN_SELECTION_MARK (tmp_selection, c, r);
+      bse_pattern_restore_selection (pe->pattern, tmp_selection);
+      bse_pattern_selection_free (tmp_selection);
+    }
+}

@@ -23,6 +23,7 @@
 #include	"bstkeytables.h"
 #include	"bstgconfig.h"
 #include	"bstpreferences.h"
+#include	"bstpatterndialog.h"	// FIXME
 #include	"../PKG_config.h"
 
 
@@ -80,6 +81,7 @@ main (int   argc,
   g_message ("BEAST: pid = %u", getpid ());
   
   gtk_init (&argc, &argv);
+  bst_pattern_dialog_gtkfix_default_accels ();
   gtk_rc_parse_string (bst_rc_string);
   gdk_rgb_init ();
   gnome_type_init ();

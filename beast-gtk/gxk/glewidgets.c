@@ -1134,7 +1134,7 @@ gtk_clue_hunter_clist_click (GtkClueHunter  *clue_hunter,
       g_free (string);
 
       gtk_clue_hunter_popdown (clue_hunter);
-      /* gtk_widget_activate (clue_hunter->entry); */
+      gtk_widget_activate (clue_hunter->entry);
     }
 
   return handled;
@@ -1810,7 +1810,8 @@ gtk_clue_hunter_event (GtkWidget *widget,
 		gtk_clue_hunter_add_history (clue_hunter, string);
 	    }
 	  gtk_clue_hunter_popdown (clue_hunter);
-	  /* gtk_widget_activate (clue_hunter->entry); */
+	  if (string)
+	    gtk_widget_activate (clue_hunter->entry);
 	}
       else
 	handled = gtk_widget_event (clue_hunter->entry, event);

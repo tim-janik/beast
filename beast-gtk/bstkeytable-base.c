@@ -17,12 +17,11 @@
  */
 
 
-/* Flag shortcuts:
- *   Z_WRAP             don't wrap at all (zero warp)
- *   C_WRAP             wrap as configured
- *   P_WRAP             wrap to pattern
- *   SET_INSTR          set instrument (zero wrap)
- *   SHIFT_OCT          shift base octave as specified
+/* Wrapping:
+ *   BORD	wrap around borders
+ *   PAT	wrap to prev/next pattern
+ *   CONF	wrap as configured
+ *   none	don't wrap at all
  *
  * MOD (SCA)
  *      |||
@@ -30,85 +29,97 @@
  *      |Control
  *      Shift
  *
- * ACT (note, shift, instrument, zero, movement, flags);
+ * MODIFY (note, octave, instrument, wrapping, movement);
+ * CHANGE (dflt_octave, dflt_instrument);
  */
 static BstKeyTableKey bst_key_table_base[] = {
   /* octave shifting */
-  { GDK_KP_Add,       MOD (000), ACT (0,     UP,    00,    0, 0,            Z_WRAP) },
-  { GDK_KP_Subtract,  MOD (000), ACT (0,     DOWN,  00,    0, 0,            Z_WRAP) },
-  /* base octave shifting */
-  { GDK_KP_Add,       MOD (S00), ACT (0,     UP,    00,    0, 0,            SHIFT_OCT) },
-  { GDK_KP_Subtract,  MOD (S00), ACT (0,     DOWN,  00,    0, 0,            SHIFT_OCT) },
+  { GDK_KP_Add,       MOD (___), MODIFY (same, UP,    same, none, none        ) },
+  { GDK_KP_Subtract,  MOD (___), MODIFY (same, DOWN,  same, none, none        ) },
   /* movement */ 
-  { GDK_Left,         MOD (000), ACT (0,     0,     00,    0, LEFT,         C_WRAP) },
-  { GDK_Right,        MOD (000), ACT (0,     0,     00,    0, RIGHT,        C_WRAP) },
-  { GDK_Up,           MOD (000), ACT (0,     0,     00,    0, UP,           P_WRAP) },
-  { GDK_Down,         MOD (000), ACT (0,     0,     00,    0, DOWN,         P_WRAP) },
-  { GDK_Left,         MOD (S00), ACT (0,     0,     00,    0, PAGE_LEFT,    C_WRAP) },
-  { GDK_Right,        MOD (S00), ACT (0,     0,     00,    0, PAGE_RIGHT,   C_WRAP) },
-  { GDK_KP_Right ,    MOD (000), ACT (0,     0,     00,    0, RIGHT,        C_WRAP) },
-  { GDK_KP_Up,        MOD (000), ACT (0,     0,     00,    0, UP,           P_WRAP) },
-  { GDK_KP_Down,      MOD (000), ACT (0,     0,     00,    0, DOWN,         P_WRAP) },
-  { GDK_KP_Begin ,    MOD (000), ACT (0,     0,     00,    0, DOWN,         C_WRAP) },
-  { GDK_Page_Up,      MOD (000), ACT (0,     0,     00,    0, PAGE_UP,      C_WRAP) },
-  { GDK_Page_Down,    MOD (000), ACT (0,     0,     00,    0, PAGE_DOWN,    C_WRAP) },
-  { GDK_Page_Up,      MOD (0C0), ACT (0,     0,     00,    0, JUMP_TOP,     C_WRAP) },
-  { GDK_Page_Down,    MOD (0C0), ACT (0,     0,     00,    0, JUMP_BOTTOM,  C_WRAP) },
-  { GDK_Home,         MOD (000), ACT (0,     0,     00,    0, JUMP_LEFT,    C_WRAP) },
-  { GDK_End,          MOD (000), ACT (0,     0,     00,    0, JUMP_RIGHT,   C_WRAP) },
-  { GDK_KP_Page_Up,   MOD (000), ACT (0,     0,     00,    0, PAGE_UP,      C_WRAP) },
-  { GDK_KP_Page_Down, MOD (000), ACT (0,     0,     00,    0, PAGE_DOWN,    C_WRAP) },
-  { GDK_KP_Page_Up,   MOD (0C0), ACT (0,     0,     00,    0, JUMP_TOP,     C_WRAP) },
-  { GDK_KP_Page_Down, MOD (0C0), ACT (0,     0,     00,    0, JUMP_BOTTOM,  C_WRAP) },
-  { GDK_KP_Home,      MOD (000), ACT (0,     0,     00,    0, JUMP_LEFT,    C_WRAP) },
-  { GDK_KP_End,       MOD (000), ACT (0,     0,     00,    0, JUMP_RIGHT,   C_WRAP) },
-  { GDK_Tab,          MOD (000), ACT (0,     0,     00,    0, NEXT_PATTERN, Z_WRAP) },
-  { GDK_KP_Tab,       MOD (000), ACT (0,     0,     00,    0, NEXT_PATTERN, Z_WRAP) },
-  { GDK_ISO_Left_Tab, MOD (000), ACT (0,     0,     00,    0, NEXT_PATTERN, Z_WRAP) },
-  { GDK_Tab,          MOD (S00), ACT (0,     0,     00,    0, PREV_PATTERN, Z_WRAP) },
-  { GDK_KP_Tab,       MOD (S00), ACT (0,     0,     00,    0, PREV_PATTERN, Z_WRAP) },
-  { GDK_ISO_Left_Tab, MOD (S00), ACT (0,     0,     00,    0, PREV_PATTERN, Z_WRAP) },
+  { GDK_Left,         MOD (___), MODIFY (same, same,  same, CONF, LEFT        ) },
+  { GDK_Right,        MOD (___), MODIFY (same, same,  same, CONF, RIGHT       ) },
+  { GDK_Up,           MOD (___), MODIFY (same, same,  same, PAT,  UP          ) },
+  { GDK_Down,         MOD (___), MODIFY (same, same,  same, PAT,  DOWN        ) },
+  { GDK_KP_Right,     MOD (___), MODIFY (same, same,  same, CONF, RIGHT       ) },
+  { GDK_KP_Up,        MOD (___), MODIFY (same, same,  same, PAT,  UP          ) },
+  { GDK_KP_Down,      MOD (___), MODIFY (same, same,  same, PAT,  DOWN        ) },
+  { GDK_KP_Begin,     MOD (___), MODIFY (same, same,  same, CONF, DOWN        ) },
+  { GDK_Page_Up,      MOD (___), MODIFY (same, same,  same, CONF, PAGE_UP     ) },
+  { GDK_Page_Down,    MOD (___), MODIFY (same, same,  same, CONF, PAGE_DOWN   ) },
+  { GDK_Page_Up,      MOD (_C_), MODIFY (same, same,  same, CONF, JUMP_TOP    ) },
+  { GDK_Page_Down,    MOD (_C_), MODIFY (same, same,  same, CONF, JUMP_BOTTOM ) },
+  { GDK_Home,         MOD (___), MODIFY (same, same,  same, CONF, JUMP_LEFT   ) },
+  { GDK_End,          MOD (___), MODIFY (same, same,  same, CONF, JUMP_RIGHT  ) },
+  { GDK_KP_Page_Up,   MOD (___), MODIFY (same, same,  same, CONF, PAGE_UP     ) },
+  { GDK_KP_Page_Down, MOD (___), MODIFY (same, same,  same, CONF, PAGE_DOWN   ) },
+  { GDK_KP_Page_Up,   MOD (_C_), MODIFY (same, same,  same, CONF, JUMP_TOP    ) },
+  { GDK_KP_Page_Down, MOD (_C_), MODIFY (same, same,  same, CONF, JUMP_BOTTOM ) },
+  { GDK_KP_Home,      MOD (___), MODIFY (same, same,  same, CONF, JUMP_LEFT   ) },
+  { GDK_KP_End,       MOD (___), MODIFY (same, same,  same, CONF, JUMP_RIGHT  ) },
+  { GDK_Tab,          MOD (___), MODIFY (same, same,  same, none, NEXT_PATTERN) },
+  { GDK_KP_Tab,       MOD (___), MODIFY (same, same,  same, none, NEXT_PATTERN) },
+  { GDK_ISO_Left_Tab, MOD (___), MODIFY (same, same,  same, none, NEXT_PATTERN) },
+  { GDK_Tab,          MOD (S__), MODIFY (same, same,  same, none, PREV_PATTERN) },
+  { GDK_KP_Tab,       MOD (S__), MODIFY (same, same,  same, none, PREV_PATTERN) },
+  { GDK_ISO_Left_Tab, MOD (S__), MODIFY (same, same,  same, none, PREV_PATTERN) },
   /* instruments */
-  { GDK_F1,           MOD (000), ACT (0,     0,     01,    0, 0,            Z_WRAP) },
-  { GDK_KP_F1,        MOD (000), ACT (0,     0,     01,    0, 0,            Z_WRAP) },
-  { GDK_F2,           MOD (000), ACT (0,     0,     02,    0, 0,            Z_WRAP) },
-  { GDK_KP_F2,        MOD (000), ACT (0,     0,     02,    0, 0,            Z_WRAP) },
-  { GDK_F3,           MOD (000), ACT (0,     0,     03,    0, 0,            Z_WRAP) },
-  { GDK_KP_F3,        MOD (000), ACT (0,     0,     03,    0, 0,            Z_WRAP) },
-  { GDK_F4,           MOD (000), ACT (0,     0,     04,    0, 0,            Z_WRAP) },
-  { GDK_KP_F4,        MOD (000), ACT (0,     0,     04,    0, 0,            Z_WRAP) },
-  { GDK_F5,           MOD (000), ACT (0,     0,     05,    0, 0,            Z_WRAP) },
-  { GDK_F6,           MOD (000), ACT (0,     0,     06,    0, 0,            Z_WRAP) },
-  { GDK_F7,           MOD (000), ACT (0,     0,     07,    0, 0,            Z_WRAP) },
-  { GDK_F8,           MOD (000), ACT (0,     0,     08,    0, 0,            Z_WRAP) },
-  { GDK_F9,           MOD (000), ACT (0,     0,     09,    0, 0,            Z_WRAP) },
-  { GDK_F10,          MOD (000), ACT (0,     0,     0A,    0, 0,            Z_WRAP) },
-  { GDK_F11,          MOD (000), ACT (0,     0,     0B,    0, 0,            Z_WRAP) },
-  { GDK_F12,          MOD (000), ACT (0,     0,     0C,    0, 0,            Z_WRAP) },
-  /* change default instrument (with SHIFT) */
-  { GDK_F1,           MOD (S00), ACT (0,     0,     01,    0, 0,            SET_INSTR) },
-  { GDK_KP_F1,        MOD (S00), ACT (0,     0,     01,    0, 0,            SET_INSTR) },
-  { GDK_F2,           MOD (S00), ACT (0,     0,     02,    0, 0,            SET_INSTR) },
-  { GDK_KP_F2,        MOD (S00), ACT (0,     0,     02,    0, 0,            SET_INSTR) },
-  { GDK_F3,           MOD (S00), ACT (0,     0,     03,    0, 0,            SET_INSTR) },
-  { GDK_KP_F3,        MOD (S00), ACT (0,     0,     03,    0, 0,            SET_INSTR) },
-  { GDK_F4,           MOD (S00), ACT (0,     0,     04,    0, 0,            SET_INSTR) },
-  { GDK_KP_F4,        MOD (S00), ACT (0,     0,     04,    0, 0,            SET_INSTR) },
-  { GDK_F5,           MOD (S00), ACT (0,     0,     05,    0, 0,            SET_INSTR) },
-  { GDK_F6,           MOD (S00), ACT (0,     0,     06,    0, 0,            SET_INSTR) },
-  { GDK_F7,           MOD (S00), ACT (0,     0,     07,    0, 0,            SET_INSTR) },
-  { GDK_F8,           MOD (S00), ACT (0,     0,     08,    0, 0,            SET_INSTR) },
-  { GDK_F9,           MOD (S00), ACT (0,     0,     09,    0, 0,            SET_INSTR) },
-  { GDK_F10,          MOD (S00), ACT (0,     0,     0A,    0, 0,            SET_INSTR) },
-  { GDK_F11,          MOD (S00), ACT (0,     0,     0B,    0, 0,            SET_INSTR) },
-  { GDK_F12,          MOD (S00), ACT (0,     0,     0C,    0, 0,            SET_INSTR) },
+  { GDK_F1,           MOD (___), MODIFY (same, same,  01,   none, none        ) },
+  { GDK_KP_F1,        MOD (___), MODIFY (same, same,  01,   none, none        ) },
+  { GDK_F2,           MOD (___), MODIFY (same, same,  02,   none, none        ) },
+  { GDK_KP_F2,        MOD (___), MODIFY (same, same,  02,   none, none        ) },
+  { GDK_F3,           MOD (___), MODIFY (same, same,  03,   none, none        ) },
+  { GDK_KP_F3,        MOD (___), MODIFY (same, same,  03,   none, none        ) },
+  { GDK_F4,           MOD (___), MODIFY (same, same,  04,   none, none        ) },
+  { GDK_KP_F4,        MOD (___), MODIFY (same, same,  04,   none, none        ) },
+  { GDK_F5,           MOD (___), MODIFY (same, same,  05,   none, none        ) },
+  { GDK_F6,           MOD (___), MODIFY (same, same,  06,   none, none        ) },
+  { GDK_F7,           MOD (___), MODIFY (same, same,  07,   none, none        ) },
+  { GDK_F8,           MOD (___), MODIFY (same, same,  08,   none, none        ) },
+  { GDK_F9,           MOD (___), MODIFY (same, same,  09,   none, none        ) },
+  { GDK_F10,          MOD (___), MODIFY (same, same,  10,   none, none        ) },
+  { GDK_F11,          MOD (___), MODIFY (same, same,  11,   none, none        ) },
+  { GDK_F12,          MOD (___), MODIFY (same, same,  12,   none, none        ) },
   /* reset note and instrument */
-  { ' ',              MOD (000), ACT (RESET, 0,     RESET, 0, NEXT,         C_WRAP) },
-  { GDK_KP_Space,     MOD (000), ACT (RESET, 0,     RESET, 0, NEXT,         C_WRAP) },
+  { ' ',              MOD (___), MODIFY (VOID, same,  VOID, CONF, NEXT        ) },
+  { GDK_KP_Space,     MOD (___), MODIFY (VOID, same,  VOID, CONF, NEXT        ) },
   /* reset note */
-  { ' ',              MOD (S00), ACT (RESET, 0,     00,    0, NEXT,         C_WRAP) },
-  { GDK_KP_Space,     MOD (S00), ACT (RESET, 0,     00,    0, NEXT,         C_WRAP) },
+  { ' ',              MOD (S__), MODIFY (VOID, same,  same, CONF, NEXT        ) },
+  { GDK_KP_Space,     MOD (S__), MODIFY (VOID, same,  same, CONF, NEXT        ) },
   /* reset instrument */
-  { ' ',              MOD (0C0), ACT (0,     0,     RESET, 0, NEXT,         C_WRAP) },
-  { GDK_KP_Space,     MOD (0C0), ACT (0,     0,     RESET, 0, NEXT,         C_WRAP) },
+  { ' ',              MOD (_C_), MODIFY (same, same,  VOID, CONF, NEXT        ) },
+  { GDK_KP_Space,     MOD (_C_), MODIFY (same, same,  VOID, CONF, NEXT        ) },
+  /* shift base octave (with SHIFT) */
+  { GDK_KP_Add,       MOD (S__), CHANGE (UP,   same) },
+  { GDK_KP_Subtract,  MOD (S__), CHANGE (DOWN, same) },
+  /* change default instrument (with SHIFT) */
+  { GDK_F1,           MOD (S__), CHANGE (same, 01  ) },
+  { GDK_KP_F1,        MOD (S__), CHANGE (same, 01  ) },
+  { GDK_F2,           MOD (S__), CHANGE (same, 02  ) },
+  { GDK_KP_F2,        MOD (S__), CHANGE (same, 02  ) },
+  { GDK_F3,           MOD (S__), CHANGE (same, 03  ) },
+  { GDK_KP_F3,        MOD (S__), CHANGE (same, 03  ) },
+  { GDK_F4,           MOD (S__), CHANGE (same, 04  ) },
+  { GDK_KP_F4,        MOD (S__), CHANGE (same, 04  ) },
+  { GDK_F5,           MOD (S__), CHANGE (same, 05  ) },
+  { GDK_F6,           MOD (S__), CHANGE (same, 06  ) },
+  { GDK_F7,           MOD (S__), CHANGE (same, 07  ) },
+  { GDK_F8,           MOD (S__), CHANGE (same, 08  ) },
+  { GDK_F9,           MOD (S__), CHANGE (same, 09  ) },
+  { GDK_F10,          MOD (S__), CHANGE (same, 10  ) },
+  { GDK_F11,          MOD (S__), CHANGE (same, 11  ) },
+  { GDK_F12,          MOD (S__), CHANGE (same, 12  ) },
+  /* activation */
+  { 'm',	      MOD (__A), ACTIVATE (ANY) },
+  /* keyboard-selection */
+  { GDK_Left,         MOD (S__), RECT_SELECT (BORD, LEFT        ) },
+  { GDK_Right,        MOD (S__), RECT_SELECT (BORD, RIGHT       ) },
+  { GDK_Up,           MOD (S__), RECT_SELECT (BORD, UP          ) },
+  { GDK_Down,         MOD (S__), RECT_SELECT (BORD, DOWN        ) },
+  { GDK_Page_Up,      MOD (S__), RECT_SELECT (BORD, PAGE_UP     ) },
+  { GDK_Page_Down,    MOD (S__), RECT_SELECT (BORD, PAGE_DOWN   ) },
+  { GDK_Page_Up,      MOD (SC_), RECT_SELECT (BORD, JUMP_TOP    ) },
+  { GDK_Page_Down,    MOD (SC_), RECT_SELECT (BORD, JUMP_BOTTOM ) },
+  { GDK_Home,         MOD (S__), RECT_SELECT (BORD, JUMP_LEFT   ) },
+  { GDK_End,          MOD (S__), RECT_SELECT (BORD, JUMP_RIGHT  ) },
 };

@@ -183,14 +183,14 @@
 enum
 {
   SIGNAL_PATTERN_STEP,
-  SIGNAL_CELL_CLICKED,
+  SIGNAL_CELL_ACTIVATE,
   LAST_SIGNAL
 };
 typedef	void	(*SignalPatternStep)	(GtkObject	*object,
 					 guint		 current_seqid,
 					 gint		 difference,
 					 gpointer	 user_data);
-typedef	void	(*SignalCellClicked)	(GtkObject	*object,
+typedef	void	(*SignalCellActivate)	(GtkObject	*object,
 					 guint		 channel,
 					 guint		 row,
 					 BstCellType	 cell,
@@ -316,10 +316,10 @@ bst_pattern_editor_get_type (void)
 }
 
 static void
-bst_pattern_editor_marshal_pattern_step (GtkObject	*object,
-					 GtkSignalFunc	func,
-					 gpointer	func_data,
-					 GtkArg		*args)
+marshal_pattern_step (GtkObject	   *object,
+		      GtkSignalFunc func,
+		      gpointer	    func_data,
+		      GtkArg	   *args)
 {
   SignalPatternStep sfunc = (SignalPatternStep) func;
   
@@ -330,12 +330,12 @@ bst_pattern_editor_marshal_pattern_step (GtkObject	*object,
 }
 
 static void
-bst_pattern_editor_marshal_cell_clicked (GtkObject	*object,
-					 GtkSignalFunc	func,
-					 gpointer	func_data,
-					 GtkArg		*args)
+marshal_cell_activate (GtkObject    *object,
+		       GtkSignalFunc func,
+		       gpointer	     func_data,
+		       GtkArg	    *args)
 {
-  SignalCellClicked sfunc = (SignalCellClicked) func;
+  SignalCellActivate sfunc = (SignalCellActivate) func;
   
   sfunc (object,
 	 GTK_VALUE_UINT (args[0]),
@@ -400,16 +400,16 @@ bst_pattern_editor_class_init (BstPatternEditorClass *class)
 		    GTK_RUN_LAST,
 		    object_class->type,
 		    GTK_SIGNAL_OFFSET (BstPatternEditorClass, pattern_step),
-		    bst_pattern_editor_marshal_pattern_step,
+		    marshal_pattern_step,
 		    GTK_TYPE_NONE, 2,
 		    GTK_TYPE_UINT,
 		    GTK_TYPE_INT);
-  pe_signals[SIGNAL_CELL_CLICKED] =
-    gtk_signal_new ("cell_clicked",
+  pe_signals[SIGNAL_CELL_ACTIVATE] =
+    gtk_signal_new ("cell_activate",
 		    GTK_RUN_LAST,
 		    object_class->type,
-		    GTK_SIGNAL_OFFSET (BstPatternEditorClass, cell_clicked),
-		    bst_pattern_editor_marshal_cell_clicked,
+		    GTK_SIGNAL_OFFSET (BstPatternEditorClass, cell_activate),
+		    marshal_cell_activate,
 		    GTK_TYPE_NONE, 7,
 		    GTK_TYPE_UINT,
 		    GTK_TYPE_UINT,
@@ -455,7 +455,7 @@ bst_pattern_editor_init (BstPatternEditor *pe)
   pe->wrap_type = 0;
   pe->channel_page = 2;
   pe->row_page = 4;
-  
+
   pe->next_moves_left = FALSE;
   pe->next_moves_right = FALSE;
   pe->next_moves_up = FALSE;
@@ -463,6 +463,8 @@ bst_pattern_editor_init (BstPatternEditor *pe)
 
   bst_pattern_editor_selection_meminit (pe);
   
+  pe->last_focus_channel = 0;
+  pe->last_focus_row = 0;
   pe->focus_channel = 0;
   pe->focus_row = 0;
   pe->last_row = -1;
@@ -877,7 +879,7 @@ bst_pattern_editor_get_cell (BstPatternEditor *pe,
   BstCellType cell_type;
   gboolean check_cell, within_panel;
   
-  if (cell_type_p) *cell_type_p = BST_CELL_INVALID;
+  if (cell_type_p) *cell_type_p = BST_CELL_NONE;
   if (channel_p) *channel_p = -1;
   if (row_p) *row_p = -1;
   
@@ -889,7 +891,7 @@ bst_pattern_editor_get_cell (BstPatternEditor *pe,
   
   /* let's go!
    */
-  cell_type = BST_CELL_INVALID;
+  cell_type = BST_CELL_NONE;
   check_cell = TRUE;
   within_panel = TRUE;
   
@@ -2010,6 +2012,9 @@ bst_pattern_editor_set_focus (BstPatternEditor *pe,
   if (reset_selection)
     bst_pattern_editor_reset_selection (pe);
 
+  pe->last_focus_channel = pe->focus_channel;
+  pe->last_focus_row = pe->focus_row;
+
   bst_pattern_editor_adjust_sas (pe, FALSE);
 }
 
@@ -2080,7 +2085,7 @@ bst_pattern_editor_button_press (GtkWidget	*widget,
 					  focus_channel, focus_row,
 					  !(event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)));
 	  gtk_signal_emit (GTK_OBJECT (pe),
-			   pe_signals[SIGNAL_CELL_CLICKED],
+			   pe_signals[SIGNAL_CELL_ACTIVATE],
 			   focus_channel,
 			   focus_row,
 			   cell_type,
@@ -2130,19 +2135,12 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
   BstPEActionType pea = 0;
   guint16 modifier;
   guint16 masks[] = {
-    BST_MOD_SCA, BST_MOD_SC0, BST_MOD_S0A, BST_MOD_S00,
-    BST_MOD_0CA, BST_MOD_0C0, BST_MOD_00A, BST_MOD_000,
+    BST_MOD_SCA, BST_MOD_0CA, BST_MOD_S0A, BST_MOD_00A,
+    BST_MOD_SC0, BST_MOD_0C0, BST_MOD_S00, BST_MOD_000,
   };
   guint n_masks = sizeof (masks) / sizeof (masks[0]);
   guint i;
-  BsePatternNote *pnote;
-  BseInstrument *instrument;
-  gint focus_channel;
-  gint focus_row;
-  gint note;
-  gint difference;
-  guint new_focus_channel;
-  guint new_focus_row;
+  guint pea_mask;
   
   g_return_val_if_fail (widget != NULL, FALSE);
   g_return_val_if_fail (BST_IS_PATTERN_EDITOR (widget), FALSE);
@@ -2150,7 +2148,7 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
   pe = BST_PATTERN_EDITOR (widget);
   
   modifier = event->state & BST_MOD_SCA;
-  for (i = 0; !(pea & BST_PEA_TAG) && i < n_masks; i++)
+  for (i = 0; !(pea & BST_PEA_TYPE_MASK) && i < n_masks; i++)
     if (modifier == masks[i])
       {
 	gpointer p = g_hash_table_lookup (BST_PATTERN_EDITOR_GET_CLASS (pe)->pea_ktab,
@@ -2158,166 +2156,136 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
 	
 	pea = GPOINTER_TO_UINT (p);
       }
-  
-  focus_channel = pe->focus_channel;
-  focus_row = pe->focus_row;
-  pnote = bse_pattern_peek_note (pe->pattern, focus_channel, focus_row);
-  note = pnote->note;
-  instrument = pnote->instrument;
-  
-  difference = 0;
-  new_focus_channel = 0;
-  new_focus_row = 0;
-  
-  if (pea & BST_PEA_TAG)
+
+  pea_mask = pea & BST_PEA_TYPE_MASK;
+  if (pea_mask == BST_PEA_TYPE_CHANGE_DEFAULTS)
     {
-      BstPEActionType wrap;
-      
-      if (pea & BST_PEA_NOTE_MASK)
-	note = BSE_NOTE_GENERIC (pea & BST_PEA_NOTE_MASK, pe->base_octave);
-      
-      if (pea & BST_PEA_INSTRUMENT_MASK)
+      pea_mask = pea & BST_PEA_INSTRUMENT_MASK;
+      if (pea_mask && pea_mask != BST_PEA_INSTRUMENT_DFLT)
+	pe->instruments[pe->focus_channel] = bse_song_get_instrument (BSE_SONG (bse_item_get_super (BSE_ITEM (pe->pattern))),
+								      pea_mask >> BST_PEA_INSTRUMENT_SHIFT);
+      switch (pea & BST_PEA_OCTAVE_MASK)
 	{
-	  if ((pea & BST_PEA_INSTRUMENT_MASK) == BST_PEA_INSTRUMENT_0F)
-	    instrument = pe->instruments[focus_channel];
-	  else
-	    instrument = bse_song_get_instrument (BSE_SONG (bse_item_get_super (BSE_ITEM (pe->pattern))),
-						  (pea & BST_PEA_INSTRUMENT_MASK) >> 8);
+	case BST_PEA_OCTAVE_UP:
+	  bst_pattern_editor_set_octave (pe, pe->base_octave + 1);
+	  break;
+	case BST_PEA_OCTAVE_DOWN:
+	  bst_pattern_editor_set_octave (pe, pe->base_octave - 1);
+	  break;
+	case BST_PEA_OCTAVE_UP2:
+	  bst_pattern_editor_set_octave (pe, pe->base_octave + 2);
+	  break;
+	case BST_PEA_OCTAVE_DOWN2:
+	  bst_pattern_editor_set_octave (pe, pe->base_octave - 2);
+	  break;
+	case BST_PEA_OCTAVE_DFLT:
+	  bst_pattern_editor_set_octave (pe, 0);
+	  break;
 	}
+    }
+  pea_mask = pea & BST_PEA_TYPE_MASK;
+  if (pea_mask == BST_PEA_TYPE_MODIFY_NOTE)
+    {
+      gint difference = 0, new_focus_channel = 0, new_focus_row = 0;
+      gint focus_channel = pe->focus_channel;
+      gint focus_row = pe->focus_row;
+      BsePatternNote *pnote = bse_pattern_peek_note (pe->pattern, focus_channel, focus_row);
+      BseInstrument *instrument = pnote->instrument;
+      gint note = pnote->note;
       
-      if (pea & BST_PEA_SET_INSTRUMENT_0F)
+      /* note setting */
+      pea_mask = pea & BST_PEA_NOTE_MASK;
+      if (pea_mask == BST_PEA_NOTE_VOID)
+	note = BSE_NOTE_VOID;
+      else if (pea_mask)
+	note = BSE_NOTE_GENERIC (pea_mask >> BST_PEA_NOTE_SHIFT, pe->base_octave);
+      /* octave shifting */
+      switch (pea & BST_PEA_OCTAVE_MASK)
 	{
-	  pe->instruments[focus_channel] = bse_song_get_instrument (BSE_SONG (bse_item_get_super (BSE_ITEM (pe->pattern))),
-								    (pea & BST_PEA_INSTRUMENT_MASK) >> 8);
+	case BST_PEA_OCTAVE_UP:
+	  note = BSE_NOTE_OCTAVE_UP (note);
+	  break;
+	case BST_PEA_OCTAVE_DOWN:
+	  note = BSE_NOTE_OCTAVE_DOWN (note);
+	  break;
+	case BST_PEA_OCTAVE_UP2:
+	  note = BSE_NOTE_OCTAVE_UP (note);
+	  note = BSE_NOTE_OCTAVE_UP (note);
+	  break;
+	case BST_PEA_OCTAVE_DOWN2:
+	  note = BSE_NOTE_OCTAVE_DOWN (note);
+	  note = BSE_NOTE_OCTAVE_DOWN (note);
+	  break;
+	case BST_PEA_OCTAVE_DFLT:
+	  if (BSE_NOTE_VALID (note))
+	    {
+	      guint half_tone;
+	      
+	      bse_note_examine (note, NULL, &half_tone, NULL, NULL);
+	      note = BSE_NOTE_GENERIC (half_tone, pe->base_octave);
+	    }
+	  break;
 	}
-      
+      /* instrument setting */
+      pea_mask = pea & BST_PEA_INSTRUMENT_MASK;
+      if (pea_mask == BST_PEA_INSTRUMENT_VOID)
+	instrument = NULL;
+      else if (pea_mask == BST_PEA_INSTRUMENT_DFLT)
+	instrument = pe->instruments[focus_channel];
+      else if (pea_mask)
+	instrument = bse_song_get_instrument (BSE_SONG (bse_item_get_super (BSE_ITEM (pe->pattern))),
+					      pea_mask >> BST_PEA_INSTRUMENT_SHIFT);
+      /* movement */
       switch (pea & BST_PEA_MOVE_MASK)
 	{
-	case  BST_PEA_MOVE_NEXT:
+	case BST_PEA_MOVE_NEXT:
 	  focus_channel -= (pe->next_moves_left != 0);
 	  focus_channel += (pe->next_moves_right != 0);
 	  focus_row -= (pe->next_moves_up != 0);
 	  focus_row += (pe->next_moves_down != 0);
 	  break;
-	case  BST_PEA_MOVE_LEFT:
-	  focus_channel--;
-	  break;
-	case  BST_PEA_MOVE_RIGHT:
-	  focus_channel++;
-	  break;
-	case  BST_PEA_MOVE_UP:
-	  focus_row--;
-	  break;
-	case  BST_PEA_MOVE_DOWN:
-	  focus_row++;
-	  break;
-	case  BST_PEA_MOVE_PAGE_LEFT:
-	  focus_channel -= pe->channel_page;
-	  break;
-	case  BST_PEA_MOVE_PAGE_RIGHT:
-	  focus_channel += pe->channel_page;
-	  break;
-	case  BST_PEA_MOVE_PAGE_UP:
-	  focus_row -= pe->row_page;
-	  break;
-	case  BST_PEA_MOVE_PAGE_DOWN:
-	  focus_row += pe->row_page;
-	  break;
-	case  BST_PEA_MOVE_JUMP_LEFT:
-	  focus_channel = 0;
-	  break;
-	case  BST_PEA_MOVE_JUMP_RIGHT:
-	  focus_channel = pe->pattern->n_channels - 1;
-	  break;
-	case  BST_PEA_MOVE_JUMP_TOP:
-	  focus_row = 0;
-	  break;
-	case  BST_PEA_MOVE_JUMP_BOTTOM:
-	  focus_row = pe->pattern->n_rows - 1;
-	  break;
-	case  BST_PEA_MOVE_PREV_PATTERN:
+	case BST_PEA_MOVE_LEFT:		focus_channel--;				break;
+	case BST_PEA_MOVE_RIGHT:	focus_channel++;				break;
+	case BST_PEA_MOVE_UP:		focus_row--;					break;
+	case BST_PEA_MOVE_DOWN:		focus_row++;					break;
+	case BST_PEA_MOVE_PAGE_LEFT:	focus_channel -= pe->channel_page;		break;
+	case BST_PEA_MOVE_PAGE_RIGHT:	focus_channel += pe->channel_page;		break;
+	case BST_PEA_MOVE_PAGE_UP:	focus_row -= pe->row_page;			break;
+	case BST_PEA_MOVE_PAGE_DOWN:	focus_row += pe->row_page;			break;
+	case BST_PEA_MOVE_JUMP_LEFT:	focus_channel = 0;				break;
+	case BST_PEA_MOVE_JUMP_RIGHT:	focus_channel = pe->pattern->n_channels - 1;	break;
+	case BST_PEA_MOVE_JUMP_TOP:	focus_row = 0;					break;
+	case BST_PEA_MOVE_JUMP_BOTTOM:	focus_row = pe->pattern->n_rows - 1;		break;
+	case BST_PEA_MOVE_PREV_PATTERN:
 	  difference = -1;
 	  new_focus_channel = focus_channel;
 	  new_focus_row = focus_row;
 	  break;
-	case  BST_PEA_MOVE_NEXT_PATTERN:
+	case BST_PEA_MOVE_NEXT_PATTERN:
 	  difference = +1;
 	  new_focus_channel = focus_channel;
 	  new_focus_row = focus_row;
 	  break;
 	}
-      
-      switch (pea & BST_PEA_OCTAVE_SHIFT_MASK)
-	{
-	case  BST_PEA_OCTAVE_SHIFT_UP:
-	  if (pea & BST_PEA_AFFECT_BASE_OCTAVE)
-	    bst_pattern_editor_set_octave (pe, pe->base_octave + 1);
-	  else
-	    note = BSE_NOTE_OCTAVE_UP (note);
-	  break;
-	case  BST_PEA_OCTAVE_SHIFT_DOWN:
-	  if (pea & BST_PEA_AFFECT_BASE_OCTAVE)
-	    bst_pattern_editor_set_octave (pe, pe->base_octave - 1);
-	  else
-	    note = BSE_NOTE_OCTAVE_DOWN (note);
-	  break;
-	case  BST_PEA_OCTAVE_SHIFT_UP2:
-	  if (pea & BST_PEA_AFFECT_BASE_OCTAVE)
-	    bst_pattern_editor_set_octave (pe, pe->base_octave + 2);
-	  else
-	    {
-	      note = BSE_NOTE_OCTAVE_UP (note);
-	      note = BSE_NOTE_OCTAVE_UP (note);
-	    }
-	  break;
-	case  BST_PEA_OCTAVE_SHIFT_DOWN2:
-	  if (pea & BST_PEA_AFFECT_BASE_OCTAVE)
-	    bst_pattern_editor_set_octave (pe, pe->base_octave - 2);
-	  else
-	    {
-	      note = BSE_NOTE_OCTAVE_DOWN (note);
-	      note = BSE_NOTE_OCTAVE_DOWN (note);
-	    }
-	  break;
-	default:
-	  if (pea & BST_PEA_AFFECT_BASE_OCTAVE)
-	    bst_pattern_editor_set_octave (pe, 0);
-	}
-      
-      if (pea & BST_PEA_NOTE_RESET)
-	note = BSE_NOTE_VOID;
-      
-      if (pea & BST_PEA_INSTRUMENT_RESET)
-	instrument = NULL;
-      
-      if (pea & BST_PEA_WRAP_AS_CONFIG)
-	wrap = pe->wrap_type;
+      /* wrapping */
+      pea_mask = pea & BST_PEA_WRAP_AS_CONFIG ? pe->wrap_type : pea;
+      if (pea_mask & BST_PEA_WRAP_TO_PATTERN)
+	pea_mask &= BST_PEA_WRAP_TO_PATTERN;
       else
-	wrap = pea;
-      if (wrap & BST_PEA_WRAP_TO_PATTERN)
-	wrap &= BST_PEA_WRAP_TO_PATTERN;
-      else
-	wrap &= BST_PEA_WRAP_TO_NOTE;
-      
+	pea_mask &= BST_PEA_WRAP_TO_NOTE;
       if (focus_channel < 0)
-	{
-	  if (wrap == BST_PEA_WRAP_TO_NOTE)
-	    focus_channel = pe->pattern->n_channels - 1;
-	  else
-	    focus_channel = 0;
-	}
+	focus_channel = (pea_mask == BST_PEA_WRAP_TO_NOTE
+			 ? pe->pattern->n_channels - 1
+			 : 0);
       if (focus_channel >= pe->pattern->n_channels)
-	{
-	  if (wrap == BST_PEA_WRAP_TO_NOTE)
-	    focus_channel = 0;
-	  else
-	    focus_channel = pe->pattern->n_channels - 1;
-	}
+	focus_channel = (pea_mask == BST_PEA_WRAP_TO_NOTE
+			 ? 0
+			 : pe->pattern->n_channels - 1);
       if (focus_row < 0)
 	{
-	  if (wrap == BST_PEA_WRAP_TO_NOTE)
+	  if (pea_mask == BST_PEA_WRAP_TO_NOTE)
 	    focus_row = pe->pattern->n_rows - 1;
-	  else if (wrap == BST_PEA_WRAP_TO_PATTERN)
+	  else if (pea_mask == BST_PEA_WRAP_TO_PATTERN)
 	    {
 	      difference = -1;
 	      new_focus_row = pe->pattern->n_rows + focus_row;
@@ -2329,9 +2297,9 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
 	}
       if (focus_row >= pe->pattern->n_rows)
 	{
-	  if (wrap == BST_PEA_WRAP_TO_NOTE)
+	  if (pea_mask == BST_PEA_WRAP_TO_NOTE)
 	    focus_row = 0;
-	  else if (wrap == BST_PEA_WRAP_TO_PATTERN)
+	  else if (pea_mask == BST_PEA_WRAP_TO_PATTERN)
 	    {
 	      difference = +1;
 	      new_focus_row = focus_row - pe->pattern->n_rows;
@@ -2341,41 +2309,71 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
 	  else
 	    focus_row = pe->pattern->n_rows - 1;
 	}
-    }
-  
-  if (note != pnote->note)
-    bse_pattern_set_note (pe->pattern,
-			  pe->focus_channel,
-			  pe->focus_row,
-			  note);
-  if (instrument != pnote->instrument)
-    bse_pattern_set_instrument (pe->pattern,
-				pe->focus_channel,
-				pe->focus_row,
-				instrument);
-  
-  if (focus_channel != pe->focus_channel ||
-      focus_row != pe->focus_row)
-    bst_pattern_editor_set_focus (pe, focus_channel, focus_row, BST_PE_KEY_FOCUS_UNSELECTS);
-  
-  if (difference != 0)
-    {
-      BsePattern *pattern;
-      
-      pattern = pe->pattern;
-      gtk_signal_emit (GTK_OBJECT (pe),
-		       pe_signals[SIGNAL_PATTERN_STEP],
-		       bse_item_get_seqid (BSE_ITEM (pe->pattern)),
-		       difference);
-      if (pattern != pe->pattern)
+      /* apply changes */
+      if (note != pnote->note)
+	bse_pattern_set_note (pe->pattern,
+			      pe->focus_channel,
+			      pe->focus_row,
+			      note);
+      if (instrument != pnote->instrument)
+	bse_pattern_set_instrument (pe->pattern,
+				    pe->focus_channel,
+				    pe->focus_row,
+				    instrument);
+      if (focus_channel != pe->focus_channel || focus_row != pe->focus_row)
 	{
-	  if (new_focus_channel != pe->focus_channel ||
-	      new_focus_row != pe->focus_row)
-	    bst_pattern_editor_set_focus (pe, new_focus_channel, new_focus_row, BST_PE_KEY_FOCUS_UNSELECTS);
+	  if (pea & BST_PEA_RECTANGLE_SELECT)
+	    {
+	      guint last_channel = pe->last_focus_channel;
+	      guint last_row = pe->last_focus_row;
+
+	      bst_pattern_editor_set_focus (pe, focus_channel, focus_row, FALSE);
+	      pe->last_focus_channel = last_channel;
+	      pe->last_focus_row = last_row;
+	      bst_pattern_editor_select_rectangle (pe,
+						   last_channel,
+						   last_row,
+						   pe->focus_channel,
+						   pe->focus_row);
+	    }
+	  else
+	    bst_pattern_editor_set_focus (pe, focus_channel, focus_row, BST_PE_KEY_FOCUS_UNSELECTS);
+	}
+      if (difference != 0)
+	{
+	  BsePattern *pattern = pe->pattern;
+	  
+	  gtk_signal_emit (GTK_OBJECT (pe),
+			   pe_signals[SIGNAL_PATTERN_STEP],
+			   bse_item_get_seqid (BSE_ITEM (pe->pattern)),
+			   difference);
+	  if (pattern != pe->pattern &&
+	      (new_focus_channel != pe->focus_channel || new_focus_row != pe->focus_row))
+	    bst_pattern_editor_set_focus (pe, new_focus_channel, new_focus_row, FALSE);
 	}
     }
-  
-  return pea & BST_PEA_TAG;
+  pea_mask = pea & BST_PEA_TYPE_MASK;
+  if (pea_mask == BST_PEA_TYPE_ACTIVATE_CELL)
+    {
+      gint x, y;
+
+      gdk_window_get_origin (pe->panel, &x, &y);
+      x += TONE_WIDTH (pe) / 2;
+      y += TONE_HEIGHT (pe) / 2;
+      x += TONE_X (pe, pe->focus_channel);
+      y += TONE_Y (pe, pe->focus_row);
+      gtk_signal_emit (GTK_OBJECT (pe),
+		       pe_signals[SIGNAL_CELL_ACTIVATE],
+		       pe->focus_channel,
+		       pe->focus_row,
+		       (pea & BST_PEA_CELL_MASK) >> BST_PEA_CELL_SHIFT,
+		       x /* x_root */,
+		       y /* y_root */,
+		       0 /* button */,
+		       (guint) event->time);
+    }
+
+  return pea & BST_PEA_TYPE_MASK;
 }
 
 static gint
@@ -2555,10 +2553,15 @@ bst_pattern_editor_class_set_key (BstPatternEditorClass	*class,
 				  BstPEActionType	 pe_action)
 {
   g_return_if_fail (BST_IS_PATTERN_EDITOR_CLASS (class));
-  
-  g_hash_table_insert (class->pea_ktab,
-		       GUINT_TO_POINTER (keyval | ((modifier & BST_MOD_SCA) << 16)),
-		       GUINT_TO_POINTER (pe_action | BST_PEA_TAG));
+
+  if (pe_action & BST_PEA_TYPE_MASK)
+    g_hash_table_insert (class->pea_ktab,
+			 GUINT_TO_POINTER (keyval | ((modifier & BST_MOD_SCA) << 16)),
+			 GUINT_TO_POINTER (pe_action));
+  else
+    g_hash_table_insert (class->pea_ktab,
+			 GUINT_TO_POINTER (keyval | ((modifier & BST_MOD_SCA) << 16)),
+			 NULL);
 }
 
 void
@@ -2582,6 +2585,7 @@ string_dump_pea (gpointer key,
   guint modifier = GPOINTER_TO_UINT (key) >> 16;
   GString *gstring = g_string_new ("");
   gchar *name;
+  guint pea_mask;
   
   name = gdk_keyval_name (gdk_keyval_to_lower (keyval));
   
@@ -2593,31 +2597,43 @@ string_dump_pea (gpointer key,
 		     modifier & BST_MOD_0C0 ? 'C' : '_',
 		     modifier & BST_MOD_00A ? 'A' : '_');
   
-  /* note
-   */
-  name = bse_note_to_string (BSE_NOTE_C (0) + (pea & BST_PEA_NOTE_MASK));
-  name[0] = toupper (name[0]);
-  g_string_sprintfa (gstring, "%-3.3s ", name[0] != 'v' ? name : "");
-  g_free (name);
-
-  /* octave
-   */
-  switch (pea & BST_PEA_MOVE_MASK)
+  /* note */
+  pea_mask = pea & BST_PEA_NOTE_MASK;
+  if (pea_mask == BST_PEA_NOTE_VOID)
+    g_string_sprintfa (gstring, "--- ");
+  else if (pea_mask == BST_PEA_NOTE_same)
+    g_string_sprintfa (gstring, "    ");
+  else
     {
-    case BST_PEA_OCTAVE_SHIFT_UP:	name = "+1";	break;
-    case BST_PEA_OCTAVE_SHIFT_DOWN:	name = "-1";	break;
-    case BST_PEA_OCTAVE_SHIFT_UP2:	name = "+2";	break;
-    case BST_PEA_OCTAVE_SHIFT_DOWN2:	name = "-2";	break;
-    default:				name = " 0";	break;
+      name = bse_note_to_string (BSE_NOTE_C (0) + (pea_mask >> BST_PEA_NOTE_SHIFT));
+      name[0] = toupper (name[0]);
+      g_string_sprintfa (gstring, "%-3.3s ", name);
+      g_free (name);
+    }
+
+  /* octave */
+  switch (pea & BST_PEA_OCTAVE_MASK)
+    {
+    case BST_PEA_OCTAVE_UP:	name = "+1";	break;
+    case BST_PEA_OCTAVE_DOWN:	name = "-1";	break;
+    case BST_PEA_OCTAVE_UP2:	name = "+2";	break;
+    case BST_PEA_OCTAVE_DOWN2:	name = "-2";	break;
+    case BST_PEA_OCTAVE_DFLT:	name = "df";	break;
+    default:			name = "  ";	break;
     }
   g_string_sprintfa (gstring, "%s ", name);
 
   /* decode instrument
    */
-  if ((pea & BST_PEA_INSTRUMENT_MASK) == BST_PEA_INSTRUMENT_0F)
+  pea_mask = pea & BST_PEA_INSTRUMENT_MASK;
+  if (pea_mask == BST_PEA_INSTRUMENT_DFLT)
     g_string_append (gstring, "df ");
+  else if (pea_mask == BST_PEA_INSTRUMENT_VOID)
+    g_string_append (gstring, "-- ");
+  else if (pea_mask == BST_PEA_INSTRUMENT_same)
+    g_string_append (gstring, "   ");
   else
-    g_string_sprintfa (gstring, "%02u ", (pea & BST_PEA_INSTRUMENT_MASK) >> 8);
+    g_string_sprintfa (gstring, "%02u ", pea_mask >> BST_PEA_INSTRUMENT_SHIFT);
   
   /* movement
    */
@@ -2641,19 +2657,31 @@ string_dump_pea (gpointer key,
     default:				name = "| | | | |"; break;
     }
   g_string_sprintfa (gstring, "%s ", name);
-
+  
   /* flags
    */
   g_string_append_c (gstring, pea & BST_PEA_WRAP_TO_NOTE	? 'B' : '.');
   g_string_append_c (gstring, pea & BST_PEA_WRAP_TO_PATTERN	? 'P' : '.');
-  g_string_append_c (gstring, pea & BST_PEA_NOTE_RESET		? 'N' : '.');
-  g_string_append_c (gstring, pea & BST_PEA_INSTRUMENT_RESET	? 'I' : '.');
-  g_string_append_c (gstring, pea & BST_PEA_SET_INSTRUMENT_0F	? 'F' : '.');
-  g_string_append_c (gstring, pea & BST_PEA_AFFECT_BASE_OCTAVE	? 'D' : '.');
-  g_string_append_c (gstring, pea & BST_PEA_WRAP_AS_CONFIG	? 'c' : '.');
+  g_string_append_c (gstring, pea & BST_PEA_WRAP_AS_CONFIG	? 'C' : '.');
+  g_string_append_c (gstring, pea & BST_PEA_RECTANGLE_SELECT	? 'E' : '.');
+  g_string_append (gstring, "  ");
+
+  /* cell activation */
+  pea_mask = pea & BST_PEA_TYPE_MASK;
+  if (pea_mask == BST_PEA_TYPE_ACTIVATE_CELL)
+    switch (pea & BST_PEA_CELL_MASK)
+      {
+      case BST_PEA_CELL_NOTE:		g_string_append (gstring, "Note      "); break;
+      case BST_PEA_CELL_INSTRUMENT:	g_string_append (gstring, "Instrument"); break;
+      case BST_PEA_CELL_EFFECT:		g_string_append (gstring, "Effect    "); break;
+      default:				g_string_append (gstring, "All       "); break;
+	break;
+      }
+  else
+    g_string_append (gstring, "-          ");
   
   g_string_sprintfa (gstring, "\n");
-
+  
   *slist_p = g_slist_prepend (*slist_p, g_strdup (gstring->str));
   g_string_free (gstring, TRUE);
 }
@@ -2687,26 +2715,24 @@ bst_pattern_editor_class_keydump (BstPatternEditorClass *class)
   gstring = g_string_new ("Pattern editor keytable:\n"
 			  "========================\n"
 			  "\n"
-			  "             Modifier (Shift, Control, ALt)\n"
+			  "             Modifier (Shift, Control, Alt)\n"
 			  "             |   Note\n"
-			  "             |   |    Octave shift\n"
+			  "             |   |    Octave\n"
 			  "             |   |    | Instrument id (df=default instrument)\n"
 			  "             |   |    | |   Note movement (Next, Left, Right, Up, Down)\n"
 			  "             |   |    | |   | Page movement (Left, Right, Up, Down)\n"
 			  "             |   |    | |   | | Jump to border (Left, Right, Top, Bottom)\n"
 			  "             |   |    | |   | | | Switch Pattern (Next, Previous)\n"
 			  "             |   |    | |   | | | |  Flag Values:\n"
-			  "             |   |    | |   | | | |  | B - Wrap around left and right\n"
-			  "             |   |    | |   | | | |  |     border\n"
-			  "             |   |    | |   | | | |  | P - Wrap to previous/next pattern\n"
-			  "             |   |    | |   | | | |  |     at top and bottom border\n"
-			  "             |   |    | |   | | | |  | N - Reset (delete) current note\n"
-			  "             |   |    | |   | | | |  | I - Reset (delete) current instrument\n"
-			  "             |   |    | |   | | | |  | F - Set default instrument of\n"
-			  "             |   |    | |   | | | |  |     current channel\n"
-			  "             |   |    | |   | | | |  | D - Apply octave shift to the\n"
-			  "             |   |    | |   | | | |  |     default octave of the pattern\n"
-			  "KeyName      Mod Not Oc In Movement  Flags\n");
+			  "             |   |    | |   | | | |  |  B - Wrap around borders\n"
+			  "             |   |    | |   | | | |  |  P - Wrap to previous/next pattern\n"
+			  "             |   |    | |   | | | |  |      at top and bottom border\n"
+			  "             |   |    | |   | | | |  |  C - Wrap according to\n"
+			  "             |   |    | |   | | | |  |      configuration\n"
+			  "             |   |    | |   | | | |  |  E - Extend rectangle selection\n"
+			  "             |   |    | |   | | | |  |     Cell activation\n"
+			  "             |   |    | |   | | | |  |     |\n"
+			  "KeyName      Mod Not Oc In Movement  Flags Activate\n");
   
   g_hash_table_foreach (class->pea_ktab,
 			string_dump_pea,

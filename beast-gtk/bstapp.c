@@ -70,15 +70,15 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Project/Refresh",			NULL,		BST_OP (REFRESH),		"<Item>" },
   { "/_Edit",				NULL,		NULL, 0,			"<Branch>" },
   { "/Edit/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
-  { "/Edit/_Undo",			"<ctrl>U",	BST_OP (UNDO_LAST),		"<Item>" },
+  { "/Edit/_Undo",			"<ctrl>Z",	BST_OP (UNDO_LAST),		"<Item>" },
   { "/Edit/_Redo",			"<ctrl>R",	BST_OP (REDO_LAST),		"<Item>" },
   { "/_Song",				NULL,		NULL, 0,			"<Branch>" },
   { "/Song/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
-  { "/Song/_Add Pattern",		"<ctrl>A",	BST_OP (PATTERN_ADD),		"<Item>" },
+  { "/Song/_Add Pattern",		"<ctrl>P",	BST_OP (PATTERN_ADD),		"<Item>" },
   { "/Song/Delete Pattern",		NULL,		BST_OP (PATTERN_DELETE),	"<Item>" },
   { "/Song/_Edit Pattern...",		"<ctrl>E",	BST_OP (PATTERN_EDITOR),	"<Item>" },
-  { "/Song/Add _Instrument",		"<ctrl>A",	BST_OP (INSTRUMENT_ADD),	"<Item>" },
-  // { "/S_Net",				NULL,		NULL, 0,			"<Branch>" },
+  { "/Song/Add _Instrument",		"<ctrl>I",	BST_OP (INSTRUMENT_ADD),	"<Item>" },
+  // { "/S_Net",			NULL,		NULL, 0,			"<Branch>" },
   // { "/SNet/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   // { "/SNet/_Test",			"",		BST_OP (NONE),			"<Item>" },
   { "/_Help",				NULL,		NULL, 0,			"<LastBranch>" },
@@ -365,7 +365,7 @@ bst_app_create_super_shell (BstApp   *app,
 void
 bst_app_reload_supers (BstApp *app)
 {
-  GtkWidget *old_page;
+  GtkWidget *old_page, *old_focus;
   GSList *page_list = NULL;
   GSList *slist;
 
@@ -373,6 +373,9 @@ bst_app_reload_supers (BstApp *app)
 
   // gtk_widget_hide (GTK_WIDGET (app->notebook));
 
+  old_focus = GTK_WINDOW (app)->focus_widget;
+  if (old_focus)
+    gtk_widget_ref (old_focus);
   old_page = app->notebook->cur_page ? app->notebook->cur_page->child : NULL;
   while (app->notebook->cur_page && app->notebook->cur_page->child)
     {
@@ -412,6 +415,13 @@ bst_app_reload_supers (BstApp *app)
     gtk_notebook_set_page (app->notebook,
 			   gtk_notebook_page_num (app->notebook,
 						  old_page));
+  if (old_focus)
+    {
+      if (old_page && gtk_widget_is_ancestor (old_focus, old_page) &&
+	  gtk_widget_get_toplevel (old_focus) == GTK_WIDGET (app))
+	gtk_widget_grab_focus (old_focus);
+      gtk_widget_unref (old_focus);
+    }
   for (slist = page_list; slist; slist = slist->next)
     {
       gtk_widget_destroy (slist->data);

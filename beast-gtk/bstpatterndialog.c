@@ -119,6 +119,41 @@ bst_pattern_dialog_class_init (BstPatternDialogClass *class)
   class->popup_entries = bst_menu_entries_sort (class->popup_entries);
 }
 
+void
+bst_pattern_dialog_gtkfix_default_accels (void)
+{
+  static gchar *accel_defaults[][2] = {
+    { "<BstPattern>/Select/All",               "<Control>A", },
+    { "<BstPattern>/Select/None",              "<Shift><Control>A", },
+    { "<BstPattern>/Select/Invert",            "<Control>I", },
+    { "<BstPattern>/Edit/Undo",                "<Control>Z", },
+    { "<BstPattern>/Edit/Redo",                "<Control>R", },
+    { "<BstPattern>/Edit/Copy",                "<Control>C", },
+    { "<BstPattern>/Edit/Cut",                 "<Control>X", },
+    { "<BstPattern>/Edit/Cut Named...",        "<Shift><Control>X", },
+    { "<BstPattern>/Edit/Paste",               "<Control>V", },
+    { "<BstPattern>/Edit/Paste Named...",      "<Shift><Control>V", },
+    { "<BstPattern>/Edit/Clear",               "<Control>K", },
+    { "<BstPattern>/Edit/Fill",                "<Control>period", },
+    { "<BstPattern>/Edit/Clear",               "<Control>K", },
+  };
+  static guint n_accel_defaults = sizeof (accel_defaults) / sizeof (accel_defaults[0]);
+  guint i;
+
+  for (i = 0; i < n_accel_defaults; i++)
+    {
+      gchar *string = g_strconcat ("(menu-path \"",
+				   accel_defaults[i][0],
+				   "\" \"",
+				   accel_defaults[i][1],
+				   "\")",
+				   NULL);
+
+      gtk_item_factory_parse_rc_string (string);
+      g_free (string);
+    }
+}
+
 static void
 bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
 {
@@ -226,17 +261,17 @@ pe_channel_row_from_popup (BstPatternDialog *pattern_dialog,
 }
 
 static void
-pe_cell_clicked (BstPatternEditor *pe,
-		 guint		   channel,
-		 guint		   row,
-		 BstCellType	   cell_type,
-		 guint		   root_x,
-		 guint		   root_y,
-		 guint		   button,
-		 guint		   time,
-		 BstPatternDialog *pattern_dialog)
+pe_cell_activate (BstPatternEditor *pe,
+		  guint		    channel,
+		  guint		    row,
+		  BstCellType	    cell_type,
+		  guint		    root_x,
+		  guint		    root_y,
+		  guint		    button,
+		  guint		    time,
+		  BstPatternDialog *pattern_dialog)
 {
-  if (button == 3)
+  if (button == 3 || button == 0)
     {
       GtkItemFactory *popup_factory = gtk_object_get_data (GTK_OBJECT (pattern_dialog),
 								bst_pattern_dialog_factories_path);
@@ -256,6 +291,40 @@ pe_cell_clicked (BstPatternEditor *pe,
     }
 }
 
+static gint
+pe_key_press (GtkObject        *pattern_editor,
+	      GdkEventKey      *event,
+	      BstPatternDialog *pattern_dialog)
+{
+  gboolean handled = FALSE;
+
+  if (event->keyval == GDK_Insert)
+    {
+      GType type = g_type_from_name ("BsePattern+insert-note");
+
+      if (type)
+	{
+	  handled = TRUE;
+	  pattern_dialog_exec_proc (pattern_dialog, type, NULL);
+	}
+    }
+  else if (event->keyval == GDK_Delete)
+    {
+      GType type = g_type_from_name ("BsePattern+delete-note");
+
+      if (type)
+	{
+	  handled = TRUE;
+	  pattern_dialog_exec_proc (pattern_dialog, type, NULL);
+	}
+    }
+
+  if (handled)
+    gtk_signal_emit_stop_by_name (pattern_editor, "key-press-event");
+
+  return handled;
+}
+
 GtkWidget*
 bst_pattern_dialog_new (BsePattern *pattern)
 {
@@ -271,8 +340,9 @@ bst_pattern_dialog_new (BsePattern *pattern)
   gtk_widget_set (pattern_dialog->pattern_editor,
 		  "visible", TRUE,
 		  "signal::destroy", gtk_widget_destroyed, &pattern_dialog->pattern_editor,
-		  "signal::pattern_step", bst_pattern_editor_dfl_stepper, NULL,
-		  "signal::cell_clicked", pe_cell_clicked, pattern_dialog,
+		  "signal::pattern-step", bst_pattern_editor_dfl_stepper, NULL,
+		  "signal::cell-activate", pe_cell_activate, pattern_dialog,
+		  "signal::key-press-event", pe_key_press, pattern_dialog,
 		  "parent", pattern_dialog->scrolled_window,
 		  NULL);
   bst_pattern_editor_set_effect_hooks (BST_PATTERN_EDITOR (pattern_dialog->pattern_editor),

@@ -74,7 +74,7 @@ void		bst_pattern_dialog_operate	(BstPatternDialog *pattern_dialog,
 gboolean	bst_pattern_dialog_can_operate	(BstPatternDialog *pattern_dialog,
 						 BstPatternOps	   op);
 void		bst_pattern_dialog_update	(BstPatternDialog *pattern_dialog);
-
+void   bst_pattern_dialog_gtkfix_default_accels (void);
 
 
 #ifdef __cplusplus
