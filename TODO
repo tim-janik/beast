@@ -300,13 +300,6 @@ sfidl:
     (at least SfiRec will probably not do a deep copy)
 60- bse.idl defines bseamplifier, for which there is an idl file
     (touch bseamplifier.idl; make breaks)
-98- Const lookups don't honour namespacing
-98- namespace prefixing in ParamHints doesn't work:
-    namespace Dav {
-    Num x = (::Bse::STANDARD);
-    Num y = (Bse::STANDARD);
-    Num z = (::STANDARD);
-    };
 51- reenable signals in bseprocidl
 50- error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
     indicate where the previous definition was
