@@ -1,5 +1,4 @@
 FIXMES:
-- update release notes
 - add demo song
 - fix plugins in bsesh
 - fix engine deinitialization assertions in bseserver.c

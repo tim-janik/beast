@@ -498,9 +498,21 @@ bst_app_update_can_operate (BstApp *app)
 
   shell = bst_app_get_current_shell (app);
   widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Song");
-  gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
+  if (widget)
+    gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
   widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Waves");
-  gtk_widget_set_sensitive (widget, BST_IS_WAVE_REPO_SHELL (shell));
+  if (widget)
+    gtk_widget_set_sensitive (widget, BST_IS_WAVE_REPO_SHELL (shell));
+
+  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/File/Save");	// FIXME: hack
+  if (widget)
+    gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
+  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Edit/Undo");	// FIXME: hack
+  if (widget)
+    gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
+  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Edit/Redo");	// FIXME: hack
+  if (widget)
+    gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
 
   for (i = BST_OP_NONE; i < BST_OP_LAST; i++)
     {
@@ -758,15 +770,19 @@ bst_app_operate (BstApp *app,
       break;
     case BST_OP_HELP_FAQ:
       help_file = g_strconcat (BST_PATH_DOCS, "/faq.markup", NULL);
-      help_title = help_file;
+      help_title = g_strdup (help_file);
       goto HELP_DIALOG;
     case BST_OP_HELP_GSL_PLAN:
       help_file = g_strconcat (BST_PATH_DOCS, "/gsl-mplan.markup", NULL);
-      help_title = help_file;
+      help_title = g_strdup (help_file);
       goto HELP_DIALOG;
     case BST_OP_HELP_QUICK_START:
       help_file = g_strconcat (BST_PATH_DOCS, "/quickstart.markup", NULL);
-      help_title = help_file;
+      help_title = g_strdup (help_file);
+      goto HELP_DIALOG;
+    case BST_OP_HELP_RELEASE_NOTES:
+      help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
+      help_title = g_strdup_printf ("BEAST-%s Release Notes", BST_VERSION);
       goto HELP_DIALOG;
     HELP_DIALOG:
       if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
@@ -786,30 +802,7 @@ bst_app_operate (BstApp *app,
 			NULL);
 	}
       g_free (help_file);
-      gxk_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
-      gxk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
-      break;
-    case BST_OP_HELP_RELEASE_NOTES:
-      if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
-	{
-	  GtkWidget *sctext;
-	  help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
-	  help_title = help_file;
-	  sctext = gxk_scroll_text_create (0, NULL);
-	  gxk_scroll_text_append_file_tsm (sctext, help_file);
-	  help_file = g_strconcat (BST_PATH_DOCS, "/release-news.markup", NULL);
-	  gxk_scroll_text_append_file_tsm (sctext, help_file);
-	  g_free (help_file);
-	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = gxk_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
-								     NULL,
-								     GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_DELETE_BUTTON,
-								     help_title, sctext);
-	  g_object_set (bst_help_dialogs[op - BST_OP_HELP_FIRST],
-			"default_width", 560,
-			"default_height", 640,
-			NULL);
-	  g_free (help_title);
-	}
+      g_free (help_title);
       gxk_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
       gxk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
       break;

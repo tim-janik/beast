@@ -1,3 +1,19 @@
+Thu Mar 13 21:42:45 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to 0.5.0, released beast-0.5.0.tar.gz.
+	
+	* TODO, README, docs/release-notes.texi: release updates.
+	
+	* beast-gtk/bstapp.c (bst_app_operate): popup release-notes dialog
+	as ordinary navigatable text window.
+
+	* beast-gtk/bstapp.c (bst_app_update_can_operate): in lack of a working
+	gtk_item_factory_get_widget_by_action() ($*=%!!!) hardcode disabling
+	of /File/Save, /Edit/Undo and /Edit/Redo.
+
+	* beast-gtk/gxk/gxktexttools.c (gxk_scroll_text_create): disable "Find"
+	button until its functionality is implemented.
+
 Thu Mar 13 18:04:21 2003  Tim Janik  <timj@gtk.org>
 
 	* test/*.bse: storage format fixups.

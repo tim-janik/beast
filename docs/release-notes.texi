@@ -11,24 +11,23 @@
 
 @unnumbered @center RELEASE-NOTES
 
-Much has changed in the new development series (v0.4) of BEAST.
-In brief (specifics can be found in the
-@uref{beast-doc://release-news,,NEWS section}), the
-GUI was majorly polished, many new synthesis features have
-been added and support for various external wave file formats
-was implemented.
+This new development series of BEAST comes with a lot of
+the internals redone, many new GUI features and a sound generation
+back-end separated from any GUI activities.
+Specifics can be found in the
+@uref{beast-doc://release-news,,NEWS section}).
 
-The current version allows to perform interesting synthesis tasks
-and to have lots of fun with songs, external MIDI devices and samples.
-However, since this is still an ALPHA version, some things might
-break on occasions, so reports about misbehaviour are welcome.
+The most outstanding new feature is the track editor which allows
+free arrangement of parts in songs and adds loop support to
+simplify song edits.
 
-Be warned though, the .bse file format hasn't fully stabelized
-yet, so incompatibilities whith future versions may occour.
+Be warned though, the .bse file format hasn't completely stabilized
+yet, so incompatibilities with future versions may occur.
 
 A good starting point are the test files shipped in the
 @path{tests/} subdirectory of the source package, or the
-@uref{beast-doc://quickstart,,Quick Start Guide} in the @menupath{Help} menu.
+@uref{beast-doc://quickstart,,Quick Start Guide} in the
+@menupath{Help} menu.
 
 For uptodate information on BEAST development, please visit:
 

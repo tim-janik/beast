@@ -16,16 +16,16 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <malloc.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <string.h>
-#include <errno.h>
-#include <dirent.h>
 #include "gxktexttools.h"
 #include <gdk/gdkkeysyms.h>
 #include "gxktoolbar.h"
 #include "gxkutils.h"
+#include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <string.h>
+#include <errno.h>
+#include <dirent.h>
 
 
 #define	GXK_IS_SCROLL_TEXT	GTK_IS_VBOX
@@ -1208,6 +1208,7 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
    */
   if (flags & GXK_SCROLL_TEXT_NAVIGATABLE)
     {
+      GtkWidget *button;
       TextNavigation *tnav = navigation_from_sctext (sctext);
       g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (gxk_scroll_text_advance), sctext);
       tnav->backb = gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Back", "Go back one page", GTK_STOCK_GO_BACK);
@@ -1226,9 +1227,11 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
       g_object_connect (gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Index", NULL, GTK_STOCK_INDEX),
 			"swapped_signal::clicked", navigate_index, sctext,
 			NULL);
-      g_object_connect (gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Find", "Searching not yet implemented", GTK_STOCK_FIND),
+      button = gxk_toolbar_append_stock (tbar, GXK_TOOLBAR_BUTTON, "_Find", "Searching not yet implemented", GTK_STOCK_FIND);
+      g_object_connect (button,
 			"swapped_signal::clicked", navigate_find, sctext,
 			NULL);
+      gtk_widget_set_sensitive (button, FALSE);	// FIXME: implement Find
       tnav->refe = g_object_new (GTK_TYPE_ENTRY,
 				 "visible", TRUE,
 				 "width_request", 10,

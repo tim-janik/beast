@@ -5,13 +5,13 @@ This is an ALPHA version of BEAST/BSE, the bedevilled audio system and
 the bedevilled sound engine.
 BEAST is currently in development stage, the BSE API has not fully
 stabelized yet.
-The rough goal of this project is to get an audio system that supports
+The overall goal of this project is to get an audio system that supports
 multiple song and sample formats (besides the project specific .bse
 format) as well as synthesis networks and allows full fledged editing
 and manipulation of them. Sample manipulation includes generation of new
 sounds from module networks, based on various forms of audio synthesis.
 More information on the fundamental principles can be found in the
-./docs subdirectory.
+./docs subdirectory and on the beast website.
 Some *.bse files used for testing are also included in the ./test
 subdirectory.
 
@@ -39,7 +39,7 @@ The official ftp site for BEAST/BSE is:
 The official web site for BEAST/BSE is:
   http://beast.gtk.org/
 
-And finally there's a mailing list (pretty low volume) as well:
+And finally there's a mailing list as well:
   beast@beast.gtk.org
 send an email to timj@beast.gtk.org to get subscribed.
 
