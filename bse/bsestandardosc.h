@@ -38,7 +38,6 @@ extern "C" {
 /* --- wave forms --- */
 typedef enum
 {
-  BSE_STANDARD_OSC_NONE,					/*< skip >*/
   BSE_STANDARD_OSC_SINE		= GSL_OSC_WAVE_SINE,		/*< nick=Sine >*/
   BSE_STANDARD_OSC_TRIANGLE	= GSL_OSC_WAVE_TRIANGLE,	/*< nick=Triangle >*/
   BSE_STANDARD_OSC_SAW_RISE	= GSL_OSC_WAVE_SAW_RISE,	/*< nick=Rising Saw >*/

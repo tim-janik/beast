@@ -1,3 +1,7 @@
+Mon Apr 15 14:43:18 2002  Tim Janik  <timj@gtk.org>
+
+	* bsestandardosc.h (enum): get rid of BSE_STANDARD_OSC_NONE.
+
 Mon Apr 15 09:43:15 2002  Tim Janik  <timj@gtk.org>
 
 	* gslosctable.[hc]: create anti-aliased filter tables for the

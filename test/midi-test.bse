@@ -2,18 +2,18 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-02-03 22:22:13")
+  (modification-time "2002-04-15 13:40:17")
   (creation-time "2002-01-12 12:42:41")
   (name "Wave-Repository"))
 (BseMidiSynth::MIDI-Net
   (snet (BseSNet::MIDI-Instrument))
   (n-voices 4)
-  (modification-time "2002-02-03 22:22:13")
+  (modification-time "2002-04-15 13:40:17")
   (creation-time "2002-01-12 12:42:52")
   (blurb "Don't touch Routing")
   (name "MIDI-Net"))
 (BseSNet::MIDI-Instrument
-  (modification-time "2002-02-03 22:22:13")
+  (modification-time "2002-04-15 13:40:17")
   (creation-time "2002-01-12 12:42:55")
   (name "MIDI-Instrument")
   (BseMidiKeyboard::MidiKeyboard
@@ -35,13 +35,13 @@
     (source-input "mono_in2" BseSNet:1.BseSimpleADSR:1 "adsr_out")
     (parasite f "BstRouterCoords" 2 95.000000 122.000000))
   (BseSimpleADSR::ADSR-Envelope
+    (decay-time 30.000002)
     (name "ADSR-Envelope")
     (source-input "gate_in" BseSNet:1.BseMidiKeyboard:1 "gate")
     (parasite f "BstRouterCoords" 2 258.000000 68.000000))
   (BseStandardOsc::Main_Voice
-    (fm-perc 27.777781)
-    (wave-form BSE_STANDARD_OSC_GSAW)
+    (fm-perc 27.777779)
     (name "Main_Voice")
     (source-input "freq_in" BseSNet:1.BseMidiKeyboard:1 "frequency")
-    (source-input "freq_mod_in" BseSNet:1.BseMidiKeyboard:1 "gate")
+    (source-input "sync_in" BseSNet:1.BseMidiKeyboard:1 "gate")
     (parasite f "BstRouterCoords" 2 205.000000 215.500000)))
