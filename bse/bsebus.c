@@ -629,11 +629,11 @@ bse_bus_class_init (BseBusClass *class)
   source_class->reset = bse_bus_reset;
   
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_MUTE,
-                              sfi_pspec_bool ("mute", _("Mute"), _("Mute this bus (turns off volume)"), FALSE, SFI_PARAM_STANDARD));
+                              sfi_pspec_bool ("mute", _("Mute"), _("Mute: turn off the bus volume"), FALSE, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_SOLO,
-                              sfi_pspec_bool ("solo", _("Solo"), _("Mute all other busses"), FALSE, SFI_PARAM_STANDARD));
+                              sfi_pspec_bool ("solo", _("Solo"), _("Solo: mute all other busses"), FALSE, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_SYNC,
-                              sfi_pspec_bool ("sync", _("Sync"), _("Keep left and right volume syncronized"), TRUE, SFI_PARAM_STANDARD));
+                              sfi_pspec_bool ("sync", _("Sync"), _("Sync: enforce the same volume left and right"), TRUE, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_LEFT_VOLUME_dB,
 			      sfi_pspec_real ("left-volume-db", _("Left Volume [dB]"), _("Volume adjustment of left bus channel"),
                                               0, BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
