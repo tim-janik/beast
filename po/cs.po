@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-22 14:28+0200\n"
-"PO-Revision-Date: 2004-06-20 18:24+0200\n"
+"POT-Creation-Date: 2004-06-28 14:20+0200\n"
+"PO-Revision-Date: 2004-06-28 16:42+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1251,16 +1251,18 @@ msgid "UTime"
 msgstr "UČas"
 
 #: beast-gtk/bstprofiler.c:247
-msgid "Milliseconds of user CPU time used by thread"
-msgstr "Uživatelský čas CPU použitý vláknem v milisekundách"
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
+msgstr "Průměrný počet milisekund uživatelského času CPU použitého vláknem za sekundu"
 
 #: beast-gtk/bstprofiler.c:248
 msgid "STime"
 msgstr "SČas"
 
 #: beast-gtk/bstprofiler.c:248
-msgid "Milliseconds of system CPU time used by thread"
-msgstr "Systémový čas CPU použitý vláknem v milisekundách"
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
+msgstr "Průměrný počet milisekund systémového času CPU použitého vláknem za sekundu"
 
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
