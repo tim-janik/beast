@@ -35,8 +35,7 @@ int main(int argc, char **argv)
 
   printf ("BseContainer: %s\n", type_blurb("BseContainer").c_str());
 
-  string home = getenv("HOME");
-  SampleFileInfoPtr info = sample_file_info (home + "/x.mp3");
+  SampleFileInfoPtr info = sample_file_info ("empty.ogg");
   if (info)
     {
       printf("file = %s, loader = %s\n", info->file.c_str(), info->loader.c_str());

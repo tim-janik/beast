@@ -1,3 +1,10 @@
+Sat Nov 29 03:05:05 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/Makefile.am: Use bsw/bswcxxutils.h again. This makes NULL
+	strings work.
+
+	* tests/empty.ogg tests/cxxbinding.cc: Added a test ogg file.
+
 Fri Nov 28 00:55:55 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/cxxbinding.cc: Don't mention SFI in the license.
