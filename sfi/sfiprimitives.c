@@ -1862,7 +1862,7 @@ sfi_ring_uniq (SfiRing        *sorted_ring1,
                SfiCompareFunc  cmp,
                gpointer        data)
 {
-  const SfiRing *ring = sfi_ring_copy_uniq (sorted_ring1, cmp, data);
+  SfiRing *ring = sfi_ring_copy_uniq (sorted_ring1, cmp, data);
   sfi_ring_free (sorted_ring1);
   return ring;
 }

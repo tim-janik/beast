@@ -28,7 +28,7 @@ G_BEGIN_DECLS
 /* --- macros --- */
 #define G_CPP_PASTE2(a,b)       a ## b
 #define G_CPP_PASTE(a,b)        G_CPP_PASTE2 (a, b)
-#define g_static_assert(expr)   typedef struct { char assertion_failed : ((expr) ? 1 : 0); } G_CPP_PASTE (GLibStaticAssertion_LINE, __LINE__)
+#define g_static_assert(expr)   typedef struct { char assertion_failed[(expr) ? 1 : -1]; } G_CPP_PASTE (GLibStaticAssertion_LINE, __LINE__)
 
 #if (GLIB_SIZEOF_LONG > 4)
 #define G_HASH_LONG(l)	((l) + ((l) >> 32))
