@@ -231,7 +231,7 @@ super_shell_build_song (BstSuperShell *self,
                             gxk_notebook_create_tabulator (_("Mixer"), BST_STOCK_MIXER, _("Mix track outputs, adjust volume and add effects")));
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (song),
-                            gxk_notebook_create_tabulator (_("Parameters"), BST_STOCK_PROPERTIES, _("Adjust general song parameters")));
+                            gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, _("Adjust overall song behaviour")));
   gtk_notebook_append_page (notebook,
                             bst_part_view_new (song),
                             gxk_notebook_create_tabulator (_("Parts"), BST_STOCK_PART, NULL));
@@ -263,7 +263,7 @@ super_shell_build_snet (BstSuperShell *self,
   param_view = bst_param_view_new (snet);
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (snet),
-                            gxk_notebook_create_tabulator (_("Parameters"), BST_STOCK_PROPERTIES, _("Adjust synthesizer parameters")));
+                            gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, _("Adjust overall synthesizer behaviour")));
 }
 
 static void
@@ -274,14 +274,10 @@ super_shell_build_wave_repo (BstSuperShell *self,
 
   gtk_notebook_append_page (notebook,
                             bst_wave_view_new (wrepo),
-                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                          "label", _("Waves"),
-                                          NULL));
+                            gxk_notebook_create_tabulator (_("Waves"), BST_STOCK_MINI_WAVE_REPO, NULL));
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (wrepo),
-                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                          "label", _("Parameters"),
-                                          NULL));
+                            gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, NULL));
 }
 
 static GtkNotebook*
