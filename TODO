@@ -1,11 +1,15 @@
 FIXMES:
-- bse.idl defines bseamplifier, for which there is an idl file
-  (touch bseamplifier.idl; make breaks)
-- remove examplepeakfilter
-- introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
-- fix syndrum parameter scale
-- move non-infrastructure synthesis modules out of the core into plugins/
 - nuke frequency fine-tune for biquad filter
+- remove examplepeakfilter
+- fix syndrum parameter scale
+- introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
+- allow extra plugin path in env variable and rc file
+- add facility to add/remove/edit sample search paths at the GUI (and save to rc file)
+- add BEAST_SAMPLE_DIRS, describe env variables in man page
+- upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
+- fix forcing unique names for children of a project 
+- check whether */icons/Makefile.icons is included in dist tarball
+- check whether plugins/Makefile.plugins is included in dist tarball
 - add toplevel menu /Synthesizers/:
   /Synthesizers/Load from Effect Library
   /Synthesizers/Load from Instrument Library
@@ -16,27 +20,22 @@ FIXMES:
   which operate on the currently selected synth (project child)
   /Synthesizers/Demo
   alternatively, introduce /Insert/ toplevel menu
-- fix raising/falling edge detection in SynDrum. rename SynDrum category
-- allow extra plugin path in env variable and rc file
-- add Songs/Scripts
+- add demo song
+- add new test song containing a wave track
+- default saving (SFI_PARAM_SKIP_DEFAULT)
+- move non-infrastructure synthesis modules out of the core into plugins/
 - freeverb bypass toggle
-- bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
-- add facility to add/remove/edit sample search paths at the GUI (and save to rc file)
-- upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
 - add "bypass" option to audio output channels
 - if Track::Synth is NULL, disconnect post-process-subsynth from track-context-merger
+- add Solo propety to tracks
+- add Volume property to tracks
 - fix nominator/denomiator settings in songs
-- fix forcing unique names for children of a project 
 - fix glue gc assertion after sfi_glue_describe_proc("")
 - change default zoom factor in sample view
-- add Solo propety to tracks
-- add frequency splitter/multiplier (plus cent-wise detune?)
-- add frequency output, offering bpm, 1/1 1/4 1/3 notes frequencies
+- add frequency splitter/multiplier module (plus cent-wise detune?)
+- add frequency output module, offering bpm, 1/1 1/4 1/3 notes frequencies
 - add sfisclock.h to sfi.h
 - <mg> quick rfe based on 0.5.3: implement multiple selection in the wave loader file selector and have an add button that does not close the dialog
-- add demo song
-- check whether */icons/Makefile.icons is included in dist tarball
-- check whether plugins/Makefile.plugins is included in dist tarball
 - fixup filemenu/dialog for WAVE recording
 - fix undo for: BseDataPocket
 - fix initial_granule in gslvorbis-cutter.c wrg page flushing
@@ -44,23 +43,19 @@ FIXMES:
 - fix 64bit v_int usage of GScanner in BSE?
 - get rid of bse_procedure_execvl
 - get rid of super->mod_time
-- add BEAST_SAMPLE_DIRS, describe env variables in man page
-- rename gslwave files appropriately
+- rename *.gslwave files appropriately
 - don't always rebuild lib-list [Rebuild]-button
 - nuke BSE file crawling functions
 - fix API for file matching in SFI
 - fix name of BSE_SNET_FLAG_USER_SYNTH
 - fix BST_OP_PROJECT_SAVE
-- add new test song containing a wave track
 - implement (GUI for) locked properties
-- register category IDs via ID mechanism
 - register drivers with categories
 - fix gsl wave osc
 - install bsw/* into bse/.
 - nuke SFI memblocks, malloc() is good enough
 - GslModuleClass.free should be renamed free_user_data
 - fix engine deinitialization warning in bseserver.c
-- default saving (SFI_PARAM_SKIP_DEFAULT)
 - match enum names on word boundaries only
 - master tune slider in preferences (kammer ton)
 - bsemididevice-oss throws warnings when compiled without midi support
@@ -69,35 +64,31 @@ FIXMES:
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
 - create modules via category identifier, not type name
 - add IDs to part links in tracks
-- update /Help index to cover new docs
 - insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
 - registering the same script function twice triggers GType assertion
 - fix procbrowser
-- fix bseplugin.c:bse_plugin_use():need_reinit
 - fix uses of gsl_engine_tick_stamp_from_systime() in bstwaveeditor.c
-- handle non-validated sequences and records in generation code (things
-  can be demarshalled in non-validated form after incompatible changes)
 - cleanup helper/util code in sfitype.h
-- choice type should have validation function
 - song->master volume doesn't affect anything
 - fix and canonify decibell naming everywhere
-- need volume properties per track
-- pressing browsing hotkeys in release-notes dialog does stuff
-- don't generate .markup files for NEWS and gsl-mplan.txt
 - sample chunk display should show note names not only midi notes
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
 - RackEditor covers are broken for rack-items close to right table boundary
-- delay class destruction and plugin unloading through async handlers (slight timeout)
 - fix the word "tact" vs. measure
 - need tact number entry widget
 - object clippboard
-- fade in/out of samples (sample editor)
+- fade in/out of samples in sample editor
 - wave editor: provide transpose spinner for wave preview
 - fix BseSong::denominator SpinButton arrows not working
-- collect flow jobs from unscheduled nodes  
-* eliminate everything that fgrep -i fixme/hack reveals
+- collect flow jobs from unscheduled nodes, i.e. call
+  collect_trash_timed_jobs_L() not only from _engine_push_processed_node()
 
 DOCS:
+- pressing browsing hotkeys in release-notes dialog does stuff
+- Ctrl+'+' and Ctrl+'-' should change font sizes in doc browser
+- don't generate .markup files for NEWS and gsl-mplan.txt
+- update /Help index to cover new docs
+- add bse-categories.txt to /Help menu (probably rewrite to .texi)
 - add tag to load/play bse files
 - add QuickStart section on wave selection
 - add QuickStart section on postprocessing effects
@@ -115,6 +106,7 @@ DOCS:
 
 TODO:
 - virtual MIDI keyboard
+- delay class destruction and plugin unloading through async handlers (slight timeout)
 - piano and track roll scrolling implemented with secondary scrollbar
 - piano roll dialog gains partlink property editor
 - item links: (where (link 3 "TrackLink::LinkTrack::Cool"))
@@ -136,6 +128,7 @@ TODO:
   - ::release on containers removes children
 - implement remote use-count collection
 - complete and intergrate piano-script
+* eliminate everything that fgrep -i fixme/hack reveals
 * move mix_freq and recording_freq into datahandle
 * fix reversed data handle wrg n_channels
 : propagate mtime changes through cascaded data handles (e.g. for dcache)
@@ -278,11 +271,17 @@ Effects:
   (main source for http://zynaddsubfx.sourceforge.net)
 
 sfidl:
+  - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
+  - bse.idl defines bseamplifier, for which there is an idl file
+    (touch bseamplifier.idl; make breaks)
   - error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
     indicate where the previous definition was
   - #include "/absolute/path" is handled as relative path
   - support records and sequences in bse-plugin-generator and bseprocidl
   - reenable signals in bseprocidl
+  - choice type should have validation function
+  - handle non-validated sequences and records in generation code (things
+    can be demarshalled in non-validated form after incompatible changes)
   fixes:
   - support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
   extensions:

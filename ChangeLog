@@ -1,3 +1,7 @@
+Fri Oct 10 13:19:03 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in (BST_RELEASE_CANDIDATE): up version to 0.5.5-rc2.
+
 Thu Oct  9 23:24:55 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/beast.1.texi:
