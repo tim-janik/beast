@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-25 11:01+0200\n"
-"PO-Revision-Date: 2004-09-25 14:44+0200\n"
+"POT-Creation-Date: 2004-09-27 19:03+0200\n"
+"PO-Revision-Date: 2004-09-28 02:08+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4419,6 +4419,15 @@ msgstr "Kroky BPM"
 msgid "Step width for beats per minute"
 msgstr "Šířka kroku pro údery za minutu"
 
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsedevice.c:287
+msgid ""
+"Auto is a special driver, it acts as a placeholder for\n"
+"automatic driver selection."
+msgstr ""
+"Auto je speciální ovladač, znamená automatický\n"
+"výběr ovladače."
+
 #. GSL
 #: bse/bseenums.c:99
 msgid "Everything went well"
@@ -4639,6 +4648,18 @@ msgstr "High znamená, že nástroj dosyntetizoval"
 msgid "/Input & Output/Instrument Output"
 msgstr "/Vstup a výstup/Výstup nástroje"
 
+#: bse/bsemain.c:266
+msgid ""
+"\n"
+"Available PCM drivers:\n"
+msgstr "\nDostupné ovladače PCM:\n"
+
+#: bse/bsemain.c:268
+msgid ""
+"\n"
+"Available MIDI drivers:\n"
+msgstr "\nDostupné ovladače MIDI:\n"
+
 #: bse/bsemidicontroller.c:86
 msgid "/Input & Output/MIDI Control Input"
 msgstr "/Vstup a výstup/Vstup ovládání MIDI"
@@ -4674,6 +4695,29 @@ msgstr "Říd Out4"
 #: bse/bsemidicontroller.c:143
 msgid "MIDI Signal 4"
 msgstr "MIDI signál 4"
+
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsemididevice-null.c:92
+msgid ""
+"Discards all output events and generates no input events. This driver\n"
+"is not part of the automatic device selection list for MIDI devices."
+msgstr ""
+"Zahazuje všechny výstupní události a negeneruje žádné vstupní\n"
+"události. Tento ovladač není na seznamu automatického výběru zařízení\n"
+"pro zařízení MIDI."
+
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsemididevice-oss.c:262
+msgid ""
+"Open Sound System MIDI driver:\n"
+"  DEVICE - MIDI device file name.\n"
+"  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
+"           read-only, read-write or write-only access."
+msgstr ""
+"Ovladač Open Sound System MIDI:\n"
+"  ZAŘÍZENÍ - název souboru zařízení MIDI.\n"
+"  REŽIM    - jedno z \"ro\", \"rw\" nebo \"wo\" pro přístup\n"
+"             jen pro čtení, pro čtení a zápis, nebo jen pro zápis."
 
 #: bse/bsemidiinput.c:82
 msgid "/Input & Output/MIDI Voice Input"
@@ -4797,6 +4841,35 @@ msgstr "Parazitující cesty"
 msgid "Parasite"
 msgstr "Parazit"
 
+#. syntax
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsepcmdevice-null.c:142
+msgid ""
+"Discard all PCM output and provide zero blocks as input. This\n"
+"driver is not part of the automatic PCM device selection list."
+msgstr ""
+"Zahazovat všechen výstup PCM a poskytovat jako vstup nulové bloky.\n"
+"Tento ovladač není na seznamu automatického výběru zařízení PCM."
+
+#: bse/bsepcmdevice-oss.c:651
+msgid "DEVICE,MODE"
+msgstr "ZAŘÍZENÍ,REŽIM"
+
+#. TRANSLATORS: keep this text to 70 chars in width
+#: bse/bsepcmdevice-oss.c:653
+msgid ""
+"Open Sound System PCM driver:\n"
+"  DEVICE - PCM device file name\n"
+"  MODE   - may contain \"rw\", \"ro\" or \"wo\" for\n"
+"           read-only, read-write or write-only access;\n"
+"           adding \"hs\" forces hard sync on underruns.\n"
+msgstr ""
+"Ovladač Open Sound System PCM:\n"
+"  ZAŘÍZENÍ - název souboru zařízení PCM\n"
+"  REŽIM    - může obsahovat \\\"ro\\\", \\\"rw\\\" nebo \\\"wo\\\" pro přístup\\n\"\n"
+"             jen pro čtení, pro čtení a zápis, nebo jen pro zápis;\"\n"
+"             přidání \"hs\" vynucuje tvrdou synchronizaci při podtečení.\n"
+
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
 msgstr "/Vstup a výstup/Vstup PCM"
@@ -4817,33 +4890,33 @@ msgstr "Soubor WAVE"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Název souboru WAVE používaného pro záznam výstupu zvuku BSE"
 
-#: bse/bseserver.c:463
+#: bse/bseserver.c:472
 msgid "Advice about PCM device selections problems"
 msgstr "Rada o problémech s výběrem zařízení PCM"
 
-#: bse/bseserver.c:464
+#: bse/bseserver.c:473
 msgid "Alert me about PCM device selections problems"
 msgstr "Upozorni mě na problémy s výběrem zařízení PCM"
 
-#: bse/bseserver.c:465
+#: bse/bseserver.c:474
 #, c-format
 msgid "Failed to open PCM devices, giving up: %s"
 msgstr "Nemohu otevřít zařízení PCM, vzdávám to: %s"
 
-#: bse/bseserver.c:484
+#: bse/bseserver.c:493
 msgid "Advice about MIDI device selections problems"
 msgstr "Rada o problémech s výběrem zařízení MIDI"
 
-#: bse/bseserver.c:485
+#: bse/bseserver.c:494
 msgid "Alert me about MIDI device selections problems"
 msgstr "Upozorni mě na problémy s výběrem zařízení MIDI"
 
-#: bse/bseserver.c:486
+#: bse/bseserver.c:495
 #, c-format
 msgid "Failed to open MIDI devices (reverting to null driver): %s"
 msgstr "Nemohu otevřít zařízení MIDI (používám ovladač null): %s"
 
-#: bse/bseserver.c:524
+#: bse/bseserver.c:547
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Nemohu otevřít výstupní soubor \"%s\": %s"
@@ -5248,6 +5321,39 @@ msgstr "Soubor syntézy BSE"
 #: data/bse.keys.in.h:1
 msgid "Audio"
 msgstr "Zvuk"
+
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:529
+msgid "PLUGIN:CARD,DEV,SUBDEV"
+msgstr "MODUL:KARTA,ZAŘ,PODZAŘ"
+
+#. TRANSLATORS: keep this text to 70 chars in width
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:531
+#, c-format
+msgid ""
+"Advanced Linux Sound Architecture PCM driver, using\n"
+"ALSA %s.\n"
+"The device specification follows the ALSA device naming\n"
+"conventions, a detailed description of which is available\n"
+"at the project's website:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
+"Various ALSA plugins can be used here, 'hw' allows direct\n"
+"adressing of hardware channels by card, device and subdevice.\n"
+"  PLUGIN - the ALSA plugin, 'default' is usually good enough\n"
+"  CARD   - the card number for plugins like 'hw'\n"
+"  DEV    - the device number for plugins like 'hw'\n"
+"  SUBDEV - the subdevice number for plugins like 'hw'\n"
+msgstr ""
+"Ovladač PCM Advanced Linux Sound Architecture PCM driver, používá\n"
+"ALSA %s.\n"
+"Specifikace zařízení používá konvence pojmenovávání zařízení ALSA,\n"
+"jejichž detailní popis je k dispozici na WWW stránkách projektu:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/pcm.html\n"
+"Dají se zde použít různé zásuvné moduly ALSA, 'hw' umožňuj přímé\n"
+"adresování hardwarových kanálů podle karty, zařízení a podzařízení.\n"
+"  MODUL  - modul ALSA, obvykle stačí 'default'\n"
+"  KARTA  - číslo karty pro moduly jako 'hw'\n"
+"  ZAŘ    - číslo zařízení pro moduly jako 'hw'\n"
+"  PODZAŘ - číslo podzařízení pro moduly jako 'hw'\n"
 
 #: plugins/artscompressor.idl:28 plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
