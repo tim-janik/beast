@@ -131,7 +131,7 @@ bse_song_sequencer_step (BseSong *song)
       
       for (channel = 0; channel < song->n_channels; channel++)
 	{
-	  static const BsePatternNote empty_note = { NULL, BSE_NOTE_VOID, 0, NULL };
+	  static const BsePatternNote empty_note = { NULL, BSE_NOTE_VOID, 0, 0, NULL };
 	  BsePatternNote *note;
 	  
 	  note = (!pattern ? &empty_note :
