@@ -409,7 +409,7 @@ alsa_device_check_io (BsePcmHandle *handle,
       (n_frames_avail == 0 &&   /* check RUNNING state */
        snd_pcm_state (alsa->read_handle ? alsa->read_handle : alsa->write_handle) != SND_PCM_STATE_RUNNING))
     alsa_device_retrigger (alsa);
-  if (n_frames_avail < handle->block_length)
+  if (n_frames_avail < (gint) handle->block_length)
     {
       /* not enough data? sync with hardware pointer */
       snd_pcm_hwsync (alsa->read_handle ? alsa->read_handle : alsa->write_handle);

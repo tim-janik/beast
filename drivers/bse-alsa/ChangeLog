@@ -1,3 +1,8 @@
+Sun Oct  3 19:02:46 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c (alsa_device_check_io): fixed signed/unsigned
+	comparison bug, reported by stefan.
+
 Sat Oct  2 04:54:22 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-alsa.c (bse_midi_device_alsa_open): open devices 
