@@ -356,6 +356,9 @@ update_play_back_marks (gpointer data,
 	}
       bst_qsampler_set_mark (qsampler, 3, qpos, BST_QSAMPLER_PRELIGHT);
     }
+  self->ignore_playpos = TRUE;
+  gtk_adjustment_set_value (GTK_RANGE (self->qsampler_playpos)->adjustment, pcm_pos * 100.0 / ((gfloat) self->playback_length));
+  self->ignore_playpos = FALSE;
   if (pcm_pos > self->playback_length)
     play_back_wchunk_off (self);	/* stop looping */
 }
@@ -597,7 +600,7 @@ static void
 playpos_changed (BstWaveEditor *self,
 		 GtkAdjustment *adjustment)
 {
-  if (self->phandle && bst_play_back_handle_is_playing (self->phandle))
+  if (self->phandle && !self->ignore_playpos && bst_play_back_handle_is_playing (self->phandle))
     bst_play_back_handle_seek_perc (self->phandle, adjustment->value);
 }
 

@@ -1,3 +1,7 @@
+Sun Aug  4 12:27:54 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstwaveeditor.c: update playback position slider.
+
 Sat Aug  3 17:46:41 2002  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am (EXTRA_DIST): don't include and ship PKG_paths.h.
