@@ -1,3 +1,17 @@
+Fri Oct 18 04:39:00 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiserial.[hc]: removed cruft. use GScanner 64bit int parsing instead
+	of identifier hack. implemented sfi_value_store_param() and
+	sfi_value_parse_param_rest().
+
+	* sfiparams.c (param_rec_values_cmp): handle type mismatch of field
+	pspec and value.
+
+Sat Oct 12 19:30:42 2002  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: implemented 64bit-safe GScanner, using
+	strtoull() code from glibc.
+
 Sat Oct 12 01:03:24 2002  Tim Janik  <timj@gtk.org>
 
 	* sfinote.[hc]: fixup error handling when parsing notes.

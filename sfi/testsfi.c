@@ -33,59 +33,109 @@ test_misc (void)
   DONE ();
 }
 
+static GScannerConfig test_scanner_config = {
+  (
+   " \t\r\n"
+   )                    /* cset_skip_characters */,
+  (
+   G_CSET_a_2_z
+   "_"
+   G_CSET_A_2_Z
+   )                    /* cset_identifier_first */,
+  (
+   G_CSET_a_2_z
+   ".:-+_0123456789*!?"
+   G_CSET_A_2_Z
+   )                    /* cset_identifier_nth */,
+  ( ";\n" )             /* cpair_comment_single */,
+  
+  FALSE                 /* case_sensitive */,
+  
+  TRUE                  /* skip_comment_multi */,
+  TRUE                  /* skip_comment_single */,
+  FALSE                 /* scan_comment_multi */,
+  TRUE                  /* scan_identifier */,
+  FALSE                 /* scan_identifier_1char */,
+  FALSE                 /* scan_identifier_NULL */,
+  FALSE                 /* scan_symbols */,
+  TRUE                  /* scan_binary */,
+  TRUE                  /* scan_octal */,
+  TRUE                  /* scan_float */,
+  TRUE                  /* scan_hex */,
+  FALSE                 /* scan_hex_dollar */,
+  FALSE                 /* scan_string_sq */,
+  TRUE                  /* scan_string_dq */,
+  TRUE                  /* numbers_2_int */,
+  FALSE                 /* int_2_float */,
+  FALSE                 /* identifier_2_string */,
+  TRUE                  /* char_2_token */,
+  TRUE                  /* symbol_2_token */,
+  FALSE                 /* scope_0_fallback */,
+  TRUE                  /* store_int64 */,
+};
+
+#define SCANNER_ASSERT(scanner, printout, token, text, svalue) { \
+  g_scanner_input_text (scanner, text, strlen (text)); \
+  ASSERT (g_scanner_get_next_token (scanner) == token); \
+  if (printout) g_print ("{scanner64value:%llu}", scanner->value.v_int64); \
+  ASSERT (scanner->value.v_int64 == svalue); \
+  ASSERT (g_scanner_get_next_token (scanner) == '#'); \
+}
+
+static void
+test_scanner64 (void)
+{
+  GScanner *scanner = g_scanner_new (&test_scanner_config);
+  MSG ("64Bit Scanner:");
+  scanner->config->numbers_2_int = FALSE;
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_BINARY, " 0b0 #", 0);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_BINARY, " 0b10000000000000000 #", 65536);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_BINARY, " 0b11111111111111111111111111111111 #", 4294967295U);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_BINARY, " 0b1111111111111111111111111111111111111111111111111111111111111111 #", 18446744073709551615U);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_OCTAL, " 0 #", 0);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_OCTAL, " 0200000 #", 65536);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_OCTAL, " 037777777777 #", 4294967295U);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_OCTAL, " 01777777777777777777777 #", 18446744073709551615U);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_HEX, " 0x0 #", 0);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_HEX, " 0x10000 #", 65536);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_HEX, " 0xffffffff #", 4294967295U);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_HEX, " 0xffffffffffffffff #", 18446744073709551615U);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_INT, " 65536 #", 65536);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_INT, " 4294967295 #", 4294967295U);
+  SCANNER_ASSERT (scanner, FALSE, G_TOKEN_INT, " 18446744073709551615 #", 18446744073709551615U);
+  g_scanner_destroy (scanner);
+  DONE ();
+}
+
+static gboolean serialize_cmp_serialize_typed = FALSE;
+
 static void
 serialize_cmp (GValue     *value,
 	       GParamSpec *pspec)
 {
-  static GScannerConfig test_scanner_config = {
-    (
-     " \t\r\n"
-     )                    /* cset_skip_characters */,
-    (
-     G_CSET_a_2_z
-     "_"
-     G_CSET_A_2_Z
-     )                    /* cset_identifier_first */,
-    (
-     G_CSET_a_2_z
-     ".:-+_0123456789*!?"
-     G_CSET_A_2_Z
-     G_CSET_LATINS
-     G_CSET_LATINC
-     )                    /* cset_identifier_nth */,
-    ( ";\n" )             /* cpair_comment_single */,
-
-    FALSE                 /* case_sensitive */,
-
-    TRUE                  /* skip_comment_multi */,
-    TRUE                  /* skip_comment_single */,
-    FALSE                 /* scan_comment_multi */,
-    TRUE                  /* scan_identifier */,
-    FALSE                 /* scan_identifier_1char */,
-    FALSE                 /* scan_identifier_NULL */,
-    TRUE                  /* scan_symbols */,
-    TRUE                  /* scan_binary */,
-    TRUE                  /* scan_octal */,
-    TRUE                  /* scan_float */,
-    TRUE                  /* scan_hex */,
-    FALSE                 /* scan_hex_dollar */,
-    FALSE                 /* scan_string_sq */,
-    TRUE                  /* scan_string_dq */,
-    TRUE                  /* numbers_2_int */,
-    FALSE                 /* int_2_float */,
-    FALSE                 /* identifier_2_string */,
-    TRUE                  /* char_2_token */,
-    TRUE                  /* symbol_2_token */,
-    FALSE                 /* scope_0_fallback */,
-  };
   GScanner *scanner = g_scanner_new (&test_scanner_config);
   GString *gstring = g_string_new (NULL);
   GValue rvalue = { 0, };
   GTokenType token;
   gint cmp;
-  sfi_value_store_typed (value, gstring);
+  if (serialize_cmp_serialize_typed)
+    sfi_value_store_typed (value, gstring);
+  else
+    sfi_value_store_param (value, gstring, pspec, 2);
   g_scanner_input_text (scanner, gstring->str, gstring->len);
-  token = sfi_value_parse_typed (&rvalue, scanner);
+  if (serialize_cmp_serialize_typed)
+    token = sfi_value_parse_typed (&rvalue, scanner);
+  else
+    {
+      if (g_scanner_get_next_token (scanner) == '(')
+	if (g_scanner_get_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+	    strcmp (scanner->value.v_identifier, pspec->name) == 0)
+	  token = sfi_value_parse_param_rest (&rvalue, scanner, pspec);
+	else
+	  token = G_TOKEN_IDENTIFIER;
+      else
+	token = '(';
+    }
   if (0)
     g_print ("{parsing:%s}", gstring->str);
   if (token != G_TOKEN_NONE)
@@ -120,7 +170,7 @@ serialize_cmp (GValue     *value,
 }
 
 static void
-test_typed_serialization (void)
+test_typed_serialization (gboolean serialize_typed)
 {
   static const GEnumValue test_choices[] = {
     { 42, "ozo-foo", "exo", },
@@ -128,6 +178,7 @@ test_typed_serialization (void)
   };
   static const SfiChoiceValues choice_values = { G_N_ELEMENTS (test_choices), test_choices };
   SfiRecFields rec_fields = { 0, NULL, };
+  GParamSpec *pspec_homo_seq;
   SfiFBlock *fblock;
   SfiBBlock *bblock;
   SfiSeq *seq;
@@ -135,7 +186,11 @@ test_typed_serialization (void)
   GValue *val;
   gchar str256[257];
   guint i;
-  MSG ("TypedSerialization:");
+  serialize_cmp_serialize_typed = serialize_typed;
+  if (serialize_typed)
+    MSG ("TypedSerialization:");
+  else
+    MSG ("ParamSerialization:");
   serialize_cmp (sfi_value_bool (FALSE),
 		 sfi_param_spec_bool ("bool-false", NULL, NULL, FALSE, SFI_PARAM_DEFAULT));
   serialize_cmp (sfi_value_bool (TRUE),
@@ -204,6 +259,7 @@ test_typed_serialization (void)
   sfi_fblock_append1 (fblock, SFI_MAXNUM);
   serialize_cmp (sfi_value_fblock (fblock),
 		 sfi_param_spec_fblock ("fblock", NULL, NULL, SFI_PARAM_DEFAULT));
+
   serialize_cmp (sfi_value_seq (NULL),
 		 sfi_param_spec_seq ("seq-nil", NULL, NULL, NULL, SFI_PARAM_DEFAULT));
   seq = sfi_seq_new ();
@@ -221,29 +277,56 @@ test_typed_serialization (void)
   val = sfi_value_fblock (fblock);
   sfi_seq_append (seq, val);
   sfi_value_free (val);
+  if (serialize_typed)
+    serialize_cmp (sfi_value_seq (seq),
+		   sfi_param_spec_seq ("seq-heterogeneous", NULL, NULL,
+				       sfi_param_spec_real ("dummy", NULL, NULL,
+							    0, -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT),
+				       SFI_PARAM_DEFAULT));
+  sfi_seq_clear (seq);
+  for (i = 0; i < 12; i++)
+    {
+      val = sfi_value_int (2000 - 3 * i);
+      sfi_seq_append (seq, val);
+      sfi_value_free (val);
+    }
+  pspec_homo_seq = sfi_param_spec_seq ("seq-homogeneous", NULL, NULL,
+				       sfi_param_spec_int ("integer", NULL, NULL,
+							   1500, 1000, 2000, 1, SFI_PARAM_DEFAULT),
+				       SFI_PARAM_DEFAULT);
+  g_param_spec_ref (pspec_homo_seq);
   serialize_cmp (sfi_value_seq (seq),
-		 sfi_param_spec_seq ("seq", NULL, NULL,
-				     sfi_param_spec_real ("dummy", NULL, NULL, 0,
-							  -SFI_MAXREAL, SFI_MAXREAL, 1, SFI_PARAM_DEFAULT),
+		 sfi_param_spec_seq ("seq-homogeneous", NULL, NULL,
+				     sfi_param_spec_int ("integer", NULL, NULL,
+							 1500, 1000, 2000, 1, SFI_PARAM_DEFAULT),
 				     SFI_PARAM_DEFAULT));
+  
   serialize_cmp (sfi_value_rec (NULL),
 		 sfi_param_spec_rec ("rec-nil", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
   rec = sfi_rec_new ();
   serialize_cmp (sfi_value_rec (rec),
 		 sfi_param_spec_rec ("rec-empty", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
   val = sfi_value_string ("huhu");
-  sfi_rec_set (rec, "exo", val);
+  sfi_rec_set (rec, "exo-string", val);
+  if (serialize_typed)
+    sfi_rec_set (rec, "exo-string2", val);
   sfi_value_free (val);
   val = sfi_value_seq (seq);
-  sfi_rec_set (rec, "foo", val);
+  sfi_rec_set (rec, "seq-homogeneous", val);
   sfi_value_free (val);
   val = sfi_value_proxy (102);
-  sfi_rec_set (rec, "baz", val);
+  sfi_rec_set (rec, "baz-proxy", val);
   sfi_value_free (val);
+  rec_fields.fields = g_new (GParamSpec*, 20); /* should be static mem */
+  rec_fields.fields[rec_fields.n_fields++] = sfi_param_spec_proxy ("baz-proxy", NULL, NULL, SFI_PARAM_DEFAULT);
+  rec_fields.fields[rec_fields.n_fields++] = sfi_param_spec_string ("exo-string", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
+  rec_fields.fields[rec_fields.n_fields++] = pspec_homo_seq;
   serialize_cmp (sfi_value_rec (rec),
 		 sfi_param_spec_rec ("rec", NULL, NULL, rec_fields, SFI_PARAM_DEFAULT));
+
   sfi_fblock_unref (fblock);
   sfi_seq_unref (seq);
+  g_param_spec_unref (pspec_homo_seq);
   sfi_rec_unref (rec);
   DONE ();
 }
@@ -347,12 +430,16 @@ int
 main (int   argc,
       char *argv[])
 {
+  g_log_set_always_fatal (g_log_set_always_fatal (G_LOG_FATAL_MASK) | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+
   sfi_init ();
 
   test_notes ();
   test_time ();
   test_renames ();
-  test_typed_serialization ();
+  test_scanner64 ();
+  test_typed_serialization (TRUE);
+  test_typed_serialization (FALSE);
   test_misc ();
   
   return 0;

@@ -24,31 +24,16 @@
 G_BEGIN_DECLS
 
 
-/* --- SfiSerializer --- */
-typedef struct {
-  guint		indent;
-} SfiSerializerConfig;
-typedef struct {
-  GString      *gstring;
-} SfiSerializer;
-
-
 /* --- functions --- */
-void		sfi_value_store			(const GValue	*value,
-						 GString	*gstring,
-						 GParamSpec	*pspec);
-GTokenType	sfi_value_parse			(GValue		*value,
-						 GScanner	*scanner,
-						 GParamSpec	*pspec,
-						 GError	       **errorp);
 void		sfi_value_store_typed		(const GValue	*value,
 						 GString	*gstring);
 void		sfi_value_store_param		(const GValue	*value,
 						 GString	*gstring,
-						 GParamSpec	*pspec);
+						 GParamSpec	*pspec,
+						 guint		 indent);
 GTokenType	sfi_value_parse_typed		(GValue		*value,
 						 GScanner	*scanner);
-GTokenType	sfi_value_parse_param		(GValue		*value,
+GTokenType	sfi_value_parse_param_rest	(GValue		*value,
 						 GScanner	*scanner,
 						 GParamSpec	*pspec);
 

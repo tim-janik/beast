@@ -24,12 +24,6 @@
 #include "sfinote.h"
 
 
-/* --- storage helpers --- */
-#define	gstring_puts(gstring, string)	g_string_append (gstring, string)
-#define	gstring_putc(gstring, vchar)	g_string_append_c (gstring, vchar)
-#define	gstring_printf			g_string_append_printf
-
-
 /* --- parsing aids --- */
 #define parse_or_return(scanner, token)  G_STMT_START{ \
   GScanner *__s = (scanner); guint _t = (token); \
@@ -49,189 +43,6 @@ check_nil (GScanner *scanner)
   return (scanner->token == G_TOKEN_IDENTIFIER &&
 	  strcmp (scanner->value.v_identifier, "nil") == 0);
 }
-
-
-/* --- functions --- */
-static void
-gstring_handle_break (GString *gstring)
-{
-  /* better be safe than sorry? */
-  gstring_putc (gstring, '\n');
-}
-
-static void
-store_value_nonstruct (const GValue *value,
-		       GString      *gstring,
-		       SfiSCategory  cat)
-{
-  switch (cat)
-    {
-      SfiNum num;
-      SfiFBlock *fblock;
-      SfiProxy proxy;
-      gchar *string;
-      const gchar *cstring;
-    case SFI_SCAT_BOOL:
-      gstring_puts (gstring, sfi_value_get_bool (value) ? "#t" : "#f");
-      break;
-    case SFI_SCAT_INT:
-      gstring_printf (gstring, "%d", sfi_value_get_int (value));
-      break;
-    case SFI_SCAT_NUM:
-      num = sfi_value_get_num (value);
-      if (num <= G_MAXINT && num >= G_MININT)
-	gstring_printf (gstring, "%d", (SfiInt) num);
-      else
-	{
-	  guint i1, i2;
-	  if (num < 0)
-	    {
-	      gstring_puts (gstring, "- ");
-	      num = -num;
-	    }
-	  i1 = num >> 32, i2 = num & 0xffffffff;
-	  gstring_printf (gstring, "'(0x%x . 0x%08x)", i1, i2);
-	}
-      break;
-    case SFI_SCAT_REAL:
-      gstring_printf (gstring, "%.18g", sfi_value_get_real (value));
-      break;
-    case SFI_SCAT_FBLOCK:
-      fblock = sfi_value_get_fblock (value);
-      if (!fblock)
-	gstring_puts (gstring, "nil");
-      else
-	{
-	  guint i;
-	  gstring_printf (gstring, "'(");
-	  if (fblock->n_values)
-	    gstring_printf (gstring, "%.18g", fblock->values[0]);
-	  for (i = 1; i < fblock->n_values; i++)
-	    gstring_printf (gstring, " %.18g", fblock->values[i]);
-	  gstring_printf (gstring, ")");
-	}
-      break;
-    case SFI_SCAT_STRING:
-      cstring = sfi_value_get_string (value);
-      if (cstring)
-	{
-	  string = g_strescape (cstring, NULL);
-	  gstring_putc (gstring, '"');
-	  gstring_puts (gstring, string);
-	  gstring_putc (gstring, '"');
-	  g_free (string);
-	}
-      else
-	gstring_puts (gstring, "nil");
-      break;
-    case SFI_SCAT_CHOICE:
-      cstring = sfi_value_get_string (value);
-      if (!cstring)
-	gstring_puts (gstring, "nil");
-      else
-	gstring_printf (gstring, "'%s", cstring);
-      break;
-    case SFI_SCAT_PROXY:
-      proxy = sfi_value_get_proxy (value);
-      gstring_printf (gstring, "%lu", proxy);
-      break;
-    case SFI_SCAT_NOTE:
-      string = sfi_note_to_string (sfi_value_get_int (value));
-      gstring_printf (gstring, "\"%s\"", string);
-      g_free (string);
-      break;
-    case SFI_SCAT_TIME:
-      string = sfi_time_to_string (sfi_time_to_utc (sfi_value_get_num (value)));
-      gstring_printf (gstring, "\"%s\"", string);
-      g_free (string);
-      break;
-    default:
-      g_error ("%s: unable to handle values of category `%c'", G_STRLOC, cat);
-      break;
-    }
-}
-
-void
-sfi_value_store (const GValue *value,
-		 GString      *gstring,
-		 GParamSpec   *pspec)
-{
-  SfiSCategory cat;
-  const gchar *indent = "";
-  
-  g_return_if_fail (G_IS_VALUE (value));
-  g_return_if_fail (gstring != NULL);
-  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
-
-  gstring_handle_break (gstring);
-
-  cat = sfi_categorize_pspec (pspec);
-  switch (cat)
-    {
-      SfiSeq *seq;
-      SfiRec *rec;
-      GParamSpec *espec;
-      SfiRecFields rfields;
-    case SFI_SCAT_BOOL:
-    case SFI_SCAT_INT:
-    case SFI_SCAT_NUM:
-    case SFI_SCAT_REAL:
-    case SFI_SCAT_STRING:
-    case SFI_SCAT_CHOICE:
-    case SFI_SCAT_PROXY:
-    case SFI_SCAT_NOTE:
-    case SFI_SCAT_TIME:
-    case SFI_SCAT_FBLOCK:
-      store_value_nonstruct (value, gstring, cat);
-      break;
-    case SFI_SCAT_SEQ:
-      seq = sfi_value_get_seq (value);
-      espec = sfi_pspec_get_seq_element (pspec);
-      if (!seq || !sfi_seq_check (seq, G_PARAM_SPEC_VALUE_TYPE (espec)))
-        gstring_puts (gstring, "nil");
-      else
-	{
-	  gchar *lbreak = g_strconcat ("\n", indent, "  ", NULL);
-	  guint i;
-	  gstring_printf (gstring, "'(");
-	  for (i = 0; i < seq->n_elements; i++)
-	    {
-	      GValue *evalue = sfi_seq_get (seq, i);
-	      gstring_puts (gstring, lbreak);
-	      sfi_value_store (evalue, gstring, espec);
-	    }
-	  gstring_puts (gstring, ")");
-	  g_free (lbreak);
-	}
-      break;
-    case SFI_SCAT_REC:
-      rec = sfi_value_get_rec (value);
-      rfields = sfi_pspec_get_rec_fields (pspec);
-      if (!rec || !sfi_rec_check (rec, rfields))
-	gstring_puts (gstring, "nil");
-      else
-	{
-	  gchar *lbreak = g_strconcat ("\n", indent, "  ", NULL);
-	  guint i;
-	  gstring_printf (gstring, "'(");
-	  for (i = 0; i < rfields.n_fields; i++)
-	    {
-	      GValue *evalue = sfi_rec_get (rec, rfields.fields[i]->name);
-	      gstring_puts (gstring, lbreak);
-	      gstring_printf (gstring, "'(%s ", rfields.fields[i]->name);
-	      sfi_value_store (evalue, gstring, rfields.fields[i]);
-	      gstring_puts (gstring, ")");
-	    }
-	  gstring_puts (gstring, ")");
-	  g_free (lbreak);
-	}
-      break;
-    default:
-      g_error ("%s: unable to handle values of type `%s' (category: `%c')", G_STRLOC, G_VALUE_TYPE_NAME (value), cat);
-      break;
-    }
-}
-
 static GTokenType
 scanner_skip_statement (GScanner *scanner,
 			guint     level)
@@ -250,342 +61,80 @@ scanner_skip_statement (GScanner *scanner,
   return G_TOKEN_NONE;
 }
 
-static gboolean
-g_scanner_peeked_integer (GScanner *scanner)
+
+/* --- storage helpers --- */
+#define	gstring_puts(gstring, string)	g_string_append (gstring, string)
+#define	gstring_putc(gstring, vchar)	g_string_append_c (gstring, vchar)
+#define	gstring_printf			g_string_append_printf
+static void
+gstring_break (GString  *gstring,
+	       gboolean *needs_break,
+	       guint     indent)
 {
-  return (scanner->next_token == G_TOKEN_BINARY ||
-	  scanner->next_token == G_TOKEN_OCTAL ||
-	  scanner->next_token == G_TOKEN_INT ||
-	  scanner->next_token == G_TOKEN_HEX);
+  gchar *s = g_new (gchar, indent + 1);
+  memset (s, ' ', indent);
+  s[indent] = 0;
+  gstring_putc (gstring, '\n');
+  gstring_puts (gstring, s);
+  g_free (s);
+  *needs_break = FALSE;
+}
+static void
+gstring_check_break (GString  *gstring,
+		     gboolean *needs_break,
+		     guint     indent)
+{
+  if (*needs_break)
+    gstring_break (gstring, needs_break, indent);
 }
 
+
+/* --- functions --- */
 static GTokenType
 sfi_scanner_parse_real_num (GScanner *scanner,
 			    SfiReal  *real_p,
-			    SfiNum   *num_p,
-			    gboolean  closing_parenthesis)
+			    SfiNum   *num_p)
 {
   gboolean negate = FALSE;
-  gchar *cset_identifier_first = scanner->config->cset_identifier_first;
-  gchar *cset_identifier_nth = scanner->config->cset_identifier_nth;
+  gdouble vdouble;
+  guint64 ui64;
 
-  g_return_val_if_fail (g_scanner_peeked_integer (scanner) == FALSE, G_TOKEN_ERROR);
-
-  /* hack around GScanner using strtol() for integer conversions, so we
-   * support numbers greater than 2^31-1, up to 2^64-1.
-   */
-
-  scanner->config->cset_identifier_first = "0123456789.";
-  scanner->config->cset_identifier_nth = "0123456789.+-eE";
   g_scanner_get_next_token (scanner);
-  if (scanner->token == ')' && closing_parenthesis)
-    {
-      /* spcial case for lists of numbers */
-      scanner->config->cset_identifier_first = cset_identifier_first;
-      scanner->config->cset_identifier_nth = cset_identifier_nth;
-      return ')';
-    }
   if (scanner->token == '-')
     {
       negate = TRUE;
       g_scanner_get_next_token (scanner);
     }
-  scanner->config->cset_identifier_first = cset_identifier_first;
-  scanner->config->cset_identifier_nth = cset_identifier_nth;
-
-  if (scanner->token == G_TOKEN_IDENTIFIER)
+  if (scanner->token == G_TOKEN_INT)
     {
-      guint64 ui64 = 0;
-      gdouble vdouble;
-      if (strchr (scanner->value.v_identifier, '.') ||
-	  strchr (scanner->value.v_identifier, 'e') ||
-	  strchr (scanner->value.v_identifier, 'E'))
-	{
-	  vdouble = g_strtod (scanner->value.v_identifier, NULL);
-	  ui64 = vdouble;
-	}
-      else
-	{
-	  sscanf (scanner->value.v_identifier, "%llu", &ui64);
-	  vdouble = ui64;
-	}
-      if (num_p)
-	{
-	  *num_p = ui64;
-	  if (negate)
-	    *num_p = - *num_p;
-	}
-      if (real_p)
-	*real_p = negate ? -vdouble : vdouble;
+      ui64 = scanner->value.v_int64;
+      vdouble = ui64;
+    }
+  else if (scanner->token == G_TOKEN_FLOAT)
+    {
+      vdouble = scanner->value.v_float;
+      ui64 = vdouble;
     }
   else
     return G_TOKEN_INT;
-  return G_TOKEN_NONE;
-}
-
-static GTokenType
-parse_value_nonstruct (GValue       *value,
-		       GScanner     *scanner,
-		       SfiSCategory  cat,
-		       GError      **errorp)
-{
-  GTokenType token;
-  switch (cat)
+  if (num_p)
     {
-      SfiNum num;
-      SfiReal real;
-      SfiTime ustime;
-      gboolean v_bool;
-    case SFI_SCAT_BOOL:
-      v_bool = FALSE;
-      g_scanner_get_next_token (scanner);
-      if (scanner->token == G_TOKEN_INT && scanner->value.v_int <= 1)
-	v_bool = scanner->value.v_int != 0;
-      else if (scanner->token == '#')
-	{
-	  g_scanner_get_next_token (scanner);
-	  if (scanner->token == 't' || scanner->token == 'T')
-	    v_bool = TRUE;
-	  else if (scanner->token == 'f' || scanner->token == 'F')
-	    v_bool = FALSE;
-	  else
-	    return 'f';
-	}
-      else
-	return '#';
-      sfi_value_set_bool (value, v_bool);
-      break;
-    case SFI_SCAT_INT:
-      token = sfi_scanner_parse_real_num (scanner, NULL, &num, FALSE);
-      if (token != G_TOKEN_NONE)
-	return token;
-      sfi_value_set_int (value, num);
-      break;
-    case SFI_SCAT_NUM:
-      token = sfi_scanner_parse_real_num (scanner, NULL, &num, FALSE);
-      if (token != G_TOKEN_NONE)
-	return token;
-      sfi_value_set_num (value, num);
-      break;
-    case SFI_SCAT_REAL:
-      g_scanner_get_next_token (scanner);
-      if (scanner->token == '-')
-	{
-	  v_bool = TRUE;
-	  g_scanner_get_next_token (scanner);
-	}
-      else
-	v_bool = FALSE;
-      if (scanner->token == G_TOKEN_FLOAT)
-	real = scanner->value.v_float;
-      else if (scanner->token == G_TOKEN_INT)
-	real = scanner->value.v_int;
-      else
-	return G_TOKEN_FLOAT;
-      sfi_value_set_real (value, v_bool ? -real : real);
-      break;
-    case SFI_SCAT_FBLOCK:
-      g_scanner_get_next_token (scanner);
-      if (check_nil (scanner))
-	sfi_value_set_fblock (value, NULL);
-      else if (scanner->token == '\'') // float list
-	{
-	  guint nfield = G_MAXUINT;
-	  SfiFBlock *fblock = sfi_fblock_new ();
-	  parse_or_return (scanner, '(');
-	  while (g_scanner_get_next_token (scanner) != ')')
-	    if (scanner->token == '-' && nfield != fblock->n_values)
-	      nfield = fblock->n_values;	// negate this field
-	    else if (scanner->token == G_TOKEN_FLOAT)
-	      sfi_fblock_append1 (fblock, scanner->value.v_float * (nfield == fblock->n_values ? -1 : 1));
-	    else if (scanner->token == G_TOKEN_INT)
-	      {
-		gfloat f = scanner->value.v_int;
-		sfi_fblock_append1 (fblock, nfield == fblock->n_values ? -f : f);
-	      }
-	    else
-	      goto WANT_FLOAT;
-	  sfi_value_set_fblock (value, fblock);
-	  sfi_fblock_unref (fblock);
-	  if (nfield == fblock->n_values)	// last element was '-'
-	    {
-	    WANT_FLOAT:
-	      return G_TOKEN_FLOAT;
-	    }
-	}
-      break;
-    case SFI_SCAT_STRING:
-      g_scanner_get_next_token (scanner);
-      if (check_nil (scanner))
-	sfi_value_set_string (value, NULL);
-      else if (scanner->token == G_TOKEN_STRING)
-	sfi_value_set_string (value, scanner->value.v_string);
-      else
-	return G_TOKEN_STRING;
-      break;
-    case SFI_SCAT_CHOICE:
-      g_scanner_get_next_token (scanner);
-      if (check_nil (scanner))
-	sfi_value_set_choice (value, NULL);
-      else if (scanner->token == '\'')
-	{
-	  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
-	  sfi_value_set_choice (value, scanner->value.v_identifier);
-	}
-      else
-	return '\'';
-      break;
-    case SFI_SCAT_PROXY:
-      parse_or_return (scanner, G_TOKEN_INT);
-      sfi_value_set_proxy (value, scanner->value.v_int);
-      break;
-    case SFI_SCAT_NOTE:
-      parse_or_return (scanner, G_TOKEN_STRING);
-      num = sfi_note_from_string (scanner->value.v_string);
-      if (!SFI_NOTE_IS_VALID (num))
-	return G_TOKEN_STRING;
-      sfi_value_set_int (value, num);
-      break;
-    case SFI_SCAT_TIME:
-      parse_or_return (scanner, G_TOKEN_STRING);
-      ustime = sfi_time_from_string (scanner->value.v_string);
-      if (!ustime)
-	return G_TOKEN_STRING;
-      sfi_value_set_num (value, ustime);
-      break;
-    default:
-      g_error ("%s: unable to handle values of category `%c'", G_STRLOC, cat);
-      break;
+      *num_p = ui64;
+      if (negate)
+	*num_p = - *num_p;
     }
-  return G_TOKEN_NONE;
-}
-
-static GTokenType
-parse_rec_field (SfiRec      *rec,
-		 GScanner    *scanner,
-		 GParamSpec  *rspec,
-		 GError     **errorp)
-{
-  GValue evalue = { 0, };
-  GTokenType token;
-  GParamSpec *fspec;
-  parse_or_return (scanner, '(');
-  parse_or_return (scanner, G_TOKEN_STRING);
-  fspec = sfi_pspec_get_rec_field (rspec, scanner->value.v_string);
-  if (!fspec)
-    {
-      sfi_set_error (errorp, 0, 0, "skipping unknown record field \"%s\"", scanner->value.v_string);
-      return scanner_skip_statement (scanner, 1);
-    }
-  g_value_init (&evalue, G_PARAM_SPEC_VALUE_TYPE (fspec));
-  token = sfi_value_parse (&evalue, scanner, fspec, errorp);
-  if (token == G_TOKEN_NONE)
-    sfi_rec_set (rec, fspec->name, &evalue);
-  g_value_unset (&evalue);
-  return token;
-}
-
-GTokenType
-sfi_value_parse (GValue     *value,
-		 GScanner   *scanner,
-		 GParamSpec *pspec,
-		 GError    **errorp)
-{
-  SfiSCategory cat;
-  GType vtype;
-
-  g_return_val_if_fail (G_IS_VALUE (value), G_TOKEN_ERROR);
-  g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
-  if (pspec)
-    g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
-
-  vtype = G_VALUE_TYPE (value);
-
-  cat = sfi_categorize_pspec (pspec);
-  switch (cat)
-    {
-      GParamSpec *espec;
-      SfiSeq *seq;
-    case SFI_SCAT_BOOL:
-    case SFI_SCAT_INT:
-    case SFI_SCAT_NUM:
-    case SFI_SCAT_REAL:
-    case SFI_SCAT_STRING:
-    case SFI_SCAT_CHOICE:
-    case SFI_SCAT_PROXY:
-    case SFI_SCAT_NOTE:
-    case SFI_SCAT_TIME:
-    case SFI_SCAT_FBLOCK:
-      return parse_value_nonstruct (value, scanner, cat, errorp);
-      break;
-    case SFI_SCAT_SEQ:
-      espec = sfi_pspec_get_seq_element (pspec);
-      if (check_nil (scanner))
-	sfi_value_set_seq (value, NULL);
-      else if (scanner->token == '\'')
-	{
-	  parse_or_return (scanner, '(');
-	  seq = sfi_seq_new ();
-	  while (g_scanner_peek_next_token (scanner) != ')')
-	    {
-	      GValue evalue = { 0, };
-	      GTokenType token;
-	      g_value_init (&evalue, G_PARAM_SPEC_VALUE_TYPE (espec));
-	      token = sfi_value_parse (&evalue, scanner, espec, errorp);
-	      if (token != G_TOKEN_NONE)
-		{
-		  g_value_unset (&evalue);
-		  sfi_seq_unref (seq);
-		  return token;
-		}
-	      sfi_seq_append (seq, &evalue);
-	      g_value_unset (&evalue);
-	    }
-	  g_scanner_get_next_token (scanner);	/* eat closing ')' */
-	  sfi_value_set_seq (value, seq);
-	  sfi_seq_unref (seq);
-	}
-      else
-	return '\'';
-      break;
-    case SFI_SCAT_REC:
-      if (check_nil (scanner))
-	sfi_value_set_rec (value, NULL);
-      else if (scanner->token == '\'')
-	{
-	  SfiRec *rec;
-	  parse_or_return (scanner, '(');
-	  rec = sfi_rec_new ();
-	  while (g_scanner_peek_next_token (scanner) != ')')
-	    {
-	      GTokenType token = parse_rec_field (rec, scanner, pspec, errorp);
-	      if (token != G_TOKEN_NONE)
-		{
-		  sfi_rec_unref (rec);
-		  return token;
-		}
-	    }
-	  g_scanner_get_next_token (scanner);	/* eat closing ')' */
-	  sfi_value_set_rec (value, rec);
-	  sfi_rec_unref (rec);
-	}
-      else
-	return '\'';
-      break;
-    default:
-      g_error ("%s: unable to handle values of type `%s' (category: `%c')", G_STRLOC, G_VALUE_TYPE_NAME (value), cat);
-      break;
-    }
+  if (real_p)
+    *real_p = negate ? -vdouble : vdouble;
   return G_TOKEN_NONE;
 }
 
 
 /* --- next generation serialization --- */
 static GTokenType
-sfi_serialize_primitive_value (SfiSCategory scat,
-			       GValue      *value,
-			       GString     *gstring,
-			       GScanner    *scanner)
+sfi_serialize_primitives (SfiSCategory scat,
+			  GValue      *value,
+			  GString     *gstring,
+			  GScanner    *scanner)
 {
   switch (scat)
     {
@@ -598,8 +147,8 @@ sfi_serialize_primitive_value (SfiSCategory scat,
 	{
 	  gboolean v_bool = FALSE;
 	  g_scanner_get_next_token (scanner);
-	  if (scanner->token == G_TOKEN_INT && scanner->value.v_int <= 1)
-	    v_bool = scanner->value.v_int != 0;
+	  if (scanner->token == G_TOKEN_INT && scanner->value.v_int64 <= 1)
+	    v_bool = scanner->value.v_int64 != 0;
 	  else if (scanner->token == '#')
 	    {
 	      g_scanner_get_next_token (scanner);
@@ -623,7 +172,7 @@ sfi_serialize_primitive_value (SfiSCategory scat,
       else
 	{
 	  SfiNum num;
-	  GTokenType token = sfi_scanner_parse_real_num (scanner, NULL, &num, FALSE);
+	  GTokenType token = sfi_scanner_parse_real_num (scanner, NULL, &num);
 	  if (token != G_TOKEN_NONE)
 	    return token;
 	  sfi_value_set_int (value, num);
@@ -638,7 +187,7 @@ sfi_serialize_primitive_value (SfiSCategory scat,
       else
 	{
 	  SfiNum num;
-	  GTokenType token = sfi_scanner_parse_real_num (scanner, NULL, &num, FALSE);
+	  GTokenType token = sfi_scanner_parse_real_num (scanner, NULL, &num);
 	  if (token != G_TOKEN_NONE)
 	    return token;
 	  sfi_value_set_num (value, num);
@@ -652,7 +201,7 @@ sfi_serialize_primitive_value (SfiSCategory scat,
       else
 	{
 	  SfiReal real;
-	  GTokenType token = sfi_scanner_parse_real_num (scanner, &real, NULL, FALSE);
+	  GTokenType token = sfi_scanner_parse_real_num (scanner, &real, NULL);
 	  if (token != G_TOKEN_NONE)
 	    return token;
 	  sfi_value_set_real (value, real);
@@ -716,7 +265,7 @@ sfi_serialize_primitive_value (SfiSCategory scat,
       else
 	{
 	  SfiNum num;
-	  GTokenType token = sfi_scanner_parse_real_num (scanner, NULL, &num, FALSE);
+	  GTokenType token = sfi_scanner_parse_real_num (scanner, NULL, &num);
           if (token != G_TOKEN_NONE)
 	    return token;
 	  sfi_value_set_proxy (value, num);
@@ -753,7 +302,7 @@ sfi_serialize_primitive_value (SfiSCategory scat,
 	      sfi_bblock_unref (bblock);
 	      while (g_scanner_get_next_token (scanner) != ')')
 		if (scanner->token == G_TOKEN_INT)
-		  sfi_bblock_append1 (bblock, scanner->value.v_int);
+		  sfi_bblock_append1 (bblock, scanner->value.v_int64);
 		else
 		  return G_TOKEN_INT;
 	    }
@@ -792,14 +341,14 @@ sfi_serialize_primitive_value (SfiSCategory scat,
 	      fblock = sfi_fblock_new ();
 	      sfi_value_set_fblock (value, fblock);
 	      sfi_fblock_unref (fblock);
-	      token = sfi_scanner_parse_real_num (scanner, &real, NULL, TRUE);
-	      while (token != ')')
+              while (g_scanner_peek_next_token (scanner) != ')')
 		{
+		  token = sfi_scanner_parse_real_num (scanner, &real, NULL);
 		  if (token != G_TOKEN_NONE)
 		    return G_TOKEN_FLOAT;
 		  sfi_fblock_append1 (fblock, real);
-		  token = sfi_scanner_parse_real_num (scanner, &real, NULL, TRUE);
 		}
+	      parse_or_return (scanner, ')');
 	    }
 	  else
 	    return '\'';
@@ -882,7 +431,7 @@ sfi_value_store_typed (const GValue *value,
     case SFI_SCAT_BBLOCK:
     case SFI_SCAT_FBLOCK:
       gstring_printf (gstring, "(%c ", scat);
-      sfi_serialize_primitive_value (scat, (GValue*) value, gstring, NULL);
+      sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL);
       gstring_putc (gstring, ')');
       break;
     case SFI_SCAT_SEQ:
@@ -912,6 +461,7 @@ sfi_value_store_typed (const GValue *value,
       else
 	{
 	  guint i;
+	  sfi_rec_sort (rec);
           gstring_puts (gstring, " '(");
 	  for (i = 0; i < rec->n_fields; i++)
 	    {
@@ -957,7 +507,7 @@ sfi_value_parse_typed (GValue   *value,
     case SFI_SCAT_BBLOCK:
     case SFI_SCAT_FBLOCK:
       g_value_init (value, sfi_category_type (scat));
-      token = sfi_serialize_primitive_value (scat, value, NULL, scanner);
+      token = sfi_serialize_primitives (scat, value, NULL, scanner);
       if (token != G_TOKEN_NONE)
 	return token;
       parse_or_return (scanner, ')');
@@ -1035,10 +585,261 @@ sfi_value_parse_typed (GValue   *value,
 	return '\'';
       parse_or_return (scanner, ')');
       break;
-      break;
     default:
       g_scanner_warn (scanner, "skipping value of unknown category `%c'", scat);
       return scanner_skip_statement (scanner, 1);
     }
   return G_TOKEN_NONE;
+}
+
+static void
+value_store_param (const GValue *value,
+		   GString      *gstring,
+		   gboolean     *needs_break,
+		   GParamSpec   *pspec,
+		   guint         indent)
+{
+  SfiSCategory scat = sfi_categorize_pspec (pspec);
+
+  gstring_check_break (gstring, needs_break, indent);
+  switch (scat)
+    {
+      SfiSeq *seq;
+      SfiRec *rec;
+    case SFI_SCAT_BOOL:
+    case SFI_SCAT_INT:
+    case SFI_SCAT_NUM:
+    case SFI_SCAT_REAL:
+    case SFI_SCAT_STRING:
+    case SFI_SCAT_CHOICE:
+    case SFI_SCAT_PROXY:
+    case SFI_SCAT_BBLOCK:
+    case SFI_SCAT_FBLOCK:
+    case SFI_SCAT_NOTE:
+    case SFI_SCAT_TIME:
+      sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL);
+      break;
+    case SFI_SCAT_SEQ:
+      seq = sfi_value_get_seq (value);
+      if (!seq)
+	gstring_puts (gstring, "nil");
+      else
+	{
+          GParamSpec *espec = sfi_pspec_get_seq_element (pspec);
+	  guint i, nth = 0;
+	  /* we ignore non conforming elements */
+	  if (espec)
+	    {
+	      for (i = 0; i < seq->n_elements; i++)
+		if (G_VALUE_HOLDS (seq->elements + i, G_PARAM_SPEC_VALUE_TYPE (espec)))
+		  {
+		    if (nth == 0)
+		      {
+			gstring_break (gstring, needs_break, indent);
+			gstring_puts (gstring, "'("); /* open sequence */
+		      }
+		    else if (nth % 5)
+		      gstring_putc (gstring, ' ');
+		    else
+		      *needs_break = TRUE;
+		    nth++;
+		    value_store_param (seq->elements + i, gstring, needs_break, espec, indent + 2);
+		  }
+	    }
+          if (nth == 0)
+	    gstring_puts (gstring, "'("); /* open sequence */
+	  gstring_putc (gstring, ')'); /* close sequence */
+	}
+      break;
+    case SFI_SCAT_REC:
+      rec = sfi_value_get_rec (value);
+      if (!rec)
+	gstring_puts (gstring, "nil");
+      else
+	{
+	  SfiRecFields fspecs = sfi_pspec_get_rec_fields (pspec);
+	  guint i, nth = 0;
+          /* we ignore non conforming fields */
+	  for (i = 0; i < fspecs.n_fields; i++)
+	    {
+	      GValue *fvalue = sfi_rec_get (rec, fspecs.fields[i]->name);
+	      if (fvalue && G_VALUE_HOLDS (fvalue, G_PARAM_SPEC_VALUE_TYPE (fspecs.fields[i])))
+		{
+		  if (nth++ == 0)
+		    {
+		      gstring_break (gstring, needs_break, indent);
+		      gstring_puts (gstring, "'("); /* open record */
+		    }
+		  else
+		    gstring_break (gstring, needs_break, indent + 2);
+		  gstring_printf (gstring, "(%s ", fspecs.fields[i]->name); /* open field */
+		  value_store_param (fvalue, gstring, needs_break, fspecs.fields[i], indent + 2 + 2);
+		  gstring_putc (gstring, ')'); /* close field */
+		}
+	    }
+	  if (nth == 0)
+	    gstring_puts (gstring, "'("); /* open record */
+          gstring_putc (gstring, ')'); /* close record */
+	}
+      break;
+    default:
+      g_error ("%s: unimplemented category (%u)", G_STRLOC, scat);
+    }
+}
+
+void
+sfi_value_store_param (const GValue *value,
+		       GString      *gstring,
+		       GParamSpec   *pspec,
+		       guint         indent)
+{
+  gboolean needs_break = FALSE;
+
+  g_return_if_fail (G_IS_VALUE (value));
+  g_return_if_fail (gstring != NULL);
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  g_return_if_fail (G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (pspec)));
+
+  gstring_break (gstring, &needs_break, indent);
+  gstring_printf (gstring, "(%s ", pspec->name);
+  value_store_param (value, gstring, &needs_break, pspec, indent + 2);
+  gstring_putc (gstring, ')');
+}
+
+static GTokenType
+value_parse_param (GValue     *value,
+		   GScanner   *scanner,
+		   GParamSpec *pspec,
+		   gboolean    close_statement)
+{
+  SfiSCategory scat;
+
+  scat = sfi_categorize_pspec (pspec);
+  switch (scat)
+    {
+      GTokenType token;
+    case SFI_SCAT_BOOL:
+    case SFI_SCAT_INT:
+    case SFI_SCAT_NUM:
+    case SFI_SCAT_REAL:
+    case SFI_SCAT_STRING:
+    case SFI_SCAT_CHOICE:
+    case SFI_SCAT_PROXY:
+    case SFI_SCAT_BBLOCK:
+    case SFI_SCAT_FBLOCK:
+    case SFI_SCAT_NOTE:
+    case SFI_SCAT_TIME:
+      token = sfi_serialize_primitives (scat, value, NULL, scanner);
+      if (token != G_TOKEN_NONE)
+	return token;
+      break;
+    case SFI_SCAT_SEQ:
+      g_scanner_get_next_token (scanner);
+      if (check_nil (scanner))
+	sfi_value_set_seq (value, NULL);
+      else if (scanner->token == '\'')
+	{
+	  GParamSpec *espec = sfi_pspec_get_seq_element (pspec);
+	  SfiSeq *seq;
+	  parse_or_return (scanner, '(');
+	  seq = sfi_seq_new ();
+	  sfi_value_set_seq (value, seq);
+	  sfi_seq_unref (seq);
+	  if (espec)
+	    {
+	      GValue *evalue = sfi_value_empty ();
+	      g_value_init (evalue, G_PARAM_SPEC_VALUE_TYPE (espec));
+	      while (g_scanner_peek_next_token (scanner) != ')')
+		{
+		  token = value_parse_param (evalue, scanner, espec, FALSE);
+		  if (token != G_TOKEN_NONE)
+		    {
+		      sfi_value_free (evalue);
+		      return token;
+		    }
+		  sfi_seq_append (seq, evalue);
+		}
+	      sfi_value_free (evalue);
+	    }
+	  parse_or_return (scanner, ')');
+	}
+      else
+	return '\'';
+      break;
+    case SFI_SCAT_REC:
+      g_scanner_get_next_token (scanner);
+      if (check_nil (scanner))
+	sfi_value_set_rec (value, NULL);
+      else if (scanner->token == '\'')
+	{
+	  SfiRec *rec;
+	  parse_or_return (scanner, '(');
+	  rec = sfi_rec_new ();
+	  sfi_value_set_rec (value, rec);
+	  sfi_rec_unref (rec);
+	  while (g_scanner_peek_next_token (scanner) != ')')
+	    {
+	      GParamSpec *fspec;
+	      parse_or_return (scanner, '(');
+	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+	      fspec = sfi_pspec_get_rec_field (pspec, scanner->value.v_identifier);
+	      if (!fspec)
+		{
+		  g_scanner_warn (scanner, "skipping unknown record field `%s'", scanner->value.v_identifier);
+		  token = scanner_skip_statement (scanner, 1);
+		  if (token != G_TOKEN_NONE)
+		    return token;
+		}
+	      else
+		{
+		  GValue *fvalue = sfi_value_empty ();
+                  g_value_init (fvalue, G_PARAM_SPEC_VALUE_TYPE (fspec));
+		  token = value_parse_param (fvalue, scanner, fspec, TRUE);
+		  if (token != G_TOKEN_NONE)
+		    {
+		      sfi_value_free (fvalue);
+		      return token;
+		    }
+		  sfi_rec_set (rec, fspec->name, fvalue);
+		  sfi_value_free (fvalue);
+		}
+	    }
+	  parse_or_return (scanner, ')');
+	}
+      else
+	return '\'';
+      break;
+    default:
+      if (close_statement)
+	{
+	  g_scanner_warn (scanner, "skipping value of unknown category `%c'", scat);
+	  return scanner_skip_statement (scanner, 1);
+	}
+      else
+	{
+	  g_scanner_error (scanner, "unable to parse value of unknown category `%c'", scat);
+	  return G_TOKEN_ERROR;
+	}
+    }
+  if (close_statement)
+    parse_or_return (scanner, ')');
+  return G_TOKEN_NONE;
+}
+
+GTokenType
+sfi_value_parse_param_rest (GValue     *value,
+			    GScanner   *scanner,
+			    GParamSpec *pspec)
+{
+  g_return_val_if_fail (value != NULL && G_VALUE_TYPE (value) == 0, G_TOKEN_ERROR);
+  g_return_val_if_fail (scanner != NULL, G_TOKEN_ERROR);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), G_TOKEN_ERROR);
+
+  /* the scanner better be at the pspec name */
+  g_return_val_if_fail (scanner->token == G_TOKEN_IDENTIFIER, G_TOKEN_ERROR);
+  g_return_val_if_fail (strcmp (scanner->value.v_identifier, pspec->name) == 0, G_TOKEN_ERROR);
+
+  g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+
+  return value_parse_param (value, scanner, pspec, TRUE);
 }

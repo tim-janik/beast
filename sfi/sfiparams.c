@@ -276,7 +276,8 @@ param_rec_values_cmp (GParamSpec   *pspec,
 	    return G_VALUE_TYPE (field1) < G_VALUE_TYPE (field2) ? -1 : 1;
 
 	  fspec = sfi_pspec_get_rec_field (pspec, field_name1);
-	  if (fspec)	/* ignore fields without param specs */
+	  /* ignore fields without or non conforming param specs */
+          if (fspec && G_VALUE_HOLDS (field1, G_PARAM_SPEC_VALUE_TYPE (fspec)))
 	    {
 	      cmp = g_param_values_cmp (fspec, field1, field2);
 	      if (cmp)
