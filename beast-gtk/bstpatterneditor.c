@@ -1441,6 +1441,23 @@ bst_pattern_editor_expose (GtkWidget	  *widget,
 					   NULL,
 					   &e_c,
 					   &e_r);
+
+      /*
+	gdk_window_set_background (pe->index,
+	(GTK_WIDGET_IS_SENSITIVE (pe)
+	? &widget->style->bg[GTK_STATE_SELECTED]
+	: &widget->style->bg[GTK_STATE_INSENSITIVE]));
+	gdk_window_set_background (pe->headline,
+	(GTK_WIDGET_IS_SENSITIVE (pe)
+	? &widget->style->bg[GTK_STATE_SELECTED]
+	: &widget->style->bg[GTK_STATE_INSENSITIVE]));
+	gdk_window_set_background (pe->panel, &widget->style->base[GTK_WIDGET_STATE (pe)]);
+
+	we need
+	gdk_window_clear_area (pe->panel, tone_x, tone_y, tone_width, tone_height);
+	on headers and columns as well
+	
+      */
       
       if (event->window == pe->panel)
 	{

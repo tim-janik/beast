@@ -393,7 +393,7 @@ find (WaveView *view)
 }
 
 static void
-mark_signal (WaveView *view)
+mark_signalh (WaveView *view)
 {
   GslLong mark;
 
@@ -401,6 +401,18 @@ mark_signal (WaveView *view)
 			       1. / 32768. * +16.,
 			       1. / 32768. * -16.,
 			       0, +1);
+  bst_qsampler_set_mark (view->qsampler, 5, MAX (mark, 0), mark < 0 ? 0 : BST_QSAMPLER_PRELIGHT);
+}
+
+static void
+mark_signalt (WaveView *view)
+{
+  GslLong mark;
+
+  mark = gsl_data_find_sample (view->handle,
+			       1. / 32768. * +16.,
+			       1. / 32768. * -16.,
+			       -1, -1);
   bst_qsampler_set_mark (view->qsampler, 5, MAX (mark, 0), mark < 0 ? 0 : BST_QSAMPLER_PRELIGHT);
 }
 
@@ -599,12 +611,22 @@ main (int   argc,
   
   button = g_object_new (GTK_TYPE_BUTTON,
 			 "visible", TRUE,
-			 "label", "Mark Signal",
+			 "label", "Mark Signal (Head)",
 			 NULL);
   gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
   for (view = wave_views; view; view = view->next)
      g_object_connect (GTK_OBJECT (button),
-		       "swapped_signal::clicked", mark_signal, view,
+		       "swapped_signal::clicked", mark_signalh, view,
+		       NULL);
+
+  button = g_object_new (GTK_TYPE_BUTTON,
+			 "visible", TRUE,
+			 "label", "Mark Signal (Tail)",
+			 NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), button, FALSE, TRUE, 0);
+  for (view = wave_views; view; view = view->next)
+     g_object_connect (GTK_OBJECT (button),
+		       "swapped_signal::clicked", mark_signalt, view,
 		       NULL);
   
   

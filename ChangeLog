@@ -1,3 +1,8 @@
+Sun Nov 25 23:25:04 2001  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version requirements for canvas, gtk, etc. to
+	recent CVS (1.3.11 for glib and gtk).
+
 Tue Nov 20 14:02:42 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.h (GTK_OBJECT_DESTROYED): bad, bad GTK_OBJECT_DESTROYED()
