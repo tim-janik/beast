@@ -31,8 +31,11 @@ struct _SfiBBlock {
   guint8 *bytes;
 };
 SfiBBlock* sfi_bblock_new	   (void);
+SfiBBlock* sfi_bblock_new_sized	   (guint	     size);
 SfiBBlock* sfi_bblock_ref	   (SfiBBlock	    *bblock);
 void	   sfi_bblock_unref	   (SfiBBlock	    *bblock);
+void	   sfi_bblock_resize	   (SfiBBlock       *bblock,
+				    guint            size);
 SfiBBlock* sfi_bblock_copy_deep	   (const SfiBBlock *bblock);
 #define	   sfi_bblock_copy_shallow sfi_bblock_ref
 void	   sfi_bblock_append	   (SfiBBlock	    *bblock,
@@ -47,17 +50,20 @@ guint8*	   sfi_bblock_get	   (const SfiBBlock *bblock);
 /* --- SfiFBlock primitive type --- */
 struct _SfiFBlock {
   guint   ref_count;
-  guint   n_floats;
-  gfloat *floats;
+  guint   n_values;
+  gfloat *values;
 };
 SfiFBlock* sfi_fblock_new	   (void);
+SfiFBlock* sfi_fblock_new_sized	   (guint	     size);
 SfiFBlock* sfi_fblock_ref	   (SfiFBlock	    *fblock);
 void	   sfi_fblock_unref	   (SfiFBlock	    *fblock);
+void	   sfi_fblock_resize	   (SfiFBlock	    *fblock,
+				    guint	     size);
 SfiFBlock* sfi_fblock_copy_deep	   (const SfiFBlock *fblock);
 #define	   sfi_fblock_copy_shallow sfi_fblock_ref
 void	   sfi_fblock_append	   (SfiFBlock	    *fblock,
-				    guint            n_floats,
-				    const gfloat    *floats);
+				    guint            n_values,
+				    const gfloat    *values);
 void	   sfi_fblock_append1	   (SfiFBlock	    *fblock,
 				    gfloat	     float0);
 guint	   sfi_fblock_length	   (const SfiFBlock *fblock);

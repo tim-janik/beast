@@ -1,7 +1,12 @@
 Interface integration work:
 
+- generate s/bse/bsw/ for old API in mkapi
+- move beast to newly generated API
+- reimplement BSW signals on top of glue layer
+- beast test run
+- fix SFI/BSE serialization
 - move primitive types from BSE (GSL) to SFI (constants, notes, time stamps)
-- move glue layer to SFI
+- move GslRing and glue layer to SFI
 - complete validation for records and sequences
 - complete serialization code, split between values with/without pspec
 - get sfidl to generate code into a different namespace
@@ -10,3 +15,5 @@ Interface integration work:
   can be demarshalled in non-validated form after incompatible changes)
 - nuke GError usages, provide logging mechanism?
 - cleanup helper/util code in sfitype.h
+- move BswLockFuncs into SFI, feature this with sfi_init()
+- wrap sfi_init() in C API wrapper code

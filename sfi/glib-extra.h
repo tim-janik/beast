@@ -47,6 +47,13 @@ gchar**		g_strslistv	(GSList		*slist);
 guint		g_strlenv	(gchar	       **str_array);
 
 
+/* --- name conversions --- */
+gchar*  g_type_name_to_cname            (const gchar    *type_name);
+gchar*  g_type_name_to_sname            (const gchar    *type_name);
+gchar*  g_type_name_to_cupper           (const gchar    *type_name);
+gchar*  g_type_name_to_type_macro       (const gchar    *type_name);
+
+
 /* --- double array --- */
 typedef struct {
   guint    n_values;

@@ -102,10 +102,10 @@ store_value_nonstruct (const GValue *value,
 	{
 	  guint i;
 	  gstring_printf (gstring, "'(");
-	  if (fblock->n_floats)
-	    gstring_printf (gstring, "%.18g", fblock->floats[0]);
-	  for (i = 1; i < fblock->n_floats; i++)
-	    gstring_printf (gstring, " %.18g", fblock->floats[i]);
+	  if (fblock->n_values)
+	    gstring_printf (gstring, "%.18g", fblock->values[0]);
+	  for (i = 1; i < fblock->n_values; i++)
+	    gstring_printf (gstring, " %.18g", fblock->values[i]);
 	  gstring_printf (gstring, ")");
 	}
       break;
@@ -360,20 +360,20 @@ parse_value_nonstruct (GValue       *value,
 	  SfiFBlock *fblock = sfi_fblock_new ();
 	  parse_or_return (scanner, '(');
 	  while (g_scanner_get_next_token (scanner) != ')')
-	    if (scanner->token == '-' && nfield != fblock->n_floats)
-	      nfield = fblock->n_floats;	// negate this field
+	    if (scanner->token == '-' && nfield != fblock->n_values)
+	      nfield = fblock->n_values;	// negate this field
 	    else if (scanner->token == G_TOKEN_FLOAT)
-	      sfi_fblock_append1 (fblock, scanner->value.v_float * (nfield == fblock->n_floats ? -1 : 1));
+	      sfi_fblock_append1 (fblock, scanner->value.v_float * (nfield == fblock->n_values ? -1 : 1));
 	    else if (scanner->token == G_TOKEN_INT)
 	      {
 		gfloat f = scanner->value.v_int;
-		sfi_fblock_append1 (fblock, nfield == fblock->n_floats ? -f : f);
+		sfi_fblock_append1 (fblock, nfield == fblock->n_values ? -f : f);
 	      }
 	    else
 	      goto WANT_FLOAT;
 	  sfi_value_set_fblock (value, fblock);
 	  sfi_fblock_unref (fblock);
-	  if (nfield == fblock->n_floats)	// last element was '-'
+	  if (nfield == fblock->n_values)	// last element was '-'
 	    {
 	    WANT_FLOAT:
 	      return G_TOKEN_FLOAT;

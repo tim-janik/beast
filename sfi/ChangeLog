@@ -1,3 +1,18 @@
+Sat Oct  5 02:07:57 2002  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: add type name conversion functions.
+
+	* sfiprimitives.[hc]: add sfi_bblock_new_sized(),
+	sfi_fblock_new_sized(), sfi_bblock_resize() and sfi_fblock_resize().
+
+	* sfidl.cc (parse): sync this with GValue types (missed out Proxy).
+
+	* sfidl-namespace.cc (qualify): output warnigns with g_warning().
+
+	* sfidl.cc: remove pointless namespacing in generated code,
+	fix sfi_value_*() uses. fix one more hardcoded "element"
+	sequence memeber.
+
 Fri Oct  4 13:08:29 2002  Stefan Westerfeld <stefan@space.twc.de>
 
 	* sfidl.cc: support optionally specifying the name of the sequence

@@ -87,6 +87,32 @@ test_time (void)
   DONE ();
 }
 
+static void
+test_renames (void)
+{
+  gchar *str;
+  MSG ("Renames:");
+  str = g_type_name_to_cname ("PrefixTypeName");
+  ASSERT (strcmp (str, "prefix_type_name") == 0);
+  g_free (str);
+  str = g_type_name_to_sname ("PrefixTypeName");
+  ASSERT (strcmp (str, "prefix-type-name") == 0);
+  g_free (str);
+  str = g_type_name_to_cupper ("PrefixTypeName");
+  ASSERT (strcmp (str, "PREFIX_TYPE_NAME") == 0);
+  g_free (str);
+  str = g_type_name_to_type_macro ("PrefixTypeName");
+  ASSERT (strcmp (str, "PREFIX_TYPE_TYPE_NAME") == 0);
+  g_free (str);
+  str = g_type_name_to_sname ("prefix_type_name");
+  ASSERT (strcmp (str, "prefix-type-name") == 0);
+  g_free (str);
+  str = g_type_name_to_cname ("prefix-type-name");
+  ASSERT (strcmp (str, "prefix_type_name") == 0);
+  g_free (str);
+  DONE ();
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -95,6 +121,7 @@ main (int   argc,
 
   test_notes ();
   test_time ();
-
+  test_renames ();
+  
   return 0;
 }

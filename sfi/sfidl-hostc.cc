@@ -325,10 +325,11 @@ void IdlParser::parse()
 {
   /* define primitive types into the basic namespace */
   ModuleHelper::define("Bool");
-  ModuleHelper::define("Num");
   ModuleHelper::define("Int");
+  ModuleHelper::define("Num");
   ModuleHelper::define("Real");
   ModuleHelper::define("String");
+  ModuleHelper::define("Proxy");
   ModuleHelper::define("BBlock");
   ModuleHelper::define("FBlock");
   
@@ -929,16 +930,16 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
       if (parser.isSequence (type))
       {
 	if (model == MODEL_TO_VALUE)
-	  return "sfi_value_seq_take (" + makeLowerName (type)+"_to_sfi_seq ("+name+"))";
+	  return "sfi_value_seq (" + makeLowerName (type)+"_to_seq ("+name+"))";
 	if (model == MODEL_FROM_VALUE) 
-	  return makeLowerName (type)+"_from_sfi_seq (sfi_value_get_seq ("+name+"))";
+	  return makeLowerName (type)+"_from_seq (sfi_value_get_seq ("+name+"))";
       }
       else
       {
 	if (model == MODEL_TO_VALUE)   
-	  return "sfi_value_rec_take (" + makeLowerName (type)+"_to_sfi_rec ("+name+"))";
+	  return "sfi_value_rec (" + makeLowerName (type)+"_to_rec ("+name+"))";
 	if (model == MODEL_FROM_VALUE)
-	  return makeLowerName (type)+"_from_sfi_rec (sfi_value_get_rec ("+name+"))";
+	  return makeLowerName (type)+"_from_rec (sfi_value_get_rec ("+name+"))";
       }
     }
   else if (parser.isEnum (type))
@@ -1074,8 +1075,8 @@ void CodeGeneratorC::run (string srcname)
 	  printf("%s %s_new (void);\n", ret.c_str(), lname.c_str());
 	  printf("void %s_append (%s seq, %s element);\n", lname.c_str(), arg.c_str(), element.c_str());
 	  printf("%s %s_copy_shallow (%s seq);\n", ret.c_str(), lname.c_str(), arg.c_str());
-	  printf("%s %s_from_sfi_seq (SfiSeq *sfi_seq);\n", ret.c_str(), lname.c_str());
-	  printf("SfiSeq *%s_to_sfi_seq (%s seq);\n", lname.c_str(), arg.c_str());
+	  printf("%s %s_from_seq (SfiSeq *sfi_seq);\n", ret.c_str(), lname.c_str());
+	  printf("SfiSeq *%s_to_seq (%s seq);\n", lname.c_str(), arg.c_str());
 	  printf("void %s_free (%s seq);\n", lname.c_str(), arg.c_str());
 	  printf("\n");
 	}
@@ -1087,8 +1088,8 @@ void CodeGeneratorC::run (string srcname)
 	  
 	  printf("%s %s_new (void);\n", ret.c_str(), lname.c_str());
 	  printf("%s %s_copy_shallow (%s rec);\n", ret.c_str(), lname.c_str(), arg.c_str());
-	  printf("%s %s_from_sfi_rec (SfiRec *sfi_rec);\n", ret.c_str(), lname.c_str());
-	  printf("SfiRec *%s_to_sfi_rec (%s rec);\n", lname.c_str(), arg.c_str());
+	  printf("%s %s_from_rec (SfiRec *sfi_rec);\n", ret.c_str(), lname.c_str());
+	  printf("SfiRec *%s_to_rec (%s rec);\n", lname.c_str(), arg.c_str());
 	  printf("void %s_free (%s rec);\n", lname.c_str(), arg.c_str());
 	  printf("\n");
 	}
@@ -1168,15 +1169,15 @@ void CodeGeneratorC::run (string srcname)
           printf("    {\n");
 	  printf("      guint i;\n");
 	  printf("      seq_copy = %s_new ();\n", lname.c_str());
-	  printf("      for (i = 0; i < seq->n_elements; i++)\n");
-	  printf("        %s_append (seq_copy, seq->elements[i]);\n", lname.c_str());
+	  printf("      for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
+	  printf("        %s_append (seq_copy, seq->%s[i]);\n", lname.c_str(), elements.c_str());
           printf("    }\n");
 	  printf("  return seq_copy;\n");
 	  printf("}\n\n");
 	  
 	  string elementFromValue = createTypeCode (si->contentType, "element", MODEL_FROM_VALUE);
 	  printf("%s\n", ret.c_str());
-	  printf("%s_from_sfi_seq (SfiSeq *sfi_seq)\n", lname.c_str());
+	  printf("%s_from_seq (SfiSeq *sfi_seq)\n", lname.c_str());
 	  printf("{\n");
 	  printf("  %s seq;\n", arg.c_str());
 	  printf("  guint i, length;\n");
@@ -1198,7 +1199,7 @@ void CodeGeneratorC::run (string srcname)
 
 	  string elementToValue = createTypeCode (si->contentType, "seq->" + elements + "[i]", MODEL_TO_VALUE);
 	  printf("SfiSeq *\n");
-	  printf("%s_to_sfi_seq (%s seq)\n", lname.c_str(), arg.c_str());
+	  printf("%s_to_seq (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  SfiSeq *sfi_seq;\n");
 	  printf("  guint i;\n");
@@ -1268,7 +1269,7 @@ void CodeGeneratorC::run (string srcname)
 	  printf("}\n\n");
 	  
 	  printf("%s\n", ret.c_str());
-	  printf("%s_from_sfi_rec (SfiRec *sfi_rec)\n", lname.c_str());
+	  printf("%s_from_rec (SfiRec *sfi_rec)\n", lname.c_str());
 	  printf("{\n");
 	  printf("  GValue *element;\n");
 	  printf("  %s rec;\n", arg.c_str());
@@ -1286,7 +1287,7 @@ void CodeGeneratorC::run (string srcname)
 	  printf("}\n\n");
 	  
 	  printf("SfiRec *\n");
-	  printf("%s_to_sfi_rec (%s rec)\n", lname.c_str(), arg.c_str());
+	  printf("%s_to_rec (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  SfiRec *sfi_rec;\n");
 	  printf("  GValue *element;\n");

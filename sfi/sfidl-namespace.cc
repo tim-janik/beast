@@ -22,7 +22,7 @@
 #include <string>
 #include <map>
 #include "sfidl-namespace.h"
-#include <assert.h>
+#include <glib-extra.h>
 
 using namespace std;
 
@@ -76,7 +76,7 @@ void ModuleHelper::enter(const char *name)
 
 void ModuleHelper::leave()
 {
-  assert(!modulePath.empty());
+  g_assert (!modulePath.empty());
   modulePath.pop_back();
 }
 
@@ -112,7 +112,7 @@ string ModuleHelper::qualify(const char *name)
     }
   else
     {
-      fprintf(stderr,"warning: qualifyName failed for %s\n",name);
+      g_warning ("qualifyName failed for %s\n",name);
       result = name;
     }
   
@@ -172,7 +172,7 @@ string NamespaceHelper::printableForm(string symbol)
   while(!current.empty())
     {
       // namespace longer than symbol?
-      assert(!symlist.empty());
+      g_assert (!symlist.empty());
       
       if(*current.begin() == *symlist.begin())
 	{
