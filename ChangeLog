@@ -1,3 +1,11 @@
+Sat Oct 16 11:15:18 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackview.c: only make sure added tracks are 
+	auto-connected to the master bus.
+
+	* beast-gtk/bstutils.c: ensure loading songs always produces songs with
+	a master bus.
+
 Sat Oct 16 09:52:35 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: make sure new songs have a master bus.

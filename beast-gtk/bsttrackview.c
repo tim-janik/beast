@@ -739,7 +739,7 @@ track_view_action_exec (gpointer data,
 	  bse_item_set_name (item, string);
 	  g_free (string);
 	  bst_item_view_select (item_view, item);
-          bse_song_ensure_output_busses (song);
+          bse_track_ensure_output (item);
 	}
       bse_item_ungroup_undo (song);
       break;

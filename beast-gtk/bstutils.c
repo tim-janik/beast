@@ -205,10 +205,8 @@ bst_project_restore_from_file (SfiProxy         project,
       {
         /* fixup orphaned parts */
         bse_song_ensure_track_links (iseq->items[i]);
-#if 0
-        /* fixup unconnected tracks */
-        bse_song_ensure_output_busses (iseq->items[i]);
-#endif
+        /* songs always need a master bus */
+        bse_song_ensure_master_bus (iseq->items[i]);
       }
   return error;
 }
