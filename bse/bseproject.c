@@ -577,7 +577,7 @@ bse_project_create_intern_synth (BseProject  *self,
       BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
       BseErrorType error = BSE_ERROR_NONE;
       StorageTrap strap = { 0, }, *old_strap = g_object_get_qdata (self, quark_storage_trap);
-      bse_storage_input_text (storage, bse_synth);
+      bse_storage_input_text (storage, bse_synth, "<builtin-lib>");
       g_object_set_qdata (self, quark_storage_trap, &strap);
       strap.max_items = 1;
       strap.base_type = check_type;

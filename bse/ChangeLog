@@ -1,3 +1,9 @@
+Sun Jun  8 19:56:27 2003  Tim Janik  <timj@gtk.org>
+
+	* bseitem.c:
+	* bseproject.c:
+	* bsestorage.[hc]: error cosmetics.
+
 Sun Jun  8 17:27:15 2003  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.[hc]: reimplementation on top of SfiRStore and SfiWStore.

@@ -107,7 +107,8 @@ void         bse_storage_prepare_write          (BseStorage             *storage
 BseErrorType bse_storage_input_file             (BseStorage             *storage,
                                                  const gchar            *file_name);
 void         bse_storage_input_text             (BseStorage             *storage,
-                                                 const gchar            *text);
+                                                 const gchar            *text,
+                                                 const gchar            *text_name);
 GTokenType   bse_storage_restore_item           (BseStorage             *storage,
                                                  gpointer                item);
 void         bse_storage_store_item             (BseStorage             *storage,

@@ -190,7 +190,8 @@ bse_storage_prepare_write (BseStorage    *self,
 
 void
 bse_storage_input_text (BseStorage  *self,
-                        const gchar *text)
+                        const gchar *text,
+                        const gchar *text_name)
 {
   g_return_if_fail (BSE_IS_STORAGE (self));
   if (!text)
@@ -199,7 +200,7 @@ bse_storage_input_text (BseStorage  *self,
   bse_storage_reset (self);
   self->rstore = sfi_rstore_new ();
   self->rstore->parser_this = self;
-  sfi_rstore_input_text (self->rstore, text);
+  sfi_rstore_input_text (self->rstore, text, text_name);
   self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
 }
 
@@ -601,10 +602,8 @@ restore_container_child (BseContainer *container,
   g_object_ref (item);
   expected_token = bse_storage_parse_rest (self, item, item_restore_try_statement, NULL);
   g_object_unref (item);
-  if (expected_token != G_TOKEN_NONE)
-    return expected_token == SFI_TOKEN_UNMATCHED ? G_TOKEN_ERROR : expected_token;
 
-  return G_TOKEN_NONE;
+  return expected_token;
 }
 
 static SfiTokenType
@@ -1399,10 +1398,7 @@ bse_storage_compat_dhparse   (BseStorage     *self,
 
   token = sfi_rstore_ensure_bin_offset (self->rstore);
   if (token != G_TOKEN_NONE)
-    {
-      bse_storage_error (self, "failed to detect binary appendix within file");
-      return G_TOKEN_ERROR;
-    }
+    return token;
 
   if (n_channels_p)
     *n_channels_p = self->n_channels;

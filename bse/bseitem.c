@@ -1094,7 +1094,7 @@ undo_restore_item (BseUndoStep  *ustep,
   GTokenType expected_token = G_TOKEN_NONE;
   GScanner *scanner;
 
-  bse_storage_input_text (storage, ustep->data[1].v_pointer);
+  bse_storage_input_text (storage, ustep->data[1].v_pointer, "<undo-storage>");
   scanner = bse_storage_get_scanner (storage);
 
   expected_token = bse_storage_restore_item (storage, item);
@@ -1135,7 +1135,7 @@ bse_item_backup_to_undo (BseItem      *self,
   if (!BSE_UNDO_STACK_VOID (ustack))
     {
       BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
-      bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS);
+      bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS | BSE_STORAGE_SELF_CONTAINED);
       bse_storage_store_item (storage, self);
       
       bse_item_push_undo_storage (self, ustack, storage);
