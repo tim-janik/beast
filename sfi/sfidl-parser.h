@@ -27,6 +27,24 @@
 
 namespace Sfidl {
 
+/**
+ * we implement a get() function since operator[] is not const
+ */
+template<typename Key, typename Value>
+class Map : public std::map<Key,Value> {
+private:
+  Value default_value;
+
+public:
+  const Value& get(const Key& k) const {
+    typename std::map<Key,Value>::const_iterator i = find(k);
+    if (i != end())
+      return i->second;
+    else
+      return default_value;
+  }
+};
+
 struct LineInfo {
   bool isInclude;
   int line;
@@ -77,20 +95,20 @@ struct Choice {
   std::string name;
   
   std::vector<ChoiceValue> contents;
-  std::map<std::string, std::string> infos;
+  Map<std::string, std::string> infos;
 };
 
 struct Record {
   std::string name;
   
   std::vector<Param> contents;
-  std::map<std::string, std::string> infos;
+  Map<std::string, std::string> infos;
 };
 
 struct Sequence {
   std::string name;
   Param content;
-  std::map<std::string, std::string> infos;
+  Map<std::string, std::string> infos;
 };
 
 struct Method {
@@ -98,7 +116,7 @@ struct Method {
 
   std::vector<Param> params;
   Param result;
-  std::map<std::string, std::string> infos;
+  Map<std::string, std::string> infos;
 };
 
 struct Class {
@@ -109,7 +127,7 @@ struct Class {
   std::vector<Method> signals;
   std::vector<Param> properties;
   std::vector<Stream> istreams, jstreams, ostreams;
-  std::map<std::string, std::string> infos;
+  Map<std::string, std::string> infos;
 };
 
 enum TypeDeclaration {
@@ -174,7 +192,7 @@ protected:
   GTokenType parseParamHints (Param &def);
   GTokenType parseClass ();
   GTokenType parseMethod (Method& def);
-  GTokenType parseInfoOptional (std::map<std::string,std::string>& infos);
+  GTokenType parseInfoOptional (Map<std::string,std::string>& infos);
 public:
   Parser ();
   
@@ -186,7 +204,7 @@ public:
   const std::vector<Choice>& getChoices () const	  { return choices; }
   const std::vector<Sequence>& getSequences () const	  { return sequences; }
   const std::vector<Record>& getRecords () const	  { return records; }
-  std::vector<Class>& getClasses () 		  { return classes; }
+  const std::vector<Class>& getClasses () const 	  { return classes; }
   const std::vector<Method>& getProcedures () const	  { return procedures; }
   const std::vector<std::string>& getTypes () const       { return types; }
   

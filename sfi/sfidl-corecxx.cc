@@ -362,7 +362,7 @@ CodeGeneratorModule::run ()
 
   /* class definitions */
   printf ("\n/* classes */\n");
-  for (vector<Class>::iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
+  for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
     {
       string ctName = TypeName (ci->name);
       string ctNameBase = TypeName (ci->name) + "Base";
@@ -380,7 +380,7 @@ CodeGeneratorModule::run ()
       /* pixstream(), this is a bit of a hack, we make it a template rather than
        * a normal inline method to avoid huge images in debugging code
        */
-      string icon = ci->infos["icon"];
+      string icon = ci->infos.get("icon");
       string pstream = "NULL";
       if (icon != "")
         {
@@ -393,8 +393,8 @@ CodeGeneratorModule::run ()
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* category () { return \"%s\"; }\n", ci->infos["category"].c_str());
-      printf ("  static inline const char* blurb    () { return \"%s\"; }\n", ci->infos["blurb"].c_str());
+      printf ("  static inline const char* category () { return \"%s\"; }\n", ci->infos.get("category").c_str());
+      printf ("  static inline const char* blurb    () { return \"%s\"; }\n", ci->infos.get("blurb").c_str());
 
       /* i/j/o channel names */
       int is_public = 0;
@@ -554,8 +554,7 @@ CodeGeneratorModule::run ()
   for (vector<const Method*>::const_iterator ppi = procs.begin(); ppi != procs.end(); ppi++)
     {
       const Method *mi = *ppi;  // FIXME: things containing maps shouldn't be constant
-      const std::map<std::string, std::string> &const_infos = mi->infos;
-      std::map<std::string, std::string> &infos = const_cast<std::map<std::string, std::string>&> (const_infos);
+      const Map<std::string, std::string> &infos = mi->infos;
       string ptName = string ("Procedure_") + TypeName (mi->name);
       bool is_void = mi->result.type == "void";
       if (parser.fromInclude (mi->name))
@@ -570,7 +569,7 @@ CodeGeneratorModule::run ()
       /* pixstream(), this is a bit of a hack, we make it a template rather than
        * a normal inline method to avoid huge images in debugging code
        */
-      string icon = infos["icon"];
+      string icon = infos.get("icon");
       string pstream = "NULL";
       if (icon != "")
         {
@@ -583,8 +582,8 @@ CodeGeneratorModule::run ()
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* category () { return \"%s\"; }\n", infos["category"].c_str());
-      printf ("  static inline const char* blurb    () { return \"%s\"; }\n", infos["blurb"].c_str());
+      printf ("  static inline const char* category () { return \"%s\"; }\n", infos.get("category").c_str());
+      printf ("  static inline const char* blurb    () { return \"%s\"; }\n", infos.get("blurb").c_str());
       
       /* return type */
       printf ("  static %s exec (", cTypeRef (mi->result.type));
@@ -630,9 +629,9 @@ CodeGeneratorModule::run ()
               "                    GParamSpec       **in_pspecs,\n"
               "                    GParamSpec       **out_pspecs)");
       printf ("  {\n");
-      printf ("    proc->help = \"%s\";\n", infos["help"].c_str());
-      printf ("    proc->authors = \"%s\";\n", infos["authors"].c_str());
-      printf ("    proc->copyright = \"%s\";\n", infos["copyright"].c_str());
+      printf ("    proc->help = \"%s\";\n", infos.get("help").c_str());
+      printf ("    proc->authors = \"%s\";\n", infos.get("authors").c_str());
+      printf ("    proc->copyright = \"%s\";\n", infos.get("copyright").c_str());
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
         printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
           if (!is_void)

@@ -580,7 +580,7 @@ void CodeGeneratorC::run ()
   vector<Record>::const_iterator ri;
   vector<Choice>::const_iterator ei;
   vector<Param>::const_iterator pi;
-  vector<Class>::iterator ci;
+  vector<Class>::const_iterator ci;
   vector<Method>::const_iterator mi;
  
   if (options.generateTypeC)

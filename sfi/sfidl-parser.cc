@@ -1031,7 +1031,7 @@ GTokenType Parser::parseParamHints (Param &def)
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseInfoOptional (map<string,string>& infos)
+GTokenType Parser::parseInfoOptional (Map<string,string>& infos)
 {
   /*
    * info HELP = "don't panic";

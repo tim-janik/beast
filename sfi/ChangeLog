@@ -1,3 +1,10 @@
+Sun Sep  7 17:36:43 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.* sfidl-module.cc sfidl-parser.*: reintroduce const
+	for datastructures containing maps - to be able to access their
+	contents, added a new template class called Map<Key,Value> with a
+	const get(Key) function.
+
 Thu Sep  4 14:58:14 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: introduce static data for the generated classes.
