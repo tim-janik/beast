@@ -1,3 +1,9 @@
+Wed Mar 19 17:56:09 2003  Tim Janik  <timj@gtk.org>
+
+	* README:
+	* docs/*.texi: announce new mailing list and change old adresses.
+	updated link sections.
+
 Mon Mar 17 07:05:04 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (main): use the new toyprof leak logger API.

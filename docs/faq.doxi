@@ -36,8 +36,7 @@ a new markup parser for @beast documentation. Around the
 @itemize
 @item WWW: @uref{http://beast.gtk.org}
 @item FTP: @uref{ftp://beast.gtk.org/pub/beast}
-@item Mailing List: @uref{mailto://beast@@beast.gtk.org}.
-Send subscription requests to @uref{mailto://timj@@beast.gtk.org}.
+@item Mailing List: @uref{http://mail.gnome.org/mailman/listinfo/beast/}.
 @end itemize
 
 @section Why do I get "Cannot access memory at address 0x706f6e6d" when running @beast in gdb?

@@ -35,6 +35,6 @@ For uptodate information on BEAST development, please visit:
 
 Questions, comments, bug reports and similar stuff should be sent to:
 
-@center	@uref{mailto://beast@@beast.gtk.org}
+@center	@uref{mailto://beast@@gnome.org}
 
 @bye

@@ -1,3 +1,7 @@
+Overview of Changes in BEAST/BSE 0.5.1:
+
+* Fixed memory leaks during plaback.
+
 Overview of Changes in BEAST/BSE 0.5.0:
 
 * Moved BSE into its own thread
