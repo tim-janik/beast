@@ -57,6 +57,7 @@ beast_sources = $(strip \
 # included *.c files, xpms etc...
 beast_extra = \
 	bstkeytables.c \
+	bstkeytables-us.c \
 	beast.glr
 
 beast_SOURCES = $(beast_sources)
@@ -65,14 +66,3 @@ EXTRA_DIST += TODO $(beast_headers) $(beast_extra)
 
 # dependancy for TAGS file from etags
 all: @MISSING_ETAGS@ @BIRNET_Y@ TAGS
-
-old_sources = \
-	bstdialogs.c \
-	bstinstrumenteditor.c \
-	bstmenus.c \
-	bstmessagebox.c \
-	bstpatternview.c \
-	bstrc.c \
-	bstrcargs.c \
-	bstshell.c \
-	beast.c
