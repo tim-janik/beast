@@ -31,7 +31,7 @@ typedef struct {
   SfiThread *user_thread;
   gint       wakeup_pipe[2];	/* read(wakeup_pipe[0]), write(wakeup_pipe[1]) */
 } EngineMasterData;
-void		_engine_master_thread		(EngineMasterData	*mdata);
+void		bse_engine_master_thread	(EngineMasterData	*mdata);
 
 G_END_DECLS
 

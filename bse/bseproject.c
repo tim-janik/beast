@@ -793,7 +793,7 @@ bse_project_start_playback (BseProject *self)
     bse_project_state_changed (self, BSE_PROJECT_PLAYING);
   /* then, start the sequencer */
   while (songs)
-    bse_ssequencer_start_song (sfi_ring_pop_head (&songs), 0);
+    bse_sequencer_start_song (sfi_ring_pop_head (&songs), 0);
 }
 
 void
@@ -813,7 +813,7 @@ bse_project_stop_playback (BseProject *self)
     {
       BseSuper *super = BSE_SUPER (slist->data);
       if (BSE_IS_SONG (super))
-        bse_ssequencer_remove_song (BSE_SONG (super));
+        bse_sequencer_remove_song (BSE_SONG (super));
       if (super->context_handle != ~0 && !BSE_SUPER_NEEDS_CONTEXT (super))
 	{
 	  BseSource *source = BSE_SOURCE (super);

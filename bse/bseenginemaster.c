@@ -1130,7 +1130,7 @@ _engine_master_dispatch (void)
 }
 
 void
-_engine_master_thread (EngineMasterData *mdata)
+bse_engine_master_thread (EngineMasterData *mdata)
 {
   /* assert sane configuration checks, since we're simply casting structures */
   g_assert (sizeof (struct pollfd) == sizeof (GPollFD) &&

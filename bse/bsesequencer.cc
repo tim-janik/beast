@@ -24,43 +24,278 @@
 #include "bsemidireceiver.h"
 #include "bsemain.h"
 #include "gslieee754.h" // FIXME: remove
+#include <sys/poll.h>
+#include <unistd.h>
+#include <assert.h>
+#include <errno.h>
+#include <vector>
+
+namespace { // Anon
+using namespace std;
 
 #define DEBUG(...)      sfi_debug ("sequencer", __VA_ARGS__)
 inline guint64 bse_dtoull (const double v) { return v < -0.0 ? guint64 (v - 0.5) : guint64 (v + 0.5); } // FIXME 
+#define BSE_CPP_CONCAT2(a,b)    a ## b
+#define BSE_CPP_CONCAT(a,b)     BSE_CPP_CONCAT2 (a, b)
+#define static_assert(expr)     typedef char BSE_CPP_CONCAT (static_assert_failed_in_line_, __LINE__)[(expr) ? 1 : -1]
 
 /* --- prototypes --- */
-static void	bse_ssequencer_thread_main	(gpointer	 data);
-static void	bse_ssequencer_process_song_SL	(BseSong	*song,
+static void	bse_sequencer_thread_main	(gpointer	 data);
+static void	bse_sequencer_process_song_SL	(BseSong	*song,
 						 guint		 n_ticks);
 
 
 /* --- variables --- */
-SfiThread            *bse_ssequencer_thread = NULL;
-static BseSSequencer *global_sequencer = NULL;
-
+extern "C" { SfiThread *bse_sequencer_thread = NULL; }
+static BseSequencer    *global_sequencer = NULL;
+static SfiCond          current_watch_cond = { 0, };
+static gint             sequencer_wake_up_pipe[2] = { -1, -1 };
 
 /* --- functions --- */
-void
-bse_ssequencer_init_thread (void)
+extern "C" void
+bse_sequencer_init_thread (void)
 {
-  g_assert (bse_ssequencer_thread == NULL);
+  g_assert (bse_sequencer_thread == NULL);
 
-  /* initialize BseSSequencer */
-  static BseSSequencer sseq = { 0, };
+  sfi_cond_init (&current_watch_cond);
+
+  if (pipe (sequencer_wake_up_pipe) < 0)
+    g_error ("failed to create sequencer wake-up pipe: %s", strerror (errno));
+
+  /* initialize BseSequencer */
+  static BseSequencer sseq = { 0, };
   sseq.stamp = gsl_tick_stamp ();
   g_assert (sseq.stamp > 0);
   global_sequencer = &sseq;
 
-  bse_ssequencer_thread = sfi_thread_run ("Sequencer", bse_ssequencer_thread_main, NULL);
-  if (!bse_ssequencer_thread)
+  bse_sequencer_thread = sfi_thread_run ("Sequencer", bse_sequencer_thread_main, NULL);
+  if (!bse_sequencer_thread)
     g_error ("failed to create sequencer thread");
 }
 
-void
-bse_ssequencer_start_song (BseSong        *song,
-                           guint64         start_stamp)
+static void
+sequencer_wake_up (gpointer wake_up_data)
 {
-  g_assert (bse_ssequencer_thread != NULL);
+  guint8 wake_up_message = 'W';
+  gint err;
+  do
+    err = write (sequencer_wake_up_pipe[1], &wake_up_message, 1);
+  while (err < 0 && errno == EINTR);
+}
+
+class PollPool {
+public:
+  struct IOWatch {
+    BseIOWatch  watch_func;
+    gpointer    watch_data;
+    guint       index;
+    guint       n_pfds;
+    GPollFD    *notify_pfds; /* set during pol() */
+  };
+private:
+  vector<IOWatch> watches;
+  vector<GPollFD> watch_pfds;
+public:
+  guint
+  get_n_pfds ()
+  {
+    return watch_pfds.size();
+  }
+  void
+  fill_pfds (guint    n_pfds,
+             GPollFD *pfds)
+  {
+    assert (n_pfds == watch_pfds.size());
+    copy (watch_pfds.begin(), watch_pfds.end(), pfds);
+    for (guint i = 0; i < watches.size(); i++)
+      watches[i].notify_pfds = pfds + watches[i].index;
+  }
+  bool
+  fetch_notify_watch (BseIOWatch &watch_func,
+                      gpointer   &watch_data,
+                      guint      &n_pfds,
+                      GPollFD   *&pfds)
+  {
+    for (guint i = 0; i < watches.size(); i++)
+      if (watches[i].notify_pfds)
+        {
+          for (guint j = 0; j < watches[i].n_pfds; j++)
+            if (watches[i].notify_pfds[j].revents)
+              {
+                watch_func = watches[i].watch_func;
+                watch_data = watches[i].watch_data;
+                n_pfds = watches[i].n_pfds;
+                pfds = watches[i].notify_pfds;
+                watches[i].notify_pfds = NULL;
+                return true;
+              }
+          /* no events found */
+          watches[i].notify_pfds = NULL;
+        }
+    return false;
+  }
+  void
+  add_watch (guint          n_pfds,
+             const GPollFD *pfds,
+             BseIOWatch     watch_func,
+             gpointer       watch_data)
+  {
+    IOWatch iow = { 0, };
+    iow.watch_func = watch_func;
+    iow.watch_data = watch_data;
+    iow.index = watch_pfds.size();
+    iow.n_pfds = n_pfds;
+    iow.notify_pfds = NULL;
+    watches.push_back (iow);
+    for (guint i = 0; i < n_pfds; i++)
+      {
+        GPollFD pfd = { 0, };
+        pfd.fd = pfds[i].fd;
+        pfd.events = pfds[i].events;
+        watch_pfds.push_back (pfd);
+      }
+  }
+  bool
+  remove_watch (BseIOWatch     watch_func,
+                gpointer       watch_data)
+  {
+    guint i;
+    /* find watch */
+    for (i = 0; i < watches.size(); i++)
+      if (watches[i].watch_func == watch_func &&
+          watches[i].watch_data == watch_data)
+        break;
+    if (i >= watches.size())
+      return false;
+    /* delete pfds */
+    watch_pfds.erase (watch_pfds.begin() + watches[i].index, watch_pfds.begin() + watches[i].index + watches[i].n_pfds);
+    /* adjust pfd indices of successors */
+    for (guint j = i + 1; j < watches.size(); j++)
+      watches[j].index -= watches[i].n_pfds;
+    /* delete watch */
+    watches.erase (watches.begin() + i);
+    return true;
+  }
+  static_assert (sizeof (GPollFD) == sizeof (struct pollfd));
+  static_assert (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
+  static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  static_assert (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
+  static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  static_assert (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
+  static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+};
+static PollPool sequencer_poll_pool;
+
+extern "C" void
+bse_sequencer_add_io_watch (guint           n_pfds,
+                            const GPollFD  *pfds,
+                            BseIOWatch      watch_func,
+                            gpointer        data)
+{
+  g_return_if_fail (watch_func != NULL);
+  BSE_SEQUENCER_LOCK ();
+  sequencer_poll_pool.add_watch (n_pfds, pfds, watch_func, data);
+  BSE_SEQUENCER_UNLOCK ();
+}
+
+static BseIOWatch current_watch_func = NULL;
+static gpointer   current_watch_data = NULL;
+static bool       current_watch_needs_remove1 = false;
+static bool       current_watch_needs_remove2 = false;
+
+extern "C" void
+bse_sequencer_remove_io_watch (BseIOWatch      watch_func,
+                               gpointer        watch_data)
+{
+  g_return_if_fail (watch_func != NULL);
+  /* removal requirements:
+   * - any thread should be able to remove an io watch (once)
+   * - a watch_func() should be able to remove its own io watch
+   * - a watch_func() may not get called after bse_sequencer_remove_io_watch()
+   *   finished in any thread
+   * - concurrent removal of an io watch from within its watch_func() (executed
+   *   within the sequencer thread) and from an external thread at the same
+   *   time, should succeed in _both_ threads
+   * - a warning should be issued if an io watch has already been removed (at
+   *   least conceptually) or has never been installed
+   */
+  bool removal_success;
+  BSE_SEQUENCER_LOCK ();
+  if (current_watch_func == watch_func && current_watch_data == watch_data)
+    {  /* watch_func() to be removed is currently in call */
+      if (bse_sequencer_thread == sfi_thread_self())
+        {
+          /* allow removal calls from within a watch_func() */
+          removal_success = !current_watch_needs_remove1;       /* catch multiple calls */
+          current_watch_needs_remove1 = true;
+        }
+      else /* not in sequencer thread */
+        {
+          /* allow removal from other threads during watch_func() call */
+          removal_success = !current_watch_needs_remove2;       /* catch multiple calls */
+          current_watch_needs_remove2 = true;
+          /* wait until watch_func() call has finished */
+          while (current_watch_func == watch_func && current_watch_data == watch_data)
+            sfi_cond_wait (&current_watch_cond, &bse_main_sequencer_mutex);
+        }
+    }
+  else /* can remove (watch_func(watch_data) not in call) */
+    removal_success = sequencer_poll_pool.remove_watch (watch_func, watch_data);
+  BSE_SEQUENCER_UNLOCK ();
+  if (!removal_success)
+    g_warning ("%s: failed to remove %p(%p)", G_STRFUNC, watch_func, watch_data);
+}
+
+static bool
+bse_sequencer_poll_Lm (gint timeout_ms)
+{
+  guint n_pfds = sequencer_poll_pool.get_n_pfds() + 1;  /* one for the wake-up pipe */
+  GPollFD *pfds = g_newa (GPollFD, n_pfds);
+  pfds[0].fd = sequencer_wake_up_pipe[0];
+  pfds[0].events = G_IO_IN;
+  pfds[0].revents = 0;
+  sequencer_poll_pool.fill_pfds (n_pfds - 1, pfds + 1); /* rest used for io watch array */
+  BSE_SEQUENCER_UNLOCK ();
+  gint result = poll ((struct pollfd*) pfds, n_pfds, timeout_ms);
+  if (result < 0 && errno != EINTR)
+    g_printerr ("%s: poll() error: %s\n", G_STRFUNC, g_strerror (errno));
+  BSE_SEQUENCER_LOCK ();
+  if (result > 0 && pfds[0].revents)
+    {
+      guint8 buffer[256];
+      read (pfds[0].fd, buffer, 256);                   /* eat wakeup */
+      result -= 1;
+    }
+  if (result > 0)
+    {
+      /* dispatch io watches */
+      guint watch_n_pfds;
+      GPollFD *watch_pfds;
+      while (sequencer_poll_pool.fetch_notify_watch (current_watch_func, current_watch_data, watch_n_pfds, watch_pfds))
+        {
+          assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
+          BSE_SEQUENCER_UNLOCK ();
+          bool current_watch_stays_alive = current_watch_func (current_watch_data, watch_n_pfds, watch_pfds);
+          BSE_SEQUENCER_LOCK ();
+          if (current_watch_needs_remove1 ||            /* removal queued from within io handler */
+              current_watch_needs_remove2 ||            /* removal queued from other thread */
+              !current_watch_stays_alive)               /* removal requested by io handler return value */
+            sequencer_poll_pool.remove_watch (current_watch_func, current_watch_data);
+          current_watch_needs_remove1 = false;
+          current_watch_needs_remove2 = false;
+          current_watch_func = NULL;
+          current_watch_data = NULL;
+          sfi_cond_broadcast (&current_watch_cond);     /* wake up threads in bse_sequencer_remove_io_watch() */
+        }
+    }
+  return !sfi_thread_aborted();
+}
+
+extern "C" void
+bse_sequencer_start_song (BseSong        *song,
+                          guint64         start_stamp)
+{
+  g_assert (bse_sequencer_thread != NULL);
   g_return_if_fail (BSE_IS_SONG (song));
   g_return_if_fail (BSE_SOURCE_PREPARED (song));
   g_return_if_fail (song->sequencer_start_request_SL == 0);
@@ -83,11 +318,11 @@ bse_ssequencer_start_song (BseSong        *song,
     }
   global_sequencer->songs = sfi_ring_append (global_sequencer->songs, song);
   BSE_SEQUENCER_UNLOCK ();
-  sfi_thread_wakeup (bse_ssequencer_thread);
+  sfi_thread_wakeup (bse_sequencer_thread);
 }
 
-void
-bse_ssequencer_remove_song (BseSong *song)
+extern "C" void
+bse_sequencer_remove_song (BseSong *song)
 {
   g_return_if_fail (BSE_IS_SONG (song));
   g_return_if_fail (BSE_SOURCE_PREPARED (song));
@@ -115,39 +350,52 @@ bse_ssequencer_remove_song (BseSong *song)
 }
 
 static gboolean
-bse_ssequencer_remove_song_async (gpointer data)        /* UserThread */
+bse_sequencer_remove_song_async (gpointer data) /* UserThread */
 {
   BseSong *song = BSE_SONG (data);
   if (BSE_SOURCE_PREPARED (song) &&     /* project might be deactivated already */
       song->sequencer_done_SL)          /* song might have been removed and re-added */
     {
-      bse_ssequencer_remove_song (song);
+      bse_sequencer_remove_song (song);
       BseProject *project = bse_item_get_project (BSE_ITEM (song));
       bse_project_check_auto_stop (project);
     }
-  g_object_unref (song);                        /* sequencer_owns_refcount_SL = FALSE from bse_ssequencer_queue_remove_song_SL() */
+  g_object_unref (song);                        /* sequencer_owns_refcount_SL = FALSE from bse_sequencer_queue_remove_song_SL() */
   return FALSE;
 }
 
 static void
-bse_ssequencer_queue_remove_song_SL (BseSong *song)
+bse_sequencer_queue_remove_song_SL (BseSong *song)
 {
   g_return_if_fail (song->sequencer_owns_refcount_SL == TRUE);
-  song->sequencer_owns_refcount_SL = FALSE;     /* g_object_unref() in bse_ssequencer_remove_song_async() */
-  bse_idle_now (bse_ssequencer_remove_song_async, song);
+  song->sequencer_owns_refcount_SL = FALSE;     /* g_object_unref() in bse_sequencer_remove_song_async() */
+  bse_idle_now (bse_sequencer_remove_song_async, song);
+}
+
+extern "C" gboolean
+bse_sequencer_thread_lagging (guint n_blocks)
+{
+  /* return whether the sequencer lags for n_blocks future stamps */
+  const guint64 cur_stamp = gsl_tick_stamp ();
+  guint64 next_stamp = cur_stamp + n_blocks * bse_engine_block_size();
+  BSE_SEQUENCER_LOCK ();
+  gboolean lagging = global_sequencer->stamp < next_stamp;
+  BSE_SEQUENCER_UNLOCK ();
+  return lagging;
 }
 
 static void
-bse_ssequencer_thread_main (gpointer data)
+bse_sequencer_thread_main (gpointer data)
 {
   DEBUG ("SST: start\n");
+  sfi_thread_set_wakeup (sequencer_wake_up, NULL, NULL);
+  BSE_SEQUENCER_LOCK ();
   do
     {
       const guint64 cur_stamp = gsl_tick_stamp ();
-      guint64 next_stamp = cur_stamp + BSE_SSEQUENCER_FUTURE_BLOCKS * bse_engine_block_size();
+      guint64 next_stamp = cur_stamp + BSE_SEQUENCER_FUTURE_BLOCKS * bse_engine_block_size();
       SfiRing *ring;
       
-      BSE_SEQUENCER_LOCK ();
       for (ring = global_sequencer->songs; ring; ring = sfi_ring_walk (ring, global_sequencer->songs))
 	{
           BseSong *song = BSE_SONG (ring->data);
@@ -161,44 +409,32 @@ bse_ssequencer_thread_main (gpointer data)
 		  guint n_ticks = gsl_dtoi (stamp_diff * song->tpsi_SL);
 		  if (n_ticks < 1)
 		    break;
-		  bse_ssequencer_process_song_SL (song, n_ticks);
+		  bse_sequencer_process_song_SL (song, n_ticks);
 		  stamp_diff = (next_stamp - song->sequencer_start_SL) - song->delta_stamp_SL;
 		}
 	    }
 	}
       global_sequencer->stamp = next_stamp;
-      BSE_SEQUENCER_UNLOCK ();
-
+      
       sfi_thread_awake_after (cur_stamp + bse_engine_block_size ());
     }
-  while (sfi_thread_sleep (-1));
+  while (bse_sequencer_poll_Lm (-1));
+  BSE_SEQUENCER_UNLOCK ();
   DEBUG ("SST: end\n");
 }
 
-gboolean
-bse_sequencer_thread_lagging (guint n_blocks)
-{
-  /* return whether the sequencer lags for n_blocks future stamps */
-  const guint64 cur_stamp = gsl_tick_stamp ();
-  guint64 next_stamp = cur_stamp + n_blocks * bse_engine_block_size();
-  BSE_SEQUENCER_LOCK ();
-  gboolean lagging = global_sequencer->stamp < next_stamp;
-  BSE_SEQUENCER_UNLOCK ();
-  return lagging;
-}
-
 static void
-bse_ssequencer_process_track_SL (BseTrack        *track,
-                                 gdouble          start_stamp,
-                                 guint            start_tick,
-                                 guint            n_ticks,
-                                 gdouble          stamps_per_tick,
-                                 BseMidiReceiver *midi_receiver);
+bse_sequencer_process_track_SL (BseTrack        *track,
+                                gdouble          start_stamp,
+                                guint            start_tick,
+                                guint            n_ticks,
+                                gdouble          stamps_per_tick,
+                                BseMidiReceiver *midi_receiver);
 
 static gboolean
-bse_ssequencer_process_song_unlooped_SL (BseSong *song,
-					 guint    n_ticks,
-					 gboolean force_active_tracks)
+bse_sequencer_process_song_unlooped_SL (BseSong *song,
+                                        guint    n_ticks,
+                                        gboolean force_active_tracks)
 {
   BseMidiReceiver *midi_receiver = song->midi_receiver_SL;
   gdouble current_stamp = song->sequencer_start_SL + song->delta_stamp_SL;
@@ -214,10 +450,10 @@ bse_ssequencer_process_song_unlooped_SL (BseSong *song,
       if (!track->track_done_SL || force_active_tracks)
 	{
 	  track->track_done_SL = FALSE;
-	  bse_ssequencer_process_track_SL (track, current_stamp,
-					   song->tick_SL, tick_bound,
-					   stamps_per_tick,
-                                           midi_receiver);
+	  bse_sequencer_process_track_SL (track, current_stamp,
+                                          song->tick_SL, tick_bound,
+                                          stamps_per_tick,
+                                          midi_receiver);
 	}
       if (track->track_done_SL)
 	n_done_tracks++;
@@ -229,8 +465,8 @@ bse_ssequencer_process_song_unlooped_SL (BseSong *song,
 }
 
 static void
-bse_ssequencer_process_song_SL (BseSong *song,
-				guint    n_ticks)
+bse_sequencer_process_song_SL (BseSong *song,
+                               guint    n_ticks)
 {
   gboolean tracks_active = TRUE;
   if (song->loop_enabled_SL && (gint64) song->tick_SL <= song->loop_right_SL)
@@ -239,7 +475,7 @@ bse_ssequencer_process_song_SL (BseSong *song,
 	guint tdiff = song->loop_right_SL - song->tick_SL;
 	tdiff = MIN (tdiff, n_ticks);
 	if (tdiff)
-	  bse_ssequencer_process_song_unlooped_SL (song, tdiff, TRUE);
+	  bse_sequencer_process_song_unlooped_SL (song, tdiff, TRUE);
 	n_ticks -= tdiff;
 	if ((gint64) song->tick_SL >= song->loop_right_SL)
 	  {
@@ -248,29 +484,29 @@ bse_ssequencer_process_song_SL (BseSong *song,
       }
     while (n_ticks);
   else
-    tracks_active = bse_ssequencer_process_song_unlooped_SL (song, n_ticks, FALSE);
+    tracks_active = bse_sequencer_process_song_unlooped_SL (song, n_ticks, FALSE);
   if (!song->sequencer_done_SL && !tracks_active)
     {
       song->sequencer_done_SL = global_sequencer->stamp;
-      bse_ssequencer_queue_remove_song_SL (song);
+      bse_sequencer_queue_remove_song_SL (song);
     }
 }
 
 static void
-bse_ssequencer_process_part_SL (BsePart         *part,
-				gdouble          start_stamp,
-				guint	         start_tick,
-				guint            bound, /* start_tick + n_ticks */
-				gdouble          stamps_per_tick,
-				BseMidiReceiver *midi_receiver,
-                                guint            midi_channel);
+bse_sequencer_process_part_SL (BsePart         *part,
+                               gdouble          start_stamp,
+                               guint	        start_tick,
+                               guint            bound, /* start_tick + n_ticks */
+                               gdouble          stamps_per_tick,
+                               BseMidiReceiver *midi_receiver,
+                               guint            midi_channel);
 static void
-bse_ssequencer_process_track_SL (BseTrack        *track,
-				 gdouble          start_stamp,
-				 guint	          start_tick,
-				 guint            bound, /* start_tick + n_ticks */
-				 gdouble          stamps_per_tick,
-                                 BseMidiReceiver *midi_receiver)
+bse_sequencer_process_track_SL (BseTrack        *track,
+                                gdouble          start_stamp,
+                                guint	         start_tick,
+                                guint            bound, /* start_tick + n_ticks */
+                                gdouble          stamps_per_tick,
+                                BseMidiReceiver *midi_receiver)
 {
   guint start, next;
   BsePart *part = bse_track_get_part_SL (track, start_tick, &start, &next);
@@ -298,25 +534,25 @@ bse_ssequencer_process_track_SL (BseTrack        *track,
       part_bound = next ? MIN (bound, next) : bound;
       part_bound -= start;
       if (!track->muted_SL)
-	bse_ssequencer_process_part_SL (part, part_stamp,
-					part_start, part_bound, stamps_per_tick,
-					midi_receiver, track->midi_channel_SL);
+	bse_sequencer_process_part_SL (part, part_stamp,
+                                       part_start, part_bound, stamps_per_tick,
+                                       midi_receiver, track->midi_channel_SL);
       part = next ? bse_track_get_part_SL (track, next, &start, &next) : NULL;
     }
 }
 
 static void
-bse_ssequencer_process_part_SL (BsePart         *part,
-				gdouble          start_stamp,
-				guint	         start_tick,
-				guint            tick_bound, /* start_tick + n_ticks */
-				gdouble          stamps_per_tick,
-				BseMidiReceiver *midi_receiver,
-                                guint            midi_channel)
+bse_sequencer_process_part_SL (BsePart         *part,
+                               gdouble          start_stamp,
+                               guint	        start_tick,
+                               guint            tick_bound, /* start_tick + n_ticks */
+                               gdouble          stamps_per_tick,
+                               BseMidiReceiver *midi_receiver,
+                               guint            midi_channel)
 {
   BsePartTickNode *node, *last;
   guint channel;
-
+  
   for (channel = 0; channel < part->n_channels; channel++)
     {
       BsePartEventNote *note = bse_part_note_channel_lookup_ge (&part->channels[channel], start_tick);
@@ -339,7 +575,7 @@ bse_ssequencer_process_part_SL (BsePart         *part,
           note++;
         }
     }
-
+  
   node = bse_part_controls_lookup_ge (&part->controls, start_tick);
   last = bse_part_controls_lookup_lt (&part->controls, tick_bound);
   if (node) while (node <= last)
@@ -357,3 +593,5 @@ bse_ssequencer_process_part_SL (BsePart         *part,
       node++;
     }
 }
+
+} // Anon

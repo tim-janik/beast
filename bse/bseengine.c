@@ -1463,7 +1463,7 @@ bse_engine_init (gboolean run_threaded)
 	}
       if (err)
 	g_error ("failed to create wakeup pipe: %s", g_strerror (errno));
-      master_thread = sfi_thread_run ("DSP #1", (SfiThreadFunc) _engine_master_thread, &master_data);
+      master_thread = sfi_thread_run ("DSP #1", (SfiThreadFunc) bse_engine_master_thread, &master_data);
       if (!master_thread)
 	g_error ("failed to create master thread");
       if (0)

@@ -330,12 +330,12 @@ bse_main_loop (gpointer data)
 
   bse_init_core ();
 
+  /* start other threads */
+  bse_sequencer_init_thread ();
+
   /* notify client about completion */
   bse_initialization_stage++;   /* =2 */
   sfi_thread_wakeup (client);
-
-  /* start other threads */
-  bse_ssequencer_init_thread ();
 
   /* and away into the main loop */
   do

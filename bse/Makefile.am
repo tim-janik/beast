@@ -29,7 +29,7 @@ libbseincludedir = $(includedir)/bse
 libbse_la_LDFLAGS = $(strip \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-release $(LT_RELEASE) \
-	-export-dynamic \
+	-export-dynamic -no-undefined \
 )
 libbse_la_LIBADD = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 

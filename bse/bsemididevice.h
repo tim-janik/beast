@@ -43,6 +43,7 @@ struct _BseMidiHandle	/* this should be nuked, it's useless */
   guint			 readable : 1;
   guint			 writable : 1;
   guint			 running_thread : 1;
+  BseMidiDecoder	*midi_decoder;
 };
 struct _BseMidiDevice
 {

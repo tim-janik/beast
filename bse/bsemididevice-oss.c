@@ -15,30 +15,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bsemididevice-oss.h"
-
-#include	"bseserver.h"
-#include	"bsemididecoder.h"
-#include	"gslcommon.h"
-
-#include	"topconfig.h"
+#include "bsemididevice-oss.h"
+#include "bseserver.h"
+#include "bsemididecoder.h"
+#include "gslcommon.h"
+#include "bsessequencer.h"
+#include "topconfig.h"
 
 #ifndef	BSE_MIDI_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #else   /* BSE_MIDI_DEVICE_CONF_OSS */
 
 #if HAVE_SYS_SOUNDCARD_H
-#include	<sys/soundcard.h>
+#include <sys/soundcard.h>
 #elif HAVE_SOUNDCARD_H
-#include	<soundcard.h>
+#include <soundcard.h>
 #endif
-#include	<sys/ioctl.h>
-#include	<sys/types.h>
-#include	<sys/time.h>
-#include	<unistd.h>
-#include	<errno.h>
-#include	<string.h>
-#include	<fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <fcntl.h>
 
 #define MIDI_DEBUG(...) sfi_debug ("midi", __VA_ARGS__)
 
@@ -52,7 +51,7 @@ typedef struct
 
 
 /* --- prototypes --- */
-static void	    io_handler				(BseMidiDevice *mdev,
+static gboolean         oss_midi_io_handler		(gpointer       data,
                                                          guint          n_pfds,
                                                          GPollFD       *pfds);
 
@@ -156,6 +155,7 @@ bse_midi_device_oss_open (BseDevice     *device,
   gint fd = -1;
   handle->readable = (omode & O_RDWR) == O_RDWR || (omode & O_RDONLY) == O_RDONLY;
   handle->writable = (omode & O_RDWR) == O_RDWR || (omode & O_WRONLY) == O_WRONLY;
+  handle->midi_decoder = BSE_MIDI_DEVICE (device)->midi_decoder;
   if ((handle->readable || !require_readable) && (handle->writable || !require_writable))
     fd = open (dname, omode | O_NONBLOCK, 0);           /* open non blocking to avoid waiting for other clients */
   if (fd < 0 && retry_mode)
@@ -184,7 +184,10 @@ bse_midi_device_oss_open (BseDevice     *device,
       if (handle->writable)
 	BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
       BSE_MIDI_DEVICE (device)->handle = handle;
-      bse_server_add_io_watch (bse_server_get (), oss->fd, G_IO_IN, (BseIOWatch) io_handler, device);
+      GPollFD pfd = { 0, };
+      pfd.fd = oss->fd;
+      pfd.events = G_IO_IN;
+      bse_sequencer_add_io_watch (1, &pfd, oss_midi_io_handler, oss);
     }
   else
     {
@@ -207,7 +210,7 @@ bse_midi_device_oss_close (BseDevice *device)
   g_assert (handle->running_thread == FALSE);
   /* midi_handle_abort_wait (handle); */
   
-  bse_server_remove_io_watch (bse_server_get (), (BseIOWatch) io_handler, device);
+  bse_sequencer_remove_io_watch (oss_midi_io_handler, oss);
   (void) close (oss->fd);
   g_free (oss);
 }
@@ -224,12 +227,12 @@ bse_midi_device_oss_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static void
-io_handler (BseMidiDevice *mdev,
-            guint          n_pfds,
-	    GPollFD       *pfd)
+static gboolean
+oss_midi_io_handler (gpointer       data,       /* Sequencer Thread */
+                     guint          n_pfds,
+                     GPollFD       *pfds)
 {
-  OSSHandle *oss = (OSSHandle*) mdev->handle;
+  OSSHandle *oss = (OSSHandle*) data;
   BseMidiHandle *handle = &oss->handle;
   const gsize buf_size = 8192;
   guint8 buffer[buf_size];
@@ -245,7 +248,8 @@ io_handler (BseMidiDevice *mdev,
   while (l < 0 && errno == EINTR);	/* don't mind signals */
   
   if (l > 0)
-    bse_midi_decoder_push_data (mdev->midi_decoder, l, buffer, systime);
+    bse_midi_decoder_push_data (handle->midi_decoder, l, buffer, systime);
+  return TRUE; /* keep alive */
 }
 
 static void

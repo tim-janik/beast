@@ -95,7 +95,7 @@ null_device_check_io (BsePcmHandle *handle,
                       glong        *timeoutp)
 {
   /* keep the sequencer busy or we will constantly timeout */
-  sfi_thread_wakeup (bse_ssequencer_thread);
+  sfi_thread_wakeup (bse_sequencer_thread);
   *timeoutp = 1;
   /* ensure sequencer fairness */
   return !bse_sequencer_thread_lagging (2);

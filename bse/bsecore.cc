@@ -65,9 +65,9 @@ collect_thread_totals::exec ()
   tth->main = ThreadInfoHandle (Sfi::INIT_DEFAULT);
   Sub::assign (tth->main, ti);
   sfi_thread_info_free (ti);
-  if (bse_ssequencer_thread)
+  if (bse_sequencer_thread)
     {
-      ti = sfi_thread_info_collect (bse_ssequencer_thread);
+      ti = sfi_thread_info_collect (bse_sequencer_thread);
       tth->sequencer = ThreadInfoHandle (Sfi::INIT_DEFAULT);
       Sub::assign (tth->sequencer, ti);
       sfi_thread_info_free (ti);

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2003 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,19 +22,25 @@
 
 G_BEGIN_DECLS
 
-#define	BSE_SSEQUENCER_FUTURE_BLOCKS    (7)
+#define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
 
 typedef struct {
   guint64		 stamp;	/* sequencer time (ahead of real time) */
   SfiRing		*songs;
-} BseSSequencer;
+} BseSequencer;
 
-extern SfiThread       *bse_ssequencer_thread;
+extern SfiThread       *bse_sequencer_thread;
 
-void			bse_ssequencer_init_thread	(void);
-void			bse_ssequencer_start_song	(BseSong        *song,
+void			bse_sequencer_init_thread	(void);
+void                    bse_sequencer_add_io_watch      (guint           n_pfds,
+                                                         const GPollFD  *pfds,
+                                                         BseIOWatch      watch_func,
+                                                         gpointer        data);
+void                    bse_sequencer_remove_io_watch   (BseIOWatch      watch_func,
+                                                         gpointer        data);
+void			bse_sequencer_start_song	(BseSong        *song,
                                                          guint64         start_stamp);
-void                    bse_ssequencer_remove_song	(BseSong        *song);
+void                    bse_sequencer_remove_song	(BseSong        *song);
 gboolean                bse_sequencer_thread_lagging    (guint           n_blocks);
 
 G_END_DECLS
