@@ -1,5 +1,5 @@
 FIXME(urgent):
-- move saturation to distortion menu
+- add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 - delete: GxkAction.options, GxkAction.key?
 - s/ActionSet/ActionLink/
 - implement GxkActionFactory like gxk_window_add_assortment_client()
