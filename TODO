@@ -11,6 +11,7 @@ FIXME(release-critical):
 - TIME: ISO 8601: http://www.cl.cam.ac.uk/~mgk25/iso-time.html
   implement time parser for this in beast, merge with travelad parser
 - driver interface: support multilpe MIDI channels
+- popdown scrollgraph on ::release
 TODO:
 - support various fft windows for fft probes
 - implement float-ffts
