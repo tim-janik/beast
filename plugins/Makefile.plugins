@@ -17,17 +17,6 @@ bseatandistort_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bseatandistort.h
 
 ##
-## Plugin bsegenosc
-##
-bsegenosc.enums: bsegenosc.h 
-plugins_built_sources += bsegenosc.enums
-$(srcdir)/bsegenosc.c: bsegenosc.enums
-bsegenosc_la_SOURCES = bsegenosc.c
-bsegenosc_la_LDFLAGS = -module -avoid-version
-bsegenosc_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS         += bsegenosc.h
-
-##
 ## Plugin bseiirfilter
 ##
 bseiirfilter.enums: bseiirfilter.h 
@@ -98,7 +87,6 @@ EXTRA_HEADERS         += davxtalstrings.h
 plugin_LTLIBRARIES += \
 	bseadder.la \
 	bseatandistort.la \
-	bsegenosc.la \
 	bseiirfilter.la \
 	bsemixer.la \
 	bsemult.la \

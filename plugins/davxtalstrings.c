@@ -11,7 +11,7 @@
  ***********************************************************************
  *
  * Any commercial use of this module requires a license from
- * Stanford University.
+ * Stanford University until 2004.
  *
  ***********************************************************************
  *
@@ -372,16 +372,22 @@ xmod_process (GslModule *module,
   xmod->last_trigger_level = last_trigger_level;
 }
 
+#define	STRING_LENGTH()	((BSE_MIX_FREQ + 19) / 20)
+
 static void
-xmod_reconnect (GslModule *module)
+xmod_reset (GslModule *module)
 {
   XtalStringsModule *xmod = module->user_data;
 
-  /* this function is called whenever an input or output
-   * connection changed
-   */
-  if (!GSL_MODULE_ISTREAM (module, DAV_XTAL_STRINGS_ICHANNEL_TRIGGER).connected)
-    xmod->last_trigger_level = 0;
+  /* this function is called whenever we need to start from scratch */
+  memset (xmod->string, 0, STRING_LENGTH () * sizeof (xmod->string[0]));
+  xmod->size = 1;
+  xmod->pos = 0;
+  xmod->count = 0;
+  xmod->a = 0.0;
+  xmod->damping_factor = 0.0;
+  xmod->last_trigger_freq = 440.0;	/* just _some_ valid freq for the stepping */
+  xmod->last_trigger_level = 0;
 }
 
 static void
@@ -405,7 +411,7 @@ dav_xtal_strings_context_create (BseSource *source,
     DAV_XTAL_STRINGS_N_OCHANNELS,	/* n_ostreams */
     xmod_process,			/* process */
     NULL,				/* process_defer */
-    xmod_reconnect,			/* reset */
+    xmod_reset,				/* reset */
     xmod_free,				/* free */
     GSL_COST_NORMAL,			/* cost */
   };
@@ -413,17 +419,11 @@ dav_xtal_strings_context_create (BseSource *source,
   XtalStringsModule *xmod = g_new0 (XtalStringsModule, 1);
   GslModule *module;
 
-  xmod->string = g_new0 (gfloat, (BSE_MIX_FREQ + 19) / 20);
-  xmod->size = 1;
-  xmod->pos = 0;
-  xmod->count = 0;
-  xmod->a = 0.0;
-  xmod->damping_factor = 0.0;
-  xmod->last_trigger_freq = 440.0;	/* just _some_ valid freq for the stepping */
-  xmod->last_trigger_level = 0;
+  xmod->string = g_new0 (gfloat, STRING_LENGTH ());
   xmod->tparams = self->params;
   module = gsl_module_new (&xmod_class, xmod);
-
+  xmod_reset (module); /* value initialization */
+  
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, module);
 
