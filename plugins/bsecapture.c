@@ -131,7 +131,11 @@ bse_capture_calc_chunk (BseSource *source,
 
   hunk = bse_hunk_alloc (1);
   if (capture->pdev && BSE_PCM_DEVICE_READABLE (capture->pdev))
-    bse_hunk_mix (1, hunk, NULL, capture->pdev->n_channels, capture->pdev->capture_cache);
+    {
+      BseChunk *chunk = bse_pcm_device_iqueue_peek (capture->pdev);
+
+      bse_hunk_mix (1, hunk, NULL, chunk->n_tracks, chunk->hunk);
+    }
   else
     memset (hunk, 0, BSE_TRACK_LENGTH * sizeof (BseSampleValue));
 

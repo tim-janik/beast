@@ -1,3 +1,8 @@
+Wed Dec 29 12:19:34 1999  Tim Janik  <timj@gtk.org>
+
+	* bsecapture.c (bse_capture_calc_chunk): removed capture cache cludge,
+	with bse_pcm_device_iqueue_peek() we've got a sane interface now.
+
 Mon Dec 27 18:33:01 1999  Tim Janik  <timj@gtk.org>
 
 	* bsegenosc.[hc]: feature self-modulation.
