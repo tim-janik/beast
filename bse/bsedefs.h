@@ -45,11 +45,6 @@ extern "C" {
 #endif /* !G_ENABLE_DEBUG */
 
 
-/* --- BSE basic typedefs --- */
-typedef gint64                          BseIndex;
-typedef gulong                          BseTime;
-
-
 /* --- BSE objects, classes & interfaces --- */
 typedef struct  _BseBinData             BseBinData;
 typedef struct  _BseBinDataClass        BseBinDataClass;

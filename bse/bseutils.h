@@ -27,21 +27,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- dates and times --- */
-#define BSE_MAX_DATE_ERRORS		(10)
-BseTime		bse_time_current	(void);
-BseTime		bse_time_to_gmt		(BseTime	time_val);
-BseTime		bse_time_from_gmt	(BseTime	time_val);
-gchar*		bse_time_to_str		(BseTime	time_val);
-gchar*		bse_time_to_bbuffer	(BseTime	time_val,
-					 gchar		bbuffer[BSE_BBUFFER_SIZE]);
-/* bse_time_from_string() returns a time > BSE_MIN_TIME, or 0 if
- * the parsing errors were really fundamental.
- */
-BseTime		bse_time_from_string	(const gchar   *time_string,
-					 BseErrorType	errors[BSE_MAX_DATE_ERRORS]);
-
-
 /* --- record utils --- */
 BseNoteDescription*	bse_note_description	(SfiInt note,
 						 gint   fine_tune);

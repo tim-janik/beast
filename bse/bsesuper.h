@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bsesuper.h: undo aware base class for songs, samples and MS networks
  */
 #ifndef __BSE_SUPER_H__
 #define __BSE_SUPER_H__
@@ -54,9 +52,8 @@ struct _BseSuper
 {
   BseContainer	 parent_object;
 
-  BseTime	 creation_time;
-  BseTime	 mod_time;
-  BseTime	 saved_mod_time;
+  SfiTime	 creation_time;
+  SfiTime	 mod_time;
 
   /* for BseProject */
   guint          context_handle;
@@ -65,28 +62,13 @@ struct _BseSuperClass
 {
   BseContainerClass parent_class;
   
-  gboolean	(*is_dirty)		(BseSuper	*super);
   void		(*modified)		(BseSuper	*super,
-					 BseTime	 stamp);
+					 SfiTime	 stamp);
 };
 
 
 /* --- prototypes --- */
 BseProject*     bse_super_get_project		(BseSuper	*super);
-gboolean	bse_super_is_dirty		(BseSuper	*super);
-void		bse_super_set_creation_time	(BseSuper	*super,
-						 BseTime	 creation_time);
-void		bse_super_reset_mod_time	(BseSuper	*super,
-						 BseTime	 mod_time);
-
-/* convenience functions */
-void		bse_super_set_author		(BseSuper	*super,
-						 const gchar	*author);
-void		bse_super_set_copyright		(BseSuper	*super,
-						 const gchar	*copyright);
-gchar*		bse_super_get_author		(BseSuper	*super);
-gchar*		bse_super_get_copyright		(BseSuper	*super);
-
 
 
 G_END_DECLS
