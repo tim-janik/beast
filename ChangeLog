@@ -1,3 +1,7 @@
+Wed Jan 26 01:22:04 2005  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up, up version to 0.6.5rc, binary 0, interface 0.
+
 Tue Jan 25 00:38:48 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstusermessage.c (dialog_show_above_modals): override active
