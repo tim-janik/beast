@@ -11,7 +11,7 @@ msgstr ""
 "Last-Translator: M?tin ?mirov <metin@karegen.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: bse/bsebiquadfilter.c:130
@@ -20,20 +20,20 @@ msgstr "Filtr"
 
 #: bse/bsebiquadfilter.c:132
 msgid "Filter Type"
-msgstr "Filtr N�v�"
+msgstr "Filtr Növü"
 
 #: bse/bsebiquadfilter.c:132
 msgid "The filter design type"
-msgstr "Filtr T?rtib N�v�"
+msgstr "Filtr Tərtib Növü"
 
 #: bse/bsebiquadfilter.c:136
 #: bse/bsebiquadfilter.c:144
 msgid "Center Frequency"
-msgstr "M?rk?z Tezliyi"
+msgstr "Mərkəz Tezliyi"
 
 #: bse/bsebiquadfilter.c:138
 msgid "Cutoff [Hz]"
-msgstr "K?sm? [Hz]"
+msgstr "Kəsmə [Hz]"
 
 #: bse/bsebiquadfilter.c:146
 msgid "Note"
@@ -50,11 +50,11 @@ msgstr "Gain [dB]"
 
 #: bse/bsebiquadfilter.c:158
 msgid "Norm Type"
-msgstr "Norm N�v�"
+msgstr "Norm Növü"
 
 #: bse/bsebiquadfilter.c:159
 msgid "The filter gain normalization type (supported only by highpass and lowpass)"
-msgstr "Filtr gaini normalla?d?rma n�v�"
+msgstr "Filtr gaini normallaşdırma növü"
 
 #: bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170
@@ -65,41 +65,41 @@ msgstr "Modulyasiya"
 
 #: bse/bsebiquadfilter.c:167
 msgid "Strength of linear frequency modulation"
-msgstr "Linear tezlik modulyasiyan?n g�c�"
+msgstr "Linear tezlik modulyasiyasının gücü"
 
 #: bse/bsebiquadfilter.c:173
 msgid "Perform exponential frequency modulation instead of linear"
-msgstr "Linear modulyasiya yerin? eksponental tezlik modulyasiyas?n? et"
+msgstr "Linear modulyasiya yerinə eksponental tezlik modulyasiyasını et"
 
 #: bse/bsebiquadfilter.c:179
 msgid "Number of octaves to be affected by exponential frequency modulation"
-msgstr "Eksponental tezlik modulyasiyas?ndan t?siri alan oktav say?"
+msgstr "Eksponental tezlik modulyasiyasından təsiri alan oktav sayı"
 
 #: bse/bsebiquadfilter.c:184
 msgid "Gain Modulation [%]"
-msgstr "Gain Modulyasiyas? [%]"
+msgstr "Gain Modulyasiyası [%]"
 
 #: bse/bsebiquadfilter.c:185
 msgid "Strength of gain modulation"
-msgstr "Gain modulyasiyas?n?n g�c�"
+msgstr "Gain modulyasiyasının gücü"
 
 #: bse/bsebiquadfilter.c:189
 msgid "Unfiltered Audio Signal"
-msgstr "Filtrl?nm?mi? Audio Siqnal"
+msgstr "Filtrlənməmiş Audio Siqnal"
 
 #: bse/bsebiquadfilter.c:191
 msgid "Center Frequency Input"
-msgstr "M?rk?z Modulyasiya Giri?i"
+msgstr "Mərkəz Modulyasiya Girişi"
 
 #: bse/bsebiquadfilter.c:193
 msgid "Frequency Modulation Input"
-msgstr "Tezlik Modulyasiya Giri?i"
+msgstr "Tezlik Modulyasiya Girişi"
 
 #: bse/bsebiquadfilter.c:195
 msgid "Gain Modulation Input"
-msgstr "Gain Modulyasiya Giri?i"
+msgstr "Gain Modulyasiya Girişi"
 
 #: bse/bsebiquadfilter.c:197
 msgid "Filtered Audio Signal"
-msgstr "Filtrl?nmi? Audio Siqnal"
+msgstr "Filtrlənmiş Audio Siqnal"
 
