@@ -400,6 +400,22 @@ bst_splash_set_animation (GtkWidget          *widget,
     bst_splash_update ();
 }
 
+static const gchar*
+splash_select_string (BstSplash *self)
+{
+  guint nth = rand () % self->n_rand_strings;
+  gchar *string = self->strings[nth];
+  self->n_rand_strings -= 1;
+  if (self->n_rand_strings < 1)
+    self->n_rand_strings = self->n_strings;
+  else
+    {
+      self->strings[nth] = self->strings[self->n_rand_strings];
+      self->strings[self->n_rand_strings] = string;
+    }
+  return string;
+}
+
 static gboolean
 about_timer (gpointer data)
 {
@@ -409,7 +425,7 @@ about_timer (gpointer data)
   self->aprogress += delta;
   if (self->aprogress >= 2)
     {
-      gtk_progress_bar_set_text (self->pbar, self->strings[rand () % self->n_strings]);
+      gtk_progress_bar_set_text (self->pbar, splash_select_string (self));
       self->aprogress = 0;
     }
   gtk_progress_bar_set_orientation (self->pbar, self->aprogress < 1 ? GTK_PROGRESS_LEFT_TO_RIGHT : GTK_PROGRESS_RIGHT_TO_LEFT);
@@ -428,10 +444,11 @@ bst_splash_animate_strings (GtkWidget      *splash,
   self->n_strings = 0;
   while (self->strings[self->n_strings])
     self->n_strings++;
+  self->n_rand_strings = self->n_strings;
   if (!self->timer_id)
     self->timer_id = g_timeout_add (40, about_timer, self);
   self->aprogress = 0;
   gtk_progress_bar_set_orientation (self->pbar, GTK_PROGRESS_LEFT_TO_RIGHT);
   gtk_progress_bar_set_fraction (self->pbar, self->aprogress);
-  gtk_progress_bar_set_text (self->pbar, self->strings[rand () % self->n_strings]);
+  gtk_progress_bar_set_text (self->pbar, splash_select_string (self));
 }

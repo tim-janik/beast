@@ -54,6 +54,7 @@ struct _BstSplash
   guint           timer_id;
   gchar         **strings;
   guint           n_strings;
+  guint           n_rand_strings;
   gfloat          aprogress;
 };
 struct _BstSplashClass
