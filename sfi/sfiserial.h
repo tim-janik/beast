@@ -25,17 +25,18 @@ G_BEGIN_DECLS
 
 
 /* --- functions --- */
+GTokenType	sfi_value_parse_typed		(GValue		*value,
+						 GScanner	*scanner);
+GTokenType	sfi_value_parse_param_rest	(GValue		*value,
+						 GScanner	*scanner,
+						 GParamSpec	*pspec);
 void		sfi_value_store_typed		(const GValue	*value,
 						 GString	*gstring);
 void		sfi_value_store_param	        (const GValue	*value,
 						 GString	*gstring,
 						 GParamSpec	*pspec,
 						 guint		 indent);
-GTokenType	sfi_value_parse_typed		(GValue		*value,
-						 GScanner	*scanner);
-GTokenType	sfi_value_parse_param_rest	(GValue		*value,
-						 GScanner	*scanner,
-						 GParamSpec	*pspec);
+void            sfi_value_store_stderr          (const GValue   *value);
 
 
 /* --- NULL (nil) token handling --- */
