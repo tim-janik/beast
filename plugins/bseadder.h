@@ -50,11 +50,15 @@ struct _BseAdder
 {
   BseSource       parent_object;
 
+  gboolean	  subtract;
+
   BseMixValue    *mix_buffer;
 };
 struct _BseAdderClass
 {
   BseSourceClass parent_class;
+
+  BseIcon	*sub_icon;
 };
 
 

@@ -1,3 +1,14 @@
+Sun Dec 26 19:23:58 1999  Tim Janik  <timj@gtk.org>
+
+	* bseadder.c (bse_adder_set_param): notify icon_changed when entering/
+	leaving subtract mode.
+	(bse_adder_do_get_icon): override parent class function to return a
+	different icon when in subtract mode.
+
+Sun Dec 25 01:37:24 1999  Tim Janik  <timj@gtk.org>
+
+	* bseadder.[hc]: feature subtract mode instead of adding (for olaf ;).
+
 Fri Dec 17 17:53:18 1999  Tim Janik  <timj@gtk.org>
 
 	* pluged bad memory leaks:
