@@ -1,3 +1,9 @@
+Fri Oct  8 09:55:43 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemathsignal.h: CVS copied from gslsignal.h.
+
+	* bsemathsignal.c: CVS copied from gslsignal.c.
+
 Fri Oct  8 06:52:09 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesequencer.cc:
