@@ -46,7 +46,9 @@ The most important change in this release is probably the reduced CPU consumptio
 lowered scope updating priority. Very convenient are the newly added -n<nicelevel> and
 -N (don't renice) options which may be used to adjust or bypass the scheduling priority
 raising effects of the suid launcher executables.
-A nice bonus in this release are the FFT based spectrograms, available for all synthesis
+A nice bonus in this release are the 
+@uref{http://beast.gtk.org/images/screenshots/stwZ04-fft_scopes.png,, FFT based spectrographs},
+available for all synthesis
 modules with output channels via the context menu.
 New with this release is the experimental
 @uref{http://www.portaudio.com/,, PortAudio} driver, Stefan Westerfeld put

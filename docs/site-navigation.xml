@@ -53,6 +53,7 @@
       <navigation-node title="SFI Changes"         target="log-sfi.html"     />
     </navigation-node>
     <navigation-node title="BEAST/BSE Development">
+      <navigation-node title="Architecture"        target="architecture.html"   />
       <navigation-node title="Writing Plugins"     target="plugin-devel.html"   />
       <navigation-node title="IDL Compiler"        target="sfidl-manual.html"   />
       <navigation-node title="GXK Functions"       target="beast-gxk.3.html"   />
