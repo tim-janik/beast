@@ -107,10 +107,10 @@ bse_sequencer_class_init (BseSequencerClass *class)
 						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Sequence",
 			      PARAM_COUNTER,
-			      bse_param_spec_uint ("counter", "Timing [ms]", NULL,
-						   1, 1000,
-						   100, 50,
-						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+			      bse_param_spec_float ("counter", "Timing [ms]", NULL,
+						    0, 1000,
+						    100, 5,
+						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   ochannel = bse_source_class_add_ochannel (source_class, "Freq Out", "Frequency Signal");
   g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_FREQ);
@@ -161,7 +161,7 @@ bse_sequencer_set_property (BseSequencer *seq,
       g_object_notify (seq, "length");
       break;
     case PARAM_COUNTER:
-      seq->counter = g_value_get_uint (value);
+      seq->counter = g_value_get_float (value);
       bse_sequencer_update_modules (seq);
       break;
     case PARAM_TRANSPOSE:
@@ -189,7 +189,7 @@ bse_sequencer_get_property (BseSequencer *seq,
       g_value_set_uint (value, seq->sdata->n_notes);
       break;
     case PARAM_COUNTER:
-      g_value_set_uint (value, seq->counter);
+      g_value_set_float (value, seq->counter);
       break;
     case PARAM_TRANSPOSE:
       g_value_set_int (value, seq->transpose);

@@ -1,3 +1,8 @@
+Wed Feb  6 04:54:16 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.c: specify timings as floats, so more
+	fine grained adjustments are possible.
+
 Wed Feb  6 04:41:09 2002  Tim Janik  <timj@gtk.org>
 
 	* bseiirfilter.[hc]: new IIR filter module.

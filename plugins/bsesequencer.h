@@ -46,7 +46,7 @@ struct _BseSequencer
 {
   BseSource      parent_object;
 
-  guint		 counter;
+  gfloat	 counter;
   gint		 transpose;
   BseSequence	*sdata;
   guint		 n_freq_values;
