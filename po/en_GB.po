@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-07 20:57+0100\n"
-"PO-Revision-Date: 2004-09-07 20:57+0100\n"
+"POT-Creation-Date: 2004-09-08 20:17+0100\n"
+"PO-Revision-Date: 2004-09-08 20:17+0100\n"
 "Last-Translator: David Lodge <dave@cirt.net>\n"
 "Language-Team: English/GB <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -334,6 +334,14 @@ msgstr "Delete"
 msgid "Editor"
 msgstr "Editor"
 
+#: beast-gtk/bstbusmixer.c:35
+msgid "Add a new bus to the mixer"
+msgstr "Add a new bus to the mixer"
+
+#: beast-gtk/bstbusmixer.c:36
+msgid "Delete the currently selected bus"
+msgstr "Delete the currently selected bus"
+
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
 msgstr "Module Link: "
@@ -351,8 +359,7 @@ msgid "Input"
 msgstr "Input"
 
 #: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1082
-#: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
-#: plugins/artscompressor.idl:58
+#: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Output"
 
@@ -2159,7 +2166,8 @@ msgstr "Select output module"
 msgid "Select input module"
 msgstr "Select input module"
 
-#: beast-gtk/bstsnetrouter.c:704
+#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsupershell.c:266 beast-gtk/bstsupershell.c:280
 msgid "Properties"
 msgstr "Properties"
 
@@ -2259,72 +2267,72 @@ msgstr "Mark Signal (Head)"
 msgid "Mark Signal (Tail)"
 msgstr "Mark Signal (Tail)"
 
-#: beast-gtk/bstsupershell.c:161 beast-gtk/bstsupershell.c:195
-#: beast-gtk/bstsupershell.c:322
+#: beast-gtk/bstsupershell.c:159 beast-gtk/bstsupershell.c:277
 msgid "Waves"
 msgstr "Waves"
 
-#: beast-gtk/bstsupershell.c:162
+#: beast-gtk/bstsupershell.c:160
 msgid "Wave Repository"
 msgstr "Wave Repository"
 
-#: beast-gtk/bstsupershell.c:167
+#: beast-gtk/bstsupershell.c:165
 #, c-format
 msgid "Song: %s"
 msgstr "Song: %s"
 
-#: beast-gtk/bstsupershell.c:172
+#: beast-gtk/bstsupershell.c:170
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI Synthesizer: %s"
 
-#: beast-gtk/bstsupershell.c:177
+#: beast-gtk/bstsupershell.c:175
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Synthesizer: %s"
 
-#: beast-gtk/bstsupershell.c:268
+#: beast-gtk/bstsupershell.c:228
 msgid "Tracks"
 msgstr "Tracks"
 
-#: beast-gtk/bstsupershell.c:268
+#: beast-gtk/bstsupershell.c:228
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Tracks contain instrument definitions and parts with notes"
 
-#: beast-gtk/bstsupershell.c:271
+#: beast-gtk/bstsupershell.c:231
 msgid "Mixer"
 msgstr "Mixer"
 
-#: beast-gtk/bstsupershell.c:271
+#: beast-gtk/bstsupershell.c:231
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr "Mix track outputs, adjust volume and add effects"
 
-#: beast-gtk/bstsupershell.c:274 beast-gtk/bstsupershell.c:309
-#: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
-#: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
-#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
-msgid "Parameters"
-msgstr "Parameters"
+#: beast-gtk/bstsupershell.c:234
+msgid "Adjust overall song behaviour"
+msgstr "Adjust overall song behaviour"
 
-#: beast-gtk/bstsupershell.c:274
-msgid "Adjust general song parameters"
-msgstr "Adjust general song parameters"
-
-#: beast-gtk/bstsupershell.c:277
+#: beast-gtk/bstsupershell.c:237
 msgid "Parts"
 msgstr "Parts"
 
-#: beast-gtk/bstsupershell.c:281
+#: beast-gtk/bstsupershell.c:241
 msgid "Busses"
 msgstr "Busses"
 
-#: beast-gtk/bstsupershell.c:285 beast-gtk/bstsupershell.c:303
+#: beast-gtk/bstsupershell.c:245 beast-gtk/bstsupershell.c:262
 msgid "Routing"
 msgstr "Routing"
 
-#: beast-gtk/bstsupershell.c:298
+#: beast-gtk/bstsupershell.c:258
 msgid "Rack"
 msgstr "Rack"
+
+#: beast-gtk/bstsupershell.c:262
+msgid "Add, edit and connect synthsizer mesh components"
+msgstr "Add, edit and connect synthsizer mesh components"
+
+#: beast-gtk/bstsupershell.c:266
+msgid "Adjust overall synthesizer behaviour"
+msgstr "Adjust overall synthesizer behaviour"
 
 #: beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert/edit/move parts (mouse button 1 and 2)"
@@ -2945,8 +2953,8 @@ msgstr ""
 "other control signals) or exponentially (to amplify audio signals). Finally, "
 "the master volume controls amplification of the resulting output signal."
 
-#: bse/bseamplifier.idl:45 plugins/bseadder.c:97 plugins/bsebalance.idl:36
-#: plugins/bsemult.c:60
+#: bse/bseamplifier.idl:45 plugins/artscompressor.idl:50 plugins/bseadder.c:97
+#: plugins/bsebalance.idl:36 plugins/bsemult.c:60
 msgid "Audio In1"
 msgstr "Audio In1"
 
@@ -2954,8 +2962,8 @@ msgstr "Audio In1"
 msgid "First audio input"
 msgstr "First audio input"
 
-#: bse/bseamplifier.idl:46 plugins/bseadder.c:99 plugins/bsebalance.idl:37
-#: plugins/bsemult.c:62
+#: bse/bseamplifier.idl:46 plugins/artscompressor.idl:51 plugins/bseadder.c:99
+#: plugins/bsebalance.idl:37 plugins/bsemult.c:62
 msgid "Audio In2"
 msgstr "Audio In2"
 
@@ -2980,10 +2988,10 @@ msgid "Second control input"
 msgstr "Second control input"
 
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
-#: bse/bsewaveosc.c:564 plugins/artscompressor.idl:33 plugins/bseadder.c:101
-#: plugins/bseatandistort.c:92 plugins/bseiirfilter.c:162
-#: plugins/bsemixer.c:109 plugins/bsemult.c:68 plugins/davbassfilter.idl:35
-#: plugins/davchorus.idl:32 plugins/davorgan.c:133 plugins/davsyndrum.c:122
+#: bse/bsewaveosc.c:564 plugins/bseadder.c:101 plugins/bseatandistort.c:92
+#: plugins/bseiirfilter.c:162 plugins/bsemixer.c:109 plugins/bsemult.c:68
+#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:32
+#: plugins/davorgan.c:133 plugins/davsyndrum.c:122
 #: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
 msgstr "Audio Out"
@@ -3204,10 +3212,9 @@ msgstr "Gain Modulation [%]"
 msgid "Strength of gain modulation"
 msgstr "Strength of gain modulation"
 
-#: bse/bsebiquadfilter.c:184 plugins/artscompressor.idl:32
-#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:160
-#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
-#: plugins/evaluator/bseevaluator.idl:32
+#: bse/bsebiquadfilter.c:184 plugins/bseatandistort.c:90
+#: plugins/bseiirfilter.c:160 plugins/davbassfilter.idl:34
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Audio In"
 
@@ -3345,8 +3352,7 @@ msgstr "Internals"
 msgid "Master Output"
 msgstr "Master Output"
 
-#: bse/bsebus.c:859 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
-#: plugins/freeverb/bsefreeverb.c:123
+#: bse/bsebus.c:859 bse/bsepcmoutput.c:128 plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Left Audio In"
 
@@ -3354,8 +3360,7 @@ msgstr "Left Audio In"
 msgid "Left channel input"
 msgstr "Left channel input"
 
-#: bse/bsebus.c:861 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
-#: plugins/freeverb/bsefreeverb.c:124
+#: bse/bsebus.c:861 bse/bsepcmoutput.c:130 plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Right Audio In"
 
@@ -3363,8 +3368,7 @@ msgstr "Right Audio In"
 msgid "Right channel input"
 msgstr "Right channel input"
 
-#: bse/bsebus.c:863 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
-#: plugins/freeverb/bsefreeverb.c:125
+#: bse/bsebus.c:863 bse/bsepcminput.c:128 plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Left Audio Out"
 
@@ -3372,8 +3376,7 @@ msgstr "Left Audio Out"
 msgid "Left channel output"
 msgstr "Left channel output"
 
-#: bse/bsebus.c:865 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
-#: plugins/freeverb/bsefreeverb.c:126
+#: bse/bsebus.c:865 bse/bsepcminput.c:130 plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Right Audio Out"
 
@@ -3480,11 +3483,103 @@ msgstr "Child System Time"
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "The CPU time spent in the system for children of this thread"
 
-#: bse/bsecore.idl:465
+#: bse/bsecore.idl:439
+msgid "Search Paths"
+msgstr "Search Paths"
+
+#: bse/bsecore.idl:440
+msgid "Sample Path"
+msgstr "Sample Path"
+
+#: bse/bsecore.idl:441
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find audio samples."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find audio samples."
+
+#: bse/bsecore.idl:444
+msgid "Effect Path"
+msgstr "Effect Path"
+
+#: bse/bsecore.idl:445
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE effect "
+"files."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find BSE effect "
+"files."
+
+#: bse/bsecore.idl:448
+msgid "Instrument Path"
+msgstr "Instrument Path"
+
+#: bse/bsecore.idl:449
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE instrument "
+"files."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find BSE instrument "
+"files."
+
+#: bse/bsecore.idl:452
+msgid "Script Path"
+msgstr "Script Path"
+
+#: bse/bsecore.idl:453
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE scheme "
+"scripts."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find BSE scheme "
+"scripts."
+
+#: bse/bsecore.idl:456
+msgid "Plugin Path"
+msgstr "Plugin Path"
+
+#: bse/bsecore.idl:457
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE plugins. "
+"This path is searched for in addition to the standard BSE plugin location on "
+"this system."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find BSE plugins. "
+"This path is searched for in addition to the standard BSE plugin location on "
+"this system."
+
+#: bse/bsecore.idl:461
+msgid "LADSPA Path"
+msgstr "LADSPA Path"
+
+#: bse/bsecore.idl:462
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find LADSPA "
+"plugins. This path is searched for in addition to the standard LADSPA "
+"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
+"API, more informations about LADSPA plugins can be found at http://www."
+"ladspa.org/."
+msgstr ""
+"Search path of directories, seperated by \"%s\", used to find LADSPA "
+"plugins. This path is searched for in addition to the standard LADSPA "
+"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
+"API, more informations about LADSPA plugins can be found at http://www."
+"ladspa.org/."
+
+#: bse/bsecore.idl:468
+msgid "Synthesis Settings"
+msgstr "Synthesis Settings"
+
+#: bse/bsecore.idl:469
 msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
-#: bse/bsecore.idl:466
+#: bse/bsecore.idl:470
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -3492,25 +3587,59 @@ msgstr ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 
-#: bse/bsecore.idl:469
+#: bse/bsecore.idl:472
 msgid "Synth Mixing Frequency"
 msgstr "Synth Mixing Frequency"
 
-#: bse/bsecore.idl:470
+#: bse/bsecore.idl:473
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:472
+#: bse/bsecore.idl:475
 msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
-#: bse/bsecore.idl:473
+#: bse/bsecore.idl:476
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
 msgstr ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
+
+#: bse/bsecore.idl:480
+msgid "MIDI"
+msgstr "MIDI"
+
+#: bse/bsecore.idl:481
+msgid "Invert Sustain Pedal"
+msgstr "Invert Sustain Pedal"
+
+#: bse/bsecore.idl:482
+msgid ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgstr ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+
+#: bse/bsecore.idl:485
+msgid "Stepping Rates"
+msgstr "Stepping Rates"
+
+#: bse/bsecore.idl:486
+msgid "Volume [dB] Steps"
+msgstr "Volume [dB] Steps"
+
+#: bse/bsecore.idl:486
+msgid "Step width for volume in decibell"
+msgstr "Step width for volume in decibel"
+
+#: bse/bsecore.idl:488
+msgid "BPM Steps"
+msgstr "BPM Steps"
+
+#: bse/bsecore.idl:488
+msgid "Step width for beats per minute"
+msgstr "Step width for beats per minute"
 
 #. GSL
 #: bse/bseenums.c:99
@@ -4308,87 +4437,152 @@ msgstr "BSE Multi-Part Wave File"
 msgid "BSE Synthesis File"
 msgstr "BSE Synthesis File"
 
-#: plugins/artscompressor.idl:29 plugins/artscompressor.idl:46
-#: plugins/evaluator/bseevaluator.idl:27
+#: plugins/artscompressor.idl:28 plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
 msgstr "GNU General Public Licence"
 
-#: plugins/artscompressor.idl:30
+#: plugins/artscompressor.idl:29
 msgid "/Enhance/ArtsCompressor"
 msgstr "/Enhance/ArtsCompressor"
 
-#: plugins/artscompressor.idl:31
-msgid "ArtsCompressor compresses the sound."
-msgstr "ArtsCompressor compresses the sound."
+#: plugins/artscompressor.idl:30
+msgid ""
+"ArtsCompressor compresses the sound.\n"
+"\n"
+"Compression is a dynamic operation that consists of two parts:\n"
+"(1) the current input volume of the signal is detected\n"
+"(2) if it exceeds a given theshold, the volume of the output signal will be "
+"reduced\n"
+"\n"
+"The input volume detection has an attack and a release half-life time which "
+"can be specified - in milliseconds - with the corresponding properties. This "
+"envelope causes the compressor to adapt slowly to the actual input signal "
+"level.\n"
+"\n"
+"The ratio specifies how the volume of a signal should be reduced, if it "
+"exceeds the threshold. A compression ratio of 2:1 means for instance that if "
+"the input volume is 2 dB over the threshold, the output volume will be 1 dB "
+"over the threshold. Example (threshold = -10, ratio 2:1):\n"
+"input = -20 dB => output = -20 dB\n"
+"input = -10 dB => output = -10 dB\n"
+"input = 0 dB => output = -5 dB\n"
+"input = 10 dB => output = 0 dB\n"
+"input = 20 dB => output = 5 dB\n"
+"\n"
+"Compression is often thought off as an operation to make music \"sound louder"
+"\". To achieve this, the first step is to reduce the dynamic range like in "
+"the example above. As the loud parts of the music have been reduced in "
+"volume, we can now amplify everything, without risking distortion or "
+"clipping. This has the overall effect of the music sounding louder. In our "
+"example, an output amplification of 5 dB would be okay, if the input signal "
+"never exceeded 0 dB."
+msgstr ""
+"ArtsCompressor compresses the sound.\n"
+"\n"
+"Compression is a dynamic operation that consists of two parts:\n"
+"(1) the current input volume of the signal is detected\n"
+"(2) if it exceeds a given theshold, the volume of the output signal will be "
+"reduced\n"
+"\n"
+"The input volume detection has an attack and a release half-life time which "
+"can be specified - in milliseconds - with the corresponding properties. This "
+"envelope causes the compressor to adapt slowly to the actual input signal "
+"level.\n"
+"\n"
+"The ratio specifies how the volume of a signal should be reduced, if it "
+"exceeds the threshold. A compression ratio of 2:1 means for instance that if "
+"the input volume is 2 dB over the threshold, the output volume will be 1 dB "
+"over the threshold. Example (threshold = -10, ratio 2:1):\n"
+"input = -20 dB => output = -20 dB\n"
+"input = -10 dB => output = -10 dB\n"
+"input = 0 dB => output = -5 dB\n"
+"input = 10 dB => output = 0 dB\n"
+"input = 20 dB => output = 5 dB\n"
+"\n"
+"Compression is often thought off as an operation to make music \"sound louder"
+"\". To achieve this, the first step is to reduce the dynamic range like in "
+"the example above. As the loud parts of the music have been reduced in "
+"volume, we can now amplify everything, without risking distortion or "
+"clipping. This has the overall effect of the music sounding louder. In our "
+"example, an output amplification of 5 dB would be okay, if the input signal "
+"never exceeded 0 dB."
 
-#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
-#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
-msgid "Audio input"
-msgstr "Audio input"
+#: plugins/artscompressor.idl:50
+msgid "Audio input 1"
+msgstr "Audio input 1"
 
-#: plugins/artscompressor.idl:33
-msgid "Compressed audio output"
-msgstr "Compressed audio output"
+#: plugins/artscompressor.idl:51
+msgid "Audio input 2"
+msgstr "Audio input 2"
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:52
+msgid "Audio Out1"
+msgstr "Audio Out1"
+
+#: plugins/artscompressor.idl:52
+msgid "Compressed audio output 1"
+msgstr "Compressed audio output 1"
+
+#: plugins/artscompressor.idl:53
+msgid "Audio Out2"
+msgstr "Audio Out2"
+
+#: plugins/artscompressor.idl:53
+msgid "Compressed audio output 2"
+msgstr "Compressed audio output 2"
+
+#: plugins/artscompressor.idl:55 plugins/davbassfilter.idl:36
+#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
+msgid "Parameters"
+msgstr "Parameters"
+
+#: plugins/artscompressor.idl:56
 msgid "Attack [ms]"
 msgstr "Attack [ms]"
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:56
 msgid "Set the attack time in milliseconds"
 msgstr "Set the attack time in milliseconds"
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:57
 msgid "Release [ms]"
 msgstr "Release [ms]"
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:57
 msgid "Set the release time in milliseconds"
 msgstr "Set the release time in milliseconds"
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
-msgid "Threshold"
-msgstr "Threshold"
+#: plugins/artscompressor.idl:58
+msgid "Threshold [dB]"
+msgstr "Threshold [dB]"
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+#: plugins/artscompressor.idl:58
 msgid "Set the threshold"
 msgstr "Set the threshold"
 
-#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
-msgid "Ratio"
-msgstr "Ratio"
+#: plugins/artscompressor.idl:59
+msgid "Ratio [x:1]"
+msgstr "Ratio [x:1]"
 
-#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
-msgid "Set the compression ratio"
-msgstr "Set the compression ratio"
+#: plugins/artscompressor.idl:59
+msgid "Set the compression ratio to x:1"
+msgstr "Set the compression ratio to x:1"
 
-#: plugins/artscompressor.idl:39 plugins/artscompressor.idl:58
+#: plugins/artscompressor.idl:60
+msgid "Output [dB]"
+msgstr "Output [dB]"
+
+#: plugins/artscompressor.idl:60
 msgid "Set the output amplification"
 msgstr "Set the output amplification"
 
-#: plugins/artscompressor.idl:47
-msgid "/Enhance/ArtsStereoCompressor"
-msgstr "/Enhance/ArtsStereoCompressor"
+#: plugins/artscompressor.idl:61
+msgid "Auto Output"
+msgstr "Auto Output"
 
-#: plugins/artscompressor.idl:48
-msgid "ArtsStereoCompressor compresses the sound."
-msgstr "ArtsStereoCompressor compresses the sound."
-
-#: plugins/artscompressor.idl:49
-msgid "Left audio input"
-msgstr "Left audio input"
-
-#: plugins/artscompressor.idl:50
-msgid "Right audio input"
-msgstr "Right audio input"
-
-#: plugins/artscompressor.idl:51
-msgid "Compressed left audio output"
-msgstr "Compressed left audio output"
-
-#: plugins/artscompressor.idl:52
-msgid "Compressed right audio output"
-msgstr "Compressed right audio output"
+#: plugins/artscompressor.idl:61
+msgid "Adjust the output amplification automatically"
+msgstr "Adjust the output amplification automatically"
 
 #: plugins/bseadder.c:97 plugins/bsemult.c:60
 msgid "Audio Input 1"
@@ -4655,6 +4849,11 @@ msgstr ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
+
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
+msgid "Audio input"
+msgstr "Audio input"
 
 #: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
