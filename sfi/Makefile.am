@@ -21,6 +21,8 @@ libsfi_la_LIBADD = $(SFI_LIBS) -lm
 sfi_headers = $(strip \
 	glib-extra.h	\
 	sfi.h		\
+	sfiglue.h	\
+	sfigluecodec.h	\
 	sfinote.h	\
 	sfiparams.h	\
 	sfiprimitives.h	\
@@ -32,6 +34,8 @@ sfi_headers = $(strip \
 )
 sfi_c_sources = $(strip \
 	glib-extra.c	\
+	sfiglue.c	\
+	sfigluecodec.c	\
 	sfinote.c	\
 	sfiparams.c	\
 	sfiprimitives.c	\
@@ -42,6 +46,7 @@ sfi_c_sources = $(strip \
 	sfivcall.c	\
 )
 sfi_extra_sources = $(strip \
+	sfigluesignal.c	\
 )
 sfi_built_sources = $(strip \
 )

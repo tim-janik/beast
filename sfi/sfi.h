@@ -19,6 +19,8 @@
 #ifndef __SFI_H__
 #define __SFI_H__
 
+#include <sfi/sfiglue.h>
+#include <sfi/sfigluecodec.h>
 #include <sfi/sfinote.h>
 #include <sfi/sfiparams.h>
 #include <sfi/sfiprimitives.h>

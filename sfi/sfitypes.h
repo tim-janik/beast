@@ -86,7 +86,6 @@ const SfiBoxedSequenceInfo* sfi_boxed_get_sequence_info (GType                  
 
 
 /* --- FIXME: hacks! --- */
-typedef struct _GslGlueProc SfiGlueProc;
 void	sfi_set_error	(GError       **errorp,	// do nothing if *errorp is set already
 			 GQuark         domain,
 			 gint           code,

@@ -1,3 +1,10 @@
+Mon Oct 21 22:19:04 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiglue.[hc]:
+	* sfigluecodec.[hc]:
+	* sfigluesignal.c:
+	moved glue layer to SFI.
+
 Mon Oct 21 16:16:35 2002  Tim Janik  <timj@gtk.org>
 
 	* sfivcall.[hc]: implement sfi_vcall_void(), a GValue based
