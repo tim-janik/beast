@@ -25,7 +25,31 @@
 #define INCREMENTAL_RESULTS 1
 
 
+/* --- prototypes --- */
+static gchar*   get_user_home (const gchar *user);
+
+
+/* --- variables --- */
+static gchar *init_cwd = NULL;
+
+
 /* --- functions --- */
+void
+_sfi_init_file_crawler (void)
+{
+  init_cwd = g_get_current_dir ();
+  if (!init_cwd || !g_path_is_absolute (init_cwd))
+    {
+      g_free (init_cwd);
+      init_cwd = g_get_tmp_dir ();
+    }
+  if (!init_cwd || !g_path_is_absolute (init_cwd))
+    {
+      g_free (init_cwd);
+      init_cwd = g_strdup (G_DIR_SEPARATOR_S);
+    }
+}
+
 /**
  * sfi_file_crawler_new
  *
@@ -39,7 +63,8 @@ SfiFileCrawler*
 sfi_file_crawler_new (void)
 {
   SfiFileCrawler *self = g_new0 (SfiFileCrawler, 1);
-  self->cwd = g_get_current_dir ();
+  self->cwd = g_strdup (init_cwd);
+  self->ptest = G_FILE_TEST_EXISTS;
   return self;
 }
 
@@ -76,35 +101,69 @@ sfi_file_crawler_set_cwd (SfiFileCrawler *self,
 }
 
 /**
+ * sfi_file_crawler_add_tests
+ * @self:       valid #SfiFileCrawler
+ * @tests:      #GFileTest test flags
+ *
+ * By default, results returned by @self are only tested
+ * for existence. If additional file tests have to be met
+ * by the results, they can be set by this function.
+ */
+void
+sfi_file_crawler_add_tests (SfiFileCrawler *self,
+                            GFileTest       tests)
+{
+  g_return_if_fail (self != NULL);
+
+  self->ptest |= tests;
+}
+
+/**
  * sfi_file_crawler_add_search_path
  * @self:          valid #SfiFileCrawler
  * @pattern_paths: colon (semicolon under win32) seperated search path
+ * @file_pattern:  wildcard pattern for file names
  * @RETURNS:       a singly linked list with newly allocated strings
  *
  * This function takes a search path (possibly containing wildcards)
  * and adds them to the file crawlers search list.
+ * If @file_pattern is non %NULL, it is appended to each directory
+ * element extracted from @pattern_paths, before attempting file
+ * system searches.
  * sfi_file_crawler_needs_crawl() may return %TRUE after calling
- * this function even if it returned %FALSE beforehand.
+ * this function.
  */
 void
 sfi_file_crawler_add_search_path (SfiFileCrawler *self,
-				  const gchar    *pattern_paths)
+				  const gchar    *pattern_paths,
+                                  const gchar    *file_pattern)
 {
   g_return_if_fail (self != NULL);
   if (pattern_paths)
     {
       const gchar *sep, *p = pattern_paths;
-      
       sep = strchr (p, G_SEARCHPATH_SEPARATOR);
       while (sep)
 	{
 	  if (sep > p)
-	    self->dpatterns = sfi_ring_append (self->dpatterns, g_strndup (p, sep - p));
+            {
+              gchar *path = g_strndup (p, sep - p);
+              if (file_pattern)
+                {
+                  gchar *tmp = g_strconcat (path, G_DIR_SEPARATOR_S, file_pattern, NULL);
+                  g_free (path);
+                  path = tmp;
+                }
+              self->dpatterns = sfi_ring_append (self->dpatterns, path);
+            }
 	  p = sep + 1;
 	  sep = strchr (p, G_SEARCHPATH_SEPARATOR);
 	}
       if (*p)
-	self->dpatterns = sfi_ring_append (self->dpatterns, g_strdup (p));
+        {
+          gchar *path = g_strconcat (p, file_pattern ? G_DIR_SEPARATOR_S : NULL, file_pattern, NULL);
+          self->dpatterns = sfi_ring_append (self->dpatterns, path);
+        }
     }
 }
 
@@ -116,7 +175,6 @@ file_crawler_queue_readdir (SfiFileCrawler *self,
 {
   g_assert (self->dhandle == NULL);
   
-  file_test = file_test ? file_test : G_FILE_TEST_EXISTS;
   if (strchr (file_pattern, '?') || strchr (file_pattern, '*'))
     {
       gchar *s = g_strconcat (base_dir, G_DIR_SEPARATOR_S, NULL);
@@ -136,7 +194,7 @@ file_crawler_queue_readdir (SfiFileCrawler *self,
 	s = g_strdup (base_dir);
       else
 	s = g_strconcat (base_dir, G_DIR_SEPARATOR_S, file_pattern, NULL);
-      if (!g_file_test (s, file_test))
+      if (!g_file_test_all (s, file_test))
 	g_free (s);
       else
 	self->accu = sfi_ring_prepend (self->accu, s);
@@ -156,7 +214,7 @@ file_crawler_crawl_readdir (SfiFileCrawler *self)
 	  g_pattern_match_string (self->pspec, d_entry->d_name))
 	{
 	  gchar *str = g_strconcat (self->base_dir, G_DIR_SEPARATOR_S, d_entry->d_name, NULL);
-	  if (self->ftest && !g_file_test (str, self->ftest))
+	  if (self->ftest && !g_file_test_all (str, self->ftest))
 	    g_free (str);
 	  else
 	    self->accu = sfi_ring_prepend (self->accu, str);
@@ -192,7 +250,7 @@ file_crawler_queue_abs_file_path (SfiFileCrawler *self,
   
   /* check root existance */
   tmp = g_strconcat (p, G_DIR_SEPARATOR_S, NULL);
-  if (!g_file_test (tmp, G_FILE_TEST_IS_DIR))
+  if (!g_file_test_all (tmp, G_FILE_TEST_IS_DIR))
     {
       g_free (tmp);
       g_free (freeme);
@@ -226,7 +284,7 @@ file_crawler_queue_abs_file_path (SfiFileCrawler *self,
     self->pdqueue = sfi_ring_append (self->pdqueue, g_strdup (p));
   
   /* final segment test */
-  self->stest = file_test ? file_test : G_FILE_TEST_EXISTS;
+  self->stest = file_test;
   
   /* cleanup */
   g_free (freeme);
@@ -282,6 +340,29 @@ file_crawler_crawl_abs_path (SfiFileCrawler *self)
       }
 }
 
+static gchar*
+path_make_absolute (const gchar *rpath,
+                    const gchar *cwd)
+{
+  const gchar *dir;
+  gchar *home, *user = NULL;
+  if (rpath[0] != '~')
+    return g_strconcat (cwd, G_DIR_SEPARATOR_S, rpath, NULL);
+  dir = strchr (rpath + 1, G_DIR_SEPARATOR);
+  if (dir && dir > rpath + 1)
+    user = g_strndup (rpath + 1, dir - rpath - 1);
+  else if (!dir && rpath[1])
+    user = g_strdup (rpath + 1);
+  home = get_user_home (user);
+  g_free (user);
+  if (!home || !g_path_is_absolute (home))
+    user = g_strconcat (cwd, dir, NULL);
+  else
+    user = g_strconcat (home, dir, NULL);
+  g_free (home);
+  return user;
+}
+
 static void
 file_crawler_crawl_dpatterns (SfiFileCrawler *self)
 {
@@ -290,13 +371,14 @@ file_crawler_crawl_dpatterns (SfiFileCrawler *self)
     {
       /* make absolute */
       if (!g_path_is_absolute (dpattern))
-	{
-	  gchar *tmp = g_strconcat (self->cwd, G_DIR_SEPARATOR_S, dpattern, NULL);
-	  file_crawler_queue_abs_file_path (self, tmp, G_FILE_TEST_EXISTS);
-	  g_free (tmp);
-	}
+        {
+          gchar *path = path_make_absolute (dpattern, self->cwd);
+          file_crawler_queue_abs_file_path (self, path, self->ptest);
+          g_free (path);
+        }
       else
-	file_crawler_queue_abs_file_path (self, dpattern, G_FILE_TEST_EXISTS);
+	file_crawler_queue_abs_file_path (self, dpattern, self->ptest);
+      g_free (dpattern);
     }
 }
 
@@ -370,4 +452,105 @@ sfi_file_crawler_destroy (SfiFileCrawler *self)
   g_free (self->base_dir);
   sfi_ring_free_deep (self->accu, g_free);
   g_free (self);
+}
+
+/**
+ * sfi_file_crawler_list_files
+ * @search_path:  colon (semicolon under win32) seperated search path with '?' and '*' wildcards
+ * @file_pattern: wildcard pattern for file names
+ * @cwd:          assumed current working directoy (to interpret './' in search_path)
+ * @file_test:    GFileTest file test condition (e.g. G_FILE_TEST_IS_REGULAR) or 0
+ * @RETURNS:      an #SfiRing with newly allocated strings
+ * Given a search path with wildcards, list all files matching @file_pattern,
+ * contained in the directories which the search path matches. Files that do
+ * not pass @file_test are not listed.
+ */
+SfiRing*
+sfi_file_crawler_list_files (const gchar *search_path,
+                             const gchar *file_pattern,
+                             GFileTest    file_test)
+{
+  SfiFileCrawler *self;
+  SfiRing *results;
+  if (!search_path)
+    return NULL;
+
+  self = sfi_file_crawler_new ();
+  sfi_file_crawler_add_tests (self, file_test);
+  sfi_file_crawler_add_search_path (self, search_path, file_pattern);
+  while (sfi_file_crawler_needs_crawl (self))
+    sfi_file_crawler_crawl (self);
+  results = self->results;
+  self->results = NULL;
+  sfi_file_crawler_destroy (self);
+  return results;
+}
+
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+gboolean
+g_file_test_all (const gchar  *filename,
+                 GFileTest     test)
+{
+  int amode = 0;
+  if (!filename)
+    return FALSE;
+  if (test & G_FILE_TEST_EXISTS)
+    amode |= F_OK;
+  if (test & G_FILE_TEST_IS_EXECUTABLE)
+    amode |= X_OK;
+  /* on some POSIX systems, X_OK may succeed
+   * for root without any executable bits set,
+   * so we also check G_FILE_TEST_IS_EXECUTABLE
+   * via stat() later.
+   */
+  if (amode && access (filename, amode) != 0)
+    return FALSE;
+  if (test & G_FILE_TEST_IS_SYMLINK)
+    {
+      struct stat s;
+      if (lstat (filename, &s) != 0 ||
+          !S_ISLNK (s.st_mode))
+        return FALSE;
+    }
+  if (test & (G_FILE_TEST_IS_REGULAR |
+              G_FILE_TEST_IS_DIR |
+              G_FILE_TEST_IS_EXECUTABLE))
+    {
+      struct stat s;
+      const int ixall = S_IXUSR | S_IXGRP | S_IXOTH;
+      if (stat (filename, &s) != 0)
+        return FALSE;
+      if ((test & G_FILE_TEST_IS_REGULAR) && !S_ISREG (s.st_mode))
+        return FALSE;
+      if ((test & G_FILE_TEST_IS_DIR) && !S_ISDIR (s.st_mode))
+        return FALSE;
+      if ((test & G_FILE_TEST_IS_EXECUTABLE) && (s.st_mode & ixall) != ixall)
+        return FALSE;
+    }
+  return TRUE;
+}
+
+#include <pwd.h>
+
+static gchar*
+get_user_home (const gchar *user)
+{
+  struct passwd *p = NULL;
+  if (user && 1 /* getpwnam_r check */)
+    {
+      char buffer[8192];
+      struct passwd spwd;
+      if (getpwnam_r (user, &spwd, buffer, 8192, &p) == 0 && p)
+        return g_strdup (p->pw_dir);
+    }
+  if (user && 1 /* getpwnam check */)
+    {
+      p = getpwnam (user);
+      if (p)
+        return g_strdup (p->pw_dir);
+    }
+  return g_strdup (g_get_home_dir ());
 }

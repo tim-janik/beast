@@ -1,3 +1,18 @@
+Sun Oct 12 16:37:29 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added g_path_concat() to concatenate
+	paths without extra searchpath seperators.
+
+	* sfifilecrawler.[hc]: fixed home directory parsing (~user/)
+	not working.
+	added file_pattern to sfi_file_crawler_add_search_path().
+	added sfi_file_crawler_add_tests()
+	to filter matches by additional file tests.
+	added sfi_file_crawler_list_files() wich blocks until all files
+	are found and tested for a given search path.
+	quickly imlpemented g_file_test_all() as g_file_test() just has
+	too sick semantics to be usable.
+
 Sun Oct 12 00:52:58 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: implemented g_option_check() which checks

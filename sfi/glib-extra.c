@@ -127,6 +127,37 @@ g_strdup_lstrip (const gchar *string)
 }
 
 
+gchar*
+g_path_concat (const gchar *first_path,
+               ...)
+{
+  GString *gstring;
+  va_list args;
+  gchar *s;
+
+  if (!first_path)
+    return NULL;
+
+  gstring = g_string_new (first_path);
+  va_start (args, first_path);
+  s = va_arg (args, gchar*);
+  while (s)
+    {
+      if (s[0])
+        {
+          if (gstring->len && gstring->str[gstring->len - 1] != G_SEARCHPATH_SEPARATOR &&
+              s[0] != G_SEARCHPATH_SEPARATOR)
+            g_string_append_c (gstring, G_SEARCHPATH_SEPARATOR);
+          g_string_append (gstring, s);
+        }
+      s = va_arg (args, gchar*);
+    }
+  va_end (args);
+
+  return g_string_free (gstring, FALSE);
+}
+
+
 /* --- string options --- */
 static const gchar*
 g_option_find_value (const gchar *option_string,

@@ -67,6 +67,9 @@ gchar*		g_strdup_stripped (const gchar	 *string);
 gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
 
+gchar*          g_path_concat     (const gchar   *first_path,
+                                   ...);
+
 
 /* --- string options --- */
 gboolean        g_option_check    (const gchar   *option_string,
