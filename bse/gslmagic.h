@@ -62,6 +62,9 @@ GslMagic*	gsl_magic_create		(gpointer	 data,
 						 const gchar	*magic_spec);
 GslMagic*	gsl_magic_list_match_file	(GslRing	*magic_list,
 						 const gchar    *file_name);
+GslMagic*	gsl_magic_list_match_file_skip	(GslRing	*magic_list,
+						 const gchar    *file_name,
+						 guint           skip_bytes);
 
 
 

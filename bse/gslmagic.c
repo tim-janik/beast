@@ -40,6 +40,7 @@ typedef struct _BFile BFile;
 struct _BFile
 {
   gint   fd;
+  guint  skip_offset;
   guint  file_size;
   guint8 header[BFILE_BSIZE];
   guint  offset;
@@ -53,7 +54,8 @@ static Magic*	magic_create		(gchar		*magic_string,
 static gboolean	magic_match_file	(BFile		*bfile,
 					 Magic       	*magics);
 static gboolean	bfile_open		(BFile		*bfile,
-					 const gchar    *file_name);
+					 const gchar    *file_name,
+					 guint		 skip_offset);
 static gboolean	bfile_read		(BFile		*bfile,
 					 guint		 offset,
 					 void		*mem,
@@ -64,15 +66,16 @@ static guint	bfile_get_size		(BFile		*bfile);
 
 /* --- functions --- */
 GslMagic*
-gsl_magic_list_match_file (GslRing     *magic_list,
-			   const gchar *file_name)
+gsl_magic_list_match_file_skip (GslRing     *magic_list,
+				const gchar *file_name,
+				guint        skip_offset)
 {
   GslMagic *rmagic = NULL;
   BFile bfile = { -1, };
   
   g_return_val_if_fail (file_name != NULL, NULL);
   
-  if (bfile_open (&bfile, file_name))
+  if (bfile_open (&bfile, file_name, skip_offset))
     {
       gchar *extension = strrchr (file_name, '.');
       gint rpriority = G_MAXINT;
@@ -130,6 +133,13 @@ gsl_magic_list_match_file (GslRing     *magic_list,
     }
   
   return rmagic;
+}
+
+GslMagic*
+gsl_magic_list_match_file (GslRing     *magic_list,
+			   const gchar *file_name)
+{
+  return gsl_magic_list_match_file_skip (magic_list, file_name, 0);
 }
 
 GslMagic*
@@ -601,7 +611,8 @@ magic_match_file (BFile *bfile,
 /* --- buffered file, optimized for magic checks --- */
 static gboolean
 bfile_open (BFile       *bfile,
-	    const gchar *file_name)
+	    const gchar *file_name,
+	    guint        skip_offset)
 {
   struct stat buf = { 0, };
   gint ret;
@@ -624,6 +635,25 @@ bfile_open (BFile       *bfile,
     }
   bfile->file_size = buf.st_size;
 
+  /* skip skip_offset bytes */
+  if (skip_offset)
+    {
+      if (bfile->file_size <= skip_offset)
+	ret = -1;
+      else
+	do
+	  ret = lseek (bfile->fd, skip_offset, SEEK_SET);
+	while (ret < 0 && errno == EINTR);
+      if (ret != skip_offset)
+	{
+	  bfile_close (bfile);
+	  return FALSE;
+	}
+    }
+  bfile->skip_offset = skip_offset;
+  bfile->file_size -= bfile->skip_offset;
+
+  /* read header */
   do
     ret = read (bfile->fd, bfile->header, BFILE_BSIZE);
   while (ret < 0 && errno == EINTR);
@@ -632,7 +662,6 @@ bfile_open (BFile       *bfile,
       bfile_close (bfile);
       return FALSE;
     }
-
   bfile->offset = 0;
   memcpy (bfile->buffer, bfile->header, BFILE_BSIZE);
 
@@ -667,7 +696,7 @@ bfile_read (BFile *bfile,
 
   bfile->offset = offset - BFILE_BSIZE / 8;
   do
-    ret = lseek (bfile->fd, bfile->offset, SEEK_SET);
+    ret = lseek (bfile->fd, bfile->skip_offset + bfile->offset, SEEK_SET);
   while (ret < 0 && errno == EINTR);
   if (ret < 0)
     {

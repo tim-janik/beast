@@ -683,6 +683,7 @@ _gsl_init_loader_gslwave (void)
     "GslWave",
     file_exts,
     mime_types,
+    0,	/* flags */
     magics,
     0,  /* priority */
     NULL,

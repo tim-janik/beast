@@ -89,6 +89,10 @@ GslWaveChunk*	       gsl_wave_chunk_create	(GslWaveDsc	 *wave_dsc,
 
 
 /* --- loader impl --- */
+typedef enum /*< skip >*/
+{
+  GSL_LOADER_SKIP_PRECEEDING_NULLS = 1 << 0
+} GslLoaderFlags;
 struct _GslLoader
 {
   const gchar *name;		/* format/loader name, e.g. "GslWave" or "WAVE audio, RIFF (little-endian)" */
@@ -99,6 +103,7 @@ struct _GslLoader
    */
   const gchar **extensions;	/* e.g.: "mp3", "ogg" or "gslwave" */
   const gchar **mime_types;	/* e.g.: "audio/x-mpg3" or "audio/x-wav" */
+  GslLoaderFlags flags;
   const gchar **magic_specs;	/* e.g.: "0 string RIFF\n8 string WAVE\n" or "0 string #GslWave\n" */
 
   gint   priority;   /* -100=high, +100=low, 0=default */

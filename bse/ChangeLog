@@ -1,3 +1,16 @@
+Sun Aug  4 21:01:56 2002  Tim Janik  <timj@gtk.org>
+
+	* gslloader-mad.c (_gsl_init_loader_mad): flag this loader with
+	GSL_LOADER_SKIP_PRECEEDING_NULLS to deal with broken mp3 files.
+
+	* gslmagic.[hc]: implement gsl_magic_list_match_file_skip() which
+	allowes for checking magics in files after an initial offset.
+
+	* gslloader.[hc]: support GSL_LOADER_SKIP_PRECEEDING_NULLS loader flag
+	to skip preceeding 0s before attempting magic matches.
+	this is implemented as a worst case fallback mechanism to deal with
+	some broken mp3 files.
+
 Sun Aug  4 11:56:27 2002  Tim Janik  <timj@gtk.org>
 
 	* gslwavechunk.c: add fix from stefan so tail and head blocks are

@@ -191,6 +191,7 @@ _gsl_init_loader_mad (void)
     "MPEG Audio (MAD: MPEG 1.0/2.0/2.5 Layer III/II/I Decoder)",
     file_exts,
     mime_types,
+    GSL_LOADER_SKIP_PRECEEDING_NULLS,	/* some mp3's have preceeding 0s (partial silence frames?) */
     magics,
     0,	/* priority */
     NULL,

@@ -16,16 +16,18 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include        "gslloader.h"
+#include "gslloader.h"
 
-#include        "gslcommon.h"
-#include        "gsldatahandle.h"
-#include        "gslmagic.h"
+#include "gslcommon.h"
+#include "gsldatahandle.h"
+#include "gslmagic.h"
+#include "gslfilehash.h"
 
 
 /* --- variables --- */
 static GslLoader *gsl_loader_list = NULL;
-static GslRing   *gsl_magic_list = NULL;
+static GslRing   *gsl_magic_list1 = NULL;
+static GslRing   *gsl_magic_list2 = NULL;
 
 
 /* --- functions --- */
@@ -69,30 +71,78 @@ gsl_loader_register (GslLoader *loader)
 	      {
 		magic = gsl_magic_create (loader, loader->priority,
 					  loader->extensions[j], loader->magic_specs[i]);
-		gsl_magic_list = gsl_ring_append (gsl_magic_list, magic);
+		gsl_magic_list1 = gsl_ring_append (gsl_magic_list1, magic);
+		if (loader->flags & GSL_LOADER_SKIP_PRECEEDING_NULLS)
+		  gsl_magic_list2 = gsl_ring_append (gsl_magic_list2, magic);
 	      }
 	  else
 	    {
 	      magic = gsl_magic_create (loader, loader->priority,
 					NULL, loader->magic_specs[i]);
-	      gsl_magic_list = gsl_ring_append (gsl_magic_list, magic);
+	      gsl_magic_list1 = gsl_ring_append (gsl_magic_list1, magic);
+	      if (loader->flags & GSL_LOADER_SKIP_PRECEEDING_NULLS)
+		gsl_magic_list2 = gsl_ring_append (gsl_magic_list2, magic);
 	    }
 	}
     }
 }
 
+static guint8*
+skipchr (const guint8 *mem,
+	 gchar         byte,
+	 guint         maxlen)
+{
+  const guint8 *p = mem, *bound = p + maxlen;
+
+  while (p < bound)
+    if_reject (*p++ != byte)
+      return (guint8*) p - 1;
+  return NULL;
+}
+
 GslLoader*
 gsl_loader_match (const gchar *file_name)
 {
-  GslMagic *magic;
+  GslMagic *magic = NULL;
 
   g_return_val_if_fail (file_name != NULL, NULL);
 
-  magic = gsl_magic_list_match_file (gsl_magic_list, file_name);
-  if (magic)
-    return magic->data;
+  /* normal magic check */
+  magic = gsl_magic_list_match_file (gsl_magic_list1, file_name);
 
-  return NULL;
+  /* in a sort-of fallback attempt,
+   * work around files that have preceeding nulls
+   */
+  if (!magic && gsl_magic_list2)
+    {
+      guint8 buffer[1024], *p = NULL;
+      GslLong n, pos = 0;
+      GslHFile *hfile = gsl_hfile_open (file_name);
+      if (!hfile)
+	return NULL;
+      while (!p)
+	{
+	  n = gsl_hfile_pread (hfile, pos, sizeof (buffer), buffer);
+	  if (n < 1)
+	    {
+	      pos = 0;
+	      break;
+	    }
+	  p = skipchr (buffer, 0, n);
+	  if (p)
+	    {
+	      pos += p - buffer;
+	      break;
+	    }
+	  else
+	    pos += n;
+	}
+      gsl_hfile_close (hfile);
+      if (pos > 0)
+	magic = gsl_magic_list_match_file_skip (gsl_magic_list2, file_name, pos);
+    }
+
+  return magic ? magic->data : NULL;
 }
 
 GslWaveFileInfo*
