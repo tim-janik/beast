@@ -423,7 +423,7 @@ bst_action_list_add_cat (GxkActionList          *alist,
       p = d ? d + 1 : p;
     }
 
-  gxk_action_list_add_translated (alist, NULL, p, NULL, NULL,
+  gxk_action_list_add_translated (alist, NULL, p, NULL, gxk_factory_path_get_leaf (cat->category),
                                   cat->category_id, stock_id,
                                   acheck, aexec, user_data);
 }
