@@ -1,3 +1,8 @@
+Sat Oct 18 05:23:23 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmenus.c (bst_menu_config_create_items): fix menu item
+	images not being visible.
+
 Sat Oct 18 05:09:24 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c (bst_app_activate): hook up effect and instrument

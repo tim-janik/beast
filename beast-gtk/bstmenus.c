@@ -327,6 +327,7 @@ bst_menu_config_create_items (BstMenuConfig  *config,
       else if (e->item_type && strcmp (e->item_type, "<StockItem>") == 0)
         {
           GtkWidget *image = e->extra_data ? gtk_image_new_from_stock ((gchar*) e->extra_data, GTK_ICON_SIZE_MENU) : NULL;
+          gtk_widget_show (image);
           gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);
         }
 
