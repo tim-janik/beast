@@ -19,9 +19,7 @@
 
 #include "topconfig.h"
 
-#include "bstsongshell.h"
-#include "bstwavereposhell.h"
-#include "bstsnetshell.h"
+#include "bstsupershell.h"
 #include "bstfiledialog.h"
 #include "bstgconfig.h"
 #include "bstpreferences.h"
@@ -391,38 +389,6 @@ bst_app_get_current_super (BstApp *app)
   return 0;
 }
 
-static GtkWidget*
-bst_app_create_super_shell (BstApp  *app,
-                            SfiProxy super)
-{
-  GtkWidget *shell = NULL;
-
-  if (BSE_IS_SONG (super))
-    shell = gtk_widget_new (BST_TYPE_SONG_SHELL,
-                            "visible", TRUE,
-                            NULL);
-  else if (BSE_IS_SNET (super))
-    shell = gtk_widget_new (BST_TYPE_SNET_SHELL,
-                            "visible", TRUE,
-                            NULL);
-  else if (BSE_IS_WAVE_REPO (super))
-    shell = gtk_widget_new (BST_TYPE_WAVE_REPO_SHELL,
-                            "visible", TRUE,
-                            NULL);
-  else
-    g_warning ("unknown super type `%s'", bse_item_get_type_name (super));
-
-  if (shell)
-    {
-      bst_super_shell_set_super (BST_SUPER_SHELL (shell), super);
-      
-      gtk_widget_ref (shell);
-      gtk_object_sink (GTK_OBJECT (shell));
-    }
-  
-  return shell;
-}
-
 void
 bst_app_reload_supers (BstApp *app)
 {
@@ -462,7 +428,11 @@ bst_app_reload_supers (BstApp *app)
             break;
           }
       if (!page)
-        page = bst_app_create_super_shell (app, pseq->proxies[i]);
+        {
+          page = g_object_new (BST_TYPE_SUPER_SHELL, "super", pseq->proxies[i], NULL);
+          g_object_ref (page);
+          gtk_object_sink (GTK_OBJECT (page));
+        }
       if (page)
         {
           if (!song_page && BSE_IS_SONG (pseq->proxies[i]))
@@ -608,11 +578,11 @@ bst_app_run_script_proc (gpointer data,
   SfiProxy super = shell ? BST_SUPER_SHELL (shell)->super : 0;
   const gchar *song = "", *wave_repo = "", *snet = "", *csynth = "";
 
-  if (BST_IS_SONG_SHELL (shell) && super)
+  if (BSE_IS_SONG (super))
     song = "song";
-  else if (BST_IS_WAVE_REPO_SHELL (shell) && super)
+  else if (BSE_IS_WAVE_REPO (super))
     wave_repo = "wrepo";
-  else if (BST_IS_SNET_SHELL (shell) && super)
+  else if (BSE_IS_SNET (super))
     {
       snet = "snet";
       if (BSE_IS_CSYNTH (super))
@@ -886,7 +856,6 @@ app_action_check (gpointer data,
   switch (action)
     {
       SfiProxy super;
-      GtkWidget *shell;
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:
     case BST_ACTION_MERGE_PROJECT:
@@ -935,11 +904,11 @@ app_action_check (gpointer data,
     case BST_ACTION_HELP_QUICK_START:
       return TRUE;
     case BST_ACTION_EXIT:
-      /* "mis"-use generic "Exit" update to sync Tools menu items */
-      shell = bst_app_get_current_shell (self);
-      gxk_gadget_sensitize (self, "song-submenu", BST_IS_SONG_SHELL (shell));
-      gxk_gadget_sensitize (self, "synth-submenu", BST_IS_SNET_SHELL (shell));
-      // FIXME: gxk_gadget_sensitize (self, "waves-submenu", BST_IS_WAVE_REPO_SHELL (shell));
+      /* abuse generic "Exit" update to sync Tools menu items */
+      super = bst_app_get_current_super (self);
+      gxk_gadget_sensitize (self, "song-submenu", BSE_IS_SONG (super));
+      gxk_gadget_sensitize (self, "synth-submenu", BSE_IS_SNET (super));
+      gxk_gadget_sensitize (self, "waves-submenu", BSE_IS_WAVE_REPO (super));
       return TRUE;
     case BST_ACTION_HELP_ABOUT:
       return FALSE;

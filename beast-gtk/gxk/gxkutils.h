@@ -41,6 +41,8 @@ GtkWidget*      gxk_item_factory_get_item          (GtkItemFactory  *ifactory,
 GtkWidget*      gxk_item_factory_get_widget        (GtkItemFactory  *ifactory,
                                                     const gchar     *path);
 void            gxk_widget_proxy_requisition       (GtkWidget       *widget);
+gboolean        gxk_widget_has_ancestor            (gpointer         widget,
+                                                    gpointer         ancestor);
 gboolean        gxk_menu_check_sensitive           (GtkMenu         *menu);
 void            gxk_menu_attach_as_submenu         (GtkMenu         *menu,
                                                     GtkMenuItem     *menu_item);

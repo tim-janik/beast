@@ -36,23 +36,13 @@ typedef	struct	_BstSuperShell		BstSuperShell;
 typedef	struct	_BstSuperShellClass	BstSuperShellClass;
 struct _BstSuperShell
 {
-  GtkVBox	parent_object;
-
-  GtkAccelGroup	*accel_group;
-
+  GtkVBox	 parent_object;
   SfiProxy	 super;
   guint		 name_set_id;
 };
 struct _BstSuperShellClass
 {
   GtkVBoxClass	parent_class;
-  
-  gchar*        (*get_title)     (BstSuperShell  *super_shell);
-  void		(*setup_super)	 (BstSuperShell  *super_shell,
-				  SfiProxy	  super);
-  void		(*release_super) (BstSuperShell  *super_shell,
-				  SfiProxy	  super);
-  void		(*rebuild)	 (BstSuperShell  *super_shell);
 };
 
 

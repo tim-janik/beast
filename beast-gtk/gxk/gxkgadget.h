@@ -107,6 +107,7 @@ gboolean  gxk_gadget_type_lookup          (GType                type,
                                            GxkGadgetType       *ggtype);
 GxkGadgetOpt* gxk_gadget_data_copy_call_options  (GxkGadgetData *gdgdata);
 GxkGadgetOpt* gxk_gadget_data_copy_scope_options (GxkGadgetData *gdgdata);
+GxkGadget*    gxk_gadget_data_get_scope_gadget   (GxkGadgetData *gdgdata);
 
 G_END_DECLS
 

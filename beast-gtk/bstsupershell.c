@@ -16,7 +16,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstsupershell.h"
-
+#include "bstparamview.h"
+#include "bsttrackview.h"
+#include "bstpartview.h"
+#include "bstwaveview.h"
+#include "bstsnetrouter.h"
 
 enum {
   PROP_0,
@@ -37,11 +41,7 @@ static void	bst_super_shell_get_property	(GObject         	*object,
 						 guint           	 prop_id,
 						 GValue          	*value,
 						 GParamSpec      	*pspec);
-static gchar*   bst_super_shell_get_title	(BstSuperShell		*super_shell);
-static void	bst_super_shell_setup_super	(BstSuperShell		*super_shell,
-						 SfiProxy     		 super);
-static void	bst_super_shell_release_super	(BstSuperShell		*super_shell,
-						 SfiProxy		 super);
+static void     super_shell_add_views           (BstSuperShell          *self);
 
 
 /* --- static variables --- */
@@ -87,11 +87,6 @@ bst_super_shell_class_init (BstSuperShellClass *class)
 
   object_class->destroy = bst_super_shell_destroy;
 
-  class->get_title = bst_super_shell_get_title;
-  class->setup_super = bst_super_shell_setup_super;
-  class->release_super = bst_super_shell_release_super;
-  class->rebuild = NULL;
-
   g_object_class_install_property (gobject_class,
 				   PROP_SUPER,
 				   sfi_pspec_proxy ("super", NULL, NULL, SFI_PARAM_DEFAULT));
@@ -100,9 +95,9 @@ bst_super_shell_class_init (BstSuperShellClass *class)
 static void
 bst_super_shell_init (BstSuperShell *self)
 {
-  self->accel_group = gtk_accel_group_new ();
   self->super = 0;
   gtk_widget_set (GTK_WIDGET (self),
+                  "visible", TRUE,
 		  "homogeneous", FALSE,
 		  "spacing", 0,
 		  "border_width", 0,
@@ -161,24 +156,9 @@ bst_super_shell_destroy (GtkObject *object)
 static void
 bst_super_shell_finalize (GObject *object)
 {
-  BstSuperShell *self = BST_SUPER_SHELL (object);
-
-  gtk_accel_group_unref (self->accel_group);
-  self->accel_group = NULL;
+  // BstSuperShell *self = BST_SUPER_SHELL (object);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
-}
-
-static gchar*
-bst_super_shell_get_title (BstSuperShell *self)
-{
-  if (self->super)
-    return g_strconcat (bse_item_get_type (self->super),
-                        ":\n",
-                        bse_item_get_name (self->super),
-                        NULL);
-  else
-    return g_strdup ("BstSuperShell");
 }
 
 static void
@@ -187,35 +167,21 @@ bst_super_shell_name_set (BstSuperShell *self)
   GtkWidget *widget = GTK_WIDGET (self);
   if (widget->parent && GTK_IS_NOTEBOOK (widget->parent))
     {
-      gchar *name = BST_SUPER_SHELL_GET_CLASS (self)->get_title (self);
-
+      gchar *name = NULL;
+      if (BSE_IS_WAVE_REPO (self->super))
+        name = g_strdup (_("Waves"));
+      else if (self->super)
+        name = g_strconcat (bse_item_get_type (self->super),
+                            ":\n",
+                            bse_item_get_name (self->super),
+                            NULL);
       widget = gtk_notebook_get_tab_label (GTK_NOTEBOOK (widget->parent), widget);
       if (widget)
-	gtk_widget_set (widget,
-			"label", name,
-			NULL);
+	g_object_set (widget,
+                      "label", name ? name : "BstSuperShell",
+                      NULL);
       g_free (name);
     }
-}
-
-static void
-bst_super_shell_setup_super (BstSuperShell *self,
-			     SfiProxy       super)
-{
-  bse_proxy_connect (super,
-		     "swapped_signal::property-notify::uname", bst_super_shell_name_set, self,
-		     NULL);
-  BST_SUPER_SHELL_GET_CLASS (self)->rebuild (self);
-}
-
-static void
-bst_super_shell_release_super (BstSuperShell *self,
-			       SfiProxy       super)
-{
-  bse_proxy_disconnect (super,
-			"any_signal::property-notify::uname", bst_super_shell_name_set, self,
-			NULL);
-  gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
 }
 
 void
@@ -230,14 +196,20 @@ bst_super_shell_set_super (BstSuperShell *self,
     {
       if (self->super)
 	{
-	  BST_SUPER_SHELL_GET_CLASS (self)->release_super (self, self->super);
+          bse_proxy_disconnect (self->super,
+                                "any_signal::property-notify::uname", bst_super_shell_name_set, self,
+                                NULL);
+          gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
 	  bse_item_unuse (self->super);
 	}
       self->super = super;
       if (self->super)
 	{
 	  bse_item_use (self->super);
-	  BST_SUPER_SHELL_GET_CLASS (self)->setup_super (self, self->super);
+          bse_proxy_connect (self->super,
+                             "swapped_signal::property-notify::uname", bst_super_shell_name_set, self,
+                             NULL);
+          super_shell_add_views (self);
 	  bst_super_shell_name_set (self);
 	}
     }
@@ -249,4 +221,101 @@ bst_super_shell_update_label (BstSuperShell *self)
   g_return_if_fail (BST_IS_SUPER_SHELL (self));
 
   bst_super_shell_name_set (self);
+}
+
+static void
+super_shell_build_song (BstSuperShell *self,
+                        GtkNotebook   *notebook)
+{
+  SfiProxy song = self->super;
+
+  gtk_notebook_append_page (notebook,
+                            bst_track_view_new (song),
+			    g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                          "label", _("Tracks"),
+                                          NULL));
+  gtk_notebook_append_page (notebook,
+                            bst_param_view_new (song),
+                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                          "label", _("Parameters"),
+                                          NULL));
+  gtk_notebook_append_page (notebook,
+                            bst_part_view_new (song),
+                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                          "label", _("Parts"),
+                                          NULL));
+  if (BST_DBG_EXT)
+    gtk_notebook_append_page (notebook,
+                              gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (song))),
+                              g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                            "label", _("Routing"),
+                                            NULL));
+}
+
+static void
+super_shell_build_snet (BstSuperShell *self,
+                        GtkNotebook   *notebook)
+{
+  SfiProxy snet = self->super;
+  GtkWidget *param_view;
+
+  if (bse_snet_supports_user_synths (snet) || BST_DBG_EXT)
+    gtk_notebook_append_page (notebook,
+                              gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (snet))),
+                              g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                            "label", _("Routing"),
+                                            NULL));
+  param_view = bst_param_view_new (snet);
+  gtk_notebook_append_page (notebook,
+                            bst_param_view_new (snet),
+                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                          "label", _("Parameters"),
+                                          NULL));
+}
+
+static void
+super_shell_build_wave_repo (BstSuperShell *self,
+                             GtkNotebook   *notebook)
+{
+  SfiProxy wrepo = self->super;
+
+  gtk_notebook_append_page (notebook,
+                            bst_wave_view_new (wrepo),
+                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                          "label", _("Waves"),
+                                          NULL));
+  gtk_notebook_append_page (notebook,
+                            bst_param_view_new (wrepo),
+                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                          "label", _("Parameters"),
+                                          NULL));
+}
+
+static GtkNotebook*
+create_notebook (BstSuperShell *self)
+{
+  GtkNotebook *notebook = g_object_new (GTK_TYPE_NOTEBOOK,
+                                        "scrollable", FALSE,
+                                        "tab_border", 0,
+                                        "show_border", TRUE,
+                                        "enable_popup", FALSE,
+                                        "show_tabs", TRUE,
+                                        "tab_pos", GTK_POS_TOP,
+                                        "border_width", 3,
+                                        "parent", self,
+                                        "visible", TRUE,
+                                        NULL);
+  g_object_connect (notebook, "signal_after::switch-page", gxk_widget_viewable_changed, NULL, NULL);
+  return notebook;
+}
+
+static void
+super_shell_add_views (BstSuperShell *self)
+{
+  if (BSE_IS_SONG (self->super))
+    super_shell_build_song (self, create_notebook (self));
+  else if (BSE_IS_CSYNTH (self->super))
+    super_shell_build_snet (self, create_notebook (self));
+  else if (BSE_IS_WAVE_REPO (self->super))
+    super_shell_build_wave_repo (self, create_notebook (self));
 }

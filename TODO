@@ -1,5 +1,5 @@
 FIXMES:
-- commit
+- piano roll button3 popup /Edit/ gets undo/redo in wrong position
 - fix multi-action factories
 - implement gdgdata_get_stencil_gadget() for a default factory boundary
 - add one-shot property to factories

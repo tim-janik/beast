@@ -46,6 +46,7 @@ struct _BstPartViewClass
 
 /* --- prototypes --- */
 GType		bst_part_view_get_type	(void);
+GtkWidget*      bst_part_view_new       (SfiProxy song);
 
 G_END_DECLS
 

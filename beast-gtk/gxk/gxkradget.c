@@ -48,6 +48,7 @@ typedef struct {
   const gchar  *name;
   EnvSpecials  *specials;
   GData        *hgroups, *vgroups, *hvgroups;
+  GxkGadget    *xdef_gadget;
 } Env;
 
 typedef struct {
@@ -988,6 +989,7 @@ node_expand_call_options (Node               *node,
 struct GxkGadgetData {
   Node         *node;
   GxkGadgetOpt *call_stack_top;
+  GxkGadget    *xdef_gadget;
 };
 
 static GxkGadget*
@@ -1009,9 +1011,13 @@ gadget_create_from_node (Node         *node,
       GxkGadgetData gdgdata;
       gdgdata.node = node;
       gdgdata.call_stack_top = node->call_stack->data;
+      gdgdata.xdef_gadget = env->xdef_gadget;
       gadget = tinfo.create (node->type, node->name, &gdgdata);
     }
   g_object_set_qdata (gadget, quark_gadget_node, node);
+  /* keep global xdef_gadget for gdg_data */
+  if (!env->xdef_gadget)
+    env->xdef_gadget = gadget;
   /* widget specific patchups (size-groups) */
   if (node->size_hgroup)
     gtk_size_group_add_widget (env_get_size_group (env, node->size_hgroup, 'h'), gadget);
@@ -1077,6 +1083,7 @@ gadget_add_to_parent (GxkGadget    *parent,
     GxkGadgetData gdgdata;
     gdgdata.node = cnode;
     gdgdata.call_stack_top = cnode->call_stack->data;
+    gdgdata.xdef_gadget = env->xdef_gadget;
     needs_packing = tinfo.adopt (gadget, parent, &gdgdata);
   }
   /* precedence for property value lookups:
@@ -1209,6 +1216,12 @@ gxk_gadget_data_copy_scope_options (GxkGadgetData *gdgdata)
 {
   Node *node = gdgdata->node;
   return gxk_gadget_options_merge (NULL, node->base_options);
+}
+
+GxkGadget*
+gxk_gadget_data_get_scope_gadget (GxkGadgetData *gdgdata)
+{
+  return gdgdata->xdef_gadget;
 }
 
 GxkGadget*

@@ -113,6 +113,19 @@ popup_part_dialog (BstPartView *part_view)
   gtk_widget_show (pdialog);
 }
 
+GtkWidget*
+bst_part_view_new (SfiProxy song)
+{
+  GtkWidget *part_view;
+
+  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+
+  part_view = gtk_widget_new (BST_TYPE_PART_VIEW, NULL);
+  bst_item_view_set_container (BST_ITEM_VIEW (part_view), song);
+
+  return part_view;
+}
+
 static void
 part_view_action_exec (gpointer                data,
                        gulong                  action)

@@ -33,7 +33,7 @@ progs_LDADD = $(strip \
 # BEAST header files that don't get installed
 beast_headers = $(strip \
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
-	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	bstsnetshell.h	\
+	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	\
 	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	\
 	bstfreeradiobutton.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
 	bstlogadjustment.h	bstitemview.h	bstmarker.h		bstknob.h	\
@@ -43,7 +43,7 @@ beast_headers = $(strip \
 	bstrackeditor.h		bstrackitem.h	bstracktable.h		bstradiotools.h	\
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	\
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	\
-	bstwavereposhell.h	bstwaveview.h	bstsongshell.h		bstxkb.h	\
+				bstwaveview.h				bstxkb.h	\
 	bstzoomedwindow.h	glewidgets.h	bsttrackrollctrl.h	bstxframe.h	\
 				bstcatalog.h	bsttreestores.h		bstutils.h	\
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
@@ -52,7 +52,7 @@ beast_headers = $(strip \
 # BEAST c sources to build the program from
 beast_sources = $(strip \
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
-	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	bstsnetshell.c	\
+	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	\
 	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	\
 	bstfreeradiobutton.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
 	bstlogadjustment.c	bstitemview.c	bstmarker.c		bstknob.c	\
@@ -62,7 +62,7 @@ beast_sources = $(strip \
 	bstrackeditor.c		bstrackitem.c	bstracktable.c		bstradiotools.c	\
 	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	\
 	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	\
-	bstwavereposhell.c	bstwaveview.c	bstsongshell.c		bstxkb.c	\
+				bstwaveview.c				bstxkb.c	\
 	bstzoomedwindow.c	glewidgets.c	bsttrackrollctrl.c	bstxframe.c	\
 				bstcatalog.c	bsttreestores.c		bstutils.c	\
 	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\

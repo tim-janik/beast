@@ -24,6 +24,7 @@ enum {
   PROP_NAME,
   PROP_PER_LIST,
   PROP_PER_ACTION,
+  PROP_ACTION_ROOT,
   PROP_ACTION_LIST,
   PROP_ACTIVATABLE,
   PROP_REGULATE
@@ -44,7 +45,8 @@ static void     gxk_gadget_factory_get_property         (GObject                
                                                          GParamSpec             *pspec);
 static void     gadget_factory_match_action_list        (GxkActionFactory       *afactory,
                                                          const gchar            *prefix,
-                                                         GxkActionList          *alist);
+                                                         GxkActionList          *alist,
+                                                         GtkWidget              *publisher);
 
 
 /* --- static variables --- */
@@ -90,6 +92,8 @@ gxk_gadget_factory_class_init (GxkGadgetFactoryClass *class)
   afactory_class->match_action_list = gadget_factory_match_action_list;
   g_object_class_install_property (gobject_class, PROP_NAME,
                                    g_param_spec_string ("name", NULL, NULL, NULL, G_PARAM_READWRITE));
+  g_object_class_install_property (gobject_class, PROP_ACTION_ROOT,
+                                   g_param_spec_string ("action-root", NULL, NULL, ":xdef", G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class, PROP_ACTION_LIST,
                                    g_param_spec_string ("action-list", NULL, NULL, NULL, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class, PROP_PER_LIST,
@@ -109,6 +113,7 @@ gxk_gadget_factory_init (GxkGadgetFactory *self)
   self->gadget = NULL;
   self->timer = 0;
   self->name = NULL;
+  self->action_root = g_strdup (":xdef");
 }
 
 static void
@@ -123,6 +128,15 @@ gxk_gadget_factory_set_property (GObject      *object,
     case PROP_NAME:
       g_free (self->name);
       self->name = g_value_dup_string (value);
+      break;
+    case PROP_ACTION_ROOT:
+      g_free (self->action_root);
+      self->action_root = g_value_dup_string (value);
+      if (self->action_root && !self->action_root[0])
+        {
+          g_free (self->action_root);
+          self->action_root = NULL;
+        }
       break;
     case PROP_ACTION_LIST:
       g_free (self->action_list);
@@ -162,6 +176,9 @@ gxk_gadget_factory_get_property (GObject    *object,
     case PROP_NAME:
       g_value_set_string (value, self->name);
       break;
+    case PROP_ACTION_ROOT:
+      g_value_set_string (value, self->action_root);
+      break;
     case PROP_ACTION_LIST:
       g_value_set_string (value, self->action_list);
       break;
@@ -189,26 +206,44 @@ gxk_gadget_factory_finalize (GObject *object)
   GxkGadgetFactory *self = GXK_GADGET_FACTORY (object);
 
   g_assert (self->window == NULL);
-  g_assert (self->timer == 0);
+  g_free (self->action_root);
   g_free (self->per_action);
   g_free (self->per_list);
   g_free (self->name);
-  g_free (self->activatable);
   g_free (self->action_list);
+  g_free (self->activatable);
   g_free (self->regulate);
   gxk_gadget_free_options (self->pass_options);
+
+  g_return_if_fail (self->timer == 0);
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+static gboolean
+match_action_root (GxkGadgetFactory *self,
+                   GtkWidget        *publisher)
+{
+  GtkWidget *ancestor;
+  if (!self->action_root)
+    return TRUE;
+  if (strcmp (self->action_root, ":xdef") == 0)
+    ancestor = self->xdef_gadget;
+  else
+    ancestor = gxk_widget_find_level_ordered ((GtkWidget*) self->window, self->action_root);
+  return ancestor && gxk_widget_has_ancestor (publisher, ancestor);
+}
+
 static void
 gadget_factory_match_action_list (GxkActionFactory       *afactory,
                                   const gchar            *prefix,
-                                  GxkActionList          *alist)
+                                  GxkActionList          *alist,
+                                  GtkWidget              *publisher)
 {
   GxkGadgetFactory *self = GXK_GADGET_FACTORY (afactory);
-  if (self->action_list && strcmp (self->action_list, prefix) == 0)
+  if (self->action_list && strcmp (self->action_list, prefix) == 0 &&
+      match_action_root (self, publisher))
     {
       const gchar *domain = gxk_gadget_get_domain (self);
       const gchar *wname = GTK_WIDGET (self->window)->name;
@@ -289,7 +324,7 @@ void
 gxk_gadget_factory_check_anchored (GxkGadgetFactory *self)
 {
   if (self->gadget && !self->timer)
-    self->timer = g_idle_add_full (G_PRIORITY_HIGH,
+    self->timer = g_idle_add_full (GXK_ACTION_PRIORITY - 1,
                                    gadget_factory_check_anchored,
                                    self, NULL);
 }
@@ -355,6 +390,7 @@ gadget_factory_adopt (GxkGadget          *gadget,
   options = gxk_gadget_data_copy_call_options (gdgdata);
   self->pass_options = gxk_gadget_options_merge (self->pass_options, options);
   gxk_gadget_free_options (options);
+  self->xdef_gadget = gxk_gadget_data_get_scope_gadget (gdgdata);
   gxk_gadget_factory_attach (gadget, GTK_WIDGET (parent));
   return FALSE; /* no support for packing options */
 }

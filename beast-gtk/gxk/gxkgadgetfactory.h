@@ -37,16 +37,19 @@ G_BEGIN_DECLS
 /* --- structures --- */
 typedef struct {
   GxkActionFactory parent_instance;
-  GtkWindow     *window;
-  GxkGadget     *gadget;
-  gulong         timer;
-  gchar         *per_action;
-  gchar         *per_list;
-  gchar         *name;
-  gchar         *action_list;
-  gchar         *activatable;
-  gchar         *regulate;
-  GxkGadgetOpt  *pass_options;
+  GtkWindow       *window;
+  GxkGadget       *gadget;
+  GxkGadget       *xdef_gadget;
+  gulong           timer;
+  gchar           *action_root;
+  gchar           *per_action;
+  gchar           *per_list;
+  gchar           *name;
+  gchar           *action_list;
+  gchar           *activatable;
+  gchar           *regulate;
+  GxkGadgetOpt    *pass_options;
+  guint foo;
 } GxkGadgetFactory;
 typedef GxkActionFactoryClass GxkGadgetFactoryClass;
 

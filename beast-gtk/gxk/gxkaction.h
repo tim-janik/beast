@@ -24,6 +24,9 @@
 G_BEGIN_DECLS
 
 
+#define GXK_ACTION_PRIORITY     (G_PRIORITY_HIGH - 10)
+
+
 /* --- structures --- */
 typedef gboolean (*GxkActionCheck)      (gpointer        user_data,
                                          gulong          action_id);
@@ -143,7 +146,8 @@ typedef struct {
   GObjectClass parent_class;
   void  (*match_action_list)    (GxkActionFactory       *self,
                                  const gchar            *prefix,
-                                 GxkActionList          *alist);
+                                 GxkActionList          *alist,
+                                 GtkWidget              *publisher);
 } GxkActionFactoryClass;
 GType   gxk_action_factory_get_type     (void);
 

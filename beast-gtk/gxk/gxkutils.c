@@ -2058,6 +2058,34 @@ gxk_widget_proxy_requisition (GtkWidget *widget)
 }
 
 /**
+ * gxk_widget_has_ancestor
+ * @widget:   valid #GtkWidget
+ * @ancestor: valid #GtkWidget
+ * @RETURNS:  whether @ancestor is ancestor of @widget
+ *
+ * This function checks whether @widget and @ancestor are equal,
+ * or whether @ancestor is an ancestor of @widget, in the same
+ * way gtk_widget_is_ancestor() tests it.
+ */
+gboolean
+gxk_widget_has_ancestor (gpointer widget,
+                         gpointer ancestor)
+{
+  GtkWidget *w = widget, *a = ancestor;
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+  g_return_val_if_fail (GTK_IS_WIDGET (ancestor), FALSE);
+
+  while (w)
+    {
+      if (w == a)
+        return TRUE;
+      w = w->parent;
+    }
+  return FALSE;
+}
+
+
+/**
  * gxk_window_get_menu_accel_group
  * @window:  valid #GtkWindow
  * @RETURNS: valid #GtkAccelGroup

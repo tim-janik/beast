@@ -121,6 +121,7 @@
     prop:tooltip="$(null-collapse,$text)" />
   <!-- gadget-factory: actions= activatable= regulate= per-list= per-action= -->
   <xdef:gadget-factory        inherit="GxkGadgetFactory"
+    prop:action-root="$(ifdef,action-root,$action-root,:xdef)"
     prop:action-list="$actions"
     prop:activatable="$activatable" prop:regulate="$regulate"
     prop:per-list="$(null-collapse,$per-list)"

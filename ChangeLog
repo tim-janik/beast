@@ -1,3 +1,34 @@
+Fri Nov 14 09:47:13 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-beast.xml: adjust action-root for factories
+	which take their actions from the toplevel.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: support action-root variable
+	for gadget factories.
+
+	* beast-gtk/gxk/gxkaction.[hc]: fixed up ActionSet alive keeping and
+	action-factory updates. made action-factory updates asyncronous.
+
+	* beast-gtk/gxk/gxkgadget.[hc]: provide access to the toplevel
+	gadget being created through gxk_gadget_data_get_scope_gadget().
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: limit the actions matched
+	successfully by a toplevel widget below witch the actions have to
+	be published (action-root). let the action-root default to the
+	scope-gadget (instead of the toplevel GtkWindow).
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_widget_has_ancestor().
+
+	* beast-gtk/bstsupershell.[hc]: removed lots of virtualization.
+	added notebook page construction functions for song, snet and wave-repo.
+
+	* beast-gtk/bstsongshell.[hc]:
+	* beast-gtk/bstsnetshell.[hc]:
+	* beast-gtk/bstwavereposhell.[hc]: removed these files, bstsupershell.c
+	constructs the neccessary notebook pages now.
+
+	* beast-gtk/bstapp.[hc]: removed super-shell special casing.
+
 Fri Nov 14 04:34:04 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkutils.[hc]: added gxk_menu_check_sensitive(),

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
 <gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
-
+  
   <!-- factory contents: relief= action-*= -->
   <xdef:factory-button inherit="button"
     focus="0"
@@ -40,7 +40,11 @@
     activatable="factory-togglebutton"
     regulate="factory-togglebutton" />
   <xdef:big-toggle-factory inherit="toggle-factory" image-size="big-button" />
-
+  
+  <!-- misc BEAST widgets -->
+  <xdef:piano-roll inherit="BstPianoRoll" />
+  <xdef:event-roll inherit="BstEventRoll" />
+  
   <!-- track view -->
   <xdef:track-view inherit="BstTrackView" prop:visible="1" prop:border-width="3" >
     <hbox spacing="3" >
@@ -100,85 +104,14 @@
       <alignment name="property-area" />
     </vpaned>
   </xdef:part-view>
-  
-  <!-- beast-menubar -->
-  <xdef:beast-menubar inherit="menubar" >
-    <submenu _label="_File">
-      <menu-tearoff />
-      <menu-factory actions="file-open" />
-      <menu-factory actions="file-save" separator="1" />
-      <menu-factory actions="preference" separator="1" />
-      <menu-factory actions="file-epilog" separator="1" />
-    </submenu>
-    <submenu _label="_Edit">
-      <menu-tearoff />
-      <menu-factory actions="undo" />
-      <menu-factory actions="undo-dvl" />
-      <menu-factory actions="preference" separator="1" />
-    </submenu>
-    <submenu _label="_View">
-      <menu-tearoff />
-      <menu-factory actions="dialog" />
-      <menu-factory actions="preference" separator="1" />
-      <menu-factory actions="rebuild" separator="1" />
-    </submenu>
-    <submenu _label="_Project">
-      <menu-tearoff />
-      <menu-factory actions="playback" />
-      <menu-factory actions="project" separator="1" />
-    </submenu>
-    <submenu _label="_Synthesizers">
-      <menu-tearoff />
-      <menu-factory actions="library-files" />
-    </submenu>
-    <submenu _label="_Tools">
-      <menu-tearoff />
-      <submenu _label="_Song" name="song-submenu" >
-	<menu-factory actions="tools-song" />
-      </submenu>
-      <submenu _label="_Synth" name="synth-submenu" >
-	<menu-factory actions="tools-synth" />
-      </submenu>
-      <submenu _label="Wave_s" name="waves-submenu" >
-	<menu-factory actions="tools-wave-repo" />
-      </submenu>
-      <menu-factory actions="tools-project" />
-    </submenu>
-    <submenu _label="_Demo">
-      <menu-tearoff />
-      <menu-factory actions="demo-songs" />
-    </submenu>
-    <submenu-last _label="_Help">
-      <menu-tearoff />
-      <menu-factory actions="simple-help" />
-      <submenu _label="Development">
-	<menu-factory actions="devel-help" />
-      </submenu>
-      <menu-factory actions="about" separator="1" />
-    </submenu-last>
-  </xdef:beast-menubar>
-
-  <!-- application-box -->
-  <xdef:application-box inherit="border-layout" >
-    <vbox name="menu-area" area="north" >
-      <beast-menubar />
-    </vbox>
-    <vbox name="toolbar-area" area="north" />
-    <left-deck name="main-notebook" pack:expand="1" />
-    <hbox name="control-area" area="north" />
-  </xdef:application-box>
-
-  <!-- misc BEAST widgets -->
-  <xdef:piano-roll inherit="BstPianoRoll" />
-  <xdef:event-roll inherit="BstEventRoll" />
 
   <!-- piano-roll-box -->
   <xdef:piano-roll-box inherit="vbox" spacing="3" >
     <vbox name="toolbar-area" area="north" >
       <frame-shadow-out >
 	<hbox name="toolbar" >
-	  <big-toggle-factory actions="pctrl-canvas-tools" relief="none" />
-	  <big-button-factory actions="piano-edit-actions" relief="none" />
+	  <big-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
+	  <big-button-factory action-root="" actions="piano-edit-actions" relief="none" />
 	</hbox>
       </frame-shadow-out>
     </vbox>
@@ -191,17 +124,17 @@
 	  <piano-roll prop:height-request="200" >
 	    <popup-menu name="piano-popup" >
 	      <submenu _label="_Tools" >
-		<menu-factory actions="pctrl-canvas-tools" />
+		<menu-factory action-root="" actions="pctrl-canvas-tools" />
 	      </submenu>
 	      <submenu _label="_Edit" >
-		<menu-factory actions="piano-edit-actions" />
-		<menu-factory actions="piano-edit-undo" separator="1" />
+		<menu-factory action-root="" actions="piano-edit-actions" />
+		<menu-factory action-root="" actions="piano-edit-undo" separator="1" />
 	      </submenu>
 	      <submenu _label="_Quantization" >
-		<menu-factory actions="pctrl-quant-tools" />
+		<menu-factory action-root="" actions="pctrl-quant-tools" />
 	      </submenu>
 	      <submenu _label="Note _Length" >
-		<menu-factory actions="pctrl-note-tools" />
+		<menu-factory action-root="" actions="pctrl-note-tools" />
 	      </submenu>
 	    </popup-menu>
 	  </piano-roll>
@@ -226,5 +159,72 @@
       <alignment size:hgroup="scroll-size" />
     </hbox>
   </xdef:piano-roll-box>
+  
+  <!-- beast-menubar -->
+  <xdef:beast-menubar inherit="menubar" >
+    <submenu _label="_File">
+      <menu-tearoff />
+      <menu-factory action-root="" actions="file-open" />
+      <menu-factory action-root="" actions="file-save" separator="1" />
+      <menu-factory action-root="" actions="preference" separator="1" />
+      <menu-factory action-root="" actions="file-epilog" separator="1" />
+    </submenu>
+    <submenu _label="_Edit">
+      <menu-tearoff />
+      <menu-factory action-root="" actions="undo" />
+      <menu-factory action-root="" actions="undo-dvl" />
+      <menu-factory action-root="" actions="preference" separator="1" />
+    </submenu>
+    <submenu _label="_View">
+      <menu-tearoff />
+      <menu-factory action-root="" actions="dialog" />
+      <menu-factory action-root="" actions="preference" separator="1" />
+      <menu-factory action-root="" actions="rebuild" separator="1" />
+    </submenu>
+    <submenu _label="_Project">
+      <menu-tearoff />
+      <menu-factory action-root="" actions="playback" />
+      <menu-factory action-root="" actions="project" separator="1" />
+    </submenu>
+    <submenu _label="_Synthesizers">
+      <menu-tearoff />
+      <menu-factory action-root="" actions="library-files" />
+    </submenu>
+    <submenu _label="_Tools">
+      <menu-tearoff />
+      <submenu _label="_Song" name="song-submenu" >
+	<menu-factory action-root="" actions="tools-song" />
+      </submenu>
+      <submenu _label="_Synth" name="synth-submenu" >
+	<menu-factory action-root="" actions="tools-synth" />
+      </submenu>
+      <submenu _label="Wave_s" name="waves-submenu" >
+	<menu-factory action-root="" actions="tools-wave-repo" />
+      </submenu>
+      <menu-factory action-root="" actions="tools-project" />
+    </submenu>
+    <submenu _label="_Demo">
+      <menu-tearoff />
+      <menu-factory action-root="" actions="demo-songs" />
+    </submenu>
+    <submenu-last _label="_Help">
+      <menu-tearoff />
+      <menu-factory action-root="" actions="simple-help" />
+      <submenu _label="Development">
+	<menu-factory action-root="" actions="devel-help" />
+      </submenu>
+      <menu-factory action-root="" actions="about" separator="1" />
+    </submenu-last>
+  </xdef:beast-menubar>
+  
+  <!-- application-box -->
+  <xdef:application-box inherit="border-layout" >
+    <vbox name="menu-area" area="north" >
+      <beast-menubar />
+    </vbox>
+    <vbox name="toolbar-area" area="north" />
+    <left-deck name="main-notebook" pack:expand="1" />
+    <hbox name="control-area" area="north" />
+  </xdef:application-box>
 
 </gxk-gadget-definitions>
