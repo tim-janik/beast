@@ -1,3 +1,8 @@
+Fri Dec 17 17:01:00 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (_GROUP_ADD_NAMED_OBJECT): use parameter nick
+	name, removed ugly bst_rcarg_params_use_tip_name hack.
+
 Thu Dec 16 06:55:44 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c: changed the basic layout container from hboxes

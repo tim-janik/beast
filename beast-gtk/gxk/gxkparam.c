@@ -51,10 +51,6 @@ static gint dots_area_motion_event	(GtkWidget          *widget,
 					 BstParam	    *bparam);
 
 
-/* --- variables --- */
-static gboolean	bst_rcarg_params_use_tip_name = TRUE;
-
-
 /* --- widget group --- */
 #define _GROUP_GET_NAMED_WIDGET(g,n) ((GtkWidget*) gtk_object_get_data (GTK_OBJECT (g), n))
 static void
@@ -617,13 +613,8 @@ bst_param_create (gpointer      owner,
       gtk_object_unref (GTK_OBJECT (adjustment));
     }
   
-  name = pspec->any.name;
+  name = pspec->any.nick;
   tooltip = pspec->any.blurb;
-  if (tooltip && bst_rcarg_params_use_tip_name)
-    {
-      name = tooltip;
-      tooltip = NULL;
-    }
 
   expandable = FALSE;
   switch (pspec->type)
