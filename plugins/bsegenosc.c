@@ -33,7 +33,9 @@ enum
   PARAM_PHASE,
   PARAM_BASE_FREQ,
   PARAM_FM_PERC,
-  PARAM_BASE_NOTE
+  PARAM_BASE_NOTE,
+  PARAM_SELF_MODULATION,
+  PARAM_SELF_PERC
 };
 
 
@@ -151,9 +153,22 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
 						   1, BSE_KAMMER_NOTE, TRUE,
 						   BSE_PARAM_GUI));
-  bse_object_class_add_param (object_class, "Base Frequency",
+  bse_object_class_add_param (object_class, "Modulation",
 			      PARAM_FM_PERC,
-                              bse_param_spec_float ("fm_perc", "Modulation [%]", NULL,
+                              bse_param_spec_float ("fm_perc", "Input Modulation [%]", "Modulation Strength for input channel",
+						    0, 100.0,
+						    5.0,
+						    10.0,
+						    BSE_PARAM_DEFAULT |
+						    BSE_PARAM_HINT_SCALE));
+  bse_object_class_add_param (object_class, "Modulation",
+			      PARAM_SELF_MODULATION,
+			      bse_param_spec_bool ("self_modulation", "Self Modulation", "Modulate oscillator with itself",
+						   FALSE,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Modulation",
+			      PARAM_SELF_PERC,
+                              bse_param_spec_float ("self_perc", "Self Modulation [%]", "Modualtion Strength for self modulation",
 						    0, 100.0,
 						    5.0,
 						    10.0,
@@ -296,9 +311,12 @@ bse_gen_osc_init (BseGenOsc *gosc)
   gosc->phase = 0.0;
   gosc->base_freq = BSE_KAMMER_FREQ;
   gosc->fm_perc = 10;
+  gosc->self_modulation = FALSE;
+  gosc->self_perc = 10;
   gosc->rate_pos = 0;
   gosc->rate = 0;
   gosc->fm_strength = 0;
+  gosc->self_strength = 0;
   gosc->table_size = 1;
   gosc->table = NULL;
 }
@@ -359,6 +377,7 @@ bse_gen_osc_update_locals (BseGenOsc *gosc)
   gosc->rate = d;
   gosc->rate = (gosc->rate << 16) + (d - gosc->rate) * 65536.0;
   gosc->fm_strength = gosc->rate * (gosc->fm_perc / 100.0) / (BSE_MAX_SAMPLE_VALUE + 1);
+  gosc->self_strength = gosc->rate * (gosc->self_perc / 100.0) / (BSE_MAX_SAMPLE_VALUE + 1);
 }
 
 static void
@@ -415,6 +434,13 @@ bse_gen_osc_set_param (BseGenOsc *gosc,
       gosc->fm_perc = param->value.v_float;
       bse_gen_osc_update_locals (gosc);
       break;
+    case PARAM_SELF_MODULATION:
+      gosc->self_modulation = param->value.v_bool;
+      break;
+    case PARAM_SELF_PERC:
+      gosc->self_perc = param->value.v_float;
+      bse_gen_osc_update_locals (gosc);
+      break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
 		 BSE_OBJECT_TYPE_NAME (gosc),
@@ -458,6 +484,12 @@ bse_gen_osc_get_param (BseGenOsc *gosc,
     case PARAM_FM_PERC:
       param->value.v_float = gosc->fm_perc;
       break;
+    case PARAM_SELF_MODULATION:
+      param->value.v_bool = gosc->self_modulation;
+      break;
+    case PARAM_SELF_PERC:
+      param->value.v_float = gosc->self_perc;
+      break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
 		 BSE_OBJECT_TYPE_NAME (gosc),
@@ -475,7 +507,6 @@ bse_gen_osc_sync (BseGenOsc *gosc)
 
   gosc->rate_pos = 0x8000;
   bse_gen_osc_update_locals (gosc);
-  gosc->last_value = 0;
 }
 
 static void
@@ -501,6 +532,7 @@ bse_gen_osc_calc_chunk (BseSource *source,
   BseChunk *fmchunk = NULL;
   BseSampleValue *hunk, *fmhunk = NULL;
   gfloat fm_strength = gosc->fm_strength;
+  gfloat self_strength = gosc->self_strength;
   BseSourceInput *freq_mod;
   guint32 table_size, rate_pos, rate;
   guint i;
@@ -522,12 +554,32 @@ bse_gen_osc_calc_chunk (BseSource *source,
   else if (fmchunk && fmchunk->hunk_filled)
     fmhunk = fmchunk->hunk;
 
-  if (fmhunk)
+  if (fmhunk && gosc->self_modulation)
+    for (i = 0; i < BSE_TRACK_LENGTH; i++)
+      {
+	BseSampleValue v = table[rate_pos >> 16];
+	
+	hunk[i] = v;
+	rate_pos += rate + fm_strength * fmhunk[i] + self_strength * v;
+	while (rate_pos >= table_size)
+	  rate_pos -= table_size;
+      }
+  else if (fmhunk)
     for (i = 0; i < BSE_TRACK_LENGTH; i++)
       {
 	hunk[i] = table[rate_pos >> 16];
 	rate_pos += rate + fm_strength * fmhunk[i];
-	if (rate_pos >= table_size)
+	while (rate_pos >= table_size)
+	  rate_pos -= table_size;
+      }
+  else if (gosc->self_modulation)
+    for (i = 0; i < BSE_TRACK_LENGTH; i++)
+      {
+	BseSampleValue v = table[rate_pos >> 16];
+
+	hunk[i] = v;
+	rate_pos += rate + self_strength * v;
+	while (rate_pos >= table_size)
 	  rate_pos -= table_size;
       }
   else
@@ -535,7 +587,7 @@ bse_gen_osc_calc_chunk (BseSource *source,
       {
 	hunk[i] = table[rate_pos >> 16];
 	rate_pos += rate;
-	if (rate_pos >= table_size)
+	while (rate_pos >= table_size)
 	  rate_pos -= table_size;
       }
   gosc->rate_pos = rate_pos;
@@ -554,7 +606,6 @@ bse_gen_osc_reset (BseSource *source)
   gosc->rate_pos = 0;
   gosc->table_size = 1;
   gosc->table = NULL;
-  gosc->last_value = 0;
   bse_gen_osc_class_unref_tables (BSE_GEN_OSC_GET_CLASS (gosc));
 
   /* chain parent class' handler */

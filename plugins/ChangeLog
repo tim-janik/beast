@@ -1,3 +1,7 @@
+Mon Dec 27 18:33:01 1999  Tim Janik  <timj@gtk.org>
+
+	* bsegenosc.[hc]: feature self-modulation.
+
 Sun Dec 26 22:42:45 1999  Tim Janik  <timj@gtk.org>
 
 	* bsefirfilter.[hc]: added highpass, corrected displayed

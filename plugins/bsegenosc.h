@@ -61,17 +61,19 @@ struct _BseGenOsc
 {
   BseSource       parent_object;
 
-  guint   wave;
-  gfloat  phase;
-  gfloat  base_freq;
-  gfloat  fm_perc;
+  guint    wave;
+  gfloat   phase;
+  gfloat   base_freq;
+  gfloat   fm_perc;
+  gboolean self_modulation;
+  gfloat   self_perc;
 
   guint32 rate_pos;
   guint32 rate;
   gfloat  fm_strength;
+  gfloat  self_strength;
   guint   table_size;
   BseSampleValue *table;
-  BseSampleValue  last_value;
 };
 struct _BseGenOscClass
 {
