@@ -299,8 +299,9 @@ if ($outmode eq 'man') {
     print "\n";
 } elsif ($outmode eq 'html') {
     print "<html>\n<head>\n";
-    printf("<title>$pname - %s - $package</title>\n</head>\n<body>\n".
-	   "<h1>NAME</h1>\n".
+    printf("<title>$pname - %s - $package</title>\n</head>\n".
+           '<body text="#000000" bgcolor="#ffffff" link="#cc0000" alink="#cc0000" vlink="#990000">'.
+	   "\n<h1>NAME</h1>\n".
 	   "<blockquote>$pname - $pblurb</blockquote>\n".
 	   "<h1>SYNOPSIS</h1>\n",
 	   strftime ("%02d %b %Y", localtime ()));

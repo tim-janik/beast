@@ -12,7 +12,7 @@ EXTRA_DIST += mkdocs.pl $(MAN_PAGES_3) $(HTML_PAGES)
 
 all-local: $(MAN_PAGES_3) $(HTML_PAGES)
 
-TEMP_FILES = temp-bsw-gen.doc
+TEMP_FILES = temp-bsw-gen1.doc temp-bsw-gen2.doc
 
 gsl.3: $(GSL_MAN_SRC_GLOBS) $(srcdir)/mkdocs.pl
 	$(srcdir)/mkdocs.pl --name "GSL-Functions" \
@@ -27,12 +27,12 @@ bse.3: $(BSE_MAN_SRC_GLOBS) $(srcdir)/mkdocs.pl
 	                    $(BSE_MAN_SRC_GLOBS) >$@
 
 bse-procs.3: $(top_builddir)/bse/bsequery $(srcdir)/mkdocs.pl
-	$(top_builddir)/bse/bsequery -p procdoc >temp-bsw-gen.doc \
+	$(top_builddir)/bse/bsequery -p procdoc >temp-bsw-gen1.doc \
 	&& $(srcdir)/mkdocs.pl --name "BSE-Procedures" \
 	                       --blurb "BSE Procedure Reference" \
 			       --package "BEAST/BSE-$(VERSION)" \
-	                       temp-bsw-gen.doc >$@ \
-	&& rm -f temp-bsw-gen.doc
+	                       temp-bsw-gen1.doc >$@ \
+	&& rm -f temp-bsw-gen1.doc
 
 bst.3: $(BST_MAN_SRC_GLOBS) $(srcdir)/mkdocs.pl
 	$(srcdir)/mkdocs.pl --name "BST-Functions" \
@@ -55,13 +55,13 @@ bse.html: $(BSE_MAN_SRC_GLOBS) $(srcdir)/mkdocs.pl
 	                    $(BSE_MAN_SRC_GLOBS) >$@
 
 bse-procs.html: $(top_builddir)/bse/bsequery $(srcdir)/mkdocs.pl
-	$(top_builddir)/bse/bsequery -p procdoc >temp-bsw-gen.doc \
+	$(top_builddir)/bse/bsequery -p procdoc >temp-bsw-gen2.doc \
 	&& $(srcdir)/mkdocs.pl --name "BSE-Procedures" \
 	                       --blurb "BSE Procedure Reference" \
 			       --package "BEAST/BSE-$(VERSION)" \
 			       --html \
-	                       temp-bsw-gen.doc >$@ \
-	&& rm -f temp-bsw-gen.doc
+	                       temp-bsw-gen2.doc >$@ \
+	&& rm -f temp-bsw-gen2.doc
 
 bst.html: $(BST_MAN_SRC_GLOBS) $(srcdir)/mkdocs.pl
 	$(srcdir)/mkdocs.pl --name "BST-Functions" \
