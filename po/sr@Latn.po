@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-22 18:13+0100\n"
-"PO-Revision-Date: 2003-11-22 18:14+0100\n"
+"POT-Creation-Date: 2003-12-07 23:01+0100\n"
+"PO-Revision-Date: 2003-12-07 23:02+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -149,31 +149,31 @@ msgstr "Pitanja i _odgovori"
 msgid "GSL Engine..."
 msgstr "GSL mašinerija..."
 
-#: beast-gtk/bstapp.c:544 beast-gtk/bstapp.c:551 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:545 beast-gtk/bstapp.c:552 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otvara projekat „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:714
+#: beast-gtk/bstapp.c:715
 msgid "Rack editor"
 msgstr "Uređivač polica"
 
-#: beast-gtk/bstapp.c:728
+#: beast-gtk/bstapp.c:729
 msgid "Preferences"
 msgstr "Postavke"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:742
+#: beast-gtk/bstapp.c:743
 msgid "Device Monitor"
 msgstr "Praćenje uređaja"
 
-#: beast-gtk/bstapp.c:757
+#: beast-gtk/bstapp.c:758
 msgid "Procedure Browser"
 msgstr "Razgledač procedura"
 
-#: beast-gtk/bstapp.c:814
+#: beast-gtk/bstapp.c:815
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ZVER-%s Objava izdanja"
@@ -376,7 +376,7 @@ msgid "Add"
 msgstr "Dodaj"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
-#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:182
+#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
 #: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
 #: beast-gtk/bstwaveview.c:45
@@ -477,7 +477,7 @@ msgstr "ZVER, izdanje %s"
 msgid "Contributions made by:"
 msgstr "Takođe doprineli:"
 
-#: beast-gtk/bstparam-entry.c:61
+#: beast-gtk/bstparam-entry.c:61 beast-gtk/gxk/gxkparam-entry.c:61
 msgid "Remove Paths"
 msgstr "Ukloni putanje"
 
@@ -735,37 +735,42 @@ msgstr ""
 "Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
 "budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
 
-#: beast-gtk/bstrackeditor.c:109 beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
 msgid "_Edit"
 msgstr "_Uredi"
 
-#: beast-gtk/bstrackitem.c:172
+#: beast-gtk/bstrackitem.c:206
 msgid "Edit Rack Item"
 msgstr "Uredi stavku police"
 
-#: beast-gtk/bstrackitem.c:174
+#: beast-gtk/bstrackitem.c:208
 msgid "Controller"
 msgstr "Upravljač"
 
-#: beast-gtk/bstrackitem.c:175
+#: beast-gtk/bstrackitem.c:209
 msgid "Duplicate"
 msgstr "Udvostruči"
 
-#: beast-gtk/bstrackitem.c:177
+#: beast-gtk/bstrackitem.c:211
 msgid "Grow Horizontally"
 msgstr "Povećaj vodoravno"
 
-#: beast-gtk/bstrackitem.c:178
+#: beast-gtk/bstrackitem.c:212
 msgid "Grow Vertically"
 msgstr "Povećaj uspravno"
 
-#: beast-gtk/bstrackitem.c:179
+#: beast-gtk/bstrackitem.c:213
 msgid "Shrink Horizontally"
 msgstr "Smanji vodoravno"
 
-#: beast-gtk/bstrackitem.c:180
+#: beast-gtk/bstrackitem.c:214
 msgid "Shrink Vertically"
 msgstr "Smanji uspravno"
+
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxksimplelabel.c:132
+msgid "Label"
+msgstr "Oznaka"
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
@@ -965,26 +970,30 @@ msgstr "Označi signal (glava)"
 msgid "Mark Signal (Tail)"
 msgstr "Označi signal (rep)"
 
-#: beast-gtk/bstsupershell.c:172 beast-gtk/bstsupershell.c:285
+#: beast-gtk/bstsupershell.c:173 beast-gtk/bstsupershell.c:290
 msgid "Waves"
 msgstr "Talasi"
 
-#: beast-gtk/bstsupershell.c:235
+#: beast-gtk/bstsupershell.c:236
 msgid "Tracks"
 msgstr "Pesme"
 
-#: beast-gtk/bstsupershell.c:240 beast-gtk/bstsupershell.c:272
-#: beast-gtk/bstsupershell.c:290
+#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
+#: beast-gtk/bstsupershell.c:295
 msgid "Parameters"
 msgstr "Parametri"
 
-#: beast-gtk/bstsupershell.c:245
+#: beast-gtk/bstsupershell.c:246
 msgid "Parts"
 msgstr "Delovi"
 
-#: beast-gtk/bstsupershell.c:251 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:252 beast-gtk/bstsupershell.c:271
 msgid "Routing"
 msgstr "Usmeravanje"
+
+#: beast-gtk/bstsupershell.c:266
+msgid "Rack"
+msgstr "Polica"
 
 #: beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert/edit/move parts (mouse button 1 and 2)"
@@ -1196,101 +1205,106 @@ msgstr "UUvećanje"
 msgid "Vertical piano zoom"
 msgstr "Uspravno uvećanje za klavir"
 
+# Ja bih radije „Kao-polica“ :-)
 #: beast-gtk/dialogs/gadgets-beast.xml.h:16
+msgid "Virtual Rack"
+msgstr "Virtuelna polica"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
 msgid "Wave_s"
 msgstr "_Talasi"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
 msgid "Zoom"
 msgstr "Uvećanje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
 msgid "_Audio Sources"
 msgstr "Izvori _zvuka"
 
 # Hteo sam „proba“, ali imamo i „Test“, pa je bolje tu iskoristiti
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
 msgid "_Demo"
 msgstr "_Demo"
 
 # distonirati? u Leksikonu se to pominje u smislu zvuka
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "_Distortion"
 msgstr "Is_krivljenje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "_Enhance"
 msgstr "Po_boljšanje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
 msgid "_File"
 msgstr "_Datoteka"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
 msgid "_Filters"
 msgstr "_Filteri"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
 msgid "_Help"
 msgstr "_Pomoć"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
 msgid "_Input & Output"
 msgstr "_Ulaz i izlaz"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
 msgid "_Misc"
 msgstr "_Razno"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
 msgid "_Other Sources"
 msgstr "_Ostali izvori"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Project"
 msgstr "_Projekat"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
 msgid "_Quantization"
 msgstr "_Kvantizacija"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_Routing"
 msgstr "Us_meravanje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
 msgid "_Song"
 msgstr "P_esma"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Spatial"
 msgstr "_Prostorno"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Synth"
 msgstr "_Sintetizator"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Synthesizers"
 msgstr "_Sintetizatori"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Tools"
 msgstr "_Alati"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Utilities"
 msgstr "_Pomoćni alati"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_View"
 msgstr "P_regled"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_Virtualization"
 msgstr "_Virtuelizacija"
 
@@ -1337,10 +1351,6 @@ msgstr "_Indeks"
 #: beast-gtk/dialogs/gadgets-standard.xml.h:11
 msgid "_Reload"
 msgstr "Os_veži"
-
-#: beast-gtk/gxk/gxksimplelabel.c:132
-msgid "Label"
-msgstr "Oznaka"
 
 #: beast-gtk/gxk/gxksimplelabel.c:132
 msgid "The text of the label"

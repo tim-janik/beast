@@ -17,6 +17,7 @@ beast-gtk/bstprocedure.c
 beast-gtk/bstprojectctrl.c
 beast-gtk/bstrackeditor.c
 beast-gtk/bstrackitem.c
+beast-gtk/bstrackview.c
 beast-gtk/bstsampleeditor.c
 beast-gtk/bstsnetrouter.c
 beast-gtk/bststest.c
@@ -28,6 +29,7 @@ beast-gtk/bstwaveeditor.c
 beast-gtk/bstwaveview.c
 beast-gtk/dialogs/gadgets-beast.xml
 beast-gtk/dialogs/gadgets-standard.xml
+beast-gtk/gxk/gxkparam-entry.c
 beast-gtk/gxk/gxksimplelabel.c
 data/beast.desktop.in
 data/bse.keys.in
