@@ -1,13 +1,15 @@
 Overview of Changes in BEAST/BSE 0.6.3:
 
+* The package now depends on GLib-2.4 and Gtk+-2.4
 * New/improved Effects:
   BseContribSampleAndHold - a sample and hold module by Artem Popov
   BseSummation            - a replacement for multiple BseAdder effects
   DavBassFilter           - added trigger input for use in instruments
 * Dialog size and resizing adaptions for 800x600 screens
+* Consistent support for dialog closing with Escape 
 * Fixed undo/redo handling across playback activation
 * Fixed error handling when users form cyclic connections
-* Consistent support for dialog closing with Escape 
+* Lots of miscellaneous bug fixes
 
 Overview of Changes in BEAST/BSE 0.6.2:
 
