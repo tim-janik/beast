@@ -29,7 +29,7 @@
   (if (not (bse-is-snet snet))
       (bse-script-exit 'error "no valid synthesis network supplied"))
   (bse-item-group-undo snet "modules2grid")      ; move all children at once
-  (do ((children (bse-container-list-items snet) (cdr children)))
+  (do ((children (bse-container-list-children snet) (cdr children)))
       ((null? children))
     (let ((module (car children)))
       (if (bse-is-source module)

@@ -119,48 +119,59 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *class)
 
 static void
 scope_probes_notify (SfiProxy     proxy,
-                     BseProbeSeq *pseq,
+                     SfiSeq      *sseq,
                      gpointer     data)
 {
   BstSnifferScope *self = BST_SNIFFER_SCOPE (data);
-  // g_print ("scope data\n");
-#if 0
-  GtkWidget *widget = GTK_WIDGET (self);
-  if (left_samples->n_values >= widget->allocation.width / 2)
+  if (GTK_WIDGET_DRAWABLE (self))
     {
-      GdkWindow *window = widget->window;
-      GtkAllocation *allocation = &widget->allocation;
-      GdkGC *fg_gc = widget->style->dark_gc[widget->state];
-      GdkGC *bg_gc = widget->style->white_gc;
+      BseProbeSeq *pseq = bse_probe_seq_from_seq (sseq);
+      GtkWidget *widget = GTK_WIDGET (self);
+      BseProbe *lprobe = NULL, *rprobe = NULL;
       guint i;
-      for (i = 0; i < widget->allocation.width / 2; i++)
+      for (i = 0; i < pseq->n_probes && (!lprobe || !rprobe); i++)
+        if (pseq->probes[i]->channel_id == 0)
+          lprobe = pseq->probes[i];
+        else if (pseq->probes[i]->channel_id == 1)
+          rprobe = pseq->probes[i];
+      if (lprobe && lprobe->sample_data && lprobe->sample_data->n_values >= widget->allocation.width / 2 &&
+          rprobe && rprobe->sample_data && rprobe->sample_data->n_values >= widget->allocation.width / 2)
         {
-          gfloat lv = CLAMP (left_samples->values[i], -1, +1) * 0.5 + 0.5;
-          gfloat rv = CLAMP (right_samples->values[i], -1, +1) * 0.5 + 0.5;
-          gdk_draw_line (window, bg_gc,
-                         allocation->x + i,
-                         allocation->y,
-                         allocation->x + i,
-                         allocation->y + allocation->height * (1.0 - lv));
-          gdk_draw_line (window, fg_gc,
-                         allocation->x + i,
-                         allocation->y + allocation->height * (1.0 - lv),
-                         allocation->x + i,
-                         allocation->y + allocation->height);
-          gdk_draw_line (window, bg_gc,
-                         allocation->x + i + allocation->width / 2,
-                         allocation->y,
-                         allocation->x + i + allocation->width / 2,
-                         allocation->y + allocation->height * (1.0 - rv));
-          gdk_draw_line (window, fg_gc,
-                         allocation->x + i + allocation->width / 2,
-                         allocation->y + allocation->height * (1.0 - rv),
-                         allocation->x + i + allocation->width / 2,
-                         allocation->y + allocation->height);
+          GdkWindow *window = widget->window;
+          GtkAllocation *allocation = &widget->allocation;
+          GdkGC *fg_gc = widget->style->dark_gc[widget->state];
+          GdkGC *bg_gc = widget->style->white_gc;
+          guint i;
+          for (i = 0; i < widget->allocation.width / 2; i++)
+            {
+              gfloat lv = CLAMP (lprobe->sample_data->values[i], -1, +1) * 0.5 + 0.5;
+              gfloat rv = CLAMP (rprobe->sample_data->values[i], -1, +1) * 0.5 + 0.5;
+              gdk_draw_line (window, bg_gc,
+                             allocation->x + i,
+                             allocation->y,
+                             allocation->x + i,
+                             allocation->y + allocation->height * (1.0 - lv));
+              gdk_draw_line (window, fg_gc,
+                             allocation->x + i,
+                             allocation->y + allocation->height * (1.0 - lv),
+                             allocation->x + i,
+                             allocation->y + allocation->height);
+              gdk_draw_line (window, bg_gc,
+                             allocation->x + i + allocation->width / 2,
+                             allocation->y,
+                             allocation->x + i + allocation->width / 2,
+                             allocation->y + allocation->height * (1.0 - rv));
+              gdk_draw_line (window, fg_gc,
+                             allocation->x + i + allocation->width / 2,
+                             allocation->y + allocation->height * (1.0 - rv),
+                             allocation->x + i + allocation->width / 2,
+                             allocation->y + allocation->height);
+            }
         }
+      bse_probe_seq_free (pseq);
     }
-#endif
-  bse_source_queue_probe_request (self->proxy, 0, 0, 0, 1, 0);
+  bse_source_queue_probe_request (self->proxy, 0, 1, 1, 1, 1);
+  bse_source_queue_probe_request (self->proxy, 1, 1, 1, 1, 1);
 }
 
 void
@@ -183,7 +194,8 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
       bse_proxy_connect (self->proxy,
                          "signal::probes", scope_probes_notify, self,
                          NULL);
-      bse_source_queue_probe_request (self->proxy, 0, 0, 0, 1, 0);
+      bse_source_queue_probe_request (self->proxy, 0, 1, 1, 1, 1);
+      bse_source_queue_probe_request (self->proxy, 1, 1, 1, 1, 1);
     }
 }
 

@@ -55,7 +55,7 @@
     (if (> end start)
       (begin
 	(bse-item-group-undo song "song-parts-operation")
-        (for-each process-track (bse-container-list-items song))
+        (for-each process-track (bse-container-list-children song))
         (bse-item-ungroup-undo song))
       (bse-script-exit 'error "loop range is empty"))))
 
