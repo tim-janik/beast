@@ -48,7 +48,7 @@ struct _BsePcmDeviceAlsaClass
 static void         bse_pcm_device_alsa_class_init       (BsePcmDeviceAlsaClass   *class);
 static void         bse_pcm_device_alsa_init             (BsePcmDeviceAlsa        *pcm_device_alsa);
 static void         bse_pcm_device_alsa_shutdown         (BseObject              *object);
-static gchar*       bse_pcm_device_alsa_device_name      (BsePcmDevice           *pdev,
+static gchar*       bse_pcm_device_alsa_device_name      (BseDevice              *dev,
 							  gboolean                descriptive);
 static BseErrorType bse_pcm_device_alsa_update_caps      (BsePcmDevice           *pdev);
 static BseErrorType bse_pcm_device_alsa_open             (BsePcmDevice           *pdev,
@@ -66,11 +66,11 @@ static BseErrorType bse_pcm_device_alsa_setup            (BsePcmDeviceAlsa      
                                                           guint                   fragment_size);
 static void         bse_pcm_device_alsa_update_state     (BsePcmDevice           *pdev);
 static void	    bse_pcm_device_alsa_retrigger        (BsePcmDevice           *pdev);
-static void         bse_pcm_device_alsa_close            (BsePcmDevice           *pdev);
-static guint        bse_pcm_device_alsa_read		 (BsePcmDevice		 *pdev,
+static void         bse_pcm_device_alsa_close            (BseDevice              *pdev);
+static guint        bse_pcm_device_alsa_read		 (BseDevice		 *dev,
 							  guint                   n_bytes,
 							  guint8                 *bytes);
-static guint	    bse_pcm_device_alsa_write		 (BsePcmDevice		 *pdev,
+static guint	    bse_pcm_device_alsa_write		 (BseDevice		 *dev,
 							  guint                   n_bytes,
 							  guint8                  *bytes);
 static guint        pcm_rates_from_alsa_rates            (guint                   alsa_rates);
@@ -114,22 +114,25 @@ static void
 bse_pcm_device_alsa_class_init (BsePcmDeviceAlsaClass *class)
 {
   BseObjectClass *object_class;
+  BseDeviceClass *device_class;
   BsePcmDeviceClass *pcm_device_class;
   
   parent_class = bse_type_class_peek (BSE_TYPE_PCM_DEVICE);
   object_class = BSE_OBJECT_CLASS (class);
+  device_class = BSE_DEVICE_CLASS (class);
   pcm_device_class = BSE_PCM_DEVICE_CLASS (class);
   
   object_class->shutdown = bse_pcm_device_alsa_shutdown;
   
-  pcm_device_class->device_name = bse_pcm_device_alsa_device_name;
+  device_class->close = bse_pcm_device_alsa_close;
+  device_class->device_name = bse_pcm_device_alsa_device_name;
+  device_class->read = bse_pcm_device_alsa_read;
+  device_class->write = bse_pcm_device_alsa_write;
+
   pcm_device_class->update_caps = bse_pcm_device_alsa_update_caps;
   pcm_device_class->open = bse_pcm_device_alsa_open;
   pcm_device_class->update_state = bse_pcm_device_alsa_update_state;
-  pcm_device_class->read = bse_pcm_device_alsa_read;
-  pcm_device_class->write = bse_pcm_device_alsa_write;
   pcm_device_class->retrigger = bse_pcm_device_alsa_retrigger;
-  pcm_device_class->close = bse_pcm_device_alsa_close;
 }
 
 static void
@@ -157,10 +160,10 @@ bse_pcm_device_alsa_shutdown (BseObject *object)
 }
 
 static gchar*
-bse_pcm_device_alsa_device_name (BsePcmDevice *pdev,
-				 gboolean      descriptive)
+bse_pcm_device_alsa_device_name (BseDevice *dev,
+				 gboolean   descriptive)
 {
-  BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (pdev);
+  BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (dev);
 
   return descriptive ? alsa->card_id : alsa->card_name;
 }
@@ -174,6 +177,7 @@ bse_pcm_device_alsa_open (BsePcmDevice  *pdev,
                           guint          fragment_size)
 {
   BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (pdev);
+  BseDevice *dev = BSE_DEVICE (alsa);
   BseErrorType error;
   gint omode = 0;
   gint perrno, fd;
@@ -206,7 +210,7 @@ bse_pcm_device_alsa_open (BsePcmDevice  *pdev,
       else
         return BSE_ERROR_DEVICE_IO;
     }
-  pdev->pfd.fd = fd;
+  dev->pfd.fd = fd;
   
   error = bse_pcm_device_alsa_setup (alsa, readable, writable, n_channels, rate, 128, fragment_size);
   if (error)
@@ -217,22 +221,25 @@ bse_pcm_device_alsa_open (BsePcmDevice  *pdev,
   else
     {
       if (readable)
-        BSE_OBJECT_SET_FLAGS (alsa, BSE_PCM_FLAG_READABLE);
+        BSE_OBJECT_SET_FLAGS (alsa, BSE_DEVICE_FLAG_READABLE);
       if (writable)
-        BSE_OBJECT_SET_FLAGS (alsa, BSE_PCM_FLAG_WRITABLE);
+        BSE_OBJECT_SET_FLAGS (alsa, BSE_DEVICE_FLAG_WRITABLE);
     }
   
   return error;
 }
 
 static void
-bse_pcm_device_alsa_close (BsePcmDevice *pdev)
+bse_pcm_device_alsa_close (BseDevice *dev)
 {
-  BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (pdev);
+  BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (dev);
   
   snd_pcm_drain_playback (alsa->handle);
   snd_pcm_close (alsa->handle);
   alsa->handle = NULL;
+
+  /* chain parent class' handler */
+  BSE_DEVICE_CLASS (parent_class)->close (dev);
 }
 
 static void
@@ -309,24 +316,24 @@ bse_pcm_device_alsa_retrigger (BsePcmDevice *pdev)
 
   if (0)
     {
-      if (BSE_PCM_DEVICE_READABLE (alsa))
+      if (BSE_DEVICE_READABLE (alsa))
 	snd_pcm_channel_prepare (alsa->handle, SND_PCM_CHANNEL_CAPTURE);
-      if (BSE_PCM_DEVICE_WRITABLE (alsa))
+      if (BSE_DEVICE_WRITABLE (alsa))
 	snd_pcm_channel_prepare (alsa->handle, SND_PCM_CHANNEL_PLAYBACK);
     }
 
-  if (BSE_PCM_DEVICE_READABLE (alsa))
+  if (BSE_DEVICE_READABLE (alsa))
     snd_pcm_channel_go (alsa->handle, SND_PCM_CHANNEL_CAPTURE);
-  if (BSE_PCM_DEVICE_WRITABLE (alsa))
+  if (BSE_DEVICE_WRITABLE (alsa))
     snd_pcm_channel_go (alsa->handle, SND_PCM_CHANNEL_PLAYBACK);
 }
 
 static guint
-bse_pcm_device_alsa_read (BsePcmDevice *pdev,
-			  guint         n_bytes,
-			  guint8       *bytes)
+bse_pcm_device_alsa_read (BseDevice *dev,
+			  guint      n_bytes,
+			  guint8    *bytes)
 {
-  BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (pdev);
+  BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (dev);
   gint n;
 
   do
@@ -337,11 +344,11 @@ bse_pcm_device_alsa_read (BsePcmDevice *pdev,
 }
 
 static guint
-bse_pcm_device_alsa_write (BsePcmDevice *pdev,
-			   guint         n_bytes,
-			   guint8       *bytes)
+bse_pcm_device_alsa_write (BseDevice *dev,
+			   guint      n_bytes,
+			   guint8    *bytes)
 {
-  BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (pdev);
+  BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (dev);
   gint n;
 
   do

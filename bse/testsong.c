@@ -79,7 +79,7 @@ main (int argc, char *argv[])
     {
       g_warning ("Opening %s \"%s\" failed: %s\n",
 		 BSE_OBJECT_TYPE_NAME (pdev),
-		 bse_pcm_device_get_device_name (pdev),
+		 bse_device_get_device_name (BSE_DEVICE (pdev)),
 		 bse_error_blurb (error));
       return -1;
     }
@@ -87,7 +87,7 @@ main (int argc, char *argv[])
     {
       g_print ("Using %s \"%s\" with %uHz in %u channel mode\n",
 	       BSE_OBJECT_TYPE_NAME (pdev),
-	       bse_pcm_device_get_device_name (pdev),
+	       bse_device_get_device_name (BSE_DEVICE (pdev)),
 	       (guint) pdev->sample_freq,
 	       pdev->n_channels);
     }
@@ -121,7 +121,7 @@ main (int argc, char *argv[])
       }
   });
 
-  bse_pcm_device_close (pdev);
+  bse_device_close (BSE_DEVICE (pdev));
   bse_object_unref (BSE_OBJECT (pdev));
 
   return 0;

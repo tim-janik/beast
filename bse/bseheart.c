@@ -234,8 +234,8 @@ bse_heart_register_device (const gchar  *symbolic_name,
   gchar *name;
 
   g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
-  g_return_if_fail (!BSE_PCM_DEVICE_REGISTERED (pdev));
-  g_return_if_fail (!BSE_PCM_DEVICE_OPEN (pdev));
+  g_return_if_fail (!BSE_DEVICE_REGISTERED (pdev));
+  g_return_if_fail (!BSE_DEVICE_OPEN (pdev));
   g_return_if_fail (symbolic_name != NULL);
 
   heart = bse_heart_get_global (TRUE);
@@ -247,7 +247,7 @@ bse_heart_register_device (const gchar  *symbolic_name,
       g_free (name);
       name = g_strdup_printf ("%s-%u", symbolic_name, ++i);
     }
-  BSE_OBJECT_SET_FLAGS (pdev, BSE_PCM_FLAG_REGISTERED);
+  BSE_OBJECT_SET_FLAGS (pdev, BSE_DEVICE_FLAG_REGISTERED);
   i = heart->n_devices++;
   heart->devices = g_renew (BseHeartDevice, heart->devices, heart->n_devices);
   heart->devices[i].device = pdev;
@@ -267,8 +267,8 @@ bse_heart_unregister_device (BsePcmDevice *pdev)
   guint i;
 
   g_return_if_fail (BSE_IS_PCM_DEVICE (pdev));
-  g_return_if_fail (BSE_PCM_DEVICE_REGISTERED (pdev));
-  g_return_if_fail (!BSE_PCM_DEVICE_OPEN (pdev));
+  g_return_if_fail (BSE_DEVICE_REGISTERED (pdev));
+  g_return_if_fail (!BSE_DEVICE_OPEN (pdev));
 
   heart = bse_heart_get_global (FALSE);
   for (i = 0; i < heart->n_devices; i++)
@@ -288,7 +288,7 @@ bse_heart_unregister_device (BsePcmDevice *pdev)
   heart->n_devices--;
   if (i < heart->n_devices)
     heart->devices[i] = heart->devices[heart->n_devices];
-  BSE_OBJECT_UNSET_FLAGS (pdev, BSE_PCM_FLAG_REGISTERED);
+  BSE_OBJECT_UNSET_FLAGS (pdev, BSE_DEVICE_FLAG_REGISTERED);
   bse_object_unref (BSE_OBJECT (pdev));
   bse_object_unref (BSE_OBJECT (heart));
 }
@@ -316,7 +316,7 @@ bse_heart_get_device_name (BsePcmDevice *pdev)
   BseHeart *heart;
 
   g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), NULL);
-  g_return_val_if_fail (BSE_PCM_DEVICE_REGISTERED (pdev), NULL);
+  g_return_val_if_fail (BSE_DEVICE_REGISTERED (pdev), NULL);
 
   heart = bse_heart_get_global (FALSE);
   if (heart)
@@ -480,7 +480,7 @@ bse_heart_source_add_idevice (BseSource    *source,
   g_return_if_fail (BSE_SOURCE_ATTACHED (source));
   g_return_if_fail (!BSE_SOURCE_IATTACHED (source));
   g_return_if_fail (BSE_IS_PCM_DEVICE (idev));
-  g_return_if_fail (BSE_PCM_DEVICE_REGISTERED (idev));
+  g_return_if_fail (BSE_DEVICE_REGISTERED (idev));
 
   heart = bse_heart_get_global (FALSE);
   
@@ -508,7 +508,7 @@ bse_heart_source_remove_idevice (BseSource    *source,
   g_return_if_fail (BSE_SOURCE_ATTACHED (source));
   g_return_if_fail (BSE_SOURCE_IATTACHED (source));
   g_return_if_fail (BSE_IS_PCM_DEVICE (idev));
-  g_return_if_fail (BSE_PCM_DEVICE_REGISTERED (idev));
+  g_return_if_fail (BSE_DEVICE_REGISTERED (idev));
 
   heart = bse_heart_get_global (FALSE);
   
@@ -542,7 +542,7 @@ bse_heart_source_add_odevice (BseSource    *source,
   g_return_if_fail (BSE_SOURCE_ATTACHED (source));
   g_return_if_fail (!BSE_SOURCE_OATTACHED (source));
   g_return_if_fail (BSE_IS_PCM_DEVICE (odev));
-  g_return_if_fail (BSE_PCM_DEVICE_REGISTERED (odev));
+  g_return_if_fail (BSE_DEVICE_REGISTERED (odev));
   g_return_if_fail (BSE_SOURCE_N_OCHANNELS (source) == 1);
   g_return_if_fail (BSE_SOURCE_OCHANNEL_DEF (source, 1)->n_tracks <= 2);
 
@@ -574,7 +574,7 @@ bse_heart_source_remove_odevice (BseSource    *source,
   g_return_if_fail (BSE_SOURCE_ATTACHED (source));
   g_return_if_fail (BSE_SOURCE_OATTACHED (source));
   g_return_if_fail (BSE_IS_PCM_DEVICE (odev));
-  g_return_if_fail (BSE_PCM_DEVICE_REGISTERED (odev));
+  g_return_if_fail (BSE_DEVICE_REGISTERED (odev));
 
   heart = bse_heart_get_global (FALSE);
   
@@ -615,7 +615,7 @@ device_open_handler (gpointer data)
       heart->device_open_list = slist->next;
       g_slist_free_1 (slist);
 
-      if (!BSE_PCM_DEVICE_OPEN (pdev) && (hdevice->n_isources || hdevice->n_osources))
+      if (!BSE_DEVICE_OPEN (pdev) && (hdevice->n_isources || hdevice->n_osources))
 	{
 	  BseErrorType error;
 
@@ -628,9 +628,9 @@ device_open_handler (gpointer data)
 					 BSE_MIX_FREQ);
 	  if (error)
 	    g_warning ("failed to open PCM Device \"%s\": %s",
-		       bse_pcm_device_get_device_name (pdev),
+		       bse_device_get_device_name (BSE_DEVICE (pdev)),
 		       bse_error_blurb (error));
-	  if (BSE_PCM_DEVICE_OPEN (pdev))
+	  if (BSE_DEVICE_OPEN (pdev))
 	    {
 	      bse_pcm_device_retrigger (pdev);
 	      if (!heart->n_open_devices)
@@ -638,9 +638,9 @@ device_open_handler (gpointer data)
 	      heart->n_open_devices++;
 	    }
 	}
-      else if (BSE_PCM_DEVICE_OPEN (pdev) && !hdevice->n_isources && !hdevice->n_osources)
+      else if (BSE_DEVICE_OPEN (pdev) && !hdevice->n_isources && !hdevice->n_osources)
 	{
-	  bse_pcm_device_close (pdev);
+	  bse_device_close (BSE_DEVICE (pdev));
 	  heart->n_open_devices--;
 	  if (!heart->n_open_devices)
 	    {
@@ -799,7 +799,7 @@ bse_heart_prepare (gpointer  source_data,
       BseHeartDevice *hdevice = heart->devices + i;
       BsePcmDevice *pdev = hdevice->device;
 
-      if (BSE_PCM_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
+      if (BSE_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
 	{
 	  guint msecs;
 
@@ -834,7 +834,7 @@ bse_heart_check (gpointer  source_data,
       BseHeartDevice *hdevice = heart->devices + i;
       BsePcmDevice *pdev = hdevice->device;
 
-      if (BSE_PCM_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
+      if (BSE_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
 	{
 	  bse_pcm_device_time_warp (pdev);
 	  if (bse_pcm_device_need_processing (pdev, heart->latency) == 0)
@@ -868,7 +868,7 @@ bse_heart_dispatch (gpointer  source_data,
       BseHeartDevice *hdevice = heart->devices + i;
       BsePcmDevice *pdev = hdevice->device;
       
-      if (BSE_PCM_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
+      if (BSE_DEVICE_OPEN (pdev)) /* hdevice->n_osources || hdevice->n_isources */
 	{
 	  bse_pcm_device_time_warp (pdev);
 	  need_cycle |= bse_pcm_device_process (pdev, heart->latency);
@@ -882,13 +882,13 @@ bse_heart_dispatch (gpointer  source_data,
 	  BseHeartDevice *hdevice = heart->devices + i;
 	  BsePcmDevice *pdev = hdevice->device;
 	  
-	  if (BSE_PCM_DEVICE_READABLE (pdev) &&
+	  if (BSE_DEVICE_READABLE (pdev) &&
 	      bse_pcm_device_iqueue_peek (pdev) == NULL)
 	    {
 	      BseChunk *chunk = bse_chunk_new_static_zero (pdev->n_channels);
 	      
 	      g_message ("UNDERRUN detected for \"%s\", padding...\007",
-			 bse_pcm_device_get_device_name (pdev));
+			 bse_device_get_device_name (BSE_DEVICE (pdev)));
 	      
               bse_pcm_device_retrigger (pdev);
 	      bse_pcm_device_iqueue_push (pdev, chunk);
@@ -903,7 +903,7 @@ bse_heart_dispatch (gpointer  source_data,
 	  BseHeartDevice *hdevice = heart->devices + i;
 	  BsePcmDevice *pdev = hdevice->device;
 	  
-	  if (BSE_PCM_DEVICE_WRITABLE (pdev) && hdevice->n_osources)
+	  if (BSE_DEVICE_WRITABLE (pdev) && hdevice->n_osources)
 	    {
 	      BseChunk *chunk;
 	      GSList *slist = bse_heart_collect_chunks (heart, hdevice);
@@ -920,7 +920,7 @@ bse_heart_dispatch (gpointer  source_data,
 	  BseHeartDevice *hdevice = heart->devices + i;
 	  BsePcmDevice *pdev = hdevice->device;
 	  
-	  if (BSE_PCM_DEVICE_READABLE (pdev))
+	  if (BSE_DEVICE_READABLE (pdev))
 	    bse_pcm_device_iqueue_pop (pdev);
 	}
     }
@@ -931,11 +931,11 @@ bse_heart_dispatch (gpointer  source_data,
 	  BseHeartDevice *hdevice = heart->devices + i;
 	  BsePcmDevice *pdev = hdevice->device;
 	  
-	  if (BSE_PCM_DEVICE_READABLE (pdev) &&
+	  if (BSE_DEVICE_READABLE (pdev) &&
 	      pdev->iqueue && pdev->iqueue->next && pdev->iqueue->next->next) /* FIXME: msecs->chunks comparision */
 	    {
 	      g_message ("OVERRUN detected for \"%s\", skipping...\007",
-			 bse_pcm_device_get_device_name (pdev));
+			 bse_device_get_device_name (BSE_DEVICE (pdev)));
 	      
 	      while (pdev->iqueue->next)
 		bse_pcm_device_iqueue_pop (pdev);

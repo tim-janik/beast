@@ -33,6 +33,7 @@
 #include        <bse/bseconfig.h>
 #include        <bse/bsecontainer.h>
 #include        <bse/bsedefs.h>
+#include        <bse/bsedevice.h>
 #include        <bse/bseeffect.h>
 #include        <bse/bseeffectfinetune.h>
 #include        <bse/bseeffectnotevolume.h>

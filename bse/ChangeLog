@@ -1,3 +1,13 @@
+Thu Jan 13 18:12:51 2000  Tim Janik  <timj@gtk.org>
+
+	* bsedevice.[hc]: new object, taking over part of BsePcmDevice's
+	responsibilities as its parent type.
+
+	* bsepcmdevice.[hc]:
+	* bsepcmdevice-oss.[hc]:
+	* bsepcmdevice-alsa.[hc]: minor adaptions because of the hirarchy
+	change.
+
 Wed Jan 12 23:11:31 2000  Tim Janik  <timj@gtk.org>
 
 	* bseplugin.[hc]: exported enum types support.

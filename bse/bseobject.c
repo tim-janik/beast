@@ -1611,7 +1611,14 @@ bse_object_do_restore_private (BseObject  *object,
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
     return BSE_TOKEN_UNMATCHED;
   
-  /* ok, we got an identifier, try object parameter lookup */
+  /* ok, we got an identifier, try object parameter lookup
+   * we should in theory only get BSE_PARAM_SERVE_STORAGE
+   * parameters here, but due to version changes or even
+   * users editing their files, we will simply parse all
+   * kinds of parameters here (we might want to at least
+   * restrict them to BSE_PARAM_SERVE_STORAGE and
+   * BSE_PARAM_SERVE_GUI at some point...)
+   */
   pspec = bse_object_class_get_param_spec (BSE_OBJECT_GET_CLASS (object),
 					   scanner->next_value.v_identifier);
   if (!pspec)

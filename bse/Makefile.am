@@ -54,6 +54,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseconfig.h \
 	bsecontainer.h \
 	bsedefs.h \
+	bsedevice.h \
 	bseeffect.h \
 	bseeffectfinetune.h \
 	bseeffectnotevolume.h \
@@ -101,6 +102,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsecategories.c \
 	bsechunk.c \
 	bsecontainer.c \
+	bsedevice.c \
 	bseeffect.c \
 	bseeffectfinetune.c \
 	bseeffectnotevolume.c \

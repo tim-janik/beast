@@ -20,7 +20,7 @@
 #ifndef __BSE_PCM_DEVICE_H__
 #define __BSE_PCM_DEVICE_H__
 
-#include        <bse/bseobject.h>
+#include        <bse/bsedevice.h>
 
 
 #ifdef __cplusplus
@@ -39,24 +39,16 @@ extern "C" {
 
 /* --- object member/convenience macros --- */
 #define BSE_PCM_DEVICE_HAS_CAPS(pdev)    ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_HAS_CAPS) != 0)
-#define BSE_PCM_DEVICE_OPEN(pdev)        ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_OPEN) != 0)
-#define BSE_PCM_DEVICE_READABLE(pdev)    ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_READABLE) != 0)
-#define BSE_PCM_DEVICE_WRITABLE(pdev)    ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_WRITABLE) != 0)
-#define BSE_PCM_DEVICE_REGISTERED(pdev)  ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_REGISTERED) != 0)
 #define BSE_PCM_DEVICE_STATE_SYNC(pdev)  ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_STATE_SYNC) != 0)
 
 
 /* --- PcmDevice flags --- */
 typedef enum
 {
-  BSE_PCM_FLAG_HAS_CAPS   = (1 << (BSE_OBJECT_FLAGS_USHIFT + 0)),
-  BSE_PCM_FLAG_OPEN	  = (1 << (BSE_OBJECT_FLAGS_USHIFT + 1)),
-  BSE_PCM_FLAG_READABLE   = (1 << (BSE_OBJECT_FLAGS_USHIFT + 2)),
-  BSE_PCM_FLAG_WRITABLE   = (1 << (BSE_OBJECT_FLAGS_USHIFT + 3)),
-  BSE_PCM_FLAG_REGISTERED = (1 << (BSE_OBJECT_FLAGS_USHIFT + 4)),
-  BSE_PCM_FLAG_STATE_SYNC = (1 << (BSE_OBJECT_FLAGS_USHIFT + 5))
-} BsePcmFlags;
-#define BSE_PCM_FLAGS_USHIFT     (BSE_OBJECT_FLAGS_USHIFT + 6)
+  BSE_PCM_FLAG_HAS_CAPS   = (1 << (BSE_DEVICE_FLAGS_USHIFT + 0)),
+  BSE_PCM_FLAG_STATE_SYNC = (1 << (BSE_DEVICE_FLAGS_USHIFT + 1))
+} BsePcmDeviceFlags;
+#define BSE_PCM_FLAGS_USHIFT     (BSE_DEVICE_FLAGS_USHIFT + 2)
 
 
 /* --- possible frequencies --- */
@@ -95,12 +87,9 @@ struct _BsePcmCapabilities
 };
 struct _BsePcmDevice
 {
-  BseObject	     parent_object;
+  BseDevice	     parent_object;
 
-  BseErrorType	     last_error;
   BsePcmCapabilities caps;
-
-  GPollFD	     pfd;
 
   /* current state */
   guint              n_channels;
@@ -117,10 +106,8 @@ struct _BsePcmDevice
 };
 struct _BsePcmDeviceClass
 {
-  BseObjectClass  parent_class;
+  BseDeviceClass parent_class;
 
-  gchar*	(*device_name)	(BsePcmDevice	*pdev,
-				 gboolean	 descriptive);
   BseErrorType	(*update_caps)	(BsePcmDevice	*pdev);
   BseErrorType	(*open)		(BsePcmDevice	*pdev,
 				 gboolean	 readable,
@@ -130,19 +117,10 @@ struct _BsePcmDeviceClass
 				 guint           fragment_size);
   void		(*update_state)	(BsePcmDevice	*pdev);
   void		(*retrigger)	(BsePcmDevice	*pdev);
-  guint		(*read)		(BsePcmDevice	*pdev,
-				 guint		 n_bytes,
-				 guint8		*bytes);
-  guint		(*write)	(BsePcmDevice	*pdev,
-				 guint		 n_bytes,
-				 guint8		*bytes);
-  void		(*close)	(BsePcmDevice	*pdev);
 };
 
 
 /* --- prototypes --- */
-gchar*		bse_pcm_device_get_device_name   (BsePcmDevice	 *pdev);
-gchar*		bse_pcm_device_get_device_blurb  (BsePcmDevice	 *pdev);
 BseErrorType 	bse_pcm_device_update_caps	 (BsePcmDevice	 *pdev);
 void	 	bse_pcm_device_invalidate_caps	 (BsePcmDevice	 *pdev);
 BseErrorType 	bse_pcm_device_open		 (BsePcmDevice	 *pdev,
@@ -150,7 +128,6 @@ BseErrorType 	bse_pcm_device_open		 (BsePcmDevice	 *pdev,
 						  gboolean	  writable,
 						  guint           n_channels,
 						  gdouble         sample_freq);
-void	     	bse_pcm_device_close		 (BsePcmDevice	 *pdev);
 void	     	bse_pcm_device_retrigger	 (BsePcmDevice	 *pdev);
 void	     	bse_pcm_device_read		 (BsePcmDevice	 *pdev,
 						  guint		  n_values,
