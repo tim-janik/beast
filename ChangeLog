@@ -1,3 +1,7 @@
+Sun Jan  2 13:28:50 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/architecture.texi: Started documenting xinfos for wave files.
+
 Fri Dec 31 14:15:08 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Added casts to fix signedness compiler
