@@ -1,3 +1,7 @@
+Mon Dec  6 03:21:54 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_entry_key_press): fixed minor bug.
+
 Mon Dec  6 02:35:37 1999  Tim Janik  <timj@gtk.org>
 
 	* configure.in: removed gle dependancy.

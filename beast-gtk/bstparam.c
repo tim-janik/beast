@@ -242,7 +242,8 @@ bst_entry_key_press (GtkWidget   *entry,
       case GDK_Down:
       case GDK_KP_Down:
 	/* bst_param_gtk_update (bparam); */
-	bst_param_gtk_changed (bparam);
+	if (!gtk_grab_get_current ())	/* don't confuse clue hunter */
+	  bst_param_gtk_changed (bparam);
 	break;
       default:
 	break;
