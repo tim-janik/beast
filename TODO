@@ -1,7 +1,15 @@
 FIXMES:
-- add menu item for scripts
-- add menu item for demo song
-- add menu item for instruments
+- add toplevel menu /Synthesizers/:
+  /Synthesizers/Load from Effect Library
+  /Synthesizers/Load from Instrument Library
+  /Synthesizers/Save to Effect Library
+  /Synthesizers/Save to Instrument Library
+  /Synthesizers/Custom Export
+  /Synthesizers/Custom Import
+  which operate on the currently selected synth (project child)
+  /Synthesizers/Demo
+  alternatively, introduce /Insert/ toplevel menu
+- fix raising/falling edge detection in SynDrum. rename SynDrum category
 - allow extra plugin path in env variable and rc file
 - make multiple notes visible in piano roll
 - add Songs/Scripts
@@ -111,12 +119,6 @@ TODO:
 - prop flag: SFI_PARAM_SKIP_DEFAULT
 - implement humanizer scheme script that offsets notes by a few random ticks
 - add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
-- add toplevel menu item "Synth" with items:
-  - Export to Effect Library
-  - Export to Instrument Library
-  - Export to Custom Library
-  - Export (+File dialog)
-  which saves the currently selected synth (project child)
 - support loading of Effects from Effect Library directory from a button in the router/rackview display
 - add "Insert Property" menu to rack view which lists all objects and their proeprties hirachically
 - object tree backbone/trunk/tribe type for project, server and workbench
