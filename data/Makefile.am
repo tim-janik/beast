@@ -114,6 +114,3 @@ config-paths.h: $(top_builddir)/config.status Makefile
 	&& echo "/* Generated data ends here */" >> xgen-cph \
 	&& (cp xgen-cph $@) \
 	&& rm -f xgen-cph
-foo:
-	echo EXTRA_DIST= $(EXTRA_DIST)
-        
