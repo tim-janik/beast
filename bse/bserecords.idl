@@ -32,6 +32,7 @@ Const SKIP_UNDO = ":skip-undo:";
 
 Const STANDARD = DEFAULT;
 
+using namespace Sfi;
 
 choice MidiSignalType {
   /* special cased signals */

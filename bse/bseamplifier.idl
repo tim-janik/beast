@@ -21,6 +21,7 @@
 namespace Bse { // FIXME: bad workaround
 class Effect;
 Const STANDARD = ":r:w:G:S:";
+using namespace Sfi;
 };
 
 namespace Bse {
