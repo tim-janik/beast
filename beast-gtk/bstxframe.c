@@ -138,7 +138,7 @@ bst_xframe_init (BstXFrame *xframe)
   xframe->button_down = 0;
   xframe->allocation_valid = FALSE;
   xframe->entered = FALSE;
-  g_object_set (xframe, "shadow_type", GTK_SHADOW_NONE, NULL);
+  g_object_set (xframe, "visible", TRUE, "shadow_type", GTK_SHADOW_NONE, NULL);
 }
 
 static void

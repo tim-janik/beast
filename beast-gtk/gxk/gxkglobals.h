@@ -24,15 +24,24 @@
 
 G_BEGIN_DECLS
 
+/* --- i18n and gettext helpers --- */
+#ifdef GXK_COMPILATION
+#  define GXK_I18N_DOMAIN NULL
+#  define _(str)        dgettext (GXK_I18N_DOMAIN, str)
+#  define T_(str)       dgettext (GXK_I18N_DOMAIN, str)
+#  define N_(str)       (str)
+#endif
+
+
+/* --- macros --- */
+#define	GXK_TOOLTIPS	(gxk_globals->tooltips)
+
+
 /* --- structures --- */
 typedef struct
 {
   GtkTooltips *tooltips;
 } GxkGlobals;
-
-
-/* --- macros --- */
-#define	GXK_TOOLTIPS	(gxk_globals->tooltips)
 
 
 /* --- spacing/padding --- */
@@ -59,6 +68,7 @@ void	gxk_init	(void);
 
 /* --- internal --- */
 void	_gxk_init_utils		(void);
+void	_gxk_init_params	(void);
 void	_gxk_init_stock		(void);
 void	_gxk_init_actions	(void);
 void	_gxk_init_gadget_types	(void);

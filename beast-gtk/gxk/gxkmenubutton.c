@@ -203,6 +203,39 @@ gxk_menu_item_get_type (void)
 }
 
 
+/* --- GxkFreeRadioButton --- */
+static void
+gxk_free_radio_button_class_init (GxkFreeRadioButtonClass *class)
+{
+  GtkCheckButtonClass *gtk_check_button_class = g_type_class_ref (GTK_TYPE_CHECK_BUTTON);
+  GtkButtonClass *button_class = GTK_BUTTON_CLASS (class);
+  button_class->clicked = GTK_BUTTON_CLASS (gtk_check_button_class)->clicked;
+  g_type_class_unref (gtk_check_button_class);
+}
+
+GType
+gxk_free_radio_button_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      static const GTypeInfo type_info = {
+        sizeof (GxkFreeRadioButtonClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) gxk_free_radio_button_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (GxkFreeRadioButton),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      type = g_type_register_static (GTK_TYPE_RADIO_BUTTON, "GxkFreeRadioButton", &type_info, 0);
+    }
+  return type;
+}
+
+
 /* --- GxkImage --- */
 enum {
   IMAGE_PROP_0,
@@ -559,10 +592,11 @@ enum {
   MENU_BUTTON_PROP_0,
   MENU_BUTTON_PROP_MENU,
   MENU_BUTTON_PROP_COMBO_ARROW,
+  MENU_BUTTON_PROP_PUSH_IN,
   MENU_BUTTON_PROP_STOCK_SIZE,
   MENU_BUTTON_PROP_SHOW_SELECTION
 };
-
+static guint menu_button_signal_changed = 0;
 static void     menu_button_remove_contents          (GxkMenuButton       *self);
 static void
 menu_button_popup (GxkMenuButton *self,
@@ -583,7 +617,7 @@ menu_button_popup (GxkMenuButton *self,
   gdk_window_get_origin (widget->window, &x, &y);
   x += widget->allocation.x;
   y += widget->allocation.y;
-  gxk_menu_popup (self->menu, x, y, FALSE, button, event ? gdk_event_get_time (event) : 0);
+  gxk_menu_popup (self->menu, x, y, self->push_in, button, event ? gdk_event_get_time (event) : 0);
   menu_item = gtk_menu_get_active (self->menu);
   if (menu_item)
     gtk_menu_shell_select_item (GTK_MENU_SHELL (self->menu), menu_item);
@@ -687,6 +721,7 @@ menu_button_remove_contents (GxkMenuButton *self)
 void
 gxk_menu_button_update (GxkMenuButton *self)
 {
+  GtkWidget *old_menu_item = self->menu_item;
   if (self->menu)
     {
       menu_button_remove_contents (self);
@@ -727,6 +762,8 @@ gxk_menu_button_update (GxkMenuButton *self)
             }
         }
     }
+  if (old_menu_item != self->menu_item)
+    g_signal_emit (self, menu_button_signal_changed, 0);
 }
 
 static void
@@ -805,6 +842,9 @@ gxk_menu_button_set_property (GObject      *object,
                               FALSE, TRUE, 0);
         }
       break;
+    case MENU_BUTTON_PROP_PUSH_IN:
+      self->push_in = g_value_get_boolean (value);
+      break;
     case MENU_BUTTON_PROP_STOCK_SIZE:
       cstr = g_value_get_string (value);
       if (cstr)
@@ -858,12 +898,17 @@ gxk_menu_button_class_init (GxkMenuButtonClass *class)
   g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_MENU,
                                    g_param_spec_object ("menu", NULL, NULL, GTK_TYPE_MENU, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_COMBO_ARROW,
-                                   g_param_spec_boolean ("combo-arrow", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+                                   g_param_spec_boolean ("combo-arrow", NULL, NULL, TRUE, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT));
+  g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_PUSH_IN,
+                                   g_param_spec_boolean ("push-in", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_STOCK_SIZE,
                                    g_param_spec_string ("stock-size", NULL, NULL, NULL, G_PARAM_WRITABLE));
   widget_class->button_press_event = menu_button_button_press;
   widget_class->key_press_event = menu_button_key_press;
   widget_class->mnemonic_activate = menu_button_mnemonic_activate;
+  menu_button_signal_changed = g_signal_new ("changed", G_OBJECT_CLASS_TYPE (class),
+                                             G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                                             gtk_signal_default_marshaller, G_TYPE_NONE, 0);
 }
 
 GType

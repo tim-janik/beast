@@ -551,7 +551,8 @@ bst_early_parse_args (int    *argc_p,
 	  exit (0);
 	}
     }
-  
+  gxk_param_set_devel_tips (bst_developer_hints);
+
   e = 0;
   for (i = 1; i < argc; i++)
     {

@@ -2496,6 +2496,41 @@ gxk_menu_attach_as_submenu (GtkMenu     *menu,
 }
 
 static void
+option_menu_propagate_hierarchy_changed (GtkOptionMenu *option_menu)
+{
+  GtkWidget *menu = option_menu->menu;
+  if (menu)
+    menu_propagate_hierarchy_changed (GTK_MENU (menu));
+}
+
+/**
+ * gxk_option_menu_set_menu
+ * @option_menu: valid #GtkOptionMenu
+ * @menu:        valid #GtkMenu
+ *
+ * This function is a replacement for
+ * gtk_option_menu_set_menu(). Similar to
+ * gxk_menu_attach_as_submenu(), it sets up
+ * a propagation mechanism, so @menu
+ * and submenus thereof automatically fetch their
+ * accelerator groups via gxk_window_get_menu_accel_group()
+ * from the toplevel window.
+ */
+void
+gxk_option_menu_set_menu (GtkOptionMenu *option_menu,
+                          GtkMenu       *menu)
+{
+  g_return_if_fail (GTK_IS_OPTION_MENU (option_menu));
+  g_return_if_fail (GTK_IS_MENU (menu));
+
+  gtk_option_menu_set_menu (option_menu, GTK_WIDGET (menu));
+
+  if (!gxk_signal_handler_pending (option_menu, "hierarchy-changed", G_CALLBACK (option_menu_propagate_hierarchy_changed), NULL))
+    g_signal_connect_after (option_menu, "hierarchy-changed", G_CALLBACK (option_menu_propagate_hierarchy_changed), NULL);
+  option_menu_propagate_hierarchy_changed (option_menu);
+}
+
+static void
 menu_propagate_hierarchy_changed (GtkMenu *menu)
 {
   GList *list;
@@ -2603,9 +2638,26 @@ menu_position_func (GtkMenu  *menu,
                     gpointer  func_data)
 {
   PopupData *pdata = func_data;
+  GtkWidget *active = gtk_menu_get_active (menu);
   *x = pdata->x;
   *y = pdata->y;
-  *push_in = pdata->push_in;
+  *push_in = pdata->push_in && active;
+  if (*push_in)
+    {
+      GList *list;
+      for (list = GTK_MENU_SHELL (menu)->children; list; list = list->next)
+        {
+          GtkWidget *child = list->data;
+          if (active == child)
+            break;
+          else if (GTK_WIDGET_VISIBLE (child))
+            {
+              GtkRequisition requisition;
+              gtk_widget_get_child_requisition (child, &requisition);
+              *y -= requisition.height;
+            }
+        }
+    }
 }
 
 void
@@ -2719,6 +2771,121 @@ gxk_widget_get_attach_toplevel (GtkWidget *widget)
     widget = parent ? parent : widget;
   } while (parent);
   return widget;
+}
+
+static void
+widget_add_font_requisition (GtkWidget      *widget,
+                             GtkRequisition *requisition)
+{
+  PangoContext *context = gtk_widget_get_pango_context (widget);
+  PangoFontMetrics *metrics = pango_context_get_metrics (context, widget->style->font_desc,
+                                                         pango_context_get_language (context));
+  gdouble digit_width = pango_font_metrics_get_approximate_digit_width (metrics);
+  gdouble char_width = pango_font_metrics_get_approximate_char_width (metrics);
+  gdouble points = digit_width * g_object_get_long (widget, "GxkWidget-font-digits") +
+                   char_width * g_object_get_long (widget, "GxkWidget-font-chars");
+  requisition->width += PANGO_PIXELS (points);
+  pango_font_metrics_unref (metrics);
+}
+
+/**
+ * gxk_widget_add_font_requisition
+ * @widget:   valid #GtkWidget
+ * @n_chars:  number of characters to request space for
+ * @n_digits: number of digits to request space for
+ *
+ * This function adds up extra space to the widget size
+ * requisition. The space is an approximation of the space
+ * required by @n_chars characters and @n_digits digits
+ * written with the widgets font.
+ */
+void
+gxk_widget_add_font_requisition (GtkWidget       *widget,
+                                 guint            n_chars,
+                                 guint            n_digits)
+{
+  g_object_set_long (widget, "GxkWidget-font-chars", n_chars);
+  g_object_set_long (widget, "GxkWidget-font-digits", n_digits);
+  if ((n_chars || n_digits) &&
+      !gxk_signal_handler_pending (widget, "size-request", G_CALLBACK (widget_add_font_requisition), NULL))
+    g_signal_connect_after (widget, "size-request", G_CALLBACK (widget_add_font_requisition), NULL);
+  gtk_widget_queue_resize (widget);
+}
+
+/**
+ * gxk_widget_get_options
+ * @widget:   valid #GtkWidget
+ * @RETURNS:  custom options set on the widget
+ *
+ * This function returns the set of custom options
+ * currently set on the widget.
+ */
+const gchar*
+gxk_widget_get_options (gpointer widget)
+{
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
+  return g_object_get_data (widget, "GxkWidget-options");
+}
+
+/**
+ * gxk_widget_add_option
+ * @widget:   valid #GtkWidget
+ * @option:   option to add to widget
+ * @value:    value of @option (currently just "+" and "-" are supported)
+ *
+ * Add/set a custom @option of @widget to a particular @value.
+ * Custom options on widgets are used to attach extra information
+ * to widgets which may be usefull to otherwise disjoint code
+ * portions. The actual options are implemented by means of
+ * g_option_concat(), g_option_check() and g_option_get().
+ */
+void
+gxk_widget_add_option (gpointer         widget,
+                       const gchar     *option,
+                       const gchar     *value)
+{
+  const gchar *options;
+  guint append = 0;
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_return_if_fail (option != NULL && !strchr (option, ':'));
+  g_return_if_fail (value == NULL || !strcmp (value, "-") || !strcmp (value, "+"));
+  options = g_object_get_data (widget, "GxkWidget-options");
+  if (!options)
+    options = "";
+  if (value && strcmp (value, "-") == 0 &&
+      g_option_check (options, option))
+    append = 2;
+  else if ((!value || strcmp (value, "+") == 0) &&
+           !g_option_check (options, option))
+    append = 1;
+  if (append)
+    {
+      guint l = strlen (options);
+      gchar *s = g_strconcat (options,
+                              options[l] == ':' ? "" : ":",
+                              option, /* append >= 1 */
+                              append >= 2 ? value : "",
+                              NULL);
+      g_object_set_data_full (widget, "GxkWidget-options", s, g_free);
+    }
+}
+
+/**
+ * gxk_widget_check_option
+ * @widget:   valid #GtkWidget
+ * @option:   option to check for
+ * @RETURNS:  whether @option is set
+ *
+ * Test whether the custom @option is set on @widget.
+ */
+gboolean
+gxk_widget_check_option (gpointer         widget,
+                         const gchar     *option)
+{
+  const gchar *options;
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+  options = g_object_get_data (widget, "GxkWidget-options");
+  return g_option_check (options, option);
 }
 
 GtkWidget*

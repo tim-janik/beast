@@ -50,6 +50,8 @@ gboolean        gxk_widget_regulate_uses_active    (GtkWidget       *widget);
 gboolean        gxk_menu_check_sensitive           (GtkMenu         *menu);
 void            gxk_menu_attach_as_submenu         (GtkMenu         *menu,
                                                     GtkMenuItem     *menu_item);
+void            gxk_option_menu_set_menu           (GtkOptionMenu   *option_menu,
+                                                    GtkMenu         *menu);
 void            gxk_menu_attach_as_popup           (GtkMenu         *menu,
                                                     GtkWidget       *widget);
 void            gxk_menu_attach_as_popup_with_func (GtkMenu         *menu,
@@ -64,6 +66,15 @@ void            gxk_menu_popup                     (GtkMenu         *menu,
 GtkWidget*      gxk_widget_find_level_ordered      (GtkWidget       *toplevel,
                                                     const gchar     *name);
 GtkWidget*      gxk_widget_get_attach_toplevel     (GtkWidget       *widget);
+void            gxk_widget_add_font_requisition    (GtkWidget       *widget,
+                                                    guint            n_chars,
+                                                    guint            n_digits);
+void            gxk_widget_add_option              (gpointer         widget,
+                                                    const gchar     *option,
+                                                    const gchar     *value);
+gboolean        gxk_widget_check_option            (gpointer         widget,
+                                                    const gchar     *option);
+const gchar*    gxk_widget_get_options             (gpointer         widget);
 void            gxk_window_set_menu_accel_group    (GtkWindow       *window,
                                                     GtkAccelGroup   *agroup);
 GtkAccelGroup*  gxk_window_get_menu_accel_group    (GtkWindow       *window);
@@ -75,6 +86,7 @@ void            gxk_window_set_geometry_width_inc  (GtkWindow       *window,
                                                     guint            width_increment);
 void            gxk_window_set_geometry_height_inc (GtkWindow       *window,
                                                     guint            height_increment);
+
 guint           gxk_container_get_insertion_slot   (GtkContainer    *container);
 void            gxk_container_slot_reorder_child   (GtkContainer    *container,
                                                     GtkWidget       *widget,

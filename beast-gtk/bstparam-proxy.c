@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,7 @@
 #include "bstcluehunter.h"
 #include <string.h>
 
-
-/* --- proxy parameters --- */
+/* --- SfiProxy parameter editors --- */
 typedef struct {
   BseProxySeq *pseq;
   gchar      **paths;
@@ -37,11 +36,12 @@ param_proxy_free_population (gpointer p)
 
 static void
 param_proxy_populate (GtkWidget *chunter,
-		      BstParam  *bparam)
+		      GxkParam  *param)
 {
   BstClueHunter *ch = BST_CLUE_HUNTER (chunter);
   ParamProxyPopulation *pop = NULL;
-  BseProxySeq *pseq;
+  BseProxySeq *pseq = NULL;
+  SfiProxy proxy;
   gchar *p;
   guint i, l;
 
@@ -49,11 +49,13 @@ param_proxy_populate (GtkWidget *chunter,
   bst_clue_hunter_remove_matches (ch, "*");
 
   /* list candidates */
-  pseq = bparam->binding->list_proxies (bparam);
+  proxy = bst_param_get_proxy (param);
+  if (proxy)
+    pseq = bse_item_list_proxies (proxy, param->pspec->name);
   if (pseq)
     {
       pop = g_new (ParamProxyPopulation, 1);
-      pop->pseq = pseq;
+      pop->pseq = bse_proxy_seq_copy_shallow (pseq);
       pop->paths = NULL;
       pop->prefix = NULL;
       /* go from object to path name */
@@ -103,14 +105,14 @@ param_proxy_populate (GtkWidget *chunter,
 }
 
 static void
-param_proxy_change_value (GtkWidget *action,
-			  BstParam  *bparam)
+param_proxy_changed (GtkWidget *entry,
+                     GxkParam  *param)
 {
-  if (!bparam->updating)
+  if (!param->updating)
     {
-      GtkWidget *chunter = bst_clue_hunter_from_entry (action);
+      GtkWidget *chunter = bst_clue_hunter_from_entry (entry);
       ParamProxyPopulation *pop = g_object_get_data (G_OBJECT (chunter), "pop");
-      gchar *string = g_strdup_stripped (gtk_entry_get_text (GTK_ENTRY (action)));
+      gchar *string = g_strdup_stripped (gtk_entry_get_text (GTK_ENTRY (entry)));
       SfiProxy item = 0;
       if (pop)
 	{
@@ -157,13 +159,13 @@ param_proxy_change_value (GtkWidget *action,
 	      }
 	}
       /* we get lots of notifications from focus-out, so try to optimize */
-      if (sfi_value_get_proxy (&bparam->value) != item)
+      if (sfi_value_get_proxy (&param->value) != item)
 	{
-	  sfi_value_set_proxy (&bparam->value, item);
-	  bst_param_apply_value (bparam);
+	  sfi_value_set_proxy (&param->value, item);
+	  gxk_param_apply_value (param);
 	}
       else if (!item && string[0]) /* make sure the entry is correctly updated */
-        bst_param_update (bparam);
+        gxk_param_update (param);
       g_free (string);
     }
 }
@@ -199,92 +201,46 @@ bst_proxy_seq_list_match (GSList      *proxy_seq_slist,
   return tmatch ? tmatch : cmatch ? cmatch : tcmatch;
 }
 
-static gboolean
-param_proxy_focus_out (GtkWidget     *entry,
-		       GdkEventFocus *event,
-		       BstParam      *bparam)
-{
-  param_proxy_change_value (entry, bparam);
-  return FALSE;
-}
-
 static GtkWidget*
-param_proxy_create_action (BstParam   *bparam,
-			   GtkWidget **post_action)
+param_proxy_create (GxkParam    *param,
+                    const gchar *tooltip,
+                    guint        variant)
 {
-  GtkWidget *action = g_object_new (GTK_TYPE_ENTRY,
-				    "visible", TRUE,
-				    "width_request", 250,
+  GtkWidget *box = gtk_hbox_new (FALSE, 0);
+  GtkWidget *widget = g_object_new (GTK_TYPE_ENTRY,
 				    "activates_default", TRUE,
+                                    "parent", box,
+                                    "width_chars", 0,
 				    NULL);
   GtkWidget *chunter = g_object_new (BST_TYPE_CLUE_HUNTER,
 				     "keep_history", FALSE,
-				     "entry", action,
-				     "user_data", bparam,
+				     "entry", widget,
+				     "user_data", param,
+                                     "align-widget", box,
 				     NULL);
-  g_object_connect (action,
-		    "signal::key_press_event", bst_param_entry_key_press, NULL,
-		    "signal::activate", param_proxy_change_value, bparam,
-		    "signal::focus_out_event", param_proxy_focus_out, bparam,
-		    NULL);
+  GtkWidget *arrow;
+  gxk_widget_add_font_requisition (widget, 16, 2);
+  gxk_param_entry_connect_handlers (param, widget, param_proxy_changed);
   g_object_connect (chunter,
-		    "signal::poll_refresh", param_proxy_populate, bparam,
+		    "signal::poll_refresh", param_proxy_populate, param,
 		    NULL);
-
-  if (post_action)
-    *post_action = bst_clue_hunter_create_arrow (BST_CLUE_HUNTER (chunter));
-
-  return action;
-}
-
-static BstGMask*
-param_proxy_create_gmask (BstParam    *bparam,
-			  const gchar *tooltip,
-			  GtkWidget   *gmask_parent)
-{
-  GtkWidget *action, *prompt, *xframe, *post_action;
-  BstGMask *gmask;
-  
-  action = param_proxy_create_action (bparam, &post_action);
-  
-  xframe = g_object_new (BST_TYPE_XFRAME,
-			 "visible", TRUE,
-			 "cover", action,
-			 NULL);
-  g_object_connect (xframe,
-		    "swapped_signal::button_check", bst_param_xframe_check_button, bparam,
-		    NULL);
-  prompt = g_object_new (GTK_TYPE_LABEL,
-			 "visible", TRUE,
-			 "label", g_param_spec_get_nick (bparam->pspec),
-			 "xalign", 0.0,
-			 "parent", xframe,
-			 NULL);
-
-  gmask = bst_gmask_form (gmask_parent, action, BST_GMASK_INTERLEAVE);
-  bst_gmask_set_prompt (gmask, prompt);
-  bst_gmask_set_atail (gmask, post_action);
-  bst_gmask_set_tip (gmask, tooltip);
-  
-  return gmask;
-}
-
-static GtkWidget*
-param_proxy_create_widget (BstParam    *bparam,
-			   const gchar *tooltip)
-{
-  GtkWidget *action = param_proxy_create_action (bparam, NULL);
-  
-  return action;
+  arrow = bst_clue_hunter_create_arrow (BST_CLUE_HUNTER (chunter));
+  gtk_box_pack_end (GTK_BOX (box), arrow, FALSE, TRUE, 0);
+  gtk_widget_show_all (box);
+  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  gtk_tooltips_set_tip (GXK_TOOLTIPS, arrow, tooltip, NULL);
+  gxk_widget_add_option (box, "hexpand", "+");
+  return box;
 }
 
 static void
-param_proxy_update (BstParam  *bparam,
-		    GtkWidget *action)
+param_proxy_update (GxkParam  *param,
+		    GtkWidget *box)
 {
-  SfiProxy item = sfi_value_get_proxy (&bparam->value);
+  SfiProxy item = sfi_value_get_proxy (&param->value);
   const gchar *cstring = item ? bse_item_get_uname_path (item) : NULL;
-  GtkWidget *chunter = bst_clue_hunter_from_entry (action);
+  GtkWidget *entry = ((GtkBoxChild*) GTK_BOX (box)->children->data)->widget;
+  GtkWidget *chunter = bst_clue_hunter_from_entry (entry);
 
   if (cstring && chunter)
     {
@@ -292,7 +248,7 @@ param_proxy_update (BstParam  *bparam,
       if (!pop)
 	{
 	  /* try populating now */
-	  param_proxy_populate (chunter, bparam);
+	  param_proxy_populate (chunter, param);
 	  pop = g_object_get_data (G_OBJECT (chunter), "pop");
 	}
       if (pop)
@@ -306,7 +262,7 @@ param_proxy_update (BstParam  *bparam,
 	      else
 		{
 		  /* prefix became invalid */
-		  param_proxy_populate (chunter, bparam);
+		  param_proxy_populate (chunter, param);
 		  pop = g_object_get_data (G_OBJECT (chunter), "pop");
 		  if (pop && pop->prefix)
 		    {
@@ -322,27 +278,16 @@ param_proxy_update (BstParam  *bparam,
 		}
 	    }
 	}
-      if (strcmp (gtk_entry_get_text (GTK_ENTRY (action)), cstring))
-	gtk_entry_set_text (GTK_ENTRY (action), cstring);
+      if (strcmp (gtk_entry_get_text (GTK_ENTRY (entry)), cstring))
+	gtk_entry_set_text (GTK_ENTRY (entry), cstring);
     }
-  else if (strcmp (gtk_entry_get_text (GTK_ENTRY (action)), ""))
-    gtk_entry_set_text (GTK_ENTRY (action), "");
+  else if (strcmp (gtk_entry_get_text (GTK_ENTRY (entry)), ""))
+    gtk_entry_set_text (GTK_ENTRY (entry), "");
 }
 
-struct _BstParamImpl param_proxy = {
-  "Proxy",		+5 /* rating */,
-  0 /* variant */,	BST_PARAM_EDITABLE | BST_PARAM_PROXY_LIST,
-  SFI_SCAT_PROXY,	NULL /* hints */,
-  param_proxy_create_gmask,
-  NULL, /* create_widget */
-  param_proxy_update,
-};
-
-struct _BstParamImpl rack_proxy = {
-  "Proxy",		+5 /* rating */,
-  0 /* variant */,	BST_PARAM_EDITABLE | BST_PARAM_PROXY_LIST,
-  SFI_SCAT_PROXY,	NULL /* hints */,
-  NULL, /* create_gmask */
-  param_proxy_create_widget,
-  param_proxy_update,
+static GxkParamEditor param_proxy = {
+  { "proxy",            N_("Object Drop Down Box"), },
+  { G_TYPE_POINTER,     "SfiProxy", },
+  { NULL,       +5,     TRUE, },        /* options, rating, editing */
+  param_proxy_create,   param_proxy_update,
 };

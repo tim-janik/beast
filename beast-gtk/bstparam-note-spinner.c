@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,122 +17,54 @@
  */
 
 
-/* --- numeric parameters --- */
-static void
-param_note_spinner_change_value (GtkAdjustment *adjustment,
-				 BstParam      *bparam)
+/* --- note parameter editors --- */
+static gint
+param_note_spinner_input (GtkSpinButton *spin_button,
+                          gdouble       *svalue,
+                          GxkParam      *param)
 {
-  if (!bparam->updating)
-    {
-      sfi_value_set_note (&bparam->value, adjustment->value);
-      bst_param_apply_value (bparam);
-    }
+  const gchar *string = gtk_entry_get_text (GTK_ENTRY (spin_button));
+  gchar *error;
+  *svalue = sfi_note_from_string_err (string, &error);
+  g_free (error);
+  return error ? GTK_INPUT_ERROR : TRUE;
+}
+
+static gint
+param_note_spinner_output (GtkSpinButton *spin_button,
+                           GxkParam      *param)
+{
+  gchar *string = sfi_note_to_string (spin_button->adjustment->value);
+  gxk_param_entry_set_text (param, GTK_WIDGET (spin_button), string);
+  g_free (string);
+  return TRUE;
 }
 
 static GtkWidget*
-param_note_spinner_setup (BstParam *bparam)
+param_note_spinner_create (GxkParam    *param,
+                           const gchar *tooltip,
+                           guint        variant)
 {
-  GParamSpec *pspec = bparam->pspec;
-  SfiInt iminimum, imaximum, istepping;
-  gpointer adjustment;
-  GtkWidget *spinner;
-  
-  sfi_pspec_get_int_range (pspec, &iminimum, &imaximum, &istepping);
-  adjustment = gtk_adjustment_new (sfi_pspec_get_int_default (pspec),
-				   iminimum, imaximum,
-				   MIN (1, istepping),
-				   MAX (12, istepping),
-				   0);
-  spinner = gtk_spin_button_new (adjustment, 0, 0);
-  
-  /* we need to be notified *after* the spinner so the
-   * spinner's value is already updated
-   */
-  g_object_connect (adjustment,
-		    "signal_after::value-changed", param_note_spinner_change_value, bparam,
-		    NULL);
-  return spinner;
+  GtkAdjustment *adjustment = gxk_param_get_adjustment (param);
+  GtkWidget *widget = gtk_spin_button_new (adjustment, 0, 0);
+  g_object_set (widget,
+                "visible", TRUE,
+                "activates_default", TRUE,
+                "width_chars", 0,
+                NULL);
+  gxk_widget_add_font_requisition (widget, 4+1, 1+1);
+  gxk_param_entry_connect_handlers (param, widget, NULL);
+  g_object_connect (widget,
+                    "signal::input", param_note_spinner_input, param,
+                    "signal::output", param_note_spinner_output, param,
+                    NULL);
+  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  return widget;
 }
 
-static BstGMask*
-param_note_spinner_create_gmask (BstParam    *bparam,
-				 const gchar *tooltip,
-				 GtkWidget   *gmask_parent)
-{
-  GtkWidget *action = NULL, *prompt, *xframe;
-  BstGMask *gmask;
-  
-  action = param_note_spinner_setup (bparam);
-  g_object_set (action,
-		"visible", TRUE,
-		"width_request", 60,
-		"activates_default", TRUE,
-		NULL);
-  g_object_connect (action,
-		    "signal::key_press_event", bst_param_entry_key_press, NULL,
-		    NULL);
-  
-  xframe = g_object_new (BST_TYPE_XFRAME,
-			 "visible", TRUE,
-			 "cover", action,
-			 NULL);
-  g_object_connect (xframe,
-		    "swapped_signal::button_check", bst_param_xframe_check_button, bparam,
-		    NULL);
-  prompt = g_object_new (GTK_TYPE_LABEL,
-			 "visible", TRUE,
-			 "label", g_param_spec_get_nick (bparam->pspec),
-			 "xalign", 0.0,
-			 "parent", xframe,
-			 NULL);
-  
-  gmask = bst_gmask_form (gmask_parent, action, 0);
-  bst_gmask_set_prompt (gmask, prompt);
-  bst_gmask_set_tip (gmask, tooltip);
-  
-  return gmask;
-}
-
-static GtkWidget*
-param_note_spinner_create_widget (BstParam    *bparam,
-				  const gchar *tooltip)
-{
-  GtkWidget *action = param_note_spinner_setup (bparam);
-  
-  g_object_set (action,
-		"visible", TRUE,
-		"width_request", 60,
-		"activates_default", TRUE,
-		NULL);
-  g_object_connect (action,
-		    "signal::key_press_event", bst_param_entry_key_press, bparam,
-		    NULL);
-  
-  return action;
-}
-
-static void
-param_note_spinner_update (BstParam  *bparam,
-			   GtkWidget *action)
-{
-  GtkAdjustment *adjustment = GTK_SPIN_BUTTON (action)->adjustment;
-  gtk_adjustment_set_value (adjustment, sfi_value_get_note (&bparam->value));
-}
-
-struct _BstParamImpl param_note_spinner = {
-  "NoteSpinner",	+4 /* rating */,
-  0 /* variant */,	BST_PARAM_EDITABLE,
-  SFI_SCAT_NOTE,	NULL /* hints */,
-  param_note_spinner_create_gmask,
-  NULL, /* create_widget */
-  param_note_spinner_update,
-};
-
-struct _BstParamImpl rack_note_spinner = {
-  "NoteSpinner",	+4 /* rating */,
-  0 /* variant */,	BST_PARAM_EDITABLE,
-  SFI_SCAT_NOTE,	NULL /* hints */,
-  NULL, /* create_gmask */
-  param_note_spinner_create_widget,
-  param_note_spinner_update,
+static GxkParamEditor param_note_spinner = {
+  { "note-spinner",     N_("Note Entry"), },
+  { G_TYPE_INT, },
+  { "note",             +10,    TRUE, },        /* options, rating, editing */
+  param_note_spinner_create, NULL,
 };

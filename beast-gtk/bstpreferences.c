@@ -91,7 +91,7 @@ bst_preferences_init (BstPreferences *prefs)
 		    NULL);
 
   pspec = bst_gconfig_pspec ();
-  prefs->bstrec = bst_gconfig_to_rec (bst_global_config);
+  prefs->bstrec = bst_gconfig_to_rec (bst_gconfig_get_global ());
   pchild = bst_preferences_build_rec_editor (prefs->bstrec, sfi_pspec_get_rec_fields (pspec), &prefs->bstparams);
   gxk_notebook_append (prefs->notebook, pchild, "BEAST");
 
@@ -135,10 +135,10 @@ bst_preferences_destroy (GtkObject *object)
 static GtkWidget*
 bst_preferences_build_rec_editor (SfiRec      *rec,
 				  SfiRecFields fields,
-				  SfiRing    **bparam_list)
+				  SfiRing    **param_list)
 {
   GtkWidget *parent;
-  SfiRing *ring, *bparams = NULL;
+  SfiRing *ring, *params = NULL;
   guint i;
 
   g_return_val_if_fail (rec != NULL, NULL);
@@ -153,17 +153,17 @@ bst_preferences_build_rec_editor (SfiRec      *rec,
       GParamSpec *pspec = fields.fields[i];
       if (sfi_pspec_check_option (pspec, "G"))     /* GUI representable */
 	{
-	  BstParam *bparam = bst_param_rec_create (pspec, FALSE, NULL, rec);
-	  bst_param_pack_property (bparam, parent);
-	  bparams = sfi_ring_append (bparams, bparam);
+	  GxkParam *param = bst_param_new_rec (pspec, rec);
+	  bst_param_create_gmask (param, NULL, parent);
+	  params = sfi_ring_append (params, param);
 	}
     }
-  for (ring = bparams; ring; ring = sfi_ring_walk (ring, bparams))
-    bst_param_update (ring->data);
-  if (bparam_list)
-    *bparam_list = bparams;
+  for (ring = params; ring; ring = sfi_ring_walk (ring, params))
+    gxk_param_update (ring->data);
+  if (param_list)
+    *param_list = params;
   else
-    sfi_ring_free (bparams);
+    sfi_ring_free (params);
   return parent;
 }
 
@@ -172,9 +172,9 @@ bst_preferences_update (BstPreferences *prefs)
 {
   SfiRing *ring;
   for (ring = prefs->bstparams; ring; ring = sfi_ring_walk (ring, prefs->bstparams))
-    bst_param_update (ring->data);
+    gxk_param_update (ring->data);
   for (ring = prefs->bseparams; ring; ring = sfi_ring_walk (ring, prefs->bseparams))
-    bst_param_update (ring->data);
+    gxk_param_update (ring->data);
 }
 
 void
@@ -184,7 +184,7 @@ bst_preferences_revert (BstPreferences *prefs)
 
   g_return_if_fail (BST_IS_PREFERENCES (prefs));
 
-  rec = bst_gconfig_to_rec (bst_global_config);
+  rec = bst_gconfig_to_rec (bst_gconfig_get_global ());
   crec = sfi_rec_copy_deep (rec);
   sfi_rec_unref (rec);
   sfi_rec_swap_fields (prefs->bstrec, crec);

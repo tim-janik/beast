@@ -8,8 +8,9 @@ SUBDIRS =
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk $(GXK_CFLAGS) # -I.. for <gxk/*.h> includes
 
 DEFS += $(strip \
-	-DGTK_DISABLE_COMPAT_H \
-	-DG_LOG_DOMAIN=\"GXK\" \
+	-DGTK_DISABLE_COMPAT_H 	\
+	-DGXK_COMPILATION	\
+	-DG_LOG_DOMAIN=\"GXK\" 	\
 )
 # -DGTK_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
 
@@ -21,7 +22,7 @@ gxk_headers = $(strip \
 	gxkrackeditor.h	gxkutils.h	gxkpolygon.h	gxkcellrendererpopup.h \
 	gxkgadget.h	gxkaction.h	gxkglobals.h	gxkgadgetfactory.h \
 	glewidgets.h	gxkracktable.h	gxkrackitem.h	gxksimplelabel.h \
-	gxklogadjustment.h		\
+	gxkparam.h					gxklogadjustment.h \
 	gxk.h \
 )
 gxk_c_sources = $(strip \
@@ -30,7 +31,7 @@ gxk_c_sources = $(strip \
 	gxkrackeditor.c	gxkutils.c	gxkpolygon.c	gxkcellrendererpopup.c \
 	gxkgadget.c	gxkaction.c	gxkglobals.c	gxkgadgetfactory.c \
 	glewidgets.c	gxkracktable.c	gxkrackitem.c	gxksimplelabel.c \
-	gxklogadjustment.c		\
+	gxkparam.c					gxklogadjustment.c \
 )
 gxk_extra_sources = $(strip \
 	gxkmarshal.list \

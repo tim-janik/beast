@@ -93,6 +93,7 @@ static void
 bst_sequence_init (BstSequence *seq)
 {
   GtkWidget *frame;
+  gtk_widget_show (GTK_WIDGET (seq));
 
   frame = gtk_widget_new (GTK_TYPE_FRAME,
 			  "visible", TRUE,

@@ -1,157 +1,168 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 2002-2003 Tim Janik
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
-#ifndef __BST_PARAM_H__
-#define __BST_PARAM_H__
+#ifndef __GXK_PARAM_H__
+#define __GXK_PARAM_H__
 
-#include	"bstutils.h"
+#include "gxkutils.h"
 
 G_BEGIN_DECLS
 
-
 /* --- macros --- */
-#define BST_PARAM_IS_GMASK(bparam)	((bparam)->impl->create_gmask != NULL)
+#define GXK_IS_PARAM(p) (p && G_IS_PARAM_SPEC (p->pspec))
 
-
-/* --- structures & enums --- */
-typedef enum /*< skip >*/
-{
-  BST_PARAM_EDITABLE		= 1 << 0,
-  BST_PARAM_PROXY_LIST		= 1 << 1,
-} BstParamFlags;
-typedef struct _BstParamBinding BstParamBinding;
-typedef struct _BstParamImpl	BstParamImpl;
+/* --- typedefs, structures & enums --- */
+typedef struct _GxkParamBinding GxkParamBinding;
 typedef struct {
-  GValue	   value;
   GParamSpec	  *pspec;
-  BstParamImpl	  *impl;
-  guint		   column : 8;
-  guint		   readonly : 1; /* precond, GUI impl && pspec */
-  guint		   writable : 1; /* dynamic, binding owned */
-  guint		   editable : 1; /* dynamic, API owned */
-  guint		   updating : 1;
-  union {
-    BstGMask	  *gmask;
-    GtkWidget	  *widget;
-  }		   gdata;
+  GValue	   value;
+  GSList          *objects;       /* of type GObject* */
+  guint            editable : 1;  /* whether widgets should be editable */
+  guint            sensitive : 1; /* whether widgets should be sensitive */
+  guint		   updating : 1;  /* flag to guard recursions */
+  guint		   constant : 1;  /* whether binding allowes writes */
+  guint		   treadonly : 1; /* binding is temporarily RO */
+  guint		   ueditable : 1; /* user determined editability */
   /* binding data */
-  BstParamBinding *binding;
+  GxkParamBinding *binding;
   union {
-    gulong	   v_long;
-    gpointer	   v_pointer;
-  }		   mdata[4];
-} BstParam;
-struct _BstParamImpl
+    gpointer    v_pointer;
+    gulong	v_long;
+  }		   bdata[1];    /* flexible array */
+} GxkParam;
+struct _GxkParamBinding
 {
-  gchar		*name;
-  gint8		 rating;
-  guint8	 variant;
-  guint8	 flags;		// BstParamFlags
-  guint		 scat;		// SfiSCategory
-  gchar		*hints;		// must match if present
-  BstGMask*	(*create_gmask)		(BstParam	*bparam,
-					 const gchar	*tooltip,
-					 GtkWidget	*gmask_parent);
-  GtkWidget*	(*create_widget)	(BstParam	*bparam,
-					 const gchar	*tooltip);
-  void		(*update)		(BstParam	*bparam,
-					 GtkWidget	*action);
-};
-struct _BstParamBinding
-{
-  // FIXME: post_create() for gmask xframe settings
-  void		(*set_value)		(BstParam	*bparam,
+  guint16         n_data_fields;
+  void          (*setup)                (GxkParam       *param,
+                                         gpointer        user_data);
+  void		(*set_value)		(GxkParam	*param,
 					 const GValue	*value);
-  void		(*get_value)		(BstParam	*bparam,
+  void		(*get_value)		(GxkParam	*param,
 					 GValue		*value);
   /* optional: */
-  void		(*destroy)		(BstParam	*bparam);
-  gboolean	(*check_writable)	(BstParam	*bparam);
-  SfiProxy	(*rack_item)		(BstParam	*bparam);
-  BseProxySeq*	(*list_proxies)		(BstParam	*bparam);
+  void		(*destroy)		(GxkParam	*param);
+  gboolean	(*check_writable)	(GxkParam	*param);
 };
-
+typedef void    (*GxkParamUpdateFunc)   (GxkParam       *param,
+                                         GtkObject      *object);
 
 /* --- functions --- */
-void		 bst_param_pack_property  (BstParam	   *bparam,
-					   GtkWidget	   *parent);
-GtkWidget*	 bst_param_rack_widget	  (BstParam	   *bparam);
-void		 bst_param_update	  (BstParam	   *bparam);
-void		 bst_param_apply_value	  (BstParam	   *bparam);
-void		 bst_param_apply_default  (BstParam	   *bparam);
-void		 bst_param_set_editable	  (BstParam	   *bparam,
-					   gboolean	    editable);
-const gchar*	 bst_param_get_name	  (BstParam	   *bparam);
-const gchar*	 bst_param_get_view_name  (BstParam	   *bparam);
-void		 bst_param_destroy	  (BstParam	   *bparam);
-guint		 bst_param_rate_check	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-					   BstParamBinding *binding);
-const gchar**	 bst_param_list_names	  (gboolean	    rack_widget,
-					   guint	   *n_p);
-const gchar*	 bst_param_lookup_view	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-					   BstParamBinding *binding);
+GxkParam*     gxk_param_new                 (GParamSpec         *pspec,
+                                             GxkParamBinding    *binding,
+                                             gpointer            user_data);
+GxkParam*     gxk_param_new_constant        (GParamSpec         *pspec,
+                                             GxkParamBinding    *binding,
+                                             gpointer            user_data);
+void          gxk_param_update              (GxkParam           *param);
+void          gxk_param_add_object          (GxkParam           *param,
+                                             GtkObject          *object);
+void          gxk_object_set_param_callback (GtkObject          *object,
+                                             GxkParamUpdateFunc  ufunc);
+void          gxk_param_remove_object       (GxkParam           *param,
+                                             GtkObject          *object);
+void          gxk_param_apply_value         (GxkParam           *param);
+void          gxk_param_apply_default       (GxkParam           *param);
+void          gxk_param_set_editable        (GxkParam           *param,
+                                             gboolean            editable);
+const gchar*  gxk_param_get_name            (GxkParam           *param);
+gchar*        gxk_param_dup_tooltip         (GxkParam           *param);
+void          gxk_param_set_devel_tips      (gboolean            enabled);
+void          gxk_param_destroy             (GxkParam           *param);
 
 
-/* --- bindings --- */
-BstParamBinding* bst_param_binding_proxy  (void);
-BstParam*	 bst_param_proxy_create	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-					   SfiProxy	    proxy);
-void		 bst_param_set_proxy	  (BstParam	   *bparam,
-					   SfiProxy	    proxy);
-BstParam*	 bst_param_rec_create	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-					   SfiRec	   *rec);
-typedef void   (*BstParamValueNotify)     (gpointer         data,
-                                           BstParam        *bparam);
-BstParam*	 bst_param_value_create	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-                                           BstParamValueNotify notify,
-                                           gpointer            notify_data);
-BstParamBinding* bst_param_binding_rec	  (void);
-BstParamBinding* bst_param_binding_value  (void);
+/* --- param value binding --- */
+typedef void (*GxkParamValueNotify)    (gpointer             notify_data,
+                                        GxkParam            *param);
+GxkParam* gxk_param_new_value          (GParamSpec          *pspec,
+                                        GxkParamValueNotify  notify,
+                                        gpointer             notify_data);
+GxkParam* gxk_param_new_constant_value (GParamSpec          *pspec,
+                                        GxkParamValueNotify  notify,
+                                        gpointer             notify_data);
 
 
-/* --- miscellaneous utilities --- */
-SfiProxy	bst_proxy_seq_list_match  (GSList	   *proxy_seq_slist,
-					   const gchar	   *path_tail);
+/* --- param view/editor --- */
+typedef struct {
+  gchar      *name, *nick;
+} GxkParamEditorIdent;
+typedef struct {
+  GxkParamEditorIdent ident;
+  struct {
+    GType        type;
+    const gchar *type_name;
+    guint        all_int_nums : 1;
+    guint        all_float_nums : 1;
+  }              type_match;
+  struct {
+    gchar      *options;        /* required pspec options */
+    gint8       rating;
+    guint       editing : 1;
+  }             features;
+  GtkWidget*  (*create_widget)  (GxkParam       *param,
+                                 const gchar    *tooltip,
+                                 guint           variant);
+  void        (*update)         (GxkParam       *param,
+                                 GtkWidget      *widget);
+  guint         variant;
+} GxkParamEditor;
+void         gxk_param_register_editor  (GxkParamEditor         *editor,
+                                         const gchar            *i18n_domain);
+void         gxk_param_register_aliases (const gchar           **aliases);
+gchar**      gxk_param_list_editors     (void);
+guint        gxk_param_editor_score     (const gchar            *editor_name,
+                                         GParamSpec             *pspec);
+const gchar* gxk_param_lookup_editor    (const gchar            *editor_name,
+                                         GParamSpec             *pspec);
+GtkWidget*   gxk_param_create_editor    (GxkParam               *param,
+                                         const gchar            *editor_name);
 
 
 /* --- param implementation utils --- */
-extern BstParamBinding *bst_dummy_binding;
-void	      _bst_init_params		(void);
-BstParam*     bst_param_alloc		(BstParamImpl	*impl,
-					 GParamSpec	*pspec);
-gboolean  bst_param_xframe_check_button (BstParam	*bparam,
-					 guint		 button);
-gboolean  bst_param_entry_key_press	(GtkEntry	*entry,
-					 GdkEventKey	*event);
-gboolean  bst_param_ensure_focus	(GtkWidget	*widget);
-
+typedef struct {
+  guint char_chars,   char_digits;
+  guint uchar_chars,  uchar_digits;
+  guint int_chars,    int_digits;
+  guint uint_chars,   uint_digits;
+  guint long_chars,   long_digits;
+  guint ulong_chars,  ulong_digits;
+  guint int64_chars,  int64_digits;
+  guint uint64_chars, uint64_digits;
+  guint float_chars,  float_digits;
+  guint double_chars, double_digits;
+  guint string_chars, string_digits;
+} GxkParamEditorSizes;
+const GxkParamEditorSizes* gxk_param_get_editor_sizes (void);
+void                       gxk_param_set_editor_sizes (const GxkParamEditorSizes *esizes);
+gboolean       gxk_param_entry_key_press        (GtkEntry    *entry,
+                                                 GdkEventKey *event);
+void           gxk_param_entry_set_text         (GxkParam    *param,
+                                                 GtkWidget   *entry,
+                                                 const gchar *text);
+void           gxk_param_entry_connect_handlers (GxkParam    *param,
+                                                 GtkWidget   *entry,
+                                                 void       (*changed) (GtkWidget*,
+                                                                        GxkParam*));
+gboolean       gxk_param_ensure_focus           (GtkWidget   *widget);
+GtkAdjustment* gxk_param_get_adjustment         (GxkParam    *param);
+GtkAdjustment* gxk_param_get_log_adjustment     (GxkParam    *param);
 
 G_END_DECLS
 
-#endif /* __BST_PARAM_H__ */
+#endif /* __GXK_PARAM_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */

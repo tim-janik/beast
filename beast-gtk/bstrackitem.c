@@ -78,7 +78,7 @@ rack_item_init (BstRackItem *self)
   self->proxy = 0;
   self->path = NULL;
   self->block_updates = 0;
-  self->bparam = NULL;
+  self->param = NULL;
 }
 
 static void
@@ -86,10 +86,10 @@ rack_item_destroy (GtkObject *object)
 {
   BstRackItem *self = BST_RACK_ITEM (object);
   
-  if (self->bparam)
+  if (self->param)
     {
-      bst_param_destroy (self->bparam);
-      self->bparam = NULL;
+      gxk_param_destroy (self->param);
+      self->param = NULL;
     }
   
   bst_rack_item_set_parasite (self, 0, NULL);

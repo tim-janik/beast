@@ -17,7 +17,6 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bstcluehunter.h"
-
 #include "bstmarshal.h"
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
@@ -38,7 +37,7 @@ enum {
 enum {
   PROP_0,
   PROP_PATTERN_MATCHING,
-  PROP_ALIGN_WIDTH,
+  PROP_ALIGN_WIDGET,
   PROP_KEEP_HISTORY,
   PROP_ENTRY
 };
@@ -143,9 +142,9 @@ bst_clue_hunter_class_init (BstClueHunterClass *class)
 				   g_param_spec_boolean ("pattern_matching", NULL, NULL,
 							 TRUE, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
-				   PROP_ALIGN_WIDTH,
-				   g_param_spec_boolean ("align_width", NULL, NULL,
-							 TRUE, G_PARAM_READWRITE));
+				   PROP_ALIGN_WIDGET,
+				   g_param_spec_object ("align-widget", NULL, NULL,
+                                                        GTK_TYPE_WIDGET, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_KEEP_HISTORY,
 				   g_param_spec_boolean ("keep_history", NULL, NULL,
@@ -197,7 +196,7 @@ bst_clue_hunter_init (BstClueHunter *self)
   self->popped_up = FALSE;
   self->completion_tag = FALSE;
   self->pattern_matching = TRUE;
-  self->align_width = TRUE;
+  self->align_widget = NULL;
   self->keep_history = FALSE;
   self->cstring = NULL;
 
@@ -244,8 +243,12 @@ bst_clue_hunter_set_property (GObject      *object,
     case PROP_PATTERN_MATCHING:
       self->pattern_matching = g_value_get_boolean (value);
       break;
-    case PROP_ALIGN_WIDTH:
-      self->align_width = g_value_get_boolean (value);
+    case PROP_ALIGN_WIDGET:
+      if (self->align_widget)
+        g_object_unref (self->align_widget);
+      self->align_widget = g_value_get_object (value);
+      if (self->align_widget)
+        g_object_ref (self->align_widget);
       break;
     case PROP_KEEP_HISTORY:
       self->keep_history = g_value_get_boolean (value);
@@ -272,8 +275,8 @@ bst_clue_hunter_get_property (GObject    *object,
     case PROP_PATTERN_MATCHING:
       g_value_set_boolean (value, self->pattern_matching);
       break;
-    case PROP_ALIGN_WIDTH:
-      g_value_set_boolean (value, self->align_width);
+    case PROP_ALIGN_WIDGET:
+      g_value_set_object (value, self->align_widget);
       break;
     case PROP_KEEP_HISTORY:
       g_value_set_boolean (value, self->keep_history);
@@ -292,6 +295,11 @@ bst_clue_hunter_destroy (GtkObject *object)
 {
   BstClueHunter *self = BST_CLUE_HUNTER (object);
 
+  if (self->align_widget)
+    {
+      g_object_unref (self->align_widget);
+      self->align_widget = NULL;
+    }
   if (self->popped_up)
     bst_clue_hunter_popdown (self);
 
@@ -311,6 +319,8 @@ bst_clue_hunter_finalize (GObject *object)
 {
   BstClueHunter *self = BST_CLUE_HUNTER (object);
 
+  if (self->align_widget)
+    g_object_unref (self->align_widget);
   g_free (self->cstring);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -705,6 +715,7 @@ bst_clue_hunter_do_popup (BstClueHunter *self)
   GtkWidget *widget = GTK_WIDGET (self);
   GtkWidget *wlist = GTK_WIDGET (self->clist);
   GtkWidget *wentry = GTK_WIDGET (self->entry);
+  GtkScrolledWindow *scw = GTK_SCROLLED_WINDOW (self->scw);
   gint sheight = gdk_screen_height ();
   gint swidth = gdk_screen_width ();
   gint x = 0, y = 0, width = 0, height = 0;
@@ -715,16 +726,37 @@ bst_clue_hunter_do_popup (BstClueHunter *self)
   if (!self->cstring)
     self->cstring = g_strdup ("");
 
+  /* work around clist and scrolled window resizing misbehaviour */
   gtk_clist_columns_autosize (self->clist);
   gtk_widget_queue_resize (wlist);	/* work around gtk+ optimizations */
-  gtk_widget_size_request (wlist, NULL);
-  gtk_widget_set_size_request (wlist,
-			       wlist->requisition.width + 2 * wlist->style->xthickness,
-			       wlist->requisition.height + 2 * wlist->style->ythickness);
+  gtk_widget_queue_resize (self->scw);	/* work around gtk+ optimizations */
+  gtk_widget_size_request (self->scw, NULL);
+  gtk_widget_set_size_request (self->scw,
+                               wlist->requisition.width + 2 * wlist->style->xthickness
+                               + 3 /* gtkscrolledwindow.c hardcoded spacing */
+                               + scw->vscrollbar->requisition.width,
+                               wlist->requisition.height + 2 * wlist->style->ythickness
+                               + 3 /* gtkscrolledwindow.c hardcoded spacing */
+                               + scw->hscrollbar->requisition.height);
+  gtk_widget_size_request (widget, NULL);
 
-  gdk_window_get_origin (wentry->window, &x, &y);
-  gdk_window_get_size (wentry->window, &width, &height);
-
+  if (self->align_widget && GTK_WIDGET_DRAWABLE (self->align_widget))
+    {
+      gdk_window_get_origin (self->align_widget->window, &x, &y);
+      if (GTK_WIDGET_NO_WINDOW (self->align_widget))
+        {
+          x += self->align_widget->allocation.x;
+          y += self->align_widget->allocation.y;
+        }
+      width = self->align_widget->allocation.width;
+      height = self->align_widget->allocation.height;
+    }
+  else
+    {
+      gdk_window_get_origin (wentry->window, &x, &y);
+      width = wentry->allocation.width;
+      height = wentry->allocation.height;
+    }
   height = MIN (height, sheight);
   if (y < 0)
     {
@@ -739,8 +771,7 @@ bst_clue_hunter_do_popup (BstClueHunter *self)
   else if (y + height > sheight)
     height = sheight - y;
   width = MIN (width, swidth);
-  x = CLAMP (x, 0, swidth - width);
-
+  x = CLAMP (x, 0, swidth);
   if (widget->requisition.height > sheight - (y + height))
     {
       if (y + height / 2 > sheight / 2)
@@ -759,46 +790,32 @@ bst_clue_hunter_do_popup (BstClueHunter *self)
       y += height;
       height = -1;
     }
-  
-  if (!self->align_width && widget->requisition.width > width)
-    {
-      if (widget->requisition.width <= swidth - x)
-	width = widget->requisition.width;
-      else if (x + width / 2 > swidth / 2)
-	{
-	  x += width;
-	  width = MIN (x, widget->requisition.width);
-	  x -= width;
-	}
-      else
-	width = MIN (swidth - x, widget->requisition.width);
-    }
-
-  gtk_widget_set_uposition (widget, x, y);
+  width = MIN (swidth - x, width);
   gtk_widget_set_size_request (widget, width, height);
 
-  gtk_grab_add (widget);
-  
+  if (GTK_WIDGET_REALIZED (widget))
+    gdk_window_move (widget->window, x, y);
+  gtk_window_move (GTK_WINDOW (widget), x, y);
+
   gtk_widget_grab_focus (wlist);
-  
-  self->popped_up = TRUE;
-  self->completion_tag = FALSE;
-  
-  bst_clue_hunter_select_on (self, self->cstring);
-  
+
   gtk_widget_show (widget);
-  
-  while (gdk_pointer_grab (widget->window, TRUE,
-			   (GDK_POINTER_MOTION_HINT_MASK |
-			    GDK_BUTTON1_MOTION_MASK |
-			    GDK_BUTTON2_MOTION_MASK |
-			    GDK_BUTTON3_MOTION_MASK |
-			    GDK_BUTTON_PRESS_MASK |
-			    GDK_BUTTON_RELEASE_MASK),
-			   NULL,
-			   NULL,
-			   GDK_CURRENT_TIME) != 0)
-    ;
+  if (gxk_grab_pointer_and_keyboard (widget->window, TRUE,
+                                     GDK_POINTER_MOTION_HINT_MASK |
+                                     GDK_BUTTON1_MOTION_MASK |
+                                     GDK_BUTTON2_MOTION_MASK |
+                                     GDK_BUTTON3_MOTION_MASK |
+                                     GDK_BUTTON_PRESS_MASK |
+                                     GDK_BUTTON_RELEASE_MASK,
+                                     NULL, NULL, GDK_CURRENT_TIME))
+    {
+      gtk_grab_add (widget);
+      self->popped_up = TRUE;
+      self->completion_tag = FALSE;
+      bst_clue_hunter_select_on (self, self->cstring);
+    }
+  else
+    gtk_widget_hide (widget);
 }
 
 static void

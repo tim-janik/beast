@@ -1,80 +1,59 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 2002-2003 Tim Janik
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-
-/* --- pspec name display --- */
-static BstGMask*
-param_pspec_create_gmask (BstParam    *bparam,
-			  const gchar *tooltip,
-			  GtkWidget   *gmask_parent)
-{
-  GtkWidget *xframe, *prompt;
-
-  xframe = g_object_new (BST_TYPE_XFRAME,
-			 "visible", TRUE,
-			 NULL);
-  g_object_connect (xframe,
-		    "swapped_signal::button_check", bst_param_xframe_check_button, bparam,
-		    NULL);
-  prompt = g_object_new (GTK_TYPE_LABEL,
-			 "visible", TRUE,
-			 "xalign", 0.0,
-			 "parent", xframe,
-			 NULL);
-  return bst_gmask_form_big (gmask_parent, xframe);
-}
+/* --- label display --- */
+enum {
+  PARAM_LABEL,
+  PARAM_LABEL_NICK,
+};
 
 static GtkWidget*
-param_pspec_create_widget (BstParam    *bparam,
-			   const gchar *tooltip)
+param_label_create (GxkParam    *param,
+                    const gchar *tooltip,
+                    guint        variant)
 {
-  return g_object_new (GTK_TYPE_LABEL,
-		       "visible", TRUE,
-		       "xalign", 0.5,
-		       NULL);
+  GtkWidget *widget = g_object_new (GTK_TYPE_LABEL,
+                                    "visible", TRUE,
+                                    "xalign", 0.5,
+                                    NULL);
+  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  if (variant == PARAM_LABEL_NICK)
+    gtk_label_set_text (GTK_LABEL (widget), g_param_spec_get_nick (param->pspec));
+  return widget;
 }
 
 static void
-param_pspec_update (BstParam  *bparam,
-		    GtkWidget *action)
+param_label_update (GxkParam  *param,
+		    GtkWidget *widget)
 {
-  if (!GTK_IS_LABEL (action))
-    {
-      /* label is xframe's child */
-      action = GTK_BIN (action)->child;
-    }
-  gtk_label_set_text (GTK_LABEL (action), g_param_spec_get_nick (bparam->pspec));
+  gtk_label_set_text (GTK_LABEL (widget), g_value_get_string (&param->value));
 }
 
-struct _BstParamImpl param_pspec = {
-  "Property Name",	-100,
-  0 /* variant */,	0    /* flags */,
-  0 /* scat */,		NULL /* hints */,
-  param_pspec_create_gmask,
-  NULL,	/* create_widget */
-  param_pspec_update,
+static GxkParamEditor param_label1 = {
+  { "pspec-nick",       N_("Property Name"), },
+  { 0, },
+  { NULL,       -100,   FALSE, },       /* options, rating, editing */
+  param_label_create,   NULL,   PARAM_LABEL_NICK,
 };
-
-struct _BstParamImpl rack_pspec = {
-  "Property Name",	-100,
-  0 /* variant */,	0    /* flags */,
-  0 /* scat */,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_pspec_create_widget,
-  param_pspec_update,
+static GxkParamEditor param_label2 = {
+  { "label",            N_("Label"), },
+  { G_TYPE_STRING, },
+  { NULL,         +0,   FALSE, },       /* options, rating, editing */
+  param_label_create,   param_label_update,     PARAM_LABEL,
 };

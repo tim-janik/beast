@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,7 @@
 
 #include	"bstparamview.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_PROCEDURE_SHELL	    (bst_procedure_shell_get_type ())
@@ -46,7 +42,7 @@ struct _BstProcedureShell
   SfiRec	    *prec;
 
   guint		     n_preset_params;
-  SfiRing	    *bparams; /* n_in_params + n_out_params bparams */
+  SfiRing	    *params; /* n_in_params + n_out_params params */
   
   guint		     in_modal_selection : 1;
   guint		     in_execution : 1;
@@ -88,9 +84,6 @@ void		   bst_procedure_exec_modal	(const gchar    *procedure_name,
 GParamSpec*        bst_procedure_ref_pspec      (const gchar    *procedure_name,
                                                  const gchar    *parameter);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_PROCEDURE_H__ */

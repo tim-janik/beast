@@ -21,7 +21,7 @@
 #include	<string.h>
 
 /* --- variables --- */
-BstGConfig        *bst_global_config = NULL;
+static BstGConfig *bst_global_config = NULL;
 static GParamSpec *pspec_global_config = NULL;
 
 
@@ -57,6 +57,12 @@ GParamSpec*
 bst_gconfig_pspec (void)
 {
   return pspec_global_config;
+}
+
+BstGConfig*
+bst_gconfig_get_global (void)
+{
+  return bst_global_config;
 }
 
 static BstGConfig*

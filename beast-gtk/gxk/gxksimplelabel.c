@@ -24,12 +24,13 @@
  * - mnemonic activation works on activatable parents even if group cycling
  * - setting ::pattern properly unsets ::use-underline
  * - if ::auto-cut is TRUE, overfull text is cut-off
+ * - the label is visible by default
  */
 #include "gxksimplelabel.h"
 #include <string.h>
 #include <gdk/gdkkeysyms.h>
 #include <pango/pango.h>
-#define _(x)    (x)
+#include <libintl.h>
 
 enum {
   PROP_0,
@@ -135,7 +136,7 @@ simple_label_class_init (GxkSimpleLabelClass *class)
                                    PROP_USE_UNDERLINE,
                                    g_param_spec_boolean ("use_underline", _("Use underline"),
                                                          _("If set, an underline in the text indicates the next character should be used for the mnemonic accelerator key"),
-                                                         TRUE, G_PARAM_READWRITE));
+                                                         FALSE, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_AUTO_CUT,
                                    g_param_spec_boolean ("auto-cut", _("Auto cut"),
@@ -176,7 +177,7 @@ simple_label_init (GxkSimpleLabel *self)
   self->mnemonic_widget = NULL;
   self->mnemonic_window = NULL;
   self->mnemonic_keyval = GDK_VoidSymbol;
-  self->use_underline = TRUE;
+  self->use_underline = FALSE;
   self->auto_cut = TRUE;
   self->label = g_strdup ("");
   gxk_simple_label_recalculate (self);

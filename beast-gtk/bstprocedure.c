@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstprocedure.h"
-
 #include "bstparam.h"
 #include <gobject/gvaluecollector.h>
 #include <string.h>
@@ -84,7 +83,7 @@ bst_procedure_shell_init (BstProcedureShell *self)
   self->proc = NULL;
   self->prec = sfi_rec_new ();
   self->n_preset_params = 0;
-  self->bparams = NULL;
+  self->params = NULL;
   self->in_modal_selection = FALSE;
   self->in_execution = FALSE;
   self->hide_dialog_on_exec = FALSE;
@@ -95,8 +94,8 @@ bst_procedure_shell_destroy_contents (BstProcedureShell *self)
 {
   gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
   self->n_preset_params = 0;
-  sfi_ring_free (self->bparams);
-  self->bparams = NULL;
+  sfi_ring_free (self->params);
+  self->params = NULL;
   self->in_modal_selection = FALSE;
 }
 
@@ -229,9 +228,9 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
     {
       GParamSpec *pspec = ring->data;
       // gboolean is_out_param = pspec == proc->ret_param;
-      BstParam *bparam = bst_param_rec_create (pspec, FALSE, NULL, self->prec);
-      bst_param_pack_property (bparam, param_box);
-      self->bparams = sfi_ring_append (self->bparams, bparam);
+      GxkParam *param = bst_param_new_rec (pspec, self->prec);
+      bst_param_create_gmask (param, NULL, param_box);
+      self->params = sfi_ring_append (self->params, param);
     }
   sfi_ring_free (pspecs);
   
@@ -247,17 +246,17 @@ bst_procedure_shell_update (BstProcedureShell *self)
 
   g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
   
-  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
-    bst_param_update (ring->data);
+  for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
+    gxk_param_update (ring->data);
 }
 
-static BstParam*
-shell_find_bparam (BstProcedureShell *self,
-		   const gchar       *name)
+static GxkParam*
+shell_find_param (BstProcedureShell *self,
+                  const gchar       *name)
 {
   SfiRing *ring;
-  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
-    if (strcmp (name, bst_param_get_name (ring->data)) == 0)
+  for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
+    if (strcmp (name, gxk_param_get_name (ring->data)) == 0)
       return ring->data;
   return NULL;
 }
@@ -276,8 +275,8 @@ bst_procedure_shell_execute (BstProcedureShell *self)
   gtk_widget_ref (widget);
 
   /* update parameter record */
-  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
-    bst_param_apply_value (ring->data);
+  for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
+    gxk_param_apply_value (ring->data);
 
   if (widget)
     {
@@ -299,10 +298,10 @@ bst_procedure_shell_execute (BstProcedureShell *self)
       sfi_seq_unref (pseq);
       if (rvalue && proc->ret_param)
 	{
-	  BstParam *bparam = shell_find_bparam (self, proc->ret_param->name);
+	  GxkParam *param = shell_find_param (self, proc->ret_param->name);
 	  sfi_rec_set (self->prec, proc->ret_param->name, rvalue);
-	  if (bparam)
-	    bst_param_update (bparam);
+	  if (param)
+	    gxk_param_update (param);
 	}
     }
 
@@ -319,12 +318,12 @@ bst_procedure_shell_reset (BstProcedureShell *self)
 
   proc = self->proc;
   sfi_rec_clear (self->prec);
-  if (!self->bparams)
+  if (!self->params)
     return;
-  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
+  for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
     {
-      BstParam *bparam = ring->data;
-      GParamSpec *pspec = bparam->pspec;
+      GxkParam *param = ring->data;
+      GParamSpec *pspec = param->pspec;
       gboolean is_out_param = pspec == proc->ret_param;
       GValue value = { 0, };
       g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
@@ -334,8 +333,8 @@ bst_procedure_shell_reset (BstProcedureShell *self)
 	g_param_value_set_default (pspec, &value);
       sfi_rec_set (self->prec, pspec->name, &value);
       g_value_unset (&value);
-      bst_param_set_editable (bparam, !is_out_param);
-      bst_param_update (bparam);
+      gxk_param_set_editable (param, !is_out_param);
+      gxk_param_update (param);
     }
   self->n_preset_params = 0;
 
@@ -350,12 +349,12 @@ bst_procedure_shell_unpreset (BstProcedureShell *self)
   
   g_return_if_fail (BST_IS_PROCEDURE_SHELL (self));
   
-  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
+  for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
     {
-      BstParam *bparam = ring->data;
-      GParamSpec *pspec = bparam->pspec;
+      GxkParam *param = ring->data;
+      GParamSpec *pspec = param->pspec;
       gboolean is_out_param = pspec == self->proc->ret_param;
-      if (!bparam->editable)
+      if (!param->editable)
 	{
 	  GValue value = { 0, };
 	  g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
@@ -365,8 +364,8 @@ bst_procedure_shell_unpreset (BstProcedureShell *self)
 	    g_param_value_set_default (pspec, &value);
 	  sfi_rec_set (self->prec, pspec->name, &value);
 	  g_value_unset (&value);
-	  bst_param_set_editable (bparam, !is_out_param);
-	  bst_param_update (bparam);
+	  gxk_param_set_editable (param, !is_out_param);
+	  gxk_param_update (param);
 	}
     }
   self->n_preset_params = 0;
@@ -395,10 +394,10 @@ bst_procedure_shell_preset (BstProcedureShell *self,
    * parameter value.
    */
 
-  for (ring = self->bparams; ring; ring = sfi_ring_walk (ring, self->bparams))
+  for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
     {
-      BstParam *bparam = ring->data;
-      GParamSpec *pspec = bparam->pspec;
+      GxkParam *param = ring->data;
+      GParamSpec *pspec = param->pspec;
       gboolean is_out_param = pspec == proc->ret_param;
 
       if (!is_out_param && strcmp (pspec->name, name) == 0)
@@ -414,16 +413,16 @@ bst_procedure_shell_preset (BstProcedureShell *self,
 	      if (lock_preset)
 		{
 		  self->n_preset_params += 1;
-		  bst_param_set_editable (bparam, FALSE);
+		  gxk_param_set_editable (param, FALSE);
 		}
-	      bst_param_update (bparam);
+	      gxk_param_update (param);
 	      return TRUE;
 	    }
 	  else
 	    g_warning (G_STRLOC ": cannot convert `%s' value to `%s' for `%s' parameter `%s'",
 		       g_type_name (G_VALUE_TYPE (value)),
-		       g_type_name (G_PARAM_SPEC_VALUE_TYPE (bparam->pspec)),
-		       g_type_name (G_PARAM_SPEC_TYPE (bparam->pspec)),
+		       g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)),
+		       g_type_name (G_PARAM_SPEC_TYPE (param->pspec)),
 		       name);
 	}
     }

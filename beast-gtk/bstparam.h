@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,132 +22,30 @@
 
 G_BEGIN_DECLS
 
-
-/* --- macros --- */
-#define BST_PARAM_IS_GMASK(bparam)	((bparam)->impl->create_gmask != NULL)
-
-
-/* --- structures & enums --- */
-typedef enum /*< skip >*/
-{
-  BST_PARAM_EDITABLE		= 1 << 0,
-  BST_PARAM_PROXY_LIST		= 1 << 1,
-} BstParamFlags;
-typedef struct _BstParamBinding BstParamBinding;
-typedef struct _BstParamImpl	BstParamImpl;
-typedef struct {
-  GValue	   value;
-  GParamSpec	  *pspec;
-  BstParamImpl	  *impl;
-  guint		   column : 8;
-  guint		   readonly : 1; /* precond, GUI impl && pspec */
-  guint		   writable : 1; /* dynamic, binding owned */
-  guint		   editable : 1; /* dynamic, API owned */
-  guint		   updating : 1;
-  union {
-    BstGMask	  *gmask;
-    GtkWidget	  *widget;
-  }		   gdata;
-  /* binding data */
-  BstParamBinding *binding;
-  union {
-    gulong	   v_long;
-    gpointer	   v_pointer;
-  }		   mdata[4];
-} BstParam;
-struct _BstParamImpl
-{
-  gchar		*name;
-  gint8		 rating;
-  guint8	 variant;
-  guint8	 flags;		// BstParamFlags
-  guint		 scat;		// SfiSCategory
-  gchar		*hints;		// must match if present
-  BstGMask*	(*create_gmask)		(BstParam	*bparam,
-					 const gchar	*tooltip,
-					 GtkWidget	*gmask_parent);
-  GtkWidget*	(*create_widget)	(BstParam	*bparam,
-					 const gchar	*tooltip);
-  void		(*update)		(BstParam	*bparam,
-					 GtkWidget	*action);
-};
-struct _BstParamBinding
-{
-  // FIXME: post_create() for gmask xframe settings
-  void		(*set_value)		(BstParam	*bparam,
-					 const GValue	*value);
-  void		(*get_value)		(BstParam	*bparam,
-					 GValue		*value);
-  /* optional: */
-  void		(*destroy)		(BstParam	*bparam);
-  gboolean	(*check_writable)	(BstParam	*bparam);
-  SfiProxy	(*rack_item)		(BstParam	*bparam);
-  BseProxySeq*	(*list_proxies)		(BstParam	*bparam);
-};
+/* --- gmask parameters --- */
+BstGMask*    bst_param_create_gmask   (GxkParam    *param,
+                                       const gchar *editor_name,
+                                       GtkWidget   *parent);
 
 
-/* --- functions --- */
-void		 bst_param_pack_property  (BstParam	   *bparam,
-					   GtkWidget	   *parent);
-GtkWidget*	 bst_param_rack_widget	  (BstParam	   *bparam);
-void		 bst_param_update	  (BstParam	   *bparam);
-void		 bst_param_apply_value	  (BstParam	   *bparam);
-void		 bst_param_apply_default  (BstParam	   *bparam);
-void		 bst_param_set_editable	  (BstParam	   *bparam,
-					   gboolean	    editable);
-const gchar*	 bst_param_get_name	  (BstParam	   *bparam);
-const gchar*	 bst_param_get_view_name  (BstParam	   *bparam);
-void		 bst_param_destroy	  (BstParam	   *bparam);
-guint		 bst_param_rate_check	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-					   BstParamBinding *binding);
-const gchar**	 bst_param_list_names	  (gboolean	    rack_widget,
-					   guint	   *n_p);
-const gchar*	 bst_param_lookup_view	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-					   BstParamBinding *binding);
+/* --- SfiRec parameters --- */
+GxkParam*    bst_param_new_rec        (GParamSpec  *pspec,
+                                       SfiRec      *rec);
 
 
-/* --- bindings --- */
-BstParamBinding* bst_param_binding_proxy  (void);
-BstParam*	 bst_param_proxy_create	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-					   SfiProxy	    proxy);
-void		 bst_param_set_proxy	  (BstParam	   *bparam,
-					   SfiProxy	    proxy);
-BstParam*	 bst_param_rec_create	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-					   SfiRec	   *rec);
-typedef void   (*BstParamValueNotify)     (gpointer         data,
-                                           BstParam        *bparam);
-BstParam*	 bst_param_value_create	  (GParamSpec	   *pspec,
-					   gboolean	    rack_widget,
-					   const gchar	   *view_name,
-                                           BstParamValueNotify notify,
-                                           gpointer            notify_data);
-BstParamBinding* bst_param_binding_rec	  (void);
-BstParamBinding* bst_param_binding_value  (void);
-
-
-/* --- miscellaneous utilities --- */
-SfiProxy	bst_proxy_seq_list_match  (GSList	   *proxy_seq_slist,
-					   const gchar	   *path_tail);
+/* --- SfiProxy parameters --- */
+GxkParam*    bst_param_new_proxy      (GParamSpec  *pspec,
+                                       SfiProxy     proxy);
+void         bst_param_set_proxy      (GxkParam    *param,
+                                       SfiProxy     proxy);
+SfiProxy     bst_param_get_proxy      (GxkParam    *param);
+SfiProxy     bst_proxy_seq_list_match (GSList      *proxy_seq_slist,
+                                       const gchar *text);
 
 
 /* --- param implementation utils --- */
-extern BstParamBinding *bst_dummy_binding;
-void	      _bst_init_params		(void);
-BstParam*     bst_param_alloc		(BstParamImpl	*impl,
-					 GParamSpec	*pspec);
-gboolean  bst_param_xframe_check_button (BstParam	*bparam,
-					 guint		 button);
-gboolean  bst_param_entry_key_press	(GtkEntry	*entry,
-					 GdkEventKey	*event);
-gboolean  bst_param_ensure_focus	(GtkWidget	*widget);
+void         _bst_init_params         (void);
+
 
 
 G_END_DECLS

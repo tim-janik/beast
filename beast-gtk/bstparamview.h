@@ -41,7 +41,7 @@ struct _BstParamView
 
   SfiProxy	 item;
 
-  GSList	*bparams;
+  GSList	*params;        /* GxkParam* */
 
   gchar         *first_base_type;
   gchar         *last_base_type;

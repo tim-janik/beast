@@ -19,7 +19,7 @@
 #ifndef __BST_CLUE_HUNTER_H__
 #define __BST_CLUE_HUNTER_H__
 
-#include	<gtk/gtk.h>
+#include <gxk/gxk.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,12 +48,12 @@ struct	_BstClueHunter
   guint		 popped_up : 1;
   guint		 completion_tag : 1;
   guint		 pattern_matching : 1;
-  guint		 align_width : 1;
   guint		 keep_history : 1;
   guint		 clist_column : 16;
 
   gchar		*cstring;
 
+  GtkWidget     *align_widget;
   GtkWidget	*scw;
   GtkCList	*clist;
   GtkEntry	*entry;

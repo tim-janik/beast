@@ -1,4 +1,14 @@
 FIXMES:
+- test GxkFreeRadioButton
+- the idl compiler doesn't support parsing group _("i18n string") {...}
+- the idl compiler writes out _("foo") as _ ("foo") but the additional space confuses gettext
+- make the menu button arrow a double arrow for push-in behaviour
+- remove BST_GMASK_FILL variant, remove ahead and atail
+- remove hpack and vpack
+- make plugins/Makefile.am actually pick up *.idl files in distribution tarballs
+- rename bstparam-entry.c to bstparam-searchpath.c
+- remove bstfreeradiobutton.[hc]
+- remove 64bit data fields from BseUndoStep if possible
 - remove bstrack*.[hc] cruft, old parasites and data pocket
 - allow parasite object links only within tree
 - s/sfi_value_rec_take_ref/sfi_value_take_rec/

@@ -21,20 +21,14 @@
 
 #include	"bstutils.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- BstGConfig - configurable defaults --- */
-#define	BST_RC_VERSION			(bst_global_config->rc_version)
-#define BST_TAB_WIDTH			(bst_global_config->tab_width)
-#define BST_SNET_ANTI_ALIASED		(bst_global_config->snet_anti_aliased)
-#define BST_SNET_EDIT_FALLBACK		(bst_global_config->snet_edit_fallback)
-#define BST_SNET_SWAP_IO_CHANNELS	(bst_global_config->snet_swap_io_channels)
-
-extern BstGConfig *bst_global_config;
+#define	BST_RC_VERSION			BST_GCONFIG (rc_version)
+#define BST_TAB_WIDTH			BST_GCONFIG (tab_width)
+#define BST_SNET_ANTI_ALIASED		BST_GCONFIG (snet_anti_aliased)
+#define BST_SNET_EDIT_FALLBACK		BST_GCONFIG (snet_edit_fallback)
+#define BST_SNET_SWAP_IO_CHANNELS	BST_GCONFIG (snet_swap_io_channels)
 
 
 /* --- prototypes --- */
@@ -42,15 +36,13 @@ void		_bst_gconfig_init		(void);
 void		bst_gconfig_set_rc_version	(const gchar	*rc_version);
 void		bst_gconfig_apply		(SfiRec		*rec);
 GParamSpec*	bst_gconfig_pspec		(void);
+/* bstutils.h: BstGConfig*     bst_gconfig_get_global (void); */
 
 
 /* --- rc file --- */
 BseErrorType     bst_rc_dump                    (const gchar    *file_name);
 BseErrorType     bst_rc_parse                   (const gchar    *file_name);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_GCONFIG_H__ */

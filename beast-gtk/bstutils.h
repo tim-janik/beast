@@ -192,12 +192,17 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 
 
 /* --- generated includes --- */
-/* type IDs */
+/* type IDs, idl types */
 #include "bstgentypes.h"
 /* marshallers */
 #include "bstmarshal.h"
 /* icon stock IDs */
 #include "beast-gtk/icons/bst-stock-gen.h"
+
+
+/* --- config values --- */
+BstGConfig*     bst_gconfig_get_global (void);
+#define BST_GCONFIG(field) (* bst_gconfig_get_global ()) . field
 
 
 /* --- internal --- */

@@ -1,359 +1,114 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 2002-2003 Tim Janik
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
-#include "bstdial.h"
-#include "bstknob.h"
-
-
+/* --- h/v scale editors --- */
 enum {
-  VDIAL,
-  VKNOB,
-  VVSCALE,
-  VHSCALE,
+  PARAM_SCALE_HORIZONTAL,
+  PARAM_LSCALE_HORIZONTAL,
+  PARAM_SCALE_VERTICAL,
+  PARAM_LSCALE_VERTICAL,
 };
 
-/* --- numeric parameters --- */
 static void
-param_scale_change_value (GtkAdjustment *adjustment,
-			  BstParam      *bparam)
+param_scale_hscale_size_request (GtkWidget      *scale,
+                                 GtkRequisition *requisition)
 {
-  if (!bparam->updating)
-    {
-      GValue dvalue = { 0, };
-      g_value_init (&dvalue, G_TYPE_DOUBLE);
-      g_value_set_double (&dvalue, adjustment->value);
-      g_value_transform (&dvalue, &bparam->value);
-      g_value_unset (&dvalue);
-      bst_param_apply_value (bparam);
-    }
+  gint slider_length = 0, trough_border = 0;
+  /* we patch up the scale's minimum size requisition here */
+  gtk_widget_style_get (scale, "slider_length", &slider_length, NULL);
+  gtk_widget_style_get (scale, "trough_border", &trough_border, NULL);
+  requisition->width = slider_length * 1.5;
+  requisition->width += 2 * trough_border;
+}
+
+static void
+param_scale_vscale_size_request (GtkWidget      *scale,
+                                 GtkRequisition *requisition)
+{
+  gint slider_length = 0, trough_border = 0;
+  /* we patch up the scale's minimum size requisition here */
+  gtk_widget_style_get (scale, "slider_length", &slider_length, NULL);
+  gtk_widget_style_get (scale, "trough_border", &trough_border, NULL);
+  requisition->height = slider_length * 1.5;
+  requisition->height += 2 * trough_border;
 }
 
 static GtkWidget*
-param_scale_create_widget (BstParam    *bparam,
-			   const gchar *tooltip)
+param_scale_create (GxkParam    *param,
+                    const gchar *tooltip,
+                    guint        variant)
 {
-  GParamSpec *pspec = bparam->pspec;
-  gboolean logarithmic = g_option_check (bparam->impl->hints, "log-scale");
-  GtkWidget *action;
-  gpointer linear_adjustment, adjustment = NULL;
-
-  switch (sfi_categorize_pspec (pspec) & SFI_SCAT_TYPE_MASK)
-    {
-      SfiInt idefault, iminimum, imaximum, istepping;
-      SfiNum ndefault, nminimum, nmaximum, nstepping;
-      SfiReal rdefault, rminimum, rmaximum, rstepping;
-    case SFI_SCAT_INT:
-      idefault = sfi_pspec_get_int_default (pspec);
-      sfi_pspec_get_int_range (pspec, &iminimum, &imaximum, &istepping);
-      if (!istepping)
-	istepping = 1;
-      adjustment = gtk_adjustment_new (idefault, iminimum, imaximum,
-				       MIN (1, istepping),
-				       MAX (1, istepping),
-				       0);
-      break;
-    case SFI_SCAT_NUM:
-      ndefault = sfi_pspec_get_num_default (pspec);
-      sfi_pspec_get_num_range (pspec, &nminimum, &nmaximum, &nstepping);
-      if (!nstepping)
-	nstepping = 1;
-      adjustment = gtk_adjustment_new (ndefault, nminimum, nmaximum,
-				       MIN (1, nstepping),
-				       MAX (1, nstepping),
-				       0);
-      break;
-    case SFI_SCAT_REAL:
-      rdefault = sfi_pspec_get_real_default (pspec);
-      sfi_pspec_get_real_range (pspec, &rminimum, &rmaximum, &rstepping);
-      if (rstepping < SFI_MINREAL)
-	rstepping = 1;
-      adjustment = gtk_adjustment_new (rdefault, rminimum, rmaximum,
-				       MIN (0.1, rstepping),
-				       MAX (0.1, rstepping),
-				       0);
-      break;
-    default:
-      ;
-    }
-
-  g_object_ref (adjustment);
-  gtk_object_sink (adjustment);
-  linear_adjustment = adjustment;
-
-  /* we need to be notified *after* the scale so the
-   * scale's value is already updated
-   */
-  g_object_connect (adjustment,
-		    "signal_after::value-changed", param_scale_change_value, bparam,
-		    NULL);
-  if (logarithmic)
-    {
-      SfiReal center, base, n_steps;
-      if (sfi_pspec_get_log_scale (pspec, &center, &base, &n_steps))
-	{
-	  GtkAdjustment *log_adjustment = bst_log_adjustment_from_adj (adjustment);
-	  g_object_unref (adjustment);
-	  adjustment = log_adjustment;
-	  g_object_ref (adjustment);
-	  gtk_object_sink (adjustment);
-	  bst_log_adjustment_setup (adjustment,
-				    center, base, n_steps);
-	}
-    }
-  switch (bparam->impl->variant)
-    {
-    case VDIAL:
-      action = g_object_new (BST_TYPE_DIAL, NULL);
-      bst_dial_set_adjustment (BST_DIAL (action), adjustment);
-      break;
-    case VKNOB:
-      action = g_object_new (BST_TYPE_KNOB, NULL);
-      bst_knob_set_adjustment (BST_KNOB (action), adjustment);
-      break;
-    case VVSCALE:
-      action = g_object_new (GTK_TYPE_VSCALE,
-			     "adjustment", adjustment,
-			     "draw_value", FALSE,
-			     NULL);
-      break;
-    case VHSCALE:
-      action = g_object_new (GTK_TYPE_HSCALE,
-			     "adjustment", adjustment,
-			     "draw_value", FALSE,
-			     NULL);
-      break;
-    default:
-      action = NULL;	/* cure cc */
-    }
-  g_object_ref (linear_adjustment);
-  g_object_set_data_full (G_OBJECT (action), "adjustment", linear_adjustment, (GDestroyNotify) g_object_unref);
-  g_object_unref (adjustment);
-  g_object_set (action,
-		"visible", TRUE,
-		"can_focus", FALSE,
-		NULL);
-  return action;
+  GtkWidget *widget;
+  GtkAdjustment *adjustment = NULL;
+  if (variant == PARAM_LSCALE_HORIZONTAL || variant == PARAM_LSCALE_VERTICAL)
+    adjustment = gxk_param_get_log_adjustment (param);
+  if (!adjustment)
+    adjustment = gxk_param_get_adjustment (param);
+  widget = g_object_new (variant >= PARAM_SCALE_VERTICAL ? GTK_TYPE_VSCALE : GTK_TYPE_HSCALE,
+                         "adjustment", adjustment,
+                         "draw_value", FALSE,
+                         "visible", TRUE,
+                         "can_focus", FALSE,
+                         NULL);
+  g_object_connect (widget,
+                    "signal_after::size_request",
+                    variant >= PARAM_SCALE_VERTICAL ? param_scale_vscale_size_request : param_scale_hscale_size_request,
+                    NULL, NULL);
+  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  if (variant >= PARAM_SCALE_VERTICAL)
+    gxk_widget_add_option (widget, "vexpand", "+");
+  else
+    gxk_widget_add_option (widget, "hexpand", "+");
+  return widget;
 }
 
-static void
-param_scale_update (BstParam  *bparam,
-		    GtkWidget *action)
-{
-  GtkAdjustment *adjustment = g_object_get_data (action, "adjustment");
-  GValue dvalue = { 0, };
-  g_value_init (&dvalue, G_TYPE_DOUBLE);
-  g_value_transform (&bparam->value, &dvalue);
-  gtk_adjustment_set_value (adjustment, g_value_get_double (&dvalue));
-  g_value_unset (&dvalue);
-}
-
-struct _BstParamImpl rack_knob_int = {
-  "Knob",		+5 /* rating */,
-  VKNOB,		BST_PARAM_EDITABLE,
-  SFI_SCAT_INT,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
+static GxkParamEditor param_scale1 = {
+  { "hscale-lin",       N_("Horizontal Scale"), },
+  { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
+  { NULL,         +5,   TRUE, },        /* options, rating, editing */
+  param_scale_create,   NULL,   PARAM_SCALE_HORIZONTAL,
 };
-struct _BstParamImpl rack_knob_num = {
-  "Knob",		+5 /* rating */,
-  VKNOB,		BST_PARAM_EDITABLE,
-  SFI_SCAT_NUM,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
+static GxkParamEditor param_scale2 = {
+  { "vscale-lin",       N_("Vertical Scale"), },
+  { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
+  { NULL,         +5,   TRUE, },        /* options, rating, editing */
+  param_scale_create,   NULL,   PARAM_SCALE_VERTICAL,
 };
-struct _BstParamImpl rack_knob_real = {
-  "Knob",		+5 /* rating */,
-  VKNOB,		BST_PARAM_EDITABLE,
-  SFI_SCAT_REAL,	NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
+static GxkParamEditor param_scale3 = {
+  { "hscale-log",       N_("Horizontal Scale (Logarithmic)"), },
+  { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
+  { "log-scale",  +5,   TRUE, },        /* options, rating, editing */
+  param_scale_create,   NULL,   PARAM_LSCALE_HORIZONTAL,
 };
-struct _BstParamImpl rack_log_knob_int = {
-  "Knob (Logarithmic)", +5 /* rating */,
-  VKNOB,		BST_PARAM_EDITABLE,
-  SFI_SCAT_INT,		"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
+static GxkParamEditor param_scale4 = {
+  { "vscale-log",       N_("Vertical Scale (Logarithmic)"), },
+  { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
+  { "log-scale",  +5,   TRUE, },        /* options, rating, editing */
+  param_scale_create,   NULL,   PARAM_LSCALE_VERTICAL,
 };
-struct _BstParamImpl rack_log_knob_num = {
-  "Knob (Logarithmic)", +5 /* rating */,
-  VKNOB,		BST_PARAM_EDITABLE,
-  SFI_SCAT_NUM,		"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
+static const gchar *param_scale_aliases1[] = {
+  "hscale",
+  "hscale-lin", "hscale-log",
+  NULL,
 };
-struct _BstParamImpl rack_log_knob_real = {
-  "Knob (Logarithmic)", +5 /* rating */,
-  VKNOB,		BST_PARAM_EDITABLE,
-  SFI_SCAT_REAL,	"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-
-struct _BstParamImpl rack_dial_int = {
-  "Dial",		+5 /* rating */,
-  VDIAL,		BST_PARAM_EDITABLE,
-  SFI_SCAT_INT,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_dial_num = {
-  "Dial",		+5 /* rating */,
-  VDIAL,		BST_PARAM_EDITABLE,
-  SFI_SCAT_NUM,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_dial_real = {
-  "Dial",		+5 /* rating */,
-  VDIAL,		BST_PARAM_EDITABLE,
-  SFI_SCAT_REAL,	NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_dial_int = {
-  "Dial (Logarithmic)", +5 /* rating */,
-  VDIAL,		BST_PARAM_EDITABLE,
-  SFI_SCAT_INT,		"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_dial_num = {
-  "Dial (Logarithmic)", +5 /* rating */,
-  VDIAL,		BST_PARAM_EDITABLE,
-  SFI_SCAT_NUM,		"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_dial_real = {
-  "Dial (Logarithmic)", +5 /* rating */,
-  VDIAL,		BST_PARAM_EDITABLE,
-  SFI_SCAT_REAL,	"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-
-struct _BstParamImpl rack_vscale_int = {
-  "VScale",		+5 /* rating */,
-  VVSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_INT,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_vscale_num = {
-  "VScale",		+5 /* rating */,
-  VVSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_NUM,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_vscale_real = {
-  "VScale",		+5 /* rating */,
-  VVSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_REAL,	NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_vscale_int = {
-  "VScale (Logarithmic)", +5 /* rating */,
-  VVSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_INT,		"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_vscale_num = {
-  "VScale (Logarithmic)", +5 /* rating */,
-  VVSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_NUM,		"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_vscale_real = {
-  "VScale (Logarithmic)", +5 /* rating */,
-  VVSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_REAL,	"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-
-struct _BstParamImpl rack_hscale_int = {
-  "HScale",		+5 /* rating */,
-  VHSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_INT,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_hscale_num = {
-  "HScale",		+5 /* rating */,
-  VHSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_NUM,		NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_hscale_real = {
-  "HScale",		+5 /* rating */,
-  VHSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_REAL,	NULL /* hints */,
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_hscale_int = {
-  "HScale (Logarithmic)", +5 /* rating */,
-  VHSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_INT,		"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_hscale_num = {
-  "HScale (Logarithmic)", +5 /* rating */,
-  VHSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_NUM,		"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
-};
-struct _BstParamImpl rack_log_hscale_real = {
-  "HScale (Logarithmic)", +5 /* rating */,
-  VHSCALE,		BST_PARAM_EDITABLE,
-  SFI_SCAT_REAL,	"log-scale",
-  NULL, /* create_gmask */
-  param_scale_create_widget,
-  param_scale_update,
+static const gchar *param_scale_aliases2[] = {
+  "vscale",
+  "vscale-lin", "vscale-log",
+  NULL,
 };

@@ -1,3 +1,109 @@
+Wed Dec 10 08:34:10 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/Makefile.am: define GXK_COMPILATION when compiling GXK.
+
+	* beast-gtk/gxk/gxkglobals.h: provide i18n macros for GXK_COMPILATION.
+
+	* beast-gtk/gxk/gxkparam.[hc]: relicensed LGPL.
+	reused parts of the BstParam implementation to implement GxkParam.
+	GxkParam is a compound consisting of a pspec, a value and a binding
+	(to the target affected by the value).
+	imlpemented simple in-param GValue binding.
+	implemented seperate GxkParamEditor interface which allowes creation
+	of editing widgets for GxkParams.
+	added functions to implement logic shared by many editor
+	implementations (e.g. GtkAdjustment creation).
+
+	* beast-gtk/gxk/gxksimplelabel.c: changed use-underline
+	default to FALSE.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_option_menu_set_menu(), a
+	replacement for gtk_option_menu_set_menu() to allow accelerators in
+	menus. added g_option_check() wrappers to support options on
+	widgets: gxk_widget_add_option(), gxk_widget_check_option() and
+	gxk_widget_get_options().
+	(menu_position_func): fixed up push_in logic for gxk_menu_popup().
+	(gxk_widget_add_font_requisition): new function, adding up to a widgets
+	requisition the size required by a certain amount of characters and
+	digits.
+
+	* beast-gtk/gxk/gxkparam-spinner.c: 
+	* beast-gtk/gxk/gxkparam-toggle.c:
+	* beast-gtk/gxk/gxkparam-scale.c:
+	* beast-gtk/gxk/gxkparam-label.c:
+	* beast-gtk/gxk/gxkparam-entry.c: relicensed LGPL. removed cruft and
+	cleaned up code, ported to GxkParam.
+
+	* beast-gtk/gxk/gxkparam-toggle.c: determine toggle/check/radio
+	appearance from pspec options.
+
+	* beast-gtk/gxk/gxkparam-spinner.c: added type dependant size
+	requisition.
+
+	* beast-gtk/gxk/gxkparam-label.c: support pspec name as well as string
+	parameter display.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: implemented free-radio-button,
+	added ::push-in property to menu-buttons (similar to the push-in
+	behaviour option-menus always exhibit).
+
+	* beast-gtk/gxk/gxkgadget.c: adde dmore widget types.
+
+	* beast-gtk/bstutils.[hc]: added spacing to auxillary gmask widgets.
+	made config settings globally available through means of BST_GCONFIG().
+
+	* beast-gtk/bstrecords.idl: added size_group_input_fields config field.
+
+	* beast-gtk/bstrackitem.[hc]:
+	* beast-gtk/bstprocedure.[hc]:
+	* beast-gtk/bstpreferences.[hc]:
+	* beast-gtk/bstpartdialog.[hc]:
+	* beast-gtk/bstparamview.[hc]: ported from BstParam to GxkParam.
+
+	* beast-gtk/bstparam.[hc]: removed BstParam implementation. made code
+	dependant on and supplementing GxkParam.
+
+	* beast-gtk/bstparam-choice.c: adapted to GxkParam, provide alternating
+	implementations, one for option menus, one for menu buttons.
+
+	* beast-gtk/bstparam-time.c: adapted to GxkParam, code cleanups,
+	removed note specific handling, added more sophisticated size
+	requisition for time entries.
+
+	* beast-gtk/bstparam-searchpath.c: reduced implementation to simple
+	searchpath additions to a normal entry.
+
+	* beast-gtk/bstparam-scale.c: adapted to GxkParam, code cleanups,
+	majorly simplyfied iumlpementation.
+
+	* beast-gtk/bstparam-note-spinner.c: adapted to GxkParam, code cleanups.
+	switched to using GtkSpinButton.
+
+	* beast-gtk/bstparam-note-sequence.c:
+	* beast-gtk/bstparam-proxy.c: adapted to GxkParam, code cleanups.
+	
+	* beast-gtk/bstparam-entry.c:
+	* beast-gtk/bstparam-label.c:
+	* beast-gtk/bstparam-spinner.c:
+	* beast-gtk/bstparam-strnum.c:
+	* beast-gtk/bstparam-toggle.c: removed these files. GxkParam
+	provides suitable alternatives.
+	
+	* beast-gtk/bstcluehunter.[hc]: removed ::align-width propety and
+	added ::align-widget with which a widget can be specified that the
+	cluehunter popup window is to be aligned to. applied a couple fixups
+	to the popup window sizing and positioning logic.
+	use gxk_grab_pointer_and_keyboard() for grabs.
+
+	* beast-gtk/bstdefs.h: cleanups.
+
+	* beast-gtk/bstgconfig.[hc]: implemented helper for config
+	structure accesses.
+
+	* beast-gtk/bstxframe.cfixed default visibility.
+
+	* beast-gtk/bstsequence.c: be visible by default.
+
 Mon Dec  8 13:40:16 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam-time.c: CVS-copied from bstparam-strnum.c.

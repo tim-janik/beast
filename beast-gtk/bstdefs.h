@@ -85,14 +85,9 @@ typedef enum /*< skip >*/
 
 
 /* --- i18n and gettext helpers --- */
-#define CKEY(x) x
-#define _(str)		dgettext (NULL, str)
-#define T_(str)		dgettext (NULL, str)
-#ifdef gettext_noop
-#  define N_(str)	gettext_noop (str)
-#else
-#  define N_(str)	(str)
-#endif
+#define _(str)	dgettext (NULL, str)
+#define T_(str)	dgettext (NULL, str)
+#define N_(str)	(str)
 
 
 /* --- internal stuff --- */

@@ -1054,7 +1054,10 @@ bst_gmask_pack (BstGMask *mask)
     }
   c++;
   if (aux1)
-    gtk_table_attach (table, aux1, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
+    {
+      gtk_table_attach (table, aux1, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
+      gtk_table_set_col_spacing (table, c, 3); /* aux1 spacing */
+    }
   c++;
   if (!aux2 && !dislodge_columns)
     {
@@ -1082,10 +1085,15 @@ bst_gmask_pack (BstGMask *mask)
                         row, row + 1, GTK_EXPAND | GTK_FILL, 0, 0, 0);
       if (dummy_aux2)
         aux2 = NULL;
+      if (aux2)
+        gtk_table_set_col_spacing (table, c, 3); /* aux2 spacing */
     }
   c++;
   if (aux3)
-    gtk_table_attach (table, aux3, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
+    {
+      gtk_table_attach (table, aux3, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
+      gtk_table_set_col_spacing (table, c, 3); /* aux3 spacing */
+    }
   c++;
   /* pack action with head and tail widgets closely together */
   if (ahead || atail)
@@ -1145,10 +1153,10 @@ bst_gmask_pack (BstGMask *mask)
                     GTK_SHRINK | GTK_FILL,
                     GTK_FILL,
                     0, 0);
-  gtk_table_set_col_spacing (table, c - 1, 2); /* seperate action from rest */
+  gtk_table_set_col_spacing (table, c - 1, 3); /* seperate action from rest */
   c = 6 * gmask->column;
   if (c)
-    gtk_table_set_col_spacing (table, c - 1, 5); /* spacing between columns */
+    gtk_table_set_col_spacing (table, c - 1, 5); /* spacing between gmask columns */
 }
 
 /**

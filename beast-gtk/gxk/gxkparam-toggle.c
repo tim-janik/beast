@@ -1,140 +1,73 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 2002-2003 Tim Janik
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
+#include "gxksimplelabel.h"
+#include "gxkauxwidgets.h"
 
-enum {
-  VRADIOBUTTON,
-  VCHECKBUTTON,
-  VTOGGLEBUTTON,
-};
-
-
-/* --- boolean parameters --- */
+/* --- toggle/check button editors --- */
 static void
 param_toggle_change_value (GtkWidget *toggle,
-			   BstParam  *bparam)
+			   GxkParam  *param)
 {
-  if (!bparam->updating)
+  if (!param->updating)
     {
-      sfi_value_set_bool (&bparam->value, GTK_TOGGLE_BUTTON (toggle)->active);
-      bst_param_apply_value (bparam);
+      g_value_set_boolean (&param->value, GTK_TOGGLE_BUTTON (toggle)->active);
+      gxk_param_apply_value (param);
     }
 }
 
-static BstGMask*
-param_toggle_create_gmask (BstParam    *bparam,
-			   const gchar *tooltip,
-			   GtkWidget   *gmask_parent)
-{
-  GtkWidget *action, *prompt, *xframe;
-  BstGMask *gmask;
-  gboolean radio = sfi_pspec_check_option (bparam->pspec, "radio");
-  gboolean trigger = sfi_pspec_check_option (bparam->pspec, "trigger");
-
-  action = g_object_new (radio ? BST_TYPE_FREE_RADIO_BUTTON :
-                         trigger ? GTK_TYPE_TOGGLE_BUTTON :
-                         GTK_TYPE_CHECK_BUTTON,
-			 "visible", TRUE,
-			 NULL);
-  g_object_connect (action,
-		    "signal::clicked", param_toggle_change_value, bparam,
-		    NULL);
-  xframe = g_object_new (BST_TYPE_XFRAME,
-			 "visible", TRUE,
-			 "parent", action,
-			 "cover", action,
-			 "steal_button", TRUE,
-			 NULL);
-  g_object_connect (xframe,
-		    "swapped_signal::button_check", bst_param_xframe_check_button, bparam,
-		    NULL);
-  prompt = g_object_new (GTK_TYPE_LABEL,
-			 "visible", TRUE,
-			 "label", g_param_spec_get_nick (bparam->pspec),
-			 "parent", xframe,
-			 NULL);
-  gtk_misc_set_alignment (GTK_MISC (prompt), 0, 0.5);
-  gmask = bst_gmask_form (gmask_parent, action, trigger ? BST_GMASK_CENTER : BST_GMASK_BIG);
-  bst_gmask_set_tip (gmask, tooltip);
-
-  return gmask;
-}
-
 static GtkWidget*
-param_toggle_create_widget (BstParam    *bparam,
-			    const gchar *tooltip)
+param_toggle_create (GxkParam    *param,
+                     const gchar *tooltip,
+                     guint        variant)
 {
-  GtkWidget *action, *prompt;
-
-  action = g_object_new (bparam->impl->variant == VCHECKBUTTON ? GTK_TYPE_CHECK_BUTTON :
-			 bparam->impl->variant == VRADIOBUTTON ? GTK_TYPE_RADIO_BUTTON :
-			 GTK_TYPE_TOGGLE_BUTTON,
-			 "visible", TRUE,
-			 NULL);
-  g_object_connect (action,
-		    "signal::clicked", param_toggle_change_value, bparam,
+  GtkWidget *widget;
+  GType type = GTK_TYPE_CHECK_BUTTON;
+  if (g_param_spec_check_option (param->pspec, "trigger"))
+    type = GTK_TYPE_TOGGLE_BUTTON;
+  if (g_param_spec_check_option (param->pspec, "radio"))
+    type = GXK_TYPE_FREE_RADIO_BUTTON;
+  widget = g_object_new (type,
+                         "visible", TRUE,
+                         NULL);
+  g_object_connect (widget,
+		    "signal::clicked", param_toggle_change_value, param,
 		    NULL);
-  prompt = g_object_new (GTK_TYPE_LABEL,
-			 "visible", TRUE,
-			 "label", g_param_spec_get_nick (bparam->pspec),
-			 "parent", action,
-			 NULL);
-  return action;
+  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  g_object_new (GXK_TYPE_SIMPLE_LABEL,
+                "visible", TRUE,
+                "use-underline", FALSE,
+                "label", g_param_spec_get_nick (param->pspec),
+                "parent", widget,
+                NULL);
+  return widget;
 }
 
 static void
-param_toggle_update (BstParam  *bparam,
-		     GtkWidget *action)
+param_toggle_update (GxkParam  *param,
+		     GtkWidget *widget)
 {
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (action), sfi_value_get_bool (&bparam->value));
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), g_value_get_boolean (&param->value));
 }
 
-struct _BstParamImpl param_check_button = {
-  "CheckButton",	0 /* rating */,
-  0 /* variant */,	BST_PARAM_EDITABLE,
-  SFI_SCAT_BOOL,	NULL /* hints */,
-  param_toggle_create_gmask,
-  NULL, /* create_widget */
-  param_toggle_update,
-};
-
-struct _BstParamImpl rack_toggle_button = {
-  "ToggleButton",	0 /* rating */,
-  VTOGGLEBUTTON,	BST_PARAM_EDITABLE,
-  SFI_SCAT_BOOL,	NULL /* hints */,
-  NULL, /* create_gmask */
-  param_toggle_create_widget,
-  param_toggle_update,
-};
-
-struct _BstParamImpl rack_check_button = {
-  "CheckButton",	+1 /* rating */,
-  VCHECKBUTTON,		BST_PARAM_EDITABLE,
-  SFI_SCAT_BOOL,	NULL /* hints */,
-  NULL, /* create_gmask */
-  param_toggle_create_widget,
-  param_toggle_update,
-};
-
-struct _BstParamImpl rack_radio_button = {
-  "RadioButton",	0 /* rating */,
-  VRADIOBUTTON,		BST_PARAM_EDITABLE,
-  SFI_SCAT_BOOL,	"radio" /* hints */,
-  NULL, /* create_gmask */
-  param_toggle_create_widget,
-  param_toggle_update,
+static GxkParamEditor param_toggle = {
+  { "toggle",           N_("Toggle Button"), },
+  { G_TYPE_BOOLEAN, },
+  { NULL,         +5,   TRUE, },        /* options, rating, editing */
+  param_toggle_create, param_toggle_update,
 };

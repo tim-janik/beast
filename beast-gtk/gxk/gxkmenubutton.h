@@ -24,7 +24,6 @@
 
 G_BEGIN_DECLS
 
-
 /* --- menu item --- */
 #define GXK_TYPE_MENU_ITEM              (gxk_menu_item_get_type ())
 #define GXK_MENU_ITEM(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_MENU_ITEM, GxkMenuItem))
@@ -36,6 +35,17 @@ typedef GtkImageMenuItem      GxkMenuItem;
 typedef GtkImageMenuItemClass GxkMenuItemClass;
 GType   gxk_menu_item_get_type          (void);
 
+/* --- free radio button --- */
+#define GXK_TYPE_FREE_RADIO_BUTTON            (gxk_free_radio_button_get_type ())
+#define GXK_FREE_RADIO_BUTTON(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GXK_TYPE_FREE_RADIO_BUTTON, GxkFreeRadioButton))
+#define GXK_FREE_RADIO_BUTTON_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_FREE_RADIO_BUTTON, GxkFreeRadioButtonClass))
+#define GXK_IS_FREE_RADIO_BUTTON(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GXK_TYPE_FREE_RADIO_BUTTON))
+#define GXK_IS_FREE_RADIO_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_FREE_RADIO_BUTTON))
+#define GXK_FREE_RADIO_BUTTON_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GXK_TYPE_FREE_RADIO_BUTTON, GxkFreeRadioButtonClass))
+typedef GtkRadioButton      GxkFreeRadioButton;
+typedef GtkRadioButtonClass GxkFreeRadioButtonClass;
+GType      gxk_free_radio_button_get_type (void);
+GtkWidget* gxk_free_radio_button_new      (void);
 
 /* --- image --- */
 #define GXK_TYPE_IMAGE              (gxk_image_get_type ())
@@ -47,7 +57,6 @@ GType   gxk_menu_item_get_type          (void);
 typedef GtkImage      GxkImage;
 typedef GtkImageClass GxkImageClass;
 GType   gxk_image_get_type              (void);
-
 
 /* --- widget-patcher --- */
 #define GXK_TYPE_WIDGET_PATCHER              (gxk_widget_patcher_get_type ())
@@ -74,7 +83,6 @@ extern const GxkGadgetType *_gxk_widget_patcher_def;
 
 const gchar*    gxk_widget_get_latent_tooltip (GtkWidget *widget);
 
-
 /* --- menu button --- */
 #define GXK_TYPE_MENU_BUTTON              (gxk_menu_button_get_type ())
 #define GXK_MENU_BUTTON(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_MENU_BUTTON, GxkMenuButton))
@@ -93,6 +101,7 @@ typedef struct {
   gint       width, height;
   guint      show_selection : 1;
   guint      combo_arrow : 1;
+  guint      push_in : 1;
 } GxkMenuButton;
 typedef GtkButtonClass GxkMenuButtonClass;
 GType   gxk_menu_button_get_type          (void);

@@ -46,7 +46,7 @@ typedef struct {
   GParamSpec      *pspec;
   gchar           *ctype;
   
-  BstParam      *bparam;
+  GxkParam      *param;
 } BstRackItem;
 typedef struct _GxkRackItemClass BstRackItemClass;
 

@@ -79,7 +79,7 @@ static void
 bst_param_view_init (BstParamView *self)
 {
   self->item = 0;
-  self->bparams = NULL;
+  self->params = NULL;
 
   self->first_base_type = g_strdup ("BseObject");
   self->last_base_type = NULL;
@@ -92,8 +92,8 @@ static void
 bst_param_view_destroy_contents (BstParamView *self)
 {
   gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
-  while (self->bparams)
-    bst_param_destroy (g_slist_pop_head (&self->bparams));
+  while (self->params)
+    gxk_param_destroy (g_slist_pop_head (&self->params));
 }
 
 static void
@@ -172,7 +172,7 @@ bst_param_view_set_item (BstParamView *self,
 			    NULL);
       self->item = 0;
       
-      for (slist = self->bparams; slist; slist = slist->next)
+      for (slist = self->params; slist; slist = slist->next)
 	bst_param_set_proxy (slist->data, 0);
     }
 
@@ -218,8 +218,8 @@ bst_param_view_apply_defaults (BstParamView *self)
     {
       GSList *slist;
       bse_item_group_undo (self->item, "Reset to defaults");
-      for (slist = self->bparams; slist; slist = slist->next)
-        bst_param_apply_default (slist->data);
+      for (slist = self->params; slist; slist = slist->next)
+        gxk_param_apply_default (slist->data);
       bse_item_ungroup_undo (self->item);
     }
 }
@@ -248,26 +248,25 @@ bst_param_view_rebuild (BstParamView *self)
     if ((!self->reject_pattern || !g_pattern_match_string (self->reject_pattern, pstrings[i])) &&
 	(!self->match_pattern || g_pattern_match_string (self->reject_pattern, pstrings[i])))
       {
-	GParamSpec *pspec = bse_proxy_get_pspec (self->item, pstrings[i]);
+        GParamSpec *pspec = bse_proxy_get_pspec (self->item, pstrings[i]);
 	const gchar *param_group = sfi_pspec_get_group (pspec);
-
 	if (sfi_pspec_check_option (pspec, "G") && /* GUI representable */
             ((pspec->flags & G_PARAM_WRITABLE) || BST_DVL_HINTS))
 	  {
-	    BstParam *bparam = bst_param_proxy_create (pspec, FALSE, NULL, self->item);
-	    if (param_group)
-	      {
-		if (!gcontainer)
-		  gcontainer = g_object_new (GTK_TYPE_VBOX, NULL);
-		bst_param_pack_property (bparam, gcontainer);
-	      }
-	    else
-	      {
-		if (!ncontainer)
-		  ncontainer = g_object_new (GTK_TYPE_VBOX, NULL);
-		bst_param_pack_property (bparam, ncontainer);
-	      }
-	    self->bparams = g_slist_prepend (self->bparams, bparam);
+            GxkParam *param = bst_param_new_proxy (pspec, self->item);
+            if (param_group)
+              {
+                if (!gcontainer)
+                  gcontainer = g_object_new (GTK_TYPE_VBOX, NULL);
+                bst_param_create_gmask (param, NULL, gcontainer);
+              }
+            else
+              {
+                if (!ncontainer)
+                  ncontainer = g_object_new (GTK_TYPE_VBOX, NULL);
+                bst_param_create_gmask (param, NULL, ncontainer);
+              }
+            self->params = g_slist_prepend (self->params, param);
 	  }
       }
 
@@ -315,6 +314,6 @@ bst_param_view_rebuild (BstParamView *self)
     }
 
   /* refresh parameter fields */
-  for (slist = self->bparams; slist; slist = slist->next)
-    bst_param_update (slist->data);
+  for (slist = self->params; slist; slist = slist->next)
+    gxk_param_update (slist->data);
 }

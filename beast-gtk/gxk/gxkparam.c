@@ -1,91 +1,609 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 2002-2003 Tim Janik
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
-#include "bstparam.h"
+#include "gxkparam.h"
+#include "gxklogadjustment.h"
+#include <string.h>
+#include <libintl.h>
 
-/* xframe rack view support */
-#include "bstxframe.h"
-#include "bstrackeditor.h"
-#include "bstapp.h"
-#include "bstdial.h"
-#include "bstlogadjustment.h"
-#include "bstsequence.h"
-
-
-/* --- prototypes --- */
-static BstParamImpl* bst_param_lookup_impl	(GParamSpec	 *pspec,
-						 gboolean	  rack_widget,
-						 const gchar	 *name,
-						 BstParamBinding *binding);
-
-
-/* --- variable --- */
-static GQuark quark_null_group = 0;
-static GQuark quark_param_choice_values = 0;
-
-
-/* --- param implementation utils --- */
-void
-_bst_init_params (void)
+/* --- GxkParam functions --- */
+static void
+param_update_flags (GxkParam *param)
 {
-  g_assert (quark_null_group == 0);
+  param->editable = !param->constant;
+  param->sensitive = param->constant || (!param->treadonly && param->ueditable);
+}
 
-  quark_null_group = g_quark_from_static_string ("bst-param-null-group");
-  quark_param_choice_values = g_quark_from_static_string ("bst-param-choice-values");
+static GxkParam*
+param_new (GParamSpec      *pspec,
+           gboolean         is_constant,
+           GxkParamBinding *binding,
+           gpointer         user_data)
+{
+  GxkParam *param = g_malloc0 (sizeof (GxkParam) + sizeof (param->bdata[0]) * (MAX (binding->n_data_fields, 1) - 1));
+  param->pspec = g_param_spec_ref (pspec);
+  g_param_spec_sink (pspec);
+  g_value_init (&param->value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+  g_param_value_set_default (param->pspec, &param->value);
+  param->objects = NULL;
+  param->constant = is_constant ||
+                    !(pspec->flags & G_PARAM_WRITABLE) ||
+                    g_param_spec_check_option (pspec, "ro");
+  param->ueditable = TRUE;
+  param->binding = binding;
+  if (param->binding->setup)
+    {
+      param_update_flags (param);
+      param->binding->setup (param, user_data);
+      /* setup may change param->constant */
+    }
+  param_update_flags (param);
+  return param;
+}
+
+GxkParam*
+gxk_param_new (GParamSpec      *pspec,
+               GxkParamBinding *binding,
+               gpointer         user_data)
+{
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  g_return_val_if_fail (binding != NULL, NULL);
+  return param_new (pspec, FALSE, binding, user_data);
+}
+
+GxkParam*
+gxk_param_new_constant (GParamSpec      *pspec,
+                        GxkParamBinding *binding,
+                        gpointer         user_data)
+{
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
+  g_return_val_if_fail (binding != NULL, NULL);
+  return param_new (pspec, TRUE, binding, user_data);
+}
+
+static void
+param_call_update (GxkParam *param,
+                   gpointer object)
+{
+  GxkParamUpdateFunc ufunc = g_object_get_data (object, "GxkParamUpdateFunc");
+  if (ufunc)
+    ufunc (param, object);
+}
+
+void
+gxk_object_set_param_callback (GtkObject          *object,
+                               GxkParamUpdateFunc  ufunc)
+{
+  g_return_if_fail (GTK_IS_OBJECT (object));
+  g_object_set_data (object, "GxkParamUpdateFunc", ufunc);
+}
+
+void
+gxk_param_update (GxkParam *param)
+{
+  GSList *slist;
+  gboolean updating;
+  
+  g_return_if_fail (GXK_IS_PARAM (param));
+  
+  updating = param->updating;
+  param->updating = TRUE;
+  if (param->binding->get_value)
+    param->binding->get_value (param, &param->value);
+  param_update_flags (param);
+  slist = param->objects;
+  while (slist)
+    {
+      GObject *object = slist->data;
+      slist = slist->next;
+      param_call_update (param, object);
+    }
+  param->updating = updating;
+}
+
+void
+gxk_param_add_object (GxkParam          *param,
+                      GtkObject         *object)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  param->objects = g_slist_prepend (param->objects, g_object_ref (object));
+  g_object_connect (object, "swapped_signal::destroy", gxk_param_remove_object, param, NULL);
+  param_call_update (param, object);
+}
+
+void
+gxk_param_remove_object (GxkParam          *param,
+                         GtkObject         *object)
+{
+  GSList *slist;
+  g_return_if_fail (GXK_IS_PARAM (param));
+  slist = g_slist_find (param->objects, object);
+  g_return_if_fail (slist != NULL);
+  param->objects = g_slist_delete_link (param->objects, slist);
+  g_object_disconnect (object, "any_signal::destroy", gxk_param_remove_object, param, NULL);
+  g_object_unref (object);
+}
+
+void
+gxk_param_apply_value (GxkParam *param)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  if (param->updating)
+    {
+      g_warning ("%s: param (%p) currently in update", G_STRFUNC, param);
+      return;
+    }
+  if (param->binding->set_value)
+    {
+      param->binding->set_value (param, &param->value);
+      /* binding->set_value() is supposed to trigger gxk_param_update() sooner or later */
+    }
+  else
+    gxk_param_update (param);
+}
+
+void
+gxk_param_apply_default (GxkParam *param)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  if (!param->updating && param->editable && param->sensitive)
+    {
+      g_param_value_set_default (param->pspec, &param->value);
+      if (param->binding->set_value)
+        {
+          param->binding->set_value (param, &param->value);
+          /* binding->set_value() is supposed to trigger gxk_param_update() sooner or later */
+        }
+      else
+        gxk_param_update (param);
+    }
+}
+
+void
+gxk_param_set_editable (GxkParam *param,
+			gboolean  editable)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  editable = editable != FALSE;
+  if (param->ueditable != editable)
+    {
+      GSList *slist;
+      param->ueditable = editable;
+      param_update_flags (param);
+      slist = param->objects;
+      while (slist)
+        {
+          GObject *object = slist->data;
+          slist = slist->next;
+          param_call_update (param, object);
+        }
+    }
+}
+
+const gchar*
+gxk_param_get_name (GxkParam *param)
+{
+  g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
+  return param->pspec->name;
+}
+
+static gboolean _param_devel_tips = FALSE;
+void
+gxk_param_set_devel_tips (gboolean enabled)
+{
+  _param_devel_tips = enabled != FALSE;
+}
+
+gchar*
+gxk_param_dup_tooltip (GxkParam *param)
+{
+  gchar *tooltip;
+  const gchar *ctip;
+  g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
+  ctip = g_param_spec_get_blurb (param->pspec);
+  if (!_param_devel_tips)
+    tooltip = g_strdup (ctip);
+  else if (ctip)
+    tooltip = g_strdup_printf ("(%s): %s", g_param_spec_get_name (param->pspec), ctip);
+  else
+    tooltip = g_strdup_printf ("(%s)", g_param_spec_get_name (param->pspec));
+  return tooltip;
+}
+
+void
+gxk_param_destroy (GxkParam *param)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  g_return_if_fail (param->binding != NULL);
+  
+  while (param->objects)
+    {
+      GObject *object = param->objects->data;
+      if (GTK_IS_OBJECT (object))
+        gtk_object_destroy (GTK_OBJECT (object));
+      else
+        g_object_unref (object);
+    }
+  if (param->binding->destroy)
+    param->binding->destroy (param);
+  param->binding = NULL;
+  g_value_unset (&param->value);
+  g_param_spec_unref (param->pspec);
+  g_free (param);
 }
 
 
-gboolean
-bst_param_xframe_check_button (BstParam *bparam,
-			       guint     button)
+/* --- value binding --- */
+static void
+param_value_binding_setup (GxkParam       *param,
+                           gpointer        user_data)
 {
-  g_return_val_if_fail (bparam != NULL, FALSE);
+  if (user_data)
+    param->constant = TRUE;
+}
 
-  if (bparam->binding->rack_item)
+static void
+param_value_binding_set_value (GxkParam     *param,
+                               const GValue *value)
+{
+  GxkParamValueNotify notify = param->bdata[0].v_pointer;
+  g_value_copy (value, &param->value);
+  if (notify)
+    notify (param->bdata[1].v_pointer, param);
+  gxk_param_update (param);
+}
+
+static void
+param_value_binding_get_value (GxkParam *param,
+                               GValue   *value)
+{
+  g_value_copy (&param->value, value);
+}
+
+static void
+param_value_binding_destroy (GxkParam *param)
+{
+  param->bdata[0].v_pointer = NULL;
+  param->bdata[1].v_pointer = NULL;
+}
+
+static GxkParamBinding _param_value_binding = {
+  2,    /* fields: notify, notify_data */
+  param_value_binding_setup,
+  param_value_binding_set_value,
+  param_value_binding_get_value,
+  param_value_binding_destroy,
+  /* check_writable */
+};
+
+GxkParam*
+gxk_param_new_value (GParamSpec          *pspec,
+                     GxkParamValueNotify  notify,
+                     gpointer             notify_data)
+{
+  GxkParam *param = gxk_param_new (pspec, &_param_value_binding, (gpointer) FALSE);
+  param->bdata[0].v_pointer = notify;
+  param->bdata[1].v_pointer = notify_data;
+  return param;
+}
+
+GxkParam*
+gxk_param_new_constant_value (GParamSpec          *pspec,
+                              GxkParamValueNotify  notify,
+                              gpointer             notify_data)
+{
+  GxkParam *param = gxk_param_new (pspec, &_param_value_binding, (gpointer) TRUE);
+  param->bdata[0].v_pointer = notify;
+  param->bdata[1].v_pointer = notify_data;
+  return param;
+}
+
+
+/* --- param view/editor --- */
+static GSList *_param_editor_list = NULL;
+static void
+param_register_editor (GxkParamEditor *editor,
+                       const gchar    *i18n_domain)
+{
+  editor->ident.nick = dgettext (i18n_domain, editor->ident.nick);
+  _param_editor_list = g_slist_prepend (_param_editor_list, (GxkParamEditor*) editor);
+}
+
+static void
+params_register_editor_dup_typed (GxkParamEditor *editor,
+                                  const gchar    *i18n_domain,
+                                  GType           new_type)
+{
+  GxkParamEditor *ed = g_memdup (editor, sizeof (editor[0]));
+  ed->type_match.type = new_type;
+  param_register_editor (ed, GXK_I18N_DOMAIN);
+}
+
+void
+gxk_param_register_editor (GxkParamEditor *editor,
+                           const gchar    *i18n_domain)
+{
+  if (editor->type_match.all_int_nums)
     {
-      SfiProxy item = bparam->binding->rack_item (bparam);
+      g_return_if_fail (editor->type_match.type == G_TYPE_NONE);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_CHAR);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_UCHAR);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_INT);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_UINT);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_LONG);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_ULONG);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_INT64);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_UINT64);
+    }
+  if (editor->type_match.all_float_nums)
+    {
+      g_return_if_fail (editor->type_match.type == G_TYPE_NONE);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_FLOAT);
+      params_register_editor_dup_typed (editor, i18n_domain, G_TYPE_DOUBLE);
+    }
+  if (!editor->type_match.all_int_nums && !editor->type_match.all_float_nums)
+    {
+      g_return_if_fail (editor->type_match.type != G_TYPE_NONE);
+      param_register_editor (editor, i18n_domain);
+    }
+}
 
-      if (BSE_IS_ITEM (item))
-	{
-	  SfiProxy project = bse_item_get_project (item);
-	  
-	  if (project)
-	    {
-	      BstApp *app = bst_app_find (project);
-	      
-	      if (app && app->rack_editor && BST_RACK_EDITOR (app->rack_editor)->rtable->edit_mode)
-		{
-		  if (button == 1)
-		    bst_rack_editor_add_property (BST_RACK_EDITOR (app->rack_editor), item, bparam->pspec->name);
-		  return TRUE;
-		}
-	    }
-	}
+gchar**
+gxk_param_list_editors (void)
+{
+  guint i, j, l = g_slist_length (_param_editor_list);
+  gchar **names = g_new (gchar*, l + 1);
+  GSList *slist = _param_editor_list;
+  for (i = 0; slist; slist = slist->next)
+    {
+      GxkParamEditor *editor = slist->data;
+      for (j = 0; j < i; j++)   /* find dups */
+        if (strcmp (names[j], editor->ident.name) == 0)
+          break;
+      if (j < i)
+        continue;               /* avoid dups */
+      names[i++] = g_strdup (editor->ident.name);
+    }
+  names[i] = NULL;
+  return names;
+}
+
+static guint          _param_editor_name_n_aliases = 0;
+static const gchar ***_param_editor_name_aliases = NULL;
+
+void
+gxk_param_register_aliases (const gchar **aliases)
+{
+  if (aliases && aliases[0] && aliases[1])
+    {
+      guint i = _param_editor_name_n_aliases++;
+      _param_editor_name_aliases = g_renew (const gchar**, _param_editor_name_aliases, _param_editor_name_n_aliases);
+      _param_editor_name_aliases[i] = aliases;
+    }
+}
+
+static gboolean
+param_editor_name_match (const gchar          *editor_name,
+                         const GxkParamEditor *editor)
+{
+  guint i;
+  if (!editor_name || !editor_name[0] || strcmp (editor_name, editor->ident.name) == 0)
+    return TRUE;
+  for (i = 0; i < _param_editor_name_n_aliases; i++)
+    {
+      const gchar **aliases = _param_editor_name_aliases[i];
+      if (strcmp (editor_name, aliases[0]) == 0)
+        {
+          guint j = 1;
+          while (aliases[j])
+            if (strcmp (aliases[j], editor->ident.name) == 0)
+              return TRUE;
+            else
+              j++;
+        }
     }
   return FALSE;
 }
 
+static guint
+param_score_editor (const GxkParamEditor *editor,
+                    GParamSpec           *pspec)
+{
+  gboolean fundamental_specific, type_mismatch = FALSE, type_specific = FALSE;
+  guint8 bonus = 0, type_distance = 0;
+  GType vtype = G_PARAM_SPEC_VALUE_TYPE (pspec);
+  GType etype = editor->type_match.type;
+  guint rating = 0;
+  gboolean is_editable = editor->features.editing;
+  if (editor->type_match.type_name)
+    {
+      GType ftype = etype;
+      etype = g_type_from_name (editor->type_match.type_name);
+      type_mismatch |= etype == 0;
+      if (ftype)
+        type_mismatch |= !g_type_is_a (etype, ftype);
+      bonus++;
+    }
+  fundamental_specific = etype != 0;
+  if (etype)
+    {
+      type_specific = !G_TYPE_IS_FUNDAMENTAL (etype);
+      is_editable &= g_type_is_a (etype, vtype);	/* write value */
+      type_mismatch |= !g_type_is_a (vtype, etype);     /* read value */
+      type_distance = g_type_depth (vtype) - g_type_depth (etype);
+    }
+  if (editor->features.options)
+    {
+      type_mismatch |= !g_param_spec_provides_options (pspec, editor->features.options);
+      bonus++;
+    }
+  
+  if (type_mismatch)    /* bail out on mismatches */
+    return 0;
+  
+  rating |= 256 - type_distance;
+  rating <<= 1;
+  rating |= is_editable;
+  rating <<= 1;
+  rating |= fundamental_specific;
+  rating <<= 1;
+  rating |= type_specific;
+  rating <<= 8;
+  rating += 128 + editor->features.rating;      /* rating is signed, 8bit */
+  rating <<= 8;
+  rating += bonus;      /* bonus is provided for overcomming additional mismatch possibilities */
+  
+  return rating;
+}
+
+static GxkParamEditor*
+param_lookup_editor (const gchar *editor_name,
+                     GParamSpec  *pspec)
+{
+  GxkParamEditor *best = NULL;
+  guint rating = 0;             /* threshold for mismatch */
+  GSList *slist;
+  for (slist = _param_editor_list; slist; slist = slist->next)
+    {
+      GxkParamEditor *editor = slist->data;
+      if (param_editor_name_match (editor_name, editor))
+        {
+          guint r = param_score_editor (editor, pspec);
+          if (r > rating)       /* only notice improvements */
+            {
+              best = editor;
+              rating = r;
+            }
+        }
+    }
+  if (!best)                    /* if editor_name!=NULL, best might be NULL */
+    best = param_lookup_editor (NULL, pspec);
+  return best;
+}
+
+guint
+gxk_param_editor_score (const gchar *editor_name,
+                        GParamSpec  *pspec)
+{
+  guint rating = 0;             /* threshold for mismatch */
+  GSList *slist;
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  g_return_val_if_fail (editor_name != NULL, 0);
+  for (slist = _param_editor_list; slist; slist = slist->next)
+    {
+      GxkParamEditor *editor = slist->data;
+      if (param_editor_name_match (editor_name, editor))
+        {
+          guint r = param_score_editor (editor, pspec);
+          rating = MAX (r, rating);
+        }
+    }
+  return rating;
+}
+
+const gchar*
+gxk_param_lookup_editor (const gchar *editor_name,
+                         GParamSpec  *pspec)
+{
+  g_return_val_if_fail (editor_name != NULL, 0);
+  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
+  return param_lookup_editor (editor_name, pspec)->ident.name;
+}
+
+GtkWidget*
+gxk_param_create_editor (GxkParam               *param,
+                         const gchar            *editor_name)
+{
+  GxkParamEditor *editor = param_lookup_editor (editor_name, param->pspec);
+  gchar *tooltip = gxk_param_dup_tooltip (param);
+  GtkWidget *widget = editor->create_widget (param, tooltip, editor->variant);
+  g_free (tooltip);
+  gxk_object_set_param_callback (GTK_OBJECT (widget), (gpointer) editor->update);
+  gxk_param_add_object (param, GTK_OBJECT (widget));
+  return widget;
+}
+
+/* --- param editor sizes --- */
+static const GxkParamEditorSizes param_editor_default_sizes = {
+  1, 3,         /* char */
+  0, 3,         /* uchar */
+  1, 10,        /* int */
+  0, 10,        /* uint */
+#if GLIB_SIZEOF_LONG <= 4
+  1, 10,        /* long */
+  0, 10,        /* ulong */
+#else
+  1, 19,        /* long */
+  0, 20,        /* ulong */
+#endif
+  1, 19,        /* int64 */
+  0, 20,        /* uint64 */
+  2, 7,         /* float */
+  2, 17,        /* double */
+  8, 2,         /* string */
+};
+static GxkParamEditorSizes param_editor_sizes;
+
+const GxkParamEditorSizes*
+gxk_param_get_editor_sizes (void)
+{
+  return &param_editor_sizes;
+}
+
+void
+gxk_param_set_editor_sizes (const GxkParamEditorSizes *esizes)
+{
+  param_editor_sizes = esizes ? *esizes : param_editor_default_sizes;
+}
+
+/* --- param editor widgets --- */
+#include "gxkparam-entry.c"
+#include "gxkparam-label.c"
+#include "gxkparam-scale.c"
+#include "gxkparam-spinner.c"
+#include "gxkparam-toggle.c"
+
+void
+_gxk_init_params (void)
+{
+  param_editor_sizes = param_editor_default_sizes;
+  gxk_param_register_editor (&param_entry, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_label1, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_label2, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_scale1, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_scale2, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_scale3, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_scale4, GXK_I18N_DOMAIN);
+  gxk_param_register_aliases (param_scale_aliases1);
+  gxk_param_register_aliases (param_scale_aliases2);
+  gxk_param_register_editor (&param_spinner1, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_spinner2, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_toggle, GXK_I18N_DOMAIN);
+}
+
+/* --- param implementation utils --- */
 gboolean
-bst_param_entry_key_press (GtkEntry    *entry,
+gxk_param_entry_key_press (GtkEntry    *entry,
 			   GdkEventKey *event)
 {
   GtkEditable *editable = GTK_EDITABLE (entry);
   gboolean intercept = FALSE;
-
+  
   if (event->state & GDK_MOD1_MASK)
     switch (event->keyval)
       {
@@ -104,739 +622,200 @@ bst_param_entry_key_press (GtkEntry    *entry,
   return intercept;
 }
 
+void
+gxk_param_entry_set_text (GxkParam    *param,
+                          GtkWidget   *_entry,
+                          const gchar *text)
+{
+  GtkEntry *entry = (GtkEntry*) _entry;
+  g_return_if_fail (GTK_IS_ENTRY (entry));
+  if (!text)
+    text = "";
+  if (!g_str_equal (gtk_entry_get_text (entry), text))
+    {
+      gtk_entry_set_text (entry, text);
+      gtk_editable_set_position ((GtkEditable*) entry, param->editable ? G_MAXINT : 0);
+    }
+}
+
+static void
+gxk_entry_changed_marshaller (GClosure       *closure,
+                              GValue         *return_value,
+                              guint           n_param_values,
+                              const GValue   *param_values,
+                              gpointer        invocation_hint,
+                              gpointer        marshal_data)
+{
+  GCClosure *cclosure = (GCClosure*) closure;
+  void (*changed) (GtkWidget*, GxkParam*) = cclosure->callback;
+  GxkParam *param = closure->data;
+  if (!param->updating)
+    changed (g_value_get_object (param_values + 0), param);
+}
+
+void
+gxk_param_entry_connect_handlers (GxkParam    *param,
+                                  GtkWidget   *entry,
+                                  void       (*changed) (GtkWidget*,
+                                                         GxkParam*))
+{
+  g_signal_connect_data (entry, "key-press-event", G_CALLBACK (gxk_param_entry_key_press), NULL, NULL, 0);
+  if (changed)
+    {
+      GClosure *closure = g_cclosure_new (G_CALLBACK (changed), param, NULL);
+      g_closure_set_marshal (closure, gxk_entry_changed_marshaller);
+      g_signal_connect_closure (entry, "activate", closure, FALSE);
+      g_signal_connect_closure (entry, "focus-out-event", closure, FALSE);
+    }
+}
+
 gboolean
-bst_param_ensure_focus (GtkWidget *widget)
+gxk_param_ensure_focus (GtkWidget *widget)
 {
   gtk_widget_grab_focus (widget);
   return FALSE;
 }
 
-/* --- BParam functions --- */
 static void
-bst_param_update_sensitivity (BstParam *bparam)
+param_adjustment_update (GxkParam       *param,
+                         GtkObject      *object)
 {
-  bparam->writable = (!bparam->readonly &&
-		      bparam->editable &&
-		      (!bparam->binding->check_writable ||
-		       bparam->binding->check_writable (bparam)));
-
-  if (BST_PARAM_IS_GMASK (bparam) && bparam->gdata.gmask)
-    bst_gmask_set_sensitive (bparam->gdata.gmask, bparam->writable);
-  else if (!BST_PARAM_IS_GMASK (bparam) && bparam->gdata.widget)
-    gtk_widget_set_sensitive (bparam->gdata.widget, bparam->writable);
-}
-
-BstParam*
-bst_param_alloc (BstParamImpl *impl,
-		 GParamSpec   *pspec)
-{
-  BstParam *bparam;
-  GType itype, vtype;
-
-  g_return_val_if_fail (impl != NULL, NULL);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
-  g_return_val_if_fail (!impl->create_gmask ^ !impl->create_widget, NULL);
-
-  bparam = g_new0 (BstParam, 1);
-  bparam->pspec = g_param_spec_ref (pspec);
-  g_param_spec_sink (pspec);
-  bparam->impl = impl;
-  vtype = G_PARAM_SPEC_VALUE_TYPE (pspec);
-  itype = sfi_category_type (bparam->impl->scat);
-  if (!itype)
-    itype = vtype;
-  g_value_init (&bparam->value, itype);
-  bparam->column = 0;
-  bparam->readonly = (!(bparam->impl->flags & BST_PARAM_EDITABLE) ||
-		      !(pspec->flags & G_PARAM_WRITABLE) ||
-		      sfi_pspec_check_option (pspec, "ro"));       /* read-only check */
-  if (!bparam->readonly)
-    bparam->readonly = !g_type_is_a (itype, vtype);
-  bparam->writable = FALSE;
-  bparam->editable = TRUE;
-  bparam->updating = FALSE;
-  bparam->gdata.widget = NULL;
-  return bparam;
-}
-
-void
-bst_param_update (BstParam *bparam)
-{
-  GtkWidget *action = NULL;
-  gboolean updating;
-  
-  g_return_if_fail (bparam != NULL);
-  
-  updating = bparam->updating;
-  bparam->updating = TRUE;
-  
-  if (BST_PARAM_IS_GMASK (bparam) && bparam->gdata.gmask)
-    action = bst_gmask_get_action (bparam->gdata.gmask);
-  else if (!BST_PARAM_IS_GMASK (bparam) && bparam->gdata.widget)
-    action = bparam->gdata.widget;
-  
-  bparam->binding->get_value (bparam, &bparam->value);
-  
-  if (action)
-    bparam->impl->update (bparam, action);
-  
-  bparam->writable = FALSE;
-  bst_param_update_sensitivity (bparam);
-  
-  bparam->updating = updating;
-}
-
-void
-bst_param_apply_value (BstParam *bparam)
-{
-  g_return_if_fail (bparam != NULL);
-
-  if (bparam->updating)
-    {
-      g_warning ("not applying value from parameter \"%s\" currently in update mode",
-		 bparam->impl->name);
-      return;
-    }
-  bparam->binding->set_value (bparam, &bparam->value);
-}
-
-void
-bst_param_apply_default (BstParam *bparam)
-{
-  g_return_if_fail (bparam != NULL);
-
-  if (!bparam->updating && bparam->writable)
-    {
-      GValue value = { 0, };
-      g_value_init (&value, G_VALUE_TYPE (&bparam->value));
-      g_param_value_set_default (bparam->pspec, &value);
-      bparam->binding->set_value (bparam, &value);
-      g_value_unset (&value);
-    }
-}
-
-void
-bst_param_set_editable (BstParam *bparam,
-			gboolean  editable)
-{
-  g_return_if_fail (bparam != NULL);
-
-  bparam->editable = editable != FALSE;
-  bst_param_update_sensitivity (bparam);
-}
-
-const gchar*
-bst_param_get_name (BstParam *bparam)
-{
-  g_return_val_if_fail (bparam != NULL, NULL);
-
-  return bparam->pspec->name;
-}
-
-const gchar*
-bst_param_get_view_name (BstParam *bparam)
-{
-  g_return_val_if_fail (bparam != NULL, NULL);
-
-  return bparam->impl->name;
-}
-
-static GtkWidget*
-bparam_make_container (GtkWidget *parent,
-		       GQuark     quark_group)
-{
-  GtkWidget *container;
-
-  container = bst_container_get_named_child (parent, quark_group ? quark_group : quark_null_group);
-  if (!container || !GTK_IS_CONTAINER (container))
-    {
-      GtkWidget *any;
-      container = bst_gmask_container_create (quark_group ? 5 : 0, FALSE);
-      if (quark_group)
-	any = gtk_widget_new (GTK_TYPE_FRAME,
-			      "visible", TRUE,
-			      "label", g_quark_to_string (quark_group),
-			      "child", container,
-			      NULL);
-      else
-	any = container;
-      if (GTK_IS_BOX (parent))
-	gtk_box_pack_start (GTK_BOX (parent), any, FALSE, TRUE, 0);
-      else if (GTK_IS_WRAP_BOX (parent))
-	gtk_container_add_with_properties (GTK_CONTAINER (parent), any,
-					   "hexpand", TRUE, "hfill", TRUE,
-					   "vexpand", FALSE, "vfill", TRUE,
-					   NULL);
-      else
-	gtk_container_add (GTK_CONTAINER (parent), any);
-      bst_container_set_named_child (parent, quark_group ? quark_group : quark_null_group, container);
-    }
-  return container;
-}
-
-static gchar*
-bst_param_create_tooltip (BstParam *bparam)
-{
-  gchar *tooltip = g_param_spec_get_blurb (bparam->pspec);
-  if (!BST_DVL_HINTS)
-    tooltip = g_strdup (tooltip);
-  else if (tooltip)
-    tooltip = g_strdup_printf ("(%s): %s", g_param_spec_get_name (bparam->pspec), tooltip);
-  else
-    tooltip = g_strdup_printf ("(%s)", g_param_spec_get_name (bparam->pspec));
-  return tooltip;
-}
-
-void
-bst_param_pack_property (BstParam       *bparam,
-			 GtkWidget      *parent)
-{
-  const gchar *group;
-  gchar *tooltip;
-
-  g_return_if_fail (bparam != NULL);
-  g_return_if_fail (GTK_IS_CONTAINER (parent));
-  g_return_if_fail (bparam->gdata.gmask == NULL);
-  g_return_if_fail (BST_PARAM_IS_GMASK (bparam));
-
-  bparam->updating = TRUE;
-  group = sfi_pspec_get_group (bparam->pspec);
-  parent = bparam_make_container (parent, group ? g_quark_from_string (group) : 0);
-  tooltip = bst_param_create_tooltip (bparam);
-  bparam->gdata.gmask = bparam->impl->create_gmask (bparam, tooltip, parent);
-  g_free (tooltip);
-  bst_gmask_ref (bparam->gdata.gmask);
-  bst_gmask_set_column (bparam->gdata.gmask, bparam->column);
-  bst_gmask_pack (bparam->gdata.gmask);
-  bparam->updating = FALSE;
-  bst_param_update_sensitivity (bparam); /* bst_param_update (bparam); */
-}
-
-GtkWidget*
-bst_param_rack_widget (BstParam *bparam)
-{
-  gchar *tooltip;
-
-  g_return_val_if_fail (bparam != NULL, NULL);
-  g_return_val_if_fail (bparam->gdata.widget == NULL, NULL);
-  g_return_val_if_fail (!BST_PARAM_IS_GMASK (bparam), NULL);
-
-  bparam->updating = TRUE;
-  tooltip = bst_param_create_tooltip (bparam);
-  bparam->gdata.widget = bparam->impl->create_widget (bparam, tooltip);
-  g_free (tooltip);
-  g_object_ref (bparam->gdata.widget);
-  bparam->updating = FALSE;
-  bst_param_update_sensitivity (bparam); /* bst_param_update (bparam); */
-  return gtk_widget_get_toplevel (bparam->gdata.widget);
-}
-
-void
-bst_param_destroy (BstParam *bparam)
-{
-  g_return_if_fail (bparam != NULL);
-  g_return_if_fail (bparam->binding != NULL);
-
-  if (bparam->binding->destroy)
-    bparam->binding->destroy (bparam);
-  bparam->binding = NULL;
-  if (BST_PARAM_IS_GMASK (bparam) && bparam->gdata.gmask)
-    {
-      bst_gmask_destroy (bparam->gdata.gmask);
-      bst_gmask_unref (bparam->gdata.gmask);
-    }
-  else if (!BST_PARAM_IS_GMASK (bparam) && bparam->gdata.widget)
-    {
-      gtk_widget_destroy (bparam->gdata.widget);
-      g_object_unref (bparam->gdata.widget);
-    }
-  g_param_spec_unref (bparam->pspec);
-  g_value_unset (&bparam->value);
-  g_free (bparam);
-}
-
-
-/* --- dummy binding --- */
-static void
-dummy_binding_set_value (BstParam       *bparam,
-                         const GValue   *value)
-{
+  GValue dvalue = { 0, };
+  g_value_init (&dvalue, G_TYPE_DOUBLE);
+  g_value_transform (&param->value, &dvalue);
+  gtk_adjustment_set_value (GTK_ADJUSTMENT (object), g_value_get_double (&dvalue));
+  g_value_unset (&dvalue);
 }
 
 static void
-dummy_binding_get_value (BstParam       *bparam,
-                         GValue         *value)
+param_adjustment_value_changed (GtkAdjustment *adjustment,
+                                GxkParam      *param)
 {
-}
-
-static BstParamBinding dummy_binding = {
-  dummy_binding_set_value,
-  dummy_binding_get_value,
-};
-BstParamBinding *bst_dummy_binding = &dummy_binding;
-
-
-/* --- proxy binding --- */
-static void
-proxy_binding_set_value (BstParam       *bparam,
-			 const GValue   *value)
-{
-  SfiProxy proxy = bparam->mdata[0].v_long;
-  if (proxy)
-    sfi_glue_proxy_set_property (bparam->mdata[0].v_long, bparam->pspec->name, value);
-}
-
-static void
-proxy_binding_get_value (BstParam       *bparam,
-			 GValue         *value)
-{
-  SfiProxy proxy = bparam->mdata[0].v_long;
-  if (proxy)
+  if (!param->updating)
     {
-      const GValue *cvalue = sfi_glue_proxy_get_property (bparam->mdata[0].v_long, bparam->pspec->name);
-      if (cvalue)
-	g_value_transform (cvalue, value);
-      else
-	g_value_reset (value);
+      GValue dvalue = { 0, };
+      g_value_init (&dvalue, G_TYPE_DOUBLE);
+      g_value_set_double (&dvalue, adjustment->value);
+      g_value_transform (&dvalue, &param->value);
+      g_value_unset (&dvalue);
+      gxk_param_apply_value (param);
+    }
+}
+
+GtkAdjustment*
+gxk_param_get_adjustment (GxkParam *param)
+{
+  gdouble min, max, dfl, stepping, pstepping;
+  GParamSpec *pspec = param->pspec;
+  GtkObject *adjustment;
+  gboolean isint = TRUE;
+  GSList *slist;
+  for (slist = param->objects; slist; slist = slist->next)
+    if (GTK_IS_ADJUSTMENT (slist->data))
+      return slist->data;
+  
+#define EXTRACT_FIELDS(p,T,mi,ma,df) { T *t = (T*) p; mi = t->minimum; ma = t->maximum; df = t->default_value; }
+  if (G_IS_PARAM_SPEC_CHAR (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecChar, min, max, dfl);
+      stepping = g_param_spec_get_istepping (pspec);
+    }
+  else if (G_IS_PARAM_SPEC_UCHAR (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecUChar, min, max, dfl);
+      stepping = g_param_spec_get_istepping (pspec);
+    }
+  else if (G_IS_PARAM_SPEC_INT (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecInt, min, max, dfl);
+      stepping = g_param_spec_get_istepping (pspec);
+    }
+  else if (G_IS_PARAM_SPEC_UINT (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecUInt, min, max, dfl);
+      stepping = g_param_spec_get_istepping (pspec);
+    }
+  else if (G_IS_PARAM_SPEC_LONG (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecLong, min, max, dfl);
+      stepping = g_param_spec_get_istepping (pspec);
+    }
+  else if (G_IS_PARAM_SPEC_ULONG (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecULong, min, max, dfl);
+      stepping = g_param_spec_get_istepping (pspec);
+    }
+  else if (G_IS_PARAM_SPEC_INT64 (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecInt64, min, max, dfl);
+      stepping = g_param_spec_get_istepping (pspec);
+    }
+  else if (G_IS_PARAM_SPEC_UINT64 (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecUInt64, min, max, dfl);
+      stepping = g_param_spec_get_istepping (pspec);
+    }
+  else if (G_IS_PARAM_SPEC_FLOAT (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecFloat, min, max, dfl);
+      stepping = g_param_spec_get_fstepping (pspec);
+      isint = FALSE;
+    }
+  else if (G_IS_PARAM_SPEC_DOUBLE (pspec))
+    {
+      EXTRACT_FIELDS (pspec, GParamSpecDouble, min, max, dfl);
+      stepping = g_param_spec_get_fstepping (pspec);
+      isint = FALSE;
     }
   else
-    g_value_reset (value);
-}
+    return NULL;
+#undef EXTRACT_FIELDS
 
-static SfiProxy
-proxy_binding_rack_item (BstParam *bparam)
-{
-  return bparam->mdata[0].v_long;
-}
-
-static void
-proxy_binding_weakref (gpointer data,
-		       SfiProxy junk)
-{
-  BstParam *bparam = data;
-  bparam->mdata[0].v_long = 0;
-  bparam->mdata[1].v_long = 0;	/* already disconnected */
-  bparam->binding = bst_dummy_binding;
-}
-
-static void
-proxy_binding_destroy (BstParam *bparam)
-{
-  SfiProxy proxy = bparam->mdata[0].v_long;
-  if (proxy)
+  pstepping = isint ? 1.0 : 0.1;
+  if (pstepping == stepping)
     {
-      sfi_glue_signal_disconnect (proxy, bparam->mdata[1].v_long);
-      sfi_glue_proxy_weak_unref (proxy, proxy_binding_weakref, bparam);
-      bparam->mdata[0].v_long = 0;
-      bparam->mdata[1].v_long = 0;
-      bparam->binding = bst_dummy_binding;
+      pstepping = ABS (max - min) / 10;
+      if (isint && 0 == (guint64) pstepping)
+        pstepping = ABS (max - min) > 2 ? 2 : 1;
     }
+  adjustment = gtk_adjustment_new (dfl, min, max,
+                                   MIN (pstepping, stepping),
+                                   MAX (pstepping, stepping),
+                                   0);
+  gxk_object_set_param_callback (adjustment, param_adjustment_update);
+  gxk_param_add_object (param, adjustment);
+  gtk_object_sink (adjustment);
+  /* catch notifies *after* the widgets are updated */
+  g_object_connect (adjustment,
+                    "signal_after::value-changed", param_adjustment_value_changed, param,
+                    NULL);
+  return GTK_ADJUSTMENT (adjustment);
 }
 
-static BseProxySeq*
-proxy_binding_list_proxies (BstParam *bparam)
+GtkAdjustment*
+gxk_param_get_log_adjustment (GxkParam *param)
 {
-  SfiProxy proxy = bparam->mdata[0].v_long;
-  if (proxy)
+  GtkAdjustment *adjustment;
+  GSList *slist;
+  for (slist = param->objects; slist; slist = slist->next)
+    if (GXK_IS_LOG_ADJUSTMENT (slist->data))
+      return slist->data;
+  adjustment = gxk_param_get_adjustment (param);
+  if (adjustment)
     {
-      BseProxySeq *pseq = bse_item_list_proxies (proxy, bparam->pspec->name);
-      if (pseq)	/* need to return "newly allocated" proxy list */
-	return bse_proxy_seq_copy_shallow (pseq);
+      gdouble center, base, n_steps;
+      if (g_param_spec_get_log_scale (param->pspec, &center, &base, &n_steps))
+        {
+          GtkAdjustment *log_adjustment = gxk_log_adjustment_from_adj (adjustment);
+          GtkObject *object = GTK_OBJECT (log_adjustment);
+          gxk_log_adjustment_setup (GXK_LOG_ADJUSTMENT (log_adjustment), center, base, n_steps);
+          gxk_param_add_object (param, object);
+          gtk_object_sink (object);
+          /* keep the linear adjustment before the log_adjustment */
+          param->objects = g_slist_remove (param->objects, adjustment);
+          param->objects = g_slist_prepend (param->objects, adjustment);
+          return log_adjustment;
+        }
     }
   return NULL;
-}
-
-static BstParamBinding bst_proxy_binding = {
-  proxy_binding_set_value,
-  proxy_binding_get_value,
-  proxy_binding_destroy,
-  NULL,	/* check_writable */
-  proxy_binding_rack_item,
-  proxy_binding_list_proxies,
-};
-
-BstParamBinding*
-bst_param_binding_proxy (void)
-{
-  return &bst_proxy_binding;
-}
-
-BstParam*
-bst_param_proxy_create (GParamSpec  *pspec,
-			gboolean     rack_widget,
-			const gchar *view_name,
-			SfiProxy     proxy)
-{
-  BstParamImpl *impl;
-  BstParam *bparam;
-
-  g_return_val_if_fail (BSE_IS_ITEM (proxy), NULL);
-
-  impl = bst_param_lookup_impl (pspec, rack_widget, view_name, &bst_proxy_binding);
-  bparam = bst_param_alloc (impl, pspec);
-  bparam->binding = &bst_proxy_binding;
-  bparam->mdata[0].v_long = 0;
-  bst_param_set_proxy (bparam, proxy);
-  return bparam;
-}
-
-void
-bst_param_set_proxy (BstParam *bparam,
-		     SfiProxy  proxy)
-{
-  g_return_if_fail (bparam != NULL);
-  g_return_if_fail (bparam->binding == &bst_proxy_binding);
-
-  proxy_binding_destroy (bparam);
-  bparam->binding = &bst_proxy_binding;
-  bparam->mdata[0].v_long = proxy;
-  if (proxy)
-    {
-      gchar *sig = g_strconcat ("property-notify::", bparam->pspec->name, NULL);
-      bparam->mdata[1].v_long = sfi_glue_signal_connect_swapped (proxy, sig, bst_param_update, bparam);
-      g_free (sig);
-      sfi_glue_proxy_weak_ref (proxy, proxy_binding_weakref, bparam);
-    }
-}
-
-
-/* --- record binding --- */
-static void
-record_binding_set_value (BstParam     *bparam,
-			  const GValue *value)
-{
-  sfi_rec_set (bparam->mdata[0].v_pointer, bparam->pspec->name, value);
-}
-
-static void
-record_binding_get_value (BstParam *bparam,
-			  GValue   *value)
-{
-  const GValue *cvalue = sfi_rec_get (bparam->mdata[0].v_pointer, bparam->pspec->name);
-  if (cvalue)
-    g_value_transform (cvalue, value);
-  else
-    g_value_reset (value);
-}
-
-static void
-record_binding_destroy (BstParam *bparam)
-{
-  sfi_rec_unref (bparam->mdata[0].v_pointer);
-  bparam->mdata[0].v_pointer = NULL;
-}
-
-static BstParamBinding bst_record_binding = {
-  record_binding_set_value,
-  record_binding_get_value,
-  record_binding_destroy,
-  NULL,	/* check_writable */
-};
-
-BstParamBinding*
-bst_param_binding_rec (void)
-{
-  return &bst_record_binding;
-}
-
-BstParam*
-bst_param_rec_create (GParamSpec  *pspec,
-		      gboolean     rack_widget,
-		      const gchar *view_name,
-		      SfiRec      *rec)
-{
-  BstParamImpl *impl;
-  BstParam *bparam;
-
-  g_return_val_if_fail (rec != NULL, NULL);
-
-  impl = bst_param_lookup_impl (pspec, rack_widget, view_name, &bst_record_binding);
-  bparam = bst_param_alloc (impl, pspec);
-  bparam->binding = &bst_record_binding;
-  bparam->mdata[0].v_pointer = sfi_rec_ref (rec);
-  return bparam;
-}
-
-
-/* --- value binding --- */
-static void
-value_binding_set_value (BstParam     *bparam,
-                         const GValue *value)
-{
-  BstParamValueNotify notify = bparam->mdata[0].v_pointer;
-  sfi_value_copy_shallow (value, &bparam->value);
-  if (notify)
-    notify (bparam->mdata[1].v_pointer, bparam);
-}
-
-static void
-value_binding_get_value (BstParam *bparam,
-                         GValue   *value)
-{
-  sfi_value_copy_shallow (&bparam->value, value);
-}
-
-static void
-value_binding_destroy (BstParam *bparam)
-{
-  bparam->mdata[0].v_pointer = NULL;
-  bparam->mdata[1].v_pointer = NULL;
-}
-
-static BstParamBinding bst_value_binding = {
-  value_binding_set_value,
-  value_binding_get_value,
-  value_binding_destroy,
-  /* check_writable */
-};
-
-BstParamBinding*
-bst_param_binding_value (void)
-{
-  return &bst_value_binding;
-}
-
-BstParam*
-bst_param_value_create (GParamSpec         *pspec,
-                        gboolean            rack_widget,
-                        const gchar        *view_name,
-                        BstParamValueNotify notify,
-                        gpointer            notify_data)
-{
-  BstParamImpl *impl;
-  BstParam *bparam;
-
-  impl = bst_param_lookup_impl (pspec, rack_widget, view_name, &bst_value_binding);
-  bparam = bst_param_alloc (impl, pspec);
-  bparam->binding = &bst_value_binding;
-  bparam->mdata[0].v_pointer = notify;
-  bparam->mdata[1].v_pointer = notify_data;
-  return bparam;
-}
-
-
-/* --- param and rack widget implementations --- */
-#include "bstparam-label.c"
-#include "bstparam-toggle.c"
-#include "bstparam-spinner.c"
-#include "bstparam-entry.c"
-#include "bstparam-note-sequence.c"
-#include "bstparam-choice.c"
-#include "bstparam-strnum.c"
-#include "bstparam-note-spinner.c"
-#include "bstparam-proxy.c"
-#include "bstparam-scale.c"
-
-static BstParamImpl *bst_param_impls[] = {
-  &param_pspec,
-  &param_check_button,
-  &param_spinner_int,
-  &param_spinner_num,
-  &param_spinner_real,
-  &param_entry,
-  &param_note_sequence,
-  &param_choice,
-  &param_note,
-  &param_time,
-  &param_note_spinner,
-  &param_proxy,
-};
-
-static BstParamImpl *bst_rack_impls[] = {
-  &rack_pspec,
-  &rack_toggle_button,
-  &rack_check_button,
-  &rack_radio_button,
-  &rack_spinner_int,
-  &rack_spinner_num,
-  &rack_spinner_real,
-  &rack_entry,
-  &rack_note_sequence,
-  &rack_choice,
-  &rack_note,
-  &rack_time,
-  &rack_note_spinner,
-  &rack_proxy,
-  &rack_knob_int,
-  &rack_knob_num,
-  &rack_knob_real,
-  &rack_log_knob_int,
-  &rack_log_knob_num,
-  &rack_log_knob_real,
-  &rack_dial_int,
-  &rack_dial_num,
-  &rack_dial_real,
-  &rack_log_dial_int,
-  &rack_log_dial_num,
-  &rack_log_dial_real,
-  &rack_vscale_int,
-  &rack_vscale_num,
-  &rack_vscale_real,
-  &rack_log_vscale_int,
-  &rack_log_vscale_num,
-  &rack_log_vscale_real,
-  &rack_hscale_int,
-  &rack_hscale_num,
-  &rack_hscale_real,
-  &rack_log_hscale_int,
-  &rack_log_hscale_num,
-  &rack_log_hscale_real,
-};
-
-const gchar**
-bst_param_list_names (gboolean rack_widget,
-		      guint   *n_p)
-{
-  static const gchar **pnames = NULL, **rnames = NULL;
-  static guint pn = 0, rn = 0;
-  const gchar **names = rack_widget ? rnames : pnames;
-
-  if (!names)
-    {
-      BstParamImpl **impls = rack_widget ? bst_rack_impls : bst_param_impls;
-      guint i, j, k = 0, n = rack_widget ? G_N_ELEMENTS (bst_rack_impls) : G_N_ELEMENTS (bst_param_impls);
-      names = g_new (const gchar*, n + 1);
-      for (i = 0; i < n; i++)
-	{
-	  for (j = 0; j < k; j++)
-	    if (strcmp (names[j], impls[i]->name) == 0)
-	      goto skip_duplicate;
-	  names[k++] = impls[i]->name;
-	skip_duplicate:
-	  ;
-	}
-      names[k] = NULL;
-      n = k;
-      names = g_renew (const gchar*, names, n + 1);
-      if (rack_widget)
-	{
-	  rnames = names;
-	  rn = n;
-	}
-      else
-	{
-	  pnames = names;
-	  pn = n;
-	}
-    }
-  if (n_p)
-    *n_p = rack_widget ? rn : pn;
-  return names;
-}
-
-static guint
-bst_param_rate_impl (BstParamImpl    *impl,
-		     GParamSpec      *pspec,
-		     BstParamBinding *binding)
-{
-  gboolean is_editable, does_match, type_specific, type_mismatch, scat_specific = FALSE;
-  guint type_distance = 0;
-  GType vtype, itype;
-  guint rating = 0;
-
-  g_return_val_if_fail (impl != NULL, 0);
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
-
-  vtype = G_PARAM_SPEC_VALUE_TYPE (pspec);
-  itype = impl->scat ? sfi_category_type (impl->scat) : 0;
-  type_specific = itype != 0;
-
-  is_editable = (impl->flags & BST_PARAM_EDITABLE) != 0;
-  if (impl->scat)
-    {
-      if (impl->scat & ~SFI_SCAT_TYPE_MASK)	/* be strict for non-fundamental scats */
-	{
-	  type_mismatch = impl->scat != sfi_categorize_pspec (pspec);
-	  scat_specific = TRUE;
-	}
-      else
-	type_mismatch = FALSE;
-      type_mismatch |= !g_type_is_a (vtype, itype);		/* read value */
-      is_editable = is_editable && g_type_is_a (itype, vtype);	/* write value */
-    }
-  else
-    type_mismatch = FALSE;
-  if (impl->flags & BST_PARAM_PROXY_LIST)
-    type_mismatch |= !binding || !binding->list_proxies;
-
-  does_match = !type_mismatch && (!impl->hints || sfi_pspec_require_options (pspec, impl->hints));
-  if (!does_match)
-    return 0;		/* mismatch */
-
-  if (itype)
-    type_distance = g_type_depth (vtype) - g_type_depth (itype);
-
-  rating |= 128 - type_distance;
-  rating <<= 1;
-  rating |= is_editable;
-  rating <<= 1;
-  rating |= type_specific;
-  rating <<= 1;
-  rating |= scat_specific;
-  rating <<= 8;
-  rating += 128 + impl->rating; /* impl->rating is signed, 8bit */
-
-  return rating;
-}
-
-static BstParamImpl*
-bst_param_lookup_impl (GParamSpec      *pspec,
-		       gboolean         rack_widget,
-		       const gchar     *name,
-		       BstParamBinding *binding)
-{
-  BstParamImpl **impls = rack_widget ? bst_rack_impls : bst_param_impls;
-  guint i, n = rack_widget ? G_N_ELEMENTS (bst_rack_impls) : G_N_ELEMENTS (bst_param_impls);
-  BstParamImpl *best = NULL;
-  guint rating = 0; /* threshold for mismatch */
-
-  for (i = 0; i < n; i++)
-    if (!name || !strcmp (impls[i]->name, name))
-      {
-	guint r = bst_param_rate_impl (impls[i], pspec, binding);
-	if (r > rating) /* only notice improvements */
-	  {
-	    best = impls[i];
-	    rating = r;
-	  }
-      }
-  /* if !name, best is != NULL */
-  if (!best)
-    best = bst_param_lookup_impl (pspec, rack_widget, NULL, binding);
-  return best;
-}
-
-const gchar*
-bst_param_lookup_view (GParamSpec      *pspec,
-		       gboolean         rack_widget,
-		       const gchar     *view_name,
-		       BstParamBinding *binding)
-{
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
-  g_return_val_if_fail (view_name != NULL, 0);
-
-  return bst_param_lookup_impl (pspec, rack_widget, view_name, binding)->name;
-}
-
-guint
-bst_param_rate_check (GParamSpec      *pspec,
-		      gboolean         rack_widget,
-		      const gchar     *view_name,
-		      BstParamBinding *binding)
-{
-  BstParamImpl **impls;
-  guint i, n, rating = 0;
-
-  g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), 0);
-  g_return_val_if_fail (view_name != NULL, 0);
-
-  impls = rack_widget ? bst_rack_impls : bst_param_impls;
-  n = rack_widget ? G_N_ELEMENTS (bst_rack_impls) : G_N_ELEMENTS (bst_param_impls);
-  for (i = 0; i < n; i++)
-    if (strcmp (impls[i]->name, view_name) == 0)
-      {
-	guint r = bst_param_rate_impl (impls[i], pspec, binding);
-	rating = MAX (r, rating);
-      }
-  return rating;
 }

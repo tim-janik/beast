@@ -127,13 +127,13 @@ vzoom_changed (BstPartDialog *self,
 }
 
 static void
-eparam_changed (gpointer         data,
-                BstParam        *bparam)
+eparam_changed (gpointer  data,
+                GxkParam *param)
 {
   BstPartDialog *self = BST_PART_DIALOG (data);
   if (self->eroll)
     {
-      BseMidiSignalType midi_signal_type = bse_midi_signal_type_from_choice (sfi_value_get_choice (&bparam->value));
+      BseMidiSignalType midi_signal_type = bse_midi_signal_type_from_choice (sfi_value_get_choice (&param->value));
       bst_event_roll_set_control_type (self->eroll, midi_signal_type);
     }
 }
@@ -207,14 +207,13 @@ bst_part_dialog_init (BstPartDialog *self)
   pspec = bst_procedure_ref_pspec ("BsePart+change-control", "control-type");
   if (pspec)
     {
-      BstParam *bparam = bst_param_value_create (pspec, TRUE, NULL, eparam_changed, self);
-      GtkWidget *rwidget = bst_param_rack_widget (bparam);
+      GxkParam *param = gxk_param_new_value (pspec, eparam_changed, self);
+      GtkWidget *rwidget = gxk_param_create_editor (param, "choice-button");
       gxk_gadget_add (gadget, "event-roll-control-area", rwidget);
-      g_object_connect (rwidget, "swapped_signal::destroy", bst_param_destroy, bparam, NULL);
+      g_object_connect (gadget, "swapped_signal::destroy", gxk_param_destroy, param, NULL);
       g_param_spec_unref (pspec);
-      sfi_value_set_choice (&bparam->value, bse_midi_signal_type_to_choice (BSE_MIDI_SIGNAL_VELOCITY));
-      bst_param_update (bparam); /* update GUI */
-      bst_param_apply_value (bparam); /* update model */
+      sfi_value_set_choice (&param->value, bse_midi_signal_type_to_choice (BSE_MIDI_SIGNAL_VELOCITY));
+      gxk_param_apply_value (param); /* update model, auto updates GUI */
     }
 
   /* hzoom */
