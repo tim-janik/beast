@@ -1,3 +1,9 @@
+Thu Dec 16 06:55:44 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c: changed the basic layout container from hboxes
+	to table, so we have a sane GUI layout (finally). we are still missing
+	a dial widget though.
+
 Sun Dec 12 12:07:38 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/icons/*: added a bunch of new icons (based on stock icons

@@ -18,10 +18,10 @@
 #include	"bseobject.h"
 
 #include	"bseexports.h"
-#include	"bseparamcol.c" /* FIXME */
+#include	"bseparamcol.c"		/* FIXME */
 #include	"bsestorage.h"
 #include	"bseparasite.h"
-#include	"bsecategories.h" /* FIXME */
+#include	"bsecategories.h"	/* FIXME */
 
 enum
 {

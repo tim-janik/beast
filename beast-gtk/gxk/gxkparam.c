@@ -24,6 +24,7 @@
 
 #undef	DEBUG_ADJUSTMENT
 
+
 /* --- structures --- */
 typedef struct _DotAreaData DotAreaData;
 struct _DotAreaData
@@ -102,13 +103,15 @@ _GROUP_CALL (GtkWidget *group,
 }
 static GtkWidget*
 GROUP_FORM (GtkWidget *parent,
-	    GtkWidget *action)
+	    GtkWidget *action,
+	    gboolean   expandable)
 {
   g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
   g_return_val_if_fail (GTK_IS_WIDGET (action), NULL);
 
   _GROUP_ADD_NAMED_OBJECT (action, "group_action", action);
   _GROUP_ADD_NAMED_OBJECT (action, "group_parent", parent);
+  gtk_object_set_data (GTK_OBJECT (action), "group_flags", GUINT_TO_POINTER (expandable ? 2 : 0));
 
   return action;
 }
@@ -121,81 +124,171 @@ GROUP_FORM_BIG (GtkWidget *parent,
 
   _GROUP_ADD_NAMED_OBJECT (action, "group_action", action);
   _GROUP_ADD_NAMED_OBJECT (action, "group_parent", parent);
-  _GROUP_ADD_NAMED_OBJECT (action, "group_big", action);
+  gtk_object_set_data (GTK_OBJECT (action), "group_flags", GUINT_TO_POINTER (2 | 1));
 
   return action;
 }
-#define GROUP_ADD_POST_ACTION(g, w) (_GROUP_ADD_NAMED_OBJECT ((g), "group_post_action", (w)))
-#define GROUP_ADD_PRE_ACTION(g, w)  (_GROUP_ADD_NAMED_OBJECT ((g), "group_pre_action", (w)))
-#define GROUP_ADD_PROMPT(g, w)      (_GROUP_ADD_NAMED_OBJECT ((g), "group_prompt", (w)))
-#define GROUP_ADD_DIAL(g, w)        (_GROUP_ADD_NAMED_OBJECT ((g), "group_dial", (w)))
-#define GROUP_ADD_SCALE(g, w)       (_GROUP_ADD_NAMED_OBJECT ((g), "group_scale", (w)))
-#define GROUP_PARENT_STORE_TOOLTIPS(p, t) (_GROUP_ADD_NAMED_OBJECT ((p), "group_tooltips", (t)))
-#define GROUP_GET_ACTION(g)	    (GTK_WIDGET (g))
-#define GROUP_GET_PRE_ACTION(g)	    (_GROUP_GET_NAMED_WIDGET ((g), "group_pre_action"))
+#define GROUP_ADD_POST_ACTION(g, w)       (_GROUP_ADD_NAMED_OBJECT ((g), "group_post_action", (w)))
+#define GROUP_ADD_PRE_ACTION(g, w)        (_GROUP_ADD_NAMED_OBJECT ((g), "group_pre_action", (w)))
+#define GROUP_ADD_PROMPT(g, w)            (_GROUP_ADD_NAMED_OBJECT ((g), "group_prompt", (w)))
+#define GROUP_ADD_DIAL(g, w)              (_GROUP_ADD_NAMED_OBJECT ((g), "group_dial", (w)))
+#define GROUP_ADD_SCALE(g, w)             (_GROUP_ADD_NAMED_OBJECT ((g), "group_scale", (w)))
+#define GROUP_GET_ACTION(g)	          (GTK_WIDGET (g))
+#define GROUP_GET_PRE_ACTION(g)	          (_GROUP_GET_NAMED_WIDGET ((g), "group_pre_action"))
 static void
 GROUP_SET_TIP (GtkWidget   *group,
 	       const gchar *tip_text,
 	       const gchar *tip_private)
 {
-  GtkWidget *parent;
-  GtkTooltips *tt;
-
   g_return_if_fail (GTK_IS_WIDGET (group));
 
-  parent = _GROUP_GET_NAMED_WIDGET (group, "group_parent");
-  tt = gtk_object_get_data (GTK_OBJECT (parent), "group_tooltips");
-  if (tt && tip_text && !GTK_WIDGET_NO_WINDOW (group))
-    gtk_tooltips_set_tip (tt, group, tip_text, tip_private);
+  if (tip_text)
+    gtk_object_set_data_full (GTK_OBJECT (group), "group_tiptext", g_strdup (tip_text), g_free);
+  if (tip_private)
+    gtk_object_set_data_full (GTK_OBJECT (group), "group_tipref", g_strdup (tip_private), g_free);
+}
+static GtkWidget*
+GROUP_PARENT_CREATE (gpointer tooltips,
+		     guint    border_width)
+{
+  GtkWidget *container = gtk_widget_new (GTK_TYPE_TABLE,
+					 "visible", TRUE,
+					 "homogeneous", FALSE,
+					 "n_columns", 2,
+					 "border_width", border_width,
+					 NULL);
+  if (tooltips)
+    _GROUP_ADD_NAMED_OBJECT (container, "group_tooltips", tooltips);
+
+  return container;
 }
 static GtkWidget*
 GROUP_DONE (GtkWidget *group)
 {
-  GtkWidget *parent, *container;
-  GtkWidget *post_action, *pre_action, *prompt, *dial, *scale, *big;
-  GtkBox *box;
+  GtkWidget *parent, *any;
+  GtkWidget *post_action, *action, *pre_action, *prompt, *dial, *scale;
+  GtkTooltips *tt = NULL;
+  gchar *tip_text, *tip_ref = NULL;
+  GtkTable *table;
+  gboolean big, expandable;
+  guint row, n, c;
 
   g_return_val_if_fail (GTK_IS_WIDGET (group), NULL);
 
+  action = group;
   parent = _GROUP_GET_NAMED_WIDGET (group, "group_parent");
-  container = gtk_widget_new (GTK_TYPE_HBOX,
-			      "visible", TRUE,
-			      "homogeneous", FALSE,
-			      "spacing", 0,
-			      "border_width", 0,
-			      NULL);
-  _GROUP_ADD_NAMED_OBJECT (group, "group_container", container);
   prompt = _GROUP_GET_NAMED_WIDGET (group, "group_prompt");
   dial = _GROUP_GET_NAMED_WIDGET (group, "group_dial");
   scale = _GROUP_GET_NAMED_WIDGET (group, "group_scale");
   pre_action = _GROUP_GET_NAMED_WIDGET (group, "group_pre_action");
-  big = _GROUP_GET_NAMED_WIDGET (group, "group_big");
+  big = GPOINTER_TO_UINT (gtk_object_get_data (GTK_OBJECT (group), "group_flags"));
+  expandable = (big & 2) != 0;
+  big &= 1;
   post_action = _GROUP_GET_NAMED_WIDGET (group, "group_post_action");
+  tip_text = gtk_object_get_data (GTK_OBJECT (group), "group_tiptext");
+  if (tip_text)
+    {
+      tip_ref = gtk_object_get_data (GTK_OBJECT (group), "group_tipref");
+      tt = gtk_object_get_data (GTK_OBJECT (parent), "group_tooltips");
+    }
   
-  if (GTK_IS_BOX (parent))
-    gtk_box_pack_start (GTK_BOX (parent), container, big != NULL, TRUE, 0);
-  else
-    gtk_container_add (GTK_CONTAINER (parent), container);
+  /* ensure we have a tooltips sensitive field if required */
+  if (tt && GTK_WIDGET_NO_WINDOW (action))
+    {
+      GtkWidget *at = gtk_widget_get_toplevel (action);
 
-  box = GTK_BOX (container);
+      if (GTK_WIDGET_NO_WINDOW (at))
+	action = gtk_widget_new (GTK_TYPE_EVENT_BOX,
+				 "visible", TRUE,
+				 "child", at,
+				 NULL);
+      else
+	action = at;
+    }
+
+  /* pack stuff, options: GTK_EXPAND, GTK_SHRINK, GTK_FILL */
+  table = GTK_TABLE (parent);
+  row = !table->children ? table->nrows - 1 : table->nrows;
+  c = 0;
   if (prompt)
-    gtk_box_pack_start (box, gtk_widget_get_toplevel (prompt), FALSE, TRUE, 0);
+    gtk_table_attach (table, gtk_widget_get_toplevel (prompt),
+		      c, c + 1, row, row + 1,
+		      GTK_FILL, GTK_FILL,
+		      0, 0);
+  c++;
   if (dial)
-    gtk_box_pack_start (box, gtk_widget_get_toplevel (dial), FALSE, TRUE, 5);
-  if (scale)
-    gtk_box_pack_start (box, gtk_widget_get_toplevel (scale), TRUE, TRUE, 5);
-  if (prompt && (!dial && !scale))
-    gtk_box_pack_start (box,
-			gtk_widget_new (GTK_TYPE_ALIGNMENT,
-					"visible", TRUE,
-					NULL),
-			FALSE, FALSE, 5);
-  if (post_action)
-    gtk_box_pack_end (box, gtk_widget_get_toplevel (post_action), FALSE, FALSE, 0);
-  gtk_box_pack_end (box, gtk_widget_get_toplevel (group),
-		    big != NULL || !prompt, !pre_action && !post_action, 0);
-  if (pre_action)
-    gtk_box_pack_end (box, gtk_widget_get_toplevel (pre_action), FALSE, FALSE, 0);
+    gtk_table_attach (table, gtk_widget_get_toplevel (dial),
+		      c, c + 1, row, row + 1,
+		      GTK_FILL, GTK_FILL,
+		      5, 0);
+  c++;
+  gtk_table_attach (table,
+		    scale ? gtk_widget_get_toplevel (scale) : gtk_widget_new (GTK_TYPE_ALIGNMENT,
+									      "visible", TRUE,
+									      NULL),
+		    dial ? c : c - 1, c + 1, row, row + 1,
+		    GTK_EXPAND | GTK_FILL, 0,
+		    5, 0);
+  c++;
+  /* stuff action with pre- and post- widgets closely together */
+  any = gtk_widget_get_toplevel (action);
+  if (pre_action || post_action)
+    {
+      any = gtk_widget_new (GTK_TYPE_HBOX,
+			    "visible", TRUE,
+			    "child", any,
+			    NULL);
+      if (pre_action)
+	gtk_container_add_with_args (GTK_CONTAINER (any), gtk_widget_get_toplevel (pre_action),
+				     "position", 0,
+				     "expand", FALSE,
+				     NULL);
+      if (post_action)
+	gtk_container_add_with_args (GTK_CONTAINER (any), gtk_widget_get_toplevel (post_action),
+				     "position", -1,
+				     "expand", FALSE,
+				     NULL);
+    }
+  n = c;
+  if (big && !scale) /* expand action to the left when possible for big forms */
+    {
+      n--;
+      if (!dial)
+	{
+	  n--;
+	  if (!prompt)
+	    n--;
+	}
+    }
+  if (!expandable) /* align to right without expansion if desired */
+    any = gtk_widget_new (GTK_TYPE_ALIGNMENT,
+			  "visible", TRUE,
+			  "child", any,
+			  "xalign", 1.0,
+			  "xscale", 0.0,
+			  "yscale", 0.0,
+			  NULL);
+  gtk_table_attach (table, any,
+		    n, c + 1, row, row + 1,
+		    GTK_FILL, GTK_FILL,
+		    0, 0);
+  
+  /* set tooltips */
+  if (tt)
+    {
+      if (prompt && !GTK_WIDGET_NO_WINDOW (prompt))
+	gtk_tooltips_set_tip (tt, prompt, tip_text, tip_ref);
+      if (dial && !GTK_WIDGET_NO_WINDOW (dial))
+	gtk_tooltips_set_tip (tt, dial, tip_text, tip_ref);
+      if (scale && !GTK_WIDGET_NO_WINDOW (scale))
+	gtk_tooltips_set_tip (tt, scale, tip_text, tip_ref);
+      if (post_action && !GTK_WIDGET_NO_WINDOW (post_action))
+	gtk_tooltips_set_tip (tt, post_action, tip_text, tip_ref);
+      if (action && !GTK_WIDGET_NO_WINDOW (action))
+	gtk_tooltips_set_tip (tt, action, tip_text, tip_ref);
+      if (pre_action && !GTK_WIDGET_NO_WINDOW (pre_action))
+	gtk_tooltips_set_tip (tt, pre_action, tip_text, tip_ref);
+    }
 
   return group;
 }
@@ -389,7 +482,7 @@ bst_param_create (gpointer      owner,
   GtkWidget *spinner = NULL;
   GtkWidget *scale = NULL;
   GtkWidget *dial = NULL;
-  gboolean read_only, string_toggle, radio;
+  gboolean read_only, string_toggle, radio, expandable;
   gchar *name, *tooltip;
 
   if (BSE_TYPE_IS_PROCEDURE (owner_type))
@@ -419,22 +512,15 @@ bst_param_create (gpointer      owner,
   bparam->locked = 1;
   bse_type_class_ref (owner_type);
   
-  parent_container = gtk_object_get_data_by_id (GTK_OBJECT (parent), pspec->any.param_group);
+  parent_container = gtk_object_get_data_by_id (GTK_OBJECT (parent), pspec->any.param_group ? pspec->any.param_group : null_group);
   if (!parent_container ||
       GTK_OBJECT_DESTROYED (parent_container) ||
-      !GTK_IS_BOX (parent_container))
+      !GTK_IS_CONTAINER (parent_container))
     {
       GtkWidget *any;
       
-      any = gtk_widget_new (GTK_TYPE_VBOX,
-			    "visible", TRUE,
-			    "homogeneous", FALSE,
-			    "spacing", 0,
-			    "border_width", pspec->any.param_group ? 5 : 0,
-			    NULL);
+      any = GROUP_PARENT_CREATE (tooltips, pspec->any.param_group ? 5 : 0);
       parent_container = any;
-      if (tooltips)
-	GROUP_PARENT_STORE_TOOLTIPS (parent_container, tooltips);
       gtk_widget_ref (any);
       gtk_object_set_data_by_id_full (GTK_OBJECT (parent),
 				      pspec->any.param_group ? pspec->any.param_group : null_group,
@@ -514,16 +600,18 @@ bst_param_create (gpointer      owner,
 #endif
       
       spinner = gtk_spin_button_new (adjustment, 0, digits);
-      if (pspec->any.flags & BSE_PARAM_HINT_SCALE)
+      if (pspec->any.flags & BSE_PARAM_HINT_DIAL)
+	{
+	  dial = gtk_widget_new (GTK_TYPE_LABEL,
+				 "visible", TRUE,
+				 "label", "|<DIAL>|", /* FIXME: we need a real dial */
+				 NULL);
+	}
+      if (pspec->any.flags & BSE_PARAM_HINT_SCALE
+	  || pspec->any.flags & BSE_PARAM_HINT_DIAL) /* FIXME: we need a real dial */
 	{
 	  scale = gtk_hscale_new (adjustment);
 	  gtk_scale_set_draw_value (GTK_SCALE (scale), FALSE);
-	}
-      if (pspec->any.flags & BSE_PARAM_HINT_DIAL)
-	{
-	  dial = gtk_hscale_new (adjustment);
-	  gtk_scale_set_draw_value (GTK_SCALE (dial), FALSE);
-	  gtk_widget_set_usize (dial, 40, -2); /* FIXME: hack */
 	}
       
       gtk_object_unref (GTK_OBJECT (adjustment));
@@ -536,7 +624,8 @@ bst_param_create (gpointer      owner,
       name = tooltip;
       tooltip = NULL;
     }
-  
+
+  expandable = FALSE;
   switch (pspec->type)
     {
       GtkWidget *action, *prompt, *pre_action, *post_action, *frame, *any, *group;
@@ -551,7 +640,7 @@ bst_param_create (gpointer      owner,
 			       "object_signal::clicked", bst_param_gtk_changed, bparam,
 			       NULL);
       gtk_misc_set_alignment (GTK_MISC (GTK_BIN (action)->child), 0, 0.5);
-      group = GROUP_FORM (parent_container, action);
+      group = GROUP_FORM_BIG (parent_container, action);
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
@@ -569,9 +658,11 @@ bst_param_create (gpointer      owner,
 	  break;
 	case BSE_TYPE_PARAM_FLOAT:
 	case BSE_TYPE_PARAM_DOUBLE:
+	  expandable = TRUE;
 	  width = 80;
 	  break;
 	case BSE_TYPE_PARAM_TIME:
+	  expandable = TRUE;
 	  width = 140;
 	  break;
 	case BSE_TYPE_PARAM_NOTE:
@@ -587,6 +678,7 @@ bst_param_create (gpointer      owner,
 			       "visible", TRUE,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
+			       "xalign", 0.0,
 			       "sensitive", !read_only,
 			       NULL);
       action = spinner ? spinner : gtk_entry_new ();
@@ -601,7 +693,7 @@ bst_param_create (gpointer      owner,
 	gtk_widget_set (action,
 			"object_signal::focus_out_event", bst_param_gtk_update, bparam,
 			NULL);
-      group = GROUP_FORM (parent_container, action);
+      group = GROUP_FORM (parent_container, action, expandable);
       GROUP_ADD_PROMPT (group, prompt);
       if (scale)
 	{
@@ -633,18 +725,19 @@ bst_param_create (gpointer      owner,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
 			       NULL);
-      group = GROUP_FORM (parent_container, action);
+      group = GROUP_FORM (parent_container, action, FALSE);
       GROUP_ADD_PROMPT (group, prompt);
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
     case BSE_TYPE_PARAM_STRING:
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
-			      "visible", TRUE,
-			      "label", name,
-			      "justify", GTK_JUSTIFY_LEFT,
-			      "sensitive", !read_only,
-			      NULL);
+			       "visible", TRUE,
+			       "label", name,
+			       "justify", GTK_JUSTIFY_LEFT,
+			       "xalign", 0.0,
+			       "sensitive", !read_only,
+			       NULL);
       action = gtk_widget_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
 			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
@@ -652,7 +745,7 @@ bst_param_create (gpointer      owner,
 			       "signal::key_press_event", bst_entry_key_press, bparam,
 			       "sensitive", !read_only,
 			       NULL);
-      group = GROUP_FORM (parent_container, action);
+      group = GROUP_FORM (parent_container, action, TRUE);
       GROUP_ADD_PROMPT (group, prompt);
       if (string_toggle)
 	{
@@ -679,11 +772,12 @@ bst_param_create (gpointer      owner,
       break;
     case BSE_TYPE_PARAM_DOTS:
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
-			      "visible", TRUE,
-			      "label", name,
-			      "justify", GTK_JUSTIFY_LEFT,
-			      "sensitive", !read_only,
-			      NULL);
+			       "visible", TRUE,
+			       "label", name,
+			       "justify", GTK_JUSTIFY_LEFT,
+			       "xalign", 0.0,
+			       "sensitive", !read_only,
+			       NULL);
       frame = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
 			      "label", NULL,
@@ -722,6 +816,7 @@ bst_param_create (gpointer      owner,
 			       "visible", TRUE,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
+			       "xalign", 0.0,
 			       "sensitive", !read_only,
 			       NULL);
       action = gtk_widget_new (GTK_TYPE_ENTRY,
@@ -732,7 +827,7 @@ bst_param_create (gpointer      owner,
 			       "signal::key_press_event", bst_entry_key_press, bparam,
 			       "sensitive", !read_only,
 			       NULL);
-      group = GROUP_FORM (parent_container, action);
+      group = GROUP_FORM (parent_container, action, TRUE);
       GROUP_ADD_PROMPT (group, prompt);
       any = gtk_widget_new (GTK_TYPE_CLUE_HUNTER,
 			    "keep_history", FALSE,

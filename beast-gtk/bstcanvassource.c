@@ -176,7 +176,7 @@ source_name_changed (BstCanvasSource *csource)
   pname = bse_object_get_name (BSE_OBJECT (project));
   if (!pname)
     pname = bse_type_name (BSE_OBJECT_TYPE (project));
-  pname = g_strconcat (pname, ":", name, NULL);
+  pname = g_strconcat (pname, ": ", name, NULL);
 
   if (csource->text)
     bst_object_set (csource->text, "text", name, NULL);

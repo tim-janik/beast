@@ -125,7 +125,7 @@ main (int   argc,
   if (!pdev && BSE_TYPE_ID (BsePcmDeviceAlsa))
     {
       pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceAlsa), NULL);
-      if (bse_pcm_device_update_caps (pdev))
+      if (bse_pcm_device_update_caps (pdev) || 1) /* FIXME: DEBUG */
 	{
 	  bse_object_unref (BSE_OBJECT (pdev));
 	  pdev = NULL;
