@@ -543,39 +543,43 @@ bst_param_create (gpointer      owner,
   switch (pspec->type)
     {
     case BSE_TYPE_PARAM_INT:
-      adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_int.default_value,
-							pspec->s_int.minimum,
-							pspec->s_int.maximum,
-							1,
-							pspec->s_int.stepping_rate,
-							0);
+      if (pspec->s_int.stepping_rate != 0)
+	adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_int.default_value,
+							  pspec->s_int.minimum,
+							  pspec->s_int.maximum,
+							  1,
+							  pspec->s_int.stepping_rate,
+							  0);
       digits = 0;
       break;
     case BSE_TYPE_PARAM_UINT:
-      adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_uint.default_value,
-							pspec->s_uint.minimum,
-							pspec->s_uint.maximum,
-							1,
-							pspec->s_uint.stepping_rate,
-							0);
+      if (pspec->s_uint.stepping_rate != 0)
+	adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_uint.default_value,
+							  pspec->s_uint.minimum,
+							  pspec->s_uint.maximum,
+							  1,
+							  pspec->s_uint.stepping_rate,
+							  0);
       digits = 0;
       break;
     case BSE_TYPE_PARAM_FLOAT:
-      adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_float.default_value,
-							pspec->s_float.minimum,
-							pspec->s_float.maximum,
-							MIN (0.1, pspec->s_float.stepping_rate),
-							MAX (0.1, pspec->s_float.stepping_rate),
-							0);
+      if (BSE_EPSILON_CMP (pspec->s_float.stepping_rate, 0) != 0)
+	adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_float.default_value,
+							  pspec->s_float.minimum,
+							  pspec->s_float.maximum,
+							  MIN (0.1, pspec->s_float.stepping_rate),
+							  MAX (0.1, pspec->s_float.stepping_rate),
+							  0);
       digits = 3;
       break;
     case BSE_TYPE_PARAM_DOUBLE:
-      adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_double.default_value,
-							pspec->s_double.minimum,
-							pspec->s_double.maximum,
-							MIN (0.1, pspec->s_double.stepping_rate),
-							MAX (0.1, pspec->s_double.stepping_rate),
-							0);
+      if (BSE_EPSILON_CMP (pspec->s_double.stepping_rate, 0) != 0)
+	adjustment = (GtkAdjustment*) gtk_adjustment_new (pspec->s_double.default_value,
+							  pspec->s_double.minimum,
+							  pspec->s_double.maximum,
+							  MIN (0.1, pspec->s_double.stepping_rate),
+							  MAX (0.1, pspec->s_double.stepping_rate),
+							  0);
       digits = 5;
       break;
     }
@@ -645,7 +649,7 @@ bst_param_create (gpointer      owner,
 	{
 	case BSE_TYPE_PARAM_INT:
 	case BSE_TYPE_PARAM_UINT:
-	  width = 50;
+	  width = 70;
 	  break;
 	case BSE_TYPE_PARAM_FLOAT:
 	case BSE_TYPE_PARAM_DOUBLE:

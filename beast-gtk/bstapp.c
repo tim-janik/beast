@@ -23,6 +23,7 @@
 #include	"bstfiledialog.h"
 #include	"bststatusbar.h"
 #include	"bstheartmonitor.h"
+#include	"bstpreferences.h"
 
 
 
@@ -48,7 +49,8 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/File/_Dialogs",			NULL,		NULL, 0,			"<Branch>" },
   { "/File/Dialogs/<<<<<<",		NULL,		NULL, 0,			"<Tearoff>" },
-  { "/File/Dialogs/Device Monitor", 	NULL,		BST_OP (DIALOG_DEVICE_MONITOR),	"<Item>" },
+  { "/File/Dialogs/_Preferences", 	NULL,		BST_OP (DIALOG_PREFERENCES),	"<Item>" },
+  { "/File/Dialogs/Device _Monitor", 	NULL,		BST_OP (DIALOG_DEVICE_MONITOR),	"<Item>" },
   { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/File/_Close",			"<ctrl>W",	BST_OP (PROJECT_CLOSE),		"<Item>" },
   { "/File/_Exit",			"<ctrl>Q",	BST_OP (EXIT),			"<Item>" },
@@ -379,6 +381,7 @@ bst_app_operate (BstApp *app,
 {
   static GtkWidget *bst_dialog_open = NULL;
   static GtkWidget *bst_dialog_save = NULL;
+  static GtkWidget *bst_preferences = NULL;
   GtkWidget *widget, *shell;
 
   g_return_if_fail (BST_IS_APP (app));
@@ -460,6 +463,19 @@ bst_app_operate (BstApp *app,
       break;
     case BST_OP_PROJECT_STOP:
       bse_project_stop_playback (app->project);
+      break;
+    case BST_OP_DIALOG_PREFERENCES:
+      if (!bst_preferences)
+	{
+	  BseGConfig *gconf = bse_object_new (BSE_TYPE_GCONFIG, NULL);
+
+	  bst_preferences = bst_preferences_new (gconf);
+	  bse_object_unref (BSE_OBJECT (gconf));
+	  gtk_widget_show (bst_preferences);
+	  bst_preferences = bst_subwindow_new (NULL, &bst_preferences, bst_preferences);
+	  gtk_window_set_title (GTK_WINDOW (bst_preferences), "BEAST: Preferences");
+	}
+      gtk_widget_showraise (bst_preferences);
       break;
     case BST_OP_DIALOG_DEVICE_MONITOR:
       heart = bse_heart_get_global (FALSE);
@@ -567,6 +583,7 @@ bst_app_can_operate (BstApp *app,
 	      return TRUE;
 	}
       return FALSE;
+    case BST_OP_DIALOG_PREFERENCES:
     case BST_OP_DIALOG_DEVICE_MONITOR:
       return TRUE;
     default:

@@ -72,6 +72,7 @@ bst_param_view_class_init (BstParamViewClass *class)
 static void
 bst_param_view_init (BstParamView *param_view)
 {
+  param_view->base_type = BSE_TYPE_OBJECT;
   param_view->object = NULL;
   param_view->bparams = NULL;
   param_view->tooltips = gtk_tooltips_new ();
@@ -114,6 +115,22 @@ bst_param_view_new (BseObject *object)
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
 
   param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
+  bst_param_view_set_object (BST_PARAM_VIEW (param_view), object);
+
+  return param_view;
+}
+
+GtkWidget*
+bst_param_view_new_with_base (BseObject *object,
+			      BseType    base_type)
+{
+  GtkWidget *param_view;
+
+  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+  g_return_val_if_fail (bse_type_is_a (BSE_OBJECT_TYPE (object), base_type), NULL);
+
+  param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
+  BST_PARAM_VIEW (param_view)->base_type = base_type;
   bst_param_view_set_object (BST_PARAM_VIEW (param_view), object);
 
   return param_view;
@@ -188,7 +205,7 @@ bst_param_view_rebuild (BstParamView *param_view)
   
   /* parameter fields, per bse class
    */
-  while (class)
+  while (class && bse_type_is_a (BSE_CLASS_TYPE (class), param_view->base_type))
     {
       class_list = g_slist_prepend (class_list, class);
       class = bse_type_class_peek_parent (class);

@@ -74,6 +74,7 @@ bst_heart_monitor_init (BstHeartMonitor *hmon)
 {
   hmon->heart = NULL;
   hmon->param_box = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
+  BST_PARAM_VIEW (hmon->param_box)->base_type = BSE_TYPE_HEART;
   gtk_widget_show (hmon->param_box);
   gtk_container_add (GTK_CONTAINER (hmon), hmon->param_box);
 }
@@ -172,4 +173,6 @@ void
 bst_heart_monitor_update (BstHeartMonitor *hmon)
 {
   g_return_if_fail (BST_IS_HEART_MONITOR (hmon));
+
+  bst_param_view_update (BST_PARAM_VIEW (hmon->param_box));
 }

@@ -47,6 +47,7 @@ beast_headers = $(strip \
 	bstpatterneditor.h \
 	bstpatterndialog.h \
 	bstpatternview.h \
+	bstpreferences.h \
 	bstprocedure.h \
 	bstsamplerepo.h \
 	bstsnetshell.h \
@@ -77,6 +78,7 @@ beast_sources = $(strip \
 	bstpatterneditor.c \
 	bstpatterndialog.c \
 	bstpatternview.c \
+	bstpreferences.c \
 	bstprocedure.c \
 	bstsamplerepo.c \
 	bstsnetshell.c \

@@ -1,3 +1,19 @@
+Wed Dec 29 23:38:15 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_create): don't provide spinners if
+	the stepping value is 0.
+
+	* beast-gtk/bstheartmonitor.c (bst_heart_monitor_init): skip BseObject
+	specific parameters from GUI.
+
+	* beast-gtk/bstparamview.[hc] (bst_param_view_new_with_base): new
+	function to skip parameters below base type.
+
+	* beast-gtk/bstpreferences.[hc]: new dialog to present preference values.
+
+	* beast-gtk/bstapp.c: provide a File/DialogPreferences menu item to
+	popup the preferences dialog.
+
 Wed Dec 29 14:37:40 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (bst_subwindow_new): if no host object to watch
