@@ -44,7 +44,7 @@ usage ()
   g_print (" -h, --help                  print usage information\n");
   g_print (" -I <directory>              add this directory to the include path\n");
   g_print (" --version                   print version\n");
-  g_print (" --print-include-path         print include path\n");
+  g_print (" --print-include-path        print include path\n");
   g_print (" --nostdinc                  don't use standard include path\n");
 }
 
