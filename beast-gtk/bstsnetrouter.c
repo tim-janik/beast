@@ -61,12 +61,13 @@ static GtkItemFactoryEntry popup_entries[] =
   { "/Modules",		NULL,		NULL,	0,	"<Title>",	0 },
   { "/-----",		NULL,		NULL,	0,	"<Separator>",	0 },
   { "/Audio _Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
-  { "/Other _Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_Other Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Routing",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Filters",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Virtualization",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Input & Output",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Enhance",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_MIDI",		NULL,		NULL,	0,	"<Branch>",	0 },
 };
 
 

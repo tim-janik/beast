@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.1
-date    = 16 Apr 2002
+date    = 21 Apr 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 16 Apr 2002 BEAST-0.4.1
+GSL-Functions 21 Apr 2002 BEAST-0.4.1
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
@@ -277,7 +277,7 @@ New job suitable for @STRONG gsl_trans_add()@
 @DOC-DESCRIPTION@
 Create a new transaction job which remove @EMPH module@ from the engine and destroys it.  
 @DOC-SYNOPSIS@
-@STRONG gsl_job_iconnect@ (@EMPH src_module@, @EMPH src_ostream@, @EMPH dest_module@, @EMPH dest_istream@);
+@STRONG gsl_job_connect@ (@EMPH src_module@, @EMPH src_ostream@, @EMPH dest_module@, @EMPH dest_istream@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 25
