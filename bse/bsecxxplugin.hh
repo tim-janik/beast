@@ -57,8 +57,7 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
 /* --- enum registration --- */
 /* enum registration is based on a static ExportTypeKeeper
  * object, which provides the enum's get_type() implementation and
- * auto-registers the enum's export node with the plugin's
- * export_identity.
+ * auto-registers the enum's export node with the export_identity.
  */
 #define BSE_CXX_DECLARED_ENUM_TYPE(EnumType)                            \
   (bse_type_keeper__3##EnumType.get_type ())
@@ -97,6 +96,30 @@ EnumValue (int         int_value,
   value.value_nick = const_cast<char*> (value_nick);
   return value;
 }
+
+
+/* --- record registration --- */
+/* record registration is based on a static ExportTypeKeeper
+ * object, which provides the record's get_type() implementation and
+ * auto-registers the record's export node with the export_identity.
+ */
+#define BSE_CXX_DECLARED_RECORD_TYPE(RecordType)                        \
+  (bse_type_keeper__1##RecordType.get_type ())
+#define BSE_CXX_DECLARE_RECORD(RecordType,RecordName)                   \
+  template<class E> static BseExportNode* bse_export_node ();           \
+  template<> static BseExportNode*                                      \
+  bse_export_node<RecordType> ()                                        \
+  {                                                                     \
+    static BseExportNodeBoxed bnode = {                                 \
+      { NULL, BSE_EXPORT_NODE_RECORD, RecordName, },                    \
+    };                                                                  \
+    return &rnode.node;                                                 \
+  }                                                                     \
+  extern ::Bse::ExportTypeKeeper bse_type_keeper__1##RecordType;
+#define BSE_CXX_REGISTER_RECORD(RecordType)                             \
+  ::Bse::ExportTypeKeeper                                               \
+         bse_type_keeper__1##RecordType (bse_export_node<RecordType>,   \
+                                         &BSE_CXX_EXPORT_IDENTITY);
 
 
 /* --- procedure registration --- */

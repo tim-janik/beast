@@ -51,9 +51,6 @@ struct _BsePlugin
   gchar		*fname;
   gpointer	 gmodule;
   guint		 use_count : 16;
-  guint		 exports_procedures : 1;
-  guint		 exports_objects : 1;
-  guint		 exports_enums : 1;
 
   BseExportNode *chain;
   guint		 n_types;

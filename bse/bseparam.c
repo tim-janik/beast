@@ -93,7 +93,8 @@ bse_param_spec_boxed (const gchar *name,
   g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type), NULL);
   
   if (sfi_boxed_get_record_info (boxed_type) ||
-      sfi_boxed_get_sequence_info (boxed_type))
+      sfi_boxed_get_sequence_info (boxed_type) ||
+      sfi_boxed_type_get_fields (boxed_type))
     {
       pspec = g_param_spec_boxed (name, nick, blurb, boxed_type, 0);
       sfi_pspec_set_options (pspec, hints);

@@ -1,3 +1,19 @@
+Tue Jan 20 15:30:44 2004  Tim Janik  <timj@gtk.org>
+
+	* bseexports.h: added BseExportNodeBoxed for records and
+	sequences.
+
+	* bseparam.c:
+	* bseglue.c: honour sfi_boxed_type_get_fields().
+
+	* bseplugin.[hc]: implement un-initialization of types
+	upon unloading (needed by boxed). added BSE_EXPORT_NODE_RECORD
+	and BSE_EXPORT_NODE_SEQUENCE handling.
+
+	* bsetype.[hc]: implement dynamic boxed.
+
+	* bsecxxplugin.h: started implementing RECORD type registration.
+
 Tue Jan 20 05:47:04 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesniffer.cc: adapt to C++ type changes.

@@ -42,6 +42,7 @@ static void	    bse_plugin_use		(GTypePlugin	  *gplugin);
 static void	    bse_plugin_unuse		(GTypePlugin	  *gplugin);
 static void         bse_plugin_init_types       (BsePlugin        *plugin);
 static void         bse_plugin_reinit_types     (BsePlugin        *plugin);
+static void         bse_plugin_uninit_types     (BsePlugin        *plugin);
 static void	    type_plugin_iface_init	(GTypePluginClass *iface);
 
 /* --- variables --- */
@@ -114,9 +115,6 @@ bse_plugin_init (BsePlugin *plugin)
   plugin->fname = NULL;
   plugin->gmodule = NULL;
   plugin->use_count = 0;
-  plugin->exports_procedures = FALSE;
-  plugin->exports_objects = FALSE;
-  plugin->exports_enums = FALSE;
   plugin->n_types = 0;
   plugin->types = NULL;
 }
@@ -213,6 +211,7 @@ bse_plugin_unload (BsePlugin *plugin)
 {
   g_return_if_fail (plugin->gmodule != NULL && plugin->fname != NULL);
   
+  bse_plugin_uninit_types (plugin);
   g_module_close (plugin->gmodule);
   plugin->gmodule = NULL;
   
@@ -241,6 +240,22 @@ bse_plugin_unuse (GTypePlugin *gplugin)
 	}
     }
   g_object_unref (G_OBJECT (plugin));
+}
+
+static void
+bse_plugin_uninit_types (BsePlugin *plugin)
+{
+  BseExportNode *node;
+  for (node = plugin->chain; node && node->ntype; node = node->next)
+    {
+      GType type = node->type;
+      if (type) // we might have left out this node upon initialization intentionally
+        {
+          if (node->ntype == BSE_EXPORT_NODE_RECORD ||
+              node->ntype == BSE_EXPORT_NODE_SEQUENCE)
+            bse_type_uninit_boxed ((BseExportNodeBoxed*) node);
+        }
+    }
 }
 
 static void
@@ -281,6 +296,10 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
             enode = (BseExportNodeEnum*) node;
             g_enum_complete_type_info (type, type_info, enode->values);
             break;
+          case BSE_EXPORT_NODE_RECORD:
+          case BSE_EXPORT_NODE_SEQUENCE:
+            bse_type_complete_boxed ((BseExportNodeBoxed*) node, value_vtable);
+            break;
           default: ;
           }
         break;
@@ -313,6 +332,9 @@ bse_plugin_reinit_types (BsePlugin *plugin)
           if (!found_type)
             g_message ("%s: plugin attempts to reregister foreign type: %s",
                        plugin->name, node->name);
+          else if (node->ntype == BSE_EXPORT_NODE_RECORD ||
+                   node->ntype == BSE_EXPORT_NODE_SEQUENCE)
+            bse_type_reinit_boxed ((BseExportNodeBoxed*) node);
         }
     }
   while (n--)
@@ -350,6 +372,8 @@ bse_plugin_init_types (BsePlugin *plugin)
         break;
       case BSE_EXPORT_NODE_PROC:
       case BSE_EXPORT_NODE_ENUM:
+      case BSE_EXPORT_NODE_RECORD:
+      case BSE_EXPORT_NODE_SEQUENCE:
         type = g_type_from_name (node->name);
         if (type)
           {
@@ -376,6 +400,12 @@ bse_plugin_init_types (BsePlugin *plugin)
            * g_value_register_transform_func (SFI_TYPE_CHOICE, type, sfi_value_choice2enum_simple);
            * g_value_register_transform_func (type, SFI_TYPE_CHOICE, sfi_value_enum2choice);
            */
+          break;
+        case BSE_EXPORT_NODE_RECORD:
+        case BSE_EXPORT_NODE_SEQUENCE:
+          type = bse_type_register_dynamic_boxed ((BseExportNodeBoxed*) node, G_TYPE_PLUGIN (plugin));
+          node->type = type;
+          bse_type_reinit_boxed ((BseExportNodeBoxed*) node);
           break;
         case BSE_EXPORT_NODE_CLASS:
           cnode = (BseExportNodeClass*) node;

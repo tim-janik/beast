@@ -38,33 +38,36 @@ extern GType bse_type_id_packed_pointer;
 
 
 /* --- prototypes --- */
-void         bse_type_init                  (void);
-void         bse_type_add_options           (GType            type,
-                                             const gchar     *options);
-const gchar* bse_type_get_options           (GType            type);
-void         bse_type_add_blurb             (GType            type,
-                                             const gchar     *blurb);
-const gchar* bse_type_get_blurb             (GType            type);
-void         bse_type_add_authors           (GType            type,
-                                             const gchar     *authors);
-const gchar* bse_type_get_authors           (GType            type);
-void         bse_type_add_license           (GType            type,
-                                             const gchar     *license);
-const gchar* bse_type_get_license           (GType            type);
-GType        bse_type_register_static       (GType            parent_type,
-                                             const gchar     *type_name,
-                                             const gchar     *type_blurb,
-                                             const GTypeInfo *info);
-GType        bse_type_register_abstract     (GType            parent_type,
-                                             const gchar     *type_name,
-                                             const gchar     *type_blurb,
-                                             const GTypeInfo *info);
-GType        bse_type_register_dynamic      (GType            parent_type,
-                                             const gchar     *type_name,
-                                             GTypePlugin     *plugin);
-void         bse_type_register_export_chain (BseExportNode   *chain,
-                                             const gchar     *owner);
-
+void         bse_type_init                   (void);
+void         bse_type_add_options            (GType               type,
+                                              const gchar        *options);
+const gchar* bse_type_get_options            (GType               type);
+void         bse_type_add_blurb              (GType               type,
+                                              const gchar        *blurb);
+const gchar* bse_type_get_blurb              (GType               type);
+void         bse_type_add_authors            (GType               type,
+                                              const gchar        *authors);
+const gchar* bse_type_get_authors            (GType               type);
+void         bse_type_add_license            (GType               type,
+                                              const gchar        *license);
+const gchar* bse_type_get_license            (GType               type);
+GType        bse_type_register_static        (GType               parent_type,
+                                              const gchar        *type_name,
+                                              const gchar        *type_blurb,
+                                              const GTypeInfo    *info);
+GType        bse_type_register_abstract      (GType               parent_type,
+                                              const gchar        *type_name,
+                                              const gchar        *type_blurb,
+                                              const GTypeInfo    *info);
+GType        bse_type_register_dynamic       (GType               parent_type,
+                                              const gchar        *type_name,
+                                              GTypePlugin        *plugin);
+GType        bse_type_register_dynamic_boxed (BseExportNodeBoxed *bnode,
+                                              GTypePlugin        *plugin);
+void         bse_type_reinit_boxed           (BseExportNodeBoxed *bnode);
+void         bse_type_uninit_boxed           (BseExportNodeBoxed *bnode);
+void         bse_type_complete_boxed         (BseExportNodeBoxed *bnode,
+                                              GTypeValueTable    *value_vtable);
 
 
 /* --- implementation details --- */

@@ -15,10 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bsetype.h"
+#include "bsetype.h"
 
-#include        "bseplugin.h"
-#include        <string.h>
+#include "bseplugin.h"
+#include <string.h>
+#include <gobject/gvaluecollector.h>
 
 
 /* --- variables --- */
@@ -26,6 +27,7 @@ static GQuark	quark_options = 0;
 static GQuark	quark_blurb = 0;
 static GQuark	quark_authors = 0;
 static GQuark	quark_license = 0;
+static GQuark	quark_boxed_export_node = 0;
 GType bse_type_id_packed_pointer = 0;
 
 
@@ -149,6 +151,151 @@ bse_type_register_dynamic (GType        parent_type,
   return type;
 }
 
+static void
+bse_boxed_value_init (GValue *value)
+{
+  value->data[0].v_pointer = NULL;
+}
+
+static void
+bse_boxed_value_free (GValue *value)
+{
+  if (value->data[0].v_pointer && !(value->data[1].v_uint & G_VALUE_NOCOPY_CONTENTS))
+    {
+      BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (value), quark_boxed_export_node);
+      bnode->free (value->data[0].v_pointer);
+    }
+}
+
+static void
+bse_boxed_value_copy (const GValue *src_value,
+                      GValue       *dest_value)
+{
+  if (src_value->data[0].v_pointer)
+    {
+      BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (src_value), quark_boxed_export_node);
+      dest_value->data[0].v_pointer = bnode->copy (src_value->data[0].v_pointer);
+    }
+  else
+    dest_value->data[0].v_pointer = src_value->data[0].v_pointer;
+}
+
+static gpointer
+bse_boxed_value_peek_pointer (const GValue *value)
+{
+  return value->data[0].v_pointer;
+}
+
+static gchar*
+bse_boxed_collect_value (GValue      *value,
+                         guint        n_collect_values,
+                         GTypeCValue *collect_values,
+                         guint        collect_flags)
+{
+  if (!collect_values[0].v_pointer)
+    value->data[0].v_pointer = NULL;
+  else
+    {
+      if (collect_flags & G_VALUE_NOCOPY_CONTENTS)
+        {
+          value->data[0].v_pointer = collect_values[0].v_pointer;
+          value->data[1].v_uint = G_VALUE_NOCOPY_CONTENTS;
+        }
+      else
+        {
+          BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (value), quark_boxed_export_node);
+          value->data[0].v_pointer = bnode->copy (collect_values[0].v_pointer);
+        }
+    }
+  return NULL;
+}
+
+static gchar*
+bse_boxed_lcopy_value (const GValue *value,
+                       guint         n_collect_values,
+                       GTypeCValue  *collect_values,
+                       guint         collect_flags)
+{
+  gpointer *boxed_p = collect_values[0].v_pointer;
+  if (!boxed_p)
+    return g_strdup_printf ("value location for `%s' passed as NULL", G_VALUE_TYPE_NAME (value));
+  if (!value->data[0].v_pointer)
+    *boxed_p = NULL;
+  else if (collect_flags & G_VALUE_NOCOPY_CONTENTS)
+    *boxed_p = value->data[0].v_pointer;
+  else
+    {
+      BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (value), quark_boxed_export_node);
+      *boxed_p = bnode->copy (value->data[0].v_pointer);
+    }
+  return NULL;
+}
+
+void
+bse_type_complete_boxed (BseExportNodeBoxed *bnode,
+                         GTypeValueTable    *value_vtable)
+{
+  static const GTypeValueTable boxed_vtable = {
+    bse_boxed_value_init,
+    bse_boxed_value_free,
+    bse_boxed_value_copy,
+    bse_boxed_value_peek_pointer,
+    "p",
+    bse_boxed_collect_value,
+    "p",
+    bse_boxed_lcopy_value,
+  };
+  *value_vtable = boxed_vtable;
+}
+
+static void
+bse_boxed_to_record (const GValue *src_value,
+                     GValue       *dest_value)
+{
+  BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (src_value), quark_boxed_export_node);
+  bnode->boxed2recseq (src_value, dest_value);
+}
+
+static void
+bse_boxed_from_record (const GValue *src_value,
+                       GValue       *dest_value)
+{
+  BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (dest_value), quark_boxed_export_node);
+  bnode->seqrec2boxed (src_value, dest_value);
+}
+
+GType
+bse_type_register_dynamic_boxed (BseExportNodeBoxed *bnode,
+                                 GTypePlugin        *plugin)
+{
+  GType type;
+  g_return_val_if_fail (bnode->node.name != NULL, 0);
+  g_return_val_if_fail (bnode->copy != NULL, 0);
+  g_return_val_if_fail (bnode->free != NULL, 0);
+  g_return_val_if_fail (g_type_from_name (bnode->node.name) == 0, 0);
+
+  type = g_type_register_dynamic (G_TYPE_BOXED, bnode->node.name, plugin, 0);
+  if (bnode->boxed2recseq)
+    g_value_register_transform_func (SFI_TYPE_REC, type, bse_boxed_to_record);
+  if (bnode->seqrec2boxed)
+    g_value_register_transform_func (type, SFI_TYPE_REC, bse_boxed_from_record);
+  return type;
+}
+
+void
+bse_type_reinit_boxed (BseExportNodeBoxed *bnode)
+{
+  g_return_if_fail (G_TYPE_IS_BOXED (bnode->node.type));
+  g_type_set_qdata (bnode->node.type, quark_boxed_export_node, bnode);
+}
+
+void
+bse_type_uninit_boxed (BseExportNodeBoxed *bnode)
+{
+  g_return_if_fail (G_TYPE_IS_BOXED (bnode->node.type));
+  g_type_set_qdata (bnode->node.type, quark_boxed_export_node, NULL);
+}
+
 
 /* --- customized pspec constructors --- */
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
@@ -228,6 +375,7 @@ bse_type_init (void)
   quark_blurb = g_quark_from_static_string ("BseType-blurb");
   quark_authors = g_quark_from_static_string ("BseType-authors");
   quark_license = g_quark_from_static_string ("BseType-license");
+  quark_boxed_export_node = g_quark_from_static_string ("BseType-boxed-export-node");
   g_type_init ();
   
   /* initialize parameter types */

@@ -107,6 +107,7 @@ typedef struct  _BseWaveRepoClass       BseWaveRepoClass;
 
 /* --- BSE aux structures --- */
 typedef struct  _BseExportNode          BseExportNode;
+typedef struct  _BseExportNodeBoxed	BseExportNodeBoxed;
 typedef struct  _BseGlobals             BseGlobals;
 typedef struct  _BsePixdata             BsePixdata;
 typedef struct  _BsePlugin              BsePlugin;

@@ -28,6 +28,8 @@ typedef enum {
   BSE_EXPORT_NODE_NONE,
   BSE_EXPORT_NODE_LINK,
   BSE_EXPORT_NODE_ENUM,
+  BSE_EXPORT_NODE_RECORD,
+  BSE_EXPORT_NODE_SEQUENCE,
   BSE_EXPORT_NODE_CLASS,
   BSE_EXPORT_NODE_PROC
 } BseExportNodeType;
@@ -47,6 +49,15 @@ typedef struct {
   BseExportNode node;
   GEnumValue   *values;
 } BseExportNodeEnum;
+struct _BseExportNodeBoxed {
+  BseExportNode   node;
+  GBoxedCopyFunc  copy;
+  GBoxedFreeFunc  free;
+  GValueTransform boxed2recseq;
+  GValueTransform seqrec2boxed;
+  SfiRecFields    fields;
+  const gchar   **infos;
+};
 typedef struct {
   BseExportNode      node;
   const char        *parent;

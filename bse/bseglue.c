@@ -337,6 +337,14 @@ bglue_value_to_serializable (const GValue *svalue)
 	dtype = SFI_TYPE_REC;
       else if (sfi_boxed_get_sequence_info (vtype))
 	dtype = SFI_TYPE_SEQ;
+      else
+        {
+          const SfiBoxedFields *bfields = sfi_boxed_type_get_fields (vtype);
+          if (bfields && bfields->is_rec)
+            dtype = SFI_TYPE_REC;
+          else if (bfields && bfields->is_seq)
+            dtype = SFI_TYPE_SEQ;
+        }
       break;
     case G_TYPE_ENUM:
       dtype = SFI_TYPE_CHOICE;
