@@ -285,10 +285,28 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		MC_EVAR_ADD(CXXFLAGS, -Wreorder, -Wreorder)
 		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
 	
+		dnl
 		dnl Optimizations
-		MC_EVAR_ADD(CXXFLAGS, -fnonnull-objects, -fnonnull-objects)
+		dnl
+		MC_EVAR_ADD(CXXFLAGS, -O, -O6)
+		MC_EVAR_ADD(CXXFLAGS, -pipe, -pipe)
+		MC_EVAR_ADD(CXXFLAGS, -fstrength-reduce, -fstrength-reduce)
+		MC_EVAR_ADD(CXXFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
+		MC_EVAR_ADD(CXXFLAGS, -finline-functions, -finline-functions)
+		MC_EVAR_ADD(CXXFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
+		MC_EVAR_ADD(CXXFLAGS, -freg-struct-return, -freg-struct-return)
 		dnl -funroll-loops gives problems with -O and templates (see Rep-CppBug_1.C)
 		dnl MC_EVAR_ADD(CXXFLAGS, -funroll-loops, -funroll-loops)
+		MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt,
+		    MC_EVAR_ADD(CXXFLAGS, -frerun-loop-opt, -frerun-loop-opt))
+		MC_EVAR_ADD(CXXFLAGS, -fgcse, -fgcse)
+		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
+		    MC_EVAR_ADD(CXXFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
+
+		dnl
+		dnl C++ specific Options
+		dnl
+		MC_EVAR_ADD(CXXFLAGS, -fnonnull-objects, -fnonnull-objects)
 		dnl MC_EVAR_ADD(CXXFLAGS, -fhandle-signatures, -fhandle-signatures)
 		dnl MC_EVAR_ADD(CXXFLAGS, -fhandle-exceptions, -fhandle-exceptions)
 		dnl MC_EVAR_ADD(CXXFLAGS, -frtti, -frtti)

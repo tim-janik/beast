@@ -2,11 +2,11 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-04-05 08:02:43")
+  (modification-time "2002-04-09 01:54:09")
   (creation-time "2002-02-06 14:05:19"))
 (BseSNet::Simple-Loop
   (auto-activate 't)
-  (modification-time "2002-04-05 08:02:43")
+  (modification-time "2002-04-09 01:54:09")
   (creation-time "2002-02-06 14:05:24")
   (name "Simple-Loop")
   (BseStandardOsc::StandardOsc
@@ -16,15 +16,9 @@
     (parasite f "BstRouterCoords" 2 211.000000 168.000000))
   (BsePcmOutput::BsePcmOutput-1
     (name "BsePcmOutput-1")
-    (source-input "left_in" BseSNet:1.BseMixer:1 "mono_out")
-    (source-input "right_in" BseSNet:1.BseMixer:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 -160.000000 55.000000))
-  (BseMixer::Mixer
-    (volume-f1 0.602560)
-    (name "Mixer")
-    (source-input "mono_in1" BseSNet:1.BseIIRFilter:1 "mono_out")
-    (source-input "mono_in2" BseSNet:1.BseMult:2 "mono_out")
-    (parasite f "BstRouterCoords" 2 -39.000000 -15.000000))
+    (source-input "left_in" BseSNet:1.BseFreeVerb:1 "left_out")
+    (source-input "right_in" BseSNet:1.BseFreeVerb:1 "right_out")
+    (parasite f "BstRouterCoords" 2 -253.000000 0.000000))
   (BseIIRFilter::Tune-Filter
     (cut-off-freq-2 18716.583984)
     (cut-off-freq 1069.513428)
@@ -77,4 +71,14 @@
     (name "HH-VCF")
     (source-input "mono_in1" BseSNet:1.BseIIRFilter:2 "mono_out")
     (source-input "mono_in2" BseSNet:1.BseSimpleADSR:2 "adsr_out")
-    (parasite f "BstRouterCoords" 2 56.500000 -116.500000)))
+    (parasite f "BstRouterCoords" 2 56.500000 -116.500000))
+  (BseFreeVerb::BseFreeVerb-1
+    (width 46.153851)
+    (dry-level 0.825170)
+    (wet-level 1.090910)
+    (damping 93.706291)
+    (room-size 0.799860)
+    (name "BseFreeVerb-1")
+    (source-input "left_in" BseSNet:1.BseIIRFilter:1 "mono_out")
+    (source-input "right_in" BseSNet:1.BseMult:2 "mono_out")
+    (parasite f "BstRouterCoords" 2 -110.500000 -6.500000)))

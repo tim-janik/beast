@@ -13,6 +13,7 @@ icon_list += organ.c
 icon_list += osc.c
 icon_list += pipe.c
 icon_list += prod.c
+icon_list += reverb.c
 icon_list += sequencer.c
 icon_list += sine.c
 icon_list += snooper.c
@@ -40,5 +41,6 @@ icon_list += snooper.xcf
 icon_list += speaker.xcf
 icon_list += sub.xcf
 icon_list += sum.xcf
+icon_list += test.xcf
 icon_list += waveosc.xcf
 ## Generated data ends here

@@ -1,15 +1,15 @@
 @DOC-VARIABLE-DEFINITIONS@
 name    = BSE-Functions
 blurb   = BSE Function Reference
-package = BEAST-0.4.0
-date    = 05 Apr 2002
+package = BEAST-0.4.1
+date    = 09 Apr 2002
 image   = bse-functions
 
 @DOC-TITLE@
 BSE-Functions
 
 @DOC-HEAD@
-BSE-Functions 05 Apr 2002 BEAST-0.4.0
+BSE-Functions 09 Apr 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSE-Functions - BSE Function Reference

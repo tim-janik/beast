@@ -1,15 +1,15 @@
 @DOC-VARIABLE-DEFINITIONS@
 name    = GSL-Functions
 blurb   = GSL Function Reference
-package = BEAST-0.4.0
-date    = 05 Apr 2002
+package = BEAST-0.4.1
+date    = 09 Apr 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 05 Apr 2002 BEAST-0.4.0
+GSL-Functions 09 Apr 2002 BEAST-0.4.1
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference

@@ -1,3 +1,9 @@
+Tue Apr  9 03:13:03 2002  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4: fixup C++ related macros.
+
+	* test/simple-loop.bse: test the free verb modules.
+
 Sat Mar 30 06:58:14 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsongshell.[hc]: conditionalize the pattern view,

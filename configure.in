@@ -16,7 +16,7 @@ AC_PREREQ(2.13)
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 BSE_MAJOR_VERSION=0
 BSE_MINOR_VERSION=4
-BSE_MICRO_VERSION=0
+BSE_MICRO_VERSION=1
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
@@ -404,6 +404,7 @@ bse/Makefile
 bse/icons/Makefile
 plugins/Makefile
 plugins/icons/Makefile
+plugins/freeverb/Makefile
 bsw/Makefile
 beast-gtk/Makefile
 beast-gtk/icons/Makefile
