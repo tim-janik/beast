@@ -1,3 +1,8 @@
+Sat Mar  6 12:36:16 2004  Tim Janik  <timj@gtk.org>
+
+	* bsenoise.c: use gsl_engine_block_size() instead of outdated
+	configuration option.
+
 Fri Feb 27 06:22:31 2004  Tim Janik  <timj@gtk.org>
 
 	* artscompressor.cc:

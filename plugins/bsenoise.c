@@ -78,7 +78,7 @@ bse_noise_prepare (BseSource *source)
   BseNoise *noise = BSE_NOISE (source);
   guint i, l;
   
-  l = BSE_GCONFIG (synth_block_size) * (N_STATIC_BLOCKS + 1);
+  l = gsl_engine_block_size() * (N_STATIC_BLOCKS + 1);
   noise->static_noise = g_new (gfloat, l);
   
   for (i = 0; i < l; i++)
@@ -94,9 +94,9 @@ noise_process (GslModule *module,
 {
   gfloat *static_noise = module->user_data;
 
-  g_return_if_fail (n_values <= BSE_GCONFIG (synth_block_size)); /* paranoid */
+  g_return_if_fail (n_values <= gsl_engine_block_size()); /* paranoid */
 
-  GSL_MODULE_OBUFFER (module, 0) = static_noise + (rand () % (BSE_GCONFIG (synth_block_size) * N_STATIC_BLOCKS));
+  GSL_MODULE_OBUFFER (module, 0) = static_noise + (rand () % (gsl_engine_block_size() * N_STATIC_BLOCKS));
 }
 
 static void
