@@ -15,16 +15,16 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bstxkb.h"
+#include	"bstxkb.h"
 
-#include <BEASTconfig.h>
-#include <string.h>
+#include	<PKG_config.h>
+#include	<string.h>
 
 #ifdef	BST_WITH_XKB
 
-#include <gdk/gdkx.h>
-#include <X11/XKBlib.h>
-#include <X11/extensions/XKBgeom.h>
+#include	<gdk/gdkx.h>
+#include	<X11/XKBlib.h>
+#include	<X11/extensions/XKBgeom.h>
 
 
 /* --- variables --- */

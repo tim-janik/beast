@@ -7,7 +7,7 @@ builtin(include, acbeast.m4)dnl
 # Configure script for BEAST/BSE
 #
 AC_INIT(bse/bseconfig.h.in)
-AM_CONFIG_HEADER(BEASTconfig.h)
+AM_CONFIG_HEADER(PKG_config.h)
 AC_PREREQ(2.13)
 
 #
@@ -200,73 +200,80 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 ])
 AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 [
-    dnl Check for possible sound devices
+    dnl Check for potential pcm devices
 	
-    bse_have_snddev=
+    bse_have_pcmdev=
 	
     dnl OSS-Lite driver check
     AC_MSG_CHECKING(for OSS-Lite sounddriver device)
     have_oss_sndstat=no
-    if test -r /proc/asound/oss-devices && test -r /proc/asound/sndstat; then
+    if test -r /dev/sndstat; then
 	have_oss_sndstat=yes
-    elif test -r /dev/sndstat; then
+    elif test -r /proc/asound/oss-devices && test -r /proc/asound/sndstat; then
 	have_oss_sndstat=yes
     fi
     if test -c /dev/dsp && test "$have_oss_sndstat" = yes; then
-	bseossdevice=\"/dev/dsp\"
-	bse_have_snddev=yes
+	bse_have_pcmdev=yes
+        AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_OSS, "/dev/dsp")
 	AC_MSG_RESULT(/dev/dsp)
-    #elif test -c /dev/dsp1 && cat /dev/sndstat >/dev/null 2>&1; then
-    #	bseossdevice=\"/dev/dsp1\"
-    #	bse_have_snddev=yes
-    #	AC_MSG_RESULT(/dev/dsp1)
     else
-	bseossdevice=
 	AC_MSG_RESULT(none)
     fi
-    AC_SUBST(bseossdevice)
 
-    dnl Feature ALSA with a minimum version requirement
-    have_alsa=
-    REQUIRED=0.3.0
-    AC_MSG_CHECKING(for ALSA - version >= $REQUIRED)
+    dnl feature ALSA with a minimum version requirement -
+    dnl the logic here is as follows, even if /proc support
+    dnl for ALSA is not currently present, we still check
+    dnl for -lasound since the modules may be loaded at runtime
+    dnl however, if /proc support is present but the ALSA version
+    dnl is too old, we report that and skip ALSA support
+    REQUIRED=0.5.0
+    check_alsa_lib=
+    AC_MSG_CHECKING(for ALSA modules - version >= $REQUIRED)
     if test -e /proc/asound/version; then
 	ALSA_VERSION=[`cat /proc/asound/version | \
 	    sed -e '/Version/!d' \
                 -e 's/.*Version[^0-9]*\(.*[0-9]\)[^0-9]*$/\1/' `]
 	MC_CHECK_VERSION($ALSA_VERSION, $REQUIRED,
 	    AC_MSG_RESULT([yes ($ALSA_VERSION)])
-	    have_alsa=yes
+            check_alsa_lib=yes
 	    ,
+	    check_alsa_lib=no
 	    AC_MSG_RESULT([no (found $ALSA_VERSION - version too old)])
 	)
     else
+        check_alsa_lib=yes
 	AC_MSG_RESULT(no)
     fi
-    AC_MSG_WARN(["Beware - we do not currently check for asound.h and libasound correctly"])
-    bsealsadevices=
-    if test "x$have_alsa" = "xyes"; then
-	AC_MSG_CHECKING(for ALSA sounddriver devices)
-	if test -c /dev/snd/pcmC0D0; then
-	    tmp=
-	    for d in /dev/snd/pcmC?D? ; do
-		if test -z "$tmp"; then
-		    tmp="\"$d\""
-		else
-		    tmp="$tmp, \"$d\""
-		fi
-	    done
-	    bsealsadevices=$tmp
-	    AC_MSG_RESULT(/dev/snd/pcmC?D?)
-	    bse_have_snddev=yes
-	else
-	    AC_MSG_RESULT(none - check your /dev/snd/* setup)
-	fi
+    if test "x$check_alsa_lib" = "xyes"; then
+        dnl check for -lasound
+        dnl this check assumes that libasound.la is installed in some
+        dnl standard path, e.g. /usr or /usr/local
+	AC_MSG_CHECKING(for ALSA Sound Library)
+        cflags=$CFLAGS
+        ldflags=$LDFLAGS
+        CFLAGS=$BSE_CFLAGS
+        LDFLAGS="-lasound $BSE_LIBS"
+        AC_TRY_LINK([
+          #include <sys/asoundlib.h>
+          #include <linux/asoundid.h>
+        ],[{
+          snd_pcm_open (0, 0, 0, SND_PCM_OPEN_CAPTURE);
+          snd_pcm_channel_setup (0, 0);
+          // snd_card_type_name (SND_CARD_TYPE_SHARE);
+        }],[
+          bse_have_pcmdev=yes
+	  AC_MSG_RESULT([found it - ALSA support enabled])
+	  AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_ALSA)
+	  BSE_LIBS="-lasound $BSE_LIBS"
+        ],[
+	  AC_MSG_RESULT([failed - disabling ALSA support])
+        ])
+        CFLAGS=$cflags
+        LDFLAGS=$ldflags
     fi
-    AC_SUBST(bsealsadevices)
-	
+
     dnl Error out if there is no sound device at all
-    if test "x$bse_have_snddev" \!= "xyes"; then
+    if test "x$bse_have_pcmdev" \!= "xyes"; then
 	AC_MSG_ERROR(unable to find any sound drivers/devices)
     fi
 ])

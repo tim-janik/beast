@@ -734,16 +734,19 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 
   if (event->type == GDK_BUTTON_PRESS  &&
       event->button.button == 1 &&
-      router->mode == 0) /* start link */
+      router->mode == 0) /* start link (or popup source view) */
     {
       BstCanvasSource *csource;
-      guint ochannel_id;
+      guint ochannel_id, ichannel_id;
 
       g_return_val_if_fail (router->tmp_line == NULL, FALSE);
       
       csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
       ochannel_id = (csource
 		     ? bst_canvas_source_ochannel_at (csource, event->button.x, event->button.y)
+		     : 0);
+      ichannel_id = (csource
+		     ? bst_canvas_source_ichannel_at (csource, event->button.x, event->button.y)
 		     : 0);
       
       if (csource && ochannel_id)
@@ -773,6 +776,10 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	  update_mode (router);
 	  handled = TRUE;
 	}
+      else if (csource &&
+	       csource->source != (BseSource*) router->snet &&
+	       ichannel_id == 0)
+	bst_canvas_source_popup_view (csource);
     }
   else if ((event->type == GDK_BUTTON_PRESS ||
 	    event->type == GDK_BUTTON_RELEASE) &&

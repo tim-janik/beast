@@ -23,7 +23,7 @@
 #include        "bstprocedure.h"
 #include	"bstxkb.h"
 #include	"bstkeytables.h"
-#include	<BEASTconfig.h>
+#include	<PKG_config.h>
 
 
 
@@ -61,7 +61,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  BsePcmDevice *pdev;
+  BsePcmDevice *pdev = NULL;
   BstApp *app = NULL;
   guint i;
   
@@ -122,8 +122,26 @@ main (int   argc,
   
   /* setup PCM Devices
    */
-  pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceOSS), NULL);
-  bse_pcm_device_set_device_name (pdev, "/dev/dsp");
+  if (!pdev && BSE_TYPE_ID (BsePcmDeviceAlsa))
+    {
+      pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceAlsa), NULL);
+      if (bse_pcm_device_update_caps (pdev))
+	{
+	  bse_object_unref (BSE_OBJECT (pdev));
+	  pdev = NULL;
+	}
+    }
+  if (!pdev && BSE_TYPE_ID (BsePcmDeviceOSS))
+    {
+      pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceOSS), NULL);
+      if (bse_pcm_device_update_caps (pdev))
+	{
+	  bse_object_unref (BSE_OBJECT (pdev));
+	  pdev = NULL;
+	}
+    }
+  if (!pdev)
+    g_error ("No PCM device driver known");
   bse_heart_register_device ("Master", pdev);
   bse_heart_set_default_odevice ("Master");
   bse_heart_set_default_idevice ("Master");
