@@ -13,7 +13,7 @@ noinst_DATA = bse-zfile.c # bse-zfile.h
 EXTRA_DIST  = $(filter-out BSE_%, $(ZFILE_DEFS))
 
 bse-zfile.c:	zintern $(srcdir)/*.bse # bse-zfile.h
-	zintern -b -z $(ZFILE_DEFS) > xgen-bzc					\
+	./zintern -b -z $(ZFILE_DEFS) > xgen-bzc					\
 	&& echo "static const BseZFile bse_zfiles[] = {" >> xgen-bzc		\
 	&& for i in $(filter BSE_%, $(ZFILE_DEFS)) ; do				\
 		echo "  { \"$$i\", $$i""_SIZE, "		>>xgen-bzc;	\
