@@ -240,7 +240,7 @@ bst_param_view_rebuild (BstParamView *param_view)
 
   /* FIXME: work around a gtk bug 
    */
-  if (GTK_WIDGET_REALIZED (param_view))
+  if (GTK_WIDGET_REALIZED (param_view) && !GTK_CHECK_VERSION (1, 2, 7))
     {
       GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (param_view));
 
