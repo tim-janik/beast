@@ -1,3 +1,9 @@
+Sat Nov 29 17:19:22 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsw/bswcxxutils.h tests/Makefile.am: Added bsw/bswcxxutils.h, which
+	contains stuff the generated code uses. Use bsw/bswcxxutils.h again.
+	This makes NULL strings work.
+
 Sat Nov 29 06:13:27 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkrackeditor.[hc]: new files containing editing
