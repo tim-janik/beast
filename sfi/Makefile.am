@@ -55,10 +55,13 @@ SFIDL = $(top_builddir)/sfi/sfidl
 temp_files =  xgen-tih xgen-tic xgen-sch
 CLEANFILES += $(temp_files)
 CLEANFILES += testidl.h testidl.c
-testidl.h: testidl.sfidl sfidl
-	$(SFIDL) --header --implementation --boxed testidl.sfidl > xgen-tih && mv xgen-tih testidl.h
-testidl.c: testidl.sfidl sfidl
-	$(SFIDL) --source --implementation --boxed --init test_types_init testidl.sfidl > xgen-tic && mv xgen-tic testidl.c
+testidl.h: $(srcdir)/testidl.sfidl sfidl
+	$(SFIDL) --header --implementation --boxed $(srcdir)/testidl.sfidl > xgen-tih \
+	&& mv xgen-tih testidl.h
+testidl.c: $(srcdir)/testidl.sfidl sfidl
+	$(SFIDL) --source --implementation --boxed --init test_types_init $(srcdir)/testidl.sfidl > xgen-tic \
+	&& mv xgen-tic testidl.c
+EXTRA_DIST += testidl.sfidl
 
 sficonfig.h: $(top_srcdir)/configure Makefile
 	echo "/* Generated data from $< (by make $@) */" > xgen-sch \
@@ -82,6 +85,7 @@ $(OBJECTS): sficonfig.h
 noinst_PROGRAMS = sfidl testsfi
 # source files
 sfidl_SOURCES = sfidl.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc glib-extra.c
+EXTRA_DIST += sfidl-namespace.h sfidl-options.h sfidl-parser.h
 progs_extra_sources += sfidl-namespace.h
 sfidl_LDADD = $(SFI_LIBS) -lm
 testsfi_SOURCES = testsfi.c

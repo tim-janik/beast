@@ -22,7 +22,7 @@
 #include <string>
 #include <map>
 #include "sfidl-namespace.h"
-#include <glib-extra.h>
+#include <sfi/glib-extra.h>
 
 using namespace std;
 

@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfidl-options.h"
-#include <glib-extra.h>
+#include <sfi/glib-extra.h>
 #include <stdio.h>
 
 using namespace Sfidl;
