@@ -1,3 +1,17 @@
+Wed Feb 26 22:57:54 2003  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: provide a pspec nick as blurb if no blurb is given.
+
+	* bserecords.sfidl: added BseSongTiming record.
+
+	* bsesong.[hc]: support tact nominator and denominator properties,
+	added BseSongTiming retrieval function and procedure. removed cruft.
+
+	* bsetrack.proc: provide get-part() procedure to lookup a specific tick.
+	provide get-timing() for convenience.
+
+	* bsepart.proc: provide get-timing() for convenience.
+
 Sat Feb 22 17:10:34 2003  Tim Janik  <timj@gtk.org>
 
 	* bsesong.[hc]: added properties for song looping and exported

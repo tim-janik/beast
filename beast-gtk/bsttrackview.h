@@ -44,6 +44,7 @@ struct _BstTrackView
   BstTrackRollController *troll_ctrl;
   BstRadioTools		 *canvas_rtools;
   BstRadioTools		 *hpanel_rtools;
+  BstRadioTools		 *quant_rtools;
   GxkToolbar		 *toolbar;
   GtkWidget		 *repeat_toggle;
 };

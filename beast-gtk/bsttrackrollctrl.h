@@ -41,6 +41,7 @@ typedef struct {
   BstTrackRollTool object_tool[3];
   BstTrackRollTool canvas_tool[3];
   BstTrackRollTool hpanel_tool[3];
+  BstQuantizationType quantization;
   guint		   ref_count;
   BstTrackRoll	  *troll;
   SfiProxy	   song;
@@ -78,6 +79,10 @@ void		bst_track_roll_controller_set_hpanel_tools	(BstTrackRollController *self,
 void		bst_track_roll_controller_set_canvas_reset	(BstTrackRollController	*self,
 								 void (*handler) (gpointer data),
 								 gpointer                data);
+void		bst_track_roll_controller_set_quantization	(BstTrackRollController *self,
+								 BstQuantizationType     quantization);
+guint		bst_track_roll_controller_quantize		(BstTrackRollController *self,
+								 guint                   fine_tick);
 
 
 G_END_DECLS

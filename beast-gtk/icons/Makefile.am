@@ -59,6 +59,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_PATTERN_TOOL		$(srcdir)/pattern-tool.png	\
 	STOCK_PREVIEW_AUDIO		$(srcdir)/small-audio.png	\
 	STOCK_PREVIEW_NO_AUDIO		$(srcdir)/small-noaudio.png	\
+	STOCK_QTACT			$(srcdir)/qtact.png		\
 	STOCK_QNOTE_NONE		$(srcdir)/qnote-none.png	\
 	STOCK_QNOTE_1			$(srcdir)/qnote-1.png		\
 	STOCK_QNOTE_2			$(srcdir)/qnote-2.png		\

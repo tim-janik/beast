@@ -119,6 +119,20 @@ namespace Bse {
     TrackPart tparts;
   };
 
+  /* BSE Song timing structure */
+  record SongTiming {
+    /* song position timing applies to */
+    Int		tick	    @= ("Current tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+    /* tempo */
+    Real	bpm	    @= ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, SFI_PARAM_DEFAULT);
+    /* signature */
+    Int		nominator   @= ("Nominator", "Number of notes per measure", 4, 1, 256, 2, SFI_PARAM_DEFAULT);
+    Int		denominator @= ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, SFI_PARAM_DEFAULT);
+    /* sequencer timing */
+    Int		tpqn	    @= ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
+    Int		tpt	    @= ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
+  };
+
   /* BSE Global Config */
   record GConfig {
     /* stepping rates */

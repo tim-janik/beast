@@ -457,18 +457,17 @@ BseTrackPartSeq*
 bse_track_list_parts (BseTrack *self)
 {
   BseTrackPartSeq *tps;
+  BseSongTiming timing;
+  BseSong *song = NULL;
   BseItem *item;
-  guint mindur = 384 * 4;
   gint i;
 
   g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
 
   item = BSE_ITEM (self);
   if (BSE_IS_SONG (item->parent))
-    {
-      BseSong *song = BSE_SONG (item->parent);
-      mindur = song->tpqn * song->qnpt;
-    }
+    song = BSE_SONG (item->parent);
+  bse_song_timing_get_default (&timing);
   tps = bse_track_part_seq_new ();
   for (i = 0; i < self->n_entries_SL; i++)
     {
@@ -478,7 +477,9 @@ bse_track_list_parts (BseTrack *self)
 	  BseTrackPart tp = { 0, };
 	  tp.tick = entry->tick;
 	  tp.part = BSE_OBJECT_ID (entry->part);
-	  tp.duration = MAX (mindur, entry->part->last_tick_SL);
+	  if (song)
+	    bse_song_get_timing (song, tp.tick, &timing);
+	  tp.duration = MAX (timing.tpt, entry->part->last_tick_SL);
 	  if (i + 1 < self->n_entries_SL)
 	    tp.duration = MIN (tp.duration, entry[1].tick - entry->tick);
 	  bse_track_part_seq_append (tps, &tp);
@@ -505,6 +506,21 @@ bse_track_find_part (BseTrack *self,
 	return TRUE;
       }
   return FALSE;
+}
+
+BsePart*
+bse_track_lookup_tick (BseTrack               *self,
+		       guint                   tick)
+{
+  BseTrackEntry *entry;
+
+  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+
+  entry = track_lookup_entry (self, tick);
+  if (entry && entry->tick == tick)
+    return entry->part;
+  else
+    return NULL;
 }
 
 BsePart*

@@ -91,6 +91,19 @@ typedef enum
   BST_OP_LAST
 } BstOps;
 
+typedef enum {
+  BST_QUANTIZE_NONE		= 0,
+  BST_QUANTIZE_NOTE_1		= 1,
+  BST_QUANTIZE_NOTE_2		= 2,
+  BST_QUANTIZE_NOTE_4		= 4,
+  BST_QUANTIZE_NOTE_8		= 8,
+  BST_QUANTIZE_NOTE_16		= 16,
+  BST_QUANTIZE_NOTE_32		= 32,
+  BST_QUANTIZE_NOTE_64		= 64,
+  BST_QUANTIZE_NOTE_128		= 128,
+  BST_QUANTIZE_TACT		= 65535
+} BstQuantizationType;
+
 
 /* --- constants & defines --- */
 #define	BST_TAG_DIAMETER	  (20)

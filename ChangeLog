@@ -1,3 +1,28 @@
+Wed Feb 26 23:02:18 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackroll.c: adjusted hzoom range.
+
+	* beast-gtk/bsttrackrollctrl.[hc]: added quantization functions, fixed
+	all operations to properly quantize according to the current setting.
+
+	* beast-gtk/bsttrackview.[hc]: added quantization radio tools. fixed
+	destruction of radio tool objects. added hzoom spinner.
+
+	* beast-gtk/bstradiotools.[hc]: added bst_radio_tools_destroy() to force
+	signal connections to be destroyed and the radio tool to be cleared.
+	added bst_radio_tools_build_toolbar_choice() which creates the radio
+	tools as toolbar choice items.
+
+	* beast-gtk/gxk/gxktoolbar.[hc]: added gxk_toolbar_choice_select(),
+	gxk_toolbar_choice_is_selected() and gxk_toolbar_choice_is_item(),
+	so choice items can be adjusted apart from the callback API.
+
+	* beast-gtk/bstdefs.h: added quantization enum.
+
+	* beast-gtk/icons/notes.xcf: added layer for tact quantization.
+
+	* beast-gtk/icons/qtact.png: tact quantization icon.
+
 Tue Feb 25 15:22:24 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: provide link for CSL.

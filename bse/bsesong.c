@@ -36,7 +36,8 @@ enum
   PARAM_VOLUME_dB,
   PARAM_VOLUME_PERC,
   PARAM_TPQN,
-  PARAM_QNPT,
+  PARAM_NOMINATOR,
+  PARAM_DENOMINATOR,
   PARAM_BPM,
   PARAM_AUTO_ACTIVATE,
   PARAM_LOOP_ENABLED,
@@ -106,6 +107,19 @@ BSE_BUILTIN_TYPE (BseSong)
 				   &song_info);
 }
 
+void
+bse_song_timing_get_default (BseSongTiming *timing)
+{
+  g_return_if_fail (timing != NULL);
+
+  timing->tick = 0;
+  timing->bpm = 120;
+  timing->nominator = 4;
+  timing->denominator = 4;
+  timing->tpqn = 384;
+  timing->tpt = timing->tpqn * 4 * timing->nominator / timing->denominator;
+}
+
 static void
 bse_song_class_init (BseSongClass *class)
 {
@@ -113,7 +127,8 @@ bse_song_class_init (BseSongClass *class)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
-  
+  BseSongTiming timing;
+
   parent_class = g_type_class_peek_parent (class);
   
   gobject_class->set_property = bse_song_set_property;
@@ -128,7 +143,9 @@ bse_song_class_init (BseSongClass *class)
   container_class->remove_item = bse_song_remove_item;
   container_class->forall_items = bse_song_forall_items;
   container_class->release_children = bse_song_release_children;
-  
+
+  bse_song_timing_get_default (&timing);
+
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
 			      sfi_pspec_real ("volume_f", "Master [float]", NULL,
@@ -151,18 +168,22 @@ bse_song_class_init (BseSongClass *class)
   bse_object_class_add_param (object_class, "Timing",
 			      PARAM_TPQN,
 			      sfi_pspec_int ("tpqn", "Ticks", "Number of ticks per quarter note",
-					     384, 384, 384, 0, SFI_PARAM_DEFAULT_RDONLY));
+					     timing.tpqn, 384, 384, 0, SFI_PARAM_DEFAULT_RDONLY));
   bse_object_class_add_param (object_class, "Timing",
-			      PARAM_QNPT,
-			      sfi_pspec_int ("qnpt", "Quarters", "Number of quarter notes per tact",
-					     4, 3, 4, 1, SFI_PARAM_DEFAULT));
+			      PARAM_NOMINATOR,
+			      sfi_pspec_int ("nominator", "Nominator", "Measure nominator",
+					     timing.nominator, 1, 256, 1, SFI_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Timing",
+			      PARAM_DENOMINATOR,
+			      sfi_pspec_int ("denominator", "Denominator", "Measure denominator, must be a power of 2",
+					     timing.denominator, 1, 256, 0, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Timing",
 			      PARAM_BPM,
-			      sfi_pspec_int ("bpm", "Beats per minute", NULL,
-					     BSE_DFL_SONG_BPM,
-					     BSE_MIN_BPM, BSE_MAX_BPM,
-					     BSE_GCONFIG (step_bpm),
-					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+			      sfi_pspec_real ("bpm", "Beats per minute", NULL,
+					      timing.bpm,
+					      BSE_MIN_BPM, BSE_MAX_BPM,
+					      BSE_GCONFIG (step_bpm),
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Playback Settings",
 			      PARAM_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,
@@ -195,11 +216,17 @@ bse_song_class_init (BseSongClass *class)
 static void
 bse_song_init (BseSong *self)
 {
+  BseSongTiming timing;
+
+  bse_song_timing_get_default (&timing);
+
   BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT | BSE_SUPER_FLAG_NEEDS_SEQUENCER);
-  self->tpqn = 384;
-  self->qnpt = 4;
-  self->bpm = BSE_DFL_SONG_BPM;
+
+  self->tpqn = timing.tpqn;
+  self->nominator = timing.nominator;
+  self->denominator = timing.denominator;
+  self->bpm = timing.bpm;
   self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
   self->parts = NULL;
@@ -265,7 +292,6 @@ bse_song_set_property (GObject      *object,
   switch (param_id)
     {
       gfloat volume_factor;
-      guint bpm;
       gboolean vbool;
       SfiInt vint;
       SfiRing *ring;
@@ -293,15 +319,21 @@ bse_song_set_property (GObject      *object,
       g_object_notify (self, "volume_f");
       break;
     case PARAM_BPM:
-      bpm = sfi_value_get_int (value);
-      self->bpm = bpm;
+      self->bpm = sfi_value_get_real (value);
       bse_song_update_tpsi_SL (self);
       break;
-    case PARAM_QNPT:
-      self->qnpt = sfi_value_get_int (value);
+    case PARAM_NOMINATOR:
+      self->nominator = sfi_value_get_int (value);
+      bse_song_update_tpsi_SL (self);
+      break;
+    case PARAM_DENOMINATOR:
+      vint = sfi_value_get_int (value);
+      self->denominator = vint <= 2 ? vint : 1 << g_bit_storage (vint - 1);
+      bse_song_update_tpsi_SL (self);
       break;
     case PARAM_TPQN:
       self->tpqn = sfi_value_get_int (value);
+      bse_song_update_tpsi_SL (self);
       break;
     case PARAM_LOOP_ENABLED:
       vbool = sfi_value_get_bool (value);
@@ -382,10 +414,13 @@ bse_song_get_property (GObject     *object,
       sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);
       break;
     case PARAM_BPM:
-      sfi_value_set_int (value, self->bpm);
+      sfi_value_set_real (value, self->bpm);
       break;
-    case PARAM_QNPT:
-      sfi_value_set_int (value, self->qnpt);
+    case PARAM_NOMINATOR:
+      sfi_value_set_int (value, self->nominator);
+      break;
+    case PARAM_DENOMINATOR:
+      sfi_value_set_int (value, self->denominator);
       break;
     case PARAM_TPQN:
       sfi_value_set_int (value, self->tpqn);
@@ -406,6 +441,22 @@ bse_song_get_property (GObject     *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
     }
+}
+
+void
+bse_song_get_timing (BseSong       *self,
+		     guint          tick,
+		     BseSongTiming *timing)
+{
+  g_return_if_fail (BSE_IS_SONG (self));
+  g_return_if_fail (timing != NULL);
+
+  timing->tick = 0;
+  timing->bpm = self->bpm;
+  timing->nominator = self->nominator;
+  timing->denominator = self->denominator;
+  timing->tpqn = self->tpqn;
+  timing->tpt = timing->tpqn * 4 * timing->nominator / timing->denominator;
 }
 
 BseSong*
@@ -527,18 +578,6 @@ bse_song_remove_item (BseContainer *container,
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
 }
 
-void
-bse_song_set_bpm (BseSong *self,
-		  guint	   bpm)
-{
-  g_return_if_fail (BSE_IS_SONG (self));
-  g_return_if_fail (bpm >= BSE_MIN_BPM && bpm <= BSE_MAX_BPM);
-  
-  g_object_set (self,
-		"bpm", bpm,
-		NULL);
-}
-
 static void
 bse_song_ht_foreach (gpointer key,
 		     gpointer value,
@@ -568,7 +607,7 @@ song_position_handler (gpointer data)
 static void
 bse_song_update_tpsi_SL (BseSong *self)
 {
-  gdouble tpqn = 384; 			/* ticks per quarter note */
+  gdouble tpqn = self->tpqn;		/* ticks per quarter note */
   gdouble qnps = self->bpm / 60.;	/* quarter notes per second */
   gdouble tps = tpqn * qnps;		/* ticks per second */
   gdouble sps = gsl_engine_sample_freq ();

@@ -37,6 +37,7 @@ struct _BstRadioToolEntry
 static void	  bst_radio_tools_class_init		(BstRadioToolsClass	*klass);
 static void	  bst_radio_tools_init			(BstRadioTools		*rtools,
 							 BstRadioToolsClass     *class);
+static void	  bst_radio_tools_real_dispose		(GObject		*object);
 static void	  bst_radio_tools_finalize		(GObject		*object);
 static void	  bst_radio_tools_do_set_tool		(BstRadioTools		*rtools,
 							 guint         		 tool_id);
@@ -79,6 +80,7 @@ bst_radio_tools_class_init (BstRadioToolsClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
+  gobject_class->dispose = bst_radio_tools_real_dispose;
   gobject_class->finalize = bst_radio_tools_finalize;
 
   class->set_tool = bst_radio_tools_do_set_tool;
@@ -96,11 +98,24 @@ static void
 bst_radio_tools_init (BstRadioTools      *rtools,
 		      BstRadioToolsClass *class)
 {
-  rtools->block_tool_id = FALSE;
+  rtools->block_tool_id = 0;
   rtools->tool_id = 0;
   rtools->n_tools = 0;
   rtools->tools = NULL;
   rtools->widgets = NULL;
+}
+
+static void
+bst_radio_tools_real_dispose (GObject *object)
+{
+  BstRadioTools *self = BST_RADIO_TOOLS (object);
+
+  bst_radio_tools_clear_tools (self);
+
+  while (self->widgets)
+    gtk_widget_destroy (self->widgets->data);
+
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
@@ -130,7 +145,7 @@ bst_radio_tools_do_set_tool (BstRadioTools *rtools,
 {
   GSList *slist, *next;
 
-  rtools->block_tool_id = TRUE;
+  rtools->block_tool_id++;
   for (slist = rtools->widgets; slist; slist = next)
     {
       GtkWidget *widget = slist->data;
@@ -138,11 +153,18 @@ bst_radio_tools_do_set_tool (BstRadioTools *rtools,
       next = slist->next;
       if (GTK_IS_TOGGLE_BUTTON (widget))
 	{
-	  tool_id = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (widget)));
+	  tool_id = g_object_get_long (widget, "user_data");
 	  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), tool_id == rtools->tool_id);
 	}
+      else if (gxk_toolbar_choice_is_item (widget))
+	{
+	  tool_id = g_object_get_long (widget, "user_data");
+	  if (tool_id == rtools->tool_id &&
+	      !gxk_toolbar_choice_is_selected (widget))
+	    gxk_toolbar_choice_select (widget);
+	}
     }
-  rtools->block_tool_id = FALSE;
+  rtools->block_tool_id--;
 }
 
 void
@@ -283,6 +305,14 @@ bst_radio_tools_clear_tools (BstRadioTools *rtools)
   rtools->tools = NULL;
 }
 
+void
+bst_radio_tools_destroy (BstRadioTools *rtools)
+{
+  g_return_if_fail (BST_IS_RADIO_TOOLS (rtools));
+
+  g_object_run_dispose (G_OBJECT (rtools));
+}
+
 static void
 rtools_widget_destroyed (BstRadioTools *rtools,
 			 GtkWidget     *widget)
@@ -310,9 +340,9 @@ rtools_toggle_toggled (BstRadioTools   *rtools,
       /* enforce depressed state in case tool_id didn't change */
       if (rtools->tool_id == tool_id && !toggle->active)
 	{
-	  rtools->block_tool_id = TRUE;
+	  rtools->block_tool_id++;
 	  gtk_toggle_button_set_active (toggle, TRUE);
-	  rtools->block_tool_id = FALSE;
+	  rtools->block_tool_id--;
 	}
     }
 }
@@ -352,6 +382,58 @@ bst_radio_tools_build_toolbar (BstRadioTools *rtools,
 			NULL);
       rtools->widgets = g_slist_prepend (rtools->widgets, button);
     }
+
+  BST_RADIO_TOOLS_GET_CLASS (rtools)->set_tool (rtools, rtools->tool_id);
+}
+
+static void
+rtools_choice_func (gpointer       data,
+		    guint          tool_id)
+{
+  BstRadioTools *rtools = BST_RADIO_TOOLS (data);
+
+  if (!rtools->block_tool_id)
+    bst_radio_tools_set_tool (rtools, tool_id);
+}
+
+void
+bst_radio_tools_build_toolbar_choice (BstRadioTools *rtools,
+				      GxkToolbar    *toolbar)
+{
+  GtkWidget *choice_widget;
+  guint i;
+
+  g_return_if_fail (BST_IS_RADIO_TOOLS (rtools));
+  g_return_if_fail (GXK_IS_TOOLBAR (toolbar));
+
+  choice_widget = gxk_toolbar_append_choice (toolbar, GXK_TOOLBAR_TRUNC_BUTTON,
+					     rtools_choice_func, rtools, NULL);
+  rtools->block_tool_id++;
+  for (i = 0; i < rtools->n_tools; i++)
+    {
+      GtkWidget *item, *image = NULL;
+
+      if (!(rtools->tools[i].flags & BST_RADIO_TOOLS_TOOLBAR))
+	continue;
+
+      if (rtools->tools[i].icon)
+	image = bst_image_from_icon (rtools->tools[i].icon, BST_SIZE_TOOLBAR);
+      else if (rtools->tools[i].stock_icon)
+	image = gxk_stock_image (rtools->tools[i].stock_icon, BST_SIZE_TOOLBAR);
+      if (!image)
+	image = gxk_stock_image (BST_STOCK_NO_ICON, BST_SIZE_TOOLBAR);
+      item = gxk_toolbar_choice_add (choice_widget,
+				     rtools->tools[i].name,
+				     rtools->tools[i].tip,
+				     image,
+				     rtools->tools[i].tool_id);
+      g_object_set_long (item, "user_data", rtools->tools[i].tool_id);
+      g_object_connect (item,
+			"swapped_signal::destroy", rtools_widget_destroyed, rtools,
+			NULL);
+      rtools->widgets = g_slist_prepend (rtools->widgets, item);
+    }
+  rtools->block_tool_id--;
 
   BST_RADIO_TOOLS_GET_CLASS (rtools)->set_tool (rtools, rtools->tool_id);
 }

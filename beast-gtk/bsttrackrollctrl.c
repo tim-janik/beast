@@ -93,6 +93,58 @@ bst_track_roll_controller_set_song (BstTrackRollController *self,
 }
 
 void
+bst_track_roll_controller_set_quantization (BstTrackRollController *self,
+					    BstQuantizationType     quantization)
+{
+  g_return_if_fail (self != NULL);
+
+  switch (quantization)
+    {
+    case BST_QUANTIZE_TACT:
+      self->quantization = quantization;
+      break;
+    case BST_QUANTIZE_NOTE_1:
+    case BST_QUANTIZE_NOTE_2:
+    case BST_QUANTIZE_NOTE_4:
+    case BST_QUANTIZE_NOTE_8:
+    case BST_QUANTIZE_NOTE_16:
+    case BST_QUANTIZE_NOTE_32:
+    case BST_QUANTIZE_NOTE_64:
+    case BST_QUANTIZE_NOTE_128:
+      self->quantization = quantization;
+      break;
+    default:
+      self->quantization = BST_QUANTIZE_NONE;
+      break;
+    }
+}
+
+guint
+bst_track_roll_controller_quantize (BstTrackRollController *self,
+				    guint                   fine_tick)
+{
+  BseSongTiming *timing;
+  guint quant, tick, qtick;
+
+  g_return_val_if_fail (self != NULL, fine_tick);
+
+  timing = bse_song_get_timing (self->song, fine_tick);
+  if (self->quantization == BST_QUANTIZE_NONE)
+    quant = 1;
+  else if (self->quantization == BST_QUANTIZE_TACT)
+    quant = timing->tpt;
+  else
+    quant = timing->tpqn * 4 / self->quantization;
+  tick = fine_tick - timing->tick;
+  qtick = tick / quant;
+  qtick *= quant;
+  if (tick - qtick > quant / 2)
+    qtick += quant;
+  tick = timing->tick + qtick;
+  return tick;
+}
+
+void
 bst_track_roll_controller_set_canvas_reset (BstTrackRollController   *self,
 					    void (*handler) (gpointer data),
 					    gpointer                  data)
@@ -237,13 +289,20 @@ insert_start (BstTrackRollController *self,
 {
   if (drag->current_track && drag->current_valid && !self->obj_part)
     {
-      SfiProxy song = bse_item_get_parent (drag->current_track);
-      SfiProxy item = bse_song_create_part (song);
-      if (item && bse_track_insert_part (drag->current_track, drag->current_tick, item) == BSE_ERROR_NONE)
-	gxk_status_set (GXK_STATUS_DONE, "Insert Part", NULL);
+      guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
+      SfiProxy item = bse_track_get_part (drag->current_track, tick);
+      if (!item)
+	{
+	  SfiProxy song = bse_item_get_parent (drag->current_track);
+	  item = bse_song_create_part (song);
+	  if (item && bse_track_insert_part (drag->current_track, tick, item) == BSE_ERROR_NONE)
+	    gxk_status_set (GXK_STATUS_DONE, "Insert Part", NULL);
+	  else
+	    gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "Lost Part");
+	  drag->state = BST_DRAG_HANDLED;
+	}
       else
-	gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "Lost Part");
-      drag->state = BST_DRAG_HANDLED;
+	gxk_status_set (GXK_STATUS_ERROR, "Insert Part", "Position taken");
     }
   else
     {
@@ -295,18 +354,18 @@ move_motion (BstTrackRollController *self,
   gboolean track_changed;
 
   new_tick = MAX (drag->current_tick, self->xoffset) - self->xoffset;
-  /* FIXME: new_tick = bst_track_roll_quantize (drag->troll, new_tick); */
+  new_tick = bst_track_roll_controller_quantize (self, new_tick);
   track_changed = self->obj_track != drag->current_track;
   if (new_tick != self->obj_tick || self->obj_track != drag->current_track)
     {
-      if (bse_track_insert_part (drag->current_track, new_tick, self->obj_part) == BSE_ERROR_NONE)
+      BseErrorType error = bse_track_insert_part (drag->current_track, new_tick, self->obj_part);
+      if (error == BSE_ERROR_NONE)
 	{
 	  bse_track_remove_tick (self->obj_track, self->obj_tick);
 	  self->obj_track = drag->current_track;
 	  self->obj_tick = new_tick;
-	  if (0)
-	    drag->state = BST_DRAG_ERROR;
 	}
+      /* else gxk_status_set (GXK_STATUS_ERROR, "Move Part", bse_error_blurb (error)); */
     }
 }
 
@@ -343,7 +402,8 @@ pointer_move (BstTrackRollController *self,
   if (self->song &&
       drag->type != BST_DRAG_DONE) /* skip release events */
     {
-      bse_proxy_set (self->song, "tick-pointer", drag->current_tick, NULL);
+      guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
+      bse_proxy_set (self->song, "tick-pointer", tick, NULL);
       drag->state = BST_DRAG_CONTINUE;
     }
 }
@@ -354,7 +414,8 @@ tick_left_move (BstTrackRollController *self,
 {
   if (self->song)
     {
-      bse_proxy_set (self->song, "loop-left", drag->current_tick, NULL);
+      guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
+      bse_proxy_set (self->song, "loop-left", tick, NULL);
       drag->state = BST_DRAG_CONTINUE;
     }
 }
@@ -365,7 +426,8 @@ tick_right_move (BstTrackRollController *self,
 {
   if (self->song)
     {
-      bse_proxy_set (self->song, "loop-right", drag->current_tick, NULL);
+      guint tick = bst_track_roll_controller_quantize (self, drag->current_tick);
+      bse_proxy_set (self->song, "loop-right", tick, NULL);
       drag->state = BST_DRAG_CONTINUE;
     }
 }

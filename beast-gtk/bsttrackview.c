@@ -38,6 +38,7 @@ static void	track_view_unlisten_on		(BstItemView		*iview,
 						 SfiProxy		 item);
 static void     track_view_update_canvas_tool	(BstTrackView		*self);
 static void	track_view_update_hpanel_tool	(BstTrackView		*self);
+static void	track_view_update_quant_tool	(BstTrackView		*self);
 
 
 /* --- columns --- */
@@ -131,6 +132,10 @@ bst_track_view_init (BstTrackView *self)
   g_object_connect (self->hpanel_rtools,
 		    "swapped_signal::set_tool", track_view_update_hpanel_tool, self,
 		    NULL);
+  self->quant_rtools = bst_radio_tools_new ();
+  g_object_connect (self->quant_rtools,
+		    "swapped_signal::set_tool", track_view_update_quant_tool, self,
+		    NULL);
 
   /* register canvas tools */
   bst_radio_tools_add_stock_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT,
@@ -142,17 +147,38 @@ bst_track_view_init (BstTrackView *self)
   bst_radio_tools_add_stock_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_EDITOR_ONCE,
 				  "Editor", "Start part editor", NULL,
 				  BST_STOCK_PART_EDITOR, BST_RADIO_TOOLS_EVERYWHERE);
-
   /* register hpanel tools */
   bst_radio_tools_add_stock_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,
-				  "Left", "Move left loop boundary pointer", NULL,
+				  "Left", "Use the horizontal ruler to adjust the left loop pointer", NULL,
 				  BST_STOCK_TICK_LOOP_LEFT, BST_RADIO_TOOLS_EVERYWHERE);
   bst_radio_tools_add_stock_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,
-				  "Pos", "Move current play position pointer", NULL,
+				  "Pos", "Use the horizontal ruler to adjust the play position pointer pointer", NULL,
 				  BST_STOCK_TICK_POINTER, BST_RADIO_TOOLS_EVERYWHERE);
   bst_radio_tools_add_stock_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,
-				  "Right", "Move right loop boundary pointer", NULL,
+				  "Right", "Use the horizontal ruler to adjust the right loop pointer", NULL,
 				  BST_STOCK_TICK_LOOP_RIGHT, BST_RADIO_TOOLS_EVERYWHERE);
+  /* register quantization tools */
+  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_TACT,
+				  "Q: Tact", "Quantize to tact boundaries", NULL,
+				  BST_STOCK_QTACT, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NONE,
+				  "None", "No quantization selected", NULL,
+				  BST_STOCK_QNOTE_NONE, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_1,
+				  "Q: 1/1", "Quantize to full note boundaries", NULL,
+				  BST_STOCK_QNOTE_1, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_2,
+				  "Q: 1/2", "Quantize to half note boundaries", NULL,
+				  BST_STOCK_QNOTE_2, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_4,
+				  "Q: 1/4", "Quantize to quarter note boundaries", NULL,
+				  BST_STOCK_QNOTE_4, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_8,
+				  "Q: 1/8", "Quantize to eighths note boundaries", NULL,
+				  BST_STOCK_QNOTE_8, BST_RADIO_TOOLS_EVERYWHERE);
+  bst_radio_tools_add_stock_tool (self->quant_rtools, BST_QUANTIZE_NOTE_16,
+				  "Q: 1/16", "Quantize to sixteenth note boundaries", NULL,
+				  BST_STOCK_QNOTE_16, BST_RADIO_TOOLS_EVERYWHERE);
 }
 
 static void
@@ -162,6 +188,12 @@ bst_track_view_finalize (GObject *object)
 
   if (self->troll_ctrl)
     bst_track_roll_controller_unref (self->troll_ctrl);
+  bst_radio_tools_destroy (self->canvas_rtools);
+  g_object_unref (self->canvas_rtools);
+  bst_radio_tools_destroy (self->hpanel_rtools);
+  g_object_unref (self->hpanel_rtools);
+  bst_radio_tools_destroy (self->quant_rtools);
+  g_object_unref (self->quant_rtools);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -177,6 +209,14 @@ bst_track_view_new (SfiProxy song)
   bst_item_view_set_container (BST_ITEM_VIEW (track_view), song);
   
   return track_view;
+}
+
+static void
+track_view_hzoom_changed (BstTrackView  *self,
+			  GtkAdjustment *adjustment)
+{
+  if (self->troll)
+    bst_track_roll_set_hzoom (self->troll, adjustment->value);
 }
 
 static void
@@ -331,7 +371,8 @@ static void
 bst_track_view_create_tree (BstItemView *iview)
 {
   BstTrackView *self = BST_TRACK_VIEW (iview);
-  GtkWidget *hscroll1, *hscroll2, *vscroll, *trframe, *tlframe, *vb1, *vb2, *vb3, *hb, *align1, *align2;
+  GtkWidget *hscroll1, *hscroll2, *vscroll, *trframe, *tlframe, *vb1, *vb2, *vb3, *hb, *align1, *align2, *entry;
+  GtkObject *adjustment;
   GtkPaned *paned;
   GtkTreeSelection *tsel;
 
@@ -407,22 +448,40 @@ bst_track_view_create_tree (BstItemView *iview)
   /* track roll controller */
   self->troll_ctrl = bst_track_roll_controller_new (self->troll);
   bst_track_roll_controller_set_song (self->troll_ctrl, iview->container);
+  /* update controller from rtools */
   bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT);
   bst_radio_tools_set_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER);
+  bst_radio_tools_set_tool (self->quant_rtools, BST_QUANTIZE_TACT);
 
   /* create toolbar */
   self->toolbar = gxk_toolbar_new (&self->toolbar);
   /* add radio tools to toolbar */
   bst_radio_tools_build_toolbar (self->canvas_rtools, self->toolbar);
   gxk_toolbar_append_separator (self->toolbar);
-  bst_radio_tools_build_toolbar (self->hpanel_rtools, self->toolbar);
+  bst_radio_tools_build_toolbar_choice (self->hpanel_rtools, self->toolbar);
   /* add repeat toggle */
-  gxk_toolbar_append_separator (self->toolbar);
   self->repeat_toggle = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_TOGGLE,
 						  "Repeat", "Repeat playback within loop points", BST_STOCK_REPEAT);
   gxk_nullify_on_destroy (self->repeat_toggle, &self->repeat_toggle);
   g_object_connect (self->repeat_toggle, "swapped_signal::toggled", track_view_repeat_toggled, self, NULL);
   track_view_repeat_changed (self);
+  /* add quantization tools to toolbar */
+  gxk_toolbar_append_separator (self->toolbar);
+  bst_radio_tools_build_toolbar_choice (self->quant_rtools, self->toolbar);
+  /* add zoom spinner */
+  gxk_toolbar_append_separator (self->toolbar);
+  adjustment = gtk_adjustment_new (50, 1, 100, 1, 5, 0);
+  g_object_connect (adjustment,
+		    "swapped_signal_after::value_changed", track_view_hzoom_changed, self,
+		    NULL);
+  entry = g_object_new (GTK_TYPE_SPIN_BUTTON,
+			"visible", TRUE,
+			"adjustment", adjustment,
+			"digits", 0,
+			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+			NULL);
+  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
+		      "Zoom", "Horizontal Zoom", entry);
 
   /* tree view box */
   vb1 = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
@@ -696,4 +755,12 @@ track_view_update_hpanel_tool (BstTrackView *self)
       bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER);
       break;
     }
+}
+
+static void
+track_view_update_quant_tool (BstTrackView *self)
+{
+  if (!self->troll_ctrl)
+    return;
+  bst_track_roll_controller_set_quantization (self->troll_ctrl, self->quant_rtools->tool_id);
 }

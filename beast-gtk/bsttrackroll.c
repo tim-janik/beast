@@ -246,7 +246,7 @@ bst_track_roll_init (BstTrackRoll *self)
   self->get_area_pos = NULL;
   bst_marker_init_vertical (&self->vmarker);
   self->in_drag = FALSE;
-  bst_track_roll_hsetup (self, 384 * 4, 800 * 384, 1);
+  bst_track_roll_hsetup (self, 384 * 4, 800 * 384, 100);
   bst_track_roll_set_hadjustment (self, NULL);
   bst_track_roll_set_vadjustment (self, NULL);
 }
@@ -1179,7 +1179,7 @@ bst_track_roll_hsetup (BstTrackRoll *self,
    */
   self->tpt = MAX (tpt, 1);
   self->max_ticks = MAX (max_ticks, 1);
-  self->hzoom = CLAMP (hzoom, 0.01, 100);
+  self->hzoom = hzoom / 50;
 
   if (old_tpt != self->tpt ||
       old_max_ticks != self->max_ticks ||	// FIXME: shouldn't always cause a redraw
@@ -1199,11 +1199,20 @@ gdouble
 bst_track_roll_set_hzoom (BstTrackRoll *self,
 			  gdouble       hzoom)
 {
+  guint n;
+
   g_return_val_if_fail (BST_IS_TRACK_ROLL (self), 0);
 
+  hzoom = CLAMP (hzoom, 0.1, 100);
   bst_track_roll_hsetup (self, self->tpt, self->max_ticks, hzoom);
+  /* readjust marks */
+  for (n = 0; n < self->vmarker.n_marks; n++)
+    {
+      BstMarker *mark = self->vmarker.marks + n;
+      bst_marker_set (&self->vmarker, mark, mark->type, tick_to_coord (self, mark->position));
+    }
 
-  return self->hzoom;
+  return self->hzoom * 50;
 }
 
 static void

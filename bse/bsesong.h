@@ -45,8 +45,9 @@ struct _BseSong
   BseSNet           parent_instance;
   
   guint		    tpqn;		/* ticks per querter note */
-  guint		    qnpt;		/* quarter notes per tact */
-  guint             bpm;
+  guint		    nominator;
+  guint		    denominator;
+  gfloat            bpm;
   gfloat            volume_factor;      /* 1-based factor */
   
   GList            *parts;              /* of type BsePart* */
@@ -78,11 +79,13 @@ struct _BseSongClass
 
 
 /* --- prototypes --- */
-void		bse_song_set_bpm		(BseSong	*self,
-						 guint		 bpm);
 BseSong*	bse_song_lookup			(BseProject	*project,
 						 const gchar	*name);
 void		bse_song_stop_sequencing_SL	(BseSong	*self);
+void		bse_song_get_timing		(BseSong	*self,
+						 guint		 tick,
+						 BseSongTiming	*timing);
+void		bse_song_timing_get_default	(BseSongTiming	*timing);
 
 
 #ifdef __cplusplus

@@ -93,16 +93,19 @@ GtkWidget*	gxk_toolbar_append_choice	(GxkToolbar	*self,
 						 GxkToolbarChoiceFunc choice_func,
 						 gpointer        data,
 						 GDestroyNotify  data_free);
-void		gxk_toolbar_choice_add		(GtkWidget	*widget,
+GtkWidget*	gxk_toolbar_choice_add		(GtkWidget	*widget,
 						 const gchar	*name,
 						 const gchar	*tooltip,
 						 GtkWidget	*icon,
 						 guint           choice);
-void		gxk_toolbar_choice_set		(GtkWidget	*widget,
+GtkWidget*	gxk_toolbar_choice_set		(GtkWidget	*widget,
 						 const gchar	*name,
 						 const gchar	*tooltip,
 						 GtkWidget	*icon,
 						 guint           choice);
+void		gxk_toolbar_choice_select	(GtkWidget	*item);
+gboolean	gxk_toolbar_choice_is_selected	(GtkWidget	*item);
+gboolean	gxk_toolbar_choice_is_item	(GtkWidget	*item);
 
 G_END_DECLS
 

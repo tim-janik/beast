@@ -55,7 +55,7 @@ struct _BstRadioTools
 
   guint		     n_tools;
   BstRadioToolEntry *tools;
-  guint              block_tool_id : 1;
+  guint              block_tool_id;
   GSList	    *widgets;
 };
 struct _BstRadioToolsClass
@@ -87,11 +87,14 @@ void            bst_radio_tools_add_stock_tool	     (BstRadioTools *rtools,
 						      const gchar   *stock_icon,
 						      BstRadioToolFlags flags);
 void            bst_radio_tools_clear_tools	     (BstRadioTools *rtools);
+void		bst_radio_tools_destroy		     (BstRadioTools *rtools);
 void            bst_radio_tools_add_category	     (BstRadioTools *rtools,
 						      guint          tool_id,
 						      BseCategory   *category,
 						      BstRadioToolFlags flags);
 void            bst_radio_tools_build_toolbar	     (BstRadioTools *rtools,
+						      GxkToolbar    *toolbar);
+void            bst_radio_tools_build_toolbar_choice (BstRadioTools *rtools,
 						      GxkToolbar    *toolbar);
 void            bst_radio_tools_build_gtk_toolbar    (BstRadioTools *rtools,
 						      GtkToolbar    *toolbar);

@@ -18,6 +18,7 @@
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>
 #include        <bse/bsepart.h>
+#include        <bse/bsesong.h>
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -548,4 +549,36 @@ BODY (BseProcedureClass *proc,
   id_valid = bse_part_deselect_event (self, id);
   
   return id_valid ? BSE_ERROR_NONE : BSE_ERROR_PROC_PARAM_INVAL;
+}
+
+METHOD (BsePart, get-timing) {
+  HELP  = "Retrieve song timing information at a specific tick.";
+  IN    = bse_param_spec_object ("part", "Part", NULL, BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self = bse_value_get_object (in_values++);
+  SfiInt   tick = sfi_value_get_int (in_values++);
+  BseItem *parent;
+  BseSongTiming timing = { 0, };
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  parent = BSE_ITEM (self)->parent;
+  if (BSE_IS_SONG (parent))
+    bse_song_get_timing (BSE_SONG (parent), tick, &timing);
+  else
+    bse_song_timing_get_default (&timing);
+
+  /* set output parameters */
+  bse_value_set_boxed (out_values++, &timing);
+
+  return BSE_ERROR_NONE;
 }

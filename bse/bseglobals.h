@@ -65,7 +65,6 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 
 /* --- hard defaults (used for saving) --- */
 #define	BSE_DFL_MASTER_VOLUME_dB	(0.0)
-#define	BSE_DFL_SONG_BPM		(160)
 #define	BSE_DFL_INSTRUMENT_VOLUME_dB	(- 0.969)
 #define BSE_DFL_INSTRUMENT_BALANCE	(0)
 #define BSE_DFL_INSTRUMENT_TRANSPOSE	(0)

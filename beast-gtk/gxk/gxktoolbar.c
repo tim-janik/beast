@@ -365,6 +365,7 @@ typedef struct {
   GxkToolbarChoiceFunc choice_func;
   gpointer             data;
   GDestroyNotify       data_free;
+  guint		       choice;
 } GxkToolbarChoiceData;
 
 static void
@@ -458,7 +459,7 @@ button_menu_popdown (GtkWidget *button)
 /**
  * gxk_toolbar_append_choice
  * @self:        a toolbar as returned from gxk_toolbar_new()
- * @child_type:  child type (one for the button variants)
+ * @child_type:  child type (one of the button variants)
  * @choice_func: callback notified if the choice changes
  * @data:        extra data argument to the callback
  * @data_free:   callback to destroy @data
@@ -509,7 +510,6 @@ menu_item_select (GtkWidget *item,
   GxkToolbarChoiceData *cdata = g_object_get_data (G_OBJECT (button), "gxk-toolbar-choice-data");
   GtkWidget *label = g_object_get_data (G_OBJECT (button), "gxk-toolbar-label");
   GtkWidget *icon = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (item));
-  gpointer choice = g_object_get_data (G_OBJECT (item), "gxk-toolbar-choice");
 
   if (cdata->alignment && icon)
     {
@@ -538,7 +538,8 @@ menu_item_select (GtkWidget *item,
 		  "width_request", -1,
 		  "height_request", -1,
 		  NULL);
-  cdata->choice_func (cdata->data, GPOINTER_TO_UINT (choice));
+  cdata->choice = g_object_get_long (item, "gxk-toolbar-choice");
+  cdata->choice_func (cdata->data, cdata->choice);
 }
 
 static GtkWidget*
@@ -551,6 +552,7 @@ toolbar_choice_add (GtkWidget            *widget,
   GtkWidget *item;
 
   item = gtk_image_menu_item_new_with_label (name);
+  g_object_set_data (G_OBJECT (item), "gxk-toolbar-choice-parent", widget);
   if (icon)
     g_object_set_data (G_OBJECT (icon), "gxk-toolbar-parent", item);
   g_object_set (item,
@@ -569,15 +571,15 @@ toolbar_choice_add (GtkWidget            *widget,
 /**
  * gxk_toolbar_choice_add
  * @widget:      a toolbar child as returned from gxk_toolbar_append_choice()
- * @name:        name of the choice child wiget
- * @tooltip:     tooltip to be displayed with this choice child
+ * @name:        name of the choice item
+ * @tooltip:     tooltip to be displayed with this choice item
  * @icon:        image widget for this choice
  * @choice:      unique integer id to identify this choice
- * @RETURNS:     newly created toolbar choice child
+ * @RETURNS:     newly created toolbar choice item
  *
- * Add a choice variant to a toolbar choice child.
+ * Add a choice item to a toolbar choice child.
  */
-void
+GtkWidget*
 gxk_toolbar_choice_add (GtkWidget   *widget,
 			const gchar *name,
 			const gchar *tooltip,
@@ -588,30 +590,31 @@ gxk_toolbar_choice_add (GtkWidget   *widget,
   GtkWidget *item;
   gboolean need_selection;
 
-  g_return_if_fail (GTK_IS_BUTTON (widget));
+  g_return_val_if_fail (GTK_IS_BUTTON (widget), NULL);
   choice_data = g_object_get_data (G_OBJECT (widget), "gxk-toolbar-choice-data");
-  g_return_if_fail (choice_data != NULL);
+  g_return_val_if_fail (choice_data != NULL, NULL);
 
   need_selection = GTK_MENU_SHELL (choice_data->menu)->children == NULL;
   item = toolbar_choice_add (widget, choice_data, name, tooltip, icon);
   g_object_set_data (G_OBJECT (item), "gxk-toolbar-choice", GUINT_TO_POINTER (choice));
   if (need_selection)
     menu_item_select (item, widget);
+  return item;
 }
 
 /**
  * gxk_toolbar_choice_set
  * @widget:      a toolbar child as returned from gxk_toolbar_append_choice()
- * @name:        name of the choice child wiget
- * @tooltip:     tooltip to be displayed with this choice child
+ * @name:        name of the choice item
+ * @tooltip:     tooltip to be displayed with this choice item
  * @icon:        image widget for this choice
  * @choice:      unique integer id to identify this choice
- * @RETURNS:     newly created toolbar choice child
+ * @RETURNS:     newly created toolbar choice item
  *
- * Add a choice variant to a toolbar choice child and make
- * this variant the currently selected one.
+ * Add a choice item to a toolbar choice child and make
+ * this item the currently selected one.
  */
-void
+GtkWidget*
 gxk_toolbar_choice_set (GtkWidget   *widget,
 			const gchar *name,
 			const gchar *tooltip,
@@ -621,11 +624,71 @@ gxk_toolbar_choice_set (GtkWidget   *widget,
   GxkToolbarChoiceData *choice_data;
   GtkWidget *item;
 
-  g_return_if_fail (GTK_IS_BUTTON (widget));
+  g_return_val_if_fail (GTK_IS_BUTTON (widget), NULL);
   choice_data = g_object_get_data (G_OBJECT (widget), "gxk-toolbar-choice-data");
-  g_return_if_fail (choice_data != NULL);
+  g_return_val_if_fail (choice_data != NULL, NULL);
 
   item = toolbar_choice_add (widget, choice_data, name, tooltip, icon);
   g_object_set_data (G_OBJECT (item), "gxk-toolbar-choice", GUINT_TO_POINTER (choice));
   menu_item_select (item, widget);
+  return item;
+}
+
+/**
+ * gxk_toolbar_choice_select
+ * @item:      a toolbar choice child as returned from gxk_toolbar_choice_add()
+ *
+ * Select the passed in choice item.
+ */
+void
+gxk_toolbar_choice_select (GtkWidget *item)
+{
+  GtkWidget *choice_widget;
+
+  g_return_if_fail (GTK_IS_MENU_ITEM (item));
+  choice_widget = g_object_get_data (G_OBJECT (item), "gxk-toolbar-choice-parent");
+  g_return_if_fail (choice_widget != NULL);
+
+  menu_item_select (item, choice_widget);
+}
+
+/**
+ * gxk_toolbar_choice_is_selected
+ * @item:      a toolbar choice child as returned from gxk_toolbar_choice_add()
+ * RETURNS:    either %TRUE or %FALSE depending on whether @item is selected
+ *
+ * Check whether the passed in choice item is currently selected.
+ */
+gboolean
+gxk_toolbar_choice_is_selected (GtkWidget *item)
+{
+  GxkToolbarChoiceData *cdata;
+  GtkWidget *choice_widget;
+
+  g_return_val_if_fail (GTK_IS_MENU_ITEM (item), FALSE);
+  choice_widget = g_object_get_data (G_OBJECT (item), "gxk-toolbar-choice-parent");
+  g_return_val_if_fail (choice_widget != NULL, FALSE);
+
+  cdata = g_object_get_data (G_OBJECT (choice_widget), "gxk-toolbar-choice-data");
+  return cdata->choice == g_object_get_long (item, "gxk-toolbar-choice");
+}
+
+/**
+ * gxk_toolbar_choice_is_item
+ * @item:      a valid #GtkWidget
+ * RETURNS:    either %TRUE or %FALSE
+ *
+ * Check whether the passed in widget is a choice item as
+ * returned from gxk_toolbar_choice_add() (so calling e.g.
+ * gxk_toolbar_choice_is_selected() is safe on this widget).
+ */
+gboolean
+gxk_toolbar_choice_is_item (GtkWidget *item)
+{
+  GtkWidget *choice_widget;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (item), FALSE);
+  choice_widget = g_object_get_data (G_OBJECT (item), "gxk-toolbar-choice-parent");
+
+  return GTK_IS_MENU_ITEM (item) && choice_widget != NULL;
 }

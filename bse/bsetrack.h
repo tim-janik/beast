@@ -84,6 +84,8 @@ BseTrackPartSeq* bse_track_list_parts	(BseTrack		*self);
 gboolean	 bse_track_find_part	(BseTrack		*self,
 					 BsePart		*part,
 					 guint			*start_p);
+BsePart*	 bse_track_lookup_tick	(BseTrack		*self,
+					 guint			 tick);
 BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 					 guint			 tick,
 					 guint			*start,

@@ -201,9 +201,10 @@ show_procdoc (void)
 	      GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
 	      gchar *tname = type_name (pspec);
 	      const gchar *blurb = g_param_spec_get_blurb (pspec);
+	      const gchar *nick = g_param_spec_get_nick (pspec);
 	      gchar *carg = g_type_name_to_cname (pspec->name);
 	      g_print ("@item @refType{%s} @tab @refParameter{%s}; @tab %s\n",
-		       tname, carg, blurb ? blurb : "");
+		       tname, carg, blurb ? blurb : nick ? nick : "");
 	      g_free (tname);
 	      g_free (carg);
 	    }
@@ -214,9 +215,10 @@ show_procdoc (void)
 	      GParamSpec *pspec = G_PARAM_SPEC (class->out_pspecs[j]);
 	      gchar *tname = type_name (pspec);
 	      const gchar *blurb = g_param_spec_get_blurb (pspec);
+	      const gchar *nick = g_param_spec_get_blurb (pspec);
               gchar *carg = g_type_name_to_cname (pspec->name);
 	      g_print ("@item @refType{%s} @tab @refParameter{%s}; @tab %s\n",
-		       tname, carg, blurb ? blurb : "");
+		       tname, carg, blurb ? blurb : nick ? nick : "");
 	      g_free (tname);
               g_free (carg);
 	    }
@@ -313,10 +315,11 @@ show_structdoc (void)
 	      GParamSpec *pspec = ring->data;
 	      gchar *tname = type_name (pspec);
 	      const gchar *blurb = g_param_spec_get_blurb (pspec);
+	      const gchar *nick = g_param_spec_get_nick (pspec);
 	      gchar *carg = g_type_name_to_cname (pspec->name);
 	      g_print ("@item @refType{%s%s} @tab @refParameter{%s}; @tab %s\n",
 		       tname, sinfo ? "*" : "",
-		       carg, blurb ? blurb : "");
+		       carg, blurb ? blurb : nick ? nick : "");
 	      g_free (tname);
 	      g_free (carg);
 	    }

@@ -241,3 +241,30 @@ METHOD (BseSong, synthesize-note) {
   
   return BSE_ERROR_NONE;
 }
+
+METHOD (BseSong, get-timing) {
+  HELP  = "Retrieve song timing information at a specific tick.";
+  IN    = bse_param_spec_object ("song", "Song", NULL, BSE_TYPE_SONG, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("tick", "Tick", "Tick to retrieve timing info about", 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("timing", "Timing", "Song Timing", BSE_TYPE_SONG_TIMING, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self = bse_value_get_object (in_values++);
+  SfiInt   tick = sfi_value_get_int (in_values++);
+  BseSongTiming timing = { 0, };
+
+  /* check parameters */
+  if (!BSE_IS_SONG (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_song_get_timing (self, tick, &timing);
+
+  /* set output parameters */
+  bse_value_set_boxed (out_values++, &timing);
+  
+  return BSE_ERROR_NONE;
+}
