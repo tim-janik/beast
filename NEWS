@@ -1,3 +1,19 @@
+Overview of Changes in BEAST/BSE 0.4.1:
+
+* Moved BSEs type system into GLib-2.0
+* Ported BEAST/BSE to Gtk+2.0 and GLib-2.0
+* Added sample/wave display and preview facilities
+* Added GSL - a common sound backend for BSE and aRts
+* New threaded sound engine which can share synthesis
+  module calculation between processors
+* Added arbitrary order IIR Filter calculation functions
+* Many new synthesis modules
+* New file caching layer
+* External Wave file support, e.g. for .wav or Ogg/Vorbis
+* A huge amount of bug fixes
+
+Overview of Changes in BEAST/BSE 0.4.0:
+
 * Various effects are supported for sequencer notes now
 * Sequencer and mixer cleanups and speedups
 * Added support for Cubic Interpolation
