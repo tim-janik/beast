@@ -49,7 +49,7 @@ UPDATE: This problem hasn't yet been reproduced with gdb versions newer than 5.
 @FAQ-CATEGORY@
 General
 @FAQ-TITLE@
-Why doesn't my synthesis networks produce any sound?
+Why doesn't my synthesis network produce any sound?
 @FAQ-ANSWER@
 
 There are various possible causes for this. First, make sure you have
