@@ -1,3 +1,8 @@
+Fri Feb 20 21:31:44 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* library/scripts/part-harmonic-transposer.scm: Support dorian,
+	phrygian, lydian, mixolydian and locrian scales (besides major/minor).
+
 Thu Feb 19 03:40:42 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatternctrl.[hc]: added parameters for stepping direction

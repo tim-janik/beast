@@ -23,6 +23,9 @@
 (bse-script-register 'part-harmonic-transposer
 		     ""
                      "/Part/Harmonic Transposer"
+		     ;; FIXME: the description may be suboptimal; the problem is
+		     ;; that I can't precisely describe details of musical theory
+		     ;; in english. -- stw
 		     (string-append "The harmonic transposer takes the selection of a part "
 				    "and transposes it to different harmonies. If you for "
 				    "instance have selected a measure filled with C major "
@@ -31,7 +34,12 @@
 				    "A minor, F major and G major chords. "
 				    "\n\n"
 				    "This also works for melodies, so you can transpose a "
-				    "whole melody written in G major to D minor."
+				    "whole melody written in G major to D minor. The standard "
+				    "scales used in church music (ionian, dorian, phrygian, "
+				    "lydian, mixolydian, aeolian, locrian) are also supported: "
+				    "it is for instance possible to write Ddorian or Caeolian. "
+				    "The aeolian scale is equivalent to minor and the ionian "
+				    "scale is equivalent to major. "
 				    "\n\n"
 				    "Since musically, there is no preference on whether to transpose up or "
 				    "down it is possible to specify the first harmony that will be transposed "
@@ -97,9 +105,20 @@
 
 ;; Harmony := <FullNote> maj | <FullNote> min | <FullNote> m | <FullNote>
 (define (parse-harmony input)
-  (let ((major (lambda (note) (cons note 0)))
+  (let ((scale (lambda (shift) (lambda (note) (cons note shift))))
+	(major (lambda (note) (cons note 0)))
         (minor (lambda (note) (cons note 5))))
     (parse-multiple input
+      ;; http://en.wikipedia.org/wiki/Musical_mode
+      ;; http://de.wikipedia.org/wiki/Kirchentonart
+      (parse-change-result (parse-constant (parse-fullnote input) "ionian") (scale 0))
+      (parse-change-result (parse-constant (parse-fullnote input) "dorian") (scale 1))
+      (parse-change-result (parse-constant (parse-fullnote input) "phrygian") (scale 2))
+      (parse-change-result (parse-constant (parse-fullnote input) "lydian") (scale 3))
+      (parse-change-result (parse-constant (parse-fullnote input) "mixolydian") (scale 4))
+      (parse-change-result (parse-constant (parse-fullnote input) "aeolian") (scale 5))
+      (parse-change-result (parse-constant (parse-fullnote input) "locrian") (scale 6))
+      ;; conventional harmonic major/minor (which is the same as ionian/aeolian in our notation)
       (parse-change-result (parse-constant (parse-fullnote input) "maj") major)
       (parse-change-result (parse-constant (parse-fullnote input) "min") minor)
       (parse-change-result (parse-constant (parse-fullnote input) "m") minor)
