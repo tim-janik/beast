@@ -1,5 +1,4 @@
 FIXMES:
-- stefan: can we optimize cxx_value_get_sequence() returns?
 - rc setting for canvas font sizes
 - record classes in c++ need to derive from GNewAllocator
 - put bstrecords.idl generated files into CLEAN files or at least MAINTAINER-CLEAN files
@@ -288,6 +287,11 @@ Effects:
   (main source for http://zynaddsubfx.sourceforge.net)
 
 sfidl:
+  - stefan: can we optimize cxx_value_get_sequence() returns?
+  - add comment for closing namespaces in namespacehelper
+  - handle Procedure {} namesace in namespacehelper
+  - rename nspace.printableForm() to something that expresses namespace relativity
+  - enum value names are not stored in fully qualified manner
 90- bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
 85- support records and sequences in bse-plugin-generator and bseprocidl
 60- bse.idl defines bseamplifier, for which there is an idl file
