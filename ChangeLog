@@ -1,3 +1,31 @@
+Thu May  8 13:21:10 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* configure.in: removed checks for documentation generation
+	tools and added a test for texitheque.
+
+	* docs/Makefile.am: removed utils from $SUBDIRS, and
+	teximacros.texi from $texi_docs.
+
+	* docs/generated/Makefile.am: replaced most of the document
+	generation functionality with texitheque.  removed navigation.xsl from
+	site rules.
+
+	* beast-gtk/Makefile.am: substituted scankeys with texitheque
+	and removed all occurrences of scankeys.
+
+	* beast-gtk/scankeys.c:
+	* docs/teximacros.texi:
+	* docs/generated/html.xsl:
+	* docs/generated/man.xsl:
+	* docs/generated/markup.xsl:
+	* docs/generated/markup.dtd:
+	* docs/generated/log2texi.sh:
+	* docs/generated/navigation.xsl:
+	* docs/generated/reference-filter.pl:
+	* docs/generated/reference-index.xsl:
+	* docs/generated/texinfo.dtd:
+	* docs/utils/*: removed due to being deprecated by texitheque.
+
 Tue May  6 15:43:12 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkcellrendererpopup.[hc]: added property

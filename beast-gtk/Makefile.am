@@ -143,8 +143,8 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 	&& cp xgen-bmc bstmarshal.c \
 	&& rm -f xgen-bmc
 
-SCANKEYS=$(top_builddir)/beast-gtk/scankeys
-stamp-ckeycheck: @DVLBUILD@ scankeys $(beast_sources) $(beast_extra_sources)
+SCANKEYS=$(TEXITHEQUE) scankeys --
+stamp-ckeycheck: @DVLBUILD@ $(beast_sources) $(beast_extra_sources)
 	cd $(srcdir) \
 	&& $(SCANKEYS) --count --key CKEY --skipkeys catalog-en.c \
 	     --tmplstart '#error MISSING DOC KEYS:\n' \
@@ -154,7 +154,7 @@ stamp-ckeycheck: @DVLBUILD@ scankeys $(beast_sources) $(beast_extra_sources)
 beast_DEPENDENCIES += stamp-ckeycheck
 
 debug_key_globs = $(top_srcdir)/beast-gtk/*.[hc] $(top_srcdir)/bse/*.[hc] $(top_srcdir)/sfi/*.[hc]
-bstdebugkeys.defs: @DVLBUILD@ scankeys $(debug_key_globs)
+bstdebugkeys.defs: @DVLBUILD@ $(debug_key_globs)
 	cd $(srcdir) \
 	&& echo > xgen-bdkd \
 	&& grep -E 'sfi_debug_(keyfunc|test_key)' $(debug_key_globs) \
@@ -172,15 +172,11 @@ bstutils.c: bstdebugkeys.defs
 bin_PROGRAMS = beast
 beast_SOURCES = bstmain.c $(beast_sources)
 beast_LDADD = $(progs_LDADD)
-noinst_PROGRAMS = bststest tsmview scankeys
+noinst_PROGRAMS = bststest tsmview
 bststest_SOURCES = bststest.c bstutils.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)
 tsmview_SOURCES = tsmview.c
 tsmview_LDADD = $(progs_LDADD)
-
-# scankeys
-scankeys_SOURCES = scankeys.c
-scankeys_LDADD = $(progs_LDADD)
 
 
 # extra deps

@@ -1,8 +1,8 @@
-SUBDIRS = utils generated
+SUBDIRS = generated
 
-texi_docs = $(strip								\
-	WRITING.3.texi		teximacros.texi		beast-index.texi	\
-	faq.texi		quickstart.texi		release-notes.texi	\
+texi_docs = $(strip							\
+	WRITING.3.texi		beast-index.texi	faq.texi	\
+	quickstart.texi		release-notes.texi			\
 )
 extra_docs = $(strip					\
 	bse-categories.txt	interpolation.txt	\

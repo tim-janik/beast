@@ -47,17 +47,7 @@ html_targets = $(strip		\
 )
 
 # extra dist
-build_tools = $(strip		\
-	navigation.xsl          \
-	reference-index.xsl     \
-	man.xsl			\
-	html.xsl		\
-	markup.xsl		\
-	markup.dtd		\
-	texinfo.dtd		\
-	scandocs.pl		\
-	log2texi.sh		\
-)
+build_tools = scandocs.pl
 EXTRA_DIST += ${build_tools}
 
 #
@@ -96,23 +86,27 @@ temp_ref_docu = sfi.3.texi bse.3.texi beast-gxk.3.texi bse-procs.3.texi bse-stru
 #
 # ChangeLog generation
 #
-LOG2TEXI=$(srcdir)/log2texi.sh
-log-beast.texi: $(top_srcdir)/ChangeLog			$(LOG2TEXI)
-	$(LOG2TEXI) $< >$@ "BEAST"
-log-bse.texi: $(top_srcdir)/bse/ChangeLog		$(LOG2TEXI)
-	$(LOG2TEXI) $< >$@ "BSE"
-log-plugins.texi: $(top_srcdir)/plugins/ChangeLog	$(LOG2TEXI)
-	$(LOG2TEXI) $< >$@ "Plugins"
-log-sfi.texi: $(top_srcdir)/sfi/ChangeLog		$(LOG2TEXI)
-	$(LOG2TEXI) $< >$@ "SFI"
+LOG2TEXI=$(TEXITHEQUE) log2texi
+log-beast.texi: $(top_srcdir)/ChangeLog
+	$(LOG2TEXI) --output=$@ --title="BEAST" $<
+log-bse.texi: $(top_srcdir)/bse/ChangeLog
+	$(LOG2TEXI) --output=$@ --title="BSE" $<
+log-plugins.texi: $(top_srcdir)/plugins/ChangeLog
+	$(LOG2TEXI) --output=$@ --title="Plugins" $<
+log-sfi.texi: $(top_srcdir)/sfi/ChangeLog
+	$(LOG2TEXI) --output=$@ --title="SFI" $<
 temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
 
 
 #
 # texi/xml/target rules
 #
-XMLANTISPACE=$(top_builddir)/docs/utils/xmlantispace
 REFERENCE_XMLS = $(patsubst %.3, %.3.crossfix.xml, $(man_MANS))
+TEXI2XML       = $(TEXITHEQUE) texi2xml
+XML2INDEX      = $(TEXITHEQUE) xml2index
+XML2MARKUP     = $(TEXITHEQUE) xml2markup
+XML2HTML       = $(TEXITHEQUE) xml2html
+XML2NROFF      = $(TEXITHEQUE) xml2nroff
 # docs to be distributed
 distdocs = $(markup_targets) $(man_MANS)
 # conditional build rules
@@ -121,98 +115,28 @@ gnome-index.lst.gz: # default-generate if not present to avoid build breakage
 	echo | gzip -9 >$@
 gnome-index.lst: $(srcdir)/gnome-index.lst.gz	# uncompress rule
 	cat $< | gzip -d >$@
-# generate *.xml from *.texi with makeinfo gnome-index
-%.xml: %.crossfix.xml $(srcdir)/reference-filter.pl index.lst gnome-index.lst
-	$(srcdir)/reference-filter.pl 		\
-	  --index index.lst			\
-	  --index gnome-index.lst		\
-	  $< >$@
-%.crossfix.xml: %.texi		$(srcdir)/../teximacros.texi $(XMLANTISPACE)
-	$(XMLMAKEINFO)  -D "TexiStamp `date -r $<`"	\
-			-I $(srcdir)/.. --xml $< -o -	\
-	| $(XMLANTISPACE) >$@
-index.lst: $(REFERENCE_XMLS) $(srcdir)/reference-index.xsl
-	rm -f $@ && touch $@
-	for i in $(REFERENCE_XMLS) ; do					\
-	  $(XSLTPROC)							\
-	    --stringparam protocol "`echo beast-man://3/$$i		\
-                                     | sed -e 's/.3.crossfix.xml//'`"	\
-	    $(srcdir)/reference-index.xsl $$i >>$@ ;			\
-	done
+# generate *.xml from *.texi with texitheque
+%.xml: %.texi index.lst gnome-index.lst
+	$(TEXI2XML) --index=index.lst --index=gnome-index.lst --output=$@ $<
+%.crossfix.xml: %.texi
+	$(TEXI2XML) --output=$@ $<
+index.lst: $(REFERENCE_XMLS)
+	$(XML2INDEX) --output=$@ --protocol="beast-man" $(REFERENCE_XMLS)
 # *.markup from xml (program docs)
-%.markup: %.xml			$(srcdir)/markup.xsl $(srcdir)/texinfo.dtd
-	$(XSLTPROC) $(srcdir)/markup.xsl $< >$@
+%.markup: %.xml
+	$(XML2MARKUP) --output=$@ $<
 # man from xml (installed)
-%.3: %.3.xml			$(srcdir)/man.xsl $(srcdir)/texinfo.dtd
-#       Below code's purpose is to extract valuable info from
-#       man files and then to combine them into one file.
-#
-#       TODO After we source files, especially TOC, page numbers
-#       change, so there should be another step to calculate the
-#       final numbers.
-#
-#       @XR@, @IF@, and @TF@ stands for the places where certion
-#       info is included into the main document, ie. @XR@ means
-#       'put xref info here'.
-#
-#       First, we create a nroff file from the xml source, and
-#       remove @XR@, and such lines as we don't have anything to do
-#       with them yet.
-	$(XSLTPROC) --param man_section 3 $(srcdir)/man.xsl $< \
-	| sed -e '/@XR@/ d' \
-	      -e '/@IF@/ d' \
-	      -e '/@TF@/ d' >$@.tmp
-#       We pass this file thru groff and catch its stderr which
-#       contains the info we are interested into.
-	$(GROFF) -man -t $@.tmp >/dev/null 2>$@.err
-#       Each type of info line has its specific prefix.  We create
-#       separate files according to those prefixes and remove them.
-	-grep '^XR: ' $@.err | cut -c5- >$@.xrf
-	-grep '^IX: ' $@.err | cut -c5- >$@.ind
-	-grep '^TC: ' $@.err | cut -c5- >$@.toc
-#       We create another nroff file from the xml source, but this
-#       time we substitute @XR@ and such lines with filenames to be
-#       sourced at those points.
-	$(XSLTPROC) --param man_section 3 $(srcdir)/man.xsl $< \
-	| sed -e 's/@XR@/.so $@.xrf/g' \
-	      -e 's/@IF@/.so $@.ind/g' \
-	      -e 's/@TF@/.so $@.toc/g' >$@.tmp
-#       Soelim loses the first line of the nroff file, which contains
-#       preprocessor info for `man'.
-	echo '.\" t' >$@
-#       Soelim processes .so lines and sources files into a big one
-#       which contains all of them.
-	$(SOELIM) <$@.tmp >>$@
-#       Remove scratch files.
-	rm -f $@.err $@.xrf $@.ind $@.toc $@.tmp
+%.3: %.3.nroff
+	cp -f $< $@
+	rm -f $<
 # html from xml (website)
-%.html: %.xml	texinfo.dtd html.xsl navigation.xsl navigation.xml
-	$(XSLTPROC) --stringparam this_file "$@" \
-	            --stringparam images_prefix "cvs-images/" \
-		    --stringparam banner_prefix "beast" \
-		    --stringparam site_icon "beast16.png" \
-	            $(srcdir)/html.xsl $< >$@
+%.html: %.xml
+	$(XML2HTML) --output=$@ --images="cvs-images/"
+		--banner="beast" --icon="beast16.png" $<
 # postscript rules
-%.nroff: %.xml man.xsl
-#       See the %.3 rule above for an explanation of these steps
-	$(XSLTPROC) $(srcdir)/man.xsl $< \
-	| sed -e '/@XR@/ d' \
-	      -e '/@IF@/ d' \
-	      -e '/@TF@/ d' >$@.tmp
-	$(GROFF) -man -t $@.tmp >/dev/null 2>$@.err
-	-grep '^XR: ' $@.err | cut -c5- >$@.xrf
-	-grep '^IX: ' $@.err | cut -c5- >$@.ind
-	-grep '^TC: ' $@.err | cut -c5- >$@.toc
-	$(XSLTPROC) $(srcdir)/man.xsl $< \
-	| sed -e 's/@XR@/.so $@.xrf/g' \
-	      -e 's/@IF@/.so $@.ind/g' \
-	      -e 's/@TF@/.so $@.toc/g' >$@.tmp
-	echo '.\" t' >$@
-	$(SOELIM) <$@.tmp >>$@
-	rm -f $@.err $@.xrf $@.ind $@.toc $@.tmp
+%.nroff: %.xml
+	$(XML2NROFF) --output=$@ $<
 %.ps: %.nroff
-	$(GROFF) -man -t $< >$@
-%.ps: %.3
 	$(GROFF) -man -t $< >$@
 %.pdf: %.ps
 	ps2pdf13 $< $@
@@ -266,10 +190,10 @@ ACCOUNT=${USER}@beast.gtk.org
 XPREFIX=_tmpFile~
 index.html: news.html
 	ln -s $< $@
-site:	$(html_targets) navigation.xsl navigation.xml index.html
+site:	$(html_targets) navigation.xml index.html
 	tar jcf beast-site-con.tar.bz2 --mode=0664 $(html_targets) index.html css/*.css
 	tar zcf beast-site-img.tar.gz  --mode=0664 css/images/*.png
-	tar zcf beast-site-nav.tar.gz  --mode=0664 navigation.xml navigation.xsl
+	tar zcf beast-site-nav.tar.gz  --mode=0664 navigation.xml
 site-update-con: site
 	echo Connecting to ${ACCOUNT}... \
 	&& uuencode ${XPREFIX}-beast-site-con.tar.bz2 < beast-site-con.tar.bz2 \
