@@ -34,8 +34,11 @@ gxk_c_sources = $(strip \
 	gxkparam.c					gxklogadjustment.c \
 )
 gxk_extra_sources = $(strip \
-	gxkmarshal.list \
-	gxkrackcovers.c	\
+	gxkparam-entry.c	gxkparam-label.c	\
+	gxkparam-scale.c	gxkparam-spinner.c	\
+	gxkparam-toggle.c	\
+	gxkrackcovers.c		\
+	gxkmarshal.list		\
 )
 gxk_built_sources = $(strip \
 	gxkmarshal.h	gxkmarshal.c	gxkgentypes.h	gxkgentypes.c \
