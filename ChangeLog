@@ -1,3 +1,8 @@
+Thu Jan  6 18:51:48 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bwtwave.cc (store): store wave xinfos. adapt to BSE changes.
+	renamed wave_xinfos class field.
+
 Tue Jan  4 23:58:20 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c:

@@ -1,8 +1,7 @@
 FIXME(urgent):
-- save ogglinks in .bse files
-- test xinfo saving and parsing for raw/ogg-links in bse and bsewave files for waves and chunks
+- keep inlined wave handles open to survive /file/Save
+- test xinfo saving and parsing for raw-links in bse and bsewave files for chunks
 - remove leftovers in : bse/zintern/
-- remove BseWave::wave_chunk_urls
 - remove bsewave compat code
 - copy xinfos in set_dhandle_from_temporary
 - nuke data handle qdata
@@ -40,6 +39,7 @@ FIXME(urgent):
 - close pianoroll window in response to part::release  
 - add dialog to ask the user whether he really wants to delete the last link to a part.
 TODO:
+- add editable text fields to snet router
 - provide a color/dB reference scale, next to the fft-scope view
 - add "..." to new dialog items in View/
 - show note and timing position of current mouse pointer in piano roll status bar

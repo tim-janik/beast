@@ -110,10 +110,10 @@ WaveChunk::~WaveChunk ()
 
 Wave::Wave (const gchar    *wave_name,
             guint           n_ch,
-            gchar         **xinfos_init) :
+            gchar         **xinfos) :
   n_channels (n_ch),
   name (wave_name),
-  xinfos (bse_xinfos_dup_consolidated (xinfos_init, FALSE))
+  wave_xinfos (bse_xinfos_dup_consolidated (xinfos, FALSE))
 {
 }
 
@@ -193,7 +193,7 @@ Wave::store (const string file_name)
           tmp_handle = gsl_data_handle_get_source (dhandle);
         }
       while (tmp_handle);
-      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle); // FIXME: deamnd certain serialno
+      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle);
       if (!vhandle)
         mf_counters[gsl_data_handle_mix_freq (chunk->dhandle)] += 1;
       else
@@ -208,6 +208,7 @@ Wave::store (const string file_name)
         dfl_mix_freq = it->first;
       }
 
+  /* dump wave header */
   SfiWStore *wstore = sfi_wstore_new ();
   wstore->comment_start = '#';
   sfi_wstore_puts (wstore, "#BseWave\n\n");
@@ -220,7 +221,22 @@ Wave::store (const string file_name)
   sfi_wstore_printf (wstore, "  byte-order = %s\n", gsl_byte_order_to_string (byte_order));
   if (dfl_mix_freq > 0)
     sfi_wstore_printf (wstore, "  mix-freq = %.3f\n", dfl_mix_freq);
+  gchar **xinfos = bse_xinfos_dup_consolidated (wave_xinfos, FALSE);
+  if (xinfos)
+    for (guint i = 0; xinfos[i]; i++)
+      if (xinfos[i][0] != '.')
+        {
+          const gchar *key = xinfos[i];
+          const gchar *value = strchr (key, '=') + 1;
+          gchar *ckey = g_strndup (key, value - key - 1);
+          gchar *str = g_strescape (value, NULL);
+          sfi_wstore_printf (wstore, "  xinfo[\"%s\"] = \"%s\"\n", ckey, str);
+          g_free (str);
+          g_free (ckey);
+        }
+  g_strfreev (xinfos);
 
+  /* dump chunks */
   for (list<WaveChunk>::iterator it = chunks.begin(); it != chunks.end(); it++)
     {
       WaveChunk *chunk = &*it;
@@ -241,25 +257,8 @@ Wave::store (const string file_name)
       GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle); // FIXME: deamnd certain serialno
       if (vhandle)      /* save already compressed Ogg/Vorbis data */
         {
-          sfi_wstore_puts (wstore, "    ogg-link = ");
-          struct Sub {
-            static void
-            vhandle_destroy (gpointer data)
-            {
-              GslVorbis1Handle *vhandle = static_cast<GslVorbis1Handle*> (data);
-              gsl_vorbis1_handle_destroy (vhandle);
-            }
-            static gint /* -errno || length */
-            vhandle_reader (gpointer data,
-                            SfiNum   pos,
-                            void    *buffer,
-                            guint    blength)
-            {
-              GslVorbis1Handle *vhandle = static_cast<GslVorbis1Handle*> (data);
-              return gsl_vorbis1_handle_reader (vhandle, (guint8*) buffer, blength);
-            }
-          };
-          sfi_wstore_put_binary (wstore, Sub::vhandle_reader, vhandle, Sub::vhandle_destroy);
+          sfi_wstore_puts (wstore, "    vorbis-link = ");
+          gsl_vorbis1_handle_put_wstore (vhandle, wstore);
           sfi_wstore_puts (wstore, "\n");
         }
       else
@@ -324,7 +323,7 @@ Wave::store (const string file_name)
 
 Wave::~Wave ()
 {
-  g_strfreev (xinfos);
+  g_strfreev (wave_xinfos);
 }
 
 } // BseWaveTool

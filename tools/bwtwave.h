@@ -43,7 +43,7 @@ struct Wave {
   guint           n_channels;
   string          name;
   list<WaveChunk> chunks;
-  gchar         **xinfos;
+  gchar         **wave_xinfos;
 public:
   /*Con*/       Wave            (const gchar    *wave_name,
                                  guint           n_channels,
