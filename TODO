@@ -80,6 +80,7 @@ FIXMES:
 - fade in/out of samples (sample editor)
 - wave editor: provide transpose spinner for wave preview
 - fix BseSong::denominator SpinButton arrows not working
+- collect flow jobs from unscheduled nodes  
 * eliminate everything that fgrep -i fixme/hack reveals
 
 DOCS:
