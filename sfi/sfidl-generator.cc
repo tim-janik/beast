@@ -204,23 +204,25 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
 
   if (group != "")
     group = "\"" + group + "\"";
+  else
+    group = "NULL";
   
   if (parser.isEnum (pdef.type))
     {
       pspec = "sfidl_pspec_Choice";
       if (pdef.args == "")
-	pspec += "_default (\"" + group + "\",\"" + pdef.name + "\",";
+	pspec += "_default (" + group + ",\"" + pdef.name + "\",";
       else
-	pspec += " (\"" + group + "\", \"" + pdef.name + "\"," + pdef.args + ",";
+	pspec += " (" + group + ", \"" + pdef.name + "\"," + pdef.args + ",";
       pspec += makeLowerName (pdef.type) + "_values)";
     }
   else if (parser.isRecord (pdef.type))
     {
       pspec = "sfidl_pspec_BoxedRec";
       if (pdef.args == "")
-	pspec += "_default (\"" + group + "\", \"" + pdef.name + "\",";
+	pspec += "_default (" + group + ", \"" + pdef.name + "\",";
       else
-	pspec += " (\"" + group + "\",\"" + pdef.name + "\"," + pdef.args + ",";
+	pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ",";
       pspec += makeLowerName (pdef.type) + "_fields)";
     }
   else if (parser.isSequence (pdef.type))
@@ -228,18 +230,18 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
       const SequenceDef& sdef = parser.findSequence (pdef.type);
       pspec = "sfidl_pspec_BoxedSeq";
       if (pdef.args == "")
-	pspec += "_default (\"" + group + "\",\"" + pdef.name + "\",";
+	pspec += "_default (" + group + ",\"" + pdef.name + "\",";
       else
-	pspec += " (\"" + group + "\",\"" + pdef.name + "\"," + pdef.args + ",";
+	pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ",";
       pspec += makeLowerName (pdef.type) + "_content)";
     }
   else
     {
       pspec = "sfidl_pspec_" + pdef.pspec;
       if (pdef.args == "")
-	pspec += "_default (\"" + group + "\",\"" + pdef.name + "\")";
+	pspec += "_default (" + group + ",\"" + pdef.name + "\")";
       else
-	pspec += " (\"" + group + "\",\"" + pdef.name + "\"," + pdef.args + ")";
+	pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ")";
     }
   return pspec;
 }

@@ -1,3 +1,7 @@
+Sun Mar  9 07:06:16 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc: fixed double quotes in sfidl
+
 Fri Mar  7 21:39:47 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.* sfidl.cc: support group keyword for grouping
