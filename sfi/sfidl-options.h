@@ -42,6 +42,7 @@ struct Options {
   bool        doInterface;
   bool        doImplementation;
   bool        doHelp;
+  bool	      doExit;
   std::string prefixC;
   std::string initFunction;
   std::string namespaceQt;

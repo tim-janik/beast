@@ -263,29 +263,15 @@ static bool match(vector<char>::iterator start, const char *string)
   return (*string == 0);
 }
 
-static bool fileExists(const char *filename)
+static bool fileExists(const string& filename)
 {
-  FILE *test = fopen(filename,"r");
+  FILE *test = fopen(filename.c_str(),"r");
   if(test)
     {
       fclose(test);
       return true;
     }
   return false;
-}
-
-static string searchFile(const char *filename, const vector<string>& path)
-{
-  if(fileExists(filename)) return filename;
-
-  vector<string>::const_iterator i;
-  for(i = path.begin(); i != path.end(); i++)
-    {
-      string location = *i + "/" + filename;
-      if(fileExists(location.c_str())) return location;
-    }
-  fprintf(stderr,"file '%s' not found\n",filename);
-  exit(1);
 }
 
 static void loadFile(const char *filename, vector<char>& v)
@@ -392,13 +378,38 @@ void Parser::preprocess (const string& input_filename)
 	    }
 	}
       else if((state == filenameIn1 && *i == '"')
-	  || (state == filenameIn2 && *i == '>'))
+	   || (state == filenameIn2 && *i == '>'))
 	{
-	  if(!haveIncluded(filename))
+	  string location;
+	  if (state == filenameIn1) // #include "foo.idl" => search in local directory (relative to input_file)
 	    {
-	      includes.push_back(filename);
+	      gchar *dir = g_path_get_dirname (input_filename.c_str());
+	      if (fileExists (dir + string(G_DIR_SEPARATOR_S) + filename))
+		location = filename;
+	      g_free (dir);
+	    }
+	  if (location != "") // all #include directives => search includepath with standard include dirs
+	    {
+	      for(vector<string>::const_iterator i = options.includePath.begin(); i != options.includePath.end(); i++)
+		{
+		  string testFilename = *i + "/" + filename;
+		  if (fileExists (testFilename))
+		    {
+		      location = testFilename;
+		      break;
+		    }
+		}
+	    }
+	  if (location == "")
+	    {
+	      fprintf(stderr,"include file '%s' not found\n", filename.c_str());
+	      exit(1);
+	    }
 
-	      string location = searchFile(filename.c_str(), options.includePath);
+	  if(!haveIncluded(location))
+	    {
+	      includes.push_back(location);
+
 	      incdepth++;
 	      preprocess (location);
 	      incdepth--;

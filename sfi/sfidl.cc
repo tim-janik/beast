@@ -42,6 +42,11 @@ int main (int argc, char **argv)
       return 1;
     }
 
+  if (options.doExit)
+    {
+      return 0;
+    }
+
   if (options.doHelp)
     {
       options.printUsage ();

@@ -17,8 +17,13 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfidl-options.h"
+#include "topconfig.h"
 #include <sfi/glib-extra.h>
 #include <stdio.h>
+
+/* FIXME: should be filled out and written into topconfig.h by configure */
+#define SFIDL_VERSION        BST_VERSION
+#define SFIDL_PRG_NAME	     "sfidl"
 
 using namespace Sfidl;
 
@@ -37,7 +42,7 @@ Options::Options ()
   generateBoxedTypes = generateProcedures = generateSignalStuff = false;
   generateIdlLineNumbers = false;
   targetC = targetQt = targetModule = false;
-  doHeader = doSource = doImplementation = doInterface = doHelp = false;
+  doHeader = doSource = doImplementation = doInterface = doHelp = doExit = false;
   sfidlName = "sfidl";
 
   Options_the = this;
@@ -45,6 +50,10 @@ Options::Options ()
 
 bool Options::parse (int *argc_p, char **argv_p[])
 {
+  bool printIncludePath = false;
+  bool printVersion = false;
+  bool noStdInc = false;
+
   unsigned int argc;
   char **argv;
   unsigned int i, e;
@@ -177,6 +186,23 @@ bool Options::parse (int *argc_p, char **argv_p[])
 	    }
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--print-include-path", argv[i]) == 0)
+	{
+	  printIncludePath = true;
+	  doExit = true;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--version", argv[i]) == 0)
+	{
+	  printVersion = true;
+	  doExit = true;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--nostdinc", argv[i]) == 0)
+	{
+	  noStdInc = true;
+	  argv[i] = NULL;
+	}
     }
 
   /* resort argc/argv */
@@ -197,10 +223,45 @@ bool Options::parse (int *argc_p, char **argv_p[])
   if (e)
     *argc_p = e;
 
+  /* add std include path */
+  if (!noStdInc)
+    {
+      char *x = g_strdup (SFIDL_PATH_STDINC);
+      char *dir = strtok (x, G_SEARCHPATH_SEPARATOR_S);
+      while (dir && dir[0])
+	{
+	  includePath.push_back (dir);
+	  dir = strtok (NULL, G_SEARCHPATH_SEPARATOR_S);
+	}
+      g_free (x);
+    }
+
   /* option validation */
 
   if (doHelp)
     return true;
+
+  if (printIncludePath)
+    {
+      bool first = true;
+      for (std::vector<std::string>::const_iterator ii = includePath.begin(); ii != includePath.end(); ii++)
+	{
+	  if (!first)
+	    printf (":");
+	  else
+	    first = false;
+	  printf ("%s", ii->c_str());
+	}
+      printf ("\n");
+      return true;
+    }
+
+  if (printVersion)
+    {
+      printf ("%s %s\n", SFIDL_PRG_NAME, SFIDL_VERSION);
+      return true;
+    }
+
 
   // exactly one of --source | --header, --interface | --implementation
   if (((doSource?1:0) + (doHeader?1:0)) != 1)
@@ -293,6 +354,9 @@ void Options::printUsage ()
   fprintf (stderr, " --namespace <namespace>     set the namespace to use for the code\n");
   fprintf (stderr, "\n");
   fprintf (stderr, " --help                      this help\n");
+  fprintf (stderr, " --version                   print version\n");
+  fprintf (stderr, " --print-include-path        print include path\n");
+  fprintf (stderr, " --nostdinc                  don't use standard include path\n");
 }
 
 

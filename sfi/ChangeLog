@@ -1,3 +1,15 @@
+Sun Sep 21 02:29:42 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bse-plugin-generator.cc: Duplicated include related options
+	here.
+
+	* sfidl-options.* sfidl.cc: New options: --print-include-path,
+	--version, --nostdinc. Use SFIDL_PATH_STDINC from topconfig.h.
+
+	* sfidl-parser.cc: Include file relative includes are now only
+	handled for #include "foo.idl". #include <foo.idl> uses the include
+	path only.
+
 Sat Sep 20 22:16:40 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-generator.cc sfidl-module.cc: Use sequentialValue where
