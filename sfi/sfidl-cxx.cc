@@ -278,7 +278,8 @@ CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
           pspec += "_default (" + group + ", \"" + param.name + "\", ";
         else
           pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
-        pspec += param.type + "::get_fields)";
+        pspec += param.type + "::get_fields()";
+        pspec += ")";
         return pspec;
       }
     case SEQUENCE:
@@ -289,7 +290,8 @@ CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
           pspec += "_default (" + group + ", \"" + param.name + "\", ";
         else
           pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
-        pspec += param.type + "::get_fields)";
+        pspec += param.type + "::get_fields()";
+        pspec += ")";
         return pspec;
       }
     default:    return makeParamSpec (param);
@@ -569,6 +571,25 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf ("{\n");
       printf ("  ::Sfi::cxx_value_set_sequence< %s> (value, self);\n", nname.c_str());
       printf ("}\n\n");
+
+      if (options.doImplementation)
+	{
+	  printf ("SfiBoxedFields\n");
+	  printf ("%s::get_fields()\n", nname.c_str());
+	  printf ("{\n");
+	  printf ("  static SfiBoxedFields bfields = { 0, NULL, 0, TRUE };\n");
+	  printf ("  if (!bfields.n_fields)\n");
+	  printf ("    {\n");
+	  printf ("      static GParamSpec *fields[1 + 1];\n");
+	  printf ("      bfields.n_fields = 1;\n");
+	  guint j = 0;
+          // printf("#line %u \"%s\"\n", si->content.line, parser.fileName().c_str());
+          printf("      fields[%u] = %s;\n", j++, untyped_pspec_constructor (si->content).c_str());
+	  printf ("      bfields.fields = fields;\n");
+	  printf ("    }\n");
+	  printf ("  return bfields;\n");
+	  printf ("}\n\n");
+	}
     }
 
   /* record members */
