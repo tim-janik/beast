@@ -18,7 +18,7 @@ plugin_libs = $(BSE_LIBS) -lm
 # plugin_ldlibs = $(top_builddir)/bse/libbse.la $(top_builddir)/blib/libblib.la
 
 # create plugin list
-UNPORTED = @STRIP_BEGIN@	\
+UNPORTED = $(strip		\
 	bsefirfilter.[hc]	\
 	bseloader-wave.[hc]	\
 	davbassfilter.[hc]	\
@@ -26,8 +26,8 @@ UNPORTED = @STRIP_BEGIN@	\
 	davchorus.[hc]		\
 	davguitar.[hc]		\
 	davsyndrum.[hc]		\
-@STRIP_END@
-PLUGIN_CFILES = @STRIP_BEGIN@	\
+)
+PLUGIN_CFILES = $(strip		\
 	bseadder.[hc]		\
 	bseatandistort.[hc]	\
 	bseiirfilter.[hc]	\
@@ -38,10 +38,10 @@ PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bsesequencer.[hc]	\
 	davorgan.[hc]		\
 	davxtalstrings.[hc]	\
-@STRIP_END@
-EXTRA_CFILES = @STRIP_BEGIN@	\
+)
+EXTRA_CFILES = $(strip		\
 	bsesimpleadsr-aux.c	\
-@STRIP_END@
+)
 Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
 	$(srcdir)/listplugins.sh $(PLUGIN_CFILES) >$@
 
@@ -54,9 +54,7 @@ EXTRA_DIST += $(strip \
 )
 
 # *.enums generation rule
-missing_perl = @MISSING_PERL5@ yes
-
-if IF_HAVE_PERL5
+if IF_DVLBUILD
 %.enums: %.h
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \

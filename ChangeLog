@@ -1,3 +1,10 @@
+Mon Mar 10 08:54:23 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: added @DVLBUILD@ ac substitution to disable
+	development build rules.
+	
+	* */Makefile.am: more srcdir!=builddir fixes, adaptions to @DVLBUILD@.
+
 Mon Mar 10 05:43:37 2003  Tim Janik  <timj@gtk.org>
 
 	* rename and CVS-move of bsw-shell/bswshell to shell/bsesh.

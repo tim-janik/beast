@@ -19,7 +19,7 @@ AUTOMAKE_OPTIONS = 1.4
 configure: acbeast.m4
 
 # build PKG_paths.h
-PKG_paths.h: $(top_srcdir)/configure Makefile
+PKG_paths.h: $(top_builddir)/config.status Makefile
 	cd $(top_builddir) \
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-pph \
 	&& echo >> xgen-pph \

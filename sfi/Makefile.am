@@ -5,7 +5,7 @@
 
 SUBDIRS =
 
-INCLUDES += -I${top_srcdir} -I$(top_builddir) $(SFI_CFLAGS)
+INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 
 # supported defines: SFI_DISABLE_DEBUG
 
@@ -63,7 +63,7 @@ testidl.c: $(srcdir)/testidl.sfidl sfidl
 	&& mv xgen-tic testidl.c
 EXTRA_DIST += testidl.sfidl
 
-sficonfig.h: $(top_srcdir)/configure Makefile
+sficonfig.h: $(top_builddir)/config.status Makefile
 	echo "/* Generated data from $< (by make $@) */" > xgen-sch \
 	&& echo >> xgen-sch \
 	&& echo "#define SFI_SIZEOF_PTH_MUTEX_T         (@SFI_SIZEOF_PTH_MUTEX_T@)" >> xgen-sch \

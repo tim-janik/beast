@@ -7,7 +7,7 @@ SUBDIRS = icons zintern
 
 # need -I$(top_srcdir) for <gsl/gsldefs.h>
 # need -I. for "../PKG_config.h"
-INCLUDES = -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+INCLUDES = -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #
 # libraries to compile and install
@@ -285,14 +285,13 @@ PPROCESS = $(CPP) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(
 # setup autogeneration dependancies
 gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
 	      xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi
-CLEANFILES += $(gen_sources) @MISSING_PERL5@ $(bse_proc_gen_sources)
+CLEANFILES += $(gen_sources) @DVLBUILD@ $(bse_proc_gen_sources)
 $(OBJECTS): $(bse_built_h_sources)
 # piggyback generation through sideeffects, needs NOP-rule for dep-tracking, must be in srcdir
 $(srcdir)/bsegentypes.h: stamp-bsegentypes.h ;
 # normal autogeneration rules
-stamp-bsegentypes.h: @MISSING_PERL5@ mktypes.pl
-stamp-bsegentypes.h: @MISSING_PERL5@ @BIRNET_N@ $(bse_c_sources)
-stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_public_h_sources) bserecords.sfidl $(SFIDL)
+stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(bse_c_sources) $(bse_public_h_sources)
+stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.sfidl $(SFIDL)
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -300,11 +299,11 @@ stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_public_h_sources) bserecords.sfidl $(
 	  --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	    $(bse_public_h_sources) > xgen-sbgth \
 	&& $(PERL) mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
-	&& $(SFIDL) --header --implementation --boxed bserecords.sfidl >> xgen-sbgth \
+	&& $(SFIDL) --header --implementation --boxed $(srcdir)/bserecords.sfidl >> xgen-sbgth \
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
-bsegentypes.c: @MISSING_PERL5@ bsegentypes.h mktypes.pl bserecords.sfidl $(SFIDL) $(bse_builtin_c_sources) # $(bse_c_sources)
+bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bserecords.sfidl $(SFIDL) $(bse_builtin_c_sources) # $(bse_c_sources)
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
@@ -313,12 +312,12 @@ bsegentypes.c: @MISSING_PERL5@ bsegentypes.h mktypes.pl bserecords.sfidl $(SFIDL
 	&& $(SFIDL) --source --implementation --boxed --init _sfidl_types_init bserecords.sfidl >> xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
 	&& rm -f xgen-bgtc
-bsegentype_array.c: @MISSING_PERL5@ bsegentypes.c
+bsegentype_array.c: @DVLBUILD@ bsegentypes.c
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-bgtac \
 	&& cp xgen-bgtac $(@F) \
 	&& rm -f xgen-bgtac
-bseenum_arrays.c: @MISSING_PERL5@ $(bse_public_h_sources)
+bseenum_arrays.c: @DVLBUILD@ $(bse_public_h_sources)
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
@@ -329,7 +328,7 @@ bseenum_arrays.c: @MISSING_PERL5@ $(bse_public_h_sources)
 	    $(bse_public_h_sources) > xgen-sbeac \
 	&& cp xgen-sbeac $(@F) \
 	&& rm -f xgen-sbeac
-bseenum_list.c: @MISSING_PERL5@ bseenum_arrays.c
+bseenum_list.c: @DVLBUILD@ bseenum_arrays.c
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -337,12 +336,12 @@ bseenum_list.c: @MISSING_PERL5@ bseenum_arrays.c
 	    $(bse_public_h_sources) > xgen-belc \
 	&& cp xgen-belc $(@F) \
 	&& rm -f xgen-belc
-bsebuiltin_externs.c: @MISSING_PERL5@ $(bse_builtin_c_sources) mkbuiltinlist.pl
+bsebuiltin_externs.c: @DVLBUILD@ $(bse_builtin_c_sources) mkbuiltinlist.pl
 	cd $(srcdir) \
 	&& $(PERL) mkbuiltinlist.pl --externs $(bse_builtin_c_sources) > xgen-bbec \
 	&& cp xgen-bbec $(@F) \
 	&& rm -f xgen-bbec
-bsebuiltin_array.c: @MISSING_PERL5@ $(bse_builtin_c_sources) mkbuiltinlist.pl
+bsebuiltin_array.c: @DVLBUILD@ $(bse_builtin_c_sources) mkbuiltinlist.pl
 	cd $(srcdir) \
 	&& $(PERL) mkbuiltinlist.pl --array $(bse_builtin_c_sources) > xgen-bbac \
 	&& cp xgen-bbac $(@F) \
@@ -355,8 +354,8 @@ bsebuiltin_array.c: @MISSING_PERL5@ $(bse_builtin_c_sources) mkbuiltinlist.pl
 # this file describes the BSE public API and needs to be generated at the
 # end of the build process
 #
-bse.sfidl: $(SFIDL) bseprocidl
-	echo "/* this file was generated from make bse.sfidl */" > xgen-bgasi \
+bse.sfidl: $(srcdir)/bserecords.sfidl $(SFIDL) bseprocidl
+	echo "/* this file was generated from make $< */" > xgen-bgasi \
 	&& cat $(srcdir)/bserecords.sfidl >> xgen-bgasi \
 	&& ./bseprocidl >> xgen-bgasi \
 	&& (cmp -s xgen-bgasi bse.sfidl || cp xgen-bgasi bse.sfidl) \
@@ -377,7 +376,7 @@ builtsources: $(bse_built_h_sources) $(bse_built_c_sources)
 #
 # private (birnet) dependancy to make TAGS file after each build
 #
-all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
+all: # TAGS
 
 
 # --- GSL targets ---

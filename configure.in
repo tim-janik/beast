@@ -440,57 +440,21 @@ AC_DOC_REQUIREMENTS
 # architecture information
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "${host_alias}")
 
-# check for perl, python, etags and indent which are required
-# to build generated sources
-AC_PROG_AWK
+# check whether development build rules can be used
 AC_CHECK_PROGS(PERL, perl5 perl)
-AC_CHECK_PROGS(PYTHON, python)
-AC_CHECK_PROGS(FOLD, fold)
-AC_CHECK_PROG(INDENT, indent, indent)
-AC_CHECK_PROG(ETAGS, etags, etags)
-MISSING_AWK=#
-MISSING_PERL5=#
-MISSING_PYTHON=#
-MISSING_FOLD=#
-MISSING_INDENT=#
-MISSING_ETAGS=#
-if test -n "$PERL" && $PERL -e 'exit !($] >= 5.002)' > /dev/null ; then
-    MISSING_PERL5=
-fi
-if test -n "$PYTHON" && python -c "import sys ; print sys.version" | grep '^1.5.' > /dev/null ; then
-    MISSING_PYTHON=
-fi
-if test -n "$FOLD" ; then
-    MISSING_FOLD=
-fi
-if test -n "$AWK" ; then
-    MISSING_AWK=
-fi
-if test -n "$INDENT" ; then
-    MISSING_INDENT=
-fi
-if test -n "$ETAGS" ; then
-    MISSING_ETAGS=
-fi
-AC_MSG_CHECKING(whether this is rambokid's machine)
-if fgrep birgrave.birnet.private /etc/hosts >/dev/null 2>&1; then
-    BIRNET_Y=
-    BIRNET_N=\#
+AC_MSG_CHECKING(whether develoment build rules can be used)
+TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
+TEST_BUILDDIR=$(cd . ; /bin/pwd)
+if test "$TEST_SRCDIR" == "$TEST_BUILDDIR" -a -n "$PERL" \
+   && $PERL -e 'exit !($] >= 5.002)' > /dev/null ; then
+    DVLBUILD=
     AC_MSG_RESULT(yes)
 else
-    BIRNET_Y=\#
-    BIRNET_N=
+    DVLBUILD=#
     AC_MSG_RESULT(no)
 fi
-AC_SUBST(MISSING_PERL5)
-AC_SUBST(MISSING_PYTHON)
-AC_SUBST(MISSING_FOLD)
-AC_SUBST(MISSING_AWK)
-AC_SUBST(MISSING_INDENT)
-AC_SUBST(MISSING_ETAGS)
-AC_SUBST(BIRNET_Y)
-AC_SUBST(BIRNET_N)
-AM_CONDITIONAL(IF_HAVE_PERL5, test -z "$MISSING_PERL5")
+AC_SUBST(DVLBUILD)
+AM_CONDITIONAL(IF_DVLBUILD, test -z "$DVLBUILD")
 
 # Automake @VARIABLE@ exports.
 AC_SUBST(CFLAGS)

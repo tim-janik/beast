@@ -3,6 +3,8 @@
 #
 ## Makefile.am for BSE zintern
 
+INCLUDES = -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+
 ZFILE_DEFS = $(strip \
 	BSE_STD_SYNTH_MONO_WAVE			$(srcdir)/mono-wave.bse		\
 )
@@ -31,7 +33,6 @@ bse-zfile.c:	zintern $(srcdir)/*.bse # bse-zfile.h
 
 # need -I$(top_srcdir) for <gsl/gsldefs.h>
 # need -I. for "../PKG_config.h"
-INCLUDES = -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 noinst_PROGRAMS = zintern
 progs_LDADD = $(top_builddir)/sfi/libsfi.la $(LIBZ)

@@ -64,6 +64,7 @@ GSL:
 - [stw]         4   /usr/share/doc/sfftw-dev/README.hacks
 - [stw]         1 7 FFT L-case optimiaztions
 - [stw]         5 1 .PAT loader (move)
+- [stw/timj]      9 port plugins listed in plugins/Makefile.am:UNPORTED
 - [stw/timj]    6 3 1) OscTableEntry sizes (wave_table_size ())
 - [stw/timj]    7 3 2) development of gsl_osc_table_create() frequencies
 - [stw/timj]    4 4 3) PWM scaling

@@ -68,26 +68,26 @@ bse_refsrc_globs=$(top_srcdir)/bse/bse*.[hc] $(top_srcdir)/bse/gsl*.[hc]
 gxk_refsrc_globs=$(top_srcdir)/beast-gtk/gxk/gxk*.[hc]
 AUTODOC=$(top_builddir)/bse/bseautodoc
 SCANDOCS=$(srcdir)/scandocs.pl
-sfi.3.texi: $(sfi_refsrc_globs) $(SCANDOCS) $(top_srcdir)/configure
+sfi.3.texi: $(sfi_refsrc_globs) $(SCANDOCS) $(top_builddir)/config.status
 	$(SCANDOCS) --name "SFI-Functions" \
 		    --blurb "SFI Function Reference" \
 		    --package "BEAST-$(VERSION)" \
 		      $(sfi_refsrc_globs) >$@
-bse.3.texi: $(bse_refsrc_globs) $(SCANDOCS) $(top_srcdir)/configure
+bse.3.texi: $(bse_refsrc_globs) $(SCANDOCS) $(top_builddir)/config.status
 	$(SCANDOCS) --name "BSE-Functions" \
 		    --blurb "BSE Function Reference" \
 		    --package "BEAST-$(VERSION)" \
 		    --seealso "beast-man://3/bse-procs,BSE Procedures" \
 		      $(bse_refsrc_globs) >$@
-beast-gxk.3.texi: $(gxk_refsrc_globs) $(SCANDOCS) $(top_srcdir)/configure
+beast-gxk.3.texi: $(gxk_refsrc_globs) $(SCANDOCS) $(top_builddir)/config.status
 	$(SCANDOCS) --name "GXK-Functions" \
 		    --blurb "Gtk+ Extension Kit Function Reference" \
 		    --package "BEAST-$(VERSION)" \
 		      $(gxk_refsrc_globs) >$@
-bse-procs.3.texi: $(AUTODOC) $(top_srcdir)/configure
+bse-procs.3.texi: $(AUTODOC) $(top_builddir)/config.status
 	$(AUTODOC)  --seealso "beast-man://3/bse-structs,BSE Structures" \
 		    procs >$@
-bse-structs.3.texi: $(AUTODOC) $(top_srcdir)/configure
+bse-structs.3.texi: $(AUTODOC) $(top_builddir)/config.status
 	$(AUTODOC)  --seealso "beast-man://3/bse-procs,BSE Procedures" \
 		    structs >$@
 temp_ref_docu = sfi.3.texi bse.3.texi beast-gxk.3.texi bse-procs.3.texi bse-structs.3.texi

@@ -108,7 +108,7 @@ builtsources: $(bsw_built_public_sources) $(bsw_built_sources)
 #
 # private (birnet) dependancy to make TAGS file after each build
 #
-all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
+all: # TAGS
 
 
 #
