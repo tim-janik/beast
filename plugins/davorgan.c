@@ -141,7 +141,7 @@ dav_organ_class_init (DavOrganClass *class)
 			      harm_param ("harm5", "2nd", "2nd harmonic", 55));
   
   ochannel_id = bse_source_class_add_ochannel (source_class,
-					       "OrganOut", "Organ Output", 1);
+					       "mono_out", "Organ Output", 1);
 }
 
 static void

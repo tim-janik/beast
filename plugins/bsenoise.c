@@ -71,7 +71,7 @@ bse_noise_class_init (BseNoiseClass *class)
   source_class->calc_chunk = bse_noise_calc_chunk;
   source_class->reset = bse_noise_reset;
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Noise", "Mono Noise Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Noise Output", 1);
   g_assert (ochannel_id == BSE_NOISE_OCHANNEL_MONO);
 }
 

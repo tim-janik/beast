@@ -186,9 +186,9 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_SCALE));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "OscOut", "Mono Oscillated Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Oscillated Output", 1);
   g_assert (ochannel_id == BSE_GEN_OSC_OCHANNEL_MONO);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "FreqMod", "Mono Frequency Modulation Input", 1, 1);
+  ichannel_id = bse_source_class_add_ichannel (source_class, "freq_mod_in", "Mono Frequency Modulation Input", 1, 1);
   g_assert (ichannel_id == BSE_GEN_OSC_ICHANNEL_FREQ_MOD);
 }
 

@@ -140,9 +140,9 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 						   TRUE,
 						   BSE_PARAM_GUI));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "FilterOut", "Mono Filtered Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Filtered Output", 1);
   g_assert (ochannel_id == BSE_FIR_FILTER_OCHANNEL_MONO);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "MonoIn", "Mono Signal Input", 1, 1);
+  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in", "Mono Signal Input", 1, 1);
   g_assert (ichannel_id == BSE_FIR_FILTER_ICHANNEL_MONO);
   // BSE_SOURCE_CLASS_ICHANNEL_DEF (class, BSE_FIR_FILTER_ICHANNEL_MONO)->history = 2;
 }

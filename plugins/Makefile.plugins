@@ -67,6 +67,14 @@ bsenoise_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsenoise.h
 
 ##
+## Plugin davcanyondelay
+##
+davcanyondelay_la_SOURCES = davcanyondelay.c
+davcanyondelay_la_LDFLAGS = -module -avoid-version
+davcanyondelay_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += davcanyondelay.h
+
+##
 ## Plugin davorgan
 ##
 davorgan_la_SOURCES = davorgan.c
@@ -113,6 +121,7 @@ plugin_LTLIBRARIES += \
 	bsemixer.la \
 	bsemult.la \
 	bsenoise.la \
+	davcanyondelay.la \
 	davorgan.la \
 	davsyndrum.la \
 	fldbsepattern.la \

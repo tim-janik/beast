@@ -78,7 +78,7 @@ bse_mult_class_init (BseMultClass *class)
   g_assert (ichannel_id == BSE_MULT_ICHANNEL_MONO3);
   ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in4", "Mono Input 4", 1, 1);
   g_assert (ichannel_id == BSE_MULT_ICHANNEL_MONO4);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Mult", "Mono Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Output", 1);
   g_assert (ochannel_id == BSE_MULT_OCHANNEL_MONO);
 }
 

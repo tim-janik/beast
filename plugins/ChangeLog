@@ -1,3 +1,21 @@
+Sun Feb  6 07:43:28 2000  Tim Janik  <timj@gtk.org>
+
+	* davcanyondelay.[hc]: added cool new canyon delay module from
+	David A. Bartold <foxx@mail.utexas.edu>.
+
+Sat Feb  5 18:35:37 2000  Tim Janik  <timj@gtk.org>
+
+	* bsemult.c:
+	* bsenoise.c:
+	* bsefirfilter.c:
+	* bseadder.c:
+	* davorgan.c:
+	* davsyndrum.c:
+	* bsemixer.c:
+	* bsegenosc.c: canonicalized input and output channel names, this breaks
+	links in already saved .bse files, but we have to be consistent here in
+	the long run.
+	
 Wed Feb  2 06:50:46 2000  Tim Janik  <timj@gtk.org>
 
 	* fldbsepattern.c: test procedure plugin for feldspar.

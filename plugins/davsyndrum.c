@@ -140,7 +140,7 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
 						    0.0, 10.0, 0.1, 2.0,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "SynDrumOut", "SynDrum Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "SynDrum Output", 1);
   g_assert (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO);
   ichannel_id = bse_source_class_add_ichannel (source_class, "trigger_in", "Trigger Input", 1, 1);
   g_assert (ichannel_id == BSE_SYN_DRUM_ICHANNEL_TRIGGER);

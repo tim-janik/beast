@@ -214,7 +214,7 @@ bse_mixer_class_init (BseMixerClass *class)
   g_assert (ichannel_id == BSE_MIXER_ICHANNEL_MONO3);
   ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in4", "Mono Input 4", 1, 1);
   g_assert (ichannel_id == BSE_MIXER_ICHANNEL_MONO4);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Mixer", "Mono Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Output", 1);
   g_assert (ochannel_id == BSE_MIXER_OCHANNEL_MONO);
 }
 
