@@ -37,7 +37,8 @@ G_BEGIN_DECLS
 #define	GXK_TOOLTIPS	(gxk_globals->tooltips)
 
 
-/* --- structures --- */
+/* --- typedefs & structures --- */
+typedef void (*GxkFreeFunc) (gpointer data);
 typedef struct
 {
   GtkTooltips *tooltips;

@@ -29,8 +29,9 @@
 
 enum {
   PROP_NONE,
+  PROP_TEXT_EDITING,
+  PROP_POPUP_EDITING,
   PROP_AUTO_POPUP,
-  PROP_SHOW_BUTTON
 };
 
 
@@ -58,13 +59,6 @@ static void	gxk_cell_renderer_popup_render		(GtkCellRenderer	*cell,
 							 GdkRectangle		*background_area,
 							 GdkRectangle		*cell_area,
 							 GdkRectangle		*expose_area,
-							 GtkCellRendererState	 flags);
-static gboolean	gxk_cell_renderer_popup_activate	(GtkCellRenderer	*cell,
-							 GdkEvent		*event,
-							 GtkWidget		*widget,
-							 const gchar		*path,
-							 GdkRectangle		*background_area,
-							 GdkRectangle		*cell_area,
 							 GtkCellRendererState	 flags);
 static GtkCellEditable* gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
 							       GdkEvent             *event,
@@ -127,16 +121,19 @@ gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *class)
   
   cell_class->get_size = gxk_cell_renderer_popup_get_size;
   cell_class->render = gxk_cell_renderer_popup_render;
-  cell_class->activate = gxk_cell_renderer_popup_activate;
   cell_class->start_editing = gxk_cell_renderer_popup_start_editing;
   
   g_object_class_install_property (object_class,
-				   PROP_SHOW_BUTTON,
-				   g_param_spec_boolean ("show_button", "Show Button", "Whether the popup button is visible",
+				   PROP_TEXT_EDITING,
+				   g_param_spec_boolean ("text-editing", "Text Editing", "Whether the text is directly editable",
+							 TRUE, G_PARAM_READWRITE));
+  g_object_class_install_property (object_class,
+				   PROP_POPUP_EDITING,
+				   g_param_spec_boolean ("popup-editing", "Popup Editing", "Whether editing with the popup dialog is possible",
 							 TRUE, G_PARAM_READWRITE));
   g_object_class_install_property (object_class,
 				   PROP_AUTO_POPUP,
-				   g_param_spec_boolean ("auto_popup", "Auto Popup", "Whether to automatically popup the popup window once editing started",
+				   g_param_spec_boolean ("auto-popup", "Auto Popup", "Whether to automatically popup the popup window once editing started",
 							 FALSE, G_PARAM_READWRITE));
   signal_popup = g_signal_new ("popup",
 			       G_OBJECT_CLASS_TYPE (object_class),
@@ -152,9 +149,9 @@ gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *class)
 static void
 gxk_cell_renderer_popup_init (GxkCellRendererPopup *self)
 {
-  self->show_button = TRUE;
+  self->text_editing = TRUE;
+  self->popup_editing = TRUE;
   self->auto_popup = FALSE;
-  // GTK_CELL_RENDERER (self)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
   // GTK_CELL_RENDERER (self)->xpad = 2;
   // GTK_CELL_RENDERER (self)->ypad = 2;
 }
@@ -169,8 +166,11 @@ gxk_cell_renderer_popup_set_property (GObject      *object,
   
   switch (param_id)
     {
-    case PROP_SHOW_BUTTON:
-      self->show_button = g_value_get_boolean (value);
+    case PROP_TEXT_EDITING:
+      self->text_editing = g_value_get_boolean (value);
+      break;
+    case PROP_POPUP_EDITING:
+      self->popup_editing = g_value_get_boolean (value);
       break;
     case PROP_AUTO_POPUP:
       self->auto_popup = g_value_get_boolean (value);
@@ -191,8 +191,11 @@ gxk_cell_renderer_popup_get_property (GObject    *object,
   
   switch (param_id)
     {
-    case PROP_SHOW_BUTTON:
-      g_value_set_boolean (value, self->show_button);
+    case PROP_TEXT_EDITING:
+      g_value_set_boolean (value, self->text_editing);
+      break;
+    case PROP_POPUP_EDITING:
+      g_value_set_boolean (value, self->popup_editing);
       break;
     case PROP_AUTO_POPUP:
       g_value_set_boolean (value, self->auto_popup);
@@ -216,7 +219,7 @@ gxk_cell_renderer_popup_get_size (GtkCellRenderer *cell,
 
   GTK_CELL_RENDERER_CLASS (parent_class)->get_size (cell, widget, cell_area, xoffs_p, yoffs_p, width_p, height_p);
 
-  if (self->show_button)
+  if (self->popup_editing)
     {
       if (width_p)
 	*width_p += ARROW_WIDTH;
@@ -234,19 +237,26 @@ gxk_cell_renderer_popup_render (GtkCellRenderer     *cell,
 				GdkRectangle        *expose_area,
 				GtkCellRendererState flags)
 {
+  GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (cell);
+  GtkStateType state = !GTK_WIDGET_IS_SENSITIVE (widget) ? GTK_STATE_INSENSITIVE :
+                       !(flags & GTK_CELL_RENDERER_SELECTED) ? GTK_STATE_NORMAL :
+                       GTK_WIDGET_HAS_FOCUS (widget) ? GTK_STATE_SELECTED : GTK_STATE_ACTIVE;
+  GdkRectangle *area = cell_area;
+#if 0
+  GdkGC *bg1_gc = widget->style->base_gc[state];
+  if (state == GTK_STATE_SELECTED)
+    gdk_draw_rectangle (window, bg1_gc, TRUE, area->x, area->y, area->width, area->height);
+#endif
   GTK_CELL_RENDERER_CLASS (parent_class)->render (cell, window, widget, background_area, cell_area, expose_area, flags);
-}
-
-static gboolean
-gxk_cell_renderer_popup_activate (GtkCellRenderer     *cell,
-				  GdkEvent            *event,
-				  GtkWidget           *widget,
-				  const gchar         *path,
-				  GdkRectangle        *background_area,
-				  GdkRectangle        *cell_area,
-				  GtkCellRendererState flags)
-{
-  return GTK_CELL_RENDERER_CLASS (parent_class)->activate (cell, event, widget, path, background_area, cell_area, flags);
+  if (self->popup_editing && (self->auto_popup || !self->text_editing))
+    {
+      GdkGC *dark_gc = widget->style->dark_gc[state];
+      GdkGC *light_gc = widget->style->light_gc[state];
+      gdk_draw_hline (window, dark_gc, area->x, area->y + area->height - 1, area->width);
+      gdk_draw_vline (window, dark_gc, area->x + area->width - 1, area->y, area->height);
+      gdk_draw_hline (window, light_gc, area->x, area->y, area->width);
+      gdk_draw_vline (window, light_gc, area->x, area->y, area->height);
+    }
 }
 
 void
@@ -288,26 +298,23 @@ gxk_cell_renderer_popup_editing_done (GxkCellRendererPopup *self,
 }
 
 void
-gxk_cell_renderer_enter (GxkCellRendererPopup   *self,
-                         const gchar            *text,
-                         gboolean                preserve_popup,
-                         gboolean                keep_editing)
+gxk_cell_renderer_popup_change (GxkCellRendererPopup   *self,
+                                const gchar            *text,
+                                gboolean                preserve_popup,
+                                gboolean                keep_editing)
 {
   g_return_if_fail (GXK_IS_CELL_RENDERER_POPUP (self));
 
-  if (self->entry)
+  if (self->entry && text)
+    gtk_entry_set_text (GTK_ENTRY (self->entry), text);
+  if (!preserve_popup)
+    gxk_cell_renderer_popup_dialog (self, NULL);
+  if (!keep_editing && self->entry)
     {
-      if (text)
-        gtk_entry_set_text (GTK_ENTRY (self->entry), text);
-      if (!preserve_popup)
-        gxk_cell_renderer_popup_dialog (self, NULL);
-      if (!keep_editing)
-        {
-          GtkCellEditable *ecell = GTK_CELL_EDITABLE (self->entry);
-          self->entry = NULL;
-          gtk_cell_editable_editing_done (ecell);
-          gtk_cell_editable_remove_widget (ecell);
-        }
+      GtkCellEditable *ecell = GTK_CELL_EDITABLE (self->entry);
+      self->entry = NULL;
+      gtk_cell_editable_editing_done (ecell);
+      gtk_cell_editable_remove_widget (ecell);
     }
 }
 
@@ -331,7 +338,7 @@ gxk_cell_renderer_popup_timeout (gpointer data)
   GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (data);
 
   GDK_THREADS_ENTER ();
-  if (self->entry && self->auto_popup && !self->dialog)
+  if (self->auto_popup && !self->dialog)
     gxk_cell_renderer_popup_clicked (self);
   GDK_THREADS_LEAVE ();
   return FALSE;
@@ -348,66 +355,60 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
 {
   GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (cell);
   GtkCellRendererText *tcell = GTK_CELL_RENDERER_TEXT (self);
-  GtkWidget *popup_area, *entry, *hbox;
-  GtkCellEditable *ecell;
-  GxkProxyEditable *eproxy;
-  if (tcell->editable == FALSE)
-    return NULL;
-  entry = g_object_new (GTK_TYPE_ENTRY,
-			"has_frame", FALSE,
-			"visible", TRUE,
-			NULL);
-  self->entry = entry;
-  g_object_connect (entry,
-		    "swapped_signal::editing_done", gxk_cell_renderer_popup_editing_done, self,
-		    "signal::notify::is-focus", gxk_cell_editable_is_focus_handler, self,
-		    "swapped_signal::remove_widget", gxk_cell_renderer_remove_widget, self,
-		    NULL);
-  if (tcell->text)
-    gtk_entry_set_text (GTK_ENTRY (entry), tcell->text);
-  ecell = GTK_CELL_EDITABLE (entry);
-  gtk_editable_select_region (GTK_EDITABLE (entry), 0, -1);
-  eproxy = g_object_new (GXK_TYPE_PROXY_EDITABLE,
-			 "visible", TRUE,
-			 "events", GDK_BUTTON_PRESS_MASK,
-			 NULL);
-  hbox = g_object_new (GTK_TYPE_HBOX,
-		       "visible", TRUE,
-		       "parent", eproxy,
-		       "child", entry,
-		       NULL);
+  GxkProxyEditable *eproxy = NULL;
+  if (tcell->editable && self->text_editing)
+    {
+      GtkWidget *entry = g_object_new (GTK_TYPE_ENTRY,
+                                       "has_frame", FALSE,
+                                       "visible", TRUE,
+                                       NULL);
+      self->entry = entry;
+      g_object_connect (entry,
+                        "swapped_signal::editing_done", gxk_cell_renderer_popup_editing_done, self,
+                        "signal::notify::is-focus", gxk_cell_editable_is_focus_handler, self,
+                        "swapped_signal::remove_widget", gxk_cell_renderer_remove_widget, self,
+                        NULL);
+      if (tcell->text)
+        gtk_entry_set_text (GTK_ENTRY (entry), tcell->text);
+      GtkCellEditable *ecell = GTK_CELL_EDITABLE (entry);
+      gtk_editable_select_region (GTK_EDITABLE (entry), 0, -1);
+      eproxy = g_object_new (GXK_TYPE_PROXY_EDITABLE,
+                             "visible", TRUE,
+                             "events", GDK_BUTTON_PRESS_MASK,
+                             NULL);
+      GtkWidget *hbox = g_object_new (GTK_TYPE_HBOX,
+                                      "visible", TRUE,
+                                      "parent", eproxy,
+                                      "child", entry,
+                                      NULL);
 #if 0	/* GTKFIX: this exhibits tree view scrolling+resizing bug in gtk+2.2 */
-  popup_area = g_object_new (GTK_TYPE_BUTTON, "visible", self->show_button,
-			     "can_focus", FALSE, "width_request", ARROW_WIDTH,
-			     "child", g_object_new (GTK_TYPE_ARROW, "visible", TRUE,
-						    "arrow_type", GTK_ARROW_DOWN, NULL),
-			     NULL);
-  g_object_connect (popup_area, "swapped_signal::clicked", gxk_cell_renderer_popup_clicked, cell, NULL);
+      GtkWidget *popup_area = g_object_new (GTK_TYPE_BUTTON, "visible", self->popup_editing,
+                                            "can_focus", FALSE, "width_request", ARROW_WIDTH,
+                                            "child", g_object_new (GTK_TYPE_ARROW, "visible", TRUE,
+                                                                   "arrow_type", GTK_ARROW_DOWN, NULL),
+                                            NULL);
+      g_object_connect (popup_area, "swapped_signal::clicked", gxk_cell_renderer_popup_clicked, cell, NULL);
 #else
-  popup_area = g_object_new (GTK_TYPE_FRAME, "visible", self->show_button,
-			     "width_request", ARROW_WIDTH, "shadow_type", GTK_SHADOW_OUT,
-			     "child", g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-						    "label", "...", NULL),
-			     NULL);
-  g_object_connect (eproxy, "swapped_signal::button_press_event", gxk_cell_renderer_popup_clicked, cell, NULL);
+      GtkWidget *popup_area = g_object_new (GTK_TYPE_FRAME, "visible", self->popup_editing,
+                                            "width_request", ARROW_WIDTH, "shadow_type", GTK_SHADOW_OUT,
+                                            "child", g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                                                   "label", "...", NULL),
+                                            NULL);
+      g_object_connect (eproxy, "swapped_signal::button_press_event", gxk_cell_renderer_popup_clicked, cell, NULL);
 #endif
-  if (!g_signal_has_handler_pending (self, signal_popup, 0, FALSE))
-    gtk_widget_set_sensitive (popup_area, FALSE);
-  g_object_connect (eproxy,
-		    // "swapped_signal::remove_widget", g_print, "remove_widget\n",
-		    // "swapped_signal::editing_done", g_print, "editing_done\n",
-		    NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), popup_area, FALSE, FALSE, 0);
-  gxk_proxy_editable_set_cell_editable (eproxy, ecell);
+      if (!g_signal_has_handler_pending (self, signal_popup, 0, FALSE))
+        gtk_widget_set_sensitive (popup_area, FALSE);
+      gtk_box_pack_start (GTK_BOX (hbox), popup_area, FALSE, FALSE, 0);
+      gxk_proxy_editable_set_cell_editable (eproxy, ecell);
+    }
   g_object_set_data_full (cell, "gxk-cell-edit-path", g_strdup (path), g_free);
-  if (self->auto_popup)
+  if (self->popup_editing && (self->auto_popup || !self->text_editing))
     g_idle_add_full (G_PRIORITY_LOW + 100,
                      gxk_cell_renderer_popup_timeout,
                      g_object_ref (cell),
                      g_object_unref);
   return GTK_CELL_EDITABLE (eproxy);
 }
-
 
 /* --- GxkProxyEditable --- */
 static void

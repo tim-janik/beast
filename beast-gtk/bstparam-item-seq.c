@@ -48,7 +48,7 @@ param_item_seq_popup_editor (GtkWidget *widget,
                                  pc->nick, pc->tooltip, pc->items,
                                  g_param_spec_get_nick (param->pspec), g_param_spec_get_blurb (param->pspec), iseq,
                                  param_item_seq_changed,
-                                 param);
+                                 param, NULL);
       bse_item_seq_free (iseq);
     }
 }

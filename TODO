@@ -1,4 +1,6 @@
 FIXMES:	(release-critical)
+- auto-conenct new busses to master
+- help menu updates (email) add plugin-devel menu item
 - move and add compat for Arts::Compressor -> Bse::Arts::Compressor
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
 - instead of bse_engine_add_garbage(), the midireceiver needs a BSE_MIDI_RECEIVER_LOCK based callback mechanism (nodes aren't queued from teh BSE thread which invokes the engine gc)

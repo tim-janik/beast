@@ -329,25 +329,13 @@
 	    </alignment>
 	  </hbox>
 	  <!-- Volume -->
-	  <hbox expand="1" >
+	  <alignment expand="1">
 	    <db-meter id="db-meter" n-channels="2" />
-	  </hbox>
+	  </alignment>
 	  <!-- VolumeSpinners -->
 	  <hbox id="spinner-box" homogeneous="1" width="1" spacing="3" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
-	  <button id="bus-outputs" can-focus="0" size:window-vgroup="bus-outputs" sensitive="0">
-	    <tooltip text="Signal destinations going out of this bus" />
-	    <hbox>
-	      <frame shadow-type="shadow-in" border-width="3" expand="1" >
-		<widget-patcher normal-bg-as-base="1" />
-		<event-box>
-		  <widget-patcher normal-bg-as-base="1" />
-		  <label label="Outputs" pack-type="start" />
-		</event-box>
-	      </frame>
-	      <label label="..." />
-	    </hbox>
-	  </button>
+          <alignment id="outputs-box" size:window-vgroup="bus-outputs" width="10"/>
 	</vbox>
       </frame>
     </event-box>

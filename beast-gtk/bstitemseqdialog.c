@@ -45,9 +45,15 @@ bst_item_seq_dialog_finalize (GObject *object)
 
 static gboolean
 bst_item_seq_dialog_delete_event (GtkWidget   *widget,
-                                     GdkEventAny *event)
+                                  GdkEventAny *event)
 {
   BstItemSeqDialog *self = BST_ITEM_SEQ_DIALOG (widget);
+  gpointer                 selected_data = self->selected_data;
+  GxkFreeFunc              selected_cleanup = self->selected_cleanup;
+  self->selected_callback = NULL;
+  self->selected_cleanup = NULL;
+  if (selected_cleanup)
+    selected_cleanup (selected_data);
   if (self->candidate_store)
     bst_item_seq_store_set (self->candidate_store, NULL);
   if (self->item_store)
@@ -59,9 +65,14 @@ bst_item_seq_dialog_delete_event (GtkWidget   *widget,
 static void
 parent_window_destroyed (BstItemSeqDialog *self)
 {
+  self->selected_callback = NULL;
+  GxkFreeFunc selected_cleanup = self->selected_cleanup;
+  self->selected_cleanup = NULL;
+  if (selected_cleanup)
+    selected_cleanup (self->selected_data);
+  gxk_toplevel_delete (GTK_WIDGET (self));
   gtk_widget_hide (GTK_WIDGET (self));
   bst_item_seq_dialog_setup (self, NULL, NULL, 0);
-  gxk_toplevel_delete (GTK_WIDGET (self));
 }
 
 static void
@@ -74,6 +85,12 @@ bst_item_seq_dialog_setup (BstItemSeqDialog *self,
   
   g_return_if_fail (BST_IS_ITEM_SEQ_DIALOG (self));
   
+  self->selected_callback = NULL;
+  GxkFreeFunc selected_cleanup = self->selected_cleanup;
+  self->selected_cleanup = NULL;
+  if (selected_cleanup)
+    selected_cleanup (self->selected_data);
+
   gtk_widget_hide (GTK_WIDGET (self));
 
   /* reset proxy handling */
@@ -121,13 +138,16 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
                            const gchar *item_label,
                            const gchar *item_tooltip,
                            BseItemSeq  *items,
-                           gpointer     selected_callback,
-                           gpointer     data)
+                           BstItemSeqDialogSelected selected_callback,
+                           gpointer                 selected_data,
+                           GxkFreeFunc              selected_cleanup)
 {
   BstItemSeqDialog *self = bst_item_seq_dialog_singleton ();
   GtkWidget *widget = GTK_WIDGET (self);
   GxkDialog *dialog = GXK_DIALOG (self);
   GtkWidget *radget = gxk_dialog_get_child (dialog);
+
+  bst_item_seq_dialog_setup (self, NULL, NULL, 0);
 
   g_object_set (gxk_radget_find (radget, "candidate-label"), "label", candidate_label, NULL);
   g_object_set (gxk_radget_find (radget, "item-label"), "label", item_label, NULL);
@@ -144,9 +164,13 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
   g_free (string);
 
   bst_item_seq_dialog_set (self, candidates, items);
-  bst_item_seq_dialog_setup (self, parent_widget, "Seq Selection: %s", item);
+  bst_item_seq_dialog_setup (self, parent_widget,
+                             /* TRANSLATORS: this is a dialog title and %s is replaced by an object name */
+                             _("Object Selection: %s"),
+                             item);
   self->selected_callback = selected_callback;
-  self->selected_data = data;
+  self->selected_data = selected_data;
+  self->selected_cleanup = selected_cleanup;
   gxk_widget_showraise (widget);
 
   return widget;
@@ -274,13 +298,19 @@ bst_item_seq_dialog_activate (BstItemSeqDialog *self)
 
   /* ignore_activate guards against multiple clicks */
   self->ignore_activate = TRUE;
-  if (self->selected_callback)  /* notify popup caller */
+  BstItemSeqDialogSelected selected_callback = self->selected_callback;
+  gpointer                 selected_data = self->selected_data;
+  GxkFreeFunc              selected_cleanup = self->selected_cleanup;
+  self->selected_callback = NULL;
+  self->selected_cleanup = NULL;
+  if (selected_callback)        /* notify popup caller */
     {
       BseItemSeq *iseq = bst_item_seq_store_dup (self->item_store);
-      ((BstItemSeqDialogSelected) self->selected_callback) (self->selected_data, iseq, self);
+      selected_callback (selected_data, iseq, self);
       bse_item_seq_free (iseq);
     }
-  self->selected_callback = NULL;
+  if (selected_cleanup)
+    selected_cleanup (selected_data);
 
   gxk_toplevel_delete (GTK_WIDGET (self));
 }

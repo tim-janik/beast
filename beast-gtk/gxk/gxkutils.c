@@ -1538,9 +1538,7 @@ tree_view_add_column (GtkTreeView  *tree_view,
   switch (column_type)
     {
     case 1:	/* text */
-      /* GTKFIX: we use a popup cell renderer for text cells to work around focus problems in gtk */
-      cell = g_object_new (GXK_TYPE_CELL_RENDERER_POPUP,
-			   "show_button", FALSE,
+      cell = g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
 			   "xalign", xalign,
 			   "editable", callback1 != NULL,
 			   NULL);
@@ -1551,8 +1549,10 @@ tree_view_add_column (GtkTreeView  *tree_view,
     case 2:	/* popup */
       cell = g_object_new (GXK_TYPE_CELL_RENDERER_POPUP,
 			   "xalign", xalign,
-			   "editable", callback1 != NULL,
-                           "auto_popup", auto_popup,
+                           "auto-popup", auto_popup,
+			   "editable", callback1 || callback2,
+                           "text-editing", callback1 != NULL,
+                           "popup-editing", callback2 != NULL,
 			   NULL);
       prop = "text";
       if (callback1)

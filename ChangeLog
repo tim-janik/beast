@@ -1,3 +1,25 @@
+Mon Sep  6 08:57:42 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbuseditor.c: fixed up ::outputs editing by creating
+	a parameter with item-sequence editor.
+
+	* beast-gtk/bstitemseqdialog.[hc]: added cleanup callback.
+
+	* beast-gtk/bsttrackview.c: added tree view column for track outputs.
+	removed auto-popup flag from pnet column.
+
+	* beast-gtk/dialogs/radgets-beast.xml: removed ::outputs mockup from
+	bus-editor, provide container for ::outputs parameter.
+	fixed volume sclae container alignment.
+
+	* beast-gtk/gxk/gxkcellrendererpopup.[hc]: changed text editing and
+	popup editing logic and API. draw button-alike frame around auto-popup
+	cells.
+
+	* beast-gtk/gxk/gxkutils.c: adapted to GxkCellRendererPopup changes.
+
+	* beast-gtk/gxk/gxkglobals.h: provide GxkFreeFunc().
+
 Sun Sep  5 16:39:41 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: comment updates.

@@ -48,8 +48,9 @@ struct _BstItemSeqDialog
   GtkWidget     *ok;            /* ok button */
   GtkWindow     *parent_window;
   guint          ignore_activate : 1;
-  gpointer       selected_callback;
-  gpointer       selected_data;
+  BstItemSeqDialogSelected selected_callback;
+  gpointer                 selected_data;
+  GxkFreeFunc              selected_cleanup;
 };
 struct _BstItemSeqDialogClass
 {
@@ -67,8 +68,9 @@ GtkWidget*      bst_item_seq_dialog_popup    (gpointer          parent_widget,
                                               const gchar      *item_label,
                                               const gchar      *item_tooltip,
                                               BseItemSeq       *iseq,
-                                              gpointer          selected_callback,
-                                              gpointer          data);
+                                              BstItemSeqDialogSelected selected_callback,
+                                              gpointer          selected_data,
+                                              GxkFreeFunc       selected_cleanup);
 void            bst_item_seq_dialog_set      (BstItemSeqDialog *self,
                                               BseItemSeq       *candidates,
                                               BseItemSeq       *iseq);

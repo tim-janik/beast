@@ -19,6 +19,7 @@
 #include "bstparam.h"
 #include "bstgrowbar.h"
 #include "bsttracksynthdialog.h"
+#include "bstitemseqdialog.h"
 #include <stdlib.h> /* strtol */
 #include <string.h>
 
@@ -46,6 +47,7 @@ enum {
   COL_VOICES,
   COL_SYNTH,
   COL_MIDI_CHANNEL,
+  COL_OUTPUTS,
   COL_POST_SYNTH,
   COL_BLURB,
   N_COLS
@@ -75,13 +77,13 @@ bst_track_view_class_init (BstTrackViewClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (class);
-
+  
   gobject_class->finalize = bst_track_view_finalize;
-
+  
   item_view_class->set_container = track_view_set_container;
   item_view_class->listen_on = track_view_listen_on;
   item_view_class->unlisten_on = track_view_unlisten_on;
-
+  
   item_view_class->item_type = "BseTrack";
 }
 
@@ -89,10 +91,10 @@ static void
 bst_track_view_finalize (GObject *object)
 {
   BstTrackView *self = BST_TRACK_VIEW (object);
-
+  
   if (self->tctrl)
     bst_track_roll_controller_unref (self->tctrl);
-
+  
   G_OBJECT_CLASS (bst_track_view_parent_class)->finalize (object);
 }
 
@@ -131,6 +133,8 @@ track_view_fill_value (BstItemView *iview,
       gboolean vbool;
       SfiInt vint;
       SfiProxy item, snet, wave;
+      BseItemSeq *iseq;
+      SfiSeq *seq;
     case COL_SEQID:
       sfi_value_take_string (value, g_strdup_printf ("%03d", seqid));
       break;
@@ -159,6 +163,18 @@ track_view_fill_value (BstItemView *iview,
       bse_proxy_get (item, "midi-channel", &vint, NULL);
       sfi_value_take_string (value, g_strdup_printf ("%2d", vint));
       break;
+    case COL_OUTPUTS:
+      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
+      bse_proxy_get (item, "outputs", &seq, NULL);
+      iseq = bse_item_seq_from_seq (seq);
+      if (iseq && iseq->n_items == 1)
+        g_value_take_string (value, g_strdup_printf ("%s", bse_item_get_name_or_type (iseq->items[0])));
+      else if (iseq && iseq->n_items > 1)
+        g_value_take_string (value, g_strdup_printf ("#%u", iseq ? iseq->n_items : 0));
+      else
+        g_value_set_string (value, "");
+      bse_item_seq_free (iseq);
+      break;
     case COL_POST_SYNTH:
       item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
       snet = 0;
@@ -179,7 +195,7 @@ track_view_synth_edited (BstTrackView *self,
 			 const gchar  *text)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
-
+  
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
@@ -214,7 +230,7 @@ track_view_post_synth_edited (BstTrackView *self,
                               const gchar  *text)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
-
+  
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
@@ -244,10 +260,10 @@ track_view_synth_popup_cb (GxkCellRendererPopup *pcell,
                            SfiProxy              proxy,
                            BstTrackSynthDialog  *tsdialog)
 {
-  gxk_cell_renderer_enter (pcell,
-                           proxy ? bse_item_get_uname_path (proxy) : "",
-                           FALSE,
-                           proxy == 0);
+  gxk_cell_renderer_popup_change (pcell,
+                                  proxy ? bse_item_get_uname_path (proxy) : "",
+                                  FALSE,
+                                  proxy == 0);
 }
 
 static void
@@ -257,7 +273,7 @@ track_view_synth_popup (BstTrackView         *self,
 			GxkCellRendererPopup *pcell)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
-
+  
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
@@ -283,7 +299,7 @@ track_view_post_synth_popup (BstTrackView         *self,
                              GxkCellRendererPopup *pcell)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
-
+  
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
@@ -295,13 +311,68 @@ track_view_post_synth_popup (BstTrackView         *self,
     }
 }
 
+typedef struct {
+  BstTrackView         *self;
+  GxkCellRendererPopup *pcell;
+  SfiProxy              item;
+} OutputsPopup;
+
+static void
+track_view_outputs_cleanup (gpointer data)
+{
+  OutputsPopup *odata = data;
+  gxk_cell_renderer_popup_change (odata->pcell, NULL, FALSE, FALSE);
+  g_free (odata);
+}
+
+static void
+track_view_outputs_changed (gpointer              data,
+                            BseItemSeq           *iseq,
+                            BstItemSeqDialog     *isdialog)
+{
+  OutputsPopup *odata = data;
+  gxk_cell_renderer_popup_change (odata->pcell, NULL, FALSE, FALSE);
+  SfiSeq *seq = bse_item_seq_to_seq (iseq);
+  GValue *value = sfi_value_seq (seq);
+  sfi_seq_unref (seq);
+  bse_proxy_set_property (odata->item, "outputs", value);
+  sfi_value_free (value);
+}
+
+static void
+track_view_outputs_popup (BstTrackView         *self,
+                          const gchar          *strpath,
+                          const gchar          *text,
+                          GxkCellRendererPopup *pcell)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+  
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "outputs");
+      GParamSpec *pspec = bse_proxy_get_pspec (item, "outputs");
+      const GValue *value = bse_proxy_get_property (item, "outputs");
+      SfiSeq *seq = g_value_get_boxed (value);
+      BseItemSeq *iseq = bse_item_seq_from_seq (seq);
+      OutputsPopup odata = { self, pcell, item };
+      GtkWidget *dialog = bst_item_seq_dialog_popup (self, item,
+                                                     pc->nick, pc->tooltip, pc->items,
+                                                     g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
+                                                     track_view_outputs_changed, g_memdup (&odata, sizeof (odata)), track_view_outputs_cleanup);
+      bse_item_seq_free (iseq);
+      gxk_cell_renderer_popup_dialog (pcell, dialog);
+    }
+}
+
 static void
 track_view_mute_toggled (BstTrackView          *self,
 			 const gchar           *strpath,
 			 GtkCellRendererToggle *tcell)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
-
+  
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
@@ -323,7 +394,7 @@ track_view_voice_edited (BstTrackView *self,
                          const gchar  *text)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
-
+  
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
@@ -343,7 +414,7 @@ track_view_midi_channel_edited (BstTrackView *self,
                                 const gchar  *text)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
-
+  
   if (strpath)
     {
       gint row = gxk_tree_spath_index0 (strpath);
@@ -411,13 +482,13 @@ bst_track_view_init (BstTrackView *self)
   GtkTreeModel *smodel;
   GxkListWrapper *lwrapper;
   GxkRadget *radget;
-
+  
   /* create GUI */
   gxk_widget_publish_actions (self, "track-view-actions",
                               G_N_ELEMENTS (track_view_actions), track_view_actions,
                               NULL, track_view_action_check, track_view_action_exec);
   radget = gxk_radget_complete (GTK_WIDGET (self), "beast", "track-view", NULL);
-
+  
   /* item list model */
   lwrapper = gxk_list_wrapper_new (N_COLS,
 				   G_TYPE_STRING,	/* COL_SEQID */
@@ -426,6 +497,7 @@ bst_track_view_init (BstTrackView *self)
 				   G_TYPE_STRING,	/* COL_VOICES */
 				   G_TYPE_STRING,	/* COL_SYNTH */
 				   G_TYPE_STRING,	/* COL_MIDI_CHANNEL */
+				   G_TYPE_STRING,	/* COL_OUTPUTS */
 				   G_TYPE_STRING,	/* COL_POST_SYNTH */
 				   G_TYPE_STRING	/* COL_BLURB */
 				   );
@@ -450,7 +522,7 @@ bst_track_view_init (BstTrackView *self)
   gtk_tree_selection_set_mode (tsel, GTK_SELECTION_BROWSE);
   gxk_tree_selection_force_browse (tsel, smodel);
   g_object_unref (smodel);
-
+  
   /* track roll */
   self->troll = g_object_new (BST_TYPE_TRACK_ROLL,
                               "visible", TRUE,
@@ -461,7 +533,7 @@ bst_track_view_init (BstTrackView *self)
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->troll), gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   bst_track_roll_set_track_callback (self->troll, self, get_track);
   track_view_marks_changed (self);
-
+  
   /* link track roll to tree view and list model */
   g_signal_connect_object (tsel, "changed",
 			   G_CALLBACK (bst_track_roll_reselect),
@@ -475,7 +547,7 @@ bst_track_view_init (BstTrackView *self)
   g_signal_connect_object (iview->wlist, "row-change",
 			   G_CALLBACK (bst_track_roll_abort_edit),
 			   self->troll, G_CONNECT_SWAPPED);
-
+  
   /* track roll controller */
   self->tctrl = bst_track_roll_controller_new (self->troll);
   bst_track_roll_controller_set_song (self->tctrl, iview->container);
@@ -488,7 +560,7 @@ bst_track_view_init (BstTrackView *self)
   gxk_nullify_in_object (self, &self->repeat_toggle);
   g_object_connect (self->repeat_toggle, "swapped_signal::toggled", track_view_repeat_toggled, self, NULL);
   track_view_repeat_changed (self);
-
+  
   /* add zoom spinner */
   adjustment = gtk_adjustment_new (50, 1, 100, 1, 5, 0);
   g_object_connect (adjustment,
@@ -501,7 +573,7 @@ bst_track_view_init (BstTrackView *self)
                                 "digits", 0,
                                 "width_request", 2 * gxk_size_width (GXK_ICON_SIZE_TOOLBAR),
                                 NULL));
-
+  
   /* add list view columns */
   if (BST_DVL_HINTS)
     gxk_tree_view_add_text_column (iview->tree, COL_SEQID, "S",
@@ -518,11 +590,14 @@ bst_track_view_init (BstTrackView *self)
 				 track_view_voice_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree, COL_SYNTH, "#",
 				  0.5, "Synth", _("Synthesis network or wave to be used as instrument by this track"),
-				  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
+                                  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_MIDI_CHANNEL, "",
                                  0.5, "Ch", _("Midi channel assigned to this track, 0 uses private per-track channel"),
                                  track_view_midi_channel_edited, self, G_CONNECT_SWAPPED);
-  gxk_tree_view_add_popup_column (iview->tree, COL_POST_SYNTH, "#",
+  gxk_tree_view_add_popup_column (iview->tree, COL_OUTPUTS, "#",
+				  0.5, "Outputs", _("Mixer busses connected to track output"),
+				  NULL, track_view_outputs_popup, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_popup_column (iview->tree, COL_POST_SYNTH, "",
 				  0.5, "Post", _("Synthesis network to be used as postprocessor"),
 				  track_view_post_synth_edited, track_view_post_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_BLURB, "",
@@ -601,6 +676,7 @@ track_view_listen_on (BstItemView *iview,
                      "signal::property-notify::n-voices", track_property_changed, iview, /* COL_VOICES */
                      "signal::property-notify::snet", track_property_changed, iview, /* COL_SYNTH */
                      "signal::property-notify::midi-channel", track_property_changed, iview, /* COL_MIDI_CHANNEL */
+                     "signal::property-notify::outputs", track_property_changed, iview, /* COL_OUTPUTS */
                      "signal::property-notify::pnet", track_property_changed, iview, /* COL_POST_SYNTH */
                      /* COL_BLURB handled by GxkListWrapper */
                      NULL);
@@ -624,7 +700,7 @@ track_view_action_exec (gpointer data,
   BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
   SfiProxy song = item_view->container;
-
+  
   switch (action)
     {
       SfiProxy item;

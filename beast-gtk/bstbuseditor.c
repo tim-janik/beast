@@ -45,36 +45,6 @@ static const GxkStockAction bus_editor_actions[] = {
 G_DEFINE_TYPE (BstBusEditor, bst_bus_editor, GTK_TYPE_ALIGNMENT);
 
 static void
-popup_item_seq_changed (gpointer             data,
-                        BseItemSeq          *iseq,
-                        BstItemSeqDialog    *isdialog)
-{
-  BstBusEditor *self = BST_BUS_EDITOR (data);
-  SfiSeq *seq = bse_item_seq_to_seq (iseq);
-  GValue *value = sfi_value_seq (seq);
-  bse_proxy_set_property (self->item, "inputs", value);
-  sfi_value_free (value);
-}
-
-static void
-popup_item_seq (BstBusEditor *self)
-{
-  BsePropertyCandidates *pc = bse_item_get_property_candidates (self->item, "inputs");
-  GParamSpec *pspec = bse_proxy_get_pspec (self->item, "inputs");
-  const GValue *value = bse_proxy_get_property (self->item, "inputs");
-  SfiSeq *seq = g_value_get_boxed (value);
-  BseItemSeq *iseq = bse_item_seq_from_seq (seq);
-  GtkWidget *dialog = bst_item_seq_dialog_popup (self,
-                                                 self->item,
-                                                 pc->nick, pc->tooltip, pc->items,
-                                                 g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec), iseq,
-                                                 popup_item_seq_changed,
-                                                 self);
-  (void) dialog;
-  bse_item_seq_free (iseq);
-}
-
-static void
 bst_bus_editor_init (BstBusEditor *self)
 {
   /* complete GUI */
@@ -83,8 +53,6 @@ bst_bus_editor_init (BstBusEditor *self)
   gxk_widget_publish_actions (self, "bus-editor-actions",
                               G_N_ELEMENTS (bus_editor_actions), bus_editor_actions,
                               NULL, bus_editor_action_check, bus_editor_action_exec);
-  GtkWidget *button = gxk_radget_find (self, "bus-outputs");
-  g_signal_connect_object (button, "clicked", G_CALLBACK (popup_item_seq), self, G_CONNECT_SWAPPED);
 }
 
 static void
@@ -213,6 +181,7 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       bus_build_param (self, "mute", "toggle-box", "toggle+label", "M");
       bus_build_param (self, "sync", "toggle-box", "toggle+label", "Y");
       bus_build_param (self, "solo", "toggle-box", "toggle+label", "S");
+      bus_build_param (self, "outputs", "outputs-box", NULL, NULL);
       /* update params */
       for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
         gxk_param_update (ring->data);
