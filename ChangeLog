@@ -1,3 +1,20 @@
+Sat Jan 11 00:47:27 2003  Tim Janik  <timj@gtk.org>
+
+	* changed logfile to logentry in alpers last patch to better
+	identify the markup purpose.
+
+Fri Jan 10 12:15:40 2003  Alper Ersoy <dirt@gtk.org>
+
+	* docs/teximacros.texi: added @logfile macro.
+
+	* docs/generated/html.xsl:
+	* docs/generated/man.xsl:
+	* docs/generated/markup.xsl:  added markup for @logfile macro.
+
+	* docs/generated/log2texi.sh: mapped matched filenames to @logfile
+	macro, changed process substitution with tmpfile usage when applying
+	texi templates.
+
 Fri Jan 10 07:42:02 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/log2texi.sh (ChangeLog2texi): fix filename markup,

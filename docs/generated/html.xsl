@@ -705,7 +705,7 @@
   <em><xsl:apply-templates/></em>
 </xsl:template>
 
-<xsl:template match="code|url|email|key|env|file|command|option|menupath|pagepath|object|channel">
+<xsl:template match="code|url|email|key|env|file|command|option|menupath|pagepath|object|channel|logentry">
   <code>
     <xsl:attribute name="class">
       <xsl:value-of select="local-name()"/>

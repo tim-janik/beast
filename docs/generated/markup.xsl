@@ -73,6 +73,7 @@
       <tagdef name="menupath"       weight="bold" background="#e0e0e0" style="italic" />
       <tagdef name="pagepath"       weight="bold" background="#f0f0f0" />
       <tagdef name="object"         family="monospace" style="italic" />
+      <tagdef name="logentry"        family="monospace" weight="bold" foreground="#a000a0" />
 
       <tagdef name="important"      underline="single" weight="bold" foreground="#df5fdf" />
 
@@ -681,7 +682,7 @@
   <!-- }}} -->
 
   <!-- {{{ contextual tags -->
-  <xsl:template match="acronym|cite|dfn|kbd|samp|var|strong|emph|url|email|key|env|file|command|option|menupath|pagepath|object|channel|important|code">
+  <xsl:template match="acronym|cite|dfn|kbd|samp|var|strong|emph|url|email|key|env|file|command|option|menupath|pagepath|object|channel|important|code|logentry">
     <span>
       <xsl:attribute name="tag">
 	<xsl:value-of select="local-name()"/>

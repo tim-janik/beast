@@ -27,7 +27,7 @@ function ChangeLog2texi ()
 	-e 's/[{}@]/@&/g' \
         -e '/^[ 	]\+\* [^:]\+:/ { ' \
           -e ':NextFile;' \
-          -e 's/^\([^:]*\*[^:]*\) \([-!-&+.-9;-?A-z|~*][-!-&+.-9;-?A-z|~*]*\)/\1 @file{\2}/;' \
+          -e 's/^\([^:]*\*[^:]*\) \([-!-&+.-9;-?A-z|~*][-!-&+.-9;-?A-z|~*]*\)/\1 @logentry{\2}/;' \
           -e 'tNextFile;' \
         -e '}' \
 	-e 's/<\([^@]*@[^>]*\)>/mailto:\1:end-mailto/g' \
@@ -93,4 +93,15 @@ fi
 filename=$1
 title="ChangeLog for $2"
 
-print_template | apply_template <(ChangeLog2texi <$filename) "$title"
+tmpfile=`mktemp -q /tmp/$0.$$.XXXXXX`
+if [ $? -ne 0 ]; then
+  echo "$0: Can't create temp file, exiting..."
+  exit 1
+fi
+
+ChangeLog2texi <$filename >$tmpfile
+
+print_template | apply_template "$tmpfile" "$title"
+
+# Cleanup
+rm -f $tmpfile

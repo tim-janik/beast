@@ -181,6 +181,10 @@
 @ifxmlelse{,reference-struct-close,nop}
 @end rmacro
 
+@c --- file highlighting in ChangeLogs ---
+@rmacro logentry{TEXT}
+@ifxmlelse{\TEXT\,logentry,file}
+@end rmacro
 
 @c --- document heading ---
 @c --- WORKAROUND:
