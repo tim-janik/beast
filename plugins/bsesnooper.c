@@ -187,12 +187,12 @@ bse_snooper_context_create (BseSource *source,
 			    GslTrans  *trans)
 {
   static const GslClass snooper_class = {
-    1,			/* n_istreams */
-    0,                  /* n_jstreams */
-    0,			/* n_ostreams */
-    snooper_process,	/* process */
-    (gpointer) g_free,	/* free */
-    GSL_COST_CHEAP,	/* flags */
+    BSE_SNOOPER_N_ICHANNELS,	/* n_istreams */
+    0,                  	/* n_jstreams */
+    0,				/* n_ostreams */
+    snooper_process,		/* process */
+    (gpointer) g_free,		/* free */
+    GSL_COST_CHEAP,		/* flags */
   };
   BseSnooper *snooper = BSE_SNOOPER (source);
   SnoopData *data = g_new0 (SnoopData, 1);

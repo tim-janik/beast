@@ -57,7 +57,8 @@ struct _BseSnooper
 /* --- channels --- */
 enum
 {
-  BSE_SNOOPER_ICHANNEL_MONO
+  BSE_SNOOPER_ICHANNEL_MONO,
+  BSE_SNOOPER_N_ICHANNELS
 };
 
 
