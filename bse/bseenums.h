@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,7 @@
 #include <bse/gsldefs.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- enum definitions --- */
@@ -81,6 +79,7 @@ typedef enum
   BSE_ERROR_FILE_EXISTS		= GSL_ERROR_EXISTS,
   BSE_ERROR_FILE_EOF		= GSL_ERROR_EOF,
   BSE_ERROR_FILE_NOT_FOUND	= GSL_ERROR_NOT_FOUND,
+  BSE_ERROR_FILE_IS_DIR 	= GSL_ERROR_IS_DIR,
   BSE_ERROR_FILE_OPEN_FAILED	= GSL_ERROR_OPEN_FAILED,
   BSE_ERROR_FILE_SEEK_FAILED	= GSL_ERROR_SEEK_FAILED,
   BSE_ERROR_FILE_READ_FAILED	= GSL_ERROR_READ_FAILED,
@@ -110,16 +109,6 @@ typedef enum
   BSE_ERROR_DEVICE_GET_CAPS,
   BSE_ERROR_DEVICE_CAPS_MISMATCH,
   BSE_ERROR_DEVICE_SET_CAPS,
-  /* Date parsing errors */
-  BSE_ERROR_DATE_INVALID,
-  BSE_ERROR_DATE_CLUTTERED,
-  BSE_ERROR_DATE_YEAR_BOUNDS,
-  BSE_ERROR_DATE_MONTH_BOUNDS,
-  BSE_ERROR_DATE_DAY_BOUNDS,
-  BSE_ERROR_DATE_HOUR_BOUNDS,
-  BSE_ERROR_DATE_MINUTE_BOUNDS,
-  BSE_ERROR_DATE_SECOND_BOUNDS,
-  BSE_ERROR_DATE_TOO_OLD,
   /* BseSource errors */
   BSE_ERROR_SOURCE_NO_SUCH_MODULE,
   BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL,
@@ -158,9 +147,7 @@ gchar*		bse_error_blurb			(BseErrorType	 error_value);
 BseErrorType	bse_error_from_errno		(gint		 v_errno,
 						 BseErrorType    fallback);
 
+G_END_DECLS
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __BSE_ENUMS_H__ */

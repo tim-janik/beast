@@ -1,3 +1,11 @@
+Sun May 11 18:45:40 2003  Tim Janik  <timj@gtk.org>
+
+	* gsldefs.h:
+	* bseenums.[hc]:
+	* gslcommon.[hc]: added GSL_ERROR_IS_DIR and BSE_ERROR_FILE_IS_DIR
+	errors. return GSL_ERROR_IS_DIR for EISDIR from gsl_error_from_errno().
+	special case GSL_ERROR_IS_DIR in gsl_check_file().
+
 Sun May 11 14:22:12 2003  Tim Janik  <timj@gtk.org>
 
 	* bseitem.c: removed ::seqid-changed signal, added readable property

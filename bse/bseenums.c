@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,7 +104,6 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_DEVICE_GET_CAPS:		return "Failed to query device capabilities";
     case BSE_ERROR_DEVICE_CAPS_MISMATCH:	return "Device capabilities not sufficient";
     case BSE_ERROR_DEVICE_SET_CAPS:		return "Failed to set device capabilities";
-      /* FIXME: remove date parsing errors */
     case BSE_ERROR_SOURCE_NO_SUCH_MODULE:	return "No such synthesis module";
     case BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL:	return "No such input channel";
     case BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL:	return "No such output channel";

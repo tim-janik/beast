@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
+ * Copyright (C) 2001-2003 Tim Janik and Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,10 +21,7 @@
 
 #include <bse/gsldefs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 
 /* --- global initialization --- */
@@ -95,8 +92,6 @@ void	_gsl_init_loader_mad		(void);
 extern volatile guint64	gsl_externvar_tick_stamp;
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_COMMON_H__ */

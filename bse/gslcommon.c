@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
+ * Copyright (C) 2001-2003 Tim Janik and Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -152,6 +152,7 @@ gsl_strerror (GslErrorType error)
     case GSL_ERROR_EXISTS:		return "File exists already";
     case GSL_ERROR_EOF:			return "File empty or premature EOF";
     case GSL_ERROR_NOT_FOUND:		return "No such file (or directory)";
+    case GSL_ERROR_IS_DIR:		return "Is a directory";
     case GSL_ERROR_OPEN_FAILED:		return "Open failed";
     case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
     case GSL_ERROR_READ_FAILED:		return "Read failed";
@@ -233,6 +234,9 @@ gsl_check_file (const gchar *file_name,
       else if (stat (file_name, &st) < 0)
 	goto have_errno;
 
+      if (check_file && S_ISDIR (st.st_mode))
+        return GSL_ERROR_IS_DIR;
+
       if ((check_file && !S_ISREG (st.st_mode)) ||
 	  (check_dir && !S_ISDIR (st.st_mode)) ||
 	  (check_link && !S_ISLNK (st.st_mode)))
@@ -255,6 +259,7 @@ gsl_error_from_errno (gint         sys_errno,
     case ENAMETOOLONG:
     case ENOTDIR:
     case ENOENT:        return GSL_ERROR_NOT_FOUND;
+    case EISDIR:        return GSL_ERROR_IS_DIR;
     case EROFS:
     case EPERM:
     case EACCES:        return GSL_ERROR_PERMS;
@@ -263,7 +268,6 @@ gsl_error_from_errno (gint         sys_errno,
     case ENFILE:	return GSL_ERROR_NO_FILES;
     case EMFILE:	return GSL_ERROR_MANY_FILES;
     case EFBIG:
-    case EISDIR:
     case ESPIPE:
     case EIO:           return GSL_ERROR_IO;
     case EEXIST:        return GSL_ERROR_EXISTS;

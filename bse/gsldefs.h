@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Stefan Westerfeld and Tim Janik
+ * Copyright (C) 2001-2003 Stefan Westerfeld and Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,9 +27,7 @@
 #include <bse/gslconfig.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- forward decls --- */
@@ -68,6 +66,7 @@ typedef enum    /*< skip >*/
   GSL_ERROR_EOF,
 #define GSL_ERROR_FILE_EMPTY	GSL_ERROR_EOF
   GSL_ERROR_NOT_FOUND,
+  GSL_ERROR_IS_DIR,
   GSL_ERROR_OPEN_FAILED,
   GSL_ERROR_SEEK_FAILED,
   GSL_ERROR_READ_FAILED,
@@ -117,9 +116,7 @@ typedef void     (*GslModuleFreeFunc)   (gpointer        data,
 #  define GSL_GCC_REJECT(cond)	cond
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_DEFS_H__ */
 
