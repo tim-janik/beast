@@ -33,9 +33,9 @@ struct _Notify
 
 
 /* --- prototypes --- */
-static void	    bse_editable_sample_init		(BseEditableSample	*sample);
+static void	    bse_editable_sample_init		(BseEditableSample	*self);
 static void	    bse_editable_sample_class_init	(BseEditableSampleClass	*class);
-static void	    bse_editable_sample_destroy		(BseObject		*object);
+static void	    bse_editable_sample_dispose		(GObject		*object);
 static void	    bse_editable_sample_finalize	(GObject		*object);
 
 
@@ -62,6 +62,8 @@ BSE_BUILTIN_TYPE (BseEditableSample)
     (GInstanceInitFunc) bse_editable_sample_init,
   };
   
+  g_assert (BSE_EDITABLE_SAMPLE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseEditableSample",
 				   "Editable sample type",
@@ -76,9 +78,8 @@ bse_editable_sample_class_init (BseEditableSampleClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
+  gobject_class->dispose = bse_editable_sample_dispose;
   gobject_class->finalize = bse_editable_sample_finalize;
-  
-  object_class->destroy = bse_editable_sample_destroy;
   
   signal_changed = bse_object_class_add_signal (object_class, "changed",
 						bse_marshal_VOID__NONE, NULL,
@@ -86,39 +87,32 @@ bse_editable_sample_class_init (BseEditableSampleClass *class)
 }
 
 static void
-bse_editable_sample_init (BseEditableSample *sample)
+bse_editable_sample_init (BseEditableSample *self)
 {
-  sample->in_destroy = FALSE;
-  sample->wchunk = NULL;
-  BSE_OBJECT_SET_FLAGS (sample, BSE_ITEM_FLAG_STORAGE_IGNORE);
+  self->wchunk = NULL;
+  BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
 
 static void
-bse_editable_sample_destroy (BseObject *object)
+bse_editable_sample_dispose (GObject *object)
 {
-  BseEditableSample *sample = BSE_EDITABLE_SAMPLE (object);
+  BseEditableSample *self = BSE_EDITABLE_SAMPLE (object);
 
-  sample->in_destroy = TRUE;
-
-  if (sample->wchunk)
-    {
-      _gsl_wave_chunk_destroy (sample->wchunk);
-      sample->wchunk = NULL;
-    }
+  bse_editable_sample_set_wchunk (self, NULL);
 
   /* chain parent class' handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
 bse_editable_sample_finalize (GObject *object)
 {
-  BseEditableSample *esample = BSE_EDITABLE_SAMPLE (object);
+  BseEditableSample *self = BSE_EDITABLE_SAMPLE (object);
   Notify *notify, *last = NULL;
 
   for (notify = changed_notify_list; notify; )
     {
-      if (notify->esample == esample)
+      if (notify->esample == self)
 	{
 	  Notify *tmp;
 
@@ -140,7 +134,7 @@ bse_editable_sample_finalize (GObject *object)
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 
-  g_return_if_fail (esample->wchunk == NULL);
+  g_return_if_fail (self->wchunk == NULL);
 }
 
 static gboolean
@@ -153,7 +147,7 @@ changed_notify_handler (gpointer editable)
       Notify *notify = changed_notify_list;
 
       changed_notify_list = notify->next;
-      if (!notify->esample->in_destroy)
+      if (!BSE_OBJECT_DISPOSED (notify->esample))
 	g_signal_emit (notify->esample, signal_changed, 0);
       g_free (notify);
     }
@@ -164,29 +158,34 @@ changed_notify_handler (gpointer editable)
 }
 
 static void
-changed_notify_add (BseEditableSample *esample)
+changed_notify_add (BseEditableSample *self)
 {
   Notify *notify;
 
   if (!changed_notify_list)
     bse_idle_notify (changed_notify_handler, NULL);
   for (notify = changed_notify_list; notify; notify = notify->next)
-    if (notify->esample == esample)
+    if (notify->esample == self)
       return;
   notify = g_new (Notify, 1);
-  notify->esample = esample;
+  notify->esample = self;
   notify->next = changed_notify_list;
   changed_notify_list = notify;
 }
 
 void
-bse_editable_sample_set_wchunk (BseEditableSample *esample,
+bse_editable_sample_set_wchunk (BseEditableSample *self,
 				GslWaveChunk      *wchunk)
 {
-  g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (esample));
+  g_return_if_fail (BSE_IS_EDITABLE_SAMPLE (self));
 
-  if (esample->wchunk)
-    _gsl_wave_chunk_destroy (esample->wchunk);
-  esample->wchunk = wchunk ? gsl_wave_chunk_copy (wchunk) : NULL;
-  changed_notify_add (esample);
+  if (self->wchunk)
+    {
+      if (self->open_count)
+	gsl_wave_chunk_close (self->wchunk);
+      self->open_count = 0;
+      gsl_wave_chunk_unref (self->wchunk);
+    }
+  self->wchunk = wchunk ? gsl_wave_chunk_ref (wchunk) : NULL;
+  changed_notify_add (self);
 }

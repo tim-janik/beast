@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001 Stefan Westerfeld and Tim Janik
+ * Copyright (C) 2001-2002 Stefan Westerfeld and Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,12 +33,13 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
 {
   if (pos < peekbuf->start || pos >= peekbuf->end)
     {
-      GslLong inc, k, bsize = MIN (GSL_DATA_HANDLE_PEEK_BUFFER, dhandle->n_values);
+      GslLong dhandle_length = dhandle->setup.n_values;
+      GslLong inc, k, bsize = MIN (GSL_DATA_HANDLE_PEEK_BUFFER, dhandle_length);
 
-      g_return_val_if_fail (pos >= 0 && pos < dhandle->n_values, 0);
+      g_return_val_if_fail (pos >= 0 && pos < dhandle_length, 0);
 
       peekbuf->start = peekbuf->dir > 0 ? pos : peekbuf->dir < 0 ? pos - bsize + 1: pos - bsize / 2;
-      peekbuf->end = MIN (peekbuf->start + bsize, dhandle->n_values);
+      peekbuf->end = MIN (peekbuf->start + bsize, dhandle_length);
       peekbuf->start = MAX (peekbuf->start, 0);
       for (k = peekbuf->start; k < peekbuf->end; k += inc)
 	{
@@ -73,7 +74,7 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
   g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, EINVAL);
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, EINVAL);
 
-  l = dhandle->n_values;
+  l = dhandle->setup.n_values;
   while (l)
     {
       GslLong retry, j, n = MIN (l, GSL_DATA_HANDLE_PEEK_BUFFER);
@@ -147,7 +148,7 @@ gsl_data_handle_dump_wav (GslDataHandle *dhandle,
   g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
   g_return_val_if_fail (n_channels >= 1, EINVAL);
 
-  data_length = dhandle->n_values * (n_bits == 16 ? 2 : 1);
+  data_length = dhandle->setup.n_values * (n_bits == 16 ? 2 : 1);
   file_length = data_length;
   file_length += 4 + 4;				/* 'RIFF' header */
   file_length += 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;	/* 'fmt ' header */
@@ -200,7 +201,7 @@ gsl_data_detect_signal (GslDataHandle *handle,
   level_4 = gsl_data_handle_peek_value (handle, k, &peek_buffer);
   level_4 *= 32768;
   level_0 = level_1 = level_2 = level_3 = level_4;
-  for (; k < handle->n_values; k++)
+  for (; k < handle->setup.n_values; k++)
     {
       gfloat mean, needx, current;
 
@@ -252,15 +253,16 @@ gsl_data_find_sample (GslDataHandle *dhandle,
   g_return_val_if_fail (dhandle != NULL, -1);
   g_return_val_if_fail (direction == -1 || direction == +1, -1);
 
-  if (start_offset >= dhandle->n_values || gsl_data_handle_open (dhandle) != GSL_ERROR_NONE)
+  if (gsl_data_handle_open (dhandle) != GSL_ERROR_NONE ||
+      start_offset >= dhandle->setup.n_values)
     return -1;
 
   if (start_offset < 0)
-    start_offset = dhandle->n_values - 1;
+    start_offset = dhandle->setup.n_values - 1;
 
   peekbuf.dir = direction;
   if (min_value <= max_value)
-    for (i = start_offset; i < dhandle->n_values && i >= 0; i += direction)
+    for (i = start_offset; i < dhandle->setup.n_values && i >= 0; i += direction)
       {
 	gfloat val = gsl_data_handle_peek_value (dhandle, i, &peekbuf);
 
@@ -269,7 +271,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
 	  break;
       }
   else
-    for (i = start_offset; i < dhandle->n_values && i >= 0; i += direction)
+    for (i = start_offset; i < dhandle->setup.n_values && i >= 0; i += direction)
       {
 	gfloat val = gsl_data_handle_peek_value (dhandle, i, &peekbuf);
 
@@ -280,7 +282,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
 
   gsl_data_handle_close (dhandle);
 
-  return i >= dhandle->n_values ? -1: i;
+  return i >= dhandle->setup.n_values ? -1: i;
 }
 
 static inline gdouble
@@ -289,7 +291,7 @@ tailmatch_score_loop (GslDataHandle *shandle,
 		      GslLong	   start,
 		      gdouble	   worst_score)
 {
-  GslLong l, length = MIN (shandle->n_values, dhandle->n_values);
+  GslLong l, length = MIN (shandle->setup.n_values, dhandle->setup.n_values);
   gfloat v1[GSL_DATA_HANDLE_PEEK_BUFFER], v2[GSL_DATA_HANDLE_PEEK_BUFFER];
   gdouble score = 0;
 
@@ -326,7 +328,6 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
   gdouble pbound, pval, best_score = GSL_MAXLONG;
   
   g_return_val_if_fail (dhandle != NULL, FALSE);
-  length = dhandle->n_values;
   g_return_val_if_fail (lspec != NULL, FALSE);
   g_return_val_if_fail (loop_start_p != NULL, FALSE);
   g_return_val_if_fail (loop_end_p != NULL, FALSE);
@@ -334,18 +335,37 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
   g_return_val_if_fail (lspec->tail_cut >= 0, FALSE);
   g_return_val_if_fail (lspec->min_loop >= 1, FALSE);
   g_return_val_if_fail (lspec->max_loop >= lspec->min_loop, FALSE);
-  g_return_val_if_fail (lspec->head_skip < length, FALSE);
+  g_return_val_if_fail (lspec->tail_cut >= lspec->max_loop, FALSE);
+
+  if (gsl_data_handle_open (dhandle) != GSL_ERROR_NONE)
+    return FALSE;
+  length = dhandle->setup.n_values;
+  if (lspec->head_skip < length)
+    {
+      gsl_data_handle_close (dhandle);
+      return FALSE;
+    }
   offset = lspec->head_skip;
   length -= offset;
-  g_return_val_if_fail (lspec->tail_cut >= lspec->max_loop, FALSE);
-  g_return_val_if_fail (lspec->tail_cut < length, FALSE);
+  if (lspec->tail_cut < length)
+    {
+      gsl_data_handle_close (dhandle);
+      return FALSE;
+    }
   length -= lspec->tail_cut;
-  g_return_val_if_fail (lspec->max_loop <= length, FALSE);
+  if (lspec->max_loop <= length)
+    {
+      gsl_data_handle_close (dhandle);
+      return FALSE;
+    }
   
   dcache = gsl_data_cache_new (dhandle, 1);
   shandle = gsl_data_handle_new_dcached (dcache);
   gsl_data_cache_unref (dcache);
   gsl_data_handle_open (shandle);
+  gsl_data_handle_close (dhandle);
+  gsl_data_handle_unref (shandle);
+  /* at this point, we just hold one open() count on shandle */
   
   pbound = (lspec->max_loop - lspec->min_loop + 1.);
   pbound *= length / 100.;
@@ -383,7 +403,6 @@ gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 	}
     }
   gsl_data_handle_close (shandle);
-  gsl_data_handle_unref (shandle);
 
   g_print ("\nhalted: %f: [0x%lx..0x%lx] (%lu)\n", best_score, start, end, end - start + 1);
   
@@ -422,11 +441,11 @@ gsl_data_find_block (GslDataHandle *handle,
   else
     g_return_val_if_fail (values != NULL, -1);
 
-  for (i = 0; i < handle->n_values; i++)
+  for (i = 0; i < handle->setup.n_values; i++)
     {
       guint j;
 
-      if (n_values > handle->n_values - i)
+      if (n_values > handle->setup.n_values - i)
 	return -1;
 
       for (j = 0; j < n_values; j++)

@@ -33,21 +33,27 @@ extern "C" {
 
 
 /* --- typedefs & structures --- */
+typedef struct {
+  GslLong	n_values;
+  guint		n_channels;
+  guint		bit_depth;
+} GslDataHandleSetup;
 struct _GslDataHandle
 {
   /* constant members */
   GslDataHandleFuncs *vtable;
   gchar		     *name;
-  GslLong	      n_values;	/* length in floats */
   /* common members */
-  guint		      bit_depth;	/* number of significant bits */
   GslMutex	      mutex;
   guint		      ref_count;
   guint		      open_count;
+  /* opened data handle setup (open_count > 0) */
+  GslDataHandleSetup  setup;
 };
 struct _GslDataHandleFuncs
 {
-  GslErrorType	(*open)			(GslDataHandle		*data_handle);
+  GslErrorType	(*open)			(GslDataHandle		*data_handle,
+					 GslDataHandleSetup	*setup);
   GslLong	(*read)			(GslDataHandle		*data_handle,
 					 GslLong		 voffset, /* in values */
 					 GslLong		 n_values,
@@ -66,7 +72,12 @@ GslDataHandle*	  gsl_data_handle_ref		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_unref		(GslDataHandle	  *dhandle);
 GslErrorType	  gsl_data_handle_open		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_close		(GslDataHandle	  *dhandle);
-GslLong		  gsl_data_handle_get_n_values	(GslDataHandle	  *data_handle);
+GslLong		  gsl_data_handle_length	(GslDataHandle	  *data_handle);
+#define	          gsl_data_handle_n_values(      dh) \
+		                                 gsl_data_handle_length (dh)
+guint		  gsl_data_handle_n_channels	(GslDataHandle	  *data_handle);
+guint		  gsl_data_handle_bit_depth	(GslDataHandle	  *data_handle);
+const gchar*	  gsl_data_handle_name		(GslDataHandle	  *data_handle);
 GslLong		  gsl_data_handle_read		(GslDataHandle	  *data_handle,
 						 GslLong	   value_offset,
 						 GslLong	   n_values,
@@ -84,16 +95,16 @@ GslDataHandle*	  gsl_data_handle_new_insert	(GslDataHandle	  *src_handle,
 						 GslLong	   n_paste_values,
 						 const gfloat	  *paste_values,
 						 void            (*free) (gpointer values));
-GslDataHandle*	  gsl_data_handle_new_merge	(GslDataHandle	  *src_handle,
-						 GslLong	   insertion_offset,
-						 GslLong	   n_insertions,
-						 GslDataHandle	  *merge_handle,
-						 GslLong	   merge_value_offset);
+GslDataHandle*	  gsl_data_handle_new_mem	(guint		   n_channels,
+						 guint             bit_depth,
+						 GslLong	   n_values,
+						 const gfloat	  *values,
+						 void            (*free) (gpointer values));
 GslDataHandle*	  gsl_data_handle_new_dcached	(GslDataCache	  *dcache);
 /* cheap and inefficient, testpurpose only */
 GslDataHandle*	  gsl_data_handle_new_looped	(GslDataHandle	  *src_handle,
-						 GslLong	   loop_start,
-						 GslLong	   loop_end);
+						 GslLong	   loop_first,
+						 GslLong	   loop_last);
 
 
 /* --- wave specific functions --- */
@@ -113,6 +124,7 @@ typedef enum    /*< skip >*/
 const gchar*      gsl_wave_format_to_string     (GslWaveFormatType format);
 GslWaveFormatType gsl_wave_format_from_string   (const gchar      *string);
 GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
+						 guint		   n_channels,
 						 GslWaveFormatType format,
 						 guint		   byte_order,
 						 GslLong	   byte_offset,
@@ -121,8 +133,7 @@ GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 
 /* --- auxillary functions --- */
 gboolean	  gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
-						 const gchar	  *file_name,
-						 guint		   bit_depth);
+						 const gchar	  *file_name);
 void		  gsl_data_handle_common_free	(GslDataHandle	  *dhandle);
 
 #ifdef __cplusplus

@@ -92,7 +92,6 @@ gsl_data_cache_new (GslDataHandle *dhandle,
   g_return_val_if_fail (dhandle != NULL, NULL);
   g_return_val_if_fail (padding > 0, NULL);
   g_return_val_if_fail (dhandle->name != NULL, NULL);
-  g_return_val_if_fail (dhandle->n_values > 0, NULL);
   g_assert (node_size == gsl_alloc_upper_power2 (node_size));
   g_return_val_if_fail (padding < node_size / 2, NULL);
 
@@ -289,6 +288,7 @@ data_cache_new_node_L (GslDataCache *dcache,
   GslDataCacheNode **node_p, *dnode;
   GslDataType *data, *node_data;
   guint new_node_array_size, old_node_array_size = UPPER_POWER2 (dcache->n_nodes);
+  GslLong dhandle_length;
   guint i, size;
   gint result;
 
@@ -323,11 +323,12 @@ data_cache_new_node_L (GslDataCache *dcache,
     offset -= dcache->padding;
   if (!demand_load)
     g_message (G_STRLOC ":FIXME: lazy data loading not yet supported");
+  dhandle_length = gsl_data_handle_length (dcache->dhandle);
   do
     {
-      if (offset >= dcache->dhandle->n_values)
+      if (offset >= dhandle_length)
 	break;
-      size = MIN (size, dcache->dhandle->n_values - offset);
+      size = MIN (size, dhandle_length - offset);
       result = gsl_data_handle_read (dcache->dhandle, offset, size, data);
       if (result < 0)
 	{
@@ -363,7 +364,8 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 
   g_return_val_if_fail (dcache != NULL, NULL);
   g_return_val_if_fail (dcache->ref_count > 0, NULL);
-  g_return_val_if_fail (offset < dcache->dhandle->n_values, NULL);
+  g_return_val_if_fail (dcache->open_count > 0, NULL);
+  g_return_val_if_fail (offset < gsl_data_handle_length (dcache->dhandle), NULL);
 
   GSL_SPIN_LOCK (&dcache->mutex);
   node_p = data_cache_lookup_nextmost_node_L (dcache, offset);

@@ -115,10 +115,9 @@ void		bse_storage_put_param		(BseStorage	*storage,
 void		bse_storage_put_value		(BseStorage	*storage,
 						 const GValue	*value,
 						 GParamSpec	*pspec);
-void		bse_storage_put_wave_handle	(BseStorage	*storage,
+void		bse_storage_put_data_handle	(BseStorage	*storage,
 						 guint		 significant_bits,
 						 GslDataHandle	*handle,
-						 GslLong	 voffset,
 						 GslLong	 vlength);
 void		bse_storage_flush_fd		(BseStorage	*storage,
 						 gint		 fd);
@@ -163,7 +162,10 @@ GTokenType	bse_storage_parse_rest		(BseStorage     *storage,
 GTokenType	bse_storage_parse_note		(BseStorage	*storage,
 						 gint		*note,
 						 gchar           bbuffer[BSE_BBUFFER_SIZE]);
-GTokenType	bse_storage_parse_wave_handle	(BseStorage	*storage,
+GTokenType	bse_storage_parse_data_handle	(BseStorage	*storage,
+						 guint           n_channels,
+						 gfloat          osc_freq,
+						 gfloat          mix_freq,
 						 GslDataHandle **data_handle_p);
 GTokenType	bse_storage_parse_param_value	(BseStorage	*storage,
 						 GValue		*value,

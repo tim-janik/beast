@@ -42,7 +42,7 @@ enum
 /* --- prototypes --- */
 static void	bse_wave_osc_init		(BseWaveOsc		*self);
 static void	bse_wave_osc_class_init		(BseWaveOscClass	*class);
-static void	bse_wave_osc_destroy		(BseObject		*object);
+static void	bse_wave_osc_dispose		(GObject		*object);
 static void	bse_wave_osc_finalize		(GObject		*object);
 static void	bse_wave_osc_set_property	(GObject		*object,
 						 guint			 param_id,
@@ -52,11 +52,10 @@ static void	bse_wave_osc_get_property	(GObject		*object,
 						 guint			 param_id,
 						 GValue			*value,
 						 GParamSpec		*pspec);
-static void     bse_wave_osc_prepare		(BseSource		*source);
 static void	bse_wave_osc_context_create	(BseSource		*source,
 						 guint			 context_handle,
 						 GslTrans		*trans);
-static void     bse_wave_osc_reset		(BseSource		*source);
+static void   bse_wave_osc_update_config_wchunk (BseWaveOsc		*self);
 static void	bse_wave_osc_update_modules	(BseWaveOsc		*self);
 
 
@@ -116,12 +115,9 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
   gobject_class->set_property = bse_wave_osc_set_property;
   gobject_class->get_property = bse_wave_osc_get_property;
   gobject_class->finalize = bse_wave_osc_finalize;
+  gobject_class->dispose = bse_wave_osc_dispose;
   
-  object_class->destroy = bse_wave_osc_destroy;
-  
-  source_class->prepare = bse_wave_osc_prepare;
   source_class->context_create = bse_wave_osc_context_create;
-  source_class->reset = bse_wave_osc_reset;
   
   bse_object_class_add_param (object_class, "Wave",
 			      PARAM_WAVE,
@@ -180,6 +176,7 @@ bse_wave_osc_init (BseWaveOsc *self)
   self->wave = NULL;
   self->fm_strength = 10.0;
   self->n_octaves = 1;
+  self->esample_wchunk = NULL;
   self->config.start_offset = 0;
   self->config.play_dir = +1;
   self->config.wchunk_data = NULL;
@@ -190,18 +187,14 @@ bse_wave_osc_init (BseWaveOsc *self)
 }
 
 static void
-bse_wave_osc_destroy (BseObject *object)
+bse_wave_osc_dispose (GObject *object)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (object);
   
-  if (self->wave)
-    {
-      g_object_unref (self->wave);
-      self->wave = NULL;
-    }
-  
+  g_assert (self->wave == NULL);	/* paranoid */
+
   /* chain parent class' handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
@@ -210,7 +203,7 @@ bse_wave_osc_finalize (GObject *object)
   BseWaveOsc *self = BSE_WAVE_OSC (object);
   
   if (self->esample_wchunk)
-    _gsl_wave_chunk_destroy (self->esample_wchunk);
+    gsl_wave_chunk_close (self->esample_wchunk);
   self->esample_wchunk = NULL;
   
   /* chain parent class' handler */
@@ -228,27 +221,21 @@ wave_uncross (BseItem *owner,
 	      BseItem *ref_item)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (owner);
-  
+  BseWave *wave = self->wave;
+
+  g_object_disconnect (wave, "any_signal", notify_wave_changed, self, NULL);
   self->wave = NULL;
-  self->config.wchunk_data = NULL;
-  self->config.wchunk_from_freq = NULL;
+  bse_wave_osc_update_config_wchunk (self);
   bse_wave_osc_update_modules (self);
-  
   if (BSE_SOURCE_PREPARED (self))
     {
       /* need to make sure our modules know about BseWave vanishing
-       * before we return
+       * before we return (the wave will destroy the wchunk index next)
        */
       gsl_engine_wait_on_trans ();
     }
+  bse_wave_drop_index (wave);
   g_object_notify (G_OBJECT (self), "wave");
-}
-
-static GslWaveChunk*
-wchunk_from_esample (gpointer wchunk_data,
-		     gfloat   freq)
-{
-  return wchunk_data;
 }
 
 static void
@@ -263,68 +250,54 @@ bse_wave_osc_set_property (GObject      *object,
     {
       BseEditableSample *esample;
     case PARAM_WAVE:
-      if (self->esample_wchunk)
-	g_object_set (self, "editable_sample", NULL, NULL);
       if (self->wave)
 	{
-	  g_object_disconnect (self->wave,	// FIXME: disconnect in uncross
-			       "any_signal", notify_wave_changed, self,
-			       NULL);
 	  bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->wave));
-	  g_assert (self->wave == NULL);
+	  g_assert (self->wave == NULL);	/* paranoid */
 	}
+      if (self->esample_wchunk)
+	g_object_set (self, "editable_sample", NULL, NULL);
+      g_assert (self->esample_wchunk == NULL);	/* paranoid */
       self->wave = g_value_get_object (value);
       if (self->wave)
 	{
 	  bse_item_cross_ref (BSE_ITEM (self), BSE_ITEM (self->wave), wave_uncross);
-	  g_object_connect (self->wave,
-			    "swapped_signal::notify::name", notify_wave_changed, self,
-			    NULL);
+	  g_object_connect (self->wave, "swapped_signal::notify::name", notify_wave_changed, self, NULL);
+	  bse_wave_request_index (self->wave);
+	  bse_wave_osc_update_config_wchunk (self);
+	  bse_wave_osc_update_modules (self);
 	  if (BSE_SOURCE_PREPARED (self))
 	    {
-	      self->config.wchunk_data = bse_wave_get_index_for_modules (self->wave);
-	      if (self->config.wchunk_data)
-		self->config.wchunk_from_freq = (gpointer) bse_wave_index_lookup_best;
-	    }
-	}
-      bse_wave_osc_update_modules (self);
-      if (BSE_SOURCE_PREPARED (self))
-	{
-	  /* need to make sure our modules know about BseWave vanishing
-	   * before we return
-	   */
-	  gsl_engine_wait_on_trans ();
-	}
-      if (self->esample_wchunk)
-	_gsl_wave_chunk_destroy (self->esample_wchunk);
-      self->esample_wchunk = NULL;
-      break;
-    case PARAM_EDITABLE_SAMPLE:
-      if (self->wave)
-	g_object_set (self, "wave", NULL, NULL);
-      if (self->esample_wchunk)
-	{
-	  self->config.wchunk_data = NULL;
-	  self->config.wchunk_from_freq = NULL;
-	  if (BSE_SOURCE_PREPARED (self))
-	    {
-	      bse_wave_osc_update_modules (self);
+	      /* need to make sure our modules know about BseWave vanishing
+	       * before we return (so the wchunk update propagates)
+	       */
 	      gsl_engine_wait_on_trans ();
 	    }
-	  _gsl_wave_chunk_destroy (self->esample_wchunk);
-	  self->esample_wchunk = NULL;
 	}
+      break;
+    case PARAM_EDITABLE_SAMPLE:
+      if (self->esample_wchunk)
+	{
+	  GslWaveChunk *esample_wchunk = self->esample_wchunk;
+	  self->esample_wchunk = NULL;
+	  bse_wave_osc_update_config_wchunk (self);
+	  bse_wave_osc_update_modules (self);
+	  if (BSE_SOURCE_PREPARED (self))
+	    gsl_engine_wait_on_trans ();
+	  gsl_wave_chunk_close (esample_wchunk);
+	}
+      if (self->wave)
+	g_object_set (self, "wave", NULL, NULL);
+      g_assert (self->wave == NULL);	/* paranoid */
       esample = g_value_get_object (value);
       if (esample && esample->wchunk)
 	{
-	  self->esample_wchunk = gsl_wave_chunk_copy (esample->wchunk);
+	  if (gsl_wave_chunk_open (esample->wchunk) == GSL_ERROR_NONE)
+	    self->esample_wchunk = esample->wchunk;
+	  bse_wave_osc_update_config_wchunk (self);
+	  bse_wave_osc_update_modules (self);
 	  if (BSE_SOURCE_PREPARED (self))
-	    {
-	      self->config.wchunk_data = self->esample_wchunk;
-	      self->config.wchunk_from_freq = wchunk_from_esample;
-	      bse_wave_osc_update_modules (self);
-	      gsl_engine_wait_on_trans ();
-	    }
+	    gsl_engine_wait_on_trans ();
 	}
       break;
     case PARAM_FM_PERC:
@@ -386,28 +359,6 @@ bse_wave_osc_get_property (GObject    *object,
 }
 
 static void
-bse_wave_osc_prepare (BseSource *source)
-{
-  BseWaveOsc *self = BSE_WAVE_OSC (source);
-  
-  self->config.wchunk_from_freq = NULL;
-  if (self->wave)
-    {
-      self->config.wchunk_data = bse_wave_get_index_for_modules (self->wave);
-      if (self->config.wchunk_data)
-	self->config.wchunk_from_freq = (gpointer) bse_wave_index_lookup_best;
-    }
-  else if (self->esample_wchunk)
-    {
-      self->config.wchunk_data = self->esample_wchunk;
-      self->config.wchunk_from_freq = wchunk_from_esample;
-    }
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source);
-}
-
-static void
 wmod_access (GslModule *module,
 	     gpointer   data)
 {
@@ -417,6 +368,32 @@ wmod_access (GslModule *module,
   /* this runs in the Gsl Engine threads */
   
   gsl_wave_osc_config (wmod, config);
+}
+
+static GslWaveChunk*
+wchunk_from_data (gpointer wchunk_data,
+		  gfloat   freq)
+{
+  return wchunk_data;
+}
+
+static void
+bse_wave_osc_update_config_wchunk (BseWaveOsc *self)
+{
+  self->config.wchunk_data = NULL;
+  self->config.wchunk_from_freq = NULL;
+  if (self->wave)
+    {
+      BseWaveIndex *index = bse_wave_get_index_for_modules (self->wave);
+      self->config.wchunk_data = index && index->n_wchunks ? index : NULL;
+      if (self->config.wchunk_data)
+	self->config.wchunk_from_freq = (gpointer) bse_wave_index_lookup_best;
+    }
+  else if (self->esample_wchunk)
+    {
+      self->config.wchunk_data = self->esample_wchunk;
+      self->config.wchunk_from_freq = wchunk_from_data;
+    }
 }
 
 static void
@@ -447,12 +424,14 @@ wmod_process (GslModule *module,
   GslWaveOscData *wmod = module->user_data;
   gfloat gate;
   
-  // FIXME: pass NULL for non-connected inputs
   gsl_wave_osc_process (wmod,
 			n_values,
-			GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_FREQ),
-			GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_MOD),
-			GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_SYNC),
+			(GSL_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_FREQ).connected ?
+			 GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_FREQ) : NULL),
+			(GSL_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_MOD).connected ?
+			 GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_MOD) : NULL),
+			(GSL_MODULE_ISTREAM (module, BSE_WAVE_OSC_ICHANNEL_SYNC).connected ?
+			 GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_SYNC) : NULL),
 			GSL_MODULE_OBUFFER (module, BSE_WAVE_OSC_OCHANNEL_WAVE));
   
   gate = wmod->done ? 0.0 : 1.0;
@@ -493,18 +472,6 @@ bse_wave_osc_context_create (BseSource *source,
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
 
-static void
-bse_wave_osc_reset (BseSource *source)
-{
-  BseWaveOsc *self = BSE_WAVE_OSC (source);
-  
-  self->config.wchunk_data = NULL;
-  self->config.wchunk_from_freq = NULL;
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source);
-}
-
 
 static void
 pcm_pos_access (GslModule *module,
@@ -524,7 +491,7 @@ pcm_pos_access_free (gpointer data)
   BseWaveOsc *self = data;
   
   /* this is guaranteed by the GSL engine to be run in user thread */
-  
+
   g_signal_emit (self, signal_notify_pcm_position, 0, self->module_pcm_position);
   
   g_object_unref (self);

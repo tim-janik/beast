@@ -246,7 +246,6 @@ gsl_hfile_pread (GslHFile *hfile,
     {
       if (hfile->cpos != offset)
 	{
-	  g_print("seek %s: %d diff=%d\n",hfile->file_name,offset, offset-hfile->cpos);
 	  hfile->cpos = lseek (hfile->fd, offset, SEEK_SET);
 	  if (hfile->cpos < 0 && errno != EINVAL)
 	    {

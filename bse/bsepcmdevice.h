@@ -43,7 +43,7 @@ extern "C" {
 
 
 /* --- capabilities --- */
-typedef enum
+typedef enum	/*< skip >*/
 {
   BSE_PCM_FREQ_8000	= 1,
   BSE_PCM_FREQ_11025,
@@ -59,12 +59,12 @@ typedef enum
 } BsePcmFreqMode;
 #define	BSE_PCM_FREQ_MIN	BSE_PCM_FREQ_8000
 #define	BSE_PCM_FREQ_MAX	BSE_PCM_FREQ_192000
-typedef enum
+typedef enum	/*< skip >*/
 {
   BSE_PCM_CMODE_MONO	= 1,
   BSE_PCM_CMODE_STEREO
 } BsePcmChannelMode;
-typedef enum
+typedef enum	/*< skip >*/
 {
   BSE_PCM_FLAG_OPEN	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
   BSE_PCM_FLAG_READABLE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),

@@ -29,6 +29,14 @@
 /* --- typedefs --- */
 typedef struct {
   GslDataHandle     dhandle;
+  guint             n_channels;
+  guint             bit_depth;
+  GslLong           n_values;
+  const gfloat     *values;
+  void            (*free_values) (gpointer);
+} MemHandle;
+typedef struct {
+  GslDataHandle     dhandle;
   GslDataHandle	   *src_handle;
 } ChainHandle;
 typedef ChainHandle ReversedHandle;
@@ -37,18 +45,23 @@ typedef struct {
   GslDataHandle	   *src_handle;	/* mirror ChainHandle */
   GslLong	    cut_offset;
   GslLong	    n_cut_values;
+  GslLong	    tail_cut;
 } CutHandle;
 typedef struct {
   GslDataHandle     dhandle;
   GslDataHandle	   *src_handle;	/* mirror ChainHandle */
+  GslLong	    requested_paste_offset;
   GslLong	    paste_offset;
   GslLong	    n_paste_values;
+  guint		    paste_bit_depth;
   const gfloat	   *paste_values;
   void            (*free_values) (gpointer);
 } InsertHandle;
 typedef struct {
   GslDataHandle     dhandle;
   GslDataHandle	   *src_handle;	/* mirror ChainHandle */
+  GslLong	    requested_first;
+  GslLong	    requested_last;
   GslLong	    loop_start;
   GslLong	    loop_width;
 } LoopHandle;
@@ -59,47 +72,30 @@ typedef struct {
 } DCacheHandle;
 typedef struct {
   GslDataHandle     dhandle;
+  guint		    n_channels;
   GslWaveFormatType format;
   guint             byte_order;
-  guint             boffset_reminder;
+  GslLong	    byte_offset;
+  GslLong	    requested_length;
   GslHFile	   *hfile;
 } WaveHandle;
 
 
 /* --- standard functions --- */
-#include <sys/types.h> // FIXME
-#include <sys/stat.h> // FIXME
-#include <unistd.h> // FIXME
 gboolean
 gsl_data_handle_common_init (GslDataHandle *dhandle,
-			     const gchar   *file_name,
-			     guint          bit_depth)
+			     const gchar   *file_name)
 {
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (dhandle->vtable == NULL, FALSE);
   g_return_val_if_fail (dhandle->name == NULL, FALSE);
   g_return_val_if_fail (dhandle->ref_count == 0, FALSE);
-  g_return_val_if_fail (bit_depth > 0, FALSE);
   
-  if (file_name)
-    {
-      struct stat statbuf = { 0, };
-      
-      if (stat (file_name, &statbuf) < 0 || statbuf.st_size < 1)
-	return FALSE;
-      
-      dhandle->name = g_strdup (file_name);
-      dhandle->n_values = statbuf.st_size;
-    }
-  else
-    {
-      dhandle->name = NULL;
-      dhandle->n_values = 0;
-    }
-  dhandle->bit_depth = bit_depth;
+  dhandle->name = g_strdup (file_name);
   gsl_mutex_init (&dhandle->mutex);
   dhandle->ref_count = 1;
   dhandle->open_count = 0;
+  memset (&dhandle->setup, 0, sizeof (dhandle->setup));
   
   return TRUE;
 }
@@ -142,7 +138,10 @@ gsl_data_handle_unref (GslDataHandle *dhandle)
   destroy = dhandle->ref_count == 0;
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   if (destroy)
-    dhandle->vtable->destroy (dhandle);
+    {
+      g_return_if_fail (dhandle->open_count == 0);
+      dhandle->vtable->destroy (dhandle);
+    }
 }
 
 GslErrorType
@@ -154,10 +153,22 @@ gsl_data_handle_open (GslDataHandle *dhandle)
   GSL_SPIN_LOCK (&dhandle->mutex);
   if (dhandle->open_count == 0)
     {
-      GslErrorType error = dhandle->vtable->open (dhandle);
+      GslErrorType error;
 
+      memset (&dhandle->setup, 0, sizeof (dhandle->setup));
+      error = dhandle->vtable->open (dhandle, &dhandle->setup);
+      if (!error && (dhandle->setup.n_values < 0 ||
+		     dhandle->setup.n_channels < 1 ||
+		     dhandle->setup.bit_depth < 1))
+	{
+	  g_warning ("internal error in data handle open() (%p): nv=%ld nc=%u bd=%u",
+		     dhandle->vtable->open, dhandle->setup.n_values, dhandle->setup.n_channels, dhandle->setup.bit_depth);
+	  dhandle->vtable->close (dhandle);
+	  error = GSL_ERROR_INTERNAL;
+	}
       if (error)
 	{
+	  memset (&dhandle->setup, 0, sizeof (dhandle->setup));
 	  GSL_SPIN_UNLOCK (&dhandle->mutex);
 	  return error;
 	}
@@ -199,15 +210,14 @@ gsl_data_handle_read (GslDataHandle *dhandle,
   GslLong l;
   
   g_return_val_if_fail (dhandle != NULL, -1);
-  g_return_val_if_fail (dhandle->ref_count > 0, -1);
   g_return_val_if_fail (dhandle->open_count > 0, -1);
   g_return_val_if_fail (value_offset >= 0, -1);
   if (n_values < 1)
     return 0;
   g_return_val_if_fail (values != NULL, -1);
-  g_return_val_if_fail (value_offset < dhandle->n_values, -1);
+  g_return_val_if_fail (value_offset < dhandle->setup.n_values, -1);
   
-  n_values = MIN (n_values, dhandle->n_values - value_offset);
+  n_values = MIN (n_values, dhandle->setup.n_values - value_offset);
   GSL_SPIN_LOCK (&dhandle->mutex);
   l = dhandle->vtable->read (dhandle, value_offset, n_values, values);
   GSL_SPIN_UNLOCK (&dhandle->mutex);
@@ -215,26 +225,177 @@ gsl_data_handle_read (GslDataHandle *dhandle,
   return l;
 }
 
-
-/* --- chain handle --- */
-static GslErrorType
-chain_handle_open (GslDataHandle *data_handle)
+GslLong
+gsl_data_handle_length (GslDataHandle *dhandle)
 {
-  ChainHandle *chandle = (ChainHandle*) data_handle;
-  
-  if (chandle->src_handle)
-    return gsl_data_handle_open (chandle->src_handle);
-  else
-    return GSL_ERROR_NONE;
+  GslLong l;
+
+  g_return_val_if_fail (dhandle != NULL, 0);
+  g_return_val_if_fail (dhandle->open_count > 0, 0);
+
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  l = dhandle->open_count ? dhandle->setup.n_values : 0;
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+
+  return l;
+}
+
+guint
+gsl_data_handle_n_channels (GslDataHandle *dhandle)
+{
+  guint n;
+
+  g_return_val_if_fail (dhandle != NULL, 0);
+  g_return_val_if_fail (dhandle->open_count > 0, 0);
+
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  n = dhandle->open_count ? dhandle->setup.n_channels : 0;
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+
+  return n;
+}
+
+guint
+gsl_data_handle_bit_depth (GslDataHandle *dhandle)
+{
+  guint n;
+
+  g_return_val_if_fail (dhandle != NULL, 0);
+  g_return_val_if_fail (dhandle->open_count > 0, 0);
+
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  n = dhandle->open_count ? dhandle->setup.bit_depth : 0;
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+
+  return n;
+}
+
+const gchar*
+gsl_data_handle_name (GslDataHandle *dhandle)
+{
+  g_return_val_if_fail (dhandle != NULL, NULL);
+
+  return dhandle->name;
+}
+
+
+/* --- const memory handle --- */
+static GslErrorType
+mem_handle_open (GslDataHandle      *dhandle,
+		 GslDataHandleSetup *setup)
+{
+  MemHandle *mhandle = (MemHandle*) dhandle;
+
+  setup->n_values = mhandle->n_values;
+  setup->n_channels = mhandle->n_channels;
+  setup->bit_depth = mhandle->bit_depth;
+
+  return GSL_ERROR_NONE;
 }
 
 static void
-chain_handle_close (GslDataHandle *data_handle)
+mem_handle_close (GslDataHandle *dhandle)
 {
-  ChainHandle *chandle = (ChainHandle*) data_handle;
+  // MemHandle *mhandle = (MemHandle*) dhandle;
+}
+
+static void
+mem_handle_destroy (GslDataHandle *dhandle)
+{
+  MemHandle *mhandle = (MemHandle*) dhandle;
+  void (*free_values) (gpointer) = mhandle->free_values;
+  const gfloat *mem_values = mhandle->values;
+
+  gsl_data_handle_common_free (dhandle);
+  mhandle->values = NULL;
+  mhandle->free_values = NULL;
+  gsl_delete_struct (MemHandle, mhandle);
   
-  if (chandle->src_handle)
-    gsl_data_handle_close (chandle->src_handle);
+  if (free_values)
+    free_values ((gpointer) mem_values);
+}
+
+static GslLong
+mem_handle_read (GslDataHandle *dhandle,
+		 GslLong        voffset,
+		 GslLong        n_values,
+		 gfloat        *values)
+{
+  MemHandle *mhandle = (MemHandle*) dhandle;
+
+  g_return_val_if_fail (voffset + n_values <= mhandle->n_values, -1);
+
+  memcpy (values, mhandle->values + voffset, n_values * sizeof (values[0]));
+
+  return n_values;
+}
+
+GslDataHandle*
+gsl_data_handle_new_mem (guint         n_channels,
+			 guint         bit_depth,
+			 GslLong       n_values,
+			 const gfloat *values,
+			 void        (*free) (gpointer values))
+{
+  static GslDataHandleFuncs mem_handle_vtable = {
+    mem_handle_open,
+    mem_handle_read,
+    mem_handle_close,
+    mem_handle_destroy,
+  };
+  MemHandle *mhandle;
+  gboolean success;
+
+  g_return_val_if_fail (n_channels > 0, NULL);
+  g_return_val_if_fail (bit_depth > 0, NULL);
+  g_return_val_if_fail (n_values >= n_channels, NULL);
+  if (n_values)
+    g_return_val_if_fail (values != NULL, NULL);
+  
+  mhandle = gsl_new_struct0 (MemHandle, 1);
+  success = gsl_data_handle_common_init (&mhandle->dhandle, NULL);
+  if (success)
+    {
+      mhandle->dhandle.name = g_strconcat ("// #memory /", NULL);
+      mhandle->dhandle.vtable = &mem_handle_vtable;
+      mhandle->n_channels = n_channels;
+      mhandle->bit_depth = bit_depth;
+      mhandle->n_values = n_values / mhandle->n_channels;
+      mhandle->n_values *= mhandle->n_channels;
+      mhandle->values = values;
+      mhandle->free_values = free;
+    }
+  else
+    {
+      gsl_delete_struct (MemHandle, mhandle);
+      return NULL;
+    }
+  return &mhandle->dhandle;
+}
+
+
+/* --- chain handle --- */
+static GslErrorType
+chain_handle_open (GslDataHandle      *dhandle,
+		   GslDataHandleSetup *setup)
+{
+  ChainHandle *chandle = (ChainHandle*) dhandle;
+  GslErrorType error;
+
+  error = gsl_data_handle_open (chandle->src_handle);
+  if (error != GSL_ERROR_NONE)
+    return error;
+  *setup = chandle->src_handle->setup;
+
+  return GSL_ERROR_NONE;
+}
+
+static void
+chain_handle_close (GslDataHandle *dhandle)
+{
+  ChainHandle *chandle = (ChainHandle*) dhandle;
+  
+  gsl_data_handle_close (chandle->src_handle);
 }
 
 
@@ -251,13 +412,13 @@ reverse_handle_destroy (GslDataHandle *data_handle)
 }
 
 static GslLong
-reverse_handle_read (GslDataHandle *data_handle,
+reverse_handle_read (GslDataHandle *dhandle,
 		     GslLong        voffset,
 		     GslLong        n_values,
 		     gfloat        *values)
 {
-  ReversedHandle *rhandle = (ReversedHandle*) data_handle;
-  GslLong left, new_offset = data_handle->n_values - (voffset + n_values);
+  ReversedHandle *rhandle = (ReversedHandle*) dhandle;
+  GslLong left, new_offset = dhandle->setup.n_values - (voffset + n_values);
   gfloat *t, *p = values;
   
   g_assert (new_offset >= 0);
@@ -303,12 +464,11 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
   g_return_val_if_fail (src_handle != NULL, NULL);
   
   rhandle = gsl_new_struct0 (ReversedHandle, 1);
-  success = gsl_data_handle_common_init (&rhandle->dhandle, NULL, src_handle->bit_depth);
+  success = gsl_data_handle_common_init (&rhandle->dhandle, NULL);
   if (success)
     {
       rhandle->dhandle.name = g_strconcat (src_handle->name, "// #reversed /", NULL);
       rhandle->dhandle.vtable = &reverse_handle_vtable;
-      rhandle->dhandle.n_values = src_handle->n_values;
       rhandle->src_handle = gsl_data_handle_ref (src_handle);
     }
   else
@@ -321,6 +481,23 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
 
 
 /* --- cut handle --- */
+static GslErrorType
+cut_handle_open (GslDataHandle      *dhandle,
+		 GslDataHandleSetup *setup)
+{
+  CutHandle *chandle = (CutHandle*) dhandle;
+  GslErrorType error;
+
+  error = gsl_data_handle_open (chandle->src_handle);
+  if (error != GSL_ERROR_NONE)
+    return error;
+  *setup = chandle->src_handle->setup;
+  setup->n_values -= MIN (setup->n_values, chandle->tail_cut);
+  setup->n_values -= MIN (setup->n_values, chandle->n_cut_values);
+
+  return GSL_ERROR_NONE;
+}
+
 static void
 cut_handle_destroy (GslDataHandle *data_handle)
 {
@@ -333,12 +510,12 @@ cut_handle_destroy (GslDataHandle *data_handle)
 }
 
 static GslLong
-cut_handle_read (GslDataHandle *data_handle,
+cut_handle_read (GslDataHandle *dhandle,
 		 GslLong        voffset,
 		 GslLong        n_values,
 		 gfloat        *values)
 {
-  CutHandle *chandle = (CutHandle*) data_handle;
+  CutHandle *chandle = (CutHandle*) dhandle;
   GslLong orig_n_values = n_values;
   
   if (voffset < chandle->cut_offset)
@@ -353,7 +530,7 @@ cut_handle_read (GslDataHandle *data_handle,
       voffset += l;
     }
   
-  if (voffset >= chandle->cut_offset)
+  if (voffset >= chandle->cut_offset && n_values)
     {
       GslLong l = gsl_data_handle_read (chandle->src_handle, voffset + chandle->n_cut_values, n_values, values);
       
@@ -375,7 +552,7 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
 			       GslLong	      tail_cut)
 {
   static GslDataHandleFuncs cut_handle_vtable = {
-    chain_handle_open,
+    cut_handle_open,
     cut_handle_read,
     chain_handle_close,
     cut_handle_destroy,
@@ -385,19 +562,17 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
   
   g_return_val_if_fail (src_handle != NULL, NULL);
   g_return_val_if_fail (cut_offset >= 0 && n_cut_values >= 0 && tail_cut >= 0, NULL);
-  g_return_val_if_fail (cut_offset < src_handle->n_values, NULL);
-  g_return_val_if_fail (cut_offset + n_cut_values + tail_cut < src_handle->n_values, NULL);
   
   chandle = gsl_new_struct0 (CutHandle, 1);
-  success = gsl_data_handle_common_init (&chandle->dhandle, NULL, src_handle->bit_depth);
+  success = gsl_data_handle_common_init (&chandle->dhandle, NULL);
   if (success)
     {
       chandle->dhandle.name = g_strconcat (src_handle->name, "// #translate /", NULL);
       chandle->dhandle.vtable = &cut_handle_vtable;
-      chandle->dhandle.n_values = src_handle->n_values - n_cut_values - tail_cut;
       chandle->src_handle = gsl_data_handle_ref (src_handle);
       chandle->cut_offset = n_cut_values ? cut_offset : 0;
       chandle->n_cut_values = n_cut_values;
+      chandle->tail_cut = tail_cut;
     }
   else
     {
@@ -446,6 +621,27 @@ gsl_data_handle_new_crop (GslDataHandle *src_handle,
 
 
 /* --- insert handle --- */
+static GslErrorType
+insert_handle_open (GslDataHandle      *dhandle,
+		    GslDataHandleSetup *setup)
+{
+  InsertHandle *ihandle = (InsertHandle*) dhandle;
+  GslErrorType error;
+
+  error = gsl_data_handle_open (ihandle->src_handle);
+  if (error != GSL_ERROR_NONE)
+    return error;
+  *setup = ihandle->src_handle->setup;
+  ihandle->paste_offset = ihandle->requested_paste_offset < 0 ? setup->n_values : ihandle->requested_paste_offset;
+  if (setup->n_values < ihandle->paste_offset)
+    setup->n_values = ihandle->paste_offset + ihandle->n_paste_values;
+  else
+    setup->n_values += ihandle->n_paste_values;
+  setup->bit_depth = MAX (setup->bit_depth, ihandle->paste_bit_depth);
+
+  return GSL_ERROR_NONE;
+}
+
 static void
 insert_handle_destroy (GslDataHandle *data_handle)
 {
@@ -453,8 +649,7 @@ insert_handle_destroy (GslDataHandle *data_handle)
   void (*free_values) (gpointer) = ihandle->free_values;
   const gfloat *paste_values = ihandle->paste_values;
   
-  if (ihandle->src_handle)
-    gsl_data_handle_unref (ihandle->src_handle);
+  gsl_data_handle_unref (ihandle->src_handle);
   
   gsl_data_handle_common_free (data_handle);
   ihandle->paste_values = NULL;
@@ -474,9 +669,10 @@ insert_handle_read (GslDataHandle *data_handle,
   InsertHandle *ihandle = (InsertHandle*) data_handle;
   GslLong l, orig_n_values = n_values;
   
-  if (voffset < ihandle->paste_offset)
+  if (voffset < ihandle->src_handle->setup.n_values &&
+      voffset < ihandle->paste_offset)
     {
-      l = MIN (n_values, ihandle->paste_offset - voffset);
+      l = MIN (n_values, MIN (ihandle->paste_offset, ihandle->src_handle->setup.n_values) - voffset);
       l = gsl_data_handle_read (ihandle->src_handle, voffset, l, values);
       if (l < 0)
 	return l;       /* pass on errors */
@@ -485,8 +681,17 @@ insert_handle_read (GslDataHandle *data_handle,
       n_values -= l;
       values += l;
     }
-  
-  if (voffset >= ihandle->paste_offset && voffset < ihandle->paste_offset + ihandle->n_paste_values)
+
+  if (n_values && voffset >= ihandle->src_handle->setup.n_values && voffset < ihandle->paste_offset)
+    {
+      l = MIN (n_values, ihandle->paste_offset - voffset);
+      memset (values, 0, l * sizeof (values[0]));
+      voffset += l;
+      n_values -= l;
+      values += l;
+    }
+
+  if (n_values && voffset >= ihandle->paste_offset && voffset < ihandle->paste_offset + ihandle->n_paste_values)
     {
       l = MIN (n_values, ihandle->paste_offset + ihandle->n_paste_values - voffset);
       memcpy (values, ihandle->paste_values + voffset - ihandle->paste_offset, l * sizeof (values[0]));
@@ -495,14 +700,13 @@ insert_handle_read (GslDataHandle *data_handle,
       values += l;
     }
   
-  if (voffset >= ihandle->paste_offset + ihandle->n_paste_values && n_values)
+  if (n_values && voffset >= ihandle->paste_offset + ihandle->n_paste_values)
     {
       l = gsl_data_handle_read (ihandle->src_handle, voffset - ihandle->n_paste_values, n_values, values);
       if (l < 0 && orig_n_values == n_values)
 	return l;       /* pass on errors */
       else if (l < 0)
 	l = 0;
-      
       n_values -= l;
     }
   
@@ -518,7 +722,7 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
 			    void         (*free) (gpointer values))
 {
   static GslDataHandleFuncs insert_handle_vtable = {
-    chain_handle_open,
+    insert_handle_open,
     insert_handle_read,
     chain_handle_close,
     insert_handle_destroy,
@@ -526,33 +730,22 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
   InsertHandle *ihandle;
   gboolean success;
   
+  g_return_val_if_fail (src_handle != NULL, NULL);
   g_return_val_if_fail (n_paste_values >= 0, NULL);
-  if (!src_handle)
-    {
-      g_return_val_if_fail (insertion_offset == 0, NULL);
-      g_return_val_if_fail (n_paste_values > 0, NULL);
-    }
-  else
-    {
-      if (insertion_offset < 0)
-	insertion_offset = src_handle->n_values;
-      g_return_val_if_fail (insertion_offset <= src_handle->n_values, NULL);
-    }
   if (n_paste_values)
     g_return_val_if_fail (paste_values != NULL, NULL);
   
   ihandle = gsl_new_struct0 (InsertHandle, 1);
-  if (src_handle)
-    paste_bit_depth = MAX (src_handle->bit_depth, paste_bit_depth);
-  success = gsl_data_handle_common_init (&ihandle->dhandle, NULL, paste_bit_depth);
+  success = gsl_data_handle_common_init (&ihandle->dhandle, NULL);
   if (success)
     {
       ihandle->dhandle.name = g_strconcat (src_handle ? src_handle->name : "", "// #insert /", NULL);
       ihandle->dhandle.vtable = &insert_handle_vtable;
-      ihandle->dhandle.n_values = n_paste_values + (src_handle ? src_handle->n_values : 0);
-      ihandle->src_handle = src_handle ? gsl_data_handle_ref (src_handle) : NULL;
-      ihandle->paste_offset = insertion_offset;
+      ihandle->src_handle = gsl_data_handle_ref (src_handle);
+      ihandle->requested_paste_offset = insertion_offset;
+      ihandle->paste_offset = 0;
       ihandle->n_paste_values = n_paste_values;
+      ihandle->paste_bit_depth = paste_bit_depth;
       ihandle->paste_values = paste_values;
       ihandle->free_values = free;
     }
@@ -566,6 +759,33 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
 
 
 /* --- loop handle --- */
+static GslErrorType
+loop_handle_open (GslDataHandle      *dhandle,
+		  GslDataHandleSetup *setup)
+{
+  LoopHandle *lhandle = (LoopHandle*) dhandle;
+  GslErrorType error;
+
+  error = gsl_data_handle_open (lhandle->src_handle);
+  if (error != GSL_ERROR_NONE)
+    return error;
+
+  *setup = lhandle->src_handle->setup;
+  if (setup->n_values > lhandle->requested_last)
+    {
+      lhandle->loop_start = lhandle->requested_first;
+      lhandle->loop_width = lhandle->requested_last - lhandle->requested_first + 1;
+      setup->n_values = GSL_MAXLONG;
+    }
+  else	/* cannot loop */
+    {
+      lhandle->loop_start = setup->n_values;
+      lhandle->loop_width = 0;
+    }
+
+  return GSL_ERROR_NONE;
+}
+
 static void
 loop_handle_destroy (GslDataHandle *data_handle)
 {
@@ -604,11 +824,11 @@ loop_handle_read (GslDataHandle *data_handle,
 
 GslDataHandle*
 gsl_data_handle_new_looped (GslDataHandle *src_handle,
-			    GslLong        loop_start,
-			    GslLong        loop_end)
+			    GslLong        loop_first,
+			    GslLong        loop_last)
 {
   static GslDataHandleFuncs loop_handle_vtable = {
-    chain_handle_open,
+    loop_handle_open,
     loop_handle_read,
     chain_handle_close,
     loop_handle_destroy,
@@ -617,20 +837,20 @@ gsl_data_handle_new_looped (GslDataHandle *src_handle,
   gboolean success;
   
   g_return_val_if_fail (src_handle != NULL, NULL);
-  g_return_val_if_fail (loop_start >= 0, NULL);
-  g_return_val_if_fail (loop_start <= loop_end, NULL);
-  g_return_val_if_fail (loop_end < src_handle->n_values, NULL);
+  g_return_val_if_fail (loop_first >= 0, NULL);
+  g_return_val_if_fail (loop_last >= loop_first, NULL);
   
   lhandle = gsl_new_struct0 (LoopHandle, 1);
-  success = gsl_data_handle_common_init (&lhandle->dhandle, NULL, src_handle->bit_depth);
+  success = gsl_data_handle_common_init (&lhandle->dhandle, NULL);
   if (success)
     {
-      lhandle->dhandle.name = g_strdup_printf ("%s// #loop(0x%lx:0x%lx) /", src_handle->name, loop_start, loop_end);
+      lhandle->dhandle.name = g_strdup_printf ("%s// #loop(0x%lx:0x%lx) /", src_handle->name, loop_first, loop_last);
       lhandle->dhandle.vtable = &loop_handle_vtable;
-      lhandle->dhandle.n_values = GSL_MAXLONG;
       lhandle->src_handle = gsl_data_handle_ref (src_handle);
-      lhandle->loop_start = loop_start;
-      lhandle->loop_width = loop_end - loop_start + 1;
+      lhandle->requested_first = loop_first;
+      lhandle->requested_last = loop_last;
+      lhandle->loop_start = 0;
+      lhandle->loop_width = 0;
     }
   else
     {
@@ -654,13 +874,20 @@ dcache_handle_destroy (GslDataHandle *data_handle)
 }
 
 static GslErrorType
-dcache_handle_open (GslDataHandle *data_handle)
+dcache_handle_open (GslDataHandle      *dhandle,
+		    GslDataHandleSetup *setup)
 {
-  DCacheHandle *dhandle = (DCacheHandle*) data_handle;
-  
-  gsl_data_cache_open (dhandle->dcache);
-  
-  return 0;	/* FIXME: should catch messages here and return error */
+  DCacheHandle *chandle = (DCacheHandle*) dhandle;
+  GslErrorType error;
+
+  error = gsl_data_handle_open (chandle->dcache->dhandle);
+  if (error != GSL_ERROR_NONE)
+    return error;
+  gsl_data_cache_open (chandle->dcache);
+  *setup = chandle->dcache->dhandle->setup;
+  gsl_data_handle_close (chandle->dcache->dhandle);
+
+  return GSL_ERROR_NONE;
 }
 
 static void
@@ -703,12 +930,11 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
   g_return_val_if_fail (dcache != NULL, NULL);
   
   dhandle = gsl_new_struct0 (DCacheHandle, 1);
-  success = gsl_data_handle_common_init (&dhandle->dhandle, NULL, dcache->dhandle->bit_depth);
+  success = gsl_data_handle_common_init (&dhandle->dhandle, NULL);
   if (success)
     {
       dhandle->dhandle.name = g_strdup_printf ("%s// #dcache /", dcache->dhandle->name);
       dhandle->dhandle.vtable = &dcache_handle_vtable;
-      dhandle->dhandle.n_values = dcache->dhandle->n_values;
       dhandle->dcache = gsl_data_cache_ref (dcache);
       dhandle->node_size = GSL_DATA_CACHE_NODE_SIZE (dcache) + dcache->padding;
     }
@@ -754,7 +980,8 @@ wave_handle_destroy (GslDataHandle *data_handle)
 }
 
 static GslErrorType
-wave_handle_open (GslDataHandle *data_handle)
+wave_handle_open (GslDataHandle      *data_handle,
+		  GslDataHandleSetup *setup)
 {
   WaveHandle *whandle = (WaveHandle*) data_handle;
 
@@ -762,13 +989,31 @@ wave_handle_open (GslDataHandle *data_handle)
   if (!whandle->hfile)
     return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
   else
-    return GSL_ERROR_NONE;
+    {
+      GslLong l, fwidth = wave_format_byte_width (whandle->format);
+      /* convert size into n_values, i.e. float length */
+      l = whandle->hfile->n_bytes;
+      l -= MIN (l, whandle->byte_offset);
+      if (l >= fwidth)
+	{
+	  l /= fwidth;
+	  if (whandle->requested_length < 0)
+	    setup->n_values = l;
+	  else
+	    setup->n_values = MIN (l, whandle->requested_length);
+	}
+      else
+	setup->n_values = 0;
+      setup->n_channels = whandle->n_channels;
+      setup->bit_depth = wave_format_bit_depth (whandle->format);
+      return GSL_ERROR_NONE;
+    }
 }
 
 static void
-wave_handle_close (GslDataHandle *data_handle)
+wave_handle_close (GslDataHandle *dhandle)
 {
-  WaveHandle *whandle = (WaveHandle*) data_handle;
+  WaveHandle *whandle = (WaveHandle*) dhandle;
   
   gsl_hfile_close (whandle->hfile);
   whandle->hfile = NULL;
@@ -785,7 +1030,7 @@ wave_handle_read (GslDataHandle *data_handle,
   GslLong l, i, byte_offset;
 
   byte_offset = voffset * wave_format_byte_width (whandle->format);	/* float offset into bytes */
-  byte_offset += whandle->boffset_reminder;				/* remaining byte offset */
+  byte_offset += whandle->byte_offset;
 
   switch (whandle->format)
     {
@@ -898,11 +1143,13 @@ wave_handle_read (GslDataHandle *data_handle,
   return l;
 }
 
-static GslDataHandle*
-raw_wave_handle_new_cached (const gchar      *file_name,
-			    GslWaveFormatType format,
-			    guint	      byte_order,
-			    guint	      boffset_reminder)
+GslDataHandle*
+gsl_wave_handle_new (const gchar      *file_name,
+		     guint             n_channels,
+		     GslWaveFormatType format,
+		     guint             byte_order,
+		     GslLong           byte_offset,
+		     GslLong           n_values)
 {
   static GslDataHandleFuncs wave_handle_vtable = {
     wave_handle_open,
@@ -911,95 +1158,31 @@ raw_wave_handle_new_cached (const gchar      *file_name,
     wave_handle_destroy,
   };
   WaveHandle *whandle;
-  gboolean success;
-  
-  g_return_val_if_fail (file_name != NULL, NULL);
-  g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
-  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
-  g_return_val_if_fail (boffset_reminder < wave_format_byte_width (format), NULL);
 
-  whandle = gsl_new_struct0 (WaveHandle, 1);
-  success = gsl_data_handle_common_init (&whandle->dhandle, file_name, wave_format_bit_depth (format));
-  if (success)
-    {
-      GslLong l;
-      
-      whandle->dhandle.vtable = &wave_handle_vtable;
-      whandle->format = format;
-      whandle->byte_order = byte_order;
-      whandle->boffset_reminder = boffset_reminder;
-      whandle->hfile = NULL;
-      
-      /* convert size into n_values, i.e. float length */
-      l = whandle->dhandle.n_values;
-      if (l > whandle->boffset_reminder)
-	{
-	  l -= whandle->boffset_reminder;
-	  l /= wave_format_byte_width (format);
-	  if (l > 0)
-	    whandle->dhandle.n_values = l;
-	  else
-	    success = FALSE;
-	}
-      else
-	success = FALSE;
-
-      if (!success)
-	gsl_data_handle_common_free (&whandle->dhandle);
-    }
-  if (!success)
-    {
-      gsl_delete_struct (WaveHandle, whandle);
-      return NULL;
-    }
-
-  return &whandle->dhandle;
-}
-
-GslDataHandle*
-gsl_wave_handle_new (const gchar      *file_name,
-		     GslWaveFormatType format,
-		     guint             byte_order,
-		     GslLong           byte_offset,
-		     GslLong           n_values)
-{
-  GslDataHandle *whandle, *thandle;
-  guint fwidth, boffset_reminder;
-  GslLong offset;
-  
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
   g_return_val_if_fail (byte_offset >= 0, NULL);
+  g_return_val_if_fail (n_channels >= 1, NULL);
   g_return_val_if_fail (n_values >= 1 || n_values == -1, NULL);
 
-  fwidth = wave_format_byte_width (format);
-  boffset_reminder = byte_offset % fwidth;
-  whandle = raw_wave_handle_new_cached (file_name, format, byte_order, boffset_reminder);
-  if (!whandle)
-    return NULL;
-
-  offset = (byte_offset - boffset_reminder) / fwidth;
-  if (n_values == -1)
-    n_values = whandle->n_values - offset;
-
-  if (offset + n_values > whandle->n_values)
+  whandle = gsl_new_struct0 (WaveHandle, 1);
+  if (gsl_data_handle_common_init (&whandle->dhandle, file_name))
     {
-      gsl_data_handle_unref (whandle);
+      whandle->dhandle.vtable = &wave_handle_vtable;
+      whandle->n_channels = n_channels;
+      whandle->format = format;
+      whandle->byte_order = byte_order;
+      whandle->byte_offset = byte_offset;
+      whandle->requested_length = n_values;
+      whandle->hfile = NULL;
+      return &whandle->dhandle;
+    }
+  else
+    {
+      gsl_delete_struct (WaveHandle, whandle);
       return NULL;
     }
-
-  /* do we need a translation handle? */
-  if (offset == 0 && whandle->n_values == n_values)
-    return whandle;
-
-  thandle = gsl_data_handle_new_translate (whandle,
-					   0, offset,
-					   whandle->n_values - offset - n_values);
-  gsl_data_handle_unref (whandle);
-  g_assert (thandle->n_values == n_values);	/* paranoid */
-  
-  return thandle;
 }
 
 const gchar*

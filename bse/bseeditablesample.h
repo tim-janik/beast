@@ -35,6 +35,11 @@ extern "C" {
 #define BSE_EDITABLE_SAMPLE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_EDITABLE_SAMPLE, BseEditableSampleClass))
 
 
+/* --- object flagss --- */
+#define BSE_EDITABLE_SAMPLE_OPENED(obj)       (BSE_EDITABLE_SAMPLE (obj)->open_count > 0)
+#define BSE_EDITABLE_SAMPLE_FLAGS_USHIFT	(BSE_ITEM_FLAGS_USHIFT + 0)
+
+
 /* --- structures --- */
 typedef struct _BseEditableSample	BseEditableSample;
 typedef struct _BseEditableSampleClass	BseEditableSampleClass;
@@ -42,7 +47,7 @@ struct _BseEditableSample
 {
   BseItem	 parent_object;
 
-  guint		 in_destroy : 1;
+  guint		 open_count;
   GslWaveChunk	*wchunk;
 };
 struct _BseEditableSampleClass
@@ -52,7 +57,7 @@ struct _BseEditableSampleClass
   void	(*changed) (BseEditableSample	*sample);
 };
 
-void	bse_editable_sample_set_wchunk	(BseEditableSample	*esample,
+void	bse_editable_sample_set_wchunk	(BseEditableSample	*self,
 					 GslWaveChunk		*wchunk);
 
 

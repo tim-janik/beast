@@ -43,21 +43,19 @@ struct _GslWaveChunk
 {
   /* wave chunk data residency */
   GslDataCache   *dcache;
-  gpointer	  owner_data;
-  GslLong	  offset;
-  GslLong	  length;
+  GslLong	  length;	/* number of per-channel-values * n-channels */
 
   /* chunk specific parameters */
   gint		  n_channels;
-  gfloat	  mix_freq;	/* recorded with mix_freq */
-  gfloat	  osc_freq;	/* while oscillating at osc_freq */
   GslLong	  n_pad_values;	/* guaranteed pad values around blocks */
-  GslLong	  wave_length;	/* start + loop duration + end */
+  GslLong	  wave_length;	/* start + loop duration + end (single channel) */
 
-  /* loop spec */
-  GslWaveLoopType loop_type : 16;
+  /* flags */
   guint		  pploop_ends_backwards : 1;
   guint		  mini_loop : 1;
+
+  /* loop spec */
+  GslWaveLoopType loop_type;
   GslLong	  loop_first;
   GslLong	  loop_last;
   guint		  loop_count;
@@ -71,6 +69,16 @@ struct _GslWaveChunk
   GslWaveChunkMem tail;
   GslLong	  leave_end_norm;
   GslLong	  tail_start_norm;
+
+  GslWaveLoopType requested_loop_type;
+  GslLong         requested_loop_first;
+  GslLong         requested_loop_last;
+  guint           requested_loop_count;
+  guint           ref_count;
+  guint           open_count;
+  /* legacy */
+  gfloat	  mix_freq;	/* recorded with mix_freq */
+  gfloat	  osc_freq;	/* while oscillating at osc_freq */
 };
 struct _GslWaveChunkBlock
 {
@@ -94,22 +102,22 @@ void		gsl_wave_chunk_use_block	(GslWaveChunk		*wave_chunk,
 						 GslWaveChunkBlock	*block);
 void		gsl_wave_chunk_unuse_block	(GslWaveChunk		*wave_chunk,
 						 GslWaveChunkBlock	*block);
-GslWaveChunk*	_gsl_wave_chunk_create		(GslDataCache		*dcache,
-						 GslLong		 offset,
-						 GslLong		 n_values,
-						 guint			 n_channels,
+GslWaveChunk*	gsl_wave_chunk_new		(GslDataCache		*dcache,
 						 gfloat			 osc_freq,
 						 gfloat			 mix_freq,
 						 GslWaveLoopType	 loop_type,
-						 GslLong		 loop_start,
-						 GslLong		 loop_last,
+						 GslLong		 loop_first,
+						 GslLong		 loop_end,
 						 guint			 loop_count);
-void		_gsl_wave_chunk_destroy		(GslWaveChunk		*wchunk);
+GslWaveChunk*	gsl_wave_chunk_ref		(GslWaveChunk		*wchunk);
+void		gsl_wave_chunk_unref		(GslWaveChunk		*wchunk);
+GslErrorType	gsl_wave_chunk_open		(GslWaveChunk		*wchunk);
+void		gsl_wave_chunk_close		(GslWaveChunk		*wchunk);
 void		gsl_wave_chunk_debug_block	(GslWaveChunk		*wchunk,
 						 GslLong		 offset,
 						 GslLong		 length,
 						 gfloat			*block);
-GslWaveChunk*	gsl_wave_chunk_copy		(GslWaveChunk		*wchunk);
+GslWaveChunk*	_gsl_wave_chunk_copy		(GslWaveChunk		*wchunk);
 const gchar*	gsl_wave_loop_type_to_string	(GslWaveLoopType	 wave_loop);
 GslWaveLoopType	gsl_wave_loop_type_from_string	(const gchar		*string);
 

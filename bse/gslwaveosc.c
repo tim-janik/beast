@@ -308,16 +308,16 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
 
   if (wosc->wchunk)
     gsl_wave_chunk_unuse_block (wosc->wchunk, &wosc->block);
-  wosc->wchunk = wosc->config.wchunk_from_freq (wosc->config.wchunk_data, GSL_SIGNAL_TO_FREQ (base_freq));
+  wosc->wchunk = wosc->config.wchunk_from_freq (wosc->config.wchunk_data, base_freq);
   wosc->block.play_dir = wosc->config.play_dir;
   wosc->block.offset = wosc->config.start_offset;
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
   wosc->x = wosc->block.start;
 
   g_print ("wave lookup: want=%f got=%f length=%lu\n",
-	   GSL_SIGNAL_TO_FREQ (base_freq), wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
+	   base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
 
-  wosc->last_freq_level = base_freq;
+  wosc->last_freq_level = GSL_SIGNAL_FROM_FREQ (base_freq);
   wosc->last_mod_level = 0;
   gsl_wave_osc_set_filter (wosc, base_freq, TRUE);
 }
@@ -346,8 +346,6 @@ gsl_wave_osc_config (GslWaveOscData   *wosc,
       if (wosc->config.cfreq != config->cfreq)
 	{
 	  wosc->config.cfreq = config->cfreq;
-	  wosc->last_freq_level = wosc->config.cfreq;
-	  wosc->last_mod_level = 0;
 	  gsl_wave_osc_retrigger (wosc, wosc->config.cfreq);
 	}
     }

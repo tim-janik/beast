@@ -67,7 +67,7 @@ extern "C" {
 
 
 /* --- BseSource flags --- */
-typedef enum
+typedef enum	/*< skip >*/
 {
   BSE_SOURCE_FLAG_PREPARED		= 1 << (BSE_ITEM_FLAGS_USHIFT + 0),
   BSE_SOURCE_FLAG_COLLECTED		= 1 << (BSE_ITEM_FLAGS_USHIFT + 1)

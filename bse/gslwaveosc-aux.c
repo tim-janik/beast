@@ -51,44 +51,64 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
       if (CHECK_SYNC)
 	{
 	  gfloat sync_level = *sync_in++;
-
 	  if_reject (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level))
 	    {
 	      wosc->j = wosc_j;
-	      gsl_wave_osc_retrigger (wosc, CHECK_FREQ ? *freq_in : wosc->config.cfreq);
+	      gsl_wave_osc_retrigger (wosc, CHECK_FREQ ? GSL_SIGNAL_TO_FREQ (*freq_in) : wosc->config.cfreq);
+	      /* retrigger alters last_freq and last_mod */
 	      last_freq_level = wosc->last_freq_level;
 	      last_mod_level = wosc->last_mod_level;
 	      wosc_j = wosc->j;
 	      boundary = block->end;
 	      /* FIXME: g_assert (ABS (block->dirstride) == 1); */
+	      last_sync_level = sync_level;
 	    }
-	  last_sync_level = sync_level;
 	}
-      if (CHECK_FREQ || CHECK_MOD)
+      if (CHECK_MOD && CHECK_FREQ)
 	{
-	  gfloat freq_level = CHECK_FREQ ? *freq_in++ : wosc->config.cfreq;
-	  gfloat mod_level = CHECK_MOD ? *mod_in++ : 0;
-
-	  if (CHECK_FREQ)
-	    freq_level = GSL_SIGNAL_TO_FREQ (freq_level);
-	  if ((CHECK_FREQ && GSL_SIGNAL_FREQ_CHANGED (last_freq_level, freq_level)) ||
-	      (CHECK_MOD && GSL_SIGNAL_MOD_CHANGED (last_mod_level, mod_level)))
+	  gfloat mod_level = *mod_in++, freq_level = *freq_in++;
+	  if_reject (GSL_SIGNAL_FREQ_CHANGED (last_freq_level, freq_level))
 	    {
-	      gfloat new_freq = freq_level;
-
-	      if (CHECK_MOD)
-		{
-		  if (EXPONENTIAL_FM)
-		    new_freq = freq_level * gsl_signal_exp2 (wosc->config.fm_strength * mod_level);
-		  else /* LINEAR_FM */
-		    new_freq = freq_level + freq_level * wosc->config.fm_strength * mod_level;
-		}
+	      last_freq_level = freq_level;
+	      if (GSL_SIGNAL_MOD_CHANGED (last_mod_level, mod_level))
+		last_mod_level = mod_level;
+	      goto UPDATE_FREQ;
+	    }
+          else if_reject (GSL_SIGNAL_MOD_CHANGED (last_mod_level, mod_level))
+	    {
+	      gfloat new_freq;
+	      last_mod_level = mod_level;
+	    UPDATE_FREQ:
+	      new_freq = GSL_SIGNAL_TO_FREQ (freq_level);
+	      if (EXPONENTIAL_FM)
+		new_freq *= gsl_signal_exp2 (wosc->config.fm_strength * mod_level);
+	      else /* LINEAR_FM */
+		new_freq *= 1.0 + wosc->config.fm_strength * mod_level;
 	      wave_osc_transform_filter (wosc, new_freq);
 	    }
-	  if (CHECK_FREQ)
-	    last_freq_level = freq_level;
-	  if (CHECK_MOD)
-	    last_mod_level = mod_level;
+	}
+      else if (CHECK_MOD)
+	{
+	  gfloat mod_level = *mod_in++;
+	  if (GSL_SIGNAL_MOD_CHANGED (last_mod_level, mod_level))
+	    {
+	      gfloat new_freq = wosc->config.cfreq;
+	      if (EXPONENTIAL_FM)
+		new_freq *= gsl_signal_exp2 (wosc->config.fm_strength * mod_level);
+	      else /* LINEAR_FM */
+		new_freq *= 1.0 + wosc->config.fm_strength * mod_level;
+	      last_mod_level = mod_level;
+	      wave_osc_transform_filter (wosc, new_freq);
+	    }
+	}
+      else if (CHECK_FREQ)
+	{
+	  gfloat freq_level = *freq_in++;
+	  if (GSL_SIGNAL_FREQ_CHANGED (last_freq_level, freq_level))
+	    {
+	      last_freq_level = freq_level;
+	      wave_osc_transform_filter (wosc, GSL_SIGNAL_TO_FREQ (freq_level));
+	    }
 	}
       
       /* process filter while necesary */

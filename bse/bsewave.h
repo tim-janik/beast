@@ -46,8 +46,6 @@ struct _BseWave
 {
   BseSource	     parent_object;
 
-  guint		     n_channels;
-
   /* locator */
   guint		     locator_set : 1;
   gchar		    *file_name;
@@ -58,10 +56,9 @@ struct _BseWave
   guint		     n_wchunks;
   GSList	    *wave_chunks;
 
-  /* prepared-state keep-alive-cache */
-  GSList	    *abandoned_chunks;
-
-  /* prepared-state GslModule index */
+  /* requested GslModule indices */
+  guint		     request_count;
+  guint		     index_dirty : 1;
   GSList	    *index_list;
 };
 struct _BseWaveClass
@@ -82,7 +79,7 @@ GslWaveChunk*   bse_wave_lookup_chunk           (BseWave        *wave,
 						 gfloat		 mix_freq);
 void            bse_wave_remove_chunk           (BseWave        *wave,
 						 GslWaveChunk   *wchunk);
-BseErrorType	bse_wave_load_wave		(BseWave	*wave,
+BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name,
 						 GDArray	*list_array,
@@ -90,8 +87,11 @@ BseErrorType	bse_wave_load_wave		(BseWave	*wave,
 void		bse_wave_set_locator		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name);
+void		bse_wave_request_index		(BseWave	*wave);
 BseWaveIndex*	bse_wave_get_index_for_modules	(BseWave	*wave);
-/* BseWaveIndex is safe to use from GslModules */
+void		bse_wave_drop_index		(BseWave	*wave);
+
+/* BseWaveIndex is safe to use from GslModules (self-contained constant structure) */
 GslWaveChunk*	bse_wave_index_lookup_best	(BseWaveIndex	*windex,
 						 gfloat		 osc_freq);
 						 

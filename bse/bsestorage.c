@@ -401,11 +401,11 @@ bse_storage_needs_break (BseStorage *storage)
 }
 
 static BseStorageBBlock*
-bse_storage_get_create_wblock (BseStorage    *storage,
-			       guint	      bytes_per_value,
-			       GslDataHandle *data_handle,
-			       GslLong	      voffset,
-			       GslLong	      vlength)
+bse_storage_ensure_wblock (BseStorage    *storage,
+			   guint          bytes_per_value,
+			   GslDataHandle *data_handle,
+			   GslLong        voffset,
+			   GslLong        vlength)
 {
   BseStorageBBlock *bblock, *last = NULL;
 
@@ -435,10 +435,9 @@ bse_storage_get_create_wblock (BseStorage    *storage,
 }
 
 void
-bse_storage_put_wave_handle (BseStorage    *storage,
+bse_storage_put_data_handle (BseStorage    *storage,
 			     guint	    significant_bits,
 			     GslDataHandle *data_handle,
-			     GslLong        voffset,
 			     GslLong        vlength)
 {
   BseStorageBBlock *bblock;
@@ -447,9 +446,7 @@ bse_storage_put_wave_handle (BseStorage    *storage,
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
   g_return_if_fail (data_handle != NULL);
-  g_return_if_fail (voffset >= 0 && vlength > 0);
-  g_return_if_fail (voffset < data_handle->n_values);
-  g_return_if_fail (voffset + vlength <= data_handle->n_values);
+  g_return_if_fail (vlength > 0);
 
   if (significant_bits <= 8)
     bytes_per_value = 1;
@@ -458,7 +455,7 @@ bse_storage_put_wave_handle (BseStorage    *storage,
   else
     bytes_per_value = 4;
 
-  bblock = bse_storage_get_create_wblock (storage, bytes_per_value, data_handle, voffset, vlength);
+  bblock = bse_storage_ensure_wblock (storage, bytes_per_value, data_handle, 0, vlength);
 
   bse_storage_handle_break (storage);
   bse_storage_printf (storage,
@@ -517,12 +514,17 @@ bse_storage_flush_fd (BseStorage *storage,
       do
         l = write (fd, term, n);
       while (l < 0 && errno == EINTR);
-
+      
       for (bblock = storage->wblocks; bblock; bblock = bblock->next)
 	{
+	  GslErrorType error = gsl_data_handle_open (bblock->data_handle);
 	  GslLong vlength = bblock->vlength;
 	  GslLong voffset = bblock->write_voffset, pad;
-
+	  
+	  if (error)
+	    bse_storage_warn (storage, "failed to open data handle (%s) for reading: %s",
+			      gsl_data_handle_name (bblock->data_handle),
+			      gsl_strerror (error));
 	  while (vlength > 0)
 	    {
 	      gfloat fbuffer[8192];
@@ -530,13 +532,17 @@ bse_storage_flush_fd (BseStorage *storage,
 	      guint n_retries = 4;
 	      gssize s;
 	      
-	      do
-		l = gsl_data_handle_read (bblock->data_handle, voffset, l, fbuffer);
-	      while (l < 1 && n_retries--);
+	      if (error)
+		memset (fbuffer, 0, l * sizeof (fbuffer[0]));
+	      else
+		do
+		  l = gsl_data_handle_read (bblock->data_handle, voffset, l, fbuffer);
+		while (l < 1 && n_retries--);
 	      if (l < 1)
 		{
-		  g_warning ("failed to retrive data for storage"); /* FIXME */
-		  l = MIN (8192, vlength);
+		  bse_storage_warn (storage, "failed to read from data handle (%s): %s",
+				    gsl_data_handle_name (bblock->data_handle),
+				    gsl_strerror (error));
 		  memset (fbuffer, 0, l * sizeof (fbuffer[0]));
 		}
 	      voffset += l;
@@ -558,6 +564,8 @@ bse_storage_flush_fd (BseStorage *storage,
 		s = write (fd, fbuffer, l);
 	      while (s < 0 && errno == EINTR);
 	    }
+	  if (!error)
+	    gsl_data_handle_close (bblock->data_handle);
 	  pad = bblock->storage_length - bblock->vlength * bblock->bytes_per_value;
 	  while (pad > 0)
             {
@@ -789,13 +797,15 @@ bse_storage_warn (BseStorage  *storage,
   gchar *string;
   
   g_return_if_fail (BSE_IS_STORAGE (storage));
-  g_return_if_fail (BSE_STORAGE_READABLE (storage));
   
   va_start (args, format);
   string = g_strdup_vprintf (format, args);
   va_end (args);
   
-  g_scanner_warn (storage->scanner, "%s", string);
+  if (BSE_STORAGE_READABLE (storage))
+    g_scanner_warn (storage->scanner, "%s", string);
+  else
+    g_printerr ("during storage: %s", string);
   
   g_free (string);
 }
@@ -961,7 +971,10 @@ bse_storage_ensure_bin_offset (BseStorage *storage,
 }
 
 GTokenType
-bse_storage_parse_wave_handle (BseStorage     *storage,
+bse_storage_parse_data_handle (BseStorage     *storage,
+			       guint           n_channels,
+			       gfloat          osc_freq,
+			       gfloat          mix_freq,
 			       GslDataHandle **data_handle_p)
 {
   GScanner *scanner;
@@ -970,9 +983,11 @@ bse_storage_parse_wave_handle (BseStorage     *storage,
   BseErrorType error;
   gchar *string;
 
-  if (data_handle_p) *data_handle_p = NULL;
+  g_return_val_if_fail (data_handle_p != NULL, G_TOKEN_ERROR);
+  *data_handle_p = NULL;
   g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
   g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
+  g_return_val_if_fail (n_channels > 0, G_TOKEN_ERROR);
 
   /*
     bse_storage_printf (storage,
@@ -1035,12 +1050,12 @@ bse_storage_parse_wave_handle (BseStorage     *storage,
   
   parse_or_return (scanner, ')');
   
-  /* except for BSE_ERROR_FILE_NOT_FOUND, all errors are fatal ones,
-   * we can't guarantee that further parsing is possible.
-   */
   error = bse_storage_ensure_bin_offset (storage, NULL);
   if (error)
     {
+      /* except for BSE_ERROR_FILE_NOT_FOUND, all errors are fatal ones,
+       * we can't guarantee that further parsing is possible.
+       */
       if (error == BSE_ERROR_FILE_NOT_FOUND)
 	bse_storage_warn (storage, "no device to retrive binary data from");
       else
@@ -1048,14 +1063,13 @@ bse_storage_parse_wave_handle (BseStorage     *storage,
       return G_TOKEN_NONE;
     }
 
-  if (data_handle_p)
-    *data_handle_p = gsl_wave_handle_new (storage->scanner->input_name,
-					  bblock.bytes_per_value == 1 ? GSL_WAVE_FORMAT_SIGNED_8 :
-					  bblock.bytes_per_value == 2 ? GSL_WAVE_FORMAT_SIGNED_16 :
-					  GSL_WAVE_FORMAT_FLOAT,
-					  byte_order,
-					  storage->bin_offset + 1 + bblock.storage_offset,
-					  bblock.vlength);
+  *data_handle_p = gsl_wave_handle_new (storage->scanner->input_name, n_channels,
+					bblock.bytes_per_value == 1 ? GSL_WAVE_FORMAT_SIGNED_8 :
+					bblock.bytes_per_value == 2 ? GSL_WAVE_FORMAT_SIGNED_16 :
+					GSL_WAVE_FORMAT_FLOAT,
+					byte_order,
+					storage->bin_offset + 1 + bblock.storage_offset,
+					bblock.vlength);
   
   return G_TOKEN_NONE;
 }

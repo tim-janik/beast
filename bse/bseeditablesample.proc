@@ -26,6 +26,69 @@ CRIGHTS	= "Tim Janik";
 DATE	= "2002";
 
 
+METHOD (BseEditableSample, open) {
+  HELP	= ("Open the sample for reading.");
+  IN	= g_param_spec_object ("esample", "Editable Sample", NULL,
+			       BSE_TYPE_EDITABLE_SAMPLE, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseEditableSample *esample = g_value_get_object (in_values++);
+  BseErrorType error;
+
+  /* check parameters */
+  if (!BSE_IS_EDITABLE_SAMPLE (esample))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (!esample->wchunk)
+    error = BSE_ERROR_NOT_FOUND;
+  else if (esample->open_count)
+    {
+      esample->open_count++;
+      error = BSE_ERROR_NONE;
+    }
+  else
+    {
+      error = gsl_wave_chunk_open (esample->wchunk);
+      if (!error)
+	esample->open_count++;
+    }
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseEditableSample, close) {
+  HELP	= ("Close an opened sample.");
+  IN	= g_param_spec_object ("esample", "Editable Sample", NULL,
+			       BSE_TYPE_EDITABLE_SAMPLE, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseEditableSample *esample = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_EDITABLE_SAMPLE (esample) || !esample->wchunk || !esample->open_count)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  esample->open_count--;
+  if (!esample->open_count)
+    gsl_wave_chunk_close (esample->wchunk);
+
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseEditableSample, get-length) {
   HELP	= ("Return the number of values in the sample.");
   IN	= g_param_spec_object ("esample", "Editable Sample", NULL,
@@ -38,14 +101,16 @@ METHOD (BseEditableSample, get-length) {
 {
   /* extract parameter values */
   BseEditableSample *esample = g_value_get_object (in_values++);
-  GslDataCache *dcache = esample->wchunk ? esample->wchunk->dcache : NULL;
+  GslDataCache *dcache = NULL;
   
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  g_value_set_uint (out_values++, dcache ? dcache->dhandle->n_values : 0);
+  if (BSE_EDITABLE_SAMPLE_OPENED (esample) && esample->wchunk)
+    dcache = esample->wchunk->dcache;
+  g_value_set_uint (out_values++, dcache ? gsl_data_handle_length (dcache->dhandle) : 0);
 
   return BSE_ERROR_NONE;
 }
@@ -111,14 +176,16 @@ METHOD (BseEditableSample, read-samples) {
   /* extract parameter values */
   BseEditableSample *esample = g_value_get_object (in_values++);
   guint              voffset = g_value_get_uint (in_values++);
-  GslDataCache *dcache = esample->wchunk ? esample->wchunk->dcache : NULL;
+  GslDataCache *dcache = NULL;
   BswValueBlock *vblock;
 
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
-  if (!dcache || voffset >= dcache->dhandle->n_values)
+  if (BSE_EDITABLE_SAMPLE_OPENED (esample) && esample->wchunk)
+    dcache = esample->wchunk->dcache;
+  if (!dcache || voffset >= gsl_data_handle_length (dcache->dhandle))
     vblock = bsw_value_block_new (1024);
   else
     {
@@ -126,7 +193,7 @@ METHOD (BseEditableSample, read-samples) {
       guint i, l, dnode_length = dcache->node_size;
 
       l = dnode_length - (voffset - dnode->offset) + dcache->padding;
-      l = MIN (l, dcache->dhandle->n_values - voffset);
+      l = MIN (l, gsl_data_handle_length (dcache->dhandle) - voffset);
       vblock = bsw_value_block_new (l);
       for (i = 0; i < l; i++)
 	vblock->values[i] = dnode->data[voffset - dnode->offset + i];
@@ -167,13 +234,15 @@ METHOD (BseEditableSample, collect-stats) {
   guint              stepping   = g_value_get_uint (in_values++);
   guint              max_pairs  = g_value_get_uint (in_values++);
   BswValueBlock *vblock;
-  GslDataCache *dcache = esample->wchunk ? esample->wchunk->dcache : NULL;
+  GslDataCache *dcache = NULL;
 
   /* check parameters */
   if (!BSE_IS_EDITABLE_SAMPLE (esample) || stepping < 1)
     return BSE_ERROR_PROC_PARAM_INVAL;
 
-  if (!esample->wchunk || voffset + block_size > dcache->dhandle->n_values)
+  if (BSE_EDITABLE_SAMPLE_OPENED (esample) && esample->wchunk)
+    dcache = esample->wchunk->dcache;
+  if (!dcache || voffset + block_size > gsl_data_handle_length (dcache->dhandle))
     vblock = bsw_value_block_new (max_pairs * 2);
   else
     {

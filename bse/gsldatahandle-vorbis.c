@@ -37,15 +37,14 @@
 typedef struct {
   GslDataHandle dhandle;
 
-  gboolean setup_validation;	/* for internal setup phase */
-  guint    n_streams;
   guint    stream;
-  guint    n_channels;
+  guint    n_streams;
 
   /* live data */
   gint64  soffset;	/* our PCM start offset */
   guint   max_block_size;
 
+  /* pcm read out cache */
   GslLong pcm_pos, pcm_length;
   gfloat *pcm[MAX_CHANNELS];
 
@@ -136,7 +135,8 @@ static ov_callbacks rfile_ov_callbacks = {
 };
 
 static GslErrorType
-dh_vorbis_open (GslDataHandle *data_handle)
+dh_vorbis_open (GslDataHandle      *data_handle,
+		GslDataHandleSetup *setup)
 {
   VorbisHandle *vhandle = (VorbisHandle*) data_handle;
   GslRFile *rfile;
@@ -167,12 +167,9 @@ dh_vorbis_open (GslDataHandle *data_handle)
     }
 
   n = ov_streams (&vhandle->ofile);
-  if (vhandle->setup_validation && n > 0)
-    {
-      vhandle->n_streams = n;
-      vhandle->stream = n - 1;
-    }
-  else if (n != vhandle->n_streams)
+  if (n > vhandle->stream)
+    vhandle->n_streams = n;
+  else
     {
       ov_clear (&vhandle->ofile); /* closes file */
       return GSL_ERROR_OPEN_FAILED;
@@ -184,15 +181,13 @@ dh_vorbis_open (GslDataHandle *data_handle)
 
   n = ov_pcm_total (&vhandle->ofile, vhandle->stream);
   vi = ov_info (&vhandle->ofile, vhandle->stream);
-  if (vhandle->setup_validation && n > 0 && vi)
+  if (n > 0 && vi && vi->channels && ov_pcm_seek (&vhandle->ofile, vhandle->soffset) >= 0)
     {
-      vhandle->n_channels = vi->channels;
-      vhandle->dhandle.n_values = n * vhandle->n_channels;
+      setup->n_channels = vi->channels;
+      setup->n_values = n * setup->n_channels;
+      setup->bit_depth = 24;
     }
-
-  if (!vi || vi->channels != vhandle->n_channels ||
-      n * vi->channels != vhandle->dhandle.n_values ||
-      ov_pcm_seek (&vhandle->ofile, vhandle->soffset) < 0)
+  else
     {
       ov_clear (&vhandle->ofile); /* closes file */
       return GSL_ERROR_OPEN_FAILED;
@@ -208,14 +203,14 @@ dh_vorbis_open (GslDataHandle *data_handle)
 }
 
 static GslLong
-dh_vorbis_coarse_seek (GslDataHandle *data_handle,
+dh_vorbis_coarse_seek (GslDataHandle *dhandle,
 		       GslLong        voffset)
 {
-  VorbisHandle *vhandle = (VorbisHandle*) data_handle;
-  GslLong opos = vhandle->pcm_pos, pos = voffset / vhandle->n_channels;
+  VorbisHandle *vhandle = (VorbisHandle*) dhandle;
+  GslLong opos = vhandle->pcm_pos, pos = voffset / dhandle->setup.n_channels;
   
   if (voffset < 0)
-    return vhandle->pcm_pos * vhandle->n_channels;
+    return vhandle->pcm_pos * dhandle->setup.n_channels;
 
   if (pos < vhandle->pcm_pos ||
       pos >= vhandle->pcm_pos + vhandle->pcm_length + SEEK_BY_READ_AHEAD (vhandle))
@@ -233,7 +228,7 @@ dh_vorbis_coarse_seek (GslDataHandle *data_handle,
   g_printerr ("OggS-SEEK: at %lu want %lu got %lu (diff-requested %ld)\n",
 	      opos, pos, vhandle->pcm_pos, pos - opos);
 
-  return vhandle->pcm_pos * vhandle->n_channels;
+  return vhandle->pcm_pos * dhandle->setup.n_channels;
 }
 
 static void
@@ -250,18 +245,18 @@ read_packet (VorbisHandle *vhandle)
       dh_vorbis_coarse_seek (&vhandle->dhandle, 0);
     }
   else
-    for (i = 0; i < vhandle->n_channels; i++)
+    for (i = 0; i < vhandle->dhandle.setup.n_channels; i++)
       vhandle->pcm[i] = pcm[i];
 }
 
 static GslLong
-dh_vorbis_read (GslDataHandle *data_handle,
+dh_vorbis_read (GslDataHandle *dhandle,
 		GslLong        voffset, /* in values */
 		GslLong        n_values,
 		gfloat        *values)
 {
-  VorbisHandle *vhandle = (VorbisHandle*) data_handle;
-  GslLong pos = voffset / vhandle->n_channels;
+  VorbisHandle *vhandle = (VorbisHandle*) dhandle;
+  GslLong pos = voffset / dhandle->setup.n_channels;
 
   if (pos < vhandle->pcm_pos ||
       pos >= vhandle->pcm_pos + vhandle->pcm_length + SEEK_BY_READ_AHEAD (vhandle))
@@ -269,26 +264,26 @@ dh_vorbis_read (GslDataHandle *data_handle,
       GslLong tmp;
 
       /* suckage, needs to seek in file, this takes ages */
-      tmp = dh_vorbis_coarse_seek (data_handle, voffset);
+      tmp = dh_vorbis_coarse_seek (dhandle, voffset);
       g_assert (tmp <= voffset);
     }
 
   while (pos >= vhandle->pcm_pos + vhandle->pcm_length)
     read_packet (vhandle);
 
-  n_values = MIN (n_values, vhandle->pcm_length * vhandle->n_channels);
+  n_values = MIN (n_values, vhandle->pcm_length * dhandle->setup.n_channels);
 
   /* interleave into output buffer */
   if (pos >= vhandle->pcm_pos && pos < vhandle->pcm_pos + vhandle->pcm_length)
     {
-      guint offset = voffset - vhandle->pcm_pos * vhandle->n_channels;
-      guint align = offset % vhandle->n_channels;
-      guint n_samples = MIN (n_values, vhandle->pcm_length * vhandle->n_channels - offset);
+      guint offset = voffset - vhandle->pcm_pos * dhandle->setup.n_channels;
+      guint align = offset % dhandle->setup.n_channels;
+      guint n_samples = MIN (n_values, vhandle->pcm_length * dhandle->setup.n_channels - offset);
       gfloat *pcm[MAX_CHANNELS], *bound = values + n_samples;
       guint i;
       
-      offset /= vhandle->n_channels;
-      for (i = 0; i < vhandle->n_channels; i++)
+      offset /= dhandle->setup.n_channels;
+      for (i = 0; i < dhandle->setup.n_channels; i++)
 	pcm[i] = vhandle->pcm[i] + offset + (i < align);
 
       for (i = align; values < bound; values++)
@@ -297,7 +292,7 @@ dh_vorbis_read (GslDataHandle *data_handle,
 
 	  f = CLAMP (f, -1.0, 1.0);
 	  *values = f;
-	  if (++i >= vhandle->n_channels)
+	  if (++i >= dhandle->setup.n_channels)
 	    i = 0;
 	}
       return n_samples;
@@ -307,9 +302,9 @@ dh_vorbis_read (GslDataHandle *data_handle,
 }
 
 static void
-dh_vorbis_close (GslDataHandle *data_handle)
+dh_vorbis_close (GslDataHandle *dhandle)
 {
-  VorbisHandle *vhandle = (VorbisHandle*) data_handle;
+  VorbisHandle *vhandle = (VorbisHandle*) dhandle;
 
   ov_clear (&vhandle->ofile);
   vhandle->pcm_pos = 0;
@@ -343,46 +338,28 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
   g_return_val_if_fail (file_name != NULL, NULL);
 
   vhandle = gsl_new_struct0 (VorbisHandle, 1);
-  success = gsl_data_handle_common_init (&vhandle->dhandle, file_name, 16);
+  success = gsl_data_handle_common_init (&vhandle->dhandle, file_name);
   if (success)
     {
       GslErrorType error;
 
       vhandle->dhandle.vtable = &dh_vorbis_vtable;
-      vhandle->dhandle.n_values = 0;
       vhandle->n_streams = 0;
-      vhandle->n_channels = 0;
+      vhandle->stream = lbitstream;
 
-      /* we can only do the remaining setup and check matters if we
-       * actually open the handle
+      /* we can only check matters upon opening
        */
-      vhandle->setup_validation = TRUE;
       error = gsl_data_handle_open (&vhandle->dhandle);
-      vhandle->setup_validation = FALSE;
-      if (!error && vhandle->soffset + vhandle->dhandle.n_values &&
-	  vhandle->n_streams && lbitstream < vhandle->n_streams)
-	{
-	  vorbis_info *vi = ov_info (&vhandle->ofile, lbitstream);
-
-	  if (vi && vi->channels > 0 && vi->channels <= MAX_CHANNELS)
-	    {
-	      GslLong n = ov_pcm_total (&vhandle->ofile, lbitstream);
-	      
-	      if (n > 0)
-		{
-		  vhandle->stream = lbitstream;
-		  vhandle->n_channels = vi->channels;
-		  vhandle->dhandle.n_values = n * vhandle->n_channels;
-		}
-	      gsl_data_handle_close (&vhandle->dhandle);
-
-	      return &vhandle->dhandle;
-	    }
-	}
       if (!error)
-	gsl_data_handle_close (&vhandle->dhandle);
-      gsl_data_handle_unref (&vhandle->dhandle);
-      return NULL;
+	{
+	  gsl_data_handle_close (&vhandle->dhandle);
+	  return &vhandle->dhandle;
+	}
+      else
+	{
+	  gsl_data_handle_unref (&vhandle->dhandle);
+	  return NULL;
+	}
     }
   else
     {

@@ -1,3 +1,47 @@
+Sat Jul 27 06:26:10 2002  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle.[hc]: redesigned some basic things.
+	data handles correspond to samples now, they carry n_values,
+	n_channels and bit_depth, provided accessors for those and
+	the data handle name. these values are only valid for opened
+	data handles now though, implementations have to fill in a
+	setup structure upon openening to provide those values.
+	(gsl_data_handle_new_mem): new data handle for constant data
+	since gsl_data_handle_new_insert() doesn't allow a NULL src_handle
+	anymore.
+
+	* gslwavechunk.[hc]: life time redesign. wave chunks are ref counted
+	now and have to be explicitely opened.
+
+	* gslfilehash.c: remove debugging code.
+
+	* gslloader.c: adapt to new wave chunk API.
+
+	* bseeditablesample.[hcp]*: adaptions accroding to the new wave chunk
+	API. users have to explicitely open and editable sample now.
+
+	* gslloader-gslwave.c:
+	* gsldatautils.c:
+	* gsldatahandle-vorbis.c:
+	* gsldatahandle-mad.c:
+	* gsldatacache.c:
+	* bsestorage.[hc]: adaptions to the new data handle API.
+
+	* bsewave.[hc]: adaptions to the new data handle and wave chunk API.
+	callers must explicitely announce interest in the wave chunk index now.
+
+	* bsewaveosc.[hc]: use new BseWave API, cleanup and fix object
+	reference handling. use new GslWaveChunk API.
+	(wmod_process): pass NULL for non-connected input buffers.
+
+	* gslwaveosc*.[hc]: fix read out of constant default frequency,
+	frequency signal and modulation signal updates and the frequency
+	argument to gsl_wave_osc_retrigger() (was expected as signal frequency).
+
+	* gslwchunk.c: test case fixup according to new APIs.
+	
+	* some ChangeLog cleanups.
+
 Thu Jul 25 01:12:51 2002  Tim Janik  <timj@gtk.org>
 
 	* gslfilehash.[hc]: new files, implementing GslHFile, an MT-safe
@@ -1948,6 +1992,72 @@ Sun Apr  2 04:53:12 2000  Tim Janik  <timj@gtk.org>
 	* Makefile.am: removed glib-* entries that went into blib.
 	* glib-*.[hc]: files removed.
 
+Fri Apr 28 21:33:52 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.h: more adaptions for GLib 1.3.1 compatibility.
+	* glib-extra.c (g_strcanon): only allow characters passed as
+	valid_chars.
+
+	* glib-gparam.c (g_param_spec_internal): 
+	* glib-gparam.c (g_param_spec_hash_table_lookup): list all valid
+	characters in call to g_strcanon().
+
+Mon Apr 17 20:45:50 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-gobject.c (g_object_base_class_finalize): oops, don't unset
+	n_params prior to destructing them.
+
+Tue Apr 11 04:28:10 2000  Tim Janik  <timj@gtk.org>
+
+	* fixed a coupole of bugs in the initial parameter/object
+	implementations, after getting beast running on GObject and GValue.
+
+	* btype.[hc]: miscellaneous B* type stuff, provide sequential
+	is for B_TYPE_PARAM_* types, so code can switch() on them.
+
+Fri Apr  7 04:27:49 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-gobject.[hc]: completed parameter set/get implementations,
+	along with asyncronous parameter changed notification queue.
+
+Mon Apr  2 02:07:55 2000  Tim Janik  <timj@gtk.org>
+
+	* bparam.[hc]: BParamSpec implementations, some of them are just
+	simple extensions of the GLib parameter specifications.
+
+Sun Apr  2 04:54:36 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-includes.h: mangle GLib extension files together.
+
+	* glib-gobject.[hc]: GObject implementation, that is facilities
+	for setting/getting quarked data and reference counting.
+
+	* glib-gparamspecs.[hc]: first actuall parameter implementations
+	for GLib, so far we have: char, uchar, bool, int, uint, long,
+	ulong, enum, flags, float, double, string and object. each of these
+	GParamSpecs is a new instantiatable type in its own respect,
+	so the .c file derives 13 new types from G_TYPE_PARAM and
+	defines over 50 (*2) conversion facilities.
+
+	* glib-gvaluecollector.h: generic varargs handling stubs for
+	GParamSpecs, private header file (does get installed for
+	inclusion into user code though).
+
+	* glib-gvalue.[hc]: GValue functionality implementation.
+
+	* glib-gparam.[hc]: basis GParamSpec implementation for
+	the virtual base type G_TYPE_PARAM.
+
+        * glib-genums.[hc]: enum/flags type implementation, based on
+	bseenum.[hc].
+
+	* glib-extra.[hc]: GLib additions, including 1.3 compatibility
+	routines and various other functions, from string manipulation
+	over list manipulation up to a unix signal GSource.
+
+	* glib-gtype.[hc]: GLib Type System implementation, heavily
+	based on BSE's dynamic type system.
+
 Tue Mar 28 14:39:38 2000  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c (bse_storage_put_bin_data): corrected byte order
@@ -3044,68 +3154,3 @@ Wed May  4 16:43:45 1999  Tim Janik  <timj@gtk.org>
 Tue Mar 24 04:28:26 1998  Tim Janik  <timj@gtk.org>
 
 	* started ChangeLog.
-Fri Apr 28 21:33:52 2000  Tim Janik  <timj@gtk.org>
-
-	* glib-extra.h: more adaptions for GLib 1.3.1 compatibility.
-	* glib-extra.c (g_strcanon): only allow characters passed as
-	valid_chars.
-
-	* glib-gparam.c (g_param_spec_internal): 
-	* glib-gparam.c (g_param_spec_hash_table_lookup): list all valid
-	characters in call to g_strcanon().
-
-Mon Apr 17 20:45:50 2000  Tim Janik  <timj@gtk.org>
-
-	* glib-gobject.c (g_object_base_class_finalize): oops, don't unset
-	n_params prior to destructing them.
-
-Tue Apr 11 04:28:10 2000  Tim Janik  <timj@gtk.org>
-
-	* fixed a coupole of bugs in the initial parameter/object
-	implementations, after getting beast running on GObject and GValue.
-
-	* btype.[hc]: miscellaneous B* type stuff, provide sequential
-	is for B_TYPE_PARAM_* types, so code can switch() on them.
-
-Fri Apr  7 04:27:49 2000  Tim Janik  <timj@gtk.org>
-
-	* glib-gobject.[hc]: completed parameter set/get implementations,
-	along with asyncronous parameter changed notification queue.
-
-Mon Apr  2 02:07:55 2000  Tim Janik  <timj@gtk.org>
-
-	* bparam.[hc]: BParamSpec implementations, some of them are just
-	simple extensions of the GLib parameter specifications.
-
-Sun Apr  2 04:54:36 2000  Tim Janik  <timj@gtk.org>
-
-	* glib-includes.h: mangle GLib extension files together.
-
-	* glib-gobject.[hc]: GObject implementation, that is facilities
-	for setting/getting quarked data and reference counting.
-
-	* glib-gparamspecs.[hc]: first actuall parameter implementations
-	for GLib, so far we have: char, uchar, bool, int, uint, long,
-	ulong, enum, flags, float, double, string and object. each of these
-	GParamSpecs is a new instantiatable type in its own respect,
-	so the .c file derives 13 new types from G_TYPE_PARAM and
-	defines over 50 (*2) conversion facilities.
-
-	* glib-gvaluecollector.h: generic varargs handling stubs for
-	GParamSpecs, private header file (does get installed for
-	inclusion into user code though).
-
-	* glib-gvalue.[hc]: GValue functionality implementation.
-
-	* glib-gparam.[hc]: basis GParamSpec implementation for
-	the virtual base type G_TYPE_PARAM.
-
-        * glib-genums.[hc]: enum/flags type implementation, based on
-	bseenum.[hc].
-
-	* glib-extra.[hc]: GLib additions, including 1.3 compatibility
-	routines and various other functions, from string manipulation
-	over list manipulation up to a unix signal GSource.
-
-	* glib-gtype.[hc]: GLib Type System implementation, heavily
-	based on BSE's dynamic type system.

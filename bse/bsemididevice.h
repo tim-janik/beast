@@ -43,7 +43,7 @@ extern "C" {
 
 
 /* --- enums --- */
-typedef enum
+typedef enum	/*< skip >*/
 {
   BSE_MIDI_FLAG_OPEN		= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
   BSE_MIDI_FLAG_READABLE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),

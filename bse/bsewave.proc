@@ -52,7 +52,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_WAVE (wave) || !file_name || !wave_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
 
-  error = bse_wave_load_wave (wave, file_name, wave_name, NULL, NULL);
+  error = bse_wave_load_wave_file (wave, file_name, wave_name, NULL, NULL);
 
   /* set output parameters */
   g_value_set_enum (out_values++, error);
@@ -60,11 +60,11 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseWave, n-channels) {
-  HELP  = "Get the number of channels of a wave";
+METHOD (BseWave, n-wave-chunks) {
+  HELP  = "Get the number of wave chunks of a wave";
   IN    = g_param_spec_object ("wave", "Wave", NULL,
 			       BSE_TYPE_WAVE, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
+  OUT   = g_param_spec_uint ("n_chunks", "Number of Wave Chunks", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
@@ -79,7 +79,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  g_value_set_uint (out_values++, wave->n_channels);
+  g_value_set_uint (out_values++, wave->n_wchunks);
 
   return BSE_ERROR_NONE;
 }

@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,19 +61,18 @@ run_tests (GslWaveLoopType loop_type,
   GslDataCache *dcache;
   GslWaveChunkBlock block = { 0, };
   GslWaveChunk *wchunk;
+  GslErrorType error;
 
-
-  myhandle = gsl_data_handle_new_insert (NULL,
-					 32,
-					 0,
-					 my_data_length,
-					 my_data,
-					 NULL);
+  myhandle = gsl_data_handle_new_mem (1, 32, my_data_length, my_data, NULL);
   dcache = gsl_data_cache_new (myhandle, 1);
   gsl_data_handle_unref (myhandle);
-  wchunk = _gsl_wave_chunk_create (dcache, 0, my_data_length,
-				   1, 44.0, 44100.0,
-				   loop_type, loop_first, loop_last, loop_count);
+  wchunk = gsl_wave_chunk_new (dcache,
+			       44.0, 44100.0,
+			       loop_type, loop_first, loop_last, loop_count);
+  error = gsl_wave_chunk_open (wchunk);
+  if (error)
+    g_error ("failed to open wave chunk: %s", gsl_strerror (error));
+  gsl_wave_chunk_unref (wchunk);
   if (verbosity >= VERBOSITY_SETUP)
     g_print ("SETUP: loop_type=%u loop_first=%ld loop_last=%ld loop_count=%d playdir=%+d\n",
 	     wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count, play_dir);
@@ -118,7 +117,8 @@ run_tests (GslWaveLoopType loop_type,
       if (abort)
 	{
 	  g_error ("mismatches occoured, setup: loop_type=%u loop_first=%ld loop_last=%ld loop_count=%d (length=%ld)",
-		   wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count, wchunk->length);
+		   wchunk->loop_type, wchunk->loop_first, wchunk->loop_last, wchunk->loop_count,
+		   gsl_data_handle_length (wchunk->dcache->dhandle));
 	}
 
       gsl_wave_chunk_unuse_block (wchunk, &block);
@@ -126,7 +126,7 @@ run_tests (GslWaveLoopType loop_type,
       block.offset = block.next_offset;
       /* block.offset += block.play_dir; */
     }
-  _gsl_wave_chunk_destroy (wchunk);
+  gsl_wave_chunk_close (wchunk);
   gsl_data_cache_unref (dcache);
 }
 
@@ -201,33 +201,31 @@ main (gint   argc,
   g_thread_init (NULL);
   gsl_init (gslconfig, NULL);
 
-  if (0)
+  if (1)
     {
       GslDataHandle *myhandle;
       GslDataHandle *rhandle1, *rhandle2;
       GslLong o, l, i, e;
+      GslErrorType error;
+
+      g_print ("reversed datahandle test:...\n");
       
-      g_print ("short datahandle test:...\n");
-      
-      myhandle = gsl_data_handle_new_insert (NULL,
-					     32,
-					     0,
-					     my_data_length,
-					     my_data,
-					     NULL);
+      myhandle = gsl_data_handle_new_mem (1, 32, my_data_length, my_data, NULL);
       rhandle1 = gsl_data_handle_new_reverse (myhandle);
       gsl_data_handle_unref (myhandle);
       rhandle2 = gsl_data_handle_new_reverse (rhandle1);
       gsl_data_handle_unref (rhandle1);
-      gsl_data_handle_open (rhandle2);
+      error = gsl_data_handle_open (rhandle2);
+      if (error)
+	g_error ("failed to open rhandle2: %s", gsl_strerror (error));
       gsl_data_handle_unref (rhandle2);
       
-      g_assert (rhandle2->n_values == myhandle->n_values);
+      g_assert (gsl_data_handle_length (rhandle2) == gsl_data_handle_length (myhandle));
       
       for (i = 1; i < 8; i++)
 	{
 	  o = 0;
-	  l = rhandle2->n_values;
+	  l = gsl_data_handle_length (rhandle2);
 	  while (l)
 	    {
 	      gfloat d1[8], d2[8];
@@ -244,24 +242,36 @@ main (gint   argc,
       gsl_data_handle_close (rhandle2);
       g_print ("passed.\n");
     }
-  
-  run_tests (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
 
-  run_tests (GSL_WAVE_LOOP_NONE, 1, 0, 0, 0);
-  run_tests (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
-  run_tests (GSL_WAVE_LOOP_JUMP, 1, 0, 0, 0);
-  run_tests (GSL_WAVE_LOOP_PINGPONG, 1, 0, 0, 0);
-  run_tests (GSL_WAVE_LOOP_JUMP, -1, 0, 0, 0);
-  run_tests (GSL_WAVE_LOOP_PINGPONG, -1, 0, 0, 0);
-  for (i = 1; i < 7; i++)
-    for (j = 0; j < my_data_length - 1; j++)
-      for (k = j + 1; k < my_data_length; k++)
-	{
-	  run_tests (GSL_WAVE_LOOP_JUMP, 1, j, k, i);
-	  run_tests (GSL_WAVE_LOOP_PINGPONG, 1, j, k, i);
-	  run_tests (GSL_WAVE_LOOP_JUMP, -1, j, k, i);
-	  run_tests (GSL_WAVE_LOOP_PINGPONG, -1, j, k, i);
-	}
+  if (1)
+    {
+      g_print ("primitive loop tests:...\n");
+      
+      run_tests (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
+      
+      run_tests (GSL_WAVE_LOOP_NONE, 1, 0, 0, 0);
+      run_tests (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
+      run_tests (GSL_WAVE_LOOP_JUMP, 1, 0, 0, 0);
+      run_tests (GSL_WAVE_LOOP_PINGPONG, 1, 0, 0, 0);
+      run_tests (GSL_WAVE_LOOP_JUMP, -1, 0, 0, 0);
+      run_tests (GSL_WAVE_LOOP_PINGPONG, -1, 0, 0, 0);
+      g_print ("passed.\n");
+    }
+
+  if (1)
+    {
+      g_print ("brute loop tests:...\n");
+      for (i = 1; i < 7; i++)
+	for (j = 0; j < my_data_length - 1; j++)
+	  for (k = j + 1; k < my_data_length; k++)
+	    {
+	      run_tests (GSL_WAVE_LOOP_JUMP, 1, j, k, i);
+	      run_tests (GSL_WAVE_LOOP_PINGPONG, 1, j, k, i);
+	      run_tests (GSL_WAVE_LOOP_JUMP, -1, j, k, i);
+	      run_tests (GSL_WAVE_LOOP_PINGPONG, -1, j, k, i);
+	    }
+      g_print ("passed.\n");
+    }
   
   return 0;
 }

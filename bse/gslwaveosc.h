@@ -40,7 +40,7 @@ typedef struct
 
   gfloat	  fm_strength;	/* linear: 0..1, exponential: n_octaves */
   guint		  exponential_fm : 1;
-  gfloat	  cfreq;
+  gfloat	  cfreq;	/* for ifreq == NULL */
 } GslWaveOscConfig;
 
 typedef struct
@@ -69,7 +69,7 @@ void		gsl_wave_osc_config	(GslWaveOscData	*wosc,
 					 GslWaveOscConfig *config);
 gboolean	gsl_wave_osc_process	(GslWaveOscData	*wosc,
 					 guint		 n_values,
-					 const gfloat	*freq,
+					 const gfloat	*ifreq,
 					 const gfloat	*mod,
 					 const gfloat	*sync,
 					 gfloat		*mono_out);

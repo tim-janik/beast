@@ -318,16 +318,13 @@ gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
     return NULL;
   /* dcache keeps dhandle alive */
 
-  wchunk = _gsl_wave_chunk_create (dcache,
-				   0,
-				   dhandle->n_values / wave_dsc->n_channels,
-				   wave_dsc->n_channels,
-				   wave_dsc->chunks[nth_chunk].osc_freq,
-				   wave_dsc->chunks[nth_chunk].mix_freq,
-				   wave_dsc->chunks[nth_chunk].loop_type,
-				   wave_dsc->chunks[nth_chunk].loop_start,
-				   wave_dsc->chunks[nth_chunk].loop_end,
-				   wave_dsc->chunks[nth_chunk].loop_count);
+  wchunk = gsl_wave_chunk_new (dcache,
+			       wave_dsc->chunks[nth_chunk].osc_freq,
+			       wave_dsc->chunks[nth_chunk].mix_freq,
+			       wave_dsc->chunks[nth_chunk].loop_type,
+			       wave_dsc->chunks[nth_chunk].loop_start,
+			       wave_dsc->chunks[nth_chunk].loop_end,
+			       wave_dsc->chunks[nth_chunk].loop_count);
   gsl_data_cache_unref (dcache);
 
   if (error_p && wchunk)

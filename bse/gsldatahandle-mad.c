@@ -53,12 +53,10 @@ typedef struct
 
   /* setup data */
   guint		sample_rate;
-  guint		n_channels;
   guint		frame_size;
   guint         stream_options;
   guint         accumulate_state_frames;
-  guint         initial_setup : 1;
-  guint         test_setup : 1;
+  guint         skip_seek_table : 1;
 
   /* file IO */
   guint         eof : 1;
@@ -67,6 +65,7 @@ typedef struct
   const gchar  *error;
 
   /* seek table */
+  GTime		seek_mtime;
   guint		n_seeks;
   guint	       *seeks;
 
@@ -137,11 +136,13 @@ check_frame_validity (MadHandle         *handle,
   if (frame_size <= 0)
     reason = "frame_size < 1";
 
-  if (!handle->initial_setup)
+  if (handle->frame_size && handle->dhandle.setup.n_channels)
     {
+#if 0
       if (frame_size != handle->frame_size)
 	reason = "frame with non-standard size";
-      if (MAD_NCHANNELS (header) != handle->n_channels)
+#endif
+      if (MAD_NCHANNELS (header) != handle->dhandle.setup.n_channels)
 	reason = "frame with non-standard channel count";
     }
 
@@ -311,17 +312,20 @@ create_seek_table (MadHandle *handle,
 }
 
 static GslErrorType
-dh_mad_open (GslDataHandle *data_handle)
+dh_mad_open (GslDataHandle      *dhandle,
+	     GslDataHandleSetup *setup)
 {
-  MadHandle *handle = (MadHandle*) data_handle;
+  MadHandle *handle = (MadHandle*) dhandle;
   GslHFile *hfile;
   GslLong n;
+  gboolean seek_invalidated = FALSE;
 
   hfile = gsl_hfile_open (handle->dhandle.name);
   if (!hfile)
     return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
-
   handle->hfile = hfile;
+
+  seek_invalidated |= handle->seek_mtime != hfile->mtime;
   handle->bfill = 0;
   handle->eof = FALSE;
   handle->pcm_pos = 0;
@@ -337,51 +341,47 @@ dh_mad_open (GslDataHandle *data_handle)
   if (!read_next_frame_header (handle))
     goto OPEN_FAILED;
 
-  /* get n_channels, and assert it to be constant throughout stream */
-  n = MAD_NCHANNELS (&handle->frame.header);
-  if (handle->initial_setup && n > 0)
-    handle->n_channels = n;
-  else if (n != handle->n_channels || !n)
-    goto OPEN_FAILED;
-
-  /* same with decoded frame size */
+  /* get n_channels, frame size and sample rate */
+  setup->bit_depth = 24;
+  setup->n_channels = MAD_NCHANNELS (&handle->frame.header);
   n = MAD_NSBSAMPLES (&handle->frame.header) * 32;
-  if (handle->initial_setup && n > 0)
-    handle->frame_size = n;
-  else if (n != handle->frame_size || !n)
+  seek_invalidated |= n != handle->frame_size;
+  handle->frame_size = n;
+  handle->sample_rate = handle->frame.header.samplerate;
+  if (setup->n_channels < 1 ||
+      setup->n_channels > MAX_CHANNELS ||
+      handle->frame_size < 1 ||
+      handle->sample_rate < 1)
     goto OPEN_FAILED;
-
-  /* and sample rate */
-  n = handle->frame.header.samplerate;
-  if (handle->initial_setup && n > 0)
-    handle->sample_rate = n;
-  else if (n != handle->sample_rate || !n)
-    goto OPEN_FAILED;
-
+  
   /* seek through the stream to collect frame positions */
-  if (handle->test_setup)
+  if (seek_invalidated || !handle->n_seeks)
     {
-      /* fake seek table */
-      handle->eof = FALSE;
-      handle->file_pos = 0;
-      handle->bfill = 0;
-      handle->n_seeks = 1;
-      handle->seeks = g_new (guint, handle->n_seeks);
-      handle->seeks[0] = 0;
+      handle->seek_mtime = hfile->mtime;
+      handle->n_seeks = 0;
+      g_free (handle->seeks);
+      handle->seeks = NULL;
+      if (handle->skip_seek_table)
+	{
+	  /* fake seek table */
+	  handle->n_seeks = 1;
+	  handle->seeks = g_new (guint, handle->n_seeks);
+	  handle->seeks[0] = 0;
+	}
+      else
+	{
+	  handle->seeks = create_seek_table (handle, &handle->n_seeks);
+	  if (!handle->seeks)
+	    goto OPEN_FAILED;
+	  MAD_DEBUG ("frames in seektable: %u", handle->n_seeks);
+	}
     }
-  else if (handle->initial_setup)
-    {
-      handle->seeks = create_seek_table (handle, &handle->n_seeks);
-      if (!handle->seeks)
-	goto OPEN_FAILED;
-      MAD_DEBUG ("frames in seektable: %u", handle->n_seeks);
-    }
-
+  
   /* validate/setup handle length */
-  n = handle->n_seeks * handle->frame_size * handle->n_channels;
-  if (handle->initial_setup && n > 0)
-    handle->dhandle.n_values = n;
-  else if (n != handle->dhandle.n_values || !n)
+  n = handle->n_seeks * handle->frame_size * setup->n_channels;
+  if (n > 0)
+    setup->n_values = n;
+  else
     goto OPEN_FAILED;
 
   if (dh_mad_coarse_seek (&handle->dhandle, 0) != 0)
@@ -390,12 +390,10 @@ dh_mad_open (GslDataHandle *data_handle)
   return GSL_ERROR_NONE;
 
  OPEN_FAILED:
-  if (handle->initial_setup)
-    {
-      g_free (handle->seeks);
-      handle->seeks = NULL;
-      handle->n_seeks = 0;
-    }
+  g_free (handle->seeks);
+  handle->seeks = NULL;
+  handle->n_seeks = 0;
+  handle->seek_mtime = -1;
   handle->bfill = 0;
   handle->eof = FALSE;
   handle->pcm_pos = 0;
@@ -412,13 +410,13 @@ dh_mad_open (GslDataHandle *data_handle)
 }
 
 static GslLong
-dh_mad_read (GslDataHandle *data_handle,
+dh_mad_read (GslDataHandle *dhandle,
 	     GslLong        voffset, /* in values */
 	     GslLong        n_values,
 	     gfloat        *values)
 {
-  MadHandle *handle = (MadHandle*) data_handle;
-  GslLong pos = voffset / handle->n_channels;
+  MadHandle *handle = (MadHandle*) dhandle;
+  GslLong pos = voffset / dhandle->setup.n_channels;
   gboolean frame_read_ok = TRUE;
 
   if (pos < handle->pcm_pos ||
@@ -427,7 +425,7 @@ dh_mad_read (GslDataHandle *data_handle,
       GslLong tmp;
 
       /* suckage, need to do lengthy seek in file */
-      tmp = dh_mad_coarse_seek (data_handle, voffset);
+      tmp = dh_mad_coarse_seek (dhandle, voffset);
       g_assert (tmp <= voffset);
     }
  
@@ -450,8 +448,8 @@ dh_mad_read (GslDataHandle *data_handle,
 			 handle->accumulate_state_frames);
 
 	      /* force dh_mad_read to retry the seek */
-	      dh_mad_coarse_seek (data_handle, 0);
-	      return dh_mad_read (data_handle, voffset, n_values, values);
+	      dh_mad_coarse_seek (dhandle, 0);
+	      return dh_mad_read (dhandle, voffset, n_values, values);
 	    }
 	  else
 	    {
@@ -467,20 +465,20 @@ dh_mad_read (GslDataHandle *data_handle,
 	}
     }
 
-  n_values = MIN (n_values, handle->pcm_length * handle->n_channels);
+  n_values = MIN (n_values, handle->pcm_length * dhandle->setup.n_channels);
 
   /* interleave into output buffer */
   if (pos >= handle->pcm_pos && pos < handle->pcm_pos + handle->pcm_length)
     {
-      guint offset = voffset - handle->pcm_pos * handle->n_channels;
-      guint align = offset % handle->n_channels;
-      guint n_samples = MIN (n_values, handle->pcm_length * handle->n_channels - offset);
+      guint offset = voffset - handle->pcm_pos * dhandle->setup.n_channels;
+      guint align = offset % dhandle->setup.n_channels;
+      guint n_samples = MIN (n_values, handle->pcm_length * dhandle->setup.n_channels - offset);
       mad_fixed_t *pcm[MAX_CHANNELS];
       gfloat *bound = values + n_samples;
       guint i;
 
-      offset /= handle->n_channels;
-      for (i = 0; i < handle->n_channels; i++)
+      offset /= dhandle->setup.n_channels;
+      for (i = 0; i < dhandle->setup.n_channels; i++)
 	pcm[i] = handle->synth.pcm.samples[i] + offset + (i < align);
       
       for (i = align; values < bound; values++)
@@ -488,7 +486,7 @@ dh_mad_read (GslDataHandle *data_handle,
 	  mad_fixed_t mf = *(pcm[i]++);
 
 	  *values = CLAMP (mf, -MAD_F_ONE, MAD_F_ONE) * (1. / (double) MAD_F_ONE);
-	  if (++i >= handle->n_channels)
+	  if (++i >= dhandle->setup.n_channels)
 	    i = 0;
 	}
       return n_samples;
@@ -503,14 +501,14 @@ dh_mad_read (GslDataHandle *data_handle,
 }
 
 static GslLong
-dh_mad_coarse_seek (GslDataHandle *data_handle,
+dh_mad_coarse_seek (GslDataHandle *dhandle,
 		    GslLong        voffset)
 {
-  MadHandle *handle = (MadHandle*) data_handle;
-  GslLong opos = handle->pcm_pos, pos = voffset / handle->n_channels;
+  MadHandle *handle = (MadHandle*) dhandle;
+  GslLong opos = handle->pcm_pos, pos = voffset / dhandle->setup.n_channels;
 
   if (voffset < 0)	/* pcm_tell() */
-    return handle->pcm_pos * handle->n_channels;
+    return handle->pcm_pos * dhandle->setup.n_channels;
 
   if (pos < handle->pcm_pos ||
       pos >= handle->pcm_pos + handle->pcm_length + SEEK_BY_READ_AHEAD (handle))
@@ -569,7 +567,7 @@ dh_mad_coarse_seek (GslDataHandle *data_handle,
 		 handle->pcm_pos - opos, pos - opos);
     }
 
-  return handle->pcm_pos * handle->n_channels;
+  return handle->pcm_pos * dhandle->setup.n_channels;
 }
 
 static void
@@ -612,21 +610,19 @@ static GslDataHandleFuncs dh_mad_vtable = {
 
 static GslDataHandle*
 dh_mad_new (const gchar *file_name,
-	    gboolean     need_seek_table)
+	    gboolean     skip_seek_keep_open)
 {
   MadHandle *handle;
   gboolean success;
 
   handle = gsl_new_struct0 (MadHandle, 1);
-  success = gsl_data_handle_common_init (&handle->dhandle, file_name, 24);
+  success = gsl_data_handle_common_init (&handle->dhandle, file_name);
   if (success)
     {
       GslErrorType error;
 
       handle->dhandle.vtable = &dh_mad_vtable;
-      handle->dhandle.n_values = 0;
       handle->sample_rate = 0;
-      handle->n_channels = 0;
       handle->frame_size = 0;
       handle->stream_options = MAD_OPTION_IGNORECRC;
       handle->accumulate_state_frames = 0;
@@ -636,35 +632,20 @@ dh_mad_new (const gchar *file_name,
       handle->error = NULL;
       handle->n_seeks = 0;
       handle->seeks = NULL;
+      handle->seek_mtime = -1;
       handle->bfill = 0;
       handle->pcm_pos = handle->pcm_length = handle->next_pcm_pos = 0;
 
-      /* we can only do the remaining setup and check matters
-       * after we actually opened the handle
+      /* we can only check matters upon opening
        */
-      handle->initial_setup = TRUE;
-      handle->test_setup = !need_seek_table;
+      handle->skip_seek_table = skip_seek_keep_open != FALSE;
       error = gsl_data_handle_open (&handle->dhandle);
-      handle->initial_setup = FALSE;
-      handle->test_setup = FALSE;
-
-      /* check setup
-       */
-      if (!error &&
-	  handle->dhandle.n_values &&
-	  handle->sample_rate > 0 &&
-	  handle->n_channels > 0 &&
-	  handle->n_channels <= MAX_CHANNELS)
+      if (!error)
 	{
-	  /* handle ok, creation succeeded */
-	  gsl_data_handle_close (&handle->dhandle);
-
+	  if (!skip_seek_keep_open)
+	    gsl_data_handle_close (&handle->dhandle);
 	  return &handle->dhandle;
 	}
-
-      /* failed to create handle properly, clean up */
-      if (!error)
-	gsl_data_handle_close (&handle->dhandle);
       gsl_data_handle_unref (&handle->dhandle);
       return NULL;
     }
@@ -681,7 +662,7 @@ gsl_data_handle_new_mad (const gchar *file_name)
 {
   g_return_val_if_fail (file_name != NULL, NULL);
 
-  return dh_mad_new (file_name, TRUE);
+  return dh_mad_new (file_name, FALSE);
 }
 
 GslErrorType
@@ -694,15 +675,16 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
   
   g_return_val_if_fail (file_name != NULL, GSL_ERROR_INTERNAL);
 
-  dhandle = dh_mad_new (file_name, FALSE);
+  dhandle = dh_mad_new (file_name, TRUE);
   if (!dhandle)
     return GSL_ERROR_OPEN_FAILED;
 
   handle = (MadHandle*) dhandle;
   if (n_channels)
-    *n_channels = handle->n_channels;
+    *n_channels = handle->dhandle.setup.n_channels;
   if (mix_freq)
     *mix_freq = handle->sample_rate;
+  gsl_data_handle_close (dhandle);
   gsl_data_handle_unref (dhandle);
 
   return GSL_ERROR_NONE;

@@ -53,13 +53,8 @@ typedef struct {
 } WPos;
 
 
-/* --- prototypes --- */
-static void	wave_chunk_open		(GslWaveChunk	*wchunk);
-static void	wave_chunk_close	(GslWaveChunk	*wchunk);
-
-
 /* --- variables --- */
-static gfloat static_zero_block[STATIC_ZERO_SIZE] = { 0, };
+static gfloat static_zero_block[STATIC_ZERO_SIZE] = { 0, };	// FIXME
 
 
 /* --- functions --- */
@@ -105,7 +100,7 @@ fill_block (GslWaveChunk *wchunk,
 	    gboolean	  backward,
 	    guint	  loop_count)
 {
-  GslLong dcache_length = wchunk->dcache->dhandle->n_values;
+  GslLong dcache_length = gsl_data_handle_length (wchunk->dcache->dhandle);
   guint i, dnode_length = wchunk->dcache->node_size;
   GslDataCacheNode *dnode;
   WPos wpos;
@@ -454,6 +449,7 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
   gboolean reverse;
 
   g_return_if_fail (wchunk != NULL);
+  g_return_if_fail (wchunk->open_count > 0);
   g_return_if_fail (block != NULL);
   g_return_if_fail (wchunk->dcache != NULL);
   g_return_if_fail (block->node == NULL);
@@ -491,7 +487,6 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
 	  else
 	    offset = iter.lbound + iter.rel_pos;
 	  max_length = reverse ? offset - iter.lbound : iter.ubound - offset;
-	  offset += wchunk->offset;
 	  dnode = gsl_data_cache_ref_node (wchunk->dcache, offset, TRUE); /* FIXME: demand_load */
 	  offset -= dnode->offset;
 	  block->start = dnode->data + offset;
@@ -555,36 +550,33 @@ gsl_wave_chunk_unuse_block (GslWaveChunk      *wchunk,
 }
 
 static void
-wave_chunk_setup_loop (GslWaveChunk   *wchunk,
-		       GslWaveLoopType loop_type,
-		       GslLong         loop_first,
-		       GslLong         loop_last,
-		       guint           loop_count)
+wave_chunk_setup_loop (GslWaveChunk *wchunk)
 {
+  GslWaveLoopType loop_type = wchunk->requested_loop_type;
+  GslLong loop_first = wchunk->requested_loop_first;
+  GslLong loop_last = wchunk->requested_loop_last;
+  guint loop_count = wchunk->requested_loop_count;
   GslLong one, padding, big_pad;
-  
-  g_return_if_fail (wchunk != NULL);
 
-  if (loop_count < 1 || loop_first < 0 || loop_last < loop_first)
-    loop_type = GSL_WAVE_LOOP_NONE;
+  g_return_if_fail (wchunk->open_count > 0);
+
   one = wchunk->n_channels;
   padding = wchunk->n_pad_values;
   big_pad = PBLOCK_SIZE (wchunk->n_pad_values, wchunk->n_channels);
+
+  /* check validity */
+  if (loop_count < 1 || loop_first < 0 || loop_last < 0 || wchunk->length < 1)
+    loop_type = GSL_WAVE_LOOP_NONE;
+
+  /* setup loop types */
   switch (loop_type)
     {
-    case GSL_WAVE_LOOP_NONE:
-      wchunk->loop_type = loop_type;
-      wchunk->loop_first = wchunk->length + 1;
-      wchunk->loop_last = -1;
-      wchunk->loop_count = 0;
-      wchunk->wave_length = wchunk->length;
-      break;
     case GSL_WAVE_LOOP_JUMP:
-      g_return_if_fail (loop_first >= 0 && loop_first < wchunk->length);
-      g_return_if_fail (loop_last < wchunk->length);
       loop_first /= wchunk->n_channels;
       loop_last /= wchunk->n_channels;
-      g_return_if_fail (loop_first < loop_last);
+      if (loop_last >= wchunk->length ||
+	  loop_first >= loop_last)
+	goto CASE_DONT_LOOP;
       wchunk->loop_type = loop_type;
       wchunk->loop_first = loop_first * wchunk->n_channels;
       wchunk->loop_last = loop_last * wchunk->n_channels;
@@ -593,11 +585,11 @@ wave_chunk_setup_loop (GslWaveChunk   *wchunk,
       wchunk->wave_length = wchunk->length + (wchunk->loop_last - wchunk->loop_first + one) * wchunk->loop_count;
       break;
     case GSL_WAVE_LOOP_PINGPONG:
-      g_return_if_fail (loop_first >= 0 && loop_first < wchunk->length);
-      g_return_if_fail (loop_last < wchunk->length);
       loop_first /= wchunk->n_channels;
       loop_last /= wchunk->n_channels;
-      g_return_if_fail (loop_first < loop_last);
+      if (loop_last >= wchunk->length ||
+	  loop_first >= loop_last)
+	goto CASE_DONT_LOOP;
       wchunk->loop_type = loop_type;
       wchunk->loop_first = loop_first * wchunk->n_channels;
       wchunk->loop_last = loop_last * wchunk->n_channels;
@@ -609,82 +601,128 @@ wave_chunk_setup_loop (GslWaveChunk   *wchunk,
       else
 	wchunk->wave_length += wchunk->length - one - wchunk->loop_last;
       break;
-    default:
-      g_return_if_fail (loop_type >= GSL_WAVE_LOOP_NONE && loop_type <= GSL_WAVE_LOOP_PINGPONG);
+    CASE_DONT_LOOP:
+      loop_type = GSL_WAVE_LOOP_NONE;
+    case GSL_WAVE_LOOP_NONE:
+      wchunk->loop_type = loop_type;
+      wchunk->loop_first = wchunk->length + 1;
+      wchunk->loop_last = -1;
+      wchunk->loop_count = 0;
+      wchunk->wave_length = wchunk->length;
+      break;
     }
   wchunk->pploop_ends_backwards = wchunk->loop_type == GSL_WAVE_LOOP_PINGPONG && (wchunk->loop_count & 1);
   wchunk->mini_loop = wchunk->loop_type && wchunk->loop_last - wchunk->loop_first < 2 * big_pad + padding;
 }
 
 GslWaveChunk*
-_gsl_wave_chunk_create (GslDataCache   *dcache,
-			GslLong         offset,
-			GslLong         n_values, /* per channel */
-			guint           n_channels,
-			gfloat          osc_freq,
-			gfloat          mix_freq,
-			GslWaveLoopType loop_type,
-			GslLong         loop_first,
-			GslLong         loop_last,
-			guint           loop_count)
+gsl_wave_chunk_new (GslDataCache   *dcache,
+		    gfloat          osc_freq,
+		    gfloat          mix_freq,
+		    GslWaveLoopType loop_type,
+		    GslLong         loop_first,
+		    GslLong         loop_last,
+		    guint           loop_count)
 {
   GslWaveChunk *wchunk;
 
   g_return_val_if_fail (dcache != NULL, NULL);
-  g_return_val_if_fail (offset >= 0, NULL);
-  g_return_val_if_fail (n_values > 0, NULL);
-  g_return_val_if_fail (n_channels > 0, NULL);
-  g_return_val_if_fail (offset + n_values * n_channels <= dcache->dhandle->n_values, NULL);
   g_return_val_if_fail (osc_freq < mix_freq / 2, NULL);
-  g_return_val_if_fail (dcache->padding >= gsl_get_config ()->wave_chunk_padding * n_channels, NULL);
+  g_return_val_if_fail (loop_type >= GSL_WAVE_LOOP_NONE && loop_type <= GSL_WAVE_LOOP_PINGPONG, NULL);
 
   wchunk = gsl_new_struct0 (GslWaveChunk, 1);
   wchunk->dcache = gsl_data_cache_ref (dcache);
-  wchunk->owner_data = NULL;
-  wchunk->offset = offset;
-  wchunk->n_channels = n_channels;
-  wchunk->length = n_values * wchunk->n_channels;
-  wchunk->mix_freq = mix_freq;
-  wchunk->osc_freq = osc_freq;
-  wchunk->n_pad_values = gsl_get_config ()->wave_chunk_padding * n_channels;
-  wchunk->wave_length = wchunk->length;
-  wchunk->loop_type = 0;
-  wchunk->loop_first = wchunk->length + 1;
-  wchunk->loop_last = -1;
-  wchunk->loop_count = 0;
+  wchunk->length = 0;
+  wchunk->n_channels = 0;
+  wchunk->n_pad_values = 0;
+  wchunk->wave_length = 0;
+  wchunk->loop_type = GSL_WAVE_LOOP_NONE;
   wchunk->leave_end_norm = 0;
   wchunk->tail_start_norm = 0;
-  wave_chunk_setup_loop (wchunk, loop_type, loop_first, loop_last, loop_count);
-  wave_chunk_open (wchunk);
+  wchunk->ref_count = 1;
+  wchunk->open_count = 0;
+  wchunk->mix_freq = mix_freq;
+  wchunk->osc_freq = osc_freq;
+  wchunk->requested_loop_type = loop_type;
+  wchunk->requested_loop_first = loop_first;
+  wchunk->requested_loop_last = loop_last;
+  wchunk->requested_loop_count = loop_count;
 
   return wchunk;
 }
 
+GslWaveChunk*
+gsl_wave_chunk_ref (GslWaveChunk *wchunk)
+{
+  g_return_val_if_fail (wchunk != NULL, NULL);
+  g_return_val_if_fail (wchunk->ref_count > 0, NULL);
+
+  wchunk->ref_count++;
+  return wchunk;
+}
+
 void
-_gsl_wave_chunk_destroy (GslWaveChunk *wchunk)
+gsl_wave_chunk_unref (GslWaveChunk *wchunk)
 {
   g_return_if_fail (wchunk != NULL);
+  g_return_if_fail (wchunk->ref_count > 0);
 
-  wave_chunk_close (wchunk);
-  gsl_data_cache_unref (wchunk->dcache);
-  gsl_delete_struct (GslWaveChunk, wchunk);
+  wchunk->ref_count--;
+  if (wchunk->ref_count == 0)
+    {
+      g_return_if_fail (wchunk->open_count == 0);
+      gsl_data_cache_unref (wchunk->dcache);
+      gsl_delete_struct (GslWaveChunk, wchunk);
+    }
 }
 
-static void
-wave_chunk_open (GslWaveChunk *wchunk)
+GslErrorType
+gsl_wave_chunk_open (GslWaveChunk *wchunk)
 {
-  g_return_if_fail (wchunk != NULL);
+  g_return_val_if_fail (wchunk != NULL, GSL_ERROR_INTERNAL);
+  g_return_val_if_fail (wchunk->ref_count > 0, GSL_ERROR_INTERNAL);
 
-  gsl_data_cache_open (wchunk->dcache);
-  setup_pblocks (wchunk);
+  if (wchunk->open_count == 0)
+    {
+      GslErrorType error;
+
+      error = gsl_data_handle_open (wchunk->dcache->dhandle);
+      if (error != GSL_ERROR_NONE)
+	return error;
+      if (gsl_data_handle_n_values (wchunk->dcache->dhandle) < gsl_data_handle_n_channels (wchunk->dcache->dhandle))
+	{
+	  gsl_data_handle_close (wchunk->dcache->dhandle);
+	  return GSL_ERROR_FILE_EMPTY;
+	}
+      wchunk->n_channels = gsl_data_handle_n_channels (wchunk->dcache->dhandle);
+      wchunk->length = gsl_data_handle_n_values (wchunk->dcache->dhandle) / wchunk->n_channels;
+      wchunk->length *= wchunk->n_channels;
+      wchunk->n_pad_values = gsl_get_config ()->wave_chunk_padding * wchunk->n_channels;
+      gsl_data_cache_open (wchunk->dcache);
+      gsl_data_handle_close (wchunk->dcache->dhandle);
+      g_return_val_if_fail (wchunk->dcache->padding >= wchunk->n_pad_values, GSL_ERROR_INTERNAL);
+      wchunk->open_count++;
+      wchunk->ref_count++;
+      wave_chunk_setup_loop (wchunk);
+      setup_pblocks (wchunk);
+    }
+  else
+    wchunk->open_count++;
+  return GSL_ERROR_NONE;
 }
 
-static void
-wave_chunk_close (GslWaveChunk *wchunk)
+void
+gsl_wave_chunk_close (GslWaveChunk *wchunk)
 {
   GslLong padding;
 
   g_return_if_fail (wchunk != NULL);
+  g_return_if_fail (wchunk->open_count > 0);
+  g_return_if_fail (wchunk->ref_count > 0);
+
+  wchunk->open_count--;
+  if (wchunk->open_count)
+    return;
 
   padding = wchunk->n_pad_values;
   gsl_data_cache_close (wchunk->dcache);
@@ -706,8 +744,14 @@ wave_chunk_close (GslWaveChunk *wchunk)
   if (wchunk->tail.mem)
     gsl_delete_structs (gfloat, wchunk->tail.length + 2 * padding, wchunk->tail.mem - padding);
   memset (&wchunk->tail, 0, sizeof (GslWaveChunkMem));
+  wchunk->length = 0;
+  wchunk->n_channels = 0;
+  wchunk->n_pad_values = 0;
+  wchunk->wave_length = 0;
+  wchunk->loop_type = GSL_WAVE_LOOP_NONE;
   wchunk->leave_end_norm = 0;
   wchunk->tail_start_norm = 0;
+  gsl_wave_chunk_unref (wchunk);
 }
 
 void
@@ -722,20 +766,18 @@ gsl_wave_chunk_debug_block (GslWaveChunk *wchunk,
 }
 
 GslWaveChunk*
-gsl_wave_chunk_copy (GslWaveChunk *wchunk)
+_gsl_wave_chunk_copy (GslWaveChunk *wchunk)
 {
   g_return_val_if_fail (wchunk != NULL, NULL);
+  g_return_val_if_fail (wchunk->ref_count > 0, NULL);
 
-  return _gsl_wave_chunk_create (wchunk->dcache,
-				 wchunk->offset,
-				 wchunk->length / wchunk->n_channels,
-				 wchunk->n_channels,
-				 wchunk->osc_freq,
-				 wchunk->mix_freq,
-				 wchunk->loop_type,
-				 wchunk->loop_first,
-				 wchunk->loop_last,
-				 wchunk->loop_count);
+  return gsl_wave_chunk_new (wchunk->dcache,
+			     wchunk->osc_freq,
+			     wchunk->mix_freq,
+			     wchunk->loop_type,
+			     wchunk->loop_first,
+			     wchunk->loop_last,
+			     wchunk->loop_count);
 }
 
 const gchar*

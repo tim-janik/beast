@@ -32,8 +32,6 @@ enum {
   PARAM_WAVE_NAME
 };
 
-#define	ABANDONED_OWNER		(GUINT_TO_POINTER (42))
-
 typedef struct
 {
   GslWaveChunk	*wchunk;
@@ -59,7 +57,7 @@ typedef struct
 /* --- prototypes --- */
 static void	    bse_wave_class_init		(BseWaveClass	*class);
 static void	    bse_wave_init		(BseWave		*wave);
-static void	    bse_wave_destroy		(BseObject		*object);
+static void	    bse_wave_dispose		(GObject		*object);
 static void	    bse_wave_set_property	(BseWave		*wave,
 						 guint                   param_id,
 						 GValue                 *value,
@@ -74,10 +72,6 @@ static GTokenType   bse_wave_do_restore		(BseObject		*object,
 						 BseStorage		*storage);
 static BseTokenType bse_wave_do_restore_private	(BseObject		*object,
 						 BseStorage		*storage);
-static void	    bse_wave_prepare		(BseSource		*source);
-static void	    bse_wave_reset		(BseSource		*source);
-static void	    wave_update_index		(BseWave		*wave,
-						 gboolean		 force);
 
 
 /* --- variables --- */
@@ -119,21 +113,17 @@ bse_wave_class_init (BseWaveClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
   gobject_class->set_property = (GObjectSetPropertyFunc) bse_wave_set_property;
   gobject_class->get_property = (GObjectGetPropertyFunc) bse_wave_get_property;
+  gobject_class->dispose = bse_wave_dispose;
 
   object_class->store_private = bse_wave_do_store_private;
   object_class->restore = bse_wave_do_restore;
   object_class->restore_private = bse_wave_do_restore_private;
-  object_class->destroy = bse_wave_destroy;
   
-  source_class->prepare = bse_wave_prepare;
-  source_class->reset = bse_wave_reset;
-
   quark_n_channels = g_quark_from_static_string ("n-channels");
   quark_loop = g_quark_from_static_string ("loop");
   quark_ping_pong_loop = g_quark_from_static_string ("ping-pong-loop");
@@ -168,7 +158,8 @@ bse_wave_init (BseWave *wave)
   wave->wave_chunk_urls = NULL;
   wave->n_wchunks = 0;
   wave->wave_chunks = NULL;
-  wave->abandoned_chunks = NULL;
+  wave->request_count = 0;
+  wave->index_dirty = FALSE;
   wave->index_list = NULL;
   BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
@@ -228,7 +219,7 @@ nuke_wave_urls (BseWave *wave)
 }
 
 static void
-bse_wave_destroy (BseObject *object)
+bse_wave_dispose (GObject *object)
 {
   BseWave *wave = BSE_WAVE (object);
 
@@ -236,24 +227,13 @@ bse_wave_destroy (BseObject *object)
   
   while (wave->wave_chunks)
     bse_wave_remove_chunk (wave, wave->wave_chunks->data);
-  g_return_if_fail (wave->abandoned_chunks == NULL);
   g_return_if_fail (wave->index_list == NULL);
 
   g_free (wave->file_name);
   g_free (wave->wave_name);
 
   /* chain parent class' handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-BseWaveIndex*
-bse_wave_get_index_for_modules (BseWave *wave)
-{
-  g_return_val_if_fail (BSE_IS_WAVE (wave), NULL);
-
-  if (BSE_SOURCE_PREPARED (wave) && wave->n_wchunks)
-    return wave->index_list->data;
-  return NULL;
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 GslWaveChunk*
@@ -261,24 +241,17 @@ bse_wave_lookup_chunk (BseWave *wave,
 		       gfloat   osc_freq,
 		       gfloat   mix_freq)
 {
+  BseWaveIndex *index;
+  GslWaveChunk *wchunk;
+
   g_return_val_if_fail (BSE_IS_WAVE (wave), NULL);
 
-  if (wave->index_list)
-    return bse_wave_index_lookup_best (wave->index_list->data, osc_freq);
-  else
-    {
-      GslWaveChunk *wchunk;
+  bse_wave_request_index (wave);
+  index = bse_wave_get_index_for_modules (wave);
+  wchunk = index ? bse_wave_index_lookup_best (index, osc_freq) : NULL;
+  bse_wave_drop_index (wave);
 
-      /* _lazy_ coder */
-      wave_update_index (wave, TRUE);
-      wchunk = bse_wave_index_lookup_best (wave->index_list->data, osc_freq);
-      g_free (wave->index_list->data);
-      g_assert (wave->index_list->next == NULL);
-      g_slist_free_1 (wave->index_list);
-      wave->index_list = NULL;
-
-      return wchunk;
-    }
+  return wchunk;
 }
 
 void
@@ -289,11 +262,9 @@ bse_wave_remove_chunk (BseWave      *wave,
 
   g_return_if_fail (BSE_IS_WAVE (wave));
   g_return_if_fail (wchunk != NULL);
-  g_return_if_fail (wchunk->owner_data == wave);
 
   wave->wave_chunks = g_slist_remove (wave->wave_chunks, wchunk);
   wave->n_wchunks--;
-  wchunk->owner_data = ABANDONED_OWNER;
 
   for (slist = wave->wave_chunk_urls; slist; slist = slist->next)
     {
@@ -309,20 +280,13 @@ bse_wave_remove_chunk (BseWave      *wave,
 	}
     }
 
-  if (BSE_SOURCE_PREPARED (wave))
-    wave->abandoned_chunks = g_slist_prepend (wave->abandoned_chunks, wchunk);
-  else
-    _gsl_wave_chunk_destroy (wchunk);
-
-  wave_update_index (wave, FALSE);
+  gsl_wave_chunk_unref (wchunk);
+  wave->index_dirty = TRUE;
 
   if (wave->n_wchunks)
     BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
   else
-    {
-      wave->n_channels = 0;
-      BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
-    }
+    BSE_OBJECT_SET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
 
 static gint
@@ -344,15 +308,8 @@ bse_wave_add_chunk (BseWave      *wave,
   g_return_if_fail (BSE_IS_WAVE (wave));
   g_return_if_fail (wchunk != NULL);
   g_return_if_fail (wchunk->dcache != NULL);
-  g_return_if_fail (wchunk->owner_data == NULL);
 
-  if (!wave->n_wchunks)
-    wave->n_channels = wchunk->n_channels;
-  else
-    g_return_if_fail (wave->n_channels == wchunk->n_channels);
-
-  wchunk->owner_data = wave;
-  wave->wave_chunks = g_slist_insert_sorted (wave->wave_chunks, wchunk, wchunk_cmp);
+  wave->wave_chunks = g_slist_insert_sorted (wave->wave_chunks, gsl_wave_chunk_ref (wchunk), wchunk_cmp);
   wave->n_wchunks++;
 
   url = g_new0 (WaveChunkUrl, 1);
@@ -361,8 +318,7 @@ bse_wave_add_chunk (BseWave      *wave,
   url->wave_name = NULL;
   url->locator_overrides = FALSE;
   wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
-
-  wave_update_index (wave, FALSE);
+  wave->index_dirty = TRUE;
   BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
 
@@ -377,12 +333,10 @@ bse_wave_add_chunk_with_locator (BseWave      *wave,
   g_return_if_fail (BSE_IS_WAVE (wave));
   g_return_if_fail (wchunk != NULL);
   g_return_if_fail (wchunk->dcache != NULL);
-  g_return_if_fail (wchunk->owner_data == NULL);
   g_return_if_fail (file_name != NULL);
   g_return_if_fail (wave_name != NULL);
 
-  wchunk->owner_data = wave;
-  wave->wave_chunks = g_slist_insert_sorted (wave->wave_chunks, wchunk, wchunk_cmp);
+  wave->wave_chunks = g_slist_insert_sorted (wave->wave_chunks, gsl_wave_chunk_ref (wchunk), wchunk_cmp);
   wave->n_wchunks++;
   url = g_new0 (WaveChunkUrl, 1);
   url->wchunk = wchunk;
@@ -390,7 +344,7 @@ bse_wave_add_chunk_with_locator (BseWave      *wave,
   url->wave_name = g_strdup (wave_name);
   url->locator_overrides = FALSE;
   wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
-  wave_update_index (wave, FALSE);
+  wave->index_dirty = TRUE;
   BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
 
@@ -490,15 +444,23 @@ bse_wave_do_store_private (BseObject  *object,
 			      url->file_name, url->wave_name,
 			      url->wchunk->osc_freq);
 	}
-      else
+      else	/* self-contained wave storage */
 	{
+	  GslErrorType error = gsl_data_handle_open (url->wchunk->dcache->dhandle);
+	  if (error)
+	    {
+	      bse_storage_warn (storage, "failed to open data handle (%s): %s",
+				gsl_data_handle_name (url->wchunk->dcache->dhandle),
+				gsl_strerror (error));
+	      continue;
+	    }
           bse_storage_break (storage);
 	  bse_storage_printf (storage, "(wave-chunk %g %g", url->wchunk->osc_freq, url->wchunk->mix_freq);
           bse_storage_push_level (storage);
-	  if (TRUE || url->wchunk->n_channels > 1) // FIXME
+	  if (gsl_data_handle_n_channels (url->wchunk->dcache->dhandle) > 1)
 	    {
 	      bse_storage_break (storage);
-	      bse_storage_printf (storage, "(n-channels %u)", url->wchunk->n_channels);
+	      bse_storage_printf (storage, "(n-channels %u)", gsl_data_handle_n_channels (url->wchunk->dcache->dhandle));
 	    }
 	  switch (url->wchunk->loop_type)
 	    {
@@ -521,10 +483,11 @@ bse_wave_do_store_private (BseObject  *object,
 	    }
 	  bse_storage_break (storage);
 	  bse_storage_printf (storage, "(wave-handle ");
-	  bse_storage_put_wave_handle (storage, 32,
+	  bse_storage_put_data_handle (storage,
+				       gsl_data_handle_bit_depth (url->wchunk->dcache->dhandle),
 				       url->wchunk->dcache->dhandle,
-				       url->wchunk->offset,
-				       url->wchunk->length);
+				       gsl_data_handle_length (url->wchunk->dcache->dhandle));
+	  gsl_data_handle_close (url->wchunk->dcache->dhandle);
 	  bse_storage_handle_break (storage);
 	  bse_storage_putc (storage, ')');
           bse_storage_pop_level (storage);
@@ -573,7 +536,11 @@ parse_wave_chunk (BseWave         *wave,
       g_scanner_get_next_token (scanner); /* eat quark identifier */
       if (pwchunk->wave_handle)
 	return bse_storage_warn_skip (storage, "duplicate wave data reference");
-      expected_token = bse_storage_parse_wave_handle (storage, &pwchunk->wave_handle);
+      expected_token = bse_storage_parse_data_handle (storage,
+						      pwchunk->n_channels,
+						      pwchunk->osc_freq,
+						      pwchunk->mix_freq,
+						      &pwchunk->wave_handle);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
       if (!pwchunk->wave_handle)
@@ -585,11 +552,11 @@ parse_wave_chunk (BseWave         *wave,
 }
 
 BseErrorType
-bse_wave_load_wave (BseWave     *wave,
-		    const gchar *file_name,
-		    const gchar *wave_name,
-		    GDArray     *list_array,
-		    GDArray     *skip_array)
+bse_wave_load_wave_file (BseWave     *wave,
+			 const gchar *file_name,
+			 const gchar *wave_name,
+			 GDArray     *list_array,
+			 GDArray     *skip_array)
 {
   BseErrorType error = BSE_ERROR_NONE;
   GslWaveFileInfo *fi;
@@ -712,7 +679,7 @@ bse_wave_do_restore_private (BseObject  *object,
 		  goto out_of_load_wave;
 		}
 	    }
-	  error = bse_wave_load_wave (wave, file_name, wave_name, load_list->n_values ? load_list : 0, skip_list);
+	  error = bse_wave_load_wave_file (wave, file_name, wave_name, load_list->n_values ? load_list : 0, skip_list);
 	  if (error)
 	    bse_storage_warn (storage, "failed to load wave \"%s\" from \"%s\": %s",
 			      wave_name, file_name, bse_error_blurb (error));
@@ -760,7 +727,7 @@ bse_wave_do_restore_private (BseObject  *object,
 	  expected_token = bse_storage_parse_rest (storage,
 						   (BseTryStatement) parse_wave_chunk,
 						   wave, &parsed_wchunk);
-	  if (expected_token == G_TOKEN_NONE)
+	  if (expected_token == G_TOKEN_NONE && parsed_wchunk.wave_handle)
 	    {
 	      GslDataCache *dcache;
 	      GslWaveChunk *wchunk;
@@ -774,17 +741,15 @@ bse_wave_do_restore_private (BseObject  *object,
 			 parsed_wchunk.wave_handle);
 	      dcache = gsl_data_cache_from_dhandle (parsed_wchunk.wave_handle,
 						    gsl_get_config ()->wave_chunk_padding * parsed_wchunk.n_channels);
-	      wchunk = _gsl_wave_chunk_create (dcache,
-					       0, parsed_wchunk.wave_handle->n_values / parsed_wchunk.n_channels,
-					       parsed_wchunk.n_channels,
-					       parsed_wchunk.osc_freq,
-					       parsed_wchunk.mix_freq,
-					       parsed_wchunk.jump_loop ? GSL_WAVE_LOOP_JUMP :
-					       parsed_wchunk.ping_pong_loop ? GSL_WAVE_LOOP_PINGPONG :
-					       GSL_WAVE_LOOP_NONE,
-					       parsed_wchunk.loop_start,
-					       parsed_wchunk.loop_end,
-					       parsed_wchunk.loop_count);
+	      wchunk = gsl_wave_chunk_new (dcache,
+					   parsed_wchunk.osc_freq,
+					   parsed_wchunk.mix_freq,
+					   parsed_wchunk.jump_loop ? GSL_WAVE_LOOP_JUMP :
+					   parsed_wchunk.ping_pong_loop ? GSL_WAVE_LOOP_PINGPONG :
+					   GSL_WAVE_LOOP_NONE,
+					   parsed_wchunk.loop_start,
+					   parsed_wchunk.loop_end,
+					   parsed_wchunk.loop_count);
 	      gsl_data_cache_unref (dcache);
 	      bse_wave_add_chunk (wave, wchunk);
 	    }
@@ -816,60 +781,66 @@ bse_wave_do_restore (BseObject  *object,
   return expected_token;
 }
 
-static void
-wave_update_index (BseWave *wave,
-		   gboolean force)
+void
+bse_wave_request_index (BseWave *wave)
 {
-  if (BSE_SOURCE_PREPARED (wave) || force)
+  g_return_if_fail (BSE_IS_WAVE (wave));
+
+  if (!wave->request_count)
+    g_object_ref (wave);
+  wave->request_count++;
+}
+
+BseWaveIndex*
+bse_wave_get_index_for_modules (BseWave *wave)
+{
+  g_return_val_if_fail (BSE_IS_WAVE (wave), NULL);
+  g_return_val_if_fail (wave->request_count > 0, NULL);
+
+  if (!wave->n_wchunks)
+    return NULL;
+  if (wave->index_dirty || !wave->index_list)
     {
       BseWaveIndex *index = g_malloc (sizeof (BseWaveIndex) + sizeof (index->wchunks) * wave->n_wchunks);
       GSList *slist;
-      guint i;
-      
-      index->n_wchunks = wave->n_wchunks;
+
+      index->n_wchunks = 0;
       index->wchunks = (gpointer) (index + 1);
-      for (i = 0, slist = wave->wave_chunks; i < index->n_wchunks; i++, slist = slist->next)
-	index->wchunks[i] = slist->data;
+      for (slist = wave->wave_chunks; slist; slist = slist->next)
+	{
+	  GslErrorType error = gsl_wave_chunk_open (slist->data);
+	  if (!error)
+	    index->wchunks[index->n_wchunks++] = slist->data;
+	}
       wave->index_list = g_slist_prepend (wave->index_list, index);
+      // FIXME: add dummy wave chunk if none was opened succesfully
+      wave->index_dirty = FALSE;
     }
+  return wave->index_list->data;
 }
 
-static void
-bse_wave_prepare (BseSource *source)
+void
+bse_wave_drop_index (BseWave *wave)
 {
-  BseWave *wave = BSE_WAVE (source);
+  g_return_if_fail (BSE_IS_WAVE (wave));
+  g_return_if_fail (wave->request_count > 0);
 
-  wave_update_index (wave, FALSE);
-
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source);
-}
-
-static void
-bse_wave_reset (BseSource *source)
-{
-  BseWave *wave = BSE_WAVE (source);
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->reset (source);
-
-  do
+  wave->request_count--;
+  if (!wave->request_count)
     {
-      GSList *tmp = wave->index_list->next;
-
-      g_free (wave->index_list->data);
-      g_slist_free_1 (wave->index_list);
-      wave->index_list = tmp;
-    }
-  while (wave->index_list);
-
-  while (wave->abandoned_chunks)
-    {
-      GSList *tmp = wave->abandoned_chunks;
-
-      wave->abandoned_chunks = tmp->next;
-      _gsl_wave_chunk_destroy (tmp->data);
-      g_slist_free_1 (tmp);
+      while (wave->index_list)
+	{
+	  GSList *tmp = wave->index_list->next;
+	  BseWaveIndex *index = wave->index_list->data;
+	  guint i;
+	  
+	  for (i = 0; i < index->n_wchunks; i++)
+	    gsl_wave_chunk_close (index->wchunks[i]);
+	  g_free (index);
+	  g_slist_free_1 (wave->index_list);
+	  wave->index_list = tmp;
+	}
+      g_object_unref (wave);
     }
 }
 
