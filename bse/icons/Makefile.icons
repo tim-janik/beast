@@ -1,6 +1,7 @@
 ## Generated data (by make Makefile.icons)
 icon_list += ampctrl.c
 icon_list += ball.c
+icon_list += biquad.c
 icon_list += const.c
 icon_list += disconnect.c
 icon_list += inoutport.c

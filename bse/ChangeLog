@@ -1,3 +1,12 @@
+Mon May 13 23:27:47 2002  Tim Janik  <timj@gtk.org>
+
+	* icons/biquad.c:
+	* bsebiquadfilter.c: fix the biquad filter icon.
+
+Mon May 13 23:06:49 2002  Tim Janik  <timj@gtk.org>
+
+	* gslmakefile.inc: added $(PERL) invocation fix from stefan.
+
 Mon May 13 22:07:36 2002  Tim Janik  <timj@gtk.org>
 
 	* gslengine.[hc], gslopmaster.c: reserve space for

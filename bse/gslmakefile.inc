@@ -44,7 +44,7 @@ gslglibhashtest_SOURCES = gslglibhashtest.cc # C++ already
 gslglibhashtest_LDADD = $(GSL_progs_ldadd)
 
 $(srcdir)/gslfft.c: $(srcdir)/gsl-fftgen.pl $(srcdir)/gsl-fftconf.sh
-	$(srcdir)/gsl-fftconf.sh $(srcdir)/gsl-fftgen.pl \"gslfft.h\" >$@
+	$(srcdir)/gsl-fftconf.sh '$(PERL) $(srcdir)/gsl-fftgen.pl' \"gslfft.h\" >$@
 MAINTAINERCLEANFILES += gslfft.c
 
 gslconfig.h: $(top_srcdir)/configure Makefile

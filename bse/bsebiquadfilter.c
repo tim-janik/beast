@@ -91,11 +91,11 @@ BSE_BUILTIN_TYPE (BseBiquadFilter)
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_biquad_filter_init,
   };
-#include "./icons/ampctrl.c"
+#include "./icons/biquad.c"
   static const BsePixdata pixdata = {
-    AMP_CTRL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    AMP_CTRL_IMAGE_WIDTH, AMP_CTRL_IMAGE_HEIGHT,
-    AMP_CTRL_IMAGE_RLE_PIXEL_DATA,
+    BIQUAD_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+    BIQUAD_IMAGE_WIDTH, BIQUAD_IMAGE_HEIGHT,
+    BIQUAD_IMAGE_RLE_PIXEL_DATA,
   };
   GType type;
 
