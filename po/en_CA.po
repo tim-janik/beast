@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-24 12:42-0400\n"
-"PO-Revision-Date: 2004-09-24 19:50-0400\n"
+"POT-Creation-Date: 2004-09-26 09:57-0400\n"
+"PO-Revision-Date: 2004-09-26 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -4412,6 +4412,14 @@ msgstr "BPM Steps"
 msgid "Step width for beats per minute"
 msgstr "Step width for beats per minute"
 
+#: bse/bsedevice.c:287
+msgid ""
+"Auto is a special driver, it acts as a placeholder for\n"
+"automatic driver selection."
+msgstr ""
+"Auto is a special driver. It acts as a placeholder for\n"
+"automatic driver selection."
+
 #. GSL
 #: bse/bseenums.c:99
 msgid "Everything went well"
@@ -4631,6 +4639,22 @@ msgstr "High indicates the instrument is done synthesizing"
 msgid "/Input & Output/Instrument Output"
 msgstr "/Input & Output/Instrument Output"
 
+#: bse/bsemain.c:266
+msgid ""
+"\n"
+"Available PCM drivers:\n"
+msgstr ""
+"\n"
+"Available PCM drivers:\n"
+
+#: bse/bsemain.c:268
+msgid ""
+"\n"
+"Available MIDI drivers:\n"
+msgstr ""
+"\n"
+"Available MIDI drivers:\n"
+
 #: bse/bsemidicontroller.c:86
 msgid "/Input & Output/MIDI Control Input"
 msgstr "/Input & Output/MIDI Control Input"
@@ -4666,6 +4690,26 @@ msgstr "Ctrl Out4"
 #: bse/bsemidicontroller.c:143
 msgid "MIDI Signal 4"
 msgstr "MIDI Signal 4"
+
+#: bse/bsemididevice-null.c:92
+msgid ""
+"Discards all output events and generates no input events. This driver\n"
+"is not part of the automatic device selection list for MIDI devices."
+msgstr ""
+"Discards all output events and generates no input events. This driver\n"
+"is not part of the automatic device selection list for MIDI devices."
+
+#: bse/bsemididevice-oss.c:262
+msgid ""
+"Open Sound System MIDI driver:\n"
+"  DEVICE - MIDI device file name.\n"
+"  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
+"           read-only, read-write or write-only access."
+msgstr ""
+"Open Sound System MIDI driver:\n"
+"  DEVICE - MIDI device file name.\n"
+"  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
+"           read-only, read-write or write-only access."
 
 #: bse/bsemidiinput.c:82
 msgid "/Input & Output/MIDI Voice Input"
@@ -4791,6 +4835,32 @@ msgstr "Parasite Paths"
 msgid "Parasite"
 msgstr "Parasite"
 
+#: bse/bsepcmdevice-null.c:142
+msgid ""
+"Discard all PCM output and provide zero blocks as input. This\n"
+"driver is not part of the automatic PCM device selection list."
+msgstr ""
+"Discard all PCM output and provide zero blocks as input. This\n"
+"driver is not part of the automatic PCM device selection list."
+
+#: bse/bsepcmdevice-oss.c:650
+msgid "DEVICE,MODE"
+msgstr "DEVICE,MODE"
+
+#: bse/bsepcmdevice-oss.c:652
+msgid ""
+"Open Sound System PCM driver:\n"
+"  DEVICE - PCM device file name\n"
+"  MODE   - may contain \"rw\", \"ro\" or \"wo\" for\n"
+"           read-only, read-write or write-only access;\n"
+"           adding \"hs\" forces hard sync on underruns.\n"
+msgstr ""
+"Open Sound System PCM driver:\n"
+"  DEVICE - PCM device file name\n"
+"  MODE   - may contain \"rw\", \"ro\" or \"wo\" for\n"
+"           read-only, read-write or write-only access;\n"
+"           adding \"hs\" forces hard sync on underruns.\n"
+
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
 msgstr "/Input & Output/PCM Input"
@@ -4811,33 +4881,33 @@ msgstr "WAVE File"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Name of the WAVE file used for recording BSE sound output"
 
-#: bse/bseserver.c:463
+#: bse/bseserver.c:472
 msgid "Advice about PCM device selections problems"
 msgstr "Advice about PCM device selection problems"
 
-#: bse/bseserver.c:464
+#: bse/bseserver.c:473
 msgid "Alert me about PCM device selections problems"
 msgstr "Alert me about PCM device selection problems"
 
-#: bse/bseserver.c:465
+#: bse/bseserver.c:474
 #, c-format
 msgid "Failed to open PCM devices, giving up: %s"
 msgstr "Failed to open PCM devices; giving up: %s"
 
-#: bse/bseserver.c:484
+#: bse/bseserver.c:493
 msgid "Advice about MIDI device selections problems"
 msgstr "Advice about MIDI device selection problems"
 
-#: bse/bseserver.c:485
+#: bse/bseserver.c:494
 msgid "Alert me about MIDI device selections problems"
 msgstr "Alert me about MIDI device selection problems"
 
-#: bse/bseserver.c:486
+#: bse/bseserver.c:495
 #, c-format
 msgid "Failed to open MIDI devices (reverting to null driver): %s"
 msgstr "Failed to open MIDI devices (reverting to null driver): %s"
 
-#: bse/bseserver.c:524
+#: bse/bseserver.c:547
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Failed to open output file \"%s\": %s"
