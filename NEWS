@@ -3,13 +3,15 @@ Overview of Changes in BEAST/BSE 0.5.2:
 * Tracks now support waves directly as Synth input
 * Added wave/synth selection dialog for tracks
 * Major improvements to file/wave selection dialogs
-* Fixed time zone handling
 * Added ability to monitor PCM output to WAVE files
 * Reenabled sample rate adjustments in preferences
-* Image (Logo) improvements [Alper Ersoy]
-* Upgraded to Guile-1.6
 * Fixed signal handling in scheme
-* Documentation improvements [Alper, Timj]
+* Fixed time zone handling
+* Upgraded to Guile-1.6
+* Robustness fixes to LADSPA loader [Sam Hocevar]
+* Improved documentation building process [Alper Ersoy]
+* Image (Logo) improvements [Alper Ersoy]
+* Documentation improvements
 * Adapted code to gcc-3.3/g++-3.3
 * Miscellaneous major and minor code fixes
 
