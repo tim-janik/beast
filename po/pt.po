@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.6\n"
 "Report-Msgid-Bugs-To: Duarte Loreto <happyguy_pt@hotmail.com>\n"
-"POT-Creation-Date: 2004-05-06 01:53+0100\n"
-"PO-Revision-Date: 2004-05-06 01:55+0000\n"
+"POT-Creation-Date: 2004-05-16 16:32+0100\n"
+"PO-Revision-Date: 2004-05-16 16:35+0000\n"
 "Last-Translator: Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Language-Team: Portuguese <gnome_pt@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -722,7 +722,7 @@ msgstr "TIPOS DE COLUNAS:"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:687
 msgid "note-1, note-2, ..."
-msgstr ""
+msgstr "note-1, note-2, ..."
 
 #: beast-gtk/bstpatterncolumns.c:688
 msgid "  display notes of the first, second, ... channel"
@@ -731,7 +731,7 @@ msgstr "  apresentar as notas do primeiro, segundo, ... canal"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:690
 msgid "offset-1, length-2, velocity-3, ..."
-msgstr ""
+msgstr "offset-1, length-2, velocity-3, ..."
 
 #: beast-gtk/bstpatterncolumns.c:691
 msgid ""
@@ -744,7 +744,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:693
 msgid "control-0, ..., control-63, cc-0, cc-31"
-msgstr ""
+msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: beast-gtk/bstpatterncolumns.c:694
 msgid "  select various event types (controls, continuous controllers)"
@@ -754,7 +754,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:696
 msgid "bar, |"
-msgstr ""
+msgstr "bar, |"
 
 #: beast-gtk/bstpatterncolumns.c:697
 msgid "  display solid vertical bar"
@@ -763,7 +763,7 @@ msgstr "  apresentar barra vertical sólida"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:699
 msgid "dbar, :"
-msgstr ""
+msgstr "dbar, :"
 
 #: beast-gtk/bstpatterncolumns.c:700
 msgid "  display dotted vertical bar"
@@ -772,7 +772,7 @@ msgstr "  apresentar barra vertical tracejada"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:702
 msgid "space, _"
-msgstr ""
+msgstr "space, _"
 
 #: beast-gtk/bstpatterncolumns.c:703
 msgid "  insert vertical space"
@@ -785,7 +785,7 @@ msgstr "EVENTOS:"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:706
 msgid "  balance, volume, cc-8, ..."
-msgstr ""
+msgstr "  balance, volume, cc-8, ..."
 
 #: beast-gtk/bstpatterncolumns.c:707
 msgid "MODIFIERS:"
@@ -794,7 +794,7 @@ msgstr "MODIFICADORES:"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:709
 msgid "hex2, hex4"
-msgstr ""
+msgstr "hex2, hex4"
 
 #: beast-gtk/bstpatterncolumns.c:710
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
@@ -804,7 +804,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:712
 msgid "shex2, shex4"
-msgstr ""
+msgstr "shex2, shex4"
 
 #: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
@@ -815,7 +815,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:715
 msgid "dec2, dec3"
-msgstr ""
+msgstr "dec2, dec3"
 
 #: beast-gtk/bstpatterncolumns.c:716
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
@@ -824,7 +824,7 @@ msgstr "  apresentar números decimais de 2 (00..99) ou 3 (000..999) dígitos"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:718
 msgid "sdec2, sdec3"
-msgstr ""
+msgstr "sdec2, sdec3"
 
 #: beast-gtk/bstpatterncolumns.c:719
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
@@ -834,7 +834,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:721
 msgid "col1, col2, col3"
-msgstr ""
+msgstr "col1, col2, col3"
 
 #: beast-gtk/bstpatterncolumns.c:722
 msgid "  selects one of 3 predefined colors"
@@ -843,7 +843,7 @@ msgstr "  selecciona uma de três cores pré-definidas"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:724
 msgid "lfold, rfold"
-msgstr ""
+msgstr "lfold, rfold"
 
 #: beast-gtk/bstpatterncolumns.c:725
 msgid "  allow folding the column into left/right neighbour"
@@ -856,7 +856,7 @@ msgstr "EXEMPLO:"
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:728
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-msgstr ""
+msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 
 #. GXK_DIALOG_MODAL
 #: beast-gtk/bstpatterncolumns.c:738
