@@ -312,11 +312,13 @@
 	  <button label="Reset" size:window-vgroup="bus-reset" sensitive="0"/>
 	  <!-- Effects -->
           <frame shadow-type="none" size:window-vgroup="bus-effects" >
-	    <vbox>
-	      <label label="[ EFX ]"/>
-	      <label label="[ EFX ]"/>
-	      <label label="[ EFX ]"/>
-	    </vbox>
+	    <frame shadow-type="etched-in" sensitive="0">
+	      <vbox homogeneous="1">
+		<label label="Reserved"/>
+		<label label="for"/>
+		<label label="Effects"/>
+	      </vbox>
+	    </frame>
 	  </frame>
 	  <!-- Bypass -->
 	  <button label="Bypass" size:window-vgroup="bus-bypass" sensitive="0"/>
