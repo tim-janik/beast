@@ -1,3 +1,13 @@
+Tue Jun 22 13:51:13 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/radgets-beast.xml:
+	* beast-gtk/dialogs/radgets-standard.xml:
+	* beast-gtk/gxk/gxkradget.c:
+	* beast-gtk/gxk/gxkradget.h:
+	* beast-gtk/gxk/gxkradgetfactory.c:
+	* beast-gtk/gxk/gxkradgetfactory.h: CVS copied *gadget* files to
+	*radget* files as the first step of a bigger rename.
+
 2004-06-14  Gustavo Maciel Dias Vieira  <gustavo@sagui.org>
 
 	* configure.in: Added pt_BR to ALL_LINGUAS.
