@@ -16,5 +16,6 @@ intltool-merge
 intltool-merge.in
 intltool-update
 intltool-update.in
+intltool-modules
 autom4te.cache
 mkinstalldirs
