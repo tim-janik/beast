@@ -1,3 +1,7 @@
+Fri Feb 27 06:48:41 2004  Tim Janik  <timj@gtk.org>
+
+	* launchers/suidmain.c: CVS copied here from beast-gtk/.
+
 Fri Feb 27 06:42:01 2004  Tim Janik  <timj@gtk.org>
 
 	* launchers/: added new directory to hold beast and bsesh
