@@ -1,3 +1,7 @@
+2003-10-15  Christian Rose  <menthos@menthos.com>
+
+	* configure.in: Added "sv" to ALL_LINGUAS.
+
 Wed Oct 15 04:58:31 2003  Tim Janik  <timj@gtk.org>
 
 	* throw out candidate 0.5.5-rc3.
