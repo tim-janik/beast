@@ -1,3 +1,12 @@
+Tue May 27 03:33:52 2003  Tim Janik  <timj@gtk.org>
+
+	* bseladspa.c: applied patch from Sam Hocevar <sam@zoy.org> which
+	fixes wrong error messages and crashes on some of the cmt.so
+	plugins.
+	added cosmetic fixups, refined debugging messages, minor optimizations.
+
+	* bseladspa.[hc]: put code under LGPL.
+
 Tue May 27 02:57:00 2003  Tim Janik  <timj@gtk.org>
 
 	* bsetrack.c (bse_track_list_proxies):

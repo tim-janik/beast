@@ -1,19 +1,20 @@
 /* BSE - Bedevilled Sound Engine
  * Copyright (C) 2003 Tim Janik
  *
- * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 #include "bseladspa.h"
 #include "bseladspamodule.h"
@@ -22,7 +23,7 @@
 
 #include "ladspa.h"
 
-#define DEBUG   sfi_debug_keyfunc ("plugins")
+#define DEBUG   sfi_debug_keyfunc ("ladspa")
 
 #define	LADSPA_TYPE_NAME	"BseLadspaModule_"
 
@@ -124,18 +125,19 @@ static void
 ladspa_plugin_unload (BseLadspaPlugin *self)
 {
   guint i;
-
+  
   g_return_if_fail (self->gmodule != NULL);
-
+  
   g_module_close (self->gmodule);
   self->gmodule = NULL;
-
+  
   for (i = 0; i < self->n_types; i++)
-    {
-      bse_ladspa_info_free (self->types[i].info);
-      self->types[i].info = NULL;
-    }
-
+    if (self->types[i].info)
+      {
+        bse_ladspa_info_free (self->types[i].info);
+        self->types[i].info = NULL;
+      }
+  
   DEBUG ("unloaded-plugin \"%s\"", self->fname);
 }
 
@@ -168,32 +170,49 @@ ladspa_plugin_complete_info (GTypePlugin	*gplugin,
       }
 }
 
+#define to_upper(c)	((c) >='a' && (c) <='z' ? (c) - 'a' + 'A' : (c))
+#define is_alnum(c)	(((c) >='A' && (c) <='Z') || ((c) >='a' && (c) <='z') || ((c) >='0' && (c) <='9'))
+
+static inline gint
+strcmp_alnum (const gchar *s1,
+              const gchar *s2)
+{
+  while (*s1 && *s2)
+    {
+      if (is_alnum (*s1) && *s1 != *s2)
+	break;
+      s1++;
+      s2++;
+    }
+  return *s1 - *s2;
+}
+
 static const gchar*
 ladspa_plugin_reinit_type_ids (BseLadspaPlugin           *self,
 			       LADSPA_Descriptor_Function ldf)
 {
-  guint i, j;
+  guint j;
   for (j = 0; j < self->n_types; j++)
     {
-      const gchar *label = g_type_name (self->types[j].type) + strlen (LADSPA_TYPE_NAME);
+      const gchar *label;
       const LADSPA_Descriptor *cld;
-      for (i = 0; ; i++)
-	{
-	  cld = ldf (i);
-	  if (!cld)
-	    return "plugin type missing";
-	  if (cld->Label && strcmp (cld->Label, label) == 0)
-	    break;
-	}
+      if (!self->types[j].type)
+	continue;
+      label = g_type_name (self->types[j].type) + strlen (LADSPA_TYPE_NAME);
+      /* we could try searching the ldf() indices for our type here,
+       * however since ladspa_plugin_init_type_ids() creates a type entry
+       * for each (even broken types) and the plugin must not change on
+       * disk, our type index really should match the ldf() index.
+       */
+      cld = ldf (j);
+      if (!cld || !cld->Label || strcmp_alnum (cld->Label, label) != 0)
+        return "plugin type missing";
       self->types[j].info = bse_ladspa_info_assemble (self->fname, cld);
       if (self->types[j].info->broken)
-	return "plugin type broken";
+	return "plugin type broke upon reload";
     }
   return NULL;
 }
-
-#define to_upper(c)	((c) >='a' && (c) <='z' ? (c) - 'a' + 'A' : (c))
-#define is_alnum(c)	(((c) >='A' && (c) <='Z') || ((c) >='a' && (c) <='z') || ((c) >='0' && (c) <='9'))
 
 static const gchar*
 ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
@@ -222,28 +241,33 @@ ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
   for (i = 0; ; i++)
     {
       const LADSPA_Descriptor *cld = ldf (i);
-      BseLadspaInfo *bli;
+      guint j;
       if (!cld)
 	break;
-      bli = bse_ladspa_info_assemble (self->fname, cld);
-      if (!bli->broken)
+      j = self->n_types++;
+      self->types = g_realloc (self->types, self->n_types * sizeof (self->types[0]));
+      self->types[j].type = 0;
+      self->types[j].info = bse_ladspa_info_assemble (self->fname, cld);
+      if (!self->types[j].info->broken)
 	{
 	  gchar *string, *name;
-	  guint k, j;
+	  guint k;
 	  name = g_strconcat (LADSPA_TYPE_NAME, cld->Label, NULL);
+	  for (k = 0; name[k]; k++)
+	    if (!is_alnum (name[k]))
+	      name[k] = '_';
+	  DEBUG ("registering-plugin: \"%s\" (%s)", name, self->fname);
 	  if (g_type_from_name (name) != 0)
 	    {
+	      bse_ladspa_info_free (self->types[j].info);
+	      self->types[j].info = NULL;
+	      g_message ("LADSPA(%s): plugin contains already registered type: %s",
+			 self->fname, name);
 	      g_free (name);
-	      bse_ladspa_info_free (bli);
-	      error = "Plugin contains registered types";
-	      goto cleanup;
+	      continue;
 	    }
-	  j = self->n_types++;
-	  self->types = g_realloc (self->types, self->n_types * sizeof (self->types[0]));
 	  self->types[j].type = bse_type_register_dynamic (BSE_TYPE_LADSPA_MODULE, name,
 							   "LADSPA Undocumented", G_TYPE_PLUGIN (self));
-	  self->types[j].info = bli;
-	  DEBUG ("registered-plugin: \"%s\"", name);
 	  g_free (name);
 	  string = g_strdup (self->types[j].info->name);
 	  for (k = 0; string[k]; k++)
@@ -260,9 +284,11 @@ ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
 	  g_free (name);
 	}
       else
-	bse_ladspa_info_free (bli);
+	{
+	  bse_ladspa_info_free (self->types[j].info);
+	  self->types[j].info = NULL;
+	}
     }
- cleanup:
   g_free (prefix);
   return error;
 }
@@ -644,6 +670,7 @@ bse_ladspa_plugin_dir_list_files (const gchar *dir_list)
   return g_slist_sort (slist, (GCompareFunc) strcmp);
 }
 
+#if 0
 static void
 ladspa_test_load (const gchar *file)
 {
@@ -681,3 +708,4 @@ ladspa_test_load (const gchar *file)
   if (gmodule)
     g_module_close (gmodule);
 }
+#endif
