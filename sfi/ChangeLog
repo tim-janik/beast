@@ -1,3 +1,8 @@
+Fri Jan  3 19:16:49 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: export functionality to merge two
+	sorted rings (sfi_ring_merge_sorted).
+
 Tue Dec 31 03:01:30 2002  Tim Janik  <timj@gtk.org>
 
 	* toyprof.[hc], toyprof.README, toyprof.pl: moved

@@ -272,6 +272,9 @@ gpointer        sfi_ring_nth_data       (SfiRing        *head,
 					 guint           n);
 SfiRing*        sfi_ring_split          (SfiRing        *head1,
 					 SfiRing        *head2);
+SfiRing*	sfi_ring_merge_sorted	(SfiRing	*head1,
+					 SfiRing	*head2,
+					 GCompareFunc	 func);
 SfiRing*        sfi_ring_sort           (SfiRing        *head,
 					 GCompareFunc    func);
 SfiRing*        sfi_ring_reverse        (SfiRing        *head);

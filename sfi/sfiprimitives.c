@@ -1411,7 +1411,7 @@ sfi_ring_remove_node (SfiRing *head,
   return head;
 }
 
-static inline SfiRing*
+SfiRing*
 sfi_ring_merge_sorted (SfiRing     *head1,
 		       SfiRing     *head2,
 		       GCompareFunc func)
