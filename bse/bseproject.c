@@ -778,8 +778,9 @@ bse_project_start_playback (BseProject *self)
           mcontext.midi_channel = 1; /* midi channel default */
           super->context_handle = bse_snet_create_context (snet, mcontext, trans);
 	  bse_source_connect_context (BSE_SOURCE (snet), super->context_handle, trans);
-	  seen_synth++;
 	}
+      if (BSE_SUPER_NEEDS_CONTEXT (super))
+        seen_synth++;
       if (BSE_IS_SONG (super))
 	songs = sfi_ring_append (songs, super);
     }

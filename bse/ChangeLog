@@ -1,3 +1,11 @@
+Fri Oct 15 01:13:56 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemidisynth.c: request polyphonic voice processing for the 
+	selected midi channel.
+
+	* bseproject.c: stay in playback mode even if only snets and no song
+	need processing.
+
 Wed Oct 13 21:28:37 2004  Tim Janik  <timj@gtk.org>
 
 	* bseserver.c (bse_server_close_devices): wait until pcm module is 

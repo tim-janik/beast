@@ -19,6 +19,7 @@
 
 #include "bsemidievent.h"	/* BSE_MIDI_MAX_CHANNELS */
 #include "bsemidivoice.h"
+#include "bsemidireceiver.h"
 #include "bsecontextmerger.h"
 #include "bsesubsynth.h"
 #include "bsepcmoutput.h"
@@ -396,6 +397,26 @@ bse_midi_synth_context_create (BseSource *source,
       guint i;
       for (i = 0; i < self->n_voices; i++)
 	bse_snet_context_clone_branch (snet, context_handle, self->context_merger, mcontext, trans);
+
+      bse_midi_receiver_channel_enable_poly (mcontext.midi_receiver, mcontext.midi_channel);
+    }
+}
+
+static void
+bse_midi_synth_context_dismiss (BseSource *source,
+                                guint      context_handle,
+                                BseTrans  *trans)
+{
+  BseMidiSynth *self = BSE_MIDI_SYNTH (source);
+  BseSNet *snet = BSE_SNET (self);
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
+
+  if (!bse_snet_context_is_branch (snet, context_handle))
+    {
+      BseMidiContext mcontext = bse_snet_get_midi_context (snet, context_handle);
+      bse_midi_receiver_channel_disable_poly (mcontext.midi_receiver, mcontext.midi_channel);
     }
 }
 
@@ -416,6 +437,7 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
   item_class->get_candidates = bse_midi_synth_get_candidates;
   
   source_class->context_create = bse_midi_synth_context_create;
+  source_class->context_dismiss = bse_midi_synth_context_dismiss;
   
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
 			      PROP_MIDI_CHANNEL,
