@@ -1,3 +1,10 @@
+Tue Jan  7 16:44:04 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/generated/scandocs.pl: fix parameter markup.
+
+	* docs/generated/html.xsl: fix empty subtopic lines in news
+	entries.
+
 Tue Jan  7 00:17:40 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: setup BstAppControl, update led.

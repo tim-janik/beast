@@ -163,11 +163,18 @@ sub tags_print_syntax {
 }
 sub tags_highlight {
     my $t = shift;
-    $t =~ s/@([A-Za-z0-9_-]+)/\@emph{$1}/g;
-    $t =~ s/%([A-Za-z0-9_-]+)/\@emph{$1}/g;
-    $t =~ s/#([A-Za-z0-9_-]+)/\@strong{$1}/g;
+    # A parameter
+    $t =~ s/@([A-Za-z0-9_-]+)/\@reference_parameter{$1}/g;
+
+    # A constant
+    $t =~ s/%([A-Za-z0-9_-]+)/\@strong{$1}/g;
+
+    # Everything else
+    $t =~ s/#([A-Za-z0-9_-]+)/\@emph{$1}/g;
+
+    # A function name
     # $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/<strong>$1<\/strong>/g;
-    $t =~ s/([A-Za-z0-9_-]+\([+\/%&|^~!A-Za-z0-9\s,*_-]*\))/\@strong{$1}/g;
+    $t =~ s/([A-Za-z0-9_-]+\([+\/%&|^~!A-Za-z0-9\s,*_-]*\))/\@reference_function{$1}/g;
     return $t;
 }
 sub tags_print_description {

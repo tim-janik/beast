@@ -681,6 +681,7 @@
   <xsl:apply-templates/>
   <xsl:choose>
     <xsl:when test="count(document-font|document-title|document-author|document-navigation|document-hasbanner)"/>
+    <xsl:when test="count(news-title|news-date)"/>
     <!-- <xsl:when test="count(reference-function|reference-struct-name)"><breakline/></xsl:when> -->
     <xsl:otherwise><br/><br/></xsl:otherwise>
   </xsl:choose>
@@ -1077,18 +1078,27 @@
 
 <!-- {{{ news items for the website -->
 <xsl:template match="para/news-date">
-  <span class="news-date">
-    <xsl:apply-templates/>
-  </span>
-  <br/>
+  <xsl:if test="not(string(.) = '')">
+    <span class="news-date">
+      <xsl:apply-templates/>
+    </span>
+    <br/>
+    <xsl:if test="string(../news-title) = ''">
+      <br/>
+    </xsl:if>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="para/news-title">
-  <strong>
-    <span class="news-heading">
-      <xsl:apply-templates/>
-    </span>
-  </strong>
+  <xsl:if test="not(string(.) = '')">
+    <strong>
+      <span class="news-heading">
+	<xsl:apply-templates/>
+      </span>
+    </strong>
+    <br/>
+    <br/>
+  </xsl:if>
 </xsl:template>
 <!-- }}} -->
 
