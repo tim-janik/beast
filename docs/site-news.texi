@@ -25,6 +25,30 @@
 @unnumbered What's New?
 
 
+@newsTitle{Sunday 07 Mar 2004, The low latency BEAST Realease}
+
+BEAST/BSE version 0.6.1 is available from the
+@uref{beast-doc://download,,download section}.
+@c here is the @uref{http://www.gnomedesktop.org/article.php?sid=1648,,FootNotes announcement}.
+
+Tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.1.tar.gz,, beast-0.6.1.tar.gz}
+and patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.0-0.6.1.bz2,, patch-beast-0.6.0-0.6.1.bz2}.
+
+Apart from important bug fixes, this release comes with a small suid wrapper,
+that acquires a nice level of -20 and drops privileges. This allowes
+beast to let the synthesis threads run with increased scheduling priorities
+which greatly reduces the possibility for drop-outs.
+Under one of the recent 2.6 linux kernels, this also allowes very low latency
+setups with delays around only 2 milli seconds.
+Also among the newly added features is a highly experimental prototype
+of a pattern editor. While this widget isn't fully functional yet, it already
+offers some interesting editing functions. Other features, updated
+languages and more bug fixes are listed in the
+@uref{beast-doc://release-news,,NEWS section}.
+
+
 @newsTitle{Wednesday 18 Feb 2004, Website updates}
 
 BEAST v0.6.0 supports skins for the
