@@ -1,5 +1,5 @@
-/* GtkListWrapper - GtkListModel implementation as a simple list wrapper
- * Copyright (C) 2002 Tim Janik
+/* GxkListWrapper - GtkListModel implementation as a simple list wrapper
+ * Copyright (C) 2002,2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GTK_LIST_WRAPPER_H__
-#define __GTK_LIST_WRAPPER_H__
+#ifndef __GXK_LIST_WRAPPER_H__
+#define __GXK_LIST_WRAPPER_H__
 
 #include <gtk/gtktreemodel.h>
 
@@ -26,18 +26,18 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* --- type macros --- */
-#define GTK_TYPE_LIST_WRAPPER              (gtk_list_wrapper_get_type ())
-#define GTK_LIST_WRAPPER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_LIST_WRAPPER, GtkListWrapper))
-#define GTK_LIST_WRAPPER_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_LIST_WRAPPER, GtkListWrapperClass))
-#define GTK_IS_LIST_WRAPPER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GTK_TYPE_LIST_WRAPPER))
-#define GTK_IS_LIST_WRAPPER_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_LIST_WRAPPER))
-#define GTK_LIST_WRAPPER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GTK_TYPE_LIST_WRAPPER, GtkListWrapperClass))
+#define GXK_TYPE_LIST_WRAPPER              (gxk_list_wrapper_get_type ())
+#define GXK_LIST_WRAPPER(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_LIST_WRAPPER, GxkListWrapper))
+#define GXK_LIST_WRAPPER_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_LIST_WRAPPER, GxkListWrapperClass))
+#define GXK_IS_LIST_WRAPPER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_LIST_WRAPPER))
+#define GXK_IS_LIST_WRAPPER_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_LIST_WRAPPER))
+#define GXK_LIST_WRAPPER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_LIST_WRAPPER, GxkListWrapperClass))
 
 
 /* --- structures & typedefs --- */
-typedef struct _GtkListWrapper      GtkListWrapper;
-typedef struct _GtkListWrapperClass GtkListWrapperClass;
-struct _GtkListWrapper
+typedef struct _GxkListWrapper      GxkListWrapper;
+typedef struct _GxkListWrapperClass GxkListWrapperClass;
+struct _GxkListWrapper
 {
   GObject parent_instance;
 
@@ -48,11 +48,11 @@ struct _GtkListWrapper
   /*< private >*/
   guint	 stamp;
 };
-struct _GtkListWrapperClass
+struct _GxkListWrapperClass
 {
   GObjectClass parent_class;
 
-  void	(*fill_value)	(GtkListWrapper	*self,
+  void	(*fill_value)	(GxkListWrapper	*self,
 			 guint		 column,
 			 guint		 row,
 			 GValue		*value);
@@ -60,26 +60,26 @@ struct _GtkListWrapperClass
 
 
 /* --- prototypes --- */
-GType		gtk_list_wrapper_get_type	(void);
-GtkListWrapper*	gtk_list_wrapper_new		(guint		 n_cols,
+GType		gxk_list_wrapper_get_type	(void);
+GxkListWrapper*	gxk_list_wrapper_new		(guint		 n_cols,
 						 GType		 first_column_type,
 						 ...);
-GtkListWrapper*	gtk_list_wrapper_newv		(guint		 n_cols,
+GxkListWrapper*	gxk_list_wrapper_newv		(guint		 n_cols,
 						 GType		*column_types);
-void		gtk_list_wrapper_notify_insert	(GtkListWrapper	*self,
+void		gxk_list_wrapper_notify_insert	(GxkListWrapper	*self,
 						 guint		 nth_row);
-void		gtk_list_wrapper_notify_change	(GtkListWrapper	*self,
+void		gxk_list_wrapper_notify_change	(GxkListWrapper	*self,
 						 guint		 nth_row);
-void		gtk_list_wrapper_notify_delete	(GtkListWrapper	*self,
+void		gxk_list_wrapper_notify_delete	(GxkListWrapper	*self,
 						 guint		 nth_row);
-void		gtk_list_wrapper_notify_prepend	(GtkListWrapper	*self,
+void		gxk_list_wrapper_notify_prepend	(GxkListWrapper	*self,
 						 guint		 n_rows);
-void		gtk_list_wrapper_notify_append	(GtkListWrapper	*self,
+void		gxk_list_wrapper_notify_append	(GxkListWrapper	*self,
 						 guint		 n_rows);
-void		gtk_list_wrapper_notify_clear	(GtkListWrapper	*self);
-guint		gtk_list_wrapper_get_index	(GtkListWrapper	*self,
+void		gxk_list_wrapper_notify_clear	(GxkListWrapper	*self);
+guint		gxk_list_wrapper_get_index	(GxkListWrapper	*self,
 						 GtkTreeIter	*iter);
-void		gtk_list_wrapper_get_iter_at	(GtkListWrapper	*self,
+void		gxk_list_wrapper_get_iter_at	(GxkListWrapper	*self,
 						 GtkTreeIter	*iter,
 						 guint		 index);
 
@@ -88,4 +88,4 @@ void		gtk_list_wrapper_get_iter_at	(GtkListWrapper	*self,
 }
 #endif /* __cplusplus */
 
-#endif /* __GTK_LIST_WRAPPER_H__ */
+#endif /* __GXK_LIST_WRAPPER_H__ */
