@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-25 23:45-0400\n"
-"PO-Revision-Date: 2004-08-25 19:50-0400\n"
+"POT-Creation-Date: 2004-08-28 16:17-0400\n"
+"PO-Revision-Date: 2004-08-29 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -312,13 +312,13 @@ msgstr "Please press the keyboard shortcut to be installed for function: %s"
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Please press the keyboard shortcut to be installed..."
 
-#: beast-gtk/bstbuseditor.c:37 beast-gtk/bstbusmixer.c:34
+#: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusmixer.c:34
 #: beast-gtk/bstbusview.c:34 beast-gtk/bstinstrumentview.c:33
 #: beast-gtk/bstpartview.c:39 beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Add"
 
-#: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusview.c:35
+#: beast-gtk/bstbuseditor.c:39 beast-gtk/bstbusview.c:35
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
@@ -327,7 +327,7 @@ msgstr "Add"
 msgid "Delete"
 msgstr "Delete"
 
-#: beast-gtk/bstbuseditor.c:39 beast-gtk/bstpartview.c:41
+#: beast-gtk/bstbuseditor.c:40 beast-gtk/bstpartview.c:41
 #: beast-gtk/bstwaveview.c:47
 msgid "Editor"
 msgstr "Editor"
@@ -582,7 +582,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Name"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:521
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:524
 msgid "Comment"
 msgstr "Comment"
 
@@ -606,7 +606,7 @@ msgstr "Change..."
 msgid "Change the currently selected key binding"
 msgstr "Change the currently selected key binding"
 
-#: beast-gtk/bstkeybindings.c:55
+#: beast-gtk/bstkeybindings.c:55 beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "Raise"
 msgstr "Raise"
 
@@ -614,7 +614,7 @@ msgstr "Raise"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Raise the currently selected key binding, relative to its neighbours"
 
-#: beast-gtk/bstkeybindings.c:57
+#: beast-gtk/bstkeybindings.c:57 beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Lower"
 msgstr "Lower"
 
@@ -748,19 +748,19 @@ msgstr "BEAST Version %s"
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
-#: beast-gtk/bstparam-choice.c:142
-msgid "Popup Options"
-msgstr "Popup Options"
-
-#: beast-gtk/bstparam-choice.c:148
+#: beast-gtk/bstparam-choice.c:143
 msgid "Drop Down Combo"
 msgstr "Drop Down Combo"
 
-#: beast-gtk/bstparam-choice.c:154
+#: beast-gtk/bstparam-choice.c:149
 msgid "Drop Down Button"
 msgstr "Drop Down Button"
 
-#: beast-gtk/bstparam-choice.c:160
+#: beast-gtk/bstparam-choice.c:155
+msgid "Popup Options"
+msgstr "Popup Options"
+
+#: beast-gtk/bstparam-choice.c:161
 msgid "Standard Option Menu"
 msgstr "Standard Option Menu"
 
@@ -780,7 +780,7 @@ msgstr "Note Sequence Grid Editor"
 msgid "Note Entry"
 msgstr "Note Entry"
 
-#: beast-gtk/bstparam-proxy.c:290
+#: beast-gtk/bstparam-proxy.c:295
 msgid "Object Drop Down Box"
 msgstr "Object Drop Down Box"
 
@@ -1015,7 +1015,7 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Pattern Editor Layout"
 
-#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:24
+#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "VZoom"
 msgstr "VZoom"
 
@@ -1393,7 +1393,7 @@ msgstr "Procedure"
 msgid "Totals"
 msgstr "Totals"
 
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:378
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:385
 msgid "Thread Name"
 msgstr "Thread Name"
 
@@ -1487,7 +1487,7 @@ msgstr ""
 "instabilities in the code (i.e. save your projects regularly)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Edit"
 msgstr "_Edit"
 
@@ -2444,7 +2444,10 @@ msgstr "Adjust the zoom factor of the router display"
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr "Aplly configuration changes to the pattern editor layout"
 
-#. Name
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
+msgid "Available Items:"
+msgstr "Available Items:"
+
 #: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Bus Name"
 msgstr "Bus Name"
@@ -2462,182 +2465,202 @@ msgid "Control Type:"
 msgstr "Control Type:"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:8
+msgid "Current Items:"
+msgstr "Current Items:"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Development"
 msgstr "Development"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "Discard changes and close dialog"
 msgstr "Discard changes and close dialog"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "E_xamples"
 msgstr "E_xamples"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Events"
 msgstr "Events"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "HZoom"
 msgstr "HZoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "Horizontal piano zoom"
 msgstr "Horizontal piano zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Horizontal track zoom"
 msgstr "Horizontal track zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Inputs"
 msgstr "Inputs"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Layout:"
 msgstr "Layout:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Level"
 msgstr "Level"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
+msgid "Move the selection down by one position"
+msgstr "Move the selection down by one position"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
+msgid "Move the selection up by one position"
+msgstr "Move the selection up by one position"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Note _Length"
 msgstr "Note _Length"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Outputs"
 msgstr "Outputs"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Piano Notes"
 msgstr "Piano Notes"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:21
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "Repeat"
 msgstr "Repeat"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "Repeat playback within loop points"
 msgstr "Repeat playback within loop points"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "Synthesis Modules"
 msgstr "Synthesis Modules"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "Vertical piano zoom"
 msgstr "Vertical piano zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "Virtual Rack"
 msgstr "Virtual Rack"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "Wave_s"
 msgstr "Wave_s"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "Zoom"
 msgstr "Zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
+msgid "_Add"
+msgstr "_Add"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_Apply"
 msgstr "_Apply"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Audio Sources"
 msgstr "_Audio Sources"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_Cancel"
 msgstr "_Cancel"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Distortion"
 msgstr "_Distortion"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Enhance"
 msgstr "_Enhance"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_File"
 msgstr "_File"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Filters"
 msgstr "_Filters"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Help"
 msgstr "_Help"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Input & Output"
 msgstr "_Input & Output"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Misc"
 msgstr "_Misc"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Other Sources"
 msgstr "_Other Sources"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Project"
 msgstr "_Project"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_Quantization"
 msgstr "_Quantization"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
+msgid "_Remove"
+msgstr "_Remove"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:52
 msgid "_Routing"
 msgstr "_Routing"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:53
 msgid "_Skins"
 msgstr "_Skins"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:54
 msgid "_Song"
 msgstr "_Song"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:55
 msgid "_Spatial"
 msgstr "_Spatial"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:56
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:57
 msgid "_Synthesizers"
 msgstr "_Synthesizers"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:58
 msgid "_Tools"
 msgstr "_Tools"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:52
+#: beast-gtk/dialogs/radgets-beast.xml.h:59
 msgid "_Utilities"
 msgstr "_Utilities"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:53
+#: beast-gtk/dialogs/radgets-beast.xml.h:60
 msgid "_View"
 msgstr "_View"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:54
+#: beast-gtk/dialogs/radgets-beast.xml.h:61
 msgid "_Virtualization"
 msgstr "_Virtualization"
 
@@ -2810,7 +2833,7 @@ msgstr "The widget to be activated when the label's mnemonic key is pressed"
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
 #.
-#: beast-gtk/gxk/gxksimplelabel.c:575
+#: beast-gtk/gxk/gxksimplelabel.c:598
 msgid "..."
 msgstr "..."
 
@@ -2880,7 +2903,7 @@ msgid "Second control input"
 msgstr "Second control input"
 
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
-#: bse/bsewaveosc.c:155 plugins/artscompressor.idl:33 plugins/bseadder.c:101
+#: bse/bsewaveosc.c:564 plugins/artscompressor.idl:33 plugins/bseadder.c:101
 #: plugins/bseatandistort.c:92 plugins/bseiirfilter.c:162
 #: plugins/bsemixer.c:109 plugins/bsemult.c:68 plugins/davbassfilter.idl:35
 #: plugins/davchorus.idl:32 plugins/davorgan.c:133 plugins/davsyndrum.c:122
@@ -3078,8 +3101,8 @@ msgstr ""
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
 #: bse/bsestandardosc.c:153 bse/bsestandardosc.c:159 bse/bsestandardosc.c:165
-#: bse/bsestandardosc.c:171 bse/bsewaveosc.c:125 bse/bsewaveosc.c:131
-#: bse/bsewaveosc.c:137
+#: bse/bsestandardosc.c:171 bse/bsewaveosc.c:534 bse/bsewaveosc.c:540
+#: bse/bsewaveosc.c:546
 msgid "Modulation"
 msgstr "Modulation"
 
@@ -3087,11 +3110,11 @@ msgstr "Modulation"
 msgid "Strength of linear frequency modulation"
 msgstr "Strength of linear frequency modulation"
 
-#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:162 bse/bsewaveosc.c:134
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:162 bse/bsewaveosc.c:543
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Perform exponential frequency modulation instead of linear"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:140
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:549
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Number of octaves to be affected by exponential frequency modulation"
 
@@ -3115,7 +3138,7 @@ msgstr "Audio In"
 msgid "Unfiltered Audio Signal"
 msgstr "Unfiltered Audio Signal"
 
-#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:192 bse/bsewaveosc.c:149
+#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:192 bse/bsewaveosc.c:558
 #: plugins/davorgan.c:132 plugins/davsyndrum.c:116
 #: plugins/davxtalstrings.c:141
 msgid "Freq In"
@@ -3145,83 +3168,91 @@ msgstr "Gain Modulation Input"
 msgid "Filtered Audio Signal"
 msgstr "Filtered Audio Signal"
 
-#: bse/bsebus.c:422 bse/bsebus.c:427 bse/bsetrack.c:124
+#: bse/bsebus.c:109
+msgid "Available Inputs"
+msgstr "Available Inputs"
+
+#: bse/bsebus.c:109
+msgid "List of available synthesis signals to be used as bus input"
+msgstr "List of available synthesis signals to be used as bus input"
+
+#: bse/bsebus.c:483 bse/bsebus.c:488 bse/bsetrack.c:875
 msgid "Adjustments"
 msgstr "Adjustments"
 
-#: bse/bsebus.c:424
+#: bse/bsebus.c:485
 msgid "Left Volume [dB]"
 msgstr "Left Volume [dB]"
 
-#: bse/bsebus.c:424
+#: bse/bsebus.c:485
 msgid "Volume adjustment of left bus channel"
 msgstr "Volume adjustment of left bus channel"
 
-#: bse/bsebus.c:429
+#: bse/bsebus.c:490
 msgid "Right Volume [dB]"
 msgstr "Right Volume [dB]"
 
-#: bse/bsebus.c:429
+#: bse/bsebus.c:490
 msgid "Volume adjustment of right bus channel"
 msgstr "Volume adjustment of right bus channel"
 
-#: bse/bsebus.c:432
+#: bse/bsebus.c:493
 msgid "Signal Inputs"
 msgstr "Signal Inputs"
 
-#: bse/bsebus.c:434
-msgid "Input Synths"
-msgstr "Input Synths"
+#: bse/bsebus.c:495
+msgid "Input Signals"
+msgstr "Input Signals"
 
-#: bse/bsebus.c:434
-msgid "Synthesis modules used as input"
-msgstr "Synthesis modules used as input"
+#: bse/bsebus.c:495
+msgid "Synthesis signals used as bus input"
+msgstr "Synthesis signals used as bus input"
 
-#: bse/bsebus.c:436
+#: bse/bsebus.c:497
 msgid "Internals"
 msgstr "Internals"
 
-#: bse/bsebus.c:438
+#: bse/bsebus.c:499
 msgid "Master Output"
 msgstr "Master Output"
 
-#: bse/bsebus.c:441 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:502 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Left Audio In"
 
-#: bse/bsebus.c:441 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:502 bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr "Left channel input"
 
-#: bse/bsebus.c:443 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:504 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Right Audio In"
 
-#: bse/bsebus.c:443
+#: bse/bsebus.c:504
 msgid "Right channel input"
 msgstr "Right channel input"
 
-#: bse/bsebus.c:445 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:506 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Left Audio Out"
 
-#: bse/bsebus.c:445 bse/bsepcminput.c:128
+#: bse/bsebus.c:506 bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr "Left channel output"
 
-#: bse/bsebus.c:447 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:508 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Right Audio Out"
 
-#: bse/bsebus.c:447 bse/bsepcminput.c:130
+#: bse/bsebus.c:508 bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr "Right channel output"
 
-#: bse/bsebus.c:466
+#: bse/bsebus.c:527
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -3252,27 +3283,27 @@ msgstr "Frequency"
 msgid "Const Out%u"
 msgstr "Const Out%u"
 
-#: bse/bsecore.idl:379
+#: bse/bsecore.idl:386
 msgid "State"
 msgstr "State"
 
-#: bse/bsecore.idl:379
+#: bse/bsecore.idl:386
 msgid "The execution state of the thread"
 msgstr "The execution state of the thread"
 
-#: bse/bsecore.idl:380
+#: bse/bsecore.idl:387
 msgid "Thread ID"
 msgstr "Thread ID"
 
-#: bse/bsecore.idl:380
+#: bse/bsecore.idl:387
 msgid "A unique number identifying this thread"
 msgstr "A unique number identifying this thread"
 
-#: bse/bsecore.idl:382
+#: bse/bsecore.idl:389
 msgid "Priority"
 msgstr "Priority"
 
-#: bse/bsecore.idl:382
+#: bse/bsecore.idl:389
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -3280,51 +3311,51 @@ msgstr ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 
-#: bse/bsecore.idl:385
+#: bse/bsecore.idl:392
 msgid "Processor"
 msgstr "Processor"
 
-#: bse/bsecore.idl:385
+#: bse/bsecore.idl:392
 msgid "The processor that this thread is currently being executed on"
 msgstr "The processor that this thread is currently being executed on"
 
-#: bse/bsecore.idl:387
+#: bse/bsecore.idl:394
 msgid "User Time"
 msgstr "User Time"
 
-#: bse/bsecore.idl:387
+#: bse/bsecore.idl:394
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "The CPU time spent executing instructions of this thread"
 
-#: bse/bsecore.idl:389
+#: bse/bsecore.idl:396
 msgid "System Time"
 msgstr "System Time"
 
-#: bse/bsecore.idl:389
+#: bse/bsecore.idl:396
 msgid "The CPU time spent in the system for this thread"
 msgstr "The CPU time spent in the system for this thread"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:398
 msgid "Child User Time"
 msgstr "Child User Time"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:398
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "The CPU time spent executing instructions of children of this thread"
 
-#: bse/bsecore.idl:393
+#: bse/bsecore.idl:400
 msgid "Child System Time"
 msgstr "Child System Time"
 
-#: bse/bsecore.idl:393
+#: bse/bsecore.idl:400
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "The CPU time spent in the system for children of this thread"
 
-#: bse/bsecore.idl:434
+#: bse/bsecore.idl:441
 msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
-#: bse/bsecore.idl:435
+#: bse/bsecore.idl:442
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -3332,19 +3363,19 @@ msgstr ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 
-#: bse/bsecore.idl:438
+#: bse/bsecore.idl:445
 msgid "Synth Mixing Frequency"
 msgstr "Synth Mixing Frequency"
 
-#: bse/bsecore.idl:439
+#: bse/bsecore.idl:446
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:441
+#: bse/bsecore.idl:448
 msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
-#: bse/bsecore.idl:442
+#: bse/bsecore.idl:449
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3460,7 +3491,7 @@ msgstr "/Input & Output/MIDI Voice Input"
 msgid "Freq Out"
 msgstr "Freq Out"
 
-#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:157
+#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:566
 msgid "Gate Out"
 msgstr "Gate Out"
 
@@ -3630,7 +3661,8 @@ msgstr "/Audio Sources/Standard Oscillator"
 msgid "Wave Form"
 msgstr "Wave Form"
 
-#: bse/bsestandardosc.c:132 bse/bsewaveosc.c:121 bse/bsewaveosc.c:123
+#: bse/bsestandardosc.c:132 bse/bsetrack.c:886 bse/bsewaveosc.c:530
+#: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr "Wave"
 
@@ -3650,15 +3682,15 @@ msgstr "Base Frequency"
 msgid "Fine Tune"
 msgstr "Fine Tune"
 
-#: bse/bsestandardosc.c:155 bse/bsewaveosc.c:127
+#: bse/bsestandardosc.c:155 bse/bsewaveosc.c:536
 msgid "Input Modulation [%]"
 msgstr "Input Modulation [%]"
 
-#: bse/bsestandardosc.c:161 bse/bsewaveosc.c:133
+#: bse/bsestandardosc.c:161 bse/bsewaveosc.c:542
 msgid "Exponential FM"
 msgstr "Exponential FM"
 
-#: bse/bsestandardosc.c:167 bse/bsewaveosc.c:139
+#: bse/bsestandardosc.c:167 bse/bsewaveosc.c:548
 msgid "Octaves"
 msgstr "Octaves"
 
@@ -3710,11 +3742,11 @@ msgstr "PWM In"
 msgid "Pulse Width Modulation Input"
 msgstr "Pulse Width Modulation Input"
 
-#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:151
+#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:560
 msgid "Sync In"
 msgstr "Sync In"
 
-#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:151
+#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:560
 msgid "Syncronization Input"
 msgstr "Syncronization Input"
 
@@ -3734,12 +3766,12 @@ msgstr "Syncronization Output"
 msgid "/Virtualization/Virtual Input"
 msgstr "/Virtualization/Virtual Input"
 
-#: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
+#: bse/bsesubiport.c:122 bse/bsesubsynth.c:502
 #, c-format
 msgid "Input Port %u"
 msgstr "Input Port %u"
 
-#: bse/bsesubiport.c:124 bse/bsesuboport.c:124 bse/bsesubsynth.c:122
+#: bse/bsesubiport.c:124 bse/bsesuboport.c:124 bse/bsesubsynth.c:492
 msgid "Assignments"
 msgstr "Assignments"
 
@@ -3749,7 +3781,7 @@ msgid ""
 msgstr ""
 "The port name is a unique name to establish input<->output port relationships"
 
-#: bse/bsesubiport.c:134 bse/bsesubsynth.c:152
+#: bse/bsesubiport.c:134 bse/bsesubsynth.c:522
 #, c-format
 msgid "Virtual input %u"
 msgstr "Virtual input %u"
@@ -3758,41 +3790,50 @@ msgstr "Virtual input %u"
 msgid "/Virtualization/Virtual Output"
 msgstr "/Virtualization/Virtual Output"
 
-#: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
+#: bse/bsesuboport.c:122 bse/bsesubsynth.c:512
 #, c-format
 msgid "Output Port %u"
 msgstr "Output Port %u"
 
-#: bse/bsesuboport.c:134 bse/bsesubsynth.c:159
+#: bse/bsesuboport.c:134 bse/bsesubsynth.c:529
 #, c-format
 msgid "Virtual output %u"
 msgstr "Virtual output %u"
 
-#: bse/bsesubsynth.c:97
+#: bse/bsesubsynth.c:94
 msgid "/Virtualization/Virtual Sub Synth"
 msgstr "/Virtualization/Virtual Sub Synth"
 
-#: bse/bsesubsynth.c:124
-msgid "Synthesis Network"
-msgstr "Synthesis Network"
+#: bse/bsesubsynth.c:146 bse/bsetrack.c:275
+msgid "Available Synthesizers"
+msgstr "Available Synthesizers"
 
-#: bse/bsesubsynth.c:125
-msgid "The synthesis network to interface to"
-msgstr "The synthesis network to interface to"
+#: bse/bsesubsynth.c:146
+msgid "List of available synthesis networks to choose a sub network from"
+msgstr ""
+"List of available synthesis networks from which to choose a sub network"
 
-#: bse/bsesubsynth.c:134
+#: bse/bsesubsynth.c:494 bse/bsetrack.c:881
+msgid "Synthesizer"
+msgstr "Synthesizer"
+
+#: bse/bsesubsynth.c:495
+msgid "Synthesis network to use as embedded sub network"
+msgstr "Synthesis network to use as embedded sub network"
+
+#: bse/bsesubsynth.c:504
 msgid "Input Assignments"
 msgstr "Input Assignments"
 
-#: bse/bsesubsynth.c:135
+#: bse/bsesubsynth.c:505
 msgid "Output port name to interface from"
 msgstr "Output port name to interface from"
 
-#: bse/bsesubsynth.c:144
+#: bse/bsesubsynth.c:514
 msgid "Output Assignments"
 msgstr "Output Assignments"
 
-#: bse/bsesubsynth.c:145
+#: bse/bsesubsynth.c:515
 msgid "Input port name to interface to"
 msgstr "Input port name to interface to"
 
@@ -3820,91 +3861,105 @@ msgstr "Creation Time"
 msgid "Last modification time"
 msgstr "Last modification time"
 
-#: bse/bsetrack.c:126
+#: bse/bsetrack.c:275
+msgid "List of available synthesis networks to choose a track instrument from"
+msgstr ""
+"List of available synthesis networks from which to choose a track instrument"
+
+#: bse/bsetrack.c:279
+msgid "Available Postprocessors"
+msgstr "Available Postprocessors"
+
+#: bse/bsetrack.c:279
+msgid "List of available synthesis networks to choose a postprocessor from"
+msgstr ""
+"List of available synthesis networks from which to choose a postprocessor"
+
+#: bse/bsetrack.c:283 bse/bsewaveosc.c:125
+msgid "Available Waves"
+msgstr "Available Waves"
+
+#: bse/bsetrack.c:283
+msgid "List of available waves to choose as track instrument"
+msgstr "List of available waves to choose as track instrument"
+
+#: bse/bsetrack.c:877
 msgid "Muted"
 msgstr "Muted"
 
-#: bse/bsetrack.c:128 bse/bsetrack.c:133 bse/bsetrack.c:138
+#: bse/bsetrack.c:879 bse/bsetrack.c:884 bse/bsetrack.c:889
 msgid "Synth Input"
 msgstr "Synth Input"
 
-#: bse/bsetrack.c:130
-msgid "Custom Synth Net"
-msgstr "Custom Synth Net"
-
-#: bse/bsetrack.c:130
+#: bse/bsetrack.c:881
 msgid "Synthesis network to be used as instrument"
 msgstr "Synthesis network to be used as instrument"
 
-#: bse/bsetrack.c:135
-msgid "Custom Wave"
-msgstr "Custom Wave"
-
-#: bse/bsetrack.c:135
+#: bse/bsetrack.c:886
 msgid "Wave to be used as instrument"
 msgstr "Wave to be used as instrument"
 
-#: bse/bsetrack.c:140
+#: bse/bsetrack.c:891
 msgid "Max Voixes"
 msgstr "Max Voices"
 
-#: bse/bsetrack.c:140
+#: bse/bsetrack.c:891
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum number of voices for simultaneous playback"
 
-#: bse/bsetrack.c:143
+#: bse/bsetrack.c:894 bse/bsetrack.c:900
 msgid "MIDI Instrument"
 msgstr "MIDI Instrument"
 
-#: bse/bsetrack.c:145
+#: bse/bsetrack.c:896
 msgid "MIDI Channel"
 msgstr "MIDI Channel"
 
-#: bse/bsetrack.c:146
+#: bse/bsetrack.c:897
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Midi channel assigned to this track. 0 uses private per-track channel."
 
-#: bse/bsetrack.c:149
-msgid "Synth Postprocess"
-msgstr "Synth Postprocess"
+#: bse/bsetrack.c:902
+msgid "Postprocessor"
+msgstr "Postprocessor"
 
-#: bse/bsetrack.c:151
-msgid "Custom Postprocess Net"
-msgstr "Custom Postprocess Net"
+#: bse/bsetrack.c:902
+msgid "Synthesis network to be used as postprocessor"
+msgstr "Synthesis network to be used as postprocessor"
 
-#: bse/bsetrack.c:152
-msgid "Synthesis network to postprocess track sound"
-msgstr "Synthesis network to postprocess track sound"
-
-#: bse/bsewaveosc.c:97
+#: bse/bsewaveosc.c:94
 msgid "/Audio Sources/Wave Oscillator"
 msgstr "/Audio Sources/Wave Oscillator"
 
-#: bse/bsewaveosc.c:123
-msgid "Wave to play"
-msgstr "Wave to play"
+#: bse/bsewaveosc.c:125
+msgid "List of available waves to choose as oscillator source"
+msgstr "List of available waves to choose as oscillator source"
 
-#: bse/bsewaveosc.c:128
+#: bse/bsewaveosc.c:532
+msgid "Wave used as oscillator source"
+msgstr "Wave used as oscillator source"
+
+#: bse/bsewaveosc.c:537
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Modulation Strength for linear frequency modulation"
 
-#: bse/bsewaveosc.c:149 plugins/davorgan.c:132
+#: bse/bsewaveosc.c:558 plugins/davorgan.c:132
 msgid "Frequency Input"
 msgstr "Frequency Input"
 
-#: bse/bsewaveosc.c:153
+#: bse/bsewaveosc.c:562
 msgid "Mod In"
 msgstr "Mod In"
 
-#: bse/bsewaveosc.c:153
+#: bse/bsewaveosc.c:562
 msgid "Modulation Input"
 msgstr "Modulation Input"
 
-#: bse/bsewaveosc.c:155
+#: bse/bsewaveosc.c:564
 msgid "Wave Output"
 msgstr "Wave Output"
 
-#: bse/bsewaveosc.c:157
+#: bse/bsewaveosc.c:566
 msgid "Gate Output"
 msgstr "Gate Output"
 
