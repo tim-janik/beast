@@ -1,3 +1,9 @@
+Fri Oct 15 11:51:29 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/audio/README: Updated README with a change necessary for
+	srcdir != builddir: featuretest.sh is now called using a Makefile.am
+	variable.
+
 Fri Oct 15 11:21:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/Makefile.am: Added $(srcdir) to beastconf.sh. Execute

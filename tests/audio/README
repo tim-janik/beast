@@ -32,7 +32,7 @@ steps:
    an example for the target test-foo would be:
 
    test-foo: beastconf.sh
-      @featuretest.sh foo.bse foo.reference \
+      @$(FEATURETEST_SH) foo.bse foo.reference \
                       --avg-spectrum --avg-energy \
                    -- --threshold=99.99
 
