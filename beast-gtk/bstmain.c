@@ -690,6 +690,7 @@ beast_show_about_box (void)
     "Stefan Westerfeld",
     "Rasmus Kaj",
     /* plugins */
+    "Artem Popov",
     "David A. Bartold",
     //"Tim Janik",
     //"Stefan Westerfeld",
@@ -712,6 +713,7 @@ beast_show_about_box (void)
     "Miloslav Trmac",
     "Raphael Higino",
     "Robert Sedak",
+    "Satoru SATOH",
     "Tino Meinen",
     "Vincent van Adrighem",
     "Xavier Conde Rueda",
