@@ -70,7 +70,9 @@ sfi_note_from_string_err (const gchar *note_string,
   gint note;
   gboolean fits;
   guint i;
-  
+
+  if (error_p)
+    *error_p = NULL;
   g_return_val_if_fail (note_string != NULL, SFI_NOTE_VOID);
   
   string = g_strdup (note_string);
