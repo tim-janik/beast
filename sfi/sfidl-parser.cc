@@ -88,16 +88,18 @@ enum ExtraToken {
   TOKEN_SEQUENCE,
   TOKEN_PROPERTY,
   TOKEN_GROUP,
+  TOKEN_USING,
   TOKEN_CONST,
   TOKEN_INFO,
   TOKEN_ISTREAM,
   TOKEN_JSTREAM,
   TOKEN_OSTREAM,
+  TOKEN_ERROR
 };
 
 const char *token_symbols[] = {
   "namespace", "class", "choice", "record", "sequence",
-  "property", "group",
+  "property", "group", "using",
   "Const", "Info", "IStream", "JStream", "OStream",
   0
 };
@@ -589,15 +591,17 @@ bool Parser::parse (const string& filename)
     }
   /* FIXME: we leak scanner->input_name later on */
 
+  currentNamespace = &rootNamespace;
+
   /* define primitive types into the basic namespace */
-  ModuleHelper::define("Bool");
-  ModuleHelper::define("Int");
-  ModuleHelper::define("Num");
-  ModuleHelper::define("Real");
-  ModuleHelper::define("String");
-  ModuleHelper::define("BBlock");
-  ModuleHelper::define("FBlock");
-  ModuleHelper::define("Rec");
+  defineSymbol("Bool");
+  defineSymbol("Int");
+  defineSymbol("Num");
+  defineSymbol("Real");
+  defineSymbol("String");
+  defineSymbol("BBlock");
+  defineSymbol("FBlock");
+  defineSymbol("Rec");
   
   GTokenType expected_token = G_TOKEN_NONE;
   
@@ -613,7 +617,7 @@ bool Parser::parse (const string& filename)
         expected_token = G_TOKEN_EOF; /* '('; */
     }
   
-  if (expected_token != G_TOKEN_NONE)
+  if (expected_token != G_TOKEN_NONE && expected_token != (GTokenType)TOKEN_ERROR)
     {
       g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
       return false;
@@ -629,7 +633,9 @@ GTokenType Parser::parseNamespace()
 {
   DEBUG("parse namespace\n");
   parse_or_return (G_TOKEN_IDENTIFIER);
-  ModuleHelper::enter (scanner->value.v_identifier);
+
+  if (!enterNamespace (scanner->value.v_identifier))
+    return GTokenType (TOKEN_ERROR);
   
   parse_or_return (G_TOKEN_LEFT_CURLY);
 
@@ -673,7 +679,7 @@ GTokenType Parser::parseNamespace()
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 
-	      procedure.name = ModuleHelper::define (procedure.name.c_str());
+	      procedure.name = defineSymbol (procedure.name.c_str());
 	      procedure.file = fileName();
 	      addProcedureTodo (procedure);
 	    }
@@ -685,6 +691,18 @@ GTokenType Parser::parseNamespace()
 		return expected_token;
 	    }
 	    break;
+	  case TOKEN_USING:
+	    {
+	      parse_or_return (TOKEN_USING);
+	      parse_or_return (TOKEN_NAMESPACE);
+	      parse_or_return (G_TOKEN_IDENTIFIER);
+
+	      if (!usingNamespace (scanner->value.v_identifier))
+		return GTokenType (TOKEN_ERROR);
+
+	      parse_or_return (';');
+	    }
+	    break;
 	  default:
 	    ready = true;
 	}
@@ -694,7 +712,7 @@ GTokenType Parser::parseNamespace()
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
   
-  ModuleHelper::leave();
+  leaveNamespace();
   
   return G_TOKEN_NONE;
 }
@@ -713,7 +731,7 @@ GTokenType Parser::parseTypeName (string& type)
       type += scanner->value.v_identifier;
     }
 
-  string qtype = ModuleHelper::qualify (type.c_str());
+  string qtype = qualifySymbol (type.c_str());
 
   if (qtype == "")
     printError ("can't find prior definition for type '%s'", type.c_str());
@@ -773,7 +791,7 @@ GTokenType Parser::parseConstant ()
 
   parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
-  cdef.name = ModuleHelper::define (scanner->value.v_identifier);
+  cdef.name = defineSymbol (scanner->value.v_identifier);
   cdef.file = fileName();
   
   parse_or_return ('=');
@@ -829,7 +847,7 @@ GTokenType Parser::parseChoice ()
   
   parse_or_return (TOKEN_CHOICE);
   parse_or_return (G_TOKEN_IDENTIFIER);
-  choice.name = ModuleHelper::define (scanner->value.v_identifier);
+  choice.name = defineSymbol (scanner->value.v_identifier);
   choice.file = fileName();
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
@@ -953,7 +971,7 @@ GTokenType Parser::parseRecord ()
   
   parse_or_return (TOKEN_RECORD);
   parse_or_return (G_TOKEN_IDENTIFIER);
-  record.name = ModuleHelper::define (scanner->value.v_identifier);
+  record.name = defineSymbol (scanner->value.v_identifier);
   record.file = fileName();
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
@@ -1115,7 +1133,7 @@ GTokenType Parser::parseParamHints (Param &def)
 	case G_TOKEN_IDENTIFIER:
           {
             vector<Constant>::iterator ci;
-            string coname = ModuleHelper::qualify (scanner->value.v_identifier);
+            string coname = qualifySymbol (scanner->value.v_identifier);
             /* FIXME: there should be a generic const_to_string() function */
             for (ci = constants.begin(); ci != constants.end(); ci++)
               if (ci->name == coname)
@@ -1194,7 +1212,7 @@ GTokenType Parser::parseSequence ()
   
   parse_or_return (TOKEN_SEQUENCE);
   parse_or_return (G_TOKEN_IDENTIFIER);
-  sequence.name = ModuleHelper::define (scanner->value.v_identifier);
+  sequence.name = defineSymbol (scanner->value.v_identifier);
   sequence.file = fileName();
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
@@ -1230,7 +1248,7 @@ GTokenType Parser::parseClass ()
   
   parse_or_return (TOKEN_CLASS);
   parse_or_return (G_TOKEN_IDENTIFIER);
-  cdef.name = ModuleHelper::define (scanner->value.v_identifier);
+  cdef.name = defineSymbol (scanner->value.v_identifier);
   cdef.file = fileName();
   
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
@@ -1598,6 +1616,210 @@ void Parser::addPrototype (const std::string& type, TypeDeclaration typeDecl)
     {
       printError ("double definition of '%s' as different types", type.c_str());
     }
+}
+
+string Parser::defineSymbol (const string& name)
+{
+  Symbol *sym = currentNamespace->find (name);
+  if (!sym)
+    {
+      sym = new Symbol();
+      sym->name = name;
+      currentNamespace->insert (sym);
+    }
+  return sym->fullName();
+}
+
+static list<string> symbolToList(string symbol)
+{
+  list<string> result;
+  string current;
+  
+  string::iterator si;
+  for(si = symbol.begin(); si != symbol.end(); si++)
+    {
+      if(*si != ':')
+	{
+	  current += *si;
+	}
+      else
+	{
+	  if(current != "")
+	    result.push_back(current);
+	  
+	  current = "";
+	}
+    }
+  
+  result.push_back(current);
+  return result;
+}
+
+Symbol *matchSymbol (const list<string>& nlist, Namespace *ns)
+{
+  Symbol *symbol = ns;
+  for (list<string>::const_iterator i = nlist.begin(); i != nlist.end(); i++)
+    {
+      if (symbol)
+	symbol = symbol->find (*i);
+    }
+  return symbol;
+}
+
+void appendUnique (list<Symbol *>& symbols, Symbol *sym)
+{
+  for (list<Symbol *>::iterator si = symbols.begin(); si != symbols.end(); si++)
+    if (*si == sym)
+      return;
+  symbols.push_back (sym);
+}
+
+void qualifyHelper (const string& name, Namespace *ns,
+                    list<Symbol *>& alternatives, set<Namespace *>& done)
+{
+  /* prevent searching the same namespace twice */
+  if (done.count (ns)) return;
+  done.insert (ns);
+
+  /* try to find the symbol in the current namespace */
+  list<string> nlist = symbolToList (name);
+  Symbol *symbol = matchSymbol (nlist, ns);
+  if (symbol)
+    appendUnique (alternatives, symbol);
+
+  /* try to find the symbol in the parent namespace */
+  Namespace *parent_ns = dynamic_cast<Namespace *> (ns->parent);
+  if (parent_ns)
+    qualifyHelper (name, parent_ns, alternatives, done);
+
+  /* try to find the symbol in one of the namespaces used via "using namespace" */
+  for (vector<Namespace *>::iterator ni = ns->used.begin(); ni != ns->used.end(); ni++)
+    qualifyHelper (name, *ni, alternatives, done);
+}
+
+Symbol *Parser::qualifyHelper (const string& name)
+{
+  set<Namespace *> done;
+  list<Symbol *> alternatives;
+
+  ::qualifyHelper (name, currentNamespace, alternatives, done);
+
+  /* no match? */
+  if (alternatives.empty())
+    return 0;
+
+  /* good match? */
+  if (alternatives.front()->parent == currentNamespace || alternatives.size() == 1)
+    return alternatives.front();
+
+  /* multiple equally valid candidates? */
+  printError ("there are multiple valid interpretations of %s in this context", name.c_str());
+  for (list<Symbol *>::iterator ai = alternatives.begin(); ai != alternatives.end(); ai++)
+    printError (" - it could be %s", (*ai)->fullName().c_str());
+
+  return 0;
+}
+
+string Parser::qualifySymbol (const string& name)
+{
+  Symbol *sym = qualifyHelper (name);
+  if (sym)
+    return sym->fullName();
+  else
+    return "";
+}
+
+bool Parser::enterNamespace (const string& name)
+{
+  Symbol *symbol = currentNamespace->find (name);
+  if (symbol)
+    {
+      currentNamespace = dynamic_cast <Namespace *> (symbol);
+      if (!currentNamespace)
+	{
+	  printError ("%s is not a namespace", name.c_str());
+	  return false;
+	}
+    }
+  else
+    {
+      symbol = new Namespace;
+      symbol->name = name;
+      currentNamespace->insert (symbol);
+      currentNamespace = dynamic_cast<Namespace*>(symbol);
+    }
+  return true;
+}
+
+void Parser::leaveNamespace ()
+{
+  currentNamespace = dynamic_cast<Namespace *>(currentNamespace->parent);
+  if (!currentNamespace)
+    g_error ("fatal: leaveNamespace called without corresponding enterNamespace");
+}
+
+bool Parser::usingNamespace (const string& name)
+{
+  Symbol *sym = qualifyHelper (name);
+  if (!sym)
+    {
+      printError ("%s is an undeclared namespace (can't be used)", name.c_str());
+      return false;
+    }
+
+  Namespace *ns = dynamic_cast<Namespace *> (sym);
+  if (!ns)
+    {
+      printError ("%s is not a namespace (can't be used)", name.c_str());
+      return false;
+    }
+  currentNamespace->used.push_back (ns);
+  return true;
+}
+
+/*
+ * the beginnings of an alternate datastructure - currently only used for namespace
+ * lookups
+ */
+
+string Symbol::fullName ()
+{
+  if (parent && parent->fullName() != "")
+    return parent->fullName() + "::" + name;
+  else
+    return name;
+}
+
+Symbol *Symbol::find (const string& name)
+{
+  for (vector<Symbol *>::iterator ci = children.begin(); ci != children.end(); ci++)
+    {
+      if ((*ci)->name == name)
+	return (*ci);
+    }
+
+  return 0;
+}
+
+bool Symbol::insert (Symbol *symbol)
+{
+  if (find (symbol->name))
+    return false;
+
+  children.push_back (symbol);
+  symbol->parent = this;
+
+  return true;
+}
+
+Symbol::Symbol() : parent (0)
+{
+}
+
+Symbol::~Symbol()
+{
+  for (vector<Symbol *>::iterator ci = children.begin(); ci != children.end(); ci++)
+    delete *ci;
 }
 
 }; // anon namespace

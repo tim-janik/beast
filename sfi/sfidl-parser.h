@@ -201,6 +201,26 @@ enum Type {
   OBJECT,     /* PROXY */
 };
 
+class Symbol {
+public:
+  std::string name;
+
+  Symbol *parent;
+  std::vector<Symbol *> children;
+
+  Symbol();
+  virtual ~Symbol();
+
+  std::string fullName ();
+  Symbol     *find (const std::string& name);
+  bool        insert (Symbol *symbol);
+};
+
+class Namespace : public Symbol {
+public:
+  std::vector<Namespace *> used; /* from "using namespace Foo;" statements */
+};
+
 class Parser {
 protected:
   const class Options&      options;
@@ -208,6 +228,9 @@ protected:
   GScanner                 *scanner;
   std::vector<char>         scannerInputData;
   std::vector<LineInfo>     scannerLineInfo;
+
+  Namespace                 rootNamespace;
+  Namespace                *currentNamespace;
 
   std::vector<std::string>  includedNames;
   std::vector<std::string>  types;
@@ -220,15 +243,30 @@ protected:
   std::vector<Record>	    records;
   std::vector<Class>	    classes;
   std::vector<Method>	    procedures;
-  
+
+  // namespace related functions
+
+  std::string defineSymbol (const std::string& name);
+  Symbol *qualifyHelper (const std::string& name);
+  std::string qualifySymbol (const std::string& name);
+  bool enterNamespace (const std::string& name);
+  void leaveNamespace ();
+  bool usingNamespace (const std::string& name);
+
+  // scanner related functions
+
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
   void printError (const gchar *format, ...);
+
+  // preprocessor
 
   void preprocess (const std::string& filename, bool includeImpl = false);
   void preprocessContents (const std::string& filename);
   bool haveIncluded (const std::string& filename) const;
   bool insideInclude () const;
-  
+
+  // parser
+
   void addConstantTodo(const Constant& cdef);
   void addChoiceTodo(const Choice& cdef);
   void addRecordTodo(const Record& rdef);

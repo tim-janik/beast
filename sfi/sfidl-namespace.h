@@ -24,19 +24,6 @@
 #include <list>
 
 /*
- * This class is used while parsing IDL files. It is used to produce fully
- * qualified names (e.g. Arts::Object rather than just Object) of all type
- * identifiers.
- */
-class ModuleHelper {
- public:
-  static void enter(const char *name);
-  static void leave();
-  static std::string define(const char *name);
-  static std::string qualify(const char *name);
-};
-
-/*
  * This class is used during code generation. It generates the namespace
  * opening and closing code.
  */

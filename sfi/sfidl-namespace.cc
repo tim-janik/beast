@@ -65,56 +65,6 @@ static string listToSymbol(list<string>& symlist)
   return s;
 }
 
-/* ModuleHelper */
-static list<string> modulePath;
-static map<string,bool> moduleDefinitions;
-
-void ModuleHelper::enter(const char *name)
-{
-  modulePath.push_back(name);
-}
-
-void ModuleHelper::leave()
-{
-  g_assert (!modulePath.empty());
-  modulePath.pop_back();
-}
-
-string prependModulePath(string s)
-{
-  if(modulePath.empty())
-    return s;
-  else
-    return listToSymbol(modulePath)+"::"+s;
-}
-
-string ModuleHelper::define(const char *name)
-{
-  string s = prependModulePath(name);
-  moduleDefinitions[s] = true;
-  return s;
-}
-
-string ModuleHelper::qualify(const char *name)
-{
-  string result;
-  
-  // TODO: nested namespaces
-  
-  string inCurrentModule = prependModulePath(name);
-  if(moduleDefinitions[inCurrentModule])
-    {
-      result = inCurrentModule.c_str();
-    }
-  else if(moduleDefinitions[name])
-    {
-      result = name;
-    }
-  
-  return result;
-}
-
-
 /* NamespaceHelper */
 NamespaceHelper::NamespaceHelper(FILE *outputfile) : out(outputfile)
 {

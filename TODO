@@ -280,11 +280,6 @@ sfidl:
     Num y = (Bse::STANDARD);
     Num z = (::STANDARD);
     };
-58- namespace using doesn't work:
-    namespace Dav {
-    using namespace Bse;
-    Num x = (STANDARD);
-    };
 51- reenable signals in bseprocidl
 50- error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
     indicate where the previous definition was
@@ -327,8 +322,9 @@ sfidl:
     - optional conversion routines C++ -> C (and back)
     - createTypeCode refactoring
       funcFromValue, funcToValue,
-      funcCopy, funcFree, funcNew,
       codeVCallArgs
+    - reenable support for nested namespaces: namespace A { namespace B { }; };
+    - should we have a "using Bse::Standard" (as opposed to "using namespace Bse")?
 
 bseprocidl:
   - doesn't really work when it comes to implementing _some_ objects yourself

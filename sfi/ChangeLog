@@ -1,3 +1,9 @@
+Mon Jan  5 23:58:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.*: Support for "using namespace Foo;" statements.
+
+	* sfidl-namespace.*: Remove obsolete code (class ModuleHelper).
+
 Mon Jan  5 14:34:50 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-cxx.* sfidl-module.* sfidl-generator.*: Next part of
