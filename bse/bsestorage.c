@@ -1236,7 +1236,11 @@ bse_storage_printf (BseStorage  *self,
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (self->wstore);
   g_return_if_fail (format != NULL);
-  
+
+  const gchar *ldir = g_printf_find_localised_directive (format);
+  if (ldir)
+    g_warning ("%s: encountered localised directive \"%s\" in format string: \"%s\"", G_STRFUNC, ldir, format);
+
   va_start (args, format);
   buffer = g_strdup_vprintf (format, args);
   va_end (args);

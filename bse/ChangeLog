@@ -1,3 +1,8 @@
+Thu Jan 20 15:18:53 2005  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c (bse_storage_printf): issue warnings if the format string
+	contains localised directives.
+
 Thu Jan 20 05:10:27 2005  Tim Janik  <timj@gtk.org>
 
 	* gslcommon.c (gsl_error_from_errno): return BSE_ERROR_NONE for an
