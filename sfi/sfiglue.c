@@ -578,11 +578,6 @@ sfi_glue_vcall_rec (const gchar *proc_name,
       if (SFI_VALUE_HOLDS_REC (rvalue))
 	retv = sfi_value_get_rec (rvalue);
     }
-  if (!retv)
-    {
-      retv = sfi_rec_new ();
-      sfi_glue_gc_add (retv, sfi_rec_unref);
-    }
   return retv;
 }
 

@@ -1,3 +1,12 @@
+Wed Dec 17 23:58:05 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-generator.cc: allow NULL rec/seq on _copy_shallow().
+	this also removes _copy_shallow_internal(), indentation fixes.
+	added FIXMEs that still need to be taken care off.
+
+	* sfiglue.c (sfi_glue_vcall_rec): do't create empty record
+	instead of NULL returns.
+
 Wed Dec 17 19:15:30 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.c (g_option_find_value): fixed lookup bug.

@@ -980,28 +980,16 @@ void CodeGeneratorC::run ()
 	  printf("%s\n", ret.c_str());
 	  printf("%s_copy_shallow (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
-	  printf("  %s seq_copy = NULL;\n", arg.c_str ());
+	  printf("  %s seq_copy;\n", arg.c_str ());
 	  printf("  guint i;\n");
-	  printf("\n");
-	  printf("  g_return_val_if_fail (seq != NULL, NULL);\n");
+	  printf("  if (!seq)\n");
+	  printf("    return NULL;\n");
 	  printf("\n");
 	  printf("  seq_copy = %s_new ();\n", lname.c_str());
 	  printf("  for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
 	  printf("    %s_append (seq_copy, seq->%s[i]);\n", lname.c_str(), elements.c_str());
 	  printf("  return seq_copy;\n");
 	  printf("}\n\n");
-
-	  if (options.generateBoxedTypes)
-	    {
-	      printf("static %s\n", ret.c_str());
-	      printf("%s_copy_shallow_internal (%s seq)\n", lname.c_str(), arg.c_str());
-	      printf("{\n");
-	      printf("  %s seq_copy = NULL;\n", arg.c_str ());
-	      printf("  if (seq)\n");
-	      printf("    seq_copy = %s_copy_shallow (seq);\n", lname.c_str());
-	      printf("  return seq_copy;\n");
-	      printf("}\n\n");
-	    }
 
 	  string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
 	  printf("%s\n", ret.c_str());
@@ -1018,10 +1006,10 @@ void CodeGeneratorC::run ()
 	  printf("  seq->%s = g_malloc (seq->n_%s * sizeof (seq->%s[0]));\n\n",
 	         elements.c_str(), elements.c_str(), elements.c_str());
 	  printf("  for (i = 0; i < length; i++)\n");
-	  printf("  {\n");
-	  printf("    GValue *element = sfi_seq_get (sfi_seq, i);\n");
-	  printf("    seq->%s[i] = %s;\n", elements.c_str(), elementFromValue.c_str());
-	  printf("  }\n");
+	  printf("    {\n");
+	  printf("      GValue *element = sfi_seq_get (sfi_seq, i);\n");
+	  printf("      seq->%s[i] = %s;\n", elements.c_str(), elementFromValue.c_str());
+	  printf("    }\n");
 	  printf("  return seq;\n");
 	  printf("}\n\n");
 
@@ -1036,14 +1024,15 @@ void CodeGeneratorC::run ()
 	  printf("\n");
 	  printf("  sfi_seq = sfi_seq_new ();\n");
 	  printf("  for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
-	  printf("  {\n");
-	  printf("    GValue *element = %s;\n", elementToValue.c_str());
-	  printf("    sfi_seq_append (sfi_seq, element);\n");
-	  printf("    sfi_value_free (element);\n");        // FIXME: couldn't we have take_append
-	  printf("  }\n");
+	  printf("    {\n");
+	  printf("      GValue *element = %s;\n", elementToValue.c_str());
+	  printf("      sfi_seq_append (sfi_seq, element);\n");
+	  printf("      sfi_value_free (element);\n");        // FIXME: couldn't we have take_append
+	  printf("    }\n");
 	  printf("  return sfi_seq;\n");
 	  printf("}\n\n");
 
+          string element_i_free_check = "if (seq->" + elements + "[i]) ";
 	  string element_i_free = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_FREE);
 	  string element_i_new = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_NEW);
 	  printf("void\n");
@@ -1057,7 +1046,7 @@ void CodeGeneratorC::run ()
 	      printf("    {\n");
 	      printf("      guint i;\n");
 	      printf("      for (i = new_size; i < seq->n_%s; i++)\n", elements.c_str());
-	      printf("        %s;\n", element_i_free.c_str());
+	      printf("        %s %s;\n", element_i_free_check.c_str(), element_i_free.c_str());
 	      printf("    }\n");
 	    }
 	  printf("\n");
@@ -1090,7 +1079,7 @@ void CodeGeneratorC::run ()
 	  if (element_i_free != "")
 	    {
 	      printf("  for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
-	      printf("    %s;\n", element_i_free.c_str());
+	      printf("    %s %s;\n", element_i_free_check.c_str(), element_i_free.c_str());
 	    }
           printf("  g_free (seq->%s);\n", elements.c_str());
           printf("  g_free (seq);\n");
@@ -1112,6 +1101,9 @@ void CodeGeneratorC::run ()
 	  printf("  %s rec = g_new0 (%s, 1);\n", arg.c_str(), mname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
+              /* FIXME: this needs to be much more versatile, so we can e.g. change
+               * whether record fields are NULL initialized (need for category->icon)
+               */
 	      string init =  createTypeCode(pi->type, "rec->" + pi->name, MODEL_NEW);
 	      if (init != "") printf("  %s;\n",init.c_str());
 	    }
@@ -1122,37 +1114,26 @@ void CodeGeneratorC::run ()
 	  printf("%s_copy_shallow (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  %s rec_copy;\n", arg.c_str());
-	  printf("\n");
-	  printf("  g_return_val_if_fail (rec != NULL, NULL);");
+	  printf("  if (!rec)\n");
+	  printf("    return NULL;");
 	  printf("\n");
 	  printf("  rec_copy = g_new0 (%s, 1);\n", mname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
+              /* FIXME: this needs to be more versatile, so NULL fields can be special cased before copying */
 	      string copy =  createTypeCode(pi->type, "rec->" + pi->name, MODEL_COPY);
 	      printf("  rec_copy->%s = %s;\n", pi->name.c_str(), copy.c_str());
 	    }
 	  printf("  return rec_copy;\n");
 	  printf("}\n\n");
 
-	  if (options.generateBoxedTypes)
-	    {
-	      printf("static %s\n", ret.c_str());
-	      printf("%s_copy_shallow_internal (%s rec)\n", lname.c_str(), arg.c_str());
-	      printf("{\n");
-	      printf("  %s rec_copy = NULL;\n", arg.c_str());
-	      printf("  if (rec)\n");
-	      printf("    rec_copy = %s_copy_shallow (rec);\n", lname.c_str());
-	      printf("  return rec_copy;\n");
-	      printf("}\n\n");
-	    }
-
 	  printf("%s\n", ret.c_str());
 	  printf("%s_from_rec (SfiRec *sfi_rec)\n", lname.c_str());
 	  printf("{\n");
 	  printf("  GValue *element;\n");
 	  printf("  %s rec;\n", arg.c_str());
-	  printf("\n");
-	  printf("  g_return_val_if_fail (sfi_rec != NULL, NULL);\n");
+	  printf("  if (!sfi_rec)\n");
+	  printf("    return NULL;\n");
 	  printf("\n");
 	  printf("  rec = g_new0 (%s, 1);\n", mname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
@@ -1178,8 +1159,8 @@ void CodeGeneratorC::run ()
 	  printf("{\n");
 	  printf("  SfiRec *sfi_rec;\n");
 	  printf("  GValue *element;\n");
-	  printf("\n");
-	  printf("  g_return_val_if_fail (rec != NULL, NULL);\n");
+	  printf("  if (!rec)\n");
+	  printf("    return NULL;\n");
           printf("\n");
 	  printf("  sfi_rec = sfi_rec_new ();\n");
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
@@ -1196,11 +1177,13 @@ void CodeGeneratorC::run ()
 	  printf("%s_free (%s rec)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
 	  printf("  g_return_if_fail (rec != NULL);\n");
+          /* FIXME: should free functions generally demand non-NULL structures? */
 	  printf("  \n");
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
-	      string free =  createTypeCode(pi->type, "rec->" + pi->name, MODEL_FREE);
-	      if (free != "") printf("  %s;\n",free.c_str());
+              /* FIXME: needs to be more verstaile, so NULL fields can be properly special cased */
+	      string free = createTypeCode(pi->type, "rec->" + pi->name, MODEL_FREE);
+	      if (free != "") printf("  if (rec->%s) %s;\n", pi->name.c_str(), free.c_str());
 	    }
 	  printf("  g_free (rec);\n");
 	  printf("}\n\n");
@@ -1412,7 +1395,7 @@ void CodeGeneratorC::run ()
 	    string name = makeLowerName(ri->name);
 
 	    printf("  %s = sfi_boxed_make_record (&%s_boxed_info,\n", gname.c_str(), name.c_str());
-	    printf("    (GBoxedCopyFunc) %s_copy_shallow_internal,\n", name.c_str());
+	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
 	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
 	  }
       	for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
@@ -1424,7 +1407,7 @@ void CodeGeneratorC::run ()
 
 	    printf("  %s_boxed_info.element = %s_content;\n", name.c_str(), name.c_str());
 	    printf("  %s = sfi_boxed_make_sequence (&%s_boxed_info,\n", gname.c_str(), name.c_str());
-	    printf("    (GBoxedCopyFunc) %s_copy_shallow_internal,\n", name.c_str());
+	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
 	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
 	  }
 }
