@@ -54,6 +54,10 @@ struct _BseSong
   BseSource	   *context_merger;
   BseSource	   *output;
 
+  /* song position pointer */
+  SfiInt	    last_position;
+  guint		    position_handler;
+
   /* fields protected by sequencer mutex */
   gdouble	    tpsi_SL;		/* ticks per stamp increment (sample) */
   SfiRing	   *tracks_SL;		/* of type BseTrack* */
@@ -63,6 +67,9 @@ struct _BseSong
   guint		    tick_SL;		/* tick at stamp_SL */
   guint		    song_done_SL : 1;
   guint		    sequencer_pending_SL : 1;
+  guint		    loop_enabled_SL : 1;
+  SfiInt	    loop_left_SL;	/* left loop tick */
+  SfiInt	    loop_right_SL;	/* left loop tick */
 };
 struct _BseSongClass
 {

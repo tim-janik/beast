@@ -262,9 +262,10 @@ bse_ssequencer_process_track_SL (BseTrack *track,
 				 guint	   start_tick,
 				 guint     n_ticks,
 				 gdouble   stamps_per_tick);
-static void
-bse_ssequencer_process_song_SL (BseSong *song,
-				guint    n_ticks)
+static gboolean
+bse_ssequencer_process_song_unlooped_SL (BseSong *song,
+					 guint    n_ticks,
+					 gboolean force_active_tracks)
 {
   gdouble current_stamp = song->start_SL + song->delta_stamp_SL;
   gdouble stamps_per_tick = 1.0 / song->tpsi_SL;
@@ -278,8 +279,9 @@ bse_ssequencer_process_song_SL (BseSong *song,
       n_tracks++;
       if (!track->midi_receiver_SL)
 	track->track_done_SL = TRUE;
-      else if (!track->track_done_SL)
+      else if (!track->track_done_SL || force_active_tracks)
 	{
+	  track->track_done_SL = FALSE;
 	  bse_ssequencer_process_track_SL (track, current_stamp,
 					   song->tick_SL, tick_bound,
 					   stamps_per_tick);
@@ -290,9 +292,33 @@ bse_ssequencer_process_song_SL (BseSong *song,
     }
   song->tick_SL += n_ticks;
   song->delta_stamp_SL += n_ticks * stamps_per_tick;
+  return n_done_tracks != n_tracks;
+}
+
+static void
+bse_ssequencer_process_song_SL (BseSong *song,
+				guint    n_ticks)
+{
+  gboolean tracks_active = TRUE;
+  if (song->loop_enabled_SL && song->tick_SL <= song->loop_right_SL)
+    do
+      {
+	guint tdiff = song->loop_right_SL - song->tick_SL;
+	tdiff = MIN (tdiff, n_ticks);
+	if (tdiff)
+	  bse_ssequencer_process_song_unlooped_SL (song, tdiff, TRUE);
+	n_ticks -= tdiff;
+	if (song->tick_SL >= song->loop_right_SL)
+	  {
+	    song->tick_SL = song->loop_left_SL;
+	  }
+      }
+    while (n_ticks);
+  else
+    tracks_active = bse_ssequencer_process_song_unlooped_SL (song, n_ticks, FALSE);
   if (!song->song_done_SL)
     {
-      song->song_done_SL = n_done_tracks == n_tracks;
+      song->song_done_SL = !tracks_active;
       if (song->song_done_SL)
 	bse_song_stop_sequencing_SL (song);
     }

@@ -38,7 +38,11 @@ enum
   PARAM_TPQN,
   PARAM_QNPT,
   PARAM_BPM,
-  PARAM_AUTO_ACTIVATE
+  PARAM_AUTO_ACTIVATE,
+  PARAM_LOOP_ENABLED,
+  PARAM_LOOP_LEFT,
+  PARAM_LOOP_RIGHT,
+  PARAM_TICK_POINTER,
 };
 
 enum {
@@ -76,6 +80,7 @@ static void	 bse_song_update_tpsi_SL	(BseSong	   *song);
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
+static guint       signal_pointer_changed = 0;
 
 
 /* --- functions --- */
@@ -163,6 +168,28 @@ bse_song_class_init (BseSongClass *class)
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,
 					      TRUE, /* change default */
 					      /* override parent property */ 0));
+  bse_object_class_add_param (object_class, "Looping",
+			      PARAM_LOOP_ENABLED,
+			      sfi_pspec_bool ("loop_enabled", NULL, NULL,
+					      FALSE, SFI_PARAM_READWRITE));
+  bse_object_class_add_param (object_class, "Looping",
+			      PARAM_LOOP_LEFT,
+			      sfi_pspec_int ("loop_left", NULL, NULL,
+					     -1, -1, G_MAXINT, 384,
+					     SFI_PARAM_READWRITE));
+  bse_object_class_add_param (object_class, "Looping",
+			      PARAM_LOOP_RIGHT,
+			      sfi_pspec_int ("loop_right", NULL, NULL,
+					     -1, -1, G_MAXINT, 384,
+					     SFI_PARAM_READWRITE));
+  bse_object_class_add_param (object_class, "Looping",
+			      PARAM_TICK_POINTER,
+			      sfi_pspec_int ("tick_pointer", NULL, NULL,
+					     -1, -1, G_MAXINT, 384,
+					     SFI_PARAM_READWRITE));
+
+  signal_pointer_changed = bse_object_class_add_signal (object_class, "pointer-changed",
+							G_TYPE_NONE, 1, SFI_TYPE_INT);
 }
 
 static void
@@ -176,7 +203,14 @@ bse_song_init (BseSong *self)
   self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
   self->parts = NULL;
+
+  self->last_position = -1;
+  self->position_handler = 0;
+
   self->tracks_SL = NULL;
+  self->loop_enabled_SL = 0;
+  self->loop_left_SL = -1;
+  self->loop_right_SL = -1;
 
   /* context merger */
   self->context_merger = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
@@ -232,6 +266,9 @@ bse_song_set_property (GObject      *object,
     {
       gfloat volume_factor;
       guint bpm;
+      gboolean vbool;
+      SfiInt vint;
+      SfiRing *ring;
     case PARAM_VOLUME_f:
     case PARAM_VOLUME_dB:
     case PARAM_VOLUME_PERC:
@@ -266,6 +303,60 @@ bse_song_set_property (GObject      *object,
     case PARAM_TPQN:
       self->tpqn = sfi_value_get_int (value);
       break;
+    case PARAM_LOOP_ENABLED:
+      vbool = sfi_value_get_bool (value);
+      vbool = vbool && self->loop_left_SL >= 0 && self->loop_right_SL > self->loop_left_SL;
+      if (vbool != self->loop_enabled_SL)
+	{
+	  BSE_SEQUENCER_LOCK ();
+	  self->loop_enabled_SL = vbool;
+	  BSE_SEQUENCER_UNLOCK ();
+	}
+      break;
+    case PARAM_LOOP_LEFT:
+      vint = sfi_value_get_int (value);
+      if (vint != self->loop_left_SL)
+	{
+	  gboolean loop_enabled = self->loop_enabled_SL;
+	  BSE_SEQUENCER_LOCK ();
+	  self->loop_left_SL = vint;
+	  self->loop_enabled_SL = (self->loop_enabled_SL &&
+				   self->loop_left_SL >= 0 &&
+				   self->loop_right_SL > self->loop_left_SL);
+	  BSE_SEQUENCER_UNLOCK ();
+	  if (loop_enabled != self->loop_enabled_SL)
+	    g_object_notify (self, "loop_enabled");
+	}
+      break;
+    case PARAM_LOOP_RIGHT:
+      vint = sfi_value_get_int (value);
+      if (vint != self->loop_right_SL)
+	{
+          gboolean loop_enabled = self->loop_enabled_SL;
+	  BSE_SEQUENCER_LOCK ();
+	  self->loop_right_SL = vint;
+	  self->loop_enabled_SL = (self->loop_enabled_SL &&
+				   self->loop_left_SL >= 0 &&
+				   self->loop_right_SL > self->loop_left_SL);
+	  BSE_SEQUENCER_UNLOCK ();
+          if (loop_enabled != self->loop_enabled_SL)
+	    g_object_notify (self, "loop_enabled");
+	}
+      break;
+    case PARAM_TICK_POINTER:
+      vint = sfi_value_get_int (value);
+      if (vint != self->tick_SL)
+	{
+	  BSE_SEQUENCER_LOCK ();
+	  self->tick_SL = vint;
+	  for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
+	    {
+	      BseTrack *track = ring->data;
+	      track->track_done_SL = FALSE;	/* let sequencer recheck if playing */
+	    }
+	  BSE_SEQUENCER_UNLOCK ();
+	}
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -298,6 +389,18 @@ bse_song_get_property (GObject     *object,
       break;
     case PARAM_TPQN:
       sfi_value_set_int (value, self->tpqn);
+      break;
+    case PARAM_LOOP_ENABLED:
+      sfi_value_set_bool (value, self->loop_enabled_SL);
+      break;
+    case PARAM_LOOP_LEFT:
+      sfi_value_set_int (value, self->loop_left_SL);
+      break;
+    case PARAM_LOOP_RIGHT:
+      sfi_value_set_int (value, self->loop_right_SL);
+      break;
+    case PARAM_TICK_POINTER:
+      sfi_value_set_int (value, self->tick_SL);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -447,6 +550,21 @@ bse_song_ht_foreach (gpointer key,
   *list_p = g_list_prepend (*list_p, value);
 }
 
+static gboolean
+song_position_handler (gpointer data)
+{
+  BseSong *self = BSE_SONG (data);
+
+  if (self->last_position != self->tick_SL)
+    {
+      BSE_SEQUENCER_LOCK ();
+      self->last_position = self->tick_SL;
+      BSE_SEQUENCER_UNLOCK ();
+      g_signal_emit (self, signal_pointer_changed, 0, self->last_position);
+    }
+  return TRUE;
+}
+
 static void
 bse_song_update_tpsi_SL (BseSong *self)
 {
@@ -463,14 +581,17 @@ bse_song_update_tpsi_SL (BseSong *self)
 static void
 bse_song_prepare (BseSource *source)
 {
-  BseSong *song = BSE_SONG (source);
+  BseSong *self = BSE_SONG (source);
 
-  bse_object_lock (BSE_OBJECT (song));
+  bse_object_lock (BSE_OBJECT (self));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
 
-  bse_song_update_tpsi_SL (song);
+  bse_song_update_tpsi_SL (self);
+
+  if (!self->position_handler)
+    self->position_handler = bse_idle_timed (50000, song_position_handler, self);
 }
 
 static void
@@ -493,14 +614,20 @@ bse_song_context_create (BseSource *source,
 static void
 bse_song_reset (BseSource *source)
 {
-  BseSong *song = BSE_SONG (source);
+  BseSong *self = BSE_SONG (source);
 
-  bse_ssequencer_handle_jobs (sfi_ring_prepend (NULL, bse_ssequencer_job_stop_super (BSE_SUPER (song))));
+  bse_ssequencer_handle_jobs (sfi_ring_prepend (NULL, bse_ssequencer_job_stop_super (BSE_SUPER (self))));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 
-  bse_object_unlock (BSE_OBJECT (song));
+  if (self->position_handler)
+    {
+      bse_idle_remove (self->position_handler);
+      self->position_handler = 0;
+    }
+  bse_object_unlock (BSE_OBJECT (self));
+  g_object_notify (self, "tick-pointer");
 }
 
 void
