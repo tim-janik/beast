@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     {
       g_print ("sample_file_info(\"%s\"): file = %s, loader = %s\n",
                file_name, info->file.c_str(), info->loader.c_str());
-      g_print ("  %d waves contained:\n", info->waves.size());
+      g_print ("  %d waves contained:\n", info->waves.length());
       for (unsigned int i = 0; i < info->waves.length(); i++)
         g_print ("  - %s\n", info->waves[i].c_str());
     }

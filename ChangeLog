@@ -1,3 +1,8 @@
+Tue Jan 20 02:50:56 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/cxxbinding.cc: Using Sfi::Sequence now (instead of
+	Bse::Sequence).
+
 Tue Jan 20 02:16:31 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/cxxbinding.cc: Use RecordHandle<...> instead of SmartPtr<...>
