@@ -1,7 +1,5 @@
 FIXME(urgent):
 - test xinfo saving and parsing for raw-links in bse and bsewave files for chunks
-- remove leftovers in : bse/zintern/
-- remove bsewave compat code
 - copy xinfos in set_dhandle_from_temporary
 - nuke data handle qdata
 - fix serialno generation for ogg/vorbis encoder and cutter
