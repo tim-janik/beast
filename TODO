@@ -12,7 +12,7 @@ FIXMES:
 - /Demo
 - check button3 /Tools/ menu in piano rool editor
 - check i18n strings for pianoroll GUI elements
-- regitering the same procedure twice trigegrs g_warning()
+- registering the same procedure twice trigegrs g_warning()
 - document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
 - File/Open should merge if issued on an empty project
 - fix forcing unique names for children of a project 
