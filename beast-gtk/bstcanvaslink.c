@@ -139,6 +139,24 @@ bst_canvas_link_at (GnomeCanvas *canvas,
   return (BstCanvasLink*) gnome_canvas_typed_item_at (canvas, BST_TYPE_CANVAS_LINK, world_x, world_y);
 }
 
+BstCanvasSource*
+bst_canvas_link_has_canvas_source_at (BstCanvasLink *clink,
+				      gdouble        world_x,
+				      gdouble        world_y)
+{
+  GnomeCanvasItem *tag;
+
+  g_return_val_if_fail (BST_IS_CANVAS_LINK (clink), NULL);
+
+  tag = gnome_canvas_typed_item_at (GNOME_CANVAS_ITEM (clink)->canvas, GNOME_TYPE_CANVAS_ELLIPSE, world_x, world_y);
+  if (tag && tag == clink->tag_start)
+    return clink->ocsource;
+  else if (tag && tag == clink->tag_end)
+    return clink->icsource;
+  else
+    return NULL;
+}
+
 static void
 clink_view_update (BstCanvasLink *clink,
 		   gboolean       force_update)
@@ -515,8 +533,8 @@ bst_canvas_link_event (GnomeCanvasItem *item,
 	{
 	  clink->in_move = FALSE;
 	  gnome_canvas_item_ungrab (item, event->button.time);
+	  handled = TRUE;
 	}
-      handled = TRUE;
       break;
     default:
       break;

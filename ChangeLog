@@ -1,3 +1,16 @@
+Mon Dec 27 14:40:23 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): check if the
+	canvas link we received a button click for is actually the tag part
+	of a source's input or output channel area. in that case we operate
+	on the canvas source.
+
+	* beast-gtk/bstcanvaslink.[hc] (bst_canvas_link_has_canvas_source_at):
+	new function to determine canvas source from a canvas link's start or
+	end tag.
+	(bst_canvas_link_event): grrr, don't returned handled=TRUE for
+	buttons!=2 (i.e. when we did *not* handle the release).
+
 Sun Dec 26 19:08:28 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvassource.[hc]: store the canvas item that holds the

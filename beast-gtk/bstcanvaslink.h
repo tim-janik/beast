@@ -68,19 +68,22 @@ struct _BstCanvasLinkClass
 
 
 /* --- prototypes --- */
-GtkType		 bst_canvas_link_get_type	(void);
-GnomeCanvasItem* bst_canvas_link_new		(GnomeCanvasGroup *group);
-void		 bst_canvas_link_set_ocsource	(BstCanvasLink    *clink,
-						 BstCanvasSource  *ocsource,
-						 guint             ochannel_id);
-void		 bst_canvas_link_set_icsource	(BstCanvasLink    *clink,
-						 BstCanvasSource  *icsource,
-						 guint             ichannel_id);
-void             bst_canvas_link_popup_view	(BstCanvasLink	  *clink);
-void             bst_canvas_link_toggle_view	(BstCanvasLink	  *clink);
-BstCanvasLink*	 bst_canvas_link_at		(GnomeCanvas      *canvas,
-						 gdouble           world_x,
-						 gdouble           world_y);
+GtkType		 bst_canvas_link_get_type		(void);
+GnomeCanvasItem* bst_canvas_link_new			(GnomeCanvasGroup *group);
+void		 bst_canvas_link_set_ocsource		(BstCanvasLink    *clink,
+							 BstCanvasSource  *ocsource,
+							 guint             ochannel_id);
+void		 bst_canvas_link_set_icsource		(BstCanvasLink    *clink,
+							 BstCanvasSource  *icsource,
+							 guint             ichannel_id);
+void             bst_canvas_link_popup_view		(BstCanvasLink	  *clink);
+void             bst_canvas_link_toggle_view		(BstCanvasLink	  *clink);
+BstCanvasLink*	 bst_canvas_link_at			(GnomeCanvas      *canvas,
+							 gdouble           world_x,
+							 gdouble           world_y);
+BstCanvasSource* bst_canvas_link_has_canvas_source_at	(BstCanvasLink	  *clink,
+							 gdouble           world_x,
+							 gdouble           world_y);
 
 
 

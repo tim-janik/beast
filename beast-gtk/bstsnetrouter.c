@@ -744,13 +744,19 @@ bst_snet_router_root_event (BstSNetRouter   *router,
       g_return_val_if_fail (router->tmp_line == NULL, FALSE);
       
       csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
+      clink = csource ? NULL : bst_canvas_link_at (canvas, event->button.x, event->button.y);
+      if (clink && !csource)
+	{
+	  csource = bst_canvas_link_has_canvas_source_at (clink, event->button.x, event->button.y);
+	  if (csource)
+	    clink = NULL;
+	}
       ochannel_id = (csource
 		     ? bst_canvas_source_ochannel_at (csource, event->button.x, event->button.y)
 		     : 0);
       ichannel_id = (csource
 		     ? bst_canvas_source_ichannel_at (csource, event->button.x, event->button.y)
 		     : 0);
-      clink = csource ? NULL : bst_canvas_link_at (canvas, event->button.x, event->button.y);
       
       if (csource && ochannel_id)
 	{
@@ -786,32 +792,35 @@ bst_snet_router_root_event (BstSNetRouter   *router,
       else if (clink)
 	bst_canvas_link_toggle_view (clink);
     }
-  else if ((event->type == GDK_BUTTON_PRESS ||
-	    event->type == GDK_BUTTON_RELEASE) &&
-	   event->button.button == 1 &&
-	   router->mode == 1) /* finish link */
+  else if ((event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE) &&
+	   event->button.button == 1 && router->mode == 1) /* finish link */
     {
       BstCanvasSource *csource;
+      BseErrorType error;
       guint ichannel_id;
       
       csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
+      if (!csource)
+	{
+	  BstCanvasLink *clink;
+
+	  clink = bst_canvas_link_at (canvas, event->button.x, event->button.y);
+	  if (clink)
+	    csource = bst_canvas_link_has_canvas_source_at (clink, event->button.x, event->button.y);
+	}
       ichannel_id = (csource
 		     ? bst_canvas_source_ichannel_at (csource, event->button.x, event->button.y)
 		     : 0);
-      /* eliminate button releases on the point we started from */
-      if (event->type == GDK_BUTTON_RELEASE &&
-	  csource == router->ocsource &&
-	  bst_canvas_source_ochannel_at (csource, event->button.x, event->button.y) ==
-	  router->ochannel_id)
-	csource = NULL;
-
-      if (csource)
+      /* don't react to button releases on the point we started from */
+      if (!(event->type == GDK_BUTTON_RELEASE && csource == router->ocsource &&
+	    bst_canvas_source_ochannel_at (csource, event->button.x, event->button.y) == router->ochannel_id))
 	{
-	  BseErrorType error;
-
-	  error = bse_source_set_input (csource->source, ichannel_id,
-					router->ocsource->source,
-					router->ochannel_id);
+	  if (csource)
+	    error = bse_source_set_input (csource->source, ichannel_id,
+					  router->ocsource->source,
+					  router->ochannel_id);
+	  else
+	    error = BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
 	  bst_snet_router_reset_mode (router);
 	  bst_status_set (error ? 0 : 100, "Create Link", bse_error_blurb (error));
 	}
@@ -825,6 +834,12 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 
       csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
       clink = csource ? NULL : bst_canvas_link_at (canvas, event->button.x, event->button.y);
+      if (clink && !csource)
+	{
+	  csource = bst_canvas_link_has_canvas_source_at (clink, event->button.x, event->button.y);
+	  if (csource)
+	    clink = NULL;
+	}
 
       if (csource)
 	{
