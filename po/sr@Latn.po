@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:06+0100\n"
-"PO-Revision-Date: 2003-12-22 08:43+0100\n"
+"POT-Creation-Date: 2003-12-29 02:43+0100\n"
+"PO-Revision-Date: 2003-12-29 12:46+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -43,12 +43,11 @@ msgstr "Spoji postojeći projekat sa tekućim projektom"
 
 #: beast-gtk/bstapp.c:57
 msgid "_Import MIDI..."
-msgstr ""
+msgstr "_Uvezi MIDI..."
 
 #: beast-gtk/bstapp.c:57
-#, fuzzy
 msgid "Import a standard MIDI file into the current project"
-msgstr "Spoji postojeći projekat sa tekućim projektom"
+msgstr "Uvezi običnu MIDI datoteku u tekući projekat"
 
 #: beast-gtk/bstapp.c:59
 msgid "_Close"
@@ -295,12 +294,12 @@ msgstr "Spaja projekat „%s“"
 #: beast-gtk/bstfiledialog.c:492
 #, c-format
 msgid "Import MIDI: %s"
-msgstr ""
+msgstr "Uvezi MIDI: %s"
 
 #: beast-gtk/bstfiledialog.c:503
 #, c-format
 msgid "Importing MIDI file `%s'"
-msgstr ""
+msgstr "Uvozim MIDI datoteku „%s“"
 
 #: beast-gtk/bstfiledialog.c:523
 #, c-format
@@ -802,10 +801,9 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih "
-"izdanja. Znači, ne pouzdajte se da će izgled uređivača ostati isti u "
-"budućnosti, i budite spremni na nestabilnost u kodu (tj. redovno snimajte "
-"vaše projekte)."
+"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih izdanja. "
+"Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
+"budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/gadgets-beast.xml.h:22
@@ -1508,8 +1506,8 @@ msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
 msgstr ""
-"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak "
-"predstavlja prečicu"
+"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak predstavlja "
+"prečicu"
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
@@ -1519,8 +1517,8 @@ msgstr "Samo-iseci"
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
-"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju "
-"tri tačke „...“"
+"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju tri "
+"tačke „...“"
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
@@ -1587,9 +1585,9 @@ msgstr ""
 "signala. Podržava dva kontrolna ulaza i dva zvučna ulaza koji se mešaju "
 "zajedno prema prilagođivanju ravnoteže i nivoa. Dobitak kontroliše "
 "prepojačanje mešanog zvučnog singala. Mešani kontrolni signal, uz težinski "
-"koeficijent, određuje pojačanje programa, dozvoljavajući da spoljašnji "
-"izvori programa razdele opšti promet (tremolo). Mešani kontrolni signal ne "
-"može da utiče linearno na pojačivanje (ostalih kontrolnih signala) ili "
+"koeficijent, određuje pojačanje programa, dozvoljavajući da spoljašnji izvori "
+"programa razdele opšti promet (tremolo). Mešani kontrolni signal ne može da "
+"utiče linearno na pojačivanje (ostalih kontrolnih signala) ili "
 "eksponencijalno (za pojačanje zvučnih zignala). Konačno, glavna jačina "
 "upravlja pojačanje izlaznog signala."
 
@@ -1978,12 +1976,11 @@ msgid ""
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
 msgstr ""
-"BseBalance je moduo za stereo ravnanje sa dva zvučna i dva kontrolna ulaza, "
-"i na svakom se može odvojeno prilagoditi nivo. Izlazna ravnoteža se "
-"kontroliše ravnotežom prilagođenja i zbirom kontrolnih ulaza. Radi "
-"izbegavanja šuma za brzu izmenu ravnoteže, kontrolni signal se predobrađuje "
-"jednostavnim niskoprolaznim filterom sa prilagodljivom frekvencijom "
-"odsecanja."
+"BseBalance je moduo za stereo ravnanje sa dva zvučna i dva kontrolna ulaza, i "
+"na svakom se može odvojeno prilagoditi nivo. Izlazna ravnoteža se kontroliše "
+"ravnotežom prilagođenja i zbirom kontrolnih ulaza. Radi izbegavanja šuma za "
+"brzu izmenu ravnoteže, kontrolni signal se predobrađuje jednostavnim "
+"niskoprolaznim filterom sa prilagodljivom frekvencijom odsecanja."
 
 #: plugins/bsebalance.idl:40
 msgid "Left Out"

@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:06+0100\n"
-"PO-Revision-Date: 2003-12-22 08:43+0100\n"
+"POT-Creation-Date: 2003-12-29 02:43+0100\n"
+"PO-Revision-Date: 2003-12-29 12:46+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -43,12 +43,11 @@ msgstr "Споји постојећи пројекат са текућим пр�
 
 #: beast-gtk/bstapp.c:57
 msgid "_Import MIDI..."
-msgstr ""
+msgstr "_Увези МИДИ..."
 
 #: beast-gtk/bstapp.c:57
-#, fuzzy
 msgid "Import a standard MIDI file into the current project"
-msgstr "Споји постојећи пројекат са текућим пројектом"
+msgstr "Увези обичну МИДИ датотеку у текући пројекат"
 
 #: beast-gtk/bstapp.c:59
 msgid "_Close"
@@ -295,12 +294,12 @@ msgstr "Спаја пројекат „%s“"
 #: beast-gtk/bstfiledialog.c:492
 #, c-format
 msgid "Import MIDI: %s"
-msgstr ""
+msgstr "Увези МИДИ: %s"
 
 #: beast-gtk/bstfiledialog.c:503
 #, c-format
 msgid "Importing MIDI file `%s'"
-msgstr ""
+msgstr "Увозим МИДИ датотеку „%s“"
 
 #: beast-gtk/bstfiledialog.c:523
 #, c-format
