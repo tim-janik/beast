@@ -1233,8 +1233,6 @@ wstore_data_handle_reader (gpointer data,
   if (n < 0)    /* bail out */
     {
       bse_storage_error (wh->storage, "failed to read from data handle");
-      G_BREAKPOINT ();
-      n = gsl_data_handle_read (wh->dhandle, pos / wh->bpv, blength / sizeof (gfloat), buffer);
       return -EIO;
     }
 

@@ -1,3 +1,7 @@
+Mon Jul  7 16:42:05 2003  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c (wstore_data_handle_reader): remove debugging code.
+
 Sat Jul  5 02:49:20 2003  Tim Janik  <timj@gtk.org>
 
 	* bsesong.[hc]: added pnet property to set postprocessing synthesis
