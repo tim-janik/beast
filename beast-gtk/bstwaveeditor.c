@@ -191,7 +191,7 @@ bst_wave_editor_init (BstWaveEditor *self)
   gtk_box_pack_start (GTK_BOX (self->main_vbox), self->gmask_parent, FALSE, TRUE, 0);
 
   /* qsampler (horizontal) zoom */
-  self->zoom_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 0.1, 10, 0));
+  self->zoom_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.5, 1e-16, 1e+16, 0.1, 10, 0));
   g_object_connect (self->zoom_adjustment, "swapped_signal_after::value_changed", adjustments_changed, self, NULL);
   gxk_nullify_on_destroy (self->zoom_adjustment, &self->zoom_adjustment);
   any = g_object_new (GTK_TYPE_SPIN_BUTTON,
@@ -522,6 +522,8 @@ wave_editor_set_n_qsamplers (BstWaveEditor *self,
 	}
       self->n_qsamplers = n_qsamplers;
     }
+  adjustments_changed (self, self->zoom_adjustment);
+  adjustments_changed (self, self->vscale_adjustment);
 }
 
 void

@@ -109,19 +109,13 @@ void            bst_gmask_set_aux2      (BstGMask      *mask,
                                          gpointer       widget);
 void            bst_gmask_set_aux3      (BstGMask      *mask,
                                          gpointer       widget);
-void            bst_gmask_set_ahead     (BstGMask      *mask,
-                                         gpointer       widget);
-void            bst_gmask_set_atail     (BstGMask      *mask,
-                                         gpointer       widget);
 void            bst_gmask_set_column    (BstGMask      *mask,
                                          guint          column);
 GtkWidget*      bst_gmask_get_prompt    (BstGMask      *mask);
 GtkWidget*      bst_gmask_get_aux1      (BstGMask      *mask);
 GtkWidget*      bst_gmask_get_aux2      (BstGMask      *mask);
 GtkWidget*      bst_gmask_get_aux3      (BstGMask      *mask);
-GtkWidget*      bst_gmask_get_ahead     (BstGMask      *mask);
 GtkWidget*      bst_gmask_get_action    (BstGMask      *mask);
-GtkWidget*      bst_gmask_get_atail     (BstGMask      *mask);
 void            bst_gmask_foreach       (BstGMask      *mask,
                                          gpointer       func,
                                          gpointer       data);

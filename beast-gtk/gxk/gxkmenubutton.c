@@ -834,12 +834,27 @@ gxk_menu_button_set_property (GObject      *object,
         {
           self->combo_arrow = b;
           if (self->combo_arrow && self->show_selection)
-            gtk_box_pack_end (GTK_BOX (GTK_BIN (self)->child),
-                              g_object_new (GTK_TYPE_ARROW,
-                                            "visible", TRUE,
-                                            "arrow-type", GTK_ARROW_DOWN,
-                                            NULL),
-                              FALSE, TRUE, 0);
+            {
+              GtkWidget *alignment = g_object_new (GTK_TYPE_ALIGNMENT,
+                                                   "visible", TRUE,
+                                                   "yscale", 0.0,
+                                                   NULL);
+              g_object_new (GTK_TYPE_VBOX,
+                            "visible", TRUE,
+                            "parent", alignment,
+                            "child", g_object_new (GTK_TYPE_ARROW,
+                                                   "visible", TRUE,
+                                                   "arrow-type", GTK_ARROW_UP,
+                                                   "yalign", 1.0,
+                                                   NULL),
+                            "child", g_object_new (GTK_TYPE_ARROW,
+                                                   "visible", TRUE,
+                                                   "arrow-type", GTK_ARROW_DOWN,
+                                                   "yalign", 0.0,
+                                                   NULL),
+                            NULL);
+              gtk_box_pack_end (GTK_BOX (GTK_BIN (self)->child), alignment, FALSE, TRUE, 0);
+            }
         }
       break;
     case MENU_BUTTON_PROP_PUSH_IN:

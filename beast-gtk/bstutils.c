@@ -455,9 +455,7 @@ typedef struct {
   GtkWidget   *aux1;
   GtkWidget   *aux2;            /* auto-expand */
   GtkWidget   *aux3;
-  GtkWidget   *ahead;
   GtkWidget   *action;
-  GtkWidget   *atail;
   gchar       *tip;
   guint        column : 16;
   guint        gpack : 8;
@@ -479,10 +477,6 @@ gmask_destroy (gpointer data)
     g_object_unref (gmask->aux2);
   if (gmask->aux3)
     g_object_unref (gmask->aux3);
-  if (gmask->ahead)
-    g_object_unref (gmask->ahead);
-  if (gmask->atail)
-    g_object_unref (gmask->atail);
   g_free (gmask->tip);
   g_free (gmask);
 }
@@ -563,7 +557,6 @@ bst_gmask_container_create (guint    border_width,
  * space is available. Other layout details are configured
  * through the @gpack packing type:
  @* %BST_GMASK_FIT - the action widget is not expanded,
- @* %BST_GMASK_FILL - the action widget can expand within the action column,
  @* %BST_GMASK_INTERLEAVE - allow the action widget to expand across auxillary
  * columns if it requests that much space,
  @* %BST_GMASK_BIG - force expansion of the action widget across all possible
@@ -699,54 +692,6 @@ bst_gmask_set_aux3 (BstGMask *mask,
 }
 
 /**
- * bst_gmask_set_ahead
- * @mask:     valid #BstGMask
- * @widget:   valid #GtkWidget
- *
- * Set the pre action widget of this GUI field @mask.
- */
-void
-bst_gmask_set_ahead (BstGMask *mask,
-                     gpointer  widget)
-{
-  GMask *gmask;
-  
-  g_return_if_fail (GTK_IS_WIDGET (mask));
-  gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  if (gmask->ahead)
-    g_object_unref (gmask->ahead);
-  gmask->ahead = g_object_ref (widget);
-  gtk_object_sink (GTK_OBJECT (widget));
-}
-
-/**
- * bst_gmask_set_atail
- * @mask:     valid #BstGMask
- * @widget:   valid #GtkWidget
- *
- * Set the post action widget of this GUI field @mask.
- */
-void
-bst_gmask_set_atail (BstGMask *mask,
-                     gpointer  widget)
-{
-  GMask *gmask;
-  
-  g_return_if_fail (GTK_IS_WIDGET (mask));
-  gmask = GMASK_GET (mask);
-  g_return_if_fail (gmask != NULL);
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  if (gmask->atail)
-    g_object_unref (gmask->atail);
-  gmask->atail = g_object_ref (widget);
-  gtk_object_sink (GTK_OBJECT (widget));
-}
-
-/**
  * bst_gmask_set_column
  * @mask:     valid #BstGMask
  * @column:   column number
@@ -844,25 +789,6 @@ bst_gmask_get_aux3 (BstGMask *mask)
 }
 
 /**
- * bst_gmask_get_ahead
- * @mask:     valid #BstGMask
- * @RETURNS:  the requested #GtkWidget or %NULL
- *
- * Retrieve the pre action widget of this GUI field @mask.
- */
-GtkWidget*
-bst_gmask_get_ahead (BstGMask *mask)
-{
-  GMask *gmask;
-  
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
-  gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
-  
-  return gmask->ahead;
-}
-
-/**
  * bst_gmask_get_action
  * @mask:     valid #BstGMask
  * @RETURNS:  the requested #GtkWidget or %NULL
@@ -879,25 +805,6 @@ bst_gmask_get_action (BstGMask *mask)
   g_return_val_if_fail (gmask != NULL, NULL);
   
   return gmask->action;
-}
-
-/**
- * bst_gmask_get_atail
- * @mask:     valid #BstGMask
- * @RETURNS:  the requested #GtkWidget or %NULL
- *
- * Retrieve the post action widget of this GUI field @mask.
- */
-GtkWidget*
-bst_gmask_get_atail (BstGMask *mask)
-{
-  GMask *gmask;
-  
-  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
-  gmask = GMASK_GET (mask);
-  g_return_val_if_fail (gmask != NULL, NULL);
-  
-  return gmask->atail;
 }
 
 /**
@@ -930,10 +837,6 @@ bst_gmask_foreach (BstGMask *mask,
     callback (gmask->aux2, data);
   if (gmask->aux3)
     callback (gmask->aux3, data);
-  if (gmask->ahead)
-    callback (gmask->ahead, data);
-  if (gmask->atail)
-    callback (gmask->atail, data);
   if (gmask->action)
     callback (gmask->action, data);
 }
@@ -999,7 +902,7 @@ table_max_bottom_row (GtkTable *table,
 void
 bst_gmask_pack (BstGMask *mask)
 {
-  GtkWidget *prompt, *aux1, *aux2, *aux3, *ahead, *action, *atail;
+  GtkWidget *prompt, *aux1, *aux2, *aux3, *action;
   GtkTable *table;
   gboolean dummy_aux2 = FALSE;
   guint row, n, c, dislodge_columns;
@@ -1022,9 +925,7 @@ bst_gmask_pack (BstGMask *mask)
   aux1 = get_toplevel_and_set_tip (gmask->aux1, GXK_TOOLTIPS, gmask->tip);
   aux2 = get_toplevel_and_set_tip (gmask->aux2, GXK_TOOLTIPS, gmask->tip);
   aux3 = get_toplevel_and_set_tip (gmask->aux3, GXK_TOOLTIPS, gmask->tip);
-  ahead = get_toplevel_and_set_tip (gmask->ahead, GXK_TOOLTIPS, gmask->tip);
   action = get_toplevel_and_set_tip (gmask->action, GXK_TOOLTIPS, gmask->tip);
-  atail = get_toplevel_and_set_tip (gmask->atail, GXK_TOOLTIPS, gmask->tip);
   dislodge_columns = g_object_get_data (G_OBJECT (gmask->parent), "GMask-dislodge") != NULL;
   table = GTK_TABLE (gmask->parent);
   
@@ -1095,21 +996,6 @@ bst_gmask_pack (BstGMask *mask)
       gtk_table_set_col_spacing (table, c, 3); /* aux3 spacing */
     }
   c++;
-  /* pack action with head and tail widgets closely together */
-  if (ahead || atail)
-    {
-      action = gtk_widget_new (GTK_TYPE_HBOX,
-                               "visible", TRUE,
-                               "child", action,
-                               NULL);
-      if (ahead)
-        gtk_container_add_with_properties (GTK_CONTAINER (action), ahead,
-                                           "position", 0,
-                                           "expand", FALSE,
-                                           NULL);
-      if (atail)
-        gtk_box_pack_end (GTK_BOX (action), atail, FALSE, TRUE, 0);
-    }
   n = c;
   if (gmask->gpack == BST_GMASK_BIG || gmask->gpack == BST_GMASK_CENTER ||
       gmask->gpack == BST_GMASK_INTERLEAVE)     /* extend action to the left when possible */
@@ -1168,7 +1054,7 @@ bst_gmask_pack (BstGMask *mask)
  * @tip_text:        text for bst_gmask_set_tip()
  * @RETURNS:         an already packed GUI field mask
  *
- * Shorthand to form a GUI field mask in @column of type %BST_GMASK_FILL,
+ * Shorthand to form a GUI field mask in @column of type %BST_GMASK_INTERLEAVE,
  * with @prompt and @tip_text. Note that this function already calls
  * bst_gmask_pack(), so the returned field mask already can't be modified
  * anymore.
@@ -1180,7 +1066,7 @@ bst_gmask_quick (GtkWidget   *gmask_container,
                  gpointer     action,
                  const gchar *tip_text)
 {
-  gpointer mask = bst_gmask_form (gmask_container, action, BST_GMASK_FILL);
+  gpointer mask = bst_gmask_form (gmask_container, action, BST_GMASK_INTERLEAVE);
   
   if (prompt)
     bst_gmask_set_prompt (mask, g_object_new (GTK_TYPE_LABEL,

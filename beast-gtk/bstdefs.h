@@ -21,7 +21,6 @@
 #include <gxk/gxk.h>
 #include <libintl.h>
 #include "bstzoomedwindow.h"
-#include "bstfreeradiobutton.h"
 
 G_BEGIN_DECLS
 

@@ -152,7 +152,6 @@ main (int   argc,
   /* GUI patchups
    */
   gtk_rc_parse_string (bst_rc_string);
-  g_type_name (bst_free_radio_button_get_type ());	/* urg, GCC_CONST */
 
   /* parse rc file
    */
