@@ -74,11 +74,6 @@ typedef enum
   BSEWAVE_TOKEN_JUMP,
   BSEWAVE_TOKEN_PINGPONG,
   BSEWAVE_TOKEN_LAST,
-  /* compat tokens */
-  BSEWAVE_TOKEN_LOOP_TYPE,      /* compat <= 0.6.4 */
-  BSEWAVE_TOKEN_LOOP_START,     /* compat <= 0.6.4 */
-  BSEWAVE_TOKEN_LOOP_END,       /* compat <= 0.6.4 */
-  BSEWAVE_TOKEN_LOOP_COUNT,     /* compat <= 0.6.4 */
 } GslWaveTokenType;
 
 
@@ -255,8 +250,6 @@ bsewave_load_file_info (gpointer      data,
     g_free (cwd);
   g_free (file_name);
   
-  /* FIXME: empty wave error? */
-  
   return fi ? &fi->wfi : NULL;
 }
 
@@ -417,38 +410,6 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
 	  case G_TOKEN_INT:	chunk->mix_freq = scanner->value.v_int64;	break;
 	  default:		return G_TOKEN_FLOAT;
 	  }
-	break;
-      case BSEWAVE_TOKEN_LOOP_TYPE:     /* compat <= 0.6.4 */
-	parse_or_return (scanner, '=');
-	switch (g_scanner_get_next_token (scanner))
-	  {
-	  case BSEWAVE_TOKEN_PINGPONG:
-            chunk->xinfos = bse_xinfos_add_value (chunk->xinfos, "loop-type", gsl_wave_loop_type_to_string (GSL_WAVE_LOOP_PINGPONG));
-            break;
-	  case BSEWAVE_TOKEN_JUMP:
-            chunk->xinfos = bse_xinfos_add_value (chunk->xinfos, "loop-type", gsl_wave_loop_type_to_string (GSL_WAVE_LOOP_JUMP));
-            break;
-	  case BSEWAVE_TOKEN_NONE:
-            chunk->xinfos = bse_xinfos_del_value (chunk->xinfos, "loop-type");
-            break;
-	  default:
-            break;
-	  }
-	break;
-      case BSEWAVE_TOKEN_LOOP_START:    /* compat <= 0.6.4 */
-	parse_or_return (scanner, '=');
-	parse_or_return (scanner, G_TOKEN_INT);
-        chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "loop-start", scanner->value.v_int64);
-	break;
-      case BSEWAVE_TOKEN_LOOP_END:      /* compat <= 0.6.4 */
-	parse_or_return (scanner, '=');
-	parse_or_return (scanner, G_TOKEN_INT);
-        chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "loop-end", scanner->value.v_int64);
-	break;
-      case BSEWAVE_TOKEN_LOOP_COUNT:    /* compat <= 0.6.4 */
-	parse_or_return (scanner, '=');
-	parse_or_return (scanner, G_TOKEN_INT);
-        chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "loop-count", scanner->value.v_int64);
 	break;
       }
   while (TRUE);
@@ -612,19 +573,6 @@ bsewave_load_wave_dsc (gpointer         data,
   g_scanner_input_file (scanner, fd);
   for (i = BSEWAVE_TOKEN_WAVE; i < BSEWAVE_TOKEN_LAST; i++)
     g_scanner_scope_add_symbol (scanner, 0, bsewave_tokens[i - BSEWAVE_TOKEN_WAVE], GUINT_TO_POINTER (i));
-  /* tokens for compat <= 0.6.4 */
-  g_scanner_scope_add_symbol (scanner, 0, "n_channels", GUINT_TO_POINTER (BSEWAVE_TOKEN_N_CHANNELS));
-  g_scanner_scope_add_symbol (scanner, 0, "midi_note", GUINT_TO_POINTER (BSEWAVE_TOKEN_MIDI_NOTE));
-  g_scanner_scope_add_symbol (scanner, 0, "osc_freq", GUINT_TO_POINTER (BSEWAVE_TOKEN_OSC_FREQ));
-  g_scanner_scope_add_symbol (scanner, 0, "n_values", GUINT_TO_POINTER (BSEWAVE_TOKEN_N_VALUES));
-  g_scanner_scope_add_symbol (scanner, 0, "byte_order", GUINT_TO_POINTER (BSEWAVE_TOKEN_BYTE_ORDER));
-  g_scanner_scope_add_symbol (scanner, 0, "mix_freq", GUINT_TO_POINTER (BSEWAVE_TOKEN_MIX_FREQ));
-  g_scanner_scope_add_symbol (scanner, 0, "loop_type", GUINT_TO_POINTER (BSEWAVE_TOKEN_LOOP_TYPE));
-  g_scanner_scope_add_symbol (scanner, 0, "loop_start", GUINT_TO_POINTER (BSEWAVE_TOKEN_LOOP_START));
-  g_scanner_scope_add_symbol (scanner, 0, "loop_end", GUINT_TO_POINTER (BSEWAVE_TOKEN_LOOP_END));
-  g_scanner_scope_add_symbol (scanner, 0, "loop_count", GUINT_TO_POINTER (BSEWAVE_TOKEN_LOOP_COUNT));
-  g_scanner_scope_add_symbol (scanner, 0, "rawlink", GUINT_TO_POINTER (BSEWAVE_TOKEN_RAW_LINK));
-  g_scanner_scope_add_symbol (scanner, 0, "ogglink", GUINT_TO_POINTER (BSEWAVE_TOKEN_VORBIS_LINK));
 
   WaveDsc *dsc = sfi_new_struct0 (WaveDsc, 1);
   dsc->wdsc.name = NULL;
