@@ -1,3 +1,8 @@
+Tue Oct 14 21:51:23 2003  Tim Janik  <timj@gtk.org>
+
+	* bseamplifier.cc: more 0.5.4-compatibility handling, audio-gain used to
+	default to 50%.
+
 Tue Oct 14 21:16:44 2003  Tim Janik  <timj@gtk.org>
 
 	* examplepeakfilter.[hc]*: removed first c++ example module, there's

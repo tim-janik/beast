@@ -220,8 +220,10 @@ protected:
                      guint          vminor,
                      guint          vmicro)
   {
-    if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 5, 4) <= 0) // FIXME: remove around 0.6.0
-      set ("ctrl_exp", TRUE, NULL);
+    if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 5, 4) <= 0) // COMPAT-FIXME: remove around 0.7.0
+      set ("ctrl_exp", TRUE,
+           "audio_gain_f", 0.5,
+           NULL);
   }
 public:
   /* implement creation and config methods for synthesis Module */
