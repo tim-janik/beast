@@ -1,3 +1,8 @@
+Tue Jan 27 16:41:45 2004  Tim Janik  <timj@gtk.org>
+
+	* bsetrack.c (bse_track_class_init): increased default number of voices
+	to 16 (from 8).
+
 Tue Jan 27 16:03:01 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecxxbase.h: added instance_is_a(), value_get_gobject<>()

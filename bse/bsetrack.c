@@ -138,7 +138,7 @@ bse_track_class_init (BseTrackClass *class)
   bse_object_class_add_param (object_class, "Synth Input",
 			      PROP_N_VOICES,
 			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
-					     8, 1, 256, 1,
+					     16, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
   bse_object_class_add_param (object_class, "MIDI Instrument",
                               PROP_MIDI_CHANNEL,
@@ -172,7 +172,7 @@ bse_track_init (BseTrack *self)
 {
   self->snet = NULL;
   self->pnet = NULL;
-  self->max_voices = 8;
+  self->max_voices = 16;
   self->muted_SL = FALSE;
   self->n_entries_SL = 0;
   self->entries_SL = g_renew (BseTrackEntry, NULL, upper_power2 (self->n_entries_SL));

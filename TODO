@@ -11,7 +11,6 @@ FIXMES:
 - let the ADSR provide Gate-Out
 - reset-properties sets base-volume of BseAmplifier to 100% (should be 0)
 - add author and license display to palette
-- default to 16 voices in tracks
 - default-initialize authors: field with user name
 - add default-settings config preference (authors, license)
 - evaluate elimination of seqid
