@@ -1,3 +1,16 @@
+Mon Nov 15 18:11:10 2004  Tim Janik  <timj@gtk.org>
+
+	* bseengine.c (bse_job_integrate): set a flag to indicate node ownership
+	by the job.
+
+	* bseengineutils.c (bse_engine_free_job): free job-owned nodes.
+
+	* bseenginemaster.c (master_process_job): 
+	(ENGINE_JOB_INTEGRATE): take over node ownership from job.
+	(ENGINE_JOB_DISCARD): pass on node ownership to job.
+
+	* bseenginenode.h: use an anonymous union in BseJob, adapted users.
+
 Mon Nov 15 15:18:01 2004  Tim Janik  <timj@gtk.org>
 
 	* bseengineutils.c: manage transaction trash list with a FIFO rather

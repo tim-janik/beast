@@ -331,19 +331,19 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("sync");
       master_need_reflow |= TRUE;
       master_schedule_discard();
-      GSL_SPIN_LOCK (job->data.sync.lock_mutex);
-      *job->data.sync.lock_p = TRUE;
-      sfi_cond_signal (job->data.sync.lock_cond);
-      while (*job->data.sync.lock_p)
-        sfi_cond_wait (job->data.sync.lock_cond, job->data.sync.lock_mutex);
-      GSL_SPIN_UNLOCK (job->data.sync.lock_mutex);
+      GSL_SPIN_LOCK (job->sync.lock_mutex);
+      *job->sync.lock_p = TRUE;
+      sfi_cond_signal (job->sync.lock_cond);
+      while (*job->sync.lock_p)
+        sfi_cond_wait (job->sync.lock_cond, job->sync.lock_mutex);
+      GSL_SPIN_UNLOCK (job->sync.lock_mutex);
       break;
     case ENGINE_JOB_INTEGRATE:
       node = job->data.node;
       JOB_DEBUG ("integrate(%p)", node);
       g_return_if_fail (node->integrated == FALSE);
       g_return_if_fail (node->sched_tag == FALSE);
-      job->data.node = NULL;  /* ownership taken over */
+      job->data.free_with_job = FALSE;  /* ownership taken over */
       _engine_mnl_integrate (node);
       if (ENGINE_NODE_IS_CONSUMER (node))
 	add_consumer (node);
@@ -378,6 +378,7 @@ master_process_job (BseJob *job)
       node = job->data.node;
       JOB_DEBUG ("discard(%p, %p)", node, node->module.klass);
       g_return_if_fail (node->integrated == TRUE);
+      job->data.free_with_job = TRUE;  /* ownership passed on to cause destruction in UserThread */
       /* kill inputs */
       for (istream = 0; istream < ENGINE_NODE_N_ISTREAMS (node); istream++)
 	if (node->inputs[istream].src_node)
@@ -426,8 +427,8 @@ master_process_job (BseJob *job)
 	}
       break;
     case ENGINE_JOB_SUSPEND:
-      node = job->data.tick.node;
-      stamp = job->data.tick.stamp;
+      node = job->tick.node;
+      stamp = job->tick.stamp;
       JOB_DEBUG ("suspend(%p,%llu)", node, stamp);
       g_return_if_fail (node->integrated == TRUE);
       if (node->local_active < stamp)
@@ -439,8 +440,8 @@ master_process_job (BseJob *job)
 	}
       break;
     case ENGINE_JOB_RESUME:
-      node = job->data.tick.node;
-      stamp = job->data.tick.stamp;
+      node = job->tick.node;
+      stamp = job->tick.stamp;
       JOB_DEBUG ("resume(%p,%llu)", node, stamp);
       g_return_if_fail (node->integrated == TRUE);
       if (node->local_active > stamp)
@@ -452,10 +453,10 @@ master_process_job (BseJob *job)
 	}
       break;
     case ENGINE_JOB_ICONNECT:
-      node = job->data.connection.dest_node;
-      src_node = job->data.connection.src_node;
-      istream = job->data.connection.dest_ijstream;
-      ostream = job->data.connection.src_ostream;
+      node = job->connection.dest_node;
+      src_node = job->connection.src_node;
+      istream = job->connection.dest_ijstream;
+      ostream = job->connection.src_ostream;
       JOB_DEBUG ("connect(%p,%u,%p,%u)", node, istream, src_node, ostream);
       g_return_if_fail (node->integrated == TRUE);
       g_return_if_fail (src_node->integrated == TRUE);
@@ -477,10 +478,10 @@ master_process_job (BseJob *job)
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_JCONNECT:
-      node = job->data.connection.dest_node;
-      src_node = job->data.connection.src_node;
-      jstream = job->data.connection.dest_ijstream;
-      ostream = job->data.connection.src_ostream;
+      node = job->connection.dest_node;
+      src_node = job->connection.src_node;
+      jstream = job->connection.dest_ijstream;
+      ostream = job->connection.src_ostream;
       JOB_DEBUG ("jconnect(%p,%u,%p,%u)", node, jstream, src_node, ostream);
       g_return_if_fail (node->integrated == TRUE);
       g_return_if_fail (src_node->integrated == TRUE);
@@ -504,18 +505,18 @@ master_process_job (BseJob *job)
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_IDISCONNECT:
-      node = job->data.connection.dest_node;
-      JOB_DEBUG ("idisconnect(%p,%u)", node, job->data.connection.dest_ijstream);
+      node = job->connection.dest_node;
+      JOB_DEBUG ("idisconnect(%p,%u)", node, job->connection.dest_ijstream);
       g_return_if_fail (node->integrated == TRUE);
-      g_return_if_fail (node->inputs[job->data.connection.dest_ijstream].src_node != NULL);
-      master_idisconnect_node (node, job->data.connection.dest_ijstream);
+      g_return_if_fail (node->inputs[job->connection.dest_ijstream].src_node != NULL);
+      master_idisconnect_node (node, job->connection.dest_ijstream);
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_JDISCONNECT:
-      node = job->data.connection.dest_node;
-      jstream = job->data.connection.dest_ijstream;
-      src_node = job->data.connection.src_node;
-      ostream = job->data.connection.src_ostream;
+      node = job->connection.dest_node;
+      jstream = job->connection.dest_ijstream;
+      src_node = job->connection.src_node;
+      ostream = job->connection.src_ostream;
       JOB_DEBUG ("jdisconnect(%p,%u,%p,%u)", node, jstream, src_node, ostream);
       g_return_if_fail (node->integrated == TRUE);
       g_return_if_fail (node->module.jstreams[jstream].jcount > 0);
@@ -539,36 +540,36 @@ master_process_job (BseJob *job)
       node->needs_reset = TRUE;
       break;
     case ENGINE_JOB_ACCESS:
-      node = job->data.access.node;
-      JOB_DEBUG ("access node(%p): %p(%p)", node, job->data.access.access_func, job->data.access.data);
+      node = job->access.node;
+      JOB_DEBUG ("access node(%p): %p(%p)", node, job->access.access_func, job->access.data);
       g_return_if_fail (node->integrated == TRUE);
       node->counter = GSL_TICK_STAMP;
-      job->data.access.access_func (&node->module, job->data.access.data);
+      job->access.access_func (&node->module, job->access.data);
       break;
     case ENGINE_JOB_PROBE_JOB:
-      node = job->data.timed_job.node;
-      pjob = job->data.probe_job.pjob;
+      node = job->timed_job.node;
+      pjob = job->probe_job.pjob;
       JOB_DEBUG ("add probe_job(%p,%p)", node, pjob);
       g_return_if_fail (node->integrated == TRUE);
-      job->data.probe_job.pjob = NULL;  /* ownership taken over */
+      job->probe_job.pjob = NULL;  /* ownership taken over */
       pjob->next = node->probe_jobs;
       node->probe_jobs = pjob;
       break;
     case ENGINE_JOB_FLOW_JOB:
-      node = job->data.timed_job.node;
-      tjob = job->data.timed_job.tjob;
+      node = job->timed_job.node;
+      tjob = job->timed_job.tjob;
       JOB_DEBUG ("add flow_job(%p,%p)", node, tjob);
       g_return_if_fail (node->integrated == TRUE);
-      job->data.timed_job.tjob = NULL;	/* ownership taken over */
+      job->timed_job.tjob = NULL;	/* ownership taken over */
       node_insert_flow_job (node, tjob);
       _engine_mnl_node_changed (node);
       break;
     case ENGINE_JOB_BOUNDARY_JOB:
-      node = job->data.timed_job.node;
-      tjob = job->data.timed_job.tjob;
+      node = job->timed_job.node;
+      tjob = job->timed_job.tjob;
       JOB_DEBUG ("add boundary_job(%p,%p)", node, tjob);
       g_return_if_fail (node->integrated == TRUE);
-      job->data.timed_job.tjob = NULL;	/* ownership taken over */
+      job->timed_job.tjob = NULL;	/* ownership taken over */
       node_insert_boundary_job (node, tjob);
       master_new_boundary_jobs = TRUE;
       break;
@@ -582,28 +583,28 @@ master_process_job (BseJob *job)
         JOB_DEBUG ("nop");
       break;
     case ENGINE_JOB_ADD_POLL:
-      JOB_DEBUG ("add poll %p(%p,%u)", job->data.poll.poll_func, job->data.poll.data, job->data.poll.n_fds);
-      if (job->data.poll.n_fds + master_n_pollfds > BSE_ENGINE_MAX_POLLFDS)
+      JOB_DEBUG ("add poll %p(%p,%u)", job->poll.poll_func, job->poll.data, job->poll.n_fds);
+      if (job->poll.n_fds + master_n_pollfds > BSE_ENGINE_MAX_POLLFDS)
 	g_error ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
-		 job->data.poll.n_fds + master_n_pollfds, BSE_ENGINE_MAX_POLLFDS);
+		 job->poll.n_fds + master_n_pollfds, BSE_ENGINE_MAX_POLLFDS);
       poll = sfi_new_struct0 (Poll, 1);
-      poll->poll_func = job->data.poll.poll_func;
-      poll->data = job->data.poll.data;
-      poll->free_func = job->data.poll.free_func;
-      job->data.poll.free_func = NULL;		/* don't free data this round */
-      poll->n_fds = job->data.poll.n_fds;
+      poll->poll_func = job->poll.poll_func;
+      poll->data = job->poll.data;
+      poll->free_func = job->poll.free_func;
+      job->poll.free_func = NULL;		/* don't free data this round */
+      poll->n_fds = job->poll.n_fds;
       poll->fds = poll->n_fds ? master_pollfds + master_n_pollfds : master_pollfds;
       master_n_pollfds += poll->n_fds;
       if (poll->n_fds)
 	master_pollfds_changed = TRUE;
-      memcpy (poll->fds, job->data.poll.fds, sizeof (poll->fds[0]) * poll->n_fds);
+      memcpy (poll->fds, job->poll.fds, sizeof (poll->fds[0]) * poll->n_fds);
       poll->next = master_poll_list;
       master_poll_list = poll;
       break;
     case ENGINE_JOB_REMOVE_POLL:
-      JOB_DEBUG ("remove poll %p(%p)", job->data.poll.poll_func, job->data.poll.data);
+      JOB_DEBUG ("remove poll %p(%p)", job->poll.poll_func, job->poll.data);
       for (poll = master_poll_list, poll_last = NULL; poll; poll_last = poll, poll = poll_last->next)
-	if (poll->poll_func == job->data.poll.poll_func && poll->data == job->data.poll.data)
+	if (poll->poll_func == job->poll.poll_func && poll->data == job->poll.data)
 	  {
 	    if (poll_last)
 	      poll_last->next = poll->next;
@@ -613,7 +614,7 @@ master_process_job (BseJob *job)
 	  }
       if (poll)
 	{
-	  job->data.poll.free_func = poll->free_func;	/* free data with job */
+	  job->poll.free_func = poll->free_func;	/* free data with job */
 	  poll_last = poll;
 	  if (poll_last->n_fds)
 	    {
@@ -630,15 +631,15 @@ master_process_job (BseJob *job)
 	}
       else
 	g_warning (G_STRLOC ": failed to remove unknown poll function %p(%p)",
-		   job->data.poll.poll_func, job->data.poll.data);
+		   job->poll.poll_func, job->poll.data);
       break;
     case ENGINE_JOB_ADD_TIMER:
-      JOB_DEBUG ("add timer %p(%p)", job->data.timer.timer_func, job->data.timer.data);
+      JOB_DEBUG ("add timer %p(%p)", job->timer.timer_func, job->timer.data);
       timer = sfi_new_struct0 (Timer, 1);
-      timer->timer_func = job->data.timer.timer_func;
-      timer->data = job->data.timer.data;
-      timer->free_func = job->data.timer.free_func;
-      job->data.timer.free_func = NULL;		/* don't free data this round */
+      timer->timer_func = job->timer.timer_func;
+      timer->data = job->timer.data;
+      timer->free_func = job->timer.free_func;
+      job->timer.free_func = NULL;		/* don't free data this round */
       timer->next = master_timer_list;
       master_timer_list = timer;
       break;

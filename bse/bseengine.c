@@ -175,6 +175,7 @@ bse_job_integrate (BseModule *module)
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_INTEGRATE;
   job->data.node = ENGINE_NODE (module);
+  job->data.free_with_job = TRUE;
   
   return job;
 }
@@ -277,10 +278,10 @@ bse_job_connect (BseModule *src_module,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ICONNECT;
-  job->data.connection.dest_node = ENGINE_NODE (dest_module);
-  job->data.connection.dest_ijstream = dest_istream;
-  job->data.connection.src_node = ENGINE_NODE (src_module);
-  job->data.connection.src_ostream = src_ostream;
+  job->connection.dest_node = ENGINE_NODE (dest_module);
+  job->connection.dest_ijstream = dest_istream;
+  job->connection.src_node = ENGINE_NODE (src_module);
+  job->connection.src_ostream = src_ostream;
   
   return job;
 }
@@ -313,10 +314,10 @@ bse_job_jconnect (BseModule *src_module,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_JCONNECT;
-  job->data.connection.dest_node = ENGINE_NODE (dest_module);
-  job->data.connection.dest_ijstream = dest_jstream;
-  job->data.connection.src_node = ENGINE_NODE (src_module);
-  job->data.connection.src_ostream = src_ostream;
+  job->connection.dest_node = ENGINE_NODE (dest_module);
+  job->connection.dest_ijstream = dest_jstream;
+  job->connection.src_node = ENGINE_NODE (src_module);
+  job->connection.src_ostream = src_ostream;
   
   return job;
 }
@@ -343,10 +344,10 @@ bse_job_disconnect (BseModule *dest_module,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_IDISCONNECT;
-  job->data.connection.dest_node = ENGINE_NODE (dest_module);
-  job->data.connection.dest_ijstream = dest_istream;
-  job->data.connection.src_node = NULL;
-  job->data.connection.src_ostream = ~0;
+  job->connection.dest_node = ENGINE_NODE (dest_module);
+  job->connection.dest_ijstream = dest_istream;
+  job->connection.src_node = NULL;
+  job->connection.src_ostream = ~0;
   
   return job;
 }
@@ -382,10 +383,10 @@ bse_job_jdisconnect (BseModule *dest_module,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_JDISCONNECT;
-  job->data.connection.dest_node = ENGINE_NODE (dest_module);
-  job->data.connection.dest_ijstream = dest_jstream;
-  job->data.connection.src_node = ENGINE_NODE (src_module);
-  job->data.connection.src_ostream = src_ostream;
+  job->connection.dest_node = ENGINE_NODE (dest_module);
+  job->connection.dest_ijstream = dest_jstream;
+  job->connection.src_node = ENGINE_NODE (src_module);
+  job->connection.src_ostream = src_ostream;
   
   return job;
 }
@@ -471,10 +472,10 @@ bse_job_access (BseModule    *module,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ACCESS;
-  job->data.access.node = ENGINE_NODE (module);
-  job->data.access.access_func = access_func;
-  job->data.access.data = data;
-  job->data.access.free_func = free_func;
+  job->access.node = ENGINE_NODE (module);
+  job->access.access_func = access_func;
+  job->access.data = data;
+  job->access.free_func = free_func;
   
   return job;
 }
@@ -497,10 +498,10 @@ bse_engine_add_user_callback (gpointer      data,
 
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ACCESS;
-  job->data.access.node = NULL;
-  job->data.access.access_func = NULL;
-  job->data.access.data = data;
-  job->data.access.free_func = free_func;
+  job->access.node = NULL;
+  job->access.access_func = NULL;
+  job->access.data = data;
+  job->access.free_func = free_func;
 
   BseTrans *trans = bse_trans_open();
   bse_trans_add (trans, job);
@@ -580,8 +581,8 @@ bse_job_probe_request (BseModule         *module,
   
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;
-  job->data.probe_job.node = ENGINE_NODE (module);
-  job->data.probe_job.pjob = pjob;
+  job->probe_job.node = ENGINE_NODE (module);
+  job->probe_job.pjob = pjob;
   
   return job;
 }
@@ -629,8 +630,8 @@ bse_job_flow_access (BseModule    *module,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_FLOW_JOB;
-  job->data.timed_job.node = ENGINE_NODE (module);
-  job->data.timed_job.tjob = tjob;
+  job->timed_job.node = ENGINE_NODE (module);
+  job->timed_job.tjob = tjob;
   
   return job;
 }
@@ -677,8 +678,8 @@ bse_job_boundary_access (BseModule    *module,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
-  job->data.timed_job.node = ENGINE_NODE (module);
-  job->data.timed_job.tjob = tjob;
+  job->timed_job.node = ENGINE_NODE (module);
+  job->timed_job.tjob = tjob;
   
   return job;
 }
@@ -722,8 +723,8 @@ bse_job_boundary_discard (BseModule *module)
 
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
-  job->data.timed_job.node = ENGINE_NODE (module);
-  job->data.timed_job.tjob = tjob;
+  job->timed_job.node = ENGINE_NODE (module);
+  job->timed_job.tjob = tjob;
 
   return job;
 }
@@ -750,8 +751,8 @@ bse_job_suspend_now (BseModule *module)
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SUSPEND;
-  job->data.tick.node = ENGINE_NODE (module);
-  job->data.tick.stamp = GSL_MAX_TICK_STAMP;
+  job->tick.node = ENGINE_NODE (module);
+  job->tick.stamp = GSL_MAX_TICK_STAMP;
   
   return job;
 }
@@ -784,8 +785,8 @@ bse_job_resume_at (BseModule *module,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_RESUME;
-  job->data.tick.node = ENGINE_NODE (module);
-  job->data.tick.stamp = tick_stamp;
+  job->tick.node = ENGINE_NODE (module);
+  job->tick.stamp = tick_stamp;
   
   return job;
 }
@@ -841,11 +842,11 @@ bse_job_add_poll (BseEnginePollFunc    poll_func,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ADD_POLL;
-  job->data.poll.poll_func = poll_func;
-  job->data.poll.data = data;
-  job->data.poll.free_func = free_func;
-  job->data.poll.n_fds = n_fds;
-  job->data.poll.fds = g_memdup (fds, sizeof (fds[0]) * n_fds);
+  job->poll.poll_func = poll_func;
+  job->poll.data = data;
+  job->poll.free_func = free_func;
+  job->poll.n_fds = n_fds;
+  job->poll.fds = g_memdup (fds, sizeof (fds[0]) * n_fds);
   
   return job;
 }
@@ -870,11 +871,11 @@ bse_job_remove_poll (BseEnginePollFunc poll_func,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_REMOVE_POLL;
-  job->data.poll.poll_func = poll_func;
-  job->data.poll.data = data;
-  job->data.poll.free_func = NULL;
-  job->data.poll.n_fds = 0;
-  job->data.poll.fds = NULL;
+  job->poll.poll_func = poll_func;
+  job->poll.data = data;
+  job->poll.free_func = NULL;
+  job->poll.n_fds = 0;
+  job->poll.fds = NULL;
   
   return job;
 }
@@ -902,9 +903,9 @@ bse_job_add_timer (BseEngineTimerFunc timer_func,
   
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ADD_TIMER;
-  job->data.timer.timer_func = timer_func;
-  job->data.timer.data = data;
-  job->data.timer.free_func = free_func;
+  job->timer.timer_func = timer_func;
+  job->timer.data = data;
+  job->timer.free_func = free_func;
   
   return job;
 }
@@ -1416,9 +1417,9 @@ bse_engine_configure (guint            latency_ms,
   GSL_SPIN_LOCK (&sync_mutex);
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_SYNC;
-  job->data.sync.lock_mutex = &sync_mutex;
-  job->data.sync.lock_cond = &sync_cond;
-  job->data.sync.lock_p = &sync_lock;
+  job->sync.lock_mutex = &sync_mutex;
+  job->sync.lock_cond = &sync_cond;
+  job->sync.lock_p = &sync_lock;
   sync_lock = FALSE;
   trans = bse_trans_open();
   bse_trans_add (trans, job);

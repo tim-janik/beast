@@ -140,34 +140,33 @@ bse_engine_free_job (BseJob *job)
     {
     case ENGINE_JOB_INTEGRATE:
     case ENGINE_JOB_DISCARD:
-      if (job->data.node)
+    case ENGINE_JOB_MESSAGE:
+      if (job->data.node && job->data.free_with_job)
         bse_engine_free_node (job->data.node);
+      g_free (job->data.message);
       break;
     case ENGINE_JOB_ACCESS:
-      if (job->data.access.free_func)
-	job->data.access.free_func (job->data.access.data);
+      if (job->access.free_func)
+	job->access.free_func (job->access.data);
       break;
     case ENGINE_JOB_ADD_POLL:
     case ENGINE_JOB_REMOVE_POLL:
-      g_free (job->data.poll.fds);
-      if (job->data.poll.free_func)
-	job->data.poll.free_func (job->data.poll.data);
+      g_free (job->poll.fds);
+      if (job->poll.free_func)
+	job->poll.free_func (job->poll.data);
       break;
     case ENGINE_JOB_ADD_TIMER:
-      if (job->data.timer.free_func)
-	job->data.timer.free_func (job->data.timer.data);
+      if (job->timer.free_func)
+	job->timer.free_func (job->timer.data);
       break;
     case ENGINE_JOB_PROBE_JOB:
-      if (job->data.probe_job.pjob)
-        bse_engine_free_user_job ((EngineUserJob*) job->data.probe_job.pjob);
+      if (job->probe_job.pjob)
+        bse_engine_free_user_job ((EngineUserJob*) job->probe_job.pjob);
       break;
     case ENGINE_JOB_FLOW_JOB:
     case ENGINE_JOB_BOUNDARY_JOB:
-      if (job->data.timed_job.tjob)
-        bse_engine_free_user_job ((EngineUserJob*) job->data.timed_job.tjob);
-      break;
-    case ENGINE_JOB_MESSAGE:
-      g_free (job->data.message);
+      if (job->timed_job.tjob)
+        bse_engine_free_user_job ((EngineUserJob*) job->timed_job.tjob);
       break;
     default: ;
     }

@@ -81,7 +81,11 @@ struct _BseJob
   EngineJobType       job_id;
   BseJob	     *next;
   union {
-    EngineNode	     *node;
+    struct {
+      EngineNode     *node;
+      gboolean        free_with_job;
+      gchar	     *message;
+    } data;
     struct {
       SfiMutex  *lock_mutex;
       SfiCond   *lock_cond;
@@ -123,8 +127,7 @@ struct _BseJob
       EngineNode     *node;
       EngineProbeJob *pjob;
     } probe_job;
-    gchar	     *message;
-  } data;
+  };
 };
 struct _BseTrans
 {
