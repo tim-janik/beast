@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-15 16:07+0100\n"
+"POT-Creation-Date: 2003-12-15 16:21+0100\n"
 "PO-Revision-Date: 2003-11-09 18:32+0200\n"
 "Last-Translator: Kostas Papadimas <pkst@gnome.org>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
@@ -1481,6 +1481,18 @@ msgstr "Εισα_γωγή"
 msgid "_Reload"
 msgstr ""
 
+#: beast-gtk/gxk/gxklistwrapper.c:101
+msgid "Number of Columns"
+msgstr ""
+
+#: beast-gtk/gxk/gxklistwrapper.c:105
+msgid "Array of column types"
+msgstr ""
+
+#: beast-gtk/gxk/gxklistwrapper.c:109
+msgid "Number of Rows"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-entry.c:56
 msgid "Text Entry"
 msgstr ""
@@ -1747,11 +1759,11 @@ msgstr "Ώρα τελευταίας τροποποίησης"
 msgid "Filter"
 msgstr "Φίλτρο"
 
-#: bse/bsebiquadfilter.c:132
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:124
 msgid "Filter Type"
 msgstr "Τύπος φίλτρου"
 
-#: bse/bsebiquadfilter.c:132
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:118
 msgid "The filter design type"
 msgstr "Ο τύπος σχεδίασης του φίλτρου"
 
@@ -1759,11 +1771,13 @@ msgstr "Ο τύπος σχεδίασης του φίλτρου"
 msgid "Center Frequency"
 msgstr "Συχνότητα κέντρου"
 
-#: bse/bsebiquadfilter.c:138
+#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:140
+#: plugins/bseiirfilter.c:150
 msgid "Cutoff [Hz]"
 msgstr "Cutoff [Hz]"
 
-#: bse/bsebiquadfilter.c:146
+#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:145
+#: plugins/bseiirfilter.c:155
 msgid "Note"
 msgstr "Νότα"
 
@@ -2050,6 +2064,58 @@ msgstr "'Εξοδος"
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
 msgstr ""
+
+#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
+#, fuzzy
+msgid "Filter Choice"
+msgstr "Τύπος φίλτρου"
+
+#: plugins/bseiirfilter.c:118
+msgid "Filter Algorithm"
+msgstr ""
+
+#: plugins/bseiirfilter.c:124
+msgid "The type of filter to use"
+msgstr ""
+
+#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
+#, fuzzy
+msgid "Filter Specification"
+msgstr "Επιλογή αρχείου"
+
+#: plugins/bseiirfilter.c:130
+msgid "Order"
+msgstr ""
+
+#: plugins/bseiirfilter.c:130
+msgid "Order of Filter"
+msgstr ""
+
+#: plugins/bseiirfilter.c:135
+msgid "Epsilon"
+msgstr ""
+
+#: plugins/bseiirfilter.c:135
+msgid "Passband falloff at cutoff frequency"
+msgstr ""
+
+#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
+msgid "Cutoff Frequency (All Filters)"
+msgstr ""
+
+#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
+msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+msgstr ""
+
+#: plugins/bseiirfilter.c:159
+#, fuzzy
+msgid "Unfiltered Input"
+msgstr "Διαγραφή εισόδων"
+
+#: plugins/bseiirfilter.c:161
+#, fuzzy
+msgid "Filtered Output"
+msgstr "Διαγραφή εξόδων"
 
 #: plugins/davchorus.idl:28
 msgid "/Enhance/Chorus"

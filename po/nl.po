@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-15 16:07+0100\n"
+"POT-Creation-Date: 2003-12-15 16:21+0100\n"
 "PO-Revision-Date: 2003-12-05 13:32+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
@@ -1417,6 +1417,18 @@ msgstr "_Index"
 msgid "_Reload"
 msgstr "_Herladen"
 
+#: beast-gtk/gxk/gxklistwrapper.c:101
+msgid "Number of Columns"
+msgstr ""
+
+#: beast-gtk/gxk/gxklistwrapper.c:105
+msgid "Array of column types"
+msgstr ""
+
+#: beast-gtk/gxk/gxklistwrapper.c:109
+msgid "Number of Rows"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-entry.c:56
 msgid "Text Entry"
 msgstr ""
@@ -1690,11 +1702,11 @@ msgstr "Uitlijning"
 msgid "Filter"
 msgstr "Filter"
 
-#: bse/bsebiquadfilter.c:132
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:124
 msgid "Filter Type"
 msgstr "Filtertype"
 
-#: bse/bsebiquadfilter.c:132
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:118
 msgid "The filter design type"
 msgstr "Het filter ontwerptype"
 
@@ -1702,11 +1714,13 @@ msgstr "Het filter ontwerptype"
 msgid "Center Frequency"
 msgstr "Middenfrequentie"
 
-#: bse/bsebiquadfilter.c:138
+#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:140
+#: plugins/bseiirfilter.c:150
 msgid "Cutoff [Hz]"
 msgstr "Afkapfreq [Hz]"
 
-#: bse/bsebiquadfilter.c:146
+#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:145
+#: plugins/bseiirfilter.c:155
 msgid "Note"
 msgstr "Noot"
 
@@ -1995,6 +2009,59 @@ msgstr "Uitvoer"
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
 msgstr ""
+
+#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
+#, fuzzy
+msgid "Filter Choice"
+msgstr "Filtertype"
+
+#: plugins/bseiirfilter.c:118
+msgid "Filter Algorithm"
+msgstr ""
+
+#: plugins/bseiirfilter.c:124
+#, fuzzy
+msgid "The type of filter to use"
+msgstr "De tekst van het label"
+
+#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
+#, fuzzy
+msgid "Filter Specification"
+msgstr "Bestandsselectie"
+
+#: plugins/bseiirfilter.c:130
+msgid "Order"
+msgstr ""
+
+#: plugins/bseiirfilter.c:130
+msgid "Order of Filter"
+msgstr ""
+
+#: plugins/bseiirfilter.c:135
+msgid "Epsilon"
+msgstr ""
+
+#: plugins/bseiirfilter.c:135
+msgid "Passband falloff at cutoff frequency"
+msgstr ""
+
+#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
+msgid "Cutoff Frequency (All Filters)"
+msgstr ""
+
+#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
+msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+msgstr ""
+
+#: plugins/bseiirfilter.c:159
+#, fuzzy
+msgid "Unfiltered Input"
+msgstr "Invoerkanalen verwijderen"
+
+#: plugins/bseiirfilter.c:161
+#, fuzzy
+msgid "Filtered Output"
+msgstr "Uitvoerkanalen verwijderen"
 
 # verhelderen
 #: plugins/davchorus.idl:28

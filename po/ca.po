@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-15 16:07+0100\n"
+"POT-Creation-Date: 2003-12-15 16:21+0100\n"
 "PO-Revision-Date: 2003-11-18 14:21+0100\n"
 "Last-Translator: Xavier Conde Rueda <xaviconde@eresmas.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -1427,6 +1427,18 @@ msgstr "_Insereix"
 msgid "_Reload"
 msgstr "To_rna a fer"
 
+#: beast-gtk/gxk/gxklistwrapper.c:101
+msgid "Number of Columns"
+msgstr ""
+
+#: beast-gtk/gxk/gxklistwrapper.c:105
+msgid "Array of column types"
+msgstr ""
+
+#: beast-gtk/gxk/gxklistwrapper.c:109
+msgid "Number of Rows"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-entry.c:56
 msgid "Text Entry"
 msgstr ""
@@ -1693,11 +1705,11 @@ msgstr "Darrera hora de modificació"
 msgid "Filter"
 msgstr "Filtre"
 
-#: bse/bsebiquadfilter.c:132
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:124
 msgid "Filter Type"
 msgstr "Tipus de filtre"
 
-#: bse/bsebiquadfilter.c:132
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:118
 msgid "The filter design type"
 msgstr "El tipus de disseny de filtre"
 
@@ -1705,11 +1717,13 @@ msgstr "El tipus de disseny de filtre"
 msgid "Center Frequency"
 msgstr "Centra freqüència"
 
-#: bse/bsebiquadfilter.c:138
+#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:140
+#: plugins/bseiirfilter.c:150
 msgid "Cutoff [Hz]"
 msgstr "Tall [Hz]"
 
-#: bse/bsebiquadfilter.c:146
+#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:145
+#: plugins/bseiirfilter.c:155
 msgid "Note"
 msgstr "Nota"
 
@@ -1998,6 +2012,58 @@ msgstr "Sortida"
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
 msgstr ""
+
+#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
+#, fuzzy
+msgid "Filter Choice"
+msgstr "Tipus de filtre"
+
+#: plugins/bseiirfilter.c:118
+msgid "Filter Algorithm"
+msgstr ""
+
+#: plugins/bseiirfilter.c:124
+msgid "The type of filter to use"
+msgstr ""
+
+#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
+#, fuzzy
+msgid "Filter Specification"
+msgstr "Selecció de fitxer"
+
+#: plugins/bseiirfilter.c:130
+msgid "Order"
+msgstr ""
+
+#: plugins/bseiirfilter.c:130
+msgid "Order of Filter"
+msgstr ""
+
+#: plugins/bseiirfilter.c:135
+msgid "Epsilon"
+msgstr ""
+
+#: plugins/bseiirfilter.c:135
+msgid "Passband falloff at cutoff frequency"
+msgstr ""
+
+#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
+msgid "Cutoff Frequency (All Filters)"
+msgstr ""
+
+#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
+msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+msgstr ""
+
+#: plugins/bseiirfilter.c:159
+#, fuzzy
+msgid "Unfiltered Input"
+msgstr "Esborra entrades"
+
+#: plugins/bseiirfilter.c:161
+#, fuzzy
+msgid "Filtered Output"
+msgstr "Esborra sortides"
 
 #: plugins/davchorus.idl:28
 msgid "/Enhance/Chorus"

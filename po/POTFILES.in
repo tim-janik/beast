@@ -35,6 +35,7 @@ beast-gtk/bstwaveeditor.c
 beast-gtk/bstwaveview.c
 beast-gtk/dialogs/gadgets-beast.xml
 beast-gtk/dialogs/gadgets-standard.xml
+beast-gtk/gxk/gxklistwrapper.c
 beast-gtk/gxk/gxkparam-entry.c
 beast-gtk/gxk/gxkparam-label.c
 beast-gtk/gxk/gxkparam-scale.c
@@ -48,5 +49,6 @@ data/beast.desktop.in
 data/bse.keys.in
 plugins/artscompressor.idl
 plugins/bsebalance.idl
+plugins/bseiirfilter.c
 plugins/davchorus.idl
 plugins/evaluator/bseevaluator.idl
