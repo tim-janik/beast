@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-29 11:03+0200\n"
-"PO-Revision-Date: 2004-09-30 04:53+0200\n"
+"POT-Creation-Date: 2004-10-14 18:38+0200\n"
+"PO-Revision-Date: 2004-10-15 01:07+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -398,7 +398,7 @@ msgstr "Toevoegen"
 #: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
 #: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:710 beast-gtk/bstsnetrouter.c:752
+#: beast-gtk/bstsnetrouter.c:701 beast-gtk/bstsnetrouter.c:743
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
 #: beast-gtk/bstwaveview.c:45
 msgid "Delete"
@@ -418,28 +418,28 @@ msgstr "Een nieuwe bus aan de mixer toevoegen"
 msgid "Delete the currently selected bus"
 msgstr "De nu geselecteerde bus verwijderen"
 
-#: beast-gtk/bstcanvaslink.c:177
+#: beast-gtk/bstcanvaslink.c:179
 msgid "Module Link: "
 msgstr "Module-link:"
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:748
+#: beast-gtk/bstcanvaslink.c:235 beast-gtk/bstsnetrouter.c:739
 msgid "Module link"
 msgstr "Module-link"
 
-#: beast-gtk/bstcanvassource.c:463
+#: beast-gtk/bstcanvassource.c:464
 msgid "Module Info"
 msgstr "Module Info"
 
-#: beast-gtk/bstcanvassource.c:963 beast-gtk/bstsnetrouter.c:1085
+#: beast-gtk/bstcanvassource.c:992 beast-gtk/bstsnetrouter.c:1076
 msgid "Input"
 msgstr "Invoer"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1082
+#: beast-gtk/bstcanvassource.c:1001 beast-gtk/bstsnetrouter.c:1073
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Uitvoer"
 
-#: beast-gtk/bstcanvassource.c:976
+#: beast-gtk/bstcanvassource.c:1005
 msgid "(Hint)"
 msgstr "(Hint)"
 
@@ -681,11 +681,11 @@ msgstr "Objectselectie: %s"
 msgid "ID"
 msgstr "ID"
 
-#: beast-gtk/bstitemview.c:208 beast-gtk/bsttrackview.c:583
+#: beast-gtk/bstitemview.c:208 beast-gtk/bsttrackview.c:608
 msgid "Name"
 msgstr "Naam"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:604
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:629
 msgid "Comment"
 msgstr "Opmerking"
 
@@ -784,83 +784,99 @@ msgid "Description"
 msgstr "Beschrijving"
 
 #. overriding Gdk's program name
-#: beast-gtk/bstmain.c:118 data/beast.desktop.in.h:1
+#: beast-gtk/bstmain.c:119 data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:130
+#: beast-gtk/bstmain.c:131
 msgid "BEAST Startup"
 msgstr "BEAST Opstartprocedure"
 
-#: beast-gtk/bstmain.c:137
+#: beast-gtk/bstmain.c:138
 msgid "Startup"
 msgstr "Opstarten"
 
 # betere vertaling?
 #. BEAST initialization
-#: beast-gtk/bstmain.c:141
+#: beast-gtk/bstmain.c:142
 msgid "Initializers"
 msgstr "Initialisators"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:148
+#: beast-gtk/bstmain.c:150
 msgid "RC Files"
 msgstr "RC bestanden"
 
 #. show splash images
-#: beast-gtk/bstmain.c:152
+#: beast-gtk/bstmain.c:154
 msgid "Splash Image"
 msgstr "Intro-afbeelding"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:164
+#: beast-gtk/bstmain.c:166
 msgid "BSE Core"
 msgstr "BSE kern"
 
-#: beast-gtk/bstmain.c:186
+#: beast-gtk/bstmain.c:188
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:205
+#: beast-gtk/bstmain.c:207
 msgid "LADSPA Plugins"
 msgstr "LADSPA plugins"
 
-#: beast-gtk/bstmain.c:233
+#: beast-gtk/bstmain.c:235
 msgid "Scripts"
 msgstr "Scripts"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:251
+#: beast-gtk/bstmain.c:253
 msgid "Dialogs"
 msgstr "Dialoogvensters"
 
-#: beast-gtk/bstmain.c:258
+#: beast-gtk/bstmain.c:260
 msgid "Loading..."
 msgstr "Bezig met laden..."
 
-#: beast-gtk/bstmain.c:288 beast-gtk/bstmain.c:290
+#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Bezig met laden van \"%s\""
 
-#: beast-gtk/bstmain.c:307
+#: beast-gtk/bstmain.c:309
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Laden van project \"%s\""
 
-#: beast-gtk/bstmain.c:788
+#: beast-gtk/bstmain.c:784
 msgid "BEAST About"
 msgstr "BEAST Info"
 
-#: beast-gtk/bstmain.c:789
+#: beast-gtk/bstmain.c:785
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versie %s"
 
-#: beast-gtk/bstmain.c:790
+#: beast-gtk/bstmain.c:786
 msgid "Contributions made by:"
 msgstr "Met dank aan:"
+
+#: beast-gtk/bstmsgabsorb.c:226
+msgid "Enable or disable message display of a specific message type"
+msgstr "Het tonen van een bepaald soort bericht aan of uitzetten"
+
+#: beast-gtk/bstmsgabsorb.c:228
+msgid "Message Type"
+msgstr "Berichtsoort"
+
+#: beast-gtk/bstmsgabsorb.c:231
+msgid "Version"
+msgstr "Versie"
+
+#: beast-gtk/bstmsgabsorb.c:232
+msgid "The last program version that displayed this message type"
+msgstr "De laatste programmaversie die dit soort berichten toonde"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
 #: beast-gtk/bstparam-automation.c:97
@@ -1562,15 +1578,19 @@ msgstr "Noot afspelen"
 msgid "Playback"
 msgstr "Afspelen"
 
-#: beast-gtk/bstpreferences.c:76
+#: beast-gtk/bstpreferences.c:77
 msgid "Piano Keys"
 msgstr "Pianotoetsen"
 
-#: beast-gtk/bstpreferences.c:83
+#: beast-gtk/bstpreferences.c:84
 msgid "Generic Keys"
 msgstr "Generieke toetsen"
 
 #: beast-gtk/bstpreferences.c:88
+msgid "Messages"
+msgstr "Berichten"
+
+#: beast-gtk/bstpreferences.c:93
 msgid "Skin"
 msgstr "Skin"
 
@@ -1579,7 +1599,8 @@ msgstr "Skin"
 msgid "Executing `%s'"
 msgstr "`%s' uitvoeren"
 
-#: beast-gtk/bstprocedure.c:446
+#. | GXK_DIALOG_WINDOW_GROUP,
+#: beast-gtk/bstprocedure.c:447
 msgid "Procedure"
 msgstr "Procedure"
 
@@ -1588,7 +1609,7 @@ msgid "Totals"
 msgstr "Totalen"
 
 # draad?
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:578
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:594
 msgid "Thread Name"
 msgstr "Thread-naam"
 
@@ -2295,7 +2316,7 @@ msgstr "Bewerken"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Bewerken/Verplaatsen/Menu (muisknop 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:924
+#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:915
 msgid "Palette"
 msgstr "Palet"
 
@@ -2303,85 +2324,85 @@ msgstr "Palet"
 msgid "Toggle visibility of the tool palette"
 msgstr "Het werkpalet tonen/verbergen"
 
-#: beast-gtk/bstsnetrouter.c:619
+#: beast-gtk/bstsnetrouter.c:610
 msgid "Input channel in use"
 msgstr "Invoerkanaal in gebruik"
 
-#: beast-gtk/bstsnetrouter.c:646 beast-gtk/bstsnetrouter.c:648
-#: beast-gtk/bstsnetrouter.c:684
+#: beast-gtk/bstsnetrouter.c:637 beast-gtk/bstsnetrouter.c:639
+#: beast-gtk/bstsnetrouter.c:675
 msgid "Create Link"
 msgstr "Koppeling maken"
 
-#: beast-gtk/bstsnetrouter.c:646
+#: beast-gtk/bstsnetrouter.c:637
 msgid "Select output module"
 msgstr "Uitvoer kiezen"
 
-#: beast-gtk/bstsnetrouter.c:648
+#: beast-gtk/bstsnetrouter.c:639
 msgid "Select input module"
 msgstr "Invoer kiezen"
 
-#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsnetrouter.c:695 beast-gtk/bstsupershell.c:234
 #: beast-gtk/bstsupershell.c:266 beast-gtk/bstsupershell.c:280
 msgid "Properties"
 msgstr "Eigenschappen"
 
-#: beast-gtk/bstsnetrouter.c:705
+#: beast-gtk/bstsnetrouter.c:696
 msgid "Reset Properties"
 msgstr "Eigenschappen resetten"
 
-#: beast-gtk/bstsnetrouter.c:706
+#: beast-gtk/bstsnetrouter.c:697
 msgid "Delete Inputs"
 msgstr "Invoerkanalen verwijderen"
 
-#: beast-gtk/bstsnetrouter.c:707
+#: beast-gtk/bstsnetrouter.c:698
 msgid "Delete Outputs"
 msgstr "Uitvoerkanalen verwijderen"
 
-#: beast-gtk/bstsnetrouter.c:708 beast-gtk/bstsnetrouter.c:750
+#: beast-gtk/bstsnetrouter.c:699 beast-gtk/bstsnetrouter.c:741
 msgid "Show Info"
 msgstr "Info weergeven"
 
-#: beast-gtk/bstsnetrouter.c:734
+#: beast-gtk/bstsnetrouter.c:725
 msgid "Remove Module"
 msgstr "Module verwijderen"
 
-#: beast-gtk/bstsnetrouter.c:761
+#: beast-gtk/bstsnetrouter.c:752
 msgid "Delete Link"
 msgstr "Koppeling verwijderen"
 
-#: beast-gtk/bstsnetrouter.c:815
+#: beast-gtk/bstsnetrouter.c:806
 msgid "Insert Module"
 msgstr "Module invoegen"
 
-#: beast-gtk/bstsnetrouter.c:1082
+#: beast-gtk/bstsnetrouter.c:1073
 msgid "PCM Output module"
 msgstr "PCM uitvoermodule"
 
-#: beast-gtk/bstsnetrouter.c:1083
+#: beast-gtk/bstsnetrouter.c:1074
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:1083
+#: beast-gtk/bstsnetrouter.c:1074
 msgid "Standard amplifier module"
 msgstr "Standaard versterkingsmodule"
 
-#: beast-gtk/bstsnetrouter.c:1084
+#: beast-gtk/bstsnetrouter.c:1075
 msgid "Snooper"
 msgstr "Snooper"
 
-#: beast-gtk/bstsnetrouter.c:1084
+#: beast-gtk/bstsnetrouter.c:1075
 msgid "Signal debugging module"
 msgstr "Singaal-debug module"
 
-#: beast-gtk/bstsnetrouter.c:1085
+#: beast-gtk/bstsnetrouter.c:1076
 msgid "PCM Input module"
 msgstr "PCM-invoermodule"
 
-#: beast-gtk/bstsnetrouter.c:1133
+#: beast-gtk/bstsnetrouter.c:1124
 msgid "Channel Hints"
 msgstr "Kanaalhints"
 
-#: beast-gtk/bstsnetrouter.c:1133
+#: beast-gtk/bstsnetrouter.c:1124
 msgid "Toggle channel name hints"
 msgstr "Kanaalnaam hints schakelen"
 
@@ -2581,6 +2602,12 @@ msgstr "Deel verplaatsen"
 msgid "Start Editor"
 msgstr "Editor starten"
 
+#. TRANSLATORS: this is a dialog title and %s is replaced by an object name
+#: beast-gtk/bsttracksynthdialog.c:264
+#, c-format
+msgid "Synthesizer Selection: %s"
+msgstr "Synthesizer selectie: %s"
+
 #: beast-gtk/bsttrackview.c:63
 msgid "Add a new track to this song"
 msgstr "Een nieuwe track toevoegen aan dit nummer"
@@ -2589,7 +2616,16 @@ msgstr "Een nieuwe track toevoegen aan dit nummer"
 msgid "Delete the currently selected track"
 msgstr "Geselecteerde track verwijderen"
 
-#: beast-gtk/bsttrackview.c:586
+# beschikbare geluiden
+#: beast-gtk/bsttrackview.c:301 bse/bsetrack.c:282 bse/bsewaveosc.c:125
+msgid "Available Waves"
+msgstr "Beschikbare waves"
+
+#: beast-gtk/bsttrackview.c:302
+msgid "List of available waves to choose a track instrument from"
+msgstr "Lijst van beschikbare waves voor een spoor-instrument"
+
+#: beast-gtk/bsttrackview.c:611
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr ""
@@ -2597,59 +2633,90 @@ msgstr ""
 "genegeerd door de sequencer."
 
 # bij gelijktijdig afspelen
-#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:941
+#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:427 bse/bsetrack.c:941
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum aantal stemmen voor gelijktijdig afspelen"
 
-#: beast-gtk/bsttrackview.c:592
+#: beast-gtk/bsttrackview.c:617
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr ""
 "Het synthese-netwerk of wave dat als instrument gebruikt zal worden bij dit "
 "spoor"
 
-#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:947
+#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:947
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 "Midikanaal dat aan dit spoor is toebedeeld, 0 gebruikt privé per-spoor kanaal"
 
-#: beast-gtk/bsttrackview.c:598
+#: beast-gtk/bsttrackview.c:623
 msgid "Mixer busses connected to track output"
 msgstr "Mixerbussen verbonden met de spooruitgang"
 
 # uitleg
-#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:729
+#: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:436 bse/bsesong.c:729
 #: bse/bsetrack.c:952
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesenetwerk dat als postprocessor gebruikt zal worden"
 
-#: beast-gtk/bstusermessage.c:91
+#: beast-gtk/bstusermessage.c:95
 msgid "Error"
 msgstr "Fout"
 
-#: beast-gtk/bstusermessage.c:95
+#: beast-gtk/bstusermessage.c:99
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#: beast-gtk/bstusermessage.c:99
-msgid "Notice"
-msgstr "Melding"
-
 #: beast-gtk/bstusermessage.c:103
-msgid "Diagnostic"
-msgstr "Diagnostiek"
+msgid "Info"
+msgstr "Info"
 
-#. shouldn't end up in dialogs
-#: beast-gtk/bstusermessage.c:107
-msgid "Debug"
-msgstr "Debuggen"
-
-#: beast-gtk/bstusermessage.c:111
+#: beast-gtk/bstusermessage.c:108
 msgid "Miscellaneous Message"
 msgstr "Zomaar een bericht"
 
-#: beast-gtk/bstusermessage.c:242 beast-gtk/bstusermessage.c:244
+#: beast-gtk/bstusermessage.c:195
+msgid "Details:"
+msgstr "Details:"
+
+#: beast-gtk/bstusermessage.c:202
+#, c-format
+msgid "Origin:  %s\n"
+msgstr "Oorsprong:  %s\n"
+
+# rekeneenheid
+#: beast-gtk/bstusermessage.c:204
+#, c-format
+msgid "Process: %s\n"
+msgstr "Proces: %s\n"
+
+#: beast-gtk/bstusermessage.c:206
+#, c-format
+msgid "PID:     %u\n"
+msgstr "PID:     %u\n"
+
+#: beast-gtk/bstusermessage.c:230
+msgid ""
+"This setting can be changed in the \"Messages\" section of the preferences "
+"dialog"
+msgstr "Deze instelling kan worden gewijzigd in de sectie \"Berichten\" van het dialogvenster Voorkeuren"
+
+#: beast-gtk/bstusermessage.c:277
+#, c-format
+msgid "Message has been repeated %u time"
+msgstr "Bericht werd %u keer herhaald"
+
+#: beast-gtk/bstusermessage.c:277
+#, c-format
+msgid "Message has been repeated %u times"
+msgstr "Bericht werd %u keer herhaald"
+
+#: beast-gtk/bstusermessage.c:375 beast-gtk/bstusermessage.c:377
 msgid "processing"
 msgstr "verwerken"
+
+#: beast-gtk/bstutils.c:318 beast-gtk/bstutils.c:340 beast-gtk/bstutils.c:343
+msgid "Updating View"
+msgstr "Beeld bijwerken"
 
 #: beast-gtk/bstwaveeditor.c:241
 msgid "Scroll None"
@@ -3164,7 +3231,7 @@ msgstr "Ctrl in2"
 msgid "Second control input"
 msgstr "Tweede controle-ingang"
 
-#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
+#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
 #: bse/bsewaveosc.c:564 plugins/bseadder.c:101 plugins/bseatandistort.c:92
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
 #: plugins/davbassfilter.idl:36 plugins/davchorus.idl:32
@@ -3345,7 +3412,7 @@ msgstr "Centrale frequentie"
 msgid "Cutoff [Hz]"
 msgstr "Cutoff [Hz]"
 
-#: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:147
+#: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:146
 #: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:158
 msgid "Note"
 msgstr "Noot"
@@ -3370,21 +3437,21 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
-#: bse/bsestandardosc.c:153 bse/bsestandardosc.c:159 bse/bsestandardosc.c:165
-#: bse/bsestandardosc.c:171 bse/bsewaveosc.c:534 bse/bsewaveosc.c:540
+#: bse/bsestandardosc.c:152 bse/bsestandardosc.c:158 bse/bsestandardosc.c:164
+#: bse/bsestandardosc.c:170 bse/bsewaveosc.c:534 bse/bsewaveosc.c:540
 #: bse/bsewaveosc.c:546
 msgid "Modulation"
 msgstr "Modulatie"
 
-#: bse/bsebiquadfilter.c:161 bse/bsestandardosc.c:156
+#: bse/bsebiquadfilter.c:161 bse/bsestandardosc.c:155
 msgid "Strength of linear frequency modulation"
 msgstr "Mate van lineaire frequentiemodulatie"
 
-#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:162 bse/bsewaveosc.c:543
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:161 bse/bsewaveosc.c:543
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Exponentiële frequentiemodulatie uitvoeren in plaats van lineaire"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:549
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:167 bse/bsewaveosc.c:549
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 "Aantal octaven dat wordt beïnvloed door de exponentiële frequentiemodulatie"
@@ -3408,7 +3475,7 @@ msgstr "Audio in"
 msgid "Unfiltered Audio Signal"
 msgstr "Ongefilterd audiosignaal"
 
-#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:192 bse/bsewaveosc.c:558
+#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:191 bse/bsewaveosc.c:558
 #: plugins/davorgan.c:132 plugins/davsyndrum.c:116
 #: plugins/davxtalstrings.c:141
 msgid "Freq In"
@@ -3418,11 +3485,11 @@ msgstr "Freq in"
 msgid "Center Frequency Input"
 msgstr "Centrale frequentie ingang"
 
-#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:193
 msgid "Freq Mod In"
 msgstr "Freq mod in"
 
-#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:193
 msgid "Frequency Modulation Input"
 msgstr "Frequentiemodulatie ingang"
 
@@ -3599,7 +3666,7 @@ msgid "Value [float]"
 msgstr "Waarde [float]"
 
 #: bse/bseconstant.c:117 bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:109
-#: bse/bsestandardosc.c:143
+#: bse/bsestandardosc.c:142
 msgid "Frequency"
 msgstr "Frequentie"
 
@@ -4312,28 +4379,28 @@ msgstr "Controle 127 Polyfonische Modus aan ITrigger"
 msgid "Continuous MIDI Control #1 - Bank Select"
 msgstr "Continue Midi controle #1 - Bank select"
 
-#: bse/bsecore.idl:579
+#: bse/bsecore.idl:595
 msgid "State"
 msgstr "Status"
 
-#: bse/bsecore.idl:579
+#: bse/bsecore.idl:595
 msgid "The execution state of the thread"
 msgstr "De uitvoeringsstatus van de 'thread'"
 
 # draad?
-#: bse/bsecore.idl:580
+#: bse/bsecore.idl:596
 msgid "Thread ID"
 msgstr "Thread-ID"
 
-#: bse/bsecore.idl:580
+#: bse/bsecore.idl:596
 msgid "A unique number identifying this thread"
 msgstr "Een uniek nummer ter identificatie van deze thread"
 
-#: bse/bsecore.idl:582
+#: bse/bsecore.idl:598
 msgid "Priority"
 msgstr "Prioriteit"
 
-#: bse/bsecore.idl:582
+#: bse/bsecore.idl:598
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -4342,70 +4409,70 @@ msgstr ""
 "lage prioriteit, dus eentje die 'aardig' is voor anderen"
 
 # rekeneenheid
-#: bse/bsecore.idl:585
+#: bse/bsecore.idl:601
 msgid "Processor"
 msgstr "Processor"
 
-#: bse/bsecore.idl:585
+#: bse/bsecore.idl:601
 msgid "The processor that this thread is currently being executed on"
 msgstr "De processor waarop deze 'thread' momenteel wordt uitgevoerd"
 
-#: bse/bsecore.idl:587
+#: bse/bsecore.idl:603
 msgid "User Time"
 msgstr "Gebruikerstijd"
 
-#: bse/bsecore.idl:587
+#: bse/bsecore.idl:603
 msgid "The CPU time spent executing instructions of this thread"
 msgstr ""
 "De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van deze "
 "'thread'"
 
-#: bse/bsecore.idl:589
+#: bse/bsecore.idl:605
 msgid "System Time"
 msgstr "Systeemtijd"
 
-#: bse/bsecore.idl:589
+#: bse/bsecore.idl:605
 msgid "The CPU time spent in the system for this thread"
 msgstr "De CPU-tijd die wordt gebruikt in het systeem voor deze 'thread'"
 
-#: bse/bsecore.idl:591
+#: bse/bsecore.idl:607
 msgid "Child User Time"
 msgstr "Dochter gebruikerstijd"
 
-#: bse/bsecore.idl:591
+#: bse/bsecore.idl:607
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr ""
 "De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van de "
 "dochters van deze 'thread'"
 
-#: bse/bsecore.idl:593
+#: bse/bsecore.idl:609
 msgid "Child System Time"
 msgstr "Dochter systeemtijd"
 
-#: bse/bsecore.idl:593
+#: bse/bsecore.idl:609
 msgid "The CPU time spent in the system for children of this thread"
 msgstr ""
 "De CPU-tijd die wordt gebruikt in het systeem voor dochters van deze 'thread'"
 
-#: bse/bsecore.idl:608
+#: bse/bsecore.idl:624
 msgid "Search Paths"
 msgstr "Zoekpaden"
 
-#: bse/bsecore.idl:609
+#: bse/bsecore.idl:625
 msgid "Sample Path"
 msgstr "Samplespad"
 
-#: bse/bsecore.idl:610
+#: bse/bsecore.idl:626
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr "Zoekpad voor samples. Pad bestaat uit mappen gescheiden door \"%s\"."
 
-#: bse/bsecore.idl:613
+#: bse/bsecore.idl:629
 msgid "Effect Path"
 msgstr "Effectenpad"
 
-#: bse/bsecore.idl:614
+#: bse/bsecore.idl:630
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
@@ -4413,11 +4480,11 @@ msgid ""
 msgstr ""
 "Zoekpad voor BSE-effecten. Pad bestaat uit mappen gescheiden door \"%s\"."
 
-#: bse/bsecore.idl:617
+#: bse/bsecore.idl:633
 msgid "Instrument Path"
 msgstr "Instrumentenpad"
 
-#: bse/bsecore.idl:618
+#: bse/bsecore.idl:634
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
@@ -4425,11 +4492,11 @@ msgid ""
 msgstr ""
 "Zoekpad voor BSE-instrumenten. Pad bestaat uit mappen gescheiden door \"%s\"."
 
-#: bse/bsecore.idl:621
+#: bse/bsecore.idl:637
 msgid "Script Path"
 msgstr "Scriptspad"
 
-#: bse/bsecore.idl:622
+#: bse/bsecore.idl:638
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
@@ -4438,11 +4505,11 @@ msgstr ""
 "Zoekpad voor BSE-scheme-scripts. Pad bestaat uit mappen gescheiden door \"%s"
 "\"."
 
-#: bse/bsecore.idl:625
+#: bse/bsecore.idl:641
 msgid "Plugin Path"
 msgstr "Pluginspad"
 
-#: bse/bsecore.idl:626
+#: bse/bsecore.idl:642
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE plugins. "
@@ -4453,11 +4520,11 @@ msgstr ""
 "pad wordt doorzocht in aanvulling op de standaard BSE-plugin locatie op dit "
 "systeem."
 
-#: bse/bsecore.idl:630
+#: bse/bsecore.idl:646
 msgid "LADSPA Path"
 msgstr "LADSPA-pad"
 
-#: bse/bsecore.idl:631
+#: bse/bsecore.idl:647
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find LADSPA "
@@ -4471,15 +4538,15 @@ msgstr ""
 "systeem. LADSPA is de Linux Audio Developer's Simple Plugin API. Meer "
 "informatie over LADSPA-plugins vindt u op http://www.ladspa.org/"
 
-#: bse/bsecore.idl:637
+#: bse/bsecore.idl:653
 msgid "Synthesis Settings"
 msgstr "Synthese-instellingen"
 
-#: bse/bsecore.idl:638
+#: bse/bsecore.idl:654
 msgid "Latency [ms]"
 msgstr "Vertraging [ms]"
 
-#: bse/bsecore.idl:639
+#: bse/bsecore.idl:655
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -4487,21 +4554,21 @@ msgstr ""
 "Procestijd tussen de invoer en uitvoer van een enkele sample. Kleinere "
 "waarden geven een hogere CPU-belasting"
 
-#: bse/bsecore.idl:641
+#: bse/bsecore.idl:657
 msgid "Synth Mixing Frequency"
 msgstr "Mixfrequentie synthese"
 
-#: bse/bsecore.idl:642
+#: bse/bsecore.idl:658
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 "De mixfrequentie voor de synthese, veelgebruikte waarden zijn: 22050, 44100, "
 "48000"
 
-#: bse/bsecore.idl:644
+#: bse/bsecore.idl:660
 msgid "Synth Control Frequency"
 msgstr "Controlefrequentie synthese"
 
-#: bse/bsecore.idl:645
+#: bse/bsecore.idl:661
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -4510,39 +4577,39 @@ msgstr ""
 "kleiner zijn dan de Mixfrequentie voor synthese zijn om de processor niet te "
 "zwaar te belasten"
 
-#: bse/bsecore.idl:649
+#: bse/bsecore.idl:665
 msgid "MIDI"
 msgstr "Midi"
 
-#: bse/bsecore.idl:650
+#: bse/bsecore.idl:666
 msgid "Invert Sustain Pedal"
 msgstr "Inverse sustain-pedaal"
 
-#: bse/bsecore.idl:651
+#: bse/bsecore.idl:667
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 "De status van het sustainpedaal (demper) omkeren zodat de betekenis van aan/"
 "uit wordt omgedraaid"
 
-#: bse/bsecore.idl:654
+#: bse/bsecore.idl:670
 msgid "Stepping Rates"
 msgstr "Stapsnelheid"
 
-#: bse/bsecore.idl:655
+#: bse/bsecore.idl:671
 msgid "Volume [dB] Steps"
 msgstr "Volume-stappen [dB]"
 
-#: bse/bsecore.idl:655
+#: bse/bsecore.idl:671
 msgid "Step width for volume in decibell"
 msgstr "Stapgrootte voor geluidsterkte in decibell"
 
-#: bse/bsecore.idl:657
+#: bse/bsecore.idl:673
 msgid "BPM Steps"
 msgstr "BPM-stappen"
 
 # slagen per minuut
-#: bse/bsecore.idl:657
+#: bse/bsecore.idl:673
 msgid "Step width for beats per minute"
 msgstr "Stapgrootte voro beats per minuut"
 
@@ -4781,17 +4848,21 @@ msgid "/Input & Output/Instrument Output"
 msgstr "/Invoer & uitvoer/Instrument uitvoer"
 
 # beschikbare geluiden
-#: bse/bsemain.c:268
+#: bse/bsemain.c:271
 msgid ""
 "\n"
 "Available PCM drivers:\n"
-msgstr "\nBeschikbare PCM stuurprogramma's:\n"
+msgstr ""
+"\n"
+"Beschikbare PCM stuurprogramma's:\n"
 
-#: bse/bsemain.c:270
+#: bse/bsemain.c:273
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
-msgstr "\nBeschikbare Midi stuurprogramma's:\n"
+msgstr ""
+"\n"
+"Beschikbare Midi stuurprogramma's:\n"
 
 #: bse/bsemidicontroller.c:86
 msgid "/Input & Output/MIDI Control Input"
@@ -4840,7 +4911,7 @@ msgstr ""
 "Midi-apparaten."
 
 #. TRANSLATORS: keep this text to 70 chars in width
-#: bse/bsemididevice-oss.c:266
+#: bse/bsemididevice-oss.c:270
 msgid ""
 "Open Sound System MIDI driver:\n"
 "  DEVICE - MIDI device file name.\n"
@@ -4924,7 +4995,7 @@ msgstr "Master [%]"
 msgid "Playback Settings"
 msgstr "Afspeelinstellingen"
 
-#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
+#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:106
 msgid "Freq Out"
 msgstr "Freq uit"
 
@@ -5035,40 +5106,46 @@ msgstr "WAVE bestand"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Naam het WAVE-bestand dat gebruikt wordt voor opname van BSE geluid"
 
-# kort houden.
-# (niet: bij problemen met het selecteren van een PCM-apparaat)
-#: bse/bseserver.c:472
-msgid "Advice about PCM device selections problems"
-msgstr "Adviseren bij problemen met selecteren PCM-apparaat"
+#: bse/bseserver.c:439
+msgid "Show messages about audio recording problems"
+msgstr "Berichten tonen over problemen bij opname van geluid"
 
-#: bse/bseserver.c:473
-msgid "Alert me about PCM device selections problems"
-msgstr "Waarschuw mij bij problemen bij het selecteren van PCM-apparaten"
+#: bse/bseserver.c:440
+msgid ""
+"An audio input module is in use, but the audio device has not been opened in "
+"recording mode. A quiet audio signal is used as input instead of a recorded "
+"signal, so playback operation may produce results not actually intended "
+"(such as reducing the output signal to pure silence)."
+msgstr "Een invoermodule voor geluid is in gebruik, maar het audioapparaat is niet in opnamemodus geopend. Een stil geluidsignaal wordt gebruikt in plaats van een opgenomen signaal dus bij het afspelen kunnen onverwachte resultaten worden verwacht zoals het reduceren van het uitgangssignaal naar volledige stilte."
+
+#: bse/bseserver.c:486
+msgid "Show messages about PCM device selections problems"
+msgstr "Waarschuwen bij problemen bij het selecteren van PCM-apparaten"
 
 # misschien beter in enkelvoud:
 # openen Midi-apparaat mislukt
 # opgeven/niet meer proberen
-#: bse/bseserver.c:474
+#: bse/bseserver.c:487
 #, c-format
 msgid "Failed to open PCM devices, giving up: %s"
 msgstr "Openen van PCM-apparaten mislukt, opgeven: %s"
 
-#: bse/bseserver.c:493
-msgid "Advice about MIDI device selections problems"
-msgstr "Adviseren bij problemen met selecteren Midi-apparaat"
-
-#: bse/bseserver.c:494
-msgid "Alert me about MIDI device selections problems"
-msgstr "Waarschuw mij bij problemen bij het selecteren van Midi-apparaten"
+#: bse/bseserver.c:506
+msgid "Show messages about MIDI device selections problems"
+msgstr "Waarschuwen bij problemen bij het selecteren van Midi-apparaten"
 
 # misschien beter in enkelvoud:
 # openen Midi-apparaat mislukt
-#: bse/bseserver.c:495
+#: bse/bseserver.c:507
 #, c-format
-msgid "Failed to open MIDI devices (reverting to null driver): %s"
-msgstr "Openen Midi-apparaten mislukt (teruggaan naar null-stuurprogramma): %s"
+msgid "Failed to open MIDI devices (reverting to null device): %s"
+msgstr "Openen Midi-apparaten mislukt (terugvallen naar null-stuurprogramma): %s"
 
-#: bse/bseserver.c:547
+#: bse/bseserver.c:558
+msgid "Show recording file errors"
+msgstr "Opnamebestand fouten tonen"
+
+#: bse/bseserver.c:559
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Openen uitvoerbestand \"%s\" mislukt: %s"
@@ -5128,19 +5205,19 @@ msgstr "Beats per minuut"
 msgid "Looping"
 msgstr "Loopen"
 
-#: bse/bsesong.proc:37
+#: bse/bsesong.proc:35
 msgid "Create a new mixer bus for a Song."
 msgstr "Een nieuwe mixerbus voor een nummer aanmaken."
 
-#: bse/bsesong.proc:74
+#: bse/bsesong.proc:72
 msgid "Delete a mixer bus from a Song."
 msgstr "Een mixerbus voor van een nummer verwijderen."
 
-#: bse/bsesong.proc:127
+#: bse/bsesong.proc:125
 msgid "Retrieve master output bus of a song."
 msgstr "Master-uitgangsbus verkrijgen van een nummer."
 
-#: bse/bsesong.proc:154
+#: bse/bsesong.proc:152
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr ""
 "Controleren dat elke partij in een nummer in tenminste één track wordt "
@@ -5148,44 +5225,44 @@ msgstr ""
 
 # engels spelfout:
 # Connect all unconnected track of a song
-#: bse/bsesong.proc:175
+#: bse/bsesong.proc:173
 msgid "Connect all unconnected track of a song to the master output bus."
 msgstr "Alle losse sporen van een nummer verbinden met de uitgansbus."
 
 # partij ipv gedeelte
-#: bse/bsesong.proc:215
+#: bse/bsesong.proc:213
 msgid "Create a new Part in a Song."
 msgstr "Nieuwe partij in een nummer aanmaken."
 
-#: bse/bsesong.proc:246
+#: bse/bsesong.proc:244
 msgid "Delete a Part from a Song."
 msgstr "Een partij uit een nummer verwijderen."
 
-#: bse/bsesong.proc:284
+#: bse/bsesong.proc:282
 msgid "Create a new Track for a Song."
 msgstr "Een nieuwe track toevoegen voor een nummer."
 
-#: bse/bsesong.proc:320
+#: bse/bsesong.proc:318
 msgid "Delete a Track from a Song."
 msgstr "Een track uit een nummer verwijderen."
 
-#: bse/bsesong.proc:359
+#: bse/bsesong.proc:357
 msgid "Find a track suitable for playing notes of a given part."
 msgstr ""
 "Een track zoeken die geschikt is om de noten voor een gegeven deel te spelen."
 
 # betere vertaling?
-#: bse/bsesong.proc:402
+#: bse/bsesong.proc:400
 msgid "Synthesize a note on a song of an active project."
 msgstr "Een noot in een nummer van een actief project synthetiseren."
 
 # betere vertaling.
 # Wat betekent het precies?
-#: bse/bsesong.proc:452
+#: bse/bsesong.proc:450
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Timing-informatie verkrijgen voor een nummer op een specifieke tick."
 
-#: bse/bsestandardosc.c:106
+#: bse/bsestandardosc.c:105
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
@@ -5193,64 +5270,64 @@ msgstr ""
 "StandardOsc is de basis-oscillator van BSE. Het ondersteunt verschillende "
 "typen golfvormen en modulatie-ingangen."
 
-#: bse/bsestandardosc.c:109
+#: bse/bsestandardosc.c:108
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Geluidsbronnen/Standaard oscillator"
 
-#: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
+#: bse/bsestandardosc.c:129 bse/bsestandardosc.c:135
 msgid "Wave Form"
 msgstr "Golfvorm"
 
-#: bse/bsestandardosc.c:132 bse/bsetrack.c:936 bse/bsewaveosc.c:530
+#: bse/bsestandardosc.c:131 bse/bsetrack.c:936 bse/bsewaveosc.c:530
 #: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr "Wave"
 
-#: bse/bsestandardosc.c:132
+#: bse/bsestandardosc.c:131
 msgid "Oscillator wave form"
 msgstr "Oscillator golfvorm"
 
-#: bse/bsestandardosc.c:138
+#: bse/bsestandardosc.c:137
 msgid "Phase"
 msgstr "Fase"
 
-#: bse/bsestandardosc.c:141 bse/bsestandardosc.c:145 bse/bsestandardosc.c:148
+#: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:147
 msgid "Base Frequency"
 msgstr "Basisfrequentie"
 
-#: bse/bsestandardosc.c:150
+#: bse/bsestandardosc.c:149
 msgid "Fine Tune"
 msgstr "Fijnstelling"
 
-#: bse/bsestandardosc.c:155 bse/bsewaveosc.c:536
+#: bse/bsestandardosc.c:154 bse/bsewaveosc.c:536
 msgid "Input Modulation [%]"
 msgstr "Invoermodulatie [%]"
 
-#: bse/bsestandardosc.c:161 bse/bsewaveosc.c:542
+#: bse/bsestandardosc.c:160 bse/bsewaveosc.c:542
 msgid "Exponential FM"
 msgstr "Exponentiële FM"
 
-#: bse/bsestandardosc.c:167 bse/bsewaveosc.c:548
+#: bse/bsestandardosc.c:166 bse/bsewaveosc.c:548
 msgid "Octaves"
 msgstr "Octaven"
 
-#: bse/bsestandardosc.c:173
+#: bse/bsestandardosc.c:172
 msgid "Self Modulation [%]"
 msgstr "Zelf-modulatie [%]"
 
-#: bse/bsestandardosc.c:174
+#: bse/bsestandardosc.c:173
 msgid "Strength of self modulation"
 msgstr "Mate van zelf-modulatie"
 
-#: bse/bsestandardosc.c:177 bse/bsestandardosc.c:184
+#: bse/bsestandardosc.c:176 bse/bsestandardosc.c:183
 msgid "Pulse Modulation"
 msgstr "Puls-modulatie"
 
-#: bse/bsestandardosc.c:179
+#: bse/bsestandardosc.c:178
 msgid "Pulse Width"
 msgstr "Pulsbreedte"
 
-#: bse/bsestandardosc.c:180
+#: bse/bsestandardosc.c:179
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
@@ -5258,11 +5335,11 @@ msgstr ""
 "Hoeveelheid van de positieve component van de puls-golfvorm (Puls moet zijn "
 "geselecteerd als golfvorm om effect te hebben)"
 
-#: bse/bsestandardosc.c:186
+#: bse/bsestandardosc.c:185
 msgid "Pulse Modulation [%]"
 msgstr "Puls-modulatie [%]"
 
-#: bse/bsestandardosc.c:187
+#: bse/bsestandardosc.c:186
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
@@ -5270,35 +5347,35 @@ msgstr ""
 "Sterkte van de pulsbreedte modulatie-ingang (Puls moet zijn geselecteerd als "
 "golfvorm om effect te hebben)"
 
-#: bse/bsestandardosc.c:192
+#: bse/bsestandardosc.c:191
 msgid "Oscillating Frequency Input"
 msgstr "Oscillerende frequentie-ingang"
 
-#: bse/bsestandardosc.c:196
+#: bse/bsestandardosc.c:195
 msgid "PWM In"
 msgstr "PWM In"
 
-#: bse/bsestandardosc.c:196
+#: bse/bsestandardosc.c:195
 msgid "Pulse Width Modulation Input"
 msgstr "Pulsbreedte modulatie-ingang"
 
-#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:560
+#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:560
 msgid "Sync In"
 msgstr "Sync In"
 
-#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:560
+#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:560
 msgid "Syncronization Input"
 msgstr "Synchronisatie-ingang"
 
-#: bse/bsestandardosc.c:200
+#: bse/bsestandardosc.c:199
 msgid "Oscillated Output"
 msgstr "Oscillerende uitgang"
 
-#: bse/bsestandardosc.c:202
+#: bse/bsestandardosc.c:201
 msgid "Sync Out"
 msgstr "Sync uit"
 
-#: bse/bsestandardosc.c:202
+#: bse/bsestandardosc.c:201
 msgid "Syncronization Output"
 msgstr "Synchronisatie-uitgang"
 
@@ -5395,11 +5472,6 @@ msgstr "Aanmaaktijd"
 #: bse/bsesuper.c:191
 msgid "Last modification time"
 msgstr "Laatste modificatietijd"
-
-# beschikbare geluiden
-#: bse/bsetrack.c:282 bse/bsewaveosc.c:125
-msgid "Available Waves"
-msgstr "Beschikbare waves"
 
 #: bse/bsetrack.c:282
 msgid "List of available waves to choose as track instrument"
@@ -5500,13 +5572,46 @@ msgstr "BSE Synthesis-bestand"
 msgid "Audio"
 msgstr "Audio"
 
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:537
+#: drivers/bse-alsa/bsemididevice-alsa.c:309
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:554
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:KAART,APP,SUBAPP"
 
 # Follow the instructions to read the message.
 #. TRANSLATORS: keep this text to 70 chars in width
-#: drivers/bse-alsa/bsepcmdevice-alsa.c:539
+#: drivers/bse-alsa/bsemididevice-alsa.c:311
+#, c-format
+msgid ""
+"Advanced Linux Sound Architecture MIDI driver, using\n"
+"ALSA %s.\n"
+"The device specification follows the ALSA device naming\n"
+"conventions, a detailed description of which is available\n"
+"at the project's website:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/midi.html\n"
+"Various ALSA plugins can be used here, 'hw' allows direct\n"
+"adressing of hardware channels by card, device and subdevice.\n"
+"  PLUGIN - the ALSA plugin, 'default' is usually good enough\n"
+"  CARD   - the card number for plugins like 'hw'\n"
+"  DEV    - the device number for plugins like 'hw'\n"
+"  SUBDEV - the subdevice number for plugins like 'hw'\n"
+msgstr ""
+"Advanced Linux Sound Architecture PCM stuurprogramma,\n"
+"gebruik ALSA %s.\n"
+"De apparaatspecificatie volgt de naamgevingconventie voor\n"
+"ALSA apparaten. Een gedetailleerde beschrijving hiervan is\n"
+"beschikbaar op de website van het project:\n"
+"    http://alsa-project.org/alsa-doc/alsa-lib/midi.html\n"
+"Verschillende ALSA plugins kunnen hier worden gebruikt; 'hw' geeft\n"
+"directe toegang tot hardware-kanalen via kaart, apparaat en sub-\n"
+"apparaat.\n"
+"  PLUGIN - de ALSA plugin, 'default' is gewoonlijk goed genoeg\n"
+"  KAART  - het kaartnummer voor plugins als 'hw'\n"
+"  APP    - het apparaatnummer voor plugins als 'hw'\n"
+"  SUBAPP - het subapparaatnummer voor plugins als 'hw'\n"
+
+# Follow the instructions to read the message.
+#. TRANSLATORS: keep this text to 70 chars in width
+#: drivers/bse-alsa/bsepcmdevice-alsa.c:556
 #, c-format
 msgid ""
 "Advanced Linux Sound Architecture PCM driver, using\n"
@@ -5901,15 +6006,15 @@ msgstr "Ruis uit"
 msgid "Noise Output"
 msgstr "Ruis uitgang"
 
-#: plugins/bsesequencer.c:107
+#: plugins/bsesequencer.c:106
 msgid "Frequency Signal"
 msgstr "Frequentie signaal"
 
-#: plugins/bsesequencer.c:109
+#: plugins/bsesequencer.c:108
 msgid "Note Sync"
 msgstr "Noot sync"
 
-#: plugins/bsesequencer.c:109
+#: plugins/bsesequencer.c:108
 msgid "Note Sync Signal"
 msgstr "Note sync signaal"
 
@@ -6150,6 +6255,23 @@ msgstr "Linker uitgang"
 msgid "Right Output"
 msgstr "Rechter uitgang"
 
+#~ msgid "Notice"
+#~ msgstr "Melding"
+
+#~ msgid "Diagnostic"
+#~ msgstr "Diagnostiek"
+
+#~ msgid "Debug"
+#~ msgstr "Debuggen"
+
+# kort houden.
+# (niet: bij problemen met het selecteren van een PCM-apparaat)
+#~ msgid "Advice about PCM device selections problems"
+#~ msgstr "Adviseren bij problemen met selecteren PCM-apparaat"
+
+#~ msgid "Advice about MIDI device selections problems"
+#~ msgstr "Adviseren bij problemen met selecteren Midi-apparaat"
+
 #~ msgid "Device capabilities not sufficient"
 #~ msgstr "Mogelijkheden van het apparaat onvoldoende"
 
@@ -6219,9 +6341,6 @@ msgstr "Rechter uitgang"
 
 #~ msgid "Quantize to full note boundaries"
 #~ msgstr "Quantiseren op hele noten"
-
-#~ msgid "Question"
-#~ msgstr "Vraag"
 
 # taalfout in engels: spatie tussen modulation en instead ontbreekt
 #~ msgid "Perform exponential frequency modulationinstead of linear"
