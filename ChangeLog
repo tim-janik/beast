@@ -1,3 +1,14 @@
+Sun Oct 26 17:45:52 2003  Tim Janik  <timj@gtk.org>
+
+	* data/.cvsignore:
+	* data/Makefile.am:
+	* data/beast-logo.png:
+	* data/beast-mime.png:
+	* data/beast-splash.png:
+	* data/beast.png:
+	* data/beast16.png:
+	* data/bse-mime.png: cvs copied these files from beast-gtk/images.
+
 2003-10-26  Metin Amiroff  <metin@karegen.com>
 
 	* configure.in: Added az to ALL_LINGUAS.
