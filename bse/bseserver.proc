@@ -379,7 +379,7 @@ BODY (BseProcedureClass *proc,
   static gboolean registration_done = FALSE;
   /* extract parameter values */
   BseServer *server	       = bse_value_get_object (in_values++);
-  const gchar *path            = BSW_PATH_SCRIPTS;
+  const gchar *path            = BSE_PATH_SCRIPTS;
   ScriptRegistration *scr_list = NULL;
   GSList *free_list, *list;
 

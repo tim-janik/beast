@@ -22,12 +22,12 @@
 #include <unistd.h>
 #include <guile/gh.h>
 #include <bse/bse.h>
-#include "bswscminterp.h"
+#include "bsescminterp.h"
 #include "../PKG_config.h"
 
+#define	PRG_NAME	"bsesh"
 
-
-#define	BOILERPLATE_SCM		BSW_PATH_SCRIPTS ## "/bse-scm-glue.boot"
+#define	BOILERPLATE_SCM		BSE_PATH_SCRIPTS ## "/bse-scm-glue.boot"
 
 
 /* --- prototypes --- */
@@ -63,7 +63,7 @@ main (int   argc,
   const gchar *env_str;
 
   g_thread_init (NULL);
-  g_set_prgname ("BseShell");
+  g_set_prgname (PRG_NAME);
   sfi_init ();
 
   env_str = g_getenv ("BSE_SHELL_SLEEP4GDB");
@@ -77,11 +77,11 @@ main (int   argc,
 
   if (bse_scm_pipe[0] >= 0 && bse_scm_pipe[1] >= 0)
     {
-      bse_scm_port = sfi_com_port_from_pipe ("BseShell", bse_scm_pipe[0], bse_scm_pipe[1]);
+      bse_scm_port = sfi_com_port_from_pipe (PRG_NAME, bse_scm_pipe[0], bse_scm_pipe[1]);
       sfi_com_port_set_close_func (bse_scm_port, port_closed, NULL);
       if (!bse_scm_port->connected)
 	{
-	  g_printerr ("bseshell: failed to connect to pipe (%d, %d)\n", bse_scm_pipe[0], bse_scm_pipe[1]);
+	  g_printerr ("%s: failed to connect to pipe (%d, %d)\n", PRG_NAME, bse_scm_pipe[0], bse_scm_pipe[1]);
 	  exit (1);
 	}
       bse_scm_context = sfi_glue_encoder_context (bse_scm_port);
@@ -91,7 +91,7 @@ main (int   argc,
     {
       /* start our own core thread */
       bse_init_async (&argc, &argv, NULL);
-      bse_scm_context = bse_init_glue_context ("BseShell");
+      bse_scm_context = bse_init_glue_context (PRG_NAME);
     }
 
   gh_enter (argc, argv, gh_main);
@@ -124,7 +124,6 @@ gh_main (int   argc,
     gh_repl (argc, argv);
 
   /* shutdown */
-  g_print ("BSE-SHELL shutdown\n");
   sfi_glue_context_pop ();
   if (bse_scm_port)
     {
@@ -170,7 +169,7 @@ shell_parse_args (gint    *argc_p,
 	  argv[i] = NULL;
 	  if (bse_scm_pipe[0] < 2 || bse_scm_pipe[1] < 2)
 	    {
-	      g_printerr ("bseshell: invalid arguments supplied for: --bse-pipe <inpipe> <outpipe>\n");
+	      g_printerr ("%s: invalid arguments supplied for: --bse-pipe <inpipe> <outpipe>\n", PRG_NAME);
 	      exit (1);
 	    }
 	}
@@ -185,7 +184,7 @@ shell_parse_args (gint    *argc_p,
 	  argv[i] = NULL;
 	  if (!bse_scm_eval_expr)
 	    {
-	      g_printerr ("bseshell: invalid arguments supplied for: --bse-eval <expression>\n");
+	      g_printerr ("%s: invalid arguments supplied for: --bse-eval <expression>\n", PRG_NAME);
 	      exit (1);
 	    }
 	}

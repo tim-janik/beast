@@ -4,7 +4,7 @@
 ## Makefile.am for BEAST/BSE
 
 # subdirs with source code to be compiled
-SRC_SUBDIRS = sfi bse plugins bsw bsw-shell beast-gtk
+SRC_SUBDIRS = sfi bse plugins bsw shell beast-gtk
 
 # other subdirs
 SUBDIRS = . $(SRC_SUBDIRS) docs test
@@ -24,8 +24,8 @@ PKG_paths.h: $(top_srcdir)/configure Makefile
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-pph \
 	&& echo >> xgen-pph \
 	&& echo "#define BSE_PATH_PLUGINS      \"${bseplugindir}\"" >> xgen-pph \
-	&& echo "#define BSW_PATH_SCRIPTS      \"${bswscriptdir}\"" >> xgen-pph \
-	&& echo "#define BSW_PATH_BINARIES     \"${bindir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_SCRIPTS      \"${bsescriptdir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_BINARIES     \"${bindir}\"" >> xgen-pph \
 	&& echo "#define BST_PATH_DOCS         \"${beastdocsdir}\"" >> xgen-pph \
 	&& echo "#define BST_PATH_IMAGES       \"${beastimagesdir}\"" >> xgen-pph \
 	&& echo "#define BST_PATH_DATA_SAMPLES \"${beastsampledatadir}\"" >> xgen-pph \

@@ -225,10 +225,10 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     bseplugindir=$bselibdir/plugins
     AC_SUBST(bseplugindir)
 ])
-AC_DEFUN(AC_BSW_SHELL_REQUIREMENTS,
+AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
 [
-    BSW_SHELL_CFLAGS="$BSE_CFLAGS"
-    BSW_SHELL_LIBS="$BSE_LIBS"
+    BSE_SHELL_CFLAGS="$BSE_CFLAGS"
+    BSE_SHELL_LIBS="$BSE_LIBS"
 
     dnl === libguile check ===
     # require guile-config
@@ -238,19 +238,19 @@ AC_DEFUN(AC_BSW_SHELL_REQUIREMENTS,
     GUILE_LDFLAGS=`$GUILE_CONFIG link`
     REQUIRED_VERSION=1.4
     MC_CHECK_VERSION($GUILE_VERSION, $REQUIRED_VERSION, [
-      BSW_SHELL_CFLAGS="$GUILE_CFLAGS $BSW_SHELL_CFLAGS"
-      BSW_SHELL_LIBS="$GUILE_LDFLAGS $BSW_SHELL_LIBS"
+      BSE_SHELL_CFLAGS="$GUILE_CFLAGS $BSE_SHELL_CFLAGS"
+      BSE_SHELL_LIBS="$GUILE_LDFLAGS $BSE_SHELL_LIBS"
     ],
       AC_MSG_ERROR([failed to find guile library v$REQUIRED_VERSION - detected version: $GUILE_VERSION])
     )
 
-    AC_SUBST(BSW_SHELL_CFLAGS)
-    AC_SUBST(BSW_SHELL_LIBS)
+    AC_SUBST(BSE_SHELL_CFLAGS)
+    AC_SUBST(BSE_SHELL_LIBS)
 
-    # setup BSW install paths
-    bswsharedir=\${datadir}/beast/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
-    bswscriptdir=$bswsharedir/scripts
-    AC_SUBST(bswscriptdir)
+    # setup BSE install paths
+    bsesharedir=\${datadir}/beast/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
+    bsescriptdir=$bsesharedir/scripts
+    AC_SUBST(bsescriptdir)
 ])
 AC_DEFUN(AC_GXK_REQUIREMENTS,
 [
@@ -431,7 +431,7 @@ MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.fr
 AC_SFI_REQUIREMENTS
 AC_GSL_REQUIREMENTS
 AC_BSE_REQUIREMENTS
-AC_BSW_SHELL_REQUIREMENTS
+AC_BSE_SHELL_REQUIREMENTS
 AC_BSE_SNDDEV_CHECK
 AC_GXK_REQUIREMENTS
 AC_BEAST_REQUIREMENTS
@@ -509,7 +509,7 @@ plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile
 bsw/Makefile
-bsw-shell/Makefile
+shell/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
 beast-gtk/icons/Makefile

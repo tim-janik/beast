@@ -19,8 +19,7 @@ FIXMES:
 - alow snet flagging as aggregate
 - add project_get_wave_snet
 - show aggregates with BST_DEVEL
-- allow .bse files to start out with #bseshell ?
-- rename bswshell to bseshell
+- allow .bse files to start out with #bsesh ?
 - update /Help index to cover new docs
 - insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
 - export item seqid as readonly property (doesn't need its own notification signal then)

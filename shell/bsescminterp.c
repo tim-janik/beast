@@ -19,7 +19,7 @@
 
 #include <string.h>
 #include <errno.h>
-#include "bswscminterp.h"
+#include "bsescminterp.h"
 #include <sfi/sficomwire.h>
 #include <bse/bseglue.h>
 

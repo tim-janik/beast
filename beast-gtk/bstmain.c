@@ -498,7 +498,7 @@ bst_early_parse_args (int    *argc_p,
 	  else if (strcmp (arg, "plugins") == 0)
 	    g_print ("%s\n", BSE_PATH_PLUGINS);
 	  else if (strcmp (arg, "scripts") == 0)
-	    g_print ("%s\n", BSW_PATH_SCRIPTS);
+	    g_print ("%s\n", BSE_PATH_SCRIPTS);
 	  else if (strcmp (arg, "samples") == 0)
 	    g_print ("%s\n", BST_PATH_DATA_SAMPLES);
 	  else
@@ -550,7 +550,7 @@ bst_print_blurb (gboolean print_help)
       g_print ("Doc Path:    %s\n", BST_PATH_DOCS);
       g_print ("Image Path:  %s\n", BST_PATH_IMAGES);
       g_print ("Plugin Path: %s\n", BSE_PATH_PLUGINS);
-      g_print ("Script Path: %s\n", BSW_PATH_SCRIPTS);
+      g_print ("Script Path: %s\n", BSE_PATH_SCRIPTS);
       g_print ("Sample Path: %s\n", BST_PATH_DATA_SAMPLES);
       g_print ("\n");
       g_print ("BEAST comes with ABSOLUTELY NO WARRANTY.\n");
