@@ -23,6 +23,6 @@
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2001-2003 Tim Janik";
+LICENSE = "GNU Lesser General Public License";
 
 

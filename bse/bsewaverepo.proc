@@ -87,7 +87,7 @@ load_file (BseWaveRepo *wrepo,
 
 /* --- procedures --- */
 AUTHORS	= "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
+LICENSE = "GNU General Public License";
 
 
 METHOD (BseWaveRepo, load-file) {

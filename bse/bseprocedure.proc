@@ -26,7 +26,7 @@
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2002 Tim Janik";
+LICENSE = "GNU General Public License";
 
 PROCEDURE (bse-note-to-freq, "Note to Freq") {
   HELP  = "Retrieve the frequency of a certain note.";

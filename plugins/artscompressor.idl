@@ -25,7 +25,7 @@ Const STANDARD = Bse::STANDARD;
 class Compressor : Bse::Effect {
   /*Info    icon      = "icons/chorus.png";*/
   Info    authors   = "Matthias Kretz, Stefan Westerfeld";
-  Info    copyright = "GNU General Public License";
+  Info    license   = "GNU General Public License";
   Info    category  = "/Modules/Enhance/ArtsCompressor";
   Info    blurb     = "ArtsCompressor compresses the sound.";
   IStream invalue   = ("Audio In", "Audio input");
@@ -41,7 +41,7 @@ class Compressor : Bse::Effect {
 
 class StereoCompressor : Bse::Effect {
   Info    authors   = "Matthias Kretz, Stefan Westerfeld";
-  Info    copyright = "GNU General Public License";
+  Info    license   = "GNU General Public License";
   Info    category  = "/Modules/Enhance/ArtsStereoCompressor";
   Info    blurb     = "ArtsStereoCompressor compresses the sound.";
   IStream inleft    = ("Left Audio In", "Left audio input");

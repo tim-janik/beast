@@ -25,7 +25,7 @@
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
+LICENSE = "GNU Lesser General Public License";
 
 
 METHOD (BseItem, get-type) {

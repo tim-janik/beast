@@ -56,7 +56,7 @@ bse_script_procedure_init (BseScriptProcedureClass *class,
   proc->blurb = sdata->blurb;
   proc->help = sdata->help;
   proc->authors = sdata->authors;
-  proc->copyright = sdata->copyright;
+  proc->license = sdata->license;
   class->sdata = sdata;
   proc->execute = bse_script_procedure_exec;
   
@@ -88,7 +88,7 @@ bse_script_proc_register (const gchar *script_file,
 			  const gchar *blurb,
 			  const gchar *help,
 			  const gchar *authors,
-			  const gchar *copyright,
+			  const gchar *license,
 			  SfiRing     *params)
 {
   GTypeInfo script_info = {
@@ -122,7 +122,7 @@ bse_script_proc_register (const gchar *script_file,
   sdata->blurb = g_strdup (blurb);
   sdata->help = g_strdup (help);
   sdata->authors = g_strdup (authors);
-  sdata->copyright = g_strdup (copyright);
+  sdata->license = g_strdup (license);
   sdata->params = sfi_ring_copy_deep (params, (SfiRingDataFunc) g_strdup, NULL);
 
   script_info.class_data = sdata;

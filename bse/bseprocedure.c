@@ -68,7 +68,7 @@ bse_procedure_base_init (BseProcedureClass *proc)
   proc->private_id = 0;
   proc->help = NULL;
   proc->authors = NULL;
-  proc->copyright = NULL;
+  proc->license = NULL;
   proc->n_in_pspecs = 0;
   proc->in_pspecs = NULL;
   proc->n_out_pspecs = 0;
@@ -85,7 +85,7 @@ bse_procedure_base_finalize (BseProcedureClass *proc)
   proc->blurb = NULL;
   proc->help = NULL;
   proc->authors = NULL;
-  proc->copyright = NULL;
+  proc->license = NULL;
   
   /* give up type references */
   for (i = 0; proc->class_refs[i]; i++)

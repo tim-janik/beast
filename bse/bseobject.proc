@@ -21,7 +21,7 @@
 #include        <bse/bseobject.h>
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2002 Tim Janik";
+LICENSE = "GNU Lesser General Public License";
 
 METHOD (BseObject, is-a) {
   HELP  = "Check object type";

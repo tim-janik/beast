@@ -556,7 +556,7 @@ bglue_describe_proc (SfiGlueContext *context,
       p->blurb = g_strdup (proc->blurb);
       p->help = g_strdup (proc->help);
       p->authors = g_strdup (proc->authors);
-      p->copyright = g_strdup (proc->copyright);
+      p->license = g_strdup (proc->license);
       if (proc->n_out_pspecs)
 	{
 	  GParamSpec *pspec = bglue_pspec_to_serializable (proc->out_pspecs[0]);

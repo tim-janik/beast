@@ -48,7 +48,7 @@ if (@ARGV > 1) {
     die "$0: too many file names\n";
 }
 
-my $var_pattern = "HELP|BLURB|AUTHORS|CRIGHTS";
+my $var_pattern = "HELP|BLURB|AUTHORS|LICENSE";
 my %var_defs = ();
 my %proc_defs = ();
 
@@ -207,7 +207,7 @@ while (<>) {
 
 	print_assignment ("proc->help", "HELP");
 	print_assignment ("proc->authors", "AUTHORS");
-	print_assignment ("proc->copyright", "CRIGHTS");
+	print_assignment ("proc->license", "LICENSE");
 	print "#line $line \"$file\"\n$1 }\n";
 	print "static BseErrorType\n";
 	print "#line $line \"$file\"\n";

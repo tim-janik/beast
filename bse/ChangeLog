@@ -1,3 +1,8 @@
+Sat Oct 25 01:49:50 2003  Tim Janik  <timj@gtk.org>
+
+	* *.*: changed "copyright" field of procedures, scripts and objects
+	into a "license" field which better reflects what we're asking for.
+
 Sat Oct 18 05:06:27 2003  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.[hc]: keep track of items stored so far, and of items

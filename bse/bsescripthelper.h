@@ -33,7 +33,7 @@ typedef struct
   gchar	  *blurb;
   gchar	  *help;
   gchar	  *authors;
-  gchar	  *copyright;
+  gchar	  *license;
   SfiRing *params;
 } BseScriptData;
 typedef struct
@@ -50,7 +50,7 @@ GType		bse_script_proc_register	(const gchar	*script_file,
 						 const gchar	*blurb,
 						 const gchar	*help,
 						 const gchar	*authors,
-						 const gchar	*copyright,
+						 const gchar	*license,
 						 SfiRing	*params);
 SfiRing*	bse_script_path_list_files	(void);
 BseErrorType    bse_script_file_register	(const gchar	*file_name,

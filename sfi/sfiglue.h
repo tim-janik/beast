@@ -52,7 +52,7 @@ typedef struct {
   gchar       *blurb;
   gchar       *help;
   gchar       *authors;
-  gchar       *copyright;
+  gchar       *license;
   GParamSpec  *ret_param;
   guint        n_params;
   GParamSpec **params;

@@ -327,7 +327,7 @@ encoder_describe_proc (SfiGlueContext *context,
       proc->blurb = g_strdup (sfi_rec_get_string (rec, "blurb"));
       proc->help = g_strdup (sfi_rec_get_string (rec, "help"));
       proc->authors = g_strdup (sfi_rec_get_string (rec, "authors"));
-      proc->copyright = g_strdup (sfi_rec_get_string (rec, "copyright"));
+      proc->license = g_strdup (sfi_rec_get_string (rec, "license"));
       pseq = sfi_rec_get_seq (rec, "params");
       if (pseq)
 	{
@@ -357,7 +357,7 @@ decoder_describe_proc (SfiGlueDecoder *decoder,
       sfi_rec_set_string (rec, "blurb", proc->blurb);
       sfi_rec_set_string (rec, "help", proc->help);
       sfi_rec_set_string (rec, "authors", proc->authors);
-      sfi_rec_set_string (rec, "copyright", proc->copyright);
+      sfi_rec_set_string (rec, "license", proc->license);
       if (proc->ret_param)
 	sfi_rec_set_pspec (rec, "ret_param", proc->ret_param);
       if (proc->params)

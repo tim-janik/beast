@@ -63,7 +63,7 @@ SCM	bse_scm_script_register		(SCM		 name,
 					 SCM		 blurb,
 					 SCM		 help,
 					 SCM		 author,
-					 SCM		 copyright,
+					 SCM		 license,
 					 SCM		 date,
 					 SCM		 params);
 SCM	bse_scm_context_pending		(void);

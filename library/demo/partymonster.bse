@@ -10,7 +10,7 @@
   (bpm 140)
   (modification-time "2003-10-18 01:55:00")
   (creation-time "2003-10-04 18:10:14")
-  (copyright "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Copyright (C) 2003 Stefan Westerfeld")
   (author "Stefan Westerfeld")
   (container-child "BseTrack::Track-01"
     (snet (link 2 "BaseDrum"))
@@ -1069,7 +1069,7 @@
 (container-child "BseCSynth::BaseDrum"
   (modification-time "2003-10-18 01:55:00")
   (creation-time "2003-10-04 18:06:54")
-  (copyright "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Copyright (C) 2003 Stefan Westerfeld")
   (author "Stefan Westerfeld")
   (container-child "DavSynDrum::DavSynDrum-1"
     (res 50.00000074505806)
@@ -1116,7 +1116,7 @@
 (container-child "BseCSynth::SynBass"
   (modification-time "2003-10-18 01:55:00")
   (creation-time "2003-10-04 18:16:53")
-  (copyright "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Copyright (C) 2003 Stefan Westerfeld")
   (author "Stefan Westerfeld")
   (container-child "BseInstrumentInput::BseSubKeyboard-1"
     (pos-y -1.5800000000000001)
@@ -1173,7 +1173,7 @@
 (container-child "BseCSynth::Hihat"
   (modification-time "2003-10-18 01:55:00")
   (creation-time "2003-10-04 19:38:05")
-  (copyright "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Copyright (C) 2003 Stefan Westerfeld")
   (author "Stefan Westerfeld")
   (container-child "BseInstrumentInput::BseSubKeyboard-1"
     (pos-y 0.73999999999999999)
@@ -1224,7 +1224,7 @@
   (auto-activate #t)
   (modification-time "2003-10-18 01:55:00")
   (creation-time "2003-10-04 20:36:52")
-  (copyright "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Copyright (C) 2003 Stefan Westerfeld")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::BseAmplifier-1"
     (olevel 37)
@@ -1273,7 +1273,7 @@
 (container-child "BseCSynth::SynString"
   (modification-time "2003-10-18 01:55:00")
   (creation-time "2003-10-04 21:06:50")
-  (copyright "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Copyright (C) 2003 Stefan Westerfeld")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::BseAmplifier-1"
     (olevel 6)

@@ -665,7 +665,7 @@ CodeGeneratorModule::run ()
       printf ("  {\n");
       printf ("    proc->help = \"%s\";\n", infos.get("help").c_str());
       printf ("    proc->authors = \"%s\";\n", infos.get("authors").c_str());
-      printf ("    proc->copyright = \"%s\";\n", infos.get("copyright").c_str());
+      printf ("    proc->license = \"%s\";\n", infos.get("license").c_str());
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
         printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
           if (!is_void)

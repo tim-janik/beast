@@ -1,4 +1,4 @@
-;; (bse-script-register <func> <category> <blurb> <help> <author> <copyright> ARGS...)
+;; (bse-script-register <func> <category> <blurb> <help> <author> <license> ARGS...)
 
 (bse-script-register 'song-parts-crop
                      "/Song/Crop parts (loop range)"

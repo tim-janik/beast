@@ -8,7 +8,6 @@
 (container-child "BseSNet::.bse-intern-mono-wave"
   (modification-time "2003-04-27 22:08:00")
   (creation-time "2003-04-27 20:45:24")
-  (copyright "")
   (author "Tim Janik")
   (container-child "BseWaveOsc::wave-osc"
     (pos-y 1.9399999999999999)

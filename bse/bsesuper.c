@@ -25,7 +25,7 @@ enum
 {
   PARAM_0,
   PARAM_AUTHOR,
-  PARAM_COPYRIGHT,
+  PARAM_LICENSE,
   PARAM_CREATION_TIME,
   PARAM_MOD_TIME
 };
@@ -51,7 +51,7 @@ static void	bse_super_do_modified	(BseSuper		*super,
 /* --- variables --- */
 static GTypeClass	*parent_class = NULL;
 static GQuark		 quark_author = 0;
-static GQuark		 quark_copyright = 0;
+static GQuark		 quark_license = 0;
 static GSList		*bse_super_objects = NULL;
 
 
@@ -74,7 +74,7 @@ BSE_BUILTIN_TYPE (BseSuper)
   
   return bse_type_register_abstract (BSE_TYPE_CONTAINER,
                                      "BseSuper",
-                                     "Base type for item managers and undo facility",
+                                     "Base type for item managers",
                                      &super_info);
 }
 
@@ -87,7 +87,7 @@ bse_super_class_init (BseSuperClass *class)
   parent_class = g_type_class_peek_parent (class);
   
   quark_author = g_quark_from_static_string ("author");
-  quark_copyright = g_quark_from_static_string ("copyright");
+  quark_license = g_quark_from_static_string ("license");
   
   gobject_class->set_property = bse_super_set_property;
   gobject_class->get_property = bse_super_get_property;
@@ -97,21 +97,21 @@ bse_super_class_init (BseSuperClass *class)
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,
-			      sfi_pspec_string ("author", "Author", NULL,
+			      sfi_pspec_string ("author", _("Author"), _("Person changing or creating this object"),
 						NULL,
 						SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
-			      PARAM_COPYRIGHT,
-			      sfi_pspec_string ("copyright", "Copyright", NULL,
+			      PARAM_LICENSE,
+			      sfi_pspec_string ("license", _("License"), _("Copyright license applying to this object"),
 						NULL,
 						SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_CREATION_TIME,
-			      sfi_pspec_time ("creation_time", "Creation Time", NULL,
+			      sfi_pspec_time ("creation_time", _("Creation Time"), NULL,
 					      SFI_PARAM_DEFAULT_RDONLY));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_MOD_TIME,
-			      sfi_pspec_time ("modification_time", "Last modification time", NULL,
+			      sfi_pspec_time ("modification_time", _("Last modification time"), NULL,
 					      SFI_PARAM_DEFAULT_RDONLY));
 }
 
@@ -161,9 +161,9 @@ bse_super_set_property (GObject      *object,
 			       g_strdup (g_value_get_string (value)),
 			       g_free);
       break;
-    case PARAM_COPYRIGHT:
+    case PARAM_LICENSE:
       g_object_set_qdata_full (super,
-			       quark_copyright,
+			       quark_license,
 			       g_strdup (g_value_get_string (value)),
 			       g_free);
       break;
@@ -197,8 +197,8 @@ bse_super_get_property (GObject     *object,
     case PARAM_AUTHOR:
       g_value_set_string (value, g_object_get_qdata (super, quark_author));
       break;
-    case PARAM_COPYRIGHT:
-      g_value_set_string (value, g_object_get_qdata (super, quark_copyright));
+    case PARAM_LICENSE:
+      g_value_set_string (value, g_object_get_qdata (super, quark_license));
       break;
     case PARAM_MOD_TIME:
       sfi_value_set_time (value, super->mod_time);

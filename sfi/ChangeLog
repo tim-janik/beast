@@ -1,3 +1,8 @@
+Sat Oct 25 01:49:50 2003  Tim Janik  <timj@gtk.org>
+
+        * *.*: changed "copyright" field of procedures, scripts and objects
+        into a "license" field which better reflects what we're asking for.
+
 Sat Oct 18 04:59:35 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiustore.[hc]: added pointer pool.

@@ -697,7 +697,7 @@ bse_scm_script_register (SCM s_name,
 			 SCM s_blurb,
 			 SCM s_help,
 			 SCM s_author,
-			 SCM s_copyright,
+			 SCM s_license,
 			 SCM s_date,
 			 SCM s_params)
 {
@@ -710,7 +710,7 @@ bse_scm_script_register (SCM s_name,
   SCM_ASSERT (SCM_STRINGP (s_blurb),     s_blurb,     SCM_ARG3, "bse-script-register");
   SCM_ASSERT (SCM_STRINGP (s_help),      s_help,      SCM_ARG4, "bse-script-register");
   SCM_ASSERT (SCM_STRINGP (s_author),    s_author,    SCM_ARG5, "bse-script-register");
-  SCM_ASSERT (SCM_STRINGP (s_copyright), s_copyright, SCM_ARG6, "bse-script-register");
+  SCM_ASSERT (SCM_STRINGP (s_license),   s_license,   SCM_ARG6, "bse-script-register");
   SCM_ASSERT (SCM_STRINGP (s_date),      s_date,      SCM_ARG7, "bse-script-register");
   for (node = s_params, i = 8; SCM_CONSP (node); node = SCM_CDR (node), i++)
     {
@@ -735,7 +735,7 @@ bse_scm_script_register (SCM s_name,
       sfi_value_free (val);
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_author), SCM_LENGTH (s_author)));
       sfi_value_free (val);
-      sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_copyright), SCM_LENGTH (s_copyright)));
+      sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_license), SCM_LENGTH (s_license)));
       sfi_value_free (val);
       sfi_seq_append (seq, val = sfi_value_lstring (SCM_ROCHARS (s_date), SCM_LENGTH (s_date)));
       sfi_value_free (val);

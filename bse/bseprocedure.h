@@ -49,7 +49,7 @@ struct _BseProcedureClass
   /* setup upon init */
   gchar          *help;
   gchar          *authors;
-  gchar          *copyright;
+  gchar          *license;
   
   /* implementation */
   guint           n_in_pspecs;

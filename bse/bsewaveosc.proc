@@ -21,7 +21,7 @@
 #include <bse/bseeditablesample.h>
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2002-2003 Tim Janik";
+LICENSE = "GNU General Public License";
 
 
 METHOD (BseWaveOsc, request-pcm-position) {
