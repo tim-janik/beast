@@ -1,3 +1,27 @@
+Mon Jan  3 23:59:39 2005  Tim Janik  <timj@gtk.org>
+
+	* bsewave.header: document format changes.
+
+	* gslloader-bsewave.c: rewrote parsing code, cleaned up token list,
+	make use of xinfos. properly identify auto-detect and raw-sample files.
+
+	* bseutils.[hc]: added bse_xinfos_parse_assignment().
+
+	* gslloader.h: extended wave chunk data fields.
+
+Sun Jan  2 14:41:59 2005  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.[hc]:
+	bse_storage_put_xinfos(): save xinfo arrays.
+	bse_storage_parse_xinfos(): load xinfo arrays.
+
+	* bsewave.[hc]: cleanups, removed per-chunk locator logic. added 
+	finalize, added bse_wave_clear(). save and parse xinfo strings.
+	bse_wave_load_wave_file(): clear wave before loading, set locator
+	after successfull loading.
+
+	* bsewaverepo.proc: use bse_wave_load_wave_file().
+
 Mon Jan 3 11:31:14 2005 Stefan Westerfeld <stefan@space.twc.de>
 
 	* gslloader-pat.cc: Since "the double free with gslloader.c" is fixed

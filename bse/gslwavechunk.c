@@ -692,6 +692,8 @@ gsl_wave_chunk_open (GslWaveChunk *wchunk)
 	  gsl_data_handle_close (wchunk->dcache->dhandle);
 	  return BSE_ERROR_FILE_EMPTY;
 	}
+      wchunk->mix_freq = gsl_data_handle_mix_freq (wchunk->dcache->dhandle);
+      wchunk->osc_freq = gsl_data_handle_osc_freq (wchunk->dcache->dhandle);
       wchunk->n_channels = gsl_data_handle_n_channels (wchunk->dcache->dhandle);
       wchunk->length = gsl_data_handle_n_values (wchunk->dcache->dhandle) / wchunk->n_channels;
       wchunk->length *= wchunk->n_channels;

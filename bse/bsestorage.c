@@ -1228,6 +1228,69 @@ bse_storage_printf (BseStorage  *self,
   g_free (buffer);
 }
 
+void
+bse_storage_put_xinfos (BseStorage *self,
+                        gchar     **xinfos)
+{
+  xinfos = bse_xinfos_dup_consolidated (xinfos, FALSE);
+  if (xinfos && xinfos[0])
+    {
+      bse_storage_break (self);
+      gchar *str = g_strescape (xinfos[0], NULL);
+      bse_storage_printf (self, " (\"%s\"", str);
+      g_free (str);
+      guint i;
+      bse_storage_push_level (self);
+      for (i = 1; xinfos[i]; i++)
+        {
+          bse_storage_break (self);
+          str = g_strescape (xinfos[i], NULL);
+          bse_storage_printf (self, "\"%s\"", str);
+          g_free (str);
+        }
+      bse_storage_pop_level (self);
+      bse_storage_puts (self, ")");
+    }
+  else
+    bse_storage_printf (self, "#f");
+  g_strfreev (xinfos);
+}
+
+GTokenType
+bse_storage_parse_xinfos (BseStorage *self,
+                          gchar    ***xinfosp)
+{
+  GScanner *scanner = bse_storage_get_scanner (self);
+  g_scanner_get_next_token (scanner);
+  if (scanner->token == '#')    /* parse "#f" => NULL */
+    {
+      g_scanner_get_next_token (scanner);
+      if (scanner->token == 'f' || scanner->token == 'F')
+        {
+          *xinfosp = NULL;
+          return G_TOKEN_NONE;
+        }
+      /* everything else, even #t is bogus */
+      return 'f';
+    }
+  else if (scanner->token == '(')
+    {
+      gchar **xinfos = NULL;
+      while (g_scanner_get_next_token (scanner) != ')')
+        {
+          if (scanner->token == G_TOKEN_STRING)
+            xinfos = bse_xinfos_parse_assignment (xinfos, scanner->value.v_string);
+          else
+            return G_TOKEN_STRING;
+        }
+      *xinfosp = bse_xinfos_dup_consolidated (xinfos, FALSE);
+      g_strfreev (xinfos);
+      return G_TOKEN_NONE;
+    }
+  else
+    return '(';
+}
+
 static void
 put_dblock_data_handle (BseStorage    *self,
                         guint          significant_bits,
@@ -1544,27 +1607,31 @@ bse_storage_flush_fd (BseStorage *self,
   sfi_wstore_flush_fd (self->wstore, fd);
 }
 
-void    bse_storage_compat_dhreset      (BseStorage     *self)
+void
+bse_storage_compat_dhreset (BseStorage     *self)
 {
   self->n_channels = 1;
   self->mix_freq = 44100;
   self->osc_freq = 440;
 }
 
-void    bse_storage_compat_dhmixf       (BseStorage     *self,
-                                         gfloat          mix_freq)
+void
+bse_storage_compat_dhmixf (BseStorage     *self,
+                           gfloat          mix_freq)
 {
   self->mix_freq = mix_freq;
 }
 
-void    bse_storage_compat_dhoscf       (BseStorage     *self,
-                                         gfloat          osc_freq)
+void
+bse_storage_compat_dhoscf (BseStorage     *self,
+                           gfloat          osc_freq)
 {
   self->osc_freq = osc_freq;
 }
 
-void    bse_storage_compat_dhchannels   (BseStorage     *self,
-                                         guint           n_channels)
+void
+bse_storage_compat_dhchannels (BseStorage     *self,
+                               guint           n_channels)
 {
   self->n_channels = n_channels;
 }

@@ -500,6 +500,25 @@ bse_xinfos_add_value (gchar          **xinfos,
 }
 
 gchar**
+bse_xinfos_parse_assignment (gchar          **xinfos,
+                             const gchar     *assignment)
+{
+  g_return_val_if_fail (assignment != NULL, xinfos);
+  const gchar *e = strchr (assignment, '=');
+  if (e && e > assignment)
+    {
+      gchar *key = g_strndup (assignment, e - assignment);
+      if (e[1]) /* key=text */
+        xinfos = bse_xinfos_add_value (xinfos, key, &e[1]);
+      else      /* key= */
+        xinfos = bse_xinfos_del_value (xinfos, key);
+    }
+  else if (!e)  /* key */
+    xinfos = bse_xinfos_del_value (xinfos, assignment);
+  return xinfos;
+}
+
+gchar**
 bse_xinfos_del_value (gchar       **xinfos,
                       const gchar  *key)
 {

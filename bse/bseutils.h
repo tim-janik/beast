@@ -97,13 +97,15 @@ gchar**       bse_xinfos_add_float              (gchar          **xinfos,
 gchar**       bse_xinfos_add_num                (gchar          **xinfos,
                                                  const gchar     *key,
                                                  SfiNum           num);
+gchar**       bse_xinfos_parse_assignment       (gchar          **xinfos,
+                                                 const gchar     *assignment);
+gchar**       bse_xinfos_del_value              (gchar          **xinfos,
+                                                 const gchar     *key);
 const gchar*  bse_xinfos_get_value              (gchar          **xinfos,
                                                  const gchar     *key);
 gfloat        bse_xinfos_get_float              (gchar          **xinfos,
                                                  const gchar     *key);
 SfiNum        bse_xinfos_get_num                (gchar          **xinfos,
-                                                 const gchar     *key);
-gchar**       bse_xinfos_del_value              (gchar          **xinfos,
                                                  const gchar     *key);
 gchar**       bse_xinfos_dup_consolidated       (gchar          **xinfos,
                                                  gboolean         copy_interns);

@@ -81,7 +81,7 @@ struct _BseStorage
   guint               n_dblocks;
   BseStorageDBlock   *dblocks;
   gchar              *free_me;
-  /* compat */ // VERSION-FIXME: remove after 0.5.2
+  /* compat */ // VERSION-FIXME: needed only for <= 0.5.1
   gfloat          mix_freq;
   gfloat          osc_freq;
   guint           n_channels;
@@ -142,6 +142,8 @@ void         bse_storage_put_item_link          (BseStorage             *self,
 void         bse_storage_put_data_handle        (BseStorage             *self,
                                                  guint                   significant_bits,
                                                  GslDataHandle          *dhandle);
+void         bse_storage_put_xinfos             (BseStorage             *self,
+                                                 gchar                 **xinfos);
 void         bse_storage_flush_fd               (BseStorage             *self,
                                                  gint                    fd);
 
@@ -176,6 +178,8 @@ GTokenType   bse_storage_parse_data_handle_rest (BseStorage             *self,
                                                  guint                  *n_channels_p,
                                                  gfloat                 *mix_freq_p,
                                                  gfloat                 *osc_freq_p);
+GTokenType   bse_storage_parse_xinfos           (BseStorage             *self,
+                                                 gchar                ***xinfosp);
 GTokenType   bse_storage_parse_rest             (BseStorage             *self,
                                                  gpointer                context_data,
                                                  BseTryStatement         try_statement,

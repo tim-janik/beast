@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2000-2002 Tim Janik
+ * Copyright (C) 2000-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,7 @@ typedef struct
   GslWaveFileInfo wfi;
   OggVorbis_File  ofile;
 } FileInfo;
-
+#define LOADER_LOGICAL_BIT_STREAM(chunk)    ((chunk).loader_data[0].uint)
 
 /* --- functions --- */
 static GslWaveFileInfo*
@@ -111,7 +111,7 @@ oggv_load_wave_dsc (gpointer         data,
   wdsc->chunks = g_new0 (GslWaveChunkDsc, 1);
   wdsc->chunks[0].osc_freq = 440.0; /* FIXME */
   wdsc->chunks[0].mix_freq = vi->rate;
-  wdsc->chunks[0].loader_offset = nth_wave;	/* lbitstream */
+  LOADER_LOGICAL_BIT_STREAM (wdsc->chunks[0]) = nth_wave;
 
   return wdsc;
 }
@@ -140,7 +140,7 @@ oggv_create_chunk_handle (gpointer      data,
   g_return_val_if_fail (nth_chunk == 0, NULL);
 
   dhandle = gsl_data_handle_new_ogg_vorbis_muxed (fi->wfi.file_name,
-					          wdsc->chunks[0].loader_offset, /* lbitstream */
+					          LOADER_LOGICAL_BIT_STREAM (wdsc->chunks[0]),
 					          wdsc->chunks[0].osc_freq);
   if (dhandle && wdsc->chunks[0].xinfos)
     {

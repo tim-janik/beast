@@ -9,71 +9,59 @@
 
 # Wave definition, a wave consists of one or more samples (chunks),
 # which usually compose a single instrument. the individual samples
-# are provided for different notes or sampling frequences, the wave
+# are provided for different notes or sampling frequencies, the wave
 # can be played at.
 wave {
         name = "quoted string"	# each wave must have a descriptive name
-        mix_freq = 44100	# the default sampling frequency for the
-        			# wave chunks to follow. defaults to 44100.
+        n-channels = 2		# each wave must specify the number of
+				# channels, e.g. 1 for mono or 2 for stereo
+        mix-freq = 44100	# the default sampling frequency for raw-file
+        			# and raw-link wave chunks. defaults to 44100.
+        byte-order = little	# the default byte order for raw-file and
+        			# raw-link wave chunks. possible values are:
+        			# little-endian, little, big-endian or big.
+        			# defaults to little-endian.
+        format = signed-16      # the default sample format for raw-file and
+        			# raw-link wave chunks. possible values are:
+        			# alaw, ulaw, signed-8, unsigned-8, signed-12,
+        			# unsigned-12, signed-16, unsigned-16 or
+        			# float. defaults to signed-16.
+	xinfo["key"] = "value"	# extra information to store custom settings
 	
-	# optional contents
-	author = "Mr. Example"
-	license = "Green OpenMusic License"
-	info = "Some comment for the user"
-
-	# raw sample specific contents:
-        format = signed_8       # for raw samples, possible formats are:
-        			# alaw, ulaw, signed_8, unsigned_8, signed_12,
-        			# unsigned_12, signed_16, unsigned_16 or
-        			# float. defaults to signed_16.
-        byte_order = little	# for raw samples, possible values are:
-        			# little_endian, little, big_endian or big.
-        			# defaults to little_endian.
-        n_channels = 2		# for raw samples, must be greater than 0.
-        			# defaults to 1 (mono).
-
         # a chunk definition; a sample chunk points to encoded sample
         # data which records how the wave sounds at given note.
         chunk {
-        	label = "quoted string" # descriptive string for the GUI
-                osc_freq = 440.0	# note frequency the chunk is to be
+                osc-freq = 440.0	# note frequency the chunk is to be
                 			# played at. (or, the note that was
                 			# played when the chunk was recorded).
-		midi_note = 57		# alternative way to specify osc_freq.
+		midi-note = 57		# alternative way to specify osc-freq.
 					# e.g. the midi note number '57' means
 					# 440 Hz (A-1).
-	        mix_freq = 44100	# for raw samples, the sampling
-	        			# frequency with which this chunk has
-	        			# been recorded.
-		volume = 1.0		# float value 0..1
-		balance = 0.0		# float value -1..1
-                rawlink = (...)		# reference to raw sample block in
-                			# binary appendix of this file
-                ogglink = (...)		# reference to Ogg/Vorbis data block
-                			# in binary appendix of this file
-                boffset = 256		# for raw samples, the number of bytes
-                			# to skip at beginning of filename
-                n_values = 512		# for raw samples, number of values
-                			# in filename. (maybe 0 for default)
-                			# defaults to filelength without the
-                			# offset, divided by the format size
-                file = "filename"	# file containing this chunk's
-                			# sampled data.
+		xinfo["key"] = "value"	# extra information per chunk
+                ogg-link = (...)	# reference to Ogg/Vorbis data block
+                			# in binary appendix of the wave file
+                file = "filename"	# wave file containing this chunk's
+                			# sampled data, the format is auto
+                			# detected
 		index = "wavename"	# wavename of sample to read from
 					# filename, indexing this chunk's
-					# sampled data.
-                # loop definition
-                # for samples that contain parts which are to be looped,
-                # the loop definition specifies the start and end points of
-                # the loop, and how often it is supposed to be repeated.
-                # the loop start and end positions are supposed to be
-                # n_channels aligned.
-                loop_type = jump	# the loop type can be one of:
-                			# none, jump or pingpong.
-                			# defaults to jump.
-                loop_start = 16
-                loop_end = 32		# should be >=loop_start
-                loop_count = 42		# defaults to maximum
+					# sampled data
+                raw-file = "filename"	# raw sample data file containing this
+					# chunk's sampled data, the format
+					# must be specified below
+                boffset = 256		# number of bytes to skip at beginning
+					# of file for raw-file chunks
+                n-values = 512		# number of values to read from file
+					# for raw-file chunks, defaults to
+					# file length
+                raw-link = (...)	# reference to raw sample block in
+                			# binary appendix of the wave file
+		byte-order = little	# the byte order for raw-file and
+					# raw-link wave chunks
+	        format = signed-16      # the sample format for raw-file and
+					# raw-link wave chunks
+	        mix-freq = 44100	# the sampling frequency for raw-file
+	        			# and raw-link wave chunks.
         }
         # more chunk definitions may follow
 }

@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2004 Tim Janik
+ * Copyright (C) 2001-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,11 +55,11 @@ struct _GslWaveChunkDsc
   gfloat	  mix_freq;
   gchar         **xinfos;
   /* loader-specific */
-  GslLong         loader_offset;
-  GslLong         loader_length;
-  glong		  loader_num1;
-  gpointer	  loader_data1; /* generic pointers for more data */
-  gpointer	  loader_data2;
+  union {
+    guint         uint;
+    gpointer      ptr;
+    gfloat        vfloat;
+  }               loader_data[8];
 };
 
 

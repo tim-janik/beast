@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2004 Tim Janik
+ * Copyright (C) 2001-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -384,6 +384,8 @@ gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
   SfiNum loop_start = bse_xinfos_get_num (chunk->xinfos, "loop-start");
   SfiNum loop_end = bse_xinfos_get_num (chunk->xinfos, "loop-end");
   SfiNum loop_count = bse_xinfos_get_num (chunk->xinfos, "loop-count");
+  if (loop_type && loop_count == 0)     /* loop_count defaults to maximum */
+    loop_count = 1000000;
   if (loop_end <= loop_start)
     {
       loop_start = loop_end = 0;
@@ -391,9 +393,7 @@ gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
       loop_count = 0;
     }
 
-  wchunk = gsl_wave_chunk_new (dcache,
-			       chunk->mix_freq,
-			       chunk->osc_freq,
+  wchunk = gsl_wave_chunk_new (dcache, chunk->mix_freq, chunk->osc_freq,
                                loop_type, loop_start, loop_end, loop_count);
   gsl_data_cache_unref (dcache);
 

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2003 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2005 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,11 @@ struct _BseWave
 {
   BseSource	     parent_object;
 
+  /* requested BseModule indices */
+  guint		     request_count;
+  GSList	    *index_list;
+  guint		     index_dirty : 1;
+
   /* locator */
   guint		     locator_set : 1;
   gchar		    *file_name;
@@ -54,11 +59,6 @@ struct _BseWave
   /* wave chunks */
   guint		     n_wchunks;
   GSList	    *wave_chunks;
-
-  /* requested BseModule indices */
-  guint		     request_count;
-  guint		     index_dirty : 1;
-  GSList	    *index_list;
 };
 struct _BseWaveClass
 {
@@ -67,31 +67,20 @@ struct _BseWaveClass
 
 
 /* --- prototypes -- */
-void		bse_wave_set_description_bits   (BseWave	*wave,
-						 GslWaveDsc     *wdsc,
-                                                 gboolean        honour_name);
-void		bse_wave_add_chunk		(BseWave	*wave,
-						 GslWaveChunk	*wchunk);
-void		bse_wave_add_chunk_with_locator	(BseWave	*wave,
-						 GslWaveChunk	*wchunk,
-						 const gchar	*file_name,
-						 const gchar	*wave_name);
-GslWaveChunk*   bse_wave_lookup_chunk           (BseWave        *wave,
-						 gfloat		 mix_freq,
-						 gfloat		 osc_freq);
-void            bse_wave_remove_chunk           (BseWave        *wave,
-						 GslWaveChunk   *wchunk);
+void		bse_wave_clear                  (BseWave	*wave);
 BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name,
 						 BseFreqArray	*list_array,
 						 BseFreqArray	*skip_array,
-                                                 gboolean        honour_description);
-void		bse_wave_set_locator		(BseWave	*wave,
-						 const gchar	*file_name,
-						 const gchar	*wave_name);
-void		bse_wave_add_xinfos		(BseWave	*wave,
-						 gchar         **xinfos);
+                                                 gboolean        rename_wave);
+void		bse_wave_add_chunk		(BseWave	*wave,
+						 GslWaveChunk	*wchunk);
+GslWaveChunk*   bse_wave_lookup_chunk           (BseWave        *wave,
+						 gfloat		 mix_freq,
+						 gfloat		 osc_freq);
+void            bse_wave_remove_chunk           (BseWave        *wave,
+						 GslWaveChunk   *wchunk);
 void		bse_wave_request_index		(BseWave	*wave);
 BseWaveIndex*	bse_wave_get_index_for_modules	(BseWave	*wave);
 void		bse_wave_drop_index		(BseWave	*wave);
