@@ -1,19 +1,20 @@
-/* BST - The GTK+ Layout Engine
- * Copyright (C) 1998, 1999 Tim Janik
+/* BEAST - Bedevilled Audio System
+ * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
+ * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 #include	"bststatusbar.h"
 
@@ -76,9 +77,13 @@ bst_status_bar_get_current (void)
       
       if (!sbar || !widget_fully_visible (sbar))
 	{
+	  GSList *saved_status_window_stack = status_window_stack;
+
+	  status_window_stack = NULL;
 	  status_windows = g_slist_remove (status_windows, window);
 	  sbar = bst_status_bar_get_current ();
 	  status_windows = g_slist_append (status_windows, window);
+	  status_window_stack = saved_status_window_stack;
 	}
     }
   
@@ -158,6 +163,21 @@ bst_status_destroyed (GtkWidget *widget)
   gtk_object_remove_data (object, "bst-status-bar");
 }
 
+static gint
+filter_procedure_events (GtkWidget *widget,
+			 GdkEvent  *event)
+{
+  switch (event->type)
+    {
+    case GDK_KEY_PRESS:
+    case GDK_KEY_RELEASE:
+    case GDK_DELETE:
+      return TRUE;
+    default:
+      return FALSE;
+    }
+}
+
 static gboolean
 procedure_share (gpointer     func_data,
 		 const gchar *proc_name,
@@ -166,7 +186,7 @@ procedure_share (gpointer     func_data,
   GtkWidget *sbar;
   gboolean should_abort = FALSE;
   
-  if (proc_window && GTK_OBJECT_DESTROYED (proc_window))
+  if (proc_window && !GTK_WIDGET_VISIBLE (proc_window))
     {
       gtk_widget_unref (proc_window);
       proc_window = NULL;
@@ -190,6 +210,7 @@ procedure_share (gpointer     func_data,
       GtkWidget *msg = gtk_object_get_data (object, "bst-msg");
       GtkWidget *status = gtk_object_get_data (object, "bst-status");
       GtkWidget *abort = gtk_object_get_data (object, "bst-abort");
+      guint event_signal_handler;
       gchar *text = strrchr (proc_name, ':');
       
       status_bar_remove_timer (sbar);
@@ -221,14 +242,20 @@ procedure_share (gpointer     func_data,
 	}
       
       gtk_widget_ref (abort);
-      
+
+      /* prevent delete events */
+      event_signal_handler = gtk_signal_connect_after (GTK_OBJECT (proc_window),
+						       "event",
+						       GTK_SIGNAL_FUNC (filter_procedure_events),
+						       NULL);
       gtk_grab_add (abort);
       do
 	g_main_iteration (FALSE);
       while (g_main_pending ());
       gtk_grab_remove (abort);
+      gtk_signal_disconnect (GTK_OBJECT (proc_window), event_signal_handler);
       
-      should_abort = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (abort));
+      should_abort = GTK_OBJECT_DESTROYED (abort) || gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (abort));
       
       gtk_widget_unref (abort);
     }
@@ -299,10 +326,10 @@ bst_status_register_window (GtkWindow *window)
     }
 }
 
-void
+GtkWidget*
 bst_status_bar_ensure (GtkWindow *window)
 {
-  GtkWidget *child, *vbox, *sbar, *hbox, *prog, *msg, *status, *abort;
+  GtkWidget *child, *vbox, *sbar, *hbox, *prog, *msg, *status, *abort, *saved_focus, *saved_default;
   static const gchar *status_bar_rc_string =
     ( "style'BstStatusBar-Abort-style'"
       "{"
@@ -315,18 +342,21 @@ bst_status_bar_ensure (GtkWindow *window)
       "widget'*.BstStatusBar.*.AbortButton*'style'BstStatusBar-Abort-style'"
       "\n");
   
-  g_return_if_fail (GTK_IS_WINDOW (window));
+  g_return_val_if_fail (GTK_IS_WINDOW (window), NULL);
   
-  if (GTK_OBJECT_DESTROYED (window) || bst_status_bar_from_window (window))
-    return;
-
+  sbar = bst_status_bar_from_window (window);
+  if (GTK_OBJECT_DESTROYED (window) || sbar)
+    return sbar;
+  
   if (status_bar_rc_string)
     {
       gtk_rc_parse_string (status_bar_rc_string);
       status_bar_rc_string = NULL;
     }
-
- child = GTK_BIN (window)->child;
+  
+  child = GTK_BIN (window)->child;
+  saved_focus = window->focus_widget;
+  saved_default = window->default_widget;
   if (child)
     {
       gtk_widget_ref (child);
@@ -394,6 +424,10 @@ bst_status_bar_ensure (GtkWindow *window)
     {
       gtk_container_add (GTK_CONTAINER (vbox), child);
       gtk_widget_unref (child);
+      if (saved_focus)
+	gtk_widget_grab_focus (saved_focus);
+      if (saved_default)
+	gtk_widget_grab_default (saved_default);
     }
   
   gtk_object_ref (GTK_OBJECT (sbar));
@@ -406,6 +440,8 @@ bst_status_bar_ensure (GtkWindow *window)
   
   bst_status_register_window (window);
   gtk_widget_show (vbox);
+
+  return bst_status_bar_from_window (window);
 }
 
 static void

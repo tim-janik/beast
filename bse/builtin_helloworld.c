@@ -91,7 +91,7 @@ randomizer_exec (BseProcedureClass *proc,
   gchar *string;
 
   /* check parameters */
-  if (!seed)
+  if (use_seed && !seed)
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* perform our duty */
@@ -187,17 +187,17 @@ BSE_EXPORT_PROCEDURES = {
   { &type_id_hello_world, "hello-world",
     "Hello World - First Plugin ever executed by BSE", 0,
     hello_world_setup, hello_world_exec, NULL,
-    "/Proc/Test/Hello World",
+    "/Proc/Toys/Hello World",
   },
   { &type_id_randomizer, "randomizer",
     "Randomizer takes a seed value and returns a random string", 0,
     randomizer_setup, randomizer_exec, NULL,
-    "/Proc/Test/Randomizer",
+    "/Proc/Toys/Randomizer",
   },
   { &type_id_progressor, "progressor",
     "Progressor takes two seed values and then starts progressing", 0,
     progressor_setup, progressor_exec, NULL,
-    "/Proc/Test/Progressor",
+    "/Proc/Toys/Progressor",
   },
   { NULL, },
 };

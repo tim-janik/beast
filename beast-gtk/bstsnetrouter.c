@@ -1,18 +1,18 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstsnetrouter.h"
@@ -268,12 +268,12 @@ bst_snet_router_toggle_palette (BstSNetRouter *router)
   if (!router->palette || !GTK_WIDGET_VISIBLE (router->palette))
     {
       if (!router->palette)
-	router->palette = bst_subwindow_new (GTK_OBJECT (router), &router->palette,
-					     bst_radio_tools_build_palette (router->rtools, TRUE, GTK_RELIEF_NORMAL),
-					     BST_SUB_DESTROY_ON_HIDE,
-					     "object_signal::destroy", palette_destroyed, router,
-					     "title", "BEAST: Palette",
-					     NULL);
+	router->palette = bst_adialog_new (GTK_OBJECT (router), &router->palette,
+					   bst_radio_tools_build_palette (router->rtools, TRUE, GTK_RELIEF_NORMAL),
+					   BST_ADIALOG_DESTROY_ON_HIDE,
+					   "object_signal::destroy", palette_destroyed, router,
+					   "title", "BEAST: Palette",
+					   NULL);
       gtk_widget_showraise (router->palette);
     }
   else
@@ -831,18 +831,16 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 					    BSE_OBJECT_NAME (source),
 					    NULL);
 
-	  choice = bst_choice_createv (BST_CHOICE_TITLE (source_name),
-				       BST_CHOICE_SEPERATOR,
-				       BST_CHOICE_S (2, "Properties", PROPERTIES, source != rsource),
-				       BST_CHOICE_S (3, "Delete Inputs", NO_ILINK, source->n_inputs),
-				       BST_CHOICE_S (4, "Delete Outputs", NO_OLINK, source->outputs),
-				       BST_CHOICE_SEPERATOR,
-				       BST_CHOICE_S (1, "Delete", DELETE, source != rsource),
-				       BST_CHOICE_END);
+	  choice = bst_choice_menu_createv (BST_CHOICE_TITLE (source_name),
+					    BST_CHOICE_SEPERATOR,
+					    BST_CHOICE_S (2, "Properties", PROPERTIES, source != rsource),
+					    BST_CHOICE_S (3, "Delete Inputs", NO_ILINK, source->n_inputs),
+					    BST_CHOICE_S (4, "Delete Outputs", NO_OLINK, source->outputs),
+					    BST_CHOICE_SEPERATOR,
+					    BST_CHOICE_S (1, "Delete", DELETE, source != rsource),
+					    BST_CHOICE_END);
 	  g_free (source_name);
-	  switch (bst_choice_selectable (choice)
-		  ? bst_choice_modal (choice, event->button.button, event->button.time)
-		  : 0)
+	  switch (bst_choice_modal (choice, event->button.button, event->button.time))
 	    {
 	    case 1:
 	      bse_snet_remove_source (router->snet, source);
@@ -857,18 +855,18 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      bse_source_clear_ochannels (source);
 	      break;
 	    }
-	  gtk_widget_unref (choice);
+	  bst_choice_destroy (choice);
 	}
       else if (clink)
 	{
 	  GtkWidget *choice;
 
-	  choice = bst_choice_createv (BST_CHOICE_TITLE ("Source link"),
-				       BST_CHOICE_SEPERATOR,
-				       BST_CHOICE (2, "Properties", PROPERTIES),
-				       BST_CHOICE_SEPERATOR,
-				       BST_CHOICE (1, "Delete", DELETE),
-				       BST_CHOICE_END);
+	  choice = bst_choice_menu_createv (BST_CHOICE_TITLE ("Source link"),
+					    BST_CHOICE_SEPERATOR,
+					    BST_CHOICE (2, "Properties", PROPERTIES),
+					    BST_CHOICE_SEPERATOR,
+					    BST_CHOICE (1, "Delete", DELETE),
+					    BST_CHOICE_END);
 	  switch (bst_choice_modal (choice, event->button.button, event->button.time))
 	    {
 	    case 1:
@@ -878,7 +876,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      bst_canvas_link_popup_view (clink);
 	      break;
 	    }
-	  gtk_widget_unref (choice);
+	  bst_choice_destroy (choice);
 	}
     }
   

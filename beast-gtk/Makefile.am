@@ -55,6 +55,7 @@ beast_headers = $(strip \
 	bstsongshell.h \
 	bststatusbar.h \
 	bstsupershell.h \
+	bstutils.h \
 	bstxkb.h \
 	bstzoomedwindow.h \
 	glewidgets.h \
@@ -89,6 +90,7 @@ beast_sources = $(strip \
 	bstsongshell.c \
 	bststatusbar.c \
 	bstsupershell.c \
+	bstutils.c \
 	bstxkb.c \
 	bstzoomedwindow.c \
 	glewidgets.c \

@@ -1,25 +1,26 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bstcanvassource.h"
 
+#include	"../PKG_config.h"
+
 #include	"bstparamview.h"
 #include	"bstgconfig.h"
-#include	"../PKG_config.h"
 
 
 
@@ -334,7 +335,7 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
 
       param_view = bst_param_view_new (BSE_OBJECT (csource->source));
       gtk_widget_show (param_view);
-      csource->source_view = bst_subwindow_new (GTK_OBJECT (csource), &csource->source_view, param_view, 0, NULL);
+      csource->source_view = bst_adialog_new (GTK_OBJECT (csource), &csource->source_view, param_view, 0, NULL);
       source_name_changed (csource);
     }
   gtk_widget_showraise (csource->source_view);

@@ -409,8 +409,6 @@ GtkWidget* gtk_vwrap_box_new                (gboolean homogeneous);
 
 
 #endif /* __GTK_VWRAP_BOX_H__ */
-void gtk_idle_show_widget (GtkWidget *widget);
-void gtk_file_selection_heal (GtkFileSelection *fs);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

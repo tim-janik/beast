@@ -1,18 +1,18 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstcanvaslink.h"
@@ -162,7 +162,7 @@ clink_view_update (BstCanvasLink *clink,
 		   gboolean       force_update)
 {
   GtkWidget *frame = (clink->link_view && (force_update || GTK_WIDGET_VISIBLE (clink->link_view))
-		      ? bst_subwindow_get_child (clink->link_view)
+		      ? bst_adialog_get_child (clink->link_view)
 		      : NULL);
 
   if (frame)
@@ -213,19 +213,19 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
   
   if (!clink->link_view)
-    clink->link_view = bst_subwindow_new (GTK_OBJECT (clink),
-					  &clink->link_view,
-					  gtk_widget_new (GTK_TYPE_FRAME,
-							  "visible", TRUE,
-							  "border_width", 5,
-							  "label", "Source link",
-							  "child", gtk_widget_new (GTK_TYPE_LABEL,
-										   "visible", TRUE,
-										   "justify", GTK_JUSTIFY_LEFT,
-										   "xpad", 5,
-										   NULL),
-							  NULL),
-					  0, NULL);
+    clink->link_view = bst_adialog_new (GTK_OBJECT (clink),
+					&clink->link_view,
+					gtk_widget_new (GTK_TYPE_FRAME,
+							"visible", TRUE,
+							"border_width", 5,
+							"label", "Source link",
+							"child", gtk_widget_new (GTK_TYPE_LABEL,
+										 "visible", TRUE,
+										 "justify", GTK_JUSTIFY_LEFT,
+										 "xpad", 5,
+										 NULL),
+							NULL),
+					0, NULL);
   clink_view_update (clink, TRUE);
   gtk_widget_showraise (clink->link_view);
 }

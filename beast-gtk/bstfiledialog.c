@@ -1,25 +1,24 @@
-/* BST - The GTK+ Layout Engine
- * Copyright (C) 1998, 1999 Tim Janik
+/* BEAST - Bedevilled Audio System
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
- * Library General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bstfiledialog.h"
 
 #include	"bststatusbar.h"
-#include	<stdio.h>
-#include	<fcntl.h>
+#include	"bstmenus.h"
 #include	<errno.h>
 
 
@@ -146,27 +145,52 @@ bst_file_dialog_save (BstFileDialog *fd)
     ;
 
   bst_status_window_push (app);
+
+ retry_saving:
+
   error = bse_project_store_bse (app->project, file_name);
-  
-  if (error)
+
+  /* offer retry if file exists
+   */
+  if (error == BSE_ERROR_FILE_EXISTS)
     {
-      g_message ("failed to save `%s' to `%s': %s", /* FIXME */
-		 BSE_OBJECT_NAME (app->project),
-		 file_name,
-		 bse_error_blurb (error));
+      GtkWidget *choice;
+      gchar *title = g_strdup_printf ("Saving project `%s'", BSE_OBJECT_NAME (app->project));
+      gchar *text = g_strdup_printf ("Failed to save\n`%s'\nto\n`%s':\n%s",
+				     BSE_OBJECT_NAME (app->project),
+				     file_name,
+				     bse_error_blurb (error));
+      
+      choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
+					  BST_CHOICE_TEXT (text),
+					  BST_CHOICE_D (1, "Overwrite", NONE),
+					  BST_CHOICE (0, "Cancel", NONE),
+					  BST_CHOICE_END);
+      g_free (title);
+      g_free (text);
+      if (bst_choice_modal (choice, 0, 0) == 1)
+	{
+	  bst_choice_destroy (choice);
+	  if (unlink (file_name) < 0)
+	    bst_status_printf (0, g_strerror (errno), "Deleting `%s'", file_name);
+	  else
+	    goto retry_saving;
+	}
+      else
+	bst_choice_destroy (choice);
+    }
+  else
+    {
       bst_status_printf (error ? 0 : 100,
-			 error ? "Failed" : "Done",
+			 error ? bse_error_blurb (error) : "Done",
 			 "Saving project `%s'",
 			 file_name);
-      bst_status_window_pop ();
-      g_free (file_name);
-
-      return;
+      if (!error)
+	gtk_widget_destroy (GTK_WIDGET (fd));
     }
 
   bst_status_window_pop ();
   g_free (file_name);
-  gtk_widget_destroy (GTK_WIDGET (fd));
 }
 
 GtkWidget*
@@ -257,162 +281,4 @@ bst_file_dialog_new_save (BstApp *app)
 					 GTK_OBJECT (dialog));
 
   return dialog;
-}
-
-GtkWidget*
-bst_text_view_from (GString     *gstring,
-		    const gchar *file_name,
-		    const gchar *font_name,
-		    const gchar *font_fallback) /* FIXME: should go into misc.c or utils.c */
-{
-  GtkWidget *hbox, *text, *sb;
-  GdkFont *font;
-  
-  hbox = gtk_widget_new (GTK_TYPE_HBOX,
-			 "visible", TRUE,
-			 "homogeneous", FALSE,
-			 "spacing", 0,
-			 "border_width", 5,
-			 NULL);
-  sb = gtk_vscrollbar_new (NULL);
-  gtk_widget_show (sb);
-  gtk_box_pack_end (GTK_BOX (hbox), sb, FALSE, TRUE, 0);
-  text = gtk_widget_new (GTK_TYPE_TEXT,
-			 "visible", TRUE,
-			 "vadjustment", GTK_RANGE (sb)->adjustment,
-			 "editable", FALSE,
-			 "word_wrap", TRUE,
-			 "line_wrap", FALSE,
-			 "width", 500,
-			 "height", 500,
-			 "parent", hbox,
-			 NULL);
-
-  font = font_name ? gdk_font_load (font_name) : NULL;
-  if (!font && font_fallback)
-    font = gdk_font_load (font_fallback);
-  if (font)
-    {
-      GtkRcStyle *rc_style = gtk_rc_style_new();
-
-      gdk_font_unref (font);
-      g_free (rc_style->font_name);
-      rc_style->font_name = g_strdup (font_name);
-
-      gtk_widget_modify_style (text, rc_style);
-    }
-
-  if (gstring)
-    gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
-  
-  if (file_name)
-    {
-      gint fd;
-      
-      fd = open (file_name, O_RDONLY, 0);
-      if (fd >= 0)
-	{
-	  gchar buffer[512];
-	  guint n;
-	  
-	  do
-	    {
-	      do
-		n = read (fd, buffer, 512);
-	      while (n < 0 && errno == EINTR); /* don't mind signals */
-	      
-	      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, buffer, n);
-	    }
-	  while (n > 0);
-	  close (fd);
-	  
-	  if (n < 0)
-	    fd = -1;
-	}
-      if (fd < 0)
-	{
-	  gchar *error;
-	  
-	  error = g_strconcat ("Failed to load \"", file_name, "\":\n", g_strerror (errno), NULL);
-	  gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, error, strlen (error));
-	  g_free (error);
-	}
-    }
-      
-  return hbox;
-}
-
-static void
-undo_base_background (GtkWidget *widget)
-{
-  GtkRcStyle *rc_style = gtk_rc_style_new ();
-
-  rc_style->color_flags[GTK_STATE_NORMAL] = GTK_RC_BASE;
-  rc_style->base[GTK_STATE_NORMAL].red = widget->style->bg[GTK_STATE_NORMAL].red;
-  rc_style->base[GTK_STATE_NORMAL].green = widget->style->bg[GTK_STATE_NORMAL].green;
-  rc_style->base[GTK_STATE_NORMAL].blue = widget->style->bg[GTK_STATE_NORMAL].blue;
-  gtk_widget_modify_style (widget, rc_style);
-}
-
-static void
-tweak_text_resize (GtkText *text)
-{
-  GtkAllocation *allocation = &GTK_WIDGET (text)->allocation;
-
-  if (text->text_area)
-    gdk_window_move_resize (text->text_area,
-			    0, 0,
-			    allocation->width,
-			    allocation->height);
-  gtk_adjustment_set_value (text->vadj, 0);
-}
-
-GtkWidget*
-bst_wrap_text_create (const gchar *string,
-		      gboolean     double_newlines,
-		      gpointer     user_data)
-{
-  GtkWidget *text;
-
-  text = gtk_widget_new (GTK_TYPE_TEXT,
-			 "visible", TRUE,
-			 "editable", FALSE,
-			 "word_wrap", TRUE,
-			 "line_wrap", TRUE,
-			 "can_focus", FALSE,
-			 "signal_after::realize", undo_base_background, NULL, // FIXME
-			 "signal_after::realize", tweak_text_resize, NULL, // FIXME
-			 "signal_after::size_allocate", tweak_text_resize, NULL, // FIXME
-			 NULL);
-  bst_wrap_text_set (text, string, double_newlines, user_data);
-
-  return text;
-}
-
-void
-bst_wrap_text_set (GtkWidget   *text,
-		   const gchar *string,
-		   gboolean     double_newlines,
-		   gpointer     user_data)
-{
-  g_return_if_fail (GTK_IS_TEXT (text));
-
-  gtk_editable_delete_text (GTK_EDITABLE (text), 0, -1);
-  if (string)
-    {
-      GString *gstring = g_string_new (string);
-
-      if (double_newlines)
-	{
-	  gint i;
-
-	  for (i = 0; i < gstring->len; i++)
-	    if (gstring->str[i] == '\n')
-	      g_string_insert_c (gstring, i++, '\n');
-	}
-      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
-      g_string_free (gstring, TRUE);
-    }
-  gtk_object_set_user_data (GTK_OBJECT (text), user_data);
-  gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
 }

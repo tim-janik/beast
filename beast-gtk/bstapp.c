@@ -1,18 +1,18 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bstapp.h"
@@ -260,13 +260,21 @@ bst_app_destroy (GtkObject *object)
 BstApp*
 bst_app_new (BseProject *project)
 {
+  GdkGeometry geometry;
   GtkWidget *widget;
   BstApp *app;
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
 
-  widget = gtk_widget_new (BST_TYPE_APP, NULL);
+  widget = gtk_widget_new (BST_TYPE_APP,
+			   "default_width", 640,
+			   "default_height", 512,
+			   NULL);
   app = BST_APP (widget);
+
+  geometry.min_width = 320;
+  geometry.min_height = 450;
+  gtk_window_set_geometry_hints (GTK_WINDOW (widget), NULL, &geometry, GDK_HINT_MIN_SIZE);
 
   bst_status_bar_ensure (GTK_WINDOW (app));
 
@@ -578,11 +586,11 @@ bst_app_operate (BstApp *app,
 	  bse_object_unref (BSE_OBJECT (gconf));
 	  gtk_widget_show (bst_preferences);
 	  deflt = BST_PREFERENCES (bst_preferences)->close; // apply;
-	  bst_preferences = bst_subwindow_new (NULL,
-					       &bst_preferences, bst_preferences,
-					       0,
-					       "title", "BEAST: Preferences",
-					       NULL);
+	  bst_preferences = bst_adialog_new (NULL,
+					     &bst_preferences, bst_preferences,
+					     0,
+					     "title", "BEAST: Preferences",
+					     NULL);
 	  gtk_widget_grab_default (deflt);
 	}
       gtk_widget_showraise (bst_preferences);
@@ -600,10 +608,10 @@ bst_app_operate (BstApp *app,
 	    {
 	      hmon = bst_heart_monitor_new (heart);
 	      gtk_widget_show (hmon);
-	      hmon = bst_subwindow_new (NULL, NULL, hmon,
-					0,
-					"title", "BEAST: Device Monitor",
-					NULL);
+	      hmon = bst_adialog_new (NULL, NULL, hmon,
+				      0,
+				      "title", "BEAST: Device Monitor",
+				      NULL);
 	    }
 	  gtk_widget_showraise (hmon);
 	}
@@ -644,15 +652,15 @@ bst_app_operate (BstApp *app,
 	  gchar *string;
 
 	  string = g_strconcat ("BEAST: ", help_title, NULL);
-	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_subwindow_new (NULL,
-									&bst_help_dialogs[op - BST_OP_HELP_FIRST],
-									bst_text_view_from (help_string,
-											    help_file,
-											    "-misc-fixed-*-*-*-*-15-*-*-*-*-*-*-*",
-											    "-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*"),
-									BST_SUB_DESTROY_ON_HIDE,
-									"title", string,
-									NULL);
+	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_adialog_new (NULL,
+								      &bst_help_dialogs[op - BST_OP_HELP_FIRST],
+								      bst_text_view_from (help_string,
+											  help_file,
+											  "-misc-fixed-*-*-*-*-15-*-*-*-*-*-*-*",
+											  "-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*"),
+								      BST_ADIALOG_DESTROY_ON_HIDE,
+								      "title", string,
+								      NULL);
 	  g_free (string);
 	}
       g_free (help_file);

@@ -348,6 +348,9 @@ AC_BSE_SNDDEV_CHECK
 # BEAST requirements
 AC_BEAST_REQUIREMENTS
 
+# architecture information
+AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "${host_alias}")
+
 # check for perl, python, etags and indent which are required
 # to build generated sources
 AC_PROG_AWK

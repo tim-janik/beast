@@ -1,18 +1,18 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstpatterndialog.h"
@@ -26,6 +26,7 @@
 /* --- prototypes --- */
 static void	bst_pattern_dialog_class_init	(BstPatternDialogClass	*klass);
 static void	bst_pattern_dialog_init		(BstPatternDialog	*pattern_dialog);
+static void	bst_pattern_dialog_destroy	(GtkObject		*object);
 static void	pattern_dialog_operate		(BstPatternDialog	*pattern_dialog,
 						 BstPatternOps     	 op,
 						 GtkWidget        	*menu_item);
@@ -36,19 +37,18 @@ static void	pattern_dialog_exec_proc	(BstPatternDialog	*pattern_dialog,
 
 /* --- menus --- */
 static gchar		  *bst_pattern_dialog_factories_path = "<BstPattern>";
-static GtkItemFactoryEntry popup_entries[] =
+static BstMenuEntry popup_entries[] =
 {
 #define BST_OP(op) (pattern_dialog_operate), (BST_PATTERN_OP_ ## op)
-  { "/<<<<<<",			NULL,		NULL, 0,		"<Tearoff>" },
-#if 0
-  { "/_Pattern",		NULL,		NULL, 0,		"<Branch>" },
-  { "/Pattern/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/Pattern/_Huhu",		"<ctrl>H",	BST_OP (HUHU),		"<Item>" },
-  { "/_Basic",			NULL,		NULL, 0,		"<Branch>" },
-  { "/Basic/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/_Test",			NULL,		NULL, 0,		"<Branch>" },
-  { "/Test/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-#endif
+  { "/<<<<<<",			NULL,		NULL, 0,		"<Tearoff>",	0 },
+  { "/Pattern",			NULL,		NULL, 0,		"<Title>",	BST_ICON_PATTERN },
+  { "/-----",			NULL,		NULL, 0,		"<Separator>",	0 },
+  { "/_Edit/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
+  { "/_Select/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
+  { "/_Tools/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
+  { "/-----",			NULL,		NULL, 0,		"<Separator>",	0 },
+  { "/To_ys",			NULL,		NULL, 0,		"<LastBranch>",	0 },
+  { "/Toys/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>",	0 },
 #undef	BST_OP
 };
 static guint n_popup_entries = sizeof (popup_entries) / sizeof (popup_entries[0]);
@@ -95,17 +95,28 @@ bst_pattern_dialog_class_init (BstPatternDialogClass *class)
   
   object_class = GTK_OBJECT_CLASS (class);
   widget_class = GTK_WIDGET_CLASS (class);
-  
-  bst_pattern_dialog_class = class;
   parent_class = gtk_type_class (GTK_TYPE_WINDOW);
+  bst_pattern_dialog_class = class;
 
+  object_class->destroy = bst_pattern_dialog_destroy;
+
+  class->popup_entries = NULL;
+  class->popup_entries = bst_menu_entries_add_bentries (class->popup_entries,
+							n_popup_entries,
+							popup_entries);
   cats = bse_categories_match_typed ("/Method/BsePattern/*", BSE_TYPE_PROCEDURE, &n_cats);
-  class->popup_entries = bst_menu_entries_compose (n_popup_entries,
-						   popup_entries,
-						   n_cats,
-						   cats,
-						   pattern_dialog_exec_proc);
+  class->popup_entries = bst_menu_entries_add_categories (class->popup_entries,
+							  n_cats,
+							  cats,
+							  pattern_dialog_exec_proc);
   g_free (cats);
+  cats = bse_categories_match_typed ("/Proc/Toys/*", BSE_TYPE_PROCEDURE, &n_cats);
+  class->popup_entries = bst_menu_entries_add_categories (class->popup_entries,
+							  n_cats,
+							  cats,
+							  pattern_dialog_exec_proc);
+  g_free (cats);
+  class->popup_entries = bst_menu_entries_sort (class->popup_entries);
 }
 
 static void
@@ -140,7 +151,19 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
 			    bst_pattern_dialog_factories_path,
 			    factory,
 			    (GtkDestroyNotify) gtk_object_unref);
-  
+  pattern_dialog->proc_dialog = NULL;
+}
+
+static void
+bst_pattern_dialog_destroy (GtkObject *object)
+{
+  BstPatternDialog *pattern_dialog = BST_PATTERN_DIALOG (object);
+
+  if (pattern_dialog->proc_dialog)
+    gtk_widget_destroy (pattern_dialog->proc_dialog);
+
+  if (GTK_OBJECT_CLASS (parent_class)->destroy)
+    (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
 }
 
 static guint
@@ -269,7 +292,8 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
   BseParamSpec *pspec_pattern, *pspec_focus_channel, *pspec_focus_row; /* FIXME: cache these */
   BseParam param_pattern = { NULL, }, param_focus_channel = { NULL, }, param_focus_row = { NULL, };
   BstPatternEditor *pattern_editor;
-  BseProcedureClass *proc;
+  BseProcedureClass *procedure;
+  BstProcedureShell *proc_shell;
   BsePattern *pattern;
   GtkWidget *widget;
   GSList *slist = NULL;
@@ -283,10 +307,23 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
   gtk_widget_ref (widget);
   bse_object_ref (BSE_OBJECT (pattern));
 
+  /* ensure procedure shell
+   */
+  if (!pattern_dialog->proc_dialog)
+    {
+      proc_shell = BST_PROCEDURE_SHELL (bst_procedure_shell_new (NULL));
+      pattern_dialog->proc_dialog = bst_procedure_dialog_from_shell (proc_shell, &pattern_dialog->proc_dialog);
+    }
+  else
+    proc_shell = bst_procedure_dialog_get_shell (pattern_dialog->proc_dialog);
 
-  proc = bse_type_class_ref (proc_type);
+  /* setup procedure
+   */
+  procedure = bse_type_class_ref (proc_type);
+  bst_procedure_shell_set_proc (proc_shell, procedure);
+  bse_type_class_unref (procedure);
 
-  /* ok, now we buld a list of possible preset parameters to
+  /* ok, now we build a list of possible preset parameters to
    * pass into the procedure
    */
   pspec_pattern = bse_param_spec_item ("pattern", NULL, NULL,
@@ -304,13 +341,10 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
   slist = g_slist_prepend (slist, &param_pattern);
   slist = g_slist_prepend (slist, &param_focus_channel);
   slist = g_slist_prepend (slist, &param_focus_row);
-  
-  /* invoke procedure with selection already residing in the pattern */
-  bst_status_window_push (widget);
-  bst_procedure_void_execpl_modal (proc, slist);
-  bst_status_window_pop ();
 
-  /* free preset params and destroy their specs again */
+  /* apply preset params and clean up
+   */
+  bst_procedure_shell_preset (proc_shell, TRUE, slist);
   while (slist)
     {
       BseParam *param = slist->data;
@@ -321,9 +355,13 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
       g_slist_free_1 (slist);
       slist = tmp;
     }
-
-  bse_type_class_unref (proc);
   
+  /* invoke procedure with selection already residing in the pattern
+   */
+  bst_status_window_push (widget);
+  bst_procedure_dialog_exec_modal (pattern_dialog->proc_dialog, FALSE);
+  bst_status_window_pop ();
+
   bst_pattern_dialog_update (pattern_dialog);
 
   bse_object_unref (BSE_OBJECT (pattern));

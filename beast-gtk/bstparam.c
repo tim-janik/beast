@@ -1,19 +1,20 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 #include	"bstparam.h"
 
@@ -347,39 +348,32 @@ bst_param_gtk_update (BstParam *bparam)
 }
 
 static gboolean
-bst_entry_key_press (GtkWidget   *entry,
+bst_entry_key_press (GtkEntry    *entry,
 		     GdkEventKey *event,
 		     BstParam    *bparam)
 {
-  gboolean is_tab = FALSE;
-
-  if (!gtk_type_is_a (GTK_OBJECT_TYPE (entry), GTK_TYPE_SPIN_BUTTON))
+  GtkEditable *editable = GTK_EDITABLE (entry);
+  gboolean intercept = FALSE;
+  
+  if (event->state & GDK_MOD1_MASK)
     switch (event->keyval)
       {
-      case GDK_Tab:
-      case GDK_ISO_Left_Tab:
-	is_tab = TRUE;
-	/* fall through */
-      case GDK_Up:
-      case GDK_KP_Up:
-      case GDK_Down:
-      case GDK_KP_Down:
-	/* special case clue hunter entries */
-	if (gtk_clue_hunter_from_entry (entry))
-	  {
-	    if (!is_tab && !gtk_grab_get_current ())
-	      bst_param_gtk_changed (bparam);
-	  }
-	else
-	  bst_param_gtk_changed (bparam);
+      case 'b':	/* check gtk_move_backward_word() */
+	intercept = editable->current_pos <= 0;
+	break;
+      case 'd': /* gtk_delete_forward_word() */
+	intercept = TRUE;
+	break;
+      case 'f': /* check gtk_move_forward_word() */
+	intercept = editable->current_pos >= entry->text_length;
 	break;
       default:
 	break;
       }
-
-  if (event->keyval == 'f' && (event->state & GDK_MOD1_MASK))
+  
+  if (intercept)
     gtk_signal_emit_stop_by_name (GTK_OBJECT (entry), "key_press_event");
-
+  
   return FALSE;
 }
 
@@ -587,6 +581,7 @@ bst_param_create (gpointer      owner,
     }
   bparam->locked = 1;
   bse_type_class_ref (owner_type);
+  bparam->editable = TRUE;
   
   parent_container = gtk_object_get_data_by_id (GTK_OBJECT (parent), param_group ? param_group : null_group);
   if (!parent_container ||
@@ -761,9 +756,11 @@ bst_param_create (gpointer      owner,
       action = spinner ? spinner : gtk_entry_new ();
       gtk_widget_set (action,
 		      "visible", TRUE,
-		      "object_signal::activate", bst_param_gtk_changed, bparam,
-		      "signal::key_press_event", bst_entry_key_press, bparam,
 		      "width", width,
+		      "signal::key_press_event", bst_entry_key_press, bparam,
+		      "object_signal::activate", bst_param_gtk_changed, bparam,
+		      "signal_after::activate", gtk_toplevel_activate_default, NULL,
+		      spinner ? NULL : "object_signal::focus_out_event", bst_param_gtk_update, bparam,
 		      NULL);
       if (!spinner)
 	gtk_widget_set (action,
@@ -846,9 +843,10 @@ bst_param_create (gpointer      owner,
 			       NULL);
       action = gtk_widget_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
-			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
-			       "object_signal::activate", bst_param_gtk_changed, bparam,
 			       "signal::key_press_event", bst_entry_key_press, bparam,
+			       "object_signal::activate", bst_param_gtk_changed, bparam,
+			       "signal_after::activate", gtk_toplevel_activate_default, NULL,
+			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
 			       NULL);
       group = GROUP_FORM (parent_container, action, TRUE);
       GROUP_ADD_PROMPT (group, prompt);
@@ -924,9 +922,10 @@ bst_param_create (gpointer      owner,
 			       NULL);
       action = gtk_widget_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
-			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
-			       "object_signal::activate", bst_param_gtk_changed, bparam,
 			       "signal::key_press_event", bst_entry_key_press, bparam,
+			       "object_signal::activate", bst_param_gtk_changed, bparam,
+			       "signal_after::activate", gtk_toplevel_activate_default, NULL,
+			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
 			       "object_signal::grab_focus", bst_param_update_clue_hunter, bparam,
 			       "width", 160,
 			       NULL);
@@ -972,7 +971,7 @@ bst_param_update (BstParam *bparam)
   BseParamSpec *pspec = param->pspec;
   gboolean read_only = (pspec->any.flags & BSE_PARAM_HINT_RDONLY) != 0;
 
-  GROUP_SET_SENSITIVE (group, !read_only);
+  GROUP_SET_SENSITIVE (group, !read_only && bparam->editable);
   
   switch (pspec->type)
     {
@@ -1275,6 +1274,17 @@ bst_param_set (BstParam *bparam)
     bparam->locked = 0;
 }
 
+void
+bst_param_reset (BstParam *bparam)
+{
+  g_return_if_fail (BSE_IS_PARAM (bparam));
+
+  bparam->locked++;
+  bse_param_reset_value (&bparam->param);
+  bst_param_update (bparam);
+  bparam->locked = 0;
+}
+
 gboolean
 bst_param_set_from_other (BstParam *bparam,
 			  BseParam *src_param)
@@ -1304,21 +1314,11 @@ bst_param_set_editable (BstParam *bparam,
 {
   g_return_if_fail (BSE_IS_PARAM (bparam));
 
-  if (bparam->group)
+  editable = editable != FALSE;
+  if (bparam->editable != editable)
     {
-      GtkWidget *prompt = GROUP_GET_PROMPT (bparam->group);
-      GtkWidget *action = GROUP_GET_ACTION (bparam->group);
-      GtkWidget *pre_action = GROUP_GET_PRE_ACTION (bparam->group);
-      GtkWidget *post_action = GROUP_GET_POST_ACTION (bparam->group);
-      
-      if (GTK_IS_WIDGET (prompt))
-	gtk_widget_set_sensitive (prompt, editable);
-      /* don't interfere with bst_string_toggle() */
-      gtk_widget_set_sensitive (action, editable);
-      if (GTK_IS_WIDGET (pre_action))
-	gtk_widget_set_sensitive (pre_action, editable);
-      if (GTK_IS_WIDGET (post_action))
-	gtk_widget_set_sensitive (post_action, editable);
+      bparam->editable = editable;
+      bst_param_update (bparam);
     }
 }
 

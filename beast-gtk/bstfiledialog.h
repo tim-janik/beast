@@ -1,18 +1,18 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #ifndef __BST_FILE_DIALOG_H__
@@ -56,18 +56,6 @@ struct _BstFileDialogClass
 GtkType		bst_file_dialog_get_type	(void);
 GtkWidget*	bst_file_dialog_new_open	(BstApp		*app);
 GtkWidget*	bst_file_dialog_new_save	(BstApp		*app);
-
-GtkWidget*	bst_text_view_from		(GString	*gstring,
-						 const gchar	*file_name,
-						 const gchar    *font_name,
-						 const gchar    *font_fallback);
-GtkWidget*	bst_wrap_text_create		(const gchar    *string,
-						 gboolean        double_newlines,
-						 gpointer	 user_data);
-void		bst_wrap_text_set		(GtkWidget	*text,
-						 const gchar    *string,
-						 gboolean        dounle_newlines,
-						 gpointer	 user_data);
 
 
 

@@ -1,19 +1,20 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 #include "bstparamview.h"
 
@@ -211,7 +212,7 @@ bst_param_view_rebuild (BstParamView *param_view)
 
   if (!param_view->object)
     return;
-
+  
   param_box = GTK_WIDGET (param_view);
   gtk_widget_set (param_box,
 		  "visible", TRUE,
@@ -220,7 +221,7 @@ bst_param_view_rebuild (BstParamView *param_view)
 		  "hspacing", 5,
 		  "aspect_ratio", 0.0,
 		  NULL);
-    
+  
   object = BSE_OBJECT (param_view->object);
   class = BSE_OBJECT_GET_CLASS (object);
   
@@ -265,18 +266,18 @@ bst_param_view_rebuild (BstParamView *param_view)
     }
   g_slist_free (class_list);
   
-  /* FIXME: work around a gtk bug 
+  /* FIXME: work around a gtk bug (<= 1.2.6)
    */
   if (GTK_WIDGET_REALIZED (param_view) && !GTK_CHECK_VERSION (1, 2, 7))
     {
       GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (param_view));
-
+      
       gtk_container_check_resize (GTK_CONTAINER (toplevel));
       gtk_container_check_resize (GTK_CONTAINER (toplevel));
       gtk_container_check_resize (GTK_CONTAINER (toplevel));
       gtk_widget_queue_resize (toplevel);
     }
-
+  
   bst_param_view_update (param_view);
 }
 

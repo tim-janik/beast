@@ -1,26 +1,24 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #ifndef __BST_DEFS_H__
 #define __BST_DEFS_H__
 
-#include        <bse/bse.h>
-#include	<gtk/gtk.h>
-#include	<gnome.h>
+#include	"bstutils.h"
 #include	"gnomeforest.h"
 #include	"glewidgets.h"
 #include	"bstzoomedwindow.h"
@@ -30,9 +28,6 @@
 extern "C" {
 #pragma }
 #endif /* __cplusplus */
-
-#define GTK_TYPE_VPANED                  (gtk_vpaned_get_type ())
-#define GTK_TYPE_HPANED                  (gtk_hpaned_get_type ())
 
 
 /* --- BEAST mainmenu operations --- */
@@ -92,28 +87,9 @@ typedef enum
 } BstOps;
 
 
+/* --- constants & defines --- */
 #define	BST_TAG_DIAMETER	(20)
-
-
-/* --- pixmap stock --- */
-typedef enum
-{
-  BST_ICON_NONE,
-  BST_ICON_NOICON,
-  BST_ICON_MOUSE_TOOL,
-  BST_ICON_PALETTE_TOOL,
-  BST_ICON_PROPERTIES,
-  BST_ICON_DELETE,
-  BST_ICON_TRASHCAN,
-  BST_ICON_CLOSE,
-  BST_ICON_NO_ILINK,
-  BST_ICON_NO_OLINK,
-  BST_ICON_PATTERN,
-  BST_ICON_PATTERN_TOOL,
-  BST_ICON_LAST
-} BstIconId;
-BseIcon* bst_icon_from_stock (BstIconId icon_id);
-
+#define BST_STRDUP_RC_FILE()	(g_strconcat (g_get_home_dir (), "/.beastrc", NULL))
 
 /* --- debug stuff --- */
 typedef enum                    /*< skip >*/
@@ -129,12 +105,12 @@ extern BstDebugFlags bst_debug_flags;
 #endif /* !G_ENABLE_DEBUG */
 
 
-#define BST_STRDUP_RC_FILE()	(g_strconcat (g_get_home_dir (), "/.beastrc", NULL))
+
+extern void bst_update_can_operate (GtkWidget   *some_widget);
 
 /* it's hackish to have these prototypes in here, but we need
  * 'em somewhere, implementations are in bstmain.c
  */
-extern void bst_update_can_operate (GtkWidget   *some_widget);
 extern void bst_object_set         (gpointer     object,
 				    const gchar *first_arg_name,
 				    ...); /* hackery rulez! */
@@ -143,43 +119,6 @@ extern void bst_object_set         (gpointer     object,
       gtk_signal_emit_by_name ((GtkObject*) (object), "args-changed"); \
 } G_STMT_END
 
-
-/* --- sub window flags --- */
-typedef enum
-{
-  BST_SUB_DESTROY_ON_HIDE	= (1 << 0),
-  BST_SUB_POPUP_POS		= (1 << 1),
-  BST_SUB_MODAL			= (1 << 2)
-} BstSubWindowFlags;
-
-
-GtkWidget* bst_subwindow_new       (GtkObject	     *alive_host,
-				    GtkWidget	    **ssubwindow_p,
-				    GtkWidget	     *child,
-				    BstSubWindowFlags flags,
-				    const gchar      *first_arg_name,
-				    ...);
-GtkWidget* bst_subwindow_get_child (GtkWidget	 *subwindow);
-void	   gtk_widget_showraise    (GtkWidget	 *widget);
-void	   gtk_toplevel_hide       (GtkWidget    *widget);
-void	   gtk_widget_make_sensitive   (GtkWidget  *widget);
-void	   gtk_widget_make_insensitive (GtkWidget  *widget);
-
-/* --- canvas utils/workarounds --- */
-extern GnomeCanvasPoints* gnome_canvas_points_new0 (guint num_points);
-extern GnomeCanvasPoints* gnome_canvas_points_newv (guint num_points, ...);
-extern void gnome_canvas_request_full_update (GnomeCanvas *canvas);
-extern guint gnome_canvas_item_get_stacking (GnomeCanvasItem *item);
-extern void gnome_canvas_item_keep_between (GnomeCanvasItem *between,
-					    GnomeCanvasItem *item1,
-					    GnomeCanvasItem *item2);
-extern void gnome_canvas_item_keep_above (GnomeCanvasItem *above,
-					  GnomeCanvasItem *item1,
-					  GnomeCanvasItem *item2);
-extern GnomeCanvasItem* gnome_canvas_typed_item_at (GnomeCanvas *canvas,
-						    GtkType	 item_type,
-						    gdouble      world_x,
-						    gdouble      world_y);
 
 
 

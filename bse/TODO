@@ -1,4 +1,5 @@
 general:
+-	s/bse_icon_static_ref/bse_icon_ref_static/
 -	use defines instead of 32767
 -	rework undo, gotta decide on what hirarchy and function level undo
 	should be implemented.

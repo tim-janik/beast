@@ -1,18 +1,18 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bstitemview.h"
@@ -93,6 +93,7 @@ bst_item_view_class_init (BstItemViewClass *class)
   
   class->operate = NULL;
   class->can_operate = NULL;
+  class->default_param_view_height = 0;
 }
 
 static void
@@ -188,10 +189,13 @@ bst_item_view_build_param_view (BstItemView *item_view)
   g_list_free (free_list);
   if (BSE_IS_ITEM (item))
     {
+      gint default_param_view_height = BST_ITEM_VIEW_GET_CLASS (item_view)->default_param_view_height;
+
       item_view->param_view = bst_param_view_new (BSE_OBJECT (item));
       gtk_widget_set (item_view->param_view,
 		      "signal::destroy", gtk_widget_destroyed, &item_view->param_view,
 		      "visible", TRUE,
+		      default_param_view_height > 0 ? "height" : NULL, default_param_view_height,
 		      NULL);
       gtk_paned_pack2 (GTK_PANED (item_view),
 		       item_view->param_view,
@@ -499,7 +503,7 @@ bst_item_view_update (BstItemView *item_view)
   for (list = free_list; list; list = list->next)
     if (bse_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
       {
-	static gchar *text[CLIST_N_COLUMNS] = { 0, };
+	static gchar *text[CLIST_N_COLUMNS] = { NULL, };
 	gint row;
 	
 	row = gtk_clist_insert (clist, 0, text);

@@ -1,3 +1,40 @@
+Tue Feb 29 08:59:39 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.[hc]: new files, holding the icon stock,
+	gnome canvas utilities and workarounds, gtk utilities, utility
+	functions for auxillary dialogs and for text views.
+
+	* beast-gtk/bstfiledialog.[hc]: moved cruft to bstutils.[hc],
+	feature overwriting when saving files.
+
+	* beast-gtk/bstdefs.h:
+	* beast-gtk/bstmain.c: clean ups, moved portions to bstutils.[hc],
+	print help and version.
+
+	* beast-gtk/bstmenus.[hc]: more versatile modal choice support
+	(menus and dialogs).
+
+	* beast-gtk/bstparam.[hc]: added bst_param_reset() for default value
+	resetting.
+
+	* beast-gtk/bstpatterndialog.c: popup menu fixes.
+
+	* beast-gtk/bstpatterneditor.c: indentation fixes in keytable dump.
+
+	* beast-gtk/bstprocedure.[hc]: redid widget implementation, we provide
+	a vbox derived shell now. better handling of preset parameters,
+	fixed popdown behaviour and miscellaneous other things.
+
+	* beast-gtk/glewidgets.[hc]: new sources.
+
+	* beast-gtk/bststatusbar.c: prevent delete events during procedure
+	shares.
+
+	* beast-gtk/bstapp.c (bst_app_new): set sane default and minimum sizes.
+
+	* *.[hc]: copyright corrections (date). files that may prove to be
+	usefull for other projects (gnome-libs, gtk, ...) are put under LGPL.
+
 Tue Feb 22 07:44:17 2000  Tim Janik  <timj@gtk.org>
 
 	* test/davorgan.bse: updates from David A. Bartold.

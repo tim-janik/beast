@@ -1,18 +1,18 @@
 /* BEAST - Bedevilled Audio System
  * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bstpatterneditor.h"
@@ -2691,21 +2691,21 @@ bst_pattern_editor_class_keydump (BstPatternEditorClass *class)
 			  "             |   Note\n"
 			  "             |   |    Octave shift\n"
 			  "             |   |    | Instrument id (df=default instrument)\n"
-			  "             |   |    | |  Note movement (Next, Left, Right, Up, Down)\n"
-			  "             |   |    | |  | Page movement (Left, Right, Up, Down)\n"
-			  "             |   |    | |  | | Jump to border (Left, Right, Top, Bottom)\n"
-			  "             |   |    | |  | | | Switch Pattern (Next, Previous)\n"
-			  "             |   |    | |  | | | |   Flag Values:\n"
-			  "             |   |    | |  | | | |   | B - Wrap around left and right\n"
-			  "             |   |    | |  | | | |   |     border\n"
-			  "             |   |    | |  | | | |   | P - Wrap to previous/next pattern\n"
-			  "             |   |    | |  | | | |   |     at top and bottom border\n"
-			  "             |   |    | |  | | | |   | N - Reset (delete) current note\n"
-			  "             |   |    | |  | | | |   | I - Reset (delete) current instrument\n"
-			  "             |   |    | |  | | | |   | F - Set default instrument of\n"
-			  "             |   |    | |  | | | |   |     current channel\n"
-			  "             |   |    | |  | | | |   | D - Apply octave shift to the\n"
-			  "             |   |    | |  | | | |   |     default octave of the pattern\n"
+			  "             |   |    | |   Note movement (Next, Left, Right, Up, Down)\n"
+			  "             |   |    | |   | Page movement (Left, Right, Up, Down)\n"
+			  "             |   |    | |   | | Jump to border (Left, Right, Top, Bottom)\n"
+			  "             |   |    | |   | | | Switch Pattern (Next, Previous)\n"
+			  "             |   |    | |   | | | |  Flag Values:\n"
+			  "             |   |    | |   | | | |  | B - Wrap around left and right\n"
+			  "             |   |    | |   | | | |  |     border\n"
+			  "             |   |    | |   | | | |  | P - Wrap to previous/next pattern\n"
+			  "             |   |    | |   | | | |  |     at top and bottom border\n"
+			  "             |   |    | |   | | | |  | N - Reset (delete) current note\n"
+			  "             |   |    | |   | | | |  | I - Reset (delete) current instrument\n"
+			  "             |   |    | |   | | | |  | F - Set default instrument of\n"
+			  "             |   |    | |   | | | |  |     current channel\n"
+			  "             |   |    | |   | | | |  | D - Apply octave shift to the\n"
+			  "             |   |    | |   | | | |  |     default octave of the pattern\n"
 			  "KeyName      Mod Not Oc In Movement  Flags\n");
   
   g_hash_table_foreach (class->pea_ktab,
