@@ -364,14 +364,15 @@ CodeGeneratorModule::run ()
   printf ("\n/* classes */\n");
   for (vector<Class>::iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
     {
-      string ctName = TypeName (ci->name) + "Base";
+      string ctName = TypeName (ci->name);
+      string ctNameBase = TypeName (ci->name) + "Base";
       string ctProperties = TypeName (ci->name) + "Properties";
       vector<string> destroy_jobs;
       if (parser.fromInclude (ci->name))
         continue;
       
       /* skeleton class declaration + type macro */
-      printf ("class %s : public ::%s {\n", ctName.c_str(), cQualified (ci->inherits));
+      printf ("class %s : public ::%s {\n", ctNameBase.c_str(), cQualified (ci->inherits));
       printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_CLASS_TYPE (%s))\n",
               cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)), TypeName (ci->name).c_str());
       
@@ -386,7 +387,7 @@ CodeGeneratorModule::run ()
           printf ("  template<bool> static inline const unsigned char* pixstream();\n");
           images.push_back (Image (icon,
                                    "template<bool> const unsigned char*\n" +
-                                   ctName +
+                                   ctNameBase +
                                    "::pixstream()"));
           pstream = "pixstream<true>()";
         }
@@ -434,7 +435,7 @@ CodeGeneratorModule::run ()
           printf ("  struct %s {\n", ctProperties.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
             printf ("    %s %s;\n", cTypeName (pi->type), pi->name.c_str());
-          printf ("    explicit %s (%s *p) ", ctProperties.c_str(), ctName.c_str());
+          printf ("    explicit %s (%s *p) ", ctProperties.c_str(), ctNameBase.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
             printf ("%c\n      %s (p->%s)", pi == ci->properties.begin() ? ':' : ',', pi->name.c_str(), pi->name.c_str());
           printf ("\n    {\n");
@@ -450,7 +451,7 @@ CodeGeneratorModule::run ()
       /* property IDs */
       if (ci->properties.begin() != ci->properties.end())
         {
-          printf ("private:\n  enum PropertyIDs {\n");
+          printf ("protected:\n  enum PropertyID {\n");
           vector<Param>::const_iterator pi = ci->properties.begin();
           printf ("    PROP_%s = 1,\n", cUC_NAME (pi->name));
           for (pi++; pi != ci->properties.end(); pi++)
@@ -474,6 +475,8 @@ CodeGeneratorModule::run ()
         }
       printf ("    };\n");
       printf ("    update_modules();\n");
+      printf ("    if (static_data.property_changed)\n");
+      printf ("      (reinterpret_cast<%s*>(this)->*static_data.property_changed) ((PropertyID) prop_id);\n", ctName.c_str());
       printf ("  }\n");
       
       /* property getter */
@@ -489,12 +492,25 @@ CodeGeneratorModule::run ()
       printf ("    };\n");
       printf ("  }\n");
 
+      /* static data */
+      printf ("private:\n");
+      printf ("  static struct StaticData {\n");
+      printf ("    void (%s::*property_changed) (PropertyID prop_id);\n", ctName.c_str());
+      printf ("  } static_data;\n");
+
+      /* property-changed hooking */
+      printf ("protected:\n");
+      printf ("  static void set_property_changed (void (%s::*mfunc) (PropertyID))\n", ctName.c_str());
+      printf ("  {\n");
+      printf ("    static_data.property_changed = mfunc;\n");
+      printf ("  }\n");
+
       /* methods */
       for (vector<Method>::const_iterator mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
         procs.push_back (&(*mi));
       
       /* destructor */
-      printf ("  virtual ~%s ()\n", ctName.c_str());
+      printf ("  virtual ~%s ()\n", ctNameBase.c_str());
       printf ("  {\n");
       /* property deletion */
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)

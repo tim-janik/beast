@@ -1,3 +1,12 @@
+Thu Sep  4 14:58:14 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: introduce static data for the generated classes.
+	added set_property_changed() method to Base class to allow hooking
+	into property setting.
+
+	* glib-extra.[hc]: removed double array implementation which
+	was mostly unused.
+
 Wed Sep  3 00:56:42 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: reworked generated plugin code to allow

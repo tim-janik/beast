@@ -86,28 +86,6 @@ gchar*  g_type_name_to_cupper           (const gchar    *type_name);
 gchar*  g_type_name_to_type_macro       (const gchar    *type_name);
 
 
-/* --- double array --- */
-typedef struct {
-  guint    n_values;
-  gdouble *values;
-  guint    n_prealloced;
-} GDArray;
-
-GDArray*	g_darray_new	(guint		 prealloc);
-void		g_darray_free	(GDArray	*darray);
-gdouble		g_darray_get	(GDArray	*darray,
-				 guint		 index);
-void		g_darray_insert	(GDArray        *darray,
-				 guint           index,
-				 gdouble	 value);
-void		g_darray_append	(GDArray        *darray,
-				 gdouble	 value);
-void		g_darray_set	(GDArray        *darray,
-				 guint           index,
-				 gdouble	 value);
-#define	g_darray_prepend(a,v)	g_darray_insert ((a), 0, (v))
-
-
 /* --- simple main loop source --- */
 typedef gboolean (*GSourcePending)  (gpointer	 data,
 				     gint	*timeout);
