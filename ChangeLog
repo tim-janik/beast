@@ -1,3 +1,9 @@
+Mon Sep  2 10:04:38 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/reference/Makefile.am: add $(top_srcdir)/configure as dependency
+	to the *.dat rules, so the .dat files are properly remade if the
+	package version changes.
+
 Mon Sep  2 07:13:50 2002  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up version to 0.4.1, non-rc.

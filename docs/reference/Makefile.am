@@ -23,24 +23,24 @@ TEMP_FILES = temp-bsw-gen1.doc temp-bsw-gen2.doc
 #
 # documentation data generation
 #
-gsl.dat: $(GSL_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl
+gsl.dat: $(GSL_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl $(top_srcdir)/configure
 	$(srcdir)/scandocs.pl --name "GSL-Functions" \
                             --blurb "GSL Function Reference" \
                             --package "BEAST-$(VERSION)" \
                             $(GSL_MAN_SRC_GLOBS) >$@
-bse.dat: $(BSE_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl
+bse.dat: $(BSE_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl $(top_srcdir)/configure
 	$(srcdir)/scandocs.pl --name "BSE-Functions" \
                             --blurb "BSE Function Reference" \
                             --package "BEAST-$(VERSION)" \
                             $(BSE_MAN_SRC_GLOBS) >$@
-bsw-procs.dat: $(top_builddir)/bse/bsequery $(srcdir)/scandocs.pl
+bsw-procs.dat: $(top_builddir)/bse/bsequery $(srcdir)/scandocs.pl $(top_srcdir)/configure
 	$(top_builddir)/bse/bsequery procdoc >temp-bsw-gen1.doc \
         && $(srcdir)/scandocs.pl --name "BSW-Procedures" \
                                --blurb "BSE Procedure Reference" \
                                --package "BEAST-$(VERSION)" \
                                temp-bsw-gen1.doc >$@ \
         && rm -f temp-bsw-gen1.doc
-bst.dat: $(BST_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl
+bst.dat: $(BST_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl $(top_srcdir)/configure
 	$(srcdir)/scandocs.pl --name "BST-Functions" \
                             --blurb "BEAST Function Reference" \
                             --package "BEAST-$(VERSION)" \
