@@ -1,3 +1,8 @@
+Wed Feb  6 04:52:37 2002  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c (bse_storage_parse_param_value): allow floats when
+	parsing int/uint, to ease backwards compatibility.
+
 Wed Feb  6 04:38:01 2002  Tim Janik  <timj@gtk.org>
 
 	* gslfilter.[hc]: added gsl_iir_filter_eval() plus _change and

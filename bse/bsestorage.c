@@ -1178,16 +1178,18 @@ bse_storage_parse_param_value (BseStorage *storage,
       break;
     case G_TYPE_UINT:
       g_scanner_get_next_token (scanner);
-      if (scanner->token != G_TOKEN_INT)
+      if (scanner->token != G_TOKEN_INT &&
+	  scanner->token != G_TOKEN_FLOAT)
         return G_TOKEN_INT;
       else
 	{
-	  g_value_set_uint (value, scanner->value.v_int);
+	  gulong v_int = scanner->token == G_TOKEN_INT ? scanner->value.v_int : scanner->value.v_float;
+
+	  g_value_set_uint (value, v_int);
 	  if (g_param_value_validate (pspec, value))
 	    return bse_storage_warn_skip (storage,
 					  "parameter value `%lu' out of bounds for parameter `%s'",
-					  scanner->value.v_int,
-					  pspec->name);
+					  v_int, pspec->name);
 	}
       break;
     case G_TYPE_INT:
@@ -1198,15 +1200,18 @@ bse_storage_parse_param_value (BseStorage *storage,
           v_bool = !v_bool;
           g_scanner_get_next_token (scanner);
         }
-      if (scanner->token != G_TOKEN_INT)
+      if (scanner->token != G_TOKEN_INT &&
+	  scanner->token != G_TOKEN_FLOAT)
         return G_TOKEN_INT;
       else
 	{
-	  g_value_set_int (value, v_bool ? - scanner->value.v_int : scanner->value.v_int);
+          glong v_int = scanner->token == G_TOKEN_INT ? scanner->value.v_int : scanner->value.v_float;
+
+	  g_value_set_int (value, v_bool ? - v_int : v_int);
           if (g_param_value_validate (pspec, value))
 	    return bse_storage_warn_skip (storage,
 					  "parameter value `%ld' out of bounds for parameter `%s'",
-					  v_bool ? - scanner->value.v_int : scanner->value.v_int,
+					  v_bool ? - v_int : v_int,
 					  pspec->name);
 	}
       break;
