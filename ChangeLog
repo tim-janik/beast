@@ -1,3 +1,12 @@
+Wed Mar  8 12:51:58 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdraggroup.c (drag_group_drag_data_received): move
+	drop_spot out of the way before adding new pattern (sigh, can't
+	unparent here right away ;( ).
+	
+	* beast-gtk/bstplaylist.c (group_list_drag_data_received): same,
+	here, gtkdnd.c really needs fixing.
+
 Wed Mar  8 10:56:51 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.[hc]: added a bunch of new helper functions for

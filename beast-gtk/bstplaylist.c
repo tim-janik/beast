@@ -371,7 +371,12 @@ group_list_drag_data_received (GtkWidget        *group_list,
   drag_contents = *((gpointer*) selection_data->data);
   g_return_if_fail (BSE_IS_PATTERN_GROUP (drag_contents));
 
-  gtk_idle_unparent (bst_play_list_drop_spot_pattern_group);
+  if (bst_play_list_drop_spot_pattern_group->parent) // FIXME GTKFIX (1.2.7 bug)
+    {
+      gtk_box_reorder_child (GTK_BOX (bst_play_list_drop_spot_pattern_group->parent),
+			     bst_play_list_drop_spot_pattern_group, -1);
+      gtk_idle_unparent (bst_play_list_drop_spot_pattern_group);
+    }
 
   gdk_window_get_origin (bst_play_list_drag_window_pattern_group_icon->window, &x, &y);
   gdk_window_translate (NULL, group_list->window, &x, &y);

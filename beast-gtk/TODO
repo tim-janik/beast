@@ -2,6 +2,9 @@ bugs:
 -	if output params in proc, provide own status bar
 -	select/none + select/invert unselects focus
 
+icons:
+-	need duplicate and duplicate-link menu icons
+
 important:
 -	sane default sizes for windows
 -	write up basic blurb 1)new song 2) instrument+sample 3) pattern etc..
