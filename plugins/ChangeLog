@@ -1,3 +1,12 @@
+Fri Dec 24 22:58:11 2004  Tim Janik  <timj@gtk.org>
+
+	* standardsaturator.idl: 
+	* standardsaturator.cc: new saturator module, supporting various 
+	saturation types.
+
+	* Makefile.am: added standardsaturator.idl, added --macro to sfidl
+	invokation to simlpify type registrations in plugins.
+
 Fri Dec 24 22:46:56 2004  Tim Janik  <timj@gtk.org>
 
 	* icons/compressor.xcf: updates to support saturation module icon.

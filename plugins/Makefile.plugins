@@ -162,4 +162,14 @@ $(srcdir)/bsenoise.cc: bsenoise.gen-idl.h
 plugins_built_sources += bsenoise.gen-idl.h
 plugin_LTLIBRARIES    += bsenoise.la
 
+##
+## Plugin standardsaturator
+##
+standardsaturator_la_SOURCES = standardsaturator.cc
+standardsaturator_la_LDFLAGS = -module $(plugin_ldflags)
+standardsaturator_la_LIBADD  = $(plugin_libs)
+$(srcdir)/standardsaturator.cc: standardsaturator.gen-idl.h
+plugins_built_sources += standardsaturator.gen-idl.h
+plugin_LTLIBRARIES    += standardsaturator.la
+
 ## Generated data ends here

@@ -21,13 +21,14 @@ plugin_idl_files = $(strip		\
 	davbassfilter.idl		\
 	bsecontribsampleandhold.idl	\
 	bsenoise.idl			\
+	standardsaturator.idl		\
 )
 EXTRA_HEADERS += $(plugin_idl_files)
 # setup generation of C++ plugins from idl files
 SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 %.gen-idl.h: %.idl $(SFIDL)
-	$(SFIDL) --plugin $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
+	$(SFIDL) --plugin  --macro $(<F) $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 plugins_built_sources =
 Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
