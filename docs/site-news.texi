@@ -30,8 +30,8 @@
 @newsTitle{Thursday 18 Nov 2004, The ``Legends may sleep@comma{} but they never die!'' Release}
 
 BEAST/BSE version 0.6.3 and BSE-ALSA version 0.6.3 are available from the
-@uref{beast-doc://download,,download section}.
-@c , here is the @uref{http://www.gnomedesktop.org/article.php?sid=1870,,FootNotes announcement}.
+@uref{beast-doc://download,,download section}, here is the
+@uref{http://gnomedesktop.org/node/2049,,FootNotes announcement}.
 
 BEAST tarball:
 @uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.3.tar.gz,, beast-0.6.3.tar.gz}
