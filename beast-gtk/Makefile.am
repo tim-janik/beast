@@ -40,6 +40,7 @@ beast_headers = $(strip \
 	bstasciipixbuf.h \
 	bstcanvaslink.h \
 	bstcanvassource.h \
+	bstcluehunter.h \
 	bstcontrollers.h \
 	bstdefs.h \
 	bstdial.h \
@@ -100,6 +101,7 @@ beast_sources = $(strip \
 	bstasciipixbuf.c \
 	bstcanvaslink.c \
 	bstcanvassource.c \
+	bstcluehunter.c \
 	bstcontrollers.c \
 	bstdial.c \
 	bstdialog.c \

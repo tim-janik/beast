@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1-rc1
-date    = 30 Jul 2002
+date    = 02 Aug 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 30 Jul 2002 BEAST-0.4.1-rc1
+BSW-Procedures 02 Aug 2002 BEAST-0.4.1-rc1
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -964,6 +964,36 @@ uloc-path:
 
 @DOC-DESCRIPTION@
 Retrieve the project relative uname path for this item.  
+@DOC-SYNOPSIS@
+@STRONG bsw-item-list-proxies@ (@EMPH item@, @EMPH property@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+property
+@DOC-PARDESC@
+Proxy property name
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+proxy-list: 
+
+@DOC-DESCRIPTION@
+List possible values for a proxy property of an item.  
 @DOC-SYNOPSIS@
 @STRONG bsw-item-unuse@ (@EMPH item@);
 

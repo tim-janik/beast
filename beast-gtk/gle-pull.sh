@@ -2,7 +2,7 @@
 set -v
 
 GLE=/usr/src/gle/gle
-SOURCES="gtkwrapbox gtkcluehunter gtkhwrapbox gtkvwrapbox"
+SOURCES="gtkwrapbox gtkhwrapbox gtkvwrapbox"
 TEMPH=glewidgets.h-tmp
 
 # pull together glewidgets.h body

@@ -1,3 +1,11 @@
+Fri Aug  2 18:33:47 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcluehunter.[hc]: copy and update clue hunter code from
+	GLE. added ::poll_refresh signal to update clue hunter contents.
+
+	* beast-gtk/bstparam.c: update clue hunter code to use BstClueHunter.
+	feature bsw_item_list_proxies() procedure for OBJECT properties.
+
 Tue Jul 30 01:44:02 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/release-notes.dat: updates.

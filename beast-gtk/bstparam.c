@@ -152,37 +152,49 @@ str_diff (gchar       *s,
 }
 
 static void
-bst_param_update_clue_hunter (BstParam *bparam)
+bst_param_refresh_clue_hunter (BstParam *bparam)
 {
   gpointer group = bparam->group;
   GParamSpec *pspec = bparam->pspec;
   GtkWidget *action = bst_gmask_get_action (group);
-  GtkClueHunter *ch = gtk_object_get_user_data (GTK_OBJECT (action));
+  BstClueHunter *ch = gtk_object_get_user_data (GTK_OBJECT (action));
   
-  g_return_if_fail (G_PARAM_SPEC_TYPE (pspec) == G_TYPE_PARAM_OBJECT && GTK_IS_CLUE_HUNTER (ch));
-  
-  if (bparam->is_object && BSE_IS_ITEM (bparam->owner) &&
-      g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_ITEM))
+  g_return_if_fail (G_PARAM_SPEC_TYPE (pspec) == G_TYPE_PARAM_OBJECT && BST_IS_CLUE_HUNTER (ch));
+
+  /* clear current list */
+  bst_clue_hunter_remove_matches (ch, "*");
+
+  if (bparam->is_object && BSE_IS_ITEM (bparam->owner))
     {
-      BseItem *item = BSE_ITEM (bparam->owner);
-      BswProxy project = bsw_item_get_project (BSE_OBJECT_ID (item));
-      gchar *p, *prefix = NULL;
+      BswIterProxy *iter;
+      GSList *slist, *paths = NULL;
+      gchar *prefix = NULL;
       guint l;
-      BswIterString *iter;
-      
-      gtk_clue_hunter_remove_matches (ch, "*");
 
-      iter = bsw_project_list_uname_paths (project, G_PARAM_SPEC_VALUE_TYPE (pspec));
-      if (bsw_iter_n_left (iter) > 1)
+      /* find candidates */
+      iter = bsw_item_list_proxies (BSE_OBJECT_ID (bparam->owner), bparam->pspec->name);
+
+      /* go from object to path name */
+      for (bsw_iter_rewind (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
 	{
-	  prefix = g_strdup (bsw_iter_get_string (iter));
+	  BswProxy proxy = bsw_iter_get_proxy (iter);
+	  paths = g_slist_prepend (paths, bsw_item_get_uname_path (proxy));
+	}
+      bsw_iter_free (iter);
 
-	  for (bsw_iter_next (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
+      /* figure common prefix, aligned to object boundaries (':') */
+      if (paths)
+	{
+	  gchar *p;
+	  prefix = g_strdup (paths->data);
+	  /* intersect */
+	  for (slist = paths->next; slist; slist = slist->next)
 	    {
-	      p = str_diff (prefix, bsw_iter_get_string (iter));
+	      p = str_diff (prefix, slist->data);
 	      *p = 0;
 	    }
-	  p = strrchr (prefix, ':');
+	  /* cut at object boundary */
+          p = strrchr (prefix, ':');
 	  if (p)
 	    *(++p) = 0;
 	  else
@@ -193,12 +205,11 @@ bst_param_update_clue_hunter (BstParam *bparam)
 	}
       l = prefix ? strlen (prefix) : 0;
 
-      for (bsw_iter_rewind (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
-	gtk_clue_hunter_add_string (ch, bsw_iter_get_string (iter) + l);
-      for (bsw_iter_rewind (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
-	g_print (" %s %s\n", prefix, bsw_iter_get_string (iter) + l);
+      /* add unprefixed names to clue hunter and save prefix */
+      for (slist = paths; slist; slist = slist->next)
+	bst_clue_hunter_add_string (ch, ((gchar*) slist->data) + l);
       g_object_set_data_full (G_OBJECT (ch), "prefix", prefix, g_free);
-      bsw_iter_free (iter);
+      g_slist_free (paths);
     }
 }
 
@@ -810,7 +821,6 @@ bst_param_create (gpointer	owner,
 				 "signal::key_press_event", bst_entry_key_press, bparam,
 				 "signal::activate", bst_param_entry_activate, bparam,
 				 "swapped_signal::focus_out_event", bst_param_focus_out, bparam,
-				 "swapped_signal::grab_focus", bst_param_update_clue_hunter, bparam,
 				 NULL);
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
@@ -826,13 +836,16 @@ bst_param_create (gpointer	owner,
 			       NULL);
       group = bst_gmask_form (parent_container, action, TRUE);
       bst_gmask_set_prompt (group, prompt);
-      any = gtk_widget_new (GTK_TYPE_CLUE_HUNTER,
+      any = gtk_widget_new (BST_TYPE_CLUE_HUNTER,
 			    "keep_history", FALSE,
 			    "entry", action,
 			    "user_data", bparam,
 			    NULL);
+      g_object_connect (any,
+			"swapped_signal::poll_refresh", bst_param_refresh_clue_hunter, bparam,
+			NULL);
       gtk_object_set_user_data (GTK_OBJECT (action), any);
-      post_action = gtk_clue_hunter_create_arrow (GTK_CLUE_HUNTER (any));
+      post_action = bst_clue_hunter_create_arrow (BST_CLUE_HUNTER (any));
       bst_gmask_set_atail (group, post_action);
       bst_gmask_set_tip (group, tooltip);
       bst_gmask_pack (group);
@@ -904,7 +917,7 @@ bst_param_update (BstParam *bparam)
     {
       GtkWidget *action, *prompt, *pre_action, *any;
       gchar *string;
-      
+
     case G_TYPE_BOOLEAN:
       action = bst_gmask_get_action (group);
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (action), g_value_get_boolean (value));
@@ -963,12 +976,31 @@ bst_param_update (BstParam *bparam)
       break;
     case G_TYPE_OBJECT:
       action = bst_gmask_get_action (group);
+      any = gtk_object_get_user_data (GTK_OBJECT (action));
       string = (BSE_IS_ITEM (g_value_get_object (value))
 		? bsw_item_get_uname_path (BSE_OBJECT_ID (g_value_get_object (value)))
 		: NULL);
-      if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), string))
-	gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
-      any = gtk_object_get_user_data (GTK_OBJECT (action));
+      /* strip common prefix */
+      if (string)
+	{
+	  gchar *prefix = g_object_get_data (G_OBJECT (any), "prefix");
+	  if (prefix)
+	    {
+	      guint l = strlen (prefix);
+	      if (strncmp (prefix, string, l) != 0)
+		{
+		  /* prefix became invalid */
+		  g_object_set_data (G_OBJECT (any), "prefix", NULL);
+		  l = 0;
+		}
+	      if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), string + l))
+		gtk_entry_set_text (GTK_ENTRY (action), string + l);
+	    }
+	  else if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), string))
+	    gtk_entry_set_text (GTK_ENTRY (action), string);
+	}
+      else if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), ""))
+	gtk_entry_set_text (GTK_ENTRY (action), "");
       break;
     case G_TYPE_ENUM:
       action = bst_gmask_get_action (group);
@@ -1121,40 +1153,29 @@ bst_param_apply (BstParam *bparam,
       break;
     case G_TYPE_OBJECT:
       action = bst_gmask_get_action (group);
+      any = gtk_object_get_user_data (GTK_OBJECT (action));
       string = bse_strdup_stripped (gtk_entry_get_text (GTK_ENTRY (action)));
       if (string && bparam->is_object && BSE_IS_ITEM (bparam->owner))
 	{
 	  BswProxy item = 0, project = bsw_item_get_project (BSE_OBJECT_ID (bparam->owner));
 
-	  g_printerr ("checking: %s\n", string);
-	  
-	  /* check whether this is an uname path */
-	  if (!item && strchr (string, ':'))
+	  /* allow full qualified uname paths */
+	  if (strchr (string, ':'))
+	    item = bsw_project_find_item (project, string);
+	  else
 	    {
-	      item = bsw_project_find_item (project, string);
-	      
-	      if (item && !g_type_is_a (bsw_proxy_type (item), G_PARAM_SPEC_VALUE_TYPE (pspec)))
-		item = 0;
+	      gchar *prefix = g_object_get_data (G_OBJECT (any), "prefix");
+	      gchar *upath = prefix ? g_strconcat (prefix, string, NULL) : NULL;
+	      item = bsw_project_find_item (project, upath ? upath : string);
+	      g_free (upath);
 	    }
-	  else if (!item) /* try generic lookup for uname (ambiguous lookup) */
-	    {
-	      BswIterProxy *iter = bsw_project_match_items_by_uname (project,
-								     G_PARAM_SPEC_VALUE_TYPE (pspec),
-								     string);
-	      g_printerr ("matching uname: n=%u\n", bsw_iter_n_left (iter));
-	      for (bsw_iter_rewind (iter); bsw_iter_n_left (iter); bsw_iter_next (iter))
-		if (bsw_item_get_project (bsw_iter_get_proxy (iter)) == project)
-		  {
-		    item = bsw_iter_get_proxy (iter);
-		    break;
-		  }
-	      bsw_iter_free (iter);
-	    }
+	  if (item && !g_type_is_a (bsw_proxy_type (item), G_PARAM_SPEC_VALUE_TYPE (pspec)))
+	    item = 0;
 
 	  /* ok, found one or giving up */
 	  g_value_set_object (value, bse_object_from_id (item));
 	  g_free (string);
-	  
+
 	  /* enforce redisplay of the entry's string with the correct name */
 	  dirty += 1;
 	}

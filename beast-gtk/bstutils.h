@@ -22,6 +22,7 @@
 #include        <bse/bse.h>
 #include        <bsw/bsw.h>
 #include        <gtk/gtk.h>
+#include        "bstcluehunter.h"
 #include        <libgnomecanvas/libgnomecanvas.h>
 
 #ifdef __cplusplus
