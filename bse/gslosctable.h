@@ -94,7 +94,6 @@ void		gsl_osc_wave_adjust_range	(guint			 n_values,
 						 gfloat			 max,
 						 gfloat			 new_center,
 						 gfloat			 new_max);
-const gchar*	gsl_osc_wave_form_name		(GslOscWaveForm		 wave_form);
 
 
 

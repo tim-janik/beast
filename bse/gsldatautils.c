@@ -210,29 +210,6 @@ gsl_wave_file_patch_length (gint           fd,
 }
 
 gint /* errno */
-gsl_wave_file_dump_data (gint           fd,
-			 guint		n_bits,
-			 guint	        n_values,
-			 const gfloat  *values)
-{
-  guint j;
-  guint8 *dest = g_new (guint8, n_values * 2); /* enough for 16bit */
-  guint n_bytes = gsl_conv_from_float_clip (n_bits > 8 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_SIGNED_8,
-					    G_BYTE_ORDER,
-					    values,
-					    dest,
-					    n_values);
-  do
-    j = write (fd, dest, n_bytes);
-  while (j < 0 && errno == EINTR);
-  g_free (dest);
-  if (j != n_bytes)
-    return errno ? errno : EIO;
-  else
-    return 0;
-}
-
-gint /* errno */
 gsl_data_handle_dump_wav (GslDataHandle *dhandle,
 			  gint           fd,
 			  guint          n_bits,

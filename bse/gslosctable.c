@@ -16,13 +16,13 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include <string.h>
+#include <sfi/gbsearcharray.h>
 #include "gslosctable.h"
-#include "gslutils.h"
+
 #include "gslcommon.h"
 #include "gslmath.h"
 #include "gslfft.h"
-#include <string.h>
-#include <sfi/gbsearcharray.h>
 
 
 #define OSC_DEBUG		sfi_debug_keyfunc ("osc")
@@ -62,10 +62,6 @@ static void	osc_wave_extrema_pos		(guint		n_values,
 						 guint        *minp_p,
 						 guint        *maxp_p);
 void		gsl_osc_cache_debug_dump	(void);
-static void	gsl_wave_osc_table_dump		(GslOscWaveForm wave_form,
-						 gfloat         mfreq,
-						 guint		n_values,
-						 gfloat	       *values);
 
 
 /* --- variables --- */
@@ -200,22 +196,12 @@ osc_table_entry_lookup_best (const GslOscTable *table,
     {
       i = g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep);
       if (i + 1 < g_bsearch_array_get_n_nodes (table->entry_array))
-	{
-	  ep = g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i + 1);
-	  OSC_DEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
-		     mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
-		     table, i + 1, g_bsearch_array_get_n_nodes (table->entry_array));
-	}
+	ep = g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i + 1);
       else	/* bad, might cause aliasing */
-	OSC_DEBUG ("osc-lookup: mismatch, aliasing possible: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
+	OSC_DEBUG ("lookup mismatch, aliasing possible: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
 		   mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
 		   table, i, g_bsearch_array_get_n_nodes (table->entry_array));
     }
-  else
-    OSC_DEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
-	       mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
-	       table, g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep),
-	       g_bsearch_array_get_n_nodes (table->entry_array));
   
   if (min_mfreq)
     {
@@ -304,17 +290,7 @@ cache_table_ref_entry (GslOscWaveForm wave_form,
       fft = g_new (gfloat, e->n_values + 2);	/* [0..n_values] for n_values/2 complex freqs */
       gsl_power2_fftar_simple (e->n_values, values, fft);
       step = e->mfreq * (gdouble) e->n_values;
-      {
-	extern guint    gsl_externvar_sample_freq;
-	gsl_gnuplot_fdump_rfft_abs (g_strdup_printf ("form%ufilt%pfrq%fbefore.gnp", wave_form, filter_func, mfreq),
-				  e->n_values, fft, gsl_externvar_sample_freq/2.);
-      }
       fft_filter (e->n_values, fft, step, filter_func);
-      {
-	extern guint    gsl_externvar_sample_freq;
-	gsl_gnuplot_fdump_rfft_abs (g_strdup_printf ("form%ufilt%pfrq%fafter.gnp", wave_form, filter_func, mfreq),
-				  e->n_values, fft, gsl_externvar_sample_freq/2.);
-      }
       gsl_power2_fftsr_simple (e->n_values, fft, values);
       g_free (fft);
       gsl_osc_wave_normalize (e->n_values, values, (min + max) / 2, max);
@@ -327,9 +303,6 @@ cache_table_ref_entry (GslOscWaveForm wave_form,
 
       /* insert into cache */
       cache_entries = g_bsearch_array_insert (cache_entries, &cache_taconfig, &e);
-
-      /* debugging hook */
-      gsl_wave_osc_table_dump (wave_form, mfreq, e->n_values, values);
     }
   else
     e->ref_count++;
@@ -651,75 +624,4 @@ gsl_osc_wave_normalize (guint   n_values,
     }
 
   gsl_osc_wave_adjust_range (n_values, values, min, max, new_center, new_max);
-}
-
-const gchar*
-gsl_osc_wave_form_name (GslOscWaveForm wave_form)
-{
-  switch (wave_form)
-    {
-    case GSL_OSC_WAVE_SINE:		return "sine";
-    case GSL_OSC_WAVE_TRIANGLE:		return "triangle";
-    case GSL_OSC_WAVE_SAW_RISE:		return "saw_rise";
-    case GSL_OSC_WAVE_SAW_FALL:		return "saw_fall";
-    case GSL_OSC_WAVE_PEAK_RISE:	return "peak_rise";
-    case GSL_OSC_WAVE_PEAK_FALL:	return "peak_fall";
-    case GSL_OSC_WAVE_MOOG_SAW:		return "moog_saw";
-    case GSL_OSC_WAVE_SQUARE:		return "square";
-    case GSL_OSC_WAVE_PULSE_SAW:	return "pulse_saw";
-    default:
-    case GSL_OSC_WAVE_NONE:		return "invalid";
-    }
-}
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include "gsldatautils.h"
-static void
-gsl_wave_osc_table_dump (GslOscWaveForm wave_form,
-			 gfloat         mfreq,
-			 guint		n_values,
-			 gfloat	       *values)
-{
-  gfloat mix_freq = 44109 - 9, freq = mix_freq * mfreq;
-  gchar *fname = g_strdup_printf ("wavetable-%s-%f.wav", gsl_osc_wave_form_name (wave_form), freq);
-  gint fd = open (fname, O_WRONLY | O_CREAT, 0666);
-  if (fd >= 0)
-    {
-      guint length = mix_freq * 4;
-      gfloat *buf = g_new (gfloat, length);
-      gfloat *b = buf, *bound = buf + length;
-      guint n_frac_bits = 32 - g_bit_storage (n_values - 1);
-      guint int_one = 1 << n_frac_bits;
-      gfloat float_one = int_one;
-      guint frac_bitmask = int_one - 1;
-      guint32 step = n_values * mfreq * int_one;
-      guint32 cur_pos = 0, max_pos = n_values << n_frac_bits;
-      gfloat ifrac_to_float = 1.0 / float_one;
-      while (b < bound)
-	{
-	  guint32 tpos = cur_pos >> n_frac_bits;
-	  guint32 ifrac = cur_pos & frac_bitmask;
-	  gfloat ffrac, w;
-	  tpos = cur_pos >> n_frac_bits;
-	  ifrac = cur_pos & frac_bitmask;
-	  ffrac = ifrac * ifrac_to_float;
-	  *b = values[tpos];
-	  w = values[tpos + 1];
-	  *b *= 1.0 - ffrac;
-	  w *= ffrac;
-	  *b += w;
-	  cur_pos += step;
-	  if (cur_pos >= max_pos)
-	    cur_pos -= max_pos;
-	  b++;
-	}
-      gsl_wave_file_dump_header (fd, length, 16, 1, mix_freq);
-      gsl_wave_file_dump_data (fd, 16, length, buf);
-      g_free (buf);
-      close (fd);
-    }
-  g_free (fname);
 }
