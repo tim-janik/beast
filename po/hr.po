@@ -4,7 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: beast 0\n"
-"POT-Creation-Date: 2004-02-01 16:48+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-02-04 06:45+0100\n"
 "PO-Revision-Date: 2004-02-01 16:49+CET\n"
 "Last-Translator: auto\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
@@ -157,30 +158,37 @@ msgstr "_Česta pitanja..."
 msgid "GSL Engine..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:525 beast-gtk/bstapp.c:532 beast-gtk/bstfiledialog.c:410
-#: beast-gtk/bstfiledialog.c:417
+#: beast-gtk/bstapp.c:530 beast-gtk/bstapp.c:537 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:431
+#, c-format
 msgid "Opening project `%s'"
 msgstr ""
 
+#: beast-gtk/bstapp.c:595
+#, c-format
+msgid "Loading skin `%s'"
+msgstr ""
+
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:698
+#: beast-gtk/bstapp.c:757
 msgid "Rack editor"
 msgstr ""
 
-#: beast-gtk/bstapp.c:712
+#: beast-gtk/bstapp.c:771
 msgid "Preferences"
 msgstr "Podešenja"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:726
+#: beast-gtk/bstapp.c:785
 msgid "Device Monitor"
 msgstr ""
 
-#: beast-gtk/bstapp.c:745
+#: beast-gtk/bstapp.c:804
 msgid "Procedure Browser"
 msgstr ""
 
-#: beast-gtk/bstapp.c:802
+#: beast-gtk/bstapp.c:861
+#, c-format
 msgid "BEAST-%s Release Notes"
 msgstr ""
 
@@ -272,28 +280,36 @@ msgid "Open Project"
 msgstr "Otvori projekt"
 
 #: beast-gtk/bstfiledialog.c:396
+#, fuzzy
+msgid "Select File"
+msgstr "Odaberi"
+
+#: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
 msgstr "Izaberite direktorij"
 
-#: beast-gtk/bstfiledialog.c:435
+#: beast-gtk/bstfiledialog.c:449
+#, c-format
 msgid "Merge: %s"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:448
+#: beast-gtk/bstfiledialog.c:462
+#, c-format
 msgid "Merging project `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:464
+#: beast-gtk/bstfiledialog.c:478
 #, c-format
 msgid "Import MIDI: %s"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:475
+#: beast-gtk/bstfiledialog.c:489
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:495
+#: beast-gtk/bstfiledialog.c:509
+#, c-format
 msgid ""
 "Failed to delete file\n"
 "`%s'\n"
@@ -301,25 +317,28 @@ msgid ""
 "%s"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:524
+#: beast-gtk/bstfiledialog.c:538
+#, c-format
 msgid "Save: %s"
 msgstr ""
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:526
+#: beast-gtk/bstfiledialog.c:540
 msgid "Fully include wave files"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:527
+#: beast-gtk/bstfiledialog.c:541
 msgid "Store references to wave files"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:548 beast-gtk/bstfiledialog.c:558
+#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
+#, c-format
 msgid "Saving project `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:549 beast-gtk/bstfiledialog.c:625
-#: beast-gtk/bstfiledialog.c:701
+#: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
+#: beast-gtk/bstfiledialog.c:715
+#, c-format
 msgid ""
 "Failed to save\n"
 "`%s'\n"
@@ -328,43 +347,48 @@ msgid ""
 "%s"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:573
+#: beast-gtk/bstfiledialog.c:587
 msgid "Load Effect"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:586
+#: beast-gtk/bstfiledialog.c:600
+#, c-format
 msgid "Merging effect `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:603
+#: beast-gtk/bstfiledialog.c:617
 msgid "Save Effect"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:624 beast-gtk/bstfiledialog.c:634
+#: beast-gtk/bstfiledialog.c:638 beast-gtk/bstfiledialog.c:648
+#, c-format
 msgid "Saving effect `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:649
+#: beast-gtk/bstfiledialog.c:663
 msgid "Load Instrument"
 msgstr "Učitaj Instrument"
 
-#: beast-gtk/bstfiledialog.c:662
+#: beast-gtk/bstfiledialog.c:676
+#, c-format
 msgid "Merging instrument `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:679
+#: beast-gtk/bstfiledialog.c:693
 msgid "Save Instrument"
 msgstr "Snimi Instrument"
 
-#: beast-gtk/bstfiledialog.c:700 beast-gtk/bstfiledialog.c:710
+#: beast-gtk/bstfiledialog.c:714 beast-gtk/bstfiledialog.c:724
+#, c-format
 msgid "Saving instrument `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:726
+#: beast-gtk/bstfiledialog.c:740
 msgid "Load Wave"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:738 beast-gtk/bstfiledialog.c:740
+#: beast-gtk/bstfiledialog.c:752 beast-gtk/bstfiledialog.c:754
+#, c-format
 msgid "Loading wave `%s'"
 msgstr ""
 
@@ -397,76 +421,85 @@ msgstr "Komentar"
 msgid "Type"
 msgstr "Tip"
 
-#: beast-gtk/bstmain.c:127
+#: beast-gtk/bstmain.c:130
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:137
 msgid "Startup"
 msgstr "Podizanje"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:139
+#.
+#: beast-gtk/bstmain.c:142
 msgid "Objects"
 msgstr "Objekti"
 
-#: beast-gtk/bstmain.c:143
+#: beast-gtk/bstmain.c:147
 msgid "Language"
 msgstr "Jezik"
 
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:154
 msgid "RC File"
 msgstr ""
 
-#. show splash images
 #: beast-gtk/bstmain.c:157
+msgid "Skin RC"
+msgstr ""
+
+#. show splash images
+#.
+#: beast-gtk/bstmain.c:163
 msgid "Splash Image"
 msgstr ""
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:169
+#: beast-gtk/bstmain.c:175
 msgid "BSE Core"
 msgstr ""
 
-#: beast-gtk/bstmain.c:188
+#: beast-gtk/bstmain.c:194
 msgid "Plugins"
 msgstr "Umetci"
 
-#: beast-gtk/bstmain.c:207
+#: beast-gtk/bstmain.c:213
 msgid "LADSPA Plugins"
 msgstr ""
 
-#: beast-gtk/bstmain.c:235
+#: beast-gtk/bstmain.c:241
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
-#: beast-gtk/bstmain.c:253
+#.
+#: beast-gtk/bstmain.c:259
 msgid "Dialogs"
 msgstr "Dijalozi"
 
-#: beast-gtk/bstmain.c:260
+#: beast-gtk/bstmain.c:266
 msgid "Loading..."
 msgstr "Učitavam..."
 
-#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
+#: beast-gtk/bstmain.c:296 beast-gtk/bstmain.c:298
+#, c-format
 msgid "Loading \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:309
+#: beast-gtk/bstmain.c:315
+#, c-format
 msgid "Loading project \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:684
+#: beast-gtk/bstmain.c:708
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.c:685
+#: beast-gtk/bstmain.c:709
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:686
+#: beast-gtk/bstmain.c:710
 msgid "Contributions made by:"
 msgstr ""
 
@@ -476,6 +509,15 @@ msgstr ""
 
 #: beast-gtk/bstparam-choice.c:150
 msgid "Drop Down Button"
+msgstr ""
+
+#: beast-gtk/bstparam-color-spinner.c:67
+#, fuzzy
+msgid "Select Color"
+msgstr "Odaberi"
+
+#: beast-gtk/bstparam-color-spinner.c:116
+msgid "Color Entry"
 msgstr ""
 
 #: beast-gtk/bstparam-note-sequence.c:61
@@ -506,12 +548,16 @@ msgstr "Biraj"
 msgid "Dial (Logarithmic"
 msgstr ""
 
-#: beast-gtk/bstparam-searchpath.c:54
+#: beast-gtk/bstparam-searchpath.c:55
 msgid "Remove Paths"
 msgstr ""
 
-#: beast-gtk/bstparam-searchpath.c:111
+#: beast-gtk/bstparam-searchpath.c:148
 msgid "Searchpath Text Entry"
+msgstr ""
+
+#: beast-gtk/bstparam-searchpath.c:154
+msgid "Filename Text Entry"
 msgstr ""
 
 #: beast-gtk/bstparam-time.c:55
@@ -737,11 +783,16 @@ msgstr ""
 msgid "Playback"
 msgstr ""
 
+#: beast-gtk/bstpreferences.c:69
+msgid "Skin"
+msgstr ""
+
 #: beast-gtk/bstprocedure.c:206
 msgid "Description"
 msgstr "Opis"
 
 #: beast-gtk/bstprocedure.c:296
+#, c-format
 msgid "Executing `%s'"
 msgstr ""
 
@@ -856,7 +907,8 @@ msgid "Sketch Maximum"
 msgstr ""
 
 #. TRANSLATORS: here "Preview" is meant audible, i.e. to
-#.  * playback the current sample version and listen to it.
+#. * playback the current sample version and listen to it.
+#.
 #: beast-gtk/bstsampleeditor.c:539
 msgid "Preview"
 msgstr "Pregled"
@@ -1323,35 +1375,39 @@ msgid "_Routing"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:34
+msgid "_Skins"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 #, fuzzy
 msgid "_Song"
 msgstr "&Pjesma"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Spatial"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Synthesizers"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Tools"
 msgstr "_Alati"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_Utilities"
 msgstr "_Pomoćni programi"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_View"
 msgstr "P_ogled"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/gadgets-beast.xml.h:42
 msgid "_Virtualization"
 msgstr ""
 
@@ -1473,7 +1529,8 @@ msgid "Auto cut"
 msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.c:143
-msgid "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
@@ -1494,7 +1551,8 @@ msgstr "Uzorak"
 msgid ""
 "A string with _ characters in positions correspond to characters in the text "
 "to underline"
-msgstr "Niz znakova gdje podvlake „_“ označavaju znakove koje treba podvući u tekstu"
+msgstr ""
+"Niz znakova gdje podvlake „_“ označavaju znakove koje treba podvući u tekstu"
 
 #: beast-gtk/gxk/gxksimplelabel.c:157
 msgid "Mnemonic key"
@@ -1748,7 +1806,8 @@ msgid "Norm Type"
 msgstr ""
 
 #: bse/bsebiquadfilter.c:159
-msgid "The filter gain normalization type (supported only by highpass and lowpass)"
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
 
 #: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
@@ -2264,4 +2323,3 @@ msgstr "Status"
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr ""
-

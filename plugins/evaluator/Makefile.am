@@ -7,9 +7,10 @@ INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 plugindir = $(bseplugindir)
 
 # setup generation of C++ plugins from idl files
-BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
-%.gen-idl.h: %.idl $(BSEPGEN)
-	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
+SFIDL = ../../sfi/sfidl
+SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+%.gen-idl.h: %.idl $(SFIDL)
+	$(SFIDL) --core-cxx $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 CLEANFILES += $(plugins_built_sources)
 
 EVALUATE_SOURCES = instruction.cc compiler.cc cpu.cc
@@ -17,7 +18,6 @@ EVALUATE_SOURCES = instruction.cc compiler.cc cpu.cc
 bseevaluator_la_SOURCES = bseevaluator.cc $(EVALUATE_SOURCES)
 bseevaluator_la_LDFLAGS = -module -avoid-version
 bseevaluator_la_LIBADD  = $(BSE_LIBS) -lm
-$(srcdir)/bseevaluator.cc: bseevaluator.gen-idl.h
 plugins_built_sources += bseevaluator.gen-idl.h
 EXTRA_HEADERS += bseevaluator.idl symbols.h token.h instruction.h compiler.h cpu.h
 

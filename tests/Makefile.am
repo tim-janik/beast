@@ -24,18 +24,18 @@ CLEANFILES += $(gen_sources)
 
 # initial creation of the real stamp-* files
 # normal autogeneration rules
-bsecxxapi.h: $(top_builddir)/bse/bse.idl $(SFIDL)
+bsecxxapi.h: $(top_srcdir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include <sfi/sficxx.h>\n" > xgen-bcah \
-	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcah \
-	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcah \
+	&& $(SFIDL) --cxx $(SFIDL_INC) --header --interface --prefix test_ $(top_srcdir)/bse/bse.idl >> xgen-bcah \
+	&& $(SFIDL) --cxx $(SFIDL_INC) --header --interface --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcah \
 	&& cp xgen-bcah $@ \
 	&& rm -f xgen-bcah
-bsecxxapi.cc: bsecxxapi.h $(top_builddir)/bse/bse.idl $(SFIDL)
+bsecxxapi.cc: bsecxxapi.h $(top_srcdir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include \"bsecxxapi.h\"\n" > xgen-bcac \
-	&& $(SFIDL) $(SFIDL_INC) --cxx --source --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcac \
-	&& $(SFIDL) $(SFIDL_INC) --cxx --source --interface --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcac \
+	&& $(SFIDL) --cxx $(SFIDL_INC) --source --interface --prefix test_ $(top_srcdir)/bse/bse.idl >> xgen-bcac \
+	&& $(SFIDL) --cxx $(SFIDL_INC) --source --interface --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcac \
 	&& cp xgen-bcac $@ \
 	&& rm -f xgen-bcac
 CLEANFILES += bsecxxapi.h bsecxxapi.cc
@@ -73,9 +73,8 @@ $(srcdir)/perftest.cc: bsecxxapi.h
 noinst_PROGRAMS = $(TESTS)
 
 # test plugin: setup generation of C++ plugins from idl files
-BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
 %.gen-idl.h: %.idl $(BSEPGEN)
-	$(BSEPGEN) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
+	$(SFIDL) --core-cxx $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
 
 # test plugin: library
 testplugin_la_SOURCES = testplugin.cc

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-18 01:26+0100\n"
+"POT-Creation-Date: 2004-02-04 06:45+0100\n"
 "PO-Revision-Date: 2004-01-17 23:28+0100\n"
 "Last-Translator: Christophe Merlet (RedFox) <redfox@redfoxcenter.org>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -165,34 +165,39 @@ msgstr "_FAQ..."
 msgid "GSL Engine..."
 msgstr "Moteur GSL..."
 
-#: beast-gtk/bstapp.c:525 beast-gtk/bstapp.c:532 beast-gtk/bstfiledialog.c:410
-#: beast-gtk/bstfiledialog.c:417
+#: beast-gtk/bstapp.c:530 beast-gtk/bstapp.c:537 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Ouverture du projet « %s »"
 
+#: beast-gtk/bstapp.c:595
+#, fuzzy, c-format
+msgid "Loading skin `%s'"
+msgstr "Chargement de l'image : %s"
+
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:698
+#: beast-gtk/bstapp.c:757
 #, fuzzy
 msgid "Rack editor"
 msgstr "Éditeur de piste"
 
-#: beast-gtk/bstapp.c:712
+#: beast-gtk/bstapp.c:771
 msgid "Preferences"
 msgstr "Préférences"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:726
+#: beast-gtk/bstapp.c:785
 #, fuzzy
 msgid "Device Monitor"
 msgstr "Moniteur de ressources"
 
-#: beast-gtk/bstapp.c:745
+#: beast-gtk/bstapp.c:804
 #, fuzzy
 msgid "Procedure Browser"
 msgstr "Retour de procédure"
 
-#: beast-gtk/bstapp.c:802
+#: beast-gtk/bstapp.c:861
 #, fuzzy, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "_Notes de version de Nautilus"
@@ -217,8 +222,8 @@ msgid "Input"
 msgstr "Entrée"
 
 #: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
-#: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
-#: plugins/artscompressor.idl:57
+#: bse/bseamplifier.idl:67 plugins/artscompressor.idl:39
+#: plugins/artscompressor.idl:58
 msgid "Output"
 msgstr "Sortie"
 
@@ -234,8 +239,8 @@ msgid "Move Control Event"
 msgstr "Centre de contrôle"
 
 #: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:472
-#: beast-gtk/bstpianorollctrl.c:582 beast-gtk/bstpianorollctrl.c:645
+#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
 #: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
 #: beast-gtk/bsttrackrollctrl.c:560
 msgid "No target"
@@ -251,7 +256,7 @@ msgid "Align Control Events"
 msgstr "Aligner au centre"
 
 #: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
-#: beast-gtk/bstpianorollctrl.c:703 beast-gtk/bstpianorollctrl.c:739
+#: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
 msgid "Aborted"
 msgstr "Interrompu"
 
@@ -271,11 +276,11 @@ msgid "Delete Control Event"
 msgstr ""
 
 #: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
-#: beast-gtk/bstpianorollctrl.c:677 beast-gtk/bstpianorollctrl.c:703
+#: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
 msgid "Select Region"
 msgstr "Sélectionner une région"
 
-#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:748
+#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:749
 #, fuzzy
 msgid "Abortion"
 msgstr "Annulation"
@@ -294,32 +299,37 @@ msgid "Open Project"
 msgstr "Ouvrir un projet"
 
 #: beast-gtk/bstfiledialog.c:396
+#, fuzzy
+msgid "Select File"
+msgstr "Sélectionner"
+
+#: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
 msgstr "Sélectionnez un répertoire"
 
-#: beast-gtk/bstfiledialog.c:435
+#: beast-gtk/bstfiledialog.c:449
 #, c-format
 msgid "Merge: %s"
 msgstr "Fusion : %s"
 
-#: beast-gtk/bstfiledialog.c:448
+#: beast-gtk/bstfiledialog.c:462
 #, fuzzy, c-format
 msgid "Merging project `%s'"
 msgstr "Erreur dans le projet « %s »"
 
-#: beast-gtk/bstfiledialog.c:464
+#: beast-gtk/bstfiledialog.c:478
 #, fuzzy, c-format
 msgid "Import MIDI: %s"
 msgstr ""
 "ID du support : %s\n"
 "\n"
 
-#: beast-gtk/bstfiledialog.c:475
+#: beast-gtk/bstfiledialog.c:489
 #, fuzzy, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importation des fichiers"
 
-#: beast-gtk/bstfiledialog.c:495
+#: beast-gtk/bstfiledialog.c:509
 #, fuzzy, c-format
 msgid ""
 "Failed to delete file\n"
@@ -328,29 +338,29 @@ msgid ""
 "%s"
 msgstr "La suppression de l'ancien fichier « %s » a échoué : %s"
 
-#: beast-gtk/bstfiledialog.c:524
+#: beast-gtk/bstfiledialog.c:538
 #, c-format
 msgid "Save: %s"
 msgstr "Enregistrer : %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:526
+#: beast-gtk/bstfiledialog.c:540
 #, fuzzy
 msgid "Fully include wave files"
 msgstr "Inclure un fichier texte"
 
-#: beast-gtk/bstfiledialog.c:527
+#: beast-gtk/bstfiledialog.c:541
 #, fuzzy
 msgid "Store references to wave files"
 msgstr "Référence vers un fichier distant"
 
-#: beast-gtk/bstfiledialog.c:548 beast-gtk/bstfiledialog.c:558
+#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
 #, fuzzy, c-format
 msgid "Saving project `%s'"
 msgstr "Enregistrement du projet ...\n"
 
-#: beast-gtk/bstfiledialog.c:549 beast-gtk/bstfiledialog.c:625
-#: beast-gtk/bstfiledialog.c:701
+#: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
+#: beast-gtk/bstfiledialog.c:715
 #, fuzzy, c-format
 msgid ""
 "Failed to save\n"
@@ -360,51 +370,51 @@ msgid ""
 "%s"
 msgstr "Le renommage de « %s » en « %s » a échoué : %s"
 
-#: beast-gtk/bstfiledialog.c:573
+#: beast-gtk/bstfiledialog.c:587
 #, fuzzy
 msgid "Load Effect"
 msgstr "Effet de lentille optique"
 
-#: beast-gtk/bstfiledialog.c:586
+#: beast-gtk/bstfiledialog.c:600
 #, fuzzy, c-format
 msgid "Merging effect `%s'"
 msgstr "Fusion de %s"
 
-#: beast-gtk/bstfiledialog.c:603
+#: beast-gtk/bstfiledialog.c:617
 #, fuzzy
 msgid "Save Effect"
 msgstr "Enregistrer l'événement"
 
-#: beast-gtk/bstfiledialog.c:624 beast-gtk/bstfiledialog.c:634
+#: beast-gtk/bstfiledialog.c:638 beast-gtk/bstfiledialog.c:648
 #, fuzzy, c-format
 msgid "Saving effect `%s'"
 msgstr "Enregistrement de « %s »"
 
-#: beast-gtk/bstfiledialog.c:649
+#: beast-gtk/bstfiledialog.c:663
 #, fuzzy
 msgid "Load Instrument"
 msgstr "Instrumental"
 
-#: beast-gtk/bstfiledialog.c:662
+#: beast-gtk/bstfiledialog.c:676
 #, fuzzy, c-format
 msgid "Merging instrument `%s'"
 msgstr "Fusion des données vers %s"
 
-#: beast-gtk/bstfiledialog.c:679
+#: beast-gtk/bstfiledialog.c:693
 msgid "Save Instrument"
 msgstr "Enregistrer l'instrument"
 
-#: beast-gtk/bstfiledialog.c:700 beast-gtk/bstfiledialog.c:710
+#: beast-gtk/bstfiledialog.c:714 beast-gtk/bstfiledialog.c:724
 #, fuzzy, c-format
 msgid "Saving instrument `%s'"
 msgstr "Enregistrement de « %s »"
 
-#: beast-gtk/bstfiledialog.c:726
+#: beast-gtk/bstfiledialog.c:740
 #, fuzzy
 msgid "Load Wave"
 msgstr "Charge moyenne"
 
-#: beast-gtk/bstfiledialog.c:738 beast-gtk/bstfiledialog.c:740
+#: beast-gtk/bstfiledialog.c:752 beast-gtk/bstfiledialog.c:754
 #, fuzzy, c-format
 msgid "Loading wave `%s'"
 msgstr "Chargement de l'image : %s"
@@ -438,85 +448,89 @@ msgstr "Commentaire"
 msgid "Type"
 msgstr "Type"
 
-#: beast-gtk/bstmain.c:127
+#: beast-gtk/bstmain.c:130
 msgid "BEAST Startup"
 msgstr "Démarrage de BEAST"
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:137
 msgid "Startup"
 msgstr "Démarrage"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:139
+#: beast-gtk/bstmain.c:142
 msgid "Objects"
 msgstr "Objets"
 
-#: beast-gtk/bstmain.c:143
+#: beast-gtk/bstmain.c:147
 msgid "Language"
 msgstr "Langue"
 
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:154
 #, fuzzy
 msgid "RC File"
 msgstr "Co_uper le fichier"
 
+#: beast-gtk/bstmain.c:157
+msgid "Skin RC"
+msgstr ""
+
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:157
+#: beast-gtk/bstmain.c:163
 #, fuzzy
 msgid "Splash Image"
 msgstr "Image de l'écran d'acceuil"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:169
+#: beast-gtk/bstmain.c:175
 #, fuzzy
 msgid "BSE Core"
 msgstr "Stocker"
 
-#: beast-gtk/bstmain.c:188
+#: beast-gtk/bstmain.c:194
 msgid "Plugins"
 msgstr "Greffons"
 
-#: beast-gtk/bstmain.c:207
+#: beast-gtk/bstmain.c:213
 #, fuzzy
 msgid "LADSPA Plugins"
 msgstr "Greffons"
 
-#: beast-gtk/bstmain.c:235
+#: beast-gtk/bstmain.c:241
 msgid "Scripts"
 msgstr "Scripts"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:253
+#: beast-gtk/bstmain.c:259
 msgid "Dialogs"
 msgstr "Boîtes de dialogue"
 
-#: beast-gtk/bstmain.c:260
+#: beast-gtk/bstmain.c:266
 msgid "Loading..."
 msgstr "Chargement..."
 
-#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
+#: beast-gtk/bstmain.c:296 beast-gtk/bstmain.c:298
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Chargement de « %s »"
 
-#: beast-gtk/bstmain.c:309
+#: beast-gtk/bstmain.c:315
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Chargement du projet « %s »"
 
-#: beast-gtk/bstmain.c:684
+#: beast-gtk/bstmain.c:708
 msgid "BEAST About"
 msgstr "À propos de BEAST"
 
-#: beast-gtk/bstmain.c:685
+#: beast-gtk/bstmain.c:709
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST version %s"
 
-#: beast-gtk/bstmain.c:686
+#: beast-gtk/bstmain.c:710
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "Contributeurs :"
@@ -530,6 +544,16 @@ msgstr "Menu Options des outils"
 #, fuzzy
 msgid "Drop Down Button"
 msgstr "Dessiner le bouton"
+
+#: beast-gtk/bstparam-color-spinner.c:67
+#, fuzzy
+msgid "Select Color"
+msgstr "Sélectionner"
+
+#: beast-gtk/bstparam-color-spinner.c:116
+#, fuzzy
+msgid "Color Entry"
+msgstr "Entrée de port"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 #, fuzzy
@@ -565,15 +589,20 @@ msgstr "Composer"
 msgid "Dial (Logarithmic"
 msgstr "Logarithmique"
 
-#: beast-gtk/bstparam-searchpath.c:54
+#: beast-gtk/bstparam-searchpath.c:55
 #, fuzzy
 msgid "Remove Paths"
 msgstr "Supprimer le chemin"
 
-#: beast-gtk/bstparam-searchpath.c:111
+#: beast-gtk/bstparam-searchpath.c:148
 #, fuzzy
 msgid "Searchpath Text Entry"
 msgstr "Centre de recherche "
+
+#: beast-gtk/bstparam-searchpath.c:154
+#, fuzzy
+msgid "Filename Text Entry"
+msgstr "Saisie de texte"
 
 #: beast-gtk/bstparam-time.c:55
 #, fuzzy
@@ -669,7 +698,7 @@ msgstr "Sélectionner"
 msgid "Rectangle select notes"
 msgstr "Supprimer les noeuds sélectionnés"
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:713
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:714
 #, fuzzy
 msgid "Vertical Select"
 msgstr "Curseur vertical"
@@ -785,36 +814,36 @@ msgstr ""
 msgid "Quantize to sixteenth note boundaries"
 msgstr "est au-delà des limites de la feuille"
 
-#: beast-gtk/bstpianorollctrl.c:465 beast-gtk/bstpianorollctrl.c:472
-#: beast-gtk/bstpianorollctrl.c:560
+#: beast-gtk/bstpianorollctrl.c:466 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bstpianorollctrl.c:561
 #, fuzzy
 msgid "Move Note"
 msgstr "Déplacement de l'élément"
 
-#: beast-gtk/bstpianorollctrl.c:560 beast-gtk/bstpianorollctrl.c:631
+#: beast-gtk/bstpianorollctrl.c:561 beast-gtk/bstpianorollctrl.c:632
 msgid "Lost Note"
 msgstr "Note perdue"
 
-#: beast-gtk/bstpianorollctrl.c:577 beast-gtk/bstpianorollctrl.c:582
-#: beast-gtk/bstpianorollctrl.c:631
+#: beast-gtk/bstpianorollctrl.c:578 beast-gtk/bstpianorollctrl.c:583
+#: beast-gtk/bstpianorollctrl.c:632
 msgid "Resize Note"
 msgstr "Redimensionner la note"
 
-#: beast-gtk/bstpianorollctrl.c:642 beast-gtk/bstpianorollctrl.c:645
+#: beast-gtk/bstpianorollctrl.c:643 beast-gtk/bstpianorollctrl.c:646
 msgid "Delete Note"
 msgstr "Supprimer la note"
 
-#: beast-gtk/bstpianorollctrl.c:667
+#: beast-gtk/bstpianorollctrl.c:668
 #, fuzzy
 msgid "Insert Note"
 msgstr "Mode d'insertion"
 
-#: beast-gtk/bstpianorollctrl.c:739
+#: beast-gtk/bstpianorollctrl.c:740
 #, fuzzy
 msgid "Vertical Region"
 msgstr "Options verticales"
 
-#: beast-gtk/bstpianorollctrl.c:860
+#: beast-gtk/bstpianorollctrl.c:861
 #, fuzzy
 msgid "Play note"
 msgstr "Nombre de lectures"
@@ -823,6 +852,10 @@ msgstr "Nombre de lectures"
 #, fuzzy
 msgid "Playback"
 msgstr "Jouer : "
+
+#: beast-gtk/bstpreferences.c:69
+msgid "Skin"
+msgstr ""
 
 #: beast-gtk/bstprocedure.c:206
 msgid "Description"
@@ -1141,9 +1174,9 @@ msgid "Tracks"
 msgstr "Pistes"
 
 #: beast-gtk/bstsupershell.c:217 beast-gtk/bstsupershell.c:253
-#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:33
-#: plugins/artscompressor.idl:52 plugins/davbassfilter.idl:35
-#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:34
+#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:34
+#: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
+#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Paramètres"
 
@@ -1484,35 +1517,39 @@ msgid "_Routing"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:34
+msgid "_Skins"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Song"
 msgstr "_Chanson"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Spatial"
 msgstr "_Spatial"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 #, fuzzy
 msgid "_Synthesizers"
 msgstr "_Synchroniser"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Tools"
 msgstr "_Outils"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_Utilities"
 msgstr "_Utilitaires"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_View"
 msgstr "Afficha_ge"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/gadgets-beast.xml.h:42
 msgid "_Virtualization"
 msgstr "_Virtualisation"
 
@@ -1689,17 +1726,17 @@ msgstr "Widget mnémonique"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Le widget à activer lorsque la touche mnémonique est activé"
 
-#: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26
-#: plugins/davbassfilter.idl:27 plugins/davchorus.idl:27
+#: bse/bseamplifier.idl:32 plugins/bsebalance.idl:26
+#: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
 #, fuzzy
 msgid "GNU Lesser General Public License"
 msgstr "La Licence Publique Générale GNU (GPL)"
 
-#: bse/bseamplifier.idl:32
+#: bse/bseamplifier.idl:33
 msgid "/Routing/Amplifier"
 msgstr ""
 
-#: bse/bseamplifier.idl:33
+#: bse/bseamplifier.idl:34
 msgid ""
 "BseAmplifier provides input signal controlled amplification or attenuation. "
 "It supports two control inputs and two audio inputs which are mixed together "
@@ -1712,193 +1749,193 @@ msgid ""
 "the master volume controls amplification of the resulting output signal."
 msgstr ""
 
-#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
 msgid "Audio In1"
 msgstr "Audio In1"
 
-#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
 #, fuzzy
 msgid "First audio input"
 msgstr "Premier point"
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
 msgid "Audio In2"
 msgstr "Audio In2"
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
 #, fuzzy
 msgid "Second audio input"
 msgstr "Entrée standard :"
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
+#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:38
 msgid "Ctrl In1"
 msgstr "Ctrl In1"
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
+#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:38
 #, fuzzy
 msgid "First control input"
 msgstr "Afficher le premier point de contrôle"
 
-#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:39
 msgid "Ctrl In2"
 msgstr "Ctrl In2"
 
-#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:39
 #, fuzzy
 msgid "Second control input"
 msgstr "Ouvrir le panneau de contrôle"
 
-#: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
-#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: bse/bseamplifier.idl:51 plugins/artscompressor.idl:33
+#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:32
 #: plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
 msgstr "Sortie audio"
 
-#: bse/bseamplifier.idl:50
+#: bse/bseamplifier.idl:51
 #, fuzzy
 msgid "Amplified audio output"
 msgstr "Type de sortie audio à utiliser"
 
-#: bse/bseamplifier.idl:51 plugins/bsebalance.idl:43
+#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:43
 msgid "Audio Input"
 msgstr "Entrée audio"
 
-#: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:44
+#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:44
 #: plugins/bsebalance.idl:49
 msgid "Input 1 [%]"
 msgstr "Entrée 1 [%]"
 
-#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:44
+#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:44
 msgid "Attenuate the level of audio input 1"
 msgstr ""
 
-#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:45
+#: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:45
 #: plugins/bsebalance.idl:50
 msgid "Input 2 [%]"
 msgstr "Entrée 2 [%]"
 
-#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:45
+#: bse/bseamplifier.idl:54 plugins/bsebalance.idl:45
 msgid "Attenuate the level of audio input 2"
 msgstr ""
 
-#: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:46
+#: bse/bseamplifier.idl:55 bse/bseamplifier.idl:60 plugins/bsebalance.idl:46
 #: plugins/bsebalance.idl:51
 msgid "Balance"
 msgstr "Balance"
 
-#: bse/bseamplifier.idl:54 plugins/bsebalance.idl:46
+#: bse/bseamplifier.idl:55 plugins/bsebalance.idl:46
 msgid "Balance audio input levels"
 msgstr ""
 
-#: bse/bseamplifier.idl:56 plugins/bsebalance.idl:48
+#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:48
 #, fuzzy
 msgid "Control Input"
 msgstr "Entrée centre"
 
-#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:49
+#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:49
 msgid "Attenuate the level of control input 1"
 msgstr ""
 
-#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:50
+#: bse/bseamplifier.idl:59 plugins/bsebalance.idl:50
 msgid "Attenuate the level of control input 2"
 msgstr ""
 
-#: bse/bseamplifier.idl:59 plugins/bsebalance.idl:51
+#: bse/bseamplifier.idl:60 plugins/bsebalance.idl:51
 msgid "Balance control input levels"
 msgstr ""
 
-#: bse/bseamplifier.idl:60
+#: bse/bseamplifier.idl:61
 #, fuzzy
 msgid "Multiply Controls"
 msgstr "VCards multiples"
 
-#: bse/bseamplifier.idl:61
+#: bse/bseamplifier.idl:62
 msgid ""
 "Switch the two control inputs to work like a chain of gain controls, rather "
 "than mixing them together, weighted by balance."
 msgstr ""
 
-#: bse/bseamplifier.idl:64
+#: bse/bseamplifier.idl:65
 #, fuzzy
 msgid "Exponential Control"
 msgstr "Puissance exponentielle"
 
-#: bse/bseamplifier.idl:64
+#: bse/bseamplifier.idl:65
 msgid "Toggle exponential and linear control response"
 msgstr ""
 
-#: bse/bseamplifier.idl:67 plugins/bsebalance.idl:54
+#: bse/bseamplifier.idl:68 plugins/bsebalance.idl:54
 #, fuzzy
 msgid "Control Strength"
 msgstr "Centre de contrôle"
 
-#: bse/bseamplifier.idl:67
+#: bse/bseamplifier.idl:68
 msgid "Adjust how much the control signals affect the output volume"
 msgstr ""
 
-#: bse/bseamplifier.idl:68
+#: bse/bseamplifier.idl:69
 #, fuzzy
 msgid "Base Volume"
 msgstr "Volume système"
 
-#: bse/bseamplifier.idl:68
+#: bse/bseamplifier.idl:69
 msgid "Base amplification (the control signal adds up to this)"
 msgstr ""
 
-#: bse/bseamplifier.idl:69
+#: bse/bseamplifier.idl:70
 #, fuzzy
 msgid "Master Volume"
 msgstr "Volume système"
 
-#: bse/bseamplifier.idl:69
+#: bse/bseamplifier.idl:70
 msgid "Output stage amplification"
 msgstr ""
 
-#: bse/bseautodoc.c:379 bse/bseautodoc.c:381
+#: bse/bseautodoc.c:397 bse/bseautodoc.c:399
 #, fuzzy
 msgid "BSE-Objects"
 msgstr "Objets"
 
-#: bse/bseautodoc.c:381
+#: bse/bseautodoc.c:399
 #, fuzzy
 msgid " Object Reference"
 msgstr "Fonctions de référence d'objets"
 
-#: bse/bseautodoc.c:393
+#: bse/bseautodoc.c:411
 msgid "Authors:"
 msgstr "Auteurs :"
 
-#: bse/bseautodoc.c:396
+#: bse/bseautodoc.c:414
 msgid "License:"
 msgstr "Licence :"
 
-#: bse/bseautodoc.c:400
+#: bse/bseautodoc.c:418
 msgid "Properties:"
 msgstr "Propriétés :"
 
-#: bse/bseautodoc.c:426 bse/bseautodoc.c:459 bse/bseautodoc.c:476
-msgid "Name:"
-msgstr "Nom :"
+#: bse/bseautodoc.c:444 bse/bseautodoc.c:477 bse/bseautodoc.c:494
+msgid "Identifier:"
+msgstr ""
 
-#: bse/bseautodoc.c:431 bse/bseautodoc.c:437
+#: bse/bseautodoc.c:449 bse/bseautodoc.c:455
 msgid "Range:"
 msgstr "Intervalle :"
 
-#: bse/bseautodoc.c:441 bse/bseautodoc.c:462 bse/bseautodoc.c:479
+#: bse/bseautodoc.c:459 bse/bseautodoc.c:480 bse/bseautodoc.c:497
 msgid "Description:"
 msgstr "Description :"
 
-#: bse/bseautodoc.c:451
+#: bse/bseautodoc.c:469
 #, fuzzy
 msgid "Input Channels:"
 msgstr "Inverser le canal"
 
-#: bse/bseautodoc.c:458
+#: bse/bseautodoc.c:476
 #, fuzzy
 msgid "(Joint Input)"
 msgstr "Entrée phone"
 
-#: bse/bseautodoc.c:469
+#: bse/bseautodoc.c:487
 #, fuzzy
 msgid "Output Channels:"
 msgstr "Niveau de sortie :"
@@ -2161,122 +2198,122 @@ msgstr ""
 msgid "BSE Synthesis File"
 msgstr ""
 
-#: plugins/artscompressor.idl:28 plugins/artscompressor.idl:45
+#: plugins/artscompressor.idl:29 plugins/artscompressor.idl:46
 #: plugins/evaluator/bseevaluator.idl:27
 #, fuzzy
 msgid "GNU General Public License"
 msgstr "La Licence Publique Générale GNU (GPL)"
 
-#: plugins/artscompressor.idl:29
+#: plugins/artscompressor.idl:30
 msgid "/Enhance/ArtsCompressor"
 msgstr ""
 
-#: plugins/artscompressor.idl:30
+#: plugins/artscompressor.idl:31
 #, fuzzy
 msgid "ArtsCompressor compresses the sound."
 msgstr "Fichier comprimé avec compress"
 
-#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
+#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Audio In"
 
-#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
+#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr "Entrée audio"
 
-#: plugins/artscompressor.idl:32
+#: plugins/artscompressor.idl:33
 #, fuzzy
 msgid "Compressed audio output"
 msgstr "Document GIMP comprimé"
 
-#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 #, fuzzy
 msgid "Attack [ms]"
 msgstr "Pièces jointes"
 
 # SUN NEW TRANSLATION
-#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 #, fuzzy
 msgid "Set the attack time in milli seconds"
 msgstr "Définit l'intervalle de temps de l'échantillon en secondes"
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Release [ms]"
 msgstr ""
 
 # SUN NEW TRANSLATION
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 #, fuzzy
 msgid "Set the release time in milli seconds"
 msgstr "Définit l'intervalle de temps de l'échantillon en secondes"
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Threshold"
 msgstr "Seuil"
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 #, fuzzy
 msgid "Set the threshold"
 msgstr "Longueur du seuil"
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Ratio"
 msgstr "Ratio"
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 #, fuzzy
 msgid "Set the compression ratio"
 msgstr "Définir la session courante"
 
-#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
+#: plugins/artscompressor.idl:39 plugins/artscompressor.idl:58
 #, fuzzy
 msgid "Set the output amplification"
 msgstr "Choix de la police pour les applications"
 
-#: plugins/artscompressor.idl:46
+#: plugins/artscompressor.idl:47
 msgid "/Enhance/ArtsStereoCompressor"
 msgstr ""
 
-#: plugins/artscompressor.idl:47
+#: plugins/artscompressor.idl:48
 msgid "ArtsStereoCompressor compresses the sound."
 msgstr ""
 
-#: plugins/artscompressor.idl:48
+#: plugins/artscompressor.idl:49
 #, fuzzy
 msgid "Left Audio In"
 msgstr "Test Audio"
 
-#: plugins/artscompressor.idl:48
+#: plugins/artscompressor.idl:49
 #, fuzzy
 msgid "Left audio input"
 msgstr "Bourrage de gauche"
 
-#: plugins/artscompressor.idl:49
+#: plugins/artscompressor.idl:50
 #, fuzzy
 msgid "Right Audio In"
 msgstr "Aligner à droite"
 
-#: plugins/artscompressor.idl:49
+#: plugins/artscompressor.idl:50
 #, fuzzy
 msgid "Right audio input"
 msgstr "Bourrage de droite"
 
-#: plugins/artscompressor.idl:50
+#: plugins/artscompressor.idl:51
 msgid "Left Audio Out"
 msgstr "Sortie audio gauche"
 
-#: plugins/artscompressor.idl:50
+#: plugins/artscompressor.idl:51
 #, fuzzy
 msgid "Compressed left audio output"
 msgstr "Type de sortie audio à utiliser"
 
-#: plugins/artscompressor.idl:51
+#: plugins/artscompressor.idl:52
 msgid "Right Audio Out"
 msgstr "Sortie audio droite"
 
-#: plugins/artscompressor.idl:51
+#: plugins/artscompressor.idl:52
 #, fuzzy
 msgid "Compressed right audio output"
 msgstr "Document GIMP comprimé"
@@ -2403,83 +2440,83 @@ msgstr "Entrée centre"
 msgid "Filtered Output"
 msgstr "<< Moins d'options"
 
-#: plugins/davbassfilter.idl:28
+#: plugins/davbassfilter.idl:29
 #, fuzzy
 msgid "/Filters/Bass Filter"
 msgstr "Filtre fichier"
 
-#: plugins/davbassfilter.idl:29
+#: plugins/davbassfilter.idl:30
 msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
 msgstr ""
 
-#: plugins/davbassfilter.idl:34
+#: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
 msgstr ""
 
-#: plugins/davbassfilter.idl:36
+#: plugins/davbassfilter.idl:37
 msgid "Cutoff [%]"
 msgstr ""
 
-#: plugins/davbassfilter.idl:36
+#: plugins/davbassfilter.idl:37
 #, fuzzy
 msgid "Set the cutoff frequency percentage"
 msgstr "Définir le format des cellules sélectionnées comme pourcentage"
 
-#: plugins/davbassfilter.idl:37
+#: plugins/davbassfilter.idl:38
 #, fuzzy
 msgid "Resonance [%]"
 msgstr "Remplacer %s"
 
-#: plugins/davbassfilter.idl:37
+#: plugins/davbassfilter.idl:38
 #, fuzzy
 msgid "Set the amount of resonance in percent"
 msgstr "Régler le contraste de l'impression"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:39
 msgid "Envelope Modulation [%]"
 msgstr ""
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:39
 msgid "Set the envelope magnitude in percent"
 msgstr ""
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:40
 #, fuzzy
 msgid "Decay [%]"
 msgstr "Pause %.2f"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:40
 #, fuzzy
 msgid "Set the decay length in percent"
 msgstr "Indiquez le chemin du périphérique ici"
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:41
 #, fuzzy
 msgid "Trigger filter"
 msgstr "Filtre fichier"
 
-#: plugins/davchorus.idl:28
+#: plugins/davchorus.idl:29
 #, fuzzy
 msgid "/Enhance/Chorus"
 msgstr "_Améliorer"
 
-#: plugins/davchorus.idl:29
+#: plugins/davchorus.idl:30
 msgid "DavChorus adds more depth to sounds"
 msgstr ""
 
-#: plugins/davchorus.idl:31
+#: plugins/davchorus.idl:32
 #, fuzzy
 msgid "Chorus audio output"
 msgstr "Sortie couleur"
 
-#: plugins/davchorus.idl:33
+#: plugins/davchorus.idl:34
 msgid "Wet out [%]"
 msgstr ""
 
-#: plugins/davchorus.idl:33
+#: plugins/davchorus.idl:34
 #, fuzzy
 msgid "Set the amount of modified data to mix"
 msgstr "Changer la date de modification à :"
@@ -2519,3 +2556,6 @@ msgstr "État"
 #, fuzzy
 msgid "Status used to output error messages"
 msgstr "La couleur des messages d'erreurs"
+
+#~ msgid "Name:"
+#~ msgstr "Nom :"

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-23 12:06+0100\n"
+"POT-Creation-Date: 2004-02-04 06:45+0100\n"
 "PO-Revision-Date: 2004-01-23 12:07+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -161,31 +161,36 @@ msgstr "Питања и _одговори"
 msgid "GSL Engine..."
 msgstr "GSL машинерија..."
 
-#: beast-gtk/bstapp.c:525 beast-gtk/bstapp.c:532 beast-gtk/bstfiledialog.c:410
-#: beast-gtk/bstfiledialog.c:417
+#: beast-gtk/bstapp.c:530 beast-gtk/bstapp.c:537 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Отвара пројекат „%s“"
 
+#: beast-gtk/bstapp.c:595
+#, fuzzy, c-format
+msgid "Loading skin `%s'"
+msgstr "Учитавам талас „%s“"
+
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:698
+#: beast-gtk/bstapp.c:757
 msgid "Rack editor"
 msgstr "Уређивач полица"
 
-#: beast-gtk/bstapp.c:712
+#: beast-gtk/bstapp.c:771
 msgid "Preferences"
 msgstr "Поставке"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:726
+#: beast-gtk/bstapp.c:785
 msgid "Device Monitor"
 msgstr "Праћење уређаја"
 
-#: beast-gtk/bstapp.c:745
+#: beast-gtk/bstapp.c:804
 msgid "Procedure Browser"
 msgstr "Разгледач процедура"
 
-#: beast-gtk/bstapp.c:802
+#: beast-gtk/bstapp.c:861
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ЗВЕР-%s Објава издања"
@@ -222,8 +227,8 @@ msgid "Move Control Event"
 msgstr "Премести контролни догађај"
 
 #: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:472
-#: beast-gtk/bstpianorollctrl.c:582 beast-gtk/bstpianorollctrl.c:645
+#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
 #: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
 #: beast-gtk/bsttrackrollctrl.c:560
 msgid "No target"
@@ -238,7 +243,7 @@ msgid "Align Control Events"
 msgstr "Поравнај контролне догађаје"
 
 #: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
-#: beast-gtk/bstpianorollctrl.c:703 beast-gtk/bstpianorollctrl.c:739
+#: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
 msgid "Aborted"
 msgstr "Прекинут"
 
@@ -256,11 +261,11 @@ msgid "Delete Control Event"
 msgstr "Обриши контролни догађај"
 
 #: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
-#: beast-gtk/bstpianorollctrl.c:677 beast-gtk/bstpianorollctrl.c:703
+#: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
 msgid "Select Region"
 msgstr "Изабери подручје"
 
-#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:748
+#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:749
 msgid "Abortion"
 msgstr "Прекид"
 
@@ -278,30 +283,35 @@ msgid "Open Project"
 msgstr "Отвори пројекат"
 
 #: beast-gtk/bstfiledialog.c:396
+#, fuzzy
+msgid "Select File"
+msgstr "Изабери"
+
+#: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
 msgstr "Изабери директоријум"
 
-#: beast-gtk/bstfiledialog.c:435
+#: beast-gtk/bstfiledialog.c:449
 #, c-format
 msgid "Merge: %s"
 msgstr "Споји: %s"
 
-#: beast-gtk/bstfiledialog.c:448
+#: beast-gtk/bstfiledialog.c:462
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Спаја пројекат „%s“"
 
-#: beast-gtk/bstfiledialog.c:464
+#: beast-gtk/bstfiledialog.c:478
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Увези МИДИ: %s"
 
-#: beast-gtk/bstfiledialog.c:475
+#: beast-gtk/bstfiledialog.c:489
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Увозим МИДИ датотеку „%s“"
 
-#: beast-gtk/bstfiledialog.c:495
+#: beast-gtk/bstfiledialog.c:509
 #, c-format
 msgid ""
 "Failed to delete file\n"
@@ -314,27 +324,27 @@ msgstr ""
 "због:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:524
+#: beast-gtk/bstfiledialog.c:538
 #, c-format
 msgid "Save: %s"
 msgstr "Сачувај: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:526
+#: beast-gtk/bstfiledialog.c:540
 msgid "Fully include wave files"
 msgstr "У потпуности укључи таласне датотеке"
 
-#: beast-gtk/bstfiledialog.c:527
+#: beast-gtk/bstfiledialog.c:541
 msgid "Store references to wave files"
 msgstr "Смести референце у таласне датотеке"
 
-#: beast-gtk/bstfiledialog.c:548 beast-gtk/bstfiledialog.c:558
+#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Снима пројекат „%s“"
 
-#: beast-gtk/bstfiledialog.c:549 beast-gtk/bstfiledialog.c:625
-#: beast-gtk/bstfiledialog.c:701
+#: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
+#: beast-gtk/bstfiledialog.c:715
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -349,47 +359,47 @@ msgstr ""
 "„%s“:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:573
+#: beast-gtk/bstfiledialog.c:587
 msgid "Load Effect"
 msgstr "Учитај ефекат"
 
-#: beast-gtk/bstfiledialog.c:586
+#: beast-gtk/bstfiledialog.c:600
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Спаја ефекат „%s“"
 
-#: beast-gtk/bstfiledialog.c:603
+#: beast-gtk/bstfiledialog.c:617
 msgid "Save Effect"
 msgstr "Сачувај ефекат"
 
-#: beast-gtk/bstfiledialog.c:624 beast-gtk/bstfiledialog.c:634
+#: beast-gtk/bstfiledialog.c:638 beast-gtk/bstfiledialog.c:648
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Снима ефекат „%s“"
 
-#: beast-gtk/bstfiledialog.c:649
+#: beast-gtk/bstfiledialog.c:663
 msgid "Load Instrument"
 msgstr "Учитај инструмент"
 
-#: beast-gtk/bstfiledialog.c:662
+#: beast-gtk/bstfiledialog.c:676
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Спаја инструмент „%s“"
 
-#: beast-gtk/bstfiledialog.c:679
+#: beast-gtk/bstfiledialog.c:693
 msgid "Save Instrument"
 msgstr "Сачувај инструмент"
 
-#: beast-gtk/bstfiledialog.c:700 beast-gtk/bstfiledialog.c:710
+#: beast-gtk/bstfiledialog.c:714 beast-gtk/bstfiledialog.c:724
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Снима инструмент „%s“"
 
-#: beast-gtk/bstfiledialog.c:726
+#: beast-gtk/bstfiledialog.c:740
 msgid "Load Wave"
 msgstr "Учитај талас"
 
-#: beast-gtk/bstfiledialog.c:738 beast-gtk/bstfiledialog.c:740
+#: beast-gtk/bstfiledialog.c:752 beast-gtk/bstfiledialog.c:754
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Учитавам талас „%s“"
@@ -423,81 +433,85 @@ msgstr "Примедба"
 msgid "Type"
 msgstr "Врста"
 
-#: beast-gtk/bstmain.c:127
+#: beast-gtk/bstmain.c:130
 msgid "BEAST Startup"
 msgstr "Покретање Звери"
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:137
 msgid "Startup"
 msgstr "Покретање"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:139
+#: beast-gtk/bstmain.c:142
 msgid "Objects"
 msgstr "Објекти"
 
-#: beast-gtk/bstmain.c:143
+#: beast-gtk/bstmain.c:147
 msgid "Language"
 msgstr "Језик"
 
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:154
 msgid "RC File"
 msgstr "RC датотека"
 
+#: beast-gtk/bstmain.c:157
+msgid "Skin RC"
+msgstr ""
+
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:157
+#: beast-gtk/bstmain.c:163
 msgid "Splash Image"
 msgstr "Уводна слика"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:169
+#: beast-gtk/bstmain.c:175
 msgid "BSE Core"
 msgstr "BSE језгро"
 
-#: beast-gtk/bstmain.c:188
+#: beast-gtk/bstmain.c:194
 msgid "Plugins"
 msgstr "Додаци"
 
-#: beast-gtk/bstmain.c:207
+#: beast-gtk/bstmain.c:213
 msgid "LADSPA Plugins"
 msgstr "LADSPA додаци"
 
-#: beast-gtk/bstmain.c:235
+#: beast-gtk/bstmain.c:241
 msgid "Scripts"
 msgstr "Скрипте"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:253
+#: beast-gtk/bstmain.c:259
 msgid "Dialogs"
 msgstr "Прозорчићи"
 
-#: beast-gtk/bstmain.c:260
+#: beast-gtk/bstmain.c:266
 msgid "Loading..."
 msgstr "Учитавам..."
 
-#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
+#: beast-gtk/bstmain.c:296 beast-gtk/bstmain.c:298
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Учитавам „%s“"
 
-#: beast-gtk/bstmain.c:309
+#: beast-gtk/bstmain.c:315
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Учитавам пројекат „%s“"
 
-#: beast-gtk/bstmain.c:684
+#: beast-gtk/bstmain.c:708
 msgid "BEAST About"
 msgstr "О Звери"
 
-#: beast-gtk/bstmain.c:685
+#: beast-gtk/bstmain.c:709
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ЗВЕР, издање %s"
 
-#: beast-gtk/bstmain.c:686
+#: beast-gtk/bstmain.c:710
 msgid "Contributions made by:"
 msgstr "Такође допринели:"
 
@@ -508,6 +522,16 @@ msgstr "Падајућа листа (мени опција)"
 #: beast-gtk/bstparam-choice.c:150
 msgid "Drop Down Button"
 msgstr "Падајуће дугме"
+
+#: beast-gtk/bstparam-color-spinner.c:67
+#, fuzzy
+msgid "Select Color"
+msgstr "Изабери"
+
+#: beast-gtk/bstparam-color-spinner.c:116
+#, fuzzy
+msgid "Color Entry"
+msgstr "Унос ноте"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -539,13 +563,18 @@ msgstr "Бројчаник"
 msgid "Dial (Logarithmic"
 msgstr "Бројчаник (логаритамски)"
 
-#: beast-gtk/bstparam-searchpath.c:54
+#: beast-gtk/bstparam-searchpath.c:55
 msgid "Remove Paths"
 msgstr "Уклони путање"
 
-#: beast-gtk/bstparam-searchpath.c:111
+#: beast-gtk/bstparam-searchpath.c:148
 msgid "Searchpath Text Entry"
 msgstr "Унос путање претраге"
+
+#: beast-gtk/bstparam-searchpath.c:154
+#, fuzzy
+msgid "Filename Text Entry"
+msgstr "Унос текста"
 
 #: beast-gtk/bstparam-time.c:55
 msgid "Time Entry"
@@ -631,7 +660,7 @@ msgstr "Изабери"
 msgid "Rectangle select notes"
 msgstr "Правоугаоник бира ноте"
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:713
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:714
 msgid "Vertical Select"
 msgstr "Усправан избор"
 
@@ -735,39 +764,43 @@ msgstr "Q: 1\\/16"
 msgid "Quantize to sixteenth note boundaries"
 msgstr "Квантизација на нивоу шеснестине ноте"
 
-#: beast-gtk/bstpianorollctrl.c:465 beast-gtk/bstpianorollctrl.c:472
-#: beast-gtk/bstpianorollctrl.c:560
+#: beast-gtk/bstpianorollctrl.c:466 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bstpianorollctrl.c:561
 msgid "Move Note"
 msgstr "Премести ноту"
 
-#: beast-gtk/bstpianorollctrl.c:560 beast-gtk/bstpianorollctrl.c:631
+#: beast-gtk/bstpianorollctrl.c:561 beast-gtk/bstpianorollctrl.c:632
 msgid "Lost Note"
 msgstr "Изгубљена нота"
 
-#: beast-gtk/bstpianorollctrl.c:577 beast-gtk/bstpianorollctrl.c:582
-#: beast-gtk/bstpianorollctrl.c:631
+#: beast-gtk/bstpianorollctrl.c:578 beast-gtk/bstpianorollctrl.c:583
+#: beast-gtk/bstpianorollctrl.c:632
 msgid "Resize Note"
 msgstr "Промени величину ноте"
 
-#: beast-gtk/bstpianorollctrl.c:642 beast-gtk/bstpianorollctrl.c:645
+#: beast-gtk/bstpianorollctrl.c:643 beast-gtk/bstpianorollctrl.c:646
 msgid "Delete Note"
 msgstr "Обриши ноту"
 
-#: beast-gtk/bstpianorollctrl.c:667
+#: beast-gtk/bstpianorollctrl.c:668
 msgid "Insert Note"
 msgstr "Уметни ноту"
 
-#: beast-gtk/bstpianorollctrl.c:739
+#: beast-gtk/bstpianorollctrl.c:740
 msgid "Vertical Region"
 msgstr "Усправно подручје"
 
-#: beast-gtk/bstpianorollctrl.c:860
+#: beast-gtk/bstpianorollctrl.c:861
 msgid "Play note"
 msgstr "Пусти ноту"
 
 #: beast-gtk/bstplayback.c:76
 msgid "Playback"
 msgstr "Пуштање"
+
+#: beast-gtk/bstpreferences.c:69
+msgid "Skin"
+msgstr ""
 
 #: beast-gtk/bstprocedure.c:206
 msgid "Description"
@@ -1366,34 +1399,38 @@ msgid "_Routing"
 msgstr "Ус_меравање"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:34
+msgid "_Skins"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Song"
 msgstr "П_есма"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Spatial"
 msgstr "_Просторно"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Synth"
 msgstr "_Синтетизатор"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Synthesizers"
 msgstr "_Синтетизатори"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Tools"
 msgstr "_Алати"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_Utilities"
 msgstr "_Помоћни алати"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_View"
 msgstr "П_реглед"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/gadgets-beast.xml.h:42
 msgid "_Virtualization"
 msgstr "_Виртуелизација"
 

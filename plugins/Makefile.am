@@ -22,9 +22,10 @@ plugin_idl_files = $(strip	\
 )
 EXTRA_HEADERS += $(plugin_idl_files)
 # setup generation of C++ plugins from idl files
-BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
-%.gen-idl.h: %.idl $(BSEPGEN)
-	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
+SFIDL = ../sfi/sfidl
+SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
+%.gen-idl.h: %.idl $(SFIDL)
+	$(SFIDL) --core-cxx $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 plugins_built_sources =
 Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am

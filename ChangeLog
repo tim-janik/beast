@@ -1,3 +1,26 @@
+Wed Feb  4 06:15:21 2004  Tim Janik  <timj@gtk.org>
+
+	* distcheck fixes.
+
+	* beast-gtk/Makefile.am: added dependancies for bsegentypes.[hc]
+	on sfidl. turned source file dependancies on generated files
+	into obejct file dependancies, so make can get it's VPATHs right.
+	don't ship build files anymore (since all tools should be
+	available at build time to generate them), generate build files
+	in the build directory. INCLUDE fixes.
+
+	* plugins/evaluator/Makefile.am:
+	* plugins/Makefile.am:
+	* bsw/Makefile.am:
+	* bse/Makefile.am: use sfidl instead of bse-plugin-generator, fix
+	idl includes.
+
+	* beast-gtk/bstmain.c: added new language translators to about box.
+	
+	* docs/site-development.texi: updated translation links.
+	
+	* NEWS: announce translations.
+	
 Wed Feb  4 00:07:12 2004  Tim Janik  <timj@gtk.org>
 
 	* applied fixes suggested by Sam Hocevar <sam@zoy.org>.

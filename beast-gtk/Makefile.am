@@ -5,7 +5,7 @@
  
 SUBDIRS = gxk dialogs icons
 
-INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk $(BEAST_CFLAGS) -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
+INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BEAST_CFLAGS) -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
 # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 
 # we specify the logging domain here
@@ -19,12 +19,12 @@ CFLAGS += # $(subst profile.c, -pg -a, $(findstring profile.c, $(<F)))
 LIBS += # -lefence # -pg 
 
 # link programs against BSE and other neccessary libraries
-progs_LDADD = $(strip \
-	./gxk/libgxk.a \
-	$(top_builddir)/bsw/libbsw.la \
-	$(top_builddir)/bse/libbse.la \
-	$(top_builddir)/sfi/libsfi.la \
-	$(LDFLAGS) $(BEAST_LIBS) \
+progs_LDADD = $(strip 			\
+	./gxk/libgxk.a 			\
+	$(top_builddir)/bsw/libbsw.la 	\
+	$(top_builddir)/bse/libbse.la 	\
+	$(top_builddir)/sfi/libsfi.la 	\
+	$(LDFLAGS) $(BEAST_LIBS) 	\
 )
 
 #
@@ -74,10 +74,10 @@ beast_extra_sources = $(strip 						\
 	bstparam-note-spinner.c		bstparam-proxy.c		\
 	bstparam-color-spinner.c	bstparam-scale.c		\
 	bstparam-searchpath.c		bstparam-time.c			\
-	bstrackeditor-covers.c		bstmarshal.c 			\
+	bstrackeditor-covers.c						\
 )
 beast_extra_files = $(strip \
-	bstmarshal.list		stamp-bstenum_arrays.c	\
+	bstmarshal.list					\
 	bstdebugkeys.defs	bstrecords.idl		\
 )
 # BEAST built sources that don't get installed
@@ -89,16 +89,17 @@ beast_built_sources = @STRIP_BEGIN@ \
 	bstenum_arrays.c \
 	bstenum_list.c \
 @STRIP_END@
+CLEANFILES += $(beast_built_sources)
 GLIB_MKENUMS = glib-mkenums
 
-SFIDL = ../sfi/sfidl    # FIXME: cd $(srcdir) && $(SFIDL) doesn't work for builddir
-
+# WATCH OUT: $(SFIDL) works only builddir relative
+SFIDL = ../sfi/sfidl
 
 # gen-sources
 CLEANFILES += xgen-beac xgen-beac xgen-bgth xgen-bgtc xgen-belc xgen-bmh xgen-bmc xgen-bdkd
 bstenum_arrays.c: $(beast_headers)
-	(cd ${srcdir} \
-	&& $(GLIB_MKENUMS) \
+	cd . \
+	&& ( cd ${srcdir} && $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
 	  --vhead "/* @EnumName@\n */\n" \
 	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
@@ -108,11 +109,11 @@ bstenum_arrays.c: $(beast_headers)
 	&& (cmp -s xgen-beac $@ || touch stamp-bstenum_arrays.c) \
 	&& cp xgen-beac $@ \
 	&& rm -f xgen-beac
-$(srcdir)/stamp-bstenum_arrays.c: bstenum_arrays.c
+stamp-bstenum_arrays.c: bstenum_arrays.c
 	@ [ -f $@ ] || touch $@
-bstgentypes.h: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
-	(cd $(srcdir) \
-	&& $(GLIB_MKENUMS) \
+bstgentypes.h: stamp-bstenum_arrays.c $(srcdir)/bstrecords.idl $(SFIDL)
+	cd .	\
+	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
 	  --eprod "extern GType bst__type_id__@EnumName@;" \
@@ -120,29 +121,29 @@ bstgentypes.h: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
 	&& $(SFIDL) --header --implementation ${srcdir}/bstrecords.idl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
-$(srcdir)/bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
-	(cd $(srcdir) \
-	&& $(GLIB_MKENUMS) \
+bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
+	cd . \
+	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
 	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
 	    $(beast_headers) ) > xgen-bgtc \
 	&& $(SFIDL) --source --implementation --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-bgtc \
         && cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
-$(srcdir)/bstenum_list.c: stamp-bstenum_arrays.c
-	(cd $(srcdir) \
-	&& $(GLIB_MKENUMS) \
+bstenum_list.c: stamp-bstenum_arrays.c
+	cd . \
+	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &bst__type_id__@EnumName@, @enum_name@_values }," \
 	    $(beast_headers) ) > xgen-belc \
 	&& cp xgen-belc $@ \
 	&& rm -f xgen-belc
-$(srcdir)/bstmarshal.h: bstmarshal.list
+bstmarshal.h: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-bmh \
-	&& cp xgen-bmh bstmarshal.h \
+	&& cp xgen-bmh $@ \
 	&& rm -f xgen-bmh
-$(srcdir)/bstmarshal.c: bstmarshal.list
+bstmarshal.c: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-bmc \
-	&& cp xgen-bmc bstmarshal.c \
+	&& cp xgen-bmc $@ \
 	&& rm -f xgen-bmc
 
 SCANKEYS=$(TEXITHEQUE) scankeys --
@@ -173,20 +174,26 @@ tsmview_SOURCES = tsmview.c cxxdummy.cc
 tsmview_LDADD = $(progs_LDADD)
 
 
-# extra deps
-$(beast_SOURCES) $(bststest_SOURCES) $(tsmview_SOURCES): bstgentypes.h
-
-EXTRA_DIST += $(beast_headers) $(beast_extra_sources) $(beast_extra_files)
-MAINTAINERCLEANFILES += $(beast_built_sources)
-EXTRA_DIST += $(beast_built_sources)
-
 #
 # rules to generate built sources
 #
-gen_source = gen-source.tmp
-CLEANFILES += $(gen_source)
-$(beast_sources): $(beast_built_sources)
+$(beast_OBJECTS) $(bststest_OBJECTS) $(tsmview_OBJECTS): $(beast_built_sources)
 
+# broken: $(beast_SOURCES) $(bststest_SOURCES) $(tsmview_SOURCES): bstgentypes.h
+# broken: EXTRA_DIST += $(beast_built_sources)
+# using _SOURCES here, cause make to attempt to remake .c files, confusing
+# it about vpaths:
+#-      No commands for `bstmain.c' and no prerequisites actually changed.
+#-      No need to remake target `bstmain.c'; using VPATH name `../../beast-gtk/bstmain.c'.
+#-      Pruning file `../../beast-gtk/bstmain.c'.
+#+      Must remake target `bstmain.c'.
+#+      Ignoring VPATH name `../../beast-gtk/bstmain.c'.
+#+      Successfully remade target file `bstmain.c'.
+#+      Pruning file `bstmain.c'.
+
+
+EXTRA_DIST += $(beast_headers) $(beast_extra_sources) $(beast_extra_files)
+MAINTAINERCLEANFILES += $(beast_built_sources)
 
 #
 # private (birnet) dependancy to make TAGS file after each build

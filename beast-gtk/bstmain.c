@@ -684,7 +684,7 @@ beast_show_about_box (void)
     "David A. Bartold",
     //"Tim Janik",
     //"Stefan Westerfeld",
-    /* languages */
+    /* translations */
     "Metin Amiroff",
     "Alexandre Prokoudine",
     "Danilo Segan",
@@ -697,6 +697,10 @@ beast_show_about_box (void)
     "Xavier Conde Rueda",
     "Kostas Papadimas",
     "Ismael Andres Rubio Rojas",
+    "Robert Sedak",
+    "Christophe Merlet",
+    "Laurent Dhima",
+    "Dulmandakh Sukhbaatar",
     NULL
   };
   if (!GTK_WIDGET_VISIBLE (beast_splash))

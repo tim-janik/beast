@@ -97,9 +97,14 @@ bse_idl_sources = $(strip \
 $(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
 $(srcdir)/bsesniffer.cc: bsesniffer.gen-idl.h
 idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
-bse_cc_sources = $(strip \
+bse_cc_sources = $(strip 	\
 	bseamplifier.cc		\
 	bsesniffer.cc		\
+)
+# idl files not used for build rules
+idl_dummy_files += $(strip	\
+	bsecxxmodule.idl	\
+	bsecxxbase.idl		\
 )
 # procedure sources
 bse_proc_sources = $(strip \
@@ -189,7 +194,7 @@ $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 # setup sources, their dependancies and commands
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
-libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl
+libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
 libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
 MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)
@@ -197,7 +202,8 @@ EXTRA_HEADERS +=
 EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
 EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
 GLIB_MKENUMS = glib-mkenums
-SFIDL = ../sfi/sfidl	# WATCH OUT: $(SFIDL) works only for srcdir==builddir with cd $(srcdir)
+# WATCH OUT: $(SFIDL) works only builddir relative
+SFIDL = ../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 
@@ -221,7 +227,7 @@ stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.idl $(SFIDL)
 	  --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	    $(bse_public_h_sources) > xgen-sbgth \
 	&& $(PERL) mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
-	&& $(SFIDL) --header --implementation --boxed $(srcdir)/bserecords.idl >> xgen-sbgth \
+	&& $(SFIDL) $(SFIDL_INC) --header --implementation --boxed $(srcdir)/bserecords.idl >> xgen-sbgth \
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
@@ -231,7 +237,7 @@ bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bserecords.idl $(SF
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
 	    $(bse_public_h_sources) >> xgen-bgtc \
 	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
-	&& $(SFIDL) --source --implementation --boxed --init _sfidl_types_init bserecords.idl >> xgen-bgtc \
+	&& $(SFIDL) $(SFIDL_INC) --source --implementation --boxed --init _sfidl_types_init bserecords.idl >> xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
 	&& rm -f xgen-bgtc
 bsegentype_array.c: @DVLBUILD@ bsegentypes.c
@@ -271,9 +277,8 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 %.gen-proc.c: %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 # setup generation of C++ objects from idl files
-BSEPGEN = ../sfi/bse-plugin-generator
-%.gen-idl.h: $(srcdir)/%.idl $(BSEPGEN)
-	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
+%.gen-idl.h: $(srcdir)/%.idl $(SFIDL)
+	$(SFIDL) --core-cxx $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
 
 
 #

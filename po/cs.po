@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-02 14:18+0100\n"
+"POT-Creation-Date: 2004-02-04 06:45+0100\n"
 "PO-Revision-Date: 2004-02-02 18:32+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -500,16 +500,16 @@ msgstr "Načítám \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Načítám projekt \"%s\""
 
-#: beast-gtk/bstmain.c:704
+#: beast-gtk/bstmain.c:708
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.c:705
+#: beast-gtk/bstmain.c:709
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: beast-gtk/bstmain.c:706
+#: beast-gtk/bstmain.c:710
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -520,6 +520,16 @@ msgstr "Rozbalovací pole (menu možností)"
 #: beast-gtk/bstparam-choice.c:150
 msgid "Drop Down Button"
 msgstr "Tlačítko rozbalení"
+
+#: beast-gtk/bstparam-color-spinner.c:67
+#, fuzzy
+msgid "Select Color"
+msgstr "Vyberte soubor"
+
+#: beast-gtk/bstparam-color-spinner.c:116
+#, fuzzy
+msgid "Color Entry"
+msgstr "Vstup noty"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -782,6 +792,11 @@ msgstr "Přehrát notu"
 #: beast-gtk/bstplayback.c:76
 msgid "Playback"
 msgstr "Přehrávání"
+
+#: beast-gtk/bstpreferences.c:69
+#, fuzzy
+msgid "Skin"
+msgstr "_Skiny"
 
 #: beast-gtk/bstprocedure.c:206
 msgid "Description"
