@@ -11,48 +11,31 @@
 
 @unnumbered RELEASE-NOTES
 
-@displaySTART
 Much has changed in the new development series (v0.4) of BEAST.
-In brief (specifics can be found in the @uref{beast-doc://release-news,,NEWS section}), the
+In brief (specifics can be found in the
+@uref{beast-doc://release-news,,NEWS section}), the
 GUI was majorly polished, many new synthesis features have
 been added and support for various external wave file formats
 was implemented.
-@displayEND
 
-@displaySTART
-The current version is already good enough to perform
-interesting synthesis tasks and to have lots of fun with
-songs, external MIDI devices and samples.
-However, this is still an ALPHA version, so things might
-not always work as expected, reports about misbehaviour
-are welcome.
-@displayEND
+The current version allows to perform interesting synthesis tasks
+and to have lots of fun with songs, external MIDI devices and samples.
+However, since this is still an ALPHA version, some things might
+break on occasions, so reports about misbehaviour are welcome.
 
-@displaySTART
 Be warned though, the .bse file format hasn't fully stabelized
 yet, so incompatibilities whith future versions may occour.
-@displayEND
 
-@displaySTART
 A good starting point are the test files shipped in the
-tests/ subdirectory of the source package, or the Quick Start
-Guide in the Help menu.
-@displayEND
+@path{tests/} subdirectory of the source package, or the
+@uref{beast-doc://quickstart,,Quick Start Guide} in the @menupath{Help} menu.
 
-@displaySTART
 For uptodate information on BEAST development, please visit:
-@displayEND
 
-@displaySTART
-	@uref{http://beast.gtk.org}
-@displayEND
+@center	@uref{http://beast.gtk.org}
 
-@displaySTART
 Questions, comments, bug reports and similar stuff should be sent to:
-@displayEND
 
-@displaySTART
-	@uref{mailto://beast@@beast.gtk.org}
-@displayEND
+@center	@uref{mailto://beast@@beast.gtk.org}
 
 @bye
