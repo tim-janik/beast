@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-31 15:04-0500\n"
+"POT-Creation-Date: 2004-11-18 14:55+0100\n"
 "PO-Revision-Date: 2004-10-31 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
@@ -398,28 +398,28 @@ msgstr "Add a new bus to the mixer"
 msgid "Delete the currently selected bus"
 msgstr "Delete the currently selected bus"
 
-#: beast-gtk/bstcanvaslink.c:179
+#: beast-gtk/bstcanvaslink.c:128
 msgid "Module Link: "
 msgstr "Module Link: "
 
-#: beast-gtk/bstcanvaslink.c:235 beast-gtk/bstsnetrouter.c:739
+#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:739
 msgid "Module link"
 msgstr "Module link"
 
-#: beast-gtk/bstcanvassource.c:464
+#: beast-gtk/bstcanvassource.c:444
 msgid "Module Info"
 msgstr "Module Info"
 
-#: beast-gtk/bstcanvassource.c:992 beast-gtk/bstsnetrouter.c:1076
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1076
 msgid "Input"
 msgstr "Input"
 
-#: beast-gtk/bstcanvassource.c:1001 beast-gtk/bstsnetrouter.c:1073
+#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1073
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Output"
 
-#: beast-gtk/bstcanvassource.c:1005
+#: beast-gtk/bstcanvassource.c:985
 msgid "(Hint)"
 msgstr "(Hint)"
 
@@ -816,16 +816,16 @@ msgstr "Loading \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Loading project \"%s\""
 
-#: beast-gtk/bstmain.c:784
+#: beast-gtk/bstmain.c:792
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:785
+#: beast-gtk/bstmain.c:793
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:786
+#: beast-gtk/bstmain.c:794
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -912,7 +912,7 @@ msgstr "Item List"
 msgid "Note Sequence Grid Editor"
 msgstr "Note Sequence Grid Editor"
 
-#: beast-gtk/bstparam-note-spinner.c:74
+#: beast-gtk/bstparam-note-spinner.c:75
 msgid "Note Entry"
 msgstr "Note Entry"
 
@@ -920,19 +920,19 @@ msgstr "Note Entry"
 msgid "Object Drop Down Box"
 msgstr "Object Drop Down Box"
 
-#: beast-gtk/bstparam-scale.c:65
+#: beast-gtk/bstparam-scale.c:66
 msgid "Knob"
 msgstr "Knob"
 
-#: beast-gtk/bstparam-scale.c:71
+#: beast-gtk/bstparam-scale.c:72
 msgid "Knob (Logarithmic)"
 msgstr "Knob (Logarithmic)"
 
-#: beast-gtk/bstparam-scale.c:83
+#: beast-gtk/bstparam-scale.c:84
 msgid "Dial"
 msgstr "Dial"
 
-#: beast-gtk/bstparam-scale.c:89
+#: beast-gtk/bstparam-scale.c:90
 msgid "Dial (Logarithmic)"
 msgstr "Dial (Logarithmic)"
 
@@ -2078,91 +2078,106 @@ msgstr ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
 
-#: beast-gtk/bstrecords.idl:111
+#: beast-gtk/bstrecords.idl:106
+msgid "Enable scopes"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:107 beast-gtk/bstrecords.idl:111
+msgid ""
+"Enables or prevents BEAST from periodically updating the scopes. Disabling "
+"may be desirable especially on slow machines."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:110
+#, fuzzy
+msgid "Enable meters"
+msgstr "Parameters"
+
+#: beast-gtk/bstrecords.idl:119
 msgid "Skin Name"
 msgstr "Skin Name"
 
-#: beast-gtk/bstrecords.idl:111
+#: beast-gtk/bstrecords.idl:119
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Name for the current skin configuration (used for skin selections)."
 
-#: beast-gtk/bstrecords.idl:113 beast-gtk/bstrecords.idl:123
-#: beast-gtk/bstrecords.idl:133
+#: beast-gtk/bstrecords.idl:121 beast-gtk/bstrecords.idl:131
+#: beast-gtk/bstrecords.idl:141
 msgid "Background Image"
 msgstr "Background Image"
 
-#: beast-gtk/bstrecords.idl:113
+#: beast-gtk/bstrecords.idl:121
 msgid "Background image used by the pattern editor."
 msgstr "Background image used by the pattern editor."
 
-#: beast-gtk/bstrecords.idl:114 beast-gtk/bstrecords.idl:124
-#: beast-gtk/bstrecords.idl:134
+#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:132
+#: beast-gtk/bstrecords.idl:142
 msgid "Image shade"
 msgstr "Image shade"
 
-#: beast-gtk/bstrecords.idl:114 beast-gtk/bstrecords.idl:124
-#: beast-gtk/bstrecords.idl:134
+#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:132
+#: beast-gtk/bstrecords.idl:142
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Percentage of background image pixel to blend over background colour."
 
-#: beast-gtk/bstrecords.idl:115 beast-gtk/bstrecords.idl:125
-#: beast-gtk/bstrecords.idl:135
+#: beast-gtk/bstrecords.idl:123 beast-gtk/bstrecords.idl:133
+#: beast-gtk/bstrecords.idl:143
 msgid "Background Color"
 msgstr "Background Colour"
 
-#: beast-gtk/bstrecords.idl:116
+#: beast-gtk/bstrecords.idl:124
 msgid "Background Shade 1"
 msgstr "Background Shade 1"
 
-#: beast-gtk/bstrecords.idl:117
+#: beast-gtk/bstrecords.idl:125
 msgid "Background Shade 2"
 msgstr "Background Shade 2"
 
-#: beast-gtk/bstrecords.idl:118
+#: beast-gtk/bstrecords.idl:126
 msgid "Empty Field Color"
 msgstr "Empty Field Colour"
 
-#: beast-gtk/bstrecords.idl:119
+#: beast-gtk/bstrecords.idl:127
 msgid "Text Color"
 msgstr "Text Colour"
 
-#: beast-gtk/bstrecords.idl:120 beast-gtk/bstrecords.idl:127
+#: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:135
 msgid "Vertical Bar Color"
 msgstr "Vertical Bar Colour"
 
-#: beast-gtk/bstrecords.idl:123
+#: beast-gtk/bstrecords.idl:131
 msgid "Background image used by the piano-roll editor."
 msgstr "Background image used by the piano-roll editor."
 
-#: beast-gtk/bstrecords.idl:126 beast-gtk/bstrecords.idl:136
+#: beast-gtk/bstrecords.idl:134 beast-gtk/bstrecords.idl:144
 msgid "Horizontal Bar Color"
 msgstr "Horizontal Bar Colour"
 
-#: beast-gtk/bstrecords.idl:128
+#: beast-gtk/bstrecords.idl:136
 msgid "Horizontal Grid Color"
 msgstr "Horizontal Grid Colour"
 
-#: beast-gtk/bstrecords.idl:129
+#: beast-gtk/bstrecords.idl:137
 msgid "Vertical Grid Color"
 msgstr "Vertical Grid Colour"
 
-#: beast-gtk/bstrecords.idl:130 beast-gtk/bstrecords.idl:137
+#: beast-gtk/bstrecords.idl:138 beast-gtk/bstrecords.idl:145
 msgid "Middle Bar Color"
 msgstr "Middle Bar Colour"
 
-#: beast-gtk/bstrecords.idl:133
+#: beast-gtk/bstrecords.idl:141
 msgid "Background image used by the control events editor."
 msgstr "Background image used by the control events editor."
 
-#: beast-gtk/bstrecords.idl:138
+#: beast-gtk/bstrecords.idl:146
 msgid "Positive Value Color"
 msgstr "Positive Value Colour"
 
-#: beast-gtk/bstrecords.idl:139
+#: beast-gtk/bstrecords.idl:147
 msgid "Zero Value Color"
 msgstr "Zero Value Colour"
 
-#: beast-gtk/bstrecords.idl:140
+#: beast-gtk/bstrecords.idl:148
 msgid "Negative Value Color"
 msgstr "Negative Value Colour"
 
@@ -2965,27 +2980,27 @@ msgstr "Property Identifier"
 msgid "Property Name"
 msgstr "Property Name"
 
-#: beast-gtk/gxk/gxkparam-scale.c:87
+#: beast-gtk/gxk/gxkparam-scale.c:88
 msgid "Horizontal Scale"
 msgstr "Horizontal Scale"
 
-#: beast-gtk/gxk/gxkparam-scale.c:93
+#: beast-gtk/gxk/gxkparam-scale.c:94
 msgid "Vertical Scale"
 msgstr "Vertical Scale"
 
-#: beast-gtk/gxk/gxkparam-scale.c:99
+#: beast-gtk/gxk/gxkparam-scale.c:100
 msgid "Horizontal Scale (Logarithmic)"
 msgstr "Horizontal Scale (Logarithmic)"
 
-#: beast-gtk/gxk/gxkparam-scale.c:105
+#: beast-gtk/gxk/gxkparam-scale.c:106
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Vertical Scale (Logarithmic)"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:98
+#: beast-gtk/gxk/gxkparam-spinner.c:99
 msgid "Spin Button"
 msgstr "Spin Button"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:104
+#: beast-gtk/gxk/gxkparam-spinner.c:105
 msgid "Spin Button (Logarithmic)"
 msgstr "Spin Button (Logarithmic)"
 
@@ -3064,7 +3079,7 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "The widget to be activated when the label's mnemonic key is pressed"
 
 #: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26 plugins/bsenoise.idl:27
-#: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
+#: plugins/davbassfilter.idl:27 plugins/davchorus.idl:27
 msgid "GNU Lesser General Public License"
 msgstr "GNU Lesser General Public Licence"
 
@@ -3131,7 +3146,7 @@ msgstr "Second control input"
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
 #: bse/bsewaveosc.c:596 plugins/bseadder.c:101 plugins/bseatandistort.c:92
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
-#: plugins/davbassfilter.idl:36 plugins/davchorus.idl:32
+#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:31
 #: plugins/davorgan.c:133 plugins/davsyndrum.c:122
 #: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
@@ -3354,8 +3369,8 @@ msgid "Strength of gain modulation"
 msgstr "Strength of gain modulation"
 
 #: bse/bsebiquadfilter.c:184 plugins/bseatandistort.c:90
-#: plugins/bseiirfilter.c:162 plugins/davbassfilter.idl:34
-#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
+#: plugins/bseiirfilter.c:162 plugins/davbassfilter.idl:33
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Audio In"
 
@@ -4477,6 +4492,7 @@ msgstr "BPM Steps"
 msgid "Step width for beats per minute"
 msgstr "Step width for beats per minute"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsedevice.c:312
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
@@ -4756,6 +4772,7 @@ msgstr "Ctrl Out4"
 msgid "MIDI Signal 4"
 msgstr "MIDI Signal 4"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-null.c:92
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
@@ -4764,6 +4781,7 @@ msgstr ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-oss.c:270
 msgid ""
 "Open Sound System MIDI driver:\n"
@@ -4900,6 +4918,8 @@ msgstr "Parasite Paths"
 msgid "Parasite"
 msgstr "Parasite"
 
+#. syntax
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-null.c:145
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
@@ -4912,6 +4932,7 @@ msgstr ""
 msgid "DEVICE,MODE"
 msgstr "DEVICE,MODE"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-oss.c:653
 msgid ""
 "Open Sound System PCM driver:\n"
@@ -5422,6 +5443,7 @@ msgstr "Audio"
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:CARD,DEV,SUBDEV"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-alsa/bsemididevice-alsa.c:311
 #, c-format
 msgid ""
@@ -5451,6 +5473,7 @@ msgstr ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-alsa/bsepcmdevice-alsa.c:556
 #, c-format
 msgid ""
@@ -5574,8 +5597,8 @@ msgstr "Audio Out2"
 msgid "Compressed audio output 2"
 msgstr "Compressed audio output 2"
 
-#: plugins/artscompressor.idl:55 plugins/davbassfilter.idl:37
-#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
+#: plugins/artscompressor.idl:55 plugins/davbassfilter.idl:36
+#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parameters"
 
@@ -5883,11 +5906,11 @@ msgstr "Done Out"
 msgid "This signal goes high after the release phase has completed"
 msgstr "This signal goes high after the release phase has completed"
 
-#: plugins/davbassfilter.idl:29
+#: plugins/davbassfilter.idl:28
 msgid "/Filters/Bass Filter"
 msgstr "/Filters/Bass Filter"
 
-#: plugins/davbassfilter.idl:30
+#: plugins/davbassfilter.idl:29
 msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
@@ -5897,57 +5920,57 @@ msgstr ""
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
 
-#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/davbassfilter.idl:33 plugins/davchorus.idl:30
 #: plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr "Audio input"
 
-#: plugins/davbassfilter.idl:35 plugins/davsyndrum.c:120
+#: plugins/davbassfilter.idl:34 plugins/davsyndrum.c:120
 #: plugins/davxtalstrings.c:143
 msgid "Trigger In"
 msgstr "Trigger In"
 
-#: plugins/davbassfilter.idl:35
+#: plugins/davbassfilter.idl:34
 msgid "Trigger input"
 msgstr "Trigger input"
 
-#: plugins/davbassfilter.idl:36
+#: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
 msgstr "Filtered audio output"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:37
 msgid "Cutoff [%]"
 msgstr "Cutoff [%]"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:37
 msgid "Set the cutoff frequency percentage"
 msgstr "Set the cutoff frequency percentage"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:38
 msgid "Resonance [%]"
 msgstr "Resonance [%]"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:38
 msgid "Set the amount of resonance in percent"
 msgstr "Set the amount of resonance in percent"
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:39
 msgid "Envelope Modulation [%]"
 msgstr "Envelope Modulation [%]"
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:39
 msgid "Set the envelope magnitude in percent"
 msgstr "Set the envelope magnitude in percent"
 
-#: plugins/davbassfilter.idl:41
+#: plugins/davbassfilter.idl:40
 msgid "Decay [%]"
 msgstr "Decay [%]"
 
-#: plugins/davbassfilter.idl:41
+#: plugins/davbassfilter.idl:40
 msgid "Set the decay length in percent"
 msgstr "Set the decay length in percent"
 
-#: plugins/davbassfilter.idl:42
+#: plugins/davbassfilter.idl:41
 msgid "Trigger filter"
 msgstr "Trigger filter"
 
@@ -5967,23 +5990,23 @@ msgstr "Left Audio Output"
 msgid "Right Audio Output"
 msgstr "Right Audio Output"
 
-#: plugins/davchorus.idl:29
+#: plugins/davchorus.idl:28
 msgid "/Enhance/Chorus"
 msgstr "/Enhance/Chorus"
 
-#: plugins/davchorus.idl:30
+#: plugins/davchorus.idl:29
 msgid "DavChorus adds more depth to sounds"
 msgstr "DavChorus adds more depth to sounds"
 
-#: plugins/davchorus.idl:32
+#: plugins/davchorus.idl:31
 msgid "Chorus audio output"
 msgstr "Chorus audio output"
 
-#: plugins/davchorus.idl:34
+#: plugins/davchorus.idl:33
 msgid "Wet out [%]"
 msgstr "Wet out [%]"
 
-#: plugins/davchorus.idl:34
+#: plugins/davchorus.idl:33
 msgid "Set the amount of modified data to mix"
 msgstr "Set the amount of modified data to mix"
 

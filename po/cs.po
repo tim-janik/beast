@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-31 18:38+0100\n"
+"POT-Creation-Date: 2004-11-18 14:55+0100\n"
 "PO-Revision-Date: 2004-11-01 00:44+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -399,28 +399,28 @@ msgstr "Přidat k mixéru novou sběrnici"
 msgid "Delete the currently selected bus"
 msgstr "Odstranit momentálně vybranou sběrnici"
 
-#: beast-gtk/bstcanvaslink.c:179
+#: beast-gtk/bstcanvaslink.c:128
 msgid "Module Link: "
 msgstr "Spojení modulů: "
 
-#: beast-gtk/bstcanvaslink.c:235 beast-gtk/bstsnetrouter.c:739
+#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:739
 msgid "Module link"
 msgstr "Spojení modulů"
 
-#: beast-gtk/bstcanvassource.c:464
+#: beast-gtk/bstcanvassource.c:444
 msgid "Module Info"
 msgstr "Informace o modulu"
 
-#: beast-gtk/bstcanvassource.c:992 beast-gtk/bstsnetrouter.c:1076
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1076
 msgid "Input"
 msgstr "Vstup"
 
-#: beast-gtk/bstcanvassource.c:1001 beast-gtk/bstsnetrouter.c:1073
+#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1073
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Výstup"
 
-#: beast-gtk/bstcanvassource.c:1005
+#: beast-gtk/bstcanvassource.c:985
 msgid "(Hint)"
 msgstr "(Nápověda)"
 
@@ -817,16 +817,16 @@ msgstr "Načítám \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Načítám projekt \"%s\""
 
-#: beast-gtk/bstmain.c:784
+#: beast-gtk/bstmain.c:792
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.c:785
+#: beast-gtk/bstmain.c:793
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: beast-gtk/bstmain.c:786
+#: beast-gtk/bstmain.c:794
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -913,7 +913,7 @@ msgstr "Seznam položek"
 msgid "Note Sequence Grid Editor"
 msgstr "Editor sekvence not v mřížce"
 
-#: beast-gtk/bstparam-note-spinner.c:74
+#: beast-gtk/bstparam-note-spinner.c:75
 msgid "Note Entry"
 msgstr "Vstup noty"
 
@@ -921,19 +921,19 @@ msgstr "Vstup noty"
 msgid "Object Drop Down Box"
 msgstr "Pole pro výběr objektu"
 
-#: beast-gtk/bstparam-scale.c:65
+#: beast-gtk/bstparam-scale.c:66
 msgid "Knob"
 msgstr "Knoflík"
 
-#: beast-gtk/bstparam-scale.c:71
+#: beast-gtk/bstparam-scale.c:72
 msgid "Knob (Logarithmic)"
 msgstr "Knoflík (logaritmický)"
 
-#: beast-gtk/bstparam-scale.c:83
+#: beast-gtk/bstparam-scale.c:84
 msgid "Dial"
 msgstr "Ciferník"
 
-#: beast-gtk/bstparam-scale.c:89
+#: beast-gtk/bstparam-scale.c:90
 msgid "Dial (Logarithmic)"
 msgstr "Ciferník (Logaritmický)"
 
@@ -2083,91 +2083,106 @@ msgstr ""
 "Povolit homogenní velikosti většiny (číselných a textových) vstupních polí. "
 "Na některé pole bude mít vliv až po restartu."
 
-#: beast-gtk/bstrecords.idl:111
+#: beast-gtk/bstrecords.idl:106
+msgid "Enable scopes"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:107 beast-gtk/bstrecords.idl:111
+msgid ""
+"Enables or prevents BEAST from periodically updating the scopes. Disabling "
+"may be desirable especially on slow machines."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:110
+#, fuzzy
+msgid "Enable meters"
+msgstr "Parametry"
+
+#: beast-gtk/bstrecords.idl:119
 msgid "Skin Name"
 msgstr "Název skinu"
 
-#: beast-gtk/bstrecords.idl:111
+#: beast-gtk/bstrecords.idl:119
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Název aktuálního nastavení skinu (používané pro výběry skinu)."
 
-#: beast-gtk/bstrecords.idl:113 beast-gtk/bstrecords.idl:123
-#: beast-gtk/bstrecords.idl:133
+#: beast-gtk/bstrecords.idl:121 beast-gtk/bstrecords.idl:131
+#: beast-gtk/bstrecords.idl:141
 msgid "Background Image"
 msgstr "Obrázek na pozadí"
 
-#: beast-gtk/bstrecords.idl:113
+#: beast-gtk/bstrecords.idl:121
 msgid "Background image used by the pattern editor."
 msgstr "Obrázek na pozadí používaný editorem vzorků."
 
-#: beast-gtk/bstrecords.idl:114 beast-gtk/bstrecords.idl:124
-#: beast-gtk/bstrecords.idl:134
+#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:132
+#: beast-gtk/bstrecords.idl:142
 msgid "Image shade"
 msgstr "Stínování obrázku"
 
-#: beast-gtk/bstrecords.idl:114 beast-gtk/bstrecords.idl:124
-#: beast-gtk/bstrecords.idl:134
+#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:132
+#: beast-gtk/bstrecords.idl:142
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Procento pixelů obrázku na pozadí, které sloučit s barvou pozadí."
 
-#: beast-gtk/bstrecords.idl:115 beast-gtk/bstrecords.idl:125
-#: beast-gtk/bstrecords.idl:135
+#: beast-gtk/bstrecords.idl:123 beast-gtk/bstrecords.idl:133
+#: beast-gtk/bstrecords.idl:143
 msgid "Background Color"
 msgstr "Barva pozadí"
 
-#: beast-gtk/bstrecords.idl:116
+#: beast-gtk/bstrecords.idl:124
 msgid "Background Shade 1"
 msgstr "Stín pozadí 1"
 
-#: beast-gtk/bstrecords.idl:117
+#: beast-gtk/bstrecords.idl:125
 msgid "Background Shade 2"
 msgstr "Stín pozadí 2"
 
-#: beast-gtk/bstrecords.idl:118
+#: beast-gtk/bstrecords.idl:126
 msgid "Empty Field Color"
 msgstr "Barva prázdného pole"
 
-#: beast-gtk/bstrecords.idl:119
+#: beast-gtk/bstrecords.idl:127
 msgid "Text Color"
 msgstr "Barva textu"
 
-#: beast-gtk/bstrecords.idl:120 beast-gtk/bstrecords.idl:127
+#: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:135
 msgid "Vertical Bar Color"
 msgstr "Barva svislého pruhu"
 
-#: beast-gtk/bstrecords.idl:123
+#: beast-gtk/bstrecords.idl:131
 msgid "Background image used by the piano-roll editor."
 msgstr "Obrázek na pozadí používaný editorem svitku klavíru."
 
-#: beast-gtk/bstrecords.idl:126 beast-gtk/bstrecords.idl:136
+#: beast-gtk/bstrecords.idl:134 beast-gtk/bstrecords.idl:144
 msgid "Horizontal Bar Color"
 msgstr "Barva vodorovného pruhu"
 
-#: beast-gtk/bstrecords.idl:128
+#: beast-gtk/bstrecords.idl:136
 msgid "Horizontal Grid Color"
 msgstr "Barva vodorovné mřížky"
 
-#: beast-gtk/bstrecords.idl:129
+#: beast-gtk/bstrecords.idl:137
 msgid "Vertical Grid Color"
 msgstr "Barva svislé mřížky"
 
-#: beast-gtk/bstrecords.idl:130 beast-gtk/bstrecords.idl:137
+#: beast-gtk/bstrecords.idl:138 beast-gtk/bstrecords.idl:145
 msgid "Middle Bar Color"
 msgstr "Barva prostředního pruhu"
 
-#: beast-gtk/bstrecords.idl:133
+#: beast-gtk/bstrecords.idl:141
 msgid "Background image used by the control events editor."
 msgstr "Obrázek na pozadí používaný editorem řídicích událostí."
 
-#: beast-gtk/bstrecords.idl:138
+#: beast-gtk/bstrecords.idl:146
 msgid "Positive Value Color"
 msgstr "Barva kladné hodnoty"
 
-#: beast-gtk/bstrecords.idl:139
+#: beast-gtk/bstrecords.idl:147
 msgid "Zero Value Color"
 msgstr "Barva nulové hodnoty"
 
-#: beast-gtk/bstrecords.idl:140
+#: beast-gtk/bstrecords.idl:148
 msgid "Negative Value Color"
 msgstr "Barva záporné hodnoty"
 
@@ -2969,27 +2984,27 @@ msgstr "Identifikátor vlastnosti"
 msgid "Property Name"
 msgstr "Název vlastnosti"
 
-#: beast-gtk/gxk/gxkparam-scale.c:87
+#: beast-gtk/gxk/gxkparam-scale.c:88
 msgid "Horizontal Scale"
 msgstr "Vodorovné zvětšení"
 
-#: beast-gtk/gxk/gxkparam-scale.c:93
+#: beast-gtk/gxk/gxkparam-scale.c:94
 msgid "Vertical Scale"
 msgstr "Svislé zvětšení"
 
-#: beast-gtk/gxk/gxkparam-scale.c:99
+#: beast-gtk/gxk/gxkparam-scale.c:100
 msgid "Horizontal Scale (Logarithmic)"
 msgstr "Vodorovné zvětšení (logaritmické)"
 
-#: beast-gtk/gxk/gxkparam-scale.c:105
+#: beast-gtk/gxk/gxkparam-scale.c:106
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Svislé zvětšení (logaritmické)"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:98
+#: beast-gtk/gxk/gxkparam-spinner.c:99
 msgid "Spin Button"
 msgstr "Tlačítko se šipkami"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:104
+#: beast-gtk/gxk/gxkparam-spinner.c:105
 msgid "Spin Button (Logarithmic)"
 msgstr "Tlačítko se šipkami (logaritmické)"
 
@@ -3068,7 +3083,7 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Widget, který aktivovat, když je stisknuta mnemonická klávesa popisku"
 
 #: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26 plugins/bsenoise.idl:27
-#: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
+#: plugins/davbassfilter.idl:27 plugins/davchorus.idl:27
 msgid "GNU Lesser General Public License"
 msgstr "GNU Lesser General Public License"
 
@@ -3135,7 +3150,7 @@ msgstr "Druhý řídicí vstup"
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
 #: bse/bsewaveosc.c:596 plugins/bseadder.c:101 plugins/bseatandistort.c:92
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
-#: plugins/davbassfilter.idl:36 plugins/davchorus.idl:32
+#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:31
 #: plugins/davorgan.c:133 plugins/davsyndrum.c:122
 #: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
@@ -3357,8 +3372,8 @@ msgid "Strength of gain modulation"
 msgstr "Síla modulace zisku"
 
 #: bse/bsebiquadfilter.c:184 plugins/bseatandistort.c:90
-#: plugins/bseiirfilter.c:162 plugins/davbassfilter.idl:34
-#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
+#: plugins/bseiirfilter.c:162 plugins/davbassfilter.idl:33
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Zvuk In"
 
@@ -5582,8 +5597,8 @@ msgstr "Výstup zvuku2"
 msgid "Compressed audio output 2"
 msgstr "Výstup komprimovaného zvuku 2"
 
-#: plugins/artscompressor.idl:55 plugins/davbassfilter.idl:37
-#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
+#: plugins/artscompressor.idl:55 plugins/davbassfilter.idl:36
+#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parametry"
 
@@ -5889,11 +5904,11 @@ msgstr "Hot Out"
 msgid "This signal goes high after the release phase has completed"
 msgstr "Tento signál je high po dokončení fáze uvolnění"
 
-#: plugins/davbassfilter.idl:29
+#: plugins/davbassfilter.idl:28
 msgid "/Filters/Bass Filter"
 msgstr "/Filtry/Filtr basů"
 
-#: plugins/davbassfilter.idl:30
+#: plugins/davbassfilter.idl:29
 msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
@@ -5904,57 +5919,57 @@ msgstr ""
 "algoritmu popsaném v \"Musical Applications of Microprocessors\" od Hala "
 "Chamberlina."
 
-#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/davbassfilter.idl:33 plugins/davchorus.idl:30
 #: plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr "Vstup zvuku"
 
-#: plugins/davbassfilter.idl:35 plugins/davsyndrum.c:120
+#: plugins/davbassfilter.idl:34 plugins/davsyndrum.c:120
 #: plugins/davxtalstrings.c:143
 msgid "Trigger In"
 msgstr "Spuštění In"
 
-#: plugins/davbassfilter.idl:35
+#: plugins/davbassfilter.idl:34
 msgid "Trigger input"
 msgstr "Spuštění vstup"
 
-#: plugins/davbassfilter.idl:36
+#: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
 msgstr "Výstup filtrovaného zvuku"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:37
 msgid "Cutoff [%]"
 msgstr "Odříznutí [%]"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:37
 msgid "Set the cutoff frequency percentage"
 msgstr "Nastavit procenta odříznutí frekvence"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:38
 msgid "Resonance [%]"
 msgstr "Rezonance [%]"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:38
 msgid "Set the amount of resonance in percent"
 msgstr "Nastavit úroveň rezonance v procentech"
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:39
 msgid "Envelope Modulation [%]"
 msgstr "Modulace obálky [%]"
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:39
 msgid "Set the envelope magnitude in percent"
 msgstr "Nastavit úroveň obálky v procentech"
 
-#: plugins/davbassfilter.idl:41
+#: plugins/davbassfilter.idl:40
 msgid "Decay [%]"
 msgstr "Útlum [%]"
 
-#: plugins/davbassfilter.idl:41
+#: plugins/davbassfilter.idl:40
 msgid "Set the decay length in percent"
 msgstr "Nastavit délku útlumu v procentech"
 
-#: plugins/davbassfilter.idl:42
+#: plugins/davbassfilter.idl:41
 msgid "Trigger filter"
 msgstr "Spustit filtr"
 
@@ -5974,23 +5989,23 @@ msgstr "Výstup levého zvuku"
 msgid "Right Audio Output"
 msgstr "Výstup pravého zvuku"
 
-#: plugins/davchorus.idl:29
+#: plugins/davchorus.idl:28
 msgid "/Enhance/Chorus"
 msgstr "/Vylepšit/Sbor"
 
-#: plugins/davchorus.idl:30
+#: plugins/davchorus.idl:29
 msgid "DavChorus adds more depth to sounds"
 msgstr "DavChorus přidává zvukům více hloubky"
 
-#: plugins/davchorus.idl:32
+#: plugins/davchorus.idl:31
 msgid "Chorus audio output"
 msgstr "Výstup zvuku sboru"
 
-#: plugins/davchorus.idl:34
+#: plugins/davchorus.idl:33
 msgid "Wet out [%]"
 msgstr ""
 
-#: plugins/davchorus.idl:34
+#: plugins/davchorus.idl:33
 msgid "Set the amount of modified data to mix"
 msgstr "Nastavit množství upravených dat, která mixovat"
 

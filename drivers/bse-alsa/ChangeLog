@@ -1,3 +1,7 @@
+Thu Nov 18 15:10:33 2004  Tim Janik  <timj@gtk.org>
+
+        * configure.in: released bse-alsa 0.6.3, binary 0, interface 0.
+
 Mon Oct  4 09:42:31 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-alsa.c: more libALSA silencing, to prevent error messages
