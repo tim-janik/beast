@@ -858,6 +858,8 @@ GTokenType Parser::parseParamDefHints (ParamDef &def)
 	}
       if (token_as_string && bracelevel)
 	{
+	  if (args != "")
+	    args += ' ';
 	  args += token_as_string;
 	  g_free (token_as_string);
 	}

@@ -1,3 +1,9 @@
+Fri Feb 14 11:17:51 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: add space between tokens that are simply parsed
+	out of the .sfidl file and added to the .c source as-they-are, to
+	allow string concatenation (SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE).
+
 Tue Feb 11 03:16:51 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiglueproxy.[hc]: added sfi_glue_proxy_pending() to test for
