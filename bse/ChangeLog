@@ -1,3 +1,7 @@
+Fri Feb 27 11:23:01 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl: CVS copied from bserecords.idl.
+
 Fri Feb 27 06:19:32 2004  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c:
