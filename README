@@ -24,12 +24,12 @@ already ship these packages or will soon, their sources can be
 found at:
 
 GnomeCanvas (GNOME-2.0):
-	ftp://ftp.gnome.org/pub/GNOME/earthquake/sources/libgnomecanvas/
+	ftp://ftp.gnome.org/pub/GNOME/2.0.1/latest/sources/
 Gtk+-2.0:
 	ftp://ftp.gtk.org/pub/gtk/v2.0/
 Guile-1.4:
 	http://www.gnu.org/software/guile/guile.html
-Ogg/Vorbis (1.0rc3 as of this writing):
+Ogg/Vorbis (at least version 1.0rc3):
 	http://www.xiph.org/ogg/vorbis/download/
 MAD (BSE was developed against libmad-0.14.2):
 	http://www.mars.org/home/rob/proj/mpeg/
