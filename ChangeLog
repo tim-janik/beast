@@ -1,3 +1,8 @@
+Sun Nov  7 07:24:36 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmaster.c (bst_master_check): don't return TRUE (as
+	need_dispatch) if we have no input sources.
+
 Sun Nov  7 03:06:55 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.[hc]: ok, we can actually handle new links

@@ -206,7 +206,7 @@ bst_master_check (gpointer  source_data,
 
   need_dispatch = (pfd->revents & G_IO_OUT) != 0;
 
-  return need_dispatch;
+  return BSE_SOURCE (master)->n_inputs && need_dispatch;
 }
 
 static gboolean
