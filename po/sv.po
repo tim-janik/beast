@@ -2,13 +2,13 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.5 2003/10/26 17:19:04 timj Exp $
+# $Id: sv.po,v 1.6 2003/10/27 00:07:26 timj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-26 18:14+0100\n"
+"POT-Creation-Date: 2003-10-27 00:53+0100\n"
 "PO-Revision-Date: 2003-10-18 12:10+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -1172,6 +1172,31 @@ msgstr "Rulla höger"
 msgid "Waves"
 msgstr "Vågor"
 
+#: data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr ""
+
+#: data/beast.desktop.in.h:2
+msgid "Music Composer"
+msgstr ""
+
+#: data/beast.desktop.in.h:3
+msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
+msgstr ""
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr ""
+
+#: data/bse.keys.in.h:2
+msgid "BSE Multi-Part Wave File"
+msgstr ""
+
+#: data/bse.keys.in.h:3
+#, fuzzy
+msgid "BSE Synthesis File"
+msgstr "Synthesizer"
+
 #~ msgid "/Project/Remove Synthesizer"
 #~ msgstr "/Projekt/Ta bort synthesizer"
 
@@ -1182,9 +1207,6 @@ msgstr "Vågor"
 # "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
 #~ msgid "Synthesizers"
 #~ msgstr "Synthesizers"
-
-#~ msgid "Synthesizer"
-#~ msgstr "Synthesizer"
 
 #~ msgid "/Synthesizers/Load Effect"
 #~ msgstr "/Synthesizers/Läs in effekt"

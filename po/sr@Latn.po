@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-27 00:07+0100\n"
+"POT-Creation-Date: 2003-10-27 00:53+0100\n"
 "PO-Revision-Date: 2003-10-27 00:10+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -857,9 +857,10 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih izdanja. "
-"Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
-"budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
+"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih "
+"izdanja. Znači, ne pouzdajte se da će izgled uređivača ostati isti u "
+"budućnosti, i budite spremni na nestabilnost u kodu (tj. redovno snimajte "
+"vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109
 msgid "_Edit"
@@ -1156,6 +1157,30 @@ msgstr "Klizaj desno"
 #: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
 msgid "Waves"
 msgstr "Talasi"
+
+#: data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr ""
+
+#: data/beast.desktop.in.h:2
+msgid "Music Composer"
+msgstr ""
+
+#: data/beast.desktop.in.h:3
+msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
+msgstr ""
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr ""
+
+#: data/bse.keys.in.h:2
+msgid "BSE Multi-Part Wave File"
+msgstr ""
+
+#: data/bse.keys.in.h:3
+msgid "BSE Synthesis File"
+msgstr ""
 
 #~ msgid "Deleting file `%s'"
 #~ msgstr "Briše datoteku „%s“"

@@ -6,7 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 1\n"
-"POT-Creation-Date: 2003-10-26 17:31+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-10-27 00:53+0100\n"
 "PO-Revision-Date: 2003-10-26 21:25+0200\n"
 "Last-Translator: M?tin ?mirov <metin@karegen.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,8 +27,7 @@ msgstr "Filtr Növü"
 msgid "The filter design type"
 msgstr "Filtr Tərtib Növü"
 
-#: bse/bsebiquadfilter.c:136
-#: bse/bsebiquadfilter.c:144
+#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
 msgid "Center Frequency"
 msgstr "Mərkəz Tezliyi"
 
@@ -39,8 +39,7 @@ msgstr "Kəsmə [Hz]"
 msgid "Note"
 msgstr "Qeyd"
 
-#: bse/bsebiquadfilter.c:151
-#: bse/bsebiquadfilter.c:156
+#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
 msgid "Emphasis"
 msgstr "Emfazis"
 
@@ -53,13 +52,12 @@ msgid "Norm Type"
 msgstr "Norm Növü"
 
 #: bse/bsebiquadfilter.c:159
-msgid "The filter gain normalization type (supported only by highpass and lowpass)"
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "Filtr gaini normallaşdırma növü"
 
-#: bse/bsebiquadfilter.c:164
-#: bse/bsebiquadfilter.c:170
-#: bse/bsebiquadfilter.c:176
-#: bse/bsebiquadfilter.c:182
+#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
+#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
 msgid "Modulation"
 msgstr "Modulyasiya"
 
@@ -102,4 +100,3 @@ msgstr "Gain Modulyasiya Girişi"
 #: bse/bsebiquadfilter.c:197
 msgid "Filtered Audio Signal"
 msgstr "Filtrlənmiş Audio Siqnal"
-

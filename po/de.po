@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.55\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-26 18:14+0100\n"
+"POT-Creation-Date: 2003-10-27 00:53+0100\n"
 "PO-Revision-Date: 2003-10-15 18:00+0200\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -1170,3 +1170,27 @@ msgstr "Rechts rollen"
 #: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
 msgid "Waves"
 msgstr "Waves"
+
+#: data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr ""
+
+#: data/beast.desktop.in.h:2
+msgid "Music Composer"
+msgstr ""
+
+#: data/beast.desktop.in.h:3
+msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
+msgstr ""
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr ""
+
+#: data/bse.keys.in.h:2
+msgid "BSE Multi-Part Wave File"
+msgstr ""
+
+#: data/bse.keys.in.h:3
+msgid "BSE Synthesis File"
+msgstr ""
