@@ -156,7 +156,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
   if (!aerror)
     aerror = snd_rawmidi_open (require_readable ? &alsa->read_handle : NULL,
                                require_writable ? &alsa->write_handle : NULL,
-                               dname, 0);
+                               dname, SND_RAWMIDI_NONBLOCK);
   /* try setup */
   BseErrorType error = !aerror ? BSE_ERROR_NONE : bse_error_from_errno (-aerror, BSE_ERROR_FILE_OPEN_FAILED);
   snd_rawmidi_params_t *mparams = alsa_alloca0 (snd_rawmidi_params);

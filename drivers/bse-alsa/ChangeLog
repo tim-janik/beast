@@ -1,3 +1,8 @@
+Sat Oct  2 04:54:22 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemididevice-alsa.c (bse_midi_device_alsa_open): open devices 
+	non-blocking so we don't hang on concurrent access.
+
 Wed Sep 29 20:22:53 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-alsa.c: poll-fd fixups. removed debugging code.
