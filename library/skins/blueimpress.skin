@@ -1,8 +1,15 @@
-; skin-file for BEAST v0.5.6
+; skin-file for BEAST v0.6.2-rc2
 
-; BstSkinConfig Dump
 (beast-skin-config-v1 
   ((skin-name "Blue Impression")
+   (pattern-image "images/blueimpress.jpg")
+   (pattern-shade 100)
+   (pattern-color 0x00ffffff)
+   (pattern-scolor1 0x003e2d59)
+   (pattern-scolor2 0x0023319e)
+   (pattern-text0 0x001e90ff)
+   (pattern-text1 0x00add8e6)
+   (pattern-vbar1 0x0090ee90)
    (piano-image "images/blueimpress.jpg")
    (piano-shade 100)
    (piano-color 0x00ffffff)

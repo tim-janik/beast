@@ -1,8 +1,15 @@
-; skin-file for BEAST v0.5.6
+; skin-file for BEAST v0.6.2-rc2
 
-; BstSkinConfig Dump
 (beast-skin-config-v1 
   ((skin-name "Biogreen")
+   (pattern-image "images/biogreen.jpg")
+   (pattern-shade 90)
+   (pattern-color 0x00a0ff80)
+   (pattern-scolor1 0x001f7e1f)
+   (pattern-scolor2 0x000d6c0d)
+   (pattern-text0 0x00308f30)
+   (pattern-text1 0x00b0ffb0)
+   (pattern-vbar1 0x00c0ffc0)
    (piano-image "images/biogreen.jpg")
    (piano-shade 90)
    (piano-color 0x00a0ff80)

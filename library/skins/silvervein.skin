@@ -1,8 +1,15 @@
-; skin-file for BEAST v0.5.6
+; skin-file for BEAST v0.6.2-rc2
 
-; BstSkinConfig Dump
 (beast-skin-config-v1 
   ((skin-name "Silver Vein")
+   (pattern-image "images/silvervein.png")
+   (pattern-shade 100)
+   (pattern-color 0x00000000)
+   (pattern-scolor1 0x00b5b5b5)
+   (pattern-scolor2 0x00c9c9c9)
+   (pattern-text0 0x00ac6060)
+   (pattern-text1 0x00205080)
+   (pattern-vbar1 0x00ffffff)
    (piano-image "images/silvervein.png")
    (piano-shade 100)
    (piano-color 0x00000000)

@@ -1,19 +1,26 @@
-; skin-file for BEAST v0.5.6
+; skin-file for BEAST v0.6.2-rc2
 
-; BstSkinConfig Dump
 (beast-skin-config-v1 
   ((skin-name "Moon Paper")
+   (pattern-image "images/moonpaper.png")
+   (pattern-shade 65)
+   (pattern-color 0x00000000)
+   (pattern-scolor1 0x00601764)
+   (pattern-scolor2 0x003d165b)
+   (pattern-text0 0x00851ac8)
+   (pattern-text1 0x00ffffff)
+   (pattern-vbar1 0x00ffffff)
    (piano-image "images/moonpaper.png")
-   (piano-shade 100)
-   (piano-color 0x00bc939a)
+   (piano-shade 65)
+   (piano-color 0x00000000)
    (piano-hbar 0x00ffffff)
    (piano-vbar 0x00ffffff)
    (piano-hgrid 0x00000000)
    (piano-vgrid 0x00000000)
    (piano-mbar 0x00851ac8)
    (controls-image "images/moonpaper.png")
-   (controls-shade 100)
-   (controls-color 0x00bc939a)
+   (controls-shade 65)
+   (controls-color 0x00000000)
    (controls-hbar 0x00ffffff)
    (controls-mbar 0x00851ac8)
    (controls-positive 0x000000ff)

@@ -1,8 +1,15 @@
-; skin-file for BEAST v0.5.6
+; skin-file for BEAST v0.6.2-rc2
 
-; BstSkinConfig Dump
 (beast-skin-config-v1 
   ((skin-name "White")
+   (pattern-image #f)
+   (pattern-shade 0)
+   (pattern-color 0x00ffffff)
+   (pattern-scolor1 0x00d5d5d5)
+   (pattern-scolor2 0x00e7e7e7)
+   (pattern-text0 0x00a0a0a0)
+   (pattern-text1 0x00000000)
+   (pattern-vbar1 0x007f7f7f)
    (piano-image #f)
    (piano-shade 0)
    (piano-color 0x00ffffff)

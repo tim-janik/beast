@@ -6,6 +6,8 @@ Overview of Changes in BEAST/BSE 0.6.2:
 * Enabled tooltips on menu items
 * Rewrote logging, messaging and error reporting system
 * Added support for 1/32, 1/64 and 1/128 notes and quantization steps
+* Added skin and row highlighting support to the pattern editor
+* Adjusted skins (pacified some of the more disturbing ones)
 * Added British English translation [Gareth Owen]
 * Added Canadian English translation [Adam Weinberger]
 * Added Brazilian Portuguese translation [Raphael Higino]
