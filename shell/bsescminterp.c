@@ -185,10 +185,11 @@ static SCM
 bse_scm_glue_rec_new (SCM sfields)
 {
   SfiRec *rec;
+  SCM s_rec = 0;
   if (!SCM_UNBNDP (sfields))
     SCM_ASSERT (SCM_CONSP (sfields) || SCM_EQ_P (sfields, SCM_EOL), sfields, SCM_ARG1, "bse-rec-new");
   rec = sfi_rec_new ();
-  SCM s_rec = bse_scm_from_glue_rec (rec);
+  s_rec = bse_scm_from_glue_rec (rec);
   sfi_rec_unref (rec);
   if (!SCM_UNBNDP (sfields))
     {
