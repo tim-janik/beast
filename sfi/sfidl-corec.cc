@@ -197,8 +197,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
         parg = makeLowerName (pdef.type) + "_content";
         break;
       case OBJECT:
-        /* FIXME: the ParamSpec doesn't transport the type of the objects we require */
-        pname = "Proxy";
+        pname = "Object";
         break;
       default:
         pname = pdef.pspec;

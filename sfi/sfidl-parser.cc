@@ -90,6 +90,7 @@ enum ExtraToken {
   TOKEN_GROUP,
   TOKEN_USING,
   TOKEN_CONST,
+  TOKEN_CONST_IDENT,
   TOKEN_INFO,
   TOKEN_ISTREAM,
   TOKEN_JSTREAM,
@@ -100,7 +101,7 @@ enum ExtraToken {
 const char *token_symbols[] = {
   "namespace", "class", "choice", "record", "sequence",
   "property", "group", "using",
-  "Const", "Info", "IStream", "JStream", "OStream",
+  "Const", "ConstIdent", "Info", "IStream", "JStream", "OStream",
   0
 };
 
@@ -770,6 +771,13 @@ GTokenType Parser::parseNamespace()
 		return expected_token;
 	    }
 	    break;
+	  case TOKEN_CONST_IDENT:
+	    {
+	      GTokenType expected_token = parseConstant (true);
+	      if (expected_token != G_TOKEN_NONE)
+		return expected_token;
+	    }
+	    break;
 	  case TOKEN_USING:
 	    {
 	      parse_or_return (TOKEN_USING);
@@ -841,7 +849,8 @@ GTokenType Parser::parseStringOrConst (string &s)
 
       for(vector<Constant>::iterator ci = constants.begin(); ci != constants.end(); ci++)
 	{
-	  if (ci->name == s)
+	  if (ci->name == s &&
+              ci->type != Constant::tIdent)     /* identifier constants can't be expanded to strings */
 	    {
 	      char *x = 0;
 	      switch (ci->type)
@@ -872,19 +881,33 @@ GTokenType Parser::parseStringOrConst (string &s)
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseConstant ()
+GTokenType Parser::parseConstant (bool isident)
 {
   /*
    * constant BAR = 3;
    */
   Constant cdef;
 
-  parse_or_return (TOKEN_CONST);
+  if (isident)
+    parse_or_return (TOKEN_CONST_IDENT);
+  else
+    parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
   cdef.name = defineSymbol (scanner->value.v_identifier);
   cdef.file = fileName();
   
   parse_or_return ('=');
+
+  /* handle ConstIdent */
+  if (isident)
+    {
+      parse_or_return (G_TOKEN_IDENTIFIER);
+      cdef.str = scanner->value.v_identifier;
+      cdef.type = Constant::tIdent;
+      parse_or_return (';');
+      addConstantTodo (cdef);
+      return G_TOKEN_NONE;
+    }
 
   GTokenType t = g_scanner_peek_next_token (scanner);
 
@@ -1328,6 +1351,9 @@ GTokenType Parser::parseParamHints (Param &def)
                 break;
               case Constant::tFloat:
                 token_as_string = g_strdup_printf ("%.17g", ci->f);
+                break;
+              case Constant::tIdent:
+                token_as_string = g_strdup (ci->str.c_str());
                 break;
               case Constant::tString:
                 x = g_strescape (ci->str.c_str(), 0);

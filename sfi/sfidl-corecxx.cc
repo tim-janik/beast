@@ -91,8 +91,7 @@ glue_untyped_pspec_constructor (const Parser &parser,
     {
     case OBJECT:
       {
-        /* FIXME(stw): the ParamSpec doesn't transport the type of the objects we require */
-        string pspec = "sfidl_pspec_Proxy";
+        string pspec = "sfidl_pspec_Object";
         if (param.args == "")
           pspec += "_default (" + group + ",\"" + param.name + "\")";
         else
@@ -350,7 +349,7 @@ public:
         }
       case OBJECT:
         {
-          string pspec = "sfidl_pspec_Object";
+          string pspec = "sfidl_pspec_TypedObject";
           if (param.args == "")
             pspec += "_default";
           pspec += " (" + group + ", \"" + param.name + "\", ";

@@ -223,40 +223,14 @@ GParamSpec*  sfi_boxed_type_get_seq_element (GType               boxed_type);
 
 
 /* --- Sfi PSpec Options --- */
-/* conventional pspec hints:
- * Legacy GParamFlags:
- * "r"                  - readable (G_PARAM_READABLE)
- * "w"                  - writable (G_PARAM_WRITABLE)
- * "construct"          - construct (G_PARAM_CONSTRUCT)
- * "construct-only"     - construct only (G_PARAM_CONSTRUCT_ONLY)
- * "lax-validation"     - lax validation (G_PARAM_LAX_VALIDATION)
- * Serialization Options:
- * "S"                  - is serializable
- * "f"                  - float indicator, reduce precision to IEEE 754 Single
- * "skip-default"       - skip defaulting values upon serialization
- * Undo/Redo Options:
- * "skip-undo"          - no undo/redo recording
- * GUI Options:
- * "G"                  - is GUI representable
- * "ro"                 - read-only, not mutable by GUI
- * "radio"              - radio button hint
- * "dial"               - dial knob hint
- * "scale"              - scale adjustment hint
- * "log-scale"          - logarithmic scale adjustment hint
- * "DB"                 - decibell hint
- * "trigger"            - trigger button hint
- * "searchpath"         - indicates colon seperated directory list
- * Source Options:
- * unprepared           - property is writable only for unprepared objects
- */
-/* common option combinations: */
+/* provide common option combinations: */
 #define	SFI_PARAM_READWRITE       ":r:w:"
 #define	SFI_PARAM_STORAGE	  ":r:w:S:"
-#define	SFI_PARAM_STANDARD        ":r:w:G:S:"
+#define	SFI_PARAM_STANDARD        ":r:w:S:G:"
+#define SFI_PARAM_STANDARD_RDONLY ":r:w:S:G:ro:"
 #define	SFI_PARAM_GUI		  ":r:w:G:"
-#define	SFI_PARAM_GUI_READABLE	  ":r:G:"
-#define SFI_PARAM_STANDARD_RDONLY ":r:w:G:S:ro:"
 #define	SFI_PARAM_GUI_RDONLY	  ":r:w:G:ro:"
+#define	SFI_PARAM_GUI_READABLE	  ":r:G:"
 
 
 /* --- serializable categories --- */

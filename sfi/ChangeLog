@@ -1,3 +1,14 @@
+Sat Sep  4 04:59:57 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.h: removed misplaced pspec option comments.
+
+	* sfidl-corecxx.cc:
+	* sfidl-corec.cc: pspec constructor fixups.
+
+	* sfi/sfidl-parser.h:
+	* sfi/sfidl-parser.cc: implemented ConstIdent, a constant able to hold
+	an identifier.
+
 Thu Sep  2 03:29:39 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.c: g_option_find_value(): match +/- option modifiers only

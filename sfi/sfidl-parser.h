@@ -92,7 +92,7 @@ struct LineInfo {
 struct Constant {
   std::string name;
   std::string file;
-  enum { tString = 1, tFloat = 2, tInt = 3 } type;
+  enum { tString = 1, tFloat = 2, tInt = 3, tIdent = 4 } type;
 
   std::string str;
   float f;
@@ -290,7 +290,7 @@ protected:
 
   GTokenType parseTypeName (std::string& s);
   GTokenType parseStringOrConst (std::string &s);
-  GTokenType parseConstant ();
+  GTokenType parseConstant (bool isident = false);
   GTokenType parseNamespace ();
   GTokenType parseChoice ();
   GTokenType parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue);
