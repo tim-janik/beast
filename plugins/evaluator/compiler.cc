@@ -20,6 +20,7 @@
 
 #include "compiler.h"
 #include <assert.h>
+#include <ctype.h>
 
 using std::vector;
 using std::string;
