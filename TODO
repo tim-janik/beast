@@ -5,7 +5,6 @@ FIXMES:
 - fix syndrum parameter scale
 - provide proper stock effect
 - provide proper stock instrument
-- .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
 - check button3 /Tools/ menu in piano rool editor
 - fix pianoroll/Test menu
@@ -16,7 +15,6 @@ FIXMES:
 - check whether plugins/Makefile.plugins is included in dist tarball
 - create ~/beast/instruments ~/beast/effects when saving effect/instrument
 - add new test song containing a wave track so the internal wave csynth is properly testet
-- add demo song
 - File/Open should merge if issued on an empty project
 - add author and license information to module types just like we do for procedures
 - default saving (SFI_PARAM_SKIP_DEFAULT)
