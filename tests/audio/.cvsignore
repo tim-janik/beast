@@ -3,4 +3,4 @@
 Makefile
 Makefile.in
 beastconf.sh
-featuretest.status.sh
+featuretest-summary.sh

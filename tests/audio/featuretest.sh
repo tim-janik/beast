@@ -50,12 +50,12 @@ while test $# -gt 0; do
 	    ;;
 
 	-r|--reset-summary)
-		rm -f featuretest.status.sh
+		rm -f featuretest-summary.sh
 		exit 0
 		;;
 	-s|--summary)
-		if test -f featuretest.status.sh; then
-		  . featuretest.status.sh
+		if test -f featuretest-summary.sh; then
+		  . featuretest-summary.sh
 		fi
 
 		tests_passed=$(expr $tests_total - $tests_failed)
@@ -138,14 +138,14 @@ echo "TEST $test_name:"
   # extract features
   echo "${test_indentation}extracting features: $features"
   $top_builddir/tools/bsefextract --cut-zeros $features $bsefile.wav > $test_name.current || exit 1
-  rm $bsefile.wav
+  rm -f $bsefile.wav
 
   # compare with reference data
   if test -f $reference; then
     echo "${test_indentation}comparing features with options: $cmpopts"
     $top_builddir/tools/bsefcompare $cmpopts $test_name.current $reference > $bsefile.result || exit_code=1
     sed "s/^/$test_indentation/g" < $bsefile.result
-    rm $bsefile.result
+    rm -f $bsefile.result
   else
     exit_code=1
     echo "${test_indentation}no reference data found in $reference (so no comparision possible)"
@@ -154,8 +154,8 @@ echo "TEST $test_name:"
 ) || test_result=failed
 echo "TEST $test_name $test_result."
 
-if test -f featuretest.status.sh; then
-  . featuretest.status.sh
+if test -f featuretest-summary.sh; then
+  . featuretest-summary.sh
 fi
 
 if test $test_result = "failed"; then
@@ -165,7 +165,6 @@ if test $test_result = "failed"; then
   tests_failed=`expr $tests_failed + 1`
 fi
 tests_total=`expr $tests_total + 1`
-echo
 
 # update feature test statistics
 # 
@@ -174,4 +173,4 @@ echo
 (
   echo "tests_failed=$tests_failed"
   echo "tests_total=$tests_total"
-) > featuretest.status.sh
+) > featuretest-summary.sh
