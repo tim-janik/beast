@@ -1,3 +1,9 @@
+Thu Mar  6 05:59:44 2003  Tim Janik  <timj@gtk.org>
+
+	* bsetrack.c: removed ::part property hack.
+	ignore snet changes while our internal sub synth is prepared
+	(locked) since changes have no effect then anyway.
+
 Mon Mar  3 23:17:18 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsepcmdevice-csl.c: slightly beautified mutex init code.

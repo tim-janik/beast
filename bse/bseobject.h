@@ -115,8 +115,8 @@ guint		bse_object_class_add_dsignal	(BseObjectClass	*oclass,
 
 
 /* --- object prototypes --- */
-void		bse_object_lock			(BseObject	*object);
-void		bse_object_unlock		(BseObject	*object);
+void		bse_object_lock			(gpointer	 object);
+void		bse_object_unlock		(gpointer	 object);
 BseIcon*	bse_object_get_icon		(BseObject	*object);
 void		bse_object_notify_icon_changed	(BseObject	*object);
 gpointer	bse_object_from_id		(guint		 unique_id);

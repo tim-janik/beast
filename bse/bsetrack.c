@@ -40,7 +40,6 @@
 
 enum {
   PROP_0,
-  PROP_PART,
   PROP_MUTED,
   PROP_SYNTH_NET,
   PROP_N_SYNTH_VOICES
@@ -115,10 +114,6 @@ bse_track_class_init (BseTrackClass *class)
   
   item_class->list_proxies = bse_track_list_proxies;
   
-  bse_object_class_add_param (object_class, "Play List",
-			      PROP_PART,
-			      bse_param_spec_object ("part", "Part", NULL,
-						     BSE_TYPE_PART, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MUTED,
 			      sfi_pspec_bool ("muted", "Muted", NULL,
@@ -287,12 +282,6 @@ check_project (BseItem *item)
 }
 
 static gboolean
-check_song (BseItem *item)
-{
-  return BSE_IS_SONG (item);
-}
-
-static gboolean
 check_part (BseItem *item)
 {
   return BSE_IS_PART (item);
@@ -314,12 +303,6 @@ bse_track_list_proxies (BseItem    *item,
   BseProxySeq *pseq = bse_proxy_seq_new ();
   switch (param_id)
     {
-    case PROP_PART:
-      bse_item_gather_proxies (item, pseq, BSE_TYPE_PART,
-			       (BseItemCheckContainer) check_song,
-			       (BseItemCheckProxy) NULL,
-			       NULL);
-      break;
     case PROP_SYNTH_NET:
       bse_item_gather_proxies (item, pseq, BSE_TYPE_SNET,
 			       (BseItemCheckContainer) check_project,
@@ -356,26 +339,25 @@ bse_track_set_property (GObject      *object,
       self->muted_SL = sfi_value_get_bool (value);
       BSE_SEQUENCER_UNLOCK ();
       break;
-    case PROP_PART:
-      if (!self->n_entries_SL && bse_value_get_object (value))
-	bse_track_insert_part (self, 0, bse_value_get_object (value));
-      break;
     case PROP_SYNTH_NET:
-      if (self->snet)
+      if (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth))
 	{
-	  bse_object_unproxy_notifies (self->snet, self, "changed");
-	  bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
+	  if (self->snet)
+	    {
+	      bse_object_unproxy_notifies (self->snet, self, "changed");
+	      bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
+	    }
+	  self->snet = bse_value_get_object (value);
+	  if (self->snet)
+	    {
+	      bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
+	      bse_object_proxy_notifies (self->snet, self, "changed");
+	    }
+	  if (self->sub_synth)
+	    g_object_set (self->sub_synth,
+			  "snet", self->snet,
+			  NULL);
 	}
-      self->snet = bse_value_get_object (value);
-      if (self->snet)
-	{
-	  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
-	  bse_object_proxy_notifies (self->snet, self, "changed");
-	}
-      if (self->sub_synth)
-	g_object_set (self->sub_synth,
-		      "snet", self->snet,
-		      NULL);
       break;
     case PROP_N_SYNTH_VOICES:
       self->max_voices = sfi_value_get_int (value);
@@ -398,9 +380,6 @@ bse_track_get_property (GObject    *object,
     {
     case PROP_MUTED:
       sfi_value_set_bool (value, self->muted_SL);
-      break;
-    case PROP_PART:
-      bse_value_set_object (value, NULL);
       break;
     case PROP_SYNTH_NET:
       bse_value_set_object (value, self->snet);
@@ -562,7 +541,7 @@ bse_track_add_modules (BseTrack     *self,
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_CONTEXT_MERGER (merger));
   g_return_if_fail (self->sub_synth == NULL);
-  
+
   /* midi voice input */
   self->voice_input = bse_container_new_item (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
   BSE_OBJECT_SET_FLAGS (self->voice_input, BSE_ITEM_FLAG_AGGREGATE);

@@ -519,9 +519,10 @@ bse_object_class_add_dsignal (BseObjectClass    *oclass,
 }
 
 void
-bse_object_lock (BseObject *object)
+bse_object_lock (gpointer _object)
 {
-  GObject *gobject = (GObject*) object;
+  BseObject *object = _object;
+  GObject *gobject = _object;
   
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (gobject->ref_count > 0);
@@ -542,8 +543,10 @@ bse_object_lock (BseObject *object)
 }
 
 void
-bse_object_unlock (BseObject *object)
+bse_object_unlock (gpointer _object)
 {
+  BseObject *object = _object;
+
   g_return_if_fail (BSE_IS_OBJECT (object));
   g_return_if_fail (object->lock_count > 0);
   
