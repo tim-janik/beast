@@ -1,3 +1,8 @@
+Sun Nov 14 01:11:09 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmaster.c: minor changes for recording frequency,
+	we still have big ISSUEs here.
+
 Mon Nov  8 02:05:10 1999  Tim Janik  <timj@gtk.org>
 
 	* wooho! unbelievable, using BseNoise connected to BseSNet, i just

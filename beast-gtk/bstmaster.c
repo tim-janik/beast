@@ -78,7 +78,8 @@ bst_master_init (void)
 
       attributes.n_channels = N_TRACKS;
       attributes.play_frequency = BSE_MIX_FREQ;
-      attribute_mask |= BSE_PCMSA_N_CHANNELS | BSE_PCMSA_PLAY_FREQUENCY;
+      attributes.record_frequency = BSE_MIX_FREQ;
+      attribute_mask |= BSE_PCMSA_N_CHANNELS | BSE_PCMSA_PLAY_FREQUENCY | BSE_PCMSA_REC_FREQUENCY;
 
       error = bse_pcm_stream_set_attribs (BSE_PCM_STREAM (stream), attribute_mask, &attributes);
       if (!error &&
@@ -94,7 +95,7 @@ bst_master_init (void)
 	  g_message ("mix buffer size: %d", bse_globals->track_length);
 	});
       else if (!error)
-	error = BSE_ERROR_STREAM_SET_ATTRIB;
+	error = BSE_ERROR_STREAM_SET_FORMAT;
     }
   
   if (error)
@@ -219,7 +220,7 @@ bst_master_dispatch (gpointer  source_data,
   master = BSE_MASTER (source_data);
 
   bse_masters_cycle ();
-  while (BSE_SOURCE (master)->n_inputs &&
+  if (BSE_SOURCE (master)->n_inputs &&
 	 !bse_stream_would_block (master->stream,
 				  (sizeof (BseSampleValue) *
 				   bse_globals->track_length *

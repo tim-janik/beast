@@ -212,6 +212,7 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
     else
 	AC_MSG_RESULT(no)
     fi
+    AC_MSG_WARN(["Beware - we do not currently check for asound.h and libasound correctly"])
     bsealsadevices=
     if test "x$have_alsa" = "xyes"; then
 	AC_MSG_CHECKING(for ALSA sounddriver devices)
