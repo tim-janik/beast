@@ -32,6 +32,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+
+/* --- BEAST mainmenu operations --- */
 typedef enum
 {
   BST_OP_NONE,
@@ -87,6 +89,14 @@ typedef enum
   BST_OP_LAST
 } BstOps;
 
+
+/* --- sub window flags --- */
+typedef enum
+{
+  BST_SUB_DESTROY_ON_HIDE	= 1 << 0
+} BstSubWindowFlags;
+
+
 #define	BST_TAG_DIAMETER	(20)
 
 
@@ -135,10 +145,10 @@ extern void bst_object_set         (gpointer     object,
       gtk_signal_emit_by_name ((GtkObject*) (object), "args-changed"); \
 } G_STMT_END
 
-GtkWidget* bst_subwindow_new       (GtkObject	 *alive_host,
-				    GtkWidget	**ssubwindow_p,
-				    GtkWidget	 *child,
-				    guint	  zero);
+GtkWidget* bst_subwindow_new       (GtkObject	     *alive_host,
+				    GtkWidget	    **ssubwindow_p,
+				    GtkWidget	     *child,
+				    BstSubWindowFlags flags);
 GtkWidget* bst_subwindow_get_child (GtkWidget	 *subwindow);
 void	   gtk_widget_showraise    (GtkWidget	 *widget);
 void	   gtk_toplevel_hide       (GtkWidget    *widget);

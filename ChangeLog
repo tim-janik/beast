@@ -1,3 +1,16 @@
+Fri Jan 21 02:45:14 2000  Tim Janik  <timj@gtk.org>
+
+	* configure.in: altered GdkPixbuf check to feature -lgdk_pixbuf and
+	optionally -lgnomecanvaspixbuf.
+
+Thu Jan 20 00:27:53 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (bst_subwindow_new): feature BstSubWindowFlags to
+	configure specific aspects (e.g. destroy_on_hide).
+
+	* beast-gtk/bstapp.c (bst_app_operate): destroy help windows when
+	closed.
+	
 Wed Jan 19 16:35:55 2000  Tim Janik  <timj@gtk.org>
 
 	* couple of build fixes for older gcc versions.

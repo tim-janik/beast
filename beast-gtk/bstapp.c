@@ -634,7 +634,7 @@ bst_app_operate (BstApp *app,
 											    help_file,
 											    "-misc-fixed-*-*-*-*-15-*-*-*-*-*-*-*",
 											    "-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*"),
-									0);
+									BST_SUB_DESTROY_ON_HIDE);
 	  string = g_strconcat ("BEAST: ", help_title, NULL);
 	  gtk_window_set_title (GTK_WINDOW (bst_help_dialogs[op - BST_OP_HELP_FIRST]), string);
 	  g_free (string);

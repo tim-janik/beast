@@ -662,16 +662,15 @@ subwindow_delete_event (GtkWidget *window)
 static GtkWidget *subwindow_choice = NULL;
 
 GtkWidget*
-bst_subwindow_new (GtkObject  *alive_host,
-		   GtkWidget **ssubwindow_p,
-		   GtkWidget  *child,
-		   guint       zero)
+bst_subwindow_new (GtkObject        *alive_host,
+		   GtkWidget       **ssubwindow_p,
+		   GtkWidget        *child,
+		   BstSubWindowFlags flags)
 {
   GtkWidget *window;
 
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
   g_return_val_if_fail (child->parent == NULL, NULL);
-  g_return_val_if_fail (zero == 0, NULL);
   if (alive_host)
     g_return_val_if_fail (GTK_IS_OBJECT (alive_host), NULL);
   if (ssubwindow_p)
@@ -698,6 +697,11 @@ bst_subwindow_new (GtkObject  *alive_host,
 			   "child", child,
 			   ssubwindow_p ? "object_signal::destroy" : NULL, bse_nullify_pointer, ssubwindow_p,
 			   NULL);
+  if (flags & BST_SUB_DESTROY_ON_HIDE)
+    gtk_signal_connect_after (GTK_OBJECT (window),
+			      "hide",
+			      GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			      NULL);
   gtk_widget_ref (child);
   gtk_object_set_data_full (GTK_OBJECT (window), "subwindow-child", child, (GDestroyNotify) gtk_widget_unref);
   gtk_object_set_data_full (GTK_OBJECT (window), "subwindow-choice", subwindow_choice, (GDestroyNotify) gtk_widget_unref);
