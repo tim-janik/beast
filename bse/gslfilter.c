@@ -73,7 +73,7 @@ gsl_filter_butter (unsigned int iorder,
 {
   double pi = GSL_PI, order = iorder, norm;
   double beta_mul = pi / (2.0 * order);
-  //  double kappa = gsl_trans_freq2s (freq);
+  /* double kappa = gsl_trans_freq2s (freq); */
   double kappa = gsl_trans_freq2s (freq) * pow (epsilon, -1.0 / order);
   GslComplex root, *poly = g_newa (GslComplex, iorder + 1);
   unsigned int i;
