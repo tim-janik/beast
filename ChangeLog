@@ -1,3 +1,7 @@
+Tue Feb 24 04:05:59 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/sfidl.1.texi: Updated sfidl manual page.
+
 Mon Feb 23 23:39:27 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am: Adapt to sfidl option changes.

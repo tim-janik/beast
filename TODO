@@ -116,6 +116,12 @@ Stefan Gui TODOs (priorities: 9=high, 0=low):
 4 - implement selection and copy and paste of parts in the strack roll
 
 TODO:
+- pattern editor: Ctrl+I (interpolate) should interpolate values between start and end of a selection,
+  regardless whether the selected column is a note or event
+- pattern editor: Ctrl+R (random) should insert random notes or events
+- pattern editor: transpose script (up and down by semitone, so that we can use an accelerator)
+- pattern editor: background colors should be different (darker) every 4 and every 16 steps (maybe
+  depending on measure)
 - let bst_key_combo_popup() display currently pressed modifiers
 - let bst_key_combo_popup() tell the user to press a mouse button to abort
 - pattern editor: render letters with pango into offscreen pixmaps, draw text by copying offscreen pixmaps (but skinning?)
@@ -292,7 +298,6 @@ GSL:
   - [timj]        7 6 Async DCache read-ahead thread creation
 
 sfidl:
-  - sfidl.1: document the command line options sfidl offers
   - sfidl-manual.texi: complete the documentation
 80- handle Procedure {} namespace in namespacehelper
 85- rename nspace.printableForm() to something that expresses namespace relativity
