@@ -175,7 +175,9 @@ std::string idlType (GType g)
     default:
       if (s == "SfiFBlock")
         return "FBlock";
-      g_error ("bseprocidl: unsupported signal argument type: %s", s.c_str());
+      else if (s == "SfiRec")
+        return "Rec";
+      g_error ("bseprocidl: unsupported argument type: %s", s.c_str());
       return "*ERROR*";
     }
 }

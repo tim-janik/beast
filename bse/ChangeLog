@@ -1,3 +1,13 @@
+Tue Dec  2 23:28:37 2003  Tim Janik  <timj@gtk.org>
+
+	* bse/bseprocidl.cc: don't error out on SfiRec arguments.
+	
+	* bseitem.[hc]: renamed bse_item_uncross() to bse_item_uncross_links().
+
+	* bseparasite.[hc]: implemented new undo-able parasite interface,
+	which supports SfiRec as parasite data and uses a file-path alike
+	nameing scheme for the parasites. storage not yet implemented.
+
 Fri Nov 28 03:34:15 2003  Tim Janik  <timj@gtk.org>
 
 	* tests/testcxx.cc: reenabled closure test, use BSE_TYPE_AMPLIFIER as

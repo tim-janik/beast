@@ -20,6 +20,7 @@
 #include "bsestorage.h"
 #include "bseprocedure.h"
 #include "bsemain.h"
+#include "bseparasite.h"
 #include "bseproject.h"
 #include "bseundostack.h"
 #include <gobject/gvaluecollector.h>
@@ -125,6 +126,7 @@ bse_item_class_init (BseItemClass *class)
                               PROP_SEQID,
                               sfi_pspec_int ("seqid", "Sequential ID", NULL,
                                              0, 0, SFI_MAXINT, 1, "r"));
+  bse_item_class_add_parasite_signals (class);
 }
 
 static void
@@ -175,6 +177,8 @@ bse_item_do_dispose (GObject *gobject)
   if (item->parent)
     bse_container_remove_item (BSE_CONTAINER (item->parent), item);
 
+  bse_item_delete_parasites (item);
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
 }
@@ -184,6 +188,7 @@ bse_item_do_finalize (GObject *object)
 {
   BseItem *item = BSE_ITEM (object);
   
+  bse_item_delete_parasites (item);
   item_seqid_changed_queue = g_slist_remove (item_seqid_changed_queue, item);
   
   /* chain parent class' handler */
@@ -629,7 +634,7 @@ bse_item_cross_unlink (BseItem        *owner,
 }
 
 /**
- * bse_item_uncross
+ * bse_item_uncross_links
  * @owner:    reference owner
  * @link:     item referenced by @owner
  *
@@ -637,8 +642,8 @@ bse_item_cross_unlink (BseItem        *owner,
  * @link by executing the associated notifiers.
  */
 void
-bse_item_uncross (BseItem *owner,
-                  BseItem *link)
+bse_item_uncross_links (BseItem *owner,
+                        BseItem *link)
 {
   BseItem *container;
   

@@ -42,7 +42,7 @@ typedef gboolean (*BseForallCrossFunc) (BseItem	 *owner,
 					gpointer  data);
 struct _BseContainer
 {
-  BseSource	parent_object;
+  BseSource	parent_instance;
   
   guint		n_items;	/* paranoid checks */
 };

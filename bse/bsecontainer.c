@@ -976,7 +976,7 @@ item_check_branch (BseItem *item,
   return FALSE;
 }
 
-void
+static void
 bse_container_uncross_descendant (BseContainer *container,
                                   BseItem      *item)
 {

@@ -54,6 +54,7 @@ struct _BseItem
 
   guint         use_count;
   BseItem      *parent;
+  BseParasite  *parasite;
 };
 struct _BseItemClass
 {
@@ -122,7 +123,7 @@ void            bse_item_cross_link          (BseItem         *owner,
 void            bse_item_cross_unlink        (BseItem         *owner,
                                               BseItem         *link,
                                               BseItemUncross   uncross_func);
-void            bse_item_uncross             (BseItem         *owner,
+void            bse_item_uncross_links       (BseItem         *owner,
                                               BseItem         *link);
 BseItem*        bse_item_use                 (BseItem         *item);
 void            bse_item_unuse               (BseItem         *item);

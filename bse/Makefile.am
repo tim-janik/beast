@@ -108,6 +108,7 @@ bse_proc_sources = $(strip \
 	bsemidinotifier.proc \
 	bsejanitor.proc \
 	bsepart.proc \
+	bseparasite.proc \
 	bseprocedure.proc \
 	bseproject.proc \
 	bsescripthelper.proc \
@@ -131,6 +132,7 @@ bse_proc_gen_sources = $(strip \
 	bsemidinotifier.gen-proc.c \
 	bsejanitor.gen-proc.c \
 	bsepart.gen-proc.c \
+	bseparasite.gen-proc.c \
 	bseprocedure.gen-proc.c \
 	bseproject.gen-proc.c \
 	bsescripthelper.gen-proc.c \

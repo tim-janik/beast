@@ -16,12 +16,429 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bseparasite.h"
-
+#include "bseundostack.h"
 #include "bsestorage.h"
-
+#include <sfi/gbsearcharray.h>
 #include <string.h>
 
-/* --- defines --- */
+
+typedef struct {
+  const gchar *path;
+  SfiRec      *rec;
+} Node;
+typedef struct {
+  BseItem *link;
+  GSList  *paths; /* contains ref-counted const gchar* */
+} CRef;
+struct _BseParasite {
+  gpointer nodes;
+  gpointer crefs;
+};
+
+
+/* --- prototypes --- */
+static gint parasite_node_cmp  (gconstpointer  bsn1,
+                                gconstpointer  bsn2);
+static gint parasite_cref_cmp  (gconstpointer  bsn1,
+                                gconstpointer  bsn2);
+static void parasite_ref_rec   (BseItem       *item,
+                                const gchar   *path,
+                                SfiRec        *rec);
+static void parasite_unref_rec (BseItem       *item,
+                                const gchar   *path,
+                                SfiRec        *rec);
+static void parasite_ref_seq   (BseItem       *item,
+                                const gchar   *path,
+                                SfiSeq        *seq);
+static void parasite_unref_seq (BseItem       *item,
+                                const gchar   *path,
+                                SfiSeq        *seq);
+
+
+/* --- variables --- */
+static guint    signal_parasites_added = 0;
+static guint    signal_parasite_changed = 0;
+static const GBSearchConfig bconfig_nodes = {
+  sizeof (Node),
+  parasite_node_cmp,
+  G_BSEARCH_ARRAY_AUTO_SHRINK
+};
+static const GBSearchConfig bconfig_crefs = {
+  sizeof (CRef),
+  parasite_cref_cmp,
+  G_BSEARCH_ARRAY_AUTO_SHRINK
+};
+
+
+/* --- functions --- */
+void
+bse_item_class_add_parasite_signals (BseItemClass *class)
+{
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  signal_parasites_added = bse_object_class_add_dsignal (object_class, "parasites-added",
+                                                         G_TYPE_NONE, 1, G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
+  signal_parasite_changed = bse_object_class_add_dsignal (object_class, "parasite-changed",
+                                                          G_TYPE_NONE, 1, G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
+}
+
+static gint
+parasite_node_cmp (gconstpointer  bsn1,
+                   gconstpointer  bsn2)
+{
+  const Node *n1 = bsn1;
+  const Node *n2 = bsn2;
+  return strcmp (n1->path, n2->path);
+}
+
+static void
+parasite_init (BseItem *item)
+{
+  g_assert (item->parasite == NULL);
+  item->parasite = g_new0 (BseParasite, 1);
+  item->parasite->nodes = g_bsearch_array_create (&bconfig_nodes);
+  item->parasite->crefs = g_bsearch_array_create (&bconfig_crefs);
+}
+
+static gint
+parasite_cref_cmp (gconstpointer  bsn1,
+                   gconstpointer  bsn2)
+{
+  const CRef *r1 = bsn1;
+  const CRef *r2 = bsn2;
+  return G_BSEARCH_ARRAY_CMP (r1->link, r2->link);
+}
+
+static void
+parasite_uncross_object (BseItem *item,
+                         BseItem *link)
+{
+  CRef *cref, key = { 0, };
+  key.link = link;
+  cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+  g_return_if_fail (cref != NULL);
+  while (cref->paths)
+    {
+      const gchar *path = cref->paths->data;
+      bse_item_set_parasite (item, path, NULL);
+      cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+    }
+}
+
+static void
+parasite_ref_object (BseItem     *item,
+                     const gchar *path,
+                     BseItem     *link)
+{
+  CRef *cref, key = { 0, };
+  key.link = link;
+  cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+  if (!cref)
+    {
+      item->parasite->crefs = g_bsearch_array_insert (item->parasite->crefs, &bconfig_crefs, &key);
+      cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+      bse_item_cross_link (item, link, parasite_uncross_object);
+    }
+  cref->paths = g_slist_prepend (cref->paths, (gchar*) g_intern_string (path));
+}
+
+static void
+parasite_unref_object (BseItem     *item,
+                       const gchar *path,
+                       BseItem     *link)
+{
+  CRef *cref, key = {0, };
+  GSList *plink;
+  key.link = link;
+  cref = g_bsearch_array_lookup (item->parasite->crefs, &bconfig_crefs, &key);
+  g_return_if_fail (cref != NULL);
+  plink = g_slist_find (cref->paths, path);
+  g_return_if_fail (plink != NULL);
+  cref->paths = g_slist_remove_link (cref->paths, plink);
+  if (!cref->paths)
+    {
+      item->parasite->crefs = g_bsearch_array_remove_node (item->parasite->crefs, &bconfig_crefs, cref);
+      bse_item_cross_unlink (item, link, parasite_uncross_object);
+    }
+}
+
+static inline void
+parasite_ref_value (BseItem      *item,
+                    const gchar  *path,
+                    const GValue *value)
+{
+  if (G_VALUE_HOLDS_OBJECT (value))
+    {
+      BseItem *link = g_value_get_object (value);
+      if (link)
+        parasite_ref_object (item, path, link);
+    }
+  else if (SFI_VALUE_HOLDS_REC (value))
+    {
+      SfiRec *crec = sfi_value_get_rec (value);
+      if (crec)
+        parasite_ref_rec (item, path, crec);
+    }
+  else if (SFI_VALUE_HOLDS_SEQ (value))
+    {
+      SfiSeq *cseq = sfi_value_get_seq (value);
+      if (cseq)
+        parasite_ref_seq (item, path, cseq);
+    }
+}
+
+static inline void
+parasite_unref_value (BseItem      *item,
+                      const gchar  *path,
+                      const GValue *value)
+{
+  if (G_VALUE_HOLDS_OBJECT (value))
+    {
+      BseItem *link = g_value_get_object (value);
+      if (link)
+        parasite_unref_object (item, path, link);
+    }
+  else if (SFI_VALUE_HOLDS_REC (value))
+    {
+      SfiRec *crec = sfi_value_get_rec (value);
+      if (crec)
+        parasite_unref_rec (item, path, crec);
+    }
+  else if (SFI_VALUE_HOLDS_SEQ (value))
+    {
+      SfiSeq *cseq = sfi_value_get_seq (value);
+      if (cseq)
+        parasite_unref_seq (item, path, cseq);
+    }
+}
+
+static void
+parasite_ref_seq (BseItem     *item,
+                  const gchar *path,
+                  SfiSeq      *seq)
+{
+  guint i;
+  for (i = 0; i < seq->n_elements; i++)
+    parasite_ref_value (item, path, seq->elements + i);
+}
+
+static void
+parasite_unref_seq (BseItem     *item,
+                    const gchar *path,
+                    SfiSeq      *seq)
+{
+  guint i;
+  for (i = 0; i < seq->n_elements; i++)
+    parasite_unref_value (item, path, seq->elements + i);
+}
+
+static void
+parasite_ref_rec (BseItem     *item,
+                  const gchar *path,
+                  SfiRec      *rec)
+{
+  guint i;
+  for (i = 0; i < rec->n_fields; i++)
+    parasite_ref_value (item, path, rec->fields + i);
+}
+
+static void
+parasite_unref_rec (BseItem     *item,
+                    const gchar *path,
+                    SfiRec      *rec)
+{
+  guint i;
+  for (i = 0; i < rec->n_fields; i++)
+    parasite_unref_value (item, path, rec->fields + i);
+}
+
+void
+bse_item_set_parasite (BseItem        *item,
+                       const gchar    *parasite_path,
+                       SfiRec         *rec)
+{
+  SfiRec *delrec;
+  gboolean notify_add = FALSE;
+  Node *node, key = { 0, };
+  /* guard against no-ops, catch wrong paths */
+  if (!parasite_path || parasite_path[0] != '/' ||
+      (!item->parasite && !rec))
+    return;
+  /* ensure parasite intiialization */
+  if (!item->parasite)
+    parasite_init (item);
+  /* ensure node */
+  key.path = parasite_path;
+  node = g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
+  if (!node)
+    {
+      /* catch no-op deletion */
+      if (!rec)
+        return;
+      key.path = g_intern_string (parasite_path);
+      item->parasite->nodes = g_bsearch_array_insert (item->parasite->nodes, &bconfig_nodes, &key);
+      node = g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
+      notify_add = TRUE;
+    }
+  /* queue undo */
+  bse_item_backup_parasite (item, node->path, node->rec);
+  /* queue record deletion */
+  delrec = node->rec;
+  /* copy/setup new record */
+  if (rec)
+    {
+      node->rec = sfi_rec_ref (rec); /* copy-shallow */
+      parasite_ref_rec (item, node->path, node->rec);
+    }
+  else
+    {
+      /* remove node */
+      item->parasite->nodes = g_bsearch_array_remove_node (item->parasite->nodes, &bconfig_nodes, node);
+    }
+  /* cleanups */
+  if (delrec)
+    parasite_unref_rec (item, parasite_path, delrec);
+  if (((GObject*) item)->ref_count && notify_add)
+    {
+      const gchar *slash = strrchr (parasite_path, '/');
+      gchar *parent_path = g_strndup (parasite_path, slash - parasite_path + 1);
+      GQuark parent_quark = g_quark_from_string (parent_path);
+      g_free (parent_path);
+      g_signal_emit (item, signal_parasites_added, parent_quark, g_quark_to_string (parent_quark));
+    }
+  if (((GObject*) item)->ref_count)
+    g_signal_emit (item, signal_parasite_changed, g_quark_from_string (parasite_path), parasite_path);
+}
+
+SfiRec*
+bse_item_get_parasite (BseItem        *item,
+                       const gchar    *parasite_path)
+{
+  if (parasite_path && parasite_path[0] == '/' && item->parasite)
+    {
+      Node *node, key = { 0, };
+      key.path = parasite_path;
+      node = g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key);
+      if (node)
+        return node->rec;
+    }
+  return NULL;
+}
+
+static void
+undo_set_parasite (BseUndoStep  *ustep,
+                   BseUndoStack *ustack)
+{
+  BseItem *item = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
+  const gchar *path = ustep->data[1].v_pointer;
+  SfiRec *rec = ustep->data[2].v_pointer;
+  bse_item_set_parasite (item, path, rec);
+}
+
+static void
+unde_free_parasite (BseUndoStep *ustep)
+{
+  SfiRec *rec = ustep->data[2].v_pointer;
+  g_free (ustep->data[0].v_pointer);
+  if (rec)
+    sfi_rec_unref (rec);
+}
+
+void
+bse_item_backup_parasite (BseItem        *item,
+                          const gchar    *parasite_path,
+                          SfiRec         *rec)
+{
+  BseUndoStack *ustack;
+  BseUndoStep *ustep;
+  g_return_if_fail (BSE_IS_ITEM (item));
+  g_return_if_fail (parasite_path && parasite_path[0] == '/');
+  ustack = bse_item_undo_open (item, "set-parasite");
+  ustep = bse_undo_step_new (undo_set_parasite, unde_free_parasite, 3);
+  ustep->data[0].v_pointer = bse_undo_pointer_pack (item, ustack);
+  ustep->data[1].v_pointer = (gchar*) g_intern_string (parasite_path);
+  ustep->data[2].v_pointer = rec ? sfi_rec_ref (rec) : NULL;
+  bse_undo_stack_push (ustack, ustep);
+  bse_item_undo_close (ustack);
+}
+
+void
+bse_item_delete_parasites (BseItem *item)
+{
+  if (item->parasite)
+    {
+      while (g_bsearch_array_get_n_nodes (item->parasite->nodes))
+        {
+          Node *node = g_bsearch_array_get_nth (item->parasite->nodes, &bconfig_nodes,
+                                                g_bsearch_array_get_n_nodes (item->parasite->nodes) - 1);
+          bse_item_set_parasite (item, node->path, NULL);
+        }
+      g_assert (g_bsearch_array_get_n_nodes (item->parasite->crefs) == 0);
+      g_bsearch_array_free (item->parasite->nodes, &bconfig_nodes);
+      g_bsearch_array_free (item->parasite->crefs, &bconfig_crefs);
+      g_free (item->parasite);
+      item->parasite = NULL;
+    }
+}
+
+SfiRing*
+bse_item_list_parasites (BseItem     *item,
+                         const gchar *parent_path)
+{
+  SfiRing *ring = NULL;
+  if (item->parasite && parent_path)
+    {
+      guint i, l = strlen (parent_path);
+      if (!l || parent_path[0] != '/' || parent_path[l-1] != '/')
+        return NULL;
+      for (i = 0; i < g_bsearch_array_get_n_nodes (item->parasite->nodes); i++)
+        {
+          Node *node = g_bsearch_array_get_nth (item->parasite->nodes, &bconfig_nodes, i);
+          if (strncmp (parent_path, node->path, l) == 0)
+            {
+              const gchar *slash = strchr (node->path + l, '/');
+              if (!slash)       /* append all children */
+                ring = sfi_ring_append_uniq (ring, (gchar*) g_intern_string (node->path));
+              else
+                {               /* append immediate child directories */
+                  gchar *dir = g_strndup (node->path, slash - node->path + 1);
+                  ring = sfi_ring_append_uniq (ring, (gchar*) g_intern_string (dir));
+                  g_free (dir);
+                }
+            }
+        }
+    }
+  return ring;
+}
+
+const gchar*
+bse_item_create_parasite_name (BseItem        *item,
+                               const gchar    *path_prefix)
+{
+  if (path_prefix && path_prefix[0] == '/')
+    {
+      Node key = { 0, };
+      guint counter = 1;
+      gchar *path = g_strdup_printf ("%sAuto-%02x", path_prefix, counter++);
+      /* ensure parasite intiialization */
+      if (!item->parasite)
+        parasite_init (item);
+      /* search for unused name */
+      key.path = path;
+      while (g_bsearch_array_lookup (item->parasite->nodes, &bconfig_nodes, &key))
+        {
+          g_free (path);
+          path = g_strdup_printf ("%sAuto-%02x", path_prefix, counter++);
+          key.path = path;
+        }
+      key.path = g_intern_string (path);
+      g_free (path);
+      return key.path;
+    }
+  return NULL;
+}
+
+
+/* --- old parasites --- */
 #define MAX_PARASITE_VALUES (1024) /* (2 << 24) */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
