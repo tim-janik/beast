@@ -9,13 +9,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-07 19:59+0200\n"
-"PO-Revision-Date: 2004-06-29 21:38+0100\n"
+"POT-Creation-Date: 2004-07-13 14:25+0200\n"
+"PO-Revision-Date: 2004-07-13 17:53+0100\n"
 "Last-Translator: David Lodge <dave@cirt.net>\n"
 "Language-Team: English/GB <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: 8bit"
 
 #: beast-gtk/bstapp.c:68
 msgid "_New"
@@ -162,9 +162,8 @@ msgid "GSL Engine..."
 msgstr "GSL Engine..."
 
 #: beast-gtk/bstapp.c:280
-#, fuzzy
 msgid "Export Audio"
-msgstr "Left Audio"
+msgstr "Export Audio"
 
 #: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
@@ -414,22 +413,23 @@ msgstr "Loading wave `%s'"
 
 #: beast-gtk/bstgrowbar.c:91
 msgid "Shrink the scrollable area"
-msgstr ""
+msgstr "Shrink the scrollable area"
 
 #: beast-gtk/bstgrowbar.c:93
 msgid "Grow the scrollable area"
-msgstr ""
+msgstr "Grow the scrollable area"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bstsongbusview.c:34 beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Add"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
-#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bstsongbusview.c:35
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:64
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Delete"
 
@@ -589,16 +589,16 @@ msgstr "Loading \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Loading project \"%s\""
 
-#: beast-gtk/bstmain.c:723
+#: beast-gtk/bstmain.c:722
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:724
+#: beast-gtk/bstmain.c:723
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:725
+#: beast-gtk/bstmain.c:724
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -919,11 +919,11 @@ msgstr "Controls the octave relative to which notes are entered"
 
 #: beast-gtk/bstpatternctrl.c:141
 msgid "Row Shading"
-msgstr ""
+msgstr "Row Shading"
 
 #: beast-gtk/bstpatternctrl.c:142
 msgid "Adjust the number of rows between each shaded row"
-msgstr ""
+msgstr "Adjust the number of rows between each shaded row"
 
 #. movement
 #: beast-gtk/bstpatternctrl.c:313
@@ -1608,127 +1608,123 @@ msgstr "Triplet hundred twenty-eighth note"
 
 #: beast-gtk/bstrecords.idl:71
 msgid "2"
-msgstr ""
+msgstr "2"
 
 #: beast-gtk/bstrecords.idl:71
 msgid "Every second row"
-msgstr ""
+msgstr "Every second row"
 
 #: beast-gtk/bstrecords.idl:72
 msgid "4"
-msgstr ""
+msgstr "4"
 
 #: beast-gtk/bstrecords.idl:72
 msgid "Every fourth row"
-msgstr ""
+msgstr "Every fourth row"
 
 #: beast-gtk/bstrecords.idl:73
 msgid "8"
-msgstr ""
+msgstr "8"
 
 #: beast-gtk/bstrecords.idl:73
-#, fuzzy
 msgid "Every eighth row"
-msgstr "Insert eighths note"
+msgstr "Every eighth row"
 
 #: beast-gtk/bstrecords.idl:74
-#, fuzzy
 msgid "16"
-msgstr "1/64"
+msgstr "16"
 
 #: beast-gtk/bstrecords.idl:74
-#, fuzzy
 msgid "Every sixteenth row"
-msgstr "Insert sixteenth note"
+msgstr "Every sixteenth row"
 
 #: beast-gtk/bstrecords.idl:75
 msgid "2 & 4"
-msgstr ""
+msgstr "2 & 4"
 
 #: beast-gtk/bstrecords.idl:75
 msgid "Every second and fourth row"
-msgstr ""
+msgstr "Every second and fourth row"
 
 #: beast-gtk/bstrecords.idl:76
 msgid "4 & 8"
-msgstr ""
+msgstr "4 & 8"
 
 #: beast-gtk/bstrecords.idl:76
 msgid "Every fourth and eighth row"
-msgstr ""
+msgstr "Every fourth and eighth row"
 
 #: beast-gtk/bstrecords.idl:77
 msgid "4 & 12"
-msgstr ""
+msgstr "4 & 12"
 
 #: beast-gtk/bstrecords.idl:77
 msgid "Every fourth and twelfth row"
-msgstr ""
+msgstr "Every fourth and twelfth row"
 
 #: beast-gtk/bstrecords.idl:78
 msgid "4 & 16"
-msgstr ""
+msgstr "4 & 16"
 
 #: beast-gtk/bstrecords.idl:78
 msgid "Every fourth and sixteenth row"
-msgstr ""
+msgstr "Every fourth and sixteenth row"
 
 #: beast-gtk/bstrecords.idl:79
 msgid "8 & 16"
-msgstr ""
+msgstr "8 & 16"
 
 #: beast-gtk/bstrecords.idl:79
 msgid "Every eighth and sixteenth row"
-msgstr ""
+msgstr "Every eighth and sixteenth row"
 
 #: beast-gtk/bstrecords.idl:80
 msgid "3"
-msgstr ""
+msgstr "3"
 
 #: beast-gtk/bstrecords.idl:80
 msgid "Every third row"
-msgstr ""
+msgstr "Every third row"
 
 #: beast-gtk/bstrecords.idl:81
 msgid "6"
-msgstr ""
+msgstr "6"
 
 #: beast-gtk/bstrecords.idl:81
 msgid "Every sixth row"
-msgstr ""
+msgstr "Every sixth row"
 
 #: beast-gtk/bstrecords.idl:82
-#, fuzzy
 msgid "12"
-msgstr "1/2"
+msgstr "12"
 
 #: beast-gtk/bstrecords.idl:82
 msgid "Every twelfth row"
-msgstr ""
+msgstr "Every twelfth row"
 
 #: beast-gtk/bstrecords.idl:83
 msgid "3 & 6"
-msgstr ""
+msgstr "3 & 6"
 
 #: beast-gtk/bstrecords.idl:83
 msgid "Every third and sixth row"
-msgstr ""
+msgstr "Every third and sixth row"
 
 #: beast-gtk/bstrecords.idl:84
 msgid "3 & 12"
-msgstr ""
+msgstr "3 & 12"
 
 #: beast-gtk/bstrecords.idl:84
 msgid "Every third and twelfth row"
-msgstr ""
+msgstr "Every third and twelfth row"
 
 #: beast-gtk/bstrecords.idl:85
 msgid "6 & 12"
-msgstr ""
+msgstr "6 & 12"
 
 #: beast-gtk/bstrecords.idl:85
 msgid "Every sixth and twelfth row"
-msgstr ""
+msgstr "Every sixth and twelfth row"
 
 #: beast-gtk/bstrecords.idl:90
 msgid "Release counter"
@@ -1800,9 +1796,8 @@ msgid "Background Image"
 msgstr "Background Image"
 
 #: beast-gtk/bstrecords.idl:115
-#, fuzzy
 msgid "Background image used by the pattern editor."
-msgstr "Background image used by the piano-roll widget."
+msgstr "Background image used by the pattern editor."
 
 #: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
 #: beast-gtk/bstrecords.idl:136
@@ -1820,32 +1815,28 @@ msgid "Background Color"
 msgstr "Background Colour"
 
 #: beast-gtk/bstrecords.idl:118
-#, fuzzy
 msgid "Background Shade 1"
-msgstr "Background Image"
+msgstr "Background Shade 1"
 
 #: beast-gtk/bstrecords.idl:119
-#, fuzzy
 msgid "Background Shade 2"
-msgstr "Background Image"
+msgstr "Background Shade 2"
 
 #: beast-gtk/bstrecords.idl:120
 msgid "Empty Field Color"
-msgstr ""
+msgstr "Empty Field Color"
 
 #: beast-gtk/bstrecords.idl:121
-#, fuzzy
 msgid "Text Color"
-msgstr "Select Colour"
+msgstr "Text Colour"
 
 #: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:129
 msgid "Vertical Bar Color"
 msgstr "Vertical Bar Colour"
 
 #: beast-gtk/bstrecords.idl:125
-#, fuzzy
 msgid "Background image used by the piano-roll editor."
-msgstr "Background image used by the piano-roll widget."
+msgstr "Background image used by the piano-roll editor."
 
 #: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:138
 msgid "Horizontal Bar Color"
@@ -1864,9 +1855,8 @@ msgid "Middle Bar Color"
 msgstr "Middle Bar Colour"
 
 #: beast-gtk/bstrecords.idl:135
-#, fuzzy
 msgid "Background image used by the control events editor."
-msgstr "Background image used by the control events widget."
+msgstr "Background image used by the control events editor."
 
 #: beast-gtk/bstrecords.idl:140
 msgid "Positive Value Color"
@@ -2099,7 +2089,7 @@ msgstr "Parts"
 
 #: beast-gtk/bstsupershell.c:229
 msgid "Busses"
-msgstr ""
+msgstr "Busses"
 
 #: beast-gtk/bstsupershell.c:235 beast-gtk/bstsupershell.c:254
 msgid "Routing"
@@ -3225,25 +3215,43 @@ msgstr "Right Out"
 msgid "Disconnect Out"
 msgstr "Disconnect Out"
 
+#: bse/bseparasite.proc:28 bse/bseparasite.proc:52 bse/bseparasite.proc:70
+#: bse/bseparasite.proc:89
+msgid "Item"
+msgstr "Item"
+
+#: bse/bseparasite.proc:29 bse/bseparasite.proc:53 bse/bseparasite.proc:71
+#: bse/bseparasite.proc:90
+msgid "Path"
+msgstr "Path"
+
+#: bse/bseparasite.proc:30
+msgid "Parasite Paths"
+msgstr "Parasite Paths"
+
+#: bse/bseparasite.proc:54 bse/bseparasite.proc:72 bse/bseparasite.proc:91
+msgid "Parasite"
+msgstr "Parasite"
+
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
 msgstr "/Input & Output/PCM Input"
 
-#: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsepcminput.c:128 bse/bsesongbus.c:146 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Left Audio Out"
 
-#: bse/bsepcminput.c:128
+#: bse/bsepcminput.c:128 bse/bsesongbus.c:146
 msgid "Left channel output"
 msgstr "Left channel output"
 
-#: bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsepcminput.c:130 bse/bsesongbus.c:148 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Right Audio Out"
 
-#: bse/bsepcminput.c:130
+#: bse/bsepcminput.c:130 bse/bsesongbus.c:148
 msgid "Right channel output"
 msgstr "Right channel output"
 
@@ -3251,16 +3259,16 @@ msgstr "Right channel output"
 msgid "/Input & Output/PCM Output"
 msgstr "/Input & Output/PCM Output"
 
-#: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsepcmoutput.c:128 bse/bsesongbus.c:142 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Left Audio In"
 
-#: bse/bsepcmoutput.c:128
+#: bse/bsepcmoutput.c:128 bse/bsesongbus.c:142
 msgid "Left channel input"
 msgstr "Left channel input"
 
-#: bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsepcmoutput.c:130 bse/bsesongbus.c:144 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Right Audio In"
@@ -3306,6 +3314,58 @@ msgstr "Signal In"
 #: bse/bsesnooper.c:108
 msgid "Snoop Signal"
 msgstr "Snoop Signal"
+
+#: bse/bsesong.proc:36
+msgid "Create a new mixer bus for a Song."
+msgstr "Create a new mixer bus for a Song."
+
+#: bse/bsesong.proc:67
+msgid "Delete a mixer bus from a Song."
+msgstr "Delete a mixer bus from a Song."
+
+#: bse/bsesong.proc:105
+msgid "Retrieve master output bus of a song."
+msgstr "Retrieve master output bus of a song."
+
+#: bse/bsesong.proc:132
+msgid "Create a new Part in a Song."
+msgstr "Create a new Part in a Song."
+
+#: bse/bsesong.proc:163
+msgid "Delete a Part from a Song."
+msgstr "Delete a Part from a Song."
+
+#: bse/bsesong.proc:201
+msgid "Create a new Track for a Song."
+msgstr "Create a new Track for a Song."
+
+#: bse/bsesong.proc:237
+msgid "Delete a Track from a Song."
+msgstr "Delete a Track from a Song."
+
+#: bse/bsesong.proc:276
+msgid "Find a track suitable for playing notes of a given part."
+msgstr "Find a track suitable for playing notes of a given part."
+
+#: bse/bsesong.proc:319
+msgid "Synthesize a note on a song of an active project."
+msgstr "Synthesize a note on a song of an active project."
+
+#: bse/bsesong.proc:369
+msgid "Retrieve song timing information at a specific tick."
+msgstr "Retrieve song timing information at a specific tick."
+
+#: bse/bsesongbus.c:144
+msgid "Right channel input"
+msgstr "Right channel input"
+
+#: bse/bsesongbus.c:167
+msgid ""
+"Bus implementation for songs, used to to route track audio signals to the "
+"master output."
+msgstr ""
+"Bus implementation for songs, used to to route track audio signals to the "
+"master output."
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -3384,12 +3444,11 @@ msgid "Pulse Modulation [%]"
 msgstr "Pulse Modulation [%]"
 
 #: bse/bsestandardosc.c:187
-#, fuzzy
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 msgstr ""
-"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
 
 #: bse/bsestandardosc.c:192
@@ -3665,9 +3724,8 @@ msgid "Audio Output"
 msgstr "Audio Output"
 
 #: plugins/bseatandistort.c:90
-#, fuzzy
 msgid "Audio Input Signal"
-msgstr "Audio Input SIgnal"
+msgstr "Audio Input Signal"
 
 #: plugins/bseatandistort.c:92
 msgid "Distorted Audio Output"
