@@ -142,10 +142,10 @@ bst_procedure_shell_set_proc (BstProcedureShell *procedure_shell,
     {
       bst_procedure_shell_destroy_contents (procedure_shell);
       if (procedure_shell->proc)
-	bse_procedure_unref (procedure_shell->proc);
+	g_type_class_unref (procedure_shell->proc);
       procedure_shell->proc = proc;
       if (procedure_shell->proc)
-	bse_procedure_ref (procedure_shell->proc);
+	g_type_class_ref (BSE_PROCEDURE_TYPE (procedure_shell->proc));
       
       bst_procedure_shell_rebuild (procedure_shell);
     }
@@ -217,8 +217,8 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
   
   /* parameter fields
    */
-  pspec_array_list = g_slist_prepend (pspec_array_list, proc->out_param_specs);
-  pspec_array_list = g_slist_prepend (pspec_array_list, proc->in_param_specs);
+  pspec_array_list = g_slist_prepend (pspec_array_list, proc->out_pspecs);
+  pspec_array_list = g_slist_prepend (pspec_array_list, proc->in_pspecs);
   for (slist = pspec_array_list; slist; slist = slist->next)
     {
       GParamSpec **pspec_p;
@@ -287,13 +287,13 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
     {
       BseErrorType error;
       
-      bst_status_bar_catch_procedure ();
+      bst_status_bar_catch_script ();
       shell->in_execution = TRUE;
       error = bse_procedure_execvl (shell->proc,
                                     shell->bparams,
                                     shell->first_out_bparam);
       shell->in_execution = FALSE;
-      bst_status_bar_uncatch_procedure ();
+      bst_status_bar_uncatch_script ();
       
       bst_procedure_shell_update (shell);
       /* feature procedures with error out parameter */

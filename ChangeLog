@@ -1,3 +1,12 @@
+Thu May 16 23:17:54 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c:
+	* beast-gtk/bststatusbar.c: 
+	* beast-gtk/bstprocedure.c: updates due to procedure changes in BSE.
+
+	* bsw/mkapi.c: 
+	* bsw/bswproxy.[hc]: updates according to procedure cleanups in BSE.
+
 Wed May 15 08:46:53 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstwaveeditor.c (play_back_wchunk_off): clear playback mark.

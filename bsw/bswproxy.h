@@ -30,9 +30,9 @@ extern "C" {
 
 typedef struct
 {
-  guint  n_in_params;
-  GValue in_params[16];
-  GValue out_param;
+  guint  n_ivalues;
+  GValue ivalues[16];
+  GValue ovalue;
   gchar *proc_name;
 } BswProxyProcedureCall;
 typedef struct
@@ -53,6 +53,13 @@ void		bsw_proxy_set			(BswProxy		 proxy,
 GParamSpec*	bsw_proxy_get_pspec		(BswProxy		 proxy,
 						 const gchar		*name);
 GType		bsw_proxy_type			(BswProxy		 proxy);
+
+
+/* --- utilities --- */
+typedef gboolean (*BswUtilForeachProc)	(gpointer	    data,
+					 GTypeClass        *klass);
+void	bse_util_foreach_proc		(gpointer	    data,
+					 BswUtilForeachProc foreach);
 
 
 /* --- garbage collection --- */

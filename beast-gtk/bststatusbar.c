@@ -29,9 +29,6 @@
 
 
 /* --- prototypes --- */
-static gboolean         procedure_finished      (gpointer        func_data,
-                                                 const gchar    *proc_name,
-                                                 BseErrorType    exit_status);
 static BstStatusBar*    status_bar_get_current  (void);
 static void             status_bar_queue_clear  (BstStatusBar   *sbar,
                                                  guint           msecs);
@@ -44,7 +41,6 @@ static void             status_bar_set          (BstStatusBar   *sbar,
 /* --- variables --- */
 static GQuark     quark_status_bar = 0;
 static GSList    *status_window_stack = NULL;
-static guint      proc_notifier = 0;
 static guint      proc_catch_count = 0;
 
 /* --- functions --- */
@@ -363,33 +359,50 @@ status_bar_get_current (void)
   return dialog ? g_object_get_qdata (G_OBJECT (dialog->status_bar), quark_status_bar) : NULL;
 }
 
-void
-bst_status_bar_catch_procedure (void)
+static void
+script_status (BseServer      *server,
+	       BswScriptStatus status,
+	       const gchar    *script_name,
+	       gfloat          progress,
+	       BseErrorType    error,
+	       gpointer        data)
 {
-  if (!proc_catch_count++)
+  switch (status)
     {
-      proc_notifier = bse_procedure_notifier_add (procedure_finished, NULL);
+    case BSW_SCRIPT_STATUS_START:
+      bst_status_set (0, script_name, NULL);
+      break;
+    case BSW_SCRIPT_STATUS_PROGRESS:
+      if (progress < 0)
+	bst_status_set (BST_STATUS_PROGRESS, script_name, NULL);
+      else
+	bst_status_set (progress * 100.0, script_name, NULL);
+      break;
+    case BSW_SCRIPT_STATUS_END:
+      bst_status_eprintf (error, script_name);
+      break;
+    case BSW_SCRIPT_STATUS_PROC_END:	/* single procedure script */
+      bst_status_eprintf (error, script_name);
+      break;
     }
 }
 
 void
-bst_status_bar_uncatch_procedure (void)
+bst_status_bar_catch_script (void)
+{
+  if (!proc_catch_count++)
+    bsw_proxy_connect (BSW_SERVER,
+		       "signal::script_status", script_status, NULL,
+		       NULL);
+}
+
+void
+bst_status_bar_uncatch_script (void)
 {
   g_return_if_fail (proc_catch_count > 0);
   
   if (!--proc_catch_count)
-    {
-      bse_procedure_notifier_remove (proc_notifier);
-      proc_notifier = 0;
-    }
-}
-
-static gboolean
-procedure_finished (gpointer     func_data,
-                    const gchar *proc_name,
-                    BseErrorType exit_status)
-{
-  bst_status_eprintf (exit_status, proc_name);
-
-  return TRUE;
+    bsw_proxy_disconnect (BSW_SERVER,
+			  "any_signal", script_status, NULL,
+			  NULL);
 }

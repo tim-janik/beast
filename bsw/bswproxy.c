@@ -62,29 +62,23 @@ bsw_proxy_call_procedure (BswProxyProcedureCall *closure)
   g_return_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type));
 
   proc = g_type_class_ref (proc_type);
-  if (proc->n_in_params == closure->n_in_params && proc->n_out_params <= 1)
+  if (proc->n_in_pspecs == closure->n_ivalues && proc->n_out_pspecs <= 1)
     {
-      GSList *node, *param_list = NULL;
-      GSList out_list = { NULL, NULL, };
       guint i;
 
-      for (i = 0; i < closure->n_in_params; i++)
+      for (i = 0; i < closure->n_ivalues; i++)
 	{
-	  GValue *value = closure->in_params + i;
+	  GValue *value = closure->ivalues + i;
 
-	  bsw_value_glue2bse (value, value, proc->in_param_specs[i]->value_type);
-	  param_list = g_slist_prepend (param_list, value);
+	  bsw_value_glue2bse (value, value, proc->in_pspecs[i]->value_type);
 	}
-      param_list = g_slist_reverse (param_list);
-      if (proc->n_out_params)
-	bsw_value_glue2bse (&closure->out_param, &closure->out_param, proc->out_param_specs[0]->value_type);
-      out_list.data = &closure->out_param;
-      result = bse_procedure_execvl (proc, param_list, &out_list);
-      for (node = param_list; node; node = node->next)
-	g_value_unset (node->data);
-      g_slist_free (param_list);
-      if (proc->n_out_params)
-	bsw_value_glue2bsw (&closure->out_param, &closure->out_param);
+      if (proc->n_out_pspecs)
+	bsw_value_glue2bse (&closure->ovalue, &closure->ovalue, proc->out_pspecs[0]->value_type);
+      result = bse_procedure_marshal (proc_type, closure->ivalues, &closure->ovalue, NULL, NULL);
+      for (i = 0; i < closure->n_ivalues; i++)
+	g_value_unset (closure->ivalues + i);
+      if (proc->n_out_pspecs)
+	bsw_value_glue2bsw (&closure->ovalue, &closure->ovalue);
     }
   else
     g_warning ("closure parameters mismatch procedure");
@@ -194,4 +188,25 @@ bsw_proxy_type (BswProxy proxy)
   GObject *object = bse_object_from_id (proxy);
 
   return BSE_IS_OBJECT (object) ? G_OBJECT_TYPE (object) : 0;
+}
+
+/* --- utilities --- */
+void
+bse_util_foreach_proc (gpointer           data,
+		       BswUtilForeachProc foreach)
+{
+  BseCategory *categories;
+  guint i, n_cats;
+
+  categories = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE, &n_cats);
+  for (i = 0; i < n_cats; i++)
+    {
+      BseProcedureClass *class = g_type_class_ref (categories[i].type);
+
+      if (class->n_out_pspecs > 1)
+	continue;
+      foreach (data, class);
+      g_type_class_unref (class);
+    }
+  g_free (categories);
 }

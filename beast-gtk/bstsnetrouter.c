@@ -943,7 +943,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 						BST_CHOICE_END);
 	      g_free (source_name);
 	      i = bst_choice_modal (choice, event->button.button, event->button.time);
-	      bst_status_bar_catch_procedure ();
+	      bst_status_bar_catch_script ();
 	      switch (i)
 		{
 		  BswErrorType error;
@@ -964,7 +964,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 		  bst_canvas_source_popup_info (csource);
 		  break;
 		}
-	      bst_status_bar_uncatch_procedure ();
+	      bst_status_bar_uncatch_script ();
 	      bst_choice_destroy (choice);
 	      /* FIXME: get rid of artifacts left behind removal (mostly rect-ellipse) */
 	      gtk_widget_queue_draw (GTK_WIDGET (canvas));
@@ -983,7 +983,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 						BST_CHOICE (1, "Delete", DELETE),
 						BST_CHOICE_END);
 	      i = bst_choice_modal (choice, event->button.button, event->button.time);
-              bst_status_bar_catch_procedure ();
+              bst_status_bar_catch_script ();
 	      switch (i)
 		{
 		  BseErrorType error;
@@ -996,7 +996,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 		  bst_canvas_link_popup_view (clink);
 		  break;
 		}
-	      bst_status_bar_uncatch_procedure ();
+	      bst_status_bar_uncatch_script ();
 	      bst_choice_destroy (choice);
 	      /* FIXME: get rid of artifacts left behind removal (mostly rect-ellipse) */
 	      gtk_widget_queue_draw (GTK_WIDGET (canvas));

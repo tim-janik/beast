@@ -283,16 +283,16 @@ bst_param_set_procedure (BstParam	   *bparam,
     g_return_if_fail (BSE_IS_PROCEDURE_CLASS (proc));
   
   if (bparam->owner)
-    bse_procedure_unref (bparam->owner);
+    g_type_class_unref (bparam->owner); /* procedure */
   
   bparam->owner = proc;
-  if (bparam->owner)
+  if (bparam->owner) /* procedure */
     {
       /* we SHOULD make sure here that bparam->param->pspec is a valid pspec
        * for proc, but actually i don't feel like writing the extra code just
        * to issue a warning
        */
-      bse_procedure_ref (bparam->owner);
+      g_type_class_ref (BSE_PROCEDURE_TYPE (bparam->owner));
       if (bparam->group)
 	bst_param_get (bparam);
     }

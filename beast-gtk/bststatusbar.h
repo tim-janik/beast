@@ -69,8 +69,8 @@ void	   bst_status_errnoprintf		(gint		 libc_errno,
 						 const gchar	*message_fmt,
 						 ...) G_GNUC_PRINTF (2, 3);
 void	   bst_status_clear			(void);
-void	   bst_status_bar_catch_procedure	(void);
-void	   bst_status_bar_uncatch_procedure	(void);
+void	   bst_status_bar_catch_script		(void);
+void	   bst_status_bar_uncatch_script	(void);
 void	   bst_status_window_push		(gpointer        widget);
 void	   bst_status_window_pop		(void);
 

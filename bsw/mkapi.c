@@ -418,49 +418,49 @@ print_proc (GType              type,
     }
 
   s = g_strdup_printf ("%s %s_%s (",
-		       class->n_out_params ? marshal_type_name (class->out_param_specs[0]->value_type, TRUE) : "void",
+		       class->n_out_pspecs ? marshal_type_name (class->out_pspecs[0]->value_type, TRUE) : "void",
 		       prefix,
 		       cname);
   n = strlen (s);
   fprintf (f_out, "%s", s);
   g_free (s);
-  for (i = 0; i < class->n_in_params; i++)
+  for (i = 0; i < class->n_in_pspecs; i++)
     {
-      add_type_wrapper (G_PARAM_SPEC_VALUE_TYPE (class->in_param_specs[i]));
+      add_type_wrapper (G_PARAM_SPEC_VALUE_TYPE (class->in_pspecs[i]));
       fprintf (f_out, "%s%s %s%s\n",
 	       i ? indent (n) : "",
-	       marshal_type_name (class->in_param_specs[i]->value_type, FALSE),
-	       cident_canonify (class->in_param_specs[i]->value_type, class->in_param_specs[i]->name),
-	       i + 1 < class->n_in_params ? "," : gen_body ? ")" : ");");
+	       marshal_type_name (class->in_pspecs[i]->value_type, FALSE),
+	       cident_canonify (class->in_pspecs[i]->value_type, class->in_pspecs[i]->name),
+	       i + 1 < class->n_in_pspecs ? "," : gen_body ? ")" : ");");
     }
-  if (!class->n_in_params)
+  if (!class->n_in_pspecs)
     fprintf (f_out, "void%s\n", gen_body ? ")" : ");");
-  if (class->n_out_params)
-    add_type_wrapper (G_PARAM_SPEC_VALUE_TYPE (class->out_param_specs[0]));
+  if (class->n_out_pspecs)
+    add_type_wrapper (G_PARAM_SPEC_VALUE_TYPE (class->out_pspecs[0]));
   if (gen_body)
     {
       fprintf (f_out, "{\n");
-      if (class->n_out_params)
-	fprintf (f_out, "  %s result;\n", marshal_type_name (class->out_param_specs[0]->value_type, TRUE));
+      if (class->n_out_pspecs)
+	fprintf (f_out, "  %s result;\n", marshal_type_name (class->out_pspecs[0]->value_type, TRUE));
       fprintf (f_out, "  BswProxyProcedureCall cl;\n");
-      fprintf (f_out, "  GValue *value = cl.in_params;\n");
-      for (i = 0; i < class->n_in_params; i++)
+      fprintf (f_out, "  GValue *value = cl.ivalues;\n");
+      for (i = 0; i < class->n_in_pspecs; i++)
 	fprintf (f_out, "  %s (value, %s, %s); value++;\n",
-		 marshal_find (class->in_param_specs[i]->value_type, TRUE)->set_func,
-		 tmacro_from_type (class->in_param_specs[i]->value_type),
-		 cident_canonify (class->in_param_specs[i]->value_type, class->in_param_specs[i]->name));
-      fprintf (f_out, "  cl.n_in_params = value - cl.in_params;\n");
-      if (class->n_out_params)
-	fprintf (f_out, "  %s (&cl.out_param, %s, 0);\n",
-		 marshal_find (class->out_param_specs[0]->value_type, TRUE)->set_func,
-		 tmacro_from_type (class->out_param_specs[0]->value_type));
+		 marshal_find (class->in_pspecs[i]->value_type, TRUE)->set_func,
+		 tmacro_from_type (class->in_pspecs[i]->value_type),
+		 cident_canonify (class->in_pspecs[i]->value_type, class->in_pspecs[i]->name));
+      fprintf (f_out, "  cl.n_ivalues = value - cl.ivalues;\n");
+      if (class->n_out_pspecs)
+	fprintf (f_out, "  %s (&cl.ovalue, %s, 0);\n",
+		 marshal_find (class->out_pspecs[0]->value_type, TRUE)->set_func,
+		 tmacro_from_type (class->out_pspecs[0]->value_type));
       fprintf (f_out, "  cl.proc_name = \"%s\";\n", class->name);
       fprintf (f_out, "  bsw_proxy_call_procedure (&cl);\n");
-      if (class->n_out_params)
+      if (class->n_out_pspecs)
 	{
-	  fprintf (f_out, "  result = %s (&cl.out_param);\n",
-		   marshal_find (class->out_param_specs[0]->value_type, TRUE)->get_func);
-	  fprintf (f_out, "  g_value_unset (&cl.out_param);\n");
+	  fprintf (f_out, "  result = %s (&cl.ovalue);\n",
+		   marshal_find (class->out_pspecs[0]->value_type, TRUE)->get_func);
+	  fprintf (f_out, "  g_value_unset (&cl.ovalue);\n");
 	  fprintf (f_out, "  return result;\n");
 	}
       fprintf (f_out, "}\n");
@@ -482,29 +482,29 @@ print_procs (const gchar *pattern)
       BseProcedureClass *class = g_type_class_ref (categories[i].type);
       guint j, can_wrap = TRUE;
 
-      if (class->n_out_params > 1)
+      if (class->n_out_pspecs > 1)
 	{
 	  g_message ("ignoring procedure `%s' with %u output args",
-		     class->name, class->n_out_params);
+		     class->name, class->n_out_pspecs);
 	  can_wrap = FALSE;
 	}
-      for (j = 0; j < class->n_out_params; j++)
-	if (!marshal_type_name (G_PARAM_SPEC_VALUE_TYPE (class->out_param_specs[j]), TRUE))
+      for (j = 0; j < class->n_out_pspecs; j++)
+	if (!marshal_type_name (G_PARAM_SPEC_VALUE_TYPE (class->out_pspecs[j]), TRUE))
 	  {
 	    g_message ("ignoring procedure `%s' with unwrappable output arg \"%s\" of type `%s'",
 		       class->name,
-		       class->out_param_specs[j]->name,
-		       g_type_name (G_PARAM_SPEC_VALUE_TYPE (class->out_param_specs[j])));
+		       class->out_pspecs[j]->name,
+		       g_type_name (G_PARAM_SPEC_VALUE_TYPE (class->out_pspecs[j])));
 	    can_wrap = FALSE;
 	    break;
 	  }
-      for (j = 0; j < class->n_in_params; j++)
-	if (!marshal_type_name (G_PARAM_SPEC_VALUE_TYPE (class->in_param_specs[j]), FALSE))
+      for (j = 0; j < class->n_in_pspecs; j++)
+	if (!marshal_type_name (G_PARAM_SPEC_VALUE_TYPE (class->in_pspecs[j]), FALSE))
 	  {
 	    g_message ("ignoring procedure `%s' with unwrappable input arg \"%s\" of type `%s'",
 		       class->name,
-		       class->in_param_specs[j]->name,
-		       g_type_name (G_PARAM_SPEC_VALUE_TYPE (class->in_param_specs[j])));
+		       class->in_pspecs[j]->name,
+		       g_type_name (G_PARAM_SPEC_VALUE_TYPE (class->in_pspecs[j])));
 	    can_wrap = FALSE;
 	    break;
 	  }
