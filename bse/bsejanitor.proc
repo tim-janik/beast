@@ -230,8 +230,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  if (!self->kill_pending)
-    bse_janitor_queue_kill (self);
+  bse_janitor_kill (self);
   
   return BSE_ERROR_NONE;
 }
@@ -262,7 +261,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* check execution context */
-  if (!self->port || self->kill_pending)
+  if (!self->port || self->close_pending)
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
@@ -291,7 +290,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* check execution context */
-  if (!self->port || self->kill_pending)
+  if (!self->port || self->close_pending)
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
@@ -312,7 +311,7 @@ BODY (BseProcedureClass *proc,
   BseJanitor *self = bse_janitor_get_current ();
   
   /* check execution context */
-  if (!self || !self->port || self->kill_pending)
+  if (!self || !self->port || self->close_pending)
     return BSE_ERROR_PROC_EXECUTION;
 
   /* set output parameters */
@@ -344,7 +343,7 @@ METHOD (BseJanitor, set-msg) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* check execution context */
-  if (!self->port || self->kill_pending)
+  if (!self->port || self->close_pending)
     return BSE_ERROR_PROC_EXECUTION;
   if (!message)
     {
@@ -381,7 +380,7 @@ METHOD (BseJanitor, progress) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* check execution context */
-  if (!self->port || self->kill_pending)
+  if (!self->port || self->close_pending)
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
@@ -413,12 +412,12 @@ METHOD (BseJanitor, exit) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* check execution context */
-  if (!BSE_IS_JANITOR (self) || !self->port || self->kill_pending)
+  if (!BSE_IS_JANITOR (self) || !self->port || self->close_pending)
     return BSE_ERROR_PROC_EXECUTION;
   
   /* action */
   bse_server_user_message (bse_server_get (), mtype, message);
-  bse_janitor_queue_kill (self);
+  bse_janitor_close (self);
   
   return BSE_ERROR_NONE;
 }

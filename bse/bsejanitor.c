@@ -49,7 +49,7 @@ static void     bse_janitor_get_property	(GObject	     	*janitor,
 static void     bse_janitor_set_parent		(BseItem                *item,
 						 BseItem                *parent);
 static void	janitor_install_jsource		(BseJanitor		*self);
-static gboolean	janitor_kill_jsource		(gpointer		 data);
+static gboolean	janitor_idle_clean_jsource	(gpointer		 data);
 static void	janitor_port_closed		(SfiComPort		*port,
 						 gpointer		 close_data);
 static GValue*	janitor_client_msg		(SfiGlueDecoder		*decoder,
@@ -138,7 +138,8 @@ bse_janitor_class_init (BseJanitorClass *class)
 static void
 bse_janitor_init (BseJanitor *self)
 {
-  self->kill_pending = FALSE;
+  self->close_pending = FALSE;
+  self->force_kill = FALSE;
   self->port = NULL;
   self->context = NULL;
   self->decoder = NULL;
@@ -383,25 +384,40 @@ bse_janitor_get_current (void)
 }
 
 static void
-queue_kill (BseJanitor *self)
+janitor_shutdown (BseJanitor *self)
 {
-  self->kill_pending = TRUE;
-  sfi_com_port_close_remote (self->port, TRUE);
-  bse_idle_now (janitor_kill_jsource, g_object_ref (self));
+  gfloat n_seconds = 1;
+  self->close_pending = TRUE;
+  sfi_com_port_close_remote (self->port, self->force_kill);
+  if (self->port->reaped)
+    n_seconds = 0;
+  bse_idle_timed (n_seconds * SFI_USEC_FACTOR, janitor_idle_clean_jsource, g_object_ref (self));
   g_signal_emit (self, signal_closed, 0);
   g_object_notify (self, "connected");
 }
 
 void
-bse_janitor_queue_kill (BseJanitor *self)
+bse_janitor_close (BseJanitor *self)
 {
   g_return_if_fail (BSE_IS_JANITOR (self));
-  g_return_if_fail (self->kill_pending == FALSE);
+  g_return_if_fail (self->close_pending == FALSE);
 
   if (BSE_ITEM (self)->parent)
     bse_container_remove_item (BSE_CONTAINER (BSE_ITEM (self)->parent), BSE_ITEM (self));
   else
-    queue_kill (self);
+    janitor_shutdown (self);
+}
+
+void
+bse_janitor_kill (BseJanitor *self)
+{
+  g_return_if_fail (BSE_IS_JANITOR (self));
+
+  if (!self->close_pending)
+    {
+      self->force_kill = TRUE;
+      bse_janitor_close (self);
+    }
 }
 
 static void
@@ -411,8 +427,8 @@ bse_janitor_set_parent (BseItem *item,
   BseJanitor *self = BSE_JANITOR (item);
   
   if (!parent &&	/* removal */
-      !self->kill_pending)
-    queue_kill (self);
+      !self->close_pending)
+    janitor_shutdown (self);
 
   /* chain parent class' handler */
   BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
@@ -481,8 +497,8 @@ janitor_dispatch (GSource    *source,
       g_string_truncate (port->gstring_stderr, 0);
     }
 #endif
-  if (!port->connected && !self->kill_pending)
-    bse_janitor_queue_kill (self);
+  if (!port->connected && !self->close_pending)
+    bse_janitor_close (self);
   return TRUE;
 }
 
@@ -515,9 +531,10 @@ janitor_install_jsource (BseJanitor *self)
 }
 
 static gboolean
-janitor_kill_jsource (gpointer data)
+janitor_idle_clean_jsource (gpointer data)
 {
   BseJanitor *self = BSE_JANITOR (data);
+  SfiComPort *port = self->port;
 
   g_return_val_if_fail (self->source != NULL, FALSE);
 
@@ -527,8 +544,26 @@ janitor_kill_jsource (gpointer data)
   self->decoder = NULL;
   sfi_glue_context_destroy (self->context);
   self->context = NULL;
-  sfi_com_port_set_close_func (self->port, NULL, NULL);
-  sfi_com_port_unref (self->port);
+  sfi_com_port_set_close_func (port, NULL, NULL);
+  sfi_com_port_reap_child (port, TRUE);
+  if (port->remote_pid)
+    {
+      if (port->exit_signal_sent)
+        {
+          /* here, sigterm_sent and/or sigkill_sent is TRUE */
+          if (port->sigkill_sent)
+            g_printerr ("%s: killed by janitor\n", port->ident);
+          else
+            g_printerr ("%s: connection terminated\n", port->ident);
+        }
+      else if (port->exit_signal && port->dumped_core)
+        g_printerr ("%s: %s (core dumped)\n", port->ident, g_strsignal (port->exit_signal));
+      else if (port->exit_signal)
+        g_printerr ("%s: %s\n", port->ident, g_strsignal (port->exit_signal));
+      else if (port->exit_code || self->force_kill)
+        g_printerr ("%s: exit status: %d\n", port->ident, port->exit_code);
+    }
+  sfi_com_port_unref (port);
   self->port = NULL;
   g_object_unref (self);
   return FALSE;
@@ -539,6 +574,6 @@ janitor_port_closed (SfiComPort *port,
 		     gpointer    close_data)
 {
   BseJanitor *self = BSE_JANITOR (close_data);
-  if (!self->kill_pending)
-    bse_janitor_queue_kill (self);
+  if (!self->close_pending)
+    bse_janitor_close (self);
 }

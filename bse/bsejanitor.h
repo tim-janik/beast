@@ -35,7 +35,8 @@ G_BEGIN_DECLS
 struct _BseJanitor
 {
   BseItem         parent_instance;
-  guint		  kill_pending : 1;
+  guint		  close_pending : 1;
+  guint		  force_kill : 1;
   SfiComPort	 *port;
   SfiGlueContext *context;
   SfiGlueDecoder *decoder;
@@ -59,7 +60,8 @@ typedef struct {
 
 /* --- prototypes --- */
 BseJanitor*  bse_janitor_new		(SfiComPort	*port);
-void	     bse_janitor_queue_kill	(BseJanitor	*self);
+void	     bse_janitor_kill   	(BseJanitor	*self);
+void	     bse_janitor_close  	(BseJanitor	*self);
 const gchar* bse_janitor_get_ident	(BseJanitor	*self);
 void	     bse_janitor_set_script	(BseJanitor	*self,
 					 const gchar	*script);
