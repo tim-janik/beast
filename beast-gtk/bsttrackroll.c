@@ -618,13 +618,16 @@ coord_check_crossing (BstTrackRoll *self,
 
 static gint
 coord_to_row (BstTrackRoll *self,
-	      gint          y)
+	      gint          y,
+	      gboolean     *is_valid)
 {
   gint row;
-  if (self->get_pos_row)
+  if (self->get_pos_row && is_valid)
+    *is_valid = self->get_pos_row (self->size_data, y, &row);
+  else if (self->get_pos_row)
     self->get_pos_row (self->size_data, y, &row);
   else
-    row = y / 15;
+    row = y / 15; /* uneducated guess */
   return row;
 }
 
@@ -672,7 +675,7 @@ bst_track_roll_draw_canvas (BstTrackRoll *self,
   GdkGC *bgp_gc = widget->style->bg_gc[GTK_STATE_PRELIGHT];
   GdkGC *dark_gc = widget->style->dark_gc[widget->state];
   GdkGC *light_gc = widget->style->light_gc[widget->state];
-  gint row = coord_to_row (self, y);
+  gint row = coord_to_row (self, y, NULL);
   gint ry, rheight, validrow;
   // gint line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
 
@@ -1069,12 +1072,13 @@ bst_track_roll_canvas_drag (BstTrackRoll *self,
 {
   if (self->canvas_drag)
     {
-      self->drag.current_row = coord_to_row (self, MAX (coord_y, 0));
+      self->drag.current_row = coord_to_row (self, coord_y, &self->drag.current_valid);
       self->drag.current_track = row_to_track (self, self->drag.current_row);
       self->drag.current_tick = coord_to_tick (self, MAX (coord_x, 0), FALSE);
       if (initial)
 	{
 	  self->drag.start_row = self->drag.current_row;
+	  self->drag.start_valid = self->drag.current_valid;
 	  self->drag.start_track = self->drag.current_track;
 	  self->drag.start_tick = self->drag.current_tick;
 	  g_signal_emit (self, signal_select_row, 0, self->drag.current_row);

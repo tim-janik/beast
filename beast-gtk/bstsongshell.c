@@ -131,6 +131,11 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 					     NULL),
 			       "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
 			       NULL);
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->track_view),
+			    gtk_widget_new (GTK_TYPE_LABEL,
+					    "label", "Tracks",
+					    "visible", TRUE,
+					    NULL));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->param_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "label", "Parameters",
@@ -139,11 +144,6 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->part_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "label", "Parts",
-					    "visible", TRUE,
-					    NULL));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->track_view),
-			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Tracks",
 					    "visible", TRUE,
 					    NULL));
   if (BST_DVL_EXT)

@@ -1,3 +1,17 @@
+Mon Feb 10 23:54:43 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackroll.[hc]: supply drag data with information
+	about validity of the current drag row.
+
+	* beast-gtk/bsttrackrollctrl.c (editor_once): minor insertion fix.
+
+	* beast-gtk/gxk/gxkutils.c (gxk_tree_view_get_row_from_coord): return
+	whether the pointer is within visible row area and clamp ro to
+	visible rows.
+
+	* beast-gtk/bstsongshell.c (bst_song_shell_rebuild): switch notebook
+	page order for songs to allow easy editing of track view.
+
 Mon Feb 10 20:12:36 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackview.c: added editable tree view columns to

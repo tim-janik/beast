@@ -1157,29 +1157,61 @@ gxk_tree_view_get_selected_row (GtkTreeView *tree)
 
 /**
  * gxk_tree_view_get_row_from_coord
- * @tree:  valid #GtkTreeView
- * @y:     bin window y coordinate
- * @row_p: row pointed to by @y
+ * @tree:    valid #GtkTreeView
+ * @y:       bin window y coordinate
+ * @row_p:   row pointed to by @y
+ * @RETURNS: whether y lies within the visible area
  *
- * Retrieve the row within which @y lies.
+ * Retrieve the row within which @y lies. If @y lies
+ * outside the visible area, the row is clamped to
+ * visible rows.
  */
-void
+gboolean
 gxk_tree_view_get_row_from_coord (GtkTreeView *tree,
 				  gint         y,
 				  gint        *row_p)
 {
-  GtkTreePath *path;
-  gint row = -1;
+  GtkTreePath *path = NULL;
+  gint row = -1, outside = FALSE;
 
-  g_return_if_fail (GTK_IS_TREE_VIEW (tree));
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree), FALSE);
 
-  if (gtk_tree_view_get_path_at_pos (tree,
-				     GTK_WIDGET (tree)->allocation.width / 2,
-				     y,
-				     &path,
-				     NULL,
-				     NULL,
-				     NULL))
+  if (!gtk_tree_view_get_path_at_pos (tree, GTK_WIDGET (tree)->allocation.width / 2,
+				      y, &path, NULL, NULL, NULL))
+    {
+      GdkRectangle rect;
+      /* clamp row to visible area */
+      gtk_tree_view_get_visible_rect (tree, &rect); /* rect.y is buffer relative */
+      if (y <= 0)	/* above visible area */
+	gtk_tree_view_get_path_at_pos (tree, GTK_WIDGET (tree)->allocation.width / 2,
+				       0, &path, NULL, NULL, NULL);
+      else if (!gtk_tree_view_get_path_at_pos (tree, GTK_WIDGET (tree)->allocation.width / 2,
+					       MAX (rect.height, 1) - 1, &path,
+					       NULL, NULL, NULL))
+	{
+	  GtkTreePath *last_path = NULL;
+	  gint offs = 0;
+	  /* no row at end of visible area, find last row */
+	  while (offs < rect.height)
+	    {
+	      gint i = (offs + rect.height) >> 1;
+	      if (gtk_tree_view_get_path_at_pos (tree, GTK_WIDGET (tree)->allocation.width / 2,
+						 i, &path, NULL, NULL, NULL))
+		{
+		  if (last_path)
+		    gtk_tree_path_free (last_path);
+		  last_path = path;
+		  /* search in lower half */
+		  offs = i + 1;
+		}
+	      else /* search in upper half */
+		rect.height = i;
+	    }
+	  path = last_path;
+	}
+      outside = TRUE;
+    }
+  if (path)
     {
       if (gtk_tree_path_get_depth (path) > 0)
 	row = gtk_tree_path_get_indices (path)[0];
@@ -1187,6 +1219,7 @@ gxk_tree_view_get_row_from_coord (GtkTreeView *tree,
     }
   if (row_p)
     *row_p = row;
+  return row >= 0 && !outside;
 }
 
 /**

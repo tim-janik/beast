@@ -41,7 +41,7 @@ typedef gboolean (*BstTrackRollRowAreaFunc) (gpointer size_data,
 					     gint     row,
 					     gint    *y_p,
 					     gint    *height_p);
-typedef void     (*BstTrackRollPosRowFunc)  (gpointer size_data,
+typedef gboolean (*BstTrackRollPosRowFunc)  (gpointer size_data,
 					     gint     y,
 					     gint    *row_p);
 typedef SfiProxy (*BstTrackRollTrackFunc)   (gpointer proxy_data,
@@ -57,9 +57,11 @@ typedef struct {
   guint         start_row;
   SfiProxy      start_track;
   guint	        start_tick;
+  gboolean      start_valid;
   guint         current_row;
   SfiProxy      current_track;
   guint         current_tick;
+  gboolean      current_valid;
   /* user data */
   BstDragStatus state;		/* request type: unhandled/continue/handled/error */
 } BstTrackRollDrag;

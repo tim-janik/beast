@@ -185,7 +185,7 @@ static void
 insert_start (BstTrackRollController *self,
 	      BstTrackRollDrag       *drag)
 {
-  if (drag->current_track && !self->obj_part)
+  if (drag->current_track && drag->current_valid && !self->obj_part)
     {
       SfiProxy song = bse_item_get_parent (drag->current_track);
       SfiProxy item = bse_song_create_part (song);
@@ -312,6 +312,8 @@ controller_canvas_drag (BstTrackRollController *self,
       BseTrackPart *tpart = NULL;
 
       /* setup drag data */
+      if (!drag->start_valid)
+	drag->start_track = 0;
       tps = drag->start_track ? bse_track_list_parts (drag->start_track) : NULL;
       if (tps && tps->n_tparts)
 	{

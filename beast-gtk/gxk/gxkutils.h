@@ -140,7 +140,7 @@ gboolean gxk_tree_view_get_row_area	 (GtkTreeView		*tree,
 					  gint			 row,
 					  gint			*y_p,
 					  gint			*height_p);
-void   gxk_tree_view_get_row_from_coord	 (GtkTreeView		*tree,
+gboolean gxk_tree_view_get_row_from_coord(GtkTreeView		*tree,
 					  gint			 y,
 					  gint			*row_p);
 void     gxk_tree_view_focus_row	 (GtkTreeView		*tree,
