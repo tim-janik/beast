@@ -1,3 +1,9 @@
+Fri Dec  3 16:42:24 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/scripts/Makefile.am:
+	* tests/scripts/waveloadtest.scm: Added a scheme script for checking
+	whether files can be loaded by BSE.
+
 Fri Dec  3 15:51:48 2004  Tim Janik  <timj@gtk.org>
 
 	* shell/bsescminterp.c (bse_scm_choice_match): implement in terms
