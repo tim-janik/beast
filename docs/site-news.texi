@@ -26,6 +26,13 @@
 @unnumbered What's New?
 @c ----------------------------- START -----------------------------
 
+@newsTitle{Friday 4 February 2005, From the ``I'll be back'' dept.}
+
+Our @uref{http://beast.gtk.org/wiki:Discussion,, Wiki} is back!
+@uref{http://www.gtk.org/,,Gtk.org} is running new @uref{http://www.php.net/,,PHP}
+packages now, so the wiki and search facility could be re-enabled. 
+In other news, we're working on the next release, so expect 0.6.5 soon.
+
 
 @newsTitle{Sunday 26 Dec 2004, From the ``security first'' dept.}
 

@@ -290,16 +290,16 @@ bst_app_init (BstApp *self)
   gxk_widget_publish_assortment (widget, "project-pages", self->ppages);
 
   /* setup WAVE file entry */
-  gxk_radget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
+  // gxk_radget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
   self->wave_file = bst_param_new_proxy (bse_proxy_get_pspec (BSE_SERVER, "wave_file"), BSE_SERVER);
   if (0) // FIXME
-    gxk_radget_add (self->box, "control-area-file-label", gxk_param_create_editor (self->wave_file, "name"));
+    gxk_radget_add (self->box, "export-area-file-label", gxk_param_create_editor (self->wave_file, "name"));
   else
-    gxk_radget_add (self->box, "control-area-file-label", g_object_new (GTK_TYPE_LABEL,
+    gxk_radget_add (self->box, "export-area-file-label", g_object_new (GTK_TYPE_LABEL,
                                                                         "visible", TRUE,
                                                                         "label", _("Export Audio"),
                                                                         NULL));
-  gxk_radget_add (self->box, "control-area-file-entry", gxk_param_create_editor (self->wave_file, NULL));
+  gxk_radget_add (self->box, "export-area-file-entry", gxk_param_create_editor (self->wave_file, NULL));
   gxk_param_update (self->wave_file);
   
   /* setup the main notebook */
@@ -1095,16 +1095,23 @@ app_action_check (gpointer data,
   switch (action)
     {
       SfiProxy super;
+      BseItemSeq *iseq;
+      guint i;
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:
     case BST_ACTION_MERGE_PROJECT:
     case BST_ACTION_IMPORT_MIDI:
     case BST_ACTION_SAVE_PROJECT:
     case BST_ACTION_SAVE_PROJECT_AS:
-    case BST_ACTION_NEW_SONG:
     case BST_ACTION_NEW_CSYNTH:
     case BST_ACTION_NEW_MIDI_SYNTH:
     case BST_ACTION_CLOSE_PROJECT:
+      return TRUE;
+    case BST_ACTION_NEW_SONG:
+      iseq = bse_container_list_children (self->project);
+      for (i = 0; i < iseq->n_items; i++)
+        if (BSE_IS_SONG (iseq->items[i]))
+          return FALSE;
       return TRUE;
     case BST_ACTION_REMOVE_SYNTH:
       super = bst_app_get_current_super (self);

@@ -1823,8 +1823,8 @@ gxk_init_radget_types (void)
   *t++ = GTK_TYPE_HSCROLLBAR;   *t++ = GTK_TYPE_HSCALE;         *t++ = GTK_TYPE_TEAROFF_MENU_ITEM;
   *t++ = GTK_TYPE_VSCROLLBAR;   *t++ = GTK_TYPE_VSCALE;         *t++ = GXK_TYPE_FREE_RADIO_BUTTON;
   *t++ = GTK_TYPE_VSEPARATOR;   *t++ = GXK_TYPE_SIMPLE_LABEL;   *t++ = GTK_TYPE_HSEPARATOR;
-  *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;      *t++ = GXK_TYPE_SCROLLED_WINDOW;
-  *t++ = GXK_TYPE_IMAGE;        *t++ = GXK_TYPE_BACK_SHADE;
+  *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;      *t++ = GTK_TYPE_HANDLE_BOX;
+  *t++ = GXK_TYPE_IMAGE;        *t++ = GXK_TYPE_BACK_SHADE;     *t++ = GXK_TYPE_SCROLLED_WINDOW;
   *t++ = GXK_TYPE_RACK_TABLE;   *t++ = GXK_TYPE_RACK_ITEM;
   while (t-- > types)
     gxk_radget_define_widget_type (*t);

@@ -211,6 +211,12 @@
     prop:window-placement="$(first-occupied,$window-placement,top-left)"
     prop:spare-space="$(first-occupied,$spare-space,0)"
     />
+  <xdef:handle-box            inherit="GtkHandleBox"
+    prop:shadow-type="$(ifdef,shadow-type,$shadow-type,shadow-etched-in)"
+    prop:handle-position="$(ifdef,handle-position,$handle-position,left)"
+    prop:snap-edge="$(ifdef,snap-edge,$snap-edge,left)"
+    prop:snap-edge-set="$(ifdef,snap-edge,1,0)"
+    />
   <xdef:tree-view             inherit="GtkTreeView"
     prop:rules-hint="$(ifdef,rules-hint,$rules-hint,1)"
     />

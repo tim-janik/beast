@@ -1,6 +1,9 @@
 FIXME(urgent):
 - 0.6.5: simply load guspatch files as mono samples without extra xinfo values
 - 0.6.5: disable gus-patch envelope
+- after laoding a sample from the instrument selection box, make it the default selection
+- display bpm only with float precision
+- add extra path handling for freepats packages
 - fix BseMixer sync behaviour across saving
 - pianoroll: close pianoroll window in response to part::release  
 - skip and retrigger updates for scope visibility changes
@@ -8,7 +11,6 @@ FIXME(urgent):
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - play + play doesn't reset wave oscillator state
 - start playback at play pointer position
-- add extra path handling for freepats packages
 - TrackRoll: display only basename of wave files
 - WaveList: list items with basname in first col, add a col for full pathname
 - automatically change project name to basename fo saved file name
