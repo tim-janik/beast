@@ -1,4 +1,5 @@
 FIXMES:
+- fix wrong-packing assertions in release-notes etc. dialogs
 - the idl compiler doesn't support parsing group _("i18n string") {...}
 - the idl compiler writes out _("foo") as _ ("foo") but the additional space confuses gettext
 - remove hpack and vpack
