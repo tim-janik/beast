@@ -1,4 +1,9 @@
 FIXMES:
+- typed record serialization needs to honour indent for sfi_value_store_param()
+- serialization of homogeneous sequences could store the field type code only once
+- fix time stamps
+- storage: data pocket: use typed serialization instead of #-hack for generic values
+- MidiEvent (serialization)
 - fix "Test column with popup"
 - make bst_catalog_get_action() always return an action, so callers don't need to check
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
@@ -9,9 +14,6 @@ FIXMES:
 - fix piano roll [VH]PANEL_BG_GC() usage and GDK_Escape (ala trackroll)
 - use one global ID allocator
 - add IDs to part links in tracks
-- track editor is grey if no tracks are present
-- typed record serialization needs to honour indent for sfi_value_store_param()
-- serialization of homogeneous sequences could store the field type code only once
 - alow snet flagging as aggregate
 - add project_get_wave_snet
 - add developer option
@@ -32,9 +34,6 @@ FIXMES:
 - fix procbrowser
 - fix uses of gsl_engine_tick_stamp_from_systime() in bstwaveeditor.c
 - bst_gmask should use typedef struct _BstGMask BstGMask; instead of gpointer
-- MidiEvent (serialization)
-- fix time stamps
-- storage: data pocket: use typed serialization instead of #-hack for generic values
 - handle non-validated sequences and records in generation code (things
   can be demarshalled in non-validated form after incompatible changes)
 - cleanup helper/util code in sfitype.h
@@ -56,7 +55,6 @@ FIXMES:
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
 - save errno across logging/debugging
 - master tune slider in preferences (kammer ton)
-- CSL driver should initialize csl mutex functions
 
 URGENT:
 - support pspec groups in idl files [stw]
