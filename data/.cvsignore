@@ -5,5 +5,7 @@ bse.pc
 beast-images.h
 config-paths.h
 beast.desktop
-bse.keys
 beast-audio-x-bse.png
+beast.applications
+beast.xml
+bse.keys
