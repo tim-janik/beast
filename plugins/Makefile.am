@@ -3,9 +3,9 @@
 #
 ## Makefile.am for BSE Plugins
 
-SUBDIRS = icons
+SUBDIRS = icons . freeverb
 
-CFLAGS   += -funroll-loops $(EXTRA_CFLAGS)
+CFLAGS   += $(EXTRA_CFLAGS)
 INCLUDES += -I$(top_srcdir) $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
 INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 GLIB_MKENUMS = glib-mkenums

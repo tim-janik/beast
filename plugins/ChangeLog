@@ -1,3 +1,19 @@
+Tue Apr  9 03:03:53 2002  Tim Janik  <timj@gtk.org>
+
+	* implemented BseFreeVerb module, a wrapper around the public domain
+	FreeVerb code by Jeremy "Jezar" Wakefield.
+
+	* freeverb/comb.hpp, comb.cpp:
+	* freeverb/denormals.h, tuning.h:
+	* freeverb/revmodel.hpp, revmodel.cpp:
+	* freeverb/allpass.hpp, freeverb/allpass.cpp:
+	Freeverb - SOURCE CODE in the public domain, written by Jezar
+	at Dreampoint - http://www.dreampoint.co.uk.
+
+	* freeverb/bsefreeverb.[hc]:
+	* freeverb/bsefreeverbcpp.h freeverb/bsefreeverbcpp.cpp:
+	BseFreeVerb module implementation and C++ wrapper code.
+
 Mon Apr  8 22:19:42 2002  Tim Janik  <timj@gtk.org>
 
 	* davorgan.[hc]: ported DavOrgan to the engine, so we have our
