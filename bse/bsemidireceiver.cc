@@ -42,7 +42,7 @@ static SfiMutex                         global_midi_mutex = { 0, };
 
 /********************************************************************************
  *
- * Busy/idle states of a voice and correspondance with table entries:
+ * Busy/idle states of a voice inputs and correspondance with table entries:
  *      Events          QS      Communication           VS      Table
  *                      Idle                            Idle    0
  *                      |                               |       0
@@ -73,10 +73,12 @@ static SfiMutex                         global_midi_mutex = { 0, };
  * Cases (b) and (c) can occour simultaneously, and sustain is handled
  * similarly to note off events.
  *
- * QS   - queued state (simulated voice state)
- * VS   - voice state
- * UT   - UserThread (BSE core thread)
- * MT   - MasterThread
+ * QS   - voice input queued state (simulated voice state)
+ * VS   - voice input state
+ *
+ * Note that vocie switch modules are connected upon Job:activate, but will
+ * *only* disconnect upon Done=1. Thus a Done=const(0) mesh can block voices
+ * forever.
  *******************************************************************************/
 
 
