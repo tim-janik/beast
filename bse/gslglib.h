@@ -74,6 +74,12 @@ typedef long long int	gint64;
 typedef unsigned long long int  guint64;
 #endif
 typedef struct _GString GString;
+typedef struct _GDebugKey       GDebugKey;
+struct _GDebugKey
+{
+  gchar *key;
+  guint  value;
+};
 
 
 /* --- standard macros --- */
