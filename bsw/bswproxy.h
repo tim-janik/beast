@@ -38,6 +38,7 @@ SfiProxy	bsw_proxy_get_server (void);
 #define	bse_proxy_list_properties	sfi_glue_proxy_list_properties
 #define	bse_proxy_disconnect		sfi_glue_proxy_disconnect
 #define	bse_proxy_connect		sfi_glue_proxy_connect
+#define	bse_proxy_pending		sfi_glue_proxy_pending
 #define	bse_proxy_is_a			sfi_glue_proxy_is_a
 #define	bse_proxy_get_qdata		sfi_glue_proxy_get_qdata
 #define	bse_proxy_set_qdata_full	sfi_glue_proxy_set_qdata_full

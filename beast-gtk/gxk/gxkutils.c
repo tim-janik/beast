@@ -620,6 +620,7 @@ gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
 					      "title", title,
 					      "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
 					      "resizable", TRUE,
+					      "reorderable", TRUE,
 					      NULL),
 				g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
 					      "xalign", xalign,
@@ -675,6 +676,7 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
 						 "title", title,
 						 "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
 						 "resizable", TRUE,
+						 "reorderable", TRUE,
 						 NULL),
 			    cell,
 			    "text", model_column,
@@ -729,6 +731,7 @@ gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
 						 "title", title,
 						 "sizing", GTK_TREE_VIEW_COLUMN_AUTOSIZE,
 						 "resizable", TRUE,
+						 "reorderable", TRUE,
 						 NULL),
 			    cell,
 			    "active", model_column,
@@ -1255,7 +1258,8 @@ gxk_notebook_append (GtkNotebook *notebook,
  * @RETURNS:         whether callback is connected
  *
  * Find out whether a specific @callback is pending for a
- * specific signal on an instance. %TRUE is returned if
+ * specific signal on an instance. @detailed_signal may be
+ * %NULL to act as a wildcard. %TRUE is returned if
  * the @callback is found, %FALSE otherwise.
  */
 gboolean
@@ -1271,12 +1275,18 @@ gxk_signal_handler_pending (gpointer     instance,
   g_return_val_if_fail (detailed_signal != NULL, FALSE);
   g_return_val_if_fail (callback != NULL, FALSE);
 
-  if (g_signal_parse_name (detailed_signal, G_TYPE_FROM_INSTANCE (instance),
-			   &signal_id, &detail, FALSE))
+  if (detailed_signal && g_signal_parse_name (detailed_signal, G_TYPE_FROM_INSTANCE (instance),
+					      &signal_id, &detail, FALSE))
     {
       if (g_signal_handler_find (instance, (G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA |
 					    (detail ? G_SIGNAL_MATCH_DETAIL : 0)),
 				 signal_id, detail, NULL, callback, data) != 0)
+	return TRUE;
+    }
+  else if (!detailed_signal)
+    {
+      if (g_signal_handler_find (instance, G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
+				 0, 0, NULL, callback, data) != 0)
 	return TRUE;
     }
   else

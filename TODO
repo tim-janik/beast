@@ -58,11 +58,11 @@ DOCS:
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
 - fix black backgrounds in logo contest thumbnails
   (occours on entries with alpha channel) [alper]
-- keep old news item links working after the site move (e.g. docs/cvs-news.html)
 - adjust overall brightness of the site [alper]
 - in development docs, make function names in descriptions links to
   apropriate functions [alper]
 - function docs constants (e.g. %NULL) aren't marked up in cyan in .markup output [alper]
+- the beast site is unusable under IE [alper]
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq
