@@ -1,7 +1,7 @@
-#GslWave
+#BseWave
 
-# GslWave file sample header. all gslwave files should contain
-# "#GslWave" as their initial bytes, to allow magic(5) identification.
+# BseWave file sample header. all bsewave files should contain
+# "#BseWave" as their initial bytes, to allow magic(5) identification.
 
 # single line comments are enclosed in '#' and newlines.
 # newlines (also consecutive), tabs and spaces are all treated as
@@ -71,12 +71,12 @@ wave {
 }
 
 # a literal "\000" byte in the header denotes the parsing end.
-# this can be used to construct gslwave files that contain:
-# 1) the gslwave header
+# this can be used to construct bsewave files that contain:
+# 1) the bsewave header
 # 2) a literal "\000" byte
 # 3) encoded sample data which the chunks refer to (e.g. rawlink)
 
 
 ^@ <--- supposedly \000
 
-File content which is ignore by the gslwave header parser.
+File content which is ignore by the bsewave header parser.

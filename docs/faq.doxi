@@ -73,7 +73,7 @@ to the sheer multitude of formats out there chances are that a specific format
 is not yet supported.
 However, sample file loaders have much improved in the last versions, and at
 this point exist for Ogg/Vorbis, MPEG Audio 1.0/2.0/2.5 Layer I/II/III,
-RIFF/WAVE, and .gslwave (@gsl multi sample format) files.
+RIFF/WAVE, and .bsewave (@bse multi sample format) files.
 
 @section Why does @beast sometimes crash with a segmentation fault on startup?
 This was due to a bug in the X Keyboard extension. @beast tries to figure the
@@ -135,5 +135,14 @@ and MIDI pianos. Setting up MIDI drivers can be a tough task on its own but is
 beyond the scope of this FAQ and is already taken care of by
 @uref{http://www.midi-howto.com/,,The Linux MIDI-HOWTO},
 which provides good descriptions and further links to related documentation.
+
+@anchor{c++-weakness}
+@section Gcc/g++ crashes or leaks or hangs when compiling @beast
+
+Recent versions of @beast make use of C++ templates pretty heavily.
+This allowes us to greatly simplify some code portions (for instance
+the plugin implementations), but it's also a stress-test for the
+compilers out there. So people encountering problems compiling C++ code
+in @beast should try to upgrade their compilers as a first meassure.
 
 @bye

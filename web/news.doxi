@@ -20,9 +20,9 @@ it's newest edition. We kindly thank the LinuxUser people for putting this artic
 online.
 
 BEAST/BSE version 0.5.5 is available from the
-@uref{beast-doc://download,,download section}.
-@c here is the
-@c @uref{http://gnomedesktop.org/article.php?sid=1182,,FootNotes announcement}.
+@uref{beast-doc://download,,download section},
+here is the
+@uref{http://gnomedesktop.org/article.php?sid=1422,,FootNotes announcement}.
 
 Tarball:
 @uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.5.tar.gz,, beast-0.5.5.tar.gz}

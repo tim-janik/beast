@@ -750,11 +750,11 @@ gslwave_create_chunk_handle (gpointer      data,
 void
 _gsl_init_loader_gslwave (void)
 {
-  static const gchar *file_exts[] = { "gslwave", NULL, };
-  static const gchar *mime_types[] = { "audio/x-gslwave", NULL, };
-  static const gchar *magics[] = { "0 string #GslWave", NULL, };
+  static const gchar *file_exts[] = { "bsewave", NULL, };
+  static const gchar *mime_types[] = { "audio/x-bsewave", NULL, };
+  static const gchar *magics[] = { "0 string #BseWave", "0 string #GslWave", NULL, };
   static GslLoader loader = {
-    "GslWave",
+    "BseWave",
     file_exts,
     mime_types,
     0,	/* flags */

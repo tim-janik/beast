@@ -1,3 +1,11 @@
+Sun Nov  2 15:01:42 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/faq.texi: added note about C++ compilation problems.
+
+	* docs/site-news.texi: link to beast 0.5.5 announcement.
+	
+	* changed reminding bits from .gslwave to .bsewave.
+
 Sun Nov  2 04:13:54 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: help string and XKBgeom.h detection fixes, suggested by

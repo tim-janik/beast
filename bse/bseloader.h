@@ -97,16 +97,16 @@ typedef enum /*< skip >*/
 } GslLoaderFlags;
 struct _GslLoader
 {
-  const gchar *name;		/* format/loader name, e.g. "GslWave" or "WAVE audio, RIFF (little-endian)" */
+  const gchar *name;		/* format/loader name, e.g. "BseWave" or "WAVE audio, RIFF (little-endian)" */
 
   /* at least one of the
    * following three must
    * be non-NULL
    */
-  const gchar **extensions;	/* e.g.: "mp3", "ogg" or "gslwave" */
+  const gchar **extensions;	/* e.g.: "mp3", "ogg" or "bsewave" */
   const gchar **mime_types;	/* e.g.: "audio/x-mpg3" or "audio/x-wav" */
   GslLoaderFlags flags;
-  const gchar **magic_specs;	/* e.g.: "0 string RIFF\n8 string WAVE\n" or "0 string #GslWave\n" */
+  const gchar **magic_specs;	/* e.g.: "0 string RIFF\n8 string WAVE\n" or "0 string #BseWave\n" */
 
   gint   priority;   /* -100=high, +100=low, 0=default */
 
