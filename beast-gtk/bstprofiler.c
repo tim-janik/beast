@@ -22,6 +22,7 @@
 /* --- thread view --- */
 enum {
   TCOL_NAME,
+  TCOL_TID,
   TCOL_PROC,
   TCOL_PRIO,
   TCOL_PERC,
@@ -32,16 +33,9 @@ enum {
 
 
 /* --- variables --- */
-static GtkWidget *profiler_dialog = NULL;
-static GxkRadget *profiler = NULL;
-static guint      timer_id = 0;
-typedef struct {
-  gchar *name;
-  gchar  state;
-  int    priority;
-  int    processor;
-  int    utime, stime;
-} ThreadInfo;
+static GtkWidget     *profiler_dialog = NULL;
+static GxkRadget     *profiler = NULL;
+static guint          timer_id = 0;
 static guint          n_thread_infos = 0;
 static BseThreadInfo *thread_infos = NULL;
 
@@ -96,8 +90,11 @@ thread_info_cell_fill_value (GtkWidget *profiler,
     case TCOL_PROC:
       sfi_value_take_string (value, info->processor ? g_strdup_printf ("%d", info->processor) : g_strdup (""));
       break;
+    case TCOL_TID:
+      sfi_value_take_string (value, info->thread_id ? g_strdup_printf ("%u", info->thread_id) : g_strdup (""));
+      break;
     case TCOL_PRIO:
-      sfi_value_take_string (value, g_strdup_printf ("%d", info->priority));
+      sfi_value_take_string (value, info->priority < G_MAXINT ? g_strdup_printf ("%d", info->priority) : g_strdup (""));
       break;
     case TCOL_PERC:
       sfi_value_take_string (value, g_strdup_printf ("%5.2f%%", (info->utime + info->stime) * 0.0001));
@@ -141,6 +138,7 @@ update_infos (GSList         *slist,
       BseThreadInfo *ninfo = slist->data;
       slist = slist->next;
       if (!oinfo->name || strcmp (oinfo->name, ninfo->name) ||
+          oinfo->thread_id != ninfo->thread_id ||
           oinfo->state != ninfo->state ||
           oinfo->priority != ninfo->priority ||
           oinfo->processor != ninfo->processor ||
@@ -149,6 +147,7 @@ update_infos (GSList         *slist,
         {
           g_free (oinfo->name);
           oinfo->name = g_strdup (ninfo->name);
+          oinfo->thread_id = ninfo->thread_id;
           oinfo->state = ninfo->state;
           oinfo->priority = ninfo->priority;
           oinfo->processor = ninfo->processor;
@@ -159,7 +158,7 @@ update_infos (GSList         *slist,
         }
       totals->utime += oinfo->utime;
       totals->stime += oinfo->stime;
-      totals->priority = MIN (oinfo->priority, totals->priority);
+      // totals->priority = MIN (oinfo->priority, totals->priority);
     }
   if (totals_changed)
     {
@@ -182,6 +181,7 @@ profiler_update (void)
   GSList *slist = NULL;
   guint i;
   bi.name = si->name;
+  bi.thread_id = si->thread_id;
   bi.state = thread_state_from_char_state (si->state);
   bi.priority = si->priority;
   bi.processor = si->processor;
@@ -226,6 +226,7 @@ bst_profiler_window_get (void)
                                         profiler);
       GxkListWrapper *lwrapper = gxk_list_wrapper_new (N_TCOLS,
                                                        G_TYPE_STRING,   /* TCOL_NAME */
+                                                       G_TYPE_STRING,   /* TCOL_TID */
                                                        G_TYPE_STRING,   /* TCOL_PERC */
                                                        G_TYPE_STRING,   /* TCOL_UTIME */
                                                        G_TYPE_STRING,   /* TCOL_STIME */
@@ -243,6 +244,8 @@ bst_profiler_window_get (void)
       gtk_tree_selection_set_mode (tsel, GTK_SELECTION_NONE);
       g_object_unref (smodel);
       gxk_tree_view_add_text_column (tview, TCOL_NAME, "SAG", 0.0, _("Thread Name"), NULL, NULL, NULL, 0);
+      if (BST_DVL_HINTS)
+        gxk_tree_view_add_text_column (tview, TCOL_TID, "SA", 0.5, _("TID"), _("Thread ID (on some systems the process ID)"), NULL, NULL, 0);
       gxk_tree_view_add_text_column (tview, TCOL_PERC, "SAG", 1.0, _("CPU%"), _("Percentage of CPU usage"), NULL, NULL, 0);
       gxk_tree_view_add_text_column (tview, TCOL_UTIME, "SAG", 1.0, _("UTime"), _("Average number of milliseconds per second of user CPU time used by thread"), NULL, NULL, 0);
       gxk_tree_view_add_text_column (tview, TCOL_STIME, "SAG", 1.0, _("STime"), _("Average number of milliseconds per second of system CPU time used by thread"), NULL, NULL, 0);
