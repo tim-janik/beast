@@ -65,8 +65,7 @@ main (int   argc,
   else
     options.sfidlName = PRG_NAME;
 
-  /* FIXME: keep in sync with sfidl-options.cc */
-  options.target = Options::TARGET_MODULE;
+  /* FIXME: keep in sync with sfidl-module.cc */
   /* configure for module generation */
   options.doImplementation = true;
   options.doInterface = false;

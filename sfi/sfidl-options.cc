@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfidl-options.h"
+#include "sfidl-factory.h"
 #include "topconfig.h"
 #include <sfi/glib-extra.h>
 #include <stdio.h>
@@ -26,6 +27,7 @@
 #define SFIDL_PRG_NAME	     "sfidl"
 
 using namespace Sfidl;
+using namespace std;
 
 static Options *Options_the = 0;
 
@@ -41,7 +43,7 @@ Options::Options ()
   generateTypeH = generateTypeC = false;
   generateBoxedTypes = generateProcedures = generateSignalStuff = false;
   generateIdlLineNumbers = false;
-  target = TARGET_C;
+  target = TARGET_C; factory = 0;
   style = STYLE_DEFAULT;
   doHeader = doSource = doImplementation = doInterface = doHelp = doExit = false;
   sfidlName = "sfidl";
@@ -117,17 +119,6 @@ bool Options::parse (int *argc_p, char **argv_p[])
       else if (strcmp ("--qt", argv[i]) == 0)
 	{
 	  target = TARGET_QT;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--module", argv[i]) == 0)
-	{
-	  target = TARGET_MODULE;
-          /* configure for module generation */
-          doImplementation = true;
-          doInterface = false;
-          doHeader = true;
-          doSource = false;
-	  generateBoxedTypes = true;
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--list-types", argv[i]) == 0)
@@ -236,6 +227,21 @@ bool Options::parse (int *argc_p, char **argv_p[])
 	  noStdInc = true;
 	  argv[i] = NULL;
 	}
+      else if (!factory) /* only one factory allowed */
+	{
+	  list<Factory *> factories = Factory::listFactories();
+
+	  for (list<Factory *>::const_iterator fi = factories.begin(); fi != factories.end(); fi++)
+	    {
+	      if ((*fi)->option() == argv[i])
+		{
+		  factory = *fi;
+		  factory->init(*this);
+		  target = TARGET_FACTORY;
+		  argv[i] = NULL;
+		}
+	    }
+	}
     }
 
   /* resort argc/argv */
@@ -335,13 +341,6 @@ bool Options::parse (int *argc_p, char **argv_p[])
       return false;
     }
 
-  // --module
-  if (target == TARGET_MODULE && doInterface)
-    {
-      fprintf (stderr, "%s: --interface is not supported for Module\n", sfidlName.c_str());
-      return false;
-    }
-
   /* implications of header/source options */
   if (doHeader)
     {
@@ -370,6 +369,8 @@ bool Options::parse (int *argc_p, char **argv_p[])
 
 void Options::printUsage ()
 {
+  list<Factory *> factories = Factory::listFactories();
+
   fprintf (stderr, "usage: %s [ <options> ] <idlfile>\n", sfidlName.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "general options:\n");
@@ -390,16 +391,21 @@ void Options::printUsage ()
   fprintf (stderr, "options for the C++ language binding:\n");
   fprintf (stderr, " --qt                        use Qt language binding\n");
   fprintf (stderr, " --cxx                       use C++ language binding\n");
-  fprintf (stderr, " --module                    generate skeleton Module implementation\n");
   fprintf (stderr, " --namespace <namespace>     set the namespace to use for the code\n");
   fprintf (stderr, " --mixed                     mixed case identifiers (createMidiSynth)\n");
   fprintf (stderr, " --lower                     lower case identifiers (create_midi_synth)\n");
   fprintf (stderr, "\n");
+  fprintf (stderr, "other language bindings:\n");
+
+  for (list<Factory *>::const_iterator fi = factories.begin(); fi != factories.end(); fi++)
+    fprintf (stderr, " %-28s%s\n", (*fi)->option().c_str(), (*fi)->description().c_str());
+
+  fprintf (stderr, "\n");
   fprintf (stderr, " --help                      this help\n");
   fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, " --print-include-path        print include path\n");
-  fprintf (stderr, " --list-types                print all types defined in the idlfile\n");
   fprintf (stderr, " --nostdinc                  don't use standard include path\n");
+  fprintf (stderr, " --list-types                print all types defined in the idlfile\n");
 }
 
 

@@ -24,8 +24,9 @@
 
 namespace Sfidl {
 
+class Factory;
 struct Options {
-  enum Target { TARGET_C, TARGET_QT, TARGET_MODULE, TARGET_CXX, TARGET_TYPELIST };
+  enum Target { TARGET_C, TARGET_QT, TARGET_CXX, TARGET_TYPELIST, TARGET_FACTORY };
   enum Style  { STYLE_DEFAULT, STYLE_LOWER, STYLE_MIXED };
   bool        generateExtern;
   bool        generateData;
@@ -37,6 +38,7 @@ struct Options {
   bool        generateSignalStuff;
   bool        generateProcedures;
   Target      target;
+  Factory    *factory; // factory which can create the code generator
   Style       style;
   bool        doHeader;
   bool        doSource;

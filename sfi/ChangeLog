@@ -1,3 +1,14 @@
+Sat Jan 24 04:16:43 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl.cc sfidl-options.* sfidl-factory.* Makefile.am: Added a new
+	mechanism, which allows bindings to register themselves in the option
+	parser, using factories. This allows sfidl to know which bindings it
+	supports, even though the binding will only need to setup its factory
+	within its own C++ file.
+
+	* sfidl-module.cc bse-plugin-generator.cc: Use this mechanism for the
+	--module option.
+
 Sat Jan 24 03:08:44 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-generator.*: Added generic rename function, which can be used

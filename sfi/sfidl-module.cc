@@ -18,6 +18,7 @@
  */
 #include "sfidl-module.h"
 #include "sfidl-namespace.h"
+#include "sfidl-factory.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -690,4 +691,26 @@ CodeGeneratorModule::run ()
   printf("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
 }
 
+namespace {
+class CodeGeneratorModuleFactory : public Factory {
+public:
+  string option() const	      { return "--module"; }
+  string description() const  { return "generate skeleton Module implementation"; }
+
+  void init (Options& options) const
+  {
+    /* FIXME: keep in sync with bse-plugin-generator.cc */
+    options.doImplementation = true;
+    options.doInterface = false;
+    options.doHeader = true;
+    options.doSource = false;
+    options.generateBoxedTypes = true;
+  }
+
+  CodeGenerator *create (const Parser& parser) const
+  {
+    return new CodeGeneratorModule (parser);
+  }
+} moduleFactory;
+}
 /* vim:set ts=8 sts=2 sw=2: */

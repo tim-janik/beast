@@ -22,6 +22,7 @@
 #include "sfidl-parser.h"
 #include "sfidl-module.h"
 #include "sfidl-typelist.h"
+#include "sfidl-factory.h"
 #include "sfidl-cxx.h"
 #include <fcntl.h>
 #include <stdio.h>
@@ -79,11 +80,11 @@ int main (int argc, char **argv)
       case Options::TARGET_CXX:
 	codeGenerator = new CodeGeneratorCxx (parser);
 	break;
-      case Options::TARGET_MODULE:
-	codeGenerator = new CodeGeneratorModule (parser);
-	break;
       case Options::TARGET_TYPELIST:
 	codeGenerator = new CodeGeneratorTypeList (parser);
+	break;
+      case Options::TARGET_FACTORY:
+	codeGenerator = options.factory->create (parser);
 	break;
     }
   if (!codeGenerator)
