@@ -134,7 +134,7 @@ SFI provides a number of predefined primitive data types. These are
 @item @strong{@emph{Sfi::FBlock}}
 @* a block of 32bit floating point values (optimized for bulk data transfer)
 @item @strong{@emph{Sfi::Rec}}
-@* a special type, which can hold any record (for records see @uref{beast-doc://sfidl#composite-types,,below})
+@* a special type, which can hold any record (for records see @uref{beast-doc://sfidl-manual#composite-types,,below})
 @end itemize
 
 @subsection Choices
