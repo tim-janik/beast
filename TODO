@@ -1,4 +1,7 @@
 FIXME(release-critical):
+- ensure mixer and track setup for songs created via MIDI import
+- MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
+- pianoroll: select-all/none
 - menu-button should keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
 - play + play doesn't reset wave oscillator state
 - implement Monitor Output Signal dialogs:
