@@ -1,3 +1,7 @@
+Overview of Changes in BEAST/BSE 0.6.2:
+
+* Lots of adaptions to Gtk+-2.4
+
 Overview of Changes in BEAST/BSE 0.6.1:
 
 * Added suid wrapper which acquires nice level -20, then drops privileges
