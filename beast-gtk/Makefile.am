@@ -47,6 +47,7 @@ beast_headers = $(strip \
 	bstpatternview.h \
 	bstpreferences.h \
 	bstprocedure.h \
+	bstradiotools.h \
 	bstsamplerepo.h \
 	bstsampleshell.h \
 	bstsnetshell.h \
@@ -80,6 +81,7 @@ beast_sources = $(strip \
 	bstpatternview.c \
 	bstpreferences.c \
 	bstprocedure.c \
+	bstradiotools.c \
 	bstsamplerepo.c \
 	bstsampleshell.c \
 	bstsnetshell.c \

@@ -1,3 +1,12 @@
+Tue Feb  8 09:24:11 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstradiotools.[hc]: new widget to maintain radio selections
+	that can build toolbars, menus (to be implemented) and a palette
+	container with description for the radio controls.
+
+	* beast-gtk/bstsnetrouter.c: build the toolbar via BstRadioTools and
+	feature a palette dialog.
+
 Mon Feb  7 05:58:28 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_param_create): fixed a stupid bug where a

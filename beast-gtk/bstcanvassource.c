@@ -334,7 +334,7 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
 
       param_view = bst_param_view_new (BSE_OBJECT (csource->source));
       gtk_widget_show (param_view);
-      csource->source_view = bst_subwindow_new (GTK_OBJECT (csource), &csource->source_view, param_view, 0);
+      csource->source_view = bst_subwindow_new (GTK_OBJECT (csource), &csource->source_view, param_view, 0, NULL);
       source_name_changed (csource);
     }
   gtk_widget_showraise (csource->source_view);

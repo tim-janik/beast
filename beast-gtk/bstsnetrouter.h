@@ -20,6 +20,7 @@
 
 #include	"bstdefs.h"
 #include	"bstcanvassource.h"
+#include	"bstradiotools.h"
 
 
 #ifdef __cplusplus
@@ -45,12 +46,12 @@ struct _BstSNetRouter
   GnomeCanvas	    parent_object;
 
   GtkWidget	   *toolbar;
+  GtkWidget	   *palette;
   GtkAdjustment    *adjustment;
 
   BseSNet	   *snet;
 
-  guint		    mode; /* 0, 1, radio_active ;) */
-  GtkWidget        *edit_radio;
+  BstRadioTools    *rtools;
 
   gdouble           world_x, world_y;
   guint             ochannel_id;
@@ -76,6 +77,7 @@ void		 bst_snet_router_rebuild	     (BstSNetRouter *snet_router);
 void		 bst_snet_router_adjust_region	     (BstSNetRouter *snet_router);
 BstCanvasSource* bst_snet_router_csource_from_source (BstSNetRouter *snet_router,
 						      BseSource     *source);
+void		 bst_snet_router_toggle_palette	     (BstSNetRouter *snet_router);
 
 
 

@@ -293,7 +293,7 @@ bst_procedure_dialog_get_global (void)
       global_procedure_dialog = bst_subwindow_new (NULL,
 						   &global_procedure_dialog,
 						   bst_procedure_dialog_new (NULL),
-						   BST_SUB_POPUP_POS);
+						   BST_SUB_POPUP_POS, NULL);
       bst_status_bar_ensure (GTK_WINDOW (global_procedure_dialog));
     }
   
@@ -380,7 +380,8 @@ bst_procedure_void_execpl_modal (BseProcedureClass *proc,
     {
       GtkWidget *dialog = bst_subwindow_new (NULL, &dialog,
 					     widget,
-					     BST_SUB_DESTROY_ON_HIDE | BST_SUB_POPUP_POS | BST_SUB_MODAL);
+					     BST_SUB_DESTROY_ON_HIDE | BST_SUB_POPUP_POS | BST_SUB_MODAL,
+					     NULL);
       proc_dialog->one_shot_exec = TRUE;
       gtk_widget_show (dialog);
 

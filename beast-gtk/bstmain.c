@@ -508,6 +508,7 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
 {
 #include "./icons/noicon.c"
 #include "./icons/mouse_tool.c"
+#include "./icons/palette.c"
 #include "./icons/properties.c"
 #include "./icons/trash.c"
 #include "./icons/close.c"
@@ -524,6 +525,10 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
     { MOUSE_TOOL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       MOUSE_TOOL_IMAGE_WIDTH, MOUSE_TOOL_IMAGE_HEIGHT,
       MOUSE_TOOL_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_PALETTE_TOOL */
+    { PALETTE_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      PALETTE_IMAGE_WIDTH, PALETTE_IMAGE_HEIGHT,
+      PALETTE_IMAGE_RLE_PIXEL_DATA, },
     /* BST_ICON_PROPERTIES */
     { PROPERTIES_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       PROPERTIES_IMAGE_WIDTH, PROPERTIES_IMAGE_HEIGHT,
@@ -663,7 +668,9 @@ GtkWidget*
 bst_subwindow_new (GtkObject        *alive_host,
 		   GtkWidget       **ssubwindow_p,
 		   GtkWidget        *child,
-		   BstSubWindowFlags flags)
+		   BstSubWindowFlags flags,
+		   const gchar      *first_arg_name,
+		   ...)
 {
   static GtkWidget *subwindow_choice = NULL;
   GtkWidget *window;
@@ -714,6 +721,44 @@ bst_subwindow_new (GtkObject        *alive_host,
 					   GTK_OBJECT (window));
   else
     gtk_quit_add_destroy (1, GTK_OBJECT (window));
+
+  if (first_arg_name)
+    {
+      GtkObject *object = GTK_OBJECT (window);
+      va_list var_args;
+      GSList *arg_list = NULL;
+      GSList *info_list = NULL;
+      gchar *error;
+
+      va_start (var_args, first_arg_name);
+      error = gtk_object_args_collect (GTK_OBJECT_TYPE (object),
+				       &arg_list,
+				       &info_list,
+				       first_arg_name,
+				       var_args);
+      va_end (var_args);
+
+      if (error)
+	{
+	  g_warning (G_STRLOC "%s", error);
+	  g_free (error);
+	}
+      else
+	{
+	  GSList *slist_arg;
+	  GSList *slist_info;
+
+	  slist_arg = arg_list;
+	  slist_info = info_list;
+	  while (slist_arg)
+	    {
+	      gtk_object_arg_set (object, slist_arg->data, slist_info->data);
+	      slist_arg = slist_arg->next;
+	      slist_info = slist_info->next;
+	    }
+	  gtk_args_collect_cleanup (arg_list, info_list);
+	}
+    }
 
   return window;
 }

@@ -225,7 +225,7 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
 										   "xpad", 5,
 										   NULL),
 							  NULL),
-					  0);
+					  0, NULL);
   clink_view_update (clink, TRUE);
   gtk_widget_showraise (clink->link_view);
 }

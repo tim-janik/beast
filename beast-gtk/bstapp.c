@@ -578,7 +578,7 @@ bst_app_operate (BstApp *app,
 	  bse_object_unref (BSE_OBJECT (gconf));
 	  gtk_widget_show (bst_preferences);
 	  deflt = BST_PREFERENCES (bst_preferences)->close; // apply;
-	  bst_preferences = bst_subwindow_new (NULL, &bst_preferences, bst_preferences, 0);
+	  bst_preferences = bst_subwindow_new (NULL, &bst_preferences, bst_preferences, 0, NULL);
 	  gtk_window_set_title (GTK_WINDOW (bst_preferences), "BEAST: Preferences");
 	  gtk_widget_grab_default (deflt);
 	}
@@ -597,7 +597,7 @@ bst_app_operate (BstApp *app,
 	    {
 	      hmon = bst_heart_monitor_new (heart);
 	      gtk_widget_show (hmon);
-	      hmon = bst_subwindow_new (NULL, NULL, hmon, 0);
+	      hmon = bst_subwindow_new (NULL, NULL, hmon, 0, NULL);
 	      gtk_window_set_title (GTK_WINDOW (hmon), "BEAST: Device Monitor");
 	    }
 	  gtk_widget_showraise (hmon);
@@ -644,7 +644,7 @@ bst_app_operate (BstApp *app,
 											    help_file,
 											    "-misc-fixed-*-*-*-*-15-*-*-*-*-*-*-*",
 											    "-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*"),
-									BST_SUB_DESTROY_ON_HIDE);
+									BST_SUB_DESTROY_ON_HIDE, NULL);
 	  string = g_strconcat ("BEAST: ", help_title, NULL);
 	  gtk_window_set_title (GTK_WINDOW (bst_help_dialogs[op - BST_OP_HELP_FIRST]), string);
 	  g_free (string);

@@ -99,6 +99,7 @@ typedef enum
   BST_ICON_NONE,
   BST_ICON_NOICON,
   BST_ICON_MOUSE_TOOL,
+  BST_ICON_PALETTE_TOOL,
   BST_ICON_PROPERTIES,
   BST_ICON_TRASH,
   BST_ICON_CLOSE,
@@ -150,7 +151,9 @@ typedef enum
 GtkWidget* bst_subwindow_new       (GtkObject	     *alive_host,
 				    GtkWidget	    **ssubwindow_p,
 				    GtkWidget	     *child,
-				    BstSubWindowFlags flags);
+				    BstSubWindowFlags flags,
+				    const gchar      *first_arg_name,
+				    ...);
 GtkWidget* bst_subwindow_get_child (GtkWidget	 *subwindow);
 void	   gtk_widget_showraise    (GtkWidget	 *widget);
 void	   gtk_toplevel_hide       (GtkWidget    *widget);
