@@ -1048,21 +1048,9 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
     pspec = g_param_spec_ref (xpspec);
   else if (G_IS_PARAM_SPEC_BOXED (xpspec))
     {
-      const SfiBoxedRecordInfo *rinfo = sfi_boxed_get_record_info (G_PARAM_SPEC_VALUE_TYPE (xpspec));
-      const SfiBoxedSequenceInfo *sinfo = sfi_boxed_get_sequence_info (G_PARAM_SPEC_VALUE_TYPE (xpspec));
       SfiRecFields rfields = sfi_boxed_type_get_rec_fields (G_PARAM_SPEC_VALUE_TYPE (xpspec));
       GParamSpec *element = sfi_boxed_type_get_seq_element (G_PARAM_SPEC_VALUE_TYPE (xpspec));
-      if (rinfo)
-        {
-          pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, rinfo->fields, NULL);
-          sfi_pspec_copy_commons (xpspec, pspec);
-        }
-      else if (sinfo)
-        {
-          pspec = sfi_pspec_seq (xpspec->name, xpspec->_nick, xpspec->_blurb, sinfo->element, NULL);
-          sfi_pspec_copy_commons (xpspec, pspec);
-        }
-      else if (rfields.n_fields)
+      if (rfields.n_fields)
         {
           pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, rfields, NULL);
           sfi_pspec_copy_commons (xpspec, pspec);

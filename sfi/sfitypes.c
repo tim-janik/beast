@@ -30,8 +30,6 @@
 
 
 /* --- variables --- */
-static GQuark quark_boxed_sequence = 0;
-static GQuark quark_boxed_record = 0;
 
 
 /* --- functions --- */
@@ -46,8 +44,6 @@ sfi_init (void)
 
       _sfi_init_threads ();
       g_type_init ();
-      quark_boxed_sequence = g_quark_from_static_string ("sfi-boxed-sequence-info");
-      quark_boxed_record = g_quark_from_static_string ("sfi-boxed-record-info");
       _sfi_init_log ();
       _sfi_init_values ();
       _sfi_init_params ();
@@ -58,73 +54,7 @@ sfi_init (void)
 }
 
 
-/* --- boxed types --- */
-GType
-sfi_boxed_make_record (const SfiBoxedRecordInfo *info,
-		       GBoxedCopyFunc            copy,
-		       GBoxedFreeFunc            free)
-{
-  GType btype;
-
-  g_return_val_if_fail (info != NULL && copy != NULL && free != NULL, 0);
-
-  btype = g_boxed_type_register_static (info->name, copy, free);
-  g_type_set_qdata (btype, quark_boxed_record, (gpointer) info);
-  if (info->rec2boxed)
-    g_value_register_transform_func (SFI_TYPE_REC, btype, info->rec2boxed);
-  if (info->boxed2rec)
-    g_value_register_transform_func (btype, SFI_TYPE_REC, info->boxed2rec);
-  return btype;
-}
-
-const SfiBoxedRecordInfo*
-sfi_boxed_get_record_info (GType boxed_type)
-{
-  return g_type_get_qdata (boxed_type, quark_boxed_record);
-}
-
-GType
-sfi_boxed_make_sequence (const SfiBoxedSequenceInfo *info,
-			 GBoxedCopyFunc              copy,
-			 GBoxedFreeFunc              free)
-{
-  GType btype;
-
-  g_return_val_if_fail (info != NULL && copy != NULL && free != NULL, 0);
-
-  btype = g_boxed_type_register_static (info->name, copy, free);
-  g_type_set_qdata (btype, quark_boxed_sequence, (gpointer) info);
-  if (info->seq2boxed)
-    g_value_register_transform_func (SFI_TYPE_SEQ, btype, info->seq2boxed);
-  if (info->boxed2seq)
-    g_value_register_transform_func (btype, SFI_TYPE_SEQ, info->boxed2seq);
-  return btype;
-}
-
-const SfiBoxedSequenceInfo*
-sfi_boxed_get_sequence_info (GType boxed_type)
-{
-  return g_type_get_qdata (boxed_type, quark_boxed_sequence);
-}
-
-
 /* --- FIXME: hacks! */
-const gchar*
-sfi_info_string_find (const gchar **infos,
-		      const gchar  *key)
-{
-  guint l, i;
-
-  g_return_val_if_fail (infos != NULL, NULL);
-  g_return_val_if_fail (key != NULL, NULL);
-
-  l = strlen (key);
-  for (i = 0; infos[i]; i++)
-    if (strncmp (infos[i], key, l) == 0 && infos[i][l] == '=')
-      return infos[i] + l + 1;
-  return NULL;
-}
-
 void
 sfi_set_error (GError       **errorp,
 	       GQuark         domain,

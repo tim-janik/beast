@@ -1,3 +1,10 @@
+Tue Mar  2 10:22:26 2004  Tim Janik  <timj@gtk.org>
+
+	* sfitypes.[hc]: removed sfi_boxed_make_record(),
+	sfi_boxed_get_record_info(), sfi_info_string_find(),
+	sfi_boxed_make_sequence() and sfi_boxed_get_sequence_info()
+	which are now unused. changed callers.
+
 Mon Mar  1 23:33:56 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: provide namespace to BSE_CXX_DECLARED_*_TYPE()

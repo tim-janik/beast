@@ -58,31 +58,6 @@ typedef struct _SfiPPool	SfiPPool;
 void	sfi_init	(void);
 
 
-/* --- boxed types --- */
-typedef struct {
-  const gchar    *name;
-  SfiRecFields    fields;
-  GValueTransform boxed2rec;
-  GValueTransform rec2boxed;
-  const gchar   **infos;
-} SfiBoxedRecordInfo;
-GType                       sfi_boxed_make_record       (const SfiBoxedRecordInfo *info,
-							 GBoxedCopyFunc            copy,
-							 GBoxedFreeFunc            free);
-const SfiBoxedRecordInfo*   sfi_boxed_get_record_info   (GType                     boxed_type);
-typedef struct {
-  const gchar    *name;
-  GParamSpec     *element;
-  GValueTransform boxed2seq;
-  GValueTransform seq2boxed;
-  const gchar   **infos;
-} SfiBoxedSequenceInfo;
-GType                       sfi_boxed_make_sequence     (const SfiBoxedSequenceInfo *info,
-							 GBoxedCopyFunc              copy,
-							 GBoxedFreeFunc              free);
-const SfiBoxedSequenceInfo* sfi_boxed_get_sequence_info (GType                       boxed_type);
-
-
 /* --- FIXME: hacks! --- */
 void	sfi_set_error	(GError       **errorp,	// do nothing if *errorp is set already
 			 GQuark         domain,
@@ -110,8 +85,6 @@ const gchar* sfi_constants_get_name	(guint		     n_consts,
 					 guint		     index);
 gint	     sfi_constants_rcmp		(const gchar	    *canon_identifier1,
 					 const gchar	    *canon_identifier2);
-const gchar* sfi_info_string_find	(const gchar	   **infos,
-					 const gchar	    *key);
 
 
 /* --- idl macro magic --- */
