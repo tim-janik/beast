@@ -90,7 +90,7 @@ progs_extra_sources += sfidl-namespace.h
 sfidl_LDADD = $(SFI_LIBS) -lm
 testsfi_SOURCES = testsfi.c
 testsfi_LDADD = libsfi.la
-testsfi.c: testidl.h testidl.c
+${srcdir}/testsfi.c: testidl.h testidl.c
 
 #
 # TESTS
