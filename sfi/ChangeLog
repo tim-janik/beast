@@ -1,3 +1,9 @@
+Sat Feb 14 08:53:03 2004  Tim Janik  <timj@gtk.org>
+
+	* sfitime.c (_sfi_init_time): applied fix from Rasmus Kaj <kaj@e.kth.se>
+	to find out the GMT offset on FreeBSD and linux. edited to preserve
+	portability history.
+
 Wed Feb 11 08:09:57 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.c: applied sfi_seq_append_empty() code simplification

@@ -58,8 +58,25 @@ _sfi_init_time (void)
   if (error)
     sfi_info ("gettimeofday() failed: %s", g_strerror (errno));
   t = tv.tv_sec + tv.tv_usec / 1000000;
-  localtime (&t);
-  gmt_diff = timezone;
+
+  /* we need to find out the timezone offset relative to GMT here */
+#if 0
+  { /* aparently FreeBSD/BSD4.3 doesn't have an extern long timezone; set by
+     * localtime(). if present, timezone contains # of seconds west of GMT.
+     */
+    localtime (&t);
+    gmt_diff = timezone;
+  }
+#else
+  { /* however, struct tm { ... long tm_gmtoff; }; is hopefully available on
+     * all recent glibc versions and BSDs. tm_gmtoff contains # of seconds east of UTC.
+     */
+    struct tm tmdata;
+    localtime_r (&t, &tmdata);
+    gmt_diff = -tmdata.tm_gmtoff;
+  }
+#endif
+
   gmt_diff *= SFI_USEC_FACTOR;
 }
 
