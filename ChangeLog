@@ -1,3 +1,7 @@
+Fri Dec 31 07:39:12 1999  Tim Janik  <timj@gtk.org>
+
+	* released beast-0.3.0.tar.gz on http://beast.gtk.org.
+
 Fri Dec 31 00:07:03 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstheartmonitor.c (bst_heart_monitor_set_heart): small bug
