@@ -22,11 +22,12 @@ libsfi_la_LIBADD = $(SFI_LIBS) -lm
 
 sfi_public_headers = $(strip \
 	sfistore.h	sficomwire.h	\
-	glib-extra.h	sfi.h		\
+	glib-extra.h	\
 	sfivmarshal.h	sfiglue.h	sfigluecodec.h	sfiglueproxy.h	\
 	sfinote.h	sfiparams.h	sfiprimitives.h	sfiserial.h	\
 	sfitime.h	sfitypes.h	sfivalues.h	sfiustore.h	\
 	sfilog.h	sfithreads.h	sfimemory.h	sficomport.h	\
+	sfi.h	\
 )
 sfi_c_sources = $(strip \
 	sfistore.c	sficomwire.c	\
