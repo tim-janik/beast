@@ -122,7 +122,7 @@ sfi_log_message (const gchar *log_domain,
       tm = t % 60;
       t /= 60;
       th = t % 24;
-      fprintf (stderr, "%02u:%02u:%02u|%s(%s)[%u]: %s\n",
+      fprintf (stderr, "##%02u:%02u:%02u#%s(%s)[%u]# %s\n",
 	       th, tm, ts,
 	       log_domain ? log_domain : "",
 	       key,
