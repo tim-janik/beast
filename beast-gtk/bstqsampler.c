@@ -1068,9 +1068,11 @@ bst_qsampler_set_source (BstQSampler    *qsampler,
   qsampler->src_filler = fill_func;
   qsampler->src_data = data;
   qsampler->src_destroy = destroy;
-  if (qsampler->adjustment)
-    qsampler->adjustment->value = -1;	/* force update */
+  //if (qsampler->adjustment)
+  // qsampler->adjustment->value = -1;	/* force update */
   bst_qsampler_resize (qsampler);
+  if (qsampler->adjustment)
+    bst_qsampler_avalue_changed (qsampler);	/* force update */
 }
 
 gint
@@ -1249,14 +1251,12 @@ bst_qsampler_scroll_internal (BstQSampler *qsampler,
       adjustment->value = adjustment->lower + pcm_offset - (upper - pscale) * qsampler->zoom_factor;
       adjustment->value += padding * qsampler->n_pixels * qsampler->zoom_factor;
       adjustment->value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
-      gtk_adjustment_value_changed (adjustment);
     }
   else if ((lrflag & 2) && pcm_offset < (qsampler->peak_offset + lower) * qsampler->zoom_factor)
     {
       adjustment->value = adjustment->lower + pcm_offset - lower * qsampler->zoom_factor;
       adjustment->value -= padding * qsampler->n_pixels * qsampler->zoom_factor;
       adjustment->value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
-      gtk_adjustment_value_changed (adjustment);
     }
 }
 
@@ -1271,6 +1271,7 @@ bst_qsampler_scroll_rbounded (BstQSampler *qsampler,
   g_return_if_fail (padding >= 0 && padding <= 1.0);
 
   bst_qsampler_scroll_internal (qsampler, pcm_offset, boundary_padding, padding, 1);
+  gtk_adjustment_value_changed (qsampler->adjustment);
 }
 
 void
@@ -1283,7 +1284,23 @@ bst_qsampler_scroll_lbounded (BstQSampler *qsampler,
   g_return_if_fail (boundary_padding >= 0.1 && boundary_padding <= 1.0);
   g_return_if_fail (padding >= 0 && padding <= 1.0);
 
-  bst_qsampler_scroll_internal (qsampler, pcm_offset, boundary_padding, padding, 2);
+  bst_qsampler_scroll_internal (qsampler, pcm_offset, 1.0 - boundary_padding, padding, 2);
+  gtk_adjustment_value_changed (qsampler->adjustment);
+}
+
+void
+bst_qsampler_scroll_bounded (BstQSampler *qsampler,
+			     guint        pcm_offset,
+			     gfloat       boundary_padding,
+			     gfloat       padding)
+{
+  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  g_return_if_fail (boundary_padding >= 0.1 && boundary_padding <= 1.0);
+  g_return_if_fail (padding >= 0 && padding <= 1.0);
+
+  bst_qsampler_scroll_internal (qsampler, pcm_offset, boundary_padding, padding, 1);
+  bst_qsampler_scroll_internal (qsampler, pcm_offset, 1.0 - boundary_padding, padding, 2);
+  gtk_adjustment_value_changed (qsampler->adjustment);
 }
 
 void
@@ -1294,6 +1311,7 @@ bst_qsampler_scroll_show (BstQSampler *qsampler,
 
   bst_qsampler_scroll_internal (qsampler, pcm_offset, 1.0, 0, 1);
   bst_qsampler_scroll_internal (qsampler, pcm_offset, 0, 0, 2);
+  gtk_adjustment_value_changed (qsampler->adjustment);
 }
 
 void
@@ -1342,4 +1360,72 @@ bst_qsampler_set_adjustment (BstQSampler   *qsampler,
 			NULL);
     }
   bst_qsampler_update_adjustment (qsampler);
+}
+
+
+typedef struct {
+  BswProxy esample;
+  guint    nth_channel;
+  guint    n_channels;
+} ESampleFiller;
+
+static guint
+qsampler_esample_filler (gpointer         data,
+			 guint            voffset,
+			 gdouble          offset_scale,
+			 guint            block_size,
+			 guint            n_values,
+			 BstQSamplerPeak *values,
+			 BstQSampler     *qsampler)
+{
+  ESampleFiller *fill = data;
+  BswValueBlock *vblock;
+  gint i;
+
+  voffset = voffset * fill->n_channels + fill->nth_channel;
+  vblock = bsw_editable_sample_collect_stats (fill->esample,
+					      voffset,
+					      offset_scale * fill->n_channels,
+					      block_size * fill->n_channels,
+					      fill->n_channels,
+					      n_values);
+  for (i = 0; i < vblock->n_values / 2; i++)
+    {
+      values[i].min = vblock->values[i * 2] * 32767.9;
+      values[i].max = vblock->values[i * 2 + 1] * 32767.9;
+    }
+  bsw_value_block_unref (vblock);
+
+  return i;
+}
+
+static void
+free_esample_filler (gpointer data)
+{
+  ESampleFiller *fill = data;
+
+  bsw_item_unuse (fill->esample);
+  g_free (data);
+}
+
+void
+bst_qsampler_set_source_from_esample (BstQSampler *qsampler,
+				      BswProxy     esample,
+				      guint        nth_channel)
+{
+  ESampleFiller *fill;
+
+  g_return_if_fail (BST_IS_QSAMPLER (qsampler));
+  g_return_if_fail (BSW_IS_EDITABLE_SAMPLE (esample));
+
+  fill = g_new (ESampleFiller, 1);
+  fill->esample = esample;
+  bsw_item_use (fill->esample);
+  fill->n_channels = bsw_editable_sample_get_n_channels (fill->esample);
+  fill->nth_channel = nth_channel;
+
+  bst_qsampler_set_source (qsampler,
+			   bsw_editable_sample_get_length (fill->esample) / fill->n_channels,
+			   qsampler_esample_filler,
+			   fill, free_esample_filler);
 }

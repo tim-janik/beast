@@ -1,3 +1,21 @@
+Wed May 15 06:59:20 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstwaveview.c (popup_wave_dialog): popup BstWaveEditor
+	instead of BstSampleEditor.
+
+	* beast-gtk/bstwaveeditor.[hc]: implement qsampler display, and sane
+	playback implementation. add zoom and vscale settings.
+
+	* beast-gtk/bstplayback.c (bst_play_back_handle_stop): auto-uninstall
+	pcm notify handler.
+	(bst_play_back_handle_pcm_notify): ignore pcm notify request when
+	not playing.
+
+	* beast-gtk/gtklistwrapper.[hc]: new Gtk object implementing a
+	GtkTreeModel for lists with cell value retrival via callbacks.
+
+	* beast-gtk/bstwaveeditor.c: use GtkListWrapper instead of GtkListStore.
+
 Tue May 14 21:12:06 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: adjust filter menu.

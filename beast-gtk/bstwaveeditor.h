@@ -41,25 +41,27 @@ typedef	struct	_BstWaveEditor	BstWaveEditor;
 typedef	struct	_BstWaveEditorClass	BstWaveEditorClass;
 struct _BstWaveEditor
 {
-  GtkVBox	 parent_object;
-  GtkWidget	*main_vbox;
+  GtkVBox	  parent_object;
+  GtkWidget	 *main_vbox;
 
-  BswProxy	 wave;
-  guint		 n_channels;
-  GslWaveChunk  *wchunk;
+  BswProxy	  wave;
+  guint		  n_channels;
+  BswProxy	  esample;
+  GslWaveChunk   *wchunk;
 
-  GtkListStore  *chunk_store;
-  GtkAdjustment *zoom_adjustment;
-  GtkAdjustment *vscale_adjustment;
-  GtkEntry      *sstart;
-  GtkEntry      *send;
+  GtkListWrapper *chunk_wrapper;
+  GtkAdjustment  *zoom_adjustment;
+  GtkAdjustment  *vscale_adjustment;
+  GtkEntry       *sstart;
+  GtkEntry       *send;
   
-  BstQSampler   *qsampler;
-  GtkWidget	*proc_editor;
+  BstQSampler   **qsampler;	/* [n_channels] */
 
-  GtkWidget	*preview_on, *preview_off;
+  GtkWidget	 *preview_on, *preview_off;
 
   BstPlayBackHandle *phandle;
+  guint		     playback_length;
+  guint		     scroll_mode;
 };
 struct _BstWaveEditorClass
 {
@@ -76,15 +78,12 @@ typedef enum
 
 /* --- prototypes --- */
 GtkType		bst_wave_editor_get_type	(void);
-GtkWidget*	bst_wave_editor_new		(BswProxy	wave);
-void		bst_wave_editor_operate		(BstWaveEditor *wave_editor,
-						 BstWaveOps	   op);
-gboolean	bst_wave_editor_can_operate	(BstWaveEditor *wave_editor,
-						 BstWaveOps	   op);
-void		bst_wave_editor_set_wave	(BstWaveEditor *wave_editor,
-						 BswProxy	wave);
+GtkWidget*	bst_wave_editor_new		(BswProxy	 wave);
+void		bst_wave_editor_set_wave	(BstWaveEditor	*self,
+						 BswProxy	 wave);
 void		bst_wave_editor_rebuild		(BstWaveEditor *wave_editor);
-void		bst_wave_editor_gtkfix_default_accels (void);
+void		bst_wave_editor_set_sample	(BstWaveEditor	*self,
+						 BswProxy	 editable_sample);
 
 
 #ifdef __cplusplus

@@ -2,23 +2,23 @@
 name    = BST-Functions
 blurb   = BST Function Reference
 package = BEAST-0.4.1
-date    = 14 May 2002
+date    = 15 May 2002
 image   = bst-functions
 
 @DOC-TITLE@
 BST-Functions
 
 @DOC-HEAD@
-BST-Functions 14 May 2002 BEAST-0.4.1
+BST-Functions 15 May 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BST-Functions - BST Function Reference
 
 @DOC-SYNOPSIS@
-@STRONG bst_gmask_container_create@ (@EMPH tooltips@, @EMPH border_width@);
+@STRONG bst_gmask_container_create@ (@EMPH tooltips@, @EMPH border_width@, @EMPH dislodge_columns@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 24
+parspace = 28
 
 @DOC-VARIABLE-DEFINITIONS@
 type = gpointer\ 
@@ -37,7 +37,15 @@ border_width
 Border width of this GUI mask
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 24
+type = gboolean\ 
+typeraw = gboolean 
+@DOC-PARAMETER@
+dislodge_columns
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 28
 
 
 @DOC-DESCRIPTION@

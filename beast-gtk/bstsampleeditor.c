@@ -333,37 +333,6 @@ qsampler_motion_event (BstQSampler    *qsampler,
   return handled;
 }
 
-static guint
-qsampler_filler (gpointer         data,
-		 guint            voffset,
-		 gdouble          offset_scale,
-		 guint            block_size,
-		 guint            n_values,
-		 BstQSamplerPeak *values,
-		 BstQSampler     *qsampler)
-{
-  BstSampleEditor *editor = BST_SAMPLE_EDITOR (data);
-  guint channel = qsampler->owner_index;
-  BswValueBlock *vblock;
-  gint i;
-
-  voffset = voffset * editor->n_channels + channel;
-  vblock = bsw_editable_sample_collect_stats (editor->esample,
-					      voffset,
-					      offset_scale * editor->n_channels,
-					      block_size * editor->n_channels,
-					      editor->n_channels,
-					      n_values);
-  for (i = 0; i < vblock->n_values / 2; i++)
-    {
-      values[i].min = vblock->values[i * 2] * 32767.9;
-      values[i].max = vblock->values[i * 2 + 1] * 32767.9;
-    }
-  bsw_value_block_unref (vblock);
-
-  return i;
-}
-
 static void
 change_draw_mode (BstSampleEditor *editor,
 		  GtkOptionMenu   *omenu)
@@ -486,19 +455,14 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
       if (!editor->esample)
 	bst_qsampler_set_source (qsampler, 0, NULL, NULL, NULL);
       else
-	{
-	  gint length = bsw_editable_sample_get_length (editor->esample);
-
-	  bst_qsampler_set_source (qsampler, length / editor->n_channels,
-				   qsampler_filler, editor, NULL);
-	}
+	bst_qsampler_set_source_from_esample (qsampler, editor->esample, i);
     }
   gtk_box_pack_start (GTK_BOX (qsampler_parent), sbar, FALSE, TRUE, 0);
   
   
   /* setup qsampler zoom and vscale
    */
-  mask_parent = bst_gmask_container_create (BST_TOOLTIPS, 5);
+  mask_parent = bst_gmask_container_create (BST_TOOLTIPS, 5, TRUE);
   gtk_box_pack_start (GTK_BOX (editor->main_vbox), mask_parent, FALSE, TRUE, 0);
   editor->zoom_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 0.1, 10, 0));
   g_object_connect (editor->zoom_adjustment,

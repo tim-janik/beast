@@ -19,6 +19,7 @@
 #define __BST_DEFS_H__
 
 #include	"bstutils.h"
+#include	"gtklistwrapper.h"
 #include	"glewidgets.h"
 #include	"bstzoomedwindow.h"
 #include	"bstfreeradiobutton.h"

@@ -409,7 +409,7 @@ bst_param_create (gpointer	owner,
     {
       GtkWidget *any;
       
-      parent_container = bst_gmask_container_create (tooltips, param_group_quark ? 5 : 0);
+      parent_container = bst_gmask_container_create (tooltips, param_group_quark ? 5 : 0, FALSE);
       if (param_group_quark)
 	any = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,

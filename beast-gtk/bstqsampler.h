@@ -18,7 +18,7 @@
 #ifndef __BST_QSAMPLER_H__
 #define __BST_QSAMPLER_H__
 
-#include        <gtk/gtk.h>
+#include        "bstutils.h"
 
 
 #ifdef __cplusplus
@@ -173,6 +173,10 @@ void	   bst_qsampler_scroll_lbounded	(BstQSampler			*qsampler,
 					 guint				 offset,
 					 gfloat				 boundary_padding,
 					 gfloat				 padding);
+void	   bst_qsampler_scroll_bounded	(BstQSampler			*qsampler,
+					 guint				 offset,
+					 gfloat				 boundary_padding,
+					 gfloat				 padding);
 void	   bst_qsampler_scroll_to	(BstQSampler			*qsampler,
 					 guint				 offset);
 void	   bst_qsampler_force_refresh	(BstQSampler			*qsampler);
@@ -195,7 +199,11 @@ void	   bst_qsampler_set_draw_mode	(BstQSampler			*qsampler,
 					 BstQSamplerDrawMode		 dmode);
 void	   bst_qsampler_set_adjustment	(BstQSampler			*qsampler,
 					 GtkAdjustment			*adjustment);
-     
+
+void	   bst_qsampler_set_source_from_esample (BstQSampler		*qsampler,
+						 BswProxy		 esample,
+						 guint			 nth_channel);
+
 
 #ifdef __cplusplus
 }

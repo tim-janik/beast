@@ -875,7 +875,8 @@ gmask_form (GtkWidget *parent,
  */
 GtkWidget*
 bst_gmask_container_create (gpointer tooltips,
-			    guint    border_width)
+			    guint    border_width,
+			    gboolean dislodge_columns)
 {
   GtkWidget *container = gtk_widget_new (GTK_TYPE_TABLE,
 					 "visible", TRUE,
@@ -889,6 +890,8 @@ bst_gmask_container_create (gpointer tooltips,
 
       g_object_set_data_full (G_OBJECT (container), "GMask-tooltips", g_object_ref (tooltips), g_object_unref);
     }
+  if (dislodge_columns)
+    g_object_set_data (G_OBJECT (container), "GMask-dislodge", GUINT_TO_POINTER (TRUE));
 
   return container;
 }
@@ -1211,7 +1214,7 @@ bst_gmask_pack (gpointer mask)
   GtkWidget *prompt, *aux1, *aux2, *aux3, *ahead, *action, *atail;
   GtkTable *table;
   gboolean dummy_aux2 = FALSE;
-  guint row, n, c;
+  guint row, n, c, dislodge_columns;
   GMask *gmask;
 
   g_return_if_fail (GTK_IS_WIDGET (mask));
@@ -1226,10 +1229,27 @@ bst_gmask_pack (gpointer mask)
   ahead = get_toplevel_and_set_tip (gmask->ahead, gmask->tooltips, gmask->tip);
   action = get_toplevel_and_set_tip (gmask->action, gmask->tooltips, gmask->tip);
   atail = get_toplevel_and_set_tip (gmask->atail, gmask->tooltips, gmask->tip);
-
-  /* pack children, options: GTK_EXPAND, GTK_SHRINK, GTK_FILL */
+  dislodge_columns = g_object_get_data (G_OBJECT (gmask->parent), "GMask-dislodge") != NULL;
   table = GTK_TABLE (gmask->parent);
-  c = 5 * gmask->column;
+
+  /* ensure expansion happens outside of columns */
+  if (dislodge_columns)
+    {
+      gchar *dummy_name = g_strdup_printf ("GMask-dummy-dislodge-%u", MAX (gmask->column, 1) - 1);
+      GtkWidget *dislodge = g_object_get_data (G_OBJECT (table), dummy_name);
+
+      if (!dislodge)
+	{
+	  dislodge = gtk_widget_new (GTK_TYPE_ALIGNMENT, "visible", TRUE, NULL);
+	  g_object_set_data_full (G_OBJECT (table), dummy_name, g_object_ref (dislodge), g_object_unref);
+	  c = MAX (gmask->column, 1) * 6;
+	  gtk_table_attach (table, dislodge, c - 1, c, 0, 1, GTK_EXPAND, 0, 0, 0);
+	}
+      g_free (dummy_name);
+    }
+
+  /* pack gmask children, options: GTK_EXPAND, GTK_SHRINK, GTK_FILL */
+  c = 6 * gmask->column;
   row = table_max_bottom_row (table, c, c + 5);
   if (prompt)
     {
@@ -1240,13 +1260,14 @@ bst_gmask_pack (gpointer mask)
   if (aux1)
     gtk_table_attach (table, aux1, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
   c++;
-  if (!aux2)
+  if (!aux2 && !dislodge_columns)
     {
       gchar *dummy_name = g_strdup_printf ("GMask-dummy-aux2-%u", gmask->column);
 
       aux2 = g_object_get_data (G_OBJECT (table), dummy_name);
-
-      /* need to have at least 1 (dummy) aux2-child per table to eat up expanding space
+      
+      /* need to have at least 1 (dummy) aux2-child per table column to eat up
+       * expanding space in this column if !dislodge_columns
        */
       if (!aux2)
 	{
@@ -1314,7 +1335,7 @@ bst_gmask_pack (gpointer mask)
 		    GTK_FILL,
 		    0, 0);
   gtk_table_set_col_spacing (table, c - 1, 2); /* seperate action from rest */
-  c = 5 * gmask->column;
+  c = 6 * gmask->column;
   if (c)
     gtk_table_set_col_spacing (table, c - 1, 5); /* spacing between columns */
 }

@@ -90,6 +90,7 @@ beast_headers = $(strip \
 	bstxkb.h \
 	bstzoomedwindow.h \
 	glewidgets.h \
+	gtklistwrapper.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
@@ -146,6 +147,7 @@ beast_sources = $(strip \
 	bstzoomedwindow.c \
 	$(PROFILE_SOURCE) \
 	glewidgets.c \
+	gtklistwrapper.c \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \

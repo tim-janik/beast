@@ -129,7 +129,7 @@ bst_wave_view_new (BswProxy wrepo)
 }
 
 static void
-XXXpopup_wave_dialog (BstWaveView *wave_view)
+popup_wave_dialog (BstWaveView *wave_view)
 {
   BswProxy wave = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
   GtkWidget *weditor, *wdialog;
@@ -144,6 +144,7 @@ XXXpopup_wave_dialog (BstWaveView *wave_view)
   gtk_widget_show (wdialog);
 }
 
+#if 0
 static void
 popup_wave_dialog (BstWaveView *wave_view)
 {
@@ -162,8 +163,8 @@ popup_wave_dialog (BstWaveView *wave_view)
       bsw_item_unuse (esample);
       gtk_widget_show (wdialog);
     }
-  // XXXpopup_wave_dialog (wave_view);
 }
+#endif
 
 void
 bst_wave_view_operate (BstItemView *item_view,

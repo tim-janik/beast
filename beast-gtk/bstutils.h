@@ -158,7 +158,8 @@ guint8*	gdk_pixbuf_create_bitmap_data	 (GdkPixbuf		*pixbuf,
 
 /* --- GUI field mask --- */
 GtkWidget*   bst_gmask_container_create	(gpointer	tooltips,
-					 guint		border_width);
+					 guint		border_width,
+					 gboolean	dislodge_columns);
 gpointer	bst_gmask_form		(GtkWidget     *gmask_container,
 					 GtkWidget     *action,
 					 gboolean	expandable);

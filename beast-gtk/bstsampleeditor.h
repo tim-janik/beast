@@ -67,7 +67,7 @@ struct _BstSampleEditorClass
 GtkType		bst_sample_editor_get_type	(void);
 GtkWidget*	bst_sample_editor_new		(BswProxy	  sample);
 void		bst_sample_editor_set_sample	(BstSampleEditor *sample_editor,
-						 BswProxy	  sample);
+						 BswProxy	  editable_sample);
 void		bst_sample_editor_rebuild	(BstSampleEditor *sample_editor);
 
 

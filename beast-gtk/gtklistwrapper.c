@@ -1,0 +1,530 @@
+/* GtkListWrapper - GtkListModel implementation as a simple list wrapper
+ * Copyright (C) 2002 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include "gtklistwrapper.h"
+
+#include "bstmarshal.h"
+
+
+#define	I2P(x)		GINT_TO_POINTER (x)
+#define	P2I(x)		GPOINTER_TO_INT (x)
+#define	_(x)		(x)
+
+enum {
+  PROP_0,
+  PROP_N_COLS,
+  PROP_COLUMN_TYPES,
+  PROP_N_ROWS
+};
+
+
+/* --- prototypes --- */
+static void	gtk_list_wrapper_class_init		(GtkListWrapperClass	*class);
+static void	gtk_list_wrapper_init			(GtkListWrapper		*self);
+static void	gtk_list_wrapper_finalize		(GObject		*object);
+static void	gtk_list_wrapper_set_property		(GObject		*object,
+							 guint                   param_id,
+							 const GValue           *value,
+							 GParamSpec             *pspec);
+static void	gtk_list_wrapper_get_property		(GObject		*object,
+							 guint                   param_id,
+							 GValue                 *value,
+							 GParamSpec             *pspec);
+static void	gtk_list_wrapper_init_tree_model_iface	(GtkTreeModelIface	*iface);
+
+
+/* --- static variables --- */
+static gpointer parent_class = NULL;
+static guint    signal_fill_value = 0;
+
+
+/* --- functions --- */
+GType
+gtk_list_wrapper_get_type (void)
+{
+  static GType type = 0;
+
+  if (!type)
+    {
+      static const GTypeInfo type_info = {
+	sizeof (GtkListWrapperClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) gtk_list_wrapper_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	sizeof (GtkListWrapper),
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) gtk_list_wrapper_init,
+      };
+      static const GInterfaceInfo iface_info = {
+	(GInterfaceInitFunc) gtk_list_wrapper_init_tree_model_iface,
+	(GInterfaceFinalizeFunc) NULL,
+	NULL,	/* interface_data */
+      };
+
+      type = g_type_register_static (G_TYPE_OBJECT, "GtkListWrapper", &type_info, 0);
+      g_type_add_interface_static (type, GTK_TYPE_TREE_MODEL, &iface_info);
+    }
+  return type;
+}
+
+static void
+gtk_list_wrapper_class_init (GtkListWrapperClass *class)
+{
+  GObjectClass *object_class = G_OBJECT_CLASS (class);
+
+  parent_class = g_type_class_peek_parent (class);
+
+  object_class->set_property = gtk_list_wrapper_set_property;
+  object_class->get_property = gtk_list_wrapper_get_property;
+  object_class->finalize = gtk_list_wrapper_finalize;
+
+  g_object_class_install_property (object_class,
+				   PROP_N_COLS,
+				   g_param_spec_uint ("n_cols", _("Number of Columns"), NULL,
+						      1, G_MAXINT, 1, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+  g_object_class_install_property (object_class,
+				   PROP_COLUMN_TYPES,
+				   g_param_spec_pointer ("column_types", _("Array of column types"), NULL,
+							 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+  g_object_class_install_property (object_class,
+				   PROP_N_ROWS,
+				   g_param_spec_uint ("n_rows", _("Number of Rows"), NULL,
+						      0, G_MAXINT, 0, G_PARAM_READWRITE));
+
+  signal_fill_value = g_signal_new ("fill-value",
+				    G_OBJECT_CLASS_TYPE (object_class),
+				    G_SIGNAL_RUN_LAST,
+				    G_STRUCT_OFFSET (GtkListWrapperClass, fill_value),
+				    NULL, NULL,
+				    bst_marshal_NONE__UINT_UINT_BOXED,
+				    G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_UINT,
+				    G_TYPE_VALUE | G_SIGNAL_TYPE_STATIC_SCOPE);
+}
+
+static void
+gtk_list_wrapper_init (GtkListWrapper *self)
+{
+  self->n_rows = 0;
+  self->n_cols = 0;
+  self->column_types = NULL;
+  self->stamp = 1;
+}
+
+static void
+gtk_list_wrapper_set_property (GObject      *object,
+			       guint         param_id,
+			       const GValue *value,
+			       GParamSpec   *pspec)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (object);
+  guint i;
+
+  switch (param_id)
+    {
+      GType *ctypes;
+    case PROP_N_COLS:
+      self->n_cols = g_value_get_uint (value);
+      break;
+    case PROP_COLUMN_TYPES:
+      self->column_types = g_new0 (GType, self->n_cols);
+      ctypes = g_value_get_pointer (value);
+      g_return_if_fail (ctypes != NULL);
+      for (i = 0; i < self->n_cols; i++)
+	self->column_types[i] = ctypes[i];
+      for (i = 0; i < self->n_cols; i++)
+	G_TYPE_IS_VALUE_TYPE (self->column_types[i]);
+      break;
+    case PROP_N_ROWS:
+      gtk_list_wrapper_notify_clear (self);
+      gtk_list_wrapper_notify_prepend (self, g_value_get_uint (value));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+}
+
+static void
+gtk_list_wrapper_get_property (GObject    *object,
+			       guint       param_id,
+			       GValue     *value,
+			       GParamSpec *pspec)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (object);
+
+  switch (param_id)
+    {
+    case PROP_N_COLS:
+      g_value_set_uint (value, self->n_cols);
+      break;
+    case PROP_COLUMN_TYPES:
+      g_value_set_pointer (value, self->column_types);
+      break;
+    case PROP_N_ROWS:
+      g_value_set_uint (value, self->n_rows);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+}
+
+static void
+gtk_list_wrapper_finalize (GObject *object)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (object);
+
+  g_free (self->column_types);
+
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+GtkListWrapper*
+gtk_list_wrapper_newv (guint  n_cols,
+		       GType *column_types)
+{
+  GtkListWrapper *self;
+
+  g_return_val_if_fail (n_cols > 0, NULL);
+  g_return_val_if_fail (column_types != NULL, NULL);
+
+  self = g_object_new (GTK_TYPE_LIST_WRAPPER,
+		       "n_cols", n_cols,
+		       "column_types", column_types,
+		       NULL);
+
+  return self;
+}
+
+GtkListWrapper*
+gtk_list_wrapper_new (guint  n_cols,
+		      GType  first_column_type,
+		      ...)
+{
+  GtkListWrapper *self;
+  GType *ctypes;
+  va_list var_args;
+  guint i;
+
+  g_return_val_if_fail (n_cols > 0, NULL);
+
+  ctypes = g_new (GType, n_cols);
+
+  ctypes[0] = first_column_type;
+  va_start (var_args, first_column_type);
+  for (i = 1; i < n_cols; i++)
+    ctypes[i] = va_arg (var_args, GType);
+  va_end (var_args);
+
+  self = g_object_new (GTK_TYPE_LIST_WRAPPER,
+		       "n_cols", n_cols,
+		       "column_types", ctypes,
+		       NULL);
+  g_free (ctypes);
+
+  return self;
+}
+
+static GtkTreeModelFlags
+gtk_list_wrapper_get_flags (GtkTreeModel *tree_model)
+{
+  return 0;
+}
+
+static gint
+gtk_list_wrapper_get_n_columns (GtkTreeModel *tree_model)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (tree_model);
+
+  return self->n_cols;
+}
+
+static GType
+gtk_list_wrapper_get_column_type (GtkTreeModel *tree_model,
+				  gint          index)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (tree_model);
+
+  g_return_val_if_fail (index >= 0 && index < self->n_cols, G_TYPE_INVALID);
+
+  return self->column_types[index];
+}
+
+static gboolean
+gtk_list_wrapper_get_iter (GtkTreeModel *tree_model,
+			   GtkTreeIter  *iter,
+			   GtkTreePath  *path)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (tree_model);
+  gint *ind;
+
+  g_return_val_if_fail (gtk_tree_path_get_depth (path) > 0, FALSE);
+
+  ind = gtk_tree_path_get_indices (path);
+  if (ind[0] < 0 || ind[0] >= self->n_rows)
+    return FALSE;		/* only happens on stamp aliasing and empty lists */
+
+  iter->stamp = self->stamp;
+  iter->user_data = I2P (ind[0]);
+
+  return TRUE;
+}
+
+static GtkTreePath*
+gtk_list_wrapper_get_path (GtkTreeModel *tree_model,
+			   GtkTreeIter  *iter)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (tree_model);
+  GtkTreePath *path;
+  gint i;
+
+  g_return_val_if_fail (iter->stamp == self->stamp, NULL);
+
+  i = P2I (iter->user_data);
+  if (i < 0 || i >= self->n_rows)
+    return FALSE;		/* only happens on stamp aliasing */
+
+  path = gtk_tree_path_new ();
+  gtk_tree_path_append_index (path, i);
+
+  return path;
+}
+
+static void
+gtk_list_wrapper_get_value (GtkTreeModel *tree_model,
+			    GtkTreeIter  *iter,
+			    gint          column,
+			    GValue       *value)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (tree_model);
+  gint i;
+
+  g_return_if_fail (iter->stamp == self->stamp);
+  g_return_if_fail (column >= 0 && column < self->n_cols);
+
+  g_value_init (value, self->column_types[column]);
+
+  i = P2I (iter->user_data);
+  if (i < 0 || i >= self->n_rows)
+    return;			/* only happens on stamp aliasing */
+
+  g_signal_emit (tree_model, signal_fill_value, 0, column, i, value);
+}
+
+static gboolean
+gtk_list_wrapper_iter_next (GtkTreeModel *tree_model,
+			    GtkTreeIter  *iter)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (tree_model);
+  gint i;
+
+  g_return_val_if_fail (iter->stamp == self->stamp, FALSE);
+
+  i = P2I (iter->user_data);
+  if (i < 0 || i >= self->n_rows)
+    return FALSE;		/* only happens on stamp aliasing */
+
+  i++;
+  iter->user_data = I2P(i);
+
+  return i < self->n_rows;
+}
+
+static gboolean
+gtk_list_wrapper_iter_has_child (GtkTreeModel *tree_model,
+				 GtkTreeIter  *iter)
+{
+  return FALSE;
+}
+
+static gint
+gtk_list_wrapper_iter_n_children (GtkTreeModel *tree_model,
+				  GtkTreeIter  *iter)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (tree_model);
+
+  if (!iter)	/* root node */
+    return self->n_rows;
+  else
+    return 0;
+}
+
+static gboolean
+gtk_list_wrapper_iter_nth_child (GtkTreeModel *tree_model,
+				 GtkTreeIter  *iter,
+				 GtkTreeIter  *parent,
+				 gint          n)
+{
+  GtkListWrapper *self = GTK_LIST_WRAPPER (tree_model);
+
+  if (parent)	/* nodes of a list don't have a parent */
+    return FALSE;
+
+  g_return_val_if_fail (n >= 0 && n < self->n_rows, FALSE);
+
+  iter->stamp = self->stamp;
+  iter->user_data = I2P (n);
+  return TRUE;
+}
+
+static void
+gtk_list_wrapper_init_tree_model_iface (GtkTreeModelIface *iface)
+{
+  iface->get_flags = gtk_list_wrapper_get_flags;
+  iface->get_n_columns = gtk_list_wrapper_get_n_columns;
+  iface->get_column_type = gtk_list_wrapper_get_column_type;
+  iface->get_iter = gtk_list_wrapper_get_iter;
+  iface->get_path = gtk_list_wrapper_get_path;
+  iface->get_value = gtk_list_wrapper_get_value;
+  iface->iter_next = gtk_list_wrapper_iter_next;
+  iface->iter_has_child = gtk_list_wrapper_iter_has_child;
+  iface->iter_n_children = gtk_list_wrapper_iter_n_children;
+  iface->iter_nth_child = gtk_list_wrapper_iter_nth_child;
+}
+
+void
+gtk_list_wrapper_notify_insert (GtkListWrapper *self,
+				guint           nth_row)
+{
+  GtkTreeModel *tree_model;
+  GtkTreeIter iter;
+  GtkTreePath *path;
+
+  g_return_if_fail (GTK_IS_LIST_WRAPPER (self));
+  g_return_if_fail (nth_row <= self->n_rows);
+
+  tree_model = GTK_TREE_MODEL (self);
+
+  self->n_rows++;
+  self->stamp++;
+  iter.stamp = self->stamp;
+  iter.user_data = I2P (nth_row);
+
+  path = gtk_tree_model_get_path (tree_model, &iter);
+  gtk_tree_model_row_inserted (tree_model, path, &iter);
+  gtk_tree_path_free (path);
+
+  g_object_notify (G_OBJECT (self), "n_rows");
+}
+
+void
+gtk_list_wrapper_notify_change (GtkListWrapper *self,
+				guint           nth_row)
+{
+  GtkTreeModel *tree_model;
+  GtkTreeIter iter;
+  GtkTreePath *path;
+
+  g_return_if_fail (GTK_IS_LIST_WRAPPER (self));
+  g_return_if_fail (nth_row < self->n_rows);
+
+  tree_model = GTK_TREE_MODEL (self);
+
+  iter.stamp = self->stamp;
+  iter.user_data = I2P (nth_row);
+
+  path = gtk_tree_model_get_path (tree_model, &iter);
+  gtk_tree_model_row_changed (tree_model, path, &iter);
+  gtk_tree_path_free (path);
+}
+
+void
+gtk_list_wrapper_notify_delete (GtkListWrapper *self,
+				guint           nth_row)
+{
+  GtkTreeModel *tree_model;
+  GtkTreeIter iter;
+  GtkTreePath *path;
+
+  g_return_if_fail (GTK_IS_LIST_WRAPPER (self));
+  g_return_if_fail (nth_row < self->n_rows);
+
+  tree_model = GTK_TREE_MODEL (self);
+
+  iter.stamp = self->stamp;
+  iter.user_data = I2P (nth_row);
+  path = gtk_tree_model_get_path (tree_model, &iter);
+  self->n_rows--;
+  self->stamp++;
+  gtk_tree_model_row_deleted (tree_model, path);
+  gtk_tree_path_free (path);
+
+  g_object_notify (G_OBJECT (self), "n_rows");
+}
+
+void
+gtk_list_wrapper_notify_prepend (GtkListWrapper *self,
+				 guint           n_rows)
+{
+  g_return_if_fail (GTK_IS_LIST_WRAPPER (self));
+
+  g_object_freeze_notify (G_OBJECT (self));
+  while (n_rows--)
+    gtk_list_wrapper_notify_insert (self, 0);
+  g_object_thaw_notify (G_OBJECT (self));
+}
+
+void
+gtk_list_wrapper_notify_append (GtkListWrapper *self,
+				guint           n_rows)
+{
+  g_return_if_fail (GTK_IS_LIST_WRAPPER (self));
+  
+  g_object_freeze_notify (G_OBJECT (self));
+  while (n_rows--)
+    gtk_list_wrapper_notify_insert (self, self->n_rows);
+  g_object_thaw_notify (G_OBJECT (self));
+}
+
+void
+gtk_list_wrapper_notify_clear (GtkListWrapper *self)
+{
+  g_return_if_fail (GTK_IS_LIST_WRAPPER (self));
+
+  g_object_freeze_notify (G_OBJECT (self));
+  while (self->n_rows)
+    gtk_list_wrapper_notify_delete (self, self->n_rows - 1);
+  g_object_thaw_notify (G_OBJECT (self));
+}
+
+void
+gtk_list_wrapper_get_iter_at (GtkListWrapper *self,
+			      GtkTreeIter    *iter,
+			      guint           index)
+{
+  g_return_if_fail (GTK_IS_LIST_WRAPPER (self));
+  g_return_if_fail (iter != NULL);
+  g_return_if_fail (index < self->n_rows);
+
+  iter->stamp = self->stamp;
+  iter->user_data = I2P (index);
+}
+
+guint
+gtk_list_wrapper_get_index (GtkListWrapper *self,
+			    GtkTreeIter    *iter)
+{
+  g_return_val_if_fail (GTK_IS_LIST_WRAPPER (self), G_MAXUINT);
+  g_return_val_if_fail (iter != NULL, G_MAXUINT);
+  g_return_val_if_fail (iter->stamp == self->stamp, G_MAXUINT);
+
+  return P2I (iter->user_data);
+}

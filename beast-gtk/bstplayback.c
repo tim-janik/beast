@@ -81,6 +81,7 @@ void
 bst_play_back_handle_stop (BstPlayBackHandle *handle)
 {
   bsw_server_halt_project (BSW_SERVER, handle->project);
+  bst_play_back_handle_pcm_notify (handle, 0, NULL, NULL);
 }
 
 void
@@ -127,6 +128,11 @@ bst_play_back_handle_pcm_notify (BstPlayBackHandle *handle,
 				 BstPlayBackNotify  notify,
 				 gpointer           data)
 {
+  if (!bsw_project_is_playing (handle->project))
+    {
+      notify = NULL;
+      data = NULL;
+    }
   handle->pcm_notify = notify;
   handle->pcm_data = data;
   if (handle->pcm_notify && !handle->pcm_timeout)
