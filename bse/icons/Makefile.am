@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BSE icons
 
-icon_pattern = *.c *.xcf
+icon_pattern = *.png *.xcf *.c
 icon_list = 
 
 # create icon list
