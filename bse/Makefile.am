@@ -381,7 +381,7 @@ all: # TAGS
 # --- GSL targets ---
 GSL_progs_ldadd = $(progs_LDADD)
 GSL_cc_dummy    =
-gslincludedir   = $(includedir)/gsl
+gslincludedir   = $(includedir)/bse
 include gslmakefile.inc
 
 
