@@ -165,10 +165,9 @@ sniffer_notify_pcm_data (SfiProxy   proxy,
                          allocation->y + allocation->height);
         }
     }
-  bse_sniffer_request_samples (self->proxy,
-                               bse_sniffer_get_tick_stamp (self->proxy) +
-                               bse_sniffer_get_mix_freq (self->proxy) * 0.100,
-                               widget->allocation.width / 2, BSE_SNIFFER_PICK_FIRST_INPUT);
+  bse_sniffer_idle_request_samples (self->proxy,
+                                    BSE_SNIFFER_TIME_RELATIVE_USECS, 100000,
+                                    widget->allocation.width / 2, BSE_SNIFFER_PICK_FIRST_INPUT);
 }
 
 void
@@ -189,6 +188,43 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
       bse_proxy_connect (self->proxy,
                          "signal::notify_pcm_data", sniffer_notify_pcm_data, self,
                          NULL);
-      // FIXME: bse_sniffer_request_samples (self->proxy, 0, 128, BSE_SNIFFER_PICK_FIRST_INPUT);
+      if (1)
+        bse_sniffer_request_samples (self->proxy, 0, 128, BSE_SNIFFER_PICK_FIRST_INPUT);
     }
+}
+
+static BseSnifferRequestSeq *sniffer_request_seq = NULL;
+static gboolean
+sniffer_idle_request (gpointer data)
+{
+  BseSnifferRequestSeq *srs;
+  GDK_THREADS_ENTER ();
+  srs = sniffer_request_seq;
+  sniffer_request_seq = NULL;
+  if (srs)
+    bse_sniffer_request_combined (srs);
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+void
+bse_sniffer_idle_request_samples (SfiProxy           sniffer,
+                                  BseSnifferTimeType ttype,
+                                  SfiNum             tick_stamp,
+                                  SfiInt             n_samples,
+                                  BseSnifferType     stype)
+{
+  BseSnifferRequest sr = { 0, };
+  g_return_if_fail (BSE_IS_SNIFFER (sniffer));
+  if (!sniffer_request_seq)
+    {
+      g_idle_add_full (G_PRIORITY_HIGH, sniffer_idle_request, NULL, NULL);
+      sniffer_request_seq = bse_sniffer_request_seq_new();
+    }
+  sr.sniffer = sniffer;
+  sr.time_type = ttype;
+  sr.variable_time = tick_stamp;
+  sr.n_samples = n_samples;
+  sr.sniffer_type = stype;
+  bse_sniffer_request_seq_append (sniffer_request_seq, &sr);
 }

@@ -36,10 +36,16 @@ typedef struct {
   SfiProxy  proxy;
 } BstSnifferScope;
 typedef GtkWidgetClass BstSnifferScopeClass;
-GType      bst_sniffer_scope_get_type    (void);
-GtkWidget* bst_sniffer_scope_new         (void);
-void       bst_sniffer_scope_set_sniffer (BstSnifferScope *scope,
-                                          SfiProxy         proxy);
+GType      bst_sniffer_scope_get_type       (void);
+GtkWidget* bst_sniffer_scope_new            (void);
+void       bst_sniffer_scope_set_sniffer    (BstSnifferScope    *scope,
+                                             SfiProxy            proxy);
+void       bse_sniffer_idle_request_samples (SfiProxy            sniffer,
+                                             BseSnifferTimeType  ttype,
+                                             SfiNum              tick_stamp,
+                                             SfiInt              n_samples,
+                                             BseSnifferType      stype);
+
 G_END_DECLS
 
 #endif /* __BST_SNIFFER_SCOPE_H__ */

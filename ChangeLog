@@ -1,3 +1,8 @@
+Tue Jan 27 16:02:06 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnifferscope.[hc]: collect sniffer requests and submit
+	them from an idle handler to minimize task switches.
+
 Tue Jan 27 00:43:29 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/Makefile.am: Reenabled C++ API code.
