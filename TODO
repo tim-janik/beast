@@ -1,4 +1,6 @@
 FIXMES:
+- fix continue_after_deletion in gslwavetool.c for i==n_chunks-1
+- beast depends on texithequemacros.texi but texitheque doesn't install it
 - add tooltip and Filedialog-button to "WAVE File" entry
 - big engine block sizes (>=1024) triggers sequencer race, causing clicks; in particular
   if (vinput->vstate == VSTATE_IDLE) g_printerr ("reading from idle\n"); in
@@ -98,6 +100,7 @@ DOCS:
 - allow commas in @refBlurb{}, respectively Info BLURB = ","; texts [alper]
 
 TODO:
+- Icons: delete-track and delete-part shouldn't have the same item in track-roll
 - Main: make beast recognize and view .markup files from the command line
 - DocBrowser: pressing browsing hotkeys in release-notes dialog does stuff
 - DocBrowser: Ctrl+'+' and Ctrl+'-' should change font sizes in doc browser
@@ -128,6 +131,7 @@ TODO:
   reuse the existing one
 - TrackRoll: implement copying of parts
 - TrackRoll: implement selection and copy and paste of parts
+- Engine: skip ENGINE_NODE_LOCK() in master_process_locked_node() for singleproc
 - let bst_key_combo_popup() display currently pressed modifiers
 - let bst_key_combo_popup() tell the user to press a mouse button to abort
 - CPU monitoring
