@@ -1,3 +1,7 @@
+Sat Dec 13 19:18:30 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsw/bswcxxutils.h: Added missing const to sfi_value_get_cxxstring.
+
 Thu Dec 11 00:25:39 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-standard.xml: don't create labels
