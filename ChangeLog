@@ -1,3 +1,18 @@
+Tue Dec 21 09:05:01 1999  Tim Janik  <timj@gtk.org>
+
+	* docs/bse-networks.txt: new file that contains (corrected) information
+	merged from bse-ep-net.txt and bse-pool-sources.txt.
+
+	* docs/bse-typesystem.txt: merged with stuff from bse-concept.txt,
+	minor corrections and additions (procedure types).
+	
+	* docs/bse-data-v1.txt: major corrections, supplied description
+	of the binary appendix layout.
+	
+	* docs/bse-concept.txt:
+	* docs/bse-ep-net.txt:
+	* docs/bse-pool-sources.txt: nuked.
+	
 Tue Dec 21 07:16:52 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): feature canvas

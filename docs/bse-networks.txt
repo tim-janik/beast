@@ -1,0 +1,50 @@
+Bse Chunk
+=========
+A BseChunk contains header informations for sample value blocks passed
+around during sound processing, and a pointer to the associated sample
+data itself. The pure sample data blocks are referred to as "Hunk"s.
+A hunk's size is determined by the size of each sample value:
+sizeof (BseSampleValue), the number of tracks contained in a hunk (for instance
+a stereo hunk contains 2 tracks) and a global variable that designates
+the block (hunk's) size for the current sound processing run:
+BSE_TRACK_LENGTH (bse_globals->track_length).
+The sample values themselves are layed out interleaved within the hunk,
+e.g. a 2 track stereo hunk with a hunk_length of 16 would contain:
+L - left track (1) value
+R - right track (2) value
+LRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLR
+Each chunk is associated with a certain output channel of a specific source,
+and applies to a distinct time frame. The actuall time frame length is
+determined through BSE_TRACK_LENGTH and the current mixing frequency
+BSE_MIX_FREQ.
+
+BSE Sources
+===========
+Each source can have an (conceptually) infinite amount of input channels and
+serve a source network (BseSNet) with multiple output channels.
+Per source, a list of input channels is kept (source pointer and output
+channel id, along with an associated history hint). Sources also keep back
+links to other sources using its output channels, this is required to maintain
+automated history updates and purging.
+
+BSE Source Networks
+===================
+
+A BSE Source Network is an accumulation of BseSources that are interconnected
+to controll sample data flow.
+The net as a whole is maintained by a BseSNet object which keeps
+references of all sources contained in the net and provides means
+to store/retrive undo/redo information for the whole net and implements
+the corresponding requirements to save and load the complete net at a
+certain configuration.
+
+Implementation details:
+-	a BseSNet keeps a list and references of all sources contained
+	in the net.
+-	each source can have a (conceptually) infinite amount of input
+	channels and serve the net with multiple output channels.
+-	per source, a list of input channels is kept (source pointer plus
+	output channel id, along with an associated history hint).
+-	sources also keep back links to sources using its output channels,
+	this is required to maintain automated history updates.
+
