@@ -85,7 +85,10 @@ file_store_idle_handler (gpointer data)
                           BST_FILE_STORE_COL_FILE, &filename,
                           -1);
       info = bse_sample_file_info (filename);
-      loader = info->error ? bse_error_blurb (info->error) : info->loader;
+      if (info->error == BSE_ERROR_FILE_IS_DIR)
+        loader = "Directory";
+      else
+        loader = info->error ? bse_error_blurb (info->error) : info->loader;
       if (info->waves->n_strings)
         name = info->waves->strings[0];
       tstr = sfi_time_to_string (info->mtime);
