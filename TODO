@@ -365,5 +365,7 @@ other stuff:
   - rename bindings to client and core (instead of interface and implementation)
   - port arts driver from csl to port-audio
   - write port-audio driver for beast
+  - freeverb parameters are broken (it _says_ dB, but it definitely _is not_
+    dB)
 
 vim:set ts=8 sts=2 sw=2:
