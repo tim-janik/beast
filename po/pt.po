@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 2.6\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:06+0100\n"
-"PO-Revision-Date: 2003-12-24 00:35+0000\n"
+"Report-Msgid-Bugs-To: Duarte Loreto <happyguy_pt@hotmail.com>\n"
+"POT-Creation-Date: 2003-12-29 19:32+0000\n"
+"PO-Revision-Date: 2003-12-29 19:35+0000\n"
 "Last-Translator: Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Language-Team: Portuguese <gnome_pt@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -41,12 +41,11 @@ msgstr "Juntar um projecto existente ao actual"
 
 #: beast-gtk/bstapp.c:57
 msgid "_Import MIDI..."
-msgstr ""
+msgstr "_Importar MIDI..."
 
 #: beast-gtk/bstapp.c:57
-#, fuzzy
 msgid "Import a standard MIDI file into the current project"
-msgstr "Juntar um projecto existente ao actual"
+msgstr "Importar um ficheiro MIDI standard para o projecto actual"
 
 #: beast-gtk/bstapp.c:59
 msgid "_Close"
@@ -293,12 +292,12 @@ msgstr "A juntar projecto `%s'"
 #: beast-gtk/bstfiledialog.c:492
 #, c-format
 msgid "Import MIDI: %s"
-msgstr ""
+msgstr "Importar MIDI: %s"
 
 #: beast-gtk/bstfiledialog.c:503
 #, c-format
 msgid "Importing MIDI file `%s'"
-msgstr ""
+msgstr "A importar ficheiro MIDI `%s'"
 
 #: beast-gtk/bstfiledialog.c:523
 #, c-format
