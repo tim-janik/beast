@@ -1,3 +1,8 @@
+Mon Jan 19 20:46:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/Makefile.am tests/perftest.cc: Added a small program to
+	test the performancs procedure invocations.
+
 Mon Jan 19 18:50:14 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnifferscope.[hc] (sniffer_notify_pcm_data): implemented

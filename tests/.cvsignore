@@ -4,3 +4,4 @@ bsecxxapi.h
 bsecxxapi.cc
 *.gen-idl.h
 cxxbinding
+perftest
