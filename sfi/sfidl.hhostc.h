@@ -50,16 +50,11 @@ namespace Sfidl {
     virtual void run () = 0;
   };
 
-  // FIXME: need to make C code generator public to get access to createTypeCode() and friends
-  class CodeGeneratorC : public CodeGenerator {
+  /*
+   * Base class for C and C++-like CodeGenerators
+   */
+  class CodeGeneratorCBase : public CodeGenerator {
   protected:
-    
-    void printInfoStrings (const std::string& name, const std::map<std::string,std::string>& infos);
-    void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
-    
-    bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
-    std::string makeGTypeName (const std::string& name);
-  public:
     enum TypeCodeModel {
       MODEL_ARG, MODEL_MEMBER, MODEL_RET, MODEL_ARRAY,
       MODEL_FREE, MODEL_COPY, MODEL_NEW, MODEL_FROM_VALUE, MODEL_TO_VALUE,
@@ -67,13 +62,25 @@ namespace Sfidl {
       MODEL_VCALL_RET, MODEL_VCALL_RCONV, MODEL_VCALL_RFREE
     };
 
+    std::string makeGTypeName (const std::string& name);
     std::string makeParamSpec (const Param& pdef);
     std::string createTypeCode (const std::string& type, TypeCodeModel model);
     std::string createTypeCode (const std::string& type, const std::string& name, 
 				TypeCodeModel model);
+
+    CodeGeneratorCBase (const Parser& parser) : CodeGenerator (parser) {
+    }
+  };
+
+  class CodeGeneratorC : public CodeGeneratorCBase {
+  protected:
+    void printInfoStrings (const std::string& name, const std::map<std::string,std::string>& infos);
+    void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
+    
+    bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
     
   public:
-    CodeGeneratorC(const Parser& parser) : CodeGenerator(parser) {
+    CodeGeneratorC(const Parser& parser) : CodeGeneratorCBase (parser) {
     }
     void run ();
   };

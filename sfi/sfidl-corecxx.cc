@@ -29,43 +29,6 @@
 using namespace std;
 using namespace Sfidl;
 
-const Parser         *the_parser = 0;
-CodeGeneratorC *the_cgc = 0;
-
-static Type
-sfidl_type (const string tname)
-{
-  /* URGlglglglglglglglglglgl *WHY* do i need to write this? */
-  if (tname == "void")
-    return VOID;
-  if (tname == "Bool")
-    return BOOL;
-  if (tname == "Int")
-    return INT;
-  if (tname == "Num")
-    return NUM;
-  if (tname == "Real")
-    return REAL;
-  if (tname == "String")
-    return STRING;
-  if (the_parser->isChoice (tname))
-    return CHOICE;
-  if (tname == "BBlock")
-    return BBLOCK;
-  if (tname == "FBlock")
-    return FBLOCK;
-  if (tname == "PSpec")
-    return FBLOCK;
-  if (the_parser->isSequence (tname))
-    return SEQUENCE;
-  if (the_parser->isRecord (tname))
-    return RECORD;
-  if (the_parser->isClass (tname))
-    return OBJECT;
-  g_error (("invalid type: " + tname).c_str());
-  return VOID;
-}
-
 static string
 TypeName (const string &str)
 {
@@ -77,7 +40,7 @@ TypeName (const string &str)
 #define cTypeName(s)    TypeName (s).c_str()
 
 static string
-canonify_type (const string s)
+canonify_type (const string& s)
 {
   /* canonify type names which contain e.g. underscores (procedures) */
   gchar *tmp = g_strcanon (g_strdup (s.c_str()),
@@ -99,11 +62,11 @@ Qualified (const string &str)
 }
 #define cQualified(s)    Qualified (s).c_str()
 
-static string
-TypeRef (const string &type)
+string
+CodeGeneratorModule::TypeRef (const string &type)
 {
   string tname = Qualified (type);
-  switch (sfidl_type (type))
+  switch (parser.typeOf (type))
     {
     case BBLOCK:
     case FBLOCK:
@@ -116,26 +79,26 @@ TypeRef (const string &type)
 }
 #define cTypeRef(s)    TypeRef (s).c_str()
 
-static string
-createTypeCode (const string& type, const string& name, CodeGeneratorC::TypeCodeModel model)
+string
+CodeGeneratorModule::createTypeCode (const string& type, const string& name, TypeCodeModel model)
 {
   // FIXME: argument validation
 
-  if (the_parser->isRecord (type))
+  if (parser.isRecord (type))
     {
       switch (model)
       {
-	case CodeGeneratorC::MODEL_MEMBER: return type + "Ptr";
+	case MODEL_MEMBER: return type + "Ptr";
 	default: ;
       }
     }
-  return the_cgc->createTypeCode (type, name, model);
+  return CodeGeneratorCBase::createTypeCode (type, name, model);
 }
 
-static string
-TypeMember (const string& type)
+string
+CodeGeneratorModule::TypeMember (const string& type)
 {
-  return createTypeCode (type, "", CodeGeneratorC::MODEL_MEMBER);
+  return createTypeCode (type, "", MODEL_MEMBER);
 }
 #define cTypeMember(s)  TypeMember(s).c_str()
 
@@ -200,10 +163,10 @@ include_relative (string path,
   return apath;
 }
 
-static string
-pspec_constructor (const Param &param)
+string
+CodeGeneratorModule::pspec_constructor (const Param &param)
 {
-  switch (sfidl_type (param.type))
+  switch (parser.typeOf (param.type))
     {
     case OBJECT:
       {
@@ -239,14 +202,14 @@ pspec_constructor (const Param &param)
         pspec += ")";
         return pspec;
       }
-    default:    return the_cgc->makeParamSpec (param);
+    default:    return makeParamSpec (param);
     }
 }
 
-static string
-func_value_set_param (const Param &param)
+string
+CodeGeneratorModule::func_value_set_param (const Param &param)
 {
-  switch (sfidl_type (param.type))
+  switch (parser.typeOf (param.type))
     {
     case BOOL:          return "sfi_value_set_bool";
     case INT:           return "sfi_value_set_int";
@@ -264,11 +227,11 @@ func_value_set_param (const Param &param)
     }
 }
 
-static string
-func_value_get_param (const Param &param,
-                      const string dest = "")
+string
+CodeGeneratorModule::func_value_get_param (const Param &param,
+                                           const string dest = "")
 {
-  switch (sfidl_type (param.type))
+  switch (parser.typeOf (param.type))
     {
     case BOOL:          return "sfi_value_get_bool";
     case INT:           return "sfi_value_get_int";
@@ -290,10 +253,10 @@ func_value_get_param (const Param &param,
     }
 }
 
-static string
-func_value_dup_param (const Param &param)
+string
+CodeGeneratorModule::func_value_dup_param (const Param &param)
 {
-  switch (sfidl_type (param.type))
+  switch (parser.typeOf (param.type))
     {
     case STRING:        return "sfi_value_dup_string";
     case BBLOCK:        return "sfi_value_dup_bblock";
@@ -306,10 +269,10 @@ func_value_dup_param (const Param &param)
     }
 }
 
-static string
-func_param_return_free (const Param &param)
+string
+CodeGeneratorModule::func_param_return_free (const Param &param)
 {
-  switch (sfidl_type (param.type))
+  switch (parser.typeOf (param.type))
     {
     case BOOL:          return "";
     case INT:           return "";
@@ -327,10 +290,10 @@ func_param_return_free (const Param &param)
     }
 }
 
-static string
-func_param_free (const Param &param)
+string
+CodeGeneratorModule::func_param_free (const Param &param)
 {
-  switch (sfidl_type (param.type))
+  switch (parser.typeOf (param.type))
     {
     case OBJECT:        return "g_object_unref";
     default:            return func_param_return_free (param);
@@ -358,10 +321,6 @@ struct Image {
 void
 CodeGeneratorModule::run ()
 {
-  // FIXME: shouldn't have the following global vars at all
-  the_parser = &parser;
-  the_cgc = new CodeGeneratorC (parser);
-  
   string nspace = "Foo";
   vector<Image> images;
   std::vector<const Method*> procs;
@@ -426,6 +385,24 @@ CodeGeneratorModule::run ()
    */
   NamespaceHelper nsh(stdout);
   printf ("\n/* record/sequence types */\n");
+
+  /* prototypes for records */
+  for (vector<Record>::const_iterator ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+  {
+    if (parser.fromInclude (ri->name)) continue;
+
+    nsh.setFromSymbol(ri->name);
+    string name = nsh.printableForm (ri->name);
+
+    printf("\n");
+    printf("class %s;\n", name.c_str());
+    printf("typedef Bse::SmartPtr<%s,CountablePointer<RefCountable> > %sPtr;\n",
+	name.c_str(), name.c_str());
+    printf("typedef Bse::SmartPtr<const %s,CountablePointer<const RefCountable> > %sCPtr;\n",
+	name.c_str(), name.c_str());
+  }
+
+  /* records */
   bool first = true;
   for(vector<string>::const_iterator ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
     {
@@ -450,12 +427,9 @@ CodeGeneratorModule::run ()
 	    {
 	      printf("  %s %s;\n", cTypeMember(pi->type), pi->name.c_str());
 	    }
+	  printf("  static %sPtr _from_rec (SfiRec *rec) { return 0; }\n", name.c_str());
+	  printf("  static SfiRec *_to_rec (%sPtr ptr) { return 0; }\n", name.c_str());
 	  printf("};\n");
-	  printf("\n");
-	  printf("typedef Bse::SmartPtr<%s,CountablePointer<RefCountable> > %sPtr;\n",
-	      name.c_str(), name.c_str());
-	  printf("typedef Bse::SmartPtr<const %s,CountablePointer<const RefCountable> > %sCPtr;\n",
-	      name.c_str(), name.c_str());
 	}
       if (parser.isSequence (*ti))
 	{

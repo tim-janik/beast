@@ -26,25 +26,23 @@
 #include <list>
 
 namespace Sfidl {
-enum Type {
-  VOID,
-  BOOL,
-  INT,
-  NUM,
-  REAL,
-  STRING,
-  CHOICE,
-  BBLOCK,
-  FBLOCK,
-  PSPEC,
-  SEQUENCE,
-  RECORD,
-  OBJECT,     /* PROXY */
-};
 
-class CodeGeneratorModule : public CodeGenerator {
+class CodeGeneratorModule : public CodeGeneratorCBase {
+protected:
+  std::string TypeRef (const std::string &type);
+  std::string createTypeCode (const std::string& type, const std::string& name,
+                              TypeCodeModel model);
+  std::string TypeMember (const std::string& type);
+
+  std::string pspec_constructor (const Param &param);
+  std::string func_value_set_param (const Param &param);
+  std::string func_value_get_param (const Param &param, const std::string dest);
+  std::string func_value_dup_param (const Param &param);
+  std::string func_param_return_free (const Param &param);
+  std::string func_param_free (const Param &param);
+
 public:
-  CodeGeneratorModule (Parser &parser) : CodeGenerator (parser) {
+  CodeGeneratorModule (const Parser &parser) : CodeGeneratorCBase (parser) {
   }
   void run ();
 };

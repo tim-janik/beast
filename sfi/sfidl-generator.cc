@@ -31,6 +31,7 @@
 using namespace Sfidl;
 using namespace std;
 
+/*--- common functions ---*/
 
 string CodeGenerator::makeNamespaceSubst (const string& name)
 {
@@ -153,13 +154,15 @@ string CodeGenerator::makeLMixedName (const string& name)
   return result;
 }
 
-string CodeGeneratorC::makeGTypeName(const string& name)
+/*--- functions for "C and C++"-like languages ---*/
+
+string CodeGeneratorCBase::makeGTypeName(const string& name)
 {
   return makeUpperName (NamespaceHelper::namespaceOf (name)
                       + "::Type" + NamespaceHelper::nameOf(name));
 }
 
-string CodeGeneratorC::makeParamSpec(const Param& pdef)
+string CodeGeneratorCBase::makeParamSpec(const Param& pdef)
 {
   string pspec;
   string group = pdef.group;
@@ -168,42 +171,57 @@ string CodeGeneratorC::makeParamSpec(const Param& pdef)
     group = "\"" + group + "\"";
   else
     group = "NULL";
-  
-  if (parser.isChoice (pdef.type))
+ 
+  switch (parser.typeOf (pdef.type))
     {
-      pspec = "sfidl_pspec_Choice";
-      if (pdef.args == "")
-	pspec += "_default (" + group + ",\"" + pdef.name + "\",";
-      else
-	pspec += " (" + group + ", \"" + pdef.name + "\"," + pdef.args + ",";
-      pspec += makeLowerName (pdef.type) + "_values)";
-    }
-  else if (parser.isRecord (pdef.type))
-    {
-      pspec = "sfidl_pspec_BoxedRec";
-      if (pdef.args == "")
-	pspec += "_default (" + group + ", \"" + pdef.name + "\",";
-      else
-	pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ",";
-      pspec += makeLowerName (pdef.type) + "_fields)";
-    }
-  else if (parser.isSequence (pdef.type))
-    {
-      // const Sequence& sdef = parser.findSequence (pdef.type);
-      pspec = "sfidl_pspec_BoxedSeq";
-      if (pdef.args == "")
-	pspec += "_default (" + group + ",\"" + pdef.name + "\",";
-      else
-	pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ",";
-      pspec += makeLowerName (pdef.type) + "_content)";
-    }
-  else
-    {
-      pspec = "sfidl_pspec_" + pdef.pspec;
-      if (pdef.args == "")
-	pspec += "_default (" + group + ",\"" + pdef.name + "\")";
-      else
-	pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ")";
+      case CHOICE:
+	{
+	  pspec = "sfidl_pspec_Choice";
+	  if (pdef.args == "")
+	    pspec += "_default (" + group + ",\"" + pdef.name + "\",";
+	  else
+	    pspec += " (" + group + ", \"" + pdef.name + "\"," + pdef.args + ",";
+	  pspec += makeLowerName (pdef.type) + "_values)";
+	}
+	break;
+      case RECORD:
+	{
+	  pspec = "sfidl_pspec_BoxedRec";
+	  if (pdef.args == "")
+	    pspec += "_default (" + group + ", \"" + pdef.name + "\",";
+	  else
+	    pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ",";
+	  pspec += makeLowerName (pdef.type) + "_fields)";
+	}
+	break;
+      case SEQUENCE:
+	{
+	  pspec = "sfidl_pspec_BoxedSeq";
+	  if (pdef.args == "")
+	    pspec += "_default (" + group + ",\"" + pdef.name + "\",";
+	  else
+	    pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ",";
+	  pspec += makeLowerName (pdef.type) + "_content)";
+	}
+	break;
+      case OBJECT:
+	{
+	  /* FIXME: the ParamSpec doesn't transport the type of the objects we require */
+	  pspec = "sfidl_pspec_Proxy";
+	  if (pdef.args == "")
+	    pspec += "_default (" + group + ",\"" + pdef.name + "\")";
+	  else
+	    pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ")";
+	}
+	break;
+      default:
+	{
+	  pspec = "sfidl_pspec_" + pdef.pspec;
+	  if (pdef.args == "")
+	    pspec += "_default (" + group + ",\"" + pdef.name + "\")";
+	  else
+	    pspec += " (" + group + ",\"" + pdef.name + "\"," + pdef.args + ")";
+	}
     }
   return pspec;
 }
@@ -226,12 +244,12 @@ static string scatId (SfiSCategory c)
   return s;
 }
 
-string CodeGeneratorC::createTypeCode (const std::string& type, TypeCodeModel model)
+string CodeGeneratorCBase::createTypeCode (const std::string& type, TypeCodeModel model)
 {
   return createTypeCode (type, "", model);
 }
 
-string CodeGeneratorC::createTypeCode (const string& type, const string &name,
+string CodeGeneratorCBase::createTypeCode (const string& type, const string &name,
                                        TypeCodeModel model)
 {
   switch (model)
@@ -336,7 +354,7 @@ string CodeGeneratorC::createTypeCode (const string& type, const string &name,
       if (model == MODEL_VCALL_RCONV) return makeLowerName (type)+"_from_choice ("+name+")";
       if (model == MODEL_VCALL_RFREE) return "";
     }
-  else if (parser.isClass (type) || type == "Proxy")
+  else if (parser.isClass (type))
     {
       /*
        * FIXME: we're currently not using the type of the proxy anywhere
@@ -490,6 +508,8 @@ string CodeGeneratorC::createTypeCode (const string& type, const string &name,
     }
   return "*createTypeCode*unknown*";
 }
+
+/*--- the C language binding ---*/
 
 void CodeGeneratorC::printProcedure (const Method& mdef, bool proto, const string& className)
 {
@@ -1415,6 +1435,8 @@ void CodeGeneratorC::run ()
 	}
     }
 }
+
+/*--- the Qt language binding ---*/
 
 class CodeGeneratorQt : public CodeGenerator {
 public:

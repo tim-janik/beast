@@ -185,6 +185,26 @@ bool Parser::isClass(const string& type) const
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdClass);
 }
 
+Type Parser::typeOf(const string& type) const
+{
+  if (type == "void")	  return VOID;
+  if (type == "Bool")	  return BOOL;
+  if (type == "Int")	  return INT;
+  if (type == "Num")	  return NUM;
+  if (type == "Real")	  return REAL;
+  if (type == "String")   return STRING;
+  if (isChoice (type))	  return CHOICE;
+  if (type == "BBlock")   return BBLOCK;
+  if (type == "FBlock")   return FBLOCK;
+  if (type == "Rec")      return REC;
+  if (type == "PSpec")    return FBLOCK;
+  if (isSequence (type))  return SEQUENCE;
+  if (isRecord (type))    return RECORD;
+  if (isClass (type))     return OBJECT;
+  g_error (("invalid type: " + type).c_str());
+  return VOID;
+}
+
 Sequence Parser::findSequence(const string& name) const
 {
   vector<Sequence>::const_iterator i;
@@ -506,7 +526,6 @@ bool Parser::parse (const string& filename)
   ModuleHelper::define("Num");
   ModuleHelper::define("Real");
   ModuleHelper::define("String");
-  ModuleHelper::define("Proxy"); /* FIXME: remove this as soon as "real" interface types exist */
   ModuleHelper::define("BBlock");
   ModuleHelper::define("FBlock");
   ModuleHelper::define("PSpec");

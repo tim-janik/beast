@@ -1,3 +1,15 @@
+Wed Nov 26 22:07:49 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.*: Moved common functionality of all C / C++
+	language bindings into new parent class CodeGeneratorCBase. "Proxy" no
+	longer accepted as type.
+
+	* sfidl-parser.*: Added Parser::typeOf method returning an enum (moved
+	from sfidl-module.cc).
+
+	* sfidl-module.*: Cleanup ugly stuff by inheriting CodeGeneratorCBase
+	and using Parser::typeOf method.
+
 Wed Nov 26 13:37:17 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-generator.*: Cleanups.

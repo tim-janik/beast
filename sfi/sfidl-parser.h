@@ -150,6 +150,28 @@ enum TypeDeclaration {
   tdClassProto    = tdClass | tdProto,
 };
 
+enum Type {
+  // primitive types
+  VOID,
+  BOOL,
+  INT,
+  NUM,
+  REAL,
+  STRING,
+  // enums
+  CHOICE,
+  // blocks of byte/float
+  BBLOCK,
+  FBLOCK,
+  // generic types: param spec, record
+  PSPEC,
+  REC,
+  // user defined types
+  SEQUENCE,
+  RECORD,
+  OBJECT,     /* PROXY */
+};
+
 class Parser {
 protected:
   const class Options&      options;
@@ -223,6 +245,7 @@ public:
   bool isSequence(const std::string& type) const;
   bool isRecord(const std::string& type) const;
   bool isClass(const std::string& type) const;
+  Type typeOf(const std::string& type) const;
   bool fromInclude(const std::string& type) const;
 };
 
