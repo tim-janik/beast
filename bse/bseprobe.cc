@@ -90,7 +90,8 @@ private:
     guint      n_modules;
     guint      n_pending;
     ProbeSeq   pseq;
-    ProbeData (const SourceProbes &probes)
+    ProbeData (const SourceProbes &probes,
+               gdouble             mix_freq)
     {
       source = probes.source;
       for (guint i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
@@ -100,6 +101,7 @@ private:
             probe.channel_id = i;
             probe.max = SFI_MINREAL;
             probe.min = SFI_MAXREAL;
+            probe.mix_freq = mix_freq;
             probe.energie = -999;
             ProbeFeatures features;
             features.probe_range = probes.range_ages[i] > 0;
@@ -261,7 +263,7 @@ public:
     BseTrans *trans = bse_trans_open();
     while (queued_jobs < PROBE_QUEUE_LENGTH)
       {
-        ProbeData *pdata = new ProbeData (*this);
+        ProbeData *pdata = new ProbeData (*this, bse_engine_sample_freq());
         pdata->n_modules = 0;
         for (SfiRing *node = ring; node; node = sfi_ring_walk (node, ring))
           {

@@ -46,7 +46,7 @@ beauty_float (gdouble f)
   return c;
 }
 
-static GQuark  boxed_type_tag = 0;
+static GQuark boxed_type_tag = 0;
 
 static void
 tag_all_boxed_pspecs (void)
@@ -384,100 +384,112 @@ strequals (const gchar *s1,
 }
 
 static void
-show_objdoc (void)
+showdoc_print_type (GObjectClass *oclass,
+                    gboolean      show_channels)
 {
-  BseCategorySeq *cseq;
-  guint i, j, in_itemize = 0;
-  g_print ("\\input texinfo\n"
-	   "@c %%**start of header\n"
-	   "@settitle %s\n"
-	   "@footnotestyle end\n"
-	   "@c %%**end of header\n"
-	   "\n"
-	   "@include texiutils.texi\n"
-	   "\n"
-	   "@docpackage{BEAST-%s}\n"
-	   "@docfont{tech}\n"
-	   "\n"
-	   "@majorheading %s - %s\n"
-	   "\n"
-	   "@revision{Document Revised:}\n"
-	   "\n"
-           "@contents\n"
-	   "\n",
-           _("BSE-Objects"),
-	   BST_VERSION,
-           _("BSE-Objects"), _(" Object Reference"));
-  cseq = bse_categories_match_typed ("*", BSE_TYPE_SOURCE);
-  for (i = 0; i < cseq->n_cats; i++)
+  GType btype, type = G_OBJECT_CLASS_TYPE (oclass);
+  guint j, in_itemize = 0;
+  const gchar *string, *pgroup = NULL;
+  g_print ("\n\n@anchor{%s} ", g_type_name (type));
+  g_print ("@unnumbered %s\n", g_type_name (type));
+  string = bse_type_get_authors (type);
+  if (string)
+    g_print ("@* @emph{%s} %s\n", _("Authors:"), string);
+  string = bse_type_get_license (type);
+  if (string)
+    g_print ("@* @emph{%s} %s\n", _("License:"), string);
+  string = bse_type_get_blurb (type);
+  if (string)
+    g_print ("@* %s\n", string);
+  g_print ("@heading %s\n", _("Properties:"));
+  btype = G_TYPE_OBJECT;
+  do
     {
-      BseCategory *cat = cseq->cats[i];
-      GType btype, type = g_type_from_name (cat->type);
-      BseSource *source = g_object_new (type, NULL);
-      const gchar *string, *pgroup = NULL;
-      g_print ("\n\n@anchor{%s} ", g_type_name (type));
-      g_print ("@unnumbered %s\n", g_type_name (type));
-      string = bse_type_get_authors (type);
-      if (string)
-        g_print ("@* @emph{%s} %s\n", _("Authors:"), string);
-      string = bse_type_get_license (type);
-      if (string)
-        g_print ("@* @emph{%s} %s\n", _("License:"), string);
-      string = bse_type_get_blurb (type);
-      if (string)
-        g_print ("@* %s\n", string);
-      g_print ("@heading %s\n", _("Properties:"));
-      btype = G_TYPE_OBJECT;
-      do
+      GParamSpec **pspecs;
+      btype = g_type_next_base (type, btype);
+      pspecs = g_object_class_list_properties (g_type_class_peek (btype), NULL);
+      /* show GUI properties */
+      for (j = 0; pspecs[j]; j++)
         {
-          GParamSpec **pspecs;
-          btype = g_type_next_base (type, btype);
-          pspecs = g_object_class_list_properties (g_type_class_peek (btype), NULL);
-          for (j = 0; pspecs[j]; j++)
+          GParamSpec *pspec = g_object_class_find_property (oclass, pspecs[j]->name);
+          const gchar *group = sfi_pspec_get_group (pspec);
+          if (pspec->owner_type != btype || !sfi_pspec_check_option (pspec, "G"))
+            continue;
+          if (!strequals (group, pgroup))
             {
-              GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), pspecs[j]->name);
-              const gchar *group = sfi_pspec_get_group (pspec);
-              if (pspec->owner_type != btype || !sfi_pspec_check_option (pspec, "G"))
-                continue;
-              if (!strequals (group, pgroup))
-                {
-                  if (in_itemize)
-                    g_print ("@end itemize\n");
-                  in_itemize = 0;
-                  pgroup = group;
-                  if (group)
-                    g_print ("@strong{%s:}\n", group);
-                }
-              if (!in_itemize++)
-                g_print ("@itemize\n");
-              g_print ("@anchor{%s::%s} ", g_type_name (type), sfi_pspec_get_name (pspec));
-              g_print ("@item @strong{@emph{%s}}\n", sfi_pspec_get_nick (pspec));
-              g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), sfi_pspec_get_name (pspec));
-              if (SFI_IS_PSPEC_INT (pspec))
-                {
-                  SfiInt imin, imax;
-                  sfi_pspec_get_int_range (pspec, &imin, &imax, NULL);
-                  g_print ("@* @emph{%s} %d .. %d\n", _("Range:"), imin, imax);
-                }
-              else if (SFI_IS_PSPEC_REAL (pspec))
-                {
-                  SfiReal fmin, fmax;
-                  sfi_pspec_get_real_range (pspec, &fmin, &fmax, NULL);
-                  g_print ("@* @emph{%s} %s .. %s\n", _("Range:"), beauty_float (fmin), beauty_float (fmax));
-                }
-              string = sfi_pspec_get_blurb (pspec);
-              if (string)
-                g_print ("@* @emph{%s} %s\n", _("Description:"), string);
-            }
-          if (in_itemize)
-            {
-              g_print ("@end itemize\n");
+              if (in_itemize)
+                g_print ("@end itemize\n");
               in_itemize = 0;
+              pgroup = group;
+              if (group)
+                g_print ("@strong{%s:}\n", group);
             }
-          g_free (pspecs);
+          if (!in_itemize++)
+            g_print ("@itemize\n");
+          g_print ("@anchor{%s::%s} ", g_type_name (type), sfi_pspec_get_name (pspec));
+          g_print ("@item @strong{@emph{%s}}\n", sfi_pspec_get_nick (pspec));
+          g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), sfi_pspec_get_name (pspec));
+          if (SFI_IS_PSPEC_INT (pspec))
+            {
+              SfiInt imin, imax;
+              sfi_pspec_get_int_range (pspec, &imin, &imax, NULL);
+              g_print ("@* @emph{%s} %d .. %d\n", _("Range:"), imin, imax);
+            }
+          else if (SFI_IS_PSPEC_REAL (pspec))
+            {
+              SfiReal fmin, fmax;
+              sfi_pspec_get_real_range (pspec, &fmin, &fmax, NULL);
+              g_print ("@* @emph{%s} %s .. %s\n", _("Range:"), beauty_float (fmin), beauty_float (fmax));
+            }
+          string = sfi_pspec_get_blurb (pspec);
+          if (string)
+            g_print ("@* @emph{%s} %s\n", _("Description:"), string);
         }
-      while (btype != type);
-      g_print ("@heading %s\n", _("Input Channels:"));
+      if (in_itemize)
+        {
+          g_print ("@end itemize\n");
+          in_itemize = 0;
+        }
+      g_free (pspecs);
+    }
+  while (btype != type);
+  /* show signals */
+  guint n, ns, *sigs = g_signal_list_ids (type, &n);
+  if (n)
+    {
+      g_print ("@heading %s\n", _("Signals:"));
+      for (ns = 0; ns < n; ns++)
+        {
+          GSignalQuery query;
+          if (!in_itemize++)
+            g_print ("@itemize\n");
+          g_signal_query (sigs[ns], &query);
+          g_print ("@item %s @strong{@emph{%s}} (\n", g_type_name (query.return_type & ~G_SIGNAL_TYPE_STATIC_SCOPE), query.signal_name);
+          guint np;
+          for (np = 0; np < query.n_params; np++)
+            {
+              if (np)
+                g_print (", ");
+              g_print ("%s", g_type_name (query.param_types[np] & ~G_SIGNAL_TYPE_STATIC_SCOPE));
+            }
+          g_print (");\n");
+        }
+      if (in_itemize)
+        {
+          g_print ("@end itemize\n");
+          in_itemize = 0;
+        }
+    }
+  g_free (sigs);
+  /* show input and output channels */
+  if (show_channels &&
+      !G_TYPE_IS_ABSTRACT (type) &&
+      g_type_is_a (type, BSE_TYPE_SOURCE) &&
+      !strequals ("BseServer", g_type_name (type)))
+    {
+      BseSource *source = g_object_new (type, NULL);
+      if (BSE_SOURCE_N_ICHANNELS (source))
+        g_print ("@heading %s\n", _("Input Channels:"));
       for (j = 0; j < BSE_SOURCE_N_ICHANNELS (source); j++)
         {
           if (!in_itemize++)
@@ -495,7 +507,8 @@ show_objdoc (void)
           g_print ("@end itemize\n");
           in_itemize = 0;
         }
-      g_print ("@heading %s\n", _("Output Channels:"));
+      if (BSE_SOURCE_N_OCHANNELS (source))
+        g_print ("@heading %s\n", _("Output Channels:"));
       for (j = 0; j < BSE_SOURCE_N_OCHANNELS (source); j++)
         {
           if (!in_itemize++)
@@ -516,6 +529,79 @@ show_objdoc (void)
       g_object_unref (source);
     }
 }
+
+static void
+showdoc_descendants (GType type)
+{
+  GObjectClass *oclass = g_type_class_ref (type);
+  showdoc_print_type (oclass, TRUE);
+  GType *child, *children = g_type_children (type, NULL);
+  for (child = children; *child; child++)
+    showdoc_descendants (*child);
+  g_free (children);
+  g_type_class_unref (oclass);
+}
+
+static void
+showdoc_alltypes (void)
+{
+  g_print ("\\input texinfo\n"
+	   "@c %%**start of header\n"
+	   "@settitle %s\n"
+	   "@footnotestyle end\n"
+	   "@c %%**end of header\n"
+	   "\n"
+	   "@include texiutils.texi\n"
+	   "\n"
+	   "@docpackage{BEAST-%s}\n"
+	   "@docfont{tech}\n"
+	   "\n"
+	   "@majorheading %s - %s\n"
+	   "\n"
+	   "@revision{Document Revised:}\n"
+	   "\n"
+           "@contents\n"
+	   "\n",
+           _("BSE-Objects"),
+	   BST_VERSION,
+           _("BSE-Objects"), _(" Object Reference"));
+  showdoc_descendants (BSE_TYPE_OBJECT);
+}
+
+#if 0
+static void
+showdoc_plugins (void)
+{
+  g_print ("\\input texinfo\n"
+	   "@c %%**start of header\n"
+	   "@settitle %s\n"
+	   "@footnotestyle end\n"
+	   "@c %%**end of header\n"
+	   "\n"
+	   "@include texiutils.texi\n"
+	   "\n"
+	   "@docpackage{BEAST-%s}\n"
+	   "@docfont{tech}\n"
+	   "\n"
+	   "@majorheading %s - %s\n"
+	   "\n"
+	   "@revision{Document Revised:}\n"
+	   "\n"
+           "@contents\n"
+	   "\n",
+           _("BSE-Objects"),
+	   BST_VERSION,
+           _("BSE-Objects"), _(" Object Reference"));
+  BseCategorySeq *cseq = bse_categories_match_typed ("*", BSE_TYPE_SOURCE);
+  guint i;
+  for (i = 0; i < cseq->n_cats; i++)
+    {
+      BseCategory *cat = cseq->cats[i];
+      GType type = g_type_from_name (cat->type);
+      showdoc_print_type (type, TRUE);
+    }
+}
+#endif
 
 static gint
 help (const gchar *name,
@@ -593,7 +679,7 @@ main (gint   argc,
   else if (gen_structs)
     show_structdoc ();
   else if (gen_objects)
-    show_objdoc ();
+    showdoc_alltypes ();
   else
     return help (argv[0], NULL);
 

@@ -583,7 +583,7 @@ METHOD (BseSource, ochannel-label) {
   HELP	= "Get output channel name.";
   IN	= bse_param_spec_object ("module", "Module", NULL,
 				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+  IN	= sfi_pspec_int ("output-channel", "Input Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_string ("channel_label", "Channel Name", NULL,
 			    NULL, SFI_PARAM_STANDARD);
@@ -610,7 +610,7 @@ METHOD (BseSource, ochannel-ident) {
   HELP	= "Get canonical output channel name.";
   IN	= bse_param_spec_object ("module", "Module", NULL,
 				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+  IN	= sfi_pspec_int ("output-channel", "Input Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_string ("channel_ident", "Channel Name", NULL,
 			    NULL, SFI_PARAM_STANDARD);
@@ -637,7 +637,7 @@ METHOD (BseSource, ochannel-blurb) {
   HELP	= "Get output channel description.";
   IN	= bse_param_spec_object ("module", "Module", NULL,
 				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
-  IN	= sfi_pspec_int ("input-channel", "Input Channel", NULL,
+  IN	= sfi_pspec_int ("output-channel", "Input Channel", NULL,
 			 0, 0, G_MAXINT, 1, SFI_PARAM_STANDARD);
   OUT   = sfi_pspec_string ("channel_blurb", "Channel Blurb", NULL,
 			    NULL, SFI_PARAM_STANDARD);

@@ -29,6 +29,7 @@ record Probe {
   Int           channel_id;
   Num           block_stamp;
   ProbeFeatures probe_features;
+  Real          mix_freq;
   Real          min;
   Real          max;
   Real          energie;
