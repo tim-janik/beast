@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-16 03:10+0100\n"
-"PO-Revision-Date: 2003-12-16 19:30+0100\n"
+"POT-Creation-Date: 2003-12-18 14:11+0100\n"
+"PO-Revision-Date: 2003-12-18 18:36+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -75,7 +75,7 @@ msgstr "_Zpět"
 msgid "_Redo"
 msgstr "Z_novu"
 
-#: beast-gtk/bstapp.c:86
+#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:69
 msgid "_Clear Undo"
 msgstr "Vyma_zat historii"
 
@@ -91,87 +91,91 @@ msgstr "Editor racku"
 msgid "Device _Monitor"
 msgstr "_Sledování zařízení"
 
-#: beast-gtk/bstapp.c:98
+#: beast-gtk/bstapp.c:96
+msgid "New View"
+msgstr "Nový pohled"
+
+#: beast-gtk/bstapp.c:100
 msgid "_Play"
 msgstr "_Přehrávat"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:102
 msgid "_Stop"
 msgstr "_Zastavit"
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:106
 msgid "New Song"
 msgstr "Nová skladba"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:108
 msgid "New Custom Synthesizer"
 msgstr "Nový vlastní syntetizér"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:110
 msgid "New MIDI Synthesizer"
 msgstr "Nový syntetizér MIDI"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:112
 msgid "Remove Song or Synthesizer"
 msgstr "Odstranit skladbu nebo syntetizér"
 
-#: beast-gtk/bstapp.c:114
+#: beast-gtk/bstapp.c:116
 msgid "Load _Effect"
 msgstr "Načíst _efekt"
 
-#: beast-gtk/bstapp.c:116
+#: beast-gtk/bstapp.c:118
 msgid "Load _Instrument"
 msgstr "Načíst _nástroj"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:120
 msgid "Save As Effect"
 msgstr "Uložit jako efekt"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:122
 msgid "Save As Instrument"
 msgstr "Uložit jako nástroj"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:126
 msgid "_Release Notes..."
 msgstr "_Poznámky o vydání..."
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:127
 msgid "Quick Start..."
 msgstr "Rychlý start..."
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:128
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:129
+#: beast-gtk/bstapp.c:131
 msgid "GSL Engine..."
 msgstr "Engine GSL..."
 
-#: beast-gtk/bstapp.c:545 beast-gtk/bstapp.c:552 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:547 beast-gtk/bstapp.c:554 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otevírám projekt `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:715
+#: beast-gtk/bstapp.c:717
 msgid "Rack editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:729
+#: beast-gtk/bstapp.c:731
 msgid "Preferences"
 msgstr "Nastavení"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:743
+#: beast-gtk/bstapp.c:745
 msgid "Device Monitor"
 msgstr "Sledování zařízení"
 
-#: beast-gtk/bstapp.c:758
+#: beast-gtk/bstapp.c:764
 msgid "Procedure Browser"
 msgstr "Procházeč procedur"
 
-#: beast-gtk/bstapp.c:815
+#: beast-gtk/bstapp.c:821
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Poznámky o vydání BEAST-%s"
@@ -184,21 +188,21 @@ msgstr "Spojení modulů: "
 msgid "Module link"
 msgstr "Spojení modulů"
 
-#: beast-gtk/bstcanvassource.c:483
+#: beast-gtk/bstcanvassource.c:492
 msgid "Module Info"
 msgstr "Informace o modulu"
 
-#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:200
+#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:200
 msgid "Input"
 msgstr "Vstup"
 
-#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
+#: beast-gtk/bstcanvassource.c:989 beast-gtk/bstsnetrouter.c:197
 #: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
 #: plugins/artscompressor.idl:57
 msgid "Output"
 msgstr "Výstup"
 
-#: beast-gtk/bstcanvassource.c:984
+#: beast-gtk/bstcanvassource.c:993
 msgid "(Hint)"
 msgstr "(Nápověda)"
 
@@ -774,7 +778,11 @@ msgid ""
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
-msgstr "Editor racku je stále ještě vysoce experimentální kód a je zaručeno, že v budoucích verzích bude změněn. Takže nebuďte závislé na tom, že obsah editoru racku bude v dalších verzích vypadat stejně, a buďte připraveni na obcházení možných nestabilit kódu (mj. pravidelně ukládejte své projekty)."
+msgstr ""
+"Editor racku je stále ještě vysoce experimentální kód a je zaručeno, že v "
+"budoucích verzích bude změněn. Takže nebuďte závislé na tom, že obsah "
+"editoru racku bude v dalších verzích vypadat stejně, a buďte připraveni na "
+"obcházení možných nestabilit kódu (mj. pravidelně ukládejte své projekty)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/gadgets-beast.xml.h:22
@@ -876,7 +884,8 @@ msgid ""
 "properties"
 msgstr ""
 "Nástroj pro úpravy (tlačítka myši 1-3)\n"
-"Vytvářejte odkazy tlačítkem 1, přesouvejte tlačítkem 2 a měňte vlastnosti tlačítkem 3"
+"Vytvářejte odkazy tlačítkem 1, přesouvejte tlačítkem 2 a měňte vlastnosti "
+"tlačítkem 3"
 
 #: beast-gtk/bstsnetrouter.c:77
 msgid "Edit"
@@ -1021,8 +1030,8 @@ msgstr "Stopy"
 
 #: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
 #: beast-gtk/bstsupershell.c:295 plugins/artscompressor.idl:33
-#: plugins/artscompressor.idl:52 plugins/davchorus.idl:32
-#: plugins/evaluator/bseevaluator.idl:33
+#: plugins/artscompressor.idl:52 plugins/davbassfilter.idl:35
+#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:33
 msgid "Parameters"
 msgstr "Parametry"
 
@@ -1270,9 +1279,8 @@ msgid "_Demo"
 msgstr "_Demo"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:21
-#, fuzzy
 msgid "_Distortion"
-msgstr "Popis"
+msgstr "_Zkreslení"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "_Enhance"
@@ -1454,7 +1462,9 @@ msgstr "Používat podtržení"
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
-msgstr "Je-li nastaveno, podtržítko v textu indikuje, že následující znak má být použit pro mnemonickou klávesovou zkratku"
+msgstr ""
+"Je-li nastaveno, podtržítko v textu indikuje, že následující znak má být "
+"použit pro mnemonickou klávesovou zkratku"
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
@@ -1463,7 +1473,9 @@ msgstr "Automaticky oříznout"
 #: beast-gtk/gxk/gxksimplelabel.c:143
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
-msgstr "Je-li nastaveno, příliš dlouhý text je uříznut a místo něj jsou zobrazeny tečky \"...\""
+msgstr ""
+"Je-li nastaveno, příliš dlouhý text je uříznut a místo něj jsou zobrazeny "
+"tečky \"...\""
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
@@ -1473,7 +1485,9 @@ msgstr "Zarování"
 msgid ""
 "The alignment of the lines in the text of the label relative to each other. "
 "This does NOT affect the alignment of the label within its allocation."
-msgstr "Zarovnání řádků v textu popisku navzájem. NEMÁ vliv na zarovnání popisku v jeho alokaci."
+msgstr ""
+"Zarovnání řádků v textu popisku navzájem. NEMÁ vliv na zarovnání popisku v "
+"jeho alokaci."
 
 #: beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
@@ -1483,7 +1497,8 @@ msgstr "Vzorek"
 msgid ""
 "A string with _ characters in positions correspond to characters in the text "
 "to underline"
-msgstr "Řetězec se znaky _ na místech odpovídajících znakům v textu, které podtrhnout"
+msgstr ""
+"Řetězec se znaky _ na místech odpovídajících znakům v textu, které podtrhnout"
 
 #: beast-gtk/gxk/gxksimplelabel.c:157
 msgid "Mnemonic key"
@@ -1501,7 +1516,8 @@ msgstr "Widget mnemoniky"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Widget, který aktivovat, když je stisknuta mnemonická klávesa popisku"
 
-#: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26 plugins/davchorus.idl:27
+#: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26
+#: plugins/davbassfilter.idl:27 plugins/davchorus.idl:27
 msgid "GNU Lesser General Public License"
 msgstr "GNU Lesser General Public License"
 
@@ -1520,7 +1536,16 @@ msgid ""
 "mixed control signal can influence the amplification linearly (to amplify "
 "other control signals) or exponentially (to amplify audio signals). Finally, "
 "the master volume controls amplification of the resulting output signal."
-msgstr "BseAmplifier poskytuje zesilování nebo zeslabování řízené vstupním signálem. Podporuje dva řídicí vstupy a dva vstupy zvuku, které jsou po úpravě vyrovnání a úrovně smixovány dohromady. Nastavení zisku ovládá předzesílení smixovaného signálu zvuku. Smixovaný řídicí signál, vážený nastavením síly, určuje další zesílení, což umožňuje externím zdrojům modulovat celkovou hlasitost (tremolo). Smixovaný řídicí signál může zesílení ovlivňovat lineárně (pro zesilování jiných řídicích signálů) nebo exponenciálně (pro zesilování zvukových signálů). Konečně hlavní hlasitost ovládá zesilování výsledného výstupního signálu."
+msgstr ""
+"BseAmplifier poskytuje zesilování nebo zeslabování řízené vstupním signálem. "
+"Podporuje dva řídicí vstupy a dva vstupy zvuku, které jsou po úpravě "
+"vyrovnání a úrovně smixovány dohromady. Nastavení zisku ovládá předzesílení "
+"smixovaného signálu zvuku. Smixovaný řídicí signál, vážený nastavením síly, "
+"určuje další zesílení, což umožňuje externím zdrojům modulovat celkovou "
+"hlasitost (tremolo). Smixovaný řídicí signál může zesílení ovlivňovat "
+"lineárně (pro zesilování jiných řídicích signálů) nebo exponenciálně (pro "
+"zesilování zvukových signálů). Konečně hlavní hlasitost ovládá zesilování "
+"výsledného výstupního signálu."
 
 #: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
 msgid "Audio In1"
@@ -1555,7 +1580,8 @@ msgid "Second control input"
 msgstr "Druhý řídicí vstup"
 
 #: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
-#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
 msgid "Audio Out"
 msgstr "Výstup zvuku"
 
@@ -1802,13 +1828,13 @@ msgstr "/Vylepšit/ArtsCompressor"
 msgid "ArtsCompressor compresses the sound."
 msgstr "ArtsCompressor komprimuje zvuk."
 
-#: plugins/artscompressor.idl:31 plugins/davchorus.idl:30
-#: plugins/evaluator/bseevaluator.idl:31
+#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:31
 msgid "Audio In"
 msgstr "Zvuk In"
 
-#: plugins/artscompressor.idl:31 plugins/davchorus.idl:30
-#: plugins/evaluator/bseevaluator.idl:31
+#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:31
 msgid "Audio input"
 msgstr "Vstup zvuku"
 
@@ -1903,7 +1929,12 @@ msgid ""
 "is controlled by a balance adjustment and the sum of the control inputs. To "
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
-msgstr "BseBalance je modul pro posun sterea se dvěma zvukovými a dvěma řídicími vstupy. Úroveň každého z nich může být odděleně upravena. Výsledné vyrovnání výstupu je ovládáno úpravou vyrovnání a součtem řídicích vstupů. Pro eliminaci artefaktů při rychlých změnách vyrování je řídicí signál předzpracován jednoduchou dolní propustí s upravitelnou limitní frekvencí."
+msgstr ""
+"BseBalance je modul pro posun sterea se dvěma zvukovými a dvěma řídicími "
+"vstupy. Úroveň každého z nich může být odděleně upravena. Výsledné vyrovnání "
+"výstupu je ovládáno úpravou vyrovnání a součtem řídicích vstupů. Pro "
+"eliminaci artefaktů při rychlých změnách vyrování je řídicí signál "
+"předzpracován jednoduchou dolní propustí s upravitelnou limitní frekvencí."
 
 #: plugins/bsebalance.idl:40
 msgid "Left Out"
@@ -2001,6 +2032,57 @@ msgstr "Nefiltrovaný vstup"
 msgid "Filtered Output"
 msgstr "Filtrovaný výstup"
 
+#: plugins/davbassfilter.idl:28
+msgid "/Filters/Bass Filter"
+msgstr "/Filtry/Filtr basů"
+
+#: plugins/davbassfilter.idl:29
+msgid ""
+"DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
+"portions of gsyn v0.2. The filter algorithm is partly based on the one "
+"described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
+msgstr "DavBassFilter je filtr ve stylu TB-303 s nízkofrekvenční rezonancí založený na částech VCF303 z gsyn v0.2. Algoritmus filtru je částečně založen na algoritmu popsaném v \"Musical Applications of Microprocessors\" od Hala Chamberlina."
+
+#: plugins/davbassfilter.idl:34
+msgid "Filtered audio output"
+msgstr "Výstup filtrovaného zvuku"
+
+#: plugins/davbassfilter.idl:36
+msgid "Cutoff [%]"
+msgstr "Odříznutí [%]"
+
+#: plugins/davbassfilter.idl:36
+msgid "Set the cutoff frequency percentage"
+msgstr "Nastavit procenta odříznutí frekvence"
+
+#: plugins/davbassfilter.idl:37
+msgid "Resonance [%]"
+msgstr "Rezonance [%]"
+
+#: plugins/davbassfilter.idl:37
+msgid "Set the amount of resonance in percent"
+msgstr "Nastavit úroveň rezonance v procentech"
+
+#: plugins/davbassfilter.idl:38
+msgid "Envelope Modulation [%]"
+msgstr "Modulace obálky [%]"
+
+#: plugins/davbassfilter.idl:38
+msgid "Set the envelope magnitude in percent"
+msgstr "Nastavit úroveň obálky v procentech"
+
+#: plugins/davbassfilter.idl:39
+msgid "Decay [%]"
+msgstr "Útlum [%]"
+
+#: plugins/davbassfilter.idl:39
+msgid "Set the decay length in percent"
+msgstr "Nastavit délku útlumu v procentech"
+
+#: plugins/davbassfilter.idl:40
+msgid "Trigger filter"
+msgstr "Spustit filtr"
+
 #: plugins/davchorus.idl:28
 msgid "/Enhance/Chorus"
 msgstr "/Vylepšit/Sbor"
@@ -2031,7 +2113,11 @@ msgid ""
 "language. The audio input signal is called input, the audio output signal is "
 "called output. Simple examples for programs would be \"output = input * 5\" "
 "or \"output = 2 * input + 1\"."
-msgstr "BseEvaluator je modul, který umí počítat aritmetické operace v malém jazyku. Signál vstupu zvuku se jmenuje input, signál výstupu zvuku se jmenuje output. Jednoduché příklady programů jsou \"output = input * 5\" nebo \"output = 2 * input + 1\"."
+msgstr ""
+"BseEvaluator je modul, který umí počítat aritmetické operace v malém jazyku. "
+"Signál vstupu zvuku se jmenuje input, signál výstupu zvuku se jmenuje "
+"output. Jednoduché příklady programů jsou \"output = input * 5\" nebo "
+"\"output = 2 * input + 1\"."
 
 #: plugins/evaluator/bseevaluator.idl:32
 msgid "Audio output"
