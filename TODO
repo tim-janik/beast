@@ -1,4 +1,5 @@
 FIXMES:	(release-critical)
+- changing a track/bus name doesn't change track&bus-inputs display of another bus
 - compat() for Arts::Compressor -> Bse::Arts::Compressor
 - compat() for Dav::*Name -> Bse::Dav::*Name
 - add tooltip to trackview about mute meaning "skip sequencer"

@@ -67,6 +67,7 @@ param_item_seq_create (GxkParam    *param,
   gxk_widget_set_tooltip (widget, tooltip);
   GtkWidget *box = g_object_new (GTK_TYPE_HBOX,
                                  "parent", widget,
+                                 "spacing", 3,
                                  NULL);
   GtkWidget *label = g_object_new (GTK_TYPE_LABEL,
                                    "label", _("..."),
@@ -74,7 +75,7 @@ param_item_seq_create (GxkParam    *param,
   gtk_box_pack_end (GTK_BOX (box), label, FALSE, TRUE, 0);
   GtkWidget *frame = g_object_new (GTK_TYPE_FRAME,
                                    "shadow-type", GTK_SHADOW_IN,
-                                   "border-width", 2,
+                                   "border-width", 1,
                                    "parent", box,
                                    NULL);
   gxk_widget_modify_normal_bg_as_base (frame);
