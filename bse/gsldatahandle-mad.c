@@ -326,7 +326,7 @@ create_seek_table (MadHandle *handle,
 	  /* frame read failed for a reason other than eof */
           if (!handle->error)
             handle->error = GSL_ERROR_IO;
-	  MAD_DEBUG ("failed to read seektable frame: %s", gsl_strerror (handle->error));
+	  MAD_DEBUG ("failed to read seektable frame: %s", handle->stream.error ? mad_stream_errorstr (&handle->stream) : gsl_strerror (handle->error));
 	  return NULL;
 	}
     }
@@ -517,13 +517,13 @@ dh_mad_read (GslDataHandle *dhandle,
 	  else
 	    {
 	      MAD_DEBUG ("synthesizing frame failed, accumulate_state_frames is already %u: %s",
-			 handle->accumulate_state_frames, gsl_strerror (handle->error));
+			 handle->accumulate_state_frames, handle->stream.error ? mad_stream_errorstr (&handle->stream) : gsl_strerror (handle->error));
 	      return -1;
 	    }
 	}
       else
 	{
-	  MAD_DEBUG ("failed to synthesize frame: %s", gsl_strerror (handle->error));
+	  MAD_DEBUG ("failed to synthesize frame: %s", handle->stream.error ? mad_stream_errorstr (&handle->stream) : gsl_strerror (handle->error));
 	  return -1;
 	}
     }
@@ -618,7 +618,8 @@ dh_mad_coarse_seek (GslDataHandle *dhandle,
 	      gboolean synth = i + 1 == handle->accumulate_state_frames;
 
 	      if (!pcm_frame_read (handle, synth) && handle->stream.error != MAD_ERROR_BADDATAPTR)
-		MAD_DEBUG ("failed to read frame ahead (%u) in coarse-seek: failed: %s", i, gsl_strerror (handle->error));
+		MAD_DEBUG ("failed to read frame ahead (%u) in coarse-seek: failed: %s", i,
+                           handle->stream.error ? mad_stream_errorstr (&handle->stream) : gsl_strerror (handle->error));
 	    }
 	}
 
@@ -728,7 +729,7 @@ dh_mad_new (const gchar  *file_name,
           *errorp = 0;
 	  return &handle->dhandle;
 	}
-      MAD_DEBUG ("failed to open \"%s\": %s", file_name, gsl_strerror (error));
+      MAD_DEBUG ("failed to open \"%s\": %s", file_name, handle->stream.error ? mad_stream_errorstr (&handle->stream) : gsl_strerror (error));
       gsl_data_handle_unref (&handle->dhandle);
       *errorp = error;
       return NULL;
