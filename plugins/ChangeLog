@@ -1,3 +1,8 @@
+Fri Oct 24 21:26:22 2003  Tim Janik  <timj@gtk.org>
+
+	* artscompressor.cc: 
+	* artscompressor.idl: fix indentation and copyright notice.
+
 Wed Oct 22 19:47:58 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* davxtalstrings.c: Fixed bug in triggering code inside inner loop.

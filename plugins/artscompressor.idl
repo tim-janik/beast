@@ -1,5 +1,6 @@
 /* ArtsCompressor - aRts Compressor Effect                        -*-mode: c++;-*-
  * Copyright (C) 2001 Matthias Kretz <kretz@kde.org>
+ * Copyright (C) 2003 Stefan Westerfeld <stefan@space.twc.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,33 +24,39 @@ Const STANDARD = Bse::STANDARD;
 
 class Compressor : Bse::Effect {
   /*Info    icon      = "icons/chorus.png";*/
+  Info    authors   = "Matthias Kretz, Stefan Westerfeld";
+  Info    copyright = "GNU General Public License";
   Info    category  = "/Modules/Enhance/ArtsCompressor";
-  Info    blurb     = "ArtsCompressor compresses the sound";
-  IStream invalue  = ("Audio In", "Audio input");
-  OStream outvalue = ("Audio Out", "Compressed audio output");
+  Info    blurb     = "ArtsCompressor compresses the sound.";
+  IStream invalue   = ("Audio In", "Audio input");
+  OStream outvalue  = ("Audio Out", "Compressed audio output");
   group "Parameters" {
     Real attack    = Real ("Attack [ms]", "Set the attack time in milli seconds", 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real release   = Real ("Release [ms]", "Set the release time in milli seconds", 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-	Real threshold = LogScale ("Threshold", "Set the threshold", 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
+    Real threshold = LogScale ("Threshold", "Set the threshold", 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
     Real ratio     = Real ("Ratio", "Set the compression ratio", 0.8, 0.0, 1.0, 0.1, STANDARD ":scale");
-	Real output    = LogScale ("Output", "Set the output amplification", 1, 0.1, 10.0, 1, pow(2, 0), 2, log(10)/log(2), STANDARD);
+    Real output    = LogScale ("Output", "Set the output amplification", 1, 0.1, 10.0, 1, pow(2, 0), 2, log(10)/log(2), STANDARD);
   };
 };
 
 class StereoCompressor : Bse::Effect {
+  Info    authors   = "Matthias Kretz, Stefan Westerfeld";
+  Info    copyright = "GNU General Public License";
   Info    category  = "/Modules/Enhance/ArtsStereoCompressor";
-  Info    blurb     = "ArtsStereoCompressor compresses the sound";
-  IStream inleft  = ("Left Audio In", "Left audio input");
-  IStream inright  = ("Right Audio In", "Right audio input");
-  OStream outleft = ("Left Audio Out", "Compressed left audio output");
-  OStream outright = ("Right Audio Out", "Compressed right audio output");
+  Info    blurb     = "ArtsStereoCompressor compresses the sound.";
+  IStream inleft    = ("Left Audio In", "Left audio input");
+  IStream inright   = ("Right Audio In", "Right audio input");
+  OStream outleft   = ("Left Audio Out", "Compressed left audio output");
+  OStream outright  = ("Right Audio Out", "Compressed right audio output");
   group "Parameters" {
     Real attack    = Real ("Attack [ms]", "Set the attack time in milli seconds", 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real release   = Real ("Release [ms]", "Set the release time in milli seconds", 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-	Real threshold = LogScale ("Threshold", "Set the threshold", 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
+    Real threshold = LogScale ("Threshold", "Set the threshold", 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
     Real ratio     = Real ("Ratio", "Set the compression ratio", 0.8, 0.0, 1.0, 0.1, STANDARD ":scale");
-	Real output    = LogScale ("Output", "Set the output amplification", 1, 0.1, 10.0, 1, pow(2, 0), 2, log(10)/log(2), STANDARD);
+    Real output    = LogScale ("Output", "Set the output amplification", 1, 0.1, 10.0, 1, pow(2, 0), 2, log(10)/log(2), STANDARD);
   };
 };
 
 }; // Arts
+
+/* vim:set ts=8 sw=2 sts=2: */
