@@ -221,8 +221,10 @@ GParamSpec*      sfi_pspec_to_serializable   (GParamSpec *pspec);
  * "lax-validation"     - lax validation (G_PARAM_LAX_VALIDATION)
  * Serialization Options:
  * "S"                  - is serializable
- * "D"                  - skip defaulting values upon serialization
  * "f"                  - float indicator, reduce precision to IEEE 754 Single
+ * "skip-default"       - skip defaulting values upon serialization
+ * Undo/Redo Options:
+ * "skip-undo"          - no undo/redo recording
  * GUI Options:
  * "G"                  - is GUI representable
  * "ro"                 - read-only, not mutable by GUI

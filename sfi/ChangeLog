@@ -1,3 +1,7 @@
+Mon Dec 15 22:45:23 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.h: document :skip-default: and :skip-undo: property options.
+
 Mon Dec 15 15:30:57 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: auto-prepend "/Modules/" to plugin categories, as
