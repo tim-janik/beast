@@ -26,8 +26,8 @@
 #include <string>
 #include <list>
 
+#if 0
 namespace Sfidl {
-
 class CodeGeneratorModule : public CodeGeneratorCxxBase {
 protected:
   std::string typeArg (const std::string &type);
@@ -60,6 +60,7 @@ public:
   void run ();
 };
 } // Sfidl
+#endif
 
 #endif	/* _SFIDL_MODULE_H__ */
 

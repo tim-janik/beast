@@ -26,7 +26,7 @@
 #include "sfidl-options.h"
 #include "sfidl-parser.h"
 #include "sfidl-module.h"
-#include "sfiparams.h" /* scatId (SFI_SCAT_*) */
+#include "sfidl-factory.h"
 #include "topconfig.h"
 
 #define PRG_NAME "bse-plugin-generator"
@@ -144,7 +144,7 @@ main (int   argc,
       g_free (x);
     }
 
-  /* include path / version */
+  /* print include path / version */
   if (printIncludePath)
     {
       bool first = true;
@@ -177,12 +177,24 @@ main (int   argc,
       return 1;
     }
 
+  /* parse idl */
   Parser parser;
   if (!parser.parse (argv[1]))
     return 1;
 
-  CodeGeneratorModule cg (parser);
-  cg.run();
+  /* find and use --module code generator factory */
+  list<Factory*> factories = Factory::listFactories();
+  Factory *factory = NULL;
+  for (list<Factory*>::const_iterator fi = factories.begin(); fi != factories.end(); fi++)
+    if ((*fi)->option() == "--module")
+      {
+        factory = *fi;
+        factory->init (options);
+      }
+
+  /* generate code */
+  CodeGenerator *cg = factory->create (parser);
+  cg->run ();
 
   return 0;
 }

@@ -324,13 +324,13 @@ upper_power2 (gulong number)
 
 static void
 sfi_seq_append_copy (SfiSeq       *seq,
-		     const GValue *value,
-		     gboolean      deep_copy)
+                     GType         value_type,
+		     gboolean      deep_copy,
+		     const GValue *value)
 {
   guint i, l, n;
 
   g_return_if_fail (seq != NULL);
-  g_return_if_fail (SFI_IS_VALUE (value));
 
   l = upper_power2 (seq->n_elements);
   i = seq->n_elements++;
@@ -340,10 +340,10 @@ sfi_seq_append_copy (SfiSeq       *seq,
       seq->elements = g_realloc (seq->elements, n * sizeof (seq->elements[0]));
       memset (seq->elements + l, 0, (n - l) * sizeof (seq->elements[0]));
     }
-  g_value_init (seq->elements + i, G_VALUE_TYPE (value));
+  g_value_init (seq->elements + i, value_type);
   if (deep_copy)
     sfi_value_copy_deep (value, seq->elements + i);
-  else
+  else if (value)
     g_value_copy (value, seq->elements + i);
 }
 
@@ -358,7 +358,7 @@ sfi_seq_copy_deep (const SfiSeq *seq)
 
   s = sfi_seq_new ();
   for (i = 0; i < seq->n_elements; i++)
-    sfi_seq_append_copy (s, seq->elements + i, TRUE);
+    sfi_seq_append_copy (s, G_VALUE_TYPE (seq->elements + i), TRUE, seq->elements + i);
   return s;
 }
 
@@ -369,7 +369,18 @@ sfi_seq_append (SfiSeq       *seq,
   g_return_if_fail (seq != NULL);
   g_return_if_fail (G_IS_VALUE (value));
   
-  sfi_seq_append_copy (seq, value, FALSE);
+  sfi_seq_append_copy (seq, G_VALUE_TYPE (value), FALSE, value);
+}
+
+GValue*
+sfi_seq_append_empty (SfiSeq          *seq,
+                      GType            value_type)
+{
+  g_return_val_if_fail (seq != NULL, NULL);
+  g_return_val_if_fail (G_TYPE_IS_VALUE (value_type), NULL);
+
+  sfi_seq_append_copy (seq, value_type, FALSE, NULL);
+  return seq->elements + seq->n_elements - 1;
 }
 
 guint
@@ -844,8 +855,9 @@ sfi_rec_lookup (SfiRec      *rec,
 static void
 sfi_rec_set_copy (SfiRec       *rec,
 		  const gchar  *field_name,
-		  const GValue *value,
-		  gboolean      deep_copy)
+                  GType         value_type,
+		  gboolean      deep_copy,
+		  const GValue *value)
 {
   gchar *name;
   guint i;
@@ -867,10 +879,10 @@ sfi_rec_set_copy (SfiRec       *rec,
       g_value_unset (rec->fields + i);
       g_free (name);
     }
-  g_value_init (rec->fields + i, G_VALUE_TYPE (value));
+  g_value_init (rec->fields + i, value_type);
   if (deep_copy)
     sfi_value_copy_deep (value, rec->fields + i);
-  else
+  else if (value)
     g_value_copy (value, rec->fields + i);
 }
 
@@ -883,7 +895,7 @@ sfi_rec_set (SfiRec       *rec,
   g_return_if_fail (field_name != NULL);
   g_return_if_fail (SFI_IS_VALUE (value));
   
-  sfi_rec_set_copy (rec, field_name, value, FALSE);
+  sfi_rec_set_copy (rec, field_name, G_VALUE_TYPE (value), FALSE, value);
 }
 
 GValue*
@@ -906,6 +918,38 @@ sfi_rec_get (SfiRec      *rec,
   return NULL;
 }
 
+GValue*
+sfi_rec_forced_get (SfiRec          *rec,
+                    const gchar     *field_name,
+                    GType            value_type)
+{
+  gchar *name;
+  guint i;
+  g_return_val_if_fail (rec != NULL, NULL);
+  g_return_val_if_fail (field_name != NULL, NULL);
+  g_return_val_if_fail (G_TYPE_IS_VALUE (value_type), NULL);
+  if (!rec->sorted)
+    sfi_rec_sort (rec);
+  name = dupcanon (field_name);
+  i = sfi_rec_lookup (rec, name);
+  if (i < rec->n_fields)
+    {
+      GValue *value = rec->fields + i;
+      g_free (name);
+      if (G_VALUE_TYPE (value) != value_type)
+        {
+          g_value_unset (value);
+          g_value_init (value, value_type);
+        }
+      return value;
+    }
+  sfi_rec_set_copy (rec, field_name, value_type, FALSE, NULL);
+  sfi_rec_sort (rec);
+  i = sfi_rec_lookup (rec, name);
+  g_free (name);
+  return rec->fields + i;
+}
+
 SfiRec*
 sfi_rec_copy_deep (SfiRec *rec)
 {
@@ -918,7 +962,7 @@ sfi_rec_copy_deep (SfiRec *rec)
   sfi_rec_sort (rec);
   r = sfi_rec_new ();
   for (i = 0; i < rec->n_fields; i++)
-    sfi_rec_set_copy (r, rec->field_names[i], &rec->fields[i], TRUE);
+    sfi_rec_set_copy (r, rec->field_names[i], G_VALUE_TYPE (&rec->fields[i]), TRUE, &rec->fields[i]);
   r->sorted = TRUE;
   return r;
 }

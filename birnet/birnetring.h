@@ -83,6 +83,8 @@ SfiSeq*	 sfi_seq_copy_deep	(const SfiSeq	 *seq);
 #define	 sfi_seq_copy_shallow	sfi_seq_ref
 void	 sfi_seq_append		(SfiSeq		 *seq,
 				 const GValue	 *value);
+GValue*	 sfi_seq_append_empty	(SfiSeq		 *seq,
+				 GType            value_type);
 void	 sfi_seq_clear		(SfiSeq		 *seq);
 guint	 sfi_seq_length		(const SfiSeq	 *seq);
 GValue*	 sfi_seq_get		(const SfiSeq	 *seq,
@@ -167,6 +169,9 @@ void       sfi_rec_set          (SfiRec          *rec,
 				 const GValue    *value);
 GValue*    sfi_rec_get          (SfiRec          *rec,
 				 const gchar     *field_name);
+GValue*    sfi_rec_forced_get   (SfiRec          *rec,
+                                 const gchar     *field_name,
+                                 GType            gtype);
 guint      sfi_rec_n_fields     (const SfiRec    *rec);
 GValue*    sfi_rec_field        (const SfiRec    *rec,
 				 guint            index);
