@@ -256,7 +256,7 @@ bst_profiler_window_get (void)
         NULL, NULL, 0);
       */
       gxk_tree_view_add_text_column (tview, TCOL_PRIO, "AG", 0.5, _("Nice"), _("Thread priority from -20 (high) to +19 (low)"), NULL, NULL, 0);
-      gxk_tree_view_add_text_column (tview, TCOL_PROC, "F", 0.5, _("#CPU"), _("CPU the thread is currently running on"), NULL, NULL, 0);
+      gxk_tree_view_add_text_column (tview, TCOL_PROC, "A", 0.5, _("#CPU"), _("CPU the thread is currently running on"), NULL, NULL, 0);
       g_object_set_data (profiler_dialog, "list-wrapper", lwrapper);
     }
   if (!timer_id)
