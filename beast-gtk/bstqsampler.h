@@ -20,11 +20,7 @@
 
 #include        "bstutils.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_QSAMPLER            (bst_qsampler_get_type ())
@@ -204,9 +200,6 @@ void	   bst_qsampler_set_source_from_esample (BstQSampler		*qsampler,
 						 SfiProxy		 esample,
 						 guint			 nth_channel);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_QSAMPLER_H__ */

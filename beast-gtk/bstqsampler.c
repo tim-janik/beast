@@ -18,8 +18,6 @@
 #include "bstqsampler.h"
 
 #include "bstutils.h"
-#include <bse/gsldatacache.h>
-#include <bse/gsldatahandle.h>
 #include <string.h>
 
 

@@ -1,4 +1,5 @@
 FIXME(urgent):
+- bsewave.c: FIXME: set authors, license, comment
 - GslWaveFileInfo -> BseWaveLibraryInfo
 - disable StandardOsc->selfmod
 - add a "Creating Skins" section to the beast manual page

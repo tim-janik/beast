@@ -595,33 +595,33 @@ int main (int argc, char **argv)
     }
 
   /* open input */
-  GslErrorType error;
+  BseErrorType error;
 
   GslWaveFileInfo *waveFileInfo = gsl_wave_file_info_load (argv[1], &error);
   if (!waveFileInfo)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], gsl_strerror (error));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
   GslWaveDsc *waveDsc = gsl_wave_dsc_load (waveFileInfo, 0, &error);
   if (!waveDsc)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], gsl_strerror (error));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
   GslDataHandle *dhandle = gsl_wave_handle_create (waveDsc, 0, &error);
   if (!dhandle)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], gsl_strerror (error));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 
   error = gsl_data_handle_open (dhandle);
   if (error)
     {
-      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], gsl_strerror (error));
+      fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));
       exit (1);
     }
 

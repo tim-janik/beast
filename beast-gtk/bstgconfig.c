@@ -171,7 +171,7 @@ bst_rc_dump (const gchar *file_name)
 	     0666);
 
   if (fd < 0)
-    return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_FILE_IO;
+    return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
 
   wstore = sfi_wstore_new ();
 
@@ -199,7 +199,7 @@ bst_rc_dump (const gchar *file_name)
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
-  return close (fd) < 0 ? BSE_ERROR_FILE_IO : BSE_ERROR_NONE;
+  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
 }
 
 static SfiTokenType
@@ -247,7 +247,7 @@ bst_rc_parse (const gchar *file_name)
   fd = open (file_name, O_RDONLY, 0);
   if (fd < 0)
     return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-	    BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_FILE_IO);
+	    BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
 
   rstore = sfi_rstore_new ();
   sfi_rstore_input_fd (rstore, fd, file_name);

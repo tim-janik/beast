@@ -274,7 +274,7 @@ bst_msg_absorb_config_dump (const gchar *file_name)
                   O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
                   0666);
   if (fd < 0)
-    return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_FILE_IO;
+    return errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_IO;
 
   SfiWStore *wstore = sfi_wstore_new ();
 
@@ -293,7 +293,7 @@ bst_msg_absorb_config_dump (const gchar *file_name)
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
 
-  return close (fd) < 0 ? BSE_ERROR_FILE_IO : BSE_ERROR_NONE;
+  return close (fd) < 0 ? BSE_ERROR_IO : BSE_ERROR_NONE;
 }
 
 void
@@ -339,7 +339,7 @@ bst_msg_absorb_config_parse (const gchar *file_name)
     {
       g_free (absname);
       return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-              BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_FILE_IO);
+              BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_IO);
     }
 
   SfiRStore *rstore = sfi_rstore_new ();

@@ -4,13 +4,13 @@
 ## Makefile.am for beast/tools
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS)
-DEFS += -DG_LOG_DOMAIN=\"BeastTools\" -DG_DISABLE_CONST_RETURNS #   """""""
+DEFS += -DG_LOG_DOMAIN=\"BSE-TOOLS\" -DG_DISABLE_CONST_RETURNS #   """""""
 
 #
 # programs to build
 #
 noinst_PROGRAMS = bsewavetool bsefextract bsefcompare
-bsewavetool_SOURCES = bsewavetool.c sfiutils.c bseloopfuncs.c
+bsewavetool_SOURCES = bsewavetool.cc bwtwave.cc # sfiutils.c bseloopfuncs.c
 bsewavetool_LDADD = $(programs_ldadd)
 
 bsefextract_SOURCES = bsefextract.cc

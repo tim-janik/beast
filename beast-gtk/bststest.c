@@ -18,8 +18,8 @@
 #include "bstutils.h"
 #include "bstqsampler.h"
 // #include "bstcellptrack.h"
-#include <bse/gsldatacache.h>
-#include <bse/gsldatahandle.h>
+// #include <bse/gsldatacache.h>
+// #include <bse/gsldatahandle.h>
 #include <string.h>
 
 #include <math.h>
@@ -30,6 +30,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+int main() { return 0; }
+
+#if 0
 
 #define	QSAMPLER_SELECTION_TIMEOUT	(33)
 
@@ -761,4 +764,7 @@ pack_test_widget (void)
 {
   return g_object_new (GTK_TYPE_ALIGNMENT, NULL);
 }
+#endif
+
+
 #endif

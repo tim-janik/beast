@@ -68,39 +68,3 @@ typedef enum
   GSL_LEVEL_CLIPPED_TAIL,
   GSL_LEVEL_CLIPPED_HEAD_TAIL
 } GslLevelClipStatus;
-
-
-/* --- functions --- */
-BseWtWave*	bse_wt_new_wave			(const gchar	*wave_name,
-						 guint           n_channels);
-void		bse_wt_add_chunk		(BseWtWave	*wave,
-						 gfloat		 mix_freq,
-						 gfloat		 osc_freq,
-						 GslDataHandle	*dhandle);
-void		bse_wt_add_chunk_midi		(BseWtWave	*wave,
-						 gfloat		 mix_freq,
-						 guint		 midi_note,
-						 GslDataHandle	*dhandle);
-void		bse_wt_remove_chunk		(BseWtWave	*wave,
-						 guint		 nth_chunk);
-void		bse_wt_free_wave		(BseWtWave	*wave);
-GslErrorType	bse_wt_chunks_dump_wav		(BseWtWave	*wave,
-						 const gchar	*base_dir,
-						 const gchar	*prefix);
-GslErrorType	bse_wt_dump_bsewave		(BseWtWave	*wave,
-						 const gchar	*file_name);
-GslErrorType	bse_wt_dump_bsewave_header	(BseWtWave	*wave,
-						 const gchar	*file_name);
-
-GslErrorType	bse_wt_dump_bsewave_wav		(BseWtWave	*wave,
-						 const gchar	*base_dir,
-						 const gchar	*bsewave, /* relative */
-						 const gchar	*chunk_prefix); /* relative */
-
-GslDataHandle*	gsl_data_level_clip_sample	(GslDataHandle	    *dhandle,
-						 GslLevelClip	    *conf,
-						 GslLevelClipStatus *status);
-gfloat*		gsl_data_make_fade_ramp		(GslDataHandle	    *handle,
-						 GslLong	     min_pos, /* *= 0.0 + delta */
-						 GslLong	     max_pos, /* *= 1.0 - delta */
-						 GslLong	    *length_p);
