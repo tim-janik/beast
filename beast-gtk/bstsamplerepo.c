@@ -20,6 +20,7 @@
 #include "bstconfigpaths.h"
 
 #include <fcntl.h>
+#include <errno.h>
 
 
 /* --- prototypes --- */
@@ -190,6 +191,7 @@ bst_sample_repo_init (void)
     {
       gchar *file_name = slist->data;
       gint fd = open (file_name, O_RDONLY);
+      gboolean recognized = FALSE;
       
       if (fd >= 0)
 	{
@@ -202,14 +204,21 @@ bst_sample_repo_init (void)
 		  if (g_scanner_get_next_token (scanner) == ':' &&
 		      g_scanner_get_next_token (scanner) == ':' &&
 		      g_scanner_get_next_token (scanner) == G_TOKEN_IDENTIFIER)
-		    bst_sample_repo_add_sample (bst_sample_repo_new (file_name),
-						scanner->value.v_identifier);
+		    {
+		      bst_sample_repo_add_sample (bst_sample_repo_new (file_name),
+						  scanner->value.v_identifier);
+		      recognized = TRUE;
+		    }
 		  break;
 		}
-	      
 	    }
 	  close (fd);
 	}
+
+      BST_DEBUG (SAMPLES, {
+	if (!recognized)
+	  g_print ("failed to open \"%s\":: %s\n", file_name, g_strerror (errno));
+      });
       g_free (file_name);
     }
   g_scanner_destroy (scanner);

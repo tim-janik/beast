@@ -1,3 +1,10 @@
+Sun Nov 14 19:59:53 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstkeytable-us.c (bst_key_table_us_101): 
+	* beast-gtk/bstkeytable-de.c (bst_key_table_de_102): urg, had
+	to adapt all keytable notes to the corrected BSE_KAMMER_NOTE
+	octave.
+
 Sun Nov 14 01:11:09 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmaster.c: minor changes for recording frequency,

@@ -221,10 +221,10 @@ bst_master_dispatch (gpointer  source_data,
 
   bse_masters_cycle ();
   if (BSE_SOURCE (master)->n_inputs &&
-	 !bse_stream_would_block (master->stream,
-				  (sizeof (BseSampleValue) *
-				   bse_globals->track_length *
-				   N_TRACKS)))
+      !bse_stream_would_block (master->stream,
+			       (sizeof (BseSampleValue) *
+				bse_globals->track_length *
+				N_TRACKS)))
     bse_masters_cycle ();
 
   return TRUE /* stay alive */;
