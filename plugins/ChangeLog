@@ -1,3 +1,9 @@
+Fri Jul 18 18:14:57 2003  Tim Janik  <timj@gtk.org>
+
+	* davsyndrum.[hc]: resurrected David A. Bartold's SynDrum plugin.
+	optimized for speed, adjusted various settings and added more
+	input channels.
+
 Sat May 10 18:13:37 2003  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am (%.enums: %.h): enable rule unconditionally since

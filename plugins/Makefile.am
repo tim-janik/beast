@@ -25,7 +25,6 @@ UNPORTED = $(strip		\
 	davcanyondelay.[hc]	\
 	davchorus.[hc]		\
 	davguitar.[hc]		\
-	davsyndrum.[hc]		\
 )
 PLUGIN_CFILES = $(strip		\
 	bseadder.[hc]		\
@@ -38,6 +37,7 @@ PLUGIN_CFILES = $(strip		\
 	bsesequencer.[hc]	\
 	davorgan.[hc]		\
 	davxtalstrings.[hc]	\
+	davsyndrum.[hc]		\
 )
 EXTRA_CFILES = $(strip		\
 	bsesimpleadsr-aux.c	\

@@ -1,5 +1,5 @@
 /* DavSynDrum - DAV Drum Synthesizer
- * Copyright (c) 1999, 2000 David A. Bartold
+ * Copyright (c) 1999, 2000 David A. Bartold, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -16,40 +16,40 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #include "davsyndrum.h"
+#include <bse/gslengine.h>
+#include <bse/gslsignal.h>
 
 /* --- parameters --- */
 enum
 {
-  PARAM_0,
-  PARAM_BASE_FREQ,
-  PARAM_BASE_NOTE,
-  PARAM_TRIGGER_VEL,
-  PARAM_TRIGGER_HIT,
-  PARAM_RES,
-  PARAM_RATIO
+  PROP_0,
+  PROP_BASE_FREQ,
+  PROP_BASE_NOTE,
+  PROP_TRIGGER_VEL,
+  PROP_TRIGGER_HIT,
+  PROP_RES,
+  PROP_RATIO
 };
 
 
 /* --- prototypes --- */
-static void        dav_syn_drum_init             (DavSynDrum       *drum);
-static void        dav_syn_drum_class_init       (DavSynDrumClass  *class);
-static void        dav_syn_drum_class_finalize   (DavSynDrumClass  *class);
-static void        dav_syn_drum_set_property     (DavSynDrum       *drum,
-						  guint             param_id,
-						  GValue           *value,
-						  GParamSpec       *pspec);
-static void        dav_syn_drum_get_property     (DavSynDrum       *drum,
-						  guint             param_id,
-						  GValue           *value,
-						  GParamSpec       *pspec);
-static void        dav_syn_drum_prepare          (BseSource        *source,
-						  BseIndex          index);
-static BseChunk*   dav_syn_drum_calc_chunk       (BseSource        *source,
-						  guint             ochannel_id);
-static void        dav_syn_drum_reset            (BseSource        *source);
-static inline void dav_syn_drum_update_locals    (DavSynDrum       *drum);
+static void dav_syn_drum_init           (DavSynDrum      *drum);
+static void dav_syn_drum_class_init     (DavSynDrumClass *class);
+static void dav_syn_drum_set_property   (GObject         *object,
+                                         guint            param_id,
+                                         const GValue    *value,
+                                         GParamSpec      *pspec);
+static void dav_syn_drum_get_property   (GObject         *object,
+                                         guint            param_id,
+                                         GValue          *value,
+                                         GParamSpec      *pspec);
+static void dav_syn_drum_prepare        (BseSource       *source);
+static void dav_syn_drum_context_create (BseSource       *source,
+                                         guint            context_handle,
+                                         GslTrans        *trans);
+static void dav_syn_drum_update_modules (DavSynDrum      *self,
+                                         gboolean         force_trigger);
 
 
 /* --- variables --- */
@@ -61,7 +61,7 @@ static const GTypeInfo type_info_syn_drum = {
   (GBaseInitFunc) NULL,
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) dav_syn_drum_class_init,
-  (GClassFinalizeFunc) dav_syn_drum_class_finalize,
+  (GClassFinalizeFunc) NULL,
   NULL /* class_data */,
   
   sizeof (DavSynDrum),
@@ -71,26 +71,6 @@ static const GTypeInfo type_info_syn_drum = {
 
 
 /* --- functions --- */
-
-/* Calculate the half life rate given:
- *  half - the length of the half life
- *  rate - time divisor (usually the # calcs per second)
- *
- * Basically, find r given 1/2 = e^(-r*(half/rate))
- */
-static gfloat
-calc_exponent (gfloat half, gfloat rate)
-{
-  /* ln (1 / 2) = ~-0.69314718056 */
-  return exp (-0.69314718056 / (half * rate));
-}
-
-static inline void
-dav_syn_drum_update_locals (DavSynDrum *drum)
-{
-  drum->res = calc_exponent (drum->half, BSE_MIX_FREQ);
-}
-
 static void
 dav_syn_drum_class_init (DavSynDrumClass *class)
 {
@@ -99,232 +79,318 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ochannel_id, ichannel_id;
   
-  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
-  
+  parent_class = g_type_class_peek_parent (class);
+
   gobject_class->set_property = dav_syn_drum_set_property;
   gobject_class->get_property = dav_syn_drum_get_property;
   
   source_class->prepare = dav_syn_drum_prepare;
-  source_class->calc_chunk = dav_syn_drum_calc_chunk;
-  source_class->reset = dav_syn_drum_reset;
-  
-  bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
-			      bse_param_spec_float ("base_freq", "Frequency", NULL,
-						  1.0, bse_note_to_freq (BSE_NOTE_Gis (-1)),
-						  30.0, 10.0,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
-  bse_object_class_add_param (object_class, "Base Frequency",
-                              PARAM_BASE_NOTE,
-                              bse_param_spec_note ("base_note", "Note", NULL,
-						 BSE_MIN_NOTE, BSE_NOTE_Gis (-1),
-						 BSE_NOTE_VOID, 1, TRUE,
-						 BSE_PARAM_GUI));
-  
-  bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_VEL,
-			      bse_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
-						  "Set the velocity of the drum hit",
-						  0.0, 1000.0, 75.0, 10.0,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_HIT,
-			      sfi_pspec_bool ("trigger_pulse", "Trigger Hit", "Hit the drum",
-						 FALSE, BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, "Parameters", PARAM_RES,
-			      bse_param_spec_float ("res", "Resonance",
-						  "Set resonance half life in number of seconds",
-						  0.001, 1.0, 0.07, 0.0025,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  bse_object_class_add_param (object_class, "Parameters", PARAM_RATIO,
-			      bse_param_spec_float ("ratio", "Frequency Ratio",
-						  "Set ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base frequency)",
-						  0.0, 10.0, 2.0, 0.1,
-						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  
-  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "SynDrum Output", 1);
+  source_class->context_create = dav_syn_drum_context_create;
+
+  bse_object_class_add_param (object_class, "Frequency", PROP_BASE_FREQ,
+                              bse_param_spec_freq ("base_freq", "Frequency", NULL,
+                                                   bse_note_to_freq (SFI_NOTE_Gis (-1)),
+                                                   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+  bse_object_class_add_param (object_class, "Frequency", PROP_BASE_NOTE,
+                              bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
+
+  bse_object_class_add_param (object_class, "Trigger", PROP_TRIGGER_VEL,
+			      sfi_pspec_real ("trigger_vel", "Trigger Velocity [%]",
+                                              "Set the velocity of the drum hit",
+                                              100.0, 0.0, 1000.0, 10.0,
+                                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+  bse_object_class_add_param (object_class, "Trigger", PROP_TRIGGER_HIT,
+			      sfi_pspec_bool ("force_trigger", "Trigger Hit", "Hit the drum",
+                                              FALSE, SFI_PARAM_GUI SFI_PARAM_HINT_TRIGGER));
+  bse_object_class_add_param (object_class, "Parameters", PROP_RES,
+			      sfi_pspec_real ("res", "Resonance",
+                                              "Set resonance half life in number of milli seconds",
+                                              50, 1, 1000.0, 2.5,
+                                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+  bse_object_class_add_param (object_class, "Parameters", PROP_RATIO,
+			      sfi_pspec_real ("ratio", "Frequency Ratio",
+                                              "Set ratio of frequency shift. (i.e. 1.0 means shift "
+                                              "equal to the drum's base frequency)",
+                                              1.0, 0.0, 10.0, 0.1,
+                                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+
+  ichannel_id = bse_source_class_add_ichannel (source_class, "Freq In", "Drum Frequency Input");
+  g_assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_FREQ);
+  ichannel_id = bse_source_class_add_ichannel (source_class, "Ratio In", "Frequency shift ratio (assumed 1.0 if not connected)");
+  g_assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_RATIO);
+  ichannel_id = bse_source_class_add_ichannel (source_class, "Trigger In", "Hit the drum on raising edges");
+  g_assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_TRIGGER);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Audio Out", "SynDrum Output");
   g_assert (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "trigger_in", "Trigger Input", 1, 1);
-  g_assert (ichannel_id == BSE_SYN_DRUM_ICHANNEL_TRIGGER);
 }
 
 static void
-dav_syn_drum_class_finalize (DavSynDrumClass *class)
+dav_syn_drum_init (DavSynDrum *self)
 {
+  self->params.freq = bse_note_to_freq (SFI_NOTE_Gis (-1));
+  self->params.trigger_vel = 100.0 * 0.01;
+  self->params.ratio = 1.0;
+  self->params.res = 0;
+  self->half = 50 * 0.001;
 }
 
 static void
-dav_syn_drum_init (DavSynDrum *drum)
+dav_syn_drum_set_property (GObject         *object,
+                           guint            param_id,
+                           const GValue    *value,
+                           GParamSpec      *pspec)
 {
-  drum->ratio = 2.0;
-  drum->freq = 30.0;
-  drum->trigger_vel = 0.75;
-  drum->spring_pos = 0.0;
-  drum->spring_vel = 0.0;
-  drum->env = 0.0;
-  drum->half = 0.07;
-  drum->res = 0;
-  drum->input_trigger_state = FALSE;
-  dav_syn_drum_update_locals (drum);
-}
-
-void
-dav_syn_drum_trigger (DavSynDrum *drum)
-{
-  g_return_if_fail (DAV_IS_SYN_DRUM (drum));
-
-  drum->spring_vel = drum->trigger_vel;
-  drum->env = drum->trigger_vel;
-}
-
-static void
-dav_syn_drum_set_property (DavSynDrum  *drum,
-			   guint        param_id,
-			   GValue      *value,
-			   GParamSpec  *pspec)
-{
+  DavSynDrum *self = DAV_SYN_DRUM (object);
+  gboolean force_trigger = FALSE;
   switch (param_id)
     {
-    case PARAM_BASE_FREQ:
-      drum->freq = g_value_get_float (value);
-      g_object_notify (drum, "base_note");
+    case PROP_BASE_FREQ:
+      self->params.freq = sfi_value_get_real (value);
+      g_object_notify (self, "base-note");
       break;
-    case PARAM_BASE_NOTE:
-      drum->freq = bse_note_to_freq (bse_value_get_note (value));
-      g_object_notify (drum, "base_freq");
+    case PROP_BASE_NOTE:
+      self->params.freq = bse_note_to_freq (sfi_value_get_note (value));
+      g_object_notify (self, "base-freq");
       break;
-    case PARAM_TRIGGER_VEL:
-      drum->trigger_vel = g_value_get_float (value) / 100.0;
+    case PROP_RATIO:
+      self->params.ratio = sfi_value_get_real (value);
       break;
-    case PARAM_TRIGGER_HIT:
-      dav_syn_drum_trigger (drum);
+    case PROP_RES:
+      self->half = sfi_value_get_real (value) * 0.001;
       break;
-    case PARAM_RATIO:
-      drum->ratio = g_value_get_float (value);
+    case PROP_TRIGGER_VEL:
+      self->params.trigger_vel = sfi_value_get_real (value) * 0.01;
       break;
-    case PARAM_RES:
-      drum->half = g_value_get_float (value);
-      dav_syn_drum_update_locals (drum);
+    case PROP_TRIGGER_HIT:
+      force_trigger = TRUE;
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (drum, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+  dav_syn_drum_update_modules (self, force_trigger);
+}
+
+static void
+dav_syn_drum_get_property (GObject         *object,
+                           guint            param_id,
+                           GValue          *value,
+                           GParamSpec      *pspec)
+{
+  DavSynDrum *self = DAV_SYN_DRUM (object);
+  switch (param_id)
+    {
+    case PROP_BASE_FREQ:
+      sfi_value_set_real (value, self->params.freq);
+      break;
+    case PROP_BASE_NOTE:
+      sfi_value_set_note (value, bse_note_from_freq (self->params.freq));
+      break;
+    case PROP_TRIGGER_VEL:
+      sfi_value_set_real (value, self->params.trigger_vel * 100.0);
+      break;
+    case PROP_TRIGGER_HIT:
+      sfi_value_set_bool (value, FALSE);
+      break;
+    case PROP_RATIO:
+      sfi_value_set_real (value, self->params.ratio);
+      break;
+    case PROP_RES:
+      sfi_value_set_real (value, self->half * 1000);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
 
 static void
-dav_syn_drum_get_property (DavSynDrum *drum,
-			   guint        param_id,
-			   GValue      *value,
-			   GParamSpec  *pspec)
+dav_syn_drum_prepare (BseSource *source)
 {
-  switch (param_id)
-    {
-    case PARAM_BASE_FREQ:
-      g_value_set_float (value, drum->freq);
-      break;
-    case PARAM_BASE_NOTE:
-      bse_value_set_note (value, bse_note_from_freq (drum->freq));
-      break;
-    case PARAM_TRIGGER_VEL:
-      g_value_set_float (value, drum->trigger_vel * 100.0);
-      break;
-    case PARAM_TRIGGER_HIT:
-      g_value_set_boolean (value, FALSE);
-      break;
-    case PARAM_RATIO:
-      g_value_set_float (value, drum->ratio);
-      break;
-    case PARAM_RES:
-      g_value_set_float (value, drum->half);
-      break;
-      
-    default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (drum, param_id, pspec);
-      break;
-    }
-}
+  DavSynDrum *self = DAV_SYN_DRUM (source);
 
-static void
-dav_syn_drum_prepare (BseSource *source,
-		      BseIndex index)
-{
-  DavSynDrum *drum = DAV_SYN_DRUM (source);
-  
-  drum->input_trigger_state = FALSE;
-  dav_syn_drum_update_locals (drum);
-  
+  /* initialize calculated params (mix-freq dependant) */
+  dav_syn_drum_update_modules (self, FALSE);
+
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
-static BseChunk*
-dav_syn_drum_calc_chunk (BseSource *source,
-			 guint ochannel_id)
+static inline void
+dmod_trigger (DavSynDrumModule *dmod,
+              gfloat            freq,
+              gfloat            ratio)
 {
-  DavSynDrum *drum = DAV_SYN_DRUM (source);
-  BseSourceInput *trigger_input;
-  BseSampleValue *hunk;
-  gfloat sample;
-  gfloat freq_shift;
-  gfloat factor;
+  dmod->spring_vel = dmod->params.trigger_vel;
+  dmod->env = dmod->params.trigger_vel;
+  dmod->freq_rad = freq * 2.0 * PI / BSE_MIX_FREQ_f;
+  dmod->freq_shift = dmod->freq_rad * dmod->params.ratio * CLAMP (ratio, 0, 1.0);
+}
+
+static void
+dmod_process (GslModule *module,
+              guint      n_values)
+{
+  DavSynDrumModule *dmod = module->user_data;
+  const gfloat *freq_in = GSL_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_FREQ);
+  const gfloat *ratio_in = GSL_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_RATIO);
+  const gfloat *trigger_in = GSL_MODULE_IBUFFER (module, DAV_SYN_DRUM_ICHANNEL_TRIGGER);
+  gfloat *wave_out = GSL_MODULE_OBUFFER (module, DAV_SYN_DRUM_OCHANNEL_MONO);
+  const gfloat res = dmod->params.res;
+  gfloat freq_rad = dmod->freq_rad;
+  gfloat freq_shift = dmod->freq_shift;
+  gfloat last_trigger_level = dmod->last_trigger_level;
+  gfloat spring_vel = dmod->spring_vel;
+  gfloat spring_pos = dmod->spring_pos;
+  gfloat env = dmod->env;
   guint i;
-  
-  g_return_val_if_fail (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO, NULL);
-  
-  trigger_input = bse_source_get_input (source, BSE_SYN_DRUM_ICHANNEL_TRIGGER);
-  if (trigger_input)
-    {
-      BseChunk *chunk = bse_source_ref_chunk (trigger_input->osource, trigger_input->ochannel_id, source->index);
-      gboolean old_state = drum->input_trigger_state;
 
-      drum->input_trigger_state = bse_chunk_get_trigger_state (chunk, 0);
-      bse_chunk_unref (chunk);
+  if (!GSL_MODULE_ISTREAM (module, DAV_SYN_DRUM_ICHANNEL_FREQ).connected)
+    freq_in = NULL;
+  if (!GSL_MODULE_ISTREAM (module, DAV_SYN_DRUM_ICHANNEL_RATIO).connected)
+    ratio_in = NULL;
 
-      if (!old_state && drum->input_trigger_state)
-	dav_syn_drum_trigger (drum);
-    }
-
-  factor = 2.0 * PI / BSE_MIX_FREQ_f;
-  hunk = bse_hunk_alloc (1);
-  
-  freq_shift = drum->freq * drum->ratio;
-  
-  for (i = 0; i < BSE_TRACK_LENGTH; i++)
+  for (i = 0; i < n_values; i++)
     {
       gfloat cur_freq;
-      
-      cur_freq = drum->freq + (drum->env * freq_shift);
-      cur_freq *= factor;
-      drum->spring_vel -= drum->spring_pos * cur_freq;
-      drum->spring_pos += drum->spring_vel * cur_freq;
-      drum->spring_vel *= drum->res;
-      drum->env *= drum->res;
-      
-      sample = drum->spring_pos * BSE_MAX_SAMPLE_VALUE_f;
-      
-      hunk[i] = BSE_CLIP_SAMPLE_VALUE (sample);
+
+      /* check input triggers */
+      if_reject (GSL_SIGNAL_RAISING_EDGE (trigger_in[i], last_trigger_level))
+        {
+          /* trigger drum */
+          dmod_trigger (dmod,
+                        freq_in ? BSE_FREQ_FROM_VALUE (freq_in[i]) : dmod->params.freq,
+                        ratio_in ? ratio_in[1] : 1.0);
+          spring_vel = dmod->spring_vel;
+          env = dmod->env;
+          freq_rad = dmod->freq_rad;
+          freq_shift = dmod->freq_shift;
+        }
+      last_trigger_level = trigger_in[i];
+
+      cur_freq = freq_rad + (env * freq_shift);
+      spring_vel -= spring_pos * cur_freq;
+      spring_pos += spring_vel * cur_freq;
+      spring_vel *= res;
+      env *= res;
+
+      wave_out[i] = spring_pos;
     }
-  
-  return bse_chunk_new_orphan (1, hunk);
+
+  dmod->env = env;
+  dmod->spring_pos = spring_pos;
+  dmod->spring_vel = spring_vel;
+  dmod->last_trigger_level = last_trigger_level;
 }
 
 static void
-dav_syn_drum_reset (BseSource *source)
+dmod_reset (GslModule *module)
 {
-  DavSynDrum *drum = DAV_SYN_DRUM (source);
+  DavSynDrumModule *dmod = module->user_data;
+  /* this function is called whenever we need to start from scratch */
+  dmod->last_trigger_level = 0;
+  dmod->spring_vel = 0.0;
+  dmod->spring_pos = 0.0;
+  dmod->env = 0.0;
+  dmod->freq_rad = 0;
+  dmod->freq_shift = 0;
+}
 
-  drum->input_trigger_state = FALSE;
+static void
+dav_syn_drum_context_create (BseSource *source,
+                             guint      context_handle,
+                             GslTrans  *trans)
+{
+  static const GslClass dmod_class = {
+    DAV_SYN_DRUM_N_ICHANNELS,           /* n_istreams */
+    0,                                  /* n_jstreams */
+    DAV_SYN_DRUM_N_OCHANNELS,           /* n_ostreams */
+    dmod_process,                       /* process */
+    NULL,                               /* process_defer */
+    dmod_reset,                         /* reset */
+    (GslModuleFreeFunc) g_free,         /* free */
+    GSL_COST_NORMAL,                    /* cost */
+  };
+  DavSynDrum *self = DAV_SYN_DRUM (source);
+  DavSynDrumModule *dmod = g_new0 (DavSynDrumModule, 1);
+  GslModule *module;
+
+  dmod->params = self->params;
+  module = gsl_module_new (&dmod_class, dmod);
+  dmod_reset (module);
+
+  /* setup module i/o streams with BseSource i/o channels */
+  bse_source_set_context_module (source, context_handle, module);
+
+  /* commit module to engine */
+  gsl_trans_add (trans, gsl_job_integrate (module));
 
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->reset (source);
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
+
+/* update module configuration from new parameter set */
+static void
+dmod_access (GslModule *module,
+             gpointer   data)
+{
+  DavSynDrumModule *dmod = module->user_data;
+  DavSynDrumParams *params = data;
+
+  dmod->params = *params;
+}
+
+/* update module configuration from new parameter set and force trigger */
+static void
+dmod_access_trigger (GslModule *module,
+                     gpointer   data)
+{
+  DavSynDrumModule *dmod = module->user_data;
+  DavSynDrumParams *params = data;
+
+  dmod->params = *params;
+  dmod_trigger (dmod, dmod->params.freq, 1.0);
+}
+
+static void
+dav_syn_drum_update_modules (DavSynDrum *self,
+                             gboolean    force_trigger)
+{
+  /* Calculate the half life rate given:
+   *  half - the length of the half life
+   *  rate - time divisor (usually the # calcs per second)
+   *
+   * Basically, find r given 1/2 = e^(-r*(half/rate))
+   *
+   * ln(1/2) = -ln(2) = -GSL_LN2 = -0.693147...
+   */
+  self->params.res = exp (-GSL_LN2 / (self->half * BSE_MIX_FREQ));
+  if (BSE_SOURCE_PREPARED (self))
+    {
+      /* update all DavSynDrumModules. take a llok at davxtalstrings.c
+       * if you don't understand what this code does.
+       */
+      bse_source_access_modules (BSE_SOURCE (self),
+                                 force_trigger ? dmod_access_trigger : dmod_access,
+                                 g_memdup (&self->params, sizeof (self->params)),
+                                 g_free,
+                                 NULL);
+    }
+}
+
 
 /* --- Export to DAV --- */
 #include "./icons/drum.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_syn_drum, "DavSynDrum", "BseSource",
-    "DavSynDrum is a synthesized drum",
+    "DavSynDrum produces synthesized drums. It accepts the drum frequency as "
+    "input channel or parameter setting. Drums are triggered through a trigger "
+    "parameter or via a trigger input channel which detects raising edges. "
+    "The initial frequency shift is controllable through the "
+    "\"Ratio In\" input channel, and adjustable through a parameter.",
     &type_info_syn_drum,
-    "/Modules/SynDrum",
+    "/Modules/Audio Sources/SynDrum",
     { DRUM_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       DRUM_IMAGE_WIDTH, DRUM_IMAGE_HEIGHT,
       DRUM_IMAGE_RLE_PIXEL_DATA, },

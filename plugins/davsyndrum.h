@@ -1,5 +1,5 @@
 /* DavSynDrum - DAV Drum Synthesizer
- * Copyright (c) 1999, 2000 David A. Bartold
+ * Copyright (c) 1999, 2000 David A. Bartold, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -16,16 +16,14 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #ifndef __DAV_SYNDRUM_H__
 #define __DAV_SYNDRUM_H__
 
 #include <bse/bseplugin.h>
 #include <bse/bsesource.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
+
 
 /* --- object type macros --- */
 #define DAV_TYPE_SYN_DRUM              (type_id_syn_drum)
@@ -36,51 +34,45 @@ extern "C" {
 #define DAV_SYN_DRUM_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_SYN_DRUM, DavSynDrumClass))
 
 /* --- DavSynDrum source --- */
-typedef struct _DavSynDrum      DavSynDrum;
-typedef struct _DavSynDrumClass DavSynDrumClass;
-
-struct _DavSynDrum
-{
-  BseSource parent_object;
-  
-  gfloat      ratio;
-  gfloat      freq;
-  gfloat      trigger_vel;
-  gfloat      spring_pos;
-  gfloat      spring_vel;
-  gfloat      env;
-  gfloat      half;
-  gfloat      res;
-
-  guint       input_trigger_state : 1;
-};
-
-struct _DavSynDrumClass
-{
+typedef struct {
+  gfloat freq;
+  gfloat trigger_vel;
+  gfloat ratio;
+  gfloat res;
+} DavSynDrumParams;
+typedef struct {
+  BseSource        parent_object;
+  DavSynDrumParams params;
+  gfloat           half;
+  gboolean         force_trigger;
+} DavSynDrum;
+typedef struct {
   BseSourceClass parent_class;
-};
-
+} DavSynDrumClass;
+typedef struct {
+  DavSynDrumParams params;
+  gfloat last_trigger_level;
+  gfloat spring_vel;
+  gfloat spring_pos;
+  gfloat env;
+  gfloat freq_rad;
+  gfloat freq_shift;
+} DavSynDrumModule;
 
 /* --- channels --- */
 enum
 {
-  BSE_SYN_DRUM_ICHANNEL_NONE,
-  BSE_SYN_DRUM_ICHANNEL_TRIGGER
+  DAV_SYN_DRUM_ICHANNEL_FREQ,
+  DAV_SYN_DRUM_ICHANNEL_RATIO,
+  DAV_SYN_DRUM_ICHANNEL_TRIGGER,
+  DAV_SYN_DRUM_N_ICHANNELS
 };
 enum
 {
-  DAV_SYN_DRUM_OCHANNEL_NONE,
-  DAV_SYN_DRUM_OCHANNEL_MONO
+  DAV_SYN_DRUM_OCHANNEL_MONO,
+  DAV_SYN_DRUM_N_OCHANNELS
 };
 
-
-/* --- prototypes --- */
-void	dav_syn_drum_trigger	(DavSynDrum	*drum);
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __DAV_SYNDRUM_H__ */
