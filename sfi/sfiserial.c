@@ -250,8 +250,10 @@ sfi_serialize_primitives (SfiSCategory scat,
 	{
 	  gboolean v_bool = FALSE;
 	  g_scanner_get_next_token (scanner);
-	  if (scanner->token == G_TOKEN_INT && scanner->value.v_int64 <= 1)
+	  if (scanner->token == G_TOKEN_INT)
 	    v_bool = scanner->value.v_int64 != 0;
+          else if (scanner->token == G_TOKEN_FLOAT)
+            v_bool = scanner->value.v_float >= -0.5 && scanner->value.v_float <= 0.5;
 	  else if (scanner->token == '#')
 	    {
 	      g_scanner_get_next_token (scanner);

@@ -1,3 +1,8 @@
+Sun Dec 19 01:01:41 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiserial.c (sfi_serialize_primitives): relaxed parsing strictness 
+	for booleans, so we parse any int and float as boolean now.
+
 Thu Dec 16 01:57:36 2004  Tim Janik  <timj@gtk.org>
 
 	* sfistore.c (sfi_rstore_new_open): fail to open directories,
