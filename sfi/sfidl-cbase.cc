@@ -16,59 +16,21 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <sfi/glib-extra.h>
+#include "sfidl.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
-#include <vector>
-#include <map>
-#include <iostream>
-#include <algorithm>
 #include "sfidl-namespace.h"
 #include "sfidl-options.h"
 #include "sfidl-parser.h"
+#include "sfidl-module.h"
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
 using namespace std;
 
-class CodeGenerator {
-protected:
-  const Parser& parser;
-  const Options& options;
-
-  vector<string> splitName (const string& name);
-  string makeNamespaceSubst (const string& name);
-  string makeLowerName (const string& name, char seperator = '_');
-  string makeUpperName (const string& name);
-  string makeMixedName (const string& name);
-  string makeLMixedName (const string& name);
-
-  CodeGenerator(const Parser& parser) : parser (parser), options (*Options::the()) {
-  }
-
-public:
-  virtual void run () = 0;
-};
-
-class CodeGeneratorC : public CodeGenerator {
-protected:
-  
-  void printInfoStrings (const string& name, const map<string,string>& infos);
-  void printProcedure (const Method& mdef, bool proto = false, const string& className = "");
-
-  string makeParamSpec (const Param& pdef);
-  string makeGTypeName (const string& name);
-  string createTypeCode (const string& type, const string& name, int model);
-  bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
-  
-public:
-  CodeGeneratorC(const Parser& parser) : CodeGenerator(parser) {
-  }
-  void run ();
-};
 
 string CodeGenerator::makeNamespaceSubst (const string& name)
 {
@@ -227,7 +189,7 @@ string CodeGeneratorC::makeParamSpec(const Param& pdef)
     }
   else if (parser.isSequence (pdef.type))
     {
-      const Sequence& sdef = parser.findSequence (pdef.type);
+      // const Sequence& sdef = parser.findSequence (pdef.type);
       pspec = "sfidl_pspec_BoxedSeq";
       if (pdef.args == "")
 	pspec += "_default (" + group + ",\"" + pdef.name + "\",";
@@ -257,23 +219,6 @@ void CodeGeneratorC::printInfoStrings (const string& name, const map<string,stri
   printf("  NULL,\n");
   printf("};\n");
 }
-
-#define MODEL_ARG         0
-#define MODEL_MEMBER      1
-#define MODEL_RET         2
-#define MODEL_ARRAY       3
-#define MODEL_FREE        4
-#define MODEL_COPY        5
-#define MODEL_NEW         6
-#define MODEL_FROM_VALUE  7
-#define MODEL_TO_VALUE    8
-#define MODEL_VCALL       9
-#define MODEL_VCALL_ARG   10
-#define MODEL_VCALL_CONV  11
-#define MODEL_VCALL_CFREE 12
-#define MODEL_VCALL_RET   13
-#define MODEL_VCALL_RCONV 14
-#define MODEL_VCALL_RFREE 15
 
 static string scatId (SfiSCategory c)
 {
@@ -1342,7 +1287,7 @@ void CodeGeneratorC::run ()
 	      const Sequence& sdef = parser.findSequence (*ti);
 
 	      string name = makeLowerName (sdef.name);
-	      int f = 0;
+	      // int f = 0;
 
 	      if (options.generateIdlLineNumbers)
 		printf("#line %u \"%s\"\n", sdef.content.line, parser.fileName().c_str());
@@ -1530,6 +1475,9 @@ int main (int argc, char **argv)
 
   if (options.targetQt)
     codeGenerator = new CodeGeneratorQt (parser);
+
+  if (options.targetModule)
+    codeGenerator = new CodeGeneratorModule (parser);
 
   if (!codeGenerator)
     {

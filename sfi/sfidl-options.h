@@ -36,6 +36,7 @@ struct Options {
   bool        generateProcedures;
   bool        targetC;
   bool        targetQt;
+  bool        targetModule;
   bool        doHeader;
   bool        doSource;
   bool        doInterface;

@@ -1,3 +1,16 @@
+Wed Jul 30 05:17:56 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-options.[hc]*: add --module code generation option.
+
+	* sfidl-parser.[hc]*: implement {I|J|O}Stream parsing.
+
+	* sfidl.[hc]*: export 	C code generator since it implements
+	functionality needed by the other code generators (needs to be fixed).
+
+	* sfidl-module.[hc]*: implement plugin module code generator.
+
+	* sfitypes.h: introduce SfiString.
+
 Mon Jul 28 05:21:01 2003  Tim Janik  <timj@gtk.org>
 
 	* toyprof.c: fix evaluation of config macro TOYPROF_PENTIUM, reported

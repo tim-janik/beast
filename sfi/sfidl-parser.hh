@@ -20,6 +20,7 @@
 #ifndef _SFIDL_PARSER_H_
 #define _SFIDL_PARSER_H_
 
+#include <sfi/glib-extra.h>
 #include <vector>
 #include <map>
 #include <string>
@@ -51,6 +52,14 @@ struct Param {
   std::string args;
 };
 
+struct Stream {
+  enum Type { IStream, JStream, OStream } type;
+  std::string ident;
+  std::string name;
+  std::string blurb;
+  int         line;
+};
+ 
 struct ChoiceValue {
   std::string name;
   std::string text;
@@ -99,6 +108,7 @@ struct Class {
   std::vector<Method> methods;
   std::vector<Method> signals;
   std::vector<Param> properties;
+  std::vector<Stream> istreams, jstreams, ostreams;
   std::map<std::string, std::string> infos;
 };
 
@@ -158,6 +168,7 @@ protected:
   GTokenType parseChoiceValue (ChoiceValue& comp, int& value);
   GTokenType parseRecord ();
   GTokenType parseRecordField (Param& comp, const std::string& group);
+  GTokenType parseStream (Stream& stream, Stream::Type);
   GTokenType parseSequence ();
   GTokenType parseParamHints (Param &def);
   GTokenType parseClass ();

@@ -36,7 +36,7 @@ Options::Options ()
   generateTypeH = generateTypeC = false;
   generateBoxedTypes = generateProcedures = generateSignalStuff = false;
   generateIdlLineNumbers = false;
-  targetC = targetQt = false;
+  targetC = targetQt = targetModule = false;
   doHeader = doSource = doImplementation = doInterface = doHelp = false;
   sfidlName = "sfidl";
 
@@ -107,6 +107,16 @@ bool Options::parse (int *argc_p, char **argv_p[])
       else if (strcmp ("--qt", argv[i]) == 0)
 	{
 	  targetQt = true;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--module", argv[i]) == 0)
+	{
+	  targetModule = true;
+          /* provide sane defaults: */
+          if (!doHeader && !doSource)
+            doSource = true;
+          if (!doImplementation && !doInterface)
+            doImplementation = true;
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--help", argv[i]) == 0)
@@ -225,6 +235,14 @@ bool Options::parse (int *argc_p, char **argv_p[])
     }
   targetC = !targetQt;
 
+  // --module
+  if (targetModule && doInterface)
+    {
+      fprintf (stderr, "%s: --interface is not supported for Module\n", sfidlName.c_str());
+      return false;
+    }
+  targetC = !targetModule;
+
   /* implications of header/source options */
   if (doHeader)
     {
@@ -272,6 +290,7 @@ void Options::printUsage ()
   fprintf (stderr, "\n");
   fprintf (stderr, "options for the C++ language binding:\n");
   fprintf (stderr, " --qt                        use Qt language binding\n");
+  fprintf (stderr, " --module                    generate skeleton Module implementation\n");
   fprintf (stderr, " --namespace <namespace>     set the namespace to use for the code\n");
   fprintf (stderr, "\n");
   fprintf (stderr, " --help                      this help\n");

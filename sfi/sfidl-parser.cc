@@ -86,6 +86,9 @@ static  GScannerConfig  scanner_config_template = {
 #define TOKEN_PROPERTY   GTokenType(G_TOKEN_LAST + 7)
 #define TOKEN_RECORD     GTokenType(G_TOKEN_LAST + 8)
 #define TOKEN_SEQUENCE   GTokenType(G_TOKEN_LAST + 9)
+#define TOKEN_ISTREAM    GTokenType(G_TOKEN_LAST + 10)
+#define TOKEN_JSTREAM    GTokenType(G_TOKEN_LAST + 11)
+#define TOKEN_OSTREAM    GTokenType(G_TOKEN_LAST + 12)
 
 #define parse_or_return(token)  G_STMT_START{ \
   GTokenType _t = GTokenType(token); \
@@ -204,6 +207,9 @@ Parser::Parser () : options (*Options::the())
     "property",
     "record",
     "sequence",
+    "IStream",
+    "JStream",
+    "OStream",
     0
   };
   for (int n = 0; syms[n]; n++)
@@ -444,7 +450,7 @@ void Parser::preprocess (const string& input_filename)
 bool Parser::insideInclude () const
 {
   int scanner_line = scanner->line - 1;
-  g_return_val_if_fail (scanner_line >= 0 && scanner_line < scannerLineInfo.size(), false);
+  g_return_val_if_fail (scanner_line >= 0 && scanner_line < (gint) scannerLineInfo.size(), false);
 
   return scannerLineInfo[scanner_line].isInclude;
 }
@@ -836,6 +842,37 @@ GTokenType Parser::parseRecordField (Param& def, const string& group)
   return G_TOKEN_NONE;
 }
 
+GTokenType
+Parser::parseStream (Stream&      stream,
+                     Stream::Type stype)
+{
+  /* OStream wave_out @= ("Audio Out", "Wave Output"); */
+
+  stream.type = stype;
+  stream.line = scanner->line;
+
+  parse_or_return (G_TOKEN_IDENTIFIER);
+  stream.ident = scanner->value.v_identifier;
+
+  parse_or_return ('@');
+  parse_or_return ('=');
+
+  parse_or_return ('(');
+
+  parse_or_return (G_TOKEN_STRING);     // FIXME: support string concatenation
+  stream.name = scanner->value.v_string;
+
+  parse_or_return (',');
+
+  parse_or_return (G_TOKEN_STRING);     // FIXME: support string concatenation
+  stream.blurb = scanner->value.v_string;
+
+  parse_or_return (')');
+
+  parse_or_return (';');
+  return G_TOKEN_NONE;
+}
+
 GTokenType Parser::parseParamHints (Param &def)
 {
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
@@ -1014,6 +1051,28 @@ GTokenType Parser::parseClass ()
 	    cdef.properties.push_back (property);
 	  }
 	  break;
+      case TOKEN_ISTREAM:
+      case TOKEN_JSTREAM:
+      case TOKEN_OSTREAM:
+        {
+          Stream::Type stype = Stream::IStream;
+          switch ((int) scanner->next_token) {
+          case TOKEN_JSTREAM:   stype = Stream::JStream; break;
+          case TOKEN_OSTREAM:   stype = Stream::OStream; break;
+          }
+          g_scanner_get_next_token (scanner); /* eat *Stream */
+          Stream stream;
+          GTokenType expected_token = parseStream (stream, stype);
+          if (expected_token != G_TOKEN_NONE)
+            return expected_token;
+
+          switch (stream.type) {
+          case Stream::IStream: cdef.istreams.push_back (stream); break;
+          case Stream::JStream: cdef.jstreams.push_back (stream); break;
+          case Stream::OStream: cdef.ostreams.push_back (stream); break;
+          }
+        }
+        break;
 	default:
 	  parse_or_return (G_TOKEN_IDENTIFIER); /* will fail; */
       }

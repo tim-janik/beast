@@ -85,8 +85,8 @@ $(OBJECTS): sficonfig.h
 #
 noinst_PROGRAMS = sfidl testsfi
 # source files
-sfidl_SOURCES = sfidl.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc glib-extra.c
-EXTRA_DIST += sfidl-namespace.h sfidl-options.h sfidl-parser.h
+sfidl_SOURCES = sfidl.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-module.cc glib-extra.c
+EXTRA_DIST += sfidl-namespace.h sfidl-options.h sfidl-parser.h sfidl-module.h
 progs_extra_sources += sfidl-namespace.h
 sfidl_LDADD = $(SFI_LIBS) -lm
 testsfi_SOURCES = testsfi.c
