@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-12 02:59+0200\n"
-"PO-Revision-Date: 2004-04-12 12:48+0200\n"
+"POT-Creation-Date: 2004-05-06 03:07+0200\n"
+"PO-Revision-Date: 2004-05-06 14:05+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -512,76 +512,76 @@ msgstr "Funkce používaná pro vytvoření nových klávesových zkratek"
 msgid "Description"
 msgstr "Popis"
 
-#: beast-gtk/bstmain.c:129
+#: beast-gtk/bstmain.c:128
 msgid "BEAST Startup"
 msgstr "Spuštění BEAST"
 
-#: beast-gtk/bstmain.c:136
+#: beast-gtk/bstmain.c:135
 msgid "Startup"
 msgstr "Spuštění"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:140
+#: beast-gtk/bstmain.c:139
 msgid "Initializers"
 msgstr "Inicializéry"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:147
+#: beast-gtk/bstmain.c:146
 msgid "RC Files"
 msgstr "Soubory RC"
 
 #. show splash images
-#: beast-gtk/bstmain.c:151
+#: beast-gtk/bstmain.c:150
 msgid "Splash Image"
 msgstr "Obrázek při spuštění"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:163
+#: beast-gtk/bstmain.c:162
 msgid "BSE Core"
 msgstr "Jádro BSE"
 
-#: beast-gtk/bstmain.c:185
+#: beast-gtk/bstmain.c:184
 msgid "Plugins"
 msgstr "Zásuvné moduly"
 
-#: beast-gtk/bstmain.c:204
+#: beast-gtk/bstmain.c:203
 msgid "LADSPA Plugins"
 msgstr "Zásuvné moduly LADSPA"
 
-#: beast-gtk/bstmain.c:232
+#: beast-gtk/bstmain.c:231
 msgid "Scripts"
 msgstr "Skripty"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:250
+#: beast-gtk/bstmain.c:249
 msgid "Dialogs"
 msgstr "Dialogy"
 
-#: beast-gtk/bstmain.c:257
+#: beast-gtk/bstmain.c:256
 msgid "Loading..."
 msgstr "Načítám..."
 
-#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
+#: beast-gtk/bstmain.c:286 beast-gtk/bstmain.c:288
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Načítám \"%s\""
 
-#: beast-gtk/bstmain.c:306
+#: beast-gtk/bstmain.c:305
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Načítám projekt \"%s\""
 
-#: beast-gtk/bstmain.c:711
+#: beast-gtk/bstmain.c:719
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.c:712
+#: beast-gtk/bstmain.c:720
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: beast-gtk/bstmain.c:713
+#: beast-gtk/bstmain.c:721
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -1196,7 +1196,11 @@ msgid ""
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
-msgstr "Editor racku je stále ještě vysoce experimentální kód a je zaručeno, že v budoucích verzích bude změněn. Takže nebuďte závislí na tom, že obsah editoru racku bude v dalších verzích vypadat stejně, a buďte připraveni na obcházení možných nestabilit kódu (tj. pravidelně ukládejte své projekty)."
+msgstr ""
+"Editor racku je stále ještě vysoce experimentální kód a je zaručeno, že v "
+"budoucích verzích bude změněn. Takže nebuďte závislí na tom, že obsah "
+"editoru racku bude v dalších verzích vypadat stejně, a buďte připraveni na "
+"obcházení možných nestabilit kódu (tj. pravidelně ukládejte své projekty)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/gadgets-beast.xml.h:31
@@ -1884,27 +1888,32 @@ msgid "Delete the currently selected track"
 msgstr "Odstranit momentálně vybranou stopu"
 
 #: beast-gtk/bstusermessage.c:91
-msgid "Notice"
-msgstr "Upozornění"
-
-#: beast-gtk/bstusermessage.c:95
-msgid "Question"
-msgstr "Otázka"
-
-#: beast-gtk/bstusermessage.c:99
-msgid "Warning"
-msgstr "Varování"
-
-#: beast-gtk/bstusermessage.c:103
 msgid "Error"
 msgstr "Chyba"
 
-# Různá zpráva :-)
+#: beast-gtk/bstusermessage.c:95
+msgid "Warning"
+msgstr "Varování"
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Notice"
+msgstr "Upozornění"
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Diagnostic"
+msgstr "Diagnostika"
+
+#. shouldn't end up in dialogs
 #: beast-gtk/bstusermessage.c:107
+msgid "Debug"
+msgstr "Ladění"
+
+# Různá zpráva :-)
+#: beast-gtk/bstusermessage.c:111
 msgid "Miscellaneous Message"
 msgstr "Zpráva"
 
-#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
+#: beast-gtk/bstusermessage.c:242 beast-gtk/bstusermessage.c:244
 msgid "processing"
 msgstr "zpracování"
 
@@ -3625,6 +3634,9 @@ msgstr "Levý výstup"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Pravý výstup"
+
+#~ msgid "Question"
+#~ msgstr "Otázka"
 
 #~ msgid "Perform exponential frequency modulationinstead of linear"
 #~ msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
