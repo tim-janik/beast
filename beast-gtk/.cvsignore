@@ -19,3 +19,4 @@ scankeys
 stamp-bstenum_arrays.c
 stamp-ckeycheck
 beast-0.*.*
+testgui
