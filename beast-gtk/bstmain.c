@@ -690,7 +690,7 @@ beast_show_about_box (void)
     "Stefan Westerfeld",
     "Rasmus Kaj",
     /* plugins */
-    "Artem Popov",
+    "\xd0\x90\xd1\x80\xd1\x82\xd0\xb5\xd0\xbc \xd0\x9f\xd0\xbe\xd0\xbf\xd0\xbe\xd0\xb2", /* "Artem Popov", */
     "David A. Bartold",
     //"Tim Janik",
     //"Stefan Westerfeld",
