@@ -1,4 +1,5 @@
 FIXMES:
+- disable bseevaluator without --devel as it's unstable
 - remove hpack and vpack
 - make plugins/Makefile.am actually pick up *.idl files in distribution tarballs
 - remove 64bit data fields from BseUndoStep if possible
