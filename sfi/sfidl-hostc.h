@@ -31,11 +31,13 @@ namespace Sfidl {
   
   class CodeGeneratorHostC : public CodeGeneratorCBase {
   protected:
-    void printInfoStrings (const std::string& name, const Map<std::string,IString>& infos);
-    bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
-    
+    void printChoiceMethodPrototypes (PrefixSymbolMode mode);
+    void printChoiceMethodImpl();
+    void printRecordFieldDeclarations();
+    void printInitFunction (const std::string& initFunction);    
+
   public:
-    CodeGeneratorHostC(const Parser& parser) : CodeGeneratorCBase (parser) {
+    CodeGeneratorHostC (const Parser& parser) : CodeGeneratorCBase (parser) {
     }
     bool run ();
   };

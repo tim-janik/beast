@@ -35,25 +35,6 @@ namespace Sfidl {
   
   class CodeGeneratorClientC : public CodeGeneratorCBase {
   protected:
-    std::vector<std::string> prefix_symbols; /* symbols which should get a namespace prefix */
-
-    enum PrefixSymbolMode { generateOutput, generatePrefixSymbols };
-
-    void printRecordPrototypes();
-    void printSequencePrototypes();
-
-    void printRecordDefinitions();
-    void printSequenceDefinitions();
-
-    void printRecordMethodPrototypes (PrefixSymbolMode mode);
-    void printSequenceMethodPrototypes (PrefixSymbolMode mode);
-
-    void printRecordMethodImpl();
-    void printSequenceMethodImpl();
-
-    void printChoiceDefinitions();
-    void printChoiceConverterPrototypes (PrefixSymbolMode mode);
-
     void printClassMacros();
 
     Method methodWithObject (const Class& cd, const Method& md);

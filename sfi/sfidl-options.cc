@@ -302,15 +302,10 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
     }
 
 
-  // exactly one of --source | --header, --interface | --implementation
+  // exactly one of --source | --header
   if (((doSource?1:0) + (doHeader?1:0)) != 1)
     {
       fprintf (stderr, "%s: need --source or --header option\n", sfidlName.c_str());
-      return false;
-    }
-  if (((doInterface?1:0) + (doImplementation?1:0)) != 1)
-    {
-      fprintf (stderr, "%s: need --interface or --implementation option\n", sfidlName.c_str());
       return false;
     }
 

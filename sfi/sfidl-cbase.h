@@ -44,11 +44,32 @@ namespace Sfidl {
       MODEL_VCALL_RET, MODEL_VCALL_RCONV, MODEL_VCALL_RFREE
     };
 
+    enum PrefixSymbolMode { generateOutput, generatePrefixSymbols };
+    std::vector<std::string> prefix_symbols; /* symbols which should get a namespace prefix */
+
     const gchar *makeCStr (const std::string& str);
 
     std::string scatId (SfiSCategory c);
+
+    /* record/sequence binding used by --host-c and --client-c binding */
+    void printClientRecordPrototypes();
+    void printClientSequencePrototypes();
+
+    void printClientRecordDefinitions();
+    void printClientSequenceDefinitions();
+
+    void printClientRecordMethodPrototypes (PrefixSymbolMode mode);
+    void printClientSequenceMethodPrototypes (PrefixSymbolMode mode);
+
+    void printClientRecordMethodImpl();
+    void printClientSequenceMethodImpl();
+
+    void printClientChoiceDefinitions();
+    void printClientChoiceConverterPrototypes (PrefixSymbolMode mode);
+
     void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
     void printChoiceConverters ();
+
     virtual std::string makeProcName (const std::string& className, const std::string& procName);
 
     std::string makeGTypeName (const std::string& name);

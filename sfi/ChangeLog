@@ -1,3 +1,12 @@
+Mon Feb 23 01:27:25 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-clientc.* sfidl-hostc.* sfidl-cbase.*: Code cleanup of the
+	--host-c binding. Moved common functionality from CodeGeneratorClientC
+	and CodeGeneratorHostC to CodeGeneratorCBase.
+
+	* sfidl-options.cc: Don't suggest the user to specify --interface or
+	--implementation (these flags don't exist any longer).
+
 Sun Feb 22 22:10:34 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-options.*: Remove generateConstant, generateSignalStuff and
