@@ -8,372 +8,374 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-20 18:38+0100\n"
-"PO-Revision-Date: 2005-01-20 19:27+0100\n"
+"POT-Creation-Date: 2005-01-28 10:46+0100\n"
+"PO-Revision-Date: 2005-01-28 13:23+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:73
+#: beast-gtk/bstapp.c:74
 msgid "_New"
 msgstr "_Nový"
 
-#: beast-gtk/bstapp.c:73
+#: beast-gtk/bstapp.c:74
 msgid "Create new project"
 msgstr "Vytvořit nový projekt"
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:76
 msgid "_Open..."
 msgstr "_Otevřít..."
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:76
 msgid "Open existing project"
 msgstr "Otevřít existující projekt"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:78
 msgid "_Merge..."
 msgstr "S_loučit..."
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:78
 msgid "Merge an existing project into the current project"
 msgstr "Sloučit existující projekt do aktuálního projektu"
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:80
 msgid "_Import MIDI..."
 msgstr "_Importovat MIDI..."
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:80
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importovat standardní soubor MIDI do aktuálního projektu"
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:82
 msgid "_Close"
 msgstr "_Zavřít"
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:82
 msgid "Close the project"
 msgstr "Zavřít projekt"
 
-#: beast-gtk/bstapp.c:85
+#: beast-gtk/bstapp.c:86
 msgid "_Save"
 msgstr "_Uložit"
 
-#: beast-gtk/bstapp.c:85
+#: beast-gtk/bstapp.c:86
 msgid "Write project to disk"
 msgstr "Zapsat projekt na disk"
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:88
 msgid "Save _As..."
 msgstr "Uložit _jako..."
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:88
 msgid "Write project to a specific file"
 msgstr "Zapsat projekt do konkrétního souboru"
 
-#: beast-gtk/bstapp.c:91
+#: beast-gtk/bstapp.c:92
 msgid "_Quit"
 msgstr "U_končit"
 
-#: beast-gtk/bstapp.c:91
+#: beast-gtk/bstapp.c:92
 msgid "Close all windows and quit"
 msgstr "Zavřít všechna okna a skončit"
 
-#: beast-gtk/bstapp.c:95
+#: beast-gtk/bstapp.c:96
 msgid "_Preferences..."
 msgstr "_Nastaven..."
 
-#: beast-gtk/bstapp.c:95
+#: beast-gtk/bstapp.c:96
 msgid "Adjust overall program behaviour"
 msgstr "Upravit obecné chování programu"
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:100
 msgid "Rebuild"
 msgstr "Znovu sestavit"
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:103
 msgid "_About..."
 msgstr "O _aplikaci..."
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:103
 msgid "Display developer and contributor credits"
 msgstr "Zobrazit kredity vývojářů a přispěvatelů"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:107
 msgid "_Undo"
 msgstr "_Zpět"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:107
 msgid "Undo the effect of the last action"
 msgstr "Vrátit zpět efekt předchozí akce"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:109
 msgid "_Redo"
 msgstr "Z_novu"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:109
 msgid "Redo the last undone action"
 msgstr "Zopakovat poslední vrácenou akci"
 
-#: beast-gtk/bstapp.c:112 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:113 beast-gtk/bstpartdialog.c:72
 msgid "_Clear Undo"
 msgstr "Vyma_zat historii"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:113
 msgid "Delete the complete undo history"
 msgstr "Odstranit celou historii vracení"
 
-#: beast-gtk/bstapp.c:116
+#: beast-gtk/bstapp.c:117
 msgid "Procedure _Browser"
 msgstr "_Procházeč procedur"
 
-#: beast-gtk/bstapp.c:116
+#: beast-gtk/bstapp.c:117
 msgid "Display an overview of all procedures"
 msgstr "Zobrazit přehled všech procedur"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:119
 msgid "Rack Editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:120 beast-gtk/bstprofiler.c:225
+#: beast-gtk/bstapp.c:121 beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Profiler"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:121
 msgid "Display statistics and timing information"
 msgstr "Zobrazit statistiky a informace o časování"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:123
 msgid "New View"
 msgstr "Nový pohled"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:123
 msgid "Create an extra view of the project"
 msgstr "Vytvořit další pohled na projekt"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:127
 msgid "_Play"
 msgstr "_Přehrávat"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:127
 msgid "Play or restart playback of the project"
 msgstr "Přehrávat nebo znovu spustit přehrávání projektu"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:129
 msgid "_Stop"
 msgstr "_Zastavit"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:129
 msgid "Stop playback of the project"
 msgstr "Zastavit přehrávání projektu"
 
-#: beast-gtk/bstapp.c:132
+#: beast-gtk/bstapp.c:133
 msgid "New Song"
 msgstr "Nová skladba"
 
-#: beast-gtk/bstapp.c:132
+#: beast-gtk/bstapp.c:133
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Vytvořit novou skladbu, skládající se z mixéru, stop, partů a poznámek"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:135
 msgid "Add Custom Synthesizer"
 msgstr "Přidat vlastní syntetizér"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:135
 msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
-msgstr "Přidat novou síť syntetizéru pro použití jako efekt nebo nástroj ve skladbách"
+msgstr ""
+"Přidat novou síť syntetizéru pro použití jako efekt nebo nástroj ve skladbách"
 
-#: beast-gtk/bstapp.c:136
+#: beast-gtk/bstapp.c:137
 msgid "Add MIDI Synthesizer"
 msgstr "Přidat syntetizér MIDI"
 
-#: beast-gtk/bstapp.c:136
+#: beast-gtk/bstapp.c:137
 msgid ""
 "Add a new MIDI synthesizer to control an instrument from external MIDI events"
-msgstr "Přidat nový syntetizér MIDI pro ovládání nástroje externími událostmi MIDI"
+msgstr ""
+"Přidat nový syntetizér MIDI pro ovládání nástroje externími událostmi MIDI"
 
-#: beast-gtk/bstapp.c:138
+#: beast-gtk/bstapp.c:139
 msgid "Remove Song or Synthesizer"
 msgstr "Odstranit skladbu nebo syntetizér"
 
-#: beast-gtk/bstapp.c:138
+#: beast-gtk/bstapp.c:139
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Odstranit momentálně vybraný syntetizér (skladbu)"
 
-#: beast-gtk/bstapp.c:142
+#: beast-gtk/bstapp.c:143
 msgid "Load _Instrument..."
 msgstr "Načíst _nástroj..."
 
-#: beast-gtk/bstapp.c:142
+#: beast-gtk/bstapp.c:143
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Načíst síť syntetizéru z adresáře nástrojů"
 
-#: beast-gtk/bstapp.c:144
+#: beast-gtk/bstapp.c:145
 msgid "Load _Effect..."
 msgstr "Načíst _efekt..."
 
-#: beast-gtk/bstapp.c:144
+#: beast-gtk/bstapp.c:145
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Načíst síť syntetizéru z adresáře efektů"
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:147
 msgid "Save As Instrument..."
 msgstr "Uložit jako nástroj..."
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:147
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Uložit síť syntetizéru do adresáře nástrojů"
 
-#: beast-gtk/bstapp.c:148
+#: beast-gtk/bstapp.c:149
 msgid "Save As Effect..."
 msgstr "Uložit jako efekt..."
 
-#: beast-gtk/bstapp.c:148
+#: beast-gtk/bstapp.c:149
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Uložit síť syntetizéru do adresáře efektů"
 
-#: beast-gtk/bstapp.c:152
+#: beast-gtk/bstapp.c:153
 msgid "Document _Index..."
 msgstr "_Rejstřík dokumentace..."
 
-#: beast-gtk/bstapp.c:152
+#: beast-gtk/bstapp.c:153
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "Poskytnout přehled veškeré dokumentace BEAST"
 
-#: beast-gtk/bstapp.c:154
+#: beast-gtk/bstapp.c:155
 msgid "_Quick Start..."
 msgstr "_Rychlý start..."
 
-#: beast-gtk/bstapp.c:154
+#: beast-gtk/bstapp.c:155
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Poskytuje úvod o tom, jak provést nejčastější úkony"
 
-#: beast-gtk/bstapp.c:156
+#: beast-gtk/bstapp.c:157
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:156
+#: beast-gtk/bstapp.c:157
 msgid "Answers to frequently asked questions"
 msgstr "Odpovědi na často kladené otázky"
 
-#: beast-gtk/bstapp.c:158
+#: beast-gtk/bstapp.c:159
 msgid "Online _Help Desk..."
 msgstr "_Nápověda online..."
 
-#: beast-gtk/bstapp.c:158
+#: beast-gtk/bstapp.c:159
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "Spustit WWW prohlížeč s nápovědou online na WWW stránkách BEAST"
 
-#: beast-gtk/bstapp.c:160
+#: beast-gtk/bstapp.c:161
 msgid "_BEAST Website..."
 msgstr "_WWW stránky BEAST..."
 
-#: beast-gtk/bstapp.c:160
+#: beast-gtk/bstapp.c:161
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Spustit WWW prohlížeč WWW stránkami BEAST"
 
-#: beast-gtk/bstapp.c:163
+#: beast-gtk/bstapp.c:164
 msgid "_Release Notes..."
 msgstr "_Poznámky o vydání..."
 
-#: beast-gtk/bstapp.c:163
+#: beast-gtk/bstapp.c:164
 msgid "Notes and informations about this release cycle"
 msgstr "Poznámky a informace o tomto cyklu vydání"
 
-#: beast-gtk/bstapp.c:165
+#: beast-gtk/bstapp.c:166
 msgid "Developing Plugins..."
 msgstr "Vývoj zásuvných modulů..."
 
-#: beast-gtk/bstapp.c:165
+#: beast-gtk/bstapp.c:166
 msgid "A guide to synthesis plugin development"
 msgstr "Průvodce vývojem zásuvných modulů pro syntézu"
 
-#: beast-gtk/bstapp.c:167
+#: beast-gtk/bstapp.c:168
 msgid "DSP Engine..."
 msgstr "Engine DSP..."
 
-#: beast-gtk/bstapp.c:167
+#: beast-gtk/bstapp.c:168
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Technický popis vnitřností vícevláknového engine syntetizéru"
 
-#: beast-gtk/bstapp.c:170
+#: beast-gtk/bstapp.c:171
 msgid "Development..."
 msgstr "Vývoj..."
 
-#: beast-gtk/bstapp.c:170
+#: beast-gtk/bstapp.c:171
 msgid "Provide an overview of development related topics and documents"
 msgstr "Poskytnout přehled témat a dokumentů souvisejících s vývojem"
 
-#: beast-gtk/bstapp.c:174
+#: beast-gtk/bstapp.c:175
 msgid "Online Sound Archive..."
 msgstr "Archiv zvuků online..."
 
-#: beast-gtk/bstapp.c:174
+#: beast-gtk/bstapp.c:175
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Spustit WWW prohlížeč s archivem zvuků online"
 
-#: beast-gtk/bstapp.c:178
+#: beast-gtk/bstapp.c:179
 msgid "Online Demos..."
 msgstr "Dema online..."
 
-#: beast-gtk/bstapp.c:178
+#: beast-gtk/bstapp.c:179
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Spustit WWW prohlížeč s demonstračními skladbami online"
 
-#: beast-gtk/bstapp.c:299
+#: beast-gtk/bstapp.c:300
 msgid "Export Audio"
 msgstr "Exportovat zvuk"
 
-#: beast-gtk/bstapp.c:491 beast-gtk/bstsupershell.c:233
+#: beast-gtk/bstapp.c:492 beast-gtk/bstsupershell.c:233
 msgid "Waves"
 msgstr "Vlny"
 
-#: beast-gtk/bstapp.c:493
+#: beast-gtk/bstapp.c:494
 msgid "Wave Repository"
 msgstr "Úložiště vln"
 
-#: beast-gtk/bstapp.c:498
+#: beast-gtk/bstapp.c:499
 #, c-format
 msgid "Song: %s"
 msgstr "Skladba: %s"
 
-#: beast-gtk/bstapp.c:503
+#: beast-gtk/bstapp.c:504
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "Syntetizér MIDI: %s"
 
-#: beast-gtk/bstapp.c:508
+#: beast-gtk/bstapp.c:509
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Syntetizér: %s"
 
-#: beast-gtk/bstapp.c:695 beast-gtk/bstapp.c:702 beast-gtk/bstfiledialog.c:421
+#: beast-gtk/bstapp.c:696 beast-gtk/bstapp.c:703 beast-gtk/bstfiledialog.c:421
 #: beast-gtk/bstfiledialog.c:428
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otevírám projekt `%s'"
 
-#: beast-gtk/bstapp.c:762
+#: beast-gtk/bstapp.c:763
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Načítám skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:931
+#: beast-gtk/bstapp.c:932
 msgid "Rack editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:945
+#: beast-gtk/bstapp.c:946
 msgid "Preferences"
 msgstr "Nastavení"
 
-#: beast-gtk/bstapp.c:972
+#: beast-gtk/bstapp.c:973
 msgid "Procedure Browser"
 msgstr "Procházeč procedur"
 
-#: beast-gtk/bstapp.c:1029
+#: beast-gtk/bstapp.c:1030
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Poznámky o vydání BEAST-%s"
@@ -397,7 +399,7 @@ msgstr "Přidat"
 #: beast-gtk/bstbuseditor.c:39 beast-gtk/bstbusmixer.c:36
 #: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
 #: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
-#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
+#: beast-gtk/bstpianorollctrl.c:80 beast-gtk/bstrackitem.c:216
 #: beast-gtk/bstsnetrouter.c:712 beast-gtk/bstsnetrouter.c:760
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
 #: beast-gtk/bstwaveview.c:45
@@ -468,51 +470,78 @@ msgstr "Zarovnat"
 msgid "Adjust relative alignment of the values or bars to be drawn"
 msgstr "Upravit relativní zarovnání kreslených hodnot nebo pruhů"
 
-#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
-#: beast-gtk/bsteventrollctrl.c:427
+#: beast-gtk/bsteventrollctrl.c:58 beast-gtk/bstpianorollctrl.c:58
+msgid "All"
+msgstr "Vše"
+
+#: beast-gtk/bsteventrollctrl.c:58
+msgid "Select all events"
+msgstr "Vybrat všechny události"
+
+#. special cased signals
+#: beast-gtk/bsteventrollctrl.c:60 beast-gtk/bstpianorollctrl.c:60
+#: beast-gtk/bstrecords.idl:61 beast-gtk/bstrecords.idl:89 bse/bsecore.idl:244
+msgid "None"
+msgstr "Žádné"
+
+#: beast-gtk/bsteventrollctrl.c:60
+msgid "Unselect all events"
+msgstr "Zrušit výběr všech událostí"
+
+#: beast-gtk/bsteventrollctrl.c:62 beast-gtk/bstpianorollctrl.c:62
+msgid "Invert"
+msgstr "Invertovat"
+
+# FIXME: s/seleciton/selection/
+#: beast-gtk/bsteventrollctrl.c:62 beast-gtk/bstpianorollctrl.c:62
+msgid "Invert the current seleciton"
+msgstr "Invertovat aktuální výběr"
+
+#: beast-gtk/bsteventrollctrl.c:441 beast-gtk/bsteventrollctrl.c:448
+#: beast-gtk/bsteventrollctrl.c:517
 msgid "Move Control Event"
 msgstr "Přesunout řídicí událost"
 
-#: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
-#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
-#: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bsteventrollctrl.c:448 beast-gtk/bsteventrollctrl.c:602
+#: beast-gtk/bsteventrollctrl.c:652 beast-gtk/bstpianorollctrl.c:575
+#: beast-gtk/bstpianorollctrl.c:685 beast-gtk/bstpianorollctrl.c:748
 #: beast-gtk/bsttrackrollctrl.c:480 beast-gtk/bsttrackrollctrl.c:500
 #: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:170
 msgid "No target"
 msgstr "Žádný cíl"
 
-#: beast-gtk/bsteventrollctrl.c:427 beast-gtk/bsteventrollctrl.c:548
+#: beast-gtk/bsteventrollctrl.c:517 beast-gtk/bsteventrollctrl.c:638
 msgid "Lost Event"
 msgstr "Ztracená událost"
 
-#: beast-gtk/bsteventrollctrl.c:437 beast-gtk/bsteventrollctrl.c:470
+#: beast-gtk/bsteventrollctrl.c:527 beast-gtk/bsteventrollctrl.c:560
 msgid "Align Control Events"
 msgstr "Zarovnat řídicí události"
 
-#: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:716 beast-gtk/bstpianorollctrl.c:752
+#: beast-gtk/bsteventrollctrl.c:560 beast-gtk/bsteventrollctrl.c:686
+#: beast-gtk/bstpianorollctrl.c:806 beast-gtk/bstpianorollctrl.c:842
 msgid "Aborted"
 msgstr "Přerušeno"
 
-#: beast-gtk/bsteventrollctrl.c:496
+#: beast-gtk/bsteventrollctrl.c:586
 msgid "Insert Control Event"
 msgstr "Vložit řídicí událost"
 
-#: beast-gtk/bsteventrollctrl.c:507 beast-gtk/bsteventrollctrl.c:512
-#: beast-gtk/bsteventrollctrl.c:548
+#: beast-gtk/bsteventrollctrl.c:597 beast-gtk/bsteventrollctrl.c:602
+#: beast-gtk/bsteventrollctrl.c:638
 msgid "Resize Control Event"
 msgstr "Přejmenovat řídicí událost"
 
-#: beast-gtk/bsteventrollctrl.c:559 beast-gtk/bsteventrollctrl.c:562
+#: beast-gtk/bsteventrollctrl.c:649 beast-gtk/bsteventrollctrl.c:652
 msgid "Delete Control Event"
 msgstr "Odstranit řídicí událost"
 
-#: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:690 beast-gtk/bstpianorollctrl.c:716
+#: beast-gtk/bsteventrollctrl.c:662 beast-gtk/bsteventrollctrl.c:686
+#: beast-gtk/bstpianorollctrl.c:780 beast-gtk/bstpianorollctrl.c:806
 msgid "Select Region"
 msgstr "Vyberte oblast"
 
-#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:761
+#: beast-gtk/bsteventrollctrl.c:695 beast-gtk/bstpianorollctrl.c:851
 msgid "Abortion"
 msgstr "Přerušení"
 
@@ -1001,51 +1030,51 @@ msgstr "Pole textu názvu souboru"
 msgid "Time Entry"
 msgstr "Pole pro zadání času"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:62
 msgid "Clear"
 msgstr "Vymazat"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:62
 msgid "Clear the current selection"
 msgstr "Odstranit aktuální výběr"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:63
 msgid "Cut"
 msgstr "Vyjmout"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:63
 msgid "Move the current selection into clipboard"
 msgstr "Přesunout aktuální výběr do schránky"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:64
 msgid "Copy"
 msgstr "Kopírovat"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:64
 msgid "Copy the current selection into clipboard"
 msgstr "Kopírovat aktuální výběr do schránky"
 
-#: beast-gtk/bstpartdialog.c:63
+#: beast-gtk/bstpartdialog.c:65
 msgid "Paste"
 msgstr "Vložit"
 
-#: beast-gtk/bstpartdialog.c:63
+#: beast-gtk/bstpartdialog.c:65
 msgid "Insert clipboard contents as current selection"
 msgstr "Vložit obsah schránky jako aktuální výběr"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:68
 msgid "Undo"
 msgstr "Zpět"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:68
 msgid "Undo last editing step"
 msgstr "Vrátit poslední krok úprav"
 
-#: beast-gtk/bstpartdialog.c:67
+#: beast-gtk/bstpartdialog.c:69
 msgid "Redo"
 msgstr "Znovu"
 
-#: beast-gtk/bstpartdialog.c:67
+#: beast-gtk/bstpartdialog.c:69
 msgid "Redo the last undone editing step"
 msgstr "Zopakovat poslední vrácený krok úprav"
 
@@ -1343,213 +1372,221 @@ msgstr "Nastavit notu v aktivní buňce"
 msgid "Sets the value of the focus digit"
 msgstr "Nastavuje hodnotu aktivní číslice"
 
-#: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
+#: beast-gtk/bstpianorollctrl.c:58
+msgid "Select all notes"
+msgstr "Vybrat všechny noty"
+
+#: beast-gtk/bstpianorollctrl.c:60
+msgid "Unselect all notes"
+msgstr "Zrušit výběr všech not"
+
+#: beast-gtk/bstpianorollctrl.c:78 beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert"
 msgstr "Vložit"
 
-#: beast-gtk/bstpianorollctrl.c:46
+#: beast-gtk/bstpianorollctrl.c:78
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
 msgstr "Vložit/změnit velikost/přesunout noty (tlačítko myši 1 a 2)"
 
-#: beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstpianorollctrl.c:80
 msgid "Delete note (mouse button 1)"
 msgstr "Odstranit notu (tlačítko myši 1)"
 
-#: beast-gtk/bstpianorollctrl.c:50
+#: beast-gtk/bstpianorollctrl.c:82
 msgid "Align Events"
 msgstr "Zarovnat události"
 
-#: beast-gtk/bstpianorollctrl.c:50
+#: beast-gtk/bstpianorollctrl.c:82
 msgid "Draw a line to align events to"
 msgstr "Nakreslete čáru, ke které zarovnat události"
 
-#: beast-gtk/bstpianorollctrl.c:52
+#: beast-gtk/bstpianorollctrl.c:84
 msgid "Select"
 msgstr "Vybrat"
 
-#: beast-gtk/bstpianorollctrl.c:52
+#: beast-gtk/bstpianorollctrl.c:84
 msgid "Rectangle select notes"
 msgstr "Vybrat noty v obdélníku"
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:726
+#: beast-gtk/bstpianorollctrl.c:86 beast-gtk/bstpianorollctrl.c:816
 msgid "Vertical Select"
 msgstr "Svislý výběr"
 
-#: beast-gtk/bstpianorollctrl.c:54
+#: beast-gtk/bstpianorollctrl.c:86
 msgid "Select tick range vertically"
 msgstr "Vyberte svisle rozsah znamének"
 
-#: beast-gtk/bstpianorollctrl.c:67
+#: beast-gtk/bstpianorollctrl.c:99
 msgid "1\\/1"
 msgstr "1\\/1"
 
-#: beast-gtk/bstpianorollctrl.c:67
+#: beast-gtk/bstpianorollctrl.c:99
 msgid "Insert whole notes"
 msgstr "Vložit celé noty"
 
-#: beast-gtk/bstpianorollctrl.c:69
+#: beast-gtk/bstpianorollctrl.c:101
 msgid "1\\/2"
 msgstr "1\\/2"
 
-#: beast-gtk/bstpianorollctrl.c:69
+#: beast-gtk/bstpianorollctrl.c:101
 msgid "Insert half notes"
 msgstr "Vložit půlové noty"
 
-#: beast-gtk/bstpianorollctrl.c:71
+#: beast-gtk/bstpianorollctrl.c:103
 msgid "1\\/4"
 msgstr "1\\/4"
 
-#: beast-gtk/bstpianorollctrl.c:71
+#: beast-gtk/bstpianorollctrl.c:103
 msgid "Insert quarter notes"
 msgstr "Vložit čtvrťové noty"
 
-#: beast-gtk/bstpianorollctrl.c:73
+#: beast-gtk/bstpianorollctrl.c:105
 msgid "1\\/8"
 msgstr "1\\/8"
 
-#: beast-gtk/bstpianorollctrl.c:73
+#: beast-gtk/bstpianorollctrl.c:105
 msgid "Insert eighths note"
 msgstr "Vložit osminové noty"
 
-#: beast-gtk/bstpianorollctrl.c:75
+#: beast-gtk/bstpianorollctrl.c:107
 msgid "1\\/16"
 msgstr "1\\/16"
 
-#: beast-gtk/bstpianorollctrl.c:75
+#: beast-gtk/bstpianorollctrl.c:107
 msgid "Insert sixteenth note"
 msgstr "Vložit šestnáctinové noty"
 
-#: beast-gtk/bstpianorollctrl.c:77
+#: beast-gtk/bstpianorollctrl.c:109
 msgid "1\\/32"
 msgstr "1\\/32"
 
-#: beast-gtk/bstpianorollctrl.c:77
+#: beast-gtk/bstpianorollctrl.c:109
 msgid "Insert thirty-second note"
 msgstr "Vložit dvaatřicetinovou notu"
 
-#: beast-gtk/bstpianorollctrl.c:79
+#: beast-gtk/bstpianorollctrl.c:111
 msgid "1\\/64"
 msgstr "1\\/64"
 
-#: beast-gtk/bstpianorollctrl.c:79
+#: beast-gtk/bstpianorollctrl.c:111
 msgid "Insert sixty-fourth note"
 msgstr "Vložit šestnáctinovou notu"
 
-#: beast-gtk/bstpianorollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:113
 msgid "1\\/128"
 msgstr "1\\/128"
 
-#: beast-gtk/bstpianorollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:113
 msgid "Insert hundred twenty-eighth note"
 msgstr "Vložit stodvacetiososminovou notu"
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:126 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
 msgstr "K: Takt"
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:126 beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
 msgstr "Kvantizovat na hranice taktů"
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:128 beast-gtk/bsttrackrollctrl.c:83
 msgid "Q: None"
 msgstr "K: Nic"
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:128 beast-gtk/bsttrackrollctrl.c:83
 msgid "No quantization selected"
 msgstr "Nevybrána žádná kvantizace"
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+#: beast-gtk/bstpianorollctrl.c:130 beast-gtk/bsttrackrollctrl.c:85
 msgid "Q: 1\\/1"
 msgstr "Q: 1\\/1"
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+#: beast-gtk/bstpianorollctrl.c:130 beast-gtk/bsttrackrollctrl.c:85
 msgid "Quantize to whole note boundaries"
 msgstr "Kvantizovat na hranice celých not"
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:132 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
 msgstr "Q: 1\\/2"
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:132 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
 msgstr "Kvantizovat na hranice půlových not"
 
-#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:134 beast-gtk/bsttrackrollctrl.c:89
 msgid "Q: 1\\/4"
 msgstr "Q: 1\\/4"
 
-#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:134 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
 msgstr "Kvantizovat na hranice čtvrtinových not"
 
-#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:136 beast-gtk/bsttrackrollctrl.c:91
 msgid "Q: 1\\/8"
 msgstr "Q: 1\\/8"
 
-#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:136 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
 msgstr "Kvantizovat na hranice osminových not"
 
-#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:138 beast-gtk/bsttrackrollctrl.c:93
 msgid "Q: 1\\/16"
 msgstr "Q: 1\\/16"
 
-#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:138 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
 msgstr "Kvantizovat na hranice šestnáctinových not"
 
-#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#: beast-gtk/bstpianorollctrl.c:140 beast-gtk/bsttrackrollctrl.c:95
 msgid "Q: 1\\/32"
 msgstr "Q: 1\\/32"
 
-#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#: beast-gtk/bstpianorollctrl.c:140 beast-gtk/bsttrackrollctrl.c:95
 msgid "Quantize to thirty-second note boundaries"
 msgstr "Kvantizovat na hranice dvaatřicetinových not"
 
-#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#: beast-gtk/bstpianorollctrl.c:142 beast-gtk/bsttrackrollctrl.c:97
 msgid "Q: 1\\/64"
 msgstr "Q: 1\\/64"
 
-#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#: beast-gtk/bstpianorollctrl.c:142 beast-gtk/bsttrackrollctrl.c:97
 msgid "Quantize to sixty-fourth note boundaries"
 msgstr "Kvantizovat na hranice čtyřiašedesátinových not"
 
-#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#: beast-gtk/bstpianorollctrl.c:144 beast-gtk/bsttrackrollctrl.c:99
 msgid "Q: 1\\/128"
 msgstr "Q: 1\\/128"
 
-#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#: beast-gtk/bstpianorollctrl.c:144 beast-gtk/bsttrackrollctrl.c:99
 msgid "Quantize to hundred twenty-eighth note boundaries"
 msgstr "Kvantizovat na hranice stodvacetiosminových not"
 
-#: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
-#: beast-gtk/bstpianorollctrl.c:573
+#: beast-gtk/bstpianorollctrl.c:568 beast-gtk/bstpianorollctrl.c:575
+#: beast-gtk/bstpianorollctrl.c:663
 msgid "Move Note"
 msgstr "Přesunout notu"
 
-#: beast-gtk/bstpianorollctrl.c:573 beast-gtk/bstpianorollctrl.c:644
+#: beast-gtk/bstpianorollctrl.c:663 beast-gtk/bstpianorollctrl.c:734
 msgid "Lost Note"
 msgstr "Ztracená nota"
 
-#: beast-gtk/bstpianorollctrl.c:590 beast-gtk/bstpianorollctrl.c:595
-#: beast-gtk/bstpianorollctrl.c:644
+#: beast-gtk/bstpianorollctrl.c:680 beast-gtk/bstpianorollctrl.c:685
+#: beast-gtk/bstpianorollctrl.c:734
 msgid "Resize Note"
 msgstr "Změnit velikost noty"
 
-#: beast-gtk/bstpianorollctrl.c:655 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bstpianorollctrl.c:745 beast-gtk/bstpianorollctrl.c:748
 msgid "Delete Note"
 msgstr "Odstranit notu"
 
-#: beast-gtk/bstpianorollctrl.c:680
+#: beast-gtk/bstpianorollctrl.c:770
 msgid "Insert Note"
 msgstr "Vložit notu"
 
-#: beast-gtk/bstpianorollctrl.c:752
+#: beast-gtk/bstpianorollctrl.c:842
 msgid "Vertical Region"
 msgstr "Vertikální rozsah"
 
-#: beast-gtk/bstpianorollctrl.c:873
+#: beast-gtk/bstpianorollctrl.c:963
 msgid "Play note"
 msgstr "Přehrát notu"
 
@@ -1887,11 +1924,6 @@ msgstr "Okno FFT s 65536 hodnotami"
 msgid ""
 "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
 msgstr "Okno FFT s 65536 hodnotami odpovídá spektru s 32769 vrcholy frekvence"
-
-#. special cased signals
-#: beast-gtk/bstrecords.idl:61 beast-gtk/bstrecords.idl:89 bse/bsecore.idl:244
-msgid "None"
-msgstr "Žádné"
 
 #: beast-gtk/bstrecords.idl:61
 msgid "Unspecified length"
@@ -2774,7 +2806,7 @@ msgstr "Maximální počet hlasů pro současné přehrávání"
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Síť syntézy nebo vlna, kterou v této stopě používat jako nástroj"
 
-#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:1018
+#: beast-gtk/bsttrackview.c:620
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
 
@@ -2839,7 +2871,7 @@ msgstr "Zpráva byla zopakována %u-krát"
 msgid "Message has been repeated %u times"
 msgstr "Zpráva byla zopakována %u-krát"
 
-#: beast-gtk/bstusermessage.c:375 beast-gtk/bstusermessage.c:377
+#: beast-gtk/bstusermessage.c:386 beast-gtk/bstusermessage.c:388
 msgid "processing"
 msgstr "zpracování"
 
@@ -3077,38 +3109,42 @@ msgid "_Routing"
 msgstr "_Směrování"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:53
+msgid "_Select"
+msgstr "_Vybrat"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:54
 msgid "_Skins"
 msgstr "_Skiny"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:54
+#: beast-gtk/dialogs/radgets-beast.xml.h:55
 msgid "_Song"
 msgstr "_Skladba"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:55
+#: beast-gtk/dialogs/radgets-beast.xml.h:56
 msgid "_Spatial"
 msgstr "_Prostorové"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:56
+#: beast-gtk/dialogs/radgets-beast.xml.h:57
 msgid "_Synth"
 msgstr "_Syntéza"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:57
+#: beast-gtk/dialogs/radgets-beast.xml.h:58
 msgid "_Synthesizers"
 msgstr "_Syntetizéry"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:58
+#: beast-gtk/dialogs/radgets-beast.xml.h:59
 msgid "_Tools"
 msgstr "_Nástroje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:59
+#: beast-gtk/dialogs/radgets-beast.xml.h:60
 msgid "_Utilities"
 msgstr "_Pomůcky"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:60
+#: beast-gtk/dialogs/radgets-beast.xml.h:61
 msgid "_View"
 msgstr "_Zobrazit"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:61
+#: beast-gtk/dialogs/radgets-beast.xml.h:62
 msgid "_Virtualization"
 msgstr "_Virtualizace"
 
@@ -5719,9 +5755,18 @@ msgstr "Vlna, kterou používat jako nástroj"
 msgid "Max Voixes"
 msgstr "Max hlasů"
 
+#: bse/bsetrack.c:1018
+msgid "Midi channel assigned to this track, 0 uses internal per-track channel"
+msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
+
 #: bse/bsetrack.c:1028
 msgid "Mixer busses used as output for this track"
 msgstr "Sběrnice mixéru používané jako výstup této stopy"
+
+#: bse/bsewave.c:305
+#, c-format
+msgid "Wave \"%s\": failed to load wave chunk for frequency %f: %s"
+msgstr "Vlna \"%s\": nemohu načíst část vlny pro frekvenci %f: %s"
 
 #: bse/bsewaveosc.c:95
 msgid "/Audio Sources/Wave Oscillator"
