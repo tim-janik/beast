@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-05 02:38+0200\n"
-"PO-Revision-Date: 2004-10-05 11:58+0200\n"
+"POT-Creation-Date: 2004-10-09 18:38+0200\n"
+"PO-Revision-Date: 2004-10-10 00:08+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -660,11 +660,11 @@ msgstr "Výběr objektu: %s"
 msgid "ID"
 msgstr "ID"
 
-#: beast-gtk/bstitemview.c:208 beast-gtk/bsttrackview.c:583
+#: beast-gtk/bstitemview.c:208 beast-gtk/bsttrackview.c:608
 msgid "Name"
 msgstr "Název"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:604
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:629
 msgid "Comment"
 msgstr "Poznámka"
 
@@ -1526,7 +1526,8 @@ msgstr "Skin"
 msgid "Executing `%s'"
 msgstr "Spouštím `%s'"
 
-#: beast-gtk/bstprocedure.c:445
+#. | GXK_DIALOG_WINDOW_GROUP,
+#: beast-gtk/bstprocedure.c:447
 msgid "Procedure"
 msgstr "Procedura"
 
@@ -2515,28 +2516,36 @@ msgstr "Přidat k této skladbě novou stopu"
 msgid "Delete the currently selected track"
 msgstr "Odstranit momentálně vybranou stopu"
 
-#: beast-gtk/bsttrackview.c:586
+#: beast-gtk/bsttrackview.c:301 bse/bsetrack.c:282 bse/bsewaveosc.c:125
+msgid "Available Waves"
+msgstr "Dostupné vlny"
+
+#: beast-gtk/bsttrackview.c:302
+msgid "List of available waves to choose a track instrument from"
+msgstr "Seznam dostupných vln, ze kterých zvolit nástroj stopy"
+
+#: beast-gtk/bsttrackview.c:611
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "Noty z nezaškrtnutých stop sekvencer při přehrávání ignoruje"
 
-#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:941
+#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:427 bse/bsetrack.c:941
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximální počet hlasů pro současné přehrávání"
 
-#: beast-gtk/bsttrackview.c:592
+#: beast-gtk/bsttrackview.c:617
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Síť syntézy nebo vlna, kterou v této stopě používat jako nástroj"
 
-#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:947
+#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:947
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
 
-#: beast-gtk/bsttrackview.c:598
+#: beast-gtk/bsttrackview.c:623
 msgid "Mixer busses connected to track output"
 msgstr "Sběrnice mixéru připojené k výstupu stopy"
 
-#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:729
+#: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:436 bse/bsesong.c:729
 #: bse/bsetrack.c:952
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Síť syntézy, kterou používat jako postprocesor"
@@ -3097,7 +3106,7 @@ msgstr "Říd In2"
 msgid "Second control input"
 msgstr "Druhý řídicí vstup"
 
-#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
+#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199
 #: bse/bsewaveosc.c:564 plugins/bseadder.c:101 plugins/bseatandistort.c:92
 #: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
 #: plugins/davbassfilter.idl:36 plugins/davchorus.idl:32
@@ -3270,7 +3279,7 @@ msgstr "Střední frekvence"
 msgid "Cutoff [Hz]"
 msgstr "Odříznutí [Hz]"
 
-#: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:147
+#: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:146
 #: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:158
 msgid "Note"
 msgstr "Upozornění"
@@ -3294,21 +3303,21 @@ msgstr "Typ filtru normalizace zisku (podporováno jen horní a dolní propustí
 
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
-#: bse/bsestandardosc.c:153 bse/bsestandardosc.c:159 bse/bsestandardosc.c:165
-#: bse/bsestandardosc.c:171 bse/bsewaveosc.c:534 bse/bsewaveosc.c:540
+#: bse/bsestandardosc.c:152 bse/bsestandardosc.c:158 bse/bsestandardosc.c:164
+#: bse/bsestandardosc.c:170 bse/bsewaveosc.c:534 bse/bsewaveosc.c:540
 #: bse/bsewaveosc.c:546
 msgid "Modulation"
 msgstr "Modulace"
 
-#: bse/bsebiquadfilter.c:161 bse/bsestandardosc.c:156
+#: bse/bsebiquadfilter.c:161 bse/bsestandardosc.c:155
 msgid "Strength of linear frequency modulation"
 msgstr "Síla lineární frekvenční modulace"
 
-#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:162 bse/bsewaveosc.c:543
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:161 bse/bsewaveosc.c:543
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:549
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:167 bse/bsewaveosc.c:549
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Počet oktáv, na které má mít vliv exponenciální frekvenční modulace"
 
@@ -3331,7 +3340,7 @@ msgstr "Zvuk In"
 msgid "Unfiltered Audio Signal"
 msgstr "Nefiltrovaný signál zvuku"
 
-#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:192 bse/bsewaveosc.c:558
+#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:191 bse/bsewaveosc.c:558
 #: plugins/davorgan.c:132 plugins/davsyndrum.c:116
 #: plugins/davxtalstrings.c:141
 msgid "Freq In"
@@ -3341,11 +3350,11 @@ msgstr "Frekv In"
 msgid "Center Frequency Input"
 msgstr "Vstup střední frekvence"
 
-#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:193
 msgid "Freq Mod In"
 msgstr "Frekv mod In"
 
-#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:193
 msgid "Frequency Modulation Input"
 msgstr "Vstup frekvenční modulace"
 
@@ -3516,7 +3525,7 @@ msgid "Value [float]"
 msgstr "Hodnota [float]"
 
 #: bse/bseconstant.c:117 bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:109
-#: bse/bsestandardosc.c:143
+#: bse/bsestandardosc.c:142
 msgid "Frequency"
 msgstr "Frekvence"
 
@@ -4678,7 +4687,7 @@ msgstr "High znamená, že nástroj dosyntetizoval"
 msgid "/Input & Output/Instrument Output"
 msgstr "/Vstup a výstup/Výstup nástroje"
 
-#: bse/bsemain.c:269
+#: bse/bsemain.c:271
 msgid ""
 "\n"
 "Available PCM drivers:\n"
@@ -4686,7 +4695,7 @@ msgstr ""
 "\n"
 "Dostupné ovladače PCM:\n"
 
-#: bse/bsemain.c:271
+#: bse/bsemain.c:273
 msgid ""
 "\n"
 "Available MIDI drivers:\n"
@@ -4815,7 +4824,7 @@ msgstr "Hlavní [%]"
 msgid "Playback Settings"
 msgstr "Nastavení přehrávání"
 
-#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
+#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:106
 msgid "Freq Out"
 msgstr "Frekv Out"
 
@@ -4925,29 +4934,41 @@ msgstr "Soubor WAVE"
 msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr "Název souboru WAVE používaného pro záznam výstupu zvuku BSE"
 
-#: bse/bseserver.c:469
+#: bse/bseserver.c:439
+msgid "Show messages about audio recording problems"
+msgstr "Zobrazovat zprávy o problémech s nahráváním zvuku"
+
+#: bse/bseserver.c:440
+msgid ""
+"An audio input module is in use, but the audio device has not been opened in "
+"recording mode. A quiet audio signal is used as input instead of a recorded "
+"signal, so playback operation may produce results not actually intended "
+"(such as reducing the output signal to pure silence)."
+msgstr "Používá se modul pro vstup zvuku, ale zvukové zařízení nebylo otevřeno pro nahrávání. Místo nahrávaného signálu se jako vstup použije tichý signál, takže přehrávání možná bude mít nezamýšlené výsledky (například nahrazení výstupního signálu úplným tichem)."
+
+#: bse/bseserver.c:486
 msgid "Show messages about PCM device selections problems"
 msgstr "Zobrazovat zprávy o problémech s výběrem zařízení PCM"
 
-#: bse/bseserver.c:470
+#: bse/bseserver.c:487
 #, c-format
 msgid "Failed to open PCM devices, giving up: %s"
 msgstr "Nemohu otevřít zařízení PCM, vzdávám to: %s"
 
-#: bse/bseserver.c:488
+#: bse/bseserver.c:506
 msgid "Show messages about MIDI device selections problems"
 msgstr "Zobrazovat zprávy o problémech s výběrem zařízení MIDI"
 
-#: bse/bseserver.c:489
+#: bse/bseserver.c:507
 #, c-format
 msgid "Failed to open MIDI devices (reverting to null device): %s"
 msgstr "Nemohu otevřít zařízení MIDI (používám ovladač null): %s"
 
-#: bse/bseserver.c:540
+#: bse/bseserver.c:558
 msgid "Show recording file errors"
 msgstr "Zobrazit chyby zaznamenávaného souboru"
 
-#: bse/bseserver.c:541
+#: bse/bseserver.c:559
 #, c-format
 msgid "Failed to open output file \"%s\": %s"
 msgstr "Nemohu otevřít výstupní soubor \"%s\": %s"
@@ -5050,7 +5071,7 @@ msgstr "Syntetizovat notu do skladby z aktuálního projektu."
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Získat informace o časování skladby u konkrétního znaménka."
 
-#: bse/bsestandardosc.c:106
+#: bse/bsestandardosc.c:105
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
@@ -5058,64 +5079,64 @@ msgstr ""
 "StandardOsc je základní oscilátor BSE, který podporuje různé typy tvarů vln "
 "a vstupů modulace."
 
-#: bse/bsestandardosc.c:109
+#: bse/bsestandardosc.c:108
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/Zdroje zvuku/Standardní oscilátor"
 
-#: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
+#: bse/bsestandardosc.c:129 bse/bsestandardosc.c:135
 msgid "Wave Form"
 msgstr "Tvar vlny"
 
-#: bse/bsestandardosc.c:132 bse/bsetrack.c:936 bse/bsewaveosc.c:530
+#: bse/bsestandardosc.c:131 bse/bsetrack.c:936 bse/bsewaveosc.c:530
 #: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr "Vlna"
 
-#: bse/bsestandardosc.c:132
+#: bse/bsestandardosc.c:131
 msgid "Oscillator wave form"
 msgstr "Tvar vlny oscilátoru"
 
-#: bse/bsestandardosc.c:138
+#: bse/bsestandardosc.c:137
 msgid "Phase"
 msgstr "Fáze"
 
-#: bse/bsestandardosc.c:141 bse/bsestandardosc.c:145 bse/bsestandardosc.c:148
+#: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:147
 msgid "Base Frequency"
 msgstr "Základní frekvence"
 
-#: bse/bsestandardosc.c:150
+#: bse/bsestandardosc.c:149
 msgid "Fine Tune"
 msgstr "Doladění"
 
-#: bse/bsestandardosc.c:155 bse/bsewaveosc.c:536
+#: bse/bsestandardosc.c:154 bse/bsewaveosc.c:536
 msgid "Input Modulation [%]"
 msgstr "Modulace vstupu [%]"
 
-#: bse/bsestandardosc.c:161 bse/bsewaveosc.c:542
+#: bse/bsestandardosc.c:160 bse/bsewaveosc.c:542
 msgid "Exponential FM"
 msgstr "Exponenciální FM"
 
-#: bse/bsestandardosc.c:167 bse/bsewaveosc.c:548
+#: bse/bsestandardosc.c:166 bse/bsewaveosc.c:548
 msgid "Octaves"
 msgstr "Oktávy"
 
-#: bse/bsestandardosc.c:173
+#: bse/bsestandardosc.c:172
 msgid "Self Modulation [%]"
 msgstr "Modulace sebe [%]"
 
-#: bse/bsestandardosc.c:174
+#: bse/bsestandardosc.c:173
 msgid "Strength of self modulation"
 msgstr "Síla modulace sebe"
 
-#: bse/bsestandardosc.c:177 bse/bsestandardosc.c:184
+#: bse/bsestandardosc.c:176 bse/bsestandardosc.c:183
 msgid "Pulse Modulation"
 msgstr "Modulace pulzu"
 
-#: bse/bsestandardosc.c:179
+#: bse/bsestandardosc.c:178
 msgid "Pulse Width"
 msgstr "Šířka pulzu"
 
-#: bse/bsestandardosc.c:180
+#: bse/bsestandardosc.c:179
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
@@ -5123,11 +5144,11 @@ msgstr ""
 "Část trvání kladné komponenty pulzové vlny (aby toto mělo vliv, musí být "
 "jako tvar vlny vybrán Pulz)"
 
-#: bse/bsestandardosc.c:186
+#: bse/bsestandardosc.c:185
 msgid "Pulse Modulation [%]"
 msgstr "Modulace pulzu [%]"
 
-#: bse/bsestandardosc.c:187
+#: bse/bsestandardosc.c:186
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
@@ -5135,35 +5156,35 @@ msgstr ""
 "Síla vstupu modulace šířky pulzu (aby toto mělo vliv, musí být jako tvar "
 "vlny vybrán Pulz)"
 
-#: bse/bsestandardosc.c:192
+#: bse/bsestandardosc.c:191
 msgid "Oscillating Frequency Input"
 msgstr "Vstup oscilující frekvence"
 
-#: bse/bsestandardosc.c:196
+#: bse/bsestandardosc.c:195
 msgid "PWM In"
 msgstr "PWM In"
 
-#: bse/bsestandardosc.c:196
+#: bse/bsestandardosc.c:195
 msgid "Pulse Width Modulation Input"
 msgstr "Vstup modulace šířky pulzu"
 
-#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:560
+#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:560
 msgid "Sync In"
 msgstr "Synch In"
 
-#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:560
+#: bse/bsestandardosc.c:197 bse/bsewaveosc.c:560
 msgid "Syncronization Input"
 msgstr "Vstup synchronizace"
 
-#: bse/bsestandardosc.c:200
+#: bse/bsestandardosc.c:199
 msgid "Oscillated Output"
 msgstr "Oscilovaný výstup"
 
-#: bse/bsestandardosc.c:202
+#: bse/bsestandardosc.c:201
 msgid "Sync Out"
 msgstr "Synch Out"
 
-#: bse/bsestandardosc.c:202
+#: bse/bsestandardosc.c:201
 msgid "Syncronization Output"
 msgstr "Výstup synchronizace"
 
@@ -5255,10 +5276,6 @@ msgstr "Čas vytvoření"
 #: bse/bsesuper.c:191
 msgid "Last modification time"
 msgstr "Čas poslední změny"
-
-#: bse/bsetrack.c:282 bse/bsewaveosc.c:125
-msgid "Available Waves"
-msgstr "Dostupné vlny"
 
 #: bse/bsetrack.c:282
 msgid "List of available waves to choose as track instrument"
@@ -5771,15 +5788,15 @@ msgstr "Hluk Out"
 msgid "Noise Output"
 msgstr "Výstup hluku"
 
-#: plugins/bsesequencer.c:107
+#: plugins/bsesequencer.c:106
 msgid "Frequency Signal"
 msgstr "Signál frekvence"
 
-#: plugins/bsesequencer.c:109
+#: plugins/bsesequencer.c:108
 msgid "Note Sync"
 msgstr "Synch noty"
 
-#: plugins/bsesequencer.c:109
+#: plugins/bsesequencer.c:108
 msgid "Note Sync Signal"
 msgstr "Signál synchronizace noty"
 
