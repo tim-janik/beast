@@ -1,0 +1,89 @@
+; BseProject
+
+(bse-version "0.6.3")
+
+(container-child "BseWaveRepo::Wave-Repository"
+  (modification-time "2004-09-28 19:41:23")
+  (creation-time "2004-09-20 10:16:21"))
+(container-child "BseCSynth::MonoLead"
+  (auto-activate #f)
+  (modification-time "2004-09-28 19:41:23")
+  (creation-time "2004-09-20 10:16:30")
+  (container-child "BseInstrumentInput::InstrumentInput-1"
+    (pos-y -1)
+    (pos-x -4))
+  (container-child "BseInstrumentOutput::InstrumentOutput-1"
+    (pos-y -2)
+    (pos-x 1)
+    (source-input "left-audio" (link 1 "Amplifier-1") "audio-out")
+    (source-input "right-audio" (link 1 "Amplifier-1") "audio-out")
+    (source-input "synth-done" (link 1 "SimpleADSR-1") "done-out"))
+  (container-child "BseSimpleADSR::SimpleADSR-1"
+    (time-range bse-time-range-short)
+    (release-time 1.538462)
+    (sustain-level 100)
+    (decay-time 6.153846)
+    (attack-time 1.538462)
+    (pos-y -2)
+    (pos-x -2)
+    (source-input "gate-in" (link 1 "InstrumentInput-1") "gate"))
+  (container-child "BseAmplifier::Amplifier-1"
+    (olevel 100)
+    (base-level 100)
+    (ostrength 100)
+    (ctrl-exp #f)
+    (ctrl-mul #t)
+    (clevel2 100)
+    (clevel1 100)
+    (alevel2 100)
+    (alevel1 100)
+    (pos-y -1)
+    (source-input "audio-in1" (link 1 "StandardOsc-1") "audio-out")
+    (source-input "ctrl-in1" (link 1 "SimpleADSR-1") "ctrl-out"))
+  (container-child "BseStandardOsc::StandardOsc-1"
+    (pulse-mod-perc 0)
+    (pulse-width 50)
+    (fm-n-octaves 1)
+    (exponential-fm #f)
+    (fm-perc 0)
+    (base-freq 440)
+    (wave-form bse-standard-osc-saw-fall)
+    (pos-x -2)
+    (source-input "freq-in" (link 1 "InstrumentInput-1") "frequency")))
+(container-child "BseSong::Unnamed-1"
+  (loop-right 6144)
+  (loop-left 0)
+  (loop-enabled #t)
+  (pnet (link 1 "LatencyTester"))
+  (bpm 144.49774169921875)
+  (denominator 4)
+  (numerator 4)
+  (tpqn 384)
+  (modification-time "2004-09-28 19:41:23")
+  (creation-time "2004-09-20 10:32:34")
+  (container-child "BseBus::Master"
+    (master-output #t)
+    (bus-input (link 1 "LeadTrack")))
+  (container-child "BseTrack::LeadTrack"
+    (n-voices 16)
+    (midi-channel 1)
+    (snet (link 2 "MonoLead"))))
+(container-child "BseCSynth::LatencyTester"
+  (auto-activate #t)
+  (modification-time "2004-09-28 19:41:23")
+  (creation-time "2004-09-28 11:07:38")
+  (container-child "BseLatencyTest::LatencyTest-1"
+    (midi-output "/tmp/midi")
+    (midi-channel 1)
+    (midi-note D-2)
+    (logfile-name "")
+    (threshold-db -48)
+    (bpm 180)
+    (pos-y 1)
+    (pos-x -2)
+    (source-input "audio-in" (link 1 "SubIPort-1") "output-1"))
+  (container-child "BseSubIPort::SubIPort-1"
+    (pos-x -4))
+  (container-child "BseSubOPort::SubOPort-1"
+    (source-input "input-1" (link 1 "LatencyTest-1") "audio-out")
+    (source-input "input-2" (link 1 "SubIPort-1") "output-2")))
