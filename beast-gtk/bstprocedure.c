@@ -335,6 +335,7 @@ bst_procedure_dialog_preset (BstProcedureDialog *procedure_dialog,
 
 	  if (strcmp (iparam->pspec->any.name, pparam->pspec->any.name) == 0)
 	    {
+	      // g_print ("preset match %s %s\n", iparam->pspec->any.name, pparam->pspec->any.name);
 	      if (bst_param_set_from_other (bparam, pparam))
 		{
 		  u++;
@@ -342,6 +343,10 @@ bst_procedure_dialog_preset (BstProcedureDialog *procedure_dialog,
 		    bst_param_set_editable (bparam, FALSE);
 		  break;
 		}
+	      else
+		g_warning (G_STRLOC "can't convert preset parameter `%s' (`%s') to `%s' (`%s')",
+			   pparam->pspec->any.name, bse_type_name (pparam->pspec->type),
+			   iparam->pspec->any.name, bse_type_name (iparam->pspec->type));
 	    }
 	}
       

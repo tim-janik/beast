@@ -59,8 +59,8 @@ test_content_exec (BseProcedureClass *proc,
 		   BseParam          *oparams)
 {
   /* extract parameter values */
-  BsePattern *pattern	 = (BsePattern*) (iparams++)->value.v_item;
-  gint        seed_value = (iparams++)->value.v_int;
+  BsePattern *pattern	    = (BsePattern*) (iparams++)->value.v_item;
+  gint        seed_value    = (iparams++)->value.v_int;
   guint c, r;
   
   /* check parameters */

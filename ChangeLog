@@ -1,3 +1,8 @@
+Wed Feb  9 03:23:34 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c (bst_procedure_dialog_preset): be noisy about
+	failing preset parameter conversions.
+
 Wed Feb  9 00:47:06 2000  Tim Janik  <timj@gtk.org>
 
 	* docs/Makefile.am:
