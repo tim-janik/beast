@@ -157,6 +157,25 @@ public:
   }
 };
 
+struct GNewable {
+  gpointer operator new (size_t s)
+  {
+    return g_malloc0 (s);
+  }
+  void operator delete (gpointer mem)
+  {
+    g_free (mem);
+  }
+  gpointer operator new[] (size_t s)
+  {
+    return g_malloc0 (s);
+  }
+  void operator delete[] (gpointer mem)
+  {
+    g_free (mem);
+  }
+};
+
 typedef enum {
   INIT_NULL,
   INIT_EMPTY,

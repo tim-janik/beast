@@ -487,7 +487,7 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
 	{
 	  printf ("#define %s BSE_CXX_DECLARED_RECORD_TYPE (%s)\n", makeGTypeName (ri->name).c_str(), name.c_str());
 	}
-      printf ("class %s {\n", name.c_str());
+      printf ("class %s : public ::Sfi::GNewable {\n", name.c_str());
       printf ("public:\n");
       for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	{
