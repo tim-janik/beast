@@ -1,3 +1,12 @@
+Mon Jan 17 11:15:37 2000  Tim Janik  <timj@gtk.org>
+
+	* davsyndrum.[hc]: added DavSynDrum module, a synthesized drum
+	generator, provided by David A. Bartold <foxx@mail.utexas.edu>
+	(minor updates from my part to honour BSE_MIX_FREQ after _prepare()
+	and to adjust parameter resolutions).
+
+	* davorgan.c (dav_organ_set_param): fixed a minor bug i introduced.
+
 Sun Jan 16 02:51:06 2000  Tim Janik  <timj@gtk.org>
 
 	* davorgan.[hc]: added DavOrgan module, an additive organ

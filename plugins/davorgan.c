@@ -188,7 +188,7 @@ dav_organ_set_param (DavOrgan *organ,
       break;
     case PARAM_BASE_NOTE:
       organ->freq = bse_note_to_freq (param->value.v_note);
-      bse_object_param_changed (BSE_OBJECT (organ), "freq");
+      bse_object_param_changed (BSE_OBJECT (organ), "base_freq");
       break;
     case PARAM_BRASS:
       organ->brass = param->value.v_bool;

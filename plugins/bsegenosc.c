@@ -283,8 +283,7 @@ bse_gen_osc_class_ref_tables (BseGenOscClass *class)
 	  table[i] = 0.5 + (table_size - d) / table_size * BSE_MAX_SAMPLE_VALUE;
 	}
 #if 0
-      if (!(i%(guint)(table_size/100)))
-	g_print ("triangle_table[%06u]=%d\n", i, table[i]);
+      g_print ("triangle_table[%06u]=%d\n", i, table[i]);
 #endif
     }
   class->triangle_table = table;
