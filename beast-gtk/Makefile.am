@@ -110,7 +110,7 @@ bstenum_arrays.c: $(beast_headers)
 	&& rm -f xgen-beac
 $(srcdir)/stamp-bstenum_arrays.c: bstenum_arrays.c
 	@ [ -f $@ ] || touch $@
-bstgentypes.h: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl
+bstgentypes.h: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
 	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -120,7 +120,7 @@ bstgentypes.h: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl
 	&& $(SFIDL) --header --implementation ${srcdir}/bstrecords.idl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
-$(srcdir)/bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl
+$(srcdir)/bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
 	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
