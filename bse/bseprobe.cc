@@ -18,6 +18,7 @@
 #include "bseprobe.gen-idl.h"
 #include "bseengine.h"
 #include "gslcommon.h" /* for gsl_tick_stamp() */
+#include "gslfft.h"
 #include <stdexcept>
 #include <queue>
 using namespace std;
@@ -34,6 +35,7 @@ class SourceProbes {
   guint               n_channels;
   vector<ProbeHandle> channel_probes;
   vector<guint8>      range_ages, energie_ages, samples_ages, fft_ages, channel_ages;
+  guint               bsize_fifo[PROBE_QUEUE_LENGTH], bsize_offset;
   SfiRing            *omodules;
   guint               queued_jobs;
   guint               idle_handler_id;
@@ -57,6 +59,8 @@ public:
     queued_jobs = 0;
     idle_handler_id = 0;
     resize_ochannels (BSE_SOURCE_N_OCHANNELS (src));
+    memset (bsize_fifo, 0, sizeof (bsize_fifo));
+    bsize_offset = 0;
   }
   ~SourceProbes ()
   {
@@ -134,6 +138,16 @@ private:
           *it += *v++;
       }
   }
+  /* returns a blackman window: x is supposed to be in the interval [0..1] */
+  inline double
+  blackman_window (double x)
+  {
+    if (x < 0)
+      return 0;
+    if (x > 1)
+      return 0;
+    return 0.42 - 0.5 * cos (PI * x * 2) + 0.08 * cos (4 * PI * x);
+  }
   void
   handle_probes (ProbeData &pdata,
                  guint64    tick_stamp,
@@ -167,6 +181,38 @@ private:
               if (probe.probe_features->probe_range && probe.max < probe.min)
                 probe.min = probe.max = 0;
             }
+        /* complete fft */
+        for (ProbeSeq::iterator it = pdata.pseq.begin(); it != pdata.pseq.end(); it++)
+          {
+            Probe &probe = **it;
+            if (probe.probe_features->probe_fft)
+              {
+                guint fft_size = probe.sample_data.length();
+                if (fft_size)
+                  {
+                    fft_size = 1 << g_bit_storage (fft_size - 1);
+                    fft_size = CLAMP (fft_size, 2, 65536);
+                    probe.fft_data.resize (fft_size);
+                    /* perform fft */
+                    double *rv = g_new (double, fft_size * 2), *cv = rv + fft_size; // FIXME: optimize
+                    gfloat *fvalues = probe.sample_data.fblock()->values;
+                    const double reci_fft_size = 1.0 / (fft_size - 1);
+                    guint i = fft_size;
+                    while (i--) /* convert to double */
+                      rv[i] = fvalues[i] * blackman_window (i * reci_fft_size);
+                    gsl_power2_fftar (fft_size, rv, cv);
+                    fvalues = probe.fft_data.fblock()->values;
+                    i = fft_size;
+                    while (i--) /* convert to float */
+                      fvalues[i] = cv[i];
+                    g_free (rv);
+                  }
+                else
+                  probe.fft_data.resize (0);
+                if (!probe.probe_features->probe_samples)
+                  probe.sample_data.take (NULL); /* delete fblock */
+              }
+          }
         g_signal_emit (source, signal_probes, 0, pdata.pseq.c_ptr());
         /* clean up counters */
         for (guint i = 0; i < n_channels; i++)
@@ -218,10 +264,15 @@ public:
         pdata->n_modules = 0;
         for (SfiRing *node = ring; node; node = sfi_ring_walk (node, ring))
           {
+            guint block_size = 0;
+            for (guint i = 0; i < PROBE_QUEUE_LENGTH; i++)
+              block_size = MAX (block_size, bsize_fifo[i]);
+            guint min_bsize = MAX (4, bse_engine_block_size() / 8);
+            guint max_bsize = MIN (bse_engine_sample_freq(), 65536);
+            block_size = CLAMP (block_size, min_bsize, max_bsize);
             bse_trans_add (trans, bse_job_probe_request ((BseModule*) node->data,
-                                                         3 * bse_engine_block_size(),
-                                                         bse_engine_block_size(),
-                                                         &channel_ages[0], source_probe_callback, pdata));
+                                                         0, // 3 * bse_engine_block_size(),
+                                                         block_size, &channel_ages[0], source_probe_callback, pdata));
             pdata->n_modules++;
           }
         pdata->n_pending = pdata->n_modules;
@@ -249,12 +300,15 @@ public:
       idle_handler_id = bse_idle_now (idle_commit_requests, g_object_ref (source));
   }
   void
-  queue_probe_request (const ProbeFeatures **channel_features) // [n_ochannels]
+  queue_probe_request (const ProbeFeatures **channel_features, // [n_ochannels]
+                       guint                 requested_block_size)
   {
+    bool queue_block_size = false;
     /* update probe ages */
     for (guint i = 0; i < n_channels; i++)
       if (channel_features[i])
         {
+          guint oldage = channel_ages[i];
           if (channel_features[i]->probe_range)
             channel_ages[i] = range_ages[i] = PROBE_QUEUE_LENGTH;
           if (channel_features[i]->probe_energie)
@@ -263,7 +317,14 @@ public:
             channel_ages[i] = samples_ages[i] = PROBE_QUEUE_LENGTH;
           if (channel_features[i]->probe_fft)
             channel_ages[i] = fft_ages[i] = PROBE_QUEUE_LENGTH;
+          queue_block_size = oldage != channel_ages[i];
         }
+    /* enqueue block size */
+    if (queue_block_size)
+      {
+        bsize_fifo[bsize_offset++] = requested_block_size;
+        bsize_offset %= PROBE_QUEUE_LENGTH;
+      }
     queue_update();
   }
   static SourceProbes*
@@ -311,9 +372,10 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
     }
   };
   ProbeRequestSeq prs (cprseq);
-  /* sort probe-requests, so requests of a single source are adjhacent */
+  /* sort probe-requests, so requests for a single source are adjacent */
   stable_sort (prs.begin(), prs.end(), Sub::probe_requests_lesser);
   BseSource *current = NULL;
+  guint block_size = 0;
   const ProbeFeatures **channel_features = NULL;
   for (ProbeRequestSeq::iterator it = prs.begin(); it != prs.end(); it++)
     {
@@ -324,22 +386,26 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
           if (current)
             {           /* commit old request list */
               SourceProbes *probes = SourceProbes::create_from_source (current);
-              probes->queue_probe_request (channel_features);
+              probes->queue_probe_request (channel_features, block_size);
               probes->commit_requests();
               g_free (channel_features);
               channel_features = NULL;
             }
           current = (*it)->source;
           channel_features = g_new0 (const ProbeFeatures*, BSE_SOURCE_N_OCHANNELS (current));
+          block_size = 0;
         }
       guint channel_id = (*it)->channel_id;
       if (channel_id < BSE_SOURCE_N_OCHANNELS (current))        /* add request */
-        channel_features[channel_id] = (*it)->probe_features.c_ptr();
+        {
+          channel_features[channel_id] = (*it)->probe_features.c_ptr();
+          block_size = MAX ((gint) block_size, (*it)->block_size);
+        }
     }
   if (current)
     {                   /* commit last request list */
       SourceProbes *probes = SourceProbes::create_from_source (current);
-      probes->queue_probe_request (channel_features);
+      probes->queue_probe_request (channel_features, block_size);
       probes->commit_requests();
       g_free (channel_features);
       channel_features = NULL;

@@ -42,6 +42,7 @@ sequence ProbeSeq {
 record ProbeRequest {
   Source        source;
   Int           channel_id;
+  Int           block_size;
   ProbeFeatures probe_features;
 };
 sequence ProbeRequestSeq {

@@ -1,3 +1,10 @@
+Sat Nov 27 18:39:38 2004  Tim Janik  <timj@gtk.org>
+
+	* bseprobe.idl:
+	* bseprobe.cc: implemented blackman windowed fft probes.
+	added support for varying probe block sizes.
+	removed artifical delay at probe start.
+
 Sat Nov 20 07:29:15 2004  Tim Janik  <timj@gtk.org>
 
 	* bseprobe.cc: shorten probe-queue length to 3 subsequent requests,
