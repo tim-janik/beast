@@ -50,8 +50,8 @@ used for audio processing within the dynamic voices.
 Properties and channels are registered with the module object class and
 individual property changes are sent to the module object. The module
 object then passes on property changes to the engine modules, taking
-care of syncronization issues, because engine modules may live and
-process audio data in seperate threads.
+care of syncronization issues which arise because engine modules live
+and process audio data in seperate threads.
 
 To summarize, in order to write a @bse module, we need to:
 @itemize
@@ -65,11 +65,11 @@ To summarize, in order to write a @bse module, we need to:
 @chapter Defining the module
 
 In the past, the @bse plugin API went through quite a few major rewrites
-to make plugin implementations as easy as possible. A standard module needs
-three files for a full implementation:
+to make plugin implementations as easy as possible. At this point,
+a standard module needs three files for a full implementation:
 
 @enumerate
-@item an @file{.idl} file containing all the definitions
+@item an @file{.idl} file containing class, property and channel definitions
 @item a @file{.cc} file containing the data processing and property
       handling logic
 @item an icon, 64 by 64 pixels RGBA format, saved as @file{.png} file.
@@ -78,10 +78,94 @@ three files for a full implementation:
 
 @section Writing the @file{IDL} file
 
-@bse sports an IDL compiler for object definitions to eliminate any
+@bse provides an IDL compiler for object definitions to eliminate any
 mechanic code fragments the programmer would need to create manually
 otherwise and to generate binding and glue code between various
-@bse components.
+@bse components, the IDL compiler is described in detail in
+@uref{beast-doc://sfidl-manual,,the SFIDL manual}.
+
+To make use of the BSE object tree, every plugin IDL file starts out with
+an include statement. Then a namespace is opened within which the desired
+classes, structures or choices (a type of enumeration) can be defined.
+
+For most plugins, an ordinary class definition with properties and input
+and output channels suffices:
+
+@example
+#include <bse/bse.idl>			// include BSE classes and definitions
+namespace Bse @{ namespace Contrib @{	// enter the namespace Bse::Contrib
+class NotchFilter : Effect @{		// derive Notchfilter from Bse::Effect
+  Real    frequency;			// a property
+  OStream audio_out;			// output signal
+@};
+@} @} // Bse::Contrib
+@end example
+
+Here we have a small @object{NotchFilter} object, defined in the namespace
+@namespace{Bse::Contrib} which is the standard namespace for third-party
+@bse plugins, more on namespaces can be found in the
+@uref{beast-doc://sfidl-manual#namespaces,, SFIDL manual namespace section}.
+The object has a @property{frequency} property of type @type{Real} and
+an output channel @channel{audio_out}.
+
+@anchor{properties}
+@section Property types
+
+@bse provides a large set of property constructors.
+By convention, all constructors expect a translatable label and a translatable
+description as first two arguments and an option string as last argument. The
+various supported options are described in the next section. Here, we give an
+overview of the various constructors, grouped by types.
+
+@subsection Bool properties
+@itemize
+@item @func{Bool} (@var{label}, @var{description}, @var{default}, @var{options}) @*
+	An ordinary property of type Bool. For GUIs and documentation generation, the
+	translatable strings @var{label} and @var{description} are provided. The default
+	value is given by @var{default} and possible values for @var{options} are discussed
+	in the @uref{beast-doc://plugin-devel#options,, property options section}.
+@end itemize
+
+@subsection Real (IEEE-754 double precision floating point) properties
+@itemize
+@item @func{Real}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options}) @*
+	An ordinary property of type Real. Most arguments should be self explanatory, @var{stepping} can be used by
+	GUIs to provide increment/decrement editing abilities.
+@item @func{Perc}      (@var{label}, @var{description}, @var{default}, @var{options}) @*
+	Percentage property, the minimum and maximum are fixed 0 and 100 respectively, and additional options
+	are provided for GUIs to recognize percentage properties as such.
+@item @func{DB}        (@var{label}, @var{description}, @var{default}, @var{options}) @* 
+@item @func{Balance}   (@var{label}, @var{description}, @var{default}, @var{options}) @* 
+@item @func{Frequency} (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{options}) @*
+@item @func{Gain}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options}) @*
+@end itemize
+
+@subsection Int (signed 32bit) properties
+@itemize
+@item @func{Int}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options}) @*
+@item @func{UInt}     (@var{label}, @var{description}, @var{default}, @var{options}) @*
+	Similar to @func{Int()} where the minimum and maximum are fixed at 0 and 2147483647.
+@item @func{Octave}   (@var{label}, @var{description}, @var{default}, @var{options}) @*
+@item @func{FineTune} (@var{label}, @var{description}, @var{options}) @*
+@end itemize
+
+@subsection Other numeric properties
+@itemize
+@item @func{Note} (@var{label}, @var{description}, @var{default}, @var{options}) @*
+Int property within 0 and 131 (sometimes also uses 132 to denote no/unspecified/unparsable notes).
+For the @var{default} value, @bse provides a constant @const{KAMMER_NOTE} and a set of macros taking
+an octave argument:
+@cmacro{NOTE_C}(@var{octave}), @cmacro{NOTE_Cis}(@var{octave}), @cmacro{NOTE_Des}(@var{octave}), @cmacro{NOTE_D}(@var{octave}),
+@cmacro{NOTE_Dis}(@var{octave}), @cmacro{NOTE_Es}(@var{octave}), @cmacro{NOTE_E}(@var{octave}), @cmacro{NOTE_F}(@var{octave}),
+@cmacro{NOTE_Fis}(@var{octave}), @cmacro{NOTE_Ges}(@var{octave}), @cmacro{NOTE_G}(@var{octave}), @cmacro{NOTE_Gis}(@var{octave}),
+@cmacro{NOTE_As}(@var{octave}), @cmacro{NOTE_A}(@var{octave}), @cmacro{NOTE_Ais}(@var{octave}), @cmacro{NOTE_Bes}(@var{octave}),
+@cmacro{NOTE_B}(@var{octave}).
+@item @func{Num} (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options}) @*
+A signed 64bit numeric property with -9223372036854775808 and 9223372036854775807 as possible minimum and maximum values.
+@end itemize
+
+@anchor{options}
+@section Property options
 
 @section Adding a @file{PNG} icon
 

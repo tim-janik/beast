@@ -1,3 +1,11 @@
+Fri Sep  3 20:12:37 2004  Tim Janik  <timj@gtk.org>
+
+	* plugin-devel.texi: more documentation, especially on properties.
+
+	* sfidl-manual.texi: many fixups, rewordings and much reformatting.
+
+	* docs/teximacros.texi: added markup macors.
+
 Fri Sep  3 15:46:52 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackview.c: tooltip fixups.

@@ -28,8 +28,8 @@
 @strong{B}edevilled @strong{S}ound @strong{E}ngine
 @end rmacro
 
-@rmacro gsl
-@emph{GSL}
+@rmacro sfi
+@emph{SFI}
 @end rmacro
 
 @rmacro beastbse
@@ -42,4 +42,28 @@
 
 @rmacro arts
 @emph{aRts}
+@end rmacro
+
+@rmacro namespace{TEXT}
+@var{\TEXT\}
+@end rmacro
+
+@rmacro type{TEXT}
+@var{\TEXT\}
+@end rmacro
+
+@rmacro field{TEXT}
+@var{\TEXT\}
+@end rmacro
+
+@rmacro func{TEXT}
+@var{\TEXT\}
+@end rmacro
+
+@rmacro cmacro{TEXT}
+@var{\TEXT\}
+@end rmacro
+
+@rmacro const{TEXT}
+@var{\TEXT\}
 @end rmacro

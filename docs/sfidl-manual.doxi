@@ -12,16 +12,16 @@
 @node Top,,,
 @center @revision{Document revised:}
 
-This document gives an overview over SFIDL, which is used
+This document gives an overview over @command{sfidl}, which is used
 in @beast{} for two purposes:
 
 @enumerate
-@item Describe the API in a language independant fashion, to make
-  it possible to access the @bse functionality from C, C++, Scheme
-  (and possibly other languages).
-@item Provide an easy way to fully specify the API of modules, @c FIXME: link
-  specifying all necessary information to generate a useful GUI
-  automatically.
+@item	Describe the API in a language independant fashion, to make
+	it possible to access the @bse functionality from C, C++, Scheme
+	and possibly other languages.
+@item	Provide an easy way to fully define the API of modules, @c FIXME: link
+	specifying all necessary information to generate a useful GUI
+	automatically.
 @end enumerate  
   
 
@@ -60,14 +60,23 @@ design.
   new classes, new procedures, new procedure parameters, new record fields)
   should generally not affect a client's ability to talk to the core.
   That is, updating the core to a newer version should not force
-  recompiles.
+  recompilation of the client code.
 @item Access to the @bse code should be possible from various programming
   languages.
 @item Writing plugins should be @emph{as easy as possible}.
 @end enumerate
 
+@section The @command{sfidl} command line utility
+
+@command{sfidl} is the interface definition language compiler for @sfi{},
+a manual page is available
+@uref{beast-man://1/sfidl,,here}, and the IDL file format is detailed
+in the next chapters.
+
+
 @chapter The .idl files
 
+@anchor{namespaces}
 @section The basics: comments and namespaces.
 
 The syntax of .idl files is similar to C++ and/or CORBA IDL. In the following
@@ -79,30 +88,26 @@ The syntax for namespace is
 
 @example
 // IDL Code
-
 namespace Foo @{
-  ... declarations go here ...
-  sequence @{  /* example sequence of integer values */
-    Sfi::Int ints;
-  @} IntSeq;
-  ... more declarations go here ...
+/* declarations go here */
+sequence @{			// example sequence of integer values
+  Sfi::Int ints;
+@} IntSeq;
+/* more declarations go here */
 @}
 
 @end example
 
-Namespaces can not be nested. There is an additional using keyword, which
-can be used to use avoid using the "::" which says that we used something
-from a different namespace:
+Namespaces can also be nested.
+There is an additional using keyword, which can be used to avoid using the
+namespace qualifier "::" to refer to something from a different namespace:
 
 @example
 // IDL Code
-
 namespace Bar @{
-  ... declarations go here ...
-  Foo::IntSeq getEvenNumbers (Sfi::Int bound);	// need to namespace Foo::
-  using namespace Foo;				// add Foo:: to namespace search list
-  IntSeq getPrimeNumbers (Sfi::Int bound);	// IntSeq is found in Foo:: automatically
-  ... more declarations go here ...
+Foo::IntSeq get_even_numbers (Sfi::Int bound);	// needed to refer to namespace Foo::
+using namespace Foo;				// adds Foo:: to namespace search list
+IntSeq get_prime_numbers (Sfi::Int bound);	// IntSeq is found in Foo:: automatically
 @}
 
 @end example
@@ -144,36 +149,34 @@ as follows:
 
 @example
 // IDL Code
-
 namespace Foo @{
-  choice WaveForm @{
-    WAVE_FORM_SINE,
-    WAVE_FORM_SAW,
-    WAVE_FORM_RECT
-  @};
+choice WaveForm @{
+  WAVE_FORM_SINE,
+  WAVE_FORM_SAW,
+  WAVE_FORM_RECT
+@};
 @}
 @end example
 
-This means that WaveForm is one of these choices. You can add two informations
-to each choice value (both optional):
+This means that a value of type @type{WaveForm} can hold one of these choices.
+Extra information can be supplied with each choice value (both optional):
 
 @itemize
-@item The number that will be used in the implementation (where in C and C++ the
-  choice will appear as enum).
-@item A user readable string, which can be used in the GUI to describe the value
-  of the choice to the user (this string also can be translated). @c FIXME: but won't be currently
+@item A number that will be used by core language binding implementations (e.g. if in C or C++ the
+      choice is implemenated as an enum type),
+@item A user readable string, which can be used in GUIs to describe the value of the choice to
+      the user (this string also is translatable).
 @end itemize
 
 @example
 // IDL Code
-
 namespace Foo @{
-  choice WaveForm @{
-    WAVE_FORM_NONE = (Neutral, "No waveform"),
-    WAVE_FORM_SINE = (1,       "Sine wave"),
-    WAVE_FORM_SAW  = (2,       "Sawtooth wave"),
-    WAVE_FORM_RECT = (3,       "Rectangle wave")
-  @};
+choice WaveForm @{
+  WAVE_FORM_NONE = (Neutral, "No waveform"),
+  WAVE_FORM_SINE = (1,       "Sine wave"),
+  WAVE_FORM_SAW  = (2,       "Sawtooth wave"),
+  WAVE_FORM_RECT = (3,       "Rectangle wave")
+@};
 @}
 @end example
 
@@ -187,13 +190,10 @@ There is one exception: the Neutral keyword indicates that the number should be 
 for both, client code and implementation. In C/C++, this allows writing
 
 @example
-@{
 // C++ Code
-
-  Foo::WaveForm wave = osc->getWaveForm();
+  Foo::WaveForm wave = osc->get_wave_form();
   if (!wave)
     printf ("No wave form selected.\n");
-@}
 @end example
 
 @anchor{composite-types}
@@ -206,21 +206,19 @@ Sequences are used for a sequence of multiple values of the same data type. The 
 
 @example
 // IDL Code
-
 namespace Foo @{
-  sequence IntSeq @{
-    Sfi::Int ints;  // the contained type
-  @};
+sequence IntSeq @{
+  Sfi::Int ints;  // the contained type
+@};
 @}
 @end example
 
 A sequence may then hold 0, 1 or N values of the same type. The name "ints" here is only used for
-the C language, where the ints contains the actual data and n_ints contains the number of items
+the C language, where @field{ints} contains the actual data and @field{n_ints} contains the number of items
 in the sequence.
 
 @example
 // C Code
-
   FooIntSeq *seq = foo_int_seq_new();
   foo_int_seq_resize (seq, 2);
   seq->ints[0] = seq->ints[1] = 42;
@@ -228,27 +226,26 @@ in the sequence.
 @end example
 
 Records can be used for a sequence of values of different data types (they behave similar
-to structs in C/C++).
+to structures in C/C++).
 
 @example
 // IDL Code
-
 namespace Foo @{
-  using namespace Sfi;
+using namespace Sfi;
 
-  record PartNote @{
-    // a human readable string describing what the record does (optional)
-    Info     blurb = "Part specific note representation";
+record PartNote @{
+  // a human readable string describing what the record does (optional)
+  Info     blurb = "Part specific note representation";
 
-    // the record fields
-    Int      id;
-    Int      tick;
-    Int      duration;
-    Int      note;
-    Int      fine_tune;
-    Real     velocity;
-    Bool     selected;
-  @};
+  // the record fields
+  Int      id;
+  Int      tick;
+  Int      duration;
+  Int      note;
+  Int      fine_tune;
+  Real     velocity;
+  Bool     selected;
+@};
 @}
 @end example
 
@@ -273,17 +270,17 @@ You can use prototypes in this case, for all types the IDL compile understands.
 
 @example
 namespace Foo @{
-  choice SomeChoice;
-  sequence SomeSequence;
-  record SomeRecord;
-  class SomeClass;
+choice SomeChoice;
+sequence SomeSequence;
+record SomeRecord;
+class SomeClass;
 
-  record Test @{
-    SomeChoice   a;
-    SomeSequence b;
-    SomeRecord   c;
-    SomeClass    d;
-  @};
+record Test @{
+  SomeChoice   a;
+  SomeSequence b;
+  SomeRecord   c;
+  SomeClass    d;
+@};
 @}
 @end example
 
@@ -296,22 +293,21 @@ of simple classes might look like this (not taken from the @bse class hierarchy)
 
 @example
 // IDL Code
-
 namespace Foo @{
-  using namespace Sfi;
+using namespace Sfi;
 
-  class AudioObject @{
-    void play ();
-    void stop ();
-  @};
+class AudioObject @{
+  void play ();
+  void stop ();
+@};
 
-  class Sample : AudioObject @{
-  @};
+class Sample : AudioObject @{
+@};
 
-  class Song : AudioObject @{
-    Sample loadSample (String filename);
-    void insertSample (Sample sample, Real position, Real speed);
-  @};
+class Song : AudioObject @{
+  Sample loadSample (String filename);
+  void insertSample (Sample sample, Real position, Real speed);
+@};
 @}
 @end example
 
@@ -321,22 +317,22 @@ as demonstrated in this simple example:
 
 @example
 // IDL Code
-
 #include <bse/bse.idl>
 
 namespace Foo @{
-  using namespace Bse; // for Bse::STANDARD
-  // ... as above ...
+using namespace Bse; // for Bse::STANDARD
+// ... like above ...
 
-  class Song : AudioObject @{
-    Sample loadSample (Sample filename) @{
-      Info blurb = _("This loads a sample for further use into the song");  // the _ function marks this string for translation
+class Song : AudioObject @{
+  Sample loadSample (Sample filename) @{
+    // _() is used as i18n markup for translatable strings
+    Info blurb = _("This loads a sample for further use into the song");
 
-      In  filename = (_("Sample Filename"), _("The name of the sample file"), "", STANDARD);
-      Out sample   = (_("Sample"), _("The newly loaded sample"), STANDARD);
-    @};
-    // ... as above ...
+    In  filename = (_("Sample Filename"), _("The name of the sample file"), "", STANDARD);
+    Out sample   = (_("Sample"), _("The newly loaded sample"), STANDARD);
   @};
+  // ... like above ...
+@};
 @}
 @end example
 
@@ -358,58 +354,80 @@ when it is done playing.
 
 @example
 // IDL Code
-
 namespace Foo @{
-  class AudioObject @{
-    void play ();
-    void stop ();
+class AudioObject @{
+  void play ();
+  void stop ();
 
-    signal positionChanged (Real new_position);
-    signal donePlaying ();
-  @};
+  signal positionChanged (Real new_position);
+  signal donePlaying ();
+@};
 @}
 @end example
 
+@anchor{properties}
 @subsection Properties
 
-Another important element commonly found in classes are properties. They can be grouped together
-for better readability in the GUI.
+Another important element commonly found in classes are properties.
+Usually, they are logically grouped to improve readability in GUIs.
 
 @example
 // IDL Code
-
-#include <bse/bse.idl>
-
+namespace Bse @{ namespace Contrib @{
 class Balance : Bse::Effect @{
-  // ...
   group _("Audio Input") @{
-    Real  alevel1    = Perc (_("Input 1 [%]"), _("Attenuate the level of audio input 1"), 100, STANDARD);
-    Real  alevel2    = Perc (_("Input 2 [%]"), _("Attenuate the level of audio input 2"), 100, STANDARD);
-    Real  abalance   = Balance (_("Balance"), _("Balance audio input levels"), 0, GUI);
+    Real  alevel1;	// volume of audio input 1
+    Real  alevel2;	// volume of audio input 2
   @};
   group _("Control Input") @{
     Real  clevel1    = Perc (_("Input 1 [%]"), _("Attenuate the level of control input 1"), 100, STANDARD);
     Real  clevel2    = Perc (_("Input 2 [%]"), _("Attenuate the level of control input 2"), 100, STANDARD);
-    Real  cbalance   = Balance (_("Balance"), _("Balance control input levels"), 0, GUI);
   @};
   group _("Output Panning") @{
-    Real  ostrength  = Perc (_("Control Strength"), _("Adjust how much the control signals affect the output balance"), 100, STANDARD);
-    Real  lowpass    = Frequency (_("Lowpass [Hz]"), _("Lowpass filter frequency for the control signal"), 100, 100, 1000, STANDARD);
-    Real  obalance   = Balance (_("Output Balance"), _("Adjust output balance between left and right"), 0, STANDARD);
+    Real  lowpass    = Frequency (_("Lowpass [Hz]"),
+                                  _("Lowpass filter frequency for the control signal"),
+                                  100, 100, 1000, STANDARD);
+    Real  obalance   = Balance (_("Output Balance"),
+                                _("Adjust output balance between left and right"),
+                                0, STANDARD);
   @};
 @};
+@} @} // Bse::Contrib
 @end example
 
-As you see the properties can be of any IDL type.
+Although the above example isn't comprehensive in this regard, properties can be of any IDL type.
+The aforementioned groups come with translatable names, and properties may support a good chunk
+of definitions besides just their type and name. 
 
-We say something about the valid ranges, name,... of the properties we define by assigning
-a parameter specification here. More about parameter specifications can be found in the
-section PARAM SPECS. @c FIXME: link
+In the example, @field{alevel1} and @field{alevel2} use the
+simplest form possible to define a property, just the types and names are given.
+Displaying a property like this in GUIs will provide unattractive results, to say the least.
+
+For this reason, @command{sfidl} allows type specific constructors, and by convention
+these constructors expect a translatable label and a translatable description as first two arguments
+and an option string as last argument.
+The constructors are provided by the @command{sfidl} language bindings, so their availability
+differs dependant on that.
+In the above example, the percentage, balance and frequency constructors, all of type @type{Real}
+and provided by @bse{}, are used and expect these arguments:
+@enumerate
+@item a translatable label,
+@item a translatable description,
+@item a default value (for @func{Perc()} within 0 .. 100, for @func{Freuquency()} within minimum and maximum),
+@item a minimum value (@func{Freuquency()} only),
+@item a maximum value (@func{Freuquency()} only),
+@item an option argument.
+@end enumerate
+
+More on property constructors provided by @bse can be found in the
+@uref{beast-doc://plugin-devel,, plugin development guide} in the
+@uref{beast-doc://plugin-devel#properties,, property section} and the
+@uref{beast-doc://plugin-devel#options,, property option section}.
 
 For this section, it is only useful to know that the last element of the parameter specification
-adds some flags. For instance STANDARD means that the property can be read, written, will be saved
-to the file and shown in the gui. GUI on the contrary means that the property will only be shown
-in the gui, can be changed by the GUI, but won't be saved to the file.
+adds some flags. For instance @const{STANDARD} means that the property can be read, written, will be saved
+to the file and shown in the gui.
+@const{GUI} on the contrary means that the property will only be used for GUIs, can be changed by the GUI, but won't be saved to the file.
 
 @subsection Streams
 
@@ -443,7 +461,7 @@ Procedures can be thought of as methods-without-a-class. A classic example is:
 
 @example
 namespace Bse @{
-  Real note_to_freq (Int note, Int fine_tune);
+Real note_to_freq (Int note, Int fine_tune);
 @}
 @end example
 
@@ -451,7 +469,6 @@ which converts a midi note to a frequency, using a given fine tune. The same
 syntactic elements for specifying more details (parameter speccifications,
 Info strings) that are valid for methods can be used here as well.
 
-@chapter The sfidl command line utility
 
 @chapter The language bindings
 
