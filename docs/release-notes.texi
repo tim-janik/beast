@@ -5,7 +5,7 @@
 @footnotestyle end
 @c %**end of header
 
-@include teximacros.texi
+@include texiutils.texi
 
 @docfont{tech}
 

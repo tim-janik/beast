@@ -3,26 +3,29 @@
 @settitle BEAST-INDEX
 @c %**end of header
 
-@include teximacros.texi
+@include texiutils.texi
 
 @unnumbered Documents
 
 @itemize
 @item @uref{beast-doc://faq,,           Frequently Asked Questions}
 @item @uref{beast-doc://quickstart,,    Quick Start Guide}
+@item @uref{beast-man://1/beast,,       BEAST Manual Page}
+@item @uref{beast-man://1/bsesh,,       BSE Scheme Shell Manual Page}
 @item @uref{beast-doc://release-notes,, BEAST Release Notes}
 @item @uref{beast-doc://release-news,,  BEAST NEWS File}
-@item @uref{beast-doc://gsl-mplan,,     GSL Engine (Development Concepts)}
 @end itemize
 
 @unnumbered Reference
 
 @itemize
-@item @uref{beast-man://3/sfi,,         Synthesis Fusion Kit Interface}
-@item @uref{beast-man://3/bse,,         Bedevilled Sound Engine}
-@item @uref{beast-man://3/beast-gxk,,   BEAST's Gtk+ Extension Kit}
-@item @uref{beast-man://3/bse-procs,,   BSE Procedures}
-@item @uref{beast-man://3/bse-structs,, BSE Structures}
+@item @uref{beast-man://1/bse-plugin-generator,, BSE Plugin Generator Manual Page}
+@item @uref{beast-man://3/bse-procs,,   	 BSE Procedures}
+@item @uref{beast-man://3/bse-structs,, 	 BSE Structures}
+@item @uref{beast-man://3/sfi,,         	 Synthesis Fusion Kit Interface}
+@item @uref{beast-man://3/bse,,         	 Bedevilled Sound Engine}
+@item @uref{beast-man://3/beast-gxk,,   	 BEAST's Gtk+ Extension Kit}
+@item @uref{beast-doc://gsl-mplan,,     	 GSL Engine (Development Concepts)}
 @end itemize
 
 @bye

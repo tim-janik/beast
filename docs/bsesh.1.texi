@@ -1,0 +1,99 @@
+\input texinfo
+@c %**start of header
+@settitle BSESH - BSE Scheme Shell
+@footnotestyle end
+@c %**end of header
+
+@include texiutils.texi
+
+@docpackage{BEAST-@value{BST_VERSION}}
+@docfont{tech}
+
+@unnumbered NAME
+ bsesh -- A Guile based scheme shell for BEAST and BSE.
+
+@unnumbered SYNOPSIS
+	@command{bsesh} [@option{OPTIONS}] [@option{---}] ...
+@c FIXME: alper, the brackets [ ] also appear marked up in @emph in manual pages
+
+@unnumbered DESCRIPTION
+	@bsesh is a guile(1) based scheme shell for @bse{}, the Bedevilled Sound Engine.
+
+        @bsesh provides a shell interface to all procedures exported by the
+        @bse library, so scripts are able to access the full range of functionality
+        provided by it, from simple playback of a @file{.bse} file to
+        full fledged automated creation or editing of synthesis networks.
+
+        Alternatively to the linked in @bse library, the @bsesh language interface
+        can also talk to a remotely running @bse library host, for instance
+        @uref{beast-man://1/beast}.
+        By operating on a remotely running @bse core, @bsesh can be used to script
+        arbitrary @bse programs. The shell is also used directly by the @bse library to
+        execute procedures on its behalf, this allowes
+        @bse procedures to be written in scheme.
+
+        When started, @bsesh tests whether the first non-option argument is a @file{.bse}
+        file and if the test succeeds, attempts to play the command line arguments as
+        @file{.bse} files.
+
+@unnumbered OPTIONS
+	@bsesh follows the usual GNU command line syntax, with long options starting with two dashes (`-').
+
+@table @option 
+@item ---bse-pipe INFD OUTFD
+	Provide the input and output communication filedescriptors
+        for remote operation.
+@item ---bse-eval STRING
+	Execute (eval-string STRING) instead of going into interactive mode.
+@item ---bse-enable-register
+	Allowes registration of procedures with the @bse core.
+@item ---bse-no-load
+	Prevent automated loading of plugins and scripts at startup time in interactive mode.
+@item ---bse-no-play
+	Prevent automated detection and playback of @file{.bse} file command line arguments.
+@item ---g-fatal-warnings
+	Make runtime warnings fatal (abort).
+@item ---help
+	Describe command line options and exit.
+@item ---version
+	Display version and exit.
+@end table
+@* @c FIXME: alper, this extra newline shouldn't be necessary
+
+	Guile Options:
+        
+@table @option
+@item -l FILE
+	Load scheme source code from file.
+@item -e FUNCTION
+	After reading script, apply FUNCTION to command-line arguments.
+@item -ds
+	Do -s SCRIPT at this point (note that this argument must be used in conjuction with -s).
+@item ---debug
+	Start with debugging evaluator and backtraces enabled (useful for debugging scripts).
+@item ---emacs
+	Enable emacs protocol for use from within emacs (experimental).
+@end table
+@* @c FIXME: alper, this extra newline shouldn't be necessary
+
+	The remaining Guile options stop argument processing, and pass all
+        remaining arguments as the value of (command-line):
+        
+@table @option
+@item ---
+	Stop argument processing, start in interactive mode.
+@item -c EXPR
+	Stop argument processing, evaluate EXPR as a scheme expression.
+@item -s SCRIPT
+	Load Scheme source from SCRIPT and execute as a script.
+@end table
+@* @c FIXME: alper, this extra newline shouldn't be necessary
+
+@unnumbered SEE ALSO
+@uref{man://1/guile},
+@uref{beast-man://1/beast},
+@uref{beast-man://1/bse-plugin-generator}
+
+@*
+@revision{Document Revised:}
+@bye

@@ -1,0 +1,58 @@
+@c emacs: -*-texinfo-*-
+
+@include texithequemacros.texi
+
+@c --- misc ---
+@rmacro plain{TEXT}
+\TEXT\
+@end rmacro
+
+@c --- manual page markup ---
+@c --- FIXME: texitheque needs to emph @command and @option
+@ifxml
+@unmacro command
+@rmacro command{TEXT}
+@rawxml{<emph><command>}\TEXT\@rawxml{</command></emph>}
+@end rmacro
+@unmacro option
+@rmacro option{TEXT}
+@rawxml{<emph><option>}\TEXT\@rawxml{</option></emph>}
+@end rmacro
+@end ifxml
+
+@c --- common names ---
+@rmacro beast
+@emph{BEAST}
+@end rmacro
+
+@rmacro bsesh
+@emph{BSESH}
+@end rmacro
+
+@rmacro beastlong
+@strong{BE}devilled @strong{A}udio @strong{S}ys@strong{T}em
+@end rmacro
+
+@rmacro bse
+@emph{BSE}
+@end rmacro
+
+@rmacro bselong
+@strong{B}edevilled @strong{S}ound @strong{E}ngine
+@end rmacro
+
+@rmacro gsl
+@emph{GSL}
+@end rmacro
+
+@rmacro beastbse
+@emph{BEAST/BSE}
+@end rmacro
+
+@rmacro sfk
+@emph{SFK}
+@end rmacro
+
+@rmacro arts
+@emph{aRts}
+@end rmacro

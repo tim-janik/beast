@@ -537,7 +537,8 @@ bst_early_parse_args (int    *argc_p,
 	    g_print ("%s\n", BST_PATH_DATA_SAMPLES);
 	  else
 	    {
-	      g_message ("no such resource path: %s", arg);
+	      if (arg[0])
+                g_message ("no such resource path: %s", arg);
 	      g_message ("supported resource paths: docs, images, plugins, scripts, samples");
 	    }
 	  exit (0);
@@ -601,12 +602,12 @@ bst_print_blurb (gboolean print_help)
 #ifdef BST_WITH_XKB
       g_print ("  --force-xkb             force XKB keytable queries\n");
 #endif
-      g_print ("  --print-path=resource   print the file path for a specific resource\n");
+      g_print ("  --print-path[=RESOURCE] print the file path for a specific resource\n");
       g_print ("  -h, --help              show this help message\n");
       g_print ("  -v, --version           print version and file paths\n");
       g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
       g_print ("Development Options:\n");
-      g_print ("  --debug=keys            enable certain verbosity stages\n");
+      g_print ("  --debug=KEYS            enable certain verbosity stages\n");
       g_print ("  --debug-list            list possible debug keys\n");
       g_print ("  -:[flags]               [flags] can be any of:\n");
       g_print ("                          f - fatal warnings\n");

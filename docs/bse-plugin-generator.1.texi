@@ -4,7 +4,7 @@
 @footnotestyle end
 @c %**end of header
 
-@include teximacros.texi
+@include texiutils.texi
 @include version.texi
 
 @docpackage{BEAST-@value{BST_VERSION}}
@@ -41,6 +41,7 @@ don't use standard include path
 @end table
 
 @unnumbered SEE ALSO
+@uref{beast-man://1/bsesh,BSE Scheme Shell},
 @uref{beast-man://3/bse-procs,BSE Procedures},
 @uref{beast-man://3/bse-structs,BSE Structures}
 @*

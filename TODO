@@ -81,7 +81,8 @@ FIXMES:
 * eliminate everything that fgrep -i fixme/hack reveals
 
 DOCS:
-- fix umlauts in utf8 texi files [Alper]
+- fix various manual page markup problems [Alper]
+  these are flagged as FIXME in docs/*.[13]
 - add QuickStart section on wave selection
 - add QuickStart section on postprocessing effects
 - make beast recognize and view .markup files from the command line

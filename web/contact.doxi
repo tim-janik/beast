@@ -3,7 +3,7 @@
 @settitle BEAST/BSE Mailing List and Contacts
 @c %**end of header
 
-@include teximacros.texi
+@include texiutils.texi
 
 @hasbanner{large}
 @navigation{navigation.xml}

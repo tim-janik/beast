@@ -283,7 +283,7 @@ print <<END_HEADER;
 \@footnotestyle end
 \@c %**end of header
 
-\@include teximacros.texi
+\@include texiutils.texi
 
 \@docpackage{$package}
 \@docfont{tech}

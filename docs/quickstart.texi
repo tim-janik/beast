@@ -4,7 +4,7 @@
 @footnotestyle end
 @c %**end of header
 
-@include teximacros.texi
+@include texiutils.texi
 
 @doctitle @beastbse Quick Start Guide
 @docauthor Tim Janik

@@ -1,3 +1,16 @@
+Fri Oct  3 13:53:29 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/*: generate texiutils.texi instead of version.texi,
+	and include ../teximacros.texi.
+
+	* docs/teximacros.texi: supply project specific macros.
+
+	* shell/bse-scm-glue.boot: implement (bse-shell-auto-play) which
+	is used if .bse files are given as comand-line args.
+
+	* docs/bsesh.1.texi: 
+	* docs/beast.1.texi: added manual pages to beast.
+
 Fri Oct  3 08:53:20 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/icons/properties.xcf:

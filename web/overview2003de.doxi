@@ -4,7 +4,7 @@
 @footnotestyle end
 @c %**end of header
 
-@include teximacros.texi
+@include texiutils.texi
 
 @doctitle @beast - Musiksynthese unter Linux
 @docauthor Tim Janik

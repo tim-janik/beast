@@ -9,7 +9,7 @@ docsdir = ${beastdocsdir}
 docs_DATA = ${markup_targets}
 
 # install man pages
-man1_MANS = bse-plugin-generator.1
+man1_MANS = beast.1 bsesh.1 bse-plugin-generator.1
 man3_MANS = sfi.3 bse.3 beast-gxk.3 bse-procs.3 bse-structs.3
 man_MANS = $(man1_MANS) $(man3_MANS)
 
@@ -122,11 +122,12 @@ gnome-index.lst.gz: # default-generate if not present to avoid build breakage
 	echo | gzip -9 >$@
 gnome-index.lst: $(srcdir)/gnome-index.lst.gz	# uncompress rule
 	cat $< | gzip -d >$@
-version.texi:
+texiutils.texi: $(srcdir)/../teximacros.texi
 	cd . \
 	&& echo "@set BST_VERSION $(BST_VERSION)"  >$@ \
-	&& echo "@set BSE_VERSION $(BSE_VERSION)" >>$@
-%.texi: $(srcdir)/../%.texi version.texi
+	&& echo "@set BSE_VERSION $(BSE_VERSION)" >>$@ \
+	&& cat $< >>$@
+%.texi: $(srcdir)/../%.texi texiutils.texi
 	cp $< $@
 # generate *.xml from *.texi with texitheque
 %.xml: %.texi index.lst gnome-index.lst
@@ -162,7 +163,7 @@ gsl-mplan.texi: $(top_srcdir)/bse/gsl-mplan.txt Makefile
 	cd . \
 	&& echo "\input texinfo"		 >$@ \
 	&& echo "@settitle GSL Flow Engine"	>>$@ \
-	&& echo "@include teximacros.texi" 	>>$@ \
+	&& echo "@include texiutils.texi" 	>>$@ \
 	&& echo "@example"			>>$@ \
 	&& echo "@verbatiminclude $<"		>>$@ \
 	&& echo "@end example"			>>$@ \
@@ -171,7 +172,7 @@ release-news.texi: $(top_srcdir)/NEWS Makefile
 	cd . \
 	&& echo "\input texinfo"		>$@ \
 	&& echo "@settitle BEAST/BSE NEWS"	>>$@ \
-	&& echo "@include teximacros.texi" 	>>$@ \
+	&& echo "@include texiutils.texi" 	>>$@ \
 	&& echo "@hasbanner{large}"             >>$@ \
 	&& echo "@navigation{navigation.xml}"   >>$@ \
 	&& echo "@example"			>>$@ \
@@ -183,7 +184,7 @@ conditional_clean = $(strip \
 	navigation.xml		gnome-index.lst		\
 	gsl-mplan.texi		release-news.texi	\
 	$(temp_ref_docu)	$(temp_log2texi)	\
-	$(distdocs)		version.texi		\
+	$(distdocs)		texiutils.texi		\
 )
 endif
 CLEANFILES += $(conditional_clean)

@@ -1,0 +1,92 @@
+\input texinfo
+@c %**start of header
+@settitle BEAST - Bedevilled Audio System
+@footnotestyle end
+@c %**end of header
+
+@include texiutils.texi
+
+@docpackage{BEAST-@value{BST_VERSION}}
+@docfont{tech}
+
+@unnumbered NAME
+ beast -- Graphical program to simulate audio synthesis and compose music.
+
+@unnumbered SYNOPSIS
+	@command{beast} [@option{OPTIONS}] [@var{FILES...}]
+@c FIXME: alper, the brackets [ ] are also appear marked up in @emph in manual pages
+
+@unnumbered DESCRIPTION
+	@beast is the BEdevilled Audio SysTem. It is a Gtk+/GNOME based program to
+	simulate audio synthesis and to compose music.
+
+	@beast comes with various synthesis modules which can be arranged in
+	networks for modular synthesis. It is capable of monophonic and polyphonic
+	voice processing, provides MIDI sequencer functionality and supports
+	external sequencer sources. A huge set of extra modules is available through
+        the support for LADSPA (Linux Audio Developer's Simple Plugin API) plugins.
+
+        @beast{}'s underlying sound engine @bse also comes with a scheme scripting
+        extension which allowes for advanced non-interactive processing via
+        bsesh(1) and creation of additional GUI functionality for @beast{}.
+
+@unnumbered OPTIONS
+	@beast follows the usual GNU command line syntax, with long options starting with two dashes (`-').
+
+@table @option
+@item ---devel
+	Enrich the GUI with hints usefull for (script) developers
+@item ---print-path[=RESOURCE]
+	Print the file path for a specific resource (e.g. `plugins' or `images').
+	@c FIXME: alper, @option seems to be stuck for the rest of the text
+	Giving just @option{---print-path} without an extra argument causes @beast
+	to print the list of available resources.
+@item -h, ---help
+	Shows a brief help message.
+@item -v, ---version
+	Prints out @beast and component versions and file paths.
+@item ---display=DISPLAY
+	X server for the GUI; see X(1).
+@end table
+@* @c FIXME: alper, this extra newline shouldn't be necessary
+
+	Development Options:
+
+@table @option
+@item ---debug=KEYS
+	Enable certain verbosity stages.
+@item ---debug-list
+	List possible debug keys.
+@item -:[flags]
+	This option enables or disables various debugging specific flags.
+	Use of of @option{-:} is not recommended, as the supported flags may
+	change between versions and cause possibly harmfull misbehaviour.
+@end table
+@* @c FIXME: alper, this extra newline shouldn't be necessary
+
+	Gtk+ Options:
+
+@table @option
+@item ---gtk-debug=FLAGS
+	Gtk+ debugging flags to enable.
+@item ---gtk-no-debug=FLAGS
+	Gtk+ debugging flags to disable.
+@item ---gtk-module=MODULE
+	Load additional Gtk+ modules.
+@item ---gdk-debug=FLAGS
+	Gdk debugging flags to enable.
+@item ---gdk-no-debug=FLAGS
+	Gdk debugging flags to disable.
+@item ---g-fatal-warnings
+	Make warnings fatal (abort).
+@item ---sync
+	Do all X calls synchronously.
+@end table
+@* @c FIXME: alper, this extra newline shouldn't be necessary
+
+@unnumbered SEE ALSO
+@uref{beast-man://1/bsesh},
+@uref{beast-man://1/bse-plugin-generator}
+@*
+@revision{Document Revised:}
+@bye

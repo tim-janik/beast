@@ -1,7 +1,7 @@
 \input texinfo
 @settitle Resources
 
-@include teximacros.texi
+@include texiutils.texi
 @hasbanner{large}
 @navigation{navigation.xml}
 

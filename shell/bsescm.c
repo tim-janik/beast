@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <guile/gh.h>
 #include <bse/bse.h>
+#include <sfi/sfistore.h> /* no bin-compat */
 #include "bsescminterp.h"
 #include "topconfig.h"
 
@@ -43,7 +44,8 @@ static void	shell_parse_args	(gint    *argc_p,
 static gint            bse_scm_pipe[2] = { -1, -1 };
 static gchar          *bse_scm_eval_expr = NULL;
 static gboolean        bse_scm_enable_register = FALSE;
-static gboolean        bse_scm_register_plugins = TRUE;
+static gboolean        bse_scm_auto_load = TRUE;
+static gboolean        bse_scm_auto_play = TRUE;
 static SfiComPort     *bse_scm_port = NULL;
 static SfiGlueContext *bse_scm_context = NULL;
 
@@ -119,11 +121,41 @@ gh_main (int   argc,
   /* exec Bse Scheme bootup code */
   gh_load (BOILERPLATE_SCM);
 
-  /* eval or interactive */
+  /* eval, auto-play or interactive */
   if (bse_scm_eval_expr)
     gh_eval_str (bse_scm_eval_expr);
   else
-    gh_repl (argc, argv);
+    {
+      gboolean call_auto_play = FALSE;
+      /* detect bse file */
+      if (argc >= 2 && bse_scm_auto_play)
+        {
+          SfiRStore *rstore = sfi_rstore_new_open (argv[1]);
+          if (rstore)
+            {
+              if (g_scanner_get_next_token (rstore->scanner) == '(' &&
+                  g_scanner_get_next_token (rstore->scanner) == G_TOKEN_IDENTIFIER)
+                {
+                  if (strcmp ("bse-version", rstore->scanner->value.v_string) == 0 &&
+                      g_scanner_get_next_token (rstore->scanner) == G_TOKEN_STRING &&
+                      g_scanner_get_next_token (rstore->scanner) == ')')
+                    call_auto_play = TRUE;
+                }
+              sfi_rstore_destroy (rstore);
+            }
+        }
+      /* auto-play or interactive */
+      if (call_auto_play)
+        gh_eval_str ("(bse-shell-auto-play)");
+      else 
+        {
+          if (bse_scm_auto_load)
+            gh_eval_str ("(bse-server-register-blocking bse-server-register-core-plugins #f)"
+                         "(bse-server-register-blocking bse-server-register-scripts #f)"
+                         "(bse-server-register-blocking bse-server-register-ladspa-plugins #f)");
+          gh_repl (argc, argv);
+        }
+    }
 
   /* shutdown */
   sfi_glue_context_pop ();
@@ -195,9 +227,14 @@ shell_parse_args (gint    *argc_p,
 	  bse_scm_enable_register = TRUE;
 	  argv[i] = NULL;
 	}
-      else if (strcmp (argv[i], "--bse-no-plugins") == 0)
+      else if (strcmp (argv[i], "--bse-no-load") == 0)
 	{
-	  bse_scm_register_plugins = FALSE;
+	  bse_scm_auto_load = FALSE;
+	  argv[i] = NULL;
+	}
+      else if (strcmp (argv[i], "--bse-no-play") == 0)
+	{
+	  bse_scm_auto_play = FALSE;
 	  argv[i] = NULL;
 	}
     }
