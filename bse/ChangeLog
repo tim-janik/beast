@@ -1,3 +1,12 @@
+Tue Oct 12 10:51:55 2004  Tim Janik  <timj@gtk.org>
+
+	* gsl-fftgen.pl: 
+	* mkcalls.pl: 
+	* mkcproc.pl:
+	* mktypes.pl:
+	don't generate "/** ...*/" comments, as two-asterisc comments are used 
+	as documentation generator magic.
+
 Fri Oct  8 18:57:40 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepcmmodule.c (bse_pcm_imodule_process): fixed recently broken value

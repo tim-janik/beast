@@ -52,8 +52,8 @@ my $var_pattern = "HELP|OPTIONS|AUTHORS|LICENSE";
 my %var_defs = ();
 my %proc_defs = ();
 
-print "\n/**\n ** Generated data (by mkcproc.pl";
-print ")\n **/\n";
+print "\n/*\n * Generated data (by mkcproc.pl";
+print ")\n */\n";
 
 sub has_semicolon {
     my $line = shift;
@@ -280,4 +280,4 @@ print "BseExportNode* $func (void);\n";
 print "BseExportNode* $func (void)\n{\n  return $last_node;\n}\n";
 
 
-print "\n/**\n ** Generated data ends here\n **/\n";
+print "\n/*\n * Generated data ends here\n */\n";

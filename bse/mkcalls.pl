@@ -23,8 +23,8 @@ while ($_ = $ARGV[0], /^-/) {
     elsif (/^--head2$/) { $head2 = $head2 . shift }
 }
 
-print "\n/**\n ** Generated data (by mkcalls.pl";
-print ")\n **/\n\n";
+print "\n/*\n * Generated data (by mkcalls.pl";
+print ")\n */\n\n";
 
 while (<>) {
     my $file = $ARGV;
@@ -105,4 +105,4 @@ if (length($tail2)) {
     print "$prod\n";
 }
 
-print "\n/**\n ** Generated data ends here\n **/\n";
+print "\n/*\n * Generated data ends here\n */\n";

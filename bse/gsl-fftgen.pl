@@ -772,13 +772,13 @@ for ($i = $max_fft_size >> 1; $i; $i >>= 1) {
 }
 die "missing stage specifications ($max_stages stages, $#arguments specs)" if ($max_stages > $#arguments);
 die "too many stage specifications ($max_stages stages, $#arguments specs)" if ($max_stages < $#arguments);
-print "/**\n";
-printf(" ** Generated data (by gsl-genfft $max_fft_size");
+print "/*\n";
+printf(" * Generated data (by gsl-genfft $max_fft_size");
 for (my $i = 1; $i < @arguments; $i++) {
     printf " %s", uc ($arguments[$i]);
 }
 printf ")\n";
-print " **/\n";
+print " */\n";
 {
     my $fft_size = $max_fft_size;
     my $skip2 = uc ($arguments[1]) eq 'S';
@@ -805,6 +805,6 @@ print " **/\n";
     printf "}\n";
     printf STDERR "\n";
 }
-print "\n/**\n";
-print " ** Generated data ends here\n";
-print " **/\n";
+print "\n/*\n";
+print " * Generated data ends here\n";
+print " */\n";

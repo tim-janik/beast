@@ -47,7 +47,7 @@ while ($_ = $ARGV[0], /^-/) {
     elsif (/^--array$/) { $gen_array = 1 }
 }
 
-print "\n/**\n ** Generated data (by mktypes.pl";
+print "\n/*\n * Generated data (by mktypes.pl";
 if ($gen_externs) {
     print " --externs";
 }
@@ -60,7 +60,7 @@ if ($gen_export_proto) {
 if ($gen_array) {
     print " --array";
 }
-print ")\n **/\n";
+print ")\n */\n";
 
 
 my %adefs;   # hash, indexed with {$uc_type}, value = [ $type, $uc_type, $uc_parent, $uc_iface, $file ]
@@ -203,4 +203,4 @@ if ($gen_array) {
 }
 
 
-print "\n/**\n ** Generated data ends here\n **/\n";
+print "\n/*\n * Generated data ends here\n */\n";
