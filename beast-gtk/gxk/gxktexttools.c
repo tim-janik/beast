@@ -1321,9 +1321,11 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   /* navigation toolbar */
   if (flags & GXK_SCROLL_TEXT_NAVIGATABLE)
     {
-      toolbar = gxk_gadget_create ("beast", "gxk-scroll-text-toolbar", NULL); // FIXME: dmain name
+      toolbar = gxk_gadget_create ("beast", "gxk-scroll-text-toolbar", NULL); // FIXME: domain name
       gtk_box_pack_start (GTK_BOX (sctext), toolbar, FALSE, TRUE, 0);
     }
+  else /* there's code depending on the "presence" of a widget in the toolbar slot */
+    gtk_box_pack_start (GTK_BOX (sctext), g_object_new (GTK_TYPE_ALIGNMENT, NULL), FALSE, TRUE, 0);
 
   /* scrollable text area */
   scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,

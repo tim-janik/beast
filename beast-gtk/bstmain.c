@@ -22,7 +22,6 @@
 #include "bstxkb.h"
 #include "bstgconfig.h"
 #include "bstusermessage.h"
-#include "bstcatalog.h"
 #include "bstparam.h"
 #include "bstpreferences.h"
 #include "topconfig.h"
@@ -148,7 +147,6 @@ main (int   argc,
   _bst_init_params ();
   _bst_gconfig_init ();
   bst_splash_update_item (splash, _("Language"));
-  _bst_catalog_init ();
 
   /* GUI patchups
    */

@@ -1,3 +1,16 @@
+Mon Nov 17 16:44:38 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-beast.xml: removed action-root="" resetting
+	from snet-router popup menu. the factories *do* limit actions to the
+	right scope. (fixes duplicate menu items in the router popup.)
+	
+	* beast-gtk/bstmessages.c:
+	* beast-gtk/bstcatalog.[hc]: deleted, code was switched back to keep
+	action labels, accelerators, tooltips and blurb in .c files (or xml
+	GUI descriptions).
+
+	* beast-gtk/gxk/gxktexttools.c: fix segfaults wrg missing toolbar.
+	
 Mon Nov 17 16:33:17 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-standard.xml: more toolbar widget

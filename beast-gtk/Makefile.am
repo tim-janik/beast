@@ -45,7 +45,7 @@ beast_headers = $(strip \
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	\
 				bstwaveview.h				bstxkb.h	\
 	bstzoomedwindow.h			bsttrackrollctrl.h	bstxframe.h	\
-				bstcatalog.h	bsttreestores.h		bstutils.h	\
+						bsttreestores.h		bstutils.h	\
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
 	bstmarshal.h bstdefs.h \
 )
@@ -64,7 +64,7 @@ beast_sources = $(strip \
 	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	\
 				bstwaveview.c				bstxkb.c	\
 	bstzoomedwindow.c			bsttrackrollctrl.c	bstxframe.c	\
-				bstcatalog.c	bsttreestores.c		bstutils.c	\
+						bsttreestores.c		bstutils.c	\
 	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\
 	$(PROFILE_SOURCE) \
 )
@@ -77,8 +77,8 @@ beast_extra_sources = $(strip \
 	bstrackeditor-covers.c	bstmarshal.c \
 )
 beast_extra_files = $(strip \
-	bstmessages.c		bstmarshal.list		stamp-bstenum_arrays.c \
-	bstdebugkeys.defs	bstrecords.idl		stamp-ckeycheck \
+	bstmarshal.list		stamp-bstenum_arrays.c	\
+	bstdebugkeys.defs	bstrecords.idl		\
 )
 # BEAST built sources that don't get installed
 beast_built_sources = @STRIP_BEGIN@ \
@@ -146,14 +146,6 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 	&& rm -f xgen-bmc
 
 SCANKEYS=$(TEXITHEQUE) scankeys --
-stamp-ckeycheck: @DVLBUILD@ $(beast_sources) $(beast_extra_sources)
-	cd $(srcdir) \
-	&& $(SCANKEYS) --count --key CKEY --skipkeys bstmessages.c \
-	     --tmplstart '#error MISSING DOC KEYS:\n' \
-	     --tmplkey '  { CKEY (%s),\t\tN_("Name"),\n    BST_STOCK_,\t\t\t\t"",\n    N_("tip"), NULL,\n  },\n' \
-	     --needkeys $(beast_sources) $(beast_extra_sources)
-	touch $@
-beast: stamp-ckeycheck
 
 debug_key_globs = $(top_srcdir)/beast-gtk/*.[hc] $(top_srcdir)/bse/*.[hc] $(top_srcdir)/sfi/*.[hc]
 bstdebugkeys.defs: @DVLBUILD@ $(debug_key_globs)
