@@ -304,6 +304,51 @@ bse_project_clear_undo (BseProject *self)
 }
 
 static void
+project_undo_do_deactivate (BseUndoStep  *ustep,
+                            BseUndoStack *ustack)
+{
+  BseProject *self = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
+  bse_project_deactivate (self);
+}
+
+static void
+project_undo_do_deactivate_free (BseUndoStep *ustep)
+{
+  g_free (ustep->data[0].v_pointer);
+}
+
+void
+bse_project_push_undo_silent_deactivate (BseProject *self)
+{
+  g_return_if_fail (BSE_IS_PROJECT (self));
+
+  /* certain things work only (can only be undone/redone) in deactivated projects,
+   * so we need to push an undo step here. this step isn't required however
+   * if there're no undo steps pushed so far, and it shouldn't be visible
+   * as a seperate undo step to the user either. so what we do is to push
+   * an "add-on" step, which just prepares state for execution of further
+   * undo steps, if there are any pending.
+   */
+  if (self->state != BSE_PROJECT_INACTIVE)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "deactivate-project");
+      BseUndoStep *ustep = bse_undo_step_new (project_undo_do_deactivate, project_undo_do_deactivate_free, 1);
+      ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
+      bse_undo_stack_push_add_on (ustack, ustep);
+      bse_item_undo_close (ustack);
+      
+      gboolean in_undo = self->in_undo;
+      self->in_undo = !in_undo;             /* swap undo<=>redo */
+      ustack = bse_item_undo_open (self, "deactivate-project");
+      ustep = bse_undo_step_new (project_undo_do_deactivate, project_undo_do_deactivate_free, 1);
+      ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
+      bse_undo_stack_push_add_on (ustack, ustep);
+      bse_item_undo_close (ustack);
+      self->in_undo = in_undo;              /* swap undo<=>redo */
+    }
+}
+
+static void
 bse_project_add_item (BseContainer *container,
 		      BseItem      *item)
 {

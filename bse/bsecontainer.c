@@ -1318,10 +1318,27 @@ bse_container_remove_backedup (BseContainer *container,
       ustep->data[2].v_pointer = bse_undo_pointer_pack (container, ustack);
       bse_undo_stack_push (ustack, ustep);
     }
+
+  /* check for automation properties */
+  BseProject *deactivate_project = NULL;
+  if (!BSE_UNDO_STACK_VOID (ustack) && BSE_IS_SOURCE (child) && BSE_SOURCE_PREPARED (child))
+    {
+      BseSourceClass *class = BSE_SOURCE_GET_CLASS (child);
+      if (class->automation_properties)
+        {
+          /* automation properties can't be setup on prepared children */
+          deactivate_project = bse_item_get_project (child);
+        }
+    }
+
   /* actual removal */
   bse_undo_stack_ignore_steps (ustack);
   bse_container_remove_item (container, child);
   bse_undo_stack_unignore_steps (ustack);
+
+  /* certain things work only (can only be undone) in deactivated projects */
+  if (deactivate_project)
+    bse_project_push_undo_silent_deactivate (deactivate_project);
 }
 
 #include <stdio.h>

@@ -33,7 +33,8 @@ pretty_print_double (char  *str,
   char *s= str;
   
   sprintf (s, "%."PRINTF_DIGITS"f", d);
-  while (*s) s++;
+  while (*s)
+    s++;
   while (s[-1] == '0' && s[-2] != '.')
     s--;
   *s = 0;
@@ -188,6 +189,25 @@ bse_complex_gnuplot (const char  *file_name,
   FILE *fout = fopen (file_name, "w");
   
   fputs (bse_complex_list (n_points, points, ""), fout);
+  fclose (fout);
+}
+
+void
+bse_float_gnuplot (const char    *file_name,
+                   double         xstart,
+                   double         xstep,
+                   unsigned int   n_ypoints,
+                   const float   *ypoints)
+{
+  FILE *fout = fopen (file_name, "w");
+  guint i;
+  for (i = 0; i < n_ypoints; i++)
+    {
+      gchar xstr[FLOAT_STRING_SIZE], ystr[FLOAT_STRING_SIZE];
+      pretty_print_double (xstr, xstart + i * xstep);
+      pretty_print_double (ystr, ypoints[i]);
+      fprintf (fout, "%s %s\n", xstr, ystr);
+    }
   fclose (fout);
 }
 

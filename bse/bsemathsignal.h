@@ -397,7 +397,7 @@ bse_approx_atan1 (register double x)
       denominator += x * 0.81901156857081841441890603235599; /* d1 */
       numerator = x * 0.41156875521951602506487246309908; /* -n1 */
       denominator *= x;
-      numerator += -1.0091272542790025586079663559158; /* n2 */
+      numerator  += -1.0091272542790025586079663559158; /* n2 */
       denominator += 1.0091272542790025586079663559158; /* d2 */
 
       return -1.0 - numerator / denominator;
@@ -409,11 +409,14 @@ bse_approx_atan1 (register double x)
       denominator += x * 0.81901156857081841441890603235599; /* d1 */
       numerator = x * -0.41156875521951602506487246309908; /* n1 */
       denominator *= x;
-      numerator += -1.0091272542790025586079663559158; /* n2 */
+      numerator  += -1.0091272542790025586079663559158; /* n2 */
       denominator += 1.0091272542790025586079663559158; /* d2 */
 
       return 1.0 + numerator / denominator;
     }
+  /* atan1_positive(x)=1+(x*-0.411568755219516-1.009127254279)/((1+x*0.81901156857)*x+1.009127254279)
+   * atan1(x)=x<0 ? -atan1_positive(-x) : atan1_positive(x)
+   */
 }
 
 static inline double	G_GNUC_CONST
@@ -473,6 +476,9 @@ bse_approx3_exp2 (float ex)
   return fp.v_float * (1.0 + x * (0.69314718055994530941723212145818 +
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622))));
+  /* exp2frac(x)=x-ftoi(x)
+   * exp2a3(x)=2**ftoi(x)*(1+exp2frac(x)*(0.6931471805599453+exp2frac(x)*(0.2402265069591+exp2frac(x)*0.0555041086648)))
+   */
 }
 
 static inline double G_GNUC_CONST
@@ -486,6 +492,10 @@ bse_approx4_exp2 (float ex)
                                   x * (0.24022650695910071233355126316333 +
                                        x * (0.055504108664821579953142263768622 +
                                             x * (0.0096181291076284771619790715736589)))));
+  /* ftoi(x)=int(x<-0.0 ? x - 0.5 : x + 0.5)
+   * exp2frac(x)=x-ftoi(x)
+   * exp2a4(x)=2**ftoi(x)*(1+exp2frac(x)*(0.6931471805599453+exp2frac(x)*(0.2402265069591+exp2frac(x)*(0.0555041086648+exp2frac(x)*0.009618129107628477))))
+   */
 }
 
 static inline double G_GNUC_CONST
@@ -599,6 +609,7 @@ bse_approx4_tanh (float x)
     return 1;
   register double bpot = bse_approx4_exp2 (x * BSE_2_DIV_LN2);
   return (bpot - 1) / (bpot + 1);
+  /* tanha4(x)=x<-20 ? -1 : x>20 ? 1 : (exp2a4(x*2.885390081777926814719849362)-1) / (exp2a4(x*2.885390081777926814719849362)+1) */
 }
 
 static inline double G_GNUC_CONST

@@ -78,7 +78,8 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
       { NULL, BSE_EXPORT_NODE_ENUM, EnumName, },                        \
     };                                                                  \
     struct Sub {                                                        \
-      static GEnumValue* get_values (void)                              \
+      static GEnumValue*                                                \
+      get_enum_values (void)                                            \
       {                                                                 \
         static GEnumValue values[N + 1];                                \
         if (!values[0].value_name) {                                    \
@@ -90,8 +91,11 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
         return values;                                                  \
       }                                                                 \
     };                                                                  \
-    if (!enode.get_values)                                              \
-      enode.get_values = Sub::get_values;                               \
+    if (!enode.get_enum_values)                                         \
+      {                                                                 \
+        enode.get_enum_values = Sub::get_enum_values;                   \
+        enode.get_choice_values = EnumType ## _choice_values;           \
+      }                                                                 \
     return &enode.node;                                                 \
   }                                                                     \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__3##EnumType;

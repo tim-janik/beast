@@ -1,3 +1,31 @@
+Fri Dec 24 22:39:48 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.c (bse_container_remove_backedup): force project 
+	deactivation for choldren with automation properties, because
+	automation properties can't be setup on prepared objects.
+
+	* bseproject.[hcp]*: export undo-stack deactivation function
+	bse_project_push_undo_silent_deactivate(), so other code portions
+	can force project deactivation for specific undo steps.
+
+	* bsecxxplugin.h: export *_choice_values() getter when declaring
+	enumeration types.
+
+	* bseplugin.c: provide choice value getter for exported enum types.
+	register enum transform functions for dynamic enum types (allowed
+	since glib-2.4).
+
+	* bseenginemaster.c: first discard the engine schedule, then 
+	modify the master node list, so the old schedule doesn't point
+	at dangling nodes.
+
+	* bsemath.[hc]: added bse_float_gnuplot() to ease debugging.
+
+	* bseexports.h: added *_choice_values() getter function to
+	BseExportNodeEnum.
+
+	* bsemathsignal.[hc]: documentation updates.
+
 Fri Dec 24 15:26:58 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslloader-pat.cc: Added initial implementation of a GSL loader for

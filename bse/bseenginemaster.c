@@ -364,6 +364,9 @@ master_process_job (BseJob *job)
       JOB_DEBUG ("discard(%p, %p)", node, node->module.klass);
       g_return_if_fail (node->integrated == TRUE);
       job->data.free_with_job = TRUE;  /* ownership passed on to cause destruction in UserThread */
+      /* discard schedule so node may be freed */
+      master_need_reflow |= TRUE;
+      master_schedule_discard ();
       /* kill inputs */
       for (istream = 0; istream < ENGINE_NODE_N_ISTREAMS (node); istream++)
 	if (node->inputs[istream].src_node)
@@ -383,8 +386,6 @@ master_process_job (BseJob *job)
       else
 	_engine_mnl_remove (node);
       node->counter = GSL_MAX_TICK_STAMP;
-      master_need_reflow |= TRUE;
-      master_schedule_discard ();	/* discard schedule so node may be freed */
       /* nuke pending timed jobs */
       do
         tjob = node_pop_flow_job (node, GSL_MAX_TICK_STAMP);

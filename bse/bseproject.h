@@ -75,7 +75,6 @@ void		bse_project_keep_activated	(BseProject	*project,
 						 guint64	 min_tick);
 void		bse_project_state_changed	(BseProject	*project,
 						 BseProjectState state);
-void            bse_project_clear_undo          (BseProject     *project);
 BseStringSeq*	bse_project_list_upaths		(BseProject	*project,
 						 GType  	 item_type);
 BseItem*	bse_project_item_from_upath	(BseProject	*project,
@@ -99,6 +98,8 @@ gpointer	bse_project_create_intern_synth	(BseProject	*project,
 						 GType           check_type);
 BseCSynth*      bse_project_create_intern_csynth(BseProject     *project,
                                                  const char     *base_name);
+void            bse_project_clear_undo          (BseProject     *project);
+void    bse_project_push_undo_silent_deactivate (BseProject     *self);
 
 
 G_END_DECLS

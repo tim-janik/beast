@@ -42,7 +42,7 @@ class Amplifier : public AmplifierBase {
       ctrl_exp = params->ctrl_exp;
       ocs = params->ostrength * 0.5 * 0.01;
       bl = params->base_level * 0.01;
-      float master = params->master_volume;
+      double master = params->master_volume;
       al1 *= master;
       al2 *= master;
     }

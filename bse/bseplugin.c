@@ -252,7 +252,9 @@ bse_plugin_uninit_types (BsePlugin *plugin)
       GType type = node->type;
       if (type) // we might have left out this node upon initialization intentionally
         {
-          if (node->ntype == BSE_EXPORT_NODE_RECORD ||
+          if (node->ntype == BSE_EXPORT_NODE_ENUM)
+            sfi_enum_type_set_choice_value_getter (type, NULL);
+          else if (node->ntype == BSE_EXPORT_NODE_RECORD ||
               node->ntype == BSE_EXPORT_NODE_SEQUENCE)
             bse_type_uninit_boxed ((BseExportNodeBoxed*) node);
         }
@@ -295,7 +297,7 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
             break;
           case BSE_EXPORT_NODE_ENUM:
             enode = (BseExportNodeEnum*) node;
-            g_enum_complete_type_info (type, type_info, enode->get_values());
+            g_enum_complete_type_info (type, type_info, enode->get_enum_values());
             break;
           case BSE_EXPORT_NODE_RECORD:
           case BSE_EXPORT_NODE_SEQUENCE:
@@ -333,6 +335,12 @@ bse_plugin_reinit_types (BsePlugin *plugin)
           if (!found_type)
             g_message ("%s: plugin attempts to reregister foreign type: %s",
                        plugin->name, node->name);
+          else if (node->ntype == BSE_EXPORT_NODE_ENUM)
+            {
+              BseExportNodeEnum *enode = (BseExportNodeEnum*) node;
+              if (enode->get_choice_values)
+                sfi_enum_type_set_choice_value_getter (type, (SfiChoiceValueGetter) enode->get_choice_values);
+            }
           else if (node->ntype == BSE_EXPORT_NODE_RECORD ||
                    node->ntype == BSE_EXPORT_NODE_SEQUENCE)
             bse_type_reinit_boxed ((BseExportNodeBoxed*) node);
@@ -392,15 +400,17 @@ bse_plugin_init_types (BsePlugin *plugin)
       switch (node->ntype)
         {
           BseExportNodeClass *cnode;
+          BseExportNodeEnum *enode;
           const gchar *error;
         case BSE_EXPORT_NODE_LINK:
           break;
         case BSE_EXPORT_NODE_ENUM:
+          enode = (BseExportNodeEnum*) node;
           type = bse_type_register_dynamic (G_TYPE_ENUM, node->name, G_TYPE_PLUGIN (plugin));
-          /* FIXME: can't register dynamic type transforms with glib-2.2.1
-           * g_value_register_transform_func (SFI_TYPE_CHOICE, type, sfi_value_choice2enum_simple);
-           * g_value_register_transform_func (type, SFI_TYPE_CHOICE, sfi_value_enum2choice);
-           */
+          if (enode->get_choice_values)
+            sfi_enum_type_set_choice_value_getter (type, (SfiChoiceValueGetter) enode->get_choice_values);
+          g_value_register_transform_func (SFI_TYPE_CHOICE, type, sfi_value_choice2enum_simple);
+          g_value_register_transform_func (type, SFI_TYPE_CHOICE, sfi_value_enum2choice);
           break;
         case BSE_EXPORT_NODE_RECORD:
         case BSE_EXPORT_NODE_SEQUENCE:

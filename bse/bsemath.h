@@ -161,6 +161,12 @@ double                 bse_bit_depth_epsilon    (guint          n_bits);  /* 1..
 gint                   bse_rand_int             (void);                   /* +-G_MAXINT */
 gfloat                 bse_rand_float           (void);                   /* -1.0..1.0 */
 gint                   bse_rand_bool            (void);                   /* random bit */
+void                   bse_float_gnuplot        (const char    *file_name,
+                                                 double         xstart,
+                                                 double         xstep,
+                                                 unsigned int   n_ypoints,
+                                                 const float   *ypoints);
+
 
 /* --- implementations --- */
 static inline BseComplex

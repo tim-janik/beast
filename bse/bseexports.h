@@ -53,10 +53,13 @@ struct _BseExportNode {
   BseExportStringsFunc fill_strings;
   GType                type;
 };
-typedef GEnumValue* (*BseExportGetEnumValues) (void);
+typedef GEnumValue*     (*BseExportGetEnumValues)   (void);
+typedef SfiChoiceValues (*BseExportGetChoiceValues) (void);
+
 typedef struct {
-  BseExportNode          node;
-  BseExportGetEnumValues get_values;
+  BseExportNode            node;
+  BseExportGetEnumValues   get_enum_values;
+  BseExportGetChoiceValues get_choice_values;
 } BseExportNodeEnum;
 typedef SfiRecFields (*BseExportGetRecordFields)    (void);
 typedef GParamSpec*  (*BseExportGetSequenceElement) (void);

@@ -193,6 +193,8 @@ bse_approx_atan1_prescale (double boost_amount)
   /* prescale factor for atan1(x*prescale), ranges from 1/max_boost_factor..max_boost_factor */
   scale = pow (max_boost_factor, tan (boost_amount / 0.75) * recip_tan_1_div_0_75);
 
+  /* atan1_prescale(ba)=100 ** (tan ((ba*2-1) / 0.75) * 0.24202942695518667705824990442766) */
+
   return scale;
 }
 
