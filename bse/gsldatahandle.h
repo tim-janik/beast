@@ -47,7 +47,6 @@ struct _GslDataHandle
   SfiMutex	      mutex;
   guint		      ref_count;
   guint		      open_count;
-  GData              *qdata;
   /* opened data handle setup (open_count > 0) */
   GslDataHandleSetup  setup;
 };

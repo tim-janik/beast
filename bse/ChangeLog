@@ -1,3 +1,7 @@
+Thu Jan  6 23:44:54 2005  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle.[hc]: removed unused QData.
+
 Thu Jan  6 23:28:03 2005  Tim Janik  <timj@gtk.org>
 
 	* gslloader-bsewave.c: removed <= 0.6.4 compat code, since we haven't

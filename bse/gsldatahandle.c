@@ -49,7 +49,6 @@ gsl_data_handle_common_init (GslDataHandle *dhandle,
   sfi_mutex_init (&dhandle->mutex);
   dhandle->ref_count = 1;
   dhandle->open_count = 0;
-  g_datalist_init (&dhandle->qdata);
   memset (&dhandle->setup, 0, sizeof (dhandle->setup));
   
   return TRUE;
@@ -75,7 +74,6 @@ gsl_data_handle_common_free (GslDataHandle *dhandle)
   g_return_if_fail (dhandle->vtable != NULL);
   g_return_if_fail (dhandle->ref_count == 0);
   
-  g_datalist_clear (&dhandle->qdata);
   g_free (dhandle->name);
   dhandle->name = NULL;
   sfi_mutex_destroy (&dhandle->mutex);
