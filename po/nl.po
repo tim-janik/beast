@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-15 20:03+0200\n"
-"PO-Revision-Date: 2004-07-15 23:35+0200\n"
+"POT-Creation-Date: 2004-07-31 10:58+0200\n"
+"PO-Revision-Date: 2004-07-31 12:04+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -1321,7 +1321,9 @@ msgstr "Gtijd"
 #: beast-gtk/bstprofiler.c:250
 msgid ""
 "Average number of milliseconds per second of user CPU time used by thread"
-msgstr "Gemiddeld aantal milliseconden per seconde gebruikers-processortijd gebruikt door de thread"
+msgstr ""
+"Gemiddeld aantal milliseconden per seconde gebruikers-processortijd gebruikt "
+"door de thread"
 
 #: beast-gtk/bstprofiler.c:251
 msgid "STime"
@@ -1330,7 +1332,8 @@ msgstr "Stijd"
 #: beast-gtk/bstprofiler.c:251
 msgid ""
 "Average number of milliseconds per second of system CPU time used by thread"
-msgstr "Gemiddeld aantal milliseconden systeem-processortijd gebruikt door de thread"
+msgstr ""
+"Gemiddeld aantal milliseconden systeem-processortijd gebruikt door de thread"
 
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
@@ -3437,11 +3440,14 @@ msgstr "Master-uitgangsbus verkrijgen van een nummer."
 
 #: bse/bsesong.proc:133
 msgid "Ensure that each part in a song is inserted into at least one track."
-msgstr "Controleren dat elke partij in een nummer in tenminste één track wordt gebruikt."
+msgstr ""
+"Controleren dat elke partij in een nummer in tenminste één track wordt "
+"gebruikt."
 
 #: bse/bsesong.proc:154
 msgid "Ensure that each track in a song is connected to an output bus."
-msgstr "Controleren dat elke track in een nummer verbonden is met een uitgansbus."
+msgstr ""
+"Controleren dat elke track in een nummer verbonden is met een uitgansbus."
 
 # partij ipv gedeelte
 #: bse/bsesong.proc:194
@@ -3462,7 +3468,8 @@ msgstr "Een track uit een nummer verwijderen."
 
 #: bse/bsesong.proc:338
 msgid "Find a track suitable for playing notes of a given part."
-msgstr "Een track zoeken die geschikt is om de noten voor een gegeven deel te spelen."
+msgstr ""
+"Een track zoeken die geschikt is om de noten voor een gegeven deel te spelen."
 
 # betere vertaling?
 #: bse/bsesong.proc:381
@@ -3482,9 +3489,11 @@ msgstr "Rechter kanaalingang"
 # betere vertaling?
 #: bse/bsebus.c:294
 msgid ""
-"Bus implementation for songs, used to to route track audio signals to the "
+"Bus implementation for songs, used to route track audio signals to the "
 "master output."
-msgstr "Busimplementatie voor nummers, wordt gebruikt om track-audiosignalen naar de masteruitgang te routeren."
+msgstr ""
+"Busimplementatie voor nummers, wordt gebruikt om track-audiosignalen naar de "
+"masteruitgang te routeren."
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -4273,7 +4282,7 @@ msgid "Right Output"
 msgstr "Rechter uitgang"
 
 #~ msgid "Adjust pattern length"
-#~ msgstr "Patroonlengte aanpassen"
+#~ msgstr "Op dit moment ben ik te oud om het project te laden :-(<"
 
 #~ msgid "Adjust right view boundary"
 #~ msgstr "Rechter weergavegrens aanpassen"
