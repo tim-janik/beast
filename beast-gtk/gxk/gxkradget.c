@@ -19,6 +19,7 @@
 #include "gxkgadget.h"
 #include "gxkgadgetfactory.h"
 #include "gxkauxwidgets.h"
+#include "gxkmenubutton.h"
 #include "glewidgets.h"
 #include "gxksimplelabel.h"
 #include "gxkracktable.h"

@@ -1,3 +1,12 @@
+Wed Mar  3 10:23:48 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkmenubutton.[hc]: remove non menu button code.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: remove menu button code, changed
+	callers.
+
+	* beast-gtk/gxk/Makefile.am: build gxkmenubutton.
+
 Wed Mar  3 10:14:16 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkmenubutton.h:

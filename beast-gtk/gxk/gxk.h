@@ -33,6 +33,7 @@
 #include <gxk/gxkglobals.h>
 #include <gxk/gxkled.h>
 #include <gxk/gxklistwrapper.h>
+#include <gxk/gxkmenubutton.h>
 #include <gxk/gxkparam.h>
 #include <gxk/gxklogadjustment.h>
 #include <gxk/gxkpolygon.h>

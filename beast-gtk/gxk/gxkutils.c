@@ -18,7 +18,7 @@
  */
 #include "gxkutils.h"
 #include "glewidgets.h"
-#include "gxkauxwidgets.h"
+#include "gxkmenubutton.h"
 #include "gxkcellrendererpopup.h"
 #include <string.h>
 
