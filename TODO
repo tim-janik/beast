@@ -1,4 +1,6 @@
 FIXMES:
+- use one global ID allocator
+- add IDs to part links in tracks
 - track editor is grey if no tracks are present
 - typed record serialization needs to honour indent for sfi_value_store_param()
 - serialization of homogeneous sequences could store the field type code only once
@@ -207,6 +209,12 @@ Balance
 sfidl:
   fixes:
   - support N/A choice values, currently hardcoded for BseErrorType
+  - syntax for neutral values in choices
+  extensions:
+  - choices need support for icons per value
+  - choices need support for tooltips per value
+  - signals should be specified in idl files (and have to be documentable)
+  - procedure skeletons should be specified in idl files
   parsing:
     - plural generator
   code generation:
