@@ -1,3 +1,7 @@
+2003-10-26  Metin Amiroff  <metin@karegen.com>
+
+	* configure.in: Added az to ALL_LINGUAS.
+
 Sat Oct 25 19:28:46 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdefs.h: added enum for track-roll/piano-roll/event-roll
