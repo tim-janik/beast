@@ -121,17 +121,17 @@ typedef struct {
                                  GtkWidget      *widget);
   guint         variant;
 } GxkParamEditor;
-void         gxk_param_register_editor  (GxkParamEditor         *editor,
-                                         const gchar            *i18n_domain);
-void         gxk_param_register_aliases (const gchar           **aliases);
-gchar**      gxk_param_list_editors     (void);
-guint        gxk_param_editor_score     (const gchar            *editor_name,
-                                         GParamSpec             *pspec);
-const gchar* gxk_param_lookup_editor    (const gchar            *editor_name,
-                                         GParamSpec             *pspec);
-GtkWidget*   gxk_param_create_editor    (GxkParam               *param,
-                                         const gchar            *editor_name);
-
+void         gxk_param_register_editor    (GxkParamEditor  *editor,
+                                           const gchar     *i18n_domain);
+void         gxk_param_register_aliases   (const gchar    **aliases);
+gchar**      gxk_param_list_editors       (void);
+guint        gxk_param_editor_score       (const gchar     *editor_name,
+                                           GParamSpec      *pspec);
+const gchar* gxk_param_lookup_editor      (const gchar     *editor_name,
+                                           GParamSpec      *pspec);
+GtkWidget*   gxk_param_create_editor      (GxkParam        *param,
+                                           const gchar     *editor_name);
+void         gxk_param_editor_debug_score (GParamSpec      *pspec);
 
 /* --- param editor size groups --- */
 typedef struct {

@@ -39,7 +39,7 @@ struct _BstBusEditor
 {
   GtkAlignment      parent_object;
   SfiProxy          item;
-  GxkParam         *lvolume, *rvolume;
+  SfiRing          *params;
   BstDBBeam        *lbeam, *rbeam;
 };
 struct _BstBusEditorClass

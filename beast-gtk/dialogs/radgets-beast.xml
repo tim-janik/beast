@@ -305,21 +305,9 @@
       <frame shadow-type="shadow-out" >
 	<vbox border-width="3" spacing="3" >
 	  <!-- Name -->
-	  <entry text="Name" width="10" size:window-vgroup="bus-name" />
+	  <alignment id="name-box" size:window-vgroup="bus-name"/>
 	  <!-- Inputs -->
-	  <button id="bus-inputs" can-focus="0" size:window-vgroup="bus-inputs" >
-	    <tooltip text="Source signals going into this bus" />
-	    <hbox>
-	      <frame shadow-type="shadow-in" border-width="3" expand="1" >
-		<widget-patcher normal-bg-as-base="1" />
-		<event-box>
-		  <widget-patcher normal-bg-as-base="1" />
-		  <label label="#23" pack-type="start" />
-		</event-box>
-	      </frame>
-	      <label label="..." />
-	    </hbox>
-	  </button>
+	  <alignment id="inputs-box" size:window-vgroup="bus-inputs" />
 	  <!-- Leds & Mute+Solo -->
 	  <hbox size:window-vgroup="bus-levels" >
 	    <label label="(O)"/>

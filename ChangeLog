@@ -1,3 +1,17 @@
+Tue Aug 31 23:58:56 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbuseditor.[hc]: added ::inputs and ::uname property 
+	handling.
+
+	* beast-gtk/bstparam-item-seq.c: new parameter editor for BseitemSeq.
+
+	* beast-gtk/dialogs/radgets-beast.xml: removed mock-up widgets for
+	bus name and bus inputs from bus-editor.
+
+	* beast-gtk/bstparam.c: added item-list parameter editor.
+
+	* beast-gtk/gxk/gxkparam.[hc]: added gxk_param_editor_debug_score().
+
 Sun Aug 29 04:18:43 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam-proxy.c: guard against NULL return values from

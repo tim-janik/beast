@@ -83,10 +83,7 @@ bst_bus_editor_init (BstBusEditor *self)
   gxk_widget_publish_actions (self, "bus-editor-actions",
                               G_N_ELEMENTS (bus_editor_actions), bus_editor_actions,
                               NULL, bus_editor_action_check, bus_editor_action_exec);
-  /* FIXME: popup item-seq dialog */
-  GtkWidget *button = gxk_radget_find (self, "bus-inputs");
-  g_signal_connect_object (button, "clicked", G_CALLBACK (popup_item_seq), self, G_CONNECT_SWAPPED);
-  button = gxk_radget_find (self, "bus-outputs");
+  GtkWidget *button = gxk_radget_find (self, "bus-outputs");
   g_signal_connect_object (button, "clicked", G_CALLBACK (popup_item_seq), self, G_CONNECT_SWAPPED);
 }
 
@@ -160,29 +157,29 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       bse_proxy_disconnect (self->item,
                             "any-signal", bus_editor_release_item, self,
                             NULL);
-      gxk_param_destroy (self->lvolume);
-      gxk_param_destroy (self->rvolume);
+      while (self->params)
+        gxk_param_destroy (sfi_ring_pop_head (&self->params));
     }
   self->item = item;
   if (self->item)
     {
+      GParamSpec *pspec;
+      SfiRing *ring;
       bse_proxy_connect (self->item,
                          "signal::release", bus_editor_release_item, self,
                          NULL);
-      /* create params */
-      GParamSpec *pspec = bse_proxy_get_pspec (self->item, "left-volume-db");
-      self->lvolume = bst_param_new_proxy (pspec, self->item);
+      /* create and hook up volume params & scopes */
+      pspec = bse_proxy_get_pspec (self->item, "left-volume-db");
+      GxkParam *lvolume = bst_param_new_proxy (pspec, self->item);
       pspec = bse_proxy_get_pspec (self->item, "right-volume-db");
-      self->rvolume = bst_param_new_proxy (pspec, self->item);
-      gxk_param_update (self->lvolume);
-      gxk_param_update (self->rvolume);
+      GxkParam *rvolume = bst_param_new_proxy (pspec, self->item);
       BstDBMeter *dbmeter = gxk_radget_find (self, "db-meter");
       if (dbmeter)
         {
           GtkRange *range = bst_db_meter_get_scale (dbmeter, 0);
-          bst_db_scale_hook_up_param (range, self->lvolume);
+          bst_db_scale_hook_up_param (range, lvolume);
           range = bst_db_meter_get_scale (dbmeter, 1);
-          bst_db_scale_hook_up_param (range, self->rvolume);
+          bst_db_scale_hook_up_param (range, rvolume);
           self->lbeam = bst_db_meter_get_beam (dbmeter, 0);
           if (self->lbeam)
             bst_db_beam_set_value (self->lbeam, -G_MAXDOUBLE);
@@ -190,8 +187,20 @@ bst_bus_editor_set_bus (BstBusEditor *self,
           if (self->rbeam)
             bst_db_beam_set_value (self->rbeam, -G_MAXDOUBLE);
         }
-      gxk_radget_add (self, "spinner-box", gxk_param_create_editor (self->lvolume, "spinner"));
-      gxk_radget_add (self, "spinner-box", gxk_param_create_editor (self->rvolume, "spinner"));
+      gxk_radget_add (self, "spinner-box", gxk_param_create_editor (lvolume, "spinner"));
+      gxk_radget_add (self, "spinner-box", gxk_param_create_editor (rvolume, "spinner"));
+      self->params = sfi_ring_prepend (self->params, lvolume);
+      self->params = sfi_ring_prepend (self->params, rvolume);
+      /* create remaining params */
+      pspec = bse_proxy_get_pspec (self->item, "uname");
+      self->params = sfi_ring_prepend (self->params, bst_param_new_proxy (pspec, self->item));
+      gxk_radget_add (self, "name-box", gxk_param_create_editor (self->params->data, NULL));
+      pspec = bse_proxy_get_pspec (self->item, "inputs");
+      self->params = sfi_ring_prepend (self->params, bst_param_new_proxy (pspec, self->item));
+      gxk_radget_add (self, "inputs-box", gxk_param_create_editor (self->params->data, NULL));
+      /* update params */
+      for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
+        gxk_param_update (ring->data);
       /* setup scope */
       bse_proxy_connect (self->item,
                          "signal::probes", bus_probes_notify, self,

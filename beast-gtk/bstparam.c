@@ -324,6 +324,7 @@ bst_param_xframe_check_button (GxkParam *param,
 #include "bstparam-note-sequence.c"
 #include "bstparam-note-spinner.c"
 #include "bstparam-proxy.c"
+#include "bstparam-item-seq.c"
 #include "bstparam-scale.c"
 #include "bstparam-searchpath.c"
 #include "bstparam-time.c"
@@ -344,6 +345,7 @@ _bst_init_params (void)
   gxk_param_register_editor (&param_note_sequence, NULL);
   gxk_param_register_editor (&param_note_spinner, NULL);
   gxk_param_register_editor (&param_proxy, NULL);
+  gxk_param_register_editor (&param_item_seq, NULL);
   gxk_param_register_editor (&param_scale1, NULL);
   gxk_param_register_editor (&param_scale2, NULL);
   gxk_param_register_editor (&param_scale3, NULL);

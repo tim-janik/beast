@@ -1,4 +1,7 @@
 FIXMES:	(release-critical)
+- compat() for Arts::Compressor -> Bse::Arts::Compressor
+- compat() for Dav::*Name -> Bse::Dav::*Name
+- add tooltip to trackview about mute meaning "skip sequencer"
 - instead of bse_engine_add_garbage(), the midireceiver needs a BSE_MIDI_RECEIVER_LOCK based callback mechanism (nodes aren't queued from teh BSE thread which invokes the engine gc)
 - disable vinput/vswitch job queueing (except for mono) if Done is not connected
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
@@ -78,7 +81,7 @@ TODO:
 - add author and license to procedure execution dialog
 - fix repeat not working if left/right exchanged
 - create one canonical place for supported sample formats and keep that updated
-- document options: :filename, :rgb, :hex
+- document options: :filename, :rgb, :hex :note-sequence :item-sequence
 - make sample editor play stereo
 - allow inverted synth-done (i.e. suitable for gate connecitons)
 - add gate-out to ADSR

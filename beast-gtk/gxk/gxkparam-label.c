@@ -65,7 +65,7 @@ param_label_update (GxkParam  *param,
 static GxkParamEditor param_label1 = {
   { "ident",            N_("Property Identifier"), },
   { 0, },
-  { NULL,       -100,   FALSE, },       /* options, rating, editing */
+  { NULL,       -101,   FALSE, },       /* options, rating, editing */
   param_label_create,   NULL,   PARAM_LABEL_IDENT,
 };
 static GxkParamEditor param_label2 = {

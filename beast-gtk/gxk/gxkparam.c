@@ -432,13 +432,13 @@ param_editor_name_match (const gchar          *editor_name,
 
 static guint
 param_score_editor (const GxkParamEditor *editor,
-                    GParamSpec           *pspec)
+                    GParamSpec           *pspec,
+                    gboolean              annotate)
 {
-  gboolean fundamental_specific, type_mismatch = FALSE, type_specific = FALSE;
+  gboolean fundamental_specific, type_mismatch = FALSE, option_mismatch = FALSE, type_specific = FALSE;
   guint8 bonus = 0, type_distance = 0;
   GType vtype = G_PARAM_SPEC_VALUE_TYPE (pspec);
   GType etype = editor->type_match.type;
-  guint rating = 0;
   gboolean is_editable = editor->features.editing;
   if (editor->type_match.type_name)
     {
@@ -459,13 +459,30 @@ param_score_editor (const GxkParamEditor *editor,
     }
   if (editor->features.options)
     {
-      type_mismatch |= !g_param_spec_provides_options (pspec, editor->features.options);
+      option_mismatch |= !g_param_spec_provides_options (pspec, editor->features.options);
       bonus++;
     }
+
+  if (annotate)
+    g_printerr ("  %s(%s): fundamental=%s derived=%s%s%s editing=%s bonus=%+d%s%s: ",
+                editor->ident.name, editor->ident.nick,
+                g_type_name (editor->type_match.type),
+                editor->type_match.type_name ? editor->type_match.type_name : "<any>",
+                editor->type_match.all_int_nums ? "(all-ints)" : "",
+                editor->type_match.all_float_nums ? "(all-floats)" : "",
+                editor->features.editing ? "yes" : "no",
+                editor->features.rating,
+                editor->features.options ? " options=" : "",
+                editor->features.options ? editor->features.options : "");
+
+  if (type_mismatch || option_mismatch) /* bail out on mismatches */
+    {
+      if (annotate)
+        g_printerr ("%s mismatch\n", type_mismatch ? "type" : "option");
+      return 0;
+    }
   
-  if (type_mismatch)    /* bail out on mismatches */
-    return 0;
-  
+  guint rating = 0;
   rating |= 256 - type_distance;
   rating <<= 1;
   rating |= is_editable;
@@ -478,6 +495,8 @@ param_score_editor (const GxkParamEditor *editor,
   rating <<= 8;
   rating += bonus;      /* bonus is provided for overcomming additional mismatch possibilities */
   
+  if (annotate)
+    g_printerr ("%d\n", rating);
   return rating;
 }
 
@@ -493,7 +512,7 @@ param_lookup_editor (const gchar *editor_name,
       GxkParamEditor *editor = slist->data;
       if (param_editor_name_match (editor_name, editor))
         {
-          guint r = param_score_editor (editor, pspec);
+          guint r = param_score_editor (editor, pspec, FALSE);
           if (r > rating)       /* only notice improvements */
             {
               best = editor;
@@ -519,11 +538,32 @@ gxk_param_editor_score (const gchar *editor_name,
       GxkParamEditor *editor = slist->data;
       if (param_editor_name_match (editor_name, editor))
         {
-          guint r = param_score_editor (editor, pspec);
+          guint r = param_score_editor (editor, pspec, FALSE);
           rating = MAX (r, rating);
         }
     }
   return rating;
+}
+
+void
+gxk_param_editor_debug_score (GParamSpec *pspec)
+{
+  guint rating = 0;             /* threshold for mismatch */
+  GSList *slist;
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  const gchar *options = g_param_spec_get_options (pspec);
+  g_printerr ("GxkParamEditor: rating for pspec: name=%s fundamental=%s type=%s options=%s nick=\"%s\" blurb=\"%s\"\n",
+              pspec->name,
+              g_type_name (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec))),
+              g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+              options ? options : "",
+              g_param_spec_get_nick (pspec), g_param_spec_get_blurb (pspec));
+  for (slist = _param_editor_list; slist; slist = slist->next)
+    {
+      GxkParamEditor *editor = slist->data;
+      guint r = param_score_editor (editor, pspec, TRUE);
+      rating = MAX (r, rating);
+    }
 }
 
 const gchar*
