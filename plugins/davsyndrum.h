@@ -51,6 +51,8 @@ struct _DavSynDrum
   gfloat      env;
   gfloat      half;
   gfloat      res;
+
+  guint       input_trigger_state : 1;
 };
 
 struct _DavSynDrumClass
@@ -62,9 +64,18 @@ struct _DavSynDrumClass
 /* --- channels --- */
 enum
 {
+  BSE_SYN_DRUM_ICHANNEL_NONE,
+  BSE_SYN_DRUM_ICHANNEL_TRIGGER
+};
+enum
+{
   DAV_SYN_DRUM_OCHANNEL_NONE,
   DAV_SYN_DRUM_OCHANNEL_MONO
 };
+
+
+/* --- prototypes --- */
+void	dav_syn_drum_trigger	(DavSynDrum	*drum);
 
 
 

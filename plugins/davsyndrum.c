@@ -95,7 +95,7 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
 {
   BseObjectClass *object_class;
   BseSourceClass *source_class;
-  guint ochannel_id;
+  guint ochannel_id, ichannel_id;
   
   parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
@@ -140,8 +140,10 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
 						    0.0, 10.0, 0.1, 2.0,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class,
-					       "SynDrumOut", "SynDrum Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "SynDrumOut", "SynDrum Output", 1);
+  g_assert (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO);
+  ichannel_id = bse_source_class_add_ichannel (source_class, "trigger_in", "Trigger Input", 1, 1);
+  g_assert (ichannel_id == BSE_SYN_DRUM_ICHANNEL_TRIGGER);
 }
 
 static void
@@ -160,6 +162,7 @@ dav_syn_drum_init (DavSynDrum *drum)
   drum->env = 0.0;
   drum->half = 0.07;
   drum->res = 0;
+  drum->input_trigger_state = FALSE;
   dav_syn_drum_update_locals (drum);
 }
 
@@ -174,9 +177,18 @@ dav_syn_drum_do_shutdown (BseObject *object)
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
+void
+dav_syn_drum_trigger (DavSynDrum *drum)
+{
+  g_return_if_fail (DAV_IS_SYN_DRUM (drum));
+
+  drum->spring_vel = drum->trigger_vel;
+  drum->env = drum->trigger_vel;
+}
+
 static void
 dav_syn_drum_set_param (DavSynDrum *drum,
-			BseParam *param)
+			BseParam   *param)
 {
   switch (param->pspec->any.param_id)
     {
@@ -192,8 +204,7 @@ dav_syn_drum_set_param (DavSynDrum *drum,
       drum->trigger_vel = param->value.v_float / 100.0;
       break;
     case PARAM_TRIGGER_HIT:
-      drum->spring_vel = drum->trigger_vel;
-      drum->env = drum->trigger_vel;
+      dav_syn_drum_trigger (drum);
       break;
     case PARAM_RATIO:
       drum->ratio = param->value.v_float;
@@ -214,7 +225,7 @@ dav_syn_drum_set_param (DavSynDrum *drum,
 
 static void
 dav_syn_drum_get_param (DavSynDrum *drum,
-			BseParam *param)
+			BseParam   *param)
 {
   switch (param->pspec->any.param_id)
     {
@@ -253,6 +264,7 @@ dav_syn_drum_prepare (BseSource *source,
 {
   DavSynDrum *drum = DAV_SYN_DRUM (source);
   
+  drum->input_trigger_state = FALSE;
   dav_syn_drum_update_locals (drum);
   
   /* chain parent class' handler */
@@ -264,6 +276,7 @@ dav_syn_drum_calc_chunk (BseSource *source,
 			 guint ochannel_id)
 {
   DavSynDrum *drum = DAV_SYN_DRUM (source);
+  BseSourceInput *trigger_input;
   BseSampleValue *hunk;
   gfloat sample;
   gfloat freq_shift;
@@ -272,8 +285,21 @@ dav_syn_drum_calc_chunk (BseSource *source,
   
   g_return_val_if_fail (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO, NULL);
   
-  hunk = bse_hunk_alloc (1);
+  trigger_input = bse_source_get_input (source, BSE_SYN_DRUM_ICHANNEL_TRIGGER);
+  if (trigger_input)
+    {
+      BseChunk *chunk = bse_source_ref_chunk (trigger_input->osource, trigger_input->ochannel_id, source->index);
+      gboolean old_state = drum->input_trigger_state;
+
+      drum->input_trigger_state = bse_chunk_get_trigger_state (chunk, 0);
+      bse_chunk_unref (chunk);
+
+      if (!old_state && drum->input_trigger_state)
+	dav_syn_drum_trigger (drum);
+    }
+
   factor = 2.0 * PI / BSE_MIX_FREQ_f;
+  hunk = bse_hunk_alloc (1);
   
   freq_shift = drum->freq * drum->ratio;
   
@@ -299,6 +325,10 @@ dav_syn_drum_calc_chunk (BseSource *source,
 static void
 dav_syn_drum_reset (BseSource *source)
 {
+  DavSynDrum *drum = DAV_SYN_DRUM (source);
+
+  drum->input_trigger_state = FALSE;
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 }
