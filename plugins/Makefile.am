@@ -37,6 +37,7 @@ PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bsenoise.[hc]		\
 	bsesimpleadsr.[hc]	\
 	bsesimpleosc.[hc]	\
+	bsesequencer.[hc]	\
 	bsesnooper.[hc]		\
 	bsewaveosc.[hc]		\
 	davxtalstrings.[hc]	\

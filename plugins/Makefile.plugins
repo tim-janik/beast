@@ -69,6 +69,14 @@ bsesimpleosc_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsesimpleosc.h
 
 ##
+## Plugin bsesequencer
+##
+bsesequencer_la_SOURCES = bsesequencer.c
+bsesequencer_la_LDFLAGS = -module -avoid-version
+bsesequencer_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += bsesequencer.h
+
+##
 ## Plugin bsesnooper
 ##
 bsesnooper_la_SOURCES = bsesnooper.c
@@ -109,6 +117,7 @@ plugin_LTLIBRARIES += \
 	bsenoise.la \
 	bsesimpleadsr.la \
 	bsesimpleosc.la \
+	bsesequencer.la \
 	bsesnooper.la \
 	bsewaveosc.la \
 	davxtalstrings.la \

@@ -93,6 +93,7 @@ bse_snooper_class_init (BseSnooperClass *class)
 static void
 bse_snooper_init (BseSnooper *snooper)
 {
+  BSE_OBJECT_SET_FLAGS (snooper, BSE_ITEM_FLAG_STORAGE_IGNORE);
   snooper->active_context_id = 0;
 }
 
