@@ -3,23 +3,25 @@
 <title>BEAST/BSE-0.4.0: BSE-Procedures</title>
 </head>
 <body text="#000000" bgcolor="#ffffff" link="#cc0000" alink="#cc0000" vlink="#990000">
-<h0>BSE-Procedures &nbsp &nbsp - &nbsp 11 Feb 2002 &nbsp - &nbsp BEAST/BSE-0.4.0 </h0>
+<h0>BSE-Procedures &nbsp &nbsp - &nbsp 13 Feb 2002 &nbsp - &nbsp BEAST/BSE-0.4.0 </h0>
 
 <h1>NAME</h1>
 <blockquote>BSE-Procedures - BSE Procedure Reference</blockquote>
 <h1>SYNOPSIS</h1>
 <blockquote>
+<strong>BseContainer::list-items (</strong><u>container</u><strong>)</strong>;
+<br>
 <strong>BseDataPocket::create-entry (</strong><u>data-pocket</u><strong>)</strong>;
 <br>
 <strong>BseDataPocket::delete-entry (</strong><u>data-pocket</u>, <u>entry-id</u><strong>)</strong>;
-<br>
-<strong>BseDataPocket::get-entry-id (</strong><u>data-pocket</u>, <u>entry-index</u><strong>)</strong>;
 <br>
 <strong>BseDataPocket::get-float (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
 <br>
 <strong>BseDataPocket::get-int (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
 <br>
 <strong>BseDataPocket::get-n-entries (</strong><u>data-pocket</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::get-nth-entry-id (</strong><u>data-pocket</u>, <u>entry-index</u><strong>)</strong>;
 <br>
 <strong>BseDataPocket::get-object (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
 <br>
@@ -48,6 +50,8 @@
 <strong>BseItem::get-type-blurb (</strong><u>item</u><strong>)</strong>;
 <br>
 <strong>BseItem::get-type-name (</strong><u>item</u><strong>)</strong>;
+<br>
+<strong>BseItem::get-uloc-path (</strong><u>item</u><strong>)</strong>;
 <br>
 <strong>BseItem::unuse (</strong><u>item</u><strong>)</strong>;
 <br>
@@ -85,9 +89,15 @@
 <br>
 <strong>BseProject::ensure-wave-repo (</strong><u>project</u><strong>)</strong>;
 <br>
+<strong>BseProject::find-item (</strong><u>project</u>, <u>uloc-path</u><strong>)</strong>;
+<br>
 <strong>BseProject::get-data-pocket (</strong><u>project</u>, <u>name</u><strong>)</strong>;
 <br>
 <strong>BseProject::is_playing (</strong><u>project</u><strong>)</strong>;
+<br>
+<strong>BseProject::list-items-by-uloc (</strong><u>project</u>, <u>item-type</u>, <u>uloc</u><strong>)</strong>;
+<br>
+<strong>BseProject::list-uloc-paths (</strong><u>project</u>, <u>item-type</u><strong>)</strong>;
 <br>
 <strong>BseSNet::can_create_source (</strong><u>snet</u>, <u>source-type</u><strong>)</strong>;
 <br>
@@ -150,6 +160,18 @@
 </blockquote>
 <h1>DESCRIPTION</h1>
 <blockquote>
+<strong>BseContainer::list-items (</strong><u>container</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>container</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>item-list: 
+</table>
+</blockquote>
+<blockquote>
+Retrive all items within a container  
+</blockquote>
+</blockquote>
+<blockquote>
 <strong>BseDataPocket::create-entry (</strong><u>data-pocket</u><strong>)</strong>;
 <blockquote>
 <table border=0 summary=" ">
@@ -172,19 +194,6 @@ Create a new entry in a data pocket. Entries have a unique ID which is required 
 </blockquote>
 <blockquote>
 Delete an existing entry from a data pocket  
-</blockquote>
-</blockquote>
-<blockquote>
-<strong>BseDataPocket::get-entry-id (</strong><u>data-pocket</u>, <u>entry-index</u><strong>)</strong>;
-<blockquote>
-<table border=0 summary=" ">
-<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
-<tr><td><u></u><td><u>entry-index</u><td>index into number of entries present
-<tr><td colspan=2><u>RETURNS:</u><td>entry-id: The unique pocket entry ID (or 0 if there's no such entry)
-</table>
-</blockquote>
-<blockquote>
-Retrive the ID of an entry in the data pocket by sequential index.  
 </blockquote>
 </blockquote>
 <blockquote>
@@ -225,6 +234,19 @@ Retrive a previously set integer value from a data pocket entry.
 </blockquote>
 <blockquote>
 Retrive the number of entries created in a data pocket.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::get-nth-entry-id (</strong><u>data-pocket</u>, <u>entry-index</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-index</u><td>index into number of entries present
+<tr><td colspan=2><u>RETURNS:</u><td>entry-id: The unique pocket entry ID (or 0 if there's no such entry)
+</table>
+</blockquote>
+<blockquote>
+Retrive the ID of an entry in the data pocket by sequential index.  
 </blockquote>
 </blockquote>
 <blockquote>
@@ -410,6 +432,18 @@ Retrieve Type Description
 </blockquote>
 <blockquote>
 Retrieve Type Name  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::get-uloc-path (</strong><u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>uloc-path: 
+</table>
+</blockquote>
+<blockquote>
+Retrieve the uloc path for this item.  
 </blockquote>
 </blockquote>
 <blockquote>
@@ -629,6 +663,19 @@ Ensure the project has a wave repository
 </blockquote>
 </blockquote>
 <blockquote>
+<strong>BseProject::find-item (</strong><u>project</u>, <u>uloc-path</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td><u></u><td><u>uloc-path</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>item: 
+</table>
+</blockquote>
+<blockquote>
+Find an item within a project, given its uloc path.  
+</blockquote>
+</blockquote>
+<blockquote>
 <strong>BseProject::get-data-pocket (</strong><u>project</u>, <u>name</u><strong>)</strong>;
 <blockquote>
 <table border=0 summary=" ">
@@ -651,6 +698,33 @@ Retrive a specifically named data pocket for this project
 </blockquote>
 <blockquote>
 Check whether a project is currently playing  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseProject::list-items-by-uloc (</strong><u>project</u>, <u>item-type</u>, <u>uloc</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td><u></u><td><u>item-type</u><td>
+<tr><td><u></u><td><u>uloc</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>item-list: 
+</table>
+</blockquote>
+<blockquote>
+Retrive all items of a specific type within a project with matching uloc  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseProject::list-uloc-paths (</strong><u>project</u>, <u>item-type</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td><u></u><td><u>item-type</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>uloc-paths: 
+</table>
+</blockquote>
+<blockquote>
+List uloc paths for all items of a specified type within this project. By their uloc paths, items are uniquely identifyable within a project.  
 </blockquote>
 </blockquote>
 <blockquote>

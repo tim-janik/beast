@@ -1,3 +1,49 @@
+Wed Feb 13 17:44:59 2002  Tim Janik  <timj@gtk.org>
+
+	* bstcontrollers.[hc]: move controllers from BstRackItem into this
+	place. added more controls.
+
+	* bstdial.[hc]: some cleanups/fixes.
+
+	* bstitemview.[hc]: use BSW where apropriate, now that we have
+	value iters.
+
+	* bstmenus.[hc]: add ability to change sensitivity of choice items.
+
+	* bstparam.[hc]: clue hunter code updates to deal with object references
+	through BSW API.
+
+	* bstplaylist.c: BswVIter updates.
+
+	* bstrackeditor.[hc]: comlpeted most code portions so the rack editor
+	slowly aproaches a usable state.
+
+	* bstrackitem.[hc]: dito, code updates, fixes, new features, etc.
+
+	* bstracktable.[hc]: fix drag abortion somewhat.
+
+	* glewidgets.c: new upstream incorporating fixes from GLE.
+
+	* beast-gtk/bstknob.[hc]: new scale/dial widget with different
+	usage behaviour.
+
+Wed Feb 13 17:41:52 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw/bswproxy.[hc]: remove/fix stuff which went into BSE.
+	provide bsw_proxy_type().
+
+	* bswsignal.[hc]: also, use glue code from BSE now.
+
+	* mkapi.c: some cleanups and reqrites. support BswVIter types and
+	ulong.
+
+	* bsw/mkapi.c (cfile_header): 
+
+Tue Feb 12 08:10:11 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_update_can_operate): keep the toplevel
+	menu entry "/Waves" sensitive all the time.
+
 Mon Feb 11 19:39:13 2002  Tim Janik  <timj@gtk.org>
 
 	* bsw/bswproxy.[hc]: bsw_proxy_get_pspec() get pspecs from proxies.
