@@ -87,7 +87,7 @@ bse_atan_distort_class_init (BseAtanDistortClass *class)
 					      50, 0, 100.0, 5,
 					      SFI_PARAM_STANDARD ":f:scale"));
   
-  channel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Audio Input SIgnal"));
+  channel_id = bse_source_class_add_ichannel (source_class, "audio-in", _("Audio In"), _("Audio Input Signal"));
   g_assert (channel_id == BSE_ATAN_DISTORT_ICHANNEL_MONO1);
   channel_id = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Distorted Audio Output"));
   g_assert (channel_id == BSE_ATAN_DISTORT_OCHANNEL_MONO1);

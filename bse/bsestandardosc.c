@@ -184,7 +184,7 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
   bse_object_class_add_param (object_class, _("Pulse Modulation"),
 			      PROP_PULSE_MOD_PERC,
 			      sfi_pspec_real ("pulse_mod_perc", _("Pulse Modulation [%]"),
-					      _("Strength of pulse wisth modulation input "
+					      _("Strength of pulse width modulation input "
                                                 "(Pulse has to be selected as wave form for this to take effect)"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:dial"));
