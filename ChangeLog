@@ -1,3 +1,35 @@
+Thu Nov 20 17:13:49 2003  Tim Janik  <timj@gtk.org>
+
+	* po/POTFILES.in:
+	* po-bse/POTFILES.in: added encoding: UTF-8.
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]:
+	use translations only to alter $action-name, not to identify menu branches.
+	added ::key-label property to GxkFactoryBranch so the untranslated version
+	of a branch is available for menu branch identification.
+
+	* beast-gtk/gxk/gxkgadget.[hc]: added translation domain argument
+	to parsing functions. also, for each translated variable
+	label="translated" still provide _label="untranslated" variants,
+	so the xml definitions can explicitely refer to the untranslated
+	strings via $_label.
+
+	* beast-gtk/bstutils.c: provide translation domain when parsing gadget
+	files. don't provide a category key different from its translation in
+	menu depth for action-lists.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: namespace fixups for xmllint.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: namespace fixups for xmllint.
+	provide untranslated ::key-label for factory-branches.
+
+	* beast-gtk/gxk/gxkaction.[hc]: added key argument to _translated
+	convenience functions. don't auto-prefix untranslated keys, so it
+	really is the untranslated version of name.
+
+	* beast-gtk/gxk/gxkutils.c (gxk_factory_path_get_leaf): guard against
+	NULL strings.
+
 Wen Nov 19 00:45:00 2003  Duarte Loreto <happyguy_pt@hotmail.com>
 
 	* configure.in: Added Portuguese (pt) to ALL_LINGUAS.

@@ -66,7 +66,7 @@ void            gxk_action_list_add_actions     (GxkActionList          *alist,
                                                  GxkActionExec           aexec,
                                                  gpointer                user_data);
 void            gxk_action_list_add_translated  (GxkActionList          *alist,
-                                                 const gchar            *key,
+                                                 const gchar            *key,           /* untranslated name */
                                                  const gchar            *name,          /* translated (key) */
                                                  const gchar            *accelerator,
                                                  const gchar            *tooltip,       /* translated */
@@ -112,7 +112,8 @@ void      gxk_widget_publish_actions_grouped    (gpointer                widget,
                                                  GxkActionExec           aexec);
 void      gxk_widget_publish_translated         (gpointer                widget,
                                                  const gchar            *prefix,
-                                                 const gchar            *name,          /* translated (part of key) */
+                                                 const gchar            *key,           /* untranslated name */
+                                                 const gchar            *name,          /* translated (key) */
                                                  const gchar            *accelerator,
                                                  const gchar            *tooltip,       /* translated */
                                                  gulong                  action_id,
@@ -122,7 +123,8 @@ void      gxk_widget_publish_translated         (gpointer                widget,
 void      gxk_widget_publish_grouped_translated (gpointer                widget,
                                                  GxkActionGroup         *group,
                                                  const gchar            *prefix,
-                                                 const gchar            *name,          /* translated (part of key) */
+                                                 const gchar            *key,           /* untranslated name */
+                                                 const gchar            *name,          /* translated (key) */
                                                  const gchar            *accelerator,
                                                  const gchar            *tooltip,       /* translated */
                                                  gulong                  action_id,

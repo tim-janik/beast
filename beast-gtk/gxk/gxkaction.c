@@ -720,35 +720,37 @@ void
 gxk_widget_publish_grouped_translated (gpointer                widget,
                                        GxkActionGroup         *group,
                                        const gchar            *prefix,
-                                       const gchar            *name,          /* translated (part of key) */
+                                       const gchar            *key,             /* untranslated name */
+                                       const gchar            *name,            /* translated (key) */
                                        const gchar            *accelerator,
-                                       const gchar            *tooltip,       /* translated */
+                                       const gchar            *tooltip,         /* translated */
                                        gulong                  action_id,
                                        const gchar            *stock_icon,
                                        GxkActionCheck          acheck,
                                        GxkActionExec           aexec)
 {
   GxkActionList *alist = gxk_action_list_create_grouped (group);
-  gchar *key = g_strconcat (prefix, "/", name, NULL);
-  gxk_action_list_add_translated (alist, g_intern_string (key), name,
+  g_return_if_fail (name != NULL);
+  gxk_action_list_add_translated (alist, g_intern_string (key ? key : name), name,
                                   accelerator, tooltip, action_id, stock_icon,
                                   acheck, aexec, widget);
-  g_free (key);
   gxk_widget_publish_action_list (widget, prefix, alist);
 }
 
 void
 gxk_widget_publish_translated (gpointer                widget,
                                const gchar            *prefix,
-                               const gchar            *name,          /* translated (part of key) */
+                               const gchar            *key,             /* untranslated name */
+                               const gchar            *name,            /* translated (part of key) */
                                const gchar            *accelerator,
-                               const gchar            *tooltip,       /* translated */
+                               const gchar            *tooltip,         /* translated */
                                gulong                  action_id,
                                const gchar            *stock_icon,
                                GxkActionCheck          acheck,
                                GxkActionExec           aexec)
 {
-  gxk_widget_publish_grouped_translated (widget, NULL, prefix, name, accelerator,
+  g_return_if_fail (name != NULL);
+  gxk_widget_publish_grouped_translated (widget, NULL, prefix, key ? key : name, name, accelerator,
                                          tooltip, action_id, stock_icon, acheck, aexec);
 }
 

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
-<gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
+<gxk-gadget-definitions
+  xmlns:xdef="http://beast.gtk.org/xmlns:xdef"
+  xmlns:prop="http://beast.gtk.org/xmlns:prop"
+  xmlns:pack="http://beast.gtk.org/xmlns:pack"
+  xmlns:default-pack="http://beast.gtk.org/xmlns:default-pack"
+  xmlns:size="http://beast.gtk.org/xmlns:size" >
   
   <!-- widget-patcher -->
   <xdef:widget-patcher inherit="GxkWidgetPatcher" />
@@ -164,6 +169,7 @@
     prop:activatable="$(null-collapse,$per-action)" prop:regulate="$(null-collapse,$per-action)" />
   <xdef:factory-branch        inherit="GxkFactoryBranch"
     prop:uline-label="$label"
+    prop:key-label="$(null-collapse,$(ifdef,_label,$_label,$label))"
     />
   <!-- menu-factory: actions= separator= -->
   <xdef:menu-factory inherit="gadget-factory"

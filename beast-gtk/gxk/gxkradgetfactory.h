@@ -77,6 +77,7 @@ void    gxk_gadget_factory_match                (GxkGadgetFactory       *self,
 typedef struct {
   GObject       parent_instance;
   gchar        *uline_label;
+  gchar        *key_label;
   GxkGadgetOpt *branch_options;
 } GxkFactoryBranch;
 typedef GObjectClass GxkFactoryBranchClass;

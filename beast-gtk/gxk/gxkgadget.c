@@ -20,6 +20,7 @@
 #include "gxkgadgetfactory.h"
 #include "gxkauxwidgets.h"
 #include "glewidgets.h"
+#include <libintl.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -79,9 +80,10 @@ typedef struct {
   const gchar *domain;
 } Domain;
 typedef struct {
-  Domain *domain;
-  guint   tag_opened;
-  GSList *node_stack; /* Node* */
+  Domain      *domain;
+  const gchar *i18n_domain;
+  guint        tag_opened;
+  GSList      *node_stack; /* Node* */
 } PData;                /* parser state */
 typedef gchar* (*MacroFunc)     (GSList *args,
                                  Env    *env);
@@ -578,6 +580,7 @@ node_define (Domain       *domain,
              Node         *xdef_node,   /* for calls */
              const gchar **attribute_names,
              const gchar **attribute_values,
+             const gchar  *i18n_domain,
              const gchar **name_p,
              const gchar **area_p,
              const gchar **default_area_p,
@@ -651,15 +654,17 @@ node_define (Domain       *domain,
       {
         const gchar *name = attribute_names[i];
         const gchar *value = attribute_values[i];
-        if (name[0] == '_') /* i18n hook */
-          {
-            name++;
-            value = dgettext (NULL, value);
-          }
         if (inherits)
           node->base_options = gadget_options_intern_set (node->base_options, name, value);
         else
           node->call_options = gadget_options_intern_set (node->call_options, name, value);
+        if (name[0] == '_') /* i18n version */
+          {
+            if (inherits)
+              node->base_options = gadget_options_intern_set (node->base_options, name + 1, dgettext (i18n_domain, value));
+            else
+              node->call_options = gadget_options_intern_set (node->call_options, name + 1, dgettext (i18n_domain, value));
+          }
       }
   if (!g_type_is_a (node->type, G_TYPE_OBJECT))
     set_error (error, "no gadget type specified in definition of: %s", node_name);
@@ -690,7 +695,7 @@ gadget_start_element  (GMarkupParseContext *context,
         {
           const gchar *default_area = NULL;
           Node *node = node_define (pdata->domain, name, 0, NULL, NULL, attribute_names, attribute_values,
-                                    NULL, NULL, &default_area, error);
+                                    pdata->i18n_domain, NULL, NULL, &default_area, error);
           if (node)
             {
               if (default_area)
@@ -705,7 +710,7 @@ gadget_start_element  (GMarkupParseContext *context,
       Node *parent = pdata->node_stack->data;
       const gchar *area = NULL, *uname = NULL;
       Node *node = node_define (pdata->domain, element_name, 0, child, g_slist_last (pdata->node_stack)->data,
-                                attribute_names, attribute_values,
+                                attribute_names, attribute_values, pdata->i18n_domain,
                                 &uname, &area, NULL, error);
       if (node)
         {
@@ -774,6 +779,7 @@ gadget_error (GMarkupParseContext *context,
 
 static void
 gadget_parser (Domain      *domain,
+               const gchar *i18n_domain,
                gint         fd,
                const gchar *text,
                gint         length,
@@ -791,6 +797,7 @@ gadget_parser (Domain      *domain,
   guint8 bspace[1024];
   const gchar *buffer = text ? text : (const gchar*) bspace;
   pdata->domain = domain;
+  pdata->i18n_domain = i18n_domain;
   if (!text)
     length = read (fd, bspace, 1024);
   while (length > 0)
@@ -814,6 +821,7 @@ static GData *domains = NULL;
 void
 gxk_gadget_parse (const gchar    *domain_name,
                   const gchar    *file_name,
+                  const gchar    *i18n_domain,
                   GError        **error)
 {
   Domain *domain;
@@ -826,7 +834,7 @@ gxk_gadget_parse (const gchar    *domain_name,
       domain->domain = g_intern_string (domain_name);
       g_datalist_set_data (&domains, domain_name, domain);
     }
-  gadget_parser (domain, fd, NULL, 0, error ? error : &myerror);
+  gadget_parser (domain, i18n_domain, fd, NULL, 0, error ? error : &myerror);
   close (fd);
   if (myerror)
     {
@@ -839,6 +847,7 @@ void
 gxk_gadget_parse_text (const gchar    *domain_name,
                        const gchar    *text,
                        gint            text_len,
+                       const gchar    *i18n_domain,
                        GError        **error)
 {
   Domain *domain;
@@ -851,7 +860,7 @@ gxk_gadget_parse_text (const gchar    *domain_name,
       domain->domain = g_intern_string (domain_name);
       g_datalist_set_data (&domains, domain_name, domain);
     }
-  gadget_parser (domain, -1, text, text_len < 0 ? strlen (text) : text_len, error ? error : &myerror);
+  gadget_parser (domain, i18n_domain, -1, text, text_len < 0 ? strlen (text) : text_len, error ? error : &myerror);
   if (myerror)
     {
       g_warning ("GxkGadget: while parsing: %s", myerror->message);
@@ -1467,13 +1476,14 @@ static void
 gadget_define_type (GType           type,
                     const gchar    *name,
                     const gchar   **attribute_names,
-                    const gchar   **attribute_values)
+                    const gchar   **attribute_values,
+                    const gchar    *i18n_domain)
 {
   GError *error = NULL;
   Node *node;
   node = node_define (standard_domain, name, type, NULL, NULL,
                       attribute_names, attribute_values,
-                      NULL, NULL, NULL, &error);
+                      i18n_domain, NULL, NULL, NULL, &error);
   g_datalist_set_data (&standard_domain->nodes, name, node);
   if (error)
     g_error ("while registering standard gadgets: %s", error->message);
@@ -1534,7 +1544,7 @@ gxk_gadget_define_type (GType                type,
   g_return_if_fail (g_type_get_qdata (type, quark_gadget_type) == NULL);
 
   g_type_set_qdata (type, quark_gadget_type, (gpointer) ggtype);
-  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values);
+  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
 
 
@@ -1605,7 +1615,7 @@ gxk_gadget_define_widget_type (GType type)
   attribute_values[1] = "$(ifdef,width,$width,0)";
   attribute_names[2] = "prop:height-request";
   attribute_values[2] = "$(ifdef,height,$height,0)";
-  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values);
+  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
 
 static gboolean
@@ -1643,7 +1653,7 @@ gadget_define_gtk_menu (void)
   g_type_set_qdata (type, quark_gadget_type, (gpointer) &widget_info);
   attribute_names[0] = "prop:visible";
   attribute_values[0] = "$(ifdef,visible,$visible,1)";
-  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values);
+  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
 
 

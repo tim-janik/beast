@@ -113,10 +113,10 @@ _bst_init_gadgets (void)
   gxk_gadget_define_widget_type (BST_TYPE_EVENT_ROLL);
   gxk_gadget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
   text = gxk_zfile_uncompress (BST_GADGETS_STANDARD_SIZE, BST_GADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_GADGETS_STANDARD_DATA));
-  gxk_gadget_parse_text ("beast", text, -1, NULL);
+  gxk_gadget_parse_text ("beast", text, -1, NULL, NULL);
   g_free (text);
   text = gxk_zfile_uncompress (BST_GADGETS_BEAST_SIZE, BST_GADGETS_BEAST_DATA, G_N_ELEMENTS (BST_GADGETS_BEAST_DATA));
-  gxk_gadget_parse_text ("beast", text, -1, NULL);
+  gxk_gadget_parse_text ("beast", text, -1, NULL, NULL);
   g_free (text);
 }
 
@@ -423,7 +423,7 @@ bst_action_list_add_cat (GxkActionList          *alist,
       p = d ? d + 1 : p;
     }
 
-  gxk_action_list_add_translated (alist, cat->category, p, NULL, NULL,
+  gxk_action_list_add_translated (alist, NULL, p, NULL, NULL,
                                   cat->category_id, stock_id,
                                   acheck, aexec, user_data);
 }

@@ -65,10 +65,12 @@ GxkGadget*    gxk_gadget_creator        (GxkGadget          *gadget,
 const gchar*  gxk_gadget_get_domain     (GxkGadget          *gadget);
 void          gxk_gadget_parse          (const gchar        *domain_name,
                                          const gchar        *file_name,
+                                         const gchar        *i18n_domain,
                                          GError            **error);
 void          gxk_gadget_parse_text     (const gchar        *domain_name,
                                          const gchar        *text,
                                          gint                text_len,
+                                         const gchar        *i18n_domain,
                                          GError            **error);
 gpointer      gxk_gadget_find           (GxkGadget          *gadget,
                                          const gchar        *name);

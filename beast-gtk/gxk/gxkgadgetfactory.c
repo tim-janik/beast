@@ -239,29 +239,32 @@ gxk_gadget_factory_finalize (GObject *object)
 
 static GxkGadget*
 gadget_factory_retrieve_branch (GxkGadgetFactory *self,
-                                const gchar      *path,
+                                const gchar      *key_path,     /* uline_unescaped */
+                                const gchar      *label_path,   /* translated, contains ulines */
                                 GxkGadget        *parent,
                                 const gchar      *path_prefix,
                                 GxkGadgetOpt     *call_options)
 {
-  gchar *bwpath = gxk_factory_path_unescape_uline (path);
-  GxkGadget *gadget = g_datalist_get_data (&self->branch_widgets, bwpath);
+  GxkGadget *gadget = g_datalist_get_data (&self->branch_widgets, key_path);
   if (!gadget)
     {
-      const gchar *leaf = gxk_factory_path_get_leaf (path);
-      gchar *action_path = g_strconcat (path_prefix, path, NULL);
-      gchar *unescaped = g_strcompress (leaf);
+      const gchar *key_leaf = gxk_factory_path_get_leaf (key_path);
+      const gchar *label_leaf = gxk_factory_path_get_leaf (label_path);
+      gchar *action_path = g_strconcat (path_prefix, key_path, NULL);
+      gchar *unescaped = g_strcompress (label_leaf ? label_leaf : key_leaf);
       GxkGadgetOpt *options = gxk_gadget_options ("action-name", unescaped,
                                                   "action-path", action_path,
                                                   NULL);
-      options = gxk_gadget_options_merge (options, call_options);
       g_free (unescaped);
       g_free (action_path);
-      if (leaf > path)
+      options = gxk_gadget_options_merge (options, call_options);
+      if (key_leaf > key_path)
         {
-          gchar *ppath = g_strndup (path, leaf - path - 1);
-          parent = gadget_factory_retrieve_branch (self, ppath, parent, path_prefix, call_options);
-          g_free (ppath);
+          gchar *key_ppath = g_strndup (key_path, key_leaf - key_path - 1);
+          gchar *label_ppath = label_leaf && label_leaf > label_path ? g_strndup (label_path, label_leaf - label_path - 1) : NULL;
+          parent = gadget_factory_retrieve_branch (self, key_ppath, label_ppath, parent, path_prefix, call_options);
+          g_free (key_ppath);
+          g_free (label_ppath);
         }
       gadget = gxk_gadget_creator (NULL, gxk_gadget_get_domain (self),
                                    self->per_branch, parent, self->pass_options, options);
@@ -269,9 +272,8 @@ gadget_factory_retrieve_branch (GxkGadgetFactory *self,
         gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
       gxk_gadget_free_options (options);
       gadget = gxk_gadget_find_area (gadget, NULL);
-      g_datalist_set_data (&self->branch_widgets, bwpath, gadget);
+      g_datalist_set_data (&self->branch_widgets, key_path, gadget);
     }
-  g_free (bwpath);
   return gadget;
 }
 
@@ -287,6 +289,14 @@ match_action_root (GxkGadgetFactory *self,
   else
     ancestor = gxk_widget_find_level_ordered ((GtkWidget*) self->window, self->action_root);
   return ancestor && gxk_widget_has_ancestor (publisher, ancestor);
+}
+
+static inline const gchar*
+strip_slashes (const gchar *string)
+{
+  while (string[0] == '/')
+    string++;
+  return string;
 }
 
 static void
@@ -314,38 +324,47 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
       for (slist = self->branches; slist; slist = slist->next)
         {
           GxkFactoryBranch *branch = slist->data;
-          gadget_factory_retrieve_branch (self, branch->uline_label, self->gadget, path_prefix, branch->branch_options);
+          if (branch->key_label)
+            {
+              gchar *key_path = gxk_factory_path_unescape_uline (branch->key_label);
+              gadget_factory_retrieve_branch (self, strip_slashes (key_path),
+                                              strip_slashes (branch->uline_label ? branch->uline_label : key_path),
+                                              self->gadget, path_prefix, branch->branch_options);
+              g_free (key_path);
+            }
         }
       for (i = self->per_action ? 0 : n; i < n; i++)
         {
           GxkGadget *gadget, *parent;
-          const gchar *action_name;
           GxkGadgetOpt *options;
           GxkAction action;
-          gchar *path, *unescaped;
           gxk_action_list_get_action (alist, i, &action);
-          action_name = self->per_branch ? gxk_factory_path_get_leaf (action.name) : action.name;
-          if (action_name > action.name)
+          gchar *key_path = gxk_factory_path_unescape_uline (strip_slashes (action.key));
+          const gchar *label_path = strip_slashes (action.name);
+          gchar *action_path = g_strconcat (path_prefix, key_path, NULL);
+          const gchar *key_leaf = gxk_factory_path_get_leaf (key_path);
+          const gchar *label_leaf = gxk_factory_path_get_leaf (label_path);
+          gchar *unescaped = g_strcompress (label_leaf ? label_leaf : key_leaf);
+          if (key_leaf > key_path && self->per_branch)
             {
-              gchar *str = g_strndup (action.name, action_name - action.name - 1);
-              path = gxk_factory_path_unescape_uline (str);
-              g_free (str);
-              parent = gadget_factory_retrieve_branch (self, path, self->gadget, path_prefix, NULL);
-              g_free (path);
+              gchar *key_ppath = g_strndup (key_path, key_leaf - key_path - 1);
+              gchar *label_ppath = label_leaf && label_leaf > label_path ? g_strndup (label_path, label_leaf - label_path - 1) : NULL;
+              parent = gadget_factory_retrieve_branch (self, key_ppath, label_ppath, self->gadget, path_prefix, NULL);
+              g_free (key_ppath);
+              g_free (label_ppath);
             }
           else
             parent = self->gadget;
-          path = g_strconcat (path_prefix, action.key, NULL);
-          unescaped = g_strcompress (action_name);
           options = gxk_gadget_options ("action-name", unescaped,
-                                        "action-key", action.key,
-                                        "action-path", path,
+                                        "action-key", key_path,
+                                        "action-path", action_path,
                                         "action-accel", action.accelerator,
                                         "action-tooltip", action.tooltip,
                                         "action-stock", action.stock_icon,
                                         NULL);
+          g_free (key_path);
+          g_free (action_path);
           g_free (unescaped);
-          g_free (path);
           gadget = gxk_gadget_creator (NULL, domain, self->per_action, parent, self->pass_options, options);
           if (parent == self->gadget)
             gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
@@ -484,7 +503,8 @@ const GxkGadgetType *_gxk_gadget_factory_def = &gadget_factory_def;
 /* --- GxkFactoryBranch --- */
 enum {
   FACTORY_BRANCH_PROP_0,
-  FACTORY_BRANCH_PROP_ULINE_LABEL
+  FACTORY_BRANCH_PROP_ULINE_LABEL,
+  FACTORY_BRANCH_PROP_KEY_LABEL
 };
 static gpointer factory_branch_parent_class = NULL;
 static void
@@ -500,16 +520,23 @@ gxk_factory_branch_set_property (GObject      *object,
       g_free (self->uline_label);
       self->uline_label = g_value_dup_string (value);
       break;
+    case FACTORY_BRANCH_PROP_KEY_LABEL:
+      g_free (self->key_label);
+      self->key_label = g_value_dup_string (value);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
+  if (!self->key_label && self->uline_label)
+    self->key_label = g_strdup (self->uline_label);
 }
 static void
 gxk_factory_branch_finalize (GObject *object)
 {
   GxkFactoryBranch *self = GXK_FACTORY_BRANCH (object);
   g_free (self->uline_label);
+  g_free (self->key_label);
   gxk_gadget_free_options (self->branch_options);
   /* chain parent class' handler */
   G_OBJECT_CLASS (factory_branch_parent_class)->finalize (object);
@@ -523,6 +550,8 @@ gxk_factory_branch_class_init (GxkFactoryBranchClass *class)
   gobject_class->finalize = gxk_factory_branch_finalize;
   g_object_class_install_property (gobject_class, FACTORY_BRANCH_PROP_ULINE_LABEL,
                                    g_param_spec_string ("uline-label", NULL, NULL, NULL, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, FACTORY_BRANCH_PROP_KEY_LABEL,
+                                   g_param_spec_string ("key-label", NULL, NULL, NULL, G_PARAM_WRITABLE));
 }
 GType
 gxk_factory_branch_get_type (void)

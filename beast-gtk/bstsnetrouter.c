@@ -242,7 +242,7 @@ bst_snet_router_init (BstSNetRouter      *self,
   self->channel_toggle = gxk_action_toggle_new ();
   gxk_action_group_select (self->channel_toggle, ROUTER_TOOL_CHANNEL_HINTS);
   gxk_widget_publish_grouped_translated (self, self->channel_toggle, "router-channel-toggle",
-                                         _("Channel Hints"), NULL, _("Toggle channel name hints"),
+                                         NULL, _("Channel Hints"), NULL, _("Toggle channel name hints"),
                                          ROUTER_TOOL_CHANNEL_HINTS, NULL,
                                          NULL, snet_router_action_exec);
   /* set default tool */

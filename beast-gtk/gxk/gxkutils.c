@@ -220,6 +220,8 @@ const gchar*
 gxk_factory_path_get_leaf (const gchar *path)
 {
   const gchar *last = NULL, *p = path;
+  if (!path)
+    return NULL;
   while (*p)
     {
       if (*p == '\\' && p[1])
