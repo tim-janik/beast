@@ -1,3 +1,7 @@
+Mon Oct 27 20:46:25 2003  Tim Janik  <timj@gtk.org>
+
+	* ru.po: added russian translation from Alexandre Prokoudine <avp@altlinux.ru>.
+
 2003-10-27  Christian Rose  <menthos@menthos.com>
 
 	* POTFILES.in: Added one more entry and a comment.
