@@ -1,3 +1,8 @@
+Wed Mar  3 10:14:16 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkmenubutton.h:
+	* beast-gtk/gxk/gxkmenubutton.c: CVS copied from gxkauxwidgets.[hc].
+
 Tue Mar  2 22:49:22 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-beast.xml: added vscale to pattern views.
