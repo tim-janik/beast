@@ -19,6 +19,7 @@
 
 #include	"bseserver.h"
 
+#define MIDI_DEBUG(...) sfi_debug ("midi", __VA_ARGS__)
 
 /* --- structs --- */
 typedef struct
@@ -61,7 +62,7 @@ bse_midi_device_null_open (BseDevice     *device,
   if (handle->writable)
     BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
   BSE_MIDI_DEVICE (device)->handle = handle;
-  
+  MIDI_DEBUG ("NULL: opening MIDI readable=%d writable=%d: %s", require_readable, require_writable, bse_error_blurb (BSE_ERROR_NONE));
   return BSE_ERROR_NONE;
 }
 

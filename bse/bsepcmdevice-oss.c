@@ -46,7 +46,7 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
 
-#define PCM_DEBUG(...)          sfi_debug ("pcm", __VA_ARGS__)
+#define PCM_DEBUG(...)  sfi_debug ("pcm", __VA_ARGS__)
 
 
 /* --- OSS PCM handle --- */
@@ -225,13 +225,13 @@ bse_pcm_device_oss_open (BseDevice     *device,
     }
   else
     {
-      PCM_DEBUG ("OSS: opening \"%s\" readable=%d writable=%d failed: %s", dname, require_readable, require_writable, bse_error_blurb (error));
       if (oss->fd >= 0)
 	close (oss->fd);
       g_free (oss->frag_buf);
       g_free (oss);
     }
-              
+  PCM_DEBUG ("OSS: opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
+  
   return error;
 }
 
@@ -354,7 +354,7 @@ oss_device_setup (OSSHandle *oss,
       oss->queue_length = CLAMP (25 * handle->mix_freq / 1000, req_queue_length, oss->queue_length);
     }
 
-  PCM_DEBUG ("OSS: setup: w=%d r=%d n_channels=%d mix_freq=%u queue=%u nfrags=%u fsize=%u bufsz=%u\n",
+  PCM_DEBUG ("OSS: setup: w=%d r=%d n_channels=%d mix_freq=%u queue=%u nfrags=%u fsize=%u bufsz=%u",
 	     handle->writable,
 	     handle->readable,
 	     handle->n_channels,
@@ -474,7 +474,7 @@ oss_device_check_io (BsePcmHandle *handle,
             }
           else /* soft-sync */
             {
-              g_printerr ("OSS: underrun detected (diff=%d), skipping data\n", n_capture_avail - oss->queue_length);
+              g_printerr ("OSS: underrun detected (diff=%d), skipping input\n", n_capture_avail - oss->queue_length);
               /* soft sync, throw away extra data */
               guint n_bytes = oss->frame_size * (n_capture_avail - oss->queue_length);
               do
