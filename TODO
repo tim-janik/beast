@@ -1,4 +1,5 @@
 FIXME(urgent):
+- skip and retrigger updates for scope visibility changes
 - add midi control numbers to midi control enum values as tooltips
 - implement display of Note properties next to frequency properties (and nuke note properties from plugins)
 - loading bsewave overrides mixing frequencies from wav-file chunks with the default bsewave mix frequency
