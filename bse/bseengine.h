@@ -44,6 +44,7 @@ typedef struct _BseJob                   BseJob;
 /* bsedefs.h:
  * typedef void (*BseEngineAccessFunc)  (BseModule      *module,
  *                                       gpointer        data);
+ * typedef void (*BseFreeFunc)          (gpointer        data);
  */
 typedef gboolean (*BseEnginePollFunc)   (gpointer       data,
                                          guint          n_values,

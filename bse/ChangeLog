@@ -1,3 +1,13 @@
+Tue Sep 14 01:13:26 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecxxmodule.idl:
+	* bsecxxmodule.cc: more effect automation work, generate debugging
+	message from module flow access function, properly constrain control
+	event values.
+
+	* bsemidireceiver.[hc]*: support midi control data structure per
+	control handler instead of just a module pointer.
+
 Mon Sep 13 02:37:28 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.h:

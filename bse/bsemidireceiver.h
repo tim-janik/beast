@@ -28,11 +28,18 @@ G_BEGIN_DECLS
 #define	BSE_MIDI_CONTROL_MODULE_N_CHANNELS		   (4)
 #define	BSE_MIDI_VOICE_MODULE_N_CHANNELS		   (4)
 #define	BSE_MIDI_VOICE_N_CHANNELS			   (3)
+typedef struct {
+  BseModule        *module;     /* matched by add/remove handler */
+  /* ignored by remove_control_handler() */
+  gfloat            minimum;
+  gfloat            maximum;
+} BseMidiControlData;
 typedef void   (*BseMidiControlHandler)                    (gpointer           handler_data,
                                                             guint64            tick_stamp,
                                                             BseMidiSignalType  signal_type,
                                                             gfloat             control_value,
-                                                            GSList            *modules,
+                                                            guint              n_mcdatas,
+                                                            const BseMidiControlData *mcdatas,
                                                             BseTrans          *trans);
 BseMidiReceiver* bse_midi_receiver_new                     (const gchar       *receiver_name);
 BseMidiReceiver* bse_midi_receiver_ref                     (BseMidiReceiver   *self);
@@ -53,13 +60,13 @@ void             bse_midi_receiver_add_control_handler     (BseMidiReceiver   *s
                                                             BseMidiSignalType  signal_type,
                                                             BseMidiControlHandler handler_func,
                                                             gpointer           handler_data,
-                                                            BseModule         *module);
+                                                            BseMidiControlData cdata);
 void             bse_midi_receiver_remove_control_handler  (BseMidiReceiver   *self,
                                                             guint              midi_channel,
                                                             BseMidiSignalType  signal_type,
                                                             BseMidiControlHandler handler_func,
                                                             gpointer           handler_data,
-                                                            BseModule         *module);
+                                                            BseMidiControlData cdata);
 BseModule*       bse_midi_receiver_retrieve_mono_voice     (BseMidiReceiver   *self,
                                                             guint              midi_channel,
                                                             BseTrans          *trans);
