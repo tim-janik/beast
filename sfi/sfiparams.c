@@ -32,6 +32,7 @@ typedef struct {
                                          const GValue *value2);
   gboolean      (*value_validate)       (GParamSpec   *pspec,
                                          GValue       *value);
+  void          (*finalize)             (GParamSpec   *pspec);
 } PSpecClassData;
 
 
@@ -42,16 +43,17 @@ static gint     param_bblock_values_cmp (GParamSpec   *pspec,
 static gint     param_fblock_values_cmp (GParamSpec   *pspec,
                                          const GValue *value1,
                                          const GValue *value2);
-static gint     param_seq_values_cmp    (GParamSpec   *pspec,
+static gint     param_rec_values_cmp    (GParamSpec   *pspec,
                                          const GValue *value1,
                                          const GValue *value2);
-static gint     param_rec_values_cmp    (GParamSpec   *pspec,
+static gboolean param_rec_validate      (GParamSpec   *pspec,
+                                         GValue       *value);
+static gint     param_seq_values_cmp    (GParamSpec   *pspec,
                                          const GValue *value1,
                                          const GValue *value2);
 static gboolean param_seq_validate      (GParamSpec   *pspec,
                                          GValue       *value);
-static gboolean param_rec_validate      (GParamSpec   *pspec,
-                                         GValue       *value);
+static void     param_seq_finalize      (GParamSpec   *pspec);
 static gboolean param_note_validate     (GParamSpec   *pspec,
                                          GValue       *value);
 static void     param_class_init        (gpointer      class,
@@ -123,6 +125,7 @@ _sfi_init_params (void)
     static const PSpecClassData cdata = {
       param_seq_values_cmp,
       param_seq_validate,
+      param_seq_finalize,
     };
     info.class_data = &cdata;
     info.instance_size = sizeof (SfiParamSpecSeq);
@@ -160,6 +163,8 @@ param_class_init (gpointer class,
         pclass->values_cmp = cdata->values_cmp;
       if (cdata->value_validate)
         pclass->value_validate = cdata->value_validate;
+      if (cdata->finalize)
+        pclass->finalize = cdata->finalize;
     }
 }
 
@@ -353,6 +358,21 @@ param_seq_validate (GParamSpec *pspec,
         }
     }
   return changed;
+}
+
+static void
+param_seq_finalize (GParamSpec *pspec)
+{
+  SfiParamSpecSeq *sspec = SFI_PSPEC_SEQ (pspec);
+  if (sspec->element)
+    {
+      g_param_spec_unref (sspec->element);
+      sspec->element = NULL;
+    }
+  /* chain to parent class' handler */
+  GParamSpecClass *class = g_type_class_peek (SFI_TYPE_PARAM_SEQ);
+  class = g_type_class_peek_parent (class);
+  class->finalize (pspec);
 }
 
 static gboolean
@@ -799,11 +819,16 @@ sfi_boxed_type_set_seq_element (GType               boxed_type,
 {
   BoxedInfo *binfo = g_type_get_qdata (boxed_type, quark_boxed_info);
   g_return_if_fail (G_TYPE_IS_BOXED (boxed_type));
+  guint i;
+  for (i = 0; i < (binfo ? binfo->n_fields : 0); i++)
+    if (binfo->fields[i])
+      g_param_spec_unref (binfo->fields[i]);
   if (element)
     {
       binfo = g_realloc (binfo, sizeof (BoxedInfo));
       binfo->n_fields = 1;
-      binfo->fields[0] = element;
+      binfo->fields[0] = g_param_spec_ref (element);
+      g_param_spec_sink (element);
       binfo->boxed_kind = BOXED_SEQUENCE;
     }
   else

@@ -95,6 +95,8 @@ GValue*	 sfi_seq_get		(const SfiSeq	 *seq,
 				 guint		  index);
 gboolean sfi_seq_check		(SfiSeq		 *seq,
 				 GType		  element_type);
+gboolean sfi_seq_validate       (SfiSeq          *seq,
+                                 GParamSpec      *pspec);
 /* convenience */
 void     sfi_seq_append_bool	(SfiSeq          *seq,
 				 SfiBool	  v_bool);

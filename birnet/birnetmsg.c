@@ -45,8 +45,7 @@ static guint          debug_actions = SFI_LOG_TO_STDERR;
 static guint          stdlog_syslog_priority = 0; // LOG_USER | LOG_INFO;
 static gboolean       stdlog_to_stderr = TRUE;
 static FILE          *stdlog_file = NULL;
-static SfiLogHandler  log_handler = sfi_log_default_handler;
-static gpointer       log_handler_data = NULL;
+static GQuark         quark_log_handler = 0;
 
 /* --- prototypes --- */
 static void     sfi_log_intern  (const char     *log_domain,
@@ -59,6 +58,8 @@ static void     sfi_log_intern  (const char     *log_domain,
 void
 _sfi_init_logging (void)
 {
+  g_assert (quark_log_handler == 0);
+  quark_log_handler = g_quark_from_static_string ("SfiLogHandler");
   sfi_mutex_init (&logging_mutex);
 }
 
@@ -277,11 +278,9 @@ sfi_log_set_stdlog (gboolean    stdlog_to_stderr_bool,
 }
 
 void
-sfi_log_set_handler (SfiLogHandler   handler,
-                     gpointer        data)
+sfi_log_set_thread_handler (SfiLogHandler handler)
 {
-  log_handler = handler;
-  log_handler_data = data;
+  sfi_thread_set_qdata (quark_log_handler, handler);
 }
 
 /**
@@ -363,14 +362,6 @@ log_prefix (const char  *prg_name,
 }
 
 static void
-log_printerr (const char        *log_domain,
-              unsigned char      level,
-              const char        *key,
-              const char        *message)
-{
-}
-
-static void
 sfi_log_intern (const char     *log_domain,
                 unsigned char   level,
                 const char     *key,
@@ -426,24 +417,40 @@ sfi_log_intern (const char     *log_domain,
       fprintf (stdlog_file, "%s: %s\n", prefix, string);
       g_free (prefix);
     }
-  if (log_handler && (actions & SFI_LOG_TO_HANDLER))
+  if (actions & SFI_LOG_TO_HANDLER)
     {
       SfiLogMessage msg = { 0, };
+      SfiLogHandler log_handler = sfi_thread_get_qdata (quark_log_handler);
+      if (!log_handler)
+        log_handler = sfi_log_default_handler;
       msg.log_domain = log_domain;
       msg.level = level;
       msg.key = key;
       msg.config_blurb = config_blurb;
       msg.message = string;
-      log_handler (&msg, log_handler_data);
+      log_handler (&msg);
     }
 }
 
 void
-sfi_log_default_handler (SfiLogMessage  *msg,
-                         gpointer        data)
+sfi_log_default_handler (SfiLogMessage *msg)
 {
-  if (msg->level >= 32 && msg->level <= 126)
-    g_printerr ("\t(*) UNHANDLED<%c>: %s\n", msg->level, msg->message);
+  const gchar *level_name;
+  switch (msg->level)
+    {
+    case SFI_LOG_ERROR:   level_name = "ERROR";      break;
+    case SFI_LOG_WARNING: level_name = "WARNING";    break;
+    case SFI_LOG_INFO:    level_name = "INFO";       break;
+    case SFI_LOG_DIAG:    level_name = "DIAGNOSTIC"; break;
+    case SFI_LOG_DEBUG:   level_name = "DEBUG";      break;
+    default:              level_name = NULL;         break;
+    }
+  g_printerr ("********************************************************************************\n");
+  if (level_name)
+    g_printerr ("** %s: %s\n", level_name, msg->message);
+  else if (msg->level >= 32 && msg->level <= 126)
+    g_printerr ("** LOG<%c>: %s\n", msg->level, msg->message);
   else
-    g_printerr ("\t(*) UNHANDLED<0x%02x>: %s\n", msg->level, msg->message);
+    g_printerr ("** LOG<0x%02x>: %s\n", msg->level, msg->message);
+  g_printerr ("********************************************************************************\n");
 }

@@ -60,16 +60,14 @@ typedef enum /*< skip >*/
   SFI_LOG_TO_STDLOG     = 2,
   SFI_LOG_TO_HANDLER    = 4,
 } SfiLogFlags;
-void               sfi_log_assign_level (unsigned char   level,
+void    sfi_log_assign_level            (unsigned char   level,
                                          SfiLogFlags     channel_mask);
-void               sfi_log_set_stdlog   (gboolean        stdlog_to_stderr,
+void    sfi_log_set_stdlog              (gboolean        stdlog_to_stderr,
                                          const char     *stdlog_filename,
                                          guint           syslog_priority); /* if != 0, stdlog to syslog */
-typedef struct     SfiLogMessage         SfiLogMessage;
-typedef void     (*SfiLogHandler)       (SfiLogMessage  *message,
-                                         gpointer        data);
-void               sfi_log_set_handler  (SfiLogHandler   handler,
-                                         gpointer        data);
+typedef struct SfiLogMessage             SfiLogMessage;
+typedef void (*SfiLogHandler)           (SfiLogMessage  *message);
+void    sfi_log_set_thread_handler      (SfiLogHandler   handler);
 
 /* --- logging internals --- */
 #define	SFI_LOG_ERROR   ('E')
@@ -96,8 +94,7 @@ void    sfi_log_string                  (const char     *log_domain,
                                          const char     *key,
                                          const char     *config_blurb,
                                          const char     *string);
-void    sfi_log_default_handler         (SfiLogMessage  *message,
-                                         gpointer        data);
+void    sfi_log_default_handler         (SfiLogMessage  *message);
 void    _sfi_init_logging               (void);
 #ifndef SFI_LOG_DOMAIN
 #define SFI_LOG_DOMAIN  G_LOG_DOMAIN

@@ -433,6 +433,19 @@ sfi_seq_check (SfiSeq *seq,
   return TRUE;
 }
 
+gboolean
+sfi_seq_validate (SfiSeq     *seq,
+                  GParamSpec *pspec)
+{
+  g_return_val_if_fail (seq != NULL, FALSE);
+  g_return_val_if_fail (pspec != NULL, FALSE);
+
+  GValue *v = sfi_value_seq (seq);
+  gboolean changed = g_param_value_validate (pspec, v);
+  sfi_value_free (v);
+  return changed;
+}
+
 void
 sfi_seq_append_bool (SfiSeq      *seq,
 		     SfiBool      v_bool)
