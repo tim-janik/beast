@@ -1,3 +1,17 @@
+Tue Jul 13 22:42:24 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (main): raised the priority of the BSE context
+	source, so handling BSE context events still occours prior to handling
+	of G_PRIORITY_HIGH events.
+
+	* beast-gtk/bstsnetrouter.[hc]: implemented link-update handling in an
+	idle handler. handling link-updates asyncronously handles cases where
+	BSE has multiple item-added signal events pending, while the core
+	is updating links and assumes all link ends to be known (which is not
+	the cases if a newly created module is still in the queue). with the
+	link-update handler running at G_PRIORITY_HIGH, it has lower priority
+	than processing of signal events.
+
 Tue Jul 13 21:53:30 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.[hc]: refactored and rearranged

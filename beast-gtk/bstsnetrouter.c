@@ -37,11 +37,6 @@ enum {
   ROUTER_TOOL_CHANNEL_HINTS
 };
 
-/* --- prototypes --- */
-static void       bst_snet_router_update_links  (BstSNetRouter          *self,
-                                                 BstCanvasSource        *csource);
-
-
 /* --- tools & actions --- */
 struct { gulong action_id; const gchar *blurb; } tool_blurbs[] = {
   { ROUTER_TOOL_EDIT,   N_("Edit tool (mouse buttons 1-3)\n"
@@ -152,6 +147,117 @@ bst_snet_router_finalize (GObject *object)
   G_OBJECT_CLASS (bst_snet_router_parent_class)->finalize (object);
 }
 
+static void
+bst_snet_router_update_links (BstSNetRouter   *self,
+                              BstCanvasSource *csource)
+{
+  GnomeCanvas *canvas = GNOME_CANVAS (self);
+
+  /* sort out input links of this csource */
+  SfiRing *node, *iring = NULL, *tmp_ring = self->canvas_links;
+  self->canvas_links = NULL;
+  while (tmp_ring)
+    {
+      BstCanvasLink *link = sfi_ring_pop_head (&tmp_ring);
+      if (link->icsource == csource)
+        iring = sfi_ring_append (iring, link);
+      else
+        self->canvas_links = sfi_ring_append (self->canvas_links, link);
+    }
+
+  /* now we walk the (c)source's input channels, keep
+   * existing links and create new ones on the fly
+   */
+  guint i;
+  for (i = 0; i < bse_source_n_ichannels (csource->source); i++)
+    {
+      guint j, n_joints = bse_source_ichannel_get_n_joints (csource->source, i);
+      for (j = 0; j < n_joints; j++)
+        {
+          SfiProxy osource = bse_source_ichannel_get_osource (csource->source, i, j);
+          if (!osource)
+            continue;
+          guint ochannel = bse_source_ichannel_get_ochannel (csource->source, i, j);
+          BstCanvasSource *ocsource = bst_snet_router_csource_from_source (self, osource);
+          if (!ocsource)
+            {
+              g_warning ("Couldn't figure CanvasSource Item from BSE module \"%s\"", bse_item_get_name_or_type (osource));
+              continue;
+            }
+          /* find corresponding link */
+          BstCanvasLink *link = NULL;
+          for (node = iring; node; node = sfi_ring_walk (node, iring))
+            {
+              link = iring->data;
+              if (link &&
+                  link->ichannel == i &&
+                  link->ocsource == ocsource &&
+                  link->ochannel == ochannel)
+                break;
+            }
+          if (node) /* cool, found one already */
+            node->data = NULL;
+          else /* got none, ok, need to create new one */
+            {
+              link = g_object_ref (bst_canvas_link_new (GNOME_CANVAS_GROUP (canvas->root)));
+              bst_canvas_link_set_icsource (link, csource, i);
+              bst_canvas_link_set_ocsource (link, ocsource, ochannel);
+              /* queue update cause ellipse-rect is broken */
+              gnome_canvas_FIXME_hard_update (canvas);
+            }
+          self->canvas_links = sfi_ring_append (self->canvas_links, link);
+        }
+    }
+
+  /* cleanup iring and left-over link objects */
+  while (iring)
+    {
+      BstCanvasLink *link = sfi_ring_pop_head (&iring);
+      if (link)
+        {
+          gtk_object_destroy (GTK_OBJECT (link));
+          g_object_unref (link);
+        }
+    }
+}
+
+static SfiRing *queued_canvas_sources = NULL;
+
+static gboolean
+bst_snet_router_handle_link_update (gpointer data)
+{
+  GDK_THREADS_ENTER();
+  while (queued_canvas_sources)
+    {
+      BstCanvasSource *csource = sfi_ring_pop_head (&queued_canvas_sources);
+      GnomeCanvasItem *citem = GNOME_CANVAS_ITEM (csource);
+      GnomeCanvas *canvas = citem->canvas;
+      if (BST_IS_SNET_ROUTER (canvas))
+        bst_snet_router_update_links (BST_SNET_ROUTER (canvas), csource);
+      g_object_unref (csource);
+    }
+  GDK_THREADS_LEAVE();
+  return FALSE;
+}
+
+static void
+bst_snet_router_queue_link_update (BstSNetRouter   *self,
+                                   BstCanvasSource *csource)
+{
+  if (!sfi_ring_find (queued_canvas_sources, csource))
+    {
+      g_object_ref (csource);
+      /* make sure a handler is executed as soon as possible to
+       * update the canvas links (however, it needs to be executed
+       * with a priority low enough so that additional item-added
+       * signals are processed first)
+       */
+      if (!queued_canvas_sources)
+        g_idle_add_full (G_PRIORITY_HIGH, bst_snet_router_handle_link_update, NULL, NULL);
+      queued_canvas_sources = sfi_ring_append (queued_canvas_sources, csource);
+    }
+}
+
 GtkWidget*
 bst_snet_router_new (SfiProxy snet)
 {
@@ -181,7 +287,7 @@ bst_snet_router_item_added (BstSNetRouter *self,
   csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root), item);
   bst_canvas_source_set_channel_hints (BST_CANVAS_SOURCE (csource), CHANNEL_HINTS (self));
   g_object_connect (csource,
-                    "swapped_signal::update_links", bst_snet_router_update_links, self,
+                    "swapped_signal::update_links", bst_snet_router_queue_link_update, self,
                     NULL);
   bst_canvas_source_update_links (BST_CANVAS_SOURCE (csource));  // FIXME: maybe too early if other items are pending (idle link update)
   /* queue update cause ellipse-rect is broken */
@@ -274,7 +380,7 @@ bst_snet_router_update (BstSNetRouter *self)
       csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root), self->snet);
       bst_canvas_source_set_channel_hints (BST_CANVAS_SOURCE (csource), CHANNEL_HINTS (self));
       g_object_connect (csource,
-                        "swapped_signal::update_links", bst_snet_router_update_links, self,
+                        "swapped_signal::update_links", bst_snet_router_queue_link_update, self,
                         NULL);
       csources = g_slist_prepend (csources, csource);
     }
@@ -290,7 +396,7 @@ bst_snet_router_update (BstSNetRouter *self)
           GnomeCanvasItem *csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root), item);
           bst_canvas_source_set_channel_hints (BST_CANVAS_SOURCE (csource), CHANNEL_HINTS (self));
           g_object_connect (csource,
-                            "swapped_signal::update_links", bst_snet_router_update_links, self,
+                            "swapped_signal::update_links", bst_snet_router_queue_link_update, self,
                             NULL);
           csources = g_slist_prepend (csources, csource);
         }
@@ -413,80 +519,6 @@ bst_snet_router_csource_from_source (BstSNetRouter *router,
     }
 
   return NULL;
-}
-
-static void
-bst_snet_router_update_links (BstSNetRouter   *self,
-                              BstCanvasSource *csource)
-{
-  GnomeCanvas *canvas = GNOME_CANVAS (self);
-
-  /* sort out input links of this csource */
-  SfiRing *node, *iring = NULL, *tmp_ring = self->canvas_links;
-  self->canvas_links = NULL;
-  while (tmp_ring)
-    {
-      BstCanvasLink *link = sfi_ring_pop_head (&tmp_ring);
-      if (link->icsource == csource)
-        iring = sfi_ring_append (iring, link);
-      else
-        self->canvas_links = sfi_ring_append (self->canvas_links, link);
-    }
-
-  /* now we walk the (c)source's input channels, keep
-   * existing links and create new ones on the fly
-   */
-  guint i;
-  for (i = 0; i < bse_source_n_ichannels (csource->source); i++)
-    {
-      guint j, n_joints = bse_source_ichannel_get_n_joints (csource->source, i);
-      for (j = 0; j < n_joints; j++)
-        {
-          SfiProxy osource = bse_source_ichannel_get_osource (csource->source, i, j);
-          if (!osource)
-            continue;
-          guint ochannel = bse_source_ichannel_get_ochannel (csource->source, i, j);
-          BstCanvasSource *ocsource = bst_snet_router_csource_from_source (self, osource);
-          if (!ocsource)
-            {
-              g_warning ("Couldn't figure CanvasSource Item from BSE module \"%s\"", bse_item_get_name_or_type (osource));
-              continue;
-            }
-          /* find corresponding link */
-          BstCanvasLink *link = NULL;
-          for (node = iring; node; node = sfi_ring_walk (node, iring))
-            {
-              link = iring->data;
-              if (link &&
-                  link->ichannel == i &&
-                  link->ocsource == ocsource &&
-                  link->ochannel == ochannel)
-                break;
-            }
-          if (node) /* cool, found one already */
-            node->data = NULL;
-          else /* got none, ok, need to create new one */
-            {
-              link = g_object_ref (bst_canvas_link_new (GNOME_CANVAS_GROUP (canvas->root)));
-              bst_canvas_link_set_icsource (link, csource, i);
-              bst_canvas_link_set_ocsource (link, ocsource, ochannel);
-              /* queue update cause ellipse-rect is broken */
-              gnome_canvas_FIXME_hard_update (canvas);
-            }
-          self->canvas_links = sfi_ring_append (self->canvas_links, link);
-        }
-    }
-
-  /* cleanup iring and left-over link objects */
-  while (iring)
-    {
-      BstCanvasLink *link = sfi_ring_pop_head (&iring);
-      if (link)
-        {
-          gtk_object_destroy (GTK_OBJECT (link));
-          g_object_unref (link);
-        }
-    }
 }
 
 static void

@@ -164,7 +164,7 @@ main (int   argc,
   bse_init_async (&argc, &argv, bseconfig);
   sfi_rec_unref (bseconfig);
   sfi_glue_context_push (bse_init_glue_context ("BEAST"));
-  source = g_source_simple (G_PRIORITY_HIGH,
+  source = g_source_simple (G_PRIORITY_HIGH - 100,
 			    (GSourcePending) sfi_glue_context_pending,
 			    (GSourceDispatch) sfi_glue_context_dispatch,
 			    NULL, NULL, NULL);
