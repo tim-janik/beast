@@ -76,6 +76,8 @@ struct _BsePcmStream
   /* Stream attributes
    */
   BsePcmStreamAttribs	attribs;
+
+  BseIndex n_blocks; /* FIXME */
 };
 struct _BsePcmStreamClass
 {
@@ -85,6 +87,10 @@ struct _BsePcmStreamClass
 			 BsePcmStreamAttribMask mask,
 			 BsePcmStreamAttribs   *attribs);
 };
+
+
+/* --- bad bad hack --- */
+extern BsePcmStream* bse_pcm_stream_extern_mic; /* FIXME */
 
 
 /* --- prototypes -- */

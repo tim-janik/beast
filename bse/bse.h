@@ -48,6 +48,7 @@
 #include        <bse/bsemagic.h>
 #include        <bse/bsemain.h>
 #include        <bse/bsemaster.h>
+#include        <bse/bsemixer.h>
 #include        <bse/bsenullstream.h>
 #include        <bse/bseobject.h>
 #include        <bse/bseparam.h>

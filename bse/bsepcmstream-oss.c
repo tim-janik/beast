@@ -158,6 +158,10 @@ bse_pcm_stream_oss_init (BsePcmStreamOSS *pcm_stream_oss)
   
   pcm_stream_oss->fd = -1;
   pcm_stream_oss->block_size = 0;
+
+  /* FIXME: bad bad hack: */
+  if (!bse_pcm_stream_extern_mic)
+    bse_pcm_stream_extern_mic = pcm_stream;
 }
 
 static void
@@ -170,6 +174,10 @@ bse_pcm_stream_oss_destroy (BseObject *object)
   pcm_stream_oss = BSE_PCM_STREAM_OSS (object);
   pcm_stream = BSE_PCM_STREAM (object);
   stream = BSE_STREAM (object);
+
+  /* FIXME: bad bad hack: */
+  if (bse_pcm_stream_extern_mic == pcm_stream)
+    bse_pcm_stream_extern_mic = NULL;
   
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
@@ -253,7 +261,7 @@ pcm_stream_oss_start (BseStream	*stream)
   pcm_stream = BSE_PCM_STREAM (stream);
   pcm_stream_oss = BSE_PCM_STREAM_OSS (stream);
   
-  /* this is sick!
+  /* FIXME: this is sick!
    * we need to put an amount of zeros into the soundcard prior to atual
    * playing, to avoid an extra click-noise.
    * this is with GUS-MAX and the ultra-driver from jaroslav.
@@ -293,24 +301,6 @@ pcm_stream_oss_stop (BseStream *stream)
   errno = 0;
 }
 
-static guint
-pcm_stream_oss_read_sv (BseStream      *stream,
-			guint		n_values,
-			BseSampleValue *values)
-{
-  BsePcmStream *pcm_stream;
-  BsePcmStreamOSS *pcm_stream_oss;
-  
-  pcm_stream = BSE_PCM_STREAM (stream);
-  pcm_stream_oss = BSE_PCM_STREAM_OSS (stream);
-  
-  memset (values, 0, sizeof (BseSampleValue) * n_values);
-  
-  errno = 0;
-  
-  return sizeof (BseSampleValue) * n_values;
-}
-
 static gboolean
 pcm_stream_oss_would_block (BseStream *stream,
 			    guint      n_values)
@@ -344,15 +334,43 @@ pcm_stream_oss_would_block (BseStream *stream,
 }
 
 static guint
+pcm_stream_oss_read_sv (BseStream      *stream,
+			guint		n_values,
+			BseSampleValue *values)
+{
+  BsePcmStream *pcm_stream;
+  BsePcmStreamOSS *pcm_stream_oss;
+  guint n_bytes;
+  guint8 *buffer = (guint8*) values;
+  guint bsize = n_values * sizeof (BseSampleValue);
+
+  pcm_stream = BSE_PCM_STREAM (stream);
+  pcm_stream_oss = BSE_PCM_STREAM_OSS (stream);
+  
+  /* the fd is set to blocking behaviour by default */
+  do
+    n_bytes = read (pcm_stream_oss->fd, buffer, bsize);
+  while (n_bytes < 0 && errno == EINTR); /* don't mind signals */
+
+  // memset (values, 0, sizeof (BseSampleValue) * n_values);
+  
+  errno = 0;
+  
+  return MAX (n_bytes, 0) * sizeof (BseSampleValue);
+}
+
+static guint
 pcm_stream_oss_write_sv (BseStream	      *stream,
 			 guint		       n_values,
 			 const BseSampleValue *values)
 {
   BsePcmStreamOSS *pcm_stream_oss;
+  BsePcmStream *pcm_stream;
   guint n_bytes;
   guint8 *buffer = (guint8*) values;
   guint bsize = n_values * sizeof (BseSampleValue);
   
+  pcm_stream = BSE_PCM_STREAM (stream);
   pcm_stream_oss = BSE_PCM_STREAM_OSS (stream);
   
   /* the fd is set to blocking behaviour by default */
@@ -361,8 +379,10 @@ pcm_stream_oss_write_sv (BseStream	      *stream,
   while (n_bytes < 0 && errno == EINTR); /* don't mind signals */
   
   errno = 0;
+
+  pcm_stream->n_blocks++; /* FIXME */
   
-  return n_values * sizeof (BseSampleValue);
+  return MAX (n_bytes, 0) * sizeof (BseSampleValue);
 }
 
 static void
@@ -399,37 +419,37 @@ pcm_stream_oss_open_dsp (BsePcmStreamOSS *pcm_stream_oss)
   BseStream *stream;
   BsePcmStream *pcm_stream;
   gint fd;
-  guint block_size;
   gint d_int;
+  glong d_long;
 
 //  G_BREAKPOINT ();
   
   stream = BSE_STREAM (pcm_stream_oss);
   pcm_stream = BSE_PCM_STREAM (pcm_stream_oss);
   
-  /* currently, we feature only BSE_STREAMF_WRITABLE */
-  
-  fd = open (stream->file_name, O_WRONLY);
+  fd = open (stream->file_name, O_RDWR);
+  if (fd < 0)
+    {
+      BSE_STREAM_UNSET_FLAG (pcm_stream_oss, READABLE);
+      fd = open (stream->file_name, O_WRONLY);
+    }
+  else
+    BSE_STREAM_SET_FLAG (pcm_stream_oss, READABLE);
   if (fd < 0)
     {
       if (errno == EBUSY)
 	return BSE_ERROR_STREAM_DEVICE_BUSY;
+      else if (errno == EISDIR || errno == EACCES || errno == EROFS)
+	return BSE_ERROR_STREAM_PERM;
       else
 	return BSE_ERROR_STREAM_IO;
     }
   
-  block_size = pcm_stream_oss->block_size;
-  d_int = block_size;
-  if (ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &d_int) < 0 ||
-      d_int < 1024 ||
-      d_int > 131072 ||
-      d_int != (d_int & 0xffffffe))
-    {
-      close (fd);
-      return BSE_ERROR_STREAM_GET_ATTRIB;
-    }
-  block_size = d_int;
-  
+  d_long = fcntl (fd, F_GETFL);
+  d_long &= ~O_NONBLOCK;
+  if (fcntl (fd, F_SETFL, d_long))
+    return BSE_ERROR_STREAM_SET_FORMAT;
+
   d_int = AFMT_S16_LE;
   if (ioctl (fd, SNDCTL_DSP_GETFMTS, &d_int) < 0 ||
       (d_int & AFMT_S16_LE) != AFMT_S16_LE)
@@ -437,7 +457,7 @@ pcm_stream_oss_open_dsp (BsePcmStreamOSS *pcm_stream_oss)
       /* audio format not supported
        */
       close (fd);
-      return BSE_ERROR_STREAM_GET_ATTRIB;
+      return BSE_ERROR_STREAM_GET_FORMATS;
     }
   
   d_int = AFMT_S16_LE;
@@ -447,11 +467,10 @@ pcm_stream_oss_open_dsp (BsePcmStreamOSS *pcm_stream_oss)
       /* failed to set audio format
        */
       close (fd);
-      return BSE_ERROR_STREAM_SET_ATTRIB;
+      return BSE_ERROR_STREAM_SET_FORMAT;
     }
   
   pcm_stream_oss->fd = fd;
-  pcm_stream_oss->block_size = block_size;
   
   return BSE_ERROR_NONE;
 }
@@ -462,8 +481,7 @@ pcm_stream_oss_set_dsp (BsePcmStreamOSS	      *pcm_stream_oss,
 			BsePcmStreamAttribs   *attribs)
 {
   BsePcmStream *pcm_stream;
-  gint d_int;
-  glong d_long;
+  gint d_int, fd = pcm_stream_oss->fd;
   
   pcm_stream = BSE_PCM_STREAM (pcm_stream_oss);
   
@@ -471,11 +489,11 @@ pcm_stream_oss_set_dsp (BsePcmStreamOSS	      *pcm_stream_oss,
     {
       attribs->n_channels = CLAMP (attribs->n_channels, 1, pcm_stream->max_channels);
       d_int = attribs->n_channels - 1;
-      if (ioctl (pcm_stream_oss->fd, SNDCTL_DSP_STEREO, &d_int) < 0)
+      if (ioctl (fd, SNDCTL_DSP_STEREO, &d_int) < 0)
 	{
 	  /* failed to set audio format
 	   */
-	  return BSE_ERROR_STREAM_SET_ATTRIB;
+	  return BSE_ERROR_STREAM_SET_FORMAT;
 	}
       d_int++;
       pcm_stream->attribs.n_channels = d_int;
@@ -504,11 +522,11 @@ pcm_stream_oss_set_dsp (BsePcmStreamOSS	      *pcm_stream_oss,
 	  freq = MAX (freq, attribs->record_frequency);
 	}
       d_int = freq;
-      if (ioctl (pcm_stream_oss->fd, SNDCTL_DSP_SPEED, &d_int) < 0)
+      if (ioctl (fd, SNDCTL_DSP_SPEED, &d_int) < 0)
 	{
 	  /* failed to set audio format
 	   */
-	  return BSE_ERROR_STREAM_SET_ATTRIB;
+	  return BSE_ERROR_STREAM_SET_FORMAT;
 	}
       pcm_stream->attribs.play_frequency = d_int;
       pcm_stream->attribs.record_frequency = d_int;
@@ -527,22 +545,26 @@ pcm_stream_oss_set_dsp (BsePcmStreamOSS	      *pcm_stream_oss,
       attribs->fragment_size &= 0xfff0;
       
       d_int = (1024 << 16) | g_bit_storage (attribs->fragment_size - 1);
-      if (ioctl (pcm_stream_oss->fd, SNDCTL_DSP_SETFRAGMENT, &d_int) < 0)
+      if (ioctl (fd, SNDCTL_DSP_SETFRAGMENT, &d_int) < 0)
 	{
 	  /* failed to set audio format
 	   */
-	  /* blatantly ignore this case
-	   * return BSE_ERROR_STREAM_SET_ATTRIB;
-	   */
+	  return BSE_ERROR_STREAM_SET_FORMAT;
 	}
       else
 	pcm_stream->attribs.fragment_size = 1 << (d_int & 0xffff);
     }
   
-  d_long = fcntl (pcm_stream_oss->fd, F_GETFL);
-  d_long &= ~O_NONBLOCK;
-  if (fcntl (pcm_stream_oss->fd, F_SETFL, d_long))
-    return BSE_ERROR_STREAM_SET_ATTRIB;
+  d_int = pcm_stream_oss->block_size;
+  if (ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &d_int) < 0 ||
+      d_int < 1024 ||
+      d_int > 131072 ||
+      d_int != (d_int & 0xffffffe))
+    {
+      close (fd);
+      return BSE_ERROR_STREAM_GET_FORMATS;
+    }
+  pcm_stream_oss->block_size = d_int;
   
   return BSE_ERROR_NONE;
 }

@@ -171,6 +171,22 @@ typedef enum                    /* <skip> */
 } BsePixdataType;
 
 
+/* --- float/double utilities --- */
+#define BSE_EPSILON                       (1e-6 /* threshold for 16 bit values */)
+#define BSE_EPSILON_CMP(double1, double2) (_bse_epsilon_cmp ((double1), (double2)))
+
+
+/* --- implementation details --- */
+static inline gint
+_bse_epsilon_cmp (gdouble double1,
+		  gdouble double2)
+{
+  register gfloat diff = double1 - double2;
+
+  return diff > BSE_EPSILON ? 1 : diff < - BSE_EPSILON ? -1 : 0;
+}
+
+
 /* --- anticipated structures --- */
 struct _BsePixdata
 {

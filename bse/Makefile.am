@@ -69,6 +69,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsemagic.h \
 	bsemain.h \
 	bsemaster.h \
+	bsemixer.h \
 	bsenullstream.h \
 	bseobject.h \
 	bseparam.h \
@@ -115,6 +116,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsemagic.c \
 	bsemain.c \
 	bsemaster.c \
+	bsemixer.c \
 	bsenullstream.c \
 	bseobject.c \
 	bseparam.c \

@@ -25,6 +25,7 @@ static void	bse_pcm_stream_destroy	     (BseObject		     *object);
 
 
 /* --- variables --- */
+/* FIXME */ BsePcmStream* bse_pcm_stream_extern_mic = NULL;
 static BseStreamClass	*parent_class = NULL;
 
 
@@ -81,6 +82,8 @@ bse_pcm_stream_init (BsePcmStream *pcm_stream)
   pcm_stream->attribs.play_frequency = pcm_stream->max_play_frequency;
   pcm_stream->attribs.record_frequency = pcm_stream->max_record_frequency;
   pcm_stream->attribs.fragment_size = 0;
+
+  pcm_stream->n_blocks = 0; /* FIXME */
 }
 
 static void

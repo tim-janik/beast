@@ -333,8 +333,18 @@ bse_source_fetch_chunk (BseSource *source,
     {
       if (!oc->chunks[oc->ring_offset])
 	{
+	  BseChunk* (*calc_chunk) (BseSource *source,
+				   guint      ochannel_id) = BSE_SOURCE_GET_CLASS (source)->calc_chunk;
+
 	  oc->in_calc = TRUE;
-	  oc->chunks[oc->ring_offset] = BSE_SOURCE_GET_CLASS (source)->calc_chunk (source, ochannel_id);
+	  if (!calc_chunk) /* FIXME: paranoid */
+	    {
+	      g_warning ("`%s' doesn't implement ->calc_chunk() memeber function",
+			 bse_type_name (BSE_OBJECT_TYPE (source)));
+	      oc->chunks[oc->ring_offset] = bse_chunk_new_static_zero (n_tracks);
+	    }
+	  else
+	    oc->chunks[oc->ring_offset] = BSE_SOURCE_GET_CLASS (source)->calc_chunk (source, ochannel_id);
 	  oc->in_calc = FALSE;
 	}
       chunk = oc->chunks[oc->ring_offset];

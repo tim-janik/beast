@@ -160,13 +160,15 @@ bse_hunk_alloc (guint n_tracks)
 }
 
 BseSampleValue*
-bse_hunk_copy (BseSampleValue *src_hunk,
-	       guint           n_tracks)
+bse_hunk_copy (guint           n_tracks,
+	       BseSampleValue *src_hunk)
 {
   BseSampleValue *hunk;
 
-  g_return_val_if_fail (src_hunk != NULL, NULL);
+  FIXME(wrong argument order);
+  
   g_return_val_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS, NULL);
+  g_return_val_if_fail (src_hunk != NULL, NULL);
 
   hunk = bse_hunk_alloc (n_tracks);
   memcpy (hunk, src_hunk, n_tracks * BSE_TRACK_LENGTH * sizeof (BseSampleValue));
@@ -175,11 +177,11 @@ bse_hunk_copy (BseSampleValue *src_hunk,
 }
 
 void
-bse_hunk_free (BseSampleValue *hunk,
-	       guint           n_tracks)
+bse_hunk_free (guint           n_tracks,
+	       BseSampleValue *hunk)
 {
-  g_return_if_fail (hunk != NULL);
   g_return_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS);
+  g_return_if_fail (hunk != NULL);
 
  recurse:
 
@@ -304,7 +306,7 @@ bse_chunk_unref (BseChunk *chunk)
       if (chunk->hunk)
 	{
 	  if (!chunk->foreign_hunk)
-	    bse_hunk_free (chunk->hunk, chunk->n_tracks);
+	    bse_hunk_free (chunk->n_tracks, chunk->hunk);
 	  else if (chunk->g_free_hunk)
 	    g_free (chunk->hunk);
 	}

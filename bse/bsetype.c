@@ -36,6 +36,7 @@
  */
 
 #define TYPE_NODES_BLOCK_SIZE   (1)     /* FIXME: 16 */
+#define FIXME_DISABLE_PREALLOCATIONS
 
 #define IFACE_PARENT_INFO       ((BseInterfaceInfo*) 41)
 
@@ -1216,6 +1217,9 @@ type_data_make (TypeNode          *node,
       data->object.class = NULL;
       data->object.object_size = info->object_size;
       data->object.n_preallocs = MIN (info->n_preallocs, 1024);
+#ifdef FIXME_DISABLE_PREALLOCATIONS
+      data->object.n_preallocs = 0;
+#endif
       data->object.object_init = info->object_init;
       data->object.mem_chunk = NULL;
       break;

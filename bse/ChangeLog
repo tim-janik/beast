@@ -1,3 +1,39 @@
+Sat Nov 13 04:40:45 1999  Tim Janik  <timj@gtk.org>
+
+	* bsepcmstream-oss.c: reordered stuff so initialization actually works
+	with OSS as well.
+
+Fri Nov 12 04:41:59 1999  Tim Janik  <timj@gtk.org>
+
+	* bsemixer.[hc]: new files to cover common mixing requirements for
+	hunks (maybe also generic buffers at a later point).
+	this file is a good candidate to get partly generated upon compilation
+	time in the future.
+
+	* bsechunk.c (bse_hunk_free): reordered arguments so n_tracks comes
+	always first.
+	(bse_hunk_copy): same here.
+
+Fri Nov 10 16:04:08 1999  Tim Janik  <timj@gtk.org>
+
+	* bseenums.[hc]: minor fixes/additions to BSE_ERROR_ enum values.
+
+	* bsepcmstream-oss.c: use new BSE_ERROR_ enum values.
+
+Mon Nov  8 22:09:49 1999  Tim Janik  <timj@gtk.org>
+
+	* bsepcmstream-oss.c (pcm_stream_oss_open_dsp): set blocking behaviour
+	prior to any ioctl()s.
+	(pcm_stream_oss_set_dsp): set BSE_PCMSA_FRAGMENT_SIZE right at the
+	beginning (probably still not enough for OSS).
+
+Mon Nov  8 02:42:44 1999  Tim Janik  <timj@gtk.org>
+
+	* bsepcmstream.[hc]: 
+	* bsepcmstream-oss.c: added an incredibly bad hack for the microphone
+	source to plugin. this does give me the opportunity to test stuff untill
+	the pcm side is redesigned.
+
 Mon Nov  8 02:01:31 1999  Tim Janik  <timj@gtk.org>
 
 	* bseobject.h (BSE_NOTIFY): don't notify objects that are destroyed.

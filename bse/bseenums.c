@@ -291,6 +291,8 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_DATA_CORRUPT:		return "Data corrupt";
     case BSE_ERROR_BINARY_DATA_CORRUPT:		return "Binary data corrupt";
     case BSE_ERROR_STREAM_INVALID:		return "Stream handle invalid";
+    case BSE_ERROR_STREAM_PERM:			return "Stream permissions insufficient";
+    case BSE_ERROR_STREAM_ASYNC:		return "Stream not async capable";
     case BSE_ERROR_STREAM_SUSPENDED:		return "Stream suspended";
     case BSE_ERROR_STREAM_DEVICE_BUSY:		return "Stream device busy";
     case BSE_ERROR_STREAM_READ_DENIED:		return "Stream read access denied";
@@ -298,8 +300,8 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_STREAM_WRITE_DENIED:		return "Stream write access denied";
     case BSE_ERROR_STREAM_WRITE_FAILED:		return "Writing to stream failed";
     case BSE_ERROR_STREAM_IO:			return "Stream I/O error";
-    case BSE_ERROR_STREAM_GET_ATTRIB:		return "Failed to get stream attribute";
-    case BSE_ERROR_STREAM_SET_ATTRIB:		return "Failed to set stream attribute";
+    case BSE_ERROR_STREAM_GET_FORMATS:		return "Failed to query stream formats";
+    case BSE_ERROR_STREAM_SET_FORMAT:		return "Failed to set stream format";
     case BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL:	return "No such input channel";
     case BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL:	return "No such output channel";
     case BSE_ERROR_SOURCE_ICHANNEL_IN_USE:	return "Input channel already in use";
