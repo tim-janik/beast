@@ -151,8 +151,8 @@ Thu Jan  2 17:23:54 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/*.xsl: 
 	* docs/WRITING.3.texi: use @example as a replacement for buggy
-	@verbatim until makeinfo got fixed. support relative (non-//) urls
-	for e.g. mailto:.
+	@verbatim until makeinfo got fixed. support non-// urls
+	for mailto a la HTML, ie. mailto:dirt@gtk.org.
 	
 	* docs/generated/site-*.texi: fixed relative urls.
 
