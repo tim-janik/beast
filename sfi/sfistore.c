@@ -219,7 +219,7 @@ sfi_wstore_put_binary (SfiWStore      *wstore,
   bblock->destroy = destroy;
   wstore->bblocks = sfi_ring_append (wstore->bblocks, bblock);
   
-  sfi_wstore_puts (wstore, "(sfi-binary ");
+  sfi_wstore_puts (wstore, "(binary-appendix ");
   bblock->patch_offset = wstore->text->len;
   sfi_wstore_puts (wstore, "0x00000000 0x00000000)");
 }
@@ -587,7 +587,7 @@ sfi_rstore_parse_binary (SfiRStore *rstore,
   if (g_scanner_get_next_token (rstore->scanner) != '(')
     return '(';
   if (g_scanner_get_next_token (rstore->scanner) != G_TOKEN_IDENTIFIER ||
-      strcmp (rstore->scanner->value.v_identifier, "sfi-binary") != 0)
+      strcmp (rstore->scanner->value.v_identifier, "binary-appendix") != 0)
     return G_TOKEN_IDENTIFIER;
   if (g_scanner_get_next_token (rstore->scanner) != G_TOKEN_INT)
     return G_TOKEN_INT;

@@ -1,3 +1,7 @@
+Sun May 18 05:05:58 2003  Tim Janik  <timj@gtk.org>
+
+	* sfistore.c: syntax fixup for inlined binary data: "binary-appendix".
+
 Sun May 11 15:35:47 2003  Tim Janik  <timj@gtk.org>
 
 	* sfigluecodec.c (encoder_process_message): fix NULL/void returns.
