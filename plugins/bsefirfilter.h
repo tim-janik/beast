@@ -40,7 +40,7 @@ extern "C" {
 #define BSE_FIR_FILTER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_FIR_FILTER, BseFIRFilterClass))
 #define BSE_IS_FIR_FILTER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_FIR_FILTER))
 #define BSE_IS_FIR_FILTER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_FIR_FILTER))
-#define BSE_FIR_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseFIRFilterClass))
+#define BSE_FIR_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_FIR_FILTER, BseFIRFilterClass))
 
 
 /* --- BseFIRFilter source --- */

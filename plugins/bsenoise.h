@@ -40,7 +40,7 @@ extern "C" {
 #define BSE_NOISE_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_NOISE, BseNoiseClass))
 #define BSE_IS_NOISE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_NOISE))
 #define BSE_IS_NOISE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_NOISE))
-#define BSE_NOISE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseNoiseClass))
+#define BSE_NOISE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_NOISE, BseNoiseClass))
 
 
 /* --- BseNoise source --- */

@@ -32,7 +32,7 @@ extern "C" {
 #define DAV_GUITAR_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_GUITAR, DavGuitar))
 #define DAV_IS_GUITAR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_GUITAR))
 #define DAV_IS_GUITAR_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_GUITAR))
-#define DAV_GUITAR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavGuitarClass))
+#define DAV_GUITAR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_GUITAR, DavGuitarClass))
 
 /* --- DavGuitar source --- */
 typedef struct _DavGuitar      DavGuitar;

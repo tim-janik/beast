@@ -33,7 +33,7 @@ extern "C" {
 #define DAV_ORGAN_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_ORGAN, DavOrganClass))
 #define DAV_IS_ORGAN(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_ORGAN))
 #define DAV_IS_ORGAN_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_ORGAN))
-#define DAV_ORGAN_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavOrganClass))
+#define DAV_ORGAN_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_ORGAN, DavOrganClass))
 
 /* --- DavOrgan source --- */
 typedef struct _DavOrgan      DavOrgan;

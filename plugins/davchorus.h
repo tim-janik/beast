@@ -33,7 +33,7 @@ extern "C" {
 #define DAV_CHORUS_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_CHORUS, DavChorus))
 #define DAV_IS_CHORUS(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_CHORUS))
 #define DAV_IS_CHORUS_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_CHORUS))
-#define DAV_CHORUS_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavChorus))
+#define DAV_CHORUS_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_CHORUS, DavChorus))
 
 
 /* --- DavChorus source --- */

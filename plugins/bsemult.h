@@ -40,7 +40,7 @@ extern "C" {
 #define BSE_MULT_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_MULT, BseMultClass))
 #define BSE_IS_MULT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_MULT))
 #define BSE_IS_MULT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MULT))
-#define BSE_MULT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseMultClass))
+#define BSE_MULT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MULT, BseMultClass))
 
 
 /* --- BseMult source --- */

@@ -32,7 +32,7 @@ extern "C" {
 #define DAV_BASS_FILTER_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_BASS_FILTER, DavBassFilter))
 #define DAV_IS_BASS_FILTER(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_BASS_FILTER))
 #define DAV_IS_BASS_FILTER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_BASS_FILTER))
-#define DAV_BASS_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavBassFilter))
+#define DAV_BASS_FILTER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_BASS_FILTER, DavBassFilter))
 
 /* --- DavBassFilter source --- */
 typedef struct _DavBassFilter      DavBassFilter;

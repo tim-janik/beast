@@ -32,7 +32,7 @@ extern "C" {
 #define DAV_CANYON_DELAY_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), DAV_TYPE_CANYON_DELAY, DavCanyonDelayClass))
 #define DAV_IS_CANYON_DELAY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), DAV_TYPE_CANYON_DELAY))
 #define DAV_IS_CANYON_DELAY_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_CANYON_DELAY))
-#define DAV_CANYON_DELAY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DavCanyonDelayClass))
+#define DAV_CANYON_DELAY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_CANYON_DELAY, DavCanyonDelayClass))
 
 /* --- DavCanyonDelay source --- */
 typedef struct _DavCanyonDelay      DavCanyonDelay;

@@ -40,7 +40,7 @@ extern "C" {
 #define BSE_LOOPBACK_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_LOOPBACK, BseLoopbackClass))
 #define BSE_IS_LOOPBACK(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_LOOPBACK))
 #define BSE_IS_LOOPBACK_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_LOOPBACK))
-#define BSE_LOOPBACK_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseLoopbackClass))
+#define BSE_LOOPBACK_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_LOOPBACK, BseLoopbackClass))
 
 
 /* --- BseLoopback source --- */

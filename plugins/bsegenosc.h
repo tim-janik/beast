@@ -40,7 +40,7 @@ extern "C" {
 #define BSE_GEN_OSC_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_GEN_OSC, BseGenOscClass))
 #define BSE_IS_GEN_OSC(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_GEN_OSC))
 #define BSE_IS_GEN_OSC_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_GEN_OSC))
-#define BSE_GEN_OSC_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseGenOscClass))
+#define BSE_GEN_OSC_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_GEN_OSC, BseGenOscClass))
 
 
 /* --- wave forms --- */

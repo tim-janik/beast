@@ -40,7 +40,7 @@ extern "C" {
 #define BSE_COMPRESSOR_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_COMPRESSOR, BseCompressorClass))
 #define BSE_IS_COMPRESSOR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_COMPRESSOR))
 #define BSE_IS_COMPRESSOR_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_COMPRESSOR))
-#define BSE_COMPRESSOR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseCompressorClass))
+#define BSE_COMPRESSOR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_COMPRESSOR, BseCompressorClass))
 
 
 /* --- BseCompressor source --- */
