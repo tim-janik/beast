@@ -1,14 +1,15 @@
 FIXMES:
+- remove bstrack*.[hc] cruft, old parasites and data pocket
+- allow parasite object links only within tree
 - s/sfi_value_rec_take_ref/sfi_value_take_rec/
 - s/sfi_value_seq_take_ref/sfi_value_take_seq/
 - queue action updates upon grouped action execution 
 - introduce gxk_action_group_select()-freeze/thaw to surround select/exec pair
 - auto-connect viewable-changed to gadget notebooks
-- fix accel activation of menu items in popups on invisible notebook pages
-- add one-shot property to factories
+- add one-shot property to gxk-gadget-factories
+- make the plugin loader match on *.so and not *.la files
 - i18n: for _label="" define label and _label after translation
 - for menu factory branches, translate submenus *after* using the path as key
-
 - beast --devel misses "clear undo" in partdialog
 - extend module info dialog to cover author license etc.
 - remove/rename test-string.bse

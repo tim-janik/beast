@@ -197,6 +197,10 @@ toggle_edit_mode (GtkToggleButton *tb,
                   GxkRackTable    *rtable)
 {
   gxk_rack_table_set_edit_mode (rtable, tb->active);
+  if (tb->active)
+    gxk_rack_table_uncover (rtable);
+  else
+    gxk_rack_table_cover_up (rtable);
 }
 
 static void

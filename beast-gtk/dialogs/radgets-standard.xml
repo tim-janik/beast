@@ -87,7 +87,8 @@
     prop:combo-arrow="$(ifdef,arrow,$arrow,1)" />
   <!-- buttons: stock= label= focus= default= relief= -->
   <xdef:button                inherit="GtkButton"
-    prop:label="$(null-collapse,$(ifdef,button-label,$button-label,$stock))"
+    prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
+    prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
     prop:relief="$(ifdef,relief,$relief,normal)"
     prop:can-default="$(ifdef,default,$default,0)"
     prop:can-focus="$(ifdef,focus,$focus,1)"
@@ -98,6 +99,7 @@
     prop:has-default="1" />
   <xdef:check-button          inherit="GtkCheckButton"
     prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
+    prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
     prop:relief="$(ifdef,relief,$relief,normal)"
     prop:can-default="$(ifdef,default,$default,0)"
     prop:can-focus="$(ifdef,focus,$focus,1)"
@@ -128,9 +130,6 @@
   <xdef:image                 inherit="GxkImage"
     prop:stock-size="$(null-collapse,$stock-size)"
     prop:stock="$stock-image" />
-  <!-- paned containers -->
-  <xdef:hpaned                inherit="GtkHPaned" />
-  <xdef:vpaned                inherit="GtkVPaned" />
   <!-- scrollbars/scales -->
   <xdef:hscale                inherit="GtkHScale" />
   <xdef:vscale                inherit="GtkVScale" />
@@ -141,6 +140,12 @@
   <xdef:tree-view             inherit="GtkTreeView"       />
   <xdef:window                inherit="GtkWindow"         />
   <xdef:table                 inherit="GtkTable"          />
+  <!-- paned containers -->
+  <xdef:hpaned                inherit="GtkHPaned" />
+  <xdef:vpaned                inherit="GtkVPaned" />
+  <!-- rack table & items -->
+  <xdef:rack-table            inherit="GxkRackTable" />
+  <xdef:rack-item             inherit="GxkRackItem" />
   
 
   <!-- Construction of composite containers -->

@@ -263,6 +263,7 @@ gxk_rack_table_handle_button_press (GxkRackTable   *self,
                                        self->editor->drag_hspan,
                                        self->editor->drag_vspan);
         }
+      return TRUE;
     }
   else if (!self->editor->drag_child && event->button == 3)
     {
@@ -271,10 +272,10 @@ gxk_rack_table_handle_button_press (GxkRackTable   *self,
         {
           /* proxy button presses */
           g_signal_emit_by_name (child, "button-press", event);
+          return TRUE;
         }
     }
-  
-  return TRUE;
+  return FALSE;
 }
 
 gboolean
@@ -556,7 +557,6 @@ gxk_rack_table_set_edit_mode (GxkRackTable *self,
   enable_editing = enable_editing && GTK_WIDGET_DRAWABLE (self);
   if (!self->editor && enable_editing)
     {
-      gxk_rack_table_uncover (self);
       self->editor = g_new0 (GxkRackEditor, 1);
       self->editor->rfx = self->editor->rfy = -1;
       rack_table_realize_rframe (self);
@@ -565,7 +565,6 @@ gxk_rack_table_set_edit_mode (GxkRackTable *self,
   else if (self->editor && !enable_editing)
     {
       gxk_rack_table_destroy_editor (self);
-      gxk_rack_table_cover_up (self);
     }
   else
     return;

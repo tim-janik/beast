@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,7 @@
 #include "bstracktable.h"
 #include "bstparam.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- type macros --- */
 #define BST_TYPE_RACK_ITEM              (bst_rack_item_get_type ())
@@ -35,55 +31,34 @@ extern "C" {
 #define BST_IS_RACK_ITEM_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_RACK_ITEM))
 #define BST_RACK_ITEM_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_RACK_ITEM, BstRackItemClass))
 
-
 /* --- structures & typedefs --- */
-typedef	struct	_BstRackItem		BstRackItem;
-typedef	struct	_BstRackItemClass	BstRackItemClass;
-struct _BstRackItem
-{
-  GtkFrame	parent_instance;
-
-  guint		 block_updates;
-  GtkWidget	*controller_choice;
-  GtkWidget	*choice;
-
-  SfiProxy	pocket;
-  guint		entry;
-
+typedef struct {
+  GxkRackItem    parent_instance;
+  SfiProxy       proxy;
+  const gchar   *path;
+  SfiRec        *rec;
+  
+  guint          block_updates;
+  GtkWidget     *controller_choice;
+  GtkWidget     *choice;
+  
   /* pocket data */
-  SfiProxy	   proxy;
-  GParamSpec	  *pspec;
-  gchar		  *ctype;
-
-  BstParam	*bparam;
-
-  /* maintained by BstRackTable */
-  BstRackChildInfo rack_child_info;
-  guint		   empty_frame : 1;
-};
-struct _BstRackItemClass
-{
-  GtkFrameClass parent_class;
-
-  void		(*button_press)	(BstRackItem	*item,
-				 GdkEventButton	*event);
-};
-
+  GParamSpec      *pspec;
+  gchar           *ctype;
+  
+  BstParam      *bparam;
+} BstRackItem;
+typedef struct _GxkRackItemClass BstRackItemClass;
 
 /* --- prototypes --- */
-GtkType		bst_rack_item_get_type		(void);
-void		bst_rack_item_set_property	(BstRackItem	*item,
-						 SfiProxy	 data_pocket,
-						 guint		 entry_id);
-void		bst_rack_item_set_proxy		(BstRackItem	*item,
-						 SfiProxy	 proxy,
-						 GParamSpec	*pspec,
-						 const gchar    *view_name);
-void		bst_rack_item_gui_changed	(BstRackItem	*item);
+GType           bst_rack_item_get_type          (void);
+GtkWidget*      bst_rack_item_new               (SfiProxy        proxy,
+                                                 const gchar    *path);
+void            bst_rack_item_set_parasite      (BstRackItem    *self,
+                                                 SfiProxy        proxy,
+                                                 const gchar    *path);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_RACK_ITEM_H__ */

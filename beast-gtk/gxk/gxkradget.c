@@ -21,6 +21,8 @@
 #include "gxkauxwidgets.h"
 #include "glewidgets.h"
 #include "gxksimplelabel.h"
+#include "gxkracktable.h"
+#include "gxkrackitem.h"
 #include <libintl.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -1512,6 +1514,7 @@ _gxk_init_gadget_types (void)
   *t++ = GTK_TYPE_VSCROLLBAR;   *t++ = GTK_TYPE_VSCALE; *t++ = GXK_TYPE_IMAGE;
   *t++ = GTK_TYPE_VSEPARATOR;   *t++ = GXK_TYPE_SIMPLE_LABEL;  *t++ = GTK_TYPE_HSEPARATOR;
   *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;
+  *t++ = GXK_TYPE_RACK_TABLE;   *t++ = GXK_TYPE_RACK_ITEM;
   while (t-- > types)
     gxk_gadget_define_widget_type (*t);
   gadget_define_gtk_menu ();

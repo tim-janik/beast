@@ -1,3 +1,24 @@
+Fri Dec  5 00:28:12 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstrackeditor.[hc]: disabled code depending on BstRackItem.
+
+	* beast-gtk/bstracktable.[hc]: disabled code depending on BstRackItem.
+
+	* beast-gtk/bstrackitem.[hc]: derive from GxkRackItem. removed
+	controller handling code.
+
+	* beast-gtk/bstsupershell.c: added rack-view notebook page to SynthNets.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added rack-view GUI description.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: support rack-table and
+	rack-item. fixed up some button properties.
+
+	* beast-gtk/gxk/gxkgadget.c: support rack table and item types.
+
+	* beast-gtk/gxk/gxkrackeditor.c: fixed up return value for button
+	presses. removed auto cover/uncover upon editing edit mode.
+
 Sun Nov 30 12:51:05 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkracktable.[hc]:

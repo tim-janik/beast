@@ -16,8 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstracktable.h"
-
+#if 0
 #include "bstrackitem.h"
+#endif
 #include "bstutils.h"
 #include <gtk/gtkalignment.h>
 #include <gtk/gtklabel.h>
@@ -422,11 +423,13 @@ bst_rack_table_button_press (GtkWidget      *widget,
 
       if (bst_rack_table_iwindow_translate (rtable, event->x, event->y, &h, &v))
 	child = bst_rack_table_find_child (rtable, h, v);
+#if 0
       if (BST_IS_RACK_ITEM (child))
 	{
 	  /* proxy button presses */
 	  g_signal_emit_by_name (child, "button_press", event);
 	}
+#endif
     }
 
   return TRUE;
@@ -697,8 +700,10 @@ bst_rack_table_add (GtkContainer *container,
 		    GTK_EXPAND | GTK_SHRINK | GTK_FILL,
 		    0, 0);
   bst_rtable_update_child_map (rtable);
+#if 0
   if (BST_IS_RACK_ITEM (child))
     bst_rack_item_gui_changed (BST_RACK_ITEM (child));
+#endif
 }
 
 static void
@@ -775,6 +780,7 @@ bst_rack_table_find_child (BstRackTable *rtable,
       if (hcell >= child->left_attach && hcell < child->right_attach &&
 	  vcell >= child->top_attach && vcell < child->bottom_attach)
 	{
+#if 0
 	  if (rtable->edit_mode &&
 	      BST_IS_RACK_ITEM (child->widget) &&
 	      BST_RACK_ITEM (child->widget)->empty_frame &&
@@ -782,6 +788,7 @@ bst_rack_table_find_child (BstRackTable *rtable,
 	      vcell > child->top_attach && vcell + 1 < child->bottom_attach)
 	    continue;
 	  return child->widget;
+#endif
 	}
     }
   
@@ -947,6 +954,7 @@ bst_rack_child_get_info (GtkWidget         *widget,
   g_return_if_fail (GTK_IS_WIDGET (widget));
   g_return_if_fail (info != NULL);
 
+#if 0
   if (BST_IS_RACK_ITEM (widget))
     *info = BST_RACK_ITEM (widget)->rack_child_info;
   else
@@ -962,6 +970,7 @@ bst_rack_child_get_info (GtkWidget         *widget,
       else
 	*info = *rinfo;
     }
+#endif
 }
 
 void
@@ -983,6 +992,7 @@ bst_rack_child_set_info (GtkWidget *widget,
       gtk_container_remove (GTK_CONTAINER (parent), widget);
     }
 
+#if 0
   if (BST_IS_RACK_ITEM (widget))
     rinfo = &BST_RACK_ITEM (widget)->rack_child_info;
   else
@@ -998,6 +1008,7 @@ bst_rack_child_set_info (GtkWidget *widget,
 	  rinfo->vspan = 1;
 	}
     }
+#endif
   rinfo->col = col >= 0 ? col : rinfo->col;
   rinfo->row = row >= 0 ? row : rinfo->row;
   rinfo->hspan = hspan > 1 ? hspan : rinfo->hspan;

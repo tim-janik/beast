@@ -20,6 +20,7 @@
 #include "bsttrackview.h"
 #include "bstpartview.h"
 #include "bstwaveview.h"
+#include "bstrackview.h"
 #include "bstsnetrouter.h"
 
 enum {
@@ -259,6 +260,10 @@ super_shell_build_snet (BstSuperShell *self,
   SfiProxy snet = self->super;
   GtkWidget *param_view;
 
+  if (bse_snet_supports_user_synths (snet))
+    gtk_notebook_append_page (notebook,
+                              gtk_widget_get_toplevel (bst_rack_view_new (snet)),
+                              g_object_new (GTK_TYPE_LABEL, "label", _("Rack"), NULL));
   if (bse_snet_supports_user_synths (snet) || BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (snet))),

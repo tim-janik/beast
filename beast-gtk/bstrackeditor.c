@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstrackeditor.h"
-
-
+#if 0
 #include "bstrackitem.h"
+#endif
 
 
 /* --- include sources --- */
@@ -160,6 +160,7 @@ static void
 pocket_entry_changed (BstRackEditor *ed,
 		      guint	     entry_id)
 {
+#if 0
   GSList *slist;
   BstRackItem *item = NULL;
   const gchar *controller;
@@ -180,6 +181,7 @@ pocket_entry_changed (BstRackEditor *ed,
     }
   else if (!item && controller)
     create_rack_item (ed, entry_id);
+#endif
 }
 
 static void
@@ -294,6 +296,7 @@ static void
 create_rack_item (BstRackEditor *ed,
 		  guint          entry_id)
 {
+#if 0
   gboolean edit_mode = ed->rtable->edit_mode;
   GtkWidget *item = g_object_new (BST_TYPE_RACK_ITEM,
 				  "visible", TRUE,
@@ -307,4 +310,5 @@ create_rack_item (BstRackEditor *ed,
   ed->item_list = g_slist_prepend (ed->item_list, item);
   if (!edit_mode)
     bst_rack_table_set_edit_mode (ed->rtable, FALSE);
+#endif
 }

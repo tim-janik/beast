@@ -45,7 +45,7 @@ beast_headers = $(strip \
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	\
 				bstwaveview.h				bstxkb.h	\
 	bstzoomedwindow.h			bsttrackrollctrl.h	bstxframe.h	\
-						bsttreestores.h		bstutils.h	\
+				bstrackview.h	bsttreestores.h		bstutils.h	\
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
 	bstmarshal.h bstdefs.h \
 )
@@ -64,7 +64,7 @@ beast_sources = $(strip \
 	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	\
 				bstwaveview.c				bstxkb.c	\
 	bstzoomedwindow.c			bsttrackrollctrl.c	bstxframe.c	\
-						bsttreestores.c		bstutils.c	\
+				bstrackview.c	bsttreestores.c		bstutils.c	\
 	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\
 	$(PROFILE_SOURCE) \
 )

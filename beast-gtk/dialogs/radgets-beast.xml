@@ -66,6 +66,22 @@
     </hbox>
   </xdef:track-view>
   
+  <!-- rack view -->
+  <xdef:rack-view inherit="vbox" prop:border-width="3" >
+    <vbox spacing="3" expand="1" >
+      <toggle-button label="_Edit" name="edit-toggle" />
+      <event-box name="rack-table-event-box" prop:events="button-press-mask" expand="1" >
+	<rack-table >
+	  <popup-menu name="rack-view-popup" >
+	    <menu-title _label="Virtual Rack" />
+	    <menu-separator />
+	    <menu-factory action-root="" actions="rack-view-popup-actions" />
+	  </popup-menu>
+	</rack-table>
+      </event-box>
+    </vbox>
+  </xdef:rack-view>
+
   <!-- modules-popup -->
   <xdef:modules-popup inherit="popup-menu" >
     <menu-title _label="Synthesis Modules" />
