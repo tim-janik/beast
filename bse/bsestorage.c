@@ -629,6 +629,40 @@ restore_item_property (BseItem    *item,
 }
 
 static GTokenType
+restore_source_automation (BseItem    *item,
+                           BseStorage *self)
+{
+  GScanner *scanner = bse_storage_get_scanner (self);
+  /* check identifier */
+  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
+      !bse_string_equals ("source-automate", scanner->next_value.v_identifier))
+    return SFI_TOKEN_UNMATCHED;
+  /* check object type */
+  if (!BSE_IS_SOURCE (item))
+    return SFI_TOKEN_UNMATCHED;
+  /* eat source-automate */
+  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+  /* read pspec name */
+  parse_or_return (scanner, G_TOKEN_STRING);
+  /* find pspec */
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), scanner->value.v_string);
+  if (!pspec || !sfi_pspec_check_option (pspec, "automate"))
+    return bse_storage_warn_skip (self, "not an automatable property: \"%s\"", pspec->name);
+  /* parse midi channel */
+  parse_or_return (scanner, G_TOKEN_INT);
+  gint midi_channel = scanner->value.v_int64;
+  /* parse control type */
+  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+  BseMidiControlType control_type = sfi_choice2enum (scanner->value.v_identifier, BSE_TYPE_MIDI_CONTROL_TYPE);
+  /* close statement */
+  parse_or_return (scanner, ')');
+  BseErrorType error = bse_source_set_automation_property (BSE_SOURCE (item), pspec->name, midi_channel, control_type);
+  if (error)
+    bse_storage_warn (self, "failed to automate property \"%s\": %s", pspec->name, bse_error_blurb (error));
+  return G_TOKEN_NONE;
+}
+
+static GTokenType
 restore_container_child (BseContainer *container,
                          BseStorage   *self)
 {
@@ -721,6 +755,9 @@ item_restore_try_statement (gpointer    item,
 
   if (expected_token == SFI_TOKEN_UNMATCHED)
     expected_token = restore_item_property (item, self);
+
+  if (expected_token == SFI_TOKEN_UNMATCHED)
+    expected_token = restore_source_automation (item, self);
 
   if (expected_token == SFI_TOKEN_UNMATCHED)
     expected_token = BSE_OBJECT_GET_CLASS (item)->restore_private (item, self, scanner);
@@ -1034,6 +1071,22 @@ bse_item_store_property (BseItem    *item,
 }
 
 static void
+bse_source_store_automation (BseSource  *source,
+                             BseStorage *storage,
+                             GParamSpec *pspec)
+{
+  guint midi_channel = 0;
+  BseMidiControlType control_type = 0;
+  bse_source_get_automation_property (source, pspec->name, &midi_channel, &control_type);
+  if (control_type)
+    {
+      bse_storage_break (storage);
+      bse_storage_printf (storage, "(source-automate \"%s\" %u %s)", pspec->name,
+                          midi_channel, sfi_enum2choice (control_type, BSE_TYPE_MIDI_CONTROL_TYPE));
+    }
+}
+
+static void
 store_item_properties (BseItem    *item,
                        BseStorage *storage)
 {
@@ -1056,6 +1109,8 @@ store_item_properties (BseItem    *item,
               !sfi_pspec_check_option (pspec, "skip-default"))
             bse_item_store_property (item, storage, &value, pspec);
           g_value_unset (&value);
+          if (sfi_pspec_check_option (pspec, "automate") && BSE_IS_SOURCE (item))
+            bse_source_store_automation (BSE_SOURCE (item), storage, pspec);
         }
     }
   g_free (pspecs);
