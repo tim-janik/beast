@@ -123,7 +123,7 @@ scope_probes_notify (SfiProxy     proxy,
                      gpointer     data)
 {
   BstSnifferScope *self = BST_SNIFFER_SCOPE (data);
-  g_print ("scope data\n");
+  // g_print ("scope data\n");
 #if 0
   GtkWidget *widget = GTK_WIDGET (self);
   if (left_samples->n_values >= widget->allocation.width / 2)
