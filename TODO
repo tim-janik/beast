@@ -1,4 +1,5 @@
 FIXMES:
+- func_value_get_param() take just a string
 - make sfidl/bse-plugin-generator manual pages match new/changed options
 - rc setting for canvas font sizes
 - record classes in c++ need to derive from GNewAllocator

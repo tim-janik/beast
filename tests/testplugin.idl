@@ -53,6 +53,8 @@ class TestObject : Bse::Effect {
   property BBlock bb;
   property FBlock fb;
   property Rec rr;
+  property Bse::Effect ef; // C++ Object 
+  property Bse::Item it;   // C Object
 };
 
 // test procedure

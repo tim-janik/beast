@@ -1,3 +1,12 @@
+Mon Jan 26 02:45:21 2004  Tim Janik  <timj@gtk.org>
+
+	* tests/Makefile.am: disable C++ API code which breaks again,
+	due to lack of object reference support.
+
+	* tests/testplugin.idl: added object properties of types
+	Bse::Effect, imlpemented in C++ in Bse and Bse::Item,
+	implemented in C in Bse.
+
 Sun Jan 25 05:49:59 2004  Tim Janik  <timj@gtk.org>
 
 	* tests/testplugin.idl: added more test cases.
