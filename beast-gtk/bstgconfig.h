@@ -32,6 +32,7 @@ extern "C" {
 #define BST_SNET_SWAP_IO_CHANNELS	(bst_globals->snet_swap_io_channels)
 #define BST_XKB_FORCE_QUERY		(bst_globals->xkb_force_query)
 #define BST_XKB_SYMBOL			(bst_globals->xkb_symbol)
+#define BST_DISABLE_ALSA		(bst_globals->disable_alsa)
 
 
 /* --- BstGlobals --- */
@@ -43,6 +44,7 @@ struct _BstGlobals
   guint  snet_swap_io_channels : 1;
   guint  xkb_force_query : 1;
   gchar *xkb_symbol;
+  guint  disable_alsa : 1;
 };
 extern const BstGlobals * const bst_globals;
 

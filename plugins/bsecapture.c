@@ -130,7 +130,7 @@ bse_capture_calc_chunk (BseSource *source,
   g_return_val_if_fail (ochannel_id == BSE_CAPTURE_OCHANNEL_MONO, NULL);
 
   hunk = bse_hunk_alloc (1);
-  if (capture->pdev && BSE_PCM_DEVICE_READABLE (capture->pdev))
+  if (capture->pdev && BSE_DEVICE_READABLE (capture->pdev))
     {
       BseChunk *chunk = bse_pcm_device_iqueue_peek (capture->pdev);
 

@@ -26,7 +26,8 @@ enum
   PARAM_SNET_EDIT_FALLBACK,
   PARAM_SNET_SWAP_IO_CHANNELS,
   PARAM_XKB_FORCE_QUERY,
-  PARAM_XKB_SYMBOL
+  PARAM_XKB_SYMBOL,
+  PARAM_DISABLE_ALSA
 };
 
 
@@ -59,6 +60,7 @@ static const BstGlobals  bst_globals_defaults = {
   FALSE			/* snet_swap_io_channels */,
   FALSE			/* xkb_force_query */,
   NULL			/* xkb_symbol */,
+  FALSE			/* disable_alsa */,
 };
 
 
@@ -138,7 +140,7 @@ bst_gconfig_class_init (BstGConfigClass *class)
   object_class->get_param = (BseObjectGetParamFunc) bst_gconfig_get_param;
   object_class->shutdown = bst_gconfig_do_shutdown;
   object_class->destroy = bst_gconfig_do_destroy;
-
+  
   bconfig_class->apply = bst_gconfig_do_apply;
   bconfig_class->revert = bst_gconfig_do_revert;
   
@@ -169,7 +171,12 @@ bst_gconfig_class_init (BstGConfigClass *class)
 			      bse_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
 						   globals_defaults.snet_swap_io_channels,
 						   BSE_PARAM_DEFAULT));
-    bst_globals_reset (&globals_defaults);
+  bse_object_class_add_param (object_class, "Debugging",
+			      PARAM_DISABLE_ALSA,
+			      bse_param_spec_bool ("disable_alsa", "Disable support for ALSA PCM driver", NULL,
+						   globals_defaults.disable_alsa,
+						   BSE_PARAM_DEFAULT));
+  bst_globals_reset (&globals_defaults);
 }
 
 static void
@@ -193,6 +200,9 @@ bst_gconfig_set_param (BstGConfig *gconf,
     case PARAM_XKB_SYMBOL:
       g_free (gconf->globals.xkb_symbol);
       gconf->globals.xkb_symbol = bse_strdup_stripped (param->value.v_string);
+      break;
+    case PARAM_DISABLE_ALSA:
+      gconf->globals.disable_alsa = param->value.v_bool;
       break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
@@ -225,6 +235,9 @@ bst_gconfig_get_param (BstGConfig *gconf,
     case PARAM_XKB_SYMBOL:
       g_free (param->value.v_string);
       param->value.v_string = g_strdup (gconf->globals.xkb_symbol);
+      break;
+    case PARAM_DISABLE_ALSA:
+      param->value.v_bool = gconf->globals.disable_alsa;
       break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",

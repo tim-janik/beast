@@ -145,7 +145,7 @@ main (int   argc,
   
   /* setup PCM Devices
    */
-  if (!pdev && BSE_TYPE_ID (BsePcmDeviceAlsa))
+  if (!pdev && BSE_TYPE_ID (BsePcmDeviceAlsa) && !BST_DISABLE_ALSA)
     {
       BseErrorType error;
 
