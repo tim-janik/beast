@@ -61,7 +61,7 @@ namespace Sfidl {
   public:
     CodeGeneratorCxx (const Parser& parser) : CodeGeneratorCxxBase (parser), nspace (stdout) {
     }
-    void run ();
+    bool run ();
   };
 };
 

@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfidl-cxx.h"
+#include "sfidl-factory.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -671,14 +672,14 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
     }
 }
 
-void CodeGeneratorCxx::run ()
+bool CodeGeneratorCxx::run ()
 {
   vector<Choice>::const_iterator ei;
   vector<Param>::const_iterator pi;
   vector<Class>::const_iterator ci;
   vector<Method>::const_iterator mi;
  
-  printf("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+  printf("\n/*-------- begin %s generated code --------*/\n\n\n", options.sfidlName.c_str());
 
   if (options.doHeader)
     {
@@ -791,7 +792,9 @@ void CodeGeneratorCxx::run ()
     }
   printf("\n");
   nspace.leaveAll();
-  printf("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+  printf("\n/*-------- end %s generated code --------*/\n\n\n", options.sfidlName.c_str());
+
+  return 1;
 }
 
 string CodeGeneratorCxx::makeProcName (const string& className, const string& procName)
@@ -879,4 +882,24 @@ void CodeGeneratorCxx::printProperties (const Class& cdef)
     }
 }
 
+namespace {
+
+class CxxFactory : public Factory {
+public:
+  string option() const	      { return "--cxx"; }
+  string description() const  { return "generate core C++ language binding"; }
+
+  void init (Options& options) const
+  {
+    options.doImplementation = false;
+    options.doInterface = true;
+  }
+
+  CodeGenerator *create (const Parser& parser) const
+  {
+    return new CodeGeneratorCxx (parser);
+  }
+} cxx_factory;
+
+}
 /* vim:set ts=8 sts=2 sw=2: */

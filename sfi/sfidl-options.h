@@ -25,38 +25,39 @@
 namespace Sfidl {
 
 class Factory;
+class Parser;
+class CodeGenerator;
+
 struct Options {
-  enum Target { TARGET_C, TARGET_QT, TARGET_CXX, TARGET_TYPELIST, TARGET_FACTORY };
-  enum Style  { STYLE_DEFAULT, STYLE_LOWER, STYLE_MIXED };
-  bool        generateExtern;
-  bool        generateData;
-  bool        generateConstant;
-  bool        generateTypeH;
-  bool        generateTypeC;
-  bool        generateBoxedTypes;
-  bool        generateIdlLineNumbers;
-  bool        generateSignalStuff;
-  bool        generateProcedures;
-  Target      target;
-  Factory    *factory; // factory which can create the code generator
-  Style       style;
-  bool        doHeader;
-  bool        doSource;
-  bool        doInterface;
-  bool        doImplementation;
-  bool        doHelp;
-  bool	      doExit;
-  std::string prefixC;
-  std::string initFunction;
-  std::string namespaceQt;
-  std::string namespaceCut;
-  std::string namespaceAdd;
-  std::string sfidlName;
+  enum Style     { STYLE_DEFAULT, STYLE_LOWER, STYLE_MIXED };
+  bool           generateExtern;
+  bool           generateData;
+  bool           generateConstant;
+  bool           generateTypeH;
+  bool           generateTypeC;
+  bool           generateBoxedTypes;
+  bool           generateIdlLineNumbers;
+  bool           generateSignalStuff;
+  bool           generateProcedures;
+  CodeGenerator *codeGenerator;
+  Style          style;
+  bool           doHeader;
+  bool           doSource;
+  bool           doInterface;
+  bool           doImplementation;
+  bool           doHelp;
+  bool	         doExit;
+  std::string    prefixC;
+  std::string    initFunction;
+  std::string    namespaceQt;
+  std::string    namespaceCut;
+  std::string    namespaceAdd;
+  std::string    sfidlName;
 
   std::vector<std::string> includePath; // path to search for includes
 
   Options ();
-  bool parse (int *argc_p, char **argv_p[]);
+  bool parse (int *argc_p, char **argv_p[], const Parser& parser);
   void printUsage ();
 
   static Options *the();

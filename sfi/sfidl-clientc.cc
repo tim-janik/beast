@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfidl-generator.h"
+#include "sfidl-factory.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -243,6 +244,18 @@ CodeGenerator::rename (NamespaceHelper& nsh, const string& name, WordCase namesp
   g_assert_not_reached ();
   string pform = nsh.printableForm (name);
   return pform;
+}
+
+vector< pair<string,bool> >
+CodeGenerator::getOptions()
+{
+  return vector< pair<string,bool> >();
+}
+
+void
+CodeGenerator::setOption (const string& option, const string& value)
+{
+  // no options, no setOption (override me!)
 }
 
 /*--- functions for "C and C++"-like languages ---*/
@@ -867,7 +880,7 @@ void CodeGeneratorCBase::printChoiceConverters()
     }
 }
 
-void CodeGeneratorC::run ()
+bool CodeGeneratorC::run ()
 {
   vector<Sequence>::const_iterator si;
   vector<Record>::const_iterator ri;
@@ -876,7 +889,7 @@ void CodeGeneratorC::run ()
   vector<Class>::const_iterator ci;
   vector<Method>::const_iterator mi;
  
-  printf("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+  printf("\n/*-------- begin %s generated code --------*/\n\n\n", options.sfidlName.c_str());
 
   if (options.generateTypeC)
     printf("#include <string.h>\n");
@@ -1641,12 +1654,19 @@ void CodeGeneratorC::run ()
 	}
     }
 
-  printf("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+  printf("\n/*-------- end %s generated code --------*/\n\n\n", options.sfidlName.c_str());
+  return true;
 }
 
-void CodeGeneratorQt::run ()
+bool CodeGeneratorQt::run ()
 {
-  printf("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+  if (options.doImplementation)
+    {
+      fprintf (stderr, "%s: --implementation is not supported for Qt\n", options.sfidlName.c_str());
+      return false;
+    }
+
+  printf("\n/*-------- begin %s generated code --------*/\n\n\n", options.sfidlName.c_str());
   NamespaceHelper nspace(stdout);
 
   if (options.generateProcedures)
@@ -1670,7 +1690,37 @@ void CodeGeneratorQt::run ()
     }
 
   nspace.leaveAll();
-  printf("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+  printf("\n/*-------- end %s generated code --------*/\n\n\n", options.sfidlName.c_str());
+
+  return true;
+}
+
+namespace {
+
+class QtFactory : public Factory {
+public:
+  string option() const	      { return "--qt"; }
+  string description() const  { return "generate Qt language binding"; }
+  
+  void init (Options& options) const
+  {
+    options.doImplementation = true;
+    options.doInterface = false;
+    options.doHeader = true;
+    options.doSource = false;
+
+    // thats slightly broken, because --lower --qt will generate the wrong
+    // style, but as options get moved to the code generators, it should
+    // become a non-issue
+    options.style = Options::STYLE_MIXED;
+  }
+  
+  CodeGenerator *create (const Parser& parser) const
+  {
+    return new CodeGeneratorQt (parser);
+  }
+} qt_factory;
+
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfidl-generator.h"
+#include "sfidl-factory.h"
 #include <stdio.h>
 
 using namespace Sfidl;
@@ -33,12 +34,35 @@ using namespace std;
 
 class TestCG : public CodeGenerator
 {
+  string one, two, done;
 public:
   TestCG(const Parser& parser) : CodeGenerator (parser)
   {
   }
-  void run()
+  vector< pair<string,bool> > getOptions()
   {
+    vector< pair<string,bool> > opts;
+
+    opts.push_back (make_pair ("--one", true));
+    opts.push_back (make_pair ("--two", true));
+    opts.push_back (make_pair ("--done", false));
+
+    return opts;
+  }
+  void setOption (const string& option, const string& value)
+  {
+    if (option == "--one") one = value;
+    if (option == "--two") two = value;
+    if (option == "--done") done = value;
+  }
+  bool run()
+  {
+    MSG ("Testing Option parser:");
+    ASSERT_EQ (one, "1");
+    ASSERT_EQ (two, "2");
+    ASSERT_EQ (done, "1");
+    DONE ();
+
     MSG ("Testing CodeGenerator::rename():");
 
     vector<string> procedures;
@@ -67,8 +91,29 @@ public:
 	       "BSE_TYPE_ALPHA_SYNTH");
 
     DONE();
+    return true;
   }
 };
+
+class TestCGFactory : public Factory {
+public:
+  string option() const	      { return "--test"; }
+  string description() const  { return "test code generator"; }
+  
+  void init (Options& options) const
+  {
+    options.doImplementation = true;
+    options.doInterface = false;
+    options.doHeader = true;
+    options.doSource = false;
+    options.generateBoxedTypes = true;
+  }
+  
+  CodeGenerator *create (const Parser& parser) const
+  {
+    return new TestCG (parser);
+  }
+} static_factory;
 
 int
 main (int   argc,
@@ -76,7 +121,31 @@ main (int   argc,
 {
   Options options;
   Parser parser;
-  TestCG testCG (parser);
-  testCG.run();
-  return 0;
+
+  int fake_argc = 6;
+  char **fake_argv = g_new0 (gchar*, fake_argc);
+  fake_argv[0] = "testsfidl";
+  fake_argv[1] = "--test";
+  fake_argv[2] = "--one";
+  fake_argv[3] = "1";
+  fake_argv[4] = "--two=2";
+  fake_argv[5] = "--done";
+  options.parse (&fake_argc, &fake_argv, parser);
+
+  MSG ("Testing factory:");
+  ASSERT (options.codeGenerator != 0);
+  DONE();
+
+  if (options.codeGenerator->run())
+    {
+      delete options.codeGenerator;
+      return 0;
+    }
+  else
+    {
+      delete options.codeGenerator;
+      return 1;
+    }
 }
+
+/* vim:set ts=8 sts=2 sw=2: */

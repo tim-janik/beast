@@ -17,36 +17,33 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef _SFIDL_TYPELIST_H__
-#define _SFIDL_TYPELIST_H__
+#include "sfidl-typelist.h"
+#include "sfidl-factory.h"
 
-#include "sfidl-generator.h"
-#include <string>
-#include <list>
+using namespace Sfidl;
+using namespace std;
 
-namespace Sfidl {
+namespace {
 
-class CodeGeneratorTypeList : public CodeGenerator {
+class TypeListFactory : public Factory {
 public:
-  CodeGeneratorTypeList (const Parser &parser) : CodeGenerator (parser) {
-  }
-  bool run ()
+  string option() const	      { return "--list-types"; }
+  string description() const  { return "print all types defined in the idlfile"; }
+  
+  void init (Options& options) const
   {
-    using namespace std;
-    vector<string>::const_iterator ti;
-
-    for(ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
-      {
-	if (parser.fromInclude (*ti)) continue;
-
-	printf ("%s\n", makeMixedName (*ti).c_str());
-      }
-    return true;
+    options.doImplementation = true;
+    options.doInterface = false;
+    options.doHeader = true;
+    options.doSource = false;
   }
-};
+  
+  CodeGenerator *create (const Parser& parser) const
+  {
+    return new CodeGeneratorTypeList (parser);
+  }
+} typelist_factory;
 
-} // Sfidl
-
-#endif	/* _SFIDL_TYPELIST_H__ */
+} // anon
 
 /* vim:set ts=8 sts=2 sw=2: */

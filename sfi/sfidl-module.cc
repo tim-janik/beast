@@ -1136,7 +1136,7 @@ public:
         printf ("} // Procedure\n\n");
       }
   }
-  void
+  bool
   run ()
   {
     printf ("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
@@ -1213,6 +1213,7 @@ public:
     
     /* done */
     printf ("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+    return true;
   }
 };
 

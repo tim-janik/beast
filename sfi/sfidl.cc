@@ -38,7 +38,9 @@ using namespace std;
 int main (int argc, char **argv)
 {
   Options options;
-  if (!options.parse (&argc, &argv))
+  Parser parser;
+
+  if (!options.parse (&argc, &argv, parser))
     {
       /* invalid options */
       return 1;
@@ -61,41 +63,22 @@ int main (int argc, char **argv)
       return 1;
     }
 
-  Parser parser;
   if (!parser.parse(argv[1]))
     {
       /* parse error */
       return 1;
     }
 
-  CodeGenerator *codeGenerator = 0;
-  switch (options.target)
+  if (!options.codeGenerator)
+    options.codeGenerator = new CodeGeneratorC (parser);
+
+  if (!options.codeGenerator->run ())
     {
-      case Options::TARGET_C:
-	codeGenerator = new CodeGeneratorC (parser);
-	break;
-      case Options::TARGET_QT:
-	codeGenerator = new CodeGeneratorQt (parser);
-	break;
-      case Options::TARGET_CXX:
-	codeGenerator = new CodeGeneratorCxx (parser);
-	break;
-      case Options::TARGET_TYPELIST:
-	codeGenerator = new CodeGeneratorTypeList (parser);
-	break;
-      case Options::TARGET_FACTORY:
-	codeGenerator = options.factory->create (parser);
-	break;
-    }
-  if (!codeGenerator)
-    {
-      fprintf(stderr, "no target given\n");
+      delete options.codeGenerator;
       return 1;
     }
 
-  codeGenerator->run ();
-
-  delete codeGenerator;
+  delete options.codeGenerator;
   return 0;
 }
 

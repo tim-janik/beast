@@ -30,7 +30,7 @@ class CodeGeneratorTypeList : public CodeGenerator {
 public:
   CodeGeneratorTypeList (const Parser &parser) : CodeGenerator (parser) {
   }
-  void run ()
+  bool run ()
   {
     using namespace std;
     vector<string>::const_iterator ti;
@@ -41,6 +41,7 @@ public:
 
 	printf ("%s\n", makeMixedName (*ti).c_str());
       }
+    return true;
   }
 };
 

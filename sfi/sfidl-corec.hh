@@ -102,7 +102,26 @@ namespace Sfidl {
     }
    
   public:
-    virtual void run () = 0;
+    /*
+     * returns the options supported by this code generator (used by the option parser)
+     * the first element of the pair is the option (i.e. "--source")
+     * the second element of the pair is true when the option should be followed by a
+     *   user argument (as in "--prefix beast"), false otherwise (i.e. "--source")
+     */
+    virtual std::vector< std::pair<std::string,bool> > getOptions();
+
+    /*
+     * called by the option parser when an option is set
+     * option is the option (i.e. "--prefix")
+     * value is the value (i.e. "beast"), and "1" for options without user argument
+     */
+    virtual void setOption (const std::string& option, const std::string& value);
+
+    /*
+     * run generates the code, and should return true if successful, false otherwise
+     * (for instance if inconsistent options were given to the code generator)
+     */
+    virtual bool run () = 0;
     virtual ~CodeGenerator() {
     }
    };
@@ -187,14 +206,14 @@ namespace Sfidl {
   public:
     CodeGeneratorC(const Parser& parser) : CodeGeneratorCBase (parser) {
     }
-    void run ();
+    bool run ();
   };
 
   class CodeGeneratorQt : public CodeGenerator {
     public:
-      CodeGeneratorQt(Parser& parser) : CodeGenerator(parser) {
+      CodeGeneratorQt(const Parser& parser) : CodeGenerator(parser) {
       }
-      void run ();
+      bool run ();
   };
 };
 

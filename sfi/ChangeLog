@@ -1,3 +1,28 @@
+Mon Jan 26 19:55:42 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.*: CodeGenerator: Added setOption and getOptions
+	methods, to allow code generators to come with their own options.
+
+	* sfidl-options.cc sfidl.cc: Parse options provided by code generators
+	in Options::parse. Get rid of a the Target enum, use factories only to
+	choose which code generator to use.
+
+	* sfidl-cxx.* sfidl-generator.* sfidl-typelist.*: Provide a factory
+	for --cxx, --qt and --list-types. Changed CodeGenerator::run() to return
+	boolean, to allow code generators to fail on inconsistent options.
+
+	* sfidl-module.cc: Adapted to the new CodeGenerator::run().
+
+	* sfidl-factory.cc: Fixed evil bug. Using global constructors ensures
+	no ordering (depends on the linker, among other things). Thus we need
+	to use a dynamically allocated list of factories, otherwise factories
+	might try to add themselves to the factory list before the factory list
+	exists.
+
+	* Makefile.am: Added sfidl-typelist.cc.
+
+	* testsfidl.cc: Test option parsing.
+
 Mon Jan 26 02:42:32 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc:

@@ -18,6 +18,7 @@
  */
 #include "sfidl-options.h"
 #include "sfidl-factory.h"
+#include "sfidl-generator.h"
 #include "topconfig.h"
 #include <sfi/glib-extra.h>
 #include <stdio.h>
@@ -43,7 +44,7 @@ Options::Options ()
   generateTypeH = generateTypeC = false;
   generateBoxedTypes = generateProcedures = generateSignalStuff = false;
   generateIdlLineNumbers = false;
-  target = TARGET_C; factory = 0;
+  codeGenerator = 0;
   style = STYLE_DEFAULT;
   doHeader = doSource = doImplementation = doInterface = doHelp = doExit = false;
   sfidlName = "sfidl";
@@ -51,11 +52,13 @@ Options::Options ()
   Options_the = this;
 }
 
-bool Options::parse (int *argc_p, char **argv_p[])
+bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 {
   bool printIncludePath = false;
   bool printVersion = false;
   bool noStdInc = false;
+
+  vector< pair<string,bool> > codeGeneratorOptions;
 
   unsigned int argc;
   char **argv;
@@ -115,32 +118,6 @@ bool Options::parse (int *argc_p, char **argv_p[])
 	      i += 1;
 	    }
 	  argv[i] = NULL;
-	}
-      else if (strcmp ("--qt", argv[i]) == 0)
-	{
-	  target = TARGET_QT;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--list-types", argv[i]) == 0)
-	{
-	  target = TARGET_TYPELIST;
-          /* configure for module generation */
-          doImplementation = true;
-          doInterface = false;
-          doHeader = true;
-          doSource = false;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--cxx", argv[i]) == 0)
-	{
-	  target = TARGET_CXX;
-	  /*
-	   * we will probably extend this to support both:
-	   * interface and implementation
-	   */
-          doImplementation = false;
-          doInterface = true;
-	  argv[i] = 0;
 	}
       else if (strcmp ("--lower", argv[i]) == 0)
 	{
@@ -227,17 +204,55 @@ bool Options::parse (int *argc_p, char **argv_p[])
 	  noStdInc = true;
 	  argv[i] = NULL;
 	}
-      else if (!factory) /* only one factory allowed */
+      else if (!codeGenerator) /* only one code generator allowed */
 	{
 	  list<Factory *> factories = Factory::listFactories();
 
 	  for (list<Factory *>::const_iterator fi = factories.begin(); fi != factories.end(); fi++)
 	    {
-	      if ((*fi)->option() == argv[i])
+	      Factory *factory = *fi;
+
+	      if (argv[i] && factory->option() == argv[i])
 		{
-		  factory = *fi;
-		  factory->init(*this);
-		  target = TARGET_FACTORY;
+		  factory->init (*this);
+		  codeGenerator = factory->create (parser);
+		  codeGeneratorOptions = codeGenerator->getOptions();
+		  argv[i] = NULL;
+		}
+	    }
+	}
+      else /* look for code generator specific options */
+	{
+	  vector< pair<string,bool> >::iterator oi;
+	  const char *value = 0;
+	  for (oi = codeGeneratorOptions.begin(); oi != codeGeneratorOptions.end() && !value; oi++)
+	    {
+	      const string& option = oi->first;
+	      const bool& needArg = oi->second;
+	      string optioneq = option + "=";
+
+	      if (option == argv[i]) // --option
+		{
+		  if (!needArg) // --option
+		    {
+		      value = "1";
+		    }
+		  else if (i + 1 < argc) // --option foo
+		    {
+		      argv[i] = NULL;
+		      i += 1;
+		      value = argv[i];
+		    }
+		}
+	      else if (strncmp(optioneq.c_str(), argv[i], optioneq.size()) == 0) // --option=foo
+		{
+		  if (needArg)
+		    value = argv[i] + optioneq.size();
+		}
+
+	      if (value)
+		{
+		  codeGenerator->setOption (option, value);
 		  argv[i] = NULL;
 		}
 	    }
@@ -326,20 +341,8 @@ bool Options::parse (int *argc_p, char **argv_p[])
       return false;
     }
 
-  // style
-
-  if (style == STYLE_DEFAULT && target == TARGET_QT)
-    style = STYLE_MIXED;
-
   if (style == STYLE_DEFAULT)
     style = STYLE_LOWER;
-
-  // --qt
-  if (target == TARGET_QT && doImplementation)
-    {
-      fprintf (stderr, "%s: --implementation is not supported for Qt\n", sfidlName.c_str());
-      return false;
-    }
 
   /* implications of header/source options */
   if (doHeader)
@@ -389,13 +392,11 @@ void Options::printUsage ()
   fprintf (stderr, " --prefix <prefix>           set the prefix for c functions\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "options for the C++ language binding:\n");
-  fprintf (stderr, " --qt                        use Qt language binding\n");
-  fprintf (stderr, " --cxx                       use C++ language binding\n");
   fprintf (stderr, " --namespace <namespace>     set the namespace to use for the code\n");
   fprintf (stderr, " --mixed                     mixed case identifiers (createMidiSynth)\n");
   fprintf (stderr, " --lower                     lower case identifiers (create_midi_synth)\n");
   fprintf (stderr, "\n");
-  fprintf (stderr, "other language bindings:\n");
+  fprintf (stderr, "language bindings:\n");
 
   for (list<Factory *>::const_iterator fi = factories.begin(); fi != factories.end(); fi++)
     fprintf (stderr, " %-28s%s\n", (*fi)->option().c_str(), (*fi)->description().c_str());
@@ -405,7 +406,6 @@ void Options::printUsage ()
   fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, " --print-include-path        print include path\n");
   fprintf (stderr, " --nostdinc                  don't use standard include path\n");
-  fprintf (stderr, " --list-types                print all types defined in the idlfile\n");
 }
 
 
