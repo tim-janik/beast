@@ -100,6 +100,7 @@ beast_sources = $(strip \
 )
 # BEAST c sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
+	bstpatterneditorselection.c \
 	bstkeytable-base.c \
 	bstkeytable-us.c \
 	bstkeytable-de.c \
