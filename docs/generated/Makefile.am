@@ -137,7 +137,7 @@ index.lst: $(REFERENCE_XMLS)
 %.nroff: %.xml
 	$(XML2NROFF) --output=$@ $<
 %.ps: %.nroff
-	$(GROFF) -man -t $< >$@
+	groff -man -t $< >$@
 %.pdf: %.ps
 	ps2pdf13 $< $@
 # where to get *.texi docs from
