@@ -1,3 +1,11 @@
+Mon May 15 14:22:16 2000  Tim Janik  <timj@gtk.org>
+
+	* davchorus.[hc]: new chorus module from David A. Bartold
+	<foxx@mail.utexas.edu>.
+
+	* davguitar.c (dav_guitar_prepare): cut-off frequency fix from David,
+	let lesser DC pass through to avoid clipping.
+
 Tue Apr 11 05:36:09 2000  Tim Janik  <timj@gtk.org>
 
 	* applied changes from David A. Bartold <foxx@mail.utexas.edu>:

@@ -83,6 +83,14 @@ davcanyondelay_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += davcanyondelay.h
 
 ##
+## Plugin davchorus
+##
+davchorus_la_SOURCES = davchorus.c
+davchorus_la_LDFLAGS = -module -avoid-version
+davchorus_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += davchorus.h
+
+##
 ## Plugin davguitar
 ##
 davguitar_la_SOURCES = davguitar.c
@@ -147,6 +155,7 @@ plugin_LTLIBRARIES += \
 	bsenoise.la \
 	davbassfilter.la \
 	davcanyondelay.la \
+	davchorus.la \
 	davguitar.la \
 	davorgan.la \
 	davsyndrum.la \

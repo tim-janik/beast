@@ -105,11 +105,6 @@ static const GTypeInfo	 type_info_guitar = {
 
 
 /* --- functions --- */
-static inline void
-dav_guitar_update_locals (DavGuitar *guitar)
-{
-}
-
 static void
 wave_guide_unstop (WaveGuide *wave)
 {
@@ -243,6 +238,11 @@ add_string_param (BseObjectClass *object_class,
   bse_object_class_add_param (object_class, name, trigger_enum,
 			      b_param_spec_bool (trigger_param, "Trigger Hit", "Pluck the string",
 						 FALSE, B_PARAM_GUI));
+}
+
+static inline void
+dav_guitar_update_locals (DavGuitar *guitar)
+{
 }
 
 static void
@@ -569,7 +569,7 @@ dav_guitar_prepare (BseSource *source,
   DavGuitar *guitar = DAV_GUITAR (source);
   int i;
   
-  guitar->hipass_coeff = pow (0.5, 2.0 / BSE_MIX_FREQ_f);
+  guitar->hipass_coeff = pow (0.5, 20.0 / BSE_MIX_FREQ_f);
   guitar->hipass_data = 0.0;
   
   wave_guide_prepare (&guitar->body);
