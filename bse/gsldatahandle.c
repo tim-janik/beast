@@ -467,20 +467,6 @@ typedef struct {
   guint             clear_xinfos : 1;
 } XInfoHandle;
 
-static gint
-xinfo_stub_compare (gconstpointer v1,
-                    gconstpointer v2,
-                    gpointer      data)
-{
-  const gchar *e1 = strchr (v1, '=');
-  gint l1 = e1 - (const gchar*) v1;
-  const gchar *e2 = strchr (v2, '=');
-  gint l2 = e2 - (const gchar*) v2;
-  if (l1 != l2)
-    return l1 - l2;
-  return strncmp (v1, v2, l1);
-}
-
 static SfiRing*
 ring_remove_dups (SfiRing        *ring,
                   SfiCompareFunc  cmp,
@@ -523,7 +509,7 @@ xinfo_handle_open (GslDataHandle      *dhandle,
   /* override by added xinfos */
   sxinfos = sfi_ring_concat (sfi_ring_copy (chandle->added_xinfos), sxinfos);
   /* remove dups (preserves first element from dup list) */
-  sxinfos = ring_remove_dups (sxinfos, xinfo_stub_compare, NULL, NULL);
+  sxinfos = ring_remove_dups (sxinfos, (SfiCompareFunc) bse_xinfo_stub_compare, NULL, NULL);
   /* copy over non-empty xinfos */
   if (sxinfos)
     {
@@ -625,7 +611,7 @@ xinfo_data_handle_new (GslDataHandle *src_handle,
       dest_added = sfi_ring_concat (sfi_ring_copy_deep (added_xinfos, (SfiRingDataFunc) g_strdup, NULL), dest_added);
     }
   /* remove dups (preserves first element from dup list) */
-  dest_added = ring_remove_dups (dest_added, xinfo_stub_compare, NULL, g_free);
+  dest_added = ring_remove_dups (dest_added, (SfiCompareFunc) bse_xinfo_stub_compare, NULL, g_free);
   /* filter non-empty xinfos */
   SfiRing *ring = NULL;
   while (dest_added)
@@ -647,7 +633,7 @@ xinfo_data_handle_new (GslDataHandle *src_handle,
       dest_remove = sfi_ring_concat (sfi_ring_copy_deep (added_xinfos, (SfiRingDataFunc) g_strdup, NULL), dest_remove);
     }
   /* remove dups (preserves first element from dup list) */
-  dest_remove = ring_remove_dups (dest_remove, xinfo_stub_compare, NULL, g_free);
+  dest_remove = ring_remove_dups (dest_remove, (SfiCompareFunc) bse_xinfo_stub_compare, NULL, g_free);
   /* filter empty xinfos */
   ring = NULL;
   while (dest_remove)

@@ -586,6 +586,66 @@ bse_xinfos_get_num (gchar          **xinfos,
     return 0.0;
 }
 
+gchar**
+bse_xinfos_dup_consolidated (gchar **xinfos)
+{
+  if (xinfos)
+    {
+      /* construct list of normalized xinfos */
+      SfiRing *xinfo_list = NULL;
+      guint i = 0;
+      while (xinfos[i])
+        {
+          const gchar *xinfo = xinfos[i];
+          const gchar *e = strchr (xinfo, '=');
+          if (!e && xinfo[0])   /* empty xinfo without '=' */
+            xinfo_list = sfi_ring_append (xinfo_list, g_strconcat (xinfo, "=", NULL));
+          else if (e && !e[1])  /* empty xinfo with "=" */
+            xinfo_list = sfi_ring_append (xinfo_list, g_strdup (xinfo));
+          else if (e)           /* non-empty xinfo */
+            xinfo_list = sfi_ring_append (xinfo_list, g_strdup (xinfo));
+          i++;
+        }
+      SfiRing *rcopy = sfi_ring_copy (xinfo_list);
+      /* sort (stable, keeping order) */
+      xinfo_list = sfi_ring_sort (xinfo_list, (SfiCompareFunc) bse_xinfo_stub_compare, NULL);
+      /* remove dups (preserves first element from dup list) */
+      xinfo_list = sfi_ring_uniq_free_deep (xinfo_list, (SfiCompareFunc) bse_xinfo_stub_compare, NULL, g_free);
+      /* restore original order */
+      xinfo_list = sfi_ring_reorder (xinfo_list, rcopy);
+      sfi_ring_free (rcopy);
+      /* filter non-empty xinfos */
+      if (xinfo_list)
+        {
+          gchar **dest_xinfos = g_new (gchar*, sfi_ring_length (xinfo_list) + 1);
+          i = 0;
+          while (xinfo_list)
+            {
+              const gchar *xinfo = sfi_ring_pop_head (&xinfo_list);
+              const gchar *e = strchr (xinfo, '=');
+              if (e[1]) /* non-empty xinfo */
+                dest_xinfos[i++] = g_strdup (xinfo);
+            }
+          dest_xinfos[i] = NULL;
+          return dest_xinfos;
+        }
+    }
+  return NULL;
+}
+
+gint
+bse_xinfo_stub_compare (const gchar     *xinfo1,  /* must contain '=' */
+                        const gchar     *xinfo2)  /* must contain '=' */
+{
+  const gchar *e1 = strchr (xinfo1, '=');
+  gint l1 = e1 - (const gchar*) xinfo1;
+  const gchar *e2 = strchr (xinfo2, '=');
+  gint l2 = e2 - (const gchar*) xinfo2;
+  if (l1 != l2)
+    return l1 - l2;
+  return strncmp (xinfo1, xinfo2, l1);
+}
+
 
 /* --- miscellaeous --- */
 guint

@@ -1,3 +1,8 @@
+Fri Dec 31 13:32:47 2004  Tim Janik  <timj@gtk.org>
+
+	* bseutils.c (bse_xinfos_dup_consolidated): duplicate xinfo array and
+	remove empty/removal xinfos (i.e. "foo=" infos).
+
 Fri Dec 31 01:40:33 2004  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle-vorbis.c: cleanups. implemented GslVorbis1Handle which
