@@ -23,6 +23,11 @@ EXTRA_IMAGES = $(strip		\
 	waveosc.xcf		\
 )
 
+# images that need to be shipped, but no C source nees to be build from
+SHIP_IMAGES = $(strip		\
+	ampctrl.png		\
+)
+
 # source images to build C source from
 SRC_IMAGES = $(strip		\
 	biquad.png		\
@@ -55,4 +60,5 @@ CLEANFILES = $(noinst_DATA)
 EXTRA_DIST += $(strip 	\
 	$(EXTRA_IMAGES)	\
 	$(SRC_IMAGES) 	\
+	$(SHIP_IMAGES)	\
 )
