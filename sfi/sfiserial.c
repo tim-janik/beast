@@ -79,18 +79,6 @@ const GScannerConfig *sfi_storage_scanner_config = &storage_scanner_config;
     return _t; \
   } \
 }G_STMT_END
-#define	NULL_STRING	"#f"
-static inline gboolean
-check_parse_null (GScanner *scanner)
-{
-  if (scanner->token == '#' && g_scanner_peek_next_token (scanner) == 'f')
-    {
-      g_scanner_get_next_token (scanner);
-      return TRUE;
-    }
-  else
-    return FALSE;
-}
 static GTokenType
 scanner_skip_statement (GScanner *scanner,
 			guint     level)
@@ -181,7 +169,7 @@ sfi_serialize_rec_typed (SfiRec  *rec,
 			 GString *gstring)
 {
   if (!rec)
-    gstring_puts (gstring, NULL_STRING);
+    gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
   else
     {
       guint i;
@@ -203,7 +191,7 @@ sfi_parse_rec_typed (GScanner *scanner,
 		     GValue   *value)
 {
   g_scanner_get_next_token (scanner);
-  if (check_parse_null (scanner))
+  if (sfi_serial_check_parse_null_token (scanner))
     sfi_value_set_rec (value, NULL);
   else if (scanner->token == '(')
     {
@@ -309,7 +297,7 @@ sfi_serialize_primitives (SfiSCategory scat,
     case SFI_SCAT_REAL:
       if (gstring)
 	{
-	  gstring_printf (gstring, "%.18g", sfi_value_get_real (value));
+	  gstring_printf (gstring, "%.17g", sfi_value_get_real (value));
 	}
       else
 	{
@@ -333,12 +321,12 @@ sfi_serialize_primitives (SfiSCategory scat,
 	      g_free (string);
 	    }
 	  else
-	    gstring_puts (gstring, NULL_STRING);
+	    gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
 	}
       else
 	{
 	  g_scanner_get_next_token (scanner);
-	  if (check_parse_null (scanner))
+	  if (sfi_serial_check_parse_null_token (scanner))
 	    sfi_value_set_string (value, NULL);
 	  else if (scanner->token == G_TOKEN_STRING)
 	    sfi_value_set_string (value, scanner->value.v_string);
@@ -351,14 +339,14 @@ sfi_serialize_primitives (SfiSCategory scat,
 	{
 	  gchar *cstring = sfi_value_get_string (value);
 	  if (!cstring)
-	    gstring_puts (gstring, NULL_STRING);
+	    gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
 	  else
 	    gstring_printf (gstring, "%s", cstring);
 	}
       else
 	{
 	  g_scanner_get_next_token (scanner);
-	  if (check_parse_null (scanner))
+	  if (sfi_serial_check_parse_null_token (scanner))
 	    sfi_value_set_choice (value, NULL);
 	  else if (scanner->token == G_TOKEN_IDENTIFIER)
 	    sfi_value_set_choice (value, scanner->value.v_identifier);
@@ -386,7 +374,7 @@ sfi_serialize_primitives (SfiSCategory scat,
 	{
 	  SfiBBlock *bblock = sfi_value_get_bblock (value);
 	  if (!bblock)
-	    gstring_puts (gstring, NULL_STRING);
+	    gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
 	  else
 	    {
 	      guint i;
@@ -401,7 +389,7 @@ sfi_serialize_primitives (SfiSCategory scat,
       else
 	{
 	  g_scanner_get_next_token (scanner);
-	  if (check_parse_null (scanner))
+	  if (sfi_serial_check_parse_null_token (scanner))
 	    sfi_value_set_bblock (value, NULL);
 	  else if (scanner->token == '(')
 	    {
@@ -424,7 +412,7 @@ sfi_serialize_primitives (SfiSCategory scat,
 	{
 	  SfiFBlock *fblock = sfi_value_get_fblock (value);
 	  if (!fblock)
-	    gstring_puts (gstring, NULL_STRING);
+	    gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
 	  else
 	    {
 	      guint i;
@@ -439,7 +427,7 @@ sfi_serialize_primitives (SfiSCategory scat,
       else
 	{
 	  g_scanner_get_next_token (scanner);
-	  if (check_parse_null (scanner))
+	  if (sfi_serial_check_parse_null_token (scanner))
 	    sfi_value_set_fblock (value, NULL);
 	  else if (scanner->token == '(')
 	    {
@@ -582,7 +570,7 @@ sfi_value_store_typed (const GValue *value,
       gstring_printf (gstring, "(%c", scat);
       seq = sfi_value_get_seq (value);
       if (!seq)
-	gstring_puts (gstring, " " NULL_STRING);
+	gstring_puts (gstring, " " SFI_SERIAL_NULL_TOKEN);
       else
 	{
 	  guint i;
@@ -646,7 +634,7 @@ sfi_value_parse_typed (GValue   *value,
     case SFI_SCAT_SEQ:
       g_value_init (value, SFI_TYPE_SEQ);
       g_scanner_get_next_token (scanner);
-      if (check_parse_null (scanner))
+      if (sfi_serial_check_parse_null_token (scanner))
 	sfi_value_set_seq (value, NULL);
       else if (scanner->token == '(')
 	{
@@ -717,7 +705,7 @@ value_store_param (const GValue *value,
     case SFI_SCAT_SEQ:
       seq = sfi_value_get_seq (value);
       if (!seq)
-	gstring_puts (gstring, NULL_STRING);
+	gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
       else
 	{
           GParamSpec *espec = sfi_pspec_get_seq_element (pspec);
@@ -749,7 +737,7 @@ value_store_param (const GValue *value,
     case SFI_SCAT_REC:
       rec = sfi_value_get_rec (value);
       if (!rec)
-	gstring_puts (gstring, NULL_STRING);
+	gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
       else
 	{
 	  SfiRecFields fspecs = sfi_pspec_get_rec_fields (pspec);
@@ -795,7 +783,7 @@ sfi_value_store_param (const GValue *value,
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   g_return_if_fail (G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (pspec)));
 
-  // gstring_break (gstring, &needs_break, indent);
+  gstring_break (gstring, &needs_break, indent);
   gstring_printf (gstring, "(%s ", pspec->name);
   value_store_param (value, gstring, &needs_break, pspec, indent + 2);
   gstring_putc (gstring, ')');
@@ -831,7 +819,7 @@ value_parse_param (GValue     *value,
       break;
     case SFI_SCAT_SEQ:
       g_scanner_get_next_token (scanner);
-      if (check_parse_null (scanner))
+      if (sfi_serial_check_parse_null_token (scanner))
 	sfi_value_set_seq (value, NULL);
       else if (scanner->token == '(')
 	{
@@ -863,7 +851,7 @@ value_parse_param (GValue     *value,
       break;
     case SFI_SCAT_REC:
       g_scanner_get_next_token (scanner);
-      if (check_parse_null (scanner))
+      if (sfi_serial_check_parse_null_token (scanner))
 	sfi_value_set_rec (value, NULL);
       else if (scanner->token == '(')
 	{
@@ -936,4 +924,18 @@ sfi_value_parse_param_rest (GValue     *value,
   g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
 
   return value_parse_param (value, scanner, pspec, TRUE);
+}
+
+gboolean
+sfi_serial_check_parse_null_token (GScanner *scanner)
+{
+  g_return_val_if_fail (scanner != NULL, FALSE);
+
+  if (scanner->token == '#' && g_scanner_peek_next_token (scanner) == 'f')
+    {
+      g_scanner_get_next_token (scanner);
+      return TRUE;
+    }
+  else
+    return FALSE;
 }

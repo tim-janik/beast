@@ -36,6 +36,17 @@ GTokenType	sfi_value_parse_typed		(GValue		*value,
 GTokenType	sfi_value_parse_param_rest	(GValue		*value,
 						 GScanner	*scanner,
 						 GParamSpec	*pspec);
+
+
+/* --- NULL (nil) token handling --- */
+#define  SFI_SERIAL_NULL_TOKEN	"#f"
+/* parse NULL token if possible and return TRUE, otherwise
+ * return FALSE and don't advance scanner
+ */
+gboolean sfi_serial_check_parse_null_token	(GScanner	*scanner);
+
+
+/* --- GScanner config --- */
 extern const GScannerConfig *sfi_storage_scanner_config;
 
 

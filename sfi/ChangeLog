@@ -1,3 +1,13 @@
+Fri Feb 14 07:46:01 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiserial.c (sfi_value_store_param): newline and indent before
+	storing values.
+	(sfi_serialize_primitives): store doubles with at most 17 significant
+	digits to avoid roundoff junk being stored.
+
+	* sfiserial.[hc]: export sfi_serial_check_parse_null_token() and
+	SFI_SERIAL_NULL_TOKEN to have a single point of NULL/nil token handling.
+
 Fri Feb 14 11:17:51 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.cc: add space between tokens that are simply parsed
