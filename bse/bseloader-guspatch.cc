@@ -108,7 +108,7 @@ readSWord (FILE *file, sword& sw)
 {
   word w;
   
-  read_or_return_error (readWord(file, w));
+  read_or_return_error (readWord (file, w));
   sw = (sword)w;
   
   return BSE_ERROR_NONE;
@@ -120,10 +120,10 @@ readDWord (FILE *file, dword& dw)
 {
   byte h, l, hh, hl;
   
-  read_or_return_error (xRead(file, 1, &l));
-  read_or_return_error (xRead(file, 1, &h));
-  read_or_return_error (xRead(file, 1, &hl));
-  read_or_return_error (xRead(file, 1, &hh));
+  read_or_return_error (xRead (file, 1, &l));
+  read_or_return_error (xRead (file, 1, &h));
+  read_or_return_error (xRead (file, 1, &hl));
+  read_or_return_error (xRead (file, 1, &hh));
   dw = (hh << 24) + (hl << 16) + (h << 8) + l;
   
   return BSE_ERROR_NONE;
