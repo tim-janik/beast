@@ -1,3 +1,8 @@
+Mon Oct 27 19:56:12 2003  Tim Janik  <timj@gtk.org>
+
+	* sfifilecrawler.[hc]: added sfi_make_dirpath() to create directories
+	possibly containing ~, ~user or non-existant parent directories.
+
 Sun Oct 26 09:33:46 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.cc: Take notice of strings within preprocessor and

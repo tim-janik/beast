@@ -26,7 +26,8 @@
 
 
 /* --- prototypes --- */
-static gchar*   get_user_home (const gchar *user);
+static gchar*   get_user_home (const gchar *user,
+                               gboolean     use_fallbacks);
 
 
 /* --- variables --- */
@@ -342,23 +343,24 @@ file_crawler_crawl_abs_path (SfiFileCrawler *self)
 
 static gchar*
 path_make_absolute (const gchar *rpath,
-                    const gchar *cwd)
+                    const gchar *cwd,
+                    gboolean     use_fallbacks)
 {
   const gchar *dir;
   gchar *home, *user = NULL;
   if (rpath[0] != '~')
-    return g_strconcat (cwd, G_DIR_SEPARATOR_S, rpath, NULL);
+    return cwd ? g_strconcat (cwd, G_DIR_SEPARATOR_S, rpath, NULL) : NULL;
   dir = strchr (rpath + 1, G_DIR_SEPARATOR);
   if (dir && dir > rpath + 1)
     user = g_strndup (rpath + 1, dir - rpath - 1);
   else if (!dir && rpath[1])
     user = g_strdup (rpath + 1);
-  home = get_user_home (user);
+  home = get_user_home (user, use_fallbacks);
   g_free (user);
   if (!home || !g_path_is_absolute (home))
-    user = g_strconcat (cwd, dir, NULL);
+    user = cwd ? g_strconcat (cwd, dir, NULL) : NULL;
   else
-    user = g_strconcat (home, dir, NULL);
+    user = home ? g_strconcat (home, dir, NULL) : NULL;
   g_free (home);
   return user;
 }
@@ -372,7 +374,7 @@ file_crawler_crawl_dpatterns (SfiFileCrawler *self)
       /* make absolute */
       if (!g_path_is_absolute (dpattern))
         {
-          gchar *path = path_make_absolute (dpattern, self->cwd);
+          gchar *path = path_make_absolute (dpattern, self->cwd, TRUE);
           file_crawler_queue_abs_file_path (self, path, self->ptest);
           g_free (path);
         }
@@ -486,6 +488,45 @@ sfi_file_crawler_list_files (const gchar *search_path,
   return results;
 }
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+void
+sfi_make_dirpath (const gchar *dir)
+{
+  gchar *str, *dirpath = NULL;
+  guint i;
+
+  g_return_if_fail (dir != NULL);
+
+  if (!g_path_is_absolute (dir))
+    {
+      dirpath = path_make_absolute (dir, NULL, FALSE);
+      if (!dirpath)
+        return;
+      dir = dirpath;
+    }
+
+  i = strlen (dir);
+  str = g_new0 (gchar, i + 1);
+  for (i = 0; dir[i]; i++)
+    {
+      str[i] = dir[i];
+      if (str[i] == G_DIR_SEPARATOR || dir[i + 1] == 0)
+        {
+          struct stat st;
+          if (stat (str, &st) < 0)      /* guard against existance */
+            {
+              if (mkdir (str, 0755) < 0)
+                break;
+            }
+        }
+    }
+  g_free (str);
+  g_free (dirpath);
+}
+
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -536,7 +577,8 @@ g_file_test_all (const gchar  *filename,
 #include <pwd.h>
 
 static gchar*
-get_user_home (const gchar *user)
+get_user_home (const gchar *user,
+               gboolean     use_fallbacks)
 {
   struct passwd *p = NULL;
   if (user && 1 /* getpwnam_r check */)
@@ -552,5 +594,7 @@ get_user_home (const gchar *user)
       if (p)
         return g_strdup (p->pw_dir);
     }
-  return g_strdup (g_get_home_dir ());
+  if (!user)
+    return g_strdup (g_get_home_dir ());
+  return use_fallbacks ? g_strdup (g_get_home_dir ()) : NULL;
 }
