@@ -207,6 +207,7 @@ bse_snooper_context_create (BseSource *source,
   
   /* commit module to engine */
   gsl_trans_add (trans, gsl_job_integrate (module));
+  gsl_trans_add (trans, gsl_job_set_consumer (module, TRUE));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);

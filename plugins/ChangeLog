@@ -1,3 +1,9 @@
+Tue Jan 29 15:17:43 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesnooper: set consumership.
+
+	* removed bseconstant.[hc] as this is in BSE now.
+
 Thu Jan 24 11:03:49 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesnooper.c (bse_snooper_context_create): get rid of hard coded

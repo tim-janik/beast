@@ -31,7 +31,6 @@ UNPORTED = @STRIP_BEGIN@	\
 PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bseadder.[hc]		\
 	bsecompressor.[hc]	\
-	bseconstant.[hc]	\
 	bsegenosc.[hc]		\
 	bsemixer.[hc]		\
 	bsemult.[hc]		\

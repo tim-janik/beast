@@ -17,14 +17,6 @@ bsecompressor_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsecompressor.h
 
 ##
-## Plugin bseconstant
-##
-bseconstant_la_SOURCES = bseconstant.c
-bseconstant_la_LDFLAGS = -module -avoid-version
-bseconstant_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS         += bseconstant.h
-
-##
 ## Plugin bsegenosc
 ##
 bsegenosc.enums: bsegenosc.h 
@@ -111,7 +103,6 @@ fldbsepattern_la_LIBADD  = $(plugin_libs)
 plugin_LTLIBRARIES += \
 	bseadder.la \
 	bsecompressor.la \
-	bseconstant.la \
 	bsegenosc.la \
 	bsemixer.la \
 	bsemult.la \
