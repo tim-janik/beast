@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GXK_UTILS_H__
-#define __GXK_UTILS_H__
+#ifndef __GXK_SPLINE_H__
+#define __GXK_SPLINE_H__
 
 #include        <gxk/gxkglobals.h>
 
@@ -50,10 +50,11 @@ double          gxk_spline_y            (const GxkSpline        *spline,
 double          gxk_spline_findx        (const GxkSpline        *spline,
                                          double                  y);
 void            gxk_spline_dump         (GxkSpline              *spline);
+GxkSpline*      gxk_spline_copy         (GxkSpline              *spline);
 void            gxk_spline_free         (GxkSpline              *spline);
 
 
 
 G_END_DECLS
 
-#endif /* __GXK_UTILS_H__ */
+#endif /* __GXK_SPLINE_H__ */

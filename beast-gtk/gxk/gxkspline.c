@@ -60,6 +60,7 @@ segment_eval (const GxkSplineSegment *xseg,     /* must not be last segment */
  * gxk_spline_new_natural
  * @n_points: number of fix points
  * @points:   fix points
+ * @RETURNS:  newly allocated spline
  * Create a natural spline based on a given set of fix points.
  */
 GxkSpline*
@@ -67,6 +68,18 @@ gxk_spline_new_natural (guint                   n_points,
                         const GxkSplinePoint   *points)
 {
   return gxk_spline_new (n_points, points, NAN, NAN);
+}
+
+/**
+ * gxk_spline_copy
+ * @spline:  correctly setup #GxkSpline
+ * @RETURNS: newly allocated spline
+ * Produce a copy of an already setup spline.
+ */
+GxkSpline*
+gxk_spline_copy (GxkSpline *spline)
+{
+  return g_memdup (spline, sizeof (spline[0]) + spline->n_segs * sizeof (spline->segs[0]));
 }
 
 static int
@@ -84,6 +97,7 @@ spline_segment_cmp (const void *v1,
  * @points:   fix points
  * @dy_start: first derivatives at point[0]
  * @dy_end:   first derivatives at point[n_points - 1]
+ * @RETURNS:  newly allocated spline
  * Create a not-a-knot spline based on a given set of fix points and the
  * first derivative of the first and last point of the interpolating function.
  */

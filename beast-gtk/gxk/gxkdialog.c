@@ -194,7 +194,7 @@ gxk_dialog_set_property (GObject      *object,
   switch (prop_id)
     {
       GtkWindow *window;
-      const gchar *cstring;
+      const gchar *cstring, *astring;
       gchar *string;
       guint old_flags;
     case PROP_ALIVE_OBJECT:
@@ -213,7 +213,8 @@ gxk_dialog_set_property (GObject      *object,
       cstring = g_value_get_string (value);
       if (!cstring)
 	cstring = "";
-      string = g_strconcat (cstring, " - ", g_get_prgname (), NULL);
+      astring = g_get_application_name();
+      string = g_strconcat (cstring, astring ? " - " : NULL, astring, NULL);
       g_object_set (self, "GtkWindow::title", string, NULL);
       g_free (string);
       break;

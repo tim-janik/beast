@@ -321,6 +321,8 @@ enum {
   PATCHER_PROP_TOOLTIP,
   PATCHER_PROP_TOOLTIP_VISIBLE,
   PATCHER_PROP_MUTE_EVENTS,
+  PATCHER_PROP_BG_AS_BASE,
+  PATCHER_PROP_BASE_AS_BG,
   PATCHER_PROP_LOWER_WINDOWS,
   PATCHER_PROP_HIDE_INSENSITIVE,
   PATCHER_PROP_WIDTH_FROM_HEIGHT,
@@ -347,6 +349,12 @@ gxk_widget_patcher_set_property (GObject      *object,
       break;
     case PATCHER_PROP_MUTE_EVENTS:
       self->mute_events = g_value_get_boolean (value);
+      break;
+    case PATCHER_PROP_BG_AS_BASE:
+      self->modify_bg_as_base = g_value_get_boolean (value);
+      break;
+    case PATCHER_PROP_BASE_AS_BG:
+      self->modify_base_as_bg = g_value_get_boolean (value);
       break;
     case PATCHER_PROP_LOWER_WINDOWS:
       self->lower_windows = g_value_get_boolean (value);
@@ -398,6 +406,10 @@ gxk_widget_patcher_class_init (GxkWidgetPatcherClass *class)
                                                          TRUE, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT));
   g_object_class_install_property (gobject_class, PATCHER_PROP_MUTE_EVENTS,
                                    g_param_spec_boolean ("mute-events", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, PATCHER_PROP_BG_AS_BASE,
+                                   g_param_spec_boolean ("bg-as-base", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, PATCHER_PROP_BASE_AS_BG,
+                                   g_param_spec_boolean ("base-as-bg", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_LOWER_WINDOWS,
                                    g_param_spec_boolean ("lower-windows", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_HIDE_INSENSITIVE,
@@ -508,6 +520,10 @@ widget_patcher_adopt (GxkRadget          *radget,
   if (self->mute_events &&
       !gxk_signal_handler_pending (parent, "event", G_CALLBACK (widget_mute_events), NULL))
     g_object_connect (parent, "signal::event", widget_mute_events, NULL, NULL);
+  if (self->modify_bg_as_base && !self->modify_base_as_bg)
+    gxk_widget_modify_bg_as_base (parent);
+  if (self->modify_base_as_bg && !self->modify_bg_as_base)
+    gxk_widget_modify_base_as_bg (parent);
   if (self->lower_windows &&
       !gxk_signal_handler_pending (parent, "map", G_CALLBACK (widget_lower_windows), NULL))
     g_object_connect (parent, "signal_after::map", widget_lower_windows, NULL, NULL);

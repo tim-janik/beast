@@ -1631,6 +1631,7 @@ _gxk_init_radget_types (void)
   standard_domain->domain = g_intern_string ("standard");
   g_datalist_set_data (&domains, standard_domain->domain, standard_domain);
   *t++ = GTK_TYPE_WINDOW;       *t++ = GTK_TYPE_ARROW;          *t++ = GTK_TYPE_SCROLLED_WINDOW;
+  *t++ = GTK_TYPE_VIEWPORT;
   *t++ = GTK_TYPE_TABLE;        *t++ = GTK_TYPE_FRAME;          *t++ = GTK_TYPE_ALIGNMENT;
   *t++ = GTK_TYPE_NOTEBOOK;     *t++ = GTK_TYPE_BUTTON;         *t++ = GTK_TYPE_MENU_BAR;
   *t++ = GTK_TYPE_TREE_VIEW;    *t++ = GTK_TYPE_LABEL;          *t++ = GTK_TYPE_PROGRESS_BAR;
@@ -1641,7 +1642,8 @@ _gxk_init_radget_types (void)
   *t++ = GTK_TYPE_HSCROLLBAR;   *t++ = GTK_TYPE_HSCALE;         *t++ = GTK_TYPE_TEAROFF_MENU_ITEM;
   *t++ = GTK_TYPE_VSCROLLBAR;   *t++ = GTK_TYPE_VSCALE;         *t++ = GXK_TYPE_IMAGE;
   *t++ = GTK_TYPE_VSEPARATOR;   *t++ = GXK_TYPE_SIMPLE_LABEL;   *t++ = GTK_TYPE_HSEPARATOR;
-  *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;      *t++ = GXK_TYPE_FREE_RADIO_BUTTON;
+  *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;
+  *t++ = GXK_TYPE_FREE_RADIO_BUTTON;
   *t++ = GXK_TYPE_RACK_TABLE;   *t++ = GXK_TYPE_RACK_ITEM;	*t++ = GXK_TYPE_BACK_SHADE;
   while (t-- > types)
     gxk_radget_define_widget_type (*t);

@@ -20,23 +20,6 @@
 #include "gxk/gxkspline.h"
 #include <stdlib.h>
 
-static GxkSpline*
-gxk_spline_new_swapped (guint                   n_points,
-                        const GxkSplinePoint   *points,
-                        double                  dy_start,
-                        double                  dy_end)
-{
-  g_error ("don't use this");
-  GxkSplinePoint *spoints = g_alloca (sizeof (spoints[0]) * n_points);
-  guint i;
-  for (i = 0; i < n_points; i++)
-    {
-      spoints[i].x = points[i].y;
-      spoints[i].y = points[i].x;
-    }
-  return gxk_spline_new (n_points, spoints, dy_start, dy_end);
-}          
-
 static void
 spline_test (GxkSpline *spline,
              guint      interval_steps,
@@ -48,10 +31,10 @@ spline_test (GxkSpline *spline,
       {
         double x = spline->segs[i - 1].x + k * (spline->segs[i].x - spline->segs[i - 1].x) / interval_steps;
         double y1 = gxk_spline_y (spline, x);
-        if (swap)
-          g_print ("%-+24.18g %-+24.18g\n", y1, x);
-        else if (1)
+        if (!swap)
           g_print ("%-+24.18g %-+24.18g\n", x, y1);
+        else if (1)
+          g_print ("%-+24.18g %-+24.18g\n", y1, x);
         else
           {
             double z = gxk_spline_findx (spline, y1);
@@ -153,48 +136,22 @@ main (int   argc,
       };
       print_spline (G_N_ELEMENTS (points), points, steps, 1, 1, variant < 0);
     }
-  else if (ABS (variant) == 5)
+  else if (ABS (variant) == 7)
     {
       GxkSplinePoint points[] = {
-#if 1
-        { 3.47, -6 },
-        { 3.79, -3 },
-        { 4.05, +0 },
-        { 4.46, +6 },
-        { 4.75, +12 },
-        { 4.95, +18 },
-        { 5.19, +30 },
-        // { 5.43, +88 },
-#elif 0
-        { 4.29, -6 },
-        { 4.77, -4 },
-        { 5.17, -2 },
-        // { 5.45,  0 },
-        { 6.01,  2 },
-        { 6.65,  5 },
-        { 7.49, 10 },
-        { 8.61, 20 },
-        { 9.29, 30 },
-        { 9.93, 50 },
-        // { 10.21, 58.75 },
-        { 10.71, 96 },
-#elif 1
-        {  0, -6  },
-        {  1, -4  },
-        {  2, -2  },
-        {  3, +0  },
-        {  4, +2  },
-        {  5, +5  },
-        {  6, +6  },
-        {  7, 10  },
-        {  8, 20  },
-        {  9, 30  },
-        { 10, 50  },
-        { 11, 144 },
-#endif
+        { +6, 0.00 },
+        { +4, 0.72 },
+        { +2, 1.32 },
+        { +0, 1.74 },
+        { -2, 2.58 },
+        { -5, 3.54 },
+        {-10, 4.80 },
+        {-20, 6.48 },
+        {-30, 7.50 },
+        {-50, 8.46 },
+        {-96, 8.88 },
       };
       print_spline (G_N_ELEMENTS (points), points, steps, NAN, NAN, variant < 0);
     }
-
   return 0;
 }
