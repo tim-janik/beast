@@ -173,7 +173,7 @@ simple_label_init (GxkSimpleLabel *self)
   
   self->jtype = GTK_JUSTIFY_LEFT;
   self->layout = NULL;
-  self->text = NULL;
+  self->text = g_strdup ("");
   self->mnemonic_widget = NULL;
   self->mnemonic_window = NULL;
   self->mnemonic_keyval = GDK_VoidSymbol;
@@ -288,12 +288,12 @@ static void
 simple_label_finalize (GObject *object)
 {
   GxkSimpleLabel *self = GXK_SIMPLE_LABEL (object);
-  g_free (self->label);
-  g_free (self->text);
   if (self->layout)
     g_object_unref (self->layout);
   if (self->effective_attrs)
     pango_attr_list_unref (self->effective_attrs);
+  g_free (self->label);
+  g_free (self->text);
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -519,7 +519,7 @@ gxk_simple_label_recalculate (GxkSimpleLabel *self)
   else
     {
       g_free (self->text);
-      self->text = g_strdup (self->label);
+      self->text = g_strdup (self->label ? self->label : "");
       if (self->effective_attrs)
         pango_attr_list_unref (self->effective_attrs);
       self->effective_attrs = NULL;
@@ -654,7 +654,7 @@ simple_label_expose (GtkWidget      *widget,
       self->needs_cutting = FALSE;
       label_cut_layout (self);
     }
-  if (self->text && self->text[0])
+  if (self->text[0])
     {
       gint x, y;
       get_layout_location (self, &x, &y);

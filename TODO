@@ -1,4 +1,5 @@
 FIXMES:
+- allow NULL records and sequences (categories)
 - category() method in plugins leaks across reloads
 - rename PARAM_DEFAULT TO STANDRAD
 - bsedefs.h should define _() only for BSE_COMPILATION

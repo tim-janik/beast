@@ -1,3 +1,9 @@
+Wed Dec 17 19:39:48 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxksimplelabel.c: work around label logic not dealing
+	with text==NULL, and pango_layout_set_text() not figuring text length
+	for length=-1, text=NULL.
+
 Wed Dec 17 19:12:57 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsupershell.c: show experimental router only for --devel.
