@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,20 +20,16 @@
 
 #include	"bstutils.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
-#define BST_TYPE_CANVAS_SOURCE            (bst_canvas_source_get_type ())
-#define BST_CANVAS_SOURCE(object)         (GTK_CHECK_CAST ((object), BST_TYPE_CANVAS_SOURCE, BstCanvasSource))
-#define BST_CANVAS_SOURCE_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_CANVAS_SOURCE, BstCanvasSourceClass))
-#define BST_IS_CANVAS_SOURCE(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_CANVAS_SOURCE))
-#define BST_IS_CANVAS_SOURCE_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_CANVAS_SOURCE))
-#define BST_CANVAS_SOURCE_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_CANVAS_SOURCE, BstCanvasSourceClass))
-#define	BST_CANVAS_SOURCE_PIXEL_SCALE	  ((SfiReal) 100)	/* > total width/height */
+#define BST_TYPE_CANVAS_SOURCE              (bst_canvas_source_get_type ())
+#define BST_CANVAS_SOURCE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_CANVAS_SOURCE, BstCanvasSource))
+#define BST_CANVAS_SOURCE_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BST_TYPE_CANVAS_SOURCE, BstCanvasSourceClass))
+#define BST_IS_CANVAS_SOURCE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_CANVAS_SOURCE))
+#define BST_IS_CANVAS_SOURCE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BST_TYPE_CANVAS_SOURCE))
+#define BST_CANVAS_SOURCE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_CANVAS_SOURCE, BstCanvasSourceClass))
+#define	BST_CANVAS_SOURCE_PIXEL_SCALE	    ((SfiReal) 100)	/* > total width/height */
 
 
 /* --- structures & typedefs --- */
@@ -45,7 +41,7 @@ struct _BstCanvasSource
 
   SfiProxy	   source;
 
-  GtkWidget	  *source_view;
+  GtkWidget	  *params_dialog;
   GtkWidget	  *source_info;
 
   GnomeCanvasItem *icon_item;
@@ -68,44 +64,39 @@ struct _BstCanvasSourceClass
 
 
 /* --- prototypes --- */
-GtkType		 bst_canvas_source_get_type	(void);
-GnomeCanvasItem* bst_canvas_source_new		(GnomeCanvasGroup *group,
-						 SfiProxy	   source);
-void		 bst_canvas_source_update_links	(BstCanvasSource  *csource);
-void		 bst_canvas_source_ochannel_pos	(BstCanvasSource  *csource,
-						 guint             ochannel,
-						 gdouble          *world_x,
-						 gdouble          *world_y);
-void		 bst_canvas_source_ichannel_pos	(BstCanvasSource  *csource,
-						 guint             ichannel,
-						 gdouble          *world_x,
-						 gdouble          *world_y);
-gboolean	 bst_canvas_source_is_jchannel	(BstCanvasSource  *csource,
-						 guint             ichannel);
-gboolean	 bst_canvas_source_ichannel_free(BstCanvasSource  *csource,
-						 guint		   ichannel);
-guint		 bst_canvas_source_ichannel_at  (BstCanvasSource  *csource,
-						 gdouble           world_x,
-						 gdouble           world_y);
-guint		 bst_canvas_source_ochannel_at  (BstCanvasSource  *csource,
-						 gdouble           world_x,
-						 gdouble           world_y);
-BstCanvasSource* bst_canvas_source_at  		(GnomeCanvas      *csource,
-						 gdouble           world_x,
-						 gdouble           world_y);
-void		 bst_canvas_source_popup_view	(BstCanvasSource  *csource);
-void		 bst_canvas_source_toggle_view	(BstCanvasSource  *csource);
-void		 bst_canvas_source_popup_info	(BstCanvasSource  *csource);
-void		 bst_canvas_source_toggle_info	(BstCanvasSource  *csource);
-void	   bst_canvas_source_set_channel_hints	(BstCanvasSource  *csource,
-						 gboolean          on_off);
+GType            bst_canvas_source_get_type          (void);
+GnomeCanvasItem* bst_canvas_source_new               (GnomeCanvasGroup *group,
+                                                      SfiProxy          source);
+void             bst_canvas_source_update_links      (BstCanvasSource  *csource);
+void             bst_canvas_source_ochannel_pos      (BstCanvasSource  *csource,
+                                                      guint             ochannel,
+                                                      gdouble          *world_x,
+                                                      gdouble          *world_y);
+void             bst_canvas_source_ichannel_pos      (BstCanvasSource  *csource,
+                                                      guint             ichannel,
+                                                      gdouble          *world_x,
+                                                      gdouble          *world_y);
+gboolean         bst_canvas_source_is_jchannel       (BstCanvasSource  *csource,
+                                                      guint             ichannel);
+gboolean         bst_canvas_source_ichannel_free     (BstCanvasSource  *csource,
+                                                      guint             ichannel);
+guint            bst_canvas_source_ichannel_at       (BstCanvasSource  *csource,
+                                                      gdouble           world_x,
+                                                      gdouble           world_y);
+guint            bst_canvas_source_ochannel_at       (BstCanvasSource  *csource,
+                                                      gdouble           world_x,
+                                                      gdouble           world_y);
+BstCanvasSource* bst_canvas_source_at                (GnomeCanvas      *csource,
+                                                      gdouble           world_x,
+                                                      gdouble           world_y);
+void             bst_canvas_source_reset_params      (BstCanvasSource  *csource);
+void             bst_canvas_source_popup_params      (BstCanvasSource  *csource);
+void             bst_canvas_source_toggle_params     (BstCanvasSource  *csource);
+void             bst_canvas_source_popup_info        (BstCanvasSource  *csource);
+void             bst_canvas_source_toggle_info       (BstCanvasSource  *csource);
+void             bst_canvas_source_set_channel_hints (BstCanvasSource  *csource,
+                                                      gboolean          on_off);
 
-     
-     
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_CANVAS_SOURCE_H__ */

@@ -184,8 +184,8 @@ bst_splash_unrealize (GtkWidget *widget)
 {
   BstSplash *self = BST_SPLASH (widget);
 
-  if (!BST_VERSION_STABLE && self->item_count > self->max_items)
-    g_message ("BstSplash: seen %u/%u items (+%u)",
+  if (BST_DBG_EXT) /* && self->item_count > self->max_items */
+    g_message ("BstSplash: seen %u/%u items (%+d)",
 	       self->item_count, self->max_items,
 	       self->item_count - self->max_items);
 

@@ -1,3 +1,29 @@
+Fri Oct  3 08:53:20 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/icons/properties.xcf:
+	* beast-gtk/icons/properties.png:
+	* beast-gtk/icons/properties-reset.png: new icons based on
+	icons from Gtk+-2.2.
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): offer
+	property reset menu item for modules.
+
+	* beast-gtk/bstcanvassource.[hc]: renamed some functions. added
+	function to reset properties.
+
+	* beast-gtk/bstparamview.c (bst_param_view_apply_defaults): apply
+	defaults to all bparams.
+
+	* beast-gtk/bstparam.c (bst_param_apply_default): apply pspec default.
+
+	* beast-gtk/bstsplash.c (bst_splash_unrealize): show progress debugging
+	messages only for BST_DBG_EXT.
+
+	* beast-gtk/bstapp.c: show "Clear Undo" item only for --devel.
+
+	* beast-gtk/bstmain.c: renamed --hints option to --devel.
+	enable --devel automatically for -:d.
+
 Thu Oct  2 23:45:03 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/cgi-bin: new directory, to hold cgi scripts for

@@ -92,6 +92,7 @@ void		 bst_param_pack_property  (BstParam	   *bparam,
 GtkWidget*	 bst_param_rack_widget	  (BstParam	   *bparam);
 void		 bst_param_update	  (BstParam	   *bparam);
 void		 bst_param_apply_value	  (BstParam	   *bparam);
+void		 bst_param_apply_default  (BstParam	   *bparam);
 void		 bst_param_set_editable	  (BstParam	   *bparam,
 					   gboolean	    editable);
 const gchar*	 bst_param_get_name	  (BstParam	   *bparam);

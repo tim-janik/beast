@@ -1,3 +1,7 @@
+Fri Oct  3 07:37:37 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.cc (bse_midi_receiver_leave_farm): fix wrong assertion.
+
 Sun Sep 21 04:42:33 2003  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am (libbseinclude_HEADERS): include bse.idl.

@@ -459,13 +459,14 @@ bst_early_parse_args (int    *argc_p,
 	    }
 	  if (strchr (flags, 'd') != NULL)
 	    {
-	      g_message ("enabling possibly harmfull debugging functionality due to '-:d'");
-	      bst_debug_extensions = strchr (flags, 'd') != NULL;
+              bst_developer_hints = TRUE;
+	      bst_debug_extensions = TRUE;
+	      g_message ("enabling possibly harmfull debugging extensions due to '-:d'");
 	    }
 	  sfi_rec_set_bool (bseconfig, "debug-extensions", bst_debug_extensions);
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--hints", argv[i]) == 0)
+      else if (strcmp ("--devel", argv[i]) == 0)
 	{
 	  bst_developer_hints = TRUE;
           argv[i] = NULL;
@@ -596,7 +597,7 @@ bst_print_blurb (gboolean print_help)
   else
     {
       g_print ("Usage: beast [options] [files...]\n");
-      g_print ("  --hints                 enrich the GUI with hints usefull for (script) developers\n");
+      g_print ("  --devel                 enrich the GUI with hints usefull for (script) developers\n");
 #ifdef BST_WITH_XKB
       g_print ("  --force-xkb             force XKB keytable queries\n");
 #endif
@@ -616,7 +617,7 @@ bst_print_blurb (gboolean print_help)
       g_print ("                          L - disable LADSPA plugin registration\n");
       g_print ("                          s - enable script registration\n");
       g_print ("                          S - enable script registration\n");
-      g_print ("                          d - debugging extensions (harmfull)\n");
+      g_print ("                          d - developer and debugging extensions (harmfull)\n");
       if (!BST_VERSION_STABLE)
         {
 	  g_print ("Gtk+ Options:\n");

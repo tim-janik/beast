@@ -180,10 +180,7 @@ bst_param_update (BstParam *bparam)
   if (action)
     bparam->impl->update (bparam, action);
   
-  bparam->writable = (!bparam->readonly &&
-		      bparam->editable &&
-		      (!bparam->binding->check_writable ||
-		       bparam->binding->check_writable (bparam)));
+  bparam->writable = FALSE;
   bst_param_update_sensitivity (bparam);
   
   bparam->updating = updating;
@@ -201,6 +198,21 @@ bst_param_apply_value (BstParam *bparam)
       return;
     }
   bparam->binding->set_value (bparam, &bparam->value);
+}
+
+void
+bst_param_apply_default (BstParam *bparam)
+{
+  g_return_if_fail (bparam != NULL);
+
+  if (!bparam->updating && bparam->writable)
+    {
+      GValue value = { 0, };
+      g_value_init (&value, G_VALUE_TYPE (&bparam->value));
+      g_param_value_set_default (bparam->pspec, &value);
+      bparam->binding->set_value (bparam, &value);
+      g_value_unset (&value);
+    }
 }
 
 void

@@ -957,7 +957,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      if (event->button.state & GDK_SHIFT_MASK)
 		bst_canvas_source_toggle_info (csource);
 	      else
-		bst_canvas_source_toggle_view (csource);
+		bst_canvas_source_toggle_params (csource);
 	    }
 	  else if (clink && !csource)
 	    bst_canvas_link_toggle_view (clink);
@@ -1005,7 +1005,8 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
 						BST_CHOICE_TITLE (source_name),
 						BST_CHOICE_SEPERATOR,
-						BST_CHOICE_S (2, "Properties", PROPERTIES, csource->source != router->snet),
+						BST_CHOICE (2, "Properties", PROPERTIES),
+						BST_CHOICE (6, "Reset Properties", PROPERTIES_RESET),
 						BST_CHOICE_S (3, "Delete Inputs", NO_ILINK, has_inputs),
 						BST_CHOICE_S (4, "Delete Outputs", NO_OLINK, bse_source_has_outputs (csource->source)),
 						BST_CHOICE (5, "Show Info", INFO),
@@ -1017,12 +1018,11 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      switch (i)
 		{
 		  BseErrorType error;
-		case 1:
-		  error = bse_snet_remove_source (router->snet, csource->source);
-		  bst_status_eprintf (error, "Remove Module");
-		  break;
 		case 2:
-		  bst_canvas_source_popup_view (csource);
+		  bst_canvas_source_popup_params (csource);
+		  break;
+		case 6:
+		  bst_canvas_source_reset_params (csource);
 		  break;
 		case 3:
 		  bse_source_clear_inputs (csource->source);
@@ -1032,6 +1032,10 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 		  break;
 		case 5:
 		  bst_canvas_source_popup_info (csource);
+		  break;
+		case 1:
+		  error = bse_snet_remove_source (router->snet, csource->source);
+		  bst_status_eprintf (error, "Remove Module");
 		  break;
 		}
 	      bst_choice_destroy (choice);

@@ -214,6 +214,21 @@ bst_param_view_set_mask (BstParamView *param_view,
 }
 
 void
+bst_param_view_apply_defaults (BstParamView *self)
+{
+  g_return_if_fail (BST_IS_PARAM_VIEW (self));
+
+  if (self->item)
+    {
+      GSList *slist;
+      bse_item_group_undo (self->item, "Reset to defaults");
+      for (slist = self->bparams; slist; slist = slist->next)
+        bst_param_apply_default (slist->data);
+      bse_item_ungroup_undo (self->item);
+    }
+}
+
+void
 bst_param_view_rebuild (BstParamView *self)
 {
   GtkBox *pbox;

@@ -1002,7 +1002,7 @@ void
 bse_midi_receiver_leave_farm (BseMidiReceiver *self)
 {
   g_return_if_fail (self != NULL);
-  g_return_if_fail (find (farm_residents.begin(), farm_residents.end(), self) == farm_residents.end());
+  g_return_if_fail (find (farm_residents.begin(), farm_residents.end(), self) != farm_residents.end());
 
   BSE_MIDI_RECEIVER_LOCK (self);
   farm_residents.erase (find (farm_residents.begin(), farm_residents.end(), self));
@@ -1073,8 +1073,8 @@ bse_midi_receiver_unref (BseMidiReceiver *self)
   BSE_MIDI_RECEIVER_LOCK (self);
   self->ref_count--;
   need_destroy = self->ref_count == 0;
-  leave_farm = (need_destroy &&
-                find (farm_residents.begin(), farm_residents.end(), self) != farm_residents.end());
+  leave_farm = need_destroy && find (farm_residents.begin(),
+                                     farm_residents.end(), self) != farm_residents.end();
   BSE_MIDI_RECEIVER_UNLOCK (self);
 
   if (need_destroy)

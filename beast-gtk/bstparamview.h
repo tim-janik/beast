@@ -21,10 +21,7 @@
 
 #include	"bstutils.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* --- type macros --- */
 #define BST_TYPE_PARAM_VIEW              (bst_param_view_get_type ())
@@ -61,6 +58,7 @@ struct _BstParamViewClass
 GType		bst_param_view_get_type		(void);
 GtkWidget*	bst_param_view_new		(SfiProxy	 item);
 void		bst_param_view_rebuild		(BstParamView	*param_view);
+void		bst_param_view_apply_defaults	(BstParamView	*param_view);
 void		bst_param_view_set_item		(BstParamView	*param_view,
 						 SfiProxy	 item);
 void		bst_param_view_set_mask		(BstParamView	*param_view,
@@ -71,10 +69,6 @@ void		bst_param_view_set_mask		(BstParamView	*param_view,
 
 
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_PARAM_VIEW_H__ */

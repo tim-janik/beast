@@ -5,10 +5,7 @@ FIXMES:
 - add facility to add/remove/edit sample search paths at the GUI (and save to rc file)
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
 - add "bypass" option to audio output channels
-- enable Clear Undo only for --hints
-- alias --hints to --devel
 - if Track::Synth is NULL, disconnect post-process-subsynth from track-context-merger
-- show Message: progress seen 19/15 items only with -:d
 - fix nominator/denomiator settings in songs
 - fix forcing unique names for children of a project 
 - fix glue gc assertion after sfi_glue_describe_proc("")
@@ -20,7 +17,6 @@ FIXMES:
 - add sfisclock.h to sfi.h
 - <mg> quick rfe based on 0.5.3: implement multiple selection in the wave loader file selector and have an add button that does not close the dialog
 - add demo song
-- add Reset menu item to BseSource menu
 - check whether */icons/Makefile.icons is included in dist tarball
 - check whether plugins/Makefile.plugins is included in dist tarball
 - fixup filemenu/dialog for WAVE recording

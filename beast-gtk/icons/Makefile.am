@@ -21,6 +21,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	pattern-group.xcf	\
 	pattern-tool.xcf	\
 	pattern.xcf		\
+	properties.xcf		\
 	railway.xcf		\
 	repeat.xcf		\
 	rect-select.xcf		\
@@ -64,6 +65,8 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_PATTERN_TOOL		$(srcdir)/pattern-tool.png	\
 	STOCK_PREVIEW_AUDIO		$(srcdir)/small-audio.png	\
 	STOCK_PREVIEW_NO_AUDIO		$(srcdir)/small-noaudio.png	\
+	STOCK_PROPERTIES		$(srcdir)/properties.png	\
+	STOCK_PROPERTIES_RESET		$(srcdir)/properties-reset.png	\
 	STOCK_QTACT			$(srcdir)/qtact.png		\
 	STOCK_QNOTE_NONE		$(srcdir)/qnote-none.png	\
 	STOCK_QNOTE_1			$(srcdir)/qnote-1.png		\

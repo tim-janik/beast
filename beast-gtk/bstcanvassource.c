@@ -82,29 +82,26 @@ static guint                 csource_signals[SIGNAL_LAST] = { 0 };
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_canvas_source_get_type (void)
 {
-  static GtkType canvas_source_type = 0;
-  
-  if (!canvas_source_type)
+  static GType type = 0;
+  if (!type)
     {
-      GtkTypeInfo canvas_source_info =
-      {
-	"BstCanvasSource",
-	sizeof (BstCanvasSource),
-	sizeof (BstCanvasSourceClass),
-	(GtkClassInitFunc) bst_canvas_source_class_init,
-	(GtkObjectInitFunc) bst_canvas_source_init,
-        /* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+      static const GTypeInfo type_info = {
+        sizeof (BstCanvasSourceClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) bst_canvas_source_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (BstCanvasSource),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) bst_canvas_source_init,
       };
-      
-      canvas_source_type = gtk_type_unique (GNOME_TYPE_CANVAS_GROUP, &canvas_source_info);
+      type = g_type_register_static (GNOME_TYPE_CANVAS_GROUP, "BstCanvasSource", &type_info, 0);
     }
-  
-  return canvas_source_type;
+  return type;
 }
 
 static void
@@ -136,7 +133,7 @@ bst_canvas_source_init (BstCanvasSource *csource)
   GtkObject *object = GTK_OBJECT (csource);
   
   csource->source = 0;
-  csource->source_view = NULL;
+  csource->params_dialog = NULL;
   csource->source_info = NULL;
   csource->icon_item = NULL;
   csource->text = NULL;
@@ -223,9 +220,9 @@ source_name_changed (BstCanvasSource *csource)
   if (csource->text)
     g_object_set (csource->text, "text", name, NULL);
 
-  if (csource->source_view)
+  if (csource->params_dialog)
     {
-      gxk_dialog_set_title (GXK_DIALOG (csource->source_view), name);
+      gxk_dialog_set_title (GXK_DIALOG (csource->params_dialog), name);
       csource_info_update (csource);
     }
 
@@ -325,36 +322,54 @@ bst_canvas_source_update_links (BstCanvasSource *csource)
     gtk_signal_emit (GTK_OBJECT (csource), csource_signals[SIGNAL_UPDATE_LINKS]);
 }
 
-void
-bst_canvas_source_popup_view (BstCanvasSource *csource)
+static inline void
+canvas_source_create_params (BstCanvasSource *csource)
 {
-  g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
-
-  if (!csource->source_view)
+  if (!csource->params_dialog)
     {
       GtkWidget *param_view;
 
       param_view = bst_param_view_new (csource->source);
       gtk_widget_show (param_view);
-      csource->source_view = gxk_dialog_new (&csource->source_view,
-					     GTK_OBJECT (csource),
-					     GXK_DIALOG_POPUP_POS,
-					     bse_item_get_name_or_type (csource->source),
-					     param_view);
+      csource->params_dialog = gxk_dialog_new (&csource->params_dialog,
+                                               GTK_OBJECT (csource),
+                                               GXK_DIALOG_POPUP_POS,
+                                               bse_item_get_name_or_type (csource->source),
+                                               param_view);
       source_name_changed (csource);
     }
-  gxk_widget_showraise (csource->source_view);
 }
 
 void
-bst_canvas_source_toggle_view (BstCanvasSource *csource)
+bst_canvas_source_reset_params (BstCanvasSource *csource)
+{
+  GtkWidget *param_view;
+
+  g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
+
+  canvas_source_create_params (csource);
+  param_view = gxk_dialog_get_child (GXK_DIALOG (csource->params_dialog));
+  bst_param_view_apply_defaults (BST_PARAM_VIEW (param_view));
+}
+
+void
+bst_canvas_source_popup_params (BstCanvasSource *csource)
 {
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
 
-  if (!csource->source_view || !GTK_WIDGET_VISIBLE (csource->source_view))
-    bst_canvas_source_popup_view (csource);
+  canvas_source_create_params (csource);
+  gxk_widget_showraise (csource->params_dialog);
+}
+
+void
+bst_canvas_source_toggle_params (BstCanvasSource *csource)
+{
+  g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
+
+  if (!csource->params_dialog || !GTK_WIDGET_VISIBLE (csource->params_dialog))
+    bst_canvas_source_popup_params (csource);
   else
-    gtk_widget_hide (csource->source_view);
+    gtk_widget_hide (csource->params_dialog);
 }
 
 void

@@ -891,6 +891,13 @@ bst_app_update_activatable (BstActivatable *activatable)
   if (widget)
     gtk_widget_set_sensitive (widget, BST_IS_WAVE_REPO_SHELL (shell));
 
+  /* special adjustments */
+  widget = gxk_item_factory_get_item (factory, "/Edit/Clear Undo");
+  if (widget && BST_DVL_HINTS)
+    gtk_widget_show (widget);
+  else if (widget && !BST_DVL_HINTS)
+    gtk_widget_hide (widget);
+
   /* update app actions */
   for (i = 0; i < G_N_ELEMENTS (menubar_entries); i++)
     {

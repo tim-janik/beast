@@ -61,7 +61,6 @@ typedef struct {
 #define BST_STOCK_EXECUTE		GTK_STOCK_EXECUTE
 #define BST_STOCK_OK			GTK_STOCK_OK
 #define BST_STOCK_OVERWRITE		("bst-stock-overwrite")
-#define	BST_STOCK_PROPERTIES		GTK_STOCK_PROPERTIES
 #define BST_STOCK_REDO			GTK_STOCK_REDO
 #define BST_STOCK_REVERT		("bst-stock-revert")
 #define BST_STOCK_UNDO			GTK_STOCK_UNDO
