@@ -28,7 +28,6 @@ TODO:
                  \ |  overshoot: fill triangle
                   \|  fill level shrinks with time
 - BUG: GUI freeze; 1) start Progressor(n-iterations=max), 2) repeatedly generate "failed to open MIDI device" dialog
-- BUG: undo -guards around moving events                  
 - BUG: select events, C+c, C+v, kill-selection. startover => copy is placed above old selection
 - BUG: when selected events overlap not-selected events, give prcedence to selected events when moving                  
 - BUG: delete track + undo doesn't preserve track order
