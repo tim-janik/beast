@@ -238,11 +238,11 @@ signal_exec_status (BseErrorType       error,
 }
 
 static BseErrorType
-call_proc (BseProcedureClass  *proc,
-           GValue             *ivalues,
-           GValue             *ovalues,
-           BseProcedureMarshal marshal,
-           gpointer            marshal_data)
+bse_procedure_call (BseProcedureClass  *proc,
+                    GValue             *ivalues,
+                    GValue             *ovalues,
+                    BseProcedureMarshal marshal,
+                    gpointer            marshal_data)
 {
   guint i, bail_out = FALSE;
   BseErrorType error;
@@ -332,7 +332,7 @@ bse_procedure_marshal (GType               proc_type,
   if (bail_out)
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
-    error = call_proc (proc, tmp_ivalues, tmp_ovalues, marshal, marshal_data);
+    error = bse_procedure_call (proc, tmp_ivalues, tmp_ovalues, marshal, marshal_data);
   signal_exec_status (error, proc, tmp_ovalues);
   
   for (i = 0; i < proc->n_in_pspecs; i++)
@@ -371,7 +371,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
   HACK_DEBUG ("call %s: ", BSE_PROCEDURE_NAME (proc));
 
   /* collect first arg */
-  if (first_value && first_value != ivalues) /* may skip this since call_proc() does extra validation */
+  if (first_value && first_value != ivalues) /* may skip this since bse_procedure_call() does extra validation */
     {
       if (proc->n_in_pspecs < 1)
         g_warning ("%s: input arg supplied for procedure taking `void'",
@@ -430,7 +430,7 @@ bse_procedure_call_collect (BseProcedureClass  *proc,
       if (bail_out)
         error = BSE_ERROR_PROC_PARAM_INVAL;
       else
-        error = call_proc (proc, ivalues, ovalues, marshal, marshal_data);
+        error = bse_procedure_call (proc, ivalues, ovalues, marshal, marshal_data);
       HACK_DEBUG ("  call result: %s", bse_error_blurb (error));
       signal_exec_status (error, proc, ovalues);
 

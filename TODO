@@ -1,5 +1,4 @@
 FIXMES:	(release-critical)
-- rename call_proc to bse_procedure_invoke
 - don't record samples to WAV file before *any* song is processed by sequencer
 - midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
 - midireceiver: revisit sched_tag as condition, it's probably too weak due to temporary enginescheduler resets
