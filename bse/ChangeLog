@@ -1,3 +1,10 @@
+Tue Mar  2 10:48:19 2004  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: i18n fixes and blurb output fixes.
+
+	* bsecore.idl: provide just BLURB not HELP for records, work
+	around a texitheque bug.
+
 Tue Mar  2 10:23:55 2004  Tim Janik  <timj@gtk.org>
 
 	* bseautodoc.c: changed callers of sfi_boxed_make_record(),

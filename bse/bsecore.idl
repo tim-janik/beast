@@ -232,9 +232,8 @@ sequence StringSeq {
 class Item;
 
 sequence ItemSeq {
-  Info   BLURB = ("An item list");
+  Info   BLURB = ("A list of BSE items or derived types.");
   Item   items;
-  Info   HELP = ("A list of BSE items or derived types.");
 };
 
 record PartNote
@@ -283,9 +282,10 @@ record NoteDescription
   /* constants */
   Int    max_fine_tune   = Int ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
   Int    kammer_note     = Int ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
-  Info   HELP            = "A note description provides all necessary details about a specific note. "
-                           "Various procedures exist to retrieve a note description, given different "
-                           "key values. The max_fine_tune and kammer_note fields are constants, which "
+  // FIXME: turn semicolons in BLURB into commas once texitheque got fixed
+  Info   BLURB           = "A note description provides all necessary details about a specific note. "
+                           "Various procedures exist to retrieve a note description; given different "
+                           "key values. The max_fine_tune and kammer_note fields are constants; which "
                            "are provided for compatibility reasons and will vanish in future APIs.";
 };
 

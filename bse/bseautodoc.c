@@ -312,9 +312,11 @@ show_structdoc (void)
 	  g_print ("@item @anchor{%s}@refStructType{%s} @refStructName{%s} @refStructOpen ", name, dname, name);
 
 	  g_print ("@findex @refStructType{%s}@ @refStructName{%s};", dname, name);
+#if 0
 	  cstring = bse_type_get_blurb (type);
 	  if (cstring)
 	    g_print (" - @refBlurb{%s}", cstring);
+#endif
 	  g_print ("\n");
 
           for (j = 0; j < rfields.n_fields; j++)
@@ -355,12 +357,12 @@ show_structdoc (void)
 
           cstring = bse_type_get_authors (type);
           if (cstring)
-            g_print ("\nAuthors: %s\n", cstring);
+            g_print ("\n%s %s\n", _("Authors:"), cstring);
           g_print ("\n");
 
           cstring = bse_type_get_license (type);
           if (cstring)
-            g_print ("\nLicense: %s\n", cstring);
+            g_print ("\n%s %s\n", _("License:"), cstring);
           g_print ("\n");
 
 	  g_free (cname);
