@@ -221,6 +221,11 @@ code.command {
 code.option {
 }
 
+var {
+  font-weight: normal;
+  font-family: serif;
+}
+
 code.menupath {
   font-weight: bold;
   /* FIXME italic monospace fonts look so ugly! :\ */
