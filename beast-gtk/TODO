@@ -26,7 +26,8 @@ File Dialog
 Pattern Editor
 -	the popup menu should be attached/detached instead of the ref/sink pair
 -	feature pattern params
-
+-	user configurable toggle to start from 000 or 001
+-	per channel mute. per channel in-use flag (active when any note or instr or eff)
 instrument editor
 -	update the samples in the combo popup...
 -	sample fetching needs to be moved back into BSE anyways

@@ -48,6 +48,7 @@ struct _BstCanvasSource
 
   GtkWidget	  *source_view;
 
+  GnomeCanvasItem *icon_item;
   GnomeCanvasItem *text;
   GSList	  *channel_items;
 

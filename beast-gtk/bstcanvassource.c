@@ -68,6 +68,8 @@ static gboolean bst_canvas_source_child_event	(BstCanvasSource	*csource,
 						 GdkEvent               *event,
 						 GnomeCanvasItem        *child);
 static void     bst_canvas_source_changed       (BstCanvasSource        *csource);
+static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
+						 BseIcon         	*icon);
 
 
 /* --- static variables --- */
@@ -143,6 +145,7 @@ bst_canvas_source_init (BstCanvasSource *csource)
   
   csource->source = NULL;
   csource->source_view = NULL;
+  csource->icon_item = NULL;
   csource->text = NULL;
   csource->channel_items = NULL;
   csource->in_move = FALSE;
@@ -184,6 +187,19 @@ source_name_changed (BstCanvasSource *csource)
 }
 
 static void
+source_icon_changed (BstCanvasSource *csource)
+{
+  BseIcon *icon;
+
+  /* update icon in group, revert to a stock icon if none is available
+   */
+  icon = bse_object_get_icon (BSE_OBJECT (csource->source));
+  if (!icon)
+    icon = bst_icon_from_stock (BST_ICON_NOICON);
+  bst_canvas_icon_set (csource->icon_item, icon);
+}
+
+static void
 bst_canvas_source_destroy (GtkObject *object)
 {
   BstCanvasSource *csource = BST_CANVAS_SOURCE (object);
@@ -200,6 +216,9 @@ bst_canvas_source_destroy (GtkObject *object)
 				       csource);
   bse_object_remove_notifiers_by_func (BSE_OBJECT (csource->source),
 				       source_name_changed,
+				       csource);
+  bse_object_remove_notifiers_by_func (BSE_OBJECT (csource->source),
+				       source_icon_changed,
 				       csource);
   csource->source = NULL;
 
@@ -275,6 +294,10 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
   bse_object_add_data_notifier (BSE_OBJECT (csource->source),
 				"name-set",
 				source_name_changed,
+				csource);
+  bse_object_add_data_notifier (BSE_OBJECT (csource->source),
+				"icon-changed",
+				source_icon_changed,
 				csource);
   
   if (bse_object_get_parasite_coords (BSE_OBJECT (csource->source), &world_x, &world_y))
@@ -519,13 +542,13 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
 #ifdef	BST_WITH_GDK_PIXBUF
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gnome-canvas-pixbuf.h>
-static GnomeCanvasItem*
-create_canvas_icon (GnomeCanvasGroup *group,
-		    BseIcon          *icon)
+#define BST_TYPE_CANVAS_ICON GNOME_TYPE_CANVAS_PIXBUF
+static void
+bst_canvas_icon_set (GnomeCanvasItem *item,
+		     BseIcon         *icon)
 {
   ArtPixBuf *apixbuf;
   GdkPixbuf *pixbuf;
-  GnomeCanvasItem *item;
   
   bse_icon_ref (icon);
   apixbuf = (icon->bytes_per_pixel > 3
@@ -536,26 +559,24 @@ create_canvas_icon (GnomeCanvasGroup *group,
 					  icon->width *
 					  icon->bytes_per_pixel);
   pixbuf = gdk_pixbuf_new_from_art_pixbuf (apixbuf);
-  item = gnome_canvas_item_new (group, GNOME_TYPE_CANVAS_PIXBUF,
-				"pixbuf", pixbuf,
-				"x_set", TRUE,
-				"y_set", TRUE,
-				NULL);
+  bst_object_set (GTK_OBJECT (item),
+		  "pixbuf", pixbuf,
+		  "x_set", TRUE,
+		  "y_set", TRUE,
+		  NULL);
   gtk_object_set_data_full (GTK_OBJECT (item),
 			    "BseIcon",
 			    icon,
 			    (GtkDestroyNotify) bse_icon_unref);
   gdk_pixbuf_unref (pixbuf);
-  
-  return item;
 }
 #else	/* !BST_WITH_GDK_PIXBUF */
-static GnomeCanvasItem*
-create_canvas_icon (GnomeCanvasGroup *group,
-		    BseIcon          *icon)
+#define BST_TYPE_CANVAS_ICON GNOME_TYPE_CANVAS_IMAGE
+static void
+bst_canvas_icon_set (GnomeCanvasItem *item,
+		     BseIcon         *icon)
 {
   ArtPixBuf *apixbuf;
-  GnomeCanvasItem *item;
   
   bse_icon_ref (icon);
   apixbuf = (icon->bytes_per_pixel > 3
@@ -565,15 +586,14 @@ create_canvas_icon (GnomeCanvasGroup *group,
 					  icon->height,
 					  icon->width *
 					  icon->bytes_per_pixel);
-  item = gnome_canvas_item_new (group, GNOME_TYPE_CANVAS_IMAGE,
-				"anchor", GTK_ANCHOR_NORTH_WEST,
-				"pixbuf", apixbuf,
-				NULL);
+  bst_object_set (GTK_OBJECT (item),
+		  "anchor", GTK_ANCHOR_NORTH_WEST,
+		  "pixbuf", apixbuf,
+		  NULL);
   gtk_object_set_data_full (GTK_OBJECT (item),
 			    "BseIcon",
 			    icon,
 			    (GtkDestroyNotify) bse_icon_unref);
-  return item;
 }
 #endif	/* !BST_WITH_GDK_PIXBUF */
 
@@ -583,23 +603,21 @@ bst_canvas_source_build (BstCanvasSource *csource)
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (csource);
   GnomeCanvasPoints *gpoints;
   GnomeCanvasItem *item;
-  BseIcon *icon;
 
   /* order of creation is important to enforce stacking */
 
-  /* add icon to group, revert to a stock icon if none is available
+  /* add icon to group
    */
-  icon = bse_object_get_icon (BSE_OBJECT (csource->source));
-  if (!icon)
-    icon = bst_icon_from_stock (BST_ICON_NOICON);
-  item = create_canvas_icon (group, icon);
-  bst_object_set (GTK_OBJECT (item),
-		  "x", ICON_X,
-		  "y", ICON_Y,
-		  "width", ICON_WIDTH,
-		  "height", ICON_HEIGHT,
-		  "object_signal::event", bst_canvas_source_child_event, csource,
-		  NULL);
+  csource->icon_item = gnome_canvas_item_new (group,
+					      BST_TYPE_CANVAS_ICON,
+					      "x", ICON_X,
+					      "y", ICON_Y,
+					      "width", ICON_WIDTH,
+					      "height", ICON_HEIGHT,
+					      "signal::destroy", gtk_widget_destroyed, &csource->icon_item,
+					      "object_signal::event", bst_canvas_source_child_event, csource,
+					      NULL);
+  source_icon_changed (csource);
 
   /* add text item, invoke name_changed callback to setup the text value
    */

@@ -1,3 +1,8 @@
+Sun Dec 26 19:08:28 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.[hc]: store the canvas item that holds the
+	source' icon and update it if necessary.
+
 Fri Dec 24 15:37:11 1999  Tim Janik  <timj@gtk.org>
 
 	* docs/bse-heart.txt: new file describing how BSE's internal loop works,
