@@ -1,3 +1,7 @@
+Mon Sep  8 00:31:10 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gbsearcharray.h: inserted casts for C++.
+
 Sun Sep  7 17:36:43 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-generator.* sfidl-module.cc sfidl-parser.*: reintroduce const
