@@ -16,6 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include "topconfig.h"
 #include "sfitime.h"
 #include "sfiprimitives.h"
 #include "sfilog.h"
@@ -512,10 +513,22 @@ sfi_time_from_string_err (const gchar *time_string,
       tm_data.tm_yday = 0;
       tm_data.tm_isdst = 1;
       
-      /* mktime() wants localtime */
-      tm_data.tm_sec -= gmt_diff / SFI_USEC_FACTOR;
-      /* UTC = mktime (LOCALTIME) */
-      ttime = mktime (&tm_data);			/* returns -1 on error */
+#if HAVE_TIMEGM
+      ttime = timegm (&tm_data);			/* returns -1 on error */
+#else
+      {
+        char *tz = g_strdup (g_getenv ("TZ"));
+        g_setenv ("TZ", "", 1);
+        tzset();
+        ttime = mktime (&tm_data);
+        if (tz)
+          g_setenv ("TZ", tz, 1);
+        else
+          g_unsetenv ("TZ");
+        tzset();
+        g_free (tz);
+      }
+#endif
       
       ustime = ttime;
       ustime *= SFI_USEC_FACTOR;

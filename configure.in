@@ -157,6 +157,7 @@ AC_DEFUN(AC_SFI_REQUIREMENTS,
     AC_SUBST(SFI_LIBS)
 
     AC_CHECK_FUNCS(getpwnam_r getpwnam)
+    AC_CHECK_FUNCS(timegm)
 
     dnl --- SFI directories ---
     sfidlstdincdir=${includedir}
