@@ -638,6 +638,8 @@ void CodeGeneratorC::run ()
   vector<ClassDef>::const_iterator ci;
   vector<MethodDef>::const_iterator mi;
  
+  if (options.generateTypeC)
+    printf("#include <string.h>\n");
   if (options.generateConstant)
     {
       vector<ConstantDef>::const_iterator ci;

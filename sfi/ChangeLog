@@ -1,3 +1,11 @@
+Wed Apr 16 19:29:48 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl.cc (CodeGeneratorC::run): include <string.h> in generated code,
+	since we use memset().
+	
+	* glib-extra.c (intern_ascii_strtoull): cure warnings due to glib 2.2
+	implementing g_ascii_strtoull().
+
 Mon Mar 17 07:08:35 2003  Tim Janik  <timj@gtk.org>
 
 	* sfigluecodec.c (sfi_glue_decoder_dispatch): unref the fetched

@@ -592,7 +592,7 @@ g_usignal_notify (gint8 usignal)
 /* --- FIXME: roll our own 64Bit GScanner --- */
 #if 1
 static guint64
-g_ascii_strtoull (const gchar *string,
+intern_ascii_strtoull (const gchar *string,
 		  gchar      **endptr,
 		  guint        base);
 #include	<stdlib.h>
@@ -2128,16 +2128,16 @@ g_scanner_get_token_ll	(GScanner	*scanner,
 	      switch (token)
 		{
 		case G_TOKEN_BINARY:
-		  ui64 = g_ascii_strtoull (gstring->str, &endptr, 2);
+		  ui64 = intern_ascii_strtoull (gstring->str, &endptr, 2);
 		  break;
 		case G_TOKEN_OCTAL:
-		  ui64 = g_ascii_strtoull (gstring->str, &endptr, 8);
+		  ui64 = intern_ascii_strtoull (gstring->str, &endptr, 8);
 		  break;
 		case G_TOKEN_INT:
-		  ui64 = g_ascii_strtoull (gstring->str, &endptr, 10);
+		  ui64 = intern_ascii_strtoull (gstring->str, &endptr, 10);
 		  break;
 		case G_TOKEN_HEX:
-		  ui64 = g_ascii_strtoull (gstring->str, &endptr, 16);
+		  ui64 = intern_ascii_strtoull (gstring->str, &endptr, 16);
 		  break;
 		default: ;
 		}
@@ -2334,7 +2334,7 @@ g_scanner_get_token_ll	(GScanner	*scanner,
  */
 
 static guint64
-g_ascii_strtoull (const gchar *nptr,
+intern_ascii_strtoull (const gchar *nptr,
 		  gchar      **endptr,
 		  guint        base)
 {
