@@ -1,3 +1,12 @@
+Sun Jan  2 15:26:55 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsetrack.c: Use different playback networks for GUS Patches and
+	normal waves, depending on play-type xinfo string.
+
+	* bsewave.h: Add xinfos field (needs implementation).
+
+	* gslloader-pat.cc: Set play-type to "gus-patch-mono".
+
 Sun Jan  2 15:23:35 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* zintern/Makefile.am:

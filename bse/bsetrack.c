@@ -333,12 +333,54 @@ track_uncross_wave (BseItem *owner,
 }
 
 static void
-clear_snet_and_wave (BseTrack *self,
-		     gboolean  need_wnet)
+create_wnet (BseTrack *self,
+	     BseWave  *wave)
+{
+  g_return_if_fail (self->wnet == NULL);
+
+  const gchar *play_type = bse_xinfos_get_value (wave->xinfos, "play-type");
+  const gchar *synthesis_network = play_type ? play_type : "wave-mono";
+
+  self->wnet = bse_project_create_intern_synth (bse_item_get_project (BSE_ITEM (self)),
+						synthesis_network,
+						BSE_TYPE_SNET);
+
+  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wnet), track_uncross_wave);
+
+  if (self->sub_synth)
+    g_object_set (self->sub_synth, /* no undo */
+		  "snet", self->wnet,
+		  NULL);
+
+  if (strcmp (synthesis_network, "wave-mono") == 0)
+    {
+      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
+						 "wave", wave,
+					         NULL);
+    }
+  else if (strcmp (synthesis_network, "gus-patch-mono") == 0)
+    {
+      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
+						 "wave", wave,
+					         NULL);
+      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "gus-patch-envelope"), /* no undo */
+						 "wave", wave,
+					         NULL);
+    }
+  else
+    {
+      g_warning ("track: waves with the play-type \"%s\" are not supported by this version of beast\n",
+	         synthesis_network);
+    }
+
+}
+
+static void
+clear_snet_and_wave (BseTrack *self)
 {
   g_return_if_fail (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth));
 
-  if (self->sub_synth && !(self->wnet && need_wnet))
+  if (self->sub_synth)
     g_object_set (self->sub_synth, /* no undo */
 		  "snet", NULL,
 		  NULL);
@@ -356,24 +398,7 @@ clear_snet_and_wave (BseTrack *self,
       self->wave = NULL;
       g_object_notify (self, "wave");
     }
-  if (need_wnet)
-    {
-      if (!self->wnet)
-	{
-	  self->wnet = bse_project_create_intern_synth (bse_item_get_project (BSE_ITEM (self)),
-							"BSE_STD_SYNTH_MONO_WAVE",
-							BSE_TYPE_SNET);
-	  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wnet), track_uncross_wave);
-	}
-      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
-		    "wave", NULL,
-		    NULL);
-      if (self->sub_synth)
-	g_object_set (self->sub_synth, /* no undo */
-		      "snet", self->wnet,
-		      NULL);
-    }
-  else if (self->wnet)
+  if (self->wnet)
     {
       BseSNet *wnet = self->wnet;
       bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->wnet), track_uncross_wave);
@@ -404,7 +429,7 @@ bse_track_set_property (GObject      *object,
 	  BseSNet *snet = bse_value_get_object (value);
 	  if (snet || self->snet)
 	    {
-	      clear_snet_and_wave (self, FALSE);
+	      clear_snet_and_wave (self);
 	      self->snet = snet;
 	      if (self->snet)
 		{
@@ -424,15 +449,14 @@ bse_track_set_property (GObject      *object,
 	  BseWave *wave = bse_value_get_object (value);
 	  if (wave || self->wave)
 	    {
-	      clear_snet_and_wave (self, wave != NULL);
+	      clear_snet_and_wave (self);
+
 	      self->wave = wave;
 	      if (self->wave)
 		{
+		  create_wnet (self, wave);
 		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
 		  bse_object_proxy_notifies (self->wave, self, "changed");
-		  g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"), /* no undo */
-				"wave", self->wave,
-				NULL);
 		}
 	    }
 	}

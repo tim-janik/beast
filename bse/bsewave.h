@@ -48,6 +48,9 @@ struct _BseWave
   gchar		    *wave_name;
   GSList	    *wave_chunk_urls;
 
+  /* wave data */
+  gchar            **xinfos;
+
   /* wave chunks */
   guint		     n_wchunks;
   GSList	    *wave_chunks;
@@ -87,6 +90,8 @@ BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
 void		bse_wave_set_locator		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name);
+void		bse_wave_add_xinfos		(BseWave	*wave,
+						 gchar         **xinfos);
 void		bse_wave_request_index		(BseWave	*wave);
 BseWaveIndex*	bse_wave_get_index_for_modules	(BseWave	*wave);
 void		bse_wave_drop_index		(BseWave	*wave);

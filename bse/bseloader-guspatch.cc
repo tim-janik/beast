@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2004 Stefan Westerfeld
+ * Copyright (C) 2004-2005 Stefan Westerfeld
  * Copyright (C) 1998-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
@@ -21,10 +21,12 @@
 #include <stdio.h>
 #include <errno.h>
 #include <vector>
+#include <string>
 
 #define GUS_PATCH_DEBUG(...)         sfi_debug ("guspatch", __VA_ARGS__)
 
 using std::vector;
+using std::string;
 
 /*
  * generic patch loading code from aRts
@@ -337,6 +339,29 @@ struct FileInfo
     return ((wave_format & PAT_FORMAT_16BIT) ? 2 : 1);
   }
 
+  string
+  envelope_point_to_string (unsigned char c)
+  {
+    gchar *tmp_str = g_strdup_printf ("%d", c);
+    string str = tmp_str;
+    g_free (tmp_str);
+    return str;
+  }
+
+  string
+  envelope_to_string (PatPatch *patch)
+  {
+    string envelope_str;
+
+    for (int i = 0; i < 6; i++)
+      {
+	envelope_str += "(" + envelope_point_to_string (patch->filterRate[i]) +
+	                " " + envelope_point_to_string (patch->filterOffset[i]) + ")";
+      }
+
+    return envelope_str;
+  }
+
   FileInfo (const gchar *file_name, BseErrorType *error_p)
   {
     /* initialize C structures with zeros */
@@ -433,6 +458,9 @@ struct FileInfo
             xinfos = bse_xinfos_add_num (xinfos, "loop-count", 1000000);
             xinfos = bse_xinfos_add_num (xinfos, "loop-start", patches[i]->loopStart / frame_size);
             xinfos = bse_xinfos_add_num (xinfos, "loop-end", patches[i]->loopEnd / frame_size);
+
+	    xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope",
+		                           envelope_to_string (patches[i]).c_str());
           }
       }
   }
