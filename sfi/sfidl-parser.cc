@@ -146,11 +146,11 @@ static  GScannerConfig  scanner_config_template = {
 
 /* --- methods --- */
 
-bool Parser::isEnum(const string& type) const
+bool Parser::isChoice(const string& type) const
 {
-  vector<EnumDef>::const_iterator i;
+  vector<Choice>::const_iterator i;
   
-  for(i=enums.begin();i != enums.end(); i++)
+  for(i=choices.begin();i != choices.end(); i++)
     if(i->name == type) return true;
   
   return false;
@@ -158,7 +158,7 @@ bool Parser::isEnum(const string& type) const
 
 bool Parser::isSequence(const string& type) const
 {
-  vector<SequenceDef>::const_iterator i;
+  vector<Sequence>::const_iterator i;
   
   for(i=sequences.begin();i != sequences.end(); i++)
     if(i->name == type) return true;
@@ -168,7 +168,7 @@ bool Parser::isSequence(const string& type) const
 
 bool Parser::isRecord(const string& type) const
 {
-  vector<RecordDef>::const_iterator i;
+  vector<Record>::const_iterator i;
   
   for(i=records.begin();i != records.end(); i++)
     if(i->name == type) return true;
@@ -178,7 +178,7 @@ bool Parser::isRecord(const string& type) const
 
 bool Parser::isClass(const string& type) const
 {
-  vector<ClassDef>::const_iterator i;
+  vector<Class>::const_iterator i;
   
   for(i=classes.begin();i != classes.end(); i++)
     if(i->name == type) return true;
@@ -186,24 +186,24 @@ bool Parser::isClass(const string& type) const
   return false;
 }
 
-SequenceDef Parser::findSequence(const string& name) const
+Sequence Parser::findSequence(const string& name) const
 {
-  vector<SequenceDef>::const_iterator i;
+  vector<Sequence>::const_iterator i;
   
   for(i=sequences.begin();i != sequences.end(); i++)
     if(i->name == name) return *i;
   
-  return SequenceDef();
+  return Sequence();
 }
 
-RecordDef Parser::findRecord(const string& name) const
+Record Parser::findRecord(const string& name) const
 {
-  vector<RecordDef>::const_iterator i;
+  vector<Record>::const_iterator i;
   
   for(i=records.begin();i != records.end(); i++)
     if(i->name == name) return *i;
   
-  return RecordDef();
+  return Record();
 }
 
 Parser::Parser () : options (*Options::the())
@@ -523,21 +523,21 @@ GTokenType Parser::parseNamespace()
 	{
 	  case TOKEN_CHOICE:
 	    {
-	      GTokenType expected_token = parseEnumDef ();
+	      GTokenType expected_token = parseChoice ();
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
 	    break;
 	  case TOKEN_RECORD:
 	    {
-	      GTokenType expected_token = parseRecordDef ();
+	      GTokenType expected_token = parseRecord ();
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
 	    break;
 	  case TOKEN_SEQUENCE:
 	    {
-	      GTokenType expected_token = parseSequenceDef ();
+	      GTokenType expected_token = parseSequence ();
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
@@ -551,8 +551,8 @@ GTokenType Parser::parseNamespace()
 	    break;
 	  case G_TOKEN_IDENTIFIER:
 	    {
-	      MethodDef procedure;
-	      GTokenType expected_token = parseMethodDef (procedure);
+	      Method procedure;
+	      GTokenType expected_token = parseMethod (procedure);
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 
@@ -562,7 +562,7 @@ GTokenType Parser::parseNamespace()
 	    break;
 	  case TOKEN_CONST:
 	    {
-	      GTokenType expected_token = parseConstantDef ();
+	      GTokenType expected_token = parseConstant ();
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
@@ -588,22 +588,22 @@ GTokenType Parser::parseStringOrConst (string &s)
       parse_or_return (G_TOKEN_IDENTIFIER);
       s = ModuleHelper::qualify (scanner->value.v_identifier);
 
-      for(vector<ConstantDef>::iterator ci = constants.begin(); ci != constants.end(); ci++)
+      for(vector<Constant>::iterator ci = constants.begin(); ci != constants.end(); ci++)
 	{
 	  if (ci->name == s)
 	    {
 	      char *x = 0;
 	      switch (ci->type)
 		{
-		  case ConstantDef::tInt:
+		  case Constant::tInt:
 		    s = x = g_strdup_printf ("%d", ci->i);
 		    g_free (x);
 		    break;
-		  case ConstantDef::tFloat:
+		  case Constant::tFloat:
 		    s = x = g_strdup_printf ("%f", ci->f);
 		    g_free (x);
 		    break;
-		  case ConstantDef::tString:
+		  case Constant::tString:
 		    s = ci->str;
 		    break;
 		  default:
@@ -621,12 +621,12 @@ GTokenType Parser::parseStringOrConst (string &s)
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseConstantDef ()
+GTokenType Parser::parseConstant ()
 {
   /*
    * constant BAR = 3;
    */
-  ConstantDef cdef;
+  Constant cdef;
 
   parse_or_return (TOKEN_CONST);
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -647,7 +647,7 @@ GTokenType Parser::parseConstantDef ()
   {
     parse_or_return (G_TOKEN_INT);
 
-    cdef.type = ConstantDef::tInt;
+    cdef.type = Constant::tInt;
     cdef.i = scanner->value.v_int;
     if (negate)
       cdef.i = -cdef.i;
@@ -656,7 +656,7 @@ GTokenType Parser::parseConstantDef ()
   {
     parse_or_return (G_TOKEN_FLOAT);
 
-    cdef.type = ConstantDef::tFloat;
+    cdef.type = Constant::tFloat;
     cdef.f = scanner->value.v_float;
     if (negate)
       cdef.f = -cdef.f;
@@ -665,7 +665,7 @@ GTokenType Parser::parseConstantDef ()
   {
     parse_string_or_return (cdef.str);
 
-    cdef.type = ConstantDef::tString;
+    cdef.type = Constant::tString;
   }
   else
   {
@@ -677,34 +677,39 @@ GTokenType Parser::parseConstantDef ()
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseEnumDef ()
+GTokenType Parser::parseChoice ()
 {
-  EnumDef edef;
+  Choice choice;
   int value = 0;
-  debug("parse enumdef\n");
+  debug("parse choice\n");
   
   parse_or_return (TOKEN_CHOICE);
   parse_or_return (G_TOKEN_IDENTIFIER);
-  edef.name = ModuleHelper::define (scanner->value.v_identifier);
+  choice.name = ModuleHelper::define (scanner->value.v_identifier);
+  if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
+    {
+      parse_or_return (';');
+      return G_TOKEN_NONE;
+    }
   parse_or_return (G_TOKEN_LEFT_CURLY);
   while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
-      EnumComponent comp;
+      ChoiceValue comp;
       
-      GTokenType expected_token = parseEnumComponent (comp, value);
+      GTokenType expected_token = parseChoiceValue (comp, value);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
       
-      edef.contents.push_back(comp);
+      choice.contents.push_back(comp);
     }
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
   
-  addEnumTodo (edef);
+  addChoiceTodo (choice);
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseEnumComponent (EnumComponent& comp, int& value)
+GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value)
 {
   /* MASTER @= (25, "Master Volume"), */
   
@@ -749,15 +754,20 @@ GTokenType Parser::parseEnumComponent (EnumComponent& comp, int& value)
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseRecordDef ()
+GTokenType Parser::parseRecord ()
 {
   string group = "";
-  RecordDef rdef;
-  debug("parse recorddef\n");
+  Record record;
+  debug("parse record\n");
   
   parse_or_return (TOKEN_RECORD);
   parse_or_return (G_TOKEN_IDENTIFIER);
-  rdef.name = ModuleHelper::define (scanner->value.v_identifier);
+  record.name = ModuleHelper::define (scanner->value.v_identifier);
+  if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
+    {
+      parse_or_return (';');
+      return G_TOKEN_NONE;
+    }
   parse_or_return (G_TOKEN_LEFT_CURLY);
 
   bool ready = false;
@@ -776,20 +786,20 @@ GTokenType Parser::parseRecordDef ()
 
 	  case G_TOKEN_IDENTIFIER:
 	    {
-	      ParamDef def;
+	      Param def;
 
 	      GTokenType expected_token = parseRecordField (def, group);
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 
 	      if (def.type != "")
-		rdef.contents.push_back(def);
+		record.contents.push_back(def);
 	    }
 	    break;
 
 	  case TOKEN_INFO:
 	    {
-	      GTokenType expected_token = parseInfoOptional (rdef.infos);
+	      GTokenType expected_token = parseInfoOptional (record.infos);
 	      if (expected_token != G_TOKEN_NONE)
 		return expected_token;
 	    }
@@ -804,11 +814,11 @@ GTokenType Parser::parseRecordDef ()
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
   
-  addRecordTodo (rdef);
+  addRecordTodo (record);
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseRecordField (ParamDef& def, const string& group)
+GTokenType Parser::parseRecordField (Param& def, const string& group)
 {
   /* FooVolumeType volume_type; */
   /* float         volume_perc @= ("Volume[%]", "Set how loud something is",
@@ -831,7 +841,7 @@ GTokenType Parser::parseRecordField (ParamDef& def, const string& group)
       
       parse_or_return ('=');
       
-      GTokenType expected_token = parseParamDefHints (def);
+      GTokenType expected_token = parseParamHints (def);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
     }
@@ -840,7 +850,7 @@ GTokenType Parser::parseRecordField (ParamDef& def, const string& group)
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseParamDefHints (ParamDef &def)
+GTokenType Parser::parseParamHints (Param &def)
 {
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
@@ -916,10 +926,10 @@ GTokenType Parser::parseInfoOptional (map<string,string>& infos)
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseSequenceDef ()
+GTokenType Parser::parseSequence ()
 {
   GTokenType expected_token;
-  SequenceDef sdef;
+  Sequence sequence;
   string group;
 
   /*
@@ -930,33 +940,38 @@ GTokenType Parser::parseSequenceDef ()
   
   parse_or_return (TOKEN_SEQUENCE);
   parse_or_return (G_TOKEN_IDENTIFIER);
-  sdef.name = ModuleHelper::define (scanner->value.v_identifier);
+  sequence.name = ModuleHelper::define (scanner->value.v_identifier);
+  if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
+    {
+      parse_or_return (';');
+      return G_TOKEN_NONE;
+    }
   parse_or_return ('{');
 
-  expected_token = parseInfoOptional (sdef.infos);
+  expected_token = parseInfoOptional (sequence.infos);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
 
-  expected_token = parseRecordField (sdef.content, "");
+  expected_token = parseRecordField (sequence.content, "");
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
 
-  expected_token = parseInfoOptional (sdef.infos);
+  expected_token = parseInfoOptional (sequence.infos);
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
 
   parse_or_return ('}');
   parse_or_return (';');
   
-  addSequenceTodo(sdef);
+  addSequenceTodo (sequence);
   return G_TOKEN_NONE;
 }
 
 GTokenType Parser::parseClass ()
 {
-  ClassDef cdef;
+  Class cdef;
   string group;
-  debug("parse classdef\n");
+  debug("parse class\n");
   
   parse_or_return (TOKEN_CLASS);
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -981,8 +996,8 @@ GTokenType Parser::parseClass ()
       {
 	case G_TOKEN_IDENTIFIER:
 	  {
-	    MethodDef method;
-	    GTokenType expected_token = parseMethodDef (method);
+	    Method method;
+	    GTokenType expected_token = parseMethod (method);
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
 
@@ -1003,7 +1018,7 @@ GTokenType Parser::parseClass ()
 	  {
 	    parse_or_return (TOKEN_PROPERTY);
 
-	    ParamDef property;
+	    Param property;
 	    GTokenType expected_token = parseRecordField (property, "");
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
@@ -1022,28 +1037,28 @@ GTokenType Parser::parseClass ()
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseMethodDef (MethodDef& mdef)
+GTokenType Parser::parseMethod (Method& method)
 {
   parse_or_return (G_TOKEN_IDENTIFIER);
   if (strcmp (scanner->value.v_identifier, "signal") == 0)
-    mdef.result.type = "signal";
+    method.result.type = "signal";
   else if (strcmp (scanner->value.v_identifier, "void") == 0)
-    mdef.result.type = "void";
+    method.result.type = "void";
   else
     {
-      mdef.result.type = ModuleHelper::qualify (scanner->value.v_identifier);
-      mdef.result.name = "result";
+      method.result.type = ModuleHelper::qualify (scanner->value.v_identifier);
+      method.result.name = "result";
     }
 
-  mdef.result.pspec = mdef.result.type;
+  method.result.pspec = method.result.type;
 
   parse_or_return (G_TOKEN_IDENTIFIER);
-  mdef.name = scanner->value.v_identifier;
+  method.name = scanner->value.v_identifier;
 
   parse_or_return ('(');
   while (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
     {
-      ParamDef def;
+      Param def;
 
       parse_or_return (G_TOKEN_IDENTIFIER);
       def.type = ModuleHelper::qualify (scanner->value.v_identifier);
@@ -1051,7 +1066,7 @@ GTokenType Parser::parseMethodDef (MethodDef& mdef)
   
       parse_or_return (G_TOKEN_IDENTIFIER);
       def.name = scanner->value.v_identifier;
-      mdef.params.push_back(def);
+      method.params.push_back(def);
 
       if (g_scanner_peek_next_token (scanner) != GTokenType(')'))
 	{
@@ -1073,13 +1088,13 @@ GTokenType Parser::parseMethodDef (MethodDef& mdef)
     {
       if (g_scanner_peek_next_token (scanner) == TOKEN_INFO)
 	{
-	  GTokenType expected_token = parseInfoOptional (mdef.infos);
+	  GTokenType expected_token = parseInfoOptional (method.infos);
 	  if (expected_token != G_TOKEN_NONE)
 	    return expected_token;
 	}
       else
 	{
-	  ParamDef *pd = 0;
+	  Param *pd = 0;
 
 	  parse_or_return (G_TOKEN_IDENTIFIER);
 	  string inout = scanner->value.v_identifier;
@@ -1087,13 +1102,13 @@ GTokenType Parser::parseMethodDef (MethodDef& mdef)
 	  if (inout == "Out")
 	  {
 	    parse_or_return (G_TOKEN_IDENTIFIER);
-	    mdef.result.name = scanner->value.v_identifier;
-	    pd = &mdef.result;
+	    method.result.name = scanner->value.v_identifier;
+	    pd = &method.result;
 	  }
 	  else if(inout == "In")
 	  {
 	    parse_or_return (G_TOKEN_IDENTIFIER);
-	    for (vector<ParamDef>::iterator pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
+	    for (vector<Param>::iterator pi = method.params.begin(); pi != method.params.end(); pi++)
 	    {
 	      if (pi->name == scanner->value.v_identifier)
 		pd = &*pi;
@@ -1116,7 +1131,7 @@ GTokenType Parser::parseMethodDef (MethodDef& mdef)
 	  parse_or_return ('@');
 	  parse_or_return ('=');
 
-	  GTokenType expected_token = parseParamDefHints (*pd);
+	  GTokenType expected_token = parseParamHints (*pd);
 	  if (expected_token != G_TOKEN_NONE)
 	    return expected_token;
 
@@ -1128,63 +1143,63 @@ GTokenType Parser::parseMethodDef (MethodDef& mdef)
   return G_TOKEN_NONE;
 }
 
-void Parser::addConstantTodo(const ConstantDef& cdef)
+void Parser::addConstantTodo(const Constant& constant)
 {
-  constants.push_back(cdef);
+  constants.push_back(constant);
   
   if (insideInclude ())
     {
-      includedNames.push_back (cdef.name);
+      includedNames.push_back (constant.name);
     }
   else
     {
-      types.push_back (cdef.name);
+      types.push_back (constant.name);
     }
 }
 
-void Parser::addEnumTodo(const EnumDef& edef)
+void Parser::addChoiceTodo(const Choice& choice)
 {
-  enums.push_back(edef);
+  choices.push_back(choice);
   
   if (insideInclude ())
     {
-      includedNames.push_back (edef.name);
+      includedNames.push_back (choice.name);
     }
   else
     {
-      types.push_back (edef.name);
+      types.push_back (choice.name);
     }
 }
 
-void Parser::addRecordTodo(const RecordDef& rdef)
+void Parser::addRecordTodo(const Record& record)
 {
-  records.push_back(rdef);
+  records.push_back(record);
   
   if (insideInclude ())
     {
-      includedNames.push_back (rdef.name);
+      includedNames.push_back (record.name);
     }
   else
     {
-      types.push_back (rdef.name);
+      types.push_back (record.name);
     }
 }
 
-void Parser::addSequenceTodo(const SequenceDef& sdef)
+void Parser::addSequenceTodo(const Sequence& sequence)
 {
-  sequences.push_back(sdef);
+  sequences.push_back(sequence);
   
   if (insideInclude ())
     {
-      includedNames.push_back (sdef.name);
+      includedNames.push_back (sequence.name);
     }
   else
     {
-      types.push_back (sdef.name);
+      types.push_back (sequence.name);
     }
 }
 
-void Parser::addClassTodo(const ClassDef& cdef)
+void Parser::addClassTodo(const Class& cdef)
 {
   classes.push_back(cdef);
   
@@ -1198,7 +1213,7 @@ void Parser::addClassTodo(const ClassDef& cdef)
     }
 }
 
-void Parser::addProcedureTodo(const MethodDef& pdef)
+void Parser::addProcedureTodo(const Method& pdef)
 {
   procedures.push_back(pdef);
   

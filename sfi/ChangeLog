@@ -1,3 +1,9 @@
+Wed Jul 23 19:19:36 2003  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl*.cc sfidl*.h: cleanup of class names.
+	support prototyping for choices, records and sequences, like
+	choice ChoiceDefinedLater;
+
 Thu Jul 17 04:00:12 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-namespace.cc: make unknown symbols an error.

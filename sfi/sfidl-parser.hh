@@ -32,7 +32,7 @@ struct LineInfo {
   std::string filename;
 };
 
-struct ConstantDef {
+struct Constant {
   std::string name;
   enum { tString = 1, tFloat = 2, tInt = 3 } type;
 
@@ -41,7 +41,7 @@ struct ConstantDef {
   int i;
 };
 
-struct ParamDef {
+struct Param {
   std::string type;
   std::string name;
  
@@ -51,7 +51,7 @@ struct ParamDef {
   std::string args;
 };
 
-struct EnumComponent {
+struct ChoiceValue {
   std::string name;
   std::string text;
   
@@ -59,7 +59,7 @@ struct EnumComponent {
   bool        neutral;
 };
 
-struct EnumDef {
+struct Choice {
   /*
    * name if the enum, "_anonymous_" for anonymous enum - of course, when
    * using namespaces, this can also lead to things like "Arts::_anonymous_",
@@ -67,38 +67,38 @@ struct EnumDef {
    */
   std::string name;
   
-  std::vector<EnumComponent> contents;
+  std::vector<ChoiceValue> contents;
   std::map<std::string, std::string> infos;
 };
 
-struct RecordDef {
+struct Record {
   std::string name;
   
-  std::vector<ParamDef> contents;
+  std::vector<Param> contents;
   std::map<std::string, std::string> infos;
 };
 
-struct SequenceDef {
+struct Sequence {
   std::string name;
-  ParamDef content;
+  Param content;
   std::map<std::string, std::string> infos;
 };
 
-struct MethodDef {
+struct Method {
   std::string name;
 
-  std::vector<ParamDef> params;
-  ParamDef result;
+  std::vector<Param> params;
+  Param result;
   std::map<std::string, std::string> infos;
 };
 
-struct ClassDef {
+struct Class {
   std::string name;
   std::string inherits;
   
-  std::vector<MethodDef> methods;
-  std::vector<MethodDef> signals;
-  std::vector<ParamDef> properties;
+  std::vector<Method> methods;
+  std::vector<Method> signals;
+  std::vector<Param> properties;
   std::map<std::string, std::string> infos;
 };
 
@@ -114,12 +114,12 @@ protected:
   std::vector<std::string>  types;
 
   std::vector<std::string>  includes;          // files to include
-  std::vector<ConstantDef>  constants;
-  std::vector<EnumDef>	    enums;
-  std::vector<SequenceDef>  sequences;
-  std::vector<RecordDef>    records;
-  std::vector<ClassDef>	    classes;
-  std::vector<MethodDef>    procedures;
+  std::vector<Constant>	    constants;
+  std::vector<Choice>	    choices;
+  std::vector<Sequence>	    sequences;
+  std::vector<Record>	    records;
+  std::vector<Class>	    classes;
+  std::vector<Method>	    procedures;
   
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
   void printError (const gchar *format, ...);
@@ -128,24 +128,24 @@ protected:
   bool haveIncluded (const std::string& filename) const;
   bool insideInclude () const;
   
-  void addConstantTodo(const ConstantDef& cdef);
-  void addEnumTodo(const EnumDef& edef);
-  void addRecordTodo(const RecordDef& rdef);
-  void addSequenceTodo(const SequenceDef& sdef);
-  void addClassTodo(const ClassDef& cdef);
-  void addProcedureTodo(const MethodDef& pdef);
+  void addConstantTodo(const Constant& cdef);
+  void addChoiceTodo(const Choice& cdef);
+  void addRecordTodo(const Record& rdef);
+  void addSequenceTodo(const Sequence& sdef);
+  void addClassTodo(const Class& cdef);
+  void addProcedureTodo(const Method& pdef);
 
   GTokenType parseStringOrConst (std::string &s);
-  GTokenType parseConstantDef ();
+  GTokenType parseConstant ();
   GTokenType parseNamespace ();
-  GTokenType parseEnumDef ();
-  GTokenType parseEnumComponent (EnumComponent& comp, int& value);
-  GTokenType parseRecordDef ();
-  GTokenType parseRecordField (ParamDef& comp, const std::string& group);
-  GTokenType parseSequenceDef ();
-  GTokenType parseParamDefHints (ParamDef &def);
+  GTokenType parseChoice ();
+  GTokenType parseChoiceValue (ChoiceValue& comp, int& value);
+  GTokenType parseRecord ();
+  GTokenType parseRecordField (Param& comp, const std::string& group);
+  GTokenType parseSequence ();
+  GTokenType parseParamHints (Param &def);
   GTokenType parseClass ();
-  GTokenType parseMethodDef (MethodDef& def);
+  GTokenType parseMethod (Method& def);
   GTokenType parseInfoOptional (std::map<std::string,std::string>& infos);
 public:
   Parser ();
@@ -154,18 +154,18 @@ public:
  
   std::string fileName() const				  { return scanner->input_name; }
   const std::vector<std::string>& getIncludes () const	  { return includes; }
-  const std::vector<ConstantDef>& getConstants () const	  { return constants; }
-  const std::vector<EnumDef>& getEnums () const		  { return enums; }
-  const std::vector<SequenceDef>& getSequences () const   { return sequences; }
-  const std::vector<RecordDef>& getRecords () const	  { return records; }
-  const std::vector<ClassDef>& getClasses () const	  { return classes; }
-  const std::vector<MethodDef>& getProcedures () const    { return procedures; }
+  const std::vector<Constant>& getConstants () const	  { return constants; }
+  const std::vector<Choice>& getChoices () const	  { return choices; }
+  const std::vector<Sequence>& getSequences () const	  { return sequences; }
+  const std::vector<Record>& getRecords () const	  { return records; }
+  const std::vector<Class>& getClasses () const		  { return classes; }
+  const std::vector<Method>& getProcedures () const	  { return procedures; }
   const std::vector<std::string>& getTypes () const       { return types; }
   
-  SequenceDef findSequence (const std::string& name) const;
-  RecordDef findRecord (const std::string& name) const;
+  Sequence findSequence (const std::string& name) const;
+  Record findRecord (const std::string& name) const;
   
-  bool isEnum(const std::string& type) const;
+  bool isChoice(const std::string& type) const;
   bool isSequence(const std::string& type) const;
   bool isRecord(const std::string& type) const;
   bool isClass(const std::string& type) const;

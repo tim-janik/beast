@@ -57,12 +57,12 @@ class CodeGeneratorC : public CodeGenerator {
 protected:
   
   void printInfoStrings (const string& name, const map<string,string>& infos);
-  void printProcedure (const MethodDef& mdef, bool proto = false, const string& className = "");
+  void printProcedure (const Method& mdef, bool proto = false, const string& className = "");
 
-  string makeParamSpec (const ParamDef& pdef);
+  string makeParamSpec (const Param& pdef);
   string makeGTypeName (const string& name);
   string createTypeCode (const string& type, const string& name, int model);
-  bool enumReverseSort(const EnumComponent& e1, const EnumComponent& e2);
+  bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
   
 public:
   CodeGeneratorC(const Parser& parser) : CodeGenerator(parser) {
@@ -197,7 +197,7 @@ string CodeGeneratorC::makeGTypeName(const string& name)
                       + "::Type" + NamespaceHelper::nameOf(name));
 }
 
-string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
+string CodeGeneratorC::makeParamSpec(const Param& pdef)
 {
   string pspec;
   string group = pdef.group;
@@ -207,7 +207,7 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
   else
     group = "NULL";
   
-  if (parser.isEnum (pdef.type))
+  if (parser.isChoice (pdef.type))
     {
       pspec = "sfidl_pspec_Choice";
       if (pdef.args == "")
@@ -227,7 +227,7 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
     }
   else if (parser.isSequence (pdef.type))
     {
-      const SequenceDef& sdef = parser.findSequence (pdef.type);
+      const Sequence& sdef = parser.findSequence (pdef.type);
       pspec = "sfidl_pspec_BoxedSeq";
       if (pdef.args == "")
 	pspec += "_default (" + group + ",\"" + pdef.name + "\",";
@@ -339,7 +339,7 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
 	  return makeLowerName (type)+"_from_rec ("+name+")";
       }
     }
-  else if (parser.isEnum (type))
+  else if (parser.isChoice (type))
     {
       if (model == MODEL_ARG)         return makeMixedName (type);
       if (model == MODEL_MEMBER)      return makeMixedName (type);
@@ -523,9 +523,9 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
   return "*createTypeCode*unknown*";
 }
 
-void CodeGeneratorC::printProcedure (const MethodDef& mdef, bool proto, const string& className)
+void CodeGeneratorC::printProcedure (const Method& mdef, bool proto, const string& className)
 {
-  vector<ParamDef>::const_iterator pi;
+  vector<Param>::const_iterator pi;
   string mname, dname;
   
   if (className == "")
@@ -618,7 +618,7 @@ void CodeGeneratorC::printProcedure (const MethodDef& mdef, bool proto, const st
   printf("}\n\n");
 }
 
-static bool enumReverseSort(const EnumComponent& e1, const EnumComponent& e2)
+static bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2)
 {
   string ename1 = e1.name;
   string ename2 = e2.name;
@@ -631,18 +631,18 @@ static bool enumReverseSort(const EnumComponent& e1, const EnumComponent& e2)
 
 void CodeGeneratorC::run ()
 {
-  vector<SequenceDef>::const_iterator si;
-  vector<RecordDef>::const_iterator ri;
-  vector<EnumDef>::const_iterator ei;
-  vector<ParamDef>::const_iterator pi;
-  vector<ClassDef>::const_iterator ci;
-  vector<MethodDef>::const_iterator mi;
+  vector<Sequence>::const_iterator si;
+  vector<Record>::const_iterator ri;
+  vector<Choice>::const_iterator ei;
+  vector<Param>::const_iterator pi;
+  vector<Class>::const_iterator ci;
+  vector<Method>::const_iterator mi;
  
   if (options.generateTypeC)
     printf("#include <string.h>\n");
   if (options.generateConstant)
     {
-      vector<ConstantDef>::const_iterator ci;
+      vector<Constant>::const_iterator ci;
       for (ci = parser.getConstants().begin(); ci != parser.getConstants().end(); ci++)
 	{
 	  if (parser.fromInclude (ci->name)) continue;
@@ -650,11 +650,11 @@ void CodeGeneratorC::run ()
 	  string uname = makeUpperName(ci->name);
 	  printf("#define %s ", uname.c_str());
 	  switch (ci->type) {
-	    case ConstantDef::tString: printf("\"%s\"\n", ci->str.c_str());
+	    case Constant::tString: printf("\"%s\"\n", ci->str.c_str());
 	      break;
-	    case ConstantDef::tFloat: printf("%f\n", ci->f);
+	    case Constant::tFloat: printf("%f\n", ci->f);
 	      break;
-	    case ConstantDef::tInt: printf("%d\n", ci->i);
+	    case Constant::tInt: printf("%d\n", ci->i);
 	      break;
 	  }
 	}
@@ -690,7 +690,7 @@ void CodeGeneratorC::run ()
 	      todo.push_back (lname + "_to_rec");
 	      todo.push_back (lname + "_free");
 	    }
-	  for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+	  for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	    {
 	      if (parser.fromInclude (ei->name)) continue;
 
@@ -731,7 +731,7 @@ void CodeGeneratorC::run ()
 	  string mname = makeMixedName (ri->name);
 	  printf("typedef struct _%s %s;\n", mname.c_str(), mname.c_str());
 	}
-      for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+      for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	{
 	  if (parser.fromInclude (ei->name)) continue;
 
@@ -741,7 +741,7 @@ void CodeGeneratorC::run ()
 	  /* in the client, obscure the server side assigned values to a
 	   * straightforward numbering of the choices */
 	  int cvalue = 1;
-	  for (vector<EnumComponent>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
+	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
 	      gint value = ci->value;
 	      if (options.doInterface)
@@ -829,7 +829,7 @@ void CodeGeneratorC::run ()
   
   if (options.generateExtern)
     {
-      for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+      for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	{
 	  if (parser.fromInclude (ei->name)) continue;
 
@@ -1125,13 +1125,13 @@ void CodeGeneratorC::run ()
     {
       int enumCount = 0;
 
-      for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+      for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	{
 	  if (parser.fromInclude (ei->name)) continue;
 
 	  string name = makeLowerName (ei->name);
 	  printf("static const GEnumValue %s_value[%d] = {\n", name.c_str(), ei->contents.size() + 1);
-	  for (vector<EnumComponent>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
+	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
 	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
 	      printf("  { %d, \"%s\", \"%s\" },\n", ci->value, ename.c_str(), ci->text.c_str());
@@ -1139,7 +1139,7 @@ void CodeGeneratorC::run ()
 	  printf("  { 0, NULL, NULL }\n");
 	  printf("};\n");
 	  printf("static const SfiChoiceValue %s_cvalue[%d] = {\n", name.c_str(), ei->contents.size());
-	  for (vector<EnumComponent>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
+	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
 	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
 	      printf("  { \"%s\", \"%s\" },\n", ename.c_str(), ci->text.c_str());
@@ -1250,18 +1250,18 @@ void CodeGeneratorC::run ()
 
   if (options.doInterface && options.doSource)
     {
-      for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+      for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	{
 	  if (parser.fromInclude (ei->name)) continue;
 
 	  int minval = 1, maxval = 1;
-	  vector<EnumComponent>::iterator ci;
+	  vector<ChoiceValue>::iterator ci;
 	  string name = makeLowerName (ei->name);
 	  string mname = makeMixedName (ei->name);
 
 	  /* produce reverse sorted enum array */
 	  int cvalue = 1;
-	  vector<EnumComponent> components = ei->contents;
+	  vector<ChoiceValue> components = ei->contents;
 	  for (ci = components.begin(); ci != components.end(); ci++)
 	    {
 	      if (ci->neutral)
@@ -1270,7 +1270,7 @@ void CodeGeneratorC::run ()
 		ci->value = cvalue++;
 	      ci->name = makeLowerName (NamespaceHelper::namespaceOf(ei->name) + ci->name, '-');
 	    }
-	  sort (components.begin(), components.end(), ::enumReverseSort);
+	  sort (components.begin(), components.end(), ::choiceReverseSort);
 
 	  printf("static const SfiConstants %s_vals[%d] = {\n",name.c_str(), ei->contents.size());
 	  for (ci = components.begin(); ci != components.end(); ci++)
@@ -1308,9 +1308,9 @@ void CodeGeneratorC::run ()
 
       /*
        * It is important to follow the declaration order of the idl file here, as for
-       * instance a ParamDef inside a record might come from a sequence, and a ParamDef
+       * instance a Param inside a record might come from a sequence, and a Param
        * inside a Sequence might come from a record - to avoid using yet-unitialized
-       * ParamDefs, we follow the getTypes() 
+       * Params, we follow the getTypes() 
        */
       vector<string>::const_iterator ti;
 
@@ -1325,7 +1325,7 @@ void CodeGeneratorC::run ()
 	    }
 	  if (parser.isRecord (*ti))
 	    {
-	      const RecordDef& rdef = parser.findRecord (*ti);
+	      const Record& rdef = parser.findRecord (*ti);
 
 	      string name = makeLowerName (rdef.name);
 	      int f = 0;
@@ -1339,7 +1339,7 @@ void CodeGeneratorC::run ()
 	    }
 	  if (parser.isSequence (*ti))
 	    {
-	      const SequenceDef& sdef = parser.findSequence (*ti);
+	      const Sequence& sdef = parser.findSequence (*ti);
 
 	      string name = makeLowerName (sdef.name);
 	      int f = 0;
@@ -1351,7 +1351,7 @@ void CodeGeneratorC::run ()
 	}
       if (options.generateBoxedTypes)
       {
-	for(ei = parser.getEnums().begin(); ei != parser.getEnums().end(); ei++)
+	for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	  {
 	    if (parser.fromInclude (ei->name)) continue;
 
@@ -1399,7 +1399,7 @@ void CodeGeneratorC::run ()
 	{
 	  if (parser.fromInclude (ci->name)) continue;
 
-	  vector<MethodDef>::const_iterator si;
+	  vector<Method>::const_iterator si;
 	  for (si = ci->signals.begin(); si != ci->signals.end(); si++)
 	    {
 	      string fullname = makeLowerName (ci->name + "::" + si->name);
@@ -1441,11 +1441,11 @@ void CodeGeneratorC::run ()
 
 	  for (mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
 	    {
-	      MethodDef md;
+	      Method md;
 	      md.name = mi->name;
 	      md.result = mi->result;
 
-	      ParamDef class_as_param;
+	      Param class_as_param;
 	      class_as_param.name = makeLowerName(ci->name) + "_object";
 	      class_as_param.type = ci->name;
 	      md.params.push_back (class_as_param);
@@ -1477,7 +1477,7 @@ void CodeGeneratorQt::run ()
 
   if (options.generateProcedures)
     {
-      vector<MethodDef>::const_iterator mi;
+      vector<Method>::const_iterator mi;
       for (mi = parser.getProcedures().begin(); mi != parser.getProcedures().end(); mi++)
 	{
 	  if (parser.fromInclude (mi->name)) continue;
