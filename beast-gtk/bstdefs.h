@@ -31,6 +31,8 @@ extern "C" {
 #pragma }
 #endif /* __cplusplus */
 
+#define GTK_TYPE_VPANED                  (gtk_vpaned_get_type ())
+#define GTK_TYPE_HPANED                  (gtk_hpaned_get_type ())
 
 
 /* --- BEAST mainmenu operations --- */
@@ -101,10 +103,13 @@ typedef enum
   BST_ICON_MOUSE_TOOL,
   BST_ICON_PALETTE_TOOL,
   BST_ICON_PROPERTIES,
-  BST_ICON_TRASH,
+  BST_ICON_DELETE,
+  BST_ICON_TRASHCAN,
   BST_ICON_CLOSE,
   BST_ICON_NO_ILINK,
   BST_ICON_NO_OLINK,
+  BST_ICON_PATTERN,
+  BST_ICON_PATTERN_TOOL,
   BST_ICON_LAST
 } BstIconId;
 BseIcon* bst_icon_from_stock (BstIconId icon_id);

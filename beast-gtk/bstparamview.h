@@ -41,7 +41,7 @@ typedef	struct	_BstParamView		BstParamView;
 typedef	struct	_BstParamViewClass	BstParamViewClass;
 struct _BstParamView
 {
-  GtkVBox	 parent_object;
+  GtkVWrapBox	 parent_object;
 
   BseObject	*object;
 
@@ -56,7 +56,7 @@ struct _BstParamView
 };
 struct _BstParamViewClass
 {
-  GtkVBoxClass		parent_class;
+  GtkVWrapBoxClass parent_class;
 };
 
 

@@ -1,10 +1,10 @@
-/* GIMP RGBA C-Source image dump 1-byte-run-length-encoded (trash.c) */
+/* GIMP RGBA C-Source image dump 1-byte-run-length-encoded (trashsmall.c) */
 
-#define TRASH_IMAGE_WIDTH (16)
-#define TRASH_IMAGE_HEIGHT (16)
-#define TRASH_IMAGE_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
-#define TRASH_IMAGE_RLE_PIXEL_DATA ((guint8*) TRASH_IMAGE_rle_pixel_data)
-#define TRASH_IMAGE_RUN_LENGTH_DECODE(image_buf, rle_data, size, bpp) do \
+#define TRASHSMALL_IMAGE_WIDTH (16)
+#define TRASHSMALL_IMAGE_HEIGHT (16)
+#define TRASHSMALL_IMAGE_BYTES_PER_PIXEL (4) /* 3:RGB, 4:RGBA */
+#define TRASHSMALL_IMAGE_RLE_PIXEL_DATA ((guint8*) TRASHSMALL_IMAGE_rle_pixel_data)
+#define TRASHSMALL_IMAGE_RUN_LENGTH_DECODE(image_buf, rle_data, size, bpp) do \
 { guint __bpp; guint8 *__ip; const guint8 *__il, *__rd; \
   __bpp = (bpp); __ip = (image_buf); __il = __ip + (size) * __bpp; \
   __rd = (rle_data); if (__bpp > 3) { /* RGBA */ \
@@ -20,7 +20,7 @@
       } else { __l *= 3; memcpy (__ip, __rd, __l); \
                __ip += __l; __rd += __l; } } \
   } } while (0)
-static const guint8 TRASH_IMAGE_rle_pixel_data[809] =
+static const guint8 TRASHSMALL_IMAGE_rle_pixel_data[809] =
 ("\203\0\0\0\0\210\0\0\0\377\206\0\0\0\0\12%%%\377\0\0\0\377\250\272\236\377"
  "\264\301\253\377\341\347\335\377\203\212}\377\220\237\206\377HNC\377\240\255"
  "\224\377\236\253\221\377\202\0\0\0\377\203\0\0\0\0\16\0\0\0\377\266\304\255"

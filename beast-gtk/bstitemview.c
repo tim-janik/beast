@@ -15,9 +15,10 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bstitemview.h"
+#include	"bstitemview.h"
 
-#include "bstparamview.h"
+#include	"bstparamview.h"
+#include	"bstradiotools.h" // for bst_forest_from_bse_icon ()
 
 
 
@@ -68,7 +69,7 @@ bst_item_view_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
       
-      item_view_type = gtk_type_unique (GTK_TYPE_VBOX, &item_view_info);
+      item_view_type = gtk_type_unique (GTK_TYPE_VPANED, &item_view_info);
     }
   
   return item_view_type;
@@ -82,7 +83,7 @@ bst_item_view_class_init (BstItemViewClass *class)
   object_class = GTK_OBJECT_CLASS (class);
   
   bst_item_view_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_VBOX);
+  parent_class = gtk_type_class (GTK_TYPE_VPANED);
   
   object_class->destroy = bst_item_view_destroy;
   object_class->finalize = bst_item_view_finalize;
@@ -103,6 +104,7 @@ bst_item_view_init (BstItemView      *item_view,
   item_view->item_clist = NULL;
   item_view->param_view = NULL;
   item_view->op_widgets = g_new0 (GtkWidget*, real_class->n_ops);
+  gtk_container_set_resize_mode (GTK_CONTAINER (item_view), GTK_RESIZE_QUEUE);
 }
 
 static void
@@ -191,12 +193,11 @@ bst_item_view_build_param_view (BstItemView *item_view)
 		      "signal::destroy", gtk_widget_destroyed, &item_view->param_view,
 		      "visible", TRUE,
 		      NULL);
-      gtk_container_add_with_args (GTK_CONTAINER (item_view), item_view->param_view,
-				   "position", 0,
-				   "expand", FALSE,
-				   "fill", TRUE,
-				   "padding", 0,
-				   NULL);
+      gtk_paned_pack2 (GTK_PANED (item_view),
+		       item_view->param_view,
+		       TRUE,
+		       TRUE);
+	
       bst_param_view_set_object (BST_PARAM_VIEW (item_view->param_view),
 				 (BseObject*) bst_item_view_get_current (item_view));
     }
@@ -371,7 +372,7 @@ bst_item_view_rebuild (BstItemView *item_view)
 {
   BseContainer *container;
   GtkCList *clist;
-  GtkWidget *hbox, *any;
+  GtkWidget *vbox, *list_box;
   guint i;
   
   g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
@@ -379,37 +380,65 @@ bst_item_view_rebuild (BstItemView *item_view)
   bst_item_view_destroy_contents (item_view);
   
   container = item_view->container;
-  
+
+  /* list box, containing list and action buttons
+   */
+  list_box = gtk_widget_new (GTK_TYPE_HBOX,
+			     "homogeneous", FALSE,
+			     "spacing", 5,
+			     "border_width", 5,
+			     "visible", TRUE,
+			     NULL);
+  gtk_paned_pack1 (GTK_PANED (item_view),
+		   list_box,
+		   FALSE,
+		   FALSE);
+
   /* action buttons
    */
-  any =
-    gtk_widget_new (GTK_TYPE_HBOX,
-		    "homogeneous", FALSE,
-		    "spacing", 0,
-		    "border_width", 0,
-		    "visible", TRUE,
-		    NULL);
-  gtk_box_pack_start (GTK_BOX (item_view), any, FALSE, TRUE, 0);
-  hbox =
-    gtk_widget_new (GTK_TYPE_HBOX,
-		    "homogeneous", TRUE,
-		    "spacing", 5,
-		    "border_width", 5,
-		    "visible", TRUE,
-		    NULL);
-  gtk_box_pack_end (GTK_BOX (any), hbox, FALSE, FALSE, 0);
+  vbox = gtk_widget_new (GTK_TYPE_VBOX,
+			 "homogeneous", TRUE,
+			 "spacing", 5,
+			 "border_width", 0,
+			 "visible", TRUE,
+			 NULL);
+  gtk_box_pack_end (GTK_BOX (list_box),
+		    gtk_widget_new (GTK_TYPE_ALIGNMENT, /* don't want vexpand */
+				    "visible", TRUE,
+				    "xscale", 0.0,
+				    "yscale", 0.0,
+				    "xalign", 0.0,
+				    "yalign", 0.0,
+				    "child", vbox,
+				    NULL),
+		    FALSE, FALSE, 0);
   
   for (i = 0; i < BST_ITEM_VIEW_GET_CLASS (item_view)->n_ops; i++)
     {
       BstItemViewOp *bop = BST_ITEM_VIEW_GET_CLASS (item_view)->ops + i;
-      
-      item_view->op_widgets[i] =
-	gtk_widget_new (GTK_TYPE_BUTTON,
-			"label", bop->op_name,
+      GtkWidget *label;
+
+      item_view->op_widgets[i] = gtk_widget_new (GTK_TYPE_BUTTON,
+						 "visible", TRUE,
+						 "signal::clicked", button_action, GUINT_TO_POINTER (bop->op),
+						 "signal::destroy", gtk_widget_destroyed, &item_view->op_widgets[i],
+						 "parent", vbox,
+						 NULL);
+      label = gtk_widget_new (GTK_TYPE_LABEL,
+			      "visible", TRUE,
+			      "label", bop->op_name,
+			      bop->stock_icon ? NULL : "parent", item_view->op_widgets[i],
+			      NULL);
+      if (bop->stock_icon)
+	gtk_widget_new (GTK_TYPE_VBOX,
 			"visible", TRUE,
-			"signal::clicked", button_action, GUINT_TO_POINTER (bop->op),
-			"signal::destroy", gtk_widget_destroyed, &item_view->op_widgets[i],
-			"parent", hbox,
+			"homogeneous", FALSE,
+			"spacing", 0,
+			"child", bst_forest_from_bse_icon (bst_icon_from_stock (bop->stock_icon),
+							   BST_TOOLBAR_ICON_WIDTH,
+							   BST_TOOLBAR_ICON_HEIGHT),
+			"child", label,
+			"parent", item_view->op_widgets[i],
 			NULL);
     }
   
@@ -420,7 +449,8 @@ bst_item_view_rebuild (BstItemView *item_view)
 		    "n_columns", CLIST_N_COLUMNS,
 		    "selection_mode", GTK_SELECTION_BROWSE,
 		    "titles_active", FALSE,
-		    "border_width", 5,
+		    "border_width", 0,
+		    "height", 60,
 		    "signal::destroy", gtk_widget_destroyed, &item_view->item_clist,
 		    "object_signal::select_row", bst_item_view_selection_changed, item_view,
 		    "signal_after::size_allocate", clist_adjust_visibility, NULL,
@@ -430,14 +460,7 @@ bst_item_view_rebuild (BstItemView *item_view)
 					      "visible", TRUE,
 					      "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 					      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-					      "parent", item_view,
-					      /* "parent", gtk_widget_new (GTK_TYPE_FRAME,
-						 "visible", TRUE,
-						 "label", "Item List",
-						 "parent", item_view,
-						 "border_width", 5,
-						 NULL),
-					      */
+					      "parent", list_box,
 					      NULL),
 		    NULL);
   clist = GTK_CLIST (item_view->item_clist);

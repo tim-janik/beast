@@ -1,3 +1,29 @@
+Thu Feb 10 11:51:28 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c:
+	* beast-gtk/bstradiotools.c:
+	* beast-gtk/bstparam.c:
+	* beast-gtk/bstparamview.[hc]:
+	* beast-gtk/bstitemview.[hc]:
+	* beast-gtk/bstpatternview.[hc]:
+	many overall GUI improvements, lots of GUI clean ups and fine tuning.
+	clean ups of GUI code.
+
+	* beast-gtk/bstdefs.h (enum): s/BST_ICON_TRASH/BST_ICON_DELETE/,
+	added BST_ICON_PATTERN, BST_ICON_PATTERN_TOOL and BST_ICON_TRASHCAN.
+	* beast-gtk/bstmain.c (bst_icon_from_stock): trashcan, trashsmall
+	replacement, added pattern.
+
+	* beast-gtk/icons/trashcan.c: 
+	* beast-gtk/icons/trashcan.xcf: 
+	new trashcan based on a png from tigert.
+
+	* beast-gtk/icons/pattern.c: 
+	* beast-gtk/icons/pattern.xcf: 
+	* beast-gtk/icons/pattern-tool.c: 
+	* beast-gtk/icons/pattern-tool.xcf: 
+	new BsePattern icon based on something from mc and panel.
+
 Thu Feb 10 03:27:49 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c (bst_procedure_dialog_rebuild): some

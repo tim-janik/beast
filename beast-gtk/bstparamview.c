@@ -50,7 +50,7 @@ bst_param_view_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
       
-      param_view_type = gtk_type_unique (GTK_TYPE_VBOX, &param_view_info);
+      param_view_type = gtk_type_unique (GTK_TYPE_VWRAP_BOX, &param_view_info);
     }
   
   return param_view_type;
@@ -64,7 +64,7 @@ bst_param_view_class_init (BstParamViewClass *class)
   object_class = GTK_OBJECT_CLASS (class);
 
   bst_param_view_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_VBOX);
+  parent_class = gtk_type_class (GTK_TYPE_VWRAP_BOX);
 
   object_class->destroy = bst_param_view_destroy;
 }
@@ -212,19 +212,17 @@ bst_param_view_rebuild (BstParamView *param_view)
   if (!param_view->object)
     return;
 
-  param_box = gtk_widget_new (GTK_TYPE_VBOX,
-			      "visible", TRUE,
-			      "parent", param_view,
-			      NULL);
-
+  param_box = GTK_WIDGET (param_view);
+  gtk_widget_set (param_box,
+		  "visible", TRUE,
+		  "homogeneous", FALSE,
+		  "border_width", 5,
+		  "hspacing", 5,
+		  "aspect_ratio", 0.0,
+		  NULL);
+    
   object = BSE_OBJECT (param_view->object);
   class = BSE_OBJECT_GET_CLASS (object);
-  
-  gtk_widget_set (param_box,
-		  "homogeneous", FALSE,
-		  "spacing", 0,
-		  "border_width", 5,
-		  NULL);
   
   /* parameter fields, per bse class
    */

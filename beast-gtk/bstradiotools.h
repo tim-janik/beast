@@ -102,6 +102,13 @@ void            bst_radio_tools_build_toolbar	     (BstRadioTools *rtools,
 GtkWidget*      bst_radio_tools_build_palette	     (BstRadioTools *rtools,
 						      gboolean       show_descriptions,
 						      GtkReliefStyle relief);
+
+/* --- defines --- */
+#define	BST_TOOLBAR_ICON_WIDTH	(32)
+#define	BST_TOOLBAR_ICON_HEIGHT	(32)
+#define	BST_PALETTE_ICON_WIDTH	(BST_TOOLBAR_ICON_WIDTH)
+#define	BST_PALETTE_ICON_HEIGHT	(BST_TOOLBAR_ICON_HEIGHT)
+
 GtkWidget*	bst_forest_from_bse_icon	     (BseIcon       *bse_icon,
 						      guint          icon_width,
 						      guint          icon_height);

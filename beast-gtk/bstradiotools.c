@@ -21,13 +21,6 @@
 #include	<ctype.h>
 
 
-/* --- defines --- */
-#define	TOOLBAR_ICON_WIDTH	(32)
-#define	TOOLBAR_ICON_HEIGHT	(32)
-#define	PALETTE_ICON_WIDTH	(TOOLBAR_ICON_WIDTH)
-#define	PALETTE_ICON_HEIGHT	(TOOLBAR_ICON_HEIGHT)
-
-
 /* --- signals --- */
 enum {
   SIGNAL_SET_TOOL,
@@ -315,7 +308,7 @@ bst_radio_tools_build_toolbar (BstRadioTools *rtools,
       if (!(rtools->tools[i].flags & BST_RADIO_TOOLS_TOOLBAR))
 	continue;
 
-      forest = bst_forest_from_bse_icon (rtools->tools[i].icon, TOOLBAR_ICON_WIDTH, TOOLBAR_ICON_HEIGHT);
+      forest = bst_forest_from_bse_icon (rtools->tools[i].icon, BST_TOOLBAR_ICON_WIDTH, BST_TOOLBAR_ICON_HEIGHT);
       button = gtk_toolbar_append_element (toolbar,
 					   GTK_TOOLBAR_CHILD_TOGGLEBUTTON, NULL,
 					   rtools->tools[i].name,
@@ -383,7 +376,7 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
       if (!(rtools->tools[i].flags & BST_RADIO_TOOLS_PALETTE))
 	continue;
       
-      forest = bst_forest_from_bse_icon (rtools->tools[i].icon, PALETTE_ICON_WIDTH, PALETTE_ICON_HEIGHT);
+      forest = bst_forest_from_bse_icon (rtools->tools[i].icon, BST_PALETTE_ICON_WIDTH, BST_PALETTE_ICON_HEIGHT);
       button = gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
 			       "visible", TRUE,
 			       "draw_indicator", FALSE,
@@ -408,13 +401,19 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
   
   if (n && text)
     {
+      GtkWidget *hbox;
+
+      hbox = gtk_widget_new (GTK_TYPE_HBOX,
+			     "visible", TRUE,
+			     NULL);
+      gtk_box_pack_start (GTK_BOX (hbox), text, TRUE, TRUE, 5);
       gtk_widget_new (GTK_TYPE_FRAME,
 		      "visible", TRUE,
 		      "label", "Description",
 		      "label_xalign", 0.5,
 		      "border_width", 5,
 		      "parent", vbox,
-		      "child", text,
+		      "child", hbox,
 		      "width", 1,
 		      "height", 100,
 		      NULL);

@@ -29,12 +29,12 @@ extern "C" {
 
 
 /* --- defines --- */
-#define	BST_CHOICE_TITLE(name)		(bst_choice_alloc (1, BST_ICON_NONE, (name), 0))
-#define	BST_CHOICE(id, name, bst_icon)	(bst_choice_alloc (0, BST_ICON_ ## bst_icon, \
+#define	BST_CHOICE_TITLE(name)		(bst_choice_alloc (2|0, BST_ICON_NONE, (name), 0))
+#define	BST_CHOICE(id, name, bst_icon)	(bst_choice_alloc (0|1, BST_ICON_ ## bst_icon, \
 							   (name), (id)))
-#define	BST_CHOICE_S(id, name, icon, s)	(bst_choice_alloc ((s) ? 0 : 1, BST_ICON_ ## icon, \
+#define	BST_CHOICE_S(id, name, icon, s)	(bst_choice_alloc ((s) ? 0|1 : 0|0, BST_ICON_ ## icon, \
 							   (name), (id)))
-#define	BST_CHOICE_SEPERATOR		(bst_choice_alloc (1, BST_ICON_NONE, NULL, 0))
+#define	BST_CHOICE_SEPERATOR		(bst_choice_alloc (0|0, BST_ICON_NONE, NULL, 0))
 #define BST_CHOICE_END			(NULL)
 
 

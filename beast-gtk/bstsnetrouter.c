@@ -272,6 +272,7 @@ bst_snet_router_toggle_palette (BstSNetRouter *router)
 					     bst_radio_tools_build_palette (router->rtools, TRUE, GTK_RELIEF_NORMAL),
 					     BST_SUB_DESTROY_ON_HIDE,
 					     "object_signal::destroy", palette_destroyed, router,
+					     "title", "BEAST: Palette",
 					     NULL);
       gtk_widget_showraise (router->palette);
     }
@@ -836,7 +837,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 				       BST_CHOICE_S (3, "Delete Inputs", NO_ILINK, source->n_inputs),
 				       BST_CHOICE_S (4, "Delete Outputs", NO_OLINK, source->outputs),
 				       BST_CHOICE_SEPERATOR,
-				       BST_CHOICE_S (1, "Delete", TRASH, source != rsource),
+				       BST_CHOICE_S (1, "Delete", DELETE, source != rsource),
 				       BST_CHOICE_END);
 	  g_free (source_name);
 	  switch (bst_choice_selectable (choice)
@@ -866,7 +867,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 				       BST_CHOICE_SEPERATOR,
 				       BST_CHOICE (2, "Properties", PROPERTIES),
 				       BST_CHOICE_SEPERATOR,
-				       BST_CHOICE (1, "Delete", TRASH),
+				       BST_CHOICE (1, "Delete", DELETE),
 				       BST_CHOICE_END);
 	  switch (bst_choice_modal (choice, event->button.button, event->button.time))
 	    {

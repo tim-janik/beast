@@ -279,7 +279,7 @@ bse_object_class_init (BseObjectClass *class)
 						      */));
   bse_object_class_add_param (class, NULL,
 			      PARAM_BLURB,
-			      bse_param_spec_fstring ("blurb", "Short description", NULL,
+			      bse_param_spec_fstring ("blurb", "Comment", NULL,
 						      NULL,
 						      BSE_PARAM_DEFAULT |
 						      BSE_PARAM_HINT_CHECK_NULL));

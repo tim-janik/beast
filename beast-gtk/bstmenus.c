@@ -183,6 +183,18 @@ bst_choice_alloc (guint        type,
 }
 
 static void
+style_modify_insensitive_fg (GtkWidget *widget)
+{
+  GtkRcStyle *rc_style = gtk_rc_style_new ();
+
+  rc_style->color_flags[GTK_STATE_INSENSITIVE] = GTK_RC_FG;
+  rc_style->fg[GTK_STATE_INSENSITIVE].red = widget->style->fg[GTK_STATE_NORMAL].red;
+  rc_style->fg[GTK_STATE_INSENSITIVE].green = widget->style->fg[GTK_STATE_NORMAL].green;
+  rc_style->fg[GTK_STATE_INSENSITIVE].blue = widget->style->fg[GTK_STATE_NORMAL].blue;
+  gtk_widget_modify_style (widget, rc_style);
+}
+
+static void
 choice_activate (GtkWidget *item,
 		 gpointer   data)
 {
@@ -216,21 +228,12 @@ bst_choice_createv (BstChoice *first_choice,
     {
       GtkWidget *item, *hbox;
 
-      switch (choice->type)
-	{
-	case 0:
-	case 1:
-	  item = gtk_widget_new (GTK_TYPE_MENU_ITEM,
-				 "visible", TRUE,
-				 "sensitive", choice->type == 0,
-				 "parent", menu,
-				 "signal::activate", choice_activate, GUINT_TO_POINTER (choice->id),
-				 NULL);
-	  break;
-	default:
-	  g_assert_not_reached ();
-	  exit (1);
-	}
+      item = gtk_widget_new (GTK_TYPE_MENU_ITEM,
+			     "visible", TRUE,
+			     "sensitive", choice->type & 1,
+			     "parent", menu,
+			     "signal::activate", choice_activate, GUINT_TO_POINTER (choice->id),
+			     NULL);
       gtk_widget_lock_accelerators (item);
       if (choice->name)
 	{
@@ -250,6 +253,7 @@ bst_choice_createv (BstChoice *first_choice,
 			  "parent", hbox,
 			  "accel_widget", item,
 			  "xalign", 0.0,
+			  choice->type & 2 ? "signal_after::realize" : NULL, style_modify_insensitive_fg, NULL, // FIXME
 			  NULL);
 	}
       if (choice->icon)

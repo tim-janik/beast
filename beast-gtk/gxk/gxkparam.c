@@ -217,20 +217,37 @@ GROUP_DONE (GtkWidget *group)
 		      c, c + 1, row, row + 1,
 		      GTK_FILL, GTK_FILL,
 		      0, 0);
+  gtk_table_set_col_spacing (table, c, 2); /* seperate prompt from rest */
   c++;
   if (dial)
     gtk_table_attach (table, gtk_widget_get_toplevel (dial),
 		      c, c + 1, row, row + 1,
-		      GTK_FILL, GTK_FILL,
-		      5, 0);
+		      /* GTK_SHRINK | */ GTK_FILL, GTK_FILL,
+		      0, 0);
   c++;
-  gtk_table_attach (table,
-		    scale ? gtk_widget_get_toplevel (scale) : gtk_widget_new (GTK_TYPE_ALIGNMENT,
-									      "visible", TRUE,
-									      NULL),
-		    dial ? c : c - 1, c + 1, row, row + 1,
-		    GTK_EXPAND | GTK_FILL, 0,
-		    5, 0);
+  if (!scale)
+    {
+      scale = gtk_object_get_data (GTK_OBJECT (table), "dummy_scale");
+
+      /* need to have at least 1 (dummy) scale per table
+       * to eat up expanding space
+       */
+      if (!scale)
+	{
+	  scale = gtk_widget_new (GTK_TYPE_ALIGNMENT,
+				  "visible", TRUE,
+				  NULL);
+	  gtk_object_set_data (GTK_OBJECT (table), "dummy_scale", scale);
+	}
+      else
+	scale = NULL;
+    }
+  if (scale)
+    gtk_table_attach (table,
+		      gtk_widget_get_toplevel (scale),
+		      dial ? c : c - 1, c + 1, row, row + 1,
+		      GTK_EXPAND | GTK_FILL, 0,
+		      0, 0);
   c++;
   /* stuff action with pre- and post- widgets closely together */
   any = gtk_widget_get_toplevel (action);
@@ -272,8 +289,9 @@ GROUP_DONE (GtkWidget *group)
 			  NULL);
   gtk_table_attach (table, any,
 		    n, c + 1, row, row + 1,
-		    GTK_FILL, GTK_FILL,
+		    GTK_SHRINK | GTK_FILL, GTK_FILL,
 		    0, 0);
+  gtk_table_set_col_spacing (table, c - 1, 2); /* seperate action from rest */
   
   /* set tooltips */
   if (tt)
@@ -414,15 +432,6 @@ bst_bparam_bse_changed (BstParam     *bparam,
     bst_param_get (bparam);
 }
 
-#ifdef DEBUG_ADJUSTMENT
-static void
-debug_adjustment (GtkAdjustment *adjustment,
-		  BstParam      *bparam)
-{
-  g_print ("adjustment changed: %f (%u)\n", adjustment->value, bparam->locked);
-}
-#endif
-
 void
 bst_param_destroy (BstParam *bparam)
 {
@@ -475,6 +484,14 @@ static void
 bparam_reset_object (BstParam *bparam)
 {
   bst_param_set_object (bparam, NULL);
+}
+
+static void
+hscale_size_request (GtkWidget      *scale,
+		     GtkRequisition *requisition)
+{
+  requisition->width = GTK_SCALE_CLASS (GTK_OBJECT (scale)->klass)->slider_length;
+  requisition->width += 2 * scale->style->klass->xthickness + 2;
 }
 
 void
@@ -588,6 +605,13 @@ bst_param_create (gpointer      owner,
 			      NULL);
       if (GTK_IS_BOX (parent))
 	gtk_box_pack_start (GTK_BOX (parent), any, FALSE, TRUE, 0);
+      else if (GTK_IS_WRAP_BOX (parent))
+	gtk_container_add_with_args (GTK_CONTAINER (parent), any,
+				     "hexpand", TRUE,
+				     "hfill", TRUE,
+				     "vexpand", FALSE,
+				     "vfill", TRUE,
+				     NULL);
       else
 	gtk_container_add (GTK_CONTAINER (parent), any);
     }
@@ -653,24 +677,20 @@ bst_param_create (gpointer      owner,
 				       "value-changed",
 				       bst_param_gtk_changed,
 				       (GtkObject*) bparam);
-#ifdef DEBUG_ADJUSTMENT
-      gtk_signal_connect (GTK_OBJECT (adjustment), "value-changed", debug_adjustment, bparam);
-#endif
-      
       spinner = gtk_spin_button_new (adjustment, 0, digits);
       if (pspec->any.flags & BSE_PARAM_HINT_DIAL)
-	{
-	  dial = gtk_widget_new (GTK_TYPE_LABEL,
-				 "visible", TRUE,
-				 "label", "|<DIAL>|", /* FIXME: we need a real dial */
-				 NULL);
-	}
+	dial = gtk_widget_new (GTK_TYPE_LABEL,
+			       "visible", TRUE,
+			       "label", "(dial)", /* FIXME: we need a real dial */
+			       NULL);
       if (pspec->any.flags & BSE_PARAM_HINT_SCALE
 	  || pspec->any.flags & BSE_PARAM_HINT_DIAL) /* FIXME: we need a real dial */
-	{
-	  scale = gtk_hscale_new (adjustment);
-	  gtk_scale_set_draw_value (GTK_SCALE (scale), FALSE);
-	}
+	scale = gtk_widget_new (GTK_TYPE_HSCALE,
+				"visible", TRUE,
+				"adjustment", adjustment,
+				"draw_value", FALSE,
+				"signal_after::size_request", hscale_size_request, NULL,
+				NULL);
       
       gtk_object_unref (GTK_OBJECT (adjustment));
     }
@@ -736,9 +756,9 @@ bst_param_create (gpointer      owner,
       action = spinner ? spinner : gtk_entry_new ();
       gtk_widget_set (action,
 		      "visible", TRUE,
-		      "width", width,
 		      "object_signal::activate", bst_param_gtk_changed, bparam,
 		      "signal::key_press_event", bst_entry_key_press, bparam,
+		      "width", width,
 		      NULL);
       if (!spinner)
 	gtk_widget_set (action,
@@ -747,15 +767,9 @@ bst_param_create (gpointer      owner,
       group = GROUP_FORM (parent_container, action, expandable);
       GROUP_ADD_PROMPT (group, prompt);
       if (scale)
-	{
-	  gtk_widget_show (scale);
-	  GROUP_ADD_SCALE (group, scale);
-	}
+	GROUP_ADD_SCALE (group, scale);
       if (dial)
-	{
-	  gtk_widget_show (dial);
-	  GROUP_ADD_DIAL (group, dial);
-	}
+	GROUP_ADD_DIAL (group, dial);
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
       break;
@@ -840,12 +854,12 @@ bst_param_create (gpointer      owner,
 				       "can_focus", FALSE,
 				       "width", 10,
 				       "height", 10,
-				       "parent", gtk_widget_new (GTK_TYPE_ALIGNMENT,
+				       "parent", gtk_widget_new (GTK_TYPE_ALIGNMENT, /* don't want vexpand */
 								 "visible", TRUE,
 								 "xscale", 0.0,
 								 "yscale", 0.0,
 								 "xalign", 0.0,
-								 "width", 13,
+								 "width", 10 + 3,
 								 NULL),
 				       "object_signal::clicked", bst_param_gtk_changed, bparam,
 				       "signal::clicked", bst_string_toggle, action,
@@ -905,11 +919,11 @@ bst_param_create (gpointer      owner,
 			       NULL);
       action = gtk_widget_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
-			       "width", 160,
 			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
 			       "object_signal::activate", bst_param_gtk_changed, bparam,
 			       "signal::key_press_event", bst_entry_key_press, bparam,
 			       "object_signal::grab_focus", bst_param_update_clue_hunter, bparam,
+			       "width", 160,
 			       NULL);
       group = GROUP_FORM (parent_container, action, TRUE);
       GROUP_ADD_PROMPT (group, prompt);
@@ -984,16 +998,6 @@ bst_param_update (BstParam *bparam)
       if (!g_str_equal (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	{
 	  gtk_entry_set_text (GTK_ENTRY (action), string);
-#if 0
-	  GtkRequisition requisition;
-	  
-	  gtk_widget_size_request (action, &requisition);
-	  if (MAX (requisition.width, action->requisition.width) > action->allocation.width)
-	    gtk_widget_set_usize (action,
-				  MAX (requisition.width, action->requisition.width),
-				  -1);
-#endif
-	  // gtk_entry_set_position (GTK_ENTRY (action), 0);
 	  if (GTK_IS_SPIN_BUTTON (action))
 	    gtk_spin_button_update (GTK_SPIN_BUTTON (action));
 	}
@@ -1003,10 +1007,7 @@ bst_param_update (BstParam *bparam)
       action = GROUP_GET_ACTION (group);
       string = param->value.v_string;
       if (!string || !g_str_equal (gtk_entry_get_text (GTK_ENTRY (action)), string))
-	{
-	  gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
-	  // gtk_entry_set_position (GTK_ENTRY (action), 0);
-	}
+	gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
       pre_action = GROUP_GET_PRE_ACTION (group);
       if (pre_action)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (pre_action), string != NULL);
@@ -1019,13 +1020,8 @@ bst_param_update (BstParam *bparam)
       action = GROUP_GET_ACTION (group);
       string = param->value.v_item ? bse_item_make_nick_path (param->value.v_item) : NULL;
       if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), string))
-	{
-	  gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
-	  // gtk_entry_set_position (GTK_ENTRY (action), 0);
-	}
+	gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
       any = gtk_object_get_user_data (GTK_OBJECT (action));
-      if (any && 0) // FIXME: remove
-	bst_param_update_clue_hunter (bparam);
       break;
     case BSE_TYPE_PARAM_ENUM:
       action = GROUP_GET_ACTION (group);

@@ -43,7 +43,7 @@ typedef	struct	_BstItemViewClass	BstItemViewClass;
 typedef	struct	_BstItemViewOp		BstItemViewOp;
 struct _BstItemView
 {
-  GtkVBox	 parent_object;
+  GtkVPaned	 parent_object;
 
   BseType	 item_type;
   
@@ -60,7 +60,7 @@ struct _BstItemView
 };
 struct _BstItemViewClass
 {
-  GtkVBoxClass parent_class;
+  GtkVPanedClass parent_class;
 
   guint			 n_ops;
   BstItemViewOp		*ops;
@@ -74,6 +74,7 @@ struct _BstItemViewOp
 {
   gchar	*op_name;
   guint	 op;
+  guint  stock_icon;
 };
 
 

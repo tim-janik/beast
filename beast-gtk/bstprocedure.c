@@ -188,14 +188,19 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
    */
   if (proc->blurb)
     {
+      GtkWidget *hbox, *text = bst_wrap_text_create (proc->blurb, TRUE, NULL);
+
+      hbox = gtk_widget_new (GTK_TYPE_HBOX,
+			     "visible", TRUE,
+			     NULL);
+      gtk_box_pack_start (GTK_BOX (hbox), text, TRUE, TRUE, 5);
       gtk_widget_new (GTK_TYPE_FRAME,
 		      "visible", TRUE,
 		      "label", "Description",
 		      "label_xalign", 0.0,
-		      "border_width", 5,
 		      "width", 1,
 		      "height", 50,
-		      "child", bst_wrap_text_create (proc->blurb, TRUE, NULL),
+		      "child", hbox,
 		      "parent", param_box,
 		      NULL);
     }

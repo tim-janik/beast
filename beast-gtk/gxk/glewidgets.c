@@ -2180,7 +2180,8 @@ layout_row (GtkWrapBox    *wbox,
 	    gboolean       vexpand)
 {
   GSList *slist;
-  guint n_children = 0, n_expand_children = 0, have_expand_children = 0, total_width = 0;
+  guint n_children = 0, n_expand_children = 0, have_expand_children = 0;
+  gint total_width = 0;
   gfloat x, width, extra;
   GtkAllocation child_allocation;
   
@@ -2211,7 +2212,7 @@ layout_row (GtkWrapBox    *wbox,
       width /= ((gdouble) children_per_line);
       extra = 0;
     }
-  else if (have_expand_children)
+  else if (have_expand_children && wbox->justify != GTK_JUSTIFY_FILL)
     {
       width = extra;
       extra /= ((gdouble) n_expand_children);
@@ -2466,7 +2467,7 @@ gtk_hwrap_box_size_allocate (GtkWidget     *widget,
 {
   GtkWrapBox *wbox = GTK_WRAP_BOX (widget);
   GtkAllocation area;
-  guint border = GTK_CONTAINER (wbox)->border_width; /*<h2v-skip>*/
+  gint border = GTK_CONTAINER (wbox)->border_width; /*<h2v-skip>*/
   
   widget->allocation = *allocation;
   area.x = allocation->x + border;
@@ -2833,7 +2834,8 @@ layout_col (GtkWrapBox    *wbox,
 	    gboolean       hexpand)
 {
   GSList *slist;
-  guint n_children = 0, n_expand_children = 0, have_expand_children = 0, total_height = 0;
+  guint n_children = 0, n_expand_children = 0, have_expand_children = 0;
+  gint total_height = 0;
   gfloat y, height, extra;
   GtkAllocation child_allocation;
   
@@ -2864,7 +2866,7 @@ layout_col (GtkWrapBox    *wbox,
       height /= ((gdouble) children_per_line);
       extra = 0;
     }
-  else if (have_expand_children)
+  else if (have_expand_children && wbox->justify != GTK_JUSTIFY_FILL)
     {
       height = extra;
       extra /= ((gdouble) n_expand_children);
@@ -3119,7 +3121,7 @@ gtk_vwrap_box_size_allocate (GtkWidget     *widget,
 {
   GtkWrapBox *wbox = GTK_WRAP_BOX (widget);
   GtkAllocation area;
-  guint border = GTK_CONTAINER (wbox)->border_width; /*<h2v-skip>*/
+  gint border = GTK_CONTAINER (wbox)->border_width; /*<h2v-skip>*/
   
   widget->allocation = *allocation;
   area.y = allocation->y + border;

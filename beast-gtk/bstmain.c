@@ -510,10 +510,13 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
 #include "./icons/mouse_tool.c"
 #include "./icons/palette.c"
 #include "./icons/properties.c"
-#include "./icons/trash.c"
+#include "./icons/trashsmall.c"
+#include "./icons/trashcan.c"
 #include "./icons/close.c"
 #include "./icons/no_ilink.c"
 #include "./icons/no_olink.c"
+#include "./icons/pattern.c"
+#include "./icons/pattern-tool.c"
   static const BsePixdata pixdatas[] = {
     /* BST_ICON_NONE */
     { 0, 0, 0, NULL, },
@@ -533,10 +536,14 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
     { PROPERTIES_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       PROPERTIES_IMAGE_WIDTH, PROPERTIES_IMAGE_HEIGHT,
       PROPERTIES_IMAGE_RLE_PIXEL_DATA, },
-    /* BST_ICON_TRASH */
-    { TRASH_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      TRASH_IMAGE_WIDTH, TRASH_IMAGE_HEIGHT,
-      TRASH_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_DELETE */
+    { TRASHSMALL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      TRASHSMALL_IMAGE_WIDTH, TRASHSMALL_IMAGE_HEIGHT,
+      TRASHSMALL_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_TRASHCAN */
+    { TRASHCAN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      TRASHCAN_IMAGE_WIDTH, TRASHCAN_IMAGE_HEIGHT,
+      TRASHCAN_IMAGE_RLE_PIXEL_DATA, },
     /* BST_ICON_CLOSE */
     { CLOSE_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_HEIGHT,
@@ -549,6 +556,14 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
     { NO_OLINK_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       NO_OLINK_IMAGE_WIDTH, NO_OLINK_IMAGE_HEIGHT,
       NO_OLINK_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_PATTERN */
+    { PATTERN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      PATTERN_IMAGE_WIDTH, PATTERN_IMAGE_HEIGHT,
+      PATTERN_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_MOUSE_TOOL */
+    { PATTERN_TOOL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      PATTERN_TOOL_IMAGE_WIDTH, PATTERN_TOOL_IMAGE_HEIGHT,
+      PATTERN_TOOL_IMAGE_RLE_PIXEL_DATA, },
   };
   static const guint n_stock_icons = sizeof (pixdatas) / sizeof (pixdatas[0]);
   static BseIcon *icons[sizeof (pixdatas) / sizeof (pixdatas[0])] = { NULL, };
