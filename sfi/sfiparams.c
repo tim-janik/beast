@@ -582,7 +582,7 @@ sfi_pspec_choice (const gchar    *name,
   sfi_pspec_set_options (pspec, hints);
   sspec = G_PARAM_SPEC_STRING (pspec);
   g_free (sspec->default_value);
-  sspec->default_value = g_strdup (default_value ? default_value : static_const_cvalues.values[0].choice_name);
+  sspec->default_value = g_strdup (default_value ? default_value : static_const_cvalues.values[0].choice_ident);
   cspec = SFI_PSPEC_CHOICE (pspec);
   cspec->cvalues = static_const_cvalues;
   pspec->value_type = SFI_TYPE_CHOICE;
@@ -833,16 +833,11 @@ choice_values_to_seq (const SfiChoiceValues cvalues)
   SfiSeq *seq = sfi_seq_new ();
   guint i;
   for (i = 0; i < cvalues.n_values; i++)
-    if (!cvalues.values[i].choice_blurb)
-      sfi_seq_append_string (seq, cvalues.values[i].choice_name);
-    else
-      {
-	gchar *str;
-	/* wrap up blurb */
-	str = g_strconcat (cvalues.values[i].choice_name, ";", cvalues.values[i].choice_blurb, NULL);
-	sfi_seq_append_string (seq, str);
-	g_free (str);
-      }
+    {
+      sfi_seq_append_string (seq, cvalues.values[i].choice_ident);
+      sfi_seq_append_string (seq, cvalues.values[i].choice_label);
+      sfi_seq_append_string (seq, cvalues.values[i].choice_blurb);
+    }
   return seq;
 }
 
@@ -914,7 +909,7 @@ tmp_record_fields_from_seq (SfiSeq *seq)
 
 typedef struct {
   guint           ref_count;
-  GEnumClass     *eclass; /* !eclass => free (cvalues[*].values.choice_name) */
+  GEnumClass     *eclass; /* !eclass => free (cvalues[*].values.choice_ident) */
   SfiChoiceValues cvalues;
 } TmpChoiceValues;
 
@@ -935,7 +930,11 @@ tmp_choice_values_unref (TmpChoiceValues *tcv)
 	}
       else
 	for (i = 0; i < tcv->cvalues.n_values; i++)
-	  g_free (tcv->cvalues.values[i].choice_name);
+          {
+            g_free (tcv->cvalues.values[i].choice_ident);
+            g_free (tcv->cvalues.values[i].choice_label);
+            g_free (tcv->cvalues.values[i].choice_blurb);
+          }
       g_free ((gpointer) tcv->cvalues.values);
       g_free (tcv);
     }
@@ -946,36 +945,27 @@ tmp_choice_values_from_seq (SfiSeq *seq)
 {
   if (seq)
     {
-      guint l = sfi_seq_length (seq);
+      guint i, l = sfi_seq_length (seq), n = l / 3;
       /* check that we got a sequence from choice_values_to_seq() */
-      if (l && sfi_seq_check (seq, SFI_TYPE_STRING))
+      if (n && l == n * 3 && sfi_seq_check (seq, SFI_TYPE_STRING))
 	{
 	  TmpChoiceValues *tcv = g_new0 (TmpChoiceValues, 1);
 	  SfiChoiceValue *cvalues;
-	  guint i;
 	  tcv->eclass = NULL;
-	  tcv->cvalues.n_values = l;
+	  tcv->cvalues.n_values = n;
 	  cvalues = g_new0 (SfiChoiceValue, tcv->cvalues.n_values);
 	  tcv->cvalues.values = cvalues;
 	  tcv->ref_count = 1;
 	  for (i = 0; i < tcv->cvalues.n_values; i++)
 	    {
-	      gchar *p;
-	      cvalues[i].choice_name = g_strdup (sfi_seq_get_string (seq, i));
-	      if (!cvalues[i].choice_name)	/* aparently invalid sequence */
+	      cvalues[i].choice_ident = g_strdup (sfi_seq_get_string (seq, 3 * i + 0));
+	      cvalues[i].choice_label = g_strdup (sfi_seq_get_string (seq, 3 * i + 1));
+	      cvalues[i].choice_blurb = g_strdup (sfi_seq_get_string (seq, 3 * i + 2));
+	      if (!cvalues[i].choice_ident)	/* aparently invalid sequence */
 		{
 		  tmp_choice_values_unref (tcv);
 		  return NULL;
 		}
-	      /* extract blurb */
-	      p = strchr (cvalues[i].choice_name, ';');
-	      if (p)
-		{
-		  *p++ = 0;
-		  cvalues[i].choice_blurb = p;
-		}
-	      else
-		cvalues[i].choice_blurb = NULL;
 	    }
 	  return tcv;
 	}
@@ -994,12 +984,12 @@ tmp_choice_values_from_enum (GEnumClass *eclass)
       tcv = g_new0 (TmpChoiceValues, 1);
       tcv->eclass = g_type_class_ref (G_TYPE_FROM_CLASS (eclass));
       tcv->cvalues.n_values = eclass->n_values;
-      cvalues = g_new (SfiChoiceValue, tcv->cvalues.n_values);
+      cvalues = g_new0 (SfiChoiceValue, tcv->cvalues.n_values);
       tcv->cvalues.values = cvalues;
       for (i = 0; i < tcv->cvalues.n_values; i++)
 	{
-	  cvalues[i].choice_name = eclass->values[i].value_name;
-	  cvalues[i].choice_blurb = eclass->values[i].value_nick;
+	  cvalues[i].choice_ident = eclass->values[i].value_name;
+	  cvalues[i].choice_label = eclass->values[i].value_nick;
 	}
       g_type_set_qdata (G_TYPE_FROM_CLASS (eclass), quark_tmp_choice_values, tcv);
     }
@@ -1301,7 +1291,7 @@ sfi_pspec_get_choice_hash (GParamSpec *pspec)
    */
   hash = cspec->cvalues.n_values << 30;
   for (i = 0; i < cspec->cvalues.n_values; i++)
-    hash = (hash << 7) - hash + g_str_hash (cspec->cvalues.values[i].choice_name);
+    hash = (hash << 7) - hash + g_str_hash (cspec->cvalues.values[i].choice_ident);
   return hash;
 }
 

@@ -436,13 +436,19 @@ public:
         printf ("static inline SfiChoiceValues\n");
         printf ("%s_choice_values()\n", name);
         printf ("{\n");
-        printf ("  static const SfiChoiceValue values[%u] = {\n", ci->contents.size());
-        for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
-          printf ("    { \"%s\", \"%s\" },\n", make_FULL_UPPER (vi->name), vi->text.c_str());
-        printf ("  };\n");
+        printf ("  static SfiChoiceValue values[%u];\n", ci->contents.size());
         printf ("  static const SfiChoiceValues choice_values = {\n");
-        printf ("    sizeof (values), values,\n");
+        printf ("    G_N_ELEMENTS (values), values,\n");
         printf ("  };\n");
+        printf ("  if (!values[0].choice_ident)\n    {\n");
+        int i = 0;
+        for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); i++, vi++)
+          {
+            printf ("      values[%u].choice_ident = \"%s\";\n", i, make_FULL_UPPER (vi->name));
+            printf ("      values[%u].choice_label = %s;\n", i, vi->label.escaped().c_str());
+            printf ("      values[%u].choice_blurb = %s;\n", i, vi->blurb.escaped().c_str());
+          }
+        printf ("  }\n");
         printf ("  return choice_values;\n");
         printf ("}\n\n");
       }
@@ -490,8 +496,8 @@ public:
         printf ("BSE_CXX_DECLARE_ENUM (%s, \"%s\", %u,\n",
                 pure_TypeName (ci->name), make_PrefixedTypeName (ci->name), ci->contents.size());
         for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
-          printf ("                      *v++ = ::Bse::EnumValue (%d, \"%s\", \"%s\" );\n",
-                  vi->sequentialValue, make_FULL_UPPER (vi->name), vi->text.c_str());
+          printf ("                      *v++ = ::Bse::EnumValue (%d, \"%s\", %s );\n",
+                  vi->sequentialValue, make_FULL_UPPER (vi->name), vi->label.escaped().c_str());
         printf ("                      );\n");
       }
   }

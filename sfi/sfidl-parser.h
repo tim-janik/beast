@@ -60,12 +60,12 @@ public:
   }
 
   /* produces an escaped version "foo" or _("foo") */
-  std::string escaped () const
+  std::string escaped (const std::string &i18n_prefix = "_") const
   {
     std::string result;
     char *x = g_strescape (c_str(), 0);
     if (i18n)
-      result = "_(\"" + std::string(x) + "\")";
+      result = i18n_prefix + "(\"" + std::string(x) + "\")";
     else
       result = "\"" + std::string(x) + "\"";
     g_free (x);
@@ -112,7 +112,8 @@ struct Stream {
 struct ChoiceValue {
   std::string name;
   std::string file;
-  std::string text;
+  IString     label;
+  IString     blurb;
   
   int         value;
   int         sequentialValue;

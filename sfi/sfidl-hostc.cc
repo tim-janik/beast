@@ -285,7 +285,7 @@ string CodeGeneratorCBase::makeParamSpec(const Param& pdef)
 	    pspec += "_default (" + group + ",\"" + pdef.name + "\",";
 	  else
 	    pspec += " (" + group + ", \"" + pdef.name + "\"," + pdef.args + ",";
-	  pspec += makeLowerName (pdef.type) + "_values)";
+	  pspec += makeLowerName (pdef.type) + "_get_values())";
 	}
 	break;
       case RECORD:
@@ -839,7 +839,8 @@ void CodeGeneratorCBase::printChoiceConverters()
 
   for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
     {
-      if (parser.fromInclude (ei->name)) continue;
+      if (parser.fromInclude (ei->name))
+        continue;
 
       int minval = 1, maxval = 1;
       vector<ChoiceValue>::iterator ci;
@@ -994,7 +995,8 @@ bool CodeGeneratorC::run ()
 	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
 	      /* don't export server side assigned choice values to the client */
-	      gint value = options.doInterface ? ci->sequentialValue : ci->value;
+	      gint value = options.doInterface || !options.generateBoxedTypes ? ci->sequentialValue : ci->value;
+              // FIXME: the above condition is really hairy, basically we just want value for BSE and GType
 	      string ename = makeUpperName (ci->name);
 	      printf("  %s = %d,\n", ename.c_str(), value);
 	    }
@@ -1077,7 +1079,7 @@ bool CodeGeneratorC::run ()
 	{
 	  if (parser.fromInclude (ei->name)) continue;
 
-	  printf("extern SfiChoiceValues %s_values;\n", makeLowerName (ei->name).c_str());
+          printf("const SfiChoiceValues %s_get_values (void);\n", makeLowerName (ei->name).c_str());
 	  if (options.generateBoxedTypes)
 	    printf("extern GType %s;\n", makeGTypeName (ei->name).c_str());
 	}
@@ -1368,25 +1370,41 @@ bool CodeGeneratorC::run ()
 
       for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	{
-	  if (parser.fromInclude (ei->name)) continue;
+	  if (parser.fromInclude (ei->name))
+            continue;
 
 	  string name = makeLowerName (ei->name);
-	  printf("static const GEnumValue %s_value[%d] = {\n", name.c_str(), ei->contents.size() + 1);
-	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
-	    {
-	      string ename = makeUpperName (ci->name);
-	      printf("  { %d, \"%s\", \"%s\" },\n", ci->value, ename.c_str(), ci->text.c_str());
-	    }
-	  printf("  { 0, NULL, NULL }\n");
-	  printf("};\n");
-	  printf("static const SfiChoiceValue %s_cvalue[%d] = {\n", name.c_str(), ei->contents.size());
-	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
-	    {
-	      string ename = makeUpperName (ci->name);
-	      printf("  { \"%s\", \"%s\" },\n", ename.c_str(), ci->text.c_str());
-	    }
-	  printf("};\n");
-	  printf("SfiChoiceValues %s_values = { %d, %s_cvalue };\n", name.c_str(), ei->contents.size(), name.c_str());
+
+          if (options.generateBoxedTypes)
+            {
+              printf("static const GEnumValue %s_value[%d] = {\n", name.c_str(), ei->contents.size() + 1); // FIXME: i18n
+              for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
+                {
+                  string ename = makeUpperName (ci->name);
+                  printf("  { %d, \"%s\", \"%s\" },\n", ci->value, ename.c_str(), ci->label.c_str());
+                }
+              printf("  { 0, NULL, NULL }\n");
+              printf("};\n");
+            }
+          printf ("const SfiChoiceValues\n");
+          printf ("%s_get_values (void)\n", makeLowerName (ei->name).c_str());
+          printf ("{\n");
+          printf ("  static SfiChoiceValue values[%u];\n", ei->contents.size());
+          printf ("  static const SfiChoiceValues choice_values = {\n");
+          printf ("    G_N_ELEMENTS (values), values,\n");
+          printf ("  };\n");
+          printf ("  if (!values[0].choice_ident)\n    {\n");
+          int i = 0;
+          for (vector<ChoiceValue>::const_iterator vi = ei->contents.begin(); vi != ei->contents.end(); i++, vi++)
+            {
+              printf ("      values[%u].choice_ident = \"%s\";\n", i, makeUpperName (vi->name).c_str());
+              printf ("      values[%u].choice_label = %s;\n", i, vi->label.escaped().c_str());
+              printf ("      values[%u].choice_blurb = %s;\n", i, vi->blurb.escaped().c_str());
+            }
+          printf ("  }\n");
+          printf ("  return choice_values;\n");
+          printf ("}\n");
+          
 	  if (options.generateBoxedTypes)
 	    printf("GType %s = 0;\n", makeGTypeName (ei->name).c_str());
 	  printf("\n");
@@ -1489,7 +1507,8 @@ bool CodeGeneratorC::run ()
 	}
     }
 
-  if (options.doInterface && options.doSource)
+  // if (options.doInterface && options.doSource)
+  if (options.doSource) //  && !options.generateBoxedTypes)
     printChoiceConverters();
 
   if (options.initFunction != "")

@@ -153,7 +153,7 @@ bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
     g_scanner_get_next_token(scanner); \
   if (g_scanner_get_next_token (scanner) != G_TOKEN_INT) \
     return G_TOKEN_INT; \
-  i = scanner->value.v_int; \
+  i = scanner->value.v_int64; \
   if (negate) i = -i; \
 }G_STMT_END
 #define parse_float_or_return(f) G_STMT_START{ \
@@ -165,7 +165,7 @@ bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
     t = g_scanner_get_next_token (scanner); \
   } \
   if (t == G_TOKEN_INT) \
-    f = scanner->value.v_int; \
+    f = scanner->value.v_int64; \
   else if (t == G_TOKEN_FLOAT) \
     f = scanner->value.v_float; \
   else \
@@ -892,7 +892,7 @@ GTokenType Parser::parseConstant ()
     parse_or_return (G_TOKEN_INT);
 
     cdef.type = Constant::tInt;
-    cdef.i = scanner->value.v_int;
+    cdef.i = scanner->value.v_int64;
     if (negate)
       cdef.i = -cdef.i;
   }
@@ -921,7 +921,8 @@ GTokenType Parser::parseConstant ()
   return G_TOKEN_NONE;
 }
 
-GTokenType Parser::parseChoice ()
+GTokenType
+Parser::parseChoice ()
 {
   Choice choice;
   int value = 0, sequentialValue = 1;
@@ -962,73 +963,84 @@ skip_ascii_at (GScanner *scanner)
     g_scanner_get_next_token (scanner);
 }
 
-GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
+#define to_lower(c)                             ( \
+        (guchar) (                                                      \
+          ( (((guchar)(c))>='A' && ((guchar)(c))<='Z') * ('a'-'A') ) |  \
+          ( (((guchar)(c))>=192 && ((guchar)(c))<=214) * (224-192) ) |  \
+          ( (((guchar)(c))>=216 && ((guchar)(c))<=222) * (248-216) ) |  \
+          ((guchar)(c))                                                 \
+        )                                                               \
+)
+
+
+GTokenType
+Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
 {
-  /*
-    YES,
-    YES = 1,
-    YES = "Yes",
-    YES = (1, "Yes"),
-    YES = Neutral,
-    YES = (Neutral, "Yes"),
-  */
-  
   parse_or_return (G_TOKEN_IDENTIFIER);
   comp.name = defineSymbol(scanner->value.v_identifier);
   comp.file = fileName();
   comp.neutral = false;
+  string str;
+  comp.name.c_str(); // don't remove this
+  for (guint i = 0; i < comp.name.size(); i++)
+    if (comp.name[i] != ':' || comp.name[i + 1] != ':')
+      str += comp.name[i] == ':' ? '_' : to_lower(comp.name[i]);
+  comp.label = g_type_name_to_sname (str.c_str());
   
-  /* the hints are optional */
+  /*
+    YES,
+    YES = 1,
+    YES = "Yes",
+    YES = Neutral,
+    YES = (1),
+    YES = (1, "Yes"),
+    YES = (Neutral, "Yes"),
+    YES = (1, "Yes", "this is the Yes value"),
+    YES = ("Yes", "this is the Yes value"),
+  */
   if (g_scanner_peek_next_token (scanner) == GTokenType('='))
     {
-      int args = 1;
       parse_or_return ('=');
-      
       if (g_scanner_peek_next_token (scanner) == GTokenType('('))
-	{
-	  parse_or_return ('(');
-	  args = 2;
-	}
-      
-      switch (g_scanner_peek_next_token (scanner))
-	{
-        case G_TOKEN_IDENTIFIER:
-          {
-            parse_or_return (G_TOKEN_IDENTIFIER);
-            if (strcmp (scanner->value.v_string, "Neutral") == 0)
-              {
-                comp.neutral = true;
-              }
-            else
-              {
-                printError("expected 'Neutral' or nothing as choice value type");
-                return GTokenType('(');
-              }
-          }
-          break;
-        case G_TOKEN_INT:
-          {
-            parse_or_return (G_TOKEN_INT);
-            value = scanner->value.v_int;
-          }
-          break;
-        case G_TOKEN_STRING:
-          {
-            if (args == 1)
-              parse_string_or_return (comp.text);
-            else
-              return G_TOKEN_INT;
-          }
-          break;
-        default:
-          return G_TOKEN_INT;
-	}
-      
-      if (args == 2)
-	{
-	  parse_or_return (',');
-	  parse_string_or_return (comp.text);
-	  parse_or_return (')');
+        {
+          bool need_arg = true;
+          parse_or_return ('(');
+          if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
+            {
+              parse_or_return (G_TOKEN_INT);
+              value = scanner->value.v_int64;
+              if (g_scanner_peek_next_token (scanner) == ',')
+                parse_or_return (',');
+              else
+                need_arg = false;
+            }
+          else if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+                   strcmp (scanner->next_value.v_string, "Neutral") == 0)
+            {
+              parse_or_return (G_TOKEN_IDENTIFIER);
+              comp.neutral = true;
+              if (g_scanner_peek_next_token (scanner) == ',')
+                parse_or_return (',');
+              else
+                need_arg = false;
+            }
+          if (need_arg)
+            {
+              parse_istring_or_return (comp.label);
+              if (g_scanner_peek_next_token (scanner) == ',')
+                parse_or_return (',');
+              else
+                need_arg = false;
+            }
+          if (need_arg)
+            {
+              parse_istring_or_return (comp.blurb);
+              if (g_scanner_peek_next_token (scanner) == ',')
+                parse_or_return (',');
+              else
+                need_arg = false;
+            }
+          parse_or_return (')');
 	}
     }
   
@@ -1208,7 +1220,7 @@ GTokenType Parser::parseParamHints (Param &def)
 				  token_as_string = g_strdup_printf ("\"%s\"", x);
 				  g_free (x);
 	  break;
-	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%lu", scanner->value.v_int);
+	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%llu", scanner->value.v_int64);
 	  break;
 	case G_TOKEN_FLOAT:	  token_as_string = g_strdup_printf ("%.17g", scanner->value.v_float);
 	  break;
