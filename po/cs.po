@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-14 19:24+0200\n"
-"PO-Revision-Date: 2004-07-14 22:59+0200\n"
+"POT-Creation-Date: 2004-08-18 11:02+0200\n"
+"PO-Revision-Date: 2004-08-18 15:14+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -529,76 +529,81 @@ msgstr "Funkce používaná pro vytvoření nových klávesových zkratek"
 msgid "Description"
 msgstr "Popis"
 
-#: beast-gtk/bstmain.c:129
+#. overriding Gdk's program name
+#: beast-gtk/bstmain.c:118 data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr "BEAST"
+
+#: beast-gtk/bstmain.c:130
 msgid "BEAST Startup"
 msgstr "Spuštění BEAST"
 
-#: beast-gtk/bstmain.c:136
+#: beast-gtk/bstmain.c:137
 msgid "Startup"
 msgstr "Spuštění"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:140
+#: beast-gtk/bstmain.c:141
 msgid "Initializers"
 msgstr "Inicializéry"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:147
+#: beast-gtk/bstmain.c:148
 msgid "RC Files"
 msgstr "Soubory RC"
 
 #. show splash images
-#: beast-gtk/bstmain.c:151
+#: beast-gtk/bstmain.c:152
 msgid "Splash Image"
 msgstr "Obrázek při spuštění"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:163
+#: beast-gtk/bstmain.c:164
 msgid "BSE Core"
 msgstr "Jádro BSE"
 
-#: beast-gtk/bstmain.c:185
+#: beast-gtk/bstmain.c:186
 msgid "Plugins"
 msgstr "Zásuvné moduly"
 
-#: beast-gtk/bstmain.c:204
+#: beast-gtk/bstmain.c:205
 msgid "LADSPA Plugins"
 msgstr "Zásuvné moduly LADSPA"
 
-#: beast-gtk/bstmain.c:232
+#: beast-gtk/bstmain.c:233
 msgid "Scripts"
 msgstr "Skripty"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:250
+#: beast-gtk/bstmain.c:251
 msgid "Dialogs"
 msgstr "Dialogy"
 
-#: beast-gtk/bstmain.c:257
+#: beast-gtk/bstmain.c:258
 msgid "Loading..."
 msgstr "Načítám..."
 
-#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
+#: beast-gtk/bstmain.c:288 beast-gtk/bstmain.c:290
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Načítám \"%s\""
 
-#: beast-gtk/bstmain.c:306
+#: beast-gtk/bstmain.c:307
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Načítám projekt \"%s\""
 
-#: beast-gtk/bstmain.c:722
+#: beast-gtk/bstmain.c:723
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.c:723
+#: beast-gtk/bstmain.c:724
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: beast-gtk/bstmain.c:724
+#: beast-gtk/bstmain.c:725
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -877,7 +882,7 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Rozložení editoru vzorků"
 
-#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "VZoom"
 msgstr "SZvětšení"
 
@@ -1349,7 +1354,7 @@ msgstr ""
 "obcházení možných nestabilit kódu (tj. pravidelně ukládejte své projekty)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_Edit"
 msgstr "_Upravit"
 
@@ -2080,34 +2085,38 @@ msgstr "Označit signál (začátek)"
 msgid "Mark Signal (Tail)"
 msgstr "Označit signál (konec)"
 
-#: beast-gtk/bstsupershell.c:150 beast-gtk/bstsupershell.c:273
+#: beast-gtk/bstsupershell.c:151 beast-gtk/bstsupershell.c:279
 msgid "Waves"
 msgstr "Vlny"
 
-#: beast-gtk/bstsupershell.c:213
+#: beast-gtk/bstsupershell.c:214
 msgid "Tracks"
 msgstr "Stopy"
 
-#: beast-gtk/bstsupershell.c:218 beast-gtk/bstsupershell.c:260
-#: beast-gtk/bstsupershell.c:278 plugins/artscompressor.idl:34
+#: beast-gtk/bstsupershell.c:219
+msgid "Mixer"
+msgstr "Mixér"
+
+#: beast-gtk/bstsupershell.c:224 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:284 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parametry"
 
-#: beast-gtk/bstsupershell.c:223
+#: beast-gtk/bstsupershell.c:229
 msgid "Parts"
 msgstr "Části"
 
-#: beast-gtk/bstsupershell.c:229
+#: beast-gtk/bstsupershell.c:235
 msgid "Busses"
 msgstr "Sběrnice"
 
-#: beast-gtk/bstsupershell.c:235 beast-gtk/bstsupershell.c:254
+#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:260
 msgid "Routing"
 msgstr "Směrování"
 
-#: beast-gtk/bstsupershell.c:249
+#: beast-gtk/bstsupershell.c:255
 msgid "Rack"
 msgstr "Rack"
 
@@ -2284,182 +2293,198 @@ msgid "Aplly configuration changes to the pattern editor layout"
 msgstr "Použít změny nastavení rozložení editoru vzorků"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:3
+msgid "Bus Name"
+msgstr "Název sběrnice"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Configure"
 msgstr "nastavit"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Configure the column layout of the pattern editor"
 msgstr "Nastavit rozložení sloupců editoru vzorků"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Control Type:"
 msgstr "Typ řízení:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Development"
 msgstr "Vývoj"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Discard changes and close dialog"
 msgstr "Zahodit změny a zavřít dialog"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "E_xamples"
 msgstr "_Příklady"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "Events"
 msgstr "Události"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "HZoom"
 msgstr "VZvětšení"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Horizontal piano zoom"
 msgstr "Vodorovné zvětšení klavíru"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Horizontal track zoom"
 msgstr "Vodorovné zvětšení stopy"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
+msgid "Inputs"
+msgstr "Vstupy"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Layout:"
 msgstr "Rozložení:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
+msgid "Level"
+msgstr "Úroveň"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Note _Length"
 msgstr "_Délka noty"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
+msgid "Outputs"
+msgstr "Výstupy"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Piano Notes"
 msgstr "Noty klavíru"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Repeat"
 msgstr "Opakovat"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "Repeat playback within loop points"
 msgstr "Opakovat přehrávání mezi hranicemi smyčky"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Synthesis Modules"
 msgstr "Moduly syntézy"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Vertical piano zoom"
 msgstr "Svislé zvětšení klavíru"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:21
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "Virtual Rack"
 msgstr "Svislý rack"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "Wave_s"
 msgstr "_Vlny"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "Zoom"
 msgstr "Zvětšení"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "_Apply"
 msgstr "_Použít"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Audio Sources"
 msgstr "_Zdroje zvuku"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Cancel"
 msgstr "_Zrušit"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Distortion"
 msgstr "_Zkreslení"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Enhance"
 msgstr "_Vylepšit"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_File"
 msgstr "_Soubor"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Filters"
 msgstr "_Filtry"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_Help"
 msgstr "Nápo_věda"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Input & Output"
 msgstr "_Vstup a výstup"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Misc"
 msgstr "_Různé"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Other Sources"
 msgstr "_Jiné zdroje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Project"
 msgstr "_Projekt"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Quantization"
 msgstr "_Kvantizace"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Routing"
 msgstr "_Směrování"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Skins"
 msgstr "_Skiny"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Song"
 msgstr "_Skladba"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Spatial"
 msgstr "_Prostorové"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Synth"
 msgstr "_Syntéza"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Synthesizers"
 msgstr "_Syntetizátory"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_Tools"
 msgstr "_Nástroje"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Utilities"
 msgstr "_Pomůcky"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:52
 msgid "_View"
 msgstr "_Zobrazit"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:53
 msgid "_Virtualization"
 msgstr "_Virtualizace"
 
@@ -3257,21 +3282,21 @@ msgstr "Parazit"
 msgid "/Input & Output/PCM Input"
 msgstr "/Vstup a výstup/Vstup PCM"
 
-#: bse/bsepcminput.c:128 bse/bsebus.c:273 plugins/artscompressor.idl:51
+#: bse/bsepcminput.c:128 bse/bsebus.c:303 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Levý zvuk Out"
 
-#: bse/bsepcminput.c:128 bse/bsebus.c:273
+#: bse/bsepcminput.c:128 bse/bsebus.c:303
 msgid "Left channel output"
 msgstr "Výstup levého kanálu"
 
-#: bse/bsepcminput.c:130 bse/bsebus.c:275 plugins/artscompressor.idl:52
+#: bse/bsepcminput.c:130 bse/bsebus.c:305 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Pravý zvuk Out"
 
-#: bse/bsepcminput.c:130 bse/bsebus.c:275
+#: bse/bsepcminput.c:130 bse/bsebus.c:305
 msgid "Right channel output"
 msgstr "Výstup pravého kanálu"
 
@@ -3279,16 +3304,16 @@ msgstr "Výstup pravého kanálu"
 msgid "/Input & Output/PCM Output"
 msgstr "/Vstup a výstup/Výstup PCM"
 
-#: bse/bsepcmoutput.c:128 bse/bsebus.c:269 plugins/artscompressor.idl:49
+#: bse/bsepcmoutput.c:128 bse/bsebus.c:299 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Levý zvuk In"
 
-#: bse/bsepcmoutput.c:128 bse/bsebus.c:269
+#: bse/bsepcmoutput.c:128 bse/bsebus.c:299
 msgid "Left channel input"
 msgstr "Vstup levého kanálu"
 
-#: bse/bsepcmoutput.c:130 bse/bsebus.c:271 plugins/artscompressor.idl:50
+#: bse/bsepcmoutput.c:130 bse/bsebus.c:301 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Pravý zvuk In"
@@ -3383,13 +3408,34 @@ msgstr "Syntetizovat notu do skladby z aktuálního projektu."
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Získat informace o časování skladby u konkrétního znaménka."
 
-#: bse/bsebus.c:271
+#: bse/bsebus.c:287
+msgid "Signal Inputs"
+msgstr "Vstupy signálu"
+
+#: bse/bsebus.c:289
+msgid "Custom Synth Net"
+msgstr "Vlastní síť syntézy"
+
+#: bse/bsebus.c:289
+msgid "Synthesis network to be used as instrument"
+msgstr "Síť syntézy, kterou používat jako nástroj"
+
+#: bse/bsebus.c:291
+msgid "Adjustments"
+msgstr "Úpravy"
+
+#: bse/bsebus.c:293
+#, fuzzy
+msgid "Bus Gain [float]"
+msgstr "Hodnota [float]"
+
+#: bse/bsebus.c:301
 msgid "Right channel input"
 msgstr "Vstup pravého kanálu"
 
-#: bse/bsebus.c:294
+#: bse/bsebus.c:324
 msgid ""
-"Bus implementation for songs, used to to route track audio signals to the "
+"Bus implementation for songs, used to route track audio signals to the "
 "master output."
 msgstr ""
 "Implementace sběrnice pro skladby používaná pro směrování signálů stop zvuku "
@@ -3632,10 +3678,6 @@ msgstr "Výstup vlny"
 #: bse/bsewaveosc.c:157
 msgid "Gate Output"
 msgstr "Výstup brány"
-
-#: data/beast.desktop.in.h:1
-msgid "BEAST"
-msgstr "BEAST"
 
 #: data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
