@@ -28,6 +28,24 @@
 #include <fcntl.h>
 
 
+static const gchar*
+beauty_float (gdouble f)
+{
+  gchar *s = g_strdup_printf ("%.7f", f);
+  const gchar *c;
+  if (strchr (s, '.'))
+    {
+      guint l = strlen (s) - 1;
+      while (s[l] == '0')
+        s[l--] = 0;
+      if (s[l] == '.')
+        s[l--] = 0;
+    }
+  c = g_intern_string (s);
+  g_free (s);
+  return c;
+}
+
 static GQuark  boxed_type_tag = 0;
 
 static void
@@ -423,7 +441,7 @@ show_objdoc (void)
                 g_print ("@itemize\n");
               g_print ("@anchor{%s::%s} ", g_type_name (type), sfi_pspec_get_name (pspec));
               g_print ("@item @strong{@emph{%s}}\n", sfi_pspec_get_nick (pspec));
-              g_print ("@* @emph{%s} @var{%s}\n", _("Name:"), sfi_pspec_get_name (pspec));
+              g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), sfi_pspec_get_name (pspec));
               if (SFI_IS_PSPEC_INT (pspec))
                 {
                   SfiInt imin, imax;
@@ -434,7 +452,7 @@ show_objdoc (void)
                 {
                   SfiReal fmin, fmax;
                   sfi_pspec_get_real_range (pspec, &fmin, &fmax, NULL);
-                  g_print ("@* @emph{%s} %.7g .. %.7g\n", _("Range:"), fmin, fmax);
+                  g_print ("@* @emph{%s} %s .. %s\n", _("Range:"), beauty_float (fmin), beauty_float (fmax));
                 }
               string = sfi_pspec_get_blurb (pspec);
               if (string)
@@ -456,7 +474,7 @@ show_objdoc (void)
           g_print ("@anchor{%s::%s} ", g_type_name (type), BSE_SOURCE_ICHANNEL_IDENT (source, j));
           g_print ("@item @strong{@emph{%s %s}}\n", BSE_SOURCE_ICHANNEL_NAME (source, j),
                    BSE_SOURCE_IS_JOINT_ICHANNEL (source, j) ? _("(Joint Input)") : "");
-          g_print ("@* @emph{%s} @var{%s}\n", _("Name:"), BSE_SOURCE_ICHANNEL_IDENT (source, j));
+          g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), BSE_SOURCE_ICHANNEL_IDENT (source, j));
           string = BSE_SOURCE_ICHANNEL_BLURB (source, j);
           if (string)
             g_print ("@* @emph{%s} %s\n", _("Description:"), string);
@@ -473,7 +491,7 @@ show_objdoc (void)
             g_print ("@itemize\n");
           g_print ("@anchor{%s::%s} ", g_type_name (type), BSE_SOURCE_OCHANNEL_IDENT (source, j));
           g_print ("@item @strong{@emph{%s}} \n", BSE_SOURCE_OCHANNEL_NAME (source, j));
-          g_print ("@* @emph{%s} @var{%s}\n", _("Name:"), BSE_SOURCE_OCHANNEL_IDENT (source, j));
+          g_print ("@* @emph{%s} @var{%s}\n", _("Identifier:"), BSE_SOURCE_OCHANNEL_IDENT (source, j));
           string = BSE_SOURCE_OCHANNEL_BLURB (source, j);
           if (string)
             g_print ("@* @emph{%s} %s\n", _("Description:"), string);
@@ -494,9 +512,8 @@ help (const gchar *name,
 {
   if (arg)
     fprintf (stderr, "%s: unknown argument: %s\n", name, arg);
-  fprintf (stderr, "usage: %s [-h] [-p] [-s] {procs|structs}\n", name);
+  fprintf (stderr, "usage: %s [-h] [-p] {procs|structs|objects}\n", name);
   fprintf (stderr, "  -p                  include plugins\n");
-  fprintf (stderr, "  -s                  include scripts\n");
   fprintf (stderr, "  -h                  show help\n");
   fprintf (stderr, "  --seealso <link>    add a SEE ALSO section link\n");
   
@@ -508,25 +525,22 @@ main (gint   argc,
       gchar *argv[])
 {
   GSList *seealso = NULL;
+  SfiRec *config;
   gboolean gen_procs = FALSE;
   gboolean gen_structs = FALSE;
   gboolean gen_objects = FALSE;
   guint i;
   
   g_thread_init (NULL);
-  
-  bse_init_intern (&argc, &argv, NULL);
+  sfi_init ();
+  config = sfi_rec_new();
   boxed_type_tag = g_quark_from_static_string ("bse-auto-doc-boxed-type-tag");
   
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
 	{
-	  // FIXME: bsw_register_plugins (NULL, TRUE, NULL, NULL, NULL);
-	}
-      else if (strcmp ("-s", argv[i]) == 0)
-	{
-	  // FIXME: bsw_register_scripts (NULL, TRUE, NULL, NULL, NULL);
+          sfi_rec_set_bool (config, "load-core-plugins", TRUE);
 	}
       else if (strcmp ("procs", argv[i]) == 0)
 	{
@@ -558,6 +572,8 @@ main (gint   argc,
       else
 	return help (argv[0], argv[i]);
     }
+
+  bse_init_intern (&argc, &argv, config);
 
   tag_all_boxed_pspecs ();
 

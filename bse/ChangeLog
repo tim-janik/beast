@@ -1,3 +1,8 @@
+Mon Jan 19 15:31:20 2004  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: beautify float output. s/Name/Identifier/ for
+	property/channel identifiers. fixed plugin loading.
+
 Fri Jan 16 19:42:30 2004  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle.[hc]: added support for alaw and ulaw sample formats.
