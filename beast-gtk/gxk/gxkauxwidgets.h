@@ -92,6 +92,19 @@ typedef GtkFrame      GxkFocusFrame;
 typedef GtkFrameClass GxkFocusFrameClass;
 GType   gxk_focus_frame_get_type          (void);
 
+/* --- back shade --- */
+#define GXK_TYPE_BACK_SHADE              (gxk_back_shade_get_type ())
+#define GXK_BACK_SHADE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_BACK_SHADE, GxkBackShade))
+#define GXK_BACK_SHADE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_BACK_SHADE, GxkBackShadeClass))
+#define GXK_IS_BACK_SHADE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_BACK_SHADE))
+#define GXK_IS_BACK_SHADE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_BACK_SHADE))
+#define GXK_BACK_SHADE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_BACK_SHADE, GxkBackShadeClass))
+typedef GtkAlignment      GxkBackShade;
+typedef GtkAlignmentClass GxkBackShadeClass;
+GType   gxk_back_shade_get_type          (void);
+
+
+
 G_END_DECLS
 
 #endif /* __GXK_AUX_WIDGETS_H__ */

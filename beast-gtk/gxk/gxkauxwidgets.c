@@ -606,6 +606,7 @@ focus_frame_expose_event (GtkWidget      *widget,
 static void
 gxk_focus_frame_init (GxkFocusFrame *self)
 {
+  GTK_WIDGET_SET_FLAGS (self, GTK_VISIBLE);
   gtk_container_set_border_width (GTK_CONTAINER (self), 1);
 }
 
@@ -615,3 +616,167 @@ gxk_focus_frame_class_init (GxkFocusFrameClass *class)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   widget_class->expose_event = focus_frame_expose_event;
 }
+
+/* --- back shade --- */
+G_DEFINE_TYPE (GxkBackShade, gxk_back_shade, GTK_TYPE_ALIGNMENT);
+
+/* color converion code stolen from gtkstyle.c */
+static void
+rgb_to_hls (gdouble  red,
+            gdouble  green,
+            gdouble  blue,
+            gdouble *h_p,
+            gdouble *l_p,
+            gdouble *s_p)
+{
+  gdouble max = MAX (MAX (red, green), blue);
+  gdouble min = MIN (MIN (red, green), blue);
+  gdouble l = (max + min) / 2.;
+  gdouble h = 0, s = 0;
+  if (max != min)
+    {
+      gdouble delta = max - min;
+      s = delta / (l <= 0.5 ? max + min : 2 - max - min);
+      if (delta == 0.0)
+        delta = 1.0;
+      if (red == max)
+        h = (green - blue) / delta;
+      else if (green == max)
+        h = 2 + (blue - red) / delta;
+      else if (blue == max)
+        h = 4 + (red - green) / delta;
+      h *= 60;
+      if (h < 0.0)
+        h += 360;
+    }
+  *h_p = h;
+  *l_p = l;
+  *s_p = s;
+}
+
+static void
+hls_to_rgb (gdouble  hue,
+            gdouble  lightness,
+            gdouble  saturation,
+            gdouble *r_p,
+            gdouble *g_p,
+            gdouble *b_p)
+{
+  if (saturation == 0)
+    {
+      *r_p = lightness;
+      *g_p = lightness;
+      *b_p = lightness;
+    }
+  else
+    {
+      gdouble m2, chue;
+      if (lightness <= 0.5)
+        m2 = lightness * (1 + saturation);
+      else
+        m2 = lightness + saturation - lightness * saturation;
+      gdouble m1 = 2 * lightness - m2;
+
+      chue = hue + 120;
+      while (chue > 360)
+        chue -= 360;
+      while (chue < 0)
+        chue += 360;
+      if (chue < 60)
+        *r_p = m1 + (m2 - m1) * chue / 60;
+      else if (chue < 180)
+        *r_p = m2;
+      else if (chue < 240)
+        *r_p = m1 + (m2 - m1) * (240 - chue) / 60;
+      else
+        *r_p = m1;
+
+      chue = hue;
+      while (chue > 360)
+        chue -= 360;
+      while (chue < 0)
+        chue += 360;
+      if (chue < 60)
+        *g_p = m1 + (m2 - m1) * chue / 60;
+      else if (chue < 180)
+        *g_p = m2;
+      else if (chue < 240)
+        *g_p = m1 + (m2 - m1) * (240 - chue) / 60;
+      else
+        *g_p = m1;
+
+      chue = hue - 120;
+      while (chue > 360)
+        chue -= 360;
+      while (chue < 0)
+        chue += 360;
+      if (chue < 60)
+        *b_p = m1 + (m2 - m1) * chue / 60;
+      else if (chue < 180)
+        *b_p = m2;
+      else if (chue < 240)
+        *b_p = m1 + (m2 - m1) * (240 - chue) / 60;
+      else
+        *b_p = m1;
+    }
+}
+
+static void
+color_shade (GdkColor *color,
+             gdouble   k)
+{
+  gdouble r = color->red / 65536.;
+  gdouble g = color->green / 65536.;
+  gdouble b = color->blue / 65536.;
+  gdouble h, l, s;
+  rgb_to_hls (r, g, b, &h, &l, &s);
+  l = CLAMP (l * k, 0, 1);
+  s = CLAMP (s * k, 0, 1);
+  hls_to_rgb (h, l, s, &r, &g, &b);
+  color->red = r * 65535.;
+  color->green = g * 65535.;
+  color->blue = b * 65535.0;
+}
+
+static GdkGC*
+get_darkened_gc (GdkWindow *window,
+                 GdkColor  *srccolor,
+                 gint       darken_count)
+{
+  GdkColor color = *srccolor;
+  while (darken_count--)
+    color_shade (&color, 0.93);
+  GdkGC *gc = gdk_gc_new (window);
+  gdk_gc_set_rgb_fg_color (gc, &color);
+  return gc;
+}
+
+static gboolean
+back_shade_expose_event (GtkWidget      *widget,
+                         GdkEventExpose *event)
+{
+  GdkWindow *window = widget->window;
+  GtkStyle *style = widget->style;
+  GdkGC *gc = get_darkened_gc (window, &style->bg[GTK_STATE_NORMAL], 1);
+  GdkRectangle *area = &event->area;
+  gdk_gc_set_clip_rectangle (gc, area);
+  gdk_draw_rectangle (window, gc, TRUE, area->x, area->y, area->width, area->height);
+  gdk_gc_set_clip_rectangle (gc, NULL);
+  g_object_unref (gc);
+  /* chain to parent */
+  return GTK_WIDGET_CLASS (gxk_back_shade_parent_class)->expose_event (widget, event);
+}
+
+static void
+gxk_back_shade_init (GxkBackShade *self)
+{
+  GTK_WIDGET_SET_FLAGS (self, GTK_VISIBLE);
+}
+
+static void
+gxk_back_shade_class_init (GxkBackShadeClass *class)
+{
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  widget_class->expose_event = back_shade_expose_event;
+}
+

@@ -151,6 +151,9 @@
   <xdef:image                 inherit="GxkImage"
     prop:stock-size="$(null-collapse,$stock-size)"
     prop:stock="$stock-image" />
+  <!-- backshade -->
+  <xdef:back-shade            inherit="GxkBackShade"
+    />
   <!-- scrollbars/scales -->
   <xdef:hscale                inherit="GtkHScale" prop:draw_value="$(first-occupied,$draw-value,0)" prop:can-focus="0" />
   <xdef:vscale                inherit="GtkVScale" prop:draw_value="$(first-occupied,$draw-value,0)" prop:can-focus="0" />

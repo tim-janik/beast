@@ -1,3 +1,12 @@
+Sat Jun 12 16:23:51 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-standard.xml: define back-shade widget.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: implemented back-shade widget which
+	uses a slightly shaded background.
+
+	* beast-gtk/gxk/gxkgadget.c: export GxkBackShade.
+
 Fri Jun 11 04:31:02 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.[hc]: made dialog actions private.
