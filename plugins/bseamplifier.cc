@@ -223,6 +223,7 @@ protected:
     if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 5, 4) <= 0) // COMPAT-FIXME: remove around 0.7.0
       set ("ctrl_exp", TRUE,
            "audio_gain_f", 0.5,
+           "ctrl_mul", FALSE,
            NULL);
   }
 public:

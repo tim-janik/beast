@@ -58,7 +58,7 @@ class Amplifier : Effect {
     Bool  ctrl_mul   = Bool ("Multiply Controls",
                              "Multiply the two control inputs with each other, "
                              "rather than weighting them by balance",
-                             FALSE, STANDARD);
+                             TRUE, STANDARD);
     Bool  ctrl_exp   = Bool ("Exponential Control", "Toggle exponential and linear control response", FALSE, STANDARD);
   };
   group "Output" {

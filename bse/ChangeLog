@@ -1,3 +1,8 @@
+Mon Oct 27 22:12:48 2003  Tim Janik  <timj@gtk.org>
+
+	* bseamplifier.[ic]*: from 0.5.5 on, let the amplifier default to
+	multiply (and-ing) the two control inputs.
+
 Mon Oct 27 00:39:10 2003  Tim Janik  <timj@gtk.org>
 
 	* gslloader-oggvorbis.c: added application/ogg.
