@@ -8,6 +8,8 @@ Fri Dec 31 01:40:33 2004  Tim Janik  <timj@gtk.org>
 	* gslvorbis-cutter.[hc]: support non-cutting mode. support specification
 	of the logical bitstream to process by setting a serialno filter.
 
+	* tests/cutvorbis.c: added option handling for -s,-p-k,-S.
+
 	* gslloader-bsewave.c: allow loading of waves with an empty chunk list.
 
 	* gslloader.[hc]: support loading of waves with empty chunk list.
