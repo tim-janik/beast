@@ -70,9 +70,6 @@ static void
 bse_adder_class_init (BseAdderClass *class)
 {
 #include "./icons/sub.c"
-  BsePixdata sub_pix_data = { SUB_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-			      SUB_IMAGE_WIDTH, SUB_IMAGE_HEIGHT,
-			      SUB_IMAGE_RLE_PIXEL_DATA, };
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
@@ -87,7 +84,7 @@ bse_adder_class_init (BseAdderClass *class)
   
   source_class->context_create = bse_adder_context_create;
   
-  class->sub_icon = bse_icon_from_pixdata (&sub_pix_data);
+  class->sub_icon = bse_icon_from_pixstream (sub_pixstream);
   
   bse_object_class_add_param (object_class, "Features",
 			      PARAM_SUBTRACT,
