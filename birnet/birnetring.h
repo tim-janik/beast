@@ -115,6 +115,39 @@ GValue*    sfi_rec_field        (const SfiRec    *rec,
 gboolean   sfi_rec_check	(SfiRec		 *rec,
 				 SfiRecFields	  rfields);
 void	   sfi_rec_sort		(SfiRec          *rec);
+void       sfi_rec_set_bool	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiBool	  v_bool);
+void       sfi_rec_set_int	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiInt	  	  v_int);
+void       sfi_rec_set_num	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiNum		  v_num);
+void       sfi_rec_set_real	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiReal	  v_real);
+void       sfi_rec_set_string	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 const gchar	 *string);
+void       sfi_rec_set_choice	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 const gchar	 *choice);
+void       sfi_rec_set_bblock	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiBBlock	 *bblock);
+void       sfi_rec_set_fblock	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiFBlock	 *fblock);
+void       sfi_rec_set_pspec	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 GParamSpec	 *pspec);
+void       sfi_rec_set_seq	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiSeq		 *seq);
+void       sfi_rec_set_rec	(SfiRec          *rec,
+				 const gchar     *field_name,
+				 SfiRec		 *v_rec);
 
 
 /* --- ring (circular-list) --- */

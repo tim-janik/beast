@@ -643,6 +643,128 @@ sfi_rec_sort (SfiRec *rec)
   rec->sorted = TRUE;
 }
 
+void
+sfi_rec_set_bool (SfiRec      *rec,
+		  const gchar *field_name,
+		  SfiBool      v_bool)
+{
+  GValue *value = sfi_value_bool (v_bool);
+  sfi_rec_set (rec, field_name, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_rec_set_int	(SfiRec      *rec,
+		 const gchar *field_name,
+		 SfiInt	      v_int)
+{
+  GValue *value = sfi_value_int (v_int);
+  sfi_rec_set (rec, field_name, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_rec_set_num	(SfiRec      *rec,
+		 const gchar *field_name,
+		 SfiNum	      v_num)
+{
+  GValue *value = sfi_value_num (v_num);
+  sfi_rec_set (rec, field_name, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_rec_set_real (SfiRec          *rec,
+		  const gchar     *field_name,
+		  SfiReal	  v_real)
+{
+  GValue *value = sfi_value_real (v_real);
+  sfi_rec_set (rec, field_name, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_rec_set_string (SfiRec      *rec,
+		    const gchar *field_name,
+		    const gchar	*string)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_STRING);
+  g_value_set_static_string (&value, string);
+  sfi_rec_set (rec, field_name, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_rec_set_choice (SfiRec      *rec,
+		    const gchar *field_name,
+		    const gchar	*choice)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_CHOICE);
+  g_value_set_static_string (&value, choice);
+  sfi_rec_set (rec, field_name, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_rec_set_bblock (SfiRec      *rec,
+		    const gchar *field_name,
+		    SfiBBlock	*bblock)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_BBLOCK);
+  g_value_set_static_boxed (&value, bblock);
+  sfi_rec_set (rec, field_name, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_rec_set_fblock (SfiRec      *rec,
+		    const gchar *field_name,
+		    SfiFBlock	*fblock)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_FBLOCK);
+  g_value_set_static_boxed (&value, fblock);
+  sfi_rec_set (rec, field_name, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_rec_set_pspec (SfiRec      *rec,
+		   const gchar *field_name,
+		   GParamSpec  *pspec)
+{
+  GValue *value = sfi_value_pspec (pspec);
+  sfi_rec_set (rec, field_name, value);
+  sfi_value_free (value);
+}
+
+void
+sfi_rec_set_seq	(SfiRec      *rec,
+		 const gchar *field_name,
+		 SfiSeq	     *seq)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_SEQ);
+  g_value_set_static_boxed (&value, seq);
+  sfi_rec_set (rec, field_name, &value);
+  g_value_unset (&value);
+}
+
+void
+sfi_rec_set_rec (SfiRec      *rec,
+		 const gchar *field_name,
+		 SfiRec	     *v_rec)
+{
+  GValue value = { 0, };
+  g_value_init (&value, SFI_TYPE_REC);
+  g_value_set_static_boxed (&value, v_rec);
+  sfi_rec_set (rec, field_name, &value);
+  g_value_unset (&value);
+}
+
 
 /* --- ring (circular-list) --- */
 #define sfi_new_struct(type, n)         ((type*) g_malloc (sizeof (type) * (n))) // FIXME
