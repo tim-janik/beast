@@ -6,6 +6,7 @@
 
 instruments_DATA = $(strip 	\
 	test-string.bse		\
+	synth-lead.bse		\
 )
 instrumentsdir = $(bseinstrumentdir)
 

@@ -1,3 +1,7 @@
+Mon Oct 27 22:24:27 2003  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/synth-lead.bse: new instrument.
+
 Mon Oct 27 20:59:24 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.c (popup_entries): disable non-working script entries.
