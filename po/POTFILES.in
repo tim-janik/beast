@@ -16,6 +16,7 @@ beast-gtk/bstitemseqdialog.c
 beast-gtk/bstitemview.c
 beast-gtk/bstkeybindings.c
 beast-gtk/bstmain.c
+beast-gtk/bstparam-automation.c
 beast-gtk/bstparam-choice.c
 beast-gtk/bstparam-color-spinner.c
 beast-gtk/bstparam-item-seq.c
@@ -85,6 +86,7 @@ bse/bsesuper.c
 bse/bsetrack.c
 bse/bsewaveosc.c
 data/beast.desktop.in
+data/beast.xml.in
 data/bse.keys.in
 plugins/artscompressor.idl
 plugins/bseadder.c
