@@ -1,0 +1,44 @@
+\input texinfo
+@c %**start of header
+@settitle BEAST/BSE News
+@c %**end of header
+
+@include teximacros.texi
+
+@hasbanner{large}
+@navigation{navigation.xml}
+
+@unnumbered What's New?
+
+@news_title{Monday 13 May 2002, Recovering from an ill-willed harddisk}
+
+We've been having a disk outage at gtk.org, which unfortunately took
+some recent work on the BEAST website with it.
+Nevertheless, BEAST development continues in various areas, and we're
+focussing on a new development release, shortly after official stable
+libgnomecanvas tarballs are out (i.e. around the release of GNOME 2.0).
+Amongst the highlights that were recently completed in the CVS version
+are,
+
+new synthesis modules: FreeVerb, BiquadFilter, ADSR Envelope, IIR Filter,
+IOPorts/SubSynth, Constant, WaveOsc and a simple Sequencer.
+The majority of the original plugins got ported to the new engine which
+meanwhile gained joint (multi-connect) channel support (that is, multiple
+signals may be routed to a single input channel which then automatically sums
+them up). Also the new 19"-rack alike GUI front-end is already usable to some
+extend and a lot of overall GUI polishing has also been done.
+
+
+@news_title{Sunday 3 March 2002, General Site Overhaul}
+
+We worked on the site to improve its structure so it will be easier for us to
+add new content or update the existing easier. Also, we now have some neat new
+content, namely the API docs and the screenshots page. FAQ is updated too. Last
+but not least, logo submissions page is more browsable, thanks to the
+thumbnails.
+
+On the CVS side, the rack editor is slowly becoming usable, .ogg and .wav files
+are supported, new synthesis modules (IIR filter, Resonance filter) available,
+and right now Tim is working on an MP3 loader. 
+
+@bye

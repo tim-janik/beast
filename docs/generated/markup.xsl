@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
   <xsl:output method="xml" indent="no" doctype-system="markup.dtd"/>
   <!-- <xsl:strip-space elements="*"/> -->
-  <xsl:preserve-space elements="keepspace code display format example lisp"/>
+  <xsl:preserve-space elements="code display smalldisplay format smallformat example smallexample lisp smalllisp"/>
 
   <!-- {{{ start parsing -->
   <xsl:template match="texinfo">
@@ -26,7 +26,6 @@
       <tagdef name="item-margin"    left_margin="18" />
       <tagdef name="bullet-tag"     indent="-10" />
       <tagdef name="enumerate-item" weight="bold" foreground="#4046a0" />
-      <tagdef name="preformat"      wrap_mode="none" />
       <tagdef name="indented"	    left_margin="20" />
       <tagdef name="tableterm"	    />
       <tagdef name="tableitem"	    left_margin="20" />
@@ -69,17 +68,23 @@
       <tagdef name="url"            family="monospace" underline="single" />
       <tagdef name="var"            family="monospace" />
 
-      <tagdef name="lisp"           family="monospace" wrap_mode="none" foreground="#000040" />
       <tagdef name="property"       style="italic" />
       <tagdef name="channel"        style="italic" />
-      <tagdef name="menupath"       style="italic" weight="bold" background="#e0e0e0" />
+      <tagdef name="menupath"       weight="bold" background="#e0e0e0" style="italic" />
       <tagdef name="pagepath"       weight="bold" background="#f0f0f0" />
       <tagdef name="object"         family="monospace" style="italic" />
 
-      <tagdef name="important"      underline="single" weight="bold" foreground="#5f5fdf" />
+      <tagdef name="important"      underline="single" weight="bold" foreground="#df5fdf" />
 
-      <tagdef name="display"        left_margin="70" right_margin="70" wrap_mode="none" />
-      <tagdef name="example"        wrap_mode="none" family="monospace" />
+      <tagdef name="quotation"      indent="10" left_margin="70" />
+      <tagdef name="example"        family="monospace" left_margin="70" wrap_mode="none" />
+      <tagdef name="smallexample"   family="monospace" left_margin="70" wrap_mode="none" scale="0.9" />
+      <tagdef name="lisp"           family="monospace" left_margin="70" wrap_mode="none" foreground="#000040" />
+      <tagdef name="smalllisp"      family="monospace" left_margin="70" wrap_mode="none" foreground="#000040" scale="0.9" />
+      <tagdef name="display"        left_margin="70" wrap_mode="none" />
+      <tagdef name="smalldisplay"   left_margin="70" wrap_mode="none" scale="0.9" />
+      <tagdef name="format"         wrap_mode="none" />
+      <tagdef name="smallformat"    wrap_mode="none" scale="0.9" />
 
       <!-- reference elements -->
       <tagdef name="reference-function"	    weight="bold" foreground="#5555cc" />
@@ -103,7 +108,7 @@
   <!-- }}} -->
 
   <!-- {{{ useless tags -->
-  <xsl:template match="setfilename|settitle|document-title|document-author|document-package|document-font|itemfunction|columnfraction"/>
+  <xsl:template match="setfilename|settitle|document-title|document-author|document-package|document-font|document-navigation|document-hasbanner|itemfunction|columnfraction"/>
   <!-- }}} -->
 
   <!-- {{{ setting a default font for documents -->
@@ -112,6 +117,7 @@
     <xsl:choose>
       <xsl:when test="$font='tech' or $font='techstyle' or $font='sans' or $font='sans-serif'"><xsl:text>sans</xsl:text></xsl:when>
       <xsl:when test="$font='story' or $font='storystyle' or $font='serif' or $font=''"><xsl:text>serif</xsl:text></xsl:when>
+      <xsl:when test="$font='mono' or $font='monospace' or $font='fixed'"><xsl:text>monospace</xsl:text></xsl:when>
       <xsl:otherwise>
 	<xsl:message>XSL-WARNING: omitting unknown font style '<xsl:value-of select="$font"/>'</xsl:message>
       </xsl:otherwise>
@@ -692,7 +698,7 @@
     </span>
   </xsl:template>
 
-  <xsl:template match="example|display|format|lisp">
+  <xsl:template match="quotation|example|smallexample|display|smalldisplay|format|smallformat|lisp|smalllisp">
     <breakline/>
     <span>
       <xsl:attribute name="tag">
@@ -701,12 +707,6 @@
       <keep-space><xsl:apply-templates/></keep-space>
     </span>
     <breakline/>
-  </xsl:template>
-
-  <xsl:template match="keepspace">
-    <span tag="preformat">
-      <keep-space><xsl:apply-templates/></keep-space>
-    </span>
   </xsl:template>
   <!-- }}} -->
 
@@ -934,7 +934,7 @@
 
   <xsl:template match="multitable/row/entry">
     <!-- Spanning each entry in a new line is disabled -->
-    <span>
+    <!-- <span> -->
       <!-- <xsl:attribute name="tag"> -->
 	<!-- <xsl:text>table_entry_</xsl:text><xsl:number/> -->
       <!-- </xsl:attribute> -->
@@ -942,7 +942,7 @@
       <xsl:if test="not(position()=last())">
         <xsl:text> </xsl:text>
       </xsl:if>
-    </span>
+    <!-- </span> -->
     <!-- <newline/> -->
   </xsl:template>
   <!-- }}} -->

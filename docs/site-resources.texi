@@ -1,0 +1,19 @@
+\input texinfo
+@c %**start of header
+@settitle Links
+@c %**end of header
+
+@include teximacros.texi
+
+@hasbanner{large}
+@navigation{navigation.xml}
+
+@unnumbered Links
+
+@itemize
+@item @uref{ftp://beast.gtk.org/pub/beast/,, BEAST/BSE FTP site}
+@item @uref{http://www.gtk.org,, GTK+ - The GIMP Toolkit}
+@item @uref{http://www.gnome.org,, GNOME Project}
+@end itemize
+
+@bye

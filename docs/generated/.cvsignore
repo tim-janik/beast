@@ -6,3 +6,5 @@ Makefile.in
 *.3
 *.texi
 *.ps
+beast-site*.tar.gz
+log2texi.sh

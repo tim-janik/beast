@@ -8,13 +8,11 @@
 
 @doctitle @beastbse Quick Start Guide
 @docauthor Tim Janik
-@revision{Document revised:}
-@*
+@center @revision{Document revised:}
 
 This guide attempts to give a few brief hints for new users,
 in order to get started with the most basic tasks that can be
 accomplished with @beast{}.
-@*
 
 @contents
 

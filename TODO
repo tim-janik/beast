@@ -37,6 +37,7 @@ URGENT:
 - support pspec groups in idl files [stefan]
 
 DOCS:
+- s/Document Revision/Document Revised/
 - try implementing some kind of table layout for tsmview [timj]
 - add QuickStart-Samples docs once we support sample editing [timj]
 - turn off word-wrapping for normal files (e.g. /etc/profile) in

@@ -782,7 +782,7 @@ bst_app_operate (BstApp *app,
 	  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG |
 					   GXK_SCROLL_TEXT_MONO_SPACED, NULL);
 	  gxk_scroll_text_append_file_tsm (sctext, help_file);
-	  help_file = g_strconcat (BST_PATH_DOCS, "/news.markup", NULL);
+	  help_file = g_strconcat (BST_PATH_DOCS, "/release-news.markup", NULL);
 	  gxk_scroll_text_append_file_tsm (sctext, help_file);
 	  g_free (help_file);
 	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = gxk_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],

@@ -11,7 +11,7 @@
 @item @uref{beast-doc://faq,,           Frequently Asked Questions}
 @item @uref{beast-doc://quickstart,,    Quick Start Guide}
 @item @uref{beast-doc://release-notes,, BEAST Release Notice}
-@item @uref{beast-doc://news,,          BEAST NEWS File}
+@item @uref{beast-doc://release-news,,  BEAST NEWS File}
 @item @uref{beast-doc://gsl-mplan,,     GSL Engine (Development Concepts)}
 @end itemize
 

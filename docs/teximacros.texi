@@ -3,10 +3,10 @@
 @c --- meta: macros used for macro definitions ---
 @ifxml
 
-@macro rawxml{XMLTEXT}
+@rmacro rawxml{XMLTEXT}
 @xml
 \XMLTEXT\@end xml
-@end macro
+@end rmacro
 
 @rmacro ifxmlelse{TEXT,TAG,CMD}
 @rawxml{<\TAG\>}\TEXT\@rawxml{</\TAG\>}
@@ -25,13 +25,26 @@
 "\TEXT\"
 @end rmacro
 
-@macro nop{TEXT}
-@end macro
+@rmacro nop{TEXT}
+@end rmacro
+
+
+@c --- preformatted sections ---
+@c WORKAROUND:
+@c makeinfo-4.3 still mixes up <display> with <para> tags which
+@c we can only circumvent by enclosing paragraphs in displaySTART
+@c and displayEND
+@rmacro displaySTART
+@rawxml{<display>}
+@end rmacro
+@rmacro displayEND
+@rawxml{</display>}
+@end rmacro
 
 
 @c --- accentuate phrases ---
 @c --- WORKAROUND:
-@c --- The below reproduction of standard @emph command is due to
+@c --- Below reproduction of standard @emph command is due to
 @c --- a bug in makeinfo. If we do not define this macro,
 @c --- the output of
 @c ---    @chapter @emph{Emph} Text
@@ -44,6 +57,28 @@
 @end rmacro
 @rmacro code{TEXT}
 @rawxml{<code>}\TEXT\@rawxml{</code>}
+@end rmacro
+@end ifxml
+
+@c --- WORKAROUND:
+@c --- @samp, @env, @file, @command and @option all generate
+@c --- <code/> blocks. These macros hopefully will emulate the
+@c --- expected behaviour.
+@ifxml
+@rmacro samp{TEXT}
+@rawxml{<samp>}\TEXT\@rawxml{</samp>}
+@end rmacro
+@rmacro env{TEXT}
+@rawxml{<env>}\TEXT\@rawxml{</env>}
+@end rmacro
+@rmacro file{TEXT}
+@rawxml{<file>}\TEXT\@rawxml{</file>}
+@end rmacro
+@rmacro command{TEXT}
+@rawxml{<command>}\TEXT\@rawxml{</command>}
+@end rmacro
+@rmacro option{TEXT}
+@rawxml{<option>}\TEXT\@rawxml{</option>}
 @end rmacro
 @end ifxml
 
@@ -73,13 +108,6 @@
 @ifxmlelse{\TEXT\,channel,code}
 @end rmacro
 
-@rmacro keepspaceSTART
-@rawxml{<keepspace>}
-@end rmacro
-@rmacro keepspaceEND
-@rawxml{</keepspace>}
-@end rmacro
-
 
 @c --- table of contents ---
 @c --- WORKAROUND:
@@ -96,7 +124,7 @@
 
 @c --- revision bit ---
 @rmacro revision{TEXT}
-@center @emph{\TEXT\} @value{TexiStamp}
+@emph{\TEXT\} @value{TexiStamp}
 @end rmacro
 
 
@@ -162,6 +190,13 @@
 @rmacro docfont{TEXT}
 @ifxmlelse{\TEXT\,document-font,nop}
 @end rmacro
+@c --- HTML specific document style ---
+@rmacro navigation{TEXT}
+@ifxmlelse{\TEXT\,document-navigation,nop}
+@end rmacro
+@rmacro hasbanner{TEXT}
+@ifxmlelse{\TEXT\,document-hasbanner,nop}
+@end rmacro
 
 
 @c --- aliases ---
@@ -179,34 +214,34 @@
 
 
 @c --- common names ---
-@macro beast
+@rmacro beast
 @emph{BEAST}
-@end macro
+@end rmacro
 
-@macro beastlong
+@rmacro beastlong
 @strong{BE}devilled @strong{A}udio @strong{S}ys@strong{T}em
-@end macro
+@end rmacro
 
-@macro bse
+@rmacro bse
 @emph{BSE}
-@end macro
+@end rmacro
 
-@macro bselong
+@rmacro bselong
 @strong{B}edevilled @strong{S}ound @strong{E}ngine
-@end macro
+@end rmacro
 
-@macro gsl
+@rmacro gsl
 @emph{GSL}
-@end macro
+@end rmacro
 
-@macro beastbse
+@rmacro beastbse
 @emph{BEAST/BSE}
-@end macro
+@end rmacro
 
-@macro sfk
+@rmacro sfk
 @emph{SFK}
-@end macro
+@end rmacro
 
-@macro arts
+@rmacro arts
 @emph{aRts}
-@end macro
+@end rmacro

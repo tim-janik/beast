@@ -7,10 +7,13 @@
 
 @include teximacros.texi
 
+@hasbanner{large}
+@navigation{navigation.xml}
+
 @docfont{tech}
 
 @majorheading @beastbse FAQ - Frequently Asked Questions
-@revision{Document revised:}
+@center @revision{Document revised:}
 @*
 
 @contents

@@ -1,0 +1,21 @@
+\input texinfo
+@c %**start of header
+@settitle BEAST/BSE API Overview
+@c %**end of header
+
+@include teximacros.texi
+
+@hasbanner{large}
+@navigation{navigation.xml}
+
+@unnumbered A Gentle Introduction to the @beastbse Architecture
+
+Beast has a number of components. These are:
+
+@itemize
+@item GXK
+@item SFI
+@item BSE
+@end itemize
+
+@bye

@@ -10,43 +10,57 @@ docs_DATA = ${markup_targets}
 
 # install man pages
 man_MANS = sfi.3 bse.3 beast-gxk.3 bse-procs.3 bse-structs.3
-ps_targets = $(patsubst %.3, %.ps, $(man_MANS))
+
 # installed docs
 markup_targets = $(strip	\
 	faq.markup		\
 	release-notes.markup	\
-	news.markup		\
+	release-news.markup	\
 	gsl-mplan.markup	\
 	quickstart.markup	\
 	beast-index.markup	\
-	sfi.3.markup		\
-	bse.3.markup		\
-	beast-gxk.3.markup	\
-	bse-procs.3.markup	\
-	bse-structs.3.markup	\
+	$(patsubst %.3, %.3.markup, $(man_MANS)) \
 )
-# website html generation
-html_targets = $(patsubst %.markup, %.html, $(markup_targets)) # $(patsubst %.3, %.html, $(man_MANS))
+
+# website html targets
+html_targets = $(strip		\
+	news.html		\
+	about.html		\
+	download.html		\
+	contact.html		\
+	resources.html		\
+	documentation.html	\
+	log-beast.html		\
+	log-bse.html		\
+	log-plugins.html	\
+	log-sfi.html		\
+	$(patsubst %.3, %.3.html, $(man_MANS)) \
+	faq.html		\
+	quickstart.html		\
+	gsl-mplan.html		\
+)
+
 # extra dist
 build_tools = $(strip		\
+	navigation.xsl          \
 	man.xsl			\
 	html.xsl		\
 	markup.xsl		\
 	markup.dtd		\
 	texinfo.dtd		\
 	scandocs.pl		\
+	log2texi.sh		\
 )
 EXTRA_DIST += ${build_tools}
 
 #
-# reference documentation
+# reference docu generation
 #
 sfi_refsrc_globs=$(top_srcdir)/sfi/sfi*.[hc]
 bse_refsrc_globs=$(top_srcdir)/bse/bse*.[hc] $(top_srcdir)/bse/gsl*.[hc]
 gxk_refsrc_globs=$(top_srcdir)/beast-gtk/gxk/gxk*.[hc]
 AUTODOC=$(top_builddir)/bse/bseautodoc
 SCANDOCS=$(srcdir)/scandocs.pl
-
 sfi.3.texi: $(sfi_refsrc_globs) $(SCANDOCS) $(top_srcdir)/configure
 	$(SCANDOCS) --name "SFI-Functions" \
 		    --blurb "SFI Function Reference" \
@@ -69,59 +83,128 @@ bse-procs.3.texi: $(AUTODOC) $(top_srcdir)/configure
 bse-structs.3.texi: $(AUTODOC) $(top_srcdir)/configure
 	$(AUTODOC)  --seealso "beast-man://3/bse-procs,BSE Procedures" \
 		    structs >$@
-temp_texi = sfi.3.texi bse.3.texi beast-gxk.3.texi bse-procs.3.texi bse-structs.3.texi
+temp_ref_docu = sfi.3.texi bse.3.texi beast-gxk.3.texi bse-procs.3.texi bse-structs.3.texi
+
+
+#
+# ChangeLog generation
+#
+LOG2TEXI=$(srcdir)/log2texi.sh
+log-beast.texi: $(top_srcdir)/ChangeLog			$(LOG2TEXI)
+	$(LOG2TEXI) $< >$@ "BEAST"
+log-bse.texi: $(top_srcdir)/bse/ChangeLog		$(LOG2TEXI)
+	$(LOG2TEXI) $< >$@ "BSE"
+log-plugins.texi: $(top_srcdir)/plugins/ChangeLog	$(LOG2TEXI)
+	$(LOG2TEXI) $< >$@ "Plugins"
+log-sfi.texi: $(top_srcdir)/sfi/ChangeLog		$(LOG2TEXI)
+	$(LOG2TEXI) $< >$@ "SFI"
+temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
+
 
 #
 # texi/xml/target rules
 #
 XMLANTISPACE=$(top_builddir)/docs/utils/xmlantispace
 if HAVE_XMLMAKEINFO_AND_XSLTPROC
-%.texi: $(srcdir)/../%.texi
-	cp -a $< $@
-%.xml: %.texi			$(XMLANTISPACE)
-	$(XMLMAKEINFO) -I $(srcdir)/.. --xml -D "TexiStamp `date -r $<`" \
-		$< -o - | $(XMLANTISPACE) >$@
+# generate *.xml from *.texi with makeinfo
+%.xml: %.texi			$(srcdir)/../teximacros.texi $(XMLANTISPACE)
+	$(XMLMAKEINFO)  -D "TexiStamp `date -r $<`" \
+			-I $(srcdir)/.. --xml $< -o - \
+	| $(XMLANTISPACE) >$@
+# *.markup from xml (program docs)
 %.markup: %.xml			$(srcdir)/markup.xsl $(srcdir)/texinfo.dtd
 	$(XSLTPROC) $(srcdir)/markup.xsl $< >$@
-%.html: %.xml			$(srcdir)/html.xsl $(srcdir)/texinfo.dtd
-	$(XSLTPROC) $(srcdir)/html.xsl $< >$@
+# man from xml (installed)
 %.3: %.3.xml			$(srcdir)/man.xsl $(srcdir)/texinfo.dtd
 	$(XSLTPROC) --param man_section 3 $(srcdir)/man.xsl $< >$@
+# html from xml (website)
+%.html: %.xml	texinfo.dtd html.xsl navigation.xsl navigation.xml
+	$(XSLTPROC) --stringparam this_file "$@" \
+	            --stringparam images_prefix "cvs-images/" \
+	            $(srcdir)/html.xsl $< >$@
+# postscript rules
 %.nroff: %.xml man.xsl
 	$(XSLTPROC) $(srcdir)/man.xsl $< >$@
 %.ps: %.nroff
 	groff -man -t $< >$@
 %.ps: %.3
 	groff -man -t $< >$@
+# where to get *.texi docs from
+%.texi: $(srcdir)/../%.texi
+	cp -p $< $@
+# where to get website *.texi from
+%.texi: $(srcdir)/../site-%.texi
+	cp -p $< $@
+# where to get website *.xml from
+%.xml: $(srcdir)/../site-%.xml
+	cp -p $< $@
+# plain text generation rules
 gsl-mplan.texi: $(top_srcdir)/bse/gsl-mplan.txt
 	cd . \
 	&& echo "\input texinfo"		 >$@ \
 	&& echo "@settitle GSL Flow Engine"	>>$@ \
-	&& echo "@example"			>>$@ \
+	&& echo "@include teximacros.texi" 	>>$@ \
+	&& echo "@docfont{mono}"                >>$@ \
+	&& echo "@format"			>>$@ \
 	&& echo "@verbatiminclude $<"		>>$@ \
-	&& echo "@end example"			>>$@ \
+	&& echo "@end format"			>>$@ \
 	&& echo "@bye"				>>$@
-news.texi: $(top_srcdir)/NEWS
+release-news.texi: $(top_srcdir)/NEWS
 	cd . \
 	&& echo "\input texinfo"		>$@ \
 	&& echo "@settitle BEAST/BSE NEWS"	>>$@ \
-	&& echo "@example"			>>$@ \
+	&& echo "@include teximacros.texi" 	>>$@ \
+	&& echo "@docfont{mono}"                >>$@ \
+	&& echo "@format"			>>$@ \
 	&& echo "@verbatiminclude $<"		>>$@ \
-	&& echo "@end example"			>>$@ \
+	&& echo "@end format"			>>$@ \
 	&& echo "@bye"				>>$@
-conditional_clean = $(markup_targets) gsl-mplan.texi news.texi faq.xml $(man_MANS) $(temp_texi)
+# cleanup
+conditional_clean = $(strip \
+	navigation.xml					\
+	gsl-mplan.texi		release-news.texi	\
+	$(markup_targets)	$(man_MANS)		\
+	$(temp_ref_docu)	$(temp_log2texi)	\
+)
 endif
+CLEANFILES += $(conditional_clean)
 
-CLEANFILES += $(conditional_clean) $(html_targets) $(ps_targets)
-MAINTAINERCLEANFILES +=
+
+#
+# website generation
+#
+index.html: news.html
+	ln -s $< $@
+site:	$(html_targets) navigation.xsl navigation.xml index.html
+	tar zcf beast-site.tar.gz $(html_targets) index.html
+	tar zcf beast-site-nav.tar.gz navigation.xml navigation.xsl
+CLEANFILES += beast-site.tar.gz beast-site-nav.tar.gz index.html $(html_targets)
+
 
 #
 # extra rules
 #
-html-targets:	$(html_targets)
-ps-targets: $(ps_targets)
-lint:
-	for i in $(markup_targets) ; do \
-		xmllint --noout --loaddtd --valid $$i ; \
+xml-clean:
+	rm -f *.xml
+clean: xml-clean
+# postscript variants
+ps_targets = $(patsubst %.3, %.ps, $(man_MANS))
+ps-targets:	$(ps_targets)
+CLEANFILES += $(ps_targets)
+# xml linting
+lint: $(markup_targets)
+	@for i in $^ ; do \
+	  echo "xmllint --noout --loaddtd --valid $$i" ; \
+	  xmllint --noout --loaddtd --valid $$i ; \
 	done
-.PHONY: html-targets lint
+
+MAINTAINERCLEANFILES +=
+
+# intermediate files we don't need to keep
+.INTERMEDIATE: $(strip \
+	release-news.texi gsl-mplan.texi navigation.xml index.html	\
+	log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi	\
+)
+
+# non-file rules
+.PHONY: site ps-targets lint xml-clean

@@ -1,3 +1,114 @@
+Tue Dec 31 09:11:19 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/faq.texi: provide web-site banner.
+
+	* docs/teximacros.texi:
+	* docs/release-notes.texi: (re-)introduce displaySTART and
+	displayEND which is the only way to force <para> tags out
+	of <display> blocks with makeinfo-4.3 which is what beast
+	currently depends on.
+
+	* docs/site-*.texi:
+	renamed pure website sources to site-*.
+
+	* docs/generated/Makefile.am:
+	major cleanup and restructuring. support 'site' target now.
+
+	* docs/generated/log2texi.sh:
+	shell script to generate .texi sources from ChangeLogs.
+	this is a .texi-patched up version from Alper, based on
+	my old beast web site script that used to generate raw
+	html.
+
+Mon Dec 30 18:21:33 2002  Alper Ersoy <aersoy@tfz.net>
+
+	Here are website changes:
+
+	* docs/generated/Makefile.am:
+	New files in $html_targets: index, about, download, contacts,
+	links, api-overview, log-beast, log-bse, log-plugins, log-sfi.
+	New files in $build_tools: nav.xml, navigation.xsl, log2texi
+	New files in $temp_texi: log-beast, log-bse, log-plugins, log-sfi
+	%.html rule has two new parameters for xsltproc, which are
+	this_file ($@) and images_prefix (cvs-images/).
+	New rules for log files: log-beast.texi, log-bse.texi,
+	log-plugins.texi, and log-sfi.texi
+	faq.xml removed from $conditional_clean.
+
+	* docs/generated/navigation.xsl:
+	* docs/generated/html.xsl:
+	Deprecated parameters: banner, navigation, uplinks, this_file,
+	image_prefix.
+	banner and navigation are substituted with texinfo macros.
+	uplinks (which controls the generation of a 'go to top' link at
+	every section title) is simply removed.  I may consider re-adding
+	that later (even though I think people should use their "Home" keys,
+	there are times when they may want a 'top' link).
+	this_file moved to navigation.xsl.  image_prefix is renamed to
+	images_prefix.
+	Removed the old fashioned table based layout in favor of a modern,
+	div based full CSS layout.
+	A couple of new templates: document-size, home-link,
+	document-title.  These are for classifying document parts or the
+	document itself in general to be used in CSS styles.
+	banner template rewritten.  No more inline images for cosmetic
+	issues.
+	Navigation templates are moved to a separate file, navigation.xsl.
+	This way, it is possible to make use of the templates from other
+	sources too.  At this time, scanpics.pl is the only example.
+
+	* docs/about.texi:
+	* docs/contacts.texi:
+	* docs/download.texi:
+	* docs/index.texi:
+	* docs/links.texi:
+	* docs/api-overview.texi:
+	new website related documents. (api-overview.texi left to be
+	filled out by Tim).
+
+Mon Dec 30 18:21:33 2002  Alper Ersoy <aersoy@tfz.net>
+
+	Here are non-website changes:
+	
+	* docs/WRITING.3.texi:
+	Added examples for block level texinfo commands.
+	Appearnce of block level commands follow their descriptions.
+
+	* bse/bseautodoc.c:
+	* docs/generated/scandocs.pl:
+	* docs/*.texi:
+	Removed @center from the @revision macro.
+
+	* docs/teximacros.texi:
+	* docs/release-notes.texi:
+	* docs/utils/xmlantispace.c:
+	Changed @keepspace* to @display.  Provided that you use CVS makeinfo,
+	it will look identical.  Removed those macros from teximacros.texi too.
+
+	* docs/teximacros.texi:
+	Added workarounds for @samp, @env, @file, @command and @option in
+	teximacros.texi.  They were generating <code/> blocks. Karl told
+	that that's due to old HTML output mappings being used again with XML.
+	Tried to adjust macro/rmacro definitions, ie. @contents was defined
+	as a rmacro, but it can be a regular macro.
+
+	* docs/generated/*.xsl:
+	Added another document font type: monospace (also mono and fixed are
+	accepted).
+	Dropped <strong />  tags from table-of-contents items.
+
+	* docs/generated/html.xsl:
+	Changed the handling of most contextual markup commands in html.xsl.
+	There was a repetitive pattern between the templates.
+
+	* docs/generated/markup.dtd:
+	* Brought markup.dtd up to date.  TSM files validate once again.
+
+	* docs/generated/Makefile.am:
+	news.texi and gsl-mplan.texi use @format instead of @example now.
+	They also make use of the new document font monospace (because
+	@format does not make any changes to the document font).
+
 Tue Dec 31 03:29:32 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c: 

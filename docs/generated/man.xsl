@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:date="http://exslt.org/dates-and-times" version="1.0">
 <xsl:output method="text" indent="no" charset="UTF-8"/>
 <xsl:strip-space elements="*"/>
-<xsl:preserve-space elements="keepspace code display format example lisp"/>
+<xsl:preserve-space elements="code display smalldisplay format smallformat example smallexample lisp smalllisp"/>
 
 <xsl:param name="man_section"/>
 
@@ -36,7 +36,7 @@
 <!-- }}} -->
 
 <!-- {{{ useless tags -->
-<xsl:template match="setfilename|settitle|document-title|document-author|document-package|document-font|itemfunction|columnfraction"/>
+<xsl:template match="setfilename|settitle|document-title|document-author|document-package|document-font|document-navigation|document-hasbanner|itemfunction|columnfraction"/>
 <!-- }}} -->
 
 <!-- {{{ setting a default font for documents -->
@@ -48,6 +48,8 @@
 .fam H</xsl:text></xsl:when>
     <xsl:when test="$font='story' or $font='storystyle' or $font='serif'"><xsl:text>
 .fam T</xsl:text></xsl:when>
+    <xsl:when test="$font='mono' or $font='monospace' or $font='mono-space' or $font='fixed'"><xsl:text>
+.fam C</xsl:text></xsl:when>
     <xsl:otherwise>
       <xsl:message>XSL-WARNING: omitting unknown font style '<xsl:value-of select="$font"/>'</xsl:message>
     </xsl:otherwise>
@@ -356,8 +358,11 @@
 <!-- <xsl:template match="reference-blurb">\fI<xsl:apply-templates/>\fP</xsl:template> -->
 <xsl:template match="reference-struct-name"> \fI<xsl:apply-templates/>\fP</xsl:template>
 <xsl:template match="reference-struct-open"> \fB{\fP</xsl:template>
-<xsl:template match="reference-struct-close">.sp -1em
-\h'-7m'\fB};\fP<xsl:text>
+<xsl:template match="reference-struct-close"><xsl:text>.sp -1em
+.TP
+.PD 0
+\fB};\fP
+
 </xsl:text></xsl:template>
 <!-- }}} -->
 
@@ -395,7 +400,11 @@
 
 <xsl:template match="strong|important">\fB<xsl:apply-templates/>\fP</xsl:template>
 
-<xsl:template match="keepspace|display|format|example|lisp">
+<xsl:template match="quotation">
+<!-- TODO fill this space -->
+</xsl:template>
+
+<xsl:template match="example|smallexample|display|smalldisplay|format|smallformat|lisp|smalllisp">
 .nf
 .na
 <xsl:apply-templates/>

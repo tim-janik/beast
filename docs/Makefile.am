@@ -1,18 +1,14 @@
 SUBDIRS = utils generated
 
-texi_docs = $(strip		\
-	faq.texi		\
-	quickstart.texi		\
-	release-notes.texi	\
-	teximacros.texi		\
-	beast-index.texi	\
+texi_docs = $(strip								\
+	WRITING.3.texi		teximacros.texi		beast-index.texi	\
+	faq.texi		quickstart.texi		release-notes.texi	\
+	site-contact.texi	site-download.texi	site-resources.texi	\
+	site-documentation.texi	site-news.texi		site-about.texi		\
 )
-private_docs = $(strip		\
-	bse-categories.txt	\
-	interpolation.txt	\
+extra_docs = $(strip					\
+	site-navigation.xml				\
+	bse-categories.txt	interpolation.txt	\
 )
 
-docsdir = ${beastdocsdir}
-docs_DATA = # ${public_docs}
-
-EXTRA_DIST = ${texi_docs} ${private_docs}
+EXTRA_DIST = ${texi_docs} ${extra_docs}

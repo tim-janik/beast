@@ -1,0 +1,24 @@
+\input texinfo
+@c %**start of header
+@settitle BEAST/BSE Mailing List and Contacts
+@c %**end of header
+
+@include teximacros.texi
+
+@hasbanner{large}
+@navigation{navigation.xml}
+
+@unnumbered Mailing List
+
+A mailing list (pretty low volume) is available at
+@uref{mailto://beast@@beast.gtk.org}.  Send an email to
+@uref{mailto://timj@@beast.gtk.org} to get subscribed.
+
+@unnumbered Contacts
+
+@itemize
+@item Email the @uref{mailto://timj@@beast.gtk.org,, developer}.
+@item Email the @uref{mailto://dirt@@gtk.org,, webmaster}.
+@end itemize
+
+@bye

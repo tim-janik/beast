@@ -3,297 +3,69 @@
   <!ENTITY sp "&amp;nbsp;">
 ]>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-<xsl:output method="html" indent="no" charset="UTF-8" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"/>
+<xsl:output method="html" indent="yes" encoding="ISO-8859-1" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd" />
 <!-- <xsl:strip-space elements="*"/> -->
-<xsl:preserve-space elements="keepspace code display format example lisp"/>
+<xsl:preserve-space elements="code display smalldisplay format smallformat example smallexample lisp smalllisp"/>
 
-<xsl:param name="banner"/>
-<xsl:param name="navigation"/>
-<xsl:param name="uplinks"/>
-<xsl:param name="this_file" select="''"/>
-<xsl:param name="image_prefix" select="''"/>
+<xsl:param name="images_prefix" select="''"/>
 
 <!-- {{{ start parsing -->
 <xsl:template match="texinfo">
 <html>
  <head>
   <meta http-equiv="Default-Style" content="Default"/>
-  <link href="default.css" title="Default" rel="stylesheet" type="text/css"/>
+  <style type="text/css" media="all">
+    body { background-color: White; color: Black; <xsl:call-template name="document-font"/> }
+  </style>
+  <style type="text/css" media="all" title="Default">
+    @import 'css/default.css';
+  </style>
   <title><xsl:value-of select="settitle"/></title>
-  <style type="text/css">
-body {
-  background-color: White;
-  color: Black;
-  <xsl:call-template name="document-font"/>
-}
-
-a {
-  font-style: normal;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-h1 {
-  font-size: 150%;
-  font-weight: normal;
-}
-
-h1.banner {
-  margin: 0px;
-  color: #d0e4d0;
-}
-
-h2 {
-  font-size: 130%;
-}
-
-h3 {
-  font-size: 120%;
-}
-
-h4 {
-  font-size: 110%;
-}
-
-dt {
-  <!-- text-decoration: underline; -->
-  font-weight: bold;
-}
-
-dd {
-  margin-left: 2em;
-}
-
-div.banner {
-  background-color: #005d5d;
-  padding: 3px 5px;
-  margin-bottom: 1em;
-  margin-right: 0.5em;
-  <!-- width: 100%; -->
-}
-
-div.title_page {
-  text-align: center;
-  margin-bottom: 3em;
-}
-
-div.title_document_title {
-}
-
-div.title_author {
-  font-size: 140%;
-  font-weight: bold;
-  margin: 2em;
-}
-
-thead td {
-  background-color: #005d5d;
-  color: #d0e4d0;
-  font-weight: bold;
-  padding-left: 4px;
-}
-
-div.index {
-}
-
-span.toc_chapter {
-  font-size: 120%;
-  color: #222266;
-}
-
-span.toc_section {
-  font-size: 110%;
-  color: #222266;
-}
-
-span.toc_subsection {
-  font-size: 100%;
-  color: #222266;
-}
-
-span.toc_subsubsection {
-  font-size: 90%;
-  color: #222266;
-}
-
-span.url {
-}
-
-span.email {
-}
-
-span.key {
-}
-
-span.env {
-}
-
-span.file {
-}
-
-span.command {
-}
-
-span.option {
-}
-
-span.menupath {
-  font-weight: bold;
-  font-style: italic;
-  font-family: monospace;
-  background-color: #e0e0e0;
-  padding: 1px 5px;
-  border: 1px outset #808080;
-}
-
-span.pagepath {
-  font-weight: bold;
-  font-style: italic;
-  font-family: monospace;
-  background-color: #f0f0f0;
-  padding: 1px 5px;
-  border: 1px solid #c0c0c0;
-}
-
-span.property {
-  font-style: italic;
-}
-
-span.channel {
-  font-style: italic;
-}
-
-span.object {
-  font-family: monospace;
-  font-style: italic;
-}
-
-span.emph {
-  font-style: italic;
-}
-
-span.strong {
-  font-weight: bold;
-}
-
-span.important {
-  font-style: italic;
-  text-decoration: underline;
-}
-
-span.reference-function {
-  font-weight: bold;
-  color: #5555cc;
-}
-
-span.reference-parameter {
-  color: #198e86;
-  font-weight: bold;
-}
-
-span.reference-returns {
-  color: #228822;
-  font-weight: bold;
-  margin-left: -1em;
-}
-
-span.reference-type {
-  color: #555555;
-  font-weight: normal;
-}
-
-span.reference-blurb {
-  color: #555555;
-}
-
-span.reference-struct-name {
-  color: #668c1a;
-  font-weight: bold;
-}
-
-span.reference-struct {
-  font-weight: bold;
-}
-
-span.reference-struct-close {
-  font-weight: bold;
-  margin-left: -2em;
-}
-
-span.keepspace {
-  white-space: pre;
-}
-
-pre.lisp {
-}
-
-div.toc {
-}
-
-div.chapter {
-  margin-bottom: 1em;
-}
-
-div.unnumbered {
-  margin-bottom: 1em;
-}
-
-div.appendix {
-  margin-bottom: 1em;
-}
-
-div.chapheading {
-  margin-bottom: 1em;
-}
-
-div.center {
-  text-align: center;
-}
-
-table.multitable {
-}
-
-table.indented {
-  margin-left: 2em;
-}
-
-   </style>
  </head>
-
- <body text="#000000" bgcolor="#FFFFFF"> 
-  <a name="top"/>
-
+ <!-- Stupid bgcolor attribute to override default Netscape 4 background color :\ -->
+ <!-- The id is for user-agent side site specific CSS overriding goodness,
+      ie. #beast-gtk-org { font-size: 10px !important; } -->
+ <body id="beast-gtk-org" bgcolor="White">
   <xsl:call-template name="banner"/>
+  <xsl:call-template name="navigation"/>
+  <div id="content">
+   <xsl:call-template name="document-size"/>
 
-  <!-- outer table starts -->
-  <table cellspacing="0" cellpadding="5" border="0" summary="Page" width="100%">
+   <xsl:call-template name="home-link"/>
+   <xsl:call-template name="title_page"/>
 
-   <tr>
+   <xsl:apply-templates/>
 
-    <xsl:call-template name="navigation"/>
-
-    <td valign="top">
-    <!-- content starts -->
-
-      <xsl:call-template name="title_page"/>
-
-      <xsl:apply-templates/>
-
-    <!-- content ends -->
-    </td>
-   </tr>
-  </table>
-
+   <xsl:call-template name="home-link"/>
+  </div>
  </body>
 </html>
+</xsl:template>
+
+<xsl:template name="document-size">
+  <xsl:choose>
+    <!-- the banner is large and there is no navigation stuff on the left -->
+    <xsl:when test="string(/texinfo/para/document-hasbanner) = 'large' and string(/texinfo/para/document-navigation) = ''">
+      <xsl:attribute name="class">with_banner_nonav</xsl:attribute>
+    </xsl:when>
+    <!-- the banner is large and there is also navigation stuff -->
+    <xsl:when test="string(/texinfo/para/document-hasbanner) = 'large' and string(/texinfo/para/document-navigation) != ''">
+      <xsl:attribute name="class">with_banner_nav</xsl:attribute>
+    </xsl:when>
+    <!-- the banner is small and there is navigation on the left -->
+    <xsl:when test="string(/texinfo/para/document-hasbanner) != 'large' and string(/texinfo/para/document-navigation) != ''">
+      <xsl:attribute name="class">with_nobanner_nav</xsl:attribute>
+    </xsl:when>
+    <!-- Otherwise: banner is small and no navigation. largest content size -->
+    <xsl:otherwise>
+      <xsl:attribute name="class">with_nobanner_nonav</xsl:attribute>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 <!-- }}} -->
 
 <!-- {{{ useless tags -->
-<xsl:template match="setfilename|settitle|document-title|document-author|document-package|document-font|itemfunction|columnfraction"/>
+<xsl:template match="setfilename|settitle|document-title|document-author|document-package|document-font|document-navigation|document-hasbanner|itemfunction|columnfraction"/>
 <!-- }}} -->
 
 <!-- {{{ setting a default font for documents -->
@@ -307,6 +79,9 @@ table.indented {
     <xsl:when test="$font='story' or $font='storystyle' or $font='serif'">
       <xsl:text>font-family: serif;</xsl:text>
     </xsl:when>
+    <xsl:when test="$font='mono' or $font='monospace' or $font='mono-space' or $font='fixed'">
+      <xsl:text>font-family: monospace;</xsl:text>
+    </xsl:when>
     <xsl:otherwise>
       <xsl:message>XSL-WARNING: omitting unknown font style '<xsl:value-of select="$font"/>'</xsl:message>
     </xsl:otherwise>
@@ -316,38 +91,53 @@ table.indented {
 
 <!-- {{{ creating a title page for documents -->
 <xsl:template name="title_page">
-  <xsl:if test="string-length(/texinfo/para/document-title) > 0 or count(/texinfo/para/document-author) > 0">
-    <div class="title_page">
-      <xsl:if test="string-length(/texinfo/para/document-title) > 0">
-	<div class="title_document_title">
-	  <xsl:call-template name="big_title">
-	    <xsl:with-param name="title" select="/texinfo/para/document-title"/>
-	  </xsl:call-template>
-	</div>
-      </xsl:if>
-      <xsl:if test="count(/texinfo/para/document-author) > 0">
-	<div class="title_author">
-	  <xsl:for-each select="/texinfo/para/document-author">
-	    <xsl:apply-templates/>
-	    <br/>
-	  </xsl:for-each>
-	</div>
-      </xsl:if>
+  <!-- We put a document title only if it does not have large banner -->
+  <xsl:if test="string(/texinfo/para/document-hasbanner) != 'large' and count(/texinfo/para/document-title) > 0">
+    <h1 class="document_title">
+      <xsl:call-template name="document-title"/>
+    </h1>
+  </xsl:if>
+  <xsl:if test="count(/texinfo/para/document-author) > 0">
+    <div class="document_author">
+      <xsl:for-each select="/texinfo/para/document-author">
+	<xsl:apply-templates/>
+	<xsl:if test="position()!=last()"><br/></xsl:if>
+      </xsl:for-each>
     </div>
   </xsl:if>
+</xsl:template>
+
+<xsl:template name="document-title">
+  <!-- prefer document-title over settitle if one is available -->
+  <xsl:choose>
+    <xsl:when test="count(/texinfo/para/document-title) > 0">
+      <xsl:for-each select="/texinfo/para/document-title">
+	<xsl:apply-templates/>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="/texinfo/settitle"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 <!-- }}} -->
 
 <!-- {{{ creating a banner at top -->
 <xsl:template name="banner">
-  <xsl:if test="string-length($banner) > 0 and not(substring-before($this_file, '.html')='')">
-    <div align="center">
-     <img border="0">
-       <xsl:attribute name="src"><xsl:value-of select="concat($image_prefix, 'images/banner/', substring-before($this_file, '.html'), '.png')"/></xsl:attribute>
-       <xsl:attribute name="alt"><xsl:value-of select="settitle"/></xsl:attribute>
-     </img>
-    </div>
-  </xsl:if>
+  <xsl:choose>
+    <xsl:when test="string(/texinfo/para/document-hasbanner) = 'large'">
+      <div id="bigbanner">
+	<a name="_top"/>
+	<h1 id="bannertitle">
+	  <xsl:call-template name="document-title"/>
+	</h1>
+      </div>
+      <div id="bannerleft"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <div id="bannerright"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 <!-- }}} -->
 
@@ -580,65 +370,11 @@ table.indented {
 <!-- }}} -->
 
 <!-- {{{ navigation -->
-<xsl:template name="navigation">
-  <xsl:if test="string-length($navigation) > 0">
-    <td width="150" valign="top">
-      <xsl:apply-templates select="document($navigation)"/>
-    </td>
-  </xsl:if>
-</xsl:template>
 
-<xsl:template match="/navigation//node">
-  <xsl:param name="depth" select="''"/>
-  <xsl:value-of disable-output-escaping="yes" select="$depth"/>
-  <xsl:choose>
-    <xsl:when test="string-length(@target) > 0 and @target != $this_file">
-      <a>
-        <xsl:attribute name="href">
-	  <xsl:value-of select="@target"/>
-	</xsl:attribute>
-	<xsl:call-template name="navigation-image"/>
-      </a>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:call-template name="navigation-image"/>
-    </xsl:otherwise>
-  </xsl:choose>
-  <br/>
-  <xsl:if test="count(./*) > 0">
-    <xsl:apply-templates>
-      <xsl:with-param name="depth" select="concat($depth, '&sp;&sp;&sp;')"/>
-    </xsl:apply-templates>
-  </xsl:if>
-</xsl:template>
+<!-- Now it's handled outside this stylesheet, so that HTML that's generated
+     without xsltproc can make use of it too -->
 
-<xsl:template name="navigation-image">
-  <xsl:choose>
-    <xsl:when test="string-length(@image) > 0">
-      <img border="0">
-	<xsl:attribute name="src">
-	  <xsl:value-of select="concat($image_prefix, @image)"/>
-	</xsl:attribute>
-	<xsl:attribute name="alt">
-	  <xsl:value-of select="@title"/>
-	</xsl:attribute>
-      </img>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:value-of select="@title"/>
-    </xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-<xsl:template name="up-link">
-  <xsl:if test="string-length($uplinks) > 0">
-    <a href="#top">
-      <img border="0" alt="Up">
-        <xsl:attribute name="src"><xsl:value-of select="concat($image_prefix, 'images/nav/up.png')"/></xsl:attribute>
-      </img>
-    </a>
-  </xsl:if>
-</xsl:template>
+<xsl:include href="navigation.xsl" />
 <!-- }}} -->
 
 <!-- {{{ document sections -->
@@ -648,14 +384,12 @@ table.indented {
       <xsl:value-of select="local-name()"/>
     </xsl:attribute>
     <xsl:apply-templates/>
-    <xsl:call-template name="up-link"/>
   </div>
 </xsl:template>
 
 <xsl:template match="chapheading|majorheading">
   <div class="chapheading">
     <xsl:apply-templates/>
-    <xsl:call-template name="up-link"/>
   </div>
 </xsl:template>
 <!-- }}} -->
@@ -683,11 +417,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_chapter">
-	  <xsl:number count="chapter" format="1 - "/><xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_chapter">
+	<xsl:number count="chapter" format="1 - "/><xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="big_title">
@@ -706,11 +438,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_section">
-	  <xsl:number level="multiple" count="chapter|section" format="1.1 - "/><xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_section">
+	<xsl:number level="multiple" count="chapter|section" format="1.1 - "/><xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -725,11 +455,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_subsection">
-	  <xsl:number level="multiple" count="chapter|section|subsection" format="1.1.1 - "/><xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_subsection">
+	<xsl:number level="multiple" count="chapter|section|subsection" format="1.1.1 - "/><xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -744,11 +472,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_subsubsection">
-	  <xsl:number level="multiple" count="chapter|section|subsection|subsubsection" format="1.1.1.1 - "/><xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_subsubsection">
+	<xsl:number level="multiple" count="chapter|section|subsection|subsubsection" format="1.1.1.1 - "/><xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -763,12 +489,10 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_chapter">
-	  <xsl:text>Appendix </xsl:text>
-	  <xsl:number count="appendix" format="A - "/><xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_chapter">
+	<xsl:text>Appendix </xsl:text>
+	<xsl:number count="appendix" format="A - "/><xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="big_title">
@@ -787,11 +511,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_section">
-	  <xsl:number level="multiple" count="appendix|appendixsec" format="A.1 - "/><xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_section">
+	<xsl:number level="multiple" count="appendix|appendixsec" format="A.1 - "/><xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -806,11 +528,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_subsection">
-	  <xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec" format="A.1.1 - "/><xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_subsection">
+	<xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec" format="A.1.1 - "/><xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -825,11 +545,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_subsubsection">
-	  <xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec|appendixsubsubsec" format="A.1.1.1 - "/><xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_subsubsection">
+	<xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec|appendixsubsubsec" format="A.1.1.1 - "/><xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -844,11 +562,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_chapter">
-	  <xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_chapter">
+	<xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="big_title">
@@ -867,11 +583,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_section">
-	  <xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_section">
+	<xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -886,11 +600,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_subsection">
-	  <xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_subsection">
+	<xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -905,11 +617,9 @@ table.indented {
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <strong>
-        <span class="toc_subsubsection">
-	  <xsl:apply-templates/>
-	</span>
-      </strong>
+      <span class="toc_subsubsection">
+	<xsl:apply-templates/>
+      </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
@@ -970,7 +680,7 @@ table.indented {
 <xsl:template match="para">
   <xsl:apply-templates/>
   <xsl:choose>
-    <xsl:when test="count(document-font|document-title|document-author)"/>
+    <xsl:when test="count(document-font|document-title|document-author|document-navigation|document-hasbanner)"/>
     <!-- <xsl:when test="count(reference-function|reference-struct-name)"><breakline/></xsl:when> -->
     <xsl:otherwise><br/><br/></xsl:otherwise>
   </xsl:choose>
@@ -986,92 +696,56 @@ table.indented {
 <!-- }}} -->
 
 <!-- {{{ contextual tags -->
-<xsl:template match="acronym">
-  <acronym><xsl:apply-templates/></acronym>
-</xsl:template>
-
-<xsl:template match="cite">
-  <cite><xsl:apply-templates/></cite>
-</xsl:template>
-
-<xsl:template match="dfn">
-  <dfn><xsl:apply-templates/></dfn>
-</xsl:template>
-
-<xsl:template match="kbd">
-  <kbd><xsl:apply-templates/></kbd>
-</xsl:template>
-
-<xsl:template match="samp">
-  <samp><xsl:apply-templates/></samp>
-</xsl:template>
-
-<xsl:template match="var">
-  <var><xsl:apply-templates/></var>
+<xsl:template match="acronym|cite|dfn|kbd|samp|var|strong">
+  <xsl:variable name="tag" select="local-name()"/>
+  <xsl:element name="{$tag}">
+    <xsl:apply-templates/>
+  </xsl:element>
 </xsl:template>
 
 <xsl:template match="emph">
   <em><xsl:apply-templates/></em>
 </xsl:template>
 
-<xsl:template match="strong">
-  <strong><xsl:apply-templates/></strong>
-</xsl:template>
-
-<xsl:template match="url|email|key|env|file|command|option">
+<xsl:template match="code|url|email|key|env|file|command|option|menupath|pagepath|object|channel">
   <code>
-    <span>
-      <xsl:attribute name="class">
-        <xsl:value-of select="local-name()"/>
-      </xsl:attribute>
-      <xsl:apply-templates/>
-    </span>
-  </code>
-</xsl:template>
-
-<xsl:template match="menupath">
-  <strong><span class="menupath"><xsl:apply-templates/></span></strong>
-</xsl:template>
-
-<xsl:template match="pagepath">
-  <strong><span class="pagepath"><xsl:apply-templates/></span></strong>
-</xsl:template>
-
-<xsl:template match="object">
-  <em><code><span class="object"><xsl:apply-templates/></span></code></em>
-</xsl:template>
-
-<xsl:template match="channel">
-  <em><span class="channel"><xsl:apply-templates/></span></em>
-</xsl:template>
-
-<xsl:template match="important">
-  <em><strong><span class="important"><xsl:apply-templates/></span></strong></em>
-</xsl:template>
-
-<xsl:template match="code">
-  <code><xsl:apply-templates/></code>
-</xsl:template>
-
-<xsl:template match="property">
-  "<em><span class="property"><xsl:apply-templates/></span></em>"
-</xsl:template>
-
-<xsl:template match="center">
-  <div class="center" align="center"><xsl:apply-templates/></div>
-</xsl:template>
-
-<xsl:template match="example|display|format|lisp">
-  <pre>
     <xsl:attribute name="class">
       <xsl:value-of select="local-name()"/>
     </xsl:attribute>
     <xsl:apply-templates/>
-  </pre>
+  </code>
 </xsl:template>
 
-<xsl:template match="keepspace">
-  <span class="keepspace"><xsl:apply-templates/></span>
+<xsl:template match="property">
+  "<code class="property"><xsl:apply-templates/></code>"
+</xsl:template>
+
+<xsl:template match="important">
+  <strong class="important"><xsl:apply-templates/></strong>
+</xsl:template>
+
+<xsl:template match="center">
+  <div class="center"><xsl:apply-templates/></div>
+</xsl:template>
+
+<xsl:template match="quotation">
+  <blockquote>
+    <xsl:apply-templates/>
+  </blockquote>
+</xsl:template>
+
+<xsl:template match="example|smallexample|display|smalldisplay|format|smallformat|lisp|smalllisp">
+  <div>
+    <xsl:if test="not(local-name()='format' or local-name()='smallformat')">
+      <xsl:attribute name="class">indented-block</xsl:attribute>
+    </xsl:if>
+    <pre>
+      <xsl:attribute name="class">
+	<xsl:value-of select="local-name()"/>
+      </xsl:attribute>
+      <xsl:apply-templates/>
+    </pre>
+  </div>
 </xsl:template>
 <!-- }}} -->
 
@@ -1092,6 +766,10 @@ table.indented {
   <li>
     <xsl:apply-templates/>
   </li>
+</xsl:template>
+
+<xsl:template match="itemize/item/para|enumerate/item/para">
+  <xsl:apply-templates/>
 </xsl:template>
 <!-- }}} -->
 
@@ -1256,7 +934,7 @@ table.indented {
       </xsl:attribute>
     </xsl:if>
     <xsl:attribute name="src">
-      <xsl:value-of select="concat($image_prefix, .)"/><xsl:text>.</xsl:text><xsl:value-of select="@extension"/>
+      <xsl:value-of select="concat($images_prefix, .)"/><xsl:text>.</xsl:text><xsl:value-of select="@extension"/>
     </xsl:attribute>
   </img>
 </xsl:template>
@@ -1380,11 +1058,10 @@ table.indented {
 
 <xsl:template match="para/news-title">
   <strong>
-    <span class="news-title">
+    <span class="news-heading">
       <xsl:apply-templates/>
     </span>
   </strong>
-  <br/>
 </xsl:template>
 <!-- }}} -->
 

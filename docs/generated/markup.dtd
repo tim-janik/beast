@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<!ELEMENT tag-span-markup (tagdef|span)+>
+<!ELEMENT tag-span-markup (tagdef|span|keep-space)+>
 <!ELEMENT tagdef EMPTY>
 <!ELEMENT span (#PCDATA|span|keep-space|image|xlink|anchor|newline|breakline)*>
 <!ELEMENT newline EMPTY>
 <!ELEMENT breakline EMPTY>
 <!ELEMENT anchor EMPTY>
-<!ELEMENT keep-space (#PCDATA|span)*>
-<!ELEMENT image (#PCDATA|span)*>
-<!ELEMENT xlink (#PCDATA|span)*>
+<!ELEMENT keep-space (#PCDATA|span|keep-space)*>
+<!ELEMENT image      (#PCDATA|span|keep-space)*>
+<!ELEMENT xlink      (#PCDATA|span|keep-space)*>
 
 <!ATTLIST tagdef
   name          CDATA                    #REQUIRED
@@ -24,6 +24,7 @@
   foreground    CDATA                    #IMPLIED
   justification (left|right|center|fill) #IMPLIED
   stretch       (expanded|normal)        #IMPLIED
+  scale         CDATA                    #IMPLIED
   >
 
 <!ATTLIST image

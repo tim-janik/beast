@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE navigation [
+  <!ELEMENT navigation (node)*>
+  <!ELEMENT node (node)*>
+
+  <!ATTLIST node
+    title  CDATA #REQUIRED
+    target CDATA #IMPLIED
+    image  CDATA #IMPLIED
+  >
+]>
+
+<navigation>
+  <node title="News"        target="news.html"              />
+  <node title="About"       target="about.html"             />
+  <node title="Screenshots" target="screenshots/index.html" />
+  <node title="Download"    target="download.html"          />
+  <node title="Contact"     target="contact.html"           />
+  <node title="Links"       target="resources.html"         />
+  
+  <node title="FAQ"                 target="faq.html" />
+  <node title="Quick Start"         target="quickstart.html" />
+  
+  <node title="ChangeLogs">
+    <node title="BEAST"   target="log-beast.html"   />
+    <node title="BSE"     target="log-bse.html"     />
+    <node title="Plugins" target="log-plugins.html" />
+    <node title="SFI"     target="log-sfi.html"     />
+  </node>
+  
+  <node title="API Reference"       target="documentation.html">
+    <node title="SFI Functions"     target="sfi.3.html"         />
+    <node title="BSE Functions"     target="bse.3.html"         />
+    <node title="GXK Functions"     target="beast-gxk.3.html"   />
+    <node title="BSE Procedures"    target="bse-procs.3.html"   />
+    <node title="BSE Structs"       target="bse-structs.3.html" />
+  </node>
+  
+  <node title="Logo Contest (Now Over)" target="logo-submissions/index.html" />
+</navigation>

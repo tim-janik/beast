@@ -218,11 +218,13 @@ print <<END_HEADER;
 
 \@docpackage{$package}
 \@docfont{tech}
+\@hasbanner{large}
+\@navigation{navigation.xml}
 
 \@unnumbered NAME
 $pname - $pblurb
 
-\@revision
+\@revision{Document Revised:}
 
 \@unnumbered SYNOPSIS
 \@printplainindex fn
