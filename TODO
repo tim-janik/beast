@@ -584,6 +584,10 @@ bseprocidl:
   - doesn't really work when it comes to implementing _some_ objects yourself
   - should output lower case vars (Info help instead of Info HELP)
 
+scripts:
+  - pianoroll transpose up/down
+  - pianorool lengthen/shorten notes
+
 STEFAN TODO:
   - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
     libtool
