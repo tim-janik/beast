@@ -48,8 +48,6 @@ DOCS:
 - @verbatiminclude doesn't seem to support makeinfo @value{} variable
   substitutions (alper, can you tell karl about this?). so i had to
   revert to an sed hack to make this work
-- implement @path{} as @file{} alias
-- s/Document Revision/Document Revised/
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq

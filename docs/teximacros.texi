@@ -89,7 +89,7 @@
 
 @c --- content markup ---
 @rmacro path{TEXT}
-@ifxmlelse{\TEXT\,menupath,doublequote}
+@ifxmlelse{\TEXT\,file,file}
 @end rmacro
 
 @rmacro menupath{TEXT}

@@ -1,3 +1,7 @@
+Sun Jan  5 23:50:56 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/teximacros.texi: fix @path{} macro handling.
+
 Sat Jan  4 12:42:10 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* bse/bseautodoc.c: s/Document Revision/Document Revised/.
