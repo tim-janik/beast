@@ -1811,7 +1811,7 @@ bse_midi_receiver_voices_pending (BseMidiReceiver *self,
                                                mchannel->vinput->queue_state != VSTATE_IDLE));
       /* find busy poly voice */
       for (i = 0; i < mchannel->n_voices && !active; i++)
-        active = active || !check_voice_switch_available_L (mchannel->voices[i]);
+        active = active || (mchannel->voices[i] && !check_voice_switch_available_L (mchannel->voices[i]));
     }
   /* find pending events */
   for (ring = self->events; ring && !active; ring = sfi_ring_next (ring, self->events))

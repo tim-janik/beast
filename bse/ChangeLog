@@ -1,3 +1,8 @@
+Mon Sep 27 18:26:56 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.cc (bse_midi_receiver_voices_pending): don't try to 
+	check busy state of NULL voices.
+
 Mon Sep 27 06:38:57 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice.[hc]: removed queue_length field from handle, as it's
