@@ -25,6 +25,23 @@
 @unnumbered What's New?
 
 
+@newsTitle{Wednesday 11 Feb 2004, BEAST Realease ``Silver Vein''}
+
+BEAST/BSE version 0.6.0 is available from the
+@uref{beast-doc://download,,download section}.
+@c here is the @uref{http://gnomedesktop.org/article.php?sid=1551,,FootNotes announcement}.
+
+Tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.0.tar.gz,, beast-0.6.0.tar.gz}
+and patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.5.6-0.6.0.bz2,, patch-beast-0.5.6-0.6.0.bz2}.
+
+Besides loads of bug fixes in this release, newly added features involve
+per-track scopes, skins for the event and piano roll widgets, major speedups,
+an AIFF file loader and four new language translations.
+As always, the @uref{beast-doc://release-news,,NEWS section} has all the glory details.
+
+
 @newsTitle{Thursday 22 Jan 2004, Wiki openings}
 
 The @beast website has a
@@ -51,82 +68,6 @@ of the BEAST demo song
 
 Have fun and
 @uref{beast-doc://upload-bse-files,, start contributing}! ;-)
-
-
-@newsTitle{Monday 29 Dec 2003, intltool add-on for beast-0.5.6}
-
-Aparently intltool 0.28 which the last beast release uses, requires a specific
-perl module to be available in order to build. So for some users, the build
-has been failing. If you run into build errors like:
-@example
-</tmp/beast-0.5.6>$ make -C data
-make: Entering directory `/tmp/beast-0.5.6/data'
-LC_ALL=C ../intltool-merge ../po beast.desktop.in beast.desktop -d -u -c ../po/.intltool-merge-cache
-The OrigTree module doesn't seem to be properly installed ../intltool-merge
-make: *** [beast.desktop] Error 2
-make: Leaving directory `/tmp/beast-0.5.6/data'
-@end example
-you can apply this patch
-@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.6-0.5.6+intltool.bz2,, patch-beast-0.5.6-0.5.6+intltool.bz2}
-like:
-@example
-</tmp/beast-0.5.6>$ patch -p1 < patch-beast-0.5.6-0.5.6+intltool
-patching file intltool-modules/XML/Parser/Style/OrigTree.pm
-@end example
-in order to supply the perl module and get intltool to work.
-
-
-@newsTitle{Sunday 28 Dec 2003, BEAST Realease ``Popcorn''}
-
-BEAST/BSE version 0.5.6 is available from the
-@uref{beast-doc://download,,download section},
-here is the
-@uref{http://gnomedesktop.org/article.php?sid=1551,,FootNotes announcement}.
-
-Tarball:
-@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.6.tar.gz,, beast-0.5.6.tar.gz}
-and patch:
-@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.5-0.5.6.bz2,, patch-beast-0.5.5-0.5.6.bz2}.
-
-Newly added features in this release involve a TB-303 style Bass Filter, major GUI
-improvements, MIDI file import abilities, a new C++ language binding, new language
-translations and finally an About box.
-As always, the @uref{beast-doc://release-news,,NEWS section} has all the glory details.
-
-In other news, we're looking for a graphics artist to improve plugin icons and
-help us develop fancier widgets like sliders, knobs, etc...
-Please @uref{mailto://beast@@gnome.org,, drop us a line} at our
-@uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list} if you're willing
-to contribute.
-
-And finally, the @uref{beast-doc://screenshots/index,,screen shot area} has had
-some updates, to reflect newer @beast versions.
-
-
-@newsTitle{Monday 27 Oct 2003, BEAST Realease & LinuxUser Article}
-
-The german
-@uref{http://www.linux-user.de/,, LinuxUser Magazin} features a
-@uref{http://www.linux-user.de/ausgabe/2003/11/032-beast/,, BEAST Workshop} in
-it's newest edition. We kindly thank the LinuxUser people for putting this article
-online.
-
-BEAST/BSE version 0.5.5 is available from the
-@uref{beast-doc://download,,download section},
-here is the
-@uref{http://gnomedesktop.org/article.php?sid=1422,,FootNotes announcement}.
-
-Tarball:
-@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.5.tar.gz,, beast-0.5.5.tar.gz}
-and patch:
-@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.4-0.5.5.bz2,, patch-beast-0.5.4-0.5.5.bz2}.
-
-Newly added features in this release involve Canyon Delay, MIDI Input, Panorama
-and Compressor modules, a demo song, stock instruments and effects, extended
-integration with external MIDI events, a new C++ based plugin interface,
-MIME type support and @emph{lots} of language translations.
-The details are outlined in the
-@uref{beast-doc://release-news,,NEWS section}.
 
 
 @bye

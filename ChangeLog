@@ -1,3 +1,8 @@
+Wed Feb 11 11:19:04 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-oldnews.texi: 
+	* docs/site-news.texi: rotate news and announce release.
+
 Wed Feb 11 09:29:29 2004  Tim Janik  <timj@gtk.org>
 
 	* released 0.6.0, binary age 0, interface age 0.
