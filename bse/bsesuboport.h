@@ -22,10 +22,7 @@
 #include <bse/bsesource.h>
 #include <bse/bseengine.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_SUB_OPORT		(BSE_TYPE_ID (BseSubOPort))
@@ -43,20 +40,13 @@ typedef struct _BseSubOPortClass BseSubOPortClass;
 struct _BseSubOPort
 {
   BseSource	 parent_object;
-  
   gchar	       **output_ports;
 };
 struct _BseSubOPortClass
 {
   BseSourceClass parent_class;
-
-  guint          n_output_ports;
-  BseModuleClass       gsl_class;
 };
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SUB_OPORT_H__ */

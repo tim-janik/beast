@@ -1,3 +1,27 @@
+Thu Sep  2 22:50:43 2004  Tim Janik  <timj@gtk.org>
+
+	* bsetrack.[hc]: derive from BSeContextMerger. this turns BseTrack
+	into a BseSource, including preparation and reset. this gets rid of
+	a bunch of special cases and state related buglets.
+
+	* bsesubiport.[hc]:
+	* bsesuboport.[hc]: prepare for derived objects with varying
+	numbers of input and output channels. some cleanups.
+
+	* bsesubsynth.[hc]: dito. move premature releasing of port
+	names to finalize.
+
+	* bsesource.[hc]: added bse_source_class_inherit_channels().
+
+	* bsesong.c: adapt to BseTrack is_a BseSource now.
+
+	* bsesnet.c: cleanups. report i/o port leaks at finalization
+	time, as ports may be left at bse_snet_release_children() from
+	inetrnal children.
+
+	* bseinstrumentoutput.c:
+	* bseinstrumentinput.c: adaptions, cleanups.
+
 Thu Sep  2 04:14:29 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.[hc]: added ::mute, ::solo and ::sync properties.

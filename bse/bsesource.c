@@ -1732,6 +1732,7 @@ bse_source_restore_private (BseObject  *object,
 static void
 bse_source_class_base_init (BseSourceClass *class)
 {
+  /* reset ichannel, jchannel and ochannel defs */
   class->channel_defs.n_ichannels = 0;
   class->channel_defs.ichannel_idents = NULL;
   class->channel_defs.ichannel_labels = NULL;
@@ -1742,9 +1743,51 @@ bse_source_class_base_init (BseSourceClass *class)
   class->channel_defs.ochannel_idents = NULL;
   class->channel_defs.ochannel_labels = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
+  /* reset other class members */
   class->engine_class = NULL;
   class->filtered_properties = FALSE;
   class->unprepared_properties = NULL;
+}
+
+void
+bse_source_class_inherit_channels (BseSourceClass *source_class)
+{
+  g_return_if_fail (BSE_IS_SOURCE_CLASS (source_class));
+  BseSourceClass *parent_class = g_type_class_peek_parent (source_class);
+  g_return_if_fail (BSE_IS_SOURCE_CLASS (parent_class));
+  g_return_if_fail (source_class->channel_defs.n_ichannels == 0);
+  g_return_if_fail (source_class->channel_defs.n_ochannels == 0);
+  g_return_if_fail (source_class->channel_defs.n_jstreams == 0);
+  g_return_if_fail (source_class->engine_class == 0);
+  BseSourceChannelDefs *defs = &parent_class->channel_defs;
+  guint i;
+  /* dup ichannel arrays */
+  source_class->channel_defs.n_ichannels = defs->n_ichannels;
+  source_class->channel_defs.ichannel_idents = g_memdup (defs->ichannel_idents, sizeof (gchar*) * defs->n_ichannels);
+  source_class->channel_defs.ichannel_labels = g_memdup (defs->ichannel_labels, sizeof (gchar*) * defs->n_ichannels);
+  source_class->channel_defs.ichannel_blurbs = g_memdup (defs->ichannel_blurbs, sizeof (gchar*) * defs->n_ichannels);
+  /* dup ichannel array contents */
+  for (i = 0; i < defs->n_ichannels; i++)
+    {
+      source_class->channel_defs.ichannel_idents[i] = g_strdup (defs->ichannel_idents[i]);
+      source_class->channel_defs.ichannel_labels[i] = g_strdup (defs->ichannel_labels[i]);
+      source_class->channel_defs.ichannel_blurbs[i] = g_strdup (defs->ichannel_blurbs[i]);
+    }
+  /* dup jstream ids + jchannel flags */
+  source_class->channel_defs.ijstreams = g_memdup (defs->ijstreams, sizeof (guint) * defs->n_ichannels);
+  source_class->channel_defs.n_jstreams = defs->n_jstreams;
+  /* dup ochannel arrays */
+  source_class->channel_defs.n_ochannels = defs->n_ochannels;
+  source_class->channel_defs.ochannel_idents = g_memdup (defs->ochannel_idents, sizeof (gchar*) * defs->n_ochannels);
+  source_class->channel_defs.ochannel_labels = g_memdup (defs->ochannel_labels, sizeof (gchar*) * defs->n_ochannels);
+  source_class->channel_defs.ochannel_blurbs = g_memdup (defs->ochannel_blurbs, sizeof (gchar*) * defs->n_ochannels);
+  /* dup ochannel array contents */
+  for (i = 0; i < defs->n_ochannels; i++)
+    {
+      source_class->channel_defs.ochannel_idents[i] = g_strdup (defs->ochannel_idents[i]);
+      source_class->channel_defs.ochannel_labels[i] = g_strdup (defs->ochannel_labels[i]);
+      source_class->channel_defs.ochannel_blurbs[i] = g_strdup (defs->ochannel_blurbs[i]);
+    }
 }
 
 static void

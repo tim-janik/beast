@@ -22,10 +22,7 @@
 #include <bse/bsesource.h>
 #include <bse/bseengine.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_SUB_IPORT		(BSE_TYPE_ID (BseSubIPort))
@@ -34,8 +31,7 @@ extern "C" {
 #define BSE_IS_IPORT(object)		(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SUB_IPORT))
 #define BSE_IS_IPORT_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUB_IPORT))
 #define BSE_SUB_IPORT_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUB_IPORT, BseSubIPortClass))
-
-#define	BSE_SUB_IPORT_N_PORTS	(4)
+#define BSE_SUB_IPORT_N_PORTS           (4)
 
 /* --- BseSubIPort module --- */
 typedef struct _BseSubIPort      BseSubIPort;
@@ -49,14 +45,8 @@ struct _BseSubIPort
 struct _BseSubIPortClass
 {
   BseSourceClass parent_class;
-
-  guint		 n_input_ports;
-  BseModuleClass	 gsl_class;
 };
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SUB_IPORT_H__ */

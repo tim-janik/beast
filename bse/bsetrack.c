@@ -28,7 +28,6 @@
 #include "bseproject.h"
 #include "bsesong.h"
 #include "bsemidivoice.h"
-#include "bsecontextmerger.h"
 #include "bsemidireceiver.h"
 #include "bsewaverepo.h"
 #include <string.h>
@@ -93,7 +92,7 @@ BSE_BUILTIN_TYPE (BseTrack)
     (GInstanceInitFunc) bse_track_init,
   };
   
-  return bse_type_register_static (BSE_TYPE_ITEM,
+  return bse_type_register_static (BSE_TYPE_CONTEXT_MERGER,
 				   "BseTrack",
 				   "BSE track type",
 				   &track_info);
@@ -114,6 +113,7 @@ alloc_id_above (guint n)
 static void
 bse_track_init (BseTrack *self)
 {
+  BSE_OBJECT_SET_FLAGS (self, BSE_SOURCE_FLAG_PRIVATE_INPUTS);
   self->snet = NULL;
   self->pnet = NULL;
   self->max_voices = 16;
@@ -699,14 +699,10 @@ bse_track_add_modules (BseTrack        *self,
   bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT,
 			     self->sub_synth, 3);
   
-  /* context merger */
-  self->context_merger = bse_container_new_child (container, BSE_TYPE_CONTEXT_MERGER, NULL);
-  bse_item_set_internal (self->context_merger, TRUE);
-  
   /* midi voice switch <-> context merger */
-  bse_source_must_set_input (self->context_merger, 0,
+  bse_source_must_set_input (BSE_SOURCE (self), 0,
 			     self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_LEFT);
-  bse_source_must_set_input (self->context_merger, 1,
+  bse_source_must_set_input (BSE_SOURCE (self), 1,
 			     self->voice_switch, BSE_MIDI_VOICE_SWITCH_OCHANNEL_RIGHT);
   
   /* postprocess */
@@ -715,8 +711,8 @@ bse_track_add_modules (BseTrack        *self,
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
   
   /* context merger <-> postprocess */
-  bse_source_must_set_input (self->postprocess, 0, self->context_merger, 0);
-  bse_source_must_set_input (self->postprocess, 1, self->context_merger, 1);
+  bse_source_must_set_input (self->postprocess, 0, BSE_SOURCE (self), 0);
+  bse_source_must_set_input (self->postprocess, 1, BSE_SOURCE (self), 1);
 
   /* propagate midi channel to modules */
   bse_track_update_midi_channel (self);
@@ -753,8 +749,6 @@ bse_track_remove_modules (BseTrack     *self,
   self->voice_input = NULL;
   bse_container_remove_item (container, BSE_ITEM (self->voice_switch));
   self->voice_switch = NULL;
-  bse_container_remove_item (container, BSE_ITEM (self->context_merger));
-  self->context_merger = NULL;
   bse_container_remove_item (container, BSE_ITEM (self->postprocess));
   self->postprocess = NULL;
 }
@@ -773,7 +767,7 @@ bse_track_clone_voices (BseTrack       *self,
   g_return_if_fail (trans != NULL);
 
   for (i = 0; i < self->max_voices - 1; i++)
-    bse_snet_context_clone_branch (snet, context, self->context_merger, mcontext, trans);
+    bse_snet_context_clone_branch (snet, context, BSE_SOURCE (self), mcontext, trans);
 }
 
 static void
@@ -872,6 +866,8 @@ bse_track_class_init (BseTrackClass *class)
   
   item_class->get_candidates = bse_track_get_candidates;
   
+  bse_source_class_inherit_channels (BSE_SOURCE_CLASS (class));
+
   bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_MUTED,
 			      sfi_pspec_bool ("muted", _("Muted"), NULL,

@@ -31,16 +31,14 @@ G_BEGIN_DECLS
 #define BSE_IS_SUB_SYNTH_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SUB_SYNTH))
 #define BSE_SUB_SYNTH_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SUB_SYNTH, BseSubSynthClass))
 
-#define BSE_SUB_SYNTH_N_IOPORTS (8)
-
 /* --- BseSubSynth source --- */
 struct _BseSubSynth
 {
   BseSource        parent_object;
 
   BseSNet	  *snet;
-  gchar		  *input_ports[BSE_SUB_SYNTH_N_IOPORTS];
-  gchar		  *output_ports[BSE_SUB_SYNTH_N_IOPORTS];
+  gchar		 **input_ports;
+  gchar		 **output_ports;
   guint            midi_channel;
   guint            null_shortcut : 1;
 };

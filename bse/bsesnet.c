@@ -52,18 +52,6 @@ enum
 
 
 /* --- prototypes --- */
-static void      bse_snet_class_init             (BseSNetClass   *class);
-static void      bse_snet_init                   (BseSNet        *snet);
-static void      bse_snet_dispose                (GObject        *object);
-static void      bse_snet_finalize               (GObject        *object);
-static void      bse_snet_set_property           (GObject	 *object,
-						  guint           param_id,
-						  const GValue   *value,
-						  GParamSpec     *pspec);
-static void      bse_snet_get_property           (GObject        *object,
-						  guint           param_id,
-						  GValue         *value,
-						  GParamSpec     *pspec);
 static void      bse_snet_add_item               (BseContainer   *container,
 						  BseItem        *item);
 static void      bse_snet_forall_items           (BseContainer   *container,
@@ -99,60 +87,6 @@ static const GBSearchConfig port_array_config = {
 
 
 /* --- functions --- */
-BSE_BUILTIN_TYPE (BseSNet)
-{
-  static const GTypeInfo type_info = {
-    sizeof (BseSNetClass),
-    (GBaseInitFunc) NULL,
-    (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_snet_class_init,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    sizeof (BseSNet),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_snet_init,
-  };
-  g_assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
-  return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", &type_info);
-}
-
-static void
-bse_snet_class_init (BseSNetClass *class)
-{
-  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  gobject_class->set_property = bse_snet_set_property;
-  gobject_class->get_property = bse_snet_get_property;
-  gobject_class->dispose = bse_snet_dispose;
-  gobject_class->finalize = bse_snet_finalize;
-  
-  source_class->prepare = bse_snet_prepare;
-  source_class->context_create = bse_snet_context_create;
-  source_class->context_connect = bse_snet_context_connect;
-  source_class->context_dismiss = bse_snet_context_dismiss;
-  source_class->reset = bse_snet_reset;
-  
-  container_class->add_item = bse_snet_add_item;
-  container_class->remove_item = bse_snet_remove_item;
-  container_class->forall_items = bse_snet_forall_items;
-  container_class->context_children = snet_context_children;
-  container_class->release_children = bse_snet_release_children;
-  
-  bse_object_class_add_param (object_class, "Playback Settings",
-			      PARAM_AUTO_ACTIVATE,
-			      sfi_pspec_bool ("auto_activate", "Auto Activate",
-					      "Automatic activation only needs to be enabled for synthesis networks "
-					      "that don't use virtual ports for their input and output",
-					      FALSE, SFI_PARAM_STANDARD));
-  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered",
-							  G_TYPE_NONE, 0);
-}
-
 static void
 bse_snet_init (BseSNet *snet)
 {
@@ -197,10 +131,6 @@ bse_snet_release_children (BseContainer *container)
 
   while (snet->sources)
     bse_container_remove_item (container, sfi_ring_pop_head (&snet->sources));
-  if (snet->iport_names)
-    g_warning ("%s: leaking %cport \"%s\"", G_STRLOC, 'i', (gchar*) snet->iport_names->data);
-  if (snet->oport_names)
-    g_warning ("%s: leaking %cport \"%s\"", G_STRLOC, 'o', (gchar*) snet->oport_names->data);
   
   /* chain parent class' handler */
   BSE_CONTAINER_CLASS (parent_class)->release_children (container);
@@ -209,8 +139,6 @@ bse_snet_release_children (BseContainer *container)
 static void
 bse_snet_dispose (GObject *object)
 {
-  // BseSNet *snet = BSE_SNET (object);
-  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
@@ -219,12 +147,21 @@ static void
 bse_snet_finalize (GObject *object)
 {
   BseSNet *snet = BSE_SNET (object);
+  BseContainer *container = BSE_CONTAINER (object);
   
+  while (snet->sources)
+    bse_container_remove_item (container, sfi_ring_pop_head (&snet->sources));
+  while (snet->isources)
+    bse_container_remove_item (container, sfi_ring_pop_head (&snet->isources));
   if (snet->port_unregistered_id)
     {
       bse_idle_remove (snet->port_unregistered_id);
       snet->port_unregistered_id = 0;
     }
+  if (snet->iport_names)
+    g_warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'i', (gchar*) snet->iport_names->data);
+  if (snet->oport_names)
+    g_warning ("%s: %s: leaking %cport \"%s\"", G_STRLOC, G_OBJECT_TYPE_NAME (snet), 'o', (gchar*) snet->oport_names->data);
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -978,4 +915,58 @@ bse_snet_context_dismiss (BseSource *source,
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
+}
+
+static void
+bse_snet_class_init (BseSNetClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->set_property = bse_snet_set_property;
+  gobject_class->get_property = bse_snet_get_property;
+  gobject_class->dispose = bse_snet_dispose;
+  gobject_class->finalize = bse_snet_finalize;
+  
+  source_class->prepare = bse_snet_prepare;
+  source_class->context_create = bse_snet_context_create;
+  source_class->context_connect = bse_snet_context_connect;
+  source_class->context_dismiss = bse_snet_context_dismiss;
+  source_class->reset = bse_snet_reset;
+  
+  container_class->add_item = bse_snet_add_item;
+  container_class->remove_item = bse_snet_remove_item;
+  container_class->forall_items = bse_snet_forall_items;
+  container_class->context_children = snet_context_children;
+  container_class->release_children = bse_snet_release_children;
+  
+  bse_object_class_add_param (object_class, "Playback Settings",
+			      PARAM_AUTO_ACTIVATE,
+			      sfi_pspec_bool ("auto_activate", "Auto Activate",
+					      "Automatic activation only needs to be enabled for synthesis networks "
+					      "that don't use virtual ports for their input and output",
+					      FALSE, SFI_PARAM_STANDARD));
+  signal_port_unregistered = bse_object_class_add_signal (object_class, "port_unregistered",
+							  G_TYPE_NONE, 0);
+}
+
+BSE_BUILTIN_TYPE (BseSNet)
+{
+  static const GTypeInfo type_info = {
+    sizeof (BseSNetClass),
+    (GBaseInitFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
+    (GClassInitFunc) bse_snet_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    sizeof (BseSNet),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_snet_init,
+  };
+  g_assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", &type_info);
 }

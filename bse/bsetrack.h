@@ -18,8 +18,9 @@
 #ifndef __BSE_TRACK_H__
 #define __BSE_TRACK_H__
 
-#include	<bse/bseitem.h>
-#include	<bse/bsesnet.h>
+#include <bse/bseitem.h>
+#include <bse/bsesnet.h>
+#include <bse/bsecontextmerger.h>
 
 G_BEGIN_DECLS
 
@@ -40,7 +41,7 @@ typedef struct {
 } BseTrackEntry;
 struct _BseTrack
 {
-  BseItem	   parent_instance;
+  BseContextMerger parent_instance;
 
   guint            channel_id;
   guint		   max_voices;
@@ -55,7 +56,6 @@ struct _BseTrack
   BseSource       *sub_synth;
   BseSource       *voice_input;
   BseSource       *voice_switch;
-  BseSource       *context_merger;
   BseSource       *postprocess;
 
   /* fields protected by sequencer mutex */
@@ -67,7 +67,7 @@ struct _BseTrack
 };
 struct _BseTrackClass
 {
-  BseItemClass parent_class;
+  BseContextMergerClass parent_class;
 };
 
 

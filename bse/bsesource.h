@@ -48,6 +48,9 @@ G_BEGIN_DECLS
 #define BSE_SOURCE_OCHANNEL_IDENT(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_idents[(id)])
 #define BSE_SOURCE_OCHANNEL_LABEL(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_labels[(id)])
 #define BSE_SOURCE_OCHANNEL_BLURB(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_blurbs[(id)])
+/* BseSourceClass */
+#define BSE_SOURCE_CLASS_N_ICHANNELS(sc)  (BSE_SOURCE_CLASS (sc)->channel_defs.n_ichannels)
+#define BSE_SOURCE_CLASS_N_OCHANNELS(sc)  (BSE_SOURCE_CLASS (sc)->channel_defs.n_ochannels)
 /*< private >*/
 #define	BSE_SOURCE_INPUT(src,id)	  (BSE_SOURCE (src)->inputs + (guint) (id))
 #define	BSE_SOURCE_OCHANNEL_OSTREAM(s,oc) ((oc) < BSE_SOURCE_N_OCHANNELS (s) ? (oc) : 0xffffffff)
@@ -189,6 +192,7 @@ guint	    bse_source_class_add_ochannel      	(BseSourceClass	*source_class,
 						 const gchar	*ident,
 						 const gchar	*label,
 						 const gchar	*blurb);
+void        bse_source_class_inherit_channels   (BseSourceClass *source_class);
 void		bse_source_set_context_imodule	(BseSource	*source,
 						 guint		 context_handle,
 						 BseModule	*imodule);

@@ -402,9 +402,6 @@ bse_song_add_item (BseContainer *container,
 {
   BseSong *self = BSE_SONG (container);
 
-  if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
-    bse_track_add_modules (BSE_TRACK (item), container, self->midi_receiver_SL);
-
   BSE_SEQUENCER_LOCK ();
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
@@ -422,7 +419,9 @@ bse_song_add_item (BseContainer *container,
 
   BSE_SEQUENCER_UNLOCK ();
 
-  if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
+  if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
+    bse_track_add_modules (BSE_TRACK (item), container, self->midi_receiver_SL);
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_BUS))
     bse_bus_create_stack (BSE_BUS (item));
 }
 
@@ -435,14 +434,6 @@ bse_song_forall_items (BseContainer	 *container,
   SfiRing *ring;
 
   /* iterate over non-source children */
-  ring = self->tracks_SL;
-  while (ring)
-    {
-      BseItem *item = ring->data;
-      ring = sfi_ring_walk (ring, self->tracks_SL);
-      if (!func (item, data))
-	return;
-    }
   ring = self->parts;
   while (ring)
     {

@@ -32,82 +32,11 @@ enum
 };
 
 
-/* --- prototypes --- */
-static void bse_instrument_input_init       (BseInstrumentInput      *self);
-static void bse_instrument_input_class_init (BseInstrumentInputClass *class);
-static void bse_instrument_input_set_parent (BseItem                 *item,
-                                             BseItem                 *parent);
-
-
 /* --- variables --- */
 static gpointer		 parent_class = NULL;
 
 
 /* --- functions --- */
-BSE_BUILTIN_TYPE (BseInstrumentInput)
-{
-  static const GTypeInfo type_info = {
-    sizeof (BseInstrumentInputClass),
-    
-    (GBaseInitFunc) NULL,
-    (GBaseFinalizeFunc) NULL,
-    (GClassInitFunc) bse_instrument_input_class_init,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    
-    sizeof (BseInstrumentInput),
-    0 /* n_preallocs */,
-    (GInstanceInitFunc) bse_instrument_input_init,
-  };
-#include "./icons/keyboard.c"
-  GType type = bse_type_register_static (BSE_TYPE_SUB_IPORT,
-                                         "BseInstrumentInput",
-                                         "Virtual input module for synthesis networks which "
-                                         "implement instruments",
-                                         &type_info);
-  bse_categories_register_stock_module (N_("/Input & Output/Instrument Voice Input"), type, keyboard_pixstream);
-  return type;
-}
-
-static void
-bse_instrument_input_class_init (BseInstrumentInputClass *class)
-{
-  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
-  BseItemClass *item_class = BSE_ITEM_CLASS (class);
-  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  BseSubIPortClass *iport_class = BSE_SUB_IPORT_CLASS (class);
-  guint i, ochannel_id;
-  
-  parent_class = g_type_class_peek_parent (class);
-  
-  item_class->set_parent = bse_instrument_input_set_parent;
-  
-  /* override parent properties with NOP properties */
-  for (i = 0; i < iport_class->n_input_ports; i++)
-    {
-      gchar *string;
-      
-      string = g_strdup_printf ("in_port_%u", i + 1);
-      bse_object_class_add_param (object_class, NULL, PROP_IPORT_NAME + i * 2,
-				  sfi_pspec_string (string, NULL, NULL, NULL, NULL));
-      g_free (string);
-    }
-  
-  /* assert parent class introduced enough ports */
-  g_assert (iport_class->n_input_ports >= 4);
-  
-  iport_class->n_input_ports = 4;
-  
-  ochannel_id = bse_source_class_add_ochannel (source_class, "frequency", _("Frequency"), _("Note Frequency"));
-  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_FREQUENCY);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "gate", _("Gate"), _("High if the note is currently being pressed"));
-  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_GATE);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "velocity", _("Velocity"), _("Velocity of the note press"));
-  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_VELOCITY);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "aftertouch", _("Aftertouch"), _("Velocity while the note is pressed"));
-  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH);
-}
-
 static void
 bse_instrument_input_reset_names (BseInstrumentInput *self)
 {
@@ -163,4 +92,62 @@ bse_instrument_input_set_parent (BseItem *item,
 			      G_CALLBACK (bse_instrument_input_reset_names), self);
   else
     bse_instrument_input_reset_names (self);
+}
+
+static void
+bse_instrument_input_class_init (BseInstrumentInputClass *class)
+{
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  guint i, ochannel_id;
+  
+  parent_class = g_type_class_peek_parent (class);
+  
+  item_class->set_parent = bse_instrument_input_set_parent;
+  
+  /* assert parent class introduced enough ports */
+  g_assert (BSE_SUB_IPORT_N_PORTS >= 4);
+  /* override parent properties with NOP properties */
+  for (i = 0; i < BSE_SUB_IPORT_N_PORTS; i++)
+    {
+      gchar *string = g_strdup_printf ("in_port_%u", i + 1);
+      bse_object_class_add_param (object_class, NULL, PROP_IPORT_NAME + i * 2,
+				  sfi_pspec_string (string, NULL, NULL, NULL, NULL));
+      g_free (string);
+    }
+
+  ochannel_id = bse_source_class_add_ochannel (source_class, "frequency", _("Frequency"), _("Note Frequency"));
+  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_FREQUENCY);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "gate", _("Gate"), _("High if the note is currently being pressed"));
+  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_GATE);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "velocity", _("Velocity"), _("Velocity of the note press"));
+  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_VELOCITY);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "aftertouch", _("Aftertouch"), _("Velocity while the note is pressed"));
+  g_assert (ochannel_id == BSE_INSTRUMENT_INPUT_OCHANNEL_AFTERTOUCH);
+}
+
+BSE_BUILTIN_TYPE (BseInstrumentInput)
+{
+  static const GTypeInfo type_info = {
+    sizeof (BseInstrumentInputClass),
+    
+    (GBaseInitFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
+    (GClassInitFunc) bse_instrument_input_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    
+    sizeof (BseInstrumentInput),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_instrument_input_init,
+  };
+#include "./icons/keyboard.c"
+  GType type = bse_type_register_static (BSE_TYPE_SUB_IPORT,
+                                         "BseInstrumentInput",
+                                         "Virtual input module for synthesis networks which "
+                                         "implement instruments",
+                                         &type_info);
+  bse_categories_register_stock_module (N_("/Input & Output/Instrument Voice Input"), type, keyboard_pixstream);
+  return type;
 }
