@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-01 13:27-0400\n"
-"PO-Revision-Date: 2004-09-01 19:50-0400\n"
+"POT-Creation-Date: 2004-09-02 11:16-0400\n"
+"PO-Revision-Date: 2004-09-02 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -592,7 +592,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Name"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:524
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:529
 msgid "Comment"
 msgstr "Comment"
 
@@ -1025,7 +1025,7 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Pattern Editor Layout"
 
-#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:29
+#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "VZoom"
 msgstr "VZoom"
 
@@ -1497,7 +1497,7 @@ msgstr ""
 "instabilities in the code (i.e. save your projects regularly)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Edit"
 msgstr "_Edit"
 
@@ -2458,65 +2458,62 @@ msgstr "Aplly configuration changes to the pattern editor layout"
 msgid "Available Items:"
 msgstr "Available Items:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:4
+#. Name
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Bus Name"
 msgstr "Bus Name"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Configure"
 msgstr "Configure"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Configure the column layout of the pattern editor"
 msgstr "Configure the column layout of the pattern editor"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Control Type:"
 msgstr "Control Type:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Current Items:"
 msgstr "Current Items:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "Development"
 msgstr "Development"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Discard changes and close dialog"
 msgstr "Discard changes and close dialog"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "E_xamples"
 msgstr "E_xamples"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Events"
 msgstr "Events"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "HZoom"
 msgstr "HZoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Horizontal piano zoom"
 msgstr "Horizontal piano zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Horizontal track zoom"
 msgstr "Horizontal track zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Inputs"
 msgstr "Inputs"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Layout:"
 msgstr "Layout:"
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:18
-msgid "Level"
-msgstr "Level"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Move the selection down by one position"
@@ -2547,130 +2544,134 @@ msgid "Repeat playback within loop points"
 msgstr "Repeat playback within loop points"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:28
+msgid "Switches"
+msgstr "Switches"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "Synthesis Modules"
 msgstr "Synthesis Modules"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "Vertical piano zoom"
 msgstr "Vertical piano zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "Virtual Rack"
 msgstr "Virtual Rack"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "Wave_s"
 msgstr "Wave_s"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "Zoom"
 msgstr "Zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_Add"
 msgstr "_Add"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Apply"
 msgstr "_Apply"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_Audio Sources"
 msgstr "_Audio Sources"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Cancel"
 msgstr "_Cancel"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Distortion"
 msgstr "_Distortion"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Enhance"
 msgstr "_Enhance"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_File"
 msgstr "_File"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Filters"
 msgstr "_Filters"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Help"
 msgstr "_Help"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Input & Output"
 msgstr "_Input & Output"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Misc"
 msgstr "_Misc"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Other Sources"
 msgstr "_Other Sources"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_Project"
 msgstr "_Project"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Quantization"
 msgstr "_Quantization"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:52
 msgid "_Remove"
 msgstr "_Remove"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:52
+#: beast-gtk/dialogs/radgets-beast.xml.h:53
 msgid "_Routing"
 msgstr "_Routing"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:53
+#: beast-gtk/dialogs/radgets-beast.xml.h:54
 msgid "_Skins"
 msgstr "_Skins"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:54
+#: beast-gtk/dialogs/radgets-beast.xml.h:55
 msgid "_Song"
 msgstr "_Song"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:55
+#: beast-gtk/dialogs/radgets-beast.xml.h:56
 msgid "_Spatial"
 msgstr "_Spatial"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:56
+#: beast-gtk/dialogs/radgets-beast.xml.h:57
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:57
+#: beast-gtk/dialogs/radgets-beast.xml.h:58
 msgid "_Synthesizers"
 msgstr "_Synthesizers"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:58
+#: beast-gtk/dialogs/radgets-beast.xml.h:59
 msgid "_Tools"
 msgstr "_Tools"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:59
+#: beast-gtk/dialogs/radgets-beast.xml.h:60
 msgid "_Utilities"
 msgstr "_Utilities"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:60
+#: beast-gtk/dialogs/radgets-beast.xml.h:61
 msgid "_View"
 msgstr "_View"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:61
+#: beast-gtk/dialogs/radgets-beast.xml.h:62
 msgid "_Virtualization"
 msgstr "_Virtualization"
 
@@ -2770,7 +2771,11 @@ msgstr "Spin Button"
 msgid "Spin Button (Logarithmic)"
 msgstr "Spin Button (Logarithmic)"
 
-#: beast-gtk/gxk/gxkparam-toggle.c:69
+#: beast-gtk/gxk/gxkparam-toggle.c:82
+msgid "Check/ToggleRadio Button"
+msgstr "Check/ToggleRadio Button"
+
+#: beast-gtk/gxk/gxkparam-toggle.c:89
 msgid "Toggle Button"
 msgstr "Toggle Button"
 
@@ -3178,98 +3183,123 @@ msgstr "Gain Modulation Input"
 msgid "Filtered Audio Signal"
 msgstr "Filtered Audio Signal"
 
-#: bse/bsebus.c:114
+#: bse/bsebus.c:118
 msgid "Available Inputs"
 msgstr "Available Inputs"
 
-#: bse/bsebus.c:114
+#: bse/bsebus.c:118
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "List of available synthesis signals to be used as bus input"
 
 #. FIXME: fix volume
-#: bse/bsebus.c:506 bse/bsebus.c:511 bse/bsemidisynth.c:439
-#: bse/bsemidisynth.c:445 bse/bsemidisynth.c:452 bse/bsesong.c:706
-#: bse/bsesong.c:712 bse/bsesong.c:719 bse/bsetrack.c:875
+#: bse/bsebus.c:631 bse/bsebus.c:633 bse/bsebus.c:635 bse/bsebus.c:637
+#: bse/bsebus.c:641 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
+#: bse/bsemidisynth.c:452 bse/bsesong.c:708 bse/bsesong.c:714
+#: bse/bsesong.c:721 bse/bsetrack.c:875
 msgid "Adjustments"
 msgstr "Adjustments"
 
-#: bse/bsebus.c:508
+#: bse/bsebus.c:632
+msgid "Mute"
+msgstr "Mute"
+
+#: bse/bsebus.c:632
+msgid "Mute: turn off the bus volume"
+msgstr "Mute: turn off the bus volume"
+
+#: bse/bsebus.c:634
+msgid "Solo"
+msgstr "Solo"
+
+#: bse/bsebus.c:634
+msgid "Solo: mute all other busses"
+msgstr "Solo: mute all other busses"
+
+#: bse/bsebus.c:636
+msgid "Sync"
+msgstr "Sync"
+
+#: bse/bsebus.c:636
+msgid "Sync: enforce the same volume left and right"
+msgstr "Sync: enforce the same volume left and right"
+
+#: bse/bsebus.c:638
 msgid "Left Volume [dB]"
 msgstr "Left Volume [dB]"
 
-#: bse/bsebus.c:508
+#: bse/bsebus.c:638
 msgid "Volume adjustment of left bus channel"
 msgstr "Volume adjustment of left bus channel"
 
-#: bse/bsebus.c:513
+#: bse/bsebus.c:642
 msgid "Right Volume [dB]"
 msgstr "Right Volume [dB]"
 
-#: bse/bsebus.c:513
+#: bse/bsebus.c:642
 msgid "Volume adjustment of right bus channel"
 msgstr "Volume adjustment of right bus channel"
 
-#: bse/bsebus.c:516
+#: bse/bsebus.c:645
 msgid "Signal Inputs"
 msgstr "Signal Inputs"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.c:519
+#: bse/bsebus.c:648
 msgid "Input Signals"
 msgstr "Input Signals"
 
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.c:523
+#: bse/bsebus.c:652
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Synthesis signals (from tracks and busses) used as bus input"
 
-#: bse/bsebus.c:526
+#: bse/bsebus.c:655
 msgid "Internals"
 msgstr "Internals"
 
-#: bse/bsebus.c:528
+#: bse/bsebus.c:657
 msgid "Master Output"
 msgstr "Master Output"
 
-#: bse/bsebus.c:531 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:660 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Left Audio In"
 
-#: bse/bsebus.c:531 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:660 bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr "Left channel input"
 
-#: bse/bsebus.c:533 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:662 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Right Audio In"
 
-#: bse/bsebus.c:533
+#: bse/bsebus.c:662
 msgid "Right channel input"
 msgstr "Right channel input"
 
-#: bse/bsebus.c:535 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:664 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Left Audio Out"
 
-#: bse/bsebus.c:535 bse/bsepcminput.c:128
+#: bse/bsebus.c:664 bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr "Left channel output"
 
-#: bse/bsebus.c:537 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:666 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Right Audio Out"
 
-#: bse/bsebus.c:537 bse/bsepcminput.c:130
+#: bse/bsebus.c:666 bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr "Right channel output"
 
-#: bse/bsebus.c:556
+#: bse/bsebus.c:685
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -3654,7 +3684,7 @@ msgstr ""
 "List of available synthesis networks from which to choose a postprocessor"
 
 #: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
-#: bse/bsemidisynth.c:434 bse/bsesong.c:744 bse/bsetrack.c:894
+#: bse/bsemidisynth.c:434 bse/bsesong.c:746 bse/bsetrack.c:894
 #: bse/bsetrack.c:900
 msgid "MIDI Instrument"
 msgstr "MIDI Instrument"
@@ -3679,27 +3709,27 @@ msgstr "Synthesizer"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Synthesis network to be used as MIDI instrument"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:746 bse/bsetrack.c:902
+#: bse/bsemidisynth.c:436 bse/bsesong.c:748 bse/bsetrack.c:902
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:746 bse/bsetrack.c:902
+#: bse/bsemidisynth.c:436 bse/bsesong.c:748 bse/bsetrack.c:902
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesis network to be used as postprocessor"
 
-#: bse/bsemidisynth.c:441 bse/bsesong.c:708
+#: bse/bsemidisynth.c:441 bse/bsesong.c:710
 msgid "Master [float]"
 msgstr "Master [float]"
 
-#: bse/bsemidisynth.c:447 bse/bsesong.c:714
+#: bse/bsemidisynth.c:447 bse/bsesong.c:716
 msgid "Master [dB]"
 msgstr "Master [dB]"
 
-#: bse/bsemidisynth.c:454 bse/bsesong.c:721
+#: bse/bsemidisynth.c:454 bse/bsesong.c:723
 msgid "Master [%]"
 msgstr "Master [%]"
 
-#: bse/bsemidisynth.c:458 bse/bsesong.c:748
+#: bse/bsemidisynth.c:458 bse/bsesong.c:750
 msgid "Playback Settings"
 msgstr "Playback Settings"
 
@@ -3813,41 +3843,41 @@ msgstr "Signal In"
 msgid "Snoop Signal"
 msgstr "Snoop Signal"
 
-#: bse/bsesong.c:725 bse/bsesong.c:729 bse/bsesong.c:733 bse/bsesong.c:737
+#: bse/bsesong.c:727 bse/bsesong.c:731 bse/bsesong.c:735 bse/bsesong.c:739
 msgid "Timing"
 msgstr "Timing"
 
-#: bse/bsesong.c:727
+#: bse/bsesong.c:729
 msgid "Ticks"
 msgstr "Ticks"
 
-#: bse/bsesong.c:727
+#: bse/bsesong.c:729
 msgid "Number of ticks per quarter note"
 msgstr "Number of ticks per quarter note"
 
-#: bse/bsesong.c:731
+#: bse/bsesong.c:733
 msgid "Numerator"
 msgstr "Numerator"
 
-#: bse/bsesong.c:731
+#: bse/bsesong.c:733
 msgid "Measure numerator"
 msgstr "Measure numerator"
 
-#: bse/bsesong.c:735
+#: bse/bsesong.c:737
 msgid "Denominator"
 msgstr "Denominator"
 
-#: bse/bsesong.c:735
+#: bse/bsesong.c:737
 msgid "Measure denominator, must be a power of 2"
 msgstr "Measure denominator; must be a power of 2"
 
-#: bse/bsesong.c:739
+#: bse/bsesong.c:741
 msgid "Beats per minute"
 msgstr "Beats per minute"
 
 #. change default
 #. override parent property
-#: bse/bsesong.c:753 bse/bsesong.c:757 bse/bsesong.c:762 bse/bsesong.c:767
+#: bse/bsesong.c:755 bse/bsesong.c:759 bse/bsesong.c:764 bse/bsesong.c:769
 msgid "Looping"
 msgstr "Looping"
 
