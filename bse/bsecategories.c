@@ -341,11 +341,15 @@ bse_category_from_id (guint id)
   if (centry)
     {
       BseCategory *cat = bse_category_new ();
+      g_free (cat->category);
       cat->category = g_strdup (g_quark_to_string (centry->category));
       cat->category_id = centry->category_id;
       cat->mindex = centry->mindex;
       cat->lindex = centry->lindex;
+      g_free (cat->type);
       cat->type = g_strdup (g_type_name (centry->type));
+      if (cat->icon)
+        bse_icon_free (cat->icon);
       cat->icon = centry->icon ? bse_icon_copy_shallow (centry->icon) : bse_icon_new ();
       return cat;
     }

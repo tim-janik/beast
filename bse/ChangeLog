@@ -1,3 +1,10 @@
+Tue Jun 24 23:25:54 2003  Tim Janik  <timj@gtk.org>
+
+	* bseserver.proc (register_scripts): fixed memleak in if() branch.
+
+	* bsecategories.c (bse_category_from_id): free category fields before
+	overwriting them.
+
 Mon Jun 23 20:33:33 2003  Tim Janik  <timj@gtk.org>
 
 	* bsejanitor.proc:

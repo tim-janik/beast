@@ -255,8 +255,8 @@ bse_script_file_register (const gchar *file_name,
   gchar *shellpath, *proc_name = "registration hook";
   BseErrorType error;
   
-  params = sfi_ring_append (params, g_strdup_printf ("--bse-enable-register"));
-  params = sfi_ring_append (params, g_strdup_printf ("--bse-eval"));
+  params = sfi_ring_append (params, g_strdup ("--bse-enable-register"));
+  params = sfi_ring_append (params, g_strdup ("--bse-eval"));
   params = sfi_ring_append (params, g_strdup_printf ("(load \"%s\")", file_name));
   shellpath = g_strdup_printf ("%s/%s", BSE_PATH_BINARIES, "bsesh");
   *janitor_p = NULL;
