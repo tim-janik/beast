@@ -1,3 +1,7 @@
+Tue Nov 23 00:16:57 1999  Tim Janik  <timj@gtk.org>
+
+	* bsefirfilter.[hc]: some (minor) parameter clean ups.
+
 Sat Nov 20 23:24:25 1999  Tim Janik  <timj@gtk.org>
 
 	* bsefirfilter.[hc]: started out on an FIR (finite impulse response)

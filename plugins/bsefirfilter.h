@@ -50,10 +50,11 @@ struct _BseFIRFilter
 {
   BseSource       parent_object;
 
-  guint   degree;
-  gfloat  cut_off_freq;
+  guint16 degree;
+  guint   lowpass : 1;
   guint   lanczos_smoothing : 1;
   guint   hann_smoothing : 1;
+  gfloat  cut_off_freq;
 
   guint           n_coeffs;
   gfloat         *coeffs;

@@ -25,11 +25,12 @@
 enum
 {
   PARAM_0,
+  PARAM_LOWPASS,
   PARAM_DEGREE,
-  PARAM_CUT_OFF_FREQ,
-  PARAM_CUT_OFF_NOTE,
   PARAM_LANCZOS,
-  PARAM_HANN
+  PARAM_HANN,
+  PARAM_CUT_OFF_FREQ,
+  PARAM_CUT_OFF_NOTE
 };
 
 
@@ -89,14 +90,9 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
   source_class->reset = bse_fir_filter_reset;
 
   bse_object_class_add_param (object_class, NULL,
-			      PARAM_HANN,
-			      bse_param_spec_bool ("hann_smoothing", "von Hann smoothing",
-						   FALSE,
-						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, NULL,
-			      PARAM_LANCZOS,
-			      bse_param_spec_bool ("lanczos_smoothing", "C. Lanczos smoothing",
-						   FALSE,
+			      PARAM_LOWPASS,
+			      bse_param_spec_bool ("lowpass", "LowPass",
+						   TRUE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_DEGREE,
@@ -104,6 +100,16 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 						   1, 128,
 						   2,
 						   3,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Smoothing",
+			      PARAM_HANN,
+			      bse_param_spec_bool ("hann_smooth", "von Hann",
+						   FALSE,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Smoothing",
+			      PARAM_LANCZOS,
+			      bse_param_spec_bool ("lanczos_smooth", "C. Lanczos",
+						   FALSE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_CUT_OFF_FREQ,
@@ -138,9 +144,10 @@ static void
 bse_fir_filter_init (BseFIRFilter *filter)
 {
   filter->degree = 3;
-  filter->cut_off_freq = BSE_KAMMER_FREQ / 2;
   filter->lanczos_smoothing = FALSE;
   filter->hann_smoothing = FALSE;
+  filter->cut_off_freq = BSE_KAMMER_FREQ / 2;
+  filter->lowpass = TRUE;
   filter->n_coeffs = 0;
   filter->coeffs = NULL;
   filter->history_pos = 0;
@@ -182,19 +189,21 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	filter->coeffs[i] = 0;
       filter->coeffs[z] = 1;
 
-      /* setup lowpass */
-      d = 2 * filter->cut_off_freq;
-      d /= BSE_MIX_FREQ;
-      c = d * PI;
-      for (i = 0; i < filter->n_coeffs; i++)
+      if (1 || filter->lowpass) /* setup lowpass */
 	{
-	  if (i == z)
-	    filter->coeffs[i] = d;
-	  else
+	  d = 2 * filter->cut_off_freq;
+	  d /= BSE_MIX_FREQ;
+	  c = d * PI;
+	  for (i = 0; i < filter->n_coeffs; i++)
 	    {
-	      gdouble k = i - z;
-
-	      filter->coeffs[i] = d * sin (c * k) / (c * k);
+	      if (i == z)
+		filter->coeffs[i] = d;
+	      else
+		{
+		  gdouble k = i - z;
+		  
+		  filter->coeffs[i] = d * sin (c * k) / (c * k);
+		}
 	    }
 	}
 
@@ -206,7 +215,7 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	    {
               gdouble k = (i - z);
 
-	      if (i != z)
+	      if (k)
 		filter->coeffs[i] *= sin (c * k) / (c * k);
 	    }
 	}
@@ -222,7 +231,7 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 	      filter->coeffs[i] *= 0.5 * (1.0 + cos (c * k));
 	    }
 	}
-
+      
 #if 0
       for (i = 0; i < filter->n_coeffs; i++)
 	g_print ("a[%d]=%f ", i - z, filter->coeffs[i]);
@@ -262,6 +271,10 @@ bse_fir_filter_set_param (BseFIRFilter *filter,
       filter->hann_smoothing = param->value.v_bool;
       bse_fir_filter_update_locals (filter);
       break;
+    case PARAM_LOWPASS:
+      filter->lowpass = param->value.v_bool;
+      bse_fir_filter_update_locals (filter);
+      break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
 		 BSE_OBJECT_TYPE_NAME (filter),
@@ -292,6 +305,9 @@ bse_fir_filter_get_param (BseFIRFilter *filter,
       break;
     case PARAM_HANN:
       param->value.v_bool = filter->hann_smoothing;
+      break;
+    case PARAM_LOWPASS:
+      param->value.v_float = filter->lowpass;
       break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
@@ -335,6 +351,9 @@ bse_fir_filter_calc_chunk (BseSource *source,
   ichunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
   bse_chunk_complete_hunk (ichunk);
   ihunk = ichunk->hunk;
+
+  if (!filter->lowpass)
+    return ichunk;
 
   hunk = bse_hunk_alloc (1);
 
