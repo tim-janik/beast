@@ -274,9 +274,7 @@ EXTRA_HEADERS +=
 EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
 EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
 GLIB_MKENUMS = glib-mkenums
-SFIDL = ../sfi/sfidl	# FIXME: cd $(srcdir) && $(SFIDL) doesn't work for builddir
-PPROCESS = $(CPP) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)  # analogous to $COMPILE
-# don't $(strip) the next two commands
+SFIDL = ../sfi/sfidl	# WATCH OUT: $(SFIDL) works only for srcdir==builddir with cd $(srcdir)
 
 
 #

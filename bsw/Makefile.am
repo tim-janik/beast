@@ -5,7 +5,7 @@
 
 # SUBDIRS = # icons
 
-INCLUDES = -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_CONST_RETURNS
+INCLUDES = -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_CONST_RETURNS
 
 #
 # libraries to compile and install
