@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-07 03:10+0100\n"
-"PO-Revision-Date: 2004-03-07 15:35+0100\n"
+"POT-Creation-Date: 2004-04-12 02:59+0200\n"
+"PO-Revision-Date: 2004-04-12 12:48+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1192,15 +1192,11 @@ msgstr "Zastavuji přehrávání"
 
 #: beast-gtk/bstrackeditor.c:95
 msgid ""
-"The rack editor is still highly experimental code and guranrteed to be "
+"The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
-msgstr ""
-"Editor racku je stále ještě vysoce experimentální kód a je zaručeno, že v "
-"budoucích verzích bude změněn. Takže nebuďte závislé na tom, že obsah "
-"editoru racku bude v dalších verzích vypadat stejně, a buďte připraveni na "
-"obcházení možných nestabilit kódu (mj. pravidelně ukládejte své projekty)."
+msgstr "Editor racku je stále ještě vysoce experimentální kód a je zaručeno, že v budoucích verzích bude změněn. Takže nebuďte závislí na tom, že obsah editoru racku bude v dalších verzích vypadat stejně, a buďte připraveni na obcházení možných nestabilit kódu (tj. pravidelně ukládejte své projekty)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/gadgets-beast.xml.h:31
@@ -2589,7 +2585,7 @@ msgstr "Modulace"
 msgid "Strength of linear frequency modulation"
 msgstr "Síla lineární frekvenční modulace"
 
-#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169 bse/bsewaveosc.c:140
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
 
@@ -2840,7 +2836,9 @@ msgstr "Zpoždění [ms]"
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
-msgstr "Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty zvyšují zátěž CPU"
+msgstr ""
+"Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty "
+"zvyšují zátěž CPU"
 
 #: bse/bsecore.idl:399
 msgid "Synth Mixing Frequency"
@@ -2858,7 +2856,9 @@ msgstr "Frekvence řízení syntézy"
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
-msgstr "Frekvence, se kterou jsou vyhodnocovány řídicí hodnoty, pro snížení zátěže CPU by měla mít mnohem menší než frekvence mixování syntézy"
+msgstr ""
+"Frekvence, se kterou jsou vyhodnocovány řídicí hodnoty, pro snížení zátěže "
+"CPU by měla mít mnohem menší než frekvence mixování syntézy"
 
 #: bse/bsesnooper.c:113
 msgid "Signal In"
@@ -3069,10 +3069,6 @@ msgstr "Vlna, kterou přehrávat"
 msgid "Modulation Strength for linear frequency modulation"
 msgstr "Síla lineární frekvenční modulace"
 
-#: bse/bsewaveosc.c:140
-msgid "Perform exponential frequency modulationinstead of linear"
-msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
-
 #: bse/bsewaveosc.c:155 plugins/davorgan.c:132
 msgid "Frequency Input"
 msgstr "Vstup frekvence"
@@ -3144,7 +3140,7 @@ msgid "Attack [ms]"
 msgstr "Nástup [ms]"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
-msgid "Set the attack time in milli seconds"
+msgid "Set the attack time in milliseconds"
 msgstr "Nastavit čas nástupu v milisekundách"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
@@ -3152,7 +3148,7 @@ msgid "Release [ms]"
 msgstr "Uvolnění [ms]"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
-msgid "Set the release time in milli seconds"
+msgid "Set the release time in milliseconds"
 msgstr "Nastavit čas uvolnění v milisekundách"
 
 #: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
@@ -3629,6 +3625,9 @@ msgstr "Levý výstup"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Pravý výstup"
+
+#~ msgid "Perform exponential frequency modulationinstead of linear"
+#~ msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
 
 #~ msgid "Device _Monitor"
 #~ msgstr "_Sledování zařízení"
