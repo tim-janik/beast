@@ -27,6 +27,8 @@
 
 std::set<std::string> needTypes;
 std::set<std::string> needClasses;
+std::set<std::string> excludeTypes;
+
 bool silent = false;
 
 void print(const gchar *format, ...)
@@ -291,9 +293,8 @@ void printInterface (const std::string& iface, const std::string& parent = "")
 {
   std::string idliface = removeBse (iface);
 
-  if (iface == "BseAmplifier" ||
-      iface == "BseSniffer")
-    return;     /* FIXME: hack to skip predefined classes */
+  if (excludeTypes.count (iface))
+    return;
 
   setActiveInterface (idliface, parent);
   printMethods (idliface);
@@ -375,11 +376,7 @@ printChoices (void)
       gboolean regular_choice = strcmp (name, "BseErrorType") != 0;
       GEnumValue *val;
 
-      if (children[i] == BSE_TYPE_MIDI_SIGNAL_TYPE ||
-          children[i] == g_type_from_name ("BseSnifferType"))
-        continue;       /* FIXME: hack to skip predefined enums */
-      
-      if (needTypes.count (name))
+      if (needTypes.count (name) && !excludeTypes.count (name))
 	{
 	  /* enum definition */
 	  printIndent ();
@@ -420,6 +417,23 @@ printForwardDecls ()
 
 int main (int argc, char **argv)
 {
+  /* exclude all types given in a file, passed as first argument, from generation */
+  if (argc == 2)
+    {
+      FILE *excludefile = fopen (argv[1], "r");
+      if (!excludefile)
+	fprintf (stderr, "excludefile %s not found\n", argv[1]);
+      else
+	{
+	  char buffer[1024];
+	  while (fgets (buffer, 1024, excludefile))
+	    {
+	      buffer[strlen(buffer) - 1] = 0;
+	      printf ("// bseprocidl: type %s excluded from generation\n", buffer);
+	      excludeTypes.insert (buffer);
+	    }
+	}
+    }
   g_thread_init (NULL);
   bse_init_intern (&argc, &argv, NULL);
   

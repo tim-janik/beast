@@ -198,6 +198,7 @@ EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
 EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
 GLIB_MKENUMS = glib-mkenums
 SFIDL = ../sfi/sfidl	# WATCH OUT: $(SFIDL) works only for srcdir==builddir with cd $(srcdir)
+SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 
 #
@@ -205,7 +206,7 @@ SFIDL = ../sfi/sfidl	# WATCH OUT: $(SFIDL) works only for srcdir==builddir with 
 #
 # setup autogeneration dependancies
 tmp_files = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
-	    xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi
+	    xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi xgen-tlist
 CLEANFILES += $(tmp_files) @DVLBUILD@ $(bse_proc_gen_sources)
 $(OBJECTS): $(bse_built_h_sources)
 # piggyback generation through sideeffects, needs NOP-rule for dep-tracking, must be in srcdir
@@ -280,10 +281,11 @@ BSEPGEN = ../sfi/bse-plugin-generator
 # end of the build process
 #
 bsehack.idl: $(srcdir)/bserecords.idl bseprocidl
+	grep -v bsehack.idl bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-tlist
 	echo "/* this file was generated from make $< */" > xgen-bgasi \
-	&& ./bseprocidl >> xgen-bgasi \
+	&& ./bseprocidl xgen-tlist >> xgen-bgasi \
 	&& (cmp -s xgen-bgasi bsehack.idl || cp xgen-bgasi bsehack.idl) \
-	&& rm -f xgen-bgasi
+	&& rm -f xgen-bgasi xgen-tlist
 CLEANFILES += bsehack.idl
 noinst_DATA = bsehack.idl
 
