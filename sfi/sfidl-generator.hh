@@ -126,12 +126,6 @@ namespace Sfidl {
     }
   };
 
-  class CodeGeneratorQt : public CodeGenerator {
-    public:
-      CodeGeneratorQt(const Parser& parser) : CodeGenerator(parser) {
-      }
-      bool run ();
-  };
 };
 
 #endif  /* __SFIDL_GENERATOR_H__ */

@@ -356,10 +356,7 @@ void CodeGeneratorClientCxx::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("  static inline SfiSeq *to_seq (%s seq);\n", cTypeArg (si->name));
       printf ("  static inline %s value_get_seq (const GValue *value);\n", cTypeRet (si->name));
       printf ("  static inline void value_set_seq (GValue *value, %s self);\n", cTypeArg (si->name));
-      printf ("  static inline const char* options   () { return %s; }\n", si->infos.get("options").escaped().c_str());
-      printf ("  static inline const char* blurb     () { return %s; }\n", si->infos.get("blurb").escaped().c_str());
-      printf ("  static inline const char* authors   () { return %s; }\n", si->infos.get("authors").escaped().c_str());
-      printf ("  static inline const char* license   () { return %s; }\n", si->infos.get("license").escaped().c_str());
+      /* FIXME: make this private (or delete it) */
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", makeMixedName (si->name).c_str());
       if (options.doImplementation)
         printf ("  static inline GParamSpec* get_element ();\n");
@@ -391,10 +388,7 @@ void CodeGeneratorClientCxx::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("  static inline SfiRec *to_rec (%s ptr);\n", cTypeArg(ri->name));
       printf ("  static inline %s value_get_rec (const GValue *value);\n", cTypeRet(ri->name));
       printf ("  static inline void value_set_rec (GValue *value, %s self);\n", cTypeArg (ri->name));
-      printf ("  static inline const char* options   () { return %s; }\n", ri->infos.get("options").escaped().c_str());
-      printf ("  static inline const char* blurb     () { return %s; }\n", ri->infos.get("blurb").escaped().c_str());
-      printf ("  static inline const char* authors   () { return %s; }\n", ri->infos.get("authors").escaped().c_str());
-      printf ("  static inline const char* license   () { return %s; }\n", ri->infos.get("license").escaped().c_str());
+      /* FIXME: make this private (or delete it) */
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", type_name.c_str());
       if (options.doImplementation)
         printf ("  static inline SfiRecFields get_fields ();\n");

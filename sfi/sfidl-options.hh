@@ -32,13 +32,10 @@ struct Options {
   enum Style     { STYLE_DEFAULT, STYLE_LOWER, STYLE_MIXED };
   bool           generateExtern;
   bool           generateData;
-  bool           generateConstant;
   bool           generateTypeH;
   bool           generateTypeC;
   bool           generateBoxedTypes;
   bool           generateIdlLineNumbers;
-  bool           generateSignalStuff;
-  bool           generateProcedures;
   CodeGenerator *codeGenerator;
   Style          style;
   bool           doHeader;

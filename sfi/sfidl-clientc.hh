@@ -35,8 +35,30 @@ namespace Sfidl {
   
   class CodeGeneratorClientC : public CodeGeneratorCBase {
   protected:
-    void printInfoStrings (const std::string& name, const Map<std::string,IString>& infos);
-    bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
+    std::vector<std::string> prefix_symbols; /* symbols which should get a namespace prefix */
+
+    enum PrefixSymbolMode { generateOutput, generatePrefixSymbols };
+
+    void printRecordPrototypes();
+    void printSequencePrototypes();
+
+    void printRecordDefinitions();
+    void printSequenceDefinitions();
+
+    void printRecordMethodPrototypes (PrefixSymbolMode mode);
+    void printSequenceMethodPrototypes (PrefixSymbolMode mode);
+
+    void printRecordMethodImpl();
+    void printSequenceMethodImpl();
+
+    void printChoiceDefinitions();
+    void printChoiceConverterPrototypes (PrefixSymbolMode mode);
+
+    void printClassMacros();
+
+    Method methodWithObject (const Class& cd, const Method& md);
+    void printProcedurePrototypes (PrefixSymbolMode mode);
+    void printProcedureImpl ();
     
   public:
     CodeGeneratorClientC(const Parser& parser) : CodeGeneratorCBase (parser) {

@@ -1,3 +1,22 @@
+Sun Feb 22 22:10:34 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-options.*: Remove generateConstant, generateSignalStuff and
+	generateProcedures option. The first two were not really used, and
+	each language binding knows whether to generate procedures or not (the
+	client bindings do, the other bindings don't).
+
+	* sfidl-clientc.*: Code cleanup: splitted the run() method in lots
+	of smaller methods. Adapted to the changes in the Options class.
+
+	* sfidl-corec.cc sfidl-hostc.cc: Adapted to the changes in the Options
+	class. Started code cleanup.
+
+	* sfidl-clientcxx.cc: Fixed bug - there shouldn't be info string based
+	information in the binding generated for records/sequences.
+	
+	* sfidl-generator.*: Removed CodeGeneratorQt (and the --qt option),
+	which didn't do anything useful until now, anyway.
+
 Sun Feb 22 01:44:09 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-generator.*: Put seperate classes in seperate files. So this

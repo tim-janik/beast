@@ -55,26 +55,6 @@ bool CodeGeneratorHostC::run ()
 
   if (options.generateTypeC)
     printf("#include <string.h>\n");
-  if (options.generateConstant)
-    {
-      vector<Constant>::const_iterator ci;
-      for (ci = parser.getConstants().begin(); ci != parser.getConstants().end(); ci++)
-	{
-	  if (parser.fromInclude (ci->name)) continue;
-
-	  string uname = makeUpperName(ci->name);
-	  printf("#define %s ", uname.c_str());
-	  switch (ci->type) {
-	    case Constant::tString: printf("\"%s\"\n", ci->str.c_str());
-	      break;
-	    case Constant::tFloat: printf("%f\n", ci->f);
-	      break;
-	    case Constant::tInt: printf("%d\n", ci->i);
-	      break;
-	  }
-	}
-      printf("\n");
-    }
   if (options.generateTypeH)
     {
       if (options.prefixC != "")
@@ -763,75 +743,6 @@ bool CodeGeneratorHostC::run ()
 	  }
 }
       printf("}\n");
-    }
-
-  if (options.generateSignalStuff)
-    {
-      for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
-	{
-	  if (parser.fromInclude (ci->name)) continue;
-
-	  vector<Method>::const_iterator si;
-	  for (si = ci->signals.begin(); si != ci->signals.end(); si++)
-	    {
-	      string fullname = makeLowerName (ci->name + "::" + si->name);
-
-	      printf("void %s_frobnicator (SignalContext *sigcontext) {\n", fullname.c_str());
-	      printf("  /* TODO: do something meaningful here */\n");
-	      for (pi = si->params.begin(); pi != si->params.end(); pi++)
-		{
-		  printf("  %s %s;\n", cTypeArg (pi->type), pi->name.c_str());
-		}
-	      printf("}\n");
-	    }
-	}
-    }
-
-  if (options.doInterface && options.doHeader)
-    {
-      for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
-	{
-	  if (parser.fromInclude (ci->name)) continue;
-
-	  string macro = makeUpperName (NamespaceHelper::namespaceOf (ci->name)) + "_IS_" +
-	                 makeUpperName (NamespaceHelper::nameOf (ci->name));
-	  string mname = makeMixedName (ci->name);
-
-	  printf ("#define %s(proxy) bse_proxy_is_a ((proxy), \"%s\")\n",
-	      macro.c_str(), mname.c_str());
-	}
-      printf("\n");
-    }
-
-  bool protoProcedures = options.doHeader;
-  if (options.generateProcedures || protoProcedures)
-    {
-      for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
-	{
-	  if (parser.fromInclude (ci->name)) continue;
-
-	  for (mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
-	    {
-	      Method md;
-	      md.name = mi->name;
-	      md.result = mi->result;
-
-	      Param class_as_param;
-	      class_as_param.name = makeLowerName(ci->name) + "_object";
-	      class_as_param.type = ci->name;
-	      md.params.push_back (class_as_param);
-
-	      for(pi = mi->params.begin(); pi != mi->params.end(); pi++)
-		md.params.push_back (*pi);
-
-	      printProcedure (md, protoProcedures, ci->name);
-	    }
-	}
-      for (mi = parser.getProcedures().begin(); mi != parser.getProcedures().end(); mi++)
-	{
-	  if (parser.fromInclude (mi->name)) continue;
-	  printProcedure (*mi, protoProcedures);
-	}
     }
 
   printf("\n/*-------- end %s generated code --------*/\n\n\n", options.sfidlName.c_str());

@@ -40,9 +40,9 @@ Options *Options::the() {
 
 Options::Options ()
 {
-  generateExtern = generateData = generateConstant = false;
+  generateExtern = generateData = false;
   generateTypeH = generateTypeC = false;
-  generateBoxedTypes = generateProcedures = generateSignalStuff = false;
+  generateBoxedTypes = false;
   generateIdlLineNumbers = false;
   codeGenerator = 0;
   style = STYLE_DEFAULT;
@@ -334,7 +334,6 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
     {
       generateExtern = true;
       generateTypeH = true;
-      generateConstant = false; // useless
     }
 
   if (doSource)
@@ -347,7 +346,6 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 
       if (doInterface)
 	{
-	  generateProcedures = true;
 	  generateTypeC = true;
 	}
     }
