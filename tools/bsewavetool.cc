@@ -1111,6 +1111,8 @@ class ClipCmd : public Command {
   vector<char*> args;
   gfloat threshold;
   guint head_samples, tail_samples, fade_samples, pad_samples, tail_silence;
+  bool all_chunks;
+  vector<gfloat> freq_list;
 public:
   ClipCmd (const char *command_name) :
     Command (command_name),
@@ -1119,20 +1121,25 @@ public:
     tail_samples (0),
     fade_samples (16),
     pad_samples (16),
-    tail_silence (0)
+    tail_silence (0),
+    all_chunks (false)
   {
   }
   void
   blurb (bool bshort)
   {
-    g_print ("[options]\n");
+    g_print ("{-m=midi-note|-f=osc-freq|--all-chunks} [options]\n");
     if (bshort)
       return;
     g_print ("    Clip head and or tail of a wave chunk and produce fade-in ramps at the\n");
-    g_print ("    beginning. Waves which are clipped to an essential 0-length will\n");
+    g_print ("    beginning. Wave chunks which are clipped to an essential 0-length will\n");
     g_print ("    automatically be deleted.\n");
     g_print ("    Options:\n");
-    g_print ("    --config=\"s h t f p r\"\n"); // FIXME: unimplemented
+    g_print ("    -f <osc-freq>       oscillator frequency to select a wave chunk\n");
+    g_print ("    -m <midi-note>      alternative way to specify oscillator frequency\n");
+    g_print ("    --all-chunks        try to clip all chunks\n");
+#if 0
+    g_print ("    --config=\"s h t f p r\"\n");
     g_print ("                        clipping configuration, consisting of space-seperated\n");
     g_print ("                        configuration values:\n");
     g_print ("                        s) minimum signal threshold [%u]\n", guint (threshold * 32767));
@@ -1141,6 +1148,7 @@ public:
     g_print ("                        f) samples to fade-in before signal starts [%u]\n", fade_samples);
     g_print ("                        p) padding samples after signal ends [%u]\n", pad_samples);
     g_print ("                        r) silence samples required at tail for clipping [%u]\n", tail_silence);
+#endif
     g_print ("    -s=<threshold>      set the minimum signal threshold (0..32767) [%u]\n", guint (threshold * 32767));
     g_print ("    -h=<head-samples>   number of silence samples to verify at head [%u]\n", head_samples);
     g_print ("    -t=<tail-samples>   number of silence samples to verify at tail [%u]\n", tail_samples);
@@ -1154,10 +1162,29 @@ public:
   parse_args (guint  argc,
               char **argv)
   {
+    bool seen_selection = false;
     for (guint i = 1; i < argc; i++)
       {
         const gchar *str;
-        if (parse_arg_option (argv, i, argc, "-s", str))
+        if (strcmp (argv[i], "--all-chunks") == 0)
+          {
+            all_chunks = true;
+            argv[i] = NULL;
+            seen_selection = true;
+          }
+        else if (parse_arg_option (argv, i, argc, "-f", str))
+          {
+            freq_list.push_back (g_ascii_strtod (str, NULL));
+            seen_selection = true;
+          }
+        else if (parse_arg_option (argv, i, argc, "-m", str))
+          {
+            SfiNum num = g_ascii_strtoull (str, NULL, 10);
+            gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
+            freq_list.push_back (osc_freq);
+            seen_selection = true;
+          }
+        else if (parse_arg_option (argv, i, argc, "-s", str))
           threshold = g_ascii_strtod (str, NULL);
         else if (parse_arg_option (argv, i, argc, "-h", str))
           head_samples = g_ascii_strtoull (str, NULL, 10);
@@ -1170,7 +1197,7 @@ public:
         else if (parse_arg_option (argv, i, argc, "-r", str))
           tail_silence = g_ascii_strtoull (str, NULL, 10);
       }
-    return 0; /* no args missing */
+    return !seen_selection ? 1 : 0; /* # args missing */
   }
   typedef enum {
     NONE,
@@ -1181,55 +1208,57 @@ public:
   void
   exec (Wave *wave)
   {
+    sort (freq_list.begin(), freq_list.end());
     vector<list<WaveChunk>::iterator> deleted;
     /* level clipping */
     for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
-      {
-        WaveChunk *chunk = &*it;
-        sfi_info ("CLIP: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
-        GslDataClipConfig cconfig = { 0 };
-        cconfig.produce_info = TRUE;
-        cconfig.threshold = threshold;
-        cconfig.head_samples = head_samples;
-        cconfig.tail_samples = tail_samples;
-        cconfig.fade_samples = fade_samples;
-        cconfig.pad_samples = pad_samples;
-        cconfig.tail_silence = tail_silence;
-        GslDataClipResult cresult;
-        GslDataHandle *dhandle = chunk->dhandle;
-        BseErrorType error;
-        error = gsl_data_clip_sample (dhandle, &cconfig, &cresult);
-        if (error == BSE_ERROR_DATA_UNMATCHED && cresult.clipped_to_0length)
-          {
-            sfi_info ("Deleting 0-length chunk");
-            deleted.push_back (it);
-            error = BSE_ERROR_NONE;
-          }
-        else if (error)
-          {
-            const gchar *reason = bse_error_blurb (error);
-            if (!cresult.tail_detected)
-              reason = "failed to detect silence at tail";
-            if (!cresult.head_detected)
-              reason = "failed to detect silence at head";
-            sfi_error ("level clipping failed: %s", reason);
-          }
-        else
-          {
-            gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
-            if (cresult.clipped_tail)
-              xinfos = bse_xinfos_add_value (xinfos, "loop-type", "unloopable");
-            if (cresult.dhandle != chunk->dhandle)
-              {
-                error = chunk->change_dhandle (cresult.dhandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
-                if (error)
-                  sfi_error ("level clipping failed: %s", bse_error_blurb (error));
-              }
-            g_strfreev (xinfos);
-          }
-        if (error && !continue_on_error)
-          exit (1);
-      }
+      if (all_chunks || wave->match (*it, freq_list))
+        {
+          WaveChunk *chunk = &*it;
+          sfi_info ("CLIP: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+          GslDataClipConfig cconfig = { 0 };
+          cconfig.produce_info = TRUE;
+          cconfig.threshold = threshold;
+          cconfig.head_samples = head_samples;
+          cconfig.tail_samples = tail_samples;
+          cconfig.fade_samples = fade_samples;
+          cconfig.pad_samples = pad_samples;
+          cconfig.tail_silence = tail_silence;
+          GslDataClipResult cresult;
+          GslDataHandle *dhandle = chunk->dhandle;
+          BseErrorType error;
+          error = gsl_data_clip_sample (dhandle, &cconfig, &cresult);
+          if (error == BSE_ERROR_DATA_UNMATCHED && cresult.clipped_to_0length)
+            {
+              sfi_info ("Deleting 0-length chunk");
+              deleted.push_back (it);
+              error = BSE_ERROR_NONE;
+            }
+          else if (error)
+            {
+              const gchar *reason = bse_error_blurb (error);
+              if (!cresult.tail_detected)
+                reason = "failed to detect silence at tail";
+              if (!cresult.head_detected)
+                reason = "failed to detect silence at head";
+              sfi_error ("level clipping failed: %s", reason);
+            }
+          else
+            {
+              gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
+              if (cresult.clipped_tail)
+                xinfos = bse_xinfos_add_value (xinfos, "loop-type", "unloopable");
+              if (cresult.dhandle != chunk->dhandle)
+                {
+                  error = chunk->change_dhandle (cresult.dhandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
+                  if (error)
+                    sfi_error ("level clipping failed: %s", bse_error_blurb (error));
+                }
+              g_strfreev (xinfos);
+            }
+          if (error && !continue_on_error)
+            exit (1);
+        }
     /* really delete chunks */
     while (deleted.size())
       {
@@ -1246,6 +1275,7 @@ public:
  * bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
  *         don't loop chunks with loop-type=unloopable xinfos
  *         automatically add xinfos with looping errors.
+ *         allow ogg/vorbis package cutting at end-loop point
  * bsewavetool omit <file.bsewave> [-a remove-algorithm] ...
  *   -L    drop samples based on loop errors
  * bsewavetool del-wave <file.bsewave> {-m midi-note|-f osc-freq} ...

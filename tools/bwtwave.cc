@@ -20,6 +20,7 @@
 #include <bse/gsldatautils.h>
 #include <bse/gsldatahandle-vorbis.h>
 #include <bse/gslloader.h>
+#include <bse/bsecxxutils.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -190,6 +191,30 @@ Wave::lookup (gfloat osc_freq)
     if (fabs (gsl_data_handle_osc_freq (it->dhandle) - osc_freq) < 0.01)
       return it->dhandle;
   return NULL;
+}
+
+static int
+compare_floats (float f1,
+                float f2)
+{
+  return f1 < f2 ? -1 : f1 > f2;
+}
+
+bool
+Wave::match (const WaveChunk &wchunk,
+             vector<float>   &sorted_freqs)
+{
+  gfloat osc_freq = gsl_data_handle_osc_freq (wchunk.dhandle);
+  vector<float>::iterator it = Bse::binary_lookup_sibling (sorted_freqs.begin(), sorted_freqs.end(), compare_floats, osc_freq);
+  if (it == sorted_freqs.end())
+    return false;
+  if (fabs (*it - osc_freq) < 0.01)
+    return true;
+  if (it != sorted_freqs.begin() && fabs (*(it - 1) - osc_freq) < 0.01)
+    return true;
+  if (it + 1 != sorted_freqs.end() && fabs (*(it + 1) - osc_freq) < 0.01)
+    return true;
+  return false;
 }
 
 void

@@ -23,6 +23,7 @@
 #include <bse/bseenums.h>
 #include <string>
 #include <list>
+#include <vector>
 
 namespace BseWaveTool {
 using namespace std;
@@ -71,6 +72,8 @@ public:
   BseErrorType          add_chunk       (GslDataHandle  *dhandle,
                                          gchar         **xinfos = NULL);
   GslDataHandle*        lookup          (gfloat          osc_freq);
+  bool                  match           (const WaveChunk &wchunk,
+                                         vector<float>   &sorted_freqs);
   void                  remove          (list<WaveChunk>::iterator it);
   void                  sort            ();
   BseErrorType          store           (const string    file_name);

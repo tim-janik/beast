@@ -1,3 +1,10 @@
+Fri Jan 14 12:30:06 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.cc: added chunk selection options to clip command.
+
+	* tools/bwtwave.[hc]*: added Wave::match() to figure whether a specific
+	chunk would be lookedup from an array of osc-freqs.
+
 Thu Jan 13 21:39:53 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.cc: added log handler for sfi_info() calls.
