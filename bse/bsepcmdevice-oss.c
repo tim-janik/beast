@@ -188,7 +188,7 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
     }
   else
     {
-      if (oss->fd < 0)
+      if (oss->fd >= 0)
 	close (oss->fd);
       g_free (oss->frag_buf);
       g_free (oss);

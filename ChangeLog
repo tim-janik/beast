@@ -1,3 +1,14 @@
+Mon Feb 17 22:52:02 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* configure.in bse/Makefile.am: libcsl support
+
+	* bse/bsepcmdevice-csl.[hc]: new PCM device implementation for
+	libcsl (Common Sound Layer). This for instance allows using
+	beast with aRts.
+
+	* bse/bsepcmdevice-oss.c: bugfix: close filedescriptor when >= 0,
+	not when < 0.
+
 Mon Feb 17 20:57:55 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* acbeast.m4: fixed wrong sed expression.
