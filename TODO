@@ -5,13 +5,13 @@ FIXMES:	(release-critical)
 - auto-add orphan tracks to master when loading
 - auto-add orphan parts to a new track when loading
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
-- disable vinput/vswitch job queueing (except for mono) if Done is not connected (use SCHEDULED(vinput/switch) to decide)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - support candidate tooltip in bst_track_synth_dialog_popup() similar to bst_item_seq_dialog_popup()
 - add a "[_] never show this warning" toggle button to warnings
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
+- revisit bse_object_lock()
 - rename cast() to convert()
 - close piano roll on Escape
 - when starting to record events in automation, make sure an event at stamp=0 exists for default setup
