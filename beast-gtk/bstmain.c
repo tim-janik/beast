@@ -104,7 +104,7 @@ main (int   argc,
   sfi_init ();
   sfi_debug_allow ("misc");
   /* ensure SFI can wake us up */
-  sfi_thread_set_name ("BEAST-GUI");
+  sfi_thread_set_name ("Beast GUI");
   sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
 			 g_main_context_default (), NULL);
 

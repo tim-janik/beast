@@ -1333,11 +1333,11 @@ gsl_engine_init (gboolean run_threaded)
 	}
       if (err)
 	g_error ("failed to create wakeup pipe: %s", g_strerror (errno));
-      master_thread = sfi_thread_run ("SynthesisMaster", (SfiThreadFunc) _engine_master_thread, &master_data);
+      master_thread = sfi_thread_run ("Synthesis0", (SfiThreadFunc) _engine_master_thread, &master_data);
       if (!master_thread)
 	g_error ("failed to create master thread");
       if (0)
-	sfi_thread_run ("SynthesisSlave", slave, NULL);
+	sfi_thread_run ("Synthesis1", slave, NULL);
     }
 }
 

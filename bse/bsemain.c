@@ -95,7 +95,7 @@ bse_init_async (gint    *argc,
     }
   
   /* start main BSE thread */
-  thread = sfi_thread_run ("BSE-CORE", bse_main_loop, sfi_thread_self ());
+  thread = sfi_thread_run ("BSE Core", bse_main_loop, sfi_thread_self ());
   if (!thread)
     g_error ("failed to start seperate thread for BSE core");
 

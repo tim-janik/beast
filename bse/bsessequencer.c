@@ -51,7 +51,7 @@ bse_ssequencer_init_thread (void)
   self->stamp = gsl_tick_stamp ();
   g_assert (self->stamp > 0);
 
-  seq_thread = sfi_thread_run ("BseSSequencer", bse_ssequencer_thread_main, NULL);
+  seq_thread = sfi_thread_run ("Sequencer", bse_ssequencer_thread_main, NULL);
   if (!seq_thread)
     g_error ("failed to create sequencer thread");
 }

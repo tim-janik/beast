@@ -151,8 +151,13 @@
 
   <!-- profiler -->
   <xdef:profiler inherit="vbox">
-    <alignment border-width="5" expand="true">
-      <label name="textfield"/>
+    <alignment border-width="5" expand="1" >
+      <vbox>
+	<scrolled-window name="tree-area" shadow-type="shadow-in" pack:expand="1"
+	  hscrollbar-policy="never" vscrollbar-policy="never" >
+	  <tree-view name="tree-view" />
+	</scrolled-window>
+      </vbox>
     </alignment>
   </xdef:profiler>
   

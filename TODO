@@ -1,4 +1,5 @@
 FIXMES:
+- rename GxkGadget to GxkRadget
 - add DSP engine module stats to profiler dialog
 - add tooltips to categories and use that for bst_action_list_add_cat()
 - remove docs/generated/bse-plugin-generator.1
@@ -99,6 +100,7 @@ FIXMES:
 - Time Counter: Measure,QuarterNote,SixteenthNote,3840ticks
 
 DOCS:
+- document choice<->enum conversion functions
 - add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
 - rewrite bse-categories.txt as .texi and add to /Help menu
 - add tag to load/play bse files

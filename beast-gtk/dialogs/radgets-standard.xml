@@ -112,7 +112,7 @@
     />
   <!-- buttons: stock= label= relief= -->
   <xdef:button                inherit="GtkButton"
-    prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
+    prop:label="$(null-collapse,$(ifdef,label,$label,$(ifdef,text,$text,$stock)))"
     prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
     prop:relief="$(ifdef,relief,$relief,normal)"
     prop:use-stock="$(if,$stock)" />

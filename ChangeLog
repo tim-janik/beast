@@ -1,3 +1,15 @@
+Sat Jun 12 19:03:06 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprofiler.[hc]: majorly beefed up the dialog ;)
+	show totals, priority and CPU number for threads. use a tree view
+	to display thread info.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: changed profiler dialog.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: support $text for labels.
+
+	* adapted thread names.
+
 Sat Jun 12 16:23:51 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-standard.xml: define back-shade widget.

@@ -16,48 +16,193 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstprofiler.h"
+#include <string.h>
+
+
+/* --- thread view --- */
+enum {
+  TCOL_NAME,
+  TCOL_PROC,
+  TCOL_PRIO,
+  TCOL_PERC,
+  TCOL_UTIME,
+  TCOL_STIME,
+  N_TCOLS
+};
+
 
 /* --- variables --- */
-static GtkWidget *profiler = NULL;
+static GtkWidget *profiler_dialog = NULL;
+static GxkGadget *profiler = NULL;
 static guint      timer_id = 0;
+typedef struct {
+  gchar *name;
+  gchar  state;
+  int    priority;
+  int    processor;
+  int    utime, stime;
+} ThreadInfo;
+static guint          n_thread_infos = 0;
+static BseThreadInfo *thread_infos = NULL;
+
 
 /* --- funtions --- */
+static gchar
+char_state_from_thread_state (BseThreadState thread_state)
+{
+  switch (thread_state)
+    {
+    default:
+    case BSE_THREAD_STATE_UNKNOWN:      return SFI_THREAD_UNKNOWN;
+    case BSE_THREAD_STATE_RUNNING:      return SFI_THREAD_RUNNING;
+    case BSE_THREAD_STATE_SLEEPING:     return SFI_THREAD_SLEEPING;
+    case BSE_THREAD_STATE_DISKWAIT:     return SFI_THREAD_DISKWAIT;
+    case BSE_THREAD_STATE_TRACED:       return SFI_THREAD_TRACED;
+    case BSE_THREAD_STATE_PAGING:       return SFI_THREAD_PAGING;
+    case BSE_THREAD_STATE_ZOMBIE:       return SFI_THREAD_ZOMBIE;
+    case BSE_THREAD_STATE_DEAD:         return SFI_THREAD_DEAD;
+    }
+}
+
+static BseThreadState
+thread_state_from_char_state (gchar thread_state)
+{
+  switch (thread_state)
+    {
+    default:
+    case SFI_THREAD_UNKNOWN:    return BSE_THREAD_STATE_UNKNOWN;
+    case SFI_THREAD_RUNNING:    return BSE_THREAD_STATE_RUNNING;
+    case SFI_THREAD_SLEEPING:   return BSE_THREAD_STATE_SLEEPING;
+    case SFI_THREAD_DISKWAIT:   return BSE_THREAD_STATE_DISKWAIT;
+    case SFI_THREAD_TRACED:     return BSE_THREAD_STATE_TRACED;
+    case SFI_THREAD_PAGING:     return BSE_THREAD_STATE_PAGING;
+    case SFI_THREAD_ZOMBIE:     return BSE_THREAD_STATE_ZOMBIE;
+    case SFI_THREAD_DEAD:       return BSE_THREAD_STATE_DEAD;
+    }
+}
+
+static void
+thread_info_cell_fill_value (GtkWidget *profiler,
+                             guint      column,
+                             guint      row,
+                             GValue    *value)
+{
+  BseThreadInfo *info = thread_infos + row;
+  switch (column)
+    {
+    case TCOL_NAME:
+      sfi_value_take_string (value, g_strdup_printf ("%s", info->name));
+      break;
+    case TCOL_PROC:
+      sfi_value_take_string (value, info->processor ? g_strdup_printf ("%d", info->processor) : g_strdup (""));
+      break;
+    case TCOL_PRIO:
+      sfi_value_take_string (value, g_strdup_printf ("%d", info->priority));
+      break;
+    case TCOL_PERC:
+      sfi_value_take_string (value, g_strdup_printf ("%5.2f%%", (info->utime + info->stime) * 0.0001));
+      break;
+    case TCOL_UTIME:
+      sfi_value_take_string (value, g_strdup_printf ("%7.3f", info->utime * 0.001));
+      break;
+    case TCOL_STIME:
+      sfi_value_take_string (value, g_strdup_printf ("%7.3f", info->stime * 0.001));
+      break;
+    }
+}
+
+static void
+update_infos (GSList         *slist,
+              GxkListWrapper *lw)
+{
+  guint i, n = g_slist_length (slist) + 1;
+  while (n_thread_infos > n)
+    {
+      BseThreadInfo *info = thread_infos + --n_thread_infos;
+      g_free (info->name);
+      gxk_list_wrapper_notify_delete (lw, n_thread_infos);
+    }
+  if (n > n_thread_infos)
+    {
+      thread_infos = g_renew (BseThreadInfo, thread_infos, n);
+      guint delta = n - n_thread_infos;
+      memset (thread_infos + n_thread_infos, 0, sizeof (thread_infos[0]) * delta);
+      n_thread_infos = n;
+      gxk_list_wrapper_notify_append (lw, delta);
+    }
+  BseThreadInfo *totals = thread_infos + n - 1;
+  gboolean totals_changed = !totals->name;
+  totals->utime = 0;
+  totals->stime = 0;
+  totals->priority = G_MAXINT;
+  for (i = 0; i < n - 1; i++)
+    {
+      BseThreadInfo *oinfo = thread_infos + i;
+      BseThreadInfo *ninfo = slist->data;
+      slist = slist->next;
+      if (!oinfo->name || strcmp (oinfo->name, ninfo->name) ||
+          oinfo->state != ninfo->state ||
+          oinfo->priority != ninfo->priority ||
+          oinfo->processor != ninfo->processor ||
+          oinfo->utime != ninfo->utime ||
+          oinfo->stime != ninfo->stime)
+        {
+          g_free (oinfo->name);
+          oinfo->name = g_strdup (ninfo->name);
+          oinfo->state = ninfo->state;
+          oinfo->priority = ninfo->priority;
+          oinfo->processor = ninfo->processor;
+          oinfo->utime = ninfo->utime;
+          oinfo->stime = ninfo->stime;
+          gxk_list_wrapper_notify_change (lw, i);
+          totals_changed = TRUE;
+        }
+      totals->utime += oinfo->utime;
+      totals->stime += oinfo->stime;
+      totals->priority = MIN (oinfo->priority, totals->priority);
+    }
+  if (totals_changed)
+    {
+      g_free (totals->name);
+      totals->name = g_strdup (_("Totals"));
+      totals->state = BSE_THREAD_STATE_RUNNING;
+      totals->processor = 0;
+      gxk_list_wrapper_notify_change (lw, n - 1);
+    }
+}
+
 static gboolean
 profile_timer (gpointer data)
 {
   gboolean visible;
   GDK_THREADS_ENTER ();
-  visible = profiler && GTK_WIDGET_VISIBLE (profiler);
+  visible = profiler_dialog && GTK_WIDGET_VISIBLE (profiler_dialog);
   if (visible)
     {
-      GtkLabel *textfield = gxk_gadget_find (profiler, "textfield");
+      GxkListWrapper *lwrapper = g_object_get_data (profiler_dialog, "list-wrapper");
       BseThreadTotals *tt = bse_collect_thread_totals ();
       sfi_thread_sleep (0); /* update accounting for self */
       SfiThreadInfo *si = sfi_thread_info_collect (sfi_thread_self());
-      GString *gstring = g_string_new ("");
-      g_string_printfa (gstring, "%7.5f %7.5f %5.2f%% %35s\n",
-                        si->utime * 0.000001, si->stime * 0.000001,
-                        (si->utime + si->stime) * 0.0001,
-                        si->name);
-      g_string_printfa (gstring, "%7.5f %7.5f %5.2f%% %35s\n",
-                        tt->main->utime * 0.000001, tt->main->stime * 0.000001,
-                        (tt->main->utime + tt->main->stime) * 0.0001,
-                        tt->main->name);
+      BseThreadInfo bi = { 0, };
+      GSList *slist = NULL;
+      guint i;
+      bi.name = si->name;
+      bi.state = thread_state_from_char_state (si->state);
+      bi.priority = si->priority;
+      bi.processor = si->processor;
+      bi.utime = si->utime;
+      bi.stime = si->stime;
+      bi.cutime = si->cutime;
+      bi.cstime = si->cstime;
+      for (i = 0; i < tt->synthesis->n_thread_infos; i++)
+        slist = g_slist_prepend (slist, tt->synthesis->thread_infos[i]);
       if (tt->sequencer)
-        g_string_printfa (gstring, "%7.5f %7.5f %5.2f%% %35s\n",
-                          tt->sequencer->utime * 0.000001, tt->sequencer->stime * 0.000001,
-                          (tt->sequencer->utime + tt->sequencer->stime) * 0.0001,
-                          tt->sequencer->name);
-      if (tt->synthesis->n_thread_infos)
-        g_string_printfa (gstring, "%7.5f %7.5f %5.2f%% %35s\n",
-                          tt->synthesis->thread_infos[0]->utime * 0.000001,
-                          tt->synthesis->thread_infos[0]->stime * 0.000001,
-                          (tt->synthesis->thread_infos[0]->utime +
-                           tt->synthesis->thread_infos[0]->stime) * 0.0001,
-                          tt->synthesis->thread_infos[0]->name);
+        slist = g_slist_prepend (slist, tt->sequencer);
+      slist = g_slist_prepend (slist, tt->main);
+      slist = g_slist_prepend (slist, &bi);
+      update_infos (slist, lwrapper);
+      g_slist_free (slist);
       sfi_thread_info_free (si);
-      g_object_set (textfield, "label", gstring->str, NULL);
-      g_string_free (gstring, TRUE);
     }
   else
     timer_id = 0;
@@ -69,11 +214,52 @@ GtkWidget*
 bst_profiler_window_get (void)
 {
   if (!profiler)
-    profiler = gxk_dialog_new (&profiler, NULL,
-                               GXK_DIALOG_HIDE_ON_DELETE,
-                               _("Profiler"),
-                               gxk_gadget_create ("beast", "profiler", NULL));
+    {
+      profiler = gxk_gadget_create ("beast", "profiler", NULL);
+      profiler_dialog = gxk_dialog_new (&profiler, NULL,
+                                        GXK_DIALOG_HIDE_ON_DELETE,
+                                        _("Profiler"),
+                                        profiler);
+      GxkListWrapper *lwrapper = gxk_list_wrapper_new (N_TCOLS,
+                                                       G_TYPE_STRING,   /* TCOL_NAME */
+                                                       G_TYPE_STRING,   /* TCOL_PERC */
+                                                       G_TYPE_STRING,   /* TCOL_UTIME */
+                                                       G_TYPE_STRING,   /* TCOL_STIME */
+                                                       G_TYPE_STRING,   /* TCOL_PRIO */
+                                                       G_TYPE_STRING    /* TCOL_PROC */
+                                                       );
+      g_signal_connect_object (lwrapper, "fill-value",
+                               G_CALLBACK (thread_info_cell_fill_value),
+                               profiler, G_CONNECT_SWAPPED);
+      GtkTreeModel *smodel = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (lwrapper));
+      g_object_unref (lwrapper);
+      GtkTreeView *tview = gxk_gadget_find (profiler, "tree-view");
+      gtk_tree_view_set_model (tview, smodel);
+      GtkTreeSelection *tsel = gtk_tree_view_get_selection (tview);
+      gtk_tree_selection_set_mode (tsel, GTK_SELECTION_NONE);
+      g_object_unref (smodel);
+      gxk_tree_view_add_text_column (tview, TCOL_NAME, "SAG", 0.0, _("Thread Name"), NULL, NULL, NULL, 0);
+      gxk_tree_view_add_text_column (tview, TCOL_PERC, "SAG", 1.0, _("CPU%"), _("Percentage of CPU usage"), NULL, NULL, 0);
+      gxk_tree_view_add_text_column (tview, TCOL_UTIME, "SAG", 1.0, _("UTime"), _("Milliseconds of user CPU time used by thread"), NULL, NULL, 0);
+      gxk_tree_view_add_text_column (tview, TCOL_STIME, "SAG", 1.0, _("STime"), _("Milliseconds of system CPU time used by thread"), NULL, NULL, 0);
+      /*
+        gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+        _("Thread State:\n"
+        "'?' - thread state is unknown\n"
+        "'R' - thread is running\n"
+        "'S' - thread is sleeping\n"
+        "'D' - thread waits on disk\n"
+        "'T' - thread is traced\n"
+        "'W' - thread is swapping memory\n"
+        "'Z' - thread died unexpectedly\n"
+        "'X' - thread exited"),
+        NULL, NULL, 0);
+      */
+      gxk_tree_view_add_text_column (tview, TCOL_PRIO, "AG", 0.5, _("Nice"), _("Thread priority from -20 (high) to +19 (low)"), NULL, NULL, 0);
+      gxk_tree_view_add_text_column (tview, TCOL_PROC, "F", 0.5, _("#CPU"), _("CPU the thread is currently running on"), NULL, NULL, 0);
+      g_object_set_data (profiler_dialog, "list-wrapper", lwrapper);
+    }
   if (!timer_id)
     timer_id = g_timeout_add (500, profile_timer, NULL);
-  return profiler;
+  return profiler_dialog;
 }
