@@ -1,3 +1,10 @@
+Fri Oct 17 22:05:10 2003  Tim Janik  <timj@gtk.org>
+
+	* bseserver.proc: export demo path and custom directories for
+	effects and instruments.
+
+	* bsetrack.proc: docu fix.
+
 Tue Oct 14 21:51:23 2003  Tim Janik  <timj@gtk.org>
 
 	* bseamplifier.cc: more 0.5.4-compatibility handling, audio-gain used to

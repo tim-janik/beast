@@ -129,7 +129,7 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseTrack, list-parts) {
-  HELP  = "List parts scheduled in a track.";
+  HELP  = "List parts scheduled in a track, sorted by tick.";
   IN    = bse_param_spec_object ("track", "Track", NULL,
 				 BSE_TYPE_TRACK, SFI_PARAM_DEFAULT);
   OUT   = bse_param_spec_boxed ("part_list", "Part List", NULL,
