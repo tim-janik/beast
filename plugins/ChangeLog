@@ -1,3 +1,7 @@
+Tue Dec 23 05:46:26 2003  Tim Janik  <timj@gtk.org>
+
+	* plugins/*.c: adapted to field order changes in BSE_REGISTER_OBJECT().
+
 Mon Dec 22 23:58:47 2003  Tim Janik  <timj@gtk.org>
 
 	* evaluator/bseevaluator.idl: declare this plugin "unstable" through

@@ -54,12 +54,13 @@ static void dav_syn_drum_update_modules (DavSynDrum      *self,
 
 /* --- Export to DAV --- */
 #include "./icons/drum.c"
-BSE_REGISTER_OBJECT (DavSynDrum, BseSource, "/Modules/Audio Sources/Synthetic Drum", drum_icon,
+BSE_REGISTER_OBJECT (DavSynDrum, BseSource, "/Modules/Audio Sources/Synthetic Drum",
                      "DavSynDrum produces synthesized drums. It accepts the drum frequency as "
                      "input channel or parameter setting. Drums are triggered through a trigger "
                      "parameter or via a trigger input channel which detects raising edges. "
                      "The initial frequency shift is controllable through the "
                      "\"Ratio In\" input channel, and adjustable through a parameter.",
+                     drum_icon,
                      dav_syn_drum_class_init, NULL, dav_syn_drum_init);
 BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
 

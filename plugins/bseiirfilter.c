@@ -86,8 +86,9 @@ static BseExportNodeEnum __enode_BseIIRFilterType = {
 };
 #include "./icons/filter.c"
 BSE_REGISTER_OBJECT_P ((BseExportNode*) &__enode_BseIIRFilterType,
-                       BseIIRFilter, BseSource, "/Modules/Filters/IIR Filter", filter_icon,
+                       BseIIRFilter, BseSource, "/Modules/Filters/IIR Filter",
                        "BseIIRFilter is an infinite impulse response filter of variable order",
+                       filter_icon,
                        bse_iir_filter_class_init, NULL, bse_iir_filter_init);
 BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
 

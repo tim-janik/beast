@@ -34,8 +34,9 @@ static void	 bse_noise_reset		(BseSource	*source);
 
 /* --- Export to BSE --- */
 #include "./icons/noise.c"
-BSE_REGISTER_OBJECT (BseNoise, BseSource, "/Modules/Audio Sources/Noise", noise_icon,
+BSE_REGISTER_OBJECT (BseNoise, BseSource, "/Modules/Audio Sources/Noise",
                      "Noise is a generator of (supposedly) white noise",
+                     noise_icon,
                      bse_noise_class_init, NULL, bse_noise_init);
 BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
 

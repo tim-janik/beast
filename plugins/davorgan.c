@@ -62,8 +62,9 @@ static void	   dav_organ_update_modules   (DavOrgan       *self);
 
 /* --- Export to DAV --- */
 #include "./icons/organ.c"
-BSE_REGISTER_OBJECT (DavOrgan, BseSource, "/Modules/Audio Sources/Organ", organ_icon,
+BSE_REGISTER_OBJECT (DavOrgan, BseSource, "/Modules/Audio Sources/Organ",
                      "DavOrgan is a modifiable additive organ synthesizer",
+                     organ_icon,
                      dav_organ_class_init, NULL, dav_organ_init);
 BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
 

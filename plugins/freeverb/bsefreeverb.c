@@ -52,9 +52,10 @@ static void	bse_free_verb_update_modules	(BseFreeVerb		*self);
 
 /* --- Export to BSE --- */
 #include "../icons/reverb.c"
-BSE_REGISTER_OBJECT (BseFreeVerb, BseSource, "/Modules/Filters/Free Verb", reverb_icon,
+BSE_REGISTER_OBJECT (BseFreeVerb, BseSource, "/Modules/Filters/Free Verb",
                      "BseFreeVerb - Free, studio-quality reverb (SOURCE CODE in the public domain) "
                      "Written by Jezar at Dreampoint - http://www.dreampoint.co.uk",
+                     reverb_icon,
                      bse_free_verb_class_init, NULL, bse_free_verb_init);
 BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
 

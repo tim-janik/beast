@@ -56,8 +56,9 @@ static void dav_canyon_delay_update_modules (DavCanyonDelay      *self);
 
 /* --- Export to DAV --- */
 #include "./icons/canyon.c"
-BSE_REGISTER_OBJECT (DavCanyonDelay, BseSource, "/Modules/Enhance/CanyonDelay", canyon_icon,
+BSE_REGISTER_OBJECT (DavCanyonDelay, BseSource, "/Modules/Enhance/CanyonDelay",
                      "DavCanyonDelay adds deep and long canyon-alike echos to stereo signals.",
+                     canyon_icon,
                      dav_canyon_delay_class_init, NULL, dav_canyon_delay_init);
 BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
 

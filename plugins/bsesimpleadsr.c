@@ -55,8 +55,9 @@ static void	bse_simple_adsr_update_modules	(BseSimpleADSR		*simple_adsr,
 
 /* --- Export to BSE --- */
 #include "./icons/adsr.c"
-BSE_REGISTER_OBJECT (BseSimpleADSR, BseSource, "/Modules/Other Sources/Simple ADSR", adsr_icon,
+BSE_REGISTER_OBJECT (BseSimpleADSR, BseSource, "/Modules/Other Sources/Simple ADSR",
                      "Simple ADSR envelope generator",
+                     adsr_icon,
                      bse_simple_adsr_class_init, NULL, bse_simple_adsr_init);
 BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
 

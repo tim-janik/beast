@@ -58,9 +58,10 @@ static void	 bse_mixer_update_modules	(BseMixer	*self,
 
 /* --- Export to BSE --- */
 #include "./icons/mixer.c"
-BSE_REGISTER_OBJECT (BseMixer, BseSource, "/Modules/Routing/Mixer", mixer_icon,
+BSE_REGISTER_OBJECT (BseMixer, BseSource, "/Modules/Routing/Mixer",
                      "The Mixer module sums up incomming signals, and allowes for fine "
                      "adjusted weighting (volume setting) of the input sources",
+                     mixer_icon,
                      bse_mixer_class_init, NULL, bse_mixer_init);
 BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME);
 
