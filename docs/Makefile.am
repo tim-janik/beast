@@ -7,6 +7,7 @@ private_docs = $(strip \
 	bse-categories.txt \
 	bse-data-v1.txt \
 	bse-typesystem.txt \
+	interpolation.txt \
 )
 build_tools = $(strip \
 	faq.dat \

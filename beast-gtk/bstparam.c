@@ -794,6 +794,7 @@ bst_param_create (gpointer	owner,
       action = gtk_option_menu_new ();
       gtk_widget_set (action,
 		      "visible", TRUE,
+		      "signal::button_press_event", gtk_widget_grab_focus, NULL,
 		      NULL);
       if (ev)
 	{

@@ -48,6 +48,8 @@ struct _BstItemView
   GType  	 item_type;
   
   BseContainer	*container;
+
+  gchar		*id_format;
   
   GtkWidget	*item_clist;
   
@@ -90,6 +92,8 @@ void		bst_item_view_operate		(BstItemView	*item_view,
 						 BstOps		 op);
 gboolean	bst_item_view_can_operate	(BstItemView	*item_view,
 						 BstOps		 op);
+void		bst_item_view_set_id_format	(BstItemView	*item_view,
+						 const gchar	*id_format);
 
 
 

@@ -147,8 +147,8 @@
 
 /* instrument cell */
 #define	INSTRUMENT_DIGITS		(3)
-#define	INSTRUMENT_FMT			"%03u"
-#define	INSTRUMENT_EMPTY		"---"
+#define	INSTRUMENT_FMT			" %02X"
+#define	INSTRUMENT_EMPTY		" --"
 #define	INSTRUMENT_WIDTH(pe)		(INSTRUMENT_DIGITS * CHAR_WIDTH (pe))
 #define	INSTRUMENT_X(pe)		(NOTE_X (pe) + NOTE_WIDTH (pe) + CELL_SPACE)
 #define	INSTRUMENT_Y(pe)		(CHAR_HEIGHT (pe) - PE (pe)->char_descent)
@@ -1949,6 +1949,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
 		 EFFECT_WIDTH (pe),
 		 EFFECT_HEIGHT (pe),
 		 fg_gc,
+		 light_gc,
 		 bg_gc,
 		 pe->ea_data);
 }

@@ -1,3 +1,21 @@
+Wed May 24 23:59:15 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstinstrumentview.c: display instrument id as a
+	hexadecimal number.
+
+	* beast-gtk/bstitemview.[hc] (bst_item_view_set_id_formate): allow
+	customization of id format string.
+
+	* beast-gtk/bstpatterneditor.c (INSTRUMENT_FMT): display instrument id
+	as a hexadecimal number.
+
+Tue May 23 18:15:52 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_create): parameter option menus need
+	to grab focus when clicked, like all other parameter widgets do.
+	
+	* docs/interpolation.txt: a word on cubic interpolation.
+
 Thu May  4 02:04:46 2000  Tim Janik  <timj@gtk.org>
 
 	* configure.in (STRIP_DUMMY): some Make 3.79 $(strip ) versions are

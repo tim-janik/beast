@@ -101,6 +101,7 @@ bst_item_view_init (BstItemView      *item_view,
 {
   item_view->item_type = 0;
   item_view->container = NULL;
+  item_view->id_format = g_strdup ("%03u");
   item_view->item_clist = NULL;
   item_view->param_view = NULL;
   item_view->op_widgets = g_new0 (GtkWidget*, real_class->n_ops);
@@ -138,6 +139,7 @@ bst_item_view_finalize (GtkObject *object)
   
   item_view = BST_ITEM_VIEW (object);
   
+  g_free (item_view->id_format);
   g_free (item_view->op_widgets);
   
   GTK_OBJECT_CLASS (parent_class)->finalize (object);
@@ -156,7 +158,7 @@ bst_item_view_item_changed (BstItemView *item_view,
     {
       gchar *string, *blurb = NULL;
       
-      string = g_strdup_printf ("%03u", bse_item_get_seqid (BSE_ITEM (item)));
+      string = g_strdup_printf (item_view->id_format, bse_item_get_seqid (BSE_ITEM (item)));
       gtk_clist_set_text (clist, row, CLIST_SEQID, string);
       g_free (string);
       gtk_clist_set_text (clist, row, CLIST_NAME, BSE_OBJECT_NAME (item));
@@ -576,6 +578,17 @@ bst_item_view_get_current (BstItemView *item_view)
     g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
   
   return item;
+}
+
+void
+bst_item_view_set_id_format (BstItemView *item_view,
+			     const gchar *id_format)
+{
+  g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
+  g_return_if_fail (id_format != NULL);
+
+  g_free (item_view->id_format);
+  item_view->id_format = g_strdup (id_format);
 }
 
 void

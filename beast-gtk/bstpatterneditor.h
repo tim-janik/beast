@@ -196,6 +196,7 @@ typedef void  (*BstPatternEffectAreaDraw)       (BstPatternEditor       *pe,
                                                  guint                   width,
                                                  guint                   height,
                                                  GdkGC                  *fg_gc,
+                                                 GdkGC                  *light_gc,
                                                  GdkGC                  *bg_gc,
                                                  gpointer                user_data);
 struct _BstPatternEditor

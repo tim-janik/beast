@@ -222,6 +222,7 @@ pe_effect_area_draw (BstPatternEditor *pe,
 		     guint	       width,
 		     guint	       height,
 		     GdkGC	      *fg_gc,
+		     GdkGC	      *light_gc,
 		     GdkGC	      *bg_gc,
 		     gpointer	       data)
 {
@@ -233,10 +234,10 @@ pe_effect_area_draw (BstPatternEditor *pe,
   
   gdk_draw_string (window,
 		   pe_widget->style->font,
-		   fg_gc,
+		   n ? fg_gc : light_gc,
 		   x,
 		   y + pe->char_height - pe->char_descent,
-		   !n ? "+" : n == 1 ? "*" : "#");
+		   !n ? "-" : n == 1 ? "*" : "#");
 }
 
 static inline void
