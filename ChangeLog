@@ -1,3 +1,15 @@
+Fri Apr  4 09:55:42 2003  Tim Janik  <timj@gtk.org>
+
+	* bstmain.c:
+	* configure.in: 
+	* Makefile.am: provide the beast prefix specific ladspa directory
+	as BSE_PATH_LADSPA.
+
+Thu Apr  3 11:03:08 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_icon_set): fixed ref-counting
+	bug.
+
 Tue Apr  1 06:45:33 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdefs.h: removed BST_TOOLTIPS, changed code to make

@@ -1,7 +1,11 @@
 FIXMES:
+- fix button sensitivity
+- implement snet removal
+- fix AM pitchshifter and Analougue Osc and bse_ladspa_info_free()
 - nuke SFI memblocks, malloc() is good enough
 - update QuickStart to match 0.5 behaviour
 - fix BSE mime logo to say BSE instead of BEAST
+- GslModuleClass.free should be renamed free_user_data
 - install bsw/* into bse/.
 - add demo song
 - fix plugins in bsesh
@@ -15,6 +19,7 @@ FIXMES:
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
 - open() may return -EINVAL (e.g. for non-readable cards),
   we shouldn't map that onto BSE_ERROR_INTERNAL
+- create modules via category identifier, not type name
 - fix piano roll [VH]PANEL_BG_GC() usage and GDK_Escape (ala trackroll)
 - add IDs to part links in tracks
 - alow snet flagging as aggregate
@@ -28,6 +33,7 @@ FIXMES:
 - merge snet specifics down to super
 - registering the same script function twice triggers GType assertion
 - fix procbrowser
+- fix bseplugin.c:bse_plugin_use():need_reinit
 - fix uses of gsl_engine_tick_stamp_from_systime() in bstwaveeditor.c
 - handle non-validated sequences and records in generation code (things
   can be demarshalled in non-validated form after incompatible changes)

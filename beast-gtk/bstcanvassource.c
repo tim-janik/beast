@@ -583,6 +583,7 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 		     BseIcon         *icon)
 {
   GdkPixbuf *pixbuf;
+  gboolean need_unref = FALSE;
 
   if (icon && icon->pixels->bytes)
     {
@@ -591,10 +592,11 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 					 8, icon->width, icon->height,
 					 icon->width * icon->bytes_per_pixel,
 					 NULL, NULL);
-      gtk_object_set_data_full (GTK_OBJECT (item),
-				"BseIcon",
-				icon,
-				(GtkDestroyNotify) bse_icon_free);
+      g_object_set_data_full (G_OBJECT (pixbuf),
+			      "BseIcon",
+			      icon,
+			      (GtkDestroyNotify) bse_icon_free);
+      need_unref = TRUE;
     }
   else
     pixbuf = bst_pixbuf_no_icon ();
@@ -605,8 +607,8 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 		"y_in_pixels", FALSE,
 		"anchor", GTK_ANCHOR_NORTH_WEST,
 		NULL);
-  if (icon)
-    gdk_pixbuf_unref (pixbuf);
+  if (need_unref)
+    g_object_unref (pixbuf);
 }
 
 static void

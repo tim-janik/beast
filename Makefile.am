@@ -24,6 +24,7 @@ PKG_paths.h: $(top_builddir)/config.status Makefile
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-pph \
 	&& echo >> xgen-pph \
 	&& echo "#define BSE_PATH_PLUGINS      \"${bseplugindir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_LADSPA       \"${bseladspadir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_SCRIPTS      \"${bsescriptdir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_BINARIES     \"${bindir}\"" >> xgen-pph \
 	&& echo "#define BST_PATH_DOCS         \"${beastdocsdir}\"" >> xgen-pph \
