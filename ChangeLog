@@ -1,3 +1,8 @@
+Tue Dec  7 02:46:21 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_source_build): erk, don't
+	draw a blackground for all items if not in aa mode.
+
 Tue Dec  7 02:25:39 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvassource.c (bst_canvas_source_build): make the

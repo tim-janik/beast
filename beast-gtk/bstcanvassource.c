@@ -325,13 +325,15 @@ bst_canvas_source_build (BstCanvasSource *csource)
   csource->rect = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
 					 GNOME_TYPE_CANVAS_RECT,
 					 "outline_color", "black",
-					 "fill_color_rgba", 0x00000000,
 					 "x1", 0.0,
 					 "y1", 0.0,
 					 "x2", 2.0 * CONNECTOR_WIDTH + ICON_WIDTH,
 					 "y2", (gdouble) (ICON_HEIGHT + TEXT_HEIGHT),
 					 "signal::destroy", gtk_widget_destroyed, &csource->rect,
 					 "object_signal::event", bst_canvas_source_child_event, csource,
+					 (GNOME_CANVAS_ITEM (csource)->canvas->aa
+					  ? "fill_color_rgba"
+					  : NULL), 0x00000000,
 					 NULL);
   gtk_object_set_data (GTK_OBJECT (csource->rect), "csource", csource);
   
