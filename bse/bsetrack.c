@@ -45,31 +45,33 @@ enum {
   PROP_MUTED,
   PROP_SYNTH_NET,
   PROP_WAVE,
+  PROP_MIDI_CHANNEL,
   PROP_N_SYNTH_VOICES,
   PROP_POST_NET
 };
 
 /* --- prototypes --- */
-static void	      bse_track_class_init	(BseTrackClass		*class);
-static void	      bse_track_init		(BseTrack		*self);
-static void	      bse_track_dispose		(GObject		*object);
-static void	      bse_track_finalize	(GObject		*object);
-static void	      bse_track_set_property	(GObject		*object,
-						 guint                   param_id,
-						 const GValue           *value,
-						 GParamSpec             *pspec);
-static void	      bse_track_get_property	(GObject		*object,
-						 guint                   param_id,
-						 GValue                 *value,
-						 GParamSpec             *pspec);
-static BseProxySeq*   bse_track_list_proxies	(BseItem        	*item,
-						 guint          	 param_id,
-						 GParamSpec     	*pspec);
-static void	      bse_track_store_private	(BseObject		*object,
-						 BseStorage		*storage);
-static SfiTokenType   bse_track_restore_private	(BseObject		*object,
-						 BseStorage		*storage,
-                                                 GScanner               *scanner);
+static void         bse_track_class_init          (BseTrackClass *class);
+static void         bse_track_init                (BseTrack      *self);
+static void         bse_track_dispose             (GObject       *object);
+static void         bse_track_finalize            (GObject       *object);
+static void         bse_track_set_property        (GObject       *object,
+                                                   guint          param_id,
+                                                   const GValue  *value,
+                                                   GParamSpec    *pspec);
+static void         bse_track_get_property        (GObject       *object,
+                                                   guint          param_id,
+                                                   GValue        *value,
+                                                   GParamSpec    *pspec);
+static BseProxySeq* bse_track_list_proxies        (BseItem       *item,
+                                                   guint          param_id,
+                                                   GParamSpec    *pspec);
+static void         bse_track_store_private       (BseObject     *object,
+                                                   BseStorage    *storage);
+static SfiTokenType bse_track_restore_private     (BseObject     *object,
+                                                   BseStorage    *storage,
+                                                   GScanner      *scanner);
+static void         bse_track_update_midi_channel (BseTrack      *self);
 
 
 /* --- variables --- */
@@ -138,6 +140,12 @@ bse_track_class_init (BseTrackClass *class)
 			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
 					     8, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
+  bse_object_class_add_param (object_class, "MIDI Instrument",
+                              PROP_MIDI_CHANNEL,
+                              sfi_pspec_int ("midi_channel", "MIDI Channel",
+                                             "Midi channel assigned to this track, 0 indicates private dynamic allocation",
+                                             0, 0, BSE_MIDI_MAX_CHANNELS, 1,
+                                             SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Synth Postprocess",
 			      PROP_POST_NET,
 			      bse_param_spec_object ("pnet", "Custom Postprocess Net",
@@ -168,7 +176,8 @@ bse_track_init (BseTrack *self)
   self->muted_SL = FALSE;
   self->n_entries_SL = 0;
   self->entries_SL = g_renew (BseTrackEntry, NULL, upper_power2 (self->n_entries_SL));
-  self->midi_channel_SL = alloc_id_above (BSE_MIDI_MAX_CHANNELS);
+  self->channel_id = alloc_id_above (BSE_MIDI_MAX_CHANNELS);
+  self->midi_channel_SL = self->channel_id;
   self->track_done_SL = FALSE;
 }
 
@@ -198,8 +207,8 @@ bse_track_finalize (GObject *object)
 
   g_assert (self->n_entries_SL == 0);
   g_free (self->entries_SL);
-  bse_id_free (self->midi_channel_SL);
-  
+  bse_id_free (self->channel_id);
+
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -423,6 +432,7 @@ bse_track_set_property (GObject      *object,
   
   switch (param_id)
     {
+      guint i;
     case PROP_MUTED:
       BSE_SEQUENCER_LOCK ();
       self->muted_SL = sfi_value_get_bool (value);
@@ -469,6 +479,15 @@ bse_track_set_property (GObject      *object,
       break;
     case PROP_N_SYNTH_VOICES:
       self->max_voices = sfi_value_get_int (value);
+      break;
+    case PROP_MIDI_CHANNEL:
+      i = sfi_value_get_int (value);
+      if (i != self->midi_channel_SL &&
+          (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess)))
+        {
+          self->midi_channel_SL = i > 0 ? i : self->channel_id;
+          bse_track_update_midi_channel (self);
+        }
       break;
     case PROP_POST_NET:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
@@ -521,6 +540,9 @@ bse_track_get_property (GObject    *object,
       break;
     case PROP_N_SYNTH_VOICES:
       sfi_value_set_int (value, self->max_voices);
+      break;
+    case PROP_MIDI_CHANNEL:
+      sfi_value_set_int (value, self->midi_channel_SL <= BSE_MIDI_MAX_CHANNELS ? self->midi_channel_SL : 0);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -709,7 +731,6 @@ bse_track_add_modules (BseTrack        *self,
                                              "snet", self->snet,
                                              NULL);
   bse_item_set_internal (self->sub_synth, TRUE);
-  bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->sub_synth), midi_receiver, self->midi_channel_SL);
   
   /* voice input <-> sub-synth */
   bse_source_must_set_input (self->sub_synth, 0,
@@ -748,7 +769,6 @@ bse_track_add_modules (BseTrack        *self,
   self->postprocess = bse_container_new_child (container, BSE_TYPE_SUB_SYNTH, NULL);
   bse_item_set_internal (self->postprocess, TRUE);
   bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
-  bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->postprocess), midi_receiver, self->midi_channel_SL);
   
   /* context merger <-> postprocess */
   bse_source_must_set_input (self->postprocess, 0, self->context_merger, 0);
@@ -757,6 +777,26 @@ bse_track_add_modules (BseTrack        *self,
   /* postprocess <-> container's merger */
   bse_source_must_set_input (merger, 0, self->postprocess, 0);
   bse_source_must_set_input (merger, 1, self->postprocess, 1);
+
+  /* propagate midi channel to modules */
+  bse_track_update_midi_channel (self);
+}
+
+static void
+bse_track_update_midi_channel (BseTrack *self)
+{
+  if (self->voice_input)
+    {
+      BseMidiVoiceInput *voice_input = BSE_MIDI_VOICE_INPUT (self->voice_input);
+      /* rather than keeping track of the midi_receiver we last set, steal receiver from voice_input module */
+      BseMidiReceiver *midi_receiver = voice_input->midi_receiver;
+      if (midi_receiver)
+        {
+          bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->sub_synth), midi_receiver, self->midi_channel_SL);
+          bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->postprocess), midi_receiver, self->midi_channel_SL);
+          bse_midi_voice_input_set_midi_receiver (BSE_MIDI_VOICE_INPUT (self->voice_input), midi_receiver, self->midi_channel_SL);
+        }
+    }
 }
 
 void

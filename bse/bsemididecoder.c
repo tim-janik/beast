@@ -222,7 +222,7 @@ bse_midi_decoder_construct_event (BseMidiDecoder *self,
     self->event_type = BSE_MIDI_SYS_EX;
   event = bse_midi_alloc_event ();
   event->status = self->event_type;
-  event->channel = self->echannel;
+  event->channel = self->echannel + 1;
   event->tick_stamp = tick_stamp;
   switch (event->status)
     {

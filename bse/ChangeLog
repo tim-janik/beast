@@ -1,3 +1,11 @@
+Sat Jul 26 04:33:03 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemididecoder.c (bse_midi_decoder_construct_event): count
+	midi channels starting from 1 for decoded events.
+
+	* bsetrack.[hc]: added midi-channel property to allow custom
+	midi channel assignments.
+
 Fri Jul 25 01:05:22 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-oss.c: push data into a midi decoder.

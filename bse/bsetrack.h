@@ -41,6 +41,7 @@ struct _BseTrack
 {
   BseItem	   parent_instance;
 
+  guint            channel_id;
   guint		   max_voices;
   BseSNet	  *snet;
   BseSNet         *pnet;
