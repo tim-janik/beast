@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-14 11:55-0400\n"
-"PO-Revision-Date: 2004-07-10 14:11-0300\n"
+"POT-Creation-Date: 2004-07-16 11:52-0400\n"
+"PO-Revision-Date: 2004-07-15 16:24-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -756,7 +756,7 @@ msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
 msgstr ""
-"  mostra deslocamento, comprimento ou velocidade de notas no primeiro, "
+"  mostra o deslocamento, o comprimento ou a duração de notas no primeiro, "
 "segundo, ... canal"
 
 #. !!! LEAVE UNTRANSLATED !!!
@@ -1269,13 +1269,12 @@ msgid "Thread Name"
 msgstr "Nome da thread"
 
 #: beast-gtk/bstprofiler.c:248
-#, fuzzy
 msgid "TID"
-msgstr "ID"
+msgstr "TID"
 
 #: beast-gtk/bstprofiler.c:248
 msgid "Thread ID (on some systems the process ID)"
-msgstr ""
+msgstr "ID da thread (em alguns sistemas, a ID do processo)"
 
 #: beast-gtk/bstprofiler.c:249
 msgid "CPU%"
@@ -1572,7 +1571,7 @@ msgstr "1/1T"
 
 #: beast-gtk/bstrecords.idl:59
 msgid "Triplet whole note"
-msgstr ""
+msgstr "Tercina"
 
 #: beast-gtk/bstrecords.idl:60
 msgid "1/2T"
@@ -1580,7 +1579,7 @@ msgstr "1/2T"
 
 #: beast-gtk/bstrecords.idl:60
 msgid "Triplet half note"
-msgstr ""
+msgstr "Tercina"
 
 #: beast-gtk/bstrecords.idl:61
 msgid "1/4T"
@@ -1588,7 +1587,7 @@ msgstr "1/4T"
 
 #: beast-gtk/bstrecords.idl:61
 msgid "Triplet quarter note"
-msgstr ""
+msgstr "Tercina"
 
 #: beast-gtk/bstrecords.idl:62
 msgid "1/8T"
@@ -1596,7 +1595,7 @@ msgstr "1/8T"
 
 #: beast-gtk/bstrecords.idl:62
 msgid "Triplet eighths note"
-msgstr ""
+msgstr "Tercina"
 
 #: beast-gtk/bstrecords.idl:63
 msgid "1/16T"
@@ -1604,25 +1603,23 @@ msgstr "1/16T"
 
 #: beast-gtk/bstrecords.idl:63
 msgid "Triplet sixteenth note"
-msgstr ""
+msgstr "Tercina"
 
 #: beast-gtk/bstrecords.idl:64
 msgid "1/32T"
 msgstr "1/32T"
 
 #: beast-gtk/bstrecords.idl:64
-#, fuzzy
 msgid "Triplet thirty-secondth note"
-msgstr "Nota de trinta e dois avos de tempo"
+msgstr "Tercina"
 
 #: beast-gtk/bstrecords.idl:65
 msgid "1/64T"
 msgstr "1/64T"
 
 #: beast-gtk/bstrecords.idl:65
-#, fuzzy
 msgid "Triplet sixty-fourth note"
-msgstr "Nota de sessenta e quatro avos de tempo pontuada"
+msgstr "Tercina"
 
 #: beast-gtk/bstrecords.idl:66
 msgid "1/128T"
@@ -1630,7 +1627,7 @@ msgstr "1/128T"
 
 #: beast-gtk/bstrecords.idl:66
 msgid "Triplet hundred twenty-eighth note"
-msgstr ""
+msgstr "Tercina"
 
 #: beast-gtk/bstrecords.idl:71
 msgid "2"
@@ -2101,7 +2098,7 @@ msgstr "Sons"
 
 #: beast-gtk/bstsupershell.c:213
 msgid "Tracks"
-msgstr "Faixas"
+msgstr "Pistas"
 
 #: beast-gtk/bstsupershell.c:218 beast-gtk/bstsupershell.c:260
 #: beast-gtk/bstsupershell.c:278 plugins/artscompressor.idl:34
@@ -2194,7 +2191,7 @@ msgstr "Inserir parte"
 
 #: beast-gtk/bsttrackrollctrl.c:461
 msgid "No Track"
-msgstr "Nenhuma faixa"
+msgstr "Nenhuma pista"
 
 #: beast-gtk/bsttrackrollctrl.c:473 beast-gtk/bsttrackrollctrl.c:476
 msgid "Delete Part"
@@ -2336,7 +2333,7 @@ msgstr "Zoom horizontal do piano"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "Horizontal track zoom"
-msgstr "Zoom horizontal da faixa"
+msgstr "Zoom horizontal da pista"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Layout:"
@@ -2683,8 +2680,8 @@ msgstr ""
 "permitindo que fontes externas modulem o volume global (trêmolo). O sinal de "
 "controle de mixado pode influenciar linearmente (para amplificar outros "
 "sinais de controle) ou exponencialmente (para amplificar sinais áudio) a "
-"amplificação. Finalmente, o volume mestre controla a amplificação do sinal "
-"de saída resultante."
+"amplificação. Finalmente, o volume principal controla a amplificação do "
+"sinal de saída resultante."
 
 #: bse/bseamplifier.idl:45 plugins/bseadder.c:97 plugins/bsebalance.idl:36
 #: plugins/bsemult.c:60
@@ -2818,7 +2815,7 @@ msgstr "Base de amplificação (o sinal de controle adiciona até esse valor)"
 
 #: bse/bseamplifier.idl:68
 msgid "Master Volume"
-msgstr "Volume mestre"
+msgstr "Volume principal"
 
 #: bse/bseamplifier.idl:68
 msgid "Output stage amplification"
@@ -3020,13 +3017,12 @@ msgid "The execution state of the thread"
 msgstr "O estado de execução da thread"
 
 #: bse/bsecore.idl:380
-#, fuzzy
 msgid "Thread ID"
-msgstr "Nome da thread"
+msgstr "ID da thread"
 
 #: bse/bsecore.idl:380
 msgid "A unique number identifying this thread"
-msgstr ""
+msgstr "Um número único que identifica essa thread"
 
 #: bse/bsecore.idl:382
 msgid "Priority"
@@ -3131,11 +3127,11 @@ msgstr "Alto se a nota está sendo pressionada atualmente"
 
 #: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
 msgid "Velocity"
-msgstr "Velocidade"
+msgstr "Duração"
 
 #: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
 msgid "Velocity of the note press"
-msgstr "Velocidade de pressionamento da nota"
+msgstr "Duração do pressionamento da nota"
 
 #: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
 msgid "Aftertouch"
@@ -3143,7 +3139,7 @@ msgstr ""
 
 #: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
 msgid "Velocity while the note is pressed"
-msgstr "Velocidade enquanto a nota é pressionada"
+msgstr "Duração enquanto a nota é pressionada"
 
 #: bse/bseinstrumentoutput.c:68
 msgid "/Input & Output/Instrument Output"
@@ -3227,7 +3223,7 @@ msgstr "Saída de gate"
 
 #: bse/bsemidivoice.c:113
 msgid "Velocity Out"
-msgstr "Velocidade de saída"
+msgstr "Duração de saída"
 
 #: bse/bsemidivoice.c:115
 msgid "Aftertouch Out"
@@ -3262,22 +3258,20 @@ msgstr "Desconectar saída"
 #: bse/bseparasite.proc:28 bse/bseparasite.proc:52 bse/bseparasite.proc:70
 #: bse/bseparasite.proc:89
 msgid "Item"
-msgstr ""
+msgstr "Item"
 
 #: bse/bseparasite.proc:29 bse/bseparasite.proc:53 bse/bseparasite.proc:71
 #: bse/bseparasite.proc:90
-#, fuzzy
 msgid "Path"
-msgstr "Partes"
+msgstr "Caminho"
 
 #: bse/bseparasite.proc:30
 msgid "Parasite Paths"
-msgstr ""
+msgstr "Caminhos parasitas"
 
 #: bse/bseparasite.proc:54 bse/bseparasite.proc:72 bse/bseparasite.proc:91
-#, fuzzy
 msgid "Parasite"
-msgstr "Colar"
+msgstr "Parasita"
 
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
@@ -3364,63 +3358,66 @@ msgstr "Observar sinal"
 
 #: bse/bsesong.proc:37
 msgid "Create a new mixer bus for a Song."
-msgstr ""
+msgstr "Cria um novo barramento de mixagem para uma música."
 
 #: bse/bsesong.proc:68
 msgid "Delete a mixer bus from a Song."
-msgstr ""
+msgstr "Exclui um barramento de mixagem de uma música."
 
 #: bse/bsesong.proc:106
 msgid "Retrieve master output bus of a song."
-msgstr ""
+msgstr "Recupera o barramento principal de saída de uma música."
 
 #: bse/bsesong.proc:133
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr ""
+"Garante que cada parte em uma música está inserida em pelo menos uma pista."
 
 #: bse/bsesong.proc:154
 msgid "Ensure that each track in a song is connected to an output bus."
 msgstr ""
+"Garante que cada pista em uma música está conectada a um barramento de saída."
 
 #: bse/bsesong.proc:194
 msgid "Create a new Part in a Song."
-msgstr ""
+msgstr "Cria uma nova parte em uma música."
 
 #: bse/bsesong.proc:225
 msgid "Delete a Part from a Song."
-msgstr ""
+msgstr "Exclui uma parde de uma música."
 
 #: bse/bsesong.proc:263
-#, fuzzy
 msgid "Create a new Track for a Song."
-msgstr "Adiciona uma nova faixa para essa música"
+msgstr "Cria uma nova pista para uma música."
 
 #: bse/bsesong.proc:299
 msgid "Delete a Track from a Song."
-msgstr ""
+msgstr "Exclui uma pista de uma música."
 
 #: bse/bsesong.proc:338
 msgid "Find a track suitable for playing notes of a given part."
 msgstr ""
+"Encontra uma pista adequada para executar notas de uma determinada parte."
 
 #: bse/bsesong.proc:381
 msgid "Synthesize a note on a song of an active project."
-msgstr ""
+msgstr "Sintetiza uma nota numa música de um projeto ativo."
 
 #: bse/bsesong.proc:431
 msgid "Retrieve song timing information at a specific tick."
-msgstr ""
+msgstr "Recupera a informação de tempo da música num ponto específico."
 
 #: bse/bsebus.c:271
-#, fuzzy
 msgid "Right channel input"
-msgstr "Canal direito de entrada"
+msgstr "Entrada do canal direito"
 
 #: bse/bsebus.c:294
 msgid ""
 "Bus implementation for songs, used to to route track audio signals to the "
 "master output."
 msgstr ""
+"Implementação de barramentos para músicas, usados para rotear sinais de "
+"áudio das pistas para a saída principal."
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -3667,7 +3664,7 @@ msgstr "BEAST"
 
 #: data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
-msgstr "Aplicação de Faixas MIDI, de Composição Musical e de Síntese Modular"
+msgstr "Aplicação de Pistas MIDI, de Composição Musical e de Síntese Modular"
 
 #: data/beast.desktop.in.h:3
 msgid "Music Composer"
