@@ -154,7 +154,7 @@ static const GxkStockAction simple_help_actions[] = {
     ACTION_HELP_INDEX,          BST_STOCK_DOC_INDEX },
   { N_("_Quick Start..."),      NULL,           N_("Provides an introduction about how to accomplish the most common tasks"),
     ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
-  { N_("_FAQ..."),              NULL,           N_("Frequently asked questions"),
+  { N_("_FAQ..."),              NULL,           N_("Answers to frequently asked questions"),
     ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
   { N_("Online _Help Desk..."), NULL,           N_("Start a web browser pointing to the online help desk at the BEAST website"),
     ACTION_URL_HELP_DESK,       BST_STOCK_ONLINE_HELP_DESK },
