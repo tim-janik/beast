@@ -301,8 +301,6 @@ bst_snet_router_set_snet (BstSNetRouter *router,
 #if 0
       if (bse_parasite_get_floats (router->snet, "BstRouterZoom", 1, &zoom) == 1)
 	gtk_adjustment_set_value (router->adjustment, zoom);
-#else
-      g_message ("%s: fix parasites", G_STRLOC);
 #endif
     }
 }
@@ -442,7 +440,7 @@ idle_zoom (gpointer data)
   d = gtk_object_get_data (GTK_OBJECT (canvas), "zoom_d");
   
   if (EPSILON < fabs (canvas->pixels_per_unit - *d))
-    gnome_canvas_set_pixels_per_unit (canvas, *d);
+    gnome_canvas_set_zoom (canvas, *d);
   
   gtk_object_remove_data (GTK_OBJECT (canvas), "zoom_d");
 
@@ -463,8 +461,6 @@ bst_snet_router_adjust_zoom (BstSNetRouter *router)
 
 #if 0
       bse_parasite_set_floats (router->snet, "BstRouterZoom", 1, &zoom);
-#else
-      g_message ("%s: fix parasites", G_STRLOC);
 #endif
     }
   

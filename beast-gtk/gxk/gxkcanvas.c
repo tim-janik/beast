@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxkcanvas.h"
+#include "gxkutils.h"
 
 
 /* --- functions --- */
@@ -152,6 +153,66 @@ gnome_canvas_item_keep_above (GnomeCanvasItem *above,
       else
 	g_warning ("gnome_canvas_item_keep_above() called for non-siblings");
     }
+}
+
+/**
+ * gnome_canvas_text_set_zoom_size
+ * @item:   canvas text item
+ * @pixels: default font size
+ *
+ * Set the default font size in pixels of a canvas text
+ * item. The size will be adjusted when the canvas zoomed
+ * via gnome_canvas_set_zoom().
+ */
+void
+gnome_canvas_text_set_zoom_size (GnomeCanvasText *item,
+				 gdouble          pixels)
+{
+  g_return_if_fail (GNOME_IS_CANVAS_TEXT (item));
+
+  g_object_set (item, "size_points", pixels, NULL);
+  g_object_set_double (item, "zoom_size", pixels);
+}
+
+static void
+canvas_adjust_text_zoom (GnomeCanvasGroup *group,
+			 gdouble           pixels_per_unit)
+{
+  GList *list;
+  for (list = group->item_list; list; list = list->next)
+    {
+      GnomeCanvasItem *item = list->data;
+      if (GNOME_IS_CANVAS_TEXT (item))
+	{
+	  gdouble zoom_size = g_object_get_double (item, "zoom_size");
+	  if (zoom_size != 0)
+	    g_object_set (item, "size_points", zoom_size * pixels_per_unit, NULL);
+	}
+      else if (GNOME_IS_CANVAS_GROUP (item))
+	canvas_adjust_text_zoom (GNOME_CANVAS_GROUP (item), pixels_per_unit);
+    }
+}
+
+/**
+ * gnome_canvas_set_zoom
+ * @canvas:          valid #GnomeCanvas
+ * @pixels_per_unit: zoom factor (defaults to 1.0)
+ *
+ * This function calls gnome_canvas_set_pixels_per_unit()
+ * with its arguments and in addition adjusts the font sizes
+ * of all canvas text items where gnome_canvas_text_set_zoom_size()
+ * was used before.
+ */
+void
+gnome_canvas_set_zoom (GnomeCanvas *canvas,
+		       gdouble      pixels_per_unit)
+{
+  g_return_if_fail (GNOME_IS_CANVAS (canvas));
+
+  /* adjust all text items */
+  canvas_adjust_text_zoom (GNOME_CANVAS_GROUP (canvas->root), pixels_per_unit);
+  /* perform the actual zoom */
+  gnome_canvas_set_pixels_per_unit (canvas, pixels_per_unit);
 }
 
 void

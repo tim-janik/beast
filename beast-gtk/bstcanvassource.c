@@ -39,10 +39,13 @@
 #define ICHANNEL_Y		((gdouble) 0)
 #define OCHANNEL_Y		((gdouble) 0)
 #define	TOTAL_WIDTH		((gdouble) CHANNEL_WIDTH + ICON_WIDTH + CHANNEL_WIDTH)
-#define	TOTAL_HEIGHT		((gdouble) ICON_HEIGHT + TEXT_HEIGHT)
-#define TEXT_X			((gdouble) CHANNEL_WIDTH + ICON_WIDTH / 2) /* anchor: north */
-#define TEXT_Y			((gdouble) ICON_HEIGHT)
-#define TEXT_HEIGHT		((gdouble) 13)
+#define	TOTAL_HEIGHT		((gdouble) ICON_HEIGHT)
+#define TEXT_X			((gdouble) CHANNEL_WIDTH + ICON_WIDTH / 2) /* for anchor: center */
+#define TEXT_Y			((gdouble) ICON_HEIGHT)			   /* for anchor: north */
+#define TEXT_HEIGHT		((gdouble) FONT_HEIGHT + 2)
+#define	CHANNEL_FONT		("Sans")
+#define	TEXT_FONT		("Serif")
+#define	FONT_HEIGHT		((gdouble) 12)
 #define RGBA_BLACK		(0x000000ff)
 
 
@@ -707,18 +710,20 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
 			       NULL);
       csource->channel_items = g_slist_prepend (csource->channel_items, item);
 
-      item = g_object_connect (gnome_canvas_item_new (group,
-						      GNOME_TYPE_CANVAS_TEXT,
-						      "fill_color_rgba", (0x000000 << 8) | 0x80,
-						      "anchor", east_channel ? GTK_ANCHOR_WEST : GTK_ANCHOR_EAST,
-						      "justification", GTK_JUSTIFY_RIGHT,
-						      "x", east_channel ? TOTAL_WIDTH + BORDER_PAD * 2. : -BORDER_PAD,
-						      "y", (y1 + y2) / 2.,
-						      "font", "Serif 10",
-						      "text", csource->show_hints ? name : "",
-						      NULL),
+      item = gnome_canvas_item_new (group,
+				    GNOME_TYPE_CANVAS_TEXT,
+				    "fill_color_rgba", (0x000000 << 8) | 0x80,
+				    "anchor", east_channel ? GTK_ANCHOR_WEST : GTK_ANCHOR_EAST,
+				    "justification", GTK_JUSTIFY_RIGHT,
+				    "x", east_channel ? TOTAL_WIDTH + BORDER_PAD * 2. : -BORDER_PAD,
+				    "y", (y1 + y2) / 2.,
+				    "font", CHANNEL_FONT,
+				    "text", csource->show_hints ? name : "",
+				    NULL);
+      item = g_object_connect (item,
 			       "swapped_signal::destroy", channel_name_remove, csource,
 			       NULL);
+      gnome_canvas_text_set_zoom_size (GNOME_CANVAS_TEXT (item), FONT_HEIGHT);
       g_object_set_data_full (G_OBJECT (item), "hint_text", g_strdup (name), g_free);
       csource->channel_hints = g_slist_prepend (csource->channel_hints, item);
       
@@ -753,19 +758,20 @@ bst_canvas_source_build (BstCanvasSource *csource)
 
   /* add text item, invoke name_changed callback to setup the text value
    */
-  csource->text = g_object_connect (gnome_canvas_item_new (group,
-							   GNOME_TYPE_CANVAS_TEXT,
-							   "fill_color", "black",
-							   "anchor", GTK_ANCHOR_NORTH,
-							   "justification", GTK_JUSTIFY_CENTER,
-							   "x", TEXT_X,
-							   "y", TEXT_Y,
-							   "font", "Serif 10",
-							   // "font", "Sans 12",
-							   NULL),
-				    "signal::destroy", gtk_widget_destroyed, &csource->text,
-				    "swapped_signal::event", bst_canvas_source_child_event, csource,
-				    NULL);
+  csource->text = gnome_canvas_item_new (group,
+					 GNOME_TYPE_CANVAS_TEXT,
+					 "fill_color", "black",
+					 "anchor", GTK_ANCHOR_NORTH,
+					 "justification", GTK_JUSTIFY_CENTER,
+					 "x", TEXT_X,
+					 "y", TEXT_Y,
+					 "font", TEXT_FONT,
+					 NULL);
+  g_object_connect (csource->text,
+		    "signal::destroy", gtk_widget_destroyed, &csource->text,
+		    "swapped_signal::event", bst_canvas_source_child_event, csource,
+		    NULL);
+  gnome_canvas_text_set_zoom_size (GNOME_CANVAS_TEXT (csource->text), FONT_HEIGHT);
   source_name_changed (csource);
 
   /* add input and output channel items
@@ -807,12 +813,14 @@ bst_canvas_source_build (BstCanvasSource *csource)
       gnome_canvas_points_free (gpoints);
     }
   
+#if 0
+#define ICON_BOTTOM             ((gdouble) ICON_Y + ICON_HEIGHT)
   /* put a line at the bottom (ontop of the text) to close
    * text bounding rectangle
    */
   gpoints = gnome_canvas_points_newv (2,
-				      CHANNEL_WIDTH, TEXT_Y,
-				      CHANNEL_WIDTH + ICON_WIDTH, TEXT_Y);
+				      CHANNEL_WIDTH, ICON_BOTTOM,
+				      CHANNEL_WIDTH + ICON_WIDTH, ICON_BOTTOM);
   item = g_object_connect (gnome_canvas_item_new (group,
 						  GNOME_TYPE_CANVAS_LINE,
 						  "fill_color_rgba", RGBA_BLACK,
@@ -821,7 +829,8 @@ bst_canvas_source_build (BstCanvasSource *csource)
 			   "swapped_signal::event", bst_canvas_source_child_event, csource,
 			   NULL);
   gnome_canvas_points_free (gpoints);
-  
+#endif
+
   /* put an outer rectangle, make it transparent in aa mode,
    * so we can receive mouse events everywhere
    */

@@ -243,10 +243,10 @@ bst_menu_config_create_items (BstMenuConfig  *config,
 	{
 	  ife.item_type = "<ImageItem>";
 	  /* we want an image menu item without an image, which gtk
-	   * doesn't properly support, so we just provide an invalid
-	   * serialized pixbuf (via magic mismatch)
+	   * doesn't properly support, so we just provide an empty
+	   * serialized pixbuf
 	   */
-	  ife.extra_data = "!Pix";
+	  ife.extra_data = BST_PIXDATA_EMPTY1x1;
 	}
       else
 	{

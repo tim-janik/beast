@@ -75,6 +75,55 @@ gxk_type_register_generated (guint                   n_entries,
 }
 
 /**
+ * g_object_set_double
+ * @object: a valid GObject
+ * @name:   name of the double value to set
+ * @v_double: the actual value
+ *
+ * Convenience variant of g_object_set_data() to set
+ * a double instead of a pointer.
+ */
+void
+g_object_set_double (gpointer     object,
+		     const gchar *name,
+		     gdouble      v_double)
+{
+  gdouble zero = 0;
+
+  g_return_if_fail (G_IS_OBJECT (object));
+
+  if (*(guint64*)&v_double == *(guint64*)&zero)
+    g_object_set_data (object, name, NULL);
+  else
+    {
+      gdouble *dp = g_new0 (gdouble, 1);
+      *dp = v_double;
+      g_object_set_data_full (object, name, dp, g_free);
+    }
+}
+
+/**
+ * g_object_get_double
+ * @object:  a valid GObject
+ * @name:    name of the double value to retrieve
+ * @RETURNS: the actual value
+ *
+ * Convenience variant of g_object_get_data() to retrieve
+ * a double instead of a pointer.
+ */
+gdouble
+g_object_get_double (gpointer     object,
+		     const gchar *name)
+{
+  gdouble *dp;
+
+  g_return_val_if_fail (G_IS_OBJECT (object), 0);
+  
+  dp = g_object_get_data (object, name);
+  return dp ? *dp : 0;
+}
+
+/**
  * g_object_set_long
  * @object: a valid GObject
  * @name:   name of the long value to set

@@ -1,3 +1,24 @@
+Mon Mar 31 12:05:07 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c: removed black text border. set text
+	sizes via gnome_canvas_text_set_zoom_size() so the text is zoomed
+	together with the rest of the canvas.
+
+	* beast-gtk/gxk/gxkcanvas.[hc]: added gnome_canvas_set_zoom() and
+	gnome_canvas_text_set_zoom_size() to support zoomable text items.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added g_object_{get|set}_double().
+
+	* beast-gtk/bstsnetrouter.c (idle_zoom): use gnome_canvas_set_zoom() to
+	alter zoom factor. shut up debug messages.
+
+	* beast-gtk/bstmenus.c (bst_menu_config_create_items): use
+	BST_PIXDATA_EMPTY1x1 as menu item image instead of pixdata
+	with invalid magic.
+
+	* beast-gtk/bstutils.h: provide a serialized pixdata empty 1x1
+	pixel image macro: BST_PIXDATA_EMPTY1x1.
+
 Wed Mar 19 17:56:09 2003  Tim Janik  <timj@gtk.org>
 
 	* README:

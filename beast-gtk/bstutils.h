@@ -86,7 +86,7 @@ typedef struct {
 /* --- pixbuf shortcuts --- */
 #define bst_pixbuf_no_icon()	gxk_stock_fallback_pixbuf (BST_STOCK_NO_ICON)
 #define	bst_pixbuf_knob()	gxk_stock_fallback_pixbuf (BST_STOCK_KNOB)
-
+#define	BST_PIXDATA_EMPTY1x1	"GdkP\0\0\0\34\1\1\0\2\0\0\0\4\0\0\0\1\0\0\0\1\0\0\0\0"
 
 /* retrieve static icons (no reference count needs) */
 GtkWidget*	bst_image_from_icon		(BseIcon	*icon,

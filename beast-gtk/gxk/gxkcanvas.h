@@ -32,14 +32,18 @@ GnomeCanvasItem*	gnome_canvas_typed_item_at	(GnomeCanvas		*canvas,
 							 GtkType		 item_type,
 							 gdouble		 world_x,
 							 gdouble		 world_y);
-guint			gnome_canvas_item_get_stacking	(GnomeCanvasItem	*item);
-void			gnome_canvas_item_keep_between	(GnomeCanvasItem	*between,
+guint		gnome_canvas_item_get_stacking		(GnomeCanvasItem	*item);
+void		gnome_canvas_item_keep_between		(GnomeCanvasItem	*between,
 							 GnomeCanvasItem	*item1,
 							 GnomeCanvasItem	*item2);
-void			gnome_canvas_item_keep_above	(GnomeCanvasItem	*above,
+void		gnome_canvas_item_keep_above		(GnomeCanvasItem	*above,
 							 GnomeCanvasItem	*item1,
 							 GnomeCanvasItem	*item2);
-void			gnome_canvas_FIXME_hard_update	(GnomeCanvas		*canvas);
+void		gnome_canvas_text_set_zoom_size		(GnomeCanvasText	*item,
+							 gdouble		 pixels);
+void		gnome_canvas_set_zoom			(GnomeCanvas		*canvas,
+							 gdouble		 pixels_per_unit);
+void		gnome_canvas_FIXME_hard_update		(GnomeCanvas		*canvas);
 
 
 G_END_DECLS

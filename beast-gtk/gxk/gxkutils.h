@@ -50,6 +50,11 @@ typedef struct {
 } GxkTypeGenerated;
 void    gxk_type_register_generated	(guint			 n_entries,
 					 const GxkTypeGenerated	*entries);
+void	g_object_set_double		(gpointer		 object,
+					 const gchar		*name,
+					 gdouble		 v_double);
+gdouble	g_object_get_double		(gpointer		 object,
+					 const gchar		*name);
 void	g_object_set_long		(gpointer		 object,
 					 const gchar		*name,
 					 glong			 v_long);
