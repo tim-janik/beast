@@ -300,14 +300,14 @@ bse_container_do_remove_item (BseContainer *container,
 {
   BseItem *ancestor = BSE_ITEM (container);
   
-  container->n_items -= 1;
-  
   do
     {
       _bse_container_uncross_descendant (BSE_CONTAINER (ancestor), item);
       ancestor = ancestor->parent;
     }
   while (ancestor);
+  
+  container->n_items -= 1;
   
   if (BSE_IS_SOURCE (item))
     {
@@ -831,7 +831,6 @@ _bse_container_cross_unlink (BseContainer  *container,
 			     BseItem       *link,
 			     BseItemUncross uncross)
 {
-  BseContainerCrossLinks *clinks;
   UncrossNode *unode;
   gboolean found_one = FALSE;
   
@@ -844,40 +843,44 @@ _bse_container_cross_unlink (BseContainer  *container,
   g_object_ref (owner);
   g_object_ref (link);
   
-  clinks = container_get_clinks (container);
-  if (clinks)
+  /* _first_ check whether a currently uncrossing (in recursion)
+   * link is to be unlinked
+   */
+  for (unode = uncross_stack; unode; unode = unode->next)
+    if (unode->container == container &&
+	unode->owner == owner &&
+	unode->link == link &&
+	unode->uncross == uncross)
+      {
+	unode->container = NULL;
+	unode->owner = NULL;
+	unode->link = NULL;
+	unode->uncross = NULL;
+	found_one = TRUE;
+	break;
+      }
+  if (!found_one)
     {
-      guint i = 0;
-      
-      while (i < clinks->n_cross_links)
+      BseContainerCrossLinks *clinks = container_get_clinks (container);
+      if (clinks)
 	{
-	  if (clinks->cross_links[i].owner == owner &&
-	      clinks->cross_links[i].link == link &&
-	      clinks->cross_links[i].uncross == uncross)
+	  guint i = 0;
+	  
+	  while (i < clinks->n_cross_links)
 	    {
-	      uncross_link_R (clinks, i, FALSE);
-	      container_queue_cross_changes (container);
-	      found_one = TRUE;
-	      break;
+	      if (clinks->cross_links[i].owner == owner &&
+		  clinks->cross_links[i].link == link &&
+		  clinks->cross_links[i].uncross == uncross)
+		{
+		  uncross_link_R (clinks, i, FALSE);	/* clinks invalid */
+		  container_queue_cross_changes (container);
+		  found_one = TRUE;
+		  break;
+		}
+	      i++;
 	    }
-	  i++;
 	}
     }
-  /* need to check for recursion before warning */
-  if (!found_one)
-    for (unode = uncross_stack; unode; unode = unode->next)
-      if (unode->container == container &&
-	  unode->owner == owner &&
-	  unode->link == link &&
-	  unode->uncross == uncross)
-	{
-	  unode->container = NULL;
-	  unode->owner = NULL;
-	  unode->link = NULL;
-	  unode->uncross = NULL;
-	  found_one = TRUE;
-	  break;
-	}
   if (!found_one)
     g_warning ("no cross link from `%s' to `%s' on `%s' to remove",
 	       G_OBJECT_TYPE_NAME (owner),
@@ -915,6 +918,7 @@ _bse_container_uncross (BseContainer  *container,
 	    {
 	      uncross_link_R (clinks, i, TRUE);
 	      container_queue_cross_changes (container);
+	      clinks = container_get_clinks (container);
 	      i = 0;
 	    }
 	  i++;
@@ -978,6 +982,7 @@ _bse_container_uncross_descendant (BseContainer *container,
 	      {
 		found_one = TRUE;
 		uncross_link_R (clinks, i, TRUE);
+		clinks = container_get_clinks (container);
 		i = 0;
 	      }
 	    else
@@ -1006,6 +1011,7 @@ _bse_container_uncross_descendant (BseContainer *container,
 		  
 		  found_one = TRUE;
 		  uncross_link_R (clinks, i, TRUE);
+		  clinks = container_get_clinks (container);
 		  i = 0;
 		  
 		  saved_parent = citem->parent;

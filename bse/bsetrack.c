@@ -31,6 +31,7 @@
 #include "bsemidireceiver.h"
 #include <string.h>
 
+#define	DEBUG	sfi_nodebug
 
 #define upper_power2(uint_n)	sfi_alloc_upper_power2 (MAX ((uint_n), 4))
 #define parse_or_return		bse_storage_scanner_parse_or_return
@@ -207,6 +208,7 @@ track_add_entry (BseTrack *self,
   self->track_done_SL = FALSE;	/* let sequencer recheck if playing */
   BSE_SEQUENCER_UNLOCK ();
   bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
+  DEBUG ("cross-link: %p %p", self, part);
   bse_object_proxy_notifies (part, self, "changed");
   bse_object_reemit_signal (part, "notify::last-tick", self, "changed");
 }
@@ -223,6 +225,7 @@ track_delete_entry (BseTrack *self,
   part = self->entries_SL[index].part;
   bse_object_remove_reemit (part, "notify::last-tick", self, "changed");
   bse_object_unproxy_notifies (part, self, "changed");
+  DEBUG ("cross-unlink: %p %p", self, part);
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
   BSE_SEQUENCER_LOCK ();
   n = self->n_entries_SL--;
@@ -269,8 +272,11 @@ track_uncross_part (BseItem *owner,
   for (i = 0; i < self->n_entries_SL; i++)
     if (self->entries_SL[i].part == part)
       {
+	DEBUG ("uncrossing[start]: %p %p", self, part);
 	track_delete_entry (self, i);
+	DEBUG ("uncrossing[done]: %p %p", self, part);
 	g_signal_emit (self, signal_changed, 0);
+	return;
       }
 }
 

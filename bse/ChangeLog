@@ -1,3 +1,17 @@
+Tue Feb 18 16:29:34 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.c:
+	(bse_container_do_remove_item): decrement n_items _after_ uncrossing
+	to keep n_items checks in uncrossing logic working.
+	(_bse_container_cross_unlink): give precedence to recursively unlinked
+	cross references over further existing cross links.
+	(_bse_container_uncross_descendant):
+	(_bse_container_uncross): reload BseContainerCrossLinks* which might
+	have been reallocated during callbacks.
+
+	* bsetrack.c:
+	(track_uncross_part): stop after the first part to uncross was found.
+
 Tue Feb 18 01:09:06 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsepcmdevice-csl.c: use BSE_PCM_DEVICE_CSL_SUPPORT (which is in the
