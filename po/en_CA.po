@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-19 05:28-0500\n"
-"PO-Revision-Date: 2004-12-19 19:50-0400\n"
+"POT-Creation-Date: 2004-12-28 05:40-0500\n"
+"PO-Revision-Date: 2004-12-28 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -458,7 +458,7 @@ msgstr "Move Control Event"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:480 beast-gtk/bsttrackrollctrl.c:500
-#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:134
+#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:168
 msgid "No target"
 msgstr "No target"
 
@@ -2344,11 +2344,11 @@ msgstr "Zero Value Colour"
 msgid "Negative Value Color"
 msgstr "Negative Value Colour"
 
-#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:199
 msgid "Zoom:"
 msgstr "Zoom:"
 
-#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:210
 msgid "VScale:"
 msgstr "VScale:"
 
@@ -2360,35 +2360,35 @@ msgstr "Start:"
 msgid "End:"
 msgstr "End:"
 
-#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:216
 msgid "Shape Range"
 msgstr "Shape Range"
 
-#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:217
 msgid "Shape Average"
 msgstr "Shape Average"
 
-#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:218
 msgid "Shape Minimum"
 msgstr "Shape Minimum"
 
-#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:219
 msgid "Shape Maximum"
 msgstr "Shape Maximum"
 
-#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:220
 msgid "Sketch Range"
 msgstr "Sketch Range"
 
-#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:221
 msgid "Sketch Average"
 msgstr "Sketch Average"
 
-#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:222
 msgid "Sketch Minimum"
 msgstr "Sketch Minimum"
 
-#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:223
 msgid "Sketch Maximum"
 msgstr "Sketch Maximum"
 
@@ -2556,39 +2556,39 @@ msgstr "Channel Hints"
 msgid "Toggle channel name hints"
 msgstr "Toggle channel name hints"
 
-#: beast-gtk/bststest.c:550
+#: beast-gtk/bststest.c:553
 msgid "Selection to Loop"
 msgstr "Selection to Loop"
 
-#: beast-gtk/bststest.c:558
+#: beast-gtk/bststest.c:561
 msgid "Loop to Selection"
 msgstr "Loop to Selection"
 
-#: beast-gtk/bststest.c:566
+#: beast-gtk/bststest.c:569
 msgid "Zoom Selection"
 msgstr "Zoom Selection"
 
-#: beast-gtk/bststest.c:574
+#: beast-gtk/bststest.c:577
 msgid "Apply Loop"
 msgstr "Apply Loop"
 
-#: beast-gtk/bststest.c:582
+#: beast-gtk/bststest.c:585
 msgid "Reset Loop"
 msgstr "Reset Loop"
 
-#: beast-gtk/bststest.c:590
+#: beast-gtk/bststest.c:593
 msgid "Score"
 msgstr "Score"
 
-#: beast-gtk/bststest.c:598
+#: beast-gtk/bststest.c:601
 msgid "Find"
 msgstr "Find"
 
-#: beast-gtk/bststest.c:616
+#: beast-gtk/bststest.c:619
 msgid "Mark Signal (Head)"
 msgstr "Mark Signal (Head)"
 
-#: beast-gtk/bststest.c:626
+#: beast-gtk/bststest.c:629
 msgid "Mark Signal (Tail)"
 msgstr "Mark Signal (Tail)"
 
@@ -2855,19 +2855,19 @@ msgstr "processing"
 msgid "Updating View"
 msgstr "Updating View"
 
-#: beast-gtk/bstwaveeditor.c:241
+#: beast-gtk/bstwaveeditor.c:238
 msgid "Scroll None"
 msgstr "Scroll None"
 
-#: beast-gtk/bstwaveeditor.c:242
+#: beast-gtk/bstwaveeditor.c:239
 msgid "Scroll Both"
 msgstr "Scroll Both"
 
-#: beast-gtk/bstwaveeditor.c:243
+#: beast-gtk/bstwaveeditor.c:240
 msgid "Scroll Left"
 msgstr "Scroll Left"
 
-#: beast-gtk/bstwaveeditor.c:244
+#: beast-gtk/bstwaveeditor.c:241
 msgid "Scroll Right"
 msgstr "Scroll Right"
 
@@ -4709,6 +4709,7 @@ msgstr "BPM Steps"
 msgid "Step width for beats per minute"
 msgstr "Step width for beats per minute"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsedevice.c:312
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
@@ -4717,158 +4718,269 @@ msgstr ""
 "Auto is a special driver. It acts as a placeholder for\n"
 "automatic driver selection."
 
-#. GSL
 #: bse/bseenums.c:99
 msgid "Everything went well"
 msgstr "Everything went well"
 
 #: bse/bseenums.c:100
+msgid "Internal error (please report)"
+msgstr "Internal error (please report)"
+
+#: bse/bseenums.c:101
+msgid "Unknown error"
+msgstr "Unknown error"
+
+#: bse/bseenums.c:102
+msgid "Input/output error"
+msgstr "Input/output error"
+
+#: bse/bseenums.c:103
+msgid "Insufficient permission"
+msgstr "Insufficient permission"
+
+#. file errors
+#: bse/bseenums.c:105
+msgid "Device or resource busy"
+msgstr "Device or resource busy"
+
+#: bse/bseenums.c:106
+msgid "File exists already"
+msgstr "File exists already"
+
+#: bse/bseenums.c:107
+msgid "File empty or premature EOF"
+msgstr "File empty or premature EOF"
+
+#. case BSE_ERROR_FILE_EMPTY:
+#: bse/bseenums.c:109
+msgid "No such file, device or directory"
+msgstr "No such file, device or directory"
+
+#: bse/bseenums.c:110
+msgid "Is a directory"
+msgstr "Is a directory"
+
+#: bse/bseenums.c:111
+msgid "Open failed"
+msgstr "Open failed"
+
+#: bse/bseenums.c:112
+msgid "Seek failed"
+msgstr "Seek failed"
+
+#: bse/bseenums.c:113
+msgid "Read failed"
+msgstr "Read failed"
+
+#: bse/bseenums.c:114
+msgid "Write failed"
+msgstr "Write failed"
+
+#. out of resource conditions
+#: bse/bseenums.c:116
+msgid "Too many open files"
+msgstr "Too many open files"
+
+#: bse/bseenums.c:117
+msgid "Too many open files in system"
+msgstr "Too many open files in system"
+
+#: bse/bseenums.c:118
+msgid "No space left on device"
+msgstr "No space left on device"
+
+#: bse/bseenums.c:119
+msgid "Out of memory"
+msgstr "Out of memory"
+
+#. content errors
+#: bse/bseenums.c:121
+msgid "Failed to detect (start of) header"
+msgstr "Failed to detect (start of) header"
+
+#: bse/bseenums.c:122
+msgid "Failed to retrieve seek information"
+msgstr "Failed to retrieve seek information"
+
+#: bse/bseenums.c:123
+msgid "No data available"
+msgstr "No data available"
+
+#: bse/bseenums.c:124
+msgid "Data corrupt"
+msgstr "Data corrupt"
+
+#: bse/bseenums.c:125
+msgid "Invalid format"
+msgstr "Invalid format"
+
+#: bse/bseenums.c:126
+msgid "Unknown format"
+msgstr "Unknown format"
+
+#. miscellaneous errors
+#: bse/bseenums.c:128
+msgid "Temporary error"
+msgstr "Temporary error"
+
+#: bse/bseenums.c:129
+msgid "No such wave"
+msgstr "No such wave"
+
+#: bse/bseenums.c:130
+msgid "CODEC failure"
+msgstr "CODEC failure"
+
+#: bse/bseenums.c:131
 msgid "Functionality not implemented"
 msgstr "Functionality not implemented"
 
-#: bse/bseenums.c:101
+#: bse/bseenums.c:132
+msgid "Invalid object property"
+msgstr "Invalid object property"
+
+#: bse/bseenums.c:133
+msgid "Invalid MIDI control type"
+msgstr "Invalid MIDI control type"
+
+#: bse/bseenums.c:134
+msgid "Parsing error"
+msgstr "Parsing error"
+
+#: bse/bseenums.c:135
+msgid "Failed to spawn child process"
+msgstr "Failed to spawn child process"
+
+#. Device errors
+#: bse/bseenums.c:137
 msgid "No device (driver) available"
 msgstr "No device (driver) available"
 
-#: bse/bseenums.c:102
+#: bse/bseenums.c:138
 msgid "Device not async capable"
 msgstr "Device not async capable"
 
-#: bse/bseenums.c:103
+#: bse/bseenums.c:139
 msgid "Device busy"
 msgstr "Device busy"
 
-#: bse/bseenums.c:104
+#: bse/bseenums.c:140
 msgid "Failed to configure device format"
 msgstr "Failed to configure device format"
 
-#: bse/bseenums.c:105
+#: bse/bseenums.c:141
 msgid "Failed to configure device buffer"
 msgstr "Failed to configure device buffer"
 
-#: bse/bseenums.c:106
+#: bse/bseenums.c:142
 msgid "Failed to configure device latency"
 msgstr "Failed to configure device latency"
 
-#: bse/bseenums.c:107
+#: bse/bseenums.c:143
 msgid "Failed to configure number of device channels"
 msgstr "Failed to configure number of device channels"
 
-#: bse/bseenums.c:108
+#: bse/bseenums.c:144
 msgid "Failed to configure device frequency"
 msgstr "Failed to configure device frequency"
 
-#: bse/bseenums.c:109
+#: bse/bseenums.c:145
 msgid "Device configurations mismatch"
 msgstr "Device configuration mismatch"
 
-#: bse/bseenums.c:110
+#. BseSource errors
+#: bse/bseenums.c:147
 msgid "No such synthesis module"
 msgstr "No such synthesis module"
 
-#: bse/bseenums.c:111
+#: bse/bseenums.c:148
 msgid "No such input channel"
 msgstr "No such input channel"
 
-#: bse/bseenums.c:112
+#: bse/bseenums.c:149
 msgid "No such output channel"
 msgstr "No such output channel"
 
-#: bse/bseenums.c:113
+#: bse/bseenums.c:150
 msgid "Input/Output channels not connected"
 msgstr "Input/Output channels not connected"
 
-#: bse/bseenums.c:114
+#: bse/bseenums.c:151
 msgid "Input channel is private"
 msgstr "Input channel is private"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.c:152
 msgid "Input channel already in use"
 msgstr "Input channel already in use"
 
-#: bse/bseenums.c:116
+#: bse/bseenums.c:153
 msgid "Input/Output channels already connected"
 msgstr "Input/Output channels already connected"
 
-#: bse/bseenums.c:117
+#: bse/bseenums.c:154
 msgid "Invalid synthesis module connection"
 msgstr "Invalid synthesis module connection"
 
-#: bse/bseenums.c:118
+#: bse/bseenums.c:155
 msgid "Parent mismatch"
 msgstr "Parent mismatch"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.c:156
 msgid "Bad loopback"
 msgstr "Bad loopback"
 
-#: bse/bseenums.c:120
+#: bse/bseenums.c:157
 msgid "Synthesis module currently busy"
 msgstr "Synthesis module currently busy"
 
-#: bse/bseenums.c:121
+#: bse/bseenums.c:158
 msgid "Invalid synthsis module type"
 msgstr "Invalid synthsis module type"
 
-#: bse/bseenums.c:122
+#. BseProcedure errors
+#: bse/bseenums.c:160
 msgid "No such procedure"
 msgstr "No such procedure"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.c:161
 msgid "Procedure currently busy"
 msgstr "Procedure currently busy"
 
 #. recursion
-#: bse/bseenums.c:124
+#: bse/bseenums.c:162
 msgid "Procedure parameter invalid"
 msgstr "Procedure parameter invalid"
 
-#: bse/bseenums.c:125
+#: bse/bseenums.c:163
 msgid "Procedure execution failed"
 msgstr "Procedure execution failed"
 
-#: bse/bseenums.c:126
+#: bse/bseenums.c:164
 msgid "Procedure execution aborted"
 msgstr "Procedure execution aborted"
 
-#: bse/bseenums.c:127
-msgid "Invalid object property"
-msgstr "Invalid object property"
-
-#: bse/bseenums.c:128
-msgid "Invalid MIDI control type"
-msgstr "Invalid MIDI control type"
-
-#: bse/bseenums.c:129
-msgid "Parsing error"
-msgstr "Parsing error"
-
-#: bse/bseenums.c:130
-msgid "Failed to spawn child process"
-msgstr "Failed to spawn child process"
-
 #. various procedure errors
-#: bse/bseenums.c:132
+#: bse/bseenums.c:166
 msgid "No such entry"
 msgstr "No such entry"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.c:167
 msgid "No such event"
 msgstr "No such event"
 
-#: bse/bseenums.c:135
+#: bse/bseenums.c:169
 msgid "Ownership mismatch"
 msgstr "Ownership mismatch"
 
-#: bse/bseenums.c:136
+#: bse/bseenums.c:170
 msgid "Invalid offset"
 msgstr "Invalid offset"
 
-#: bse/bseenums.c:137
+#: bse/bseenums.c:171
 msgid "Invalid duration"
 msgstr "Invalid duration"
 
-#: bse/bseenums.c:138
+#: bse/bseenums.c:172
 msgid "Invalid overlap"
 msgstr "Invalid overlap"
 
@@ -4988,6 +5100,7 @@ msgstr "Ctrl Out4"
 msgid "MIDI Signal 4"
 msgstr "MIDI Signal 4"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-null.c:92
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
@@ -4996,6 +5109,7 @@ msgstr ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-oss.c:270
 msgid ""
 "Open Sound System MIDI driver:\n"
@@ -5132,6 +5246,8 @@ msgstr "Parasite Paths"
 msgid "Parasite"
 msgstr "Parasite"
 
+#. syntax
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-null.c:145
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
@@ -5145,6 +5261,7 @@ msgstr ""
 msgid "DEVICE,MODE"
 msgstr "DEVICE,MODE"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-oss.c:653
 msgid ""
 "Open Sound System PCM driver:\n"
@@ -5671,6 +5788,7 @@ msgstr "Audio"
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:CARD,DEV,SUBDEV"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-alsa/bsemididevice-alsa.c:311
 #, c-format
 msgid ""
@@ -5700,6 +5818,7 @@ msgstr ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-alsa/bsepcmdevice-alsa.c:556
 #, c-format
 msgid ""
@@ -5729,6 +5848,7 @@ msgstr ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 
+#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:354
 #, c-format
 msgid ""
