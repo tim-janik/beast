@@ -12,7 +12,7 @@ AUTOCONF_VERSION=2.50
 AUTOHEADER=autoheader
 GETTEXTIZE=glib-gettextize
 INTLTOOLIZE=intltoolize
-#LIBTOOL=libtool
+LIBTOOLIZE=libtoolize
 CONFIGURE_OPTIONS=--enable-devel-rules=yes
 
 srcdir=`dirname $0`
@@ -66,7 +66,7 @@ fi
 $GETTEXTIZE --version >/dev/null 2>&1 || {
 	echo
 	echo "You need to have $GETTEXTIZE installed to compile $PROJECT."
-	echo "Get the source tarball at http://ftp.gnu.org/gnu/libtool"
+	echo "Get the source tarball at http://ftp.gnu.org/gnu/"
 	DIE=1
 }
 
@@ -74,16 +74,17 @@ $GETTEXTIZE --version >/dev/null 2>&1 || {
 $INTLTOOLIZE --version >/dev/null 2>&1 || {
 	echo
 	echo "You need to have $INTLTOOLIZE installed to compile $PROJECT."
+	echo "Get the source tarball at http://ftp.gnu.org/gnu/"
+	DIE=1
+}
+
+# check for libtool
+$LIBTOOLIZE --version >/dev/null 2>&1 || {
+	echo
+	echo "You need to have $LIBTOOL installed to compile $PROJECT."
 	echo "Get the source tarball at http://ftp.gnu.org/gnu/libtool"
 	DIE=1
 }
-# check for libtool
-#$LIBTOOL --version >/dev/null 2>&1 || {
-#	echo
-#	echo "You need to have $LIBTOOL installed to compile $PROJECT."
-#	echo "Get the source tarball at http://ftp.gnu.org/gnu/libtool"
-#	DIE=1
-#}
 
 # sanity test aclocal
 $ACLOCAL --version >/dev/null 2>&1 || {
@@ -118,10 +119,12 @@ if test -z "$ACLOCAL_FLAGS"; then
 	done
 fi
 
+$LIBTOOLIZE --force || exit $?
+
 # run gettext
 echo "Running gettextize...  Ignore non-fatal messages."
-# Hmm, we specify --force here, since otherwise things dont'
-# get added reliably, but we don't want to overwrite intl
+# We specify --force here, since otherwise things are
+# not added reliably, but we don't want to overwrite intl
 # while making dist.
 echo "no" | $GETTEXTIZE --copy --force || exit $?
 

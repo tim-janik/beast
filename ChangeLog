@@ -1,3 +1,12 @@
+Sun Dec 28 18:39:22 2003  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: run libtoolize automatically, so developers
+	get their beast build with their system specific libtool.
+
+	* config.guess:
+	* config.sub:
+	* ltmain.sh: remove these files.
+
 Sun Dec 28 13:06:01 2003  Tim Janik  <timj@gtk.org>
 
 	* released 0.5.6.
