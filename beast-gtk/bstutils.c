@@ -1232,6 +1232,46 @@ bst_item_factory_new (GType          container_type,
 }
 
 
+/* --- file utils --- */
+#include <sfi/sfistore.h>
+
+static gboolean
+song_name_scanner (SfiRStore      *rstore,
+                   gpointer        data)
+{
+  if (g_scanner_peek_next_token (rstore->scanner) == G_TOKEN_STRING)
+    {
+      g_scanner_get_next_token (rstore->scanner);
+      if (strncmp (rstore->scanner->value.v_string, "BseSong::", 9) == 0)
+        {
+          gchar **rval = data;
+          *rval = g_strdup (rstore->scanner->value.v_string + 9);
+          return FALSE;
+        }
+    }
+  return TRUE;
+}
+
+gchar*
+bst_file_scan_song_name (const gchar *file)
+{
+  SfiRStore *rstore;
+
+  g_return_val_if_fail (file != NULL, NULL);
+
+  rstore = sfi_rstore_new_open (file);
+  if (rstore)
+    {
+      gchar *name = NULL;
+      sfi_rstore_quick_scan (rstore, "container-child", song_name_scanner, &name);
+      sfi_rstore_destroy (rstore);
+      return name;
+    }
+  else
+    return NULL;
+}
+
+
 /* --- source file key scans --- */
 #include "bstdebugkeys.defs"
 #ifndef BST_DEBUG_KEYS

@@ -54,6 +54,7 @@ static gboolean bst_app_can_activate            (BstActivatable *activatable,
                                                  gulong          action);
 static void     bst_app_request_update          (BstActivatable *activatable);
 static void     bst_app_update_activatable      (BstActivatable *activatable);
+static BstMenuConfig* demo_entries_create       (const gchar    *path);
 
 
 /* --- menus --- */
@@ -292,6 +293,9 @@ bst_app_init (BstApp *app)
   m1 = bst_menu_config_merge (m1, m2);
   /* add help entries */
   m2 = bst_menu_config_from_entries (G_N_ELEMENTS (menubar_help_entries), menubar_help_entries);
+  m1 = bst_menu_config_merge (m1, m2);
+  /* add demo songs */
+  m2 = demo_entries_create ("/Demo");
   m1 = bst_menu_config_merge (m1, m2);
   /* and create menu items */
   bst_menu_config_create_items (m1, factory, GTK_WIDGET (app));
@@ -580,6 +584,82 @@ rebuild_super_shell (BstSuperShell *super_shell)
   bst_super_shell_set_super (super_shell, 0);
   bst_super_shell_set_super (super_shell, proxy);
   bse_item_unuse (proxy);
+}
+
+typedef struct {
+  gchar *file;
+  gchar *name;
+} DemoEntry;
+static DemoEntry *demo_entries = NULL;
+static guint     n_demo_entries = 0;
+
+static void
+demo_entries_setup (void)
+{
+  if (!demo_entries)
+    {
+      SfiRing *files = sfi_file_crawler_list_files (bse_server_get_demo_path (BSE_SERVER), "*.bse", 0);
+      while (files)
+        {
+          gchar *file = sfi_ring_pop_head (&files);
+          gchar *name = bst_file_scan_song_name (file);
+          if (name && n_demo_entries < 0xffff)
+            {
+              guint i = n_demo_entries++;
+              demo_entries = g_renew (DemoEntry, demo_entries, n_demo_entries);
+              demo_entries[i].file = file;
+              demo_entries[i].name = name;
+            }
+          else
+            {
+              g_free (name);
+              g_free (file);
+            }
+        }
+    }
+}
+
+static void
+demo_play_song (GtkWidget   *owner,
+                gulong       callback_action,
+                gpointer     popup_data)
+{
+  const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
+  SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
+  BseErrorType error = bse_project_restore_from_file (project, file_name);
+  if (error)
+    bst_status_eprintf (error, _("Opening project `%s'"), file_name);
+  else
+    {
+      BstApp *app;
+      bse_project_get_wave_repo (project);
+      app = bst_app_new (project);
+      gxk_status_window_push (app);
+      bst_status_eprintf (error, _("Opening project `%s'"), file_name);
+      gxk_status_window_pop ();
+      gxk_idle_show_widget (GTK_WIDGET (app));
+    }
+  bse_item_unuse (project);
+}
+
+static BstMenuConfig*
+demo_entries_create (const gchar *path)
+{
+  BstMenuConfig *m1 = bst_menu_config_from_entries (0, NULL);
+  guint i;
+  demo_entries_setup ();
+  for (i = 0; i < n_demo_entries; i++)
+    {
+      BstMenuConfigEntry entry = { 0, };
+      entry.path = g_strconcat (path, "/", demo_entries[i].name, NULL);
+      entry.callback = demo_play_song;
+      entry.callback_action = BST_ACTION_LOAD_DEMO_0000 + i;
+      entry.item_type = "<StockItem>";
+      entry.extra_data = BST_STOCK_NOTE_ICON;
+      m1 = bst_menu_config_merge (bst_menu_config_from_entries (1, &entry), m1);
+    }
+  bst_menu_config_sort (m1);
+  return m1;
 }
 
 static void

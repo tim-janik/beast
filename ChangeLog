@@ -1,3 +1,14 @@
+Sat Oct 25 17:34:31 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/cons/binote.png: new stock menu icon.
+
+	* beast-gtk/bstapp.c: list and load demo songs.
+
+Sat Oct 25 17:33:43 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.[hc]: helper function to scan song names
+	from -bse files.
+
 Sat Oct 25 17:14:45 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/demo/partymonster.bse: Licensed under the Green OpenMusic

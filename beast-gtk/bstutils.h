@@ -211,6 +211,10 @@ GtkItemFactory* bst_item_factory_new            (GType          container_type,
                                                  const gchar   *path);
 
 
+/* --- file utils --- */
+gchar*          bst_file_scan_song_name         (const gchar    *file);
+
+
 /* --- internal --- */
 void	_bst_init_utils		(void);
 
