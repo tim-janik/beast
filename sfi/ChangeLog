@@ -1,3 +1,7 @@
+Mon May  3 20:00:52 2004  Tim Janik  <timj@gtk.org>
+
+	* sficomwire.c (sfi_com_spawn_async): set child_pid to 0 upon failure.
+
 Fri Apr 30 09:13:47 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.h: small glib-2.4.0 compat addition.

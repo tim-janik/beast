@@ -1023,7 +1023,7 @@ sfi_com_spawn_async (const gchar *executable,
       close (command_input_pipe[0]);	command_input_pipe[0] = -1;
       close (command_input_pipe[1]);	command_input_pipe[1] = -1;
       if (child_pid)
-	*child_pid = -1;
+	*child_pid = 0;
       if (standard_input)
 	*standard_input = -1;
       if (standard_output)
