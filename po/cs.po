@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-18 03:08+0100\n"
-"PO-Revision-Date: 2004-02-18 15:57+0100\n"
+"POT-Creation-Date: 2004-02-20 03:09+0100\n"
+"PO-Revision-Date: 2004-02-20 14:35+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -197,7 +197,8 @@ msgstr "Poznámky o vydání BEAST-%s"
 #: beast-gtk/bstauxdialogs.c:389
 #, c-format
 msgid "Please press the keyboard shortcut to be installed for function: %s"
-msgstr "Stiskněte prosím klávesovou zkratku, kterou nainstalovat pro funkci: %s"
+msgstr ""
+"Stiskněte prosím klávesovou zkratku, kterou nainstalovat pro funkci: %s"
 
 #: beast-gtk/bstauxdialogs.c:394
 msgid "Please press the keyboard shortcut to be installed..."
@@ -581,11 +582,11 @@ msgstr "BEAST verze %s"
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
-#: beast-gtk/bstparam-choice.c:144
+#: beast-gtk/bstparam-choice.c:145
 msgid "Drop Down Box (Option Menu)"
 msgstr "Rozbalovací pole (menu možností)"
 
-#: beast-gtk/bstparam-choice.c:150
+#: beast-gtk/bstparam-choice.c:151
 msgid "Drop Down Button"
 msgstr "Tlačítko rozbalení"
 
@@ -697,7 +698,9 @@ msgstr "Editor"
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
-msgstr "Rozložení sloupců editoru vzorků je určeno vypsáním typů sloupců s možnými modifikátory v pořadí zobrazování."
+msgstr ""
+"Rozložení sloupců editoru vzorků je určeno vypsáním typů sloupců s možnými "
+"modifikátory v pořadí zobrazování."
 
 #: beast-gtk/bstpatterncolumns.c:313
 msgid "COLUMN TYPES:"
@@ -721,7 +724,8 @@ msgstr "offset-1, length-2, velocty-3, ..."
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
-msgstr "  posun zobrazení, délka nebo rychlost not v prvním, druhém, ... kanálu"
+msgstr ""
+"  posun zobrazení, délka nebo rychlost not v prvním, druhém, ... kanálu"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:321
@@ -779,7 +783,8 @@ msgstr "hex2, hex4"
 
 #: beast-gtk/bstpatterncolumns.c:338
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
-msgstr "  zobrazit šestnáctková čísla se 2 (00..FF) nebo 4 (0000..FFFF) číslicemi"
+msgstr ""
+"  zobrazit šestnáctková čísla se 2 (00..FF) nebo 4 (0000..FFFF) číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:340
@@ -788,7 +793,9 @@ msgstr "shex2, shex4"
 
 #: beast-gtk/bstpatterncolumns.c:341
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
-msgstr "  zobrazit šestnáctková čísla se znaménkem se 2 (-FF..+FF) nebo 4 (-FFFF..+FFFF) číslicemi"
+msgstr ""
+"  zobrazit šestnáctková čísla se znaménkem se 2 (-FF..+FF) nebo 4 (-FFFF.."
+"+FFFF) číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:343
@@ -806,7 +813,9 @@ msgstr "sdec2, sdec3"
 
 #: beast-gtk/bstpatterncolumns.c:347
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
-msgstr "  zobrazit desítková čísla se znaménkem se 2 (-99..+99) nebo 3 (-999..+999) číslicemi"
+msgstr ""
+"  zobrazit desítková čísla se znaménkem se 2 (-99..+99) nebo 3 (-999..+999) "
+"číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:349
@@ -830,107 +839,128 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Rozložení editoru vzorků"
 
+#: beast-gtk/bstpatternctrl.c:39
+msgid "Steps"
+msgstr "Kroky"
+
+#: beast-gtk/bstpatternctrl.c:40
+msgid ""
+"The number of cells to move across each time an event or note was edited"
+msgstr "Počet buněk, o které se posunout po každé úpravě události nebo noty"
+
+#: beast-gtk/bstpatternctrl.c:44
+msgid "Direction"
+msgstr "Směr"
+
+#: beast-gtk/bstpatternctrl.c:45
+msgid "The direction of cell movement each time an event or note was edited"
+msgstr "Směr pohybu buňky po každé úpravě události nebo noty"
+
 #. movement
-#: beast-gtk/bstpatternctrl.c:142
+#: beast-gtk/bstpatternctrl.c:161
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
-msgstr "Aktivovat následující buňku (nahoru/doleva/doprava/dolů podle nastavení)"
+msgstr ""
+"Aktivovat následující buňku (nahoru/doleva/doprava/dolů podle nastavení)"
 
-#: beast-gtk/bstpatternctrl.c:143
+#: beast-gtk/bstpatternctrl.c:162
 msgid "Move focus cell upwards"
 msgstr "Aktivovat buňku nahoře"
 
-#: beast-gtk/bstpatternctrl.c:144
+#: beast-gtk/bstpatternctrl.c:163
 msgid "Move focus cell to the left"
 msgstr "Aktivovat buňku vlevo"
 
-#: beast-gtk/bstpatternctrl.c:145
+#: beast-gtk/bstpatternctrl.c:164
 msgid "Move focus cell to the right"
 msgstr "Aktivovat buňku vpravo"
 
-#: beast-gtk/bstpatternctrl.c:146
+#: beast-gtk/bstpatternctrl.c:165
 msgid "Move focus cell downwards"
 msgstr "Aktivovat buňku doků"
 
-#: beast-gtk/bstpatternctrl.c:147
+#: beast-gtk/bstpatternctrl.c:166
 msgid "Move focus cell upwards page-wise"
 msgstr "Aktivovat buňku o stránku výš"
 
-#: beast-gtk/bstpatternctrl.c:148
+#: beast-gtk/bstpatternctrl.c:167
 msgid "Move focus cell to the left page-wise"
 msgstr "Aktivovat buňku o stránku vlevo"
 
-#: beast-gtk/bstpatternctrl.c:149
+#: beast-gtk/bstpatternctrl.c:168
 msgid "Move focus cell to the right page-wise"
 msgstr "Aktivovat buňku o stránku vpravo"
 
-#: beast-gtk/bstpatternctrl.c:150
+#: beast-gtk/bstpatternctrl.c:169
 msgid "Move focus cell downwards page-wise"
 msgstr "Aktivovat buňku o stránku níž"
 
-#: beast-gtk/bstpatternctrl.c:151
+#: beast-gtk/bstpatternctrl.c:170
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Aktivovat nejvyšší možnou buňku"
 
-#: beast-gtk/bstpatternctrl.c:152
+#: beast-gtk/bstpatternctrl.c:171
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Aktivovat nejlevější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.c:153
+#: beast-gtk/bstpatternctrl.c:172
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Aktivovat nejpravější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.c:154
+#: beast-gtk/bstpatternctrl.c:173
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Aktivovat nejspodnější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.c:158
+#: beast-gtk/bstpatternctrl.c:177
 msgid "Remove any events in the focus cell"
 msgstr "Odstranit události v aktivní buňce"
 
-#: beast-gtk/bstpatternctrl.c:161
+#: beast-gtk/bstpatternctrl.c:180
 msgid "Remove any events in the focus cell and move to the next cell"
 msgstr "Odstranit události v aktivní buňce a aktivovat následující buňku"
 
-#: beast-gtk/bstpatternctrl.c:165
+#: beast-gtk/bstpatternctrl.c:184
 msgid "Set the focus cell note"
 msgstr "Nastavit notu v aktivní buňce"
 
-#: beast-gtk/bstpatternctrl.c:168
+#: beast-gtk/bstpatternctrl.c:187
 msgid "Set the focus cell note and move to the next cell"
 msgstr "Nastavit notu v aktivní buňce a aktivovat na následující buňku"
 
-#: beast-gtk/bstpatternctrl.c:171
+#: beast-gtk/bstpatternctrl.c:190
 msgid "Set the focus cell note relative to the base octave"
 msgstr "Nastavit notu v aktivní buňce relativně k základní oktávě"
 
-#: beast-gtk/bstpatternctrl.c:174
+#: beast-gtk/bstpatternctrl.c:193
 msgid ""
 "Set the focus cell note relative to the base octave and move to the next cell"
-msgstr "Nastavit notu v aktivní buňce relativně k základní oktávě a aktivovat následující buňku"
+msgstr ""
+"Nastavit notu v aktivní buňce relativně k základní oktávě a aktivovat "
+"následující buňku"
 
-#: beast-gtk/bstpatternctrl.c:178
+#: beast-gtk/bstpatternctrl.c:197
 msgid "Set the focus cell octave"
 msgstr "Nastavit oktávu aktivní buňky"
 
-#: beast-gtk/bstpatternctrl.c:181
+#: beast-gtk/bstpatternctrl.c:200
 msgid "Set the focus cell octave and move to the next cell"
 msgstr "Nastavit oktávu aktivní buňky a aktivovat následující buňku"
 
-#: beast-gtk/bstpatternctrl.c:184
+#: beast-gtk/bstpatternctrl.c:203
 msgid "Change the focus cell octave by a given amount"
 msgstr "Změnit oktávu aktivní buňky o danou hodnotu"
 
-#: beast-gtk/bstpatternctrl.c:187
+#: beast-gtk/bstpatternctrl.c:206
 msgid ""
 "Change the focus cell octave by a given amount and move to the next cell"
-msgstr "Změnit oktávu aktivní buňky o danou hodnotu a aktivovat následující buňku"
+msgstr ""
+"Změnit oktávu aktivní buňky o danou hodnotu a aktivovat následující buňku"
 
-#: beast-gtk/bstpatternctrl.c:191
+#: beast-gtk/bstpatternctrl.c:210
 msgid "Set the base octave"
 msgstr "Nastavit základní oktávu"
 
-#: beast-gtk/bstpatternctrl.c:194
+#: beast-gtk/bstpatternctrl.c:213
 msgid "Change the base octave by a given amount"
 msgstr "Změnit základní oktávu o danou hodnotu"
 
@@ -1178,10 +1208,160 @@ msgstr "Vodorovně zmenšit"
 msgid "Shrink Vertically"
 msgstr "Svisle zmenšit"
 
-#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:55
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:78
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
 msgstr "Popisek"
+
+#: beast-gtk/bstrecords.idl:35
+msgid "Up"
+msgstr "Nahoru"
+
+#: beast-gtk/bstrecords.idl:35
+msgid "Move upwards"
+msgstr "Posunout nahoru"
+
+#: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "Levé"
+
+#: beast-gtk/bstrecords.idl:36
+msgid "Move to the left"
+msgstr "Posunout doleva"
+
+#: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "Pravé"
+
+#: beast-gtk/bstrecords.idl:37
+msgid "Move to the right"
+msgstr "Posunout doprava"
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Down"
+msgstr "Dolů"
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Step downwards"
+msgstr "Krok dolů"
+
+#: beast-gtk/bstrecords.idl:43
+msgid "Release counter"
+msgstr "Uvolnit čítač"
+
+#: beast-gtk/bstrecords.idl:45
+msgid "Font Size"
+msgstr "Velikost písma"
+
+#: beast-gtk/bstrecords.idl:45
+msgid "Font size in pixels for labels displayed in synthesis networks"
+msgstr "Velikost písma v pixelech pro popisky zobrazované v sítích syntézy"
+
+#: beast-gtk/bstrecords.idl:47
+msgid "Anti-Alias"
+msgstr "Vyhlazovat"
+
+#: beast-gtk/bstrecords.idl:47
+msgid "Draw synthesis networks anti-aliased?"
+msgstr "Kreslit sítě syntézy vyhlazované?"
+
+#: beast-gtk/bstrecords.idl:49
+msgid "Single Edit"
+msgstr "Upravit jediné"
+
+#: beast-gtk/bstrecords.idl:49
+msgid "Fallback into Edit mode after creating synthesis modules?"
+msgstr "Vrátit se do režimu úprav po vytvoření modulů syntézy?"
+
+#: beast-gtk/bstrecords.idl:51
+msgid "Swap IO"
+msgstr "Přehodit IO"
+
+#: beast-gtk/bstrecords.idl:51
+msgid "Swap input with output channels when displaying synthesis modules?"
+msgstr "Přehodit při zobrazování modulů syntézy vstupní a výstupní kanály?"
+
+#: beast-gtk/bstrecords.idl:55
+msgid "Tab Width"
+msgstr "Šířka záložky"
+
+#: beast-gtk/bstrecords.idl:55
+msgid "Specify project tab width in pixels"
+msgstr "Určení šířky záložky projektu v pixelech"
+
+#: beast-gtk/bstrecords.idl:57
+msgid "Homogeneous Input Fields"
+msgstr "Homogenní vstupní pole"
+
+#: beast-gtk/bstrecords.idl:58
+msgid ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
+msgstr "Povolit homogenní velikosti většiny (číselných a textových) vstupních polí. Na některé pole bude mít vliv až po restartu."
+
+#: beast-gtk/bstrecords.idl:66
+msgid "Skin Name"
+msgstr "Název skinu"
+
+#: beast-gtk/bstrecords.idl:66
+msgid "Name for the current skin configuration (used for skin selections)."
+msgstr "Název aktuálního nastavení skinu (používané pro výběry skinu)."
+
+#: beast-gtk/bstrecords.idl:68 beast-gtk/bstrecords.idl:78
+msgid "Background Image"
+msgstr "Obrázek na pozadí"
+
+#: beast-gtk/bstrecords.idl:68
+msgid "Background image used by the piano-roll widget."
+msgstr "Obrázek na pozadí používaný widgetem svitku klavíru."
+
+#: beast-gtk/bstrecords.idl:69 beast-gtk/bstrecords.idl:79
+msgid "Image shade"
+msgstr "Stínování obrázku"
+
+#: beast-gtk/bstrecords.idl:69 beast-gtk/bstrecords.idl:79
+msgid "Percentage of background image pixel to blend over background color."
+msgstr "Procento pixelů obrázku na pozadí, které sloučit s barvou pozadí."
+
+#: beast-gtk/bstrecords.idl:70 beast-gtk/bstrecords.idl:80
+msgid "Background Color"
+msgstr "Barva pozadí"
+
+#: beast-gtk/bstrecords.idl:71 beast-gtk/bstrecords.idl:81
+msgid "Horizontal Bar Color"
+msgstr "Barva vodorovného pruhu"
+
+#: beast-gtk/bstrecords.idl:72
+msgid "Vertical Bar Color"
+msgstr "Barva svislého pruhu"
+
+#: beast-gtk/bstrecords.idl:73
+msgid "Horizontal Grid Color"
+msgstr "Barva vodorovné mřížky"
+
+#: beast-gtk/bstrecords.idl:74
+msgid "Vertical Grid Color"
+msgstr "Barva svislé mřížky"
+
+#: beast-gtk/bstrecords.idl:75 beast-gtk/bstrecords.idl:82
+msgid "Middle Bar Color"
+msgstr "Barva prostředního pruhu"
+
+#: beast-gtk/bstrecords.idl:78
+msgid "Background image used by the control events widget."
+msgstr "Obrázek na pozadí používaný widgetem řídicích událostí."
+
+#: beast-gtk/bstrecords.idl:83
+msgid "Positive Value Color"
+msgstr "Barva kladné hodnoty"
+
+#: beast-gtk/bstrecords.idl:84
+msgid "Zero Value Color"
+msgstr "Barva nulové hodnoty"
+
+#: beast-gtk/bstrecords.idl:85
+msgid "Negative Value Color"
+msgstr "Barva záporné hodnoty"
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
@@ -1433,10 +1613,6 @@ msgid "Delete parts"
 msgstr "Odstranit části"
 
 #: beast-gtk/bsttrackrollctrl.c:64
-msgid "Left"
-msgstr "Levé"
-
-#: beast-gtk/bsttrackrollctrl.c:64
 msgid "Use the horizontal ruler to adjust the left loop pointer"
 msgstr "Použijte vodorovné pravítko pro úpravu ukazatele levé smyčky"
 
@@ -1447,10 +1623,6 @@ msgstr "Pozice"
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Use the horizontal ruler to adjust the play position pointer"
 msgstr "Použijte vodorovné pravítko pro úpravu ukazatele pozice přehrávání"
-
-#: beast-gtk/bsttrackrollctrl.c:68
-msgid "Right"
-msgstr "Pravé"
 
 #: beast-gtk/bsttrackrollctrl.c:68
 msgid "Use the horizontal ruler to adjust the right loop pointer"
@@ -1588,8 +1760,8 @@ msgid "Configure"
 msgstr "nastavit"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:4
-msgid "Configure the display facilities of the pattern editor"
-msgstr "Nastavit možnosti zobrazování editoru vzorků"
+msgid "Configure the column layout of the pattern editor"
+msgstr "Nastavit rozložení sloupců editoru vzorků"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:5
 msgid "Control Type:"
@@ -1831,7 +2003,11 @@ msgstr "Počet řádků"
 msgid "Text Entry"
 msgstr "Pole textu"
 
-#: beast-gtk/gxk/gxkparam-label.c:49
+#: beast-gtk/gxk/gxkparam-label.c:66
+msgid "Property Identifier"
+msgstr "Identifikátor vlastnosti"
+
+#: beast-gtk/gxk/gxkparam-label.c:72
 msgid "Property Name"
 msgstr "Název vlastnosti"
 
@@ -1851,11 +2027,11 @@ msgstr "Vodorovné zvětšení (logaritmické)"
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Svislé zvětšení (logaritmické)"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:74
+#: beast-gtk/gxk/gxkparam-spinner.c:82
 msgid "Spin Button"
 msgstr "Tlačítko se šipkami"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:80
+#: beast-gtk/gxk/gxkparam-spinner.c:88
 msgid "Spin Button (Logarithmic)"
 msgstr "Tlačítko se šipkami (logaritmické)"
 
@@ -2717,9 +2893,6 @@ msgstr "Stav používaný pro výstup zpráv o chybách"
 
 #~ msgid "Language"
 #~ msgstr "Jazyk"
-
-#~ msgid "Skin RC"
-#~ msgstr "RC skinu"
 
 #~ msgid "Name:"
 #~ msgstr "Název:"
