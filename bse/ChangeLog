@@ -1,3 +1,9 @@
+Wed Sep  1 14:37:24 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslsignal.h: Don't use UNLIKELY in headers (but G_UNLIKELY), as this
+	breaks compilation for external code, as LIKELY/UNLIKELY are
+	convenience macros only defined when compiling bse itself.
+
 Wed Sep  1 14:25:49 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c: proxy changes on input objects onto notify::inputs.

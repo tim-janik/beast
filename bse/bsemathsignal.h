@@ -75,9 +75,9 @@ static inline double   gsl_signal_value_clip (register double x)  G_GNUC_CONST;
 static inline double G_GNUC_CONST
 gsl_signal_value_clip (register double x)
 {
-  if (UNLIKELY (x > 1.0))
+  if (G_UNLIKELY (x > 1.0))
     return 1.0;
-  if (UNLIKELY (x < -1.0))
+  if (G_UNLIKELY (x < -1.0))
     return -1.0;
   return x;
 }
@@ -321,9 +321,9 @@ _gsl_signal_exp2_fraction (float x)	/* 2^x, -0.5 <= x <= 0.5 */
 static inline float  G_GNUC_CONST
 gsl_signal_exp2 (float x)		/* 2^x, -3.5 <= x <= 3.5, prec>16bit */
 {
-  if (UNLIKELY (x < -0.5))
+  if (G_UNLIKELY (x < -0.5))
     {
-      if (UNLIKELY (x < -1.5))
+      if (G_UNLIKELY (x < -1.5))
 	{
 	  if (x < -2.5)
 	    return 0.125 * _gsl_signal_exp2_fraction (x + 3);
@@ -333,9 +333,9 @@ gsl_signal_exp2 (float x)		/* 2^x, -3.5 <= x <= 3.5, prec>16bit */
       else /* -1.5 <= x < -0.5 */
 	return 0.5 * _gsl_signal_exp2_fraction (x + 1);
     }
-  else if (UNLIKELY (x > 0.5))
+  else if (G_UNLIKELY (x > 0.5))
     {
-      if (UNLIKELY (x > 1.5))
+      if (G_UNLIKELY (x > 1.5))
 	{
 	  if (x > 2.5)
 	    return 8 * _gsl_signal_exp2_fraction (x - 3);
