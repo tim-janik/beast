@@ -44,6 +44,56 @@ namespace Sfidl {
     std::string makeMixedName (const std::string& name);
     std::string makeLMixedName (const std::string& name);
     std::string makeStyleName (const std::string& name);
+
+    enum WordCase {
+      lower,
+      Capitalized,
+      semiCapitalized,
+      UPPER
+    };
+
+    /*
+     * translates a word into a given word case
+     * i.e. toWordCase ("Hello", UPPER) == "HELLO"
+     */
+    std::string toWordCase (const std::string& word, WordCase wc);
+    std::string joinName (const std::vector<std::string>& name, const std::string& seperator, WordCase wc);
+
+    enum NamespaceType {
+      NONE,     /* no namespace */
+      ABSOLUTE, /* in C++ means :: prefix */
+      /* RELATIVE indicated by NamespaceHelper instead */
+    };
+
+    /*
+     * rename is a function for renaming types according to rules
+     * 
+     * name: the name to be renamed
+     * namespace_wc: the desired case for the namespace
+     * namespace_join: how to join the namespace
+     * namespace_append: words to append to the namespace
+     * typename_wc: the desired case for the typename
+     * typename_join: how to join the typename
+     */
+    std::string
+    rename (NamespaceType namespace_type, const std::string& name, WordCase namespace_wc,
+	    const std::string &namespace_join, const std::vector<std::string> &namespace_append,
+	    WordCase typename_wc, const std::string &typename_join);
+
+    /*
+     * rename is a function for renaming types according to rules
+     * 
+     * nsh: namespace helper indicates which namespace to be relative to
+     * namespace_wc: the desired case for the namespace
+     * namespace_join: how to join the namespace
+     * namespace_append: words to append to the namespace
+     * typename_wc: the desired case for the typename
+     * typename_join: how to join the typename
+     */
+    std::string
+    rename (NamespaceHelper& nsh, const std::string& name, WordCase namespace_wc,
+	    const std::string& namespace_join, const std::vector<std::string>& namespace_append,
+	    WordCase typename_wc, const std::string& typename_join);
     
     CodeGenerator(const Parser& parser) : parser (parser), options (*Options::the()) {
     }

@@ -1,3 +1,12 @@
+Sat Jan 24 03:08:44 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.*: Added generic rename function, which can be used
+	to reformat typenames. Should be able to do everything that
+	makeLowerName, makeMixedName, makeUpperName, makeGTypeName did, and
+	more (at the cost of having a more complex API).
+
+	* Makefile.am testsfidl.cc: Added test code.
+
 Sat Jan 24 01:50:55 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-cxx.cc: fixed get_fields() usage in pspec constructors,

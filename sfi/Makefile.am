@@ -86,7 +86,7 @@ $(OBJECTS): sficonfig.h
 # source files
 common_idl_sources = sfidl-module.cc sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-cxx.cc glib-extra.c
 
-noinst_PROGRAMS = sfidl testsfi testcxx
+noinst_PROGRAMS = sfidl testsfi testcxx testsfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
 sfidl_LDADD = $(SFI_LIBS) -lm
 
@@ -102,11 +102,14 @@ ${srcdir}/testsfi.c: testidl.h testidl.c
 testcxx_SOURCES = testcxx.cc
 testcxx_LDADD = libsfi.la
 ${srcdir}/testcxx.cc: testidl.h testidl.c
+testsfidl_SOURCES = testsfidl.cc $(common_idl_sources)
+testsfidl_LDADD = libsfi.la
+${srcdir}/testsfidl.cc: testidl.h testidl.c
 
 #
 # TESTS
 #
-TESTS = testsfi testcxx
+TESTS = testsfi testcxx testsfidl
 
 #
 # TOYPROF: poor man's profiling toy

@@ -97,6 +97,7 @@ vector<string> CodeGenerator::splitName (const string& name)
   return words;
 }
 
+
 string CodeGenerator::makeLowerName (const string& name, char seperator)
 {
   string result;
@@ -159,6 +160,83 @@ string CodeGenerator::makeStyleName (const string& name)
   if (options.style == Options::STYLE_MIXED)
     return makeLMixedName (name);
   return makeLowerName (name);
+}
+
+string CodeGenerator::toWordCase (const string& word, WordCase wc)
+{
+  string result;
+  for (string::const_iterator si = word.begin(); si != word.end(); si++)
+    {
+      bool first = (si == word.begin());
+      switch (wc)
+	{
+	  case lower:	      result += tolower (*si);
+			      break;
+	  case Capitalized:   result += first ? toupper (*si) : *si;
+			      break;
+	  case UPPER:	      result += toupper (*si);
+			      break;
+	  default:	      g_assert_not_reached();
+	}
+    }
+  return result;
+}
+
+string CodeGenerator::joinName (const vector<string>& name, const string& seperator, WordCase wc)
+{
+  string result;
+
+  for (vector<string>::const_iterator wi = name.begin(); wi != name.end(); wi++)
+    {
+      if (result != "")
+	result += seperator;
+      if (wc == semiCapitalized)
+	{
+	  if (result == "")
+	    result += toWordCase (*wi, lower);
+	  else
+	    result += toWordCase (*wi, Capitalized);
+	}
+      else
+	result += toWordCase (*wi, wc);
+    }
+  return result;
+}
+
+string
+CodeGenerator::rename (NamespaceType namespace_type, const string& name, WordCase namespace_wc,
+		       const string &namespace_join, const vector<string> &namespace_append,
+		       WordCase typename_wc, const string &typename_join)
+{
+  string result;
+  vector<string> namespace_words;
+
+  if (namespace_type == ABSOLUTE)
+    {
+      result = namespace_join;
+      namespace_words = splitName (NamespaceHelper::namespaceOf (name));
+    }
+
+  namespace_words.insert (namespace_words.end(), namespace_append.begin(), namespace_append.end());
+  if (!namespace_words.empty())
+    {
+      result += joinName (namespace_words, namespace_join, namespace_wc);
+      result += namespace_join;
+    }
+
+  vector<string> words = splitName (NamespaceHelper::nameOf (name));
+  result += joinName (words, typename_join, typename_wc);
+  return result;
+}
+
+string
+CodeGenerator::rename (NamespaceHelper& nsh, const string& name, WordCase namespace_wc,
+		       const string& namespace_join, const vector<string>& namespace_append,
+		       WordCase typename_wc, const string& typename_join)
+{
+  g_assert_not_reached ();
+  string pform = nsh.printableForm (name);
+  return pform;
 }
 
 /*--- functions for "C and C++"-like languages ---*/
