@@ -14,9 +14,8 @@
 @newsTitle{Wednesday 25 Jun 2003, BEAST Bugfix Realease}
 
 BEAST/BSE version 0.5.3 is available in the
-@uref{beast-doc://download,,download section}.
-@c , here is the
-@c @uref{http://www.gnomedesktop.org/article.php?sid=1176,,FootNotes announcement}.
+@uref{beast-doc://download,,download section}, here is the
+@uref{http://gnomedesktop.org/article.php?sid=1182,,FootNotes announcement}.
 
 Tarball:
 @uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.3.tar.gz,, beast-0.5.3.tar.gz}
