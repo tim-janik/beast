@@ -1,4 +1,4 @@
-This directory provides automatic testing of the audio output beast synthesis
+This directory provides automatic testing of the audio output BSE synthesis
 networks produce. Since changing algorithms might result in subtle differences
 in the resulting audio files, 1:1 comparision of audio files (such as storing
 an md5 hash) is not a good choice for an automated testing framework.
