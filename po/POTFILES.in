@@ -30,6 +30,7 @@ beast-gtk/bstprojectctrl.c
 beast-gtk/bstrackeditor.c
 beast-gtk/bstrackitem.c
 beast-gtk/bstrackview.c
+beast-gtk/bstrecords.idl
 beast-gtk/bstsampleeditor.c
 beast-gtk/bstsnetrouter.c
 beast-gtk/bststest.c
@@ -51,6 +52,7 @@ beast-gtk/gxk/gxksimplelabel.c
 bse/bseamplifier.idl
 bse/bseautodoc.c
 bse/bsebiquadfilter.c
+bse/bserecords.idl
 bse/bsestandardosc.c
 bse/bsesuper.c
 data/beast.desktop.in
