@@ -189,6 +189,6 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
       bse_proxy_connect (self->proxy,
                          "signal::notify_pcm_data", sniffer_notify_pcm_data, self,
                          NULL);
-      // FIXME: bse_sniffer_request_samples (self->proxy, 0, 128, BSE_PICK_FIRST_INPUT);
+      // FIXME: bse_sniffer_request_samples (self->proxy, 0, 128, BSE_SNIFFER_PICK_FIRST_INPUT);
     }
 }
