@@ -43,7 +43,6 @@ struct _BseSNet
   BseSuper	 parent_object;
 
   GList		*sources;	/* of type BseSource* */
-  BseSampleValue*junk; /* FIXME */
 };
 struct _BseSNetClass
 {
@@ -58,7 +57,7 @@ enum {
 };
 enum {
   BSE_SNET_ICHANNEL_NONE,
-  BSE_SNET_ICHANNEL_MONO
+  BSE_SNET_ICHANNEL_MULTI
 };
 
 

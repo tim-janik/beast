@@ -264,6 +264,8 @@ struct _BseNotifyHook
  * BSE_NOTIFY (song, get_param, NOTIFY (OBJECT, id, param, DATA));
  */
 #define BSE_NOTIFY(__obj, __method, __CALL) \
+    BSE_NOTIFY_CHECK (__obj, __method, __CALL, if (!BSE_OBJECT_DESTROYED (__object)))
+#define BSE_NOTIFY_CHECK(__obj, __method, __CALL, __CHECK) \
 G_STMT_START { \
   BseObject *__object = (BseObject*) (__obj); GHook *__hook; \
   BseNotify_ ## __method NOTIFY; GHookList *__hook_list; \
@@ -271,7 +273,7 @@ G_STMT_START { \
   bse_object_ref (__object); \
   __hook_list = bse_object_get_hook_list (__object); \
   __hook = __hook_list ? g_hook_first_valid (__hook_list, TRUE) : NULL; \
-  while (__hook) \
+  __CHECK while (__hook) \
     { \
       if (((BseNotifyHook*) __hook)->quark == __hook_quark) \
         { \

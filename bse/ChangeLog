@@ -1,3 +1,36 @@
+Mon Nov  8 02:01:31 1999  Tim Janik  <timj@gtk.org>
+
+	* bseobject.h (BSE_NOTIFY): don't notify objects that are destroyed.
+	* bseobject.c (bse_object_do_shutdown): notify object of ::destroy,
+	allthough it is of course destroyed.
+
+	* bsesnet.[hc]: make the sole input channel we have a multi track
+	channel (well, actually only stereo for the moment).
+	(bse_snet_calc_chunk): mix input hunk to stereo if necessary.
+
+	* bsesource.[hc]: added max_n_tracks field to BseSourceIChannelDef.
+	enforced further usage of the BSE_SOURCE_*() macros, instead of direct
+	class usage. renamed the class-> ichannels and ochannels fields to
+	ichannel_defs and ochannel_defs to keep distinction to the ->ochannels
+	member in sources (and because these are actually *definitions* only).
+	moved BseSourceInput ->history field, this actually belongs into the
+	BseSourceIChannelDef structure.
+	got rid of the history argument to bse_source_set_input() and the
+	->add_input() member function that way.
+	made BSE_SOURCE_ICHANNEL_DEF() and BSE_SOURCE_OCHANNEL_DEF() return
+	pointers.
+	(bse_source_ref_state_chunk):
+	(bse_source_ref_chunk): reduced code duplication by moving 98% percent
+	of the code into an inlined bse_source_fetch_chunk().
+	(bse_source_fetch_chunk): guard against negative indices.
+	(bse_source_do_prepare): recalc history for all output channels.
+	(bse_source_do_remove_input): notify the output source about io_changed.
+	(bse_source_get_input): new function to return input handle for a given
+	channel.
+
+	* bseenums.[hc]: added BSE_ERROR_SOURCE_TOO_MANY_OTRACKS
+	error case.
+
 Sun Nov  7 08:12:21 1999  Tim Janik  <timj@gtk.org>
 
 	* bsesnet.c (N_RAND_BLOCKS): uhg, don't kill my speakers with that

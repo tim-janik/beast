@@ -511,7 +511,7 @@ static void
 bse_object_do_shutdown (BseObject *object)
 {
   BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DESTROYED);
-  BSE_NOTIFY (object, destroy, NOTIFY (OBJECT, DATA));
+  BSE_NOTIFY_CHECK (object, destroy, NOTIFY (OBJECT, DATA), /* always */);
 }
 
 static void

@@ -43,8 +43,8 @@ extern "C" {
 #define BSE_SOURCE_PAUSED(object)       ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_PAUSED) != 0)
 #define BSE_SOURCE_HAS_INPUT(object)    ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_HAS_INPUT) != 0)
 #define BSE_SOURCE_HAS_OUTPUT(object)   ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_HAS_OUTPUT) != 0)
-#define	BSE_SOURCE_ICHANNEL_DEF(src,id) (BSE_SOURCE_GET_CLASS (src)->ichannels[-1 + (guint) (id)])
-#define	BSE_SOURCE_OCHANNEL_DEF(src,id) (BSE_SOURCE_GET_CLASS (src)->ochannels[-1 + (guint) (id)])
+#define	BSE_SOURCE_ICHANNEL_DEF(src,id) (BSE_SOURCE_GET_CLASS (src)->ichannel_defs - 1 + (guint) (id))
+#define	BSE_SOURCE_OCHANNEL_DEF(src,id) (BSE_SOURCE_GET_CLASS (src)->ochannel_defs - 1 + (guint) (id))
 #define	BSE_SOURCE_N_ICHANNELS(src)     (BSE_SOURCE_GET_CLASS (src)->n_ichannels)
 #define	BSE_SOURCE_N_OCHANNELS(src)     (BSE_SOURCE_GET_CLASS (src)->n_ochannels)
 /*< private >*/
@@ -70,7 +70,6 @@ typedef struct _BseSourceOChannelDef BseSourceOChannelDef;
 struct _BseSourceInput
 {
   guint      ichannel_id;
-  guint      history;
   BseSource *osource;
   guint      ochannel_id;
 };
@@ -99,10 +98,11 @@ struct _BseSourceIChannelDef
 {
   gchar   *name;
   gchar   *blurb;
-  guint    min_n_tracks; /* minimum number of tracks required for
-			  * output channel, or 0 to indicate an infinite
-			  * number of input sources.
+  guint    min_n_tracks;
+  guint    max_n_tracks; /* minimum/maximum number of tracks required for
+			  * output channel (FIXME: or 0 to indicate an infinite number of input sources).
 			  */
+  guint    min_history;
 };
 struct _BseSourceOChannelDef
 {
@@ -115,9 +115,9 @@ struct _BseSourceClass
   BseItemClass		 parent_class;
   
   guint			 n_ichannels;
-  BseSourceIChannelDef	*ichannels;
+  BseSourceIChannelDef	*ichannel_defs;
   guint			 n_ochannels;
-  BseSourceOChannelDef	*ochannels;
+  BseSourceOChannelDef	*ochannel_defs;
   
   void		(*prepare)	(BseSource	*source,
 				 BseIndex	 index);
@@ -130,8 +130,7 @@ struct _BseSourceClass
   void	(*add_input)	(BseSource	*source,
 			 guint		 ichannel_id,
 			 BseSource	*input,
-			 guint		 ochannel_id,
-			 guint		 history);
+			 guint		 ochannel_id);
   void	(*remove_input)	(BseSource	*source,
 			 guint		 input_index);
 };
@@ -141,10 +140,11 @@ struct _BseSourceClass
 BseErrorType	bse_source_set_input		(BseSource	*source,
 						 guint		 ichannel_id,
 						 BseSource	*input,
-						 guint		 ochannel_id,
-						 guint		 history);
+						 guint		 ochannel_id);
 gboolean	bse_source_remove_input		(BseSource	*source,
 						 BseSource	*input);
+BseSourceInput* bse_source_get_input            (BseSource      *source,
+						 guint           ichannel_id);
 void		bse_source_clear_ichannel	(BseSource	*source,
 						 guint		 ichannel_id);
 void		bse_source_clear_ichannels	(BseSource	*source);
@@ -165,7 +165,8 @@ GList*		bse_source_list_inputs		(BseSource	*source);
 guint		bse_source_class_add_ichannel	(BseSourceClass	*source_class,
 						 const gchar	*name,
 						 const gchar	*blurb,
-						 guint		 min_n_tracks);
+						 guint		 min_n_tracks,
+						 guint           max_n_tracks);
 guint		bse_source_class_add_ochannel	(BseSourceClass	*source_class,
 						 const gchar	*name,
 						 const gchar	*blurb,

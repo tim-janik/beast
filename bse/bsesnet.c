@@ -123,9 +123,9 @@ bse_snet_class_init (BseSNetClass *class)
   container_class->forall_items = bse_snet_forall_items;
   
   ichannel_id = bse_source_class_add_ichannel (source_class,
-					       "Mono In", "Input Channel",
-					       1);
-  g_assert (ichannel_id == BSE_SNET_ICHANNEL_MONO);
+					       "Mono/Stereo/Multi Track In", "Input Channel",
+					       1, 2); /* FIXME: BSE_MAX_N_TRACKS */
+  g_assert (ichannel_id == BSE_SNET_ICHANNEL_MULTI);
   ochannel_id = bse_source_class_add_ochannel (source_class,
 					       "Stereo Out", "Stereo Output",
 					       2);
@@ -136,7 +136,6 @@ static void
 bse_snet_init (BseSNet *snet)
 {
   snet->sources = NULL;
-  snet->junk = NULL;
 }
 
 static void
@@ -319,19 +318,11 @@ bse_snet_remove_source (BseSNet   *snet,
   bse_container_remove_item (container, item);
 }
 
-#define N_RAND_BLOCKS 17
-
 static void
 bse_snet_prepare (BseSource *source,
 		  BseIndex   index)
 {
-  BseSNet *snet = BSE_SNET (source);
-  guint i;
-
-  snet->junk = g_new (BseSampleValue, 2 * BSE_TRACK_LENGTH * N_RAND_BLOCKS);
-
-  for (i = 0; i < 2 * BSE_TRACK_LENGTH * N_RAND_BLOCKS; i++)
-    snet->junk[i] = rand ();
+  // BseSNet *snet = BSE_SNET (source);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
@@ -341,26 +332,36 @@ static BseChunk*
 bse_snet_calc_chunk (BseSource *source,
 		     guint      ochannel_id)
 {
-  BseSNet *snet = BSE_SNET (source);
-  BseSampleValue *hunk;
+  // BseSNet *snet = BSE_SNET (source);
+  BseSourceInput *input;
+  BseChunk *ichunk;
+  BseSampleValue *hunk, *shunk;
+  guint i;
 
   g_return_val_if_fail (ochannel_id == BSE_SNET_OCHANNEL_STEREO, NULL);
 
-  /* FIXME: we need some kinda notification mechanism on sources when
-   * the source stopped playing
+  input = bse_source_get_input (source, BSE_SNET_ICHANNEL_MULTI);
+  if (!input) /* silence */
+    return bse_chunk_new_static_zero (2);
+
+  ichunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
+  if (ichunk->n_tracks == 2) /* stereo already */
+    return ichunk;
+
+  g_assert (ichunk->n_tracks == 1); /* FIXME: paranoid */
+
+  /* ok, mix mono to stereo
+   * FIXME: we need a general bse_hunk_alloc_mixed () functions to return a mixed hunk
+   * from a given chunk with variable number of channels
    */
-
-  if (1)
-    hunk = bse_hunk_copy (snet->junk + (2 * BSE_TRACK_LENGTH * (rand () % N_RAND_BLOCKS)),
-			  2);
-  else
+  hunk = bse_hunk_alloc (2);
+  shunk = ichunk->hunk;
+  for (i = 0; i < BSE_TRACK_LENGTH; i++)
     {
-      guint i, n_tracks = 2;
-
-      hunk = bse_hunk_alloc (n_tracks);
-      for (i = 0; i < BSE_TRACK_LENGTH * n_tracks; i++)
-	hunk[i] = rand ();
+      hunk[i * 2] = shunk[i];
+      hunk[i * 2 + 1] = shunk[i];
     }
+  bse_chunk_unref (ichunk);
 
   return bse_chunk_new_orphan (2, hunk);
 }
@@ -368,10 +369,7 @@ bse_snet_calc_chunk (BseSource *source,
 static void
 bse_snet_reset (BseSource *source)
 {
-  BseSNet *snet = BSE_SNET (source);
-
-  g_free (snet->junk);
-  snet->junk = NULL;
+  // BseSNet *snet = BSE_SNET (source);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);

@@ -36,8 +36,7 @@ static void     bse_source_do_cycle		(BseSource	*source);
 static void	bse_source_do_add_input		(BseSource	*source,
 						 guint     	 ichannel_id,
 						 BseSource 	*input,
-						 guint     	 ochannel_id,
-						 guint     	 history);
+						 guint     	 ochannel_id);
 static void	bse_source_do_remove_input	(BseSource	*source,
 						 guint		 input_index);
 
@@ -73,9 +72,9 @@ static void
 bse_source_class_base_init (BseSourceClass *class)
 {
   class->n_ichannels = 0;
-  class->ichannels = NULL;
+  class->ichannel_defs = NULL;
   class->n_ochannels = 0;
-  class->ochannels = NULL;
+  class->ochannel_defs = NULL;
 }
 
 static void
@@ -85,21 +84,21 @@ bse_source_class_base_destroy (BseSourceClass *class)
   
   for (i = 0; i < class->n_ichannels; i++)
     {
-      g_free (class->ichannels[i].name);
-      g_free (class->ichannels[i].blurb);
+      g_free (class->ichannel_defs[i].name);
+      g_free (class->ichannel_defs[i].blurb);
     }
-  g_free (class->ichannels);
+  g_free (class->ichannel_defs);
   for (i = 0; i < class->n_ochannels; i++)
     {
-      g_free (class->ochannels[i].name);
-      g_free (class->ochannels[i].blurb);
+      g_free (class->ochannel_defs[i].name);
+      g_free (class->ochannel_defs[i].blurb);
     }
-  g_free (class->ochannels);
+  g_free (class->ochannel_defs);
   
   class->n_ichannels = 0;
-  class->ichannels = NULL;
+  class->ichannel_defs = NULL;
   class->n_ochannels = 0;
-  class->ochannels = NULL;
+  class->ochannel_defs = NULL;
 }
 
 static void
@@ -142,9 +141,6 @@ bse_source_init (BseSource      *source,
   source->ochannels = g_new0 (BseSourceOChannel, class->n_ochannels);
   for (i = 0; i < class->n_ochannels; i++)
     source->ochannels[i].chunks = NULL;
-
-  //  for (i = 0; i < class->n_ochannels; i++)
-  //    bse_source_calc_history (source, i + 1);
 }
 
 static void
@@ -179,6 +175,7 @@ bse_source_do_shutdown (BseObject *object)
       g_free (oc->chunks);
     }
   g_free (source->ochannels);
+  source->ochannels = NULL;
 
   /* chain parent class' shutdown handler */
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
@@ -188,7 +185,8 @@ guint
 bse_source_class_add_ichannel (BseSourceClass *source_class,
 			       const gchar    *name,
 			       const gchar    *blurb,
-			       guint           min_n_tracks)
+			       guint           min_n_tracks,
+			       guint           max_n_tracks)
 {
   guint index;
 
@@ -197,16 +195,19 @@ bse_source_class_add_ichannel (BseSourceClass *source_class,
   if (!blurb)
     blurb = name;
   g_return_val_if_fail (min_n_tracks >= 1 && min_n_tracks <= BSE_MAX_N_TRACKS, 0);
-
+  g_return_val_if_fail (max_n_tracks >= min_n_tracks && max_n_tracks <= BSE_MAX_N_TRACKS, 0);
+  
   index = source_class->n_ichannels;
   source_class->n_ichannels++;
-  source_class->ichannels = g_renew (BseSourceIChannelDef,
-				     source_class->ichannels,
-				     source_class->n_ichannels);
-  source_class->ichannels[index].name = g_strdup (name);
-  source_class->ichannels[index].blurb = g_strdup (blurb);
-  source_class->ichannels[index].min_n_tracks = min_n_tracks;
-
+  source_class->ichannel_defs = g_renew (BseSourceIChannelDef,
+					 source_class->ichannel_defs,
+					 source_class->n_ichannels);
+  source_class->ichannel_defs[index].name = g_strdup (name);
+  source_class->ichannel_defs[index].blurb = g_strdup (blurb);
+  source_class->ichannel_defs[index].min_n_tracks = min_n_tracks;
+  source_class->ichannel_defs[index].max_n_tracks = max_n_tracks;
+  source_class->ichannel_defs[index].min_history = 0;
+  
   return index + 1;
 }
 
@@ -223,15 +224,15 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
   if (!blurb)
     blurb = name;
   g_return_val_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS, 0);
-
+  
   index = source_class->n_ochannels;
   source_class->n_ochannels++;
-  source_class->ochannels = g_renew (BseSourceOChannelDef,
-				     source_class->ochannels,
-				     source_class->n_ochannels);
-  source_class->ochannels[index].name = g_strdup (name);
-  source_class->ochannels[index].blurb = g_strdup (blurb);
-  source_class->ochannels[index].n_tracks = n_tracks;
+  source_class->ochannel_defs = g_renew (BseSourceOChannelDef,
+					 source_class->ochannel_defs,
+					 source_class->n_ochannels);
+  source_class->ochannel_defs[index].name = g_strdup (name);
+  source_class->ochannel_defs[index].blurb = g_strdup (blurb);
+  source_class->ochannel_defs[index].n_tracks = n_tracks;
 
   return index + 1;
 }
@@ -256,10 +257,10 @@ bse_source_calc_history (BseSource *source,
 	if (output->inputs[n].osource == source &&
 	    output->inputs[n].ochannel_id == ochannel_id)
 	  {
-	    if (history)
-	      history = MAX (history, output->inputs[n].history);
-	    else
-	      history = MAX (1, output->inputs[n].history);
+	    BseSourceIChannelDef *ic_def;
+
+	    ic_def = BSE_SOURCE_ICHANNEL_DEF (output, output->inputs[n].ichannel_id);
+	    history = MAX (history, MAX (ic_def->min_history, 1));
 	  }
     }
 
@@ -291,10 +292,10 @@ bse_source_calc_history (BseSource *source,
   oc->ring_offset = 0;
 }
 
-BseChunk*
-bse_source_ref_chunk (BseSource *source,
-		      guint      ochannel_id,
-		      BseIndex   index)
+static inline BseChunk*
+bse_source_fetch_chunk (BseSource *source,
+			guint      ochannel_id,
+			BseIndex   index)
 {
   BseSourceOChannel *oc;
   BseChunk *chunk;
@@ -305,14 +306,16 @@ bse_source_ref_chunk (BseSource *source,
   g_return_val_if_fail (ochannel_id >= 1 && ochannel_id <= BSE_SOURCE_N_OCHANNELS (source), NULL);
   g_return_val_if_fail (index <= source->index, NULL);
 
-  n_tracks = BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id).n_tracks;
+  n_tracks = BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id)->n_tracks;
   oc = BSE_SOURCE_OCHANNEL (source, ochannel_id);
   index = source->index - index;
-  if (index > oc->history)
+  if (index > oc->history || index < 0)
     {
-      g_warning ("%s (\"%s\"): too old (%lld) history chunk requested on %u",
+      g_warning ("%s (\"%s\"): invalid (%lld - %lld = %lld) history chunk requested on %u",
 		 BSE_OBJECT_TYPE_NAME (source),
 		 BSE_OBJECT_NAME (source) ? BSE_OBJECT_NAME (source) : "",
+		 source->index,
+		 source->index - index,
 		 index,
 		 ochannel_id);
       return bse_chunk_new_static_zero (n_tracks);
@@ -338,8 +341,20 @@ bse_source_ref_chunk (BseSource *source,
       bse_chunk_ref (chunk);
     }
 
+  return chunk;
+}
+
+BseChunk*
+bse_source_ref_chunk (BseSource *source,
+		      guint      ochannel_id,
+		      BseIndex   index)
+{
+  BseChunk *chunk;
+
+  chunk = bse_source_fetch_chunk (source, ochannel_id, index);
+
   bse_chunk_complete_hunk (chunk);
-  
+
   return chunk;
 }
 
@@ -348,44 +363,9 @@ bse_source_ref_state_chunk (BseSource *source,
 			    guint      ochannel_id,
 			    BseIndex   index)
 {
-  BseSourceOChannel *oc;
   BseChunk *chunk;
-  guint n_tracks;
 
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (source), NULL);
-  g_return_val_if_fail (ochannel_id >= 1 && ochannel_id <= BSE_SOURCE_N_OCHANNELS (source), NULL);
-  g_return_val_if_fail (index <= source->index, NULL);
-
-  n_tracks = BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id).n_tracks;
-  oc = BSE_SOURCE_OCHANNEL (source, ochannel_id);
-  index = source->index - index;
-  if (index > oc->history)
-    {
-      g_warning ("%s (\"%s\"): too old (%lld) history chunk requested on %u",
-		 BSE_OBJECT_TYPE_NAME (source),
-		 BSE_OBJECT_NAME (source) ? BSE_OBJECT_NAME (source) : "",
-		 index,
-		 ochannel_id);
-      return bse_chunk_new_static_zero (n_tracks);
-    }
-
-  if (index || oc->in_calc)
-    {
-      chunk = oc->chunks[(index + oc->ring_offset) % oc->history];
-      if (!chunk)
-	chunk = bse_chunk_new_static_zero (n_tracks);
-      else
-	bse_chunk_ref (chunk);
-    }
-  else
-    {
-      oc->in_calc = TRUE;
-      oc->chunks[oc->ring_offset] = BSE_SOURCE_GET_CLASS (source)->calc_chunk (source, ochannel_id);
-      oc->in_calc = FALSE;
-      chunk = oc->chunks[oc->ring_offset];
-      bse_chunk_ref (chunk);
-    }
+  chunk = bse_source_fetch_chunk (source, ochannel_id, index);
 
   bse_chunk_complete_state (chunk);
 
@@ -481,11 +461,10 @@ BseErrorType
 bse_source_set_input (BseSource *source,
 		      guint      ichannel_id,
 		      BseSource *input,
-		      guint      ochannel_id,
-		      guint	 history)
+		      guint      ochannel_id)
 {
-  BseSourceClass *class;
-  BseSourceClass *input_class;
+  BseSourceIChannelDef *ic_def;
+  BseSourceOChannelDef *oc_def;
   guint i;
   
   g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
@@ -495,19 +474,20 @@ bse_source_set_input (BseSource *source,
   g_return_val_if_fail (!BSE_OBJECT_DESTROYED (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_OBJECT_DESTROYED (input), BSE_ERROR_INTERNAL);
   
-  class = BSE_SOURCE_GET_CLASS (source);
-  input_class = BSE_SOURCE_GET_CLASS (input);
+  ic_def = BSE_SOURCE_ICHANNEL_DEF (source, ichannel_id);
+  oc_def = BSE_SOURCE_OCHANNEL_DEF (input, ochannel_id);
   
-  if (ichannel_id < 1 || ichannel_id > class->n_ichannels)
+  if (ichannel_id < 1 || ichannel_id > BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
-  if (ochannel_id < 1 || ochannel_id > input_class->n_ochannels)
+  if (ochannel_id < 1 || ochannel_id > BSE_SOURCE_N_OCHANNELS (input))
     return BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
-  
-  if (class->ichannels[ichannel_id - 1].min_n_tracks >
-      input_class->ochannels[ochannel_id - 1].n_tracks)
+
+  if (ic_def->min_n_tracks > oc_def->n_tracks)
     return BSE_ERROR_SOURCE_TOO_MANY_ITRACKS;
+  if (ic_def->max_n_tracks < oc_def->n_tracks)
+    return BSE_ERROR_SOURCE_TOO_MANY_OTRACKS;
   
-  if (class->ichannels[ichannel_id - 1].min_n_tracks)
+  if (ic_def->min_n_tracks) /* FIXME: bad hack */
     for (i = 0; i < source->n_inputs; i++)
       if (source->inputs[i].ichannel_id == ichannel_id)
 	return BSE_ERROR_SOURCE_ICHANNEL_IN_USE;
@@ -515,8 +495,7 @@ bse_source_set_input (BseSource *source,
   bse_object_ref (BSE_OBJECT (source));
   bse_object_ref (BSE_OBJECT (input));
 
-  BSE_SOURCE_GET_CLASS (source)->add_input (source, ichannel_id,
-					    input, ochannel_id, history);
+  BSE_SOURCE_GET_CLASS (source)->add_input (source, ichannel_id, input, ochannel_id);
   bse_source_calc_history (input, ochannel_id);
   BSE_NOTIFY (source, io_changed, NOTIFY (OBJECT, DATA));
   BSE_NOTIFY (input, io_changed, NOTIFY (OBJECT, DATA));
@@ -531,15 +510,13 @@ static void
 bse_source_do_add_input (BseSource *source,
 			 guint      ichannel_id,
 			 BseSource *input,
-			 guint      ochannel_id,
-			 guint      history)
+			 guint      ochannel_id)
 {
   guint i = source->n_inputs;
 
   source->n_inputs += 1;
   source->inputs = g_renew (BseSourceInput, source->inputs, source->n_inputs);
   source->inputs[i].ichannel_id = ichannel_id;
-  source->inputs[i].history = history;
   source->inputs[i].osource = input;
   source->inputs[i].ochannel_id = ochannel_id;
   
@@ -550,6 +527,22 @@ bse_source_do_add_input (BseSource *source,
       BSE_OBJECT_SET_FLAGS (input, BSE_SOURCE_FLAG_PREPARED);
       BSE_SOURCE_GET_CLASS (input)->prepare (input, MAX (-1, source->index - 1));
     }
+}
+
+BseSourceInput*
+bse_source_get_input (BseSource *source,
+		      guint      ichannel_id)
+{
+  guint i;
+
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  g_return_val_if_fail (ichannel_id >= 1 && ichannel_id <= BSE_SOURCE_N_ICHANNELS (source), NULL);
+
+  for (i = 0; i < source->n_inputs; i++)
+    if (source->inputs[i].ichannel_id == ichannel_id)
+      return source->inputs + i;
+
+  return NULL;
 }
 
 gboolean
@@ -579,23 +572,30 @@ static void
 bse_source_do_remove_input (BseSource *source,
 			    guint      input_index)
 {
-  BseSource *input;
+  BseSource *osource;
 
-  input = source->inputs[input_index].osource;
+  osource = source->inputs[input_index].osource;
 
   source->n_inputs--;
   if (input_index < source->n_inputs)
     source->inputs[input_index] = source->inputs[source->n_inputs];
 
-  input->outputs = g_slist_remove (input->outputs, source);
+  osource->outputs = g_slist_remove (osource->outputs, source);
 
-  if (!input->outputs && BSE_SOURCE_PREPARED (input))
+  bse_object_ref (BSE_OBJECT (osource));
+  if (!osource->outputs && BSE_SOURCE_PREPARED (osource))
     {
-      bse_object_ref (BSE_OBJECT (input));
-      BSE_OBJECT_UNSET_FLAGS (input, BSE_SOURCE_FLAG_PREPARED);
-      BSE_SOURCE_GET_CLASS (input)->reset (input);
-      bse_object_unref (BSE_OBJECT (input));
+      /* FIXME: i guess this is not right, we should also
+       * un-prepare, i.e. reset the osource if all the remaining outputs
+       * are un-prepared
+       * FIXME: this whole concept still has issues with sources that
+       * serve as outputs for themselves.
+       */
+      BSE_OBJECT_UNSET_FLAGS (osource, BSE_SOURCE_FLAG_PREPARED);
+      BSE_SOURCE_GET_CLASS (osource)->reset (osource);
     }
+  BSE_NOTIFY (osource, io_changed, NOTIFY (OBJECT, DATA));
+  bse_object_unref (BSE_OBJECT (osource));
 }
 
 void
@@ -659,6 +659,9 @@ bse_source_do_prepare (BseSource *source,
   source->start = index;
   source->index = index;
   
+  for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
+    bse_source_calc_history (source, i + 1);
+
   for (i = 0; i < source->n_inputs; i++)
     {
       BseSource *input = source->inputs[i].osource;

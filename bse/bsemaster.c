@@ -32,8 +32,7 @@ static void	bse_master_do_cycle		(BseSource	*source);
 static void     bse_master_do_add_input         (BseSource      *source,
 						 guint           ichannel_id,
 						 BseSource      *input,
-						 guint           ochannel_id,
-						 guint           history);
+						 guint           ochannel_id);
 static void     bse_master_do_remove_input      (BseSource      *source,
 						 guint           input_index);
 
@@ -85,9 +84,9 @@ bse_master_class_init (BseMasterClass *class)
   source_class->add_input = bse_master_do_add_input;
   source_class->remove_input = bse_master_do_remove_input;
 
-  bse_source_class_add_ichannel (source_class, "Master input", NULL, 1);
-  /* bad hack for multiple inputs */
-  source_class->ichannels[0].min_n_tracks = 0;
+  bse_source_class_add_ichannel (source_class, "Master input", NULL, 1, BSE_MAX_N_TRACKS);
+  /* FIXME: bad hack for multiple inputs */
+  source_class->ichannel_defs[0].min_n_tracks = 0;
 }
 
 static void
@@ -291,7 +290,7 @@ bse_master_add_source (BseMaster *master,
   g_return_if_fail (BSE_SOURCE_HAS_OUTPUT (source));
   g_return_if_fail (ochannel_id >= 1 && ochannel_id <= BSE_SOURCE_N_OCHANNELS (source));
 
-  error = bse_source_set_input (BSE_SOURCE (master), 1, source, ochannel_id, 0);
+  error = bse_source_set_input (BSE_SOURCE (master), 1, source, ochannel_id);
   g_return_if_fail (error == BSE_ERROR_NONE); /* this should never fail */
 }
 
@@ -341,17 +340,14 @@ static void
 bse_master_do_add_input (BseSource *source,
 			 guint      ichannel_id,
 			 BseSource *input,
-			 guint      ochannel_id,
-			 guint      history)
+			 guint      ochannel_id)
 {
   BseMaster *master;
   
   master = BSE_MASTER (source);
   
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->add_input (source, ichannel_id,
-					      input, ochannel_id,
-					      history);
+  BSE_SOURCE_CLASS (parent_class)->add_input (source, ichannel_id, input, ochannel_id);
   
   master->chunks = g_renew (BseChunk*, master->chunks, source->n_inputs);
   master->chunks[source->n_inputs - 1] = NULL;

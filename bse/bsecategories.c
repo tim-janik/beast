@@ -109,6 +109,7 @@ centry_new (const gchar *caller,
   else
     centry = g_trash_stack_pop (&free_entries);
 
+  /* FIXME: need sorting alphabetically */
   centry->next = cat_entries;
   cat_entries = centry;
   centry->mindex = mindex - 1;
