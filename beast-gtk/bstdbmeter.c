@@ -41,15 +41,16 @@ bst_db_setup_get_default (void)
   if (!dbsetup)
     {
       static const GxkSplinePoint beast_db_points[] = {
-        {  +6, 0 },
-        {  +3, 1 },
-        {  +0, 2 },
-        {  -3, 3 },
-        {  -6, 4 },
-        { -12, 5 },
-        { -24, 6 },
-        { -48, 7 },
-        { -96, 8 },
+        { +12, 0 },
+        {  +6, 1 },
+        {  +3, 2 },
+        {  +0, 3 },
+        {  -3, 4 },
+        {  -6, 5 },
+        { -12, 6 },
+        { -24, 7 },
+        { -48, 8 },
+        { -96, 9 },
       };
       const GxkSplinePoint *points;
       guint n_points;
@@ -87,7 +88,7 @@ bst_db_setup_new (GxkSpline *db2pixel_spline,
         zindex = i;
     }
   g_return_val_if_fail (miny == 0, NULL);
-  g_return_val_if_fail (maxy > 0, NULL);
+  g_return_val_if_fail (miny < maxy, NULL);
   BstDBSetup *dbsetup = g_new0 (BstDBSetup, 1);
   dbsetup->ref_count = 1;
   dbsetup->spline = gxk_spline_copy (db2pixel_spline);
@@ -117,9 +118,12 @@ bst_db_setup_relocate (BstDBSetup     *dbsetup,
 {
   dbsetup->flipdir = flipdir != FALSE;
   guint i;
-  double maxy = dbsetup->spline->segs[0].y;
+  double miny = dbsetup->spline->segs[0].y, maxy = miny;
   for (i = 1; i < dbsetup->spline->n_segs; i++)
-    maxy = MAX (maxy, dbsetup->spline->segs[i].y);
+    {
+      miny = MIN (miny, dbsetup->spline->segs[i].y);
+      maxy = MAX (maxy, dbsetup->spline->segs[i].y);
+    }
   dbsetup->offset = offset;
   dbsetup->length = range + 1;
   dbsetup->spzoom = range / maxy;

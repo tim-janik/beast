@@ -47,7 +47,7 @@
 #define	TEXT_FONT		("Serif")
 #define	FONT_HEIGHT		((gdouble) BST_GCONFIG (snet_font_size))
 #define RGBA_BLACK		(0x000000ff)
-
+#define RGBA_INTERNAL           (0x0000ffff)
 
 /* --- signals --- */
 enum
@@ -805,9 +805,10 @@ bst_canvas_source_build (BstCanvasSource *csource)
 
   /* add text item, invoke name_changed callback to setup the text value
    */
+  guint ocolor = csource->source && bse_item_internal (csource->source) ? RGBA_INTERNAL : RGBA_BLACK;
   csource->text = gnome_canvas_item_new (group,
 					 GNOME_TYPE_CANVAS_TEXT,
-					 "fill_color", "black",
+					 "fill_color_rgba", ocolor,
 					 "anchor", GTK_ANCHOR_NORTH,
 					 "justification", GTK_JUSTIFY_CENTER,
 					 "x", TEXT_X (csource),
