@@ -115,7 +115,7 @@ bse_constant_class_init (BseConstantClass *class)
       bse_object_class_add_param (object_class, group, PARAM_VALUE + (i - 1) * 3,
 				  sfi_pspec_real (string, name, NULL,
 						  1.0, -1.0, 1.0, 0.01,
-						  SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+						  SFI_PARAM_DEFAULT ":dial"));
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("frequency_%u", i);
@@ -126,7 +126,7 @@ bse_constant_class_init (BseConstantClass *class)
 						       0, BSE_MAX_FREQUENCY_f,
 						       10.0,
 						       BSE_KAMMER_FREQUENCY_f * 2, 2, 4,
-						       SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+						       SFI_PARAM_GUI ":dial"));
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("note_%u", i);

@@ -172,13 +172,13 @@ bse_song_class_init (BseSongClass *class)
 					      BSE_DFL_MASTER_VOLUME_dB,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
-					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_VOLUME_PERC,
 			      sfi_pspec_int ("volume_perc", "Master [%]", NULL,
 					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-					     SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					     SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Timing",
 			      PROP_TPQN,
 			      sfi_pspec_int ("tpqn", "Ticks", "Number of ticks per quarter note",
@@ -197,7 +197,7 @@ bse_song_class_init (BseSongClass *class)
 					      timing.bpm,
 					      BSE_MIN_BPM, BSE_MAX_BPM,
 					      BSE_GCONFIG (step_bpm),
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					      SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Synth Postprocess",
                               PROP_POST_NET,
                               bse_param_spec_object ("pnet", "Custom Postprocess Net",

@@ -85,7 +85,7 @@ bse_effect_fine_tune_class_init (BseEffectClass *class)
                               PARAM_FINE_TUNE,
                               sfi_pspec_int ("fine_tune", "Fine tune", NULL,
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10
-					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_DEFAULT ":scale"));
 }
 
 static void

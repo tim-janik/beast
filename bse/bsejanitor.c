@@ -117,7 +117,7 @@ bse_janitor_class_init (BseJanitorClass *class)
   bse_object_class_add_param (object_class, NULL,
 			      PROP_CONNECTED,
 			      sfi_pspec_bool ("connected", "Connected", NULL,
-					      FALSE, SFI_PARAM_SERVE_GUI SFI_PARAM_READABLE));
+					      FALSE, "G:r"));
   bse_object_class_add_param (object_class, NULL,
 			      PROP_IDENT,
 			      sfi_pspec_string ("ident", "Script Identifier", NULL,

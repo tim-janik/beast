@@ -1026,7 +1026,7 @@ store_item_properties (BseItem    *item,
     {
       GParamSpec *pspec = pspecs[n];
 
-      if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_STORAGE))
+      if (sfi_pspec_check_option (pspec, "S")) /* check serializable */
         {
           GValue value = { 0, };
 
@@ -1122,7 +1122,7 @@ bse_storage_putr (BseStorage     *self,
   g_return_if_fail (BSE_IS_STORAGE (self));
   g_return_if_fail (self->wstore);
 
-  if (hints && strstr (hints, ":"SFI_PARAM_FLOAT))
+  if (hints && g_option_check (hints, "f"))     /* check float option */
     bse_storage_putf (self, vreal);
   else
     bse_storage_putd (self, vreal);

@@ -155,7 +155,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	  /* try to guess when scales are going to be usefull */
 	  if (port->minimum < 0 ||
 	      port->maximum - port->minimum > 10)
-	    hints = SFI_PARAM_GUI SFI_PARAM_HINT_SCALE;
+	    hints = SFI_PARAM_GUI ":scale";
 	  else
 	    hints = SFI_PARAM_GUI;
 	  group = "Adjustments";
@@ -184,7 +184,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	  pspec = sfi_pspec_log_scale (port->ident, port->name, NULL,
 				       dfvalue, minimum, maximum, 10.0,
 				       2 * BSE_KAMMER_FREQUENCY_f, 2, 4,
-				       SFI_PARAM_GUI SFI_PARAM_FLOAT SFI_PARAM_HINT_SCALE SFI_PARAM_HINT_DIAL);
+				       SFI_PARAM_GUI ":f:scale:dial");
 	  if (port->concert_a)
 	    {
 	      /* when defaulting to A', we probably have note-aligned port values */
@@ -214,18 +214,18 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	  group = "Adjustments";
 	  pspec = sfi_pspec_real (port->ident, port->name, NULL,
 				  port->default_value, port->minimum, port->maximum, stepping,
-				  SFI_PARAM_GUI SFI_PARAM_FLOAT SFI_PARAM_HINT_SCALE);
+				  SFI_PARAM_GUI ":f:scale");
 	}
       if (port->input)
-	sfi_pspec_add_hint (pspec, SFI_PARAM_SERVE_STORAGE);
+	sfi_pspec_add_option (pspec, "S", "+");         /* serializable */
       else /* port->output */
-	sfi_pspec_add_hint (pspec, SFI_PARAM_HINT_RDONLY);
+	sfi_pspec_add_option (pspec, "ro", "+");        /* read-only at the GUI */
       bse_object_class_add_param (object_class, group, i + 1, pspec);
       if (pspec2)
 	{
 	  g_param_spec_set_qdata (pspec2, quark_value_index, (gpointer) i);
 	  if (port->output)
-	    sfi_pspec_add_hint (pspec2, SFI_PARAM_HINT_RDONLY);
+	    sfi_pspec_add_option (pspec2, "ro", "+");   /* read-only at the GUI */
 	  bse_object_class_add_param (object_class, group, bli->n_cports + i + 1, pspec2);
 	}
     }

@@ -18,10 +18,12 @@
  */
 
 // FIXME: #include <bse/bse.idl>
+namespace Bse { // FIXME: bad workaround
+class Effect;
+Const STANDARD = ":r:w:G:S:";
+};
 
 namespace Bse {
-
-class Effect; // FIXME: bad workaround
 
 class Amplifier : Effect {
   Info    icon      = "icons/ampctrl.png";
@@ -45,31 +47,31 @@ class Amplifier : Effect {
   IStream ctrl_in2   = ("Ctrl In2", "Second control input");
   OStream audio_out  = ("Audio Out", "Amplified audio output");
   group "Audio Input" {
-    Real  alevel1    = Perc ("Input 1 [%]", "Attenuate the level of audio input 1", 100, SFI_PARAM_DEFAULT);
-    Real  alevel2    = Perc ("Input 2 [%]", "Attenuate the level of audio input 2", 100, SFI_PARAM_DEFAULT);
+    Real  alevel1    = Perc ("Input 1 [%]", "Attenuate the level of audio input 1", 100, STANDARD);
+    Real  alevel2    = Perc ("Input 2 [%]", "Attenuate the level of audio input 2", 100, STANDARD);
     Real  abalance   = Balance ("Balance", "Balance audio input levels", 0, SFI_PARAM_GUI);
   };
   group "Control Input" {
-    Real  clevel1    = Perc ("Input 1 [%]", "Attenuate the level of control input 1", 100, SFI_PARAM_DEFAULT);
-    Real  clevel2    = Perc ("Input 2 [%]", "Attenuate the level of control input 2", 100, SFI_PARAM_DEFAULT);
+    Real  clevel1    = Perc ("Input 1 [%]", "Attenuate the level of control input 1", 100, STANDARD);
+    Real  clevel2    = Perc ("Input 2 [%]", "Attenuate the level of control input 2", 100, STANDARD);
     Real  cbalance   = Balance ("Balance", "Balance control input levels", 0, SFI_PARAM_GUI);
     Bool  ctrl_mul   = Bool ("Multiply Controls",
                              "Multiply the two control inputs with each other, "
                              "rather than weighting them by balance",
-                             FALSE, SFI_PARAM_DEFAULT);
-    Bool  ctrl_exp   = Bool ("Exponential Control", "Toggle exponential and linear control response", FALSE, SFI_PARAM_DEFAULT);
+                             FALSE, STANDARD);
+    Bool  ctrl_exp   = Bool ("Exponential Control", "Toggle exponential and linear control response", FALSE, STANDARD);
   };
   group "Output" {
-    Real  ostrength  = Perc ("Control Strength", "Adjust how much the control signals affect the output volume", 100, SFI_PARAM_DEFAULT);
-    Real  base_level = Perc ("Base Volume", "Base amplification (the control signal adds up to this)", 100, SFI_PARAM_DEFAULT);
-    Real  olevel     = Perc ("Master Volume", "Output stage amplification", 100, SFI_PARAM_DEFAULT);
+    Real  ostrength  = Perc ("Control Strength", "Adjust how much the control signals affect the output volume", 100, STANDARD);
+    Real  base_level = Perc ("Base Volume", "Base amplification (the control signal adds up to this)", 100, STANDARD);
+    Real  olevel     = Perc ("Master Volume", "Output stage amplification", 100, STANDARD);
   };
   group "Compat" { // FIXME: remove properties around 0.6.0
-    Real  audio_balance   = Perc (NULL, NULL, 0, SFI_PARAM_WRITABLE); /* -> abalance */
-    Real  ctrl_balance    = Perc (NULL, NULL, 0, SFI_PARAM_WRITABLE); /* -> cbalance */
-    Real  ctrl_strength_f = Real (NULL, NULL, 1, 0, 1, 0.1, SFI_PARAM_WRITABLE); /* *100 -> ostrength */
-    Real  master_gain_f   = Real (NULL, NULL, 1, 0, 1, 0.1, SFI_PARAM_WRITABLE); /* *100 -> olevel */
-    Real  audio_gain_f    = Real (NULL, NULL, 0, 0, 1, 0.1, SFI_PARAM_WRITABLE); /* *100 -> base_level */
+    Real  audio_balance   = Perc (NULL, NULL, 0, "w"); /* -> abalance */
+    Real  ctrl_balance    = Perc (NULL, NULL, 0, "w"); /* -> cbalance */
+    Real  ctrl_strength_f = Real (NULL, NULL, 1, 0, 1, 0.1, "w"); /* *100 -> ostrength */
+    Real  master_gain_f   = Real (NULL, NULL, 1, 0, 1, 0.1, "w"); /* *100 -> olevel */
+    Real  audio_gain_f    = Real (NULL, NULL, 0, 0, 1, 0.1, "w"); /* *100 -> base_level */
   };
 };
 

@@ -133,7 +133,7 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
                               sfi_pspec_real ("fm_perc", "Input Modulation [%]",
                                               "Modulation Strength for linear frequency modulation",
                                               10.0, 0, 100.0,5.0,
-                                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+                                              SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Modulation",
                               PARAM_FM_EXP,
                               sfi_pspec_bool ("exponential_fm", "Exponential FM",
@@ -145,7 +145,7 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
                               sfi_pspec_real ("fm_n_octaves", "Octaves",
                                               "Number of octaves to be affected by exponential frequency modulation",
                                               1.0, 0, 3.0, 0.01,
-                                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+                                              SFI_PARAM_DEFAULT ":scale"));
   
   signal_notify_pcm_position = bse_object_class_add_signal (object_class, "notify_pcm_position",
                                                             G_TYPE_NONE, 2,

@@ -38,7 +38,7 @@ METHOD (BsePart, insert-note) {
   IN	= bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
   IN	= sfi_pspec_real ("velocity", "Velocity", NULL,
 			  1.0, 0, 1.0, 0.01,
-			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+			  SFI_PARAM_DEFAULT ":scale");
   OUT	= sfi_pspec_int ("id", "ID", NULL,
 			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
 }
@@ -84,7 +84,7 @@ METHOD (BsePart, insert-control) {
                                 SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_real ("value", "Value", NULL,
 			  0.0, -1.0, +1.0, 0.1,
-			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+			  SFI_PARAM_DEFAULT ":scale");
   OUT	= sfi_pspec_int ("id", "ID", NULL,
 			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_DEFAULT);
 }
@@ -132,7 +132,7 @@ METHOD (BsePart, change-note) {
   IN	= bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
   IN	= sfi_pspec_real ("velocity", "Velocity", NULL,
 			  1.0, 0, 1.0, 0.01,
-			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+			  SFI_PARAM_DEFAULT ":scale");
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 				SFI_PARAM_DEFAULT);
@@ -193,7 +193,7 @@ METHOD (BsePart, change-control) {
                                 SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_real ("value", "Value", NULL,
 			  0.0, -1.0, +1.0, 0.1,
-			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+			  SFI_PARAM_DEFAULT ":scale");
   OUT   = bse_param_spec_genum ("error", "Error", NULL,
 				BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 				SFI_PARAM_DEFAULT);

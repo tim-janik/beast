@@ -122,12 +122,12 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
 			      PROP_MIDI_CHANNEL,
 			      sfi_pspec_int ("midi_channel", "MIDI Channel", NULL,
 					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
   bse_object_class_add_param (object_class, "MIDI Instrument",
 			      PROP_N_VOICES,
 			      sfi_pspec_int ("n_voices", "Max Voices", "Maximum number of voices for simultaneous playback",
 					     16, 1, 256, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
   bse_object_class_add_param (object_class, "MIDI Instrument",
 			      PROP_SNET,
 			      bse_param_spec_object ("snet", "Synthesis Network", "The MIDI instrument synthesis network",
@@ -150,13 +150,13 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
 					      BSE_DFL_MASTER_VOLUME_dB,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
-					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_VOLUME_PERC,
 			      sfi_pspec_int ("volume_perc", "Master [%]", NULL,
 					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-					     SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					     SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Playback Settings",
 			      PROP_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,

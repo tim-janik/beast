@@ -1,3 +1,9 @@
+Sun Oct 12 01:12:15 2003  Tim Janik  <timj@gtk.org>
+
+	* fixes according to pspec hints->options change.
+
+	* bserecords.idl: fixed indentation.
+
 Sat Oct 11 22:10:18 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemain.c: bind gettext domain "bse" to BST_PATH_LOCALE.

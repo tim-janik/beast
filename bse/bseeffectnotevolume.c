@@ -88,13 +88,13 @@ bse_effect_note_volume_class_init (BseEffectClass *class)
 					     bse_dB_to_factor (0) * 100,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 					     1,
-					     SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					     SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, NULL,
                               PARAM_VOLUME_dB,
                               sfi_pspec_real ("volume_dB", "Volume [dB]", NULL,
 					      0,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_GUI ":dial"));
 }
 
 static void

@@ -232,7 +232,7 @@ METHOD (BseSong, synthesize-note) {
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
   IN    = sfi_pspec_real ("velocity", "Velocity", NULL,
 			  1.0, 0, 1.0, 0.01,
-			  SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+			  SFI_PARAM_DEFAULT ":scale");
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)

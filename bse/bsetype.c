@@ -137,7 +137,7 @@ bse_param_spec_enum (const gchar    *name,
     }
 
   pspec = g_param_spec_enum (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), enum_type, default_value, 0);
-  sfi_pspec_set_hints (pspec, hints);
+  sfi_pspec_set_options (pspec, hints);
 
   return pspec;
 }

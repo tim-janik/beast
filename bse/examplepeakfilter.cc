@@ -60,17 +60,17 @@ PeakFilter::class_init (CxxBaseClass *klass)
   /* register properties */
   klass->add ("Peak Settings", PROP_FREQ,
               bse_param_spec_freq_simple ("freq", _("Frequency"), _("Frequency around which the peak is centered"),
-                                          SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
+                                          SFI_PARAM_DEFAULT "f:dial"));
   klass->add ("Peak Settings", PROP_GAIN,
               sfi_pspec_real ("gain", _("Gain [dB]"), _("Specify the peak level in decibell"),
                               3, 0, +48., 3,
-                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+                              SFI_PARAM_DEFAULT ":dial"));
   klass->add ("Filter Settings", PROP_QUALITY,
               sfi_pspec_real ("quality", _("Quality"),
                               _("The quality adjust how much neighbouring frequencies are affected "
                                 "by altering the peak frequency"),
                               1, 0.01, 10.0, 1,
-                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+                              SFI_PARAM_DEFAULT ":dial"));
   klass->add_ichannel ("Audio In", "Audio input to be filtered", ICHANNEL_MONO);
   klass->add_ochannel ("Audio Out", "Filtered audio output", OCHANNEL_FILTERED);
 }

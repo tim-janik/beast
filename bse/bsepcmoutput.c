@@ -121,13 +121,13 @@ bse_pcm_output_class_init (BsePcmOutputClass *class)
 					      BSE_DFL_MASTER_VOLUME_dB,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
-					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_PERC,
 			      sfi_pspec_int ("master_volume_perc", "Master [%]", NULL,
 					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-					     1, SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					     1, SFI_PARAM_GUI ":dial"));
   
   ichannel_id = bse_source_class_add_ichannel (source_class, "Left Audio In", "Left channel input");
   g_assert (ichannel_id == BSE_PCM_OUTPUT_ICHANNEL_LEFT);

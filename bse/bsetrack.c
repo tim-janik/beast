@@ -139,13 +139,13 @@ bse_track_class_init (BseTrackClass *class)
 			      PROP_N_SYNTH_VOICES,
 			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
 					     8, 1, 256, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
   bse_object_class_add_param (object_class, "MIDI Instrument",
                               PROP_MIDI_CHANNEL,
                               sfi_pspec_int ("midi_channel", "MIDI Channel",
                                              "Midi channel assigned to this track, 0 uses private per-track channel",
                                              0, 0, BSE_MIDI_MAX_CHANNELS, 1,
-                                             SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
+                                             SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
   bse_object_class_add_param (object_class, "Synth Postprocess",
 			      PROP_POST_NET,
 			      bse_param_spec_object ("pnet", "Custom Postprocess Net",

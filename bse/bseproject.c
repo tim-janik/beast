@@ -150,7 +150,7 @@ bse_project_class_init (BseProjectClass *class)
   bse_object_class_add_param (object_class, "State",
                               PARAM_DIRTY,
                               sfi_pspec_bool ("dirty", NULL, "Whether project needs saving",
-                                              FALSE, SFI_PARAM_READABLE));
+                                              FALSE, "r"));
 
   signal_state_changed = bse_object_class_add_signal (object_class, "state-changed",
 						      G_TYPE_NONE,

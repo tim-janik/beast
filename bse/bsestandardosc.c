@@ -144,11 +144,11 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      PROP_PHASE,
 			      sfi_pspec_real ("phase", "Phase", NULL,
 					      0.0, -180.0, 180.0, 5.0,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
+					      SFI_PARAM_DEFAULT ":f:dial"));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PROP_BASE_FREQ,
 			      bse_param_spec_freq_simple ("base_freq", "Frequency", NULL,
-							  SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
+							  SFI_PARAM_DEFAULT ":f:dial"));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PROP_BASE_NOTE,
 			      bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
@@ -156,13 +156,13 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      PROP_FINE_TUNE,
 			      sfi_pspec_int ("fine_tune", "Fine Tune", NULL,
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
-					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					     SFI_PARAM_DEFAULT ":f:dial"));
   bse_object_class_add_param (object_class, "Modulation",
 			      PROP_FM_PERC,
 			      sfi_pspec_real ("fm_perc", "Input Modulation [%]",
 					      "Strength of linear frequency modulation",
 					      0.0, 0.0, 100.0, 5.0,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE SFI_PARAM_FLOAT));
+					      SFI_PARAM_DEFAULT ":f:scale"));
   bse_object_class_add_param (object_class, "Modulation",
 			      PROP_FM_EXP,
 			      sfi_pspec_bool ("exponential_fm", "Exponential FM",
@@ -174,27 +174,27 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      sfi_pspec_real ("fm_n_octaves", "Octaves",
 					      "Number of octaves to be affected by exponential frequency modulation",
 					      1.0, 0, 5.0, 0.01,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE SFI_PARAM_FLOAT));
+					      SFI_PARAM_DEFAULT ":f:scale"));
   bse_object_class_add_param (object_class, "Modulation",
 			      PROP_SELF_PERC,
 			      sfi_pspec_real ("self_perc", "Self Modulation [%]",
 					      "Strength of self modulation",
 					      0.0, 0.0, 100.0, 5.0,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE SFI_PARAM_FLOAT));
+					      SFI_PARAM_DEFAULT ":f:scale"));
   bse_object_class_add_param (object_class, "Pulse Modulation",
 			      PROP_PULSE_WIDTH,
 			      sfi_pspec_real ("pulse_width", "Pulse Width",
 					      "Proportion of the positive component duration of the pulse wave form "
 					      "(Pulse has to be selected as wave form for this to take effect)",
 					      50.0, 0.0, 100.0, 5.0,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
+					      SFI_PARAM_DEFAULT ":f:dial"));
   bse_object_class_add_param (object_class, "Pulse Modulation",
 			      PROP_PULSE_MOD_PERC,
 			      sfi_pspec_real ("pulse_mod_perc", "Pulse Modulation [%]",
 					      "Strength of pulse wisth modulation input "
 					      "(Pulse has to be selected as wave form for this to take effect)",
 					      0.0, 0.0, 100.0, 5.0,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
+					      SFI_PARAM_DEFAULT ":f:dial"));
   
   ichannel = bse_source_class_add_ichannel (source_class, "Freq In", "Oscillating Frequency Input");
   g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_FREQ);

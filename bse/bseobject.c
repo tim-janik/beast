@@ -142,7 +142,7 @@ bse_object_class_init (BseObjectClass *class)
 			      PROP_UNAME,
 			      sfi_pspec_string ("uname", "Name", "Unique name of this object",
 						NULL,
-						SFI_PARAM_GUI SFI_PARAM_LAX_VALIDATION
+						SFI_PARAM_GUI ":lax-validation"
 						/* watch out, unames are specially
 						 * treated within the various
 						 * objects, specifically BseItem

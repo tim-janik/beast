@@ -141,7 +141,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 						   BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f - FREQ_DELTA,
 						   5.0,
 						   BSE_KAMMER_FREQUENCY_f * 2, 2, 4,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+						   SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, _("Center Frequency"),
 			      PROP_NOTE,
 			      sfi_pspec_note ("note", _("Note"), NULL,
@@ -153,12 +153,12 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 			      PROP_FINE_TUNE,
 			      sfi_pspec_int ("fine_tune", "Fine Tune", NULL,
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
-					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					     SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, _("Emphasis"),
 			      PROP_GAIN,
 			      sfi_pspec_real ("gain", _("Gain [dB]"), NULL,
 					      3, -48., +48., 3,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, _("Emphasis"),
 			      PROP_NORM_TYPE,
 			      bse_param_spec_genum ("norm_type", _("Norm Type"),
@@ -172,7 +172,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 			      sfi_pspec_real ("fm_perc", "Input Modulation [%]",
 					      _("Strength of linear frequency modulation"),
 					      0, 0.0, 100.0, 5.0,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					      SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_FM_EXP,
 			      sfi_pspec_bool ("exponential_fm", "Exponential FM",
@@ -184,13 +184,13 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 			      sfi_pspec_real ("fm_n_octaves", "Octaves",
 					      _("Number of octaves to be affected by exponential frequency modulation"),
 					      1.0, 0, 5.0, 0.01,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					      SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_GAIN_PERC,
 			      sfi_pspec_real ("gain_perc", _("Gain Modulation [%]"),
 					      _("Strength of gain modulation"),
 					      0.0, 0.0, 100.0, 5.0,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					      SFI_PARAM_DEFAULT ":scale"));
   
   channel_id = bse_source_class_add_ichannel (source_class, "Audio In", _("Unfiltered Audio Signal"));
   g_assert (channel_id == BSE_BIQUAD_FILTER_ICHANNEL_AUDIO);

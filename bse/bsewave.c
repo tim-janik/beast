@@ -139,18 +139,15 @@ bse_wave_class_init (BseWaveClass *class)
   bse_object_class_add_param (object_class, "Locator",
 			      PARAM_LOCATOR_SET,
 			      sfi_pspec_bool ("locator_set", "Locator Set", NULL,
-					      FALSE,
-					      SFI_PARAM_SERVE_GUI SFI_PARAM_READABLE));
+					      FALSE, "G:r"));
   bse_object_class_add_param (object_class, "Locator",
 			      PARAM_FILE_NAME,
 			      sfi_pspec_string ("file_name", "File Name", NULL,
-						NULL,
-						SFI_PARAM_SERVE_GUI SFI_PARAM_READABLE));
+						NULL, "G:r"));
   bse_object_class_add_param (object_class, "Locator",
 			      PARAM_WAVE_NAME,
 			      sfi_pspec_string ("wave_name", "Wave Name", NULL,
-						NULL, 
-						SFI_PARAM_SERVE_GUI SFI_PARAM_READABLE));
+						NULL, "G:r"));
 }
 
 static void

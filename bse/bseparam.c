@@ -45,7 +45,7 @@ bse_param_spec_object (const gchar    *name,
   g_return_val_if_fail (g_type_is_a (object_type, BSE_TYPE_OBJECT), NULL);
   
   pspec = g_param_spec_object (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), object_type, 0);
-  sfi_pspec_set_hints (pspec, hints);
+  sfi_pspec_set_options (pspec, hints);
   
   return pspec;
 }
@@ -95,7 +95,7 @@ bse_param_spec_boxed (const gchar *name,
       sfi_boxed_get_sequence_info (boxed_type))
     {
       pspec = g_param_spec_boxed (name, nick, blurb, boxed_type, 0);
-      sfi_pspec_set_hints (pspec, hints);
+      sfi_pspec_set_options (pspec, hints);
     }
   else
     g_warning ("boxed parameter \"%s\" of type `%s' can't be converted to record or sequence",
