@@ -1,3 +1,12 @@
+Sun Jan  9 13:42:01 2000  Tim Janik  <timj@gtk.org>
+
+	* bsegconfig.c (bse_gconfig_do_default_revert): 
+	(bse_gconfig_revert): walk *all* classes when reverting the parameters,
+	not only the topmost one.
+
+	* bseobject.c (bse_object_do_set_name): don't pass destroy notifier when
+	name == NULL.
+
 Sun Jan  9 12:49:29 2000  Tim Janik  <timj@gtk.org>
 
 	* bsegconfig.[hc]: moved the BseGConfig object from bseglobals.[hc].

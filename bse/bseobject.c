@@ -351,7 +351,7 @@ static void
 bse_object_do_set_name (BseObject   *object,
 			const gchar *name)
 {
-  g_datalist_id_set_data_full (&object->datalist, _bse_quark_name, g_strdup (name), g_free);
+  g_datalist_id_set_data_full (&object->datalist, _bse_quark_name, g_strdup (name), name ? g_free : NULL);
 }
 
 static void

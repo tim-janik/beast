@@ -365,12 +365,17 @@ bse_gconfig_revert (BseGConfig *gconf)
   BSE_GCONFIG_GET_CLASS (gconf)->revert (gconf);
   
   class = BSE_OBJECT_GET_CLASS (gconf);
-  for (i = 0; i < class->n_params; i++)
+  do
     {
-      BseParamSpec *pspec = class->param_specs[i];
-      
-      bse_object_param_changed (BSE_OBJECT (gconf), pspec->any.name);
+      for (i = 0; i < class->n_params; i++)
+	{
+	  BseParamSpec *pspec = class->param_specs[i];
+	  
+	  bse_object_param_changed (BSE_OBJECT (gconf), pspec->any.name);
+	}
+      class = bse_type_class_peek_parent (class);
     }
+  while (class);
   
   bse_object_unref (gconf);
 }
@@ -400,14 +405,19 @@ bse_gconfig_do_default_revert (BseGConfig *gconf)
   object = BSE_OBJECT (gconf);
 
   class = BSE_OBJECT_GET_CLASS (gconf);
-  for (i = 0; i < class->n_params; i++)
+  do
     {
-      BseParam param = { NULL };
-      BseParamSpec *pspec = class->param_specs[i];
-
-      bse_param_init_default (&param, pspec);
-
-      bse_object_set_param (object, &param);
-      bse_param_free_value (&param);
+      for (i = 0; i < class->n_params; i++)
+	{
+	  BseParam param = { NULL };
+	  BseParamSpec *pspec = class->param_specs[i];
+	  
+	  bse_param_init_default (&param, pspec);
+	  
+	  bse_object_set_param (object, &param);
+	  bse_param_free_value (&param);
+	}
+      class = bse_type_class_peek_parent (class);
     }
+  while (class);
 }
