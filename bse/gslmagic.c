@@ -67,7 +67,8 @@ static guint	bfile_get_size		(BFile		*bfile);
 /* --- functions --- */
 static gint
 magic_cmp (gconstpointer p1,
-	   gconstpointer p2)
+	   gconstpointer p2,
+           gpointer      data)
 {
   const GslMagic *m1 = p1;
   const GslMagic *m2 = p2;
@@ -124,9 +125,9 @@ gsl_magic_list_brute_match (SfiRing     *magic_list,
       bfile_close (&bfile);
     }
   if (ext_matches)
-    *ext_matches = sfi_ring_sort (*ext_matches, magic_cmp);
+    *ext_matches = sfi_ring_sort (*ext_matches, magic_cmp, NULL);
   if (other_matches)
-    *other_matches = sfi_ring_sort (*other_matches, magic_cmp);
+    *other_matches = sfi_ring_sort (*other_matches, magic_cmp, NULL);
 }
 
 GslMagic*

@@ -116,7 +116,8 @@ bse_ssequencer_job_stop_super (BseSuper *super)
 
 static gint
 jobs_cmp (gconstpointer a,
-	  gconstpointer b)
+	  gconstpointer b,
+          gpointer      data)
 {
   const BseSSequencerJob *job1 = a;
   const BseSSequencerJob *job2 = b;
@@ -189,9 +190,9 @@ bse_ssequencer_queue_jobs_internal (SfiRing *jobs,
 	  if (job->type == BSE_SSEQUENCER_JOB_ADD)
 	    job->stamp = MAX (job->stamp, stamp);
 	}
-      jobs = sfi_ring_sort (jobs, jobs_cmp);
+      jobs = sfi_ring_sort (jobs, jobs_cmp, NULL);
       BSE_SEQUENCER_LOCK ();
-      self->jobs = sfi_ring_merge_sorted (self->jobs, jobs, jobs_cmp);
+      self->jobs = sfi_ring_merge_sorted (self->jobs, jobs, jobs_cmp, NULL);
       if (process_now)
 	bse_ssequencer_handle_jobs_SL (gsl_tick_stamp ());
       BSE_SEQUENCER_UNLOCK ();

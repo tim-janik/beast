@@ -621,16 +621,16 @@ bse_plugin_path_list_files (void)
   SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
 
   ring1 = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.so", G_FILE_TEST_IS_REGULAR);
-  ring1 = sfi_ring_sort (ring1, (GCompareFunc) strcmp);
+  ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
 
   if (BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
     ring2 = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.so", G_FILE_TEST_IS_REGULAR);
-  ring2 = sfi_ring_sort (ring2, (GCompareFunc) strcmp);
+  ring2 = sfi_ring_sort (ring2, (SfiCompareFunc) strcmp, NULL);
 
   /* allow file names in plugin_path */
   if (BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
     ring3 = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), NULL, G_FILE_TEST_IS_REGULAR);
-  ring3 = sfi_ring_sort (ring3, (GCompareFunc) strcmp);
+  ring3 = sfi_ring_sort (ring3, (SfiCompareFunc) strcmp, NULL);
 
   return sfi_ring_concat (ring1, sfi_ring_concat (ring2, ring3));
 }

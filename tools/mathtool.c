@@ -692,7 +692,8 @@ print_int_ring (SfiRing *ring)
 
 static gint
 ints_cmp (gconstpointer d1,
-	  gconstpointer d2)
+	  gconstpointer d2,
+          gpointer      data)
 {
   gint i1 = (gint) d1;
   gint i2 = (gint) d2;
@@ -731,7 +732,7 @@ ring_test (void)
 	ring = sfi_ring_append (ring, (gpointer) (data_array[n][i]));
       g_print ("source: ");
       print_int_ring (ring);
-      ring = sfi_ring_sort (ring, ints_cmp);
+      ring = sfi_ring_sort (ring, ints_cmp, NULL);
       g_print (" sorted: ");
       print_int_ring (ring);
       g_print ("\n");

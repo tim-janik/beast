@@ -235,11 +235,11 @@ bse_script_path_list_files (void)
   SfiRing *ring1, *ring2 = NULL;
 
   ring1 = sfi_file_crawler_list_files (BSE_PATH_SCRIPTS, "*.scm", G_FILE_TEST_IS_REGULAR);
-  ring1 = sfi_ring_sort (ring1, (GCompareFunc) strcmp);
+  ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
 
   if (BSE_GCONFIG (script_path) && BSE_GCONFIG (script_path)[0])
     ring2 = sfi_file_crawler_list_files (BSE_GCONFIG (script_path), "*.scm", G_FILE_TEST_IS_REGULAR);
-  ring2 = sfi_ring_sort (ring2, (GCompareFunc) strcmp);
+  ring2 = sfi_ring_sort (ring2, (SfiCompareFunc) strcmp, NULL);
 
   return sfi_ring_concat (ring1, ring2);
 }

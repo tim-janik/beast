@@ -943,7 +943,8 @@ _bse_midi_init (void)
 
 static gint
 events_cmp (gconstpointer a,
-            gconstpointer b)
+            gconstpointer b,
+            gpointer      data)
 {
   const BseMidiEvent *e1 = (const BseMidiEvent *) a;
   const BseMidiEvent *e2 = (const BseMidiEvent *) b;
@@ -969,7 +970,7 @@ bse_midi_receiver_farm_distribute_event (BseMidiEvent *event)
   
   BSE_MIDI_RECEIVER_LOCK (self);
   for (vector<BseMidiReceiver*>::iterator it = farm_residents.begin(); it != farm_residents.end(); it++)
-    (*it)->events = sfi_ring_insert_sorted ((*it)->events, bse_midi_copy_event (event), events_cmp);
+    (*it)->events = sfi_ring_insert_sorted ((*it)->events, bse_midi_copy_event (event), events_cmp, NULL);
   BSE_MIDI_RECEIVER_UNLOCK (self);
 }
 
@@ -1007,7 +1008,7 @@ bse_midi_receiver_push_event (BseMidiReceiver *self,
   g_return_if_fail (event != NULL);
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  self->events = sfi_ring_insert_sorted (self->events, event, events_cmp);
+  self->events = sfi_ring_insert_sorted (self->events, event, events_cmp, NULL);
   BSE_MIDI_RECEIVER_UNLOCK (self);
 }
 

@@ -671,17 +671,17 @@ bse_ladspa_plugin_path_list_files (void)
   const gchar *paths;
 
   ring1 = sfi_file_crawler_list_files (BSE_PATH_LADSPA, "*.so", 0);
-  ring1 = sfi_ring_sort (ring1, (GCompareFunc) strcmp);
+  ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
 
   paths = g_getenv ("LADSPA_PATH");
   if (paths && paths[0])
     ring2 = sfi_file_crawler_list_files (paths, "*.so", 0);
-  ring2 = sfi_ring_sort (ring2, (GCompareFunc) strcmp);
+  ring2 = sfi_ring_sort (ring2, (SfiCompareFunc) strcmp, NULL);
 
   paths = BSE_GCONFIG (ladspa_path);
   if (paths && paths[0])
     ring3 = sfi_file_crawler_list_files (paths, "*.so", 0);
-  ring3 = sfi_ring_sort (ring3, (GCompareFunc) strcmp);
+  ring3 = sfi_ring_sort (ring3, (SfiCompareFunc) strcmp, NULL);
 
   ring2 = sfi_ring_concat (ring2, ring3);
 
