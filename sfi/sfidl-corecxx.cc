@@ -62,6 +62,17 @@ Qualified (const string &str)
 }
 #define cQualified(s)    Qualified (s).c_str()
 
+string
+CodeGeneratorModule::typeArg (const std::string &type)
+{
+  string tname = Qualified (type);
+  switch (parser.typeOf (type))
+    {
+    case OBJECT:        return g_intern_string (string (tname + "*").c_str());
+    default:            return CodeGeneratorCxxBase::typeArg (type);
+    }
+}
+
 const gchar*
 CodeGeneratorModule::TypeRef (const string &type)
 {
@@ -209,6 +220,12 @@ CodeGeneratorModule::pspec_constructor (const Param &param)
     }
 }
 
+static const char*
+abs_cxx_type_name (const string &dest)
+{
+  return g_intern_string (("::" + dest).c_str());
+}
+
 const char*
 CodeGeneratorModule::func_value_set_param (const Param &param)
 {
@@ -222,18 +239,12 @@ CodeGeneratorModule::func_value_set_param (const Param &param)
     case CHOICE:        return "g_value_set_enum";
     case BBLOCK:        return "::Sfi::BBlock::value_set";
     case FBLOCK:        return "::Sfi::FBlock::value_set";
-    case SEQUENCE:      g_assert_not_reached(); return "sfi_value_set_seq";
-    case RECORD:        g_assert_not_reached(); return "sfi_value_set_rec";
+    case SEQUENCE:      
+    case RECORD:        return g_intern_string (string (abs_cxx_type_name (param.type) + (string)"::value_set").c_str());
     case SFIREC:        return "sfi_value_set_rec";
     case OBJECT:        return "g_value_set_object";
     default:            return "*** ERROR ***";
     }
-}
-
-static const char*
-abs_cxx_type_name (const string &dest)
-{
-  return g_intern_string (string(string ("::") + dest).c_str());
 }
 
 string
@@ -251,8 +262,8 @@ CodeGeneratorModule::func_value_get_param (const Param &param,
     case BBLOCK:        return "::Sfi::BBlock::value_get";
     case FBLOCK:        return "::Sfi::FBlock::value_get";
     case SFIREC:        return "::Sfi::Rec::value_get";
-    case SEQUENCE:      return "sfi_value_get_seq";
-    case RECORD:        g_assert_not_reached(); return "sfi_value_get_rec";
+    case SEQUENCE:      
+    case RECORD:        return string (abs_cxx_type_name (param.type)) + "::value_get";
     case OBJECT:
       if (dest != "")
         return "("+ dest +"*) ::Bse::g_value_get_object< "+ dest +"Base*>";
@@ -317,13 +328,13 @@ CodeGeneratorModule::generate_procedures (const std::string          &outer_nspa
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", ptFullName.c_str());
       
       /* return type */
-      printf ("  static %s exec (", TypeRef (mi->result.type));
+      printf ("  static %s exec (", cTypeRet (mi->result.type));
       /* args */
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
         {
           if (ai != mi->params.begin())
             printf (", ");
-          printf ("%s %s", TypeRef (ai->type), ai->name.c_str());
+          printf ("%s %s", cTypeArg (ai->type), ai->name.c_str());
         }
       printf (");\n");
       
@@ -334,7 +345,7 @@ CodeGeneratorModule::generate_procedures (const std::string          &outer_nspa
       printf ("  {\n");
       printf ("    try {\n");
       if (!is_void)
-        printf ("      %s __return_value =\n", TypeRef (mi->result.type));
+        printf ("      %s __return_value =\n", cTypeRet (mi->result.type));
       printf ("        exec (\n");
       int i = 0;
       for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
@@ -431,74 +442,11 @@ CodeGeneratorModule::run ()
 
   /* records and sequences */
 
-  /*
-   * FIXME: we follow the declaration order of the idl file for generating records and sequences.
-   * This is quite good, as if no prototypes are used, we won't refer to undefined types.
-   * However, this breaks with prototypes.
-   */
   NamespaceHelper nsh(stdout);
-  printf ("\n/* record/sequence types */\n");
 
-  /* prototypes for records */
-  for (vector<Record>::const_iterator ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
-  {
-    if (parser.fromInclude (ri->name)) continue;
-
-    nsh.setFromSymbol(ri->name);
-    string name = nsh.printableForm (ri->name);
-
-    printf("\n");
-    printf("class %s;\n", name.c_str());
-    printf("typedef Bse::SmartPtr<%s,CountablePointer<RefCountable> > %sPtr;\n",
-	name.c_str(), name.c_str());
-    printf("typedef Bse::SmartPtr<const %s,CountablePointer<const RefCountable> > %sCPtr;\n",
-	name.c_str(), name.c_str());
-  }
-
-  /* records */
-  bool first = true;
-  for(vector<string>::const_iterator ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
-    {
-      if (parser.fromInclude (*ti)) continue;
-
-      if (parser.isRecord (*ti) || parser.isSequence (*ti))
-	{
-	  if(!first) printf("\n");
-	  first = false;
-	}
-
-      if (parser.isRecord (*ti))
-	{
-	  const Record& rdef = parser.findRecord (*ti);
-
-	  nsh.setFromSymbol(rdef.name);
-	  string name = nsh.printableForm (rdef.name);
-
-	  printf("class %s : public RefCountable {\n", name.c_str());
-	  printf("public:\n");
-	  for (vector<Param>::const_iterator pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++)
-	    {
-	      printf("  %s %s;\n", TypeField(pi->type), pi->name.c_str());
-	    }
-	  printf("  static %sPtr _from_rec (SfiRec *rec) { return 0; }\n", name.c_str());
-	  printf("  static SfiRec *_to_rec (%sPtr ptr) { return 0; }\n", name.c_str());
-	  printf("};\n");
-	}
-      if (parser.isSequence (*ti))
-	{
-	  const Sequence& sdef = parser.findSequence (*ti);
-
-	  printf("//%s\n", sdef.name.c_str());
-#if 0
-	  string name = makeLowerName (sdef.name);
-	  // int f = 0;
-
-	  if (options.generateIdlLineNumbers)
-	    printf("#line %u \"%s\"\n", sdef.content.line, parser.fileName().c_str());
-	  printf("  %s_content = %s;\n", name.c_str(), makeParamSpec (sdef.content).c_str());
-#endif
-	}
-    }
+  printRecSeqForwardDecl (nsh);
+  printRecSeqDefinition (nsh);
+  printRecSeqImpl (nsh);
 
   nsh.leaveAll();
 

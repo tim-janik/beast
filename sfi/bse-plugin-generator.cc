@@ -65,6 +65,15 @@ main (int   argc,
   else
     options.sfidlName = PRG_NAME;
 
+  /* FIXME: keep in sync with sfidl-options.cc */
+  options.target = Options::TARGET_MODULE;
+  /* configure for module generation */
+  options.doImplementation = true;
+  options.doInterface = false;
+  options.doHeader = true;
+  options.doSource = false;
+  options.generateBoxedTypes = true;
+
   /* roll own option parsing as Options is sfidl specific */
   for (i = 1; i < argc; i++)
     {

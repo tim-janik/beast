@@ -1,3 +1,15 @@
+Tue Jan 20 23:23:28 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bse-plugin-generator.cc sfidl-options.cc: Set generateBoxedTypes
+	to true, as the generated code is supposed to be running within the
+	core.
+
+	* sfidl-cxx.*: Moved the records/sequences into CodeGeneratorCxxBase
+	to allow them to be accessed by the C++ core binding.
+
+	* sfidl-module.cc sfidl-module.h: Start making records/sequences
+	available to plugins. Not complete yet.
+
 Tue Jan 20 15:35:46 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiparams.[hc]: added sfi_boxed_type_set_fields() and

@@ -30,6 +30,7 @@ namespace Sfidl {
 
 class CodeGeneratorModule : public CodeGeneratorCxxBase {
 protected:
+  std::string typeArg (const std::string &type);
   const gchar* TypeRef (const std::string &type);
   std::string createTypeCode (const std::string& type, const std::string& name,
                               TypeCodeModel model);

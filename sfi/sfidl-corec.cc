@@ -478,6 +478,8 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 	      return "SfiRec*";
 	    if (model == MODEL_VCALL_CONV) 
 	      return makeLowerName (type)+"_to_rec ("+name+")";
+	    if (model == MODEL_VCALL_CFREE) 
+	      return "sfi_rec_unref ("+name+")";
 	    if (model == MODEL_VCALL_RET) 
 	      return "SfiRec*";
 	    if (model == MODEL_VCALL_RCONV) 
@@ -492,7 +494,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 	      if (model == MODEL_TO_VALUE)
 		return "sfi_value_choice_genum ("+name+", "+makeGTypeName(type)+")";
 	      if (model == MODEL_FROM_VALUE) 
-		return "sfi_choice2enum (sfi_value_get_choice ("+name+"), "+makeGTypeName(type)+")";
+		return "(" + typeField(type) + ") sfi_choice2enum (sfi_value_get_choice ("+name+"), "+makeGTypeName(type)+")";
 	    }
 	  else /* client code */
 	    {

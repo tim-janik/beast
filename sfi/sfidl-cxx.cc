@@ -133,10 +133,10 @@ string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std:
       case RECORD:
 	switch (model)
 	  {
-	    case MODEL_TO_VALUE:    return "sfi_value_new_take_rec ("+type+"::_to_rec ("+name+"))";
-	    case MODEL_FROM_VALUE:  return type + "::_from_rec (sfi_value_get_rec ("+name+"))";
-	    case MODEL_VCALL_CONV:  return type + "::_to_rec ("+name+")";
-	    case MODEL_VCALL_RCONV: return type + "::_from_rec ("+name+")";
+	    case MODEL_TO_VALUE:    return "sfi_value_new_take_rec ("+type+"::to_rec ("+name+"))";
+	    case MODEL_FROM_VALUE:  return type + "::from_rec (sfi_value_get_rec ("+name+"))";
+	    case MODEL_VCALL_CONV:  return type + "::to_rec ("+name+")";
+	    case MODEL_VCALL_RCONV: return type + "::from_rec ("+name+")";
 	    case MODEL_VCALL_RFREE: return "";
 	    default: ;
 	  }
@@ -144,10 +144,10 @@ string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std:
       case SEQUENCE:
 	switch (model)
 	  {
-	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+name+"._to_seq ())";
-	    case MODEL_FROM_VALUE:  return type + "::_from_seq (sfi_value_get_seq ("+name+"))";
-	    case MODEL_VCALL_CONV:  return type + "::_to_seq ("+name+")";
-	    case MODEL_VCALL_RCONV: return type + "::_from_seq ("+name+")";
+	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+name+".to_seq ())";
+	    case MODEL_FROM_VALUE:  return type + "::from_seq (sfi_value_get_seq ("+name+"))";
+	    case MODEL_VCALL_CONV:  return type + "::to_seq ("+name+")";
+	    case MODEL_VCALL_RCONV: return type + "::from_seq ("+name+")";
 	    case MODEL_VCALL_RFREE: return "";
 	    default: ;
 	  }
@@ -170,10 +170,222 @@ string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std:
   return CodeGeneratorCBase::createTypeCode (type, name, model);
 }
 
-void CodeGeneratorCxx::run ()
+void CodeGeneratorCxxBase::printRecSeqForwardDecl (NamespaceHelper& nspace)
 {
   vector<Sequence>::const_iterator si;
   vector<Record>::const_iterator ri;
+
+  printf ("\n/* record/sequence forward declarations */\n");
+
+  /* forward declarations for records */
+  for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+    {
+      if (parser.fromInclude (ri->name)) continue;
+
+      nspace.setFromSymbol(ri->name);
+      string name = nspace.printableForm (ri->name);
+
+      printf("\n");
+      printf("class %s;\n", name.c_str());
+      printf("typedef Sfi::RecordHandle<%s> %sHandle;\n", name.c_str(), name.c_str());
+    }
+
+  /* forward declarations for sequences */
+  for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+    {
+      if (parser.fromInclude (si->name)) continue;
+
+      nspace.setFromSymbol(si->name);
+      string name = nspace.printableForm (si->name);
+
+      printf("\n");
+      printf("class %s;\n", name.c_str());
+    }
+
+}
+
+void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
+{
+  vector<Param>::const_iterator pi;
+
+  /* sequences */
+  for (vector<Sequence>::const_iterator si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+    {
+      if (parser.fromInclude (si->name)) continue;
+
+      nspace.setFromSymbol(si->name);
+
+      /* FIXME: need optimized refcounted copy-on-write sequences as base types */
+
+      string name = nspace.printableForm (si->name);
+      string content = typeField (si->content.type);
+
+      printf("\n");
+      printf("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
+      printf("public:\n");
+      /* TODO: make this a constructor? */
+      printf("  static %s from_seq (SfiSeq *seq);\n", cTypeRet (si->name));
+      printf("  SfiSeq *to_seq () const;\n");
+      printf("  static %s value_get (const GValue *value);", cTypeRet (si->name));
+      printf("  static void value_set (GValue *value, %s self);", cTypeArg (si->name));
+      printf("};\n");
+    }
+
+  /* records */
+  for (vector<Record>::const_iterator ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+    {
+      if (parser.fromInclude (ri->name)) continue;
+
+      nspace.setFromSymbol(ri->name);
+      string name = nspace.printableForm (ri->name);
+
+      printf("\n");
+      printf("class %s {\n", name.c_str());
+      printf("public:\n");
+      for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+	{
+	  printf("  %s %s;\n", cTypeField (pi->type), pi->name.c_str());
+	}
+      printf("  static %s from_rec (SfiRec *rec);\n", cTypeRet(ri->name));
+      printf("  static SfiRec *to_rec (%s ptr);\n", cTypeArg(ri->name));
+      printf("  static %s value_get (const GValue *value);", cTypeRet(ri->name));
+      printf("  static void value_set (GValue *value, %s self);", cTypeArg (ri->name));
+      printf("};\n");
+    }
+}
+
+void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
+{
+  vector<Sequence>::const_iterator si;
+  vector<Record>::const_iterator ri;
+  vector<Param>::const_iterator pi;
+
+  /* sequence members */
+  for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+    {
+      if (parser.fromInclude (si->name)) continue;
+
+      string name = si->name;
+
+      string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
+      printf("%s\n", cTypeRet (si->name));
+      printf("%s::from_seq (SfiSeq *sfi_seq)\n", name.c_str());
+      printf("{\n");
+      printf("  %s seq;\n", cTypeRet (si->name));
+      printf("  guint i, length;\n");
+      printf("\n");
+      printf("  g_return_val_if_fail (sfi_seq != NULL, seq);\n");
+      printf("\n");
+      printf("  length = sfi_seq_length (sfi_seq);\n");
+      printf("  seq.resize (length);\n");
+      printf("  for (i = 0; i < length; i++)\n");
+      printf("  {\n");
+      printf("    GValue *element = sfi_seq_get (sfi_seq, i);\n");
+      printf("    seq[i] = %s;\n", elementFromValue.c_str());
+      printf("  }\n");
+      printf("  return seq;\n");
+      printf("}\n\n");
+
+      /* FIXME: ugly code (*this[i]) */
+      string elementToValue = createTypeCode (si->content.type, "(*this)[i]", MODEL_TO_VALUE);
+      printf("SfiSeq *\n");
+      printf("%s::to_seq () const\n", name.c_str());
+      printf("{\n");
+      printf("  SfiSeq *sfi_seq = sfi_seq_new ();\n");
+      printf("  for (guint i = 0; i < length(); i++)\n");
+      printf("  {\n");
+      printf("    GValue *element = %s;\n", elementToValue.c_str());
+      printf("    sfi_seq_append (sfi_seq, element);\n");
+      printf("    sfi_value_free (element);\n");        // FIXME: couldn't we have take_append
+      printf("  }\n");
+      printf("  return sfi_seq;\n");
+      printf("}\n\n");
+
+      /* FIXME: client only, core needs type system support */
+      printf("%s\n", cTypeRet (si->name));
+      printf("%s::value_get (const GValue *value)", name.c_str());
+      printf("{\n");
+      printf("  SfiSeq *sfi_seq = sfi_value_get_seq (value);\n");
+      printf("  if (sfi_seq)\n");
+      printf("    return from_seq (sfi_seq);\n");
+      printf("  else\n");
+      printf("    return %s();\n", cTypeRet (si->name));
+      printf("}\n\n");
+
+      printf("void\n");
+      printf("%s::value_set (GValue *value, %s self)", name.c_str(), cTypeArg (si->name));
+      printf("{\n");
+      printf("  sfi_value_take_seq (value, self.to_seq());\n");
+      printf("}\n\n");
+    }
+
+  /* record members */
+  for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+    {
+      if (parser.fromInclude (ri->name)) continue;
+
+      string name = ri->name;
+
+      printf("%s\n", cTypeRet (ri->name));
+      printf("%s::from_rec (SfiRec *sfi_rec)\n", name.c_str());
+      printf("{\n");
+      printf("  GValue *element;\n");
+      printf("\n");
+      printf("  if (!sfi_rec)\n");
+      printf("    return Sfi::INIT_NULL;\n");
+      printf("\n");
+      printf("  %s rec = Sfi::INIT_DEFAULT;\n", cTypeField (ri->name));
+      for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+	{
+	  string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
+
+	  printf("  element = sfi_rec_get (sfi_rec, \"%s\");\n", pi->name.c_str());
+	  printf("  if (element)\n");
+	  printf("    rec->%s = %s;\n", pi->name.c_str(), elementFromValue.c_str());
+	}
+      printf("  return rec;\n");
+      printf("}\n\n");
+
+      printf("SfiRec *\n");
+      printf("%s::to_rec (%s rec)\n", name.c_str(), cTypeArg (ri->name));
+      printf("{\n");
+      printf("  SfiRec *sfi_rec;\n");
+      printf("  GValue *element;\n");
+      printf("\n");
+      printf("  g_return_val_if_fail (rec, NULL);\n");
+      printf("\n");
+      printf("  sfi_rec = sfi_rec_new ();\n");
+      for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+	{
+	  string elementToValue = createTypeCode (pi->type, "rec->" + pi->name, MODEL_TO_VALUE);
+	  printf("  element = %s;\n", elementToValue.c_str());
+	  printf("  sfi_rec_set (sfi_rec, \"%s\", element);\n", pi->name.c_str());
+	  printf("  sfi_value_free (element);\n");        // FIXME: couldn't we have take_set
+	}
+      printf("  return sfi_rec;\n");
+      printf("}\n\n");
+
+      /* FIXME: client only, core needs type system support */
+      printf("%s\n", cTypeRet(ri->name));
+      printf("%s::value_get (const GValue *value)", name.c_str());
+      printf("{\n");
+      printf("  SfiRec *sfi_rec = sfi_value_get_rec (value);\n");
+      printf("  if (sfi_rec)\n");
+      printf("    return from_rec (sfi_rec);\n");
+      printf("  else\n");
+      printf("    return Sfi::INIT_NULL;\n");
+      printf("}\n\n");
+
+      printf("void\n");
+      printf("%s::value_set (GValue *value, %s self)", name.c_str(), cTypeArg (ri->name));
+      printf("{\n");
+      printf("  sfi_value_take_rec (value, to_rec (self));\n");
+      printf("}\n\n");
+    }
+}
+
+void CodeGeneratorCxx::run ()
+{
   vector<Choice>::const_iterator ei;
   vector<Param>::const_iterator pi;
   vector<Class>::const_iterator ci;
@@ -201,22 +413,6 @@ void CodeGeneratorCxx::run ()
           printf("};\n");
         }
 
-      /* records and sequences */
-      printf ("\n/* record/sequence types */\n");
-
-      /* prototypes for records */
-      for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
-	{
-	  if (parser.fromInclude (ri->name)) continue;
-
-	  nspace.setFromSymbol(ri->name);
-	  string name = nspace.printableForm (ri->name);
-
-	  printf("\n");
-	  printf("class %s;\n", name.c_str());
-	  printf("typedef Sfi::RecordHandle<%s> %sHandle;\n", name.c_str(), name.c_str());
-	}
-
       printf("\n");
       /* prototypes for classes */
       for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
@@ -229,26 +425,7 @@ void CodeGeneratorCxx::run ()
 	  printf("class %s;\n", name.c_str());
 	}
 
-      /* sequences */
-      for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
-	{
-	  if (parser.fromInclude (si->name)) continue;
-
-	  nspace.setFromSymbol(si->name);
-
-	  /* FIXME: need optimized refcounted copy-on-write sequences as base types */
-
-	  string name = nspace.printableForm (si->name);
-	  string content = typeField (si->content.type);
-
-	  printf("\n");
-	  printf("class %s : public Sfi::Sequence<%s> {\n", name.c_str(), content.c_str());
-	  printf("public:\n");
-	  /* TODO: make this a constructor? */
-	  printf("  static %s _from_seq (SfiSeq *seq);\n", cTypeRet (si->name));
-	  printf("  SfiSeq *_to_seq ();\n");
-	  printf("};\n");
-	}
+      printRecSeqForwardDecl (nspace);
 
       /* classes */
       for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
@@ -283,26 +460,7 @@ void CodeGeneratorCxx::run ()
 	  printProperties(*ci);
 	  printf("};\n");
 	}
-
-      /* records */
-      for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
-	{
-	  if (parser.fromInclude (ri->name)) continue;
-
-	  nspace.setFromSymbol(ri->name);
-	  string name = nspace.printableForm (ri->name);
-
-	  printf("\n");
-	  printf("class %s {\n", name.c_str());
-	  printf("public:\n");
-	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
-	    {
-	      printf("  %s %s;\n", cTypeField (pi->type), pi->name.c_str());
-	    }
-	  printf("  static %s _from_rec (SfiRec *rec);\n", cTypeRet(ri->name));
-	  printf("  static SfiRec *_to_rec (%s ptr);\n", cTypeArg(ri->name));
-	  printf("};\n");
-	}
+      printRecSeqDefinition (nspace);
     }
 
   if (options.doSource)
@@ -316,94 +474,7 @@ void CodeGeneratorCxx::run ()
 	  printf("\n");
 	}
 
-      /* sequence members */
-      for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
-	{
-	  if (parser.fromInclude (si->name)) continue;
-
-	  string name = si->name;
-
-          string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
-          printf("%s\n", cTypeRet (si->name));
-          printf("%s::_from_seq (SfiSeq *sfi_seq)\n", name.c_str());
-          printf("{\n");
-          printf("  %s seq;\n", cTypeRet (si->name));
-          printf("  guint i, length;\n");
-          printf("\n");
-          printf("  g_return_val_if_fail (sfi_seq != NULL, seq);\n");
-          printf("\n");
-          printf("  length = sfi_seq_length (sfi_seq);\n");
-	  printf("  seq.resize (length);\n");
-          printf("  for (i = 0; i < length; i++)\n");
-          printf("  {\n");
-          printf("    GValue *element = sfi_seq_get (sfi_seq, i);\n");
-          printf("    seq[i] = %s;\n", elementFromValue.c_str());
-          printf("  }\n");
-          printf("  return seq;\n");
-          printf("}\n\n");
-
-	  /* FIXME: ugly code (*this[i]) */
-	  string elementToValue = createTypeCode (si->content.type, "(*this)[i]", MODEL_TO_VALUE);
-	  printf("SfiSeq *\n");
-	  printf("%s::_to_seq ()\n", name.c_str());
-	  printf("{\n");
-	  printf("  SfiSeq *sfi_seq = sfi_seq_new ();\n");
-	  printf("  for (guint i = 0; i < length(); i++)\n");
-	  printf("  {\n");
-	  printf("    GValue *element = %s;\n", elementToValue.c_str());
-	  printf("    sfi_seq_append (sfi_seq, element);\n");
-	  printf("    sfi_value_free (element);\n");        // FIXME: couldn't we have take_append
-	  printf("  }\n");
-	  printf("  return sfi_seq;\n");
-	  printf("}\n\n");
-	}
-
-      /* record members */
-      for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
-	{
-	  if (parser.fromInclude (ri->name)) continue;
-
-	  string name = ri->name;
-
-          printf("%s\n", cTypeRet (ri->name));
-          printf("%s::_from_rec (SfiRec *sfi_rec)\n", name.c_str());
-          printf("{\n");
-          printf("  GValue *element;\n");
-          printf("\n");
-          printf("  if (!sfi_rec)\n");
-	  printf("    return Sfi::INIT_NULL;\n");
-          printf("\n");
-          printf("  %s rec = Sfi::INIT_DEFAULT;\n", cTypeField (ri->name));
-          for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
-            {
-              string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
-
-              printf("  element = sfi_rec_get (sfi_rec, \"%s\");\n", pi->name.c_str());
-              printf("  if (element)\n");
-              printf("    rec->%s = %s;\n", pi->name.c_str(), elementFromValue.c_str());
-            }
-          printf("  return rec;\n");
-          printf("}\n\n");
-
-	  printf("SfiRec *\n");
-	  printf("%s::_to_rec (%s rec)\n", name.c_str(), cTypeArg (ri->name));
-	  printf("{\n");
-	  printf("  SfiRec *sfi_rec;\n");
-	  printf("  GValue *element;\n");
-	  printf("\n");
-	  printf("  g_return_val_if_fail (rec, NULL);\n");
-          printf("\n");
-	  printf("  sfi_rec = sfi_rec_new ();\n");
-	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
-	    {
-	      string elementToValue = createTypeCode (pi->type, "rec->" + pi->name, MODEL_TO_VALUE);
-	      printf("  element = %s;\n", elementToValue.c_str());
-	      printf("  sfi_rec_set (sfi_rec, \"%s\", element);\n", pi->name.c_str());
-	      printf("  sfi_value_free (element);\n");        // FIXME: couldn't we have take_set
-	    }
-	  printf("  return sfi_rec;\n");
-	  printf("}\n\n");
-	}
+      printRecSeqImpl (nspace);
 
       /* methods */
       for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
@@ -412,7 +483,6 @@ void CodeGeneratorCxx::run ()
 	  printMethods(*ci);
 	  printProperties(*ci);
 	}
-
     }
 
   printf("\n");

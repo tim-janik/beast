@@ -127,6 +127,7 @@ bool Options::parse (int *argc_p, char **argv_p[])
           doInterface = false;
           doHeader = true;
           doSource = false;
+	  generateBoxedTypes = true;
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--list-types", argv[i]) == 0)

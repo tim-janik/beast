@@ -37,6 +37,10 @@ namespace Sfidl {
     std::string funcCopy (const std::string& type);
     std::string funcFree (const std::string& type);
 
+    void printRecSeqForwardDecl (NamespaceHelper& nspace);
+    void printRecSeqDefinition (NamespaceHelper& nspace);
+    void printRecSeqImpl (NamespaceHelper& nspace);
+
   public:
     CodeGeneratorCxxBase (const Parser& parser) : CodeGeneratorCBase (parser) {
     }
