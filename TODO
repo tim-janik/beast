@@ -141,6 +141,9 @@ BseWaveChunk:
   ('cause gsl_thread_main needs to be replaced by bse_main_thred() or somesuch)
 
 General BSE:
+- level-o-meter visualizer at links (adjustable?)
+  needs linear (red >1) and logarithmic display
+- frequency shifter/multiplier (*2 etc.)
 - fix fine-tune settings (from gsl)
 - _SL functions have to be revisited and thoroughly implemented
 - track_step_SL() needs bpm_tick => stamp_tick translation

@@ -30,6 +30,7 @@
 #include "bstrackeditor.h"
 #include "bstmenus.h"
 #include "bstprocedure.h"
+#include "sfi/toyprof-mem.h"
 
 
 /* --- prototypes --- */
@@ -699,8 +700,9 @@ bst_app_operate (BstApp *app,
 			    "Device Monitor",
 			    any);
       gtk_widget_show (any);
+      sfi_alloc_report ();
+      toyprof_report_mem ();
 #if 0 // FIXME
-      //gsl_alloc_report ();
       {
 	GSList *slist, *olist = g_object_debug_list();
 	guint i, n_buckets = 257;

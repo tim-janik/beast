@@ -15,20 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bstutils.h"
-
-#include        "bse/bse.h"
-#include        "bstapp.h"
-#include        "bstsplash.h"
-#include	"bstxkb.h"
-#include	"bstgconfig.h"
-#include	"bstusermessage.h"
-#include	"bstpreferences.h"
-#include	"../PKG_config.h"
-#include	"images/beast-images.h"
-#include	<unistd.h>
-#include	<stdio.h>
-#include	<string.h>
+#include "bstutils.h"
+#include "bse/bse.h"
+#include "bstapp.h"
+#include "bstsplash.h"
+#include "bstxkb.h"
+#include "bstgconfig.h"
+#include "bstusermessage.h"
+#include "bstpreferences.h"
+#include "../PKG_config.h"
+#include "images/beast-images.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include "sfi/toyprof-mem.h"
 
 
 /* --- prototypes --- */
@@ -93,8 +93,8 @@ main (int   argc,
 
   /* GLib's thread and object systems
    */
-  if (0)
-    g_mem_set_vtable (glib_mem_profiler_table);
+  if (toyprof_mem_table && 0)
+    g_mem_set_vtable (toyprof_mem_table);
   g_thread_init (NULL);
   g_type_init ();
 

@@ -1,3 +1,9 @@
+Tue Dec 31 03:29:32 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c: 
+	* beast-gtk/bstapp.c: use sfi/toyprof-mem.h code if necessary,
+	removed otehr hacks.
+
 Mon Dec 30 04:30:46 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_param_rate_impl): oops, fix rating.
