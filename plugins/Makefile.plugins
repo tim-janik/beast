@@ -121,4 +121,14 @@ $(srcdir)/davchorus.cc: davchorus.gen-idl.h
 plugins_built_sources += davchorus.gen-idl.h
 plugin_LTLIBRARIES    += davchorus.la
 
+##
+## Plugin bsebalance
+##
+bsebalance_la_SOURCES = bsebalance.cc
+bsebalance_la_LDFLAGS = -module -avoid-version
+bsebalance_la_LIBADD  = $(plugin_libs)
+$(srcdir)/bsebalance.cc: bsebalance.gen-idl.h
+plugins_built_sources += bsebalance.gen-idl.h
+plugin_LTLIBRARIES    += bsebalance.la
+
 ## Generated data ends here

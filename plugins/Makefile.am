@@ -72,6 +72,7 @@ CLEANFILES += $(plugins_built_sources) xgen-enums-*
 #
 plugin_idl_files = $(strip	\
 	davchorus.idl		\
+	bsebalance.idl		\
 )
 # setup generation of C++ plugins from idl files
 BSEPGEN = ../sfi/bse-plugin-generator
