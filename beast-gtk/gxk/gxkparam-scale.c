@@ -58,6 +58,11 @@ param_scale_create (GxkParam    *param,
   GtkAdjustment *adjustment = NULL;
   if (variant == PARAM_LSCALE_HORIZONTAL || variant == PARAM_LSCALE_VERTICAL)
     adjustment = gxk_param_get_log_adjustment (param);
+  if ((variant == PARAM_SCALE_HORIZONTAL || variant == PARAM_SCALE_VERTICAL) &&
+      (g_param_spec_check_option (param->pspec, "db-volume") ||
+       g_param_spec_check_option (param->pspec, "db-range")) &&
+      !g_param_spec_check_option (param->pspec, "db-value"))
+    adjustment = gxk_param_get_decibel_adjustment (param);
   if (!adjustment)
     adjustment = gxk_param_get_adjustment (param);
   widget = g_object_new (variant >= PARAM_SCALE_VERTICAL ? GTK_TYPE_VSCALE : GTK_TYPE_HSCALE,

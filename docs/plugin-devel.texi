@@ -3,7 +3,7 @@
 @settitle BSE Plugin Development
 @footnotestyle end
 @c %**end of header
-@c revision-date: $Id: plugin-devel.texi,v 1.5 2004/09/19 23:20:17 timj Exp $
+@c revision-date: $Id: plugin-devel.texi,v 1.6 2004/10/30 13:21:25 timj Exp $
 
 @include texiutils.texi
 
@@ -197,9 +197,12 @@ and @option{:skip-undo:}.
 @item @strong{@func{Perc}      (@var{label}, @var{description}, @var{default}, @var{options})} @*
         Percentage property, the minimum and maximum are fixed 0 and 100 respectively, and additional options
         are provided for GUIs to recognize percentage properties as such.
-@item @strong{@func{DB}        (@var{label}, @var{description}, @var{default}, @var{options})} @* 
-	A @type{DB} property is used for properties holding values in deci bell. The minimum and
-	maximum supported by @bse are currently -144 and +24, the default can be specified through an argument.
+@item @strong{@func{DBVolume}  (@var{label}, @var{description}, @var{default_db}, @var{minimum_db}, @var{maximum_db}, @var{options})} @* 
+	A @type{DBVolume} property is used for real-valued properties with values >0 which are used as volume factors and
+	should be displayed and editable as values in decibel.
+	The @var{default_db}, @var{minimum_db} and @var{maximum_db} parameters are converted into linear volume factors
+	before being interpreted as property default and limits. For example, a @code{DBVolume(``'', ``'', 0, -6, +6, STANDARD)}
+	property will actually default to 1.0 (0 decibel) and hold values in the range +0.501 (-6 decibel) .. +1.995 (+6 decibel).
 @item @strong{@func{Balance}   (@var{label}, @var{description}, @var{default}, @var{options})} @* 
 	A @type{Balance} property is similar to a normal @type{Real} property, but has a fixed
 	minimum and maximum of -100 and +100 and defaults to 0.
@@ -318,7 +321,10 @@ GUI Options:
 @item @strong{``dial''}          - a hint to display the property with dial knob
 @item @strong{``scale''}         - a hint to display the property with a scale adjustment
 @item @strong{``log-scale''}     - a hint to display the property with a logarithmic scale adjustment
-@item @strong{``DB''}            - a hint to indicate deci bell display
+@item @strong{``db-value''}      - a hint indicating a decibel valued property
+	(as opposed to a property that is real valued but for which dB values should be displayed)
+@item @strong{``db-volume''}     - a hint indicating a dB volume scale for a dB or real valued property
+@item @strong{``db-range''}      - a hint indicating a dB scale with smooth curvature for a dB or real valued property
 @item @strong{``searchpath''}    - a hint indicating a property consisting of colon seperated directory list
 @item @strong{``filename''}      - a hint indicating a property consisting of a filename
 @item @strong{``rgb''}           - a hint indicating a property consisting of an RGB color value
@@ -336,7 +342,6 @@ Predefined options sets:
 @item @strong{STORAGE}          - property is READWRITE and serializable (``:r:w:S:'')
 @item @strong{STANDARD}         - property is READWRITE, STORAGE and GUI (``:r:w:S:G:'')
 @item @strong{STANDARD_RDONLY}  - property is READWRITE, STORAGE, GUI_RDONLY (``:r:w:S:G:ro:'')
-@item @strong{SKIP_DEFAULT}     - property is READWRITE, STORAGE, GUI_RDONLY (``:r:w:S:G:ro:'')
 @end itemize
 
 Extra option sets (mostly for convenience and readability):

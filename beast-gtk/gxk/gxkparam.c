@@ -610,6 +610,8 @@ gxk_param_create_editor (GxkParam               *param,
 
 /* --- param editor sizes --- */
 static const GxkParamEditorSizes param_editor_default_sizes = {
+  TRUE,         /* may_resize */
+  FALSE,        /* request_fractions */
   1, 3,         /* char */
   0, 3,         /* uchar */
   1, 10,        /* int */
@@ -626,7 +628,6 @@ static const GxkParamEditorSizes param_editor_default_sizes = {
   2, 7,         /* float */
   2, 17,        /* double */
   8, 2,         /* string */
-  TRUE,         /* may_shrink */
 };
 static GxkParamEditorSizes *size_groups = NULL;
 static guint                n_size_groups = 0;
@@ -639,7 +640,8 @@ gxk_param_create_size_group (void)
   i = n_size_groups++;
   size_groups = g_renew (GxkParamEditorSizes, size_groups, n_size_groups);
   size_groups[i] = param_editor_default_sizes;
-  size_groups[i].may_shrink = FALSE;
+  size_groups[i].may_resize = FALSE;
+  size_groups[i].request_fractions = FALSE;
   return n_size_groups;
 }
 
@@ -936,6 +938,66 @@ gxk_param_get_log_adjustment (GxkParam *param)
           g_object_set_data (log_adjustment, "gxk-param-func", gxk_param_get_log_adjustment);
           return log_adjustment;
         }
+    }
+  return NULL;
+}
+
+typedef struct {
+  gdouble mindb, maxdb;
+} GxkParamDBData;
+
+static gdouble
+gxk_param_db_adjustment_convert (GxkAdapterAdjustment           *self,
+                                 GxkAdapterAdjustmentConvertType convert_type,
+                                 gdouble                         value,
+                                 gpointer                        data)
+{
+  GxkParamDBData *dbdata = data;
+  switch (convert_type)
+    {
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_TO_CLIENT:
+      return pow (10, value / 20);
+    default:
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_FROM_CLIENT:
+      value = 20 * log10 (value);
+      value = CLAMP (value, dbdata->mindb, dbdata->maxdb);
+      return value;
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_STEP_INCREMENT:
+      return MIN (1, (dbdata->maxdb - dbdata->mindb) / 10.0);
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_PAGE_INCREMENT:
+      return MIN (6, (dbdata->maxdb - dbdata->mindb) / 2.0);
+    case GXK_ADAPTER_ADJUSTMENT_CONVERT_PAGE_SIZE:
+      return 0;
+    }
+}
+
+GtkAdjustment*
+gxk_param_get_decibel_adjustment (GxkParam *param)
+{
+  GtkAdjustment *adjustment;
+  GSList *slist;
+  for (slist = param->objects; slist; slist = slist->next)
+    if (GXK_IS_LOG_ADJUSTMENT (slist->data) &&
+        g_object_get_data (slist->data, "gxk-param-func") == gxk_param_get_decibel_adjustment)
+      return slist->data;
+  adjustment = gxk_param_get_adjustment (param);
+  if (adjustment && adjustment->lower >= 0 &&
+      !g_param_spec_check_option (param->pspec, "db-value"))
+    {
+      GxkParamDBData dbdata = { 0, };
+      dbdata.maxdb = 20 * log10 (adjustment->upper);
+      dbdata.mindb = 20 * log10 (adjustment->lower);
+      const double minimum_db = -144.494397918711; /* 24bit: -144.494397918711 32bit: -192.659197224948 */
+      if (adjustment->lower <= 0 || dbdata.mindb < minimum_db)
+        dbdata.mindb = minimum_db;
+      GtkAdjustment *db_adjustment = gxk_adapter_adjustment_from_adj (adjustment, gxk_param_db_adjustment_convert,
+                                                                      g_memdup (&dbdata, sizeof (dbdata)), g_free);
+      GtkObject *object = GTK_OBJECT (db_adjustment);
+      gxk_param_add_object (param, object);
+      gtk_object_sink (object);
+      /* recognize adjustments created by this function */
+      g_object_set_data (db_adjustment, "gxk-param-func", gxk_param_get_decibel_adjustment);
+      return db_adjustment;
     }
   return NULL;
 }

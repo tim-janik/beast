@@ -34,6 +34,11 @@ param_scale_create (GxkParam    *param,
   guint svariant = variant & 0xffff;
   guint logarithmic = variant & PARAM_SCALE_LOGARITHMIC;
   GtkAdjustment *adjustment = logarithmic ? gxk_param_get_log_adjustment (param) : NULL;
+  if (!logarithmic &&
+      (g_param_spec_check_option (param->pspec, "db-volume") ||
+       g_param_spec_check_option (param->pspec, "db-range")) &&
+      !g_param_spec_check_option (param->pspec, "db-value"))
+    adjustment = gxk_param_get_decibel_adjustment (param);
   if (!adjustment)
     adjustment = gxk_param_get_adjustment (param);
 

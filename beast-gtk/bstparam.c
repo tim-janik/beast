@@ -64,7 +64,9 @@ param_get_gmask_container (GtkWidget *parent,
   return container;
 }
 
-static const GxkParamEditorSizes param_editor_sizes = {
+static const GxkParamEditorSizes param_editor_homogeneous_sizes = {
+  FALSE,        /* may_resize */
+  FALSE,        /* request_fractions */
   2, 8,         /* char */
   2, 8,         /* uchar */
   2, 8,         /* int */
@@ -93,7 +95,7 @@ bst_param_create_gmask (GxkParam    *param,
   g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
   g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
   
-  gxk_param_set_sizes (param_size_group, BST_GCONFIG (size_group_input_fields) ? &param_editor_sizes : NULL);
+  gxk_param_set_sizes (param_size_group, BST_GCONFIG (size_group_input_fields) ? &param_editor_homogeneous_sizes : NULL);
   group = sfi_pspec_get_group (param->pspec);
   parent = param_get_gmask_container (parent, group ? g_quark_from_string (group) : 0);
   

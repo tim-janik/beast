@@ -28,8 +28,18 @@ param_spinner_create (GxkParam    *param,
                       const gchar *tooltip,
                       guint        variant)
 {
-  GtkWidget *widget;
   GtkAdjustment *adjustment = NULL;
+  /* figure normal/log/db value scaled adjustment */
+  if (variant == PARAM_SPINNER_LOGARITHMIC)
+    adjustment = gxk_param_get_log_adjustment (param);
+  if (variant == PARAM_SPINNER_LINEAR &&
+      (g_param_spec_check_option (param->pspec, "db-volume") ||
+       g_param_spec_check_option (param->pspec, "db-range")) &&
+      !g_param_spec_check_option (param->pspec, "db-value"))
+    adjustment = gxk_param_get_decibel_adjustment (param);
+  if (!adjustment)
+    adjustment = gxk_param_get_adjustment (param);
+  /* figure chars & digits by type */
   const GxkParamEditorSizes *esize = gxk_param_get_editor_sizes (param);
   guint chars = 1, digits = 0, fracts = 0;
   switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (&param->value)))
@@ -45,26 +55,32 @@ param_spinner_create (GxkParam    *param,
     case G_TYPE_FLOAT:  chars = esize->float_chars;  digits = esize->float_digits;  fracts = 7;  break;
     case G_TYPE_DOUBLE: chars = esize->double_chars; digits = esize->double_digits; fracts = 17; break;
     }
-  if (variant == PARAM_SPINNER_LOGARITHMIC)
-    adjustment = gxk_param_get_log_adjustment (param);
-  if (!adjustment)
-    adjustment = gxk_param_get_adjustment (param);
-  if (esize->may_shrink)
+  /* adjust digits by sign */
+  if (esize->may_resize &&      /* may chars be modified? */
+      adjustment->lower >= 0 && adjustment->upper >= 0 && chars >= 1)
+    chars -= 1; /* no sign */
+  /* shrink fractions by semantic information */
+  if (TRUE &&                   /* fractions may always be modified */
+      (g_param_spec_check_option (param->pspec, "db-volume") ||
+       g_param_spec_check_option (param->pspec, "db-range") ||
+       g_param_spec_check_option (param->pspec, "db-value")))
+    fracts = MIN (fracts, 6);   /* fractional digits don't make too much sense for decibel values */
+  /* shrink digits by range */
+  if (esize->may_resize)        /* may digits be modified? */
     {
-      double mv = MAX (ABS (adjustment->lower), ABS (adjustment->upper));
-      guint vdigits = gxk_param_get_digits (mv, 10);
+      double maxvalue = MAX (ABS (adjustment->lower), ABS (adjustment->upper));
+      guint vdigits = gxk_param_get_digits (maxvalue, 10);
       digits = MIN (digits, vdigits);
-      if (adjustment->lower >= 0 && adjustment->upper >= 0 && chars >= 1)
-        chars -= 1;     /* no sign */
     }
-  widget = g_object_new (GTK_TYPE_SPIN_BUTTON,
-                         "visible", TRUE,
-                         "activates_default", TRUE,
-                         "adjustment", adjustment,
-                         "digits", fracts,
-                         "width_chars", 0,
-                         NULL);
-  gxk_widget_add_font_requisition (widget, chars, digits);
+  /* creation & setup */
+  GtkWidget *widget = g_object_new (GTK_TYPE_SPIN_BUTTON,
+                                    "visible", TRUE,
+                                    "activates_default", TRUE,
+                                    "adjustment", adjustment,
+                                    "digits", fracts,
+                                    "width_chars", 0,
+                                    NULL);
+  gxk_widget_add_font_requisition (widget, chars, digits + (esize->request_fractions ? fracts : 0));
   gxk_param_entry_connect_handlers (param, widget, NULL);
   gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
   return widget;

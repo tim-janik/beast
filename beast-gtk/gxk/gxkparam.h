@@ -136,6 +136,8 @@ void         gxk_param_editor_debug_score (GParamSpec      *pspec);
 
 /* --- param editor size groups --- */
 typedef struct {
+  guint may_resize : 1;                 /* whether the specified chars/digits may be adjusted */
+  guint request_fractions : 1;          /* whether fractional digits should be size requested */
   guint char_chars,   char_digits;
   guint uchar_chars,  uchar_digits;
   guint int_chars,    int_digits;
@@ -147,7 +149,6 @@ typedef struct {
   guint float_chars,  float_digits;
   guint double_chars, double_digits;
   guint string_chars, string_digits;
-  guint may_shrink;
 } GxkParamEditorSizes;
 guint                      gxk_param_create_size_group (void);
 void                       gxk_param_set_sizes         (guint                      size_group,
@@ -174,6 +175,7 @@ GtkAdjustment* gxk_param_get_adjustment               (GxkParam  *param);
 GtkAdjustment* gxk_param_get_adjustment_with_stepping (GxkParam  *param,
                                                        gdouble    pstepping);
 GtkAdjustment* gxk_param_get_log_adjustment           (GxkParam  *param);
+GtkAdjustment* gxk_param_get_decibel_adjustment       (GxkParam  *param);
 
 G_END_DECLS
 

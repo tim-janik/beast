@@ -22,7 +22,7 @@
 
 #include <string.h>
 
-#define	BSE_DFL_MIXER_VOLUME_dB	(BSE_DFL_MASTER_VOLUME_dB)
+#define	DEFAULT_DB_VOLUME	(0)
 
 /* --- parameters --- */
 enum
@@ -90,20 +90,20 @@ bse_mixer_class_init (BseMixerClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MVOLUME_f,
 			      sfi_pspec_real ("master_volume_f", "Master [float]", NULL,
-					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+					      bse_db_to_factor (DEFAULT_DB_VOLUME),
 					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB), 0.1,
 					      SFI_PARAM_STORAGE ":f"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MVOLUME_dB,
 			      sfi_pspec_real ("master_volume_dB", "Master [dB]", NULL,
-					      BSE_DFL_MASTER_VOLUME_dB,
+					      DEFAULT_DB_VOLUME,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
 					      SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MVOLUME_PERC,
 			      sfi_pspec_int ("master_volume_perc", "Master [%]", NULL,
-					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+					     bse_db_to_factor (DEFAULT_DB_VOLUME) * 100,
 					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 					     SFI_PARAM_GUI ":dial"));
   ochannel = bse_source_class_add_ochannel (source_class, "audio-out", _("Audio Out"), _("Sole Output"));
@@ -118,7 +118,7 @@ bse_mixer_class_init (BseMixerClass *class)
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_f + (i - 1) * 3,
 				  sfi_pspec_real (ident, label, NULL,
-						  bse_db_to_factor (BSE_DFL_MIXER_VOLUME_dB),
+						  bse_db_to_factor (DEFAULT_DB_VOLUME),
 						  0, bse_db_to_factor (BSE_MAX_VOLUME_dB), 0.1,
 						  SFI_PARAM_STORAGE));
       g_free (ident);
@@ -128,7 +128,7 @@ bse_mixer_class_init (BseMixerClass *class)
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_dB + (i - 1) * 3,
 				  sfi_pspec_real (ident, label, NULL,
-						  BSE_DFL_MIXER_VOLUME_dB,
+						  DEFAULT_DB_VOLUME,
 						  BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 						  BSE_GCONFIG (step_volume_dB),
 						  SFI_PARAM_GUI ":dial"));
@@ -139,7 +139,7 @@ bse_mixer_class_init (BseMixerClass *class)
       bse_object_class_add_param (object_class, group,
 				  PROP_NTH_VOLUME_PERC + (i - 1) * 3,
 				  sfi_pspec_int (ident, label, NULL,
-						 bse_db_to_factor (BSE_DFL_MIXER_VOLUME_dB) * 100,
+						 bse_db_to_factor (DEFAULT_DB_VOLUME) * 100,
 						 0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 						 SFI_PARAM_GUI ":dial"));
       g_free (group);
@@ -161,9 +161,9 @@ bse_mixer_init (BseMixer *self)
 {
   guint i;
   
-  self->master_volume_factor = bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB);
+  self->master_volume_factor = bse_db_to_factor (DEFAULT_DB_VOLUME);
   for (i = 0; i < BSE_MIXER_N_INPUTS; i++)
-    self->volume_factors[i] = bse_db_to_factor (BSE_DFL_MIXER_VOLUME_dB);
+    self->volume_factors[i] = bse_db_to_factor (DEFAULT_DB_VOLUME);
 }
 
 static void

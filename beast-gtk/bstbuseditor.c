@@ -160,10 +160,10 @@ bst_bus_editor_set_bus (BstBusEditor *self,
                          "signal::release", bus_editor_release_item, self,
                          NULL);
       /* create and hook up volume params & scopes */
-      pspec = bse_proxy_get_pspec (self->item, "left-volume-db");
+      pspec = bse_proxy_get_pspec (self->item, "left-volume");
       GxkParam *lvolume = bst_param_new_proxy (pspec, self->item);
       GtkWidget *lspinner = gxk_param_create_editor (lvolume, "spinner");
-      pspec = bse_proxy_get_pspec (self->item, "right-volume-db");
+      pspec = bse_proxy_get_pspec (self->item, "right-volume");
       GxkParam *rvolume = bst_param_new_proxy (pspec, self->item);
       GtkWidget *rspinner = gxk_param_create_editor (rvolume, "spinner");
       BstDBMeter *dbmeter = gxk_radget_find (self, "db-meter");

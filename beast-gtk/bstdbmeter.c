@@ -1279,13 +1279,42 @@ bst_db_meter_create_dashes (BstDBMeter      *self,
 }
 
 static void
+db_scale_pixel_adjustment_value_changed_unconverted (GtkAdjustment *adjustment,
+                                                     GxkParam      *param)
+{
+  if (param->updating)
+    return;
+  BstDBSetup *dbsetup = g_object_get_data (adjustment, "BstDBSetup");
+  double value = bst_db_setup_get_dbvalue (dbsetup, adjustment->value);
+  GValue dvalue = { 0, };
+  g_value_init (&dvalue, G_TYPE_DOUBLE);
+  g_value_set_double (&dvalue, value);
+  g_value_transform (&dvalue, &param->value);
+  g_value_unset (&dvalue);
+  gxk_param_apply_value (param);
+}
+
+static void
+db_scale_pixel_adjustment_update_unconverted (GxkParam       *param,
+                                              GtkObject      *object)
+{
+  BstDBSetup *dbsetup = g_object_get_data (object, "BstDBSetup");
+  GValue dvalue = { 0, };
+  g_value_init (&dvalue, G_TYPE_DOUBLE);
+  g_value_transform (&param->value, &dvalue);
+  gtk_adjustment_set_value (GTK_ADJUSTMENT (object), bst_db_setup_get_pixel (dbsetup, g_value_get_double (&dvalue)));
+  g_value_unset (&dvalue);
+}
+
+static void
 db_scale_pixel_adjustment_value_changed (GtkAdjustment *adjustment,
                                          GxkParam      *param)
 {
   if (param->updating)
     return;
   BstDBSetup *dbsetup = g_object_get_data (adjustment, "BstDBSetup");
-  double value = bst_db_setup_get_dbvalue (dbsetup, adjustment->value);
+  double dbvalue = bst_db_setup_get_dbvalue (dbsetup, adjustment->value);
+  double value = pow (10, dbvalue / 20);
   GValue dvalue = { 0, };
   g_value_init (&dvalue, G_TYPE_DOUBLE);
   g_value_set_double (&dvalue, value);
@@ -1302,7 +1331,12 @@ db_scale_pixel_adjustment_update (GxkParam       *param,
   GValue dvalue = { 0, };
   g_value_init (&dvalue, G_TYPE_DOUBLE);
   g_value_transform (&param->value, &dvalue);
-  gtk_adjustment_set_value (GTK_ADJUSTMENT (object), bst_db_setup_get_pixel (dbsetup, g_value_get_double (&dvalue)));
+  gdouble dbvalue, value = g_value_get_double (&dvalue);
+  if (value > 0)
+    dbvalue = 20 * log10 (value);
+  else
+    dbvalue = dbsetup->mindb;
+  gtk_adjustment_set_value (GTK_ADJUSTMENT (object), bst_db_setup_get_pixel (dbsetup, dbvalue));
   g_value_unset (&dvalue);
 }
 
@@ -1318,11 +1352,15 @@ bst_db_scale_hook_up_param (GtkRange     *range,
   // FIXME: update adjustment // range = editor->create_widget (param, tooltip, editor->variant);
   param->updating = updating;
   gxk_param_add_object (param, GTK_OBJECT (range));
+  gboolean need_conversion = !g_param_spec_check_option (param->pspec, "db-value");
   GtkAdjustment *adjustment = gtk_range_get_adjustment (range);
-  gxk_object_set_param_callback (GTK_OBJECT (adjustment), db_scale_pixel_adjustment_update);
+  gxk_object_set_param_callback (GTK_OBJECT (adjustment),
+                                 need_conversion ? db_scale_pixel_adjustment_update : db_scale_pixel_adjustment_update_unconverted);
   gxk_param_add_object (param, GTK_OBJECT (adjustment));
   /* catch notifies *after* the widgets are updated */
-  g_object_connect (adjustment, "signal_after::value-changed", db_scale_pixel_adjustment_value_changed, param, NULL);
+  g_object_connect (adjustment, "signal_after::value-changed",
+                    need_conversion ? db_scale_pixel_adjustment_value_changed : db_scale_pixel_adjustment_value_changed_unconverted,
+                    param, NULL);
   /* save param for GtkRange */
   g_object_set_data (range, "GxkParam", param);
 }

@@ -1,3 +1,29 @@
+Sat Oct 30 13:22:23 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/plugin-devel.texi: introduced :db-value:, :db-volume: and
+	:db-range: property options, removed :DB:, documented DBVolume().
+
+	* beast-gtk/bstbuseditor.c: adapt to BseBus property changes.
+
+	* beast-gtk/bstdbmeter.c: added decibel conversion for non db-value
+	properties.
+
+	* beast-gtk/gxk/gxkparam-scale.c:
+	* beast-gtk/bstparam-scale.c: use decibel adjustment if appropriate.
+
+	* beast-gtk/gxk/gxkparam-spinner.c: improved size requisition and
+	digit quantization handling. added explicit support for decibel
+	valued properties.
+
+	* beast-gtk/gxk/gxkparam.[hc]:
+	(GxkParamEditorSizes): renamed may_resize field, added request_fractions
+	bool value, adapted users.
+	gxk_param_get_decibel_adjustment(): provide decibel adjustment for some
+	properties.
+
+	* beast-gtk/gxk/gxklogadjustment.[hc]: implemented adapter adjustment,
+	which allows adjustment value conversion via callbacks.
+
 Sat Oct 16 11:15:18 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackview.c: only make sure added tracks are 

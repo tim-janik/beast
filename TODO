@@ -7,7 +7,11 @@ FIXMES:	(release-critical)
 - deleteing last track + undo doesn't redraw trackroll
 - adjust engine block size (Subject: blocksize vs. cpu)
 - save mixer bus volumes
+- BseAmplifier: extend master volume to +24db
+- redo doesn't work for BseBus properties
 TODO:
+- implement GxkLogAdjustment in terms of GxkAdapterAdjustment and rename gxklogadjustment.h
+- remove [dB], [%], [uS] etc... unit specifications from property labels, use hints instead and let the GUI make such indications
 - add GxkDialog minimum shrink sizes support
 - preserve part-link ids in tracks across part-tick movement and remove-tick+insert-part undo
 - add raise/lower buttons to track view
@@ -154,7 +158,6 @@ TODO:
 - fix uses of gsl_engine_tick_stamp_from_systime() in bstwaveeditor.c
 - cleanup helper/util code in sfitype.h
 - song->master volume doesn't affect anything
-- fix and canonify decibell naming everywhere
 - sample chunk display should show note names not only midi notes
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
 - fix the word "tact" vs. measure
