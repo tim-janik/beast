@@ -1,0 +1,49 @@
+; BseProject
+
+(bse-version "0.6.4")
+
+(container-child "BseCSynth::%bse-intern-gus-patch-mono"
+  (modification-time "2005-01-02 10:08:04")
+  (creation-time "2003-04-27 20:45:24")
+  (author "Stefan Westerfeld")
+  (container-child "BseWaveOsc::wave-osc"
+    (fm-n-octaves 1)
+    (exponential-fm #f)
+    (fm-perc 10)
+    (channel 1)
+    (pos-y 0.56)
+    (pos-x -1.55)
+    (blurb "")
+    (source-input "freq-in" (link 1 "midi-note") "frequency")
+    (source-input "sync-in" (link 1 "midi-note") "gate")
+    (source-input "mod-in" (link 1 "midi-controls") "ctrl-out1"))
+  (container-child "BseInstrumentInput::midi-note"
+    (pos-y 1.59)
+    (pos-x -3.64))
+  (container-child "BseMidiController::midi-controls"
+    (control-4 bse-midi-signal-pressure)
+    (control-3 bse-midi-signal-continuous-7)
+    (control-2 bse-midi-signal-continuous-1)
+    (control-1 bse-midi-signal-pitch-bend)
+    (pos-y -0.88)
+    (pos-x -2.8))
+  (container-child "BseInstrumentOutput::instrument-output"
+    (pos-y -0.58)
+    (pos-x 3.89)
+    (source-input "left-audio" (link 1 "volume-multiplier") "audio-out")
+    (source-input "right-audio" (link 1 "volume-multiplier") "audio-out")
+    (source-input "synth-done" (link 1 "gus-patch-envelope") "done-out"))
+  (container-child "BseMult::volume-multiplier"
+    (pos-y 1.17)
+    (pos-x 2.22)
+    (source-input "audio-in1" (link 1 "gus-patch-envelope") "audio-out1")
+    (source-input "audio-in2" (link 1 "midi-controls") "ctrl-out3")
+    (source-input "audio-in3" (link 1 "midi-note") "velocity"))
+  (container-child "BseStandardGusPatchEnvelope::gus-patch-envelope"
+    (pos-y 2.285)
+    (pos-x 0.185)
+    (source-input "frequency" (link 1 "midi-note") "frequency")
+    (source-input "gate-in" (link 1 "midi-note") "gate")
+    (source-input "retrigger-in" (link 1 "midi-note") "gate")
+    (source-input "audio-in" (link 1 "wave-osc") "audio-out")
+    (source-input "audio-gate" (link 1 "wave-osc") "gate-out")))

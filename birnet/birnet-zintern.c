@@ -133,15 +133,15 @@ gen_zfile (const gchar *name,
   g_print ("/* zintern file dump (%s) */\n", file);
 
   config = config_init;
-  printf ("#define %s_NAME \"", name);
+  printf ("#define %s_NAME \"", g_type_name_to_cupper (name));
   for (i = 0; fname[i]; i++)
     print_uchar (&config, fname[i]);
   printf ("\"\n");
 
-  printf ("#define %s_SIZE (%u)\n", name, dlen);
+  printf ("#define %s_SIZE (%u)\n", g_type_name_to_cupper (name), dlen);
 
   config = config_init;
-  printf ("static const unsigned char %s_DATA[%lu] =\n", name, clen);
+  printf ("static const unsigned char %s_DATA[%lu] =\n", g_type_name_to_cupper (name), clen);
   printf ("( \"");
   for (i = 0; i < clen; i++)
     print_uchar (&config, cdata[i]);

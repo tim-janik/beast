@@ -1,3 +1,10 @@
+Sun Jan  2 15:23:35 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* zintern/Makefile.am:
+	* zintern/zintern.c: Use Scheme identifier style for zintern names.
+
+	* zintern/gus-patch-mono.bse: Add a network for GUS Patch playback.
+
 Sun Jan  2 11:41:05 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslloader-pat.cc: GUS Patches are only mono patches.
