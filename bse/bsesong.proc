@@ -34,7 +34,7 @@ METHOD (BseSong, create-part) {
   OUT   = g_param_spec_object ("part", "Part", NULL,
                                BSE_TYPE_PART, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-        GValue            *in_values,
+        const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
@@ -64,7 +64,7 @@ METHOD (BseSong, remove-part) {
   IN    = g_param_spec_object ("part", "Part", NULL,
                                BSE_TYPE_PART, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-        GValue            *in_values,
+        const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
@@ -88,7 +88,7 @@ METHOD (BseSong, create-instrument) {
   OUT   = g_param_spec_object ("instrument", "Instrument", NULL,
                                BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-        GValue            *in_values,
+        const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
@@ -118,7 +118,7 @@ METHOD (BseSong, remove-instrument) {
   IN    = g_param_spec_object ("instrument", "Instrument", NULL,
                                BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-        GValue            *in_values,
+        const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */

@@ -239,7 +239,7 @@ channel_dup_canonify (const gchar *name)
     else if (*s >= 'A' && *s <= 'Z')
       *c++ = *s - 'A' + 'a';
     else
-      *c++ = '_';
+      *c++ = '-';
   *c++ = 0;
   return cname;
 }

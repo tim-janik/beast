@@ -39,7 +39,7 @@ METHOD (BseWave, load-wave) {
                              BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -68,7 +68,7 @@ METHOD (BseWave, n-channels) {
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -94,7 +94,7 @@ METHOD (BseWave, use-editable) {
 			       BSE_TYPE_EDITABLE_SAMPLE, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */

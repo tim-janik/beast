@@ -21,6 +21,9 @@
 #include <bse/bseproject.h>
 #include <bse/gslloader.h>
 #include <bse/bswprivate.h>
+#include <bse/bsemidinotifier.h>
+#include <bse/bsemidievent.h>
+#include <bse/bsescriptcontrol.h>
 #include <string.h>
 
 
@@ -39,7 +42,7 @@ METHOD (BseServer, use-new-project) {
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -73,6 +76,38 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseServer, get-midi-notifier) {
+  HELP	= "Retrive the global midi notifier object.";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("midi_notifier", "Midi Notifier", NULL,
+			       BSE_TYPE_MIDI_NOTIFIER, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *self = g_value_get_object (in_values++);
+  BseMidiNotifier *mrec;
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  mrec = _bse_midi_get_notifier ();
+  if (!mrec)
+    {
+      mrec = g_object_new (BSE_TYPE_MIDI_NOTIFIER, NULL);
+      _bse_midi_set_notifier (mrec);
+    }
+
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (mrec));
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseServer, run-project) {
   HELP	= "Process a project to generate sound";
   IN	= g_param_spec_object ("server", "Server", NULL,
@@ -84,7 +119,7 @@ METHOD (BseServer, run-project) {
 			     BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -129,7 +164,7 @@ METHOD (BseServer, halt-project) {
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -163,7 +198,7 @@ METHOD (BseServer, can-load) {
 				FALSE, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -199,7 +234,7 @@ METHOD (BseServer, describe-note) {
 			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -233,7 +268,7 @@ METHOD (BseServer, note-from-freq) {
 			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -266,7 +301,7 @@ METHOD (BseServer, note-from-string) {
 			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -306,7 +341,7 @@ METHOD (BseServer, construct-note) {
 			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -327,6 +362,38 @@ BODY (BseProcedureClass *proc,
 
   /* set output parameters */
   g_value_set_boxed_take_ownership (out_values++, info);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, n-scripts) {
+  HELP	= "Return the number of scripts currently running on this server.";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  OUT   = bse_param_spec_uint ("n_connections", NULL, "Number of Connections",
+			       0, G_MAXINT, 0, 1,
+			       BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server	= g_value_get_object (in_values++);
+  GSList *slist;
+  guint n_scripts = 0;
+
+  /* check parameters */
+  if (!BSE_IS_SERVER (server))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* count script controls */
+  for (slist = server->children; slist; slist = slist->next)
+    if (BSE_IS_SCRIPT_CONTROL (slist->data))
+      n_scripts++;
+
+  /* set output parameters */
+  g_value_set_uint (out_values++, n_scripts);
   
   return BSE_ERROR_NONE;
 }

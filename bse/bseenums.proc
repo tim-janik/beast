@@ -33,7 +33,7 @@ PROCEDURE (bse-error-name, "Utils/Error Name") {
   OUT	= g_param_spec_string ("name", "Name", NULL,
 			       NULL, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -61,7 +61,7 @@ PROCEDURE (bse-error-blurb, "Utils/Error Blurb") {
   OUT	= g_param_spec_string ("blurb", "Blurb", NULL,
 			       NULL, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */

@@ -15,31 +15,42 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        <bse/bseplugin.h>
-#include        <bse/bsewaveosc.h>
-#include        <bse/bseprocedure.h>
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsemidinotifier.h>
+#include <sys/time.h>
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
 CRIGHTS	= "Tim Janik";
 DATE	= "2002";
 
 
-METHOD (BseWaveOsc, request-pcm-position) {
-  HELP	= "Request emission of the ::notify_pcm_position signal.";
-  IN	= g_param_spec_object ("wosc", NULL, "Wave Oscilator",
-			       BSE_TYPE_WAVE_OSC, BSE_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-	const GValue      *in_values,
-	GValue            *out_values)
+METHOD (BseMidiNotifier, current-time) {
+  HELP	= "Test";
+  IN	= g_param_spec_object ("midi_notifier", "Midi Notifier", NULL,
+ 			       BSE_TYPE_MIDI_NOTIFIER, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_uint ("msec_time", "Time [ms]", NULL,
+			     0, G_MAXUINT, 0, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
 {
   /* extract parameter values */
-  BseWaveOsc *self = g_value_get_object (in_values++);
+  BseMidiNotifier *self = g_value_get_object (in_values++);
+  struct timeval tv;
+  guint64 stamp;
   
   /* check parameters */
-  if (!BSE_IS_WAVE_OSC (self))
+  if (!BSE_IS_MIDI_NOTIFIER (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  bse_wave_osc_request_pcm_position (self);
+
+  gettimeofday (&tv, NULL);
+  stamp = tv.tv_sec;
+  stamp = stamp * 1000000 + tv.tv_usec;
+
+  /* set output parameters */
+  g_value_set_uint (out_values++, stamp / 1000);
   
   return BSE_ERROR_NONE;
 }

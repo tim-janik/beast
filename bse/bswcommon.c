@@ -21,6 +21,7 @@
 #include "bswprivate.h"
 #include "gslcommon.h"
 #include "bseplugin.h"
+#include "bseglue.h"
 #include "bsescripthelper.h"
 #include <string.h>
 
@@ -533,14 +534,57 @@ bsw_note_description_free (BswNoteDescription *info)
     }
 }
 
+static GslGlueRec*
+note_description_to_glue_rec (gpointer crecord)
+{
+  BswNoteDescription *info = crecord;
+  GslGlueValue val;
+  GslGlueRec *rec;
+
+  rec = gsl_glue_rec ();
+  /* note */
+  val = gsl_glue_value_int (info->note);
+  gsl_glue_rec_take_append (rec, &val);
+  /* octave */
+  val = gsl_glue_value_int (info->octave);
+  gsl_glue_rec_take_append (rec, &val);
+  /* freq */
+  val = gsl_glue_value_float (info->freq);
+  gsl_glue_rec_take_append (rec, &val);
+  /* fine_tune */
+  val = gsl_glue_value_int (info->fine_tune);
+  gsl_glue_rec_take_append (rec, &val);
+  /* half_tone */
+  val = gsl_glue_value_int (info->half_tone);
+  gsl_glue_rec_take_append (rec, &val);
+  /* upshift */
+  val = gsl_glue_value_bool (info->upshift);
+  gsl_glue_rec_take_append (rec, &val);
+  /* letter */
+  val = gsl_glue_value_int (info->letter);
+  gsl_glue_rec_take_append (rec, &val);
+  /* name */
+  val = gsl_glue_value_string (info->name);
+  gsl_glue_rec_take_append (rec, &val);
+  /* max_fine_tune */
+  val = gsl_glue_value_int (info->max_fine_tune);
+  gsl_glue_rec_take_append (rec, &val);
+  /* kammer_note */
+  val = gsl_glue_value_int (info->kammer_note);
+  gsl_glue_rec_take_append (rec, &val);
+  
+  return rec;
+}
+
 GType
 bsw_note_description_get_type (void)
 {
   static GType type = 0;
   if (!type)
-    type = g_boxed_type_register_static ("BswNoteDescription",
-					 note_description_copy,
-					 (GBoxedFreeFunc) bsw_note_description_free);
+    type = bse_glue_make_rorecord ("BswNoteDescription",
+				   note_description_copy,
+				   (GBoxedFreeFunc) bsw_note_description_free,
+				   note_description_to_glue_rec);
   return type;
 }
 
@@ -786,7 +830,7 @@ bsw_register_plugins (const gchar *path,
       const gchar *error;
 
       if (verbose)
-	g_string_printfa (gstring, "loading plugin \"%s\"...", string);
+	g_string_printfa (gstring, "register plugin \"%s\"...", string);
       handle_message (gstring, messages);
       error = bse_plugin_check_load (string);
       if (error)
@@ -828,7 +872,7 @@ bsw_register_scripts (const gchar *path,
       const gchar *error;
 
       if (verbose)
-	g_string_printfa (gstring, "loading script \"%s\"...", string);
+	g_string_printfa (gstring, "register script \"%s\"...", string);
       handle_message (gstring, messages);
       error = bse_script_file_register (string);
       if (error)

@@ -41,7 +41,10 @@ extern "C" {
 
 
 /* --- string functions --- */
-gchar*  g_strdup_quoted         (const gchar   *string);
+gchar**		g_straddv	 (gchar	       **str_array,
+				  const gchar	*new_str);
+gchar**		g_strslistv	(GSList		*slist);
+guint		g_strlenv	(gchar	       **str_array);
 
 
 /* --- double array --- */
@@ -65,43 +68,6 @@ void		g_darray_set	(GDArray        *darray,
 				 gdouble	 value);
 #define	g_darray_prepend(a,v)	g_darray_insert ((a), 0, (v))
 
-
-/* --- bsearch impl --- */
-#define G_BSEARCH_BEGIN(n_elements, elements, key_element, element_size)      \
-{                                                                             \
-  const gchar *G_BSEARCH_ELEMENT2 = NULL;                                     \
-  const gchar *_glib__base = (elements);                                      \
-  const gchar *G_BSEARCH_ELEMENT1 = (key_element);                            \
-  guint _glib__n_elements = (n_elements);                                     \
-  guint _glib__offset = 0, _glib__esize = (element_size);                     \
-  gpointer *_glib__ret;                                                       \
-  gboolean _glib__match = FALSE;                                              \
-                                                                              \
-  while (_glib__offset < _glib__n_elements)                                   \
-    {                                                                         \
-      guint _glib__index = (_glib__offset + _glib__n_elements) >> 1;          \
-      gint _glib__diff;                                                       \
-                                                                              \
-      G_BSEARCH_ELEMENT2 = _glib__base + _glib__index * _glib__esize;       { \
-
-/* difference = compare_func (G_BSEARCH_ELEMENT1, G_BSEARCH_ELEMENT2); */
-
-#define G_BSEARCH_END(difference, match_nearest, return_loc)                } \
-       _glib__diff = (difference);                                             \
-      if (_glib__diff < 0)                                                    \
-        _glib__n_elements = _glib__index;                                     \
-      else if (_glib__diff > 0)                                               \
-        _glib__offset = _glib__index + 1;                                     \
-      else /* _glib__diff == 0 */                                             \
-        {                                                                     \
-          _glib__match = TRUE;                                                \
-          break;                                                              \
-        }                                                                     \
-    }                                                                         \
-  _glib__match = _glib__match || (match_nearest);                             \
-  _glib__ret = (return_loc);                                                  \
-  *_glib__ret = _glib__match ? (gpointer) G_BSEARCH_ELEMENT2 : NULL;          \
-}
 
 
 /* --- signal queue --- */

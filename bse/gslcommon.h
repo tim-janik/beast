@@ -148,6 +148,7 @@ GslThread*	gsl_thread_new		(GslThreadFunc	func,
 					 gpointer	user_data);
 guint		gsl_threads_get_count	(void);
 GslThread*	gsl_thread_self		(void);
+GslThread*	gsl_thread_main		(void);
 
 
 /* --- thread syncronization --- */
@@ -158,7 +159,7 @@ void		gsl_thread_abort	(GslThread	*thread);
 void		gsl_thread_wakeup	(GslThread	*thread);
 void		gsl_thread_awake_after	(guint64	 tick_stamp);
 void		gsl_thread_awake_before	(guint64	 tick_stamp);
-void		gsl_thread_get_pollfd	(GslPollFD	*pfd);
+void		gsl_thread_get_pollfd	(GPollFD	*pfd);
 guint64		gsl_tick_stamp		(void);
 #define		GSL_TICK_STAMP		(_GSL_TICK_STAMP_VAL ())
 #define		GSL_MAX_TICK_STAMP	(~((guint64) 0))

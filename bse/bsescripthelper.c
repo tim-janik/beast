@@ -20,6 +20,10 @@
 #include "../PKG_config.h"
 #include "bsecategories.h"
 #include "bseserver.h"
+#include "bseglue.h"
+#include "gslgluecodec.h"
+#include "bsecomwire.h"
+#include "bsescriptcontrol.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -28,8 +32,16 @@
 static void		bse_script_procedure_init	(BseScriptProcedureClass *class,
 							 BseScriptData		 *sdata);
 static BseErrorType	bse_script_procedure_exec	(BseProcedureClass	 *proc,
-							 GValue			 *in_values,
+							 const GValue		 *in_values,
 							 GValue			 *out_values);
+static void		bse_script_send_event		(GslGlueCodec		 *codoex,
+							 gpointer		  user_data,
+							 const gchar		 *message);
+static GslGlueValue	bse_script_check_client_msg	(GslGlueCodec		 *codec,
+							 gpointer		  data,
+							 const gchar		 *msg,
+							 GslGlueValue		  value,
+							 gboolean		 *handled);
 static gboolean		bse_script_dispatcher		(gpointer		  data,
 							 guint			  request,
 							 const gchar		 *request_msg,
@@ -40,12 +52,8 @@ static GParamSpec*	bse_script_param_spec		(gchar			 *pspec_desc,
 							 gchar			**free1,
 							 gchar			**free2);
 static void		bse_script_param_stringify	(GString		 *gstring,
-							 GValue			 *value,
+							 const GValue		 *value,
 							 GParamSpec		 *pspec);
-
-
-/* --- variables --- */
-static GSList *wire_stack = NULL;
 
 
 /* --- functions --- */
@@ -162,75 +170,9 @@ bse_script_proc_register (const gchar *script_file,
   return type;
 }
 
-static GType
-bse_script_register_scan (const gchar *script_file,
-			  const gchar *bsr_args)
-{
-  GTokenType token = G_TOKEN_STRING;
-  GScanner *scanner;
-  GType type = 0;
-  gchar *name = NULL, *category = NULL, *blurb = NULL, *help = NULL;
-  gchar *author = NULL, *copyright = NULL, *date = NULL;
-  GSList *params = NULL;
-  
-  g_return_val_if_fail (script_file != NULL, 0);
-  g_return_val_if_fail (bsr_args != NULL, 0);
-
-  scanner = g_scanner_new (NULL);
-  g_scanner_input_text (scanner, bsr_args, strlen (bsr_args));
-
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
-    goto bail_out;
-  name = g_strdup (scanner->value.v_string);
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
-    goto bail_out;
-  category = g_strdup (scanner->value.v_string);
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
-    goto bail_out;
-  blurb = g_strdup (scanner->value.v_string);
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
-    goto bail_out;
-  help = g_strdup (scanner->value.v_string);
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
-    goto bail_out;
-  author = g_strdup (scanner->value.v_string);
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
-    goto bail_out;
-  copyright = g_strdup (scanner->value.v_string);
-  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
-    goto bail_out;
-  date = g_strdup (scanner->value.v_string);
-  while (g_scanner_get_next_token (scanner) == G_TOKEN_STRING)
-    params = g_slist_prepend (params, g_strdup (scanner->value.v_string));
-  params = g_slist_reverse (params);
-  if (scanner->token != ')')
-    {
-      token = ')';
-      goto bail_out;
-    }
-  type = bse_script_proc_register (script_file, name, category, blurb, help, author, copyright, date, params);
-  goto free_data;
-
- bail_out:
-  g_scanner_unexp_token (scanner, token, NULL, NULL, NULL, "not registering script", FALSE);
-
- free_data:
-  g_free (name);
-  g_free (category);
-  g_free (blurb);
-  g_free (help);
-  g_free (author);
-  g_free (copyright);
-  g_free (date);
-  string_list_free_deep (params);
-  g_scanner_destroy (scanner);
-
-  return type;
-}
-
 static BseErrorType
 bse_script_procedure_exec (BseProcedureClass *proc,
-			   GValue            *in_values,
+			   const GValue      *in_values,
 			   GValue            *out_values)
 {
   BseScriptProcedureClass *sproc = (BseScriptProcedureClass*) proc;
@@ -238,6 +180,8 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   BseServer *server = bse_server_get ();
   GSList *params = NULL;
   GString *gstring = g_string_new ("");
+  GslGlueCodec *codec;
+  BseScriptControl *sctrl;
   gchar *error, *shellpath;
   guint i;
 
@@ -252,9 +196,14 @@ bse_script_procedure_exec (BseProcedureClass *proc,
 						     gstring->str));
   g_string_free (gstring, TRUE);
   shellpath = g_strdup_printf ("%s/%s", BSW_PATH_BINARIES, "bswshell");
+  codec = gsl_glue_codec_new (bse_glue_context (),
+			      bse_script_send_event,
+			      bse_script_check_client_msg);
   error = bse_server_run_remote (server, sdata->script_file, shellpath,
-				 bse_script_dispatcher, sdata->script_file, NULL,
-				 params);
+				 bse_script_dispatcher, codec, (GDestroyNotify) gsl_glue_codec_destroy,
+				 params, &sctrl);
+  if (sctrl)
+    gsl_glue_codec_set_user_data (codec, sctrl, NULL);
   g_free (shellpath);
   string_list_free_deep (params);
 
@@ -265,12 +214,61 @@ bse_script_procedure_exec (BseProcedureClass *proc,
     }
   else
     {
-      bse_server_exec_status (server, BSE_EXEC_STATUS_START, sdata->script_file, -1, BSE_ERROR_NONE);
+      bse_script_control_set_file_name (sctrl, sdata->script_file);
+      bse_script_control_push_current (sctrl);
+      bse_server_exec_status (server, BSE_EXEC_STATUS_START,
+			      bse_script_control_get_ident (sctrl),
+			      -1, BSE_ERROR_NONE);
+      bse_script_control_pop_current ();
       /* don't let procedure notification override the status we just sent */
       bse_procedure_skip_next_exec_status ();
     }
   
   return error ? BSE_ERROR_SPAWN : BSE_ERROR_NONE;
+}
+
+static GslGlueValue
+bse_script_check_client_msg (GslGlueCodec *codec,
+			     gpointer      data,
+			     const gchar  *msg,
+			     GslGlueValue  value,
+			     gboolean     *handled)
+{
+  BseScriptControl *sctrl = codec->user_data;
+  GslGlueValue retval = { 0, };
+  
+  if (!msg)
+    return retval;
+  if (strcmp (msg, "bse-script-register") == 0)
+    {
+      GslGlueSeq *seq = value.value.v_seq;
+
+      *handled = TRUE;
+      if (value.glue_type != GSL_GLUE_TYPE_SEQ ||
+	  !seq || seq->n_elements < 7 ||
+	  seq->element_type != GSL_GLUE_TYPE_STRING)
+	retval = gsl_glue_value_string ("invalid arguments supplied");
+      else
+	{
+	  GSList *params = NULL;
+	  GType type;
+	  guint i;
+
+	  for (i = seq->n_elements - 1; i >= 7; i--)
+	    params = g_slist_prepend (params, seq->elements[i].value.v_string);
+	  type = bse_script_proc_register (bse_script_control_get_file_name (sctrl),
+					   seq->elements[0].value.v_string,
+					   seq->elements[1].value.v_string,
+					   seq->elements[2].value.v_string,
+					   seq->elements[3].value.v_string,
+					   seq->elements[4].value.v_string,
+					   seq->elements[5].value.v_string,
+					   seq->elements[6].value.v_string,
+					   params);
+	  g_slist_free (params);
+	}
+    }
+  return retval;
 }
 
 static gboolean
@@ -279,7 +277,8 @@ bse_script_dispatcher (gpointer        data,
 		       const gchar    *request_msg,
 		       BseComWire     *wire)
 {
-  const gchar *script_file = data;
+  GslGlueCodec *codec = data;
+  BseScriptControl *sctrl = codec->user_data;
   gchar *result;
 
   /* avoid spurious invocations */
@@ -287,62 +286,35 @@ bse_script_dispatcher (gpointer        data,
     return FALSE;
 
   /* log current wire */
-  wire_stack = g_slist_prepend (wire_stack, wire);
+  bse_script_control_push_current (sctrl);
 
-  /* catch registration requests */
-  if (strncmp (request_msg, "(bse-script-register", 20) == 0)
-    {
-      GType type = bse_script_register_scan (script_file, request_msg + 20);
-      
-      /* marshal response */
-      result = bse_procedure_marshal_retval (type ? 0 : BSE_ERROR_DATA_CORRUPT, NULL, NULL);
-    }
-  else
-    {
-      GValue value = { 0, };
-      BseErrorType error;
-      gchar *warnings;
+  /* dispatch serialized commands and fetch result.
+   */
+  result = gsl_glue_codec_process (codec, request_msg);
 
-      /* request_msg is a marshalled procedure call (or at least, it better be one ;)
-       * we block exec-status, because the various procedure calls that a script makes
-       * aren't all that interesting
-       */
-      bse_procedure_block_exec_status ();
-      warnings = bse_procedure_eval (request_msg, &error, &value);
-      bse_procedure_unblock_exec_status ();
-      
-      /* passing on warnings to the interpreter isn't actually usefull,
-       * as the interpreter is less likely to present stderr
-       */
-      if (warnings)
-	{
-	  gchar *esc = g_strescape (request_msg, NULL);
-	  
-	  g_printerr ("%s: while evaluating request \"%s\":\n%s\n", wire->ident, esc, warnings);
-	  g_free (esc);
-	  g_free (warnings);
-	}
-      
-      /* marshal return values */
-      result = bse_procedure_marshal_retval (error, &value, NULL);
-      g_value_unset (&value);
-    }
-
-  /* and send them back through the wire */
+  /* and send result back through the wire */
   bse_com_wire_send_result (wire, request, result);
   g_free (result);
 
   /* unlog wire */
-  wire_stack = g_slist_remove (wire_stack, wire);
+  bse_script_control_pop_current ();
 
   /* we handled this request_msg */
   return TRUE;
 }
 
-BseComWire*
-bse_script_peek_current_wire (void)
+static void
+bse_script_send_event (GslGlueCodec *codec,
+		       gpointer      data,
+		       const gchar  *message)
 {
-  return wire_stack ? wire_stack->data : NULL;
+  BseScriptControl *sctrl = codec->user_data;
+  BseComWire *wire = sctrl->wire;
+  guint request_id;
+
+  request_id = bse_com_wire_send_request (wire, message);
+  /* one-way message */
+  bse_com_wire_forget_request (wire, request_id);
 }
 
 GSList*
@@ -359,16 +331,27 @@ bse_script_file_register (const gchar *file_name)
   BseServer *server = bse_server_get ();
   GSList *params = NULL;
   gchar *error, *shellpath, *warning = NULL;
-
+  BseScriptControl *sctrl;
+  GslGlueCodec *codec;
+  
   params = g_slist_prepend (params, g_strdup_printf ("--bse-enable-register"));
   params = g_slist_prepend (params, g_strdup_printf ("(load \"%s\")", file_name));
   shellpath = g_strdup_printf ("%s/%s", BSW_PATH_BINARIES, "bswshell");
-  error = bse_server_run_remote (server, file_name, shellpath, bse_script_dispatcher, g_strdup (file_name), g_free, params);
+  codec = gsl_glue_codec_new (bse_glue_context (),
+			      bse_script_send_event,
+			      bse_script_check_client_msg);
+  error = bse_server_run_remote (server, file_name, shellpath,
+				 bse_script_dispatcher, codec, (GDestroyNotify) gsl_glue_codec_destroy,
+				 params, &sctrl);
+  if (sctrl)
+    gsl_glue_codec_set_user_data (codec, sctrl, NULL);
   g_free (shellpath);
   string_list_free_deep (params);
 
   if (error)
     warning = g_strdup_printf ("failed to start interpreter for \"%s\": %s", file_name, error);
+  else
+    bse_script_control_set_file_name (sctrl, file_name);
   g_free (error);
   
   return warning;
@@ -460,18 +443,31 @@ bse_script_param_spec (gchar       *pspec_desc,
 	dfnote = BSE_NOTE_VOID;
       return bse_param_spec_note (cname, nick, blurb, BSE_MIN_NOTE, BSE_MAX_NOTE, dfnote, 1, TRUE, PARAM_FLAGS);
     }
+  else if (strncmp (pspec_desc, "BseParamProxy", 13) == 0)	/* "BseParamProxyBseProject:Project:0" */
+    {
+      GType type = g_type_from_name (pspec_desc + 13);
+
+      if (!g_type_is_a (type, BSE_TYPE_ITEM))
+	{
+	  g_message ("unknown proxy type: %s", pspec_desc + 13);
+	  return NULL;
+	}
+      else
+	return g_param_spec_object (cname, nick, blurb, type, PARAM_FLAGS);
+    }
   else
     return NULL;
 }
 
 static void
-bse_script_param_stringify (GString    *gstring,
-			    GValue     *value,
-			    GParamSpec *pspec)
+bse_script_param_stringify (GString      *gstring,
+			    const GValue *value,
+			    GParamSpec   *pspec)
 {
   switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)))
     {
       gchar *str;
+      GObject *obj;
     case G_TYPE_STRING:
       str = g_value_get_string (value);
       str = g_strescape (str ? str : "", NULL);
@@ -491,6 +487,10 @@ bse_script_param_stringify (GString    *gstring,
       str = bse_note_to_string (bse_value_get_note (value));
       g_string_printfa (gstring, "\"%s\"", str);
       g_free (str);
+      break;
+    case G_TYPE_OBJECT:
+      obj = g_value_get_object (value);
+      g_string_printfa (gstring, "%u", BSE_IS_ITEM (obj) ? BSE_OBJECT_ID (obj) : 0);
       break;
     default:
       g_assert_not_reached ();

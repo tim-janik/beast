@@ -41,12 +41,12 @@ extern "C" {
 
 
 /* --- typedefs --- */
-typedef gboolean (*GslPollFunc)		(gpointer	  data,
-					 guint		  n_values,
-					 glong		 *timeout_p,
-					 guint            n_fds,
-					 const GslPollFD *fds,
-					 gboolean	  revents_filled);
+typedef gboolean (*GslPollFunc)		(gpointer	data,
+					 guint		n_values,
+					 glong	       *timeout_p,
+					 guint          n_fds,
+					 const GPollFD *fds,
+					 gboolean	revents_filled);
 typedef void     (*GslProcessFunc)	(GslModule	 *module,
 					 guint		  n_values);
 typedef guint    (*GslProcessDeferFunc)	(GslModule	 *module,
@@ -141,7 +141,7 @@ GslJob*		gsl_job_add_poll	(GslPollFunc	  poll_func,
 					 gpointer	  data,
 					 GslFreeFunc	  free_func,
 					 guint		  n_fds,
-					 const GslPollFD *fds);
+					 const GPollFD   *fds);
 GslJob*		gsl_job_remove_poll	(GslPollFunc	  poll_func,
 					 gpointer	  data);
 GslTrans*	gsl_trans_open		(void);
@@ -176,7 +176,7 @@ typedef struct
   glong		timeout;
   gboolean	fds_changed;
   guint		n_fds;
-  GslPollFD    *fds;
+  GPollFD      *fds;
   gboolean	revents_filled;
 } GslEngineLoop;
 gboolean        gsl_engine_prepare	(GslEngineLoop		*loop);

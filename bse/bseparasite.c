@@ -76,7 +76,7 @@ store_parasite_list (BseObject  *object,
 	continue;
 
       bse_storage_break (storage);
-      name = g_strdup_quoted (g_quark_to_string (parasite->quark));
+      name = g_strescape (g_quark_to_string (parasite->quark), NULL);
       bse_storage_printf (storage, "(parasite #\\%c \"%s\"",
 			  parasite->type,
 			  name);

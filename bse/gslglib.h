@@ -397,9 +397,19 @@ g_trash_stack_height (GTrashStack **stack_p)
 #endif  /* !__GNUC__ */
 
 
-
-/* --- sick defines --- */
-typedef struct { int fd; short events, revents; } GPollFD;
+/* --- GPollFD (for poll(2)) --- */
+#define G_IO_IN      (0x0001 /* There is data to read */)
+#define G_IO_PRI     (0x0002 /* There is urgent data to read */)
+#define G_IO_OUT     (0x0004 /* Writing now will not block */)
+#define G_IO_ERR     (0x0008 /* Error condition */)
+#define G_IO_HUP     (0x0010 /* Hung up */)
+#define G_IO_NVAL    (0x0020 /* Invalid request: fd not open */)
+typedef struct
+{
+  gint    fd;
+  gushort events;
+  gushort revents;
+} GPollFD;
 
 
 

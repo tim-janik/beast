@@ -21,51 +21,67 @@
 #include	<string.h>
 
 
-gchar*
-g_strdup_quoted (const gchar *string)
+
+/* --- string functions --- */
+gchar**
+g_straddv (gchar      **str_array,
+	   const gchar *new_str)
 {
-  GString *gstring;
-  gchar *retval;
-  
-  g_return_val_if_fail (string != NULL, NULL);
-  
-  gstring = g_string_new ("");
-  while (*string)
+  if (new_str)
     {
-      switch (*string)
+      if (!str_array)
 	{
-	case '\\':
-	  g_string_append (gstring, "\\\\");
-	  break;
-	case '\t':
-	  g_string_append (gstring, "\\t");
-	  break;
-	case '\n':
-	  g_string_append (gstring, "\\n");
-	  break;
-	case '\r':
-	  g_string_append (gstring, "\\r");
-	  break;
-	case '\b':
-	  g_string_append (gstring, "\\b");
-	  break;
-	case '\f':
-	  g_string_append (gstring, "\\f");
-	  break;
-	default:
-	  if (*string > 126 || *string < 32)
-	    g_string_printfa (gstring, "\\%03o", (guchar) *string);
-	  else
-	    g_string_append_c (gstring, *string);
-	  break;
+	  str_array = g_new (gchar*, 2);
+	  str_array[0] = g_strdup (new_str);
+	  str_array[1] = NULL;
 	}
-      string++;
+      else
+	{
+	  guint i = 0;
+
+	  while (str_array[i])
+	    i++;
+	  str_array = g_renew (gchar*, str_array, i + 1 + 1);
+	  str_array[i] = g_strdup (new_str);
+	  i++;
+	  str_array[i] = NULL;
+	}
     }
-  
-  retval = gstring->str;
-  g_string_free (gstring, FALSE);
-  
-  return retval;
+  return str_array;
+}
+
+guint
+g_strlenv (gchar **str_array)
+{
+  guint i = 0;
+
+  if (str_array)
+    while (str_array[i])
+      i++;
+
+  return i;
+}
+
+gchar**
+g_strslistv (GSList *slist)
+{
+  gchar **str_array;
+  guint i;
+
+  if (!slist)
+    return NULL;
+
+  i = g_slist_length (slist);
+  str_array = g_new (gchar*, i + 1);
+  i = 0;
+  while (slist)
+    {
+      str_array[i++] = g_strdup (slist->data);
+      slist = slist->next;
+    }
+  str_array[i] = NULL;
+
+  return str_array;
 }
 
 GDArray*

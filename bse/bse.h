@@ -41,6 +41,7 @@
 #include        <bse/bseitem.h>
 #include        <bse/bsemain.h>
 #include        <bse/bsemath.h>
+#include	<bse/bsemidinotifier.h>
 #include	<bse/bsemidisynth.h>
 #include        <bse/bseobject.h>
 #include        <bse/bseparam.h>
@@ -54,6 +55,7 @@
 #include        <bse/bseproject.h>
 #include        <bse/bseserver.h>
 #include        <bse/bsescripthelper.h>
+#include        <bse/bsescriptcontrol.h>
 #include        <bse/bsesnet.h>
 #include        <bse/bsesong.h>
 #include        <bse/bsesource.h>

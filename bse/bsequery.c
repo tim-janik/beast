@@ -164,6 +164,8 @@ show_procdoc (void)
 	}
       if (class->help)
 	fprintf (f_out, " * %s\n", class->help);
+      else if (class->blurb)
+	fprintf (f_out, " * %s\n", class->blurb);
       fprintf (f_out, " **/\n");
       g_type_class_unref (class);
       g_free (pname);

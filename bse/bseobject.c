@@ -314,6 +314,8 @@ bse_object_do_dispose (GObject *gobject)
   BseObject *object = BSE_OBJECT (gobject);
   
   g_return_if_fail (gobject->ref_count == 1);
+
+  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DISPOSED);
   
   /* perform destroy notification */
   g_signal_emit (object, object_signals[SIGNAL_DESTROY], 0);
@@ -491,6 +493,44 @@ bse_object_class_add_signal (BseObjectClass    *oclass,
   return signal_id;
 }
 
+guint
+bse_object_class_add_dsignal (BseObjectClass    *oclass,
+			      const gchar       *signal_name,
+			      GSignalCMarshaller c_marshaller,
+			      GSignalCMarshaller proxy_marshaller,
+			      GType              return_type,
+			      guint              n_params,
+			      ...)
+{
+  va_list args;
+  guint signal_id;
+  gpointer old_proxy_marshaller;
+
+  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
+  g_return_val_if_fail (signal_name != NULL, 0);
+  g_return_val_if_fail (c_marshaller != NULL, 0);
+  
+  va_start (args, n_params);
+  signal_id = g_signal_new_valist (signal_name,
+				   G_TYPE_FROM_CLASS (oclass),
+				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_DETAILED,
+				   NULL, NULL, NULL,
+				   c_marshaller,
+				   return_type,
+				   n_params, args);
+  va_end (args);
+
+  old_proxy_marshaller = g_hash_table_lookup (marshaller_ht, c_marshaller);
+  if (old_proxy_marshaller && old_proxy_marshaller != proxy_marshaller)
+    g_warning ("proxy marshaller mismatch for signal \"%s::%s\": %p != %p",
+	       g_type_name (G_TYPE_FROM_CLASS (oclass)), signal_name,
+	       old_proxy_marshaller, proxy_marshaller);
+  else
+    g_hash_table_insert (marshaller_ht, c_marshaller, proxy_marshaller);
+  
+  return signal_id;
+}
+
 GSignalCMarshaller
 bse_proxy_marshaller_lookup (GSignalCMarshaller c_marshaller)
 {
@@ -622,9 +662,14 @@ bse_object_unlock (BseObject *object)
 gpointer
 bse_object_from_id (guint unique_id)
 {
-  /* g_return_val_if_fail (unique_id > 0, NULL); reveal NULL for 0 IDs */
-  
-  return g_hash_table_lookup (object_id_ht, (gpointer) unique_id);
+  gpointer object = g_hash_table_lookup (object_id_ht, (gpointer) unique_id);
+
+  /* we reveal NULL for disposed objects or 0 IDs */
+
+  if (object && BSE_OBJECT_DISPOSED (object))
+    object = NULL;
+
+  return object;
 }
 
 GList*

@@ -108,9 +108,9 @@ bse_sub_instrument_class_init (BseSubInstrumentClass *class)
   
   oport_class->n_output_ports = 4;
   
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Left Out", "Left Channel Output");
+  ichannel_id = bse_source_class_add_ichannel (source_class, "Left Audio", "Left Channel Output");
   g_assert (ichannel_id == BSE_SUB_INSTRUMENT_ICHANNEL_LEFT);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "Right Out", "Right Channel Output");
+  ichannel_id = bse_source_class_add_ichannel (source_class, "Right Audio", "Right Channel Output");
   g_assert (ichannel_id == BSE_SUB_INSTRUMENT_ICHANNEL_RIGHT);
   ichannel_id = bse_source_class_add_ichannel (source_class, "Unused", NULL);
   g_assert (ichannel_id == BSE_SUB_INSTRUMENT_ICHANNEL_UNUSED);

@@ -25,21 +25,22 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-typedef gboolean (*BseComDispatch)	(gpointer	 data,
-					 guint		 request,
-					 const gchar	*request_msg,
-					 BseComWire	*wire);
+/* typedef gboolean (*BseComDispatch)	(gpointer	 data,
+ *					 guint		 request,
+ *					 const gchar	*request_msg,
+ *					 BseComWire	*wire);
+ */
+
 struct _BseComWire
 {
   gchar		*ident;		/* debugging identifier for this connection */
+  gpointer	 owner;		/* BseScriptControl* */
   guint		 connected : 1;
-  guint		 killed : 1;
   guint		 remote_input_broke : 1;
   guint		 remote_output_broke : 1;
   guint		 standard_input_broke : 1;
   guint		 standard_output_broke : 1;
   guint		 standard_error_broke : 1;
-  gint		 user_status;
   
   BseComDispatch dispatch_func;
   gpointer	 dispatch_data;

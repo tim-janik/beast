@@ -76,13 +76,13 @@ bse_midi_module_process (GslModule *module,
   gfloat values[BSE_MIDI_MODULE_N_CHANNELS];
   guint i;
 
-  channel = _bse_midi_decoder_lock_channel (mdata->decoder, mdata->midi_channel_id - 1);
+  channel = bse_midi_decoder_lock_channel_ASYNC (mdata->decoder, mdata->midi_channel_id - 1);
   for (i = 0; i < BSE_MIDI_MODULE_N_CHANNELS; i++)
     if (module->ostreams[i].connected)
       values[i] = pick_signal (channel, signals[i], nth_note);
     else
       values[i] = 0.0;
-  _bse_midi_decoder_unlock_channel (mdata->decoder, channel);
+  bse_midi_decoder_unlock_channel_ASYNC (mdata->decoder, channel);
 
   /* wait with gsl_const_values() untill here to keep lock latencies small */
   for (i = 0; i < BSE_MIDI_MODULE_N_CHANNELS; i++)
@@ -126,7 +126,7 @@ bse_midi_module_insert (BseMidiDecoder *decoder,
   gsl_trans_add (trans, gsl_job_integrate (module));
   gsl_trans_add (trans, gsl_job_set_consumer (module, TRUE));
 
-  _bse_midi_decoder_use_channel (mdata->decoder, mdata->midi_channel_id - 1);
+  bse_midi_decoder_use_channel (mdata->decoder, mdata->midi_channel_id - 1);
   
   return module;
 }
@@ -141,7 +141,7 @@ bse_midi_module_remove (GslModule *midi_module,
   g_return_if_fail (trans != NULL);
 
   mdata = midi_module->user_data;
-  _bse_midi_decoder_unuse_channel (mdata->decoder, mdata->midi_channel_id - 1);
+  bse_midi_decoder_unuse_channel (mdata->decoder, mdata->midi_channel_id - 1);
 
   gsl_trans_add (trans, gsl_job_discard (midi_module));
 }

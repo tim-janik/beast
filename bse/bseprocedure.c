@@ -260,6 +260,12 @@ bse_procedure_block_exec_status (void)
   exec_status_blocker++;
 }
 
+gboolean
+bse_procedure_exec_status_blocked (void)
+{
+  return exec_status_blocker > 0;
+}
+
 void
 bse_procedure_skip_next_exec_status (void)
 {

@@ -135,7 +135,7 @@ bse_constant_class_init (BseConstantClass *class)
 						       BSE_PARAM_GUI));
       g_free (string);
       g_free (name);
-      string = g_strdup_printf ("Const Out %u", i);
+      string = g_strdup_printf ("Const Out%u", i);
       name = g_strdup_printf ("Constant Output %u", i);
       ochannel = bse_source_class_add_ochannel (source_class, string, name);
       g_assert (ochannel == i - 1);

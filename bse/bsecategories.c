@@ -142,6 +142,20 @@ centry_new (const gchar *caller,
   return centry;
 }
 
+static void
+check_type (GType type)
+{
+  if (BSE_TYPE_IS_PROCEDURE (type))
+    {
+      gchar *x = g_strcanon (g_strdup (g_type_name (type)),
+			     G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "+",
+			     '-');
+      if (strcmp (x, g_type_name (type)) != 0)
+	g_warning ("type name with invalid characters: %s", g_type_name (type));
+      g_free (x);
+    }
+}
+
 void
 bse_categories_register (const gchar *category,
 			 GType        type)
@@ -151,6 +165,7 @@ bse_categories_register (const gchar *category,
   g_return_if_fail (category != NULL);
 
   centry = centry_new (G_GNUC_PRETTY_FUNCTION, category);
+  check_type (type);
   if (centry)
     {
       centry->type = type;
@@ -169,6 +184,7 @@ bse_categories_register_icon (const gchar      *category,
   g_return_if_fail (pixdata != NULL);
 
   centry = centry_new (G_GNUC_PRETTY_FUNCTION, category);
+  check_type (type);
   if (centry)
     {
       centry->type = type;

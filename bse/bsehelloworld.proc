@@ -34,7 +34,7 @@ PROCEDURE (bse-hello-world, "Toys/Hello World") {
 	   "parameters.");
   /* no input/output parameters */
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* issue a message */
@@ -58,7 +58,7 @@ PROCEDURE (bse-randomizer, "Toys/Randomizer") {
   OUT	= bse_param_spec_string ("text", "Random Text", NULL,
 			       NULL, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */

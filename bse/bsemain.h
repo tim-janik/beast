@@ -61,7 +61,6 @@ extern gboolean	bse_developer_extensions;
 #define		BSE_DVL_EXT			(bse_developer_extensions != FALSE)
 
 
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

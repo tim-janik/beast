@@ -28,13 +28,13 @@ CRIGHTS	= "Tim Janik";
 DATE	= "2001";
 
 
-METHOD (BseSource, set-input) {
-  HELP	= "Connect a source input to another source's output";
-  IN	= g_param_spec_object ("input-source", "Input Source", NULL,
+METHOD (BseSource, set-input-by-id) {
+  HELP	= "Connect a module input to another module's output.";
+  IN	= g_param_spec_object ("imodule", "Input Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("output-source", "Output Source", NULL,
+  IN	= g_param_spec_object ("omodule", "Output Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("output-channel", "Output Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -43,7 +43,7 @@ METHOD (BseSource, set-input) {
 			     BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -67,13 +67,54 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseSource, unset-input) {
-  HELP	= "Disconnect a source input";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+METHOD (BseSource, set-input) {
+  HELP	= "Connect a module input to another module's output.";
+  IN	= g_param_spec_object ("imodule", "Input Module", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("input-channel", "Input Channel", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_object ("omodule", "Output Module", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("output-channel", "Output Channel", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *isource = g_value_get_object (in_values++);
+  gchar *ichannel    = g_value_get_string (in_values++);
+  BseSource *osource = g_value_get_object (in_values++);
+  gchar *ochannel    = g_value_get_string (in_values++);
+  BseErrorType error;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
+      BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
+      !ichannel || !ochannel)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* connect */
+  error = bse_source_set_input (isource, bse_source_find_ichannel (isource, ichannel),
+				osource, bse_source_find_ochannel (osource, ochannel));
+  
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, unset-input-by-id) {
+  HELP	= "Disconnect a module input.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_object ("output-source", "Output Source", NULL,
+  IN	= g_param_spec_object ("omodule", "Output Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("output-channel", "Output Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -82,7 +123,7 @@ METHOD (BseSource, unset-input) {
 			     BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -106,13 +147,54 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseSource, unset-input) {
+  HELP	= "Disconnect a module input.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("input-channel", "Input Channel", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_object ("omodule", "Output Module", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("output-channel", "Output Channel", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *isource = g_value_get_object (in_values++);
+  gchar *ichannel    = g_value_get_string (in_values++);
+  BseSource *osource = g_value_get_object (in_values++);
+  gchar *ochannel    = g_value_get_string (in_values++);
+  BseErrorType error = BSE_ERROR_NONE;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
+      BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent ||
+      !ichannel || !ochannel)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* disconnect */
+  error = bse_source_unset_input (isource, bse_source_find_ichannel (isource, ichannel),
+				  osource, bse_source_find_ochannel (osource, ochannel));
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseSource, clear-inputs) {
-  HELP	= "Disconnect all source inputs";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Disconnect all module inputs.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -129,12 +211,12 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseSource, clear-outputs) {
-  HELP	= "Disconnect all source outputs";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Disconnect all module outputs.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -151,14 +233,14 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseSource, n-ichannels) {
-  HELP	= "Get the number of input channels of a source";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Get the number of input channels of a module.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -175,8 +257,8 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseSource, ichannel-name) {
-  HELP	= "Get input channel name";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Get input channel name.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -184,7 +266,7 @@ METHOD (BseSource, ichannel-name) {
 			       NULL, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -201,9 +283,36 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseSource, ichannel-cname) {
+  HELP	= "Get canonical input channel name.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_string ("channel_name", "Channel Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ichannel    = g_value_get_uint (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_CNAME (source, ichannel));
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseSource, ichannel-blurb) {
-  HELP	= "Get input channel description";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Get input channel description.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -211,7 +320,7 @@ METHOD (BseSource, ichannel-blurb) {
 			       NULL, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -228,9 +337,9 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseSource, is-joint-ichannel) {
-  HELP	= "Check if an input channel is a joint (multi-connect) channel";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+METHOD (BseSource, is-joint-ichannel-by-id) {
+  HELP	= "Check if an input channel is a joint (multi-connect) channel.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -238,7 +347,7 @@ METHOD (BseSource, is-joint-ichannel) {
 				FALSE, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -255,9 +364,39 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseSource, is-joint-ichannel) {
+  HELP	= "Check if an input channel is a joint (multi-connect) channel.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("input-channel", "Input Channel", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boolean ("is_jchannel", "Is Joint Channel", NULL,
+				FALSE, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  gchar *ichannel   = g_value_get_string (in_values++);
+  guint id;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || !ichannel)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  id = bse_source_find_ichannel (source, ichannel);
+  g_value_set_boolean (out_values++,
+		       id < BSE_SOURCE_N_ICHANNELS (source) ? BSE_SOURCE_IS_JOINT_ICHANNEL (source, id) : FALSE);
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseSource, ichannel-get-n-joints) {
-  HELP	= "Retrive the number of input connections of an input channel";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Retrive the number of inputs connected to an input channel.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -265,7 +404,7 @@ METHOD (BseSource, ichannel-get-n-joints) {
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -288,8 +427,8 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseSource, ichannel-get-osource) {
-  HELP	= "Retrive output source connected to a specific joint of an input channel";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Retrive output module connected to a specific joint of an input channel";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -299,7 +438,7 @@ METHOD (BseSource, ichannel-get-osource) {
 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -325,8 +464,8 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseSource, ichannel-get-ochannel) {
-  HELP	= "Retrive output channel of the source connected to a specific joint of an input channel";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Retrive output channel of the module connected to a specific joint of an input channel.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -336,7 +475,7 @@ METHOD (BseSource, ichannel-get-ochannel) {
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -362,14 +501,14 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseSource, n-ochannels) {
-  HELP	= "Get the number of output channels of a source";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Get the number of output channels of a module.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -386,8 +525,8 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseSource, ochannel-name) {
-  HELP	= "Get output channel name";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Get output channel name.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -395,7 +534,7 @@ METHOD (BseSource, ochannel-name) {
 			       NULL, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -412,9 +551,36 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseSource, ochannel-cname) {
+  HELP	= "Get canonical output channel name.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_string ("channel_name", "Channel Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ochannel    = g_value_get_uint (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_CNAME (source, ochannel));
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseSource, ochannel-blurb) {
-  HELP	= "Get output channel description";
-  IN	= g_param_spec_object ("source", "Source", NULL,
+  HELP	= "Get output channel description.";
+  IN	= g_param_spec_object ("module", "Module", NULL,
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
@@ -422,7 +588,7 @@ METHOD (BseSource, ochannel-blurb) {
 			       NULL, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */

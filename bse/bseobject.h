@@ -50,13 +50,15 @@ extern "C" {
 #define BSE_OBJECT_SET_FLAGS(object, f)	  (BSE_OBJECT_FLAGS (object) |= (f))
 #define BSE_OBJECT_UNSET_FLAGS(object, f) (BSE_OBJECT_FLAGS (object) &= ~(f))
 #define BSE_OBJECT_IS_LOCKED(object)	  (((BseObject*) (object))->lock_count > 0)
+#define BSE_OBJECT_DISPOSED(object)	  ((BSE_OBJECT_FLAGS (object) & BSE_OBJECT_FLAG_DISPOSED) > 0)
 #define BSE_OBJECT_ID(object)		  (((BseObject*) (object))->unique_id)
 
 
 /* --- bse object flags --- */
 typedef enum				/*< skip >*/
 {
-  BSE_OBJECT_FLAG_FIXED_UNAME		= 1 << 0
+  BSE_OBJECT_FLAG_FIXED_UNAME		= 1 << 0,
+  BSE_OBJECT_FLAG_DISPOSED		= 1 << 1
 } BseObjectFlags;
 #define BSE_OBJECT_FLAGS_USHIFT	    (2)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
@@ -128,6 +130,13 @@ void		bse_object_class_add_parser	(BseObjectClass *oclass,
 						 BseObjectParseStatement parse_func,
 						 gpointer	 user_data);
 guint		bse_object_class_add_signal	(BseObjectClass	*oclass,
+						 const gchar	*signal_name,
+						 GSignalCMarshaller c_marshaller,
+						 GSignalCMarshaller proxy_marshaller,
+						 GType           return_type,
+						 guint           n_params,
+						 ...);
+guint		bse_object_class_add_dsignal	(BseObjectClass	*oclass,
 						 const gchar	*signal_name,
 						 GSignalCMarshaller c_marshaller,
 						 GSignalCMarshaller proxy_marshaller,

@@ -32,7 +32,7 @@ METHOD (BsePart, insert-note) {
   IN	= bse_param_spec_uint ("tick", "Start Tick", NULL,
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
-			       1, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
+			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_float ("freq", "Frequency", NULL,
 				0, BSE_MAX_FREQUENCY,
 				BSE_KAMMER_FREQ, 10.0,
@@ -46,7 +46,7 @@ METHOD (BsePart, insert-note) {
 			     BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -82,7 +82,7 @@ METHOD (BsePart, delete-note) {
 				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -113,7 +113,7 @@ METHOD (BsePart, find-notes) {
 			      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -152,7 +152,7 @@ METHOD (BsePart, check-overlap) {
 			      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -191,7 +191,7 @@ METHOD (BsePart, freq-equals) {
 				FALSE, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -224,7 +224,7 @@ METHOD (BsePart, get-note) {
 			      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -254,7 +254,7 @@ METHOD (BsePart, get-min-octave) {
 			      -G_MAXINT, G_MAXINT, 0, 1, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */
@@ -278,7 +278,7 @@ METHOD (BsePart, get-max-octave) {
 			      -G_MAXINT, G_MAXINT, 0, 1, BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
-      GValue            *in_values,
+      const GValue      *in_values,
       GValue            *out_values)
 {
   /* extract parameter values */

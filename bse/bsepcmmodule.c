@@ -56,12 +56,12 @@ static void		bse_pcm_imodule_remove	(GslModule	*pcm_module,
 
 /* --- functions --- */
 static gboolean
-bse_pcm_module_poll (gpointer         data,
-		     guint            n_values,
-		     glong           *timeout_p,
-		     guint            n_fds,
-		     const GslPollFD *fds,
-		     gboolean         revents_filled)
+bse_pcm_module_poll (gpointer       data,
+		     guint          n_values,
+		     glong         *timeout_p,
+		     guint          n_fds,
+		     const GPollFD *fds,
+		     gboolean       revents_filled)
 {
 #if 0
   /* written for full OSS buffer fills */

@@ -34,16 +34,14 @@ enum
 static void	bse_bin_data_class_init		(BseBinDataClass	*class);
 static void	bse_bin_data_init		(BseBinData		*bin_data);
 static void	bse_bin_data_destroy		(BseObject		*object);
-static void     bse_bin_data_set_property          (BseBinData		*bin_data,
+static void     bse_bin_data_set_property       (GObject                *object,
+						 guint          	 param_id,
+						 const GValue         	*value,
+						 GParamSpec     	*pspec);
+static void     bse_bin_data_get_property 	(GObject                *object,
 						 guint          	 param_id,
 						 GValue         	*value,
-						 GParamSpec     	*pspec,
-						 const gchar    	*trailer);
-static void     bse_bin_data_get_property 		(BseBinData        	*bin_data,
-						 guint          	 param_id,
-						 GValue         	*value,
-						 GParamSpec     	*pspec,
-						 const gchar    	*trailer);
+						 GParamSpec     	*pspec);
 static void	bse_bin_data_free_values	(BseBinData		*bin_data);
 
 
@@ -84,8 +82,8 @@ bse_bin_data_class_init (BseBinDataClass *class)
   gobject_class = G_OBJECT_CLASS (class);
   object_class = BSE_OBJECT_CLASS (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_bin_data_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_bin_data_get_property;
+  gobject_class->set_property = bse_bin_data_set_property;
+  gobject_class->get_property = bse_bin_data_get_property;
   
   object_class->destroy = bse_bin_data_destroy;
   
@@ -128,45 +126,47 @@ bse_bin_data_destroy (BseObject *object)
 }
 
 static void
-bse_bin_data_set_property (BseBinData  *bin_data,
-			guint        param_id,
-			GValue      *value,
-			GParamSpec  *pspec,
-			const gchar *trailer)
+bse_bin_data_set_property (GObject      *object,
+			   guint         param_id,
+			   const GValue *value,
+			   GParamSpec   *pspec)
 {
-  if (bin_data->values)
-    bse_bin_data_free_values (bin_data);
+  BseBinData *self = BSE_BIN_DATA (object);
+
+  if (self->values)
+    bse_bin_data_free_values (self);
   switch (param_id)
     {
     case PARAM_N_BITS:
-      bin_data->bits_per_value = g_value_get_uint (value);
+      self->bits_per_value = g_value_get_uint (value);
       break;
     case PARAM_BYTE_SIZE:
-      bin_data->bits_per_value = g_value_get_uint (value);
+      self->bits_per_value = g_value_get_uint (value);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (bin_data, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_bin_data_get_property (BseBinData  *bin_data,
-                        guint        param_id,
-			GValue      *value,
-			GParamSpec  *pspec,
-			const gchar *trailer)
+bse_bin_data_get_property (GObject    *object,
+			   guint       param_id,
+			   GValue     *value,
+			   GParamSpec *pspec)
 {
+  BseBinData *self = BSE_BIN_DATA (object);
+
   switch (param_id)
     {
     case PARAM_N_BITS:
-      g_value_set_uint (value, bin_data->bits_per_value);
+      g_value_set_uint (value, self->bits_per_value);
       break;
     case PARAM_BYTE_SIZE:
-      g_value_set_uint (value, bin_data->bits_per_value * 8);
+      g_value_set_uint (value, self->bits_per_value * 8);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (bin_data, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }

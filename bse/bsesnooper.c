@@ -105,7 +105,7 @@ bse_snooper_class_init (BseSnooperClass *class)
 						   0, 65535, 0, 1,
 						   BSE_PARAM_DEFAULT));
 
-  ichannel = bse_source_class_add_ichannel (source_class, "Mono In", "Snoop Signal");
+  ichannel = bse_source_class_add_ichannel (source_class, "Signal In", "Snoop Signal");
   g_assert (ichannel == BSE_SNOOPER_ICHANNEL_MONO);
 }
 

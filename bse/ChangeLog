@@ -1,3 +1,96 @@
+Thu Jun 13 07:28:34 2002  Tim Janik  <timj@gtk.org>
+
+	* bsemidinotifier.[hcp]*: new object, emitting notification of incomming
+	MIDI events.
+
+	* bsescriptcontrol.[hcp]*: new object, proxying running scripts and
+	allowing for user side control of scripts.
+
+	* *.c: more i/o channel name fixups.
+
+	* bsebindata.c: code cleanups.
+
+	* bsecategories.c: check type name syntax.
+
+	* bsecomwire.[hc]: removed temporary hacks, slight fixup to
+	random request id generation.
+
+	* bsecontainer.proc: added lookup procedure to find a named child
+	of a container.
+
+	* *.proc: const cleanups.
+
+	* bseenums.[hc]: added user error enum values.
+
+	* bseitem.proc: added is_a check procedure.
+
+	* bsemidimodule.c:
+	* bsemididevice-oss.c: changes due to new timestamped and thread-safe
+	MIDI decoder API.
+
+	* bsemidievent.[hc]: midi decoder API extensions to provide
+	time stamped MIDI events. explicitely marked mutex-affected
+	functions and implemented thread-safety measures.
+
+	* bseobject.[hc] (bse_object_do_dispose): set the
+	BSE_OBJECT_FLAG_DISPOSED flag on objects, since we don't support
+	resurrection in general.
+	(bse_object_class_add_dsignal): allow addition of detailed signals.
+	(bse_object_from_id): don't hand out disposed objects.
+
+	* bseparasite.c: fixed string-escaping bug.
+
+	* bsepart.[hc]: for now, limit the maximum tick count to 0x7fffffff,
+	which is a valid signed integer.
+
+	* bsescripthelper.[hc]: properly support the GslGlue layer and
+	BseScriptControl.
+
+	* bseserver.[hcp]*: support container usage of the server.
+	moved script handling into bsescriptcontrol.c.
+	implment procedure to retrive a MIDI notifier obejct.
+
+	* bsesongthread.c: silence debugging output.
+
+	* bsesource.proc: allow setting a module's input by name.
+	added more getters for channels.
+
+	* bsestorage.c: fix string escaping bug.
+
+	* bswcommon.c: added handler to convert a BswNoteDescription
+	into a GslGlueRecord.
+
+Wed Jun 12 06:31:34 2002  Tim Janik  <timj@gtk.org>
+
+	* GSL Glue layer introduction. the code is mature enough for
+	our scheme bindings, but still evolving.
+
+	* gslglue.[hc]: new files implementing the GslGlue layer.
+	the GslGlue layer is a presumably simple API abstraction
+	which allowes acces to foreign object systems with notification
+	signals, object properties and object procedures.
+
+	* gslgluecodec.[hc]: serialization/deserialization layer
+	which allowes GslGlue to be used from remote processes
+	transparently.
+
+	* bseglue.[hc]: new file, imlpementing the GslGlueVTable backend
+	for BSE.
+
+Mon May 27 16:45:48 2002  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: remove the buggy and old g_strdup_quoted() function.
+	changed callers to use g_strescape (string, NULL) instead.
+
+	* bsequery.c (show_procdoc): fallback to procedure blurb if there's
+	no help available.
+
+	* mkcproc.pl: support procedure BLURBs.
+
+	* gslcommon.[hc]: added function to return main thread handle.
+
+	* gsl*.[hc]: nuked GslPollFD, use GPollFD instead.
+
 Mon May 27 08:34:28 2002  Tim Janik  <timj@gtk.org>
 
 	* bseprocedure.c (call_proc): provide the procedure execution status

@@ -28,6 +28,9 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+#define BSE_TYPE_MIDI_EVENT	(bse_midi_event_get_type ())
+
+
 /* --- MIDI constants --- */
 #define	BSE_MIDI_MAX_CHANNELS		(16)
 #define	BSE_MIDI_MAX_VELOCITY		(0x7f)
@@ -73,6 +76,7 @@ struct _BseMidiEvent
 {
   BseMidiEventType status;
   guint		   channel;	/* 0 .. 15 if valid */
+  guint64	   usec_stamp;	/* arrival in micro seconds */
   union {
     struct {
       guint   note;
@@ -118,6 +122,7 @@ struct _BseMidiDecoder
   BseMidiChannel   channels[BSE_MIDI_MAX_CHANNELS];
 
   /*< private >*/
+  GslMutex	   mutex;
   BseMidiEvent    *events;
   BseMidiEventType status;
   BseMidiEventType last_status;
@@ -125,26 +130,38 @@ struct _BseMidiDecoder
   guint            n_bytes;
   guint8	  *bytes;
   guint		   left_bytes;
+  guint64	   usec_stamp;
 };
 
 
+/* --- API --- */
+GType		 bse_midi_event_get_type	  (void);	/* boxed */
+BseMidiDecoder*	 bse_midi_decoder_new		  (void);
+void		 bse_midi_decoder_destroy	  (BseMidiDecoder	*decoder);
+void		 bse_midi_decoder_use_channel	  (BseMidiDecoder	*decoder,
+						   guint		 channel);
+void		 bse_midi_decoder_unuse_channel   (BseMidiDecoder	*decoder,
+						   guint		 channel);
+
+
 /* --- internal --- */
-BseMidiDecoder*	bse_midi_decoder_new		(void);
-void		bse_midi_decoder_destroy	(BseMidiDecoder		*decoder);
-void		_bse_midi_decoder_use_channel	(BseMidiDecoder		*decoder,
-						 guint			 channel);
-void		_bse_midi_decoder_unuse_channel	(BseMidiDecoder		*decoder,
-						 guint			 channel);
-BseMidiChannel*	_bse_midi_decoder_lock_channel	(BseMidiDecoder		*decoder,
-						 guint			 channel);
-void		_bse_midi_decoder_unlock_channel(BseMidiDecoder		*decoder,
-						 BseMidiChannel		*channel);
-void		_bse_midi_decoder_push_data	(BseMidiDecoder		*decoder,
-						 guint			 n_bytes,
-						 guint8			*bytes);
-void		bse_midi_free_event		(BseMidiEvent		*event);
-void		bse_midi_event_process		(BseMidiEvent		*event,
-						 BseMidiChannel		 channels[BSE_MIDI_MAX_CHANNELS]);
+void		 _bse_midi_set_notifier		  (BseMidiNotifier	*notifier);
+BseMidiNotifier* _bse_midi_get_notifier		  (void);
+
+
+/* --- threaded functions --- */
+BseMidiChannel*	 bse_midi_decoder_lock_channel_ASYNC    (BseMidiDecoder	*decoder,
+							 guint		 channel);
+void		 bse_midi_decoder_unlock_channel_ASYNC  (BseMidiDecoder	*decoder,
+							 BseMidiChannel	*channel);
+void		 _bse_midi_decoder_push_data_ASYNC	(BseMidiDecoder	*decoder,
+							 guint		 n_bytes,
+							 guint8		*bytes,
+							 guint64         usec_time);
+BseMidiEvent*	 _bse_midi_fetch_notify_events_ASYNC	(void);
+gboolean	 _bse_midi_has_notify_events_ASYNC	(void);
+void		 _bse_midi_free_event_ASYNC	        (BseMidiEvent	*event);
+
 
 #ifdef __cplusplus
 }

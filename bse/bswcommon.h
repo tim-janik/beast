@@ -101,10 +101,10 @@ typedef struct
 {
   guint    note;
   gint     octave;
-  guint	   half_tone;	/* 0 .. 11 */
-  gboolean upshift;
   gfloat   freq;
   gint     fine_tune;
+  guint	   half_tone;	/* 0 .. 11 */
+  gboolean upshift;
   gchar    letter;	/* "\0" if invalid */
   gchar	  *name;	/* NULL if invalid */
   /* constants */

@@ -81,7 +81,7 @@ struct _Poll
   GslPollFunc poll_func;
   gpointer    data;
   guint       n_fds;
-  GslPollFD  *fds;
+  GPollFD    *fds;
   GslFreeFunc free_func;
 };
 
@@ -98,7 +98,7 @@ const gfloat           gsl_engine_master_zero_block[GSL_STREAM_MAX_VALUES] = { 0
 static Poll	      *master_poll_list = NULL;
 static guint           master_n_pollfds = 0;
 static guint           master_pollfds_changed = FALSE;
-static GslPollFD       master_pollfds[GSL_ENGINE_MAX_POLLFDS];
+static GPollFD         master_pollfds[GSL_ENGINE_MAX_POLLFDS];
 static EngineSchedule *master_schedule = NULL;
 
 
@@ -760,10 +760,10 @@ _engine_master_thread (gpointer data)
   gboolean run = TRUE;
   
   /* assert sane configuration checks, since we're simply casting structures */
-  g_assert (sizeof (struct pollfd) == sizeof (GslPollFD) &&
-	    G_STRUCT_OFFSET (GslPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd) &&
-	    G_STRUCT_OFFSET (GslPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events) &&
-	    G_STRUCT_OFFSET (GslPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
+  g_assert (sizeof (struct pollfd) == sizeof (GPollFD) &&
+	    G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd) &&
+	    G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events) &&
+	    G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
   
   /* add the thread wakeup pipe to master pollfds, so we get woken
    * up in time (even though we evaluate the pipe contents later)

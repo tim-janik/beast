@@ -137,9 +137,9 @@ bse_pcm_input_class_init (BsePcmInputClass *class)
 						   bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100, 1,
 						   BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Left Out", "Left channel output");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Left Audio Out", "Left channel output");
   g_assert (ochannel_id == BSE_PCM_INPUT_OCHANNEL_LEFT);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Right Out", "Right channel output");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Right Audio Out", "Right channel output");
   g_assert (ochannel_id == BSE_PCM_INPUT_OCHANNEL_RIGHT);
 }
 

@@ -22,9 +22,13 @@
 #include "gslengine.h"
 #include "gslcommon.h"
 #include "bsemarshal.h"
+#include "bseglue.h"
 #include "bsemidimodule.h"
 #include "bsecomwire.h"
+#include "bsemidinotifier.h"
 #include "bsemain.h"		/* threads enter/leave */
+#include "bsecomwire.h"
+#include "bsescriptcontrol.h"
 
 
 /* --- PCM GslModule implementations ---*/
@@ -51,6 +55,15 @@ static void	bse_server_get_property		(BseServer	   *server,
 						 guint              param_id,
 						 GValue            *value,
 						 GParamSpec        *pspec);
+static void	bse_server_set_parent		(BseItem	   *item,
+						 BseItem	   *parent);
+static void     bse_server_add_item             (BseContainer      *container,
+						 BseItem           *item);
+static void     bse_server_forall_items         (BseContainer      *container,
+						 BseForallItemsFunc func,
+						 gpointer           data);
+static void     bse_server_remove_item          (BseContainer      *container,
+						 BseItem           *item);
 static gboolean	iowatch_remove			(BseServer	   *server,
 						 BseIOWatch	    watch_func,
 						 gpointer	    data);
@@ -59,9 +72,8 @@ static void	iowatch_add			(BseServer	   *server,
 						 GIOCondition	    events,
 						 BseIOWatch	    watch_func,
 						 gpointer	    data);
-static void	interp_wire_add			(BseServer	   *server,
-						 BseComWire	   *wire);
-static gboolean	interp_wire_kill		(gpointer	    data);
+static void	main_thread_source_setup	(gint               priority,
+						 GslGlueContext    *context);
 static void	engine_init			(BseServer	   *server,
 						 gfloat		    mix_freq);
 static void	engine_shutdown			(BseServer	   *server);
@@ -90,7 +102,7 @@ BSE_BUILTIN_TYPE (BseServer)
     (GInstanceInitFunc) bse_server_init,
   };
   
-  return bse_type_register_static (BSE_TYPE_ITEM,
+  return bse_type_register_static (BSE_TYPE_CONTAINER,
 				   "BseServer",
 				   "BSE Server type",
 				   &server_info);
@@ -101,12 +113,21 @@ bse_server_class_init (BseServerClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
   gobject_class->set_property = (GObjectSetPropertyFunc) bse_server_set_property;
   gobject_class->get_property = (GObjectGetPropertyFunc) bse_server_get_property;
+
   object_class->destroy = bse_server_destroy;
+
+  item_class->set_parent = bse_server_set_parent;
+
+  container_class->add_item = bse_server_add_item;
+  container_class->remove_item = bse_server_remove_item;
+  container_class->forall_items = bse_server_forall_items;
 
   bse_object_class_add_param (object_class, "PCM Settings",
 			      PARAM_PCM_LATENCY,
@@ -121,11 +142,12 @@ bse_server_class_init (BseServerClass *class)
 						     BSE_TYPE_USER_MSG_TYPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_exec_status = bse_object_class_add_signal (object_class, "exec-status",
-						    bse_marshal_VOID__ENUM_STRING_FLOAT_ENUM, NULL,
-						    G_TYPE_NONE, 4,
+						    bse_marshal_VOID__ENUM_STRING_FLOAT_ENUM_OBJECT,
+						    bse_marshal_VOID__ENUM_STRING_FLOAT_ENUM_POINTER,
+						    G_TYPE_NONE, 5,
 						    BSE_TYPE_EXEC_STATUS,
 						    G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
-						    G_TYPE_FLOAT, BSE_TYPE_ERROR_TYPE);
+						    G_TYPE_FLOAT, BSE_TYPE_ERROR_TYPE, BSE_TYPE_SCRIPT_CONTROL);
 }
 
 static void
@@ -145,6 +167,9 @@ bse_server_init (BseServer *server)
   server->main_context = g_main_context_default ();
   g_main_context_ref (server->main_context);
   BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
+
+  /* start dispatching main thread stuff */
+  main_thread_source_setup (BSE_NOTIFY_PRIORITY, bse_glue_context ());
 }
 
 static void
@@ -195,6 +220,55 @@ bse_server_get_property (BseServer  *server,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (server, param_id, pspec);
       break;
     }
+}
+
+static void
+bse_server_set_parent (BseItem *item,
+		       BseItem *parent)
+{
+  g_warning ("%s: BseServer is a global singleton that cannot be added to a container", G_STRLOC);
+}
+
+static void
+bse_server_add_item (BseContainer *container,
+		     BseItem      *item)
+{
+  BseServer *self = BSE_SERVER (container);
+
+  self->children = g_slist_prepend (self->children, item);
+
+  /* chain parent class' handler */
+  BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
+}
+
+static void
+bse_server_forall_items (BseContainer      *container,
+			 BseForallItemsFunc func,
+			 gpointer           data)
+{
+  BseServer *self = BSE_SERVER (container);
+  GSList *slist = self->children;
+
+  while (slist)
+    {
+      BseItem *item = slist->data;
+
+      slist = slist->next;
+      if (!func (item, data))
+	return;
+    }
+}
+
+static void
+bse_server_remove_item (BseContainer *container,
+			BseItem      *item)
+{
+  BseServer *self = BSE_SERVER (container);
+  
+  self->children = g_slist_remove (self->children, item);
+
+  /* chain parent class' handler */
+  BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
 }
 
 /**
@@ -508,12 +582,18 @@ bse_server_exec_status (BseServer    *server,
 			gfloat        progress,
 			BseErrorType  error)
 {
+  BseScriptControl *sctrl;
+
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (exec_name != NULL);
 
   progress = CLAMP (progress, -1, +1);
+  sctrl = bse_script_control_peek_current ();
+  if (sctrl && !BSE_ITEM (sctrl)->parent)
+    sctrl = NULL;
   g_signal_emit (server, signal_exec_status, 0,
-		 status, exec_name, progress, error);
+		 status, exec_name, progress, error,
+		 sctrl);
 }
 
 void
@@ -561,7 +641,8 @@ bse_server_run_remote (BseServer     *server,
 		       BseComDispatch dispatcher,
 		       gpointer       dispatch_data,
 		       GDestroyNotify destroy_data,
-		       GSList        *params)
+		       GSList        *params,
+		       BseScriptControl **sctrl_p)
 {
   gint child_pid, standard_input, standard_output, standard_error, command_input, command_output;
   gchar *error;
@@ -570,6 +651,8 @@ bse_server_run_remote (BseServer     *server,
   g_return_val_if_fail (process_name != NULL, NULL);
   g_return_val_if_fail (dispatcher != NULL, NULL);
 
+  if (sctrl_p)
+    *sctrl_p = NULL;
   child_pid = standard_input = standard_output = standard_error = command_input = command_output = -1;
   error = bse_com_spawn_async (process_name,
 			       &child_pid,
@@ -589,259 +672,109 @@ bse_server_run_remote (BseServer     *server,
 						  standard_output,
 						  standard_error,
 						  child_pid);
-      bse_com_wire_set_dispatcher (wire, dispatcher, dispatch_data, destroy_data);
-      interp_wire_add (server, wire);
+      if (!wire->connected)	/* bad, bad */
+	{
+	  bse_com_wire_destroy (wire);
+	  error = g_strdup (bse_error_blurb (BSE_ERROR_SPAWN));
+	}
+      else
+	{
+	  BseScriptControl *sctrl;
+
+	  bse_com_wire_set_dispatcher (wire, dispatcher, dispatch_data, destroy_data);
+	  sctrl = bse_script_control_new (wire);
+	  bse_container_add_item (BSE_CONTAINER (server), BSE_ITEM (sctrl));
+	  if (sctrl_p)
+	    *sctrl_p = sctrl;
+	}
     }
-  else if (destroy_data)
-    destroy_data (dispatch_data);
+  if (error)
+    {
+      if (destroy_data)
+	destroy_data (dispatch_data);
+      bse_server_exec_status (server, BSE_EXEC_STATUS_DONE, wire_name, 0, BSE_ERROR_SPAWN);
+    }
 
   return error;
 }
 
-void
-bse_server_queue_kill_wire (BseServer  *server,
-			    BseComWire *wire)
-{
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (wire != NULL);
-  g_return_if_fail (wire->killed == FALSE);
 
-  wire->connected = FALSE;
-  wire->killed = TRUE;
-  g_idle_add (interp_wire_kill, wire);
-
-  bse_server_exec_status (server, BSE_EXEC_STATUS_DONE, wire->ident, -1, wire->user_status);
-}
-
-
-/* --- GSL Interpreter Source --- */
+/* --- GSL Main Thread Source --- */
 typedef struct {
-  GSource     source;
-  BseComWire *wire;
-  guint	      n_pfds;
-  GPollFD    *pfds;
-} ISource;
+  GSource         source;
+  GslGlueContext *context;
+  GPollFD	  pfd;
+} MainSource;
 
 static gboolean
-interp_wire_prepare (GSource *source,
+main_source_prepare (GSource *source,
 		     gint    *timeout_p)
 {
-  ISource *isource = (ISource*) source;
-  BseComWire *wire = isource->wire;
-  gboolean need_dispatch, fds_changed = FALSE;
-  GPollFD *pfds;
-  guint n_pfds, i;
-
-  if (!wire)
-    return FALSE;
-  BSE_THREADS_ENTER ();
-  pfds = bse_com_wire_get_poll_fds (wire, &n_pfds);
-  fds_changed |= n_pfds != isource->n_pfds;
-  for (i = 0; i < n_pfds && !fds_changed; i++)
-    fds_changed |= isource->pfds[i].fd != pfds[i].fd || isource->pfds[i].events != pfds[i].events;
-  if (fds_changed)
-    {
-      for (i = 0; i < isource->n_pfds; i++)
-	g_source_remove_poll (source, isource->pfds + i);
-      g_free (isource->pfds);
-      isource->pfds = pfds;
-      isource->n_pfds = n_pfds;
-      for (i = 0; i < isource->n_pfds; i++)
-	{
-	  isource->pfds[i].revents = 0;
-	  g_source_add_poll (source, isource->pfds + i);
-	}
-    }
-  else
-    g_free (pfds);
-  need_dispatch = bse_com_wire_need_dispatch (wire);
-  *timeout_p = -1;
-  BSE_THREADS_LEAVE ();
-
-  return need_dispatch;
-}
-
-static gboolean
-interp_wire_check (GSource *source)
-{
-  ISource *isource = (ISource*) source;
-  BseComWire *wire = isource->wire;
+  MainSource *xsource = (MainSource*) source;
   gboolean need_dispatch;
-  guint i;
 
-  if (!wire)
-    return FALSE;
   BSE_THREADS_ENTER ();
-  need_dispatch = bse_com_wire_need_dispatch (wire);
-  for (i = 0; i < isource->n_pfds; i++)
-    need_dispatch |= isource->pfds[i].revents & isource->pfds[i].events;
+  need_dispatch = gsl_glue_context_pending (xsource->context);
+  if (_bse_midi_get_notifier ())
+    need_dispatch |= bse_midi_notifier_needs_dispatch (_bse_midi_get_notifier ());
   BSE_THREADS_LEAVE ();
 
   return need_dispatch;
 }
 
 static gboolean
-interp_wire_dispatch (GSource    *source,
+main_source_check (GSource *source)
+{
+  MainSource *xsource = (MainSource*) source;
+  gboolean need_dispatch;
+
+  BSE_THREADS_ENTER ();
+  need_dispatch = xsource->pfd.events & xsource->pfd.revents;
+  need_dispatch |= gsl_glue_context_pending (xsource->context);
+  if (_bse_midi_get_notifier ())
+    need_dispatch |= bse_midi_notifier_needs_dispatch (_bse_midi_get_notifier ());
+  BSE_THREADS_LEAVE ();
+  
+  return need_dispatch;
+}
+
+static gboolean
+main_source_dispatch (GSource    *source,
 		      GSourceFunc callback,
 		      gpointer    user_data)
 {
-  ISource *isource = (ISource*) source;
-  BseComWire *wire = isource->wire;
-  guint request;
+  MainSource *xsource = (MainSource*) source;
 
-  if (!wire)
-    return TRUE;	/* keep source alive */
   BSE_THREADS_ENTER ();
-  bse_com_wire_process_io (wire);
-  if (wire->gstring_stdout->len)
-    {
-      g_printerr ("%s:O: %s", wire->ident, wire->gstring_stdout->str);
-      g_string_truncate (wire->gstring_stdout, 0);
-    }
-  if (wire->gstring_stderr->len)
-    {
-      g_printerr ("%s:E: %s", wire->ident, wire->gstring_stderr->str);
-      g_string_truncate (wire->gstring_stderr, 0);
-    }
-  bse_com_wire_receive_dispatch (wire);
-  request = bse_com_wire_peek_first_result (wire);
-  if (request)
-    {
-      gchar *result = bse_com_wire_receive_result (wire, request);
-
-      g_message ("ignoring iresult from \"%s\": %s\n", wire->ident, result);
-      g_free (result);
-    }
-  if (!wire->connected && !wire->killed)
-    bse_server_queue_kill_wire (bse_server_get (), wire);
+  gsl_glue_context_dispatch (xsource->context);
+  if (_bse_midi_get_notifier ())
+    bse_midi_notifier_dispatch (_bse_midi_get_notifier ());
+  gsl_thread_sleep (0);	/* process poll fd data */
   BSE_THREADS_LEAVE ();
 
   return TRUE;
 }
 
 static void
-interp_wire_finalize (GSource *source)
+main_thread_source_setup (gint            priority,
+			  GslGlueContext *context)
 {
-  ISource *isource = (ISource*) source;
-
-  g_free (isource->pfds);
-
-  /* in this finalize handler, the BSE_THREADS_* mutex may or may not be
-   * acquired, thus we destroy wires from an idle handler. because of that
-   * the wire should already be gone at this point, so we may well check that.
-   */
-  g_return_if_fail (isource->wire == NULL);
-}
-
-static void
-interp_wire_add (BseServer  *server,
-		 BseComWire *wire)
-{
-  static GSourceFuncs interp_wire_funcs = {
-    interp_wire_prepare,
-    interp_wire_check,
-    interp_wire_dispatch,
-    interp_wire_finalize,
+  static GSourceFuncs main_source_funcs = {
+    main_source_prepare,
+    main_source_check,
+    main_source_dispatch,
   };
-  GSource *source = g_source_new (&interp_wire_funcs, sizeof (ISource));
-  ISource *isource = (ISource*) source;
+  GSource *source = g_source_new (&main_source_funcs, sizeof (MainSource));
+  MainSource *xsource = (MainSource*) source;
+  static gboolean single_call = 0;
 
-  isource->wire = wire;
-  isource->n_pfds = 0;
-  g_source_set_priority (source, G_PRIORITY_LOW); 	// FIXME: prio settings
+  g_assert (single_call++ == 0);
+  
+  xsource->context = context;
+  gsl_thread_get_pollfd (&xsource->pfd);
+  g_source_set_priority (source, priority);
+  g_source_add_poll (source, &xsource->pfd);
   g_source_attach (source, g_main_context_default ());
-  server->interpreters = g_slist_prepend (server->interpreters, source);
-}
-
-static gboolean
-interp_wire_kill (gpointer data)
-{
-  BseComWire *wire = data;
-  ISource *wire_source = NULL;
-  BseServer *server;
-  GSList *slist;
-
-  BSE_THREADS_ENTER ();
-  server = bse_server_get ();
-
-  for (slist = server->interpreters; slist; slist = slist->next)
-    {
-      GSource *source = slist->data;
-
-      wire_source = (ISource*) source;
-      if (wire_source->wire == wire)
-	break;
-    }
-  if (!slist)
-    wire_source = NULL;
-  {
-    BSE_THREADS_LEAVE ();
-    g_return_val_if_fail (wire_source != NULL, FALSE);
-    BSE_THREADS_ENTER ();
-  }
-
-  /* got the wire, correctly shutdown down */
-  server->interpreters = g_slist_remove (server->interpreters, wire_source);
-  wire_source->wire = NULL;
-  bse_com_wire_destroy (wire);
-  g_source_destroy (&wire_source->source);
-  BSE_THREADS_LEAVE ();
-
-  return FALSE;
-}
-
-
-/* --- G_IO_* <-> GSL_POLL* --- */
-static guint gio2gslpoll = 2; /* three state: 0:equalvalues, 1:translatevalues, 2:queryvalues */
-
-static inline guint
-gio_from_gslpoll (guint gslpoll)
-{
-  do
-    {
-      if (gio2gslpoll == 0)
-	return gslpoll;
-      else if (gio2gslpoll == 1)
-	{
-	  guint gio = (gslpoll & GSL_POLLIN) ? G_IO_IN : 0;
-	  gio |= (gslpoll & GSL_POLLPRI) ? G_IO_PRI : 0;
-	  gio |= (gslpoll & GSL_POLLOUT) ? G_IO_OUT : 0;
-	  gio |= (gslpoll & GSL_POLLERR) ? G_IO_ERR : 0;
-	  gio |= (gslpoll & GSL_POLLHUP) ? G_IO_HUP : 0;
-	  gio |= (gslpoll & GSL_POLLNVAL) ? G_IO_NVAL : 0;
-	  return gio;
-	}
-      else /* compare */
-	gio2gslpoll = (GSL_POLLIN == G_IO_IN && GSL_POLLPRI == G_IO_PRI &&
-		       GSL_POLLOUT == G_IO_OUT && GSL_POLLERR == G_IO_ERR &&
-		       GSL_POLLHUP == G_IO_HUP && GSL_POLLNVAL == G_IO_NVAL);
-    }
-  while (TRUE);
-}
-
-static inline guint
-gslpoll_from_gio (guint gio)
-{
-  do
-    {
-      if (gio2gslpoll == 0)
-	return gio;
-      else if (gio2gslpoll == 1)
-	{
-	  guint gslpoll = (gio & G_IO_IN) ? GSL_POLLIN : 0;
-	  gslpoll |= (gio & G_IO_PRI) ? GSL_POLLPRI : 0;
-	  gslpoll |= (gio & G_IO_OUT) ? GSL_POLLOUT : 0;
-	  gslpoll |= (gio & G_IO_ERR) ? GSL_POLLERR : 0;
-	  gslpoll |= (gio & G_IO_HUP) ? GSL_POLLHUP : 0;
-	  gslpoll |= (gio & G_IO_NVAL) ? GSL_POLLNVAL : 0;
-	  return gslpoll;
-	}
-      else /* compare */
-	gio2gslpoll = (GSL_POLLIN == G_IO_IN && GSL_POLLPRI == G_IO_PRI &&
-		       GSL_POLLOUT == G_IO_OUT && GSL_POLLERR == G_IO_ERR &&
-		       GSL_POLLHUP == G_IO_HUP && GSL_POLLNVAL == G_IO_NVAL);
-    }
-  while (TRUE);
 }
 
 
@@ -971,7 +904,7 @@ engine_prepare (GSource *source,
 	  GPollFD *pfd = psource->fds + i;
 
 	  pfd->fd = psource->loop.fds[i].fd;
-	  pfd->events = gio_from_gslpoll (psource->loop.fds[i].events);
+	  pfd->events = psource->loop.fds[i].events;
 	  g_source_add_poll (source, pfd);
 	}
     }
@@ -990,7 +923,7 @@ engine_check (GSource *source)
 
   BSE_THREADS_ENTER ();
   for (i = 0; i < psource->n_fds; i++)
-    psource->loop.fds[i].revents = gslpoll_from_gio (psource->fds[i].revents);
+    psource->loop.fds[i].revents = psource->fds[i].revents;
   psource->loop.revents_filled = TRUE;
   need_dispatch = gsl_engine_check (&psource->loop);
   BSE_THREADS_LEAVE ();
@@ -1023,7 +956,6 @@ engine_init (BseServer *server,
   static gboolean engine_is_initialized = FALSE;
 
   g_return_if_fail (server->engine_source == NULL);
-  g_assert (sizeof (GslPollFD) == sizeof (GPollFD));
 
   bse_globals_lock ();		// FIXME: globals mix_freq
   server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));

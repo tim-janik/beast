@@ -118,7 +118,7 @@ sequencer_thread (gpointer data)
 	      seq_step_SL (seq, seq->next_stamp - seq->cur_stamp);
 	      if (seq->cur_stamp <= check_stamp)
 		{
-		  g_printerr ("sequencer %p didn't advance tick count (%llu <= %llu)\n", seq, seq->cur_stamp, check_stamp);
+		  // g_printerr ("sequencer %p didn't advance tick count (%llu <= %llu)\n", seq, seq->cur_stamp, check_stamp);
 		  break;
 		}
 	    }

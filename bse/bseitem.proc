@@ -35,7 +35,7 @@ METHOD (BseItem, get-type) {
 			      0, G_MAXULONG, 0,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -59,7 +59,7 @@ METHOD (BseItem, get-type-name) {
 			       NULL,
 			       BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -83,7 +83,7 @@ METHOD (BseItem, get-type-blurb) {
 			       NULL,
 			       BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -106,7 +106,7 @@ METHOD (BseItem, get-parent) {
   OUT	= g_param_spec_object ("parent", "Parent", NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -129,7 +129,7 @@ METHOD (BseItem, get-project) {
   OUT	= g_param_spec_object ("project", "Project", NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -152,7 +152,7 @@ METHOD (BseItem, get-uname-path) {
   OUT	= g_param_spec_string ("uloc_path", NULL, NULL,
 			       NULL, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -179,7 +179,7 @@ METHOD (BseItem, use) {
   OUT	= g_param_spec_object ("used_item", "Item", NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -203,7 +203,7 @@ METHOD (BseItem, unuse) {
   IN	= g_param_spec_object ("item", "Item", NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -233,7 +233,7 @@ METHOD (BseItem, get-name) {
   OUT	= g_param_spec_string ("name", "Name", NULL,
 			       NULL, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -256,7 +256,7 @@ METHOD (BseItem, get-name-or-type) {
   OUT	= g_param_spec_string ("name", "Name", NULL,
 			       NULL, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -286,7 +286,7 @@ METHOD (BseItem, common-ancestor) {
   OUT	= g_param_spec_object ("ancestor", "ancestor", "Common ancestor of both items",
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -312,7 +312,7 @@ METHOD (BseItem, get-seqid) {
   OUT	= g_param_spec_uint ("seqid", "Sequential ID", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -325,5 +325,37 @@ METHOD (BseItem, get-seqid) {
   /* set output parameters */
   g_value_set_uint (out_values++, bse_item_get_seqid (item));
   
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, check-is-a) {
+  BLURB = "Check whether an item has a certain type.";
+  IN    = g_param_spec_object ("item", "Item", "The Item",
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("type_name", "Type Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boolean ("is_a", NULL, NULL,
+				FALSE, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item    = g_value_get_object (in_values++);
+  gchar *type_name = g_value_get_string (in_values++);
+  GType type;
+  gboolean is_a;
+
+  /* check parameters */
+  if (!type_name)
+    type_name = "";
+
+  /* action */
+  type = g_type_from_name (type_name);
+  is_a = item && g_type_is_a (G_OBJECT_TYPE (item), type);
+
+  /* set output parameters */
+  g_value_set_boolean (out_values++, is_a);
+
   return BSE_ERROR_NONE;
 }

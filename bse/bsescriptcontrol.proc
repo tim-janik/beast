@@ -1,0 +1,392 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2002 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsescriptcontrol.h>
+#include <bse/bsecomwire.h>
+#include <bse/bseserver.h>
+#include <string.h>
+
+
+AUTHOR	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik";
+DATE	= "2002";
+
+
+METHOD (BseScriptControl, trigger-action) {
+  HELP	= "Trigger an installed user action of this script control.";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("action", "Action", NULL,
+ 			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseScriptControl *self   = g_value_get_object (in_values++);
+  const gchar      *action = g_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SCRIPT_CONTROL (self) || !action)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_script_control_trigger_action (self, action);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseScriptControl, n-actions) {
+  HELP	= "Retrive number of user actions of this script control.";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+  OUT    = g_param_spec_uint ("n_actions", "N Actions", NULL,
+			      0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseScriptControl *self   = g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SCRIPT_CONTROL (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_uint (out_values++, g_slist_length (self->actions));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseScriptControl, get-action) {
+  HELP	= "Retrive an action of this script control.";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("nth_action", "Nth Action", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_string ("action", "Action", NULL,
+ 			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseScriptControl *self = g_value_get_object (in_values++);
+  guint             nth  = g_value_get_uint (in_values++);
+  BseScriptControlAction *a;
+
+  /* check parameters */
+  if (!BSE_IS_SCRIPT_CONTROL (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  a = g_slist_nth_data (self->actions, nth);
+
+  /* set output parameters */
+  g_value_set_string (out_values++, a ? g_quark_to_string (a->action) : NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseScriptControl, get-action-name) {
+  HELP	= "Retrive the name of an action of this script control.";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("nth_action", "Nth Action", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_string ("action-name", "Action Name", NULL,
+ 			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseScriptControl *self = g_value_get_object (in_values++);
+  guint             nth  = g_value_get_uint (in_values++);
+  BseScriptControlAction *a;
+
+  /* check parameters */
+  if (!BSE_IS_SCRIPT_CONTROL (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  a = g_slist_nth_data (self->actions, nth);
+
+  /* set output parameters */
+  g_value_set_string (out_values++, a ? a->name : NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseScriptControl, get-action-blurb) {
+  HELP	= "Retrive the help string of an action of this script control.";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("nth_action", "Nth Action", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_string ("action-blurb", "Action Blurb", NULL,
+ 			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseScriptControl *self = g_value_get_object (in_values++);
+  guint             nth  = g_value_get_uint (in_values++);
+  BseScriptControlAction *a;
+
+  /* check parameters */
+  if (!BSE_IS_SCRIPT_CONTROL (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  a = g_slist_nth_data (self->actions, nth);
+
+  /* set output parameters */
+  g_value_set_string (out_values++, a ? a->blurb : NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseScriptControl, kill) {
+  HELP	= "Kill a currently running script";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseScriptControl *self = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SCRIPT_CONTROL (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_script_control_preset_error (self, BSE_ERROR_NONE);
+  if (self->wire)
+    bse_script_control_queue_kill (self);
+  /* we don't want our own exec status to override the one we just signalled */
+  bse_procedure_skip_next_exec_status ();
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-script-add-action, "Script Utils/Add Action") {
+  HELP	= "Install a user action for script control.";
+  IN	= g_param_spec_string ("action", "Action", NULL,
+ 			       NULL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("name", "Name", NULL,
+ 			       NULL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("blurb", "Blurb", NULL,
+ 			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  const gchar      *action = g_value_get_string (in_values++);
+  const gchar      *name   = g_value_get_string (in_values++);
+  const gchar      *blurb  = g_value_get_string (in_values++);
+  BseScriptControl *self = bse_script_control_peek_current ();
+  
+  /* check parameters */
+  if (!action || !name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* check execution context */
+  if (!BSE_IS_SCRIPT_CONTROL (self) || !self->wire)
+    return BSE_ERROR_PROC_EXECUTION;
+
+  /* action */
+  bse_script_control_add_action (self, action, name, blurb);
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-script-remove-action, "Script Utils/Remove Action") {
+  HELP	= "Remove a previously installed user action from script control.";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("action", "Action", NULL,
+ 			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  const gchar      *action = g_value_get_string (in_values++);
+  BseScriptControl *self = bse_script_control_peek_current ();
+  
+  /* check parameters */
+  if (!action)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* check execution context */
+  if (!BSE_IS_SCRIPT_CONTROL (self) || !self->wire)
+    return BSE_ERROR_PROC_EXECUTION;
+
+  /* action */
+  bse_script_control_remove_action (self, action);
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-script-control, "Script Utils/Current Control") {
+  HELP  = "Retrive the current script control object.";
+  OUT   = g_param_spec_object ("script_control", "Script Control", NULL,
+			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  BseScriptControl *self = bse_script_control_peek_current ();
+  
+  /* set output parameters */
+  g_value_set_object (out_values++, self);
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-script-set-msg, "Script Utils/Set Message") {
+  HELP  = "Alter script status message.";
+  IN    = g_param_spec_enum ("msg_type", "Message Type", NULL,
+			     BSE_TYPE_USER_MSG_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("message", "Message", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseUserMsgType mtype   = g_value_get_enum (in_values++);
+  const gchar   *message = g_value_get_string (in_values++);
+  BseScriptControl *self = bse_script_control_peek_current ();
+
+  /* check execution context */
+  if (!BSE_IS_SCRIPT_CONTROL (self) || !self->wire)
+    return BSE_ERROR_PROC_EXECUTION;
+  if (!message)
+    {
+      message = bse_script_control_get_ident (self);
+      mtype = BSE_USER_MSG_INFO;
+    }
+
+  /* action */
+  g_object_set (self,
+		"user_msg_type", mtype,
+		"user_msg", message,
+		NULL);
+
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-script-progress, "Script Utils/Progress") {
+  HELP  = "Indicate progress (from 0.0 to 1.0 or -1 for unknown amount).";
+  IN    = bse_param_spec_float ("progress", "Progress", NULL,
+				-1, 1.0, -1, 0.1,
+				BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  gfloat progress = g_value_get_float (in_values++);
+  BseScriptControl *self = bse_script_control_peek_current ();
+
+  /* check execution context */
+  if (!BSE_IS_SCRIPT_CONTROL (self) || !self->wire)
+    return BSE_ERROR_PROC_EXECUTION;
+
+  /* action */
+  bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_PROGRESS,
+			  bse_script_control_get_ident (self),
+			  progress > 0 ? progress : -1,
+			  BSE_ERROR_NONE);
+  /* we don't want our own exec status to override the one we just signalled */
+  bse_procedure_skip_next_exec_status ();
+  /* don't let further procedure invokations from this script override
+   * it's progress value.
+   */
+  bse_script_control_block_exec_status (self, TRUE);
+
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-script-exit, "Script Utils/Exit Message") {
+  HELP  = "Exit a script, leaving a message.";
+  IN    = g_param_spec_enum ("msg_type", "Message Type", NULL,
+			     BSE_TYPE_USER_MSG_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("message", "Message", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseUserMsgType mtype   = g_value_get_enum (in_values++);
+  const gchar   *message = g_value_get_string (in_values++);
+  BseScriptControl *self = bse_script_control_peek_current ();
+  BseErrorType error;
+
+  /* check parameters */
+  if (!message)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* check execution context */
+  if (!BSE_IS_SCRIPT_CONTROL (self) || !self->wire)
+    return BSE_ERROR_PROC_EXECUTION;
+
+  /* action */
+  bse_server_user_message (bse_server_get (), mtype, message);
+  switch (mtype)
+    {
+    case BSE_USER_MSG_INFO:
+      error = BSE_ERROR_USER_INFO;
+      break;
+    case BSE_USER_MSG_QUESTION:
+      error = BSE_ERROR_USER_QUESTION;
+      break;
+    case BSE_USER_MSG_WARNING:
+      error = BSE_ERROR_USER_WARNING;
+      break;
+    case BSE_USER_MSG_ERROR:
+      error = BSE_ERROR_USER_ERROR;
+      break;
+    default:
+      error = BSE_ERROR_NONE;
+      break;
+    }
+  bse_script_control_preset_error (self, error);
+  bse_script_control_queue_kill (self);
+  /* we don't want our own exec status to override the one from killing the wire */
+  bse_procedure_skip_next_exec_status ();
+
+  return BSE_ERROR_NONE;
+}

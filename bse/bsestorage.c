@@ -1222,7 +1222,7 @@ bse_storage_put_value (BseStorage   *storage,
     case G_TYPE_STRING:
       if (g_value_get_string (value))
         {
-          string = g_strdup_quoted (g_value_get_string (value));
+          string = g_strescape (g_value_get_string (value), NULL);
           bse_storage_putc (storage, '"');
           bse_storage_puts (storage, string);
           bse_storage_putc (storage, '"');

@@ -35,7 +35,7 @@ sub has_semicolon {
     return m/;/;
 }
 
-my $var_pattern = "HELP|AUTHOR|CRIGHTS|DATE";
+my $var_pattern = "HELP|BLURB|AUTHOR|CRIGHTS|DATE";
 my %var_defs = ();
 my %proc_defs = ();
 my $line_jump = 1;
@@ -59,7 +59,23 @@ sub print_assignment {
 	return;
     }
     print "#line $vline \"$vfile\"\n";
-    print "  $assignment = $val\n";
+    print "  $assignment = $val;\n";
+}
+
+sub get_variable {
+    my $var = shift;
+    my $fallback = shift;
+    my $val;
+    my $vfile;
+    my $vline;
+    if (defined $proc_defs{$var}) {
+	( $val, $vfile, $vline ) = @{$proc_defs{$var}};
+    } elsif (defined $var_defs{$var}) {
+	( $val, $vfile, $vline ) = @{$var_defs{$var}};
+    } else {
+	$val = $fallback;
+    }
+    return "$val";
 }
 
 while (<>) {
@@ -133,25 +149,13 @@ while (<>) {
 	print "GParamSpec **in_pspecs, GParamSpec **out_pspecs) {\n";
 	print "#line $line \"$file\"\n$rest\n" if (defined $rest);
 
-	$externs .= "  { ";
-	$externs .= "&type_id_" . ncanon ($proc_name) . ", ";
-	$externs .= $proc_method . ", ";                 # name
-	$externs .= "NULL, ";                            # FIXME: type blurb
-	$externs .= "0, ";                               # private_id
-	$externs .= ncanon ($proc_name) . "_setup, ";    # init
-	$externs .= ncanon ($proc_name) . "_exec, ";     # exec
-	$externs .= "NULL, ";                            # unload
-	$externs .= $proc_category . ", ";               # category
-	$externs .= "{ 0, }, ";                          # FIXME: pixdata
-	$externs .= "},\n";
-
 	$match_contents = 1; $line_jump = 1; next;
     }
 
     # find BODY directive
     if ($match_contents && m@[^\)]*BODY\s*\(@) {
-	if (!defined $proc_name) {
-	    die "$file:$.: BODY() without PROCEDURE()\n";
+	if (!defined $proc_name || !defined $proc_method) {
+	    die "$file:$.: BODY() without PROCEDURE() or METHOD()\n";
 	}
 	while (!m@\)@) {
 	    my $new = <>;
@@ -162,6 +166,18 @@ while (<>) {
 	    die "$file:$.: Invalid BODY() directive\n";
 	}
 	
+	$externs .= "  { ";
+	$externs .= "&type_id_" . ncanon ($proc_name) . ", ";
+	$externs .= $proc_method . ", ";                   # name
+	$externs .= get_variable ("BLURB", "NULL") . ", "; # blurb
+	$externs .= "0, ";                                 # private_id
+	$externs .= ncanon ($proc_name) . "_setup, ";      # init
+	$externs .= ncanon ($proc_name) . "_exec, ";       # exec
+	$externs .= "NULL, ";                              # unload
+	$externs .= $proc_category . ", ";                 # category
+	$externs .= "{ 0, }, ";                            # pixdata
+	$externs .= "},\n";
+
 	print_assignment ("proc->help", "HELP");
 	print_assignment ("proc->author", "AUTHOR");
 	print_assignment ("proc->copyright", "CRIGHTS");
@@ -178,7 +194,7 @@ while (<>) {
     }
     
     # read variables lines
-    if ($match_contents && m@[^;]*($var_pattern)\s*=@) {
+    if ($match_contents && m@[^;]*\b($var_pattern)\s*=@) {
 	my $var = $1;
 	while (!has_semicolon ($_)) {
 	    my $new = <>;
@@ -187,6 +203,7 @@ while (<>) {
 	}
 	$value = $_;
 	$value =~ s/^.*$var[^=]*=\s*//;
+	$value =~ s/;\s*$//;
 	if (defined $proc_name) {
 	    $proc_defs{$var} = [ $value, $file, $line ];
 	} else {
@@ -197,7 +214,7 @@ while (<>) {
     }
 
     # warn verbose
-    if (m@($var_pattern|BODY|PROCEDURE|METHOD)@) {
+    if (m@\b($var_pattern|BODY|PROCEDURE|METHOD)@) {
 	print STDERR "$file:$.: warning: reserved word `$1' remains unmatched\n";
     }
 

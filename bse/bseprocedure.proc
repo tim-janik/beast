@@ -19,97 +19,45 @@
 #include <bse/bseprocedure.h>
 #include <bse/bsescripthelper.h>
 #include <bse/bseserver.h>
+#include <bse/bswprivate.h>
 
 
 AUTHOR  = "Tim Janik <timj@gtk.org>";
 CRIGHTS = "Tim Janik";
 DATE    = "2002";
 
-
-PROCEDURE (bse-exit, "Utils/Misc/Exit") {
-  HELP  = "Exit a script indicating error or success.";
-  IN    = g_param_spec_enum ("error", "Error", NULL,
-                             BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-        GValue            *in_values,
-        GValue            *out_values)
-{
-  /* extract parameter values */
-  BseErrorType error = g_value_get_enum (in_values++);
-  BseComWire *wire;
-
-  /* action */
-  wire = bse_script_peek_current_wire ();
-  if (wire)
-    {
-      wire->user_status = error;
-      if (!wire->killed)
-	bse_server_queue_kill_wire (bse_server_get (), wire);
-      bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, wire->ident, error ? 0 : 1, error);
-      /* we don't want our own exec status to override the one we just signalled */
-      bse_procedure_skip_next_exec_status ();
-    }
-
-  return BSE_ERROR_NONE;
-}
-
-PROCEDURE (bse-progress, "Utils/Misc/Progress") {
-  HELP  = "Indicate progress (from 0.0 to 1.0 or -1 for unknown amount).";
-  IN    = bse_param_spec_float ("progress", "Progress", NULL,
-				-1, 1.0, -1, 0.1,
+PROCEDURE (bse-note-to-freq, "Utils/Notes/Note to Freq") {
+  HELP  = "Retrive the frequency of a certain note.";
+  IN    = bse_param_spec_uint ("note", "Note", NULL,
+			       BSE_MIN_NOTE, BSE_MAX_NOTE,
+			       BSE_KAMMER_NOTE, 1,
+			       BSE_PARAM_DEFAULT);
+  IN    = bse_param_spec_int ("fine_tune", "Fine Tune", NULL,
+			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
+			      0, 1, BSE_PARAM_DEFAULT);
+  OUT   = bse_param_spec_float ("frequency", "Frequency", NULL,
+				0, BSE_MAX_FREQUENCY, 440.0, 0.1,
 				BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-        GValue            *in_values,
+        const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
-  gfloat progress = g_value_get_float (in_values++);
-  BseComWire *wire;
-
-  /* action */
-  wire = bse_script_peek_current_wire ();
-  bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_PROGRESS,
-			  wire ? wire->ident : proc->name,
-			  progress > 0 ? progress : -1,
-			  BSE_ERROR_NONE);
-  /* we don't want our own exec status to override the one we just signalled */
-  bse_procedure_skip_next_exec_status ();
+  gint       note       = g_value_get_uint (in_values++);
+  gint       fine_tune  = g_value_get_int (in_values++);
+  BswNoteDescription *info;
+  gfloat freq;
   
-  return BSE_ERROR_NONE;
-}
-
-PROCEDURE (bse-exit-msg, "Utils/Misc/Exit Message") {
-  HELP  = "Exit a script, leaving a message.";
-  IN    = g_param_spec_enum ("msg_type", "Message Type", NULL,
-                             BSE_TYPE_USER_MSG_TYPE, BSE_ERROR_NONE,
-			     BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("message", "Message", NULL,
-			       NULL, BSE_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-        GValue            *in_values,
-        GValue            *out_values)
-{
-  /* extract parameter values */
-  BseUserMsgType mtype   = g_value_get_enum (in_values++);
-  const gchar     *message = g_value_get_string (in_values++);
-  BseComWire *wire;
-
-  /* check parameters */
-  if (!message)
-    message = "<This is not a message>";
-
   /* action */
-  bse_server_user_message (bse_server_get (), mtype, message);
-  wire = bse_script_peek_current_wire ();
-  if (wire)
-    {
-      /* wire->user_status = error; */
-      if (!wire->killed)
-	bse_server_queue_kill_wire (bse_server_get (), wire);
-      /* we don't want our own exec status to override the one from killing the wire */
-      bse_procedure_skip_next_exec_status ();
-    }
+  info = bsw_note_description (note, fine_tune);
+  if (!info->name)
+    freq = 0;
+  else
+    freq = info->freq;
+  bsw_note_description_free (info);
 
+  /* set out params */
+  g_value_set_float (out_values++, freq);
+  
   return BSE_ERROR_NONE;
 }

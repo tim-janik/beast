@@ -99,7 +99,7 @@ typedef enum	/*< skip >*/
 #define	BSE_PART_FREQ_IFACTOR_f		(1.0 / (gfloat) BSE_PART_FREQ_FACTOR)
 #define	BSE_PART_IFREQ(float_freq)	((guint) (BSE_PART_FREQ_FACTOR * (float_freq) + 0.5))
 #define	BSE_PART_FREQ(ifreq)		(BSE_PART_FREQ_IFACTOR_f * (ifreq))
-#define	BSE_PART_MAX_TICK		(0xffffffff)
+#define	BSE_PART_MAX_TICK		(0x7fffffff)
 
 typedef union  _BsePartEvent BsePartEvent;
 typedef struct

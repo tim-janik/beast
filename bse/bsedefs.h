@@ -74,6 +74,8 @@ typedef struct  _BseInstrumentClass     BseInstrumentClass;
 typedef struct  _BseItem                BseItem;
 typedef struct  _BseItemClass           BseItemClass;
 typedef struct	_BseMidiDecoder		BseMidiDecoder;
+typedef struct  _BseMidiNotifier        BseMidiNotifier;
+typedef struct  _BseMidiNotifierClass   BseMidiNotifierClass;
 typedef struct  _BseMidiSynth           BseMidiSynth;
 typedef struct  _BseMidiSynthClass      BseMidiSynthClass;
 typedef struct  _BseObject              BseObject;
@@ -87,6 +89,8 @@ typedef struct  _BsePatternGroupClass   BsePatternGroupClass;
 typedef struct  _BseProcedureClass      BseProcedureClass;
 typedef struct  _BseProject             BseProject;
 typedef struct  _BseProjectClass        BseProjectClass;
+typedef struct  _BseScriptControl       BseScriptControl;
+typedef struct  _BseScriptControlClass  BseScriptControlClass;
 typedef struct  _BseServer              BseServer;
 typedef struct  _BseServerClass         BseServerClass;
 typedef struct  _BseSNet                BseSNet;
@@ -177,6 +181,10 @@ extern BseDebugFlags bse_debug_flags;
 
 
 /* --- BSE function types --- */
+typedef gboolean (*BseComDispatch)   (gpointer        data,
+				      guint           request,
+				      const gchar    *request_msg,
+				      BseComWire     *wire);
 typedef void          (*BseFunc)             (void);
 typedef void          (*BseIOWatch)	     (gpointer		 data,
 					      GPollFD		*pfd);

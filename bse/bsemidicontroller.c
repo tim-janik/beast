@@ -146,13 +146,13 @@ bse_midi_icontroller_class_init (BseMidiIControllerClass *class)
 						   BSE_MIDI_CONTROL_PRESSURE,
 						   BSE_PARAM_DEFAULT));
 
-  ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl_1", "MIDI Control 1");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out1", "MIDI Control 1");
   g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL1);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl_2", "MIDI Control 2");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out2", "MIDI Control 2");
   g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL2);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl_3", "MIDI Control 3");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out3", "MIDI Control 3");
   g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL3);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "ctrl_4", "MIDI Control 4");
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Ctrl Out4", "MIDI Control 4");
   g_assert (ochannel_id == BSE_MIDI_ICONTROLLER_OCHANNEL_CONTROL4);
 }
 

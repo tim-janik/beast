@@ -33,7 +33,7 @@ METHOD (BseDataPocket, create-entry) {
   OUT	= g_param_spec_uint ("entry_id", "Entry ID", "The unique pocket entry ID",
 			     1, G_MAXINT, 1, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -63,7 +63,7 @@ METHOD (BseDataPocket, delete-entry) {
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -92,7 +92,7 @@ METHOD (BseDataPocket, get-n-entries) {
   OUT	= g_param_spec_uint ("n_entries", "N Entries", "The number of entries in use",
 			     0, G_MAXINT, 1, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -117,7 +117,7 @@ METHOD (BseDataPocket, get-nth-entry-id) {
   OUT	= g_param_spec_uint ("entry_id", "Entry ID", "The unique pocket entry ID (or 0 if there's no such entry)",
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -150,7 +150,7 @@ METHOD (BseDataPocket, set-float) {
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -192,7 +192,7 @@ METHOD (BseDataPocket, set-int) {
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -234,7 +234,7 @@ METHOD (BseDataPocket, set-object) {
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -275,7 +275,7 @@ METHOD (BseDataPocket, set-string) {
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -312,7 +312,7 @@ METHOD (BseDataPocket, get-float) {
   OUT	= g_param_spec_float ("number", "Number", "The value stored in the data pocket entry",
 			      -G_MAXFLOAT, G_MAXFLOAT, 0, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -346,7 +346,7 @@ METHOD (BseDataPocket, get-int) {
   OUT	= g_param_spec_int ("number", "Number", "The value stored in the data pocket entry",
 			    -G_MAXINT, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -380,7 +380,7 @@ METHOD (BseDataPocket, get-object) {
   OUT   = g_param_spec_object ("item", "Item", "The value stored in the data pocket entry",
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -414,7 +414,7 @@ METHOD (BseDataPocket, get-string) {
   OUT   = g_param_spec_string ("string", "String", "The value stored in the data pocket entry",
 			       0, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */

@@ -62,6 +62,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseexports.h \
 	bsegconfig.h \
 	bseglobals.h \
+	bseglue.h \
 	bseinstrument.h \
 	bseitem.h \
 	bsemain.h \
@@ -72,6 +73,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsemididevice-oss.h \
 	bsemidievent.h \
 	bsemidimodule.h \
+	bsemidinotifier.h \
 	bsemidisynth.h \
 	bsemidisynthinput.h \
 	bseobject.h \
@@ -87,6 +89,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseplugin.h \
 	bseprocedure.h \
 	bseproject.h \
+	bsescriptcontrol.h \
 	bsescripthelper.h \
 	bseserver.h \
 	bsesnet.h \
@@ -137,6 +140,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseenums.c \
 	bsegconfig.c \
 	bseglobals.c \
+	bseglue.c \
 	bseinstrument.c \
 	bseitem.c \
 	bsemain.c \
@@ -147,6 +151,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsemididevice-oss.c \
 	bsemidievent.c \
 	bsemidimodule.c \
+	bsemidinotifier.c \
 	bsemidisynth.c \
 	bsemidisynthinput.c \
 	bseobject.c \
@@ -162,6 +167,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseplugin.c \
 	bseprocedure.c \
 	bseproject.c \
+	bsescriptcontrol.c \
 	bsescripthelper.c \
 	bseserver.c \
 	bsesnet.c \
@@ -195,10 +201,13 @@ bse_proc_sources = @STRIP_BEGIN@ \
 	bseeditablesample.proc \
 	bseenums.proc \
 	bsehelloworld.proc \
+	bsemidinotifier.proc \
 	bseobject.proc \
 	bsepart.proc \
 	bseprocedure.proc \
 	bseproject.proc \
+	bsescriptcontrol.proc \
+	bsescripthelper.proc \
 	bseserver.proc \
 	bsesong.proc \
 	bsesource.proc \
@@ -214,10 +223,13 @@ bse_proc_gen_sources = @STRIP_BEGIN@ \
 	bseenums.gen-proc.c \
 	bseeditablesample.gen-proc.c \
 	bsehelloworld.gen-proc.c \
+	bsemidinotifier.gen-proc.c \
 	bseobject.gen-proc.c \
 	bsepart.gen-proc.c \
 	bseprocedure.gen-proc.c \
 	bseproject.gen-proc.c \
+	bsescriptcontrol.gen-proc.c \
+	bsescripthelper.gen-proc.c \
 	bseserver.gen-proc.c \
 	bsesong.gen-proc.c \
 	bsesource.gen-proc.c \

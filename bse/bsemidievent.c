@@ -17,20 +17,29 @@
  */
 #include "bsemidievent.h"
 
+#include "bseglue.h"
+#include "bsemidinotifier.h"
+#include "gslcommon.h"
+
 #include <errno.h>
 
 
 /* --- prototypes --- */
-static void		decoder_read_event_data	(BseMidiDecoder	*decoder,
-						 guint		*n_bytes_p,
-						 guint8	       **bytes_p);
-static BseMidiEvent*	decoder_extract_event	(BseMidiDecoder	*decoder);
-static void		decoder_enqeue_event	(BseMidiDecoder	*decoder,
-						 BseMidiEvent	*event);
+static void		decoder_read_event_data_ASYNC	(BseMidiDecoder	*decoder,
+							 guint		*n_bytes_p,
+							 guint8	       **bytes_p);
+static BseMidiEvent*	decoder_extract_event_ASYNC	(BseMidiDecoder	*decoder,
+							 guint64	 usec_time);
+static void		decoder_enqueue_event_ASYNC	(BseMidiDecoder	*decoder,
+							 BseMidiEvent	*event);
+static void		midi_event_process_ASYNC	(BseMidiEvent  *event,
+							 BseMidiChannel channels[BSE_MIDI_MAX_CHANNELS]);
 
 
 /* --- variables --- */
-static BseMidiEvent *decoder_event_cache = NULL;
+static GslMutex         notifier_event_mutex = { 0, };
+static BseMidiEvent    *notifier_event_queue = NULL;
+static BseMidiNotifier *midi_notifier = NULL;
 
 
 /* --- functions --- */
@@ -39,6 +48,13 @@ bse_midi_decoder_new (void)
 {
   BseMidiDecoder *decoder = g_new0 (BseMidiDecoder, 1);
   guint i;
+  static guint mutex_initialized = FALSE;
+
+  if (!mutex_initialized)
+    {
+      mutex_initialized = TRUE;
+      gsl_mutex_init (&notifier_event_mutex);
+    }
 
   decoder->n_channels = BSE_MIDI_MAX_CHANNELS;
   for (i = 0; i < decoder->n_channels; i++)
@@ -47,6 +63,7 @@ bse_midi_decoder_new (void)
       decoder->channels[i].control_values[7 /* Volume */] = 102; /* 80% */
       decoder->channels[i].control_values[8 /* Balance */] = 64; /* 50% */
     }
+  gsl_mutex_init (&decoder->mutex);
 
   return decoder;
 }
@@ -54,28 +71,36 @@ bse_midi_decoder_new (void)
 void
 bse_midi_decoder_destroy (BseMidiDecoder *decoder)
 {
-  BseMidiEvent *event;
   guint i;
 
   g_return_if_fail (decoder != NULL);
 
   for (i = 0; i < decoder->n_channels; i++)
     g_free (decoder->channels[i].notes);
-  for (event = decoder->events; event; event = event->next)
-    bse_midi_free_event (event);
+  while (decoder->events)
+    {
+      BseMidiEvent *event = decoder->events;
+      decoder->events = event->next;
+      event->next = NULL;
+      _bse_midi_free_event_ASYNC (event);
+    }
   g_free (decoder->bytes);
+  gsl_mutex_destroy (&decoder->mutex);
   g_free (decoder);
 }
 
 void
-_bse_midi_decoder_push_data (BseMidiDecoder *decoder,
-			     guint           n_bytes,
-			     guint8         *bytes)
+_bse_midi_decoder_push_data_ASYNC (BseMidiDecoder *decoder,
+				   guint           n_bytes,
+				   guint8         *bytes,
+				   guint64         usec_time)
 {
   g_return_if_fail (decoder != NULL);
   if (n_bytes)
     g_return_if_fail (bytes != NULL);
-  
+
+  GSL_SPIN_LOCK (&decoder->mutex);
+
   while (n_bytes)
     {
       /* start new event */
@@ -146,18 +171,20 @@ _bse_midi_decoder_push_data (BseMidiDecoder *decoder,
 	}
       /* read remaining data */
       if (n_bytes && decoder->status && decoder->left_bytes)
-	decoder_read_event_data (decoder, &n_bytes, &bytes);
+	decoder_read_event_data_ASYNC (decoder, &n_bytes, &bytes);
       /* extract event */
       if (decoder->status && decoder->left_bytes == 0)
-	decoder_enqeue_event (decoder,
-			      decoder_extract_event (decoder));
+	decoder_enqueue_event_ASYNC (decoder,
+				     decoder_extract_event_ASYNC (decoder, usec_time));
     }
+
+  GSL_SPIN_UNLOCK (&decoder->mutex);
 }
 
 static void
-decoder_read_event_data (BseMidiDecoder *decoder,
-			 guint          *n_bytes_p,
-			 guint8        **bytes_p)
+decoder_read_event_data_ASYNC (BseMidiDecoder *decoder,
+			       guint          *n_bytes_p,
+			       guint8        **bytes_p)
 {
   guint n_bytes = *n_bytes_p;
   guint8 *bytes = *bytes_p;
@@ -205,7 +232,8 @@ decoder_read_event_data (BseMidiDecoder *decoder,
 }
 
 static BseMidiEvent*
-decoder_extract_event (BseMidiDecoder *decoder)
+decoder_extract_event_ASYNC (BseMidiDecoder *decoder,
+			     guint64         usec_time)
 {
   BseMidiEvent *event;
 
@@ -215,13 +243,10 @@ decoder_extract_event (BseMidiDecoder *decoder)
   /* special case completed SysEx */
   if (decoder->status == BSE_MIDI_END_EX)
     decoder->status = BSE_MIDI_SYS_EX;
-  event = decoder_event_cache;
-  if (event)
-    decoder_event_cache = event->next;
-  else
-    event = g_new (BseMidiEvent, 1);
+  event = gsl_new_struct (BseMidiEvent, 1);
   event->status = decoder->status;
   event->channel = decoder->echannel;
+  event->usec_stamp = usec_time;
   switch (event->status)
     {
       guint v;
@@ -286,8 +311,8 @@ decoder_extract_event (BseMidiDecoder *decoder)
 }
 
 static void
-decoder_enqeue_event (BseMidiDecoder *decoder,
-		      BseMidiEvent   *event)
+decoder_enqueue_event_ASYNC (BseMidiDecoder *decoder,
+			     BseMidiEvent   *event)
 {
   g_return_if_fail (event != NULL);
   g_return_if_fail (event->next == NULL);
@@ -298,21 +323,21 @@ decoder_enqeue_event (BseMidiDecoder *decoder,
 }
 
 void
-bse_midi_free_event (BseMidiEvent *event)
+_bse_midi_free_event_ASYNC (BseMidiEvent *event)
 {
   g_return_if_fail (event != NULL);
+  g_return_if_fail (event->next == NULL);
   g_return_if_fail (event->status != 0);
 
   if (event->status == BSE_MIDI_SYS_EX)
     g_free (event->data.sys_ex.bytes);
   event->status = 0;
-  event->next = decoder_event_cache;
-  decoder_event_cache = event;
+  gsl_delete_struct (BseMidiEvent, event);
 }
 
-void
-bse_midi_event_process (BseMidiEvent  *event,
-			BseMidiChannel channels[BSE_MIDI_MAX_CHANNELS])
+static void
+midi_event_process_ASYNC (BseMidiEvent  *event,
+			  BseMidiChannel channels[BSE_MIDI_MAX_CHANNELS])
 {
   g_return_if_fail (event != NULL);
   g_return_if_fail (event->status >= 0x80);
@@ -428,8 +453,20 @@ bse_midi_event_process (BseMidiEvent  *event,
     }
 }
 
+void
+_bse_midi_set_notifier (BseMidiNotifier *notifier)
+{
+  midi_notifier = notifier;
+}
+
+BseMidiNotifier*
+_bse_midi_get_notifier (void)
+{
+  return midi_notifier;
+}
+
 static void
-decoder_process_events (BseMidiDecoder *decoder)
+decoder_process_events_ASYNC (BseMidiDecoder *decoder)
 {
   BseMidiEvent *event, *next = NULL, *last = NULL;
 
@@ -443,68 +480,102 @@ decoder_process_events (BseMidiDecoder *decoder)
   decoder->events = last;
 
   /* process events */
-  for (event = decoder->events; event; event = next)
+  while (decoder->events)
     {
-      next = event->next;
-      bse_midi_event_process (event, decoder->channels);
-      bse_midi_free_event (event);
+      event = decoder->events;
+      decoder->events = event->next;
+      event->next = NULL;
+      midi_event_process_ASYNC (event, decoder->channels);
+      if (midi_notifier)
+	{
+	  GSL_SPIN_LOCK (&notifier_event_mutex);
+	  event->next = notifier_event_queue;
+	  notifier_event_queue = event;
+	  GSL_SPIN_UNLOCK (&notifier_event_mutex);
+	}
+      else
+	_bse_midi_free_event_ASYNC (event);
     }
-  decoder->events = NULL;
 }
 
 BseMidiChannel*
-_bse_midi_decoder_lock_channel (BseMidiDecoder *decoder,
-				guint           channel)
+bse_midi_decoder_lock_channel_ASYNC (BseMidiDecoder *decoder,
+				     guint           channel)
 {
   g_return_val_if_fail (decoder != NULL, NULL);
   g_return_val_if_fail (channel < BSE_MIDI_MAX_CHANNELS, NULL);
 
-  // FIXME: need mutex locking here
-  // FIXME: processing events as a hack here
-  decoder_process_events (decoder);
+  GSL_SPIN_LOCK (&decoder->mutex);
+
+  /* make sure all events so far are processed */
+  decoder_process_events_ASYNC (decoder);
 
   return decoder->channels + channel;
 }
 
 void
-_bse_midi_decoder_unlock_channel (BseMidiDecoder *decoder,
-				  BseMidiChannel *channel)
+bse_midi_decoder_unlock_channel_ASYNC (BseMidiDecoder *decoder,
+				       BseMidiChannel *channel)
 {
   g_return_if_fail (decoder != NULL);
   g_return_if_fail (channel != NULL);
 
-  // FIXME: need mutex locking here
+  GSL_SPIN_UNLOCK (&decoder->mutex);
+
+  /* wake up midi notifer if necessary */
+  if (notifier_event_queue)
+    gsl_thread_wakeup (gsl_thread_main ());
+}
+
+BseMidiEvent*
+_bse_midi_fetch_notify_events_ASYNC (void)
+{
+  BseMidiEvent *events;
+
+  GSL_SPIN_LOCK (&notifier_event_mutex);
+  events = notifier_event_queue;
+  notifier_event_queue = NULL;
+  GSL_SPIN_UNLOCK (&notifier_event_mutex);
+
+  return events;
+}
+
+gboolean
+_bse_midi_has_notify_events_ASYNC (void)
+{
+  /* prolly don't need a lock */
+  return notifier_event_queue != NULL;
 }
 
 void
-_bse_midi_decoder_use_channel (BseMidiDecoder *decoder,
-			       guint           channel_indx)
+bse_midi_decoder_use_channel (BseMidiDecoder *decoder,
+			      guint           channel_indx)
 {
   BseMidiChannel *channel;
 
   g_return_if_fail (decoder != NULL);
   g_return_if_fail (channel_indx < BSE_MIDI_MAX_CHANNELS);
 
-  channel = _bse_midi_decoder_lock_channel (decoder, channel_indx);
+  channel = bse_midi_decoder_lock_channel_ASYNC (decoder, channel_indx);
   if (!channel->use_count)
     {
       channel->n_alloced_notes = 16;
       channel->notes = g_new0 (BseMidiNote, channel->n_alloced_notes);
     }
   channel->use_count++;
-  _bse_midi_decoder_unlock_channel (decoder, channel);
+  bse_midi_decoder_unlock_channel_ASYNC (decoder, channel);
 }
 
 void
-_bse_midi_decoder_unuse_channel (BseMidiDecoder *decoder,
-				 guint           channel_indx)
+bse_midi_decoder_unuse_channel (BseMidiDecoder *decoder,
+				guint           channel_indx)
 {
   BseMidiChannel *channel;
 
   g_return_if_fail (decoder != NULL);
   g_return_if_fail (channel_indx < BSE_MIDI_MAX_CHANNELS);
 
-  channel = _bse_midi_decoder_lock_channel (decoder, channel_indx);
+  channel = bse_midi_decoder_lock_channel_ASYNC (decoder, channel_indx);
   if (channel->use_count < 1)
     g_warning ("%s: use_count==0 for channel %u", G_STRLOC, channel_indx);
   else
@@ -518,5 +589,123 @@ _bse_midi_decoder_unuse_channel (BseMidiDecoder *decoder,
 	  channel->n_notes = 0;
 	}
     }
-  _bse_midi_decoder_unlock_channel (decoder, channel);
+  bse_midi_decoder_unlock_channel_ASYNC (decoder, channel);
+}
+
+static gpointer
+boxed_copy_midi_event (gpointer boxed)
+{
+  BseMidiEvent *src = boxed;
+  BseMidiEvent *dest = g_new (BseMidiEvent, 1);
+
+  *dest = *src;
+  if (dest->status == BSE_MIDI_SYS_EX)
+    {
+      dest->data.sys_ex.n_bytes = 0;
+      dest->data.sys_ex.bytes = NULL;
+    }
+  dest->next = NULL;
+  return dest;
+}
+
+static void
+boxed_free_midi_event (gpointer boxed)
+{
+  BseMidiEvent *event = boxed;
+  
+  g_free (event);
+}
+
+static GslGlueRec*
+midi_event_to_record (gpointer crecord)
+{
+  BseMidiEvent *event = crecord;
+  GslGlueValue val;
+  GslGlueRec *rec;
+
+  rec = gsl_glue_rec ();
+  /* status */
+  val = gsl_glue_value_enum (g_type_name (BSE_TYPE_MIDI_EVENT_TYPE),
+			     bse_glue_enum_index (BSE_TYPE_MIDI_EVENT_TYPE, event->status));
+  gsl_glue_rec_take_append (rec, &val);
+  /* channel */
+  val = gsl_glue_value_int (event->channel);
+  gsl_glue_rec_take_append (rec, &val);
+  /* msec_stamp */
+  val = gsl_glue_value_int (event->usec_stamp / 1000);
+  gsl_glue_rec_take_append (rec, &val);
+  switch (event->status)
+    {
+    case BSE_MIDI_NOTE_OFF:
+    case BSE_MIDI_NOTE_ON:
+    case BSE_MIDI_KEY_PRESSURE:
+      val = gsl_glue_value_int (event->data.note.note);
+      gsl_glue_rec_take_append (rec, &val);
+      val = gsl_glue_value_int (event->data.note.velocity);
+      gsl_glue_rec_take_append (rec, &val);
+      break;
+    case BSE_MIDI_CONTROL_CHANGE:
+      val = gsl_glue_value_int (event->data.control.control);
+      gsl_glue_rec_take_append (rec, &val);
+      val = gsl_glue_value_int (event->data.control.value);
+      gsl_glue_rec_take_append (rec, &val);
+      break;
+    case BSE_MIDI_PROGRAM_CHANGE:
+      val = gsl_glue_value_int (event->data.program);
+      gsl_glue_rec_take_append (rec, &val);
+      val = gsl_glue_value_int (0);
+      gsl_glue_rec_take_append (rec, &val);
+      break;
+    case BSE_MIDI_CHANNEL_PRESSURE:
+      val = gsl_glue_value_int (event->data.intensity);
+      gsl_glue_rec_take_append (rec, &val);
+      val = gsl_glue_value_int (0);
+      gsl_glue_rec_take_append (rec, &val);
+      break;
+    case BSE_MIDI_PITCH_BEND:
+      val = gsl_glue_value_int (event->data.pitch_bend);
+      gsl_glue_rec_take_append (rec, &val);
+      val = gsl_glue_value_int (0);
+      gsl_glue_rec_take_append (rec, &val);
+      break;
+    case BSE_MIDI_SONG_POINTER:
+      val = gsl_glue_value_int (event->data.song_pointer);
+      gsl_glue_rec_take_append (rec, &val);
+      val = gsl_glue_value_int (0);
+      gsl_glue_rec_take_append (rec, &val);
+      break;
+    case BSE_MIDI_SONG_SELECT:
+      val = gsl_glue_value_int (event->data.song_number);
+      gsl_glue_rec_take_append (rec, &val);
+      val = gsl_glue_value_int (0);
+      gsl_glue_rec_take_append (rec, &val);
+      break;
+    case BSE_MIDI_SYS_EX:
+    case BSE_MIDI_TUNE:
+    case BSE_MIDI_TIMING_CLOCK:
+    case BSE_MIDI_SONG_START:
+    case BSE_MIDI_SONG_CONTINUE:
+    case BSE_MIDI_SONG_STOP:
+    case BSE_MIDI_ACTIVE_SENSING:
+    case BSE_MIDI_SYSTEM_RESET:
+    case BSE_MIDI_END_EX:
+    default:
+      val = gsl_glue_value_int (0);
+      gsl_glue_rec_take_append (rec, &val);
+      val = gsl_glue_value_int (0);
+      gsl_glue_rec_take_append (rec, &val);
+      break;
+    }
+  return rec;
+}
+
+GType
+bse_midi_event_get_type (void)
+{
+  static GType type = 0;
+
+  if (!type)
+    type = bse_glue_make_rorecord ("BseMidiEvent", boxed_copy_midi_event, boxed_free_midi_event, midi_event_to_record);
+
+  return type;
 }

@@ -34,7 +34,7 @@ METHOD (BseContainer, list-items) {
 			      BSW_TYPE_ITER_PROXY,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -46,6 +46,34 @@ METHOD (BseContainer, list-items) {
 
   /* set output parameters */
   g_value_set_boxed_take_ownership (out_values++, bse_container_list_items (container));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseContainer, lookup-item) {
+  BLURB = "Find an item within a container.";
+  HELP	= ("Lookup an immediate child of a container from its uname (the uname "
+	   "is the name of the item, unique between all immediate children of a container).");
+  IN	= g_param_spec_object ("container", "Container", "The Container",
+			       BSE_TYPE_CONTAINER, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("uname", "UName", "Unique item name",
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_object ("item", "Item", "The item named by uname",
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseContainer *container = g_value_get_object (in_values++);
+  gchar *uname            = g_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_CONTAINER (container) || !uname)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_object (out_values++, bse_container_lookup_item (container, uname));
 
   return BSE_ERROR_NONE;
 }

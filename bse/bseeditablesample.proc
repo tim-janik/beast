@@ -33,7 +33,7 @@ METHOD (BseEditableSample, get-length) {
   OUT	= g_param_spec_uint ("length", NULL, "Number of values",
 			     0, G_MAXINT, 1, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -57,7 +57,7 @@ METHOD (BseEditableSample, get-n-channels) {
   OUT	= g_param_spec_uint ("n-channels", NULL, "Number of channels",
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -82,7 +82,7 @@ METHOD (BseEditableSample, get-osc-freq) {
 			      BSE_KAMMER_FREQ,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -107,7 +107,7 @@ METHOD (BseEditableSample, read-samples) {
   OUT	= g_param_spec_boxed ("sample_block", NULL, "Block of samples",
 			      BSW_TYPE_VALUE_BLOCK, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -158,7 +158,7 @@ METHOD (BseEditableSample, collect-stats) {
   OUT	= g_param_spec_boxed ("sample_block", NULL, "Block of samples",
 			      BSW_TYPE_VALUE_BLOCK, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */

@@ -42,6 +42,7 @@ typedef struct _GslComplex		GslComplex;
 typedef struct _GslDataCache		GslDataCache;
 typedef struct _GslDataHandle		GslDataHandle;
 typedef struct _GslDataHandleFuncs	GslDataHandleFuncs;
+typedef struct _GslGlueContext          GslGlueContext;
 typedef struct _GslJob			GslJob;
 typedef struct _GslModule		GslModule;
 typedef struct _GslIStream		GslIStream;
@@ -94,21 +95,6 @@ typedef void     (*GslAccessFunc)       (GslModule      *module,
 typedef void     (*GslFreeFunc)         (gpointer        data);
 typedef void     (*GslModuleFreeFunc)   (gpointer        data,
 					 const GslClass	*klass);
-
-
-/* --- GslPollFD (for poll(2)) --- */
-#define GSL_POLLIN      (0x0001 /* There is data to read */)
-#define GSL_POLLPRI     (0x0002 /* There is urgent data to read */)
-#define GSL_POLLOUT     (0x0004 /* Writing now will not block */)
-#define GSL_POLLERR     (0x0008 /* Error condition */)
-#define GSL_POLLHUP     (0x0010 /* Hung up */)
-#define GSL_POLLNVAL    (0x0020 /* Invalid request: fd not open */)
-typedef struct
-{
-  gint    fd;
-  gushort events;
-  gushort revents;
-} GslPollFD;
 
 
 #if defined (BSE_COMPILATION) || defined (BSE_PLUGIN_FALLBACK) \

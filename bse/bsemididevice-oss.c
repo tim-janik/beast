@@ -201,17 +201,24 @@ io_handler (BseMidiDevice *mdev,
   BseMidiHandle *handle = &oss->handle;
   const gsize buf_size = 8192;
   guint8 buffer[buf_size];
+  struct timeval tv;
   gssize l;
   
   /* this should spawn its own thread someday */
   g_assert (handle->running_thread == FALSE);
 
+  gettimeofday (&tv, NULL);
   do
     l = read (oss->fd, buffer, buf_size);
   while (l < 0 && errno == EINTR);	/* don't mind signals */
 
   if (l > 0)
-    _bse_midi_decoder_push_data (handle->decoder, l, buffer);
+    {
+      guint64 stamp = tv.tv_sec;
+
+      stamp = stamp * 1000000 + tv.tv_usec;
+      _bse_midi_decoder_push_data_ASYNC (handle->decoder, l, buffer, stamp);
+    }
 }
 
 #endif	/* BSE_MIDI_DEVICE_CONF_OSS */

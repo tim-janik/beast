@@ -63,7 +63,6 @@ typedef enum
 } BseExecStatus;
 typedef enum
 {
-  BSE_USER_MSG_DISCARD,
   BSE_USER_MSG_INFO,
   BSE_USER_MSG_QUESTION,
   BSE_USER_MSG_WARNING,
@@ -95,6 +94,11 @@ typedef enum
   BSE_ERROR_UNIMPLEMENTED	= GSL_ERROR_LAST,
   BSE_ERROR_SPAWN,
   BSE_ERROR_NOT_OWNER,
+  /* errors corresponding to use messages */
+  BSE_ERROR_USER_INFO,
+  BSE_ERROR_USER_QUESTION,
+  BSE_ERROR_USER_WARNING,
+  BSE_ERROR_USER_ERROR,
   /* File, Loading/Saving errors */
 #define BSE_ERROR_FILE_IO		BSE_ERROR_IO
 #define BSE_ERROR_FILE_NOT_FOUND	BSE_ERROR_NOT_FOUND

@@ -80,8 +80,6 @@ bse_com_wire_from_child (const gchar *ident,
 		     wire->standard_input >= 0 ||
 		     wire->standard_output >= 0 ||
 		     wire->standard_error >= 0);
-  wire->killed = FALSE;
-  wire->user_status = 0;
   bse_com_wire_set_dispatcher (wire, NULL, NULL, NULL);
   nonblock_fd (wire->remote_input);
   nonblock_fd (wire->remote_output);
@@ -383,7 +381,7 @@ wire_find_link (GList *list,
 static guint
 wire_alloc_request (BseComWire *wire)
 {
-  guint request = rand () * rand ();
+  guint request = (rand () << 16) ^ rand ();
 
   while (request == 0 || wire_find_link (wire->orequests, request))
     request++;

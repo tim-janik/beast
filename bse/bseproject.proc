@@ -32,14 +32,14 @@ CRIGHTS	= "Tim Janik";
 DATE	= "2001";
 
 
-METHOD (BseProject, is_playing) {
+METHOD (BseProject, is-playing) {
   HELP	= "Check whether a project is currently playing";
-  IN	= g_param_spec_object ("project", "Project", NULL,
+  IN	= g_param_spec_object ("project", "Project", "The project",
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_boolean ("is_playing", "Is Playing", NULL,
+  OUT	= g_param_spec_boolean ("is_playing", "Is Playing", "Whether the project is currently producing sound",
 				FALSE, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -59,15 +59,15 @@ METHOD (BseProject, is_playing) {
 
 METHOD (BseProject, restore-from-file, "File/Restore") {
   HELP	= "Load a project from file";
-  IN	= g_param_spec_object ("project", "Project", NULL,
+  IN	= g_param_spec_object ("project", "Project", "The project",
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("file-name", "File", NULL,
+  IN	= g_param_spec_string ("file-name", "File", "Source file name",
 			       NULL, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_enum ("error", "Error", NULL,
+  OUT	= g_param_spec_enum ("error", "Error", "Error indicating possible failures",
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -99,17 +99,19 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
 
 METHOD (BseProject, store-bse, "File/Store") {
   HELP	= "Save a project into a BSE file";
-  IN	= g_param_spec_object ("project", "Project", NULL,
+  IN	= g_param_spec_object ("project", "Project", "The project",
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("file-name", "File", NULL,
+  IN	= g_param_spec_string ("file-name", "File", "Destination file name",
 			       NULL, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_boolean ("self-contained", "Self Contained", NULL,
+  IN	= g_param_spec_boolean ("self-contained", "Self Contained",
+				"Whether references to other objects (e.g. samples) should "
+				"be stored or whether to include everything in a self-contained .bse file",
 				FALSE, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_enum ("error", "Error", NULL,
+  OUT	= g_param_spec_enum ("error", "Error", "Error indicating possible failures",
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -131,17 +133,20 @@ METHOD (BseProject, store-bse, "File/Store") {
 }
 
 METHOD (BseProject, create-song) {
-  HELP	= "Create a new song in project";
-  IN	= g_param_spec_object ("project", "Project", NULL,
+  BLURB	= "Create a song for this project.";
+  IN	= g_param_spec_object ("project", "Project", "The project",
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_object ("song", "Song", NULL,
+  IN    = g_param_spec_string ("name", "Name", "Song name",
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("song", "Song", "The new song",
 			       BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = g_value_get_object (in_values++);
+  gchar *name         = g_value_get_string (in_values++);
   BseSong *song;
   
   /* check parameters */
@@ -150,6 +155,7 @@ METHOD (BseProject, create-song) {
 
   /* action */
   song = bse_object_new (BSE_TYPE_SONG,
+			 name ? "uname" : NULL, name,
 			 NULL);
   bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (song));
 
@@ -162,12 +168,12 @@ METHOD (BseProject, create-song) {
 
 METHOD (BseProject, ensure-wave-repo) {
   HELP	= "Ensure the project has a wave repository";
-  IN	= g_param_spec_object ("project", "Project", NULL,
+  IN	= g_param_spec_object ("project", "Project", "The project",
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_object ("wrepo", "Wave Repo", NULL,
+  OUT	= g_param_spec_object ("wrepo", "Wave Repo", "The project's unique wave repo",
 			       BSE_TYPE_WAVE_REPO, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -201,14 +207,14 @@ METHOD (BseProject, ensure-wave-repo) {
 
 METHOD (BseProject, get-data-pocket) {
   HELP	= "Retrive a specifically named data pocket for this project";
-  IN	= g_param_spec_object ("project", "Project", NULL,
+  IN	= g_param_spec_object ("project", "Project", "The project",
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("name", "Name", NULL,
+  IN	= g_param_spec_string ("name", "Name", "Name of the data pocket",
 			       NULL, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_object ("data_pocket", "Data Pocket", NULL,
+  OUT	= g_param_spec_object ("data_pocket", "Data Pocket", "The data pocket",
 			       BSE_TYPE_DATA_POCKET, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -236,17 +242,20 @@ METHOD (BseProject, get-data-pocket) {
 }
 
 METHOD (BseProject, create-snet) {
-  HELP	= "Create a synthsizer network in project";
-  IN	= g_param_spec_object ("project", "Project", NULL,
+  BLURB	= "Create a synthsizer network for this project.";
+  IN	= g_param_spec_object ("project", "Project", "The project",
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_object ("snet", "Synthesizer Network", NULL,
+  IN    = g_param_spec_string ("name", "Name", "Synth network name",
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("snet", "Synthesizer Network", "New synth network",
 			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = g_value_get_object (in_values++);
+  gchar *name         = g_value_get_string (in_values++);
   BseSNet *snet;
   
   /* check parameters */
@@ -255,6 +264,7 @@ METHOD (BseProject, create-snet) {
 
   /* action */
   snet = bse_object_new (BSE_TYPE_SNET,
+                         name ? "uname" : NULL, name,
 			 NULL);
   bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (snet));
   
@@ -266,17 +276,20 @@ METHOD (BseProject, create-snet) {
 }
 
 METHOD (BseProject, create-midi-synth) {
-  HELP	= "Create a MIDI synthesizer network in project";
-  IN	= g_param_spec_object ("project", "Project", NULL,
+  BLURB	= "Create a MIDI synthesizer network for this project.";
+  IN	= g_param_spec_object ("project", "Project", "The project",
 			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_object ("midi_synth", "MIDI Synthesizer", NULL,
+  IN    = g_param_spec_string ("name", "Name", "MIDI synth name",
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("midi_synth", "MIDI Synthesizer", "New MIDI synth",
 			       BSE_TYPE_MIDI_SYNTH, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = g_value_get_object (in_values++);
+  gchar *name         = g_value_get_string (in_values++);
   BseMidiSynth *midi_synth;
   
   /* check parameters */
@@ -284,7 +297,9 @@ METHOD (BseProject, create-midi-synth) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  midi_synth = bse_object_new (BSE_TYPE_MIDI_SYNTH, NULL);
+  midi_synth = bse_object_new (BSE_TYPE_MIDI_SYNTH,
+			       name ? "uname" : NULL, name,
+			       NULL);
   bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (midi_synth));
 
   /* set output parameters */
@@ -305,7 +320,7 @@ METHOD (BseProject, list-uname-paths) {
 			      BSW_TYPE_ITER_STRING,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -331,7 +346,7 @@ METHOD (BseProject, find-item) {
   OUT   = g_param_spec_object ("item", NULL, NULL,
 			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */
@@ -360,7 +375,7 @@ METHOD (BseProject, match-items-by-uname) {
 			      BSW_TYPE_ITER_PROXY,
 			      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
-	GValue            *in_values,
+	const GValue      *in_values,
 	GValue            *out_values)
 {
   /* extract parameter values */

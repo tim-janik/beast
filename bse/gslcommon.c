@@ -448,6 +448,7 @@ static GslRing    *global_thread_list = NULL;
 static GslCond     global_thread_cond = { 0, };
 static GslRing    *awake_tdata_list = NULL;
 static ThreadData *main_thread_tdata = NULL;
+static GslThread  *main_thread = NULL;
 
 static inline ThreadData*
 thread_data_from_gsl_thread (GslThread *thread)
@@ -589,6 +590,12 @@ gsl_thread_self (void)
   return gthread;
 }
 
+GslThread*
+gsl_thread_main (void)
+{
+  return main_thread;
+}
+
 guint
 gsl_threads_get_count (void)
 {
@@ -648,6 +655,7 @@ gsl_thread_abort (GslThread *thread)
   ThreadData *tdata;
   
   g_return_if_fail (thread != NULL);
+  g_return_if_fail (thread != main_thread);
   
   GSL_SYNC_LOCK (&global_thread);
   g_assert (gsl_ring_find (global_thread_list, thread));
@@ -678,7 +686,8 @@ gsl_thread_queue_abort (GslThread *thread)
   ThreadData *tdata;
   
   g_return_if_fail (thread != NULL);
-
+  g_return_if_fail (thread != main_thread);
+  
   GSL_SYNC_LOCK (&global_thread);
   g_assert (gsl_ring_find (global_thread_list, thread));
   GSL_SYNC_UNLOCK (&global_thread);
@@ -716,7 +725,8 @@ gsl_thread_aborted (void)
  * @returns:  %TRUE if the thread should continue execution
  * Sleep for the amount of time given. This function may get interrupted
  * by wakeup or abort requests, it returns whether the thread is supposed
- * to continue execution after waking up.
+ * to continue execution after waking up. This function also processes
+ * remaining data from the thread's poll fd.
  */
 gboolean
 gsl_thread_sleep (glong max_msec)
@@ -726,14 +736,14 @@ gsl_thread_sleep (glong max_msec)
   gint r, aborted;
 
   pfd.fd = tdata->wpipe[0];
-  pfd.events = GSL_POLLIN;
+  pfd.events = G_IO_IN;
   pfd.revents = 0;
 
   r = poll (&pfd, 1, max_msec);
 
   if (r < 0 && errno != EINTR)
     g_message (G_STRLOC ": poll() error: %s\n", g_strerror (errno));
-  else if (pfd.revents & GSL_POLLIN)
+  else if (pfd.revents & G_IO_IN)
     {
       guint8 data[64];
 
@@ -749,13 +759,20 @@ gsl_thread_sleep (glong max_msec)
   return !aborted;
 }
 
+/**
+ * gsl_thread_awake_after
+ * RETURNS: GPollFD for the current thread
+ * Get the GPollfd for the current thread which is used
+ * to signal thread wakeups (e.g. due to
+ * gsl_thread_abort() or gsl_thread_wakeup()).
+ */
 void
-gsl_thread_get_pollfd (GslPollFD *pfd)
+gsl_thread_get_pollfd (GPollFD *pfd)
 {
   ThreadData *tdata = thread_data_from_gsl_thread (gsl_thread_self ());
 
   pfd->fd = tdata->wpipe[0];
-  pfd->events = GSL_POLLIN;
+  pfd->events = G_IO_IN;
   pfd->revents = 0;
 }
 
@@ -1515,6 +1532,8 @@ gsl_init (const GslConfigValue values[],
   gsl_cond_init (&global_thread_cond);
   main_thread_tdata = create_tdata ();
   g_assert (main_thread_tdata != NULL);
+  main_thread = gsl_thread_self ();
+  global_thread_list = gsl_ring_prepend (global_thread_list, main_thread);
   _gsl_init_signal ();
   _gsl_init_data_handles ();
   _gsl_init_data_caches ();

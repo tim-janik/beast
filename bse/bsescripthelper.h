@@ -56,7 +56,6 @@ GType		bse_script_proc_register	(const gchar	*script_file,
 						 GSList		*params);
 GSList*		bse_script_dir_list_files	(const gchar	*dir_list);
 const gchar*    bse_script_file_register	(const gchar	*file_name);
-BseComWire*	bse_script_peek_current_wire	(void);
 
 
 #ifdef __cplusplus

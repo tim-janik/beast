@@ -411,11 +411,11 @@ gsl_flow_job_resume (GslModule *module,
  * determine whether processing is currently necessary.
  */
 GslJob*
-gsl_job_add_poll (GslPollFunc      poll_func,
-		  gpointer         data,
-		  GslFreeFunc      free_func,
-		  guint            n_fds,
-		  const GslPollFD *fds)
+gsl_job_add_poll (GslPollFunc    poll_func,
+		  gpointer       data,
+		  GslFreeFunc    free_func,
+		  guint          n_fds,
+		  const GPollFD *fds)
 {
   GslJob *job;
   

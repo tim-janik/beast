@@ -23,7 +23,6 @@
 #include        <bse/bsesuper.h>
 #include        <bse/bsepcmdevice.h>
 #include        <bse/bsemididevice.h>
-#include        <bse/bsecomwire.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,43 +41,41 @@ extern "C" {
 /* --- BseServer object --- */
 struct _BseServer
 {
-  BseItem         parent_object;
+  BseContainer     parent_object;
 
-  guint		  pcm_latency;
+  GMainContext    *main_context;
 
-  GSource	*engine_source;
+  GSource	  *engine_source;
 
-  GList	         *projects;
-  GSList	 *interpreters;
+  GList	          *projects;
+  GSList	  *children;
   
-  guint		  dev_use_count;
+  guint		   pcm_latency;
+  guint		   pcm_ref_count;
+  BsePcmDevice    *pcm_device;
+  GslModule       *pcm_imodule;
+  GslModule       *pcm_omodule;
+  guint		   dev_use_count;
+  guint		   midi_ref_count;
+  BseMidiDevice	  *midi_device;
+  BseMidiDecoder  *midi_decoder;
+  GSList	  *midi_modules;
 
-  BsePcmDevice   *pcm_device;
-  GslModule      *pcm_imodule;
-  GslModule      *pcm_omodule;
-  guint		  pcm_ref_count;
-
-  BseMidiDevice	 *midi_device;
-  BseMidiDecoder *midi_decoder;
-  GSList	 *midi_modules;
-  guint		  midi_ref_count;
-
-  GSList	 *watch_list;
-
-  GMainContext   *main_context;
+  GSList	  *watch_list;
 };
 struct _BseServerClass
 {
-  BseItemClass parent_class;
+  BseContainerClass parent_class;
 
-  void		(*user_message)		(BseServer	*server,
-					 BseUserMsgType	 msg_type,
-					 const gchar	*message);
-  void		(*exec_status)		(BseServer	*server,
-					 BseExecStatus   status,
-					 const gchar	*exec_name,
-					 gfloat		 progress,
-					 BseErrorType	 error);
+  void		(*user_message)		(BseServer	  *server,
+					 BseUserMsgType	   msg_type,
+					 const gchar	  *message);
+  void		(*exec_status)		(BseServer	  *server,
+					 BseExecStatus     status,
+					 const gchar	  *exec_name,
+					 gfloat		   progress,
+					 BseErrorType	   error,
+					 BseScriptControl *script_control);
 };
 
 
@@ -129,7 +126,8 @@ gchar*		bse_server_run_remote			(BseServer	*server,
 							 BseComDispatch  dispatcher,
 							 gpointer        dispatch_data,
 							 GDestroyNotify  destroy_data,
-							 GSList		*params);
+							 GSList		*params,
+							 BseScriptControl **sctrl);
 void		bse_server_queue_kill_wire		(BseServer	*server,
 							 BseComWire	*wire);
 void		bse_server_user_message			(BseServer	*server,

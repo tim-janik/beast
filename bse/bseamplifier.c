@@ -212,10 +212,10 @@ bse_amplifier_class_init (BseAmplifierClass *class)
 						    0, 100, 100, 1,
 						    BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
 
-  channel = bse_source_class_add_ichannel (source_class, "Audio1", "Audio Input 1");
-  channel = bse_source_class_add_ichannel (source_class, "Audio2", "Audio Input 2");
-  channel = bse_source_class_add_ichannel (source_class, "Control1", "Control Input 1");
-  channel = bse_source_class_add_ichannel (source_class, "Control2", "Control Input 2");
+  channel = bse_source_class_add_ichannel (source_class, "Audio In1", "Audio Input 1");
+  channel = bse_source_class_add_ichannel (source_class, "Audio In2", "Audio Input 2");
+  channel = bse_source_class_add_ichannel (source_class, "Ctrl In1", "Control Input 1");
+  channel = bse_source_class_add_ichannel (source_class, "Ctrl In2", "Control Input 2");
   channel = bse_source_class_add_ochannel (source_class, "Audio Out", "Amplified Audio Output");
 }
 
