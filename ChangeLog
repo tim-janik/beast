@@ -1,3 +1,18 @@
+Mon Mar 13 01:00:35 2000  Tim Janik  <timj@gtk.org>
+
+        * released beast-0.3.2.tar.gz on http://beast.gtk.org.
+        
+        * configure.in: up up version number to 0.3.2.
+
+	* docs/faq.dat: added an item on how to get pre-0.3.2 songs to play
+	in BEAST.
+
+Sun Mar 12 16:06:03 2000  Tim Janik  <timj@gtk.org>
+
+	* NEWS: scratched the "* Synthesis instruments, i.e. use of synthesis
+	networks as song instruments" item for now, we want more thorough
+	support of that.
+
 Fri Mar 10 22:20:37 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstitemview.c (bst_item_view_set_container): use destroy

@@ -1,4 +1,6 @@
+Overview of Changes in BEAST/BSE 0.3.2:
 
+* Songs have a pattern play list now that can be altered
 * Major overhaul of the mixing engine which is now agressively
   optimized and contains all necessary means for effect
   implementations
@@ -6,8 +8,6 @@
   many other GUI improvements
 * Enabled procedure support for the pattern editor to supply
   spreadsheet like editing facilities
-* Synthesis instruments, i.e. use of synthesis networks as song
-  instruments
 * New synthesis modules:
   BseMixer       - mix 4->1 channels with adjustable volumes
   DavOrgan       - a modifiable Additive Organ Synthesizer
