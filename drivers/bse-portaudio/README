@@ -35,7 +35,7 @@ For general installation instructions, see the file `INSTALL'.
 Known Issues with this Version
 ==============================
 
-* The BSE-PortAdio driver doesn't yet work with the PortAudio JACK driver
+* The BSE-PortAudio driver doesn't yet work with the PortAudio JACK driver
 
   Although one of the motivations for implementing the PortAudioV19 support
   was JACK support, it turned out that we needed to use the PortAudios
@@ -51,17 +51,17 @@ Known Issues with this Version
   the PortAudio Team. Once this happened, the PortAudio driver is supposed
   to support JACK, OSS and ALSA.
 
-* The BSE-PortAdio driver depends on a CVS version of PortAudioV19
+* The BSE-PortAudio driver depends on a CVS version of PortAudioV19
 
   Since PortAudioV19 has not publically been released yet, this driver
   currently depends on CVS snapshots which can be obtained from:
   
       http://www.portaudio.com/archives/pa_snapshot_v19.tar.gz
 
-* The BSE-PortAdio is largly untested
+* The BSE-PortAudio is largly untested
 
   Stefan Westerfeld only tested the driver in a local setup, so feedback
-  about non-working and working drivers is apprechiated.
+  about non-working and working drivers is appreciated.
   It appears that some cards may not work when opened in readwrite mode
   through PortAudio. This hasn't yet been completely investigated,
   but PortAudio can be initialized using:
