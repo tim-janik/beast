@@ -12,6 +12,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	editor.xcf		\
 	event-control.xcf	\
 	knob.xcf		\
+	ladspa.xcf		\
 	loopleft.xcf		\
 	mini-csynth.xcf		\
 	mini-song.xcf		\

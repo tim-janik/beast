@@ -607,8 +607,9 @@ bst_snet_router_root_event (BstSNetRouter   *self,
         }
       at_channel = ochannel != ~0 || ichannel != ~0;
       
-      if (event->type == GDK_BUTTON_PRESS && event->button.button == 1 &&
-          ROUTER_TOOL (self) == 0) /* start link (or popup property dialog) */
+      if (event->type == GDK_BUTTON_PRESS &&
+          event->button.button == 1 &&
+          ROUTER_TOOL (self) == 0)                                      /* start link (or popup property dialog) */
         {
           g_return_val_if_fail (self->tmp_line == NULL, FALSE);
           
@@ -684,7 +685,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
             }
           handled = TRUE;
         }
-      else if (event->type == GDK_BUTTON_PRESS && event->button.button == 3)
+      else if (event->type == GDK_BUTTON_PRESS && event->button.button == 3)    /* module context menu */
         {
           if (csource)
             {
@@ -738,7 +739,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
               gtk_widget_queue_draw (GTK_WIDGET (canvas));
               handled = TRUE;
             }
-          else if (clink && !csource)
+          else if (clink && !csource)   /* link context menu */
             {
               GtkWidget *choice;
               guint i;
