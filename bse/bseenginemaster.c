@@ -224,15 +224,15 @@ node_pop_flow_job (EngineNode  *node,
 {
   EngineTimedJob *tjob = node->flow_jobs;
   if (UNLIKELY (tjob != NULL))
-                     {
-                       if (tjob->tick_stamp <= tick_stamp)
-                         {
-                           node->flow_jobs = tjob->next;
-                           insert_trash_job (node, (EngineUserJob*) tjob);
-                         }
-                       else
-                         tjob = NULL;
-                     }
+    {
+      if (tjob->tick_stamp <= tick_stamp)
+        {
+          node->flow_jobs = tjob->next;
+          insert_trash_job (node, (EngineUserJob*) tjob);
+        }
+      else
+        tjob = NULL;
+    }
   return tjob;
 }
 
@@ -298,7 +298,7 @@ node_peek_flow_job_stamp (EngineNode *node)
 {
   EngineTimedJob *tjob = node->flow_jobs;
   if (UNLIKELY (tjob != NULL))
-                     return tjob->tick_stamp;
+    return tjob->tick_stamp;
   return GSL_MAX_TICK_STAMP;
 }
 
@@ -307,7 +307,7 @@ node_peek_boundary_job_stamp (EngineNode *node)
 {
   EngineTimedJob *tjob = node->boundary_jobs;
   if (UNLIKELY (tjob != NULL))
-                     return tjob->tick_stamp;
+    return tjob->tick_stamp;
   return GSL_MAX_TICK_STAMP;
 }
 
@@ -769,14 +769,14 @@ master_update_node_state (EngineNode *node,
     }
   tjob = node_pop_flow_job (node, max_tick);
   if (UNLIKELY (tjob != NULL))
-                     do
-                       {
-                         TJOB_DEBUG ("flow-access for (%p:s=%u) at:%lld current:%lld\n",
-                                     node, node->sched_tag, tjob->tick_stamp, node->counter);
-                         tjob->access_func (&node->module, tjob->data);
-                         tjob = node_pop_flow_job (node, max_tick);
-                       }
-                     while (tjob);
+    do
+      {
+        TJOB_DEBUG ("flow-access for (%p:s=%u) at:%lld current:%lld\n",
+                    node, node->sched_tag, tjob->tick_stamp, node->counter);
+        tjob->access_func (&node->module, tjob->data);
+        tjob = node_pop_flow_job (node, max_tick);
+      }
+    while (tjob);
   return node_peek_flow_job_stamp (node);
 }
 
@@ -1058,37 +1058,37 @@ _engine_master_dispatch_jobs (void)
     }
   /* process boundary jobs and possibly newly queued jobs after that. */
   if (UNLIKELY (boundary_node_list != NULL))
-                                   do
-                                     {
-                                       SfiRing *ring = boundary_node_list;
-                                       master_new_boundary_jobs = FALSE;       /* to catch new boundary jobs */
-                                       while (ring)
-                                         {
-                                           SfiRing *current = ring;
-                                           EngineNode *node = ring->data;
-                                           EngineTimedJob *tjob;
-                                           ring = sfi_ring_walk (ring, boundary_node_list);
-                                           tjob = node_pop_boundary_job (node, last_block_tick, current);
-                                           if (tjob)
-                                             node->counter = current_stamp;
-                                           while (tjob)
-                                             {
-                                               TJOB_DEBUG ("boundary-access for (%p:s=%u) at:%lld current:%lld\n",
-                                                           node, node->sched_tag, tjob->tick_stamp, node->counter);
-                                               tjob->access_func (&node->module, tjob->data);
-                                               tjob = node_pop_boundary_job (node, last_block_tick, current);
-                                             }
-                                         }
-                                       /* process newly queued jobs if any */
-                                       job = _engine_pop_job ();
-                                       while (job)
-                                         {
-                                           master_process_job (job);
-                                           job = _engine_pop_job ();
-                                         }
-                                       /* need to repeat if master_process_job() just queued a new boundary job */
-                                     }
-                                   while (master_new_boundary_jobs);   /* new boundary jobs arrived */
+    do
+      {
+        SfiRing *ring = boundary_node_list;
+        master_new_boundary_jobs = FALSE;       /* to catch new boundary jobs */
+        while (ring)
+          {
+            SfiRing *current = ring;
+            EngineNode *node = ring->data;
+            EngineTimedJob *tjob;
+            ring = sfi_ring_walk (ring, boundary_node_list);
+            tjob = node_pop_boundary_job (node, last_block_tick, current);
+            if (tjob)
+              node->counter = current_stamp;
+            while (tjob)
+              {
+                TJOB_DEBUG ("boundary-access for (%p:s=%u) at:%lld current:%lld\n",
+                            node, node->sched_tag, tjob->tick_stamp, node->counter);
+                tjob->access_func (&node->module, tjob->data);
+                tjob = node_pop_boundary_job (node, last_block_tick, current);
+              }
+          }
+        /* process newly queued jobs if any */
+        job = _engine_pop_job ();
+        while (job)
+          {
+            master_process_job (job);
+            job = _engine_pop_job ();
+          }
+        /* need to repeat if master_process_job() just queued a new boundary job */
+      }
+    while (master_new_boundary_jobs);   /* new boundary jobs arrived */
 }
 
 void

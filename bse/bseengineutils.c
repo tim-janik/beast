@@ -387,11 +387,11 @@ _engine_set_schedule (EngineSchedule *sched)
   
   GSL_SPIN_LOCK (&pqueue_mutex);
   if (UNLIKELY (pqueue_schedule != NULL))
-                                {
-                                  GSL_SPIN_UNLOCK (&pqueue_mutex);
-                                  g_warning (G_STRLOC ": schedule already set");
-                                  return;
-                                }
+    {
+      GSL_SPIN_UNLOCK (&pqueue_mutex);
+      g_warning (G_STRLOC ": schedule already set");
+      return;
+    }
   pqueue_schedule = sched;
   sched->in_pqueue = TRUE;
   GSL_SPIN_UNLOCK (&pqueue_mutex);
@@ -406,11 +406,11 @@ _engine_unset_schedule (EngineSchedule *sched)
   
   GSL_SPIN_LOCK (&pqueue_mutex);
   if (UNLIKELY (pqueue_schedule != sched))
-                                {
-                                  GSL_SPIN_UNLOCK (&pqueue_mutex);
-                                  g_warning (G_STRLOC ": schedule(%p) not currently set", sched);
-                                  return;
-                                }
+    {
+      GSL_SPIN_UNLOCK (&pqueue_mutex);
+      g_warning (G_STRLOC ": schedule(%p) not currently set", sched);
+      return;
+    }
   if (UNLIKELY (pqueue_n_nodes || pqueue_n_cycles))
     g_warning (G_STRLOC ": schedule(%p) still busy", sched);
   sched->in_pqueue = FALSE;
@@ -451,15 +451,15 @@ static inline void
 collect_user_jobs_L (EngineNode *node)
 {
   if (UNLIKELY (node->ujob_first != NULL))
-                                 {
-                                   /* move into timed jobs trash queue */
-                                   node->ujob_last->next = pqueue_trash_ujobs_first;
-                                   pqueue_trash_ujobs_first = node->ujob_first;
-                                   if (!pqueue_trash_ujobs_last)
-                                     pqueue_trash_ujobs_last = node->ujob_last;
-                                   node->ujob_first = NULL;
-                                   node->ujob_last = NULL;
-                                 }
+    {
+      /* move into timed jobs trash queue */
+      node->ujob_last->next = pqueue_trash_ujobs_first;
+      pqueue_trash_ujobs_first = node->ujob_first;
+      if (!pqueue_trash_ujobs_last)
+        pqueue_trash_ujobs_last = node->ujob_last;
+      node->ujob_first = NULL;
+      node->ujob_last = NULL;
+    }
 }
 
 void
@@ -573,39 +573,39 @@ _engine_mnl_node_changed (EngineNode *node)
    */
   sibling = node->mnl_prev ? node->mnl_prev : node->mnl_next;
   if (UNLIKELY (sibling && BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node) != BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (sibling)))
-                                                                       {
-                                                                         /* remove */
-                                                                         if (node->mnl_prev)
-                                                                           node->mnl_prev->mnl_next = node->mnl_next;
-                                                                         else
-                                                                           master_node_list_head = node->mnl_next;
-                                                                         if (node->mnl_next)
-                                                                           node->mnl_next->mnl_prev = node->mnl_prev;
-                                                                         else
-                                                                           master_node_list_tail = node->mnl_prev;
-                                                                         if (BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node))	/* move towards head */
-                                                                           {
-                                                                             /* prepend to non-NULL list */
-                                                                             master_node_list_head->mnl_prev = node;
-                                                                             node->mnl_next = master_node_list_head;
-                                                                             master_node_list_head = node;
-                                                                             node->mnl_prev = NULL;
-                                                                           }
-                                                                         else				/* move towards tail */
-                                                                           {
-                                                                             /* append to non-NULL list */
-                                                                             master_node_list_tail->mnl_next = node;
-                                                                             node->mnl_prev = master_node_list_tail;
-                                                                             master_node_list_tail = node;
-                                                                             node->mnl_next = NULL;
-                                                                           }
-                                                                       }
+    {
+      /* remove */
+      if (node->mnl_prev)
+        node->mnl_prev->mnl_next = node->mnl_next;
+      else
+        master_node_list_head = node->mnl_next;
+      if (node->mnl_next)
+        node->mnl_next->mnl_prev = node->mnl_prev;
+      else
+        master_node_list_tail = node->mnl_prev;
+      if (BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node))	/* move towards head */
+        {
+          /* prepend to non-NULL list */
+          master_node_list_head->mnl_prev = node;
+          node->mnl_next = master_node_list_head;
+          master_node_list_head = node;
+          node->mnl_prev = NULL;
+        }
+      else				/* move towards tail */
+        {
+          /* append to non-NULL list */
+          master_node_list_tail->mnl_next = node;
+          node->mnl_prev = master_node_list_tail;
+          master_node_list_tail = node;
+          node->mnl_next = NULL;
+        }
+    }
   if (UNLIKELY (node->ujob_first != NULL))
-                                 {
-                                   GSL_SPIN_LOCK (&pqueue_mutex);
-                                   collect_user_jobs_L (node);
-                                   GSL_SPIN_UNLOCK (&pqueue_mutex);
-                                 }
+    {
+      GSL_SPIN_LOCK (&pqueue_mutex);
+      collect_user_jobs_L (node);
+      GSL_SPIN_UNLOCK (&pqueue_mutex);
+    }
 }
 
 
