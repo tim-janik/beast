@@ -133,7 +133,7 @@ echo "TEST $test_name:"
 (
   # convert to wave file
   echo -n "$test_indentation"
-  $top_builddir/shell/bsesh-$BIN_VERSION --bse-mixing-freq=48000 --bse-control-freq=1000 -p null -m null -s bsetowav.scm $bsefile $bsefile.wav || exit 1
+  $top_builddir/shell/bsesh-$BIN_VERSION --bse-mixing-freq=48000 --bse-control-freq=1000 -p null -m null -s $srcdir/bsetowav.scm $srcdir/$bsefile $bsefile.wav || exit 1
 
   # extract features
   echo "${test_indentation}extracting features: $features"
@@ -141,14 +141,14 @@ echo "TEST $test_name:"
   rm -f $bsefile.wav
 
   # compare with reference data
-  if test -f $reference; then
+  if test -f $srcdir/$reference; then
     echo "${test_indentation}comparing features with options: $cmpopts"
-    $top_builddir/tools/bsefcompare $cmpopts $test_name.current $reference > $bsefile.result || exit_code=1
+    $top_builddir/tools/bsefcompare $cmpopts $test_name.current $srcdir/$reference > $bsefile.result || exit_code=1
     sed "s/^/$test_indentation/g" < $bsefile.result
     rm -f $bsefile.result
   else
     exit_code=1
-    echo "${test_indentation}no reference data found in $reference (so no comparision possible)"
+    echo "${test_indentation}no reference data found in $srcdir/$reference (so no comparision possible)"
   fi
   exit $exit_code
 ) || test_result=failed
@@ -161,7 +161,7 @@ fi
 if test $test_result = "failed"; then
   echo "# If you are sure the extracted features of this test run are correct, and"
   echo "# you want to make them the new reference data, you can do so by typing:"
-  echo "mv $test_name.current $test_name.reference"
+  echo "mv $test_name.current $srcdir/$test_name.reference"
   tests_failed=`expr $tests_failed + 1`
 fi
 tests_total=`expr $tests_total + 1`
