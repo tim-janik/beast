@@ -415,7 +415,7 @@ bse_bus_connect (BseBus  *self,
       bse_source_must_set_input (self->summation, 1, osource, 1);
       self->inputs = sfi_ring_append (self->inputs, trackbus);
       bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
-      bse_object_proxy_notifies (trackbus, self, "inputs-changed");
+      bse_object_proxy_notifies (trackbus, self, "notify::inputs");
       g_object_notify (self, "inputs");
       // FIXME: g_object_notify (osource, "outputs");
     }
@@ -435,7 +435,7 @@ bse_bus_disconnect (BseBus  *self,
     return BSE_ERROR_SOURCE_TYPE_INVALID;
   if (!osource || !self->summation || !sfi_ring_find (self->inputs, trackbus))
     return BSE_ERROR_SOURCE_PARENT_MISMATCH;
-  bse_object_unproxy_notifies (trackbus, self, "inputs-changed");
+  bse_object_unproxy_notifies (trackbus, self, "notify::inputs");
   bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (trackbus), bus_uncross_input);
   self->inputs = sfi_ring_remove (self->inputs, trackbus);
   BseErrorType error1 = bse_source_unset_input (self->summation, 0, osource, 0);

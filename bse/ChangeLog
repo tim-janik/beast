@@ -1,3 +1,7 @@
+Wed Sep  1 14:25:49 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.c: proxy changes on input objects onto notify::inputs.
+
 Wed Sep  1 01:44:46 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c (bse_bus_set_property): use new sfi_ring_reorder() API.
