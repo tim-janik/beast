@@ -1,3 +1,7 @@
+Sat Oct 25 01:58:24 2003  Tim Janik  <timj@gtk.org>
+
+	* library/scripts/test.scm: removed.
+
 Sat Oct 25 01:49:50 2003  Tim Janik  <timj@gtk.org>
 
         * *.*: changed "copyright" field of procedures, scripts and objects

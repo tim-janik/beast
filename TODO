@@ -1,4 +1,6 @@
 FIXMES:
+- fix copyright/license in song-parts-operations.scm
+- fix copyright/license in party-monster.bse
 - remove test.scm
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
@@ -6,6 +8,8 @@ FIXMES:
 - amplifier: audio_balance and ctrl_balance range: -100..+100
 - fix syndrum parameter scale
 - nuke frequency fine-tune for biquad filter
+- provide proper stock effect
+- provide proper stock instrument
 - .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
 - add warning at the GUI that the rackview widget is still experimental and will break for future BSE files
