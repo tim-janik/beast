@@ -111,6 +111,7 @@ void	_gsl_init_fd_pool		(void);
 void	_gsl_init_data_caches		(void);
 void	_gsl_init_engine_utils		(void);
 void	_gsl_init_loader_gslwave	(void);
+void	_gsl_init_loader_aiff		(void);
 void	_gsl_init_loader_wav		(void);
 void	_gsl_init_loader_oggvorbis	(void);
 void	_gsl_init_loader_mad		(void);

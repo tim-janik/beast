@@ -32,7 +32,7 @@ GSL_C_SRC     =	$(strip \
 	gslloader-oggvorbis.c	gslloader-wav.c	gslloader-mad.c	gslloader-gslwave.c \
 	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
 	gsldatahandle-mad.c	gslloader.c	gslfilehash.c	gsldatautils.c	\
-	gslwaveosc.c		gslosctable.c	gslmagic.c	\
+	gslwaveosc.c		gslosctable.c	gslmagic.c	gslloader-aiff.c \
 )
 GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h \
 		gslopschedule.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c

@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
+ * Copyright (C) 2001-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,15 +23,7 @@
 #include <bse/gslcommon.h>
 #include <bse/gslwavechunk.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-
-
-typedef struct _GslWaveFileInfo GslWaveFileInfo;
-typedef struct _GslWaveDsc      GslWaveDsc;
-typedef struct _GslWaveChunkDsc GslWaveChunkDsc;
+G_BEGIN_DECLS
 
 /* --- structures --- */
 struct _GslWaveFileInfo
@@ -52,6 +44,9 @@ struct _GslWaveDsc
   guint	           n_chunks;
   GslWaveChunkDsc *chunks;
   guint            n_channels;
+  gchar           *authors;
+  gchar           *license;
+  gchar           *comment;
   /*< private >*/
   GslWaveFileInfo *file_info;
 };
@@ -133,11 +128,6 @@ struct _GslLoader
 void		gsl_loader_register	(GslLoader	*loader);
 GslLoader*	gsl_loader_match	(const gchar	*file_name);
 
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_LOADER_H__ */

@@ -66,6 +66,7 @@ FIXMES:
 - need tact number entry widget
 - fade in/out of samples in sample editor
 - wave editor: provide transpose spinner for wave preview
+- gslwaveosc resp. gslwavechunk occasionally segfaults on ping-pong loops
 
 DOCS:
 - pressing browsing hotkeys in release-notes dialog does stuff

@@ -29,6 +29,7 @@ help (gchar *arg)
 {
   fprintf (stderr, "usage: magictest [-{h|p|}] [files...]\n");
   fprintf (stderr, "       -p         include plugins\n");
+  fprintf (stderr, "       -t         test loading file info\n");
   fprintf (stderr, "       -h         guess what ;)\n");
   
   return arg != NULL;
@@ -57,6 +58,7 @@ main (gint   argc,
   static const guint n_magic_presets = sizeof (magic_presets) / sizeof (magic_presets[0]);
   guint i;
   SfiRing *magic_list = NULL;
+  gboolean test_open = FALSE;
   
   g_thread_init (NULL);
   bse_init_intern (&argc, &argv, NULL);
@@ -72,6 +74,8 @@ main (gint   argc,
     {
       if (strcmp ("-p", argv[i]) == 0)
 	; // FIXME: bsw_register_plugins (BSE_PATH_PLUGINS, FALSE, NULL, NULL, NULL);
+      else if (strcmp ("-t", argv[i]) == 0)
+	test_open = TRUE;
       else if (strcmp ("-h", argv[i]) == 0)
 	{
 	  return help (NULL);
@@ -94,7 +98,20 @@ main (gint   argc,
 	      if (magic)
 		g_print (" MAGIC: %s", (char*) magic->data);
 	      if (loader)
-		g_print (" LOADER: %s", loader->name);
+                {
+                  if (test_open)
+                    {
+                      GslWaveFileInfo *wfi;
+                      GslErrorType error = 0;
+                      g_print ("\n  LOADER: %s\n", loader->name);
+                      wfi = gsl_wave_file_info_load (argv[i], &error);
+                      if (wfi)
+                        gsl_wave_file_info_unref (wfi);
+                      g_print ("  ERROR: %s", gsl_strerror (error));
+                    }
+                  else
+                    g_print (" LOADER: %s", loader->name);
+                }
 	    }
 	  g_print ("\n");
 	}

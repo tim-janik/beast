@@ -59,13 +59,14 @@ load_file (BseWaveRepo *wrepo,
   wave = g_object_new (BSE_TYPE_WAVE,
 		       "uname", fname,
 		       NULL);
+  bse_wave_set_description_bits (wave, wdsc, TRUE);
   g_free (fname);
   for (i = 0; i < wdsc->n_chunks; i++)
     {
       GslWaveChunk *wchunk = gsl_wave_chunk_create (wdsc, i, error ? NULL : &error);
       
       if (wchunk)
-	bse_wave_add_chunk (wave, wchunk);
+        bse_wave_add_chunk (wave, wchunk);
     }
   bse_wave_set_locator (wave, file_name, wdsc->name);
   

@@ -64,6 +64,9 @@ struct _BseWaveClass
 
 
 /* --- prototypes -- */
+void		bse_wave_set_description_bits   (BseWave	*wave,
+						 GslWaveDsc     *wdsc,
+                                                 gboolean        honour_name);
 void		bse_wave_add_chunk		(BseWave	*wave,
 						 GslWaveChunk	*wchunk);
 void		bse_wave_add_chunk_with_locator	(BseWave	*wave,
@@ -79,7 +82,8 @@ BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name,
 						 BseFreqArray	*list_array,
-						 BseFreqArray	*skip_array);
+						 BseFreqArray	*skip_array,
+                                                 gboolean        honour_description);
 void		bse_wave_set_locator		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name);

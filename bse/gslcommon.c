@@ -467,6 +467,7 @@ gsl_init (const GslConfigValue values[])
   _gsl_init_data_caches ();
   _gsl_init_engine_utils ();
   _gsl_init_loader_gslwave ();
+  _gsl_init_loader_aiff ();
   _gsl_init_loader_wav ();
   _gsl_init_loader_oggvorbis ();
   _gsl_init_loader_mad ();

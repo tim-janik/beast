@@ -306,6 +306,19 @@ wchunk_cmp (gconstpointer a,
 }
 
 void
+bse_wave_set_description_bits (BseWave        *self,
+                               GslWaveDsc     *wdsc,
+                               gboolean        honour_name)
+{
+  g_return_if_fail (BSE_IS_WAVE (self));
+  if (wdsc->name && honour_name)
+    bse_item_set (self, "uname", wdsc->name, NULL);
+  /* FIXME: also set authors, license */
+  if (wdsc->comment)
+    bse_item_set (self, "blurb", wdsc->comment, NULL);
+}
+
+void
 bse_wave_add_chunk (BseWave      *wave,
 		    GslWaveChunk *wchunk)
 {
@@ -559,7 +572,8 @@ bse_wave_load_wave_file (BseWave      *wave,
 			 const gchar  *file_name,
 			 const gchar  *wave_name,
 			 BseFreqArray *list_array,
-			 BseFreqArray *skip_array)
+			 BseFreqArray *skip_array,
+                         gboolean      honour_description)
 {
   BseErrorType error = BSE_ERROR_NONE;
   GslWaveFileInfo *fi;
@@ -596,7 +610,11 @@ bse_wave_load_wave_file (BseWave      *wave,
 				   bse_error_blurb (error));
 		      }
 		    else
-		      bse_wave_add_chunk (wave, wchunk);
+                      {
+                        bse_wave_add_chunk (wave, wchunk);
+                        if (honour_description)
+                          bse_wave_set_description_bits (wave, wdsc, TRUE);
+                      }
 		  }
 	      gsl_wave_dsc_free (wdsc);
 	    }
@@ -678,7 +696,9 @@ bse_wave_restore_private (BseObject  *object,
 	      goto out_of_load_wave;
 	    }
 	}
-      error = bse_wave_load_wave_file (wave, file_name, wave_name, bse_freq_array_n_values (load_list) ? load_list : 0, skip_list);
+      error = bse_wave_load_wave_file (wave, file_name, wave_name,
+                                       bse_freq_array_n_values (load_list) ? load_list : 0, skip_list,
+                                       FALSE);
       if (error)
 	bse_storage_warn (storage, "failed to load wave \"%s\" from \"%s\": %s",
 			  wave_name, file_name, bse_error_blurb (error));

@@ -1,3 +1,22 @@
+Fri Jan  2 19:04:16 2004  Tim Janik  <timj@gtk.org>
+
+	* bsewave.[hc]: added bse_wave_set_description_bits() to set comment and
+	similar information from wave file descriptions.
+	(bse_wave_load_wave_file): call bse_wave_set_description_bits() if
+	requested.
+	* bsewave.proc: call bse_wave_set_description_bits() when loading waves.
+
+	* bsewaverepo.proc: call bse_wave_set_description_bits() when loading waves.
+
+	* gslloader.[hc]: added authors, license and comment fields to
+	wave descriptions.
+
+	* tests/magictest.c: added -t option to test load file info.
+
+	* gslcommon.[hc]: register AIFF file loader.
+
+	* gslloader-aiff.c: new file loader for AIFF files.
+
 Wed Dec 31 01:06:51 2003  Nedko Arnaudov  <nedko@users.sourceforge.net>
 
         * bsemididevice-oss.c:
