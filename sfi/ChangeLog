@@ -1,3 +1,13 @@
+Sat Sep 20 22:16:40 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.cc sfidl-module.cc: Use sequentialValue where
+	appropriate.
+
+	* sfidl-parser.*: Compute two values for each ChoiceValue: one
+	containing the assigned value for the server side C/C++ language
+	binding and one containing a sequential number for the client side
+	C/C++ language binding.
+
 Mon Sep  8 00:31:10 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gbsearcharray.h: inserted casts for C++.

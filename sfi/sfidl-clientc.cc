@@ -683,19 +683,10 @@ void CodeGeneratorC::run ()
 	  string mname = makeMixedName (ei->name);
 	  string lname = makeLowerName (ei->name);
 	  printf("\ntypedef enum {\n");
-	  /* in the client, obscure the server side assigned values to a
-	   * straightforward numbering of the choices */
-	  int cvalue = 1;
 	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
-	      gint value = ci->value;
-	      if (options.doInterface)
-		{
-		  if (ci->neutral)
-		    value = 0;
-		  else
-		    value = cvalue++;
-		}
+	      /* don't export server side assigned choice values to the client */
+	      gint value = options.doInterface ? ci->sequentialValue : ci->value;
 	      string ename = makeUpperName (NamespaceHelper::namespaceOf(ei->name) + ci->name);
 	      printf("  %s = %d,\n", ename.c_str(), value);
 	    }
@@ -1205,22 +1196,15 @@ void CodeGeneratorC::run ()
 	  string mname = makeMixedName (ei->name);
 
 	  /* produce reverse sorted enum array */
-	  int cvalue = 1;
 	  vector<ChoiceValue> components = ei->contents;
 	  for (ci = components.begin(); ci != components.end(); ci++)
-	    {
-	      if (ci->neutral)
-		ci->value = 0;
-	      else
-		ci->value = cvalue++;
-	      ci->name = makeLowerName (NamespaceHelper::namespaceOf(ei->name) + ci->name, '-');
-	    }
+	    ci->name = makeLowerName (NamespaceHelper::namespaceOf(ei->name) + ci->name, '-');
 	  sort (components.begin(), components.end(), ::choiceReverseSort);
 
 	  printf("static const SfiConstants %s_vals[%d] = {\n",name.c_str(), ei->contents.size());
 	  for (ci = components.begin(); ci != components.end(); ci++)
 	    {
-	      int value = ci->value;
+	      int value = ci->sequentialValue;
 	      minval = min (value, minval);
 	      maxval = max (value, maxval);
 	      printf("  { \"%s\", %d, %d },\n", ci->name.c_str(), ci->name.size(), value);

@@ -695,7 +695,7 @@ GTokenType Parser::parseConstant ()
 GTokenType Parser::parseChoice ()
 {
   Choice choice;
-  int value = 0;
+  int value = 0, sequentialValue = 1;
   DEBUG("parse choice\n");
   
   parse_or_return (TOKEN_CHOICE);
@@ -712,7 +712,7 @@ GTokenType Parser::parseChoice ()
     {
       ChoiceValue comp;
       
-      GTokenType expected_token = parseChoiceValue (comp, value);
+      GTokenType expected_token = parseChoiceValue (comp, value, sequentialValue);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
       
@@ -732,7 +732,7 @@ skip_ascii_at (GScanner *scanner)
     g_scanner_get_next_token (scanner);
 }
 
-GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value)
+GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue)
 {
   /*
     YES,
@@ -801,7 +801,11 @@ GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value)
 	}
     }
   
-  comp.value = value;
+  comp.value = value++;
+  if (comp.neutral)
+    comp.sequentialValue = 0;
+  else
+    comp.sequentialValue = sequentialValue++;
   
   if (g_scanner_peek_next_token (scanner) == GTokenType(','))
     parse_or_return (',');

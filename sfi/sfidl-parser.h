@@ -81,6 +81,7 @@ struct ChoiceValue {
   std::string text;
   
   int         value;
+  int         sequentialValue;
   bool        neutral;
 };
 
@@ -182,7 +183,7 @@ protected:
   GTokenType parseConstant ();
   GTokenType parseNamespace ();
   GTokenType parseChoice ();
-  GTokenType parseChoiceValue (ChoiceValue& comp, int& value);
+  GTokenType parseChoiceValue (ChoiceValue& comp, int& value, int& sequentialValue);
   GTokenType parseRecord ();
   GTokenType parseRecordField (Param& comp, const std::string& group);
   GTokenType parseStream (Stream& stream, Stream::Type);

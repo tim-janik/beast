@@ -347,16 +347,14 @@ CodeGeneratorModule::run ()
       printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_ENUM_TYPE (%s))\n",
               cUC_NAME (nspace), cUC_NAME (cTypeName (ci->name)), TypeName (ci->name).c_str());
       printf ("enum %s {\n", cTypeName (ci->name));
-      int i = 1; // FIXME: vi->value needs to be set != 0
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
-        printf ("  %s = %d,\n", cUC_NAME (vi->name), i++ /* vi->value */ );
+        printf ("  %s = %d,\n", cUC_NAME (vi->name), vi->sequentialValue );
       printf ("};\n");
       printf ("BSE_CXX_DECLARE_ENUM (%s, \"%s\" \"%s\", %u,\n",
               cTypeName (ci->name), nspace.c_str(), cTypeName (ci->name), ci->contents.size());
-      i = 1;
       for (vector<ChoiceValue>::const_iterator vi = ci->contents.begin(); vi != ci->contents.end(); vi++)
         printf ("                      *v++ = ::Bse::EnumValue (%d, \"%s\", \"%s\" );\n",
-                i++ /* vi->value */, cUC_NAME (vi->name), vi->text.c_str());
+                vi->sequentialValue, cUC_NAME (vi->name), vi->text.c_str());
       printf ("                      );\n");
     }
 
