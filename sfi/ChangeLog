@@ -1,3 +1,8 @@
+Thu Jan 20 17:31:01 2005  Tim Janik  <timj@gtk.org>
+
+	* sfitime.c (sfi_time_from_string_err): parse dates without time
+	specifications for yyyy-mm-dd, mm/dd/yyyy and dd.mm.yyyy.
+
 Thu Jan 20 17:15:06 2005  Tim Janik  <timj@gtk.org>
 
 	* sfistore.[hc]:

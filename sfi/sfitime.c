@@ -191,7 +191,7 @@ SfiTime
 sfi_time_from_string_err (const gchar *time_string,
 			  gchar      **error_p)
 {
-  const guint n_formats = 12;
+  const guint n_formats = 15;
   guint year[n_formats];
   guint month[n_formats];
   guint day[n_formats];
@@ -223,16 +223,22 @@ sfi_time_from_string_err (const gchar *time_string,
    * the following formats are currently implemented:
    * "yyyy-mm-dd hh:mm:ss"
    * "yyyy-mm-dd hh:mm"
+   * "yyyy-mm-dd"
    * "mm/dd/yyyy hh:mm:ss"
    * "mm/dd/yyyy hh:mm"
+   * "mm/dd/yyyy"
    * "dd.mm.yyyy hh:mm:ss"
    * "dd.mm.yyyy hh:mm"
+   * "dd.mm.yyyy"
    * "hh:mm:ss yyyy-mm-dd"
    * "hh:mm yyyy-mm-dd"
    * "hh:mm:ss mm/dd/yyyy"
    * "hh:mm mm/dd/yyyy"
    * "hh:mm:ss dd.mm.yyyy"
    * "hh:mm dd.mm.yyyy"
+   *
+   * more on time formats (ISO 8601) can be found at:
+   *   http://www.cl.cam.ac.uk/~mgk25/iso-time.html
    */
   
   string = g_strdup (time_string);
@@ -292,6 +298,21 @@ sfi_time_from_string_err (const gchar *time_string,
       finished = success[i] && !garbage[i] && DATE_CHECK (i);
       i++;
     }
+  if (!finished) /* parse "yyyy-mm-dd" e.g. "1998-04-16" */
+    {
+      gint n_values;
+      gchar end_char = 0;
+      
+      second[i] = 0;
+      n_values = sscanf (string,
+                         "%u-%u-%u%c",
+                         &year[i], &month[i], &day[i],
+                         &end_char);
+      success[i] = n_values >= 3;
+      garbage[i] = n_values > 3;
+      finished = success[i] && !garbage[i] && DATE_CHECK (i);
+      i++;
+    }
   if (!finished) /* parse "mm/dd/yyyy hh:mm:ss" e.g. "04/16/1998 23:59:59" */
     
     {
@@ -324,6 +345,21 @@ sfi_time_from_string_err (const gchar *time_string,
       finished = success[i] && !garbage[i] && DATE_CHECK (i);
       i++;
     }
+  if (!finished) /* parse "mm/dd/yyyy" e.g. "04/16/1998" */
+    {
+      gint n_values;
+      gchar end_char = 0;
+      
+      second[i] = 0;
+      n_values = sscanf (string,
+                         "%u/%u/%u%c",
+                         &month[i], &day[i], &year[i],
+                         &end_char);
+      success[i] = n_values >= 3;
+      garbage[i] = n_values > 3;
+      finished = success[i] && !garbage[i] && DATE_CHECK (i);
+      i++;
+    }
   if (!finished) /* parse "dd.mm.yyyy hh:mm:ss" e.g. "16.4.1998 23:59:59" */
     {
       gint n_values;
@@ -352,6 +388,21 @@ sfi_time_from_string_err (const gchar *time_string,
 			 &end_char);
       success[i] = n_values >= 5;
       garbage[i] = n_values > 5;
+      finished = success[i] && !garbage[i] && DATE_CHECK (i);
+      i++;
+    }
+  if (!finished) /* parse "dd.mm.yyyy" e.g. "16.4.1998" */
+    {
+      gint n_values;
+      gchar end_char = 0;
+      
+      second[i] = 0;
+      n_values = sscanf (string,
+                         "%u.%u.%u%c",
+                         &day[i], &month[i], &year[i],
+                         &end_char);
+      success[i] = n_values >= 3;
+      garbage[i] = n_values > 3;
       finished = success[i] && !garbage[i] && DATE_CHECK (i);
       i++;
     }
