@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999-2002 Tim Janik
+ * Copyright (C) 1999-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,9 @@
 #include <gtk/gtkadjustment.h>
 #include <gtk/gtkimage.h>
 
+G_BEGIN_DECLS
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-
+/* --- type macros --- */
 #define BST_TYPE_KNOB			(bst_knob_get_type ())
 #define BST_KNOB(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_KNOB, BstKnob))
 #define BST_KNOB_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_KNOB, BstKnobClass))
@@ -34,7 +31,7 @@ extern "C" {
 #define BST_IS_KNOB_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_KNOB))
 #define BST_KNOB_GET_CLASS(object)	(G_TYPE_INSTANCE_GET_CLASS ((obj), BST_TYPE_KNOB, BstKnobClass))
 
-
+/* --- structures & typedefs --- */
 typedef struct _BstKnob	     BstKnob;
 typedef struct _BstKnobClass BstKnobClass;
 struct _BstKnob
@@ -79,18 +76,14 @@ struct _BstKnobClass
   GtkImageClass parent_class;
 };
   
-
-GtkType	       bst_knob_get_type	       (void);
+/* --- public methods --- */
+GType	       bst_knob_get_type	       (void);
 GtkWidget*     bst_knob_new                    (GtkAdjustment *adjustment);
 void           bst_knob_set_adjustment         (BstKnob       *knob,
                                                 GtkAdjustment *adjustment);
 GtkAdjustment* bst_knob_get_adjustment         (BstKnob       *knob);
 void           bst_knob_set_update_policy      (BstKnob       *knob,
                                                 GtkUpdateType  policy);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_KNOB_H__ */
-

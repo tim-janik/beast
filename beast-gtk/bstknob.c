@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999-2002 Tim Janik
+ * Copyright (C) 1999-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 #include <gtk/gtksignal.h>
 #include <math.h>
 #include <stdio.h>
-#include <gxk/gxkstock.h>	// FIXME: remove include
 
 
 #define SCROLL_DELAY_LENGTH	300
@@ -35,26 +34,8 @@ enum {
 };
 
 
-static void     bst_knob_class_init                 (BstKnobClass   *class);
-static void     bst_knob_init                       (BstKnob        *knob);
-static void     bst_knob_destroy                    (GtkObject      *object);
-static void     bst_knob_realize                    (GtkWidget      *widget);
-static void     bst_knob_unrealize                  (GtkWidget      *widget);
-static void     bst_knob_map                        (GtkWidget      *widget);
-static void     bst_knob_unmap                      (GtkWidget      *widget);
-static void     bst_knob_size_request               (GtkWidget      *widget,
-                                                     GtkRequisition *requisition);
-static void     bst_knob_size_allocate              (GtkWidget      *widget,
-                                                     GtkAllocation  *allocation);
-static gint     bst_knob_expose                     (GtkWidget      *widget,
-                                                     GdkEventExpose *event);
+/* --- prototypes --- */
 static void	bst_knob_paint			    (BstKnob	    *knob);
-static gint     bst_knob_button_press               (GtkWidget      *widget,
-                                                     GdkEventButton *event);
-static gint     bst_knob_button_release             (GtkWidget      *widget,
-                                                     GdkEventButton *event);
-static gint     bst_knob_motion_notify              (GtkWidget      *widget,
-                                                     GdkEventMotion *event);
 static gboolean bst_knob_timer                      (gpointer        data);
 static void     bst_knob_mouse_update               (BstKnob        *knob,
                                                      gint            x,
@@ -66,87 +47,8 @@ static void     bst_knob_adjustment_changed         (GtkAdjustment  *adjustment,
 static void     bst_knob_adjustment_value_changed   (GtkAdjustment  *adjustment,
                                                      gpointer        data);
 
-static GtkWidgetClass *parent_class = NULL;
-
-GtkType
-bst_knob_get_type (void)
-{
-  static GtkType knob_type = 0;
-  
-  if (!knob_type)
-    {
-      GtkTypeInfo knob_info =
-      {
-        "BstKnob",
-        sizeof (BstKnob),
-        sizeof (BstKnobClass),
-        (GtkClassInitFunc) bst_knob_class_init,
-        (GtkObjectInitFunc) bst_knob_init,
-        /* reserved_1 */ NULL,
-        /* reserved_2 */ NULL,
-        (GtkClassInitFunc) NULL,
-      };
-      
-      knob_type = gtk_type_unique (GTK_TYPE_IMAGE, &knob_info);
-    }
-  
-  return knob_type;
-}
-
-static void
-bst_knob_class_init (BstKnobClass *class)
-{
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
-  
-  object_class->destroy = bst_knob_destroy;
-  
-  widget_class->size_request = bst_knob_size_request;
-  widget_class->size_allocate = bst_knob_size_allocate;
-  widget_class->realize = bst_knob_realize;
-  widget_class->unrealize = bst_knob_unrealize;
-  widget_class->map = bst_knob_map;
-  widget_class->unmap = bst_knob_unmap;
-  widget_class->expose_event = bst_knob_expose;
-  widget_class->button_press_event = bst_knob_button_press;
-  widget_class->button_release_event = bst_knob_button_release;
-  widget_class->motion_notify_event = bst_knob_motion_notify;
-
-  /* sets text[PRELIGHT] to red */
-  gtk_rc_parse_string ("style'BstKnobClass-style'{text[PRELIGHT]={1.,0.,0.}}"
-		       "widget_class'*BstKnob'style'BstKnobClass-style'");
-}
-
-static void
-bst_knob_init (BstKnob *knob)
-{
-  gfloat w, h, radius;
-
-  knob->update_policy = GTK_UPDATE_CONTINUOUS;
-  knob->button = 0;
-  knob->arc_start = 1.25 * M_PI;	/* 0 .. 2*M_PI */
-  knob->arc_dist  = 1.5 * M_PI;		/* 0 .. 2*M_PI */
-  knob->timer = 0;
-  knob->angle_range = 0.0;
-  knob->old_value = 0.0;
-  knob->old_lower = 0.0;
-  knob->old_upper = 0.0;
-  knob->old_page_size = 0.0;
-  knob->adjustment = NULL;
-  knob->pixbuf = g_object_ref (bst_pixbuf_knob ());
-  g_assert (knob->pixbuf);
-
-  gtk_image_set_from_pixbuf (GTK_IMAGE (knob), knob->pixbuf);
-  w = gdk_pixbuf_get_width (knob->pixbuf);
-  h = gdk_pixbuf_get_height (knob->pixbuf);
-  radius = (w + h) / 4.;
-  knob->furrow_radius = radius * 0.65;
-  knob->dot_radius = radius * 0.81;
-  knob->xofs = 1;
-  knob->yofs = 0;
-}
+/* --- functions --- */
+G_DEFINE_TYPE (BstKnob, bst_knob, GTK_TYPE_IMAGE);
 
 static void
 bst_knob_destroy (GtkObject *object)
@@ -172,7 +74,7 @@ bst_knob_destroy (GtkObject *object)
     }
   
   /* chain parent class' handler */
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_knob_parent_class)->destroy (object);
 }
 
 static void
@@ -182,7 +84,7 @@ bst_knob_size_request (GtkWidget      *widget,
   // BstKnob *knob = BST_KNOB (widget);
 
   /* chain parent class' handler */
-  GTK_WIDGET_CLASS (parent_class)->size_request (widget, requisition);
+  GTK_WIDGET_CLASS (bst_knob_parent_class)->size_request (widget, requisition);
 }
 
 static void
@@ -192,7 +94,7 @@ bst_knob_size_allocate (GtkWidget     *widget,
   BstKnob *knob = BST_KNOB (widget);
 
   /* chain parent class' handler */
-  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+  GTK_WIDGET_CLASS (bst_knob_parent_class)->size_allocate (widget, allocation);
 
   /* position widget's window accordingly
    */
@@ -210,7 +112,7 @@ bst_knob_realize (GtkWidget *widget)
   gint attributes_mask;
 
   /* chain parent class' handler */
-  GTK_WIDGET_CLASS (parent_class)->realize (widget);
+  GTK_WIDGET_CLASS (bst_knob_parent_class)->realize (widget);
 
   attributes.window_type = GDK_WINDOW_CHILD;
   attributes.x = widget->allocation.x;
@@ -240,7 +142,7 @@ bst_knob_unrealize (GtkWidget *widget)
   knob->iwindow = NULL;
 
   /* chain parent class' handler */
-  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  GTK_WIDGET_CLASS (bst_knob_parent_class)->unrealize (widget);
 }
 
 static void
@@ -248,7 +150,7 @@ bst_knob_map (GtkWidget *widget)
 {
   BstKnob *knob = BST_KNOB (widget);
 
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
+  GTK_WIDGET_CLASS (bst_knob_parent_class)->map (widget);
 
   gdk_window_show (knob->iwindow);
 }
@@ -260,7 +162,7 @@ bst_knob_unmap (GtkWidget *widget)
 
   gdk_window_hide (knob->iwindow);
 
-  GTK_WIDGET_CLASS (parent_class)->unmap (widget);
+  GTK_WIDGET_CLASS (bst_knob_parent_class)->unmap (widget);
 }
 
 static gint
@@ -270,7 +172,7 @@ bst_knob_expose (GtkWidget      *widget,
   BstKnob *knob = BST_KNOB (widget);
 
   /* chain parent class' handler */
-  GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+  GTK_WIDGET_CLASS (bst_knob_parent_class)->expose_event (widget, event);
 
   /* we ignore intermediate expose events
    */
@@ -693,4 +595,57 @@ bst_knob_update (BstKnob *knob)
 		       (adjustment->upper - adjustment->page_size - adjustment->lower));
   
   gtk_widget_queue_draw (widget);
+}
+
+static void
+bst_knob_init (BstKnob *knob)
+{
+  gfloat w, h, radius;
+
+  knob->update_policy = GTK_UPDATE_CONTINUOUS;
+  knob->button = 0;
+  knob->arc_start = 1.25 * M_PI;	/* 0 .. 2*M_PI */
+  knob->arc_dist  = 1.5 * M_PI;		/* 0 .. 2*M_PI */
+  knob->timer = 0;
+  knob->angle_range = 0.0;
+  knob->old_value = 0.0;
+  knob->old_lower = 0.0;
+  knob->old_upper = 0.0;
+  knob->old_page_size = 0.0;
+  knob->adjustment = NULL;
+  knob->pixbuf = g_object_ref (bst_pixbuf_knob ());
+  g_assert (knob->pixbuf);
+
+  gtk_image_set_from_pixbuf (GTK_IMAGE (knob), knob->pixbuf);
+  w = gdk_pixbuf_get_width (knob->pixbuf);
+  h = gdk_pixbuf_get_height (knob->pixbuf);
+  radius = (w + h) / 4.;
+  knob->furrow_radius = radius * 0.65;
+  knob->dot_radius = radius * 0.81;
+  knob->xofs = 1;
+  knob->yofs = 0;
+}
+
+static void
+bst_knob_class_init (BstKnobClass *class)
+{
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+
+  object_class->destroy = bst_knob_destroy;
+  
+  widget_class->size_request = bst_knob_size_request;
+  widget_class->size_allocate = bst_knob_size_allocate;
+  widget_class->realize = bst_knob_realize;
+  widget_class->unrealize = bst_knob_unrealize;
+  widget_class->map = bst_knob_map;
+  widget_class->unmap = bst_knob_unmap;
+  widget_class->expose_event = bst_knob_expose;
+  widget_class->button_press_event = bst_knob_button_press;
+  widget_class->button_release_event = bst_knob_button_release;
+  widget_class->motion_notify_event = bst_knob_motion_notify;
+
+  /* sets text[PRELIGHT] to red */
+  gtk_rc_parse_string ("style'BstKnobClass-style'{text[PRELIGHT]={1.,0.,0.}}"
+		       "widget_class'*BstKnob'style'BstKnobClass-style'");
 }
