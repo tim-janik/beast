@@ -69,23 +69,23 @@ static BstMenuConfigEntry popup_entries[] =
 {
 #define MENU_CB(xxx)	menu_select_tool, BST_PIANO_ROLL_TOOL_ ## xxx
 #define ACTION_CB(xxx)	menu_activate_tool, ACTION_ ## xxx
-  { "/_Tools",		NULL,		NULL,   0,		"<Branch>",	0 },
-  { "/Tools/Insert",	"I",		MENU_CB (INSERT),	"<StockItem>",	BST_STOCK_PART_TOOL },
-  { "/Tools/Delete",	"D",		MENU_CB (DELETE),	"<StockItem>",	BST_STOCK_TRASHCAN },
-  { "/Tools/Align Events", "A",		MENU_CB (ALIGN),	"<StockItem>",	BST_STOCK_EVENT_CONTROL },
-  { "/Tools/Select",	"S",		MENU_CB (SELECT),	"<StockItem>",	BST_STOCK_RECT_SELECT },
-  { "/Tools/Vertical Select",	"V",	MENU_CB (VSELECT),	"<StockItem>",	BST_STOCK_VERT_SELECT },
-  { "/_Edit",		NULL,		NULL,   0,		"<Branch>",	0 },
-  { "/Edit/Cut",	"<ctrl>X",	ACTION_CB (CUT),	"<StockItem>",	BST_STOCK_MUSIC_CUT },
-  { "/Edit/Copy",	"<ctrl>C",	ACTION_CB (COPY),	"<StockItem>",	BST_STOCK_MUSIC_COPY },
-  { "/Edit/Paste",	"<ctrl>V",	ACTION_CB (PASTE),	"<StockItem>",	BST_STOCK_MUSIC_PASTE },
-  { "/Edit/Clear",	"<ctrl>K",	ACTION_CB (CLEAR),	"<StockItem>",	BST_STOCK_TRASH_SCISSORS },
-  { "/Edit/-----1",	NULL,     	NULL,   0,           	"<Separator>",	0 },
-  { "/Edit/Undo",	"<ctrl>Z",      ACTION_CB (UNDO),	"<StockItem>",	BST_STOCK_UNDO },
-  { "/Edit/Redo",	"<ctrl>R",      ACTION_CB (REDO),	"<StockItem>",	BST_STOCK_REDO },
-  { "/-----1",		NULL,		NULL,	0,		"<Separator>",	0 },
-  { "/Scripts",		NULL,		NULL,   0,		"<Title>",	0 },
-  { "/Test",		NULL,		NULL,	0,		"<Branch>",	0 },
+  { N_("/_Tools"),		NULL,		NULL,   0,		"<Branch>",	0 },
+  { N_("/Tools/Insert"),	"I",		MENU_CB (INSERT),	"<StockItem>",	BST_STOCK_PART_TOOL },
+  { N_("/Tools/Delete"),	"D",		MENU_CB (DELETE),	"<StockItem>",	BST_STOCK_TRASHCAN },
+  { N_("/Tools/Align Events"),  "A",		MENU_CB (ALIGN),	"<StockItem>",	BST_STOCK_EVENT_CONTROL },
+  { N_("/Tools/Select"),	"S",		MENU_CB (SELECT),	"<StockItem>",	BST_STOCK_RECT_SELECT },
+  { N_("/Tools/Vertical Select"), "V",  	MENU_CB (VSELECT),	"<StockItem>",	BST_STOCK_VERT_SELECT },
+  { N_("/_Edit"),		NULL,		NULL,   0,		"<Branch>",	0 },
+  { N_("/Edit/Cut"),    	"<ctrl>X",	ACTION_CB (CUT),	"<StockItem>",	BST_STOCK_MUSIC_CUT },
+  { N_("/Edit/Copy"),   	"<ctrl>C",	ACTION_CB (COPY),	"<StockItem>",	BST_STOCK_MUSIC_COPY },
+  { N_("/Edit/Paste"),  	"<ctrl>V",	ACTION_CB (PASTE),	"<StockItem>",	BST_STOCK_MUSIC_PASTE },
+  { N_("/Edit/Clear"),  	"<ctrl>K",	ACTION_CB (CLEAR),	"<StockItem>",	BST_STOCK_TRASH_SCISSORS },
+  {    "/Edit/-----1",   	NULL,     	NULL,   0,           	"<Separator>",	0 },
+  { N_("/Edit/Undo"),   	"<ctrl>Z",      ACTION_CB (UNDO),	"<StockItem>",	BST_STOCK_UNDO },
+  { N_("/Edit/Redo"),   	"<ctrl>R",      ACTION_CB (REDO),	"<StockItem>",	BST_STOCK_REDO },
+  {    "/-----1",             	NULL,		NULL,	0,		"<Separator>",	0 },
+  { N_("/Scripts"),		NULL,		NULL,   0,		"<Title>",	0 },
+  { N_("/Test"),		NULL,		NULL,	0,		"<Branch>",	0 },
 };
 static gpointer	parent_class = NULL;
 
@@ -526,7 +526,7 @@ part_dialog_update_tool (BstPartDialog *self)
     case BST_PIANO_ROLL_TOOL_VSELECT:
       bst_piano_roll_controller_set_obj_tools (self->pctrl,
 					       BST_PIANO_ROLL_TOOL_VSELECT,
-					       BST_PIANO_ROLL_TOOL_NONE,
+                                               BST_PIANO_ROLL_TOOL_MOVE,
 					       BST_PIANO_ROLL_TOOL_NONE);
       bst_piano_roll_controller_set_bg_tools (self->pctrl,
 					      BST_PIANO_ROLL_TOOL_VSELECT,
