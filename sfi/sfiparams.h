@@ -206,18 +206,15 @@ GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 
 
 /* --- conversion --- */
-typedef struct {
-  guint        n_fields;
-  GParamSpec **fields;
-  guint        is_rec : 1;
-  guint        is_seq : 1;
-} SfiBoxedFields;
-void                  sfi_boxed_type_set_fields   (GType                 boxed_type,
-                                                   const SfiBoxedFields *bfields);
-const SfiBoxedFields* sfi_boxed_type_get_fields   (GType                 boxed_type);
-GParamSpec*           sfi_pspec_to_serializable   (GParamSpec           *pspec);
-GParamSpec*           sfi_pspec_choice_from_enum  (GParamSpec           *enum_pspec);
-GParamSpec*           sfi_pspec_proxy_from_object (GParamSpec           *object_pspec);
+GParamSpec*  sfi_pspec_to_serializable      (GParamSpec         *pspec);
+GParamSpec*  sfi_pspec_choice_from_enum     (GParamSpec         *enum_pspec);
+GParamSpec*  sfi_pspec_proxy_from_object    (GParamSpec         *object_pspec);
+void         sfi_boxed_type_set_rec_fields  (GType               boxed_type,
+                                             const SfiRecFields  static_const_fields);
+SfiRecFields sfi_boxed_type_get_rec_fields  (GType               boxed_type);
+void         sfi_boxed_type_set_seq_element (GType               boxed_type,
+                                             GParamSpec         *element);
+GParamSpec*  sfi_boxed_type_get_seq_element (GType               boxed_type);
 
 
 /* --- Sfi PSpec Options --- */

@@ -1,3 +1,11 @@
+Sat Jan 24 06:55:57 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-cxx.cc: switch to a get_element() method for sequences,
+	return SfiRecFields for get_fields() of records.
+
+	* sfiparams.[hc]: reimplemented boxed type helpers, based on an
+	element pspec for sequences and SfiRecFields for records.
+
 Sat Jan 24 04:44:00 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-generator.*: Make rename() prefix namespace_seperator for

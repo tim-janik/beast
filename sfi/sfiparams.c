@@ -67,7 +67,7 @@ static GQuark quark_param_group = 0;
 static GQuark quark_param_owner = 0;
 static GQuark quark_tmp_choice_values = 0;
 static GQuark quark_tmp_record_fields = 0;
-static GQuark quark_boxed_fields = 0;
+static GQuark quark_boxed_info = 0;
 
 
 /* --- functions --- */
@@ -96,7 +96,7 @@ _sfi_init_params (void)
   quark_param_owner = g_quark_from_static_string ("sfi-pspec-owner");
   quark_tmp_choice_values = g_quark_from_static_string ("sfi-tmp-choice-values");
   quark_tmp_record_fields = g_quark_from_static_string ("sfi-tmp-choice-values");
-  quark_boxed_fields = g_quark_from_static_string ("sfi-boxed-fields");
+  quark_boxed_info = g_quark_from_static_string ("sfi-boxed-info");
 
   /* pspec types */
   info.instance_size = sizeof (SfiParamSpecProxy);
@@ -736,6 +736,86 @@ sfi_pspec_note (const gchar *name,
 }
 
 
+/* --- boxed type conversion support --- */
+enum {
+  BOXED_RECORD = 1,
+  BOXED_SEQUENCE
+};
+typedef struct {
+  guint       n_fields : 24;
+  guint       boxed_kind : 8;
+  GParamSpec *fields[1]; /* variable length array */
+} BoxedInfo;
+
+void
+sfi_boxed_type_set_rec_fields (GType               boxed_type,
+                               const SfiRecFields  static_const_fields)
+{
+  BoxedInfo *binfo = g_type_get_qdata (boxed_type, quark_boxed_info);
+  g_return_if_fail (G_TYPE_IS_BOXED (boxed_type));
+  if (static_const_fields.n_fields)
+    {
+      binfo = g_realloc (binfo, (sizeof (BoxedInfo) +
+                                 sizeof (binfo->fields[0]) * (static_const_fields.n_fields - 1)));
+      binfo->n_fields = static_const_fields.n_fields;
+      memcpy (binfo->fields, static_const_fields.fields, sizeof (binfo->fields[0]) * binfo->n_fields);
+      binfo->boxed_kind = BOXED_RECORD;
+    }
+  else
+    {
+      g_free (binfo);
+      binfo = NULL;
+    }
+  g_type_set_qdata (boxed_type, quark_boxed_info, binfo);
+}
+
+SfiRecFields
+sfi_boxed_type_get_rec_fields (GType boxed_type)
+{
+  BoxedInfo *binfo = g_type_get_qdata (boxed_type, quark_boxed_info);
+  SfiRecFields rfields = { 0, NULL };
+  g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type), rfields);
+  if (binfo && binfo->boxed_kind == BOXED_RECORD)
+    {
+      rfields.n_fields = binfo->n_fields;
+      rfields.fields = binfo->fields;
+    }
+  return rfields;
+}
+
+void
+sfi_boxed_type_set_seq_element (GType               boxed_type,
+                                GParamSpec         *element)
+{
+  BoxedInfo *binfo = g_type_get_qdata (boxed_type, quark_boxed_info);
+  g_return_if_fail (G_TYPE_IS_BOXED (boxed_type));
+  if (element)
+    {
+      binfo = g_realloc (binfo, sizeof (BoxedInfo));
+      binfo->n_fields = 1;
+      binfo->fields[0] = element;
+      binfo->boxed_kind = BOXED_SEQUENCE;
+    }
+  else
+    {
+      g_free (binfo);
+      binfo = NULL;
+    }
+  g_type_set_qdata (boxed_type, quark_boxed_info, binfo);
+}
+
+GParamSpec*
+sfi_boxed_type_get_seq_element (GType               boxed_type)
+{
+  BoxedInfo *binfo = g_type_get_qdata (boxed_type, quark_boxed_info);
+  GParamSpec *pspec = NULL;
+  g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type), NULL);
+  if (binfo && binfo->boxed_kind == BOXED_SEQUENCE)
+    pspec = binfo->fields[0];
+  return pspec;
+}
+
+
 /* --- conversion --- */
 static SfiSeq*
 choice_values_to_seq (const SfiChoiceValues cvalues)
@@ -957,22 +1037,6 @@ sfi_pspec_proxy_from_object (GParamSpec *object_pspec)
   return pspec;
 }
 
-void
-sfi_boxed_type_set_fields (GType                 boxed_type,
-                           const SfiBoxedFields *bfields)
-{
-  g_return_if_fail (G_TYPE_IS_BOXED (boxed_type) && !G_TYPE_IS_ABSTRACT (boxed_type));
-  if (bfields != NULL)
-    g_return_if_fail (bfields->n_fields && (bfields->is_rec || bfields->is_seq));
-  g_type_set_qdata (boxed_type, quark_boxed_fields, (SfiBoxedFields*) bfields);
-}
-
-const SfiBoxedFields*
-sfi_boxed_type_get_fields (GType boxed_type)
-{
-  return g_type_get_qdata (boxed_type, quark_boxed_fields);
-}
-
 GParamSpec*
 sfi_pspec_to_serializable (GParamSpec *xpspec)
 {
@@ -986,7 +1050,8 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
     {
       const SfiBoxedRecordInfo *rinfo = sfi_boxed_get_record_info (G_PARAM_SPEC_VALUE_TYPE (xpspec));
       const SfiBoxedSequenceInfo *sinfo = sfi_boxed_get_sequence_info (G_PARAM_SPEC_VALUE_TYPE (xpspec));
-      const SfiBoxedFields *bfields = sfi_boxed_type_get_fields (G_PARAM_SPEC_VALUE_TYPE (xpspec));
+      SfiRecFields rfields = sfi_boxed_type_get_rec_fields (G_PARAM_SPEC_VALUE_TYPE (xpspec));
+      GParamSpec *element = sfi_boxed_type_get_seq_element (G_PARAM_SPEC_VALUE_TYPE (xpspec));
       if (rinfo)
         {
           pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, rinfo->fields, NULL);
@@ -997,14 +1062,14 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
           pspec = sfi_pspec_seq (xpspec->name, xpspec->_nick, xpspec->_blurb, sinfo->element, NULL);
           sfi_pspec_copy_commons (xpspec, pspec);
         }
-      else if (bfields && bfields->is_rec)
+      else if (rfields.n_fields)
         {
-          pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, *(SfiRecFields*) bfields, NULL);
+          pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, rfields, NULL);
           sfi_pspec_copy_commons (xpspec, pspec);
         }
-      else if (bfields && bfields->is_seq)
+      else if (element)
         {
-          pspec = sfi_pspec_seq (xpspec->name, xpspec->_nick, xpspec->_blurb, bfields->fields[0], NULL);
+          pspec = sfi_pspec_seq (xpspec->name, xpspec->_nick, xpspec->_blurb, element, NULL);
           sfi_pspec_copy_commons (xpspec, pspec);
         }
     }

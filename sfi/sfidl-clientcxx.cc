@@ -290,7 +290,7 @@ CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
           pspec += "_default (" + group + ", \"" + param.name + "\", ";
         else
           pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
-        pspec += param.type + "::get_fields()";
+        pspec += param.type + "::get_element()";
         pspec += ")";
         return pspec;
       }
@@ -470,7 +470,7 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("  static inline const char* license   () { return %s; }\n", si->infos.get("license").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", makeMixedName (si->name).c_str());
       if (options.doImplementation)
-        printf ("  static inline SfiBoxedFields get_fields ();\n");
+        printf ("  static inline GParamSpec* get_element ();\n");
       printf("};\n");
       printf ("\n");
     }
@@ -505,7 +505,7 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
       printf ("  static inline const char* license   () { return %s; }\n", ri->infos.get("license").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", type_name.c_str());
       if (options.doImplementation)
-        printf ("  static inline SfiBoxedFields get_fields ();\n");
+        printf ("  static inline SfiRecFields get_fields ();\n");
       printf ("};\n");
       printf ("\n");
     }
@@ -574,20 +574,14 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
 
       if (options.doImplementation)
 	{
-	  printf ("SfiBoxedFields\n");
-	  printf ("%s::get_fields()\n", nname.c_str());
+	  printf ("GParamSpec*\n");
+	  printf ("%s::get_element()\n", nname.c_str());
 	  printf ("{\n");
-	  printf ("  static SfiBoxedFields bfields = { 0, NULL, 0, TRUE };\n");
-	  printf ("  if (!bfields.n_fields)\n");
-	  printf ("    {\n");
-	  printf ("      static GParamSpec *fields[1 + 1];\n");
-	  printf ("      bfields.n_fields = 1;\n");
-	  guint j = 0;
+	  printf ("  static GParamSpec *element = NULL;\n");
+	  printf ("  if (!element)\n");
           // printf("#line %u \"%s\"\n", si->content.line, parser.fileName().c_str());
-          printf("      fields[%u] = %s;\n", j++, untyped_pspec_constructor (si->content).c_str());
-	  printf ("      bfields.fields = fields;\n");
-	  printf ("    }\n");
-	  printf ("  return bfields;\n");
+          printf ("    element = %s;\n", untyped_pspec_constructor (si->content).c_str());
+	  printf ("  return element;\n");
 	  printf ("}\n\n");
 	}
     }
@@ -658,23 +652,23 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
 
       if (options.doImplementation)
 	{
-	  printf ("SfiBoxedFields\n");
+	  printf ("SfiRecFields\n");
 	  printf ("%s::get_fields()\n", nname.c_str());
 	  printf ("{\n");
-	  printf ("  static SfiBoxedFields bfields = { 0, NULL, TRUE, 0 };\n");
-	  printf ("  if (!bfields.n_fields)\n");
+	  printf ("  static SfiRecFields rfields = { 0, NULL };\n");
+	  printf ("  if (!rfields.n_fields)\n");
 	  printf ("    {\n");
 	  printf ("      static GParamSpec *fields[%u + 1];\n", ri->contents.size());
-	  printf ("      bfields.n_fields = %u;\n", ri->contents.size());
+	  printf ("      rfields.n_fields = %u;\n", ri->contents.size());
 	  guint j = 0;
 	  for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
 	      // printf("#line %u \"%s\"\n", pi->line, parser.fileName().c_str());
 	      printf("      fields[%u] = %s;\n", j++, untyped_pspec_constructor (*pi).c_str());
 	    }
-	  printf ("      bfields.fields = fields;\n");
+	  printf ("      rfields.fields = fields;\n");
 	  printf ("    }\n");
-	  printf ("  return bfields;\n");
+	  printf ("  return rfields;\n");
 	  printf ("}\n\n");
 	}
     }
