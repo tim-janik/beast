@@ -103,10 +103,18 @@ typedef enum	/*< skip >*/
   GSL_ERROR_NONE,
   GSL_ERROR_INTERNAL,
   GSL_ERROR_UNKNOWN,
+  /* I/O errors */
   GSL_ERROR_IO,
   GSL_ERROR_NOT_FOUND,
+  GSL_ERROR_OPEN_FAILED,
   GSL_ERROR_READ_FAILED,
-  GSL_ERROR_SEEK_FAILED
+  GSL_ERROR_SEEK_FAILED,
+  GSL_ERROR_PREMATURE_EOF,
+  /* content errors */
+  GSL_ERROR_FORMAT_INVALID,
+  GSL_ERROR_DATA_CORRUPT,
+  /* miscellaneous errors */
+  GSL_ERROR_CODEC_FAILURE
 } GslErrorType;
 void		gsl_message_send	(GslMsgType	msgtype,
 					 GslErrorType	error,

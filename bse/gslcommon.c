@@ -665,14 +665,19 @@ gsl_strerror (GslErrorType error)
 {
   switch (error)
     {
-    case GSL_ERROR_NONE:	return "Everything went well";
-    case GSL_ERROR_INTERNAL:	return "Internal error (please report)";
-    case GSL_ERROR_UNKNOWN:	return "Unknown error";
-    case GSL_ERROR_IO:		return "I/O error";
-    case GSL_ERROR_NOT_FOUND:	return "Not found";
-    case GSL_ERROR_READ_FAILED:	return "Read failed";
-    case GSL_ERROR_SEEK_FAILED:	return "Seek failed";
-    default:			return NULL;
+    case GSL_ERROR_NONE:		return "Everything went well";
+    case GSL_ERROR_INTERNAL:		return "Internal error (please report)";
+    case GSL_ERROR_UNKNOWN:		return "Unknown error";
+    case GSL_ERROR_IO:			return "I/O error";
+    case GSL_ERROR_NOT_FOUND:		return "Not found";
+    case GSL_ERROR_OPEN_FAILED:		return "Open failed";
+    case GSL_ERROR_READ_FAILED:		return "Read failed";
+    case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
+    case GSL_ERROR_PREMATURE_EOF:	return "Premature EOF";
+    case GSL_ERROR_FORMAT_INVALID:	return "Invalid format";
+    case GSL_ERROR_DATA_CORRUPT:        return "data corrupt";
+    case GSL_ERROR_CODEC_FAILURE:	return "CODEC failure";
+    default:				return NULL;
     }
 }
 
