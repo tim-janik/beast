@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Stefan Westerfeld and Tim Janik
+ * Copyright (C) 2001-2004 Stefan Westerfeld and Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,12 +21,8 @@
 
 #include <bse/bsemath.h>
 #include <bse/gsldatahandle.h>
-#include <sfi/sfistore.h>	// FIXME:?
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- structures --- */
 #define GSL_DATA_HANDLE_PEEK_BUFFER     (2048)
@@ -175,7 +171,7 @@ gsl_conv_from_float (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
       do
-        *u8++ = *src++ * 128. + 128.5;
+        *u8++ = bse_dtoi (*src++ * 128. + 128);
       while (src < bound);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
@@ -185,20 +181,20 @@ gsl_conv_from_float (GslWaveFormatType format,
         {
           v = *src++;
           v *= 128.;
-          *i8++ = bse_ftoi (v);
+          *i8++ = bse_dtoi (v);
         }
       while (src < bound);
       bse_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
-        *u16++ = *src++ * 2048. + 2048.5;
+        *u16++ = bse_dtoi (*src++ * 2048. + 2048);
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vu16 = *src++ * 2048. + 2048.5;
+          vu16 = bse_dtoi (*src++ * 2048. + 2048);
           *u16++ = GUINT16_SWAP_LE_BE (vu16);
         }
       while (src < bound);
@@ -209,7 +205,7 @@ gsl_conv_from_float (GslWaveFormatType format,
         {
           v = *src++;
           v *= 2048.;
-          *i16++ = bse_ftoi (v);
+          *i16++ = bse_dtoi (v);
         }
       while (src < bound);
       bse_fpu_restore (fpu);
@@ -220,7 +216,7 @@ gsl_conv_from_float (GslWaveFormatType format,
         {
           v = *src++;
           v *= 2048.;
-          vi16 = bse_ftoi (v);
+          vi16 = bse_dtoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
@@ -228,13 +224,13 @@ gsl_conv_from_float (GslWaveFormatType format,
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
-        *u16++ = *src++ * 32768. + 32768.5;
+        *u16++ = bse_dtoi (*src++ * 32768. + 32768);
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vu16 = *src++ * 32768. + 32768.5;
+          vu16 = bse_dtoi (*src++ * 32768. + 32768);
           *u16++ = GUINT16_SWAP_LE_BE (vu16);
         }
       while (src < bound);
@@ -245,7 +241,7 @@ gsl_conv_from_float (GslWaveFormatType format,
         {
           v = *src++;
 	  v *= 32768.;
-          *i16++ = bse_ftoi (v);
+          *i16++ = bse_dtoi (v);
         }
       while (src < bound);
       bse_fpu_restore (fpu);
@@ -256,7 +252,7 @@ gsl_conv_from_float (GslWaveFormatType format,
         {
           v = *src++;
           v *= 32768.;
-          vi16 = bse_ftoi (v);
+          vi16 = bse_dtoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
@@ -306,7 +302,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 128. + 128.5;
+          vi32 = bse_dtoi (*src++ * 128. + 128);
           *u8++ = CLAMP (vi32, 0, 255);
         }
       while (src < bound);
@@ -318,7 +314,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 128.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           *i8++ = CLAMP (vi32, -128, 127);
         }
       while (src < bound);
@@ -327,7 +323,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 2048. + 2048.5;
+          vi32 = bse_dtoi (*src++ * 2048. + 2048);
           *u16++ = CLAMP (vi32, 0, 4095);
         }
       while (src < bound);
@@ -335,7 +331,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 2048. + 2048.5;
+          vi32 = bse_dtoi (*src++ * 2048. + 2048);
           vi32 = CLAMP (vi32, 0, 4095);
           *u16++ = GUINT16_SWAP_LE_BE (vi32);
         }
@@ -347,7 +343,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 2048.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           *i16++ = CLAMP (vi32, -2048, 2047);
         }
       while (src < bound);
@@ -359,7 +355,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 2048.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           vi32 = CLAMP (vi32, -2048, 2047);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
@@ -369,7 +365,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 32768. + 32768.5;
+          vi32 = bse_dtoi (*src++ * 32768. + 32768);
           *u16++ = CLAMP (vi32, 0, 65535);
         }
       while (src < bound);
@@ -377,7 +373,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 32768. + 32768.5;
+          vi32 = bse_dtoi (*src++ * 32768. + 32768);
           vi32 = CLAMP (vi32, 0, 65535);
           *u16++ = GUINT16_SWAP_LE_BE (vi32);
         }
@@ -389,7 +385,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 32768.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = vi32;
         }
@@ -402,7 +398,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 32768.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
@@ -622,7 +618,7 @@ gsl_conv_from_double (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
       do
-        *u8++ = *src++ * 128. + 128.5;
+        *u8++ = bse_dtoi (*src++ * 128. + 128);
       while (src < bound);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
@@ -632,20 +628,20 @@ gsl_conv_from_double (GslWaveFormatType format,
         {
           v = *src++;
           v *= 128.;
-          *i8++ = bse_ftoi (v);
+          *i8++ = bse_dtoi (v);
         }
       while (src < bound);
       bse_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
-        *u16++ = *src++ * 2048. + 2048.5;
+        *u16++ = bse_dtoi (*src++ * 2048. + 2048);
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vu16 = *src++ * 2048. + 2048.5;
+          vu16 = bse_dtoi (*src++ * 2048. + 2048);
           *u16++ = GUINT16_SWAP_LE_BE (vu16);
         }
       while (src < bound);
@@ -656,7 +652,7 @@ gsl_conv_from_double (GslWaveFormatType format,
         {
           v = *src++;
           v *= 2048.;
-          *i16++ = bse_ftoi (v);
+          *i16++ = bse_dtoi (v);
         }
       while (src < bound);
       bse_fpu_restore (fpu);
@@ -667,7 +663,7 @@ gsl_conv_from_double (GslWaveFormatType format,
         {
           v = *src++;
           v *= 2048.;
-          vi16 = bse_ftoi (v);
+          vi16 = bse_dtoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
@@ -675,13 +671,13 @@ gsl_conv_from_double (GslWaveFormatType format,
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
-        *u16++ = *src++ * 32768. + 32768.5;
+        *u16++ = bse_dtoi (*src++ * 32768. + 32768);
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vu16 = *src++ * 32768. + 32768.5;
+          vu16 = bse_dtoi (*src++ * 32768. + 32768);
           *u16++ = GUINT16_SWAP_LE_BE (vu16);
         }
       while (src < bound);
@@ -692,7 +688,7 @@ gsl_conv_from_double (GslWaveFormatType format,
         {
           v = *src++;
           v *= 32768.;
-          *i16++ = bse_ftoi (v);
+          *i16++ = bse_dtoi (v);
         }
       while (src < bound);
       bse_fpu_restore (fpu);
@@ -703,7 +699,7 @@ gsl_conv_from_double (GslWaveFormatType format,
         {
           v = *src++;
           v *= 32768.;
-          vi16 = bse_ftoi (v);
+          vi16 = bse_dtoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
@@ -753,7 +749,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 128. + 128.5;
+          vi32 = bse_dtoi (*src++ * 128. + 128);
           *u8++ = CLAMP (vi32, 0, 255);
         }
       while (src < bound);
@@ -765,7 +761,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 128.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           *i8++ = CLAMP (vi32, -128, 127);
         }
       while (src < bound);
@@ -774,7 +770,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 2048. + 2048.5;
+          vi32 = bse_dtoi (*src++ * 2048. + 2048);
           *u16++ = CLAMP (vi32, 0, 4095);
         }
       while (src < bound);
@@ -782,7 +778,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 2048. + 2048.5;
+          vi32 = bse_dtoi (*src++ * 2048. + 2048);
           vi32 = CLAMP (vi32, 0, 4095);
           *u16++ = GUINT16_SWAP_LE_BE (vi32);
         }
@@ -794,7 +790,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 2048.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           *i16++ = CLAMP (vi32, -2048, 2047);
         }
       while (src < bound);
@@ -806,7 +802,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 2048.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           vi32 = CLAMP (vi32, -2048, 2047);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
@@ -816,7 +812,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 32768. + 32768.5;
+          vi32 = bse_dtoi (*src++ * 32768. + 32768);
           *u16++ = CLAMP (vi32, 0, 65535);
         }
       while (src < bound);
@@ -824,7 +820,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
       do
         {
-          vi32 = *src++ * 32768. + 32768.5;
+          vi32 = bse_dtoi (*src++ * 32768. + 32768);
           vi32 = CLAMP (vi32, 0, 65535);
           *u16++ = GUINT16_SWAP_LE_BE (vi32);
         }
@@ -836,7 +832,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 32768.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = vi32;
         }
@@ -849,7 +845,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
         {
           v = *src++;
           v *= 32768.;
-          vi32 = bse_ftoi (v);
+          vi32 = bse_dtoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
@@ -990,10 +986,7 @@ gsl_conv_to_double (GslWaveFormatType format,
     }
 }
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_DATA_UTILS_H__ */
 

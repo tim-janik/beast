@@ -1,3 +1,12 @@
+Thu Dec 16 02:11:26 2004  Tim Janik  <timj@gtk.org>
+
+	* gsldatautils.h: 
+	gsl_conv_from_double_clip():
+	gsl_conv_from_double():
+	gsl_conv_from_float_clip(): 
+	gsl_conv_from_float(): use bse_dtoi() for double->int conversion to
+	get faster rounding and to avoid C++ warnings.
+
 Wed Dec 15 23:58:50 2004  Tim Janik  <timj@gtk.org>
 
 	* zintern/mono-wave.bse: adapt to beast 0.6.4. this fixes song compat
