@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-14 17:41-0400\n"
-"PO-Revision-Date: 2004-05-22 08:49-0300\n"
+"POT-Creation-Date: 2004-06-15 03:04+0200\n"
+"PO-Revision-Date: 2004-06-15 16:57-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -635,7 +635,7 @@ msgstr "Botão"
 
 #: beast-gtk/bstparam-scale.c:66
 msgid "Knob (Logarithmic"
-msgstr "Botão (Logarítmico)"
+msgstr "Botão (Logarítmico"
 
 #: beast-gtk/bstparam-scale.c:78
 msgid "Dial"
@@ -873,7 +873,7 @@ msgstr "ZoomV"
 
 #: beast-gtk/bstpatternctrl.c:83
 msgid "The tick/note length per line"
-msgstr ""
+msgstr "O comprimento por linha da marca/nota"
 
 #: beast-gtk/bstpatternctrl.c:86
 msgid "Steps"
@@ -980,11 +980,11 @@ msgstr "Define a oitava base"
 
 #: beast-gtk/bstpatternctrl.c:293
 msgid "Change the base octave by a given amount"
-msgstr "Altera a oitava base em um determinado montante"
+msgstr "Altera a oitava base em uma determinada quantidade"
 
 #: beast-gtk/bstpatternctrl.c:297
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
-msgstr ""
+msgstr "Altera o conteúdo da célula em foco (p.ex. a oitava) em uma determinada quantidade"
 
 #: beast-gtk/bstpatternctrl.c:301
 msgid "Set the focus cell octave"
@@ -1043,9 +1043,8 @@ msgid "1\\/1"
 msgstr "1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:67
-#, fuzzy
 msgid "Insert whole notes"
-msgstr "Insere notas de meio tempo"
+msgstr "Insere notas de tempo inteiro"
 
 #: beast-gtk/bstpianorollctrl.c:69
 msgid "1\\/2"
@@ -1080,34 +1079,28 @@ msgid "Insert sixteenth note"
 msgstr "Insere notas de dezesseis avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "1\\/32"
-msgstr "1/32"
+msgstr "1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:77
-#, fuzzy
 msgid "Insert thirty-second note"
-msgstr "Nota de trinta e dois avos de tempo pontuada"
+msgstr "Nota de trinta e dois avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "1\\/64"
-msgstr "1/64"
+msgstr "1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:79
-#, fuzzy
 msgid "Insert sixty-fourth note"
-msgstr "Insere notas de dezesseis avos de tempo"
+msgstr "Insere notas de sessenta e quatro avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:81
-#, fuzzy
 msgid "1\\/128"
-msgstr "1\\/1"
+msgstr "1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:81
-#, fuzzy
 msgid "Insert hundred twenty-eighth note"
-msgstr "Insere notas de oitavo tempo"
+msgstr "Insere notas de cento e vinte oito avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
@@ -1130,9 +1123,8 @@ msgid "Q: 1\\/1"
 msgstr "Q: 1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
-#, fuzzy
 msgid "Quantize to whole note boundaries"
-msgstr "Quantiza até os limites de notas de meio tempo"
+msgstr "Quantiza para os limites de notas de tempo inteiro"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
@@ -1140,7 +1132,7 @@ msgstr "Q: 1\\/2"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
-msgstr "Quantiza até os limites de notas de meio tempo"
+msgstr "Quantiza para os limites de notas de meio tempo"
 
 #: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Q: 1\\/4"
@@ -1148,7 +1140,7 @@ msgstr "Q: 1\\/4"
 
 #: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
-msgstr "Quantiza até os limites de notas de quarto de tempo"
+msgstr "Quantiza para os limites de notas de quarto de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Q: 1\\/8"
@@ -1156,7 +1148,7 @@ msgstr "Q: 1\\/8"
 
 #: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
-msgstr "Quantiza até os limites de notas de oitavo de tempo"
+msgstr "Quantiza para os limites de notas de oitavo de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Q: 1\\/16"
@@ -1164,37 +1156,31 @@ msgstr "Q: 1\\/16"
 
 #: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
-msgstr "Quantiza até os limites de notas de dezesseis avos de tempo"
+msgstr "Quantiza para os limites de notas de dezesseis avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
-#, fuzzy
 msgid "Q: 1\\/32"
-msgstr "Q: 1\\/2"
+msgstr "Q: 1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
-#, fuzzy
 msgid "Quantize to thirty-second note boundaries"
-msgstr "Quantiza até os limites de notas de dezesseis avos de tempo"
+msgstr "Quantiza para os limites de notas de trinta e dois avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
-#, fuzzy
 msgid "Q: 1\\/64"
-msgstr "Q: 1\\/4"
+msgstr "Q: 1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
-#, fuzzy
 msgid "Quantize to sixty-fourth note boundaries"
-msgstr "Quantiza até os limites de notas de dezesseis avos de tempo"
+msgstr "Quantiza para os limites de notas de sessenta e quatro avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
-#, fuzzy
 msgid "Q: 1\\/128"
-msgstr "Q: 1\\/1"
+msgstr "Q: 1\\/128"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
-#, fuzzy
 msgid "Quantize to hundred twenty-eighth note boundaries"
-msgstr "Quantiza até os limites de notas de oitavo de tempo"
+msgstr "Quantiza para os limites de notas de cento e vinte e oito avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:573
@@ -1394,7 +1380,6 @@ msgid "1/32"
 msgstr "1/32"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "Thirty-secondth note"
 msgstr "Nota de trinta e dois avos de tempo"
 
@@ -1403,19 +1388,16 @@ msgid "1/64"
 msgstr "1/64"
 
 #: beast-gtk/bstrecords.idl:49
-#, fuzzy
 msgid "Sixty-fourth note"
 msgstr "Nota de sessenta e quatro avos de tempo"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "1/128"
-msgstr "1/1"
+msgstr "1/128"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "Hundred twenty-eighth note"
-msgstr "Insere notas de oitavo tempo"
+msgstr "Nota de cento e vinte oito avos de tempo"
 
 #: beast-gtk/bstrecords.idl:51
 msgid "1/1."
@@ -1462,7 +1444,6 @@ msgid "1/32."
 msgstr "1/32."
 
 #: beast-gtk/bstrecords.idl:56
-#, fuzzy
 msgid "Dotted thirty-secondth note"
 msgstr "Nota de trinta e dois avos de tempo pontuada"
 
@@ -1471,19 +1452,16 @@ msgid "1/64."
 msgstr "1/64."
 
 #: beast-gtk/bstrecords.idl:57
-#, fuzzy
 msgid "Dotted sixty-fourth note"
 msgstr "Nota de sessenta e quatro avos de tempo pontuada"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "1/128."
-msgstr "1/1."
+msgstr "1/128."
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "Dotted hundred twenty-eighth note"
-msgstr "Nota de oitavo de tempo pontuada"
+msgstr "Nota de cento e vinte oito avos de tempo pontuada"
 
 #: beast-gtk/bstrecords.idl:59
 msgid "1/1T"
@@ -1544,9 +1522,8 @@ msgid "Triplet sixty-fourth note"
 msgstr "Nota de sessenta e quatro avos de tempo pontuada"
 
 #: beast-gtk/bstrecords.idl:66
-#, fuzzy
 msgid "1/128T"
-msgstr "1/1T"
+msgstr "1/128T"
 
 #: beast-gtk/bstrecords.idl:66
 msgid "Triplet hundred twenty-eighth note"
@@ -1630,7 +1607,7 @@ msgstr "Sombreado da imagem"
 
 #: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
 msgid "Percentage of background image pixel to blend over background color."
-msgstr ""
+msgstr "Porcentagem dos pixels da imagem de fundo para misturar com a cor de fundo."
 
 #: beast-gtk/bstrecords.idl:98 beast-gtk/bstrecords.idl:108
 msgid "Background Color"
@@ -1690,19 +1667,19 @@ msgstr "Fim:"
 
 #: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
 msgid "Shape Range"
-msgstr ""
+msgstr "Gama de figuras"
 
 #: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
 msgid "Shape Average"
-msgstr ""
+msgstr "Figura média"
 
 #: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
 msgid "Shape Minimum"
-msgstr ""
+msgstr "Figura mínima"
 
 #: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
 msgid "Shape Maximum"
-msgstr ""
+msgstr "Figura máxima"
 
 #: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
 msgid "Sketch Range"
@@ -2625,9 +2602,8 @@ msgid "Output Channels:"
 msgstr "Canais de saída:"
 
 #: bse/bsebiquadfilter.c:105
-#, fuzzy
 msgid "/Filters/Biquad Types"
-msgstr "Tipo de filtro"
+msgstr "/Filtros/Tipos biquadrados"
 
 #: bse/bsebiquadfilter.c:124
 msgid "Filter"
@@ -2767,20 +2743,19 @@ msgstr ""
 
 #: bse/bsecore.idl:378
 msgid "Thread Name"
-msgstr ""
+msgstr "Nome da thread"
 
 #: bse/bsecore.idl:379
-#, fuzzy
 msgid "State"
-msgstr "Início:"
+msgstr "Estado"
 
 #: bse/bsecore.idl:379
 msgid "The execution state of the thread"
-msgstr ""
+msgstr "O estado de execução da thread"
 
 #: bse/bsecore.idl:380
 msgid "Priority"
-msgstr ""
+msgstr "Prioridade"
 
 #: bse/bsecore.idl:380
 msgid ""
@@ -2789,45 +2764,44 @@ msgid ""
 msgstr ""
 
 #: bse/bsecore.idl:383
-#, fuzzy
 msgid "Processor"
-msgstr "Procedimento"
+msgstr "Processador"
 
 #: bse/bsecore.idl:383
 msgid "The processor that this thread is currently being executed on"
-msgstr ""
+msgstr "O processador em que essa thread está sendo executada atualmente"
 
 #: bse/bsecore.idl:385
 msgid "User Time"
-msgstr ""
+msgstr "Tempo do usuário"
 
 #: bse/bsecore.idl:385
 msgid "The CPU time spent executing instructions of this thread"
-msgstr ""
+msgstr "O tempo da CPU utilizado executando instruções dessa thread"
 
 #: bse/bsecore.idl:387
 msgid "System Time"
-msgstr ""
+msgstr "Tempo do sistema"
 
 #: bse/bsecore.idl:387
 msgid "The CPU time spent in the system for this thread"
-msgstr ""
+msgstr "O tempo da CPU utilizado no sistema para essa thread"
 
 #: bse/bsecore.idl:389
 msgid "Child User Time"
-msgstr ""
+msgstr "Tempo filho do usuário"
 
 #: bse/bsecore.idl:389
 msgid "The CPU time spent executing instructions of children of this thread"
-msgstr ""
+msgstr "O tempo da CPU utilizado executando instruções de filhos dessa thread"
 
 #: bse/bsecore.idl:391
 msgid "Child System Time"
-msgstr ""
+msgstr "Tempo filho do sistema"
 
 #: bse/bsecore.idl:391
 msgid "The CPU time spent in the system for children of this thread"
-msgstr ""
+msgstr "O tempo da CPU utilizado no sistema para filhos dessa thread"
 
 #: bse/bsecore.idl:432
 msgid "Latency [ms]"
@@ -2841,15 +2815,15 @@ msgstr ""
 
 #: bse/bsecore.idl:436
 msgid "Synth Mixing Frequency"
-msgstr ""
+msgstr "Freqüência de mixagem de síntese"
 
 #: bse/bsecore.idl:437
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr ""
+msgstr "Freqüência de mixagem de síntese, valores comuns são: 22050, 44100, 48000"
 
 #: bse/bsecore.idl:439
 msgid "Synth Control Frequency"
-msgstr ""
+msgstr "Freqüência de controle de síntese"
 
 #: bse/bsecore.idl:440
 msgid ""
@@ -2879,7 +2853,7 @@ msgstr "Velocidade"
 
 #: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
 msgid "Velocity of the note press"
-msgstr ""
+msgstr "Velocidade de pressionamento da nota"
 
 #: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
 msgid "Aftertouch"
@@ -2891,23 +2865,23 @@ msgstr ""
 
 #: bse/bseinstrumentoutput.c:68
 msgid "/Input & Output/Instrument Output"
-msgstr ""
+msgstr "/Entrada & Saída/Saída do instrumento"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
-msgstr ""
+msgstr "Áudio esquerdo"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Channel Output"
-msgstr ""
+msgstr "Saída do canal esquerdo"
 
 #: bse/bseinstrumentoutput.c:103
 msgid "Right Audio"
-msgstr ""
+msgstr "Áudio direito"
 
 #: bse/bseinstrumentoutput.c:103
 msgid "Right Channel Output"
-msgstr ""
+msgstr "Saída do canal direito"
 
 #: bse/bseinstrumentoutput.c:105
 msgid "Unused"
@@ -2931,7 +2905,7 @@ msgstr ""
 
 #: bse/bsemidicontroller.c:137
 msgid "MIDI Signal 1"
-msgstr ""
+msgstr "Sinal MIDI 1"
 
 #: bse/bsemidicontroller.c:139
 msgid "Ctrl Out2"
@@ -2939,7 +2913,7 @@ msgstr ""
 
 #: bse/bsemidicontroller.c:139
 msgid "MIDI Signal 2"
-msgstr ""
+msgstr "Sinal MIDI 2"
 
 #: bse/bsemidicontroller.c:141
 msgid "Ctrl Out3"
@@ -2947,7 +2921,7 @@ msgstr ""
 
 #: bse/bsemidicontroller.c:141
 msgid "MIDI Signal 3"
-msgstr ""
+msgstr "Sinal MIDI 3"
 
 #: bse/bsemidicontroller.c:143
 msgid "Ctrl Out4"
@@ -2955,7 +2929,7 @@ msgstr ""
 
 #: bse/bsemidicontroller.c:143
 msgid "MIDI Signal 4"
-msgstr ""
+msgstr "Sinal MIDI 4"
 
 #: bse/bsemidiinput.c:82
 msgid "/Input & Output/MIDI Voice Input"
@@ -2979,81 +2953,81 @@ msgstr ""
 
 #: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
 msgid "Left In"
-msgstr ""
+msgstr "Entrada esquerda"
 
 #: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
 msgid "Right In"
-msgstr ""
+msgstr "Entrada direita"
 
 #: bse/bsemidivoice.c:137
 msgid "Disconnect In"
-msgstr ""
+msgstr "Desconectar entrada"
 
 #: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
 #: plugins/davcanyondelay.c:120
 msgid "Left Out"
-msgstr ""
+msgstr "Saída esquerda"
 
 #: bse/bsemidivoice.c:141 plugins/bsebalance.idl:42
 #: plugins/davcanyondelay.c:122
 msgid "Right Out"
-msgstr ""
+msgstr "Saída direita"
 
 #: bse/bsemidivoice.c:143
 msgid "Disconnect Out"
-msgstr ""
+msgstr "Desconectar saída"
 
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
-msgstr ""
+msgstr "/Entrada & Saída/Entrada PCM"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
-msgstr ""
+msgstr "Saída esquerda de áudio"
 
 #: bse/bsepcminput.c:128
 msgid "Left channel output"
-msgstr ""
+msgstr "Canal esquerdo de saída"
 
 #: bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
-msgstr ""
+msgstr "Saída direita de áudio"
 
 #: bse/bsepcminput.c:130
 msgid "Right channel output"
-msgstr ""
+msgstr "Canal direito de saída"
 
 #: bse/bsepcmoutput.c:85
 msgid "/Input & Output/PCM Output"
-msgstr ""
+msgstr "/Entrada & Saída/Saída PCM"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
-msgstr ""
+msgstr "Entrada esquerda de áudio"
 
 #: bse/bsepcmoutput.c:128
 msgid "Left channel input"
-msgstr ""
+msgstr "Canal esquerdo de entrada"
 
 #: bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
-msgstr ""
+msgstr "Entrada direita de áudio"
 
 #: bse/bsepcmoutput.c:130
 msgid "Right channel Input"
-msgstr ""
+msgstr "Canal direito de entrada"
 
 #: bse/bseserver.c:143
 msgid "WAVE File"
-msgstr ""
+msgstr "Arquivo WAVE"
 
 #: bse/bseserver.c:144
 msgid "Name of the WAVE file used for recording BSE sound output"
-msgstr ""
+msgstr "Nome do WAVE usado para gravar a saída de som do BSE"
 
 #: bse/bseserver.c:504
 msgid "Advice about MIDI device selections"
@@ -3071,7 +3045,7 @@ msgstr ""
 #: bse/bseserver.c:548
 #, c-format
 msgid "failed to open output file \"%s\": %s"
-msgstr ""
+msgstr "falha ao abrir o arquivo de saída \"%s\": %s"
 
 #: bse/bsesnooper.c:77
 msgid "/Misc/Snooper"
@@ -3079,7 +3053,7 @@ msgstr ""
 
 #: bse/bsesnooper.c:108
 msgid "Signal In"
-msgstr ""
+msgstr "Entrada de sinal"
 
 #: bse/bsesnooper.c:108
 msgid "Snoop Signal"
@@ -3674,23 +3648,23 @@ msgstr ""
 
 #: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
-msgstr ""
+msgstr "Saída de áudio filtrada"
 
 #: plugins/davbassfilter.idl:37
 msgid "Cutoff [%]"
-msgstr ""
+msgstr "Corte [%]"
 
 #: plugins/davbassfilter.idl:37
 msgid "Set the cutoff frequency percentage"
-msgstr ""
+msgstr "Define a porcentagem da freqüência de corte"
 
 #: plugins/davbassfilter.idl:38
 msgid "Resonance [%]"
-msgstr ""
+msgstr "Ressonância [%]"
 
 #: plugins/davbassfilter.idl:38
 msgid "Set the amount of resonance in percent"
-msgstr ""
+msgstr "Define a quantidade de ressonância em porcentagem"
 
 #: plugins/davbassfilter.idl:39
 msgid "Envelope Modulation [%]"
@@ -3714,31 +3688,31 @@ msgstr ""
 
 #: plugins/davcanyondelay.c:116
 msgid "Left Audio Input"
-msgstr ""
+msgstr "Entrada esquerda de áudio"
 
 #: plugins/davcanyondelay.c:118
 msgid "Right Audio Input"
-msgstr ""
+msgstr "Entrada direita de áudio"
 
 #: plugins/davcanyondelay.c:120
 msgid "Left Audio Output"
-msgstr ""
+msgstr "Saída esquerda de áudio"
 
 #: plugins/davcanyondelay.c:122
 msgid "Right Audio Output"
-msgstr ""
+msgstr "Saída direita de áudio"
 
 #: plugins/davchorus.idl:29
 msgid "/Enhance/Chorus"
-msgstr ""
+msgstr "/Melhorar/Refrão"
 
 #: plugins/davchorus.idl:30
 msgid "DavChorus adds more depth to sounds"
-msgstr ""
+msgstr "DavChorus adiciona mais profundidade aos sons"
 
 #: plugins/davchorus.idl:32
 msgid "Chorus audio output"
-msgstr ""
+msgstr "Saída de áudio de refrão"
 
 #: plugins/davchorus.idl:34
 msgid "Wet out [%]"
@@ -3746,35 +3720,35 @@ msgstr ""
 
 #: plugins/davchorus.idl:34
 msgid "Set the amount of modified data to mix"
-msgstr ""
+msgstr "Define a quantidade de dados modificados para mixar"
 
 #: plugins/davguitar.c:302
 msgid "Guitar Output"
-msgstr ""
+msgstr "Saída de guitarra"
 
 #: plugins/davorgan.c:133
 msgid "Organ Output"
-msgstr ""
+msgstr "Saída de órgão"
 
 #: plugins/davsyndrum.c:116
 msgid "Drum Frequency Input"
-msgstr ""
+msgstr "Entrada de freqüência de bateria"
 
 #: plugins/davsyndrum.c:118
 msgid "Ratio In"
-msgstr ""
+msgstr "Razão de entrada"
 
 #: plugins/davsyndrum.c:118
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
-msgstr ""
+msgstr "Razão de deslocamento de freqüência (assumida como 1.0 se não conectado)"
 
 #: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
 msgid "Trigger In"
-msgstr ""
+msgstr "Gatilho de entrada"
 
 #: plugins/davsyndrum.c:120
 msgid "Hit the drum on raising edges"
-msgstr ""
+msgstr "Bate na bateria nas bordas ascendentes"
 
 #: plugins/davsyndrum.c:122
 msgid "SynDrum Output"
@@ -3794,7 +3768,7 @@ msgstr ""
 
 #: plugins/evaluator/bseevaluator.idl:28
 msgid "/Misc/Evaluator"
-msgstr ""
+msgstr "/Miscelânea/Evaluator"
 
 #: plugins/evaluator/bseevaluator.idl:29
 msgid ""
@@ -3802,19 +3776,19 @@ msgid ""
 "language. The audio input signal is called input, the audio output signal is "
 "called output. Simple examples for programs would be \"output = input * 5\" "
 "or \"output = 2 * input + 1\"."
-msgstr ""
+msgstr "BseEvaluator é um módulo que pode computar operações aritméticas em uma pequena linguagem. O sinal de entrada de áudio é chamado de input, o sinal de saída de áudio é chamado de output. Exemplos simples para programas seriam \"output = input * 5\" ou \"output = 2 * input + 1\"."
 
 #: plugins/evaluator/bseevaluator.idl:33
 msgid "Audio output"
-msgstr ""
+msgstr "Saída de áudio"
 
 #: plugins/evaluator/bseevaluator.idl:35
 msgid "Source code"
-msgstr ""
+msgstr "Código fonte"
 
 #: plugins/evaluator/bseevaluator.idl:35
 msgid "The source code"
-msgstr ""
+msgstr "O código fonte"
 
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status"
@@ -3822,23 +3796,23 @@ msgstr "Status"
 
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
-msgstr ""
+msgstr "O status é usado para mostrar mensagens de erro"
 
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Input"
-msgstr ""
+msgstr "Entrada esquerda"
 
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Input"
-msgstr ""
+msgstr "Entrada direita"
 
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Output"
-msgstr ""
+msgstr "Saída esquerda"
 
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
-msgstr ""
+msgstr "Saída direita"
 
 #~ msgid "Insert full notes"
 #~ msgstr "Insere notas de tempo inteiro"
