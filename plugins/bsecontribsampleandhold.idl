@@ -19,6 +19,7 @@
 
 namespace Bse { namespace Contrib {
 class SampleAndHold: Effect {
+  Info icon             = "icons/sample+hold.png";
   Info authors		= _("Artem Popov");
   Info license		= _("GNU General Public License");
   Info category		= _("/Routing/Sample and Hold");

@@ -1,3 +1,17 @@
+Sun Sep  5 16:36:09 2004  Tim Janik  <timj@gtk.org>
+
+	* icons/compressor.png:
+	* icons/compressor.xcf:
+	* icons/compressor2.png:
+	* icons/compressor2.xcf:
+	* icons/sample+hold.png:
+	* icons/sample+hold.xcf: new icons submitted by
+	Artem Popov <tfwo@mail.ru>.
+
+	* artscompressor.idl: use new compressor icons.
+
+	* bsecontribsampleandhold.idl: use new sample+hold icon.
+
 Sun Jul 18 21:54:09 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsenoise.cc bsenoise.idl: C++ified the noise module from bsenoise.[hc].

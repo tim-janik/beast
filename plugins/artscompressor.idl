@@ -24,7 +24,7 @@ namespace Arts {
 using namespace Bse;
 
 class Compressor : Effect {
-  /*Info    icon      = "icons/artscompressor.png";*/
+  Info    icon      = "icons/compressor.png";
   Info    authors   = "Matthias Kretz, Stefan Westerfeld";
   Info    license   = _("GNU General Public License");
   Info    category  = _("/Enhance/ArtsCompressor");
@@ -41,7 +41,7 @@ class Compressor : Effect {
 };
 
 class StereoCompressor : Effect {
-  /*Info    icon      = "icons/artscompressor.png";*/
+  Info    icon            = "icons/compressor2.png";
   Info    authors         = "Matthias Kretz, Stefan Westerfeld";
   Info    license         = _("GNU General Public License");
   Info    category        = _("/Enhance/ArtsStereoCompressor");
