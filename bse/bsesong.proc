@@ -31,8 +31,6 @@
 AUTHORS = "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
 
-#define LOG_INTERN      SfiLogger ("internals", NULL, NULL)
-
 METHOD (BseSong, create-bus) {
   HELP  = _("Create a new mixer bus for a Song.");
   IN    = bse_param_spec_object ("song", NULL, NULL,
@@ -204,7 +202,7 @@ METHOD (BseSong, ensure-output-busses) {
     {
       BseErrorType error = bse_bus_connect (BSE_BUS (master), node->data);
       if (error)
-        sfi_warn (LOG_INTERN, "failed to conenct track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
+        sfi_warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
     }
   sfi_ring_free (tracks);
 

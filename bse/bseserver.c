@@ -468,11 +468,9 @@ server_open_pcm_device (BseServer *server,
                                                                bse_main_args->pcm_drivers,
                                                                pcm_request_callback, &pr, error ? NULL : &error);
   if (!server->pcm_device)
-    sfi_warn (SfiLogger ("pcm",
-                         _("Advice about PCM device selections problems"),
-                         _("Alert me about PCM device selections problems")),
-              _("Failed to open PCM devices, giving up: %s"),
-              bse_error_blurb (error));
+    sfi_error_msg (_("Show messages about PCM device selections problems"),
+                   _("Failed to open PCM devices, giving up: %s"),
+                   bse_error_blurb (error));
   return server->pcm_device ? BSE_ERROR_NONE : error;
 }
 
@@ -489,11 +487,9 @@ server_open_midi_device (BseServer *server)
       server->midi_device = (BseMidiDevice*) bse_device_open_best (BSE_TYPE_MIDI_DEVICE_NULL, TRUE, FALSE, ring, NULL, NULL, NULL);
       sfi_ring_free (ring);
       if (server->midi_device)
-	sfi_warn (SfiLogger ("midi",
-                             _("Advice about MIDI device selections problems"),
-                             _("Alert me about MIDI device selections problems")),
-                  _("Failed to open MIDI devices (reverting to null driver): %s"),
-                  bse_error_blurb (error));
+	sfi_warning_msg (_("Show messages about MIDI device selections problems"),
+                         _("Failed to open MIDI devices (reverting to null device): %s"),
+                         bse_error_blurb (error));
     }
   return server->midi_device ? BSE_ERROR_NONE : error;
 }
@@ -543,9 +539,9 @@ bse_server_open_devices (BseServer *self)
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, bse_engine_sample_freq ());
 	  if (error)
 	    {
-              sfi_warn (SfiLogger ("recording", NULL, NULL),
-                        _("Failed to open output file \"%s\": %s"),
-                        self->wave_file, bse_error_blurb (error));
+              sfi_error_msg (_("Show recording file errors"),
+                             _("Failed to open output file \"%s\": %s"),
+                             self->wave_file, bse_error_blurb (error));
 	      g_object_unref (self->pcm_writer);
 	      self->pcm_writer = NULL;
 	    }
