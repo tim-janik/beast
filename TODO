@@ -12,7 +12,6 @@ FIXMES:
 - fix internal items (snets) being listed as tentative property values / fix internal synths being displayed by beast
 - fix sub-synth "snet" property setter
 - fix snet property changes in sub synth and instrument
-- implement snet removal
 - fix name of BSE_SNET_FLAG_USER_SYNTH
 - bse_item_gather_proxies() could simply have container and child type (no callbacks) once midi/song don't derive from BseSNet
 - never gather INTERNAL items in bse_item_gather_proxies()

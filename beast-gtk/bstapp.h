@@ -82,10 +82,11 @@ enum {
   BST_ACTION_SAVE_PROJECT,
   BST_ACTION_SAVE_PROJECT_AS,
   BST_ACTION_CLOSE_PROJECT,
-  /* creating supers */
+  /* handling supers */
   BST_ACTION_NEW_SONG,
   BST_ACTION_NEW_CSYNTH,
   BST_ACTION_NEW_MIDI_SYNTH,
+  BST_ACTION_REMOVE_SYNTH,
   /* playback */
   BST_ACTION_START_PLAYBACK,
   BST_ACTION_STOP_PLAYBACK,
@@ -105,6 +106,7 @@ BstApp*         bst_app_new                     (SfiProxy        project);
 void            bst_app_reload_supers           (BstApp         *app);
 void            bst_app_create_default          (BstApp         *app);
 GtkWidget*      bst_app_get_current_shell       (BstApp         *app);
+SfiProxy        bst_app_get_current_super       (BstApp         *app);
 GtkItemFactory* bst_app_menu_factory            (BstApp         *app);
 BstApp*         bst_app_find                    (SfiProxy        project);
 

@@ -1,3 +1,12 @@
+Tue May 27 02:23:01 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.[hc]: support removal of snets.
+
+Tue May 27 02:02:41 2003  Tim Janik  <timj@gtk.org>
+
+	* shell/cxxdummy.cc: added this file to tell gcc to link in C++ mode
+	so C++ modules can be loaded dynamically.
+
 Mon May 26 13:56:16 2003  Tim Janik  <timj@gtk.org>
 
 	* shell/bse-scm-glue.boot: added bse-server-register-blocking to allow

@@ -85,6 +85,7 @@ static BstMenuConfigEntry menubar_entries[] =
   { "/Project/New Song",                NULL,           CB (NEW_SONG),                  "<Item>" },
   { "/Project/New Custom Synthesizer",  NULL,           CB (NEW_CSYNTH),                "<Item>" },
   { "/Project/New MIDI Synthesizer",    NULL,           CB (NEW_MIDI_SYNTH),            "<Item>" },
+  { "/Project/Remove Synth",            NULL,           CB (REMOVE_SYNTH),              "<Item>" },
   { "/Project/-----",                   NULL,           NULL, 0,                        "<Separator>" },
   { "/Project/Rack Editor",             NULL,           CB (RACK_EDITOR),               "<Item>" },
   { "/Project/-----",                   NULL,           NULL, 0,                        "<Separator>" },
@@ -377,6 +378,18 @@ bst_app_get_current_shell (BstApp *app)
   return NULL;
 }
 
+SfiProxy
+bst_app_get_current_super (BstApp *app)
+{
+  GtkWidget *shell = bst_app_get_current_shell (app);
+  if (BST_IS_SUPER_SHELL (shell))
+    {
+      BstSuperShell *super_shell = BST_SUPER_SHELL (shell);
+      return super_shell->super;
+    }
+  return 0;
+}
+
 GtkItemFactory*
 bst_app_menu_factory (BstApp *app)
 {
@@ -604,6 +617,11 @@ bst_app_activate (BstActivatable *activatable,
     case BST_ACTION_NEW_MIDI_SYNTH:
       proxy = bse_project_create_midi_synth (self->project, NULL);
       break;
+    case BST_ACTION_REMOVE_SYNTH:
+      proxy = bst_app_get_current_super (self);
+      if (BSE_IS_SNET (proxy) && !bse_project_is_active (self->project))
+        bse_project_remove_snet (self->project, proxy);
+      break;
     case BST_ACTION_START_PLAYBACK:
       bst_project_ctrl_play (BST_PROJECT_CTRL (self->pcontrols));
       break;
@@ -768,6 +786,7 @@ bst_app_can_activate (BstActivatable *activatable,
   switch (action)
     {
       GtkWidget *shell;
+      SfiProxy super;
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:
     case BST_ACTION_MERGE_PROJECT:
@@ -778,6 +797,9 @@ bst_app_can_activate (BstActivatable *activatable,
     case BST_ACTION_NEW_MIDI_SYNTH:
     case BST_ACTION_CLOSE_PROJECT:
       return TRUE;
+    case BST_ACTION_REMOVE_SYNTH:
+      super = bst_app_get_current_super (self);
+      return BSE_IS_SNET (super) && !bse_project_is_active (self->project);
     case BST_ACTION_UNDO:
     case BST_ACTION_REDO:
       return FALSE;
