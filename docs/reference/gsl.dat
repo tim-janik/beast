@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.1
-date    = 21 Jul 2002
+date    = 25 Jul 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 21 Jul 2002 BEAST-0.4.1
+GSL-Functions 25 Jul 2002 BEAST-0.4.1
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
@@ -204,6 +204,82 @@ Current tick stamp and system time in micro seconds
 
 @DOC-DESCRIPTION@
 Get the system time of the last GSL global tick stamp update. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_data_handle_new_cut@ (@EMPH src_handle@, @EMPH cut_offset@, @EMPH n_cut_values@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 29
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslDataHandle*
+typeraw = GslDataHandle*
+@DOC-PARAMETER@
+src_handle
+@DOC-PARDESC@
+source GslDataHandle
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ \ \ \ \ \ 
+typeraw = GslLong       
+@DOC-PARAMETER@
+cut_offset
+@DOC-PARDESC@
+offset of gap into @EMPH src_handle@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ \ \ \ \ \ 
+typeraw = GslLong       
+@DOC-PARAMETER@
+n_cut_values
+@DOC-PARDESC@
+length of gap in @EMPH src_handle@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 29
+
+@DOC-RETURNS@
+a newly created data handle
+
+@DOC-DESCRIPTION@
+Create a new data handle containing the contents of @EMPH src_handle@ minus @EMPH n_cut_values@ at offset @EMPH cut_offset@.  
+@DOC-SYNOPSIS@
+@STRONG gsl_data_handle_new_crop@ (@EMPH src_handle@, @EMPH n_head_cut@, @EMPH n_tail_cut@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 27
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslDataHandle*
+typeraw = GslDataHandle*
+@DOC-PARAMETER@
+src_handle
+@DOC-PARDESC@
+source GslDataHandle
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ \ \ \ \ \ 
+typeraw = GslLong       
+@DOC-PARAMETER@
+n_head_cut
+@DOC-PARDESC@
+number of values to cut at data handle head
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ \ \ \ \ \ 
+typeraw = GslLong       
+@DOC-PARAMETER@
+n_tail_cut
+@DOC-PARDESC@
+number of values to cut at data handle tail
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 27
+
+@DOC-RETURNS@
+a newly created data handle
+
+@DOC-DESCRIPTION@
+Create a new data handle containing the contents of @EMPH src_handle@ minus @EMPH n_head_cut@ values at the start and @EMPH n_tail_cut@ values at the end.  
 @DOC-SYNOPSIS@
 @STRONG gsl_data_find_block@ (@EMPH handle@, @EMPH n_values@, @EMPH values@, @EMPH epsilon@);
 
@@ -1288,6 +1364,316 @@ retspace = 15
 
 @DOC-DESCRIPTION@
 Real valued variant of @STRONG gsl_power2_fftsc()@, counterpart to @STRONG gsl_power2_fftar()@, using the same frequency storage format. A real valued data set transformed into the frequency domain with @STRONG gsl_power2_fftar()@ can be reconstructed using this function. Note that the transformation is performed out of place, the input array is not modified, and may not overlap with the output array.  
+@DOC-SYNOPSIS@
+@STRONG gsl_hfile_open@ (@EMPH file_name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+file_name
+@DOC-PARDESC@
+name of the file to open
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+@DOC-RETURNS@
+a new opened @STRONG GslHFile@ or NULL if an error occoured (errno set)
+
+@DOC-DESCRIPTION@
+Open a file for reading and return the associated GSL hashed file. The motivation for using a @STRONG GslHFile@ over normal unix file descriptors is to reduce the amount of opened unix file descriptors and to ensure thread safety upon reading offset relative byte blocks. Multiple open @STRONG GslHFiles@ with equal file names will share a single unix file descriptor as long as the file wasn't modified meanwhile. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_hfile_close@ (@EMPH hfile@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslHFile*
+typeraw = GslHFile*
+@DOC-PARAMETER@
+hfile
+@DOC-PARDESC@
+valid @STRONG GslHFile@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+
+@DOC-DESCRIPTION@
+Close and destroy a @STRONG GslHFile@. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_hfile_pread@ (@EMPH hfile@, @EMPH offset@, @EMPH n_bytes@, @EMPH bytes@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslHFile*
+typeraw = GslHFile*
+@DOC-PARAMETER@
+hfile
+@DOC-PARDESC@
+valid GslHFile
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ 
+typeraw = GslLong  
+@DOC-PARAMETER@
+offset
+@DOC-PARDESC@
+offset in bytes within 0 and file end
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ 
+typeraw = GslLong  
+@DOC-PARAMETER@
+n_bytes
+@DOC-PARDESC@
+number of bytes to read
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ 
+typeraw = gpointer 
+@DOC-PARAMETER@
+bytes
+@DOC-PARDESC@
+buffer to store read bytes
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+@DOC-RETURNS@
+amount of bytes read or -1 if an error occoured (errno set)
+
+@DOC-DESCRIPTION@
+Read a block of bytes from a GslHFile. This function is MT-safe and may be called from any thread.  
+@DOC-SYNOPSIS@
+@STRONG gsl_rfile_open@ (@EMPH file_name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+file_name
+@DOC-PARDESC@
+name of the file to open
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+@DOC-RETURNS@
+a new opened @STRONG GslRFile@ or NULL if an error occoured (errno set)
+
+@DOC-DESCRIPTION@
+Open a file for reading and create a GSL read only file handle for it. The motivation for using a @STRONG GslRFile@ over normal unix files is to reduce the amount of opened unix file descriptors by using a @STRONG GslHFile@ for the actual IO.  
+@DOC-SYNOPSIS@
+@STRONG gsl_rfile_name@ (@EMPH rfile@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRFile*
+typeraw = GslRFile*
+@DOC-PARAMETER@
+rfile
+@DOC-PARDESC@
+valid @STRONG GslRFile@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+the file name used to open this file
+
+@DOC-DESCRIPTION@
+Retrive the file name used to open @EMPH rfile@.  
+@DOC-SYNOPSIS@
+@STRONG gsl_rfile_seek_set@ (@EMPH rfile@, @EMPH offset@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 18
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRFile*
+typeraw = GslRFile*
+@DOC-PARAMETER@
+rfile
+@DOC-PARDESC@
+valid @STRONG GslRFile@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ 
+typeraw = GslLong  
+@DOC-PARAMETER@
+offset
+@DOC-PARDESC@
+new seek position within 0 and @STRONG gsl_rfile_length()@+1
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 18
+
+@DOC-RETURNS@
+resulting position within 0 and @STRONG gsl_rfile_length()@+1
+
+@DOC-DESCRIPTION@
+Set the current @STRONG GslRFile@ seek position.  
+@DOC-SYNOPSIS@
+@STRONG gsl_rfile_position@ (@EMPH rfile@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRFile*
+typeraw = GslRFile*
+@DOC-PARAMETER@
+rfile
+@DOC-PARDESC@
+valid @STRONG GslRFile@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+current position within 0 and @STRONG gsl_rfile_length()@
+
+@DOC-DESCRIPTION@
+Retrive the current @STRONG GslRFile@ seek position.  
+@DOC-SYNOPSIS@
+@STRONG gsl_rfile_length@ (@EMPH rfile@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRFile*
+typeraw = GslRFile*
+@DOC-PARAMETER@
+rfile
+@DOC-PARDESC@
+valid @STRONG GslRFile@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+total length of the @STRONG GslRFile@ in bytes
+
+@DOC-DESCRIPTION@
+Retrive the file length of @EMPH rfile@ in bytes.  
+@DOC-SYNOPSIS@
+@STRONG gsl_rfile_pread@ (@EMPH rfile@, @EMPH offset@, @EMPH n_bytes@, @EMPH bytes@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRFile*
+typeraw = GslRFile*
+@DOC-PARAMETER@
+rfile
+@DOC-PARDESC@
+valid GslRFile
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ 
+typeraw = GslLong  
+@DOC-PARAMETER@
+offset
+@DOC-PARDESC@
+offset in bytes within 0 and @STRONG gsl_rfile_length()@
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ 
+typeraw = GslLong  
+@DOC-PARAMETER@
+n_bytes
+@DOC-PARDESC@
+number of bytes to read
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ 
+typeraw = gpointer 
+@DOC-PARAMETER@
+bytes
+@DOC-PARDESC@
+buffer to store read bytes
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+@DOC-RETURNS@
+amount of bytes read or -1 if an error occoured (errno set)
+
+@DOC-DESCRIPTION@
+Read a block of bytes from a GslRFile at a specified position.  
+@DOC-SYNOPSIS@
+@STRONG gsl_rfile_read@ (@EMPH rfile@, @EMPH n_bytes@, @EMPH bytes@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRFile*
+typeraw = GslRFile*
+@DOC-PARAMETER@
+rfile
+@DOC-PARDESC@
+valid GslRFile
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslLong\ \ 
+typeraw = GslLong  
+@DOC-PARAMETER@
+n_bytes
+@DOC-PARDESC@
+number of bytes to read
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ 
+typeraw = gpointer 
+@DOC-PARAMETER@
+bytes
+@DOC-PARDESC@
+buffer to store read bytes
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+@DOC-RETURNS@
+amount of bytes read or -1 if an error occoured (errno set)
+
+@DOC-DESCRIPTION@
+Read a block of bytes from a GslRFile from the current seek position and advance the seek position.  
+@DOC-SYNOPSIS@
+@STRONG gsl_rfile_close@ (@EMPH rfile@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslRFile*
+typeraw = GslRFile*
+@DOC-PARAMETER@
+rfile
+@DOC-PARDESC@
+valid @STRONG GslRFile@
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+
+@DOC-DESCRIPTION@
+Close and destroy a @STRONG GslRFile@.  
 @DOC-SYNOPSIS@
 @STRONG gsl_filter_tscheb2_steepness_db@ (@EMPH iorder@, @EMPH c_freq@, @EMPH epsilon@, @EMPH stopband_db@);
 

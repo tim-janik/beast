@@ -2,23 +2,19 @@ RELEASE:
 - put a WARNING somewhere about file format changes in future versions
 - subsynth cycle search algorithm
 - bsw_item_check_value(item,name,value) to filter non-valid objects property settings
-- terminology: s/pulse/square/, s/growing/rising/, s/shrinking/falling/ (saw)
+- terminology: s/pulse/square/, s/growing/rising/, s/shrinking/falling/ (saw), half.tone->semitone
 - remove GenOsc plugin
 - Module Menu: add EDIT
 - help: QuickStart-Samples, QuickStart-Synthesis, QuickStart-Songs
 - disallow creating more than one track as long as playback isn't supported for it
+* add switch to set keytables directly, no-serverquery, which works without rc file
+* fix file selection (open load) dialog
 
 GENERAL:
 * BLIT, band-limited impulse train
-* load wave dialog
-* clippboard
-* fix file selection (open load) dialog
-* fade in/out of samples (sample editor & sequencer)
-- change default envelop to 0 attack
+* object clippboard
+* fade in/out of samples (sample editor)
 - device monitor delay should be persistent in .beastrc
-- project playback can fail! should reset play mode afterwards
-* add switch to set keytables directly, no-serverquery, which works without rc file
-- pattern: select/none + select/invert unselects focus
 * get File/Save to work
 * quit/close needs to feature mod-time vs. creation-time handling
-* wave editor: provide transpose spinenr for wave preview
+* wave editor: provide transpose spinner for wave preview

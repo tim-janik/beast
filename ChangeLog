@@ -1,3 +1,9 @@
+Thu Jul 25 01:25:35 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bststest.c: gsl_wave_handle_new() updates.
+
+	* doc updates.
+
 Tue Jul 23 08:12:54 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/icons/music-cut.png: minor icon fixup.
