@@ -309,7 +309,7 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		gxx_columns=0
 		AC_CHECK_PROG(TPUT, tput, yes)
 		if test "$TPUT" = "yes"; then
-		    gxx_columns=$(tput cols)
+		    gxx_columns=`tput cols`
 		fi
 		if test "$gxx_columns" -gt 1 ; then
 		    MC_PROG_CC_SUPPORTS_OPTION(-fmessage-length=$gxx_columns,
