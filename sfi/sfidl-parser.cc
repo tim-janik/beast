@@ -316,7 +316,8 @@ void Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_e
 
 /* --- preprocessing related functions --- */
 
-static bool match(vector<char>::iterator start, const char *string)
+template<class Iterator>
+static bool match(Iterator start, const char *string)
 {
   /* FIXME: can we exceed the bounds of the input vector? */
   while(*string && *start)
@@ -418,18 +419,23 @@ void Parser::preprocess (const string& filename, bool includeImpl)
       vector<LineInfo>::iterator li;
       for (li = scannerLineInfo.begin(); li != scannerLineInfo.end(); li++)
 	li->isInclude = (implIncludes.count (li->filename) == 0);
+
+      vector<Pragma>::iterator pi;
+      for (pi = pragmas.begin(); pi != pragmas.end(); pi++)
+	pi->fromInclude = (implIncludes.count (pi->filename) == 0);
     }
 }
 
 void Parser::preprocessContents (const string& input_filename)
 {
+  Pragma pragma;
   string filename;
   bool includeImpl = false; // always initialized again, this just silences the compiler
   enum
     {
       lineStart, idlCode, commentC, commentCxx,
       filenameFind, filenameIn1, filenameIn2,
-      inString, inStringEscape
+      inString, inStringEscape, inPragma
     } state = lineStart;
 
   LineInfo linfo;
@@ -471,6 +477,24 @@ void Parser::preprocessContents (const string& input_filename)
 		}
 	      i++;
 	    }
+	}
+      else if(state == inPragma) // parse pragma lines
+	{
+	  if(*i == '\n')
+	    {
+	      scannerInputData.push_back(*i); // keep line numbering
+	      scannerLineInfo.push_back(linfo);
+	      pragma.filename = linfo.filename;
+	      pragma.line = linfo.line;
+	      pragmas.push_back (pragma);
+	      linfo.line++;
+	      state = lineStart;
+	    }
+	  else
+	    {
+	      pragma.text += *i;
+	    }
+	  i++;
 	}
       else if(state == inString)
 	{
@@ -580,6 +604,12 @@ void Parser::preprocessContents (const string& input_filename)
 	      filename = "";
 	      includeImpl = false;
 	    }
+	  else if(match(i,"#pragma"))
+	    {
+	      i += 7;
+	      state = inPragma;
+	      pragma.text = "";
+	    }
 	  else
 	    {
 	      if(*i != ' ' && *i != '\t' && *i != '\n') state = idlCode;
@@ -611,6 +641,89 @@ bool Parser::insideInclude () const
   g_return_val_if_fail (scanner_line >= 0 && scanner_line < (gint) scannerLineInfo.size(), false);
 
   return scannerLineInfo[scanner_line].isInclude;
+}
+
+/*
+ * This gets the #pragma lines, which should look like this in the input file:
+ *
+ * #pragma SFIDL Binding::foo bar bazz
+ * 
+ * Only the "foo bar bazz" part will be returned in the resulting vector,
+ * when a binding used getPragmas ("Binding").
+ */
+vector<Pragma> Parser::getPragmas (const string& binding) const
+{
+  vector<Pragma> resultPragmas;
+  for (vector<Pragma>::const_iterator pi = pragmas.begin(); pi != pragmas.end(); pi++)
+    {
+      enum { expectSfidl, expectBinding, expectColons, goodMatch, badMatch } state = expectSfidl;
+      Pragma p = *pi;
+
+      for (std::string::const_iterator ti = pi->text.begin(); ti != pi->text.end();)
+	{
+	  unsigned int chars_left = pi->text.end() - ti;
+
+	   if (state == goodMatch)
+	    {
+	      /* copy actual pragma content (stripped of SFIDL Binding::) */
+	      p.text += *ti++;
+	    }
+	   else if (*ti == ' ' || *ti == '\t')
+	    {
+	      /* skip whitespace */
+	      ti++;
+	    }
+	  else if (chars_left >= 5 && state == expectSfidl && match (ti, "SFIDL"))
+	    {
+	      state = expectBinding;
+	      ti += 5;
+	    }
+	  else if (chars_left >= binding.size() && state == expectBinding
+	        && match (ti, binding.c_str()))
+	    {
+	      state = expectColons;
+	      ti += binding.size();
+	    }
+	  else if (chars_left >= 2 && state == expectColons)
+	    {
+	      state = goodMatch;
+	      p.text = "";
+	      ti += 2;
+	    }
+	  else
+	    {
+	      state = badMatch;
+	      ti++;
+	    }
+	}
+      if (state == goodMatch)
+	{
+	  resultPragmas.push_back (p);
+	}
+    }
+
+  return resultPragmas;
+}
+
+bool Pragma::getString (const string& key, string& value)
+{
+  bool result = false;
+  GScanner *scanner = g_scanner_new64 (&scanner_config_template);
+  g_scanner_input_text (scanner, text.c_str(), text.size());
+
+  if (g_scanner_get_next_token (scanner) == G_TOKEN_IDENTIFIER)
+    {
+      if (scanner->value.v_identifier == key)
+	{
+	  if (g_scanner_get_next_token (scanner) == G_TOKEN_STRING)
+	    {
+	      value = scanner->value.v_string;
+	      result = true;
+	    }
+	}
+    }
+  g_scanner_destroy (scanner);
+  return result;
 }
 
 /*

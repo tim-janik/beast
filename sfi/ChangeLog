@@ -1,3 +1,14 @@
+Fri Dec  3 21:24:34 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.*: Parse #pragma lines into Pragma structures, which can
+	then be retrieved by individual language bindings using
+	parser.getPragmas ("SomeBinding"). This will ret
+
+	* sfidl-clientc.*: Support new #pragma lines:
+	  #pragma SFIDL ClientC::binding_specific_c_header "foo.h"
+	  #pragma SFIDL ClientC::binding_specific_c_source "foo.c"
+	They allow including custom C code into the generated output.
+
 Fri Dec  3 15:50:31 2004  Tim Janik  <timj@gtk.org>
 
 	* sfitypes.c (sfi_choice_match_detailed): always match on word 

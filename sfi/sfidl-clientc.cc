@@ -107,6 +107,42 @@ void CodeGeneratorClientC::printProcedureImpl ()
     }
 }
 
+void
+CodeGeneratorClientC::addBindingSpecificFiles (const string& binding_specific_file)
+{
+  vector<Pragma> pragmas = parser.getPragmas ("ClientC");
+
+  for (vector<Pragma>::iterator pi = pragmas.begin(); pi != pragmas.end(); pi++)
+  {
+    if (pi->fromInclude) continue;
+
+    string filename;
+    if (pi->getString (binding_specific_file, filename))
+      {
+	gchar *directory = g_path_get_dirname (pi->filename.c_str());
+	filename = directory + string (G_DIR_SEPARATOR_S) + filename;
+	g_free (directory);
+
+	printf ("/* %s: including binding specific file \"%s\", as requested in %s:%d */\n",
+	        options.sfidlName.c_str(), filename.c_str(), pi->filename.c_str(), pi->line);
+	FILE *f = fopen (filename.c_str(), "r");
+	if (f)
+	  {
+	    char buffer[1024];
+	    int bytes;
+	    while ((bytes = fread (buffer, 1, sizeof (buffer), f)) > 0)
+	      fwrite (buffer, 1, bytes, stdout);
+	    fclose (f);
+	  }
+	else
+	  {
+	    fprintf (stderr, "binding specific file '%s' not found.\n", filename.c_str());
+	    exit (1);
+	  }
+      }
+  }
+}
+
 bool CodeGeneratorClientC::run()
 {
   printf("\n/*-------- begin %s generated code --------*/\n\n\n", options.sfidlName.c_str());
@@ -144,6 +180,7 @@ bool CodeGeneratorClientC::run()
       printProcedurePrototypes (generateOutput);
 
       printClassMacros();
+      addBindingSpecificFiles ("binding_specific_c_header");
     }
 
   if (generateSource)
@@ -154,6 +191,7 @@ bool CodeGeneratorClientC::run()
       printClientSequenceMethodImpl();
       printChoiceConverters();
       printProcedureImpl();
+      addBindingSpecificFiles ("binding_specific_c_source");
     }
 
   printf("\n/*-------- end %s generated code --------*/\n\n\n", options.sfidlName.c_str());

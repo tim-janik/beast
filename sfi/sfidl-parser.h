@@ -89,6 +89,15 @@ struct LineInfo {
   }
 };
 
+struct Pragma {
+  std::string filename;
+  std::string text;
+  int line;
+  bool fromInclude; /* true for normal includes; false for implIncludes and the base file */
+
+  bool getString (const std::string& key, std::string& value);
+};
+
 struct Constant {
   std::string name;
   std::string file;
@@ -254,6 +263,7 @@ protected:
   std::map<std::string,int> typeMap;
 
   std::vector<std::string>  includes;          // files to include
+  std::vector<Pragma>	    pragmas;
   std::vector<Constant>	    constants;
   std::vector<Choice>	    choices;
   std::vector<Sequence>	    sequences;
@@ -323,7 +333,9 @@ public:
   const std::vector<Class>& getClasses () const 	  { return classes; }
   const std::vector<Method>& getProcedures () const	  { return procedures; }
   const std::vector<std::string>& getTypes () const       { return types; }
-  
+ 
+  std::vector<Pragma> getPragmas (const std::string& binding) const;
+
   Sequence findSequence (const std::string& name) const;
   Record findRecord (const std::string& name) const;
   const Class* findClass (const std::string &name) const;

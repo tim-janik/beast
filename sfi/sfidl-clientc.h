@@ -41,6 +41,7 @@ namespace Sfidl {
     void printProcedurePrototypes (PrefixSymbolMode mode);
     void printClassMacros();
     void printProcedureImpl ();
+    void addBindingSpecificFiles (const std::string& binding_specific_files);
     
   public:
     CodeGeneratorClientC(const Parser& parser) : CodeGeneratorCBase (parser) {
