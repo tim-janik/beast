@@ -1,3 +1,11 @@
+Mon Dec 29 18:05:14 2003  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: include intltool-modules/XML/Parser/Style/OrigTree.pm
+	into distribution tarballs.
+
+	* docs/site-news.texi: announce patch-beast-0.5.6-0.5.6+intltool.bz2
+	which fixes intltool issues with beast-0.5.6.tar.gz.
+
 Mon Dec 29 12:54:07 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: announce release, screenshot updates etc.
