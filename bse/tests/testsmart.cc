@@ -108,15 +108,8 @@ test()
   fs.push_back (new Foo (4));
   fs.push_back (zz);
   fs.push_back (new Foo (1));
-  int i = 0;
-  for (int i = 0; i < fs.length (); i++)
+  for (unsigned int i = 0; i < fs.length (); i++)
     g_print ("%d) get(%d)=%d [%d]=%d\n", i, i, fs.get(i)->f, i, fs[i]->f);
-  i = 0;
-  for (FooSeq::Iter fi = fs.begin(); fi != fs.end(); fi++)
-    g_print ("%d) %d\n", i++, fi->f);
-  i = 0;
-  for (FooSeq::RIter ri = fs.rbegin(); ri != fs.rend(); ri++)
-    g_print ("%d) %d\n", i++, ri->f);
 }
 
 int

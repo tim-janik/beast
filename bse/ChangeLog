@@ -1,3 +1,8 @@
+Sun Dec 21 20:41:46 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecxxsmart.h tests/testsmart.cc: Cleaned up the Bse::Sequence
+	template. No more iterators. They were not working anyway.
+
 Sat Dec 20 20:47:25 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsecxxsmart.h: Added size_type typedef and size() function to our

@@ -191,7 +191,7 @@ public:
 };
 
 /* sequence type template. supports:
- * ::Iter, begin(), end(), rbegin(), rend(), length(), get(), [0]
+ * length(), size(), resize(), get(), [0]
  */
 template<class ValPtr>
 class Sequence {
@@ -199,54 +199,8 @@ class Sequence {
 public:
   typedef size_t size_type;
 
-  class Iter : public ValPtr {
-    friend class Sequence;
-    Sequence *seq;
-    int nth;
-    int dir;
-    void
-    set_nth (int i)
-    {
-      nth = i;
-      *this = seq->get (nth);
-    }
-    Iter (Sequence *s, int n, int d = 1) : seq (s), nth (~0), dir (d) { set_nth (n); }
-  public:
-    Iter (const Iter &src) : seq (src.seq), nth (~0), dir (src.dir) { set_nth (src.nth); }
-    using ValPtr::operator=;
-    Iter& operator= (const Iter &src)
-    {
-      seq = src.seq;
-      set_nth (src.nth);
-      dir = src.dir;
-    }
-    Iter& operator+= (int i)
-    {
-      set_nth (nth + dir * i);
-      return *this;
-    }
-    Iter& operator++ (int)   { return *this += 1; }
-    Iter& operator++ ()      { return *this += 1; }
-    Iter& operator-= (int i) { return *this += -i; }
-    Iter& operator-- (int)   { return *this -= 1; }
-    Iter& operator-- ()      { return *this -= 1; }
-    Iter  operator+  (int i) const { return Iter (*this) += i; }
-    Iter  operator-  (int i) const { return Iter (*this) -= i; }
-    gint
-    cmp (const Iter &src) const
-    {
-      return dir * (seq < src.seq ? -1 : seq > src.seq ? 1 : nth < src.nth ? -1 : nth > src.nth);
-    }
-    bool operator<  (const Iter &src) const { return cmp (src) < 0; }
-    bool operator<= (const Iter &src) const { return cmp (src) <= 0; }
-    bool operator>  (const Iter &src) const { return cmp (src) > 0; }
-    bool operator>= (const Iter &src) const { return cmp (src) >= 0; }
-    bool operator!= (const Iter &src) const { return cmp (src) != 0; }
-    bool operator== (const Iter &src) const { return cmp (src) == 0; }
-  };
-  typedef Iter RIter;
   ValPtr
-  get (int index)
+  get (unsigned int index)
   {
     if (index >= 0 && index < length())
       return values[index];
@@ -257,7 +211,7 @@ public:
   {
     return values.at (index);
   }
-  int
+  size_type
   length ()
   {
     return values.size();
@@ -271,26 +225,6 @@ public:
   resize (guint newsize)
   {
     return values.resize (newsize);
-  }
-  Iter
-  rend()
-  {
-    return Iter (this, -1, -1);
-  }
-  Iter
-  begin()
-  {
-    return Iter (this, 0);
-  }
-  Iter
-  rbegin()
-  {
-    return Iter (this, length () - 1, -1);
-  }
-  Iter
-  end()
-  {
-    return Iter (this, length ());
   }
   void
   push_back (ValPtr v)
