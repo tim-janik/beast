@@ -179,6 +179,8 @@ void CodeGeneratorCxx::run ()
   vector<Class>::const_iterator ci;
   vector<Method>::const_iterator mi;
  
+  printf("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+
   if (options.doHeader)
     {
       /* choices */
@@ -427,6 +429,7 @@ void CodeGeneratorCxx::run ()
     }
   printf("\n");
   nspace.leaveAll();
+  printf("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
 }
 
 string CodeGeneratorCxx::makeProcName (const string& className, const string& procName)

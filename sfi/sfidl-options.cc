@@ -129,6 +129,16 @@ bool Options::parse (int *argc_p, char **argv_p[])
           doSource = false;
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--list-types", argv[i]) == 0)
+	{
+	  target = TARGET_TYPELIST;
+          /* configure for module generation */
+          doImplementation = true;
+          doInterface = false;
+          doHeader = true;
+          doSource = false;
+	  argv[i] = NULL;
+	}
       else if (strcmp ("--cxx", argv[i]) == 0)
 	{
 	  target = TARGET_CXX;
@@ -387,6 +397,7 @@ void Options::printUsage ()
   fprintf (stderr, " --help                      this help\n");
   fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, " --print-include-path        print include path\n");
+  fprintf (stderr, " --list-types                print all types defined in the idlfile\n");
   fprintf (stderr, " --nostdinc                  don't use standard include path\n");
 }
 

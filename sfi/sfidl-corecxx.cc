@@ -421,6 +421,8 @@ CodeGeneratorModule::run ()
   vector<Image> images;
   std::vector<const Method*> procs;
   
+  printf("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+
   /* standard includes */
   printf ("\n#include <bse/bsecxxplugin.h>\n");
   printf ("#include <bse/bsecxxsmart.h>\n");
@@ -830,6 +832,7 @@ CodeGeneratorModule::run ()
   
   /* close namespace */
   printf ("\n}; /* %s */\n", nspace.c_str());
+  printf("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

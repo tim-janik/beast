@@ -25,7 +25,7 @@
 namespace Sfidl {
 
 struct Options {
-  enum Target { TARGET_C, TARGET_QT, TARGET_MODULE, TARGET_CXX };
+  enum Target { TARGET_C, TARGET_QT, TARGET_MODULE, TARGET_CXX, TARGET_TYPELIST };
   enum Style  { STYLE_DEFAULT, STYLE_LOWER, STYLE_MIXED };
   bool        generateExtern;
   bool        generateData;

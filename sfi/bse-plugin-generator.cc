@@ -174,10 +174,7 @@ main (int   argc,
     return 1;
 
   CodeGeneratorModule cg (parser);
-
-  g_print ("\n/*-------- begin %s generated code --------*/\n\n\n", argv[0]);
   cg.run();
-  g_print ("\n\n/*-------- end %s generated code --------*/\n\n\n", argv[0]);
 
   return 0;
 }

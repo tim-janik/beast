@@ -312,7 +312,13 @@ static bool fileExists(const string& filename)
 
 static void loadFile(const char *filename, vector<char>& v)
 {
-  FILE *f = fopen(filename,"r");
+  FILE *f = 0;
+
+  if (strcmp (filename, "-") == 0) /* stdin */
+    f = stdin;
+  else
+    f = fopen (filename,"r");
+
   if(!f)
     {
       fprintf(stderr,"file '%s' not found\n",filename);
@@ -321,7 +327,7 @@ static void loadFile(const char *filename, vector<char>& v)
 
   char buffer[1024];
   long l;
-  while((l = fread(buffer,1,1024,f)) > 0)
+  while (!feof (f) && (l = fread(buffer,1,1024,f)) > 0)
     v.insert(v.end(),buffer, buffer+l);
   fclose(f);
 }
@@ -395,7 +401,7 @@ void Parser::preprocessContents (const string& input_filename)
 
   LineInfo linfo;
   linfo.line = 1;
-  linfo.filename = input_filename;
+  linfo.filename = (input_filename == "-") ? "stdin" : input_filename;
 
   vector<char> input;
   loadFile (input_filename.c_str(), input);
@@ -583,6 +589,10 @@ bool Parser::parse (const string& filename)
   /* provide abosulte input file name for fileName() */
   if (g_path_is_absolute (filename.c_str()))
     scanner->input_name = g_strdup (filename.c_str());
+  else if (filename == "-") /* stdin */
+    {
+      scanner->input_name = "stdin";
+    }
   else
     {
       gchar *dir = g_get_current_dir();

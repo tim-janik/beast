@@ -790,6 +790,8 @@ void CodeGeneratorC::run ()
   vector<Class>::const_iterator ci;
   vector<Method>::const_iterator mi;
  
+  printf("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
+
   if (options.generateTypeC)
     printf("#include <string.h>\n");
   if (options.generateConstant)
@@ -1552,10 +1554,13 @@ void CodeGeneratorC::run ()
 	  printProcedure (*mi, protoProcedures);
 	}
     }
+
+  printf("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
 }
 
 void CodeGeneratorQt::run ()
 {
+  printf("\n/*-------- begin %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
   NamespaceHelper nspace(stdout);
 
   if (options.generateProcedures)
@@ -1577,6 +1582,9 @@ void CodeGeneratorQt::run ()
 	    }
 	}
     }
+
+  nspace.leaveAll();
+  printf("\n/*-------- end %s generated code --------*/\n\n\n", Options::the()->sfidlName.c_str());
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

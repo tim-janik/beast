@@ -21,8 +21,8 @@
 #include "sfidl-options.h"
 #include "sfidl-parser.h"
 #include "sfidl-module.h"
+#include "sfidl-typelist.h"
 #include "sfidl-cxx.h"
-#include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -82,6 +82,9 @@ int main (int argc, char **argv)
       case Options::TARGET_MODULE:
 	codeGenerator = new CodeGeneratorModule (parser);
 	break;
+      case Options::TARGET_TYPELIST:
+	codeGenerator = new CodeGeneratorTypeList (parser);
+	break;
     }
   if (!codeGenerator)
     {
@@ -89,9 +92,7 @@ int main (int argc, char **argv)
       return 1;
     }
 
-  printf("\n/*-------- begin %s generated code --------*/\n\n\n",argv[0]);
   codeGenerator->run ();
-  printf("\n\n/*-------- end %s generated code --------*/\n\n\n",argv[0]);
 
   delete codeGenerator;
   return 0;
