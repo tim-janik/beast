@@ -1,6 +1,8 @@
 Overview of Changes in BEAST/BSE 0.6.3:
 
-* New Effect: BseSummation - Can be used to replace multiple BseAdder effects
+* New Effects:
+  BseContribSampleAndHold - a sample and hold module by Artem Popov
+  BseSummation            - a replacement for multiple BseAdder effects
 * Fixed error handling when users form cyclic connections
 
 Overview of Changes in BEAST/BSE 0.6.2:
