@@ -56,7 +56,7 @@ bse_public_h_sources = $(strip \
 	bsesubsynth.h		bsesuper.h		bsetrack.h			bsetype.h \
 	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
 	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
-	bsecompat.h		bseundostack.h		bsemonokeyboard.c		bsemididecoder.h \
+	bsecompat.h		bseundostack.h		bsemonokeyboard.h		bsemididecoder.h \
 	bsenote.h		\
 	bsecxxvalue.h		bsecxxutils.h		bsecxxbase.h			bsecxxclosure.h \
 	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			examplepeakfilter.h \
