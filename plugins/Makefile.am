@@ -29,7 +29,7 @@ UNPORTED = @STRIP_BEGIN@	\
 @STRIP_END@
 PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bseadder.[hc]		\
-	bsecompressor.[hc]	\
+	bseatandistort.[hc]	\
 	bsegenosc.[hc]		\
 	bseiirfilter.[hc]	\
 	bsemixer.[hc]		\
