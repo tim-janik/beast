@@ -647,6 +647,8 @@ gui:
   pianoroll:
     - Farbe fuer h (nicht blau), damit selektionen blau sein koennen
       bstpianoroll.c: "light blue"
+    - add helper bars for c#,d#,f#,g#,a#, to provide alternate column
+      shading like effect
   snet router:
     - grid
     - theming for SNetRouter
