@@ -116,12 +116,14 @@ bse_noise_context_create (BseSource *source,
 			  GslTrans  *trans)
 {
   static const GslClass output_mclass = {
-    0,			/* n_istreams */
-    0,                  /* n_jstreams */
-    1,			/* n_ostreams */
-    noise_process,	/* process */
-    NULL,		/* free */
-    GSL_COST_CHEAP,	/* cost */
+    0,				/* n_istreams */
+    0,                  	/* n_jstreams */
+    1,				/* n_ostreams */
+    noise_process,		/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
+    NULL,			/* free */
+    GSL_COST_CHEAP,		/* cost */
   };
   BseNoise *noise = BSE_NOISE (source);
   GslModule *module = gsl_module_new (&output_mclass, noise->static_noise);

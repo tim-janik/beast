@@ -212,6 +212,9 @@ free_verb_access (GslModule *module,
 
   /* this runs in the Gsl Engine threads */
   bse_free_verb_cpp_configure (cpp, config);
+
+  /* save config for _reconnect() */
+  bse_free_verb_cpp_save_config (cpp, config);
 }
 
 static void
@@ -239,6 +242,19 @@ free_verb_process (GslModule *module,
 }
 
 static void
+free_verb_reconnect (GslModule *module)
+{
+  BseFreeVerbCpp *cpp = module->user_data;
+  BseFreeVerbConfig config;
+
+  bse_free_verb_cpp_restore_config (cpp, &config);
+  bse_free_verb_cpp_destroy (cpp);
+  bse_free_verb_cpp_create (cpp);
+  bse_free_verb_cpp_configure (cpp, &config);
+  bse_free_verb_cpp_save_config (cpp, &config);
+}
+
+static void
 free_verb_destroy (gpointer        data,
 		   const GslClass *klass)
 {
@@ -258,6 +274,8 @@ bse_free_verb_context_create (BseSource *source,
     0,				/* n_jstreams */
     BSE_FREE_VERB_N_OCHANNELS,	/* n_ostreams */
     free_verb_process,		/* process */
+    NULL,			/* process_defer */
+    free_verb_reconnect,	/* reconnect */
     free_verb_destroy,		/* free */
     GSL_COST_EXPENSIVE,		/* cost */
   };
@@ -268,6 +286,7 @@ bse_free_verb_context_create (BseSource *source,
   /* initialize module data */
   bse_free_verb_cpp_create (cpp);
   bse_free_verb_cpp_configure (cpp, &self->config);
+  bse_free_verb_cpp_save_config (cpp, &self->config);
   module = gsl_module_new (&free_verb_class, cpp);
 
   /* setup module i/o streams with BseSource i/o channels */

@@ -1,3 +1,13 @@
+Mon May 13 22:17:17 2002  Tim Janik  <timj@gtk.org>
+
+	* freeverb/bsefreeverb.[hc] (free_verb_reconnect): reset
+	the freverb filter when the module got reconnected.
+	
+	* bsesimpleresonancefilter.[hc]: disable this test module,
+	BSE's new biquad filter does things way better.
+	
+	* *.c: fixes due to new GslClass layout.
+
 Sun May  5 20:31:16 2002  Tim Janik  <timj@gtk.org>
 
 	* bsewaveosc.[hc]: move this into BSE as it's an fundamental

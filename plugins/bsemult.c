@@ -124,6 +124,8 @@ bse_mult_context_create (BseSource *source,
     0,                          /* n_jstreams */
     1,                          /* n_ostreams */
     multiply_process,           /* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     NULL,                       /* free */
     GSL_COST_CHEAP,             /* cost */
   };

@@ -412,7 +412,7 @@ iir_filter_process (GslModule *module,
   const gfloat *sig_in = GSL_MODULE_IBUFFER (module, BSE_IIR_FILTER_ICHANNEL_MONO);
   gfloat *sig_out = GSL_MODULE_OBUFFER (module, BSE_IIR_FILTER_OCHANNEL_MONO);
 
-  gsl_iir_filter_eval (&fmod->iir, sig_in, sig_out, n_values);
+  gsl_iir_filter_eval (&fmod->iir, n_values, sig_in, sig_out);
 }
 
 static void
@@ -425,6 +425,8 @@ bse_iir_filter_context_create (BseSource *source,
     0,				/* n_jstreams */
     BSE_IIR_FILTER_N_OCHANNELS,	/* n_ostreams */
     iir_filter_process,		/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     (gpointer) g_free,		/* free */
     GSL_COST_NORMAL,		/* flags */
   };

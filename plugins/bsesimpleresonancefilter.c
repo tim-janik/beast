@@ -305,6 +305,8 @@ bse_simple_resonance_filter_context_create (BseSource *source,
     0,						/* n_jstreams */
     BSE_SIMPLE_RESONANCE_FILTER_N_OCHANNELS,	/* n_ostreams */
     simple_resonance_filter_process,		/* process */
+    NULL,                       		/* process_defer */
+    NULL,                       		/* reconnect */
     (gpointer) g_free,				/* free */
     GSL_COST_NORMAL,				/* flags */
   };

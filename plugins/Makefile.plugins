@@ -69,14 +69,6 @@ bsesimpleadsr_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsesimpleadsr.h
 
 ##
-## Plugin bsesimpleresonancefilter
-##
-bsesimpleresonancefilter_la_SOURCES = bsesimpleresonancefilter.c
-bsesimpleresonancefilter_la_LDFLAGS = -module -avoid-version
-bsesimpleresonancefilter_la_LIBADD  = $(plugin_libs)
-EXTRA_HEADERS         += bsesimpleresonancefilter.h
-
-##
 ## Plugin bsesequencer
 ##
 bsesequencer_la_SOURCES = bsesequencer.c
@@ -117,7 +109,6 @@ plugin_LTLIBRARIES += \
 	bsemult.la \
 	bsenoise.la \
 	bsesimpleadsr.la \
-	bsesimpleresonancefilter.la \
 	bsesequencer.la \
 	davorgan.la \
 	davxtalstrings.la \

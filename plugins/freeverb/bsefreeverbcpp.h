@@ -45,6 +45,7 @@ typedef struct
 typedef struct
 {
   gpointer obj;
+  BseFreeVerbConfig saved_config;
 } BseFreeVerbCpp;
 
 void   bse_free_verb_cpp_create		(BseFreeVerbCpp		*cpp);
@@ -59,6 +60,11 @@ void   bse_free_verb_cpp_process	(BseFreeVerbCpp		*cpp,
 void   bse_free_verb_cpp_destroy	(BseFreeVerbCpp		*cpp);
 void   bse_free_verb_cpp_defaults	(BseFreeVerbConfig	*config,
 					 BseFreeVerbConstants	*constants);
+void   bse_free_verb_cpp_save_config	(BseFreeVerbCpp		*cpp,
+					 BseFreeVerbConfig	*config);
+void   bse_free_verb_cpp_restore_config	(BseFreeVerbCpp		*cpp,
+					 BseFreeVerbConfig	*config);
+
 
 G_END_DECLS
 

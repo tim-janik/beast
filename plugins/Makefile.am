@@ -36,7 +36,6 @@ PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bsemult.[hc]		\
 	bsenoise.[hc]		\
 	bsesimpleadsr.[hc]	\
-	bsesimpleresonancefilter.[hc]	\
 	bsesequencer.[hc]	\
 	davorgan.[hc]		\
 	davxtalstrings.[hc]	\

@@ -335,6 +335,8 @@ bse_sequencer_context_create (BseSource *source,
     0,                  	/* n_jstreams */
     BSE_SEQUENCER_N_OCHANNELS,	/* n_ostreams */
     sequencer_process,		/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     (gpointer) g_free,		/* free */
     GSL_COST_CHEAP,		/* flags */
   };

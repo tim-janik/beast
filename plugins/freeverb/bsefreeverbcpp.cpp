@@ -90,4 +90,18 @@ bse_free_verb_cpp_defaults (BseFreeVerbConfig    *config,
     }
 }
 
+void
+bse_free_verb_cpp_save_config (BseFreeVerbCpp    *cpp,
+			       BseFreeVerbConfig *config)
+{
+  cpp->saved_config = *config;
+}
+
+void
+bse_free_verb_cpp_restore_config (BseFreeVerbCpp    *cpp,
+				  BseFreeVerbConfig *config)
+{
+  *config = cpp->saved_config;
+}
+
 G_END_DECLS

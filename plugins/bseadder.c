@@ -253,6 +253,8 @@ bse_adder_context_create (BseSource *source,
     BSE_ADDER_N_JCHANNELS,	/* n_jstreams */
     BSE_ADDER_N_OCHANNELS,	/* n_ostreams */
     adder_process,		/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
   };
