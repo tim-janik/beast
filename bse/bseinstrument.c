@@ -107,7 +107,7 @@ BSE_BUILTIN_TYPE (BseInstrument)
     NULL /* class_data */,
     
     sizeof (BseInstrument),
-    8 /* n_preallocs */,
+    BSE_PREALLOC_N_INSTRUMENTS /* n_preallocs */,
     (BseObjectInitFunc) bse_instrument_init,
   };
   

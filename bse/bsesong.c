@@ -97,7 +97,7 @@ BSE_BUILTIN_TYPE (BseSong)
     NULL /* class_data */,
     
     sizeof (BseSong),
-    4 /* n_preallocs */,
+    BSE_PREALLOC_N_SUPERS /* n_preallocs */,
     (BseObjectInitFunc) bse_song_init,
   };
   

@@ -48,7 +48,7 @@ BSE_BUILTIN_TYPE (BseEffectNoteVolume)
     NULL /* class_data */,
 
     sizeof (BseEffectNoteVolume),
-    8 /* n_preallocs */,
+    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
     (BseObjectInitFunc) bse_effect_note_volume_init,
   };
 

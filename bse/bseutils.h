@@ -69,7 +69,7 @@ gdouble	bse_note_to_tuned_freq	(gint		 note,
 
 /* --- icons --- */
 BseIcon* bse_icon_from_pixdata (const BsePixdata *pixdata);
-BseIcon* bse_icon_static_ref   (BseIcon          *icon);
+BseIcon* bse_icon_ref_static   (BseIcon          *icon);
 BseIcon* bse_icon_ref          (BseIcon          *icon);
 void     bse_icon_unref        (BseIcon          *icon);
 

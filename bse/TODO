@@ -1,10 +1,4 @@
 general:
--	s/bse_icon_static_ref/bse_icon_ref_static/
--	use defines instead of 32767
--	rework undo, gotta decide on what hirarchy and function level undo
-	should be implemented.
--	param_changed(): update modified stamp and record undo
--	BseStorage must not contain type references above BSE_TYPE_ITEM (cleanlyness)
 -	bse_object_do_store_private() should not save equally named params (from
 	different heirarchy levels), actually this is a general problem with GUIs
 	as well.
@@ -14,8 +8,11 @@ general:
 	/* how to handle groups here? */
 -	delay class destruction and plugin unloading through timeout handlers
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
--	optimize weak reference removal
--	recheck n_preallocs
+-	optimize cross-reference removal
+-	BseStorage must not contain type references above BSE_TYPE_ITEM (cleanlyness)
+-	param_changed(): update modified stamp and record undo
+-	rework undo, gotta decide on what hirarchy and function level undo
+	should be implemented.
 
 Song/Pattern
 -	removal of instruments needs to scratch instrument references from all patterns
@@ -27,20 +24,13 @@ Identifiers
 -	there're some shortcomings in object namings e.g. "--- Minus ---" was
 	not possible (there're also some bugs with making them into '_'s)
 
-Mixer/Sequencer
--	bse_mixer_add_voice_to_buffer:	balance asserts
-
 Instrument
 -	smooth up the dot array behaviour, editing is somewhat sluggish
 -	need to put envelope logic into a sperate file anyways
 
-Voice
--	make sample_munk_index a BseMunk* pointer
--	substitute guint n_ochannels; q  guint         *ochannel_volume;
-  
-loaders
+Loaders
 -	we need AIFF
--	we need .wav, desperatedly
+-	we need .WAV, desperatedly
 
 loadwav.c:
 -	read_data(): read sample data by blocks not as a whole
@@ -63,13 +53,10 @@ Effects
 	tremolo
 	-	buffer-sync
 	-	lfo as freq-mod
-
 	fine-tune
 	-	1/24 of halftone
-
 	pitch-bend
 	-	slides
-	
-	portamento
+	portamento (up/down/to note)
 	-	nahtloser uebergang zur naechsten note
 	-	buffer-sync

@@ -1,3 +1,27 @@
+Fri Mar 10 22:48:33 2000  Tim Janik  <timj@gtk.org>
+
+	* bsesong.c: 
+	* bsesnet.c:
+	* bseheart.c:
+	* bsesample.c:
+	* bsepattern.c:
+	* bseinstrument.c:
+	* bsepatterngroup.c:
+	* bseeffectfinetune.c:
+	* bseeffectnotevolume.c:
+	* bseeffectpatternjump.c:
+	* bseeffectvolumedelta.c:
+	* bseeffectpatternbreak.c:
+	preallocation adjustments.
+
+	* bseglobals.h (BSE_PREALLOC_N_SUPERS): added object preallocation
+	defines so memory can be trimmed if desired.
+
+	* bseutils.c (bse_icon_ref_static):
+	s/bse_icon_static_ref/bse_icon_ref_static/ and changed callers.
+	
+	* TODO: cleanups.
+
 Wed Mar  8 14:57:50 2000  Tim Janik  <timj@gtk.org>
 
 	* bsepatterngroup.c: implemented bse_pattern_group_store_private()

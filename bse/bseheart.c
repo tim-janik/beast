@@ -76,7 +76,7 @@ BSE_BUILTIN_TYPE (BseHeart)
     NULL /* class_data */,
 
     sizeof (BseHeart),
-    16 /* n_preallocs */,
+    0 /* n_preallocs */,
     (BseObjectInitFunc) bse_heart_init,
   };
 

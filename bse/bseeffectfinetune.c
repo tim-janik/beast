@@ -47,7 +47,7 @@ BSE_BUILTIN_TYPE (BseEffectFineTune)
     NULL /* class_data */,
     
     sizeof (BseEffectFineTune),
-    8 /* n_preallocs */,
+    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
     (BseObjectInitFunc) bse_effect_fine_tune_init,
   };
   

@@ -63,7 +63,7 @@ BSE_BUILTIN_TYPE (BsePatternGroup)
     NULL /* class_group */,
     
     sizeof (BsePatternGroup),
-    0 /* n_preallocs */,
+    BSE_PREALLOC_N_PATTERN_GROUPS /* n_preallocs */,
     (BseObjectInitFunc) bse_pattern_group_init,
   };
   

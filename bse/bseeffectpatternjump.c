@@ -47,7 +47,7 @@ BSE_BUILTIN_TYPE (BseEffectPatternJump)
     NULL /* class_data */,
 
     sizeof (BseEffectPatternJump),
-    8 /* n_preallocs */,
+    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
     (BseObjectInitFunc) bse_effect_pattern_jump_init,
   };
 

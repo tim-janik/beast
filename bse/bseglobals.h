@@ -125,6 +125,16 @@ extern "C" {
 #define BSE_DFL_SAMPLE_REC_NOTE		(BSE_KAMMER_NOTE)
 
 
+/* --- memory preallocations --- */
+#define	BSE_PREALLOC_N_EFFECTS		(32)
+#define	BSE_PREALLOC_N_PATTERNS		(16)
+#define	BSE_PREALLOC_N_PATTERN_GROUPS	(4)
+#define	BSE_PREALLOC_N_SAMPLES		(8)
+#define	BSE_PREALLOC_N_INSTRUMENTS	(4)
+#define	BSE_PREALLOC_N_SUPERS		(4)
+#define	BSE_PREALLOC_N_PROJECTS		(0)
+
+
 /* --- miscellaneous --- */
 #define BSE_MAGIC                       (('B' << 24) | ('S' << 16) | \
 	    /* 1112753441 0x42534521 */	 ('E' <<  8) | ('!' <<  0))

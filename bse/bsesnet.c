@@ -83,7 +83,7 @@ BSE_BUILTIN_TYPE (BseSNet)
     NULL /* class_data */,
     
     sizeof (BseSNet),
-    16 /* n_preallocs */,
+    BSE_PREALLOC_N_SUPERS /* n_preallocs */,
     (BseObjectInitFunc) bse_snet_init,
   };
   
@@ -129,7 +129,7 @@ bse_snet_class_init (BseSNetClass *class)
   container_class->remove_item = bse_snet_remove_item;
   container_class->forall_items = bse_snet_forall_items;
   
-  class->icon = bse_icon_static_ref (bse_icon_from_pixdata (&snet_pixdata));
+  class->icon = bse_icon_ref_static (bse_icon_from_pixdata (&snet_pixdata));
 
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,

@@ -66,7 +66,7 @@ BSE_BUILTIN_TYPE (BseProject)
     NULL /* class_data */,
     
     sizeof (BseProject),
-    0 /* n_preallocs */,
+    BSE_PREALLOC_N_PROJECTS /* n_preallocs */,
     (BseObjectInitFunc) bse_project_init,
   };
   

@@ -71,7 +71,7 @@ BSE_BUILTIN_TYPE (BseSample)
     NULL /* class_data */,
     
     sizeof (BseSample),
-    16 /* n_preallocs */,
+    BSE_PREALLOC_N_SAMPLES /* n_preallocs */,
     (BseObjectInitFunc) bse_sample_init,
   };
   

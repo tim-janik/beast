@@ -70,7 +70,7 @@ BSE_BUILTIN_TYPE (BsePattern)
     NULL /* class_data */,
     
     sizeof (BsePattern),
-    16 /* n_preallocs */,
+    BSE_PREALLOC_N_PATTERNS /* n_preallocs */,
     (BseObjectInitFunc) bse_pattern_init,
   };
   

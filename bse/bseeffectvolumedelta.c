@@ -47,7 +47,7 @@ BSE_BUILTIN_TYPE (BseEffectVolumeDelta)
     NULL /* class_data */,
 
     sizeof (BseEffectVolumeDelta),
-    8 /* n_preallocs */,
+    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
     (BseObjectInitFunc) bse_effect_volume_delta_init,
   };
 

@@ -36,7 +36,7 @@ BSE_BUILTIN_TYPE (BseEffectPatternBreak)
     NULL /* class_data */,
 
     sizeof (BseEffectPatternBreak),
-    8 /* n_preallocs */,
+    BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
     (BseObjectInitFunc) bse_effect_pattern_break_init,
   };
 
