@@ -414,28 +414,10 @@ gtk_last_event_coords (gint *x_root,
 		       gint *y_root)
 {
   GdkEvent *event = gtk_get_current_event ();
-  gint x = 0, y = 0;
+  gdouble x = 0, y = 0;
 
   if (event)
-    {
-      switch (event->type)
-	{
-	case GDK_MOTION_NOTIFY:		x = event->motion.x_root;	y = event->motion.y_root;	break;
-	case GDK_BUTTON_PRESS:
-	case GDK_2BUTTON_PRESS:
-	case GDK_3BUTTON_PRESS:
-	case GDK_BUTTON_RELEASE:	x = event->button.x_root;       y = event->button.y_root;       break;
-	case GDK_ENTER_NOTIFY:
-	case GDK_LEAVE_NOTIFY:		x = event->crossing.x_root;	y = event->crossing.y_root;	break;
-	case GDK_DRAG_ENTER:
-	case GDK_DRAG_LEAVE:
-	case GDK_DRAG_MOTION:
-	case GDK_DRAG_STATUS:
-	case GDK_DROP_START:
-	case GDK_DROP_FINISHED:		x = event->dnd.x_root;		y = event->dnd.y_root;		break;
-	default:											break;
-	}
-    }
+    gdk_event_get_root_coords (event, &x, &y);
 
   if (x_root)
     *x_root = x;
@@ -1643,7 +1625,7 @@ bst_drag_window_from_icon (BseIcon *icon)
 guint
 bst_container_get_insertion_position (GtkContainer   *container,
 				      gboolean        scan_horizontally,
-				      gint            xy,	/* relative to widget->window */
+				      gint            xy,	/* relative to container->allocation */
 				      GtkWidget      *ignore_child,
 				      gint           *ignore_child_position)
 {
@@ -1657,6 +1639,9 @@ bst_container_get_insertion_position (GtkContainer   *container,
 
   if (ignore_child_position)
     *ignore_child_position = -1;
+
+  if (GTK_WIDGET_NO_WINDOW (container))
+    xy += scan_horizontally ? widget->allocation.x : widget->allocation.y;
 
   children = gtk_container_children (container);
   for (list = children; list; list = list->next)

@@ -59,6 +59,12 @@ static void	       drag_group_drag_leave   (GtkWidget              *group_list,
 						GdkDragContext         *context,
 						guint                   time,
 						BstDragGroup           *drag_group);
+static gboolean	       drag_group_drag_drop	(GtkWidget              *group_list,
+						 GdkDragContext         *context,
+						 gint                    x,
+						 gint                    y,
+						 guint                   time,
+						 BstDragGroup           *drag_group);
 static void	drag_group_drag_data_received  (GtkWidget              *group_list,
 						GdkDragContext         *context,
 						gint                    x,
@@ -363,13 +369,14 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
   /* setup as drag destination
    */
   gtk_drag_dest_set (drag_group->hbox,
-		     GTK_DEST_DEFAULT_DROP,
+		     0,
 		     &target, 1,
 		     GDK_ACTION_COPY | GDK_ACTION_MOVE);
   g_object_connect (drag_group->hbox,
 		    "signal::drag_motion", drag_group_drag_motion, drag_group,
 		    "signal::drag_leave", drag_group_drag_leave, drag_group,
 		    "signal::drag_data_received", drag_group_drag_data_received, drag_group,
+		    "signal::drag_drop", drag_group_drag_drop, drag_group,
 		    NULL);
 
   return drag_group;
@@ -407,8 +414,6 @@ drag_group_drag_motion (GtkWidget      *hbox,
       if (!bst_play_list_drop_spot_pattern->parent)
 	gtk_box_pack_start (GTK_BOX (hbox), bst_play_list_drop_spot_pattern, FALSE, TRUE, 1);
 
-      gdk_window_get_origin (bst_play_list_drag_window_pattern_icon->window, &x, &y);
-      gdk_window_translate (NULL, hbox->window, &x, &y);
       new_pos = bst_container_get_insertion_position (GTK_CONTAINER (hbox),
 						      TRUE, x,
 						      bst_play_list_drop_spot_pattern,
@@ -419,7 +424,7 @@ drag_group_drag_motion (GtkWidget      *hbox,
       return TRUE;
     }
 
-  gtk_idle_unparent (bst_play_list_drop_spot_pattern);
+  container_remove (bst_play_list_drop_spot_pattern);
 
   return FALSE;
 }
@@ -430,7 +435,31 @@ drag_group_drag_leave (GtkWidget      *hbox,
 		       guint           time,
 		       BstDragGroup   *drag_group)
 {
-  gtk_idle_unparent (bst_play_list_drop_spot_pattern);
+  container_remove (bst_play_list_drop_spot_pattern);
+}
+
+static gboolean
+drag_group_drag_drop (GtkWidget      *hbox,
+		      GdkDragContext *context,
+		      gint            x,
+		      gint            y,
+		      guint           time,
+		      BstDragGroup   *drag_group)
+{
+  GtkWidget *drag_source = gtk_drag_get_source_widget (context);
+  GtkWidget *plist = gtk_widget_get_ancestor (hbox, BST_TYPE_PLAY_LIST);
+
+  if (drag_source &&                                            /* check SAME_APP */
+      gtk_widget_is_ancestor (drag_source, plist) &&            /* check widget branch */
+      context->targets &&                                       /* check target type */
+      context->targets->data == atom_beast_pattern_pointer)
+    {
+      gtk_drag_get_data (hbox, context, context->targets->data, time);
+
+      return TRUE;
+    }
+
+  return FALSE;
 }
 
 static void
@@ -457,18 +486,17 @@ drag_group_drag_data_received (GtkWidget        *hbox,
   drag_contents = *((gpointer*) selection_data->data);
   g_return_if_fail (BSE_IS_PATTERN (drag_contents));
 
-  if (bst_play_list_drop_spot_pattern->parent) // FIXME GTKFIX
-    {
-      gtk_box_reorder_child (GTK_BOX (bst_play_list_drop_spot_pattern->parent),
-			     bst_play_list_drop_spot_pattern, -1);
-      gtk_idle_unparent (bst_play_list_drop_spot_pattern);
-    }
-
-  gdk_window_get_origin (bst_play_list_drag_window_pattern_icon->window, &x, &y);
-  gdk_window_translate (NULL, hbox->window, &x, &y);
   position = bst_container_get_insertion_position (GTK_CONTAINER (hbox),
 						   TRUE, x,
-						   NULL, NULL);
+						   bst_play_list_drop_spot_pattern, NULL);
+
+  if (bst_play_list_drop_spot_pattern->parent) // FIXME GTKFIX
+    {
+      container_remove (bst_play_list_drop_spot_pattern);
+      if (bst_play_list_drop_spot_pattern->parent)
+	gtk_box_reorder_child (GTK_BOX (bst_play_list_drop_spot_pattern->parent),
+			       bst_play_list_drop_spot_pattern, -1);
+    }
 
   if (context->actions & (GDK_ACTION_COPY | GDK_ACTION_MOVE))
     bse_pattern_group_insert_pattern (drag_group->pattern_group, drag_contents, position);

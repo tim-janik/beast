@@ -29,6 +29,17 @@ static GtkWidget        *bst_play_list_drop_spot_pattern_group = NULL;
 static GdkAtom		 atom_beast_pattern_group_pointer = 0;
 static GdkAtom		 atom_beast_pattern_pointer = 0;
 
+
+/* --- bug workarounds --- */
+static void
+container_remove (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (widget->parent)
+    gtk_container_remove (GTK_CONTAINER (widget->parent), widget);
+}
+
 #include	"bstdragpattern.c"	/* draggable pattern widgets */
 #include	"bstdraggroup.c"	/* draggable pattern group widgets */
 
@@ -45,6 +56,12 @@ static gboolean	group_list_drag_motion		(GtkWidget      	*group_list,
 static void	group_list_drag_leave		(GtkWidget              *group_list,
 						 GdkDragContext 	*context,
 						 guint                   time,
+						 BstPlayList		*plist);
+static gboolean	group_list_drag_drop		(GtkWidget      	*group_list,
+						 GdkDragContext 	*context,
+						 gint            	 x,
+						 gint            	 y,
+						 guint           	 time,
 						 BstPlayList		*plist);
 static void	group_list_drag_data_received	(GtkWidget              *group_list,
 						 GdkDragContext         *context,
@@ -127,11 +144,12 @@ bst_play_list_init (BstPlayList *plist)
 			"xalign", 0.0,
 			NULL);
   gtk_box_pack_start (GTK_BOX (vbox), any, FALSE, TRUE, 0);
-  plist->pattern_list = g_object_connect (g_object_new (GTK_TYPE_VBOX,
-							"visible", TRUE,
-							NULL),
-					  "signal::destroy", gtk_widget_destroyed, &plist->pattern_list,
-					  NULL);
+  plist->pattern_list = g_object_new (GTK_TYPE_VBOX,
+				      "visible", TRUE,
+				      NULL);
+  g_object_connect (plist->pattern_list,
+		    "signal::destroy", gtk_widget_destroyed, &plist->pattern_list,
+		    NULL);
   sw = gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
 		       "visible", TRUE,
 		       "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -172,13 +190,14 @@ bst_play_list_init (BstPlayList *plist)
   /* setup group list as drag destination
    */
   gtk_drag_dest_set (plist->group_list,
-		     GTK_DEST_DEFAULT_DROP,
+		     0,
 		     &target, 1,
 		     GDK_ACTION_COPY | GDK_ACTION_LINK | GDK_ACTION_MOVE);
   g_object_connect (plist->group_list,
 		    "signal::drag_motion", group_list_drag_motion, plist,
 		    "signal::drag_leave", group_list_drag_leave, plist,
 		    "signal::drag_data_received", group_list_drag_data_received, plist,
+		    "signal::drag_drop", group_list_drag_drop, plist,
 		    NULL);
   
   
@@ -326,8 +345,6 @@ group_list_drag_motion (GtkWidget      *group_list,
       if (!bst_play_list_drop_spot_pattern_group->parent)
 	gtk_box_pack_start (GTK_BOX (group_list), bst_play_list_drop_spot_pattern_group, FALSE, TRUE, 1);
 
-      gdk_window_get_origin (bst_play_list_drag_window_pattern_group_icon->window, &x, &y);
-      gdk_window_translate (NULL, group_list->window, &x, &y);
       new_pos = bst_container_get_insertion_position (GTK_CONTAINER (group_list),
 						      FALSE, y,
 						      bst_play_list_drop_spot_pattern_group,
@@ -338,7 +355,7 @@ group_list_drag_motion (GtkWidget      *group_list,
       return TRUE;
     }
 
-  gtk_idle_unparent (bst_play_list_drop_spot_pattern_group); /* FIXME: GTKFIX, DND breaks on tree alterations */
+  container_remove (bst_play_list_drop_spot_pattern_group); /* FIXME: GTKFIX, DND breaks on tree alterations */
 
   return FALSE;
 }
@@ -349,7 +366,30 @@ group_list_drag_leave (GtkWidget      *group_list,
 		       guint           time,
 		       BstPlayList    *plist)
 {
-  gtk_idle_unparent (bst_play_list_drop_spot_pattern_group);
+  container_remove (bst_play_list_drop_spot_pattern_group);
+}
+
+static gboolean
+group_list_drag_drop (GtkWidget      *group_list,
+		      GdkDragContext *context,
+		      gint            x,
+		      gint            y,
+		      guint           time,
+		      BstPlayList    *plist)
+{
+  GtkWidget *drag_source = gtk_drag_get_source_widget (context);
+
+  if (drag_source &&							/* check SAME_APP */
+      gtk_widget_is_ancestor (drag_source, GTK_WIDGET (plist)) &&	/* check widget branch */
+      context->targets &&						/* check target type */
+      context->targets->data == atom_beast_pattern_group_pointer)
+    {
+      gtk_drag_get_data (group_list, context, context->targets->data, time);
+
+      return TRUE;
+    }
+
+  return FALSE;
 }
 
 static void
@@ -365,7 +405,7 @@ group_list_drag_data_received (GtkWidget        *group_list,
   gpointer drag_contents;
   gint position;
   guint action;
-  
+
   g_return_if_fail (selection_data->type == atom_beast_pattern_group_pointer);
   g_return_if_fail (selection_data->format = 8);
   g_return_if_fail (selection_data->length == sizeof (gpointer));
@@ -376,18 +416,17 @@ group_list_drag_data_received (GtkWidget        *group_list,
   drag_contents = *((gpointer*) selection_data->data);
   g_return_if_fail (BSE_IS_PATTERN_GROUP (drag_contents));
 
-  if (bst_play_list_drop_spot_pattern_group->parent) // FIXME GTKFIX (1.2.7 bug)
-    {
-      gtk_box_reorder_child (GTK_BOX (bst_play_list_drop_spot_pattern_group->parent),
-			     bst_play_list_drop_spot_pattern_group, -1);
-      gtk_idle_unparent (bst_play_list_drop_spot_pattern_group);
-    }
-
-  gdk_window_get_origin (bst_play_list_drag_window_pattern_group_icon->window, &x, &y);
-  gdk_window_translate (NULL, group_list->window, &x, &y);
   position = bst_container_get_insertion_position (GTK_CONTAINER (group_list),
 						   FALSE, y,
 						   bst_play_list_drop_spot_pattern_group, NULL);
+
+  if (bst_play_list_drop_spot_pattern_group->parent) // FIXME GTKFIX (1.2.7 bug)
+    {
+      container_remove (bst_play_list_drop_spot_pattern_group);
+      if (bst_play_list_drop_spot_pattern_group->parent)
+	gtk_box_reorder_child (GTK_BOX (bst_play_list_drop_spot_pattern_group->parent),
+			       bst_play_list_drop_spot_pattern_group, -1);
+    }
 
   if (context->actions & GDK_ACTION_COPY)
     bse_song_insert_pattern_group_copy (plist->song, drag_contents, position);
@@ -409,6 +448,7 @@ song_item_added (BseSong     *song,
       gtk_container_add_with_properties (GTK_CONTAINER (plist->pattern_list), drag_pattern->widget,
 					 "expand", FALSE,
 					 NULL);
+      gtk_widget_queue_resize (plist->pattern_list);
     }
 }
 

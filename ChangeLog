@@ -1,3 +1,21 @@
+Mon Jan  7 09:48:34 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdraggroup.c: dnd fixes, don't specify
+	GTK_DEST_DEFAULT_DROP but implement own ::drag_drop
+	handler. got rid of window origin query and translation
+	hack which was necessary because gtk erroneously computed
+	the drop position.
+
+	* beast-gtk/bstplaylist.c: same here. also, disabled idle
+	unparentation hack since gtk should deal with widget tree
+	changes during drag motion now.
+
+	* beast-gtk/bstutils.c:
+	(gtk_last_event_coords): simply chain to gdk_event_get_root_coords()
+	internally.
+	(bst_container_get_insertion_position): take container allocation
+	into account.
+
 Fri Dec 14 18:43:49 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdial.[hc] (bst_dial_update): as a usability improvement,
