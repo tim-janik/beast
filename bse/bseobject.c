@@ -1498,7 +1498,7 @@ bse_object_do_store_private (BseObject  *object,
 	      
 	      bse_param_init (&param, pspec);
 	      bse_object_get_param (object, &param);
-	      if (!bse_param_defaults (&param))
+	      if (!bse_param_defaults (&param) || BSE_STORAGE_PUT_DEFAULTS (storage))
 		{
 		  bse_storage_break (storage);
 		  bse_storage_put_param (storage, &param);

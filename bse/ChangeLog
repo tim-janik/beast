@@ -1,3 +1,11 @@
+Thu Dec 30 19:19:22 1999  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.[hc]: prefix flag values, provide one to flag default
+	value storage.
+
+	* bseobject.c (bse_object_do_store_private): save object parameters
+	even if tehy default when BSE_STORAGE_PUT_DEFAULTS (storage).
+
 Thu Dec 30 05:47:24 1999  Tim Janik  <timj@gtk.org>
 
 	* bseheart.[hc] (bse_heart_unregister_all_devices): provide function to

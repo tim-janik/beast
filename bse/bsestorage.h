@@ -33,18 +33,20 @@ extern "C" {
 #define	BSE_STORAGE_FLAGS(st)		(((BseStorage*) (st))->flags)
 #define	BSE_STORAGE_SET_FLAGS(st,f)	(BSE_STORAGE_FLAGS (st) |= (f))
 #define	BSE_STORAGE_UNSET_FLAGS(st,f)	(BSE_STORAGE_FLAGS (st) &= ~(f))
-#define	BSE_STORAGE_READABLE(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_READABLE) != 0)
-#define	BSE_STORAGE_WRITABLE(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_WRITABLE) != 0)
-#define	BSE_STORAGE_NEEDS_BREAK(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_NEEDS_BREAK) != 0)
-#define	BSE_STORAGE_AT_BOL(st)		((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_AT_BOL) != 0)
+#define	BSE_STORAGE_READABLE(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_READABLE) != 0)
+#define	BSE_STORAGE_WRITABLE(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_WRITABLE) != 0)
+#define	BSE_STORAGE_NEEDS_BREAK(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_NEEDS_BREAK) != 0)
+#define	BSE_STORAGE_AT_BOL(st)		((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_AT_BOL) != 0)
+#define	BSE_STORAGE_PUT_DEFAULTS(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_PUT_DEFAULTS) != 0)
 
 /* --- BseStorage flags --- */
 typedef enum			/* <skip> */
 {
-  BSE_STORAGE_READABLE		= 1 << 0,
-  BSE_STORAGE_WRITABLE		= 1 << 1,
-  BSE_STORAGE_NEEDS_BREAK	= 1 << 2,
-  BSE_STORAGE_AT_BOL		= 1 << 3
+  BSE_STORAGE_FLAG_READABLE	= 1 << 0,
+  BSE_STORAGE_FLAG_WRITABLE	= 1 << 1,
+  BSE_STORAGE_FLAG_NEEDS_BREAK	= 1 << 2,
+  BSE_STORAGE_FLAG_AT_BOL	= 1 << 3,
+  BSE_STORAGE_FLAG_PUT_DEFAULTS	= 1 << 4
 } BseStorageFlags;
 
 
@@ -82,7 +84,8 @@ struct _BseStorageBBlock
 BseStorage*	bse_storage_new			(void);
 BseStorage*	bse_storage_from_scanner	(GScanner	*scanner);
 void		bse_storage_destroy		(BseStorage	*storage);
-void		bse_storage_prepare_write	(BseStorage	*storage);
+void		bse_storage_prepare_write	(BseStorage	*storage,
+						 gboolean        store_defaults);
 BseErrorType	bse_storage_input_file		(BseStorage	*storage,
 						 const gchar	*file_name);
 void		bse_storage_reset		(BseStorage	*storage);
@@ -107,7 +110,7 @@ void		bse_storage_put_bin_data	(BseStorage	*storage,
 						 BseBinData	*bdata);
 void		bse_storage_flush_fd		(BseStorage	*storage,
 						 gint		 fd);
-
+     
 
 /* --- reading --- */
 void		bse_storage_set_path_resolver	(BseStorage	*storage,

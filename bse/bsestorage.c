@@ -167,7 +167,8 @@ bse_storage_reset (BseStorage *storage)
 }
 
 void
-bse_storage_prepare_write (BseStorage      *storage)
+bse_storage_prepare_write (BseStorage *storage,
+			   gboolean    store_defaults)
 {
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (!BSE_STORAGE_WRITABLE (storage));
@@ -175,8 +176,10 @@ bse_storage_prepare_write (BseStorage      *storage)
   
   storage->indent = g_slist_prepend (NULL, g_strdup (""));
   storage->gstring = g_string_sized_new (1024);
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_WRITABLE);
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_AT_BOL);
+  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_WRITABLE);
+  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+  if (store_defaults)
+    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_PUT_DEFAULTS);
 }
 
 BseErrorType
@@ -205,7 +208,7 @@ bse_storage_input_file (BseStorage     *storage,
   storage->scanner->max_parse_errors = 1;
   storage->scanner->parse_errors = 0;
   
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_READABLE);
+  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_READABLE);
   
   return BSE_ERROR_NONE;
 }
@@ -266,9 +269,9 @@ bse_storage_puts (BseStorage  *storage,
 	g_string_append (storage->gstring, string);
       
       if (string[l - 1] == '\n')
-	BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_AT_BOL);
+	BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
       else
-	BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_AT_BOL);
+	BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
     }
 }
 
@@ -283,9 +286,9 @@ bse_storage_putc (BseStorage *storage,
     g_string_append_c (storage->gstring, character);
   
   if (character == '\n')
-    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_AT_BOL);
+    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
   else
-    BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_AT_BOL);
+    BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
 }
 
 void
@@ -316,7 +319,7 @@ bse_storage_break (BseStorage *storage)
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
   
   bse_storage_putc (storage, '\n');
-  BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_NEEDS_BREAK);
+  BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);
   bse_storage_indent (storage);
 }
 
@@ -336,7 +339,7 @@ bse_storage_needs_break (BseStorage *storage)
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
   
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_NEEDS_BREAK);
+  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);
 }
 
 void

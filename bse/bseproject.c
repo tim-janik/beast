@@ -335,7 +335,7 @@ bse_project_store_bse (BseProject  *project,
     return (errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_FILE_IO);
 
   storage = bse_storage_new ();
-  bse_storage_prepare_write (storage);
+  bse_storage_prepare_write (storage, FALSE);
   bse_container_store_items (BSE_CONTAINER (project), storage);
 
   mflags = storage->wblocks ? BSE_MAGIC_BSE_BIN_EXTENSION : 0;

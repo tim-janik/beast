@@ -17,7 +17,7 @@
  */
 #include	"bsepcmdevice-oss.h"
 
-#include	<PKG_config.h>
+#include	"../PKG_config.h"
 
 #ifndef	BSE_PCM_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BsePcmDeviceOSS);

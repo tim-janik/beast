@@ -17,7 +17,7 @@
  */
 #include        "bsepcmdevice-alsa.h"
 
-#include        <PKG_config.h>
+#include        "../PKG_config.h"
 
 #ifndef	BSE_PCM_DEVICE_CONF_ALSA
 BSE_DUMMY_TYPE (BsePcmDeviceAlsa);

@@ -17,7 +17,6 @@ Makefile.icons: $(icon_pattern) Makefile.am
 
 EXTRA_DIST += $(strip \
 	$(icon_list) \
-	TODO \
 )
 
 ## include generated icon list Makefile
