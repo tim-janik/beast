@@ -1,23 +1,8 @@
 - partials context creation for non-modifiable snets:
   gsl-module: BseContextBus 4in<->4out
   BseSource: BseContextIBus (owns ContextBus) 4in, BseContextOBus 4out
-- sub-synth must handle property changes correctly:
-  void bse_snet_set_iport_dest (BseSNet        *snet,
-                                const gchar    *port_name,
-                                guint		snet_context,
-                                GslModule      *imodule,
-                                guint           istream,
-                                GslTrans       *trans);
-  void bse_snet_set_iport_src  (BseSNet        *snet,
-                                const gchar    *port_name,
-                                guint           snet_context,
-                                GslModule      *omodule,
-                                guint           ostream,
-                                GslTrans       *trans);
-  plus s/iport/oport/                                
-
-- fixed amount of contexts (notes) per instrument as song property
 - BseDisconnectSource with two engine modules
+- fixed amount of contexts (notes) per instrument as song property
 - user process collection of done modules + state reset
 Problems:
 - _SL functions have to be revisited and thoroughly implemented
