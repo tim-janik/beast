@@ -140,8 +140,9 @@ bse_server_class_init (BseServerClass *class)
 			      bse_gconfig_pspec ());	/* "bse-preferences" */
   bse_object_class_add_param (object_class, "PCM Recording",
 			      PROP_WAVE_FILE,
-			      sfi_pspec_string ("wave_file", "WAVE File", NULL,
-						NULL, SFI_PARAM_GUI));
+			      sfi_pspec_string ("wave_file", _("WAVE File"),
+                                                _("Name of the WAVE file used for recording BSE sound output"),
+						NULL, SFI_PARAM_GUI ":filename"));
   
   signal_registration = bse_object_class_add_signal (object_class, "registration",
 						     G_TYPE_NONE, 3,
