@@ -148,14 +148,14 @@ show_procdoc (void)
 
 	  fprintf (f_out, " * @%s: %s\n",
 		   pspec->name,
-		   g_param_get_blurb (pspec) ? g_param_get_blurb (pspec) : nullstr);
+		   g_param_spec_get_blurb (pspec) ? g_param_spec_get_blurb (pspec) : nullstr);
 	}
       for (j = 0; j < class->n_out_params; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->out_param_specs[j]);
 
 	  fprintf (f_out, " * @Returns: %s\n",
-		   g_param_get_blurb (pspec) ? g_param_get_blurb (pspec) : nullstr);
+		   g_param_spec_get_blurb (pspec) ? g_param_spec_get_blurb (pspec) : nullstr);
 	}
       if (class->help)
 	fprintf (f_out, " * %s\n", class->help);
