@@ -154,7 +154,7 @@ bse_extra_sources = $(strip \
 	bseamplifier-aux.c \
 	bseconfig.h.in \
 	bsepcmmodule.c \
-	bserecords.sfidl \
+	bserecords.idl \
 )
 # we use our own built_sources variable rules instead of BUILT_SOURCES,
 # since handles BUILT_SOURCES strange and wrong on some occasions (mostly
@@ -207,7 +207,7 @@ $(OBJECTS): $(bse_built_h_sources)
 $(srcdir)/bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
 # normal autogeneration rules
 stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(bse_c_sources) $(bse_public_h_sources)
-stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.sfidl $(SFIDL)
+stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.idl $(SFIDL)
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -215,17 +215,17 @@ stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.sfidl $(SFIDL)
 	  --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	    $(bse_public_h_sources) > xgen-sbgth \
 	&& $(PERL) mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
-	&& $(SFIDL) --header --implementation --boxed $(srcdir)/bserecords.sfidl >> xgen-sbgth \
+	&& $(SFIDL) --header --implementation --boxed $(srcdir)/bserecords.idl >> xgen-sbgth \
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
-bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bserecords.sfidl $(SFIDL) $(bse_builtin_c_sources) # $(bse_c_sources)
+bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bserecords.idl $(SFIDL) $(bse_builtin_c_sources) # $(bse_c_sources)
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
 	    $(bse_public_h_sources) >> xgen-bgtc \
 	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
-	&& $(SFIDL) --source --implementation --boxed --init _sfidl_types_init bserecords.sfidl >> xgen-bgtc \
+	&& $(SFIDL) --source --implementation --boxed --init _sfidl_types_init bserecords.idl >> xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
 	&& rm -f xgen-bgtc
 bsegentype_array.c: @DVLBUILD@ bsegentypes.c
@@ -270,14 +270,14 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_builtin_c_sources) mkbuiltinlist.pl
 # this file describes the BSE public API and needs to be generated at the
 # end of the build process
 #
-bse.sfidl: $(srcdir)/bserecords.sfidl bseprocidl
+bse.idl: $(srcdir)/bserecords.idl bseprocidl
 	echo "/* this file was generated from make $< */" > xgen-bgasi \
-	&& cat $(srcdir)/bserecords.sfidl >> xgen-bgasi \
+	&& cat $(srcdir)/bserecords.idl >> xgen-bgasi \
 	&& ./bseprocidl >> xgen-bgasi \
-	&& (cmp -s xgen-bgasi bse.sfidl || cp xgen-bgasi bse.sfidl) \
+	&& (cmp -s xgen-bgasi bse.idl || cp xgen-bgasi bse.idl) \
 	&& rm -f xgen-bgasi
-CLEANFILES += bse.sfidl
-noinst_DATA = bse.sfidl
+CLEANFILES += bse.idl
+noinst_DATA = bse.idl
 
 
 #

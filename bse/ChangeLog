@@ -1,3 +1,9 @@
+Fri Aug 22 08:06:29 2003  Tim Janik  <timj@gtk.org>
+
+        * bse.idl:
+        * bserecords.idl:
+        * Makefile.am: renamed *.sfidl to *.idl.
+
 Fri Aug 22 05:01:14 2003  Tim Janik  <timj@gtk.org>
 
 	* examplepeakfilter.[hc]*: implementation of a peak filter, and example
