@@ -18,12 +18,10 @@
 #include "bsesongthread.h"
 #include "gslcommon.h"
 #include "gslengine.h"
-#include "bsepattern.h"
-#include "bseconstant.h"
-#include "bsesubsynth.h"
-#include "bseinstrument.h"
-#include "bsemain.h"
+#include "bsetrack.h"
 #include "bsepart.h"
+#include "bsemidireceiver.h"
+#include "bsemain.h"
 
 
 /* --- prototypes --- */
@@ -146,15 +144,17 @@ seq_init_SL (BseSongSequencer *seq,
   seq->beats_per_second = seq->song->bpm;
   seq->beats_per_second /= 60.;
   seq->beat_tick = 0;
-  if (seq->song->parts && seq->song->instruments)
+  if (seq->song->tracks)
     {
-      seq->n_tracks = 1;
-      seq->tracks = g_new (BseSongSequencerTrack, seq->n_tracks);
-      seq->tracks[0].part = seq->song->parts->data;
-      seq->tracks[0].instrument = seq->song->instruments->data;
-      seq->tracks[0].tick = 0;
-      seq->tracks[0].constant = BSE_CONSTANT (seq->song->net.voices[0].constant);
-      bse_sub_synth_set_snet (BSE_SUB_SYNTH (seq->song->net.voices[0].sub_synth), seq->tracks[0].instrument->seq_snet);
+      BseTrack *track = seq->song->tracks->data;
+      if (track->part_SL)
+	{
+	  seq->n_tracks = 1;
+	  seq->tracks = g_new (BseSongSequencerTrack, seq->n_tracks);
+	  seq->tracks[0].part = track->part_SL;
+	  seq->tracks[0].midi_receiver = track->midi_receiver_SL;
+	  seq->tracks[0].tick = 0;
+	}
     }
 }
 
@@ -193,7 +193,8 @@ track_step_SL (BseSongSequencer      *seq,
 {
   BsePart *part = track->part;
   guint i, tick_bound = track->tick + n_ticks;
-
+  gboolean need_debug;
+  
   i = bse_part_node_lookup_SL (part, track->tick);
   while (i < part->n_nodes && part->nodes[i].tick < tick_bound)
     {
@@ -203,26 +204,26 @@ track_step_SL (BseSongSequencer      *seq,
       for (ev = part->nodes[i].events; ev; ev = ev->any.next)
 	if (ev && ev->type == BSE_PART_EVENT_NOTE)
 	  {
-	    BseConstant *constant = track->constant;
-	    
-	    /* frequency */
-	    bse_constant_stamped_set_freq_SL (constant,
-					      seq->start_stamp + tick * ticks2stamp,
-					      0, BSE_PART_FREQ (ev->note.ifreq));
-	    
-	    /* gate */
-	    bse_constant_stamped_set_float_SL (constant,
-					       seq->start_stamp + tick * ticks2stamp,
-					       1, 1.0);
-	    
-	    /* gate */
-	    bse_constant_stamped_set_float_SL (constant,
-					       seq->start_stamp + (tick + ev->note.duration) * ticks2stamp,
-					       1, 0.0);
-	    
-	    g_printerr ("TSS: note %f at %u (%f)\n", BSE_PART_FREQ (ev->note.ifreq), tick, tick * ticks2stamp);
+	    bse_midi_receiver_push_event (track->midi_receiver,
+					  bse_midi_event_note_on (0,
+								  seq->start_stamp + tick * ticks2stamp,
+								  BSE_PART_FREQ (ev->note.ifreq), 1.0));
+	    bse_midi_receiver_push_event (track->midi_receiver,
+					  bse_midi_event_note_off (0,
+								   seq->start_stamp + (tick + ev->note.duration) * ticks2stamp,
+								   BSE_PART_FREQ (ev->note.ifreq)));
+	    g_print ("note: %f till %f freq=%f\n",
+		     seq->start_stamp + tick * ticks2stamp,
+		     seq->start_stamp + (tick + ev->note.duration) * ticks2stamp,
+		     BSE_PART_FREQ (ev->note.ifreq));
 	  }
       i = bse_part_node_lookup_SL (part, tick + 1);
     }
   track->tick += n_ticks;
+  need_debug=track->midi_receiver->events!= NULL;
+  bse_midi_receiver_process_events (track->midi_receiver, seq->start_stamp + tick_bound * ticks2stamp);
+if (need_debug)  g_print ("process until: %f (current=%llu next=%llu)\n",
+	   seq->start_stamp + tick_bound * ticks2stamp,
+	   gsl_tick_stamp (),
+	   gsl_tick_stamp () + gsl_engine_block_size ());
 }

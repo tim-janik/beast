@@ -61,6 +61,7 @@
 #include        <bse/bsesource.h>
 #include	<bse/bsestorage.h>
 #include        <bse/bsesuper.h>
+#include        <bse/bsetrack.h>
 #include        <bse/bsetype.h>
 #include        <bse/bseutils.h>
 #include        <bse/bsewave.h>

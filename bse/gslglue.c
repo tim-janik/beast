@@ -207,7 +207,7 @@ gsl_glue_call_proc (const gchar *proc_name)
 
   call = g_new0 (GslGlueCall, 1);
   call->proc_name = g_strdup (proc_name);
-  call->params = gsl_glue_rec ();
+  call->params = gsl_glue_seq ();
 
   return call;
 }
@@ -218,7 +218,7 @@ gsl_glue_call_take_arg (GslGlueCall *call,
 {
   g_return_if_fail (call != NULL);
 
-  gsl_glue_rec_append (call->params, value);
+  gsl_glue_seq_append (call->params, value);
   gsl_glue_reset_value (&value);
 }
 
@@ -347,6 +347,18 @@ gsl_glue_param_proxy (GslGlueParam *param,
 }
 
 void
+gsl_glue_param_seq (GslGlueParam *param,
+		    const gchar  *name)
+{
+  g_return_if_fail (param != NULL);
+  g_return_if_fail (param->glue_type == 0);
+  g_return_if_fail (name != NULL);
+
+  param->glue_type = GSL_GLUE_TYPE_SEQ;
+  param->seq.name = g_strdup (name);
+}
+
+void
 gsl_glue_param_rec (GslGlueParam *param,
 		    const gchar  *name)
 {
@@ -356,21 +368,16 @@ gsl_glue_param_rec (GslGlueParam *param,
 
   param->glue_type = GSL_GLUE_TYPE_REC;
   param->rec.name = g_strdup (name);
-  param->rec.n_fields = 0;
 }
 
 
 /* --- Sequence --- */
 GslGlueSeq*
-gsl_glue_seq (GslGlueType element_type)
+gsl_glue_seq (void)
 {
   GslGlueSeq *s;
 
-  g_return_val_if_fail (element_type >= GSL_GLUE_TYPE_FIRST, NULL);
-  g_return_val_if_fail (element_type <= GSL_GLUE_TYPE_LAST, NULL);
-
   s = g_malloc (sizeof (*s));
-  s->element_type = element_type;
   s->n_elements = 0;
   s->elements = NULL;
 
@@ -382,7 +389,6 @@ gsl_glue_seq_append (GslGlueSeq  *seq,
 		     GslGlueValue value)
 {
   g_return_if_fail (seq != NULL);
-  g_return_if_fail (seq->element_type == value.glue_type);
 
   value = gsl_glue_valuedup (value);
   gsl_glue_seq_take_append (seq, &value);
@@ -396,7 +402,6 @@ gsl_glue_seq_take_append (GslGlueSeq   *seq,
 
   g_return_if_fail (seq != NULL);
   g_return_if_fail (value != NULL);
-  g_return_if_fail (seq->element_type == value->glue_type);
 
   l = upper_power2 (seq->n_elements);
   i = seq->n_elements++;
@@ -423,6 +428,20 @@ gsl_glue_seq_get (const GslGlueSeq *seq,
   return seq->elements[index];
 }
 
+gboolean
+gsl_glue_seq_check_elements (GslGlueSeq *seq,
+			     GslGlueType element_type)
+{
+  guint i;
+
+  g_return_val_if_fail (seq != NULL, FALSE);
+
+  for (i = 0; i < seq->n_elements; i++)
+    if (seq->elements[i].glue_type != element_type)
+      return FALSE;
+  return TRUE;
+}
+
 
 /* --- Record --- */
 GslGlueRec*
@@ -431,41 +450,96 @@ gsl_glue_rec (void)
   GslGlueRec *r = g_malloc (sizeof (*r));
 
   r->n_fields = 0;
+  r->ref_count = 1;
   r->fields = NULL;
+  r->field_names = NULL;
 
   return r;
 }
 
-void
-gsl_glue_rec_take_append (GslGlueRec   *rec,
-			  GslGlueValue *value)
+GslGlueRec*
+gsl_glue_rec_ref (GslGlueRec *rec)
 {
-  guint i, l, n;
+  g_return_val_if_fail (rec != NULL, NULL);
+  g_return_val_if_fail (rec->ref_count > 0, NULL);
+
+  rec->ref_count++;
+
+  return rec;
+}
+
+void
+gsl_glue_rec_unref (GslGlueRec *rec)
+{
+  g_return_if_fail (rec != NULL);
+  g_return_if_fail (rec->ref_count > 0);
+
+  rec->ref_count--;
+  if (rec->ref_count == 0)
+    {
+      guint i;
+      for (i = 0; i < rec->n_fields; i++)
+	{
+	  gsl_glue_reset_value (rec->fields + i);
+	  g_free (rec->field_names[i]);
+	}
+      g_free (rec->fields);
+      g_free (rec->field_names);
+      g_free (rec);
+    }
+}
+
+static gchar*
+dupcanon (const gchar *field_name)
+{
+  return g_strcanon (g_strdup (field_name),
+		     G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS,
+		     '-');
+}
+
+void
+gsl_glue_rec_take (GslGlueRec   *rec,
+		   const gchar  *field_name,
+		   GslGlueValue *value)
+{
+  gchar *name;
+  guint i;
 
   g_return_if_fail (rec != NULL);
+  g_return_if_fail (field_name != NULL);
   g_return_if_fail (value != NULL);
   g_return_if_fail (value->glue_type >= GSL_GLUE_TYPE_FIRST);
   g_return_if_fail (value->glue_type <= GSL_GLUE_TYPE_LAST);
 
-  l = upper_power2 (rec->n_fields);
-  i = rec->n_fields++;
-  n = upper_power2 (rec->n_fields);
-  if (n > l)
-    rec->fields = g_realloc (rec->fields, n * sizeof (rec->fields[0]));
+  name = dupcanon (field_name);
+  for (i = 0; i < rec->n_fields; i++)
+    if (strcmp (name, rec->field_names[i]) == 0)
+      break;
+  if (i >= rec->n_fields)
+    {
+      i = rec->n_fields++;
+      rec->fields = g_realloc (rec->fields, rec->n_fields * sizeof (rec->fields[0]));
+      rec->field_names = g_realloc (rec->field_names, rec->n_fields * sizeof (rec->field_names[0]));
+      rec->field_names[i] = name;
+    }
+  else
+    g_free (name);
   rec->fields[i] = *value;	/* relocate */
   memset (value, 0, sizeof (*value));
 }
 
 void
-gsl_glue_rec_append (GslGlueRec  *rec,
-		     GslGlueValue value)
+gsl_glue_rec_set (GslGlueRec   *rec,
+		  const gchar  *field_name,
+		  GslGlueValue  value)
 {
   g_return_if_fail (rec != NULL);
+  g_return_if_fail (field_name != NULL);
   g_return_if_fail (value.glue_type >= GSL_GLUE_TYPE_FIRST);
   g_return_if_fail (value.glue_type <= GSL_GLUE_TYPE_LAST);
 
   value = gsl_glue_valuedup (value);
-  gsl_glue_rec_take_append (rec, &value);
+  gsl_glue_rec_take (rec, field_name, &value);
 }
 
 guint
@@ -482,6 +556,30 @@ gsl_glue_rec_field (const GslGlueRec *rec,
   g_return_val_if_fail (index < rec->n_fields, zero_value);
 
   return rec->fields[index];
+}
+
+GslGlueValue
+gsl_glue_rec_get (const GslGlueRec *rec,
+		  const gchar      *field_name)
+{
+  gchar *name;
+  guint i;
+
+  g_return_val_if_fail (rec != NULL, zero_value);
+  g_return_val_if_fail (field_name != NULL, zero_value);
+
+  name = dupcanon (field_name);
+  for (i = 0; i < rec->n_fields; i++)
+    if (strcmp (name, rec->field_names[i]) == 0)
+      break;
+  if (i < rec->n_fields)
+    {
+      g_free (name);
+      return rec->fields[i];
+    }
+  g_warning ("%s: record (%p) has no field named \"%s\"", G_STRLOC, rec, name);
+  g_free (name);
+  return zero_value;
 }
 
 
@@ -507,7 +605,7 @@ gsl_glue_valuedup (const GslGlueValue value)
       dest.value.v_seq = gsl_glue_seqdup (value.value.v_seq);
       break;
     case GSL_GLUE_TYPE_REC:
-      dest.value.v_rec = gsl_glue_recdup (value.value.v_rec);
+      dest.value.v_rec = gsl_glue_rec_ref (value.value.v_rec);
       break;
     default:
       break;
@@ -532,7 +630,7 @@ gsl_glue_reset_value (GslGlueValue *value)
       break;
     case GSL_GLUE_TYPE_REC:
       if (value->value.v_rec)
-	gsl_glue_free_rec (value->value.v_rec);
+	gsl_glue_rec_unref (value->value.v_rec);
       break;
     default:
       break;
@@ -545,30 +643,13 @@ gsl_glue_seqdup (const GslGlueSeq *seq)
 {
   if (seq)
     {
-      GslGlueSeq *s = gsl_glue_seq (seq->element_type);
+      GslGlueSeq *s = gsl_glue_seq ();
       guint i;
 
       for (i = 0; i < seq->n_elements; i++)
 	gsl_glue_seq_append (s, seq->elements[i]);
 
       return s;
-    }
-  else
-    return NULL;
-}
-
-GslGlueRec*
-gsl_glue_recdup (const GslGlueRec *rec)
-{
-  if (rec)
-    {
-      GslGlueRec *r = gsl_glue_rec ();
-      guint i;
-
-      for (i = 0; i < rec->n_fields; i++)
-	gsl_glue_rec_append (r, rec->fields[i]);
-
-      return r;
     }
   else
     return NULL;
@@ -635,7 +716,7 @@ gsl_glue_free_call (GslGlueCall *call)
 
   g_free (call->proc_name);
   if (call->params)
-    gsl_glue_free_rec (call->params);
+    gsl_glue_free_seq (call->params);
   gsl_glue_reset_value (&call->retval);
   g_free (call);
 }
@@ -654,19 +735,6 @@ gsl_glue_free_seq (GslGlueSeq *seq)
 }
 
 void
-gsl_glue_free_rec (GslGlueRec *rec)
-{
-  guint i;
-
-  g_return_if_fail (rec != NULL);
-
-  for (i = 0; i < rec->n_fields; i++)
-    gsl_glue_reset_value (rec->fields + i);
-  g_free (rec->fields);
-  g_free (rec);
-}
-
-void
 gsl_glue_reset_param (GslGlueParam *param)
 {
   g_return_if_fail (param != NULL);
@@ -674,7 +742,6 @@ gsl_glue_reset_param (GslGlueParam *param)
   g_free (param->any.name);
   switch (param->glue_type)
     {
-      guint i;
     case GSL_GLUE_TYPE_NONE:
     case GSL_GLUE_TYPE_BOOL:
     case GSL_GLUE_TYPE_IRANGE:
@@ -690,16 +757,20 @@ gsl_glue_reset_param (GslGlueParam *param)
       g_free (param->proxy.iface_name);
       break;
     case GSL_GLUE_TYPE_SEQ:
+#if 0
       if (param->seq.elements)
 	{
 	  gsl_glue_reset_param (param->seq.elements);
 	  g_free (param->seq.elements);
 	}
+#endif
       break;
     case GSL_GLUE_TYPE_REC:
+#if 0
       for (i = 0; i < param->rec.n_fields; i++)
 	gsl_glue_reset_param (param->rec.fields + i);
       g_free (param->rec.fields);
+#endif
       break;
     }
   memset (param, 0, sizeof (*param));

@@ -19,6 +19,7 @@
 
 #include "bsemarshal.h"
 #include "bsemain.h"
+#include "gslcommon.h"
 
 
 /* --- prototypes --- */
@@ -89,64 +90,31 @@ bse_midi_notifier_init (BseMidiNotifier *self)
 static void
 bse_midi_notifier_finalize (GObject *object)
 {
-  BseMidiNotifier *self = BSE_MIDI_NOTIFIER (object);
-  
-  /* BseMidiNotifier only makes sense as a singleton,
-   * however proper guarding doesn't hurt
-   */
-  if (_bse_midi_get_notifier () == self)
-    {
-      BseMidiEvent *events;
-
-      _bse_midi_set_notifier (NULL);
-
-      /* need to free remaining events */
-      events = _bse_midi_fetch_notify_events_ASYNC ();
-      while (events)
-	{
-	  BseMidiEvent *event = events;
-	  
-	  events = event->next;
-	  event->next = NULL;
-	  _bse_midi_free_event_ASYNC (event);
-	}
-    }
+  /* BseMidiNotifier *self = BSE_MIDI_NOTIFIER (object); */
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-gboolean
-bse_midi_notifier_needs_dispatch (BseMidiNotifier *self)
-{
-  /* g_return_if_fail (BSE_IS_MIDI_NOTIFIER (self), FALSE); */
-
-  return _bse_midi_has_notify_events_ASYNC ();
-}
-
 void
-bse_midi_notifier_dispatch (BseMidiNotifier *self)
+bse_midi_notifier_dispatch (BseMidiNotifier *self,
+			    BseMidiReceiver *midi_receiver)
 {
-  BseMidiEvent *events;
+  GslRing *ring;
+  gboolean need_emission;
 
   g_return_if_fail (BSE_IS_MIDI_NOTIFIER (self));
+  g_return_if_fail (midi_receiver != NULL);
 
-  events = _bse_midi_fetch_notify_events_ASYNC ();
-  if (events)
+  need_emission = 0 != g_signal_handler_find (self, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_UNBLOCKED,
+					      signal_midi_event, 0, NULL, NULL, NULL);
+  ring = bse_midi_receiver_fetch_notify_events (midi_receiver);
+  while (ring)
     {
-      gboolean need_emission;
+      BseMidiEvent *event = gsl_ring_pop_head (&ring);
 
-      need_emission = 0 != g_signal_handler_find (self, G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_UNBLOCKED,
-						  signal_midi_event, 0, NULL, NULL, NULL);
-      while (events)
-	{
-	  BseMidiEvent *event = events;
-	  
-	  events = event->next;
-	  event->next = NULL;
-	  if (event->channel < BSE_MIDI_MAX_CHANNELS && need_emission)
-	    g_signal_emit (self, signal_midi_event, number_quarks[event->channel], event);
-	  _bse_midi_free_event_ASYNC (event);
-	}
+      if (event->channel < BSE_MIDI_MAX_CHANNELS && need_emission)
+	g_signal_emit (self, signal_midi_event, number_quarks[event->channel], event);
+      bse_midi_free_event (event);
     }
 }

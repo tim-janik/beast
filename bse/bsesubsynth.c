@@ -20,6 +20,7 @@
 
 #include "bsecategories.h"
 #include "bsesnet.h"
+#include "bsemidireceiver.h"
 #include "./icons/inoutport.c"
 #include "gslengine.h"
 
@@ -182,20 +183,21 @@ bse_sub_synth_init (BseSubSynth *synth)
 static void
 bse_sub_synth_do_destroy (BseObject *object)
 {
-  BseSubSynth *synth = BSE_SUB_SYNTH (object);
+  BseSubSynth *self = BSE_SUB_SYNTH (object);
   guint i;
   
-  if (synth->snet)
+  if (self->snet)
     {
-      g_object_unref (synth->snet);
-      synth->snet = NULL;
+      g_object_unref (self->snet);
+      self->snet = NULL;
     }
+  bse_sub_synth_set_midi_receiver (self, NULL, 0);
   for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
-      g_free (synth->input_ports[i]);
-      synth->input_ports[i] = NULL;
-      g_free (synth->output_ports[i]);
-      synth->output_ports[i] = NULL;
+      g_free (self->input_ports[i]);
+      self->input_ports[i] = NULL;
+      g_free (self->output_ports[i]);
+      self->output_ports[i] = NULL;
     }
   
   /* chain parent class' destroy handler */
@@ -316,13 +318,18 @@ bse_sub_synth_get_property (GObject    *object,
 }
 
 void
-bse_sub_synth_set_snet (BseSubSynth *sub_synth,
-			BseSNet     *snet)
+bse_sub_synth_set_midi_receiver (BseSubSynth     *self,
+				 BseMidiReceiver *midi_receiver,
+				 guint            midi_channel)
 {
-  g_return_if_fail (BSE_IS_SUB_SYNTH (sub_synth));
+  g_return_if_fail (BSE_IS_SUB_SYNTH (self));
 
-  if (sub_synth->snet != snet)
-    g_object_set (sub_synth, "snet", snet, NULL);
+  if (self->midi_receiver)
+    bse_midi_receiver_unref (self->midi_receiver);
+  self->midi_receiver = midi_receiver;
+  self->midi_channel = midi_channel;
+  if (self->midi_receiver)
+    bse_midi_receiver_ref (self->midi_receiver);
 }
 
 typedef struct {
@@ -330,48 +337,30 @@ typedef struct {
 } ModData;
 
 static void
-sub_synths_process (GslModule *module,
-		    guint      n_values)
-{
-  guint i;
-
-  for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
-    GSL_MODULE_OBUFFER (module, i) = (gfloat*) GSL_MODULE_IBUFFER (module, i);
-}
-
-static void
 bse_sub_synth_context_create (BseSource *source,
 			      guint      context_handle,
 			      GslTrans  *trans)
 {
-  static const GslClass sub_synth_mclass = {
-    BSE_SUB_SYNTH_N_IOPORTS,	/* n_istreams */
-    0,				/* n_jstreams */
-    BSE_SUB_SYNTH_N_IOPORTS,	/* n_ostreams */
-    sub_synths_process,		/* process */
-    NULL,                       /* process_defer */
-    NULL,                       /* reset */
-    (GslModuleFreeFunc) g_free,	/* free */
-    GSL_COST_CHEAP,		/* cost */
-  };
-  BseSubSynth *synth = BSE_SUB_SYNTH (source);
-  BseSNet *snet = synth->snet;
+  BseSubSynth *self = BSE_SUB_SYNTH (source);
+  BseSNet *snet = self->snet;
   ModData *mdata_in = g_new0 (ModData, 1);
   ModData *mdata_out = g_new0 (ModData, 1);
-  GslModule *imodule = gsl_module_new (&sub_synth_mclass, mdata_in);
-  GslModule *omodule = gsl_module_new (&sub_synth_mclass, mdata_out);
+  GslModule *imodule = gsl_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_in, g_free);
+  GslModule *omodule = gsl_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_out, g_free);
   guint foreign_context_handle = ~0;
 
   /* create new context for foreign synth */
   if (snet)
     {
-      BseItem *parent = BSE_ITEM (source)->parent;
-      BseMidiReceiver *midi_reciver;
-      guint midi_channel;
+      BseMidiReceiver *midi_receiver = self->midi_receiver;
+      guint midi_channel = self->midi_channel;
 
-      midi_reciver = bse_sent_get_midi_receiver (BSE_SNET (parent), context_handle, &midi_channel);
-
-      foreign_context_handle = bse_snet_create_context (snet, midi_reciver, midi_channel, trans);
+      if (!midi_receiver)
+	{
+	  BseItem *parent = BSE_ITEM (self)->parent;
+	  midi_receiver = bse_snet_get_midi_receiver (BSE_SNET (parent), context_handle, &midi_channel);
+	}
+      foreign_context_handle = bse_snet_create_context (snet, midi_receiver, midi_channel, trans);
     }
 
   mdata_in->synth_context_handle = foreign_context_handle;

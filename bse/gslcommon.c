@@ -48,6 +48,7 @@
 
 /* --- variables --- */
 volatile guint64     gsl_externvar_tick_stamp = 0;
+static guint64	     tick_stamp_system_time = 0;
 static guint         global_tick_stamp_leaps = 0;
 static GslDebugFlags gsl_debug_flags = 0;
 
@@ -456,8 +457,9 @@ gsl_ring_insert_sorted (GslRing	    *head,
 	return gsl_ring_append (head, data);
 
       /* walk forward while data >= tmp (skipping equal nodes) */
-      for (tmp = head->next; cmp >= 0 && tmp != tail; tmp = tmp->next)
-	cmp = func (data, tmp->data);
+      for (tmp = head->next; tmp != tail; tmp = tmp->next)
+	if (func (data, tmp->data) < 0)
+	  break;
 
       /* insert before sibling which is greater than data */
       gsl_ring_prepend (tmp, data);	/* keep current head */
@@ -861,6 +863,7 @@ gsl_thread_awake_before (guint64 tick_stamp)
 /**
  * gsl_tick_stamp
  * @RETURNS: GSL's execution tick stamp as unsigned 64bit integer
+ *
  * Retrive the GSL global tick stamp.
  * GSL increments its global tick stamp at certain intervals,
  * by specific amounts (refer to gsl_engine_init() for further
@@ -873,6 +876,7 @@ gsl_thread_awake_before (guint64 tick_stamp)
  * GslProcessFunc() functions) may use the macro %GSL_TICK_STAMP
  * to retrive the current tick in a faster manner (not involving
  * mutex locking). See also gsl_module_tick_stamp().
+ * This function is MT-safe and may be called from any thread.
  */
 guint64
 gsl_tick_stamp (void)
@@ -894,18 +898,68 @@ _gsl_tick_stamp_set_leap (guint ticks)
   GSL_SYNC_UNLOCK (&global_thread);
 }
 
+/**
+ * gsl_time_system
+ * @RETURNS: Current system time in micro seconds
+ *
+ * Get the current system time in micro seconds.
+ * Subsequent calls to this function do not necessarily
+ * return growing values. In fact, a second call may return
+ * a value smaller than the first call under certainsystem
+ * conditions.
+ * This function is MT-safe and may be called from any thread.
+ */
+guint64
+gsl_time_system (void)
+{
+  struct timeval tv;
+  guint64 csys_time;
+  gint error;
+
+  error = gettimeofday (&tv, NULL);
+  if (error)
+    g_error ("gettimeofday() failed: %s", g_strerror (errno));
+  csys_time = tv.tv_sec;
+  csys_time = csys_time * 1000000 + tv.tv_usec;
+
+  return csys_time;
+}
+
+/**
+ * gsl_tick_stamp_last
+ * @RETURNS: Current tick stamp and system time in micro seconds
+ *
+ * Get the system time of the last GSL global tick stamp update.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslTickStampUpdate
+gsl_tick_stamp_last (void)
+{
+  GslTickStampUpdate ustamp;
+
+  GSL_SYNC_LOCK (&global_thread);
+  ustamp.tick_stamp = gsl_externvar_tick_stamp;
+  ustamp.system_time = tick_stamp_system_time;
+  GSL_SYNC_UNLOCK (&global_thread);
+
+  return ustamp;
+}
+
 void
 _gsl_tick_stamp_inc (void)
 {
   volatile guint64 newstamp;
   GslRing *ring;
+  guint64 systime;
 
   g_return_if_fail (global_tick_stamp_leaps > 0);
 
+  systime = gsl_time_system ();
   newstamp = gsl_externvar_tick_stamp + global_tick_stamp_leaps;
 
   GSL_SYNC_LOCK (&global_thread);
   gsl_externvar_tick_stamp = newstamp;
+  tick_stamp_system_time = systime;
   for (ring = awake_tdata_list; ring; )
     {
       ThreadData *tdata = ring->data;
@@ -1198,6 +1252,7 @@ static const GDebugKey gsl_static_debug_keys[] = {
   { "osc",	      GSL_MSG_OSC },
   { "engine",         GSL_MSG_ENGINE },
   { "jobs",           GSL_MSG_JOBS },
+  { "fjobs",          GSL_MSG_FJOBS },
   { "sched",          GSL_MSG_SCHED },
   { "master",         GSL_MSG_MASTER },
   { "slave",          GSL_MSG_SLAVE },
@@ -1215,6 +1270,7 @@ reporter_name (GslDebugFlags reporter)
     case GSL_MSG_OSC:		return "Oscillator";
     case GSL_MSG_ENGINE:	return "Engine";	/* Engine */
     case GSL_MSG_JOBS:		return "Jobs";		/* Engine */
+    case GSL_MSG_FJOBS:		return "FlowJobs";	/* Engine */
     case GSL_MSG_SCHED:		return "Sched";		/* Engine */
     case GSL_MSG_MASTER:	return "Master";	/* Engine */
     case GSL_MSG_SLAVE:		return "Slave";		/* Engine */
@@ -1517,7 +1573,7 @@ gsl_init (const GslConfigValue values[],
     4,				/* wave_chunk_big_pad */
     512,			/* dcache_block_size */
     1024 * 1024,		/* dcache_cache_memory */
-    57,				/* midi_kammer_note */
+    69,				/* midi_kammer_note */
     440,			/* kammer_freq */
   };
 

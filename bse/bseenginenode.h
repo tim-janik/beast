@@ -1,20 +1,19 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001, 2002 Tim Janik
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #ifndef __GSL_ENGINE_NODE_H__
 #define __GSL_ENGINE_NODE_H__
@@ -50,6 +49,7 @@ extern "C" {
 #define ENG_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_ENGINE, NULL)
 #define MAS_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_MASTER, NULL)
 #define JOB_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_JOBS, NULL)
+#define FJOB_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_FJOBS, NULL)
 #define SCHED_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_SCHED, NULL)
 
 
@@ -63,6 +63,8 @@ typedef enum {
   ENGINE_JOB_JCONNECT,
   ENGINE_JOB_IDISCONNECT,
   ENGINE_JOB_JDISCONNECT,
+  ENGINE_JOB_KILL_INPUTS,
+  ENGINE_JOB_KILL_OUTPUTS,
   ENGINE_JOB_SET_CONSUMER,
   ENGINE_JOB_UNSET_CONSUMER,
   ENGINE_JOB_ACCESS,
@@ -146,11 +148,17 @@ typedef struct
 {
   EngineNode *src_node;
   guint	      src_stream;	/* ostream of src_node */
+  /* valid if istream[].connected, setup by scheduler */
+  EngineNode *real_node;	/* set to NULL if !connected */
+  guint	      real_stream;	/* ostream of real_node */
 } EngineInput;
 typedef struct
 {
   EngineNode *src_node;
   guint	      src_stream;	/* ostream of src_node */
+  /* valid if < jstream[].n_connections, setup by scheduler */
+  EngineNode *real_node;
+  guint       real_stream;	/* ostream of real_node */
 } EngineJInput;
 typedef struct
 {
@@ -164,7 +172,7 @@ struct _EngineNode		/* fields sorted by order of processing access */
   GslRecMutex	 rec_mutex;	/* processing lock */
   guint64	 counter;	/* <= GSL_TICK_STAMP */
   EngineInput	*inputs;	/* [ENGINE_NODE_N_ISTREAMS()] */
-  EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()] */
+  EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */
   EngineOutput	*outputs;	/* [ENGINE_NODE_N_OSTREAMS()] */
 
   /* flow jobs */
@@ -186,8 +194,9 @@ struct _EngineNode		/* fields sorted by order of processing access */
   guint		 needs_reset : 1;	/* flagged at resumption */
 
   /* scheduler */
-  guint		 sched_tag : 1;
-  guint		 sched_router_tag : 1;
+  guint		 cleared_ostreams : 1;	/* whether ostream[].connected was cleared already */
+  guint		 sched_tag : 1;		/* whether this node is contained in the schedule */
+  guint		 sched_recurse_tag : 1;	/* recursion flag used during scheduling */
   guint		 sched_leaf_level;
   EngineNode	*toplevel_next;	/* master-consumer-list, FIXME: overkill, using a GslRing is good enough */
   GslRing	*output_nodes;	/* EngineNode* ring of nodes in ->outputs[] */

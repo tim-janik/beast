@@ -48,6 +48,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseconfig.h \
 	bseconstant.h \
 	bsecontainer.h \
+	bsecontextmerger.h \
 	bsedatapocket.h \
 	bsedefs.h \
 	bseeditablesample.h \
@@ -72,11 +73,9 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsemididevice-null.h \
 	bsemididevice-oss.h \
 	bsemidievent.h \
-	bsemidimodule.h \
 	bsemidinotifier.h \
 	bsemidireceiver.h \
 	bsemidisynth.h \
-	bsemidisynthinput.h \
 	bseobject.h \
 	bsepart.h \
 	bsepcminput.h \
@@ -107,8 +106,10 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsesuboport.h \
 	bsesubsynth.h \
 	bsesuper.h \
+	bsetrack.h \
 	bsetype.h \
 	bseutils.h \
+	bsemidivoice.h \
 	bsewave.h \
 	bsewaveosc.h \
 	bsewaverepo.h \
@@ -129,6 +130,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsecomwire.c \
 	bseconstant.c \
 	bsecontainer.c \
+	bsecontextmerger.c \
 	bsedatapocket.c \
 	bseeditablesample.c \
 	bseeffect.c \
@@ -151,11 +153,9 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsemididevice-null.c \
 	bsemididevice-oss.c \
 	bsemidievent.c \
-	bsemidimodule.c \
 	bsemidinotifier.c \
 	bsemidireceiver.c \
 	bsemidisynth.c \
-	bsemidisynthinput.c \
 	bseobject.c \
 	bsepart.c \
 	bsepcminput.c \
@@ -186,8 +186,10 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsesuboport.c \
 	bsesubsynth.c \
 	bsesuper.c \
+	bsetrack.c \
 	bsetype.c \
 	bseutils.c \
+	bsemidivoice.c \
 	bsewave.c \
 	bsewaveosc.c \
 	bsewaverepo.c \

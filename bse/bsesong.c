@@ -18,9 +18,12 @@
 #include	"bsesong.h"
 
 #include	"bseinstrument.h"
+#include	"bsetrack.h"
 #include	"bsepart.h"
 #include	"bsepattern.h"
 #include	"bsepatterngroup.h"
+#include	"bsecontextmerger.h"
+#include	"bsepcmoutput.h"
 #include	"bsesongthread.h"
 #include	"bseproject.h"
 #include	"bsestorage.h"
@@ -32,7 +35,6 @@
 enum
 {
   PARAM_0,
-  PARAM_N_VOICES,
   PARAM_VOLUME_f,
   PARAM_VOLUME_dB,
   PARAM_VOLUME_PERC,
@@ -75,9 +77,10 @@ static void      bse_song_store_after		(BseObject         *object,
 static GTokenType bse_song_restore              (BseObject         *object,
 						 BseStorage        *storage);
 static void	 bse_song_prepare		(BseSource	   *source);
+static void      bse_song_context_create        (BseSource         *source,
+						 guint              context_handle,
+						 GslTrans          *trans);
 static void	 bse_song_reset			(BseSource	   *source);
-static void	 song_set_n_voices		(BseSong	   *song,
-						 guint		    n_voices);
 
 
 /* --- variables --- */
@@ -127,19 +130,13 @@ bse_song_class_init (BseSongClass *class)
   object_class->destroy = bse_song_do_destroy;
   
   source_class->prepare = bse_song_prepare;
-  // source_class->calc_chunk = bse_song_calc_chunk;
+  source_class->context_create = bse_song_context_create;
   source_class->reset = bse_song_reset;
   
   container_class->add_item = bse_song_add_item;
   container_class->remove_item = bse_song_remove_item;
   container_class->forall_items = bse_song_forall_items;
   
-  bse_object_class_add_param (object_class, NULL,
-			      PARAM_N_VOICES,
-			      bse_param_spec_uint ("n_voices", "Max # of Voices", NULL,
-						   1, 256,
-						   16, 1,
-						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
 			      bse_param_spec_float ("volume_f", "Master [float]", NULL,
@@ -186,58 +183,61 @@ bse_song_class_init (BseSongClass *class)
 }
 
 static void
-bse_song_init (BseSong *song)
+bse_song_init (BseSong *self)
 {
-  BSE_OBJECT_UNSET_FLAGS (song, BSE_SNET_FLAG_USER_SYNTH);
-  BSE_SUPER (song)->auto_activate = TRUE;
-  song->bpm = BSE_DFL_SONG_BPM;
-  song->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
-  song->net.n_voices = 0;
+  BSE_OBJECT_UNSET_FLAGS (self, BSE_SNET_FLAG_USER_SYNTH);
+  BSE_SUPER (self)->auto_activate = TRUE;
+  self->bpm = BSE_DFL_SONG_BPM;
+  self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
-  song->instruments = NULL;
-  song->parts = NULL;
+  self->instruments = NULL;
+  self->parts = NULL;
+  self->tracks = NULL;
 
-  song_set_n_voices (song, 16);
+  /* context merger */
+  self->context_merger = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
+  BSE_OBJECT_SET_FLAGS (self->context_merger, BSE_ITEM_FLAG_STORAGE_IGNORE);
+
+  /* output */
+  self->output = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
+  BSE_OBJECT_SET_FLAGS (self->output, BSE_ITEM_FLAG_STORAGE_IGNORE);
+
+  /* context merger <-> output */
+  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
+			     self->context_merger, 0);
+  bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
+			     self->context_merger, 1);
 
   /* legacy */
-  song->patterns = NULL;
-  song->pattern_groups = NULL;
-  song->n_pgroups = 0;
-  song->pgroups = NULL;
+  self->patterns = NULL;
+  self->pattern_groups = NULL;
+  self->n_pgroups = 0;
+  self->pgroups = NULL;
 }
 
 static void
 bse_song_do_destroy (BseObject *object)
 {
-  BseSong *song = BSE_SONG (object);
-  BseContainer *container = BSE_CONTAINER (song);
-  
-  while (song->pattern_groups)
-    bse_container_remove_item (BSE_CONTAINER (song), song->pattern_groups->data);
-  song->n_pgroups = 0;
-  g_free (song->pgroups);
-  song->pgroups = NULL;
-  while (song->patterns)
-    bse_container_remove_item (BSE_CONTAINER (song), song->patterns->data);
-  while (song->parts)
-    bse_container_remove_item (BSE_CONTAINER (song), song->parts->data);
-  while (song->instruments)
-    bse_container_remove_item (BSE_CONTAINER (song), song->instruments->data);
+  BseSong *self = BSE_SONG (object);
 
-  song_set_n_voices (song, 0);
+  bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->context_merger));
+  self->context_merger = NULL;
+  bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->output));
+  self->output = NULL;
 
-  if (song->net.lmixer)
-    {
-      BseSongNet *net = &song->net;
-
-      bse_container_remove_item (container, BSE_ITEM (net->lmixer));
-      net->lmixer = NULL;
-      bse_container_remove_item (container, BSE_ITEM (net->rmixer));
-      net->rmixer = NULL;
-      bse_container_remove_item (container, BSE_ITEM (net->output));
-      net->output = NULL;
-    }
-  g_free (song->net.voices);
+  while (self->pattern_groups)
+    bse_container_remove_item (BSE_CONTAINER (self), self->pattern_groups->data);
+  self->n_pgroups = 0;
+  g_free (self->pgroups);
+  self->pgroups = NULL;
+  while (self->patterns)
+    bse_container_remove_item (BSE_CONTAINER (self), self->patterns->data);
+  while (self->parts)
+    bse_container_remove_item (BSE_CONTAINER (self), self->parts->data);
+  while (self->instruments)
+    bse_container_remove_item (BSE_CONTAINER (self), self->instruments->data);
+  while (self->tracks)
+    bse_container_remove_item (BSE_CONTAINER (self), self->tracks->data);
   
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
@@ -254,14 +254,6 @@ bse_song_set_property (BseSong     *song,
     {
       gfloat volume_factor;
       guint bpm;
-
-    case PARAM_N_VOICES:
-      /* we silently ignore this parameter during playing phase */
-      if (!BSE_OBJECT_IS_LOCKED (song))
-	{
-	  song_set_n_voices (song, g_value_get_uint (value));
-	}
-      break;
     case PARAM_VOLUME_f:
     case PARAM_VOLUME_dB:
     case PARAM_VOLUME_PERC:
@@ -305,9 +297,6 @@ bse_song_get_property (BseSong     *song,
 {
   switch (param_id)
     {
-    case PARAM_N_VOICES:
-      g_value_set_uint (value, song->net.n_voices);
-      break;
     case PARAM_VOLUME_f:
       g_value_set_float (value, song->volume_factor);
       break;
@@ -348,10 +337,15 @@ bse_song_add_item (BseContainer *container,
   
   song = BSE_SONG (container);
   
+  if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
+    bse_track_add_modules (BSE_TRACK (item), BSE_CONTAINER (song), song->context_merger);
+
   BSE_SEQUENCER_LOCK ();
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
     song->instruments = g_list_append (song->instruments, item);
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
+    song->tracks = g_list_append (song->tracks, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
     song->parts = g_list_append (song->parts, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
@@ -387,7 +381,18 @@ bse_song_forall_items (BseContainer	 *container,
       if (!func (item, data))
 	return;
     }
-  
+
+  list = song->tracks;
+  while (list)
+    {
+      BseItem *item;
+      
+      item = list->data;
+      list = list->next;
+      if (!func (item, data))
+	return;
+    }
+
   list = song->parts;
   while (list)
     {
@@ -436,6 +441,12 @@ bse_song_remove_item (BseContainer *container,
   
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
     list_p = &song->instruments;
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
+    {
+      g_assert (!BSE_SOURCE_PREPARED (song));
+      bse_track_remove_modules (BSE_TRACK (item), BSE_CONTAINER (song));
+      list_p = &song->tracks;
+    }
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
     list_p = &song->parts;
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
@@ -830,94 +841,6 @@ bse_song_restore (BseObject  *object,
 }
 
 static void
-song_set_n_voices (BseSong *song,
-		   guint    n_voices)
-{
-  BseContainer *container = BSE_CONTAINER (song);
-  BseSongNet *net = &song->net;
-  guint i;
-  
-  if (!net->lmixer)
-    {
-      /* initial setup */
-      net->lmixer = g_object_new (g_type_from_name ("BseMixer"), NULL);	// FIXME
-      BSE_OBJECT_SET_FLAGS (net->lmixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
-      bse_container_add_item (container, BSE_ITEM (net->lmixer));
-      g_object_unref (net->lmixer);
-
-      net->rmixer = g_object_new (g_type_from_name ("BseMixer"), NULL);	// FIXME
-      BSE_OBJECT_SET_FLAGS (net->rmixer, BSE_ITEM_FLAG_STORAGE_IGNORE);
-      bse_container_add_item (container, BSE_ITEM (net->rmixer));
-      g_object_unref (net->rmixer);
-
-      net->output = g_object_new (g_type_from_name ("BsePcmOutput"), NULL);	// FIXME
-      BSE_OBJECT_SET_FLAGS (net->output, BSE_ITEM_FLAG_STORAGE_IGNORE);
-      bse_container_add_item (container, BSE_ITEM (net->output));
-      g_object_unref (net->output);
-
-      bse_source_set_input (net->output, 0, net->lmixer, 0);
-      bse_source_set_input (net->output, 1, net->rmixer, 0);
-    }
-
-  for (i = n_voices; i < song->net.n_voices; i++)
-    {
-      BseItem *item;
-
-      item = BSE_ITEM (net->voices[i].constant);
-      bse_container_remove_item (container, item);
-
-      item = BSE_ITEM (net->voices[i].sub_synth);
-      bse_container_remove_item (container, item);
-    }
-
-  i = song->net.n_voices;
-  song->net.n_voices = n_voices;
-  net->voices = g_renew (BseSongVoice, net->voices, song->net.n_voices);
-
-  for (; i < song->net.n_voices; i++)
-    {
-      BseSource *source;
-
-      source = g_object_new (g_type_from_name ("BseConstant"),
-			     "value_1", 0.0,
-			     "value_2", 0.0,
-			     "value_3", 0.0,
-			     "value_4", 0.0,
-			     NULL);
-      BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
-      net->voices[i].constant = source;
-      bse_container_add_item (container, BSE_ITEM (source));
-      g_object_unref (source);
-      
-      source = g_object_new (g_type_from_name ("BseSubSynth"),
-			     "in_port_1", "frequency",
-			     "in_port_2", "gate",
-			     "in_port_3", "velocity",
-			     "in_port_4", "aftertouch",
-			     "out_port_1", "left-audio",
-			     "out_port_2", "right-audio",
-			     "out_port_3", "unused",
-			     "out_port_4", "synth_done",
-			     NULL);
-      BSE_OBJECT_SET_FLAGS (source, BSE_ITEM_FLAG_STORAGE_IGNORE);
-      net->voices[i].sub_synth = source;
-      bse_container_add_item (container, BSE_ITEM (source));
-      g_object_unref (source);
-
-      bse_source_set_input (net->voices[i].sub_synth, 0, net->voices[i].constant, 0);
-      bse_source_set_input (net->voices[i].sub_synth, 1, net->voices[i].constant, 1);
-      bse_source_set_input (net->voices[i].sub_synth, 2, net->voices[i].constant, 2);
-      bse_source_set_input (net->voices[i].sub_synth, 3, net->voices[i].constant, 3);
-
-      if (i < 4) // FIXME
-	{
-	  bse_source_set_input (net->lmixer, i, net->voices[i].sub_synth, 0);
-	  bse_source_set_input (net->rmixer, i, net->voices[i].sub_synth, 1);
-	}
-    }
-}
-
-static void
 bse_song_prepare (BseSource *source)
 {
   BseSong *song = BSE_SONG (source);
@@ -928,6 +851,23 @@ bse_song_prepare (BseSource *source)
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
   
   song->sequencer = bse_song_sequencer_setup (song);
+}
+
+static void
+bse_song_context_create (BseSource *source,
+			 guint      context_handle,
+			 GslTrans  *trans)
+{
+  BseSong *self = BSE_SONG (source);
+  BseSNet *snet = BSE_SNET (self);
+  GList *list;
+  
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
+
+  if (!bse_snet_context_is_branch (snet, context_handle))       /* catch recursion */
+    for (list = self->tracks; list; list = list->next)
+      bse_track_clone_voices (list->data, snet, context_handle, trans);
 }
 
 static void

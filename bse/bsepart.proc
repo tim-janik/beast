@@ -50,7 +50,7 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *part     = g_value_get_object (in_values++);
+  BsePart *self     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   guint    duration = g_value_get_uint (in_values++);
   gfloat   freq	    = g_value_get_float (in_values++);
@@ -58,11 +58,11 @@ BODY (BseProcedureClass *proc,
   BseErrorType error;
 
   /* check parameters */
-  if (!BSE_IS_PART (part))
+  if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  error = bse_part_insert_note (part, tick, duration, freq, velocity);
+  error = bse_part_insert_note (self, tick, duration, freq, velocity);
 
   /* set output parameters */
   g_value_set_enum (out_values++, error);
@@ -86,16 +86,16 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *part     = g_value_get_object (in_values++);
+  BsePart *self     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   gfloat   freq	    = g_value_get_float (in_values++);
 
   /* check parameters */
-  if (!BSE_IS_PART (part))
+  if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_part_delete_note (part, tick, freq);
+  bse_part_delete_note (self, tick, freq);
 
   return BSE_ERROR_NONE;
 }
@@ -107,7 +107,7 @@ METHOD (BsePart, find-notes) {
   IN	= bse_param_spec_uint ("tick", "Start Tick", NULL,
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
-			       1, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
+			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
 			      BSW_TYPE_ITER_PART_NOTE,
 			      BSE_PARAM_DEFAULT);
@@ -117,17 +117,46 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *part     = g_value_get_object (in_values++);
+  BsePart *self     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   guint    duration = g_value_get_uint (in_values++);
   BswIterPartNote *iter;
 
   /* check parameters */
-  if (!BSE_IS_PART (part))
+  if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_notes (part, tick, duration, 0, BSE_MAX_FREQUENCY);
+  iter = bse_part_list_notes (self, tick, duration, 0, BSE_MAX_FREQUENCY);
+
+  /* set output parameters */
+  g_value_set_boxed_take_ownership (out_values++, iter);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, find-selected-notes) {
+  HELP	= "List all notes within current selection.";
+  IN	= g_param_spec_object ("part", "Part", NULL,
+ 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
+			      BSW_TYPE_ITER_PART_NOTE,
+			      BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = g_value_get_object (in_values++);
+  BswIterPartNote *iter;
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  iter = bse_part_list_selected_notes (self);
 
   /* set output parameters */
   g_value_set_boxed_take_ownership (out_values++, iter);
@@ -156,18 +185,18 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *part     = g_value_get_object (in_values++);
+  BsePart *self     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   guint    duration = g_value_get_uint (in_values++);
   gfloat   freq     = g_value_get_float (in_values++);
   BswIterPartNote *iter;
 
   /* check parameters */
-  if (!BSE_IS_PART (part))
+  if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_notes (part, tick, duration, freq, freq);
+  iter = bse_part_list_notes (self, tick, duration, freq, freq);
 
   /* set output parameters */
   g_value_set_boxed_take_ownership (out_values++, iter);
@@ -195,12 +224,12 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *part     = g_value_get_object (in_values++);
+  BsePart *self     = g_value_get_object (in_values++);
   gfloat   freq1    = g_value_get_float (in_values++);
   gfloat   freq2    = g_value_get_float (in_values++);
 
   /* check parameters */
-  if (!BSE_IS_PART (part))
+  if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
@@ -228,17 +257,17 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *part     = g_value_get_object (in_values++);
+  BsePart *self     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   gfloat   freq     = g_value_get_float (in_values++);
   BswIterPartNote *iter;
 
   /* check parameters */
-  if (!BSE_IS_PART (part))
+  if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_get_note_at (part, tick, freq);
+  iter = bse_part_get_note_at (self, tick, freq);
 
   /* set output parameters */
   g_value_set_boxed_take_ownership (out_values++, iter);
@@ -258,10 +287,10 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *part     = g_value_get_object (in_values++);
+  BsePart *self     = g_value_get_object (in_values++);
 
   /* check parameters */
-  if (!BSE_IS_PART (part))
+  if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* it doesn't make much sense to support more than our standard note range covers */
@@ -282,14 +311,195 @@ BODY (BseProcedureClass *proc,
       GValue            *out_values)
 {
   /* extract parameter values */
-  BsePart *part     = g_value_get_object (in_values++);
+  BsePart *self     = g_value_get_object (in_values++);
 
   /* check parameters */
-  if (!BSE_IS_PART (part))
+  if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* it doesn't make much sense to support more than our standard note range covers */
   g_value_set_int (out_values++, BSE_MAX_OCTAVE);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, get-max-half-tone) {
+  HELP	= "Retrive the maximum half tone of the maximum octave supported.";
+  IN	= g_param_spec_object ("part", "Part", NULL,
+ 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  OUT	= bse_param_spec_uint ("half-tone", "Half Tone", NULL,
+			       0, 11, 0, 1, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* it doesn't make much sense to support more than our standard note range covers */
+  g_value_set_uint (out_values++, BSE_MAX_NOTE - BSE_NOTE_C (BSE_MAX_OCTAVE));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, get-min-half-tone) {
+  HELP	= "Retrive the minimum half tone of the minimum octave supported.";
+  IN	= g_param_spec_object ("part", "Part", NULL,
+ 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  OUT	= bse_param_spec_uint ("half-tone", "Half Tone", NULL,
+			       0, 11, 0, 1, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* it doesn't make much sense to support more than our standard note range covers */
+  g_value_set_uint (out_values++, BSE_MIN_NOTE + 12 - BSE_NOTE_C (BSE_MIN_OCTAVE + 1));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, get-selection-tick) {
+  HELP	= "Retrive the selection start tick.";
+  IN	= g_param_spec_object ("part", "Part", "Part",
+ 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  OUT	= bse_param_spec_uint ("tick", "Tick", "Selection Tick",
+			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  g_value_set_uint (out_values++, self->selection_tick);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, get-selection-duration) {
+  HELP	= "Retrive the selection duration.";
+  IN	= g_param_spec_object ("part", "Part", "Part",
+ 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  OUT	= bse_param_spec_uint ("duration", "Duration", "Selection Duration",
+			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  g_value_set_uint (out_values++, self->selection_bound - self->selection_tick);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, get-selection-min-freq) {
+  HELP	= "Retrive the selection minimum frequency.";
+  IN	= g_param_spec_object ("part", "Part", "Part",
+ 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  OUT   = bse_param_spec_float ("freq", "Frequency", "Minimum Selection Frequency",
+				0, BSE_MAX_FREQUENCY,
+				BSE_KAMMER_FREQ, 10.0,
+				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  g_value_set_float (out_values++, self->selection_min_freq);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, get-selection-max-freq) {
+  HELP	= "Retrive the selection maximum frequency.";
+  IN	= g_param_spec_object ("part", "Part", "Part",
+ 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  OUT   = bse_param_spec_float ("freq", "Frequency", "Maximum Selection Frequency",
+				0, BSE_MAX_FREQUENCY,
+				BSE_KAMMER_FREQ, 10.0,
+				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  g_value_set_float (out_values++, self->selection_max_freq);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, set-selection) {
+  HELP	= "Set the selection rectangle.";
+  IN	= g_param_spec_object ("part", "Part", "Part",
+ 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_uint ("tick", "Tick", "Selection Tick",
+			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_uint ("duration", "Duration", "Selection Duration",
+			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_float ("min_freq", "Frequency", "Minimum Selection Frequency",
+				0, BSE_MAX_FREQUENCY,
+				BSE_KAMMER_FREQ, 10.0,
+				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_float ("max_freq", "Frequency", "Maximum Selection Frequency",
+				0, BSE_MAX_FREQUENCY,
+				BSE_KAMMER_FREQ, 10.0,
+				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self   = g_value_get_object (in_values++);
+  guint tick      = g_value_get_uint (in_values++);
+  guint duration  = g_value_get_uint (in_values++);
+  gfloat min_freq = g_value_get_float (in_values++);
+  gfloat max_freq = g_value_get_float (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  bse_part_set_selection (self, tick, duration, min_freq, max_freq);
 
   return BSE_ERROR_NONE;
 }

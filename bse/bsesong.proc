@@ -21,6 +21,7 @@
 #include        <bse/bsesong.h>
 #include        <bse/bsepart.h>
 #include        <bse/bseinstrument.h>
+#include        <bse/bsetrack.h>
 
 AUTHOR  = "Tim Janik <timj@gtk.org>";
 CRIGHTS = "Tim Janik";
@@ -134,4 +135,60 @@ METHOD (BseSong, remove-instrument) {
   bse_container_remove_item (BSE_CONTAINER (song), BSE_ITEM (instrument));
 
   return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, create-track) {
+  HELP  = "Create a new Track for a Song";
+  IN    = g_param_spec_object ("song", "Song", NULL,
+                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_object ("track", "Track", NULL,
+                               BSE_TYPE_TRACK, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self = g_value_get_object (in_values++);
+  BseTrack *track;
+
+  /* check parameters */
+  if (!BSE_IS_SONG (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  track = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
+
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (track));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, remove-track) {
+  HELP  = "Delete a Track from a Song";
+  IN    = g_param_spec_object ("song", "Song", NULL,
+                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_object ("track", "Track", NULL,
+                               BSE_TYPE_TRACK, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self   = g_value_get_object (in_values++);
+  BseTrack *track = g_value_get_object (in_values++);
+  BseErrorType error = BSE_ERROR_NONE;
+
+  /* check parameters */
+  if (!BSE_IS_SONG (self) || !BSE_IS_TRACK (track) ||
+      BSE_ITEM (track)->parent != BSE_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (BSE_SOURCE_PREPARED (self))
+    error = BSE_ERROR_SOURCE_BUSY;
+  else
+    bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (track));
+
+  return error;
 }

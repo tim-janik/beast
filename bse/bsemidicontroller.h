@@ -20,6 +20,8 @@
 #define __BSE_MIDI_ICONTROLLER_H__
 
 #include <bse/bsesource.h>
+#include <bse/bsemidievent.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,11 +44,8 @@ struct _BseMidiIController
 {
   BseSource          parent_object;
 
-  guint		     midi_channel_id;
-  BseMidiControlType controls[4];
-  
-  /* PREPARED */
-  GslModule   *midi_input_module;
+  guint		     midi_channel;
+  BseMidiSignalType  controls[4];
 };
 struct _BseMidiIControllerClass
 {

@@ -184,6 +184,7 @@ void		bse_object_store		(BseObject	*object,
 GTokenType	bse_object_restore		(BseObject	*object,
 						 BseStorage	*storage);
 void		bse_object_debug_leaks		(void);
+const gchar*	bse_object_debug_name		(gpointer	 object);
 
 
 /* --- implementation details --- */

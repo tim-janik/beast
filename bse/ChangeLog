@@ -1,3 +1,144 @@
+Mon Jul 15 05:07:37 2002  Tim Janik  <timj@gtk.org>
+
+	* bsecontextmerger.[hc]: new internal module which merges signal
+	outputs of multiple module contexts.
+
+	* bsemidimodule.[hc]:
+	* bsemidisynthinput.[hc]: remove old midi voice implementation modules.
+
+	* bsetrack.[hc]: first start at implementing tracks for songs, which
+	arrange song parts.
+
+	* bsemidivoice.[hc]: internal wrapper objects for midi receiver modules.
+
+	* bsecontainer.[hc]: added class method to list children for context
+	creation propagation (overriden by BseSNet context branch
+	implementation).
+
+	* bseenums.[hc]: remove MIDI related enums.
+
+	* bseglobals.[hc]:
+	* gslcommon.[hc] (gsl_init):
+	fix MIDI note number for kammer note.
+
+	* bseglue.[hc]: support boxed->GslGlueSequence conversions. fix up
+	record and sequence usage.
+
+	* *midi*.[hc]: remove old BseMidiDecoder code.
+
+	* bsemidievent.[hc]: remove old MIDI channel/note/decoder implementations.
+	use float values for MIDI event fields.
+	add event constructors, remove global MIDI notifier hook.
+	add MIDI_SIGNAL enum and default values for the various control
+	signals supported per midi channel.
+
+	* bsemidiicontroller.[hc]: adaptions to work with the new MIDI_SIGNAL
+	enum and MidiReceiver.
+
+	* bsemidinotifier.[hc]: adaptions to work with the new MidiREceiver.
+
+	* bsemidireceiver.[hc]: actually deploy the new midi receiver
+	implementation. added event processing implementation, support float
+	values for midi event fields.
+	(bse_midi_receiver_push_data): translate system time to engine ticks
+	here. process newly enqueued events (this might need to change).
+	add API to push and process event structures.
+	implement midi control value module.
+	reimplement midi voice and switch modules, make use of the engine's
+	new virtual module implementation.
+	implement midi notifier hooks per midi receiver.
+	support continuous midi controls (convert LSB and MSB part to float).
+	support "all sound off" and "all notes off" control triggers, abuse
+	"local control switch" for debugging output of active voices.
+	support sustain pedal for active voices.
+	move BseMidiEvent structure back into bsemidievent.[hc].
+
+	* bsemidisynth.[hc]: implement multiple midi voices via branch
+	contexts. got rid of the maximum_voices=4 limitation. this also
+	requires midi voice synth networks to properly put out the
+	"done" signal to figure reusable voices. get rid of "clicks"
+	at note boundaries when reusing voices by means of the engine's
+	reset() method for modules.
+
+	* bseobject.[hc] (bse_object_debug_name): debugging convenience
+	function which describes (partly invalid) object references.
+
+	* bsepart.[hcp]*: support selection rectangle.
+
+	* bseprocedure.proc: add convenience procedure to convert notes into
+	frequencies.
+
+	* bseserver.[hcp]*: remove MidiDecoder code, properly support
+	BseMidiReceiver.
+
+	* bsesnet.[hc]: added bse_snet_context_clone_branch() and
+	bse_snet_context_is_branch() to support context branches for
+	selected modules within a synthesis network.
+
+	* bsesong.[hc]: implement voices via MidiReceiver modules
+	and context branches.
+	* bsesong.proc: add procs for track addition/removal.
+
+	* bsesongthread.[hc]: implement playback of part notes via
+	midi note on/off events. fetch part via BseTracks.
+
+	* bsesource.[hc]: added convenience macro bse_source_must_set_input()
+	fo rinternal module connections.
+	support setting of context data for sources with 0 input and output
+	channels. to be used by BseSNet solely (for context branches).
+	bse_source_collect_inputs_recursive() traversal function to construct
+	a list of modules that form inputs of a given modules.
+
+	* bsesubsynth.[hc]: pass on MidiReceiver per context to custom synth
+	networks.
+
+	* bswcommon.[hc]: support iterator->GslGlueSequence conversion.
+
+	* gslcommon.[hc]: 
+	add flow job debug key.
+	(gsl_time_system): retrive system time in micro seconds.
+	(gsl_tick_stamp_last): get the last tick stamp update together with
+	the system time of that update.
+
+	* gslgluecodec.c:
+	* gslgluesignal.c:
+	* gslglue.[hc]: don't fix the element type of sequences.
+	ref-count records (should do the same at least for sequences).
+	use sequences for compound signal/procedure arguments.
+	support field names in record implementation (should use quarks
+	for efficiency).
+
+	* gslopnode.h:
+	* gslengine.[hc]:
+	* gslopmaster.[hc]:
+	* gslopschedule.[hc]:
+	* gsloputils.[hc]: change GSL Engine license to GPL.
+
+	* gslengine.[hc]: more documentation. make/flag thread-safe functions.
+	make garbage collection explicit.
+	(gsl_module_new_virtual): really implement cirtual modules.
+	(gsl_engine_dispatch): garbag collect here.
+	(gsl_engine_tick_stamp_from_systime): translate system time to engine
+	tick stamps, based on the last tick stamp update.
+
+	* gslopnode.h:
+	* gslopmaster.[hc]: update output stream connected flags during within
+	scheduler.
+	clenup pending flow jobs when discarding engine modules.
+	reimplement resumption implementation.
+	fixup flow job implementation.
+	implement stream virtualization for virtual modules.
+	implement module suspension.
+
+	* gslopnode.h:
+	* gslopschedule.[hc]:
+	support scheduling virtual modules and ouput stream connected flag
+	updates.
+
+	* gsloputil.[hc]: implement proper flow job and garbage collection.
+
+	* gsl-mplan.txt: document virtual modules.
+
 Wed Jul  3 05:34:10 2002  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.[hc]: new MIDI event handling core which creates

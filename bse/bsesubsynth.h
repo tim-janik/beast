@@ -39,15 +39,15 @@ extern "C" {
 #define BSE_SUB_SYNTH_N_IOPORTS (8)
 
 /* --- BseSubSynth source --- */
-typedef struct _BseSubSynth      BseSubSynth;
-typedef struct _BseSubSynthClass BseSubSynthClass;
 struct _BseSubSynth
 {
-  BseSource       parent_object;
+  BseSource        parent_object;
 
-  BseSNet	*snet;
-  gchar		*input_ports[BSE_SUB_SYNTH_N_IOPORTS];
-  gchar		*output_ports[BSE_SUB_SYNTH_N_IOPORTS];
+  BseSNet	  *snet;
+  gchar		  *input_ports[BSE_SUB_SYNTH_N_IOPORTS];
+  gchar		  *output_ports[BSE_SUB_SYNTH_N_IOPORTS];
+  BseMidiReceiver *midi_receiver;
+  guint            midi_channel;
 };
 struct _BseSubSynthClass
 {
@@ -56,8 +56,9 @@ struct _BseSubSynthClass
 
 
 /* --- prototypes --- */
-void	bse_sub_synth_set_snet (BseSubSynth	*sub_synth,
-				BseSNet		*snet);
+void    bse_sub_synth_set_midi_receiver  (BseSubSynth     *self,
+					  BseMidiReceiver *midi_receiver,
+					  guint            midi_channel);
 
 
 #ifdef __cplusplus

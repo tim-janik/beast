@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bseserver.h: Global BSE singleton server
  */
 #ifndef __BSE_SERVER_H__
 #define __BSE_SERVER_H__
@@ -56,11 +54,8 @@ struct _BseServer
   GslModule       *pcm_imodule;
   GslModule       *pcm_omodule;
   guint		   dev_use_count;
-  guint		   midi_ref_count;
   BseMidiDevice	  *midi_device;
-  BseMidiDecoder  *midi_decoder;
   BseMidiReceiver *midi_receiver;
-  GSList	  *midi_modules;
 
   GSList	  *watch_list;
 };

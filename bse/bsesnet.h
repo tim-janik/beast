@@ -67,9 +67,9 @@ struct _BseSNet
   GSList	*oport_names;
   gpointer	 port_array;	/* of type BseSNetPort* */
 
-  guint		 port_unregistered_id;
+  GSList	*tmp_context_children;
 
-  GSList	*context_data;
+  guint		 port_unregistered_id;
 
   guint		 cid_counter;
   guint		 n_cids;
@@ -86,7 +86,15 @@ guint		bse_snet_create_context		(BseSNet	 *snet,
 						 BseMidiReceiver *midi_receiver,
 						 guint		  midi_channel,
 						 GslTrans	 *trans);
-BseMidiReceiver*bse_sent_get_midi_receiver	(BseSNet	 *sent,
+guint		bse_snet_context_clone_branch	(BseSNet         *self,
+						 guint            context,
+						 BseSource       *context_merger,
+						 BseMidiReceiver *midi_receiver,
+						 guint            midi_channel,
+						 GslTrans        *trans);
+gboolean	bse_snet_context_is_branch	(BseSNet	 *self,
+						 guint		  context_id);
+BseMidiReceiver*bse_snet_get_midi_receiver	(BseSNet	 *snet,
 						 guint		  context_handle,
 						 guint		 *midi_channel);
 const gchar*	bse_snet_iport_name_register	(BseSNet	 *snet,

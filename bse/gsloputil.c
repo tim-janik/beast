@@ -1,20 +1,19 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001, 2002 Tim Janik
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "gsloputil.h"
 
@@ -61,7 +60,8 @@ free_node (EngineNode *node)
   g_return_if_fail (node->output_nodes == NULL);
   g_return_if_fail (node->integrated == FALSE);
   g_return_if_fail (node->sched_tag == FALSE);
-  g_return_if_fail (node->sched_router_tag == FALSE);
+  g_return_if_fail (node->sched_recurse_tag == FALSE);
+  g_return_if_fail (node->flow_jobs == NULL && node->fjob_first == NULL);
   
   gsl_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
@@ -142,8 +142,8 @@ free_flow_job (EngineFlowJob *fjob)
     }
 }
 
-void
-_engine_free_trans (GslTrans *trans)
+static void
+free_trans (GslTrans *trans)
 {
   GslJob *job;
   
@@ -222,7 +222,7 @@ _engine_mnl_reorder (EngineNode *node)
    * are agglomerated at the head.
    */
   sibling = node->mnl_prev ? node->mnl_prev : node->mnl_next;
-  if (sibling && GSL_MNL_HEAD_NODE (node) != GSL_MNL_HEAD_NODE (sibling))
+  if (sibling && GSL_MNL_UNSCHEDULED_FLOW_NODE (node) != GSL_MNL_UNSCHEDULED_FLOW_NODE (sibling))
     {
       /* remove */
       if (node->mnl_prev)
@@ -233,7 +233,7 @@ _engine_mnl_reorder (EngineNode *node)
 	node->mnl_next->mnl_prev = node->mnl_prev;
       else
 	master_node_list_tail = node->mnl_prev;
-      if (GSL_MNL_HEAD_NODE (node))	/* move towards head */
+      if (GSL_MNL_UNSCHEDULED_FLOW_NODE (node))	/* move towards head */
 	{
 	  /* prepend to non-NULL list */
 	  master_node_list_head->mnl_prev = node;
@@ -440,7 +440,7 @@ _engine_enqueue_trans (GslTrans *trans)
     cqueue_trans_pending_head = trans;
   cqueue_trans_pending_tail = trans;
   GSL_SPIN_UNLOCK (&cqueue_trans);
-  gsl_cond_signal (&cqueue_trans_cond);
+  gsl_cond_broadcast (&cqueue_trans_cond);
 }
 
 void
@@ -466,13 +466,29 @@ _engine_job_pending (void)
   return pending;
 }
 
-GslJob*
-_engine_pop_job (void)	/* (glong max_useconds) */
+void
+_engine_free_trans (GslTrans *trans)
 {
-  /* clean up if necessary and try fetching new jobs */
-  if (!cqueue_trans_job)
+  g_return_if_fail (trans != NULL);
+  g_return_if_fail (trans->comitted == FALSE);
+  if (trans->jobs_tail)
+    g_return_if_fail (trans->jobs_tail->next == NULL);  /* paranoid */
+  g_return_if_fail (trans->cqt_next == NULL);
+
+  GSL_SPIN_LOCK (&cqueue_trans);
+  trans->cqt_next = cqueue_trans_trash;
+  cqueue_trans_trash = trans;
+  GSL_SPIN_UNLOCK (&cqueue_trans);
+}
+
+GslJob*
+_engine_pop_job (void)
+{
+  /* clean up if necessary and try fetching new jobs
+   */
+  if (!cqueue_trans_job)	/* no transaction job in communication queue */
     {
-      if (cqueue_trans_active_head)
+      if (cqueue_trans_active_head)	/* currently processing transaction */
 	{
 	  GSL_SPIN_LOCK (&cqueue_trans);
 	  /* get rid of processed transaction and
@@ -487,9 +503,9 @@ _engine_pop_job (void)	/* (glong max_useconds) */
 	  cqueue_trans_pending_head = NULL;
 	  cqueue_trans_pending_tail = NULL;
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
-	  gsl_cond_signal (&cqueue_trans_cond);
+	  gsl_cond_broadcast (&cqueue_trans_cond);
 	}
-      else
+      else	/* not currently processing a transaction */
 	{
 	  GSL_SPIN_LOCK (&cqueue_trans);
 	  /* fetch new transaction */
@@ -511,23 +527,7 @@ _engine_pop_job (void)	/* (glong max_useconds) */
       return job;
     }
   
-#if 0
-  /* wait until jobs are present */
-  if (max_useconds != 0)
-    {
-      GSL_SPIN_LOCK (&cqueue_trans);
-      if (!cqueue_trans_pending_head)
-	gsl_cond_wait_timed (&cqueue_trans_cond,
-			     &cqueue_trans,
-			     max_useconds);
-      GSL_SPIN_UNLOCK (&cqueue_trans);
-      
-      /* there may be jobs now, start from scratch */
-      return op_com_pop_job_timed (max_useconds < 0 ? -1 : 0);
-    }
-#endif
-  
-  /* time expired, no jobs... */
+  /* no pending jobs... */
   return NULL;
 }
 
@@ -537,7 +537,7 @@ _engine_pop_job (void)	/* (glong max_useconds) */
  * gsl_engine_garbage_collect
  *
  * GSL Engine user thread function. Collects processed jobs
- * and transactions from the engine and frees them, this
+ * and transactions from the engine and frees them. This
  * involves callback invocation of GslFreeFunc() functions,
  * e.g. from gsl_job_access() or gsl_flow_job_access()
  * jobs.
@@ -561,28 +561,35 @@ gsl_engine_garbage_collect (void)
   while (trans)
     {
       GslTrans *t = trans;
-
+      
       trans = t->cqt_next;
       t->cqt_next = NULL;
-      t->jobs_tail->next = NULL;
+      if (t->jobs_tail)
+	t->jobs_tail->next = NULL;
       t->comitted = FALSE;
-      _engine_free_trans (t);
+      free_trans (t);
     }
 
   while (fjobs)
     {
       EngineFlowJob *j = fjobs;
-
+      
       fjobs = j->any.next;
       j->any.next = NULL;
       free_flow_job (j);
     }
 }
 
+gboolean
+gsl_engine_has_garbage (void)
+{
+  return cqueue_trans_trash || cqueue_trash_fjobs;
+}
+
 
 /* --- node processing queue --- */
 static GslMutex          pqueue_mutex = { 0, };
-static EngineSchedule       *pqueue_schedule = NULL;
+static EngineSchedule   *pqueue_schedule = NULL;
 static guint             pqueue_n_nodes = 0;
 static guint             pqueue_n_cycles = 0;
 static GslCond		 pqueue_done_cond = { 0, };
@@ -658,6 +665,32 @@ _engine_pop_unprocessed_node (void)
   return node;
 }
 
+static inline void
+collect_trash_flow_jobs_L (EngineNode *node)
+{
+  if_reject (node->fjob_first)
+    {
+      /*move into flow jobs trash queue */
+      node->fjob_last->any.next = pqueue_trash_fjobs_first;
+      pqueue_trash_fjobs_first = node->fjob_first;
+      if (!pqueue_trash_fjobs_last)
+	pqueue_trash_fjobs_last = node->fjob_last;
+      node->fjob_first = NULL;
+      node->fjob_last = NULL;
+    }
+}
+
+void
+_engine_node_collect_flow_jobs (EngineNode *node)
+{
+  g_return_if_fail (node != NULL);
+  g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (node));
+
+  GSL_SPIN_LOCK (&pqueue_mutex);
+  collect_trash_flow_jobs_L (node);
+  GSL_SPIN_UNLOCK (&pqueue_mutex);
+}
+
 void
 _engine_push_processed_node (EngineNode *node)
 {
@@ -667,15 +700,7 @@ _engine_push_processed_node (EngineNode *node)
   
   GSL_SPIN_LOCK (&pqueue_mutex);
   g_assert (pqueue_n_nodes > 0);        /* paranoid */
-  if (node->fjob_first)	/* collect trash flow jobs */
-    {
-      node->fjob_last->any.next = pqueue_trash_fjobs_first;
-      pqueue_trash_fjobs_first = node->fjob_first;
-      if (!pqueue_trash_fjobs_last)
-	pqueue_trash_fjobs_last = node->fjob_last;
-      node->fjob_first = NULL;
-      node->fjob_last = NULL;
-    }
+  collect_trash_flow_jobs_L (node);
   pqueue_n_nodes -= 1;
   ENGINE_NODE_UNLOCK (node);
   if (!pqueue_n_nodes && !pqueue_n_cycles && GSL_SCHEDULE_NONPOPABLE (pqueue_schedule))

@@ -69,7 +69,7 @@ static GslGlueValue     encode_client_msg                   (GslGlueContext *con
 static void		gstring_add_signal		    (GString	    *gstring,
 							     const gchar    *signal,
 							     gulong          proxy,
-							     GslGlueRec     *rec,
+							     GslGlueSeq     *args,
 							     gboolean        connected);
 
 
@@ -409,7 +409,6 @@ g_string_add_param (GString      *gstring,
   g_string_append_c (gstring, ' ');
   switch (param->glue_type)
     {
-      guint i;
     case GSL_GLUE_TYPE_NONE:
       break;
     case GSL_GLUE_TYPE_BOOL:
@@ -438,12 +437,16 @@ g_string_add_param (GString      *gstring,
       g_string_add_escstr (gstring, param->proxy.iface_name);
       break;
     case GSL_GLUE_TYPE_SEQ:
+#if 0
       g_string_add_param (gstring, param->seq.elements);
+#endif
       break;
     case GSL_GLUE_TYPE_REC:
+#if 0
       g_string_printfa (gstring, "%u ", param->rec.n_fields);
       for (i = 0; i < param->rec.n_fields; i++)
         g_string_add_param (gstring, param->rec.fields + i);
+#endif
       break;
     }
   g_string_append_c (gstring, ')');
@@ -545,11 +548,14 @@ parse_param (GScanner     *scanner,
       param->proxy.iface_name = g_strdup (scanner->value.v_string);
       break;
     case GSL_GLUE_TYPE_SEQ:
+#if 0
       param->seq.elements = g_new0 (GslGlueParam, 1);
       parse_param (scanner, param->seq.elements, FALSE);
       checkok_or_return (scanner, FALSE);
+#endif
       break;
     case GSL_GLUE_TYPE_REC:
+#if 0
       parse_or_return (scanner, G_TOKEN_INT, FALSE);
       param->rec.n_fields = scanner->value.v_int;
       if (param->rec.n_fields < 1)
@@ -564,6 +570,7 @@ parse_param (GScanner     *scanner,
           parse_param (scanner, param->rec.fields + i, TRUE);
           checkok_or_return (scanner, FALSE);
         }
+#endif
       break;
     }
   parse_or_return (scanner, ')', FALSE);
@@ -604,7 +611,9 @@ g_string_add_value (GString     *gstring,
     case GSL_GLUE_TYPE_SEQ:
       if (value.value.v_seq)
         {
+#if 0
           g_string_printfa (gstring, "%u ", value.value.v_seq->element_type);
+#endif
           for (i = 0; i < value.value.v_seq->n_elements; i++)
             g_string_add_value (gstring, value.value.v_seq->elements[i]);
         }
@@ -612,7 +621,10 @@ g_string_add_value (GString     *gstring,
     case GSL_GLUE_TYPE_REC:
       if (value.value.v_rec)
         for (i = 0; i < value.value.v_rec->n_fields; i++)
-          g_string_add_value (gstring, value.value.v_rec->fields[i]);
+	  {
+	    g_string_add_escstr (gstring, value.value.v_rec->field_names[i]);
+	    g_string_add_value (gstring, value.value.v_rec->fields[i]);
+	  }
       break;
     }
   g_string_append_c (gstring, ')');
@@ -675,6 +687,7 @@ parse_value (GScanner     *scanner,
       value->value.v_proxy = scanner->value.v_int;
       break;
     case GSL_GLUE_TYPE_SEQ:
+#if 0
       parse_or_return (scanner, G_TOKEN_INT, FALSE);
       i = scanner->value.v_int;
       if (i < GSL_GLUE_TYPE_FIRST || i > GSL_GLUE_TYPE_LAST)
@@ -682,19 +695,22 @@ parse_value (GScanner     *scanner,
           scanner_error (scanner, "invalid glue type id `%u' for value sequence", i);
           return FALSE;
         }
-      value->value.v_seq = gsl_glue_seq (i);
+#endif
+      value->value.v_seq = gsl_glue_seq ();
       while (g_scanner_peek_next_token (scanner) != ')')
         {
           GslGlueValue v = { 0, };
           
           parse_value (scanner, &v);
           checkok_or_return (scanner, FALSE);
+#if 0
           if (v.glue_type != value->value.v_seq->element_type)
             {
               scanner_error (scanner, "invalid value type `%u' for sequence value", v.glue_type);
               gsl_glue_reset_value (&v);
               return FALSE;
             }
+#endif
           gsl_glue_seq_append (value->value.v_seq, v);
           gsl_glue_reset_value (&v);
         }
@@ -704,11 +720,18 @@ parse_value (GScanner     *scanner,
       while (g_scanner_peek_next_token (scanner) != ')')
         {
           GslGlueValue v = { 0, };
-          
+          gchar *name;
+
+	  parse_or_return (scanner, G_TOKEN_STRING, FALSE);
+	  name = g_strdup (scanner->value.v_string);
           parse_value (scanner, &v);
-          checkok_or_return (scanner, FALSE);
-          gsl_glue_rec_append (value->value.v_rec, v);
-          gsl_glue_reset_value (&v);
+	  if (!checkok (scanner))
+	    {
+	      g_free (name);
+	      return FALSE;
+	    }
+	  gsl_glue_rec_take (value->value.v_rec, name, &v);
+	  g_free (name);
         }
       break;
     }
@@ -1242,12 +1265,12 @@ decode_exec_proc (GslGlueCodec *codec,
   parse_or_return (scanner, G_TOKEN_STRING, FALSE);
   pname = g_strdup (scanner->value.v_string);
   parse_value (scanner, &value);
-  if (checkok (scanner) && value.glue_type == GSL_GLUE_TYPE_REC)
+  if (checkok (scanner) && value.glue_type == GSL_GLUE_TYPE_SEQ)
     {
       GslGlueCall call = { 0, };
       
       call.proc_name = pname;
-      call.params = value.value.v_rec;
+      call.params = value.value.v_seq;
       gsl_glue_call_exec (&call);
       gsl_glue_reset_value (&value);
       value = call.retval;      /* relocate */
@@ -1273,8 +1296,8 @@ encode_exec_proc (GslGlueContext *context,
   g_string_printfa (gstring, "(%u ", GSL_GLUE_CODEC_EXEC);
   g_string_add_escstr (gstring, call->proc_name);
   g_string_append_c (gstring, ' ');
-  value.glue_type = GSL_GLUE_TYPE_REC;
-  value.value.v_rec = call->params;
+  value.glue_type = GSL_GLUE_TYPE_SEQ;
+  value.value.v_seq = call->params;
   g_string_add_value (gstring, value);
   memset (&value, 0, sizeof (value));
   g_string_append_c (gstring, ')');
@@ -1313,14 +1336,14 @@ codec_signal_destroy (gpointer data)
   if (sig->id)
     {
       GString *gstring = g_string_new (NULL);
-      GslGlueRec *rec = gsl_glue_rec ();
+      GslGlueSeq *args = gsl_glue_seq ();
       GslGlueValue value = { 0, };
       
       value = gsl_glue_value_proxy (sig->proxy);
-      gsl_glue_rec_take_append (rec, &value);
+      gsl_glue_seq_take_append (args, &value);
       gsl_glue_reset_value (&value);
-      gstring_add_signal (gstring, sig->signal, sig->proxy, rec, 0);
-      gsl_glue_free_rec (rec);
+      gstring_add_signal (gstring, sig->signal, sig->proxy, args, 0);
+      gsl_glue_free_seq (args);
       
       codec->send_event (codec, codec->user_data, gstring->str);
       
@@ -1335,7 +1358,7 @@ codec_signal_destroy (gpointer data)
 static void
 codec_handle_signal (gpointer     sig_data,
 		     const gchar *signal,
-		     GslGlueRec  *args)
+		     GslGlueSeq  *args)
 {
   CodecSignal *sig = sig_data;
   GslGlueCodec *codec = sig->codec;
@@ -1577,7 +1600,7 @@ static void
 gstring_add_signal (GString     *gstring,
 		    const gchar *signal,
 		    gulong       proxy,
-		    GslGlueRec  *rec,
+		    GslGlueSeq  *args,
 		    gboolean     connected)
 {
   GslGlueValue value = { 0, };
@@ -1585,8 +1608,8 @@ gstring_add_signal (GString     *gstring,
   g_string_printfa (gstring, "(%u ", GSL_GLUE_CODEC_EVENT_SIGNAL);
   g_string_add_escstr (gstring, signal);
   g_string_printfa (gstring, " %lu ", proxy);
-  value.glue_type = GSL_GLUE_TYPE_REC;
-  value.value.v_rec = rec;
+  value.glue_type = GSL_GLUE_TYPE_SEQ;
+  value.value.v_seq = args;
   g_string_add_value (gstring, value);
   value.glue_type = 0;
   g_string_printfa (gstring, " %u)", connected);
@@ -1596,7 +1619,7 @@ static gboolean       /* returns whether there was an event */
 decode_event (GslGlueContext *context,
 	      gchar         **signal,
 	      gulong	     *proxy_p,
-	      GslGlueRec    **args,
+	      GslGlueSeq    **args,
 	      gboolean       *connected)
 {
   GScanner *scanner = ((CodecContext*) context)->scanner;
@@ -1614,15 +1637,15 @@ decode_event (GslGlueContext *context,
   proxy = scanner->value.v_int;
   parse_value (scanner, &value);
   checkok_or_return (scanner, TRUE);
-  if (value.glue_type != GSL_GLUE_TYPE_REC)
+  if (value.glue_type != GSL_GLUE_TYPE_SEQ)
     {
       gsl_glue_reset_value (&value);
       return TRUE;
     }
   else
     {
-      *args = value.value.v_rec;
-      value.value.v_rec = NULL;
+      *args = value.value.v_seq;
+      value.value.v_seq = NULL;
       gsl_glue_reset_value (&value);
     }
   parse_or_return (scanner, G_TOKEN_INT, TRUE);
@@ -1640,7 +1663,7 @@ gsl_glue_codec_enqueue_event (GslGlueContext *context,
   GScanner *scanner;
   gchar *signal = NULL;
   gulong proxy = 0;
-  GslGlueRec *args = NULL;
+  GslGlueSeq *args = NULL;
   gboolean seen_event, connected = FALSE;
 
   g_return_val_if_fail (context != NULL, FALSE);
@@ -1654,7 +1677,7 @@ gsl_glue_codec_enqueue_event (GslGlueContext *context,
     gsl_glue_enqueue_signal_event (signal, args, !connected);
   g_free (signal);
   if (args)
-    gsl_glue_free_rec (args);
+    gsl_glue_free_seq (args);
 
   return seen_event;
 }

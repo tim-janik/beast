@@ -69,6 +69,7 @@ static void	    bse_container_context_dismiss	(BseSource		*source,
 							 guint			 context_handle,
 							 GslTrans		*trans);
 static void         bse_container_reset                 (BseSource              *source);
+static GSList*	    container_context_children		(BseContainer		*container);
 
 
 /* --- variables --- */
@@ -135,6 +136,7 @@ bse_container_class_init (BseContainerClass *class)
   class->remove_item = bse_container_do_remove_item;
   class->forall_items = NULL;
   class->retrieve_child = bse_container_real_retrieve_child;
+  class->context_children = container_context_children;
 
   container_signals[SIGNAL_ITEM_ADDED] = bse_object_class_add_signal (object_class, "item_added",
 								      bse_marshal_VOID__OBJECT,
@@ -1083,19 +1085,27 @@ bse_container_prepare (BseSource *source)
 }
 
 static gboolean
-forall_context_create (BseItem *item,
-		       gpointer _data)
+forall_slist_prepend (BseItem *item,
+		      gpointer data)
 {
-  gpointer *data = _data;
+  GSList **slist_p = data;
 
   if (BSE_IS_SOURCE (item))
-    {
-      g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
-
-      bse_source_create_context (BSE_SOURCE (item), GPOINTER_TO_UINT (data[0]), data[1]);
-    }
+    *slist_p = g_slist_prepend (*slist_p, item);
 
   return TRUE;
+}
+
+static GSList*
+container_context_children (BseContainer *container)
+{
+  GSList *slist = NULL;
+
+  g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
+
+  BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_slist_prepend, &slist);
+
+  return slist;
 }
 
 static void
@@ -1111,11 +1121,11 @@ bse_container_context_create (BseSource	*source,
   /* handle children */
   if (container->n_items)
     {
-      gpointer data[2] = { GUINT_TO_POINTER (context_handle), trans };
+      GSList *node, *slist = BSE_CONTAINER_GET_CLASS (container)->context_children (container);
 
-      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
-
-      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_context_create, data);
+      for (node = slist; node; node = node->next)
+	bse_source_create_context (node->data, context_handle, trans);
+      g_slist_free (slist);
     }
 }
 
@@ -1124,14 +1134,16 @@ forall_context_connect (BseItem *item,
 			gpointer _data)
 {
   gpointer *data = _data;
-
+  guint cid = GPOINTER_TO_UINT (data[0]);
+  
   if (BSE_IS_SOURCE (item))
     {
+      BseSource *source = BSE_SOURCE (item);
+
       g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
 
-      bse_source_connect_context (BSE_SOURCE (item),
-				  GPOINTER_TO_UINT (data[0]),
-				  data[1]);
+      if (bse_source_has_context (source, cid))
+	bse_source_connect_context (source, cid, data[1]);
     }
   
   return TRUE;
@@ -1144,9 +1156,6 @@ bse_container_context_connect (BseSource *source,
 {
   BseContainer *container = BSE_CONTAINER (source);
 
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
-
   /* handle children */
   if (container->n_items)
     {
@@ -1156,6 +1165,9 @@ bse_container_context_connect (BseSource *source,
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_context_connect, data);
     }
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
 }
 
 static gboolean
@@ -1163,14 +1175,16 @@ forall_context_dismiss (BseItem *item,
 			gpointer _data)
 {
   gpointer *data = _data;
+  guint cid = GPOINTER_TO_UINT (data[0]);
 
   if (BSE_IS_SOURCE (item))
     {
+      BseSource *source = BSE_SOURCE (item);
+
       g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
 
-      bse_source_dismiss_context (BSE_SOURCE (item),
-				  GPOINTER_TO_UINT (data[0]),
-				  data[1]);
+      if (bse_source_has_context (source, cid))
+	bse_source_dismiss_context (source, cid, data[1]);
     }
   
   return TRUE;
@@ -1183,9 +1197,6 @@ bse_container_context_dismiss (BseSource *source,
 {
   BseContainer *container = BSE_CONTAINER (source);
 
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
-
   /* handle children */
   if (container->n_items)
     {
@@ -1195,6 +1206,9 @@ bse_container_context_dismiss (BseSource *source,
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_context_dismiss, data);
     }
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
 }
 
 static gboolean

@@ -265,6 +265,28 @@ bse_object_debug_leaks (void)
     }
 }
 
+const gchar*
+bse_object_debug_name (gpointer object)
+{
+  GTypeInstance *instance = object;
+  gchar *debug_name;
+
+  if (!instance)
+    return "<NULL>";
+  if (!instance->g_class)
+    return "<NULL-Class>";
+  if (!g_type_is_a (instance->g_class->g_type, BSE_TYPE_OBJECT))
+    return "<Non-BseObject>";
+  debug_name = g_object_get_data (G_OBJECT (instance), "bse-debug-name");
+  if (!debug_name)
+    {
+      const gchar *uname = BSE_OBJECT_UNAME (instance);
+      debug_name = g_strdup_printf ("\"%s::%s\"", G_OBJECT_TYPE_NAME (instance), uname ? uname : "");
+      g_object_set_data_full (G_OBJECT (instance), "bse-debug-name", debug_name, g_free);
+    }
+  return debug_name;
+}
+
 static inline void
 object_unames_ht_insert (BseObject *object)
 {
@@ -380,6 +402,7 @@ bse_object_do_set_property (BseObject   *object,
 	    }
 	  BSE_OBJECT_GET_CLASS (object)->set_uname (object, string);
 	  g_free (string);
+	  g_object_set_data (G_OBJECT (object), "bse-debug-name", NULL);
 	  object_unames_ht_insert (object);
 	}
       break;

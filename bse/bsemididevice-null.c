@@ -31,8 +31,7 @@ typedef struct
 static void	    bse_midi_device_null_class_init	(BseMidiDeviceNULLClass	*class);
 static void	    bse_midi_device_null_init		(BseMidiDeviceNULL	*midi_device_null);
 static void	    bse_midi_device_null_destroy	(BseObject		*object);
-static BseErrorType bse_midi_device_null_open		(BseMidiDevice		*mdev,
-							 BseMidiDecoder		*decoder);
+static BseErrorType bse_midi_device_null_open		(BseMidiDevice		*mdev);
 static void	    bse_midi_device_null_close		(BseMidiDevice		*mdev);
 
 
@@ -87,8 +86,7 @@ bse_midi_device_null_init (BseMidiDeviceNULL *null)
 }
 
 static BseErrorType
-bse_midi_device_null_open (BseMidiDevice  *mdev,
-			  BseMidiDecoder *decoder)
+bse_midi_device_null_open (BseMidiDevice *mdev)
 {
   NULLHandle *null = g_new0 (NULLHandle, 1);
   BseMidiHandle *handle = &null->handle;
@@ -103,7 +101,6 @@ bse_midi_device_null_open (BseMidiDevice  *mdev,
   if (handle->writable)
     BSE_OBJECT_SET_FLAGS (mdev, BSE_MIDI_FLAG_WRITABLE);
   mdev->handle = handle;
-  handle->decoder = decoder;
   handle->midi_fd = -1;
 
   return BSE_ERROR_NONE;

@@ -118,9 +118,10 @@ typedef enum /*< skip >*/
   GSL_MSG_OSC		= 1 << 4,
   GSL_MSG_ENGINE	= 1 << 5,
   GSL_MSG_JOBS		= 1 << 6,
-  GSL_MSG_SCHED		= 1 << 7,
-  GSL_MSG_MASTER	= 1 << 8,
-  GSL_MSG_SLAVE		= 1 << 9
+  GSL_MSG_FJOBS		= 1 << 7,
+  GSL_MSG_SCHED		= 1 << 8,
+  GSL_MSG_MASTER	= 1 << 9,
+  GSL_MSG_SLAVE		= 1 << 10
 } GslDebugFlags;
 extern const GDebugKey *gsl_debug_keys;
 extern const guint      gsl_n_debug_keys;
@@ -156,6 +157,18 @@ GslThread*	gsl_thread_self		(void);
 GslThread*	gsl_thread_main		(void);
 
 
+/* --- tick stamps --- */
+typedef struct {
+  guint64 tick_stamp;
+  guint64 system_time;
+} GslTickStampUpdate;
+guint64		   gsl_tick_stamp	(void);
+guint64		   gsl_time_system	(void);
+GslTickStampUpdate gsl_tick_stamp_last	(void);
+#define		   GSL_TICK_STAMP	(_GSL_TICK_STAMP_VAL ())
+#define		   GSL_MAX_TICK_STAMP	(G_MAXUINT64)
+
+
 /* --- thread syncronization --- */
 gboolean	gsl_thread_sleep	(glong		 max_msec);
 gboolean	gsl_thread_aborted	(void);
@@ -165,9 +178,6 @@ void		gsl_thread_wakeup	(GslThread	*thread);
 void		gsl_thread_awake_after	(guint64	 tick_stamp);
 void		gsl_thread_awake_before	(guint64	 tick_stamp);
 void		gsl_thread_get_pollfd	(GPollFD	*pfd);
-guint64		gsl_tick_stamp		(void);
-#define		GSL_TICK_STAMP		(_GSL_TICK_STAMP_VAL ())
-#define		GSL_MAX_TICK_STAMP	(~((guint64) 0))
 
 
 /* --- GslMutex --- */

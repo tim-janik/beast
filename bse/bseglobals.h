@@ -47,7 +47,7 @@ extern "C" {
 #define	BSE_MAX_NOTE			(127 /* 123 */)
 #define	BSE_NOTE_VOID			(1024)
 #define	BSE_NOTE_UNPARSABLE		(BSE_NOTE_VOID + 1)
-#define	BSE_KAMMER_NOTE			((gint) (57) /* A' */)
+#define	BSE_KAMMER_NOTE			((gint) (69) /* A' */)
 #define	BSE_KAMMER_OCTAVE		((gint) (+1))
 #define	BSE_NOTE_OCTAVE(n)		((((gint) (n)) - (BSE_KAMMER_NOTE - 9)) / 12 + BSE_KAMMER_OCTAVE)
 #define	BSE_MIN_OCTAVE			(BSE_NOTE_OCTAVE (BSE_MIN_NOTE))

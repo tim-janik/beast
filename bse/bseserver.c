@@ -23,7 +23,6 @@
 #include "gslcommon.h"
 #include "bsemarshal.h"
 #include "bseglue.h"
-#include "bsemidimodule.h"
 #include "bsecomwire.h"
 #include "bsemidinotifier.h"
 #include "bsemain.h"		/* threads enter/leave */
@@ -73,7 +72,8 @@ static void	iowatch_add			(BseServer	   *server,
 						 GIOCondition	    events,
 						 BseIOWatch	    watch_func,
 						 gpointer	    data);
-static void	main_thread_source_setup	(gint               priority,
+static void	main_thread_source_setup	(BseServer	   *self,
+						 gint               priority,
 						 GslGlueContext    *context);
 static void	engine_init			(BseServer	   *server,
 						 gfloat		    mix_freq);
@@ -162,15 +162,12 @@ bse_server_init (BseServer *server)
   server->pcm_omodule = NULL;
   server->pcm_ref_count = 0;
   server->midi_device = NULL;
-  server->midi_decoder = NULL;
-  server->midi_modules = NULL;
-  server->midi_ref_count = 0;
   server->main_context = g_main_context_default ();
   g_main_context_ref (server->main_context);
   BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
 
   /* start dispatching main thread stuff */
-  main_thread_source_setup (BSE_NOTIFY_PRIORITY, bse_glue_context ());
+  main_thread_source_setup (server, BSE_NOTIFY_PRIORITY, bse_glue_context ());
 }
 
 static void
@@ -387,10 +384,8 @@ bse_server_pick_default_devices (BseServer *server)
   g_free (children);
   if (rating)
     {
-      if (!server->midi_receiver)
-	server->midi_receiver = bse_midi_receiver_new ("default");
       server->midi_device = g_object_new (choice,
-					  "midi_receiver", server->midi_receiver,
+					  "midi_receiver", bse_server_get_midi_receiver (server, "default"),
 					  NULL);
     }
 }
@@ -401,7 +396,6 @@ bse_server_activate_devices (BseServer *server)
   BseErrorType error = BSE_ERROR_NONE;
 
   g_return_val_if_fail (BSE_IS_SERVER (server), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (server->midi_decoder == NULL, BSE_ERROR_INTERNAL);
 
   if (!server->pcm_device || !server->midi_device)
     bse_server_pick_default_devices (server);
@@ -412,14 +406,9 @@ bse_server_activate_devices (BseServer *server)
     error = bse_pcm_device_open (server->pcm_device);
   if (!error)
     {
-      server->midi_decoder = bse_midi_decoder_new ();
-      error = bse_midi_device_open (server->midi_device, server->midi_decoder);
+      error = bse_midi_device_open (server->midi_device);
       if (error)
-	{
-	  bse_pcm_device_suspend (server->pcm_device);
-	  bse_midi_decoder_destroy (server->midi_decoder);
-	  server->midi_decoder = NULL;
-	}
+	bse_pcm_device_suspend (server->pcm_device);
     }
   if (!error)
     {
@@ -442,11 +431,9 @@ void
 bse_server_suspend_devices (BseServer *server)
 {
   GslTrans *trans;
-  GSList *slist;
 
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (server->pcm_ref_count == 0);
-  g_return_if_fail (server->midi_ref_count == 0);
 
   trans = gsl_trans_open ();
   if (server->pcm_omodule)
@@ -456,10 +443,8 @@ bse_server_suspend_devices (BseServer *server)
       bse_pcm_omodule_remove (server->pcm_omodule, trans);
       server->pcm_omodule = NULL;
     }
-  for (slist = server->midi_modules; slist; slist = slist->next)
-    bse_midi_module_remove (slist->data, trans);
-  g_slist_free (server->midi_modules);
-  server->midi_modules = NULL;
+  /* we don't need to discard the midi_receiver */
+  // FIXME: discard midi_receiver modules
   gsl_trans_commit (trans);
   
   /* wait until transaction has been processed */
@@ -467,8 +452,6 @@ bse_server_suspend_devices (BseServer *server)
   
   bse_pcm_device_suspend (server->pcm_device);
   bse_midi_device_suspend (server->midi_device);
-  bse_midi_decoder_destroy (server->midi_decoder);
-  server->midi_decoder = NULL;
 
   engine_shutdown (server);
 }
@@ -536,51 +519,11 @@ bse_server_get_midi_receiver (BseServer   *self,
   g_return_val_if_fail (BSE_IS_SERVER (self), NULL);
   g_return_val_if_fail (midi_name != NULL, NULL);
 
+  if (!self->midi_receiver)
+    self->midi_receiver = bse_midi_receiver_new ("default");
   // FIXME: we don't actually check the midi_receiver name
 
   return self->midi_receiver;
-}
-
-GslModule*
-bse_server_retrive_midi_input_module (BseServer   *server,
-				      const gchar *downlink_name,
-				      guint        midi_channel_id,
-				      guint        nth_note,
-				      guint        signals[4])
-{
-  GslTrans *trans;
-  GslModule *module;
-  GSList *slist;
-
-  g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
-  g_return_val_if_fail (downlink_name != NULL, NULL);
-  g_return_val_if_fail (midi_channel_id - 1 < BSE_MIDI_MAX_CHANNELS, NULL);
-  g_return_val_if_fail (signals != NULL, NULL);
-  g_assert (4 == BSE_MIDI_MODULE_N_CHANNELS);
-  
-  server->midi_ref_count += 1;
-  for (slist = server->midi_modules; slist; slist = slist->next)
-    if (bse_midi_module_matches (slist->data, midi_channel_id, nth_note, signals))
-      return slist->data;
-
-  trans = gsl_trans_open ();
-  module = bse_midi_module_insert (server->midi_decoder, midi_channel_id, nth_note, signals, trans);
-  gsl_trans_commit (trans);
-  server->midi_modules = g_slist_prepend (server->midi_modules, module);
-
-  return module;
-}
-
-void
-bse_server_discard_midi_input_module (BseServer   *server,
-				      GslModule *module)
-{
-  g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (module != NULL);
-  g_return_if_fail (server->midi_ref_count > 0);
-  g_return_if_fail (g_slist_find (server->midi_modules, module));	/* paranoid */
-
-  server->midi_ref_count -= 1;
 }
 
 /* bse_server_exec_status
@@ -721,6 +664,7 @@ bse_server_run_remote (BseServer     *server,
 /* --- GSL Main Thread Source --- */
 typedef struct {
   GSource         source;
+  BseServer	 *server;
   GslGlueContext *context;
   GPollFD	  pfd;
 } MainSource;
@@ -734,8 +678,8 @@ main_source_prepare (GSource *source,
 
   BSE_THREADS_ENTER ();
   need_dispatch = gsl_glue_context_pending (xsource->context);
-  if (_bse_midi_get_notifier ())
-    need_dispatch |= bse_midi_notifier_needs_dispatch (_bse_midi_get_notifier ());
+  if (xsource->server->midi_receiver)
+    need_dispatch |= bse_midi_receiver_has_notify_events (xsource->server->midi_receiver);
   BSE_THREADS_LEAVE ();
 
   return need_dispatch;
@@ -750,8 +694,8 @@ main_source_check (GSource *source)
   BSE_THREADS_ENTER ();
   need_dispatch = xsource->pfd.events & xsource->pfd.revents;
   need_dispatch |= gsl_glue_context_pending (xsource->context);
-  if (_bse_midi_get_notifier ())
-    need_dispatch |= bse_midi_notifier_needs_dispatch (_bse_midi_get_notifier ());
+  if (xsource->server->midi_receiver)
+    need_dispatch |= bse_midi_receiver_has_notify_events (xsource->server->midi_receiver);
   BSE_THREADS_LEAVE ();
   
   return need_dispatch;
@@ -766,8 +710,8 @@ main_source_dispatch (GSource    *source,
 
   BSE_THREADS_ENTER ();
   gsl_glue_context_dispatch (xsource->context);
-  if (_bse_midi_get_notifier ())
-    bse_midi_notifier_dispatch (_bse_midi_get_notifier ());
+  if (xsource->server->midi_receiver && xsource->server->midi_receiver->notifier)
+    bse_midi_notifier_dispatch (xsource->server->midi_receiver->notifier, xsource->server->midi_receiver);
   gsl_thread_sleep (0);	/* process poll fd data */
   BSE_THREADS_LEAVE ();
 
@@ -775,7 +719,8 @@ main_source_dispatch (GSource    *source,
 }
 
 static void
-main_thread_source_setup (gint            priority,
+main_thread_source_setup (BseServer      *self,
+			  gint            priority,
 			  GslGlueContext *context)
 {
   static GSourceFuncs main_source_funcs = {
@@ -790,6 +735,7 @@ main_thread_source_setup (gint            priority,
   g_assert (single_call++ == 0);
   
   xsource->context = context;
+  xsource->server = self;
   gsl_thread_get_pollfd (&xsource->pfd);
   g_source_set_priority (source, priority);
   g_source_add_poll (source, &xsource->pfd);
@@ -996,8 +942,9 @@ engine_shutdown (BseServer *server)
 {
   g_return_if_fail (server->engine_source != NULL);
 
-  // FIXME: need to be able to completely unintialize engine here
   g_source_destroy (server->engine_source);
   server->engine_source = NULL;
+  gsl_engine_garbage_collect ();
+  // FIXME: need to be able to completely unintialize engine here
   bse_globals_unlock ();
 }

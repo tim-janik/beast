@@ -58,6 +58,7 @@ struct _BseContainerClass
   BseItem*	(*retrieve_child)	(BseContainer		*container,
 					 GType			 child_type,
 					 const gchar		*uname);
+  GSList*	(*context_children)	(BseContainer		*container);
 };
 
 

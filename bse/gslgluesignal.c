@@ -26,7 +26,7 @@ typedef struct {
 
 typedef struct {
   gchar      *signal;
-  GslGlueRec *args;
+  GslGlueSeq *args;
   gboolean    destroyed;
 } GlueEvent;
 
@@ -90,10 +90,10 @@ gsl_glue_signals_dispatch (GslGlueContext *context)
       gulong proxy;
       GHook *hook;
 
-      g_return_if_fail (sevent->args->fields[0].glue_type == GSL_GLUE_TYPE_PROXY);
+      g_return_if_fail (sevent->args->elements[0].glue_type == GSL_GLUE_TYPE_PROXY);
 
       context->sigqueue = gsl_ring_remove_node (context->sigqueue, node);
-      proxy = sevent->args->fields[0].value.v_proxy;
+      proxy = sevent->args->elements[0].value.v_proxy;
       sig = glue_signal_lookup (context, proxy, sevent->signal);
 
       hook = g_hook_first_valid (&sig->hooks, FALSE);
@@ -109,7 +109,7 @@ gsl_glue_signals_dispatch (GslGlueContext *context)
 	  hook = g_hook_next_valid (&sig->hooks, hook, FALSE);
 	}
       
-      gsl_glue_free_rec (sevent->args);
+      gsl_glue_free_seq (sevent->args);
       g_free (sevent->signal);
       g_free (sevent);
     }
@@ -211,7 +211,7 @@ gsl_glue_signal_disconnect (const gchar *signal,
 
 void
 gsl_glue_enqueue_signal_event (const gchar *signal,
-			       GslGlueRec  *args,
+			       GslGlueSeq  *args,
 			       gboolean     disabled)
 {
   GslGlueContext *context = gsl_glue_fetch_context (G_STRLOC);
@@ -219,12 +219,12 @@ gsl_glue_enqueue_signal_event (const gchar *signal,
 
   g_return_if_fail (signal != NULL);
   g_return_if_fail (args != NULL);
-  g_return_if_fail (args->n_fields > 0);
-  g_return_if_fail (args->fields[0].glue_type == GSL_GLUE_TYPE_PROXY);
+  g_return_if_fail (args->n_elements > 0);
+  g_return_if_fail (args->elements[0].glue_type == GSL_GLUE_TYPE_PROXY);
 
   sevent = g_new0 (GlueEvent, 1);
   sevent->signal = g_strdup (signal);
-  sevent->args = gsl_glue_recdup (args);
+  sevent->args = gsl_glue_seqdup (args);
   sevent->destroyed = disabled != FALSE;
   context->sigqueue = gsl_ring_append (context->sigqueue, sevent);
 }

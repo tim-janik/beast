@@ -44,13 +44,6 @@ typedef struct {
   BseSource *constant;
   BseSource *sub_synth;
 } BseSongVoice;
-typedef struct {
-  guint		n_voices;
-  BseSource    *lmixer;
-  BseSource    *rmixer;
-  BseSource    *output;
-  BseSongVoice *voices;	/* [n_voices] */
-} BseSongNet;
 struct _BseSong
 {
   BseSNet           parent_instance;
@@ -60,8 +53,10 @@ struct _BseSong
   
   GList            *instruments;        /* of type BseInstrument* */
   GList            *parts;              /* of type BsePart* */
+  GList            *tracks;             /* of type BseTrack* */
 
-  BseSongNet	    net;
+  BseSource	   *context_merger;
+  BseSource	   *output;
 
   /*< private >*/
   BseSongSequencer *sequencer;

@@ -1,20 +1,19 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001, 2002 Tim Janik
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #ifndef __GSL_ENGINE_SCHEDULE_H__
 #define __GSL_ENGINE_SCHEDULE_H__
@@ -49,6 +48,7 @@ struct _EngineSchedule
   guint	    cur_leaf_level;
   GslRing  *cur_node;
   GslRing  *cur_cycle;
+  GslRing  *vnodes;	/* virtual modules */
 };
 #define	GSL_SCHEDULE_NONPOPABLE(schedule)		((schedule)->cur_leaf_level >= (schedule)->leaf_levels)
 
@@ -59,12 +59,6 @@ void		_engine_schedule_clear		(EngineSchedule	*schedule);
 void		_engine_schedule_destroy	(EngineSchedule	*schedule);
 void		_engine_schedule_consumer_node	(EngineSchedule	*schedule,
 						 EngineNode	*node);
-void		_engine_schedule_node		(EngineSchedule	*schedule,
-						 EngineNode	*node,
-						 guint		 leaf_level);
-void		_engine_schedule_cycle		(EngineSchedule	*schedule,
-						 GslRing	*cycle_nodes,
-						 guint		 leaf_level);
 void		_engine_schedule_secure		(EngineSchedule	*schedule);
 EngineNode*	_engine_schedule_pop_node	(EngineSchedule	*schedule);
 GslRing*	_engine_schedule_pop_cycle	(EngineSchedule	*schedule);

@@ -19,94 +19,36 @@
 #define __BSE_MIDI_RECEIVER_H__
 
 #include        <bse/bseobject.h>
+#include        <bse/bsemidievent.h>
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-#ifndef	BSE_MIDI_MAX_CHANNELS			// FIXME
-#define  BSE_MIDI_MAX_CHANNELS           (16)	// FIXME
-#endif
 
 /* --- BSE MIDI structs --- */
-typedef struct _BseMidiEvent     BseMidiEvent;
-typedef struct _BseMidiNote      BseMidiNote;
-struct _BseMidiNote
-{
-  gfloat freq;
-  gfloat velocity;	/* 0..+1 */
-  gfloat aftertouch;	/* 0..+1 */
-};
-typedef enum
-{
-  /* channel voice messages */
-  BSE_MIDI_NOTE_OFF             = 0x80,         /* note, velocity */
-  BSE_MIDI_NOTE_ON              = 0x90,         /* note, velocity */
-  BSE_MIDI_KEY_PRESSURE         = 0xA0,         /* note, intensity */
-  BSE_MIDI_CONTROL_CHANGE       = 0xB0,         /* ctl-nr, value */
-  BSE_MIDI_PROGRAM_CHANGE       = 0xC0,         /* prg-nr */
-  BSE_MIDI_CHANNEL_PRESSURE     = 0xD0,         /* intensity */
-  BSE_MIDI_PITCH_BEND           = 0xE0,         /* 7lsb, 7msb */
-  /* system common messages */
-  BSE_MIDI_SYS_EX               = 0xF0,         /* data... */
-  BSE_MIDI_SONG_POINTER         = 0xF2,         /* p1, p2 */
-  BSE_MIDI_SONG_SELECT          = 0xF3,         /* song-nr */
-  BSE_MIDI_TUNE                 = 0xF6,
-  BSE_MIDI_END_EX               = 0xF7,
-  /* system realtime messages */
-  BSE_MIDI_TIMING_CLOCK         = 0xF8,
-  BSE_MIDI_SONG_START           = 0xFA,
-  BSE_MIDI_SONG_CONTINUE        = 0xFB,
-  BSE_MIDI_SONG_STOP            = 0xFC,
-  BSE_MIDI_ACTIVE_SENSING       = 0xFE,
-  BSE_MIDI_SYSTEM_RESET         = 0xFF
-} BseMidiEventType;
-struct _BseMidiEvent
-{
-  BseMidiEventType status;
-  guint            channel;     /* 0 .. 15 if valid */
-  guint64          usec_stamp;  /* arrival in micro seconds */
-  union {
-    struct {
-      guint   note;		/* 0..0x7f */
-      guint   velocity;		/* or intensity: 0..0x7f */
-    }       note;
-    struct {
-      guint   control;		/* 0..0x7f */
-      guint   value;		/* 0..0x7f */
-    }       control;
-    guint   program;		/* 0..0x7f */
-    guint   intensity;		/* 0..0x7f */
-    guint   pitch_bend;		/* 0..0x3fff; center: 0x2000 */
-    struct {
-      guint   n_bytes;
-      guint8 *bytes;
-    }       sys_ex;
-    guint   song_pointer;	/* 0..0x3fff */
-    guint   song_number;	/* 0..0x7f */
-  } data;
-  BseMidiEvent    *next;
-};
-typedef struct
-{
-  guint      channel_id;
-  GslModule *vmodule;	/* note module */
-  GslModule *smodule;	/* input module (switches and suspends) */
-  GslModule *omodule;	/* output module */
-} BseMidiVoice;
+typedef struct _BseMidiVoice BseMidiVoice;
+typedef struct {
+  BseMidiSignalType	 type;
+  guint			 midi_channel;
+  gfloat		 value;
+  GSList		*cmodules;
+} BseMidiControlSlot;
 struct _BseMidiReceiver
 {
   gchar		  *receiver_name;
 
+  guint		   n_voices;
+  BseMidiVoice	 **voices;
+
   guint		   n_cmodules;
   GslModule	 **cmodules;
 
-  guint		   n_voices;
-  BseMidiVoice	  *voices;
+  gpointer	   ctrl_slot_array;	/* BSA of BseMidiControlSlot* */
 
   /*< private >*/
-  GslRing	  *events;
+  GslRing	  *events;	/* BseMidiEvent* */
   BseMidiEventType event_type;	/* event currently being decoded */
   BseMidiEventType running_mode;
   guint		   echannel;	/* channel of current event */
@@ -114,37 +56,53 @@ struct _BseMidiReceiver
   guint8	  *bytes;
   guint		   left_bytes;
   guint		   ref_count;
+  BseMidiNotifier *notifier;
+  GslRing	  *notifier_events;
 };
 
 
 /* --- API --- */
-#define	BSE_MIDI_RECEIVER_LOCK(rec)		bse_midi_global_lock ()
-#define	BSE_MIDI_RECEIVER_UNLOCK(rec)		bse_midi_global_unlock ()
-#define	BSE_MIDI_CONTROL_MODULE_N_CHANNELS	(4)
-#define	BSE_MIDI_VOICE_MODULE_N_CHANNELS	(4)
-#define	BSE_MIDI_VOICE_N_CHANNELS		(3)
-BseMidiReceiver* bse_midi_receiver_new		 (const gchar		*receiver_name);
-BseMidiReceiver* bse_midi_receiver_ref		 (BseMidiReceiver	*self);
-void		 bse_midi_receiver_unref	 (BseMidiReceiver	*self);
-void             bse_midi_receiver_push_data    (BseMidiReceiver	*self,
-						 guint		         n_bytes,
-						 guint8		        *bytes,
-						 guint64	         usec_time);
-GslModule*	bse_midi_receiver_retrive_control_module (BseMidiReceiver	*self,
-							  guint			 channel_id,
-							  BseMidiControlType	 signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS]);
-void		bse_midi_receiver_discard_control_module (BseMidiReceiver	*self,
-							  GslModule		*cmodule);
-guint		bse_midi_reciver_retrive_voice		 (BseMidiReceiver	*self,
-							  guint			 channel_id);
-void		bse_midi_reciver_discard_voice		 (BseMidiReceiver	*self,
-							  guint			 voice_id);
-GslModule*	bse_midi_receiver_get_note_module	 (BseMidiReceiver	*self,
-							  guint			 voice_id);
-GslModule*	bse_midi_receiver_get_input_module	 (BseMidiReceiver	*self,
-							  guint			 voice_id);
-GslModule*	bse_midi_receiver_get_output_module	 (BseMidiReceiver	*self,
-							  guint			 voice_id);
+#define	BSE_MIDI_RECEIVER_LOCK(rec)			   bse_midi_global_lock ()
+#define	BSE_MIDI_RECEIVER_UNLOCK(rec)			   bse_midi_global_unlock ()
+#define	BSE_MIDI_CONTROL_MODULE_N_CHANNELS		  (4)
+#define	BSE_MIDI_VOICE_MODULE_N_CHANNELS		  (4)
+#define	BSE_MIDI_VOICE_N_CHANNELS			  (3)
+BseMidiReceiver* bse_midi_receiver_new		 	  (const gchar		*receiver_name);
+BseMidiReceiver* bse_midi_receiver_ref		 	  (BseMidiReceiver	*self);
+void		 bse_midi_receiver_unref	 	  (BseMidiReceiver	*self);
+void             bse_midi_receiver_push_data    	  (BseMidiReceiver	*self,
+							   guint		 n_bytes,
+							   guint8		*bytes,
+							   guint64	         usec_systime);
+void             bse_midi_receiver_push_event    	  (BseMidiReceiver	*self,
+							   BseMidiEvent		*event);
+void		 bse_midi_receiver_process_events	  (BseMidiReceiver	*self,
+							   guint64		 max_tick_stamp);
+guint		 bse_midi_receiver_create_voice		  (BseMidiReceiver	*self,
+							   guint		 channel_id,
+							   GslTrans		*trans);
+void		 bse_midi_receiver_discard_voice	  (BseMidiReceiver	*self,
+							   guint		 voice_id,
+							   GslTrans		*trans);
+GslModule*	 bse_midi_receiver_retrive_control_module (BseMidiReceiver	*self,
+							   guint		 channel_id,
+							   BseMidiSignalType	 signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
+							   GslTrans		*trans);
+void		 bse_midi_receiver_discard_control_module (BseMidiReceiver	*self,
+							   GslModule		*cmodule,
+							   GslTrans		*trans);
+GslModule*	 bse_midi_receiver_get_note_module	  (BseMidiReceiver	*self,
+							   guint		 voice_id);
+GslModule*	 bse_midi_receiver_get_input_module	  (BseMidiReceiver	*self,
+							   guint		 voice_id);
+GslModule*	 bse_midi_receiver_get_output_module	  (BseMidiReceiver	*self,
+							   guint		 voice_id);
+void             bse_midi_receiver_set_notifier		  (BseMidiReceiver	*self,
+							   BseMidiNotifier      *notifier);
+BseMidiNotifier* bse_midi_receiver_get_notifier		  (BseMidiReceiver	*self);
+gboolean	 bse_midi_receiver_has_notify_events	  (BseMidiReceiver	*self);
+GslRing*	 bse_midi_receiver_fetch_notify_events	  (BseMidiReceiver	*self);
+
 
 /* --- internal --- */
 void		 bse_midi_global_lock		(void);

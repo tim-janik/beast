@@ -166,16 +166,14 @@ bse_midi_device_destroy (BseObject *object)
 }
 
 BseErrorType
-bse_midi_device_open (BseMidiDevice  *mdev,
-		      BseMidiDecoder *decoder)
+bse_midi_device_open (BseMidiDevice  *mdev)
 {
   BseErrorType error;
 
   g_return_val_if_fail (BSE_IS_MIDI_DEVICE (mdev), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_MIDI_DEVICE_OPEN (mdev), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (decoder != NULL, BSE_ERROR_INTERNAL);
 
-  error = BSE_MIDI_DEVICE_GET_CLASS (mdev)->open (mdev, decoder);
+  error = BSE_MIDI_DEVICE_GET_CLASS (mdev)->open (mdev);
 
   if (!error)
     g_return_val_if_fail (BSE_MIDI_DEVICE_OPEN (mdev) && mdev->handle, BSE_ERROR_INTERNAL);
@@ -209,80 +207,3 @@ bse_midi_device_trigger (BseMidiDevice *mdev)
   if (BSE_MIDI_DEVICE_OPEN (mdev))
     BSE_MIDI_DEVICE_GET_CLASS (mdev)->trigger (mdev);
 }
-
-
-#if 0  // FIXME remove code:
-/* --- decoder / utils --- */
-struct _BseMidiDecoder
-{
-  BseMidiEvent    *events;
-  BseMidiEventType status;
-  BseMidiEventType last_status;
-  guint		   channel_id;
-  guint            n_bytes;
-  guint8	  *bytes;
-  guint		   left_bytes;
-};
-
-void
-bse_midi_handle_init (BseMidiHandle *handle)
-{
-  g_return_if_fail (handle != NULL);
-  g_return_if_fail (handle->decoder == NULL);
-  g_return_if_fail (handle->channels == NULL);
-
-  handle->decoder = g_new0 (BseMidiDecoder, 1);
-  // memset (handle->channels, 0, sizeof (handle->channels));
-}
-
-static void
-read_data (BseMidiDecoder *decoder,
-	   guint          *n_bytes_p,
-	   guint8        **bytes_p)
-{
-  guint n_bytes = *n_bytes_p;
-  guint8 *bytes = *bytes_p;
-
-  g_return_if_fail (decoder->status & 0x80);
-
-  if (decoder->status != BSE_MIDI_SYS_EX)
-    {
-      guint i = MIN (decoder->left_bytes, n_bytes);
-      guint n = decoder->n_bytes;
-      
-      decoder->n_bytes += i;
-      decoder->bytes = g_renew (guint8, decoder->bytes, decoder->n_bytes);
-      memcpy (decoder->bytes + n, bytes, i);
-      decoder->left_bytes -= i;
-      *n_bytes_p -= i;
-      *bytes_p += i;
-    }
-  else /* search BSE_MIDI_END_EX */
-    {
-      guint i;
-
-      /* search for end mark */
-      for (i = 0; i < n_bytes; i++)
-	if (bytes[i] == BSE_MIDI_END_EX)
-	  break;
-      /* append data bytes */
-      if (i)
-	{
-	  guint n = decoder->n_bytes;
-
-	  decoder->n_bytes += i - 1;
-	  decoder->bytes = g_renew (guint8, decoder->bytes, decoder->n_bytes + 1);
-	  memcpy (decoder->bytes + n, bytes, i - 1);
-	}
-      *n_bytes_p -= i;
-      *bytes_p += i;
-      /* did we find end mark? */
-      if (i < n_bytes)
-	{
-	  decoder->status = BSE_MIDI_END_EX;
-	  decoder->left_bytes = 0;
-	  read_data (decoder, n_bytes_p, bytes_p);
-	}
-    }
-}
-#endif

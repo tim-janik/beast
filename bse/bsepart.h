@@ -44,6 +44,11 @@ struct _BsePart
   BsePartNode *nodes;
   guint	       ppqn;
 
+  guint	       selection_tick;
+  guint	       selection_bound;
+  gfloat       selection_min_freq;
+  gfloat       selection_max_freq;
+
   guint	       range_tick;
   guint	       range_bound;
   gfloat       range_min_freq;
@@ -62,23 +67,29 @@ struct _BsePartClass
 
 
 /* --- functions --- */
-BseErrorType	bse_part_insert_note	(BsePart	*part,
+BseErrorType	bse_part_insert_note	(BsePart	*self,
 					 guint		 tick,
 					 guint		 duration,
 					 gfloat		 freq,
 					 gfloat		 velocity);
-void		bse_part_delete_note	(BsePart	*part,
+void		bse_part_delete_note	(BsePart	*self,
 					 guint		 tick,
 					 gfloat		 freq);
-BswIterPartNote* bse_part_list_notes	(BsePart	*part,
+BswIterPartNote* bse_part_list_notes	(BsePart	*self,
 					 guint		 tick,
 					 guint		 duration,
 					 gfloat		 min_freq,
 					 gfloat		 max_freq);
-BswIterPartNote* bse_part_get_note_at	(BsePart	*part,
+BswIterPartNote* bse_part_list_selected_notes (BsePart	*self);
+BswIterPartNote* bse_part_get_note_at	(BsePart	*self,
 					 guint		 tick,
 					 gfloat		 freq);
-guint		bse_part_node_lookup_SL	(BsePart	*part,
+void		 bse_part_set_selection (BsePart	*self,
+					 guint		 tick,
+					 guint		 duration,
+					 gfloat		 min_freq,
+					 gfloat		 max_freq);
+guint		bse_part_node_lookup_SL	(BsePart	*self,
 					 guint		 tick);
 
 

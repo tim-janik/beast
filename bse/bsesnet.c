@@ -22,6 +22,7 @@
 #include        "bsestorage.h"
 #include        "bsemarshal.h"
 #include        "bsemain.h"
+#include        "bsecontextmerger.h"
 #include        "bsemidireceiver.h"
 #include        <string.h>
 #include        <time.h>
@@ -30,6 +31,7 @@
 #include        <stdlib.h>
 #include        "gbsearcharray.h"
 #include        <gsl/gslengine.h>
+#include        <gsl/gslcommon.h>
 
 
 typedef struct
@@ -37,7 +39,9 @@ typedef struct
   guint            context_id;
   BseMidiReceiver *midi_receiver;
   guint            midi_channel;
-  guint            voice;
+  guint		   n_branches;
+  guint		  *branches;
+  guint		   parent_context;
 } ContextData;
 
 /* --- parameters --- */
@@ -72,9 +76,16 @@ static void      bse_snet_prepare                (BseSource      *source);
 static void      bse_snet_reset                  (BseSource      *source);
 static gint	 snet_ports_compare              (gconstpointer   bsearch_node1, /* key */
 						  gconstpointer   bsearch_node2);
+static void      bse_snet_context_create	 (BseSource      *source,
+						  guint           context_handle,
+						  GslTrans       *trans);
+static void      bse_snet_context_connect	 (BseSource      *source,
+						  guint           context_handle,
+						  GslTrans       *trans);
 static void      bse_snet_context_dismiss	 (BseSource      *source,
 						  guint           context_handle,
 						  GslTrans       *trans);
+static GSList*	 snet_context_children		 (BseContainer	 *container);
 
 
 /* --- variables --- */
@@ -132,12 +143,15 @@ bse_snet_class_init (BseSNetClass *class)
   object_class->destroy = bse_snet_do_destroy;
   
   source_class->prepare = bse_snet_prepare;
+  source_class->context_create = bse_snet_context_create;
+  source_class->context_connect = bse_snet_context_connect;
   source_class->context_dismiss = bse_snet_context_dismiss;
   source_class->reset = bse_snet_reset;
   
   container_class->add_item = bse_snet_add_item;
   container_class->remove_item = bse_snet_remove_item;
   container_class->forall_items = bse_snet_forall_items;
+  container_class->context_children = snet_context_children;
   
   bse_object_class_add_param (object_class, "Playback Settings",
 			      PARAM_AUTO_ACTIVATE,
@@ -681,50 +695,73 @@ bse_snet_alloc_cid (BseSNet *snet)
   return cid;
 }
 
-static void
-add_context_data (BseSNet         *self,
-		  guint            context_id,
-		  BseMidiReceiver *midi_receiver,
-		  guint            midi_channel)
+static inline ContextData*
+find_context_data (BseSNet *self,
+		   guint    context_id)
+{
+  gpointer data = bse_source_get_context_data (BSE_SOURCE (self), context_id);
+  return data;
+}
+
+static ContextData*
+create_context_data (BseSNet         *self,
+		     guint            context_id,
+		     guint            parent_context,
+		     BseMidiReceiver *midi_receiver,
+		     guint            midi_channel)
 {
   ContextData *cdata = g_new0 (ContextData, 1);
 
   cdata->context_id = context_id;
   cdata->midi_receiver = bse_midi_receiver_ref (midi_receiver);
   cdata->midi_channel = midi_channel;
-  cdata->voice = G_MAXUINT;
-
-  self->context_data = g_slist_prepend (self->context_data, cdata);
-}
-
-static ContextData*
-find_context_data (BseSNet *self,
-		   guint    context_id)
-{
-  GSList *slist;
-
-  for (slist = self->context_data; slist; slist = slist->next)
+  cdata->n_branches = 0;
+  cdata->branches = NULL;
+  if (parent_context)
     {
-      ContextData *cdata = slist->data;
+      ContextData *pdata = find_context_data (self, parent_context);
+      guint i;
 
-      if (cdata->context_id == context_id)
-	return cdata;
+      i = pdata->n_branches++;
+      pdata->branches = g_renew (guint, pdata->branches, pdata->n_branches);
+      pdata->branches[i] = context_id;
+      cdata->parent_context = parent_context;
     }
-  return NULL;
+  else
+    cdata->parent_context = 0;
+  
+  return cdata;
 }
 
 static void
-remove_context_data (BseSNet *self,
-		     guint    context_id)
+free_context_data (BseSource *source,
+		   gpointer   data,
+		   GslTrans  *trans)
 {
-  ContextData *cdata = find_context_data (self, context_id);
+  BseSNet *self = BSE_SNET (source);
+  ContextData *cdata = data;
 
-  g_return_if_fail (cdata != NULL);
+  g_return_if_fail (cdata->n_branches == 0);
 
-  self->context_data = g_slist_remove (self->context_data, cdata);
-  if (cdata->voice != G_MAXUINT)
-    bse_midi_reciver_discard_voice (cdata->midi_receiver, cdata->voice);
   bse_midi_receiver_unref (cdata->midi_receiver);
+  bse_snet_free_cid (self, cdata->context_id);
+  if (cdata->parent_context)
+    {
+      ContextData *pdata = find_context_data (self, cdata->parent_context);
+      guint i, swap_context;
+
+      g_return_if_fail (pdata->n_branches > 0);
+
+      pdata->n_branches--;
+      swap_context = pdata->branches[pdata->n_branches];
+      for (i = 0; i < pdata->n_branches; i++)
+	if (pdata->branches[i] == cdata->context_id)
+	  {
+	    pdata->branches[i] = swap_context;
+	    break;
+	  }
+    }
+  g_free (cdata->branches);
   g_free (cdata);
 }
 
@@ -734,6 +771,7 @@ bse_snet_create_context (BseSNet         *self,
 			 guint		  midi_channel,
 			 GslTrans        *trans)
 {
+  ContextData *cdata;
   guint cid;
   
   g_return_val_if_fail (BSE_IS_SNET (self), 0);
@@ -745,14 +783,91 @@ bse_snet_create_context (BseSNet         *self,
   g_return_val_if_fail (cid > 0, 0);
   g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), cid) == FALSE, 0);
 
-  add_context_data (self, cid, midi_receiver, midi_channel);
-  bse_source_create_context (BSE_SOURCE (self), cid, trans);
+  cdata = create_context_data (self, cid, 0, midi_receiver, midi_channel);
+  bse_source_create_context_with_data (BSE_SOURCE (self), cid, cdata, free_context_data, trans);
   
   return cid;
 }
 
+guint
+bse_snet_context_clone_branch (BseSNet         *self,
+			       guint            context,
+			       BseSource       *context_merger,
+			       BseMidiReceiver *midi_receiver,
+			       guint            midi_channel,
+			       GslTrans        *trans)
+{
+  GslRing *ring;
+  guint bcid = 0;
+
+  g_return_val_if_fail (BSE_IS_SNET (self), 0);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), 0);
+  g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), context), 0);
+  g_return_val_if_fail (BSE_IS_CONTEXT_MERGER (context_merger), 0);
+  g_return_val_if_fail (bse_source_has_context (context_merger, context), 0);
+  g_return_val_if_fail (BSE_ITEM (context_merger)->parent == BSE_ITEM (self), 0);
+  g_return_val_if_fail (midi_receiver != NULL, 0);
+  g_return_val_if_fail (trans != NULL, 0);
+
+  ring = bse_source_collect_inputs_recursive (context_merger);
+  if (!BSE_SOURCE_COLLECTED (context_merger))
+    {
+      ContextData *cdata;
+      GslRing *node;
+
+      g_assert (self->tmp_context_children == NULL);
+      for (node = ring; node; node = gsl_ring_walk (ring, node))
+	self->tmp_context_children = g_slist_prepend (self->tmp_context_children, node->data);
+      self->tmp_context_children = g_slist_prepend (self->tmp_context_children, context_merger);
+      bse_source_free_collection (ring);
+      bcid = bse_snet_alloc_cid (self);
+      cdata = create_context_data (self, bcid, context, midi_receiver, midi_channel);
+      bse_source_create_context_with_data (BSE_SOURCE (self), bcid, cdata, free_context_data, trans);
+      g_assert (self->tmp_context_children == NULL);
+    }
+  else
+    {
+      g_warning ("%s: context merger forms a cycle with it's inputs", G_STRLOC);
+      bse_source_free_collection (ring);
+    }
+
+
+  return bcid;
+}
+
+gboolean
+bse_snet_context_is_branch (BseSNet *self,
+			    guint    context_id)
+{
+  ContextData *cdata;
+
+  g_return_val_if_fail (BSE_IS_SNET (self), FALSE);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (self), FALSE);
+  g_return_val_if_fail (context_id > 0, FALSE);
+
+  cdata = find_context_data (self, context_id);
+  return cdata ? cdata->parent_context > 0 : FALSE;
+}
+
+static GSList*
+snet_context_children (BseContainer *container)
+{
+  BseSNet *self = BSE_SNET (container);
+  GSList *slist;
+
+  if (self->tmp_context_children)
+    {
+      slist = self->tmp_context_children;
+      self->tmp_context_children = NULL;
+    }
+  else
+    slist = BSE_CONTAINER_CLASS (parent_class)->context_children (container);
+
+  return slist;
+}
+
 BseMidiReceiver*
-bse_sent_get_midi_receiver (BseSNet *self,
+bse_snet_get_midi_receiver (BseSNet *self,
 			    guint    context_handle,
 			    guint   *midi_channel)
 {
@@ -814,16 +929,58 @@ bse_snet_reset (BseSource *source)
 }
 
 static void
+bse_snet_context_create (BseSource *source,
+			 guint      context_handle,
+			 GslTrans  *trans)
+{
+  BseSNet *self = BSE_SNET (source);
+
+  if (self->tmp_context_children)
+    {
+      BseContextMerger *context_merger = self->tmp_context_children->data;
+      ContextData *cdata = find_context_data (self, context_handle);
+
+      g_assert (BSE_IS_CONTEXT_MERGER (context_merger));
+
+      bse_context_merger_set_merge_context (context_merger, cdata->parent_context);
+      /* chain parent class' handler */
+      BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
+      bse_context_merger_set_merge_context (context_merger, 0);
+    }
+  else
+    {
+      /* chain parent class' handler */
+      BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
+    }
+}
+
+static void
+bse_snet_context_connect (BseSource *source,
+			  guint      context_handle,
+			  GslTrans  *trans)
+{
+  BseSNet *self = BSE_SNET (source);
+  ContextData *cdata = find_context_data (self, context_handle);
+  guint i;
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
+
+  for (i = 0; i < cdata->n_branches; i++)
+    bse_source_connect_context (source, cdata->branches[i], trans);
+}
+
+static void
 bse_snet_context_dismiss (BseSource *source,
 			  guint      context_handle,
 			  GslTrans  *trans)
 {
   BseSNet *self = BSE_SNET (source);
-  
+  ContextData *cdata = find_context_data (self, context_handle);
+
+  while (cdata->n_branches)
+    bse_source_dismiss_context (source, cdata->branches[cdata->n_branches - 1], trans);
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
-  
-  remove_context_data (self, context_handle);
-
-  bse_snet_free_cid (self, context_handle);
 }

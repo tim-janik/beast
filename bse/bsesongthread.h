@@ -20,7 +20,6 @@
 
 #include <bse/bsesong.h>
 #include <bse/bsepart.h>
-#include <bse/bseconstant.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,10 +27,9 @@ extern "C" {
 
 
 typedef struct {
-  BsePart       *part;
-  BseInstrument *instrument;
+  BsePart         *part;
+  BseMidiReceiver *midi_receiver;
   guint	         tick;	/* next unhandled part tick */
-  BseConstant   *constant;
 } BseSongSequencerTrack;
 
 #define	bse_song_sequencer_recalc(song)		({})

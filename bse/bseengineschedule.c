@@ -1,25 +1,36 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001, 2002 Tim Janik
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "gslopschedule.h"
 
 
-#include "gslcommon.h"	
+#include "gslcommon.h"
+
+
+/* --- prototypes --- */
+static void	schedule_node		(EngineSchedule	*schedule,
+					 EngineNode	*node,
+					 guint		 leaf_level);
+static void	schedule_cycle		(EngineSchedule	*schedule,
+					 GslRing	*cycle_nodes,
+					 guint		 leaf_level);
+static void 	subschedule_query_node	(EngineSchedule *schedule,
+					 EngineNode     *node,
+					 EngineQuery    *query);
 
 
 /* --- functions --- */
@@ -37,8 +48,22 @@ _engine_schedule_new (void)
   sched->cur_leaf_level = ~0;
   sched->cur_node = NULL;
   sched->cur_cycle = NULL;
-  
+  sched->vnodes = NULL;
+
   return sched;
+}
+
+static inline void
+unschedule_virtual (EngineSchedule *sched,
+		    EngineNode     *vnode)
+{
+  g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (vnode) == TRUE);
+  g_return_if_fail (sched->n_items > 0);
+
+  /* SCHED_DEBUG ("unschedule_virtual(%p)", vnode); */
+  sched->vnodes = gsl_ring_remove (sched->vnodes, vnode);
+  vnode->sched_tag = FALSE;
+  sched->n_items--;
 }
 
 static inline void
@@ -52,7 +77,7 @@ unschedule_node (EngineSchedule *sched,
   g_return_if_fail (leaf_level <= sched->leaf_levels);
   g_return_if_fail (sched->n_items > 0);
   
-  SCHED_DEBUG ("unschedule_node(%p,%u)", node, leaf_level);
+  /* SCHED_DEBUG ("unschedule_node(%p,%u)", node, leaf_level); */
   sched->nodes[leaf_level] = gsl_ring_remove (sched->nodes[leaf_level], node);
   node->sched_leaf_level = 0;
   node->sched_tag = FALSE;
@@ -73,7 +98,7 @@ unschedule_cycle (EngineSchedule *sched,
   g_return_if_fail (leaf_level <= sched->leaf_levels);
   g_return_if_fail (sched->n_items > 0);
   
-  SCHED_DEBUG ("unschedule_cycle(%p,%u,%p)", ring->data, leaf_level, ring);
+  /* SCHED_DEBUG ("unschedule_cycle(%p,%u,%p)", ring->data, leaf_level, ring); */
   sched->nodes[leaf_level] = gsl_ring_remove (sched->nodes[leaf_level], ring);
   for (walk = ring; walk; walk = gsl_ring_walk (ring, walk))
     {
@@ -111,7 +136,9 @@ _engine_schedule_debug_dump (EngineSchedule *sched)
 	    continue;
 	  g_printerr ("  { leaf_level=%u:", i);
 	  for (ring = head; ring; ring = gsl_ring_walk (head, ring))
-	    g_printerr (" node(%p(tag:%u))", ring->data, ((EngineNode*) ring->data)->sched_tag);
+	    g_printerr (" node(%p(i:%u,s:%u))", ring->data,
+			((EngineNode*) ring->data)->integrated,
+			((EngineNode*) ring->data)->sched_tag);
 	  g_printerr (" },\n");
 	}
     }
@@ -128,11 +155,10 @@ _engine_schedule_clear (EngineSchedule *sched)
   g_return_if_fail (sched->secured == FALSE);
   g_return_if_fail (sched->in_pqueue == FALSE);
   
+  while (sched->vnodes)
+    unschedule_virtual (sched, sched->vnodes->data);
   for (i = 0; i < sched->leaf_levels; i++)
     {
-      /* FIXME: each unschedule operation is a list walk, while we
-       * could easily leave the rings alone and free them as a whole
-       */
       while (sched->nodes[i])
 	unschedule_node (sched, sched->nodes[i]->data);
       while (sched->cycles[i])
@@ -175,19 +201,37 @@ _engine_schedule_grow (EngineSchedule *sched,
     }
 }
 
-void
-_engine_schedule_node (EngineSchedule *sched,
-		       EngineNode     *node,
-		       guint           leaf_level)
+static void
+schedule_virtual (EngineSchedule *sched,
+		  EngineNode     *vnode)
+{
+  g_return_if_fail (sched != NULL);
+  g_return_if_fail (sched->secured == FALSE);
+  g_return_if_fail (vnode != NULL);
+  g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (vnode));
+  g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (vnode));
+  
+  /* SCHED_DEBUG ("schedule_virtual(%p)", vnode); */
+  vnode->sched_tag = TRUE;
+  vnode->cleared_ostreams = FALSE;
+  sched->vnodes = gsl_ring_append (sched->vnodes, vnode);
+  sched->n_items++;
+}
+
+static void
+schedule_node (EngineSchedule *sched,
+	       EngineNode     *node,
+	       guint           leaf_level)
 {
   g_return_if_fail (sched != NULL);
   g_return_if_fail (sched->secured == FALSE);
   g_return_if_fail (node != NULL);
   g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (node));
   
-  SCHED_DEBUG ("schedule_node(%p,%u)", node, leaf_level);
+  /* SCHED_DEBUG ("schedule_node(%p,%u)", node, leaf_level); */
   node->sched_leaf_level = leaf_level;
   node->sched_tag = TRUE;
+  node->cleared_ostreams = FALSE;
   if (node->flow_jobs)
     _engine_mnl_reorder (node);
   _engine_schedule_grow (sched, leaf_level);
@@ -196,10 +240,10 @@ _engine_schedule_node (EngineSchedule *sched,
   sched->n_items++;
 }
 
-void
-_engine_schedule_cycle (EngineSchedule *sched,
-			GslRing        *cycle_nodes,
-			guint           leaf_level)
+static void
+schedule_cycle (EngineSchedule *sched,
+		GslRing        *cycle_nodes,
+		guint           leaf_level)
 {
   GslRing *walk;
   
@@ -214,6 +258,7 @@ _engine_schedule_cycle (EngineSchedule *sched,
       g_return_if_fail (!ENGINE_NODE_IS_SCHEDULED (node));
       node->sched_leaf_level = leaf_level;
       node->sched_tag = TRUE;
+      node->cleared_ostreams = FALSE;
       if (node->flow_jobs)
 	_engine_mnl_reorder (node);
     }
@@ -332,6 +377,24 @@ _engine_schedule_unsecure (EngineSchedule *sched)
   sched->cur_leaf_level = ~0;
 }
 
+void
+_engine_schedule_consumer_node (EngineSchedule *schedule,
+				EngineNode     *node)
+{
+  EngineQuery query = { 0, };
+  
+  g_return_if_fail (schedule != NULL);
+  g_return_if_fail (schedule->secured == FALSE);
+  g_return_if_fail (node != NULL);
+  g_return_if_fail (ENGINE_NODE_IS_CONSUMER (node));
+  g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+  
+  subschedule_query_node (schedule, node, &query);
+  g_assert (query.cycles == NULL);	/* paranoid */
+  g_assert (query.cycle_nodes == NULL);	/* paranoid */
+  schedule_node (schedule, node, query.leaf_level);
+}
+
 
 /* --- depth scheduling --- */
 static void
@@ -363,21 +426,21 @@ merge_untagged_node_lists_uniq (GslRing *ring1,
 {
   GslRing *walk;
   
-  /* paranoid, ensure all nodes are untagged */
+  /* paranoid, ensure all nodes are untagged (ring2) */
   for (walk = ring2; walk; walk = gsl_ring_walk (ring2, walk))
     {
       EngineNode *node = walk->data;
       
-      g_assert (node->sched_router_tag == FALSE);
+      g_assert (node->sched_recurse_tag == FALSE);
     }
   
-  /* tag all nodes in list first */
+  /* tag all nodes in ring1 first */
   for (walk = ring1; walk; walk = gsl_ring_walk (ring1, walk))
     {
       EngineNode *node = walk->data;
       
-      g_assert (node->sched_router_tag == FALSE);	/* paranoid check */
-      node->sched_router_tag = TRUE;
+      g_assert (node->sched_recurse_tag == FALSE);	/* paranoid check */
+      node->sched_recurse_tag = TRUE;
     }
   
   /* merge list with missing (untagged) nodes */
@@ -385,7 +448,7 @@ merge_untagged_node_lists_uniq (GslRing *ring1,
     {
       EngineNode *node = walk->data;
       
-      if (node->sched_router_tag == FALSE)
+      if (node->sched_recurse_tag == FALSE)
 	ring1 = gsl_ring_append (ring1, node);
     }
   
@@ -394,13 +457,13 @@ merge_untagged_node_lists_uniq (GslRing *ring1,
     {
       EngineNode *node = walk->data;
       
-      node->sched_router_tag = FALSE;
+      node->sched_recurse_tag = FALSE;
     }
   for (walk = ring2; walk; walk = gsl_ring_walk (ring2, walk))
     {
       EngineNode *node = walk->data;
       
-      node->sched_router_tag = FALSE;
+      node->sched_recurse_tag = FALSE;
     }
   gsl_ring_free (ring2);
   return ring1;
@@ -486,13 +549,83 @@ query_merge_cycles (EngineQuery *query,
       cycle->seen_deferred_node |= ENGINE_NODE_IS_DEFERRED (node);
     }
   
-  /* merge child cycles into ours */
+  /* merge child cycles into our cycle list */
   query->cycles = gsl_ring_concat (query->cycles, child_query->cycles);
   child_query->cycles = NULL;
   
-  /* merge childs cycle nodes from resolved cycles into ours */
+  /* merge child's cycle nodes from resolved cycles into ours */
   query->cycle_nodes = merge_untagged_node_lists_uniq (query->cycle_nodes, child_query->cycle_nodes);
   child_query->cycle_nodes = NULL;
+}
+
+static inline void
+clean_ostreams (EngineNode *node)
+{
+  if (!node->cleared_ostreams && !ENGINE_NODE_IS_SCHEDULED (node))
+    {
+      guint i;
+
+      for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
+	node->module.ostreams[i].connected = FALSE;
+      node->cleared_ostreams = TRUE;
+    }
+}
+
+static inline EngineNode*
+subschedule_skip_virtuals (EngineSchedule *schedule,
+			   EngineNode     *node,
+			   guint          *ostream_p)
+{
+  while (node && ENGINE_NODE_IS_VIRTUAL (node))
+    {
+      EngineInput *input = node->inputs + *ostream_p;
+      if (!ENGINE_NODE_IS_SCHEDULED (node))
+	schedule_virtual (schedule, node);
+      node = input->src_node;
+      *ostream_p = input->src_stream;
+    }
+  return node;
+}
+
+static inline void
+subschedule_child (EngineSchedule *schedule,
+		   EngineNode     *node,
+		   EngineQuery    *query,
+		   EngineNode     *child,
+		   guint           child_ostream)
+{
+  g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+
+  /* flag connected ostream */
+  clean_ostreams (child);
+  child->module.ostreams[child_ostream].connected = TRUE;
+
+  /* schedule away if necessary */
+  if (ENGINE_NODE_IS_SCHEDULED (child))
+    query->leaf_level = MAX (query->leaf_level, child->sched_leaf_level + 1);
+  else if (child->sched_recurse_tag)	/* cycle */
+    query_add_cycle (query, child, node);
+  else			/* nice boy ;) */
+    {
+      EngineQuery child_query = { 0, };
+      
+      subschedule_query_node (schedule, child, &child_query);
+      query->leaf_level = MAX (query->leaf_level, child_query.leaf_level + 1);
+      if (!child_query.cycles)
+	{
+	  g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
+	  schedule_node (schedule, child, child_query.leaf_level);
+	}
+      else if (master_resolve_cycles (&child_query, child))
+	{
+	  g_assert (child == child_query.cycle_nodes->data);	/* paranoid */
+	  schedule_cycle (schedule, child_query.cycle_nodes, child_query.leaf_level);
+	  child_query.cycle_nodes = NULL;
+	}
+      else
+	query_merge_cycles (query, &child_query, node);
+      g_assert (child_query.cycles == NULL && child_query.cycle_nodes == NULL);	/* paranoid */
+    }
 }
 
 static void
@@ -500,113 +633,92 @@ subschedule_query_node (EngineSchedule *schedule,
 			EngineNode     *node,
 			EngineQuery    *query)
 {
-  guint i, j, leaf_level = 0;
+  guint i, j;
   
-  g_return_if_fail (node->sched_router_tag == FALSE);
+  g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
+  g_return_if_fail (node->sched_recurse_tag == FALSE);
+  g_return_if_fail (query->leaf_level == 0);
 
   /* update suspension state if necessary */
   if (node->suspension_update)
     update_suspension_state (node);
+  /* reset ostream[].connected flags */
+  clean_ostreams (node);
   
-  SCHED_DEBUG ("start_query(%p)", node);
-  node->sched_router_tag = TRUE;
+  /* SCHED_DEBUG ("sched_query(%p)", node); */
+  node->sched_recurse_tag = TRUE;
+  /* schedule input stream children */
   for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
     {
       EngineNode *child = node->inputs[i].src_node;
+      guint child_ostream = node->inputs[i].src_stream;
 
-      node->module.istreams[i].connected = child != NULL;
+      child = subschedule_skip_virtuals (schedule, child, &child_ostream);
       if (!child)
-	continue;
-      else if (ENGINE_NODE_IS_SCHEDULED (child))
 	{
-	  leaf_level = MAX (leaf_level, child->sched_leaf_level + 1);
-	  continue;
+	  node->module.istreams[i].connected = FALSE;
+	  node->inputs[i].real_node = NULL;
 	}
-      else if (child->sched_router_tag)	/* cycle */
+      else
 	{
-	  query_add_cycle (query, child, node);
-	}
-      else			/* nice boy ;) */
-	{
-	  EngineQuery child_query = { 0, };
-	  
-	  subschedule_query_node (schedule, child, &child_query);
-	  leaf_level = MAX (leaf_level, child_query.leaf_level + 1);
-	  if (!child_query.cycles)
-	    {
-	      g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
-	      _engine_schedule_node (schedule, child, child_query.leaf_level);
-	    }
-	  else if (master_resolve_cycles (&child_query, child))
-	    {
-	      g_assert (child == child_query.cycle_nodes->data);	/* paranoid */
-	      _engine_schedule_cycle (schedule, child_query.cycle_nodes, child_query.leaf_level);
-	      child_query.cycle_nodes = NULL;
-	    }
-	  else
-	    query_merge_cycles (query, &child_query, node);
-	  g_assert (child_query.cycles == NULL);	/* paranoid */
-	  g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
+	  node->module.istreams[i].connected = TRUE;
+	  node->inputs[i].real_node = child;
+	  node->inputs[i].real_stream = child_ostream;
+	  subschedule_child (schedule, node, query, child, child_ostream);
 	}
     }
+  /* eliminate dead virtual ends in jstreams */
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
-    node->module.jstreams[j].n_connections = node->module.jstreams[j].jcount;
+    {
+      GslJStream *jstream = node->module.jstreams + j;
+
+      /* we check this jstream's connections for virtual dead-ends.
+       * valid connections stay at (are moved to) the array front and
+       * are counted in n_connections, while dead-ends are moved
+       * to the array end and are counted in i. jcount is the number
+       * of total connections for this joint stream.
+       */
+      jstream->n_connections = i = 0;
+      while (jstream->n_connections + i < jstream->jcount)
+	{
+	  EngineJInput *tmp, *jinput = node->jinputs[j] + jstream->n_connections;
+	  EngineNode *child = jinput->src_node;
+	  guint child_ostream = jinput->src_stream;
+
+	  child = subschedule_skip_virtuals (schedule, child, &child_ostream);
+	  if (child)
+	    {
+	      jstream->n_connections++;		/* valid input */
+	      jinput->real_node = child;
+	      jinput->real_stream = child_ostream;
+	    }
+	  else
+	    {
+	      i++;				/* virtual dead-end */
+	      /* swap dead-end out of the way */
+	      tmp = node->jinputs[j] + jstream->jcount - i;
+	      if (jinput != tmp)
+		{
+		  child = tmp->src_node;
+		  child_ostream = tmp->src_stream;
+		  tmp->src_node = jinput->src_node;
+		  tmp->src_stream = jinput->src_stream;
+		  jinput->src_node = child;
+		  jinput->src_stream = child_ostream;
+		}
+	    }
+	}
+    }
+  /* schedule valid jstream connections */
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
     for (i = 0; i < node->module.jstreams[j].n_connections; i++)
       {
-	EngineNode *child = node->jinputs[j][i].src_node;
+	EngineNode *child = node->jinputs[j][i].real_node;
+	guint child_ostream = node->jinputs[j][i].real_stream;
 	
-	if (ENGINE_NODE_IS_SCHEDULED (child))
-	  {
-	    leaf_level = MAX (leaf_level, child->sched_leaf_level + 1);
-	    continue;
-	  }
-	else if (child->sched_router_tag)	/* cycle */
-	  {
-	    query_add_cycle (query, child, node);
-	  }
-	else			/* nice boy ;) */
-	  {
-	    EngineQuery child_query = { 0, };
-	    
-	    subschedule_query_node (schedule, child, &child_query);
-	    leaf_level = MAX (leaf_level, child_query.leaf_level + 1);
-	    if (!child_query.cycles)
-	      {
-		g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
-		_engine_schedule_node (schedule, child, child_query.leaf_level);
-	      }
-	    else if (master_resolve_cycles (&child_query, child))
-	      {
-		g_assert (child == child_query.cycle_nodes->data);	/* paranoid */
-		_engine_schedule_cycle (schedule, child_query.cycle_nodes, child_query.leaf_level);
-		child_query.cycle_nodes = NULL;
-	      }
-	    else
-	      query_merge_cycles (query, &child_query, node);
-	    g_assert (child_query.cycles == NULL);	/* paranoid */
-	    g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
-	  }
+	subschedule_child (schedule, node, query, child, child_ostream);
       }
-  query->leaf_level = leaf_level;
   node->counter = GSL_TICK_STAMP;
-  node->sched_router_tag = FALSE;
-  SCHED_DEBUG ("end_query(%p)", node);
-}
-
-void
-_engine_schedule_consumer_node (EngineSchedule *schedule,
-				EngineNode     *node)
-{
-  EngineQuery query = { 0, };
-  
-  g_return_if_fail (schedule != NULL);
-  g_return_if_fail (schedule->secured == FALSE);
-  g_return_if_fail (node != NULL);
-  g_return_if_fail (ENGINE_NODE_IS_CONSUMER (node));
-  
-  subschedule_query_node (schedule, node, &query);
-  g_assert (query.cycles == NULL);	/* paranoid */
-  g_assert (query.cycle_nodes == NULL);	/* paranoid */
-  _engine_schedule_node (schedule, node, query.leaf_level);
+  node->sched_recurse_tag = FALSE;
+  /* SCHED_DEBUG ("sched_done(%p)", node); */
 }

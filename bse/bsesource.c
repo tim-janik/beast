@@ -20,6 +20,7 @@
 #include        "bsecontainer.h"
 #include        "bsestorage.h"
 #include        "bsemarshal.h"
+#include        "gslcommon.h"
 #include        "gslengine.h"
 #include        <string.h>
 #include        "gbsearcharray.h"
@@ -38,8 +39,16 @@ enum {
 typedef struct
 {
   guint	      id;
-  GslModule  *imodule;
-  GslModule  *omodule;
+  union {
+    struct {
+      GslModule  *imodule;
+      GslModule  *omodule;
+    } mods;
+    struct {
+      gpointer d1;
+      gpointer d2;
+    } data;
+  } u;
 } BseSourceContext;
 
 #define	BSE_SOURCE_N_CONTEXTS(source)	(g_bsearch_array_get_n_nodes ((source)->contexts))
@@ -497,42 +506,84 @@ bse_source_context_ids (BseSource *source,
   return cids;
 }
 
-void
-bse_source_create_context (BseSource *source,
-			   guint      context_handle,
-			   GslTrans  *trans)
+gpointer
+bse_source_get_context_data (BseSource *source,
+			     guint      context_handle)
+{
+  BseSourceContext *context;
+
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (source), NULL);
+  g_return_val_if_fail (!BSE_SOURCE_N_ICHANNELS (source) && !BSE_SOURCE_N_OCHANNELS (source), NULL);
+  g_return_val_if_fail (context_handle > 0, NULL);
+
+  context = context_lookup (source, context_handle);
+  return context ? context->u.data.d2 : NULL;
+}
+
+static void
+source_create_context (BseSource               *source,
+		       guint                    context_handle,
+		       gpointer                 data,
+		       BseSourceFreeContextData free_data,
+		       const gchar             *str_loc,
+		       GslTrans                *trans)
 {
   BseSourceContext *context, key = { 0, };
-
-  g_return_if_fail (BSE_IS_SOURCE (source));
-  g_return_if_fail (BSE_SOURCE_PREPARED (source));
-  g_return_if_fail (context_handle > 0);
-  g_return_if_fail (trans != NULL);
 
   context = context_lookup (source, context_handle);
   if (context)
     {
-      g_warning ("%s: context %u on %p exists already", G_STRLOC, context->id, source);
+      g_warning ("%s: context %u on %p exists already", str_loc, context->id, source);
       return;
     }
 
   g_object_ref (source);
   key.id = context_handle;
-  key.imodule = NULL;
-  key.omodule = NULL;
+  key.u.data.d1 = free_data;
+  key.u.data.d2 = data;
   source->contexts = g_bsearch_array_insert (source->contexts, &context_config, &key);
   BSE_SOURCE_GET_CLASS (source)->context_create (source, key.id, trans);
   context = context_lookup (source, context_handle);
   g_return_if_fail (context != NULL);
-  if (!context->imodule && BSE_SOURCE_N_ICHANNELS (source))
+  if (BSE_SOURCE_N_ICHANNELS (source) && !context->u.mods.imodule)
     g_warning ("%s: source `%s' failed to create %s module",
-	       G_STRLOC,
+	       str_loc,
 	       G_OBJECT_TYPE_NAME (source), "input");
-  if (!context->omodule && BSE_SOURCE_N_OCHANNELS (source))
+  if (BSE_SOURCE_N_OCHANNELS (source) && !context->u.mods.omodule)
     g_warning ("%s: source `%s' failed to create %s module",
-               G_STRLOC,
+               str_loc,
 	       G_OBJECT_TYPE_NAME (source), "output");
   g_object_unref (source);
+}
+
+void
+bse_source_create_context_with_data (BseSource      *source,
+				     guint           context_handle,
+				     gpointer        data,
+				     BseSourceFreeContextData free_data,
+				     GslTrans       *trans)
+{
+  g_return_if_fail (BSE_IS_SOURCE (source));
+  g_return_if_fail (BSE_SOURCE_PREPARED (source));
+  g_return_if_fail (!BSE_SOURCE_N_ICHANNELS (source) && !BSE_SOURCE_N_OCHANNELS (source));
+  g_return_if_fail (context_handle > 0);
+  g_return_if_fail (trans != NULL);
+
+  source_create_context (source, context_handle, data, free_data, G_STRLOC, trans);
+}
+
+void
+bse_source_create_context (BseSource *source,
+			   guint      context_handle,
+			   GslTrans  *trans)
+{
+  g_return_if_fail (BSE_IS_SOURCE (source));
+  g_return_if_fail (BSE_SOURCE_PREPARED (source));
+  g_return_if_fail (context_handle > 0);
+  g_return_if_fail (trans != NULL);
+
+  source_create_context (source, context_handle, NULL, NULL, G_STRLOC, trans);
 }
 
 static void
@@ -560,7 +611,7 @@ bse_source_context_connect_ichannel (BseSource        *source,
 			     gsl_job_jconnect (omodule,
 					       BSE_SOURCE_OCHANNEL_OSTREAM (output->osource,
 									   output->ochannel),
-					       context->imodule,
+					       context->u.mods.imodule,
 					       BSE_SOURCE_ICHANNEL_JSTREAM (source, ichannel)));
 	    }
 	}
@@ -575,7 +626,7 @@ bse_source_context_connect_ichannel (BseSource        *source,
 			 gsl_job_connect (omodule,
 					  BSE_SOURCE_OCHANNEL_OSTREAM (input->idata.osource,
 								       input->idata.ochannel),
-					  context->imodule,
+					  context->u.mods.imodule,
 					  BSE_SOURCE_ICHANNEL_ISTREAM (source, ichannel)));
 	}
     }
@@ -626,12 +677,15 @@ bse_source_real_context_dismiss	(BseSource *source,
 {
   BseSourceContext *context = context_lookup (source, context_handle);
 
-  if (context->imodule)
-    gsl_trans_add (trans, gsl_job_discard (context->imodule));
-  if (context->omodule && context->omodule != context->imodule)
-    gsl_trans_add (trans, gsl_job_discard (context->omodule));
-  context->imodule = NULL;
-  context->omodule = NULL;
+  if (BSE_SOURCE_N_ICHANNELS (source) || BSE_SOURCE_N_OCHANNELS (source))
+    {
+      if (context->u.mods.imodule)
+	gsl_trans_add (trans, gsl_job_discard (context->u.mods.imodule));
+      if (context->u.mods.omodule && context->u.mods.omodule != context->u.mods.imodule)
+	gsl_trans_add (trans, gsl_job_discard (context->u.mods.omodule));
+      context->u.mods.imodule = NULL;
+      context->u.mods.omodule = NULL;
+    }
 }
 
 void
@@ -649,71 +703,36 @@ bse_source_dismiss_context (BseSource *source,
   context = context_lookup (source, context_handle);
   if (context)
     {
+      BseSourceFreeContextData free_cdata = NULL;
+      gpointer cdata = NULL;
       g_object_ref (source);
       BSE_SOURCE_GET_CLASS (source)->context_dismiss (source, context_handle, trans);
       context = context_lookup (source, context_handle);
       g_return_if_fail (context != NULL);
-      if (context->imodule)
+      if (BSE_SOURCE_N_ICHANNELS (source) && context->u.mods.imodule)
 	g_warning ("%s: source `%s' failed to dismiss %s module",
 		   G_STRLOC,
 		   G_OBJECT_TYPE_NAME (source), "input");
-      if (context->omodule)
+      if (BSE_SOURCE_N_OCHANNELS (source) && context->u.mods.omodule)
 	g_warning ("%s: source `%s' failed to dismiss %s module",
 		   G_STRLOC,
 		   G_OBJECT_TYPE_NAME (source), "output");
+      if (BSE_SOURCE_N_OCHANNELS (source) == 0 &&
+	  BSE_SOURCE_N_ICHANNELS (source) == 0)
+	{
+	  free_cdata = context->u.data.d1;
+	  cdata = context->u.data.d2;
+	}
       source->contexts = g_bsearch_array_remove (source->contexts, &context_config,
 						 g_bsearch_array_get_index (source->contexts,
 									    &context_config,
 									    context));
+      if (free_cdata)
+	free_cdata (source, cdata, trans);
       g_object_unref (source);
     }
   else
     g_warning ("%s: no such context %u", G_STRLOC, context_handle);
-}
-
-void
-bse_source_recreate_context (BseSource *source,
-			     guint      context_handle,
-			     GslTrans  *trans)
-{
-  BseSourceContext *context;
-
-  g_return_if_fail (BSE_IS_SOURCE (source));
-  g_return_if_fail (BSE_SOURCE_PREPARED (source));
-  g_return_if_fail (context_handle > 0);
-  g_return_if_fail (trans != NULL);
-
-  context = context_lookup (source, context_handle);
-  if (!context)
-    {
-      g_warning ("%s: no such context %u", G_STRLOC, context_handle);
-      return;
-    }
-
-  g_object_ref (source);
-  BSE_SOURCE_GET_CLASS (source)->context_dismiss (source, context_handle, trans);
-  context = context_lookup (source, context_handle);
-  g_return_if_fail (context != NULL);
-  if (context->imodule)
-    g_warning ("%s: source `%s' failed to dismiss %s module",
-	       G_STRLOC,
-	       G_OBJECT_TYPE_NAME (source), "input");
-  if (context->omodule)
-    g_warning ("%s: source `%s' failed to dismiss %s module",
-	       G_STRLOC,
-	       G_OBJECT_TYPE_NAME (source), "output");
-  BSE_SOURCE_GET_CLASS (source)->context_create (source, context->id, trans);
-  context = context_lookup (source, context_handle);
-  g_return_if_fail (context != NULL);
-  if (!context->imodule && BSE_SOURCE_N_ICHANNELS (source))
-    g_warning ("%s: source `%s' failed to create %s module",
-	       G_STRLOC,
-	       G_OBJECT_TYPE_NAME (source), "input");
-  if (!context->omodule && BSE_SOURCE_N_OCHANNELS (source))
-    g_warning ("%s: source `%s' failed to create %s module",
-               G_STRLOC,
-	       G_OBJECT_TYPE_NAME (source), "output");
-  g_object_unref (source);
 }
 
 void
@@ -746,11 +765,11 @@ bse_source_set_context_imodule (BseSource *source,
       return;
     }
   if (imodule)
-    g_return_if_fail (context->imodule == NULL);
+    g_return_if_fail (context->u.mods.imodule == NULL);
   else
-    g_return_if_fail (context->imodule != NULL);
+    g_return_if_fail (context->u.mods.imodule != NULL);
 
-  context->imodule = imodule;
+  context->u.mods.imodule = imodule;
 }
 
 GslModule*
@@ -761,14 +780,15 @@ bse_source_get_context_imodule (BseSource *source,
 
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   g_return_val_if_fail (BSE_SOURCE_PREPARED (source), NULL);
-
+  g_return_val_if_fail (BSE_SOURCE_N_ICHANNELS (source) > 0, NULL);
+  
   context = context_lookup (source, context_handle);
   if (!context)
     {
       g_warning ("%s: no such context %u", G_STRLOC, context_handle);
       return NULL;
     }
-  return context->imodule;
+  return context->u.mods.imodule;
 }
 
 void
@@ -792,11 +812,11 @@ bse_source_set_context_omodule (BseSource *source,
       return;
     }
   if (omodule)
-    g_return_if_fail (context->omodule == NULL);
+    g_return_if_fail (context->u.mods.omodule == NULL);
   else
-    g_return_if_fail (context->omodule != NULL);
+    g_return_if_fail (context->u.mods.omodule != NULL);
 
-  context->omodule = omodule;
+  context->u.mods.omodule = omodule;
 }
 
 GslModule*
@@ -807,14 +827,15 @@ bse_source_get_context_omodule (BseSource *source,
   
   g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
   g_return_val_if_fail (BSE_SOURCE_PREPARED (source), NULL);
-
+  g_return_val_if_fail (BSE_SOURCE_N_OCHANNELS (source) > 0, NULL);
+  
   context = context_lookup (source, context_handle);
   if (!context)
     {
       g_warning ("%s: no such context %u", G_STRLOC, context_handle);
       return NULL;
     }
-  return context->omodule;
+  return context->u.mods.omodule;
 }
 
 void
@@ -850,6 +871,7 @@ bse_source_flow_access_module (BseSource    *source,
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
   g_return_if_fail (access_func != NULL);
   g_return_if_fail (context_handle > 0);
+  g_return_if_fail (BSE_SOURCE_N_ICHANNELS (source) || BSE_SOURCE_N_OCHANNELS (source));
   
   context = context_lookup (source, context_handle);
   if (!context)
@@ -857,8 +879,8 @@ bse_source_flow_access_module (BseSource    *source,
       g_warning ("%s: no such context %u", G_STRLOC, context_handle);
       return;
     }
-  m1 = context->imodule;
-  m2 = context->omodule;
+  m1 = context->u.mods.imodule;
+  m2 = context->u.mods.omodule;
   if (m1 == m2)
     m1 = NULL;
 
@@ -893,15 +915,16 @@ bse_source_flow_access_modules (BseSource    *source,
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
   g_return_if_fail (access_func != NULL);
-
+  g_return_if_fail (BSE_SOURCE_N_ICHANNELS (source) || BSE_SOURCE_N_OCHANNELS (source));
+  
   for (i = 0; i < BSE_SOURCE_N_CONTEXTS (source); i++)
     {
       BseSourceContext *context = context_nth (source, i);
 
-      if (context->imodule)
-	modules = g_slist_prepend (modules, context->imodule);
-      else if (context->omodule && context->omodule != context->imodule)
-	modules = g_slist_prepend (modules, context->omodule);
+      if (context->u.mods.imodule)
+	modules = g_slist_prepend (modules, context->u.mods.imodule);
+      else if (context->u.mods.omodule && context->u.mods.omodule != context->u.mods.imodule)
+	modules = g_slist_prepend (modules, context->u.mods.omodule);
     }
   
   if (modules)
@@ -933,15 +956,16 @@ bse_source_access_modules (BseSource    *source,
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
   g_return_if_fail (access_func != NULL);
-
+  g_return_if_fail (BSE_SOURCE_N_ICHANNELS (source) || BSE_SOURCE_N_OCHANNELS (source));
+  
   for (i = 0; i < BSE_SOURCE_N_CONTEXTS (source); i++)
     {
       BseSourceContext *context = context_nth (source, i);
 
-      if (context->imodule)
-	modules = g_slist_prepend (modules, context->imodule);
-      else if (context->omodule && context->omodule != context->imodule)
-	modules = g_slist_prepend (modules, context->omodule);
+      if (context->u.mods.imodule)
+	modules = g_slist_prepend (modules, context->u.mods.imodule);
+      else if (context->u.mods.omodule && context->u.mods.omodule != context->u.mods.imodule)
+	modules = g_slist_prepend (modules, context->u.mods.omodule);
     }
 
   if (modules)
@@ -1126,9 +1150,9 @@ bse_source_real_remove_input (BseSource *source,
 	  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
 	    {
 	      BseSourceContext *src_context = context_nth (osource, c);
-	      gsl_trans_add (trans, gsl_job_jdisconnect (context->imodule,
+	      gsl_trans_add (trans, gsl_job_jdisconnect (context->u.mods.imodule,
 							 BSE_SOURCE_ICHANNEL_JSTREAM (source, ichannel),
-							 src_context->omodule,
+							 src_context->u.mods.omodule,
 							 BSE_SOURCE_OCHANNEL_OSTREAM (osource, ochannel)));
 	    }
 	  else
@@ -1137,7 +1161,7 @@ bse_source_real_remove_input (BseSource *source,
 		{
 		  BseSourceContext *context = context_nth (source, c);
 		  
-		  gsl_trans_add (trans, gsl_job_disconnect (context->imodule,
+		  gsl_trans_add (trans, gsl_job_disconnect (context->u.mods.imodule,
 							    BSE_SOURCE_ICHANNEL_ISTREAM (source, ichannel)));
 		}
 	    }
@@ -1195,6 +1219,65 @@ bse_source_unset_input (BseSource *source,
   g_object_unref (source);
 
   return BSE_ERROR_NONE;
+}
+
+static GslRing*
+add_inputs_recurse (GslRing   *ring,
+		    BseSource *source)
+{
+  guint i, j;
+
+  for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
+    {
+      BseSourceInput *input = BSE_SOURCE_INPUT (source, i);
+
+      if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
+	for (j = 0; j < input->jdata.n_joints; j++)
+	  {
+	    BseSource *isource = input->jdata.joints[j].osource;
+	    if (!BSE_SOURCE_COLLECTED (isource))
+	      {
+		BSE_OBJECT_SET_FLAGS (isource, BSE_SOURCE_FLAG_COLLECTED);
+		ring = gsl_ring_append (ring, isource);
+	      }
+	  }
+      else if (input->idata.osource)
+	{
+	  BseSource *isource = input->idata.osource;
+	  if (!BSE_SOURCE_COLLECTED (isource))
+	    {
+	      BSE_OBJECT_SET_FLAGS (isource, BSE_SOURCE_FLAG_COLLECTED);
+	      ring = gsl_ring_append (ring, isource);
+	    }
+	}
+    }
+  return ring;
+}
+
+GslRing*
+bse_source_collect_inputs_recursive (BseSource *source)
+{
+  GslRing *node, *ring = NULL;
+
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+
+  ring = add_inputs_recurse (ring, source);
+  for (node = ring; node; node = gsl_ring_walk (ring, node))
+    ring = add_inputs_recurse (ring, node->data);
+  return ring;
+}
+
+void
+bse_source_free_collection (GslRing *ring)
+{
+  GslRing *node;
+
+  for (node = ring; node; node = gsl_ring_walk (ring, node))
+    {
+      BseSource *source = BSE_SOURCE (node->data);
+      BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_COLLECTED);
+    }
+  gsl_ring_free (ring);
 }
 
 void

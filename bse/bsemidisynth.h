@@ -39,11 +39,6 @@ extern "C" {
 
 
 /* --- BseMidiSynth object --- */
-typedef struct
-{
-  BseSource *midi_synth_input;
-  BseSource *sub_synth;
-} BseMidiSynthVoice;
 struct _BseMidiSynth
 {
   BseSNet	 parent_object;
@@ -51,13 +46,12 @@ struct _BseMidiSynth
   guint		 midi_channel_id;
   guint		 n_voices;
   gfloat	 volume_factor;         /* 1-based factor */
-  BseSNet	*snet;
 
-  /* internal */
-  BseMidiSynthVoice *voices;
-  BseSource	    *lmixer;
-  BseSource	    *rmixer;
-  BseSource	    *pcm_out;
+  BseSource	*voice_input;
+  BseSource	*voice_switch;
+  BseSource	*context_merger;
+  BseSource	*output;
+  BseSource	*sub_synth;
 };
 struct _BseMidiSynthClass
 {

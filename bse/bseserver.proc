@@ -89,21 +89,24 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseServer *self = g_value_get_object (in_values++);
-  BseMidiNotifier *mrec;
+  BseMidiReceiver *midi_receiver;
+  BseMidiNotifier *notifier;
 
   /* check parameters */
   if (!BSE_IS_SERVER (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
-  mrec = _bse_midi_get_notifier ();
-  if (!mrec)
+  midi_receiver = bse_server_get_midi_receiver (self, "default");
+  notifier = bse_midi_receiver_get_notifier (midi_receiver);
+  if (!notifier)
     {
-      mrec = g_object_new (BSE_TYPE_MIDI_NOTIFIER, NULL);
-      _bse_midi_set_notifier (mrec);
+      notifier = g_object_new (BSE_TYPE_MIDI_NOTIFIER, NULL);
+      bse_midi_receiver_set_notifier (midi_receiver, notifier);
+      g_object_unref (notifier);
     }
 
   /* set output parameters */
-  g_value_set_object (out_values++, G_OBJECT (mrec));
+  g_value_set_object (out_values++, G_OBJECT (notifier));
   
   return BSE_ERROR_NONE;
 }

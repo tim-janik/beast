@@ -69,15 +69,16 @@ iter_free (gpointer boxed)
 }
 
 static GType
-bsw_iter_make_type (const gchar  *type_name,
-		    BswIterFuncs *funcs)
+bsw_iter_make_type (const gchar      *type_name,
+		    BswIterFuncs     *funcs,
+		    BseGlueBoxedToSeq b2seq)
 {
   GType type;
 
   g_return_val_if_fail (strncmp ("BswIter", type_name, 7) == 0, 0);
   g_return_val_if_fail (funcs != NULL, 0);
 
-  type = g_boxed_type_register_static (type_name, iter_copy, iter_free);
+  type = bse_glue_make_rosequence (type_name, iter_copy, iter_free, b2seq);
 
   if (!iter_func_quark)
     iter_func_quark = g_quark_from_static_string ("BswIterFuncs");
@@ -235,6 +236,21 @@ bsw_iter_check_is_a (const BswIter *iter,
 
 
 /* --- discrete iterators --- */
+static GslGlueSeq*
+iter_int_to_sequence (gpointer boxed)
+{
+  BswIterInt *iter = boxed;
+  GslGlueSeq *seq = gsl_glue_seq ();
+
+  bsw_iter_rewind (iter);
+  for (; bsw_iter_n_left (iter); bsw_iter_next (iter))
+    {
+      GslGlueValue val = gsl_glue_value_int (bsw_iter_get_int (iter));
+      gsl_glue_seq_take_append (seq, &val);
+    }
+  return seq;
+}
+
 GType
 bsw_iter_int_get_type (void)
 {
@@ -245,7 +261,7 @@ bsw_iter_int_get_type (void)
 	(BswIterCopyItem) NULL,
 	(BswIterFreeItem) NULL,
       };
-      type = bsw_iter_make_type ("BswIterInt", &funcs);
+      type = bsw_iter_make_type ("BswIterInt", &funcs, iter_int_to_sequence);
     }
   return type;
 }
@@ -273,6 +289,21 @@ iter_string_free (BswIterItem item)
   g_free (item.v_string);
 }
 
+static GslGlueSeq*
+iter_string_to_sequence (gpointer boxed)
+{
+  BswIterString *iter = boxed;
+  GslGlueSeq *seq = gsl_glue_seq ();
+
+  bsw_iter_rewind (iter);
+  for (; bsw_iter_n_left (iter); bsw_iter_next (iter))
+    {
+      GslGlueValue val = gsl_glue_value_string (bsw_iter_get_string (iter));
+      gsl_glue_seq_take_append (seq, &val);
+    }
+  return seq;
+}
+
 GType
 bsw_iter_string_get_type (void)
 {
@@ -283,7 +314,7 @@ bsw_iter_string_get_type (void)
 	iter_string_copy,
 	iter_string_free,
       };
-      type = bsw_iter_make_type ("BswIterString", &funcs);
+      type = bsw_iter_make_type ("BswIterString", &funcs, iter_string_to_sequence);
     }
   return type;
 }
@@ -372,6 +403,21 @@ bsw_param_spec_proxy (const gchar *name,
   return pspec;
 }
 
+static GslGlueSeq*
+iter_proxy_to_sequence (gpointer boxed)
+{
+  BswIterProxy *iter = boxed;
+  GslGlueSeq *seq = gsl_glue_seq ();
+
+  bsw_iter_rewind (iter);
+  for (; bsw_iter_n_left (iter); bsw_iter_next (iter))
+    {
+      GslGlueValue val = gsl_glue_value_proxy (bsw_iter_get_proxy (iter));
+      gsl_glue_seq_take_append (seq, &val);
+    }
+  return seq;
+}
+
 GType
 bsw_iter_proxy_get_type (void)
 {
@@ -382,7 +428,7 @@ bsw_iter_proxy_get_type (void)
         (BswIterCopyItem) NULL,
 	(BswIterFreeItem) NULL,
       };
-      type = bsw_iter_make_type ("BswIterProxy", &funcs);
+      type = bsw_iter_make_type ("BswIterProxy", &funcs, iter_proxy_to_sequence);
     }
   return type;
 }
@@ -431,20 +477,43 @@ bsw_part_note_free (BswPartNote *pnote)
     gsl_delete_struct (BswPartNote, pnote);
 }
 
+static GslGlueRec*
+part_note_to_record (gpointer crecord)
+{
+  BswPartNote *note = crecord;
+  GslGlueValue val;
+  GslGlueRec *rec;
+
+  rec = gsl_glue_rec ();
+  val = gsl_glue_value_int (note->tick);	// FIXME: uint
+  gsl_glue_rec_take (rec, "tick", &val);
+  val = gsl_glue_value_int (note->duration);	// FIXME: uint
+  gsl_glue_rec_take (rec, "duration", &val);
+  val = gsl_glue_value_float (note->freq);
+  gsl_glue_rec_take (rec, "frequency", &val);
+  val = gsl_glue_value_float (note->velocity);
+  gsl_glue_rec_take (rec, "velocity", &val);
+  val = gsl_glue_value_bool (note->selected);
+  gsl_glue_rec_take (rec, "selected", &val);
+  return rec;
+}
+
 GType
 bsw_part_note_get_type (void)
 {
   static GType type = 0;
   if (!type)
-    type = g_boxed_type_register_static ("BswPartNote", part_note_copy, (GBoxedFreeFunc) bsw_part_note_free);
+    type = bse_glue_make_rorecord ("BswPartNote", part_note_copy, (GBoxedFreeFunc) bsw_part_note_free,
+				   part_note_to_record);
   return type;
 }
 
 BswPartNote*
-bsw_part_note (guint  tick,
-	       guint  duration,
-	       gfloat freq,
-	       gfloat velocity)
+bsw_part_note (guint    tick,
+	       guint    duration,
+	       gfloat   freq,
+	       gfloat   velocity,
+	       gboolean selected)
 {
   BswPartNote *pnote = gsl_new_struct (BswPartNote, 1);
 
@@ -452,6 +521,7 @@ bsw_part_note (guint  tick,
   pnote->freq = freq;
   pnote->duration = duration;
   pnote->velocity = velocity;
+  pnote->selected = selected != FALSE;
 
   return pnote;
 }
@@ -471,6 +541,21 @@ iter_part_note_free (BswIterItem item)
     g_boxed_free (BSW_TYPE_PART_NOTE, item.v_pointer);
 }
 
+static GslGlueSeq*
+iter_part_note_to_sequence (gpointer boxed)
+{
+  BswIterPartNote *iter = boxed;
+  GslGlueSeq *seq = gsl_glue_seq ();
+
+  bsw_iter_rewind (iter);
+  for (; bsw_iter_n_left (iter); bsw_iter_next (iter))
+    {
+      GslGlueValue val = bse_glue_boxed_to_value (BSW_TYPE_PART_NOTE, bsw_iter_get_part_note (iter));
+      gsl_glue_seq_take_append (seq, &val);
+    }
+  return seq;
+}
+
 GType
 bsw_iter_part_note_get_type (void)
 {
@@ -481,13 +566,13 @@ bsw_iter_part_note_get_type (void)
 	iter_part_note_copy,
 	iter_part_note_free,
       };
-      type = bsw_iter_make_type ("BswIterPartNote", &funcs);
+      type = bsw_iter_make_type ("BswIterPartNote", &funcs, iter_part_note_to_sequence);
     }
   return type;
 }
 
 BswPartNote*
-bsw_iter_get_part_note (BswIterString *iter)
+bsw_iter_get_part_note (BswIterPartNote *iter)
 {
   g_return_val_if_fail (BSW_IS_ITER_PART_NOTE (iter), NULL);
   g_return_val_if_fail (iter->pos < iter->n_items, NULL);
@@ -544,34 +629,34 @@ note_description_to_glue_rec (gpointer crecord)
   rec = gsl_glue_rec ();
   /* note */
   val = gsl_glue_value_int (info->note);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "note", &val);
   /* octave */
   val = gsl_glue_value_int (info->octave);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "octave", &val);
   /* freq */
   val = gsl_glue_value_float (info->freq);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "frequency", &val);
   /* fine_tune */
   val = gsl_glue_value_int (info->fine_tune);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "fine_tune", &val);
   /* half_tone */
   val = gsl_glue_value_int (info->half_tone);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "half_tone", &val);
   /* upshift */
   val = gsl_glue_value_bool (info->upshift);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "upshift", &val);
   /* letter */
   val = gsl_glue_value_int (info->letter);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "letter", &val);
   /* name */
   val = gsl_glue_value_string (info->name);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "name", &val);
   /* max_fine_tune */
   val = gsl_glue_value_int (info->max_fine_tune);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "max_fine_tune", &val);
   /* kammer_note */
   val = gsl_glue_value_int (info->kammer_note);
-  gsl_glue_rec_take_append (rec, &val);
+  gsl_glue_rec_take (rec, "kammer_note", &val);
   
   return rec;
 }

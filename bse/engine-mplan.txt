@@ -157,6 +157,21 @@ e.g. by allowing suspension only at block boundaries, by integrating
 one recusion pass with other recursive tasks on the graph
 (scheduling), and by doing various flag tests during the passes.
 
+Virtual modules
+---------------
+In order to ease implementations of object networks which facilitate
+the engine for actual calculation, virtual modules are supported.
+Virtual modules are not scheduled and thus don't consume processor
+cycles durign calculation phase. Their input/output streams are
+mere reconnection points for streams of real processing modules.
+As virtual modules are not part of the active calculation schedule,
+flow and suspension jobs may not be queued on them, but input recursive
+suspension propagation (and thus indirect resumption) propagates
+correctly across virtual modules (though not seperately along their
+input/output streams).
+To let automatic suspension state propagate per-stream, multiple
+virtual modules can be used.
+
 Deferred Node Implementation Considerations:
 --------------------------------------------
 For deferred nodes, the number n specifying the amount of output
@@ -235,7 +250,6 @@ The engine provides API entry points to:
   such as poll(2)
 - check whether dispatching is necessary
 - dispatch outstanding work to be performed by the engine
-FIXME: needs description of pollfd/callback jobs
 
 
 TODO:
@@ -244,7 +258,12 @@ TODO:
   and are skipped upon processing (gsl_module_new_virtual() simply
   creates a pass-through node currently)
 - self-input cycles need to be resolved in parent as well
+- needs description of pollfd/callback jobs
+- load control for slave threads
 
+
+Jul 15 2002	TimJanik
+	* describe virtual modules
 Jun 30 2002	Tim Janik
 	* describe reset()
 	* describe suspension

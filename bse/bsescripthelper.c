@@ -246,7 +246,7 @@ bse_script_check_client_msg (GslGlueCodec *codec,
       *handled = TRUE;
       if (value.glue_type != GSL_GLUE_TYPE_SEQ ||
 	  !seq || seq->n_elements < 7 ||
-	  seq->element_type != GSL_GLUE_TYPE_STRING)
+	  !gsl_glue_seq_check_elements (seq, GSL_GLUE_TYPE_STRING))
 	retval = gsl_glue_value_string ("invalid arguments supplied");
       else
 	{

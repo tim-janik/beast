@@ -62,7 +62,6 @@ struct _BseMidiHandle	/* this should be nuked, it's useless */
   guint			 writable : 1;
   guint			 readable : 1;
   guint			 running_thread : 1;
-  BseMidiDecoder	*decoder;
 };
 struct _BseMidiDevice
 {
@@ -78,16 +77,14 @@ struct _BseMidiDeviceClass
   BseObjectClass	parent_class;
 
   guint			driver_rating;
-  BseErrorType	(*open)		(BseMidiDevice	*mdev,
-				 BseMidiDecoder	*decoder);
+  BseErrorType	(*open)		(BseMidiDevice	*mdev);
   void		(*suspend)	(BseMidiDevice	*mdev);
   void		(*trigger)	(BseMidiDevice	*mhandle);
 };
 
 
 /* --- prototypes --- */
-BseErrorType	bse_midi_device_open		(BseMidiDevice		*mdev,
-						 BseMidiDecoder		*decoder);
+BseErrorType	bse_midi_device_open		(BseMidiDevice		*mdev);
 void		bse_midi_device_suspend		(BseMidiDevice		*mdev);
 void		bse_midi_device_trigger		(BseMidiDevice		*mdev);
 

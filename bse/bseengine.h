@@ -1,20 +1,19 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001, 2002 Tim Janik
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #ifndef __GSL_ENGINE_H__
 #define __GSL_ENGINE_H__
@@ -112,7 +111,9 @@ struct _GslOStream
 /* --- interface (UserThread functions) --- */
 GslModule*	gsl_module_new		(const GslClass	 *klass,
 					 gpointer	  user_data);
-GslModule*	gsl_module_new_virtual	(guint		  n_iostreams);
+GslModule*	gsl_module_new_virtual	(guint		  n_iostreams,
+					 gpointer	  user_data,
+					 GslFreeFunc	  free_data);
 guint64		gsl_module_tick_stamp	(GslModule	 *module);
 GslJob*		gsl_job_connect		(GslModule	 *src_module,
 					 guint		  src_ostream,
@@ -128,6 +129,8 @@ GslJob*		gsl_job_jdisconnect	(GslModule	 *dest_module,
 					 guint		  dest_jstream,
 					 GslModule	 *src_module,
 					 guint		  src_ostream);
+GslJob*		gsl_job_kill_inputs	(GslModule	 *module);
+GslJob*		gsl_job_kill_outputs	(GslModule	 *module);
 GslJob*		gsl_job_integrate	(GslModule	 *module);
 GslJob*		gsl_job_discard		(GslModule	 *module);
 GslJob*		gsl_job_access		(GslModule	 *module,
@@ -184,14 +187,16 @@ void	        gsl_engine_dispatch	(void);
 
 
 /* --- miscellaneous --- */
-void	      gsl_engine_garbage_collect	(void);
-void	      gsl_engine_wait_on_trans		(void);
-#define	      gsl_engine_block_size()		((const guint)	gsl_externvar_bsize + 0)
-#define	      gsl_engine_sample_freq()		((const guint)	gsl_externvar_sample_freq + 0)
-#define	      gsl_engine_sub_sample_mask()	((const guint)	gsl_externvar_sub_sample_mask + 0)
-#define	      gsl_engine_sub_sample_steps()	((const guint)	gsl_externvar_sub_sample_steps + 0)
-#define	      gsl_engine_sub_sample_test(ptr)	(((guint) (ptr)) & gsl_engine_sub_sample_mask ())
-#define	      GSL_SUB_SAMPLE_MATCH(ptr,sspatrn)	(gsl_engine_sub_sample_test (ptr) == (sspatrn))
+gboolean      gsl_engine_has_garbage		 (void);
+void	      gsl_engine_garbage_collect	 (void);
+void	      gsl_engine_wait_on_trans		 (void);
+guint64	      gsl_engine_tick_stamp_from_systime (guint64	systime);
+#define	      gsl_engine_block_size()		 ((const guint)	gsl_externvar_bsize + 0)
+#define	      gsl_engine_sample_freq()		 ((const guint)	gsl_externvar_sample_freq + 0)
+#define	      gsl_engine_sub_sample_mask()	 ((const guint)	gsl_externvar_sub_sample_mask + 0)
+#define	      gsl_engine_sub_sample_steps()	 ((const guint)	gsl_externvar_sub_sample_steps + 0)
+#define	      gsl_engine_sub_sample_test(ptr)	 (((guint) (ptr)) & gsl_engine_sub_sample_mask ())
+#define	      GSL_SUB_SAMPLE_MATCH(ptr,sspatrn)	 (gsl_engine_sub_sample_test (ptr) == (sspatrn))
 
 
 /*< private >*/

@@ -1,20 +1,19 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001, 2002 Tim Janik
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #ifndef __GSL_ENGINE_UTIL_H__
 #define __GSL_ENGINE_UTIL_H__
@@ -42,11 +41,12 @@ gfloat*		gsl_engine_const_values		(gfloat		value);
 
 /* --- MasterThread --- */
 void		_engine_recycle_const_values	(void);
+void		_engine_node_collect_flow_jobs	(EngineNode	*node);
 /* master node list */
 void		_engine_mnl_remove		(EngineNode	*node);
 void		_engine_mnl_reorder		(EngineNode	*node);
 void		_engine_mnl_integrate		(EngineNode	*node);
-#define	GSL_MNL_HEAD_NODE(node)			((node)->flow_jobs && !(node)->sched_tag)
+#define	GSL_MNL_UNSCHEDULED_FLOW_NODE(node)	((node)->flow_jobs && !(node)->sched_tag)
 EngineNode*	_engine_mnl_head		(void);
 
 /* communication routines for threads:

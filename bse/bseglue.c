@@ -64,22 +64,42 @@ bse_glue_make_rorecord (const gchar      *rec_name,
   return type;
 }
 
+GType
+bse_glue_make_rosequence (const gchar      *seq_name,
+			  GBoxedCopyFunc    copy,
+			  GBoxedFreeFunc    free,
+			  BseGlueBoxedToSeq to_sequence)
+{
+  GType type;
+
+  type = g_boxed_type_register_static (seq_name, copy, free);
+  g_type_set_qdata (type, g_quark_from_string ("BseGlueBoxedToSeq"), to_sequence);
+
+  return type;
+}
+
 GslGlueValue
 bse_glue_boxed_to_value (GType    boxed_type,
-			 gpointer crecord)
+			 gpointer boxed)
 {
   BseGlueBoxedToRec b2rec;
+  BseGlueBoxedToSeq b2seq;
   GslGlueValue zero_value = { 0, };
   
   g_return_val_if_fail (G_TYPE_IS_BOXED (boxed_type) && G_TYPE_IS_DERIVED (boxed_type), zero_value);
-  g_return_val_if_fail (crecord != NULL, zero_value);
+  g_return_val_if_fail (boxed != NULL, zero_value);
 
   b2rec = g_type_get_qdata (boxed_type, g_quark_from_string ("BseGlueBoxedToRec"));
+  b2seq = g_type_get_qdata (boxed_type, g_quark_from_string ("BseGlueBoxedToSeq"));
   if (b2rec)
-    return gsl_glue_value_take_rec (b2rec (crecord));
-
-  /* fallback: empty record */
-  return gsl_glue_value_take_rec (gsl_glue_rec ());
+    return gsl_glue_value_take_rec (b2rec (boxed));
+  else if (b2seq)
+    return gsl_glue_value_take_seq (b2seq (boxed));
+  else /* urm, bad */
+    {
+      g_warning ("unable to convert boxed type `%s' to record or sequence", g_type_name (boxed_type));
+      return zero_value;
+    }
 }
 
 GslGlueContext*
@@ -333,7 +353,15 @@ param_from_pspec (GslGlueParam *param,
                             g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
       break;
     case G_TYPE_BOXED:
-      gsl_glue_param_rec (param, pspec->name);
+      if (g_type_get_qdata (G_PARAM_SPEC_VALUE_TYPE (pspec), g_quark_from_string ("BseGlueBoxedToRec")))
+	gsl_glue_param_rec (param, pspec->name);
+      else if (g_type_get_qdata (G_PARAM_SPEC_VALUE_TYPE (pspec), g_quark_from_string ("BseGlueBoxedToSeq")))
+	gsl_glue_param_seq (param, pspec->name);
+      else
+	{
+	  g_warning ("unable to create glue param for boxed type `%s'", g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+	  return FALSE;
+	}
       break;
     default:
       return FALSE;
@@ -685,12 +713,12 @@ bglue_exec_proc (GslGlueContext *context,
     {
       GValue *ivalues = g_new0 (GValue, proc->n_in_pspecs);
       GValue *ovalues = g_new0 (GValue, proc->n_out_pspecs);
-      guint i, n_fields = call->params ? call->params->n_fields : 0;
+      guint i, n_elements = call->params ? call->params->n_elements : 0;
       BseErrorType error;
       
       for (i = 0; i < proc->n_in_pspecs; i++)
         glue_initset_gvalue (ivalues + i, proc->in_pspecs[i],
-                             i < n_fields ? call->params->fields[i] : zero_value);
+                             i < n_elements ? call->params->elements[i] : zero_value);
       for (i = 0; i < proc->n_out_pspecs; i++)
         g_value_init (ovalues + i, G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]));
       
@@ -732,16 +760,16 @@ bglue_signal_closure_invalidated (gpointer  data,
   
   if (handler_id)
     {
-      GslGlueRec *rec;
+      GslGlueSeq *args;
       GslGlueValue val;
 
       g_object_set_qdata (G_OBJECT (item), quark, 0);
-      rec = gsl_glue_rec ();
+      args = gsl_glue_seq ();
       val = gsl_glue_value_proxy (BSE_OBJECT_ID (item));
-      gsl_glue_rec_take_append (rec, &val);
+      gsl_glue_seq_take_append (args, &val);
       gsl_glue_context_push (((BGlueClosure*) closure)->context);
-      gsl_glue_enqueue_signal_event (signal, rec, TRUE);
-      gsl_glue_free_rec (rec);
+      gsl_glue_enqueue_signal_event (signal, args, TRUE);
+      gsl_glue_free_seq (args);
       gsl_glue_context_pop ();
     }
 }
@@ -755,19 +783,19 @@ bglue_signal_closure_marshal (GClosure       *closure,
 			      gpointer        marshal_data)
 {
   gchar *signal = ((BGlueClosure*) closure)->signal;
-  GslGlueRec *rec;
+  GslGlueSeq *args;
   guint i;
   
-  rec = gsl_glue_rec ();
+  args = gsl_glue_seq ();
   for (i = 0; i < n_param_values; i++)
     {
       GslGlueValue val = { 0, };
 
       glue_value_from_gvalue (param_values + i, NULL, &val);
-      gsl_glue_rec_take_append (rec, &val);
+      gsl_glue_seq_take_append (args, &val);
     }
   gsl_glue_context_push (((BGlueClosure*) closure)->context);
-  gsl_glue_enqueue_signal_event (signal, rec, FALSE);
+  gsl_glue_enqueue_signal_event (signal, args, FALSE);
   /* this is for the curious ;) */
   if (!bse_procedure_exec_status_blocked ())
     {
@@ -775,7 +803,7 @@ bglue_signal_closure_marshal (GClosure       *closure,
       bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, signame, -1, BSE_ERROR_NONE);
       g_free (signame);
     }
-  gsl_glue_free_rec (rec);
+  gsl_glue_free_seq (args);
   gsl_glue_context_pop ();
 }
 
@@ -857,22 +885,22 @@ bglue_client_msg (GslGlueContext *context,
     ;
   else if (strcmp (msg, "bse-set-prop") == 0)
     {
-      GslGlueRec *rec = value.value.v_rec;
+      GslGlueSeq *args = value.value.v_seq;
 
-      if (value.glue_type != GSL_GLUE_TYPE_REC ||
-          !rec || rec->n_fields != 3 ||
-          rec->fields[0].glue_type != GSL_GLUE_TYPE_PROXY ||
-          rec->fields[1].glue_type != GSL_GLUE_TYPE_STRING)
+      if (value.glue_type != GSL_GLUE_TYPE_SEQ ||
+          !args || args->n_elements != 3 ||
+          args->elements[0].glue_type != GSL_GLUE_TYPE_PROXY ||
+          args->elements[1].glue_type != GSL_GLUE_TYPE_STRING)
         retval = gsl_glue_value_string ("invalid arguments supplied");
       else
         {
           GValue gvalue = { 0, };
-          GObject *object = bse_object_from_id (rec->fields[0].value.v_proxy);
+          GObject *object = bse_object_from_id (args->elements[0].value.v_proxy);
           GParamSpec *pspec = NULL;
 
           if (BSE_IS_ITEM (object))
-            pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (object), rec->fields[1].value.v_string);
-          if (pspec && glue_initset_gvalue (&gvalue, pspec, rec->fields[2]))
+            pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (object), args->elements[1].value.v_string);
+          if (pspec && glue_initset_gvalue (&gvalue, pspec, args->elements[2]))
             {
               g_object_set_property (object, pspec->name, &gvalue);
               g_value_unset (&gvalue);

@@ -25,18 +25,23 @@
 extern "C" {
 #endif /* __cplusplus */
 
-GslGlueContext*		bse_glue_context	(void);
+GslGlueContext*		bse_glue_context	 (void);
 
-typedef GslGlueRec* (*BseGlueBoxedToRec)	(gpointer	crecord);
+typedef GslGlueRec* (*BseGlueBoxedToRec)	 (gpointer	    boxed);
+typedef GslGlueSeq* (*BseGlueBoxedToSeq)	 (gpointer	    boxed);
 
-guint			bse_glue_enum_index	(GType		    enum_type,
-						 gint		    enum_value);
-GType			bse_glue_make_rorecord	(const gchar	   *rec_name,
-						 GBoxedCopyFunc	    copy,
-						 GBoxedFreeFunc	    free,
-						 BseGlueBoxedToRec  to_record);
-GslGlueValue		bse_glue_boxed_to_value	(GType		    boxed_type,
-						 gpointer	    crecord);
+guint			bse_glue_enum_index	 (GType		    enum_type,
+						  gint		    enum_value);
+GType			bse_glue_make_rorecord	 (const gchar	   *rec_name,
+						  GBoxedCopyFunc    copy,
+						  GBoxedFreeFunc    free,
+						  BseGlueBoxedToRec to_record);
+GType			bse_glue_make_rosequence (const gchar	   *seq_name,
+						  GBoxedCopyFunc    copy,
+						  GBoxedFreeFunc    free,
+						  BseGlueBoxedToSeq to_sequence);
+GslGlueValue		bse_glue_boxed_to_value	 (GType		    boxed_type,
+						  gpointer	    boxed);
 
 
 #ifdef __cplusplus

@@ -1,20 +1,19 @@
 /* GSL Engine - Flow module operation engine
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001, 2002 Tim Janik
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "gslengine.h"
 
@@ -28,6 +27,16 @@ static void wakeup_master (void);
 
 
 /* --- UserThread --- */
+/**
+ * gsl_module_new
+ * @klass:   the GslClass which determines the module's behaviour
+ * @RETURNS: a newly created module
+ *
+ * Create a new module with methods specified in @klass and
+ * a user_data field set to @user_data. The returned module
+ * can then be integrated into the engine with gsl_job_integrate().
+ * This function is MT-safe and may be called from any thread.
+ */
 GslModule*
 gsl_module_new (const GslClass *klass,
 		gpointer        user_data)
@@ -80,6 +89,7 @@ gsl_module_new (const GslClass *klass,
  * The module specific tick stamp is updated to gsl_tick_stamp() +
  * @n_values every time its GslProcessFunc() function was
  * called. See also gsl_tick_stamp().
+ * This function is MT-safe and may be called from any thread.
  */
 guint64
 gsl_module_tick_stamp (GslModule *module)
@@ -95,6 +105,7 @@ gsl_module_tick_stamp (GslModule *module)
  * @Returns: New job suitable for gsl_trans_add()
  *
  * Create a new transaction job to integrate @module into the engine.
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_job_integrate (GslModule *module)
@@ -117,6 +128,7 @@ gsl_job_integrate (GslModule *module)
  *
  * Create a new transaction job which removes @module from the
  * engine and destroys it.
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_job_discard (GslModule *module)
@@ -133,6 +145,52 @@ gsl_job_discard (GslModule *module)
 }
 
 /**
+ * gsl_job_kill_inputs
+ * @module: Module with input streams
+ * @Returns: New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which causes all connected input streams
+ * of @module to be disconnected, like it's done upon discarding the module.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslJob*
+gsl_job_kill_inputs (GslModule *module)
+{
+  GslJob *job;
+  
+  g_return_val_if_fail (module != NULL, NULL);
+
+  job = gsl_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_KILL_INPUTS;
+  job->data.node = ENGINE_NODE (module);
+
+  return job;
+}
+
+/**
+ * gsl_job_kill_outputs
+ * @module: Module with output streams
+ * @Returns: New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which causes all connected output streams
+ * of @module to be disconnected, like it's done upon discarding the module.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslJob*
+gsl_job_kill_outputs (GslModule *module)
+{
+  GslJob *job;
+  
+  g_return_val_if_fail (module != NULL, NULL);
+
+  job = gsl_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_KILL_OUTPUTS;
+  job->data.node = ENGINE_NODE (module);
+
+  return job;
+}
+
+/**
  * gsl_job_connect
  * @src_module: Module with output stream
  * @src_ostream: Index of output stream of @src_module
@@ -144,6 +202,7 @@ gsl_job_discard (GslModule *module)
  * of module @src_module to the input stream @dest_istream of module @dest_module
  * (it is an error if the input stream is already connected by the time the job
  * is executed).
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_job_connect (GslModule *src_module,
@@ -168,6 +227,19 @@ gsl_job_connect (GslModule *src_module,
   return job;
 }
 
+/**
+ * gsl_job_jconnect
+ * @src_module: Module with output stream
+ * @src_ostream: Index of output stream of @src_module
+ * @dest_module: Module with unconnected joint input stream
+ * @dest_jstream: Index of joint input stream of @dest_module
+ * @Returns: New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which connects the ouput stream @src_ostream
+ * of module @src_module to the joint input stream @dest_istream of module
+ * @dest_module.
+ * This function is MT-safe and may be called from any thread.
+ */
 GslJob*
 gsl_job_jconnect (GslModule *src_module,
 		  guint      src_ostream,
@@ -200,6 +272,7 @@ gsl_job_jconnect (GslModule *src_module,
  * Create a new transaction job which causes the input stream @dest_istream
  * of @dest_module to be disconnected (it is an error if the input stream isn't
  * connected by the time the job is executed).
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_job_disconnect (GslModule *dest_module,
@@ -220,6 +293,22 @@ gsl_job_disconnect (GslModule *dest_module,
   return job;
 }
 
+/**
+ * gsl_job_jdisconnect
+ * @dest_module: Module with connected input stream
+ * @dest_jstream: Index of input stream of @dest_module
+ * @src_module: Module with output stream
+ * @src_ostream: Index of output stream of @src_module
+ * @Returns: New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which causes the joint input
+ * stream @dest_jstream of @dest_module to be disconnected from
+ * the output stream @src_ostream of @src_module (it is an
+ * error if this connection isn't established by the time the
+ * job is executed). Beware, the order of @dest_module and
+ * @src_module is different from gsl_job_jconnect().
+ * This function is MT-safe and may be called from any thread.
+ */
 GslJob*
 gsl_job_jdisconnect (GslModule *dest_module,
 		     guint      dest_jstream,
@@ -250,6 +339,7 @@ gsl_job_set_consumer (GslModule *module,
   GslJob *job;
   
   g_return_val_if_fail (module != NULL, NULL);
+  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
   job->job_id = is_toplevel_consumer ? ENGINE_JOB_SET_CONSUMER : ENGINE_JOB_UNSET_CONSUMER;
@@ -280,6 +370,7 @@ gsl_job_set_consumer (GslModule *module,
  * Create a new transaction job which will invoke @access_func 
  * on @module with @data when the transaction queue is processed
  * to modify the module's state.
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_job_access (GslModule    *module,
@@ -304,6 +395,20 @@ gsl_job_access (GslModule    *module,
 
 /**
  * gsl_flow_job_access
+ * @module:      The module to access
+ * @tick_stamp:  Engine time stamp
+ * @access_func: The accessor function
+ * @data:        Data passed in to the accessor
+ * @free_func:   Function to free @data
+ * @Returns:     New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which inserts @access_func 
+ * with @data into the flow job queue of @module.
+ * Flow jobs are jobs with limited impact on modules, which
+ * are executed during flow system progress at specific times.
+ * Once the time stamp counter of @module passed @tick_stamp,
+ * @access_func is called to modify the module's state.
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_flow_job_access (GslModule    *module,
@@ -316,6 +421,8 @@ gsl_flow_job_access (GslModule    *module,
   EngineFlowJob *fjob;
 
   g_return_val_if_fail (module != NULL, NULL);
+  g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   g_return_val_if_fail (access_func != NULL, NULL);
   
   fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAccess, 1);
@@ -333,6 +440,18 @@ gsl_flow_job_access (GslModule    *module,
   return job;
 }
 
+/**
+ * gsl_job_suspend
+ * @module: Module not currently suspended
+ * @Returns: New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which suspends the @module
+ * and all it's input modules which don't have other non-suspended
+ * output connections.
+ * Suspension of a module prevents it's process() method from being
+ * called, it's outputs are simply filled with zero's instead.
+ * This function is MT-safe and may be called from any thread.
+ */
 GslJob*
 gsl_job_suspend (GslModule *module)
 {
@@ -348,6 +467,22 @@ gsl_job_suspend (GslModule *module)
   return job;
 }
 
+/**
+ * gsl_flow_job_resume
+ * @module: Module not currently suspended
+ * @Returns: New job suitable for gsl_trans_add()
+ *
+ * Create a new transaction job which inserts a resumption
+ * event into the flow job queue of @module.
+ * Flow jobs are jobs with limited impact on modules, which
+ * are executed during flow system progress at specific times.
+ * Once the time stamp counter of @module passed @tick_stamp,
+ * its reset() method is called and the module is resumed,
+ * causing it's process() method to be called again.
+ * Resuming a module also resumes all input modules it has,
+ * unless those were explicitely suspended via gsl_job_suspend().
+ * This function is MT-safe and may be called from any thread.
+ */
 GslJob*
 gsl_flow_job_resume (GslModule *module,
 		     guint64    tick_stamp)
@@ -357,6 +492,7 @@ gsl_flow_job_resume (GslModule *module,
   
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
+  g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
   
   fjob = (EngineFlowJob*) gsl_new_struct0 (EngineFlowJobAny, 1);
   fjob->fjob_id = ENGINE_FLOW_JOB_RESUME;
@@ -404,6 +540,7 @@ gsl_flow_job_resume (GslModule *module,
  * Create a new transaction job which adds a poll function
  * to the engine. The poll function is used by the engine to
  * determine whether processing is currently necessary.
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_job_add_poll (GslPollFunc    poll_func,
@@ -436,6 +573,7 @@ gsl_job_add_poll (GslPollFunc    poll_func,
  *
  * Create a new transaction job which removes a previously inserted poll
  * function from the engine.
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_job_remove_poll (GslPollFunc poll_func,
@@ -463,6 +601,7 @@ gsl_job_remove_poll (GslPollFunc poll_func,
  * Create a new transaction job which issues @debug message when
  * the job is executed. This function is meant for debugging purposes
  * during development phase only and shouldn't be used in production code.
+ * This function is MT-safe and may be called from any thread.
  */
 GslJob*
 gsl_job_debug (const gchar *debug)
@@ -483,15 +622,15 @@ gsl_job_debug (const gchar *debug)
  * @Returns: Newly opened empty transaction
  *
  * Open up a new transaction to commit jobs to the GSL engine.
- * This function may cause garbage collection (see
- * gsl_engine_garbage_collect()).
+ * While the distinct functions to operate on a transaction are
+ * MT-safe, the caller has to take measures himself, to assure
+ * that only one function operates on the transaction at a time.
+ * This function is MT-safe and may be called from any thread.
  */
 GslTrans*
 gsl_trans_open (void)
 {
   GslTrans *trans;
-
-  gsl_engine_garbage_collect ();
 
   trans = gsl_new_struct0 (GslTrans, 1);
   
@@ -509,6 +648,7 @@ gsl_trans_open (void)
  * @job: Job to add
  *
  * Append a job to an opened transaction.
+ * This function is MT-safe and may be called from any thread.
  */
 void
 gsl_trans_add (GslTrans *trans,
@@ -549,17 +689,16 @@ gsl_trans_commit (GslTrans *trans)
       wakeup_master ();
     }
   else
-    gsl_trans_dismiss (trans);
+    _engine_free_trans (trans);
 }
 
 /**
  * gsl_trans_dismiss
  * @trans: Opened transaction
  *
- * Close and discard the transaction, destroy all jobs currently
- * contained in it and do not execute them.
- * This function may cause garbage collection (see
- * gsl_engine_garbage_collect()).
+ * Close and discard the transaction, causes destruction of
+ * all jobs currently contained in it and prevents their execution.
+ * This function is MT-safe and may be called from any thread.
  */
 void
 gsl_trans_dismiss (GslTrans *trans)
@@ -569,8 +708,6 @@ gsl_trans_dismiss (GslTrans *trans)
   g_return_if_fail (trans->cqt_next == NULL);
   
   _engine_free_trans (trans);
-
-  gsl_engine_garbage_collect ();
 }
 
 /**
@@ -581,6 +718,7 @@ gsl_trans_dismiss (GslTrans *trans)
  * Convenience function which openes up a new transaction,
  * collects the %NULL terminated job list passed to the function,
  * and commits the transaction.
+ * This function is MT-safe and may be called from any thread.
  */
 void
 gsl_transact (GslJob *job,
@@ -613,35 +751,80 @@ virtual_module_process (GslModule *module,
       module->ostreams[i].values = (gfloat*) module->istreams[i].values;
 }
 
+typedef struct {
+  GslClass    klass;
+  GslFreeFunc free_data;
+} VirtualModuleClass;
+
 static void
 virtual_module_free (gpointer        data,
 		     const GslClass *klass)
 {
-  g_free ((gpointer) klass);
+  VirtualModuleClass *vclass = (VirtualModuleClass*) klass;
+
+  if (vclass->free_data)
+    vclass->free_data (data);
+  g_free (vclass);
 }
 
+/**
+ * gsl_module_new_virtual
+ * @n_iostreams: number of input and output streams
+ * @user_data:   user data, stored in module->user_data
+ * @free_data:   function to free user_data when the module is discarded
+ * @RETURNS:     a newly created module
+ *
+ * Create a new virtual module which has @n_iostreams input
+ * streams and @n_iostreams output streams. Simply put,
+ * virtual modules just pass all input stream signals through
+ * to the corresponsding output stream.
+ * However, they are cheaper to compute than a literal module
+ * implementation that just passes through all data in its
+ * progress() method, because the connections can be virtualized
+ * in a connection optimization stage during scheduling, so that
+ * they don't end up in the list of modules which need to be
+ * processed during calculation phase.
+ * Beware though, flow jobs may not be scheduled on virtual
+ * modules (thusly, suspend jobs cannot be queued on them
+ * either), as virtual modules are ignored during calculation
+ * phase.
+ * They do, however, work just like ordinary modules with regards
+ * to suspension propagation, so the suspension state from
+ * output modules does only propagate across the virtual
+ * module to its input modules, if all its outputs are suspended.
+ * Instead of a single virtual module with multiple input/output
+ * streams, multiple virtual modules can be used if suspension
+ * is desired to propagate per stream.
+ * This function is MT-safe and may be called from any thread.
+ */
 GslModule*
-gsl_module_new_virtual (guint n_iostreams)
+gsl_module_new_virtual (guint       n_iostreams,
+			gpointer    user_data,
+			GslFreeFunc free_data)
 {
-  GslClass virtual_module_class = {
-    0,				/* n_istreams */
-    0,				/* n_jstreams */
-    0,				/* n_ostreams */
-    virtual_module_process,	/* process */
-    NULL,			/* process_defer */
-    NULL,			/* reset */
-    virtual_module_free,	/* free */
-    GSL_COST_CHEAP
+  VirtualModuleClass virtual_module_class = {
+    {
+      0,			/* n_istreams */
+      0,			/* n_jstreams */
+      0,			/* n_ostreams */
+      virtual_module_process,	/* process */
+      NULL,			/* process_defer */
+      NULL,			/* reset */
+      virtual_module_free,	/* free */
+      GSL_COST_CHEAP
+    },
+    NULL,			/* free_data */
   };
-  GslClass *klass;
+  VirtualModuleClass *vclass;
   GslModule *module;
 
   g_return_val_if_fail (n_iostreams > 0, NULL);
 
-  klass = g_memdup (&virtual_module_class, sizeof (virtual_module_class));
-  klass->n_istreams = n_iostreams;
-  klass->n_ostreams = n_iostreams;
-  module = gsl_module_new (klass, NULL);	/* FIXME: support virtual modules */
+  vclass = g_memdup (&virtual_module_class, sizeof (virtual_module_class));
+  vclass->klass.n_istreams = n_iostreams;
+  vclass->klass.n_ostreams = n_iostreams;
+  vclass->free_data = free_data;
+  module = gsl_module_new (&vclass->klass, user_data);
   ENGINE_NODE (module)->virtual_node = TRUE;
 
   return module;
@@ -710,6 +893,7 @@ gsl_engine_init (gboolean run_threaded,
   gsl_externvar_sub_sample_mask = sub_sample_mask << 2;	/* shift out sizeof (float) alignment */
   gsl_externvar_sub_sample_steps = sub_sample_mask + 1;
   _gsl_tick_stamp_set_leap (block_size);
+  _gsl_tick_stamp_inc ();	/* ensure stamp validity (>0 and systime mark) */
   
   ENG_DEBUG ("initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
   
@@ -735,14 +919,14 @@ gsl_engine_prepare (GslEngineLoop *loop)
   g_return_val_if_fail (gsl_engine_initialized == TRUE, FALSE);
 
   if (!gsl_engine_threaded)
-    return _engine_master_prepare (loop);
+    return _engine_master_prepare (loop) || gsl_engine_has_garbage ();
   else
     {
       loop->timeout = -1;
       loop->fds_changed = FALSE;
       loop->n_fds = 0;
       loop->revents_filled = FALSE;
-      return FALSE;
+      return gsl_engine_has_garbage ();
     }
 }
 
@@ -754,11 +938,22 @@ gsl_engine_check (const GslEngineLoop *loop)
     g_return_val_if_fail (loop->revents_filled == TRUE, FALSE);
   
   if (!gsl_engine_threaded)
-    return _engine_master_check (loop);
+    return _engine_master_check (loop) || gsl_engine_has_garbage ();
   else
-    return FALSE;
+    return gsl_engine_has_garbage ();
 }
 
+/**
+ * gsl_engine_dispatch
+ *
+ * Perform necessary work the engine has to handle
+ * in the user thread.
+ * This function may only be called from the user thread,
+ * since it will invoke GslFreeFunc() functions (see
+ * gsl_engine_garbage_collect()) and do
+ * other things which are guranteed to be executed
+ * in the user thread.
+ */
 void
 gsl_engine_dispatch (void)
 {
@@ -766,6 +961,60 @@ gsl_engine_dispatch (void)
 
   if (!gsl_engine_threaded)
     _engine_master_dispatch ();
+
+  if (gsl_engine_has_garbage ())	/* prevent extra mutex locking */
+    gsl_engine_garbage_collect ();
+}
+
+/**
+ * gsl_engine_tick_stamp_from_systime
+ * @systime: System time in micro seconds.
+ * @RETURNS: Engine tick stamp value
+ *
+ * Depending on the engine's sample frequency and the time
+ * of the last global tick stamp update, calculate the
+ * corresponding engine tick stamp from a given system time.
+ * This function is MT-safe and may be called from any thread.
+ */
+guint64
+gsl_engine_tick_stamp_from_systime (guint64 systime)
+{
+  GslTickStampUpdate ustamp = gsl_tick_stamp_last ();
+  guint64 tick_stamp;
+
+  /* FIXME: we should add special guards here
+   * for gsl_time_system() - ustamp.system_time ~> (44100 / gsl_engine_block_size ())
+   */
+
+  if (systime > ustamp.system_time)
+    {
+      tick_stamp = systime - ustamp.system_time;
+      tick_stamp = tick_stamp * gsl_engine_sample_freq () / 1000000;
+      tick_stamp += ustamp.tick_stamp;
+    }
+  else
+    {
+      tick_stamp = ustamp.system_time - systime;
+      tick_stamp = tick_stamp * gsl_engine_sample_freq () / 1000000;
+      tick_stamp = ustamp.tick_stamp - MIN (tick_stamp, ustamp.tick_stamp);
+    }
+
+#if 0
+  if (tick_stamp > 158760000)
+    g_error ("tick_stamp conversion problem:\n"
+	     "  tick_stamp            = %llu\n"
+	     "  usec_systime          = %llu\n"
+	     "  current-systime       = %llu\n"
+	     "  current-tickstamp     = %llu\n"
+	     "  last-update-systime   = %llu\n"
+	     "  last-update-tickstamp = %llu\n"
+	     "  sample-freq           = %u\n",
+	     tick_stamp, systime, gsl_time_system (), gsl_tick_stamp (),
+	     ustamp.system_time, ustamp.tick_stamp,
+	     gsl_engine_sample_freq ());
+#endif
+
+  return tick_stamp;
 }
 
 /**
@@ -773,7 +1022,8 @@ gsl_engine_dispatch (void)
  *
  * Wait until all pending transactions have been processed
  * by the GSL Engine.
- * This function may cause garbage collection (see
+ * This function, when done waiting, will run a garbage
+ * collection cycle before returning (see
  * gsl_engine_garbage_collect()).
  */
 void
@@ -787,7 +1037,7 @@ gsl_engine_wait_on_trans (void)
 
   /* threaded */
   _engine_wait_on_trans ();
-  
+
   /* call all free() functions */
   gsl_engine_garbage_collect ();
 }

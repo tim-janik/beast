@@ -18,6 +18,8 @@
 #include	"bsemididevice-oss.h"
 
 #include	"bseserver.h"
+#include	"bsemidireceiver.h"
+#include	"gslcommon.h"
 
 #include	"../PKG_config.h"
 
@@ -46,8 +48,7 @@ typedef struct
 static void	    bse_midi_device_oss_class_init	(BseMidiDeviceOSSClass	*class);
 static void	    bse_midi_device_oss_init		(BseMidiDeviceOSS	*midi_device_oss);
 static void	    bse_midi_device_oss_destroy		(BseObject		*object);
-static BseErrorType bse_midi_device_oss_open		(BseMidiDevice		*mdev,
-							 BseMidiDecoder		*decoder);
+static BseErrorType bse_midi_device_oss_open		(BseMidiDevice		*mdev);
 static void	    bse_midi_device_oss_close		(BseMidiDevice		*mdev);
 static void	    io_handler				(BseMidiDevice		*mdev,
 							 GPollFD		*pfd);
@@ -105,8 +106,7 @@ bse_midi_device_oss_init (BseMidiDeviceOSS *oss)
 }
 
 static BseErrorType
-bse_midi_device_oss_open (BseMidiDevice  *mdev,
-			  BseMidiDecoder *decoder)
+bse_midi_device_oss_open (BseMidiDevice *mdev)
 {
   OSSHandle *oss = g_new0 (OSSHandle, 1);
   BseMidiHandle *handle = &oss->handle;
@@ -151,7 +151,6 @@ bse_midi_device_oss_open (BseMidiDevice  *mdev,
       if (handle->writable)
 	BSE_OBJECT_SET_FLAGS (mdev, BSE_MIDI_FLAG_WRITABLE);
       mdev->handle = handle;
-      handle->decoder = decoder;
       handle->midi_fd = oss->fd;
       bse_server_add_io_watch (bse_server_get (), handle->midi_fd, G_IO_IN, (BseIOWatch) io_handler, mdev);
     }
@@ -201,26 +200,19 @@ io_handler (BseMidiDevice *mdev,
   BseMidiHandle *handle = &oss->handle;
   const gsize buf_size = 8192;
   guint8 buffer[buf_size];
-  struct timeval tv;
+  guint64 systime;
   gssize l;
   
   /* this should spawn its own thread someday */
   g_assert (handle->running_thread == FALSE);
 
-  gettimeofday (&tv, NULL);
+  systime = gsl_time_system ();
   do
     l = read (oss->fd, buffer, buf_size);
   while (l < 0 && errno == EINTR);	/* don't mind signals */
 
-  if (l > 0)
-    {
-      guint64 stamp = tv.tv_sec;
-
-      stamp = stamp * 1000000 + tv.tv_usec;
-      if (mdev->midi_receiver)
-	bse_midi_receiver_push_data (mdev->midi_receiver, l, buffer, stamp);
-      _bse_midi_decoder_push_data_ASYNC (handle->decoder, l, buffer, stamp);
-    }
+  if (l > 0 && mdev->midi_receiver)
+    bse_midi_receiver_push_data (mdev->midi_receiver, l, buffer, systime);
 }
 
 #endif	/* BSE_MIDI_DEVICE_CONF_OSS */

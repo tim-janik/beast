@@ -19,7 +19,7 @@
 #define __BSE_MIDI_NOTIFIER_H__
 
 #include <bse/bseitem.h>
-#include <bse/bsemidievent.h>
+#include <bse/bsemidireceiver.h>
 
 
 #ifdef __cplusplus
@@ -51,8 +51,8 @@ struct _BseMidiNotifierClass
 
 
 /* --- prototypes --- */
-gboolean	bse_midi_notifier_needs_dispatch	(BseMidiNotifier	*self);
-void		bse_midi_notifier_dispatch		(BseMidiNotifier	*self);
+void		bse_midi_notifier_dispatch		(BseMidiNotifier	*self,
+							 BseMidiReceiver	*midi_receiver);
 
 
 #ifdef __cplusplus
