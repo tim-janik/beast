@@ -74,6 +74,18 @@ struct InvalidConnection : Exception {
   const char* what() const throw() { return "Function to be connected has invalid signature"; }
 };
 
+
+/* --- records & sequences --- */
+class Record {
+  Record&          operator= (const Record&);
+  explicit         Record    (const Record&);
+public:
+  explicit         Record    ();
+  virtual SfiRec*  to_rec    ();
+  virtual         ~Record    ();
+};
+
+
 /* --- class registration --- */
 #define BSE_CXX_TYPE_REGISTER(ObjectType, parent, class_info)          \
           BSE_CXX_TYPE_REGISTER_INITIALIZED (ObjectType, parent, class_info, NULL, TypeRegistry::NONE)
@@ -112,13 +124,27 @@ public:
                               void            (*class_init) (CxxBaseClass*),
                               GInstanceInitFunc iinit,
                               Flags             flags);
-  GType         get_type ()
+  const GType get_type () const
   {
     return gtype_id;
   }
   static void   init_types ();
 };
 
+template<class C> const GType
+bse_type_keeper_object (const char *type_name)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      type = g_type_from_name (type_name);
+      g_assert (type);
+    }
+  return type;
+}
+
+#define BSE_CXX_TYPE_GET_REGISTERED(NameSpace, ObjectType) \
+  (bse_type_keeper_object<ObjectType> (#NameSpace #ObjectType))
 #define BSE_CXX_TYPE_REGISTER_INITIALIZED(ObjectType, parent, cinfo, binit, flags) \
   BSE_CXX_DEFINE_INSTANCE_INIT (ObjectType);                                       \
   BSE_CXX_TYPE_REGISTER_INTERN (ObjectType, parent, cinfo, binit,                  \
@@ -132,11 +158,7 @@ public:
     ObjectType ## _type_keeper (sizeof (ObjectType), "Bse" #ObjectType, parent, \
                                 cinfo, binit,                                   \
                                 BSE_CXX_SYM(ObjectType,class_init),             \
-                                iinit, flags);                                  \
-  GType ObjectType::get_type ()                                                 \
-  {                                                                             \
-    return ObjectType ## _type_keeper . get_type ();                            \
-  }
+                                iinit, flags);
 #define BSE_CXX_DEFINE_INSTANCE_INIT(ObjectType)                                \
   static void                                                                   \
   BSE_CXX_SYM(ObjectType,instance_init) (GTypeInstance *instance,               \

@@ -56,6 +56,8 @@ struct _BseProcedureClass
   GParamSpec	**in_pspecs;
   guint           n_out_pspecs;
   GParamSpec	**out_pspecs;
+  /* base_init references */
+  GTypeClass    **class_refs;
 
   BseProcedureExec execute;
 };

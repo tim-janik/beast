@@ -87,6 +87,12 @@ bse_procedure_base_finalize (BseProcedureClass *proc)
   proc->authors = NULL;
   proc->copyright = NULL;
   
+  /* give up type references */
+  for (i = 0; proc->class_refs[i]; i++)
+    g_type_class_unref (proc->class_refs[i]);
+  g_free (proc->class_refs);
+  proc->class_refs = NULL;
+
   for (i = 0; i < proc->n_in_pspecs; i++)
     g_param_spec_unref (proc->in_pspecs[i]);
   g_free (proc->in_pspecs);
@@ -103,7 +109,7 @@ bse_procedure_init (BseProcedureClass       *proc,
 {
   GParamSpec *in_pspecs[BSE_PROCEDURE_MAX_IN_PARAMS + 8];
   GParamSpec *out_pspecs[BSE_PROCEDURE_MAX_OUT_PARAMS + 8];
-  guint i;
+  guint i, j;
   gchar *const_name, *const_blurb;
   
   memset (in_pspecs, 0, sizeof (in_pspecs));
@@ -141,8 +147,7 @@ bse_procedure_init (BseProcedureClass       *proc,
       g_warning ("procedure \"%s\" messes with reserved class members", proc->name);
     }
   
-  /* check input parameters and setup specifications
-   */
+  /* check input parameters and setup specifications */
   for (i = 0; i < BSE_PROCEDURE_MAX_IN_PARAMS; i++)
     if (in_pspecs[i])
       {
@@ -163,8 +168,7 @@ bse_procedure_init (BseProcedureClass       *proc,
   memcpy (proc->in_pspecs, in_pspecs, sizeof (in_pspecs[0]) * proc->n_in_pspecs);
   proc->in_pspecs[proc->n_in_pspecs] = NULL;
   
-  /* check output parameters and setup specifications
-   */
+  /* check output parameters and setup specifications */
   for (i = 0; i < BSE_PROCEDURE_MAX_OUT_PARAMS; i++)
     if (out_pspecs[i])
       {
@@ -184,7 +188,19 @@ bse_procedure_init (BseProcedureClass       *proc,
   proc->out_pspecs = g_new (GParamSpec*, proc->n_out_pspecs + 1);
   memcpy (proc->out_pspecs, out_pspecs, sizeof (out_pspecs[0]) * proc->n_out_pspecs);
   proc->out_pspecs[proc->n_out_pspecs] = NULL;
-  
+
+  /* keep type references */
+  proc->class_refs = g_new (GTypeClass*, proc->n_in_pspecs + proc->n_out_pspecs + 1);
+  j = 0;
+  for (i = 0; i < proc->n_in_pspecs; i++)
+    if (G_TYPE_IS_CLASSED ((G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[i]))))
+      proc->class_refs[j++] = g_type_class_ref (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[i]));
+  for (i = 0; i < proc->n_out_pspecs; i++)
+    if (G_TYPE_IS_CLASSED ((G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]))))
+      proc->class_refs[j++] = g_type_class_ref (G_PARAM_SPEC_VALUE_TYPE (proc->out_pspecs[i]));
+  proc->class_refs[j++] = NULL;
+
+  /* hookup execute method */
   proc->execute = pnode->exec;
 }
 

@@ -25,7 +25,7 @@
 namespace Bse {
 #define BSE_CXX_INSTANCE_OFFSET    BSE_CXX_SIZEOF (BseSource)
 
-#define BSE_TYPE_CXX_BASE        (CxxBase::get_type ())
+#define BSE_TYPE_CXX_BASE        (BSE_CXX_TYPE_GET_REGISTERED (Bse, CxxBase))
 
 class CxxBaseClass : public BseSourceClass {
 public:
@@ -47,6 +47,8 @@ public:
 class CxxBase {
   void*           cast_to_gobject   ();
   static CxxBase* cast_from_gobject (void *o);
+public:
+  static CxxBase* base_from_gobject (GObject *o) { return cast_from_gobject (o); }
 protected:
   GObject*        gobject           ();
   BseItem*        item              ();
@@ -84,7 +86,6 @@ public:
   virtual         ~CxxBase          ();
 
   static void     class_init        (CxxBaseClass *klass);
-  static GType    get_type          (); // needed by BSE_CXX_TYPE_REGISTER()
   
   class Pointer {
     CxxBase *p;

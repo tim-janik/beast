@@ -120,7 +120,7 @@ PeakFilter::get_property (guint       prop_id,
 }
 
 /* synthesis module: */
-class PeakFilterModule : public Module {
+class PeakFilterModule : public SynthesisModule {
   /* state: */
   double xd1, xd2;    // X delay elements
   double yd1, yd2;    // Y delay elements
@@ -178,7 +178,7 @@ public:
   }
 };
 
-Module::Accessor*
+SynthesisModule::Accessor*
 PeakFilter::module_configurator ()
 {
   /* this function creates a (re-)configuration closure for synthesis
@@ -189,10 +189,10 @@ PeakFilter::module_configurator ()
    * to be executed asyncronously in synthesis threads for modules
    * created by create_module()
    */
-  return Module::accessor (&PeakFilterModule::config, params);
+  return SynthesisModule::accessor (&PeakFilterModule::config, params);
 }
 
-Module*
+SynthesisModule*
 PeakFilter::create_module (unsigned int context_handle,
                            GslTrans    *trans)
 {

@@ -252,7 +252,7 @@ bcontext_queue_signal (BContext    *bcontext,
 static GParamSpec*
 bglue_pspec_to_serializable (GParamSpec *pspec)
 {
-  if (BSE_IS_PARAM_SPEC_ENUM (pspec))
+  if (G_IS_PARAM_SPEC_ENUM (pspec))
     {
       GType etype = G_PARAM_SPEC_VALUE_TYPE (pspec);
       pspec = sfi_pspec_choice_from_enum (pspec);

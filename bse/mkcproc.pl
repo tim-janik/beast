@@ -48,6 +48,10 @@ if (@ARGV > 1) {
     die "$0: too many file names\n";
 }
 
+my $var_pattern = "HELP|BLURB|AUTHORS|CRIGHTS";
+my %var_defs = ();
+my %proc_defs = ();
+
 print "\n/**\n ** Generated data (by mkcproc.pl";
 print ")\n **/\n";
 
@@ -73,6 +77,7 @@ sub print_assignment {
     } elsif (defined $var_defs{$var}) {
 	( $val, $vfile, $vline ) = @{$var_defs{$var}};
     } else {
+	# print STDERR "no assignment for $var\n" ;
 	return;
     }
     print "#line $vline \"$vfile\"\n";
@@ -95,9 +100,6 @@ sub get_variable {
     return "$val";
 }
 
-my $var_pattern = "HELP|BLURB|AUTHORS|CRIGHTS";
-my %var_defs = ();
-my %proc_defs = ();
 my $proc_name;
 my $proc_method;
 my $proc_category;

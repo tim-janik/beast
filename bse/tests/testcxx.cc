@@ -43,7 +43,7 @@ main (int   argc,
   a5.token();
   // tokenize_gtype (0);
 
-  GObject *o = (GObject*) g_object_new (EXAMPLE_TYPE_PEAK_FILTER, NULL);
+  GObject *o = (GObject*) g_object_new (BSE_TYPE_CXX_BASE, NULL);
   CxxBase *b = cast (o);
   Foo f;
   b->connect ("notify", Closure (&f, &Foo::bar));

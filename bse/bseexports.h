@@ -62,22 +62,22 @@ typedef struct {
   BseProcedureExec  exec;
 } BseExportNodeProc;
 
-void	bse_procedure_complete_info	(const BseExportNodeProc *pnode,
-					 GTypeInfo               *info);
-
-
-/* export identity (name and version) */
+/* plugin export identity (name, bse-version and actual types) */
 #define BSE_EXPORT_IDENTITY_SYMBOL      bse_export__identity
 #define BSE_EXPORT_IDENTITY_STRING     "bse_export__identity"
 typedef struct {
   const gchar   *name;
   guint          major, minor, micro;
   guint          binary_age, interface_age;
-  BseExportNode *type_chain;
+  BseExportNode *export_chain;
 } BseExportIdentity;
 #define BSE_EXPORT_IDENTITY(Name, HEAD)                                 \
   { Name, BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION,      \
     BSE_BINARY_AGE, BSE_INTERFACE_AGE, &HEAD }
+
+/* implementation prototype */
+void	bse_procedure_complete_info	(const BseExportNodeProc *pnode,
+					 GTypeInfo               *info);
 
 G_END_DECLS
 

@@ -120,7 +120,7 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
     error = BSE_ERROR_PROC_BUSY;
 
   /* set output parameters */
-  bse_value_set_enum (out_values++, error);
+  g_value_set_enum (out_values++, error);
   
   return BSE_ERROR_NONE;
 }

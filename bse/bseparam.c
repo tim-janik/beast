@@ -32,61 +32,6 @@ bse_param_types_init (void)	/* sync with btype.c */
 }
 
 
-/* --- enumeration param specs --- */
-GParamSpec*
-bse_param_spec_enum (const gchar    *name,
-		     const gchar    *nick,
-		     const gchar    *blurb,
-		     gint            default_value,
-		     GType           enum_type,
-		     const gchar    *hints)
-{
-  GParamSpec *pspec;
-  
-  g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), NULL);
-  g_return_val_if_fail (enum_type != G_TYPE_ENUM, NULL);
-  
-  pspec = g_param_spec_enum (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), enum_type, default_value, 0);
-  sfi_pspec_set_hints (pspec, hints);
-  
-  return pspec;
-}
-
-gint
-bse_pspec_get_enum_default (GParamSpec *pspec)
-{
-  g_return_val_if_fail (BSE_IS_PARAM_SPEC_ENUM (pspec), 0);
-  
-  return G_PARAM_SPEC_ENUM (pspec)->default_value;
-}
-
-GEnumValue*
-bse_pspec_get_enum_value_list (GParamSpec *pspec)
-{
-  GParamSpecEnum *espec;
-  
-  g_return_val_if_fail (BSE_IS_PARAM_SPEC_ENUM (pspec), NULL);
-  
-  espec = BSE_PARAM_SPEC_ENUM (pspec);
-  return (GEnumValue*) espec->enum_class->values;
-}
-
-GValue*
-bse_value_enum (GType enum_type,
-		gint  evalue)
-{
-  GValue *value;
-  
-  g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), NULL);
-  g_return_val_if_fail (enum_type != G_TYPE_ENUM, NULL);
-  
-  value = sfi_value_empty ();
-  g_value_init (value, enum_type);
-  bse_value_set_enum (value, evalue);
-  return value;
-}
-
-
 /* --- object param specs --- */
 GParamSpec*
 bse_param_spec_object (const gchar    *name,

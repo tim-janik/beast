@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsemain.h"
+#include "topconfig.h"
 #include <bse/bseconfig.h>	/* for *_VERSION and *_AGE */
 #include "bseserver.h"
 #include "bsessequencer.h"
@@ -223,6 +224,7 @@ bse_init_intern (gint    *argc,
 		 gchar ***argv,
 		 SfiRec  *config)
 {
+  SfiRec *unref_me = NULL;
   if (bse_initialization_stage != 0)
     g_error ("%s() may only be called once", "bse_init_intern");
   bse_initialization_stage++;
@@ -231,6 +233,8 @@ bse_init_intern (gint    *argc,
   
   /* initialize submodules */
   sfi_init ();
+  if (!config)
+    config = unref_me = sfi_rec_new();
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
   /* early argument handling */
@@ -242,6 +246,22 @@ bse_init_intern (gint    *argc,
     }
   
   bse_init_core ();
+
+  /* initialize core plugins */
+  if (sfi_rec_get_bool (config, "load-core-plugins"))
+    {
+      GSList *slist = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
+      while (slist)
+        {
+          gchar *name = g_slist_pop_head (&slist);
+          const char *error = bse_plugin_check_load (name);
+          if (error)
+            sfi_warn ("%s: %s", name, error);
+          g_free (name);
+        }
+    }
+  if (unref_me)
+    sfi_rec_unref (unref_me);
 }
 
 static void

@@ -74,9 +74,18 @@ void   bse_type_register_export_chain (BseExportNode   *chain,
 #endif /* BSE_COMPILATION */
 
 
-/* Here we import the auto generated type ids.
- */
+/* --- customized pspec constructors --- */
+GParamSpec*     bse_param_spec_enum (const gchar    *name,
+                                     const gchar    *nick,
+                                     const gchar    *blurb,
+                                     gint            default_value, /* can always be 0 */
+                                     GType           enum_type,
+                                     const gchar    *hints);
+
+
+/* -- auto generated type ids --- */
 #include        <bse/bsegentypes.h>
+
 
 /* --- dynamic config --- */
 #define BSE_GCONFIG(cfg) (bse_global_config->cfg)
@@ -106,6 +115,8 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_choice (name, NULL, NULL, NULL, cvalues, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_GEnum(group, name, nick, blurb, dval, hints, etype)	\
   sfi_pspec_set_group (bse_param_spec_genum (name, nick, blurb, etype, dval, hints), group)
+#define	sfidl_pspec_GEnum_default(group, name, etype)	\
+  sfi_pspec_set_group (bse_param_spec_genum (name, NULL, NULL, etype, 0, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_Note(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (sfi_pspec_note (name, nick, blurb, dflt, SFI_MIN_NOTE, SFI_MAX_NOTE, FALSE, hints), group)
 #define	sfidl_pspec_Octave(group, name, nick, blurb, dflt, hints)			\
@@ -124,6 +135,8 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_string (name, NULL, NULL, NULL, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_Proxy_default(group, name)  \
   sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_Object_default(group, name, otype)	\
+  sfi_pspec_set_group (bse_param_spec_object (name, NULL, NULL, otype, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_BoxedSeq(group, name, nick, blurb, hints, element_pspec)		\
   sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element_pspec, hints), group)
 #define	sfidl_pspec_BoxedRec(group, name, nick, blurb, hints, fields)			\

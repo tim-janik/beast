@@ -162,17 +162,22 @@ std::string idlType (GType g)
       needTypes.insert (s);
       return s.substr(3, s.size() - 3);
     }
-  if (s == "guint" || s == "gint" || s == "gulong")
-    return "Int";
-  if (s == "gchararray")
-    return "String";
-  if (s == "gfloat" || s == "gdouble")
-    return "Real";
-  if (s == "gboolean")
-    return "Bool";
-  if (s == "SfiFBlock")
-    return "FBlock";
-  return "*" + s + "*";
+  switch (G_TYPE_FUNDAMENTAL (g))
+    {
+    case G_TYPE_INT64:
+    case G_TYPE_UINT64:         return "Num";
+    case G_TYPE_INT:
+    case G_TYPE_UINT:           return "Int";
+    case G_TYPE_STRING:         return "String";
+    case G_TYPE_FLOAT:
+    case G_TYPE_DOUBLE:         return "Real";
+    case G_TYPE_BOOLEAN:        return "Bool";
+    default:
+      if (s == "SfiFBlock")
+        return "FBlock";
+      g_error ("bseprocidl: unsupported signal argument type: %s", s.c_str());
+      return "*ERROR*";
+    }
 }
 
 std::string symbolForInt (int i)
@@ -298,15 +303,17 @@ void printInterface (const std::string& iface, const std::string& parent = "")
 	      GSignalQuery query;
 	      g_signal_query (sids[s], &query);
 	      printIndent();
-	      print ("signal %s (", signalName (query.signal_name).c_str());
+              // FIXME: disabled signals, since it currently breaks
+	      // print ("signal %s (", signalName (query.signal_name).c_str());
 	      for (guint p = 0; p < query.n_params; p++)
 		{
 		  std::string ptype = idlType (query.param_types[p]);
 		  std::string pname = ""; pname += char('a' + p);
-		  if (p != 0) print(", ");
-		  print ("%s %s", ptype.c_str(), pname.c_str());
+		  if (p != 0)
+                    ; // print(", ");
+		  //print ("%s %s", ptype.c_str(), pname.c_str());
                 }
-	      print(");\n");
+	      //print(");\n");
 	    }
 	}
       else

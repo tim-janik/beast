@@ -110,6 +110,39 @@ bse_type_register_dynamic (GType        parent_type,
 }
 
 
+/* --- customized pspec constructors --- */
+#define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
+GParamSpec*
+bse_param_spec_enum (const gchar    *name,
+                     const gchar    *nick,
+                     const gchar    *blurb,
+                     gint            default_value,
+                     GType           enum_type,
+                     const gchar    *hints)
+{
+  GParamSpec *pspec;
+  
+  g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), NULL);
+  g_return_val_if_fail (enum_type != G_TYPE_ENUM, NULL);
+
+  /* g_param_spec_enum() validates default_value, which we allways allow
+   * to be 0, so we might need to adjust it to pass validation
+   */
+  if (default_value == 0)
+    {
+      GEnumClass *enum_class = g_type_class_ref (enum_type);
+      if (!g_enum_get_value (enum_class, default_value))
+        default_value = enum_class->values[0].value;
+      g_type_class_unref (enum_class);
+    }
+
+  pspec = g_param_spec_enum (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), enum_type, default_value, 0);
+  sfi_pspec_set_hints (pspec, hints);
+
+  return pspec;
+}
+
+
 /* --- SFIDL includes --- */
 /* provide common constants */
 #include "bseglobals.h"

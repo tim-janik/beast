@@ -21,8 +21,7 @@
 namespace {
 using namespace Bse;
 
-const ClassInfo cinfo ("/Modules/C++ Module",
-                       "BseEffect implements an abstract C++ effect base.");
+const ClassInfo cinfo (NULL, "BseEffect implements an abstract C++ effect base.");
 BSE_CXX_TYPE_REGISTER_ABSTRACT (Effect, "BseCxxBase", &cinfo);
 
 Effect::Effect()
@@ -47,15 +46,15 @@ void
 access_trampoline (GslModule *module,
                    gpointer   data)
 {
-  Module::Accessor *ac = static_cast<Module::Accessor*> (data);
-  Module *m = static_cast<Module*> (module->user_data);
+  SynthesisModule::Accessor *ac = static_cast<SynthesisModule::Accessor*> (data);
+  SynthesisModule *m = static_cast<SynthesisModule*> (module->user_data);
   (*ac) (m);
 }
 
 void
 access_data_free (gpointer data)
 {
-  Module::Accessor *ac = static_cast<Module::Accessor*> (data);
+  SynthesisModule::Accessor *ac = static_cast<SynthesisModule::Accessor*> (data);
   delete ac;
 }
 
@@ -65,7 +64,7 @@ Effect::update_modules (GslTrans *trans)
   BseSource *source = cast (this);
   if (BSE_SOURCE_PREPARED (source))
     {
-      Module::Accessor *ac = module_configurator();
+      SynthesisModule::Accessor *ac = module_configurator();
       GslTrans *atrans = trans ? trans : gsl_trans_open();
       bse_source_access_modules (source, access_trampoline, ac, access_data_free, atrans);
       if (!trans)
@@ -73,19 +72,19 @@ Effect::update_modules (GslTrans *trans)
     }
 }
 
-Module::Module()
+SynthesisModule::SynthesisModule()
 {
   engine_module = NULL;
 }
 
 void
-Module::set_module (void *ptr)
+SynthesisModule::set_module (void *ptr)
 {
   GslModule *gslmodule = static_cast<GslModule*> (ptr);
-
+  
   g_return_if_fail (engine_module == NULL);
   g_return_if_fail (gslmodule != NULL);
-
+  
   engine_module = gslmodule;
   /* see check_mirror_structs() on why these casts are valid */
   istreams = reinterpret_cast<IStream*> (gslmodule->istreams);
@@ -93,12 +92,12 @@ Module::set_module (void *ptr)
   ostreams = reinterpret_cast<OStream*> (gslmodule->ostreams);
 }
 
-Module::~Module()
+SynthesisModule::~SynthesisModule()
 {
 }
 
 const ProcessCost
-Module::cost()
+SynthesisModule::cost()
 {
   return NORMAL;
 }
@@ -107,14 +106,14 @@ void
 process_module (GslModule *gslmodule,
                 guint      n_values)
 {
-  Module *m = static_cast<Module*> (gslmodule->user_data);
+  SynthesisModule *m = static_cast<SynthesisModule*> (gslmodule->user_data);
   m->process (n_values);
 }
 
 void
 reset_module (GslModule *gslmodule)
 {
-  Module *m = static_cast<Module*> (gslmodule->user_data);
+  SynthesisModule *m = static_cast<SynthesisModule*> (gslmodule->user_data);
   m->reset();
 }
 
@@ -122,7 +121,7 @@ void
 delete_module (gpointer        data,
                const GslClass *klass)
 {
-  Module *m = static_cast<Module*> (data);
+  SynthesisModule *m = static_cast<SynthesisModule*> (data);
   delete m;
 }
 
@@ -139,8 +138,8 @@ gsl_module_flags_from_process_cost (ProcessCost cost)
 }
 
 const GslClass*
-make_gsl_class (BseSource *source,
-                Module    *sample_module)
+make_gsl_class (BseSource       *source,
+                SynthesisModule *sample_module)
 {
   BseSourceClass *source_class = BSE_SOURCE_GET_CLASS (source);
   if (!source_class->gsl_class)
@@ -173,24 +172,24 @@ effect_context_create (BseSource *source,
 {
   CxxBase *base = cast (source);
   Effect *self = static_cast<Effect*> (base);
-
-  Module *cxxmodule = self->create_module (context_handle, trans);
-
+  
+  SynthesisModule *cxxmodule = self->create_module (context_handle, trans);
+  
   GslModule *gslmodule = gsl_module_new (make_gsl_class (source, cxxmodule), cxxmodule);
-
+  
   cxxmodule->set_module (gslmodule);
-
+  
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_module (source, context_handle, gslmodule);
-
+  
   /* intergrate module into engine */
   gsl_trans_add (trans, gsl_job_integrate (gslmodule));
   /* reset module */
   gsl_trans_add (trans, gsl_job_force_reset (gslmodule));
   /* configure module */
-  Module::Accessor *ac = self->module_configurator();
+  SynthesisModule::Accessor *ac = self->module_configurator();
   gsl_trans_add (trans, gsl_job_access (gslmodule, access_trampoline, ac, access_data_free));
-
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (effect_parent_class)->context_create (source, context_handle, trans);
 }

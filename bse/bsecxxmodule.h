@@ -19,6 +19,7 @@
 #define __BSE_EFFECT_H__
 
 #include <bse/bsecxxbase.h>
+#include <bse/gslieee754.h>
 
 namespace Bse {
 
@@ -50,33 +51,35 @@ public:
   unsigned int  connected : 1;
 };
 
-class Module {
+class SynthesisModule {
   template<class T, typename P> class AccessorP1; /* 1-argument member function closure */
   void          *engine_module;
   const IStream *istreams;
   const JStream *jstreams;
   const OStream *ostreams;
 public:
-  explicit                  Module     ();
-  virtual                  ~Module     () = 0;
-  virtual void              reset      () = 0;
-  virtual void              process    (unsigned int n_values) = 0;
-  virtual const ProcessCost cost       ();
-  inline const IStream&     istream    (unsigned int istream_index) const;
-  inline const JStream&     jstream    (unsigned int jstream_index) const;
-  inline const OStream&     ostream    (unsigned int ostream_index) const;
-  inline const unsigned int mix_freq   () const;
+  explicit                  SynthesisModule ();
+  virtual                  ~SynthesisModule () = 0;
+  virtual void              reset           () = 0;
+  virtual void              process         (unsigned int n_values) = 0;
+  virtual const ProcessCost cost            ();
+  inline const IStream&     istream         (unsigned int istream_index) const;
+  inline const JStream&     jstream         (unsigned int jstream_index) const;
+  inline const OStream&     ostream         (unsigned int ostream_index) const;
+  inline const unsigned int mix_freq        () const;
+  static inline int         dtoi            (double d) { return gsl_dtoi (d); }
+  static inline int         ftoi            (float  f) { return gsl_ftoi (f); }
   /* member function closure base */
   struct Accessor {
-    virtual void            operator() (Module*) = 0;
-    virtual                ~Accessor   ()         {}
+    virtual void            operator()      (SynthesisModule*) = 0;
+    virtual                ~Accessor        ()         {}
   };
-  /* create a 1-argument member function closure, where C must be derived from Module */
+  /* create a 1-argument member function closure, where C must be derived from SynthesisModule */
   template<class D, class C>
-  static Accessor*          accessor   (void    (C::*accessor) (D*),
-                                        const D     &data);
+  static Accessor*          accessor        (void    (C::*accessor) (D*),
+                                             const D     &data);
   /* internal */
-  void                      set_module (void*);
+  void                      set_module      (void*);
 };
 
 class Effect : public CxxBase {
@@ -88,39 +91,39 @@ public:
   void                      get_property        (guint          prop_id,
                                                  Value         &value,
                                                  GParamSpec    *pspec);
-  virtual Module*           create_module       (unsigned int   context_handle,
+  virtual SynthesisModule*  create_module       (unsigned int   context_handle,
                                                  GslTrans      *trans) = 0;
-  virtual Module::Accessor* module_configurator () = 0;
+  virtual SynthesisModule::Accessor*
+                            module_configurator () = 0;
   void                      update_modules      (GslTrans      *trans = NULL);
-
+  
   static void               class_init          (CxxBaseClass *klass);
-  static GType              get_type             (); // needed by BSE_CXX_TYPE_REGISTER()
 };
 
 
 /* --- implementation details --- */
 extern "C" { extern guint gsl_externvar_sample_freq; }
 inline const unsigned int
-Module::mix_freq () const {
+SynthesisModule::mix_freq () const {
   return gsl_externvar_sample_freq;
 }
 inline const IStream&
-Module::istream (unsigned int istream_index) const
+SynthesisModule::istream (unsigned int istream_index) const
 {
   return istreams[istream_index];
 }
 inline const JStream&
-Module::jstream (unsigned int jstream_index) const
+SynthesisModule::jstream (unsigned int jstream_index) const
 {
   return jstreams[jstream_index];
 }
 inline const OStream&
-Module::ostream (unsigned int ostream_index) const
+SynthesisModule::ostream (unsigned int ostream_index) const
 {
   return ostreams[ostream_index];
 }
 template<class T, typename P>
-class Module::AccessorP1 : public Module::Accessor {
+class SynthesisModule::AccessorP1 : public SynthesisModule::Accessor {
   typedef void (T::*Member) (P*);
   Member    func;
   P        *data;
@@ -128,9 +131,9 @@ public:
   AccessorP1 (void (T::*f) (P*), P *p)
     : func (f), data (p)
   {
-    assert_derivation<T,Module>();
+    assert_derivation<T,SynthesisModule>();
   }
-  void operator() (Module *p)
+  void operator() (SynthesisModule *p)
   {
     T *t = static_cast<T*> (p);
     (t->*func) (data);
@@ -140,9 +143,9 @@ public:
     delete data;
   }
 };
-template<class D, class C> Module::Accessor*
-Module::accessor (void   (C::*accessor) (D*),
-                  const D    &data)
+template<class D, class C> SynthesisModule::Accessor*
+SynthesisModule::accessor (void   (C::*accessor) (D*),
+                           const D    &data)
 {
   D *d = new D (data);
   AccessorP1<C,D> *ac = new AccessorP1<C,D> (accessor, d);

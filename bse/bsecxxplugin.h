@@ -33,22 +33,8 @@
 
 namespace Bse {
 
-#define BSE_CXX_REGISTER_EFFECT(NameSpace, Effect)                              \
-  BSE_CXX_DEFINE_INSTANCE_INIT (Effect);                                        \
-  BSE_CXX_DEFINE_SET_PROPERTY (Effect);                                         \
-  BSE_CXX_DEFINE_GET_PROPERTY (Effect);                                         \
-  BSE_CXX_DEFINE_CREATE_MODULE (Effect);                                        \
-  BSE_CXX_DEFINE_MODULE_CONFIGURATOR (Effect);                                  \
-  BSE_CXX_DEFINE_CLASS_INIT (Effect, BSE_CXX_SYM(Effect,set_property),          \
-                                     BSE_CXX_SYM(Effect,get_property));         \
-  ::BseExportNodeClass Effect::export_node = {                                  \
-    { NULL, ::BSE_EXPORT_NODE_CLASS, #NameSpace #Effect, },                     \
-    "BseEffect", BSE_CXX_COMMON_CLASS_SIZE,                                     \
-    (GClassInitFunc) BSE_CXX_SYM (Effect, class_init), NULL,                    \
-    BSE_CXX_INSTANCE_OFFSET + sizeof (Effect),                                  \
-    BSE_CXX_SYM (Effect, instance_init),                                        \
-  };  Effect::TypeInit __init_ ## Effect (&__export_identity)
-
+/* -- export identity --- */
+/* provide plugin export identity, preceeding all type exports */
 #define BSE_CXX_DEFINE_EXPORTS()                                                \
   static ::BseExportNode __export_chain_head = { NULL, BSE_EXPORT_NODE_LINK, }; \
   static ::BseExportIdentity __export_identity =                                \
@@ -58,60 +44,157 @@ namespace Bse {
     ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__export_identity; \
   }
 
-#define BSE_CXX_DEFINE_CREATE_MODULE(ObjectType)                                \
-  Bse::Module*                                                                  \
-  ObjectType::create_module (unsigned int context_handle, GslTrans *trans)      \
-  { /* create a synthesis module */                                             \
-    return new ObjectType ## Module();                                          \
-  }
-#define BSE_CXX_DEFINE_MODULE_CONFIGURATOR(ObjectType)                          \
-Bse::Module::Accessor*                                                          \
-ObjectType::module_configurator()                                               \
-{                                                                               \
-  return Module::accessor (&ObjectType ## Module::config, Parameters (this));   \
-}
 
-struct EnumValue {
-  gint   value;
-  gchar *value_name;
-  gchar *value_nick;
-  EnumValue (gint v, gchar *vna, gchar *vni)
-    : value (v), value_name (vna), value_nick (vni)
-  {
-  }
-  operator GEnumValue ()
-  {
-    GEnumValue v;
-    v.value = value;
-    v.value_name = value_name;
-    v.value_nick = value_nick;
-    return v;
-  }
-};
-#define BSE_CXX_ENUM_TYPE_KEEPER(EType,EName,N,ICode) struct EType ## __TypeKeeper \
-{                                                                       \
-  static void enter_type_chain (BseExportIdentity *export_identity)     \
+/* --- enum registration --- */
+/* enum registration is based on a static ExportTypeKeeper
+ * object, which provides the enum's get_type() implementation and
+ * auto-registers the enum's export node with the plugin's
+ * export_identity.
+ */
+#define BSE_CXX_DECLARED_ENUM_TYPE(EnumType)                            \
+  (bse_type_keeper__3##EnumType.get_type ())
+#define BSE_CXX_DECLARE_ENUM(EnumType,EnumName,N,ICode)                 \
+  template<class E> static BseExportNode* bse_export_node ();           \
+  template<> static BseExportNode*                                      \
+  bse_export_node<EnumType> ()                                          \
   {                                                                     \
-    static ::BseExportNodeEnum en = {                                   \
-      { NULL, BSE_EXPORT_NODE_ENUM, EName, },                           \
+    static BseExportNodeEnum enode = {                                  \
+      { NULL, BSE_EXPORT_NODE_ENUM, EnumName, },                        \
     };                                                                  \
-    if (!en.node.next) {                                                \
-      static GEnumValue values[N];                                      \
+    static GEnumValue values[N + 1];                                    \
+    if (!enode.values) {                                                \
       GEnumValue *v = values;                                           \
       ICode; /* initializes values via *v++ = ...; */                   \
-      en.node.next = export_identity->type_chain;                       \
-      export_identity->type_chain = &en.node;                           \
+      g_assert (v == values + N);                                       \
+      *v++ = ::Bse::EnumValue (0, 0, 0); /* NULL termination */         \
+      enode.values = values;                                            \
     }                                                                   \
+    return &enode.node;                                                 \
   }                                                                     \
-  static const GType get_type()                                         \
-  {                                                                     \
-    static GType t = 0;                                                 \
-    if (!t)                                                             \
-      t = g_type_from_name (EName);                                     \
-    return t;                                                           \
-  }                                                                     \
+  extern ::Bse::ExportTypeKeeper bse_type_keeper__3##EnumType;
+#define BSE_CXX_REGISTER_ENUM(EnumType)                                 \
+  ::Bse::ExportTypeKeeper                                               \
+         bse_type_keeper__3##EnumType (bse_export_node<EnumType>,       \
+                                       &__export_identity);
+/* convenience creator to allow easy assignments of GEnumValue structs */
+inline const GEnumValue
+EnumValue (int         int_value,
+           const char *value_name,
+           const char *value_nick)
+{
+  GEnumValue value;
+  value.value = int_value;
+  value.value_name = const_cast<char*> (value_name);
+  value.value_nick = const_cast<char*> (value_nick);
+  return value;
 }
 
+
+/* --- procedure registration --- */
+/* procedure registration works similar to enum registration. */
+#define BSE_CXX_DECLARED_PROC_TYPE(ProcType)                            \
+  (bse_type_keeper__9##ProcType.get_type ())
+#define BSE_CXX_DECLARE_PROC(ProcType)                                  \
+  extern ::Bse::ExportTypeKeeper bse_type_keeper__9##ProcType;
+#define BSE_CXX_REGISTER_PROC(NameSpace, ProcType)                              \
+  template<class C> static ::BseExportNode* bse_export_node ();                 \
+  template<> static ::BseExportNode*                                            \
+  bse_export_node<Procedure_##ProcType> ()                                      \
+  {                                                                             \
+    static ::BseExportNodeProc pnode = {                                        \
+      { NULL, ::BSE_EXPORT_NODE_PROC, #NameSpace #ProcType, },                  \
+      0, Procedure_##ProcType::init, Procedure_##ProcType::marshal,             \
+    };                                                                          \
+    if (!pnode.node.category && !pnode.node.pixstream && !pnode.node.blurb) {   \
+      pnode.node.category = Procedure_##ProcType::category();                   \
+      pnode.node.pixstream = Procedure_##ProcType::pixstream();                 \
+      pnode.node.blurb = Procedure_##ProcType::blurb();                         \
+    }                                                                           \
+    return &pnode.node;                                                         \
+  }                                                                             \
+  ::Bse::ExportTypeKeeper                                                       \
+         bse_type_keeper__9##ProcType (bse_export_node<Procedure_##ProcType>,   \
+                                   &__export_identity);
+
+
+/* --- class registration --- */
+/* class registration works similar to enum registration.
+ * in addition, we need to define a couple trampoline functions to make
+ * C++ methods callable, and for effects, we're providing some basic
+ * method implementations to interface with the synmthesis Module.
+ */
+#define BSE_CXX_DECLARED_CLASS_TYPE(ClassType)                          \
+  (bse_type_keeper__0##ClassType.get_type ())
+#define BSE_CXX_DECLARE_CLASS(ClassType)                                \
+  extern ::Bse::ExportTypeKeeper bse_type_keeper__0##ClassType;
+#define BSE_CXX_REGISTER_EFFECT(NameSpace, Effect)                              \
+  BSE_CXX_DEFINE_SET_PROPERTY (Effect ## Base);                                 \
+  BSE_CXX_DEFINE_GET_PROPERTY (Effect ## Base);                                 \
+  BSE_CXX_DEFINE_CLASS_INIT (Effect,                                            \
+                             BSE_CXX_SYM (Effect ## Base, set_property),        \
+                             BSE_CXX_SYM (Effect ## Base, get_property));       \
+  BSE_CXX_DEFINE_INSTANCE_INIT (Effect);                                        \
+  template<class C> static ::BseExportNode* bse_export_node ();                 \
+  template<> static ::BseExportNode*                                            \
+  bse_export_node<Effect> ()                                                    \
+  {                                                                             \
+    static ::BseExportNodeClass cnode = {                                       \
+      { NULL, ::BSE_EXPORT_NODE_CLASS, #NameSpace #Effect, },                   \
+      "BseEffect", BSE_CXX_COMMON_CLASS_SIZE,                                   \
+      (GClassInitFunc) BSE_CXX_SYM (Effect, class_init), NULL,                  \
+      BSE_CXX_INSTANCE_OFFSET + sizeof (Effect),                                \
+      BSE_CXX_SYM (Effect, instance_init),                                      \
+    };                                                                          \
+    if (!cnode.node.category && !cnode.node.pixstream && !cnode.node.blurb) {   \
+      cnode.node.category = Effect::category();                                 \
+      cnode.node.pixstream = Effect::pixstream();                               \
+      cnode.node.blurb = Effect::blurb();                                       \
+    }                                                                           \
+    return &cnode.node;                                                         \
+  }                                                                             \
+  ::Bse::ExportTypeKeeper                                                       \
+         bse_type_keeper__0##Effect (bse_export_node<Effect>,                   \
+                                     &__export_identity);
+/* effect method: create_module(); */
+#define BSE_CXX_DEFINE_CREATE_MODULE(ObjectType,ModuleType,ParamType)           \
+  Bse::SynthesisModule*                                                         \
+  ObjectType::create_module (unsigned int context_handle,                       \
+                             GslTrans    *trans)                                \
+  { /* create a synthesis module */                                             \
+    return new ModuleType();                                                    \
+  }
+/* effect method: module_configurator(); */
+#define BSE_CXX_DEFINE_MODULE_CONFIGURATOR(ObjectType,ModuleType,ParamType)     \
+Bse::SynthesisModule::Accessor*                                                 \
+ObjectType::module_configurator()                                               \
+{                                                                               \
+  return SynthesisModule::accessor (&ModuleType::config, ParamType (this));     \
+}
+/* convenience macro to define BseEffect module methods */
+#define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
+  BSE_CXX_DEFINE_CREATE_MODULE (ObjectType,ModuleType,ParamType);               \
+  BSE_CXX_DEFINE_MODULE_CONFIGURATOR (ObjectType,ModuleType,ParamType);
+
+
+/* --- type keeper for export nodes --- */
+class ExportTypeKeeper
+{
+  BseExportNode    *enode;
+  explicit          ExportTypeKeeper (const ExportTypeKeeper&);
+  ExportTypeKeeper& operator=        (const ExportTypeKeeper&);
+public:
+  explicit          ExportTypeKeeper (::BseExportNode*   (*export_node) (),
+                                      ::BseExportIdentity *export_identity)
+  {
+    enode = export_node ();
+    enode->next = export_identity->export_chain;
+    export_identity->export_chain = enode;
+  }
+  const GType get_type()
+  {
+    return enode->type;
+  }
+};
 
 } // Bse
 

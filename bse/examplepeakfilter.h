@@ -23,7 +23,7 @@
 namespace Example {
 using namespace Bse;
 
-#define EXAMPLE_TYPE_PEAK_FILTER     (Example::PeakFilter::get_type ())
+#define EXAMPLE_TYPE_PEAK_FILTER     (BSE_CXX_TYPE_GET_REGISTERED (PeakFilter))
 
 class PeakFilter : public Effect {
   /* properties: */
@@ -63,13 +63,13 @@ public:
   void              get_property        (guint          prop_id,
                                          Value         &value,
                                          GParamSpec    *pspec);
-  Module*           create_module       (unsigned int   context_handle,
+  SynthesisModule*  create_module       (unsigned int   context_handle,
                                          GslTrans      *trans);
-  Module::Accessor* module_configurator ();
+  SynthesisModule::Accessor*
+                    module_configurator ();
   virtual          ~PeakFilter          ();
   
   static void       class_init          (CxxBaseClass *klass);
-  static GType      get_type            (); // declaration needed by BSE_CXX_TYPE_REGISTER()
 };
 
 }

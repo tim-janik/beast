@@ -57,6 +57,20 @@ struct Value : GValue {
   void operator=   (SfiReal       r) { set_real (r); }
   void operator=   (const String &s) { set_string (s.c_str()); }
 };
+template<class TO> inline TO
+g_value_get_object (const GValue *v)
+{
+  struct Castable {
+    void *from;
+    TO to;
+    Castable (void *v) : from (v) {}
+    void convert (CxxBase*) { to = static_cast<TO> (CxxBase::base_from_gobject ((GObject*) from)); }
+    void convert (void*)    { to = static_cast<TO> (from); }
+  };
+  Castable c (g_value_get_object (v));
+  c.convert((TO) 0);
+  return c.to;
+}
 
 } // Bse
 

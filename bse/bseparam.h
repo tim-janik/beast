@@ -27,27 +27,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- enumeration params and values --- */
-#define	    BSE_TYPE_PARAM_ENUM			(G_TYPE_PARAM_ENUM)
-#define	    BSE_IS_PARAM_SPEC_ENUM(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), BSE_TYPE_PARAM_ENUM))
-#define	    BSE_PARAM_SPEC_ENUM(pspec)		(G_TYPE_CHECK_INSTANCE_CAST ((pspec), BSE_TYPE_PARAM_ENUM, BseParamSpecEnum))
-typedef	    GParamSpecEnum			 BseParamSpecEnum;
-GParamSpec* bse_param_spec_enum			(const gchar	*name,
-						 const gchar	*nick,
-						 const gchar	*blurb,
-						 gint		 default_value,
-						 GType		 enum_type,
-						 const gchar	*hints);
-gint	    bse_pspec_get_enum_default		(GParamSpec	*pspec);
-GEnumValue* bse_pspec_get_enum_value_list	(GParamSpec	*pspec);
-
-#define	    BSE_VALUE_HOLDS_ENUM(value)		(G_TYPE_CHECK_VALUE_TYPE ((value), BSE_TYPE_ENUM))
-#define	    bse_value_get_enum			 g_value_get_enum
-#define	    bse_value_set_enum			 g_value_set_enum
-GValue*	    bse_value_enum			(GType		 enum_type,
-						 gint		 evalue);
-
-
 /* --- object param specs --- */
 #define	    BSE_TYPE_PARAM_OBJECT		(G_TYPE_PARAM_OBJECT)
 #define	    BSE_IS_PARAM_SPEC_OBJECT(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), BSE_TYPE_PARAM_OBJECT))

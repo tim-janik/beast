@@ -185,11 +185,11 @@ bse_plugin_use (GTypePlugin *gplugin)
       
       plugin->use_count++;
       plugin->gmodule = g_module_open (plugin->fname, 0); /* reopen for use non-lazy */
-      plugin_identity = lookup_export_identity (plugin->gmodule);
+      plugin_identity = plugin->gmodule ? lookup_export_identity (plugin->gmodule) : NULL;
       if (!plugin->gmodule || !plugin_identity)
-	g_error ("Fatal plugin error, failed to reinitialize plugin: %s", g_module_error ());
+	g_error ("failed to reinitialize plugin: %s", g_module_error ());
 
-      plugin->chain = plugin_identity->type_chain;
+      plugin->chain = plugin_identity->export_chain;
 
       bse_plugin_reinit_types (plugin);
     }
@@ -500,14 +500,14 @@ bse_plugin_check_load (const gchar *_file_name)
     }
 
   /* create plugin if this is a BSE plugin with valid type chain */
-  if (plugin_identity->type_chain)
+  if (plugin_identity->export_chain)
     {
       BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
       g_free (plugin->name);
       plugin->name = g_strdup (plugin_identity->name);
       plugin->fname = file_name;
       plugin->gmodule = gmodule;
-      plugin->chain = plugin_identity->type_chain;
+      plugin->chain = plugin_identity->export_chain;
       
       /* register BSE module types */
       bse_plugin_init_types (plugin);

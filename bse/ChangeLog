@@ -1,3 +1,47 @@
+Wed Sep  3 00:59:09 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecxxbase.[hc]*: provide public conversion function for GObject
+	to CxxBase.
+
+	* bsecxxmodule.[hc]*: renamed Module to SynthesisModule so plugins
+	can simply define "Module" objects. don't register abstract BseEffect
+	with categories.
+
+	* bsecxxplugin.[hc]*: unify type registration for classes, enums and
+	procedures in plugins.
+
+	* bsecxxutils.[hc]*: fix category registration. get rid of C++ classes
+	having to prototye a get_type() function.
+
+	* bsecxxvalue.h: provide g_value_get_object<>() template to retrieve
+	specific Cxx classes from values.
+
+	* bseexports.h: mostly cosmetic patchups on the new export structure.
+
+	* bsemain.c (bse_init_intern): allow automated core plugin registration.
+
+	* bseparam.[hc]: remove all enum hackery.
+
+	* bseplugin.c: fixed plugin loading error handling.
+
+	* bseprocedure.[hc]: reference value types prior to use to properly
+	support plugin types in procedures.
+
+	* bseprocidl.cc: fixed up type special casing. however this still lacks
+	fundamental supprot for records and sequences, so signal generation
+	needs to be disabled at the moment.
+
+	* bsequery.c: fixed plugin registration.
+
+	* bsetype.[hc]: provide enum pspecs creators.
+
+	* mkcproc.pl: fixed recently introduced bug that swallowed procedure infos.
+
+Sun Aug 31 15:53:17 2003  Tim Janik  <timj@gtk.org>
+
+	* mkcproc.pl: fix recently introduced bug that prevented
+	HELP/AUTHORS etc. assignemtns in procedure definitions.
+
 Mon Aug 25 20:01:58 2003  Tim Janik  <timj@gtk.org>
 
 	* bseladspa.c (bse_ladspa_plugin_check_load): 

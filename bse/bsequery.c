@@ -212,14 +212,17 @@ main (gint   argc,
   gboolean gen_procdoc = 0;
   gboolean list_synths = 0;
   gchar *show_synth = NULL;
+  gchar *root_name = NULL;
   guint i;
   gchar *iindent = "";
-  
+  SfiRec *config;
+
   f_out = stdout;
 
   g_thread_init (NULL);
 
-  bse_init_intern (&argc, &argv, NULL);
+  sfi_init ();
+  config = sfi_rec_new();
   
   root = BSE_TYPE_OBJECT;
 
@@ -262,7 +265,7 @@ main (gint   argc,
 	{
 	  i++;
 	  if (i < argc)
-	    root = g_type_from_name (argv[i]);
+	    root_name = argv[i];
 	}
       else if (strcmp ("-n", argv[i]) == 0)
 	{
@@ -302,7 +305,7 @@ main (gint   argc,
 	}
       else if (strcmp ("-p", argv[i]) == 0)
 	{
-	  // bse_ladspa_plugin_test ();
+          sfi_rec_set_bool (config, "load-core-plugins", TRUE);
 	}
       else if (strcmp ("-h", argv[i]) == 0)
 	{
@@ -315,6 +318,12 @@ main (gint   argc,
       else
 	return help (argv[i]);
     }
+
+  bse_init_intern (&argc, &argv, config);
+
+  if (root_name)
+    root = g_type_from_name (root_name);
+
   if (!gen_froots && !gen_tree && !gen_cats && !gen_procdoc && !list_synths && !show_synth)
     return help (argv[i-1]);
 
