@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-18 03:00+0200\n"
-"PO-Revision-Date: 2004-09-18 14:33-0300\n"
+"POT-Creation-Date: 2004-09-18 19:01+0200\n"
+"PO-Revision-Date: 2004-09-19 08:20-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -3513,7 +3513,7 @@ msgstr "Pressão do canal"
 #. 7bit
 #: bse/bsecore.idl:64
 msgid "Pitch Bend"
-msgstr ""
+msgstr "Pitch Bend"
 
 #. 14bit
 #: bse/bsecore.idl:65
@@ -3655,24 +3655,23 @@ msgstr ""
 #. 14bit, special cased signals
 #: bse/bsecore.idl:101
 msgid "Constant HIGH"
-msgstr ""
+msgstr "ALTO constante"
 
 #: bse/bsecore.idl:102
 msgid "Constant CENTER"
-msgstr ""
+msgstr "CENTRO constante"
 
 #: bse/bsecore.idl:103
-#, fuzzy
 msgid "Constant LOW"
-msgstr "Saída constante %u"
+msgstr "BAIXO constante"
 
 #: bse/bsecore.idl:104
 msgid "Constant Negative CENTER"
-msgstr ""
+msgstr "CENTRO negativo constante"
 
 #: bse/bsecore.idl:105
 msgid "Constant Negative HIGH"
-msgstr ""
+msgstr "ALTO negativo constante"
 
 #: bse/bsecore.idl:106
 msgid "Registered Parameter"
@@ -4640,7 +4639,7 @@ msgstr "Duração do pressionamento da nota"
 
 #: bse/bseinstrumentinput.c:126 bse/bsemidiinput.c:115
 msgid "Aftertouch"
-msgstr ""
+msgstr "Pós-toque"
 
 #: bse/bseinstrumentinput.c:126 bse/bsemidiinput.c:115
 msgid "Velocity while the note is pressed"
@@ -4794,11 +4793,11 @@ msgstr "Saída de gate"
 
 #: bse/bsemidivoice.c:113
 msgid "Velocity Out"
-msgstr "Duração de saída"
+msgstr "Saída de duração"
 
 #: bse/bsemidivoice.c:115
 msgid "Aftertouch Out"
-msgstr ""
+msgstr "Saída pós-toque"
 
 #: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
 msgid "Left In"
@@ -5303,7 +5302,6 @@ msgid "/Enhance/ArtsCompressor"
 msgstr "/Melhorar/ArtsCompressor"
 
 #: plugins/artscompressor.idl:30
-#, fuzzy
 msgid ""
 "ArtsCompressor compresses the sound.\n"
 "\n"
@@ -5341,7 +5339,7 @@ msgstr ""
 "(1) o volume de entrada atual do sinal é detectado\n"
 "(2) se exceder um dado limiar, o volume do sinal de saída será reduzido\n"
 "\n"
-"A detecção do volume de entrada tem um tempo de meia-vida de ataque e de liberação que pode ser especificado - em milissegundos - com as propriedades correspondentes. Esse *envelope faz o compressor se adaptar lentamente ao nível real do sinal de entrada.\n"
+"A detecção do volume de entrada tem um tempo de meia-vida de ataque e de liberação que pode ser especificado - em milissegundos - com as propriedades correspondentes. Esse envelope faz o compressor se adaptar lentamente ao nível real do sinal de entrada.\n"
 "\n"
 "A taxa especifica como o volume de um sinal deve ser reduzida, se ela exceder o limiar. Uma taxa de compressão de 2:1 significa, por exemplo, que se o volume de entrada for 2 dB a mais que o limiar, o volume de saída será 1 dB a mais que o limiar. Exemplo (limiar = -10, taxa 2:1):\n"
 "entrada = -20 dB => saída = -20 dB\n"
@@ -5429,7 +5427,9 @@ msgstr "Saída automática"
 msgid ""
 "Adjust the output amplification automatically according to threshold and "
 "ratio"
-msgstr "Ajusta a amplificação da saída automaticamente de acordo com o limiar e com a taxa"
+msgstr ""
+"Ajusta a amplificação da saída automaticamente de acordo com o limiar e com "
+"a taxa"
 
 #: plugins/bseadder.c:97 plugins/bsemult.c:60
 msgid "Audio Input 1"
@@ -5658,7 +5658,7 @@ msgstr "Ent gate"
 
 #: plugins/bsesimpleadsr.c:118
 msgid "Gate input (activates/deactivates envelope)"
-msgstr ""
+msgstr "Entrada gate (ativa/desativa o envelope)"
 
 #: plugins/bsesimpleadsr.c:120
 msgid "Retrigger In"
@@ -5674,7 +5674,7 @@ msgstr "Saída de controle"
 
 #: plugins/bsesimpleadsr.c:122
 msgid "Attack-Decay-Sustain-Release envelope output"
-msgstr ""
+msgstr "Saída envelope ataque-desaparecimento-sustain-liberação"
 
 #: plugins/bsesimpleadsr.c:124
 msgid "Done Out"
@@ -5734,19 +5734,19 @@ msgstr "Define a quantidade de ressonância em porcentagem"
 
 #: plugins/davbassfilter.idl:40
 msgid "Envelope Modulation [%]"
-msgstr ""
+msgstr "Modulação de envelope [%]"
 
 #: plugins/davbassfilter.idl:40
 msgid "Set the envelope magnitude in percent"
-msgstr ""
+msgstr "Define a magnitude de envelope em porcentagem"
 
 #: plugins/davbassfilter.idl:41
 msgid "Decay [%]"
-msgstr ""
+msgstr "Desaparecimento [%]"
 
 #: plugins/davbassfilter.idl:41
 msgid "Set the decay length in percent"
-msgstr ""
+msgstr "Define o tamanho do desaparecimento em porcentagem"
 
 #: plugins/davbassfilter.idl:42
 msgid "Trigger filter"
