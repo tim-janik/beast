@@ -348,7 +348,7 @@ sfi_rstore_new (void)
   SfiRStore *rstore;
 
   rstore = g_new0 (SfiRStore, 1);
-  rstore->scanner = g_scanner_new (sfi_storage_scanner_config);
+  rstore->scanner = g_scanner_new64 (sfi_storage_scanner_config);
   rstore->scanner->max_parse_errors = 1;
   rstore->fname = NULL;
   rstore->parser_this = rstore;

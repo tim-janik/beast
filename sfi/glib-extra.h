@@ -359,12 +359,8 @@ union	_GTokenValue
 {
   gpointer	v_symbol;
   gchar		*v_identifier;
-  gulong	v_binary;
-  gulong	v_octal;
-  gulong	v_int;
   guint64	v_int64;
   gdouble	v_float;
-  gulong	v_hex;
   gchar		*v_string;
   gchar		*v_comment;
   guchar	v_char;
@@ -406,7 +402,6 @@ struct	_GScannerConfig
   guint		char_2_token : 1;		/* return G_TOKEN_CHAR? */
   guint		symbol_2_token : 1;
   guint		scope_0_fallback : 1;		/* try scope 0 on lookups? */
-  guint		store_int64 : 1;
   guint		padding_dummy;
 };
 struct	_GScanner
@@ -433,7 +428,7 @@ struct	_GScanner
   guint			scope_id;
   GScannerMsgFunc	msg_handler;
 };
-GScanner*	g_scanner_new			(const GScannerConfig *config_templ);
+GScanner*	g_scanner_new64			(const GScannerConfig *config_templ);
 void		g_scanner_destroy		(GScanner	*scanner);
 void		g_scanner_input_file		(GScanner	*scanner,
 						 gint		input_fd);

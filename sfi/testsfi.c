@@ -207,7 +207,7 @@ test_threads (void)
 static void
 test_scanner64 (void)
 {
-  GScanner *scanner = g_scanner_new (sfi_storage_scanner_config);
+  GScanner *scanner = g_scanner_new64 (sfi_storage_scanner_config);
   MSG ("64Bit Scanner:");
   scanner->config->numbers_2_int = FALSE;
   SCANNER_ASSERT64 (scanner, FALSE, G_TOKEN_BINARY, " 0b0 #", 0);
@@ -273,7 +273,7 @@ static void
 serialize_cmp (GValue     *value,
 	       GParamSpec *pspec)
 {
-  GScanner *scanner = g_scanner_new (sfi_storage_scanner_config);
+  GScanner *scanner = g_scanner_new64 (sfi_storage_scanner_config);
   GString *gstring = g_string_new (NULL);
   GValue rvalue = { 0, };
   GTokenType token;

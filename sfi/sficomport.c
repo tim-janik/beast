@@ -541,7 +541,7 @@ sfi_com_port_deserialize (SfiComPort *port)
 {
   if (!port->scanner && port->rbuffer.hlen)
     {
-      port->scanner = g_scanner_new (sfi_storage_scanner_config);
+      port->scanner = g_scanner_new64 (sfi_storage_scanner_config);
       port->scanner->input_name = NULL;
       port->scanner->parse_errors = 0;
       port->scanner->user_data = port;

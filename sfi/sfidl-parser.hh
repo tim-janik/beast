@@ -96,7 +96,7 @@ struct Constant {
 
   std::string str;
   float f;
-  int i;
+  gint64 i;
 };
 
 struct Param {

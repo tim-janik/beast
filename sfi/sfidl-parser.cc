@@ -252,7 +252,7 @@ Parser::findClass (const string& name) const
 
 Parser::Parser () : options (*Options::the())
 {
-  scanner = g_scanner_new (&scanner_config_template);
+  scanner = g_scanner_new64 (&scanner_config_template);
   
   for (int n = 0; token_symbols[n]; n++)
     g_scanner_add_symbol (scanner, token_symbols[n], GUINT_TO_POINTER (G_TOKEN_LAST + 1 + n));
@@ -847,7 +847,7 @@ GTokenType Parser::parseStringOrConst (string &s)
 	      switch (ci->type)
 		{
 		  case Constant::tInt:
-		    s = x = g_strdup_printf ("%d", ci->i);
+		    s = x = g_strdup_printf ("%lldLL", ci->i);
 		    g_free (x);
 		    break;
 		  case Constant::tFloat:
@@ -888,12 +888,14 @@ GTokenType Parser::parseConstant ()
 
   GTokenType t = g_scanner_peek_next_token (scanner);
 
-  bool negate = (t == GTokenType('-')); /* negative number? */
-  if (negate)
-  {
-    parse_or_return ('-');
-    t = g_scanner_peek_next_token (scanner);
-  }
+  /* allow positive/negative prefixing */
+  bool negate = FALSE;
+  while (t == '+' || t == '-')
+    {
+      t = g_scanner_get_next_token (scanner);
+      negate = negate ^ (t == '-');
+      t = g_scanner_peek_next_token (scanner);
+    }
 
   if (t == G_TOKEN_INT)
   {
@@ -1322,7 +1324,7 @@ GTokenType Parser::parseParamHints (Param &def)
             else switch (ci->type)
               {
               case Constant::tInt:
-                token_as_string = g_strdup_printf ("%d", ci->i);
+                token_as_string = g_strdup_printf ("%lldLL", ci->i);
                 break;
               case Constant::tFloat:
                 token_as_string = g_strdup_printf ("%.17g", ci->f);

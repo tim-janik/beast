@@ -1084,7 +1084,6 @@ static GScannerConfig g_scanner_config_template =
   TRUE			/* char_2_token */,
   FALSE			/* symbol_2_token */,
   FALSE			/* scope_0_fallback */,
-  FALSE			/* store_int64 */,
 };
 
 
@@ -1137,7 +1136,7 @@ g_scanner_char_2_num (guchar	c,
 }
 
 GScanner*
-g_scanner_new (const GScannerConfig *config_templ)
+g_scanner_new64 (const GScannerConfig *config_templ)
 {
   GScanner *scanner;
   
@@ -1181,7 +1180,6 @@ g_scanner_new (const GScannerConfig *config_templ)
   scanner->config->char_2_token		 = config_templ->char_2_token;
   scanner->config->symbol_2_token	 = config_templ->symbol_2_token;
   scanner->config->scope_0_fallback	 = config_templ->scope_0_fallback;
-  scanner->config->store_int64		 = config_templ->store_int64;
   
   scanner->token = G_TOKEN_NONE;
   scanner->value.v_int64 = 0;
@@ -1927,10 +1925,7 @@ g_scanner_unexp_token (GScanner		*scanner,
     case G_TOKEN_OCTAL:
     case G_TOKEN_INT:
     case G_TOKEN_HEX:
-      if (scanner->config->store_int64)
-	g_snprintf (token_string, token_string_len, "number `%llu'", scanner->value.v_int64);
-      else
-	g_snprintf (token_string, token_string_len, "number `%lu'", scanner->value.v_int);
+      g_snprintf (token_string, token_string_len, "number `%llu'", scanner->value.v_int64);
       break;
       
     case G_TOKEN_FLOAT:
@@ -2163,10 +2158,7 @@ g_scanner_get_token_i (GScanner	*scanner,
       scanner->config->int_2_float)
     {
       *token_p = G_TOKEN_FLOAT;
-      if (scanner->config->store_int64)
-	value_p->v_float = value_p->v_int64;
-      else
-	value_p->v_float = value_p->v_int;
+      value_p->v_float = value_p->v_int64;
     }
   
   errno = 0;
@@ -2555,10 +2547,7 @@ g_scanner_get_token_ll	(GScanner	*scanner,
 		  break;
 		default: ;
 		}
-	      if (scanner->config->store_int64)
-		value.v_int64 = ui64;
-	      else
-		value.v_int = ui64;
+              value.v_int64 = ui64;
 	    }
 	  if (endptr && *endptr)
 	    {
