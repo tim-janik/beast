@@ -13,7 +13,7 @@ Wed Dec 10 19:27:33 2003  Tim Janik  <timj@gtk.org>
 
 	* ltmain.sh: update to libtool 1.5.0a + debian patches.
 	
-	* beast-gtk/bstutils.[hc]: emove atail and ahead slots from gmask.
+	* beast-gtk/bstutils.[hc]: remove atail and ahead slots from gmask.
 	removed BST_GMASK_FILL, bst_gmask_quick() simply uses BST_GMASK_INTERLEAVE.
 
 	* beast-gtk/gxk/gxkauxwidgets.c: added second arrow to menu button.
