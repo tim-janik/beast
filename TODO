@@ -1,5 +1,4 @@
 FIXMES:	(release-critical)
-- move and add compat for Dav::*Name -> Bse::Dav::*Name
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - adjust engine block size (Subject: blocksize vs. cpu)
 - midireceiver: revisit sched_tag as condition, it's probably too weak due to temporary enginescheduler resets
