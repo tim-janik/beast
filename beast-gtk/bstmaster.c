@@ -178,6 +178,8 @@ bst_master_prepare (gpointer  source_data,
 					     bse_globals->track_length *
 					     N_TRACKS)));
 
+  // g_print ("n_inputs %d\n", BSE_SOURCE (master)->n_inputs);
+
   /* don't even bother selecting on the fd if there's
    * no data to write (BSE_SOURCE (master)->n_inputs == 0) or
    * we already know that we need further dispatching (in which

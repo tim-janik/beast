@@ -17,6 +17,7 @@
  */
 #include "bstsnetshell.h"
 
+#include "bstzoomedwindow.h"
 #include "bstparamview.h"
 #include "bstapp.h"
 
@@ -135,20 +136,79 @@ bst_snet_shell_new (BseSNet *snet)
 }
 
 static void
+zoomed_add_xpm (BstZoomedWindow *zoomed)
+{
+  if (!GTK_BIN (zoomed->toggle_button)->child)
+    {
+      GtkWidget *widget = GTK_WIDGET (zoomed);
+      GdkPixmap *pixmap;
+      GdkBitmap *mask;
+      GtkWidget *pix;
+      static const gchar *zoom_xpm[] = {
+	"12 12 2 1", "  c None", "# c #000000",
+	"####  ####  ",
+	"##      ##  ",
+	"# #    # #  ",
+	"#  ####  #  ",
+	"   #  #     ",
+	"   #  #     ",
+	"#  ####  #  ",
+	"# #    # #  ",
+	"##      ##  ",
+	"####  ####  ",
+	"            ",
+	"            ",
+      };
+
+      pixmap = gdk_pixmap_create_from_xpm_d (widget->window,
+					     &mask,
+					     NULL,
+					     (gchar**) zoom_xpm);
+      pix = gtk_pixmap_new (pixmap, mask);
+      gdk_pixmap_unref (pixmap);
+      gdk_pixmap_unref (mask);
+
+      gtk_widget_set (pix,
+		      "visible", TRUE,
+		      "parent", zoomed->toggle_button,
+		      NULL);
+    }
+}
+
+static void
 bst_snet_shell_build (BstSNetShell *snet_shell)
 {
-  GtkWidget *notebook;
+  GtkWidget *notebook, *zoomed_window;
   BseSNet *snet = BSE_SNET (BST_SUPER_SHELL (snet_shell)->super);
+  GtkWidget *snet_router_box;
 
   snet_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT (snet));
   gtk_widget_set (GTK_WIDGET (snet_shell->param_view),
 		  "signal::destroy", gtk_widget_destroyed, &snet_shell->param_view,
 		  "visible", TRUE,
 		  NULL);
+
+  snet_router_box = gtk_widget_new (GTK_TYPE_VBOX,
+				    "visible", TRUE,
+				    "homogeneous", FALSE,
+				    "spacing", 3,
+				    "border_width", 5,
+				    NULL);
   snet_shell->snet_router = (BstSNetRouter*) bst_snet_router_new (snet);
+  gtk_box_pack_start (GTK_BOX (snet_router_box), snet_shell->snet_router->toolbar, FALSE, TRUE, 0);
+  zoomed_window = gtk_widget_new (BST_TYPE_ZOOMED_WINDOW,
+				  "visible", TRUE,
+				  "hscrollbar_policy", GTK_POLICY_ALWAYS,
+				  "vscrollbar_policy", GTK_POLICY_ALWAYS,
+				  "parent", snet_router_box,
+				  "object_signal::zoom", bst_snet_router_adjust_region, snet_shell->snet_router,
+				  "object_signal::zoom", gtk_false, NULL,
+				  "signal::realize", zoomed_add_xpm, NULL,
+				  NULL);
   gtk_widget_set (GTK_WIDGET (snet_shell->snet_router),
-		  "signal::destroy", gtk_widget_destroyed, &snet_shell->snet_router,
 		  "visible", TRUE,
+		  "signal::destroy", gtk_widget_destroyed, &snet_shell->snet_router,
+		  "parent", zoomed_window,
 		  NULL);
 
   notebook = gtk_widget_new (GTK_TYPE_NOTEBOOK,
@@ -168,7 +228,7 @@ bst_snet_shell_build (BstSNetShell *snet_shell)
 					    "label", "Parameters",
 					    "visible", TRUE,
 					    NULL));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (snet_shell->snet_router),
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), snet_router_box,
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "label", "Routing",
 					    "visible", TRUE,
@@ -239,7 +299,7 @@ bst_snet_shell_operate (BstSuperShell *super_shell,
   switch (op)
     {
     case BST_OP_PLAY:
-      // FIXME: bse_master_add_source (master, BSE_SOURCE (snet), BSE_SNET_OCHANNEL_STEREO);
+      bse_master_add_source (master, BSE_SOURCE (snet), BSE_SNET_OCHANNEL_STEREO);
       break;
     case BST_OP_STOP:
       bse_source_clear_ochannels (BSE_SOURCE (snet));
@@ -261,9 +321,9 @@ bst_snet_shell_can_operate (BstSuperShell *super_shell,
   switch (op)
     {
     case BST_OP_PLAY:
-      return snet != NULL;
+      return snet->junk == NULL;
     case BST_OP_STOP:
-      return snet != NULL;
+      return snet->junk != NULL;
     default:
       return FALSE;
     }

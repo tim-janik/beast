@@ -295,7 +295,7 @@ main (int   argc,
       
       app = bst_app_new (project);
       bse_object_unref (BSE_OBJECT (project));
-      bst_app_operate (app, BST_OP_PROJECT_NEW_SONG);
+      /* bst_app_operate (app, BST_OP_PROJECT_NEW_SONG); */
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
   

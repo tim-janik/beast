@@ -38,21 +38,25 @@ static gchar	   *bst_app_factories_path = "<BstApp>";
 static GtkItemFactoryEntry menubar_entries[] =
 {
 #define BST_OP(bst_op) (bst_app_operate), (BST_OP_ ## bst_op)
+  { "/_File",			NULL,		NULL, 0,		"<Branch>" },
+  { "/File/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
+  { "/File/_New",		"<ctrl>N",	BST_OP (PROJECT_NEW),	"<Item>" },
+  { "/File/_Open...",		"<ctrl>O",	BST_OP (PROJECT_OPEN),	"<Item>" },
+  { "/File/_Save",		"<ctrl>S",	BST_OP (PROJECT_SAVE),	"<Item>" },
+  { "/File/Save _As...",	NULL,		BST_OP (PROJECT_SAVE_AS),"<Item>" },
+  { "/File/-----",		NULL,		NULL, 0,		"<Separator>" },
+  { "/File/_Close",		"<ctrl>W",	BST_OP (PROJECT_CLOSE),	"<Item>" },
+  { "/File/_Exit",		"<ctrl>Q",	BST_OP (EXIT),		"<Item>" },
   { "/_Project",		NULL,		NULL, 0,		"<Branch>" },
   { "/Project/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/Project/_New",		"<ctrl>N",	BST_OP (PROJECT_NEW),	"<Item>" },
-  { "/Project/_Open...",	"<ctrl>O",	BST_OP (PROJECT_OPEN),	"<Item>" },
-  { "/Project/_Save",		"<ctrl>S",	BST_OP (PROJECT_SAVE),	"<Item>" },
-  { "/Project/Save _As...",	NULL,		BST_OP (PROJECT_SAVE_AS),"<Item>" },
+  { "/Project/_Play",		"",		BST_OP (PROJECT_PLAY),	"<Item>" },
+  { "/Project/_Stop",		"",		BST_OP (PROJECT_STOP),	"<Item>" },
   { "/Project/-----",		NULL,		NULL, 0,		"<Separator>" },
   { "/Project/New Song",	NULL,		BST_OP (PROJECT_NEW_SONG), "<Item>" },
-  { "/Project/New SNet",	NULL,		BST_OP (PROJECT_NEW_SNET), "<Item>" },
+  { "/Project/New Source Net",	NULL,		BST_OP (PROJECT_NEW_SNET), "<Item>" },
   { "/Project/-----",		NULL,		NULL, 0,		"<Separator>" },
   { "/Project/Rebuild",		NULL,		BST_OP (REBUILD),	"<Item>" },
   { "/Project/Refresh",		NULL,		BST_OP (REFRESH),	"<Item>" },
-  { "/Project/-----",		NULL,		NULL, 0,		"<Separator>" },
-  { "/Project/_Close",		"<ctrl>W",	BST_OP (PROJECT_CLOSE),	"<Item>" },
-  { "/Project/_Exit",		"<ctrl>Q",	BST_OP (EXIT),		"<Item>" },
   { "/_Edit",			NULL,		NULL, 0,		"<Branch>" },
   { "/Edit/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
   { "/Edit/_Undo",		"<ctrl>U",	BST_OP (UNDO_LAST),	"<Item>" },
@@ -63,12 +67,9 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Song/Delete Pattern",	NULL,		BST_OP (PATTERN_DELETE),"<Item>" },
   { "/Song/_Edit Pattern...",	"<ctrl>E",	BST_OP (PATTERN_EDITOR),"<Item>" },
   { "/Song/Add _Instrument",	"<ctrl>A",	BST_OP (INSTRUMENT_ADD),"<Item>" },
-  { "/Song/_Play",		"",		BST_OP (PLAY),		"<Item>" },
-  { "/Song/_Stop",		"",		BST_OP (STOP),		"<Item>" },
   { "/S_Net",			NULL,		NULL, 0,		"<Branch>" },
   { "/SNet/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/SNet/_Play",		"",		BST_OP (PLAY),		"<Item>" },
-  { "/SNet/_Stop",		"",		BST_OP (STOP),		"<Item>" },
+  { "/SNet/_Test",		"",		BST_OP (NONE),		"<Item>" },
   { "/_Help",			NULL,		NULL, 0,		"<LastBranch>" },
   { "/Help/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
   { "/Help/_About...",		NULL,		BST_OP (HELP_ABOUT),	"<Item>" },
@@ -243,6 +244,10 @@ bst_app_build (GleGWidget *gwidget,
 				   "switch-page",
 				   bst_update_can_operate,
 				   GTK_OBJECT (app));
+
+  /* update menu entries
+   */
+  bst_app_update_can_operate (app);
 }
 
 GtkWidget*
@@ -369,6 +374,14 @@ bst_app_update_can_operate (BstApp *app)
     }
 }
 
+static void
+foreach_super_shell_operate (BstSuperShell *shell,
+			     gpointer       data)
+{
+  if (bst_super_shell_can_operate (shell, GPOINTER_TO_UINT (data)))
+    bst_super_shell_operate (shell, GPOINTER_TO_UINT (data));
+}
+
 void
 bst_app_operate (BstApp *app,
 		 BstOps	 op)
@@ -391,22 +404,6 @@ bst_app_operate (BstApp *app,
       BseSong *song;
       BseSNet *snet;
 
-    case BST_OP_PROJECT_NEW_SONG:
-      song = bse_song_new (BST_APP_PROJECT (app), BSE_DFL_SONG_N_CHANNELS);
-      bst_app_reload_supers (app);
-      super_shell = bst_super_shell_from_super (BSE_SUPER (song));
-      bst_super_shell_operate (super_shell, BST_OP_PATTERN_ADD);
-      bse_object_unref (BSE_OBJECT (song));
-      break;
-    case BST_OP_PROJECT_NEW_SNET:
-      snet = bse_snet_new (BST_APP_PROJECT (app), NULL);
-      bst_app_reload_supers (app);
-      super_shell = bst_super_shell_from_super (BSE_SUPER (snet));
-      bse_object_unref (BSE_OBJECT (snet));
-      break;
-    case BST_OP_PROJECT_CLOSE:
-      bst_app_handle_delete_event (widget);
-      break;
     case BST_OP_PROJECT_NEW:
       if (1)
 	{
@@ -414,7 +411,8 @@ bst_app_operate (BstApp *app,
 	  BstApp *napp = bst_app_new (project);
 
 	  bse_object_unref (BSE_OBJECT (project));
-	  bst_app_operate (napp, BST_OP_PROJECT_NEW_SONG);
+	  if (0)
+	    bst_app_operate (napp, BST_OP_PROJECT_NEW_SONG);
 	  gtk_idle_show_widget (GTK_WIDGET (napp));
 	}
       break;
@@ -441,15 +439,8 @@ bst_app_operate (BstApp *app,
       gtk_widget_show (bst_dialog_save);
       gdk_window_raise (bst_dialog_save->window);
       break;
-    case BST_OP_REFRESH:
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) bst_super_shell_update,
-			     NULL);
-      break;
-    case BST_OP_REBUILD:
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) bst_super_shell_rebuild,
-			     NULL);
+    case BST_OP_PROJECT_CLOSE:
+      bst_app_handle_delete_event (widget);
       break;
     case BST_OP_EXIT:
       if (bst_app_class)
@@ -461,6 +452,41 @@ bst_app_operate (BstApp *app,
 	  g_slist_free (free_slist);
 	}
       break;
+    case BST_OP_PROJECT_NEW_SONG:
+      song = bse_song_new (BST_APP_PROJECT (app), BSE_DFL_SONG_N_CHANNELS);
+      bst_app_reload_supers (app);
+      super_shell = bst_super_shell_from_super (BSE_SUPER (song));
+      bst_super_shell_operate (super_shell, BST_OP_PATTERN_ADD);
+      bse_object_unref (BSE_OBJECT (song));
+      break;
+    case BST_OP_PROJECT_NEW_SNET:
+      snet = bse_snet_new (BST_APP_PROJECT (app), NULL);
+      bst_app_reload_supers (app);
+      super_shell = bst_super_shell_from_super (BSE_SUPER (snet));
+      bse_object_unref (BSE_OBJECT (snet));
+      break;
+    case BST_OP_PROJECT_PLAY:
+      gtk_container_foreach (GTK_CONTAINER (app->notebook),
+			     (GtkCallback) foreach_super_shell_operate,
+			     GUINT_TO_POINTER (BST_OP_PLAY));
+      break;
+    case BST_OP_PROJECT_STOP:
+      gtk_container_foreach (GTK_CONTAINER (app->notebook),
+			     (GtkCallback) foreach_super_shell_operate,
+			     GUINT_TO_POINTER (BST_OP_STOP));
+      break;
+    case BST_OP_REFRESH:
+      gtk_container_foreach (GTK_CONTAINER (app->notebook),
+			     (GtkCallback) bst_super_shell_update,
+			     NULL);
+      gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
+      break;
+    case BST_OP_REBUILD:
+      gtk_container_foreach (GTK_CONTAINER (app->notebook),
+			     (GtkCallback) bst_super_shell_rebuild,
+			     NULL);
+      gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
+      break;
     default:
       if (shell)
 	bst_super_shell_operate (BST_SUPER_SHELL (shell), op);
@@ -470,6 +496,33 @@ bst_app_operate (BstApp *app,
   bst_update_can_operate (widget);
 
   gtk_widget_unref (widget);
+}
+
+#define NONE ((void*) -1)
+
+static void
+forwhich_super_shell_can_operate (BstSuperShell *shell,
+				  gpointer       data_p)
+{
+  gpointer *data = data_p;
+
+  if (data[1] == NONE || data[1] == NULL)
+    {
+      if (bst_super_shell_can_operate (shell, GPOINTER_TO_UINT (data[0])))
+	data[1] = shell;
+      else
+	data[1] = NULL;
+    }
+}
+
+static void
+forany_super_shell_can_operate (BstSuperShell *shell,
+				gpointer       data_p)
+{
+  gpointer *data = data_p;
+
+  if (bst_super_shell_can_operate (shell, GPOINTER_TO_UINT (data[0])))
+    data[1] = shell;
 }
 
 gboolean
@@ -485,6 +538,7 @@ bst_app_can_operate (BstApp *app,
 
   switch (bst_op)
     {
+      gpointer data[2];
     case BST_OP_PROJECT_NEW:
     case BST_OP_PROJECT_OPEN:
     case BST_OP_PROJECT_SAVE_AS:
@@ -495,6 +549,22 @@ bst_app_can_operate (BstApp *app,
     case BST_OP_REBUILD:
     case BST_OP_EXIT:
       return TRUE;
+    case BST_OP_PROJECT_PLAY:
+      data[0] = GUINT_TO_POINTER (BST_OP_STOP);
+      data[1] = NONE;
+      gtk_container_foreach (GTK_CONTAINER (app->notebook),
+			     (GtkCallback) forwhich_super_shell_can_operate,
+			     data);
+      return data[1] == NULL;
+      break;
+    case BST_OP_PROJECT_STOP:
+      data[0] = GUINT_TO_POINTER (BST_OP_STOP);
+      data[1] = NULL;
+      gtk_container_foreach (GTK_CONTAINER (app->notebook),
+			     (GtkCallback) forany_super_shell_can_operate,
+			     data);
+      return data[1] != NULL;
+      break;
     default:
       return shell ? bst_super_shell_can_operate (BST_SUPER_SHELL (shell), bst_op) : FALSE;
     }

@@ -734,6 +734,8 @@ gnome_forest_state_changed (GtkWidget   *widget,
                            0, 0,
                            widget->allocation.width,
                            widget->allocation.height);
+  if (GTK_WIDGET_REALIZED (widget))
+    gtk_style_set_background (widget->style, widget->window, GTK_WIDGET_STATE (widget));
   
   if (GTK_WIDGET_CLASS (parent_class)->state_changed)
     GTK_WIDGET_CLASS (parent_class)->state_changed (widget, previous_state);
@@ -748,6 +750,8 @@ gnome_forest_style_set (GtkWidget *widget,
                            0, 0,
                            widget->allocation.width,
                            widget->allocation.height);
+  if (GTK_WIDGET_REALIZED (widget))
+    gtk_style_set_background (widget->style, widget->window, GTK_WIDGET_STATE (widget));
   
   if (GTK_WIDGET_CLASS (parent_class)->style_set)
     GTK_WIDGET_CLASS (parent_class)->style_set (widget, previous_style);

@@ -1,3 +1,26 @@
+Sat Nov  6 05:58:29 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetshell.c (bst_snet_shell_build): moved most of
+	the dynamic snet router creation here, we also setup the zoomed
+	window in this place.
+
+	* beast-gtk/bstsnetrouter.[hc]: changed matters, so we derive from
+	GnomeCanvas now. removed other non-canvas dependant stuff (we still
+	create the toolbar though). indicate toolbar mode through cursor
+	change on the canvas.
+
+Fri Nov  5 05:00:13 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetshell.c (bst_snet_shell_operate): added playback
+	and playback stop support.
+
+	* beast-gtk/bstapp.c: reordered menubar, made play/stop project specific
+	operations.
+
+	* beast-gtk/bstapp.c (bst_app_operate): don't spawn a new song in new
+	projects.
+	* beast-gtk/bstmain.c (main): same here for the default project.
+
 Thu Nov  4 00:18:05 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (toolbar_add_category): ignore supers,

@@ -41,22 +41,21 @@ typedef	struct	_BstSNetRouter		BstSNetRouter;
 typedef	struct	_BstSNetRouterClass	BstSNetRouterClass;
 struct _BstSNetRouter
 {
-  GtkVBox	    parent_object;
+  GnomeCanvas	    parent_object;
+
+  GtkWidget	   *toolbar;
 
   BseSNet	   *snet;
 
   guint		    radio_action; /* radio_active ;) */
 
-  GnomeCanvas	   *canvas;
-  GnomeCanvasGroup *root;
-
   gdouble           world_x, world_y;
 };
 struct _BstSNetRouterClass
 {
-  GtkVBoxClass  parent_class;
+  GnomeCanvasClass parent_class;
 
-  GtkTooltips  *tooltips;
+  GtkTooltips     *tooltips;
 };
 
 
@@ -67,6 +66,7 @@ void		bst_snet_router_set_snet 	(BstSNetRouter  *router,
 						 BseSNet        *snet);
 void		bst_snet_router_update		(BstSNetRouter	*snet_router);
 void		bst_snet_router_rebuild		(BstSNetRouter	*snet_router);
+void		bst_snet_router_adjust_region	(BstSNetRouter  *snet_router);
      
 
 
