@@ -722,6 +722,7 @@ design instruments:
 documentation:
  - C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
   - sfidl-manual.texi: complete the documentation
+ - bsewavetool needs to be documented with documentation tool on code level (gsl_data_find_loop*)
 
 Misc Buglets/Feature Requests:
  - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
