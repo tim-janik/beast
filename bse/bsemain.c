@@ -66,6 +66,8 @@ bse_init_async (gint    *argc,
   bse_initialization_stage++;
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_async");
+
+  bindtextdomain ("bse", BST_PATH_LOCALE);
   
   /* this function is running in the user thread and needs to start the main BSE thread */
   
@@ -230,6 +232,8 @@ bse_init_intern (gint    *argc,
   bse_initialization_stage++;
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_intern");
+
+  bindtextdomain ("bse", BST_PATH_LOCALE);
   
   /* initialize submodules */
   sfi_init ();

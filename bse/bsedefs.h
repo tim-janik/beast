@@ -20,12 +20,13 @@
 #ifndef __BSE_DEFS_H__
 #define __BSE_DEFS_H__
 
-#undef          G_DISABLE_ASSERT
-#undef          G_DISABLE_CHECKS
-#include        <sfi/sfi.h>
-#include        <sfi/sfistore.h>	// FIXME
-#include	<sfi/sficomwire.h>	// FIXME
-#include	<math.h>
+#undef   G_DISABLE_ASSERT
+#undef   G_DISABLE_CHECKS
+#include <libintl.h>
+#include <sfi/sfi.h>
+#include <sfi/sfistore.h>	// FIXME
+#include <sfi/sficomwire.h>	// FIXME
+#include <math.h>
 
 
 #ifdef __cplusplus
@@ -34,8 +35,6 @@ extern "C" {
 
 
 /* --- some globally used macros --- */
-#define	_(x)	(x)
-#define	N_(x)	(x)
 #define BSE_VERSION_CMP(v1_major, v1_minor, v1_micro, v2_major, v2_minor, v2_micro) ( \
                                     (v1_major != v2_major) ? (v1_major > v2_major ? +1 : -1) : \
                                     (v1_minor != v2_minor) ? (v1_minor > v2_minor ? +1 : -1) : \
@@ -164,6 +163,15 @@ typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
                                               GType              type,
                                               gpointer           user_data);
 
+
+
+/* --- i18n and gettext helpers --- */
+#define _(str)		dgettext ("bse", str)
+#ifdef gettext_noop
+#  define N_(str)	gettext_noop (str)
+#else
+#  define N_(str)	(str)
+#endif
 
 
 #ifdef __cplusplus
