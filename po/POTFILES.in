@@ -9,6 +9,7 @@ beast-gtk/bstinstrumentview.c
 beast-gtk/bstitemview.c
 beast-gtk/bstmain.c
 beast-gtk/bstparam-choice.c
+beast-gtk/bstparam-color-spinner.c
 beast-gtk/bstparam-note-sequence.c
 beast-gtk/bstparam-note-spinner.c
 beast-gtk/bstparam-proxy.c
@@ -19,6 +20,7 @@ beast-gtk/bstpartdialog.c
 beast-gtk/bstpartview.c
 beast-gtk/bstpianorollctrl.c
 beast-gtk/bstplayback.c
+beast-gtk/bstpreferences.c
 beast-gtk/bstprocedure.c
 beast-gtk/bstprojectctrl.c
 beast-gtk/bstrackeditor.c
