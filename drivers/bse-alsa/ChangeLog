@@ -1,3 +1,8 @@
+Tue Sep 28 00:57:57 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c (alsa_device_write): issue dummy reads instead of
+	calling snd_pcm_forward() which produces annoying debugging messages.
+
 Tue Sep 28 00:38:31 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-alsa.h: 

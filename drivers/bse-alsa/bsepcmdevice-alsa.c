@@ -464,9 +464,12 @@ alsa_device_read (BsePcmHandle *handle,
           memset (buf, 0, n * alsa->frame_size);
           n_frames = n;
         }
-      guint nv = n_frames * handle->n_channels;
-      gsl_conv_to_float (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER, buf, dest, nv);
-      dest += nv;
+      if (dest) /* ignore dummy reads() */
+        {
+          guint nv = n_frames * handle->n_channels;
+          gsl_conv_to_float (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER, buf, dest, nv);
+          dest += nv;
+        }
       n_left -= n_frames;
     }
   while (n_left);
@@ -485,8 +488,13 @@ alsa_device_write (BsePcmHandle *handle,
   
   if (alsa->read_handle && alsa->read_write_count < 1)
     {
-      snd_pcm_forward (alsa->read_handle, handle->block_length);
-      alsa->read_write_count += 1;
+      if (0)    /* snd_pcm_forward() throws warnings instead of returning -EPIPE */
+        {
+          snd_pcm_forward (alsa->read_handle, handle->block_length);
+          alsa->read_write_count += 1;
+        }
+      else /* need blocking read() */
+        alsa_device_read (handle, NULL);
     }
   
   alsa->read_write_count -= 1;
