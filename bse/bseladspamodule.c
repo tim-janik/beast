@@ -44,6 +44,7 @@ static void	bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa
 /* --- variables --- */
 static gpointer	derived_parent_class = NULL;
 static GQuark   quark_value_index = 0;
+static GQuark   quark_notify_sibling = 0;
 
 
 /* --- functions --- */
@@ -75,6 +76,7 @@ static void
 bse_ladspa_module_class_init (BseLadspaModuleClass *class)
 {
   quark_value_index = g_quark_from_static_string ("BseLadspaValueIndex");
+  quark_notify_sibling = g_quark_from_static_string ("BseLadspaNotifySibling");
 
   class->bli = NULL;
 }
@@ -164,43 +166,40 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
       else if (port->frequency)
 	{
 	  /* we relate a maximum value of 0.5 (sample_freq/2) to BSE_MAX_OSC_FREQUENCY_f */
-	  gfloat maximum = port->maximum * 2.0 * BSE_MAX_OSC_FREQUENCY_f;
-	  gfloat minimum = port->minimum * 2.0 * BSE_MAX_OSC_FREQUENCY_f;
-	  gfloat dfvalue = port->default_value * 2.0 * BSE_MAX_OSC_FREQUENCY_f;
-	  minimum = CLAMP (minimum, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f);
-	  maximum = CLAMP (maximum, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f);
+	  gfloat maximum = port->maximum;
+	  gfloat minimum = port->minimum;
+	  gfloat dfvalue = port->default_value;
+	  if (port->rate_relative)
+	    {
+	      /* we relate a maximum value of 0.5 (sample_freq/2) to BSE_MAX_OSC_FREQUENCY_f */
+	      maximum *= 2.0 * BSE_MAX_OSC_FREQUENCY_f;
+	      minimum *= 2.0 * BSE_MAX_OSC_FREQUENCY_f;
+	      dfvalue *= 2.0 * BSE_MAX_OSC_FREQUENCY_f;
+	    }
 	  if (port->concert_a)
 	    dfvalue = BSE_KAMMER_FREQUENCY_f;
+	  minimum = CLAMP (minimum, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f);
+	  maximum = CLAMP (maximum, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f);
 	  dfvalue = CLAMP (dfvalue, minimum, maximum);
 	  group = "Frequencies";
-	  if (maximum - minimum > 10.0 &&	/* port->logarithmic */
-	      minimum < BSE_KAMMER_FREQUENCY_f &&
-	      maximum > 2 * 2 * BSE_KAMMER_FREQUENCY_f)
-	    pspec = sfi_pspec_log_scale (port->ident, port->name, NULL,
-					 dfvalue, minimum, maximum, 10.0,
-					 2 * BSE_KAMMER_FREQUENCY_f, 2, 4,
-					 SFI_PARAM_GUI SFI_PARAM_FLOAT SFI_PARAM_HINT_SCALE SFI_PARAM_HINT_DIAL);
-	  else
-	    {
-	      gfloat stepping;
-	      if (maximum - minimum > 3 * 10.0)
-		stepping = 10.0;
-	      else if (maximum - minimum > 3 * 1.0)
-		stepping = 1.0;
-	      else
-		stepping = 0;
-	      pspec = sfi_pspec_real (port->ident, port->name, NULL,
-				      dfvalue, minimum, maximum, stepping,
-				      SFI_PARAM_GUI SFI_PARAM_FLOAT SFI_PARAM_HINT_SCALE);
-	    }
+	  pspec = sfi_pspec_log_scale (port->ident, port->name, NULL,
+				       dfvalue, minimum, maximum, 10.0,
+				       2 * BSE_KAMMER_FREQUENCY_f, 2, 4,
+				       SFI_PARAM_GUI SFI_PARAM_FLOAT SFI_PARAM_HINT_SCALE SFI_PARAM_HINT_DIAL);
 	  if (port->concert_a)	/* probably note-aligned port values */
 	    {
-	      gint min_note = bse_note_from_freq (minimum);
-	      gint max_note = bse_note_from_freq (maximum);
+	      gint min_note = bse_note_from_freq_bounded (minimum);
+	      gint max_note = bse_note_from_freq_bounded (maximum);
+	      gchar *ident2 = g_strconcat (port->ident, "-note", NULL);
 	      if (max_note - min_note > 2)
-		pspec2 = sfi_pspec_note (port->ident, port->name, NULL,
-					 BSE_KAMMER_NOTE, min_note, max_note, FALSE,
-					 SFI_PARAM_GUI);
+		{
+		  pspec2 = sfi_pspec_note (ident2, port->name, NULL,
+					   BSE_KAMMER_NOTE, min_note, max_note, FALSE,
+					   SFI_PARAM_GUI);
+		  g_param_spec_set_qdata (pspec2, quark_notify_sibling, pspec);
+		  g_param_spec_set_qdata (pspec, quark_notify_sibling, pspec2);
+		}
+	      g_free (ident2);
 	    }
 	}
       else /* normal float */
@@ -242,23 +241,20 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 }
 
 static gfloat
-ladspa_value_get_float (const GValue *value,
-			gboolean      frequency_port)
+ladspa_value_get_float (const GValue  *value,
+			BseLadspaPort *port)
 {
   switch (sfi_categorize_type (G_VALUE_TYPE (value)))
     {
     case SFI_SCAT_BOOL:
       return sfi_value_get_bool (value);
     case SFI_SCAT_INT:
-      if (frequency_port)
-	return bse_note_to_freq (sfi_value_get_int (value)) / (2.0 * BSE_MAX_OSC_FREQUENCY_f);
+      if (port->frequency && port->concert_a)	/* is note */
+	return bse_note_to_freq (sfi_value_get_int (value));
       else
 	return sfi_value_get_int (value);
     case SFI_SCAT_REAL:
-      if (frequency_port)
-	return sfi_value_get_real (value) / (2.0 * BSE_MAX_OSC_FREQUENCY_f);
-      else
-	return sfi_value_get_real (value);
+      return sfi_value_get_real (value);
     default:
       g_assert_not_reached ();
       return 0;
@@ -266,9 +262,9 @@ ladspa_value_get_float (const GValue *value,
 }
 
 static void
-ladspa_value_set_float (GValue     *value,
-			gboolean    frequency_port,
-			gfloat      v_float)
+ladspa_value_set_float (GValue        *value,
+			BseLadspaPort *port,
+			gfloat         v_float)
 {
   switch (sfi_categorize_type (G_VALUE_TYPE (value)))
     {
@@ -276,16 +272,13 @@ ladspa_value_set_float (GValue     *value,
       sfi_value_set_bool (value, v_float >= 0.5);
       break;
     case SFI_SCAT_INT:
-      if (frequency_port)
-	sfi_value_set_int (value, bse_note_from_freq (v_float * 2.0 * BSE_MAX_OSC_FREQUENCY_f));
+      if (port->frequency && port->concert_a)	/* is note */
+	sfi_value_set_int (value, bse_note_from_freq (v_float));
       else
 	sfi_value_set_int (value, v_float >= 0 ? v_float + 0.5 : v_float - 0.5);
       break;
     case SFI_SCAT_REAL:
-      if (frequency_port)
-	sfi_value_set_real (value, v_float * 2.0 * BSE_MAX_OSC_FREQUENCY_f);
-      else
-	sfi_value_set_real (value, v_float);
+      sfi_value_set_real (value, v_float);
       break;
     default:
       g_assert_not_reached ();
@@ -305,7 +298,7 @@ ladspa_derived_init (BseLadspaModule *self)
       GValue tmp = { 0, };
       g_value_init (&tmp, G_PARAM_SPEC_VALUE_TYPE (pspec));
       g_param_value_set_default (pspec, &tmp);
-      self->cvalues[i] = ladspa_value_get_float (&tmp, class->bli->cports[i].frequency);
+      self->cvalues[i] = ladspa_value_get_float (&tmp, class->bli->cports + i);
       g_value_unset (&tmp);
     }
 }
@@ -329,7 +322,7 @@ ladspa_derived_get_property (GObject    *object,
   guint i = param_id - 1;
   if (i >= class->bli->n_cports)
     i = (guint) g_param_spec_get_qdata (pspec, quark_value_index);
-  ladspa_value_set_float (value, class->bli->cports[i].frequency, self->cvalues[i]);
+  ladspa_value_set_float (value, class->bli->cports + i, self->cvalues[i]);
 }
 
 typedef struct
@@ -337,6 +330,7 @@ typedef struct
   BseLadspaInfo *bli;
   gpointer       handle;
   guint	         activated : 1;
+  gfloat	*ibuffers;
   gfloat         cvalues[1];	/* flexible array */
 } LadspaData;
 #define	LADSPA_DATA_SIZE(bli)	 (sizeof (LadspaData) + (MAX (bli->n_cports, 1) - 1) * sizeof (gfloat))
@@ -360,11 +354,14 @@ ladspa_derived_set_property (GObject      *object,
 {
   BseLadspaModule *self = BSE_LADSPA_MODULE (object);
   BseLadspaModuleClass *class = BSE_LADSPA_MODULE_GET_CLASS (self);
+  GParamSpec *pspec2 = g_param_spec_get_qdata (pspec, quark_notify_sibling);
   /* store value */
   guint i = param_id - 1;
   if (i >= class->bli->n_cports)
     i = (guint) g_param_spec_get_qdata (pspec, quark_value_index);
-  self->cvalues[i] = ladspa_value_get_float (value, class->bli->cports[i].frequency);
+  self->cvalues[i] = ladspa_value_get_float (value, class->bli->cports + i);
+  if (pspec2)
+    g_object_notify (object, pspec2->name);
   /* update modules in all contexts with the new control values */
   if (BSE_SOURCE_PREPARED (self))
     {
@@ -397,8 +394,8 @@ ladspa_module_process (GslModule *module,
 {
   LadspaData *ldata = module->user_data;
   BseLadspaInfo *bli = ldata->bli;
-  guint nis = 0, nos = 0, i;
-  /* connect audio ports */
+  guint i, nis = 0, nos = 0, bsize = gsl_engine_block_size ();
+  /* connect audio ports and copy audio buffers */
   for (i = 0; i < bli->n_aports; i++)
     if (bli->aports[i].output)
       {
@@ -407,11 +404,28 @@ ladspa_module_process (GslModule *module,
       }
     else
       {
-	bli->connect_port (ldata->handle, bli->aports[i].port_index, (gfloat*) GSL_MODULE_IBUFFER (module, nis));
+	gfloat *ibuffer = ldata->ibuffers + nis * bsize;
+	const gfloat *srcbuf = GSL_MODULE_IBUFFER (module, nis);
+	guint j;
+	if (bli->aports[i].rate_relative)
+	  for (j = 0; j < n_values; j++)
+	    ibuffer[j] = srcbuf[j] * GSL_SIGNAL_TO_FREQ_FACTOR;
+	else
+	  memcpy (ibuffer, srcbuf, sizeof (ibuffer[0]) * n_values);
 	nis++;
       }
   /* process ladspa plugin */
   ldata->bli->run (ldata->handle, n_values);
+  /* adjust rate_relative output buffers */
+  for (i = 0, nos = 0; i < bli->n_aports; i++)
+    if (bli->aports[i].output && bli->aports[i].rate_relative)
+      {
+	gfloat *obuf = GSL_MODULE_OBUFFER (module, nos);
+	guint j;
+	for (j = 0; j < n_values; j++)
+	  obuf[j] *= GSL_SIGNAL_FROM_FREQ_FACTOR;
+	nos++;
+      }
 }
 
 static void
@@ -425,6 +439,7 @@ ladspa_module_free_data (gpointer        data,
   /* destroy ladspa plugin instance */
   ldata->bli->cleanup (ldata->handle);
   ldata->handle = NULL;
+  g_free (ldata->ibuffers);
 }
 
 static void
@@ -447,14 +462,14 @@ ladspa_derived_context_create (BseSource *source,
   BseLadspaInfo *bli = class->bli;
   LadspaData *ldata = g_malloc0 (LADSPA_DATA_SIZE (bli));
   GslModule *module;
-  guint i;
+  guint i, nis;
 
   ldata->bli = bli;
   /* setup audio streams */
   if (!class->gsl_class)
     {
-      guint nis = 0, nos = 0;
-      for (i = 0; i < bli->n_aports; i++)
+      guint nos = 0;
+      for (i = 0, nis = 0; i < bli->n_aports; i++)
 	if (bli->aports[i].output)
 	  nos++;
 	else
@@ -470,6 +485,12 @@ ladspa_derived_context_create (BseSource *source,
     bli->connect_port (ldata->handle, bli->cports[i].port_index, ldata->cvalues + i);
   /* initialize control ports */
   memcpy (ldata->cvalues, self->cvalues, LADSPA_CVALUES_SIZE (bli));
+  /* allocate input audio buffers */
+  ldata->ibuffers = g_new (gfloat, class->gsl_class->n_istreams * gsl_engine_block_size ());
+  /* connect input audio ports */
+  for (i = 0, nis = 0; i < bli->n_aports; i++)
+    if (bli->aports[i].input)
+      bli->connect_port (ldata->handle, bli->aports[i].port_index, ldata->ibuffers + nis++ * gsl_engine_block_size ());
   
   module = gsl_module_new (class->gsl_class, ldata);
   bse_source_set_context_module (source, context_handle, module);

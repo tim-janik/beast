@@ -126,19 +126,19 @@ bse_sub_instrument_reset_names (BseSubInstrument *self)
   const gchar *name;
 
   g_object_freeze_notify (G_OBJECT (self));
-  name = BSE_SOURCE_ICHANNEL_CNAME (self, 0);
+  name = BSE_SOURCE_ICHANNEL_IDENT (self, 0);
   if (strcmp (oport->output_ports[0], name) != 0 &&
       (!snet || !bse_snet_oport_name_registered (snet, name)))
     g_object_set (self, "BseSubOPort::out_port_1", name, NULL);
-  name = BSE_SOURCE_ICHANNEL_CNAME (self, 1);
+  name = BSE_SOURCE_ICHANNEL_IDENT (self, 1);
   if (strcmp (oport->output_ports[1], name) != 0 &&
       (!snet || !bse_snet_oport_name_registered (snet, name)))
     g_object_set (self, "BseSubOPort::out_port_2", name, NULL);
-  name = BSE_SOURCE_ICHANNEL_CNAME (self, 2);
+  name = BSE_SOURCE_ICHANNEL_IDENT (self, 2);
   if (strcmp (oport->output_ports[2], name) != 0 &&
       (!snet || !bse_snet_oport_name_registered (snet, name)))
     g_object_set (self, "BseSubOPort::out_port_3", name, NULL);
-  name = BSE_SOURCE_ICHANNEL_CNAME (self, 3);
+  name = BSE_SOURCE_ICHANNEL_IDENT (self, 3);
   if (strcmp (oport->output_ports[3], name) != 0 &&
       (!snet || !bse_snet_oport_name_registered (snet, name)))
     g_object_set (self, "BseSubOPort::out_port_4", name, NULL);

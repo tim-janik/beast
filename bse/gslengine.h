@@ -27,7 +27,7 @@ extern "C" {
 
 
 /* --- constants --- */
-#define	GSL_STREAM_MAX_VALUES		        (8192 /* power of 2, <= 16384 */)	/* FIXME */
+#define	GSL_STREAM_MAX_VALUES		        (2048 /* power of 2, <= 16384 */)	/* FIXME */
 #define	GSL_MODULE_N_OSTREAMS(module)	        ((module)->klass->n_ostreams)
 #define	GSL_MODULE_N_ISTREAMS(module)	        ((module)->klass->n_istreams)
 #define	GSL_MODULE_N_JSTREAMS(module)	        ((module)->klass->n_jstreams)

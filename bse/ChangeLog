@@ -1,3 +1,26 @@
+Sat Apr  5 17:48:45 2003  Tim Janik  <timj@gtk.org>
+
+	* bseladspamodule.c: adjust property construction to better hinting
+	and pre-/post-process audio signals that have the rate_relative hint
+	set.
+
+	* bseladspa.c (bse_ladspa_info_add_port): use the ladspa port index to
+	construct a unique port identifier instead of the port name, according
+	to a recommendation from Steve Harris <S.W.Harris@ecs.soton.ac.uk>.
+
+	* bseladspa.[hc] (bse_ladspa_info_add_port): provide a sample rate
+	relative hint and set frequency hint if we have good indications for
+	a frequency control input port.
+
+Fri Apr  4 19:25:52 2003  Tim Janik  <timj@gtk.org>
+
+	* bseparasite.c (bse_parasite_restore): removed pre-0.5.0 compat
+	parsing code.
+
+	* gsldatahandle-vorbis.c: require ogg/vorbis >= 1.0.0rc4 now.
+	
+	* bseutils.c: documentation fixes.
+
 Fri Apr  4 10:25:00 2003  Tim Janik  <timj@gtk.org>
 
 	* ladspa.h: added LADSPA API Version 1.1 header file.

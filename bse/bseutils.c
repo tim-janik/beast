@@ -63,7 +63,7 @@ slist_prepend_uniq_dedup (GSList *slist,
 
 /**
  * bse_search_path_list_matches
- * @search_path: semicolon seperated search path with '?' and '*' wildcards
+ * @search_path: colon (semicolon under win32) seperated search path with '?' and '*' wildcards
  * @cwd:         assumed current working directoy (to interpret './' in search_path)
  * @RETURNS:     a singly linked list with newly allocated strings
  * This function takes a search path with wildcards and lists all existing
@@ -101,7 +101,7 @@ bse_search_path_list_matches (const gchar *search_path,
 
 /**
  * bse_search_path_list_files
- * @search_path:  semicolon seperated search path with '?' and '*' wildcards
+ * @search_path:  colon (semicolon under win32) seperated search path with '?' and '*' wildcards
  * @file_pattern: wildcard pattern for file names
  * @cwd:          assumed current working directoy (to interpret './' in search_path)
  * @file_test:    GFileTest file test condition (e.g. G_FILE_TEST_IS_REGULAR) or 0
@@ -162,7 +162,7 @@ bse_search_path_list_files (const gchar *search_path,
 
 /**
  * bse_search_path_list_entries
- * @search_path: semicolon seperated search path
+ * @search_path: colon (semicolon under win32) seperated search path
  * @RETURNS:     a singly linked list with newly allocated strings
  * This function takes a search path and returns a singly linked list
  * containing the seperated path entries.
@@ -453,6 +453,19 @@ bse_note_from_freq (gdouble freq)
   note = gsl_ftoi (BSE_KAMMER_NOTE + d);
 
   return note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE ? note : BSE_NOTE_VOID;
+}
+
+gint
+bse_note_from_freq_bounded (gdouble freq)
+{
+  gdouble d;
+  gint note;
+
+  freq /= BSE_KAMMER_FREQUENCY_f;
+  d = log (freq) / BSE_LN_2_POW_1_DIV_12_d;
+  note = gsl_ftoi (BSE_KAMMER_NOTE + d);
+
+  return CLAMP (note, BSE_MIN_NOTE, BSE_MAX_NOTE);
 }
 
 gint

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,7 @@
 #include <bse/bseitem.h>
 #include <bse/gsldefs.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 
 /* --- BseSource type macros --- */
@@ -43,14 +39,14 @@ extern "C" {
 #define BSE_SOURCE_PREPARED(src)	  ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_PREPARED) != 0)
 #define BSE_SOURCE_COLLECTED(src)	  ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_COLLECTED) != 0)
 #define BSE_SOURCE_N_ICHANNELS(src)	  (BSE_SOURCE (src)->channel_defs->n_ichannels)
+#define BSE_SOURCE_ICHANNEL_IDENT(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_idents[(id)])
 #define BSE_SOURCE_ICHANNEL_NAME(src,id)  (BSE_SOURCE (src)->channel_defs->ichannel_names[(id)])
-#define BSE_SOURCE_ICHANNEL_CNAME(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_cnames[(id)])
 #define BSE_SOURCE_ICHANNEL_BLURB(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_blurbs[(id)])
 #define BSE_SOURCE_IS_JOINT_ICHANNEL(s,i) ((BSE_SOURCE (s)->channel_defs->ijstreams[(i)] & BSE_SOURCE_JSTREAM_FLAG) != 0)
 #define BSE_SOURCE_N_JOINT_ICHANNELS(src) (BSE_SOURCE (src)->channel_defs->n_jstreams)
 #define BSE_SOURCE_N_OCHANNELS(src)	  (BSE_SOURCE (src)->channel_defs->n_ochannels)
+#define BSE_SOURCE_OCHANNEL_IDENT(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_idents[(id)])
 #define BSE_SOURCE_OCHANNEL_NAME(src,id)  (BSE_SOURCE (src)->channel_defs->ochannel_names[(id)])
-#define BSE_SOURCE_OCHANNEL_CNAME(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_cnames[(id)])
 #define BSE_SOURCE_OCHANNEL_BLURB(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_blurbs[(id)])
 /*< private >*/
 #define	BSE_SOURCE_INPUT(src,id)	  (BSE_SOURCE (src)->inputs + (guint) (id))
@@ -108,14 +104,14 @@ struct _BseSource
 struct _BseSourceChannelDefs
 {
   guint   n_ichannels;
+  gchar **ichannel_idents;
   gchar **ichannel_names;
-  gchar **ichannel_cnames;
   gchar **ichannel_blurbs;
   guint  *ijstreams;
   guint	  n_jstreams;
   guint   n_ochannels;
+  gchar **ochannel_idents;
   gchar **ochannel_names;
-  gchar **ochannel_cnames;
   gchar **ochannel_blurbs;
 };
 struct _BseSourceClass
@@ -150,9 +146,9 @@ struct _BseSourceClass
 
 /* --- prototypes -- */
 guint		bse_source_find_ichannel	(BseSource	*source,
-						 const gchar    *ichannel_cname);
+						 const gchar    *ichannel_ident);
 guint		bse_source_find_ochannel	(BseSource	*source,
-						 const gchar    *ochannel_cname);
+						 const gchar    *ochannel_ident);
 BseErrorType	bse_source_set_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
@@ -175,13 +171,16 @@ BseErrorType	bse_source_unset_input		(BseSource	*source,
 
 
 /* --- source implementations --- */
-guint		bse_source_class_add_ichannel	(BseSourceClass	*source_class,
+guint	    bse_source_class_add_ichannel_ident	(BseSourceClass	*source_class,
+						 const gchar	*ident,
 						 const gchar	*name,
 						 const gchar	*blurb);
-guint		bse_source_class_add_jchannel	(BseSourceClass	*source_class,
+guint	    bse_source_class_add_jchannel_ident	(BseSourceClass	*source_class,
+						 const gchar	*ident,
 						 const gchar	*name,
 						 const gchar	*blurb);
-guint		bse_source_class_add_ochannel	(BseSourceClass	*source_class,
+guint	    bse_source_class_add_ochannel_ident	(BseSourceClass	*source_class,
+						 const gchar	*ident,
 						 const gchar	*name,
 						 const gchar	*blurb);
 void		bse_source_set_context_imodule	(BseSource	*source,
@@ -213,6 +212,15 @@ void		bse_source_access_modules	(BseSource	*source,
 						 GslFreeFunc	 data_free_func,
 						 GslTrans	*trans);
 /* convenience */
+guint		bse_source_class_add_ichannel	(BseSourceClass	*source_class,
+						 const gchar	*name,
+						 const gchar	*blurb);
+guint		bse_source_class_add_jchannel	(BseSourceClass	*source_class,
+						 const gchar	*name,
+						 const gchar	*blurb);
+guint		bse_source_class_add_ochannel	(BseSourceClass	*source_class,
+						 const gchar	*name,
+						 const gchar	*blurb);
 void		bse_source_set_context_module	(BseSource	*source,
 						 guint		 context_handle,
 						 GslModule	*module);
@@ -255,8 +263,6 @@ gboolean	bse_source_has_context		(BseSource	*source,
 						 guint		 context_handle);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SOURCE_H__ */

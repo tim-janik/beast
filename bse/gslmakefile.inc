@@ -50,7 +50,6 @@ gslconfig.h: $(top_srcdir)/configure Makefile
 	echo "/* Generated data from $< (by make $@) */" > xgen-gch \
 	&& echo >> xgen-gch \
 	&& echo "#define GSL_SIZEOF_STD_INTMAX_T        (@GSL_SIZEOF_STD_INTMAX_T@)" >> xgen-gch \
-	&& echo "#define GSL_OV_READ_FLOAT_ARGS         (@GSL_OV_READ_FLOAT_ARGS@)" >> xgen-gch \
 	&& echo "#define GSL_HAVE_LIBMAD                (@GSL_HAVE_LIBMAD@)" >> xgen-gch \
 	&& echo >> xgen-gch \
 	&& echo "/* Generated data ends here */" >> xgen-gch \

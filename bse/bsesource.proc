@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2000-2002 Tim Janik
+ * Copyright (C) 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
-CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
+CRIGHTS = "Copyright (C) 2001-2003 Tim Janik";
 
 
 METHOD (BseSource, set-input-by-id) {
@@ -304,7 +304,7 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseSource, ichannel-cname) {
+METHOD (BseSource, ichannel-ident) {
   HELP	= "Get canonical input channel name.";
   IN	= bse_param_spec_object ("module", "Module", NULL,
 				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
@@ -326,7 +326,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_CNAME (source, ichannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_IDENT (source, ichannel));
   
   return BSE_ERROR_NONE;
 }
@@ -572,7 +572,7 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseSource, ochannel-cname) {
+METHOD (BseSource, ochannel-ident) {
   HELP	= "Get canonical output channel name.";
   IN	= bse_param_spec_object ("module", "Module", NULL,
 				 BSE_TYPE_SOURCE, SFI_PARAM_DEFAULT);
@@ -594,7 +594,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* set output parameters */
-  sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_CNAME (source, ochannel));
+  sfi_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_IDENT (source, ochannel));
   
   return BSE_ERROR_NONE;
 }

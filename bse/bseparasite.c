@@ -18,7 +18,6 @@
 #include "bseparasite.h"
 
 #include "bsestorage.h"
-#include "bsesource.h"	// FIXME: compat include
 
 #include <string.h>
 
@@ -213,12 +212,6 @@ bse_parasite_restore (BseObject  *object,
   /* eat "parasite" identifier */
   g_scanner_get_next_token (scanner);
 
-  /* ignore these for compat reasons (FIXME: remove post 0.5.0) */
-  if (g_scanner_peek_next_token (scanner) == '#')
-    g_scanner_get_next_token (scanner);
-  if (g_scanner_peek_next_token (scanner) == '\\')
-    g_scanner_get_next_token (scanner);
-
   /* parse parasite type */
   g_scanner_get_next_token (scanner);
   if (!(scanner->token >= 'a' && scanner->token <= 'z'))
@@ -275,26 +268,12 @@ bse_parasite_restore (BseObject  *object,
   
   if (g_scanner_peek_next_token (scanner) == ')')
     {
-      if (n_values == 2 && BSE_IS_SOURCE (object) &&
-	  quark == g_quark_from_string ("BstRouterCoords"))  // FIXME: compat code, remove
-	{
-	  gfloat *floats = data;
-	  g_object_set (object,
-			"pos_x", -floats[0] / 100.0,
-			"pos_y", floats[1] / 100.0,
-			NULL);
-	  bse_storage_warn (storage, "fixing up parasite to module position: (%f,%f)", -floats[0] / 100.0, floats[1] / 100.0);
-	  g_free (data);
-	}
-      else
-	{
-	  Parasite *parasite = fetch_parasite (object, quark, type, TRUE);
-	  
-	  if (parasite->n_values)
-	    g_free (parasite->data);
-	  parasite->n_values = n_values;
-	  parasite->data = data;
-	}
+      Parasite *parasite = fetch_parasite (object, quark, type, TRUE);
+      
+      if (parasite->n_values)
+	g_free (parasite->data);
+      parasite->n_values = n_values;
+      parasite->data = data;
     }
   else if (n_values)
     g_free (data);

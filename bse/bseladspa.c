@@ -267,6 +267,14 @@ ladspa_plugin_init_type_ids (BseLadspaPlugin           *self,
   return error;
 }
 
+typedef struct {
+  guint index;
+  guint audio_input;
+  guint audio_output;
+  guint control_input;
+  guint control_output;
+} PortCounter;
+
 static gboolean
 bse_ladspa_info_add_port (BseLadspaInfo              *bli,
 			  const gchar                *port_name,
@@ -274,14 +282,13 @@ bse_ladspa_info_add_port (BseLadspaInfo              *bli,
 			  const LADSPA_PortRangeHint *port_range,
 			  guint			     *n_ports_p,
 			  BseLadspaPort		    **ports_p,
-			  guint			      port_index)
+			  PortCounter		     *pcounter)
 {
-  gboolean input = (port_flags & LADSPA_PORT_INPUT) != 0;
-  gboolean output = (port_flags & LADSPA_PORT_OUTPUT) != 0;
+  gboolean is_input = (port_flags & LADSPA_PORT_INPUT) != 0;
+  gboolean is_output = (port_flags & LADSPA_PORT_OUTPUT) != 0;
   BseLadspaPort *port;
-  gchar *ident, *string;
-  guint i, dedup = 1;
-  if (!input && !output)
+  guint i;
+  if (!is_input && !is_output)
     {
       g_message ("LADSPA(%s): port '%s' is neither input nor output", bli->ident, port_name);
       return FALSE;
@@ -291,35 +298,18 @@ bse_ladspa_info_add_port (BseLadspaInfo              *bli,
   port = (*ports_p) + i;
   memset (port, 0, sizeof (*port));
   port->name = port_name;
-  port->port_index = port_index;
+  port->port_index = pcounter->index;
   port->audio_channel = (port_flags & LADSPA_PORT_AUDIO) != 0;
-  port->input = input;
-  port->output = output;
-  if (!((port_name[0] >= 'a' && port_name[0] <= 'z') ||
-	(port_name[0] >= 'A' && port_name[0] <= 'Z')))
-    string = g_strconcat (port->audio_channel ? "Audio-" : "Control-", port_name, NULL);
-  else
-    string = g_strdup (port_name);
-  g_strcanon (string, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS, '-');
-  ident = string;
-  /* ensure uniqueness */
- recheck:
-  for (i = 0; i < *n_ports_p - 1; i++)
-    if (strcmp ((*ports_p)[i].ident, ident) == 0)
-      {
-	if (ident != string)
-	  g_free (ident);
-	ident = g_strdup_printf ("%s-dD%u", string, dedup++);
-	goto recheck;
-      }
-  if (ident == string)
-    port->ident = string;
-  else
-    {
-      port->ident = g_strdup (ident);
-      g_free (ident);
-      g_free (string);
-    }
+  port->input = is_input;
+  port->output = is_output;
+  if (port->audio_channel && port->input)
+    port->ident = g_strdup_printf ("audio-in-%u", pcounter->audio_input++);
+  else if (port->audio_channel) /* port->output */
+    port->ident = g_strdup_printf ("audio-out-%u", pcounter->audio_output++);
+  else if (port->input) /* !port->audio_channel */
+    port->ident = g_strdup_printf ("icontrol-%u", pcounter->control_input++);
+  else /* port->output && !port->audio_channel */
+    port->ident = g_strdup_printf ("ocontrol-%u", pcounter->control_output++);
   port->minimum = G_MINFLOAT;
   port->default_value = 0;
   port->maximum = G_MAXFLOAT;
@@ -333,7 +323,7 @@ bse_ladspa_info_add_port (BseLadspaInfo              *bli,
       port->logarithmic = (hints & LADSPA_HINT_LOGARITHMIC) != 0;
       if (hints & LADSPA_HINT_SAMPLE_RATE)
 	{
-	  port->frequency = TRUE;
+	  port->rate_relative = TRUE;
 	  port->minimum = MAX (port->minimum, 0);
 	}
       if (hints & LADSPA_HINT_INTEGER)
@@ -398,6 +388,16 @@ bse_ladspa_info_add_port (BseLadspaInfo              *bli,
 	  break;
 	}
       port->default_value = CLAMP (port->default_value, port->minimum, port->maximum);
+      if (!port->boolean && !port->integer_stepping)
+	{
+	  /* interpretation heuristic */
+	  if (port->minimum >= 0 && port->minimum <= 220 &&
+	      port->maximum >= 1760 && port->maximum <= 24000 &&
+	      port->logarithmic)
+	    port->frequency = TRUE;
+	  else if (port->rate_relative)
+	    port->frequency = TRUE;
+	}
     }
   return TRUE;
 }
@@ -434,20 +434,13 @@ bse_ladspa_info_assemble (const gchar  *file_path,
   const LADSPA_Descriptor *cld = ladspa_descriptor;
   BseLadspaInfo *bli = g_new0 (BseLadspaInfo, 1);
   gboolean seen_output = FALSE;
-  guint i;
+  PortCounter pcounter = { 0, 1, 1, 1, 1 };
 
   g_return_val_if_fail (cld != NULL, NULL);
 
   bli->file_path = g_strdup (file_path);
   if (!file_path)
     file_path = "";	/* ensure !=NULL for messages below */
-  if (bli->file_path)
-    {
-      bli->file_name = strrchr (bli->file_path, '/');
-      bli->file_name = bli->file_name ? bli->file_name + 1 : bli->file_path;
-    }
-  else
-    bli->file_name = "#NONE";
 
   bli->plugin_id = cld->UniqueID;
   if (bli->plugin_id < 1 || bli->plugin_id >= 0x1000000)
@@ -487,35 +480,35 @@ bse_ladspa_info_assemble (const gchar  *file_path,
     }
   if (!cld->PortRangeHints)
     g_message ("LADSPA(%s): port range hint array is NULL", bli->ident);
-  for (i = 0; i < cld->PortCount; i++)
+  for (pcounter.index = 0; pcounter.index < cld->PortCount; pcounter.index++)
     {
-      const LADSPA_PortRangeHint *port_range = cld->PortRangeHints ? cld->PortRangeHints + i : NULL;
-      const gchar *port_name = cld->PortNames[i];
-      guint port_flags = cld->PortDescriptors[i];
+      const LADSPA_PortRangeHint *port_range = cld->PortRangeHints ? cld->PortRangeHints + pcounter.index : NULL;
+      const gchar *port_name = cld->PortNames[pcounter.index];
+      guint port_flags = cld->PortDescriptors[pcounter.index];
       if (!port_name)
 	{
-	  g_message ("LADSPA(%s): port %u name is NULL", bli->ident, i);
+	  g_message ("LADSPA(%s): port %u name is NULL", bli->ident, pcounter.index);
 	  goto bail_broken;
 	}
       switch (port_flags & (LADSPA_PORT_CONTROL | LADSPA_PORT_AUDIO))
 	{
 	case LADSPA_PORT_CONTROL:
 	  if (!bse_ladspa_info_add_port (bli, port_name, port_flags, port_range,
-					 &bli->n_cports, &bli->cports, i))
+					 &bli->n_cports, &bli->cports, &pcounter))
 	    goto bail_broken;
 	  break;
 	case LADSPA_PORT_AUDIO:
 	  if (!bse_ladspa_info_add_port (bli, port_name, port_flags, port_range,
-					 &bli->n_aports, &bli->aports, i))
+					 &bli->n_aports, &bli->aports, &pcounter))
 	    goto bail_broken;
 	  seen_output |= bli->aports[bli->n_aports - 1].output;
 	  break;
 	case LADSPA_PORT_CONTROL | LADSPA_PORT_AUDIO:
-	  g_message ("LADSPA(%s): port %u type claims to be `control` and `audio`", bli->ident, i);
+	  g_message ("LADSPA(%s): port %u type claims to be `control` and `audio`", bli->ident, pcounter.index);
 	  goto bail_broken;
 	default:
 	case 0:
-	  g_message ("LADSPA(%s): port %u type is neither `control` nor `audio`", bli->ident, i);
+	  g_message ("LADSPA(%s): port %u type is neither `control` nor `audio`", bli->ident, pcounter.index);
 	  goto bail_broken;
 	}
     }

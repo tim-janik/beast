@@ -53,8 +53,8 @@ struct _BseLadspaPluginClass
   GObjectClass parent_class;
 };
 typedef struct {
-  const gchar  *name;
   gchar        *ident;
+  const gchar  *name;
   gfloat	minimum;
   gfloat	default_value;
   gfloat	maximum;
@@ -64,16 +64,16 @@ typedef struct {
   guint		output : 1;
   guint		boolean : 1;
   guint		integer_stepping : 1;
-  guint		frequency : 1;		/* sample rate relative values */
+  guint		rate_relative : 1;	/* sample rate relative values */
+  guint		frequency : 1;		/* provide logarithmic frequency slider */
   guint		logarithmic : 1;
   guint		concert_a : 1;		/* default to 440Hz concert A */
 } BseLadspaPort;
 struct _BseLadspaInfo
 {
   gchar         *file_path;		/* fully qualified file path and name */
-  const gchar   *file_name;		/* basedir stripped */
-  guint          plugin_id;		/* unique plugin type ID */
   gchar	        *ident;			/* unique identifier */
+  guint          plugin_id;		/* unique plugin type ID */
   const gchar   *name;			/* descriptive name */
   const gchar   *author;
   const gchar   *copyright;
