@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 20:11+0200\n"
+"POT-Creation-Date: 2004-06-09 21:38+0200\n"
 "PO-Revision-Date: 2003-11-09 18:32+0200\n"
 "Last-Translator: Kostas Papadimas <pkst@gnome.org>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
@@ -256,10 +256,10 @@ msgid "Move Control Event"
 msgstr "Μετακίνηση γεγονότος ελέγχου"
 
 #: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
-#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:473
-#: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
-#: beast-gtk/bsttrackrollctrl.c:470 beast-gtk/bsttrackrollctrl.c:490
-#: beast-gtk/bsttrackrollctrl.c:562
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
+#: beast-gtk/bsttrackrollctrl.c:568
 msgid "No target"
 msgstr "Όχι στόχος"
 
@@ -272,7 +272,7 @@ msgid "Align Control Events"
 msgstr "Στοίχιση γεγονότων ελέγχου"
 
 #: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
+#: beast-gtk/bstpianorollctrl.c:716 beast-gtk/bstpianorollctrl.c:752
 msgid "Aborted"
 msgstr "Εγκαταλείφθηκε"
 
@@ -290,11 +290,11 @@ msgid "Delete Control Event"
 msgstr "Διαγραφή ελέγχου γεγονότος"
 
 #: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
+#: beast-gtk/bstpianorollctrl.c:690 beast-gtk/bstpianorollctrl.c:716
 msgid "Select Region"
 msgstr "Επιλογή περιοχής"
 
-#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:749
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:761
 msgid "Abortion"
 msgstr "Εγκατάλειψη"
 
@@ -1061,7 +1061,7 @@ msgstr "Επιλογή"
 msgid "Rectangle select notes"
 msgstr "Rectangle select notes"
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:714
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:726
 msgid "Vertical Select"
 msgstr "Κάθετη επιλογή"
 
@@ -1075,8 +1075,9 @@ msgid "1\\/1"
 msgstr "1/1"
 
 #: beast-gtk/bstpianorollctrl.c:67
-msgid "Insert full notes"
-msgstr "Εισαγωγή πλήρεις νότες"
+#, fuzzy
+msgid "Insert whole notes"
+msgstr "Εισαγωγή ήμισεων"
 
 #: beast-gtk/bstpianorollctrl.c:69
 #, fuzzy
@@ -1114,94 +1115,155 @@ msgstr "1/16"
 msgid "Insert sixteenth note"
 msgstr "Εισαγωγή δεκάτων έκτων"
 
-#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:77
+#, fuzzy
+msgid "1\\/32"
+msgstr "1/2"
+
+#: beast-gtk/bstpianorollctrl.c:77
+#, fuzzy
+msgid "Insert thirty-second note"
+msgstr "Εισαγωγή δεκάτων έκτων"
+
+#: beast-gtk/bstpianorollctrl.c:79
+#, fuzzy
+msgid "1\\/64"
+msgstr "1/4"
+
+#: beast-gtk/bstpianorollctrl.c:79
+#, fuzzy
+msgid "Insert sixty-fourth note"
+msgstr "Εισαγωγή δεκάτων έκτων"
+
+#: beast-gtk/bstpianorollctrl.c:81
+#, fuzzy
+msgid "1\\/128"
+msgstr "1/1"
+
+#: beast-gtk/bstpianorollctrl.c:81
+#, fuzzy
+msgid "Insert hundred twenty-eighth note"
+msgstr "Εισαγωγή ογδόων"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
 msgstr "Q: Tact"
 
-#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
 msgstr "Quantize to tact boundaries"
 
-#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "Q: None"
 msgstr "Q: Κανένα"
 
-#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "No quantization selected"
 msgstr "Δεν έχει επιλεχθεί quantization"
 
-#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
 #, fuzzy
 msgid "Q: 1\\/1"
 msgstr "Q: 1/1"
 
-#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
-msgid "Quantize to full note boundaries"
-msgstr "Quantize to full note boundaries"
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+#, fuzzy
+msgid "Quantize to whole note boundaries"
+msgstr "Quantize to half note boundaries"
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 #, fuzzy
 msgid "Q: 1\\/2"
 msgstr "Q: 1/2"
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
 msgstr "Quantize to half note boundaries"
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 #, fuzzy
 msgid "Q: 1\\/4"
 msgstr "Q: 1/4"
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
 msgstr "Quantize to quarter note boundaries"
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 #, fuzzy
 msgid "Q: 1\\/8"
 msgstr "Q: 1/8"
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
 msgstr "Quantize to eighths note boundaries"
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 #, fuzzy
 msgid "Q: 1\\/16"
 msgstr "Q: 1/16"
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
 msgstr "Quantize to sixteenth note boundaries"
 
-#: beast-gtk/bstpianorollctrl.c:466 beast-gtk/bstpianorollctrl.c:473
-#: beast-gtk/bstpianorollctrl.c:561
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#, fuzzy
+msgid "Q: 1\\/32"
+msgstr "Q: 1/2"
+
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#, fuzzy
+msgid "Quantize to thirty-second note boundaries"
+msgstr "Quantize to sixteenth note boundaries"
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#, fuzzy
+msgid "Q: 1\\/64"
+msgstr "Q: 1/4"
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#, fuzzy
+msgid "Quantize to sixty-fourth note boundaries"
+msgstr "Quantize to sixteenth note boundaries"
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#, fuzzy
+msgid "Q: 1\\/128"
+msgstr "Q: 1/1"
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#, fuzzy
+msgid "Quantize to hundred twenty-eighth note boundaries"
+msgstr "Quantize to eighths note boundaries"
+
+#: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:573
 msgid "Move Note"
 msgstr "Μετακίνηση νότας"
 
-#: beast-gtk/bstpianorollctrl.c:561 beast-gtk/bstpianorollctrl.c:632
+#: beast-gtk/bstpianorollctrl.c:573 beast-gtk/bstpianorollctrl.c:644
 msgid "Lost Note"
 msgstr "Χαμένη νότα"
 
-#: beast-gtk/bstpianorollctrl.c:578 beast-gtk/bstpianorollctrl.c:583
-#: beast-gtk/bstpianorollctrl.c:632
+#: beast-gtk/bstpianorollctrl.c:590 beast-gtk/bstpianorollctrl.c:595
+#: beast-gtk/bstpianorollctrl.c:644
 msgid "Resize Note"
 msgstr "Αλλαγή μεγέθους νότας"
 
-#: beast-gtk/bstpianorollctrl.c:643 beast-gtk/bstpianorollctrl.c:646
+#: beast-gtk/bstpianorollctrl.c:655 beast-gtk/bstpianorollctrl.c:658
 msgid "Delete Note"
 msgstr "Διαγραφή νότας"
 
-#: beast-gtk/bstpianorollctrl.c:668
+#: beast-gtk/bstpianorollctrl.c:680
 msgid "Insert Note"
 msgstr "Εισαγωγή νότας"
 
-#: beast-gtk/bstpianorollctrl.c:740
+#: beast-gtk/bstpianorollctrl.c:752
 msgid "Vertical Region"
 msgstr "Κάθετη περιοχή"
 
-#: beast-gtk/bstpianorollctrl.c:861
+#: beast-gtk/bstpianorollctrl.c:873
 msgid "Play note"
 msgstr "Αναπαραγωγή νότας"
 
@@ -1940,49 +2002,49 @@ msgstr ""
 msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr "Χρήση του οριζόντιου χάρακα για την ρύθμιση του right loop pointer"
 
-#: beast-gtk/bsttrackrollctrl.c:410 beast-gtk/bsttrackrollctrl.c:422
+#: beast-gtk/bsttrackrollctrl.c:416 beast-gtk/bsttrackrollctrl.c:428
 msgid "Edit Part"
 msgstr "Επεξεργασία μέρους"
 
-#: beast-gtk/bsttrackrollctrl.c:410
+#: beast-gtk/bsttrackrollctrl.c:416
 msgid "No Part"
 msgstr "Δεν υπάρχει μέρος"
 
-#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:443
-#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:447 beast-gtk/bsttrackrollctrl.c:449
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
 msgid "Insert Part"
 msgstr "Εισαγωγή μέρους"
 
-#: beast-gtk/bsttrackrollctrl.c:443 beast-gtk/bsttrackrollctrl.c:545
+#: beast-gtk/bsttrackrollctrl.c:449 beast-gtk/bsttrackrollctrl.c:551
 msgid "Lost Part"
 msgstr "Χαμένο μέρος"
 
-#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
 msgid "Position taken"
 msgstr "Θέση κατειλημένη"
 
-#: beast-gtk/bsttrackrollctrl.c:455
+#: beast-gtk/bsttrackrollctrl.c:461
 msgid "Insert part"
 msgstr "Εισαγωγή μέρους"
 
-#: beast-gtk/bsttrackrollctrl.c:455
+#: beast-gtk/bsttrackrollctrl.c:461
 msgid "No Track"
 msgstr "Δεν υπάρχει κομμάτι"
 
-#: beast-gtk/bsttrackrollctrl.c:467 beast-gtk/bsttrackrollctrl.c:470
+#: beast-gtk/bsttrackrollctrl.c:473 beast-gtk/bsttrackrollctrl.c:476
 msgid "Delete Part"
 msgstr "Διαγραφή μέρους"
 
-#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
 msgid "Link Part"
 msgstr "Σύνδεση μέρους"
 
-#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
-#: beast-gtk/bsttrackrollctrl.c:545
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
+#: beast-gtk/bsttrackrollctrl.c:551
 msgid "Move Part"
 msgstr "Μετακίνηση μέρους"
 
-#: beast-gtk/bsttrackrollctrl.c:557 beast-gtk/bsttrackrollctrl.c:562
+#: beast-gtk/bsttrackrollctrl.c:563 beast-gtk/bsttrackrollctrl.c:568
 msgid "Start Editor"
 msgstr "Έναρξη επεξεργαστή"
 
@@ -3921,6 +3983,12 @@ msgstr "Αριστερά"
 #, fuzzy
 msgid "Right Output"
 msgstr "Δεξιά"
+
+#~ msgid "Insert full notes"
+#~ msgstr "Εισαγωγή πλήρεις νότες"
+
+#~ msgid "Quantize to full note boundaries"
+#~ msgstr "Quantize to full note boundaries"
 
 #~ msgid "Question"
 #~ msgstr "Ερώτηση"

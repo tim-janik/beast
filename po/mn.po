@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 20:11+0200\n"
+"POT-Creation-Date: 2004-06-09 21:38+0200\n"
 "PO-Revision-Date: 2003-12-08 17:11+0800\n"
 "Last-Translator: Dulmandakh Sukhbaatar <sdulmandakh@yahoo.com>\n"
 "Language-Team: Mongolian <openmn-core@lists.sf.net>\n"
@@ -228,10 +228,10 @@ msgid "Move Control Event"
 msgstr ""
 
 #: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
-#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:473
-#: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
-#: beast-gtk/bsttrackrollctrl.c:470 beast-gtk/bsttrackrollctrl.c:490
-#: beast-gtk/bsttrackrollctrl.c:562
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
+#: beast-gtk/bsttrackrollctrl.c:568
 msgid "No target"
 msgstr "Бай алга"
 
@@ -244,7 +244,7 @@ msgid "Align Control Events"
 msgstr ""
 
 #: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
+#: beast-gtk/bstpianorollctrl.c:716 beast-gtk/bstpianorollctrl.c:752
 msgid "Aborted"
 msgstr "Зогсоогдсон"
 
@@ -262,11 +262,11 @@ msgid "Delete Control Event"
 msgstr ""
 
 #: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
+#: beast-gtk/bstpianorollctrl.c:690 beast-gtk/bstpianorollctrl.c:716
 msgid "Select Region"
 msgstr "Бүсийг сонго"
 
-#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:749
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:761
 msgid "Abortion"
 msgstr ""
 
@@ -1017,7 +1017,7 @@ msgstr "Сонго"
 msgid "Rectangle select notes"
 msgstr "Тэгш өнцөгт сонгох тэмдэглэлүүд"
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:714
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:726
 msgid "Vertical Select"
 msgstr "Босоо сонголт"
 
@@ -1030,8 +1030,9 @@ msgid "1\\/1"
 msgstr "1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:67
-msgid "Insert full notes"
-msgstr "Бүтэн нот оруул"
+#, fuzzy
+msgid "Insert whole notes"
+msgstr "Хагас нот оруул"
 
 #: beast-gtk/bstpianorollctrl.c:69
 msgid "1\\/2"
@@ -1065,89 +1066,147 @@ msgstr "1\\/16"
 msgid "Insert sixteenth note"
 msgstr "Арван зургаатын нот оруул"
 
-#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:77
+#, fuzzy
+msgid "1\\/32"
+msgstr "1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:77
+#, fuzzy
+msgid "Insert thirty-second note"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:79
+#, fuzzy
+msgid "1\\/64"
+msgstr "1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:79
+#, fuzzy
+msgid "Insert sixty-fourth note"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:81
+#, fuzzy
+msgid "1\\/128"
+msgstr "1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:81
+#, fuzzy
+msgid "Insert hundred twenty-eighth note"
+msgstr "Наймтын нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
 msgstr "А: Такт"
 
-#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "Q: None"
 msgstr "А: Алга"
 
-#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "No quantization selected"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
 msgid "Q: 1\\/1"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
-msgid "Quantize to full note boundaries"
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+msgid "Quantize to whole note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Q: 1\\/4"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Q: 1\\/8"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Q: 1\\/16"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:466 beast-gtk/bstpianorollctrl.c:473
-#: beast-gtk/bstpianorollctrl.c:561
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#, fuzzy
+msgid "Q: 1\\/32"
+msgstr "1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+msgid "Quantize to thirty-second note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#, fuzzy
+msgid "Q: 1\\/64"
+msgstr "1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#, fuzzy
+msgid "Quantize to sixty-fourth note boundaries"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#, fuzzy
+msgid "Q: 1\\/128"
+msgstr "1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+msgid "Quantize to hundred twenty-eighth note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:573
 msgid "Move Note"
 msgstr "Нотыг зөө"
 
-#: beast-gtk/bstpianorollctrl.c:561 beast-gtk/bstpianorollctrl.c:632
+#: beast-gtk/bstpianorollctrl.c:573 beast-gtk/bstpianorollctrl.c:644
 msgid "Lost Note"
 msgstr "Алдагдсан нот"
 
-#: beast-gtk/bstpianorollctrl.c:578 beast-gtk/bstpianorollctrl.c:583
-#: beast-gtk/bstpianorollctrl.c:632
+#: beast-gtk/bstpianorollctrl.c:590 beast-gtk/bstpianorollctrl.c:595
+#: beast-gtk/bstpianorollctrl.c:644
 msgid "Resize Note"
 msgstr "Нотын хэмжээг өөрчил"
 
-#: beast-gtk/bstpianorollctrl.c:643 beast-gtk/bstpianorollctrl.c:646
+#: beast-gtk/bstpianorollctrl.c:655 beast-gtk/bstpianorollctrl.c:658
 msgid "Delete Note"
 msgstr "Нотыг устга"
 
-#: beast-gtk/bstpianorollctrl.c:668
+#: beast-gtk/bstpianorollctrl.c:680
 msgid "Insert Note"
 msgstr "Нот оруул"
 
-#: beast-gtk/bstpianorollctrl.c:740
+#: beast-gtk/bstpianorollctrl.c:752
 msgid "Vertical Region"
 msgstr "Босоо бүс"
 
-#: beast-gtk/bstpianorollctrl.c:861
+#: beast-gtk/bstpianorollctrl.c:873
 msgid "Play note"
 msgstr "Нотыг тогло"
 
@@ -1871,49 +1930,49 @@ msgstr ""
 msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:410 beast-gtk/bsttrackrollctrl.c:422
+#: beast-gtk/bsttrackrollctrl.c:416 beast-gtk/bsttrackrollctrl.c:428
 msgid "Edit Part"
 msgstr "Хэсгийг засварла"
 
-#: beast-gtk/bsttrackrollctrl.c:410
+#: beast-gtk/bsttrackrollctrl.c:416
 msgid "No Part"
 msgstr "Хэсэг алга"
 
-#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:443
-#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:447 beast-gtk/bsttrackrollctrl.c:449
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
 msgid "Insert Part"
 msgstr "Хэсэг оруул"
 
-#: beast-gtk/bsttrackrollctrl.c:443 beast-gtk/bsttrackrollctrl.c:545
+#: beast-gtk/bsttrackrollctrl.c:449 beast-gtk/bsttrackrollctrl.c:551
 msgid "Lost Part"
 msgstr "Алдагдсан хэсэг"
 
-#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
 msgid "Position taken"
 msgstr "Байрлал авагдсан"
 
-#: beast-gtk/bsttrackrollctrl.c:455
+#: beast-gtk/bsttrackrollctrl.c:461
 msgid "Insert part"
 msgstr "Хэсэг оруул"
 
-#: beast-gtk/bsttrackrollctrl.c:455
+#: beast-gtk/bsttrackrollctrl.c:461
 msgid "No Track"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:467 beast-gtk/bsttrackrollctrl.c:470
+#: beast-gtk/bsttrackrollctrl.c:473 beast-gtk/bsttrackrollctrl.c:476
 msgid "Delete Part"
 msgstr "Хэсгийг устга"
 
-#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
 msgid "Link Part"
 msgstr "Хэсгийг холбо"
 
-#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
-#: beast-gtk/bsttrackrollctrl.c:545
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
+#: beast-gtk/bsttrackrollctrl.c:551
 msgid "Move Part"
 msgstr "Хэсгийг зөө"
 
-#: beast-gtk/bsttrackrollctrl.c:557 beast-gtk/bsttrackrollctrl.c:562
+#: beast-gtk/bsttrackrollctrl.c:563 beast-gtk/bsttrackrollctrl.c:568
 msgid "Start Editor"
 msgstr "Засварлагчийг эхлүүл"
 
@@ -3801,6 +3860,9 @@ msgstr "Зүүн"
 #, fuzzy
 msgid "Right Output"
 msgstr "Баруун"
+
+#~ msgid "Insert full notes"
+#~ msgstr "Бүтэн нот оруул"
 
 #~ msgid "Question"
 #~ msgstr "Асуулт"

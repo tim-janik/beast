@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 20:11+0200\n"
+"POT-Creation-Date: 2004-06-09 21:38+0200\n"
 "PO-Revision-Date: 2004-02-28 14:21+0100\n"
 "Last-Translator: Xavier Conde Rueda <xaviconde@eresmas.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -225,10 +225,10 @@ msgid "Move Control Event"
 msgstr "Esdeveniment de control de moviment"
 
 #: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
-#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:473
-#: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
-#: beast-gtk/bsttrackrollctrl.c:470 beast-gtk/bsttrackrollctrl.c:490
-#: beast-gtk/bsttrackrollctrl.c:562
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
+#: beast-gtk/bsttrackrollctrl.c:568
 msgid "No target"
 msgstr "Cap objectiu"
 
@@ -241,7 +241,7 @@ msgid "Align Control Events"
 msgstr "Esdeveniments de control d'alineació"
 
 #: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
+#: beast-gtk/bstpianorollctrl.c:716 beast-gtk/bstpianorollctrl.c:752
 msgid "Aborted"
 msgstr "Interromput"
 
@@ -259,11 +259,11 @@ msgid "Delete Control Event"
 msgstr "Esdeveniment de control de supressió"
 
 #: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
-#: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
+#: beast-gtk/bstpianorollctrl.c:690 beast-gtk/bstpianorollctrl.c:716
 msgid "Select Region"
 msgstr "Seleccioneu una regió"
 
-#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:749
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:761
 msgid "Abortion"
 msgstr "Interrupció"
 
@@ -1026,7 +1026,7 @@ msgstr "Selecciona"
 msgid "Rectangle select notes"
 msgstr "Notes sobre la selecció de rectangle"
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:714
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:726
 msgid "Vertical Select"
 msgstr "Selecció vertical"
 
@@ -1039,8 +1039,9 @@ msgid "1\\/1"
 msgstr "1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:67
-msgid "Insert full notes"
-msgstr "Insereix rodones"
+#, fuzzy
+msgid "Insert whole notes"
+msgstr "Insereix blanques"
 
 #: beast-gtk/bstpianorollctrl.c:69
 msgid "1\\/2"
@@ -1074,89 +1075,150 @@ msgstr "1\\/16"
 msgid "Insert sixteenth note"
 msgstr "Insereix semicorxeres"
 
-#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:77
+#, fuzzy
+msgid "1\\/32"
+msgstr "1/32"
+
+#: beast-gtk/bstpianorollctrl.c:77
+#, fuzzy
+msgid "Insert thirty-second note"
+msgstr "Fusa triple"
+
+#: beast-gtk/bstpianorollctrl.c:79
+#, fuzzy
+msgid "1\\/64"
+msgstr "1/64"
+
+#: beast-gtk/bstpianorollctrl.c:79
+#, fuzzy
+msgid "Insert sixty-fourth note"
+msgstr "Insereix semicorxeres"
+
+#: beast-gtk/bstpianorollctrl.c:81
+#, fuzzy
+msgid "1\\/128"
+msgstr "1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:81
+#, fuzzy
+msgid "Insert hundred twenty-eighth note"
+msgstr "Insereix corxeres"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
 msgstr "Q: interpretació"
 
-#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
 msgstr "Quantitza als límits de la interpretació"
 
-#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "Q: None"
 msgstr "Q: cap"
 
-#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "No quantization selected"
 msgstr "No s'ha seleccionat cap quantització"
 
-#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
 msgid "Q: 1\\/1"
 msgstr "Q: 1\\/1"
 
-#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
-msgid "Quantize to full note boundaries"
-msgstr "Quantitza fins als límits d'una rodona"
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+#, fuzzy
+msgid "Quantize to whole note boundaries"
+msgstr "Quantitza fins als límits d'una blanca"
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
 msgstr "Q: 1\\/2"
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
 msgstr "Quantitza fins als límits d'una blanca"
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Q: 1\\/4"
 msgstr "Q: 1\\/4"
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
 msgstr "Quantitza fins als límits d'una negra"
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Q: 1\\/8"
 msgstr "Q: 1\\/8"
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
 msgstr "Quantitza fins als límits d'una corxera"
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Q: 1\\/16"
 msgstr "Q: 1\\/16"
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
 msgstr "Quantitza fins als límits d'una semicorxera"
 
-#: beast-gtk/bstpianorollctrl.c:466 beast-gtk/bstpianorollctrl.c:473
-#: beast-gtk/bstpianorollctrl.c:561
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#, fuzzy
+msgid "Q: 1\\/32"
+msgstr "Q: 1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+#, fuzzy
+msgid "Quantize to thirty-second note boundaries"
+msgstr "Quantitza fins als límits d'una semicorxera"
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#, fuzzy
+msgid "Q: 1\\/64"
+msgstr "Q: 1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+#, fuzzy
+msgid "Quantize to sixty-fourth note boundaries"
+msgstr "Quantitza fins als límits d'una semicorxera"
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#, fuzzy
+msgid "Q: 1\\/128"
+msgstr "Q: 1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+#, fuzzy
+msgid "Quantize to hundred twenty-eighth note boundaries"
+msgstr "Quantitza fins als límits d'una corxera"
+
+#: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:573
 msgid "Move Note"
 msgstr "Mou una nota"
 
-#: beast-gtk/bstpianorollctrl.c:561 beast-gtk/bstpianorollctrl.c:632
+#: beast-gtk/bstpianorollctrl.c:573 beast-gtk/bstpianorollctrl.c:644
 msgid "Lost Note"
 msgstr "Nota perduda"
 
-#: beast-gtk/bstpianorollctrl.c:578 beast-gtk/bstpianorollctrl.c:583
-#: beast-gtk/bstpianorollctrl.c:632
+#: beast-gtk/bstpianorollctrl.c:590 beast-gtk/bstpianorollctrl.c:595
+#: beast-gtk/bstpianorollctrl.c:644
 msgid "Resize Note"
 msgstr "Canvia la mida de la nota"
 
-#: beast-gtk/bstpianorollctrl.c:643 beast-gtk/bstpianorollctrl.c:646
+#: beast-gtk/bstpianorollctrl.c:655 beast-gtk/bstpianorollctrl.c:658
 msgid "Delete Note"
 msgstr "Esborra una nota"
 
-#: beast-gtk/bstpianorollctrl.c:668
+#: beast-gtk/bstpianorollctrl.c:680
 msgid "Insert Note"
 msgstr "Insereix una nota"
 
-#: beast-gtk/bstpianorollctrl.c:740
+#: beast-gtk/bstpianorollctrl.c:752
 msgid "Vertical Region"
 msgstr "Regió vertical"
 
-#: beast-gtk/bstpianorollctrl.c:861
+#: beast-gtk/bstpianorollctrl.c:873
 msgid "Play note"
 msgstr "Reprodueix una nota"
 
@@ -1855,49 +1917,49 @@ msgstr ""
 msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr "Feu servir el regle horitzontal per ajustar el punter del bucle dret"
 
-#: beast-gtk/bsttrackrollctrl.c:410 beast-gtk/bsttrackrollctrl.c:422
+#: beast-gtk/bsttrackrollctrl.c:416 beast-gtk/bsttrackrollctrl.c:428
 msgid "Edit Part"
 msgstr "Edita una part"
 
-#: beast-gtk/bsttrackrollctrl.c:410
+#: beast-gtk/bsttrackrollctrl.c:416
 msgid "No Part"
 msgstr "Cap part"
 
-#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:443
-#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:447 beast-gtk/bsttrackrollctrl.c:449
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
 msgid "Insert Part"
 msgstr "Insereix una part"
 
-#: beast-gtk/bsttrackrollctrl.c:443 beast-gtk/bsttrackrollctrl.c:545
+#: beast-gtk/bsttrackrollctrl.c:449 beast-gtk/bsttrackrollctrl.c:551
 msgid "Lost Part"
 msgstr "Part perduda"
 
-#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
 msgid "Position taken"
 msgstr "S'ha pres la posició"
 
-#: beast-gtk/bsttrackrollctrl.c:455
+#: beast-gtk/bsttrackrollctrl.c:461
 msgid "Insert part"
 msgstr "Insereix part"
 
-#: beast-gtk/bsttrackrollctrl.c:455
+#: beast-gtk/bsttrackrollctrl.c:461
 msgid "No Track"
 msgstr "Cap pista"
 
-#: beast-gtk/bsttrackrollctrl.c:467 beast-gtk/bsttrackrollctrl.c:470
+#: beast-gtk/bsttrackrollctrl.c:473 beast-gtk/bsttrackrollctrl.c:476
 msgid "Delete Part"
 msgstr "Esborra una part"
 
-#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
 msgid "Link Part"
 msgstr "Enllaça una part"
 
-#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
-#: beast-gtk/bsttrackrollctrl.c:545
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
+#: beast-gtk/bsttrackrollctrl.c:551
 msgid "Move Part"
 msgstr "Mou una part"
 
-#: beast-gtk/bsttrackrollctrl.c:557 beast-gtk/bsttrackrollctrl.c:562
+#: beast-gtk/bsttrackrollctrl.c:563 beast-gtk/bsttrackrollctrl.c:568
 msgid "Start Editor"
 msgstr "Inicia l'editor"
 
@@ -3754,6 +3816,12 @@ msgstr "Sortida esquerra"
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Output"
 msgstr "Sortida dreta"
+
+#~ msgid "Insert full notes"
+#~ msgstr "Insereix rodones"
+
+#~ msgid "Quantize to full note boundaries"
+#~ msgstr "Quantitza fins als límits d'una rodona"
 
 #~ msgid "Question"
 #~ msgstr "Pregunta"
