@@ -1,11 +1,11 @@
 FIXME(urgent):
+- add stock icons for Select/None Select/All Select/Invert
 - add a "Creating Skins" section to the beast manual page
 - bsewavetool: fix per-command docu to properly account for input.bsewave
 - install bsewavetool, bsewavetool.1
 - gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
 - play + play doesn't reset wave oscillator state
 - pianoroll: close pianoroll window in response to part::release  
-- pianoroll: select-all/none
 - start playback at play pointer position
 - add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
 - write script which resizes 0-length notes to 1/4 note or similar length (those notes occour from MIDI drum pattern imports)
@@ -40,7 +40,7 @@ TODO:
   - histogram
   - edge detector: ...____..__|^^^'----'^^^^^|__.... (using dots for contiguous regions)
 - add mini-keyboard to Router toolbar to test instrument designs
-- implement hirarchical topc selector instead of notebook-tabs for preferences:
+- implement hirarchical topic selector instead of notebook-tabs for preferences:
   - move BSE paths into their own "paths" categorie
   - rename BEAST tab to "appearance" or similar
 - the instruments selection dialog for tracks should default-select the currently used instrument
@@ -164,7 +164,6 @@ TODO:
 - remove bstrack*.[hc] cruft, old parasites and data pocket
 - allow parasite object links only within tree
 - queue action updates upon grouped action execution 
-- introduce gxk_action_group_select()-freeze/thaw to surround select/exec pair
 - auto-connect viewable-changed to radget notebooks
 - add one-shot property to gxk-radget-factories
 - remove/rename test-string.bse
@@ -184,7 +183,6 @@ TODO:
 - add frequency output module, offering bpm, 1/1 1/4 1/3 notes frequencies
 - add sfisclock.h to sfi.h
 - <mg> quick rfe based on 0.5.3: implement multiple selection in the wave loader file selector and have an add button that does not close the dialog
-- fix initial_granule in gslvorbis-cutter.c wrg page flushing
 - rename gsl_strerror()
 - get rid of bse_procedure_execvl
 - get rid of super->mod_time
@@ -274,7 +272,7 @@ TASKS:
 - PatternEditor: implement last tick spinner
 - PatternEditor: implement length and offset columns
 - PatternEditor: allow inserting notes of different lengths
-- PatternEditor: Ctrl+I (interpolate) should interpolate values between start and end of a selection,
+- PatternEditor: (interpolate) should interpolate values between start and end of a selection,
   regardless whether the selected column is a note or event
 - PatternEditor: Ctrl+R (random) should insert random notes or events
 - PatternEditor: transpose script (up and down by semitone, so that we can use an accelerator)
