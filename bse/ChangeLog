@@ -1,3 +1,8 @@
+Sun Nov 16 13:30:00 2003  Christian Neumair  <chris@gnome-de.org>
+
+	* bsebiquadfilter.c: added xgettext keyword (no-c-format) comment
+	to a string.
+
 Mon Oct 27 22:12:48 2003  Tim Janik  <timj@gtk.org>
 
 	* bseamplifier.[ic]*: from 0.5.5 on, let the amplifier default to

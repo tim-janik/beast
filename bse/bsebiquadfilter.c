@@ -181,6 +181,7 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
 					      SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_GAIN_PERC,
+			      /* xgettext:no-c-format */
 			      sfi_pspec_real ("gain_perc", _("Gain Modulation [%]"),
 					      _("Strength of gain modulation"),
 					      0.0, 0.0, 100.0, 5.0,
