@@ -1,3 +1,7 @@
+Mon Dec 22 23:56:45 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: support per-type options for procedures and objects.
+
 Sun Dec 21 20:40:15 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-cxx.cc: Use Bse::Sequence as sequence template for all
