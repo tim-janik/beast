@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-06 19:03+0200\n"
+"POT-Creation-Date: 2004-09-07 11:04+0200\n"
 "PO-Revision-Date: 2004-09-06 19:28-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
@@ -315,18 +315,19 @@ msgstr "Por favor, aperte o atalho de teclado para usar com a função: %s"
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Por favor, aperte o atalho de teclado para usar..."
 
-#: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusmixer.c:34
+#: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusmixer.c:35
 #: beast-gtk/bstbusview.c:34 beast-gtk/bstinstrumentview.c:33
 #: beast-gtk/bstpartview.c:39 beast-gtk/bsttrackview.c:63
 msgid "Add"
 msgstr "Adicionar"
 
-#: beast-gtk/bstbuseditor.c:39 beast-gtk/bstbusview.c:35
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
-#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
-#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:710
-#: beast-gtk/bstsnetrouter.c:752 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:66 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstbuseditor.c:39 beast-gtk/bstbusmixer.c:36
+#: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
+#: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
+#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
+#: beast-gtk/bstsnetrouter.c:710 beast-gtk/bstsnetrouter.c:752
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Excluir"
 
@@ -838,6 +839,18 @@ msgstr "Disco (Logarítmico)"
 #: beast-gtk/bstparam-searchpath.c:55
 msgid "Remove Paths"
 msgstr "Remover caminhos"
+
+#: beast-gtk/bstparam-searchpath.c:128
+msgid "Remove directory from searchpath"
+msgstr "Remove diretórios do caminho de busca"
+
+#: beast-gtk/bstparam-searchpath.c:129
+msgid "Add directory to searchpath"
+msgstr "Adiciona diretórios ao caminho de busca"
+
+#: beast-gtk/bstparam-searchpath.c:139
+msgid "Open file browser"
+msgstr "Abre o navegador de arquivos"
 
 #: beast-gtk/bstparam-searchpath.c:148
 msgid "Searchpath Text Entry"
@@ -3808,7 +3821,7 @@ msgstr "Canal MIDI"
 msgid "Max Voices"
 msgstr "Vozes máximas"
 
-#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:509 bse/bsetrack.c:902
+#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:513 bse/bsetrack.c:902
 msgid "Synthesizer"
 msgstr "Sintetizadores"
 
@@ -4154,17 +4167,17 @@ msgstr "Saída Sinc"
 msgid "Syncronization Output"
 msgstr "Saída de sincronização"
 
-#: bse/bsesubiport.c:294 bse/bsesubsynth.c:537
+#: bse/bsesubiport.c:294 bse/bsesubsynth.c:541
 #, c-format
 msgid "Virtual input %u"
 msgstr "Entrada virtual %u"
 
-#: bse/bsesubiport.c:301 bse/bsesubsynth.c:517
+#: bse/bsesubiport.c:301 bse/bsesubsynth.c:521
 #, c-format
 msgid "Input Port %u"
 msgstr "Porta de entrada %u"
 
-#: bse/bsesubiport.c:303 bse/bsesuboport.c:304 bse/bsesubsynth.c:507
+#: bse/bsesubiport.c:303 bse/bsesuboport.c:304 bse/bsesubsynth.c:511
 msgid "Assignments"
 msgstr "Atribuições"
 
@@ -4179,12 +4192,12 @@ msgstr ""
 msgid "/Virtualization/Virtual Input"
 msgstr "/Virtualização/Entrada virtual"
 
-#: bse/bsesuboport.c:295 bse/bsesubsynth.c:544
+#: bse/bsesuboport.c:295 bse/bsesubsynth.c:548
 #, c-format
 msgid "Virtual output %u"
 msgstr "Saída virtual %u"
 
-#: bse/bsesuboport.c:302 bse/bsesubsynth.c:527
+#: bse/bsesuboport.c:302 bse/bsesubsynth.c:531
 #, c-format
 msgid "Output Port %u"
 msgstr "Porta de saída %u"
@@ -4202,23 +4215,23 @@ msgid "List of available synthesis networks to choose a sub network from"
 msgstr ""
 "Lista das redes de síntese disponíveis a partir de onde escolher um sub-rede"
 
-#: bse/bsesubsynth.c:510
+#: bse/bsesubsynth.c:514
 msgid "Synthesis network to use as embedded sub network"
 msgstr "A rede de síntese para usar como sub-rede embutida"
 
-#: bse/bsesubsynth.c:519
+#: bse/bsesubsynth.c:523
 msgid "Input Assignments"
 msgstr "Atribuições de entrada"
 
-#: bse/bsesubsynth.c:520
+#: bse/bsesubsynth.c:524
 msgid "Output port name to interface from"
 msgstr "Porta de saída com a qual deve ser feita interface"
 
-#: bse/bsesubsynth.c:529
+#: bse/bsesubsynth.c:533
 msgid "Output Assignments"
 msgstr "Atribuições de saída"
 
-#: bse/bsesubsynth.c:530
+#: bse/bsesubsynth.c:534
 msgid "Input port name to interface to"
 msgstr "Porta de entrada com a qual deve ser feita interface"
 
