@@ -21,7 +21,7 @@ libsfi_la_LDFLAGS = $(strip \
 libsfi_la_LIBADD = $(SFI_LIBS) -lm
 
 sfi_public_headers = $(strip \
-	sfistore.h	sficomwire.h	\
+	sfistore.h	sficomwire.h	sfifilecrawler.h \
 	glib-extra.h	\
 	sfivmarshal.h	sfiglue.h	sfigluecodec.h	sfiglueproxy.h	\
 	sfinote.h	sfiparams.h	sfiprimitives.h	sfiserial.h	\
@@ -30,7 +30,7 @@ sfi_public_headers = $(strip \
 	sfi.h	\
 )
 sfi_c_sources = $(strip \
-	sfistore.c	sficomwire.c	\
+	sfistore.c	sficomwire.c	sfifilecrawler.c \
 	glib-extra.c	\
 	sfivmarshal.c	sfiglue.c	sfigluecodec.c	sfiglueproxy.c	\
 	sfinote.c	sfiparams.c	sfiprimitives.c	sfiserial.c	\

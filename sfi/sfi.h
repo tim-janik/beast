@@ -21,6 +21,7 @@
 
 /* no bin-compat: #include <sfi/sficomwire.h> */
 #include <sfi/sficomport.h>
+#include <sfi/sfifilecrawler.h>
 #include <sfi/sfiglue.h>
 #include <sfi/sfigluecodec.h>
 #include <sfi/sfiglueproxy.h>

@@ -1,3 +1,8 @@
+Tue May  6 04:17:19 2003  Tim Janik  <timj@gtk.org>
+
+        * sfifilecrawler.[hc]: added SfiFileCrawler, a new mechanism to
+        construct a file list for a given search path incrementally.
+
 Mon May  5 03:16:51 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.[hc]: added sfi_ring_test_length(l) to figure whether
