@@ -201,7 +201,8 @@ static SfiMutex        cqueue_trans = { 0, };
 static BseTrans       *cqueue_trans_pending_head = NULL;
 static BseTrans       *cqueue_trans_pending_tail = NULL;
 static SfiCond         cqueue_trans_cond = { 0, };
-static BseTrans       *cqueue_trans_trash = NULL;
+static BseTrans       *cqueue_trans_trash_head = NULL;
+static BseTrans       *cqueue_trans_trash_tail = NULL;
 static BseTrans       *cqueue_trans_active_head = NULL;
 static BseTrans       *cqueue_trans_active_tail = NULL;
 static EngineUserJob  *cqueue_trash_ujobs = NULL;
@@ -262,8 +263,12 @@ _engine_free_trans (BseTrans *trans)
     g_return_if_fail (trans->jobs_tail->next == NULL);  /* paranoid */
   
   GSL_SPIN_LOCK (&cqueue_trans);
-  trans->cqt_next = cqueue_trans_trash;
-  cqueue_trans_trash = trans;
+  trans->cqt_next = NULL;
+  if (cqueue_trans_trash_tail)
+    cqueue_trans_trash_tail->cqt_next = trans;
+  else
+    cqueue_trans_trash_head = trans;
+  cqueue_trans_trash_tail = trans;
   GSL_SPIN_UNLOCK (&cqueue_trans);
 }
 
@@ -285,8 +290,12 @@ _engine_pop_job (gboolean update_commit_stamp)
 	   * signal UserThread which might be in
 	   * op_com_wait_on_trans()
 	   */
-	  cqueue_trans_active_tail->cqt_next = cqueue_trans_trash;
-	  cqueue_trans_trash = cqueue_trans_active_head;
+          cqueue_trans_active_tail->cqt_next = NULL;
+          if (cqueue_trans_trash_tail)
+            cqueue_trans_trash_tail->cqt_next = cqueue_trans_active_head;
+          else
+            cqueue_trans_trash_head = cqueue_trans_active_head;
+          cqueue_trans_trash_tail = cqueue_trans_active_tail;
 	  /* fetch new transaction */
 	  cqueue_trans_active_head = cqueue_trans_pending_head;
 	  cqueue_trans_active_tail = cqueue_trans_pending_tail;
@@ -346,8 +355,8 @@ bse_engine_garbage_collect (void)
   EngineUserJob *jlist;
   
   GSL_SPIN_LOCK (&cqueue_trans);
-  trans = cqueue_trans_trash;
-  cqueue_trans_trash = NULL;
+  trans = cqueue_trans_trash_head;
+  cqueue_trans_trash_head = cqueue_trans_trash_tail = NULL;
   jlist = cqueue_trash_ujobs;
   cqueue_trash_ujobs = NULL;
   GSL_SPIN_UNLOCK (&cqueue_trans);
@@ -363,7 +372,6 @@ bse_engine_garbage_collect (void)
   while (trans)
     {
       BseTrans *t = trans;
-      
       trans = t->cqt_next;
       t->cqt_next = NULL;
       if (t->jobs_tail)
@@ -376,7 +384,7 @@ bse_engine_garbage_collect (void)
 gboolean
 bse_engine_has_garbage (void)
 {
-  return cqueue_trans_trash || cqueue_trash_ujobs;
+  return cqueue_trans_trash_head || cqueue_trash_ujobs;
 }
 
 

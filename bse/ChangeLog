@@ -1,3 +1,9 @@
+Mon Nov 15 15:18:01 2004  Tim Janik  <timj@gtk.org>
+
+	* bseengineutils.c: manage transaction trash list with a FIFO rather
+	than a stack, so execution order of user-callbacks and free handlers
+	is preserved.
+
 Sun Nov 14 15:32:57 2004  Tim Janik  <timj@gtk.org>
 
 	* bseengine.[hc]: documentation updates.
