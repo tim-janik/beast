@@ -27,7 +27,6 @@
 #include <sys/poll.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <assert.h>
 #include <errno.h>
 #include <vector>
 
@@ -36,9 +35,6 @@ using namespace std;
 
 #define DEBUG(...)      sfi_debug ("sequencer", __VA_ARGS__)
 inline guint64 bse_dtoull (const double v) { return v < -0.0 ? guint64 (v - 0.5) : guint64 (v + 0.5); } // FIXME 
-#define BSE_CPP_CONCAT2(a,b)    a ## b
-#define BSE_CPP_CONCAT(a,b)     BSE_CPP_CONCAT2 (a, b)
-#define static_assert(expr)     typedef char BSE_CPP_CONCAT (static_assert_failed_in_line_, __LINE__)[(expr) ? 1 : -1]
 
 /* --- prototypes --- */
 static void	bse_sequencer_thread_main	(gpointer	 data);
@@ -110,7 +106,7 @@ public:
   fill_pfds (guint    n_pfds,
              GPollFD *pfds)
   {
-    assert (n_pfds == watch_pfds.size());
+    g_assert (n_pfds == watch_pfds.size());
     copy (watch_pfds.begin(), watch_pfds.end(), pfds);
     for (guint i = 0; i < watches.size(); i++)
       watches[i].notify_pfds = pfds + watches[i].index;
@@ -181,13 +177,13 @@ public:
     watches.erase (watches.begin() + i);
     return true;
   }
-  static_assert (sizeof (GPollFD) == sizeof (struct pollfd));
-  static_assert (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
-  static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
-  static_assert (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
-  static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
-  static_assert (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
-  static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+  g_static_assert (sizeof (GPollFD) == sizeof (struct pollfd));
+  g_static_assert (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
+  g_static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  g_static_assert (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
+  g_static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  g_static_assert (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
+  g_static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
 };
 static PollPool sequencer_poll_pool;
 
@@ -282,7 +278,7 @@ bse_sequencer_poll_Lm (gint timeout_ms)
       GPollFD *watch_pfds;
       while (sequencer_poll_pool.fetch_notify_watch (current_watch_func, current_watch_data, watch_n_pfds, watch_pfds))
         {
-          assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
+          g_assert (!current_watch_needs_remove1 && !current_watch_needs_remove2);
           BSE_SEQUENCER_UNLOCK ();
           bool current_watch_stays_alive = current_watch_func (current_watch_data, watch_n_pfds, watch_pfds);
           BSE_SEQUENCER_LOCK ();

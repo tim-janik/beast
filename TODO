@@ -1,5 +1,4 @@
 FIXMES:	(release-critical)
-- sequencer: export asserts
 - gslmath->bsemath
 - sequencer: dtoull
 - midi csynth does not work anymore (anable multi-voices like in tracks?)

@@ -1135,12 +1135,15 @@ bse_engine_master_thread (EngineMasterData *mdata)
 {
   sfi_log_set_thread_handler (bse_log_handler);
 
-  /* assert sane configuration checks, since we're simply casting structures */
-  g_assert (sizeof (struct pollfd) == sizeof (GPollFD) &&
-	    G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd) &&
-	    G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events) &&
-	    G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
-  
+  /* assert pollfd equality, since we're simply casting structures */
+  g_static_assert (sizeof (struct pollfd) == sizeof (GPollFD));
+  g_static_assert (G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd));
+  g_static_assert (sizeof (((GPollFD*) 0)->fd) == sizeof (((struct pollfd*) 0)->fd));
+  g_static_assert (G_STRUCT_OFFSET (GPollFD, events) == G_STRUCT_OFFSET (struct pollfd, events));
+  g_static_assert (sizeof (((GPollFD*) 0)->events) == sizeof (((struct pollfd*) 0)->events));
+  g_static_assert (G_STRUCT_OFFSET (GPollFD, revents) == G_STRUCT_OFFSET (struct pollfd, revents));
+  g_static_assert (sizeof (((GPollFD*) 0)->revents) == sizeof (((struct pollfd*) 0)->revents));
+
   /* add the thread wakeup pipe to master pollfds,
    * so we get woken  up in time.
    */

@@ -225,7 +225,7 @@ aiff_read_inst (gint      fd,
                 guint32   chunk_size)
 {
   gint r;
-  g_assert (sizeof (afile->instrument) == 20);
+  g_static_assert (sizeof (afile->instrument) == 20);
   if (chunk_size < 20)
     return GSL_ERROR_FORMAT_INVALID;
   do
