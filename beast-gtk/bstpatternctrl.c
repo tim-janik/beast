@@ -138,8 +138,11 @@ bst_pattern_controller_unref (BstPatternController   *self)
           gxk_action_group_dispose (self->quant_rtools);
           g_object_unref (self->quant_rtools);
         }
+      gxk_param_destroy (self->vraster);
       gxk_param_destroy (self->steps);
       gxk_param_destroy (self->step_dir);
+      gxk_param_destroy (self->hwrap);
+      gxk_param_destroy (self->base_octave);
       g_free (self);
     }
 }

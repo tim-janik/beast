@@ -43,6 +43,8 @@ struct _BstApp
 
   SfiProxy        project;
 
+  GxkParam       *wave_file;
+
   GxkGadget      *box;
   GtkNotebook    *notebook;
 
@@ -64,7 +66,6 @@ enum {
   /* dialogs */
   BST_ACTION_SHOW_PREFERENCES,
   BST_ACTION_SHOW_PROC_BROWSER,
-  BST_ACTION_SHOW_DEVICE_MONITOR,
   BST_ACTION_EXTRA_VIEW,
   /* help dialogs */
 #define BST_ACTION_HELP_FIRST   BST_ACTION_HELP_FAQ

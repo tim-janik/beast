@@ -15,8 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bstapp.h"
 #include "topconfig.h"
+#include "bstapp.h"
+#include "bstparam.h"
 #include "bstskinconfig.h"
 #include "bstsupershell.h"
 #include "bstfiledialog.h"
@@ -91,8 +92,6 @@ static const GxkStockAction dialog_actions[] = {
     BST_ACTION_SHOW_PROC_BROWSER, },
   { N_("Rack Editor"),          NULL,           NULL,
     BST_ACTION_RACK_EDITOR, },
-  { N_("Device _Monitor"),      NULL,           NULL,
-    BST_ACTION_SHOW_DEVICE_MONITOR, },
   { N_("New View"),             NULL,           NULL,
     BST_ACTION_EXTRA_VIEW, },
 };
@@ -167,93 +166,101 @@ bst_app_unregister (BstApp *app)
   bst_app_class->apps = g_slist_remove (bst_app_class->apps, app);
 }
 static void
-bst_app_init (BstApp *app)
+bst_app_init (BstApp *self)
 {
-  GtkWidget *widget = GTK_WIDGET (app);
+  GtkWidget *widget = GTK_WIDGET (self);
   BseCategorySeq *cseq;
   GxkActionList *al1, *al2;
   
-  g_object_set (app,
+  g_object_set (self,
                 "name", "BEAST-Application",
                 "allow_shrink", TRUE,
                 "allow_grow", TRUE,
                 "flags", GXK_DIALOG_STATUS_SHELL,
                 NULL);
-  bst_app_register (app);
-  app->box = gxk_gadget_create ("beast", "application-box", NULL);
-  gtk_container_add (GTK_CONTAINER (GXK_DIALOG (app)->vbox), app->box);
+  bst_app_register (self);
+  self->box = gxk_gadget_create ("beast", "application-box", NULL);
+  gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), self->box);
   
   /* publish widget specific actions */
-  gxk_widget_publish_actions (app, "file-open", G_N_ELEMENTS (file_open_actions), file_open_actions,
+  gxk_widget_publish_actions (self, "file-open", G_N_ELEMENTS (file_open_actions), file_open_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "file-save", G_N_ELEMENTS (file_save_actions), file_save_actions,
+  gxk_widget_publish_actions (self, "file-save", G_N_ELEMENTS (file_save_actions), file_save_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "file-epilog", G_N_ELEMENTS (file_epilog_actions), file_epilog_actions,
+  gxk_widget_publish_actions (self, "file-epilog", G_N_ELEMENTS (file_epilog_actions), file_epilog_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "preference", G_N_ELEMENTS (preference_actions), preference_actions,
+  gxk_widget_publish_actions (self, "preference", G_N_ELEMENTS (preference_actions), preference_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "rebuild", G_N_ELEMENTS (rebuild_actions), rebuild_actions,
+  gxk_widget_publish_actions (self, "rebuild", G_N_ELEMENTS (rebuild_actions), rebuild_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "about", G_N_ELEMENTS (about_actions), about_actions,
+  gxk_widget_publish_actions (self, "about", G_N_ELEMENTS (about_actions), about_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "undo", G_N_ELEMENTS (undo_actions), undo_actions,
+  gxk_widget_publish_actions (self, "undo", G_N_ELEMENTS (undo_actions), undo_actions,
                               NULL, app_action_check, app_action_exec);
   if (BST_DVL_HINTS)
-    gxk_widget_publish_actions (app, "undo-dvl", G_N_ELEMENTS (undo_dvl_actions), undo_dvl_actions,
+    gxk_widget_publish_actions (self, "undo-dvl", G_N_ELEMENTS (undo_dvl_actions), undo_dvl_actions,
                                 NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "dialog", G_N_ELEMENTS (dialog_actions), dialog_actions,
+  gxk_widget_publish_actions (self, "dialog", G_N_ELEMENTS (dialog_actions), dialog_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "playback", G_N_ELEMENTS (playback_actions), playback_actions,
+  gxk_widget_publish_actions (self, "playback", G_N_ELEMENTS (playback_actions), playback_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "project", G_N_ELEMENTS (project_actions), project_actions,
+  gxk_widget_publish_actions (self, "project", G_N_ELEMENTS (project_actions), project_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "library-files", G_N_ELEMENTS (library_files_actions), library_files_actions,
+  gxk_widget_publish_actions (self, "library-files", G_N_ELEMENTS (library_files_actions), library_files_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "simple-help", G_N_ELEMENTS (simple_help_actions), simple_help_actions,
+  gxk_widget_publish_actions (self, "simple-help", G_N_ELEMENTS (simple_help_actions), simple_help_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (app, "devel-help", G_N_ELEMENTS (devel_help_actions), devel_help_actions,
+  gxk_widget_publish_actions (self, "devel-help", G_N_ELEMENTS (devel_help_actions), devel_help_actions,
                               NULL, app_action_check, app_action_exec);
   /* Project utilities */
   cseq = bse_categories_match ("/Project/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-project", al1);
   /* Song scripts */
   cseq = bse_categories_match ("/Song/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-song", al1);
   /* CSynth & SNet utilities */
   cseq = bse_categories_match ("/CSynth/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   cseq = bse_categories_match ("/SNet/*");
-  al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
+  al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al2);
   al1 = gxk_action_list_merge (al1, al2);
   gxk_widget_publish_action_list (widget, "tools-synth", al1);
   /* WaveRepo utilities */
   cseq = bse_categories_match ("/WaveRepo/*");
-  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-wave-repo", al1);
   /* add demo songs */
-  al1 = demo_entries_create (app);
+  al1 = demo_entries_create (self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "demo-songs", al1);
   /* add skins */
-  al1 = skin_entries_create (app);
+  al1 = skin_entries_create (self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "skin-options", al1);
 
   /* setup playback controls */
-  app->pcontrols = g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
-  gxk_gadget_add (app->box, "control-area", app->pcontrols);
+  self->pcontrols = g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
+  gxk_gadget_add (self->box, "control-area", self->pcontrols);
+
+  /* setup WAVE file entry */
+  self->wave_file = bst_param_new_proxy (bse_proxy_get_pspec (BSE_SERVER, "wave_file"), BSE_SERVER);
+  gxk_gadget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
+  gxk_gadget_add (self->box, "control-area", gxk_param_create_editor (self->wave_file, "name"));
+  gxk_gadget_add (self->box, "control-area", gxk_param_create_editor (self->wave_file, NULL));
+  gxk_param_update (self->wave_file);
+
   /* setup the main notebook */
-  app->notebook = gxk_gadget_find (app->box, "main-notebook");
-  gxk_nullify_in_object (app, &app->notebook);
-  g_object_connect (app->notebook,
-                    "swapped_signal_after::switch-page", gxk_widget_update_actions, app,
+  self->notebook = gxk_gadget_find (self->box, "main-notebook");
+  gxk_nullify_in_object (self, &self->notebook);
+  g_object_connect (self->notebook,
+                    "swapped_signal_after::switch-page", gxk_widget_update_actions, self,
                     "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
                     NULL);
 }
@@ -263,6 +270,12 @@ bst_app_destroy (GtkObject *object)
 {
   BstApp *self = BST_APP (object);
 
+  if (self->wave_file)
+    {
+      gxk_param_destroy (self->wave_file);
+      self->wave_file = NULL;
+    }
+  
   if (self->rack_dialog)
     gtk_widget_destroy (self->rack_dialog);
 
@@ -778,16 +791,6 @@ app_action_exec (gpointer data,
         bst_preferences_revert (BST_PREFERENCES (gxk_dialog_get_child (GXK_DIALOG (bst_preferences))));
       gxk_widget_showraise (bst_preferences);
       break;
-    case BST_ACTION_SHOW_DEVICE_MONITOR:
-      any = g_object_new (BST_TYPE_SERVER_MONITOR, NULL);
-      gtk_widget_show (any);
-      any = gxk_dialog_new (NULL,
-                            GTK_OBJECT (self),
-                            GXK_DIALOG_DELETE_BUTTON, // FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-                            _("Device Monitor"),
-                            any);
-      gxk_idle_show_widget (any);
-      break;
     case BST_ACTION_EXTRA_VIEW:
       any = (GtkWidget*) bst_app_new (self->project);
       gxk_idle_show_widget (any);
@@ -940,7 +943,6 @@ app_action_check (gpointer data,
     case BST_ACTION_SHOW_PROC_BROWSER:
       return FALSE;
     case BST_ACTION_SHOW_PREFERENCES:
-    case BST_ACTION_SHOW_DEVICE_MONITOR:
     case BST_ACTION_EXTRA_VIEW:
       return TRUE;
     case BST_ACTION_MERGE_EFFECT:

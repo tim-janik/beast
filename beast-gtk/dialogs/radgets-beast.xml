@@ -424,7 +424,9 @@
     </vbox>
     <vbox name="toolbar-area" area="north" />
     <bottom-deck name="main-notebook" pack:expand="1" />
-    <hbox name="control-area" area="north" />
+    <hbox area="north" >
+      <hbox name="control-area" />
+    </hbox>
   </xdef:application-box>
 
 </gxk-gadget-definitions>

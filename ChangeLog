@@ -1,3 +1,13 @@
+Sat Mar  6 12:15:06 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: removed device monitor. added wave file control
+	entry to playback controls.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: provide a non-expanding hbox for
+	project playback controls.
+
+	* beast-gtk/bstpatternctrl.c: added missing gxk_param_destroy() calls.
+
 Fri Mar  5 19:08:45 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstrecords.idl: added NoteLength choice enumeration.
