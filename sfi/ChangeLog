@@ -1,3 +1,9 @@
+Sun Jul  4 08:09:48 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-parser.h: with gcc-3.4, finding memebers of a dependant base
+	in template definitions will only work with qualified names, so use 
+	this->end() instead of just end() as iterator from the base.
+
 Tue Jun 29 01:52:14 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.h: added G_DEFINE_DATA_TYPE() and variants to have

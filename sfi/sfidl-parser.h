@@ -36,7 +36,7 @@ private:
 public:
   const Value& get(const Key& k) const {
     typename std::map<Key,Value>::const_iterator i = find(k);
-    if (i != end())
+    if (i != this->end())
       return i->second;
     else
       return default_value;
