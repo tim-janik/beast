@@ -1,3 +1,17 @@
+Wed Dec 29 14:37:40 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (bst_subwindow_new): if no host object to watch
+	for destruction is given, add an automatic quit handler.
+
+	* beast-gtk/bstapp.c: provide a File/Dialog/Device Monitor menu item
+	to popup BseHeart dialog.
+
+	* beast-gtk/bstheartmonitor.[hc]: new files coming with a preliminary
+	dialog to edit BSE's heart latency.
+
+	* docs/bse-heart.txt: a bit of restructuring and a bunch of minor
+	corrections and changes.
+
 Mon Dec 27 14:40:23 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): check if the

@@ -22,6 +22,7 @@
 #include	"bstsnetshell.h"
 #include	"bstfiledialog.h"
 #include	"bststatusbar.h"
+#include	"bstheartmonitor.h"
 
 
 
@@ -38,41 +39,45 @@ static gchar	   *bst_app_factories_path = "<BstApp>";
 static GtkItemFactoryEntry menubar_entries[] =
 {
 #define BST_OP(bst_op) (bst_app_operate), (BST_OP_ ## bst_op)
-  { "/_File",			NULL,		NULL, 0,		"<Branch>" },
-  { "/File/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/File/_New",		"<ctrl>N",	BST_OP (PROJECT_NEW),	"<Item>" },
-  { "/File/_Open...",		"<ctrl>O",	BST_OP (PROJECT_OPEN),	"<Item>" },
-  { "/File/_Save",		"<ctrl>S",	BST_OP (PROJECT_SAVE),	"<Item>" },
-  { "/File/Save _As...",	NULL,		BST_OP (PROJECT_SAVE_AS),"<Item>" },
-  { "/File/-----",		NULL,		NULL, 0,		"<Separator>" },
-  { "/File/_Close",		"<ctrl>W",	BST_OP (PROJECT_CLOSE),	"<Item>" },
-  { "/File/_Exit",		"<ctrl>Q",	BST_OP (EXIT),		"<Item>" },
-  { "/_Project",		NULL,		NULL, 0,		"<Branch>" },
-  { "/Project/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/Project/_Play",		"",		BST_OP (PROJECT_PLAY),	"<Item>" },
-  { "/Project/_Stop",		"",		BST_OP (PROJECT_STOP),	"<Item>" },
-  { "/Project/-----",		NULL,		NULL, 0,		"<Separator>" },
-  { "/Project/New Song",	NULL,		BST_OP (PROJECT_NEW_SONG), "<Item>" },
-  { "/Project/New Source Net",	NULL,		BST_OP (PROJECT_NEW_SNET), "<Item>" },
-  { "/Project/-----",		NULL,		NULL, 0,		"<Separator>" },
-  { "/Project/Rebuild",		NULL,		BST_OP (REBUILD),	"<Item>" },
-  { "/Project/Refresh",		NULL,		BST_OP (REFRESH),	"<Item>" },
-  { "/_Edit",			NULL,		NULL, 0,		"<Branch>" },
-  { "/Edit/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/Edit/_Undo",		"<ctrl>U",	BST_OP (UNDO_LAST),	"<Item>" },
-  { "/Edit/_Redo",		"<ctrl>R",	BST_OP (REDO_LAST),	"<Item>" },
-  { "/_Song",			NULL,		NULL, 0,		"<Branch>" },
-  { "/Song/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/Song/_Add Pattern",	"<ctrl>A",	BST_OP (PATTERN_ADD),	"<Item>" },
-  { "/Song/Delete Pattern",	NULL,		BST_OP (PATTERN_DELETE),"<Item>" },
-  { "/Song/_Edit Pattern...",	"<ctrl>E",	BST_OP (PATTERN_EDITOR),"<Item>" },
-  { "/Song/Add _Instrument",	"<ctrl>A",	BST_OP (INSTRUMENT_ADD),"<Item>" },
-  { "/S_Net",			NULL,		NULL, 0,		"<Branch>" },
-  { "/SNet/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/SNet/_Test",		"",		BST_OP (NONE),		"<Item>" },
-  { "/_Help",			NULL,		NULL, 0,		"<LastBranch>" },
-  { "/Help/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/Help/_About...",		NULL,		BST_OP (HELP_ABOUT),	"<Item>" },
+  { "/_File",				NULL,		NULL, 0,			"<Branch>" },
+  { "/File/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/File/_New",			"<ctrl>N",	BST_OP (PROJECT_NEW),		"<Item>" },
+  { "/File/_Open...",			"<ctrl>O",	BST_OP (PROJECT_OPEN),		"<Item>" },
+  { "/File/_Save",			"<ctrl>S",	BST_OP (PROJECT_SAVE),		"<Item>" },
+  { "/File/Save _As...",		NULL,		BST_OP (PROJECT_SAVE_AS),	"<Item>" },
+  { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
+  { "/File/_Dialogs",			NULL,		NULL, 0,			"<Branch>" },
+  { "/File/Dialogs/<<<<<<",		NULL,		NULL, 0,			"<Tearoff>" },
+  { "/File/Dialogs/Device Monitor", 	NULL,		BST_OP (DIALOG_DEVICE_MONITOR),	"<Item>" },
+  { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
+  { "/File/_Close",			"<ctrl>W",	BST_OP (PROJECT_CLOSE),		"<Item>" },
+  { "/File/_Exit",			"<ctrl>Q",	BST_OP (EXIT),			"<Item>" },
+  { "/_Project",			NULL,		NULL, 0,			"<Branch>" },
+  { "/Project/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/Project/_Play",			"",		BST_OP (PROJECT_PLAY),		"<Item>" },
+  { "/Project/_Stop",			"",		BST_OP (PROJECT_STOP),		"<Item>" },
+  { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
+  { "/Project/New Song",		NULL,		BST_OP (PROJECT_NEW_SONG),	"<Item>" },
+  { "/Project/New Source Net",		NULL,		BST_OP (PROJECT_NEW_SNET),	"<Item>" },
+  { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
+  { "/Project/Rebuild",			NULL,		BST_OP (REBUILD),		"<Item>" },
+  { "/Project/Refresh",			NULL,		BST_OP (REFRESH),		"<Item>" },
+  { "/_Edit",				NULL,		NULL, 0,			"<Branch>" },
+  { "/Edit/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/Edit/_Undo",			"<ctrl>U",	BST_OP (UNDO_LAST),		"<Item>" },
+  { "/Edit/_Redo",			"<ctrl>R",	BST_OP (REDO_LAST),		"<Item>" },
+  { "/_Song",				NULL,		NULL, 0,			"<Branch>" },
+  { "/Song/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/Song/_Add Pattern",		"<ctrl>A",	BST_OP (PATTERN_ADD),		"<Item>" },
+  { "/Song/Delete Pattern",		NULL,		BST_OP (PATTERN_DELETE),	"<Item>" },
+  { "/Song/_Edit Pattern...",		"<ctrl>E",	BST_OP (PATTERN_EDITOR),	"<Item>" },
+  { "/Song/Add _Instrument",		"<ctrl>A",	BST_OP (INSTRUMENT_ADD),	"<Item>" },
+  { "/S_Net",				NULL,		NULL, 0,			"<Branch>" },
+  { "/SNet/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/SNet/_Test",			"",		BST_OP (NONE),			"<Item>" },
+  { "/_Help",				NULL,		NULL, 0,			"<LastBranch>" },
+  { "/Help/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/Help/_About...",			NULL,		BST_OP (HELP_ABOUT),		"<Item>" },
 #undef	BST_OP
 };
 static guint n_menubar_entries = sizeof (menubar_entries) / sizeof (menubar_entries[0]);
@@ -387,6 +392,7 @@ bst_app_operate (BstApp *app,
   switch (op)
     {
       BstSuperShell *super_shell;
+      BseHeart *heart;
       BseSong *song;
       BseSNet *snet;
 
@@ -454,6 +460,25 @@ bst_app_operate (BstApp *app,
       break;
     case BST_OP_PROJECT_STOP:
       bse_project_stop_playback (app->project);
+      break;
+    case BST_OP_DIALOG_DEVICE_MONITOR:
+      heart = bse_heart_get_global (FALSE);
+      if (heart)
+	{
+	  GtkWidget *hmon;
+
+	  hmon = (GtkWidget*) bst_heart_monitor_from_heart (heart);
+	  if (hmon)
+	    hmon = gtk_widget_get_toplevel (hmon);
+	  else
+	    {
+	      hmon = bst_heart_monitor_new (heart);
+	      gtk_widget_show (hmon);
+	      hmon = bst_subwindow_new (NULL, NULL, hmon);
+	      gtk_window_set_title (GTK_WINDOW (hmon), "BEAST: Device Monitor");
+	    }
+	  gtk_widget_showraise (hmon);
+	}
       break;
     case BST_OP_REFRESH:
       gtk_container_foreach (GTK_CONTAINER (app->notebook),
@@ -542,6 +567,8 @@ bst_app_can_operate (BstApp *app,
 	      return TRUE;
 	}
       return FALSE;
+    case BST_OP_DIALOG_DEVICE_MONITOR:
+      return TRUE;
     default:
       return shell ? bst_super_shell_can_operate (BST_SUPER_SHELL (shell), bst_op) : FALSE;
     }

@@ -1,7 +1,7 @@
 BseHeart
 ========
 
-Bse's heart is a unique globally existing object of type BseHeart which
+BSE's heart is a unique globally existing object of type BseHeart which
 takes care of glueing the PCM devices and the internal network structure
 together and handle syncronization issues.
 BseHeart brings the internal network to work by incrementing a global
@@ -15,40 +15,59 @@ problems still remain for slight alterations in their oscilaltors if
 a device e.g. runs at 44099Hz (such as the es1371 from newer PCI SB
 cards).
 For the time being, we do not handle different output/input frequencies
-at all and use our own syncronization within BSE, which is closely tied
-to GLib's main loop mechanism with BseHeart interacting with it by attaching
-a GSource.
+at all and use our own syncronization within BSE, bound to GLib's main
+loop mechanism by BseHeart attaching a GSource.
 
 To support user defined latencies, PCM Devices implement their own output
 buffer queue which is used for temporary storage of output buffers if
 the specified latency forces a delay greater than what can be achived through
 the device driver's queue. The devices also maintain an input queue for
 recorded data to avoid overruns in the PCM drivers, ideally these queues
-will immediatedly be cleared again because output is also required.
+will immediatedly be emptied again because output is also required.
 FIXME: A check may be necessary to catch indefinitely growing input
-queues due to input->output frequency inconsistencies. We will also
+queues due to input->output frequency differences. We will also
 need to catch input underruns here, though handling that is somwhat
 easier in that we can simply slide in a zero pad chunk there.
 
-To support user defined latencies, BseHeart processes data as follows:
+The fundamental BSE cycling (block-wise processing of all currently active
+sources) is bound to the PCM devices output requirements, according to the
+current latency setting.
+Integrated into GLib's main loop, we perform the following steps:
  - prepare():
-	We walk all output (and input) devices until one is found that reports
-	requirement to be dispatched. If none is found the devices report
-	an estimated timeout value for when they will probably need to
-	be dispatched. The minimum timeout value is reported to GLib's
-	main loop.
+	We walk all input devices until one is found that reports requirement
+	to process incoming data.
+	We walk all output devices until one is found that reports requirement
+	to process outgoing data or needs refilling of its output queue,
+	according to the latency settiongs.
+	If none is found, the devices report an estimated timeout value for
+	how long it takes until they need to process further data.
+	[Implementation note: as an optimization, we walk all PCM devices in
+	one run and leave the distinction between input and output up to them]
+	The minimum of the reported timeout values is used for GLib's main
+	loop to determine when to check for dispatching again.
 - check():
 	We simply do the same thing as in prepare() to figure whether
-	some PCM devices need dispatching (no need for a timeout value though).
+	some PCM devices need processing and if necessary request dispatching.
 - dispatch():
-	We walk the input devices so they can queue up incoming data.
-	We walk the output devices so they can write out their queue contents,
-	they also report whether they need a new input block according to the
-	latency setting.
-	Now here's the tweak, if *any* output device reports the need for
-	further input data, we increment the BseIndex of all currently
-	active BseSources, calc their output chunks and queue them up for
-	all output sources connected to them.
-
-[as of currently (24.12.1999), the described model is actually in the
- process of being implemented]
+	We walk the output devices in order to flush remaining queued chunks,
+	and collect reports on whether they need new input blocks according to
+	the latency setting.
+	We walk the input devices so they can process incoming data (queue it
+	up in chunks).
+	[Implementation note: as an optimization, we currently do these two
+	walks in one step, leaving the details to the PCM devices]
+	Now here's the tweak: if *any* output device reports the need for
+	further input data, we perform a complete BSE cycle.
+	If no output devices require further input data, we walk the input
+	devices and check whether they have more than one chunk in their
+	queue (and if necessary, fix that) this is required to catch overruns
+	and constrain output latency.
+- cycle():
+	For input devices that have empty queues, we report underruns and pad
+	their queues with zero chunks, i.e. we ensure all input PCM devices
+	have at least one usable chunk in their input queue.
+	We increment the BseIndex of all currently active BseSources, calc
+	their output chunks and queue them up for all output sources connected
+	to them.
+	We walk the input devices and remove exactly one chunk from
+	their input queues.

@@ -116,8 +116,6 @@ bst_param_view_new (BseObject *object)
   param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
   bst_param_view_set_object (BST_PARAM_VIEW (param_view), object);
 
-  bst_param_view_rebuild (BST_PARAM_VIEW (param_view));
-
   return param_view;
 }
 
@@ -155,6 +153,8 @@ bst_param_view_set_object (BstParamView *param_view,
 
   for (slist = param_view->bparams; slist; slist = slist->next)
     bst_param_set_object (slist->data, object);
+
+  bst_param_view_rebuild (param_view);
 }
 
 void
@@ -169,13 +169,13 @@ bst_param_view_rebuild (BstParamView *param_view)
 
   bst_param_view_destroy_contents (param_view);
 
+  if (!param_view->object)
+    return;
+
   param_box = gtk_widget_new (GTK_TYPE_VBOX,
 			      "visible", TRUE,
 			      "parent", param_view,
 			      NULL);
-
-  if (!param_view->object)
-    return;
 
   object = BSE_OBJECT (param_view->object);
   class = BSE_OBJECT_GET_CLASS (object);

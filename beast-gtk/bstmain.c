@@ -596,6 +596,8 @@ bst_subwindow_new (GtkObject  *alive_host,
 					   "destroy",
 					   GTK_SIGNAL_FUNC (gtk_widget_destroy),
 					   GTK_OBJECT (window));
+  else
+    gtk_quit_add_destroy (1, GTK_OBJECT (window));
 
   return window;
 }

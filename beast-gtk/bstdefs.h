@@ -48,6 +48,10 @@ typedef enum
   BST_OP_PROJECT_PLAY,
   BST_OP_PROJECT_STOP,
 
+  /* spawn new dialogs
+   */
+  BST_OP_DIALOG_DEVICE_MONITOR,
+
   /* debugging */
   BST_OP_REBUILD,
   BST_OP_REFRESH,
