@@ -123,7 +123,9 @@ EnumValue (int         int_value,
       bnode.free = ::Sfi::cxx_boxed_free<RecordType>;                   \
       bnode.seqrec2boxed = ::Sfi::cxx_boxed_from_rec<RecordType>;       \
       bnode.boxed2recseq = ::Sfi::cxx_boxed_to_rec<RecordType>;         \
-      bnode.fields = RecordType::get_fields();                          \
+      SfiRecFields rfields = RecordType::get_fields();                  \
+      bnode.n_fields = rfields.n_fields;                                \
+      bnode.fields = rfields.fields;                                    \
     }                                                                   \
     return &bnode.node;                                                 \
   }                                                                     \
@@ -156,7 +158,9 @@ EnumValue (int         int_value,
       bnode.free = ::Sfi::cxx_boxed_free<SequenceType>;                         \
       bnode.seqrec2boxed = ::Sfi::cxx_boxed_from_seq<SequenceType>;             \
       bnode.boxed2recseq = ::Sfi::cxx_boxed_to_seq<SequenceType>;               \
-      bnode.fields = SequenceType::get_fields();                                \
+      bnode.n_fields = 1;                                                       \
+      static GParamSpec *element = SequenceType::get_element();                 \
+      bnode.fields = &element;                                                  \
     }                                                                           \
     return &bnode.node;                                                         \
   }                                                                             \

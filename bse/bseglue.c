@@ -339,10 +339,11 @@ bglue_value_to_serializable (const GValue *svalue)
 	dtype = SFI_TYPE_SEQ;
       else
         {
-          const SfiBoxedFields *bfields = sfi_boxed_type_get_fields (vtype);
-          if (bfields && bfields->is_rec)
+          SfiRecFields rfields = sfi_boxed_type_get_rec_fields (vtype);
+          GParamSpec *element = sfi_boxed_type_get_seq_element (vtype);
+          if (rfields.n_fields)
             dtype = SFI_TYPE_REC;
-          else if (bfields && bfields->is_seq)
+          else if (element)
             dtype = SFI_TYPE_SEQ;
         }
       break;

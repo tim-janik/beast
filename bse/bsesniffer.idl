@@ -82,5 +82,5 @@ sequence SnifferRequestSeq {
 };
 
 void sniffer_request_combined (SnifferRequestSeq srs);
-*/
+//*/
 };

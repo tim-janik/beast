@@ -1,3 +1,20 @@
+Sat Jan 24 07:04:59 2004  Tim Janik  <timj@gtk.org>
+
+	* bseexports.h: specify the field array of boxed types directly
+	in BseExportNodeBoxed.
+
+	* bsecxxplugin.h: adaptions due to bseexport.h changes.
+
+	* bsetype.c:
+	(bse_type_reinit_boxed): 
+	(bse_type_uninit_boxed): register and unregister extra info about
+	boxed records and sequences with sfi.
+
+	* bseglue.c: adapt to sfi_boxed_type_get_rec_fields() and
+	sfi_boxed_type_get_seq_element().
+
+	* bseparam.c: likewise.
+
 Fri Jan 23 22:38:57 2004  Tim Janik  <timj@gtk.org>
 
 	* bseplugin.c (bse_plugin_check_load): added debugging output for

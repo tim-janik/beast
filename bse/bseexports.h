@@ -55,7 +55,8 @@ struct _BseExportNodeBoxed {
   GBoxedFreeFunc  free;
   GValueTransform boxed2recseq;
   GValueTransform seqrec2boxed;
-  SfiBoxedFields  fields;
+  guint           n_fields;
+  GParamSpec    **fields;
 };
 typedef struct {
   BseExportNode      node;
