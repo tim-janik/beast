@@ -32,8 +32,8 @@ class Compressor : Effect {
   IStream audio_in  = (_("Audio In"), _("Audio input"));
   OStream audio_out = (_("Audio Out"), _("Compressed audio output"));
   group _("Parameters") {
-    Real attack    = Real (_("Attack [ms]"), _("Set the attack time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-    Real release   = Real (_("Release [ms]"), _("Set the release time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real attack    = Real (_("Attack [ms]"), _("Set the attack time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real release   = Real (_("Release [ms]"), _("Set the release time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real threshold = LogScale (_("Threshold"), _("Set the threshold"), 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
     Real ratio     = Real (_("Ratio"), _("Set the compression ratio"), 0.8, 0.0, 1.0, 0.1, STANDARD ":scale");
     Real output    = LogScale (_("Output"), _("Set the output amplification"), 1, 0.1, 10.0, 1, pow (2, 0), 2, log (10) / log (2), STANDARD);
@@ -51,8 +51,8 @@ class StereoCompressor : Effect {
   OStream left_audio_out  = (_("Left Audio Out"), _("Compressed left audio output"));
   OStream right_audio_out = (_("Right Audio Out"), _("Compressed right audio output"));
   group _("Parameters") {
-    Real attack    = Real (_("Attack [ms]"), _("Set the attack time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-    Real release   = Real (_("Release [ms]"), _("Set the release time in milli seconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real attack    = Real (_("Attack [ms]"), _("Set the attack time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
+    Real release   = Real (_("Release [ms]"), _("Set the release time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real threshold = LogScale (_("Threshold"), _("Set the threshold"), 1, 0.00001, 1, 0.001, pow (2, -8), 2, 8, STANDARD);
     Real ratio     = Real (_("Ratio"), _("Set the compression ratio"), 0.8, 0.0, 1.0, 0.1, STANDARD ":scale");
     Real output    = LogScale (_("Output"), _("Set the output amplification"), 1, 0.1, 10.0, 1, pow(2, 0), 2, log(10)/log(2), STANDARD);
