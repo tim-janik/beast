@@ -29,7 +29,7 @@
 #define BSE_PATTERN_GROUP_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PATTERN_GROUP, BsePatternGroupClass))
 #define BSE_IS_PATTERN_GROUP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PATTERN_GROUP))
 #define BSE_IS_PATTERN_GROUP_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PATTERN_GROUP))
-#define BSE_PATTERN_GROUP_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BsePatternGroupClass))
+#define BSE_PATTERN_GROUP_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PATTERN_GROUP, BsePatternGroupClass))
 
 
 /* --- BsePatternGroup object --- */

@@ -69,6 +69,8 @@ category_strip_toplevels (const gchar *category)
     }
   else if (l > 8 && strncmp (category, "/Source/", 8) == 0)
     return 8;
+  else if (l > 8 && strncmp (category, "/Effect/", 8) == 0)
+    return 8;
   else if (l > 6 && strncmp (category, "/Proc/", 6) == 0)
     return 6;
 

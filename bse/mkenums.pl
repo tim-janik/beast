@@ -44,6 +44,15 @@ sub parse_entries {
     
     while (<$file>) {
 	
+	# Read lines until we have no open comments
+	while (m@/\*
+	       ([^*]|\*(?!/))*$
+	       @x) {
+	    my $new;
+	    defined ($new = <>) || die "Unmatched comment in $ARGV";
+	    $_ .= $new;
+	}
+
 	# strip comments w/o options
 	s@/\*(?!<)
 	    ([^*]+|\*(?!/))*
@@ -55,7 +64,7 @@ sub parse_entries {
 	# skip empty lines
 	next if m@^\s*$@;
 	
-#	print "xxx $_\n";
+#	print STDERR "xxx $_\n";
 	
 	# Handle include files
 	if (/^\#include\s*<([^>]*)>/ ) {
@@ -101,7 +110,7 @@ sub parse_entries {
              @x) {
             my ($name, $value, $options) = ($1,$2,$3);
 
-#	    print "xxx \"$name\" \"$value\" \"$otions\"\n";
+#	    print STDERR "xxx \"$name\" \"$value\" \"$otions\"\n";
 
 	    if (!defined $flags && defined $value && $value =~ /<</) {
 		$seenbitshift = 1;
@@ -180,7 +189,7 @@ while (<>) {
         ([^*]+|\*(?!/))*
             \*/@@gx;
 
-#       print "xxx $_\n";
+#    print STDERR "xxx $_\n";
 
     if (m@^\s*typedef\s+enum\s*
            ({)?\s*

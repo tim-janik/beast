@@ -38,7 +38,7 @@ extern "C" {
 #define BSE_SINSTRUMENT_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SINSTRUMENT, BseSInstrumentClass))
 #define BSE_IS_SINSTRUMENT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SINSTRUMENT))
 #define BSE_IS_SINSTRUMENT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SINSTRUMENT))
-#define BSE_SINSTRUMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseSInstrumentClass))
+#define BSE_SINSTRUMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SINSTRUMENT, BseSInstrumentClass))
 
 
 /* --- BseSInstrument source --- */

@@ -35,7 +35,7 @@ extern "C" {
 #define BSE_HEART_CLASS(class)	    (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_HEART, BseHeartClass))
 #define BSE_IS_HEART(object)	    (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_HEART))
 #define BSE_IS_HEART_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_HEART))
-#define BSE_HEART_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseHeartClass))
+#define BSE_HEART_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_HEART, BseHeartClass))
 
 
 /* --- BseHeart structs --- */

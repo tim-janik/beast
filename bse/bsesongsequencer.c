@@ -24,6 +24,9 @@
 
 
 
+#define	MAX_JUMP_RECURSION	32
+
+
 /* --- mixing functions --- */
 static void      bse_song_mixer_activate_voice  (BseVoice               *voice,
 						 BsePatternNote         *note);
@@ -114,8 +117,12 @@ bse_song_sequencer_step (BseSong *song)
   sequencer->step_counter++;
   if (sequencer->step_counter >= sequencer->step_threshold)
     {
+      guint jump_recursion_depth = 0;
       BsePattern *pattern;
       guint channel;
+
+    restart_sequence:
+      jump_recursion_depth += 1;
       
       sequencer->step_counter = 0;
       
@@ -133,13 +140,41 @@ bse_song_sequencer_step (BseSong *song)
 	{
 	  static BsePatternNote empty_note = { NULL, BSE_NOTE_VOID, 0, 0, NULL };
 	  BsePatternNote *note;
+	  guint j;
 	  
 	  note = (!pattern ? &empty_note :
 		  bse_pattern_peek_note (pattern,
 					 channel,
 					 sequencer->next_pattern_row));
+
+	  /* process sequencer effects */
+	  for (j = 0; j < note->n_effects; j++)
+	    {
+	      guint next_pattern = sequencer->next_pattern;
+	      guint next_row = sequencer->next_pattern_row;
+	      
+	      if (bse_effect_jump_sequencer (note->effects[j], &next_pattern, &next_row) &&
+		  jump_recursion_depth <= MAX_JUMP_RECURSION)
+		{
+		  sequencer->next_pattern = next_pattern;
+		  sequencer->next_pattern_row = next_row;
+		  if (sequencer->next_pattern_row >= song->pattern_length)
+		    {
+		      sequencer->next_pattern_row = 0;
+		      sequencer->next_pattern++;
+		    }
+		  
+		  goto restart_sequence;
+		}
+	    }
 	  
+	  /* setup voice */
 	  bse_song_mixer_activate_voice (sequencer->va->voices[channel], note);
+
+	  /* process voicing effects */
+	  if (sequencer->va->voices[channel]->input_type != BSE_VOICE_INPUT_NONE)
+	    for (j = 0; j < note->n_effects; j++)
+	      bse_effect_setup_voice (note->effects[j], sequencer->va->voices[channel]);
 	}
       
       sequencer->next_pattern_row++;
@@ -282,15 +317,15 @@ bse_song_mixer_activate_voice (BseVoice       *voice,
 
       if (note->note == BSE_NOTE_VOID || instrument->type == BSE_INSTRUMENT_NONE)
 	{
-	  /* this is actually a pretty senseless note
-	   * FIXME: olaf?
+	  /* this is actually a pretty senseless note?
+	   * no, it can carry effects
 	   */
 	  return;
 	}
 
       /* ok, setup the voice
        */
-      bse_voice_activate (voice, instrument, note->note, voice->fine_tune);
+      bse_voice_activate (voice, instrument, note->note);
       bse_voice_set_envelope_part (voice, BSE_ENVELOPE_PART_DELAY);
     }
   else if (note->note != BSE_NOTE_VOID &&
@@ -299,7 +334,7 @@ bse_song_mixer_activate_voice (BseVoice       *voice,
     {
       /* only the note changed, so adjust the stepping rates
        */
-      bse_voice_set_note (voice, note->note, voice->fine_tune);
+      bse_voice_set_note (voice, note->note);
     }
 
   /* FIXME: handle effects here

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,15 @@
 #include	"bseeffectpatternbreak.h"
 
 
+#include        "bsecategories.h"
+
+
 /* --- prototypes --- */
-static void bse_effect_pattern_break_class_init (BseEffectClass      *class);
-static void bse_effect_pattern_break_init       (BseEffectPatternBreak *effect);
+static void     bse_effect_pattern_break_class_init     (BseEffectClass        *class);
+static void     bse_effect_pattern_break_init           (BseEffectPatternBreak *effect);
+static gboolean bse_effect_pattern_break_jump_sequencer (BseEffect             *effect,
+							 guint                 *current_pattern,
+							 guint                 *current_row);
 
 
 /* --- functions --- */
@@ -39,11 +45,15 @@ BSE_BUILTIN_TYPE (BseEffectPatternBreak)
     BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_pattern_break_init,
   };
+  GType effect_type;
+  
+  effect_type = bse_type_register_static (BSE_TYPE_EFFECT,
+					  "BseEffectPatternBreak",
+					  "BSE Effect - break and advance to new pattern",
+					  &effect_info);
+  bse_categories_register ("/Effect/Pattern Break", effect_type);
 
-  return bse_type_register_static (BSE_TYPE_EFFECT,
-				   "BseEffectPatternBreak",
-				   "BSE Effect - break and advance to new pattern",
-				   &effect_info);
+  return effect_type;
 }
 
 static void
@@ -51,10 +61,21 @@ bse_effect_pattern_break_class_init (BseEffectClass *class)
 {
   /* BseObjectClass *object_class = BSE_OBJECT_CLASS (class); */
 
-  class->effect_type = BSE_EFFECT_TYPE_PATTERN_BREAK;
+  class->jump_sequencer = bse_effect_pattern_break_jump_sequencer;
 }
 
 static void
 bse_effect_pattern_break_init (BseEffectPatternBreak *effect)
 {
+}
+
+static gboolean
+bse_effect_pattern_break_jump_sequencer (BseEffect *effect,
+					 guint     *current_pattern,
+					 guint     *current_row)
+{
+  *current_pattern += 1;
+  *current_row = 0;
+
+  return TRUE;
 }

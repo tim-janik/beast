@@ -18,6 +18,9 @@
 #include	"bseeffectpatternjump.h"
 
 
+#include        "bsecategories.h"
+
+
 enum {
   PARAM_0,
   PARAM_PATTERN_ID
@@ -54,11 +57,15 @@ BSE_BUILTIN_TYPE (BseEffectPatternJump)
     BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
     (GInstanceInitFunc) bse_effect_pattern_jump_init,
   };
+  GType effect_type;
+  
+  effect_type = bse_type_register_static (BSE_TYPE_EFFECT,
+					  "BseEffectPatternJump",
+					  "BSE Effect - jump to new pattern",
+					  &effect_info);
+  // bse_categories_register ("/Effect/Pattern Jump", effect_type);
 
-  return bse_type_register_static (BSE_TYPE_EFFECT,
-				   "BseEffectPatternJump",
-				   "BSE Effect - jump to new pattern",
-				   &effect_info);
+  return effect_type;
 }
 
 static void
@@ -69,8 +76,6 @@ bse_effect_pattern_jump_class_init (BseEffectClass *class)
 
   gobject_class->set_param = (GObjectSetParamFunc) bse_effect_pattern_jump_set_param;
   gobject_class->get_param = (GObjectGetParamFunc) bse_effect_pattern_jump_get_param;
-
-  class->effect_type = BSE_EFFECT_TYPE_PATTERN_JUMP;
 
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_PATTERN_ID,

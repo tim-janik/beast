@@ -32,11 +32,6 @@
 #include        <bse/bsedefs.h>
 #include        <bse/bsedevice.h>
 #include        <bse/bseeffect.h>
-#include        <bse/bseeffectfinetune.h>
-#include        <bse/bseeffectnotevolume.h>
-#include        <bse/bseeffectpatternbreak.h>
-#include        <bse/bseeffectpatternjump.h>
-#include        <bse/bseeffectvolumedelta.h>
 #include        <bse/bseenums.h>
 #include        <bse/bseexports.h>
 #include        <bse/bsegconfig.h>

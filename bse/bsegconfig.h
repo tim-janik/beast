@@ -35,7 +35,7 @@ extern "C" {
 #define BSE_GCONFIG_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_GCONFIG, BseGConfigClass))
 #define BSE_IS_GCONFIG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_GCONFIG))
 #define BSE_IS_GCONFIG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_GCONFIG))
-#define BSE_GCONFIG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseGConfigClass))
+#define BSE_GCONFIG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_GCONFIG, BseGConfigClass))
 
 
 /* --- structures --- */

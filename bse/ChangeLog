@@ -1,3 +1,48 @@
+Mon May 29 02:37:01 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepattern.c: save and load effect list with notes.
+
+	* bseeffect.[ch]: object framework cleanup, we really just derive from
+        BseObject and that's it. provide class methods for effect settings.
+	scratched the BseEffectType idea, we use real methods instead of
+	hardcoded object type special casing in sequencer and front ends.
+
+	* bseeffectfinetune.c:
+	* bseeffectpatternbreak.c:
+	* bseeffectbalance.c:
+	* bseeffectnotevolume.c: completed effect implementation.
+
+	* bseeffectpatternjump.c:
+	* bseeffectvolumedelta.c: unimplemented, still on hold.
+
+	* bsevoice.[hc]: fine_tune bug squeezed (API cleanup), support arbitrary
+	effect settings.
+
+	* bsesongsequencer.c (bse_song_mixer_activate_voice): inserted effect
+	hooks for sequencer stepping and initial voice setup.
+
+Sat May 27 16:16:01 2000  Tim Janik  <timj@gtk.org>
+
+	* bsevoice.c (bse_voice_make_poly_and_renew): simply reset voices that
+	haven't started playing yet.
+
+	* mkenums.pl (parse_entries): urg, don't hang on multi line comments,
+	but read them up.
+
+Fri May 26 07:58:14 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepattern.[hc]: provide effect management functions:
+	(bse_pattern_note_get_n_effects): number if effects on note.
+	(bse_pattern_note_get_effect): get effect by index.
+	(bse_pattern_note_find_effect): get effect by type.
+	(bse_pattern_note_actuate_effect): install effect type.
+	(bse_pattern_note_drop_effect): drop effect type.
+
+	* bsecategories.c (category_strip_toplevels): handle /Effect toplevel
+	categories.
+
+	* bse.h: only export the BseEffect basis type to the rest of the world.
+
 Thu May 25 02:56:18 2000  Tim Janik  <timj@gtk.org>
 
 	* bsebuffermixer.[hc]: 

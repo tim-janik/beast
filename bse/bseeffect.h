@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,15 +29,16 @@ extern "C" {
 
 
 /* --- BseEffect type macros --- */
+#define BSE_TYPE_IS_EFFECT(type)     (g_type_is_a ((type), BSE_TYPE_EFFECT))
 #define BSE_TYPE_EFFECT		     (BSE_TYPE_ID (BseEffect))
 #define BSE_EFFECT(object)	     (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_EFFECT, BseEffect))
 #define BSE_EFFECT_CLASS(class)	     (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_EFFECT, BseEffectClass))
 #define BSE_IS_EFFECT(object)	     (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_EFFECT))
 #define BSE_IS_EFFECT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_EFFECT))
-#define BSE_EFFECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseEffectClass))
+#define BSE_EFFECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_EFFECT, BseEffectClass))
 
 
-/* BSE effects are fairly lightweight (and somewhat uncommon) objects.
+/* BSE effects are fairly lightweight objects.
  * they are managed by BsePatterns and in principle serve as simple
  * operators and id containers only. the reason to implement them as
  * real objects, rather than plain auxillary structures is to provide
@@ -46,52 +47,30 @@ extern "C" {
  * structures as well.
  */
 
-/* --- BSE Effect types --- */
-typedef enum
-{
-  BSE_EFFECT_TYPE_NONE,
-
-  /* sequencer effects */
-  BSE_EFFECT_TYPE_PATTERN_BREAK,
-  BSE_EFFECT_TYPE_PATTERN_JUMP,
-
-  /* voice effects */
-  BSE_EFFECT_TYPE_NOTE_VOLUME,
-  BSE_EFFECT_TYPE_VOLUME_DELTA,
-  BSE_EFFECT_TYPE_FINE_TUNE,
-
-  /* unimplemented */
-  BSE_EFFECT_TYPE_APPREGIO,
-  BSE_EFFECT_TYPE_VIBRATO,
-  BSE_EFFECT_TYPE_TREMOLO,
-  BSE_EFFECT_TYPE_SLIDE,
-  BSE_EFFECT_TYPE_PITCH_BEND,
-  BSE_EFFECT_TYPE_PORTAMENTO,
-  BSE_EFFECT_TYPE_PORTAMENTO_UP,
-  BSE_EFFECT_TYPE_PORTAMENTO_DOWN,
-  BSE_EFFECT_TYPE_LAST                       /*< skip >*/
-} BseEffectType;
-
 
 /* --- BseEffect --- */
 struct _BseEffect
 {
   BseObject  parent_object;
-
-  /* private, for BsePattern use */
-  /* BseEffect *next; */
 };
 struct _BseEffectClass
 {
   BseObjectClass parent_class;
 
-  /* though effects can be uniquely identified through their type
-   * ids, we use this enum to be able to construct fast switch
-   * statements to special case the various effect types.
-   */
-
-  BseEffectType effect_type;
+  gboolean	(*jump_sequencer)	(BseEffect	*effect,
+					 guint		*current_pattern,
+					 guint		*current_row);
+  void		(*setup_voice)		(BseEffect	*effect,
+					 BseVoice	*voice);
 };
+
+
+/* --- prototypes --- */
+gboolean	bse_effect_jump_sequencer	(BseEffect	*effect,
+						 guint		*current_pattern,
+						 guint		*current_row);
+void		bse_effect_setup_voice		(BseEffect	*effect,
+						 BseVoice	*voice);
 
 
 

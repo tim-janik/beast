@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,11 @@
 #include	"bseeffect.h"
 
 
+
 /* --- prototypes --- */
-static void bse_effect_class_init (BseEffectClass *class);
-static void bse_effect_init       (BseEffect      *effect);
-static void bse_effect_destroy    (BseObject      *object);
+static void bse_effect_class_init 	(BseEffectClass *class);
+static void bse_effect_init		(BseEffect      *effect);
+static void bse_effect_destroy		(BseObject      *object);
 
 
 /* --- variables --- */
@@ -60,26 +61,51 @@ bse_effect_class_init (BseEffectClass *class)
 
   object_class->destroy = bse_effect_destroy;
 
-  class->effect_type = BSE_EFFECT_TYPE_NONE;
+  class->jump_sequencer = NULL;
+  class->setup_voice = NULL;
 }
 
 static void
 bse_effect_init	(BseEffect *effect)
 {
-  /* effect->next = NULL; */
 }
 
 static void
 bse_effect_destroy (BseObject *object)
 {
-  /*
-    BseEffect *effect = BSE_EFFECT (object);
-
-    if (effect->next)
-    g_warning ("BseEffect was not properly unlinked before destruction (->next: %p)",
-    effect->next);
-  */
 
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
+}
+
+gboolean
+bse_effect_jump_sequencer (BseEffect *effect,
+			   guint     *current_pattern,
+			   guint     *current_row)
+{
+  BseEffectClass *class;
+
+  g_return_val_if_fail (BSE_IS_EFFECT (effect), FALSE);
+  g_return_val_if_fail (current_pattern != NULL, FALSE);
+  g_return_val_if_fail (current_row != NULL, FALSE);
+
+  class = BSE_EFFECT_GET_CLASS (effect);
+  if (class->jump_sequencer)
+    return class->jump_sequencer (effect, current_pattern, current_row);
+  else
+    return FALSE;
+}
+
+void
+bse_effect_setup_voice (BseEffect *effect,
+			BseVoice  *voice)
+{
+  BseEffectClass *class;
+
+  g_return_if_fail (BSE_IS_EFFECT (effect));
+  g_return_if_fail (voice != NULL);
+
+  class = BSE_EFFECT_GET_CLASS (effect);
+  if (class->setup_voice)
+    class->setup_voice (effect, voice);
 }

@@ -21,6 +21,7 @@
 #define __BSE_PATTERN_H__
 
 #include	<bse/bseitem.h>
+#include	<bse/bseeffect.h>
 
 
 #ifdef __cplusplus
@@ -34,7 +35,12 @@ extern "C" {
 #define BSE_PATTERN_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PATTERN, BsePatternClass))
 #define BSE_IS_PATTERN(object)	      (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PATTERN))
 #define BSE_IS_PATTERN_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PATTERN))
-#define BSE_PATTERN_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BsePatternClass))
+#define BSE_PATTERN_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PATTERN, BsePatternClass))
+
+
+/* --- accessors --- */
+#define	BSE_PATTERN_N_CHANNELS(pattern)	(((BsePattern*) (pattern))->n_channels)
+#define	BSE_PATTERN_N_ROWS(pattern)	(((BsePattern*) (pattern))->n_rows)
 
 
 /* --- BsePattern object --- */
@@ -69,16 +75,35 @@ struct _BsePatternClass
 /* returns a pointer to relocatable data, make sure to lock the
  * pattern to maintain validity.
  */
-BsePatternNote*	bse_pattern_peek_note	    (BsePattern		*pattern,
-					     guint               channel,
-					     guint               row);
-GList* /*fl*/	bse_pattern_list_selection  (BsePattern		*pattern);
-gboolean	bse_pattern_has_selection   (BsePattern		*pattern);
-void		bse_pattern_modify_note	    (BsePattern		*pattern,
-					     guint		 channel,
-					     guint		 row,
-					     gint		 note,
-					     BseInstrument	*instrument);
+BsePatternNote*	bse_pattern_peek_note	        (BsePattern	*pattern,
+						 guint		 channel,
+						 guint		 row);
+GList* /*fl*/	bse_pattern_list_selection      (BsePattern	*pattern);
+gboolean	bse_pattern_has_selection       (BsePattern	*pattern);
+void		bse_pattern_modify_note	        (BsePattern	*pattern,
+						 guint		 channel,
+						 guint		 row,
+						 gint		 note,
+						 BseInstrument	*instrument);
+guint		bse_pattern_note_get_n_effects  (BsePattern	*pattern,
+						 guint      	 channel,
+						 guint      	 row);
+BseEffect*	bse_pattern_note_get_effect     (BsePattern	*pattern,
+						 guint      	 channel,
+						 guint      	 row,
+						 guint      	 index);
+BseEffect*	bse_pattern_note_find_effect    (BsePattern	*pattern,
+						 guint      	 channel,
+						 guint      	 row,
+						 GType      	 effect_type);
+void		bse_pattern_note_actuate_effect (BsePattern	*pattern,
+						 guint      	 channel,
+						 guint      	 row,
+						 GType      	 effect_type);
+void		bse_pattern_note_drop_effect	(BsePattern	*pattern,
+						 guint      	 channel,
+						 guint      	 row,
+						 GType      	 effect_type);
 
 
 /* --- convenience --- */

@@ -35,7 +35,7 @@ extern "C" {
 #define BSE_SAMPLE_CLASS(class)	     (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SAMPLE, BseSampleClass))
 #define BSE_IS_SAMPLE(object)	     (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SAMPLE))
 #define BSE_IS_SAMPLE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SAMPLE))
-#define BSE_SAMPLE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseSampleClass))
+#define BSE_SAMPLE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SAMPLE, BseSampleClass))
 
 
 /* --- BseSample object --- */

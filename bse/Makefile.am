@@ -58,6 +58,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsedefs.h \
 	bsedevice.h \
 	bseeffect.h \
+	bseeffectbalance.h \
 	bseeffectfinetune.h \
 	bseeffectnotevolume.h \
 	bseeffectpatternbreak.h \
@@ -109,6 +110,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsecontainer.c \
 	bsedevice.c \
 	bseeffect.c \
+	bseeffectbalance.c \
 	bseeffectfinetune.c \
 	bseeffectnotevolume.c \
 	bseeffectpatternbreak.c \

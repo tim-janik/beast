@@ -21,6 +21,7 @@
 #include	"bsesong.h"
 #include	"bseprocedure.h"
 #include	"bsestorage.h"
+#include	<string.h>
 
 
 #define	INDX(n_channels, channel, row) ((row) * (n_channels) + (channel))
@@ -157,7 +158,8 @@ bse_pattern_reset_note (BsePattern *pattern,
 			guint	    row)
 {
   BsePatternNote *note;
-  
+  guint i;
+
   note = &PNOTE (pattern, channel, row);
 
   note->note = BSE_NOTE_VOID;
@@ -167,10 +169,12 @@ bse_pattern_reset_note (BsePattern *pattern,
       note->instrument = NULL;
     }
 
-  if (note->effects || note->n_effects)
-    g_warning ("effects are not yet imlemented, bogus non-NULL pointer encountered");
+  for (i = 0; i < note->n_effects; i++)
+    g_object_unref (G_OBJECT (note->effects[i]));
+  g_free (note->effects);
   note->effects = NULL;
   note->n_effects = 0;
+
   /* leave note->selected state */
 }
 
@@ -227,7 +231,7 @@ bse_pattern_set_n_rows (BsePattern *pattern,
   
   if (BSE_OBJECT_IS_LOCKED (pattern))
     return;
-
+  
   if (pattern->n_rows != n_rows)
     {
       BsePatternNote *notes;
@@ -260,6 +264,116 @@ bse_pattern_set_n_rows (BsePattern *pattern,
       
       BSE_NOTIFY (pattern, size_changed, NOTIFY (OBJECT, DATA));
     }
+}
+
+guint
+bse_pattern_note_get_n_effects (BsePattern *pattern,
+				guint       channel,
+				guint       row)
+{
+  BsePatternNote *note;
+  
+  g_return_val_if_fail (BSE_IS_PATTERN (pattern), 0);
+  g_return_val_if_fail (channel < pattern->n_channels, 0);
+  g_return_val_if_fail (row < pattern->n_rows, 0);
+  
+  note = &PNOTE (pattern, channel, row);
+  
+  return note->n_effects;
+}
+
+BseEffect*
+bse_pattern_note_get_effect (BsePattern *pattern,
+			     guint       channel,
+			     guint       row,
+			     guint       index)
+{
+  BsePatternNote *note;
+  
+  g_return_val_if_fail (BSE_IS_PATTERN (pattern), NULL);
+  g_return_val_if_fail (channel < pattern->n_channels, NULL);
+  g_return_val_if_fail (row < pattern->n_rows, NULL);
+  
+  note = &PNOTE (pattern, channel, row);
+  if (index < note->n_effects)
+    return note->effects[index];
+  
+  return NULL;
+}
+
+BseEffect*
+bse_pattern_note_find_effect (BsePattern *pattern,
+			      guint       channel,
+			      guint       row,
+			      GType       effect_type)
+{
+  BseEffect *effect = NULL;
+  BsePatternNote *note;
+  guint i;
+  
+  g_return_val_if_fail (BSE_IS_PATTERN (pattern), NULL);
+  g_return_val_if_fail (channel < pattern->n_channels, NULL);
+  g_return_val_if_fail (row < pattern->n_rows, NULL);
+  g_return_val_if_fail (BSE_TYPE_IS_EFFECT (effect_type), NULL);
+  
+  note = &PNOTE (pattern, channel, row);
+  for (i = 0; i < note->n_effects; i++)
+    if (g_type_is_a (BSE_OBJECT_TYPE (note->effects[i]), effect_type))
+      {
+	effect = note->effects[i];
+	break;
+      }
+  
+  return effect;
+}
+
+void
+bse_pattern_note_actuate_effect (BsePattern *pattern,
+				 guint       channel,
+				 guint       row,
+				 GType	     effect_type)
+{
+  g_return_if_fail (BSE_IS_PATTERN (pattern));
+  g_return_if_fail (channel < pattern->n_channels);
+  g_return_if_fail (row < pattern->n_rows);
+  g_return_if_fail (BSE_TYPE_IS_EFFECT (effect_type));
+  
+  if (!bse_pattern_note_find_effect (pattern, channel, row, g_type_next_base (effect_type, BSE_TYPE_EFFECT)))
+    {
+      BsePatternNote *note = &PNOTE (pattern, channel, row);
+      guint i = note->n_effects++;
+      
+      note->effects = g_renew (BseEffect*, note->effects, note->n_effects);
+      note->effects[i] = bse_object_new (effect_type, NULL);
+      BSE_NOTIFY (pattern, note_changed, NOTIFY (OBJECT, channel, row, DATA));
+    }
+}
+
+
+void
+bse_pattern_note_drop_effect (BsePattern *pattern,
+			      guint       channel,
+			      guint       row,
+			      GType       effect_type)
+{
+  BsePatternNote *note;
+  guint i;
+  
+  g_return_if_fail (BSE_IS_PATTERN (pattern));
+  g_return_if_fail (channel < pattern->n_channels);
+  g_return_if_fail (row < pattern->n_rows);
+  g_return_if_fail (BSE_TYPE_IS_EFFECT (effect_type));
+  
+  note = &PNOTE (pattern, channel, row);
+  for (i = 0; i < note->n_effects; i++)
+    if (g_type_is_a (BSE_OBJECT_TYPE (note->effects[i]), effect_type))
+      {
+	g_object_unref (G_OBJECT (note->effects[i]));
+	note->n_effects--;
+	g_memmove (note->effects + i, note->effects + i + 1, sizeof (note->effects[0]) * (note->n_effects - i));
+	BSE_NOTIFY (pattern, note_changed, NOTIFY (OBJECT, channel, row, DATA));
+	return;
+      }
 }
 
 void
@@ -584,6 +698,26 @@ save_note (BseStorage     *storage,
   if (note->instrument)
     bse_storage_printf (storage, " %u",
 			bse_item_get_seqid (BSE_ITEM (note->instrument)));
+
+  if (note->n_effects)
+    {
+      guint i;
+
+      bse_storage_push_level (storage);
+
+      for (i = 0; i < note->n_effects; i++)
+	{
+	  bse_storage_break (storage);
+	  bse_storage_putc (storage, '(');
+
+	  bse_storage_puts (storage, BSE_OBJECT_TYPE_NAME (note->effects[i]));
+
+	  bse_storage_push_level (storage);
+	  bse_object_store (BSE_OBJECT (note->effects[i]), storage);
+	  bse_storage_pop_level (storage);
+	}
+      bse_storage_pop_level (storage);
+    }
   
   bse_storage_putc (storage, ')');
 }
@@ -659,6 +793,7 @@ bse_pattern_restore_private (BseObject	*object,
   gint note = BSE_NOTE_VOID;
   BseInstrument *instrument = NULL;
   BsePattern *pattern;
+  gboolean parse_effects = FALSE;
   
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->restore_private)
@@ -790,13 +925,19 @@ bse_pattern_restore_private (BseObject	*object,
 					  "invalid instrument id `%lu'",
 					  scanner->value.v_int);
 	}
+
+      parse_effects = TRUE;
     }
   else
     return BSE_TOKEN_UNMATCHED;
   
-  if (g_scanner_get_next_token (scanner) != ')')
-    return ')';
-  
+  if (g_scanner_peek_next_token (scanner) != ')' && (!parse_effects || g_scanner_peek_next_token (scanner) != '('))
+    {
+      g_scanner_get_next_token (scanner);
+      
+      return ')';
+    }
+
   if (token_quark == quark_note || token_quark == quark_skip)
     {
       if (pattern->current_channel < pattern->n_channels &&
@@ -811,11 +952,52 @@ bse_pattern_restore_private (BseObject	*object,
 				      pattern->current_row,
 				      instrument);
 	}
-
+      
+      if (parse_effects)
+	while (g_scanner_peek_next_token (scanner) == '(')
+	  {
+	    BseEffect *effect;
+	    GType effect_type;
+	    
+	    g_scanner_get_next_token (scanner);
+	    if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
+	      return G_TOKEN_IDENTIFIER;
+	    
+	    effect_type = g_type_from_name (scanner->value.v_identifier);
+	    
+	    if (!BSE_TYPE_IS_EFFECT (effect_type))
+	      {
+		expected_token = bse_storage_warn_skip (storage,
+							"invalid effect type `%s'",
+							scanner->value.v_identifier);
+		if (expected_token != G_TOKEN_NONE)
+		  return expected_token;
+	      }
+	    
+	    effect = bse_pattern_note_find_effect (pattern,
+						   pattern->current_channel,
+						   pattern->current_row,
+						   effect_type);
+	    if (!effect)
+	      {
+		bse_pattern_note_actuate_effect (pattern,
+						 pattern->current_channel,
+						 pattern->current_row,
+						 effect_type);
+		effect = bse_pattern_note_find_effect (pattern,
+						       pattern->current_channel,
+						       pattern->current_row,
+						       effect_type);
+	      }
+	    expected_token = bse_object_restore (BSE_OBJECT (effect), storage);
+	    if (expected_token != G_TOKEN_NONE)
+	      return expected_token;
+	  }
+      
       pattern->current_row++;
     }
   
-  return G_TOKEN_NONE;
+  return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
 }
 
 static GTokenType

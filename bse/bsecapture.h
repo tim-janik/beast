@@ -37,7 +37,7 @@ extern "C" {
 #define BSE_CAPTURE_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_CAPTURE, BseCaptureClass))
 #define BSE_IS_CAPTURE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_CAPTURE))
 #define BSE_IS_CAPTURE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_CAPTURE))
-#define BSE_CAPTURE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseCaptureClass))
+#define BSE_CAPTURE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_CAPTURE, BseCaptureClass))
 
 
 /* --- BseCapture source --- */

@@ -80,6 +80,7 @@ struct _BseVoice
   /* flags */
   BseVoiceType	  input_type : 8;
   guint		  make_poly : 1;
+  guint		  started : 1;
 
   /* fader setup */
   guint		  fader_pending : 1;
@@ -139,18 +140,19 @@ void		bse_voice_set_fine_tune		(BseVoice	*voice,
 						 gint     	 fine_tune);
 void		bse_voice_set_envelope_part	(BseVoice       *voice,
 						 BseEnvelopePartType env_part);
-/* bse_voice_adjust_note (BseVoice *voice, gint note); */
+void		bse_voice_set_volume		(BseVoice	*voice,
+						 gfloat          volume_factor);
+void		bse_voice_set_balance		(BseVoice	*voice,
+						 gint		 balance);
 
 
 /* --- private --- */
 BseVoice*	bse_voice_make_poly_and_renew	(BseVoice	*voice);
 void		bse_voice_activate		(BseVoice	*voice,
 						 BseInstrument	*instrument,
-						 gint		 note,
-						 gint            fine_tune);
+						 gint		 note);
 void		bse_voice_set_note		(BseVoice	*voice,
-						 gint		 note,
-						 gint            fine_tune);
+						 gint		 note);
 void		bse_voice_fade_out_until	(BseVoice	*voice,
 						 guint           n_values);
 gboolean	bse_voice_need_after_fade	(BseVoice	*voice);

@@ -35,6 +35,7 @@ bse_voice_meminit (BseVoice          *voice,
 
   voice->input_type = BSE_VOICE_INPUT_NONE;
   voice->make_poly = FALSE;
+  voice->started = FALSE;
 
   voice->fader_pending = FALSE;
   voice->is_fading = FALSE;
@@ -225,9 +226,14 @@ bse_voice_make_poly_and_renew (BseVoice *voice)
 
   if (voice->input_type != BSE_VOICE_INPUT_NONE)
     {
-      allocator->voices[index] = bse_voice_new (allocator, index);
-      allocator->voices[index]->next = voice;
-      voice = allocator->voices[index];
+      if (!voice->started)
+	bse_voice_reset (voice);
+      else
+	{
+	  allocator->voices[index] = bse_voice_new (allocator, index);
+	  allocator->voices[index]->next = voice;
+	  voice = allocator->voices[index];
+	}
     }
 
   return voice;
@@ -236,8 +242,7 @@ bse_voice_make_poly_and_renew (BseVoice *voice)
 void
 bse_voice_activate (BseVoice      *voice,
 		    BseInstrument *instrument,
-		    gint           note,
-		    gint           fine_tune)
+		    gint           note)
 {
   g_return_if_fail (voice != NULL);
   g_return_if_fail (voice->input_type == BSE_VOICE_INPUT_NONE);
@@ -247,6 +252,7 @@ bse_voice_activate (BseVoice      *voice,
   /* set instrument
    */
   voice->make_poly = FALSE;
+  voice->started = FALSE;
   voice->fader_pending = FALSE;
   voice->is_fading = FALSE;
   voice->volume_factor = instrument->volume_factor;
@@ -300,14 +306,38 @@ bse_voice_activate (BseVoice      *voice,
       break;
     }
 
-  bse_voice_set_note (voice, note, fine_tune);
+  /* setup the remaining voice bits */
+  bse_voice_set_note (voice, note);
   bse_voice_set_envelope_part (voice, BSE_ENVELOPE_PART_DELAY);
 }
 
 void
+bse_voice_set_volume (BseVoice *voice,
+		      gfloat    volume_factor)
+{
+  g_return_if_fail (voice != NULL);
+
+  if (!voice->is_fading)
+    {
+      voice->volume_factor = volume_factor;
+    }
+}
+
+void
+bse_voice_set_balance (BseVoice *voice,
+		       gint      balance)
+{
+  g_return_if_fail (voice != NULL);
+
+  if (!voice->is_fading)
+    {
+      voice->balance = balance;
+    }
+}
+
+void
 bse_voice_set_note (BseVoice *voice,
-		    gint      note,
-		    gint      fine_tune)
+		    gint      note)
 {
   g_return_if_fail (voice != NULL);
   g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
@@ -355,7 +385,8 @@ bse_voice_set_note (BseVoice *voice,
       break;
     }
 
-  bse_voice_set_fine_tune (voice, fine_tune);
+  /* fine adjust the new rate */
+  bse_voice_set_fine_tune (voice, voice->fine_tune);
 }
 
 void
@@ -568,6 +599,8 @@ bse_voice_preprocess (BseVoice *voice)
 
   voice->volume.left = l_volume;
   voice->volume.right = r_volume;
+
+  voice->started = TRUE;
 
   return TRUE;
 }
