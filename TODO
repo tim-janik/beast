@@ -282,6 +282,8 @@ Effects:
   (main source for http://zynaddsubfx.sourceforge.net)
 
 sfidl:
+  - sfidl.1: document the command line options sfidl offers
+  - sfidl-manual.texi: complete the documentation
   - stefan: can we optimize cxx_value_get_sequence() returns?
   - handle Procedure {} namesace in namespacehelper
   - rename nspace.printableForm() to something that expresses namespace relativity
