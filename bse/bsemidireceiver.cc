@@ -172,12 +172,7 @@ public:
     std::pair<Channels::iterator,bool> result =
       binary_lookup_insertion_pos (midi_channels.begin(), midi_channels.end(), midi_channel_compare, midi_channel);
     if (!result.second)
-      {
-        static guint i = 23478634;
-        result.first = midi_channels.insert (result.first, new MidiChannel (midi_channel));
-        if (i != midi_channel)
-          i = midi_channel;
-      }
+      result.first = midi_channels.insert (result.first, new MidiChannel (midi_channel));
     return *result.first;
   }
   ControlValue*
@@ -388,17 +383,18 @@ voice_state_to_string (VoiceState s)
 struct VoiceInput
 {
   /* module state */
-  gfloat          freq_value;
-  gfloat          gate;
-  gfloat          velocity;
-  gfloat          aftertouch;        /* mutatable while within_note */
-  VoiceState      vstate;
+  gfloat           freq_value;
+  gfloat           gate;
+  gfloat           velocity;
+  gfloat           aftertouch;           /* mutable while within_note */
+  VoiceState       vstate;
   /* mono synth */
-  guint           ref_count;
-  BseModule      *fmodule;	     /* freq module */
-  guint64         tick_stamp;        /* time of last event change */
-  VoiceState      queue_state;       /* vstate according to jobs queued so far */
-  VoiceInput     *next;
+  guint            ref_count;
+  BseModule       *fmodule;	        /* freq module */
+  guint64          tick_stamp;           /* time of last event change */
+  VoiceState       queue_state;          /* vstate according to jobs queued so far */
+  VoiceInputTable *table;
+  VoiceInput      *next;
   VoiceInputTable::iterator iter;
 };
 
@@ -432,7 +428,45 @@ voice_input_module_reset (BseModule *module)
   vinput->gate = 0;
   vinput->velocity = 0.5;
   vinput->aftertouch = 0.5;
-  vinput->vstate = VSTATE_IDLE;
+}
+
+static void
+voice_input_remove_from_table (VoiceInput *vinput)      /* UserThread */
+{
+  if (vinput->table && vinput->iter != vinput->table->end())
+    {
+      VoiceInputTable::iterator iter = vinput->iter;
+      VoiceInput *last = NULL, *cur;
+      for (cur = iter->second; cur; last = cur, cur = last->next)
+        if (cur == vinput)
+          {
+            if (last)
+              last->next = cur->next;
+            else
+              iter->second = cur->next;
+            vinput->next = NULL;
+            vinput->iter = vinput->table->end();
+            vinput->queue_state = VSTATE_IDLE;
+            return;
+          }
+      g_assert_not_reached ();
+    }
+}
+
+static void
+voice_input_enter_sustain (gpointer data)     /* UserThread */
+{
+  VoiceInput *vinput = (VoiceInput*) data;
+  voice_input_remove_from_table (vinput);
+  vinput->queue_state = VSTATE_SUSTAINED;
+}
+
+static void
+voice_input_enter_idle (gpointer data)        /* UserThread */
+{
+  VoiceInput *vinput = (VoiceInput*) data;
+  voice_input_remove_from_table (vinput);
+  vinput->queue_state = VSTATE_IDLE;
 }
 
 static void
@@ -449,11 +483,13 @@ voice_input_module_access (BseModule *module,
   switch (mdata->vtype)
     {
     case VOICE_ON:
+      if (vinput->vstate == VSTATE_BUSY)
+        g_warning ("%s: VOICE_ON: vinput->vstate == VSTATE_BUSY", G_STRLOC);
+      vinput->vstate = VSTATE_BUSY;
       vinput->freq_value = mdata->freq_value;
       vinput->gate = 1.0;
       vinput->velocity = mdata->velocity;
       vinput->aftertouch = mdata->velocity;
-      vinput->vstate = VSTATE_BUSY;
       break;
     case VOICE_PRESSURE:
       if (vinput->vstate == VSTATE_BUSY &&
@@ -463,11 +499,14 @@ voice_input_module_access (BseModule *module,
     case VOICE_SUSTAIN:
       if (vinput->vstate == VSTATE_BUSY &&
           GSL_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))
-        vinput->vstate = VSTATE_SUSTAINED;
+        {
+          vinput->vstate = VSTATE_SUSTAINED;
+          bse_engine_add_garbage (vinput, voice_input_enter_sustain);
+        }
       break;
     case VOICE_OFF:
       if (vinput->vstate == VSTATE_BUSY &&
-          GSL_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))
+          GSL_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))       /* monophonic synths get spurious note-off events */
         goto kill_voice;
       break;
     case VOICE_KILL_SUSTAIN:
@@ -476,94 +515,66 @@ voice_input_module_access (BseModule *module,
       break;
     case VOICE_KILL:
     kill_voice:
-      vinput->gate = 0.0;
       vinput->vstate = VSTATE_IDLE;
+      vinput->gate = 0.0;
+      bse_engine_add_garbage (vinput, voice_input_enter_idle);
       break;
     }
 }
 
 static void
-voice_input_table_iter_remove (VoiceInputTable::iterator iter,
-                               VoiceInput               *vinput)
-{
-  VoiceInput *last = NULL, *cur;
-  for (cur = iter->second; cur; last = cur, cur = last->next)
-    if (cur == vinput)
-      {
-        if (last)
-          last->next = cur->next;
-        else
-          iter->second = cur->next;
-        vinput->next = NULL;
-        return;
-      }
-  g_assert_not_reached ();
-}
-
-static void
 change_voice_input (VoiceInput      *vinput,
-                    VoiceInputTable *table,
                     guint64          tick_stamp,
                     VoiceChangeType  vtype,
                     gfloat           freq_value,
                     gfloat           velocity,
                     BseTrans        *trans)
 {
-  VoiceInputData mdata;
-  
-  mdata.vtype = vtype;
-  mdata.freq_value = freq_value;
-  mdata.velocity = velocity;
-  
-  bse_trans_add (trans, bse_job_flow_access (vinput->fmodule, tick_stamp,
-					     voice_input_module_access,
-					     g_memdup (&mdata, sizeof (mdata)), g_free));
-  switch (mdata.vtype)
+  switch (vtype)
     {
     case VOICE_ON:
-      if (table)
+      if (vinput->queue_state == VSTATE_BUSY)
+        g_warning ("%s: VOICE_ON: vinput->queue_state == VSTATE_BUSY", G_STRLOC);
+      if (vinput->table)
         {
-          g_assert (vinput->iter == table->end());
-          vinput->next = (*table)[freq_value];
-          vinput->iter = table->find (freq_value);
-          g_assert (vinput->iter != table->end());
+          g_return_if_fail (vinput->iter == vinput->table->end());
+          vinput->next = (*vinput->table)[freq_value];
+          vinput->iter = vinput->table->find (freq_value);
+          g_assert (vinput->iter != vinput->table->end());
           vinput->iter->second = vinput;
         }
       vinput->queue_state = VSTATE_BUSY;
       break;
     case VOICE_PRESSURE:
-      if (table)
-        g_assert (vinput->iter != table->end());
+      if (vinput->table)
+        g_return_if_fail (vinput->iter != vinput->table->end());
       break;
     case VOICE_SUSTAIN:
-      if (table)
-        {
-          g_assert (vinput->iter != table->end());
-          voice_input_table_iter_remove (vinput->iter, vinput);
-          vinput->iter = table->end();
-        }
+      if (vinput->table)
+        g_return_if_fail (vinput->iter != vinput->table->end());
       vinput->queue_state = VSTATE_SUSTAINED;
       break;
     case VOICE_OFF:
-      if (table)
-        {
-          g_assert (vinput->iter != table->end());
-          voice_input_table_iter_remove (vinput->iter, vinput);
-          vinput->iter = table->end();
-        }
+      if (vinput->table)
+        g_return_if_fail (vinput->iter != vinput->table->end());
       vinput->queue_state = VSTATE_IDLE;
       break;
     case VOICE_KILL_SUSTAIN:
+      g_return_if_fail (vinput->queue_state == VSTATE_SUSTAINED);
+      vinput->queue_state = VSTATE_IDLE;
+      break;
     case VOICE_KILL:
-      if (table && vinput->iter != table->end())
-        {
-          voice_input_table_iter_remove (vinput->iter, vinput);
-          vinput->iter = table->end();
-        }
+      g_return_if_fail (vinput->queue_state != VSTATE_IDLE);
       vinput->queue_state = VSTATE_IDLE;
       break;
     }
+  VoiceInputData mdata;
+  mdata.vtype = vtype;
+  mdata.freq_value = freq_value;
+  mdata.velocity = velocity;
+  bse_trans_add (trans, bse_job_flow_access (vinput->fmodule, tick_stamp, voice_input_module_access, g_memdup (&mdata, sizeof (mdata)), g_free));
   vinput->tick_stamp = tick_stamp;
+
   DEBUG ("Synth<%p:%08llx>: QueueEvent=%s Freq=%.2fHz",
          vinput, tick_stamp,
          voice_change_to_string (vtype),
@@ -581,6 +592,7 @@ voice_input_module_free (gpointer        data,
 
 static VoiceInput*
 create_voice_input (VoiceInputTable *table,
+                    gboolean         ismono,
                     BseTrans        *trans)
 {
   static const BseModuleClass mono_synth_module_class = {
@@ -604,6 +616,7 @@ create_voice_input (VoiceInputTable *table,
   vinput->ref_count = 1;
   vinput->tick_stamp = 0;
   vinput->queue_state = VSTATE_IDLE;
+  vinput->table = ismono ? NULL : table;
   vinput->next = NULL;
   vinput->iter = table->end();
   bse_trans_add (trans, bse_job_integrate (vinput->fmodule));
@@ -613,16 +626,12 @@ create_voice_input (VoiceInputTable *table,
 
 static void
 destroy_voice_input (VoiceInput      *vinput,
-                     VoiceInputTable *table,
                      BseTrans        *trans)
 {
   g_return_if_fail (vinput->ref_count == 0);
   
-  if (vinput->iter != table->end())
-    {
-      voice_input_table_iter_remove (vinput->iter, vinput);
-      vinput->iter = table->end();
-    }
+  if (vinput->table && vinput->iter != vinput->table->end())
+    voice_input_remove_from_table (vinput);
   bse_trans_add (trans, bse_job_discard (vinput->fmodule));
 }
 
@@ -639,6 +648,13 @@ struct VoiceSwitch
   BseModule        *smodule;            /* input module (switches and suspends) */
   BseModule        *vmodule;            /* output module (virtual) */
 };
+
+static void
+voice_switch_module_reuse (gpointer data)       /* UserThread */
+{
+  VoiceSwitch *vswitch = (VoiceSwitch*) data;
+  vswitch->disconnected = TRUE;         /* reuse possible */
+}
 
 static void
 voice_switch_module_process (BseModule *module,
@@ -660,7 +676,13 @@ voice_switch_module_process (BseModule *module,
       bse_trans_add (trans, bse_job_suspend_now (module));
       bse_trans_add (trans, bse_job_kill_inputs (vswitch->vmodule));
       bse_trans_commit (trans);
-      vswitch->disconnected = TRUE;       /* hint towards possible reuse */
+      for (i = 0; i < vswitch->n_vinputs; i++)
+        if (vswitch->vinputs[i]->vstate == VSTATE_BUSY)
+          {
+            vswitch->vinputs[i]->vstate = VSTATE_IDLE;
+            bse_engine_add_garbage (vswitch->vinputs[i], voice_input_enter_idle);
+          }
+      bse_engine_add_garbage (vswitch, voice_switch_module_reuse);
     }
 }
 
@@ -770,13 +792,13 @@ static inline gboolean
 check_voice_input_improvement (VoiceInput *vinput1, /* vinput1 better than vinput2? */
                                VoiceInput *vinput2)
 {
-  if (vinput1->vstate == vinput2->vstate)
+  if (vinput1->queue_state == vinput2->queue_state)
     return vinput1->tick_stamp < vinput2->tick_stamp;
-  if (vinput1->vstate == VSTATE_IDLE)
+  if (vinput1->queue_state == VSTATE_IDLE)
     return TRUE;
-  if (vinput1->vstate == VSTATE_SUSTAINED)
-    return vinput2->vstate == VSTATE_IDLE ? FALSE : TRUE;
-  return FALSE; /* vinput1->vstate == VSTATE_BUSY && vinput1->vstate != vinput2->vstate */
+  if (vinput1->queue_state == VSTATE_SUSTAINED)
+    return vinput2->queue_state == VSTATE_IDLE ? FALSE : TRUE;
+  return FALSE; /* vinput1->queue_state == VSTATE_BUSY && vinput1->queue_state != vinput2->queue_state */
 }
 
 void
@@ -794,7 +816,7 @@ MidiChannel::start_note (guint64         tick_stamp,
   
   /* adjust channel global mono synth */
   if (mchannel->vinput)
-    change_voice_input (mchannel->vinput, NULL, tick_stamp, VOICE_ON, freq_val, velocity, trans);
+    change_voice_input (mchannel->vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
   
   /* figure voice from event */
   vswitch = NULL; // voice numbers on events not currently supported
@@ -824,7 +846,7 @@ MidiChannel::start_note (guint64         tick_stamp,
           vinput = vswitch->vinputs[i];
       /* setup voice */
       activate_voice_switch (vswitch, tick_stamp, trans);
-      change_voice_input (vinput, &mchannel->voice_input_table, tick_stamp, VOICE_ON, freq_val, velocity, trans);
+      change_voice_input (vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
     }
   else
     sfi_diag ("MidiChannel(%u): no voice available for note-on (%fHz)", mchannel->midi_channel, freq);
@@ -847,14 +869,16 @@ MidiChannel::adjust_note (guint64         tick_stamp,
   
   /* adjust channel global mono synth */
   if (mchannel->vinput)
-    change_voice_input (mchannel->vinput, NULL, tick_stamp, vctype, freq_val, velocity, trans);
+    change_voice_input (mchannel->vinput, tick_stamp, vctype, freq_val, velocity, trans);
   
   /* find corresponding vinput */
   vinput = mchannel->voice_input_table[freq_val];
-  
+  while (vinput && vinput->queue_state != VSTATE_BUSY)
+    vinput = vinput->next;
+
   /* adjust note */
   if (vinput)
-    change_voice_input (vinput, &mchannel->voice_input_table, tick_stamp, vctype, freq_val, velocity, trans);
+    change_voice_input (vinput, tick_stamp, vctype, freq_val, velocity, trans);
   else
     sfi_diag ("MidiChannel(%u): no voice available for %s (%fHz)", mchannel->midi_channel,
               etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity", freq);
@@ -870,9 +894,9 @@ MidiChannel::kill_notes (guint64       tick_stamp,
   
   /* adjust channel global voice inputs */
   if (mchannel->vinput && sustained_only && mchannel->vinput->queue_state == VSTATE_SUSTAINED)
-    change_voice_input (mchannel->vinput, NULL, tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
-  else if (mchannel->vinput && !sustained_only)
-    change_voice_input (mchannel->vinput, NULL, tick_stamp, VOICE_KILL, 0, 0, trans);
+    change_voice_input (mchannel->vinput, tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
+  else if (mchannel->vinput && !sustained_only && mchannel->vinput->queue_state != VSTATE_IDLE)
+    change_voice_input (mchannel->vinput, tick_stamp, VOICE_KILL, 0, 0, trans);
   
   /* adjust poly voice inputs */
   for (i = 0; i < mchannel->n_voices; i++)
@@ -881,11 +905,9 @@ MidiChannel::kill_notes (guint64       tick_stamp,
       if (vswitch)
         for (j = 0; j < vswitch->n_vinputs; j++)
           if (sustained_only && vswitch->vinputs[j]->queue_state == VSTATE_SUSTAINED)
-            change_voice_input (vswitch->vinputs[j], &mchannel->voice_input_table,
-                                tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
-          else if (!sustained_only)
-            change_voice_input (vswitch->vinputs[j], &mchannel->voice_input_table,
-                                tick_stamp, VOICE_KILL, 0, 0, trans);
+            change_voice_input (vswitch->vinputs[j], tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
+          else if (!sustained_only && vswitch->vinputs[j]->queue_state != VSTATE_BUSY)
+            change_voice_input (vswitch->vinputs[j], tick_stamp, VOICE_KILL, 0, 0, trans);
     }
 }
 
@@ -1235,7 +1257,7 @@ bse_midi_receiver_retrieve_mono_voice (BseMidiReceiver *self,
   if (mchannel->vinput)
     mchannel->vinput->ref_count++;
   else
-    mchannel->vinput = create_voice_input (&mchannel->voice_input_table, trans);
+    mchannel->vinput = create_voice_input (&mchannel->voice_input_table, TRUE, trans);
   BSE_MIDI_RECEIVER_UNLOCK (self);
   return mchannel->vinput->fmodule;
 }
@@ -1258,7 +1280,7 @@ bse_midi_receiver_discard_mono_voice (BseMidiReceiver *self,
       mchannel->vinput->ref_count--;
       if (!mchannel->vinput->ref_count)
         {
-          destroy_voice_input (mchannel->vinput, &mchannel->voice_input_table, trans);
+          destroy_voice_input (mchannel->vinput, trans);
           mchannel->vinput = NULL;
         }
       BSE_MIDI_RECEIVER_UNLOCK (self);
@@ -1395,7 +1417,7 @@ bse_midi_receiver_create_sub_voice (BseMidiReceiver   *self,
     {
       guint i = vswitch->n_vinputs++;
       vswitch->vinputs = g_renew (VoiceInput*, vswitch->vinputs, vswitch->n_vinputs);
-      vswitch->vinputs[i] = create_voice_input (&mchannel->voice_input_table, trans);
+      vswitch->vinputs[i] = create_voice_input (&mchannel->voice_input_table, FALSE, trans);
       vswitch->ref_count++;
       module = vswitch->vinputs[i]->fmodule;
     }
@@ -1430,7 +1452,7 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
           vswitch->vinputs[i]->ref_count--;
           if (!vswitch->vinputs[i]->ref_count)
             {
-              destroy_voice_input (vswitch->vinputs[i], &mchannel->voice_input_table, trans);
+              destroy_voice_input (vswitch->vinputs[i], trans);
               vswitch->vinputs[i] = vswitch->vinputs[--vswitch->n_vinputs];
               need_unref = TRUE;
             }

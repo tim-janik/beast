@@ -407,32 +407,55 @@ _engine_schedule_consumer_node (EngineSchedule *schedule,
 
 
 /* --- depth scheduling --- */
+static gboolean
+determine_suspension_reset (EngineNode *node)
+{
+  g_return_val_if_fail (node->update_suspend == FALSE, FALSE);
+  g_return_val_if_fail (node->in_suspend_call == FALSE, FALSE);
+
+  if (!ENGINE_NODE_IS_VIRTUAL (node))
+    return node->needs_reset;
+
+  SfiRing *ring;
+  gboolean keep_state = FALSE;
+  node->in_suspend_call = TRUE;
+  for (ring = node->output_nodes; ring && !keep_state; ring = sfi_ring_walk (ring, node->output_nodes))
+    {
+      EngineNode *dest_node = ring->data;
+      if (!dest_node->in_suspend_call)          /* break cycles (consisting of purely virtual nodes) */
+        keep_state |= !determine_suspension_reset (dest_node);
+    }
+  node->in_suspend_call = FALSE;
+
+  return !keep_state;
+}
+
 static guint64
 determine_suspension_state (EngineNode *node,
                             gboolean   *seen_cycle_p,
-                            gboolean   *avoid_reset_p)
+                            gboolean   *keep_state_p)
 {
   gboolean seen_cycle = FALSE;
   guint64 stamp;
   g_assert (node->in_suspend_call == FALSE);
   if (node->update_suspend)
     {
-      SfiRing *ring;    /* calculate outer suspend constraints */
-      gboolean avoid_reset = FALSE;
-      stamp = ENGINE_NODE_IS_CONSUMER (node) ? 0 : GSL_MAX_TICK_STAMP;
       node->in_suspend_call = TRUE;
+      SfiRing *ring;    /* calculate outer suspend constraints */
+      stamp = ENGINE_NODE_IS_CONSUMER (node) ? 0 : GSL_MAX_TICK_STAMP;
+      gboolean keep_state = FALSE;
       for (ring = node->output_nodes; ring; ring = sfi_ring_walk (ring, node->output_nodes))
         {
           EngineNode *dest_node = ring->data;
           if (!dest_node->in_suspend_call)      /* catch cycles */
             {
-              guint64 ostamp = determine_suspension_state (ring->data, &seen_cycle, &avoid_reset);
+              guint64 ostamp = determine_suspension_state (dest_node, &seen_cycle, &keep_state);
               stamp = MIN (ostamp, stamp);
             }
           else
             seen_cycle = TRUE;
         }
-      node->needs_reset |= !avoid_reset;
+      node->needs_reset |= !keep_state;
       /* bound against inner suspend constraint */
       stamp = MAX (stamp, node->local_active);
       if (!seen_cycle)
@@ -443,10 +466,8 @@ determine_suspension_state (EngineNode *node,
       node->in_suspend_call = FALSE;
     }
   else
-    {
-      stamp = node->next_active;
-      *avoid_reset_p |= !node->needs_reset;
-    }
+    stamp = node->next_active;
+  *keep_state_p |= !determine_suspension_reset (node);
   *seen_cycle_p = *seen_cycle_p || seen_cycle;
   return stamp;
 }
@@ -457,9 +478,9 @@ update_suspension_state (EngineNode *node)
   if (node->update_suspend)
     {
       gboolean seen_cycle = FALSE;
-      gboolean avoid_reset = FALSE;
-      guint64 stamp = determine_suspension_state (node, &seen_cycle, &avoid_reset);
-      node->needs_reset |= !avoid_reset;
+      gboolean keep_state = FALSE;
+      guint64 stamp = determine_suspension_state (node, &seen_cycle, &keep_state);
+      node->needs_reset |= !keep_state;
       if (node->update_suspend)         /* break cycles */
         {
           node->next_active = stamp;

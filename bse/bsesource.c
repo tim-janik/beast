@@ -1198,7 +1198,7 @@ bse_source_unset_input (BseSource *source,
   BseErrorType error = bse_source_check_input (source, ichannel, osource, ochannel);
   if (error != BSE_ERROR_NONE)
     return error;
-
+  
   g_object_ref (source);
   g_object_ref (osource);
   BSE_SOURCE_GET_CLASS (source)->remove_input (source, ichannel, osource, ochannel);

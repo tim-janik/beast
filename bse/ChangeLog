@@ -1,3 +1,27 @@
+Mon Aug 30 01:20:08 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.cc:
+	MidiChannel::adjust_note(): only queue voice-pressure, voice-sustain or
+	voice-off changes on busy voice input modules.
+	check_voice_input_improvement(): perform rating according to the
+	queue_state which is maintained in the UserThread.
+	voice_switch_module_process(): use UserThread callbacks to clean up
+	disconnected state and to remove vinput modules from the frequency
+	reverse lookup table.
+	create_voice_input(): keep a pointer to the reverse lookup table per
+	vinput module, so removal frmo that table may occour from callbacks.
+	change_voice_input(): defer removal from table until the module's
+	internal state has been updated.
+
+	* bseengineschedule.c:
+	determine_suspension_state(): query keep-state (avoid-reset) from
+	recently updated nodes also. use determine_suspension_reset() to
+	determine whether a node wants its inputs to keep-state.
+	determine_suspension_reset(): for virtual nodes, needs_reset is
+	determined by looking at the virtual node's output node's needs_reset.
+
+	* bseengine.[hc]: added bse_engine_add_garbage().
+
 Sun Aug 29 12:49:36 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c: made parent's BseSubSynth::snet a private property that's

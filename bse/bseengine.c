@@ -461,6 +461,34 @@ bse_job_access (BseModule    *module,
 }
 
 /**
+ * bse_engine_add_garbage
+ * @data:      Data passed in to the free_func
+ * @free_func: Function to free @data (executed in user thread)
+ *
+ * Queues data to be collected by bse_engine_garbage_collect(),
+ * so @free_func() will be called with @data as argument
+ * during the next garbage collection cycle in the user thread.
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+bse_engine_add_garbage (gpointer      data,
+                        BseFreeFunc   free_func)
+{
+  g_return_if_fail (free_func != NULL);
+
+  BseJob *job = sfi_new_struct0 (BseJob, 1);
+  job->job_id = ENGINE_JOB_ACCESS;
+  job->data.access.node = NULL;
+  job->data.access.access_func = NULL;
+  job->data.access.data = data;
+  job->data.access.free_func = free_func;
+
+  BseTrans *trans = bse_trans_open();
+  bse_trans_add (trans, job);
+  bse_trans_dismiss (trans);
+}
+
+/**
  * BseEngineProbeFunc
  * @data:       user data passed in to bse_job_probe_request()
  * @tick_stamp: engine time in microseconds of the probe
