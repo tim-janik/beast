@@ -1,3 +1,9 @@
+Wed Sep  8 15:38:01 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl: use g_intern_printf() to reformat i18n strings which
+	contain G_SEARCHPATH_SEPARATOR_S, so intltool can do the right thing
+	for translators.
+
 Tue Sep  7 01:19:24 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c: don't store defaults for solo, mute and sync properties.

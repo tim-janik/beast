@@ -438,33 +438,36 @@ ThreadTotals    collect_thread_totals ();
 record GConfig {
   group _("Search Paths") {
     String sample_path     = (_("Sample Path"),
-                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                                "find audio samples. "), BSE_PATH_USER_DATA("/samples"), STANDARD ":searchpath");
+                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find audio samples."),
+                                               G_SEARCHPATH_SEPARATOR_S),
+                              BSE_PATH_USER_DATA ("/samples"), STANDARD ":searchpath");
     String effect_path     = (_("Effect Path"),
-                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                                "find BSE effect files. "), BSE_PATH_USER_DATA("/effects"), STANDARD ":searchpath");
+                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE effect files."),
+                                               G_SEARCHPATH_SEPARATOR_S),
+                              BSE_PATH_USER_DATA ("/effects"), STANDARD ":searchpath");
     String instrument_path = (_("Instrument Path"),
-                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                                "find BSE instrument files. "), BSE_PATH_USER_DATA("/instruments"), STANDARD ":searchpath");
+                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE instrument files."),
+                                               G_SEARCHPATH_SEPARATOR_S),
+                              BSE_PATH_USER_DATA ("/instruments"), STANDARD ":searchpath");
     String script_path     = (_("Script Path"),
-                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                                "find BSE scheme scripts. "), BSE_PATH_USER_DATA("/scripts"), STANDARD ":searchpath");
+                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE scheme scripts."),
+                                               G_SEARCHPATH_SEPARATOR_S),
+                              BSE_PATH_USER_DATA ("/scripts"), STANDARD ":searchpath");
     String plugin_path     = (_("Plugin Path"),
-                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                                "find BSE plugins. This path is searched for in addition to the standard BSE plugin "
-                                "location on this system."),
+                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE plugins. This path "
+                                                 "is searched for in addition to the standard BSE plugin location on this system."),
+                                               G_SEARCHPATH_SEPARATOR_S),
                               NULL, STANDARD ":searchpath");
     String ladspa_path     = (_("LADSPA Path"),
-                              _("Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
-                                "find LADSPA plugins. This path is searched for in addition to the standard LADSPA "
-                                "location on this system. LADSPA is the Linux Audio Developer's Simple Plugin API, "
-                                "more informations about LADSPA plugins can be found at http://www.ladspa.org/."),
+                              g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find LADSPA plugins. This "
+                                                 "path is searched for in addition to the standard LADSPA location on this system. "
+                                                 "LADSPA is the Linux Audio Developer's Simple Plugin API, more informations about "
+                                                 "LADSPA plugins can be found at http://www.ladspa.org/."), G_SEARCHPATH_SEPARATOR_S),
                               NULL, STANDARD ":searchpath");
   };
   group _("Synthesis Settings") {
     Int synth_latency           = (_("Latency [ms]"),
-                                   _("Processing duration between input and output of a single sample, "
-                                     "smaller values increase CPU load"),
+                                   _("Processing duration between input and output of a single sample, smaller values increase CPU load"),
                                    50, 1, 2000, 5, STANDARD);
     Int synth_mixing_freq       = (_("Synth Mixing Frequency"),
                                    _("Synthesis mixing frequency, common values are: 22050, 44100, 48000"),
