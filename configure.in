@@ -574,6 +574,7 @@ library/effects/Makefile
 library/instruments/Makefile
 library/scripts/Makefile
 library/demo/Makefile
+tests/Makefile
 data/Makefile
 data/sfi.pc
 data/bse.pc

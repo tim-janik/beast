@@ -1,3 +1,9 @@
+Fri Nov 28 00:55:55 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* configure.in Makefile.am: Added tests directory.
+	
+	* tests/Makefile.am tests/cxxbinding.cc: A test for the C++ binding.
+
 Sat Nov 22 16:27:24 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkrackitem.[hc]: new files, containing a GxkRackItem,
