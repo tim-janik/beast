@@ -138,19 +138,47 @@ gxk_param_update (GxkParam *param)
   param->updating = updating;
 }
 
-void
-gxk_param_add_object (GxkParam          *param,
-                      GtkObject         *object)
+static gboolean
+gxk_param_grouping_event (GtkWidget *widget,
+                          GdkEvent  *event,
+                          GxkParam  *param)
 {
-  g_return_if_fail (GXK_IS_PARAM (param));
-  if (GTK_IS_WIDGET (object))
-    gtk_widget_set_sensitive (GTK_WIDGET (object), param->sensitive);
-  param->objects = g_slist_prepend (param->objects, g_object_ref (object));
-  g_object_connect (object, "swapped_signal::destroy", gxk_param_remove_object, param, NULL);
-  param_call_update (param, object);
+  switch (event->type)
+    {
+      // case GDK_KEY_PRESS:
+    case GDK_BUTTON_PRESS:
+      if (GTK_WIDGET_DRAWABLE (widget))
+        gxk_param_start_grouping (param);
+      break;
+      // case GDK_KEY_RELEASE:
+    case GDK_BUTTON_RELEASE:
+      gxk_param_stop_grouping (param);
+      break;
+    default: ;
+    }
+  return FALSE;
+}
+
+static void
+gxk_param_grouping_unrealized (GtkWidget *widget,
+                               GxkParam  *param)
+{
+  while (param->grouping)
+    gxk_param_stop_grouping (param);
 }
 
 void
+gxk_param_add_grab_widget (GxkParam           *param,
+                           GtkWidget          *widget)
+{
+  gxk_param_add_object (param, GTK_OBJECT (widget));
+  g_object_connect (widget,
+                    "signal::event", gxk_param_grouping_event, param,
+                    "signal::unrealize", gxk_param_grouping_unrealized, param,
+                    NULL);
+}
+
+static void
 gxk_param_remove_object (GxkParam          *param,
                          GtkObject         *object)
 {
@@ -160,7 +188,28 @@ gxk_param_remove_object (GxkParam          *param,
   g_return_if_fail (slist != NULL);
   param->objects = g_slist_delete_link (param->objects, slist);
   g_object_disconnect (object, "any_signal::destroy", gxk_param_remove_object, param, NULL);
+  if (GTK_IS_WIDGET (object) && /* check for grab_widget: */
+      gxk_signal_handler_pending (object, "unrealize", G_CALLBACK (gxk_param_grouping_unrealized), param))
+    g_object_disconnect (object,
+                         "any_signal::event", gxk_param_grouping_event, param,
+                         "any_signal::unrealize", gxk_param_grouping_unrealized, param,
+                         NULL);
   g_object_unref (object);
+}
+
+void
+gxk_param_add_object (GxkParam          *param,
+                      GtkObject         *object)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  if (gxk_signal_handler_pending (object, "destroy", G_CALLBACK (gxk_param_remove_object), param) == FALSE)
+    {
+      if (GTK_IS_WIDGET (object))
+        gtk_widget_set_sensitive (GTK_WIDGET (object), param->sensitive);
+      param->objects = g_slist_prepend (param->objects, g_object_ref (object));
+      g_object_connect (object, "swapped_signal::destroy", gxk_param_remove_object, param, NULL);
+      param_call_update (param, object);
+    }
 }
 
 void
@@ -244,10 +293,37 @@ gxk_param_dup_tooltip (GxkParam *param)
 }
 
 void
+gxk_param_start_grouping (GxkParam *param)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  g_return_if_fail (param->binding != NULL);
+  g_return_if_fail (param->grouping < 0xff);
+  if (!param->grouping++ &&
+      param->binding->start_grouping)
+    param->binding->start_grouping (param);
+}
+
+void
+gxk_param_stop_grouping (GxkParam *param)
+{
+  g_return_if_fail (GXK_IS_PARAM (param));
+  g_return_if_fail (param->binding != NULL);
+  if (param->grouping)
+    {
+      if (!--param->grouping &&
+          param->binding->stop_grouping)
+        param->binding->stop_grouping (param);
+    }
+}
+
+void
 gxk_param_destroy (GxkParam *param)
 {
   g_return_if_fail (GXK_IS_PARAM (param));
   g_return_if_fail (param->binding != NULL);
+
+  while (param->grouping)
+    gxk_param_stop_grouping (param);
   
   while (param->objects)
     {
@@ -636,7 +712,7 @@ guint
 gxk_param_create_size_group (void)
 {
   guint i;
-  g_assert (n_size_groups < 0xffff);
+  g_assert (n_size_groups < 0xff);
   i = n_size_groups++;
   size_groups = g_renew (GxkParamEditorSizes, size_groups, n_size_groups);
   size_groups[i] = param_editor_default_sizes;

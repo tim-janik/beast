@@ -32,8 +32,9 @@ typedef struct {
   GParamSpec	  *pspec;
   GValue	   value;
   GSList          *objects;       /* of type GObject* */
-  guint16          size_group;
+  guint8           size_group;
   guint8	   updating;      /* flag to guard value against updates (recursions) */
+  guint8           grouping;      /* stop_grouping() call pending */
   guint            editable : 1;  /* whether widgets should be editable */
   guint            sensitive : 1; /* whether widgets should be sensitive */
   guint		   constant : 1;  /* whether binding allowes writes */
@@ -59,6 +60,8 @@ struct _GxkParamBinding
   /* optional: */
   void		(*destroy)		(GxkParam	*param);
   gboolean	(*check_writable)	(GxkParam	*param);
+  void		(*start_grouping)	(GxkParam	*param);
+  void		(*stop_grouping)	(GxkParam	*param);
 };
 typedef void    (*GxkParamUpdateFunc)   (GxkParam       *param,
                                          GtkObject      *object);
@@ -71,11 +74,11 @@ GxkParam*     gxk_param_new_constant        (GParamSpec         *pspec,
                                              GxkParamBinding    *binding,
                                              gpointer            user_data);
 void          gxk_param_update              (GxkParam           *param);
+void          gxk_param_start_grouping      (GxkParam           *param);
+void          gxk_param_stop_grouping       (GxkParam           *param);
+void          gxk_param_add_grab_widget     (GxkParam           *param,
+                                             GtkWidget          *widget);
 void          gxk_param_add_object          (GxkParam           *param,
-                                             GtkObject          *object);
-void          gxk_object_set_param_callback (GtkObject          *object,
-                                             GxkParamUpdateFunc  ufunc);
-void          gxk_param_remove_object       (GxkParam           *param,
                                              GtkObject          *object);
 void          gxk_param_apply_value         (GxkParam           *param);
 void          gxk_param_apply_default       (GxkParam           *param);
@@ -85,6 +88,8 @@ const gchar*  gxk_param_get_name            (GxkParam           *param);
 gchar*        gxk_param_dup_tooltip         (GxkParam           *param);
 void          gxk_param_set_devel_tips      (gboolean            enabled);
 void          gxk_param_destroy             (GxkParam           *param);
+void          gxk_object_set_param_callback (GtkObject          *object,
+                                             GxkParamUpdateFunc  ufunc);
 
 
 /* --- param value binding --- */

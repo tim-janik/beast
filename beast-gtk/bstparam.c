@@ -224,6 +224,24 @@ proxy_binding_destroy (GxkParam *param)
     }
 }
 
+static void
+proxy_binding_start_grouping (GxkParam *param)
+{
+  SfiProxy proxy = param->bdata[0].v_long;
+  gchar *ustr = g_strconcat ("Modify ", g_param_spec_get_nick (param->pspec), NULL);
+  if (proxy)
+    bse_item_group_undo (proxy, ustr);
+  g_free (ustr);
+}
+
+static void
+proxy_binding_stop_grouping (GxkParam *param)
+{
+  SfiProxy proxy = param->bdata[0].v_long;
+  if (proxy)
+    bse_item_ungroup_undo (proxy);
+}
+
 static gboolean
 proxy_binding_check_writable (GxkParam *param)
 {
@@ -235,11 +253,13 @@ proxy_binding_check_writable (GxkParam *param)
 }
 
 static GxkParamBinding proxy_binding = {
-  2, NULL,
-  proxy_binding_set_value,
-  proxy_binding_get_value,
-  proxy_binding_destroy,
-  proxy_binding_check_writable,
+  .n_data_fields        = 2,
+  .set_value            = proxy_binding_set_value,
+  .get_value            = proxy_binding_get_value,
+  .destroy              = proxy_binding_destroy,
+  .check_writable       = proxy_binding_check_writable,
+  .start_grouping       = proxy_binding_start_grouping,
+  .stop_grouping        = proxy_binding_stop_grouping,
 };
 
 GxkParam*

@@ -25,11 +25,6 @@
 
 
 /* --- prototypes --- */
-static void	bst_canvas_link_class_init	(BstCanvasLinkClass	*class);
-static void	bst_canvas_link_init		(BstCanvasLink		*clink);
-static void	bst_canvas_link_destroy		(GtkObject		*object);
-static gboolean bst_canvas_link_event		(GnomeCanvasItem        *item,
-						 GdkEvent               *event);
 static void	bst_canvas_link_adjust_arrow	(BstCanvasLink		*clink);
 static void	bst_canvas_link_adjust_tags	(BstCanvasLink		*clink);
 static gboolean	bst_canvas_link_child_event	(GnomeCanvasItem        *item,
@@ -38,54 +33,8 @@ static void     bst_canvas_link_update          (BstCanvasLink          *clink);
 static gboolean bst_canvas_link_build_async     (gpointer                data);
 
 
-/* --- static variables --- */
-static gpointer              parent_class = NULL;
-static BstCanvasLinkClass *bst_canvas_link_class = NULL;
-
-
 /* --- functions --- */
-GtkType
-bst_canvas_link_get_type (void)
-{
-  static GtkType canvas_link_type = 0;
-  
-  if (!canvas_link_type)
-    {
-      GtkTypeInfo canvas_link_info =
-      {
-	"BstCanvasLink",
-	sizeof (BstCanvasLink),
-	sizeof (BstCanvasLinkClass),
-	(GtkClassInitFunc) bst_canvas_link_class_init,
-	(GtkObjectInitFunc) bst_canvas_link_init,
-        /* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
-      };
-      
-      canvas_link_type = gtk_type_unique (GNOME_TYPE_CANVAS_GROUP, &canvas_link_info);
-    }
-  
-  return canvas_link_type;
-}
-
-static void
-bst_canvas_link_class_init (BstCanvasLinkClass *class)
-{
-  GtkObjectClass *object_class;
-  GnomeCanvasItemClass *canvas_item_class;
-  GnomeCanvasGroupClass *canvas_group_class;
-  
-  object_class = GTK_OBJECT_CLASS (class);
-  canvas_item_class = GNOME_CANVAS_ITEM_CLASS (class);
-  canvas_group_class = GNOME_CANVAS_GROUP_CLASS (class);
-  
-  bst_canvas_link_class = class;
-  parent_class = gtk_type_class (GNOME_TYPE_CANVAS_GROUP);
-  
-  object_class->destroy = bst_canvas_link_destroy;
-  canvas_item_class->event = bst_canvas_link_event;
-}
+G_DEFINE_TYPE (BstCanvasLink, bst_canvas_link, GNOME_TYPE_CANVAS_GROUP);
 
 static void
 bst_canvas_link_init (BstCanvasLink *clink)
@@ -115,7 +64,7 @@ bst_canvas_link_destroy (GtkObject *object)
   bst_canvas_link_set_ocsource (clink, NULL, 0);
   bst_canvas_link_set_icsource (clink, NULL, 0);
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_canvas_link_parent_class)->destroy (object);
 }
 
 GnomeCanvasItem*
@@ -584,8 +533,8 @@ bst_canvas_link_event (GnomeCanvasItem *item,
       break;
     }
   
-  if (!handled && GNOME_CANVAS_ITEM_CLASS (parent_class)->event)
-    handled |= GNOME_CANVAS_ITEM_CLASS (parent_class)->event (item, event);
+  if (!handled && GNOME_CANVAS_ITEM_CLASS (bst_canvas_link_parent_class)->event)
+    handled |= GNOME_CANVAS_ITEM_CLASS (bst_canvas_link_parent_class)->event (item, event);
   
   return handled;
 }
@@ -640,4 +589,19 @@ bst_canvas_link_child_event (GnomeCanvasItem *item,
     }
   
   return handled;
+}
+
+static void
+bst_canvas_link_class_init (BstCanvasLinkClass *class)
+{
+  GtkObjectClass *object_class;
+  GnomeCanvasItemClass *canvas_item_class;
+  GnomeCanvasGroupClass *canvas_group_class;
+  
+  object_class = GTK_OBJECT_CLASS (class);
+  canvas_item_class = GNOME_CANVAS_ITEM_CLASS (class);
+  canvas_group_class = GNOME_CANVAS_GROUP_CLASS (class);
+  
+  object_class->destroy = bst_canvas_link_destroy;
+  canvas_item_class->event = bst_canvas_link_event;
 }

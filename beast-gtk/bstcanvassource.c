@@ -60,9 +60,6 @@ typedef void    (*SignalUpdateLinks)            (BstCanvasSource       *source,
 
 
 /* --- prototypes --- */
-static void	bst_canvas_source_destroy	(GtkObject		*object);
-static gboolean bst_canvas_source_event		(GnomeCanvasItem        *item,
-						 GdkEvent               *event);
 static gboolean bst_canvas_source_child_event	(BstCanvasSource	*csource,
 						 GdkEvent               *event,
 						 GnomeCanvasItem        *child);
@@ -75,34 +72,11 @@ static void     bst_canvas_source_build         (BstCanvasSource        *csource
 
 
 /* --- static variables --- */
-static BstCanvasSourceClass *bst_canvas_source_class = NULL;
 static guint                 csource_signals[SIGNAL_LAST] = { 0 };
 
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstCanvasSource, bst_canvas_source, GNOME_TYPE_CANVAS_GROUP);
-
-static void
-bst_canvas_source_class_init (BstCanvasSourceClass *class)
-{
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  GnomeCanvasItemClass *canvas_item_class = GNOME_CANVAS_ITEM_CLASS (class);
-  /* GnomeCanvasGroupClass *canvas_group_class = GNOME_CANVAS_GROUP_CLASS (class); */
-  
-  bst_canvas_source_class = class;
-  
-  object_class->destroy = bst_canvas_source_destroy;
-  canvas_item_class->event = bst_canvas_source_event;
-  class->update_links = NULL;
-
-  csource_signals[SIGNAL_UPDATE_LINKS] =
-    gtk_signal_new ("update-links",
-		    GTK_RUN_LAST,
-		    GTK_CLASS_TYPE (object_class),
-		    GTK_SIGNAL_OFFSET (BstCanvasSourceClass, update_links),
-		    gtk_signal_default_marshaller,
-		    GTK_TYPE_NONE, 0);
-}
 
 static void
 bst_canvas_source_init (BstCanvasSource *csource)
@@ -225,6 +199,12 @@ bst_canvas_source_destroy (GtkObject *object)
 {
   BstCanvasSource *csource = BST_CANVAS_SOURCE (object);
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (object);
+
+  if (csource->in_move)
+    {
+      csource->in_move = FALSE;
+      bse_item_ungroup_undo (csource->source);
+    }
 
   while (csource->channel_hints)
     gtk_object_destroy (csource->channel_hints->data);
@@ -949,21 +929,21 @@ bst_canvas_source_event (GnomeCanvasItem *item,
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-      if (event->button.button == 2)
+      if (!csource->in_move && event->button.button == 2)
 	{
-	  GdkCursor *fleur;
-	  gdouble x = event->button.x, y = event->button.y;
-	  
-	  gnome_canvas_item_w2i (item, &x, &y);
-	  csource->move_dx = x;
-	  csource->move_dy = y;
-	  csource->in_move = TRUE;
-	  
-	  fleur = gdk_cursor_new (GDK_FLEUR);
-	  gnome_canvas_item_grab (item,
-				  GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK,
-				  fleur,
-				  event->button.time);
+	  GdkCursor *fleur = gdk_cursor_new (GDK_FLEUR);
+	  if (gnome_canvas_item_grab (item,
+                                      GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK,
+                                      fleur,
+                                      event->button.time) == 0)
+            {
+              gdouble x = event->button.x, y = event->button.y;
+              gnome_canvas_item_w2i (item, &x, &y);
+              csource->move_dx = x;
+              csource->move_dy = y;
+              csource->in_move = TRUE;
+              bse_item_group_undo (csource->source, "Move");
+            }
 	  gdk_cursor_destroy (fleur);
 	  handled = TRUE;
 	}
@@ -1010,6 +990,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
     case GDK_BUTTON_RELEASE:
       if (event->button.button == 2 && csource->in_move)
 	{
+          bse_item_ungroup_undo (csource->source);
 	  csource->in_move = FALSE;
 	  gnome_canvas_item_ungrab (item, event->button.time);
 	  handled = TRUE;
@@ -1070,4 +1051,24 @@ bst_canvas_source_child_event (BstCanvasSource *csource,
     }
   
   return handled;
+}
+
+static void
+bst_canvas_source_class_init (BstCanvasSourceClass *class)
+{
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GnomeCanvasItemClass *canvas_item_class = GNOME_CANVAS_ITEM_CLASS (class);
+  /* GnomeCanvasGroupClass *canvas_group_class = GNOME_CANVAS_GROUP_CLASS (class); */
+  
+  object_class->destroy = bst_canvas_source_destroy;
+  canvas_item_class->event = bst_canvas_source_event;
+  class->update_links = NULL;
+
+  csource_signals[SIGNAL_UPDATE_LINKS] =
+    gtk_signal_new ("update-links",
+		    GTK_RUN_LAST,
+		    GTK_CLASS_TYPE (object_class),
+		    GTK_SIGNAL_OFFSET (BstCanvasSourceClass, update_links),
+		    gtk_signal_default_marshaller,
+		    GTK_TYPE_NONE, 0);
 }

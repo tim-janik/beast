@@ -47,6 +47,7 @@ param_note_spinner_create (GxkParam    *param,
 {
   GtkAdjustment *adjustment = gxk_param_get_adjustment (param);
   GtkWidget *widget = gtk_spin_button_new (adjustment, 0, 0);
+  gxk_param_add_grab_widget (param, widget);
   g_object_set (widget,
                 "visible", TRUE,
                 "activates_default", TRUE,

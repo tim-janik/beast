@@ -80,6 +80,7 @@ param_spinner_create (GxkParam    *param,
                                     "digits", fracts,
                                     "width_chars", 0,
                                     NULL);
+  gxk_param_add_grab_widget (param, widget);
   gxk_widget_add_font_requisition (widget, chars, digits + (esize->request_fractions ? fracts : 0));
   gxk_param_entry_connect_handlers (param, widget, NULL);
   gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);

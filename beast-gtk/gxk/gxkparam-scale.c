@@ -80,6 +80,7 @@ param_scale_create (GxkParam    *param,
     gxk_widget_add_option (widget, "vexpand", "+");
   else
     gxk_widget_add_option (widget, "hexpand", "+");
+  gxk_param_add_grab_widget (param, widget);
   return widget;
 }
 

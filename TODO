@@ -4,7 +4,6 @@ FIXMES:	(release-critical)
 - midireceiver: revisit sched_tag as condition, it's probably too weak due to temporary enginescheduler resets
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
-- deleteing last track + undo doesn't redraw trackroll
 - adjust engine block size (Subject: blocksize vs. cpu)
 - save mixer bus volumes
 - BseAmplifier: extend master volume to +24db
