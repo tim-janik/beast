@@ -1,4 +1,5 @@
-FIXME(release-critical):
+FIXME(urgent):
+- fix beast argument parser: beast foo.notexistant doesn't give an error message
 - ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - pianoroll: select-all/none
@@ -14,7 +15,6 @@ FIXME(release-critical):
 - TIME: ISO 8601: http://www.cl.cam.ac.uk/~mgk25/iso-time.html
   implement time parser for this in beast, merge with travelad parser
 - driver interface: support multilpe MIDI devices
-- popdown scrollgraph on ::release
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 - add: /demo/simple/stereo pipe
        /demo/simple/MIDI piano

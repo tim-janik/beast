@@ -1,3 +1,13 @@
+Mon Dec 13 00:31:18 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/Makefile.am: removed BSW dependancy. 
+	generate language ClientC binding for BSE.
+
+	* beast-gtk/bstbseutils.h:
+	* beast-gtk/bstbseutils.c: include/build BSE language binding
+	and provide binding utilities. moved bst_project_restore_from_file()
+	from bstutils.[hc] here.
+
 Sun Dec 12 03:26:13 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstscrollgraph.[hc]: added label to indicate unconnected 

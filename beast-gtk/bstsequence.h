@@ -19,7 +19,7 @@
 #define __BST_SEQUENCE_H__
 
 #include <gtk/gtk.h>
-#include <bsw/bsw.h>
+#include "bstbseutils.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -21,7 +21,6 @@ LIBS += # -lefence # -pg
 # link programs against BSE and other neccessary libraries
 progs_LDADD = $(strip 			\
 	./gxk/libgxk.a 			\
-	$(top_builddir)/bsw/libbsw.la 	\
 	$(top_builddir)/bse/libbse.la 	\
 	$(top_builddir)/sfi/libsfi.la 	\
 	$(LDFLAGS) $(BEAST_LIBS) 	\
@@ -47,8 +46,8 @@ beast_headers = $(strip \
 	bstrackeditor.h		bstrackitem.h	bstracktable.h		bstsequence.h	    \
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	    \
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	    \
-	bstzoomedwindow.h	bstskinconfig.h	bstmsgabsorb.h		\
-	bstsampleeditor.h	bstrackview.h	bsttreestores.h		bstutils.h	    \
+	bstzoomedwindow.h	bstskinconfig.h	bstmsgabsorb.h		bstsampleeditor.h   \
+	bstrackview.h		bsttreestores.h	bstbseutils.h		bstutils.h	    \
 	bstmarshal.h bstdefs.h \
 )
 # BEAST c sources to build the program from
@@ -68,8 +67,8 @@ beast_sources = $(strip \
 	bstrackeditor.c		bstrackitem.c	bstracktable.c		bstsequence.c	    \
 	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	    \
 	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	    \
-	bstzoomedwindow.c	bstskinconfig.c	bstmsgabsorb.c		\
-	bstsampleeditor.c	bstrackview.c	bsttreestores.c		bstutils.c	    \
+	bstzoomedwindow.c	bstskinconfig.c	bstmsgabsorb.c		bstsampleeditor.c   \
+	bstrackview.c		bsttreestores.c	bstbseutils.c		bstutils.c	    \
 	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
@@ -85,19 +84,38 @@ beast_extra_files = $(strip \
 	bstmarshal.list					\
 	bstdebugkeys.defs	bstrecords.idl		\
 )
-# BEAST built sources that don't get installed
-beast_built_sources = @STRIP_BEGIN@ \
-	bstmarshal.h \
-	bstmarshal.c \
-	bstgentypes.h \
-	bstgentypes.c \
-	bstenum_arrays.c \
-	bstenum_list.c \
-@STRIP_END@
-CLEANFILES += $(beast_built_sources)
+# BEAST built sources needed by all objects
+beast_built_depend_sources = $(strip \
+	bstmarshal.h	\
+	bstgentypes.h	\
+	bstgenbseapi.h	\
+)
+# BEAST built sources
+beast_built_sources = $(strip 		\
+	$(beast_built_depend_sources)	\
+	bstmarshal.c			\
+	bstgentypes.c 			\
+	bstgenbseapi.c 			\
+	bstenum_arrays.c		\
+	bstenum_list.c 			\
+)
+# BEAST stamp files for built-sources generation
+beast_built_stamp = $(strip		\
+	stamp-bstenum_arrays.c		\
+	stamp-bstgenbseapi.h		\
+)
+# built source have to be cleaned with stamps to force proper regeneration
+CLEANFILES += $(beast_built_sources) $(beast_built_stamp)
+# rules to build built-sources
+.PHONY: generated clean-generated
+clean-generated: clean
+	rm -f $(beast_built_sources) $(beast_built_stamp)
+generated: clean-generated $(beast_built_sources)
+
 GLIB_MKENUMS = glib-mkenums
 
 SFIDL = ../sfi/sfidl
+SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 # gen-sources
 CLEANFILES += xgen-beac xgen-beac xgen-bgth xgen-bgtc xgen-belc xgen-bmh xgen-bmc xgen-bdkd
@@ -141,6 +159,21 @@ bstenum_list.c: stamp-bstenum_arrays.c
 	    $(beast_headers) ) > xgen-belc \
 	&& cp xgen-belc $@ \
 	&& rm -f xgen-belc
+bstgenbseapi.h: stamp-bstgenbseapi.h ;
+stamp-bstgenbseapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+	cd .	\
+	&& echo -e "#include <sfi/sfi.h>\n" > xgen-bgbah \
+	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-bgbah \
+	&& (cmp -s xgen-bgbah bstgenbseapi.h || cp xgen-bgbah bstgenbseapi.h) \
+	&& rm -f xgen-bgbah \
+	&& echo timestamp > $@
+bstbseutils.c: bstgenbseapi.c
+bstgenbseapi.c: bstgenbseapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
+	cd .	\
+	&& echo -e "/* #include \"bstgenbseapi.h\" */\n" > xgen-bgbac \
+	&& $(SFIDL) $(SFIDL_INC) --client-c --source --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-bgbac \
+	&& cp xgen-bgbac bstgenbseapi.c \
+	&& rm -f xgen-bgbac
 bstmarshal.h: bstmarshal.list
 	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-bmh \
 	&& cp xgen-bmh $@ \
@@ -185,8 +218,8 @@ testgui_LDADD = $(progs_LDADD)
 #
 # rules to generate built sources
 #
-#$(beast_objects) $(bststest_OBJECTS) $(tsmview_OBJECTS): $(beast_built_sources)
-$(OBJECTS): $(beast_built_sources)
+#$(beast_objects) $(bststest_OBJECTS) $(tsmview_OBJECTS): $(beast_built_depend_sources)
+$(OBJECTS): $(beast_built_depend_sources)
 
 # broken: $(beast_SOURCES) $(bststest_SOURCES) $(tsmview_SOURCES): bstgentypes.h
 # broken: EXTRA_DIST += $(beast_built_sources)
@@ -202,7 +235,6 @@ $(OBJECTS): $(beast_built_sources)
 
 
 EXTRA_DIST += $(beast_headers) $(beast_extra_sources) $(beast_extra_files)
-MAINTAINERCLEANFILES += $(beast_built_sources)
 
 #
 # private (birnet) dependancy to make TAGS file after each build
