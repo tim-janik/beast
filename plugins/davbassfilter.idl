@@ -31,8 +31,9 @@ class BassFilter : Effect {
                         "on the VCF303 portions of gsyn v0.2. The filter algorithm is partly "
                         "based on the one described in \"Musical Applications of Microprocessors\" "
                         "by Hal Chamberlin.");
-  IStream audio_in  = (_("Audio In"), _("Audio input"));
-  OStream audio_out = (_("Audio Out"), _("Filtered audio output"));
+  IStream audio_in   = (_("Audio In"), _("Audio input"));
+  IStream trigger_in = (_("Trigger In"), _("Trigger input"));
+  OStream audio_out  = (_("Audio Out"), _("Filtered audio output"));
   group _("Parameters") {
     Real cutoff_perc = Perc (_("Cutoff [%]"), _("Set the cutoff frequency percentage"), 50, STANDARD);
     Real reso_perc   = Perc (_("Resonance [%]"), _("Set the amount of resonance in percent"), 99.5, STANDARD);

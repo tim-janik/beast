@@ -1,3 +1,8 @@
+Sun Sep 12 03:47:11 2004  Tim Janik  <timj@gtk.org>
+
+	* davbassfilter.idl:
+	* davbassfilter.cc: added trigger input channel.
+
 Sat Sep 11 14:35:11 2004  Tim Janik  <timj@gtk.org>
 
 	* davbassfilter.cc: don't reset coefficients in reset().
