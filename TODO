@@ -1,5 +1,9 @@
 FIXMES:
--udefull vs. useful
+- bseautodoc.c: use bse_type_get_license() instead of sfi_info_string_find()
+- remove sfi_boxed_get_record_info
+- sfi_info_string_find
+- remove sfi_boxed_make_sequence
+- udefull vs. useful
 - make signal arguments STATIC_SCOPE (avoid fblock copies)
 - allow inverted synth-done (i.e. suitable for gate connecitons)
 - let the ADSR provide Gate-Out
