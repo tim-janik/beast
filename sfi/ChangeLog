@@ -1,3 +1,9 @@
+Mon Sep 20 21:52:23 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: generate class definiiitions which may contain
+	function bodies after all other types have been prototyped, declared
+	and defined.
+
 Mon Sep 20 01:12:01 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: added class_has_automation_properties().

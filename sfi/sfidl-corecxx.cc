@@ -554,9 +554,9 @@ public:
       }
   }
   void
-  generate_enum_implementations (NamespaceHelper& nspace)
+  generate_enum_declarations (NamespaceHelper& nspace)
   {
-    printf ("\n\n/* enum implementations */\n");
+    printf ("\n\n/* enum declarations */\n");
     for (vector<Choice>::const_iterator ci = parser.getChoices().begin(); ci != parser.getChoices().end(); ci++)
       {
         if (parser.fromInclude (ci->name))
@@ -1312,9 +1312,9 @@ public:
     generate_enum_definitions (nsh);
     generate_sequence_definitions (nsh);
     generate_record_definitions (nsh);
-    generate_class_definitions (nsh);           /* adds to images, procs */
 
     /* (type) declarations */
+    generate_enum_declarations (nsh);
     generate_sequence_declarations (nsh);
     generate_record_declarations (nsh);
 
@@ -1323,8 +1323,10 @@ public:
       procs.push_back (&(*mi));                 /* collect procedures */
     generate_procedure_prototypes (nsh);
 
+    /* class bodies */
+    generate_class_definitions (nsh);           /* adds to images, procs */
+
     /* implementations */
-    generate_enum_implementations (nsh);
     generate_choice_implementations (nsh);
     generate_record_implementations (nsh);
     generate_sequence_implementations (nsh);
