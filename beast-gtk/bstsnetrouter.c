@@ -77,14 +77,6 @@ static BstMenuConfigEntry popup_entries[] =
   { "/_Virtualization",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Input & Output",	NULL,		NULL,	0,	"<Branch>",	0 },
 };
-static const gchar *palette_cats[] = {
-  "/Modules/Audio Sources/",    "/Modules/Other Sources/",
-  "/Modules/Routing/",          "/Modules/Spatial/",
-  "/Modules/Filters/",
-  "/Modules/Enhance/",          "/Modules/Distortion/",
-  "/Modules/Virtualization/",
-  "/Modules/Input & Output/",
-};
 
 
 /* --- static variables --- */
@@ -572,20 +564,16 @@ bst_snet_router_build_tools (BstSNetRouter *self)
   for (i = 0; i < cseq->n_cats; i++)
     {
       static struct { gchar *type, *name, *tip; } toolbar_types[] = {
-	{ "BsePcmOutput", "Output", "PCM Output" },
-	{ "BseAmplifier", "DCA", "Amplifier" },
-	{ "BseSnooper", "Snoop", "Signal Debugging Tool" },
-	{ "BsePcmInput", "Input", "PCM Input" },
+	{ "BsePcmOutput",       "Output", "PCM Output" },
+	{ "BseAmplifier",       "DCA", "Amplifier" },
+	{ "BseSnooper",         "Snoop", "Signal Debugging Tool" },
+	{ "BsePcmInput",        "Input", "PCM Input" },
       };
       guint n, is_palette = 0;
 
       /* decide whether this tool is displayed in the palette */
-      for (n = 0; n < G_N_ELEMENTS (palette_cats); n++)
-	if (strncmp (palette_cats[n], cseq->cats[i]->category, strlen (palette_cats[n])) == 0)
-	  {
-	    is_palette = TRUE;
-	    break;
-	  }
+      is_palette = cseq->cats[i]->icon && (cseq->cats[i]->icon->width + cseq->cats[i]->icon->height) > 0;
+
       /* add (all) tools */
       bst_radio_tools_add_category (self->rtools,
 				    cseq->cats[i]->category_id,

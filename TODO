@@ -1,6 +1,6 @@
 FIXMES:
-- nuke frequency fine-tune for biquad filter
 - remove examplepeakfilter
+- nuke frequency fine-tune for biquad filter
 - fix syndrum parameter scale
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
 - allow extra plugin path in env variable and rc file
@@ -23,6 +23,7 @@ FIXMES:
 - add demo song
 - add new test song containing a wave track
 - default saving (SFI_PARAM_SKIP_DEFAULT)
+- fix non-NULL icons at 0x0, GUI breaks in lots of places for them
 - move non-infrastructure synthesis modules out of the core into plugins/
 - freeverb bypass toggle
 - add "bypass" option to audio output channels

@@ -127,9 +127,9 @@ bst_menu_config_from_cats (BseCategorySeq *cseq,
       e.callback = (BstMenuUserFunc) callback;
       e.callback_action = cseq->cats[i]->category_id;
       have_icon = cseq->cats[i]->icon && (cseq->cats[i]->icon->width + cseq->cats[i]->icon->height) > 0;
-      if (!have_icon && stock_fallback)
+      if (!have_icon)
         {
-          e.item_type = "<StockItem>";
+          e.item_type = stock_fallback ? "<StockItem>" : "<Item>";
           e.extra_data = stock_fallback;
         }
       else
@@ -291,7 +291,7 @@ bst_menu_config_create_items (BstMenuConfig  *config,
 	}
 
       /* create image from BseIcon */
-      if (e->item_type == bstmenu_category_item)
+      if (e->item_type && strcmp (e->item_type, bstmenu_category_item) == 0)
 	{
 	  GtkWidget *image = bst_image_from_icon ((BseIcon*) e->extra_data, BST_SIZE_MENU);
 	  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item), image);

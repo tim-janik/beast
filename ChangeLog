@@ -1,3 +1,11 @@
+Fri Oct 10 14:53:46 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: nuke palette icon selection special casing.
+	simply add all modules which have an icon to the palette.
+
+	* beast-gtk/bstmenus.c: fixed bugs in icon handling logic, which
+	prevented icons from being displayed.
+
 Fri Oct 10 13:19:03 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in (BST_RELEASE_CANDIDATE): up version to 0.5.5-rc2.
