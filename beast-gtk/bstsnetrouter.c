@@ -477,7 +477,7 @@ bst_snet_router_build_tools (BstSNetRouter *router)
   for (i = 0; i < n_cats; i++)
     {
       static const gchar *toolbar_categories[] = {
-	"BsePcmOutput", "BseMixer", "BseSnooper", // "BseCapture",
+	"BsePcmOutput", "BseMixer", "BseSnooper", "BsePcmInput",
       };
       guint n, n_toolbar_categories = sizeof (toolbar_categories) / sizeof (toolbar_categories[0]);
       gboolean add_to_toolbar = FALSE;
@@ -502,7 +502,7 @@ bst_snet_router_build_tools (BstSNetRouter *router)
   for (i = 0; i < n_cats; i++)
     {
       static const gchar *toolbar_categories[] = {
-	"BsePcmOutput", "BseMixer", "BseSnooper", // "BseCapture",
+	"BsePcmOutput", "BseMixer", "BseSnooper", "BsePcmInput",
       };
       guint n, n_toolbar_categories = sizeof (toolbar_categories) / sizeof (toolbar_categories[0]);
       gboolean add_to_toolbar = FALSE;
@@ -946,9 +946,11 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 						BST_CHOICE_END);
 	      switch (bst_choice_modal (choice, event->button.button, event->button.time))
 		{
+		  BseErrorType error;
 		case 1:
-		  bsw_source_unset_input (clink->icsource->source, clink->ichannel,
-					  clink->ocsource->source, clink->ochannel);
+		  error = bsw_source_unset_input (clink->icsource->source, clink->ichannel,
+						  clink->ocsource->source, clink->ochannel);
+		  bst_status_set (error ? 0 : 100, "Delete Link", bsw_error_blurb (error));
 		  break;
 		case 2:
 		  bst_canvas_link_popup_view (clink);

@@ -1,3 +1,8 @@
+Thu Jan 31 17:49:27 2002  Tim Janik  <timj@gtk.org>
+
+	* bstsnetrouter.c: support PcmInput as default module.
+	fixed error handling when deleting a link.
+
 Thu Jan 31 01:17:31 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstwaveeditor.c: fix number of channels displayed.
