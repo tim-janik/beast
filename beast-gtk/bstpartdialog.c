@@ -24,8 +24,6 @@
 
 
 /* --- prototypes --- */
-static void	bst_part_dialog_class_init	(BstPartDialogClass	*klass);
-static void	bst_part_dialog_init		(BstPartDialog		*part_dialog);
 static void	bst_part_dialog_finalize	(GObject		*object);
 static void	piano_canvas_clicked		(BstPianoRoll           *proll,
 						 guint			 button,
@@ -71,43 +69,13 @@ static const GxkStockAction piano_clear_undo[] = {
 };
      
 
-/* --- variables --- */
-static gpointer	parent_class = NULL;
-
-
 /* --- functions --- */
-GType
-bst_part_dialog_get_type (void)
-{
-  static GType type = 0;
-  
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstPartDialogClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_part_dialog_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstPartDialog),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_part_dialog_init,
-      };
-      type = g_type_register_static (GXK_TYPE_DIALOG,
-				     "BstPartDialog",
-				     &type_info, 0);
-    }
-  
-  return type;
-}
+G_DEFINE_TYPE (BstPartDialog, bst_part_dialog, GXK_TYPE_DIALOG);
 
 static void
 bst_part_dialog_class_init (BstPartDialogClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
   
   gobject_class->finalize = bst_part_dialog_finalize;
 }

@@ -60,8 +60,6 @@ typedef void    (*SignalUpdateLinks)            (BstCanvasSource       *source,
 
 
 /* --- prototypes --- */
-static void	bst_canvas_source_class_init	(BstCanvasSourceClass	*class);
-static void	bst_canvas_source_init		(BstCanvasSource	*csource);
 static void	bst_canvas_source_build		(BstCanvasSource	*csource);
 static void	bst_canvas_source_destroy	(GtkObject		*object);
 static gboolean bst_canvas_source_event		(GnomeCanvasItem        *item,
@@ -77,33 +75,12 @@ static void	csource_info_update		(BstCanvasSource	*csource);
 
 
 /* --- static variables --- */
-static gpointer              parent_class = NULL;
 static BstCanvasSourceClass *bst_canvas_source_class = NULL;
 static guint                 csource_signals[SIGNAL_LAST] = { 0 };
 
 
 /* --- functions --- */
-GType
-bst_canvas_source_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (BstCanvasSourceClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) bst_canvas_source_class_init,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (BstCanvasSource),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) bst_canvas_source_init,
-      };
-      type = g_type_register_static (GNOME_TYPE_CANVAS_GROUP, "BstCanvasSource", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstCanvasSource, bst_canvas_source, GNOME_TYPE_CANVAS_GROUP);
 
 static void
 bst_canvas_source_class_init (BstCanvasSourceClass *class)
@@ -113,7 +90,6 @@ bst_canvas_source_class_init (BstCanvasSourceClass *class)
   /* GnomeCanvasGroupClass *canvas_group_class = GNOME_CANVAS_GROUP_CLASS (class); */
   
   bst_canvas_source_class = class;
-  parent_class = g_type_class_peek_parent (class);
   
   object_class->destroy = bst_canvas_source_destroy;
   canvas_item_class->event = bst_canvas_source_event;

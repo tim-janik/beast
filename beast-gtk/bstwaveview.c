@@ -23,8 +23,6 @@
 
 
 /* --- prototypes --- */
-static void	bst_wave_view_class_init	(BstWaveViewClass	*klass);
-static void	bst_wave_view_init		(BstWaveView		*wave_view);
 static void     wave_view_action_exec           (gpointer                data,
                                                  gulong                  action);
 static gboolean wave_view_action_check          (gpointer                data,
@@ -51,39 +49,13 @@ static const GxkStockAction wave_view_actions[] = {
 };
 
 
-/* --- variables --- */
-static gpointer		 parent_class = NULL;
-
-
 /* --- functions --- */
-GType
-bst_wave_view_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstWaveViewClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_wave_view_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstWaveView),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_wave_view_init,
-      };
-      type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstWaveView", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstWaveView, bst_wave_view, BST_TYPE_ITEM_VIEW);
 
 static void
 bst_wave_view_class_init (BstWaveViewClass *class)
 {
   BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
 
   item_view_class->item_type = "BseWave";
 }

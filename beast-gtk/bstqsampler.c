@@ -33,8 +33,6 @@ enum {
 
 
 /* --- prototypes --- */
-static void	bst_qsampler_class_init		(BstQSamplerClass	*class);
-static void	bst_qsampler_init		(BstQSampler		*qsampler);
 static void	bst_qsampler_destroy		(GtkObject		*object);
 static void	bst_qsampler_finalize		(GObject		*object);
 static void	bst_qsampler_set_property	(GObject		*object,
@@ -72,39 +70,13 @@ static void	bst_qsampler_queue_refresh	(BstQSampler		*qsampler);
 
 
 /* --- static variables --- */
-static gpointer	parent_class = NULL;
 static GSList  *refresh_widgets = NULL;
 static GSList  *tmp_refresh_widgets = NULL;
 static gint     refresh_handler = 0;
 
 
 /* --- functions --- */
-GType
-bst_qsampler_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstQSamplerClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_qsampler_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstQSampler),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_qsampler_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_WIDGET,
-				     "BstQSampler",
-				     &type_info, 0);
-    }
-
-  return type;
-}
+G_DEFINE_TYPE (BstQSampler, bst_qsampler, GTK_TYPE_WIDGET);
 
 static void
 bst_qsampler_class_init (BstQSamplerClass *class)
@@ -112,8 +84,6 @@ bst_qsampler_class_init (BstQSamplerClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-
-  parent_class = gtk_type_class (GTK_TYPE_WIDGET);
 
   gobject_class->finalize = bst_qsampler_finalize;
   gobject_class->set_property = bst_qsampler_set_property;

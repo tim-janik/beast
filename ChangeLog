@@ -1,3 +1,30 @@
+Fri Jan  9 15:41:53 2004  Tim Janik  <timj@gtk.org>
+
+        * beast-gtk/bstapp.c:
+        * beast-gtk/bstcanvassource.c:
+        * beast-gtk/bsteventroll.c:
+        * beast-gtk/bstfiledialog.c:
+        * beast-gtk/bstitemview.c:
+        * beast-gtk/bstlogadjustment.c:
+        * beast-gtk/bstparamview.c:
+        * beast-gtk/bstpartdialog.c:
+        * beast-gtk/bstpartview.c:
+        * beast-gtk/bstpianoroll.c:
+        * beast-gtk/bstpreferences.c:
+        * beast-gtk/bstqsampler.c:
+        * beast-gtk/bstsequence.c:
+        * beast-gtk/bstsnetrouter.c:
+        * beast-gtk/bstsnifferscope.c:
+        * beast-gtk/bstsupershell.c:
+        * beast-gtk/bsttrackroll.c:
+        * beast-gtk/bsttracksynthdialog.c:
+        * beast-gtk/bsttrackview.c:
+        * beast-gtk/bstwaveview.c:
+        * beast-gtk/bstxframe.c: use G_DEFINE_TYPE() to implement
+        GType boilerplate.
+
+        * docs/site-development.texi: added link for Mongolian translation.
+
 Wed Jan  7 22:46:45 2004  Sanlig Badral  <badral@openmn.org>
 
 	* configure.in : Added "mn" to ALL_LINGUAS.

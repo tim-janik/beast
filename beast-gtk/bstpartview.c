@@ -23,8 +23,6 @@
 
 
 /* --- prototypes --- */
-static void	bst_part_view_class_init	(BstPartViewClass	*klass);
-static void	bst_part_view_init		(BstPartView		*part_view);
 static void     part_view_action_exec           (gpointer                data,
                                                  gulong                  action);
 static gboolean part_view_action_check          (gpointer                data,
@@ -44,40 +42,13 @@ static const GxkStockAction part_view_actions[] = {
 };
 
 
-/* --- variables --- */
-static gpointer	parent_class = NULL;
-
-
 /* --- functions --- */
-GType
-bst_part_view_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (BstPartViewClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) bst_part_view_class_init,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (BstPartView),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) bst_part_view_init,
-      };
-      type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstPartView", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstPartView, bst_part_view, BST_TYPE_ITEM_VIEW);
 
 static void
 bst_part_view_class_init (BstPartViewClass *class)
 {
-  // GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
 
   item_view_class->item_type = "BsePart";
 }

@@ -23,45 +23,17 @@
 
 
 /* --- prototypes --- */
-static void	bst_file_dialog_class_init	(BstFileDialogClass	*class);
-static void	bst_file_dialog_init		(BstFileDialog		*fd);
 static void	bst_file_dialog_finalize	(GObject		*object);
 static void	bst_file_dialog_activate	(BstFileDialog		*self);
 
 
-/* --- variables --- */
-static GtkFileSelection *parent_class = NULL;
-
-
 /* --- functions --- */
-GType
-bst_file_dialog_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstFileDialogClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_file_dialog_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstFileDialog),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_file_dialog_init,
-      };
-      type = g_type_register_static (GXK_TYPE_DIALOG, "BstFileDialog", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstFileDialog, bst_file_dialog, GXK_TYPE_DIALOG);
 
 static void
 bst_file_dialog_class_init (BstFileDialogClass	*class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
   
   gobject_class->finalize = bst_file_dialog_finalize;
 }

@@ -21,9 +21,6 @@
 
 
 /* --- prototypes --- */
-static void	bst_item_view_class_init	(BstItemViewClass	*klass);
-static void	bst_item_view_init		(BstItemView		*self,
-						 BstItemViewClass	*real_class);
 static void	bst_item_view_destroy		(GtkObject		*object);
 static void	bst_item_view_finalize		(GObject		*object);
 static void	item_view_listen_on		(BstItemView		*self,
@@ -34,40 +31,14 @@ static void	item_view_set_container		(BstItemView		*self,
 						 SfiProxy		 new_container);
 
 
-/* --- static variables --- */
-static gpointer		 parent_class = NULL;
-
-
 /* --- functions --- */
-GType
-bst_item_view_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (BstItemViewClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_item_view_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstItemView),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_item_view_init,
-      };
-      type = g_type_register_static (GTK_TYPE_ALIGNMENT, "BstItemView", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstItemView, bst_item_view, GTK_TYPE_ALIGNMENT);
 
 static void
 bst_item_view_class_init (BstItemViewClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
   
   gobject_class->finalize = bst_item_view_finalize;
 
@@ -82,8 +53,7 @@ bst_item_view_class_init (BstItemViewClass *class)
 }
 
 static void
-bst_item_view_init (BstItemView      *self,
-		    BstItemViewClass *ITEM_VIEW_CLASS)
+bst_item_view_init (BstItemView *self)
 {
   self->container = 0;
 }

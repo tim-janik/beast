@@ -16,14 +16,13 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include <sfi/glib-extra.h>
 #include "bstlogadjustment.h"
 
 #include <math.h>
 
 
 /* --- prototypes --- */
-static void	bst_log_adjustment_class_init		(BstLogAdjustmentClass	*klass);
-static void	bst_log_adjustment_init			(BstLogAdjustment	*ladj);
 static void	bst_log_adjustment_destroy		(GtkObject		*object);
 static void	bst_log_adjustment_changed		(GtkAdjustment		*adj);
 static void	bst_log_adjustment_value_changed	(GtkAdjustment		*adj);
@@ -31,45 +30,14 @@ static void	ladj_adjust_ranges			(BstLogAdjustment	*ladj);
 static void	ladj_client_value_changed		(BstLogAdjustment	*ladj);
 
 
-/* --- static variables --- */
-static gpointer		      parent_class = NULL;
-
-
 /* --- functions --- */
-GType
-bst_log_adjustment_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstLogAdjustmentClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_log_adjustment_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstLogAdjustment),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_log_adjustment_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_ADJUSTMENT,
-				     "BstLogAdjustment",
-				     &type_info, 0);
-    }
-
-  return type;
-}
+G_DEFINE_TYPE (BstLogAdjustment, bst_log_adjustment, GTK_TYPE_ADJUSTMENT);
 
 static void
 bst_log_adjustment_class_init (BstLogAdjustmentClass *class)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkAdjustmentClass *adjustment_class = GTK_ADJUSTMENT_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   object_class->destroy = bst_log_adjustment_destroy;
 

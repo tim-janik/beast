@@ -22,8 +22,6 @@
 
 
 /* --- prototypes --- */
-static void     bst_sequence_class_init	(BstSequenceClass	*class);
-static void     bst_sequence_init	(BstSequence		*sequence);
 static void     bst_sequence_finalize	(GObject		*object);
 static gint	darea_configure_event	(BstSequence		*seq,
 					 GdkEventConfigure	*event);
@@ -38,46 +36,17 @@ static gint	darea_motion_event	(BstSequence		*seq,
 
 
 /* --- varibales --- */
-static GtkWidgetClass *parent_class = NULL;
 static guint           seq_changed_signal = 0;
 
 
 /* --- fucntions --- */
-GtkType
-bst_sequence_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstSequenceClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_sequence_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstSequence),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_sequence_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_HBOX,
-				     "BstSequence",
-				     &type_info, 0);
-    }
-
-  return type;
-}
+G_DEFINE_TYPE (BstSequence, bst_sequence, GTK_TYPE_HBOX);
 
 static void
 bst_sequence_class_init (BstSequenceClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  /* GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class); */
-
-  parent_class = g_type_class_peek_parent (class);
   
   gobject_class->finalize = bst_sequence_finalize;
 

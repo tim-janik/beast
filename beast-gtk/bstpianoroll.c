@@ -70,8 +70,6 @@
 
 
 /* --- prototypes --- */
-static void	bst_piano_roll_class_init		(BstPianoRollClass	*class);
-static void	bst_piano_roll_init			(BstPianoRoll		*self);
 static void	bst_piano_roll_dispose			(GObject		*object);
 static void	bst_piano_roll_destroy			(GtkObject		*object);
 static void	bst_piano_roll_finalize			(GObject		*object);
@@ -120,7 +118,6 @@ static void	bst_piano_roll_hsetup			(BstPianoRoll		*self,
 							 gfloat			 hzoom);
 
 /* --- static variables --- */
-static gpointer	parent_class = NULL;
 static guint	signal_canvas_drag = 0;
 static guint	signal_canvas_clicked = 0;
 static guint	signal_piano_drag = 0;
@@ -128,32 +125,7 @@ static guint	signal_piano_clicked = 0;
 
 
 /* --- functions --- */
-GType
-bst_piano_roll_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstPianoRollClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_piano_roll_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstPianoRoll),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_piano_roll_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_CONTAINER,
-				     "BstPianoRoll",
-				     &type_info, 0);
-    }
-
-  return type;
-}
+G_DEFINE_TYPE (BstPianoRoll, bst_piano_roll, GTK_TYPE_CONTAINER);
 
 static void
 bst_piano_roll_class_init (BstPianoRollClass *class)
@@ -161,8 +133,6 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->dispose = bst_piano_roll_dispose;
   gobject_class->finalize = bst_piano_roll_finalize;

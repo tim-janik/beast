@@ -17,13 +17,10 @@
  */
 #include "bstsnifferscope.h"
 
-/* --- prototypes --- */
-
-/* --- variables --- */
-static gpointer parent_class = NULL;
-
 
 /* --- functions --- */
+G_DEFINE_TYPE (BstSnifferScope, bst_sniffer_scope, GTK_TYPE_WIDGET);
+
 static void
 bst_sniffer_scope_init (BstSnifferScope *self)
 {
@@ -81,7 +78,7 @@ static gboolean
 bst_sniffer_scope_expose (GtkWidget      *widget,
                           GdkEventExpose *event)
 {
-  BstSnifferScope *self = BST_SNIFFER_SCOPE (widget);
+  // BstSnifferScope *self = BST_SNIFFER_SCOPE (widget);
   GdkWindow *window = event->window;
   GdkRectangle area = event->area;
   GdkGC *dark_gc = widget->style->dark_gc[widget->state];
@@ -114,8 +111,6 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *class)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
 
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class->finalize = bst_sniffer_scope_finalize;
 
   object_class->destroy = bst_sniffer_scope_destroy;
@@ -123,26 +118,4 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *class)
   widget_class->size_request = bst_sniffer_scope_size_request;
   widget_class->size_allocate = bst_sniffer_scope_size_allocate;
   widget_class->expose_event = bst_sniffer_scope_expose;
-}
-
-GType
-bst_sniffer_scope_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (BstSnifferScopeClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) bst_sniffer_scope_class_init,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (BstSnifferScope),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) bst_sniffer_scope_init,
-      };
-      type = g_type_register_static (GTK_TYPE_WIDGET, "BstSnifferScope", &type_info, 0);
-    }
-  return type;
 }

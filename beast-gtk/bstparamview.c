@@ -22,44 +22,16 @@
 
 
 /* --- prototypes --- */
-static void	bst_param_view_class_init	(BstParamViewClass	*klass);
-static void	bst_param_view_init		(BstParamView		*pe);
 static void	bst_param_view_destroy		(GtkObject		*object);
 static void	bst_param_view_finalize		(GObject		*object);
 
 
 /* --- static variables --- */
-static gpointer           parent_class = NULL;
 static BstParamViewClass *bst_param_view_class = NULL;
 
 
 /* --- functions --- */
-GType
-bst_param_view_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstParamViewClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_param_view_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstParamView),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_param_view_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_VBOX,
-				     "BstParamView",
-				     &type_info, 0);
-    }
-
-  return type;
-}
+G_DEFINE_TYPE (BstParamView, bst_param_view, GTK_TYPE_VBOX);
 
 static void
 bst_param_view_class_init (BstParamViewClass *class)
@@ -68,7 +40,6 @@ bst_param_view_class_init (BstParamViewClass *class)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
 
   bst_param_view_class = class;
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->finalize = bst_param_view_finalize;
 

@@ -39,9 +39,6 @@ enum {
 
 
 /* --- prototypes --- */
-static void	  bst_snet_router_class_init	(BstSNetRouterClass	*klass);
-static void	  bst_snet_router_init		(BstSNetRouter		*self,
-						 BstSNetRouterClass     *class);
 static void	  bst_snet_router_destroy	(GtkObject		*object);
 static void	  bst_snet_router_finalize	(GObject		*object);
 static void	  bst_snet_router_item_added    (BstSNetRouter          *self,
@@ -84,32 +81,11 @@ static const GxkStockAction router_toolbar_actions[] = {
 
 
 /* --- static variables --- */
-static gpointer            parent_class = NULL;
 static BstSNetRouterClass *bst_snet_router_class = NULL;
 
 
 /* --- functions --- */
-GType
-bst_snet_router_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (BstSNetRouterClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) bst_snet_router_class_init,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (BstSNetRouter),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) bst_snet_router_init,
-      };
-      type = g_type_register_static (GNOME_TYPE_CANVAS, "BstSNetRouter", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstSNetRouter, bst_snet_router, GNOME_TYPE_CANVAS);
 
 static void
 bst_snet_router_class_init (BstSNetRouterClass *class)
@@ -118,7 +94,6 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
 
-  parent_class = g_type_class_peek_parent (class);
   bst_snet_router_class = class;
   
   gobject_class->finalize = bst_snet_router_finalize;
@@ -142,8 +117,7 @@ filter_popup_modules (gpointer         predicate_data,
 }
 
 static void
-bst_snet_router_init (BstSNetRouter      *self,
-		      BstSNetRouterClass *class)
+bst_snet_router_init (BstSNetRouter      *self)
 {
   GnomeCanvas *canvas = GNOME_CANVAS (self);
   GxkActionList *al1, *al2, *canvas_modules, *toolbar_modules, *palette_modules;

@@ -30,8 +30,6 @@ enum {
 
 
 /* --- prototypes --- */
-static void	bst_super_shell_class_init	(BstSuperShellClass	*klass);
-static void	bst_super_shell_init		(BstSuperShell		*super_shell);
 static void	bst_super_shell_destroy		(GtkObject		*object);
 static void	bst_super_shell_finalize	(GObject		*object);
 static void	bst_super_shell_set_property	(GObject         	*object,
@@ -46,32 +44,11 @@ static void     super_shell_add_views           (BstSuperShell          *self);
 
 
 /* --- static variables --- */
-static GtkVBoxClass	  *parent_class = NULL;
 static BstSuperShellClass *bst_super_shell_class = NULL;
 
 
 /* --- functions --- */
-GType
-bst_super_shell_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (BstSuperShellClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) bst_super_shell_class_init,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (BstSuperShell),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) bst_super_shell_init,
-      };
-      type = g_type_register_static (GTK_TYPE_VBOX, "BstSuperShell", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstSuperShell, bst_super_shell, GTK_TYPE_VBOX);
 
 static void
 bst_super_shell_class_init (BstSuperShellClass *class)
@@ -80,7 +57,6 @@ bst_super_shell_class_init (BstSuperShellClass *class)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
 
   bst_super_shell_class = class;
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->set_property = bst_super_shell_set_property;
   gobject_class->get_property = bst_super_shell_get_property;

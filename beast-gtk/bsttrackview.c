@@ -24,8 +24,6 @@
 #define	SCROLLBAR_SPACING (3) /* from gtkscrolledwindow.c:DEFAULT_SCROLLBAR_SPACING */
 
 /* --- prototypes --- */
-static void	bst_track_view_class_init	(BstTrackViewClass	*klass);
-static void	bst_track_view_init		(BstTrackView		*self);
 static void	bst_track_view_finalize		(GObject		*object);
 static gboolean track_view_action_check         (gpointer                data,
                                                  gulong                  action);
@@ -68,40 +66,14 @@ static const GxkStockAction track_view_actions[] = {
 };
 
 
-/* --- variables --- */
-static gpointer parent_class = NULL;
-
-
 /* --- functions --- */
-GType
-bst_track_view_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (BstTrackViewClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) bst_track_view_class_init,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (BstTrackView),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) bst_track_view_init,
-      };
-      type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstTrackView", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstTrackView, bst_track_view, BST_TYPE_ITEM_VIEW);
 
 static void
 bst_track_view_class_init (BstTrackViewClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->finalize = bst_track_view_finalize;
 

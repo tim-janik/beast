@@ -23,50 +23,18 @@
 
 
 /* --- prototypes --- */
-static void	  bst_preferences_class_init		(BstPreferencesClass	*klass);
-static void	  bst_preferences_init			(BstPreferences		*prefs);
 static void	  bst_preferences_destroy		(GtkObject		*object);
 static GtkWidget* bst_preferences_build_rec_editor	(SfiRec			*rec,
 							 SfiRecFields		 fields,
 							 SfiRing	       **bparam_list);
 
-
-/* --- static variables --- */
-static gpointer             parent_class = NULL;
-
-
 /* --- functions --- */
-GtkType
-bst_preferences_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstPreferencesClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_preferences_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstPreferences),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_preferences_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_VBOX, "BstPreferences", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstPreferences, bst_preferences, GTK_TYPE_VBOX);
 
 static void
 bst_preferences_class_init (BstPreferencesClass *class)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
-
   object_class->destroy = bst_preferences_destroy;
 }
 

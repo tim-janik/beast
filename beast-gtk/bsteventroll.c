@@ -54,8 +54,6 @@
 
 
 /* --- prototypes --- */
-static void     bst_event_roll_class_init             (BstEventRollClass *class);
-static void     bst_event_roll_init                   (BstEventRoll      *self);
 static void     bst_event_roll_dispose                (GObject           *object);
 static void     bst_event_roll_destroy                (GtkObject         *object);
 static void     bst_event_roll_finalize               (GObject           *object);
@@ -112,7 +110,6 @@ static void     bst_event_roll_hsetup                 (BstEventRoll      *self,
                                                        gfloat             hzoom);
 
 /* --- static variables --- */
-static gpointer	parent_class = NULL;
 static guint	signal_canvas_drag = 0;
 static guint	signal_canvas_clicked = 0;
 static guint	signal_vpanel_drag = 0;
@@ -120,32 +117,7 @@ static guint	signal_vpanel_clicked = 0;
 
 
 /* --- functions --- */
-GType
-bst_event_roll_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstEventRollClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_event_roll_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstEventRoll),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_event_roll_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_CONTAINER,
-				     "BstEventRoll",
-				     &type_info, 0);
-    }
-
-  return type;
-}
+G_DEFINE_TYPE (BstEventRoll, bst_event_roll, GTK_TYPE_CONTAINER);
 
 static void
 bst_event_roll_class_init (BstEventRollClass *class)
@@ -154,8 +126,6 @@ bst_event_roll_class_init (BstEventRollClass *class)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   GtkContainerClass *container_class = GTK_CONTAINER_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->dispose = bst_event_roll_dispose;
   gobject_class->finalize = bst_event_roll_finalize;

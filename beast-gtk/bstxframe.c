@@ -27,8 +27,6 @@ enum {
 
 
 /* --- prototypes --- */
-static void     bst_xframe_class_init                 (BstXFrameClass	*class);
-static void     bst_xframe_init                       (BstXFrame	*xframe);
 static void     bst_xframe_destroy                    (GtkObject	*object);
 static void     bst_xframe_set_property		      (GObject		*object,
 						       guint		 prop_id,
@@ -58,37 +56,11 @@ static void     bst_xframe_size_allocate_cover        (GtkWidget	*widget,
 
 
 /* --- variables --- */
-static gpointer parent_class = NULL;
 static guint    signal_button_check = 0;
 
 
 /* --- functions --- */
-GType
-bst_xframe_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info = {
-	sizeof (BstXFrameClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_xframe_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstXFrame),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_xframe_init,
-      };
-
-      object_type = g_type_register_static (GTK_TYPE_FRAME,
-					    "BstXFrame",
-					    &object_info, 0);
-    }
-
-  return object_type;
-}
+G_DEFINE_TYPE (BstXFrame, bst_xframe, GTK_TYPE_FRAME);
 
 static void
 bst_xframe_class_init (BstXFrameClass *class)
@@ -96,8 +68,6 @@ bst_xframe_class_init (BstXFrameClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->set_property = bst_xframe_set_property;
   gobject_class->get_property = bst_xframe_get_property;

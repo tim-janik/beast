@@ -32,8 +32,6 @@
 
 
 /* --- prototypes --- */
-static void     bst_app_class_init              (BstAppClass    *class);
-static void     bst_app_init                    (BstApp         *app);
 static void     bst_app_destroy                 (GtkObject      *object);
 static gboolean bst_app_handle_delete_event     (GtkWidget      *widget,
                                                  GdkEventAny    *event);
@@ -136,31 +134,10 @@ static const GxkStockAction devel_help_actions[] = {
 
 /* --- variables --- */
 static BstAppClass    *bst_app_class = NULL;
-static gpointer        parent_class = NULL;
 
 
 /* --- functions --- */
-GType
-bst_app_get_type (void)
-{
-  static GType type = 0;
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-        sizeof (BstAppClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) bst_app_class_init,
-        NULL,   /* class_finalize */
-        NULL,   /* class_data */
-        sizeof (BstApp),
-        0,      /* n_preallocs */
-        (GInstanceInitFunc) bst_app_init,
-      };
-      type = g_type_register_static (GXK_TYPE_DIALOG, "BstApp", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (BstApp, bst_app, GXK_TYPE_DIALOG);
 
 static void
 bst_app_class_init (BstAppClass *class)
@@ -169,7 +146,6 @@ bst_app_class_init (BstAppClass *class)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
 
   bst_app_class = class;
-  parent_class = g_type_class_peek_parent (class);
 
   object_class->destroy = bst_app_destroy;
 

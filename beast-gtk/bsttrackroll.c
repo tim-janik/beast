@@ -74,8 +74,6 @@ enum {
 
 
 /* --- prototypes --- */
-static void	bst_track_roll_class_init		(BstTrackRollClass	*class);
-static void	bst_track_roll_init			(BstTrackRoll		*self);
 static void	bst_track_roll_destroy			(GtkObject		*object);
 static void	bst_track_roll_finalize			(GObject		*object);
 static void	bst_track_roll_set_scroll_adjustments	(BstTrackRoll		*self,
@@ -127,7 +125,6 @@ static void     track_roll_forall                       (GtkContainer    *contai
 
 
 /* --- static variables --- */
-static gpointer	parent_class = NULL;
 static guint	signal_select_row = 0;
 static guint	signal_drag = 0;
 static guint	signal_clicked = 0;
@@ -135,32 +132,7 @@ static guint	signal_stop_edit = 0;
 
 
 /* --- functions --- */
-GType
-bst_track_roll_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info = {
-	sizeof (BstTrackRollClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_track_roll_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstTrackRoll),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_track_roll_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_CONTAINER,
-				     "BstTrackRoll",
-				     &type_info, 0);
-    }
-
-  return type;
-}
+G_DEFINE_TYPE (BstTrackRoll, bst_track_roll, GTK_TYPE_CONTAINER);
 
 static void
 bst_track_roll_class_init (BstTrackRollClass *class)
@@ -169,8 +141,6 @@ bst_track_roll_class_init (BstTrackRollClass *class)
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   GtkContainerClass *container_class = GTK_CONTAINER_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->finalize = bst_track_roll_finalize;
 
