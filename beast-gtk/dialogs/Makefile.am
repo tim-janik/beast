@@ -13,14 +13,13 @@ EXTRA_DIST = $(XML_FILES)
 
 ZINTERN=$(top_builddir)/bse/zintern/zintern
 
-xmllint:
-	$(WANT_XMLLINT)
-if MAINTAINER_MODE
-WANT_XMLLINT=xmllint --noout $(XML_FILES)
-endif
+xmllint: $(XML_FILES)
+	cd .					\
+	&& test -z "$(XMLLINT)"			\
+	|| $(XMLLINT) --noout $(XML_FILES)
+.PHONY: xmllint
 
-beast-xml-zfiles.c:	$(XML_FILES) $(ZINTERN)
-	$(WANT_XMLLINT)
+beast-xml-zfiles.c: $(XML_FILES) xmllint $(ZINTERN)
 	$(ZINTERN) -b -z $(ZFILE_DEFS) > xgen-bxc	\
 	&& cp xgen-bxc $@				\
 	&& rm -f xgen-bxc
