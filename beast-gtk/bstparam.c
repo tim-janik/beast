@@ -165,7 +165,7 @@ bst_param_create_gmask_intern (GxkParam    *param,
   tooltip = gxk_param_dup_tooltip (param);
   bst_gmask_set_tip (gmask, tooltip);
   g_free (tooltip);
-  bst_gmask_pack (gmask);
+  bst_gmask_pack (gmask); /* this alters tooltips of some editors, e.g. GxkMenuButton choice */
   gxk_param_update (param);
   return gmask;
 }

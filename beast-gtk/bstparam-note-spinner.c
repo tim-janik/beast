@@ -59,7 +59,7 @@ param_note_spinner_create (GxkParam    *param,
                     "signal::input", param_note_spinner_input, param,
                     "signal::output", param_note_spinner_output, param,
                     NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
   return widget;
 }
 

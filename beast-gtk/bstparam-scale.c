@@ -58,7 +58,7 @@ param_scale_create (GxkParam    *param,
 		"can_focus", FALSE,
 		NULL);
   gxk_param_add_grab_widget (param, widget);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
   return widget;
 }
 

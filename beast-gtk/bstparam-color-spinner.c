@@ -92,12 +92,12 @@ param_color_spinner_create (GxkParam    *param,
                     "signal::input", param_color_spinner_input, param,
                     "signal::output", param_color_spinner_output, param,
                     NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
   box = gtk_hbox_new (FALSE, 0);
   gtk_box_pack_start (GTK_BOX (box), widget, TRUE, TRUE, 0);
   btn = bst_stock_icon_button (BST_STOCK_COLOR_SELECTOR);
   gtk_box_pack_end (GTK_BOX (box), btn, FALSE, TRUE, 0);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, btn, tooltip, NULL);
+  gxk_widget_set_tooltip (btn, tooltip);
   g_object_connect (btn, "swapped_signal::clicked", param_color_popup_selector, widget, NULL);
   gtk_widget_show_all (box);
   gxk_widget_add_option (box, "hexpand", "+");

@@ -70,6 +70,7 @@ param_choice_create (GxkParam    *param,
                            "mode", variant,
                            "can-focus", variant == GXK_MENU_BUTTON_COMBO_MODE,
                            NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
 
   menu = g_object_new (GTK_TYPE_MENU, NULL);
   for (i = 0; i < cvalues.n_values; i++)
@@ -103,7 +104,6 @@ param_choice_create (GxkParam    *param,
 		    "signal::button_press_event", gxk_param_ensure_focus, NULL,
 		    "signal::changed", param_choice_change_value, param,
 		    NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
   return widget;
 }
 
@@ -130,6 +130,13 @@ param_choice_update (GxkParam  *param,
               break;
 	    }
 	}
+    }
+  if (GXK_IS_MENU_BUTTON (widget))
+    {
+      /* force a menu button update even if param_choice_item_activated()
+       * didn't change anything, to ensure correctly set tooltips.
+       */
+      gxk_menu_button_update (GXK_MENU_BUTTON (widget));
     }
 }
 

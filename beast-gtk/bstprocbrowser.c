@@ -264,9 +264,7 @@ bst_proc_browser_create_buttons (BstProcBrowser *self,
 					"swapped_signal::clicked", bst_proc_browser_execute, self,
 					"swapped_signal::destroy", g_nullify_pointer, &self->execute,
 					NULL);
-      gtk_tooltips_set_tip (GXK_TOOLTIPS, self->execute,
-			    "Execute the current line.",
-			    NULL);
+      gxk_widget_set_tooltip (self->execute, "Execute the current line.");
     }
 
   /* Close

@@ -1945,7 +1945,7 @@ fixup_tcolumn_title (GtkWidget   *widget,
   while (!GTK_IS_BUTTON (widget))
     widget = widget->parent;
   if (GTK_IS_BUTTON (widget))
-    gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+    gxk_widget_set_tooltip (widget, tooltip);
 }
 
 /**

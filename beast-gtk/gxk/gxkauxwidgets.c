@@ -569,7 +569,7 @@ widget_patcher_adopt (GxkRadget          *radget,
     {
       gxk_widget_set_latent_tooltip (parent, self->tooltip);
       if (self->tooltip_visible)
-        gtk_tooltips_set_tip (GXK_TOOLTIPS, parent, self->tooltip, NULL);
+        gxk_widget_set_tooltip (parent, self->tooltip);
     }
   if (self->mute_events &&
       !gxk_signal_handler_exists (parent, "event", G_CALLBACK (widget_mute_events), NULL))

@@ -42,7 +42,7 @@ param_label_create (GxkParam    *param,
                              "visible", TRUE,
                              "parent", parent,
                              NULL);
-      gtk_tooltips_set_tip (GXK_TOOLTIPS, parent, tooltip, NULL);
+      gxk_widget_set_tooltip (parent, tooltip);
     }
   widget = g_object_new (GTK_TYPE_LABEL,
                          "visible", TRUE,

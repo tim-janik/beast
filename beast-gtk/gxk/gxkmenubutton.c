@@ -296,7 +296,7 @@ menu_button_remove_contents (GxkMenuButton *self)
       g_signal_handlers_disconnect_by_func (self->menu_item, menu_button_proxy_state, self);
       g_object_unref (self->menu_item);
       self->menu_item = NULL;
-      gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (self), NULL, NULL);
+      gxk_widget_set_tooltip (GTK_WIDGET (self), NULL);
     }
 }
 
@@ -340,10 +340,9 @@ gxk_menu_button_update (GxkMenuButton *self)
               menu_button_proxy_state (self);
               tipdata = gtk_tooltips_data_get (self->menu_item);
               if (tipdata && tipdata->tip_text && tipdata->tip_text[0])
-                gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (self), tipdata->tip_text, tipdata->tip_private);
+                gxk_widget_set_tooltip (GTK_WIDGET (self), tipdata->tip_text);
               else
-                gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (self),
-                                      gxk_widget_get_latent_tooltip (self->menu_item), NULL);
+                gxk_widget_set_tooltip (GTK_WIDGET (self), gxk_widget_get_latent_tooltip (self->menu_item));
               gtk_widget_queue_resize (GTK_WIDGET (self));
               /* restore slot sizes */
               g_object_set (self->islot,

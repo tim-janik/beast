@@ -222,7 +222,7 @@ param_proxy_create (GxkParam    *param,
   if (proxy)
     {
       BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, param->pspec->name);
-      gtk_tooltips_set_tip (GXK_TOOLTIPS, chunter, pc ? pc->tooltip : NULL, NULL);
+      gxk_widget_set_tooltip (chunter, pc ? pc->tooltip : NULL);
     }
   gxk_widget_add_font_requisition (widget, 16, 2);
   gxk_param_entry_connect_handlers (param, widget, param_proxy_changed);
@@ -232,8 +232,8 @@ param_proxy_create (GxkParam    *param,
   GtkWidget *arrow = bst_clue_hunter_create_arrow (BST_CLUE_HUNTER (chunter), TRUE);
   gtk_box_pack_end (GTK_BOX (box), arrow, FALSE, TRUE, 0);
   gtk_widget_show_all (box);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, arrow, tooltip, NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
+  gxk_widget_set_tooltip (arrow, tooltip);
   gxk_widget_add_option (box, "hexpand", "+");
   return box;
 }

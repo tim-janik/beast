@@ -380,30 +380,23 @@ bst_preferences_create_buttons (BstPreferences *self,
                                   "swapped_signal::clicked", bst_preferences_save, self,
                                   "swapped_signal::destroy", g_nullify_pointer, &self->apply,
                                   NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, self->apply,
-			"Apply and save the preference values. Some values may only take effect after "
-			"restart while others can be locked against modifcation during "
-			"playback.",
-			NULL);
+  gxk_widget_set_tooltip (self->apply,
+                          "Apply and save the preference values. Some values may only take effect after "
+                          "restart while others can be locked against modifcation during "
+                          "playback.");
   
   /* Revert
    */
   widget = gxk_dialog_action_swapped (dialog, BST_STOCK_REVERT, bst_preferences_revert, self);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget,
-			"Revert to the currently active values.",
-			NULL);
+  gxk_widget_set_tooltip (widget, "Revert to the currently active values.");
   
   /* Default Revert
    */
   widget = gxk_dialog_action_swapped (dialog, BST_STOCK_DEFAULT_REVERT, bst_preferences_default_revert, self);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget,
-			"Revert to hardcoded default values (factory settings).",
-			NULL);
+  gxk_widget_set_tooltip (widget, "Revert to hardcoded default values (factory settings).");
   
   /* Close
    */
   widget = gxk_dialog_action (dialog, BST_STOCK_CLOSE, gxk_toplevel_delete, NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget,
-			"Discard changes and close dialog.",
-			NULL);
+  gxk_widget_set_tooltip (widget, "Discard changes and close dialog.");
 }

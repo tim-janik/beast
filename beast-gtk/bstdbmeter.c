@@ -1345,7 +1345,7 @@ bst_db_scale_hook_up_param (GtkRange     *range,
                             GxkParam     *param)
 {
   gchar *tooltip = gxk_param_dup_tooltip (param);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (range), tooltip, NULL);
+  gxk_widget_set_tooltip (GTK_WIDGET (range), tooltip);
   g_free (tooltip);
   gboolean updating = param->updating;
   param->updating = TRUE;       /* protect value from change-notifications during setup */

@@ -75,7 +75,7 @@ param_scale_create (GxkParam    *param,
                     "signal_after::size_request",
                     variant >= PARAM_SCALE_VERTICAL ? param_scale_vscale_size_request : param_scale_hscale_size_request,
                     NULL, NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
   if (variant >= PARAM_SCALE_VERTICAL)
     gxk_widget_add_option (widget, "vexpand", "+");
   else

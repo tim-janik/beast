@@ -1,5 +1,5 @@
 FIXME(urgent):
-- replace all g.k_tooltips_set_tip (GXK_TOOLTIPS,...) with gxk_widget_set_tooltip()
+- move saturation to distortion menu
 - delete: GxkAction.options, GxkAction.key?
 - s/ActionSet/ActionLink/
 - implement GxkActionFactory like gxk_window_add_assortment_client()

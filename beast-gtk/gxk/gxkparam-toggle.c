@@ -52,7 +52,7 @@ param_toggle_create (GxkParam    *param,
   g_object_connect (widget,
 		    "signal::clicked", param_toggle_change_value, param,
 		    NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
   if (variant == PARAM_TOGGLE_WITH_LABEL)
     g_object_new (GTK_TYPE_LABEL,
                   "visible", TRUE,

@@ -1,3 +1,12 @@
+Thu Jan 20 01:15:10 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/*.c:
+	* beast-gtk/*.c: use gxk_widget_set_tooltip() all over the place.
+
+	* beast-gtk/bstparam-choice.c: force resetting of menu button tooltips
+	upon gxk_param_update() to ensure correct initial tooltip (important
+	if the tooltip is taken from menu items and overriden by gmask creation).
+
 Thu Jan 20 00:20:26 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkradget.c: removed special character functions 

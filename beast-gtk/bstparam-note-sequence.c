@@ -38,7 +38,7 @@ param_note_sequence_create (GxkParam    *param,
   g_object_connect (widget,
 		    "signal::seq-changed", param_note_sequence_changed, param,
 		    NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
   gxk_widget_add_option (widget, "hexpand", "+");
   gxk_widget_add_option (widget, "vexpand", "+");
   return widget;

@@ -44,7 +44,6 @@ gxk_notebook_assortment_added (gpointer                client_data,
                                GtkWidget              *publisher)
 {
   GxkNotebook *self = GXK_NOTEBOOK (client_data);
-  g_printerr ("%s: %s == %s\n", G_STRLOC, self->assortment_name, assortment->publishing_name);
   if (self->assortment_name && assortment->publishing_name &&
       strcmp (self->assortment_name, assortment->publishing_name) == 0)
     gxk_notebook_set_assortment (self, assortment);

@@ -38,7 +38,7 @@ param_time_create (GxkParam    *param,
                                     NULL);
   gxk_widget_add_font_requisition (widget, 5, 14);
   gxk_param_entry_connect_handlers (param, widget, param_time_changed);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+  gxk_widget_set_tooltip (widget, tooltip);
   return widget;
 }
 

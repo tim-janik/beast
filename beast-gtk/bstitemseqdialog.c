@@ -151,16 +151,16 @@ bst_item_seq_dialog_popup (gpointer     parent_widget,
 
   g_object_set (gxk_radget_find (radget, "candidate-label"), "label", candidate_label, NULL);
   g_object_set (gxk_radget_find (radget, "item-label"), "label", item_label, NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, gxk_radget_find (radget, "candidate-view"), candidate_tooltip, NULL);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, gxk_radget_find (radget, "item-view"), item_tooltip, NULL);
+  gxk_widget_set_tooltip (gxk_radget_find (radget, "candidate-view"), candidate_tooltip);
+  gxk_widget_set_tooltip (gxk_radget_find (radget, "item-view"), item_tooltip);
 
   /* construct add/remove button tooltips */
   gchar *string;
   string = g_strdup_printf (_("Adds the selection from the \"%s\" list to the \"%s\" list"), candidate_label, item_label);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, gxk_radget_find (radget, "button-add"), string, NULL);
+  gxk_widget_set_tooltip (gxk_radget_find (radget, "button-add"), string);
   g_free (string);
   string = g_strdup_printf (_("Removes the selection from the \"%s\" list"), item_label);
-  gtk_tooltips_set_tip (GXK_TOOLTIPS, gxk_radget_find (radget, "button-remove"), string, NULL);
+  gxk_widget_set_tooltip (gxk_radget_find (radget, "button-remove"), string);
   g_free (string);
 
   bst_item_seq_dialog_set (self, candidates, items);

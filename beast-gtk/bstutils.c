@@ -960,20 +960,19 @@ bst_gmask_foreach (BstGMask *mask,
 
 static GtkWidget*
 get_toplevel_and_set_tip (GtkWidget   *widget,
-                          GtkTooltips *tooltips,
                           const gchar *tip)
 {
   GtkWidget *last;
   
   if (!widget)
     return NULL;
-  else if (!tooltips || !tip)
+  else if (!tip)
     return gtk_widget_get_toplevel (widget);
   do
     {
       if (!GTK_WIDGET_NO_WINDOW (widget))
         {
-          gtk_tooltips_set_tip (tooltips, widget, tip, NULL);
+          gxk_widget_set_tooltip (widget, tip);
           return gtk_widget_get_toplevel (widget);
         }
       last = widget;
@@ -985,7 +984,7 @@ get_toplevel_and_set_tip (GtkWidget   *widget,
                            "visible", TRUE,
                            "child", last,
                            NULL);
-  gtk_tooltips_set_tip (tooltips, widget, tip, NULL);
+  gxk_widget_set_tooltip (widget, tip);
   return widget;
 }
 
@@ -1038,11 +1037,11 @@ bst_gmask_pack (BstGMask *mask)
    */
   
   /* retrieve children and set tips */
-  prompt = get_toplevel_and_set_tip (gmask->prompt, GXK_TOOLTIPS, gmask->tip);
-  aux1 = get_toplevel_and_set_tip (gmask->aux1, GXK_TOOLTIPS, gmask->tip);
-  aux2 = get_toplevel_and_set_tip (gmask->aux2, GXK_TOOLTIPS, gmask->tip);
-  aux3 = get_toplevel_and_set_tip (gmask->aux3, GXK_TOOLTIPS, gmask->tip);
-  action = get_toplevel_and_set_tip (gmask->action, GXK_TOOLTIPS, gmask->tip);
+  prompt = get_toplevel_and_set_tip (gmask->prompt, gmask->tip);
+  aux1 = get_toplevel_and_set_tip (gmask->aux1, gmask->tip);
+  aux2 = get_toplevel_and_set_tip (gmask->aux2, gmask->tip);
+  aux3 = get_toplevel_and_set_tip (gmask->aux3, gmask->tip);
+  action = get_toplevel_and_set_tip (gmask->action, gmask->tip);
   dislodge_columns = g_object_get_data (G_OBJECT (gmask->parent), "GMask-dislodge") != NULL;
   table = GTK_TABLE (gmask->parent);
   
