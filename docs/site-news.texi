@@ -25,7 +25,7 @@
 @unnumbered What's New?
 
 
-@newsTitle{Sunday 07 Mar 2004, The low latency BEAST Realease}
+@newsTitle{Sunday 07 Mar 2004, The low latency BEAST Release}
 
 BEAST/BSE version 0.6.1 is available from the
 @uref{beast-doc://download,,download section}.
@@ -37,10 +37,10 @@ and patch:
 @uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.0-0.6.1.bz2,, patch-beast-0.6.0-0.6.1.bz2}.
 
 Apart from important bug fixes, this release comes with a small suid wrapper,
-that acquires a nice level of -20 and drops privileges. This allowes
+that acquires a nice level of -20 and drops privileges. This allows
 beast to let the synthesis threads run with increased scheduling priorities
 which greatly reduces the possibility for drop-outs.
-Under one of the recent 2.6 linux kernels, this also allowes very low latency
+Under one of the recent 2.6 Linux kernels, this also allows very low latency
 setups with delays around only 2 milli seconds.
 Also among the newly added features is a highly experimental prototype
 of a pattern editor. While this widget isn't fully functional yet, it already
@@ -63,7 +63,7 @@ and the
 @uref{beast-doc://links-synthesis,, synthesis links section} was updated.
 
 
-@newsTitle{Wednesday 11 Feb 2004, BEAST Realease ``Silver Vein''}
+@newsTitle{Wednesday 11 Feb 2004, BEAST Release ``Silver Vein''}
 
 BEAST/BSE version 0.6.0 is available from the
 @uref{beast-doc://download,,download section},
@@ -110,4 +110,4 @@ Have fun and
 
 @bye
 
-@c  LocalWords:  website uref Alper Ersoy efford
+@c  LocalWords:  website uref Alper Ersoy efford sid
