@@ -359,9 +359,15 @@ csource_info_update (BstCanvasSource *csource)
 
       /* construct information */
       gxk_scroll_text_clear (text);
-      gxk_scroll_text_aprintf (text, "%s (%s):\n",
-			       bse_item_get_name_or_type (csource->source),
-			       bse_item_get_type_name (csource->source));
+      gxk_scroll_text_aprintf (text, "%s:\n", bse_item_get_name_or_type (csource->source));
+
+      /* type & category */
+      gxk_scroll_text_push_indent (text);
+      gxk_scroll_text_aprintf (text, "Type: %s\n", bse_item_get_type_name (csource->source));
+      BseCategorySeq *cseq = bse_categories_match_typed ("*", bse_item_get_type (csource->source));
+      if (cseq->n_cats)
+        gxk_scroll_text_aprintf (text, "Category: %s\n", cseq->cats[0]->category);
+      gxk_scroll_text_pop_indent (text);
 
       /* input channels */
       if (bse_source_n_ichannels (csource->source))
