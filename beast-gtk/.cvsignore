@@ -4,7 +4,6 @@ _libs
 .libs
 Makefile
 Makefile.in
-beast
 bstconfigpaths.h
 bstenum_arrays.c
 bstenum_list.c
@@ -19,3 +18,5 @@ tsmview
 scankeys
 stamp-bstenum_arrays.c
 stamp-ckeycheck
+beast-0.*.*
+beast
