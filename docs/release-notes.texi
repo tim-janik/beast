@@ -12,20 +12,16 @@
 @unnumbered @center RELEASE-NOTES
 
 This new development series of BEAST comes with a lot of the internals
-redone, many new GUI features and a sound generation
-back-end separated from all GUI activities.
+redone, many new GUI features and a sound generation back-end separated
+from all GUI activities.
 Specifics can be found in the
 @uref{beast-doc://release-news,,NEWS section}.
 
-The most outstanding new features are the demo song, the effect and
-instrument management abilities, the track editor which allowes
-for easy selection of synthesizers or samples as track sources, loop
-support in songs and unlimited Undo/Redo capabilities.
-
-NOTE: If you encounter problems with .bse files from previous
-BEAST versions, this may indicate bugs at the compatibility
-layer. A bug report accompanied by the problematic file can be send
-to the mailing list and is likely to get you a fixed file in return.
+Outstanding new features include support for skins, many sample
+file formats, MIDI file import abilities, an improved piano roll
+widget, the track editor which allows for easy selection of
+synthesisers or samples as track sources, loop support in songs
+and unlimited Undo/Redo capabilities.
 
 Good starting points are the effects and instruments or the demo
 song shipped with BEAST, and of course the
