@@ -1,0 +1,3 @@
+filename="bseadder.bse"
+features="--avg-spectrum --avg-energy"
+threshold="99.99"

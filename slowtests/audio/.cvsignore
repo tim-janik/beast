@@ -1,0 +1,5 @@
+*.test.current
+*.bse.wav
+Makefile
+Makefile.in
+beastconf.sh

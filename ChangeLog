@@ -1,3 +1,21 @@
+Wed Sep 22 00:54:46 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* configure.in: Add tests/audio/Makefile.am
+
+	* tests/audio/README: Description of the automated audio testing.
+
+	* tests/audio/Makefile.am: You can say make test now.
+
+	* tests/audio/featuretest.sh: The main shell script which evaluates
+	the feature tests.
+
+	* tests/audio/bsetowav.scm: A helper scheme script which converts bse
+	files to wav files.
+
+	* tests/audio/bseadder.test:
+	* tests/audio/bseadder.test.reference:
+	* tests/audio/bseadder.bse: A test for bseadder.
+
 Tue Sep 21 03:11:53 2004  Tim Janik  <timj@gtk.org>
 
 	* library/demo/partymonster.bse: adjusted volume levels of the

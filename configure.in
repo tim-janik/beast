@@ -603,6 +603,7 @@ library/skins/Makefile
 library/skins/images/Makefile
 tools/Makefile
 tests/Makefile
+tests/audio/Makefile
 data/Makefile
 data/sfi.pc
 data/bse.pc

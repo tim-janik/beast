@@ -1,0 +1,44 @@
+This directory provides automatic testing of the audio output beast synthesis
+networks produce. Since changing algorithms might result in subtle differences
+in the resulting audio files, 1:1 comparision of audio files (such as storing
+an md5 hash) is not a good choice for an automated testing framework.
+
+Thus, the tests are based on comparing features of audio files that are not
+as fragile as a bytewise comparision, but still provide a good similarity
+measure, such as the spectrum or the average signal energy. To see in detail
+which features are supported, call bsefextract --help.
+
+To run the currently available tests, there is a Makefile rule, so you can
+type:
+
+   make test
+
+To add a new audio test, lets call it foo, you need to perform the following
+steps:
+
+1) create a foo.bse file with beast, which will generate appropriate output;
+   ensure that the bse file terminates after some time (using the song
+   sequencer is a good way to ensure this)
+
+   save foo.bse in this directory (add it to the CVS)
+
+2) write three things into foo.test:
+
+   - the .bse filename
+   - the features you want to compare (see ../../tools/bsefextract --help)
+   - the desired threshold
+
+   an example for the contents of foo.test could be (add it to the CVS):
+
+     filename="foo.bse"
+     features="--avg-spectrum --avg-energy"
+     threshold="99.99"
+
+3) add it to the FEATURE_TESTS line in Makefile.am
+
+4) run make test once, the test will fail, but you will be given instructions
+   how to make the results of this test run the test reference data
+
+5) do this (and add newly created foo.test.reference to CVS)
+
+6) run make test a second time, the test should succeed now
