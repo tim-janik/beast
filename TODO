@@ -19,6 +19,7 @@ FIXME(release-critical):
 - add: /demo/simple/stereo pipe
        /demo/simple/MIDI piano
 - test fft on 2, 3, 4 etc channels       
+- spectrogram needs to show "channel is unconnected" label instead of black background
 TODO:
 - support various fft windows for fft probes
 - implement float-ffts
