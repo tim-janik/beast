@@ -1,3 +1,18 @@
+Fri Jan 16 17:51:53 2004  Tim Janik  <timj@gtk.org>
+
+	* engine-mplan.txt: fixed typo.
+
+	* gslengine.c: fixed documentation.
+
+	* gslopmaster.c: make needs_reset unconditionally indicate whether a
+	module needs a reset() call. check whether a module flagged needs_reset
+	has a reset() function before calling it. defer forced resets until
+	shortly before process().
+
+	* gslopschedule.c: propagate needs_reset() down a branch similar to
+	suspension state. this fixes missing reset()s of voices where both
+	a suspend and resume job for a voice fell into the same block boundary.
+
 Fri Jan 16 04:32:05 2004  Tim Janik  <timj@gtk.org>
 
 	* gslopmaster.c (master_process_flow): execute flow jobs scheduled at

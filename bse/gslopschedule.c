@@ -398,8 +398,9 @@ _engine_schedule_consumer_node (EngineSchedule *schedule,
 
 /* --- depth scheduling --- */
 static guint64
-approx_suspension_state (EngineNode *node,
-                         gboolean   *seen_cycle_p)
+determine_suspension_state (EngineNode *node,
+                            gboolean   *seen_cycle_p,
+                            gboolean   *avoid_reset_p)
 {
   gboolean seen_cycle = FALSE;
   guint64 stamp;
@@ -407,6 +408,7 @@ approx_suspension_state (EngineNode *node,
   if (node->update_suspend)
     {
       SfiRing *ring;    /* calculate outer suspend constraints */
+      gboolean avoid_reset = FALSE;
       stamp = ENGINE_NODE_IS_CONSUMER (node) ? 0 : GSL_MAX_TICK_STAMP;
       node->in_suspend_call = TRUE;
       for (ring = node->output_nodes; ring; ring = sfi_ring_walk (ring, node->output_nodes))
@@ -414,12 +416,13 @@ approx_suspension_state (EngineNode *node,
           EngineNode *dest_node = ring->data;
           if (!dest_node->in_suspend_call)      /* catch cycles */
             {
-              guint64 ostamp = approx_suspension_state (ring->data, &seen_cycle);
+              guint64 ostamp = determine_suspension_state (ring->data, &seen_cycle, &avoid_reset);
               stamp = MIN (ostamp, stamp);
             }
           else
             seen_cycle = TRUE;
         }
+      node->needs_reset |= !avoid_reset;
       /* bound against inner suspend constraint */
       stamp = MAX (stamp, node->local_active);
       if (!seen_cycle)
@@ -430,7 +433,10 @@ approx_suspension_state (EngineNode *node,
       node->in_suspend_call = FALSE;
     }
   else
-    stamp = node->next_active;
+    {
+      stamp = node->next_active;
+      *avoid_reset_p |= !node->needs_reset;
+    }
   *seen_cycle_p = *seen_cycle_p || seen_cycle;
   return stamp;
 }
@@ -441,7 +447,9 @@ update_suspension_state (EngineNode *node)
   if (node->update_suspend)
     {
       gboolean seen_cycle = FALSE;
-      guint64 stamp = approx_suspension_state (node, &seen_cycle);
+      gboolean avoid_reset = FALSE;
+      guint64 stamp = determine_suspension_state (node, &seen_cycle, &avoid_reset);
+      node->needs_reset |= !avoid_reset;
       if (node->update_suspend)         /* break cycles */
         {
           node->next_active = stamp;

@@ -33,7 +33,7 @@
 #define JOB_DEBUG    sfi_debug_keyfunc ("job")
 #define TJOB_DEBUG   sfi_debug_keyfunc ("tjob")
 
-#define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = (node)->module.klass->reset != NULL*/; } G_STMT_END
+#define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = TRUE*/; } G_STMT_END
 
 
 /* --- time stamping (debugging) --- */
@@ -340,7 +340,7 @@ master_process_job (GslJob *job)
       NODE_FLAG_RECONNECT (node);
       node->local_active = 0;   /* by default not suspended */
       node->update_suspend = TRUE;
-      node->needs_reset = node->module.klass->reset != NULL;
+      node->needs_reset = TRUE;
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_KILL_INPUTS:
@@ -423,7 +423,7 @@ master_process_job (GslJob *job)
 	{
 	  propagate_update_suspend (node);
 	  node->local_active = stamp;
-	  node->needs_reset = node->module.klass->reset != NULL;
+	  node->needs_reset = TRUE;
 	  master_need_reflow |= TRUE;
 	}
       break;
@@ -436,7 +436,7 @@ master_process_job (GslJob *job)
 	{
 	  propagate_update_suspend (node);
 	  node->local_active = stamp;
-	  node->needs_reset = node->module.klass->reset != NULL;
+	  node->needs_reset = TRUE;
 	  master_need_reflow |= TRUE;
 	}
       break;
@@ -525,9 +525,7 @@ master_process_job (GslJob *job)
       JOB_DEBUG ("reset(%p)", node);
       g_return_if_fail (node->integrated == TRUE);
       node->counter = GSL_TICK_STAMP;
-      if (node->module.klass->reset)
-        node->module.klass->reset (&node->module);
-      node->needs_reset = FALSE;
+      node->needs_reset = TRUE;
       break;
     case ENGINE_JOB_ACCESS:
       node = job->data.access.node;
@@ -705,7 +703,8 @@ master_update_node_state (EngineNode *node,
   if_reject (node->needs_reset && !ENGINE_NODE_IS_SUSPENDED (node, node->counter))
     {
       /* for suspended nodes, reset() occours later */
-      node->module.klass->reset (&node->module);
+      if (node->module.klass->reset)
+        node->module.klass->reset (&node->module);
       node->needs_reset = FALSE;
     }
   tjob = node_pop_flow_job (node, max_tick);
@@ -802,7 +801,7 @@ master_process_locked_node (EngineNode *node,
 	  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	    if (node->module.ostreams[i].connected)
 	      node->module.ostreams[i].values = gsl_engine_const_values (0.0);
-          node->needs_reset = node->module.klass->reset != NULL;
+          node->needs_reset = TRUE;
 	}
       else
         node->module.klass->process (&node->module, new_counter - node->counter);

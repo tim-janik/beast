@@ -125,9 +125,10 @@ gsl_module_tick_stamp (GslModule *module)
  *
  * Check whether @istream may be disconnected via
  * gsl_job_disconnect(). This is not an indication for whether
- * @istream will be connected during process(), as the source
- * may be a dangling virtual module, resulting in an unconnected
- * input stream after the next scheduling phase.
+ * GSL_MODULE_ISTREAM (@module, @istream).connected will be %TRUE
+ * during process(), as the source may be a dangling virtual module,
+ * resulting in GSL_MODULE_ISTREAM (@module, @istream).connected
+ * being %FALSE.
  * See also gsl_module_new_virtual().
  * This function is MT-safe and may be called from any thread.
  */
@@ -395,8 +396,9 @@ gsl_job_set_consumer (GslModule *module,
  * @module: The module to be reset
  * @Returns: New job suitable for gsl_trans_add()
  *
- * Forces an immediate reset of @module if its class
- * provides a reset() implementation. This is usually
+ * Forces a reset of @module before its next call to
+ * process(), if its class provides a reset()
+ * implementation. This is usually
  * not a good idea, as forcing an immediate reset can
  * lead to multiple unnecessary reset() invocations.
  * The logic used to invoke reset() automatically is

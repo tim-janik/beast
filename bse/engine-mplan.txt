@@ -155,7 +155,7 @@ need updating themselves).
 Various optimizations are possible during the two recursion passes,
 e.g. by allowing suspending only at block boundaries or by integrating
 one recursion pass with other recursive tasks on the graph (scheduling).
-Node should not be activated or suspended due to a cyclic connection
+Nodes should not be activated or suspended due to a cyclic connection
 to one of their outputs, so to determine the activation time of a node
 cyclic connection paths must be ignored.
 
