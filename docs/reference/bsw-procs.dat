@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1
-date    = 26 Jul 2002
+date    = 27 Jul 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 26 Jul 2002 BEAST-0.4.1
+BSW-Procedures 27 Jul 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -507,6 +507,26 @@ error: BSE error code
 @DOC-DESCRIPTION@
 Set a named string in a data pocket entry.  
 @DOC-SYNOPSIS@
+@STRONG bsw-editable-sample-close@ (@EMPH esample@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 10
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+esample
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 10
+
+
+@DOC-DESCRIPTION@
+Close an opened sample.  
+@DOC-SYNOPSIS@
 @STRONG bsw-editable-sample-collect-stats@ (@EMPH esample@, @EMPH voffset@, @EMPH offset-scale@, @EMPH block-size@, @EMPH stepping@, @EMPH max-pairs@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -634,6 +654,28 @@ osc-freq: Oscillator Frequency
 
 @DOC-DESCRIPTION@
 Return the oscillator frequency for the sample.  
+@DOC-SYNOPSIS@
+@STRONG bsw-editable-sample-open@ (@EMPH esample@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+esample
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Open the sample for reading.  
 @DOC-SYNOPSIS@
 @STRONG bsw-editable-sample-read-samples@ (@EMPH esample@, @EMPH voffset@);
 
@@ -3343,7 +3385,7 @@ error: BSE error type
 @DOC-DESCRIPTION@
 Load sample chunks from a wave file  
 @DOC-SYNOPSIS@
-@STRONG bsw-wave-n-channels@ (@EMPH wave@);
+@STRONG bsw-wave-n-wave-chunks@ (@EMPH wave@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -3360,10 +3402,10 @@ wave
 retspace = 11
 
 @DOC-RETURNS@
-n-channels: 
+n-chunks: 
 
 @DOC-DESCRIPTION@
-Get the number of channels of a wave  
+Get the number of wave chunks of a wave  
 @DOC-SYNOPSIS@
 @STRONG bsw-wave-use-editable@ (@EMPH wave@, @EMPH chunk-index@);
 

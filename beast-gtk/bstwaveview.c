@@ -134,10 +134,7 @@ popup_wave_dialog (BstWaveView *wave_view)
   BswProxy wave = bst_item_view_get_current (BST_ITEM_VIEW (wave_view));
   GtkWidget *weditor, *wdialog;
 
-  weditor = g_object_new (BST_TYPE_WAVE_EDITOR,
-			  "visible", TRUE,
-			  "wave", wave,
-			  NULL);
+  weditor = bst_wave_editor_new (wave);
   wdialog = bst_dialog_new (NULL, GTK_OBJECT (wave_view), BST_DIALOG_DELETE_BUTTON,
 			    NULL, weditor);
   bst_dialog_sync_title_to_proxy (BST_DIALOG (wdialog), wave, "%s");

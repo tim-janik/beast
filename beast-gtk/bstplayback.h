@@ -57,8 +57,6 @@ gboolean		bst_play_back_handle_is_playing	(BstPlayBackHandle	*handle);
 gboolean		bst_play_back_handle_done	(BstPlayBackHandle	*handle);
 void			bst_play_back_handle_destroy	(BstPlayBackHandle	*handle);
 
-#include	<gsl/gslwavechunk.h>
-
 
 
 

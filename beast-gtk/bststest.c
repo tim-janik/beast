@@ -258,7 +258,7 @@ qsampler_dcache_filler (gpointer     data,
   gint i;
 
   dnode = gsl_data_cache_ref_node (dcache, voffset, TRUE);
-  dcache_length = dcache->dhandle->n_values;
+  dcache_length = gsl_data_handle_length (dcache->dhandle);
   dnode_length = dcache->node_size;
   for (i = 0; i < n_values; i++)
     {
@@ -286,7 +286,7 @@ qsampler_set_handle (BstQSampler   *qsampler,
   GslDataCache *dcache = gsl_data_cache_new (handle, 1);
   
   gsl_data_cache_open (dcache);
-  bst_qsampler_set_source (qsampler, dcache->dhandle->n_values,
+  bst_qsampler_set_source (qsampler, gsl_data_handle_length (dcache->dhandle),
 			   qsampler_dcache_filler, dcache, (GDestroyNotify) gsl_data_cache_close);
   gsl_data_cache_unref (dcache);
 }
@@ -331,7 +331,7 @@ score (BstQSampler *qsampler)
   GslDataCache *dcache = qsampler->src_data;
   GslDataHandle *shandle = global_handle;
   GslDataHandle *dhandle = dcache->dhandle;
-  GslLong l, length = MIN (shandle->n_values, dhandle->n_values);
+  GslLong l, length = MIN (gsl_data_handle_length (shandle), gsl_data_handle_length (dhandle));
   gdouble score = 0;
 
   for (l = 0; l < length; )
@@ -357,7 +357,7 @@ static gdouble
 score_loop (GslDataHandle *shandle,
 	    GslDataHandle *dhandle)
 {
-  GslLong l, length = MIN (shandle->n_values, dhandle->n_values);
+  GslLong l, length = MIN (gsl_data_handle_length (shandle), gsl_data_handle_length (dhandle));
   gdouble score = 0;
 
   for (l = 0; l < length; )
@@ -384,7 +384,7 @@ static void
 find (WaveView *view)
 {
   GslLong start, end;
-  GslLong length = view->handle->n_values;
+  GslLong length = gsl_data_handle_length (view->handle);
   GslLoopSpec loop_spec = { 0, length / 3, 44100.0/15., length / 3.5 };
     
   gsl_data_find_tailmatch (view->handle, &loop_spec, &start, &end);
@@ -421,8 +421,8 @@ findx ()
 {
   GslDataCache *dcache = gsl_data_cache_new (global_handle, 1);
   GslDataHandle *shandle = gsl_data_handle_new_dcached (dcache);
-  GslLong length = shandle->n_values;
-  GslLong l, start = 0, end = 0, lsize = shandle->n_values / 2;
+  GslLong length = gsl_data_handle_length (shandle);
+  GslLong l, start = 0, end = 0, lsize = gsl_data_handle_length (shandle) / 2;
   gdouble score = 0, least = GSL_MAXLONG;
   
   gsl_data_cache_unref (dcache);
@@ -490,7 +490,7 @@ main (int   argc,
   for (i = 1; i < argc; i++)
     {
       view = g_new (WaveView, 1);
-      view->handle = gsl_wave_handle_new (argv[i], GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN, 0, -1);
+      view->handle = gsl_wave_handle_new (argv[i], 1, GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN, 0, -1);
       if (!view->handle)
 	g_error ("failed to create handle for \"%s\": stat() failed", argv[i]);
       view->qsampler = g_object_new (BST_TYPE_QSAMPLER,
