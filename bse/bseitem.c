@@ -27,6 +27,7 @@
 static void	bse_item_class_init		(BseItemClass	*class);
 static void	bse_item_init			(BseItem		*item);
 static void	bse_item_do_shutdown		(BseObject		*object);
+static void	bse_item_do_destroy		(BseObject		*object);
 static void	bse_item_do_set_name		(BseObject		*object,
 						 const gchar		*name);
 static guint	bse_item_do_get_seqid		(BseItem		*item);
@@ -35,7 +36,9 @@ static void	bse_item_do_set_parent		(BseItem                *item,
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static BseTypeClass *parent_class = NULL;
+static GSList       *item_seqid_changed_queue = NULL;
+
 
 
 /* --- functions --- */
@@ -72,10 +75,10 @@ bse_item_class_init (BseItemClass *class)
 
   object_class->set_name = bse_item_do_set_name;
   object_class->shutdown = bse_item_do_shutdown;
+  object_class->destroy = bse_item_do_destroy;
 
   class->set_parent = bse_item_do_set_parent;
   class->get_seqid = bse_item_do_get_seqid;
-  class->seqid_changed = NULL;
 }
 
 static void
@@ -93,6 +96,17 @@ bse_item_do_shutdown (BseObject *object)
 
   /* chain parent class' shutdown handler */
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+}
+
+static void
+bse_item_do_destroy (BseObject *object)
+{
+  BseItem *item = BSE_ITEM (object);
+
+  item_seqid_changed_queue = g_slist_remove (item_seqid_changed_queue, item);
+
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
@@ -154,15 +168,34 @@ bse_item_do_get_seqid (BseItem *item)
     return 0;
 }
 
+static gboolean
+idle_handler_seqid_changed (gpointer data)
+{
+  while (item_seqid_changed_queue)
+    {
+      GSList *slist = item_seqid_changed_queue;
+      BseItem *item = slist->data;
+
+      item_seqid_changed_queue = slist->next;
+      g_slist_free_1 (slist);
+      if (item->parent)
+	BSE_NOTIFY (item, seqid_changed, NOTIFY (OBJECT, DATA));
+    }
+
+  return FALSE;
+}
+
 void
-bse_item_seqid_changed (BseItem *item)
+bse_item_queue_seqid_changed (BseItem *item)
 {
   g_return_if_fail (BSE_IS_ITEM (item));
+  g_return_if_fail (BSE_ITEM (item)->parent != NULL);
 
-  if (BSE_ITEM_GET_CLASS (item)->seqid_changed)
-    BSE_ITEM_GET_CLASS (item)->seqid_changed (item);
+  if (!item_seqid_changed_queue)
+    g_idle_add_full (BSE_NOTIFY_PRIORITY, idle_handler_seqid_changed, NULL, NULL);
 
-  BSE_NOTIFY (item, seqid_changed, NOTIFY (OBJECT, DATA));
+  if (!g_slist_find (item_seqid_changed_queue, item))
+    item_seqid_changed_queue = g_slist_prepend (item_seqid_changed_queue, item);
 }
 
 guint

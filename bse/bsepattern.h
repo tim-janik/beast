@@ -74,9 +74,14 @@ BsePatternNote*	bse_pattern_peek_note	    (BsePattern		*pattern,
 					     guint               row);
 GList* /*fl*/	bse_pattern_list_selection  (BsePattern		*pattern);
 gboolean	bse_pattern_has_selection   (BsePattern		*pattern);
+void		bse_pattern_modify_note	    (BsePattern		*pattern,
+					     guint		 channel,
+					     guint		 row,
+					     gint		 note,
+					     BseInstrument	*instrument);
 
 
-/* --- procedure short hands --- */
+/* --- convenience --- */
 void		bse_pattern_set_note	    (BsePattern		*pattern,
 					     guint               channel,
 					     guint               row,
@@ -92,11 +97,6 @@ void		bse_pattern_set_n_channels  (BsePattern		*pattern,
 					     guint		 n_channels);
 void		bse_pattern_set_n_rows	    (BsePattern		*pattern,
 					     guint		 n_rows);
-void		bse_pattern_modify_note	    (BsePattern		*pattern,
-					     guint		 channel,
-					     guint		 row,
-					     gint		 note,
-					     BseInstrument	*instrument);
 void		bse_pattern_select_note     (BsePattern		*pattern,
 					     guint      	 channel,
 					     guint      	 row);

@@ -1,3 +1,17 @@
+Mon Mar  6 23:47:46 2000  Tim Janik  <timj@gtk.org>
+
+	* bsesong.[hc]: added pattern group support:
+	bse_song_get_default_pattern_group(),
+	bse_song_insert_pattern_group_link(),
+	bse_song_insert_pattern_group_copy() and
+	bse_song_remove_pattern_group_entry().
+	
+	* bsepatterngroup.[hc]: new maintenance object to keep track of
+	patterns, grouped together for arranger parts.
+
+	* bseitem.[hc] (bse_item_queue_seqid_changed): made seqid_changed() an
+	async notification.
+
 Tue Feb 22 07:28:03 2000  Tim Janik  <timj@gtk.org>
 
 	* builtin_bsepattern.c: added Tools/Fill random procedure, formerly

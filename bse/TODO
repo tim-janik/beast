@@ -15,8 +15,10 @@ general:
 -	delay class destruction and plugin unloading through timeout handlers
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
 -	optimize weak reference removal
+-	recheck n_preallocs
 
 Song/Pattern
+-	removal of instruments needs to scratch instrument references from all patterns
 -	mutable channels! (make them silent)
 	use procedure types for this
 

@@ -99,6 +99,8 @@ typedef struct  _BseObject              BseObject;
 typedef struct  _BseObjectClass         BseObjectClass;
 typedef struct  _BsePattern             BsePattern;
 typedef struct  _BsePatternClass        BsePatternClass;
+typedef struct  _BsePatternGroup        BsePatternGroup;
+typedef struct  _BsePatternGroupClass   BsePatternGroupClass;
 typedef struct  _BseProcedureClass      BseProcedureClass;
 typedef struct  _BseProject             BseProject;
 typedef struct  _BseProjectClass        BseProjectClass;
@@ -122,7 +124,6 @@ typedef struct  _BseChunk               BseChunk;
 typedef struct  _BseDot                 BseDot;
 typedef struct  _BseGlobals             BseGlobals;
 typedef struct  _BseIcon                BseIcon;
-typedef struct  _BseLfo                 BseLfo;
 typedef struct  _BsePixdata             BsePixdata;
 typedef struct  _BseMixBuffer           BseMixBuffer;
 typedef struct  _BseMixSource           BseMixSource;
@@ -246,51 +247,67 @@ typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
 /* notifier signatures, these will get postprocessed to generate
  * bsenotifier_array.c
  */
-typedef void    (*BseNotify_destroy)                (BseObject      *object,
-						     gpointer        data);
-typedef void    (*BseNotify_name_set)               (BseObject      *object,
-						     gpointer        data);
-typedef void    (*BseNotify_param_changed)          (BseObject      *object,
-						     BseParamSpec   *pspec,
-						     gpointer        data);
-typedef void    (*BseNotify_store)                  (BseObject      *object,
-						     BseStorage     *storage,
-						     gpointer        data);
-typedef void    (*BseNotify_icon_changed)           (BseObject      *object,
-						     gpointer        data);
-typedef void    (*BseNotify_lock_changed)           (BseGConfig     *gconf,
-						     gpointer        data);
-typedef void    (*BseNotify_io_changed)             (BseSource      *source,
-						     gpointer        data);
-typedef void    (*BseNotify_item_added)             (BseContainer   *container,
-						     BseItem        *item,
-						     gpointer        data);
-typedef void    (*BseNotify_item_removed)           (BseContainer   *container,
-						     BseItem        *item,
-						     gpointer        data);
-typedef void    (*BseNotify_cross_changes)          (BseContainer   *container,
-						     gpointer        data);
-typedef void    (*BseNotify_seqid_changed)          (BseItem        *item,
-						     gpointer        data);
-typedef void    (*BseNotify_set_parent)             (BseItem        *item,
-						     BseItem        *container,
-						     gpointer        data);
-typedef void    (*BseNotify_size_changed)           (BsePattern     *pattern,
-						     gpointer        data);
-typedef void    (*BseNotify_note_changed)           (BsePattern     *pattern,
-						     guint           channel,
-						     guint           row,
-						     gpointer        data);
-typedef void    (*BseNotify_note_selection_changed) (BsePattern     *pattern,
-						     guint           channel,
-						     guint           row,
-						     gpointer        data);
-typedef void    (*BseNotify_sequencer_step)         (BseSong        *song,
-						     gpointer        data);
-typedef void    (*BseNotify_complete_restore)       (BseProject     *project,
-						     BseStorage     *storage,
-						     gboolean        aborted,
-						     gpointer        data);
+typedef void   (*BseNotify_destroy)                (BseObject       *object,
+                                                    gpointer         data);
+typedef void   (*BseNotify_name_set)               (BseObject       *object,
+                                                    gpointer         data);
+typedef void   (*BseNotify_param_changed)          (BseObject       *object,
+                                                    BseParamSpec    *pspec,
+                                                    gpointer         data);
+typedef void   (*BseNotify_store)                  (BseObject       *object,
+                                                    BseStorage      *storage,
+                                                    gpointer         data);
+typedef void   (*BseNotify_icon_changed)           (BseObject       *object,
+                                                    gpointer         data);
+typedef void   (*BseNotify_lock_changed)           (BseGConfig      *gconf,
+                                                    gpointer         data);
+typedef void   (*BseNotify_io_changed)             (BseSource       *source,
+                                                    gpointer         data);
+typedef void   (*BseNotify_item_added)             (BseContainer    *container,
+                                                    BseItem         *item,
+                                                    gpointer         data);
+typedef void   (*BseNotify_item_removed)           (BseContainer    *container,
+                                                    BseItem         *item,
+                                                    gpointer         data);
+typedef void   (*BseNotify_cross_changes)          (BseContainer    *container,
+                                                    gpointer         data);
+typedef void   (*BseNotify_seqid_changed)          (BseItem         *item,
+                                                    gpointer         data);
+typedef void   (*BseNotify_set_parent)             (BseItem         *item,
+                                                    BseItem         *container,
+                                                    gpointer         data);
+typedef void   (*BseNotify_size_changed)           (BsePattern      *pattern,
+                                                    gpointer         data);
+typedef void   (*BseNotify_note_changed)           (BsePattern      *pattern,
+                                                    guint            channel,
+                                                    guint            row,
+                                                    gpointer         data);
+typedef void   (*BseNotify_note_selection_changed) (BsePattern      *pattern,
+                                                    guint            channel,
+                                                    guint            row,
+                                                    gpointer         data);
+typedef void   (*BseNotify_pattern_inserted)       (BsePatternGroup *pgroup,
+                                                    BsePattern      *pattern,
+						    guint            position,
+                                                    gpointer         data);
+typedef void   (*BseNotify_pattern_removed)        (BsePatternGroup *pgroup,
+						    BsePattern      *pattern,
+						    guint            position,
+                                                    gpointer         data);
+typedef void   (*BseNotify_pattern_group_inserted) (BseSong         *song,
+                                                    BsePatternGroup *pgroup,
+						    guint            position,
+                                                    gpointer         data);
+typedef void   (*BseNotify_pattern_group_removed)  (BseSong         *song,
+                                                    BsePatternGroup *pgroup,
+						    guint            position,
+                                                    gpointer         data);
+typedef void   (*BseNotify_sequencer_step)         (BseSong         *song,
+                                                    gpointer         data);
+typedef void   (*BseNotify_complete_restore)       (BseProject      *project,
+                                                    BseStorage      *storage,
+                                                    gboolean         aborted,
+                                                    gpointer         data);
 
 
 

@@ -54,6 +54,7 @@
 #include        <bse/bseparam.h>
 #include        <bse/bseparasite.h>
 #include        <bse/bsepattern.h>
+#include        <bse/bsepatterngroup.h>
 #include        <bse/bsepcmdevice.h>
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>

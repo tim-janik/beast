@@ -306,17 +306,16 @@ bse_pattern_set_note (BsePattern *pattern,
 		      guint       row,
 		      gint        note)
 {
+  BsePatternNote *pnote;
+
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
   if (note != BSE_NOTE_VOID)
     g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
 
-  bse_item_exec_void_proc (BSE_ITEM (pattern),
-			   "set-note",
-			   channel,
-			   row,
-			   note);
+  pnote = bse_pattern_peek_note (pattern, channel, row);
+  bse_pattern_modify_note (pattern, channel, row, note, pnote->instrument);
 }
 
 void
@@ -325,17 +324,16 @@ bse_pattern_set_instrument (BsePattern    *pattern,
 			    guint          row,
 			    BseInstrument *instrument)
 {
+  BsePatternNote *pnote;
+
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
   g_return_if_fail (row < pattern->n_rows);
   if (instrument)
     g_return_if_fail (BSE_IS_INSTRUMENT (instrument));
 
-  bse_item_exec_void_proc (BSE_ITEM (pattern),
-			   "set-instrument",
-			   channel,
-			   row,
-			   instrument);
+  pnote = bse_pattern_peek_note (pattern, channel, row);
+  bse_pattern_modify_note (pattern, channel, row, pnote->note, instrument);
 }
 
 void

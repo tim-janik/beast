@@ -77,6 +77,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseparam.h \
 	bseparasite.h \
 	bsepattern.h \
+	bsepatterngroup.h \
 	bsepcmdevice.h \
 	bsepcmdevice-oss.h \
 	bsepcmdevice-alsa.h \
@@ -127,6 +128,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseparam.c \
 	bseparasite.c \
 	bsepattern.c \
+	bsepatterngroup.c \
 	bsepcmdevice.c \
 	bsepcmdevice-oss.c \
 	bsepcmdevice-alsa.c \

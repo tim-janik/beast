@@ -180,6 +180,7 @@ sub foreach_entry {
     undef $adefs{$uc_type};
 
     # need to print out the parent type first?
+    # print STDERR "$type has parent: $uc_parent: " . $adefs{$uc_parent} . "\n";
     if ($adefs{$uc_parent}) {
 	foreach_entry ($adefs{$uc_parent});
     }
