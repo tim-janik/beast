@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 20:11+0200\n"
-"PO-Revision-Date: 2004-05-06 14:05+0200\n"
+"POT-Creation-Date: 2004-05-21 03:07+0200\n"
+"PO-Revision-Date: 2004-05-21 16:37+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -2658,9 +2658,8 @@ msgid "Filtered Audio Signal"
 msgstr "Filtrovaný signál zvuku"
 
 #: bse/bseconstant.c:84
-#, fuzzy
 msgid "/Other Sources/Constant"
-msgstr "_Jiné zdroje"
+msgstr "/Jiné zdroje/Konstantní"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
 #, c-format
@@ -2714,9 +2713,8 @@ msgstr ""
 "CPU by měla mít mnohem menší než frekvence mixování syntézy"
 
 #: bse/bseinstrumentinput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Voice Input"
-msgstr "_Vstup a výstup"
+msgstr "/Vstup a výstup/Vstup hlasu nástroje"
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 msgid "Note Frequency"
@@ -2747,9 +2745,8 @@ msgid "Velocity while the note is pressed"
 msgstr "Rychlost při stisknutí noty"
 
 #: bse/bseinstrumentoutput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Output"
-msgstr "_Vstup a výstup"
+msgstr "/Vstup a výstup/Výstup nástroje"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2780,9 +2777,8 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr "High znamená, že nástroj dosyntetizoval"
 
 #: bse/bsemidicontroller.c:86
-#, fuzzy
 msgid "/Input & Output/MIDI Control Input"
-msgstr "_Vstup a výstup"
+msgstr "/Vstup a výstup/Vstup ovládání MIDI"
 
 #: bse/bsemidicontroller.c:137
 msgid "Ctrl Out1"
@@ -2817,9 +2813,8 @@ msgid "MIDI Signal 4"
 msgstr "MIDI signál 4"
 
 #: bse/bsemidiinput.c:82
-#, fuzzy
 msgid "/Input & Output/MIDI Voice Input"
-msgstr "_Vstup a výstup"
+msgstr "/Vstup a výstup/Vstup hlasu MIDI"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
 msgid "Freq Out"
@@ -2864,9 +2859,8 @@ msgid "Disconnect Out"
 msgstr "Odpojení Out"
 
 #: bse/bsepcminput.c:85
-#, fuzzy
 msgid "/Input & Output/PCM Input"
-msgstr "_Vstup a výstup"
+msgstr "/Vstup a výstup/Vstup PCM"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
@@ -2887,9 +2881,8 @@ msgid "Right channel output"
 msgstr "Výstup pravého kanálu"
 
 #: bse/bsepcmoutput.c:85
-#, fuzzy
 msgid "/Input & Output/PCM Output"
-msgstr "_Vstup a výstup"
+msgstr "/Vstup a výstup/Výstup PCM"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
@@ -2911,21 +2904,21 @@ msgstr "Vstup pravého kanálu"
 
 #: bse/bseserver.c:503
 msgid "Advice about MIDI device selections"
-msgstr ""
+msgstr "Rada o výběru zařízení MIDI"
 
 #: bse/bseserver.c:504
 msgid "Alert me about MIDI device selections"
-msgstr ""
+msgstr "Upozorni mě na výběr zařízení MIDI"
 
 #: bse/bseserver.c:505
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr ""
+msgstr "nemohu otevřít zařízení midi %s (používám zařízení null): %s"
 
 #: bse/bseserver.c:547
 #, c-format
 msgid "failed to open output file \"%s\": %s"
-msgstr ""
+msgstr "nemohu otevřít výstupní soubor \"%s\": %s"
 
 #: bse/bsesnooper.c:77
 msgid "/Misc/Snooper"
@@ -2948,9 +2941,8 @@ msgstr ""
 "a vstupů modulace."
 
 #: bse/bsestandardosc.c:109
-#, fuzzy
 msgid "/Audio Sources/Standard Oscillator"
-msgstr "/Moduly/Zdroje zvuku/Standardní oscilátor"
+msgstr "/Zdroje zvuku/Standardní oscilátor"
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
 msgid "Wave Form"
@@ -3057,9 +3049,8 @@ msgid "Syncronization Output"
 msgstr "Výstup synchronizace"
 
 #: bse/bsesubiport.c:90
-#, fuzzy
 msgid "/Virtualization/Virtual Input"
-msgstr "_Virtualizace"
+msgstr "/Virtualizace/Virtuální vstup"
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
 #, c-format
@@ -3081,9 +3072,8 @@ msgid "Virtual input %u"
 msgstr "Virtuální vstup %u"
 
 #: bse/bsesuboport.c:90
-#, fuzzy
 msgid "/Virtualization/Virtual Output"
-msgstr "_Virtualizace"
+msgstr "/Virtualizace/Virtuální výstup"
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
 #, c-format
@@ -3151,7 +3141,7 @@ msgstr "Čas poslední změny"
 #: bse/bsewaveosc.c:97
 #, fuzzy
 msgid "/Audio Sources/Wave Oscillator"
-msgstr "/Moduly/Zdroje zvuku/Standardní oscilátor"
+msgstr "/Zdroje zvuku/Standardní oscilátor"
 
 #: bse/bsewaveosc.c:123
 msgid "Wave to play"
