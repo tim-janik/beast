@@ -102,14 +102,11 @@ void CodeGeneratorCxx::run ()
 
 	  string name = nspace.printableForm (si->name);
 	  string content = createTypeCode (si->content.type, MODEL_MEMBER);
-	  string base = "std::vector";
 	  string arg = createTypeCode (si->name, MODEL_ARG);
 	  string ret = createTypeCode (si->name, MODEL_RET);
-	  if (parser.isRecord(si->content.type))
-	    base = "Bse::Sequence";
 
 	  printf("\n");
-	  printf("class %s : public %s<%s> {\n", name.c_str(), base.c_str(), content.c_str());
+	  printf("class %s : public Bse::Sequence<%s> {\n", name.c_str(), content.c_str());
 	  printf("public:\n");
 	  /* TODO: make this a constructor? */
 	  printf("  static %s _from_seq (SfiSeq *seq);\n", ret.c_str(), ret.c_str());
