@@ -20,6 +20,7 @@ FIXMES:
 - show aggregates with BST_DEVEL
 - document -: f-fatal +p-plugins +s-scripts d-develext g-gdb
 - allow .bse files to start out with #bseshell ?
+- rename bswshell to bseshell
 - implement object uname changes parser lookup table
 - nuke g_datalist usages
 - update /Help index to cover new docs
