@@ -1,3 +1,16 @@
+Sat Oct 16 00:57:06 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsupershell.c: show "Parts" page of a song only for
+	debugging mode (-:d). parts are now properly deleted from songs
+	once the last track link of a part gets removed. orphan parts
+	upon loading are adopted by an extra track.
+
+	* beast-gtk/bsttrackrollctrl.c: delete part if the last link to it
+	gets deleted. group with link deletion undo-wise.
+
+	* beast-gtk/bsttrackview.c: delete parts contained in a track if
+	the track contained the last link to those parts. group undo-wise.
+
 Sat Oct 16 00:41:08 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* configure.in: For development builds, xmllint is required. Fail if

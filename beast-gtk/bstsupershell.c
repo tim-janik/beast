@@ -232,9 +232,10 @@ super_shell_build_song (BstSuperShell *self,
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (song),
                             gxk_notebook_create_tabulator (_("Properties"), BST_STOCK_PROPERTIES, _("Adjust overall song behaviour")));
-  gtk_notebook_append_page (notebook,
-                            bst_part_view_new (song),
-                            gxk_notebook_create_tabulator (_("Parts"), BST_STOCK_PART, NULL));
+  if (BST_DBG_EXT)
+    gtk_notebook_append_page (notebook,
+                              bst_part_view_new (song),
+                              gxk_notebook_create_tabulator (_("Parts"), BST_STOCK_PART, NULL));
   if (BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               bst_bus_view_new (song),

@@ -729,6 +729,7 @@ track_view_action_exec (gpointer data,
   switch (action)
     {
       SfiProxy item;
+      guint i;
     case ACTION_ADD_TRACK:
       bse_item_group_undo (song, "Add Track");
       item = bse_song_create_track (song);
@@ -744,7 +745,13 @@ track_view_action_exec (gpointer data,
       break;
     case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
+      bse_item_group_undo (song, "Delete Track");
+      BseItemSeq *iseq = bse_track_list_parts_uniq (item);
       bse_song_remove_track (song, item);
+      for (i = 0; i < iseq->n_items; i++)
+        if (!bse_song_find_any_track_for_part (song, iseq->items[i]))
+          bse_song_remove_part (song, iseq->items[i]);
+      bse_item_ungroup_undo (song);
       break;
     }
   gxk_widget_update_actions_downwards (self);

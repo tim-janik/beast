@@ -9,7 +9,12 @@ FIXMES:	(release-critical)
 - auto-add orphan parts to a new track when loading
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
+- deleteing last track + undo doesn't redraw trackroll
 TODO:
+- add GxkDialog minimum shrink sizes support
+- preserve part-link ids in tracks across part-tick movement and remove-tick+insert-part undo
+- add raise/lower buttons to track view
+- add left/right buttons to bus view (mixer)
 - add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - add executable versioning to sfidl 
 - davsyndrum needs gate-out (or done)

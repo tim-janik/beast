@@ -469,7 +469,11 @@ delete_start (BstTrackRollController *self,
 {
   if (self->obj_part)	/* got part to delete */
     {
+      bse_item_group_undo (self->song, "Delete Part");
       bse_track_remove_tick (self->obj_track, self->obj_tick);
+      if (!bse_song_find_any_track_for_part (self->song, self->obj_part))
+        bse_song_remove_part (self->song, self->obj_part);
+      bse_item_ungroup_undo (self->song);
       gxk_status_set (GXK_STATUS_DONE, _("Delete Part"), NULL);
     }
   else
