@@ -416,7 +416,7 @@
       <beast-menubar />
     </vbox>
     <vbox name="toolbar-area" area="north" />
-    <left-deck name="main-notebook" pack:expand="1" />
+    <bottom-deck name="main-notebook" pack:expand="1" />
     <hbox name="control-area" area="north" />
   </xdef:application-box>
 

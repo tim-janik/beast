@@ -1,3 +1,8 @@
+Wed Feb 25 04:49:55 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-beast.xml: made the toplevel-notebook tabs
+	appear at the bottom.
+
 Wed Feb 25 03:40:00 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkauxwidgets.c: use G_DEFINE_TYPE() for menu button.
