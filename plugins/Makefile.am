@@ -76,7 +76,7 @@ plugin_idl_files = $(strip	\
 # setup generation of C++ plugins from idl files
 BSEPGEN = ../sfi/bse-plugin-generator
 %.gen-idl.h: %.idl $(BSEPGEN)
-	$(BSEPGEN) $< > $@ || (rm $@ ; exit 1 )
+	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 plugins_built_sources =
 Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
